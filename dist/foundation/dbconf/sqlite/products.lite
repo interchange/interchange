@@ -1,5 +1,6 @@
 Database  products  products.txt __SQLDSN__
 Database  products  KEY          sku
+Database  products  HIDE_FIELD   inactive
 Database  products  COLUMN_DEF   "sku=char(64) NOT NULL PRIMARY KEY"
 Database  products  COLUMN_DEF   "category=VARCHAR(64) NOT NULL DEFAULT ''"
 Database  products  COLUMN_DEF   "color=VARCHAR(96)"

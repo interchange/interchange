@@ -5,6 +5,7 @@ endif
 ifdef SQLPASS
 Database  products  PASS         __SQLPASS__
 endif
+Database  products  HIDE_FIELD   inactive
 Database  products  DEFAULT_TYPE varchar(128)
 Database  products  KEY          sku
 Database  products  COLUMN_DEF   "sku=varchar(64) NOT NULL PRIMARY KEY"

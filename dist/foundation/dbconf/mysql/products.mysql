@@ -1,4 +1,5 @@
 Database  products  products.txt __SQLDSN__
+Database  products  HIDE_FIELD   inactive
 Database  products  KEY          sku
 Database  products  COLUMN_DEF   "sku=char(64) NOT NULL PRIMARY KEY"
 Database  products  COLUMN_DEF   "description=VARCHAR(128) NOT NULL"
