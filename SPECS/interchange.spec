@@ -1,7 +1,7 @@
 # To do:
 # Fall back to vlink.pl if no C compiler available at foundation demo build time
 
-%define ic_version			4.7.3
+%define ic_version			4.7.4
 %define ic_rpm_release		1
 %define ic_package_basename	interchange
 %define ic_user				interch

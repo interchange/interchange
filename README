@@ -2,7 +2,7 @@
 
                            I N T E R C H A N G E
 
-Interchange 4.7.3
+Interchange 4.7.4
 
 Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 
@@ -35,7 +35,7 @@ Unix-like operating system.
 
 More information is in the following files and directories:
 
-doc/           Documentation.
+pod/           Documentation.
 
 README.rpm     Notes on using Interchange when installed from RPM packages.
 
@@ -75,17 +75,17 @@ test.pl        The installation test script.
 
                           I N S T A L L A T I O N
 
+You can install Interchange as root for a multi-user system-wide setup, or
+as an unprivileged user who will be the only one modifying Interchange files.
+
 Here is the quick installation summary:
 
 gzip -dc interchange-4.7.?.tar.gz | tar xvf -
 cd interchange-4.7.?
 ./configure
 
-Then you will need to make your first Interchange catalog. See the
-section 'DEMO' below.
-
-Remember to check http://developer.akopia.com/ for documentation and
-help from other users if you have any trouble.
+Then you will need to make your first Interchange catalog, as described in
+the next section.
 
 -----------------------------------------------------------------------------
 
@@ -113,12 +113,12 @@ Visit http://demo.akopia.com/ to see a live demo on our servers.
 
                          D O C U M E N T A T I O N
 
-The included documentation is in man(1), POD, and HTML formats. Extended
-documentation is available at:
+The included documentation is in POD and man(1) formats. The developer web
+site it located at:
 
-http://developer.akopia.com/
+http://interchange.redhat.com/
 
-which includes user-annotated documentation, the manual in other formats,
+It offers user-annotated documentation, the documentation in other formats,
 and a user-contributed code library.
 
 -----------------------------------------------------------------------------

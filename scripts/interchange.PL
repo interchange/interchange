@@ -23,9 +23,9 @@ DOIT: {
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# Interchange version 4.7.3
+# Interchange version 4.7.4
 #
-# $Id: interchange.PL,v 1.15.2.46 2001-06-12 23:24:17 jon Exp $
+# $Id: interchange.PL,v 1.15.2.47 2001-06-13 17:08:59 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -141,7 +141,7 @@ use vars qw($VERSION);
 require Exporter;
 
 BEGIN {
-	$VERSION = '4.7.3';
+	$VERSION = '4.7.4';
 }
 
 use Fcntl;
@@ -2252,7 +2252,7 @@ interchange [--options] [file]
 
 =head1 VERSION
 
-4.7.3
+4.7.4
 
 =head1 DESCRIPTION
 
