@@ -1,6 +1,6 @@
 # Vend::SOAP - Handle SOAP connections for Interchange
 #
-# $Id: SOAP.pm,v 2.3 2002-11-18 16:55:15 mheins Exp $
+# $Id: SOAP.pm,v 2.4 2003-03-07 13:49:50 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -34,7 +34,7 @@ require SOAP::Transport::HTTP;
 use strict;
 
 use vars qw($VERSION @ISA $AUTOLOAD);
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 @ISA = qw/SOAP::Server/;
 
 my %Allowed_tags;
@@ -151,7 +151,7 @@ sub tag_soap {
 		}
 	};
 	if($@) {
-		::logGlobal("error on SOAP call: %s", $@);
+		::logError("error on SOAP call: %s", $@);
 	}
 #::logDebug("after method call, uri=$uri proxy=$proxy call=$method result=$result");
 
