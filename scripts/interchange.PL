@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.8.3
 #
-# $Id: interchange.PL,v 2.7.2.3 2001-10-13 23:10:24 mheins Exp $
+# $Id: interchange.PL,v 2.7.2.4 2001-10-18 16:24:36 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -1088,9 +1088,10 @@ sub update_values {
 			$value = Vend::Interpolate::filter_value(
 						'restrict_html',
 						$value,
-						$key,
+						undef,
 						@$restrict,
 					);
+			$::Values->{$key} = $value;
 			next;
 		}
 		$value =~ tr/<[//d;
