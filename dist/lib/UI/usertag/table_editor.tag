@@ -796,7 +796,7 @@ EOF
 						ui_sequence_edit
 					/ );
 
-	push(@opt_set, splice(@cgi_set, 0)) if $opt->{CGI};
+	push(@opt_set, splice(@cgi_set, 0)) if $opt->{cgi};
 	for(@opt_set) {
 		next unless length $opt->{$_};
 		my $val = $opt->{$_};
@@ -1218,7 +1218,7 @@ EOF
 			$template =~ s/\$LABEL\$/$Tag->error($parm)/eg;
 		}
 		$template =~ s/~TKEY~/$tkey_message || ''/eg;
-::logDebug("col=$c widget=$widget->{$c} (type=$type)");
+#::logDebug("col=$c widget=$widget->{$c} (type=$type)");
 		my $display = $Tag->display({
 										applylocale => 1,
 										arbitrary => $opt->{ui_meta_view},
