@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Payment.pm,v 1.1.2.3 2001-04-09 21:03:17 heins Exp $
+# $Id: Payment.pm,v 1.1.2.4 2001-04-10 05:03:39 heins Exp $
 #
 # Copyright (C) 1996-2000 Red Hat, Inc., http://www.redhat.com
 #
@@ -22,7 +22,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.1.2.3 $, 10);
+$VERSION = substr(q$Revision: 1.1.2.4 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -385,9 +385,13 @@ sub charge {
 
 	if($result{$svar} !~ /^success/) {
 		$Vend::Session->{payment_error} = $result{$evar};
+		$result{'invalid-order-id'} = delete $result{'order-id'}
+			if $result{'order-id'};
 	}
 	elsif($result{$svar} =~ /success-duplicate/) {
 		$Vend::Session->{payment_error} = $result{$evar};
+		$result{'invalid-order-id'} = delete $result{'order-id'}
+			if $result{'order-id'};
 	}
 	else {
 		delete $Vend::Session->{payment_error};

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: CyberCash.pm,v 1.1.2.1 2001-04-09 16:18:35 heins Exp $
+# $Id: CyberCash.pm,v 1.1.2.2 2001-04-10 05:03:40 heins Exp $
 #
 # Copyright (C) 1999-2001 Red Hat, Inc., http://www.redhat.com
 #
@@ -19,29 +19,30 @@
 # License along with this program; if not, write to the Free
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
-# Connection routine for AuthorizeNet version 3 using the 'ADC Direct Response'
+#
+# Connection routine for CyberCash version 3 using the 'MCKLib3_2 Direct'
 # method.
 
 
 package Vend::Payment::CyberCash;
 
-$VERSION = substr(q$Revision: 1.1.2.1 $, 10);
+$VERSION = substr(q$Revision: 1.1.2.2 $, 10);
 
 =head1 Interchange CyberCash Support
 
-Vend::Payment::CyberCash $Revision: 1.1.2.1 $
+Vend::Payment::CyberCash $Revision: 1.1.2.2 $
 
 =head1 SYNOPSIS
 
-cybercash($mode, $opt);
-
-	or
-
-&charge=cybercash
-
-	or
-
-[charge mode=cybercash param1=value1 param2=value2]
+    &charge=cybercash
+ 
+        or
+ 
+    [charge mode=cybercash param1=value1 param2=value2]
+ 
+        or
+ 
+    $Tag->charge('cybercash', $opt);
 
 =head1 PREREQUISITES
 
@@ -57,80 +58,131 @@ file changes.
 
 To enable this module, place this directive in C<interchange.cfg>:
 
-	Require module Vend::Payment::CyberCash
+    Require module Vend::Payment::CyberCash
 
-This I<must> be in interchange.cfg or a file included from it.
+This I<should> be in interchange.cfg or a file included from it, but
+it is actually in by default to maintain backward compatibility with
+legacy CyberCash installations.
 
 Make sure CreditCardAuto is off (default in Interchange demos).
+
+Make sure the CyberCash Merchant connection kit is installed and working.
+It requires the following steps:
+
+=over 4
+
+=item 1.
+
+Obtain the CyberCash modules, prefereably version 3.2.0.4 though
+3.2.0.5 and above should work if you add "DebugFile /dev/null" in
+interchange.cfg. Ask around on the list if you need older versions.
+
+=item 2.
+
+Install the modules, then find the directory where they are and
+copy them to /path_to_interchange/lib. Include the following files:
+
+    CCMckDirectLib3_2.pm  CCMckLib3_2.pm  MCKencrypt
+    CCMckErrno3_2.pm      MCKdecrypt      computeMD5hash
+
+Make sure the program files (non-.pm) are executable.
+
+=item 3.
+
+Edit CC*.pm to adjust the paths for MCKencrypt, MCKdecrypt, and
+computeMD5hash.
+
+  in CCMckDirectLib3_2.pm:
+    $MCKencrypt = "/path_to_interchange/lib/MCKencrypt";
+    $MCKdecrypt = "/path_to_interchange/lib/MCKdecrypt";
+  
+  in CCMckLib3_2.pm:
+    $computehash = "/path_to_interchange/lib/computeMD5hash";
+
+=item 4.
+
+Restart Interchange and make sure you get the message:
+
+    CyberCash module found (Version 3.x)
+
+=back
 
 The mode can be named anything, but the C<gateway> parameter must be set
 to C<cybercash>. To make it the default payment gateway for all credit
 card transactions in a specific catalog, you can set in C<catalog.cfg>:
 
-	Variable   MV_PAYMENT_MODE  cybercash
+    Variable   MV_PAYMENT_MODE  cybercash
 
-It uses several of the standard settings from Interchange payment. Any time
+It uses any of the applicable standard settings from Interchange payment. Any time
 we speak of a setting, it is obtained either first from the tag/call options,
 then from an Interchange order Route named for the mode, then finally a
-default global payment variable, For example, the C<id> parameter would
+default global payment variable, For example, the C<configfile> parameter would
 be specified by:
 
-	[charge mode=cybercash id=YourCC_ID]
+    [charge mode=cybercash configfile="/path/to/the/merchant_conf"]
 
 or
 
-	Route cybercash id YourAuthorizeNetID
+    Route cybercash configfile /path/to/the/merchant_conf
 
 or 
 
-	Variable MV_PAYMENT_ID      YourAuthorizeNetID
+    Variable MV_PAYMENT_CONFIGFILE    /path/to/the/merchant_conf
 
 The active settings are:
 
 =over 4
 
-=item id
+=item configfile
 
-Your Authorize.net account ID, supplied by Authorize.net when you sign up.
-Global parameter is MV_PAYMENT_ID.
+Your CyberCash merchant_conf file, usually created when you installed the MCK.
+Global parameter is MV_PAYMENT_CONFIGFILE.
 
-=item secret
+=item precision
 
-Your Authorize.net account password, supplied by Authorize.net when you sign up.
-Global parameter is MV_PAYMENT_SECRET.
+The number of decimal digits to be included in the amount. Default is 2.
+
+=item currency
+
+The international currency code to use. Default is C<usd>. Must be supported
+by CyberCash.
+
+=back
+
+Items supported, but never normally used, are:
+
+=over 4
+
+=item host
+
+The CyberCash host to use. Default is set in the merchant_conf file, and is
+not normally changed by the user. No global parameter is used for fear of
+conflict with another payment gateway -- must be set in the Route or
+direct option.
 
 =item transaction
 
 The type of transaction to be run. Valid values are:
 
-	Interchange mode    AuthorizeNet mode
-	----------------    -----------------
+    Interchange mode    CyberCash mode
+    ----------------    -----------------
+    sale                mauthcapture
+    auth                mauthonly
+
+IMPORTANT NOTE: In most cases, you cannot control your transaction type,
+it is set at http://amps.cybercash.com.
 
 =item remap 
 
-This remaps the form variable names to the ones needed by Authorize.net.
-
-=item test
-
-Set this to C<TRUE> if you wish to operate in test mode, i.e. set the Authorize.net
-C<x_Test_Request> query paramter to TRUE.i
-
-Examples: 
-
-	Route    authorizenet  test  TRUE
-		or
- 	Variable   MV_PAYMENT_TEST   TRUE
-	    or 
-	[charge mode=authorizenet test=TRUE]
+This remaps the form variable names to the ones needed by CyberCash. See
+the payment documentation for details.
 
 =back
 
 =head2 Troubleshooting
 
-Try the instructions above, then enable test mode. A test order should complete.
-
-Disable test mode, then test in various Authorize.net error modes by
-using the credit card number 4222 2222 2222 2222.
+Try the instructions above, then enable test mode at http://amps.cybercash.com.
+A test order should complete. Exam
 
 Then try a sale with the card number C<4111 1111 1111 1111>
 and a valid expiration date. The sale should be denied, and the reason should
@@ -138,27 +190,59 @@ be in [data session payment_error].
 
 If nothing works:
 
+=over 4
+
+=item *
+
 Make sure you "Require"d the module in interchange.cfg:
 
-	Require module Vend::Payment::Authorize
+    Require module Vend::Payment::CyberCash
 
-Make sure Net::SSLeay is installed and working.
+=item *
+
+Make sure the CyberCash Merchant connection kit is installed and working. Test
+with CyberCash's supplied routines.
+
+=item *
 
 Check the error logs, both catalog and global.
 
-Make sure you set your payment parameters properly.  
+=item *
+
+Make sure you set your payment parameters properly. At the minimum, you
+will need:
+
+    Route  cybercash   configfile   /path/to/merchant_conf
+
+=item *
+
+Make sure you have a payment mode set if you are not calling it with
+C<&charge=cybercash>:
+
+    Variable  MV_PAYMENT_MODE  cybercash
+
+Everything is case-sensitive, make sure values match.
+
+=item *
 
 Try an order, then put this code in a page:
 
-	[calc]
-		$Tag->uneval( { ref => $Session->{payment_result} );
-	[/calc]
+    <XMP>
+    [calc]
+        my $string = $Tag->uneval( { ref => $Session->{payment_result} });
+        $string =~ s/{/{\n/;
+        $string =~ s/,/,\n/g;
+        return $string;
+    [/calc]
+    </XMP>
 
 That should show what happened.
 
+=back
+
 =head1 BUGS
 
-There is actually nothing *in* Vend::Payment::Authorize. It changes packages
+There is actually nothing *in* Vend::Payment::CyberCash. It changes packages
 to Vend::Payment and places things there.
 
 =head1 AUTHORS
@@ -167,11 +251,11 @@ Mark Stosberg <mark@summersault.com> and Mike Heins <mheins@redhat.com>.
 
 =head1 CREDITS
 
-	Jeff Nappi <brage@cyberhighway.net>
-	Paul Delys <paul@gi.alaska.edu>
-	webmaster@nameastar.net
-	Ray Desjardins <ray@dfwmicrotech.com>
-	Nelson H. Ferrari <nferrari@ccsc.com>
+    Jeff Nappi <brage@cyberhighway.net>
+    Paul Delys <paul@gi.alaska.edu>
+    webmaster@nameastar.net
+    Ray Desjardins <ray@dfwmicrotech.com>
+    Nelson H. Ferrari <nferrari@ccsc.com>
 
 =cut
 

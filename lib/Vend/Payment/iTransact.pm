@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: iTransact.pm,v 1.1.2.1 2001-04-09 21:03:20 heins Exp $
+# $Id: iTransact.pm,v 1.1.2.2 2001-04-10 05:03:40 heins Exp $
 #
 # Copyright (C) 1999-2001 Red Hat, Inc., http://www.redhat.com
 #
@@ -27,7 +27,7 @@ package Vend::Payment::iTransact;
 
 =head1 Interchange iTransact Support
 
-Vend::Payment::iTransact $Revision: 1.1.2.1 $
+Vend::Payment::iTransact $Revision: 1.1.2.2 $
 
 =head1 SYNOPSIS
 
@@ -39,8 +39,13 @@ Vend::Payment::iTransact $Revision: 1.1.2.1 $
 
 =head1 PREREQUISITES
 
-  Bundle::LWP, including LWP::UserAgent and HTTP::Request
-  Crypt::SSLeay
+  Net::SSLeay
+ 
+    or
+  
+  LWP::UserAgent and Crypt::SSLeay
+
+Only one of these need be present and working.
 
 =head1 DESCRIPTION
 
@@ -121,11 +126,17 @@ Make sure you "Require"d the module in interchange.cfg:
 
 =item *
 
-Make sure Crypt::SSLeay and LWP::UserAgent are installed and working. You can
-test to see whether your Perl thinks they are:
+Make sure either Net::SSLeay or Crypt::SSLeay and LWP::UserAgent are installed
+and working. You can test to see whether your Perl thinks they are:
 
-    perl -MCrypt::SSLeay -e 'print "It works\n"'
-    perl -MLWP::UserAgent -e 'print "It works\n"'
+    perl -MNet::SSLeay -e 'print "It works\n"'
+
+or
+
+    perl -MLWP::UserAgent -MCrypt::SSLeay -e 'print "It works\n"'
+
+If either one prints "It works." and returns to the prompt you should be OK
+(presuming they are in working order otherwise).
 
 =item *
 

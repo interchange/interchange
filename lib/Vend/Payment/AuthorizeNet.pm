@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: AuthorizeNet.pm,v 1.1.2.1 2001-04-09 17:35:56 heins Exp $
+# $Id: AuthorizeNet.pm,v 1.1.2.2 2001-04-10 05:03:40 heins Exp $
 #
 # Copyright (C) 1999-2001 Red Hat, Inc., http://www.redhat.com
 #
@@ -37,7 +37,7 @@ package Vend::Payment::AuthorizeNet;
 
 =head1 Interchange AuthorizeNet Support
 
-Vend::Payment::AuthorizeNet $Revision: 1.1.2.1 $
+Vend::Payment::AuthorizeNet $Revision: 1.1.2.2 $
 
 =head1 SYNOPSIS
 
@@ -112,8 +112,14 @@ Global parameter is MV_PAYMENT_REFERER.
 
 The type of transaction to be run. Valid values are:
 
-    Interchange mode    AuthorizeNet mode
+    Interchange         AuthorizeNet
     ----------------    -----------------
+        auth            AUTH_ONLY
+        return          CREDIT
+        reverse         PRIOR_AUTH_CAPTURE
+        sale            AUTH_CAPTURE
+        settle          CAPTURE_ONLY
+        void            VOID
 
 =item remap 
 
@@ -175,9 +181,14 @@ Make sure you set your payment parameters properly.
 
 Try an order, then put this code in a page:
 
+    <XMP>
     [calc]
-        $Tag->uneval( { ref => $Session->{payment_result} );
+        my $string = $Tag->uneval( { ref => $Session->{payment_result} });
+        $string =~ s/{/{\n/;
+        $string =~ s/,/,\n/g;
+        return $string;
     [/calc]
+    </XMP>
 
 That should show what happened.
 
@@ -213,7 +224,7 @@ package Vend::Payment;
 use Net::SSLeay qw(post_https make_form make_headers);
 
 sub authorizenet {
-	my ($user, $secret, $amount) = @_;
+	my ($user, $amount) = @_;
 
 	my $opt;
 	if(ref $user) {
