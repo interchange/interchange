@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.2
 #
-# $Id: interchange.PL,v 1.15.2.30 2001-04-08 16:56:58 heins Exp $
+# $Id: interchange.PL,v 1.15.2.31 2001-04-08 17:00:46 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -2612,16 +2612,6 @@ sub main_loop {
 
 	## Bring in the CyberCash libraries if present
 	## Moved here to prevent unwanted messages
-	eval {
-		package Vend::Order;
-		require CCLib;
-		$Vend::CC2 = 1;
-		my $ver = $CCLib::VERSION || '2.1';
-		::logGlobal({}, "CyberCash module found (Version %s)", $ver )
-			unless $Vend::Quiet;
-	};
-
-	$Vend::CyberCash = ! $@;
 
 	eval {
 		package Vend::Order;
@@ -2638,7 +2628,7 @@ sub main_loop {
 			unless $Vend::Quiet;
 	};
 
-	$Vend::CyberCash = $Vend::CyberCash || ! $@;
+	$Vend::CyberCash = ! $@;
 
 	# These modules no longer necessary, why take up memory?
 	delete $INC{'Getopt/Long.pm'};
