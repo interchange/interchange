@@ -19,6 +19,3 @@ else
 	echo "#Variable DEBUG 1" >> $SETTINGSCFG	
 fi
 
-if db_get interchange-ui/uilocales; then
-	echo "$RET" | sed "s/German/Variable UI_LOCALE_DE 1/" >> $SETTINGSCFG
-fi
