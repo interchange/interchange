@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.130 2004-01-11 15:06:00 mheins Exp $
+# $Id: Config.pm,v 2.131 2004-01-26 09:18:46 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.130 $, 10);
+$VERSION = substr(q$Revision: 2.131 $, 10);
 
 my %CDname;
 my %CPname;
@@ -2209,7 +2209,7 @@ sub parse_locale {
 		my($sethash);
 		if ($eval) {
 			$sethash = $safe->reval($settings)
-				or config_warn("bad Locale setting in %s: %s", $name,$settings),
+				or config_warn("bad Locale setting in %s: %s", $name, $@),
 						$sethash = {};
 		}
 		else {
