@@ -38,12 +38,19 @@ sub {
 		$prependor = $prependor ? $prependor . '_' : '';
 #::logDebug("setting prependor to $prependor");
 	}
+
+	my $appendor = '';
+	if($opt->{stacker}) {
+		$appendor = "__$opt->{stacker}";
+#::logDebug("setting appendor to $appendor");
+	}
 	return errmsg("non-existent table '%s' for row-edit", $table)
 		unless $db;
 	$db = $db->ref();
 
 	my $acl = UI::Primitive::get_ui_table_acl();
 
+	my $record;
 	my $bad;
 	if ($key) {
 		eval {
@@ -51,11 +58,19 @@ sub {
 			$bad = errmsg('DELETED') if $bad;
 		};
 		$bad = errmsg('ERROR') if $@;
-		if(! $bad and $acl) {
+		if($bad) {
+			# Do nothing, we are already bad
+		}
+		elsif($acl) {
 			$bad = errmsg('Not available')
 				if ! UI::Primitive::ui_acl_atom($acl, 'keys', $key);
 		}
+		else {
+			$record = $db->row_hash($key);
+		}
 	}
+
+	$record ||= {};
 
 	my @cols;
 
@@ -108,13 +123,13 @@ sub {
 	}
 	elsif($key or $opt->{blank}) {
 		for(@cols) {
-			my $text = $opt->{blank} ? '' : $db->field($key, $_);
+			my $text = $opt->{blank} ? '' : $record->{$_} || '';
 			my $msg = '';
 			if($do_meta{$_}) {
 				my $tmp = Vend::Tags->display( {
 											table => $table,
 											column => $_,
-											name => "$prependor$_",
+											name => "$prependor$_$appendor",
 											value => $text,
 											template => ' $WIDGET$ ',
 										});
@@ -125,13 +140,13 @@ sub {
 				my $rows = $opt->{height} || 4;
 				HTML::Entities::encode($text, $ESCAPE_CHARS::std);
 				$out .= <<EOF;
-<TD$ta_extra><TEXTAREA NAME="$prependor$_" COLS="$size" ROWS="$rows">$text</TEXTAREA>$msg</TD>
+<TD$ta_extra><TEXTAREA NAME="$prependor$_$appendor" COLS="$size" ROWS="$rows">$text</TEXTAREA>$msg</TD>
 EOF
 			}
 			else {
 				$text =~ s/"/&quot;/g;
 				$out .= <<EOF;
-<TD$tf_extra><INPUT NAME="$prependor$_" SIZE=$size VALUE="$text">$msg</TD>
+<TD$tf_extra><INPUT NAME="$prependor$_$appendor" SIZE=$size VALUE="$text">$msg</TD>
 EOF
 			}
 		}

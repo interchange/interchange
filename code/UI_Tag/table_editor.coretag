@@ -123,7 +123,7 @@ sub {
 show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 
 	package Vend::Interpolate;
-	use vars qw/$Values $Scratch $Db $Tag $Config $CGI $Variable $safe_safe/;
+	use vars qw/$Values $Scratch $Db $Tag $Config $CGI $safe_safe $Session/;
 
 	if(ref($opt->{all_opts}) eq 'HASH') {
 		my $o = $opt->{all_opts};
@@ -400,9 +400,9 @@ EOF
 		$key = $opt->{item_id};
 	}
 
-	$opt->{color_success} = $Variable->{UI_C_SUCCESS} || '#00FF00'
+	$opt->{color_success} = $::Variable->{UI_C_SUCCESS} || '#00FF00'
 		if ! $opt->{color_success};
-	$opt->{color_fail} = $Variable->{UI_CONTRAST} || '#FF0000'
+	$opt->{color_fail} = $::Variable->{UI_CONTRAST} || '#FF0000'
 		if ! $opt->{color_fail};
 	### Build the error checking
 	my $error_show_var = 1;
@@ -1271,7 +1271,153 @@ EOF
 					: $::Variable->{UI_META_LINK};
 	}
 
+	my %link_row;
+	my %link_before;
+	if($opt->{link_table} and $key) {
+		my @ltable;
+		my @lfields;
+		my @lkey;
+		my @lview;
+		my @llab;
+		my @ltpl;
+		my @lbefore;
+		my @lsort;
+		my $tcount = 1;
+		if(ref($opt->{link_table}) eq 'ARRAY') {
+			@ltable  = @{$opt->{link_table}};
+			@lfields = @{$opt->{link_fields}};
+			@lview   = @{$opt->{link_view}};
+			@lkey    = @{$opt->{link_key}};
+			@llab    = @{$opt->{link_label}};
+			@ltpl    = @{$opt->{link_template}};
+			@lbefore = @{$opt->{link_before}};
+			@lsort   = @{$opt->{link_sort}};
+		}
+		else {
+			@ltable  = $opt->{link_table};
+			@lfields = $opt->{link_fields};
+			@lview   = $opt->{link_view};
+			@lkey    = $opt->{link_key};
+			@llab    = $opt->{link_label};
+			@ltpl    = $opt->{link_template};
+			@lbefore = $opt->{link_before};
+			@lsort   = $opt->{link_sort};
+		}
+		while(my $lt = shift @ltable) {
+			my $lf = shift @lfields;
+			my $lv = shift @lview;
+			my $lk = shift @lkey;
+			my $ll = shift @lkey;
+			my $lb = shift @lbefore;
+			my $ls = shift @lsort;
+
+			my $rcount = 0;
+
+			$ll ||= errmsg("Settings in table %s linked by %s", $lt, $lk);
+
+			my $tpl = $row_template;
+			my $ldb = database_exists_ref($lt)
+				or do {
+					logError("Bad table editor link table: %s", $lt);
+					next;
+				};
+
+			my $lmeta = Vend::Tags->meta_record($lt, $lv);
+			$lf ||= $lmeta->{spread_fields};
+
+			my $l_pkey = $ldb->config('KEY');
+
+			my @cf = grep /\S/, split /[\s,\0]+/, $lf;
+			@cf = grep $_ ne $l_pkey, @cf;
+			$lf = join " ", @cf;
+			my $lextra = $opt->{link_extra} || '';
+			$lextra = " $lextra" if $lextra;
+			my $labside = <<EOF;
+<input type=hidden name="mv_data_table__$tcount" value="$lt">
+<input type=hidden name="mv_data_fields__$tcount" value="$lf">
+<input type=hidden name="mv_data_multiple__$tcount" value="1">
+<input type=hidden name="mv_data_key__$tcount" value="$l_pkey">
+$ll
+EOF
+
+			my @lout = q{<table cellspacing=0 cellpadding=1>};
+			push @lout, qq{<tr><td$lextra>$l_pkey</td>};
+			push @lout, Vend::Tags->row_edit({ table => $lt, columns => $lf });
+			push @lout, '</tr>';
+
+			my $tname = $ldb->name();
+			my $lfor = $key;
+			$lfor = $ldb->quote($key, $lk);
+			my $q = "SELECT $l_pkey FROM $tname WHERE $lk = $lfor";
+			$q .= " ORDER BY $ls" if $ls;
+			my $ary = $ldb->query($q);
+			for(@$ary) {
+				my $rk = $_->[0];
+				my $pp = $rcount ? "${rcount}_" : '';
+				my $hid = qq{<input type=hidden name="$pp${l_pkey}__$tcount" value="};
+				$hid .= HTML::Entities::encode($rk);
+				$hid .= qq{">};
+				push @lout, qq{<tr><td$lextra>$rk$hid</td>};
+				my %o = (
+					table => $lt,
+					key => $_->[0],
+					extra => $opt->{link_extra},
+					pointer => $rcount,
+					stacker => $tcount,
+					columns => $lf,
+					extra => $opt->{link_extra},
+				);
+				$rcount++;
+				push @lout, Vend::Tags->row_edit(\%o);
+				push @lout, "</tr>";
+			}
+			my %o = (
+				table => $lt,
+				blank => 1,
+				extra => $opt->{link_extra},
+				pointer => 999999,
+				stacker => $tcount,
+				columns => $lf,
+				extra => $opt->{link_extra},
+			);
+			push @lout, qq{<tr><td$lextra>};
+			push @lout, qq{<input size=8 name="999999_${l_pkey}__$tcount" value="">};
+			push @lout, '</td>';
+			push @lout, Vend::Tags->row_edit(\%o);
+			push @lout, '</tr>';
+			push @lout, "</table>";
+			$tpl =~ s{\$LABEL\$}{$labside}g;
+			$tpl =~ s{\$WIDGET\$}{join "", @lout}ge;
+			my $murl = '';
+			if($show_meta) {
+				$murl = $Tag->page({
+							href => 'admin/db_metaconfig_spread',
+							form => qq(
+									ui_table=$lt
+									ui_view=$lv
+								),
+							});
+				$murl .= errmsg('meta');
+				$murl .= '</a>';
+			}
+			$tpl =~ s{\~META\~}{$murl}g;
+			$tpl =~ s{\$HELP\$}{}g;
+			$tpl =~ s{\~TKEY\~}{}g;
+			$tpl =~ s!{HELP_URL}.*?{/HELP_URL}!!gs;
+			$link_row{$lt} = $tpl;
+			if($lb) {
+				$link_before{$lb} = $lt;
+			}
+			my $mde_key = "mv_data_enable__$tcount";
+			$Scratch->{$mde_key} = "$lt:" . join(",", $l_pkey, @cf) . ':';
+			$tcount++;
+		}
+	}
+
 	foreach my $col (@cols) {
+		if($link_before{$col}) {
+			push @controls, delete $link_row{$link_before{$col}};
+		}
 		my $t;
 		my $c;
 		my $k;
@@ -1506,6 +1652,10 @@ EOF
 		$w .= $display;
 		$w .= "</TR>\n" unless $rowcount % $rowdiv;
 		push @controls, $w;
+	}
+
+	for(sort keys %link_row) {
+		push @controls, delete $link_row{$_};
 	}
 
 	my @firstout = splice @out, 0;

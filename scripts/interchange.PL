@@ -3,7 +3,7 @@
 #
 # Interchange version 4.9.3
 #
-# $Id: interchange.PL,v 2.56 2002-09-11 23:22:55 mheins Exp $
+# $Id: interchange.PL,v 2.57 2002-09-12 05:33:29 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and others.
 # http://www.icdevgroup.org/
@@ -507,6 +507,7 @@ sub set_db {
 ## Update the user-entered fields.
 sub update_data {
 	my($key,$value);
+	my @cgi_keys = keys %CGI::values;
     # Update a database record
 	# Check to see if this is allowed
 #::logDebug("mv_data_enable=$::Scratch->{mv_data_enable}");
@@ -807,7 +808,7 @@ sub update_data {
 	my @multis;
 	if($CGI::values{mv_data_multiple}) {
 		my $re = qr/^\d+_$prikey$/;
-		@multis = grep $_ =~ $re, keys %CGI::values;
+		@multis = grep $_ =~ $re, @cgi_keys;
 		for(@multis) {
 			s/_.*//;
 		}
@@ -973,6 +974,38 @@ sub update_data {
 	if($CGI::values{mv_return_table}) {
 		$CGI::values{mv_data_table} = $CGI::values{mv_return_table};
 	}
+
+	my @reloads = grep /^mv_data_table__\d+$/, keys %CGI::values;
+	if(@reloads) {
+		@reloads = map { m/.*__(\d+)$/; $1 } @reloads;
+		@reloads = sort { $a <=> $b } @reloads;
+		my $new = shift @reloads;
+		my $this = qr{__$new$};
+		my $some = qr{__\d+$};
+#::logDebug("Reloading, new=$new this=$this some=$some");
+		my %cgiset;
+		my @death_row;
+		for(@cgi_keys) {
+			push(@death_row, $_), next unless $_ =~ $some;
+			if($_ =~ $this) {
+				my $k = $_;
+				$k =~ s/$this//;
+				$cgiset{$k} = delete $CGI::values{$_};
+			}
+		}
+
+		$::Scratch->{mv_data_enable} = delete $::Scratch->{"mv_data_enable__$new"};
+		delete $::Scratch->{mv_data_enable_key};
+
+		for(@death_row) {
+			next unless /^mv_(data|blob|update)_/ or $data{$_}; # Reprieve!
+			delete $CGI::values{$_};
+		}
+
+		@CGI::values{keys %cgiset} = values %cgiset;
+		update_data();
+	}
+
 	return;
 }
 
