@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.57 2002-07-22 16:07:01 mheins Exp $
+# $Id: Config.pm,v 2.58 2002-08-02 13:04:09 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.57 $, 10);
+$VERSION = substr(q$Revision: 2.58 $, 10);
 
 my %CDname;
 
@@ -2805,6 +2805,8 @@ sub parse_database {
 		}
 		elsif ($p eq 'MAP') {
 			my @f = split(/\s+/, $val);
+			my %parms;
+			
 			if (@f < 2) {
 				config_error("At least two parameters needed for MAP.");
 			} elsif (@f > 3) {
@@ -2815,7 +2817,12 @@ sub parse_database {
 			$d->{OrigClass} = $d->{Class};
 			$d->{Class} = 'SHADOW';
 			$d->{type} = 10;
-			$d->{MAP}->{$f[0]}->{$f[1]} = $f[2];
+			if ($f[2] =~ /::/) {
+				($parms{table}, $parms{column}) = split (/::/, $f[2]);
+			} else {
+				$parms{column} = $f[2];
+			}
+			$d->{MAP}->{$f[0]}->{$f[1]} = \%parms;
 		}
 
 		else {
