@@ -1133,7 +1133,7 @@ EOF
          <td class=cwidget> 
            \$WIDGET\$
          </td>
-         <td class=chelp>~TKEY~<i>\$HELP\$</i>{HELPURL}<BR><A HREF="\$HELP_URL\$">help</A>{/HELPURL}</FONT></td>
+         <td class=chelp>~TKEY~<i>\$HELP\$</i>{HELP_URL}<BR><A HREF="\$HELP_URL\$">help</A>{/HELP_URL}</FONT></td>
        </tr>
      </table>
    </td>
