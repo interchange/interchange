@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.50 2004-03-07 06:59:50 mheins Exp $
+# $Id: Server.pm,v 2.51 2004-04-30 19:23:07 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.50 $, 10);
+$VERSION = substr(q$Revision: 2.51 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -500,6 +500,8 @@ sub respond {
 	$$body =~ s/^\s+//
 		if ! $Vend::ResponseMade and $::Pragma->{strip_white};
 
+	$Vend::StatusLine =~ s/\s*$/\r\n/ if $Vend::StatusLine;
+
 	if(! $s and $Vend::StatusLine) {
 		$Vend::StatusLine .= ($Vend::StatusLine =~ /^Content-Type:/im)
 							? '' : "\r\nContent-Type: text/html\r\n";
@@ -554,7 +556,7 @@ sub respond {
 		my $save = select $fh;
 		$| = 1;
 		select $save;
-        $Vend::StatusLine .= "X-Track: " . $Vend::Track->header() . "\r\n"
+        $Vend::StatusLine .= "\r\nX-Track: " . $Vend::Track->header() . "\r\n"
 			if $Vend::Track;
 # END TRACK                            
         $Vend::StatusLine .= "Pragma: no-cache\r\n"
