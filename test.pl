@@ -5,6 +5,11 @@ use Errno;
 $cur_dir = cwd();
 $failed = 0;
 
+if($^O =~ /cygwin|win32/) {
+	print "no tests supported on Windows platform.\n";
+	exit;
+}
+
 die "Must be in build directory\n" unless -d 'blib';
 die "No tests defined for Windows\n" if $^O =~ /win32/i;
 
