@@ -6,8 +6,8 @@ Database  merchandising  USER         __SQLUSER__
 Database  merchandising  PASS         __SQLPASS__
 #endif
 Database  merchandising  DEFAULT_TYPE text
-Database  merchandising  COLUMN_DEF   "sku=char(64) NOT NULL PRIMARY KEY"
-Database  merchandising  COLUMN_DEF   "featured=CHAR(32)"
-Database  merchandising  COLUMN_DEF   "start_date=CHAR(24)"
-Database  merchandising  COLUMN_DEF   "finish_date=CHAR(24)"
-Database  merchandising  COLUMN_DEF   "cross_category=CHAR(64)"
+Database  merchandising  COLUMN_DEF   "sku=varchar(64) NOT NULL PRIMARY KEY"
+Database  merchandising  COLUMN_DEF   "featured=varchar(32)"
+Database  merchandising  COLUMN_DEF   "start_date=varchar(24)"
+Database  merchandising  COLUMN_DEF   "finish_date=varchar(24)"
+Database  merchandising  COLUMN_DEF   "cross_category=varchar(64)"
