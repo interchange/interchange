@@ -25,6 +25,11 @@
 
 </td>
 <td>
+[if !value area_table]
+	[value name=area_table set=products hide=1]
+	[value name=area_column set=prod_group hide=1]
+	[value name=cat_column set=category hide=1]
+[/if]
 <select name="area_table"
 	onChange="
 		populateTable(
@@ -39,8 +44,7 @@
             );
 	"
 size=1>
-<option value=""> Select a table
-[loop list="[list-databases]"]
+[loop list="[list-databases]" option=area_table]
 	<OPTION VALUE="[loop-code]">[loop-code]</OPTION>
 [/loop]
 </select>
@@ -53,6 +57,9 @@ size=1>
 <td>
 <select name="area_column">
 <option value=""> -- none --
+[loop list="[db-columns table='[value area_table]']" option=area_column]
+<option>[loop-code]
+[/loop]
 </select>
 </td>
 </tr>
@@ -63,6 +70,9 @@ size=1>
 <td>
 <select name="cat_column">
 <option value=""> -- none --
+[loop list="[db-columns table='[value area_table]']" option=cat_column]
+<option>[loop-code]
+[/loop]
 </select>
 </td>
 </tr>
