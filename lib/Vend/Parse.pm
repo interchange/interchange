@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.8 2000-09-30 09:43:01 heins Exp $
+# $Id: Parse.pm,v 1.9 2000-10-04 09:45:42 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,12 +27,12 @@
 
 package Vend::Parse;
 
-# $Id: Parse.pm,v 1.8 2000-09-30 09:43:01 heins Exp $
+# $Id: Parse.pm,v 1.9 2000-10-04 09:45:42 heins Exp $
 
 require Vend::Parser;
 
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.8 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.9 $ =~ /(\d+)\.(\d+)/);
 
 use Safe;
 use Vend::Util;
@@ -44,7 +44,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.8 $, 10);
+$VERSION = substr(q$Revision: 1.9 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -812,9 +812,12 @@ sub do_tag {
 	die errmsg("Unauthorized for admin tag %s", $tag)
 		if defined $Vend::Cfg->{AdminSub}{$tag} and ! $Vend::admin;
 	
-	if (! defined $Routine{tag} and (not $tag = $Alias{$tag}) ) {
-		::logError("Tag '$tag' not defined.");
-		return undef;
+	if (! defined $Routine{$tag}) {
+        if (! $Alias{$tag}) {
+            ::logError("Tag '$tag' not defined.");
+            return undef;
+        }
+        $tag = $Alias{$tag};
 	};
 	if(ref($_[-1]) =~ /HASH/ && scalar @{$Order{$tag}} > scalar @_) {
 		my $text;
