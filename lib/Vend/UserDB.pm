@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.31 2004-10-15 15:09:54 jon Exp $
+# $Id: UserDB.pm,v 2.32 2004-11-30 14:20:38 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.31 $, 10);
+$VERSION = substr(q$Revision: 2.32 $, 10);
 
 use vars qw!
 	$VERSION
@@ -728,7 +728,7 @@ sub set_values {
 		}
 		else {
 			::logDebug( errmsg(
-							"cannot set unknown userdb field $_ to: %s",
+							"cannot set unknown userdb field %s to: %s",
 							$_,
 							$val,
 						)
