@@ -94,6 +94,9 @@ sub regen_build {
 					mv_no_count => 1,
 				 };
 
+	# bindings for Safe are no longer valid
+	$Vend::Calc_initialized = 0;
+
 	eval {
 		($pageref) = ::cache_html($page, 1);
 	};
@@ -325,6 +328,7 @@ EOF
 		my $out = "Messages during regen:<blockquote>";
 		$out .= join "<br>", @regen_messages;
 		$out .= "</blockquote>";
+		regen_track(join("\n", @regen_messages));
 		::response($out);
 	}
 	my $end = (times)[0] - $start;
