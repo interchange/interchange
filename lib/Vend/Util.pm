@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.4 2000-12-13 15:51:04 zarko Exp $
+# $Id: Util.pm,v 1.14.2.5 2000-12-17 07:02:53 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -78,7 +78,7 @@ use Config;
 use Fcntl;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.4 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.5 $, 10);
 
 BEGIN {
 	eval {
@@ -104,72 +104,72 @@ $ESCAPE_CHARS::ok_in_filename =
 	;
 
 sub setup_escape_chars {
-	my($ok, $i, $a, $t);
+    my($ok, $i, $a, $t);
 
-	foreach $i (0..255) {
-		$a = chr($i);
-		if (index($ESCAPE_CHARS::ok_in_filename,$a) == -1) {
+    foreach $i (0..255) {
+        $a = chr($i);
+        if (index($ESCAPE_CHARS::ok_in_filename,$a) == -1) {
 			$t = '%' . sprintf( "%02X", $i );
-		}
+        }
 		else {
 			$t = $a;
-		}
-		$ESCAPE_CHARS::translate[$i] = $t;
-	}
+        }
+        $ESCAPE_CHARS::translate[$i] = $t;
+    }
 }
 
 # Replace any characters that might not be safe in a filename (especially
 # shell metacharacters) with the %HH notation.
 
 sub escape_chars {
-	my($in) = @_;
-	my($c, $r);
+    my($in) = @_;
+    my($c, $r);
 
-	$r = '';
-	foreach $c (split(//, $in)) {
+    $r = '';
+    foreach $c (split(//, $in)) {
 		$r .= $ESCAPE_CHARS::translate[ord($c)];
-	}
+    }
 
-	# safe now
-	$r =~ /(.*)/;
-	$r = $1;
-	return $r;
+    # safe now
+    $r =~ /(.*)/;
+    $r = $1;
+    return $r;
 }
 
 # Returns its arguments as a string of tab-separated fields.  Tabs in the
 # argument values are converted to spaces.
 
-sub tabbed {
-	return join("\t", map { $_ = '' unless defined $_;
-							s/\t/ /g;
-							$_;
-							} @_);
+sub tabbed {        
+    return join("\t", map { $_ = '' unless defined $_;
+                            s/\t/ /g;
+                            $_;
+                          } @_);
 }
 
 # Finds common-log-style offset
 # Unproven, authoratative code welcome
 my $Offset;
 FINDOFFSET: {
-	my $now = time;
-	my ($gm,$gh,$gd,$gy) = (gmtime($now))[1,2,5,7];
-	my ($lm,$lh,$ld,$ly) = (localtime($now))[1,2,5,7];
-	if($gy != $ly) {
-		$gy < $ly ? $lh += 24 : $gh += 24;
-	}
-	elsif($gd != $ld) {
-		$gd < $ld ? $lh += 24 : $gh += 24;
-	}
-	$gh *= 100;
-	$lh *= 100;
-	$gh += $gm;
-	$lh += $lm;
-	$Offset = sprintf("%05d", $lh - $gh);
-	$Offset =~ s/0(\d\d\d\d)/+$1/;
+    my $now = time;
+    my ($gm,$gh,$gd,$gy) = (gmtime($now))[1,2,5,7];
+    my ($lm,$lh,$ld,$ly) = (localtime($now))[1,2,5,7];
+    if($gy != $ly) {
+        $gy < $ly ? $lh += 24 : $gh += 24;
+    }
+    elsif($gd != $ld) {
+        $gd < $ld ? $lh += 24 : $gh += 24;
+    }
+    $gh *= 100;
+    $lh *= 100;
+    $gh += $gm;
+    $lh += $lm;
+    $Offset = sprintf("%05d", $lh - $gh);
+    $Offset =~ s/0(\d\d\d\d)/+$1/;
 }
 
 # Returns time in HTTP common log format
 sub logtime {
-	return POSIX::strftime("[%d/%B/%Y:%H:%M:%S $Offset]", localtime());
+    return POSIX::strftime("[%d/%B/%Y:%H:%M:%S $Offset]", localtime());
 }
 
 sub format_log_msg {
@@ -177,7 +177,7 @@ sub format_log_msg {
 	my(@params);
 
 	# IP, Session, REMOTE_USER (if any) and time
-	push @params, ($CGI::remote_host || $CGI::remote_addr || '-');
+    push @params, ($CGI::remote_host || $CGI::remote_addr || '-');
 	push @params, ($Vend::SessionName || '-');
 	push @params, ($CGI::user || '-');
 	push @params, logtime();
@@ -227,10 +227,10 @@ sub round_to_frac_digits {
 
 # Return AMOUNT formatted as currency.
 sub commify {
-	local($_) = shift;
+    local($_) = shift;
 	my $sep = shift || ',';
-	1 while s/^(-?\d+)(\d{3})/$1$sep$2/;
-	return $_;
+    1 while s/^(-?\d+)(\d{3})/$1$sep$2/;
+    return $_;
 }
 
 my %safe_locale = ( 
@@ -259,7 +259,7 @@ sub safe_sprintf {
 
 sub picture_format {
 	my($amount, $pic, $sep, $point) = @_;
-	$pic	= reverse $pic;
+    $pic	= reverse $pic;
 	$point	= '.' unless defined $point;
 	$sep	= ',' unless defined $sep;
 	$pic =~ /(#+)\Q$point/;
@@ -275,36 +275,36 @@ sub picture_format {
 }
 
 sub setlocale {
-	my ($locale, $currency, $opt) = @_;
+    my ($locale, $currency, $opt) = @_;
 #::logDebug("original locale " . (defined $locale ? $locale : 'undef') );
 #::logDebug("default locale  " . (defined $::Scratch->{mv_locale} ? $::Scratch->{mv_locale} : 'undef') );
-	$locale = $::Scratch->{mv_locale} unless defined $locale;
+    $locale = $::Scratch->{mv_locale} unless defined $locale;
 #::logDebug("locale is now   " . (defined $locale ? $locale : 'undef') );
 
-	if ( $locale and not defined $Vend::Cfg->{Locale_repository}{$locale}) {
-		::logError( "attempt to set non-existant locale '%s'" , $locale );
-		return '';
-	}
+    if ( $locale and not defined $Vend::Cfg->{Locale_repository}{$locale}) {
+        ::logError( "attempt to set non-existant locale '%s'" , $locale );
+        return '';
+    }
 
-	if ( $currency and not defined $Vend::Cfg->{Locale_repository}{$currency}) {
-		::logError("attempt to set non-existant currency '%s'" , $currency);
-		return '';
-	}
+    if ( $currency and not defined $Vend::Cfg->{Locale_repository}{$currency}) {
+        ::logError("attempt to set non-existant currency '%s'" , $currency);
+        return '';
+    }
 
-	if($locale) {
-		my $loc = $Vend::Cfg->{Locale} = $Vend::Cfg->{Locale_repository}{$locale};
+    if($locale) {
+        my $loc = $Vend::Cfg->{Locale} = $Vend::Cfg->{Locale_repository}{$locale};
 
-		for(@Vend::Config::Locale_directives_scalar) {
-			$Vend::Cfg->{$_} = $loc->{$_}
-				if defined $loc->{$_};
-		}
+        for(@Vend::Config::Locale_directives_scalar) {
+            $Vend::Cfg->{$_} = $loc->{$_}
+                if defined $loc->{$_};
+        }
 
-		for(@Vend::Config::Locale_directives_ary) {
-			@{$Vend::Cfg->{$_}} = split (/\s+/, $loc->{$_})
-				if $loc->{$_};
-		}
+        for(@Vend::Config::Locale_directives_ary) {
+            @{$Vend::Cfg->{$_}} = split (/\s+/, $loc->{$_})
+                if $loc->{$_};
+        }
 
-		for(@Vend::Config::Locale_directives_code) {
+        for(@Vend::Config::Locale_directives_code) {
 			next unless $loc->{$_->[0]};
 			my ($routine, $args) = @{$_}[1,2];
 			if($args) {
@@ -313,29 +313,29 @@ sub setlocale {
 			else {
 				$routine->();
 			}
-		}
+        }
 
 		no strict 'refs';
 		for(qw/LC_COLLATE LC_CTYPE LC_TIME/) {
 			next unless $loc->{$_};
 			POSIX::setlocale(&{"POSIX::$_"}, $loc->{$_});
 		}
-	}
+    }
 
-	if ($currency) {
-		my $curr = $Vend::Cfg->{Locale_repository}{$currency};
+    if ($currency) {
+        my $curr = $Vend::Cfg->{Locale_repository}{$currency};
 
-		for(@Vend::Config::Locale_directives_currency) {
-			$Vend::Cfg->{$_} = $curr->{$_}
-				if defined $curr->{$_};
-		}
-		@{$Vend::Cfg->{Locale}}{@Vend::Config::Locale_keys_currency} =
-			@{$curr}{@Vend::Config::Locale_keys_currency};
-	}
+        for(@Vend::Config::Locale_directives_currency) {
+            $Vend::Cfg->{$_} = $curr->{$_}
+                if defined $curr->{$_};
+        }
+        @{$Vend::Cfg->{Locale}}{@Vend::Config::Locale_keys_currency} =
+                @{$curr}{@Vend::Config::Locale_keys_currency};
+    }
 
-	$::Scratch->{mv_locale}   = $locale    if $opt->{persist} and $locale;
-	$::Scratch->{mv_currency} = $currency  if $opt->{persist} and $currency;
-	return '';
+    $::Scratch->{mv_locale}   = $locale    if $opt->{persist} and $locale;
+    $::Scratch->{mv_currency} = $currency  if $opt->{persist} and $currency;
+    return '';
 }
 
 
@@ -388,15 +388,15 @@ my $random_chars = "ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
 # Return a string of random characters.
 
 sub random_string {
-	my ($len) = @_;
-	$len = 8 unless $len;
-	my ($r, $i);
+    my ($len) = @_;
+    $len = 8 unless $len;
+    my ($r, $i);
 
-	$r = '';
-	for ($i = 0;  $i < $len;  ++$i) {
-		$r .= substr($random_chars, int(rand(length($random_chars))), 1);
-	}
-	$r;
+    $r = '';
+    for ($i = 0;  $i < $len;  ++$i) {
+	$r .= substr($random_chars, int(rand(length($random_chars))), 1);
+    }
+    $r;
 }
 
 # To generate a unique key for caching
@@ -411,11 +411,11 @@ if(! $@) {
 	$Md = new Digest::MD5;
 	$Keysub = sub {
 #::logDebug("key gen args: '@_'");
-		@_ = time() unless @_;
-		$Md->reset();
-		$Md->add(@_);
-		$Md->hexdigest();
-	};
+					@_ = time() unless @_;
+					$Md->reset();
+					$Md->add(@_);
+					$Md->hexdigest();
+				};
 }
 else {
 	$Keysub = sub {
@@ -430,20 +430,18 @@ else {
 	};
 }
 
-sub generate_key {
-	&$Keysub(@_);
-}
+sub generate_key { &$Keysub(@_) }
 
 sub hexify {
-	my $string = shift;
-	$string =~ s/(\W)/sprintf '%%%02x', ord($1)/ge;
-	return $string;
+    my $string = shift;
+    $string =~ s/(\W)/sprintf '%%%02x', ord($1)/ge;
+    return $string;
 }
 
 sub unhexify {
-	my $s = shift;
-	$s =~ s/%(..)/chr(hex($1))/ge;
-	return $s;
+    my $s = shift;
+    $s =~ s/%(..)/chr(hex($1))/ge;
+    return $s;
 }
 
 ## UNEVAL
@@ -455,34 +453,31 @@ sub unhexify {
 # in 
 
 sub uneval_it {
-	my($o) = @_;		# recursive
-	my($r, $s, $i, $key, $value);
+    my($o) = @_;		# recursive
+    my($r, $s, $i, $key, $value);
 
 	local($^W) = 0;
-	$r = ref $o;
-	if (!$r) {
-		$o =~ s/([\\"\$@])/\\$1/g;
-		$s = '"' . $o . '"';
+    $r = ref $o;
+    if (!$r) {
+	$o =~ s/([\\"\$@])/\\$1/g;
+	$s = '"' . $o . '"';
+    } elsif ($r eq 'ARRAY') {
+	$s = "[";
+	foreach $i (0 .. $#$o) {
+	    $s .= uneval_it($o->[$i]) . ",";
 	}
-	elsif ($r eq 'ARRAY') {
-		$s = "[";
-		foreach $i (0 .. $#$o) {
-			$s .= uneval_it($o->[$i]) . ",";
-		}
-		$s .= "]";
+	$s .= "]";
+    } elsif ($r eq 'HASH') {
+	$s = "{";
+	while (($key, $value) = each %$o) {
+	    $s .= "'$key' => " . uneval_it($value) . ",";
 	}
-	elsif ($r eq 'HASH') {
-		$s = "{";
-		while (($key, $value) = each %$o) {
-			$s .= "'$key' => " . uneval_it($value) . ",";
-		}
-		$s .= "}";
-	}
-	else {
-		$s = "'something else'";
-	}
+	$s .= "}";
+    } else {
+	$s = "'something else'";
+    }
 
-	$s;
+    $s;
 }
 
 use subs 'uneval_fast';
@@ -519,18 +514,18 @@ eval {
 # See if Data::Dumper is installed with XSUB
 # If it is, session writes will be about 25-30% faster
 eval {
-	require Data::Dumper;
-	import Data::Dumper 'DumperX';
-	$Data::Dumper::Indent = 1;
-	$Data::Dumper::Terse = 1;
-	$Data::Dumper::Deepcopy = 1;
-	if(defined $Fast_uneval) {
-		$Pretty_uneval = \&Data::Dumper::Dumper;
-	}
-	else {
-		$Pretty_uneval = \&Data::Dumper::DumperX;
-		$Fast_uneval = \&Data::Dumper::DumperX
-	}
+		require Data::Dumper;
+		import Data::Dumper 'DumperX';
+		$Data::Dumper::Indent = 1;
+		$Data::Dumper::Terse = 1;
+		$Data::Dumper::Deepcopy = 1;
+		if(defined $Fast_uneval) {
+			$Pretty_uneval = \&Data::Dumper::Dumper;
+		}
+		else {
+			$Pretty_uneval = \&Data::Dumper::DumperX;
+			$Fast_uneval = \&Data::Dumper::DumperX
+		}
 };
 
 *uneval_fast = defined $Fast_uneval       ? $Fast_uneval       : \&uneval_it;
@@ -540,13 +535,13 @@ eval {
 *uneval      = defined $Pretty_uneval     ? $Pretty_uneval     : \&uneval_it;
 
 sub writefile {
-	my($file, $data, $opt) = @_;
+    my($file, $data, $opt) = @_;
 
 	$file = ">>$file" unless $file =~ /^[|>]/;
 	if (ref $opt and $opt->{umask}) {
 		$opt->{umask} = umask oct($opt->{umask});
 	}
-	eval {
+    eval {
 		unless($file =~ s/^[|]\s*//) {
 			if (ref $opt and $opt->{auto_create_dir}) {
 				my $dir = $file;
@@ -572,7 +567,7 @@ sub writefile {
 			unlockfile(\*MVLOGDATA) or die "unlock\n";
 		}
 		else {
-			my (@args) = grep /\S/, Text::ParseWords::shellwords($file);
+            my (@args) = grep /\S/, Text::ParseWords::shellwords($file);
 			open(MVLOGDATA, "|-") || exec @args;
 			if(ref $data) {
 				print(MVLOGDATA $$data) or die "pipe to\n";
@@ -582,10 +577,10 @@ sub writefile {
 			}
 		}
 		close(MVLOGDATA) or die "close\n";
-	};
+    };
 
 	my $status = 1;
-	if ($@) {
+    if ($@) {
 		::logError ("Could not %s file '%s': %s\nto write this data:\n%s",
 				$@,
 				$file,
@@ -593,11 +588,11 @@ sub writefile {
 				$data,
 				);
 		$status = 0;
-	}
+    }
 
-	if (ref $opt and defined $opt->{umask}) {
-		$opt->{umask} = umask oct($opt->{umask});
-	}
+    if (ref $opt and defined $opt->{umask}) {                                        
+        $opt->{umask} = umask oct($opt->{umask});                                    
+    }
 
 	return $status;
 }
@@ -606,14 +601,14 @@ sub writefile {
 # Log data fields to a data file.
 
 sub logData {
-	my($file,@msg) = @_;
-	my $prefix = '';
+    my($file,@msg) = @_;
+    my $prefix = '';
 
 	$file = ">>$file" unless $file =~ /^[|>]/;
 
 	my $msg = tabbed @msg;
 
-	eval {
+    eval {
 		unless($file =~ s/^[|]\s*//) {
 			# We have checked for beginning > or | previously
 			open(MVLOGDATA, $file)		or die "open\n";
@@ -623,13 +618,13 @@ sub logData {
 			unlockfile(\*MVLOGDATA)		or die "unlock\n";
 		}
 		else {
-			my (@args) = grep /\S/, Text::ParseWords::shellwords($file);
+            my (@args) = grep /\S/, Text::ParseWords::shellwords($file);
 			open(MVLOGDATA, "|-") || exec @args;
 			print(MVLOGDATA "$msg\n") or die "pipe to\n";
 		}
 		close(MVLOGDATA) or die "close\n";
-	};
-	if ($@) {
+    };
+    if ($@) {
 		::logError ("Could not %s log file '%s': %s\nto log this data:\n%s",
 				$@,
 				$file,
@@ -637,65 +632,60 @@ sub logData {
 				$msg,
 				);
 		return 0;
-	}
+    }
 	1;
 }
 
 
 sub file_modification_time {
-	my ($fn, $tolerate) = @_;
-	my @s = stat($fn) or ($tolerate and return 0) or die "Can't stat '$fn': $!\n";
-	return $s[9];
+    my ($fn, $tolerate) = @_;
+    my @s = stat($fn) or ($tolerate and return 0) or die "Can't stat '$fn': $!\n";
+    return $s[9];
 }
 
 sub quoted_comma_string {
 	my ($text) = @_;
 	my (@fields);
 	push(@fields, $+) while $text =~ m{
-		"([^\"\\]*(?:\\.[^\"\\]*)*)"[\s,]?  ## std quoted string, w/possible space-comma
-		| ([^\s,]+)[\s,]?                   ## anything else, w/possible space-comma
-		| [,\s]+                            ## any comma or whitespace
-		}gx;
-	@fields;
+   "([^\"\\]*(?:\\.[^\"\\]*)*)"[\s,]?  ## std quoted string, w/possible space-comma
+   | ([^\s,]+)[\s,]?                   ## anything else, w/possible space-comma
+   | [,\s]+                            ## any comma or whitespace
+        }gx;
+    @fields;
 }
 
 # Modified from old, old module called Ref.pm
 sub copyref {
-	my($x,$r) = @_; 
+    my($x,$r) = @_; 
 
-	my($z, $y);
+    my($z, $y);
 
-	my $rt = ref $x;
+    my $rt = ref $x;
 
-	if ($rt =~ /SCALAR/) {
-		# Would \$$x work?
-		$z = $$x;
-		return \$z;
-	}
-	elsif ($rt =~ /HASH/) {
-		$r = {} unless defined $r;
-		for $y (sort keys %$x) {
-			$r->{$y} = &copyref($x->{$y}, $r->{$y});
-		}
-		return $r;
-	}
-	elsif ($rt =~ /ARRAY/) {
-		$r = [] unless defined $r;
-		for ($y = 0; $y <= $#{$x}; $y++) {
-			$r->[$y] = &copyref($x->[$y]);
-		}
-		return $r;
-	}
-	elsif ($rt =~ /REF/) {
-		$z = &copyref($x);
-		return \$z;
-	}
-	elsif (! $rt) {
-		return $x;
-	}
-	else {
-		die "do not know how to copy $x";
-	}
+    if ($rt =~ /SCALAR/) {
+        # Would \$$x work?
+        $z = $$x;
+        return \$z;
+    } elsif ($rt =~ /HASH/) {
+        $r = {} unless defined $r;
+        for $y (sort keys %$x) {
+            $r->{$y} = &copyref($x->{$y}, $r->{$y});
+        }
+        return $r;
+    } elsif ($rt =~ /ARRAY/) {
+        $r = [] unless defined $r;
+        for ($y = 0; $y <= $#{$x}; $y++) {
+            $r->[$y] = &copyref($x->[$y]);
+        }
+        return $r;
+    } elsif ($rt =~ /REF/) {
+        $z = &copyref($x);
+        return \$z;
+    } elsif (! $rt) {
+        return $x;
+    } else {
+        die "do not know how to copy $x";
+    }
 }
 
 sub check_gate {
@@ -798,9 +788,9 @@ sub find_locale_bit {
 # Substitutes Locale bits as necessary.
 
 sub readin {
-	my($file, $only) = @_;
-	my($fn, $contents, $gate, $pathdir, $dir, $level);
-	local($/);
+    my($file, $only) = @_;
+    my($fn, $contents, $gate, $pathdir, $dir, $level);
+    local($/);
 
 	$Global::Variable->{MV_PREV_PAGE} = $Global::Variable->{MV_PAGE}
 		if defined $Global::Variable->{MV_PAGE};
@@ -815,97 +805,97 @@ sub readin {
 	$pathdir =~ s:^/+::;
 	my $try;
 	my $suffix = $Vend::Cfg->{HTMLsuffix};
-	FINDPAGE: {
-		foreach $try (
-			$Vend::Cfg->{PageDir},
-			@{$Vend::Cfg->{TemplateDir}},
-			@{$Global::TemplateDir})
-		{
-			$dir = $try . "/" . $pathdir;
-			if (-f "$dir/.access") {
-				if (-s _) {
-					$level = 3;
-				}
-				else {
-					$level = '';
-				}
-				if(-f "$dir/.autoload") {
-					my $status = ::interpolate_html( readfile("$dir/.autoload") );
-					$status =~ s/\s+//g;
-					undef $level if $status;
-				}
-				$gate = check_gate($file,$dir)
-					if defined $level;
+  FINDPAGE: {
+	foreach $try (
+					$Vend::Cfg->{PageDir},
+					@{$Vend::Cfg->{TemplateDir}},
+					@{$Global::TemplateDir}          )
+	{
+		$dir = $try . "/" . $pathdir;
+		if (-f "$dir/.access") {
+			if (-s _) {
+				$level = 3;
 			}
+			else {
+				$level = '';
+			}
+			if(-f "$dir/.autoload") {
+				my $status = ::interpolate_html( readfile("$dir/.autoload") );
+				$status =~ s/\s+//g;
+				undef $level if $status;
+			}
+			$gate = check_gate($file,$dir)
+				if defined $level;
+		}
 
-			if( defined $level and ! check_security($file, $level, $gate) ){
-				my $realm = $::Variable->{COMPANY} || $Vend::Cfg->{CatalogName};
-				$Vend::StatusLine = <<EOF if $Vend::InternalHTTP;
+		if( defined $level and ! check_security($file, $level, $gate) ){
+			my $realm = $::Variable->{COMPANY} || $Vend::Cfg->{CatalogName};
+			$Vend::StatusLine = <<EOF if $Vend::InternalHTTP;
 HTTP/1.0 401 Unauthorized
 WWW-Authenticate: Basic realm="$realm"
 EOF
-				if(-f "$try/violation.$suffix") {
-					$fn = "$try/violation.$suffix";
-				}
-				else {
-					$file = find_special_page('violation');
-					$fn = $try . "/" . escape_chars($file) . $suffix;
-				}
+			if(-f "$try/violation.$suffix") {
+				$fn = "$try/violation.$suffix";
 			}
 			else {
+				$file = find_special_page('violation');
 				$fn = $try . "/" . escape_chars($file) . $suffix;
 			}
+		}
+		else {
+			$fn = $try . "/" . escape_chars($file) . $suffix;
+		}
 
-			if (open(MVIN, "< $fn")) {
-				binmode(MVIN) if $Global::Windows;
-				undef $/;
-				$contents = <MVIN>;
-				close(MVIN);
-				last;
-			}
-			last if defined $only;
+		if (open(MVIN, "< $fn")) {
+			binmode(MVIN) if $Global::Windows;
+			undef $/;
+			$contents = <MVIN>;
+			close(MVIN);
+			last;
 		}
-		if(! defined $contents) {
-			last FINDPAGE if $suffix eq '.html';
-			$suffix = '.html';
-			redo FINDPAGE;
-		}
-		elsif($Vend::Cfg->{Locale}) {
-			my $key;
-			$contents =~ s~\[L(\s+([^\]]+))?\]([\000-\377]*?)\[/L\]~
-							$key = $2 || $3;		
-							defined $Vend::Cfg->{Locale}{$key}
-							?  ($Vend::Cfg->{Locale}{$key})	: $3 ~eg;
-			$contents =~ s~\[LC\]([\000-\377]*?)\[/LC\]~
-							find_locale_bit($1) ~eg;
-			undef $Lang;
-		}
-		else {
-			$contents =~ s~\[L(?:\s+[^\]]+)?\]([\000-\377]*?)\[/L\]~$1~g;
-		}
+		last if defined $only;
 	}
-	if($Vend::Cfg->{HTMLmirror}) {
-	  	my $mir = $fn;
-	  	$mir =~ s:([^/]+)$:.$1:;
+	if(! defined $contents) {
+		last FINDPAGE if $suffix eq '.html';
+		$suffix = '.html';
+		redo FINDPAGE;
+	}
+	elsif($Vend::Cfg->{Locale}) {
+		my $key;
+		$contents =~ s~\[L(\s+([^\]]+))?\]([\000-\377]*?)\[/L\]~
+						$key = $2 || $3;		
+						defined $Vend::Cfg->{Locale}{$key}
+						?  ($Vend::Cfg->{Locale}{$key})	: $3 ~eg;
+		$contents =~ s~\[LC\]([\000-\377]*?)\[/LC\]~
+						find_locale_bit($1) ~eg;
+		undef $Lang;
+	}
+	else {
+		$contents =~ s~\[L(?:\s+[^\]]+)?\]([\000-\377]*?)\[/L\]~$1~g;
+	}
+  }
+  if($Vend::Cfg->{HTMLmirror}) {
+  	my $mir = $fn;
+  	$mir =~ s:([^/]+)$:.$1:;
 #::logDebug("mirror $mir");
-	  	if	(
-				-f $mir
-					and 
-				file_modification_time($fn) <= file_modification_time($mir)
-			)
-		{
-			return $contents;
-		}
-		else {
-			# We want to work anyway
-			open (MIR, ">$mir")
-				or return $contents;
-			Vend::Interpolate::vars_and_comments(\$contents, 1);
-			print MIR $contents;
-			close MIR;
-		}
+  	if	(
+			-f $mir
+				and 
+			file_modification_time($fn) <= file_modification_time($mir)
+		)
+	{
+		return $contents;
 	}
-	$contents;
+	else {
+		# We want to work anyway
+		open (MIR, ">$mir")
+			or return $contents;
+		Vend::Interpolate::vars_and_comments(\$contents, 1);
+		print MIR $contents;
+		close MIR;
+	}
+  }
+  $contents;
 }
 
 # Reads in an arbitrary file.  Returns the entire contents,
@@ -921,9 +911,9 @@ EOF
 # / is not allowed unless $Global::NoAbsolute is set.
 #
 sub readfile {
-	my($ifile, $no, $loc) = @_;
-	my($contents);
-	local($/);
+    my($ifile, $no, $loc) = @_;
+    my($contents);
+    local($/);
 
 	if($no and (::file_name_is_absolute($ifile) or $ifile =~ m#\.\./.*\.\.#)) {
 		::logError("Can't read file '%s' with NoAbsolute set" , $ifile);
@@ -947,8 +937,8 @@ sub readfile {
 		}
 	}
 
-	return undef if ! $file;
-	return undef if ! open(READIN, "< $file");
+    return undef if ! $file;
+    return undef if ! open(READIN, "< $file");
 
 	$Global::Variable->{MV_FILE} = $file;
 
@@ -967,11 +957,11 @@ sub readfile {
 						find_locale_bit($1) ~eg;
 		undef $Lang;
 	}
-	return $contents;
+    return $contents;
 }
 
 sub is_yes {
-	return( defined($_[$[]) && ($_[$[] =~ /^[yYtT1]/));
+    return( defined($_[$[]) && ($_[$[] =~ /^[yYtT1]/));
 }
 
 sub is_no {
@@ -983,8 +973,8 @@ sub is_no {
 # of pages by the browser.
 
 sub vendUrl {
-	my($path, $arguments, $r) = @_;
-	$r = $Vend::Cfg->{VendURL}
+    my($path, $arguments, $r) = @_;
+    $r = $Vend::Cfg->{VendURL}
 		unless defined $r;
 
 	my @parms;
@@ -999,7 +989,7 @@ sub vendUrl {
 	$ct = ++$Vend::Session->{pageCount}
 		unless $::Scratch->{mv_no_count};
 
-	$r .= '/' . $path;
+    $r .= '/' . $path;
 	$r .= '.html' if $::Scratch->{mv_add_dot_html} and $r !~ /\.html?$/;
 	push @parms, "$::VN->{mv_session_id}=$id"			 	if defined $id;
 	push @parms, "$::VN->{mv_arg}=" . hexify($arguments)	if defined $arguments;
@@ -1018,7 +1008,7 @@ sub vendUrl {
 
 	}
 	return $r unless @parms;
-	return $r . '?' . join("&", @parms);
+    return $r . '?' . join("&", @parms);
 } 
 
 sub secure_vendUrl {
@@ -1053,66 +1043,66 @@ my $flock_LOCK_NB = 4;          # Don't block when locking
 my $flock_LOCK_UN = 8;          # Unlock
 
 sub flock_lock {
-	my ($fh, $excl, $wait) = @_;
-	my $flag = $excl ? $flock_LOCK_EX : $flock_LOCK_SH;
+    my ($fh, $excl, $wait) = @_;
+    my $flag = $excl ? $flock_LOCK_EX : $flock_LOCK_SH;
 
-	if ($wait) {
-		flock($fh, $flag) or die "Could not lock file: $!\n";
-		return 1;
-	}
-	else {
-		if (! flock($fh, $flag | $flock_LOCK_NB)) {
-			if ($! =~ m/^Try again/
-				or $! =~ m/^Resource temporarily unavailable/
-				or $! =~ m/^Operation would block/) {
-				return 0;
-			}
-			else {
-				die "Could not lock file: $!\n";
-			}
-		}
-		return 1;
-	}
+    if ($wait) {
+        flock($fh, $flag) or die "Could not lock file: $!\n";
+        return 1;
+    }
+    else {
+        if (! flock($fh, $flag | $flock_LOCK_NB)) {
+            if ($! =~ m/^Try again/
+                or $! =~ m/^Resource temporarily unavailable/
+                or $! =~ m/^Operation would block/) {
+                return 0;
+            }
+            else {
+                die "Could not lock file: $!\n";
+            }
+        }
+        return 1;
+    }
 }
 
 sub flock_unlock {
-	my ($fh) = @_;
-	flock($fh, $flock_LOCK_UN) or die "Could not unlock file: $!\n";
+    my ($fh) = @_;
+    flock($fh, $flock_LOCK_UN) or die "Could not unlock file: $!\n";
 }
 
 sub fcntl_lock {
-	my ($fh, $excl, $wait) = @_;
-	my $flag = $excl ? F_WRLCK : F_RDLCK;
-	my $op = $wait ? F_SETLKW : F_SETLK;
+    my ($fh, $excl, $wait) = @_;
+    my $flag = $excl ? F_WRLCK : F_RDLCK;
+    my $op = $wait ? F_SETLKW : F_SETLK;
 
 	my $struct = pack('sslli', $flag, 0, 0, 0, $$);
 
-	if ($wait) {
-		fcntl($fh, $op, $struct) or die "Could not fcntl_lock file: $!\n";
-		return 1;
-	}
-	else {
-		if (fcntl($fh, $op, $struct) < 0) {
-			if ($! =~ m/^Try again/
-				or $! =~ m/^Resource temporarily unavailable/
-				or $! =~ m/^Operation would block/) {
-				return 0;
-			}
-			else {
-				die "Could not lock file: $!\n";
-			}
-		}
-		return 1;
-	}
+    if ($wait) {
+        fcntl($fh, $op, $struct) or die "Could not fcntl_lock file: $!\n";
+        return 1;
+    }
+    else {
+        if (fcntl($fh, $op, $struct) < 0) {
+            if ($! =~ m/^Try again/
+                or $! =~ m/^Resource temporarily unavailable/
+                or $! =~ m/^Operation would block/) {
+                return 0;
+            }
+            else {
+                die "Could not lock file: $!\n";
+            }
+        }
+        return 1;
+    }
 }
 
 sub fcntl_unlock {
-	my ($fh) = @_;
+    my ($fh) = @_;
 	my $struct = pack('sslli', F_UNLCK, 0, 0, 0, $$);
 	if (fcntl($fh, F_SETLK, $struct) < 0) {
 		if ($! =~ m/^Try again/
-				or $! =~ m/^Resource temporarily unavailable/
-				or $! =~ m/^Operation would block/) {
+                or $! =~ m/^Resource temporarily unavailable/
+                or $! =~ m/^Operation would block/) {
 			return 0;
 		}
 		else {
@@ -1128,29 +1118,29 @@ my $lock_function;
 my $unlock_function;
 
 unless (defined $use) {
-	my $os = $Vend::Util::Config{'osname'};
+    my $os = $Vend::Util::Config{'osname'};
 	$use = 'flock';
 	if ($os =~ /win32/i) {
-		$use = 'none';
+        $use = 'none';
 	}
 }
-
+        
 if ($use eq 'none') {
-	print "using NO locking\n";
-	$lock_function = sub {1};
-	$unlock_function = sub {1};
+    print "using NO locking\n";
+    $lock_function = sub {1};
+    $unlock_function = sub {1};
 }
 else {
-	$lock_function = \&flock_lock;
-	$unlock_function = \&flock_unlock;
+    $lock_function = \&flock_lock;
+    $unlock_function = \&flock_unlock;
 }
-
+    
 sub lockfile {
-	&$lock_function(@_);
+    &$lock_function(@_);
 }
 
 sub unlockfile {
-	&$unlock_function(@_);
+    &$unlock_function(@_);
 }
 
 # Returns the total number of items ordered.
@@ -1158,7 +1148,7 @@ sub unlockfile {
 
 sub tag_nitems {
 	my($ref, $opt) = @_;
-	my($cart, $total, $item);
+    my($cart, $total, $item);
 	
 	if($ref) {
 		 $cart = $::Carts->{$ref}
@@ -1176,20 +1166,20 @@ sub tag_nitems {
 			if $opt->{compare};
 		if($opt->{compare}) {
 			$sub = sub { 
-				$_[0] =~ $qr;
-			};
+							$_[0] =~ $qr;
+						};
 		}
 		else {
 			$sub = sub { return $_[0] };
 		}
 	}
 
-	$total = 0;
-	foreach $item (@$cart) {
+    $total = 0;
+    foreach $item (@$cart) {
 		next if $attr and ! $sub->($item->{$attr});
 		$total += $item->{'quantity'};
-	}
-	$total;
+    }
+    $total;
 }
 
 sub dump_structure {
@@ -1288,7 +1278,7 @@ sub check_security {
 							$CGI::path_info,
 							);
 		}
-		return '';  
+        return '';  
 	}
 	elsif($reconfig eq '1') {
 		$msg = 'reconfigure catalog';
@@ -1309,7 +1299,7 @@ sub check_security {
 				and
 			$CGI::remote_addr !~ /^($Vend::Cfg->{MasterHost})$/	)	)
 	{
-		my $fmt = <<'EOF';
+			my $fmt = <<'EOF';
 ALERT: Attempt to %s at %s from:
 
 	REMOTE_ADDR  %s
@@ -1318,7 +1308,7 @@ ALERT: Attempt to %s at %s from:
 	SCRIPT_NAME  %s
 	PATH_INFO    %s
 EOF
-		::logGlobal({}, $fmt,
+		logGlobal ({}, $fmt,
 						$msg,
 						$CGI::script_name,
 						$CGI::host,
@@ -1326,7 +1316,7 @@ EOF
 						$CGI::useragent,
 						$CGI::script_name,
 						$CGI::path_info,
-					);
+						);
 		return '';
 	}
 
@@ -1410,21 +1400,21 @@ EOF
 # Replace the escape notation %HH with the actual characters.
 #
 sub unescape_chars {
-	my($in) = @_;
+    my($in) = @_;
 
-	$in =~ s/%(..)/chr(hex($1))/ge;
-	$in;
+    $in =~ s/%(..)/chr(hex($1))/ge;
+    $in;
 }
 
 
 # Checks the Locale for a special page definintion mv_special_$key and
 # returns it if found, otherwise goes to the default Vend::Cfg->{Special} array
 sub find_special_page {
-	my $key = shift;
+    my $key = shift;
 	my $dir = '';
 	$dir = "../$Vend::Cfg->{SpecialPageDir}/"
 		if $Vend::Cfg->{SpecialPageDir};
-	return $Vend::Cfg->{Special}{$key} || "$dir$key";
+    return $Vend::Cfg->{Special}{$key} || "$dir$key";
 }
 
 ## ERROR
@@ -1457,7 +1447,7 @@ sub errmsg {
 }
 
 sub logGlobal {
-	my($msg) = shift;
+    my($msg) = shift;
 	my $opt;
 	if(ref $msg) {
 		$opt = $msg;
@@ -1501,11 +1491,11 @@ sub logGlobal {
 	$fn =~ s/^([^|>])/>>$1/
 		or $nolock = 1;
 #::logDebug("logging with $fn");
-	$msg = format_log_msg($msg) if ! $nolock;
+    $msg = format_log_msg($msg) if ! $nolock;
 
 	$Vend::Errors .= $msg if $Global::DisplayErrors;
 
-	eval {
+    eval {
 		# We have checked for beginning > or | previously
 		open(MVERROR, $fn) or die "open\n";
 		if(! $nolock) {
@@ -1517,21 +1507,21 @@ sub logGlobal {
 			unlockfile(\*MVERROR) or die "unlock\n";
 		}
 		close(MVERROR) or die "close\n";
-	};
-	if ($@) {
+    };
+    if ($@) {
 		chomp $@;
 		print "\nCould not $@ error file '";
 		print $Global::ErrorFile, "':\n$!\n";
 		print "to report this error:\n", $msg;
 		exit 1;
-	}
+    }
 }
 
 
 # Log the error MSG to the error file.
 
 sub logError {
-	my $msg = shift;
+    my $msg = shift;
 	return unless defined $Vend::Cfg;
 	if(@_) {
 		$msg = errmsg($msg, @_);
@@ -1541,12 +1531,12 @@ sub logError {
 
 	$Vend::Session->{last_error} = $msg;
 
-	$msg = format_log_msg($msg) unless $msg =~ s/^\\//;
+    $msg = format_log_msg($msg) unless $msg =~ s/^\\//;
 
 	$Vend::Errors .= $msg if ($Vend::Cfg->{DisplayErrors} ||
 							  $Global::DisplayErrors);
 
-	eval {
+    eval {
 		open(MVERROR, ">>$Vend::Cfg->{ErrorFile}")
 											or die "open\n";
 		lockfile(\*MVERROR, 1, 1)		or die "lock\n";
@@ -1554,8 +1544,8 @@ sub logError {
 		print(MVERROR $msg, "\n")		or die "write to\n";
 		unlockfile(\*MVERROR)			or die "unlock\n";
 		close(MVERROR)					or die "close\n";
-	};
-	if ($@) {
+    };
+    if ($@) {
 		chomp $@;
 		logGlobal ("Could not %s error file %s: %s\nto report this error: %s",
 					$@,
@@ -1563,16 +1553,16 @@ sub logError {
 					$!,
 					$msg,
 				);
-	}
+    }
 }
 
 # Here for convenience in calls
 sub set_cookie {
-	my ($name, $value, $expire) = @_;
-	$::Instance->{Cookies} = []
-		if ! $::Instance->{Cookies};
-	@{$::Instance->{Cookies}} = [$name, $value, $expire];
-	return;
+    my ($name, $value, $expire) = @_;
+    $::Instance->{Cookies} = []
+        if ! $::Instance->{Cookies};
+    @{$::Instance->{Cookies}} = [$name, $value, $expire];
+    return;
 }
 
 # Here for convenience in calls
@@ -1581,17 +1571,17 @@ sub read_cookie {
 	$string = $CGI::cookie
 		unless defined $string;
 	return undef unless $string =~ /\b$lookfor=([^\s;]+)/i;
-	return unescape_chars($1);
+ 	return unescape_chars($1);
 }
 
 # Return a quasi-hashed directory/file combo, creating if necessary
 sub exists_filename {
-	my ($file,$levels,$chars, $dir) = @_;
+    my ($file,$levels,$chars, $dir) = @_;
 	my $i;
 	$levels = 1 unless defined $levels;
 	$chars = 1 unless defined $chars;
 	$dir = $Vend::Cfg->{ScratchDir} unless $dir;
-	for($i = 0; $i < $levels; $i++) {
+    for($i = 0; $i < $levels; $i++) {
 		$dir .= "/";
 		$dir .= substr($file, $i * $chars, $chars);
 		return 0 unless -d $dir;
@@ -1601,19 +1591,19 @@ sub exists_filename {
 
 # Return a quasi-hashed directory/file combo, creating if necessary
 sub get_filename {
-	my ($file,$levels,$chars, $dir) = @_;
+    my ($file,$levels,$chars, $dir) = @_;
 	my $i;
 	$levels = 1 unless defined $levels;
 	$chars = 1 unless defined $chars;
 	$dir = $Vend::Cfg->{ScratchDir} unless $dir;
-	for($i = 0; $i < $levels; $i++) {
+    for($i = 0; $i < $levels; $i++) {
 		$dir .= "/";
 		$dir .= substr($file, $i * $chars, $chars);
 		mkdir $dir, 0777 unless -d $dir;
 	}
-	die "Couldn't make directory $dir (or parents): $!\n"
+    die "Couldn't make directory $dir (or parents): $!\n"
 		unless -d $dir;
-	return "$dir/$file";
+    return "$dir/$file";
 }
 
 # These were stolen from File::Spec
@@ -1623,92 +1613,88 @@ sub get_filename {
 my $abspat = $^O =~ /win32/i ? '^([a-z]:)?[\\\\/]' : '^/';
 
 sub file_name_is_absolute {
-	my($file) = @_;
-	$file =~ m{$abspat}oi ;
+    my($file) = @_;
+    $file =~ m{$abspat}oi ;
 }
 
 sub win_catfile {
-	my $file = pop @_;
-	return $file unless @_;
-	my $dir = catdir(@_);
-	$dir =~ s/(\\\.)$//;
-	$dir .= "\\" unless substr($dir,length($dir)-1,1) eq "\\";
-	return $dir.$file;
+    my $file = pop @_;
+    return $file unless @_;
+    my $dir = catdir(@_);
+    $dir =~ s/(\\\.)$//;
+    $dir .= "\\" unless substr($dir,length($dir)-1,1) eq "\\";
+    return $dir.$file;
 }
 
 sub unix_catfile {
-	my $file = pop @_;
-	return $file unless @_;
-	my $dir = catdir(@_);
-	for ($dir) {
-		$_ .= "/" unless substr($_,length($_)-1,1) eq "/";
-	}
-	return $dir.$file;
+    my $file = pop @_;
+    return $file unless @_;
+    my $dir = catdir(@_);
+    for ($dir) {
+	$_ .= "/" unless substr($_,length($_)-1,1) eq "/";
+    }
+    return $dir.$file;
 }
 
 sub unix_path {
-	my $path_sep = ":";
-	my $path = $ENV{PATH};
-	my @path = split $path_sep, $path;
-	foreach(@path) {
-		$_ = '.' if $_ eq '';
-	}
-	@path;
+    my $path_sep = ":";
+    my $path = $ENV{PATH};
+    my @path = split $path_sep, $path;
+    foreach(@path) { $_ = '.' if $_ eq '' }
+    @path;
 }
 
 sub win_path {
-	local $^W = 1;
-	my $path = $ENV{PATH} || $ENV{Path} || $ENV{'path'};
-	my @path = split(';',$path);
-	foreach(@path) {
-		$_ = '.' if $_ eq '';
-	}
-	@path;
+    local $^W = 1;
+    my $path = $ENV{PATH} || $ENV{Path} || $ENV{'path'};
+    my @path = split(';',$path);
+    foreach(@path) { $_ = '.' if $_ eq '' }
+    @path;
 }
 
 sub win_catdir {
-	my @args = @_;
-	for (@args) {
-		# append a slash to each argument unless it has one there
-		$_ .= "\\" if $_ eq '' or substr($_,-1) ne "\\";
-	}
-	my $result = canonpath(join('', @args));
-	$result;
+    my @args = @_;
+    for (@args) {
+	# append a slash to each argument unless it has one there
+	$_ .= "\\" if $_ eq '' or substr($_,-1) ne "\\";
+    }
+    my $result = canonpath(join('', @args));
+    $result;
 }
 
 sub win_canonpath {
-	my($path) = @_;
-	$path =~ s/^([a-z]:)/\u$1/;
-	$path =~ s|/|\\|g;
-	$path =~ s|\\+|\\|g ;                          # xx////xx  -> xx/xx
-	$path =~ s|(\\\.)+\\|\\|g ;                    # xx/././xx -> xx/xx
-	$path =~ s|^(\.\\)+|| unless $path eq ".\\";   # ./xx      -> xx
-	$path =~ s|\\$|| 
-		unless $path =~ m#^([a-z]:)?\\#;           # xx/       -> xx
-	$path .= '.' if $path =~ m#\\$#;
-	$path;
+    my($path) = @_;
+    $path =~ s/^([a-z]:)/\u$1/;
+    $path =~ s|/|\\|g;
+    $path =~ s|\\+|\\|g ;                          # xx////xx  -> xx/xx
+    $path =~ s|(\\\.)+\\|\\|g ;                    # xx/././xx -> xx/xx
+    $path =~ s|^(\.\\)+|| unless $path eq ".\\";   # ./xx      -> xx
+    $path =~ s|\\$|| 
+             unless $path =~ m#^([a-z]:)?\\#;      # xx/       -> xx
+    $path .= '.' if $path =~ m#\\$#;
+    $path;
 }
 
 sub unix_canonpath {
-	my($path) = @_;
-	$path =~ s|/+|/|g ;                            # xx////xx  -> xx/xx
-	$path =~ s|(/\.)+/|/|g ;                       # xx/././xx -> xx/xx
-	$path =~ s|^(\./)+|| unless $path eq "./";     # ./xx      -> xx
-	$path =~ s|/$|| unless $path eq "/";           # xx/       -> xx
-	$path;
+    my($path) = @_;
+    $path =~ s|/+|/|g ;                            # xx////xx  -> xx/xx
+    $path =~ s|(/\.)+/|/|g ;                       # xx/././xx -> xx/xx
+    $path =~ s|^(\./)+|| unless $path eq "./";     # ./xx      -> xx
+    $path =~ s|/$|| unless $path eq "/";           # xx/       -> xx
+    $path;
 }
 
 sub unix_catdir {
-	my @args = @_;
-	for (@args) {
+    my @args = @_;
+    for (@args) {
 	# append a slash to each argument unless it has one there
-		$_ .= "/" if $_ eq '' or substr($_,-1) ne "/";
-	}
-	my $result = join('', @args);
-	# remove a trailing slash unless we are root
-	substr($result,-1) = ""
+	$_ .= "/" if $_ eq '' or substr($_,-1) ne "/";
+    }
+    my $result = join('', @args);
+    # remove a trailing slash unless we are root
+    substr($result,-1) = ""
 	if length($result) > 1 && substr($result,-1) eq "/";
-	$result;
+    $result;
 }
 
 
