@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.74 2002-10-21 15:43:01 mheins Exp $
+# $Id: Config.pm,v 2.75 2002-10-27 03:53:59 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -45,7 +45,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.74 $, 10);
+$VERSION = substr(q$Revision: 2.75 $, 10);
 
 my %CDname;
 
@@ -2408,7 +2408,8 @@ sub parse_array_complete {
 sub parse_list_wildcard {
 	my($var, $value) = @_;
 
-	$value =~ s/^\s+|\s+$//g;
+	$value =~ s/^\s+//;
+	$value =~ s/\s+$//;
 	return '' if ! $value;
 
 	if($value !~ /\|/) {
