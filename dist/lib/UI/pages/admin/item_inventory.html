@@ -7,11 +7,19 @@
 		$CGI->{mv_data_table} = 'inventory';
 	}
 	if(! $CGI->{ui_data_fields}) {
-		$CGI->{ui_data_fields} = '[db-columns name=inventory]';
+		$CGI->{ui_data_fields} = 'products:description [db-columns name=inventory]';
+		$CGI->{ui_display_only} = 'products:description';
 	}
 	if(! $CGI->{ui_break_before}) {
 		$CGI->{ui_break_before} = 'account';
 	}
+	my @args = (
+		 '__UI_BASE__/item_edit',
+		 "item_id=$CGI->{item_id}",
+		 "item_id_left=$CGI->{item_id_left}",
+		 "ui_sequence_edit=$CGI->{ui_sequence_edit}",
+	);
+	$CGI->{ui_return_to} = join "\0", @args;
 	return;
 [/calc]
 @_UI_STD_DBEDIT_HEAD_@

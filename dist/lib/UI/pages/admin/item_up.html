@@ -7,11 +7,19 @@
 		$CGI->{mv_data_table} = 'merchandising';
 	}
 	if(! $CGI->{ui_data_fields}) {
-		$CGI->{ui_data_fields} = 'sku upsell_to blurb_begin blurb_end banner_text banner_image';
+		$CGI->{ui_data_fields} = 'sku products:description upsell_to';
+		$CGI->{ui_display_only} = 'products:description';
 	}
 	if(! $CGI->{ui_break_before}) {
-		$CGI->{ui_break_before} = 'blurb_begin';
+		$CGI->{ui_break_before} = 'upsell_to';
 	}
+	my @args = (
+		 '__UI_BASE__/item_edit',
+		 "item_id=$CGI->{item_id}",
+		 "item_id_left=$CGI->{item_id_left}",
+		 "ui_sequence_edit=$CGI->{ui_sequence_edit}",
+	);
+	$CGI->{ui_return_to} = join "\0", @args;
 	return;
 [/calc]
 @_UI_STD_DBEDIT_HEAD_@
