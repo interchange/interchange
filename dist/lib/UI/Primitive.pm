@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.16 $, 10);
+$VERSION = substr(q$Revision: 1.17 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -104,8 +104,6 @@ sub ui_wrap {
 	return $snoop;
 }
 
-=head1 test
-
 sub wrap_edit {
 	package Vend::Interpolate;
 	my $name = shift;
@@ -118,14 +116,21 @@ sub wrap_edit {
 		return $::Variable->{$name} if ! $::Variable->{$name};
 		$ref = { variable => $::Variable->{$name} };
 	}
-	
+	if ($ref->{variable} =~ s/^(\s*\[)include(\s+)/$1 . 'file' . $2/e) {
+		$ref->{variable} = ::interpolate_html($ref->{variable});
+	}
 	my $edit_link;
 	my $url = $Vend::Cfg->{VendURL};
-	$url =~ s!/ui_wrap$!$::Variable->{UI_BASE}||$Global::Variable->{UI_BASE}||'admin'!;
-	$url .= "/$:
+	$url =~ s!/ui_wrap$!$::Variable->{UI_BASE} || $Global::Variable->{UI_BASE} || 'admin'!e;
+	$url .= "/";
 	if(not $edit_link = $::Variable->{UI_EDIT_LINK}) {
+		my $url = Vend::Interpolate::tag_area(
+						"$::Variable->{UI_BASE}/compedit",
+						$name,
+						);
+		$url =~ s:/ui_wrap/:/:;
 		$edit_link = <<EOF;
-<A HREF="[area href="$::Variable->{UI_BASE}/compedit" arg="[scratch ui_component]"]" target=_blank><u>edit</u></A>
+<A HREF="$url" target="_blank"><u>edit</u></A>
 EOF
 		chop $edit_link;
 	}
@@ -135,17 +140,15 @@ EOF
 		\$Scratch->{ui_component} = q{$name}; return; [/calc]
 EOF
 	chop $out;
+
 	for( qw/preedit preamble variable postamble postedit/ ) {
 		$out .= $ref->{$_};
 	}
 	$out .= qq{[calc] \$Scratch->{ui_component} = pop \@\$C_stack; return; [/calc]};
-	$out =~ s:\[comment\]\s*\$EDIT_LINK\$\s*\[/comment\]:$edit_link:
-		or $out .= $edit_link;
+	$out =~ s:\[comment\]\s*\$EDIT_LINK\$\s*\[/comment\]:$edit_link:;
 ::logGlobal("returning wrap_edit $out");
 	return $out;
 }
-
-=cut
 
 sub resolve_var {
 	my ($name, $ref) = @_;
