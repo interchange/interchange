@@ -14,7 +14,7 @@ DESCRIPTION
     locations, i.e.:
 
     Configuration
-        Configuration file is /etc/minivend.cfg. It is only writable by
+        Configuration file is /etc/interchange.cfg. It is only writable by
         root.
 
     Data
@@ -26,11 +26,11 @@ DESCRIPTION
         installs to be active in run levels 3, 4, and 5; to be killed in
         all.
 
-        IMPORTANT NOTE: Do not expect /usr/local/interchange/bin/restart to
+        IMPORTANT NOTE: Do not expect /usr/lib/interchange/bin/restart to
         work!
 
         Interchange uses a special invocation script, located at
-        /usr/local/bin/interchange, to start the Interchange server. This is
+        /usr/lib/bin/interchange, to start the Interchange server. This is
         called by /etc/rc.d/init.d/interchange.
 
     Run Run files go in /var/run/interchange/*. The subdirectory is needed
@@ -47,8 +47,15 @@ ASSUMPTIONS
         Interchange relies upon the following things in the Apache
         installation:
 
+         For Red Hat Linux 6.x:
          -- Server root in /home/httpd
          -- ScriptAlias /cgi-bin/ /home/httpd/cgi-bin/
+
+         For Red Hat Linux 7.x:
+         -- Server root in /var/www
+         -- ScriptAlias /cgi-bin/ /var/www/cgi-bin/
+
+         In general:
          -- Hostname as revealed by `hostname` is the ServerName
          -- SuExec not enabled
 
@@ -65,9 +72,9 @@ ASSUMPTIONS
 
     Run files
         To place the logs, configuration, and run files in standard
-        Redhat/LSB locations, Interchange relies on a special invocation
-        from /usr/local/bin/interchange. In other words, don't expect
-        /usr/local/interchange/bin/restart to work.
+        Red Hat/LSB locations, Interchange relies on a special invocation
+        from /usr/lib/bin/interchange. In other words, don't expect
+        /usr/lib/interchange/bin/restart to work.
 
         Interchange will be started by this command:
 
@@ -79,18 +86,17 @@ ASSUMPTIONS
 
         or possibly:
 
-            /usr/local/bin/interchange -r
+            /usr/lib/bin/interchange -r
 
         The run files, i.e. UNIX-domain socket, catalog status files, will
         be placed in /var/run/interchange. That directory must be
         owned/writable by the interchange user ID.
 
 USING INTERCHANGE
-    When the installation finishes, you should be able to access the two
-    installed catalogs:
+    When the installation finishes, you should be able to access the
+    installed demo catalog:
 
-            http://localhost/barry/
-            http://localhost/simple/
+            http://localhost/construct/
 
     The initial user name is "interchange", and the password is "pass".
     CHANGE IT.
@@ -103,4 +109,3 @@ SEE ALSO
 AUTHOR
     Mike Heins, <heins@akopia.com>. Questions should be directed to the
     Interchange user list, <interchange-users@lists.akopia.com>.
-
