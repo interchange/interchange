@@ -1,5 +1,7 @@
 Interchange 4.6.1
 
+* Added MS Excel import/export capability.
+
 * Added new SessionType "NFS", which forces fcntl_lock/fcntl_unlock in
   SessionFile.pm (bug #76).
 
@@ -22,7 +24,7 @@ Interchange 4.6.1
   case-sensitive and $CGI comparisons. Documented in Tagref.pm. Also,
   "multiple" and "default" args can no longer be positional -- no big loss.
 
-* Bug meaning [item-subtotal noformat=1] not recognized fixed.
+* Fixed bug that kept [item-subtotal noformat=1] from being recognized.
 
 * [item-exec routine] now picks up $Values, etc. before a [calc] is run.
 
@@ -30,7 +32,7 @@ Interchange 4.6.1
   header.
 
 * Fixes to Util.pm:
-  - Prevent sprintf() screwing up numbers in certain locales.
+  - Prevent sprintf() from screwing up numbers in certain locales.
   - [include] now can interpret [L] if locale=1 parameter is added.
 
 * Server.pm -- we can now accept ISINDEX queries (for what it is worth).
@@ -39,6 +41,12 @@ Interchange 4.6.1
 
 * Database tables can now reside in different directories with the 
   DIR option to the Database config parameter.
+
+* Fixed typo ('error' vs. 'errors') in Order.pm preventing no-items
+  error from being seen at checkout (bug #82). Thanks to Bas Bezemer.
+
+* Removed some duplicated image files, reducing package size by ~ 200 KB.
+
 
 Interchange 4.6.0
 
@@ -210,6 +218,12 @@ Core:
   compatibility with older catalogs.
 
 * Added image copying for shared image directories (the admin).
+
+
+Interchange 4.5.5 beta release
+
+
+Interchange 4.5.3 beta release
 
 
 Interchange 4.5.0 changes -- the start of the Tallyman merge.
