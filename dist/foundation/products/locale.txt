@@ -433,7 +433,7 @@ buy now	buy now			koop nu
 by	by			door
 contact us	contact us			neem contact met ons op
 create a new account	create a new account			nieuwe rekening aanmaken
-currency_symbol	$	DM	FF	Euro
+currency_symbol	$	Euro	FF	Euro
 decimal_point	.	.	.	.
 default	1	0	0	1
 e-mail	e-mail			
@@ -451,7 +451,7 @@ or	or			of
 p_cs_precedes	1			1
 p_sep_by_space			1	1
 password minder	password minder			wachtwoord verzorger
-price_picture		DM ### ### ###,##		
+price_picture		Euro ### ### ###,##		
 primary	primary			primair
 products		de_products	produits	
 test number	test number			testnummer
