@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.24 2002-01-29 05:52:43 mheins Exp $
+# $Id: Config.pm,v 2.25 2002-01-30 00:52:29 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.24 $, 10);
+$VERSION = substr(q$Revision: 2.25 $, 10);
 
 my %CDname;
 
@@ -3154,7 +3154,7 @@ sub finalize_mapped_code {
 sub parse_mapped_code {
 	my ($var, $value) = @_;
 
-	return '' if ! $value;
+	return {} if ! $value and $C;
 
 	## Can't give CodeDef a default or this will be premature
 	get_system_code() unless defined $SystemCodeDone;
