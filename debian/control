@@ -19,7 +19,7 @@ Description: Foundation Store, a sample Interchange catalog
 Package: interchange-ui
 Architecture: all
 Depends: ${perl:Depends}, debconf, interchange (>=4.8.1)
-Suggests: libspreadsheet-parseexcel-perl, libspreadsheet-writeexcel-perl
+Suggests: apache-ssl | libapache-mod-ssl, libspreadsheet-parseexcel-perl, libspreadsheet-writeexcel-perl
 Description: Interchange administration interface (UI)
  With the Interchange administration interface, called UI, you are able
  to perform several useful operations like page edit, user's administration
