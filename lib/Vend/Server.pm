@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.40 2001-06-08 15:45:37 heins Exp $
+# $Id: Server.pm,v 1.8.2.41 2001-06-15 17:38:40 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.40 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.41 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -2143,9 +2143,7 @@ my $pretty_vector = unpack('b*', $rin);
 			die "$msg";
         }
 		elsif($n == 0) {
-			undef $spawn;
-			housekeeping($tick);
-			next;
+			# Do nothing, timed out
 		}
         else {
 
