@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.7.2.5 2000-12-08 19:51:45 zarko Exp $
+# $Id: Server.pm,v 1.7.2.6 2000-12-08 20:42:21 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.7.2.5 $, 10);
+$VERSION = substr(q$Revision: 1.7.2.6 $, 10);
 
 use strict;
 use POSIX qw(setsid strftime);
@@ -46,12 +46,6 @@ use File::CounterFile;
 
 sub new {
 	my($class, $fh, $env, $entity) = @_;
-	if (@Global::argv > 1) {
-		(
-			$CGI::script_name,
-			$CGI::values{mv_session_id}, 
-			$CGI::query_string
-		) = @Global::argv;
 		map_cgi();
 		$Global::FastMode = 1;
 		return bless { fh => $fh }, $class;
@@ -109,8 +103,7 @@ sub populate {
 
 sub map_cgi {
 	my $h = shift;
-	die "REQUEST_METHOD is not defined" unless defined $CGI::request_method
-		or @Global::argv;
+	die "REQUEST_METHOD is not defined" unless defined $CGI::request_method;
 
 	if ($h) {
 		$CGI::user = $CGI::remote_user;
@@ -545,7 +538,7 @@ sub http_log_msg {
 }
 
 sub http_server {
-	my($status_line, $in, $argv, $env, $entity) = @_;
+	my($status_line, $in, $env, $entity) = @_;
 
 	die "Need URI::URL for this functionality.\n"
 		unless defined $HTTP_enabled;
@@ -588,7 +581,6 @@ sub http_server {
 
 #::logDebug("exiting loop");
 	my $url = new URI::URL $request;
-	@{$argv} = $url->keywords();
 
 	(undef, $Remote_addr) =
 				sockaddr_in(getpeername(Vend::Server::MESSAGE));
@@ -672,7 +664,7 @@ EOF
 }
 
 sub read_cgi_data {
-	my($argv, $env, $entity) = @_;
+	my($env, $entity) = @_;
 	my($in, $block, $n, $i, $e, $key, $value);
 	$in = '';
 
@@ -683,12 +675,6 @@ sub read_cgi_data {
 		}
 		elsif ($block =~ s/^ipc ([-\w]+)$//) {
 			my $cat = $1;
-		}
-		elsif (($n) = ($block =~ m/^arg (\d+)$/)) {
-			$#$argv = $n - 1;
-			foreach $i (0 .. $n - 1) {
-				$$argv[$i] = _string(\$in);
-			}
 		}
 		elsif (($n) = ($block =~ m/^env (\d+)$/)) {
 			foreach $i (0 .. $n - 1) {
@@ -723,7 +709,7 @@ sub connection {
 	my(%env, $entity);
 	my $http;
 #::logDebug ("begin connection: " . (join " ", times()) . "\n");
-	read_cgi_data(\@Global::argv, \%env, \$entity)
+	read_cgi_data(\%env, \$entity)
 		or return 0;
 	$http = new Vend::Server \*Vend::Server::MESSAGE, \%env, \$entity;
 #::logGlobal ("begin dispatch: " . (join " ", times()) . "\n");
@@ -1448,8 +1434,7 @@ sub set_file_permissions {
 sub adjust_cgi {
 	my($host);
 
-	die "REQUEST_METHOD is not defined" unless defined $CGI::request_method
-		or @Global::argv;
+	die "REQUEST_METHOD is not defined" unless defined $CGI::request_method;
 
 	# The great and really final AOL fix
 	#
