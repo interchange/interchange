@@ -234,7 +234,7 @@ UA	9	Other	UA	XDM	Ukraine	UKR	804
 AE	9	Other	AE	XDM	United Arab Emirates	ARE	784
 UK	3	Europe-EC	UK	XDM	United Kingdom		
 GB	9	Other	GB		Great Britain	GBR	826
-US	0		US	1DA 2DA GNDCOM	United States	USA	840
+US	0		US	GNDCOM 2DA 1DA	United States	USA	840
 UM	9	Other	UM		United States Minor Outlying Isl	UMI	581
 UY	9	Other	UY	XDM	Uruguay	URY	858
 UZ	9	Other	UZ		Uzbekistan	UZB	860
