@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.6 2000-08-06 19:54:55 heins Exp $
+# $Id: Util.pm,v 1.7 2000-09-10 21:07:51 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -74,7 +74,7 @@ use Config;
 use Fcntl;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 1.7 $, 10);
 
 BEGIN {
 	eval {
@@ -757,7 +757,13 @@ sub readin {
 			else {
 				$level = '';
 			}
-			$gate = check_gate($file,$dir);
+			if(-f "$dir/.autoload") {
+				my $status = ::interpolate_html( readfile("$dir/.autoload") );
+				$status =~ s/\s+//g;
+				undef $level if $status;
+			}
+			$gate = check_gate($file,$dir)
+				if defined $level;
 		}
 
 		if( defined $level and ! check_security($file, $level, $gate) ){
