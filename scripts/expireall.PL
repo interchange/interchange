@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange session expiration for all catalogs
 #
-# $Id: expireall.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
+# $Id: expireall.PL,v 2.1 2002-02-03 01:31:56 kwalsh Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -155,6 +155,7 @@ unless ($opt_n) {
 }
 
 # Parse the interchange.cfg file to look for script/catalog info
+chdir $Global::VendRoot or die "Couldn't change to $Global::VendRoot: $!\n";
 global_config();
 
 while( my($name, $cat) = each %Global::Catalog ) {
@@ -172,7 +173,7 @@ expireall -- Run Interchange expire on all catalogs
 
 =head1 VERSION
 
-# $Id: expireall.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
+# $Id: expireall.PL,v 2.1 2002-02-03 01:31:56 kwalsh Exp $
 
 =head1 DESCRIPTION
 
