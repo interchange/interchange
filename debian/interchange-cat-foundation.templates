@@ -72,3 +72,13 @@ Template: interchange-cat-foundation/demomode
 Type: boolean
 Default: yes
 Description: Enable demo mode ?
+
+Template: interchange-cat-foundation/locales
+Type: multiselect
+Choices: de_DE, nl_NL
+Description: Select additional locales for the storefront of the demo catalog
+ The Interchange demo catalog is able to display the storefront in a number of 
+ different languages. Each selected locale will increase the memory footprint
+ of the Interchange server processes, so it is recommended to choose only 
+ locales which are really needed.
+
