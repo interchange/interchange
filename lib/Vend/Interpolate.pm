@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.21 2000-09-24 20:07:41 heins Exp $
+# $Id: Interpolate.pm,v 1.22 2000-09-24 21:16:25 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.21 $, 10);
+$VERSION = substr(q$Revision: 1.22 $, 10);
 
 @EXPORT = qw (
 
@@ -1983,9 +1983,10 @@ sub do_tag {
 sub tag_counter {
     my $file = shift || 'etc/counter';
 	my $opt = shift;
+#::logDebug("counter: file=$file start=$opt->{start}");
     $file = $Vend::Cfg->{VendRoot} . "/$file"
-        unless Vend::Util::filename_is_absolute($file);
-    my $ctr = new File::CounterFile $file, ($opt->{start} || undef);
+        unless Vend::Util::file_name_is_absolute($file);
+    my $ctr = new File::CounterFile $file, $opt->{start} || undef;
     return $ctr->value() if $opt->{value};
     return $ctr->dec() if $opt->{decrement};
     return $ctr->inc();
