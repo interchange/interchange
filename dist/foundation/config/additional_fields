@@ -2,16 +2,13 @@ COMPANY
 Your company name
 Foundation Store
 
-STYLE
+!STYLE
 Default theme
 foundation
 
 SAMPDATATYPE
 Sample data type?
 tools	computer	reports	none
-
-DOMAINNAME
-Your base domain for email addresses
 
 SOMESQL
 Set to 1 if you want to use MySQL, PostgreSQL, Oracle, or DB2
@@ -121,125 +118,128 @@ CRYPTPW
 Administrative password
 pass	nevairbe
 
-ADDRESS
+!ADDRESS
 Your company address
 11480 Sunset Hills Rd.<BR>Suite 200 East
 
-CITY
+!CITY
 Your company city/state/zip
 Reston, VA 20190
 
-PHONE
+!PHONE
 Your company phone
 (703) 456-2900
 
-FAX
+!FAX
 Your company fax number
 (703) 555-5556
 
-TOLLFREE
+!TOLLFREE
 Your company tollfree number (if any)
 (888) 555-5555
 
-TAXAREA
+!TAXAREA
 Area(s) to tax in
 VA UT OH
 
-TAXRATE
+!TAXRATE
 Percentage rate(s) for tax in different areas
 VA=7.5, UT=7.25, OH=6.75
 
-UPSADDER
+!UPSADDER
 Amount to add on to standard UPS costs
 3.00
 
-UPSORIGIN
+!UPSORIGIN
 Origin zip code for UPS lookups
 45056
 
-PAYCOD
+!PAYCOD
 Whether you accept COD orders
 0	1
 
-PAYPO
+!PAYPO
 Whether you accept purchase orders
 0	1
 
-PAYPOSTAL
+!PAYPOSTAL
 Whether you allow orders without payment to be completed by mail
 0	1
 
-PAYCC
+!PAYCC
 Which credit cards you accept
 visa mc amex discover	visa mc discover	visa mc amex	visa mc
 
-DEFAULTFONT
+!DEFAULTFONT
 Default font face for catalog
 Arial,Helvetica,sans-serif	Verdana, Arial, Helvetica, Sans-Serif
 
-EMAILINFO
+!DOMAINNAME
+Your base domain for email addresses
+
+!EMAILINFO
 Email address to reference for email product information requests
 sales@__MVC_DOMAINNAME__
 
-EMAILSERVICE
+!EMAILSERVICE
 Email address to reference for emailed customer service requests
 service@__MVC_DOMAINNAME__
 
-PGPKEYID
+!PGPKEYID
 PGP/GPG key id to use for encryption (if any)
 
-LOGO
+!LOGO
 Your logo image
 logo.gif
 
-SMLOGO
+!SMLOGO
 Your small logo image
 logo.gif
 
-SECURESERVERNAME
+!SECURESERVERNAME
 Secure server URL
 https://__MVC_SERVERNAME__
 
-TAXFIELD
+!TAXFIELD
 The field which determines tax rate
 state	country
 
-LOGDIR
+!LOGDIR
 The base directory for logs
 	/var/log/interchange/__MVC_CATALOGNAME__
 
-CACHEDIR
+!CACHEDIR
 The base directory for sessions and temps
 	/var/cache/interchange/__MVC_CATALOGNAME__
 
-IMGADDCART
+!IMGADDCART
 Image to use for the "Add to cart" icon
 __MVC_STYLE__/add_cart.gif
 
-IMGMOREINFO
+!IMGMOREINFO
 Image to use for the "More information" icon
 __MVC_STYLE__/more_info.gif
 
-IMGCONTINUE
+!IMGCONTINUE
 Image to use for the "Continue Shopping" button
 __MVC_STYLE__/continue_shopping.gif
 
-IMGCHECKOUT
+!IMGCHECKOUT
 Image to use for the "Check Out" button
 __MVC_STYLE__/checkout_button.gif
 
-IMGRECALC
+!IMGRECALC
 Image to use for the "Recalculate" button
 __MVC_STYLE__/recalculate_button.gif
 
-IMGRECALC
+!IMGPLACEORDER
 Image to use for the "Place Order" button
-__MVC_STYLE__/recalculate_button.gif
+__MVC_STYLE__/placeorder_button.gif
 
-DICTPRICESTD
+!DICTPRICESTD
 What you want for your regular price label
 Retail Price	List Price	MSRP Price
 
-DICTPRICESALE
+!DICTPRICESALE
 What you want for your sale price label
 Our Price	Sale Price	Best Price
