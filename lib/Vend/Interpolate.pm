@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.119 2002-10-21 15:42:11 mheins Exp $
+# $Id: Interpolate.pm,v 2.120 2002-10-23 16:38:49 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.119 $, 10);
+$VERSION = substr(q$Revision: 2.120 $, 10);
 
 @EXPORT = qw (
 
@@ -3271,7 +3271,7 @@ my %cond_op = (
 sub pull_cond {
 	my($string, $reverse, $cond, $lhs) = @_;
 #::logDebug("pull_cond string='$string' rev='$reverse' cond='$cond' lhs='$lhs'");
-	my ($op, $rhs) = split /\s+/, $cond;
+	my ($op, $rhs) = split /\s+/, $cond, 2;
 	$rhs =~ s/^(["'])(.*)\1$/$2/;
 	if(! defined $cond_op{$op} ) {
 		logError("bad conditional operator %s in if-PREFIX-data", $op);
