@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.15 2001-01-28 08:35:57 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.16 2001-01-28 12:17:23 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.15 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.16 $, 10);
 
 @EXPORT = qw (
 
@@ -918,6 +918,12 @@ sub tag_data {
 	'digits' => sub {
 					my $val = shift;
 					$val =~ s/\D+//g;
+					return $val;
+				},
+	'alphanumeric' =>	sub {
+					my $val = shift;
+					$val =~ s/\W+//g;
+					$val =~ s/_+//g;
 					return $val;
 				},
 	'word' =>	sub {
