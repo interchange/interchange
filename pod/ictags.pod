@@ -406,77 +406,77 @@ Similarly to use a hash reference for the 'entry' attribute:
 =head1 Looping tags and Sub-tags
 
 I<>Certain tags are not standalone; these are the ones that are
-interpreted as part of a surrounding looping tag like [loop],
-[item-list], [query], or [region].
+interpreted as part of a surrounding looping tag like [I<loop>],
+[I<item-list>], [I<query>], or [I<region>].
 
 =over 4
 
 =item
 
-[PREFIX-accessories]
+[I<prefix>-I<accessories>]
 
-[PREFIX-alternate]
+[I<prefix>-I<alternate>]
 
-[PREFIX-calc]
+[I<prefix>-I<calc>]
 
-[PREFIX-change]
+[I<prefix>-I<change>]
 
-[PREFIX-code]
+[I<prefix>-I<code>]
 
-[PREFIX-data]
+[I<prefix>-I<data>]
 
-[PREFIX-description] (Note safe-data and ed( ) escape)
+[I<prefix>-I<description>] (Note safe-data and ed( ) escape)
 
-[PREFIX-discount]
+[I<prefix>-I<discount>]
 
-[PREFIX-discount_subtotal]
+[I<prefix>-I<discount_subtotal>]
 
-[PREFIX-exec]
+[I<prefix>-I<exec>]
 
-[PREFIX-field] (Optimization note-- one query per field if you use
-this; we optimize around this if only one products table)
+[I<prefix>-I<field>] (Optimization note-- one query per field if you
+use this; we optimize around this if only one products table)
 
-[PREFIX-filter] (like filter tag but doesn't interpolate)
+[I<prefix>-I<filter>] (like filter tag but doesn't interpolate)
 
-[PREFIX-increment]
+[I<prefix>-I<increment>]
 
-[PREFIX-last]
+[I<prefix>-I<last>]
 
-[PREFIX-line] (tab-delimited list of parameters returned)
+[I<prefix>-I<line>] (tab-delimited list of parameters returned)
 
-[PREFIX-match]
+[I<prefix>-I<match>]
 
-[PREFIX-modifier]
+[I<prefix>-I<modifier>]
 
-[PREFIX-next]
+[I<prefix>-I<next>]
 
-[PREFIX-options]
+[I<prefix>-I<options>]
 
-[PREFIX-param]
+[I<prefix>-I<param>]
 
-[PREFIX-pos]
+[I<prefix>-I<pos>]
 
-[PREFIX-price]
+[I<prefix>-I<price>]
 
-[PREFIX-quantity]
+[I<prefix>-I<quantity>]
 
-[PREFIX-sub]
+[I<prefix>-I<sub>]
 
-[PREFIX-subtotal]
+[I<prefix>-I<subtotal>]
 
-[if-PREFIX-data]
+[if-I<prefix>-I<data>]
 
-[if-PREFIX-field]
+[if-I<prefix>-I<field>]
 
-[if-PREFIX-modifier] (hash list only)
+[if-I<prefix>-I<modifier>] (hash list only)
 
-[if-PREFIX-param]
+[if-I<prefix>-I<param>]
 
-[if-PREFIX-pos]
+[if-I<prefix>-I<pos>]
 
-[modifier-name]
+[I<modifier-name>]
 
-[quantity-name]
+[I<quantity-name>]
 
 =back
 
@@ -556,7 +556,11 @@ Now the data structure will look like:
         { foo => 'fooN', bar => 'barN' },
     ]
 
-=head2 [I<PREFIX-accessories> arglist]
+I<>
+
+=head2 I<prefix>-accessories
+
+   [prefix-accessories arglist]
 
 Except for the usual differences that apply to all subtags (such as
 parsing order), these are more or less equivalent for an array-type
@@ -573,7 +577,11 @@ If the list is a hash list, i.e. an [item-list], then the value of the
 current item hash is passed so that a value default can be
 established.
 
-=head2 [I<PREFIX-alternate> N] DIVISIBLE [else] NOT DIVISIBLE [/else][/PREFIX-alternate]
+I<>
+
+=head2 I<prefix>-alternate
+
+   [prefix-alternate N] DIVISIBLE [else] NOT DIVISIBLE [/else][/PREFIX-alternate]
 
 Set up an alternation sequence. If the item-increment is divisible by
 `N', the text will be displayed. If an `[else]NOT DIVISIBLE
@@ -585,13 +593,21 @@ For example:
     [item-alternate 2]EVEN[else]ODD[/else][/item-alternate]
     [item-alternate 3]BY 3[else]NOT by 3[/else][/item-alternate]
 
-=head2 [I<PREFIX-calc>] 2 + [item-field price] [/PREFIX-calc]
+I<>
+
+=head2 I<prefix>-calc
+
+   [prefix-calc] 2 + [item-field price] [/PREFIX-calc]
 
 Executes Perl code in the tag body. This is equivalent to the [calc]
 [/calc] tag pair, except it's calculated at loop time instead of later
 when the rest of the page is parsed.
 
-=head2 [I<PREFIX-change>][condition] ... [/condition] TEXT [/PREFIX-change]
+I<>
+
+=head2 I<prefix>-change
+
+   [prefix-change][condition] ... [/condition] TEXT [/PREFIX-change]
 
 Sets up a breaking sequence that occurs when the contents of
 [condition] [/condition] change. The most common one is a category
@@ -601,16 +617,16 @@ The region is only output when a field or other repeating value
 between [condition] and [/condition] changes its value. This allows
 indented lists similar to database reports to be easily formatted. The
 repeating value must be a tag interpolated in the search process, such
-as [PREFIX-field field] or [PREFIX-data database field]. If you
-need access to ITL tags, you can use [PREFIX-calc] with a $Tag->foo()
-call.
+as [I<prefix>-field field] or [I<prefix>-data database field].
+If you need access to ITL tags, you can use [I<prefix>-calc] with a
+$Tag->foo() call.
 
 Of course, this will only work as you expect when the search results
 are properly sorted.
 
 The value to be tested is contained within a
-[condition]value[/condition] tag pair. The [PREFIX-change] tag
-also processes an [else] [/else] pair for output when the value
+[condition]value[/condition] tag pair. The [I<prefix>-change]
+tag also processes an [else] [/else] pair for output when the value
 does not change.
 
 Here is a simple example for a search list that has a field
@@ -650,21 +666,33 @@ The above should put out a table that only shows the category and
 subcategory once, while showing the name for every product. (The
 &nbsp; will prevent blanked table cells if you use a border.)
 
-=head2 [I<PREFIX-code>]
+I<>
+
+=head2 I<prefix>-code
+
+   [prefix-code]
 
 The key or code of the current loop. In an [item-list] this is always
 the product code; in a loop list it is the value of the current
 argument; in a search it is whatever you have defined as the first
 mv_return_field (rf).
 
-=head2 [I<PREFIX-data> table field]
+I<>
+
+=head2 I<prefix>-data
+
+   [prefix-data table field]
 
 Calls the column field in database table table for the current
-[PREFIX-code]. This may or may not be equivalent to [PREFIX-field
-field] depending on whether your search table is defined as one of
-the ProductFiles.
+[I<prefix>-code]. This may or may not be equivalent to
+[I<prefix>-field field] depending on whether your search table is
+defined as one of the ProductFiles.
 
-=head2 [I<PREFIX-description>]
+I<>
+
+=head2 I<prefix>-description
+
+   [prefix-description]
 
 The description of the current item, as defined in the catalog.cfg
 directive DescriptionField. In the demo, it would be the value of
@@ -674,18 +702,30 @@ If the list is a hash list, and the lookup of DescriptionField
 fails, then the attribute description will be substituted. This is
 useful to supply shopping cart descriptions for on-the-fly items.
 
-=head2 [I<PREFIX-discount>]
+I<>
+
+=head2 I<prefix>-discount
+
+   [prefix-discount]
 
 The price of the current item is calculated, and the difference
 between that price and the list price (quantity one) price is output.
 This may have different behavior than you expect if you set the
 [discount] [/discount] tag along with quantity pricing.
 
-=head2 [I<PREFIX-discount_subtotal>]
+I<>
+
+=head2 I<prefix>-discount_subtotal
+
+   [prefix-discount_subtotal]
 
 Inserts the discounted subtotal of the ordered items.
 
-=head2 [I<PREFIX-field>]
+I<>
+
+=head2 I<prefix>-field
+
+   [prefix-field]
 
 Looks up a field value for the current item in one of several places,
 in this order:
@@ -711,29 +751,42 @@ foo_field. Unless foo is in ProductFiles and the code is not
 present in a previous product file, you will get a blank or some value
 you don't want. What you really want is [loop-data foo foo_field],
 which specifically addresses the table foo. See also
-[PREFIX-param]> and [PREFIX-pos]>.
+[I<C[jump="#I<prefix>-param"]I<prefix>-param>]> and
+[I<C[jump="#I<prefix>-pos"]I<prefix>-pos>]>.
 
-=head2 [I<PREFIX-increment>]
+I<>
+
+=head2 I<prefix>-increment
+
+   [prefix-increment]
 
 The current count on the list, starting from either 1 in a
 zero-anchored list like [loop] or [item-list], or from the match
 count in a search list.
 
-If you skip items with [PREFIX-last] or [PREFIX-next], the count is
-NOT adjusted.
+If you skip items with [I<prefix>-last] or [I<prefix>-next], the count
+is NOT adjusted.
 
-=head2 [I<PREFIX-last>] CONDITION [/PREFIX-last]
+I<>
+
+=head2 I<prefix>-last
+
+   [prefix-last] CONDITION [/PREFIX-last]
 
 If CONDITION evaluates true (a non-whitespace value that is not
 specifically zero) then this will be the last item displayed.
 
-=head2 [I<PREFIX-line> start_column]
+I<>
+
+=head2 I<prefix>-line
+
+   [prefix-line start_column]
 
 Returns all array values from the current looping row in a single
 string, with each value separated by a tab, roughly equivalent to
 this:
 
- [PREFIX-pos 0](tab)[PREFIX-pos 1](tab)[PREFIX-pos 2](tab)[...]
+  [prefix-pos 0](tab)[prefix-pos 1](tab)[prefix-pos 2](tab)[...]
 
 for however many fields were returned in that row.
 
@@ -743,19 +796,35 @@ verify your search specification.
 If the optional start_column attribute is given, the output starts
 with that column instead of column 0.
 
-=head2 [I<PREFIX-modifier> attribute]
+I<>
+
+=head2 I<prefix>-modifier
+
+   [prefix-modifier attribute]
 
 If the item is a hash list (i.e. [item-list]), this will return the
 value of the attribute.
 
-=head2 [I<PREFIX-next>] CONDITION [/PREFIX-next]
+I<>
+
+=head2 I<prefix>-next
+
+   [prefix-next] CONDITION [/PREFIX-next]
 
 If CONDITION evaluates true (a non-whitespace value that is not
 specifically zero) then this item is skipped.
 
-=head2 [I<PREFIX-param> name]
+I<>
 
-=head2 [I<PREFIX-pos> N]
+=head2 I<prefix>-param
+
+   [prefix-param name]
+
+I<>
+
+=head2 I<prefix>-pos
+
+   [prefix-pos N]
 
 Returns the value of the array parameter associated with the looping
 tag row. Each looping list returns an array of return fields, set
@@ -763,8 +832,8 @@ in searches with mv_return_field or rf. The default is only to
 return the code of the search result, but by setting those parameters
 you can return whichever columns you wish.
 
-[PREFIX-pos N] outputs the data from the I<N>th field as returned
-(starting with 0); [PREFIX-param] lets you access the data by field
+[I<prefix>-pos N] outputs the data from the I<N>th field as returned
+(starting with 0); [I<prefix>-param] lets you access the data by field
 name instead of number.
 
 In a [query ...] ITL tag you can select multiple return fields with
@@ -779,7 +848,11 @@ foo is the first returned parameter and becomes the code for this
 row. Another synonym is [prefix-pos 0]; and [prefix-pos 1] is the same
 as [prefix-param bar].
 
-=head2 [I<PREFIX-price>]
+I<>
+
+=head2 I<prefix>-price
+
+   [prefix-price]
 
 The price of the product identified by the current code, formatted for
 currency. If Interchange's pricing routines cannot determine the price
@@ -788,38 +861,56 @@ returned. If the list is a hash list, the price will be modified by
 its quantity or other applicable attributes (like size in the
 demo).
 
-=head2 [I<PREFIX-quantity>]
+I<>
+
+=head2 I<prefix>-quantity
+
+   [prefix-quantity]
 
 The value of the quantity attribute in a hash list. Most commonly
 used to display the quantity of an item in a shopping cart
 [item-list].
 
-=head2 [I<PREFIX-subtotal>]
+I<>
 
-The [PREFIX-quantity] times the [PREFIX-price]. This does take
+=head2 I<prefix>-subtotal
+
+   [prefix-subtotal]
+
+The [I<prefix>-quantity] times the [I<prefix>-price]. This does take
 discounts into effect.
 
-=head2 [I<if-PREFIX-data> table field] IF text [else] ELSE text [/else] [/if-PREFIX-data]
+I<>
 
-Examines the data field, i.e. [PREFIX-data table field], and if it is
-non-blank and non-zero then the IF text will be returned. If it is
-false, i.e. blank or zero, the ELSE text will be returned to the
+=head2 if-I<prefix>-data
+
+   [if-prefix-data table field] IF text [else] ELSE text [/else] [/if-prefix-data]
+
+Examines the data field, i.e. [I<prefix>-data table field], and if it
+is non-blank and non-zero then the IF text will be returned. If it
+is false, i.e. blank or zero, the ELSE text will be returned to the
 page.
 
 This is much more efficient than the otherwise equivalent [if
-type=data term=table::field::[PREFIX-code]].
+type=data term=table::field::[I<prefix>-code]].
 
-You cannot place a condition; i.e. [if-PREFIX-data table field eq
+You cannot place a condition; i.e. [if-I<prefix>-data table field eq
 'something']. Use [if type=data ...] for that.
 
 Careful, a space is not a false value!
 
-=head2 [I<if-PREFIX-field> field] IF text [else] ELSE text [/else] [/if-PREFIX-field]
+I<>
 
-Same as [if-PREFIX-data ...] except uses the same data rules as
-[PREFIX-field].
+=head2 if-I<prefix>-field
 
-=head2 [I<modifier-name> attribute]
+   [if-prefix-field field] IF text [else] ELSE text [/else] [/if-prefix-field]
+
+Same as [if-I<prefix>-data ...] except uses the same data rules as
+[I<prefix>-field].
+
+=head2 modifier-name
+
+   [modifier-name attribute]
 
 Outputs a variable name which will set an appropriate variable name
 for setting the attribute in a form (usually a shopping cart). Outputs
@@ -831,7 +922,9 @@ for successive items in the list:
 
 etc.
 
-=head2 [I<quantity-name>]
+=head2 quantity-name
+
+   [quantity-name]
 
 Outputs for successive items in the list:
 
@@ -1602,28 +1695,14 @@ Summary
 
 Parameters: B<type term op compare>
 
-THIS TAG HAS SPECIAL POSITIONAL PARAMETER HANDLING.
-
 Pass attribute hash as last to subroutine: B<no>
 
 Must pass named parameter interpolate=1 to cause interpolation.
 
 Invalidates cache: B<no>
 
-Called Routine:
+B<Note: >This tag has special positional parameter handling.
 
-Called Routine for positonal:
-
-B<ASP-like Perl call:>
-
-Not applicable. The [and ...] tag only is used with [if ...], and Perl
-logic obviates the [if ...] tag.
-
-Attribute aliases
-
-            base ==> type
-            comp ==> compare
-            operator ==> op
     [and type term op compare]
 
  Parameters   Description                               Default
@@ -1646,21 +1725,24 @@ Attribute aliases
 
 B<Tag expansion example:>
 
-   [and type term op compare]
+   [value name=fname set="Mike" hide=1]
+   [value name=lname set="" hide=1]
+     ...
+
+   [if value fname]
+   [and value lname]
+      Both first and last name are present.
+   [else]
+      Missing one of "fname" and "lname" from $Values.
+   [/else]
+   [/if]
 ---
-   TAGRESULT
+   Missing one of "fname" and "lname" from $Values.
 
 B<ASP-like Perl call:>
 
-   $Tag->and(  { compare => VALUE_compare
-                  op => VALUE_op
-                  term => VALUE_term
-                  type => VALUE_type
-}, $body  );
-
-or similarly with positional parameters,
-
-    $Tag->and(type,term,op,compare, $attribute_hash_reference, $body);
+Not applicable. The [and ...] tag only is used with [if ...], and Perl
+logic obviates the [if ...] tag.
 
 Description
 
@@ -1965,35 +2047,16 @@ between [total-cost] and assigned tags.
 
 =head2 attr_list
 
+This tag is intended for use within embedded perl rather than as a
+standalone tag within a template (i.e., the [attr_list ...] syntax
+does not apply).
+
+The $Tag-E<gt>attr_list($template, $hashref) usage provides a
+shorthand for accessing values of a hash within embedded perl. It also
+allows you to control defaults or set up conditional values.
+
 Summary
 
-Parameters: B<hash>
-
-Positional parameters in same order.
-
-Pass attribute hash as last to subroutine: B<no>
-
-Must pass named parameter interpolate=1 to cause interpolation.
-
-This is a container tag, i.e. [attr_list] FOO [/attr_list]. Nesting:
-NO
-
-Invalidates cache: B<no>
-
-Called Routine:
-
-B<ASP-like Perl call:>
-
-    $Tag->attr_list(
-        {
-         hash => VALUE,
-        },
-        BODY
-    )
-
- OR
-
-    $Tag->attr_list($hash, $BODY);
     [attr_list hash]
 
  Parameters   Description                               Default
@@ -2005,48 +2068,51 @@ B<ASP-like Perl call:>
 
  Other_Charactreristics            
  Invalidates cache                 no
- Container tag                     Yes
+ Container tag                     NA (Though the template is technically body text)
  Has Subtags                       No
  Nests                             No
 
-B<Tag expansion example:>
+B<Tag expansion example> (ASP-like Perl call):
 
-   [attr_list hash]
+  [perl tables=products]
+     my %opt = ( hashref => 1,
+                 sql     => 'select * from  products', );
+
+     my $ary_of_hash = $Db{products}->query(\%opt);
+
+     my $template = <<EOF;
+        {sku} - {description} - {price|Call for price}
+        {image?}<IMG SRC="{image}">{/image?}
+        {image:}No image available{/image:}
+        <br>
+        More body Text here
+        <br>
+EOF
+
+     foreach my $ref (@$ary_of_hash) {
+        $out .= $Tag->attr_list($template, $ref);
+     }
+     return $out;
+  [/perl]
 ---
-   TAGRESULT
+        os28113 - The Claw Hand Rake - Call for price
+        <IMG SRC="/mycatalog/images/os28113.gif">
 
-B<ASP-like Perl call:>
+        <br>
+        More body Text here
+        <br>
+        os28006 - Painters Brush Set - 29.99
+        No image available
 
-   $Tag->attr_list(  { hash => VALUE_hash
-}, $body  );
-
-or similarly with positional parameters,
-
-    $Tag->attr_list(hash, $attribute_hash_reference, $body);
+        <br>
+        More body Text here
+        <br>
+        ...
 
 Description
 
 Tags an attribute list with values from a hash. Designed for use in
 embedded Perl.
-
-Example:
-
-        [perl tables=products]
-                my %opt = (
-                        hashref => 1,
-                        sql => 'select * from  products',
-                );
-                my $ary_of_hash = $Db{products}->query(\%opt);
-                my $template = <<EOF;
-{sku} - {description} - {price|Call for price}
-        {image?}<IMG SRC="{image}">{/image?}
-        {image:}No image available{/image:}
-EOF
-                foreach my $ref (@$ary_of_hash) {
-                        $out .= $Tag->attr_list($template, $ref);
-                }
-                return $out;
-        [/perl]
 
 Tags according to the following rules:
 
@@ -2058,7 +2124,7 @@ this is the column name.
 {key|fallback string}
 
 Displays the value of {key} or if it is zero or blank, the fallback
-string.
+string (i.e., default).
 
 {key true string}
 
@@ -2076,6 +2142,9 @@ Displays false text if the value of {key} is blank or zero, and
 nothing otherwise.
 
 I<hash>
+
+This is the hash reference whose keys will be expanded within the
+template (see above).
 
 =head2 banner
 
@@ -5772,8 +5841,6 @@ Summary
 
 Parameters: B<name>
 
-ONLY THE B<> PARAMETERS ARE POSITIONAL.
-
 B<The attribute hash reference is passed> after the parameters but
 before the container text argument. B<This may mean that there are
 parameters not shown here.>
@@ -6323,7 +6390,7 @@ could produce a select list of options this way:
 Outputs the IF if the column in table is non-empty, and the ELSE
 (if any) otherwise.
 
-See [if-PREFIX-data].
+See [I<if-I<prefix>-data>].
 
 [if-loop-field column] IF [else] ELSE [/else][/if-loop-field]
 
@@ -6331,7 +6398,7 @@ Outputs the B<IF> if the column in the products table is
 non-empty, and the B<ELSE> (if any) otherwise. Will fall through to
 the first non-empty field if there are multiple ProductFiles.
 
-See [if-PREFIX-field].
+See [I<if-I<prefix>-field>].
 
 [if-loop-param param] IF [else] ELSE [/else][/if-loop-param]
 
@@ -6341,7 +6408,7 @@ passed list with the lr=1 parameter).
 Outputs the B<IF> if the returned param is non-empty, and the
 B<ELSE> (if any) otherwise.
 
-See [if-PREFIX-param].
+See [I<if-I<prefix>-param>].
 
 [if-loop-pos N] IF [else] ELSE [/else][/if-loop-pos]
 
@@ -6354,30 +6421,30 @@ equivalent of [loop-code].
 Outputs the B<IF> if the returned positional parmeter N is
 non-empty, and the B<ELSE> (if any) otherwise.
 
-See [if-PREFIX-pos].
+See [I<if-I<prefix>-pos>].
 
 [loop-accessories]
 
 Outputs an [accessories ...] item.
 
-See [PREFIX-accessories].
+See [I<I<prefix>-accessories>].
 
 [loop-change marker]
 
-See [PREFIX-change].
+See [I<I<prefix>-change>].
 
 [loop-code]
 
 Evaluates to the code for the current item.
 
-See [PREFIX-code].
+See [I<I<prefix>-code>].
 
 [loop-data database fieldname]
 
 Evaluates to the field name I<fieldname> in the arbitrary database
 table I<database>, for the current item.
 
-See [PREFIX-data].
+See [I<I<prefix>-data>].
 
 [loop-description]
 
@@ -6385,14 +6452,14 @@ Evaluates to the product description (from the products file, passed
 description in on-fly item, or description attribute in cart) for the
 current item.
 
-See [PREFIX-description].
+See [I<I<prefix>-description>].
 
 [loop-field fieldname]
 
 Evaluates to the field name I<fieldname> in the database,  for the
 current item.
 
-See [PREFIX-field].
+See [I<I<prefix>-field>].
 
 [loop-increment]
 
@@ -6401,7 +6468,7 @@ items in the list.
 
 Starts from integer 1.
 
-See [PREFIX-increment].
+See [I<I<prefix>-increment>].
 
 [loop-last]tags[/loop-last]
 
@@ -8667,8 +8734,6 @@ Summary
 
 Parameters: B<arg>
 
-ONLY THE B<> PARAMETERS ARE POSITIONAL.
-
 B<The attribute hash reference is passed> after the parameters but
 before the container text argument. B<This may mean that there are
 parameters not shown here.>
@@ -10310,8 +10375,6 @@ I<noformat>
 Summary
 
 Parameters: B<table master subordinate start>
-
-ONLY THE B<> PARAMETERS ARE POSITIONAL.
 
 B<The attribute hash reference is passed> after the parameters but
 before the container text argument. B<This may mean that there are
