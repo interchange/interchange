@@ -172,7 +172,7 @@ N
 
 
 [/filter]
-[/if][if scratch ISTAXABLE][filter tabbed]SPL
+[/if][filter tabbed]SPL
 [fcounter etc/qbline.number]
 [scratch TRNSTYPE]
 [scratch DATE]
@@ -192,7 +192,7 @@ N
 
 
 AUTOSTAX[/filter]
-[/if]ENDTRNS
+ENDTRNS
 [/seti]
 [calc]
 	$Scratch->{qb_trans} =~ s/\r?\n/\r\n/g;

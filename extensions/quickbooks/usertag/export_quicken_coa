@@ -1,6 +1,6 @@
-UserTag export_quicken_items Order file
-UserTag export_quicken_items addAttr
-UserTag export_quicken_items Routine <<EOR
+UserTag export_quicken_coa Order file
+UserTag export_quicken_coa addAttr
+UserTag export_quicken_coa Routine <<EOR
 sub {
 	my($file, $opt) = @_;
 	local($SIG{__DIE__});
@@ -15,7 +15,7 @@ EOF
                             exit 0;
                         };
 
-	die "export_quicken: No file passed.\n"
+	die "export_quicken_coa: No file passed.\n"
 		if ! $file;
 
 	my @interest = grep /^qb:/, keys %CGI::values;
@@ -25,14 +25,6 @@ EOF
 	my %rmap;
 	my $keyname;
 	my %subs;
-	my $limit = $CGI::values{ui_qbitem_types} || '';
-	my $limit_idx;
-	if($limit) {
-		$limit =~ s/^\s+//;
-		$limit =~ s/\s+$//;
-		$limit =~ s/\s+/|/g;
-		$limit = qr/$limit/;
-	}
 	for(@interest) {
 		next if ! $CGI::values{$_};
 		my $k = $_;
@@ -57,9 +49,6 @@ EOF
 		my($t, $f) = split /:+/, $k;
 		$rmap{$t}{$v} = $f;
 		$dt = ::database_exists_ref($t);
-		if($dt->config('KEY') eq $f) {
-			$keyname = $v;
-		}
 		die "Bad database $t\n" if ! $dt;
 		my $get = $dt->field_accessor($f);
 		if($subs{$v}) {
@@ -67,6 +56,11 @@ EOF
 			next;
 		}
 		$subs{$v} = sub { $pfunc->( $get->(shift) )};
+	}
+
+	if(! $subs{ACCNTTYPE}) {
+		my $string = $CGI->{ui_qbcoa_type} || 'INC';
+		$subs{ACCNTTYPE} = sub { return $string };
 	}
 
 	my @keys = keys %subs;
@@ -77,26 +71,18 @@ EOF
 	#
 	# If $limit is set then we don't need to worry....
 	my $i = 0;
-	for(@keys) {
-		if($_ eq 'INVITEMTYPE') {
-			$limit_idx = $i;
-			last;
-		}
-		$i++;
-	}
 
 	my $keystring = join "\t", @keys;
 
-	die "No key mapped." if ! $keyname;
 	my $delimiter = quotemeta $opt->{delimiter} || "\t";
 	my $now = time();
-	my $date = POSIX::strftime('%m/%d/%y', localtime($now));
+	my $date = POSIX::strftime('%m/%d/%Y', localtime($now));
 	open(EXPORT, ">$file")
 		or die "write $file: $!\n";
 	print EXPORT <<EOF;
 !HDR	PROD	VER	REL	IIFVER	DATE	TIME	ACCNTNT	ACCNTNTSPLITTIME\r
 HDR	Interchange	Version $::VERSION	Release $::VERSION	1	$date	$now	N	0\r
-!INVITEM	$keystring\r
+!ACCNT	$keystring\r
 EOF
 	my $fields;
 	my $count = 0;
@@ -110,6 +96,8 @@ To make import match export, do query (for all relevant TABLEs):
 
 EOF
 
+	my $prepend = $CGI->{ui_qbcoa_prepend} || '';
+
 	foreach $table (@{$Vend::Cfg->{ProductFiles}}) {
 		my $db = ::database_exists_ref($table);
 		die "Bad products table '$table'" if ! $db;
@@ -121,28 +109,22 @@ EOF
 				if($_ eq 'REFNUM') {
 					if($k !~ /^\d+$/) {
 						my $n = $Tag->counter(
-									"$Vend::Cfg->{ProductDir}/quickbooks.refnum",
+									"$Vend::Cfg->{ProductDir}/quickbooks.coa.refnum",
 								);
-						my $fname = $rmap{$table}{$_};
-						$out .= $rename_msg . "update TABLE set $fname = $n where $fname = '$k'\n";
-						$rename_msg = '';
+						push @out, $n;
 					}
 					else {
 						push @out, $k;
 					}
 				}
+				elsif($prepend and $_ eq 'NAME') {
+					push @out, $prepend . $subs{$_}->($k);
+				}
 				else {
 					push @out, $subs{$_}->($k);
 				}
 			}
-			if($limit) {
-::logError("Checking limit '$out[$limit_idx]'");
-				next unless $out[$limit_idx] =~ $limit;
-			}
-			elsif ($out[$limit_idx] =~ /[^A-Z]/) {
-				$out[$limit_idx] = 'PART';
-			}
-			print EXPORT join $delimiter, 'INVITEM', @out;
+			print EXPORT join $delimiter, 'ACCNT', @out;
 			print EXPORT "\r\n";
 			$count++;
 		}
