@@ -1,0 +1,20 @@
+UserTag jsquote Alias jsq
+UserTag jsq hasEndTag
+UserTag jsq NoReparse
+UserTag jsq PosNumber 0
+UserTag jsq Routine <<EOR
+sub {
+	my $text = shift;
+	$text =~ s/^[ \t\r]*\n//;
+	my @lines = split /\r?\n/, $text;
+
+	for(@lines) {
+		( $_ !~ /'/ and s/\r/\\r/g, s/(^|[^\\])\$\{?(\w+)\}?/$1' + $2 + '/g, $_ = qq{'$_'} )
+		  or
+		( $_ !~ /"/ and s/\r/\\r/g, s/(^|[^\\])\$\{?(\w+)\}?/$1" + $2 + "/g, $_ = qq{"$_"} )
+		  or 
+		( s/'/\\'/g,  s/\r/\\r/g, s/(^|[^\\])\$\{?(\w+)\}?/$1' + $2 + '/g, $_ = qq{'$_'} );
+	}
+	return join (" +\n", @lines);
+}
+EOR
