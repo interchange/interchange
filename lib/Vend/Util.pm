@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.53 2003-03-06 17:12:41 racke Exp $
+# $Id: Util.pm,v 2.54 2003-03-20 23:31:24 racke Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -85,7 +85,7 @@ require HTML::Entities;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.53 $, 10);
+$VERSION = substr(q$Revision: 2.54 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -855,11 +855,8 @@ sub check_gate {
 
 sub string_to_ref {
 	my ($string) = @_;
-	if(! $Vend::Cfg->{ExtraSecure} and $MVSAFE::Safe) {
+	if($MVSAFE::Safe) {
 		return eval $string;
-	}
-	elsif ($MVSAFE::Safe) {
-		die errmsg("not allowed to eval in Safe mode.");
 	}
 	my $safe = $Vend::Interpolate::safe_safe || new Safe;
 	return $safe->reval($string);
