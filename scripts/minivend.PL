@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.5.x
 #
-# $Id: minivend.PL,v 1.15 2000-08-26 16:43:23 heins Exp $
+# $Id: minivend.PL,v 1.16 2000-09-05 21:22:08 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -460,7 +460,7 @@ sub update_data {
 	my (@k);
 	my (@v);
 	my (@c);
-::logDebug("update_data:db=$db key=$prikey VALUES=" . ::uneval(\%CGI::values));
+#::logDebug("update_data:db=$db key=$prikey VALUES=" . ::uneval(\%CGI::values));
 	my $select_key;
 	for($i = 0; $i < @{$data{$prikey}}; $i++) {
 		@k = (); @v = ();
@@ -1377,14 +1377,14 @@ sub rpc_dispatch {
 		}
 	}
 
-::logDebug ("end rpc dispatch: " . (join " ", times()) . "\n");
+#::logDebug ("end rpc dispatch: " . (join " ", times()) . "\n");
 
 	put_session() if $Vend::HaveSession;
 	close_database();
 
 	undef $Vend::Cfg;
 
-::logDebug ("closed all rpc: " .  join " ", times() . "\n");
+#::logDebug ("closed all rpc: " .  join " ", times() . "\n");
 
 	return $response;
 }
@@ -1837,7 +1837,7 @@ EOF
 		$Vend::Action = shift @path;
 	}
 
-::logGlobal("action=$Vend::Action path=$Vend::FinalPath");
+#::logGlobal("action=$Vend::Action path=$Vend::FinalPath");
 	my ($sub, $status);
 	Vend::Interpolate::reset_calc();
 	if(defined $Vend::Cfg->{ActionMap}{$Vend::Action}) {
