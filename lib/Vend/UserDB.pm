@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.5 2002-06-17 22:24:08 jon Exp $
+# $Id: UserDB.pm,v 2.6 2002-06-23 15:04:04 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -16,7 +16,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.5 $, 10);
+$VERSION = substr(q$Revision: 2.6 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1086,14 +1086,39 @@ sub login {
 			}
 		}
 
+		my $udb = $self->{DB};
+		my $foreign = $self->{OPTIONS}{indirect_login};
+
+		if($foreign) {
+			my $uname = ($self->{PASSED_USERNAME} ||= $self->{USERNAME});
+			my $ufield = $self->{LOCATION}{USERNAME};
+			$uname = $udb->quote($uname);
+			my $q = "select $ufield from $self->{DB_ID} where $foreign = $uname";
+			my $ary = $udb->query($q)
+				or do {
+					my $msg = ::errmsg( "Database access error for query: %s", $q);
+					die "$msg\n";
+				};
+			@$ary == 1
+				or do {
+					logError(
+						"Denied attempted login with nonexistent (indirect) user name %s",
+						$uname,
+						$self->{USERNAME},
+					);
+					die $stock_error, "\n";
+				};
+			$self->{USERNAME} = $ary->[0][0];
+		}
+
 		# If not superuser, an entry must exist in access database
 		unless ($Vend::superuser) {
-			unless ($self->{DB}->record_exists($self->{USERNAME})) {
+			unless ($udb->record_exists($self->{USERNAME})) {
 				logError("Denied attempted login with nonexistent user name '%s'",
 					$self->{USERNAME});
 				die $stock_error, "\n";
 			}
-			unless ($user_data = $self->{DB}->row_hash($self->{USERNAME})) {
+			unless ($user_data = $udb->row_hash($self->{USERNAME})) {
 				logError("Login denied after failed fetch of user data for user '%s'",
 					$self->{USERNAME});
 				die $stock_error, "\n";
@@ -1118,7 +1143,7 @@ sub login {
 			my $cmp = $now;
 			$cmp = POSIX::strftime("%Y%m%d%H%M", localtime($now))
 				unless $self->{OPTIONS}->{unix_time};
-			my $exp = $self->{DB}->field(
+			my $exp = $udb->field(
 						$self->{USERNAME},
 						$self->{LOCATION}{EXPIRATION},
 						);
@@ -1134,7 +1159,7 @@ sub login {
 
 		if ($self->{LOCATION}{LAST} ne 'none') {
 			eval {
-				$self->{DB}->set_field( $self->{USERNAME},
+				$udb->set_field( $self->{USERNAME},
 										$self->{LOCATION}{LAST},
 										time()
 									  );
@@ -1352,7 +1377,10 @@ sub new_account {
 			};
 		}
 	
+		my $udb = $self->{DB};
+
 		if($self->{OPTIONS}{assign_username}) {
+			$self->{PASSED_USERNAME} = $self->{USERNAME};
 			$self->{USERNAME} = $self->assign_username();
 			$self->{USERNAME} = lc $self->{USERNAME}
 				if $self->{OPTIONS}{ignore_case};
@@ -1363,15 +1391,45 @@ sub new_account {
 		die ::errmsg("Must have at least %s characters in username.",
 			$self->{USERMINLEN}) . "\n"
 			if length($self->{USERNAME}) < $self->{USERMINLEN};
-		if ($self->{DB}->record_exists($self->{USERNAME})) {
-			die ::errmsg("Username already exists.") . "\n"
+
+		# Here we put the username in a non-primary key field, checking
+		# for existence
+		my $foreign = $self->{OPTIONS}{indirect_login};
+		if ($foreign) {
+			my $uname = ($self->{PASSED_USERNAME} ||= $self->{USERNAME});
+			$uname = $udb->quote($uname);
+			my $q = "select username from $self->{DB_ID} where $foreign = $uname";
+			my $ary = $udb->query($q)
+				or do {
+					my $msg = ::errmsg( "Database access error for query: %s", $q);
+					die "$msg\n";
+				};
+			@$ary == 0
+				or do {
+					my $msg = ::errmsg( "Username already exists (indirect).");
+					die "$msg\n";
+				};
 		}
-		my $pass = $self->{DB}->set_field(
+
+		if ($udb->record_exists($self->{USERNAME})) {
+			die ::errmsg("Username already exists.") . "\n";
+		}
+
+		my $pass = $udb->set_field(
 						$self->{USERNAME},
 						$self->{LOCATION}{PASSWORD},
-						$pw
+						$pw,
 						);
 		die ::errmsg("Database access error.") . "\n" unless defined $pass;
+
+		if($foreign) {
+			 $udb->set_field(
+						$self->{USERNAME},
+						$foreign,
+						$self->{PASSED_USERNAME},
+						)
+				or die ::errmsg("Database access error.");
+		}
 
 		username_cookies($self->{USERNAME}, $pw) 
 			if $Vend::Cfg->{CookieLogin};
