@@ -54,7 +54,6 @@ Variable UI_TAG_TITLE_BAR 1
 #### Now including individual usertag files
 
 #include usertag/*
-#include compat/*
 
 
 ### Include if you want non-English error messages. Not complete.
