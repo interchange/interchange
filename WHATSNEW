@@ -129,6 +129,7 @@ Miscellaneous
 
 * Various minor cleanup, prevents warnings on startup.
 
+* Call tracking functions only if Vend::Track object exists.
 
 ------------------------------------------------------------------------------
 

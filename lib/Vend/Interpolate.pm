@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.174 2003-06-18 17:34:44 jon Exp $
+# $Id: Interpolate.pm,v 2.175 2003-07-01 10:46:32 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.174 $, 10);
+$VERSION = substr(q$Revision: 2.175 $, 10);
 
 @EXPORT = qw (
 
@@ -5011,7 +5011,7 @@ sub fly_page {
 	# This allows access from embedded Perl
 	$Tmp->{flycode} = $code;
 # TRACK
-	$Vend::Track->view_product($code);
+	$Vend::Track->view_product($code) if $Vend::Track;
 # END TRACK
 	
 # LEGACY

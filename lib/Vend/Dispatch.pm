@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.21 2003-06-25 15:02:03 mheins Exp $
+# $Id: Dispatch.pm,v 1.22 2003-07-01 10:46:32 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.21 $, 10);
+$VERSION = substr(q$Revision: 1.22 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -471,7 +471,7 @@ my %form_action = (
 					$result_hash = {} unless $result_hash;
 
 # TRACK
-                    $Vend::Track->finish_order ();
+                    $Vend::Track->finish_order () if $Vend::Track;
 # END TRACK
 					# This function (followed down) now does the rudimentary
 					# backend ordering with AsciiTrack and the order report.
@@ -1499,7 +1499,7 @@ EOF
   }
 
 # TRACK
-	$Vend::Track->filetrack();
+	$Vend::Track->filetrack() if $Vend::Track;
 # END TRACK
 
 	close_cat();
