@@ -44,10 +44,10 @@ This file documents all changes of the LINUXIA branch of Interchange.
 - extinguish absolute font settings (affiliates.html: 1.10.4.9,
   genconfig.html: 1.15.4.4)
 - profile check de_postcode added (Order.pm: 1.14.4.3)
-
-f
 - UI_IMG fixes (order.html: 1.19.4.4, UI_STD_DBEDIT_TABLE: 1.18.4.6)
 - ugly fix for unforeseen transaction state (order_view.html: 1.16.4.4)
+- better error handling for obscure MySQL problem 
+  (DBI.pm: 1.19.4.7)
 
 Changes that made into the main branch:
 

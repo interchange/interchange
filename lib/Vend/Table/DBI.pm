@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.19.4.6 2000-11-22 08:40:42 racke Exp $
+# $Id: DBI.pm,v 1.19.4.7 2000-11-24 23:41:41 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.19.4.6 $, 10);
+$VERSION = substr(q$Revision: 1.19.4.7 $, 10);
 
 use strict;
 
@@ -740,6 +740,9 @@ sub list_fields {
 
 	if($config and $config->{NAME_REQUIRES_FETCH}) {
 		$sth->fetch();
+	}
+	unless (defined $sth->{NAME}) {
+		die "Couldn't determine field names for $name: $DBI::errstr";
 	}
 	@fld = @{$sth->{NAME}};
 	if($config->{GUESS_NUMERIC}) {
