@@ -1,4 +1,5 @@
 code	en_US	de_DE	fr_FR	nl_NL
+- or -		- oder -
 <B>If the above links do not work</B>, this is an indication of one of the following	<B>If the above links do not work</B>, this is an indication of one of the following			<B>Als bovenstaande links niet werken</B> kan een reden hiervan zijn
 About Us	About Us	Über uns		Over ons
 Access denied	Access denied	Zugriff verweigert		Toegang gewijgerd
@@ -73,6 +74,7 @@ Comments on %s		Meinungen zu
 Comment on this product.	Comment on this product.	Meinung zu diesem Produkt		Geef uw mening over dit product.
 Company	Company	Firma		Bedrijf
 Company P.O.	Company P.O.			Bedrijf's inkooporder
+Contact Form		Kontaktformular	
 Contact Information	Contact Information			Contactinformatie
 Contact Us	Contact Us			Neem contact met ons op
 Continue shopping	Continue shopping			Doorgaan met winkelen
@@ -158,6 +160,7 @@ March		M&auml;rz	Mars	Maart
 Matches %s of %s found.	Matches %s of %s found.			%s van %s gevonden resultaten
 Maximum order quantity of %s enforced.	Maximum order quantity of %s enforced.			Maximale bestelhoeveelheid is %s.
 May		Mai	Mai	Mei
+Message		Nachricht
 Minimum order quantity of %s enforced.	Minimum order quantity of %s enforced.			Minimale bestelhoeveelheid is %s.
 Modified	Modified			Gewijzigd
 More Info	More Info	Mehr Info		Meer informatie
@@ -167,7 +170,7 @@ Must enter at least %s characters for password.		Das Passwort muß mindestens %s 
 NEW_BROWSER_PAYMENT_MSG1	We will wait for a check sent to us referencing the order number you receive on your receipt.			
 Name	Name			Naam
 New Account	New Account	Benutzerkonto anlegen		Nieuwe rekening
-New items	New items			Nieuw artikel
+New items	New items	Neue Artikel		Nieuw artikel
 Next	Next			Volgende
 Nickname	Nickname			Korte naam
 No	No	Nein		Nee
@@ -219,7 +222,7 @@ Part No.	Part No.			Onderdeel No.
 Password	Password	Passwort		Wachtwoord
 Payment Method	Payment Method	Zahlungsart		Betalingsmethode
 Perl Information	Perl Information			Perl informatie
-Phone	Phone			Telefoon
+Phone	Phone	Telefon		Telefoon
 Place one-click test order	Place one-click test order			Plaats een-klik testorder
 Plain Old Text	Plain Old Text			Puur tekst
 Please %scontact us%s if you have any questions for us.	Please %scontact us%s if you have any questions for us.			Hebt U nog vragen, neem dan vrijblijvend %scontact%s met ons op.
@@ -295,6 +298,7 @@ See also	See also			Zie ook
 See also...	See also...			Zie ook...
 See...	See...			Zie...
 Send an email copy of my receipt	Send an email copy of my receipt			Stuur een copie per email
+Send Message		Nachricht senden
 Separate shipping	Separate shipping			Separate verzending
 Separate shipping addresses	Separate shipping addresses			Separate verzendadressen
 September		September	Septembre	September
@@ -343,7 +347,7 @@ The selected shipping addresses have been removed.	The selected shipping address
 There are communication problems with the server. See the links below.	There are communication problems with the server. See the links below.			Er zijn communicatieproblemen met de server. Zie onderstaande links.
 There was an error adding the new address entry.	There was an error adding the new address entry.			Er is een fout opgetreden bij het toevoegen van het nieuwe adres.
 There were errors in your last submission	There were errors in your last submission	Folgende Felder sind nicht korrekt ausgefüllt		Er zijn fouten opgetreden bij de verzending
-There were errors in your last submission.	There were errors in your last submission.			Er zijn fouten opgetreden bij de verzending
+There were errors in your last submission.	There were errors in your last submission.	Ihre Eingabe ist leider fehlerhaft oder unvollständig.		Er zijn fouten opgetreden bij de verzending
 There were no matches found.	There were no matches found.			Er zijn geen resultaten gevonden.
 There will be a %s charge added for COD.	There will be a %s charge added for COD.			Er geldt een toeslag van %s voor rembourszendingen.
 They are shown in %sthis color%s below.	They are shown in %sthis color%s below.			Ze zijn hieronder aangegeven in %sdeze kleur%s.
@@ -363,6 +367,7 @@ URL to enter catalog	URL to enter catalog			URL voor binnengaan catalogus
 URL to order a product	URL to order a product			URL voor bestellen van product
 United States	United States			Verenigde Staten
 Update item	Update item			Product bijwerken
+Use Our Online Form		Unser Onlineformular
 Use the Preview Button! Check those URLs!  Don't forget the http://!	Use the Preview Button! Check those URLs!  Don't forget the http://!			
 User support mail lists	User support mail lists			
 Username	Username	Benutzername		Gebruikersnaam
@@ -401,13 +406,14 @@ Will one-click order these random items	Will one-click order these random items	
 Yes	Yes	Ja		Ja
 You are already logged in.	You are already logged in.			U bent al aangemeld.
 You are logged in as user	You are logged in as user			U bent aangemeld als gebruiker
-You can contact us the following ways	You can contact us the following ways			U kunt ons als volgt bereiken
+You can contact us the following ways	You can contact us the following ways	Sie können uns wie folgt erreichen		U kunt ons als volgt bereiken
 You can log in at	You can log in at			U kunt zich hier aanmelden
 You have accessed a page that requires authorization.	You have accessed a page that requires authorization.			
 You have been logged out.	You have been logged out.			U bent afgemeld.
 You may not return more items than you originally purchased.	You may not return more items than you originally purchased.			Het is niet toegestaan om meer artikelen te retourneren dan U hebt gekocht.
 You may now use the added shipping address by selecting it on the shopping cart or recurring orders page.	You may now use the added shipping address by selecting it on the shopping cart or recurring orders page.			U kunt nu het toegevoegde verzendadres gebruiken door het te selecteren in de winkelwagen of op de herhalingsorder pagina.
 You may only return items from orders that have been fully shipped.	You may only return items from orders that have been fully shipped.			U kunt alleen producten retourneren van volledig uitgeleverde orders.
+You may use the form below to send us a message.		Bitte benutzen Sie das Formular für Ihre Nachricht.
 You might also like	You might also like			Misschien houdt U ook van
 You might also like...	You might also like...			Misschien houdt U ook van...
 You need to select your method of payment.	You need to select your method of payment.			
