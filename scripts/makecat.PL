@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.32.4.10 2001-04-18 05:19:48 jon Exp $
+# $Id: makecat.PL,v 1.32.4.11 2001-04-20 18:49:36 jon Exp $
 #
 # Copyright (C) 1996-2001 Akopia, Inc. <info@akopia.com>
 #
@@ -1871,12 +1871,10 @@ EOF
 			chdir "share" or die "\nchdir 'share': $!\n";
 			map { push @sharedirs, $_ if -d $_ } glob('*');
 			chdir "..";
-			# copy everything except some HTML help file stuff
-			my $exclude_pattern = '((^|/)src(/|$)|\.pl$)';
-			copy_dir("share", "$Conf{relocate}$Conf{sharedir}", $exclude_pattern) or die;
+			copy_dir("share", "$Conf{relocate}$Conf{sharedir}") or die;
 		};
 		if ($@) {
-			print "\nError installing share/ files: $@\n" if $@;
+			print "\nError installing share/ files: $@\n";
 		} else {
 			File::Find::find(
 				$chg_to_catuser,
@@ -2180,7 +2178,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 1.32.4.10 2001-04-18 05:19:48 jon Exp $
+# $Id: makecat.PL,v 1.32.4.11 2001-04-20 18:49:36 jon Exp $
 
 =head1 INTRODUCTION
 
@@ -2554,7 +2552,7 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-Copyright 1995-2001, Red Hat, Inc.. All rights reserved except as in the
+Copyright 1995-2001, Red Hat, Inc. All rights reserved except as in the
 license.
 
 =cut
