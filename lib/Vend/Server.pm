@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.44 2004-01-07 15:37:41 racke Exp $
+# $Id: Server.pm,v 2.45 2004-01-30 13:17:36 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.44 $, 10);
+$VERSION = substr(q$Revision: 2.45 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -591,7 +591,7 @@ sub respond {
 			push (@paths, @{$ref->{alias}}) if defined $ref->{alias};
 			if ($Global::FullUrl) {
 				# remove domain from script
-				for (@paths) { s:^[^/]+/:/: ; }
+				for (@paths) { s:^[^/]+/:/: or $_ = '/'; }
 			}
 		}
 
