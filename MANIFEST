@@ -1126,7 +1126,6 @@ dist/lib/UI/pages/include/menus/MiscFunction.txt
 dist/lib/UI/pages/include/menus/None.txt
 dist/lib/UI/pages/include/menus/OrderView.txt
 dist/lib/UI/pages/include/menus/Orders.txt
-dist/lib/UI/pages/include/menus/Products.txt
 dist/lib/UI/pages/include/menus/Quicklinks.txt
 dist/lib/UI/pages/include/menus/Reports.txt
 dist/lib/UI/pages/include/menus/Surveys.txt
