@@ -39,6 +39,9 @@ This file documents all changes of the LINUXIA branch of Interchange.
 - allow catalog-defined user tags in action maps (interchange.PL: 1.8.4.8) 
 - code input field is empty if table::column doesn't exist within
   metadata database (display: 1.7.4.2)
+- extinguish absolute font settings (affiliates.html: 1.10.4.9,
+  genconfig.html: 1.15.4.4)
+- profile check de_postcode added (Order.pm: 1.14.4.3)
 
 Changes that made into the main branch:
 

@@ -10,8 +10,10 @@ interchange (4.6.0-1.4) unstable; urgency=low
   * moved UI help stuff to interchange-ui package, removed unneeded
     stuff in share, link help to localhost
   * allow catalog-defined user tags in action maps
-  * option signal added to formel user tag
+  * option signal, type radio added to formel user tag
   * fix for empty code field within meta editor
+  * some absolute font settings extinguished
+  * profile check de_postcode added
   
  -- Stefan Hornburg <racke@linuxia.de>  Thu,  2 Nov 2000 11:08:20 +0100
 
