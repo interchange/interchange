@@ -1,6 +1,6 @@
 # Tagref.pm - Document Interchange tags
 # 
-# $Id: Tagref.pm,v 1.6 2000-10-12 21:45:52 zarko Exp $
+# $Id: Tagref.pm,v 1.7 2000-10-12 21:55:03 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -23,11 +23,11 @@ package Vend::Tagref;
 use lib "$Global::VendRoot/lib";
 use lib '../lib';
 
-# $Id: Tagref.pm,v 1.6 2000-10-12 21:45:52 zarko Exp $
+# $Id: Tagref.pm,v 1.7 2000-10-12 21:55:03 zarko Exp $
 
 use Vend::Parse;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.6 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.7 $ =~ /(\d+)\.(\d+)/);
 
 use vars '%myRefs';
 
@@ -2181,7 +2181,7 @@ you would need to use new syntax.
 
 The optional I<arg> is used just as in the I<page> tag.
 
-=head2 [/page]
+=item [/page]
 
 Expands into </a>. Used with the page element, such as:
 
