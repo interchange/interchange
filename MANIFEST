@@ -531,6 +531,9 @@ dist/interchange.cfg.dist
 dist/lib/UI/Primitive.pm
 dist/lib/UI/ichelp.txt
 dist/lib/UI/icmenu.txt
+dist/lib/UI/locales/de_DE.cfg
+dist/lib/UI/pages/admin/.access
+dist/lib/UI/pages/admin/.autoload
 dist/lib/UI/pages/admin/access.html
 dist/lib/UI/pages/admin/access_permissions.html
 dist/lib/UI/pages/admin/add_meta_option.html
@@ -718,6 +721,7 @@ dist/lib/UI/usertag/list_databases.tag
 dist/lib/UI/usertag/list_glob.tag
 dist/lib/UI/usertag/list_keys.tag
 dist/lib/UI/usertag/list_pages.tag
+dist/lib/UI/usertag/mm_locale.tag
 dist/lib/UI/usertag/mm_value.tag
 dist/lib/UI/usertag/newer.tag
 dist/lib/UI/usertag/quick_table.tag

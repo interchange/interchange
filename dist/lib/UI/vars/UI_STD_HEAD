@@ -139,7 +139,7 @@ EOF
 	  <a href="[area href="[am-param page]" form="[am-param form]"]" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('[am-param name]','','@_UI_IMG_@navigation/[am-param img_up]',1)"><img name="[am-param name]" alt="[am-param alt]" border="0" src="@_UI_IMG_@navigation/[if scratch ui_class_[am-param name]][am-param img_up][else][am-param img_dn][/else][/if]"></a>
 	  [/if-am-param]
 	  [if-am-param !img_dn]
-		  <a href="[area [am-param page]]" class=ctitle>[am-param name]</a>
+		  <a href="[area [am-param page]]" class=ctitle>[loc][am-param name][/loc]</a>
 	  [/if-am-param]
 	  [/if-mm]
 	  [/if-am-param]
@@ -176,7 +176,7 @@ EOF
 	my $depend = q{[sm-param depends_on]};
 	return '' if $exclude and $CGI->{$exclude};
 	return '' if $depend and ! $CGI->{$depend};
-	my $name = q{[sm-param name]};
+	my $name = $Tag->loc(undef,q{[sm-param name]});
 	my $page = q{[sm-param page]};
 	my $form = q{[sm-param form]};
 	for(\$name, \$page, \$form) {
