@@ -137,12 +137,14 @@ The tabbed_display tag can be used in embedded Perl as well.
 
     my @titles = ( 'Title 1', 'Title 2' );
     my @contents = ( 'Content of panel 1: foo', 'Content of 2' );
-    my %options = (
+
+    return $Tag->tabbed_display({
+        titles => \@titles,
+        contents => \@contents,
         panel_width => 600,
         panel_height => 400,
         tab_bgcolor_template => '#ffffxx',
-    );
-    return $Tag->tabbed_display(\@titles, \@contents, \%options);
+    });
 
 =cut
 
