@@ -48,7 +48,7 @@ Set to 1 if you want to use PostgreSQL
 
 {PGSQL}SQLDB
 Database to use (will be created)
-test___MVC_CATALOGNAME__	interch
+__MVC_CATALOGNAME__	interch
 
 {PGSQL}SQLDSN
 DBI DSN to use
