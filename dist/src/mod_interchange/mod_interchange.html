@@ -1,56 +1,483 @@
-<HTML>
-<HEAD>
-   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
-   <TITLE>Module mod_interchange</TITLE>
-</HEAD>
-<BODY>
+<!-- $Id: mod_interchange.html,v 2.0.2.2 2003-01-23 17:11:45 jon Exp $ -->
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <title>Apache module: mod_interchange (version 1.29)</title>
+</head>
+<body bgcolor="#FFFFFF" text="#000000">
+    <h1>Apache module: mod_interchange (version 1.29)</h1>
+    <h2>Apache link module for Interchange</h2>
+    <p>
+	This module replaces the <i>tlink</i> and <i>vlink</i> programs
+	that come with <a href="http://www.icdevgroup.org/">Interchange</a>.&nbsp;
+	It has been tested with all Interchange versions up to and
+	including 4.9.6 (development).&nbsp;
+	Although this module is known to have worked with MiniVend versions 3
+	and 4, its current compatibility has not been tested.
+    </p>
+    <p>
+	This module has been tested with Apache versions 1.3.6
+	through 1.3.26.&nbsp;
+	<b>Note that this module is not compatible with Apache 2.</b>
+    </p>
 
-<H1>Module mod_interchange</H1>
+    <h2>Contents</h2>
+    <ol>
+	<li>Module Directives:
+	    <ul>
+		<li><a href="#server">InterchangeServer</a></li>
+		<li><a href="#serverbackup">InterchangeServerBackup</a></li>
+		<li><a href="#tries">ConnectTries</a></li>
+		<li><a href="#retrydelay">ConnectRetryDelay</a></li>
+		<li><a href="#droplist">DropRequestList</a></li>
+	    </ul>
+	    <br>
+	</li>
+	<li><a href="#example">Configuration Examples</a></li>
+	<li><a href="#copyright">Copyright and License</a></li>
+    </ol>
 
-<H2>Interchange link module</H2>
+    <hr>
+    <h2><a name="server">InterchangeServer</a></h2>
+    <b>Syntax:</b> <code>InterchangeServer <i>address</i></code>
+    <br><b>Context:</b> Location
+    <br><b>Override:</b> None
+    <br><b>Status:</b> Extension
+    <p>
+	Specifies the way Apache should connect to the primary
+	Interchange server.
+    </p>
 
-<p>This module replaces the <tt>tlink</tt> and <tt>vlink</tt> programs
-that come with <a href="http://www.icdevgroup.org/">Interchange</a>.</p>
+    <h2><a name="serverbackup">InterchangeServerBackup</a></h2>
+    <b>Syntax:</b> <code>InterchangeServerBackup <i>address</i></code>
+    <br><b>Context:</b> Location
+    <br><b>Override:</b> None
+    <br><b>Status:</b> Extension
+    <p>
+	Specifies the way Apache should connect to the backup
+	Interchange server in the event that the primary server is
+	unavailable for any reason.
+    </p><p>
+	InterchangeServerBackup takes the same arguments as the
+	InterchangeServer directive but should obviously point to a
+	different Interchange server than the primary.&nbsp;
+	The InterchangeServerBackup directive is only of any use if you
+	have multiple Interchange servers configured in a clustered
+	environment.
+    </p>
 
-<P>This modules requires Apache 1.3.6 or greater, and works with any
-version of Interchange (back to MiniVend 3.12).</p>
+    <h2><a name="tries">ConnectTries</a></h2>
+    <b>Syntax:</b> <code>ConnectTries <i>number</i></code>
+    <br><b>Context:</b> Location
+    <br><b>Override:</b> None
+    <br><b>Status:</b> Extension
+    <p>
+	Number of connection attempts to make before giving up.&nbsp;
+	The default is 10.
+    </p>
 
-<P>&nbsp;</P>        
+    <h2><a name="retrydelay">ConnectRetryDelay</a></h2>
+    <b>Syntax:</b> <code>ConnectRetryDelay <i>seconds</i></code>
+    <br><b>Context:</b> Location
+    <br><b>Override:</b> None
+    <br><b>Status:</b> Extension
+    <p>
+	Delay, in seconds, between each retry attempt.&nbsp;
+	The default is 2.
+    </p>
 
-<P><A href="#example">Configuration example</A></p>
+    <h2><a name="droplist">DropRequestList</a></h2>
+    <b>Syntax:</b> <code>DropRequestList <i>entry entry entry</i></code>
+    <br><b>Context:</b> Location
+    <br><b>Override:</b> None
+    <br><b>Status:</b> Extension
+    <p>
+	Space-separated list of URI path components to deny access to.&nbsp;
+	Various attacks are made on Microsoft IIS systems and, while they
+	don't affect Apache, they do tend to waste valuable processor time.
+    </p><p>
+	If any of the entries in the list are found anywhere in the requested
+	URI, the request will be dropped with a 404 (not found) error.
+    </p><p>
+	A maximum of 10 entries may be present in the list.&nbsp;
+	Any other entries will be ignored.&nbsp;
+	If you need more than 10 entries, edit the <code>IC_DROPLIST_NO</code>
+	value in <code>mod_interchange.c</code> and recompile the module.&nbsp;
+	See the example below for a common use of this directive.
+    </p>
 
-<H2>Directives</H2>
+    <hr>
+    <h2><a name="example">Configuration Examples</a></h2>
+    <p>
+	Note: The Apache <Location> URI path should not contain a dot (.) or
+	any other characters except A-Z, a-z, 0-9 or a hyphen (-), so:
+    </p><p>
+	<code>&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>Location</b> <i>/shop.name</i>&gt</code>&nbsp; is invalid, whereas:<br>
+	<code>&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>Location</b> <i>/shop-name</i>&gt</code>&nbsp; is valid.
+    </p><p>
+	Here is an example UNIX-socket configuration:
+    </p>
+    <code>
+	&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;Location</b> <i>/shop</i><b>&gt;</b><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>SetHandler interchange-handler</b><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>InterchangeServer</b> <i>/opt/interchange/etc/socket</i><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;/Location&gt;</b><br>
+    </code>
+    <p>
+	Here is an INET-socket example:
+    </p>
+    <code>
+	&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;Location</b> <i>/shop</i><b>&gt;</b><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>SetHandler interchange-handler</b><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>InterchangeServer</b> <i>localhost</i>:<i>7786</i><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;/Location&gt;</b><br>
+    </code>
+    <p>
+	UNIX-socket local primary connection and INET-socket remote backup
+	connection:
+    </p>
+    <code>
+	&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;Location</b> <i>/shop</i><b>&gt;</b><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>SetHandler interchange-handler</b><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>InterchangeServer</b> <i>/opt/interchange/etc/socket</i><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>InterchangeServerBackup</b> <i>another.server.com</i>:<i>7786</i><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;/Location&gt;</b><br>
+    </code>
+    <p>
+	Two parameters control what happens when mod_interchange
+	fails to connect to the Interchange server.&nbsp;
+	The most likely reason for a failure to connect is that Interchange
+	is being restarted by the administrator.
+    </p><p>
+	<b>ConnectTries</b> specifies the number of connection attempts
+	to make before giving up.&nbsp;
+	The default is 10.&nbsp;
+	<b>ConnectRetryDelay</b> specifies the delay, in seconds, between each
+	retry attempt.&nbsp;
+	The default is 2.&nbsp;
+	Connection retry example:
+    </p>
+    <code>
+	&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;Location</b> <i>/shop</i><b>&gt;</b><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>SetHandler interchange-handler</b><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>InterchangeServer</b> <i>localhost</i>:<i>7786</i><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>ConnectTries</b> <i>10</i><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>ConnectRetryDelay</b> <i>1</i><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;/Location&gt;</b><br>
+    </code>
+    <p>
+	If an <b>InterchangeServerBackup</b> directive has been specified
+	then the backup server will be tried immediately after an attempt
+	to contact the primary server fails.&nbsp;
+	The <b>ConnectTries</b> and <b>ConnectRetryDelay</b> paramaters will
+	only come into affect if both the primary and backup Interchange
+	servers are found to be unavailable.
+    </p><p>
+	The <b>DropRequestList</b> allows a list of up to 10 space-separated URI
+	components to be specified.&nbsp;
+	If any of the list entries is found anywhere in the requested URI,
+	the request will be dropped with a 404 (not found) error, without
+	the request being passed to Interchange.&nbsp;
+	This parameter is useful for blocking known Microsoft IIS attacks,
+	such as &quot;Code Red&quot;, so that we don't waste any more time processing
+	these bogus requests than we have to.&nbsp;
+	<b>DropRequestList</b> example:
+    </p>
+    <code>
+	&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;Location</b> <i>/shop</i><b>&gt;</b><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>SetHandler interchange-handler</b><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>InterchangeServer</b> <i>localhost</i>:<i>7786</i><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>DropRequestList</b> <i>/default.ida /x.ida /cmd.exe /root.exe</i><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;/Location&gt;</b><br>
+    </code>
 
-<ul>
-<li><A href="#server">InterchangeServer</A></li>
-</ul>
+    <br><hr>
+    <h2><a name="changelog">Change Log</a></h2>
+    <ul>
+	<li>
+	    1.29
+	    (Thu 09 Jan 2003)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Fixed a bug reported by Jeff Dafoe.&nbsp;
+		    The request information enabled Interchange to show the
+		    correct page but prevented it from storing the request in
+		    the session's history.&nbsp;
+		    The problem only showed itself when Interchange's
+		    [history-scan] tag was used.&nbsp;
+		    As almost no page history was saved, [history-scan] sent
+		    the user to the default page (usually index) most of the
+		    time.&nbsp;
+		    This bug seems to have originated in version 1.28.
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
+	    1.28
+	    (Thu 09 Jan 2003)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Fixed a weird bug where empty HTTP variables were being
+		    passed under certain circumstances.
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
+	    1.27
+	    (Wed 27 Nov 2002)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Implemented a proper (automatic) URILevels mechanism and
+		    removed the URILevels configuration directive.&nbsp;
+		    This also fixes a bug, reported by Philip Hempel in the
+		    interchange-users mail list, where [PT] redirects were
+		    not being handled correctly.
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
+	    1.26
+	    (Sun 03 Nov 2002)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Added proper support for internal redirects which will
+		    help with the security of "soft product" delivery.
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
+	    1.25
+	    (Sat 02 Nov 2002)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Fixed a bug reported by Jeff Dafoe.&nbsp;
+		    There are some instances where the socket to Interchange
+		    may not be closed upon error.&nbsp;
+		    While I'm reasonably certain that Apache will handle
+		    this for us, it doesn't hurt to ensure that the socket
+		    is closed.
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
+	    1.24
+	    (Mon 31 Oct 2002)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Fixed a bug reported by Shawn Mathews.&nbsp;
+		    The URILevels directive was not taken into account when
+		    munging the PATH_INFO HTTP environment variable.
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
+	    1.23
+	    (Wed 02 Oct 2002)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Added the module identification to the Apache version
+		    string so that it shows up in the "Server:" response
+		    header field when Apache is configured to show version
+		    information.&nbsp;
+		    Of course, suitably paranoid system administrators should
+		    configure Apache so that it doesn't release unnecessay
+		    server information.&nbsp;
+		    Any competent adminsitrator should know what module
+		    versions they have anyway. :-)
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
+	    1.22
+	    (Mon 05 Aug 2002)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Fixed a bug reported by John Young.&nbsp;
+		    Mod_interchange was not decoding entities in the
+		    REQUEST_URI, which caused Interchange searches (scan)
+		    with encoded spaces to fail.
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
+	    1.21
+	    (Mon 01 Apr 2002)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Added Support for Solaris 8 with a patch supplied
+		    by John Young.&nbsp;
+		    Apparently Solaris doesn't have the <code>AF_LOCAL</code>,
+		    <code>PF_LOCAL</code> or <code>SUN_LEN</code> macros.&nbsp;
+		    John's patch conditionally <code>#define</code>s the
+		    missing <code>_LOCAL</code> macros as aliases for
+		    <code>AF_UNIX</code> and <code>PF_UNIX</code>, and
+		    conditionally <code>#define</code>s a <code>SUN_LEN</code>
+		    macro.
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
+	    1.20
+	    (Fri 15 Mar 2002)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Added the <code>InterchangeServerBackup</code> module
+		    parameter to allow the module to automatically try a
+		    backup Interchange server if the primary is unavailable.
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
+	    1.14
+	    (Wed 26 Sep 2001)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Added the <code>DropRequestList</code> module parameter
+		    to stop Interchange from having to waste its time
+		    processing known IIS exploits.
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
+	    1.13
+	    (Wed 22 Aug 2001)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Added a retry loop so that connections delay for a while,
+		    instead of failing, while the Interchange server is being
+		    restarted.
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
+	    1.12
+	    (Sun 10 Aug 2001)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Added OS/X patch as it doesn't appear to have a typedef
+		    for <code>socklen_t</code>.&nbsp;
+		    The poor Apple <nobr>OS/X</nobr> users must un-comment the OSX line
+		    in the Makefile to the module to compile the definition in.
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
+	    1.11
+	    (Fri 20 Apr 2001)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Added the <code>URILevels</code> parameter to allow for
+		    sites that need to specify <code>&lt;Location&gt;</code>s
+		    that have more than one directory level.&nbsp;
+		    The default <code>URILevel</code> is 1.
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
+	    1.10
+	    (Tue 27 Feb 2001)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Rewrote the <code>ic_send_request()</code> and
+		    <code>ic_transfer_response()</code> functions because
+		    they were giving all sorts of <code>EPIPE</code> errors
+		    when writing data to clients during a concurrent-user
+		    test.&nbsp;
+		    Testing tools used were ab (ApacheBench/1.3) and httperf.&nbsp;
+		    We have now lost the &quot;connreset&quot; errors that
+		    were reported by httperf as well as the associated
+		    &quot;broken pipe&quot; meessages in the Apache error logs.&nbsp;
+		    The module now stands up properly when placed under a heavy
+		    load.
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
+	    1.05
+	    (Mon 29 Jan 2001)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Nothing more than a rename from <code>mod_minivend</code>
+		    to <code>mod_interchange</code>.&nbsp;
+		    (Changed &quot;<code>mv_</code>&quot; function names to
+		    &quot;<code>ic_</code>&quot; etc.)
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
+	    1.04
+	    (Tue 23 May 2000)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Changed to make the module work with Apache name-based
+		    <code>&lt;VirtualHost&gt;</code> entries that have been
+		    configured with the Apache <code>ServerPath</code>
+		    directive.
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
+	    1.03-1i
+	    (Mon 02 Aug 1999)
+	    Francis J. Lacoste &lt;francis.lacoste@iNsu.COM&gt;<br>
+	    <ul>
+		<li>
+		    Last bugfixes.
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
+	    1.02-1i
+	    (Mon 02 Aug 1999)
+	    Francis J. Lacoste &lt;francis.lacoste@iNsu.COM&gt;<br>
+	    <ul>
+		<li>
+		    Fixed spec files bugs.
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
+	    1.00-1i
+	    (Mon 02 Aug 1999)
+	    Francis J. Lacoste &lt;francis.lacoste@iNsu.COM&gt;<br>
+	    <ul>
+		<li>
+		    Packaged for iNs/linux.
+		</li>
+	    </ul>
+	</li>
+    </ul>
 
-<hr>
-<h2>
-<A name="server"></A>InterchangeServer</H2>
-<B>Syntax:</B> InterchangeServer <I>address</I>
-<BR><B>Context:</B> Directory
-<BR><B>Override:</B> None
-<BR><B>Status:</B> Extension
-
-<p>Specifies the way to connect to the Interchange server.</p>
-
-<HR>
-<H2>
-<A NAME="example"></A>Example</H2>
-Here is an example UNIX configuration:
-
-<PRE>&lt;Location /store&gt;
-   SetHandler interchange-handler
-   InterchangeServer /var/run/interchange/socket
-&lt;/Location&gt;</PRE>
-
-and here is an INET example:
-
-<PRE>&lt;Location /store&gt;
-   SetHandler interchange-handler
-   InterchangeServer ic.host.com:7786
-&lt;/Location&gt;</PRE>
-
+    <br><hr>
+    <h2><a name="copyright">Copyright and License</a></h2>
+    <p>
+	Copyright &copy; 1999 Francis J. Lacoste and iNsu Innovations Inc.<br>
+	Copyright &copy; 2000-2003 Cursor Software Limited.<br>
+	All rights reserved.
+    </p><p>
+	This program is free software.&nbsp;
+	You can redistribute it and/or modify it under the terms of the
+	GNU General Public License as published by the Free Software
+	Foundation.&nbsp;
+	You may refer to either version 2 of the License or (at your option)
+	any later version.
+    </p>
 </body>
 </html>

@@ -1,147 +1,132 @@
 mod_interchange
 ===============
 
-Version: 1.04
+$Id: README,v 2.0.2.2 2003-01-23 17:11:45 jon Exp $
+
+Version: 1.29
 
 Description
 -----------
-mod_interchange is designed to replace the vlink and tlink programs that
-come with Interchange. The Interchange link protocol is implemented via
-an Apache module which saves us the (small) overhead of the execution
-of a CGI program.
 
-Requires
+mod_interchange is designed to replace the vlink and tlink programs
+that comes with Interchange.  The Interchange link protocol has been
+implemented via an Apache module which saves us the (small) overhead
+of the execution of a CGI program.
+
+Note that this module is not compatible with Apache 2.
+
+Building the module
+-------------------
+
+The included Makefile builds the module as a DSO object. So if
+you're Apache has mod_dso.so configured you can do
+
+    make
+    make install
+
+If not, you should be able to copy the file mod_interchange.c under
+src/modules/extra and add the line when building Apache:
+
+    --activate-module=src/modules/extra/mod_interchange.c
+
+
+Installing the module as a DSO object
+-------------------------------------
+
+Copy mod_intercange.so into your Apache DSO library directory and
+add the following lines to your httpd.conf:
+
+    LoadModule interchange_module /wherever/lib/apache/mod_interchange.so
+    AddModule mod_interchange.c
+
+
+Documentation
+-------------
+
+The module understands directives which specify the way to contact the
+primary, and possibly a secondary, Interchange server.  The InterchangeServer
+directive takes either a pathname to the Interchange UNIX socket or a
+host:port specification if you want to use INET mode.
+
+The optional InterchangeServerBackup directive takes the same arguments,
+but should obviously point to a different Interchange server than the
+primary.  The InterchangeServerBackup directive is only of any use if
+you have multiple Interchange servers configured in a clustered environment.
+
+Note: The Apache <Location> path should not contain a dot (.) or any
+other characters except A-Z, a-z, 0-9 or a hyphen (-), so:
+
+	<Location /shop.name> is invalid, whereas:
+	<Location /shop-name> is valid.
+
+
+Examples
 --------
-Apache 1.3.6 or later
-Any version of Interchange (all the way back to MiniVend 3.12)
 
-Installing
-----------
-The included Makefile builds the module as a DSO object. So if your
-Apache has mod_dso.so configured you can do:
+UNIX mode local connection:
 
-make 
-make install
-
-If not, you can copy the file mod_interchange.c to src/modules/extra
-and add the option:
-
---activate-module=src/modules/extra/mod_interchange.c
-
-to the 'configure' command when building Apache.
-
-Configuring Interchange
------------------------
-First you need to decide what URL path you want to point to Interchange,
-and make sure you don't need any files from that same path. For example,
-with the default Construct Something demo you have HTML and images in:
-
-http://www.yourdomain.com/construct/*
-
-So you can't have mod_interchange take over the /construct path. Instead
-use a different name like /store, so that users will access the site with
-a URL like:
-
-http://www.yourdomain.com/store
-
-And Apache will still be able to serve images from /construct/* just fine.
-
-To make such a change, you need to modify the Catalog directive in
-interchange.cfg to look like this:
-
-Catalog  construct  /var/lib/interchange/construct  /store
-
-And update the CGI_URL variable in catalog.cfg by uncommenting and changing
-this line:
-
-Variable  CGI_URL  /store
-
-Configuring Apache
-------------------
-The module understands one directive which specifies the way to contact
-the Interchange server. The directive InterchangeServer takes either a
-full pathname to the Interchange UNIX socket or a host:port specification
-if you want to use INET mode.
-
-That means you need to add new Location section to your Apache httpd.conf.
-We'll discuss the two kinds of InterchangeServer settings separately.
-
-UNIX socket setup
------------------
-Here is an example httpd.conf section for connecting to Interchange via
-a UNIX socket on the same machine Apache's running on:
-
-<Location /store>
+    <Location /shop>
 	SetHandler interchange-handler
-	InterchangeServer /var/run/interchange/socket
-</Location>
+	InterchangeServer /opt/interchange/etc/socket
+    </Location>
 
-Since you're not using the set-UID CGI executable anymore, you need to
-allow the Apache daemon to read from and write to the socket directly.
-This is slightly tricky because Interchange recreates the socket file each
-time it is run, so you can't just modify the ownership and permissions
-of the socket file directly.
+INET mode local connection:
 
-We solve this by setting the group ownership of the directory the socket
-is in to a group Apache is a member of (usually www, apache, http, nobody,
-or similar):
-
-chgrp apache /var/run/interchange
-
-Then we make the directory set-GID so any files created in it will have
-the same group ownership as the directory:
-
-chmod g+srx /var/run/interchange
-
-Obviously you'll need to substitute the correct group for 'apache' and the
-right parent directory of the socket where we show '/var/run/interchange'.
-In a non-RPM Interchange installation the directory is 'etc' inside the
-Interchange software directory (perhaps /usr/local/interchange).
-
-Next you need to add this directive to interchange.cfg:
-
-SocketPerms 0660
-
-This tells Interchange to allow reading from and writing to the socket by
-the group (which our set-GID directory will set to the group the Apache
-daemon is in), instead of the default 0600, which would only allow reading
-and writing by the owner (the Interchange user, usually 'interch').
-
-INET socket setup
------------------
-This is the configuration to connect to Interchange via INET sockets:
-
-<Location /store>
+    <Location /shop>
 	SetHandler interchange-handler
-	InterchangeServer ic.host.com:7786
-</Location>
+	InterchangeServer localhost:7786
+    </Location>
 
-The port number is optional if you're using the default port 7786.
+UNIX mode local primary connection and INET mode remote backup connection:
 
-Support
--------
-Visit http://www.icdevgroup.org/ to find information on how you can
-join the Interchange mailing lists, browse documentation and mailing list
-archives, and get other support.
+    <Location /shop>
+	SetHandler interchange-handler
+	InterchangeServer /opt/interchange/etc/socket
+	InterchangeServerBackup another.server.com:7786
+    </Location>
 
-History
--------
-mod_interchange is the direct descendant of mod_minivend, created by
-Francis J. Lacoste <francis.lacoste@iNsu.com> at iNsu Innovations Inc.
-in 1999. Thanks, Francis!
+The ConnectTries parameter specifies the number of connection attempts to
+make before giving up.  ConnectRetryDelay specifies the delay, in seconds,
+between each retry attempt.
 
-Maintenance of the module was taken over by Red Hat (formerly Akopia)
-in February 2001, with Francis's blessing. The only changes we've made
-so far are to rename occurrences of MiniVend to Interchange, expand the
-documentation, and include it in the standard Interchange distribution
-starting with Interchange 4.6.4.
+The ConnectTries default is 10 and the ConnectRetryDelay default is 2 seconds.
+Here is an example:
 
-Copyright
----------
-Copyright (c) 1999 Francis J. Lacoste and iNsu Innovations Inc. 
+    <Location /shop>
+	SetHandler interchange-handler
+	InterchangeServer localhost:7786
+	ConnectTries 10
+	ConnectRetryDelay 1
+    </Location>
+
+The DropRequestList allows a list of up to 10 space-separated URI components
+to be specified.  If one of the list entries is found anywhere in the
+requested URI, the request will be dropped with a 404 (not found) error,
+without the request being passed to Interchange.  This parameter is useful
+for blocking known Microsoft IIS attacks like "Code Red", so that we don't
+waste any more time processing the (bogus) requests than we have to.
+
+    <Location /shop>
+	SetHandler interchange-handler
+	InterchangeServer localhost:7786
+	DropRequestList /default.ida /x.ida /cmd.exe /root.exe
+    </Location>
+
+
+Bugs
+----
+
+Send bug reports and suggestions to Kevin Walsh <kevin@cursor.biz>
+
+
+Copyright and License
+---------------------
+
+Copyright (c) 1999 Francis J. Lacoste and iNsu Innovations Inc.
+Copyright (c) 2000-2003 Cursor Software Limited.
 All rights reserved.
 
-This program is free software; you can redistribute it and/or modify
+This program is free software.  You can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 2 of the License, or
-(at your option) any later version.
+the Free Software Foundation.  You may refer to either version 2 of the
+License or (at your option) any later version.
