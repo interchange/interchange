@@ -48,3 +48,10 @@ Template: interchange/olduser
 Type: string
 Default: ""
 Description: 
+
+Template: interchange/debug
+Type: boolean
+Default: false
+Description: Whether to enable debug mode or not
+ Debug mode is only useful if you modified the Interchange sources
+ accordingly.
