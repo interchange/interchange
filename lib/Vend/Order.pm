@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18.2.19 2001-04-13 10:31:54 heins Exp $
+# $Id: Order.pm,v 1.18.2.20 2001-04-23 14:38:57 jason Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.19 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.20 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -57,6 +57,8 @@ use Vend::Session;
 use Vend::Data;
 use Text::ParseWords;
 use strict;
+
+use autouse 'Vend::Error' => qw/do_lockout/;
 
 my @Errors = ();
 my $Fatal = 0;
