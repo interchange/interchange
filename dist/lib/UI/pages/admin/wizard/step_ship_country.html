@@ -11,6 +11,11 @@ You can select which shipping rate the customer defaults to. This should be
 a domestic rate, i.e. one which is offered for the country you selected as
 default.
 <P>
+If your default ship mode requires a postal code in order to calculate a price,
+you will need to select one as the target for defaults. If you want to show
+the customer the least it will be, select your origin zip/postal code. If you want to
+show the most it will be, select something at the opposite end of the country.
+<P>
 If you wish to refine your shipping methods further you may use the
 Administration section of the Interchange admin menus after you have finished
 the CommerceLauncher.
@@ -82,8 +87,8 @@ the CommerceLauncher.
 
 	ui_data_key=code
 
-	ui_data_fields="code defaultcountry defaultshipmode"
-	ui_display_only="defaultcountry defaultshipmode"
+	ui_data_fields="code defaultcountry defaultshipmode defaultshipzip"
+	ui_display_only="defaultcountry defaultshipmode defaultshipzip"
 	ui_hide_key="1"
 
 	check.defaultcountry=mandatory
@@ -96,6 +101,10 @@ the CommerceLauncher.
 	help.defaultshipmode="You must select something, even if it is Free Shipping"
 	widget.defaultshipmode=select
 	passed.defaultshipmode=`$Scratch->{all_ship_modes}`
+
+	label.defaultshipzip="Default domestic ship postal code"
+	widget.defaultshipzip=text_5
+	passed.defaultshipzip=61821
 
 ]
 
