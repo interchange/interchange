@@ -9,7 +9,7 @@ CATEGORYBAR_FONT	Helvetica	Catalog Colors and Style
 CATEGORYBAR_FONTSIZE	11px	Catalog Colors and Style
 CATEGORYBAR_WEIGHT	normal	Catalog Colors and Style
 CATEGORYBAR_LINK	#FFFFCC	Catalog Colors and Style
-CATEGORYBAR_LINKHOVER	#FFFFCC Catalog Colors and Style
+CATEGORYBAR_LINKHOVER	#FFFFCC	Catalog Colors and Style
 CATEGORYBAR_LINKDECO	none	Catalog Colors and Style
 CATEGORYBAR_HOVERDECO	underline	Catalog Colors and Style
 CGI_URL	__MVC_CGIURL__	Directories and Paths
