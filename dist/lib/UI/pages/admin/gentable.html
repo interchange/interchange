@@ -93,7 +93,7 @@ sub {
 	for(qw/edit import export upload download /) {  # Add "report"
 		my $line = $ref->{$_};
 		$out .= <<EOF;
-<td ALIGN=center><A HREF="$line->{url}"><img src="$line->{img}" border=0 alt="$_ $tab" title="$_ $tab" align=top></A></td>
+<td ALIGN=center><A HREF="$line->{url}&id=$Session->{id}"><img src="$line->{img}" border=0 alt="$_ $tab" title="$_ $tab" align=top></A></td>
 EOF
 	}
 	$out .= qq{<td>&nbsp;<FONT SIZE="+1">$name</FONT>};
