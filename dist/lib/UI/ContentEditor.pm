@@ -2,7 +2,7 @@
 #
 # UI::ContentEditor - Interchange page/component edit
 # 
-# $Id: ContentEditor.pm,v 2.11 2003-06-18 17:34:43 jon Exp $
+# $Id: ContentEditor.pm,v 2.12 2003-11-03 14:42:22 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -24,7 +24,7 @@
 
 package UI::ContentEditor;
 
-$VERSION = substr(q$Revision: 2.11 $, 10);
+$VERSION = substr(q$Revision: 2.12 $, 10);
 $DEBUG = 0;
 
 use POSIX qw/strftime/;
@@ -2742,7 +2742,7 @@ sub page_editor {
 	parse_page($pref, $opt);
 	publish_page($pref, $opt) if $opt->{new};
 
-#::logDebug("found a template name=$pref->{ui_name} store=$pstore: " . uneval($pref));
+#::logDebug("found a template name=$pref->{ui_name} store=$name: " . uneval($pref));
 
 	my ($overall, $comp) = page_region($pref, $opt);
 
