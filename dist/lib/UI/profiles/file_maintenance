@@ -5,6 +5,7 @@ __NAME__ file_maintenance
 [/comment]
 
 [set nevair]1[/set]
+[mm_locale]
 [if session logged_in]
 [and session login_table ne __UI_ACCESS_TABLE__]
 [then]
@@ -55,10 +56,10 @@ __NAME__ file_maintenance
 						);
 		}
 		elsif( $Tag->unlink_file($fn, $prefix) ) {
-			$Scratch->{ui_message} = errmsg("File $fn was deleted.", $mfn);
+			$Scratch->{ui_message} = errmsg("File %s was deleted.", $mfn);
 		}
 		else {
-			$Scratch->{ui_failure} = errmsg("Delete of $fn FAILED.", $mfn);
+			$Scratch->{ui_failure} = errmsg("Delete of %s FAILED.", $mfn);
 		}
 		return;
 	[/perl]
