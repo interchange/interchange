@@ -1,24 +1,6 @@
-UserTag email-raw Documentation <<EOD
-
-=head1 email-raw
-
-This tag takes a raw email message, I<including headers>, and
-uses the SendmailProgram with B<-t> option. Example:
-
-	[email-raw]
-	From: foo@bar.com
-	To: bar@foo.com
-	Subject: baz
-    
-	The text of the message.
-	[/email-raw]
-
-The headers must be at the beginning of the line, and the header
-must have a valid C<To:> or it will not be delivered.
-
-=cut
-
-EOD
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: email_raw.tag,v 1.4 2004-10-02 18:15:16 docelic Exp $
 
 UserTag email-raw hasEndTag
 UserTag email-raw addAttr
@@ -46,3 +28,4 @@ sub {
     return $opt->{hide} ? '' : $ok;
 }
 EOR
+
