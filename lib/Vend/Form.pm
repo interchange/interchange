@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.5 2002-02-02 08:57:11 mheins Exp $
+# $Id: Form.pm,v 2.6 2002-02-03 01:16:11 kwalsh Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -29,13 +29,14 @@ use Vend::Interpolate;
 use Vend::Util;
 use Vend::Tags;
 use strict;
+use POSIX qw{strftime};
 
 use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.5 $, 10);
+$VERSION = substr(q$Revision: 2.6 $, 10);
 
 @EXPORT = qw (
 	display
