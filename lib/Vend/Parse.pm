@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12.2.6 2000-12-17 07:39:11 heins Exp $
+# $Id: Parse.pm,v 1.12.2.7 2000-12-21 11:27:37 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Parse;
 require Vend::Parser;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.12.2.6 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.12.2.7 $ =~ /(\d+)\.(\d+)/);
 
 use Safe;
 use Vend::Util;
@@ -40,7 +40,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12.2.6 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.7 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -63,6 +63,7 @@ my %PosNumber =	( qw!
 				cgi              1
 				checked          2
 				control          2
+				control_set      1
 				counter          1
 				currency         2
 				data             3
@@ -197,6 +198,7 @@ my %Order =	(
 				region			=> [qw( )],
 				record			=> [qw( )],
 				control			=> [qw( name default )],
+				control_set		=> [qw( index )],
 				selected		=> [qw( name value )],
 				set_cookie		=> [qw( name value expire )],
 				setlocale		=> [qw( locale currency )],
@@ -232,6 +234,7 @@ my %addAttr = (
 					checked         1
 					counter         1
 					control         1
+					control_set     1
 					data			1
 					default			1
 					ecml            1
@@ -283,6 +286,7 @@ my %hasEndTag = (
                         attr_list       1
                         calc            1
 						catch           1
+						control_set     1
                         currency        1
                         discount        1
                         filter	        1
@@ -429,6 +433,7 @@ my %Routine = (
 				cgi				=> \&Vend::Interpolate::tag_cgi,
 				checked			=> \&Vend::Interpolate::tag_checked,
 				control			=> \&Vend::Interpolate::tag_control,
+				control_set		=> \&Vend::Interpolate::tag_control_set,
 				counter			=> \&Vend::Interpolate::tag_counter,
 				currency		=> sub {
 										my($convert,$noformat,$amount) = @_;
