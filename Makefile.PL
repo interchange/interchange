@@ -449,8 +449,6 @@ sub initialize {
 	my @re_dir  = qw( simple/download );
 	my @re_copy = qw(	
 						../pod/mvtags.pod simple/download/mvtags.pod
-						../pod/mvdocs.pod simple/download/mvdocs.pod
-						../pod/mvfaq.pod simple/download/mvfaq.pod
 						);
 
 #warn "Got past mvtags build\n" ; #if $X{RPMBUILDDIR};
@@ -786,13 +784,18 @@ else {
 	WriteMakefile(
 		NAME       => "Interchange",
 		MAN3PODS => {
-						'pod/mvdocs.pod' => 'blib/man3/mvdocs.8',
-						'pod/mvtags.pod' => 'blib/man3/mvtags.8',
-						'pod/mvfaq.pod' => 'blib/man3/mvfaq.8',
+						'pod/icbackoffice.pod' => 'blib/man3/icbackoffice.8',
+						'pod/icconfig.pod'		=> 'blib/man3/icconfig.8',
+						'pod/icdatabase.pod'	=> 'blib/man3/icdatabase.8',
+						'pod/icinstall.pod'		=> 'blib/man3/icinstall.8',
+						'pod/icintro.pod'		=> 'blib/man3/icintro.8',
+						'pod/ictemplates.pod'	=> 'blib/man3/ictemplates.8',
+						'pod/mv_metadata.pod'	=> 'blib/man3/mv_metadata.8',
+						'pod/mvtags.pod'       => 'blib/man3/mvtags.8',
 						},
 		DISTNAME => "interchange",
 		clean    => {
-					FILES=> "lib/IniConf.pm _uid _db_storable _session_storable lib/File/CounterFile.pm scripts/initp.pl scripts/compile_link scripts/config_prog scripts/configdump scripts/dump scripts/expire scripts/localize scripts/expireall scripts/makecat scripts/interchange scripts/offline scripts/restart scripts/update dist/simple/download/mvdocs.pod dist/simple/download/mvtags.pod dist/simple/download/mvfaq.pod pod/mvtags.pod",
+					FILES=> "lib/IniConf.pm _uid _db_storable _session_storable lib/File/CounterFile.pm scripts/initp.pl scripts/compile_link scripts/config_prog scripts/configdump scripts/dump scripts/expire scripts/localize scripts/expireall scripts/makecat scripts/interchange scripts/offline scripts/restart scripts/update dist/simple/download/mvtags.pod",
 				   },
 
 		dist     => {
