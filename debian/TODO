@@ -1,10 +1,1 @@
-* Problems
-** makecat
-*** "them" as suggestion for ServerName
-
-* Suggestions
-** makecat
-*** should ask to create an user
-
-* 4.7.0
-** poweredbygif
+add Debian specific stuff to README.Debian (like /etc/interchange files)
