@@ -24,11 +24,12 @@ fi
 # Copy the sample data
 if test -d __MVC_CATROOT__/templates/sampledata/__MVC_SAMPDATATYPE__
 then
-  chmod $DMODE __MVC_CATROOT__/templates/sampledata/__MVC_SAMPDATATYPE__/images 2>/dev/null
-  chmod $DMODE __MVC_CATROOT__/templates/sampledata/__MVC_SAMPDATATYPE__/images/* 2>/dev/null
-  chmod $FMODE __MVC_CATROOT__/templates/sampledata/__MVC_SAMPDATATYPE__/images/??*.* 2>/dev/null
-  chmod $FMODE __MVC_CATROOT__/templates/sampledata/__MVC_SAMPDATATYPE__/images/*/??*.* 2>/dev/null
-  cp -pr __MVC_CATROOT__/templates/sampledata/__MVC_SAMPDATATYPE__/* __MVC_CATROOT__ 2>/dev/null
+	chmod $DMODE __MVC_CATROOT__/templates/sampledata/__MVC_SAMPDATATYPE__/images 2>/dev/null || true
+	chmod $DMODE __MVC_CATROOT__/templates/sampledata/__MVC_SAMPDATATYPE__/images/* 2>/dev/null || true
+	chmod $FMODE __MVC_CATROOT__/templates/sampledata/__MVC_SAMPDATATYPE__/images/??*.* 2>/dev/null || true
+	chmod $FMODE __MVC_CATROOT__/templates/sampledata/__MVC_SAMPDATATYPE__/images/*/??*.* 2>/dev/null || true
+	cp -pr __MVC_CATROOT__/templates/sampledata/__MVC_SAMPDATATYPE__/images/* __MVC_CATROOT__/images 2>/dev/null || true
+	cp -pr __MVC_CATROOT__/templates/sampledata/__MVC_SAMPDATATYPE__/* __MVC_CATROOT__ 2>/dev/null || true
 
 else 
 	echo "Sample data directory does not exist:"
