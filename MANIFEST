@@ -173,13 +173,11 @@ dist/foundation/images/computer.xls
 dist/foundation/images/construct.xls
 dist/foundation/images/download.png
 dist/foundation/images/foundation/about.gif
-dist/foundation/images/foundation/bar_filler.gif
 dist/foundation/images/foundation/buynow.gif
 dist/foundation/images/foundation/cart.gif
 dist/foundation/images/foundation/checkout.gif
 dist/foundation/images/foundation/checkout_button.gif
 dist/foundation/images/foundation/clear.gif
-dist/foundation/images/foundation/continue_shopping.gif
 dist/foundation/images/foundation/go.gif
 dist/foundation/images/foundation/home.gif
 dist/foundation/images/foundation/littlebar.gif
@@ -192,11 +190,9 @@ dist/foundation/images/foundation/poweredby.gif
 dist/foundation/images/foundation/recalculate_button.gif
 dist/foundation/images/foundation/savecart.gif
 dist/foundation/images/foundation/saverecur.gif
-dist/foundation/images/foundation/search.gif
 dist/foundation/images/foundation/sep.gif
 dist/foundation/images/foundation/service.gif
 dist/foundation/images/foundation/thumb.gif
-dist/foundation/images/image.gif
 dist/foundation/images/items/yourimage.gif
 dist/foundation/images/reports.xls
 dist/foundation/images/smallamex.png
