@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.24 2002-05-02 00:32:07 jon Exp $
+# $Id: Util.pm,v 2.25 2002-06-11 19:11:30 mheins Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -82,7 +82,7 @@ require HTML::Entities;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.24 $, 10);
+$VERSION = substr(q$Revision: 2.25 $, 10);
 
 BEGIN {
 	eval {
@@ -540,6 +540,15 @@ sub unhexify {
     my $s = shift;
     $s =~ s/%(..)/chr(hex($1))/ge;
     return $s;
+}
+
+*unescape_chars = \&unhexify;
+
+sub unescape_full {
+    my $url = shift;
+    $url =~ tr/+/ /;
+    $url =~ s/<!--.*?-->//sg;
+    return unhexify($url);
 }
 
 ## UNEVAL
@@ -1641,15 +1650,6 @@ EOF
 
 	# Authorized if got here
 	return 1;
-}
-
-# Replace the escape notation %HH with the actual characters.
-#
-sub unescape_chars {
-    my($in) = @_;
-
-    $in =~ s/%(..)/chr(hex($1))/ge;
-    $in;
 }
 
 
