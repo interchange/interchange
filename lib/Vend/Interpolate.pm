@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.83 2001-06-27 17:47:09 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.84 2001-06-27 18:29:35 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.83 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.84 $, 10);
 
 @EXPORT = qw (
 
@@ -2000,6 +2000,33 @@ sub tag_options {
 	return $out;
 }
 
+sub produce_range {
+	my ($ary, $max) = @_;
+	$max = $Vend::Cfg->{Limit}{option_list} if ! $max;
+	my @do;
+	for (my $i = 0; $i < scalar(@$ary); $i++) {
+		$ary->[$i] =~ /^\s* ([a-zA-Z0-9]+) \s* \.\.+ \s* ([a-zA-Z0-9]+) \s* $/x
+			or next;
+		my @new = $1 .. $2;
+		if(@new > $max) {
+			::logError(
+				"Refuse to add %d options to option list via range, max %d.",
+				scalar(@new),
+				$max,
+				);
+			next;
+		}
+		push @do, $i, \@new;
+	}
+	my $idx;
+	my $new;
+	while($new = pop(@do)) {
+		my $idx = pop(@do);
+		splice @$ary, $idx, 1, @$new;
+	}
+	return;
+}
+
 sub tag_accessories {
 	my($code,$extra,$opt,$item) = @_;
 
@@ -2113,24 +2140,7 @@ sub tag_accessories {
 	my @opts = split /\s*$delimiter\s*/, $data;
 
 	if($type =~ s/\branges\b//i || $opt->{ranges} ) {
-		my @out; 
-		my $max = $Vend::Cfg->{Limit}{option_list} || 5000;
-		for (@opts) {
-			if( /^\s* ([a-zA-Z0-9]+) \s* \.\.+ \s* ([a-zA-Z0-9]+) \s* $/x ) {
-				my @new = $1 .. $2;
-				if(@new > $max) {
-					::logError(
-						"Refuse to add %d options to option list via range.",
-						scalar(@new),
-						);
-					next;
-				}
-				push @out, @new;
-				next;
-			}
-			push @out, $_;
-		}
-		@opts = @out;
+		produce_range(\@opts);
 	}
 
 #::logDebug("item in tag_accessories: " . ::uneval_it($item));
@@ -5295,7 +5305,6 @@ my $List_it = 1;
 sub tag_loop_list {
 	my ($list, $opt, $text) = @_;
 
-#::logDebug("loop list opt=" . ::uneval($opt));
 	my $fn;
 	my @rows;
 
@@ -5381,15 +5390,19 @@ sub tag_loop_list {
 	}
 	elsif($opt->{quoted}) {
 #::logDebug("loop resolve quoted");
+		my @l = Text::ParseWords::shellwords($list);
+		produce_range(\@l) if $opt->{ranges};
 		eval {
-			@rows = map { [$_] } Text::ParseWords::shellwords($list);
+			@rows = map { [$_] } @l;
 		};
 	}
 	else {
 #::logDebug("loop resolve default");
 		$delim = $opt->{delimiter} || '[,\s]+';
+		my @l =  split /$delim/, $list;
+		produce_range(\@l) if $opt->{ranges};
 		eval {
-			@rows = map { [$_] } split /$delim/, $list;
+			@rows = map { [$_] } @l;
 		};
 	}
   }
