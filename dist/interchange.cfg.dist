@@ -17,6 +17,9 @@ Variable   TRAFFIC    low
 
 Environment  MOD_PERL
 
+# Prevent arbitrary [file ...] and [include ...] among other things
+NoAbsolute Yes
+
 #Uncomment to log to debug file /tmp/icdebug
 #Variable   DEBUG     1
 
@@ -42,8 +45,6 @@ HouseKeeping 2
 MaxServers   10
 PIDcheck     120
 endif
-
-NoAbsolute Yes
 
 # No real downside to adding this....
 Mall       Yes
