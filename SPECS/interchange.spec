@@ -14,7 +14,7 @@
 
 Summary: Interchange web application platform
 Name: interchange
-Version: 4.9.9
+Version: 5.0.0
 Release: 1
 Vendor: Interchange Development Group
 Group: System Environment/Daemons
@@ -25,6 +25,7 @@ Source0: http://www.icdevgroup.org/interchange/interchange-%{version}.tar.gz
 Source1: interchange-wrapper
 Source2: interchange-init
 Source3: interchange-logrotate
+Source4: interchange-cron
 License: GPL
 Prereq: /sbin/chkconfig, /sbin/service, /usr/sbin/useradd, /usr/sbin/groupadd
 Requires: perl >= 5.6.0
@@ -120,6 +121,10 @@ bin/compile_link -build src
 # Install log rotation script
 %__mkdir_p $RPM_BUILD_ROOT$ETCBASE/logrotate.d
 %__install -m644 %{SOURCE3} $RPM_BUILD_ROOT$ETCBASE/logrotate.d/interchange
+
+# Install expired session and tmp removal cron job
+%__mkdir_p $RPM_BUILD_ROOT$ETCBASE/cron.daily
+%__install -m755 %{SOURCE4} $RPM_BUILD_ROOT$ETCBASE/cron.daily/interchange
 
 # Build the demo catalog
 HOST=RPM_CHANGE_HOST
@@ -239,6 +244,7 @@ find . -path .$ICBASE/foundation -prune -mindepth $DIRDEPTH -maxdepth $DIRDEPTH 
 %doc UPGRADE
 %doc WHATSNEW
 %config(noreplace) %{_sysconfdir}/logrotate.d/interchange
+%config(noreplace) %{_sysconfdir}/cron.daily/interchange
 %config %{_sysconfdir}/rc.d/init.d/interchange
 %{_sbindir}/interchange
 %dir %{_libdir}/interchange
@@ -374,6 +380,10 @@ fi
 
 
 %changelog
+* Wed Dec 03 2003 Jon Jensen <jon@icdevgroup.org> 5.0.0-1
+- Update for new release
+- Add new expired session/tmp removal script for cron
+
 * Fri Oct 24 2003 Jon Jensen <jon@icdevgroup.org> 4.9.9-1
 - Update for new release
 - Add support for custom no-dependency Perl build in /usr/local
