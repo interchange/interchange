@@ -5,16 +5,8 @@ Variable UI_STD_FOOTER  <<EOV
 </tr>
 
 <tr>
-<td colspan=2>
-<p>
-&nbsp;
-<p>
-&nbsp;
-<p>
-</tr>
-
-<tr>
 <td colspan="2">
+<br>
 <hr noshade size="2" width="100%">
 </td>
 </tr>
