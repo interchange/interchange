@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.5.2.7 2002-11-26 03:21:13 jon Exp $
+# $Id: makecat.PL,v 2.5.2.8 2003-01-23 17:14:02 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
@@ -1960,7 +1960,7 @@ proper value and ensure that the SUID bit is turned off on the link
 program ($cginame).
 
 EOF
-			chown($catuid, $catgid, $_) or die "\nchown $_: $!\n";
+			chown($catuid, $catgid, $cginame) or die "\nchown $cginame: $!\n";
 			prompt("Press <ENTER> to continue....");
 		}
 	}
@@ -2356,7 +2356,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.5.2.7 2002-11-26 03:21:13 jon Exp $
+# $Id: makecat.PL,v 2.5.2.8 2003-01-23 17:14:02 jon Exp $
 
 =head1 INTRODUCTION
 
