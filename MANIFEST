@@ -731,6 +731,7 @@ eg/globalsub/signio
 eg/globalsub/test_card
 eg/grant.sql
 eg/ifdef
+eg/news_feature/README
 eg/news_feature/dbconfig/default_db/news.dbm
 eg/news_feature/dbconfig/mysql/news.mysql
 eg/news_feature/dbconfig/oracle/news.ora
