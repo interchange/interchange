@@ -544,7 +544,7 @@ is $_[1].
 =item [loop-sub routine]PERL[/loop-sub]
 
 Defines a subroutine that is available to the current (and subsequent)
-[loop-...] tags within the same page. See Interchange Programming.
+[loop-...] tags within the same page. See I<Interchange Programming>.
 
 =back
 
@@ -1234,12 +1234,21 @@ A reference to the $Vend::Cfg array. This is normally used with a
 large amount of the Interchange source code, but for simple things use
 something like:
 
-    # Turn off CyberCash for thi    $Config->{CyberCash} = 0;
+    # Allow searching the User database this page only
 
- user
+=back
+    $Config->{NoSearch} =~ s/\buserdb\b//;
 
-Changes are not persistent except when running in the foreground
-(Debug mode).
+=over 4
+
+=item
+
+Changes are not persistent -- they are reset upon the next page
+access.
+
+=back
+
+=over 4
 
 =item %Db
 

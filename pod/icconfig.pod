@@ -988,7 +988,7 @@ subsequent configuration setting if ParseVariables is on:
 Almost any configuration variable can be set up to be tied to a
 subroutine if the Tie::Watch module is installed. It uses a notation
 like the <<HERE document, but <&HERE is the notation. See
-Interchange Programming for details.
+I<Interchange Programming> for details.
 
 =back
 
@@ -1348,8 +1348,6 @@ Interchange will work with GPG, the Gnu Privacy Guard.
 
    CreditCardAuto     Yes
 
-This should be turned off if using CyberCash.
-
 =head2 CustomShipping
 
 If not blank, causes an error log entry if the shipping file entry is
@@ -1357,13 +1355,6 @@ not found. Not otherwise used for shipping. See SHIPPING for how to
 go about doing that.
 
    CustomShipping      Yes
-
-=head2 CyberCash
-
-A Yes/No directive, default is No. Enables CyberCash payment
-protocols. See Using CyberCash.
-
-   CyberCash           Yes
 
 =head2 Database
 
@@ -2605,5 +2596,6 @@ Specifies the base URL that will run vlink as a cgi-bin program.
 =head2 WideOpen
 
 Disables IP qualification of user sessions. B<This degrades catalog
-security.> Do not use unless using PGP/CreditCardAuto or CyberCash.
+security.> Do not use unless using encryption or a real-time payment
+gateway.
 
