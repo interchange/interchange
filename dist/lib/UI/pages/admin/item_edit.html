@@ -14,6 +14,9 @@
 		$CGI->{ui_break_before} = $Variable->{UI_ITEM_BREAK}
 				|| 'image size';
 	}
+	if(! $CGI->{ui_break_before_label}) {
+		$CGI->{ui_break_before_label} = $Variable->{UI_ITEM_BREAK_LABEL};
+	}
 	my @args = (
 		 '__UI_BASE__/item',
 		 "item_id_left=$CGI->{item_id_left}",
