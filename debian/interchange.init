@@ -8,7 +8,6 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/sbin/interchange
 NAME=interchange
 DESC="Interchange Server"
-USERNAME=interchange
 
 test -f $DAEMON || exit 0
 
@@ -18,13 +17,14 @@ test -f $DAEMON || exit 0
 # --inetmode        Internet mode only
 # --unix --inetmode Unix and Internet mode
 MODE="--unix"
+USER=interchange
 . /etc/interchange/init.cfg
 
 case "$1" in
   start)
 	echo -n "Starting $DESC: "
 	start-stop-daemon --start --quiet --pidfile /var/run/interchange/$NAME.pid \
-		--chuid $USERNAME --exec $DAEMON -- --serve $MODE \
+		--chuid $USER --exec $DAEMON -- --serve $MODE \
         -f /etc/interchange/interchange.cfg \
         --confdir /var/run/interchange
 	;;
@@ -59,7 +59,7 @@ case "$1" in
     sleep 1
 
     start-stop-daemon --start --quiet --pidfile /var/run/interchange/$NAME.pid \
-		--chuid $USERNAME --exec $DAEMON -- --serve $MODE \
+		--chuid $USER --exec $DAEMON -- --serve $MODE \
         -f /etc/interchange/interchange.cfg \
         --confdir /var/run/interchange
     ;;
