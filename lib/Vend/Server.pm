@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.22 2001-03-08 13:53:17 heins Exp $
+# $Id: Server.pm,v 1.8.2.23 2001-03-11 02:31:16 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.22 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.23 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -189,8 +189,6 @@ EOF
 			: ($Global::IV, $Global::VN, $Global::IgnoreMultiple);
 
 	if ("\U$CGI::request_method" eq 'POST') {
-		parse_post(\$CGI::query_string)
-			if $Global::TolerateGet;
 		parse_post($h->{entity});
 	}
 	else {
@@ -249,10 +247,6 @@ sub parse_post {
 			or do {
 				if($CGI::request_method =~ /^post$/i) {
 					die ::errmsg("Syntax error in POST input: %s\n", $pair);
-				}
-				elsif ($Global::TolerateGet) {
-					$key = $pair;
-					$value = undef;
 				}
 				else {
 					die ::errmsg("Syntax error in GET input: %s\n", $pair);
