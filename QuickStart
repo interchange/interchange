@@ -307,14 +307,13 @@ Demo Store Install Walkthrough
 <--# The type of demo catalog to use. Standard types
 <--# distributed are:
 <--#
-<--#    simple   -- database-based catalog, not really simple 8-)
-<--#    barry    -- Barry's Books version of "simple"
+<--#    construct   -- 'Construct Something' demo store
 <--#
 <--# If you have defined your own custom template catalog,
 <--# you can enter it's name.
 <--#
 <--# If you are new to Interchange and not a sophisticated web designer,
-<--# use "barry" to start with.
+<--# use "construct" to start with.
 
 <--DemoType? [construct]
 -->construct
