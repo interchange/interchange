@@ -1,4 +1,5 @@
 CVS
+_allow_threads
 _session_storable
 _uid
 blib
