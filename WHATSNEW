@@ -35,6 +35,10 @@ Core
   it determines the maximum number of search results returned; mv_matchlimit
   determines how to divide those up into pages.
 
+* Fixed set_slice bug that remove all values from array after code, if code
+  was passed in array (separately from code parameter in sub call). Patch by
+  Mark Johnson.
+
 Usertags
 --------
 
