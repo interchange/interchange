@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.54 2001-06-28 22:07:21 jon Exp $
+# $Id: Config.pm,v 1.25.2.55 2001-06-29 00:59:58 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.54 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.55 $, 10);
 
 my %CDname;
 
@@ -264,7 +264,8 @@ sub global_directives {
 	['Require',			 'require',			 ''],
 	['Suggest',			 'suggest',			 ''],
 	['VarName',          'varname',           ''],
-	['LockType',         undef,           	  ''],
+	['Windows',          undef,               $Global::Windows || ''],
+	['LockType',         undef,           	  $Global::Windows ? 'none' : ''],
 	['DumpStructure',	 'yesno',     	     'No'],
 	['DumpAllCfg',	     'yesno',     	     'No'],
 	['DisplayErrors',    'yesno',            'No'],
@@ -1367,19 +1368,15 @@ sub parse_autovar {
 		next unless $name =~ /^\w+$/;
 		my $val = get_directive($name);
 		if(! ref $val) {
-#::logDebug("Found scalar = $name");
 			parse_variable('Variable', "$name $val");
 		}
 		elsif ($val =~ /ARRAY/) {
-#::logDebug("Found array = $name");
 			for(my $i = 0; $i < @$val; $i++) {
 				my $an = "${name}_$i";
-#::logDebug("an=$an");
 				parse_variable('Variable', "$an $val->[$i]");
 			}
 		}
 		elsif ($val =~ /HASH/) {
-#::logDebug("Found hash = $name");
 			my ($k, $v);
 			while ( ($k, $v) = each %$val) {
 				next unless $k =~ /^\w+$/;
@@ -1388,7 +1385,6 @@ sub parse_autovar {
 		}
 		else {
 			config_warn(::errmsg('%s directive not parsable by AutoVariable', $name));
-#::logDebug("Found something else = $name=$val");
 		}
 	}
 }
