@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.40 2004-01-30 17:33:10 racke Exp $
+# $Id: Form.pm,v 2.41 2004-02-02 20:58:13 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.40 $, 10);
+$VERSION = substr(q$Revision: 2.41 $, 10);
 
 @EXPORT = qw (
 	display
@@ -74,6 +74,8 @@ my $Tag = new Vend::Tags;
 		.
 		qq({ROWS?} size="{ROWS}"{/ROWS?})
 		.
+		qq({DISABLED?} DISABLED{/DISABLED?})
+		.
 		qq({MULTIPLE?} MULTIPLE{/MULTIPLE?})
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
@@ -93,6 +95,8 @@ my $Tag = new Vend::Tags;
 		qq({ROWS?} rows="{ROWS}"{/ROWS?})
 		.
 		qq({COLS?} cols="{COLS}"{/COLS?})
+		.
+		qq({DISABLED?} DISABLED{/DISABLED?})
 		.
 		qq({MAXLENGTH?} maxlength="{MAXLENGTH}"{/MAXLENGTH?})
 		.
@@ -138,6 +142,8 @@ my $Tag = new Vend::Tags;
 		.
 		qq({COLS?} size="{COLS}"{/COLS?})
 		.
+		qq({DISABLED?} DISABLED{/DISABLED?})
+		.
 		qq({MAXLENGTH?} maxlength="{MAXLENGTH}"{/MAXLENGTH?})
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
@@ -163,6 +169,8 @@ my $Tag = new Vend::Tags;
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
 		.
+		qq({DISABLED?} DISABLED{/DISABLED?})
+		.
 		qq({SELECTED?} CHECKED{/SELECTED?})
 		.
 		qq(>&nbsp;{TLABEL})
@@ -171,6 +179,8 @@ my $Tag = new Vend::Tags;
 		qq(<input type="{VARIANT}" name="{NAME}" value="{TVALUE}")
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
+		.
+		qq({DISABLED?} DISABLED{/DISABLED?})
 		.
 		qq({SELECTED?} CHECKED{/SELECTED?})
 		.
@@ -189,6 +199,8 @@ my $Tag = new Vend::Tags;
 		qq(<td{TD_VALUE?} {TD_VALUE}{/TD_VALUE?}>)
 		.
 		qq(<input type="{VARIANT}" name="{NAME}" value="{TVALUE}")
+		.
+		qq({DISABLED?} DISABLED{/DISABLED?})
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
 		.

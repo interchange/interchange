@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.48 2004-01-29 01:43:45 mheins Exp $
+# $Id: Editor.pm,v 1.49 2004-02-02 20:58:13 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.48 $, 10);
+$VERSION = substr(q$Revision: 1.49 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -314,7 +314,10 @@ sub display {
 								db
 								class
 								extra
+								disabled
 								field
+								form
+								form_name
 								filter
 								height
 								help
@@ -1065,6 +1068,7 @@ my @cgi_opts = qw/
 	check
 	database
 	default
+	disabled
 	extra
 	field
 	filter
@@ -1354,6 +1358,7 @@ sub resolve_options {
 		for(qw/
                     append
                     default
+                    disabled
 					database
                     error
                     extra
@@ -1763,6 +1768,7 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	my $class        = $opt->{class} || {};
 	my $database     = $opt->{database};
 	my $default      = $opt->{default};
+	my $disabled     = $opt->{disabled};
 	my $error        = $opt->{error};
 	my $extra        = $opt->{extra};
 	my $field        = $opt->{field};
@@ -3140,6 +3146,7 @@ $l_pkey</td>};
 				and $col = "$t:$1"
 					and $serialize = $c;
 			$k = $3 || undef;
+			$do = 1 if $disabled->{$c};
 			push @ext_enable, ("$t:$c" . $k ? ":$k" : '')
 				unless $do;
 		}
@@ -3149,6 +3156,7 @@ $l_pkey</td>};
 			$c =~ /(.+?)\.\w.*/
 				and $col = $1
 					and $serialize = $c;
+			$do = 1 if $disabled->{$c};
 			push @data_enable, $col
 				unless $do and ! $opt->{mailto};
 		}
@@ -3226,7 +3234,7 @@ $l_pkey</td>};
 
 #::logDebug("display_only=$do col=$c");
 		$widget->{$c} = 'value'
-			if $do and ! ($opt->{wizard} || $opt->{mailto});
+			if $do and ! ($disabled->{$c} || $opt->{wizard} || $opt->{mailto});
 
 		if (! length $currval and defined $default->{$c}) {
 			$currval = $default->{$c};
@@ -3333,6 +3341,7 @@ EOF
 							db					=> $database->{$c},
 							default				=> $currval,
 							default_widget		=> $opt->{default_widget},
+							disabled			=> $disabled->{$c},
 							extra				=> $extra->{$c},
 							fallback			=> 1,
 							field				=> $field->{$c},
@@ -3490,7 +3499,7 @@ EOF
 	### END USER INCLUDE
 
 	unless ($opt->{mailto} and $opt->{mv_blob_only}) {
-		@cols = grep ! $display_only{$_}, @cols;
+		@cols = grep ! $display_only{$_} && ! $disabled->{$_}, @cols;
 	}
 	$passed_fields = join " ", @cols;
 
