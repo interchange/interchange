@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# $Id: Search.pm,v 1.6.2.3 2000-11-07 22:41:47 zarko Exp $
+# $Id: Search.pm,v 1.6.2.4 2000-11-10 17:31:21 zarko Exp $
 #
 # Vend::Search -- Base class for search engines
 #
@@ -26,7 +26,7 @@
 #
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 1.6.2.3 $, 10);
+$VERSION = substr(q$Revision: 1.6.2.4 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -295,7 +295,7 @@ EOF
 			my $msg;
 			for (@specs) {
 				$passed = 1;
-			 	ext if length($_) >= $s->{mv_min_string};
+			 	next if length($_) >= $s->{mv_min_string};
 				$msg = <<EOF;
 Search strings must be at least $s->{mv_min_string} characters.
 You had '$_' as one of your search strings.
