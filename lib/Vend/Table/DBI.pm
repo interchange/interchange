@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.16 2001-03-21 16:55:42 heins Exp $
+# $Id: DBI.pm,v 1.25.2.17 2001-03-27 19:51:09 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.16 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.17 $, 10);
 
 use strict;
 
@@ -424,7 +424,6 @@ sub open_table {
 
 	# Allow multiple tables in different DBs to have same local name
 	$tablename = $config->{REAL_NAME}
-and ::logDebug("REAL_NAME=$config->{REAL_NAME}")
 		if $config->{REAL_NAME};
 
 	# Used so you can do query() and nothing else
