@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.9.4.3 2000-11-27 02:26:17 racke Exp $
+# $Id: Parse.pm,v 1.9.4.4 2001-02-07 15:59:20 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,12 +27,12 @@
 
 package Vend::Parse;
 
-# $Id: Parse.pm,v 1.9.4.3 2000-11-27 02:26:17 racke Exp $
+# $Id: Parse.pm,v 1.9.4.4 2001-02-07 15:59:20 racke Exp $
 
 require Vend::Parser;
 
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.9.4.3 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.9.4.4 $ =~ /(\d+)\.(\d+)/);
 
 use Safe;
 use Vend::Util;
@@ -44,7 +44,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.9.4.3 $, 10);
+$VERSION = substr(q$Revision: 1.9.4.4 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -81,7 +81,7 @@ my %PosNumber =	( qw!
                 filter           1
 				flag			 1
                 fly_tax          1
-                fly_list         2
+                fly_list         1
                 goto             2
 				harness          0
                 html_table       0
@@ -159,7 +159,7 @@ my %Order =	(
 				flag			=> [qw( type )],
 				time			=> [qw( locale )],
 				fly_tax			=> [qw( area )],
-				fly_list		=> [qw( code base )],
+				fly_list		=> [qw( code )],
 				'goto'			=> [qw( name if)],
 				harness		    => [qw( )],
 				html_table	    => [qw( )],
@@ -230,6 +230,7 @@ my %addAttr = (
 					error           1
 					export          1
 					flag            1
+					fly_list        1
 					harness         1
 					html_table      1
 					import          1
