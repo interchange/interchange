@@ -909,6 +909,7 @@ lib/Vend/Glimpse.pm
 lib/Vend/Imagemap.pm
 lib/Vend/Interpolate.pm
 lib/Vend/MakeCat.pm
+lib/Vend/ModPerl.pm
 lib/Vend/Order.pm
 lib/Vend/Page.pm
 lib/Vend/Parse.pm
@@ -945,12 +946,14 @@ lib/Vend/Track.pm
 lib/Vend/UserDB.pm
 lib/Vend/Util.pm
 perl/Interchange.pm
+relocate.pl
 scripts/compile_link.PL
 scripts/config_prog.PL
 scripts/configdump.PL
 scripts/dump.PL
 scripts/expire.PL
 scripts/expireall.PL
+scripts/ic_mod_perl.PL
 scripts/interchange.PL
 scripts/localize.PL
 scripts/makecat.PL

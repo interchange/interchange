@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.6 2002-06-17 22:24:08 jon Exp $
+# $Id: Server.pm,v 2.7 2002-06-27 18:59:36 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.7 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -185,6 +185,9 @@ EOF
 	($::IV, $::VN, $::SV) = $g->{VarName}
 			? ($g->{IV}, $g->{VN}, $g->{IgnoreMultiple})
 			: ($Global::IV, $Global::VN, $Global::IgnoreMultiple);
+
+	# Vend::ModPerl has already handled GET/POST parsing
+	return if $Global::mod_perl;
 
 #::logDebug("CGI::query_string=" . $CGI::query_string);
 #::logDebug("entity=" . ${$h->{entity}});
@@ -557,9 +560,7 @@ sub _string {
 
 my $HTTP_enabled;
 my $Remote_addr;
-my $Remote_host;
 my %CGImap;
-my %CGIspecial;
 
 BEGIN {
 	eval {
@@ -598,7 +599,6 @@ BEGIN {
 
 					/
 		);
-		%CGIspecial = ();
 	};
 										 
 }                                    
@@ -734,10 +734,6 @@ sub http_server {
 			if(defined $CGImap{$header}) {
 				$$env{$CGImap{$header}} = $block;
 			}
-			elsif(defined $CGIspecial{$header}) {
-				&{$CGIspecial{$header}}($env, $block);
-			}
-			# else { throw_away() }
 			next;
 		}
 		else {
@@ -1260,8 +1256,10 @@ sub server_start_message {
 	push (@types, 'INET') if $Global::Inet_Mode;
 	push (@types, 'UNIX') if $Global::Unix_Mode;
 	push (@types, 'SOAP') if $Global::SOAP;
+	push (@types, 'mod_perl') if $Global::mod_perl;
 	my $server_type = join(" and ", @types);
-	my @args = $reverse ? ($server_type, $$) : ($$, $server_type);
+	my $pid = read_pidfile();
+	my @args = $reverse ? ($server_type, $pid) : ($pid, $server_type);
 	return ::errmsg ($fmt , @args );
 }
 
@@ -1502,26 +1500,7 @@ sub start_soap {
 		}
 		elsif (! $pid) {
 			unless( $pid = fork ) {
-				close(STDOUT);
-				close(STDERR);
-				close(STDIN);
-				if ($Global::DebugFile) {
-					open(Vend::DEBUG, ">>$Global::DebugFile.soap");
-					select Vend::DEBUG;
-					$| =1;
-					print "Start DEBUG at " . localtime() . "\n";
-				}
-				elsif (!$Global::DEBUG) {
-					# May as well turn warnings off, not going anywhere
-					$^W = 0;
-					open (Vend::DEBUG, ">/dev/null") unless $Global::Windows;
-				}
-
-				open(STDOUT, ">&Vend::DEBUG");
-				select(STDOUT);
-				$| = 1;
-				open(STDERR, ">&Vend::DEBUG");
-				select(STDERR); $| = 1; select(STDOUT);
+				setup_debug_log();
 
 				$Global::Foreground = 1;
 
@@ -1926,11 +1905,39 @@ sub send_ipc {
 	close SOCK;
 }
 
+sub setup_debug_log {
+	if ($Global::DebugFile) {
+		open(Vend::DEBUG, ">>$Global::DebugFile");
+		select Vend::DEBUG;
+		$| = 1;
+		print "Start DEBUG at " . localtime() . "\n";
+	}
+	elsif (!$Global::DEBUG) {
+		# May as well turn warnings off, not going anywhere
+		$^W = 0;
+		open (Vend::DEBUG, ">/dev/null") unless $Global::Windows;
+	}
+
+	close(STDIN);
+	close(STDOUT);
+	close(STDERR);
+
+	open(STDOUT, ">&Vend::DEBUG");
+	select(STDOUT);
+	$| = 1;
+
+	open(STDERR, ">&Vend::DEBUG");
+	select(STDERR);
+	$| = 1;
+}
+
 # The servers for both are now combined
 # Can have both INET and UNIX on same system
 sub server_both {
     my ($socket_filename) = @_;
     my ($n, $rin, $rout, $pid);
+
+	::logGlobal({ level => 'info' }, server_start_message());
 
 	$Vend::MasterProcess = $$;
 
@@ -1956,7 +1963,6 @@ sub server_both {
 		$ipc_socket{$ipc} = $ipc;
 		$unix_socket{$ipc} = $ipc;
 		$ipc_vector = $vector;
-		
 	}
 
 	# Make UNIX-domain sockets if applicable. The sockets are mapped into the
@@ -2084,27 +2090,7 @@ sub server_both {
 		::logGlobal({ level => 'info' }, "Running in foreground, OS=$^O, debug=$Global::DEBUG\n");
 	}
 	else {
-		close(STDIN);
-		close(STDOUT);
-		close(STDERR);
-
-		if ($Global::DebugFile) {
-			open(Vend::DEBUG, ">>$Global::DebugFile");
-			select Vend::DEBUG;
-			$| =1;
-			print "Start DEBUG at " . localtime() . "\n";
-		}
-		elsif (!$Global::DEBUG) {
-			# May as well turn warnings off, not going anywhere
-			$^W = 0;
-			open (Vend::DEBUG, ">/dev/null") unless $Global::Windows;
-		}
-
-		open(STDOUT, ">&Vend::DEBUG");
-		select(STDOUT);
-		$| = 1;
-		open(STDERR, ">&Vend::DEBUG");
-		select(STDERR); $| = 1; select(STDOUT);
+		setup_debug_log();
 #::logDebug("s_vector=" . unpack('b*', $s_vector));
 		if($s_vector) {
 			start_soap(1);
@@ -2343,11 +2329,9 @@ sub grab_pid {
         no strict 'subs';
         truncate($fh, 0) or die "Couldn't truncate pid file: $!\n";
     }
-    print $fh $$, "\n";
+    print $fh ($Global::mod_perl ? getppid : $$), "\n";
     return 0;
 }
-
-
 
 sub open_pid {
 	my $fn = shift || $Global::PIDfile;
@@ -2361,34 +2345,73 @@ sub open_pid {
 	return $fh;
 }
 
+sub read_pidfile {
+	my $fn = shift || $Global::PIDfile;
+	my $fh = gensym();
+	open $fh, "<$fn" or return;
+	chomp (my $pid = <$fh>);
+	close $fh;
+	return $pid;
+}
+
 sub run_server {
     my $next;
 	
     my $pidh = open_pid($Global::PIDfile);
 
-	unless($Global::Inet_Mode || $Global::Unix_Mode || $Global::Windows) {
-		$Global::Inet_Mode = $Global::Unix_Mode = 1;
+	if ($Global::mod_perl) {
+		undef $Global::Unix_Mode;
+		undef $Global::Inet_Mode;
+		undef $Global::StartServers;
+		undef $Global::PreFork;
+		undef $Global::SOAP;
+		undef $Global::IPCsocket;
 	}
 	elsif ( $Global::Windows ) {
 		$Global::Inet_Mode = 1;
 	}
+	elsif (! $Global::Inet_Mode and ! $Global::Unix_Mode) {
+		$Global::Inet_Mode = $Global::Unix_Mode = 1;
+	}
 
-	::logGlobal({ level => 'info' }, server_start_message());
-
-	if($Global::PreFork || $Global::DEBUG || $Global::Windows) {
+	if($Global::mod_perl || $Global::PreFork || $Global::DEBUG || $Global::Windows) {
 		eval {
 			require Tie::ShadowHash;
 		};
 		if($@) {
 			my $reason;
-			if($Global::PreFork)	{ $reason = 'in PreFork mode' }
+			if($Global::mod_perl)	{ $reason = 'under mod_perl' }
+			elsif($Global::PreFork)	{ $reason = 'in PreFork mode' }
 			elsif($Global::DEBUG)	{ $reason = 'in DEBUG mode' }
 			elsif($Global::Windows)	{ $reason = 'under Windows' }
 			die ::errmsg("Running $reason requires Tie::ShadowHash module.") . "\n";
 		}
 	}
 
-    if ($Global::Windows || $Global::DEBUG) {
+	if ($Global::mod_perl) {
+		my $running = grab_pid($pidh);
+		if ($running) {
+			print errmsg(
+				"The Interchange server is already running (process id %s)\n",
+				$running,
+			);
+			undef $Global::mod_perl;
+			return;
+		}
+		# throw away pidfile -- Apache hasn't forked yet, so pid is wrong
+		unlockfile($pidh);
+		unlink $Global::PIDfile;
+		print server_start_message("Interchange server started (%s)\n", 1);
+		::logGlobal(
+			{ level => 'info' },
+			Vend::Server::server_start_message('START server (%s)', 1),
+		);
+		setup_debug_log();
+		# all done; now wait for Apache to call Vend::ModPerl::handler
+		return;
+	}
+
+	if ($Global::Windows || $Global::DEBUG) {
         my $running = grab_pid($pidh);
         if ($running) {
 			print errmsg(
