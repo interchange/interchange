@@ -1,13 +1,10 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.53 2001-06-27 17:47:09 heins Exp $
+# $Id: Config.pm,v 1.25.2.54 2001-06-28 22:07:21 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
+# This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -98,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.53 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.54 $, 10);
 
 my %CDname;
 
@@ -474,6 +471,7 @@ sub catalog_directives {
 	['SOAP',			 'yesno',			 'No'],
 	['SOAP_Enable',		 'hash',			 ''],
 	['UserDB',			 'locale',	     	 ''], 
+	['UserDBPasswordMinLength', 'integer',   4],
 	['UserDatabase',	 undef,		     	 ''],  #undocumented
 	['RobotLimit',		 'integer',		      0],
 	['OrderLineLimit',	 'integer',		      0],
