@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.41 2002-11-28 16:24:01 kwalsh Exp $
+# $Id: Util.pm,v 2.42 2002-11-28 17:12:22 kwalsh Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -83,7 +83,7 @@ require HTML::Entities;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.41 $, 10);
+$VERSION = substr(q$Revision: 2.42 $, 10);
 
 BEGIN {
 	eval {
@@ -1019,13 +1019,10 @@ sub readin {
 		if defined $Global::Variable->{MV_PAGE};
 	$Global::Variable->{MV_PAGE} = $file;
 
+	$file =~ s#^\s+##;
+	$file =~ s#\s+$##;
 	$file =~ s#\.html?$##;
-	$file =~ s/^\s+//;
-	if($Global::NoAbsolute and $file =~ m:^/:) {
-		::logError("Cannot specify full path '%s' while NoAbsolute is in use.", $file);
-		$file = find_special_page('violation');
-	}
-	elsif($file =~ m{\.\.} and $file =~ /\.\..*\.\./) {
+	if($file =~ m{\.\.} and $file =~ /\.\..*\.\./) {
 		::logError( "Too many .. in file path '%s' for security.", $file );
 		$file = find_special_page('violation');
 	}

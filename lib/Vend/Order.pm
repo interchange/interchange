@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.40 2002-11-28 16:24:01 kwalsh Exp $
+# $Id: Order.pm,v 2.41 2002-11-28 17:12:22 kwalsh Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.40 $, 10);
+$VERSION = substr(q$Revision: 2.41 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -764,8 +764,14 @@ sub mail_order {
 	my($body, $ok);
 	my($subject);
 # LEGACY
-	$body = readin($::Values->{mv_order_report})
-		if $::Values->{mv_order_report};
+	if ($::Values->{mv_order_report}) {
+		if($Global::NoAbsolute and (file_name_is_absolute($::Values->{mv_order_report}) or $::Values->{mv_order_report} =~ m#\.\./.*\.\.#)) {
+			::logError("Can't use file '%s' with NoAbsolute set", $::Values->{mv_order_report});
+			::logGlobal({ level => 'auth'}, "Can't use file '%s' with NoAbsolute set", $::Values->{mv_order_report});
+			return undef;
+		}
+		$body = readin($::Values->{mv_order_report})
+	}
 # END LEGACY
 	$body = readfile($Vend::Cfg->{OrderReport}, $Global::NoAbsolute)
 		if ! $body;
@@ -780,6 +786,11 @@ trying one more time. Fix this.},
 				$Vend::Cfg->{OrderReport},
 				$::Values->{mv_order_report},
 			);
+		if($Global::NoAbsolute and (file_name_is_absolute($Vend::Cfg->{OrderReport}) or $Vend::Cfg->{OrderReport} =~ m#\.\./.*\.\.#)) {
+			::logError("Can't use file '%s' with NoAbsolute set", $Vend::Cfg->{OrderReport});
+			::logGlobal({ level => 'auth'}, "Can't use file '%s' with NoAbsolute set", $Vend::Cfg->{OrderReport});
+			return undef;
+		}
 		$body = readin($Vend::Cfg->{OrderReport});
 		return undef if ! $body;
 	}
