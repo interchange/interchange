@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# $Id: Search.pm,v 1.8.2.8 2001-04-25 08:01:38 heins Exp $
+# $Id: Search.pm,v 1.8.2.9 2001-04-26 10:59:22 racke Exp $
 #
 # Vend::Search -- Base class for search engines
 #
@@ -26,7 +26,7 @@
 #
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 1.8.2.8 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.9 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -367,47 +367,43 @@ sub more_matches {
 
 sub more_alpha {
 	my ($s, $out) = @_;
-	
-	if ($s->{mv_sort_field} and @{$s->{mv_sort_field}}) {
-		my ($letter, $sortkey, $last, @alphaspecs, $i);
-		my $alphachars = $s->{mv_more_alpha_chars} || 3;
+	my ($letter, $sortkey, $last, @alphaspecs, $i);
+	my $alphachars = $s->{mv_more_alpha_chars} || 3;
 		
-		# add dummy record
-		@alphaspecs = (['']);
+	# add dummy record
+	@alphaspecs = (['']);
 		
-		$last = 0;
-		for ($i = 0; $i < @$out; $i++) {
-		  	$sortkey = $out->[$i]->[$s->{mv_sort_field}->[0]];
-			$letter = substr($sortkey,0,1);
+	$last = 0;
+	for ($i = 0; $i < @$out; $i++) {
+		$sortkey = $out->[$i]->[$s->{mv_sort_field}->[0]];
+		$letter = substr($sortkey,0,1);
 
-			if ($letter ne substr($alphaspecs[$last]->[0],0,1)) {
-				# add record if first letter has changed
-				push (@alphaspecs, [$sortkey, 1, $i]);
-				# add last pointer to previous record
-				push (@{$alphaspecs[$last++]}, $i - 1);
-			} elsif ($alphachars > 1
-				&& $i - $alphaspecs[$last]->[2] >= $s->{mv_matchlimit}) {
-				# add record if match limit is exceeded and significant
-				# letters are different
-				for (my $c = 2; $c <= $alphachars; $c++) {
-					if (substr($sortkey,0,$c)
-						ne substr($alphaspecs[$last]->[0],0,$c)) {
-						push (@alphaspecs, [$sortkey, $c, $i]);
-						# add last pointer to previous record
-						push (@{$alphaspecs[$last++]}, $i - 1);
-						last;
-					}
+		if ($letter ne substr($alphaspecs[$last]->[0],0,1)) {
+			# add record if first letter has changed
+			push (@alphaspecs, [$sortkey, 1, $i]);
+			# add last pointer to previous record
+			push (@{$alphaspecs[$last++]}, $i - 1);
+		} elsif ($alphachars > 1
+				 && $i - $alphaspecs[$last]->[2] >= $s->{mv_matchlimit}) {
+			# add record if match limit is exceeded and significant
+			# letters are different
+			for (my $c = 2; $c <= $alphachars; $c++) {
+				if (substr($sortkey,0,$c)
+					ne substr($alphaspecs[$last]->[0],0,$c)) {
+					push (@alphaspecs, [$sortkey, $c, $i]);
+					# add last pointer to previous record
+					push (@{$alphaspecs[$last++]}, $i - 1);
+					last;
 				}
 			}
-			
 		}
-		# add last pointer to last record
-		push (@{$alphaspecs[$last]}, $i - 1);
-		# remove dummy record
-		shift (@alphaspecs);
-		$s->{mv_alpha_list} = \@alphaspecs;
+			
 	}
-
+	# add last pointer to last record
+	push (@{$alphaspecs[$last]}, $i - 1);
+	# remove dummy record
+	shift (@alphaspecs);
+	$s->{mv_alpha_list} = \@alphaspecs;
 }
 
 # Returns a field weeding function based on the search specification.
@@ -990,6 +986,13 @@ sub save_more {
 		$s->{mv_next_pointer} = $s->{mv_matchlimit};
 	}
 	if ($s->{mv_more_alpha}) {
+		unless ($s->{mv_sort_field} and @{$s->{mv_sort_field}}) {
+			return $s->search_error("mv_sort_field required for mv_more_alpha");
+		}
+		unless ($s->{mv_return_fields}
+				and grep {$_ eq $s->{mv_sort_field}->[0]} @{$s->{mv_return_fields}}) {
+					return $s->search_error("mv_sort_field missing in mv_return_fields (required for mv_more_alpha)");
+		}
 		more_alpha($s,$out);
 	}
 	
