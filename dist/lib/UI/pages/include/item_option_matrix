@@ -262,7 +262,9 @@ HREF="[area
 <INPUT TYPE=hidden NAME=ui_return_to VALUE="ui_text_qualification=sku=[cgi item_id]">
 <INPUT TYPE=hidden NAME=mv_action        VALUE=back>
 
-<table __UI_T_PROPERTIES__>
+<TABLE BORDER=0><TR><TD VALIGN=TOP>
+
+<table __UI_T_PROPERTIES__ WIDTH=100%>
 <tr class=rtitle>
 	<td class=ctitle colspan=3>
 		<H2>Add Variant</H2>
@@ -428,7 +430,8 @@ mv_nextpage=@@MV_PAGE@@
 [/button]
 
 </FORM>
-item_tables: __UI_ITEM_TABLES__
+
+</TD><TD VALIGN=TOP>
 
 [table-editor
 	table_width=400
@@ -446,3 +449,5 @@ item_tables: __UI_ITEM_TABLES__
 	widget.o_matrix=hidden
 	widget.sku="hidden_text"
 ]
+
+</TD></TR></TABLE>
