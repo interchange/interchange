@@ -1,5 +1,5 @@
 [set help_name]payment[/set]
-[set page_title]Payment Preferences[/set]
+[set page_title][L]Payment Preferences[/L][/set]
 [set ui_checklist]1[/set]
 [set help_name]wizard.payment[/set]
 @_UI_STD_HEAD_@
@@ -12,13 +12,13 @@
 [/if]
 
 <table><tr><td width=500>
-Select your payment processing preference(s). 
+[L]Select your payment processing preference(s).[/L]
 <p>
-The payment gateway you choose determines how
+[L WIZARD_STEP_PAY_PAR_1]The payment gateway you choose determines how
 your site will securely process credit card information. 
 If you have not obtained your payment gateway information yet,
 choose <i>no credit cards</i>.  This information may be entered
-at a later date. 
+at a later date.[/L] 
 </td></tr></table>
 <p>
 [table-editor 
@@ -40,14 +40,14 @@ at a later date.
 
 	ui_wizard_fields="paygate creditcards paycheck paymo paycod paypo"
 
-	label.paygate="Payment gateway"
-	help.paygate="Which payment gateway will you use for credit cards?"
+	label.paygate="[L]Payment gateway[/L]"
+	help.paygate="[L]Which payment gateway will you use for credit cards?[/L]"
 	widget.paygate=select
 	passed.paygate=`delete $Scratch->{options_paygate}`
 	default.paygate="pgp"
 
-	label.creditcards="Which cards?"
-	help.creditcards="Select credit cards to accept"
+	label.creditcards="[L]Which cards?[/L]"
+	help.creditcards="[L]Select credit cards to accept[/L]"
 	widget.creditcards=checkbox_left_2
 	filter.creditcards="checkbox null_to_space"
 	passed.creditcards="visa=Visa,
@@ -62,26 +62,26 @@ at a later date.
 		"
 	default.creditcards="visa mc amex discover"
 
-	label.paycheck="Accept checks?"
-	help.paycheck="Enable online checks for your payment gateway (if supported)"
+	label.paycheck="[L]Accept checks?[/L]"
+	help.paycheck="[L]Enable online checks for your payment gateway (if supported)[/L]"
 	widget.paycheck=checkbox
 	filter.paycheck=checkbox
 	passed.paycheck="1=&nbsp;"
 
-	label.paymo="Accept money orders?"
-	help.paymo="Enable money-order option on checkout form."
+	label.paymo="[L]Accept money orders?[/L]"
+	help.paymo="[L]Enable money-order option on checkout form.[/L]"
 	widget.paymo=checkbox
 	filter.paymo=checkbox
 	passed.paymo="1=&nbsp;"
 
-	label.paycod="Accept COD payment?"
-	help.paycod="Enable COD option on checkout form."
+	label.paycod="[L]Accept COD payment?[/L]"
+	help.paycod="[L]Enable COD option on checkout form.[/L]"
 	widget.paycod=checkbox
 	filter.paycod=checkbox
 	passed.paycod="1=&nbsp;"
 
-	label.paypo="Accept purchase orders?"
-	help.paypo="Enable Interchange purchase order handling"
+	label.paypo="[L]Accept purchase orders?[/L]"
+	help.paypo="[L]Enable Interchange purchase order handling[/L]"
 	widget.paypo=checkbox
 	filter.paypo=checkbox
 	passed.paypo="1=&nbsp;"

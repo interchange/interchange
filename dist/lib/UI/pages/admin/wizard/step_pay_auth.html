@@ -1,10 +1,10 @@
-[set page_title]Payment Preferences - AuthorizeNet[/set]
+[set page_title][L]Payment Preferences - AuthorizeNet[/L][/set]
 [set ui_checklist]1[/set]
 [set help_name]wizard.authorizenet[/set]
 @_UI_STD_HEAD_@
 
 <table width=500><tr><td align=left>
-Enter the values used to enable payment processing through Authorize.net.
+[L]Enter the values used to enable payment processing through Authorize.net.[/L]
 </td></tr></table>
 
 [table-editor 
@@ -28,23 +28,23 @@ Enter the values used to enable payment processing through Authorize.net.
 	ui_wizard_fields="authnet_id authnet_secret authnet_server authnet_referer"
 
 	check.authnet_id=mandatory
-	label.authnet_id="Account ID"
-	help.authnet_id="You should have received this when you signed up"
+	label.authnet_id="[L]Account ID[/L]"
+	help.authnet_id="[L]You should have received this when you signed up[/L]"
 	widget.authnet_id=text_20
 
-	label.authnet_secret="Password"
-	help.authnet_secret="You should have received this when you signed up -- sometimes known as 'secret'"
+	label.authnet_secret="[L]Password[/L]"
+	help.authnet_secret="[L]You should have received this when you signed up -- sometimes known as 'secret'[/L]"
 	widget.authnet_secret=text_20
 
 	check.authnet_server=mandatory
-	label.authnet_server="Authorize.net server"
+	label.authnet_server="[L]Authorize.net server[/L]"
 	widget.authnet_server=text_40
 	default.authnet_server="secure.authorize.net"
 
 	check.authnet_referer=mandatory
-	label.authnet_referer="Valid referer"
+	label.authnet_referer="[L]Valid referer[/L]"
 	widget.authnet_referer=text_40
-	help.authnet_referer="A valid referering URL (match this with your setting on secure.authorize.net)"
+	help.authnet_referer="[L]A valid referering URL (match this with your setting on secure.authorize.net)[/L]"
 ]
 
 @_UI_STD_FOOTER_@
