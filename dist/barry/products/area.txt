@@ -1,4 +1,4 @@
-code	sel	name	which_page	sort	display_type	image	image_prop	banner_image	banner_text	link_type	url	tab	page	search	selector
+code	sel	name	which_page	sort	display_type	image	image_prop	banner_image	banner_text	link_type	url	tab	page	search	selector	link_template
 1	left	Books	all 	01	image	books.gif	border=0			internal	subcat mv_arg=books				
 2	left	About us	all 	00	image	about.gif	border=0			internal	about 				
 3	left	Bikes	all 	02	image	bikes.gif	border=0			simple		products			category=bikes
