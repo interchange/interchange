@@ -96,11 +96,31 @@
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
 	Active sessions
+	[if cgi list_sessions]<br><small><i>
+	(last
+	[calc] int (
+					$::Variable->{ACTIVE_SESSION_MINUTES}
+					|| ( ($Config->{SessionExpire} || 60) / 60)
+				)
+				 [/calc] minutes)</I></small>
+	[/if]
 	</TH>
-	<TD>[loop list="[dump-session find=1]"]<A HREF="[area
+	<TD>[if cgi list_sessions][loop list="[dump-session find=1]"]<A HREF="[area
 														href='@@MV_PAGE@@'
 														form='show_session=[loop-code]'
 														]">[loop-code]</A><BR>[/loop]
+	[else]
+		[page href="@@MV_PAGE@@" form="list_sessions=1"]Show active sessions</A>
+		<br>
+		<small><i>(last
+		[calc] int (
+					$::Variable->{ACTIVE_SESSION_MINUTES}
+					|| ( ($Config->{SessionExpire} || 60) / 60)
+				)
+				 [/calc] minutes)</I></small>
+
+	[/else]
+	[/if]
 	[if cgi show_session]
 		<P><B>Showing session: [cgi show_session]</B>
 		<FONT SIZE=1>
