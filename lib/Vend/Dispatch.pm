@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.28 2003-12-06 22:52:36 mheins Exp $
+# $Id: Dispatch.pm,v 1.29 2004-01-30 17:35:03 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.28 $, 10);
+$VERSION = substr(q$Revision: 1.29 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -152,6 +152,16 @@ sub parse_click {
 			if defined $extra;
 	}
 }
+
+## This is the set of variables we don't want to dump or save in
+## sessions for security reasons.
+@Global::HideCGI = qw(
+						mv_password
+						mv_verify
+						mv_password_old
+						mv_credit_card_number
+						mv_credit_card_cvv2
+					);
 
 # This is the set of CGI-passed variables to ignore, in other words
 # never set in the user session.  If set in the mv_check pass, though,
