@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.16 2001-10-07 11:53:21 racke Exp $
+# $Id: Interpolate.pm,v 2.17 2001-10-09 22:29:57 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.16 $, 10);
+$VERSION = substr(q$Revision: 2.17 $, 10);
 
 @EXPORT = qw (
 
@@ -820,10 +820,6 @@ sub tag_data {
 			return '';
 		}
 	}
-	elsif($opt->{increment}) {
-#::logDebug("increment_field: key=$key field=$field value=$opt->{value}");
-		return increment_field($Vend::Database{$selector},$key,$field,$opt->{value} || 1);
-	}
 	elsif (defined $opt->{value}) {
 #::logDebug("alter table: table=$selector alter=$opt->{alter} field=$field value=$opt->{value}");
 		my $db = $Vend::Database{$selector};
@@ -849,8 +845,38 @@ sub tag_data {
 			$opt->{value} = filter_value($opt->{filter}, $opt->{value}, $field)
 				if $opt->{filter};
 #::logDebug("set_field: table=$selector key=$key field=$field foreign=$opt->{foreign} value=$opt->{value}");
-			return set_field($selector,$key,$field,$opt->{value},$opt->{append}, $opt->{foreign});
+			my $orig = $opt->{value};
+			if($opt->{serial}) {
+				$field =~ s/\.(.*)//;
+				my $hk = $1;
+				my $current = database_field($selector,$key,$field,$opt->{foreign});
+				$opt->{value} = dotted_hash($current, $hk, $orig);
+			}
+			my $result = set_field(
+							$selector,
+							$key,
+							$field,
+							$opt->{value},
+							$opt->{append},
+							$opt->{foreign},
+						);
+			return $orig if $opt->{serial};
+			return $result
 		}
+	}
+	elsif($opt->{increment}) {
+#::logDebug("increment_field: key=$key field=$field value=$opt->{value}");
+		return increment_field($Vend::Database{$selector},$key,$field,$opt->{value} || 1);
+	}
+	elsif ($opt->{serial}) {
+		$field =~ s/\.(.*)//;
+		my $hk = $1;
+		return ed(
+					dotted_hash(
+						database_field($selector,$key,$field,$opt->{foreign}),
+						$hk,
+					)
+				);
 	}
 	elsif ($opt->{hash}) {
 		my $db = ::database_exists_ref($selector);
@@ -2362,7 +2388,7 @@ sub tag_accessories {
 		$opt->{rows} = $opt->{rows} || $1 || 1;
 		$opt->{cols} = $opt->{cols} || $2 || 16;
 		my $ejs = ",1" if $opt->{rows} > 1;
-		$opt->{js} = qq{onChange="addItem(this.form.X$name,this.form.$name$ejs)"}
+		$opt->{js} = qq{onChange="addItem(this.form['X$name'],this.form['$name']$ejs)"}
 			unless $opt->{js};
 		my $out = build_accessory_select("X$name", $type, '', $opt, @opts);
 		if($opt->{rows} > 1) {
