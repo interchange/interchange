@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange session expiration
 #
-# $Id: expire.PL,v 1.6 2000-09-23 18:49:30 heins Exp $
+# $Id: expire.PL,v 1.7 2000-09-25 16:36:58 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -57,12 +57,19 @@ use lib '/usr/local/interchange/lib';
 use lib '/usr/local/interchange';
 #use lib '~_~INSTALLARCHLIB~_~';
 
-BEGIN {
+use strict;
+use Fcntl;
+use Vend::Session;
+use Vend::Config qw(get_catalog_default parse_time);
+use Vend::Util qw/errmsg/;
+use Getopt::Std;
+use vars qw/$opt_c $opt_r $opt_e $opt_u $opt_v $opt_x/;
 
+BEGIN {
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
 		if defined $ENV{MINIVEND_ROOT};
-$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
-#$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
+	$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
+#	$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
 	$ENV{MINIVEND_STORABLE} = 1
 		if -f "$Global::VendRoot/_session_storable";
 	$ENV{MINIVEND_STORABLE_DB} = 1
@@ -80,16 +87,12 @@ $Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
 		$Global::ExeName = 'interchange';
 		$Global::ConfigFile = 'interchange.cfg';
 	}
-	
 }
 
-### END CONFIGURABLE VARIABLES
+### END CONFIGURATION VARIABLES
 
 $Global::HammerLock = 20;
 $Global::ErrorFile = 'error.log';
-
-use strict;
-use Fcntl;
 
 $Vend::ExternalProgram = 1;
 $Vend::SessionName = 'utility';
@@ -120,11 +123,6 @@ BEGIN {
 		die "Can't use expire without DBM sessions.\n";
 	}
 }
-
-use Vend::Session;
-use Vend::Config qw(get_catalog_default parse_time);
-use Vend::Util qw/errmsg/;
-use vars qw/$opt_c $opt_r $opt_e $opt_u $opt_v $opt_x/;
 
 $Vend::Quiet = 1;
 
@@ -160,8 +158,6 @@ my $expiretime;
 my $reorg;
 
 $Vend::Cfg = { FileCreationMask => 0600 };
-
-use Getopt::Std;
 
 getopts('c:e:ruvx') or die "$@\n$USAGE\n";
 
