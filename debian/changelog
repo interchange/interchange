@@ -9,8 +9,10 @@ interchange (4.6.4-1) unstable; urgency=low
   * interchange-cat-construct.files added
   * select now supported by usertag formel
   * dh_strip added for the CGI link binaries
+  * actually use interchange user/group asked for (found by
+    Jason Kohles <jkohles@redhat.com>)
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 23 Mar 2001 15:54:37 +0100
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 23 Mar 2001 23:26:38 +0100
 
 interchange (4.6.3-1) unstable; urgency=low
 
