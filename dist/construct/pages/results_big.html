@@ -1,0 +1,146 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftright
+[/comment]
+
+[set bgcolor]#FFFFFF[/set]
+[set component_right]promo_vertical[/set]
+[set component_after]cross_horizontal[/set]
+[set members_only]0[/set]
+[set component_vsize]4[/set]
+[set page_banner] [/set]
+[set vbanner]Specials[/set]
+[set component_hsize]2[/set]
+[set hbanner]Also see...[/set]
+[set component_before][/set]
+[set hpromo_type]specials[/set]
+[set page_title]__COMPANY__ -- Search results[/set]
+[set vpromo_type]specials[/set]
+@_LEFTRIGHT_TOP_@
+
+<!-- BEGIN CONTENT -->
+[search-region]
+
+[tmp cross_sale][value-extended name=mv_searchspec index=0][/tmp]
+
+[search-list]
+
+[item-change 1][condition][item-field category][/condition]
+                    <table width="250" border="0" cellspacing="0" cellpadding="0" bgcolor="0099ff">
+                      <tr> 
+                        <td width="10"><img src="navigation/minime1.gif" width="10" height="20" align="top"></td>
+                        <td width="227"><font __FFACE__ size="1"><b><i><font color="ffffff" size="2">[either][value banner_text][or][item-field category][/either]</font></i></b></font></td>
+                        <td width="10"><img src="navigation/minime2.gif" width="10" height="20" align="top"></td>
+                      </tr>
+                    </table>
+[/item-change 1]
+					
+                    <table width="313" border="1" cellspacing="0" cellpadding="0" bordercolor="0099ff">
+                      <tr bgcolor="ffffff" valign="middle"> 
+                        <td align=center height="5"> 
+                          <div align="left"> 
+                            <table border="0" cellspacing="0" cellpadding="3" bordercolor="#FFFFFF" align="center">
+                              <tr> 
+                                <td valign="top" align="center"> 
+                                  <table width="25%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr> 
+                                      <td>[if-item-field image]<A HREF="[area [item-code]]"><img src="items/[item-field image]" ALT="[item-field title]" BORDER="0"></A>[/if-item-field]</td>
+                                    </tr>
+                                  </table>
+                                </td>
+                                <td valign="top" align="center"> 
+                                  <table border="0" cellpadding="3" cellspacing="0">
+<FORM ACTION="[process-target]" METHOD=POST>
+<INPUT TYPE=hidden  NAME="mv_todo"        VALUE="refresh">
+<INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="[item-code]">
+                                    <tr> 
+                                      <td valign="top"> 
+                                        <p><font __FFACE__ size="1"><b><i>[item-field title]</i></b></font></p>
+                                      </td>
+                                    </tr>
+                                    <tr> 
+                                      <td align="center"><font __FFACE__>[item-price]</font></td>
+                                    </tr>
+                                    <tr> 
+                                      <td align="center"><font __FFACE__>&nbsp;</font></td>
+                                    </tr>
+									
+[item-calc]
+	my $q = q{[item-data inventory quantity]};
+	if($q > 0) {
+		return <<EOF;
+                                    <tr> 
+                                      <td align="center"><font __FFACE__ size="1" color="#008000"><b>In Stock</b></font></td>
+                                    </tr>
+EOF
+	}
+	else {
+		return <<EOF;
+                                    <tr> 
+                                      <td align="center"><font __FFACE__ size="1" color="#FF0000"><b>Out Of Stock</b></font><br><br>
+									  <font __FFACE__ size="1"><a href="[area stock-alert [item-code]]">In Stock Notification</a></font></td>
+                                    </tr>
+EOF
+	}
+[/item-calc]									
+                                    <tr> 
+                                      <td align="center"><font __FFACE__>&nbsp;</font></td>
+                                    </tr>
+                                    <tr> 
+                                      <td align="center"> <font __FFACE__ size="1">Quantity:</font> 
+                                        <input type="text" name="mv_order_quantity" size="4" value="1">
+                                      </td>
+                                    </tr>
+                                    <tr> 
+                                      <td align="center"> 
+                                        <input type="submit" value="Buy it Now!">
+                                      </td>
+                                    </tr>
+</FORM>
+                                  </table>
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td colspan="2"> 
+                                  <p><font __FFACE__ size="1">
+								  [item-field comment__MVC_FIELDMUNGE__]
+								  </font></p>
+                                </td>
+                              </tr>
+                            </table>
+                            <div align="center"><b><i></i></b></div>
+                          </div>
+                        </td>
+                      </tr>
+                    </table><br>
+					
+[/search-list]
+
+[no-match]
+<BR><BR><BLOCKQUOTE>
+<font __FFACE__ size="2">
+Sorry, no matches for <B>[value-extended name=mv_searchspec joiner=" | "]</B>.
+[if value mv_search_error]
+<P><B>Errors:
+<BR> [value-extended name=mv_search_error joiner="<BR>"]
+</B>
+[/if]
+</font>
+<BR><BR></BLOCKQUOTE>
+[/no-match]
+<font __FFACE__ size="2">
+<BR CLEAR=LEFT>
+[more-list]
+</font>
+<BLOCKQUOTE>
+<font __FFACE__ size="2">
+Matches [matches] of [match-count] found.
+<BR>[more]<BR>
+</font>
+</BLOCKQUOTE>
+[/more-list]
+
+[/search-region]
+<!-- END CONTENT -->
+
+@_LEFTRIGHT_BOTTOM_@
