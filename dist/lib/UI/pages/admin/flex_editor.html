@@ -1,3 +1,6 @@
+[if cgi ui_return_table]
+	[calc] $CGI->{mv_data_table} = delete $CGI->{ui_return_table}; return; [/calc]
+[/if]
 [seti page_title]
 	[either]
 		[cgi page_title]
