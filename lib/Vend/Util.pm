@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.54 2003-03-20 23:31:24 racke Exp $
+# $Id: Util.pm,v 2.55 2003-03-27 16:52:59 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -85,7 +85,7 @@ require HTML::Entities;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.54 $, 10);
+$VERSION = substr(q$Revision: 2.55 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -950,6 +950,48 @@ sub get_option_hash {
 		}
 	}
 	return \%hash;
+}
+
+## Takes an IC scalar form value (parm=val\nparm2=val) and translates it
+## to a reference
+
+sub scalar_to_hash {
+	my $val = shift;
+
+	$val =~ s/^\s+//mg;
+	$val =~ s/\s+$//mg;
+	my @args;
+
+	@args = split /\n+/, $val;
+
+	my $ref = {};
+
+	for(@args) {
+		m!([^=]+)=(.*)!
+			and $ref->{$1} = $2;
+	}
+	return $ref;
+}
+
+## Takes a form reference (i.e. from \%CGI::values) and makes into a
+## scalar value value (i.e. parm=val\nparm2=val). Also translates it
+## via HTML entities -- it is designed to make it into a hidden
+## form value
+
+sub hash_to_scalar {
+	my $ref = shift
+		or return '';
+
+	unless (ref($ref) eq 'HASH') {
+		die __PACKAGE__ . " hash_to_scalar routine got bad reference.\n";
+	}
+
+	my @parms;
+	while( my($k, $v) = each %$ref ) {
+		$v =~ s/\r?\n/\r/g;
+		push @parms, HTML::Entities::encode("$k=$v");
+	}
+	return join "\n", @parms;
 }
 
 ## This simply returns a hash of words, which may be quoted shellwords
@@ -2019,11 +2061,17 @@ sub get_filename {
 # Can't use that because it INSISTS on object
 # calls without returning a blessed object
 
-my $abspat = $^O =~ /win32/i ? '^([a-z]:)?[\\\\/]' : '^/';
+my $abspat = $^O =~ /win32/i ? qr{^([a-zA-Z]:)?[\\/]} : qr{^/};
+my $relpat = qr{\.\.[\\/]};
 
 sub file_name_is_absolute {
     my($file) = @_;
-    $file =~ m{$abspat}oi ;
+    $file =~ $abspat;
+}
+
+sub absolute_or_relative {
+    my($file) = @_;
+    $file =~ $abspat or $file =~ $relpat;
 }
 
 sub win_catfile {
