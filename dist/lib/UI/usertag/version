@@ -6,11 +6,46 @@ sub {
 	my $opt = shift;
 	my $joiner = $opt->{joiner} || '<BR>';
 	my @out;
-	if(not $opt->{db} || $opt->{modules}) {
+	my $done_something;
+
+	if($opt->{global_error}) {
+		push @out, $Global::ErrorFile;
+		$done_something = 1;
+	}
+
+	if($opt->{local_error}) {
+		my $fn = $Vend::Cfg->{ErrorFile};
+		push @out, $Tag->page( "$::Variable->{UI_BASE}/do_view", $fn) . "$fn</A>";
+		$done_something = 1;
+	}
+
+	if($opt->{pid}) {
+		push @out, ::readfile($Global::PIDfile);
+		$done_something = 1;
+	}
+
+	if($opt->{uid}) {
+		push @out, scalar getpwuid($>) . " (uid $>)";
+		$done_something = 1;
+	}
+
+	if($opt->{perl}) {
+		push @out, "$] (called with: $^X)";
+		$done_something = 1;
+	}
+
+	if($opt->{perl_config}) {
+		require Config;
+		push @out, "<PRE>\n" . Config::myconfig() . "</PRE>";
+		$done_something = 1;
+	}
+
+	if(not $opt->{db} || $opt->{modules} || $done_something) {
 		$opt->{db} = 1;
 		push @out, "Interchange Version $::VERSION";
 		push @out, "";
 	}
+
 	if($opt->{db}) {
 		if($Global::GDBM) {
 			push @out, "GDBM available (v$GDBM_File::VERSION)";
@@ -61,7 +96,10 @@ sub {
 				push @out, "$_ not found. $info"
 			}
 			else {
-				push @out, "$_ found.";
+				no strict 'refs';
+				my $ver = ${"$_" . "::VERSION"};
+				$ver = $ver ? "v$ver" : 'no version info';
+				push @out, "$_ found ($ver).";
 			}
 		}
 	}
