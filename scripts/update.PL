@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange database updater
 #
-# $Id: update.PL,v 2.0.2.2 2002-11-26 03:21:13 jon Exp $
+# $Id: update.PL,v 2.0.2.3 2003-01-23 19:08:04 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
@@ -256,6 +256,8 @@ close GLOBAL;
 global_config();
 
 chdir $dir or die "Couldn't change directory to $dir: $!\n";
+
+$Vend::ExternalProgram = $Vend::Quiet = 1;
 
 $Vend::Cfg = config($name, $dir, "$dir/etc", ($subconfig || undef));
 $::Variable = $Vend::Cfg->{Variable};
