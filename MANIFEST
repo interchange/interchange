@@ -525,9 +525,13 @@ dist/lib/UI/pages/admin/regenerate.html
 dist/lib/UI/pages/admin/report.html
 dist/lib/UI/pages/admin/report_results.html
 dist/lib/UI/pages/admin/report_save.html
+dist/lib/UI/pages/admin/reports/order/.access
+dist/lib/UI/pages/admin/reports/order/.autoload
 dist/lib/UI/pages/admin/reports/order/ByAffiliate.html
 dist/lib/UI/pages/admin/reports/order/Detail.html
 dist/lib/UI/pages/admin/reports/order/Monthly.html
+dist/lib/UI/pages/admin/reports/traffic/.access
+dist/lib/UI/pages/admin/reports/traffic/.autoload
 dist/lib/UI/pages/admin/reports/traffic/ByAffiliate.html
 dist/lib/UI/pages/admin/search_wizard.html
 dist/lib/UI/pages/admin/search_wizard2.html
@@ -538,6 +542,8 @@ dist/lib/UI/pages/admin/ship_data.html
 dist/lib/UI/pages/admin/ship_edit.html
 dist/lib/UI/pages/admin/ship_range.html
 dist/lib/UI/pages/admin/sku_selector.html
+dist/lib/UI/pages/admin/special/.access
+dist/lib/UI/pages/admin/special/.autoload
 dist/lib/UI/pages/admin/special/key_violation.html
 dist/lib/UI/pages/admin/spread.html
 dist/lib/UI/pages/admin/spread_control.html
@@ -555,6 +561,8 @@ dist/lib/UI/pages/admin/upload_image.html
 dist/lib/UI/pages/admin/upload_pages.html
 dist/lib/UI/pages/admin/user_change_pass.html
 dist/lib/UI/pages/admin/user_edit.html
+dist/lib/UI/pages/admin/wizard/.access
+dist/lib/UI/pages/admin/wizard/.autoload
 dist/lib/UI/pages/admin/wizard/X_dump.html
 dist/lib/UI/pages/admin/wizard/X_test.html
 dist/lib/UI/pages/admin/wizard/demo_init.html
