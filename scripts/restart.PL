@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange restarter
 #
-# $Id: restart.PL,v 1.6 2000-09-20 19:58:01 zarko Exp $
+# $Id: restart.PL,v 1.7 2000-09-20 20:03:09 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -96,8 +96,8 @@ sub get_id {
 }
 
 if ($< == 0) {
-	$name = get_id() || 'YOUR_MINIVEND_USER_NAME';
-	die "Interchange user ID not set in $Global::VendRoot/_uid.\n" if $name eq 'YOUR_MINIVEND_USER_NAME';
+	$name = get_id() || 'YOUR_INTERCHANGE_USER_NAME';
+	die "Interchange user ID not set in $Global::VendRoot/_uid.\n" if $name eq 'YOUR_INTERCHANGE_USER_NAME';
 	if(-t) {
 		print <<EOM unless $force;
 
