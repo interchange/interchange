@@ -1,5 +1,5 @@
-# This tag uses GNU diff3 to merge two texts blocks that were
-# modified from the same ancestral text together, and marks
+# This tag uses GNU diff3 to merge two text blocks that were
+# modified from the same ancestral text, and marks
 # conflicts that may appear. This is similar to CVS's merging
 # and conflict marking. The names the diff3 manpage uses are:
 #
@@ -18,7 +18,7 @@
 # in the 'result' option where the return code from diff3 will be placed.
 #
 # Set the 'ascii' option to allow for different newline types and
-# ignore whether the last line of the file has a newline.
+# ignore whether the last line of the file ends with a newline.
 #
 # Set the 'safe_data' option to allow raw data to be pulled from the
 # database without escaping left brackets (turning [ into &#91;).
