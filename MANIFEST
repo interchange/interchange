@@ -6,7 +6,8 @@ QuickStart
 README
 README.cvs
 README.rpm
-SPECS/interchange-4.5.7.spec
+SPECS/interchange-4.5.7-rh6.spec
+SPECS/interchange-4.5.7-rh7.spec
 UPGRADE_FROM_MV3
 WHATSNEW
 configure
