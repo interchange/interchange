@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# $Id: Search.pm,v 1.8.2.7 2001-04-21 05:34:09 heins Exp $
+# $Id: Search.pm,v 1.8.2.8 2001-04-25 08:01:38 heins Exp $
 #
 # Vend::Search -- Base class for search engines
 #
@@ -26,7 +26,7 @@
 #
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 1.8.2.7 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.8 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -522,6 +522,18 @@ sub code_join {
 	$out .= ' ) ';
 }
 
+sub create_field_hash {
+	my $s = shift;
+	my $fn = $s->{mv_field_names}
+		or return;
+	my $fh = {};
+	my $idx = 0;
+	for(@$fn) {
+		$fh->{$_} = $idx++;
+	}
+	return $fh;
+}
+
 # Returns a screening function based on the search specification.
 # The $f is a reference to previously created search function which does
 # a pattern match on the line.
@@ -561,6 +573,8 @@ sub get_limit {
 	}
 	# Add the code to get the join data if it is there
 	if(@join_fields) {
+		$s->{mv_field_hash} = create_field_hash($s) 
+			unless $s->{mv_field_hash};
 		$code .= <<EOF;
 my \$key = (split m{$s->{mv_index_delim}}, \$line)[$join_key];
 EOF
@@ -575,6 +589,10 @@ EOF
 			}
 			elsif ($col =~ tr/:/,/) {
 				$col =~ tr/ \t//d;
+				my @col = map { $s->{mv_field_hash}{$_} } split /,/, $col;
+				@col = grep defined $_, @col;
+				$col = join ",", @col;
+				next unless $col;
 				$wild_card = 1;
 				$col =~ s/[^\d,.]//g;
 			$code .= <<EOF;
