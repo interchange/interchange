@@ -3,7 +3,7 @@ UserTag forum-userlink addAttr
 UserTag forum-userlink Routine <<EOR
 sub {
 	my ($row) = @_;
-	return $row->{name} || 'Anonymous Coward'
+	return $row->{name} || $Variable->{FORUM_ANON_NAME} || 'Anonymous Coward'
 		if $row->{anon} or ! $row->{username};
 	my $realname = tag_data('userdb', 'handle', $row->{username})
 				 || tag_data('userdb', 'fname', $row->{username});
