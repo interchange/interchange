@@ -1,11 +1,11 @@
 <HTML>
 <HEAD>
 	<TITLE>
-		MiniVend Security FAQ
+		Interchange Security FAQ
 	</TITLE>
 </HEAD>
 <BODY>
-<H2>MiniVend Security FAQ</H2>
+<H2>Interchange Security FAQ</H2>
 
 <STRONG>
 (with thanks to Lincoln Stein, and the WWW Security FAQ)
@@ -104,7 +104,7 @@ the number stick around on the disk forever?</I>
 <P>
 The SSL encryption will take care of network transmission. But we
 don't want to make it easy for just anybody, even those with access
-to our system, to view your number. When MiniVend is properly set
+to our system, to view your number. When Interchange is properly set
 up, the number is encrypted with PGP encryption before ever being
 written to a file.
 <P>
@@ -114,7 +114,7 @@ memory. The now-encrypted card number (with the password only known
 to our order entry personnel) is then written to a file with
 permissions set so only the program can get at it.
 <P>
-This behavior will be followed by the MiniVend program as long as
+This behavior will be followed by the Interchange program as long as
 the number is placed in a field named <B>mv_credit_card_number</B>
 -- you can view the source of the order form to ensure that.
 <P>
