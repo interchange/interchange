@@ -33,11 +33,13 @@ function open_quicklinks() {
 </script>
 
 </head>
-<body bgcolor="#ffffff" link="#0000ee" alink="#0000ee" vlink="#551a8b">
+<body bgcolor="__UI_C_BG__" link="__UI_C_LINK__" alink="__UI_C_ALINK__"
+ vlink="__UI_C_VLINK__">
+
 <!-- ----- BEGIN TITLEBAR ----- -->
 
 <table width="100%" height="22" 
- bgcolor="#7079aa" border="0" cellpadding="0" 
+ bgcolor="__UI_C_TITLEBARBG__" border="0" cellpadding="0" 
  cellspacing="0">
 
 <tr height="22">
@@ -51,7 +53,7 @@ function open_quicklinks() {
 <img src="admin/icon_orders.gif" height="16" width="16" border="0" 
  align="top">
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
- color="#ffffff">
+ color="__UI_C_TITLEBARTXT__">
  &nbsp;Orders
 </font></a>
 
@@ -60,7 +62,7 @@ function open_quicklinks() {
 <a href="[area admin/page]">
 <img src="admin/icon_pages.gif" height="16" width="16" border="0" align="top">
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
- color="#ffffff">
+ color="__UI_C_TITLEBARTXT__">
 &nbsp;Pages
 </font></a>
 
@@ -69,7 +71,7 @@ function open_quicklinks() {
 <a href="[area admin/item]">
 <img src="admin/icon_item.gif" height="16" width="16" border="0" align="top">
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
- color="#ffffff">
+ color="__UI_C_TITLEBARTXT__">
 &nbsp;Items
 </font></a>
 
@@ -79,7 +81,7 @@ function open_quicklinks() {
 <img src="admin/icon_config.gif" height="16" width="16" border="0" 
  align="top">
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
- color="#ffffff">
+ color="__UI_C_TITLEBARTXT__">
 &nbsp;Configure
 </font></a>
 
@@ -88,7 +90,7 @@ function open_quicklinks() {
 <a href="[area admin/genstats]">
 <img src="admin/icon_stats.gif" height="16" width="16" border="0" align="top">
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
- color="#ffffff">
+ color="__UI_C_TITLEBARTXT__">
 &nbsp;Statistics
 </font></a>
 
@@ -97,7 +99,7 @@ function open_quicklinks() {
 <a href="[area admin/reconfig]">
 <img src="admin/icon_regen.gif" height="16" width="16" border="0" align="top">
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
- color="#ffffff">
+ color="__UI_C_TITLEBARTXT__">
 &nbsp;Regenerate
 </font></a>
 
@@ -107,14 +109,14 @@ function open_quicklinks() {
 <td align="right" valign="middle" height="22">
 <a href="javascript:open_quicklinks()">
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
- color="#ffffff">
+ color="__UI_C_TITLEBARTXT__">
 Quicklinks
 </font>
 </a>
 
 <a href="javascript:open_help('http://www.tallyman.com/help/2.0.6/[scratch help_name].html')">
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
- color="#ffffff">
+ color="__UI_C_TITLEBARTXT__">
 Help
 </font></a>
 </td>

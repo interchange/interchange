@@ -12,10 +12,10 @@ Variable UI_STD_FOOTER  <<EOV
 </tr>
 <tr>
 <td valign=top>
-<a href="http://www.tallyman.com"><font face="Verdana,Arial,Helvetica,sans-serif" size="1"><b>Tallyman</b></font></a><font face="Verdana,Arial,Helvetica,sans-serif" size="1"><b> - &copy;1999 <a href="http://www.akopia.com/">Akopia, Inc.</a> &nbsp; &nbsp; &nbsp; &nbsp; Username: [data session username]
+<a href="http://www.akopia.com/tallyman"><font face="Verdana,Arial,Helvetica,sans-serif" size="1"><b>Tallyman</b></font></a><font face="Verdana,Arial,Helvetica,sans-serif" size="1"><b> - &copy;2000 <a href="http://www.akopia.com/">Akopia, Inc.</a> &nbsp; &nbsp; &nbsp; &nbsp; Username: [data session username]
 StoreID: <A HREF="[area index]">[calc]$Config->{CatalogName}[/calc] </b></font></a></td>
 
-<td valign=top width="70" align="right"><a href="[area admin/index]"><img height="50" width="70" border="0" src="admin/tan_logo.gif"></a></td>
+<td valign=top width="70" align="right"><a href="[area admin/index]"><img height="50" width="70" border="0" src="admin/__UI_BOTTOMIMG__"></a></td>
 
 </tr>
 </table>
