@@ -1,6 +1,6 @@
 UserTag update-order-status Order order_number
 UserTag update-order-status addAttr
-UserTag update-order-status Version $Id: update_order_status.tag,v 1.5 2002-11-04 16:16:30 mheins Exp $
+UserTag update-order-status Version $Id: update_order_status.tag,v 1.6 2003-01-14 00:20:17 mheins Exp $
 UserTag update-order-status Routine <<EOR
 sub {
 	my ($on, $opt) = @_;
@@ -243,6 +243,11 @@ sub {
 					? "Email copy sent to $::Scratch->{ship_notice_email}."
 					: "No email copy sent as per user preference.";
 
+	my $dotime = $odb->config('DSN');
+	my $update_date;
+	$dotime = $dotime =~ /dbi:mysql:/ ? 0 : 1;
+	$update_date = POSIX::strftime('%Y-%m-%d %H:%M:%S %z', localtime());
+	
 	# Actually update the orderline database
 	for(@$lines_ary) {
 		my $code = $_->[$odb_keypos];
@@ -255,6 +260,13 @@ sub {
 				$::Scratch->{ui_message} = "Orderline $code ship status update failed.";
 				return;
 			};
+		if($dotime) {
+			$odb->set_field($code, 'update_date', $update_date)
+				or do {
+					$::Scratch->{ui_message} = "Orderline $code ship date update failed.";
+					return;
+				};
+		}
 
 	}
 
