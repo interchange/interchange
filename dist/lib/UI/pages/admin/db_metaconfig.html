@@ -1,4 +1,4 @@
-[set table_perms]mv_metadata[/set]
+[set table_perms]__UI_META_TABLE__[/set]
 [tmp page_title]
 	Configure table display: [cgi ui_table]
 	[if cgi ui_view]
@@ -41,7 +41,7 @@
 [/if]
 
 [table-editor
-	table=mv_metadata
+	table=__UI_META_TABLE__
 	display-only=fieldmeta
 	view=dbconfig
 	no-table-meta=1
@@ -378,4 +378,4 @@ Inventory;inventory:quantity:rn=Inventory},
 
 ]
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Revision: 2.18 $ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.19 $ -->
