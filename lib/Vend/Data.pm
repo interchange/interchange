@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.5 2000-07-20 07:15:47 heins Exp $
+# $Id: Data.pm,v 1.6 2000-08-06 19:40:02 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -861,15 +861,31 @@ sub index_database {
 		return;
 	}
 
+	if(! $opt->{spec}) {
+		$opt->{fn} = $opt->{fn} || $opt->{fields} || $opt->{col} || $opt->{columns};
+		my $key = $db->config('KEY');
+		my @fields = grep $_ ne $key, split /[\0,\s]+/, $opt->{fn};
+		my $sort = join ",", @fields;
+		if(! $opt->{fn}) {
+			::logError(errmsg("index attempted on table '%s' with no fields, no search spec", $dbname));
+			return undef;
+		}
+		$opt->{spec} = <<EOF;
+ra=1
+rf=$opt->{fn}
+tf=$sort
+EOF
+	}
+
+	my $scan = Vend::Interpolate::escape_scan($opt->{spec});
+	$scan =~ s:^scan/::;
+
 	my $c = {
-				mv_list_only	 => 1,
-				mv_search_file => $bx_fn,
+				mv_list_only		=> 1,
+				mv_search_file		=> $bx_fn,
 			};
 
-	Vend::Scan::find_search_params(
-			$c,
-			Vend::Interpolate::escape_scan($opt->{spec}),
-			);
+	Vend::Scan::find_search_params($c, $scan);
 	
 	$c->{mv_matchlimit} = 100000
 		unless defined $c->{mv_matchlimit};
@@ -881,9 +897,7 @@ sub index_database {
 		@fn = split /\s*[\0,]+\s*/, $c->{mv_return_fields};
 	}
 
-#::logDebug(
-#	"search options: " . Vend::Util::uneval($c) . "\n"
-#	);
+#::logDebug( "search options: " . Vend::Util::uneval($c) . "\n");
 
 	open(Vend::Data::INDEX, "+<$ix_fn") or
 		open(Vend::Data::INDEX, "+>$ix_fn") or
@@ -898,12 +912,18 @@ sub index_database {
 		print INDEX join $f_delim, @fn;
 		print INDEX $r_delim;
 	}
-	print INDEX join $r_delim, @{Vend::Scan::perform_search($c)};
+	
+	my $ref = Vend::Scan::perform_search($c);
+	for(@$ref) {
+		print INDEX join $f_delim, @$_; 
+		print INDEX $r_delim;
+	}
 
 	unlockfile(\*Vend::Data::INDEX)
 		or die "Couldn't unlock $ix_fn: $!\n";
 	close(Vend::Data::INDEX)
 		or die "Couldn't close $ix_fn: $!\n";
+	return 1 if $opt->{show_status};
 	return;
 }
 
