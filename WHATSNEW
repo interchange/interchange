@@ -17,6 +17,8 @@ Core
   with the SOAP standard, but also makes it work with the more recent versions
   of SOAP::Lite, including the latest 0.55 with the security fix.
 
+* Fixed missing usertags in catalog subs called from Autoload.
+
 Packaging
 ---------
 
