@@ -25,7 +25,6 @@ _$
 ^lib/IniConf.pm
 ^lib/URI
 ^test(/|$)
-^pod/.*\.pdf
 ^bin(/|$)
 ^blib(/|$)
 ^catalogs/[^.].*
@@ -36,6 +35,7 @@ _$
 ^dist/barry(/|$)
 ^dist/basic(/|$)
 ^dist/books(/|$)
+^dist/construct(/|$)
 ^dist/test(/|$)
 ^dist/etc/[^.]
 ^dist/lib/MiniMate(/|$)
@@ -49,9 +49,12 @@ _$
 ^lib/src/config.status$
 ^lib/src/syscfg$
 ^pm_to_blib$
+^pod/README
+^pod/.*\.pdf
 ^pod/mvtags.pod$
 ^pod/QuickStart.pod$
 ^pod/mvrpm.pod$
+^pdf/README
 ^run(/|$)
 ^scripts/.*[a-z]$
 ^scripts/initp.PL$
