@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.8 2001-09-28 15:17:08 racke Exp $
+# $Id: Order.pm,v 2.9 2001-10-06 06:29:54 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = substr(q$Revision: 2.9 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1396,7 +1396,7 @@ sub route_order {
 			$::Values->{mv_credit_card_info} = build_cc_info(\%attrlist);
 		}
 		elsif ($::Values->{mv_credit_card_info}) {
-			$::Values->{mv_credit_card_info} =~ /BEGIN\s+PGP\s+MESSAGE/
+			$::Values->{mv_credit_card_info} =~ /BEGIN\s+[PG]+\s+MESSAGE/
 				and $pre_encrypted = 1;
 		}
 
