@@ -89,16 +89,13 @@ Always reference your order number when calling for a status.[if !session logged
 Or you can check status via this URL:
 
    [area form='
-            mv_username=[data
-                table=transactions
-                col=username
-                key="[value mv_order_number]"
-                ]
-            mv_password=[value zip]
+            [scratch mv_autocreate]
             mv_click=Login
             mv_todo=return
             mv_nextpage=query/check_orders
      ']
+[else]
+You can visit your account maintenance page to check order status.[/else]
 [/if]
 Remember, you can always visit our site at:
 
