@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.45 2002-06-10 20:34:40 racke Exp $
+# $Id: Config.pm,v 2.46 2002-06-11 04:33:54 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.45 $, 10);
+$VERSION = substr(q$Revision: 2.46 $, 10);
 
 my %CDname;
 
@@ -128,6 +128,7 @@ my %HashDefaultBlank = (qw(
 					SOAP			1
 					Mail			1
 					DatabaseDefault	1
+					SQL_Ledger		1
 				));
 
 my %DumpSource = (qw(
@@ -484,6 +485,7 @@ sub catalog_directives {
 	['PriceDefault',	 undef,              'price'],
 	['PriceField',		 undef,              'price'],
 	['Shipping',         'locale',           ''],
+	['SQL_Ledger',	 	 'hash',     	 	 ''],
 	['AutoVariable',	 'autovar',     	 ''],
 
 	];
@@ -1950,7 +1952,7 @@ sub parse_special {
 sub parse_hash {
 	my($item,$settings) = @_;
 	if (! $settings) {
-		return $HashDefaultBlank{$item} ? '' : {} if ! $settings;
+		return $HashDefaultBlank{$item} ? '' : {};
 	}
 
 	my $c;
