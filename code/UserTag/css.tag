@@ -1,6 +1,6 @@
 # Copyright 2003 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: css.tag,v 1.4 2004-10-02 11:07:00 docelic Exp $
+# $Id: css.tag,v 1.5 2004-10-02 16:38:55 docelic Exp $
 
 UserTag css Order name
 UserTag css addAttr
@@ -99,7 +99,7 @@ sub {
 				logError("CSS file %s has no write permission.", $fn);
 			}
 			else {
-				if ( -x $dir ) {
+				if ( -d $dir ) {
 					logError("CSS dir %s has no write permission.", $dir);
 				}
 				else {
