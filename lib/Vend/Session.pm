@@ -1,6 +1,6 @@
 # Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 2.15 2003-12-03 16:10:21 mheins Exp $
+# $Id: Session.pm,v 2.15.2.1 2004-02-24 20:55:13 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -27,7 +27,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.15 $, 10);
+$VERSION = substr(q$Revision: 2.15.2.1 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -460,6 +460,11 @@ sub session_name {
 
 
 sub init_session {
+	undef $Vend::username;
+	undef $Vend::admin;
+	undef $Vend::groups;
+	undef $Vend::superuser;
+	undef $Vend::login_table;
     $Vend::Session = {
 		'ohost'		=> $CGI::remote_addr,
 		'arg'		=> $Vend::Argument,
