@@ -9,29 +9,32 @@
 [set help_name]orderstats.view[/set]
 
 @_UI_STD_HEAD_@
-<TABLE>
-<TR BGCOLOR="#f5f5fb">
-<TD BGCOLOR="#528ebc" VALIGN="top">
-<FONT FACE="arial" COLOR="#ffffff" SIZE="-1">
+<TABLE width="90%" border=0 callpadding=0 cellspacing=0>
+<tr bgcolor="#000000" height=1><td colspan=4></td></tr>
+<TR BGCOLOR="#__UI_C_TOPBLOCKBAR__">
+<TD VALIGN="top" width="20%">
+<FONT COLOR="__UI_C_TITLEBARTXT__">
 <B>Date</B>
 </FONT>
 </TD>
-<TD BGCOLOR="#528ebc" VALIGN="top">
-<FONT FACE="arial" COLOR="#ffffff" SIZE="-1">
+<TD VALIGN="top">
+<FONT COLOR="__UI_C_TITLEBARTXT__">
 <B>Affiliate</B>
 </FONT>
 </TD>
-<TD ALIGN=right BGCOLOR="#528ebc" VALIGN="top">
-<FONT FACE="arial" COLOR="#ffffff" SIZE="-1">
+<TD ALIGN=center VALIGN="top">
+<FONT COLOR="__UI_C_TITLEBARTXT__">
 <B>Number of Orders</B>
 </FONT>
 </TD>
-<TD ALIGN=right BGCOLOR="#528ebc" VALIGN="top">
-<FONT FACE="arial" COLOR="#ffffff" SIZE="-1">
+<TD ALIGN=right VALIGN="top">
+<FONT COLOR="__UI_C_TITLEBARTXT__">
 <B>Revenue</B>
 </FONT>
 </TD>
 </TR>
+<tr bgcolor="#000000" height=1><td colspan=4></td></tr>
+<tr bgcolor="#FFFFFF" height=2><td colspan=4></td></tr>
 
 [calc]
 	if($Session->{arg}) {
@@ -126,82 +129,64 @@ EOF
 			my $url = qq{<A HREF="$burl$syndstring">$mname&nbsp;$year</A>}
 				if $mname;
 			$out .= <<EOF;
-	<TR BGCOLOR=#f5f5fb>
+	<TR BGCOLOR=__UI_C_INTBLOCK__>
 	<TD VALIGN=top>
-	<FONT FACE=arial SIZE=-1>
 	$url&nbsp;
-	</FONT>
 	</TD>
 	<TD VALIGN=top>
-	<FONT FACE=arial SIZE=-1>
 	<A HREF="$burl&affiliate=$syn">$synlabel</A>&nbsp;<A HREF="$burl&affiliate=$syn&campaign=$camp">$camp</A>
-	</FONT>
 	</TD>
-	<TD ALIGN=right VALIGN=top>
-	<FONT FACE="arial" SIZE="-1">
+	<TD ALIGN=center VALIGN=top>
 	$record->{orders}
-	</FONT>
 	</TD>
 	<TD ALIGN=right VALIGN=top>
-	<FONT FACE=arial SIZE=-1>
 	$sales
-	</FONT>
 	</TD>
 EOF
 			$mname = $year = '';
 		}
-		$total_sales        += $subtotal_sales;
-		$total_quantity     += $subtotal_quantity;
+		$total_sales    += $subtotal_sales;
+		$total_quantity += $subtotal_quantity;
 		$subtotal_sales  = $Tag->currency({}, $subtotal_sales);
 		$out .= <<EOF;
-	<TR BGCOLOR="#f5f5fb">
+	<TR BGCOLOR="__UI_C_INTBLOCK__">
 	<TD VALIGN=top>
-	<FONT FACE=arial SIZE=-1>
 	&nbsp;
-	</FONT>
 	</TD>
 	<TD VALIGN=top>
-	<FONT FACE=arial SIZE=-1>
-	ALL<BR><HR>
-	</FONT>
+	ALL<BR><HR color=black size=1>
 	</TD>
-	<TD ALIGN=right VALIGN=top>
-	<FONT FACE=arial SIZE=-1>
+	<TD ALIGN=center VALIGN=top>
 	$subtotal_quantity
-	</FONT>
 	</TD>
 	<TD ALIGN=right VALIGN=top>
-	<FONT FACE=arial SIZE=-1>
 	$subtotal_sales
-	</FONT>
 	</TD>
 	</TR>
 EOF
 	}
 		$total_sales  = $Tag->currency({}, $total_sales);
 		$out .= <<EOF;
-	<TR BGCOLOR="#f5f5fb">
+	<TR BGCOLOR="__UI_C_INTBLOCK__">
 	<TD VALIGN="top">
-	<FONT FACE="arial" SIZE="-1">
+
 	GRAND TOTAL
-	</FONT>
 	</TD>
 	<TD VALIGN="top">
-	<FONT FACE="arial" SIZE="-1">
+
 	ALL
-	</FONT>
 	</TD>
-	<TD ALIGN=right VALIGN="top">
-	<FONT FACE="arial" SIZE="-1">
+	<TD ALIGN=center VALIGN="top">
+
 	$total_quantity
-	</FONT>
 	</TD>
 	<TD ALIGN=right VALIGN="top">
-	<FONT FACE="arial" SIZE="-1">
+
 	$total_sales
-	</FONT>
 	</TD>
 	</TR>
+	<tr bgcolor="#000000" height=1><td colspan=4></td></tr>
+
 EOF
 [/perl]
 </TABLE>
