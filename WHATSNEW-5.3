@@ -8,6 +8,40 @@
 
 Interchange 5.3.0 not yet released.
 
+Core
+----
+
+* Fix X-Track headers so that they will always be canonical.
+
+* Add support for uploaded files in IC-in-mod_perl server mode,
+  supplied by Spencer Christensen <schristensen@backcountry.com>.
+
+* Add more file tests than -f for [if file].
+
+	[if file-s catalog.cfg > 10000]
+		catalog.cfg size is greater than 10000
+	[else]
+		catalog.cfg size is not greater than 10000
+	[/else]
+	[/if]
+
+	[if file-w catalog.cfg]
+		catalog.cfg can be written
+	[/if]
+
+	[if file-T catalog.cfg]
+		catalog.cfg is a text file
+	[/if]
+
+	[if file-B catalog.cfg]
+		catalog.cfg is a binary file
+	[/if]
+
+	etc.
+
+  The tests are standard Perl tests, supported are:
+
+	A B d e f g l M r s T u w x
 
 UI
 --
@@ -20,6 +54,18 @@ UI
   return from meta_editor.
 
 * Display "New item" in the HTML title of the item editor for new items.
+
+Menu
+----
+
+* Allow "Create menu from HTML" option to recognize <OPTION value=URL>Anchor
+  lists.
+
+UserTag
+-------
+
+* Make secure image directory be set to something even if no
+  separate secure image directory within [image] UserTag.
 
 Foundation
 ----------
