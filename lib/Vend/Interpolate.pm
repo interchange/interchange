@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.63 2002-04-29 14:47:02 mheins Exp $
+# $Id: Interpolate.pm,v 2.64 2002-05-17 03:15:19 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.63 $, 10);
+$VERSION = substr(q$Revision: 2.64 $, 10);
 
 @EXPORT = qw (
 
@@ -5556,7 +5556,7 @@ sub shipping {
 
 	my($field, $code, $i, $total, $cost, $multiplier, $formula, $error_message);
 
-	my $ref = $Vend::Cfg;
+#	my $ref = $Vend::Cfg;
 #
 #	if(defined $Vend::Cfg->{Shipping_criterion}->{$mode}) {
 #		$ref = $Vend::Cfg;
@@ -5767,9 +5767,6 @@ sub shipping {
 			}
 
 			$cost = tag_ups($type,$geo,$total,$zselect,$o);
-			FIGURE: {
-				last FIGURE unless $cost;
-			}
 			$final += $cost;
 			last SHIPIT unless $o->{continue};
 		}
