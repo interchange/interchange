@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.187 2003-08-04 05:11:20 mheins Exp $
+# $Id: Interpolate.pm,v 2.188 2003-08-08 19:29:29 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.187 $, 10);
+$VERSION = substr(q$Revision: 2.188 $, 10);
 
 @EXPORT = qw (
 
@@ -1036,10 +1036,14 @@ sub tag_data {
 					$val =~ s/\D+//g;
 					return $val;
 				},
+	'alpha' =>	sub {
+					my $val = shift;
+					$val =~ s/[^A-Za-z]+//g;
+					return $val;
+				},
 	'alphanumeric' =>	sub {
 					my $val = shift;
-					$val =~ s/\W+//g;
-					$val =~ s/_+//g;
+					$val =~ s/[^A-Za-z0-9]+//g;
 					return $val;
 				},
 	'word' =>	sub {
@@ -1173,6 +1177,21 @@ sub tag_data {
 					$_[0] =~ /^0*(.*)/; return $1;
 				},
 
+	pgbool => sub {
+					my $val = shift;
+					return 'f' if ! defined($val);
+					$val =~ s/\s+//g;
+					return 'f' if $val =~ /^[Ff0]?$/;
+					return 't';
+				},
+
+	pgbooln => sub {
+					my $val = shift;
+					return if ! defined($val);
+					$val =~ s/\s+//g;
+					return 'f' if $val =~ /^[Ff0]?$/;
+					return 't';
+				},
 	);
 
 $Filter{upper} = $Filter{uc};
