@@ -7,7 +7,7 @@ sub {
 
 	if($message) {
 		my $param = ref $opt->{param} ? $opt->{param} : [$opt->{param}];
-		push_warning($opt->{message}, @$param);
+		push_warning($message, @$param);
 		return unless $opt->{show};
 	}
 
