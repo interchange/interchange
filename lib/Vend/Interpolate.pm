@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.9.2.18 2002-06-27 22:38:24 jon Exp $
+# $Id: Interpolate.pm,v 2.9.2.19 2002-07-23 22:34:01 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.9.2.18 $, 10);
+$VERSION = substr(q$Revision: 2.9.2.19 $, 10);
 
 @EXPORT = qw (
 
@@ -3250,7 +3250,7 @@ sub tag_mail {
 		push @headers, grep /^\w[-\w]*:/, split /\n/, $opt->{extra};
 	}
 
-	$body ||= $setsub->{body};
+	$body ||= $setsub->('body');
 	unless($body) {
 		return error_opt($opt, "Refuse to send email message with no body.");
 	}

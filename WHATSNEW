@@ -46,6 +46,9 @@ Core
   problems with ignore_case set. Found and patch supplied by Mike Weisenborn
   <mw@clearbult.com>.
 
+* Fixed error in Vend::Interpolate::tag_mail where a code reference is
+  used as a hash reference if the passed body is empty.
+
 Usertags
 --------
 
