@@ -9,125 +9,117 @@ ui_template_name: leftright
 
 [control reset=1]
 
-			[control-set]
-			[component]search_box_small[/component]
-			[/control-set]
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
 
-			[tmp use_tiny_cart]1[/tmp]
-			[if scratch use_tiny_cart]
-			  [control-set]
-			  [component]cart_tiny[/component]
-			  [/control-set]
-			[else]
-			  [control-set]
-			  [component][/component]
-			  [/control-set]
-			[/else]
-			[/if]
+[control-set]
+[component]cart_tiny[/component]
+[/control-set]
 
-			[control-set]
-			[component]category_vertical[/component]
-			[/control-set]
+[control-set]
+[component]category_vertical[/component]
+[/control-set]
 
-			[control-set]
-			[component][/component]
-			[/control-set]
+[control-set]
+[component][/component]
+[/control-set]
 
-			[control-set]
-			[component]cross_horizontal[/component]
-			[size]2[/size]
-			[cols]2[/cols]
-			[banner]Specials[/banner]
-			[/control-set]
+[control-set]
+[component]cross_horizontal[/component]
+[size]2[/size]
+[cols]2[/cols]
+[banner]Specials[/banner]
+[/control-set]
 
-			[control-set]
-			[component]random[/component]
-			[size]3[/size]
-			[cols]1[/cols]
-			[banner]See also...[/banner]
-			[/control-set]			
-					
+[control-set]
+[component]random[/component]
+[size]3[/size]
+[cols]1[/cols]
+[banner]See also...[/banner]
+[/control-set]
+
 [control reset=1]
 
 @_LEFTRIGHT_TOP_@
 
 <!-- BEGIN CONTENT -->
 
+[tmp matchlimit]10[/tmp]
+
 <table width="95%" border="0">
-<tr> 
-  <td>
-    <br>
+<tr>
+<td>
+<br>
 
-	<big><b>Advanced Search</b></big>
-	<br><br> 
+<big><b>Advanced Search</b></big>
+<br><br>
 
-	<form action="[area search]" method=post>
-    <input type=hidden name=mv_session_id value="[data session id]">
-	[set asearch]su=yes/fi=products[/set]
-        <input type=hidden name=mv_profile value=asearch>
-	<table>
-	<tr>
-	  <td>
-	    <b>Search by Field:</b><br>
-	    Search for  
-		<input type="text" name=mv_searchspec>
-          in the 
-              <select name=mv_search_field>
-		<option value="description">Description
-              	<option value="sku">SKU
-		<option value="price">Price
-		<option value="weight">Weight
-		<option value="color">Color
-		<option value="size__MVC_FIELDMUNGE__">Size		 
-	      </select>
+<p>
+<form action="[area search]" method=post>
+<input type=hidden name=mv_session_id value="[data session id]">
+[seti asearch]
+fi=products
+st=db
+su=yes
+ml=[scratch matchlimit]
+[/seti]
+<input type=hidden name=mv_profile value=asearch>
+<b>Search by Field:</b><br>
+Search for
+<input type=text name=mv_searchspec size=20 maxlength=30>
+in
+<select name=mv_search_field>
+[loop
+	lr=1
+	list="*	all fields
+description	Description
+sku	SKU
+price	Price
+weight	Weight
+color	Color
+size__MVC_FIELDMUNGE__	Size
+"]
+<option value="[loop-code]"[selected mv_search_field [loop-code]]>[loop-pos 1]
+[/loop]
+</select>
+&nbsp;
+<input type="image" alt="Search" src="__THEME_IMG_DIR__go.gif" border=0>
+</form>
+</p>
 
-          field. 
-		  <input type="image" alt="Search" src="__THEME_IMG_DIR__go.gif" border=0>
-      </td>
-    </tr>
-	</table>
-	</form>
+<p>
+<form action="[area search]" method=post>
+<input type=hidden name=mv_session_id value="[data session id]">
+<input type=hidden name=mv_matchlimit value=[scratch matchlimit]>
+<input type=hidden name=mv_substring_match value="Yes">
 
-  <form action="[area search]" method=post>
-  <input type=hidden name=mv_session_id value="[data session id]">
-  <input type=hidden name=mv_substring_match value="Yes">
-  <input type=hidden name=mv_search_map value="
-    mv_searchspec=search1
-    mv_searchspec=search2
-    ">
-  <input type=hidden name=mv_search_field value="category">
-  <input type=hidden name=mv_search_field value="*">
+<b>Search by Category:</b><br>
+Search for
+<input type=text name=mv_searchspec size=20 maxlength=30>
+in the category
+<select name=mv_searchspec>
+[loop
+	search="
+		fi=cat
+		st=db
+		ra=yes
+		rf=name
+		ml=1000
+		tf=name
+		un=1
+	"
+]
+<option>[loop-code]
+[/loop]
+</select>
+&nbsp;
+<input type="image" alt="Search" src="__THEME_IMG_DIR__go.gif" border=0>
+</p>
 
-  <table>
-  <tr>
-    <td>
-      <b>Search by Category:</b><br>
-      Search for  
-      <input type="text" name=search2 value=""> 
-      in the 
-      <select name=search1>
-                  [loop option=category search="
-                        ra=yes
-                        fi=cat
-						st=db
-                        rf=name
-                        ml=1000
-                        tf=name
-						un=1
-                  "]
-                  <option>[loop-code]</option>
-                  [/loop]
-  </select>
-   category.  
-      <input type="image" alt="Search" src="__THEME_IMG_DIR__go.gif" border=0>
+</form>
 
-    </td>
-  </tr>
-  </table>
-
-  </form>
-
-  </td>
+</td>
 </tr>
 </table>
 
