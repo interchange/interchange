@@ -264,7 +264,7 @@ ui_template_name: noleft
         <table border="0" cellspacing="0" cellpadding="0" width="50%">
         <TR>
           <td align="left">
-            <INPUT TYPE=image VALUE="Refresh" src="__THEME_IMG_DIR__recalculate_button.gif">
+            <INPUT TYPE=image VALUE="Refresh" src="__THEME_IMG_DIR__recalculate_button.gif" border=0>
           </td>
           <td align="right">
             <table align="center" cellspacing="0" border="0">
@@ -884,17 +884,20 @@ ui_template_name: noleft
       <br>
       <table align="center" cellpadding="10" cellspacing="10"><tr>
       <td class="contentbar1">
+[comment]
 	[button 
-           name="mv_click" 
-	   src="__THEME__/placeorder.gif" 
-	   text="Place Order"
-	   hidetext=1
+		name="mv_click" 
+		src="__THEME__/placeorder.gif" 
+		text="Place Order"
+		hidetext=1
 	]
-	   mv_todo=submit
-        [/button]
+		mv_todo=submit
+	[/button]
+[/comment]
+		<input type=image src="__THEME_IMG_DIR__checkout_button.gif" VALUE="Place Order" name="mv_todo.submit" border=0>
       </td>
       <td>
-	<INPUT TYPE=image VALUE="Refresh" src="__THEME_IMG_DIR__recalculate_button.gif">
+	<INPUT TYPE=image VALUE="Refresh" src="__THEME_IMG_DIR__recalculate_button.gif" border=0>
       </td>
       </tr></table>
         
