@@ -65,6 +65,12 @@ Packaging
 
 * doc-base support added to libapache-mod-interchange Debian package.
 
+I18N
+----
+
+* Spanish locale added made by Ignacio Lizarán and 
+  José Mª Revuelto <josemaria.revuelto@solgrama.com>.
+
 Miscellaneous
 -------------
 
