@@ -80,7 +80,7 @@ EOF
 [page href="@@MV_PAGE@@" form="
 	mv_action=back
 	mv_click=profile_save_values
-"]Save current settings</A>
+"][L]Save current settings[/L]</A>
 
 [if type=file term=`
 	$Scratch->{wizard_fn} = "upload/$Session->{username}.wizard";
@@ -88,13 +88,13 @@ EOF
 	<BR>[page href="@@MV_PAGE@@" form="
 		mv_action=back
 		mv_click=profile_get_values
-	"]Retrieve saved values</A>
+	"][L]Retrieve saved values[/L]</A>
 [/if]
 </p>
 [if type=explicit compare="__MV_DEMO_MODE__"]
 <p>(For testing convenience:)<br>
-[page __UI_BASE__/wizard/demo_init]Set some starting values</A><br>
-[page __UI_BASE__/wizard/demo_zero]Zero the values</A></p>
+[page __UI_BASE__/wizard/demo_init][L]Set some starting values[/L]</A><br>
+[page __UI_BASE__/wizard/demo_zero][L]Zero the values[/L]</A></p>
 [/if]
 
 </td>
