@@ -1,6 +1,6 @@
 # Interchange.pm - Interchange access for Perl scripts
 #
-# $Id: Interchange.pm,v 2.1 2002-06-17 22:24:12 jon Exp $
+# $Id: Interchange.pm,v 2.2 2002-07-13 16:05:12 racke Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -30,7 +30,7 @@ require Exporter;
 use strict;
 use Fcntl;
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2 $, 10);
 
 BEGIN {
 	require 5.005;
@@ -180,7 +180,7 @@ sub new {
 	my ($class, @options) = 
 	my ($k, $v);
 	my $self = {};
-	while (defined ($k = shift(@options)) {
+	while (defined ($k = shift(@options))) {
 		($self->{$k} = shift(@options), next)
 			unless defined $Special{lc $k};
 		my $arg = shift @options;
@@ -188,9 +188,10 @@ sub new {
 	}
 
 	if(! $self->{Cfg}{CatRoot}) {
-		for( $ENV{INTERCHANGE_CATDIR}, 
+		for( $ENV{INTERCHANGE_CATDIR}, ) {
 		if(-f $ENV{INTERCHANGE_CATDIR}) {
 		}
+	}
 	}
 	unless (defined $self->{session}) {
 	}
@@ -347,7 +348,7 @@ sub tag_nitems {
 	
 	$opt->{cart} = ($self->{_config}{current_cart} ||= 'main')
 		unless $opt->{cart};
-
+	
 	my ($attr, $sub);
 	if($opt->{qualifier}) {
 		$attr = $opt->{qualifier};
@@ -365,7 +366,7 @@ sub tag_nitems {
 	}
 
     my $total = 0;
-    foreach my $item (@$cart) {
+    foreach my $item (@{$opt->{cart}}) {
 		next if $attr and ! $sub->($item->{$attr});
 		$total += $item->{'quantity'};
     }
