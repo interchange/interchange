@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.31 2003-04-08 13:41:03 racke Exp $
+# $Id: Shadow.pm,v 1.32 2003-04-10 00:52:54 racke Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.31 $, 10);
+$VERSION = substr(q$Revision: 1.32 $, 10);
 
 # TODO
 #
@@ -212,7 +212,6 @@ sub set_field {
 	$s = $s->import_db() unless defined $s->[$OBJ];
 
 	# usually we want to operate on the original table
-	::logDebug("SET_FIELD: $key $column $value");
 	$s->[$OBJ]->set_field($key, $column, $value);
 }
 
@@ -283,7 +282,7 @@ sub query {
 		my $table = $qref->{tables}->[0];
 		my $db;
 		
-		if ($table ne $s->[$TABLE]) {
+		if ($table ne $s->[$CONFIG]->{name}) {
 			# pass query to other table, but preserve the query info
 			$opt->{queryinfo} = $qref;
 			unless ($db = Vend::Data::database_exists_ref($table)) {
