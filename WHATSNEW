@@ -147,6 +147,14 @@ Core
 
   Note that this is not yet implemented!
 
+* Update pgp_encrypt to accept multiple encryption keys.  Keys should be
+  passed as a space or comma separated list.
+
+* Change behavior of UserDB _check_acl routine so that undefined value
+  is returned if location is not present at all. This allows a check
+  both on the file location and the parent directory location without
+  affecting true/false status.
+
 File
 ----
 
@@ -216,7 +224,7 @@ File
 
 	FileControl include/junk  <<EOR
 	sub {
-		my ($fn, $write, @caller) = @_;
+		my ($fn, $checkpath, $write, @caller) = @_;
 
 		## Allow write to files containing "foo"
 		if($write) {
