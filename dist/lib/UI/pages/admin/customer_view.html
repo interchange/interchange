@@ -162,48 +162,64 @@
 </tr>
 
 <tr>
-<td width="20%" bgcolor=__UI_C_INTBLOCK__>
+<td>
+<table border=0 cellpadding=1 cellspacing=3>
+
+<tr>
+<td bgcolor=__UI_C_INTBLOCK__ align=right>
 	<B>[L]Order number[/L]</B>
 </td>
-<td width="20%" bgcolor=__UI_C_INTBLOCK__>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td bgcolor=__UI_C_INTBLOCK__>
 	<B>[L]Order date[/L]</B>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td bgcolor=__UI_C_INTBLOCK__ align=right>
 	<B>[L]Order Total[/L]</B>
 </td>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 <td bgcolor=__UI_C_INTBLOCK__>
 	<B>[L]Status[/L]</B>
 </td>
 </tr>
-[query list=1
-		st=db
-		table=transactions 
-		sql="select
-			  order_number, order_date, salestax, shipping, total_cost, status
-			  FROM transactions 
-			  WHERE username = '[loop-code]'
-			  ORDER BY order_date
-			  "
-			  ]
+[query
+	list=1
+	st=db
+	table=transactions 
+	sql="select
+		order_number, order_date, total_cost, status
+		FROM transactions 
+		WHERE username = '[loop-code]'
+		ORDER BY order_date
+	"
+]
 <tr>
-<td>
+<td align=right>
 	<A HREF="[area __UI_BASE__/order_view [sql-code]]"><U>[sql-code]</U></A>
 </td>
+<td></td>
 <td>
-	[sql-pos 1]
+	[sql-param order_date]
 </td>
-<td>
-	[sql-pos 4]
+<td></td>
+<td align=right>
+	[currency][sql-param total_cost][/currency]
 </td>
+<td></td>
 <td>
 <A HREF="[area
 			href=__UI_BASE__/order_status
 			form="
 				order=[sql-code]
-			"]"><U>[msg][sql-pos 5][/msg]</U></A>
+			"]"><U>[msg][sql-param status][/msg]</U></A>
 </td>
 </tr>
 [/query]
+
+</table>
+</td>
+</tr>
+
 <tr>
 <td colspan=6 bgcolor=__UI_C_TITLEBARBG__><img src="bg.gif" height=1></td>
 </tr>
