@@ -140,6 +140,13 @@ Core
 * New mv_cleanup operates like mv_click and mv_check, but operates
   after a form processing action is done.
 
+Installation
+------------
+
+* "you are now ready to run makecat" is no longer displayed on upgrades.
+
+* Prevent test from failing on upgrades.
+
 Payment
 -------
 
