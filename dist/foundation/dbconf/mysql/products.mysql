@@ -22,4 +22,5 @@ Database  products  COLUMN_DEF   "color=VARCHAR(96)"
 Database  products  COLUMN_DEF   "gift_cert=VARCHAR(3)"
 Database  products  COLUMN_DEF   "related=text"
 Database  products  COLUMN_DEF   "featured=VARCHAR(32)"
+Database  products  COLUMN_DEF	 "inactive=TINYINT(1) DEFAULT '0' NOT NULL"
 Database  products  NUMERIC      price
