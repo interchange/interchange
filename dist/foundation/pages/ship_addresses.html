@@ -27,6 +27,109 @@ ui_template_name: leftonly
 [set members_only]1[/set]
 [set page_banner]Shipping Addresses[/set]
 [set page_title]__COMPANY__ -- Shipping Addresses[/set]
+[set meta_header]
+
+<STYLE TYPE=text/css>
+.ctitle  { 
+  font-weight: bold; 
+  color: white;
+  font-size: 11pt;
+}
+
+A:link.ctitle  { 
+  text-decoration: none;
+  font-weight: bold; 
+  color: white;
+  font-size: 11pt;
+}
+
+A:hover.ctitle { 
+  text-decoration: underline; 
+  font-weight: bold; 
+  color: yellow; 
+  font-size: 11pt;
+}
+
+A:active.ctitle { 
+  text-decoration: underline; 
+  font-weight: bold; 
+  color: yellow; 
+  font-size: 11pt;
+}
+
+A:visited.ctitle {  
+  text-decoration: none;
+  font-weight: bold; 
+  color: white;
+  font-size: 11pt;
+}
+
+.cbreak { 
+  font-weight: bold; 
+  font-size: 11pt;
+}
+
+.cdata { 
+  vertical-align: center;
+  font-size: 11pt;
+}
+
+.cerror { 
+  color: red; 
+  font-size: 11pt;
+}
+
+.cmessage { 
+  color: green; 
+  font-size: 11pt;
+}
+
+.chelp { 
+  vertical-align: center; 
+  font-size: 11pt; 
+}
+
+.clabel { 
+  text-align: left; 
+  font-weight: bold; 
+  font-size: 11pt;
+}
+
+.cwidget { 
+  vertical-align: center; 
+  font-size: 11pt; 
+}
+
+.ralt { 
+  background-color: __UI_T_ROW_ODD__; 
+} 
+
+.rbreak { 
+  background-color: __UI_T_ROW_ODD__; 
+}
+
+.rmarq { 
+  background-color: __UI_C_TITLEBARBG__; 
+}
+
+.rnorm { 
+  background-color: __UI_T_ROW_EVEN__; 
+}
+
+.rborder { 
+  background-color: __UI_C_TOPBLOCKBAR__; 
+}
+
+.rspacer { 
+  background-color: __UI_C_TITLEBARBG__; 
+}
+
+.rtitle { 
+  background-color: __UI_C_TITLEBARBG__; 
+}
+
+</STYLE>
+[/set]
 
 @_LEFTONLY_TOP_@
 
@@ -36,6 +139,7 @@ ui_template_name: leftonly
 	    hidden.mv_action=back
 		ui_hide_key=1
 	    table=userdb
+		table_width="95%"
 	    auto_secure=1
 		reload=1
 	    all_errors=1
