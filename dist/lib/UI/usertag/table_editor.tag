@@ -1269,7 +1269,7 @@ EOF
 										width => $width->{$c},
 										template => $template,
 									});
-		if($super and ($Variable->{UI_META_LINK} || $::Values->{ui_meta_force}) ) {
+		if($super and ! $opt->{no_meta} and ($Variable->{UI_META_LINK} || $::Values->{ui_meta_force}) ) {
 			$meta .= '<BR><FONT SIZE=1>';
 			# Get global variables
 			my $base = $Tag->var('UI_BASE', 1);
