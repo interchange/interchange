@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.27 2003-03-26 21:05:58 racke Exp $
+# $Id: Editor.pm,v 1.28 2003-03-29 20:33:13 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.27 $, 10);
+$VERSION = substr(q$Revision: 1.28 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -1283,6 +1283,7 @@ sub resolve_options {
 		ui_new_item
 		ui_nextpage
 		ui_no_meta_display
+		ui_profile
 		view_from
 		widget_cell_class
 		widget_cell_style
@@ -1847,6 +1848,7 @@ EOF
 					  . $name
 					  . "}; return 1\n"
 					  . $prof;
+				## Un-confuse vi }
 				$opt->{ui_profile_success} = "&set=step_$name 1";
 			}
 		}
