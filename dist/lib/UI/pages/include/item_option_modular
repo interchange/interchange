@@ -70,7 +70,7 @@
 					ui_meta_view=modular
 					{phantom?}
 					ui_te_widget:o_default=text
-					ui_te_widget_width:o_default=20
+					ui_te_width:o_default=20
 					ui_te_help:o_default=Override the option defaults, select SKU to use instead
 					{/phantom?}
 					ui_page_banner=[cgi ui_page_banner]

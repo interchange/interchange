@@ -1,6 +1,6 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 2.9 2001-11-06 23:30:50 mheins Exp $
+# $Id: Primitive.pm,v 2.10 2001-11-11 07:15:30 mheins Exp $
 
 # Copyright (C) 1998-2001 Red Hat, Inc. <interchange@redhat.com>
 
@@ -25,7 +25,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = substr(q$Revision: 2.10 $, 10);
 
 $DEBUG = 0;
 
@@ -638,6 +638,42 @@ for(1 .. 31) {
 	push @days, [sprintf("%02d", $_), $_];
 }
 
+sub round_to_fifteen {
+	my $val = shift;
+#::logDebug("round_to_fifteen val in=$val");
+	$val = substr($val, 0, 4);
+	$val = "0$val" if length($val) == 3;
+	return '0000' if length($val) < 4;
+	if($val !~ /(00|15|30|45)$/) {
+		my $hr = substr($val, 0, 2);
+		$hr =~ s/^0//;
+		my $min = substr($val, 2, 2);
+		$min =~ s/^0//;
+		if($min > 45 and $hr < 23) {
+			$hr++;
+			$min = 0;
+		}
+		elsif($min > 30) {
+			$min = 45;
+		}
+		elsif($min > 15) {
+			$min = 30;
+		}
+		elsif($min > 0) {
+			$min = 15;
+		}
+		elsif ($hr == 23) {
+			$min = 45;
+		}
+		else {
+			$min = 0;
+		}
+		$val = sprintf('%02d%02d', $hr, $min);
+	}
+#::logDebug("round_to_fifteen val out=$val");
+	return $val;
+}
+
 sub date_widget {
 	my($name, $val, $time) = @_;
 	if($val =~ /\D/) {
@@ -706,9 +742,10 @@ sub date_widget {
 
 	$val =~ s/^\d{8}//;
 	$val =~ s/\D+//g;
+	$val = round_to_fifteen($val);
 	$out .= qq{<INPUT TYPE=hidden NAME="$name" VALUE=":">};
 	$out .= qq{<SELECT NAME="$name">};
-
+	
 	my $ampm = $time =~ /pm/ ? 1 : 0;
 	my $mod = '';
 	undef $sel;
@@ -739,10 +776,11 @@ sub date_widget {
 				$disp_hour = sprintf("%02d:%02d", $hr, $min);
 			}
 			my $time = sprintf "%02d%02d", $hr, $min;
-			$o = sprintf qq{<OPTION VALUE="%s">%s</OPTION>\n}, $time, $disp_hour;
+			$o = sprintf qq{<OPTION VALUE="%s">%s}, $time, $disp_hour;
 			($out .= $o, next) unless ! $sel and $val;
+#::logDebug("prospect=$time actual=$val");
 			$o =~ s/>/ SELECTED>/ && $sel++
-				if substr($val, 0, 4) eq $time;
+				if $val eq $time;
 			$out .= $o;
 		}
 	}
