@@ -48,7 +48,7 @@ The information you need is in the following files:
 
     README     Copyright info, roadmap to installation
                and pointers to support system
-    
+
     Copying    Your Interchange license -- please read.
 
     QuickStart Document to help you install Interchange
@@ -180,4 +180,4 @@ Apache with SUEXEC:
 
 Windows:
     Interchange will not work properly with Windows. No strategy
-	has been yet developed for providing reliable operation on Windows.
+    has been yet developed for providing reliable operation on Windows.
