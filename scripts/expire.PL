@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange session expiration
 #
-# $Id: expire.PL,v 1.7 2000-09-25 16:36:58 zarko Exp $
+# $Id: expire.PL,v 1.8 2000-10-04 23:36:57 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -95,7 +95,8 @@ $Global::HammerLock = 20;
 $Global::ErrorFile = 'error.log';
 
 $Vend::ExternalProgram = 1;
-$Vend::SessionName = 'utility';
+$Vend::Quiet           = 1;
+$Vend::SessionName     = 'utility';
 
 #select a DBM
 
@@ -124,11 +125,9 @@ BEGIN {
 	}
 }
 
-$Vend::Quiet = 1;
-
 sub logGlobal {
 	ref $_[0] and shift(@_);
-	warn(errmsg(@_));
+	warn(errmsg(@_)) unless $Vend::Quiet;
 }
 
 sub is_retired {}
