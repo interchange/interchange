@@ -34,7 +34,9 @@ banner:
 
 <!-- BEGIN COMPONENT [control component random] -->
 
-<table width="[control table_width 95%]" align="center">
+<br>
+
+<table width="[control table_width 90%]" align="center">
 <tr> 
   <td class="categorybar">
     <b>[control banner See also...]</b>
@@ -42,6 +44,7 @@ banner:
 </tr>
 <tr>
   <td> 
+    <br>
     [calc]
   	my $n = [control cols 2];
 	$Scratch->{width_percent} = int(100 / $n) . '%';
@@ -58,42 +61,39 @@ banner:
 					ml=[control pool 1000]
 				"]
       <TD width="[scratch width_percent]"> 
-	<table border="0" cellspacing="0" cellpadding="0">
+	<table border="0" cellspacing="0" cellpadding="0" width="100%">
 	<tr> 
-	  <td id=rv>[loop-description]</td>
+	  <td width="100%" id=rv class="contentbar2">
+	    &nbsp;[loop-description]
+	  </td>
 	</tr>
 	<tr> 
-	  <td id=rv>
+	  <td id=rv nowrap align="center" class="contentbar1">
+	    <a href="[area [loop-code]]">More Info</a>
 		[if-loop-data options o_modular]
 			[page [loop-code]]
 		[else]
 			[order [loop-code]]
 		[/else]
 		[/if-loop-data]
-	    <img src="__THEME_IMG_DIR__buynow.gif" border="0"></A>
+	    <img align="middle" src="__THEME_IMG_DIR__buynow.gif" border="0"></A>
 	  </td>
 	</tr>
 	<tr> 
-	  <td align="center"> 
-	    <table cellspacing="0" cellpadding="0">
-	    <tr> 
-	      <td>
-		<img src="thumb/[loop-field thumb]">
-	      </td>
-	    </tr>
-	    </table>
-	  </td>
-	</tr>
-	<tr> 
-	  <td id=rv>
+	  <td id=rv align="center" class="contentbar1">
 	    Our Price: <b>[loop-price]</b>
 	  </td>
 	</tr>
-	<tr> 
-	  <td id=rv>
-	    <a href="[area [loop-code]]">More Info</a>
+<!---	<tr> 
+	  <td align="center"> 
+	    <a href="[area [loop-code]]">
+	      <img border="0" src="thumb/[loop-field thumb]">
+	    </a>
 	  </td>
-	</tr>
+	</tr> ---->
+        <tr>
+          <td><p>&nbsp;<br><br></p></td>
+        </tr>
 	</table>
       </TD>
       [/loop]
