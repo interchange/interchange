@@ -17,4 +17,72 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
+# Source debconf library
+. /usr/share/debconf/confmodule
+
+GOAHEAD=false
+
+# Get interchange user and group
+db_get interchange/user
+USER=$RET
+db_get interchange/group
+GROUP=$RET
+
+# Whether to do the actual installation of the demo catalog
+db_get interchange-cat-foundation/install
+
+if [ "$RET" = "true" ]; then
+	if [ -d /var/lib/interchange/catalogs/foundation ]; then
+		db_get interchange-cat-foundation/overwrite
+		if [ "$RET" = "always" ]; then
+			GOAHEAD=true
+		elif [ "$RET" = "ask" ]; then
+			db_get interchange-cat-foundation/confirm
+			GOAHEAD=$RET
+		fi
+	else
+		GOAHEAD=true
+	fi
+fi
+
+if [ "$GOAHEAD" = "true" ]; then
+	db_get interchange/docroot
+	# document root for static HTML
+	BASEDIR=/var/lib/interchange/catalogs
+	CGIBASE=/usr/lib/cgi-bin/ic
+	DOCROOT="$RET"
+	CATALOG=foundation
+	mkdir /var/lib/interchange/catalogs/$CATALOG
+	mkdir -p $DOCROOT/$CATALOG/images
+#	mkdir -p $RPM_BUILD_ROOT$BASEDIR/$i
+	/usr/bin/makecat \
+		-F \
+		--demotype=$CATALOG \
+		--catalogname=$CATALOG \
+		--basedir=$BASEDIR \
+		--catroot=$BASEDIR/$CATALOG \
+		--documentroot=$DOCROOT \
+		--samplehtml=$DOCROOT/$CATALOG \
+		--sampleurl=http://`hostname`.`dnsdomainname`/cgi-bin/ic/$CATALOG \
+		--imagedir=$DOCROOT/$CATALOG/images \
+		--imageurl=/shops/$CATALOG/images \
+		--servername=`hostname`.`dnsdomainname` \
+		--sharedir=$DOCROOT \
+		--shareurl= \
+		--cgidir=/usr/lib/cgi-bin/ic \
+		--cgibase=$CGIBASE \
+		--cgiurl=$CGIBASE/$i \
+		--interchangeuser=$USER \
+		--interchangegroup=$GROUP \
+		--permtype=user \
+		--serverconf=/etc/apache/httpd.conf \
+		--vendroot=/usr/lib/interchange \
+		--linkmode=UNIX \
+		--catuser=$USER \
+		--mailorderto=$USER \
+		cachedir=$CACHEDIR/$i \
+		logdir=$LOGDIR/$i
+fi
+
+
 #DEBHELPER#
