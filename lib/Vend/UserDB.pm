@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.13.6.12 2001-03-23 00:40:33 jon Exp $
+# $Id: UserDB.pm,v 1.13.6.13 2001-03-31 14:45:44 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.13.6.12 $, 10);
+$VERSION = substr(q$Revision: 1.13.6.13 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -1399,6 +1399,7 @@ sub userdb {
 		delete $::Values->{mv_username};
 		$user->log('logout') if $options{'log'};
 		$user->{MESSAGE} = ::errmsg('Logged out.');
+		Vend::Session::init_session() if $user->{OPTIONS}{clear_session};
 	}
 	elsif (! $Vend::Session->{logged_in}) {
 		$Vend::Session->{failure} = ::errmsg("Not logged in.");
