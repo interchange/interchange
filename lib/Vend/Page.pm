@@ -1,6 +1,6 @@
 # Vend::Page - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 2.18 2004-04-02 17:19:20 mheins Exp $
+# $Id: Page.pm,v 2.19 2004-04-08 19:49:51 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -46,7 +46,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.18 $, 10);
+$VERSION = substr(q$Revision: 2.19 $, 10);
 
 my $wantref = 1;
 
@@ -76,6 +76,7 @@ sub display_special_page {
 	die ::get_locale_message(412, "Missing special page: %s\n", $name)
 		unless defined $page;
 	$page =~ s#\[subject\]#$subject#ig;
+	$Global::Variable->{MV_SUBJECT} = $subject;
 	$Vend::PageInit = 0;
 	interpolate_html($page, 1);
 	::response();
