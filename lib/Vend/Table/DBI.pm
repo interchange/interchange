@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.30 2001-04-16 07:31:53 heins Exp $
+# $Id: DBI.pm,v 1.25.2.31 2001-05-01 10:15:14 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.30 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.31 $, 10);
 
 use strict;
 
@@ -1392,6 +1392,10 @@ sub query {
 
 	$s = $s->import_db() if ! defined $s->[$DBI];
 	$opt->{query} = $opt->{sql} || $text if ! $opt->{query};
+
+	if($opt->{type}) {
+		$opt->{$opt->{type}} = 1 unless defined $opt->{$opt->{type}};
+	}
 
 #::logDebug("\$db->query=$opt->{query}");
 	if(defined $opt->{values}) {
