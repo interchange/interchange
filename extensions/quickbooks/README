@@ -33,9 +33,10 @@ INSTALLATION
     To set up this extension, the basic steps are:
 
         * Create and copy directories and files.
-        * Add additional database fields.
+        * Add additional database fields (if any).
         * Modify catalog.cfg with additions.
-        * Add "quickbooks" order route to checkout pages.
+        * Add "quickbooks" order route to default route (or pages in setups
+		  that use an mv_order_route form field).
         * Restart Interchange.
         * Export your items from Interchange catalog (or import your
           existing QuickBooks items to Interchange).
@@ -160,7 +161,8 @@ INSTALLATION
     uses to track item sales. If you don't create these fields to relate to
     each SKU, the account "Other Income" will be used in the exports.
 
-    Add the following fields to the "inventory" table:
+    Add the following fields to the "inventory" table if they don't
+	already exist:
 
         account
         cogs_account
