@@ -2,7 +2,7 @@
 *.substvars
 files
 interchange
-interchange-cat-*
+interchange-cat-foundation
 interchange-doc
 interchange-ui
 substvars
