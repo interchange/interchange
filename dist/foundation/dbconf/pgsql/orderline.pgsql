@@ -29,4 +29,5 @@ Database  orderline  COLUMN_DEF   "order_date=varchar(32) NOT NULL"
 Database  orderline  COLUMN_DEF   "update_date=timestamp"
 Database  orderline  COLUMN_DEF   "status=varchar(64)"
 Database  orderline  COLUMN_DEF   "parent=varchar(9)"
+Database  orderline  COLUMN_DEF   "separate_address=text"
 Database  orderline  INDEX         store_id order_number
