@@ -1,5 +1,7 @@
 <!-- BEGIN COMPONENT random_horizontal -->
+
 <br clear=all>
+
 <table width="95%" align=center>
 <tr class="categorybar"> 
   <td class="categorybar" align="left"> 
@@ -7,57 +9,58 @@
   </td>
 </tr>
 <tr> 
-<td> 
-  <table border="0" cellspacing="0" cellpadding="0" align="center">
+  <td> 
+    <table border="0" cellspacing="0" cellpadding="0" align="center">
 	<tr align="center"> 
-	[loop
-			random="[either][scratch component_hsize][or]2[/either]"
-			search="
-					fi=products
-					st=db
-					ra=yes
-					ml=1000
-				"]
-	  <td> 
-		<table border="0" cellspacing="0" cellpadding="0">
-		  <tr> 
-			<td align="center">
-				<b>[loop-description]</b>
-			</td>
-		  </tr>
-		  <tr> 
-			<td align="center">
-				<b>[order [loop-code]]<img src="__THEME_IMG_DIR__buynow.gif" border="0" alt="buy now">[/order]</b>
-			</td>
-		  </tr>
-		  <tr> 
-			<td align="center"> 
-			  <table border="0" cellspacing="0" cellpadding="0">
-				<tr> 
-				  <td><img src="thumb/[loop-field thumb]" width="80" height="80"></td>
-				</tr>
-			  </table>
-			</td>
-		  </tr>
-		  <tr> 
-			<td align="center">
-				Our Price: [loop-price]
-			</td>
-		  </tr>
-		  <tr> 
-			<td align="center">
-				<a href="[area [loop-code]]">More Information</a>
-			</td>
-		  </tr>
-		  <tr> 
-			<td align="center">&nbsp;</td>
-		  </tr>
-		</table>
-	  </td>
-	[/loop]
+	[loop random="[either][scratch component_hsize][or]2[/either]"
+		search="
+			fi=products
+			st=db
+			ra=yes
+			ml=1000
+		"]
+		<td> 
+			<table border="0" cellspacing="0" cellpadding="0">
+		  	<tr> 
+				<td align="center">
+					<b>[loop-description]</b>
+				</td>
+		  	</tr>
+		  	<tr> 
+				<td align="center">
+					<b>[order [loop-code]]<img src="__THEME_IMG_DIR__buynow.gif" border="0" alt="buy now">[/order]</b>
+				</td>
+		  	</tr>
+		  	<tr> 
+				<td align="center"> 
+			  		<table border="0" cellspacing="0" cellpadding="0">
+					<tr> 
+				  		<td><img src="thumb/[loop-field thumb]" width="80" height="80"></td>
+					</tr>
+			  		</table>
+				</td>
+		 	 </tr>
+		  	<tr> 
+				<td align="center">
+					Our Price: [loop-price]
+				</td>
+		 	 </tr>
+		  	<tr> 
+				<td align="center">
+					<a href="[area [loop-code]]">More Information</a>
+				</td>
+		  	</tr>
+		  	<tr> 
+				<td align="center">&nbsp;</td>
+		  	</tr>
+			</table>
+	 	 </td>
+		[/loop]
 	</tr>
-  </table>
-  <p>&nbsp;</p>
+  	</table>
+
+	<p>&nbsp;</p>
+
   </td>
 </tr>
 </table>

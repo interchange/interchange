@@ -25,13 +25,15 @@ banner:
 [/comment]
 
 <!-- BEGIN COMPONENT [control component promo] -->
+
 <br clear=all>
+
 <table width="95%" align=center>
 <tr class="categorybar"> 
   <td class="categorybar" align="left"><b>[control banner Specials]</b></td>
 </tr>
 <tr> 
-<td> 
+  <td> 
 	[query arrayref=main
 		   sql="
 		   	SELECT sku,timed_promotion,start_date,finish_date
@@ -57,29 +59,29 @@ banner:
 		$Scratch->{promo_codes} = join(' ', @out);
 		return;
 	[/perl]
-<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-<tr align="center"> 
+      <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+      <tr align="center"> 
 [loop
 	random="[control matches 2]"
 	list="[scratch promo_codes]"
 	 ] 
-  <td> 
-	<table border="0" cellspacing="0" cellpadding="0">
+        <td> 
+	  <table border="0" cellspacing="0" cellpadding="0">
 	  <tr> 
 		<td align="center">
 		  <b>
-		[if-loop-data merchandising blurb_begin]
+		  [if-loop-data merchandising blurb_begin]
 			[loop-data merchandising blurb_begin]
-		[else]
+		  [else]
 			[loop-description]
-		[/else]
-		[/if-loop-data]</b>
+		  [/else]
+		  [/if-loop-data]</b>
 		</td>
 	  </tr>
 	  <tr> 
 		<td align="center">
-		<b>
-		[if-loop-data options o_modular]
+		  <b>
+		  [if-loop-data options o_modular]
 				[page [loop-code]]
 				[else][order [loop-code]]
 				[/else]
@@ -88,11 +90,7 @@ banner:
 	  </tr>
 	  <tr> 
 		<td align="center"> 
-		  <table border="0" cellspacing="0" cellpadding="0">
-			<tr> 
-			  <td><img src="thumb/[loop-field thumb]" height="80"></td>
-			</tr>
-		  </table>
+		  <img src="thumb/[loop-field thumb]" height="80">
 		</td>
 	  </tr>
 	  <tr> 
@@ -120,13 +118,15 @@ banner:
 	  <tr> 
 		<td align="center">&nbsp;</td>
 	  </tr>
-	</table>
-  </td>
+	  </table>
+  	</td>
 [/loop]
-</tr>
-</table>
-<p>&nbsp;</p>
-</td>
+      </tr>
+      </table>
+
+      <p>&nbsp;</p>
+
+  </td>
 </tr>
 </table>
 

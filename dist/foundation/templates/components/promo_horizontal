@@ -1,5 +1,7 @@
 <!-- BEGIN COMPONENT promo_horizontal -->
+
 <br clear=all>
+
 <table width="95%" align=center>
 <tr> 
   <td> 
@@ -28,68 +30,71 @@
 		$Scratch->{promo_codes} = join(' ', @out);
 		return;
 	[/perl]
-<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-<tr align="center"> 
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+    <tr align="center"> 
 [loop
 	random="[either][scratch component_hsize][or]2[/either]"
 	list="[scratch promo_codes]"
 		 ] 
-  <td> 
+      <td> 
 	<table border="0" cellspacing="0" cellpadding="0">
-	  <tr> 
+	<tr> 
 		<td align="center">
 			<b>
-		[if-loop-data merchandising blurb_begin]
+		  [if-loop-data merchandising blurb_begin]
 			[loop-data merchandising blurb_begin]
-		[else]
+		  [else]
 			[loop-description]
-		[/else]
-		[/if-loop-data]</b>
-	    </td>
-	  </tr>
-	  <tr> 
-	    <td align="center">
-		<b>[order [loop-code]]<img src="__THEME_IMG_DIR__buynow.gif" border="0" alt="buy now">[/order]</b>
-	    </td>
-	  </tr>
-	  <tr> 
+		  [/else]
+		  [/if-loop-data]</b>
+	        </td>
+	</tr>
+	<tr> 
+	    	<td align="center">
+		  <b>[order [loop-code]]<img src="__THEME_IMG_DIR__buynow.gif" border="0" alt="buy now">[/order]</b>
+	    	</td>
+	</tr>
+	<tr> 
 		<td align="center"> 
 		  <table border="0" cellspacing="0" cellpadding="0">
-			<tr> 
-			  <td><img src="thumb/[loop-field thumb]"></td>
-			</tr>
+		  <tr> 
+		    <td><img src="thumb/[loop-field thumb]"></td>
+		  </tr>
 		  </table>
 		</td>
-	  </tr>
-	  <tr> 
+	</tr>
+	<tr> 
 		<td align="center">
 			Our Price: [loop-price]
 		</td>
-	  </tr>
+	</tr>
 	[if-loop-data merchandising blurb_end]
-	  <tr> 
+	<tr> 
 		<td align="center">
 		  <a href="[area [loop-code]]">[loop-data merchandising blurb_end]</a>
 		</td>
-	  </tr>
+	</tr>
 	[else]
-	  <tr> 
+	<tr> 
 	    <td align="center">
 	      <a href="[area [loop-code]]">More Information</a>
 	    </td>
-	  </tr>
+	</tr>
 	[/else]
 	[/if-loop-data]
-	  <tr> 
+	<tr> 
 		<td align="center">&nbsp;</td>
-	  </tr>
+	</tr>
 	</table>
-  </td>
+      </td>
 [/loop]
-</tr>
-</table>
+
+    </tr>
+    </table>
+
 <p>&nbsp;</p>
-</td>
+
+  </td>
 </tr>
 </table>
 

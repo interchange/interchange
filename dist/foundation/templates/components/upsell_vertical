@@ -1,12 +1,14 @@
 <!-- BEGIN COMPONENT upsell_vertical -->
+
 [if scratch upsell]
 [loop
     random="[either][scratch component_vsize][or]3[/either]"
     list="[scratch upsell]"
- ] 
+] 
+
 <table border="0" cellspacing="0" cellpadding="0">
 <tr class="categorybar" align="center" valign="middle"> 
-	  <td class="categorybar">
+	<td class="categorybar">
 		<b>[scratch vbanner]</b>
 	</td>
 </tr>
@@ -47,7 +49,7 @@
 			<td align="center">&nbsp;</td>
 		  </tr>
 		</table>
-[/list]
+		[/list]
 	  </td>
 	</tr>
 	<tr align="center">

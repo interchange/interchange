@@ -16,71 +16,68 @@ banner:
 [/comment]
 
 <!-- BEGIN COMPONENT [control component best_vertical] -->
+
 [loop
     search="
-					fi=merchandising
-					st=db
-					ra=yes
-					tf=times_ordered
-					to=rn
-					ml=[control size 3]
-	"
- ] 
+	fi=merchandising
+	st=db
+	ra=yes
+	tf=times_ordered
+	to=rn
+	ml=[control size 3]
+"] 
+
 <table border="0" cellspacing="0" cellpadding="0">
-	<tr class="categorybar" align="center" valign="middle"> 
-	  <td class="categorybar">
+<tr class="categorybar" align="center" valign="middle"> 
+	<td class="categorybar">
 		<b>[control banner Best Sellers]</b>
-	  </td>
-	</tr>
-	<tr align="center"> 
-	  <td>
+	</td>
+</tr>
+<tr align="center"> 
+	<td>
 		[list]
-			<table border="0" cellspacing="0" cellpadding="0">
-			  <tr> 
-				<td align="center">
-					<b>[loop-field description]</b>
-				</td>
-			  </tr>
-			  <tr> 
-				<td align="center">
-				  <b>
+		<table border="0" cellspacing="0" cellpadding="0">
+		<tr> 
+			<td align="center">
+				<b>[loop-field description]</b>
+			</td>
+		</tr>
+		<tr> 
+			<td align="center">
+				<b>
 				[if-loop-data options o_modular]
 				[page [loop-code]]
 				[else][order [loop-code]]
 				[/else]
 				[/if-loop-data]<img src="__THEME_IMG_DIR__buynow.gif" border="0" alt="buy now">[/order]</b>
-				</td>
-			  </tr>
-			  <tr> 
-				<td align="center"> 
-				  <table border="0" cellspacing="0" cellpadding="0">
-					<tr> 
-					  <td><img src="thumb/[loop-field thumb]" width="80" height="80"></td>
-					</tr>
-				  </table>
-				</td>
-			  </tr>
-			  <tr> 
-				<td align="center">
-				  Our Price: [loop-price]
-				</td>
-			  </tr>
-			  <tr> 
-				<td align="center">
-					<A HREF="[area [loop-code]]">More Information</a>
-				</td>
-			  </tr>
-			  <tr> 
-				<td align="center">&nbsp;</td>
-			  </tr>
-			</table>
-[/list]
-		  </td>
+			</td>
 		</tr>
-		<tr align="center">
-		  <td>&nbsp;</td>
+		<tr> 
+			<td align="center"> 
+				<img src="thumb/[loop-field thumb]" width="80" height="80">
+			</td>
 		</tr>
-	  </table>
+		<tr> 
+			<td align="center">
+				Our Price: [loop-price]
+			</td>
+		</tr>
+		<tr> 
+			<td align="center">
+				<A HREF="[area [loop-code]]">More Information</a>
+			</td>
+		</tr>
+		<tr> 
+			<td align="center">&nbsp;</td>
+		</tr>
+		</table>
+		[/list]
+	</td>
+</tr>
+<tr align="center">
+	<td>&nbsp;</td>
+</tr>
+</table>
 [/loop]
 
 <!-- END COMPONENT [control component best_vertical] -->

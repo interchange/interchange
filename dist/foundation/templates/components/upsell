@@ -26,8 +26,11 @@ random:
 [/comment]
 
 <!-- BEGIN COMPONENT [control component upsell] -->
+
 [if scratch upsell]
+
 <br clear=all>
+
 <table width="[control table_width 95%]" align=center>
 <tr class="categorybar">
   <td style="categorybar"> 
@@ -35,14 +38,15 @@ random:
   </td>
 </tr>
 <tr>
-<td> 
-  [calc]
+  <td> 
+    [calc]
   	my $n = [control cols 2];
 	$Scratch->{width_percent} = int(100 / $n) . '%';
 	return;
-  [/calc]
-  <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-[table-organize embed=1 pretty=1 cols="[control cols 2]"]
+    [/calc]
+
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+    [table-organize embed=1 pretty=1 cols="[control cols 2]"]
 	[loop random="[control size 2]" list="[scratchd upsell]"]
 	  <TD width="[scratch width_percent]"> 
 		<table border="0" cellspacing="0" cellpadding="0">
@@ -50,7 +54,7 @@ random:
 			<td align="center">[loop-description]</td>
 		  </tr>
 		  <tr> 
-			<td align="center" id=rv>
+			<td align="center">
 				[if-loop-data options o_modular]
 					[page [loop-code]]
 				[else]
@@ -89,9 +93,11 @@ random:
 		</table>
 	  </TD>
 	[/loop]
-[/table-organize]
-  </table>
-  <p>&nbsp;</p>
+    [/table-organize]
+    </table>
+
+    <p>&nbsp;</p>
+
   </td>
 </tr>
 </table>

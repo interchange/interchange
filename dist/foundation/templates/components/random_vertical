@@ -47,6 +47,7 @@ banner:
 	$Scratch->{width_percent} = int(100 / $n) . '%';
 	return;
     [/calc]
+
     <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
     [table-organize embed=1 pretty=1 cols="[control cols 2]"]
 	[loop
@@ -60,10 +61,10 @@ banner:
       <TD width="[scratch width_percent]"> 
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr> 
-	  <td id=rv>[loop-description]</td>
+	  <td>[loop-description]</td>
 	</tr>
 	<tr> 
-	  <td id=rv>
+	  <td>
 		[if-loop-data options o_modular]
 			[page [loop-code]]
 		[else]
@@ -85,12 +86,12 @@ banner:
 	  </td>
 	</tr>
 	<tr> 
-	  <td id=rv>
+	  <td>
 	    Our Price: <b>[loop-price]</b>
 	  </td>
 	</tr>
 	<tr> 
-	  <td id=rv>
+	  <td>
 	    <a href="[area [loop-code]]">More Info</a>
 	  </td>
 	</tr>

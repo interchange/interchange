@@ -63,12 +63,12 @@ banner:
       <TD width="[scratch width_percent]" valign="top" align="center"> 
 	<table border="0" cellspacing="0" cellpadding="0" width="75%">
 	<tr> 
-	  <td width="75%" id=rv class="contentbar1" align="center">
+	  <td width="75%" class="contentbar1" align="center">
 	    &nbsp;[loop-description]
 	  </td>
 	</tr>
 	<tr> 
-	  <td id=rv nowrap align="center">
+	  <td nowrap align="center">
 	    <a href="[area [loop-code]]">More Info</a>
 		[if-loop-data options o_modular]
 			[page [loop-code]]
@@ -80,7 +80,7 @@ banner:
 	  </td>
 	</tr>
 	<tr> 
-	  <td id=rv align="center">
+	  <td align="center">
 	    Our Price: <b>[loop-price]</b>
 	  </td>
 	</tr>

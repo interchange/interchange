@@ -132,7 +132,7 @@ function update_price (form) {
 	<br>
 	<INPUT TYPE=hidden NAME="[quantity-name]" VALUE="[item-quantity]">
 	<INPUT TYPE=hidden NAME="item_pointer" VALUE="[modifier-name mv_sku]=[item-data options o_group]">
-	<SMALL><SMALL><SELECT NAME="[item-data options o_group]" onChange="update_price(this.form)">
+	<SMALL><SELECT NAME="[item-data options o_group]" onChange="update_price(this.form)">
 
 [tree
 		prefix=tree
@@ -170,8 +170,8 @@ function update_price (form) {
 	return qq{<OPTION VALUE="$row->{code}"$sel>$desc</OPTION>};
 [/tree-sub][tree-exec do_level][/tree-exec][/tree]
 
-	</SELECT></SMALL></SMALL>
-	<HR>
+	</SELECT></SMALL>
+	<br>
 [/if-item-param]
 
 [/item-list]

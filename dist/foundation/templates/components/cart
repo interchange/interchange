@@ -17,42 +17,43 @@ upsell_in_cart:
 
 <table width="95%" cellspacing="0">
 <tr>
-  <td align="centeR">
+	<td align="center">
 
-[if type=explicit compare="q{[read-cookie MV_SESSION_ID]}"]
+	[if type=explicit compare="q{[read-cookie MV_SESSION_ID]}"]
 
-[elsif scratch tried]
-    You must have cookies set to leave the basket. Check out now or forever
-    lose your shopping cart.
-[/elsif]
+	[elsif scratch tried]
+    		You must have cookies set to leave the basket. Check out now or forever
+    		lose your shopping cart.
+	[/elsif]
 
-[else]
-[set tried]1[/set]
-[bounce href="[area ord/basket]"]
-[/else]
+	[else]
+		[set tried]1[/set]
+		[bounce href="[area ord/basket]"]
+	[/else]
 
-[/if]
+	[/if]
 
-    <FORM ACTION="[process-target secure=1]" METHOD=POST name="basket">
-    <INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
-    <INPUT TYPE=hidden NAME=mv_doit      VALUE=refresh>
-    <INPUT TYPE=hidden NAME=mv_orderpage VALUE="ord/basket">
-    <INPUT TYPE=hidden NAME=mv_checkout  VALUE="ord/checkout">
-    <INPUT TYPE=hidden NAME=mv_nextpage  VALUE=index>
-    <br>
-    <table>
-    <tr>
-      <td>
-        <table cellspacing="0" cellpadding="4" border="0">
-	<TR>
-          <td class="contentbar2"><b>&nbsp;Remove</b></td>
-          <td class="contentbar2" align="center"><b>SKU</b></td>
-          <td class="contentbar2"><b>Description</b></td>
-          <td class="contentbar2"><b>Quantity</b></td>
-          <td class="contentbar2" align="center"><b>Price</b></td>
-          <td class="contentbar2"><b>Extension&nbsp;</b></td>
-	</TR>
-	<TBODY>
+	<FORM ACTION="[process-target secure=1]" METHOD=POST name="basket">
+    	<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+    	<INPUT TYPE=hidden NAME=mv_doit      VALUE=refresh>
+    	<INPUT TYPE=hidden NAME=mv_orderpage VALUE="ord/basket">
+    	<INPUT TYPE=hidden NAME=mv_checkout  VALUE="ord/checkout">
+    	<INPUT TYPE=hidden NAME=mv_nextpage  VALUE=index>
+    	<br>
+
+	<table>
+    	<tr>
+      		<td>
+        		<table cellspacing="0" cellpadding="4" border="0">
+			<TR>
+          			<td class="contentbar2"><b>&nbsp;Remove</b></td>
+			        <td class="contentbar2" align="center"><b>SKU</b></td>
+          			<td class="contentbar2"><b>Description</b></td>
+          			<td class="contentbar2"><b>Quantity</b></td>
+          			<td class="contentbar2" align="center"><b>Price</b></td>
+          			<td class="contentbar2"><b>Extension&nbsp;</b></td>
+			</TR>
+			<TBODY>
 	
 [if items]
 [then]
@@ -95,11 +96,12 @@ upsell_in_cart:
 [/item-calc]
 
 	<TR class="[item-calc]$row_class || 'contentbar1'[/item-calc]">
-	  <TD align=center>
-	    <INPUT TYPE=checkbox NAME="[quantity-name]" onClick="this.form.action='[process-target]', this.form.submit()" VALUE=0>
-	  </TD>
-	  <TD><b>[item-sku]</b></TD>
-	  <td>[page [item-code]]<b>[item-description]</b></A>
+		<TD align=center>
+	    		<INPUT TYPE=checkbox NAME="[quantity-name]" onClick="this.form.action='[process-target]', this.form.submit()" VALUE=0>
+	  	</TD>
+	  	<TD><b>[item-sku]</b></TD>
+	  	<td>[page [item-code]]<b>[item-description]</b></A>
+
 	[if scratch dealer]
 	[if-item-data pricing sku]
 	    <BR>[page quantity [item-code]]
@@ -147,32 +149,32 @@ EOF
 	[set upsell_found][/set]
 	[loop list="[item-data merchandising upsell_to]"]
 	[if scratch upsell_found]
-	    <TABLE CELLPADDING=0 CELLSPACING=0>
-	    <TR class="contentbar2">
-	      <TD class="contentbar1">
-		Other items you may like:
-	      </TD>
-	      <TD class="contentbar1">
-	      </TD>
-	    </TR>
-	    <TR>
-	      <TD class="contentbar1">
-	[list]
-	[loop-calc]
-		@ary = grep $_->{code} eq q{[loop-code]}, @{$Carts->{main}};
-		return if scalar @ary;
-		$Scratch->{upsell_found} = 1;
-		return q{<A HREF="[area [loop-code]]">[loop-description]</A><BR>};
-	[/loop-calc]
-	[/list]
-	      </TD>
-	    </TR>
-	    </table>
+	<TABLE CELLPADDING=0 CELLSPACING=0>
+	<TR class="contentbar2">
+		<TD class="contentbar1">
+			Other items you may like:
+	      	</TD>
+	      	<TD class="contentbar1"></TD>
+	</TR>
+	<TR>
+	      	<TD class="contentbar1">
+		  [list]
+		  [loop-calc]
+		  @ary = grep $_->{code} eq q{[loop-code]}, @{$Carts->{main}};
+		  return if scalar @ary;
+		  $Scratch->{upsell_found} = 1;
+		  return q{<A HREF="[area [loop-code]]">[loop-description]</A><BR>};
+		  [/loop-calc]
+		  [/list]
+	      	</TD>
+	</TR>
+	</table>
+
 	[/if]
 	[/loop]
 [/if]
 
-	    <br>
+	<br>
 
 	[if-item-data options o_enable]
 		[if-item-data !options o_modular]
@@ -224,12 +226,12 @@ EOF
 [/loop]
 EOF
 	my $modify = $Tag->area( {
-								href => 'modular_modify',
-								form => '
-											mv_arg=[item-modifier mv_mi]
-											sku=[item-code]
-										',
-							});
+		href => 'modular_modify',
+		form => '
+		mv_arg=[item-modifier mv_mi]
+		sku=[item-code]
+		',
+	});
 
 	my @lines = split /\n/, $string;
 	my $half = int(scalar(@lines) / 2);
@@ -395,7 +397,7 @@ EOF
 	</tr>
 	<tr>
 	  <td colspan="4" align="center">
-	  <br>
+	    <br>
   [set Save Cart]
    mv_todo=return
    mv_nextpage=ord/basket

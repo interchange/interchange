@@ -35,16 +35,15 @@ ui_component_label: Smaller cart for display in content area
 	  [page ord/basket]edit</A>
 	</TD>
 	<td valign=top>[item-code]</TD>
-	<td valign=top>[page [item-code]][item-description]</A>
-</TD>
+	<td valign=top>[page [item-code]][item-description]</A></TD>
 
-[if-item-modifier gift_cert]
+	[if-item-modifier gift_cert]
 	<TD ALIGN=CENTER><small>Amount of gift:</small></TD>
 	<TD ALIGN=CENTER>[item-quantity]</TD>
 	<TD ALIGN=right>
 			[item-subtotal]
 	</TD>
-[else]
+	[else]
 	<TD ALIGN=CENTER>[item-quantity]</TD>
 	<TD ALIGN=right>
 			[item-price]

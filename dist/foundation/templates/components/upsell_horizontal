@@ -1,6 +1,9 @@
 <!-- BEGIN COMPONENT upsell_horizontal -->
+
 [if scratch upsell]
+
 <br clear=all>
+
 <table width="95%" align=center>
 <tr class="categorybar"> 
   <td class="categorybar" align="left"> 
@@ -50,8 +53,10 @@
 	  </td>
 	[/loop]
 	</tr>
-  </table>
-  <p>&nbsp;</p>
+    </table>
+
+    <p>&nbsp;</p>
+
   </td>
 </tr>
 </table>

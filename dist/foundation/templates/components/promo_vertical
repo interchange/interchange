@@ -1,4 +1,5 @@
 <!-- BEGIN COMPONENT promo_vertical -->
+
 [query arrayref=main
 	   sql="
 		SELECT sku,timed_promotion,start_date,finish_date
@@ -28,75 +29,73 @@
     random="[either][scratch component_vsize][or]3[/either]"
     list="[scratch promo_codes]"
          ] 
+
 <table border="0" cellspacing="0" cellpadding="0">
-	<tr class="categorybar" align="center" valign="middle"> 
-		  <td class="categorybar">
-			<b>[scratch vbanner]</b>
-		  </td>
-	</tr>
-	<tr align="center"> 
-	  <td>
-[list]
+<tr class="categorybar" align="center" valign="middle"> 
+	<td class="categorybar">
+		<b>[scratch vbanner]</b>
+	</td>
+</tr>
+<tr align="center"> 
+	<td>
+		[list]
 		<table border="0" cellspacing="0" cellpadding="0">
-		  <tr> 
+		<tr> 
 			<td align="center">
 			  <b>
-		[if-loop-data merchandising blurb_begin]
-			[loop-data merchandising blurb_begin]
-		[else]
-			[loop-description]
-		[/else]
-		[/if-loop-data]
+				[if-loop-data merchandising blurb_begin]
+				[loop-data merchandising blurb_begin]
+				[else]
+				[loop-description]
+				[/else]
+				[/if-loop-data]
 			  </b>
 			</td>
-		  </tr>
-		  <tr> 
+		</tr>
+		<tr> 
 			<td align="center">
 				[order [loop-code]]<img src="__THEME_IMG_DIR__buynow.gif" border="0" alt="buy now">[/order]
 			</td>
-		  </tr>
-		  <tr> 
+		</tr>
+		<tr> 
 			<td align="center"> 
-			  <table border="0" cellspacing="0" cellpadding="0">
-				<tr> 
-				  <td><img src="thumb/[loop-field thumb]" width="80" height="80"></td>
-				</tr>
-			  </table>
+				<img src="thumb/[loop-field thumb]" width="80" height="80">
 			</td>
-		  </tr>
-		  <tr> 
+		</tr>
+		<tr> 
 			<td align="center" height="5">&nbsp;</td>
-		  </tr>
-		  <tr> 
+		</tr>
+		<tr> 
 			<td align="center">
 				Our Price: [loop-price]
 			</td>
-		  </tr>
-	[if-loop-data merchandising blurb_end]
-	  <tr> 
-		<td align="center">
-			<a href="[area [loop-code]]">[loop-data merchandising blurb_end]</a>
-		</td>
-	  </tr>
-	[else]
-	  <tr> 
-		<td align="center">
-			<A HREF="[area [loop-code]]">More Information</a>
-		</td>
-	  </tr>
-	[/else]
-	[/if-loop-data]
-	  <tr> 
-		<td align="center">&nbsp;</td>
-	  </tr>
-	</table>
-[/list]
+		</tr>
+		[if-loop-data merchandising blurb_end]
+	  	<tr> 
+			<td align="center">
+				<a href="[area [loop-code]]">[loop-data merchandising blurb_end]</a>
+			</td>
+	  	</tr>
+		[else]
+	  	<tr> 
+			<td align="center">
+				<A HREF="[area [loop-code]]">More Information</a>
+			</td>
+	  	</tr>
+		[/else]
+		[/if-loop-data]
+	  	<tr> 
+			<td align="center">&nbsp;</td>
+	  	</tr>
+		</table>
+		[/list]
 	  </td>
    </tr>
    <tr align="center">
      <td>&nbsp;</td>
    </tr>
 </table>
+
 [/loop]
 
 <!-- END COMPONENT promo_vertical -->
