@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.10 2002-08-11 15:52:30 mheins Exp $
+# $Id: Search.pm,v 2.11 2002-09-01 23:19:51 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.10 $, 10);
+$VERSION = substr(q$Revision: 2.11 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -257,14 +257,6 @@ sub spec_check {
 		    splice(@specs, $i, 1);
 		}
 		else {
-			if(length($specs[$i]) < $s->{mv_min_string}) {
-				my $msg = <<EOF;
-Search strings must be at least $s->{mv_min_string} characters.
-You had '$specs[$i]' as one of your search strings.
-EOF
-				$s->{matches} = -1;
-				return undef;
-			}
 			COLOP: {
 				last COLOP unless $s->{mv_coordinate};
 #::logDebug("i=$i, begin_string=$s->{mv_begin_string}[$i]");
