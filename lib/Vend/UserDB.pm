@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.13.6.2 2000-11-30 06:06:29 heins Exp $
+# $Id: UserDB.pm,v 1.13.6.3 2000-12-11 01:57:45 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.13.6.2 $, 10);
+$VERSION = substr(q$Revision: 1.13.6.3 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -314,7 +314,7 @@ sub new {
 
 	set_db($self) or die ::errmsg("user database %s does not exist.", $self->{DB_ID}) . "\n";
 
-	return $self;
+	return $Vend::user_object = $self;
 }
 
 sub create_db {
