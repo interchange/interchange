@@ -5,12 +5,13 @@ config_prog
 dump
 expire
 expireall
+ic_mod_perl
 initp.pl
 interchange
 localize
 makecat
 minivend
+newcat
 offline
 restart
 update
-
