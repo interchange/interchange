@@ -21,11 +21,12 @@ Packaging
 ---------
 
 * Debian package build process didn't install scripts properly
-  into usr/lib/interchange/bin when running with Perl 5.8.x
+  into usr/lib/interchange/bin when running with Perl 5.8.x.
 
 * Cleanse mod_interchange directory in Debian's clean target.
 
 * No need to restart Interchange for log rotation.
+
 
 ------------------------------------------------------------------------------
 
