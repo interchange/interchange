@@ -1,4 +1,4 @@
-## UI Header vars, version: $Id: UI_STD_HEAD,v 2.36 2003-01-14 02:25:53 mheins Exp $
+## UI Header vars, version: $Id: UI_STD_HEAD,v 2.37 2003-01-20 17:37:18 mheins Exp $
 Variable UI_STD_INIT <<EOV
 [calcn]
 	# is this browser able to grok DHTML ?
@@ -117,7 +117,7 @@ Variable UI_STD_HEAD <<EOV
 [output name=fixed_menu]
 [if session logged_in]
 [menu
-	name=Bottom
+	name=Fixed
 	ui_security=depends_on
 	extra_value.check_publish=`$Scratch->{check_publish}`
 	superuser=super
@@ -130,7 +130,7 @@ Variable UI_STD_HEAD <<EOV
 	[if scratch ui_meta_link]
 			<td nowrap>
 				&nbsp;&nbsp;<a
-					href="[area href='admin/menu_editor' form='qmenu_name=Bottom']"
+					href="[area href='admin/menu_editor' form='qmenu_name=Fixed']"
 					style="font-size: 7pt" class=edittablink {CHECK_PUBLISH} title="[msg]Edit this menu[/msg]">edit</A>
 			&nbsp;&nbsp;</td>
 	[/if]
