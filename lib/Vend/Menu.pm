@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.35 2003-11-14 14:32:58 racke Exp $
+# $Id: Menu.pm,v 2.36 2003-11-23 16:42:36 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.35 $, 10);
+$VERSION = substr(q$Revision: 2.36 $, 10);
 
 use Vend::Util;
 use strict;
@@ -1560,7 +1560,7 @@ sub menu {
 	}
 
 	my @transform;
-	my @ordered_transform = qw/full_interpolate page_class indicator_class indicator_page localize entities nbsp/;
+	my @ordered_transform = qw/full_interpolate indicator_page page_class indicator_class localize entities nbsp/;
 	my %ordered;
 	@ordered{@ordered_transform} = @ordered_transform;
 
