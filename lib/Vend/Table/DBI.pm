@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.27 2001-04-14 09:26:55 heins Exp $
+# $Id: DBI.pm,v 1.25.2.28 2001-04-15 04:29:27 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.27 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.28 $, 10);
 
 use strict;
 
@@ -838,9 +838,13 @@ sub set_slice {
 	my $tkey;
 	my $sql;
 	unless($s->record_exists($key)) {
+#::logDebug("record $key doesn't exist");
 		$key = $s->set_row($key);
-		$tkey = $s->quote($key, $s->[$KEY]) if defined $key;
+#::logDebug("key now '$key'");
 	}
+
+	$tkey = $s->quote($key, $s->[$KEY]) if defined $key;
+#::logDebug("tkey now $tkey");
 
 	if(defined $tkey) {
 		my $fstring = join ",", map { "$_=?" } @$fary;
@@ -1110,6 +1114,7 @@ sub set_field {
 			$query = qq{INSERT INTO $s->[$TABLE] ($column) VALUES ($value)};
 		}
 		else {
+#::logDebug("creating key '$rawkey' in table $s->[$TABLE]");
 			$s->set_row($rawkey);
 		}
 	}
