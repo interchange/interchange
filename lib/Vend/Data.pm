@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.10 2002-06-27 22:24:10 jon Exp $
+# $Id: Data.pm,v 2.11 2002-07-08 15:32:06 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -967,7 +967,7 @@ sub import_database {
 		eval { 
 			if($MVSAFE::Safe) {
                 if (exists $Vend::Interpolate::Db{$class_config->{Class}}) {
-				    $db = $Vend::Interpolate::Db{$class_config->{Class}}->open_table( $obj, $obj->{db_file} );
+				    $db = $Vend::Interpolate::Db{$table_name}->open_table( $obj, $obj->{db_file} );
                 } else {
                     die errmsg("no access for database %s", $table_name);
                 }
