@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.9.0
 #
-# $Id: interchange.PL,v 2.27 2002-05-09 10:02:33 racke Exp $
+# $Id: interchange.PL,v 2.28 2002-05-10 19:46:51 kwalsh Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -2865,6 +2865,8 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 
 	# Read interchange.cfg (or whatever its name is set to be)
 	global_config();
+	# Select locking mode
+	set_lock_type();
 
 	@action{keys %{$Global::ActionMap}} = (values %{$Global::ActionMap})
 		if $Global::ActionMap;
