@@ -162,7 +162,6 @@ dist/barry/mysql/inventory.mysql
 dist/barry/mysql/orderline.mysql
 dist/barry/mysql/pricing.mysql
 dist/barry/mysql/products.mysql
-dist/barry/mysql/shipping.mysql
 dist/barry/mysql/transactions.mysql
 dist/barry/mysql/userdb.mysql
 dist/barry/orders/.empty
@@ -219,7 +218,6 @@ dist/barry/pgsql/inventory.pgsql
 dist/barry/pgsql/orderline.pgsql
 dist/barry/pgsql/pricing.pgsql
 dist/barry/pgsql/products.pgsql
-dist/barry/pgsql/shipping.pgsql
 dist/barry/pgsql/transactions.pgsql
 dist/barry/pgsql/userdb.pgsql
 dist/barry/products/2ndDayAir.csv
@@ -246,7 +244,6 @@ dist/barry/products/pricing.txt
 dist/barry/products/products.txt
 dist/barry/products/salestax.asc
 dist/barry/products/shipping.asc
-dist/barry/products/shipping.txt
 dist/barry/products/state.txt
 dist/barry/products/transactions.txt
 dist/barry/products/ups_zone.asc
@@ -640,7 +637,6 @@ dist/simple/mysql/inventory.mysql
 dist/simple/mysql/orderline.mysql
 dist/simple/mysql/pricing.mysql
 dist/simple/mysql/products.mysql
-dist/simple/mysql/shipping.mysql
 dist/simple/mysql/transactions.mysql
 dist/simple/mysql/userdb.mysql
 dist/simple/orders/.empty
@@ -705,7 +701,6 @@ dist/simple/pgsql/inventory.pgsql
 dist/simple/pgsql/orderline.pgsql
 dist/simple/pgsql/pricing.pgsql
 dist/simple/pgsql/products.pgsql
-dist/simple/pgsql/shipping.pgsql
 dist/simple/pgsql/transactions.pgsql
 dist/simple/pgsql/userdb.pgsql
 dist/simple/products/2ndDayAir.csv
@@ -732,7 +727,6 @@ dist/simple/products/pricing.txt
 dist/simple/products/products.txt
 dist/simple/products/salestax.asc
 dist/simple/products/shipping.asc
-dist/simple/products/shipping.txt
 dist/simple/products/state.txt
 dist/simple/products/transactions.txt
 dist/simple/products/ups_zone.asc
