@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.152 2005-01-29 18:30:01 mheins Exp $
+# $Id: Config.pm,v 2.153 2005-01-30 16:36:29 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -49,7 +49,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.152 $, 10);
+$VERSION = substr(q$Revision: 2.153 $, 10);
 
 my %CDname;
 my %CPname;
@@ -553,7 +553,7 @@ sub catalog_directives {
 	['PriceDefault',	 undef,              'price'],
 	['PriceField',		 undef,              'price'],
 	['DiscountSpaces',	 'yesno',            'no'],
-	['DiscountSpaceVar', 'word',             'no'],
+	['DiscountSpaceVar', 'word',             'mv_discount_space'],
 	['Jobs',		 	 'hash',     	 	 ''],
 	['Shipping',         'locale',           ''],
 	['Accounting',	 	 'locale',     	 	 ''],
@@ -2412,7 +2412,9 @@ my @Dispatches;
 	DiscountSpaces => sub {
 #::logDebug("Doing DiscountSpaces dispatch...");
 	   if ($CGI::values{$Vend::Cfg->{DiscountSpaceVar}}) {
+#::logDebug("$Vend::Cfg->{DiscountSpaceVar} is set=...");
            $Vend::DiscountSpace = $CGI::values{$Vend::Cfg->{DiscountSpaceVar}};
+#::logDebug("$Vend::Cfg->{DiscountSpaceVar} is set=$Vend::DiscountSpace...");
 		   $::Discounts
 				= $Vend::Session->{discount}
 				= $Vend::Session->{discount_space}{$Vend::DiscountSpace}
