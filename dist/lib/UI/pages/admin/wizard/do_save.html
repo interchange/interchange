@@ -127,6 +127,16 @@ products            => sub {
 shipzip             => 'UPS_ORIGIN',
 shoppass           => sub {
 						$udb->set_field(
+								$Values->{adminuser},
+								'password',
+								$Values->{shoppass},
+								);
+						$udb->set_field(
+								$Values->{adminuser},
+								'fname',
+								$Values->{firstname},
+								);
+						$udb->set_field(
 								$Values->{shopuser},
 								'password',
 								$Values->{shoppass},
