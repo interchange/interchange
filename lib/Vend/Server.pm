@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.0.2.10 2003-01-23 19:18:07 jon Exp $
+# $Id: Server.pm,v 2.0.2.11 2003-01-24 03:37:06 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.0.2.10 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.11 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -401,7 +401,7 @@ sub canon_status {
 	$_ = shift;
 	s:^\s+::;
 	s:\s+$::;
-	s:\s*\n:\r\n:mg;
+	s:\s*\n\s*:\r\n:g;
 	return "$_\r\n";
 }
 
