@@ -67,7 +67,7 @@ it easy to try out a number of Interchange's features.
 
 # This is obviously a terrible oversimplification of whether the build system
 # is Red Hat Linux 7 or not, but it has worked so far.
-%define interchange_rpm_subrelease %( if [ "%webdir" = "/var/www" ]; then echo -n rh7 ; else echo -n rh6 ; fi )
+#%define interchange_rpm_subrelease %( if [ "%webdir" = "/var/www" ]; then echo -n rh7 ; else echo -n rh6 ; fi )
 
 
 %prep
@@ -302,7 +302,9 @@ chown %{ic_user}.%ic_group $RPM_BUILD_ROOT$RPMICLOG
 DIRDEPTH=`echo $ICBASE | sed 's:[^/]::g' | awk '{print length + 1}'`
 cd $RPM_BUILD_ROOT
 find . -path .$ICBASE/%cat_name -prune -mindepth $DIRDEPTH -maxdepth $DIRDEPTH \
-	-o -print | grep "^\.$ICBASE" | sed 's:^\.::' > %filelist_main
+	-o -print | grep "^\.$ICBASE" | sed 's:^\.::' | \
+	sed 's:^\(/usr/lib/interchange/etc\):%attr(-, %{ic_user}, %{ic_group}) \1:' \
+	> %filelist_main
 
 
 %install
@@ -377,7 +379,6 @@ fi
 /var/cache/interchange/%cat_name
 %{webdir}/html/%cat_name
 %{webdir}/cgi-bin/%cat_name
-
 
 %endif
 
@@ -527,6 +528,10 @@ rm -f %filelist_main
 
 
 %changelog
+
+* Wed Jun 20 2001 Jon Jensen <jon@redhat.com>
+- Make /usr/lib/interchange/etc owned by interch.interch for makecat.cfg
+  and reconfig and whatever else needs it.
 
 * Thu Jun 14 2001 Jon Jensen <jon@redhat.com>
 - Bring back prebuilt demo, but as a separate package called
