@@ -14,76 +14,76 @@ Core
 
 * The great tag breakout!
 
-	- Almost all tags are now UserTag definitions. The exceptions are:
+    - Almost all tags are now UserTag definitions. The exceptions are:
 
-		and bounce goto if label or unless
+        and bounce goto if label or unless
 
-	- New TagDir directive (default is VENDROOT/code) sets the
-	  directory (or directories) which are searched for code definitions
-	  set by UserTag and CodeDef.
+    - New TagDir directive (default is VENDROOT/code) sets the
+      directory (or directories) which are searched for code definitions
+      set by UserTag and CodeDef.
 
-	- New TagGroup directive establishes groups of ITL tags which can
-	  be included.
+    - New TagGroup directive establishes groups of ITL tags which can
+      be included.
 
-		TagGroup :crufty "banner default ecml html_table onfly sql"
+        TagGroup :crufty "banner default ecml html_table onfly sql"
 
-	  The default groups include :core, which contains all of the
-	  ITL tags defined in 4.8/early 4.9. The groups are defined
-	  in $Vend::Cfg::StdTags and can be undefined if desired
-	  with "TagGroup :group".
+      The default groups include :core, which contains all of the
+      ITL tags defined in 4.8/early 4.9. The groups are defined
+      in $Vend::Cfg::StdTags and can be undefined if desired
+      with "TagGroup :group".
 
-	- New TagInclude directive allows inclusion of tags (or groups
-	  of tags). If a tag is defined as a core tag (with a .coretag
-	  or .tag or .ct extension) and is not included, it will not
-	  be compiled and placed in the tag map. This is for all catalogs,
-	  so if *any* catalog uses a tag it must be included.
+    - New TagInclude directive allows inclusion of tags (or groups
+      of tags). If a tag is defined as a core tag (with a .coretag
+      or .tag or .ct extension) and is not included, it will not
+      be compiled and placed in the tag map. This is for all catalogs,
+      so if *any* catalog uses a tag it must be included.
 
-	  Examples:
+      Examples:
 
-		# Include the base tags
-		TagInclude :core
+        # Include the base tags
+        TagInclude :core
 
-		# Not the commerce tags
-		TagInclude !:commerce
+        # Not the commerce tags
+        TagInclude !:commerce
 
-		# But make sure item-list is included even though
-		# it is in :commerce
-		TagInclude item-list
+        # But make sure item-list is included even though
+        # it is in :commerce
+        TagInclude item-list
 
-		## Double negatives are honored
-		TagGroup    :foo "bar !baz buz"
-		## With the group above, the below is equivalent
-		## to TagInclude !bar baz !buz
-		TagInclude !:foo
+        ## Double negatives are honored
+        TagGroup    :foo "bar !baz buz"
+        ## With the group above, the below is equivalent
+        ## to TagInclude !bar baz !buz
+        TagInclude !:foo
 
-	- New CodeDef directive allows the setting of filters, order checks,
+    - New CodeDef directive allows the setting of filters, order checks,
       FormAction, ActionMap, ItemAction, and LocaleChange.
 
-			## filters
-			CodeDef  mixedcase Filter
-			CodeDef  mixedcase Routine <<EOR
-			sub {
-				my $val = shift;
-				## [filter mixedcase]mixed case[/filter]
-				## outputs "MiXeD CaSe"
-				$val =~ s/(.)(.)/\u$1\l$2/g;
-				return $val;
-			}
-			EOR
+            ## filters
+            CodeDef  mixedcase Filter
+            CodeDef  mixedcase Routine <<EOR
+            sub {
+                my $val = shift;
+                ## [filter mixedcase]mixed case[/filter]
+                ## outputs "MiXeD CaSe"
+                $val =~ s/(.)(.)/\u$1\l$2/g;
+                return $val;
+            }
+            EOR
 
-			## order checks
-			CodeDef  mixedcase OrderCheck
-			CodeDef  foo  Routine <<EOR
-			sub {
-				my ($ref, $var, $val) = @_;
-				return (1,$var) if $val eq 'bar';
-				return (0,$var, "foo must be bar");
-			}
-			EOR
+            ## order checks
+            CodeDef  mixedcase OrderCheck
+            CodeDef  foo  Routine <<EOR
+            sub {
+                my ($ref, $var, $val) = @_;
+                return (1,$var) if $val eq 'bar';
+                return (0,$var, "foo must be bar");
+            }
+            EOR
 
-	   All work in catalog.cfg; LocaleChange and ItemAction are not
-	   global. FormAction, ActionMap, and ItemAction directives
-	   are equivalent to their CodeDef equivalents.
+       All work in catalog.cfg; LocaleChange and ItemAction are not
+       global. FormAction, ActionMap, and ItemAction directives
+       are equivalent to their CodeDef equivalents.
 
 * New Vend::Form module implements display tag and widget creation.
   Passes all known tests, and runs accessories/widgets (apparently)
@@ -91,7 +91,7 @@ Core
 
 * Clear the following intermittent error:
 
-	CGI mapping error: multipart/form-data sent incorrectly
+    CGI mapping error: multipart/form-data sent incorrectly
 
   Some browsers, like Opera, use non-word characters like '+' in
   form-data MIME boundaries, causing the regex matches to fail.
@@ -112,26 +112,26 @@ UI
 
 * Major changes to the content editing scheme.
 
-	- Requires a CSS/Javascript 1.3 compliant browser. Tested on
-	  Mozilla 0.9.8, MSIE 5.51, Opera 6.0tp2. All work pretty well;
-	  Mozilla is a bit slow, Opera doesn't have CSS widths down.
+    - Requires a CSS/Javascript 1.3 compliant browser. Tested on
+      Mozilla 0.9.8, MSIE 5.51, Opera 6.0tp2. All work pretty well;
+      Mozilla is a bit slow, Opera doesn't have CSS widths down.
 
-	- Page editor has a quasi-visual layout that should be much more
-	  intuitive. Support for a "PAGE_PICTURE" file in the templates
-	  allows visual links to the editor page.
+    - Page editor has a quasi-visual layout that should be much more
+      intuitive. Support for a "PAGE_PICTURE" file in the templates
+      allows visual links to the editor page.
 
-	- Components, templates, and pages are now all editable.
-	  Template and component editors need to be brought up to speed
-	  with the page editor, but work fairly well.
+    - Components, templates, and pages are now all editable.
+      Template and component editors need to be brought up to speed
+      with the page editor, but work fairly well.
 
-	- Added new lib/UI/ContentEditor.pm module which implements
-	  this stuff in conjunction with lib/UI/pages/include/*_editor.
-	  A bit of a JavaScript dependency nightmare on the generated
-	  attribute editors, but I may get this more canned as time goes on.
+    - Added new lib/UI/ContentEditor.pm module which implements
+      this stuff in conjunction with lib/UI/pages/include/*_editor.
+      A bit of a JavaScript dependency nightmare on the generated
+      attribute editors, but I may get this more canned as time goes on.
 
-	- Let's get this on record -- this content editiing WILL NOT
-	  UNDER ANY CIRCUMSTANCES EVER WORK ON NETSCAPE 4. Do not ask,
-	  though I know the people who monitor this stuff won't.
+    - Let's get this on record -- this content editiing WILL NOT
+      UNDER ANY CIRCUMSTANCES EVER WORK ON NETSCAPE 4. Do not ask,
+      though I know the people who monitor this stuff won't.
 
 * Added Mike's cool new "auto_wizard" which builds a wizard from a
   file like in the example. It will be the method to provide scripted
@@ -141,7 +141,7 @@ UI
   all_opts option which allows building the options in
   Perl and then doing:
 
-		[table-editor all-opts=`\%opts`]
+        [table-editor all-opts=`\%opts`]
 
 * Look for major updates on the table editor to make it
   completely templateable.
@@ -160,20 +160,20 @@ UI
 * Add su facility for catalog superuser to switch users to another
   user id, using new UI_Tag su as follows:
 
-	[su username=miltonbear]
+    [su username=miltonbear]
 
-	1. Stringifies current session after checking that su user is valid
-	2. Writes a random string to "$Global::ConfDir/tmp/$Session->{id}"
-	3. Issues a cookie hashing the above two
-	4. Inits a new session, putting in the login info
-	5. Writes $Session->{su} with session string
+    1. Stringifies current session after checking that su user is valid
+    2. Writes a random string to "$Global::ConfDir/tmp/$Session->{id}"
+    3. Issues a cookie hashing the above two
+    4. Inits a new session, putting in the login info
+    5. Writes $Session->{su} with session string
 
-	[su exit=1]
+    [su exit=1]
 
-	1. Reads random string from "$Global::ConfDir/tmp/$Session->{id}"
-	2. Hashes that with session and verifies with cookie
-	3. Safe evals session string
-	4. Retrieves session username/admin info
+    1. Reads random string from "$Global::ConfDir/tmp/$Session->{id}"
+    2. Hashes that with session and verifies with cookie
+    3. Safe evals session string
+    4. Retrieves session username/admin info
 
   MMsu profile is called on admin/customer.html to run the switch.
 
@@ -184,12 +184,12 @@ UI
 
 * Continuing work on meta_display and Vend::Form.
 
-	- Relocated date and option widgets
-	- Prepared for breaking out image widgets to code/Widget
-	- Fixed various bugs in widgets
-	- Code simplification in Primitive.pm
-	- Fix widget.coretag to not call UI::Primitive routine
-	- Redo option_format filtering
+    - Relocated date and option widgets
+    - Prepared for breaking out image widgets to code/Widget
+    - Fixed various bugs in widgets
+    - Code simplification in Primitive.pm
+    - Fix widget.coretag to not call UI::Primitive routine
+    - Redo option_format filtering
 
 * Display server hostname on the information page (genconfig).
 
@@ -211,27 +211,27 @@ Accounting
   Some intended functions:
     NOTE: AS = Accounting Software, i.e. SQL-Ledger, IC = Interchange
 
-	1. Assign customer number
-	2. Change customer information based on input, limit to fields customer
-	   should have control over
-	3. Add sales transaction (IC)
-	4. Feed back sales transaction from AS side for account status
-	5. Enter payments (IC --> AS), with credit-cards used to pay invoices
-	6. Reconcile AS account status with IC, i.e. ship status
-	7. Cancel order (IC)
-	8. Ship portion or all of order (IC)
-	9. Mark order complete
+    1. Assign customer number
+    2. Change customer information based on input, limit to fields customer
+       should have control over
+    3. Add sales transaction (IC)
+    4. Feed back sales transaction from AS side for account status
+    5. Enter payments (IC --> AS), with credit-cards used to pay invoices
+    6. Reconcile AS account status with IC, i.e. ship status
+    7. Cancel order (IC)
+    8. Ship portion or all of order (IC)
+    9. Mark order complete
 
-	Input on other functions needed is appreciated.
+    Input on other functions needed is appreciated.
 
 PROPOSED:
 
 * Set of modules selectable by route handle:
 
-	Vend::Account::SQL_Ledger (exists)
-	Vend::Account::QuickBooks (proposed)
-	Vend::Account::Compiere (proposed)
-	Vend::Account::[fill-in-the-blank]
+    Vend::Account::SQL_Ledger (exists)
+    Vend::Account::QuickBooks (proposed)
+    Vend::Account::Compiere (proposed)
+    Vend::Account::[fill-in-the-blank]
 
 * Use a usertag [account] (a la [charge]) to interface functions.
 
@@ -248,7 +248,7 @@ PROPOSED:
 * Define two transitional state tables for handshaking:
 
     orderstatus -- status of orders, i.e.
-		    pending,transmitted,received,shipped,complete
+            pending,transmitted,received,shipped,complete
 
     accountstatus -- record of payments and orders for account statement
 
