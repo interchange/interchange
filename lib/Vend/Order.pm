@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.46 2003-03-29 20:19:20 mheins Exp $
+# $Id: Order.pm,v 2.47 2003-03-29 22:11:08 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.46 $, 10);
+$VERSION = substr(q$Revision: 2.47 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1581,6 +1581,12 @@ sub route_order {
 				$shelf->{$_} = [ @$cart ];
 				push @main, $_;
 			}
+		}
+
+		if($Vend::Session->{mv_order_number}) {
+			$value_save->{mv_order_number} =
+				$::Values->{mv_order_number} =
+					$Vend::Session->{mv_order_number};
 		}
 
 		$Vend::Interpolate::Values = $::Values = { %$value_save };
