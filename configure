@@ -1,10 +1,10 @@
 #!/bin/sh
 
-# $Id: configure,v 2.5 2002-07-23 17:42:46 jon Exp $
+# $Id: configure,v 2.6 2002-08-15 20:18:48 mheins Exp $
 
 cat <<EOF
 
- Interchange Version 4.9.2 Configuration
+ Interchange Version 4.9.3 Configuration
 
  Copyright 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 
