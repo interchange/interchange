@@ -29,14 +29,14 @@ to setup a pserver then you might just skim chapter 2 ("Setup CVS"),
 or skip it all together.
 
 In addition, I have tried to write at a technical level that would be
-on par with what I percieve to be the average Interchange user that
+on par with what I perceive to be the average Interchange user that
 participates on the interchange-users mailing list.  It is assumed
 that the reader can and already has setup Interchange and the template
 catalog (such as foundation or construct) is working correctly.
 
 =head2 Contact the author
 
-If you find any spelling errors, technical slipups, mistakes,
+If you find any spelling errors, technical slip-ups, mistakes,
 subliminal messages, or if you wish to send feedback, critique,
 remarks, comments, or if you wish to contribute examples, instructions
 for alternative platforms, chapters, or other material, please do so.
@@ -60,7 +60,7 @@ What is CVS all about?
 
 =item *
 
-What are it's advantages?
+What are its advantages?
 
 =back
 
@@ -89,7 +89,7 @@ version as well as fix bugs in the stable production version.
 
 Multiple developers can work on the same catalog and even the same
 file at the same time.  (For more information about how multiple
-simultaneous writes are merged and conflicts resolved, see the cvs
+simultaneous writes are merged and conflicts resolved, see the CVS
 docs in the I<Resources> Appendix).
 
 =item *
@@ -106,7 +106,7 @@ by different developers.
 =item *
 
 Allows one to keep track of the changes that have been made over time
-(many release managers repackage cvs commit logs into WHATSNEW,
+(many release managers repackage CVS commit logs into WHATSNEW,
 HISTORY, and/or NEWS files).
 
 =back
@@ -134,7 +134,7 @@ One catalog
 
 =item *
 
-One cvs module
+One CVS module
 
 =item *
 
@@ -156,11 +156,11 @@ Two catalogs (e.g., one is live, one is development)
 
 =item *
 
-One cvs modules
+Two CVS modules
 
 =item *
 
-Seperate development and live branches
+Separate development and live branches
 
 =back
 
@@ -179,7 +179,7 @@ Multiple catalogs
 
 =item *
 
-Multiple cvs modules
+Multiple CVS modules
 
 =item *
 
@@ -207,7 +207,7 @@ parts of the rest of this document:
 
 =item *
 
-Red Hat 7.x
+Red Hat Linux 7.x
 
 =item *
 
@@ -215,7 +215,7 @@ Interchange installed (RPM or tarball)
 
 =item *
 
-Default interchange tarball installation directory paths (adjust for
+Default Interchange tarball installation directory paths (adjust for
 your environment)
 
 =item *
@@ -230,32 +230,32 @@ construct catalog or your own catalog by mentally transposing the
 names and paths.
 
 There shouldn't be any reason why you could not do everything I
-mention here on other Linux distributions, unicies or Windows (using
-cygwin).  However, my statements will reflect Red Hat 7.x. 
-Additionally, Red Hat 6.x is for the most part the same as 7.x, except
-for the difference of using inetd instead of xinetd to setup pserver.
+mention here on other Linux distributions, Unices or Windows (using
+cygwin). However, my statements will reflect Red Hat Linux 7.x.
+Additionally, Red Hat Linux 6.x is for the most part the same as 7.x,
+except for the difference of using inetd instead of xinetd to setup
+pserver.
 
 =head2 Install CVS
 
-This is the easy part.  For Red Hat systems, download the cvs rpms and
-install them.  The following RPM command will download and install the
-Red Hat 7.1 version of cvs from rpmfind.net.
+This is the easy part.  For Red Hat Linux systems, download the CVS
+rpms and install them.  The following RPM command will download and
+install the Red Hat 7.1 version of CVS from rpmfind.net.
 
 B<Note: >You need to be root to complete the following tasks
 
  su - root
 rpm -Uvh ftp://speakeasy.rpmfind.net/linux/redhat/7.1/en/os/i386/RedHat/RPMS/cvs-1.11-3.i386.rpm
 
-Create the user and group that will administrate the interchange
+Create the user and group that will administrate the Interchange
 repository.  For this document, it will be the interch user, (which
 was setup during the installation of Interchange).  But if you
 understand the mechanics of Unix users/groups, then you can use
 whatever username and group scheme you prefer.  For example, some
-create a cvs user and cvs group, then add the interchange user and
-catalog owner to it's group and/or vise-versa.  The integration of
-interchange and CVS in the latter portion of this document will
-require that the CVS user has some write capability to the catalog
-directory.
+create a cvs user and cvs group, then add the Interchange user and
+catalog owner to its group or vice-versa.  The integration of
+Interchange and CVS in the latter portion of this document will
+require that the CVS user can write to the catalog directory.
 
 =head2 Create the CVS repository directory
 
@@ -315,7 +315,7 @@ L<http://freshmeat.net/projects/cvspadm/>
 I recommend cvsadmin, but there are also a variety of manual methods
 that can be used in the absence of such tools, one of which involves
 copying the system shadow file and modifying it for use by CVS.  For
-more information on this manual method, see the RedHat CVS pserver
+more information on this manual method, see the Red Hat CVS pserver
 setup guide by Michael Amorose
 (L<http://www.michael-amorose.com/cvs/>).
 
@@ -323,8 +323,8 @@ Setup authentication using the cvsadmin tool
 
 You can find a tarball to install on your system using the above
 address, but here is the address of a recent RPM package of the
-version.  This package is intended for mandrake systems, but is
-compatible with Red Hat 7.1:
+version. This package is intended for Mandrake systems, but is
+compatible with Red Hat Linux 7.1:
 
 =over 4
 
@@ -348,7 +348,7 @@ has its own branches, trees,  and other features.
 
 Add your project to the F<modules> configuration file
 
-The format of the modules file is explained in detail in the cvs
+The format of the modules file is explained in detail in the CVS
 documentation, here is the simplest way to use it:
 
  /rep/CVSROOT/modules:
@@ -405,7 +405,7 @@ binary file types (by extension) used in web development.
 
 At this point, you should have a working (though empty) CVS
 repository.  Before we continue with setting up the pserver or
-importing source code, try logging in as one of the cvs users listed
+importing source code, try logging in as one of the CVS users listed
 in your CVSROOT/passwd and test the checkout.
 
  #test checkout in home directory of any cvs user
@@ -418,16 +418,16 @@ This should create F<foundation/> and F<foundation/CVS>.
 =head2 Setup the CVS pserver
 
 You will likely need to be root to do this, and there are lots of
-guides on the internet for setting up a cvs pserver, hopefully you
+guides on the Internet for setting up a CVS pserver, hopefully you
 wont have any trouble doing it on your particular operating system. 
 See the I<Resources> Appendix for more information.
 
-Setup pserver in Red Hat 7.1 using xinetd.
+Setup pserver in Red Hat Linux 7.1 using xinetd.
 
-For Red Hat 7.x, edit F</etc/xinetd.d/cvspserver> (create a new one if
-none exists).  The following works for me, but customization may be
-required for your environment (see the next section below for an
-inetd-based system example).  This also must be done as root.
+For Red Hat Linux 7.x, edit F</etc/xinetd.d/cvspserver> (create a new
+one if none exists).  The following works for me, but customization
+may be required for your environment (see the next section below for
+an inetd-based system example).  This also must be done as root.
 
  su - root
 /etc/xinetd.d/cvspserver:
@@ -459,9 +459,8 @@ Now, restart xinetd for the changes to take effect.
 
 Setup pserver in inetd-based systems.
 
-I haven't tested this (any takers?), but something like the following
-needs to be done for inetd-based systems such as Red Hat 6.2.  Make
-sure that the following files are setup accordingly.
+For inetd-based systems such as Red Hat Linux 6.2, make sure that the
+following files are setup accordingly.
 
  /etc/services:
 
@@ -472,9 +471,9 @@ cvspserver stream tcp nowait root /usr/sbin/tcpd /usr/local/bin/cvs --allow-root
 
 Testing your pserver
 
-At this point, you should be able to use a cvs client to use your
+At this point, you should be able to use a CVS client to use your
 pserver and execute all the same commands that you can locally (which
-we tested before).  You may wish to take advantage of a graphical cvs
+we tested before).  You may wish to take advantage of a graphical CVS
 client, which can be particularly helpful in leveling the learning
 curve.
 
@@ -484,11 +483,11 @@ See the I<Resources> Appendix for links to some graphical CVS tools.
 
 =head2 Configuring your catalog
 
-Eventually, we will import your catalog into the cvs repository, but
+Eventually, we will import your catalog into the CVS repository, but
 first we need to do some work with a temporary copy of the catalog so
 we can get it into shape for importing.
 
-B<Note: >From here on, assume the use of the interchange user, such as
+B<Note: >From here on, assume the use of the Interchange user, such as
 interch, unless otherwise noted.
 
  su - interch
@@ -515,13 +514,13 @@ B<Note: >You should make a backup of the catalog directory before you
 do this.
 
 
-#Become interchange catalog user
+#Become Interchange catalog user
 su - interch
 
 #backup catalog folder first
 tar czf ~/foundation_backup.tgz /var/lib/interchange/foundation
 
-#get rid of any old CVS folders -- (BE CAREFULL!)
+#get rid of any old CVS folders -- (BE CAREFUL!)
 cd /var/lib/interchange/foundation
 find . -name CVS -exec rm -Rf {} \;
 
@@ -552,9 +551,9 @@ Will the file be modified by another source?
 
 =back
 
-For example, /etc/order.number is modified by interchange when run.
+For example, /etc/order.number is modified by Interchange when run.
  But not everyone will use a local development model that includes
-running interchange on a directly checked-out copy of their source. 
+running Interchange on a directly checked-out copy of their source. 
 Which means this specific issue is avoided if you upload every edit
 before viewing your changes on a server.
 
@@ -580,7 +579,7 @@ Speed.
 =back
 
 Managing less files in the repository takes away from the amount of
-time required for cvs checkout, update, branching, and other cvs
+time required for CVS checkout, update, branching, and other CVS
 actions.  For most, this amount of time is small already, but it is a
 consideration for some.
 
@@ -600,8 +599,8 @@ directories like etc/ session/ orders/, etc., then you must first
 combine your checkout with the other working parts of a catalog before
 the catalog is viable.  But this is slower and will bring up lots of
 harmless notification and warning messages (about changed local
-versions) if you run interchange on your local source copy (because
-interchange will touch etc/ session/ orders/, etc. directly, and then
+versions) if you run Interchange on your local source copy (because
+Interchange will touch etc/ session/ orders/, etc. directly, and then
 warn that your local copy has changed from the CVS copy).  You may be
 able to manage some of these notifications and warnings with
 F<CVSROOT/cvsignore> or $CVSIGNORE, see the I<Resources> appendix
@@ -640,7 +639,7 @@ I<Resources> for more information.
 
 When you run the import command, it will launch $EDITOR (set to
 'vi' earlier), and ask for a message to go along with the import
-action.  Whatever you see fit to write (e.g. "starting new cvs module
+action.  Whatever you see fit to write (e.g. "starting new CVS module
 with my foundation catalog...") is fine.
 
 This example import command includes renaming the foundation
@@ -703,6 +702,10 @@ it wont conflict with your existing F<foundation/> directory.
 
 Add any needed files to checked-out catalog
 
+Note that empty directories are pruned, so they will need something in
+them for them to show up with a -P checkout. Often a zero-byte file
+called '.empty' is used.
+
 If you removed any directories during the streamlining step, we must
 first add those back so that the catalog is usable to Interchange.  In
 this document, we only removed unneeded files and left empty
@@ -731,7 +734,7 @@ mv images images_old
 ln -s /var/lib/interchange/foundation/images images
 
 Now, you should have a working catalog again.  To make sure, start up
-interchange and test the site with your browser.
+Interchange and test the site with your browser.
 
 =head2 Testing manual CVS updates on Interchange catalogs
 
@@ -756,7 +759,7 @@ Your changed version will now be resident in the repository.  Again,
 CVS documentation is in the I<Resources> Appendix.
 
 This time, we can allow the changes to take effect on the code being
-used by interchange to server pages.  To do so, one must run a cvs
+used by Interchange to serve pages. To do so, one must run a cvs
 update on the catalog directory:
 
  cd /var/lib/interchange/foundation
@@ -780,13 +783,13 @@ heard of the listed directories or files (they are in your local
 source dir but not in the CVS source dir).  It is harmless, but
 sometimes annoying.
 
-The M means that sthe file has been modified on your local copy,
-and is out of sync with the remote CVS version (e.g. when Interchange
-runs it updates F<etc/status.foundation>).  Normally this is corrected
-by uploading your "modified" version to the server, but in this case,
-the modification was done by Interchange instead of the programmer,
-and wasn't meant to be committed back to the CVS repository.  These
-types of messages can be handled with $CVSIGNORE and
+The M means that the file has been modified on your local copy, and
+is out of sync with the remote CVS version (e.g. when Interchange runs
+it updates F<etc/status.foundation>).  Normally this is corrected by
+uploading your "modified" version to the server, but in this case, the
+modification was done by Interchange instead of the programmer, and
+wasn't meant to be committed back to the CVS repository.  These types
+of messages can be handled with $CVSIGNORE and
 $CVSROOT/CVSROOT/cvsignore.
 
 Now, check to make sure that your change has taken effect by
@@ -805,7 +808,7 @@ Start by modifying $CVSROOT/CVSROOT/loginfo
 
  ^foundation     (date; cat; (sleep 1; cd /var/lib/interchange/foundation; cvs -q update -d) &) >> $CVSROOT/CVSROOT/updatelog 2>&1
 
-The first line tells cvs that for every commit on modules that start
+The first line tells CVS that for every commit on modules that start
 with "foundation" (notice the regular expression "^foundation"), it
 will run cvs update on the given catalog directory in the
 background.  It is important that it is executed in a forked shell
@@ -838,7 +841,7 @@ executable by the cvs user (using "chmod 755 /usr/bin/cvs-log").
  echo -n $2"  ";
  date;
  echo;
- cat) | tee $1 | /usr/bin/Mail -s "[foundation-cvs] $3" foundation-cvs@example.com
+ cat) | tee -a $1 | /usr/bin/Mail -s "[foundation-cvs] $3" foundation-cvs@example.com
 
 Your commit logs will now be archived in the CVSROOT/commitlog file
 and e-mailed to the  foundation-cvs@example.com address (which is
@@ -1009,7 +1012,7 @@ Variable IMAGE_DIR /foundation_dev/images
 Variable SQLDSN    dbi:Pg:dbname=foundation_dev
 Variable SQLDB     foundation_dev
 
-Now you can restart interchange to make your changes take effect.
+Now you can restart Interchange to make your changes take effect.
 
 =head2 Splitting updates on commit by tag
 
@@ -1072,7 +1075,7 @@ Update back to the development version (DEV1)
 
 =back
 
-I do the above so often that I have written a TCL script for WinCVS
+I do the above so often that I have written a Tcl script for WinCVS
 that will automatically perform the above steps.  And similar shell
 scripts can probably be easily written to match your development
 environment.
@@ -1089,31 +1092,31 @@ or special purpose tag.
 This is the productivity tips section, which will hopefully help you
 to be able to get more done in less time.
 
-=head2 Workstation interchange installation
+=head2 Workstation Interchange installation
 
 Not all developers work on Linux workstations, many use Apples
-(graphics designers and html gurus tend to, I've found), and many use
+(graphics designers and HTML gurus tend to, I've found), and many use
 Windows.  This means that many developers have the extra step of
 uploading their changes to a Unix server where Interchange is running
 in order to see their changes.
 
-The remedy to that is to setup an interchange server on your
+The remedy to that is to setup an Interchange server on your
 workstation, or any location that has direct access to the CVS source
 files.  I'll explain:
 
-The interchange server that runs where the CVS server is (that we
+The Interchange server that runs where the CVS server is (that we
 setup earlier) can be seen as the gathering point for all the
-developers.  However, each developer may run as many interchange
+developers.  However, each developer may run as many Interchange
 daemons as he/she requires in a local context for the purpose of
 seeing the changes made before uploading them via CVS.
 
-For example, Bob could setup another interchange catalog on the same
+For example, Bob could setup another Interchange catalog on the same
 server as the CVS, (e.g. foundation-bob).  To get direct access to
 those files (rather than FTP), Bob could use NFS mounts (if Bob's
 workstation is Linux) or SMB mounts using Samba if his workstation is
 a Windows variant.  Any way that Bob can get direct access to the
 files will save him some time (by cutting out the "upload" from the
-"edit->upload->test" development cycle).  One could even use Vmware to
+"edit->upload->test" development cycle).  One could even use VMware to
 run a Linux server on your Windows workstation.
 
 B<Note: >You can now use the cygwin compatibility confirmed in
@@ -1129,7 +1132,7 @@ the same steps used to setup the CVS catalog.  Which is:
 
 =item *
 
-Stop interchange.
+Stop Interchange.
 
 =item *
 
@@ -1151,19 +1154,19 @@ CGI_URL, HOSTNAME, DBI_USER, DBI_PASSWORD).
 
 =item *
 
-Restart interchange.
+Restart Interchange.
 
 =back
 
 One aspect of this local configuration is managing the differences
-between the main interchange daemon which runs on the CVS server and
-the local interchange daemon.  The differences are probably hostname,
+between the main Interchange daemon which runs on the CVS server and
+the local Interchange daemon.  The differences are probably hostname,
 database information, etc.  That will all need to be managed (usually
 through catalog.cfg entries) and database exports & imports (i.e. the
 postgres pg_dump command).
 
 Another thing that you might have noticed at this point is all the
-files that are modified locally by the interchange daemon will report
+files that are modified locally by the Interchange daemon will report
 ? or M when you run an update.  This can be handled with
 F<CVSROOT/cvsignore> and $CVSIGNORE, which are beyond the scope of
 this document.
@@ -1171,15 +1174,8 @@ this document.
 =head2 Mailserver for CVS updates
 
 To setup a mailserver for CVS updates, first download and install
-mailman.  For Red Hat systems, the following RPM could be used:
-
-=over 4
-
-=item *
-
-L<ftp://speakeasy.rpmfind.net/linux/redhat/7.1/en/powertools/i386/RedHat/RPMS//mailman-2.0.1-2.i386.rpm>
-
-=back
+Mailman. For RPM-based systems, check on rpmfind.net for a precompiled
+binary package.
 
 After installing, read the following information about Mailman and
 what needs to be done after installation (taken from the RPM meta
@@ -1199,12 +1195,12 @@ When the package has finished installing, you will need to:
 
 =item *
 
-Run F</var/mailman/bin/mmsitepass> to set the mailman administrator
+Run F</var/mailman/bin/mmsitepass> to set the Mailman administrator
 password.
 
 =item *
 
-Edit F</var/mailman/Mailman/mm_cfg.py> to customize mailman's
+Edit F</var/mailman/Mailman/mm_cfg.py> to customize Mailman's
 configuration for your site.
 
 =item *
@@ -1244,10 +1240,10 @@ server.
 
 The idea is to have the IC server use its own files and directories
 for things that won't be edited and modified locally, but reference a
-samba directory or NFS directory for things that will (such as
+Samba directory or NFS directory for things that will (such as
 F<pages/>, F<templates/>, etc.).
 
-Mount the samba or NFS directory
+Mount the Samba or NFS directory
 
 C<smbmount <...E<gt>> or C<mount -t nfsfs <...E<gt>>
 
@@ -1267,27 +1263,27 @@ F=templates; ln -s $S/$F $D/$F
 
 This will leave you with a working catalog that can be quickly
 modified (since your editor can access the local copy), while
-interchange has to do the work of going over the SMB or NFS
+Interchange has to do the work of going over the SMB or NFS
 connection.
 
-=head2 jEdit - a good editor with Interchange/HTML/perl colorization and CVS
+=head2 jEdit - a good editor with Interchange/HTML/Perl colorization and CVS
 
 I have been quite impressed with jEdit (L<http://www.jedit.org>, and
-open source editor that is written in java and runs on most platforms.
+open source editor that is written in Java and runs on most platforms.
 
 I use the interchange.xml language definition written by Chris
 Jesseman I<chris@sitemajic.net>, which is available from
 L<http://www.sitemajic.net/jedit/>.  With this, jEdit automatically
-colors HTML, perl, AND many interchange tags very intelligently.
+colors HTML, Perl, AND many Interchange tags very intelligently.
 
 Further, jEdit has a CVS plugin, written by Ben Sarsgard
 I<bsarsgard@vmtllc.com>, and available at:
 L<http://www.vmtllc.com/~bsarsgard/jedit.html>.  This plugin allows
 you to diff, update, and commit right from the editor.
 
-=head2 Seperate servers for development and live catalogs
+=head2 Separate servers for development and live catalogs
 
-If you have the luxury of seperate server ardware for the development
+If you have the luxury of separate server hardware for the development
 and live catalogs, you might find the following utility helpful:
 
 =over 4
@@ -1338,6 +1334,10 @@ May 2001.  Conceived and written by Dan Browning.
 =item *
 
 July 19, 2001.  First draft complete, first public release.
+
+=item *
+
+12 April 2002.  Minor typographical edit.
 
 =back
 
@@ -1396,7 +1396,7 @@ L<http://www.csc.calpoly.edu/~dbutler/tutorials/winter96/cvs/>
 
 =item *
 
-RedHat CVS pserver setup guide L<http://www.michael-amorose.com/cvs/>
+Red Hat CVS pserver setup guide L<http://www.michael-amorose.com/cvs/>
 
 =item *
 
@@ -1410,18 +1410,18 @@ CVS Server Software
 
 =item *
 
-CVS RPM download (Red Hat 7.1) 
+CVS RPM download (Red Hat Linux 7.1) 
 L<ftp://speakeasy.rpmfind.net/linux/redhat/7.1/en/os/i386/RedHat/RPMS/cvs-1.11-3.i386.rpm>
 
 =item *
 
-Source tarballs links can can be found at cvshome.org.
+Source tarball links can can be found at cvshome.org.
 
 =back
 
 CVS Client Software
 
-There are a variety of client access methods for using cvs on your
+There is a variety of client access methods for using CVS on your
 development box.
 
 =over 4
@@ -1434,15 +1434,15 @@ the command line cvs commands.
 
 =item *
 
-jCVS is a great cross-platform graphical cvs client available at
+jCVS is a great cross-platform graphical CVS client available at
 L<http://www.jcvs.org>.
 
 =item *
 
 jEdit is a great cross-platform text editor written in java, which not
 only has a CVS module that allows you to commit (upload) files
-directly from the editor, but also has a interchange markup language
-(and perl language) colorizer/parser.  It is available from
+directly from the editor, but also has a Interchange Tag Language (and
+Perl language) colorizer/parser.  It is available from
 L<http://www.jedit.org>.
 
 =back

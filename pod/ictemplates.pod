@@ -52,7 +52,7 @@ computers and networks.
 Variable substitution is a simple and often used feature of
 Interchange templates. It allows you to set a variable to a particular
 value in the F<catalog.cfg> directory. Then, by placing that variable
-name on a page, you envoke that value to be used. Before anything else
+name on a page, you invoke that value to be used. Before anything else
 is done on a template, all variable tokens are replaced by variable
 values. There are three types of variable tokens:
 
@@ -68,8 +68,8 @@ VARIABLENAME.
 
 For more information on how to use the Variable configuration file
 directive to set global variables in interchange.cfg and catalog
-variables in catalog.cfg, see the I<Red Hat Interchange 4.8:
-Development Guide>.
+variables in catalog.cfg, see the I<Interchange Configuration
+Guide>.
 
 =head1 Using Interchange Template Tags
 
@@ -98,7 +98,7 @@ Summary:
 Most tags can accept some positional parameters. This makes parsing
 faster and is, in most cases, simpler to write.
 
-The follwoing is an example tag:
+The following is an example tag:
 
    [value name=city]
 
@@ -149,8 +149,9 @@ is the same as
 
    [value name=row_value set="[calc]$row_value += 1[/calc]"]
 
-Pipes can also be used as quoting characters, but have the unique
-behavior of stripping leading and trailing whitespace. For example:
+Vertical bars can also be used as quoting characters, but have the
+unique behavior of stripping leading and trailing whitespace. For
+example:
 
        [loop list="code        field    field2  field3
        k1    A1    A2    A3
@@ -162,7 +163,7 @@ could be better expressed as:
 
     [loop list=|
             k1    A1    A2    A3
-            k2    B1    B2    B3"]
+            k2    B1    B2    B3
     |]
         [loop-increment][loop-code]
     [/loop]
@@ -170,8 +171,9 @@ could be better expressed as:
 How the result of the tag is displayed depends on if it is a container
 or a standalone tag. A container tag has a closing tag (for example,
 [tag] stuff [/tag]). A standalone tag has no end tag (for example,
-[area href=somepage]). [page ...] and [order ..] are B<not>
-container tags.
+[area href=somepage]). Note that [page ...] and [order ..]
+are B<not> container tags. ([/page] and [/order] are simple
+macros.)
 
 A container tag will have its output re-parsed for more Interchange
 tags by default. To inhibit this behavior, set the attribute reparse
@@ -180,15 +182,11 @@ almost always desirable. On the other hand, the output of a standalone
 tag will not be re-interpreted for Interchange tag constructs (with
 some exceptions, like ([include file]).
 
-Most container tags will not have their contents interpreted before
-being passed the container text. Exceptions include [calc] ..
-[/calc] and [currency] ... [/currency]. All tags accept the
-INTERPOLATE=1 tag modifier, which causes the interpretation to take
-place. It is not necessary to interpret the contents of a [set
-variable] TAGS [/set] pair, as they might contain tags which
-should only be upon evaluating an order profile, search profile, or
-mv_click operation. If the evaluation is performed at the time a
-variable is set, use [set name=variable interpolate=1] TAGS [/set].
+Most container tags will not have their contents interpreted
+(Interchange tags parsed) before being passed the container text.
+Exceptions include calc, currency, and seti. All tags accept
+the interpolate=1 tag modifier, which causes the interpretation to
+take place.
 
 =head2 The DATA and FIELD Tags
 
@@ -199,9 +197,9 @@ key/row is conditional based on a previous operation.
 
 The following are equivalent for attribute names:
 
-   table ---> base
-   col   ---> field --> column
-   key   ---> code  --> row
+   table --> base
+   col   --> field --> column
+   key   --> code  --> row
 
 The [field ...] tag looks in any tables defined as ProductFiles, in
 that order, for the data and returns the first non-empty value. In
@@ -272,9 +270,9 @@ can be controlled with scratch variables, particularly search and
 order processing, the mv_click multiple variable setting facility,
 and key Interchange conditions session URL display.
 
-There are three tags that are used to set the space, [set
+There are three tags that are used to set the scratch space, [set
 name]value[/set], [seti name]value[/seti], [tmp name]value[/tmp], and
-two variations (or shortcuts).
+two tags for reading scratch space.
 
 =over 4
 
@@ -330,8 +328,8 @@ foo] is the same as, but faster than:
 
 =item [scratchd]
 
-The same as [scratch name], except it deletes the value. Same as
-[scratch foo][set foo][/set].
+The same as [scratch name], except it deletes the value after
+returning it. Same as [scratch foo][set foo][/set].
 
 =item [if scratch name op* compare*] yes [else] no [/else] [/if]
 
@@ -572,7 +570,7 @@ various Interchange session and database values. The general form is:
                                 The [then] [/then] is optional in most
                                 cases. If ! is prepended to the type
                                 setting, the sense is reversed and
-                                this textwill be output for a false condition.
+                                this text will be output for a false condition.
     [/then]
     [elsif type term op compare]
                                 Optional, tested when if fails.
@@ -1061,7 +1059,7 @@ To echo the user's browser, but within some HTML tags:
 
 To show the user their name and the current time:
 
-   [perl arg=values]
+   [perl]
 
    my $string = "Hi, " . $Values->{name} ". The time is now ";
    $string .= $Tag->time();
@@ -1309,10 +1307,10 @@ The available methods are:
         $sub->($key, @values);
     }
 
-    # Retrurn a complete array of the database (minus the key)
+    # Return a complete array of the database (minus the key)
     @values = $ref->row($key);
 
-    # Retrurn a complete hash of the database row (minus the key)
+    # Return a complete hash of the database row (minus the key)
     $hashref = $ref->row_hash($key);
 
     # Delete a record/row from the table
@@ -1540,12 +1538,6 @@ example:
 
 =item
 
-HTML style:
-
-    <HTML MV="mvasp" MV.TABLES="products pricing">
-
-or
-
 Named parameters:
 
     [mvasp tables="products pricing"]
@@ -1640,7 +1632,7 @@ global UserTag).
    <%
 
 It prepends the normal timestamp with user and page information. To
-supress that information, begin the message with a backslash (\).
+suppress that information, begin the message with a backslash (\).
 
         Log("\\error log entry without timestamp");
         Log('\another error log entry without timestamp');
@@ -1658,7 +1650,7 @@ commented-out '::logDebug(SOMETHING)' statements which can be edited
 to activate them. Set the value of DebugFile to a file that will be
 written to:
 
-   DebugFile /tmp/mvdebug
+   DebugFile /tmp/icdebug
 
 =head2 Export
 
@@ -1796,18 +1788,18 @@ for it allows the naming of fields so that the order in which they
 appear in the database will not have to be remembered. The following
 two imports are identical in effect:
 
-    [import table=o    code: [value mv_order_number]
+    [import table=orders type=LINE continue=    code: [value mv_order_number]
     shipping_mode: [shipping-description]
     status: pending
     [/import]
 
-    [import table=orders]
+    [import table=orders type=LINE continue=NOTES]
     shipping_mode: [shipping-description]
     status: pending
     code: [value mv_order_number]
     [/import]
 
-ders]
+OTES]
 
 The code or key must always be present, and is always named code. If
 NOTES mode is not used, import the fields in the same order as they
@@ -2738,7 +2730,7 @@ display a 404 error, just put this in special_pages/missing.html:
 This page is displayed if the URL from the browser specifies the
 ordering of a product code which is not in the products file.
 
-=item order (ord/backet.htm)
+=item order (ord/basket.html)
 
 This page is displayed when the customer orders an item. It can
 contain any or all of the customer-entered values, but is commonly
@@ -2769,7 +2761,7 @@ in a the global configuration file with the CheckHTML directive. To
 check a page for validity, set the global directive CheckHTML to the
 name of the program (don't do any output redirection). A good choice
 is the freely available program Weblint. It would be set in
-minivend.cfg with:
+interchange.cfg with:
 
    CheckHTML  /usr/local/bin/weblint -s -
 
@@ -2921,7 +2913,6 @@ The predefined actions at the first level are:
    search        form-based search
    scan          path-based search
    order         order an item
-   minimate      get access to a database via MiniMate
 
 Any action can be defined with ActionMap.
 
@@ -3190,6 +3181,8 @@ olor>
 
 =back
 
+See also the ictags documentation on the [loop] tag.
+
 =head2 Integrated Image Maps
 
 Imagemaps can also be defined on forms, with the special form variable
@@ -3224,7 +3217,7 @@ multiple values for the same variable name. As an example, to allow
 the user to order multiple items with one click, set up a form like
 this:
 
- <FORM METHOD=POST ACTION="[process-order]">
+ <FORM METHOD=POST ACTION="[process]">
 <input type=checkbox name="mv_order_item" value="M3243"> Item M3243
 <input type=checkbox name="mv_order_item" value="M3244"> Item M3244
 <input type=checkbox name="mv_order_item" value="M3245"> Item M3245
@@ -3237,7 +3230,7 @@ values, causing the order of any items that are checked.
 
 To place a "delete" checkbox on the shopping basket display:
 
- <FORM METHOD=POST ACTION="[process-order]">
+ <FORM METHOD=POST ACTION="[process]">
 [item-list]
   <input type=checkbox name="[quantity-name]" value="0"> Delete
   Part number: [item-code]
@@ -3548,6 +3541,13 @@ directive. All settings are independent for each catalog and each user
 visiting that catalog, since customers can access the same catalog in
 an unlimited number of languages and currencies.
 
+=head2 Configuring the Locale
+
+It is recommended to use the ScratchDefault directive for setting
+the catalog's default locale:
+
+   ScratchDefault mv_locale de_DE
+
 =head2 Setting the Locale
 
 The locale could be set to fr_FR (French for France) in one of two
@@ -3556,8 +3556,6 @@ ways:
 =over 4
 
 =item [setlocale locale=locale* currency=locale* persist=1*]
-
-This tag is for new-style tags only and will not work for [old].
 
 Immediately sets the locale to locale, and will cause it to persist
 in future user pages if the persist is set to a non-zero, non-blank
@@ -3646,7 +3644,7 @@ If a page index.html exists, it will be the default. If the current
 locale is fr_FR, a page "index.fr_FR" exists, and Locale looks
 like this:
 
-   Locale fr_FR HTMLsuffix  fr_FR
+   Locale fr_FR HTMLsuffix  .fr_FR
 
 Then, the .fr_FR page will be used instead of the .html page.
 For a longer series of strings, the configuration file recognizes:
@@ -3997,6 +3995,6 @@ translation or currency conversion in the normal course of events.
 
  ________________________________________
 
-Copyright 2001 Red Hat, Inc. Freely redistributable under terms of the
-GNU General Public License.
+Copyright 2001-2002 Red Hat, Inc. Freely redistributable under terms
+of the GNU General Public License.
 

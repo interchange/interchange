@@ -1638,11 +1638,7 @@ pricing.txt
 
 products.txt
 
-products.txt.category
-
 =back
-
-I<>
 
 =item *
 
@@ -1659,8 +1655,6 @@ gift_certs.txt
 userdb.txt
 
 =back
-
-I<>
 
 =item *
 
@@ -1680,8 +1674,6 @@ transactions.txt
 
 =back
 
-I<>
-
 =item *
 
 Third-party relationship data
@@ -1695,8 +1687,6 @@ affiliate.txt
 banner.txt
 
 =back
-
-I<>
 
 =item *
 
@@ -1716,7 +1706,7 @@ icmenu.txt
 
 locale.txt
 
-mv_metadata
+mv_metadata.asc
 
 route.txt
 
@@ -1726,11 +1716,9 @@ variable.txt
 
 =back
 
-I<>
-
 =item *
 
-Ancillary data
+Shipping and tax
 
 =over 8
 
@@ -1753,6 +1741,13 @@ state.txt
 =back
 
 =back
+
+You may also see symbolic links pointing to index tables, for example
+products.category.txt linking to products.txt.10. These are
+automatically generated indexes, in this case into the products table
+to speed category searches. See I<Dictionary Indexing With INDEX> in
+the database documentation for details about auto-indexing of text
+databases.
 
 The following dictionary lists and describes each table used in the
 Foundation demo.
@@ -1782,8 +1777,8 @@ Shipping table from UPS
 =head2 access.asc
 
 Administrative access table.  This table is used by the Administration
-Tool. For more description on these fields, see the Red Hat
-Interchange Administration Tool guide.
+Tool. For more description on these fields, see the Interchange
+Administration Tool guide.
 
 B<Fields>
 
@@ -3683,14 +3678,6 @@ I<url>
 
 Not Documented
 
-=head2 products.category.txt
-
-The products.category.txt table (actually a link to products.txt.10)
-is an automatically generated index into the products table to speed
-category searches.  See I<Dictionary Indexing With INDEX> in the
-database documentation for details about auto-indexing of text
-databases.
-
 =head2 route.txt
 
     code
@@ -3919,9 +3906,9 @@ Use:
 
 Inline images are placed in Interchange pages in the normal fashion
 with <IMG SRC="URL">. But since Interchange pages are served by a CGI
-program, do not use relative links. The Foundation store defines an
-image directory with the ImageDir and ImageDirSecure directives
-that automatically adjusts the image path to a set base directory.
+program, it will by default automatically rewrite relative image links
+as absolute ones based on the ImageDir and ImageDirSecure
+directives.
 
 =head1 Browser Cookies
 
@@ -3943,10 +3930,11 @@ located in the same server as the domain.
 
 In general, it's a good idea to leave fields empty if you don't want
 to use them, instead of removing them from the database altogether.
-That way nothing in admin or demo will break.
+That way nothing in the administration interface or the Foundation
+pages will break.
 
  ________________________________________
 
-Copyright 2001 Red Hat, Inc. Freely redistributable under terms of the
-GNU General Public License.
+Copyright 2001-2002 Red Hat, Inc. Freely redistributable under terms
+of the GNU General Public License.
 

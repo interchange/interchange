@@ -10,8 +10,7 @@ The purpose of this document is to guide you through constructing a
 simple Interchange catalog from scratch. The demo catalog that ships
 with Interchange is quite complex since it highlights some of the many
 capabilities that Interchange offers. As a template for your own
-catalog, the demos can either be an intimidating place to start or too
-customized to relate to your business.
+catalog, the demo can either be an intimidating place to start.
 
 The simple catalog you create using this tutorial should give you a
 feel for the basic Interchange system. It should also be considered a
@@ -20,8 +19,7 @@ built with Interchange. The tutorial relies as much as possible on
 default settings to accentuate how Interchange works. It will use as
 few of Interchange's capabilities as possible, while still building a
 usable store. The resulting site will be simple but usable. The value
-of this tutorial is not in the resulting e-commerce site, but in the
-instruction that occurs along the way.
+of this tutorial is in the instruction that occurs along the way.
 
 It is recommended that you create the files used in this tutorial
 yourself. You will learn more by creating the directory structure and
@@ -40,12 +38,12 @@ I<RPM install> on the Red Hat Linux or Linux Mandrake operating
 systems. You can also get Interchange by unpacking an Interchange
 tarball or checking out a copy of the CVS repository and doing a
 I<manual installation>. These installations can be done either as a
-regular user or as root with a special Interchange user.
+regular user or as root, installing for a special Interchange user.
 
 You must also know what type of installation you ran so you know where
 to place the various files created. Before proceeding, verify that
-Interchange is properly installed. Also, which type of installation
-you ran:
+Interchange is properly installed. Also, keep in mind which type of
+installation you did:
 
 =over 4
 
@@ -65,9 +63,9 @@ Manual install as regular user
 
 B<Note: >After installation, F<makecat> should be run to build your
 catalog. For information on installing Interchange and building your
-catalog using F<makecat>, see the I<Red Hat Interchange 4.8: Getting
-Started Guide>. Do not to continue with this tutorial without a
-working demo catalog.
+catalog using F<makecat>, see the I<Interchange Getting Started
+Guide>. Do not to continue with this tutorial without a working demo
+catalog.
 
 Installing the demo catalog set up the Interchange global
 configuration file F<interchange.cfg>, which resides in the
@@ -80,11 +78,11 @@ directory. This is necessary for your catalog to run properly.
 If Interchange was installed as a regular user, that will be the user
 Interchange runs as. If Interchange was installed as root or from an
 RPM, you need to know the name of the separate Interchange user. The
-Interchange daemon will not run as root, or even as the web server
-user (often www or httpd or nobody). If Interchange was installed from
-the RPM, or with the default source installation settings, the default
-username is interch. If a different user name was established, you
-will need to know what it is.
+Interchange daemon will not run as root, and should not run as the web
+server user (usually 'apache', 'www', 'httpd', or 'nobody'). If
+Interchange was installed from the RPM, or with the default source
+installation settings, the username is interch. If you selected a
+different user name, you will need to know what it is.
 
 =head2 Important directories
 
@@ -108,12 +106,10 @@ regular user:> /home/username/catalogs
 
 =item *
 
-cgi-bin directory B<.RPM install or source install as root (Red Hat 6,
-Linux Mandrake):> /home/httpd/cgi-bin B<.RPM install or source install
-as root (Red Hat 7):> /var/www/cgi-bin B<.Manual install as root
-(locally installed web server):> /usr/local/htdocs, /opt/www, ...
-B<.Manual install as regular user:> /home/username/public_html (with
-.cgi extension)
+cgi-bin directory B<.RPM install or source install as root:>
+/var/www/cgi-bin B<.Manual install as root (locally installed web
+server):> /usr/local/htdocs, /opt/www, ... B<.Manual install as
+regular user:> /home/username/public_html (with .cgi extension)
 
 =back
 
@@ -186,9 +182,9 @@ need to restart Interchange a few times during the tutorial.
 
 =head2 Tutorial assumptions
 
-Because it is impossible to cover all senarios, this tutorial assumes
-that you installed Interchange on Red Hat 7 from the RPM. This creates
-the following settings:
+Because it is impossible to cover all scenarios, this tutorial assumes
+that you installed Interchange on Red Hat Linux from the RPM packages.
+This creates the following settings:
 
 =over 4
 
@@ -278,7 +274,7 @@ directory to create the tutorial subdirectory:
 
 You should be able to do everything you need to do as the 'interch'
 user for the rest of this tutorial. So you can switch to that user now
-(su interch). If you installed Interchange from the RPM, the user
+(su - interch). If you installed Interchange from the RPM, the user
 B<interch> probably doesn't have a password. You'll have to set it
 with a command such as passwd interch while root.
 
@@ -300,7 +296,7 @@ to the output of the F<ls> command with the -F option.)
 
 You need to create the session directory where Interchange saves
 information on each visitor's browsing session. If you do not have
-this directory, Interchange may fail to work. This directory is called
+this directory, your catalog will not work. This directory is called
 F<session/> and goes under your catalog directory. Type mkdir
 session to create this directory.
 
@@ -359,7 +355,7 @@ Interchange system in this format:
 Interchange has several database options available. We will use the
 simplest, which is the built-in default (specifically, some variant of
 DBM). The default location for I<filename> is in a subdirectory called
-F<products> under the catalog directory. Interchange recongnizes a
+F<products> under the catalog directory. Interchange recognizes a
 number of file formats. We will use a tab-delimited text file. Enter
 the following into F<catalog.cfg>:
 
@@ -368,11 +364,12 @@ the following into F<catalog.cfg>:
 This tells Interchange that you have a database table named 'products'
 that is described in a tab-delimited file named F<products.txt>. You
 can describe an unlimited number of arbitrary database tables for the
-system to use this way. Interchange is an e-commerce system and it
-expects at least a products database table. You can specify all of the
-database tables that contain products by using the B<ProductFiles>
-directive. There is no default for this, so you will have to specify
-your products database by adding the following line to F<catalog.cfg>:
+system to use this way. Interchange keeps a list of default tables
+called "Product Files," reflecting its e-commerce roots. You can
+specify all of the database tables that contain products by using the
+B<ProductFiles> directive. There is no default for this, so you will
+have to specify your products table's name by adding the following
+line to F<catalog.cfg>:
 
   ProductFiles  products
 
@@ -414,8 +411,8 @@ product.
 The product database is handled as a special case since Interchange
 expects at least the description, price, and product ID (sku) fields.
 In other words, the F<products.txt> file must at least contain fields
-named sku, price, and description. Any other fields you decide to
-include are handled normally.
+named sku, price, and description. You can have other fields too, if
+you wish.
 
 The simple store that we are going to build will sell tests. You can
 choose another sample product line, but it is recommended that you
@@ -430,8 +427,8 @@ this, with a single tab separating each field:
 
 B<Note: >When using tab-delimited files as we are, make sure you have
 exactly one tab between each field. Some text editors will use spaces
-to simulate tabs. Interchange expects actual ASCII tab characters; no
-spaces or extra characters are accepted.
+to simulate tabs. Interchange expects actual ASCII tab characters;
+extra spaces or other characters will corrupt your data.
 
 You may notice that the columns don't line up in your text editor.
 This is the nature of tab-delimited files. Do not try to fix these.
@@ -460,7 +457,7 @@ sections:
 
 The "main" section holds the content that is different for each page.
 The "top" section is for headers, banners, menus, and so on. The
-"left" section can be used as a sidebar or navagation bar, and the
+"left" section can be used as a sidebar or navigation bar, and the
 "bottom" section can contain the copyright and contact info. The top,
 left, and bottom sections will remain constant throughout the site.
 Making a change to information in one of these sections will make that
@@ -542,7 +539,7 @@ http://localhost/cgi-bin/tutorial/index.html.
 B<Note: >Interchange pages in the F<pages/> or other directories
 B<must> have the .html suffix on them. You can drop the suffix in your
 URL and in other places, such as the [page] tag you'll learn about
-later, but the file name itself must have the suffix.
+later, but the file name on disk must have the suffix.
 
 =head1 Troubleshooting
 
@@ -1448,9 +1445,9 @@ by description:
   [loop search="ra=yes/fi=products/tf=1/to=r"]
 
 Now let's try narrowing the search down a bit. Instead of returning
-all, we'll give 'se', the B<se>arch paramerter, and and use 'su',
-which allows B<su>bstring matches. To search only for products that
-have the word "test" in one of their fields, and sort the results by
+all, we'll give 'se', the B<se>arch parameter, and and use 'su', which
+allows B<su>bstring matches. To search only for products that have the
+word "test" in one of their fields, and sort the results by
 description, type:
 
   [loop search="se=test/su=yes/fi=products/tf=description"]
@@ -1695,8 +1692,11 @@ January 2001. Proofread and clarified by Alison Smith and David Adams.
 
 12 January 2001. First public release.
 
+12 April 2002. Remove mention of obsolete Red Hat Linux 6-specific
+RPMs.
+
  ________________________________________
 
-Copyright 2001 Red Hat, Inc. Freely redistributable under terms of the
-GNU General Public License.
+Copyright 2001-2002 Red Hat, Inc. Freely redistributable under terms
+of the GNU General Public License.
 

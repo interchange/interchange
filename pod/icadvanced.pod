@@ -321,7 +321,7 @@ code within the LEFTRIGHT_TOP template:
 Horizontal After Component
 
 This function allows the inclusion of a defined component to be
-displayed after or below the pages's content. It's called with the
+displayed after or below the page's content. It's called with the
 following code within the LEFTRIGHT_BOTTOM template:
 
  [if scratch component_after]
@@ -343,8 +343,8 @@ Special Tag
 This setting is only viable when a promotion is used for a horizontal
 component. It tells the promotional component which rows to evaluate
 in the merchandising table for display within the component. This
-setting normally corelates to the featured column of the merchandising
-table as follows:
+setting normally correlates to the featured column of the
+merchandising table as follows:
 
         [query arrayref=main
                    sql="
@@ -533,9 +533,7 @@ The page controlled/baz is always allowed for display.
 
 The page controlled/any (or any other page in the directory not
 named in .access_gate) will be allowed for any user logged in via
-I<UserDB>. NOTE: The .access_gate scheme is available for database
-access checking if the database is defined as an AdminDatabase. The
-.access_gate file is located in ProductDir.
+I<UserDB>.
 
 =back
 
@@ -562,7 +560,7 @@ capability is not available.
 
 Interchange can store meta information for selected columns of tables
 in a site's database. This meta information is used when the user
-interacts with the database. For example, the meta informaton for a
+interacts with the database. For example, the meta information for a
 Hide Item field might specify that a checkbox be displayed when the
 user edits that field, since the only reasonable values are on and
 off. Or, the meta information might specify a filter on data
@@ -996,7 +994,7 @@ building a catalog by hand.
 Interchange requires a web server that is already installed on a
 system. It does have an internal server which can be used for
 administration, testing, and maintenance, but this will not be useful
-or desireable in a production environment.
+or desirable in a production environment.
 
 As detailed previously, Interchange is always running in the
 background as a daemon, or resident program. It monitors either a
@@ -1204,8 +1202,8 @@ commands:
    perl -e 'do "syscfg"; system ("$CC $CFLAGS $DEFS $LIBS -o tlink tlink.c")'
    perl -e 'do "syscfg"; system ("$CC $CFLAGS $DEFS $LIBS -o vlink vlink.c")'
 
-There is also a compile_link program which has docmentation
-embedded and which will compile an approprate link. If you cannot
+There is also a compile_link program which has documentation
+embedded and which will compile an appropriate link. If you cannot
 compile, try using the tlink.pl script, written in Perl instead of
 C, which should work on most any system. Since vlink needs to have
 values set before compilation, a pre-compiled version will not work
@@ -1301,10 +1299,10 @@ If using an ISP or have a non-standard network configuration, some
 changes to interchange.cfg are necessary. For tlink to work, the
 proper host name(s) must be configured into the TcpHost directive in
 interchange.cfg. The program selects port 7786 by default (the ASCII
-codes for "M" and "V"). If another port is used, it must be set to the
-same number in both the tlink program (by running compile_link) and
-the minivend.cfg file. The tlink program does not need to be
-SUID.
+codes for "M" and "V", for MiniVend). If another port is used, it must
+be set to the same number in both the tlink program (by running
+compile_link) and the interchange.cfg file. The tlink program
+does not need to be SUID.
 
 =back
 
@@ -1320,7 +1318,7 @@ The Interchange server should not run as the user nobody! The
 program files can be owned by anyone, but any databases, ASCII
 database source files, error logs, and the directory that holds them
 must be writable by the proper user ID, that is the one that is
-executing the MiniVend program.
+executing the Interchange program.
 
 =item *
 
@@ -1343,13 +1341,13 @@ socket file etc/socket on a directly attached disk?
 =item *
 
 UNIX-domain sockets will not work on NFS-mounted file systems! This
-means that the server minivend and the CGI program vlink must be
+means that the Interchange server and the CGI program vlink must be
 executing on the same machine.
 
 =item *
 
 The tlink program does not have this problem, but it must have the
-proper host name(s) and TCP ports set in the TcpHost and TcpPort
+proper host name(s) and TCP ports set in the TcpHost and TcpMap
 directives in interchange.cfg. Also, be careful of security if
 sensitive information, like customer credit card numbers, is being
 placed on a network wire.
@@ -1360,6 +1358,6 @@ placed on a network wire.
 
  ________________________________________
 
-Copyright 2001 Red Hat, Inc. Freely redistributable under terms of the
-GNU General Public License.
+Copyright 2001-2002 Red Hat, Inc. Freely redistributable under terms
+of the GNU General Public License.
 

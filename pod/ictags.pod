@@ -100,66 +100,6 @@ optimization.)
 See the I<Template Parsing Order> appendix if you are modifying the
 special administrative interface pages and intend to use this syntax.
 
-=head2 HTML-Embedded
-
-As an alternative syntax, you can usually embed an Interchange tag as
-an attribute within an HTML tag. This allows some HTML editors to work
-more easily with Interchange templates (though you should consider the
-above HTML-comment-style brackets first). The following is a basic
-example of HTML-Embedded syntax:
-
-  <HTMLtag MV="tagname positional parameters" other HTML attributes>
-
-The following examples will each loop over any items in the shopping
-cart, displaying their part number, description, and price, but only
-IF there are items in the cart.
-
-=over 4
-
-=item
-
-HTML syntax:
-
-    <TABLE MV="if items">
-
-=back
-    <TR MV="item-list">
-    <TD> [item-code] </TD>
-    <TD> [item-description] </TD>
-    <TD> [item-price] </TD>
-    </TR></TABLE>
-
-=over 4
-
-=item
-
-Standard syntax:
-
-    [if items]
-
-=back
-    <TABLE>
-    [item-list]
-    <TR>
-    <TD> [item-code] </TD>
-    <TD> [item-description] </TD>
-    <TD> [item-price] </TD>
-    </TR>
-    [/item-list]</TABLE>
-    [/if]
-
-B<Note - Disabling HTML-embedded tags for performance: >
-
-Avoid the HTML-embedded usage if you can.
-
-The Foundation catalog included with Interchange disables parsing of
-the HTML-embedded syntax. This is for better performance, since it
-saves the server from checking every HTML tag for Interchange tag
-calls. This is done in the catalog by setting the pragma
-no_html_parse in catalog.cfg.
-
-
-
 =head2 I<Named vs. Positional Parameters>
 
 There are two styles of supplying parameters to a tag: named and
@@ -843,7 +783,7 @@ something like:
         [prefix-code]  [prefix-param foo]  [prefix-param bar]
     [/query]
 
-In this case, [prefix-code] and [prefix-param foo] are synonymns, for
+In this case, [prefix-code] and [prefix-param foo] are synonyms, for
 foo is the first returned parameter and becomes the code for this
 row. Another synonym is [prefix-pos 0]; and [prefix-pos 1] is the same
 as [prefix-param bar].
@@ -997,7 +937,7 @@ Summary
  new                               none
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Container tag                     No
  Has Subtags                       No
@@ -1253,7 +1193,7 @@ This determines the action to be taken. One of:
  select                            Builds a dropdown <SELECT> menu for the item attribute, with the default item attribute value SELECTED. The accessories tag builds a select widget by default if type is not set.
  display                           Shows the label text for *only the selected option* if called in Hash List context (e.g., within an [item-list]). Ignored otherwise (i.e., the tag will build the default <SELECT> menu).
  show                              Returns the list of possible attributes for the item (without labels or any HTML widget). For example, if sku os28044 is available in several sizes:[accessories os28044 size,show]-----------------------------------------Sm=10oz, Med=15oz*, Lg=20oz
- options                           This shows the attribute options as a newline delimimited list:[accessories os28044 size,options]-----------------------------------------SmMedLg
+ options                           This shows the attribute options as a newline delimited list:[accessories os28044 size,options]-----------------------------------------SmMedLg
  labels                            This shows the attribute option labels:[accessories os28044 size,options]-----------------------------------------10oz15oz*20oz
  radio                             Builds a radio box group for the item, with spaces separating the elements.
  radio nbsp                        Builds a radio box group for the item, with &nbsp; separating the elements.
@@ -1717,7 +1657,7 @@ B<Note: >This tag has special positional parameter handling.
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     No
  Has Subtags                       No
@@ -1792,7 +1732,7 @@ Summary
  secure                            No
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Macro                             No
  Has end tag                       No
@@ -1922,10 +1862,6 @@ Named call example:
 
     <A HREF="[area ord/basket]">Check basket</A>
 
-HTML-embedded example (disabled if no_html_parse I<Pragma> active):
-
-    <A MV="area dir/page" HREF="dir/page.html">
-
 =head2 assign
 
 Allows you to assign numeric values to preempt calculation of one or
@@ -1938,7 +1874,11 @@ it, an assigned tag will return your value instead of calculating a
 value.
 
 Warning - please be sure you understand the dependencies within the
-pricing system before using the assign tag.
+pricing system before using the assign tag. In particular, you must
+have the value mv_shipmode set to assign to shipping, and
+likewise you must set mv_handling to assign to handling. The
+salestax and subtotal settings don't require any session
+variables be set.
 
 Summary
 
@@ -1952,7 +1892,7 @@ Summary
  shipping     Assigns an override value for [shipping] tagsnone
  subtotal     Assigns an override value for [subtotal] tagsnone
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Container tag                     No
 
@@ -2066,7 +2006,7 @@ Summary
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     NA (Though the template is technically body text)
  Has Subtags                       No
@@ -2171,7 +2111,7 @@ Summary
  w_field (weighted)                weight
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Container tag                     No
 
@@ -2323,7 +2263,7 @@ processing.
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     No
  Has Subtags                       No
@@ -2333,7 +2273,7 @@ B<Tag expansion example:>
 
    [bounce href if]
 ---
-   TAGRESULT
+   TAG RESULT
 
 B<ASP-like Perl call:>
 
@@ -2398,7 +2338,7 @@ B<No parameters>
 B<No attributes> (though you can break it if you set
 'interpolate=0')
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Has Subtags                       No
  Container tag                     Yes
@@ -2470,7 +2410,7 @@ B<ASP-like Perl call:>
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     No
  Has Subtags                       No
@@ -2480,7 +2420,7 @@ B<Tag expansion example:>
 
    [cart name]
 ---
-   TAGRESULT
+   TAG RESULT
 
 B<ASP-like Perl call:>
 
@@ -2541,7 +2481,7 @@ Summary
  interpolate                       Yes
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Container tag                     Yes
  Has Subtags                       [Error message text]body[/Error message text]
@@ -2585,7 +2525,7 @@ I<try>
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Container tag                     No
  Has Subtags                       No
@@ -2595,7 +2535,7 @@ B<Tag expansion example:>
 
    [catch ]
 ---
-   TAGRESULT
+   TAG RESULT
 
 B<ASP-like Perl call:>
 
@@ -2637,59 +2577,51 @@ to 'default'.
 
 =head2 cgi
 
+Returns the the current value of the named CGI input variable.
+HTML-escapes Interchange tags in the result for security.
+
+Can also set a new CGI value within the current page.
+
 Summary
 
-Parameters: B<name>
-
-Positional parameters in same order.
-
-Pass attribute hash as last to subroutine: B<no>
-
-Must pass named parameter interpolate=1 to cause interpolation.
-
-Invalidates cache: B<YES>
-
-Called Routine:
-
-B<ASP-like Perl call:>
-
-    $Tag->cgi(
-        {
-         name => VALUE,
-        }
-    )
-
- OR
-
-    $Tag->cgi($name);
     [cgi name]
+    [cgi name=cgi_var_name other_named_attributes]
 
  Parameters   Description                               Default
- name                                                   DEFAULT_VALUE
+ name         This is the name of the CGI variable whose value you want.None
 
  Attributes                        Default
+ set                               none
+ hide                              No
+ filter                            none
+ keep (with filter)                No
+ enable_html                       No
  interpolate (reparse)             No
 
- Other_Charactreristics            
- Invalidates cache                 YES
- Container tag                     No
- Has Subtags                       No
- Nests                             Yes
+ Other_Characteristics             
+ Invalidates cache                 Yes
 
 B<Tag expansion example:>
 
-   [cgi name]
+Assuming CGI variable 'foo' = 'bar',
+
+   [cgi foo]
 ---
-   TAGRESULT
+   bar
 
 B<ASP-like Perl call:>
 
-   $Tag->cgi(  { name => VALUE_name
-}, $body  );
+    $Tag->cgi( { name => var_name } );
+
+    # or if you simply want the value:
+    $CGI->{var_name};
+
+    # or:
+    $CGI::values{var_name};
 
 or similarly with positional parameters,
 
-    $Tag->cgi(name, $attribute_hash_reference, $body);
+    $Tag->cgi($name, $attribute_hash_reference);
 
 Description
 
@@ -2706,6 +2638,47 @@ bar will be substituted for [cgi foo].
 This is the same as $CGI->{foo} in embedded Perl.
 
 I<name>
+
+This is the name of the CGI variable whose value you want.
+
+I<set>
+
+You can change a value with 'set=I<new_value>'. The tag will return
+the CGI value you set unless you also set the I<hide>=1 attribute.
+
+Note that this is only available in new-style tags, for safety
+reasons.
+
+I<hide>
+
+Setting hide=1 suppresses the tag's return value, which can be
+useful with the set attribute.
+
+I<filter>
+
+See the filter tag for a list of filters.
+
+Setting 'filter="I<filter>"' modifies the named CGI variable with
+the specified filter.
+
+I<keep> (with filter)
+
+Set keep=1 if you want the tag to return a filtered result but do
+not want the filter to modify the CGI value itself in the $CGI::values
+hash.
+
+I<default>
+
+This sets a return value in case the named CGI variable is missing or
+otherwise false. The following will expand to S<"Using default":>
+
+   [cgi name=myname set=0 hide=1]
+   [cgi name=myname default="Using default"]
+
+I<enable_html>
+
+Any '<' characters will normally be converted into '&lt;' for safety
+reasons. This conversion can be disabled using 'enable_html=1'.
 
 =head2 checked
 
@@ -2747,7 +2720,7 @@ B<ASP-like Perl call:>
  ATT1                              none
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     No
  Has Subtags                       No
@@ -2757,7 +2730,7 @@ B<Tag expansion example:>
 
    [checked name value]
 ---
-   TAGRESULT
+   TAG RESULT
 
 B<ASP-like Perl call:>
 
@@ -2823,7 +2796,7 @@ Summary
  ATT1                              none
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     No
  Has Subtags                       No
@@ -2833,7 +2806,7 @@ B<Tag expansion example:>
 
    [control name default]
 ---
-   TAGRESULT
+   TAG RESULT
 
 B<ASP-like Perl call:>
 
@@ -2936,7 +2909,7 @@ B<ASP-like Perl call:>
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     Yes
  Has Subtags                       No
@@ -2946,7 +2919,7 @@ B<Tag expansion example:>
 
    [control_set index]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -3001,7 +2974,7 @@ Attribute aliases
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     No
  Has Subtags                       No
@@ -3011,7 +2984,7 @@ B<Tag expansion example:>
 
    [counter file]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -3097,7 +3070,7 @@ B<ASP-like Perl call:>
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     Yes
  Has Subtags                       No
@@ -3107,7 +3080,7 @@ B<Tag expansion example:>
 
    [currency convert noformat]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -3204,7 +3177,7 @@ Attribute aliases
  ATT1                              none
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     No
  Has Subtags                       No
@@ -3214,7 +3187,7 @@ B<Tag expansion example:>
 
    [data table field key]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -3346,7 +3319,7 @@ B<ASP-like Perl call:>
  ATT1                              none
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     No
  Has Subtags                       No
@@ -3356,7 +3329,7 @@ B<Tag expansion example:>
 
    [default name default]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -3416,7 +3389,7 @@ B<ASP-like Perl call:>
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     No
  Has Subtags                       No
@@ -3426,7 +3399,7 @@ B<Tag expansion example:>
 
    [description code base]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -3495,7 +3468,7 @@ B<ASP-like Perl call:>
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     Yes
  Has Subtags                       No
@@ -3505,7 +3478,7 @@ B<Tag expansion example:>
 
    [discount code]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -3622,7 +3595,7 @@ B<ASP-like Perl call:>
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     No
  Has Subtags                       No
@@ -3632,7 +3605,7 @@ B<Tag expansion example:>
 
    [dump ]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -3666,7 +3639,7 @@ Summary
  ATT1                              none
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     No
  Has Subtags                       No
@@ -3676,7 +3649,7 @@ B<Tag expansion example:>
 
    [ecml name function]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -3816,7 +3789,7 @@ B<ASP-like Perl call:>
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     Yes
  Has Subtags                       No
@@ -3826,7 +3799,7 @@ B<Tag expansion example:>
 
    [either ]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -3879,7 +3852,7 @@ B<ASP-like Perl call:>
  ATT1                              none
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     No
  Has Subtags                       No
@@ -3889,7 +3862,7 @@ B<Tag expansion example:>
 
    [error name]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -3935,7 +3908,7 @@ The options are:
 
 I<all=1>
 
-Display all error messages, not just the one refered to by <var>. The
+Display all error messages, not just the one referred to by <var>. The
 default is only display the error message assigned to <var>.
 
 text=<optional string to embed the error message(s) in>
@@ -4026,7 +3999,7 @@ Summary
  ATT1                              none
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     No
  Has Subtags                       No
@@ -4036,7 +4009,7 @@ B<Tag expansion example:>
 
    [export table]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -4170,7 +4143,7 @@ Attribute aliases
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     No
  Has Subtags                       No
@@ -4180,7 +4153,7 @@ B<Tag expansion example:>
 
    [field name code]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -4193,8 +4166,6 @@ or similarly with positional parameters,
     $Tag->field(name,code, $attribute_hash_reference, $body);
 
 Description
-
-HTML example: <PARAM MV=field MV.COL=column MV.ROW=key>
 
 Expands into the value of the field I<name> for the product identified
 by I<code> as found by searching the products database. It will return
@@ -4247,7 +4218,7 @@ B<ASP-like Perl call:>
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     No
  Has Subtags                       No
@@ -4257,7 +4228,7 @@ B<Tag expansion example:>
 
    [file name type]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -4322,7 +4293,7 @@ B<ASP-like Perl call:>
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     Yes
  Has Subtags                       No
@@ -4332,7 +4303,7 @@ B<Tag expansion example:>
 
    [filter op]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -4628,12 +4599,12 @@ Summary
  transactions Reopens the database in transactions mode if Safe.pm is not active (e.g., in a global subroutine, usertag or [perl global=1] tag). The limitation exists because it is not possible to reopen a database within Safe.pm.DEFAULT_VALUE
  type                                                   DEFAULT_VALUE
  value        The boolean value of the flag             DEFAULT_VALUE
- write        Flags the table writeable by default (or read-only if you also set the value=0 attribute)DEFAULT_VALUE
+ write        Flags the table writable by default (or read-only if you also set the value=0 attribute)DEFAULT_VALUE
 
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     No
  Has Subtags                       No
@@ -4643,7 +4614,7 @@ B<Tag expansion example:>
 
    [flag type]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -4725,7 +4696,7 @@ The boolean value of the flag
 
 I<write>
 
-Flags the table writeable by default (or read-only if you also set the
+Flags the table writable by default (or read-only if you also set the
 value=0 attribute)
 
 =head2 fly_list
@@ -4769,7 +4740,7 @@ B<ASP-like Perl call:>
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     Yes
  Has Subtags                       No
@@ -4779,7 +4750,7 @@ B<Tag expansion example:>
 
    [fly_list code base]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -4857,7 +4828,7 @@ B<ASP-like Perl call:>
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     No
  Has Subtags                       No
@@ -4867,7 +4838,7 @@ B<Tag expansion example:>
 
    [fly_tax area]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -4908,7 +4879,7 @@ or positionally,
  name         The name set in the corresponding [label] tagnone
  if           Condition for goto. Should evaluate to truth value before tag is parsed.true
 
- Other_Charactreristics            
+ Other_Characteristics             
  Container tag                     No, but you use it like this:[goto name=label_name if=condition]body text[label label_name]
  Has Subtags                       [label] interpreted by goto
 
@@ -4999,7 +4970,7 @@ Attribute aliases
  ATT1                              none
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     No
  Has Subtags                       No
@@ -5009,7 +4980,7 @@ B<Tag expansion example:>
 
    [handling mode]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -5048,7 +5019,7 @@ Summary
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     Yes
  Has Subtags                       No
@@ -5058,7 +5029,7 @@ B<Tag expansion example:>
 
    [harness ]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -5113,7 +5084,7 @@ Summary
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     Yes
  Has Subtags                       No
@@ -5123,7 +5094,7 @@ B<Tag expansion example:>
 
    [html_table ]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -5190,7 +5161,7 @@ Invalidates cache: B<YES>
 
 Called Routine:
 
-Called Routine for positonal:
+Called Routine for positional:
 
 B<ASP-like Perl call:>
 
@@ -5219,7 +5190,7 @@ Attribute aliases
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     Yes
  Has Subtags                       No
@@ -5229,7 +5200,7 @@ B<Tag expansion example:>
 
    [if type term op compare]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -5312,7 +5283,7 @@ Oops!  This will not work. You must do instead
 or better yet
 
     [if type=explicit compare=`
-                        $Value->{name} =~ /$Value->{b_name}/
+                        $Values->{name} =~ /$Values->{b_name}/
                         `]
         Shipping name matches billing name.
     [/if]
@@ -5403,7 +5374,7 @@ I<file>
 Tests for existence of a file. Useful for placing image tags only if
 the image is present.
 
-    [if file /home/user/www/images/[item-code].gif]
+    [if type=file term="/home/user/www/images/[item-code].gif"]
     <IMG SRC="[item-code].gif">
     [/if]
 
@@ -5473,20 +5444,20 @@ name]value[/set] element.
 I<session>
 
 the Interchange session variables. of particular interest are
-i<login>, i<frames>, i<secure>, and i<browser>.
+I<login>, I<frames>, I<secure>, and I<browser>.
 
 I<validcc>
 
 a special case, takes the form [if validcc no type exp_date].
 evaluates to true if the supplied credit card number, type of card,
-and expiration date pass a validity test. does a luhn-10 calculation
+and expiration date pass a validity test. does a Luhn-10 calculation
 to weed out typos or phony card numbers. Uses the standard
 CreditCardAuto variables for targets if nothing else is passed.
 
 I<value>
 
 the Interchange user variables, typically set in search, control, or
-order forms. variables beginning with c<mv_> are Interchange special
+order forms. Variables beginning with mv_ are Interchange special
 values, and should be tested/used with caution.
 
 The I<field> term is the specifier for that area. For example, [if
@@ -5525,7 +5496,7 @@ are as in Perl:
     <   numeric less-than
     lt  string less-than
     !=  numeric non-equivalence
-    ne  string equivalence
+    ne  string non-equivalence
 
 Any simple perl test can be used, including some limited regex
 matching. More complex tests are best done with [if explicit].
@@ -5616,7 +5587,7 @@ Attribute aliases
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     Yes
  Has Subtags                       No
@@ -5626,7 +5597,7 @@ B<Tag expansion example:>
 
    [import table type]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -5713,7 +5684,7 @@ Not applicable.
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     No
  Has Subtags                       No
@@ -5723,7 +5694,7 @@ B<Tag expansion example:>
 
    [include file locale]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -5754,7 +5725,7 @@ Summary
 
  Parameters   Description                               Default
  base         Alias for table                           DEFAULT_VALUE
- basefile     Database filename. Exports the table to this filename if old or missing before indexing. See also the export tag for additional relevent attributes such as delimiter type, etc.DEFAULT_VALUE
+ basefile     Database filename. Exports the table to this filename if old or missing before indexing. See also the export tag for additional relevant attributes such as delimiter type, etc.DEFAULT_VALUE
  col          alias for fields                          DEFAULT_VALUE
  columns      alias for fields                          DEFAULT_VALUE
  database     Alias for table                           DEFAULT_VALUE
@@ -5770,7 +5741,7 @@ Summary
  ATT1                              none
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     No
  Has Subtags                       No
@@ -5780,7 +5751,7 @@ B<Tag expansion example:>
 
    [index table]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -5799,7 +5770,7 @@ I<basefile>
 
 Database filename. Exports the table to this filename if old or
 missing before indexing. See also the export tag for additional
-relevent attributes such as delimiter type, etc.
+relevant attributes such as delimiter type, etc.
 
 I<col>
 
@@ -5886,7 +5857,7 @@ Attribute aliases
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     Yes
  Has Subtags                       No
@@ -5896,7 +5867,7 @@ B<Tag expansion example:>
 
    [item_list name]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -6014,7 +5985,7 @@ output from the [calc][/calc] tags; the list will end and the item
 will B<not> be shown. If the product's weight field is less than 1, a
 numerical 1 is output. The item will be shown, but will be the last
 item shown. (If it is an [item-list], any price for the item will
-still be added to the subtotal.) NOTE: no HTML style.
+still be added to the subtotal.)
 
 [item-modifier attribute]
 
@@ -6097,7 +6068,7 @@ NO SUMMARY SECTION
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Container tag                     No
  Has Subtags                       No
@@ -6107,7 +6078,7 @@ B<Tag expansion example:>
 
    [label ]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -6145,7 +6116,7 @@ Summary
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     Yes
  Has Subtags                       No
@@ -6155,7 +6126,7 @@ B<Tag expansion example:>
 
    [log file]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -6278,7 +6249,7 @@ Attribute aliases
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     Yes
  Has Subtags                       No
@@ -6288,7 +6259,7 @@ B<Tag expansion example:>
 
    [loop list]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -6300,10 +6271,6 @@ or similarly with positional parameters,
     $Tag->loop(list, $attribute_hash_reference, $body);
 
 Description
-
-HTML example:
-
-    <TABLE><TR MV="loop 1 2 3"><TD>[loop-code]</TD></TR></TABLE>
 
 Returns a string consisting of the LIST, repeated for every item in a
 comma-separated or space-separated list. Operates in the same fashion
@@ -6385,6 +6352,62 @@ could produce a select list of options this way:
         [on-match]</SELECT>[/on-match]
     [/loop]
 
+A nice shortcut is available when using [loop] to generate <OPTION>
+lists inside HTML <SELECT>...</SELECT> blocks, when you want the
+user's last selection to be chosen by default on subsequent page
+views. Interchange simplifies this with functions that output
+"SELECTED" (surrounded by appropriate whitespace) for an <OPTION> if a
+certain value is set to the <OPTION VALUE="...">. (It sounds more
+complicated than it really is.)
+
+For example, consider:
+
+ <select name=search_cat>
+[loop
+        search="
+                fi=cat
+                st=db
+                ra=yes
+                rf=name
+                tf=name
+                un=1
+        "
+]
+<option[selected search_cat [loop-code]>[loop-code]
+[/loop]
+</select>
+
+When the user returns to the page, their last selection will be chosen
+as the default. (Assuming the value search_cat was set after the
+search, which is normally is with standard searches.)
+
+[loop] offers the option attribute, which can give loops that parse
+faster and are easier to write. The following example is equivalent to
+the one above:
+
+ <select name=search_cat>
+[loop
+        option=search_cat
+        search="
+                fi=cat
+                st=db
+                ra=yes
+                rf=name
+                tf=name
+                un=1
+        "
+]
+<option>[loop-code]
+[/loop]
+</select>
+
+It works equally well when option values are explicitly specified:
+
+ <option value="[loop-code]">So-called "[loop-code]"
+
+See also the ictemplates documentation in the section "Checks and
+Selections."
+
 [if-loop-data table column] IF [else] ELSE [/else][/if-loop-field]
 
 Outputs the IF if the column in table is non-empty, and the ELSE
@@ -6418,7 +6441,7 @@ passed list with the lr=1 parameter).
 Parameters are numbered from ordinal 0, with [loop-pos 0] being the
 equivalent of [loop-code].
 
-Outputs the B<IF> if the returned positional parmeter N is
+Outputs the B<IF> if the returned positional parameter N is
 non-empty, and the B<ELSE> (if any) otherwise.
 
 See [I<if-I<prefix>-pos>].
@@ -6533,7 +6556,7 @@ Summary
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     Yes
  Has Subtags                       No
@@ -6543,7 +6566,7 @@ B<Tag expansion example:>
 
    [mail to]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -6609,7 +6632,7 @@ Summary
  interpolate                       No
  reparse                           No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 Yes
  Has Subtags                       <% and %>
  Container tag                     Yes
@@ -6702,7 +6725,7 @@ Summary
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     No
  Has Subtags                       No
@@ -6712,7 +6735,7 @@ B<Tag expansion example:>
 
    [nitems name]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -6808,7 +6831,7 @@ Summary
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     No
  Has Subtags                       No
@@ -6818,7 +6841,7 @@ B<Tag expansion example:>
 
    [options code]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -6980,7 +7003,7 @@ Invalidates cache: B<no>
 
 Called Routine:
 
-Called Routine for positonal:
+Called Routine for positional:
 
 B<ASP-like Perl call:>
 
@@ -7016,7 +7039,7 @@ Attribute aliases
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     No
  Has Subtags                       No
@@ -7026,7 +7049,7 @@ B<Tag expansion example:>
 
    [or type term op compare]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -7069,7 +7092,7 @@ Summary
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Container tag                     No
  Has end tag                       No ([/order] is a macro for </A>)
@@ -7110,7 +7133,7 @@ control, for example, to change frames for the S<order:>
 To order with a form, you set the form variable mv_order_item to
 the item-code/SKU and use the refresh S<action:>
 
-   <FORM ACTION="[process-target]" METHOD=POST>
+   <FORM ACTION="[process]" METHOD=POST>
    <INPUT TYPE=hidden  NAME="mv_todo"        VALUE="refresh">
    <INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="os28044">
 
@@ -7121,7 +7144,7 @@ the item-code/SKU and use the refresh S<action:>
 
 Groups of items may be batched:
 
-   <FORM ACTION="[process-target]" METHOD=POST>
+   <FORM ACTION="[process]" METHOD=POST>
    <INPUT TYPE=hidden  NAME="mv_todo"        VALUE="refresh">
 
    <INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="TK112">
@@ -7169,7 +7192,7 @@ Summary
  secure                            No
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Macro                             No
  Has end tag                       No ([/page] is a macro for </A>)
@@ -7472,7 +7495,7 @@ Summary
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 Yes
  Has Subtags                       No
  Container tag                     Yes
@@ -7520,14 +7543,6 @@ printing to STDOUT or STDERR is useless).
         return "Hi, $name! How do you like your $browser?
     [/perl]
 
-HTML example:
-
-    <PRE mv=perl>
-        $name    = $Values->{name};
-        $browser = $Session->{browser};
-        return "Hi, $name! How do you like your $browser?
-    </PRE>
-
 Object references are available for most Interchange tags and
 functions, as well as direct references to Interchange session and
 configuration values.
@@ -7555,7 +7570,7 @@ Objects>.
 
 I<tables>
 
-This should ba a whitespace-separated list of database tables you want
+This should be a whitespace-separated list of database tables you want
 to make available within the Perl code.
 
 If you wish to use database values in your Perl code, the tag must
@@ -7772,7 +7787,7 @@ Attribute aliases
  ATT1                              none
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     No
  Has Subtags                       No
@@ -7782,7 +7797,7 @@ B<Tag expansion example:>
 
    [price code]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -7895,8 +7910,9 @@ I<code>
 =head2 process
 
 This is a shortcut for the 'process' action, expanding to your catalog
-URL and session ID.  It is analogous to the area tag, but is more
-limited. The following expansion is S<illuastrative:>
+URL and session ID. It is analogous to the area tag for the
+'process' page, but is more limited. The following expansion is
+S<illustrative:>
 
    [process target=targetframe]
 ---
@@ -7911,7 +7927,7 @@ should supply the containing quotes, like S<this:>
 
    <A HREF="[process target=targetframe]">...
 
-Alias:  B<process_target>
+Aliases:  B<process_target>, B<process_order>
 
 Summary
 
@@ -7925,7 +7941,7 @@ Summary
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Container tag                     No
 
@@ -7945,12 +7961,16 @@ or similarly with positional parameters,
 
     $Tag->process($target, $secure, $attribute_hash_reference);
 
+=head2 process_search
+
+This is an exact alias for [area search].
+
 =head2 query
 
 Passes SQL statements through to SQL databases, or allows SQL queries
 via Interchange's database abstraction into non-SQL databases and text
-files. The latter use may require Jochen Wiedmann's I<SQL Statement>
-module (included with Bundle::Interchange from CPAN).
+files. The latter requires the Perl I<SQL Statement> module (included
+with Bundle::Interchange from CPAN).
 
 Summary
 
@@ -7958,7 +7978,7 @@ Summary
     [query sql="SQL_query_text" other_named_attributes]
 
  Parameters   Description                               Default
- sql          The SQL statement.Passed directly through to an SQL database.For a non-SQL table, the tag interprets your SQL first. See Jochen Wiedmann's SQL Statement module for limitations and detail.none
+ sql          The SQL statement.Passed directly through to an SQL database.For a non-SQL table, the tag interprets your SQL first. See the SQL Statement module for limitations and detail.none
  query        Alias for sql                             none
 
  Attributes                        Default
@@ -7979,7 +7999,7 @@ Summary
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Container tag                     Yes
  Has subtags                       Yes
@@ -8034,10 +8054,10 @@ the database and return the result.
 
 If your table is not in an SQL database (for example, GDBM, text,
 LDAP, and in-memory tables), Interchange will internally convert it to
-an Interchange search specification with Jochen Wiedmann's I<SQL
-Statement> module (included with Bundle::Interchange from CPAN). This
-means that you can use simple SQL queries regardless of the underlying
-database implementation.
+an Interchange search specification with the Perl I<SQL Statement>
+module (included with Bundle::Interchange from CPAN). This means that
+you can use simple SQL queries regardless of the underlying database
+implementation.
 
 I<Subtags>
 
@@ -8143,7 +8163,7 @@ you had set 'arrayref=""'.
 I<arrayref and hashref>
 
 If you set 'arrayref=I<keyname>' or 'hashref=I<keyname>', the
-query will not ruturn results to the page. Instead, it will place the
+query will not return results to the page. Instead, it will place the
 results of your query in the $Vend::Interpolate::Tmp hash. Using
 'arrayref=my_query' sets $Vend::Interpolate::Tmp->{my_query} to
 refer to an array of array references, while 'hashref=my_query'
@@ -8160,7 +8180,8 @@ somewhere more persistent such as the $Session S<hash:>
 
    $Session->{my_query} = $Vend::Interpolate::Tmp->{my_query};
 
-Beware the impact on perfomance if you do this with large result sets.
+Beware the impact on performance if you do this with large result
+sets.
 
 Technical note - the string returned by the 'textref' type will
 B<eval>() to the 'arrayref' data structure.
@@ -8339,7 +8360,7 @@ Summary
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 Yes
  Container tag                     No
 
@@ -8397,7 +8418,7 @@ Summary
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 Yes
  Container tag                     No
 
@@ -8478,7 +8499,7 @@ B<ASP-like Perl call:>
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     Yes
  Has Subtags                       No
@@ -8488,7 +8509,7 @@ B<Tag expansion example:>
 
    [row width]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -8581,7 +8602,7 @@ Attribute aliases
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     No
  Has Subtags                       No
@@ -8591,7 +8612,7 @@ B<Tag expansion example:>
 
    [salestax name noformat]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -8650,7 +8671,7 @@ B<ASP-like Perl call:>
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     No
  Has Subtags                       No
@@ -8660,7 +8681,7 @@ B<Tag expansion example:>
 
    [scratch name]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -8700,7 +8721,7 @@ Summary
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 Yes
  Container tag                     No
 
@@ -8778,7 +8799,7 @@ Attribute aliases
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     Yes
  Has Subtags                       No
@@ -8788,7 +8809,7 @@ B<Tag expansion example:>
 
    [search_region arg]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -8845,7 +8866,7 @@ B<ASP-like Perl call:>
  ATT1                              none
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     No
  Has Subtags                       No
@@ -8855,7 +8876,7 @@ B<Tag expansion example:>
 
    [selected name value]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -8941,7 +8962,7 @@ B<ASP-like Perl call:>
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     Yes
  Has Subtags                       No
@@ -8951,7 +8972,7 @@ B<Tag expansion example:>
 
    [set name]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -9008,7 +9029,7 @@ Parameters must be named (no positional usage except in Perl call)
  domain       Overrides the domain(s) set in CookieDomainDomain(s), if any, defined in the CookieDomain directive
  path         legal URL paths for the cookie            URL path(s) to your catalog, including aliases
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 Yes
  Container tag                     No
 
@@ -9133,7 +9154,7 @@ B<ASP-like Perl call:>
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     Yes
  Has Subtags                       No
@@ -9143,7 +9164,7 @@ B<Tag expansion example:>
 
    [seti name]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -9180,7 +9201,7 @@ Summary
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     No
  Has Subtags                       No
@@ -9190,7 +9211,7 @@ B<Tag expansion example:>
 
    [setlocale ]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -9289,13 +9310,13 @@ Summary
  noformat     Returns result as a number rather than a string formatted for the current locale's currency.Default: TrueDEFAULT_VALUE
  reset_messageBoolean. Blanks the session's current shipping message (i.e., $Session->{ship_message}).DEFAULT_VALUE
  reset_modes  Clears list of modes in $Vend::Cfg->{Shipping_line}Default: FalseDEFAULT_VALUE
- table        Alias: tables Whitespace-delimited list of tables containing shipping data required for perl or query calculations (e.g., in the 'PERL' field of your shipping database - see Shipping). You must specify the tables to get past the Perl 'Safe.pm' proctection. For example, you will get 'Safe' errors if you refer to an SQL table without specifying it here.Default: NoneDEFAULT_VALUE
+ table        Alias: tables Whitespace-delimited list of tables containing shipping data required for perl or query calculations (e.g., in the 'PERL' field of your shipping database - see Shipping). You must specify the tables to get past the Perl 'Safe.pm' protection. For example, you will get 'Safe' errors if you refer to an SQL table without specifying it here.Default: NoneDEFAULT_VALUE
  tables       Alias for table                           DEFAULT_VALUE
 
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     No
  Has Subtags                       No
@@ -9305,7 +9326,7 @@ B<Tag expansion example:>
 
    [shipping mode]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -9489,7 +9510,7 @@ I<table>
 S<Alias:> B<tables> Whitespace-delimited list of tables containing
 shipping data required for perl or query calculations (I<e.g.>, in the
 'PERL' field of your shipping database - see I<Shipping>). You must
-specify the tables to get past the Perl 'I<Safe.pm>' proctection. For
+specify the tables to get past the Perl 'I<Safe.pm>' protection. For
 example, you will get 'I<Safe>' errors if you refer to an SQL table
 without specifying it here.
 
@@ -9520,7 +9541,7 @@ Summary
  Parameters   Description                 Default
  mode         Shipping mode. This is a key into the shipping.asc database. See Shipping documentation.mv_shipmode, or 'default' if mv_shipmode not set
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 Yes, but only if no mode given
  Container tag                     No
 
@@ -9576,7 +9597,7 @@ B<ASP-like Perl call:>
  ATT1                              none
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     No
  Has Subtags                       No
@@ -9586,7 +9607,7 @@ B<Tag expansion example:>
 
    [soap call uri proxy]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -9621,7 +9642,7 @@ Summary
 
 No parameters.
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Container tag                     Yes
  Has Subtags                       No
@@ -9677,7 +9698,7 @@ Attribute aliases
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     No
  Has Subtags                       No
@@ -9687,7 +9708,7 @@ B<Tag expansion example:>
 
    [subtotal name noformat]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -9765,7 +9786,7 @@ Attribute aliases
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     Yes
  Has Subtags                       No
@@ -9775,7 +9796,7 @@ B<Tag expansion example:>
 
    [tag op arg]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -9947,7 +9968,7 @@ B<ASP-like Perl call:>
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     Yes
  Has Subtags                       No
@@ -9957,7 +9978,7 @@ B<Tag expansion example:>
 
    [time locale]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -10113,7 +10134,7 @@ B<ASP-like Perl call:>
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     Yes
  Has Subtags                       No
@@ -10123,7 +10144,7 @@ B<Tag expansion example:>
 
    [timed_build file]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -10176,7 +10197,7 @@ directory must exist.
 I<if>
 
 Allows you to to only display the cached region when the if
-paremeter is true. For example, you can do:
+parameter is true. For example, you can do:
 
         [timed-build if="[value timed]"]
         ITL tags....
@@ -10261,7 +10282,7 @@ B<ASP-like Perl call:>
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     Yes
  Has Subtags                       No
@@ -10271,7 +10292,7 @@ B<Tag expansion example:>
 
    [tmp name]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -10339,7 +10360,7 @@ Attribute aliases
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     No
  Has Subtags                       No
@@ -10349,7 +10370,7 @@ B<Tag expansion example:>
 
    [total_cost name noformat]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -10421,7 +10442,7 @@ Attribute aliases
  interpolate                       No
  reparse                           Yes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 no
  Container tag                     Yes
  Has Subtags                       No
@@ -10431,7 +10452,7 @@ B<Tag expansion example:>
 
    [tree table master subordinate start]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -10535,7 +10556,7 @@ from the tag call:
         [/tree]
         </table>
 
-Accepts the following paremeters:
+Accepts the following parameters:
 
 I<table>
 
@@ -10702,7 +10723,7 @@ Summary
  interpolate           See Interpolating ParametersNo
  reparse               See Interpolating ParametersYes
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Container tag                     Yes
 
@@ -10817,13 +10838,13 @@ Summary
     [update function]
 
  Parameters   Description                               Default
- function     cartUpates current or named cart (see name attribute)processUpdates an order or a search pagevaluesUpdates user-entered fieldsdataUpdates database, using current mv_ CGI form variables, for example:mv_data_table Table to updatemv_data_key Key into tablemv_data_fields Fields to update (space or null delimited)mv_data_function One of the following:deleteupdateinsertdeleteetc.DEFAULT_VALUE
+ function     cartUpdates current or named cart (see name attribute)processUpdates an order or a search pagevaluesUpdates user-entered fieldsdataUpdates database, using current mv_ CGI form variables, for example:mv_data_table Table to updatemv_data_key Key into tablemv_data_fields Fields to update (space or null delimited)mv_data_function One of the following:deleteupdateinsertdeleteetc.DEFAULT_VALUE
  name         Cart name to update (if 'function=cart')Default: current cartDEFAULT_VALUE
 
  Attributes                        Default
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     No
  Has Subtags                       No
@@ -10833,7 +10854,7 @@ B<Tag expansion example:>
 
    [update function]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -10881,7 +10902,7 @@ cart
 
 =item *
 
-Upates current or named cart (see name attribute)
+Updates current or named cart (see name attribute)
 
 =back
 
@@ -11032,7 +11053,7 @@ Attribute aliases
  ATT1                              none
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     No
  Has Subtags                       No
@@ -11042,7 +11063,7 @@ B<Tag expansion example:>
 
    [userdb function]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -11083,7 +11104,7 @@ It is normally called in an mv_click or mv_check setting, as in:
     [userdb function=login]
     [/set]
 
-    <FORM ACTION="[process-target]" METHOD=POST>
+    <FORM ACTION="[process]" METHOD=POST>
     <INPUT TYPE=hidden NAME=mv_click VALUE=Login>
     Username <INPUT NAME=mv_username SIZE=10>
     Password <INPUT NAME=mv_password SIZE=10>
@@ -11093,7 +11114,7 @@ There are several global parameters that apply to any use of the
 userdb functions. Most importantly, by default the database table
 is set to be I<userdb>. If you must use another table name, then you
 should include a database=table parameter with any call to
-userdb. The global parameters (default in parens):
+userdb. The global parameters (default in parentheses):
 
     database     Sets user database table (userdb)
     show         Show the return value of certain functions
@@ -11138,9 +11159,10 @@ Summary
  keep (with filter)                No
  scratch                           No
  default                           none
+ enable_html                       No
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 Yes
 
 B<Tag expansion example:>
@@ -11153,21 +11175,21 @@ Assuming form variable 'foo' = 'bar',
 
 B<ASP-like Perl call:>
 
-    $Tag->value(  { name => var_name, }  );
+    $Tag->value( { name => var_name } );
 
-    # or if you simply want the value,
-    $::Values->{var_name};
+    # or if you simply want the value:
+    $Values->{var_name};
 
 or similarly with positional parameters,
 
-    $Tag->value($name$, $attribute_hash_reference);
+    $Tag->value($name, $attribute_hash_reference);
 
 Description
 
-HTML examples:
+Usage example:
 
-   <PARAM MV="value name">
    <INPUT TYPE="text" NAME="name" VALUE="[value name]">
+   <INPUT TYPE="text" NAME="name" VALUE="[value name=name]">
 
 Expands into the current value of the named customer/form input
 field. When the value is returned, any Interchange tags present in the
@@ -11193,7 +11215,7 @@ reasons.
 I<hide>
 
 Setting hide=1 suppresses the tag's return value, which can be
-useful with the setset attribute.
+useful with the set attribute.
 
 I<filter>
 
@@ -11222,7 +11244,12 @@ This sets a return value in case the named value is missing or
 otherwise false. The following will expand to S<"Using default":>
 
    [value name=myname set=0 hide=1]
-   [value myname default="Using default"]
+   [value name=myname default="Using default"]
+
+I<enable_html>
+
+Any '<' characters will normally be converted into '&lt;' for safety
+reasons. This conversion can be disabled using 'enable_html=1'.
 
 =head2 value_extended
 
@@ -11259,10 +11286,10 @@ B<ASP-like Perl call:>
  name                                                   DEFAULT_VALUE
 
  Attributes                        Default
- ATT1                              none
+ umask                             none
  interpolate (reparse)             No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 YES
  Container tag                     No
  Has Subtags                       No
@@ -11272,7 +11299,7 @@ B<Tag expansion example:>
 
    [value_extended name]
 ---
-   TAGRESULT
+   TODO: (tag result)
 
 B<ASP-like Perl call:>
 
@@ -11290,6 +11317,7 @@ Named call example:
    [value-extended
             name=formfield
             outfile=filename*
+            umask=octal*
             ascii=1*
             yes="Yes"*
             no="No"*
@@ -11297,7 +11325,8 @@ Named call example:
             test="isfile|length|defined"*
             index="N|N..N|*"
             file_contents=1*
-            elements=1*]
+            elements=1*
+   ]
 
 Expands into the current value of the customer/form input field named
 by field. If there are multiple elements of that variable, it will
@@ -11348,6 +11377,13 @@ accept an absolute file name; the name must be relative to the catalog
 directory. If you wish to write images or other files that would go to
 HTML space, you must use the HTTP server's Alias facilities or make
 a symbolic link.
+
+I<umask>
+
+Permission mask (in octal) to apply to the uploaded file's permission
+bits. You may want to set this to make a file world-readable, or to
+keep it from being group-readable. See the UNIX chmod(1) manpage for
+details.
 
 I<ascii>
 
@@ -11512,55 +11548,6 @@ file="/long/path/to/file"] every time, you can just put:
 and [include file] will be the equivalent. You can still specify
 another value with [include file="/another/path/to/file"].
 
-=head2 InsertHTML
-
-This attribute makes HTML tag output be inserted into the containing
-tag, in effect adding an attribute=value pair (or pairs).
-
-    UserTag tagname InsertHTML   htmltag  mvtag|mvtag2|mvtagN
-
-In Interchange's standard tags, among others, the <OPTION ...> tag has
-the [selected ..] and [checked ...] tags included with them, so that
-you can do:
-
-   <INPUT TYPE=checkbox
-        MV="checked mvshipmode upsg" NAME=mv_shipmode> UPS Ground shipping
-
-to expand to this:
-
-   <INPUT TYPE=checkbox CHECKED NAME=mv_shipmode> UPS Ground shipping
-
-Providing, of course, that mv_shipmode B<is> equal to upsg. If
-you want to turn off this behavior on a per-tag basis, add the
-attribute mv.noinsert=1 to the tag on your page.
-
-=head2 InsideHTML
-
-To make a container tag be placed B<after> the containing HTML tag,
-use the InsideHTML setting.
-
-    UserTag tagname InsideHTML   htmltag  mvtag|mvtag2|mvtagN
-
-In Interchange's standard tags, the only InsideHTML tag is the
-<SELECT> tag when used with I<loop>, which causes this:
-
-   <SELECT MV="loop upsg upsb upsr" NAME=mv_shipmode>
-   <OPTION VALUE="[loop-code]"> [shipping-desc [loop-code]]
-   </SELECT>
-
-to expand to this:
-
-   <SELECT NAME=mv_shipmode>
-   [loop upsg upsb upsr]
-   <OPTION VALUE="[loop-code]"> [shipping-desc [loop-code]]
-   [/loop]
-   </SELECT>
-
-Without the InsideHTML setting, the [loop ...] would have been
-B<outside> of the select - not what you want. If you want to turn off
-this behavior on a per-tag basis, add the attribute mv.noinside=1 to
-the tag on your page.
-
 =head2 Interpolate
 
 The behavior for this attribute depends on whether the tag is a
@@ -11597,49 +11584,6 @@ Identical to the Routine argument - a subroutine that will be called
 when the new syntax is not used for the call, i.e. [usertag
 argument] instead of [usertag ARG=argument]. If not defined,
 I<Routine> is used, and Interchange will usually do the right thing.
-
-=head2 ReplaceAttr
-
-Works in concert with InsertHTML, defining a B<single> attribute which
-will be replaced in the insertion operation..
-
-  UserTag tagname ReplaceAttr  htmltag attr
-
-An example is the standard HTML <A HREF=...> tag. If you want to use
-the Interchange tag [area pagename] inside of it, then you would
-normally want to replace the HREF attribute. So the equivalent to the
-following is defined within Interchange:
-
-  UserTag  area  ReplaceAttr  a  href
-
-Causing this
-
-    <A MV="area pagename" HREF="a_test_page.html">
-
-to become
-
-    <A HREF="http://yourserver/cgi/simple/pagename?X8sl2lly;;44">
-
-when intepreted.
-
-=head2 ReplaceHTML
-
-For HTML-style tag use only. Causes the tag containing the Interchange
-tag to be stripped and the result of the tag to be inserted, for
-certain tags. For example:
-
-  UserTag company_name Routine sub { my $l = shift; return "$l: XYZ Company" }
-  UserTag company_name HasEndTag
-  UserTag company_name ReplaceHTML  b    company_name
-
-<BR> is the HTML tag, and "company_name" is the Interchange tag. At
-that point, the usage:
-
-    <B MV="company-name"> Company </B>  --->>  Company: XYZ Company
-
-Tags not in the list will not be stripped:
-
-    <I MV="company-name"> Company </I> --->>  <I>Company: XYZ Company</I>
 
 =head2 Routine
 
@@ -11696,7 +11640,7 @@ with named parameters.
  page         Name of page for which this bar-button is definednone
  current      Name of the current page                  Current page: MV_PAGE
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Macro                             No
  Has end tag                       [/bar-button]
@@ -11747,7 +11691,7 @@ Description
 
 Displays content based on current page. The content between the
 [selected][/selected] tags will be displayed only if the name of the
-curent page matches the name that was passed to the page parameter
+current page matches the name that was passed to the page parameter
 (page=page-name). The default content will be displayed when there is
 no match.
 
@@ -11786,7 +11730,7 @@ with named parameters.
  raw                               none
  zerofix                           none
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Macro                             No
  Has end tag                       [/convert_date]
@@ -11870,7 +11814,7 @@ with named parameters.
  table        Table name.                               products
  format       POSIX time format string                  %A %d %b %Y
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Macro                             No
  Has end tag                       No
@@ -11925,7 +11869,7 @@ with named parameters.
  Parameters   Description                               Default
  nickname     Must be an existing nickname              none
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Macro                             No
  Has end tag                       No
@@ -11953,7 +11897,7 @@ for more examples.
 Description
 
 Deletes a cart with name nickname from the user database. Basically
-the same as [userdb function=delete_cart nickname=mcart].
+the same as [userdb function=delete_cart nickname=mycart].
 
 I<nickname>
 
@@ -11983,7 +11927,7 @@ with named parameters.
  from         Senders email address                     First address in MailOrderTo configuration variable
  extra        Additional headers to be included         none
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Macro                             No
  Has end tag                       [/email]
@@ -12056,9 +12000,9 @@ SendmailProgram with -t option.
 
 Summary
 
-    [email_raw]Your message incuding headers[/email_raw]
+    [email_raw]Your message including headers[/email_raw]
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Macro                             No
  Has end tag                       [/email_raw]
@@ -12122,7 +12066,7 @@ with named parameters.
  Attributes                        Default
  strip                             none
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Macro                             No
  Has end tag                       No
@@ -12176,7 +12120,7 @@ with named parameters.
  Parameters   Description                               Default
  nickname     Must be an existing nickname.Nickname is constructed from:a name parttime modified (time the cart was saved by save_cart tag)type (c for cart, r for recurring)none
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Macro                             No
  Has end tag                       No
@@ -12239,9 +12183,9 @@ with named parameters.
 
  Parameters   Description                               Default
  nickname     Label for the cart.                       none
- recurring    Set to true if recurring. Set to false, or ommit if cart.none
+ recurring    Set to true if recurring. Set to false, or omit if cart.none
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Macro                             No
  Has end tag                       No
@@ -12280,7 +12224,7 @@ with the same nickname.
 
 I<recurring>
 
-Set to true if recurring. Set to false, or simply ommit it, if it is a
+Set to true if recurring. Set to false, or simply omit it, if it is a
 cart.
 
 =head2 summary
@@ -12309,7 +12253,7 @@ with named parameters.
  reset                             none
  total                             none
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Macro                             No
  Has end tag                       No
@@ -12346,13 +12290,13 @@ Description
 
 The summary tag provides you with an easy way to calculate and display
 totals. The display of the amounts is fully customizable. You can hide
-diplay, or you can show the amounts with the proper currency
+display, or you can show the amounts with the proper currency
 formatting according to the locale, or you can define your own
 formatting. Any number of summaries can be kept on a page.
 
 I<currency>
 
-The amount or total will be diplayed according to the currency
+The amount or total will be displayed according to the currency
 formatting of the current locale if this attribute is set to true (non
 blank or zero).
 
@@ -12377,7 +12321,7 @@ I<reset>
 
 Will erase the total(s) if set to true. Be careful tough. It will
 reset ALL totals when you have no name attribute supplied. If you have
-provided a label for the name atribute then it will only reset the
+provided a label for the name attribute then it will only reset the
 total for that particular label. All others won't be touched.
 
 I<total>
@@ -12421,7 +12365,7 @@ with named parameters.
  td                                none
  tr                                none
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Macro                             No
  Has end tag                       [/table-organize]
@@ -12607,7 +12551,7 @@ with named parameters.
  size         Font size                                 6
  width        Width of the title bar                    500
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Macro                             No
  Has end tag                       [/title-bar]
@@ -12644,7 +12588,7 @@ Sets the background color of the bar. You can set the color as 'red',
 
 I<size>
 
-Determines the size of the text. Parameter shoud be set to a value
+Determines the size of the text. Parameter should be set to a value
 accepted by the HTML <font> tag size attribute.
 
 I<width>
@@ -12693,7 +12637,7 @@ with named parameters.
  no_second                         none
  skip_empty                        none
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Macro                             No
  Has end tag                       [/xml-generator]
@@ -12835,7 +12779,8 @@ I<dbdump>
 
 Will dump all tables in the catalog when this attribute is set true.
 Used attributes are "toplevel_tag", "record_tag", "field_tag", and
-"skip_empty" or default values (resp. 'table', 'record', 'field').
+"skip_empty" or default values ('table', 'record', 'field'
+respectively).
 
  Output format:
     <database name="catalogname">
@@ -13141,7 +13086,7 @@ the next level.
 
 =item *
 
-Within the same level, tags are proccessed in the order the appear on
+Within the same level, tags are processed in the order the appear on
 the page.
 
 =item *
@@ -13509,7 +13454,6 @@ The two-letter abbreviations are mapped with these letters:
  Abbr  Long name
  DL    mv_raw_dict_look
  MM    mv_more_matches
- SE    mv_raw_searchspec
  ac    mv_all_chars
  ar    mv_arg
  bd    mv_base_directory
@@ -13571,6 +13515,6 @@ The two-letter abbreviations are mapped with these letters:
 
  ________________________________________
 
-Copyright 2001 Red Hat, Inc. Freely redistributable under terms of the
-GNU General Public License.
+Copyright 2001-2002 Red Hat, Inc. Freely redistributable under terms
+of the GNU General Public License.
 

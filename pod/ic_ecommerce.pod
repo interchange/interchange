@@ -58,7 +58,7 @@ special [order item-code] tag:
 named attributes:
 
         [order code="sku" quantity="n"* href="page"* cart="cartname"* base="table"*]
-        * = optional paramenters
+        * = optional parameters
 
 Expands into a hypertext link which will include the specified code in
 the list of products to order and display the order page. B<code>
@@ -200,8 +200,8 @@ A basic link can be generated like:
 The form parameter value mv_order_fly can contain any number of
 fields which will set corresponding parameters in the item attributes.
 The fields are separated by the pipe (|) character and contain
-value-parmeter pairs separated by an = sign. (These are URL-encoded by
-the [area ...] or [page ...] tag, of course.) You can set a
+value-parameter pairs separated by an = sign. (These are URL-encoded
+by the [area ...] or [page ...] tag, of course.) You can set a
 size, color, or any other parameter.
 
 The special attribute mv_price can be used in conjunction with the
@@ -454,7 +454,7 @@ itself, if you wish.
 You can also order items from a form, using the mv_order_item,
 mv_cartname, and optional mv_order_quantity variables.
 
- <FORM METHOD=POST ACTION="[process-order]">
+ <FORM METHOD=POST ACTION="[process]">
  <input type=checkbox name="mv_order_item" value="M3243"> Item M3243
  <input name="mv_order_quantity" value="1"> Quantity
  <input type=hidden name="mv_cartname" value="layaway">
@@ -486,8 +486,8 @@ quantity, size, color or other factors read on.
 
 =head2 Price Maintenance with CommonAdjust
 
-As of Interchange 3.11, a flexible chained pricing scheme is available
-when the I<CommonAdjust> directive is set.
+A flexible chained pricing scheme is available when the
+I<CommonAdjust> directive is set.
 
 NOTE: For compatibility with older carts, if both PriceAdjustment and
 CommonAdjust are set, and CommonAdjust contains a valid database
@@ -522,7 +522,7 @@ will be used to set the price of the items.
 
 =item 4
 
-If PriceBreaks is in use, it's price will take precedence over the
+If PriceBreaks is in use, its price will take precedence over the
 value of CommonAdjust, though it may also contain a CommonAdjust
 string.
 
@@ -637,7 +637,7 @@ the package Vend::Interpolate. That means that in a UserTag:
   $Vend::Interpolate::item->{size}  gives size for current item (if there)
   $Vend::Interpolate::item->{mv_ib} gives database ordered from
 
-=item [valid minivend tags]
+=item [valid Interchange tags]
 
 If the settor begins with a square bracket ([) or underscore, it is
 parsed for Interchange tags with variable substitution (but no Locale
@@ -810,7 +810,7 @@ directive/option.
 
 Numbers that begin with an equals sign (=) are used as absolute
 prices and are I<interpolated for Interchange tags first>, so you can
-use subroutines to set the price. To facilite coordination with the
+use subroutines to set the price. To facilitate coordination with the
 subroutine, the session variables item_code and item_quantity
 are set to the code and quantity of the item being evaluated. They
 would be accessed in a global subroutine with
@@ -1027,7 +1027,7 @@ types:
 
     1. A discount for one particular item code (key is the item-code)
     2. A discount applying to all item codes (key is ALL_ITEMS)
-    3. A discount for an individual line item (set the mv_disount attribute
+    3. A discount for an individual line item (set the mv_discount attribute
        with embedded Perl)
     4. A discount applied after all items are totaled
        (key is ENTIRE_ORDER)
@@ -1495,9 +1495,6 @@ example,
 Any input field from the order page can be included using the dollar
 sign notation.
 
-To prevent a value from being included in the order report, just add
-it to the B<ReportIgnore> configuration directive.
-
 Interchange defines some values for use in the search form -- they
 begin with mv_ and are automatically ignored.
 
@@ -1571,6 +1568,6 @@ you should set it large enough to be comfortable for the customer.
 
  ________________________________________
 
-Copyright 2001 Red Hat, Inc. Freely redistributable under terms of the
-GNU General Public License.
+Copyright 2001-2002 Red Hat, Inc. Freely redistributable under terms
+of the GNU General Public License.
 

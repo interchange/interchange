@@ -241,8 +241,7 @@ are in fixed formats:
 The database of shipping options that is accessed if the
 CustomShipping directive is in use.  This is a fixed-format
 database, and must be created as specified. For more information, see
-the Shipping ITL tag in the I<Red Hat Interchange 4.8: Tag Reference
-Guide>.
+the Shipping ITL tag in the I<Interchange Tag Reference Guide>.
 
 =item salestax.asc
 
@@ -420,7 +419,7 @@ memory type in the Database directive:
 
 =back
 
-B<Note: >The use of memory databases is not recommendeded.
+B<Note: >The use of memory databases is not recommended.
 
 =head2 Character Usage Restrictions
 
@@ -593,7 +592,7 @@ Products.asc file:
 
 Microsoft Excel is a widely-used tool to maintain Interchange
 databases, but has several problems with its standard TAB-delimited
-export, like encasing fields containing commas in quotes, generating
+export, like enclosing fields containing commas in quotes, generating
 extra carriage returns embedded in records, and not including trailing
 blank fields. To avoid problems, use a text-qualifier of none.
 
@@ -602,6 +601,25 @@ Set the EXCEL attribute to 1 to fix these problems on import:
     Database products EXCEL 1
 
 This is normally used only with TAB-delimited files.
+
+=item LARGE
+
+Interchange databases containing many records can result in a
+noticeable slowdown when displayed by the UI.
+
+Set the LARGE attribute to 1 to avoid this problem:
+
+        Database transactions LARGE 1
+
+=back
+
+=over 4
+
+=item
+
+In this case the UI supplies only input boxes to search records in the
+database instead of drawing all the records from the database, sorting
+them and creating more lists.
 
 =back
 
@@ -741,8 +759,8 @@ the same order as they appear in the ASCII source file.
 The file option overrides the container text and imports directly
 from a named file based in the catalog directory. To import from
 products.txt, specify file="products/products.txt". If the
-NoAbsolute directive is set to Yes in minivend.cfg, only relative
-path names will be allowed.
+NoAbsolute directive is set to Yes in interchange.cfg, only
+relative path names will be allowed.
 
 The [import ....] TEXT [/import] region may contain multiple
 records. If using NOTES mode, a separator must be used, which, by
@@ -788,7 +806,7 @@ always be writable, without having to specify [tag flag write] ...
 
    Database   products  WRITE_ALWAYS  1
 
-The default behavior of SQL datbases is equivalent to WRITE_ALWAYS,
+The default behavior of SQL databases is equivalent to WRITE_ALWAYS,
 while the default for GDBM_File, DB_File, and Memory databases is
 equivalent to:
 
@@ -798,7 +816,7 @@ equivalent to:
 =head2 Global Databases
 
 If a database is to be available to all catalogs on the Interchange
-server, it may be defined in minivend.cfg. Any catalog running
+server, it may be defined in interchange.cfg. Any catalog running
 under that server will be able to use it. It is writable by any
 catalog unless WRITE_CONTROL is used.
 
@@ -957,7 +975,7 @@ definitions from the default char(128):
  # Only applies if Interchange is importing from ASCII file
  # If you set a field to a numeric type, you must set the
  # NUMERIC attribute
- Database   products  COLUMN_DEF    "code=char(20) NOT NUL primary key"
+ Database   products  COLUMN_DEF    "code=char(20) NOT NULL primary key"
  Database   products  COLUMN_DEF    price=float, discount=float
  Database   products  COLUMN_DEF    author=char(40), title=char(64)
  Database   products  COLUMN_DEF    nontaxable=char(3)
@@ -984,7 +1002,7 @@ appropriate ODBC driver must be installed and tested.
 
 An Interchange SQL database can be accessed with the same tags as any
 of the other databases can. Arbitrary SQL queries can be passed with
-the [query sql="SQL STATEMENT"] MML tag.
+the [query sql="SQL STATEMENT"] ITL tag.
 
 =head2 Importing from an ASCII File
 
@@ -1106,7 +1124,7 @@ fully-coordinated search with grouping.
 
 The default, a text based search, sequentially scans the lines in the
 target file. By default it returns the first field (delineated by the
-delimiter for that database, for every line matching the search
+delimiter for that database) for every line matching the search
 specification. This corresponds to the product code, which is then
 used to key specific accesses to the database.
 
@@ -1165,11 +1183,10 @@ will be searched.
 
 To use the Glimpse search, the Glimpse index must be built based on
 files in the ProductDir, or wherever the files to be searched will be
-located. If Interchange was installed in the default
-/usr/local/lib/minivend, the command line to build the index for
-the products file would be:
+located. If the catalog is in /var/lib/interchange/foundation, the
+command line to build the index for the products file would be:
 
-   chdir products
+   chdir /var/lib/interchange/foundation/products
    glimpseindex -b -H . products.txt
 
 There are several ways to improve search speed for large catalogs. One
@@ -1179,7 +1196,7 @@ lines) with the split(1) UNIX/POSIX command. Then, index it with
 Glimpse:
 
    split -100 products.txt index.txt.
-   glimpseindex -H /usr/local/lib/minivend/products index.txt.*
+   glimpseindex -H /var/lib/interchange/foundation/products index.txt.*
 
 This will dramatically increase search speeds for large catalogs, at
 least if the search term is relatively unique. If it is a common
@@ -1322,14 +1339,15 @@ mv_column_op (or op) parameter. The operations include:
 
 An example:
 
-   [page scan
+   [page search="
            co=yes
            sf=title
            se=Sunflowers
            op=em
            sf=artist
            se=Van Gogh
-           op=rm          ] Sunflowers, Van Gogh [/page]
+           op=rm
+   "] Sunflowers, Van Gogh </a>
 
    [page search="
            co=yes
@@ -1348,7 +1366,7 @@ An example:
            se=1
            op=>=
            nu=1
-       "] Any in stock except Sunflowers, Van Gogh [/page]
+   "] Any in stock except Sunflowers, Van Gogh </a>
 
 Note that in the second example, nu=0 must be specified even though
 that is the default. This is to set the proper correspondence. To
@@ -1369,7 +1387,7 @@ avoid having to do this, use Interchange's option array feature:
                    op=>=
                    nu=1
                "
-       ] Any in stock except Sunflowers, Van Gogh [/page]
+       ] Any in stock except Sunflowers, Van Gogh </a>
 
 The co=yes is assumed when specifying a multiple search.
 
@@ -1383,13 +1401,12 @@ used to pre-screen records so that database accesses only need be made
 for already-matching entries. If accesses must be made for every
 record, large searches can get quite slow.
 
-=head2 Specifying a Text-Based Search with SQL-Like Syntax
+=head2 Specifying a Text-Based Search with SQL Syntax
 
-If Jochen Wiedmann's SQL::Statement module is installed, a SQL
-syntax can be specified for the text-based search. (This is not the
-same as the SQL search, treated below separately. It would work on an
-SQL table, but only on the ASCII text source file, not on the actual
-database.)
+If the Perl SQL::Statement module is installed, SQL syntax can be
+specified for the text-based search. This is not the same as the
+external SQL database search, treated below separately. This works on
+the ASCII text source file, not on the actual database.
 
 This syntax allows this form setup:
 
@@ -1568,7 +1585,6 @@ The two-letter abbreviations are mapped with these letters:
  rr  mv_return_reference
  rs  mv_return_spec
  rx  mv_range_max
- SE  mv_raw_searchspec
  se  mv_searchspec
  sf  mv_search_field
  sg  mv_search_group
@@ -1705,13 +1721,18 @@ including paging. For example:
                    "]
    [more-list][more][/more-list]
    [search-list]
-   <A MV="page [item-code]" HREF="flypage.html">
+   [page [item-code]]
        [item-field title]<A>, by [item-field artist]
    [/search-list]
    [no-match]
        Sorry, no matches for [value mv_searchspec].
    [/no-match]
    [/search-region]
+
+B<Note: >The [item-code] above does not need to be quoted because it
+is replaced before the [page ...] tag is interpolated. If building
+large lists, this is worth doing because unquoted tags are twice as
+fast to parse.
 
 To use the same page for search paging, make sure to set the
 sp=page parameter.
@@ -1797,10 +1818,10 @@ If the file to be searched is left empty in the search form or
 definition (it is set with mv_search_file (fi)), the text files
 associated with the products databases will be searched, and field
 names are already available as named in the first line of the file(s).
-This is defined to be products.txt in the Interchange
-demonstrations.
+This is defined to be products.txt in the Interchange demo
+catalogs.
 
-Be Careful if using SQL! If the database is change and not exporte
+Be careful if using SQL! If the database is changed and not exported
 with [tag export products][/tag], searches will not be successful.
 
 =item Other database files
@@ -2183,18 +2204,10 @@ man page.
 
 Set by the search to indicate the total number of matches found.
 
-=item mv_search_over_msg
-
-The message that should be displayed if there is an overflow condition
-(mv_matchlimit is exceeded). Overrides the SearchOverMsg directive.
-It is cleared by Interchange if there is no overflow. Somewhat
-deprecated by match paging.
-
 =item mv_search_page
 
 The Interchange-style name of the page that should display the search
-results. Overrides the FrameSearchPage directive, and the default
-value of search.
+results. This overrides the default value of search.
 
 =item mv_searchspec
 
@@ -2264,7 +2277,7 @@ to the sort fields as they are defined, presuming those are stacked.
 =item mv_spelling_errors
 
 The number of spelling errors that will be tolerated. Ignored unless
-using Glimpse. For a large catalog, limit this to two.
+using Glimpse. For a large table, limit this to two.
 
 =item mv_substring_match
 
@@ -2320,9 +2333,10 @@ The basic structure looks like this:
 [/more-list]
 [/search-region]
 
-TIP FOR MV3 PORTS: A [search-list][/search-list] must always be
-surrounded by a [search-region][/search-region] pair. This is a
-change from Interchange 3.
+Tip for catalogs upgraded from Minivend 3: A
+[search-list][/search-list] must always be surrounded by a
+[search-region][/search-region] pair. This is a change from
+Minivend 3.
 
 =over 4
 
@@ -2471,6 +2485,13 @@ Replaced with the range of match numbers displayed by the search page.
 Looks something like "1-50". Make sure to insert this item between a
 [more-list] and [/more-list] element pair.
 
+=item [match-count]
+
+Replaced with the total number of matches. This tag works even on
+[query] searches where [value mv_search_match_count] isn't set
+unless the query is applied to a non-SQL database. Make sure to insert
+this item between a [more-list] and [/more-list] element pair.
+
 =item [more-list next_img* prev_img* page_img* border* border_current*]
 
 Starts the section of the search page which is only displayed if there
@@ -2575,21 +2596,14 @@ The current page will not be a hyperlink. Every time the new link is
 pressed, the list is re-built to correspond to the current page. If
 there is no Next or Previous page, that link will not be shown.
 
-See the fr_resul.html or search.html files for examples. Make
-sure to insert this item between a [more-list] and [/more-list]
-element pair.
+See the search.html file for examples. Make sure to insert this
+item between a [more-list] and [/more-list] element pair.
 
 =item [process-search]
 
-Calls the search with the proper URL, including Interchange session
-tags. Used as the ACTION value for the search form.
-
-=item [process-target frame]
-
-Calls the search with the proper URL, including Interchange session
-tags. Used as the ACTION value for the search form if the results are
-to be targeted to a different window than the one set by SearchFrame
-(which is "_self" by default).
+Outputs the complete URL for a search, including Interchange session
+tags. Used as the ACTION value for the search form. This is exactly
+the same as [area search].
 
 =back
 
@@ -2896,7 +2910,7 @@ The method of developing cost. It can be a number which will be used
 directly as the shipping cost, or a function, determined by a single
 character at the beginning of the field:
 
-   f       Formula (MML tags OK, evaluated as   x       Multiplied by a number
+   f       Formula (ITL tags OK, evaluated as   x       Multiplied by a number
    [uA-Z]  UPS-style lookup
    m       Interchange chained cost lookup (all items summed together)
    i       Interchange chained cost lookup (items summed individually)
@@ -3450,7 +3464,7 @@ controlling access to pages and databases on a user-by-user basis.
 The database field names in the user database correspond with the form
 variable names in the user session. If there is a column named
 address, when the user logs in the contents of that field will be
-placed in the form variable address, and will be availabe for
+placed in the form variable address, and will be available for
 display with [value address]. Similarly, the database value is
 available with [data table=userdb column=address key=username].
 
@@ -3574,7 +3588,7 @@ It is normally called in an mv_click or mv_check setting, as in:
    [userdb function=login]
    [/set]
 
-   <FORM ACTION="[process-target]" METHOD=POST>
+   <FORM ACTION="[process]" METHOD=POST>
    <INPUT TYPE=hidden NAME=mv_click VALUE=Login>
    Username <INPUT NAME=mv_username SIZE=10>
    Password <INPUT NAME=mv_password SIZE=10>
@@ -3584,7 +3598,7 @@ There are several global parameters that apply to any use of the
 userdb functions. Most importantly, by default, the database table
 is set to be userdb. If another table name must be used, include a
 database=table parameter with any call to userdb. The global
-parameters (default in parens):
+parameters (default in parentheses):
 
  database          Sets user database table (userdb)
  show              Show the return value of certain functions
@@ -3971,7 +3985,7 @@ function:
 By default, they are placed in the variable address_book. Here is a
 little snippet that builds a select box:
 
-   <FORM ACTION="[process-target]" METHOD=POST>
+   <FORM ACTION="[process]" METHOD=POST>
    [userdb function=get_shipping_names]
    [if value address_book]
    <SELECT NAME="s_nickname">
@@ -4148,21 +4162,19 @@ the key value:
 =head1 Tracking and Back-End Order Entry
 
 Interchange allows the entry of orders into a system through one of
-several methods. The AsciiBackend capability allows submission of
-parameters to an external order entry script. Support for SQL allows
-the entry of orders directly into an SQL database. Orders can be
-written to an ASCII file. They can be formatted precisely for
-e-mail-based systems. The orders can be placed in a DBM file. Finally,
-embedded Perl allows completely flexible order entry, including
-real-time credit card verification and settlement.
+several methods. Orders can be written to an ASCII file or formatted
+precisely for email-based systems. Or they can go directly into an SQL
+or DBM database. Finally, embedded Perl allows completely flexible
+order entry, including real-time credit card verification and
+settlement.
 
 =head2 ASCII Backup Order Tracking
 
 If AsciiTrack is set to a legal file name (based in VendRoot unless
-it has a leading "/"). A copy of the order is saved and sent in an
-e-mail.
+it has a leading "/"), a copy of the order is saved and sent in an
+email.
 
-If the file name string begins with a pipe "|," a program will be run
+If the file name string begins with a pipe "|", a program will be run
 and the output "piped" to that program. This allows easy back-end
 entry of orders with an external program.
 
@@ -4342,7 +4354,7 @@ first be encrypted, then the entire order encrypted.
 
 =item encrypt_program
 
-The encryption program incantaton which should be used. Set
+The encryption program incantation which should be used. Set
 identically to the EncryptProgram directive, except that %s will be
 replaced with the pgp_key. Default is empty.
 
@@ -4626,8 +4638,8 @@ been changed.
 Interchange uses the SecureURL directive to set the base URL for
 secure transactions, and the VendURL directive for normal
 non-secure transactions. Secure URLs can be enabled for forms through
-a form action of [process-target secure=1]. An individual page can
-be displayed via SSL with [page href=mvstyle_pagename secure=1]. A
+a form action of [process secure=1]. An individual page can be
+displayed via SSL with [page href=mvstyle_pagename secure=1]. A
 certain page can be set to be always secure with the AlwaysSecure
 catalog.cfg directive.
 
@@ -4674,7 +4686,7 @@ http://www.cpan.org, or try:
 
     perl -MCPAN -e 'install DBD::XXXXX'
 
-where XXXX is the name of your module. Some of them are:
+where XXXXX is the name of your module. Some of them are:
 
         DB2
     Informix
@@ -4826,6 +4838,6 @@ the database residing on the UNIX side.
 
  ________________________________________
 
-Copyright 2001 Red Hat, Inc. Freely redistributable under terms of the
-GNU General Public License.
+Copyright 2001-2002 Red Hat, Inc. Freely redistributable under terms
+of the GNU General Public License.
 

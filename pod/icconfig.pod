@@ -6,9 +6,8 @@ icconfig - Configuration Reference
 
 =head1 Interchange Configuration Files
 
-The Red Hat Interchange 4.8 Configuration Reference is an alphabetical
-reference to the configuration directives used in Interchange global
-and catalog configuration files.
+This is an alphabetical reference to the configuration directives used
+in Interchange global and catalog configuration files.
 
 Interchange has multiple catalog capability, and therefore splits its
 configuration into two pieces. One is global, interchange.cfg, and
@@ -20,7 +19,7 @@ catalogs.
 
 Configuration directives are normally specified with the directive as
 the first word on the line, with its value or values following.
-Capitalization of the directive name is not signifigant. Leading and
+Capitalization of the directive name is not significant. Leading and
 trailing whitespace is stripped from the line.
 
 =over 4
@@ -256,7 +255,7 @@ only. This is mostly useful for ErrorFile and DisplayErrors:
 
 =head2 CheckHTML *global*
 
-Set to the name of an external program that will check the users HTML
+Set to the name of an external program that will check the user's HTML
 when they set [flag checkhtml] or [tag flag checkhtml][/tag] in
 their page.
 
@@ -343,6 +342,17 @@ store the output of logDebug statements, and warnings if warnings
 are enabled.
 
         DebugFile  /tmp/icdebug
+
+=head2 DeleteDirective *global*
+
+Deletes a configuration directive from the list is parsed for every
+catalog.cfg file. Can save memory for installations with large
+numbers of catalogs.
+
+   DeleteDirective  DescriptionField OfflineDir
+
+The directive is not case-sensitive. Has no effect on global
+directives.
 
 =head2 DisplayErrors *global*
 
@@ -612,6 +622,10 @@ problems.
 
    NoAbsolute     Yes
 
+Note that this does not apply to tests for whether a file exists, as
+with [if file ...]. Such operations are allowed regardless of the
+NoAbsolute setting.
+
 =head2 PIDcheck *global*
 
 If non-zero, enables a check of running Interchange processes during
@@ -632,7 +646,7 @@ script.
 =head2 PIDfile *global*
 
 The file which will contain the Interchange server process ID so that
-it can be read to determine which proces should be sent a signal for
+it can be read to determine which process should be sent a signal for
 stopping or reconfiguring the server.
 
    PIDfile  /var/run/interchange/interchange.pid
@@ -871,15 +885,16 @@ no leading or trailing whitespace.
 
 =head2 TemplateDir *global*
 
-Sets a directory which will be searched for pages if not found in the
-user's pages directory. Interchange uses this; use it to supply
-some default pages so the user will not have them in their directory.
+This can be used to supply some default pages so catalogs will not
+need their own copies.
+
+Supply one or more directory names, separated by whitespace, which
+will be searched for pages not found in the catalog's PageDir
+directory or the catalog-level TemplateDir directory list.
 
    TemplateDir    /usr/local/interchange/default_pages
 
-The user's page, if it exists, will take precedence. There is also a
-catalog-specific version of this directive. If a page is found in that
-directory (or directories), it will take precedence.
+This is undefined by default.
 
 =head2 TolerateGet *global*
 
@@ -910,19 +925,21 @@ catalog UserTag.
 =head2 Variable *global*
 
 Defines a global variable that will be available in all catalogs with
-the notation @@VARIABLENAME@@. Variable identifiers must begin with a
+the notation @@VARIABLE@@. Variable identifiers must begin with a
 capital letter, and can contain only word characters (B<A-Z,a-z,0-9>
-and underscore). They are case-sensitive. If using the
-ParseVariables directive, only variables in ALL CAPS will be
-parsed. These are substituted first in any Interchange page, and can
-contain any valid Interchange tags including catalog variables.
+and underscore). They are case-sensitive.
 
    Variable   DOCUMENT_ROOT   /usr/local/etc/httpd/htdocs
 
-If a variable is called with @_VARIABLE_@, and there is no catalog
-Variable with its name, the global Variable value will be inserted.
+Only variables with ALL CAPS names will be parsed in catalog pages or,
+when the ParseVariables directive is set, in catalog (not global)
+configuration directives (other than Variable itself). These are
+substituted first in any Interchange page, and can contain any valid
+Interchange tags including catalog variables. If a variable is called
+with the notation @_VARIABLE_@, and there is no catalog Variable with
+its name, the global Variable value will be inserted.
 
-There are several standard variables which should not be used:
+There are several standard variables which you should not set:
 
 =over 4
 
@@ -981,7 +998,7 @@ is started, so it's pointless to change the variable after that.
 
 Sets the names of variables that will be remapped to and from the URL
 when Interchange writes it. For instance, to display the variable
-mv_session_id as session in the users URL:
+mv_session_id as session in the user's URL:
 
    VarName   mv_session_id  session
 
@@ -1184,6 +1201,22 @@ subdirectory of pages, set:
 
    Autoload   [perl] $CGI->{mv_nextpage} =~ s:^private/:public/:; [/perl]
 
+You can temporarily change any of the catalog configuration settings,
+for example use a different flypage.
+
+   Autoload       <<EOA
+   [perl]
+   if ($Session->{browser} =~ /msie/i) {
+      $Config->{Special}->{flypage}='ms_flypage'};
+   }
+   [/perl]
+   EOA
+
+Please note that SpecialPage is the corresponding directive in the
+catalog configuration, not Special. This is an exceptional case.
+Usually the hash key has the same name as the catalog configuration
+directive.
+
 =head2 AutoModifier
 
 Sets an attribute in a shopping cart entry to the field of the same
@@ -1369,9 +1402,8 @@ Set to 0 otherwise.
 
 =back
 
-PGP is recommended as the encryption program, though remember that
-U.S. commercial organizations may require a license for RSA.
-Interchange will work with GPG, the Gnu Privacy Guard.
+GnuPG is recommended as the encryption program. Interchange will also
+work with PGP.
 
    CreditCardAuto     Yes
 
@@ -1648,7 +1680,7 @@ a fully-qualified path starting with http://.
 
    ImageDirSecure   /secure/images/
 
-This is useful if using separate HTTPS and HTTP servesr, and cannot
+This is useful if using separate HTTPS and HTTP servers, and cannot
 make the image directory path heads match.
 
 =head2 Locale
@@ -1704,10 +1736,30 @@ statically.
 =head2 NoImport
 
 When set to one or more Interchange database identifiers, those
-database(s) will never be subject to import. Useful for SQL databases
-or databases that will "never" change.
+database(s) will never be subject to import. Normally, Interchange
+checks to see if each database needs to be created and populated (from
+the source text file) when the Interchange daemon is started or
+restarted, or a catalog is reconfigured.
+
+This is useful for SQL databases used by other applications besides
+Interchange, or large databases you load and back up outside of
+Interchange. With this option you can omit the source text file for
+SQL databases entirely.
 
    NoImport   inventory
+
+=head2 NoImportExternal
+
+When set to true, this directive prevents database imports for all
+"external" databases:
+
+   NoImportExternal  Yes
+
+External database types are DBI (all popular SQL databases) and LDAP.
+Internal database types are the DBM variants (GDBM, DB_File, SDBM) and
+in-memory databases.
+
+The default setting is false (databases may be imported).
 
 =head2 NonTaxableField
 
@@ -1843,9 +1895,11 @@ will be used.
 
 =head2 ParseVariables
 
-Determines whether global and catalog variables will be parsed in the
-configuration file. Default is No. The foundation catalog.cfg turns
-ParseVariables on and usually expects it to be on.
+Determines whether global and catalog variables will be parsed in
+catalog configuration directives (not including the Variable directive
+itself, which never parses its settings). Applies only to variables
+with names in ALL CAPS. Default setting is No. The foundation
+catalog.cfg turns ParseVariables on and usually expects it to be on.
 
    Variable STORE_ID  topshop
    ParseVariables Yes
@@ -1904,23 +1958,6 @@ Descriptions of each pragma follow.
 =item dynamic_variables
 
 =item dynamic_variables_file_only
-
-=item no_html_parse
-
-=back
-
-Disallows HTML tag parsing. This is a B<big> parser performance gain
-and is enabled in the demo catalog.
-
-When this pragma is set, you can't encapsulate Interchange tags inside
-HTML tags like this:
-
-   <P MV="if scratch something"> ... </P>
-
-Note that a page with no HTML parsing is a good place to put a DTD
-(document type descriptor).
-
-=over 4
 
 =item no_image_rewrite
 
@@ -2198,12 +2235,18 @@ Default is 30 days.
 =head2 ScratchDefault
 
 The default scratch variable settings that the user will start with
-when their session is initialized. To disable placing URL rewrite
-strings after the user has given a cookie, set:
+when their session is initialized.
+
+To disable placing URL rewrite strings after the user has given a
+cookie, set:
 
    ScratchDefault  mv_no_session_id  1
    ScratchDefault  mv_no_count       1
    ScratchDefault  mv_add_dot_html   1
+
+To set the default locale:
+
+   ScratchDefault  mv_locale         de_DE
 
 =head2 ScratchDir
 
@@ -2348,7 +2391,7 @@ The type of session management to be used. Use one of the following:
    GDBM        GDBM
 
 The default is file-based sessions, which provides the best
-performance and reliablility in most environments.
+performance and reliability in most environments.
 
 If you are planning on running Interchange servers with an NFS-mounted
 filesystem as the session target, you must set SessionType to "NFS".
@@ -2489,7 +2532,7 @@ with:
 
    [perl]
        my $cart = $Carts->{main};
-       return sort_cart($cart);
+       return sort_cart_by_quantity($cart);
    [/perl]
 
 and will display an HTML table of the items in the current shopping
@@ -2554,6 +2597,17 @@ shipping cost, i.e., UT. Blank by default, never taxing shipping.
 
    TaxShipping         UT,NV,94024
 
+=head2 TemplateDir
+
+Sets one or more directories (separated by whitespace) which will be
+searched (in order) for pages not found in the PageDir. If a page
+is not found in directories specified here, the search continues with
+the global TemplateDir setting, if defined.
+
+   TemplateDir    /var/lib/interchange/foundation/bonus_pages
+
+This is undefined by default.
+
 =head2 TrackFile
 
 Name of a logfile that tracks user traffic. This is used in the back
@@ -2610,13 +2664,20 @@ When the user session starts, [value fname] [value lname] will be
 =head2 Variable
 
 Defines a catalog variable that will be available in the current
-catalog with the notation __Variable__. Variable identifiers must
+catalog with the notation __VARIABLE__. Variable identifiers must
 begin with a capital letter, and can contain only word characters
-(B<A-Z,a-z,0-9> and underscore). These are substituted second (right
-after global Variables) in any Interchange page, and can contain any
-valid Interchange tags except global variables.
+(B<A-Z,a-z,0-9> and underscore). They are case-sensitive.
 
    Variable   DOCUMENT_ROOT   /usr/local/etc/httpd/htdocs
+
+Only variables with ALL CAPS names will be parsed in catalog pages or,
+when the ParseVariables directive is set, in catalog configuration
+directives (other than in Variable directives themselves). These are
+substituted second (right after global Variables) in any Interchange
+page, and can contain any valid Interchange tags except global
+variables. If a variable is called with the notation @_VARIABLE_@, and
+there is no catalog Variable with its name, the global Variable value
+will be inserted.
 
 =head2 VariableDatabase
 
@@ -2664,6 +2725,6 @@ gateway.
 
  ________________________________________
 
-Copyright 2001 Red Hat, Inc. Freely redistributable under terms of the
-GNU General Public License.
+Copyright 2001-2002 Red Hat, Inc. Freely redistributable under terms
+of the GNU General Public License.
 

@@ -725,7 +725,7 @@ Probable causes:
 
 You must have a .pgp or .gnupg directory in the home directory
 of the user running Interchange. It is also possible to set an
-environment variable (variously PGPPATH or GNUPGPATH) to orient the
+environment variable (variously PGPPATH or GNUPGHOME) to orient the
 program correctly.
 
 =item EncryptProgram directive set wrong
@@ -842,12 +842,11 @@ it will then be placed in the session identifier source.
 
 This URL:
 
-   <A HREF="http://yourcatalog.com/cgi-in/yourcat/sp_offer?mv_pc=Source1">
-       Special offer!&lt;/A>
+ http://yourcatalog.com/cgi-in/yourcat/sp_offer?mv_pc=Source1
 
 will yield Source1 from the Interchange tag [data session source].
 
-The Interchange 3 idiom ?;;Source1 continues to be supported, so
+The Minivend 3 idiom ?;;Source1 continues to be supported, so
 existing partner sites should work without change.
 
 =head2 How can I send an email copy of the receipt to a user?
@@ -893,6 +892,47 @@ notation may be different depending on your context):
 [setlocale]
 
 Any questions? Read the docs about "Internationalization."
+
+=head2 How do I empty the shopping cart?
+
+Here are three examples of ways to empty/drop/clear the shopping cart
+contents.
+
+Empty shopping cart
+
+ [calc]
+        @{$Carts->{$CGI->{mv_cartname} || 'main'}} = ();
+[/calc]
+
+Empty shopping cart
+
+ [set clear_basket]
+        [calc]
+                @{$Carts->{$CGI->{mv_cartname} || 'main'}} = ();
+        [/calc]
+[/set]
+
+[button
+        text="Clear Basket"
+        src="clear_basket.gif"
+        hidetext=1
+        form=basket
+        ]
+                mv_todo=refresh
+                mv_click=clear_basket
+[/button]
+
+Erase the user session (includes shopping cart)
+
+ [button
+        text="Clear Basket"
+        src="clear_basket.gif"
+        hidetext=1
+        form=basket
+        ]
+                mv_todo=cancel
+                mv_nextpage=index
+[/button]
 
 =head1 Errors
 
@@ -1655,10 +1695,10 @@ is Interchange trimming trailing space from CHAR fields itself?
 IC daemon user should have environment variables ORACLE_HOME and
 possibly NLS_LANG set.
 
-Mark Johnson (Red Hat E-Business Professional Services) wrote this
-trigger on TABLE_NAME to update the MOD_TIME column on insert or
-update. The user must have been granted the RESOURCE role to create
-triggers. Here it is:
+Mark Johnson (Red Hat Professional Services) wrote this trigger on
+TABLE_NAME to update the MOD_TIME column on insert or update. The user
+must have been granted the RESOURCE role to create triggers. Here it
+is:
 
 CREATE TRIGGER tr_modtime_for_TABLE_NAME BEFORE INSERT OR UPDATE ON
 TABLE_NAME FOR EACH ROW BEGIN
@@ -1675,6 +1715,9 @@ POSTGRES_INCLUDE and POSTGRES_LIB environment variables are set.
 Permissions. test_ databases usually special.
 
 =head1 Using Interchange with Apache
+
+Slightly modified article posted to the old minivend-users mail list.
+Minivend-users is now interchange-users.
 
  Date: Thu, 7 Sep 2000 12:08:37 -0700
 From: Bill Randle <billr@exgate.tek.com>
@@ -1711,11 +1754,12 @@ with Apache rewrite rules in the VirtualHost directive for yourdomain.com:
     CustomLog logs/yourdomain-access_log common
     ScriptAlias /cgi-bin/ "/home/httpd/cgi-bin/"
     RewriteEngine On
-    RewriteRule    ^$      /cgi-bin/yourstore/index.html    [PT,L]
-    RewriteRule    ^/$     /cgi-bin/yourstore/index.html    [PT,L]
-    RewriteRule    ^/index\.html$  /cgi-bin/yourstore/index.html    [PT,L]
-    RewriteRule    ^/cgi-bin/yourstore/.*   -           [PT,L]
-    RewriteRule    ^/(.*)      /cgi-bin/yourstore/$1        [PT,L]
+    RewriteRule ^$  /cgi-bin/yourstore/index.html            [PT,L]
+    RewriteRule ^/$ /cgi-bin/yourstore/index.html            [PT,L]
+    RewriteRule ^/index\.html$ /cgi-bin/yourstore/index.html [PT,L]
+    RewriteRule ^/cgi-bin/yourstore/.* -                     [PT,L]
+    RewriteRule ^/.*images/.* -                              [PT,L]
+    RewriteRule ^/(.*) /cgi-bin/yourstore/$1                 [PT,L]
 </VirtualHost>
 
 I just did this for a client and it works quite well (as long as you're
@@ -1725,77 +1769,128 @@ using a fairly recent version of Apache as your webserver).
 
 =head1 Perl/Interchange FAQ
 
- Date: Wed, 14 Feb 2001 10:20:18 -0600
-From: Cameron B. Prince <cameron@akopia.com>
-To: support@akopia.com
-Subject: Local Perl Install Steps
+=head2 Cameron Prince's local Perl installation how-to
 
-Hi all,
+=over 4
 
-Here's the steps I took to install the local perl for the client who had an
-old system perl (5.004) and couldn't upgrade.
+=item 13.
 
-This was tested on a Red Hat v5.x system as well as v7.0.
+Login as user. In this example, we'll call the user bob. Bob's home
+directory is /home/bob.
 
-Cameron
+=item 14.
 
+Get the perl tarball and extract it in /home/bob. (tar -xzvf
+perl-5.6.0.tar.gz)
 
-1) Login as user. In this example, we'll call the user bob. Bob's home directory is /home/bob.
+=item 15.
 
-2) Get the perl tarball and extract it in /home/bob. (tar -xzvf perl-5.6.0.tar.gz)
+Create a directory for the local perl. (mkdir /home/bob/local-perl)
 
-3) Create a directory for the local perl. (mkdir /home/bob/local-perl)
+=item 16.
 
-4) Compile perl.
+Compile perl.
 
-        A) cd perl-5.6.0
+=over 8
 
-        B) sh Configure
+=item 17.
 
-        C) Choose all the defaults until you get to: "Directories to use for library searches?" Here you want to enter the new local perl path, as well as the defaults. So you should enter something like: /home/bob/local-perl/lib /usr/local/lib /lib /usr/lib
+cd perl-5.6.0
 
-        D) Continue choosing defaults till you get to: "Any additional ld flags (NOT including libraries)?" This should be: -L/home/bob/local-perl/lib
+=item 18.
 
-        E) Continue choosing defaults till you get to: "Installation prefix to use? (~name ok)" This should be: /home/bob/local-perl
+sh Configure
 
-        F) Choose all defaults till you get to: "Directory /home/bob/local-perl/bin doesn't exist.  Use that name anyway?" Enter y.
+=item 19.
 
-        G) Continue choosing defaults till you get to: "Do you want to install perl as /usr/bin/perl?" Enter n.
+Choose all the defaults until you get to: "Directories to use for
+library searches?" Here you want to enter the new local perl path, as
+well as the defaults. So you should enter something like:
+/home/bob/local-perl/lib /usr/local/lib /lib /usr/lib
 
-        H) Continue choosing defaults till you get to: "Directory /home/bob/local-perl/bin doesn't exist.  Use that name anyway?" Enter y.
+=item 20.
 
-        I) Directory /home/bob/local-perl/bin doesn't exist.  Use that name anyway? Enter y.
+Continue choosing defaults till you get to: "Any additional ld flags
+(NOT including libraries)?" This should be: -L/home/bob/local-perl/lib
 
-        J) Continue taking defaults till you return to a prompt.
+=item 21.
 
-        K) make
+Continue choosing defaults till you get to: "Installation prefix to
+use? (~name ok)" This should be: /home/bob/local-perl
 
-        L) make test
+=item 22.
 
-        M) make install
+Choose all defaults till you get to: "Directory
+/home/bob/local-perl/bin doesn't exist.  Use that name anyway?" Enter
+y.
 
-        O) /home/bob/local-perl/bin/perl -v
+=item 23.
 
-                You should see: This is perl, v5.6.0
+Continue choosing defaults till you get to: "Do you want to install
+perl as /usr/bin/perl?" Enter n.
 
+=item 24.
 
-5) edit /home/bob/.bash_rc
+Continue choosing defaults till you get to: "Directory
+/home/bob/local-perl/bin doesn't exist.  Use that name anyway?" Enter
+y.
 
-                Change: PATH=$PATH:$HOME/bin
-                To: PATH=/home/bob/local-perl/bin:$PATH:$HOME/bin
+=item 25.
 
-6) Logout and log back in.
+Directory /home/bob/local-perl/bin doesn't exist.  Use that name
+anyway? Enter y.
 
-7) which perl
+=item 26.
 
-                You should see: ~/local-perl/bin/perl or /home/bob/local-perl/bin/perl
+Continue taking defaults till you return to a prompt.
 
+=item 27.
 
-8) perl -MCPAN -e 'install Bundle::Interchange'
+make
+
+=item 28.
+
+make test
+
+=item 29.
+
+make install
+
+=back
+
+=item 30.
+
+/home/bob/local-perl/bin/perl -v
+
+You should see: This is perl, v5.6.0
+
+=item 31.
+
+edit /home/bob/.bash_rc
+
+Change: PATH=$PATH:$HOME/bin
+
+To: PATH=/home/bob/local-perl/bin:$PATH:$HOME/bin
+
+=item 32.
+
+Logout and log back in.
+
+=item 33.
+
+which perl
+
+You should see: ~/local-perl/bin/perl or /home/bob/local-perl/bin/perl
+
+=item 34.
+
+perl -MCPAN -e 'install Bundle::Interchange'
 
 Keep running this until you see:
 
 MD5 is up to date.
+
+=back
 MIME::Base64 is up to date.
 URI is up to date.
 Net::FTP is up to date.
@@ -1813,27 +1908,70 @@ Storable is up to date.
 DBI is up to date.
 Safe::Hole is up to date.
 
-You may need to get the modules via ftp and install them by hand. For instance, during the test used to create this document, I had to get URI and LWP and install by hand before everything reported that it was up to date. To do this, follow these steps:
+You may need to get the modules via ftp and install them by hand. For
+instance, during the test used to create this document, I had to get
+URI and LWP and install by hand before everything reported that it was
+up to date. To do this, follow these steps:
 
-1) ftp ftp.cpan.org
-2) cd /CPAN/modules/by-module/URI
-3) bin
-4) get URI-1.10.tar.gz
-5) quit
-6) tar -xzvf URI-1.10.tar.gz
-7) cd URI-1.10
-8) perl Makefile.pl
-9) make
-10) make test
-11) make install
+=over 4
 
-Use the same basic steps for any module not properly installed by using perl -MCPAN -e 'install Bundle::Interchange'
+=over 8
 
+=item 35.
 
-9) Install Interchange as normal.
+ftp ftp.cpan.org
+
+=item 36.
+
+cd /CPAN/modules/by-module/URI
+
+=item 37.
+
+bin
+
+=item 38.
+
+get URI-1.10.tar.gz
+
+=item 39.
+
+quit
+
+=item 40.
+
+tar -xzvf URI-1.10.tar.gz
+
+=item 41.
+
+cd URI-1.10
+
+=item 42.
+
+perl Makefile.pl
+
+=item 43.
+
+make
+
+=item 44.
+
+make test
+
+=item 45.
+
+make install
+
+=back
+
+=back
+
+Use the same basic steps for any module not properly installed by
+using perl -MCPAN -e 'install Bundle::Interchange'
+
+Now, install Interchange as normal.
 
  ________________________________________
 
-Copyright 2001 Red Hat, Inc. Freely redistributable under terms of the
-GNU General Public License.
+Copyright 2001-2002 Red Hat, Inc. Freely redistributable under terms
+of the GNU General Public License.
 

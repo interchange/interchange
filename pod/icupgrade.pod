@@ -57,7 +57,7 @@ interchange.PL 854,855
 
 =item ROUTINES and LANG
 
-intechange.PL 1552,1579
+interchange.PL 1552,1579
 
         ROUTINES: {
                 last ROUTINES unless index($Vend::FinalPath, '/process/') == 0;
@@ -474,7 +474,7 @@ Variable HEADER    <pages/header
 Variable FOOTER    <pages/footer
 Variable COPYRIGHT <pages/copyright
 
-Then replace all occurences of [buttonbar 0] with __HEADER__,
+Then replace all occurrences of [buttonbar 0] with __HEADER__,
 [buttonbar 1] with __FOOTER__, etc.
 
 Note that the old header.html, footer.html, etc. contained html code,
@@ -494,7 +494,7 @@ Replace with [ad random=1] or custom code. See the [ad] tag docs.
 Random and rotate were used to place random or rotating regions on
 pages, such as banner ads.
 
-The Random durective in catalog.cfg defines the numbered HTML snippet
+The Random directive in catalog.cfg defines the numbered HTML snippet
 files, similar to buttonbars above.
 
 =back
@@ -1216,8 +1216,8 @@ forward and the user community continues to grow.
 
 =item
 
-Copyright 2001 Red Hat, Inc. Freely redistributable under terms of the
-GNU General Public License.
+Copyright 2001-2002 Red Hat, Inc. Freely redistributable under terms
+of the GNU General Public License.
 
 =back
 
