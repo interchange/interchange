@@ -1,6 +1,6 @@
 # Table/LDAP.pm: LDAP pseudo-table
 #
-# $Id: LDAP.pm,v 1.6.6.5 2001-04-14 09:26:55 heins Exp $
+# $Id: LDAP.pm,v 1.6.6.6 2001-04-17 16:20:26 jason Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,7 +27,7 @@
 
 package Vend::Table::LDAP;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 1.6.6.5 $, 10);
+$VERSION = substr(q$Revision: 1.6.6.6 $, 10);
 use strict;
 
 use vars qw(
@@ -407,7 +407,7 @@ sub each_record {
 			my $k = $data->get($ki)->[0];
 			my (@record) = $k;
 			for(@names) {
-				push @record, $data->get($_);
+				push @record, $data->get($_)->[0];
 			}
 			push @repos, \@record;
 		}
