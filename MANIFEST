@@ -263,6 +263,7 @@ dist/foundation/pages/admin/report_def/Order%20Status.html
 dist/foundation/pages/admin/report_def/Products%20to%20edit.html
 dist/foundation/pages/admin/reports/Order%20Status.html
 dist/foundation/pages/admin/reports/Products%20to%20edit.html
+dist/foundation/pages/advancedsearch.html
 dist/foundation/pages/affiliate/index.html
 dist/foundation/pages/affiliate/login.html
 dist/foundation/pages/browse.html
@@ -833,6 +834,7 @@ extra/IniConf.pm
 extra/Tie/ShadowHash.pm
 extra/URI/URL.pm
 hints.pl
+lib/Tie/ShadowHash.pm
 lib/Vend/Cart.pm
 lib/Vend/Config.pm
 lib/Vend/Control.pm

@@ -82,15 +82,13 @@ ui_template_name: leftright
           <td>Search field:</td>
           <td>
               <select name=mv_search_field>
-                  [perl tables="products"]
-                    my $return = '';
-                    my @columns = $Db{products}->columns();
-                    foreach(@columns) {
-                        $return .= "<OPTION value=$_>$_\n";
-                    }
-                    return $return;
-                  [/perl]
-                </select>
+		<option value="description">Description
+              	<option value="sku">SKU
+		<option value="price">Price
+		<option value="weight">Weight
+		<option value="color">Color
+		<option value="size">Size		 
+	      </select>
           </td>
         </tr>
 	<tr>
