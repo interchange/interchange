@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.20 2002-08-02 03:07:32 mheins Exp $
+# $Id: Parse.pm,v 2.21 2002-08-05 06:04:49 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.20 $, 10);
+$VERSION = substr(q$Revision: 2.21 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -316,6 +316,7 @@ use vars '%myRefs';
      attrAlias       => \%attrAlias,
 	 Documentation   => \%Documentation,
 	 hasEndTag       => \%hasEndTag,
+	 NoReparse       => \%NoReparse,
 	 noRearrange     => \%noRearrange,
 	 Implicit        => \%Implicit,
 	 Interpolate     => \%Interpolate,
@@ -325,6 +326,8 @@ use vars '%myRefs';
 	 PosRoutine      => \%PosRoutine,
 	 Routine         => \%Routine,
 );
+
+my @myRefs = keys %myRefs;
 
 sub do_tag {
 	my $tag = shift;
@@ -398,7 +401,7 @@ sub add_tags {
 	return unless $ref->{Routine} or $ref->{Alias};
 	my $area;
 	no strict 'refs';
-	foreach $area (keys %myRefs) {
+	foreach $area (@myRefs) {
 		next unless $ref->{$area};
 		if($area eq 'Routine') {
 			for (keys %{$ref->{$area}}) {
