@@ -3,7 +3,7 @@
 #
 # Interchange version 4.9.2
 #
-# $Id: interchange.PL,v 2.46 2002-08-01 18:51:10 mheins Exp $
+# $Id: interchange.PL,v 2.47 2002-08-01 19:03:43 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and others.
 # http://www.icdevgroup.org/
@@ -272,6 +272,29 @@ use Vend::UserDB;
 use Vend::Interpolate;
 use Vend::Page;
 use Vend::CounterFile;
+
+if($ENV{INTERCHANGE_REQUIRE}) {
+	my @mods = split /[;\s]+/, $ENV{INTERCHANGE_REQUIRE};
+	foreach my $mod (@mods) {
+		eval {
+			eval "require $mod";
+			die $@ if $@;
+		};
+		if($@) {
+			die errmsg(
+				"FAILED to require module %s as specified in environment. Error: %s\n", 
+				$mod,
+				$@,
+			);
+		}
+		else {
+			warn errmsg(
+				"Required module %s successfully as specified in environment.\n", 
+				$mod,
+			);
+		}
+	}
+}
 
 if( ! $Global::Windows and $> == -1 || scalar(getpwuid($>)) eq 'nobody' ) {
 	warn errmsg("\aYou probably don't want to run as nobody!\n");
