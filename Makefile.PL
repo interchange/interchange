@@ -25,9 +25,10 @@ use vars (qw($VERSION $DOWARN));
 my $TermRead;
 my $Prompt_sub;
 my @mods_to_get;
+my @remove_old;
 my $Lock_troubles;
 
-$VERSION = '4.5.3';
+$VERSION = '4.5.4';
 
 # See if we have the CPAN module
 my $Cpan = 0;
@@ -143,8 +144,10 @@ sub install_file {
 		}
 		$extra = 'old' unless $extra;
 		while (-f "$targfile.$extra") {
+			push @remove_old, "$targfile.$extra";
 			$extra .= '~';
 		}
+		push @remove_old, "$targfile.$extra";
 		rename $targfile, "$targfile.$extra"
 			or die "Couldn't rename $targfile to $targfile.$extra: $!\n";
 	}
@@ -565,6 +568,23 @@ EOF
 			}
 		}
 		chdir '..';
+		if(@remove_old) {
+			my $msg = <<EOF;
+The following old files were found, different from the installed versions.
+You should check and remove them at the earliest opportunity.
+
+EOF
+			$msg .= join "\n\t", '', @remove_old;
+			$msg .= <<EOF;
+
+
+If you have not modified any Minivend usertags, software programs, or libraries,
+it is usually safe to remove them, but you might copy them somewhere just in
+case you forgot something you changed.
+EOF
+			print $msg;
+
+		}
 		exit;
 	}
 
