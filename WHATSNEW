@@ -18,6 +18,12 @@ Core
   that all content is sent and that all further parsing of ITL
   should stop.
 
+* Add mv_source parameter which sets an affiliate program source
+  and can be carried around in URLs when $Scratch->{mv_add_source}
+  is set. This solves the problem of AOL caching the page with
+  the source embedded, then forwarding the next request sans source.
+
+  From a suggestion by Dan <ic@concolor.org>.
 
 ------------------------------------------------------------------------------
 
