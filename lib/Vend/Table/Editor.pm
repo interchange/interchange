@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.9 2002-09-27 15:26:40 mheins Exp $
+# $Id: Editor.pm,v 1.10 2002-09-28 17:48:32 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.9 $, 10);
+$VERSION = substr(q$Revision: 1.10 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -177,6 +177,7 @@ sub meta_record {
 	}
 	else {
 		$record = $mdb->row_hash($mkey);
+#::logDebug("used mkey=$mkey to select record=$record");
 	}
 
 	$record ||= $mdb->row_hash($item) if $view;
@@ -922,6 +923,7 @@ my %o_default_defined = (
 my %o_default = (
 	action				=> 'set',
 	wizard_next			=> 'return',
+	help_anchor			=> 'help',
 	wizard_cancel		=> 'back',
 	across				=> 1,
 	color_success		=> '#00FF00',
@@ -1074,6 +1076,7 @@ sub resolve_options {
 		file_upload
 		help_cell_class
 		help_cell_style
+		help_anchor
 		include_before
 		include_form
 		label_cell_class
@@ -1294,9 +1297,13 @@ sub resolve_options {
 
 	$opt->{form_extra} =~ s/^\s*/ /
 		if $opt->{form_extra};
+	$opt->{form_extra} ||= '';
 
-	$opt->{form_name} = qq{ NAME="$opt->{form_name}"}
+	$opt->{form_extra} .= qq{ NAME="$opt->{form_name}"}
 		if $opt->{form_name};
+
+	$opt->{form_extra} .= qq{ TARGET="$opt->{form_target}"}
+		if $opt->{form_target};
 
 	$opt->{enctype} = $opt->{file_upload} ? ' ENCTYPE="multipart/form-data"' : '';
 
@@ -1329,6 +1336,7 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	$opt->{mv_data_table} = $table if $table;
 	$opt->{item_id}		  = $key if $key;
 	$opt->{table}		  = $opt->{mv_data_table};
+	$opt->{ui_meta_view}  ||= $CGI->{ui_meta_view} if $opt->{cgi};
 
 	resolve_options($opt);
 	$table = $opt->{table};
@@ -1848,7 +1856,7 @@ EOF
 	no strict 'subs';
 
 	chunk 'FORM_BEGIN', <<EOF; # unless $wo;
-$restrict_begin<FORM METHOD=$opt->{method} ACTION="$opt->{href}"$opt->{form_name}$opt->{enctype}$opt->{form_extra}>
+$restrict_begin<FORM METHOD=$opt->{method} ACTION="$opt->{href}"$opt->{enctype}$opt->{form_extra}>
 EOF
 	chunk 'HIDDEN_ALWAYS', <<EOF;
 $sidstr<INPUT TYPE=hidden NAME=mv_todo VALUE="$opt->{action}">
@@ -2292,7 +2300,6 @@ EOF
 	
 	if(! $row_template) {
 		if($opt->{simple_row}) {
-			$opt->{help_anchor} ||= 'help';
 			$row_template = <<EOF;
    <td$opt->{label_cell_extra}> 
      {BLABEL}{LABEL}{ELABEL}
@@ -2312,7 +2319,7 @@ EOF
          <td$opt->{widget_cell_extra}>
            {WIDGET}
          </td>
-         <td$opt->{help_cell_extra}>{TKEY}{HELP?}<i>{HELP}</i>{/HELP?}{HELP_URL?}<BR><A HREF="{HELP_URL}">help</A>{/HELP_URL?}</td>
+         <td$opt->{help_cell_extra}>{TKEY}{HELP?}<i>{HELP}</i>{/HELP?}{HELP_URL?}<BR><A HREF="{HELP_URL}">$opt->{help_anchor}</A>{/HELP_URL?}</td>
        </tr>
      </table>
    </td>

@@ -54,7 +54,7 @@ Core
         2. Prevent useless session files from cluttering disk
         3. Prevent session writes from inhibiting disk performance.
 
-* Add the oft-requested DirectoryIndex feature.
+* Add the oft-requested DirectoryIndex feature. 
 
 * Add new content management features. This allows Interchange to:
 
@@ -138,6 +138,9 @@ Core
 
   This should allow REAL_NAME many more places.
 
+* New mv_cleanup operates like mv_click and mv_check, but operates
+  after a form processing action is done.
+
 Payment
 -------
 
@@ -186,12 +189,15 @@ UserTags
             [/tabbed-panel]
         [/tabbed-display]
 
-  It is pretty much that simple. It is documented.
+  It is pretty much that simple. It is documented, and an example is
+  on the pages/admin/genconfig.html page.
 
-* [table-editor ...] tag starts extensive rework. Added tabbed displays,
-  with eventual full templating of the display.
+* [table-editor ...] tag updated extensively. Added tabbed displays,
+  full templating of the display, user-includeable forms, almost all
+  features supported with metadata.
 
-* Many minor changes in metadata and preferences.
+* Many minor changes in metadata and preferences. Changed default
+  in some tables to tabbed display.
 
 UI
 ----
@@ -208,7 +214,10 @@ UI
 
     -- Tabbed displays
     -- Insert spreadsheet linked via foreign key
+    -- Insert custom form widgets for form processing use,
+	   a "recompute transaction" included for an example
     -- Control over styles and classes for table columns
+	-- Completely templateable
 
 * Add the suggested feature from Dan Browning -- a great idea --
   a spreadsheet of a linked table within the table editor.
