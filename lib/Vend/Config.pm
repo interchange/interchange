@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.16 2000-08-26 17:19:06 heins Exp $
+# $Id: Config.pm,v 1.17 2000-09-10 21:06:02 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -103,7 +103,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.16 $, 10);
+$VERSION = substr(q$Revision: 1.17 $, 10);
 
 my %CDname;
 
@@ -322,7 +322,7 @@ sub catalog_directives {
     ['ProductFiles',	 'array_complete',  'products'],
     ['DisplayErrors',    'yesno',            'No'],
     ['ParseVariables',	 'yesno',     	     'No'],
-    ['SpecialPage',		 'special',     	 ''],
+    ['SpecialPage',		 'special',     	 'order ord/basket results results search results flypage flypage'],
 	['Sub',				 'subroutine',       ''],
 	['VendURL',          'url',              undef],
 	['SecureURL',        'url',              undef],
