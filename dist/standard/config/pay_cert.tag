@@ -92,10 +92,10 @@ sub {
 			$expire_date = POSIX::strftime('%Y%m%d%H%M%S', @date_expires);
 		}
 
-::logDebug("generated code=$code, expires=$opt->{expires} date_expires=$expire_date ");
+#::logDebug("generated code=$code, expires=$opt->{expires} date_expires=$expire_date ");
 		my $check = int rand(10);
 		$check .= int(rand(10)) while length($check) < 4;
-::logDebug("generated check=$check");
+#::logDebug("generated check=$check");
 		my %record = (
 			amount => $opt->{amount},
 			ip_addr => $CGI::remote_addr,
@@ -203,13 +203,13 @@ sub {
 
 		$opt->{tid} = $status = $rdb->set_slice(undef, \%redeem)
 			or $die->("Auth redemption of %s failed: %s", $code, $rdb->errstr());
-::logDebug("Redemption auth tid=$status");
+#::logDebug("Redemption auth tid=$status");
 		my $new_amount = $cdb->set_field(
 								$code,
 								'amount',
 								$record->{amount} - $opt->{amount},
 							);
-::logDebug("Redemption amount=$record->{amount} redeeming=$opt->{amount} new_amount=$new_amount");
+#::logDebug("Redemption amount=$record->{amount} redeeming=$opt->{amount} new_amount=$new_amount");
 
 		defined $new_amount
 			or $die->("Auth redemption of %s failed: %s", $code, $rdb->errstr());
@@ -250,10 +250,10 @@ sub {
 
 		$opt->{new_tid} = $status = $rdb->set_slice(undef, \%redeem)
 			or $die->("Auth redemption of %s failed: %s", $code, $rdb->errstr());
-::logDebug("Redemption auth tid=$status");
+#::logDebug("Redemption auth tid=$status");
 
 		$rdb->set_field($opt->{tid}, 'captured', 1);
-::logDebug("Capture amount=$red_record->{amount}");
+#::logDebug("Capture amount=$red_record->{amount}");
 
 	}
 	elsif($opt->{void}) {
@@ -303,13 +303,13 @@ sub {
 
 		$opt->{new_tid} = $status = $rdb->set_slice(undef, \%redeem)
 			or $die->("Auth redemption of %s failed: %s", $code, $rdb->errstr());
-::logDebug("Redemption auth tid=$status");
+#::logDebug("Redemption auth tid=$status");
 
 		$rdb->set_field($opt->{tid}, 'voided', 1);
-::logDebug("Capture amount=$red_record->{amount}");
+#::logDebug("Capture amount=$red_record->{amount}");
 
 		my $new_amount = $cdb->set_field($code, 'amount', $record->{amount} + $red_record->{amount});
-::logDebug("void amount=$red_record->{amount} new_amount=$new_amount");
+#::logDebug("void amount=$red_record->{amount} new_amount=$new_amount");
 
 	}
 	elsif ($opt->{return}) {
@@ -343,13 +343,13 @@ sub {
 
 		$opt->{tid} = $status = $rdb->set_slice(undef, \%redeem)
 			or $die->("Auth redemption of %s failed: %s", $code, $rdb->errstr());
-::logDebug("Redemption auth tid=$status");
+#::logDebug("Redemption auth tid=$status");
 		my $new_amount = $cdb->set_field(
 								$code,
 								'amount',
 								$record->{amount} + $opt->{amount},
 							);
-::logDebug("return amount=$record->{amount} redeeming=$opt->{amount} new_amount=$new_amount");
+#::logDebug("return amount=$record->{amount} redeeming=$opt->{amount} new_amount=$new_amount");
 
 		defined $new_amount
 			or $die->("Return of %s failed: %s", $code, $rdb->errstr());
@@ -357,14 +357,14 @@ sub {
 
 	if($locked) {
 		my $rc = $sth_unlock->execute($code) and $locked = 0;
-::logDebug("unlock rc=$rc");
+#::logDebug("unlock rc=$rc");
 		if($locked) {
 			undef $locked;
 			return $die->("Gift certificate %s lock was not released.", $code);
 		}
 	}
 	else {
-::logDebug("Not locked??!!?? THis should not happen.");
+#::logDebug("Not locked??!!?? THis should not happen.");
 	}
 	return $status;
 }

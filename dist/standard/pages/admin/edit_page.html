@@ -45,13 +45,13 @@ ui_template_name: noleft
 
 	my $editable;
 	if($preamble =~ m{\[(seti?|tmpn?)\s+editable\s*\](.*?)\[/\1\]}) {
-Log("Found editable marker=$1 editable=$2 preamble length=" . length($preamble));
+#Log("Found editable marker=$1 editable=$2 preamble length=" . length($preamble));
 		$editable = $2;
 		$editable =~ s/^\s+//;
 		$editable =~ s/\s+$//;
 	}
 	else {
-Log("Didn't find preamble length=" . length($preamble));
+#Log("Didn't find preamble length=" . length($preamble));
 	}
 
 	unless ($editable) {

@@ -33,9 +33,9 @@ File name pattern to scan <input type=text name=pattern size=50 value="[cgi patt
 
 	my  @do;
 	for(@pages) {
-Debug("Checking $_");
+#Debug("Checking $_");
 		next unless $CGI->{$_};
-Debug("$_ is changable.");
+#Debug("$_ is changable.");
 		my $digits = $_;
 		$digits =~ s/^dopage//;
 		push @do, $digits;
@@ -47,7 +47,7 @@ Debug("$_ is changable.");
 		my $page = $CGI->{"page$_"};
 		my $settor = $CGI->{"settor$_"};
 		my $val = $CGI->{"value$_"};
-Debug("ready to write page=$page settor=$settor val=$val");
+#Debug("ready to write page=$page settor=$settor val=$val");
 		my $data = $Tag->file("pages/$page", 'raw');
 		$data =~ s/(\n[ \t]*\@_[A-Z][A-Z_]+_\@[ \t]*\n.*)//s
 			or do {

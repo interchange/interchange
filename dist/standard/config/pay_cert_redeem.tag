@@ -69,10 +69,10 @@ sub {
 			my $tid = $Tag->pay_cert($o);
 			if($tid) {
 				push @tid, $tid;
-::logDebug("authorized pay_cert=$code amount=$amount tid=$tid");
+#::logDebug("authorized pay_cert=$code amount=$amount tid=$tid");
 			}
 			else {
-::logDebug("failed to auth pay_cert=$code amount=$amount tid=$tid");
+#::logDebug("failed to auth pay_cert=$code amount=$amount tid=$tid");
 				for(@tid) {
 					my $o = {
 						void => 1,

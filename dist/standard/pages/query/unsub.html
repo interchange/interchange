@@ -45,7 +45,7 @@ ui_template_name: leftonly
 				WHERE  username = '$who'
 				AND    email = '$what'
 				};
-Debug("unsub query is : $q");
+#Debug("unsub query is : $q");
 	my $ary = $db->query($q);
 	if(! $ary) {
 		$who = $Tag->filter('entities', $who);

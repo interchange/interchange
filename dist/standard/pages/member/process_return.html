@@ -88,7 +88,7 @@ my $qty_over     = 0;
 
 foreach my $code (@items) {
 
-Debug("Doing return for $code");
+#Debug("Doing return for $code");
 	my $prior = $rdb->field($code, 'rma_number');
 	if($prior) {
 		$Tag->warnings("Return already processed for line $code on RMA $prior! Skipping.");
@@ -116,7 +116,7 @@ Debug("Doing return for $code");
 		last;
 	}
 	else {
-Debug("Doing record for $code");
+#Debug("Doing record for $code");
 		push @done, {
 						code => $code,
 						nitems => $qty2,
@@ -144,7 +144,7 @@ $tdb->set_field($on, 'status', 'returned');
 $tdb->set_field($on, 'archived', '');
 
 foreach my $rec (@done) {
-Debug("updating records for $code");
+#Debug("updating records for $code");
 	$rec->{order_number} = $on;
 	$rec->{session} = $Session->{id};
 	$rec->{username} = $Session->{username};

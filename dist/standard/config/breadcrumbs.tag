@@ -130,7 +130,7 @@ sub {
 	my $crumb;
 
 	if($opt->{reset_on_product} and @extra) {
-::logDebug("Resetting based on product");
+#::logDebug("Resetting based on product");
 		@$crumbs = ();
 	}
 
