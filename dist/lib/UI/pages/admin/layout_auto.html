@@ -4,7 +4,22 @@
 [set page_perm]layout=e[/set]
 [set help_name]layout.edit[/set]
 [set icon_name]icon_pages.gif[/set]
-[tmp meta_header][include include/table_populator][/tmp]
+[tmp meta_header]
+	[include include/table_populator]
+	<SCRIPT LANGUAGE=JavaScript>
+	  function change_ta (ta_field, selector) {
+	  	if(selector == 'complex') {
+			ta_field.rows = 20;
+			ta_field.disabled = false;
+		}
+		else {
+			ta_field.rows = 1;
+			ta_field.disabled = true;
+		}
+		return;
+	  }
+	</SCRIPT>
+[/tmp]
 [seti ui_body_extra][/seti]
 
 @_UI_STD_HEAD_@
@@ -76,9 +91,50 @@ size=1>
 </select>
 </td>
 </tr>
+<tr>
+<td>
+4. Choose a search type:
+</td>
+<td>
+<select name="cat_type" onChange="change_ta(this.form.search_code,this.form.cat_type.value)">
+<option value="narrow"> Narrow search (area and category match)
+<option value="simple"> Simple search (only category matches)
+<option value="complex"> Complex search (template substitution on below)
+</select>
+</td>
+</tr>
+<tr>
+<td valign=top>
+5. Complex search code:
+</td>
+<td>
+NOTE: Not active unless complex search selected above.<br>
+<textarea rows=1 cols=50 name=search_code disabled=true>
+	fi=products
+	st=db
+	co=yes
+
+	sf=prod_group
+	se=~PROD_GROUP~
+	op=eq
+
+	sf=category
+	se=~CATEGORY~
+	op=eq
+
+	sf=inactive
+	se=1
+	op=ne
+
+	rf=sku
+
+	va=banner_text=~BANNER_TEXT~
+</textarea>
+</td>
+</tr>
 <tr bgcolor="__UI_C_INTBLOCK__">
 <td>
-4. Select the page class:
+6. Select the page class:
 </td>
 <td>
 <INPUT NAME=which_page VALUE=all>
@@ -86,7 +142,7 @@ size=1>
 </tr>
 <tr bgcolor="__UI_C_INTBLOCK__">
 <td>
-5. Select the page area:
+7. Select the page area:
 </td>
 <td>
 <INPUT NAME=sel VALUE=left>
@@ -94,7 +150,7 @@ size=1>
 </tr>
 <tr bgcolor="__UI_C_INTBLOCK__">
 <td>
-6. Decide whether to remove previous settings:
+8. Decide whether to remove previous settings:
 </td>
 <td>
 <SELECT NAME=nuke><OPTION VALUE=0>No <OPTION VALUE=1>Yes</SELECT>
@@ -102,7 +158,7 @@ size=1>
 </tr>
 <tr>
 <td>
-6. Click this button to populate:
+9. Click this button to populate:
 </td>
 <td>
 [button text="Populate"]
@@ -137,11 +193,35 @@ size=1>
 		display_type => 'name',
 	);
 	my %catmap;
+	my $lt;
+	my $search_code;
+	if($CGI->{cat_type} eq 'simple') {
+		$lt = 'simple';
+		$selector = 'category=~CATEGORY~';
+		$search_code = '';
+	}
+	elsif($CGI->{cat_type} eq 'narrow') {
+		$lt = 'simple';
+		$selector = <<EOF;
+category=~CATEGORY~
+prod_group=~PROD_GROUP~
+EOF
+		$search_code = '';
+	}
+	else {
+		$lt = 'complex';
+		$selector = '';
+		$search_code = $CGI->{search_code};
+	}
+
 	my %cat_defaults = (
-		link_type => 'simple',
+		link_type => $lt,
+		selector => $selector,
+		search => $search_code,
 		sort	=> '05',
 		display_type => 'name'
 	);
+
 	if($CGI->{nuke}) {
 		$adb->query('delete from area');
 		$cdb->query('delete from cat');
@@ -168,21 +248,26 @@ size=1>
 		$cdb->config('AUTO_NUMBER', '1000') if ! $cdb->config('_Auto_number');
 		return "cat column $ccol doesn't exist"
 			unless $pdb->column_exists($ccol);
-		my $ary = $pdb->query("select $acol, $ccol from $ptab order by $ccol")
+		my ($ary, $fh) = $pdb->query(
+								"select $acol, $ccol from $ptab order by $ccol",
+								)
 			or return "cat column query failed";
-		for(@$ary) {
-			my ($area, $cat) = (@$_);
+		foreach my $row (@$ary) {
+			my $area = $row->[$fh->{$acol}];
+			my $cat  = $row->[$fh->{$ccol}];
 			next if $catdone{$cat}++;
 			my $key = $cdb->set_row('');
 			return "no cat autonumbering available" if ! $key;
 
-			$cat_defaults{name} = $cat;
-			$cat_defaults{sel} = $catmap{$area};
-			$cat_defaults{selector} = "$ccol=$cat";
+			my %defaults = %cat_defaults;
+			$defaults{name} = $cat;
+			$defaults{sel} = $catmap{$area};
+			$defaults{search} =~ s/~ (\w+) ~/$row->[$fh->{lc $1}]/gx;
+			$defaults{selector} =~ s/~ (\w+) ~/$row->[$fh->{lc $1}]/gx;
 			
-			for(keys %cat_defaults) {
-				Log("setting col=$_ key=$key = $cat_defaults{$_}");
-				$cdb->set_field($key, $_, $cat_defaults{$_});
+			for(keys %defaults) {
+				Log("setting col=$_ key=$key = $defaults{$_}");
+				$cdb->set_field($key, $_, $defaults{$_});
 			}
 		}
 	}
