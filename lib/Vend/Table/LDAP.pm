@@ -1,6 +1,6 @@
 # Vend::Table::LDAP - Interchange LDAP pseudo-table access
 #
-# $Id: LDAP.pm,v 2.4 2002-07-09 17:42:12 mheins Exp $
+# $Id: LDAP.pm,v 2.5 2002-07-15 14:08:14 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -24,7 +24,7 @@
 
 package Vend::Table::LDAP;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 use strict;
 
 use vars qw(
@@ -593,22 +593,9 @@ eval {
 
 	if($update) {
 #::logDebug("Updating, update=$update");
-#		$relocate = $stmt->{MV_VALUE_RELOCATE}
-#			if defined $stmt->{MV_VALUE_RELOCATE};
 		$opt->{row_count} = 1;
 		die "Reached update query without object"
 			if ! $s;
-#		if($relocate) {
-#			my $code = splice(@vals, $stmt->{MV_VALUE_RELOCATE}, 1);
-#			unshift(@vals, $code) if $update ne 'UPDATE';
-##::logDebug("relocating values col=$relocate: columns='@na' vals='@vals'"); 
-#		}
-#		elsif (!defined $relocate) {
-#			die "Must have code field to insert"
-#				 if $update eq 'INSERT';
-#			unshift(@na, $codename);
-##::logDebug("NOT defined relocating values col=$relocate: columns='@na' vals='@vals'"); 
-#		}
 		my $sub = $update eq 'DELETE'
 					? sub { delete_record($s, @_) }
 					: $s->row_settor(@na);
