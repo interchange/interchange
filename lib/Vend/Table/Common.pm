@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.23 2003-01-01 14:54:09 racke Exp $
+# $Id: Common.pm,v 2.24 2003-01-12 18:28:45 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -23,7 +23,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.23 $, 10);
+$VERSION = substr(q$Revision: 2.24 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -1325,6 +1325,7 @@ EndOfRoutine
 			File::Copy::copy(@{$_});
 		}
 	}
+	$out->commit() if $out->config('HAS_TRANSACTIONS');
 	delete $out->[$CONFIG]{Clean_start};
 	delete $out->[$CONFIG]{_Dirty};
 	unlockfile(\*IN) or die "unlock\n";

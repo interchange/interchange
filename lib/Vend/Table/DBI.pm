@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.39 2003-01-12 06:47:09 jon Exp $
+# $Id: DBI.pm,v 2.40 2003-01-12 18:28:45 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.39 $, 10);
+$VERSION = substr(q$Revision: 2.40 $, 10);
 
 use strict;
 
@@ -216,6 +216,10 @@ sub check_capability {
 	$driver_name = $config->{BASE_CAPABILITY}
 		if $config->{BASE_CAPABILITY};
 
+	if($driver_name =~ /^dbi:+(.*?):/) {
+		$driver_name = $1;
+	}
+
 	my ($k, $known);
 	while ( ($k, $known) = each %known_capability ) {
 		if(! defined $config->{$k} ) {
@@ -288,6 +292,11 @@ sub create_sql {
 sub create {
     my ($class, $config, $columns, $tablename) = @_;
 #::logDebug("trying create table $tablename");
+
+	local($config->{Transactions});
+	check_capability($config, $config->{DSN});
+	$config->{Transactions} = 1 if $config->{HAS_TRANSACTIONS};
+
 	my @call = find_dsn($config);
 	my $dattr = pop @call;
 
@@ -353,6 +362,7 @@ sub create {
 #::logDebug("Trying to create with specified CREATE_SQL:\n$config->{CREATE_SQL}");
 		eval {
 			$db->do($config->{CREATE_SQL});
+			$db->commit() if $config->{Transactions};
 		};
 		if($@) {
 			 die ::errmsg(
@@ -370,11 +380,13 @@ sub create {
 			$db->do("drop table $tablename")
 				and $config->{Clean_start} = 1
 				or warn "$DBI::errstr\n";
+			$db->commit() if $config->{Transactions};
 		};
 
 #::logDebug("Trying to create with:$query");
 		eval {
 			$db->do($query);
+			$db->commit() if $config->{Transactions};
 		};
 		if($@) {
 			warn "DBI: Create table '$tablename' failed: $DBI::errstr\n";
@@ -382,8 +394,6 @@ sub create {
 		else {
 			::logError("table %s created: %s" , $tablename, $query );
 		}
-
-
 	}
 
 #::logDebug("seq: $config->{AUTO_SEQUENCE} create: $config->{SEQUENCE_CREATE}");
@@ -395,6 +405,7 @@ sub create {
 			eval {
 				$db->do($dq)
 					or warn("drop sequence failed: $dq");
+				$db->commit() if $config->{Transactions};
 			};
 		}
 		$q =~ s/_SEQUENCE_NAME_/$config->{AUTO_SEQUENCE}/g;
@@ -406,6 +417,7 @@ sub create {
 		eval {
 			$db->do($q)
 				or warn("create sequence failed: $q");
+			$db->commit() if $config->{Transactions};
 		};
 	}
 
@@ -438,6 +450,7 @@ sub create {
 								$_,
 								$DBI::errstr,
 					);
+			$db->commit() if $config->{Transactions};
 		}
 	} elsif ($config->{AUTO_INDEX_PRIMARY_KEY}) {
 		# Oracle automatically creates indexes on primary keys,
@@ -445,6 +458,7 @@ sub create {
 	} else {
 		$db->do("create index ${tablename}_${key} on $tablename ($key)")
 			or ::logError("table %s index failed: %s" , $tablename, $DBI::errstr);
+		$db->commit() if $config->{Transactions};
 	}
 
 	for(@index) {
@@ -455,6 +469,7 @@ sub create {
 							$_,
 							$DBI::errstr,
 				);
+		$db->commit() if $config->{Transactions};
 	}
 
 	if(! defined $config->{EXTENDED}) {
@@ -752,10 +767,11 @@ sub test_column {
 sub quote {
 	my($s, $value, $field) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
-	return 'NULL' if $field and ! length($value)
-		and exists $s->[$CONFIG]->{PREFER_NULL}{$field};
+	return $s->[$DBI]->quote($value) unless $field;
+	return 'NULL'	if ! length($value)
+					and exists $s->[$CONFIG]->{PREFER_NULL}{$field};
 	return $s->[$DBI]->quote($value)
-		unless $field and exists $s->[$CONFIG]->{NUMERIC}{$field};
+					unless exists $s->[$CONFIG]->{NUMERIC}{$field};
 	$value = 0 if ! length($value);
 	return $value;
 }
