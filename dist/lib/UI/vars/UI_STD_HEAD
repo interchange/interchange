@@ -32,6 +32,8 @@ Variable UI_STD_HEAD <<EOV
 [if-mm !logged_in]
 	[set ui_checklist][/set]
 	[set icon_name][/set]
+	[set page_perm][/set]
+	[set table_perm][/set]
 	[if !scratch no_login_required]
 		[bounce href=|
 			[area href="__UI_BASE__/login" form="destination=[var MV_PAGE 1]"]
