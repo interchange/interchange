@@ -21,7 +21,7 @@ Variable UI_STD_FOOTER  <<EOV
       <td valign="top" align="left" nowrap>
         <table cellpadding="0" cellspacing="0">
         <tr><td nowrap>
-  	  <font size="1">&nbsp; <a href="http://developer.akopia.com/"><font size="1"><b>Red Hat Interchange&#8482;</b></font></a><font size="1"><b> - &copy; 2000-2001 Red Hat, Inc.</font></font>
+  	  <font size="1">&nbsp; <a href="http://interchange.redhat.com/"><font size="1"><b>Red Hat Interchange&#8482;</b></font></a><font size="1"><b> - &copy; 2000-2001 Red Hat, Inc.</font></font>
         </td></tr>
         <tr><td nowrap>
           <font size="1">&nbsp; [loc]Username[/loc]: [either][data session username][or](none)[/either] &nbsp;&nbsp;&nbsp; [loc]StoreID[/loc]: <A HREF="[scratch ui_catalog_url]">[calc]$Config->{CatalogName}[/calc] </b></a></font>
@@ -44,7 +44,7 @@ Variable UI_STD_FOOTER  <<EOV
         <A href="[area __UI_BASE__/login]"><small>[loc]Log out[/loc]</small></A>
       </td>
       <td valign="top" align="right" nowrap>
-        <a href="http://www.akopia.com/"><img border="0" src="poweredby.gif" align="top"></a> &nbsp;
+        <a href="http://www.redhat.com/ecommerce"><img border="0" src="poweredby.gif" align="top"></a> &nbsp;
       </td>
     </tr>
     </table>
