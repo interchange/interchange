@@ -5,7 +5,7 @@ UserTag image Documentation <<EOD
 
 =head2 image
 
-This is a general-purpose tag for inserting HTML <img> tags based on
+This is a general-purpose tag for inserting HTML C<< <img> >> tags based on
 various settings, with the ability to test whether an image exists,
 predetermine its pixel dimensions, retrieve the image name from the
 product database field B<image> for that sku, automatically pull product
@@ -50,7 +50,7 @@ Parameters for this tag are:
 
 =item alt
 
-Text to use for the <img alt="..."> attribute. By default, this will
+Text to use for the C<< <img alt="..."> >> attribute. By default, this will
 be filled with the B<description> from the product database if a sku (not
 a filename) is provided.
 
@@ -135,6 +135,8 @@ global variables UI_IMAGE_DIR and UI_IMAGE_DIR_SECURE instead of regular
 catalog image prefixes from ImageDir and ImageDirSecure.
 
 =back
+
+=cut
 
 EOD
 

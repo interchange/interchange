@@ -2,11 +2,15 @@ UserTag get-url Order url
 UserTag get-url AddAttr
 UserTag get-url Documentation <<EOD
 
-usage: [get-url url="valid_url" strip=1*]
+=pod
+
+	[get-url url="valid_url" strip=1*]
 
 Uses the LWP libraries to fetch a URL and return the contents.
-If the strip option is set, strips everything up to <body> and
-everything after </body>
+If the C<strip> option is set, strips everything up to C<< <body> >> and
+everything after C<< </body> >>.
+
+=cut
 
 EOD
 

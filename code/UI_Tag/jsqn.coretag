@@ -1,4 +1,5 @@
 UserTag jsqn Documentation <<EOD
+
 =head1 jsqn
 
 Returns a string quoted for JavaScript, with no variable substitution.
@@ -16,6 +17,8 @@ Generates:
 	</script>
 
 Used in the UI dynamic HTML.
+
+=cut
 
 EOD
 

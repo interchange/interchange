@@ -2,10 +2,12 @@ UserTag write-relative-file Documentation <<EOD
 
 =head2 write-relative-file
 
-usage: [write-relative-file file=name]content[/write-relative-file]
+	[write-relative-file file=name]content[/write-relative-file]
 
-Writes a file C<name> in the catalog directory. Name must be relative; it will
-return undef if the file name is absolute or contains C<..>.
+Writes a file C<name> in the catalog directory. C<name> must be relative; 
+it will return undef if the file name is absolute or contains C<..>.
+
+=cut
 
 EOD
 

@@ -20,7 +20,8 @@ sub {
 EOR
 
 UserTag jsq Documentation <<EOD
-=head1 jsqn
+
+=head1 jsq
 
 Returns a string quoted for JavaScript, with variable substitution.
 
@@ -42,5 +43,6 @@ Generates:
 
 Used in the UI dynamic HTML.
 
+=cut
 EOD
 

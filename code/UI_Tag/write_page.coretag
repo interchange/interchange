@@ -2,10 +2,12 @@ UserTag write-page Documentation <<EOD
 
 =head2 write-page
 
-usage: [write-page file=name]content[/write-page]
+	[write-page file=name]content[/write-page]
 
-Writes a file C<name> in the catalog directory. Name must be relative; it will
-return undef if the file name is absolute or contains C<..>.
+Writes a file C<name> in the catalog directory. C<name> must be relative; 
+it will return undef if the file name is absolute or contains C<..>.
+
+=cut
 
 EOD
 

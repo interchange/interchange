@@ -1,6 +1,9 @@
 UserTag fortune Order short
 UserTag fortune addAttr
 UserTag fortune Documentation <<EOF
+
+=pod
+
 This tag uses the fortune(1) command to display a randome saying.
 
 Options:
@@ -13,6 +16,8 @@ Options:
 Example:
 
 	[fortune short=yes]
+
+=cut
 
 EOF
 

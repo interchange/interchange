@@ -31,7 +31,7 @@ NOTE: All sizes are in pixels to allow size calculation.
 
 =over 4
 
-=item tab_bgcolor_template}
+=item tab_bgcolor_template
 
 Default #xxxxxx. A template where each "x" will be broken into
 descending-brightness colors. The default value will cause
@@ -109,8 +109,6 @@ A typical value might be "</table>", which allows table rows to
 be sent as content. This is the value used in Interchange's
 table editor.
 
-=back
-
 =item contents
 
 If you have an array set with the value of each panel's content,
@@ -130,6 +128,8 @@ be found in a form input.
 
 If the title for a panel is set in the array, the title found in the
 body text of the tag is ignored.
+
+=back
 
 =head2 Use in embedded Perl
 

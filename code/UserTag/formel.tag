@@ -258,12 +258,9 @@ Only used for display types.
 You can set defaults for cause, format, order, reset, signal and size with the
 corresponding mv_formel_... form variable values, e.g.:
 
-    [value name="mv_formel_cause" set=" (<I>%s</I>)" hide=1]
-
-    [value name="mv_formel_format" set="<TR><TD>%s</TD><TD>%s</TD></TR>" hide=1]
-
-    [value name="mv_formel_order" set=1 hide=1]
-
+	[value name="mv_formel_cause" set=" (<I>%s</I>)" hide=1]
+	[value name="mv_formel_format" set="<TR><TD>%s</TD><TD>%s</TD></TR>" hide=1]
+	[value name="mv_formel_order" set=1 hide=1]
 	[value name="mv_formel_signal" set="<BLINK>%s</BLINK>" hide=1]    
 
 To display the label and the form element seperately call C<formel> twice:
@@ -272,7 +269,9 @@ To display the label and the form element seperately call C<formel> twice:
 	[formel name=login order=1 format="%s"]
 
 You may add a help text for the form element.
-
+	
 	[formel label=Username: name=login help="alphanumeric (5-10 characters)"]
+
+=cut
 
 EOD

@@ -5,11 +5,11 @@ UserTag table-organize addAttr
 UserTag table-organize hasEndTag
 UserTag table-organize Documentation <<EOD
 
-=head2 table-organize
+=head1 table-organize
 
-usage: [table-organize <options>]
-            [loop ....] <td> [loop-tags] </td> [/loop]
-        [/table-organize]
+	[table-organize <options>]
+		[loop ....] <td> [loop-tags] </td> [/loop]
+	[/table-organize]
 
 Takes an unorganized set of table cells and organizes them into
 rows based on the number of columns; it will also break them into
@@ -137,25 +137,27 @@ which will produce:
                 <td align=left>&nbsp;</td>
         </tr>
 
-	If the attribute columnize=1 is present, the result will look like:
+If the attribute columnize=1 is present, the result will look like:
 
-            <tr bgcolor="#EEEEEE">
-                    <td align=right>1</td>
-                    <td align=center>1a</td>
-                    <td align=left>1b</td>
-            </tr>
-            <tr bgcolor="#FFFFFF">
-                    <td align=right>2</td>
-                    <td align=center>2a</td>
-                    <td align=left>&nbsp;</td>
-            </tr>
-            <tr bgcolor="#EEEEEE">
-                    <td align=right>3</td>
-                    <td align=center>3a</td>
-                    <td align=left>&nbsp;</td>
-            </tr>
+        <tr bgcolor="#EEEEEE">
+                <td align=right>1</td>
+                <td align=center>1a</td>
+                <td align=left>1b</td>
+        </tr>
+        <tr bgcolor="#FFFFFF">
+                <td align=right>2</td>
+                <td align=center>2a</td>
+                <td align=left>&nbsp;</td>
+        </tr>
+        <tr bgcolor="#EEEEEE">
+                <td align=right>3</td>
+                <td align=center>3a</td>
+                <td align=left>&nbsp;</td>
+        </tr>
 
 See the source for more ideas on how to extend this tag.
+
+=cut
 
 EOD
 UserTag table-organize Routine <<EOR
