@@ -6,6 +6,44 @@
 ------------------------------------------------------------------------------
 
 
+Interchange 5.1.1 released 2004-04-20.
+
+Core
+----
+
+* Make old-style Matrix options work with arbitrary part numbers.
+
+* Remove security hole found during a code read, where by a non-admin user
+  with write permission to files for ITL could elevate their login status
+  to admin.
+
+      logout=[userdb logout]
+      [calc]
+          $Config->{AdminUserDB}{default} = 1;
+      [/calc]
+
+      login=[userdb function=login username=mike password=pass]
+
+  This would cause setting of $Vend::admin.
+
+* Create a new %Global::ReadOnlyCfg hash with the pristine values from the
+  initial configuration. At catalog configuration time, the values from
+  AdminUserDB and UserDB_repository are copied over.
+
+* The UserDB login function now references the read-only config to
+  determine admin status.
+
+Payment
+-------
+
+* Add payment module for Concord EFSNet's gateway
+  (http://www.concordefsnet.com/), written and donated by Chris Wenham of
+  Synesmedia (http://www.synesmedia.com/). Thanks!
+
+
+------------------------------------------------------------------------------
+
+
 Interchange 5.1.0 released 2004-04-08.
 
 Security
@@ -382,8 +420,6 @@ Payment
 
 * Pass credit card security code through to Verisign if provided in
   CGI parameter mv_credit_card_cvv2.
-
-* Added the EFSNet payment module, contributed by Chris Wenham of Synesmedia.
 
 i18n
 ----
