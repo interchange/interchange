@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.32 2000-11-03 23:29:03 heins Exp $
+# $Id: makecat.PL,v 1.33 2000-12-05 16:14:46 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -2071,7 +2071,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.32 2000-11-03 23:29:03 heins Exp $
+$Id: makecat.PL,v 1.33 2000-12-05 16:14:46 racke Exp $
 
 =head1 INTRODUCTION
 
@@ -2114,7 +2114,7 @@ The makecat program can build a catalog based completely on a command line
 description. An example is in eg/makecat.sh.
 
 There are just a few flag-based options:
- 
+
 =over 4
 
 =item C<-F>
