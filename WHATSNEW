@@ -213,6 +213,33 @@ Core
   Passes all known tests, and runs accessories/widgets (apparently)
   flawlessly in foundation, barry, simple, and the UI.
 
+* Add new HIDE_FIELD capability to DbSearch. It provides automatic
+  hiding of records accessed via search (and NOT query).
+
+ -When the following configuration is added:
+
+  	Database products HIDE_FIELD inactive
+
+ -It adds automatically the qualification to every search:
+
+  	WHERE inactive != 1
+
+ -To use, you should have a field of char(1) or int type.
+
+	Database products COLUMN_DEF "inactive=int default 0"
+
+ -This has the side-effect of hiding fields with NULL in the
+  field, so be careful. You should probably set "default 0"
+  as shown above.
+
+ -Works for DBM types too.
+
+ -Does NOT work for TextSearch.
+
+ -If you want to show all records, you can pass mv_no_hide=1
+  in the search parameters. Obviously, this makes this not a
+  security feature.
+
 * Clear the following intermittent error:
 
     CGI mapping error: multipart/form-data sent incorrectly
