@@ -58,7 +58,7 @@
 		<tr>
 			<td>
 			<b>Force build of:</b><br>
-			<select name="ui_force_build" multiple>
+			<select name="ui_force_build" multiple size=25>
 			[loop prefix=force option=ui_initial_page list="[scratch pages]"]
 				<option>[force-code]
 			[/loop]
@@ -67,7 +67,7 @@
 			<td>
 
 			<b>Never build:</b><br>
-			<select name="ui_never_build" multiple>
+			<select name="ui_never_build" multiple size=25>
 			[loop prefix=never list="[scratch pages]"]
 				<option>[never-code]
 			[/loop]

@@ -65,49 +65,45 @@
 <p>
 <form action="[area @@MV_PAGE@@]" method=POST>
 <INPUT TYPE=hidden NAME=tax_format VALUE=do>
-<table __UI_T_PROPERTIES__>
-
-<tr>
-<td colspan=4 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-
-<tr>
-<td bgcolor="__UI_C_INTBLOCK__" VALIGN=bottom>
+<TABLE width="90%" border=0 callpadding=0 cellspacing=0>
+<tr bgcolor="#000000" height=1><td colspan=4></td></tr>
+<TR BGCOLOR="#__UI_C_TOPBLOCKBAR__">
+<TD VALIGN="top" width="20%">
+<FONT COLOR="__UI_C_TITLEBARTXT__">
 <b>Location</b>
 </td>
-
-<td bgcolor="__UI_C_INTBLOCK__" VALIGN=bottom>
-<b>Percentage</b>
+<TD align=center VALIGN="top">
+<FONT COLOR="__UI_C_TITLEBARTXT__">
+<b>Tax Rate (%)</b>
 </td>
-
-<td align=center bgcolor="__UI_C_INTBLOCK__" VALIGN=bottom>
-<b>Tax<BR>shipping?</b>
+<TD align=center VALIGN="top">
+<FONT COLOR="__UI_C_TITLEBARTXT__">
+<b>Apply tax to shipping charge</b>
 </td>
-
-<td bgcolor="__UI_C_INTBLOCK__">
+<TD VALIGN="top">
+<FONT COLOR="__UI_C_TITLEBARTXT__">
 &nbsp;
 </td>
 </tr>
+<tr bgcolor="#000000" height=1><td colspan=4></td></tr>
+<tr bgcolor="#FFFFFF" height=2><td colspan=4></td></tr>
 
-<tr>
-<td colspan=4 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
 [loop lr=1 list="[scratch its]"]
 <tr>
 <td bgcolor="__UI_C_INTBLOCK__">
 <input type=text name="taxarea[loop-code]" size=40 value="[loop-pos 1]">
 </td>
 
-<td bgcolor="__UI_C_INTBLOCK__">
+<td align=center bgcolor="__UI_C_INTBLOCK__">
 <input type=text name="taxrate[loop-code]" 
- size=5 value="[loop-pos 2]">
+ size=7 value="[loop-pos 2]">
 </td>
 
 <td bgcolor="__UI_C_INTBLOCK__" align=center valign=center>
 <INPUT TYPE=CHECKBOX NAME=taxship[loop-code] VALUE="1"[if-loop-pos 3] CHECKED[/if-loop-pos]>
 </td>
 
-<td bgcolor="__UI_C_INTBLOCK__" align=center valign=center>
+<td bgcolor="__UI_C_INTBLOCK__" align=lrft valign=center>
 <INPUT TYPE=image src="admin/delete.gif" width=20 height=20 border=0 NAME=Delete[loop-code]>
 </td>
 
@@ -117,20 +113,13 @@
 <td colspan=4 bgcolor="__UI_C_INTBLOCK__"><a href="[area href=@@MV_PAGE@@ form='addnewtax=ok']"><img src="admin/plus.gif" width=20 height=20 border=0></a></td>
 </tr>
 
-<tr>
-<td colspan=4 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
+<tr bgcolor="#000000" height=1><td colspan=4></td></tr>
 
 </table>
 
 <p>
 [button text="Update values"]
 mv_todo=return
-[/button]
-<p>
-[button text="Back"]
-mv_todo=back
-[return-to click]
 [/button]
 </form>
 

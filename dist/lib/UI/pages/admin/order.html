@@ -35,8 +35,11 @@
 [tmp page_perm]order[/tmp]
 [tmp meta_header]
 <style><!--
-td {font-family:arial,sans-serif}
--->
+td {font-family:verdana,arial,sans-serif}
+th a:active { text-decoration: none }
+th a:link { text-decoration: none }
+th a:visited { text-decoration: none }
+  -->
 </style>[/tmp]
 
 [tag flag write]transactions[/tag]
@@ -163,7 +166,7 @@ td {font-family:arial,sans-serif}
 &nbsp;
 [/if]
 
-<table><tr>
+<table border=0><tr>
 <td>
 <small>
     <FORM ACTION="[area @@MV_PAGE@@]">
@@ -172,7 +175,7 @@ td {font-family:arial,sans-serif}
     </FORM>
 </small>
 </td>
-<td><B>or</B></td>
+<td valign=top><B> or </B></td>
 <td>
 <small>
     <FORM ACTION="[area @@MV_PAGE@@]">
@@ -183,11 +186,9 @@ td {font-family:arial,sans-serif}
 </td>
 </tr>
 </table>
-
 [if cgi ui_text_qualification]
-<H3>Entries cotaining "[cgi ui_text_qualification]"</H3>
+<H4>Entries containing "[cgi ui_text_qualification]"</H3>
 [/if]
-
 [search-region more=1 arg="
 		fi=transactions
 		ml=__UI_SZ_LIST_ORDER__
@@ -232,40 +233,44 @@ td {font-family:arial,sans-serif}
 <FORM ACTION="[process]" METHOD=POST NAME=batch>
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
 <INPUT TYPE=hidden NAME=mv_todo VALUE=back>
-<TABLE CELLSPACING=0>
+<TABLE border=0 CELLSPACING=0 width=90%>
+<tr bgcolor=000000 height=1><td colspan=8></td></tr>
 <TR BGCOLOR="__UI_C_TITLEBARBG__">
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">Order No.</TH>
-<TH ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__">
+<th>&nbsp;</th>
+<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">Order</TH>
+<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
 [page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=company,lname\n" . sortrev('company');
 	`]User</A>
 </TH>
-<TH><FONT COLOR="__UI_C_TITLEBARTXT__">
+<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
 [page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=country,state,city\n" . sortrev('country');
 	`]Location</A>
 </TH>
-<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">
+<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
 [page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=order_date\n" . sortrev('order_date');
-	`]Date</A>
+	`]Date/Time</A>
 </TH>
-<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">
+<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
 [page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=nitems\n" . sortrev('nitems', 1);
 `]Items</A>
 </TH>
-<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">
+<TH ALIGN=CENTER><FONT SIZE=-1 COLOR="__UI_C_TITLEBARTXT__">
 [page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=total_cost\n" . sortrev('total_cost', 1);
 `]Total</A>
 </TH>
-<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">
+<TH ALIGN=RIGHT><FONT SIZE=-1 COLOR="__UI_C_TITLEBARTXT__">
 [page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=status\n" . sortrev('status');
 `]Status</A>
 </TH>
 </tr>
+<tr bgcolor=000000 height=1><td colspan=8></td></tr>
+<tr bgcolor=FFFFFF height=2><td colspan=8></td></tr>
 [search-list]
 <TR [item-alternate 2]BGCOLOR="__UI_T_ROW_EVEN__"[else]BGCOLOR="__UI_T_ROW_ODD__"[/else][/item-alternate]>
 <TD>
@@ -288,24 +293,29 @@ td {font-family:arial,sans-serif}
 		order=[item-code]
 	']"
 	onClick="return confirm('Are you sure you want to delete order [item-code]?')"><IMG SRC="admin/delsm.gif" ALT="DELETE [item-code]" BORDER=0></A>
-[page href=__UI_BASE__/order_view form="order=[item-code]"][item-code]</A></TD>
+</TD>
+<TD>[page href=__UI_BASE__/order_view form="order=[item-code]"][item-code]</A></TD>
 <TD>
 	[page href=__UI_BASE__/customer_view form="customer=[item-param username]"][item-param lname], [item-param fname][if-item-param company] -- [item-param company][/if-item-param]</A>
 </TD>
 <TD>[item-filter 30][item-param city], [item-param state] [item-param country][/item-filter]</TD>
-<TD ALIGN=CENTER>[convert-date][item-param order_date][/convert-date]</TD>
-<TD ALIGN=RIGHT>[item-param nitems]</TD>
+<TD ALIGN=LEFT>[convert-date][item-param order_date][/convert-date]</TD>
+<TD ALIGN=CENTER>[item-param nitems]</TD>
 <TD ALIGN=Right>[currency][item-param total_cost][/currency]</TD>
 <TD ALIGN=Right>[page href="__UI_BASE__/order_status" form="order=[item-code]"][item-param status]</A></TD>
 </tr>
 [/search-list]
 [no-match]
 <tr>
-<td colspan=6 align=center>
-<B>Nothing matched.</B>
+<td colspan=6>
+<br>
+<B>No orders</B>
+<br><br>
 </td>
 </tr>
 [/no-match]
+<tr bgcolor=000000 height=1><td colspan=8></td></tr>
+<tr bgcolor=FFFFFF height=8><td colspan=8></td></tr>
 [more-list]
 <tr>
 <td colspan=6 align=center>
@@ -313,7 +323,6 @@ Orders [matches] displayed. More orders: [decade-next][/decade-next] [more] [dec
 </td>
 </tr>
 [/more-list]
-
 </table>
 [if-mm advanced order=d]
 [button form=batch text="Delete checked orders" src="admin/delete.gif-NO"

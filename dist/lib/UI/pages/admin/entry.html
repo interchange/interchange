@@ -29,7 +29,7 @@
 <INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 <INPUT TYPE=hidden NAME=mv_todo VALUE="refresh">
 <INPUT TYPE=hidden NAME=mv_search_page VALUE="__UI_BASE__/entry_select">
-<table __UI_T_PROPERTIES__>
+<table border=0 __UI_T_PROPERTIES__>
 	<COL WIDTH="10%">
 	<COL WIDTH="1%">
 	<COL WIDTH="40%">
@@ -38,25 +38,27 @@
 	<COL WIDTH="1%">
 	<COL WIDTH="18%">
 	<THEAD>
+		<tr bgcolor="000000" height=1><td colspan=7></td></tr>
 		<TR BGCOLOR=__UI_C_TITLEBARBG__ VALIGN=TOP>
 			<TH BGCOLOR=__UI_C_TITLEBARBG__ WIDTH="10%">
-				<P><FONT COLOR=__UI_C_TITLEBARTXT__><FONT FACE="helvetica, sans-serif">SKU</FONT></FONT></P>
+				<P><FONT COLOR=__UI_C_TITLEBARTXT__><FONT SIZE="-1" FACE="helvetica, sans-serif">SKU</FONT></FONT></P>
 			</TH>
 			<TH BGCOLOR=__UI_C_TITLEBARBG__ WIDTH="1%">&nbsp;</TH>
 			<TH BGCOLOR=__UI_C_TITLEBARBG__ WIDTH="40%">
-				<P><FONT COLOR=__UI_C_TITLEBARTXT__><FONT FACE="helvetica, sans-serif">Description</FONT></FONT></P>
+				<P><FONT COLOR=__UI_C_TITLEBARTXT__><FONT SIZE="-1" FACE="helvetica, sans-serif">Description</FONT></FONT></P>
 			</TH>
 			<TH BGCOLOR=__UI_C_TITLEBARBG__ WIDTH="13%">
-				<P><FONT COLOR=__UI_C_TITLEBARTXT__><FONT FACE="helvetica, sans-serif">Quantity</FONT></FONT></P>
+				<P><FONT COLOR=__UI_C_TITLEBARTXT__><FONT SIZE="-1" FACE="helvetica, sans-serif">Quantity</FONT></FONT></P>
 			</TH>
-			<TH BGCOLOR=__UI_C_TITLEBARBG__ WIDTH="17%">
-				<P><FONT COLOR=__UI_C_TITLEBARTXT__><FONT FACE="helvetica, sans-serif">Price</FONT></FONT></P>
+			<TH ALIGN=RIGHT BGCOLOR=__UI_C_TITLEBARBG__ WIDTH="17%">
+				<P><FONT COLOR=__UI_C_TITLEBARTXT__><FONT SIZE="-1" FACE="helvetica, sans-serif">Price</FONT></FONT></P>
 			</TH>
 			<TH BGCOLOR=__UI_C_TITLEBARBG__ WIDTH="1%">&nbsp;</TH>
-			<TH BGCOLOR=__UI_C_TITLEBARBG__ WIDTH="18%">
-				<P><FONT COLOR=__UI_C_TITLEBARTXT__><FONT FACE="helvetica, sans-serif">Extension</FONT></FONT></P>
+			<TH ALIGN=RIGHT BGCOLOR=__UI_C_TITLEBARBG__ WIDTH="18%">
+				<P><FONT COLOR=__UI_C_TITLEBARTXT__><FONT SIZE="-1" FACE="helvetica, sans-serif">Extension</FONT></FONT></P>
 			</TH>
 		</TR>
+		<tr bgcolor="000000" height=1><td colspan=7></td></tr>
 	</THEAD>
 	<TBODY>
 <TR BGCOLOR=__UI_C_INTBLOCK__>
@@ -79,7 +81,7 @@
 	[/search-region]
 	</TD>
 	<TH BGCOLOR=__UI_C_INTBLOCK__ WIDTH="2">&nbsp;</TH>
-	<TD BGCOLOR=__UI_C_INTBLOCK__ VALIGN=TOP MARGINWIDTH=12 MARGINHEIGHT=12>
+	<TD BGCOLOR=__UI_C_INTBLOCK__ ALIGN=CENTER VALIGN=TOP MARGINWIDTH=12 MARGINHEIGHT=12>
 	<INPUT NAME=mv_searchspec
 			onChange="this.form.action='[process-search]'; this.form.submit()">
 	</TD>
@@ -95,20 +97,22 @@
 		&nbsp;
 	</TD>
 </TR>
+<TR><TD ALIGN=CENTER COLSPAN=7><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="1" BORDER="0"></TR>
+
 [item-list]
 <TR BGCOLOR=__UI_C_INTBLOCK__>
 	<TD BGCOLOR=__UI_C_INTBLOCK__ VALIGN=TOP align=center>
-	[item-code]<FONT SIZE="-2"><BR><INPUT TYPE=checkbox NAME="[quantity-name]"
+	<FONT SIZE="-2"><INPUT TYPE=checkbox NAME="[quantity-name]"
 			   onClick="this.form.action='[process-target]',
 			   			this.form.submit()"
-			   VALUE=0>remove</FONT></TD>
+			   VALUE=0>remove</FONT>&nbsp;&nbsp;&nbsp;[item-code]</TD>
 	<TH BGCOLOR=__UI_C_INTBLOCK__ WIDTH="2">&nbsp;</TH>
 	<TD BGCOLOR=__UI_C_INTBLOCK__ VALIGN=TOP MARGINWIDTH=12 MARGINHEIGHT=12>
 	[page [item-code]][item-description]</A>
-	[if-item-field weight]<BR>
+	[if-item-field weight]&nbsp;&nbsp;&nbsp;
 	<SMALL>WEIGHT: [summary amount=`[item-quantity] * [item-field weight]`]</SMALL>
 	[/if-item-field]
-	<BR>
+	&nbsp;&nbsp;&nbsp;
 	[if-item-field related]
 	[if !ordered [item-field related]]
 	<TABLE CELLPADDING=0 CELLSPACING=0 WIDTH="100%">
@@ -148,13 +152,13 @@
 		[item-subtotal]
 	</TD>
 </TR>
-<TR><TD ALIGN=CENTER COLSPAN=7 BGCOLOR=__UI_C_TITLEBARBG__><IMG SRC="admin/bg.gif" WIDTH="1" ALT="" HEIGHT="1" BORDER="0"></TR>
+<TR><TD ALIGN=CENTER COLSPAN=7><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="1" BORDER="0"></TR>
 [/item-list]
 <TR>
-<TD BGCOLOR=__UI_C_TITLEBARBG__ COLSPAN=4 ROWSPAN=5 ALIGN=RIGHT VALIGN=CENTER>
-<FONT COLOR=__UI_C_TITLEBARTXT__><FONT SIZE="-1">[summary format="<B>Shipping weight:</B> %s" total=1]</FONT>&nbsp;&nbsp;&nbsp;&nbsp;<INPUT TYPE=submit
+<TD COLSPAN=4 ROWSPAN=5 ALIGN=LEFT VALIGN=CENTER>
+&nbsp;&nbsp;&nbsp;&nbsp;<INPUT TYPE=submit
 	onClick="this.form.action='[process-target]'"
-	VALUE="Recalculate">&nbsp;&nbsp;&nbsp;</TD>
+	VALUE="Enter / Recalculate">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<FONT SIZE="-1">[summary format="<B>Shipping weight:</B> %s" total=1]</FONT></TD>
 <TR>
 	<TD BGCOLOR=__UI_C_INTBLOCK__><SMALL><B>Subtotal</TD>
 	<TD BGCOLOR=__UI_C_INTBLOCK__><SMALL>&nbsp;</TD>
@@ -175,11 +179,6 @@
 	<TD BGCOLOR=__UI_C_INTBLOCK__><SMALL>&nbsp;</TD>
 	<TD BGCOLOR=__UI_C_INTBLOCK__ ALIGN=RIGHT VALIGN=RIGHT><SMALL><B>[total-cost]</TD>
 </TR>
-<TR>
-<TD BGCOLOR=__UI_C_INTBLOCK__ COLSPAN=7 ALIGN=CENTER>
-
-</TD>
-</TR>
 </TBODY>
 </TABLE>
 
@@ -198,8 +197,9 @@ They are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
 <INPUT TYPE=hidden NAME=mv_order_profile VALUE=checkout_profile>
 <INPUT TYPE=hidden NAME=mv_order_route   VALUE="log_entry main copy_user">
 
-<TABLE WIDTH=600><TR><TD BGCOLOR="__UI_C_TITLEBARBG__">
-<FONT SIZE="+2" COLOR="__UI_C_TITLEBARTXT__">Shipping Address</FONT>
+<br>
+<TABLE border=0 WIDTH=600><TR><TD BGCOLOR="__UI_C_TITLEBARBG__">
+<FONT COLOR="__UI_C_TITLEBARTXT__"><B>Shipping Address</B></FONT>
 </TD></TR></TABLE>
 
 [calc]
@@ -251,12 +251,12 @@ They are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
 
 [loop list=`$Values->{customer_id} || 'NEW'`]
 
-<TABLE WIDTH=90%>
+<TABLE WIDTH="90%" cellpadding=3 border=0>
 <TR>
 	<TD ALIGN=RIGHT>
 	Customer ID</TD>
 	<TD>
-		<INPUT TYPE=text NAME=customer_id VALUE="[value customer_id]" size=20>
+		<INPUT TYPE=text NAME=customer_id VALUE="[value customer_id]" size=30>
 		<INPUT TYPE=checkbox NAME=new_customer_id VALUE=1 [if !value customer_id]CHECKED[else]onClick="this.form.customer_id.value=''; this.form.submit()"[/else][/if]>New customer
 	</TD>
 </TR>
@@ -265,22 +265,22 @@ They are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
 	<TD ALIGN=RIGHT>
 	[error name=fname std_label="First Name" required=1]</TD>
 	<TD>
-		<INPUT TYPE=text NAME=fname VALUE="[value name=fname default="[loop-data userdb fname]"]" size=20>
-	[error name=lname std_label=Last required=1]&nbsp;<INPUT TYPE=text NAME=lname VALUE="[value name=lname default="[loop-data userdb lname]"]" size=20>
+		<INPUT TYPE=text NAME=fname VALUE="[value name=fname default="[loop-data userdb fname]"]" size=30>
+	[error name=lname std_label=Last required=1]&nbsp;<INPUT TYPE=text NAME=lname VALUE="[value name=lname default="[loop-data userdb lname]"]" size=30>
 	</TD>
 </TR>
 
 <TR>
 	<TD ALIGN=RIGHT>[error name=address1 std_label=Address required=1]</TD>
 	<TD ALIGN=LEFT>
-		<INPUT TYPE=text NAME=address1 VALUE="[value name=address1 default="[loop-data userdb address1]"]" size=40>
+		<INPUT TYPE=text NAME=address1 VALUE="[value name=address1 default="[loop-data userdb address1]"]" size=60>
 	</TD>
 </TR>
 
 <TR>
 	<TD ALIGN=RIGHT>&nbsp;</TD>
 	<TD ALIGN=LEFT>
-		<INPUT TYPE=text NAME=address2 VALUE="[value name=address2 default="[loop-data userdb address2]"]" size=40>
+		<INPUT TYPE=text NAME=address2 VALUE="[value name=address2 default="[loop-data userdb address2]"]" size=60>
 	</TD>
 </TR>
 
@@ -398,7 +398,7 @@ mv_todo=return
 [if !scratch only_downloadable]
 <P>
 <TABLE WIDTH=600><TR><TD BGCOLOR="__UI_C_TITLEBARBG__">
-<FONT SIZE="+2" COLOR=__UI_C_TITLEBARTXT__>Choose your shipping method</FONT>
+<FONT COLOR=__UI_C_TITLEBARTXT__><B>Choose your shipping method</B></FONT>
 </TD></TR></TABLE>
 
 <P>
@@ -427,20 +427,7 @@ mv_todo=return
 
 [if variable CREDIT_CARDS_ACCEPTED =~ /\S/]
 <TABLE WIDTH=600><TR><TD BGCOLOR="__UI_C_TITLEBARBG__">
-<FONT SIZE="+2" COLOR=__UI_C_TITLEBARTXT__>[error std_label="Credit Card Information" name=mv_credit_card_valid]</FONT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[calc]
-	my $accepted = $Variable->{CREDIT_CARDS_ACCEPTED};
-	my (@out);
-	my (@cc);
-	my $out;
-	push @cc, 'visa' if $accepted =~ /visa/;
-	push @cc, 'mc' if $accepted =~ /mc/;
-	push @cc, 'disc' if $accepted =~ /discover/;
-	push @cc, 'amex' if $accepted =~ /amex/;
-	for (@cc) {
-		push @out, qq{<IMG SRC="small$_.png">};
-	}
-	return join '&nbsp;&nbsp;', @out;
-[/calc]
+<FONT COLOR=__UI_C_TITLEBARTXT__>[error std_label="<B>Credit Card Information</B>" name=mv_credit_card_valid]</FONT>
 </TD></TR></TABLE>
 
 <P>  
@@ -525,68 +512,77 @@ Card Number<BR>
 	<INPUT TYPE=radio NAME=fax_order VALUE=3 [checked fax_order 3]>
 	<I>I will pay by COD ([handling cod] extra charge will be added)</I><BR>
 [/if]
-
+<br>
 <TABLE WIDTH=__UI_MAIN_WIDTH__><TR><TD BGCOLOR="__UI_C_TITLEBARBG__">
-<FONT SIZE="+2" COLOR="__UI_C_TITLEBARTXT__">Billing Address (if different)</FONT>
+<FONT COLOR="__UI_C_TITLEBARTXT__"><B>Billing Address (if different)</B></FONT>
 </TD></TR></TABLE>
 
-<TABLE>
+<TABLE border=0>
 <TR>
-	<TD ALIGN=RIGHT><B>Name</B></TD>
+	<TD ALIGN=RIGHT><B>Name: First </B></TD>
 	<TD>
 		<INPUT TYPE=text NAME=b_fname VALUE="[value name=b_fname default="[loop-data userdb b_fname]"]" size=20>
-		<INPUT TYPE=text NAME=b_lname VALUE="[value name=b_lname default="[loop-data userdb b_lname]"]" size=30>
+		<B>Last </B><INPUT TYPE=text NAME=b_lname VALUE="[value name=b_lname default="[loop-data userdb b_lname]"]" size=30>
 	</TD>
 </TR>
 
 <TR>
 	<TD ALIGN=RIGHT><B>Address</B></TD>
 	<TD ALIGN=LEFT>
-		<INPUT TYPE=text NAME=b_address1 VALUE="[value name=b_address1 default="[loop-data userdb b_address1]"]" size=20>
-		<INPUT TYPE=text NAME=b_address2 VALUE="[value name=b_address2 default="[loop-data userdb b_address2]"]" size=30>
+		<INPUT TYPE=text NAME=b_address1 VALUE="[value name=b_address1 default="[loop-data userdb b_address1]"]" size=50>
 	</TD>
 </TR>
+
 <TR>
-	<TD ALIGN=RIGHT><B>City, State, Postal Code</B></TD>
+	<TD ALIGN=RIGHT></TD>
+	<TD ALIGN=LEFT>
+		<INPUT TYPE=text NAME=b_address2 VALUE="[value name=b_address2 default="[loop-data userdb b_address2]"]" size=50>
+	</TD>
+</TR>
+
+
+
+<TR>
+	<TD ALIGN=RIGHT><B>City</B></TD>
 	<TD>
 		<INPUT TYPE=text NAME=b_city VALUE="[value name=b_city default="[loop-data userdb b_city]"]" size=20>
-		<INPUT TYPE=text NAME=b_state VALUE="[value name=b_state default="[loop-data userdb b_state]"]" size=3>
-		<INPUT TYPE=text NAME=b_zip VALUE="[value name=b_zip default="[loop-data userdb b_zip]"]" size=10>
+		<B>State</B> <INPUT TYPE=text NAME=b_state VALUE="[value name=b_state default="[loop-data userdb b_state]"]" size=3>
+		<B>Postal Code</B> <INPUT TYPE=text NAME=b_zip VALUE="[value name=b_zip default="[loop-data userdb b_zip]"]" size=10>
 	</TD>
 </TR>
 <TR>
 	<TD ALIGN=RIGHT><B>Country</B></TD>
 	<TD>
-		<INPUT TYPE=text NAME=b_country VALUE="[value name=b_country default="[loop-data userdb b_country]"]" size=2>
+		<INPUT TYPE=text NAME=b_country VALUE="[value name=b_country default="[loop-data userdb b_country]"]" size=20>
 	</TD>
 </TR>
 
-</TABLE>
+</TABLE><br>
 
 [set Place Order!]
 mv_todo=submit
 [/set]
 
 <TABLE WIDTH=600><TR><TD BGCOLOR="__UI_C_TITLEBARBG__">
-<FONT SIZE="+2" COLOR="__UI_C_TITLEBARTXT__">Email preferences</FONT>
+<FONT COLOR="__UI_C_TITLEBARTXT__"><B>Email preferences</B></FONT>
 </TD></TR></TABLE>
 
 <TABLE>
 <TR>
-	<TD>
+	<TD valign=bottom>
 		<INPUT TYPE=radio NAME=email_copy [checked name=email_copy value=1 default=1] VALUE="1">Yes
 		<INPUT TYPE=radio NAME=email_copy [checked name=email_copy value=0] VALUE="0">No
 	</TD>
-	<TD>
+	<TD valign=bottom>
 		<I>Send an email copy of my receipt</I>
 	</TD>
 </TR>
 <TR>
-	<TD>
+	<TD valign=bottom>
 		<INPUT TYPE=radio NAME=mail_list [if-loop-data userdb mail_list]CHECKED[/if-loop-data] VALUE="1">Yes
 		<INPUT TYPE=radio NAME=mail_list [if-loop-data userdb mail_list][else]CHECKED[/else][/if-loop-data] VALUE="0">No
 	</TD>
-	<TD>
+	<TD valign=bottom>
 		<I>Put customer on email information list</I>
 	</TD>
 </TR>
@@ -606,8 +602,6 @@ mv_todo=submit
 </FORM>
 [/loop]
 [error all=1 hide=1 comment="Clear errors"]
-<P>
-<FONT SIZE="-1" __CONTRAST__><B>NOTE:</B> If you access something below, it will not save anything you have entered.
 
 </TD></TR></TABLE>
 __MENUBOTTOM__

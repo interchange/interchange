@@ -8,10 +8,13 @@
 [set help_name]stats.order[/set]
 @_UI_STD_HEAD_@
 
-<table __UI_T_PROPERTIES__>
+<table border=0 __UI_T_PROPERTIES__>
+<tr bgcolor="#000000" height=1><td colspan=2></td></tr>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><FONT COLOR="__UI_C_TITLEBARTXT__"><B>View Stats for this Month Only</B></FONT></td>
 </tr>
+<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
+<tr bgcolor="#FFFFFF" height=2><td colspan=8></td></tr>
 <tr>
 <td bgcolor="__UI_C_INTBLOCK__" colspan=2>
 
@@ -20,24 +23,37 @@
 <A HREF="[area __UI_BASE__/reports/order/Monthly]">By day for this month</A><BR>
 <A HREF="[area __UI_BASE__/reports/order/Detail]">Individual orders this month</A><BR>
 </BLOCKQUOTE>
-<HR>
+
+</td>
+</tr>
+<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
+
+</table>
+<br>
+<table border=0 __UI_T_PROPERTIES__>
+<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
+<tr>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><FONT COLOR="__UI_C_TITLEBARTXT__"><B>View Stats for Any Period of Time</B></FONT></td>
+</tr>
+<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
+<tr bgcolor="#FFFFFF" height=2><td colspan=8></td></tr>
+
 <FORM ACTION="[process]">
 <INPUT TYPE=hidden NAME=mv_todo VALUE=return>
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/reports/order/ByAffiliate">
-<TABLE>
 <TR>
-<TD>
+<TD bgcolor="__UI_C_INTBLOCK__">
 <BLOCKQUOTE>Beginning:<BR>
 	[widget type=date name=ui_begin_date]
 </BLOCKQUOTE>
 </TD>
-<TD>
+<TD bgcolor="__UI_C_INTBLOCK__">
 <BLOCKQUOTE>Ending:<BR>
 	[widget type=date name=ui_end_date]
 </BLOCKQUOTE>
 </TD>
 <TR>
-<TD COLSPAN=2>
+<TD COLSPAN=2 bgcolor="__UI_C_INTBLOCK__">
 	[set List individual orders]
 	mv_nextpage=__UI_BASE__/reports/order/Detail
 	[/set]
@@ -49,14 +65,12 @@
 	</BLOCKQUOTE>
 </TD>
 </TR>
+<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
 </TABLE>
 </FORM>
 </td>
 </tr>
 
-<tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
 </table>
 
 @_UI_STD_FOOTER_@

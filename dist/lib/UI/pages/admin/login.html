@@ -2,18 +2,19 @@
 [set no_login_required]1[/set]
 [set ui_class]None[/set]
 [set page_title]Welcome to Interchange[/set]
+[set page_banner]&nbsp;[/set]
 [set help_name]index[/set]
-[set icon_name]admin/icon_error.gif[/set]
 @_UI_STD_HEAD_@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
-<table border=0>
-<tr>
-<td valign=top><img src="admin/back.sm.gif" height=350 width=230></td>
-<td>&nbsp;</td>
-<td valign=top align=left>
-<table border="0" cellpadding="0" cellspacing="3" width="296">
+<table width="680"  border="0" cellspacing="0" cellpadding="0" height="200">
+  <tr>
+    <td bgcolor="#EEEEEE" width="700"> <font size="3"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#000066">&nbsp;&nbsp;</font></b></font> 
+	  <table width="250" border="1" cellspacing="0" cellpadding="0" bordercolorlight="#6699FF" bordercolordark="#6699FF" align="center">
+	    <tr>
+		  <td>
+             <table width="250" border="0" cellspacing="0" cellpadding="0" align="center" bgcolor="#FFFFFF">
 [if scratch ui_error]
 <FONT COLOR=__CONTRAST__>[scratch ui_error]</FONT>
 [set ui_error][/set]
@@ -47,28 +48,46 @@
 </TR>
 [/if]
 
-<tr>
-<td align=right valign=middle>[L]Username[/L]</td>
-<td valign=middle>
-<INPUT NAME=mv_username VALUE="" SIZE=10>
-</td>
-</tr><tr height=27>
-<td height=27 align=right valign=middle>[L]Password[/L]</td>
-<td height=27 valign=middle>
-			<INPUT TYPE=password NAME=mv_password VALUE="" SIZE=10 onChange="this.form.submit()">
-</td>
-</tr>
-<td height=27></td>
-<td height=27 valign=top>
-			<INPUT TYPE=submit VALUE="Log in">
-</td>
-</tr>
+<tr> 
+                <td>&nbsp;</td>
+                <td>&nbsp; </td>
+              </tr>
+              <tr> 
+                <td> 
+                  <div align="right"><font size="2"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#000066">[L]Username[/L]</font><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;&nbsp;</font></b></font></div>
+                </td>
+                <td> 
+                  <INPUT NAME=mv_username VALUE="" SIZE=10>
+                </td>
+              </tr>
+              <tr> 
+                <td> 
+                  <div align="right"><font size="2"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#000066">[L]Password[/L]</font><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;&nbsp;</font></b></font></div>
+                </td>
+                <td> 
+                  <INPUT TYPE=password NAME=mv_password VALUE="" SIZE=10 onChange="this.form.submit()">
+                </td>
+              </tr>
+              <tr> 
+                <td>&nbsp;</td>
+                <td> 
+                  <INPUT TYPE=submit VALUE="Log in">
+                </td>
+              </tr>
+              <tr> 
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+              </tr>
 </FORM>
-
 </table>
 </td>
 </tr>
 </table>				
+<br>
+</td>
+</tr>
+</table>				
+<br><br>
 
 
 <!-- ----- END REAL STUFF ----- -->

@@ -11,7 +11,7 @@
 [/comment]
 
 [set ui_class]Merchandising[/set]
-[set page_title]Item editor[/set]
+[set page_title]Merchandising editor[/set]
 [set table_perm]1[/set]
 [set help_name]item.main[/set]
 [set icon_name]admin/icon_item.gif[/set]
@@ -29,75 +29,107 @@
 [/if]
 
 [tmp pricing_edit]
+ui_return_to=__UI_BASE__/merchandising
 mv_data_table=pricing
 help_name=pricing.edit
 icon_name=admin/icon_item.gif
-ui_return_to=admin/item
 ui_hide_key=1
 ui_break_before=price_group,q2
 [/tmp]
 [tmp inv_edit]
+ui_return_to=__UI_BASE__/merchandising
 mv_data_table=inventory
 help_name=inventory.edit
 ui_hide_key=1
-ui_return_to=admin/item
 icon_name=admin/icon_item.gif
 ui_break_before=quantity,stock_message
 [/tmp]
-[tmp cross_edit]
-ui_return_to=__UI_BASE__/item
+[tmp up_sell_edit]
+ui_return_to=__UI_BASE__/merchandising
 mv_data_table=merchandising
 help_name=merchandising
 ui_hide_key=1
-ui_return_to=admin/item
 icon_name=admin/icon_item.gif
-ui_break_before=products:related cross_sell
-ui_data_fields=sku products:related cross_sell upsell_to
+ui_break_before=upsell_to
+ui_data_fields=sku upsell_to
 [/tmp]
-[tmp merch_edit]
-ui_return_to=__UI_BASE__/item
+[tmp cross_sell_edit]
+ui_return_to=__UI_BASE__/merchandising
 mv_data_table=merchandising
 help_name=merchandising
 ui_hide_key=1
-ui_return_to=admin/item
 icon_name=admin/icon_item.gif
-ui_break_before=featured blurb_begin banner_text start
-ui_data_fields=sku featured blurb_begin blurb_end banner_text banner_image start finish
+ui_break_before=cross_sell
+ui_data_fields=sku cross_sell
 [/tmp]
+[tmp promotion_edit]
+ui_return_to=__UI_BASE__/merchandising
+mv_data_table=merchandising
+help_name=merchandising
+ui_hide_key=1
+icon_name=admin/icon_item.gif
+ui_break_before=featured
+ui_data_fields=sku featured
+[/tmp]
+[comment]former ui_data_fields from tmp merch_edit:  blurb_begin blurb_end banner_text banner_image start finish[/comment]
 <FORM ACTION="[area @@MV_PAGE@@]">
 <INPUT NAME=ui_text_qualification>
 <INPUT TYPE=submit VALUE="Limit with search">
 </FORM>
-
 [if cgi ui_text_qualification]
 <H3>Entries cotaining "[cgi ui_text_qualification]"</H3>
 [/if]
-
 [search-region more=1 arg="
 		[if cgi ui_text_qualification]
 		se=[cgi ui_text_qualification]
 		su=yes
 		[else]ra=yes[/else][/if]
+		[if cgi ui_sort_field]
+			tf=[cgi ui_sort_field]
+			to=[cgi ui_sort_option]
+		[else]
+			tf=description
+		[/else]
+		[/if]
 		st=db
-		tf=description
 		sp=@@MV_PAGE@@
 		ml=25
 "][on-match]
-<TABLE CELLSPACING=0>
+[calc] 
+	my $so   = $CGI->{ui_sort_option};
+	my $fld  = $CGI->{ui_sort_field};
+	$fld =~ s/[\s,\0].*//;
+	sub sortrev {
+		my ($f, $n) = @_;
+		my $out = 'ui_sort_option=';
+		$out .= 'n' if $n;
+		return $out unless $fld eq $f;
+		return $out if $so =~ /r/;
+		return $out . 'r';
+	}
+	return;
+[/calc]
+<TABLE CELLSPACING=0 width="90%">
+<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
 <TR BGCOLOR="__UI_C_TITLEBARBG__">
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">SKU</TH>
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">Description</TH>
-<TH ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__">Price</TH>
-<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Quantity pricing</TH>
+<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
+	return "ui_sort_field=sku\n" . sortrev('sku');
+	`]SKU</TH>
+<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
+	return "ui_sort_field=description\n" . sortrev('description');
+	`]Description</TH>
+<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Qty pricing</TH>
+<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Up sell</TH>
 <TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Cross sell</TH>
-<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Featured</TH>
+<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Promotion</TH>
 </tr>
+<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
+<tr bgcolor="#FFFFFF" height=2><td colspan=8></td></tr>
 [/on-match]
 [search-list]
 <TR [item-alternate 2]BGCOLOR="__UI_T_ROW_EVEN__"[else]BGCOLOR="__UI_T_ROW_ODD__"[/else][/item-alternate]>
 <TD>[page href=__UI_BASE__/item_edit form="item_id=[item-code]"][item-code]</A></TD>
 <TD>[filter 30][item-description][/filter]</TD>
-<TD ALIGN=RIGHT>[item-price]</TD>
 <TD ALIGN=CENTER>[page href=__UI_BASE__/flex_editor form="
 	item_id=[item-code]
 	page_title=Pricing: [item-code]
@@ -107,25 +139,35 @@ ui_data_fields=sku featured blurb_begin blurb_end banner_text banner_image start
 </TD>
 <TD ALIGN=CENTER>[page href=__UI_BASE__/flex_editor form="
 	item_id=[item-code]
-	page_title=Merchandising: [item-code]
-	[scratch cross_edit]
-"][if-item-data merchandising related]Yes[else]No[/else][/if-item-data]
+	page_title=Up sell: [item-code]
+	[scratch up_sell_edit]
+"][if-item-data merchandising upsell_to]Yes[else]No[/else][/if-item-data]</a>
 </TD>
 <TD ALIGN=CENTER>[page href=__UI_BASE__/flex_editor form="
 	item_id=[item-code]
-	page_title=Merchandising: [item-code]
-	[scratch merch_edit]
-"][if-item-data merchandising featured]Yes[else]No[/else][/if-item-data]
+	page_title=Cross sell: [item-code]
+	[scratch cross_sell_edit]
+"][if-item-data merchandising cross_sell]Yes[else]No[/else][/if-item-data]</a>
+</TD>
+<TD ALIGN=CENTER>[page href=__UI_BASE__/flex_editor form="
+	item_id=[item-code]
+	page_title=Promotion: [item-code]
+	[scratch promotion_edit]
+"][if-item-data merchandising featured]Yes[else]No[/else][/if-item-data]</a>
 </TD>
 </tr>
 [/search-list]
 [no-match]
 <tr>
-<td colspan=6 align=center>
+<td colspan=6 align=left>
+<br>
 <B>Nothing matched.</B>
+<br><br>
 </td>
 </tr>
 [/no-match]
+<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
+<tr bgcolor="#FFFFFF" height=8><td colspan=8></td></tr>
 [more-list]
 <tr>
 <td colspan=6 align=center>

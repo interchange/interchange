@@ -159,18 +159,16 @@
 
 <!-- ----- Show the active/inactive buttons ----- -->
 
-<br>
-
 <FORM ACTION="[area @@MV_PAGE@@]">
-<SMALL>Search for customer <INPUT TYPE=text NAME=ui_text_qualification VALUE="">
-[button text="Limit with search"]
+<SMALL><INPUT TYPE=text NAME=ui_text_qualification VALUE="">
+[button text="Search for customer"]
 mv_nextpage=@@MV_PAGE@@
 [/button]
 </form>
 </SMALL>
 <!-- ----- Show the customer list box ----- -->
 [if cgi ui_text_qualification]
-<H3>Entries cotaining "[cgi ui_text_qualification]"</H3>
+<H4>Entries containing "[cgi ui_text_qualification]"</H3>
 [/if]
 <FORM ACTION="[process]">
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
@@ -213,19 +211,26 @@ mv_nextpage=@@MV_PAGE@@
 	}
 	return;
 [/calc]
-<TABLE __UI_T_PROPERTIES__>
+<TABLE border=0 __UI_T_PROPERTIES__>
+<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
 <TR BGCOLOR="__UI_C_TITLEBARBG__">
-	<TH ALIGN=left><FONT COLOR="__UI_C_TITLEBARTXT__">ID</TH>
+	<th>&nbsp;</th>
 	<TH ALIGN=left><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
-    return "ui_sort_field=company,lname\n" . sortrev('company');
-    `]Company</A></TH>
+    return "ui_sort_field=username\n" . sortrev('username');
+    `]ID</a></TH>
 	<TH ALIGN=left><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
     return "ui_sort_field=lname,fname\n" . sortrev('lname');
     `]Name</A></TH>
 	<TH ALIGN=left><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
+    return "ui_sort_field=company,lname\n" . sortrev('company');
+    `]Company</A></TH>
+	<TH ALIGN=left><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
     return "ui_sort_field=country,state,city\n" . sortrev('country');
     `]Location</A></TH>
 </TR>
+<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
+<tr bgcolor="#FFFFFF" height=2><td colspan=8></td></tr>
+
 [search-list]
 <TR [item-alternate 2]BGCOLOR="__UI_T_ROW_EVEN__"[else]BGCOLOR="__UI_T_ROW_ODD__"[/else][/item-alternate]>
 
@@ -242,14 +247,19 @@ mv_nextpage=@@MV_PAGE@@
 		customer=[item-code]
 	']"
 	onClick="return confirm('Are you sure you want to delete customer [item-code]?')"><IMG SRC="admin/delsm.gif" ALT="DELETE [item-code]" BORDER=0></A>
+</td><td>
 [page href=__UI_BASE__/customer_view
 			  form="
 			  	customer=[item-code]
 			  "][item-code]</A>
-	</TD>
-	<TD>[item-param company]</TD>
-	<TD>[item-param lname], [item-param fname]</TD>
-	<TD>[item-param city] [item-param state] [item-param country]</TD>
+[comment]
+These non-breaking spaces make sure the table background color appears
+so there's a full line across the page even if table cells are blank.
+[/comment]
+	&nbsp;</TD>
+	<TD>[item-param lname], [item-param fname]&nbsp;</TD>
+	<TD>[item-param company]&nbsp;</TD>
+	<TD>[item-param city] [item-param state] [item-param country]&nbsp;</TD>
 	</TR>
 [/search-list]
 
@@ -267,6 +277,9 @@ mv_nextpage=@@MV_PAGE@@
 	</td>
 </tr>
 [/more-list]
+<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
+<tr bgcolor="#FFFFFF" height=8><td colspan=8></td></tr>
+
 </table>
 [if-mm advanced userdb=d]
 [button form=batch text="Delete checked customers"

@@ -15,8 +15,16 @@
 </tr>
 
 <tr><td align=left bgcolor=__UI_C_INTBLOCK__>
-<H3>Catalog Information</H3>
-<TABLE>
+<TABLE border=0>
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	Interchange version
+	</TH>
+	<td rowspan=12> &nbsp; </td>
+	<TD> [version]</A></TD>
+</TR>
+
+
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
 	Last time server restarted
@@ -47,6 +55,35 @@
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
+	Perl Version and Location
+	</TH>
+	<TD>-display-</TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	Location of Error Logs
+	</TH>
+	<TD>-display-</TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	Interchange PID
+	</TH>
+	<TD>-display-</TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	Interchange SUID User
+	</TH>
+	<TD>-display-</TD>
+</TR>
+
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
 	Active sessions
 	</TH>
 	<TD>[loop list="[dump-session find=1]"]<A HREF="[area
@@ -66,22 +103,14 @@
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
-	Interchange version
-	</TH>
-	<TD> [version]</A></TD>
-</TR>
-
-
-<TR>
-	<TH VALIGN=TOP ALIGN=RIGHT>
-	Database Information
+	Database Information<br> (what's in actual use?)
 	</TH>
 	<TD> [version extended=1 db=1]</A></TD>
 </TR>
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
-	Module Information
+	Optional Module Information<br>(include version #)
 	</TH>
 	<TD> [version extended=1 modules=1]</A></TD>
 </TR>

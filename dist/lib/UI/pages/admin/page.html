@@ -17,13 +17,13 @@
 </BLOCKQUOTE>
 [/if]
 
-<table __UI_T_PROPERTIES__>
+<table border=0 __UI_T_PROPERTIES__>
 <tr>
 <td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
-<tr>
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_LEFT_WIDTH__>
+<tr bgcolor="__UI_C_INTBLOCK__">
+<td width=25%>
 [set Create new page]
 [if !cgi ui_page]
 mv_nextpage=@@MV_PAGE@@
@@ -41,14 +41,12 @@ mv_nextpage=__UI_BASE__/page_preview
 mv_todo=return
 [/set]
 
-<input type="submit" name="mv_click" value="Create new page" onClick="this.form.target='_self'"><BR>
-<input type="submit" name="mv_click" value="Preview template" onClick="this.form.target='_blank'">
-</td>
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_RIGHT_WIDTH__>
-&nbsp;
+1. Choose a page template from the pull-down menu:
 
+</td>
+<td>
 <select name="ui_template" size=1>
-<option value=> Please select a type
+<option value=> Select a page template
 [calc]
 	@files = $Tag->list_glob('templates/*');
 	for(@files) {
@@ -75,7 +73,30 @@ mv_todo=return
 	return join "\n", @out;
 [/calc]
 </select>
-<BR><B>File name:<B> <INPUT NAME=ui_page>
+</td>
+</tr>
+<tr>
+<td>
+2. (Optional) Preview your selection:
+</td>
+<td>
+<input type="submit" name="mv_click" value="Preview template" onClick="this.form.target='_blank'"> &nbsp; (Opens a new window)
+</td>
+</tr>
+<tr bgcolor="__UI_C_INTBLOCK__">
+<td>
+3. Name the file you are creating:
+</td>
+<td>
+<INPUT NAME=ui_page>
+</td>
+</tr>
+<tr>
+<td>
+4. Click this button to create the page:
+</td>
+<td>
+<input type="submit" name="mv_click" value="Create new page" onClick="this.form.target='_self'"><BR>
 </td>
 </tr>
 

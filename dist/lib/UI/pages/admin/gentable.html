@@ -8,16 +8,21 @@
 <!-- ----- BEGIN REAL STUFF ----- -->
 
 <center>
-<table __UI_T_PROPERTIES__>
+<TABLE width="90%" border=0 callpadding=0 cellspacing=0>
+<tr bgcolor="#000000" height=1><td></td></tr>
+<TR BGCOLOR="#__UI_C_TOPBLOCKBAR__">
+<TD VALIGN="top" width="20%">
+<FONT COLOR="__UI_C_TITLEBARTXT__">
+Database tables
+</font>
+</td></tr>
+<tr bgcolor="#000000" height=1><td></td></tr>
+<tr bgcolor="#FFFFFF" height=2><td></td></tr>
 
-<tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
 
 <tr><td align=left bgcolor=__UI_C_INTBLOCK__>
-<H3>Database tables</H3>
 
-<table cellspacing=0 cellmargin=0 cellpadding=0>
+<table border=0 cellspacing=0 cellmargin=0 cellpadding=0>
 [loop list="[list-databases]"]
 [loop-sub db_action]
 sub {
@@ -74,9 +79,9 @@ sub {
 	};
 	my $out = '';
 	if(! $dblist_done_one++) {
-		$out .= '<tr bgcolor="__UI_C_TITLEBARBG__">';
+		$out .= '<tr>';
 		for(qw/edit import export view upload download /, "Table name (description)") {  # Add "report"
-			$out .= qq{<td align=center><font size="-1" color="__UI_C_TITLEBARTXT__"><B>&nbsp;$_&nbsp;</B></td>};
+			$out .= qq{<td bgcolor="__UI_C_TITLEBARBG__" align=center><font size="-1" color="__UI_C_TITLEBARTXT__">$_</td>};
 		}
 		$out .= "</tr>";
 	}
@@ -87,7 +92,7 @@ sub {
 <td ALIGN=center><A HREF="$line->{url}"><img src="$line->{img}" border=0 alt="$_ $tab" align=top></A></td>
 EOF
 	}
-	return $out . qq{<td>&nbsp;<FONT><B>$name</B></FONT></td></tr>};
+	return $out . qq{<td>&nbsp;<FONT SIZE="+1">$name</FONT></td></tr>};
 }
 [/loop-sub]
 [loop-exec db_action][loop-data __UI_META_TABLE__ label][/loop-exec]
@@ -96,9 +101,7 @@ EOF
 
 </td></tr>
 
-<tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
+<tr bgcolor="#000000" height=1><td></td></tr>
 
 </table>
 </center>

@@ -20,20 +20,18 @@
 [update values]
 [loop list="[value-extended customer]"]
 
-<table __UI_T_PROPERTIES__>
+<table border=0 __UI_T_PROPERTIES__>
 <tr>
-<td colspan=6 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" height=1></td>
+<td colspan=6 bgcolor=__UI_C_TITLEBARBG__><img src="admin/bg.gif" height=1></td>
 </tr>
 
 <tr>
 <td colspan=6 align=left bgcolor=__UI_C_INTBLOCK__>
-<b>Customer Username: [loop-code]</b>
-</td>
-</tr>
-
-<tr>
-<td colspan=6 align=left bgcolor=__UI_C_INTBLOCK__>
-<b>Customer: 
+<table>
+<tr><td align=right>
+<b>Customer Username: </td><td>[loop-code]</b></td>
+</tr><tr>
+<td align=right><b>Customer: </td><td>
 <A HREF="[area
 				href=__UI_BASE__/customer_pref
 				form=|
@@ -41,6 +39,9 @@
 				|
 		]"><u>[loop-data userdb fname] [loop-data userdb lname]</u></A>
 		</b>
+</td>
+</tr>
+</table>
 </td>
 </tr>
 
@@ -51,7 +52,7 @@
 
 <form>
 
-<table>
+<table border=0>
 <tr><td align=right>
 <font size=2><b> Company: </b></font>
 </td><td><font size=2>[loop-data userdb company]</font></td></tr>
@@ -157,24 +158,18 @@
 </td></tr>
 
 <tr>
-<td colspan=6 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" height=1></td>
+<td colspan=6 bgcolor=__UI_C_TITLEBARBG__><img src="admin/bg.gif" height=1></td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td width="20%" bgcolor=__UI_C_INTBLOCK__>
 	<B>Order number</B>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td width="20%" bgcolor=__UI_C_INTBLOCK__>
 	<B>Order date</B>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
-	<B>Tax</B>
-</td>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
-	<B>Shipping</B>
-</td>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
-	<B>Total cost</B>
+<td bgcolor=__UI_C_INTBLOCK__>
+	<B>Order Total</B>
 </td>
 <td bgcolor=__UI_C_INTBLOCK__>
 	<B>Status</B>
@@ -197,13 +192,7 @@
 <td>
 	[sql-pos 1]
 </td>
-<td align=right>
-	[sql-pos 2]
-</td>
-<td align=right>
-	[sql-pos 3]
-</td>
-<td align=right>
+<td>
 	[sql-pos 4]
 </td>
 <td>
@@ -216,7 +205,7 @@
 </tr>
 [/query]
 <tr>
-<td colspan=6 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" height=1></td>
+<td colspan=6 bgcolor=__UI_C_TITLEBARBG__><img src="admin/bg.gif" height=1></td>
 </tr>
 
 </table>
