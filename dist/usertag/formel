@@ -30,6 +30,20 @@ sub {
 	my $checkfor = $opt->{'checkfor'} || $name;
     my $sizestr = '';
 
+	sub label {
+		my ($label, $keep) = @_;
+
+	    if ($Tag->error($checkfor, {keep => $keep})) {
+			if ($opt->{signal}) {
+				sprintf($opt->{signal}, $label);
+			} else {
+		        qq{<font color="$contrast">$label</font>};
+			}	
+	    } else {      
+    	    $label;
+		}
+	}
+
     # set defaults
     $type = 'text' unless $type;
     
@@ -64,20 +78,15 @@ sub {
 			} else {
 				$rvalue = $rlabel = $button;
 			}
+			$rlabel = label($rlabel, 1);
 			$elhtml .= qq{<input type=radio name=$name value=$rvalue> $rlabel};
 		}
+		# delete error implicitly
+		label();
 		return sprintf ($fmt, $labelhtml, $elhtml);
 	}
 
-    if ($Tag->error($checkfor)) {
-		if ($opt->{signal}) {
-			$labelhtml = sprintf($opt->{signal}, $label);
-		} else {
-	        $labelhtml = qq{<font color="$contrast">$label</font>};
-		}
-    } else {      
-        $labelhtml = $label;
-    }
+	$labelhtml = label ($label);
 
     if ($opt->{reset}) {
 		if ($type eq 'textarea') {
