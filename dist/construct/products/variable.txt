@@ -34,18 +34,20 @@ TAXFIELD	state	Tax
 TAXRATE	OH=6.75	Tax
 TAXSHIPPING		Tax
 TOLLFREE	(888) 555-5555	Company
+UI_ABOUT_LOGIN_URL	http://help.akopia.com/4.5.6/about/	Admin control
+UI_ABOUT_NORMAL_URL	http://help.akopia.com/4.5.6/about/	Admin control
 UI_BOTTOMIMG	poweredby.gif	Admin layout
 UI_C_ALINK	#000000	Admin colors
 UI_C_BG	#FFFFFF	Admin colors
 UI_C_HEADERTXT	#333333	Admin colors
 UI_C_INTBLOCK	#EEEEEE	Admin colors
-UI_C_INTBLOCKBAR	#73f2d9	Admin colors
+UI_C_INTBLOCKBAR	#CCCCCC	Admin colors
 UI_C_LINK	#000000	Admin colors
 UI_C_TITLEBARBG	#6699FF	Admin colors
 UI_C_TITLEBARTXT	#FFFFFF	Admin colors
-UI_C_TOPBLOCKBAR	#336699	Admin colors
+UI_C_TOPBLOCKBAR	#6699FF	Admin colors
 UI_C_VLINK	#000000	Admin colors
-UI_HELP_BASE_URL	http://www.akopia.com/help/4.5.6/	Admin control
+UI_HELP_BASE_URL	http://help.akopia.com/4.5.6/	Admin control
 UI_ITEM_FIELDS	description image thumb comment size color sku price weight category	Item display
 UI_LEFT_WIDTH	150	Admin layout
 UI_META_LINK	1	Admin control
