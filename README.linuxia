@@ -1,7 +1,5 @@
 This file documents all changes of the LINUXIA branch of Interchange.
 
-- Debian packaging files added
-[Debian specific]
 - let `force' override directory check in Makefile.PL (CVS 1.23.4.3)
 - Debian configuration file location added to interchange.PL (CVS 1.8.4.2)
   and makecat.PL (CVS 1.26.4.6)
@@ -85,6 +83,7 @@ Changes that made into the development branch:
 
 - imagehelper widget (interchange.PL: 1.15.2.4, Primitive.pm: 1.25.4.2,
   modified, 2000-12-03)
+- Debian packaging files added (2001-03-14)
 
 Candidates for 4.7:
 
