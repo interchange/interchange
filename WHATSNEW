@@ -36,12 +36,13 @@ Core
   menus from a menu specification. See the UI.
 
 * Add robot tolerance facility, where mv_tmp_session is set when either
-  a RobotUA or RobotIP wildcard matches.
+  a RobotUA, RobotIP or RobotHost wildcard matches.
 
   In interchange.cfg:
 
       RobotUA   Inktomi, Scooter, Site*Sucker
       RobotIP   209.135.65, 64.172.5
+      RobotHost *.googlebot.com
 
   After that, it is all automatic. mv_tmp_session gets set to one, the
   Scratch values mv_no_session_id and mv_no_count are set to one, and
@@ -226,9 +227,14 @@ Foundation
 UserTags
 --------
 
-* [xml-generator] removed.
+* Fixed problem in [button] tag to make sure that the current button being 
+  pressed is the only one whose mv_click_map_* variable gets set.
 
-* [tabbed-display] tag added. 
+  This works around the problem of a user clicking one button, using the
+  browser's Back button, then clicking on a different button, and both
+  mv_clicks execute instead of just the most recent one.
+
+* [xml-generator] removed.
 
 * [history-scan ...] now escapes form parameters properly.
 
