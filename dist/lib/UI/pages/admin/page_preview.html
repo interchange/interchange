@@ -24,19 +24,23 @@
 		my $k = $1;
 		unshift @layout, "[set $k]" . $CGI->{$_} . '[/set]';
 	}
-	foreach $one (@layout) {
-		if( $one eq 'UI_CONTENT') {
-			my $content = shift @insert;
+	if (@layout) {
+		foreach $one (@layout) {
+			if( $one eq 'UI_CONTENT') {
+				my $content = shift @insert;
 #Log("inserting $content");
-			$content =~ s/\r?\n/\n/g;
-			push @out, $content;
+				$content =~ s/\r?\n/\n/g;
+				push @out, $content;
+			}
+			elsif ($one =~ /^[A-Z]\w+$/) {
+				push @out, '@_' . $one . '_@';
+			}
+			else {
+				push @out, $one;
+			}
 		}
-		elsif ($one =~ /^[A-Z]\w+$/) {
-			push @out, '@_' . $one . '_@';
-		}
-		else {
-			push @out, $one;
-		}
+	} else {
+		push @out, $CGI->{ui_content};
 	}
 	$Tag->write_relative_file("tmp/$Session->{id}.preview", (join "\n", @out));
 	return;

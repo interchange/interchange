@@ -9,7 +9,7 @@ This file documents all changes of the LINUXIA branch of Interchange.
 - new UserTag formel
 - insert without primary key (interchange.PL: 1.8.4.4, DBI.pm: 1.19.4.2, UI_STD_DBEDIT_HEAD: 1.5.4.3, item_edit.html: 1.12.4.4)
 - replaced hardcoded name for affiliate table with UI_AFFILIATE_TABLE
-  (catalog_before.cfg: 1.17.4.3+5, affiliates.html: 1.10.4.3-5,
+  (catalog_before.cfg: 1.17.4.3+5, affiliates.html: 1.10.4.3-5+8,
   order_view.html: 1.16.4.2)
 - UI_IMG fix for poweredby.gif (UI_STD_FOOTER: CVS 1.11.4.2)
 - sort by DescriptionField instead of hardcoded field name (item.html: 1.18.4.4)
@@ -32,6 +32,8 @@ This file documents all changes of the LINUXIA branch of Interchange.
   (reports/traffic/ByAffiliate.html: 1.6.4.2)
 - Pragma substitute_table_image added (Interpolate.pm: 1.29.4.3)
 - emit error message on undefined filters (Interpolate.pm: 1.29.4.3)
+- page_* works without any template 
+  (page_save.html: 1.4.4.2, page_preview.html: 1.5.4.2)
 
 Changes that made into the main branch:
 
