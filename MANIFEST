@@ -165,6 +165,7 @@ code/UI_Tag/unlink_file.coretag
 code/UI_Tag/update_order_status.tag
 code/UI_Tag/version.coretag
 code/UI_Tag/widget.coretag
+code/UI_Tag/widget_meta.coretag
 code/UI_Tag/write_relative_file.coretag
 code/UI_Tag/write_shipping.coretag
 code/UI_Tag/xfer_catalog.coretag
@@ -204,6 +205,7 @@ code/Widget/gpg_keys.widget
 code/Widget/htmlarea.widget
 code/Widget/imagedir.widget
 code/Widget/imagehelper.widget
+code/Widget/uploadblob.widget
 code/Widget/uploadhelper.widget
 configure
 debian/400mod_interchange.info
@@ -212,12 +214,12 @@ debian/changelog
 debian/control
 debian/copyright
 debian/CREDITS.debian
-debian/interchange-cat-foundation.config
-debian/interchange-cat-foundation.files
-debian/interchange-cat-foundation.postinst
-debian/interchange-cat-foundation.postrm
-debian/interchange-cat-foundation.prerm
-debian/interchange-cat-foundation.templates
+debian/interchange-cat-standard.config
+debian/interchange-cat-standard.files
+debian/interchange-cat-standard.postinst
+debian/interchange-cat-standard.postrm
+debian/interchange-cat-standard.prerm
+debian/interchange-cat-standard.templates
 debian/interchange-ui.config
 debian/interchange-ui.files
 debian/interchange-ui.postinst
@@ -864,6 +866,7 @@ eg/reset_order_number
 eg/survey_graph.tag
 eg/te
 eg/usertag/benchmark
+eg/usertag/isindex.tag
 eg/usertag/sleep
 eg/usps/html2tab
 eg/usps/join123local
@@ -940,6 +943,7 @@ lib/Vend/Payment/EFSNet.pm
 lib/Vend/Payment/iTransact.pm
 lib/Vend/Payment/Linkpoint.pm
 lib/Vend/Payment/MCVE.pm
+lib/Vend/Payment/PRI.pm
 lib/Vend/Payment/PSiGate.pm
 lib/Vend/Payment/Signio.pm
 lib/Vend/Payment/Skipjack.pm
@@ -1083,4 +1087,3 @@ WHATSNEW-4.7
 WHATSNEW-4.9
 WHATSNEW-5.1
 WHATSNEW-5.3
-META.yml                                 Module meta-data (added by MakeMaker)
