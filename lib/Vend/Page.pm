@@ -1,6 +1,6 @@
 # Vend::Page - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 2.0.2.1 2001-10-11 23:06:01 mheins Exp $
+# $Id: Page.pm,v 2.0.2.2 2001-10-13 20:35:42 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -45,14 +45,23 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.0.2.1 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.2 $, 10);
 
 my $wantref = 1;
 
 sub display_special_page {
 	my($name, $subject) = @_;
 	my($page);
-	
+
+	$name =~ m/[\[<]+/g
+		and do {
+			::logGlobal(
+					"Security violation -- scripting character in page name '%s'.",
+					$name,
+				);
+			$name = 'violation';
+		};
+
 	$subject = $subject || 'unspecified error';
 	
 #::logDebug("looking for special_page=$name");
@@ -72,6 +81,16 @@ sub display_special_page {
 sub display_page {
 	my($name) = @_;
 	my($page);
+
+	$name =~ m/[\[<]+/g
+		and do {
+			::logGlobal(
+					"Security violation -- scripting character in page name '%s'.",
+					$name,
+				);
+			$name = 'violation';
+			return display_special_page($name);
+		};
 
 	$name = $CGI::values{mv_nextpage} unless $name;
 #::logDebug("display_page: $name");
