@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.80 2001-06-25 13:46:53 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.81 2001-06-26 17:05:45 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.80 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.81 $, 10);
 
 @EXPORT = qw (
 
@@ -6022,7 +6022,9 @@ sub timed_build {
 		$abort = 1 if ! $saved_file || $file =~ m:MM=:;
 	}
 
-	return Vend::Interpolate::interpolate_html(shift)
+	$opt->{login} = 1 if $opt->{auto};
+
+	return Vend::Interpolate::interpolate_html($_[0])
 		if $abort
 		or ( ! $opt->{force}
 				and
@@ -6031,6 +6033,18 @@ sub timed_build {
 					or ! $opt->{login} && $Vend::Session->{logged_in}
 				)
 			);
+	
+	if($opt->{auto}) {
+		$opt->{login} =    1 unless defined $opt->{login};
+		$opt->{minutes} = 60 unless defined $opt->{minutes};
+		$opt->{login} = 1;
+		my $dir = "$Vend::Cfg->{ScratchDir}/auto-timed";
+		if(! -d $dir) {
+			require File::Path;
+			File::Path::mkpath($dir);
+		}
+		$file = "$dir/" . generate_key(@_);
+	}
 
     if($opt->{noframes} and $Vend::Session->{frames}) {
         return '';
