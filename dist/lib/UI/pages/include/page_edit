@@ -14,10 +14,18 @@
 [perl tables="[list-databases] __UI_META_TABLE__"] 
 
 	# Some inits
+	my $imgpath = $Tag->var('UI_IMG', 2);
 	my $template_dir = $Variable->{UI_TEMPLATE_DIR} || 'templates';
 	my $out = '';
 	my $ver = $Tag->version();
 	my $current = $Scratch->{ui_current_content};
+	my %hidden;
+	my %control_display = map { ($_, 1) } split /[\s\0,]/,
+											(  $CGI->{ui_content_edit}
+											|| $Values->{ui_content_edit}
+											|| $Variable->{UI_CONTENT_EDIT}
+											|| 'template page components content'
+											);
 #Log("current begins: " . substr($current, 0, 1000) );
 
 	sub tmp_error {
@@ -147,7 +155,7 @@ push @messages, "template from upload:\n$tref->{ui_definition}";
 #Log("Template top: $template_top");
 	}
 
-#Log("t_name=$t_name");
+Log("t_name=$t_name");
 
 	my $page = $CGI->{ui_page};
 
@@ -161,8 +169,11 @@ push @messages, "template from upload:\n$tref->{ui_definition}";
 		</b></font>
 	</td>
 </tr>
+EOF
+	if($control_display{template}) {
+		$out .= <<EOF;
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr>
 	<td bgcolor=__UI_C_INTBLOCK__><b>Template</b> ($t_name)</td>
@@ -201,13 +212,23 @@ EOF
 	</td>
 </tr>
 EOF
-
-#	$out .= <<EOF;
-#<tr>
-#	<td class=ralt><b>Template description</b></td>
-#	<td class=ralt>$t_desc</td>
-#</tr>
-#EOF
+	}
+	else {
+		$out .= <<EOF;
+<tr>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+		<b>Template</b>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+		$t_name -- $t_desc
+		<INPUT type=hidden name="ui_template" value="$t_name">
+	</td>
+</tr>
+EOF
+	}
 
 	$out .= <<EOF;
 <tr>
@@ -225,7 +246,7 @@ EOF
 	</td>
 </tr>
 <tr class=rtitle>
-<td colspan=2 class=ctitle><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=ctitle><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 EOF
 
@@ -254,9 +275,10 @@ EOF
 		delete $r->{ui_definition};
 	}
 
-	my $template_div;
+	my $template_div = 0;
 
 	for(\$template_top, \$template_bot) {
+Log("looking in template, length " . length($$_));
 		while( $$_ =~ m{
 				 [ \t]* 
 				 (?:
@@ -277,7 +299,7 @@ EOF
 		{
 			my $compname = $1 || $4;
 			my $comptype = $2 || $5;
-#Log("Found component $compname, group $comptype");
+Log("Found component $compname, group $comptype");
 			my $current_content = $3 || '';
 			
 #Log ("Read component $compname=$chash->{$compname}.");
@@ -326,13 +348,13 @@ EOF
 
 	$out .= <<EOF if $CGI->{ui_show_template};
 <tr class=cmarq>
-<td colspan=2><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr class=ralt>
 	<td valign=top>
 	<b>Top of template</b>
 	<small><br><br>
-	<A HREF="$Config->{VendURL}/ui_download/$page?mv_no_cache=$Session->{pageCount}"><img src="down.gif" border=0 height=11 width=10 alt="download $page">download content</a>
+	<A HREF="$Config->{VendURL}/ui_download/$page?mv_no_cache=$Session->{pageCount}"><img src="${imgpath}admin/down.gif" border=0 height=11 width=10 alt="download $page">download content</a>
 	<br><i>(will not reflect changes below unless saved)</I></small>
 	</td>
 	<td>
@@ -354,7 +376,7 @@ EOF
 	</td>
 </tr>
 <tr>
-<td colspan=2 class=rtitle><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rtitle><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 EOF
 
 
@@ -465,19 +487,19 @@ EOF
 
 	my $break_template = <<EOF;
 <tr class=cmarq>
-<td colspan=2><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 EOF
 
 	my $title_template = <<EOF;
 <tr class=rborder>
-<td colspan=2><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr class=rtitle>
 <td colspan=2 class=ctitle><span style="font-size: larger; font-weight: bold">~TITLE~</span></td>
 </tr>
 <tr class=rborder>
-<td colspan=2><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 EOF
 
@@ -529,8 +551,13 @@ EOF
 EOF
 
 	my @globals;
-	@globals = @{$tref->{ui_display_order}}
-		if $tref->{ui_display_order};
+	if(! $control_display{page}) {
+		$hidden{ui_page_setting_text} = $pref->{ui_page_setting_text};
+	}
+	elsif($tref->{ui_display_order}) {
+		@globals = @{$tref->{ui_display_order}}
+			if $tref->{ui_display_order};
+	}
 
 	push @controls, title_row("Page Settings")
 		if @globals;
@@ -570,7 +597,12 @@ EOF
 		push @controls, $widget;
 	}
 
-	push @controls, title_row("Top Components");
+	if(! $control_display{components}) {
+		@cobj = ();
+		$hidden{ui_component_text} = $pref->{ui_component_text};
+	}
+
+	push @controls, title_row("Top Components") if @cobj;
 	for(my $i = 0; $i < @cobj; $i++) {
 		my $ref = $cobj[$i];
 		my $settings = $settings[$i] || {};
@@ -681,13 +713,13 @@ push @messages, "r key $_ set='$set' options=$options value=$Values->{$_} widget
 	
 	$out .= <<EOF if $CGI->{ui_show_template};
 <tr>
-<td colspan=2 class=rtitle><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rtitle><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr class=ralt>
 	<td valign=top>
 	<b>Bottom of template</b>
 	<small><br><br>
-	<A HREF="$Config->{VendURL}/ui_download/$page?mv_no_cache=$Session->{pageCount}"><img src="down.gif" border=0 height=11 width=10 alt="download $page">download content</a>
+	<A HREF="$Config->{VendURL}/ui_download/$page?mv_no_cache=$Session->{pageCount}"><img src="${imgpath}admin/down.gif" border=0 height=11 width=10 alt="download $page">download content</a>
 	<br><i>(will not reflect changes below unless saved)</I></small>
 	</td>
 	<td>
@@ -708,9 +740,14 @@ push @messages, "r key $_ set='$set' options=$options value=$Values->{$_} widget
 	</td>
 </tr>
 EOF
-
+	my $hidden = '';
+	for(keys %hidden) {
+		$hidden .= q{<input type=hidden name="$_" value="};
+		$hidden .= $Tag->filter('entities', $hidden{$_});
+		$hidden .= qq{">\n};
+	}
+	$Scratch->{tmp_hidden} = $hidden;
 	return $out;
-	return $out . tmp_error("Finished checking first part.");
 [/perl]
 
 <tr>
@@ -728,11 +765,15 @@ mv_action=back
 mv_nextpage=__UI_BASE__/page_save
 [/set]
 
+[scratchd tmp_hidden]
 <INPUT TYPE=submit NAME=mv_click VALUE=Preview onClick="this.form.target='page_preview'">
 <INPUT TYPE=hidden NAME=ui_return_to VALUE="__UI_BASE__/page">
 <INPUT TYPE=submit NAME=mv_click VALUE=Save onClick="this.form.target='_self'">
 <INPUT TYPE=submit NAME=mv_click VALUE=Cancel onClick="this.form.target='_self'"><br>
+[comment]
+<!-- may come back someday -->
 <INPUT TYPE=checkbox NAME=ui_save_t_in_page VALUE=1 [cgi save_in_page]> Save template in page
+[/comment]
 
 </td>
 </tr>

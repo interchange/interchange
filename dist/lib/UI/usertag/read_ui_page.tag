@@ -91,13 +91,14 @@ Log("_setref key=$key val=$val");
 	}
 
 	if($data =~ m/
-						\[control \s+ reset .*? \]
-						(.*?)
-						\[control \s+ reset .*? \]
+						(\[control \s+ reset .*? \]
+						*?
+						\[control \s+ reset .*? \])
 					/six)
 	{
 		# New style
 		my $stuff = $1;
+		$ref->{ui_component_text} = $stuff;
 		while($stuff =~ m{\[control-set\](.*?)\[/control-set\]}isg ) {
 			my $sets = $1;
 			my $r = {};
@@ -112,8 +113,10 @@ Log("_setref key=$key val=$val");
 
 	# Global controls
 	my $comp_text = $data;
-	while($comp_text =~ m{\[(set|tmp|seti)\s+([^\]]+)\](.*?)\[/\1\]}isg ) {
-		$tref->{$2} = $3;
+	$ref->{ui_page_setting_text} = '';
+	while($comp_text =~ m{(\[(set|tmp|seti)\s+([^\]]+)\](.*?)\[/\2\])}isg ) {
+		$tref->{$3} = $4;
+		$ref->{ui_page_setting_current} .= $1;
 	}
 
 	$ref->{ui_page_setting} = $tref;
