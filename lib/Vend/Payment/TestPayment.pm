@@ -1,6 +1,6 @@
 # Vend::Payment::TestPayment - Interchange payment test module
 #
-# $Id: TestPayment.pm,v 1.5 2004-06-07 20:59:18 mheins Exp $
+# $Id: TestPayment.pm,v 1.6 2005-01-16 16:31:31 mheins Exp $
 #
 # Copyright (C) 2002 Cursor Software Limited.
 # All Rights Reserved.
@@ -190,7 +190,7 @@ BEGIN {
 		unless $Vend::Quiet or ! $Global::VendRoot or ! $Global::VendRoot;
 }
 
-$VERSION = substr(q$Revision: 1.5 $,10);
+$VERSION = substr(q$Revision: 1.6 $,10);
 
 package Vend::Payment;
 
@@ -211,19 +211,25 @@ sub testpayment {
     if ($opt->{actual}){
 		$actual = $opt->{actual};
     }
-    else{
-	my (%actual) = map_actual();
-	$actual = \%actual;
+    else {
+		my (%actual) = map_actual();
+		$actual = \%actual;
     }
 
 #::logDebug("actual map result: " . ::uneval($actual));
-    unless ($user){
-	$user = charge_param('id') or return (
-	    MStatus => 'failure-hard',
-	    MErrMsg => errmsg('No account id'),
-	);
+    unless ($user) {
+		$user = charge_param('id') or return (
+			MStatus => 'failure-hard',
+			MErrMsg => errmsg('No account id'),
+		);
     }
 	
+	my $logfile;
+	my $log;
+	if($log = charge_param('log')) {
+		$logfile = charge_param('logfile') || $Vend::Cfg->{ErrorFile};
+	}
+
     $secret ||= charge_param('secret');
 
     my $precision = $opt->{precision} || 2;
@@ -245,10 +251,11 @@ sub testpayment {
     $actual->{mv_credit_card_exp_year} =~ s/\D//g;
     $actual->{mv_credit_card_number} =~ s/\D//g;
 
-    my $exp = sprintf('%02d%02d',
-	$actual->{mv_credit_card_exp_month},
-	$actual->{mv_credit_card_exp_year},
-    );
+    my $exp = sprintf(
+					'%02d%02d',
+					$actual->{mv_credit_card_exp_month},
+					$actual->{mv_credit_card_exp_year},
+				);
 
     $opt->{transaction} ||= 'sale';
 
@@ -330,6 +337,19 @@ sub testpayment {
 		$msg ||= 'TestPayment error: %s.  Please call in your order or try again.';
 		$result{'pop.error-message'} = errmsg($msg,'Invalid test card number');
     }
+
+	if($log) {
+		logError(
+			errmsg('TestPayment %s id=%s: function=%s status=%s amount=%s error=%s',
+					$user, 
+					$opt->{order_id},
+					$amount,
+					$result{'pop.status'},
+					$result{'pop.error-message'},
+			),
+			{ file => $logfile },
+		);
+	}
 
     $result{MStatus} = $result{'pop.status'};
     $result{MErrMsg} = $result{'pop.error-message'} if $result{'pop.error-message'};
