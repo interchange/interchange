@@ -629,6 +629,7 @@ lib/Vend/External.pm
 lib/Vend/Glimpse.pm
 lib/Vend/Imagemap.pm
 lib/Vend/Interpolate.pm
+lib/Vend/Mail.pm
 lib/Vend/MakeCat.pm
 lib/Vend/Misc/Static.pm
 lib/Vend/Order.pm

@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.6.0
 #
-# $Id: interchange.PL,v 1.8.2.5 2000-11-15 16:34:53 heins Exp $
+# $Id: interchange.PL,v 1.8.2.6 2000-11-16 01:00:41 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -270,6 +270,7 @@ use Vend::Data;
 use Vend::UserDB;
 use Vend::Interpolate;
 use Vend::Page;
+use Vend::Mail;
 use File::CounterFile;
 
 if( ! $Global::Windows and $> == -1 || scalar(getpwuid($>)) eq 'nobody' ) {

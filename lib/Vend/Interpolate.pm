@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.29.2.7 2000-11-13 16:15:35 zarko Exp $
+# $Id: Interpolate.pm,v 1.29.2.8 2000-11-16 01:00:39 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.29.2.7 $, 10);
+$VERSION = substr(q$Revision: 1.29.2.8 $, 10);
 
 @EXPORT = qw (
 
@@ -3469,14 +3469,14 @@ sub iterate_hash_list {
 				or
 				$run =~ s!$QR{discount_price}!
 							currency(
-								discount_price($item, item_price($item,$1), $1 || 1)
+								discount_price($item, Vend::Data::item_price($item,$1), $1 || 1)
 								, $2
 								)!ge;
 		$run =~ s!$B$QR{_difference}!
 					currency(
 							item_difference(
 								$item->{code},
-								item_price($item, $item->{quantity}),
+								Vend::Data::item_price($item, $item->{quantity}),
 								$item->{quantity},
 							),
 							$2,
