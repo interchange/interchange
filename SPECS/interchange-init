@@ -31,12 +31,12 @@ case "$1" in
 	status)
 		status interchange
 		;;
-	restart)
+	restart|reload)
 		$0 stop
 		$0 start
 		;;
 	*)
-		echo "Usage: $0 {start|stop|restart|status}"
+		echo "Usage: $0 {start|stop|restart|reload|status}"
 		exit 1
 esac
 
