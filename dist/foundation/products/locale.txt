@@ -1,17 +1,17 @@
 code	en_US	de_DE	fr_FR	nl_NL
 <B>If the above links do not work</B>, this is an indication of one of the following	<B>If the above links do not work</B>, this is an indication of one of the following			<B>Als bovenstaande links niet werken</B> kan een reden hiervan zijn
-About Us	About Us			Over ons
-Access denied	Access denied			Toegang gewijgerd
+About Us	About Us	Über uns		Over ons
+Access denied	Access denied	Zugriff verweigert		Toegang gewijgerd
 Account Information Erased	Account Information Erased			Rekeninginformatie gewist
 Account Maintenance	Account Maintenance			Rekeningonderhoud
 Account Management Functions	Account Management Functions			Functies rekeningonderhoud
 Account Number	Account Number			Rekeningnummer
 Account active	Account active			Rekening actief
 Action	Action			Actie
-Add address	Add address			Adres toevoegen
+Add address	Add address	Adresse hinzufügen		Adres toevoegen
 Additional (not required, shown on second page)	Additional (not required, shown on second page)			Additioneel (is niet vereist en wordt getoond op tweede pagina)
 Additional Shipping Addresses	Additional Shipping Addresses			Additionele verzendadressen
-Address	Address			Adres
+Address	Address	Adresse		Adres
 Admin	Admin			Administratie
 Admin interface	Admin interface			Administratie interface
 Advanced	Advanced			Verfijnd zoeken
@@ -36,7 +36,7 @@ Best sellers...	Best sellers...			Best verkopende...
 Billing Address	Billing Address			Faktuuradres
 Billing Name	Billing Name			Faktuurnaam
 Business name	Business name			Bedrijfsnaam
-Buy	Buy			Kopen
+Buy	Buy	Kaufen		Kopen
 Buy List	Buy List			Bestellijst
 Buy it Now!	Buy it Now!			Koop nu!
 Buy now	Buy now			Koop nu
@@ -205,14 +205,14 @@ Order total %s exceeds credit limit, please call.	Order total %s exceeds credit 
 Other	Other			Ander
 Other items you may like	Other items you may like			Wellicht houdt U ook van deze artikelen
 Our Price	Our Price			Onze prijs
-Out Of Stock	Out Of Stock			Niet voorradig
+Out Of Stock	Out Of Stock	Nicht vorrätig		Niet voorradig
 P.O. Information	P.O. Information			
 PAYMENT<BR>METHOD	PAYMENT<BR>METHOD			BETALINGS<BR>METHODE
 PO Number	PO Number			Inkooporder nummer
 PROCESS_RETURNS_PAR1	Your return has been processed. Please ship the item(s) to the address below and your account will be credited for the returned amount. A return confirmation has also been emailed to you.			Uw retourzending is verwerkt. Stuur het(de) product(en) naar onderstaand adres en uw rekening zal worden gecrediteerd voor het bedrag dat de teruggestuurde goederen vertegenwoordigen. Ter confirmatie van deze retourzending is een email naar U verzonden.
 Parent	Parent			Ouder
 Part No.	Part No.			Onderdeel No.
-Password	Password			Wachtwoord
+Password	Password	Passwort		Wachtwoord
 Payment Method	Payment Method			Betalingsmethode
 Perl Information	Perl Information			Perl informatie
 Phone	Phone			Telefoon
@@ -232,21 +232,21 @@ Postal Billing	Postal Billing
 Powered by Interchange	Powered by Interchange			
 Preview	Preview			
 Previous	Previous			Vorige
-Price	Price			Prijs
+Price	Price	Preis		Prijs
 PriceDivide	1	0.5409	0.1632	
 Privacy Policy	Privacy Policy			
 Problem	Problem			Probleem
 Process Order Return	Process Order Return			Verwerken retourzending
-Product	Product			
+Product	Product	Produkt		
 Product Views All	Product Views All			
 ProductFiles				
 Put me on these mail lists (if any)	Put me on these mail lists (if any)			Plaats mij op deze emaillijsten (indien aanwezig)
 Put me on your email list of infrequent offers	Put me on your email list of infrequent offers			Plaats mij op uw emaillijst van niet frequente aanbiedingen
 QTY<BR>TOTAL	QTY<BR>TOTAL			TOTAAL<BR>AANTAL
 QUANTITY PRICING	QUANTITY PRICING			KWANTUMPRIJZEN
-Qty	Qty			Aantal
+Qty	Qty	Anz.		Aantal
 Quan	Quan			Aantal
-Quantity	Quantity			Aantal
+Quantity	Quantity	Anzahl		Aantal
 Quantity Discounts	Quantity Discounts			Kwantumkortingen
 RMA Number	RMA Number			RMA nummer
 Recurring Orders	Recurring Orders			Herhalingsorders
@@ -284,7 +284,7 @@ Search Go	Search Go			Zoek nu
 Search by Category	Search by Category			Zoek op categorie
 Search by Field	Search by Field			Zoek op veld
 Search for	Search for			Zoek voor
-Search results	Search results			Zoekresultaten
+Search results	Search results	Suchergebnisse		Zoekresultaten
 See also	See also			Zie ook
 See also...	See also...			Zie ook...
 See...	See...			Zie...

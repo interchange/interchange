@@ -5,13 +5,13 @@ code	name
 4	Leitern
 14	Sonstiges
 10	Hand Tools
-7	Painting Supplies
+7	Malutensilien
 3	Hardware
 11	Hardware
 6	Sonstiges
-15	Painting Supplies
-16	Safety Equipment
+15	Malutensilien
+16	Sicherheitsausrüstung
 12	Leitern
 9	Tool Storage
 2	Hand Tools
-8	Safety Equipment
+8	Sicherheitsausrüstung
