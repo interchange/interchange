@@ -916,6 +916,7 @@ lib/Vend/Payment/Signio.pm
 lib/Vend/Payment/Skipjack.pm
 lib/Vend/Payment/WellsFargo.pm
 lib/Vend/Payment/iTransact.pm
+lib/Vend/RefSearch.pm
 lib/Vend/SOAP.pm
 lib/Vend/SOAP/Transport.pm
 lib/Vend/Scan.pm
