@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.52 2004-02-22 19:28:38 mheins Exp $
+# $Id: Editor.pm,v 1.53 2004-03-08 21:06:50 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.52 $, 10);
+$VERSION = substr(q$Revision: 1.53 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -2022,8 +2022,12 @@ EOF
 	my $linecount;
 
 	CANONCOLS: {
-		my @cols = split /[,\0\s]/, $opt->{ui_data_fields};
-		#@cols = grep /:/ || $db->column_exists($_), @cols;
+		my (@cols, %colseen);
+
+		for (split /[,\0\s]/, $opt->{ui_data_fields}) {
+			next if $colseen{$_}++;
+			push (@cols, $_);
+		}
 
 		$opt->{ui_data_fields} = join " ", @cols;
 
