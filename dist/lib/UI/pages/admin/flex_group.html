@@ -11,6 +11,9 @@
 	return join "\n", @out;
 [/calc]
 [/if] -->
+[if-mm super]
+	[calc] $Config->{NoSearch} =~ s/\b$CGI->{mv_data_table}\|?//; return; [/calc]
+[/if-mm]
 [if !cgi mv_data_table]
 [bounce page="__UI_BASE__/gentable"]
 [/if]
