@@ -574,18 +574,22 @@ mv_todo=return
 [/button]
 [/if]
 
+[comment][if-mm function="tables" table="[cgi mv_data_table]=d"][/comment]
 &nbsp;&nbsp;&nbsp;&nbsp;
-
 [button text="[L]Delete checked records[/L]"
 		confirm="[L]Are you sure you want to delete the checked records?[/L]"]
 [flag type=write table="[cgi mv_data_table]"]
 deleterecords=1
 mv_click=db_maintenance
 [/button]
+[comment][/if-mm][/comment]
+
 [/on-match]
 </FORM>
 [/search-region]
 <!-- ----- END REAL STUFF ----- -->
+
+[update values]
 
 @_UI_STD_FOOTER_@
 <!-- page: @@MV_PAGE@@ -->

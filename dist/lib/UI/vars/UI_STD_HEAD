@@ -60,7 +60,7 @@ Variable UI_STD_HEAD <<EOV
 EOF
 	$Scratch->{"ui_class_$ui_tag"} = 1;
 	$Scratch->{ui_menu_sparams} = $sparams;
-	return $out;
+	return;
 [/calc]
 [if scratch table_perm]
 	[calc]
