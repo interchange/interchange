@@ -82,7 +82,15 @@ Quan  Item No.    Description                            Price       Extension
 	return $status;
 [/calc]
 [/column]
+[/row][if-item-data orderline separate_address]
+
+[row 82]
+[column width=5             gutter=1 align=right] [/column]
+[column width=12            gutter=1] SHIP TO: [/column]
+[column width=61 align=n][item-data orderline separate address][/column]
 [/row]
+[/if-item-data]
+
 
 [/loop]
 [row 82]

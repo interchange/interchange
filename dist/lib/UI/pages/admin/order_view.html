@@ -319,7 +319,7 @@
                <td width="14%" class=rhead style="padding: 5px; text-align: right">[L]Total[/L]</td>
             </tr>
 [query list=1 sql="select * from orderline where order_number = '[loop-code]'"]
-            <tr class="[sql-alternate 2]rowalt[else]rownorm[/else][/sql-alternate]"> 
+            <tr class="[sql-alternate 2]rowalt[else]rownorm[/else][/sql-alternate]" valign=top> 
                <td style="padding: 5px">[page href="admin/order_status"
 			   							 form="order=[loop-code]"
 									]
@@ -352,6 +352,18 @@
                <td align=right style="padding: 5px">[sql-param price]</td>
                <td align=right style="padding: 5px">[sql-param subtotal]</td>
             </tr>
+[if-sql-param separate_address]
+            <tr class="[sql-alternate 2]rowalt[else]rownorm[/else][/sql-alternate]" valign=top> 
+	    <td>&nbsp;</td>
+	    <td colspan=4 align=left style="padding: 5px">
+	    <B>SHIP TO: </B>[calc]
+	    my $ad = q{[sql-param separate_address]}; $ad =~ s/\s*\n+\s*/ * /g; return $ad;
+	    [/calc]
+	    </td>
+	    <td>&nbsp;</td>
+	    </tr>
+[/if-sql-param]
+
 [/query]
             <tr> 
                <td height=4 colspan=5 class=lightshade><img src="bg.gif" width=1 height=4></td>
@@ -423,4 +435,4 @@ vieworder=
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: order_view.html,v 2.15 2003-07-22 22:27:54 racke Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order_view.html,v 2.16 2003-11-20 22:11:31 edl Exp $ -->

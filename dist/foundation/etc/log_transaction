@@ -287,6 +287,15 @@ status: pending
 description: [filter mac][item-description][/filter]
 [/import]
 
+[if-item-modifier mv_ad]
+	[data
+	base=orderline
+	field=separate_address
+	key="[value mv_order_number]-[item-increment]"
+	value=|[item-modifier mv_ad]|
+	]
+[/if]
+
 [if variable DECREMENT_INVENTORY]Inventory of [item-code] now:
 	[data
 		table=inventory
