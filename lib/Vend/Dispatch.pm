@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.36.2.1 2004-04-19 14:32:59 mheins Exp $
+# $Id: Dispatch.pm,v 1.36.2.2 2004-06-17 19:06:41 kwalsh Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.36.2.1 $, 10);
+$VERSION = substr(q$Revision: 1.36.2.2 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1279,7 +1279,7 @@ RESOLVEID: {
 Too many new ID assignments for this IP address. Please wait at least %d hours
 before trying again. Only waiting that period will allow access. Terminating.
 EOF
-				$msg = Vend::Page::get_locale_message(403, $msg);
+				$msg = get_locale_message(403, $msg);
 				do_lockout($msg);
 				$Vend::StatusLine = <<EOF;
 Status: 403 Forbidden
