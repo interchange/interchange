@@ -1,6 +1,6 @@
 # Vend::Table::GDBM - Access an Interchange table stored in a GDBM file
 #
-# $Id: GDBM.pm,v 2.11 2003-10-19 17:01:47 mheins Exp $
+# $Id: GDBM.pm,v 2.12 2004-03-12 12:46:01 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -30,7 +30,7 @@ use GDBM_File;
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 2.11 $, 10);
+$VERSION = substr(q$Revision: 2.12 $, 10);
 
 sub new {
 	my ($class, $obj) = @_;
@@ -55,7 +55,7 @@ sub create {
 	my $flags = GDBM_NEWDB;
 	$flags |= GDBM_FAST if $Fast_write;
 	my $dbm = tie(%$tie, 'GDBM_File', $filename, $flags, $File_permission_mode)
-		or die errmsg("%s %s: %s\n", errmsg("create"), $filename, $!);
+		or die ::errmsg("%s %s: %s\n", ::errmsg("create"), $filename, $!);
 
 	$tie->{'c'} = join("\t", @$columns);
 
