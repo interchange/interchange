@@ -176,10 +176,17 @@ sub {
 	my $del_img = qq{<img src="delete.gif" align=center border=0 height=20 width=20 title="DELETE ~FN~">};
 	my $sp_img = qq{<img src="bg.gif" align=center border=0 height=20 width=20>};
 
-	if(defined $CGI->{details}) {
-		$Session->{ui_file_details} = $CGI->{details};
+	my $do_perms;
+	$opt->{details} = $CGI->{details} unless defined $opt->{details};
+	if(defined $opt->{details}) {
+		$do_perms = $opt->{details};
 	}
-	my $do_perms = $Session->{ui_file_details};
+	elsif (defined $CGI->{details}) {
+		$do_perms = $Session->{ui_file_details} = $CGI->{details};
+	}
+	else {
+		$do_perms = $Session->{ui_file_details};
+	}
 
 	my $del_string = '';
 	$Tag->if_mm('advanced', 'delete_files')
@@ -288,13 +295,15 @@ EOF
 		}
 	}
 
+	$opt->{top_of_tree} ||= '.';
 	my $nd = $curdir;
-	if($nd ne '.' and ! $opt->{no_up}) {
+	if($nd ne $opt->{top_of_tree} and ! $opt->{no_up}) {
 		$nd =~ s:/[^/]*$::
-		  or $nd = '.';
-		my $msg = $nd eq '.'
-				? "<large><b>..</b></large>"
-				: "<large><b>..</b></large>";
+		  or $nd = $opt->{top_of_tree};
+		my $msg = errmsg(
+					"<large><b>..</b></large> &#91;%s&#93",
+					$opt->{parent_directory_nessage} || 'parent directory',
+					);
 		unshift @dir, [ $nd, $msg, $dtmpl ];
 	}
 
