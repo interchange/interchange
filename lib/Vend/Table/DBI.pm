@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.13 2002-02-04 08:25:54 mheins Exp $
+# $Id: DBI.pm,v 2.14 2002-03-04 19:50:02 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.13 $, 10);
+$VERSION = substr(q$Revision: 2.14 $, 10);
 
 use strict;
 
@@ -1457,10 +1457,6 @@ sub list_fields {
 	return \@fld;
 }
 
-# OLDSQL
-
-# END OLDSQL
-
 sub touch {
 	return ''
 }
@@ -1586,7 +1582,6 @@ sub query {
 
 #::logDebug("\$db->query=$opt->{query}");
 	if(defined $opt->{values}) {
-		# do nothing
 		@arg = $opt->{values} =~ /['"]/
 				? ( Text::ParseWords::shellwords($opt->{values})  )
 				: (grep /\S/, split /\s+/, $opt->{values});
@@ -1760,10 +1755,11 @@ eval {
 } # MVSEARCH
 #::logDebug("finished query, rc=$rc ref=$ref arrayref=$opt->{arrayref} Tmp=$Vend::Interpolate::Tmp->{$opt->{arrayref}}");
 
+	if ($rc < 1 and CORE::ref($ref) and scalar(@$ref) ) {
+		$rc = scalar(@$ref);
+		$::Values->{mv_search_match_count} = $rc;
+	}
 	if ($opt->{row_count}) {
-		if($rc < 1 and CORE::ref($ref) and scalar(@$ref) ) {
-			$rc = scalar(@$ref);
-		}
 		return $rc unless $opt->{list};
 		$ref = [ [ $rc ] ];
 		@na = [ 'row_count' ];
