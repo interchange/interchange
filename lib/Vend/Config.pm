@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.14 2001-01-28 08:33:03 heins Exp $
+# $Id: Config.pm,v 1.25.2.15 2001-01-28 17:47:51 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -104,7 +104,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.25.2.14 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.15 $, 10);
 
 my %CDname;
 
@@ -767,6 +767,7 @@ CONFIGLOOP:
 		if(/^\s*${leadinghash}include\s+(.+)/) {
 #print "found $_\n";
 			my $spec = $1;
+			$spec = substitute_variable($spec) if $C->{ParseVariables};
 			my $ref = [ $configfile, tell(CONFIG)];
 #print "saving config $configfile (pos $ref->[1])\n";
 			#unshift @include, [ $configfile, tell(CONFIG) ];
