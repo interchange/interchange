@@ -21,11 +21,16 @@ then
 	LOGDIR='__MVC_LOGDIR__'
 	mkdir -p     $LOGDIR/logs
 	mkdir -p     $LOGDIR/orders
+	touch        $LOGDIR/error.log
 	ln    -s     $LOGDIR/error.log __MVC_CATROOT__
 	ln    -s     $LOGDIR/logs      __MVC_CATROOT__
 	ln    -s     $LOGDIR/orders    __MVC_CATROOT__
 	chmod $DMODE $LOGDIR/logs
 	chmod $DMODE $LOGDIR/orders
+	if test -n "$ICUSER"
+	then
+		chown $ICUSER.$ICUSER $LOGDIR/error.log
+	fi
 else
 	LOGDIR='__MVC_CATROOT__'
 	mkdir -p     $LOGDIR/orders
