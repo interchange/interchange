@@ -106,8 +106,9 @@
 	my $tab = $CGI->{mv_data_table} or return;
 	my $db = $Db{$tab};
 	if(! $db) {
-		$Scratch->{error_message} = "<FONT CLASS=error>Error: no <B>$tab</B> database.</FONT><BR>";
-		$Scratch->{ui_location} = "__UI_BASE__/error";
+		$Scratch->{ui_error} = errmsg('no %s database', $tab);
+		$Scratch->{ui_location} = $Tag->area({href=>"__UI_BASE__/error",
+            secure=>'@@UI_SECURE@@'||'__UI_SECURE__'});
 		return;
 	}
 
