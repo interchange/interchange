@@ -1,3 +1,4 @@
+[index table=icmenu export_only=1]
 [strip interpolate=1]
 [if-mm !logged_in]
 	[bounce page="__UI_BASE__/login"]
@@ -109,7 +110,6 @@ EOF
 
 [loop
 	  prefix=am
-	  head_skip=1
 	  search="
 	  	fi=icmenu
 		st=db
