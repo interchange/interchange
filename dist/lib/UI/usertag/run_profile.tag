@@ -72,22 +72,11 @@ sub {
 #Debug("running check $check, pname=$pname profile=$profile");
 	$profile .= "\n&fatal=1\n";
 	$profile = "&noerror=1\n$profile" if $opt->{no_error};
-	$profile = "&overwrite=1\n$profile" if $opt->{overwrite_error};
 	$::Scratch->{$pname} = $profile;
 
 	my ($status) = ::check_order($pname, $ref);
 
 	delete $::Scratch->{$pname};
-
-## This is not needed now that we have no_error
-#	if(! $status) {
-#		unless ($opt->{multiple_errors}) {
-#			my $ref = $Vend::Session->{errors};
-#			for(keys %$ref) {
-#				$ref->{$_} =~ s/.* AND //;
-#			}
-#		}
-#	}
 
 	return $status;
 }
