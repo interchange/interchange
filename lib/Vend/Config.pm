@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.72 2002-09-26 16:39:15 racke Exp $
+# $Id: Config.pm,v 2.73 2002-10-07 15:35:57 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -45,7 +45,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.72 $, 10);
+$VERSION = substr(q$Revision: 2.73 $, 10);
 
 my %CDname;
 
@@ -376,6 +376,7 @@ sub catalog_directives {
 	['SessionDatabase',  'relative_dir',     'session'],
 	['SessionLockFile',  undef,     		 'etc/session.lock'],
 	['DatabaseDefault',  'hash',	     	 ''],
+	['DatabaseAuto',	 'dbauto',	     	 ''],
 	['Database',  		 'database',     	 ''],
 	['Autoload',		 undef,		     	 ''],
 	['AutoEnd',			 undef,		     	 ''],
@@ -2907,6 +2908,19 @@ sub parse_config_db {
 
 	return $d;
 	
+}
+
+sub parse_dbauto {
+	my ($var, $value) = @_;
+	return '' unless $value;
+	my @inc = Vend::Table::DBI::auto_config($value);
+	my %noed;
+	for(@inc) {
+		my ($t, $thing) = @$_;
+		parse_boolean('NoImport', $t) unless $noed{$t}++;
+		parse_database('Database', "$t $thing");
+	}
+	return 1;
 }
 
 sub parse_database {
