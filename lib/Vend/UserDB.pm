@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.14 2003-04-11 22:03:01 mheins Exp $
+# $Id: UserDB.pm,v 2.15 2003-05-05 14:13:47 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -16,7 +16,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.14 $, 10);
+$VERSION = substr(q$Revision: 2.15 $, 10);
 
 use vars qw!
 	$VERSION
@@ -833,7 +833,7 @@ sub get_shipping_names {
 	my $self = shift;
 	my $ref = $self->get_hash('SHIPPING');
 	return undef unless ref $ref;
-	$::Values->{$self->{LOCATION}{SHIPPING}} = join "\n", keys %$ref;
+	$::Values->{$self->{LOCATION}{SHIPPING}} = join "\n", sort keys %$ref;
 	return $::Values->{$self->{LOCATION}{SHIPPING}} if $self->{OPTIONS}{show};
 	return '';
 }
@@ -842,7 +842,7 @@ sub get_billing_names {
 	my $self = shift;
 	my $ref = $self->get_hash('BILLING');
 	return undef unless ref $ref;
-	$::Values->{$self->{LOCATION}{BILLING}} = join "\n", keys %$ref;
+	$::Values->{$self->{LOCATION}{BILLING}} = join "\n", sort keys %$ref;
 	return $::Values->{$self->{LOCATION}{BILLING}} if $self->{OPTIONS}{show};
 	return '';
 }
@@ -851,7 +851,7 @@ sub get_preferences_names {
 	my $self = shift;
 	my $ref = $self->get_hash('PREFERENCES');
 	return undef unless ref $ref;
-	$::Values->{$self->{LOCATION}{PREFERENCES}} = join "\n", keys %$ref;
+	$::Values->{$self->{LOCATION}{PREFERENCES}} = join "\n", sort keys %$ref;
 	return $::Values->{$self->{LOCATION}{PREFERENCES}} if $self->{OPTIONS}{show};
 	return '';
 }
@@ -860,7 +860,7 @@ sub get_cart_names {
 	my $self = shift;
 	my $ref = $self->get_hash('CARTS');
 	return undef unless ref $ref;
-	$::Values->{$self->{LOCATION}{CARTS}} = join "\n", keys %$ref;
+	$::Values->{$self->{LOCATION}{CARTS}} = join "\n", sort keys %$ref;
 	return $::Values->{$self->{LOCATION}{CARTS}} if $self->{OPTIONS}{show};
 	return '';
 }
