@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.1 2001-08-17 22:30:56 heins Exp $
+# $Id: UserDB.pm,v 2.2 2001-09-18 21:59:22 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -16,7 +16,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1477,11 +1477,14 @@ sub userdb {
 
 #::logDebug("Called userdb function=$function opt=$opt " .  Data::Dumper::Dumper($opt));
 
-	if(ref $opt) {
+	if(ref $opt eq 'HASH') {
 		%options = %$opt;
 	}
-	else {
+	elsif (! ref $opt) {
 		%options = ($opt, @_);
+	}
+	else {
+		%options = @_;
 	}
 
 	my $status = 1;
