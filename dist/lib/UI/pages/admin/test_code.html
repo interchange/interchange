@@ -1,6 +1,6 @@
-[set page_title]Test ITL code snippet[/set]
+[set page_title][L]Test ITL code snippet[/L][/set]
 [set ui_class]Admin[/set]
-[set page_banner]Test ITL code snippet[/set]
+[set page_banner][L]Test ITL code snippet[/L][/set]
 [set page_perm]super[/set]
 [set help_name][/set]
 [set icon_name]icon_config.gif[/set]
@@ -16,7 +16,7 @@
 [if cgi itl_code]
 	<tr>
 		<td style="font-size: larger">
-		<u style="font-size: larger; font-weight: bold">Results</u><br>
+		<u style="font-size: larger; font-weight: bold">[L]Results[/L]</u><br>
 		[if cgi xmp]<xmp>[/if][calc] $Scratch->{itl_code} = $CGI->{itl_code}; [/calc][if cgi xmp]</xmp>[/if]
 		</td>
 	</tr>
@@ -30,7 +30,7 @@
 			value="[scratchd itl_code]"
 			enable-itl=1]
 		<br>
-		<input type=submit value="[L]Run[/L]"> <input type=button value="[L]Clear[/L]" onClick="this.form.itl_code.value=''"> [display type=select name=xmp cgi-default=1 options="1=Source, 0=HTML"]
+		<input type=submit value="[L]Run[/L]"> <input type=button value="[L]Clear[/L]" onClick="this.form.itl_code.value=''"> [display type=select name=xmp cgi-default=1 options="1=[L]Source[/L], 0=[L]HTML[/L]"]
 		</td>
 	</tr>
 </table>
