@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.46 2003-04-24 17:26:33 mheins Exp $
+# $Id: DBI.pm,v 2.47 2003-05-12 22:29:58 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.46 $, 10);
+$VERSION = substr(q$Revision: 2.47 $, 10);
 
 use strict;
 
@@ -1261,11 +1261,13 @@ sub set_slice {
 				: $key;
 	};
 
+#::logDebug("set_slice key: $val");
+
 	if($@) {
 		my $caller = caller();
 		::logGlobal(
 			"%s error as called by %s: %s\nquery was:%s\nvalues were:'%s'",
-			'select_slice',
+			'set_slice',
 			$caller,
 			$@,
 			$sql,
