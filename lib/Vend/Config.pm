@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.111 2003-05-03 16:41:02 racke Exp $
+# $Id: Config.pm,v 2.112 2003-05-05 20:21:49 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.111 $, 10);
+$VERSION = substr(q$Revision: 2.112 $, 10);
 
 my %CDname;
 my %CPname;
@@ -127,7 +127,6 @@ qw/
         PriceField
 		SalesTax
         SpecialPageDir
-		StaticPath
 		TaxShipping
 
 /   );
@@ -499,7 +498,7 @@ sub catalog_directives {
 	['NonTaxableField',  undef,     	     ''],
 	['CyberCash',	 	 'warn',     	     ''],
 	['CreditCardAuto',	 'yesno',     	     'No'],
-	['NoCache',	     	 'boolean',    	     ''],
+	['NoCache',	     	 'warn',    	     ''],
 	['ClearCache',	     'yesno',     	     'No'],
 	['FormIgnore',	     'boolean',    	     ''],
 	['EncryptProgram',	 undef,     	     $Global::EncryptProgram || ''],
@@ -509,16 +508,13 @@ sub catalog_directives {
 	['TrackPageParam',	 'hash',     	     ''],
 	['SalesTax',		 undef,     	     ''],
 	['SalesTaxFunction', undef,     	     ''],
-	['StaticDBM',  	 	 undef,     	     ''],
-	['Static',   	 	 'yesno',     	     'No'],
-	['StaticAll',		 'yesno',     	     'No'],
-	['StaticDepth',		 undef,     	     '1'],
-	['StaticFly',		 'yesno',     	     'No'],
-	['StaticLogged',	 'yesno',     	     'No'],
+	['StaticDBM',  	 	 'warn',     	     ''],
+	['Static',   	 	 'warn',     	     ''],
+	['StaticAll',		 'warn',     	     ''],
+	['StaticDepth',		 'warn',     	     ''],
+	['StaticFly',		 'warn',     	     ''],
+	['StaticLogged',	 'warn',     	     ''],
 	['StaticDir',		 undef,     	     ''],
-	['StaticIndex',		 undef,     	     ''], 					  
-	['StaticSessionDefault',	 'hash',     ''],
-	['StaticTrack',		 undef,     	     ''],
 	['SOAP',			 'yesno',			 'No'],
 	['SOAP_Enable',		 'hash',			 ''],
 	['SOAP_Action',		 'action',			 ''],				   
@@ -527,10 +523,10 @@ sub catalog_directives {
 	['UserDatabase',	 undef,		     	 ''],  #undocumented
 	['RobotLimit',		 'integer',		      0],
 	['OrderLineLimit',	 'integer',		      0],
-	['StaticPage',		 'boolean',     	     ''],
-	['StaticPath',		 undef,     	     '/'],
-	['StaticPattern',	 'regex',     	     ''],
-	['StaticSuffix',	 undef,     	     '.html'],
+	['StaticPage',		 'warn',     	     ''],
+	['StaticPath',		 'warn',     	     ''],
+	['StaticPattern',	 'warn',     	     ''],
+	['StaticSuffix',	 'warn',     	     ''],
 	['HTMLsuffix',	     undef,     	     '.html'],
 	['CustomShipping',	 undef,     	     ''],
 	['DefaultShipping',	 undef,     	     'default'],
