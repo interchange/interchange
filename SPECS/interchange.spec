@@ -1,4 +1,4 @@
-%define interchange_version		4.6.3
+%define interchange_version		4.6.4
 %define interchange_rpm_release	1
 %define interchange_package		interchange
 %define interchange_user		interch
@@ -271,7 +271,7 @@ find $RPM_BUILD_ROOT/%{_prefix}/lib/interchange/bin -type f | xargs chmod 755
 for i in %build_cats
 do
 	touch $RPM_BUILD_ROOT/var/log/interchange/$i.error.log
-	ln -s ../../../log/$i.error.log $RPM_BUILD_ROOT/var/lib/interchange/$i/error.log
+	ln -s ../../../log/interchange/$i.error.log $RPM_BUILD_ROOT/var/lib/interchange/$i/error.log
 done
 mv interchange.cfg $RPM_BUILD_ROOT/etc/interchange.cfg
 ln -s /etc/interchange.cfg .
