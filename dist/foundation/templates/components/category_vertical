@@ -94,7 +94,7 @@ timed:
         tf=description
     "
     ]
-      &nbsp;&nbsp;[page [loop-code]][loop-field description][/page]<BR>
+      &nbsp;&nbsp;[page [loop-code]][loop-field description]</a><BR>
 [/loop]
 	  </td>
 	</tr>
