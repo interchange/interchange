@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 1.16.4.16 2001-07-12 13:46:56 heins Exp $
+# $Id: Common.pm,v 1.16.4.17 2001-07-13 03:15:28 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.16.4.16 $, 10);
+$VERSION = substr(q$Revision: 1.16.4.17 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -810,14 +810,14 @@ sub import_ascii_delimited {
 			# Do nothing, no preload
 		}
 		else {
-			$realfile = $infile if -f $infile;
+			$realfile = -f $infile ? $infile : '';
 			$infile = $options->{PRELOAD};
 			$infile = "$Global::VendRoot/$infile" if ! -f $infile;
 			($infile = $realfile, undef $realfile) if ! -f $infile;
 		}
 	}
 
-	if(! $realfile) {
+	if(! defined $realfile) {
 		open(IN, "+<$infile")
 			or die ::errmsg("Couldn't open '%s' read/write: %s", $infile, $!);
 		lockfile(\*IN, 1, 1)
