@@ -1,8 +1,8 @@
 code	Variable	pref_group
 ADDRESS	__MVC_ADDRESS__	Company
 BAR_LINK_TEMPLATE	<A HREF="$URL$" CLASS="barlink">$ANCHOR$</A>	Admin colors
-CGIWRAP	__MVC_CGIWRAP__	Admin Control
-CGI_DIR	__MVC_CGIDIR__	Admin Control
+CGIWRAP	__MVC_CGIWRAP__	Admin control
+CGI_DIR	__MVC_CGIDIR__	Admin control
 CGI_URL	__MVC_CGIURL__	Directories and Paths
 CHECKOUT_MAIL_LIST	1	Mailings
 CHECK_ACCEPTED	1	Payment
@@ -22,10 +22,10 @@ FORUM_ANON_NAME	Anonymous Coward	Forums
 FORUM_EMAIL_NOTIFY	__MVC_EMAILSERVICE__	Forums
 FORUM_PRODUCTS	__MVC_MYSQL____MVC_PGSQL__	Forums
 IMAGE_DIR	__MVC_IMAGEURL__	Directories and Paths
-IC_DIR	__MVC_VENDROOT__	Admin Control
-LINKMODE	__MVC_LINKMODE__	Admin Control
-LINKHOST	__MVC_LINKHOST__	Admin Control
-LINKPORT	__MVC_LINKPORT__	Admin Control
+IC_DIR	__MVC_VENDROOT__	Admin control
+LINKMODE	__MVC_LINKMODE__	Admin control
+LINKHOST	__MVC_LINKHOST__	Admin control
+LINKPORT	__MVC_LINKPORT__	Admin control
 LOCALES	__MVC_LOCALES__	Internationalization
 LOGO	__MVC_LOGO__	Template
 MAILING_FROM	__MVC_COMPANY__ <__MVC_EMAILSERVICE__>	Mailings
