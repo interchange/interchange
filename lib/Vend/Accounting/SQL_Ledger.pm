@@ -325,7 +325,11 @@ INSERT INTO parts (
 	inventory_accno_id,
 	income_accno_id,
 	expense_accno_id
-) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
+) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?,
+			(select c.id from chart c where c.accno = ?),
+			(select c.id from chart c where c.accno = ?),
+			(select c.id from chart c where c.accno = ?)
+			)
 EOF
 			my $sh = $dbh->prepare($addq)
 				or die errmsg("Prepare add part '%s' failed.", $addq);
