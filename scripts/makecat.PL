@@ -52,7 +52,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.7 2001-08-23 23:32:08 racke Exp $
+# $Id: makecat.PL,v 2.8 2001-09-02 17:11:32 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -165,6 +165,7 @@ options:
     --mailorderto=email        Email address to send orders
 
     Optional:
+    --catalogconf=file         Specify separate configuration file for catalogs
     --catuser=username         The user files should be owned by (if root)
     --sharedir=directory       The directory where shared admin images go
     --shareurl=url             The URL to prefix shared admin images with
@@ -190,6 +191,7 @@ if (scalar @ARGV > 1) {
 	    'F'                 => \$Vend::MakeCat::Force,
 	    'aliases'           => \$Conf{aliases},
 	    'basedir'           => \$Conf{basedir},
+	    'catalogconf'       => \$Conf{catalogconf},
 	    'catalogname'       => \$catalog_name,
 	    'catroot'           => \$Conf{catroot},
 	    'catuser'           => \$Conf{catuser},
@@ -239,6 +241,7 @@ if (scalar @ARGV > 1) {
 	    F
 	    aliases=s
 	    basedir|base=s
+	    catalogconf=s		
 	    catalogname|name=s
 	    catroot|dir=s
 	    catuser|user=s
@@ -2084,8 +2087,11 @@ POSTCMD: {
 	umask(07) unless $Conf{noumask};
 
 	$add = prefix('nocfg') ? 'n' : 'y';
-	$yes = prompt "Add catalog to $Global::ConfigFile? ", $add;
-
+	if ($Conf{catalogconf}) {
+		$yes = prompt "Add catalog to $Conf{catalogconf}? ", $add;
+	} else {
+		$yes = prompt "Add catalog to $Global::ConfigFile? ", $add;
+	}
 	$add = prefix('norunning') ? 'n' : 'y';
 
 	if($pid) {
@@ -2101,15 +2107,24 @@ POSTCMD: {
 
 	if( is_yes($yes) ) {
 		my ($newcfgline, $mark, @out);
-		my ($tmpfile) = "$Global::ConfigFile.$$";
-		if (-f $Global::ConfigFile) {
-			File::Copy::copy ($Global::ConfigFile, $tmpfile)
-				or die "\nCouldn't copy $Global::ConfigFile: $!\n";
+		my $tmpfile;
+
+		if ($Conf{catalogconf}) {
+			$tmpfile = "$Conf{catalogconf}.$$";
+			File::Copy::copy ($Conf{catalogconf}, $tmpfile)
+					or die "\nCouldn't copy $Conf{catalogconf}: $!\n";
+        } else {
+        	$tmpfile= "$Global::ConfigFile.$$";
+			if (-f $Global::ConfigFile) {
+				File::Copy::copy ($Global::ConfigFile, $tmpfile)
+					or die "\nCouldn't copy $Global::ConfigFile: $!\n";
+			}	
+			else {
+				File::Copy::copy("$Global::ConfigFile.dist", $tmpfile)
+					or die "\nCouldn't copy $Global::ConfigFile.dist: $!\n";
+			}	
 		}
-		else {
-			File::Copy::copy("$Global::ConfigFile.dist", $tmpfile)
-				or die "\nCouldn't copy $Global::ConfigFile.dist: $!\n";
-		}
+
 		open(CFG, "< $tmpfile")
 			or die "\nCouldn't open $tmpfile: $!\n";
 		while(<CFG>) {
@@ -2125,8 +2140,14 @@ POSTCMD: {
 		if($full) {
 			$full = $Conf{servername};
 		}
-		open(NEWCFG, ">$Global::ConfigFile")
-			or die "\nCouldn't write $Global::ConfigFile: $!\n";
+
+		if ($Conf{catalogconf}) {
+			open(NEWCFG, ">$Conf{catalogconf}")
+				or die "\nCouldn't write $Conf{catalogconf}: $!\n";
+		} else {
+			open(NEWCFG, ">$Global::ConfigFile")
+				or die "\nCouldn't write $Global::ConfigFile: $!\n";
+		}
 
 		$newcfgline = sprintf "%-13s %s %s %s %s\n", 'Catalog',
 				$catalog_name, $Conf{catroot}, $full . $Conf{cgiurl}, $Conf{aliases};
@@ -2260,7 +2281,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.7 2001-08-23 23:32:08 racke Exp $
+# $Id: makecat.PL,v 2.8 2001-09-02 17:11:32 racke Exp $
 
 =head1 INTRODUCTION
 
@@ -2488,6 +2509,11 @@ URL to access HTML for catalog.
 =item --noumask
 
 Don't set umask to the value implied by mode.
+
+=item --catalogconf=file
+
+Use file as configuration file for catalog definitions. This option
+has been designed for the use with Debian installations.
 
 =back
 
