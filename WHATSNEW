@@ -26,6 +26,10 @@ Packaging
   not starting it after install anyway. Administrator should decide whether
   to do those things.
 
+Miscellaneous
+-------------
+
+* Expire script didn't work with a VariableDatabase in SQL.
 
 ------------------------------------------------------------------------------
 

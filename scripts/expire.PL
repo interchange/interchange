@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange session expiration
 #
-# $Id: expire.PL,v 2.0.2.2 2002-04-01 11:51:34 racke Exp $
+# $Id: expire.PL,v 2.0.2.3 2002-05-11 12:53:13 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -79,11 +79,6 @@ use lib '/usr/local/interchange';
 
 use strict;
 use Fcntl;
-use Vend::Session;
-use Vend::Config qw(get_catalog_default global_config parse_time);
-use Vend::Util qw/errmsg/;
-use Getopt::Std;
-use vars qw/$opt_c $opt_r $opt_e $opt_f $opt_u $opt_v $opt_x/;
 
 BEGIN {
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
@@ -121,29 +116,81 @@ $Vend::SessionName     = 'utility';
 #select a DBM
 
 BEGIN {
-	$Global::GDBM = $Global::DB_File = 0;
-    AUTO: {
-        last AUTO if
-            (defined $ENV{MINIVEND_DBFILE} and $Global::DB_File = 1);
-        last AUTO if
-            (defined $ENV{MINIVEND_NODBM});
-        eval {require GDBM_File and $Global::GDBM = 1} ||
-        eval {require DB_File and $Global::DB_File = 1};
-    }
+	$Global::GDBM = $Global::DB_File = $Global::SDBM =
+# LDAP
+	$Global::LDAP =
+# END LDAP
+# SQL
+	$Global::DBI =
+# END SQL
+	0;
+
+# SQL
+	# This is for standard DBI
+	eval {
+			die if $ENV{MINIVEND_NODBI};
+			require DBI and $Global::DBI = 1
+	};
+# END SQL
+# LDAP
+	eval {
+		die if $ENV{MINIVEND_NOLDAP};
+		require Net::LDAP and $Global::LDAP = 1
+	};
+# END LDAP
+
+	# Now can use any type of database
+	AUTO: {
+		last AUTO if 
+			(defined $ENV{MINIVEND_DBFILE} and $Global::DB_File = 1);
+		last AUTO if 
+			(defined $ENV{MINIVEND_SDBM} and $Global::SDBM = 1);
+		last AUTO if 
+			(defined $ENV{MINIVEND_NODBM});
+		eval {require GDBM_File and $Global::GDBM = 1};
+		last AUTO if 
+			(defined $ENV{MINIVEND_GDBM} and $Global::GDBM = 1);
+		last AUTO if
+				!   $ENV{MINIVEND_ALLDBM}
+				and $Global::GDBM;
+		eval {require DB_File and $Global::DB_File = 1};
+		last AUTO if
+				!   $ENV{MINIVEND_ALLDBM}
+				and $Global::GDBM || $Global::DB_File;
+		eval {require SDBM_File and $Global::SDBM = 1};
+	}
+
 	if($Global::GDBM) {
 		require Vend::Table::GDBM;
 		import GDBM_File;
 		$Global::GDBM = 1;
+		$Global::Default_database = 'GDBM'
+			unless defined $Global::Default_database;
 	}
-	elsif($Global::DB_File) {
+	if($Global::DB_File) {
 		require Vend::Table::DB_File;
 		import DB_File;
 		$Global::DB_File = 1;
+		$Global::Default_database = 'DB_FILE'
+			unless defined $Global::Default_database;
 	}
-	else {
-		die "Can't use expire without DBM sessions.\n";
+	if($Global::SDBM) {
+		require Vend::Table::SDBM;
+		import SDBM_File;
+		$Global::SDBM = 1;
+		$Global::Default_database = 'SDBM'
+			unless defined $Global::Default_database;
 	}
+	$Global::Default_database = 'MEMORY'
+			unless defined $Global::Default_database;
+	require Vend::Table::InMemory;
 }
+
+use Vend::Session;
+use Vend::Config qw(get_catalog_default global_config parse_time);
+use Vend::Util qw/errmsg/;
+use Getopt::Std;
+use vars qw/$opt_c $opt_r $opt_e $opt_f $opt_u $opt_v $opt_x/;
 
 sub logGlobal {  }
 sub logError  {  }
