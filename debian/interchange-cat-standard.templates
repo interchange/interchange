@@ -68,5 +68,11 @@ Template: interchange-cat-standard/dbtype
 Type: select
 __Choices: PostgreSQL, MySQL
 Default: MySQL
-_Description: What database should be used for the demo catalog ?
+_Description: Which DBMS should be used for the demo catalog ?
  Please select the database type.
+
+Template: interchange-cat-standard/dbname
+Type: string
+Default: standard
+_Description: Database name
+ Please select the name of the database.
