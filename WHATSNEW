@@ -134,8 +134,12 @@ Extensions
 Payment
 -------
 
-* Support for TrustCommerce added.
-* Support for the Mainstreet Credit Verificatiion Engine (MCVE) added.
+* Support for TrustCommerce added. Written, tested, and donated by
+  Dan Helfman of TrustCommerce <dan@trustcommerce.com>. Thanks, Dan!
+
+* Support for the Mainstreet Credit Verification Engine (MCVE) added.
+  Written, tested, and donated by Tom Friedel <tom@readyink.com>.
+  Thanks, Tom!
 
 
 ------------------------------------------------------------------------------
