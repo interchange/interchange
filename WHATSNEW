@@ -49,6 +49,9 @@ Core and usertags
 * Fixed bug in database query methods which can hose query strings
   like "select ... where column like '%...%'".
 
+* Check for Digest::MD5 instead of MD5 in the usertag version and
+  the RPM spec file
+
 * New option -D for localize script (Don't put default locale in output.),
   insert comments only if they are distinct from the key
 
