@@ -220,7 +220,7 @@
 		my ($f, $n) = @_;
 		my $out = "$qual\nui_sort_option=";
 		$out .= 'n' if $n;
-		return $out unless $fld eq $f;
+		return $out unless ($fld eq $f) || ($f eq 'code');
 		return $out if $so =~ /r/;
 		return $out . 'r';
 	}
@@ -229,14 +229,18 @@
 <FORM ACTION="[process]" METHOD=POST NAME=batch>
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
 <INPUT TYPE=hidden NAME=mv_todo VALUE=back>
-<TABLE border=0 CELLSPACING=0 width=90%>
+<TABLE border=0 CELLSPACING=0 width="90%">
 <tr bgcolor=000000 height=1><td colspan=8></td></tr>
 <TR BGCOLOR="__UI_C_TITLEBARBG__">
 <th>&nbsp;</th>
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">Order</TH>
 <TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
 [page href=@@MV_PAGE@@ form=`
-	return "ui_sort_field=company,lname\n" . sortrev('company');
+	return "ui_sort_field=code\n" . sortrev('code');
+	`]Order</A>
+</TH>
+<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
+[page href=@@MV_PAGE@@ form=`
+	return "ui_sort_field=lname,fname\n" . sortrev('lname');
 	`]User</A>
 </TH>
 <TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
