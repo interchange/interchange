@@ -140,7 +140,7 @@ ui_template_name: leftonly
 [/if-item-param]
 	  	</TD>
 	  	<TD valign="top"><b>[item-sku]</b></TD>
-	  	<td><a href="[area href="item-sku"]" class="cartlink"><b>[item-description]</b></A><br><br>
+	  	<td><a href="[area href="[item-sku]"]" class="cartlink"><b>[item-description]</b></A><br><br>
 
 	[if scratch dealer]
 	[if-item-data pricing sku]
@@ -300,7 +300,7 @@ EOF
 			  form=basket
 		  ]
 			mv_todo=return
-			mv_nextpage=ord/country.html
+			mv_nextpage=__CHECKOUT_PAGE__
 		[/button]
 	  </td>
 	  <td align="center">

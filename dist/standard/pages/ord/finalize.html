@@ -77,7 +77,7 @@ ui_template_name: noleft
             <INPUT TYPE=checkbox NAME="[quantity-name]" onClick="this.form.action='[process]', this.form.submit()" VALUE=0>
           </TD>
           <TD><b>[item-sku]</b></TD>
-          <TD><a href="[area href="item-sku"]" class="cartlink"><b>[item-description]</b></a>
+          <TD><a href="[area href="[item-sku]"]" class="cartlink"><b>[item-description]</b></a>
 
                 [table-organize cols=4 table=' ' font="size=1" pretty=1]
                     [item-options td=1 label=1 bold=1 price=1]
@@ -240,7 +240,7 @@ ui_template_name: noleft
 						[value fname] [value lname]<br>
 						[value address1]<br>
 						[if value address2][value address2]<br>[/if]
-						[value city], [value state]  [value zip]<br>
+						[value city][if value state], [value state][/if]  [value zip]<br>
 						[value country]
 						</blockquote>
 						</td>
@@ -251,7 +251,7 @@ ui_template_name: noleft
 						[value b_fname] [value b_lname]<br>
 						[value b_address1]<br>
 						[if value b_address2][value b_address2]<br>[/if]
-						[value b_city], [value b_state]  [value b_zip]<br>
+						[value b_city][if value b_state], [value b_state][/if]  [value b_zip]<br>
 						[value b_country]
 						</blockquote>
 						</td>
