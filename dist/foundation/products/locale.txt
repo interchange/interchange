@@ -5,9 +5,11 @@ Access denied	Access denied			Toegang gewijgerd
 Account Information Erased	Account Information Erased			Rekeninginformatie gewist
 Account Maintenance	Account Maintenance			Rekeningonderhoud
 Account Management Functions	Account Management Functions			Functies rekeningonderhoud
+Account Number	Account Number			Rekeningnummer
 Account active	Account active			Rekening actief
 Action	Action			Actie
 Add address	Add address			Adres toevoegen
+Additional (not required, shown on second page)	Additional (not required, shown on second page)			Additioneel (is niet vereist en wordt getoond op tweede pagina)
 Additional Shipping Addresses	Additional Shipping Addresses			Additionele verzendadressen
 Address	Address			Adres
 Admin	Admin			Administratie
@@ -17,14 +19,17 @@ Advanced Search	Advanced Search			Uitgebreid zoeken
 Affiliate code	Affiliate code			
 Affiliate headquarters	Affiliate headquarters			
 Affiliates	Affiliates			
+Allowed HTML	Allowed HTML			Toegestane HTML code
 Also see...	Also see...			Zie ook...
 Amount of gift	Amount of gift			Bedrag van het kado
 Apache Web Server	Apache Web Server			
 Approximate Credit	Approximate Credit			Credit circa
 April		April	Avril	April
 August		August	Aout	Augustus
+Available credit	Available credit			Beschikbaar krediet
 BACK	BACK			TERUG
 Bad search specification	Bad search specification			Verkeerde zoekspecificatie
+Bank Phone	Bank Phone			Telefoon bank
 Be sure to list the RMA number issued below on your shipping label.	Be sure to list the RMA number issued below on your shipping label.			Vergeet niet het onderstaande RMA nummer te vermelden op uw verzendsticker.
 Below are our automated customer service options. If you need to talk to someone please %sclick here%s.	Below are our automated customer service options. If you need to talk to someone please %sclick here%s.			Onderstaand vindt U onze geautomatiseerde klantenservice mogelijkheden. Wilt U een medewerker spreken, %sklik dan hier%s.
 Best sellers...	Best sellers...			Best verkopende...
@@ -35,18 +40,22 @@ Buy	Buy			Kopen
 Buy List	Buy List			Bestellijst
 Buy it Now!	Buy it Now!			Koop nu!
 Buy now	Buy now			Koop nu
+C.O.D.	C.O.D.			Rembours
 CANCELED_MSG1	If you wish to order another item, we would like you to do so, butunfortunately you will have to re-enter any account information.			
 CANCEL_PAR1	Please confirm your request to stop shopping by clicking the button below. Allitems will be cleared from your shopping cart, your name and address informationwill be expunged, and all saved settings from your visit will disappear.			Bevestig alstublieft uw verzoek om met winkelen te stoppen door op onderstaande knop te klikken. Als U dat doet worden alle producten uit uw winkelwagen verwijderd, uw naam en adresinformatie worden gewist en alle bewaarde instellingen tijdens uw bezoek zullen verdwijnen.
 CART_MSG1	You must have cookies set to leave the basket. Check out now or forever lose your shopping cart.			Om de winkelwagen te kunnen verlaten dient het ontvangen van cookies te zijn ingesteld. Controleer dat alstublieft nu, anders gaat uw winkelwagen definitief verloren.
 CC_NOT_VALID_MSG1	Please go BACK and check the information you entered and see that the correct card type, expiration date, and number are entered.			
 COLOR	COLOR			KLEUR
-CONFIRMATION_MSG1	Your order has been sent, and you will receive an order confirmation via email.			
+CONFIRMATION_MSG1	Your order has been sent, and you will receive an order confirmation via email.			Uw bestelling is verzonden en U ontvangt een orderbevestiging per email.
 Canada	Canada			Canada
+Card Number	Card Number			Kaartnummer
 Cart Contents	Cart Contents			Inhoud winkelwagen
 Catalog Reconfigured	Catalog Reconfigured			Catalogus opnieuw geconfigureerd
 Change Password	Change Password			Wijzigen wachtwoord
 Change password	Change password			Wijzigen wachtwoord
 Change your password	Change your password			Wijzig uw wachtwoord
+Check Information	Check Information			Cheque-informatie
+Check Number	Check Number			Chequenummer
 Check Out	Check Out			Naar de kassa
 City	City			Plaats
 City, State, Zip	City, State, Zip			Plaats, Provincie, Postcode
@@ -56,9 +65,12 @@ Click Here To Preorder	Click Here To Preorder			Klik hier om vooruit te bestelle
 Click for more information.	Click for more information.			Klik voor meer informatie.
 Click here for more information on this product	Click here for more information on this product			Klik hier voor meer informatie over dit product
 Click here to pre-order this item or get notified as soon as this item is available again.	Click here to pre-order this item or get notified as soon as this item is available again.			Klik hier om vooruit te bestellen. U ontvangt een kennisgeving zodra dit artikel weer voorradig is.
+Code	Code			
 Collapse All Categories	Collapse All Categories			Verberg alle sub-categorieen
+Comment	Comment			Commentaar
 Comment on this product.	Comment on this product.			Geef uw mening over dit product.
 Company	Company			Bedrijf
+Company P.O.	Company P.O.			Bedrijf's inkooporder
 Contact Information	Contact Information			Contactinformatie
 Contact Us	Contact Us			Neem contact met ons op
 Continue shopping	Continue shopping			Doorgaan met winkelen
@@ -66,6 +78,8 @@ Country	Country			Land
 Create Account	Create Account			Aanmaken rekening
 Create a new account	Create a new account			Nieuwe rekening aanmaken
 Credit Amount	Credit Amount			Credit bedrag
+Credit Card	Credit Card			
+Credit Card Information	Credit Card Information			Credit Card Informatie
 Credit Card number fails test	Credit Card number fails test			
 Current Price	Current Price			Huidige prijs
 Custom configure and buy	Custom configure and buy			
@@ -84,6 +98,7 @@ Email Address	Email Address			Emailadres
 Enter as customer	Enter as customer			Betreedt als klant
 Errors	Errors			Fouten
 Evening Phone	Evening Phone			Telefoon avond
+Expiration	Expiration			Expiratiedatum
 Extension	Extension			Bedrag
 FAILED_MSG1	We're sorry, but your order could not be processed at this time due totechnical problems.  Please print the order page and give us a call.We will follow up as soon as possible.			
 Fax	Fax			Fax
@@ -94,6 +109,9 @@ Frequently Asked Questions	Frequently Asked Questions			Veel gestelde vragen
 GET_PASSWORD_MSG1	Hello! You requested that your ID and password be sent to your email address of record. The information is			Hallo! U verzocht ons uw gebruikersnaam en wachtwoord te sturen naar het emailadres dat wij in ons bestand hebben. Onderstaand treft U deze informatie aan.
 GET_PASSWORD_MSG2	Please contact us if we can be of service, and thank you for doing business with us.			Neem gerust contact met ons op als wij U op enigerlij wijze van dienst kunnen zijn. Hartelijk dank voor uw vertrouwen.
 HANDLING	HANDLING			BEHANDELING
+HTML Formatted	HTML Formatted			Opgemaakt met HTML
+HTML Formatted (no wiki)	HTML Formatted (no wiki)			
+Handling	Handling			
 Hello and thank you for your interest in %s products.	Hello and thank you for your interest in %s products.			Hallo en bedankt voor uw interesse in de producten van %s.
 Hello and thank you for your interest in __COMPANY__ products.	Hello and thank you for your interest in __COMPANY__ products.			Hallo en bedankt voor uw interesse in de producten van __COMPANY__.
 Help	Help			Help
@@ -101,6 +119,7 @@ Hi	Hi			Hallo
 ID sent by fastest available email method!	ID sent by fastest available email method!			Uw klantnummergegevens zijn verzonden met de snelste beschikbare emailmethode!
 INDEX_PAR1	    Welcome to the <b>Interchange</b> Foundation Store! This     site is intended to get you started building    your own e-business site. Replace the stock graphics, products,     and categories in this store to begin building your custom site.			Welkom bij de <b>Interchange</b> Foundation Store! Deze site is bedoeld om U op weg te helpen met het bouwen van uw eigen e-business site. Om te starten met uw eigen site vervangt U simpelweg de standaard afbeeldingen, producten en categorieen.
 If different than above	If different than above			Indien anders dan hierboven
+If you have an account with us, please login using the fields below. It is not required, but you can also %screate an account%s with us.	If you have an account with us, please login using the fields below. It is not required, but you can also %screate an account%s with us.			Als U een rekening bij ons hebt, kunt U zich aanmelden middels onderstaand formulier. Desgewenst kunt U ook een %snieuwe rekening%s aanmaken.
 If you would like further information on constructing a store like this, please contact the Interchange Development Group	If you would like further information on constructing a store like this, please contact the Interchange Development Group			Mocht u nadere informatie wensen over het bouwen van een winkel als deze, neem dan contact op met de Interchange Development Group
 In Stock	In Stock			Op Voorraad
 In Stock Notification	In Stock Notification			Op voorraadmelding
@@ -110,6 +129,7 @@ Interchange server not running. Usually one of	Interchange server not running. U
 Is that really a phone number?	Is that really a phone number?			Is dat werkelijk een telefoonnummer?
 Item No.	Item No.			Artikelnr.
 Item Quantity	Item Quantity			Productaantal
+Item is discounted %s	Item is discounted %s			
 January		Januar	Janvier	Januari
 July		Juli	Juillet	Juli
 June		Juni	Juin	Juni
@@ -128,6 +148,7 @@ Log out	Log out			Afmelden
 Logo image	Logo image			Afbeelding logo
 Lost your customer ID?	Lost your customer ID?			Uw klantnummer vergeten?
 Lost your password?	Lost your password?			Wachtwoord vergeten?
+Mail lists (if any)	Mail lists (if any)			
 Mailing Status	Mailing Status			Mailing Status
 Main Interchange developer site	Main Interchange developer site			
 March		M&auml;rz	Mars	Maart
@@ -139,6 +160,7 @@ Modified	Modified			Gewijzigd
 More Info	More Info			Meer informatie
 More info	More info			Meer informatie
 More info...	More info...			Meer informatie...
+NEW_BROWSER_PAYMENT_MSG1	We will wait for a check sent to us referencing the order number you receive on your receipt.			
 Name	Name			Naam
 New Account	New Account			Nieuwe rekening
 New items	New items			Nieuw artikel
@@ -152,7 +174,9 @@ No items at the moment.	No items at the moment.			Momenteel geen artikelen.
 No items in your shopping cart!	No items in your shopping cart!			Er bevinden zich geen artikelen in uw winkelwagen!
 No items were selected for return.	No items were selected for return.			Er zijn geen producten geselecteerd om te retourneren.
 No items with '%s' were found.  You can %sreturn to browsing our catalog%s, if you wish.	No items with '%s' were found.  You can %sreturn to browsing our catalog%s, if you wish.			
+No payment method selected.	No payment method selected.			Er is geen betalingsmethode geselecteerd.
 Not Found	Not Found			Niet gevonden
+Note	Note			Opmerking
 November		November	Novembre	November
 Number Of Items	Number Of Items			Aantal producten
 ORDER ID	ORDER ID			ORDER NR
@@ -164,6 +188,7 @@ October		Oktober	Octobre	October
 Off Coupon Active	Off Coupon Active			Kortingcoupon actief
 Old password	Old password			Oud wachtwoord
 One message below your threshold	One message below your threshold			Een bericht beneden uw drempel
+Online Check	Online Check			
 Or send an e-mail to	Or send an e-mail to			Of stuur een e-mail naar
 Or you can create a %snew account%s.	Or you can create a %snew account%s.			Of U kunt een %snieuwe rekening%s openen.
 Order Date	Order Date			Orderdatum
@@ -176,11 +201,14 @@ Order Returns	Order Returns			Retourzendingen
 Order Total	Order Total			Ordertotaal
 Order Tracking	Order Tracking			Traceren orders
 Order this	Order this			Koop dit product
+Order total %s exceeds credit limit, please call.	Order total %s exceeds credit limit, please call.			Het totaal van uw bestelling (%s) overschrijdt uw kredietlimiet. Bel ons alstublieft.
 Other	Other			Ander
 Other items you may like	Other items you may like			Wellicht houdt U ook van deze artikelen
 Our Price	Our Price			Onze prijs
 Out Of Stock	Out Of Stock			Niet voorradig
+P.O. Information	P.O. Information			
 PAYMENT<BR>METHOD	PAYMENT<BR>METHOD			BETALINGS<BR>METHODE
+PO Number	PO Number			Inkooporder nummer
 PROCESS_RETURNS_PAR1	Your return has been processed. Please ship the item(s) to the address below and your account will be credited for the returned amount. A return confirmation has also been emailed to you.			Uw retourzending is verwerkt. Stuur het(de) product(en) naar onderstaand adres en uw rekening zal worden gecrediteerd voor het bedrag dat de teruggestuurde goederen vertegenwoordigen. Ter confirmatie van deze retourzending is een email naar U verzonden.
 Parent	Parent			Ouder
 Part No.	Part No.			Onderdeel No.
@@ -189,6 +217,7 @@ Payment Method	Payment Method			Betalingsmethode
 Perl Information	Perl Information			Perl informatie
 Phone	Phone			Telefoon
 Place one-click test order	Place one-click test order			Plaats een-klik testorder
+Plain Old Text	Plain Old Text			Puur tekst
 Please %scontact us%s if you have any questions for us.	Please %scontact us%s if you have any questions for us.			Hebt U nog vragen, neem dan vrijblijvend %scontact%s met ons op.
 Please contact %sCustomer Service%s for assistance.	Please contact %sCustomer Service%s for assistance.			Voor hulp kunt U contact opnemen met %sklantenservice%s.
 Please either	Please either			Kiest U alstublieft
@@ -198,6 +227,8 @@ Please use the information below to process your return	Please use the informati
 Please use your browser's back button to return to the order and select at least one item from the order to return.	Please use your browser's back button to return to the order and select at least one item from the order to return.			Gebruik de browser's 'Terug'-knop om terug te keren naar de order en selecteer minimaal een artikel dat U wilt retourneren.
 Please use your browser's back to enter a more appropriate value.	Please use your browser's back to enter a more appropriate value.			Gebruik de browser's 'Terug'-knop en vul een geschiktere waarde in.
 Please verify the information below and click the <b>'Place Order'</b> button to process your order.	Please verify the information below and click the <b>'Place Order'</b> button to process your order.			Controleert U alstublieft onderstaande gegevens en klik vervolgens de <b>"Plaats Order"</b> knop om uw bestelling te verwerken.
+Post Anonymously	Post Anonymously			Anoniem verzenden
+Postal Billing	Postal Billing			
 Powered by Interchange	Powered by Interchange			
 Preview	Preview			
 Previous	Previous			Vorige
@@ -228,6 +259,7 @@ Return Info	Return Info			Informatie retourzending
 Return Selected Items	Return Selected Items			Retourneer geselecteerde producten
 Return request received.	Return request received.			Verzoek voor retourzending ontvangen.
 Returns	Returns			Retour producten
+Routing Number	Routing Number			
 SALES TAX	SALES TAX			BTW
 SECURITY PROBLEM	SECURITY PROBLEM			BEVEILIGINGSPROBLEEM
 SHIPPING	SHIPPING			VERZENDING
@@ -257,6 +289,7 @@ See also	See also			Zie ook
 See also...	See also...			Zie ook...
 See...	See...			Zie...
 Send an email copy of my receipt	Send an email copy of my receipt			Stuur een copie per email
+Separate shipping	Separate shipping			Separate verzending
 Separate shipping addresses	Separate shipping addresses			Separate verzendadressen
 September		September	Septembre	September
 Set As Recurring Order	Set As Recurring Order			Bewaar als herhalingsorder
@@ -282,6 +315,8 @@ Stock	Stock			Voorraad
 Stock Alert Request	Stock Alert Request			Op voorraadmelding
 Stock Alerting	Stock Alerting			Op voorraad melden
 Stop Shopping	Stop Shopping			Stoppen met winkelen
+Story	Story			Commentaar
+Subject	Subject			Onderwerp
 Submit	Submit			Verzend
 Submit Request	Submit Request			Verstuur verzoek
 Subtotal	Subtotal			Subtotaal
@@ -303,6 +338,7 @@ There was an error adding the new address entry.	There was an error adding the n
 There were errors in your last submission	There were errors in your last submission			Er zijn fouten opgetreden bij de verzending
 There were errors in your last submission.	There were errors in your last submission.			Er zijn fouten opgetreden bij de verzending
 There were no matches found.	There were no matches found.			Er zijn geen resultaten gevonden.
+There will be a %s charge added for COD.	There will be a %s charge added for COD.			Er geldt een toeslag van %s voor rembourszendingen.
 They are shown in %sthis color%s below.	They are shown in %sthis color%s below.			Ze zijn hieronder aangegeven in %sdeze kleur%s.
 This a confirmation of your request submission.	This a confirmation of your request submission.			Dit is een bevestiging van uw ingezonden verzoek.
 This is a demo store. If you would like further information on how you can build a store or how you can get custom services, please %svisit our web site%s.	This is a demo store. If you would like further information on how you can build a store or how you can get custom services, please %svisit our web site%s.			Dit is een demonstratie internet winkel. Wilt U meer informatie over hoe uzelf zo'n winkel bouwt of hoe U aangepaste diensten kunt krijgen, %sbezoek dan onze website%s.
@@ -312,7 +348,7 @@ This item is currently in your %sshopping cart%s.	This item is currently in your
 To save this cart, give it a nickname, then press 'Save Cart'.	To save this cart, give it a nickname, then press 'Save Cart'.			Geef deze winkelwagen een korte naam om hem op te slaan en klik daarna 'Winkelwagen opslaan'.
 To save this recurring order, give it a nickname, then press 'Save Cart'.	To save this recurring order, give it a nickname, then press 'Save Cart'.			Geef deze herhalingsorder een korte naam om hem op te slaan en klik daarna 'Herhalingsorder opslaan'.
 Toll free	Toll free			
-Toll-free	Toll-free			
+Toll-free	Toll-free			Gratis nummer
 Trying to retrieve....	Trying to retrieve....			Probeert op te halen....
 Trying to unsub you from the <b>%s</b> list....	Trying to unsub you from the <b>%s</b> list....			Probeert U te verwijderen van de <b>%s</b> lijst....
 Trying to unsub....	Trying to unsub....			Probeert te verwijderen....
@@ -320,6 +356,7 @@ URL to enter catalog	URL to enter catalog			URL voor binnengaan catalogus
 URL to order a product	URL to order a product			URL voor bestellen van product
 United States	United States			Verenigde Staten
 Update item	Update item			Product bijwerken
+Use the Preview Button! Check those URLs!  Don't forget the http://!	Use the Preview Button! Check those URLs!  Don't forget the http://!			
 User support mail lists	User support mail lists			
 Username	Username			Gebruikersnaam
 Username must be of characters [A-Za-z0-9]	Username must be of characters [A-Za-z0-9]			Gebruikersnaam moet bestaan uit letters [A-Za-z0-9]
@@ -341,9 +378,11 @@ We need a valid two-letter state code like CA.	We need a valid two-letter state 
 We need a zip code for UPS lookup.	We need a zip code for UPS lookup.			
 We need an address....	We need an address....			Het adres is nodig...
 We need some more information!	We need some more information!			Wij hebben wat meer informatie nodig!
+We need the <b>bold fields</b> to process your order	We need the <b>bold fields</b> to process your order			De <b>vetgedrukte velden</b> zijn nodig voor een correcte verwerking van uw bestelling
 We need the bold fields to process your order	We need the bold fields to process your order			De vetgedrukte velden zijn nodig voor een correcte verwerking van dit formulier
 We need to have some fields entered to be able to process your order. Please %sgo back</A> and fill out the information.	We need to have some fields entered to be able to process your order. Please %sgo back</A> and fill out the information.			
 We will contact you once your selected item becomes available.	We will contact you once your selected item becomes available.			Wij nemen contact met U op zodra de door U geselecteerde artikelen beschikbaar zijn.
+We will wait for a check sent to us referencing the order number you receive on your receipt.	We will wait for a check sent to us referencing the order number you receive on your receipt.			
 We would also like you to take our	We would also like you to take our			Wij stellen het zeer op prijs als u deelneemt aan ons
 Welcome	Welcome			Welkom
 Welcome Affiliate Program Visitor	Welcome Affiliate Program Visitor			
@@ -400,5 +439,6 @@ password minder	password minder			wachtwoord verzorger
 price_picture		DM ### ### ###,##		
 primary	primary			primair
 products		de_products	produits	
+test number	test number			testnummer
 will update display	will update display			Ververst het scherm
 will work to start it.	will work to start it.			zal werken om het te starten.
