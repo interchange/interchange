@@ -63,11 +63,10 @@
 				)
 			{
 				my $m = $1;
-				$adder = " + ($cost)" if $cost =~ /\S/;
 				$cost = "f [ups-query mode=$m weight=";
 				$cost .= '"@@TOTAL@'  . '@"';
 				$cost .= qq{ origin="$opt->{origin}"} if $opt->{origin};
-				$cost .= "]$adder";
+				$cost .= "]";
 			}
 			$modes[$i][5] = $cost;
 			$i++;
@@ -116,22 +115,6 @@
 <td colspan=5 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
 </tr>
 
-<tr>
-<td colspan=5 align=left bgcolor=__UI_C_INTBLOCK__>
-&nbsp;
-<p>
-<b>[cgi ui_shipmode] -- [shipping-desc mode="[cgi ui_shipmode]"]</b>
-<p>
-Borderline values are rounded up the next bracket.
-<p>
-&nbsp;
-</td>
-</tr>
-
-<tr>
-<td align=left colspan=5 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=1 height=1></td>
-</tr>
-
 [perl]
 		my $inmode = $CGI->{ui_shipmode};
 		Log("ship_data inmode=$inmode");
@@ -150,12 +133,41 @@ Borderline values are rounded up the next bracket.
 		if ($opt->{ui_ship_type}) {
 				Log("ui_ship_type: $opt->{ui_ship_type}");
 		}
+		my $algomessage = $master->[2];
+		if ($algomessage eq /\[subtotal\snoformat=1\]/) {
+			$algomessage = 'total price';
+		}
+		elsif ($algomessage eq 'quantity') {
+			$algomessage = 'total number';
+		}
+		if($algomessage) {
+			$algomessage = <<EOF;
+Calculaton is done based on $algomessage of items in cart.
+EOF
+		}
 		my @out;
 		push (@out, <<EOF);
 <tr>
+<td colspan=5 align=left bgcolor=__UI_C_INTBLOCK__>
+&nbsp;
+<p>
+<b>[cgi ui_shipmode] -- [shipping-desc mode="[cgi ui_shipmode]"]</b>
+<p>
+Borderline values are rounded up the next bracket.
+<p>
+$algomessage
+<p>&nbsp;
+</td>
+</tr>
+
+<tr>
+<td align=left colspan=5 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=1 height=1></td>
+</tr>
+
+<tr>
 <td bgcolor=__UI_C_INTBLOCK__><INPUT TYPE=hidden NAME=ui_shipmode VALUE="$inmode"><b>Start range</b></td>
 <td bgcolor=__UI_C_INTBLOCK__><b>End range</b></td>
-<td bgcolor=__UI_C_INTBLOCK__><b>Charge type (total is $opt->{ui_ship_type})</b></td>
+<td bgcolor=__UI_C_INTBLOCK__><b>Charge type</b></td>
 <td bgcolor=__UI_C_INTBLOCK__><b>Charge amount</b></td>
 <td bgcolor=__UI_C_INTBLOCK__> &nbsp; </td>
 </tr>
@@ -170,6 +182,35 @@ EOF
 			u	=> 'Internal UPS',
 			e	=> 'Message',
 		);
+		if(! @modes) {
+			if ($opt->{ui_ship_type} =~ /^UPSE:(.*)/) {
+				push @modes, 
+					[	$inmode,
+						$master->[1],
+						'',
+						0,
+						150,
+						"f [ups-query mode=$1 weight=" . '@@TOTAL' . '@@',
+					],
+					[	$inmode,
+						$master->[1],
+						'',
+						150,
+						9999999,
+						"e Too heavy for UPS",
+					];
+			}
+			else {
+				push @modes, 
+					[	$inmode,
+						$master->[1],
+						'',
+						0,
+						9999999,
+						0,
+					];
+			}
+		}
 		for(@modes) {
 			my $ref = $_;
 			$idx++;
