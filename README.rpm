@@ -3,10 +3,10 @@ NAME
 
   VERSION
 
-    4.5.x
+    4.5.6
 
 SYNOPSIS
-    rpm -Uvh interchange-4.X.X-X.rpm
+    rpm -Uvh interchange-4.5.6-5.rpm
 
 DESCRIPTION
     The Interchange 4 RPM is designed to integrate Interchange with a stock
