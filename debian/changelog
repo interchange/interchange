@@ -1,5 +1,7 @@
 interchange (4.8.4-1) unstable; urgency=low
 
+  * fixed overly strict dependency on apache-common (Closes: #133671,
+    thanks to Matthew Wilcox <willy@debian.org>)
   * add version to dependency on libsql-statement-perl, because newer
     versions cause Interchange to fail in some cases
   * /etc/interchange/usertag directory for locally used global usertags added
@@ -7,7 +9,7 @@ interchange (4.8.4-1) unstable; urgency=low
   * query username and password for UI superuser account in the foundation
     catalog from the user via debconf
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu,  7 Feb 2002 11:23:41 +0100
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 13 Feb 2002 09:58:39 +0100
 
 interchange (4.8.3-1) unstable; urgency=low
 

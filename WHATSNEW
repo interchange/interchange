@@ -80,7 +80,11 @@ Packaging
 * Directory /etc/interchange/usertag for locally used global usertags 
   add to the interchange Debian package.
 
-* interchange-ui Debian package now suggests a HTTPS server
+* Fixed overly strict dependency of the libapache-mod-interchange
+  Debian package on apache-common. Thanks to Matthew Wilcox 
+  <willy@debian.org>).
+
+* interchange-ui Debian package now suggests a HTTPS server.
 
 ------------------------------------------------------------------------------
 
