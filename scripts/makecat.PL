@@ -1489,7 +1489,9 @@ DOCOPY: {
 		die <<EOF . "\n";
 There were errors in copying the demo files.  Cannot
 continue.  Check to see if permissions are correct.
+The problem was:
 
+	$@
 EOF
 	}
 
@@ -1955,7 +1957,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.7 2000-08-19 04:16:31 heins Exp $
+$Id: makecat.PL,v 1.8 2000-09-16 02:34:19 heins Exp $
 
 =head1 INTRODUCTION
 
