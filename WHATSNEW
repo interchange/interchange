@@ -6,6 +6,29 @@
 ------------------------------------------------------------------------------
 
 
+Interchange 5.0.0 not yet released.
+
+Core
+----
+
+* On 2002-10-21 Canada Post changed symbol NF to NL to reflect the province of
+  Newfoundland changing its name to "Newfoundland and Labrador". For details
+  see:
+
+  http://www.canadapost.ca/personal/corporate/about/announcements/newpcode-e.asp
+
+  The "province" profile check will now accept both NF and NL, but NF is now
+  deprecated and will be removed in a future release.
+
+Foundation
+----------
+
+* Change Newfoundland from NF to NL in "state" table.
+
+
+------------------------------------------------------------------------------
+
+
 Interchange 4.9.9 released 2003-10-31.
 
 Core
