@@ -731,15 +731,10 @@ EOF
 		  $out .= <<EOF;
 <TR class=rnorm>
 <td>&nbsp;</td>
-<td align=left colspan=$oddspan>
+<td align=left colspan=$oddspan class=cdata>
 EOF
 			$out .= <<EOF if ! $opt->{bottom_buttons};
-<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{back_text}">
-&nbsp;
-<INPUT TYPE=submit NAME=mv_click VALUE="Cancel">
-&nbsp;
-<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}">
-</B>
+<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{back_text}">&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="Cancel">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
 <BR>
 EOF
 			$out .= <<EOF;
@@ -756,7 +751,7 @@ EOF
 		  $out .= <<EOF;
 <TR class=rnorm>
 <td>&nbsp;</td>
-<td align=left colspan=$oddspan>
+<td align=left colspan=$oddspan class=cdata>
 <B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}">
 </B>
 &nbsp;
@@ -1196,24 +1191,16 @@ EOF
       $out .= <<EOF;
 <TR class=rnorm>
 <td>&nbsp;</td>
-<td align=left colspan=$oddspan>
-<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{back_text}">
-&nbsp;
-<INPUT TYPE=submit NAME=mv_click VALUE="Cancel">
-&nbsp;
-<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}">
-</B>
+<td align=left colspan=$oddspan class=cdata>
+<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{back_text}">&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="Cancel">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
 EOF
 		}
 		else {
 		  $out .= <<EOF;
 <TR class=rnorm>
 <td>&nbsp;</td>
-<td align=left colspan=$oddspan>
-<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}">
-</B>
-&nbsp;
-<INPUT TYPE=submit NAME=mv_click VALUE="Cancel">
+<td align=left colspan=$oddspan class=cdata>
+<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="Cancel">
 EOF
 		}
 #
