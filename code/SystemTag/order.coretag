@@ -6,6 +6,7 @@ UserTag order               attrAlias    database base
 UserTag order               attrAlias    db base
 UserTag order               attrAlias    mv_ib base
 UserTag order               attrAlias    href page
+UserTag order               attrAlias    variant mv_sku
 UserTag order               addAttr
 UserTag order               PosNumber    2
 UserTag order               Routine      <<EOR
@@ -29,6 +30,8 @@ sub {
 
 	push(@parms, "mv_order_quantity=$quantity")
 		if($quantity);
+
+	push @parms, "mv_sku=$opt->{mv_sku}" if $opt->{mv_sku};
 
 	$opt->{form} .= "\n" . join "\n", @parms;
 
