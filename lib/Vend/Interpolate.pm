@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.57 2001-04-21 05:34:08 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.58 2001-04-26 12:39:58 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.57 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.58 $, 10);
 
 @EXPORT = qw (
 
@@ -3983,11 +3983,11 @@ sub tag_more_list {
 	if ($q->{mv_alpha_list}) {
 		for my $record (@{$q->{mv_alpha_list}}) {
 			$arg = "$session:$record->[2]:$record->[3]:" . ($record->[3] - $record->[2] + 1);
-			$r .= '<A HREF="';
-			$r .= tag_area( "scan/MM=$arg", '', { form => $form_arg });
-			$r .= '">';
-			$r .= substr($record->[0],0,$record->[1]);
-			$r .= '</A> ';
+			$list .= '<A HREF="';
+			$list .= tag_area( "scan/MM=$arg", '', { form => $form_arg });
+			$list .= '">';
+			$list .= substr($record->[0],0,$record->[1]);
+			$list .= '</A> ';
 		}
 	} else {
 		foreach $inc ($b .. $e) {
@@ -3995,7 +3995,6 @@ sub tag_more_list {
 			$list .= more_link($inc, $page_anchor);
 		}
 	}
-
 	$list .= " $decade_next " if defined $decade_next;
 	$list .= $next_tag;
 	$first = $first + 1;
