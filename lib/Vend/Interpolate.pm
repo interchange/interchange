@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.31 2001-11-16 13:39:22 mheins Exp $
+# $Id: Interpolate.pm,v 2.32 2001-11-21 19:33:10 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.31 $, 10);
+$VERSION = substr(q$Revision: 2.32 $, 10);
 
 @EXPORT = qw (
 
@@ -1280,6 +1280,11 @@ sub conditional {
 
 #::logDebug ("cond: base=$base term=$term op=$operator comp=$comp\n");
 
+	my $total;
+	if($base eq 'total') {
+		$base = $term;
+		$total = 1;
+	}
 
 	if($base eq 'session') {
 		$CacheInvalid = 1;
@@ -1401,9 +1406,20 @@ sub conditional {
 		$op = qq|-$op "$term"|;
 	}
 	elsif($base =~ /^errors?$/) {
-		my $err_ref = $Vend::Session->{errors}
-			or return '';
-		return scalar (keys %$err_ref);
+		my $err;
+		if(! $term or $total) {
+			$err	= is_hash($Vend::Session->{errors})
+					? scalar (keys %{$Vend::Session->{errors}})
+					: 0;
+		}
+		else {
+			$err	= is_hash($Vend::Session->{errors})
+					? $Vend::Session->{errors}{$term}
+					: 0;
+		}
+		$op = $err;
+		$op .=	qq%	$operator $comp%
+				if defined $comp;
 	}
 	elsif($base eq 'validcc') {
 		$CacheInvalid = 1;
@@ -6419,7 +6435,7 @@ sub timed_build {
 	$opt->{login} = 1 if $opt->{auto};
 
 	my $save_scratch;
-	if($opt->{new} and $Vend::new_session) {
+	if($opt->{new} and $Vend::new_session and !$Vend::Session->{logged_in}) {
 #::logDebug("we are new");
 		$save_scratch = $::Scratch;
 		$Vend::Cookie = 1;
