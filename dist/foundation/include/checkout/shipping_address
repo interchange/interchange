@@ -67,7 +67,8 @@
 			ml=100
 		  "
 		  option=state]
-		  [on-match]<SELECT onChange="check_tax(this.form)" NAME=state>[/on-match]
+		  [on-match]<SELECT onChange="check_tax(this.form)" NAME=state><option value="">--[L]select state[/L]--
+		  [/on-match]
 		  [list]
 		  [loop-change 1][condition][loop-param country][/condition]
 		  <OPTGROUP LABEL="[data table=country col=name key='[loop-param country]']">
