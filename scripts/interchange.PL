@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.3
 #
-# $Id: interchange.PL,v 1.15.2.45 2001-06-12 15:47:57 heins Exp $
+# $Id: interchange.PL,v 1.15.2.46 2001-06-12 23:24:17 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -2265,7 +2265,7 @@ Interchange has many, many, functions and features; they are too numerous
 to describe in this venue. Complete information can be found at
 its web site:
 
-		http://www.akopia.com/
+		http://interchange.redhat.com/
 
 Interchange requires Perl 5.005 or higher; more information on Perl can
 be seen at:
@@ -2813,13 +2813,13 @@ if ($@) {
 
 =head1 SEE ALSO
 
-mvdocs(8), compile_link(1), config_prog(1), configdump(1), dump(1), expire(1),
+compile_link(1), config_prog(1), configdump(1), dump(1), expire(1),
 expireall(1), localize(1), makecat(1), offline(1), restart(1), update(1),
-http://www.akopia.com/
+http://interchange.redhat.com/
 
 =head1 LICENSE
 
-Interchange comes with ABSOLUTELY NO WARRANTY.  This is free software, and
+Interchange comes with ABSOLUTELY NO WARRANTY. This is free software, and
 you are welcome to redistribute and modify it under the terms of the
 GNU General Public License.
 
@@ -2837,12 +2837,11 @@ Brev Patterson, Jason Kohles, and others of the Red Hat E-Business
 Solutions Group. Please do not contact the author for direct help with
 the system. Use the Interchange mail list:
 
-    interchange-users   (English, subscribe at http://developer.akopia.com/)
+    interchange-users  (English, subscribe at http://interchange.redhat.com/)
 
 General information and documentation for Interchange is at:
 
-    http://www.akopia.com/
-    http://developer.akopia.com/
+    http://interchange.redhat.com/
 
 =head1 SPECIAL ACKNOWLEDGEMENTS
 
@@ -2861,33 +2860,34 @@ Original author of Vend, ancestor to Minivend and Interchange, was Andrew
 Wilcox. Interchange was based on Vend 0.2, with portions from Vend 0.3;
 both were produced in 1995.
 
-# columnize with "pr -t -2 | expand -8 | sed 's/^/    '"
+# columnize with "pr -t -2 | expand -8 | sed 's/^/    /'"
 
 Contributions to Interchange have been made by:
 
-    Andreas Koenig                      Jeff Nappi
-    Bill Dawkins                        Jochen Wiedmann
-    Bill Randle                         Jon Jensen
-    Birgitt Funk                        Keiko
-    Bob Jordan                          Keith Oberlin
+    Andreas Koenig                      Jeff Carnahan
+    Bill Dawkins                        Jeff Nappi
+    Bill Randle                         Jochen Wiedmann
+    Birgitt Funk                        Jon Jensen
+    Bob Jordan                          Keiko
+    Brev Patterson                      Keith Oberlin
     Brian Bullen                        Larry Leszczynski
     Bruce Albrecht                      Marc Austin
-    Cameron Prince                      Mark Stosberg
-    Christian Mueller                   Matthew Schick
-    Christopher Thompson                Michael McCune
-    Dan Browning                        Michael Wilk
-    Dan Busarow                         Mike Frager
-    Dave Adams                          Neil Evans
-    Dave Wingate                        Raj Goel
-    Dennis Cronin                       Ray Desjardins
-    Don Grodecki                        Sonny Cook
-    Ed LaFrance                         Tim Baverstock
-    Frank Bonita                        Ton Verhagen
-    Gunnar Hellekson                    Troy Davis
-    Hans-Joachim Leidinger              Victor Nolton
-    Heinz Wittenbecher                  William Dan Terry
-    Jason Holt                          and many others
-    Jeff Carnahan
+    Cameron Prince                      Mark Johnson
+    Christian Mueller                   Mark Stosberg
+    Christopher Thompson                Matthew Schick
+    Dan Browning                        Michael McCune
+    Dan Busarow                         Michael Wilk
+    Dave Adams                          Mike Frager
+    Dave Wingate                        Neil Evans
+    Dennis Cronin                       Raj Goel
+    Don Grodecki                        Ray Desjardins
+    Ed LaFrance                         Sonny Cook
+    Frank Bonita                        Tim Baverstock
+    Gunnar Hellekson                    Ton Verhagen
+    Hans-Joachim Leidinger              Troy Davis
+    Heinz Wittenbecher                  Victor Nolton
+    Jason Holt                          William Dan Terry
+    Jason Kohles                        and many others
 
 and, of course, the entire Perl team without whom Interchange could not exist.
 
