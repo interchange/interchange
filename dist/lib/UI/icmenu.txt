@@ -4,7 +4,7 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0003	Top	03		Items		item	admin/item		Items			Add and edit items displayed for sale on the site		B4.gif	B4_b.gif	B4_b.gif	icon_item.gif	
 0004	Top	04		Content		page	admin/page		Content			Create, edit, upload and download pages		B5.gif	B5_b.gif	B5_b.gif	icon_pages.gif	
 0005	Top	05		Design		layout	admin/layout		Design			Organize site navigation, manage site layout		B6.gif	B6_b.gif	B6_b.gif	icon_design.gif	
-0006	Top	06		Merchandising		item	admin/merchandising		Merchandising		1	Set up quantity pricing, up-sell, promotions, and affiliates		B7.gif	B7_b.gif	B7_b.gif	icon_merch.gif	
+0006	Top	06		Merchandising		item	admin/merchandising		Merchandising			Set up quantity pricing, up-sell, promotions, and affiliates		B7.gif	B7_b.gif	B7_b.gif	icon_merch.gif	
 0007	Top	07		Reporting		stats	admin/orderstats		Reporting			View statistics on orders and site traffic, create custom reports		B8.gif	B8_b.gif	B8_b.gif	icon_stats.gif	
 0008	Top	07		Admin		admin	admin/genconfig		Administration			Administrator and developer-oriented tools		B9.gif	B9_b.gif	B9_b.gif	icon_config.gif	
 0009	Admin	01					admin/genconfig		Info									
