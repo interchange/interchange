@@ -1,7 +1,7 @@
 #! /bin/sh -e
 
 . /etc/interchange/init.cfg
-OPTS="SocketFile=/var/run/interchange/interchange.sock IPCsocket=/var/run/interchange/interchange.sock.ipc PIDfile=/var/run/interchange/interchange.pid --log /var/log/interchange/error.log -rundir /var/run/interchange"
+OPTS="SocketFile=/var/run/interchange/interchange.sock IPCsocket=/var/run/interchange/interchange.sock.ipc PIDfile=/var/run/interchange/interchange.pid --pidfile=/var/run/interchange/interchange.pid --log=/var/log/interchange/error.log --rundir=/var/run/interchange"
 CMD="/usr/lib/interchange/bin/interchange $OPTS $@"
 if [ "$UID" -eq 0 ]; then
 	su -s /bin/sh -c "$CMD" $USER
