@@ -83,7 +83,7 @@ EOF
 [/if]
 [if scratch page_perm]
 	[if-mm function="!advanced" name="[scratch page_perm]"]
-	[seti ui_error]Sorry, no permission for page [scratch page_perm][/seti]
+	[seti ui_error][msg arg.0="[scratch page_perm]"]Sorry, no permission for page %s[/msg].[/seti]
 	[set page_perm][/set]
 	[bounce page="__UI_BASE__/error"]
 	[/if-mm]
@@ -267,7 +267,7 @@ EOF
 	my $depend = q{[sm-param depends_on]};
 	return '' if $exclude and $CGI->{$exclude};
 	return '' if $depend and ! $CGI->{$depend};
-	my $name = $Tag->msg(q{[sm-param name]});
+	my $name = errmsg(q{[sm-param name]});
 	my $page = q{[sm-param page]};
 	my $form = q{[sm-param form]};
 	for(\$name, \$page, \$form) {
