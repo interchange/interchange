@@ -2,11 +2,11 @@
 
 Interchange Databases
 
-=head1 AKOPIA INTERCHANGE TM DATABASES
+=head1 AKOPIA INTERCHANGE(TM) DATABASES
 
 Akopia Interchange is the industry's most widely distributed and
 implemented open source e-commerce platform. This document discusses
-databases, SQL support, the Interchange TM search engine, frequently
+databases, SQL support, the Interchange search engine, frequently
 asked questions, and usertags.
 
 =head2 A Typical User Session
@@ -48,7 +48,7 @@ their own distinctive look and feel.
 =head1 DATABASES
 
 As with most powerful shopping cart programs, Interchange is all about
-databases. Interchange can use GDBM, DB_File, SQL, DAP, or in-memory
+databases. Interchange can use GDBM, DB_File, SQL, LDAP, or in-memory
 database formats. In most cases, these different database formats
 should operate the same when called by Interchange's access methods.
 
@@ -719,7 +719,7 @@ operation, use Interchange's C<[import ...]> tag.
 
 Named parameters:
 
- lbracketimport table=tabl         file=filename*
+ [import table=tabl         file=filename*
          type=(TAB|PIPE|CSV|%%|LINE)*
          continue=(NOTES|UNIX|DITTO)*
          separator=c*]
@@ -742,17 +742,17 @@ particularly useful, for it allows fields to be named and not have to
 be in any particular order of appearance in the database. The
 following two imports are identical in effect:
 
-   lbracketimport table=orders]
-            code: lbracketvalue mv_order_number]
-   shipping_mode: lbracketshipping-description]
+   [import table=orders]
+            code: [value mv_order_number]
+   shipping_mode: [shipping-description]
           status: pending
-   lbracket/import]
+   [/import]
 
-   lbracketimport table=orders]
-   shipping_mode: lbracketshipping-description]
+   [import table=orders]
+   shipping_mode: [shipping-description]
    status:        pending
-   code:          lbracketvalue mv_order_number]
-   lbracket/import]
+   code:          [value mv_order_number]
+   [/import]
 
 The C<code> or key must always be present, and is always named
 C<code>. If C<NOTES> mode is not used, the fields must be imported in
@@ -1100,7 +1100,7 @@ what search behavior will be.
 
 Here is a simple search form:
 
- <FORM ACTION="lbracketarea search]" METHOD=POST>
+ <FORM ACTION="[area search]" METHOD=POST>
  <INPUT TYPE="text" SIZE="30" NAME="mv_searchspec">
  <INPUT TYPE="submit" VALUE="Search">
  </FORM>
@@ -1113,7 +1113,7 @@ code pertaining to that line.
 The same search for a fixed string, say "shirt," could be performed
 with the use of a hot link, using the special scan URL:
 
- lbracketpage search="se=shirt"]See our shirt collection!lbracket/page]
+ [page search="se=shirt"]See our shirt collection![/page]
 
 The default is to search every field on the line. To match on the
 string "shirt" in the product database field "description," modify the
@@ -1123,10 +1123,10 @@ search:
 
 In the hot-linked URL search:
 
- lbracketpage search="
+ [page search="
                se=shirt
                sf=category
-           "]See our shirt collection!lbracket/page]
+           "]See our shirt collection![/page]
 
 To let the user decide on the search parameters, use checkboxes or
 radiobox fields to set the fields:
@@ -1221,27 +1221,27 @@ and the database.
 
 Now, specify in a form:
 
-   <FORM ACTION="lbracketprocess href=search]" METHOD=POST>
+   <FORM ACTION="[process href=search]" METHOD=POST>
    <INPUT TYPE=hidden NAME=mv_dict_limit VALUE=title>
    <INPUT NAME=mv_dict_look>
    </FORM>
 
 or in a URL:
 
-   lbracketpage search="dl=Van Gogh/di=title"]
+   [page search="dl=Van Gogh/di=title"]
 
 This search is case-sensitive. To do the same thing
 case-insensitively:
 
    Database   products   INDEX    title:f
 
-   <FORM ACTION="lbracketprocess href=search]" METHOD=POST>
+   <FORM ACTION="[process href=search]" METHOD=POST>
    <INPUT TYPE=hidden NAME=mv_dict_limit VALUE=title>
    <INPUT TYPE=hidden NAME=mv_dict_fold  VALUE=1>
    <INPUT NAME=mv_dict_look>
    </FORM>
 
-   lbracketpage search="dl=Van Gogh/di=title/df=1"]
+   [page search="dl=Van Gogh/di=title/df=1"]
 
 =head2 Coordinated and Joined Searching
 
@@ -1300,16 +1300,16 @@ C<mv_column_op> (or op) parameter. The operations include:
 
 An example:
 
-   lbracketpage scan
+   [page scan
            co=yes
            sf=title
            se=Sunflowers
            op=em
            sf=artist
            se=Van Gogh
-           op=rm          ] Sunflowers, Van Gogh lbracket/page]
+           op=rm          ] Sunflowers, Van Gogh [/page]
 
-   lbracketpage search="
+   [page search="
            co=yes
 
            sf=title
@@ -1326,13 +1326,13 @@ An example:
            se=1
            op=>=
            nu=1
-       "] Any in stock except Sunflowers, Van Gogh lbracket/page]
+       "] Any in stock except Sunflowers, Van Gogh [/page]
 
 Note that in the second example, nu=0 must be specified even though
 that is the default. This is to set the proper correspondence. To
 avoid having to do this, use Interchange's option array feature:
 
-   lbracketpage search.0="
+   [page search.0="
                    sf=title
                    se=Sunflowers
                    op=!~
@@ -1347,7 +1347,7 @@ avoid having to do this, use Interchange's option array feature:
                    op=>=
                    nu=1
                "
-       ] Any in stock except Sunflowers, Van Gogh lbracket/page]
+       ] Any in stock except Sunflowers, Van Gogh [/page]
 
 The C<co=yes> is assumed when specifying a multiple search.
 
@@ -1397,27 +1397,27 @@ formats a corresponding text-based search. Parentheses will have no
 effect, and an OR condition will cause all conditions to be OR. The
 searches above would be similar to:
 
-   lbracketpage search="
+   [page search="
                co=yes
                sf=artist
                op=rm
-               se=lbracketvalue artist]
+               se=[value artist]
                sf=title
                op=rm
-               se=lbracketvalue title]
+               se=[value title]
            "  ]
-       Search for lbracketvalue artist], lbracketvalue title]
-   lbracket/page]
+       Search for [value artist], [value title]
+   [/page]
 
-   lbracketpage search="
+   [page search="
                co=yes
-               sf=lbracketvalue column]
+               sf=[value column]
                op=rm
-               se=lbracketvalue searchstring]
+               se=[value searchstring]
            "  ]
-   Search for lbracketvalue searchstring]
-          in  lbracketvalue column]
-   lbracket/page]
+   Search for [value searchstring]
+          in  [value column]
+   [/page]
 
 =head2 Range Searching
 
@@ -1472,18 +1472,18 @@ Interchange allows a search to be passed in a URL, as shown above.
 Just specify the search with the special page parameter search or
 special page C<scan>. Here is an example:
 
-    lbracketpage search="
+    [page search="
                se=Impressionists
                sf=category
            "]
        Impressionist Paintings
-    lbracket/page]
+    [/page]
 
 This is the same:
 
-    lbracketpage scan se=Impressionists/sf=category]
+    [page scan se=Impressionists/sf=category]
        Impressionist Paintings
-    lbracket/page]
+    [/page]
 
 Here is the same thing from a home page (assuming /cgi-bin/vlink is
 the CGI path for Interchange's vlink):
@@ -1569,7 +1569,7 @@ specifying C<[page scan/se=searchstring]>. This is interpreted by the
 parser as C<[page scan/se="searchstring"]> and will cause a bad URL.
 Change this to C<[page scan se=searchstring]>, or perhaps better yet:
 
-   lbracketpage search="
+   [page search="
                    se=searchstring
            "]
 
@@ -1584,8 +1584,8 @@ A one-click search may be specified in three different ways.
 To do an OR search on the fields category and artist for the strings
 "Surreal" and "Gogh," while matching substrings, do:
 
- lbracketpage scan se=Surreal/se=Gogh/os=yes/su=yes/sf=artist/sf=cat    Van Gogh -- compare to surrealists
- lbracket/page]
+ [page scan se=Surreal/se=Gogh/os=yes/su=yes/sf=artist/sf=cat    Van Gogh -- compare to surrealists
+ [/page]
 
 gory]
 
@@ -1599,13 +1599,13 @@ search profile.)
 
 Specify parameters one to a line, as well.
 
-    lbracketpag        se="Van Gogh"
+    [pag        se="Van Gogh"
         sp=lists/surreal
         os=yes
         su=yes
         sf=artist
         sf=category
-    ] Van Gogh -- compare to surrealists lbracket/page]
+    ] Van Gogh -- compare to surrealists [/page]
 
  scan
 
@@ -1617,8 +1617,8 @@ Any "unsafe" characters will be escaped. To search for trailing spaces
 Substitute & for / in the specification and be able to use / and
 quotes and spaces in the specification.
 
- lbracketpage href=scan se="Van Gogh"&sp=lists/surreal&os=yes&su=yes&sf=artist&sf=cat    Van Gogh -- compare to surrealists
- lbracket/page]
+ [page href=scan se="Van Gogh"&sp=lists/surreal&os=yes&su=yes&sf=artist&sf=cat    Van Gogh -- compare to surrealists
+ [/page]
 
 gory]
 
@@ -1635,11 +1635,11 @@ C<mv_value> is a misnomer, it will almost never be used in a form
 where variable values can be set. Always specify it in a one-click
 search with C<va=var=value>. Example:
 
-   lbracketpage href=scan
+   [page href=scan
          arg="se=Renaissance
               se=Impressionists
               va=category_name=Renaissance and Impressionist Paintings
-              os=yes"]Renaissance and Impressionist Paintingslbracket/page]
+              os=yes"]Renaissance and Impressionist Paintings[/page]
 
 Display the appropriate category on the search results page with
 C<[value category_name]>.
@@ -1654,15 +1654,15 @@ return objects, by default, a series of item codes.
 The C<[loop ...]> tag directly accepts a search parameter. To search
 for all products in the categories "Americana" and "Contemporary," do:
 
-   lbracketloop search="
+   [loop search="
        se=Americana
        se=Contemporary
        os=yes
        sf=category9
        "]
-   Artist: lbracketloop-field artist]<BR>
-   Title: lbracketloop-field title]<P>
-   lbracket/loop]
+   Artist: [loop-field artist]<BR>
+   Title: [loop-field title]<P>
+   [/loop]
 
 The advantage of the in-page search is that searches can be embedded
 within searches, and there can be straight unchanging links from
@@ -1674,21 +1674,21 @@ that C<[search-list]>, C<[more-list]>, and C<[more]> tags can be
 placed within it. Use them to display and format the results,
 including paging. For example:
 
-   lbracketsearch-region  more=1
+   [search-region  more=1
                    search="
                         se=Americana
                         sf=category
                         ml=2
                    "]
-   lbracketmore-list]lbracketmore]lbracket/more-list]
-   lbracketsearch-list]
-   <A MV="page lbracketitem-code]" HREF="flypage.html">
-       lbracketitem-field title]<A>, by lbracketitem-field artist]
-   lbracket/search-list]
-   lbracketno-match]
-       Sorry, no matches for lbracketvalue mv_searchspec].
-   lbracket/no-match]
-   lbracket/search-region]
+   [more-list][more][/more-list]
+   [search-list]
+   <A MV="page [item-code]" HREF="flypage.html">
+       [item-field title]<A>, by [item-field artist]
+   [/search-list]
+   [no-match]
+       Sorry, no matches for [value mv_searchspec].
+   [/no-match]
+   [/search-region]
 
 To use the same page for search paging, make sure to set the
 C<sp=page> parameter.
@@ -1705,19 +1705,19 @@ mv_orsearch=yes
 These correspond to the Interchange search variables that can be set
 on a form. Set it right on the page that contains the search.
 
- lbracketset artist_profile]
+ [set artist_profile]
 mv_search_field=artist
 mv_search_field=category
 mv_orsearch=yes
-lbracket/set]
+[/set]
 
 This is the same:
 
- lbracketset artist_profile]
+ [set artist_profile]
 sf=artist
 sf=category
 os=yes
-lbracket/set]
+[/set]
 
 Then, in the search form, set a variable with the name of the profile:
 
@@ -1725,7 +1725,7 @@ Then, in the search form, set a variable with the name of the profile:
 
 In a one-click search, use the C<mp> modifier:
 
- lbracketpage scan se=Leonardo/mp=artist_profile]A left-handed artistlbracket/page]
+ [page scan se=Leonardo/mp=artist_profile]A left-handed artist[/page]
 
 They can also be placed in a file. Define the file name in the
 C<SearchProfile> directive. The catalog must be reconfigured for
@@ -1818,7 +1818,7 @@ indices there. Default is ProductDir.
 If an absolute path directory is used, for security enable it in the
 users session with:
 
-    lbracketset /directory/name]1lbracket/set]
+    [set /directory/name]1[/set]
 
 This prevents users from setting an arbitrary value and viewing
 arbitrary files.
@@ -2255,17 +2255,17 @@ from the search.
 
 The basic structure looks like this:
 
- lbracketsearch-region]
-lbracketsearch-list]
+ [search-region]
+[search-list]
     your iterating code, once for each match
-lbracket/search-list]
-lbracketno-match]
+[/search-list]
+[no-match]
     Text / tags to be output if no matches found (optional but recommended)
-lbracket/no-match]
-lbracketmore-list]
+[/no-match]
+[more-list]
     More / paging area (optional)
-lbracket/more-list]
-lbracket/search-region]
+[/more-list]
+[/search-region]
 
 TIP FOR MV3 PORTS: A C<[search-list][/search-list]> must always be
 surrounded by a C<[search-region][/search-region]> pair. This is a
@@ -2284,38 +2284,38 @@ The example tags shown have an C<item-> prefix, which is the default.
 Set any prefix desired with the C<prefix> parameter to
 C<[search-region]>:
 
-    lbracketsearch-region pref    lbracketsearch-list]
-        SKU:   lbracketmy-code]
-        Title: lbracketmy-data products title]
-    lbracket/search-list]
-    lbracket/search-region]
+    [search-region pref    [search-list]
+        SKU:   [my-code]
+        Title: [my-data products title]
+    [/search-list]
+    [/search-region]
 
 x=my]
 
 The standard set of Interchange iterative ITL tags are available. They
 are interpolated in this order:
 
-        lbracketitem-alternate N] true lbracketelse] false lbracket/else] lbracket/item-alte        lbracketif-item-param named_field] true lbracketelse] false lbracket/else] lbracket/if-item-param]
-        lbracketitem-param named_field]
-        lbracketif-item-pos N] true lbracketelse] false lbracket/else] lbracket/if-item-pos]
-        lbracketitem-pos N]
-        lbracketif-item-field products_field] true lbracketelse] false lbracket/else] lbracket/if-item-field]
-        lbracketitem-field products_column]
-        lbracketitem-increment]
-        lbracketitem-accessories]
-        lbracketitem-code]
-        lbracketitem-description]
-        lbracketif-item-data table column] true lbracketelse] false lbracket/else] lbracket/if-item-data]
-        lbracketitem-data table column]
-        lbracketitem-price N* noformat=1*]
-        lbracketitem-calc] lbracket/item-calc]
-        lbracketitem-change marker]
-            lbracketcondition]variable textlbracket/condition]
+        [item-alternate N] true [else] false [/else] [/item-alte        [if-item-param named_field] true [else] false [/else] [/if-item-param]
+        [item-param named_field]
+        [if-item-pos N] true [else] false [/else] [/if-item-pos]
+        [item-pos N]
+        [if-item-field products_field] true [else] false [/else] [/if-item-field]
+        [item-field products_column]
+        [item-increment]
+        [item-accessories]
+        [item-code]
+        [item-description]
+        [if-item-data table column] true [else] false [/else] [/if-item-data]
+        [item-data table column]
+        [item-price N* noformat=1*]
+        [item-calc] [/item-calc]
+        [item-change marker]
+            [condition]variable text[/condition]
             true
-            lbracketelse] false lbracket/else]
-        lbracket/item-change marker]
-        lbracketitem-last] condition lbracket/item-last]
-        lbracketitem-next] condition lbracket/item-next]
+            [else] false [/else]
+        [/item-change marker]
+        [item-last] condition [/item-last]
+        [item-next] condition [/item-next]
 
 nate]
 
@@ -2374,32 +2374,32 @@ The following is a simple example for a search list that has a field
 C<category> and C<subcategory> associated with each item:
 
  < <TR><TH>Category</TH><TH>Subcategory</TH><TH>Product</TH></TR>
- lbracketsearch-list]
+ [search-list]
  <TR>
     <TD>
-         lbracketitem-change cat]
+         [item-change cat]
 
-         lbracketcondition]lbracketitem-field category]lbracket/condition]
+         [condition][item-field category][/condition]
 
-                 lbracketitem-field category]
-         lbracketelse]
+                 [item-field category]
+         [else]
                  &nbsp;
-         lbracket/else]
-         lbracket/item-change cat]
+         [/else]
+         [/item-change cat]
     </TD>
     <TD>
-         lbracketitem-change subcat]
+         [item-change subcat]
 
-         lbracketcondition]lbracketitem-field subcategory]lbracket/condition]
+         [condition][item-field subcategory][/condition]
 
-                 lbracketitem-field subcategory]
-         lbracketelse]
+                 [item-field subcategory]
+         [else]
                  &nbsp;
-         lbracket/else]
-         lbracket/item-change subcat]
+         [/else]
+         [/item-change subcat]
     </TD>
-    <TD> lbracketitem-field name] </TD>
- lbracket/search-list]
+    <TD> [item-field name] </TD>
+ [/search-list]
  </TABLE>
 
 ABLE>
@@ -2475,11 +2475,11 @@ C<[next-anchor][/next-anchor]>, C<[prev-anchor][/prev-anchor]> and
 C<[page-anchor][/page-anchor]>. The string $PAGE$ will be replaced
 with the page number in the latter. The same example:
 
-    lbracketmore-list     lbracketnext-anchor] Forward lbracket/next-anchor]
-    lbracketprev-anchor] Back lbracket/prev-anchor]
-    lbracketpage-anchor] Page $PAGE$ lbracket/page-anchor]
-    lbracketmore]
-    lbracket/more-list]
+    [more-list     [next-anchor] Forward [/next-anchor]
+    [prev-anchor] Back [/prev-anchor]
+    [page-anchor] Page $PAGE$ [/page-anchor]
+    [more]
+    [/more-list]
 
  0 0]
 
@@ -2493,11 +2493,11 @@ once, set C<[decade-next][/decade-next]> and
 C<[decade-prev][/decade-prev]>. If set them empty, a search with 31
 pages will display pages 21-30 like:
 
-  Previous 1 2 3 4 5 6 7 8 9 10 lbracketmore>>] Next
+  Previous 1 2 3 4 5 6 7 8 9 10 [more>>] Next
 
 and pages 11-20 like:
 
-  Previous lbracket<<more] 11 12 13 14 15 16 17 18 19 20 lbracketmore>>] Next
+  Previous [<<more] 11 12 13 14 15 16 17 18 19 20 [more>>] Next
 
 If set to C<[decade-next](higher)[/decade-next]> and
 C<[decade-prev](lower)[/decade-prev]>, the following will be
@@ -2549,30 +2549,30 @@ based on a start value and chunk size (or start and end value, from
 which a chunk size is determined). All accept a standard format sort
 tag which must be directly after the list call:
 
-   lbracketloop 4 3 2 1]
-   lbracketsort -2 +2]
-       lbracketloop-code]
-   lbracket/loop]
+   [loop 4 3 2 1]
+   [sort -2 +2]
+       [loop-code]
+   [/loop]
 
-   lbracketsearch-list]
-   lbracketsort products:category:f]
-       lbracketitem-price] lbracketitem-description]<BR>
-   lbracket/search-list]
+   [search-list]
+   [sort products:category:f]
+       [item-price] [item-description]<BR>
+   [/search-list]
 
-   lbracketitem-list]
-   lbracketsort products:price:rn]
-       lbracketitem-price] lbracketitem-code]<BR>
-   lbracket/item-list]
+   [item-list]
+   [sort products:price:rn]
+       [item-price] [item-code]<BR>
+   [/item-list]
 
-   lbracketloop search="ra=yes"]
-   lbracketsort products:category products:title]
-   lbracketloop-field category] lbracketloop-field title] <BR>
-   lbracket/loop]
+   [loop search="ra=yes"]
+   [sort products:category products:title]
+   [loop-field category] [loop-field title] <BR>
+   [/loop]
 
 All sort situations, C<[search list]>, C<[loop list]>, C<[tag each
 table]>, and C<[item-list]>, take options of the form:
 
- lbracketsort database:field:option* -n +n =n-n ... ]
+ [sort database:field:option* -n +n =n-n ... ]
 
 =over 4
 
@@ -2630,9 +2630,9 @@ Examples, all based on the C<simple> demo:
 
 =item Loop list
 
-    lbracketloop 00-0011 19-202 34-101 9    lbracketsort products:title]
-        lbracketloop-code] lbracketloop-field title]<BR>
-    lbracket/loop]
+    [loop 00-0011 19-202 34-101 9    [sort products:title]
+        [loop-code] [loop-field title]<BR>
+    [/loop]
 
 -102]
 
@@ -2646,9 +2646,9 @@ trait
 
 \Alternatively:
 
-    lbracketloop 00-0011 19-202 34-101 9    lbracketsort products:title -3 +2]
-        lbracketloop-code] lbracketloop-field title]<BR>
-    lbracket/loop]
+    [loop 00-0011 19-202 34-101 9    [sort products:title -3 +2]
+        [loop-code] [loop-field title]<BR>
+    [/loop]
 
 -102]
 
@@ -2665,9 +2665,9 @@ The tag C<[sort products:title =3-4]> is equivalent to the above.
 A search of all products (i.e.,
 http://yoursystem.com/cgi-bin/simple/scan/ra=yes):
 
-    lbracketsearch    lbracketsort products:artist products:title:rf]
-        lbracketitem-field artist] lbracketitem-field title]<BR>
-    lbracket/search-list]
+    [search    [sort products:artist products:title:rf]
+        [item-field artist] [item-field title]<BR>
+    [/search-list]
 
 list]
 
@@ -2690,9 +2690,9 @@ artist field and, as such, sorts first).
 
 Adding a slice option:
 
-    lbracketsearch    lbracketsort products:artist products:title:rf =6-10]
-        lbracketitem-field artist] lbracketitem-field title]<BR>
-    lbracket/search-list]
+    [search    [sort products:artist products:title:rf =6-10]
+        [item-field artist] [item-field title]<BR>
+    [/search-list]
 
 list]
 
@@ -2709,9 +2709,9 @@ elements that exist will be displayed, starting from the start value.
 
 =item Shopping cart
 
-    lbracketitem    lbracketsort products:price:rn]
-        lbracketitem-price] lbracketitem-code]<BR>
-    lbracket/item-list]
+    [item    [sort products:price:rn]
+        [item-price] [item-code]<BR>
+    [/item-list]
 
 list]
 
@@ -2722,9 +2722,9 @@ into effect. Modifier values or quantities cannot be sorted.
 
 =item Complete database contents
 
-    lbrackettag each pro    lbracketsort products:category products:title]
-    lbracketloop-field category] lbracketloop-field title] <BR>
-    lbracket/tag]
+    [tag each pro    [sort products:category products:title]
+    [loop-field category] [loop-field title] <BR>
+    [/tag]
 
 ucts]
 
@@ -2796,12 +2796,12 @@ spanned with the <<HERE document format, like so:
 
    upsg: UPS Ground
        criteria    <<EOF
-   lbracketperl]
+   [perl]
        return 'weight' if $Values->{country} eq 'US';
        return 'weight' if ! $Values->{country};
        # Return blank, don't want UPS
        return '';
-   lbracket/perl]
+   [/perl]
    EOF
 
 The definable fields are, in order, for the tab-separated format:
@@ -2844,7 +2844,7 @@ directly as the shipping cost, or a function, determined by a single
 character at the beginning of the field:
 
    f       Formula (MML tags OK, evaluated as   x       Multiplied by a number
-   lbracketuA-Z]  UPS-style lookup
+   [uA-Z]  UPS-style lookup
    m       Interchange chained cost lookup (all items summed together)
    i       Interchange chained cost lookup (items summed individually)
 
@@ -3293,7 +3293,7 @@ semicolon. They will be appended globally after the hash reference.
   # database, for the value the user has entered for 'country'
   # The spaces around the separators are OK
 
-  special : adder ; lbracketvalue country]
+  special : adder ; [value country]
 
   # Sends a fixed parameter of 20 to the subroutine
 
@@ -3304,7 +3304,7 @@ abase
 The parameters are interpreted for Interchange tags before being
 parsed. Here is a complete example:
 
-   s item_cost weight,modes:lbracketvalue mv_shipmode];lbracketvalue country], ;2
+   s item_cost weight,modes:[value mv_shipmode];[value country], ;2
   items in the shopping cart:  00-0011 19=202
 
   ------- product database  ----
@@ -3377,7 +3377,7 @@ Therefore, the zone column (shipping type) that would be used for UPS
 ground would be "Ground," and that is what the database should be
 named. To support the above, use a C<shipping.asc> line that reads:
 
-   upsg  UPS Ground  weight  0  150  u Ground lbracketdefault zip 983]
+   upsg  UPS Ground  weight  0  150  u Ground [default zip 983]
 
 and a C<catalog.cfg> database callout of:
 
@@ -3451,9 +3451,9 @@ remaining information in the field is used as a qualifier for the
 subsidiary shipping modes. This can be used to create geographic
 qualifications for shipping, as in:
 
- upsg   UPS Ground   weight lbracketvalue state]   0     0     e No items selected
-upsg   UPS Ground   AK HI                  0     150   u Ground lbracketvalue zip] 12.00
-upsg   UPS Ground                          0     150   u Ground lbracketvalue zip] 3.00
+ upsg   UPS Ground   weight [value state]   0     0     e No items selected
+upsg   UPS Ground   AK HI                  0     150   u Ground [value zip] 12.00
+upsg   UPS Ground                          0     150   u Ground [value zip] 3.00
 
 If C<upsg> is the mode selected, the value of the user session
 variable C<state> is examined to see if it matches the geographic
@@ -3477,14 +3477,14 @@ accounted for.
 
 To only process a handling charge once, do the following:
 
-   lbracketitem-list]
-   lbracketif-item-field very_heavy]
-   lbracketperl values]
+   [item-list]
+   [if-item-field very_heavy]
+   [perl values]
        return '' if $Values->{mv_handling} =~ /very_heavy/;
        return "<INPUT TYPE=hidden NAME=mv_handling VALUE=very_heavy>";
-   lbracket/perl]
-   lbracket/if-item-field]
-   lbracket/item-list]
+   [/perl]
+   [/if-item-field]
+   [/item-list]
 
 A non-blank/non-zero value in the database field will trigger Perl
 code which will only set C<mv_handling> once.
@@ -3499,7 +3499,7 @@ into the C<DefaultShipping> directive:
 This will make the entry on the order form checked by default when the
 user starts the order process, if it is put in the form:
 
- <INPUT TYPE=RADIO NAME=mv_shipmode VALUE=upsg lbracketchecked mv_shipmode upsg]>
+ <INPUT TYPE=RADIO NAME=mv_shipmode VALUE=upsg [checked mv_shipmode upsg]>
 
 To force a choice by the user, make C<mv_shipmode> a required form
 variable (with RequiredFields or in an order profile) and set
@@ -3610,7 +3610,7 @@ Reserved fields include:
 Interchange provides a C<[userdb ...]> tag to access the UserDB
 functions.
 
- lbracketuserdb
+ [userdb
        function=function_name
        username="username"*
        assign_username=1
@@ -3633,13 +3633,13 @@ functions.
 
 It is normally called in an C<mv_click> or C<mv_check> setting, as in:
 
-   lbracketset Login]
+   [set Login]
    mv_todo=return
    mv_nextpage=welcome
-   lbracketuserdb function=login]
-   lbracket/set]
+   [userdb function=login]
+   [/set]
 
-   <FORM ACTION="lbracketprocess-target]" METHOD=POST>
+   <FORM ACTION="[process-target]" METHOD=POST>
    <INPUT TYPE=hidden NAME=mv_click VALUE=Login>
    Username <INPUT NAME=mv_username SIZE=10>
    Password <INPUT NAME=mv_password SIZE=10>
@@ -3736,7 +3736,7 @@ The last one to be set becomes the default.
 The option C<profile> selects the set to use. For usernames and
 passwords to be case sensitive with no encryption, pass this call:
 
-   lbracketuserdb function=new_account profile=case_crypt]
+   [userdb function=new_account profile=case_crypt]
 
 The username and password will be stored as typed in, and the password
 will be encrypted in the database.
@@ -3795,7 +3795,7 @@ the surrounding / /), then any username containing a matching string
 will not be allowed for use. For example, to screen out order numbers
 from being used by a random user:
 
-    lbracketuserdb function=new_a            username_mask="^lbracketA-Z]*lbracket0-9]"
+    [userdb function=new_a            username_mask="^[A-Z]*[0-9]"
             ]
 
 count
@@ -3810,9 +3810,9 @@ both username and password to be saved, the latter just the username.
 To automatically create an account for every order, set the following
 in the C<OrderReport> file:
 
-    lbracketuserdb function=new_a            username="lbracketvalue mv_order_number]"
-            password="lbracketvalue zip]"
-            verify="lbracketvalue zip]"
+    [userdb function=new_a            username="[value mv_order_number]"
+            password="[value zip]"
+            verify="[value zip]"
             database="orders"
             ]
 
@@ -3838,7 +3838,7 @@ Active parameters: nickname, shipping, ship_field
 
 Place an entry in the shipping Address book. For example:
 
-    lbracketuserdb function=set_shipping nickname=Dad]
+    [userdb function=set_shipping nickname=Dad]
 
 See Address Book below.
 
@@ -3848,7 +3848,7 @@ Active parameters: nickname, shipping, ship_field
 
 Recall an entry from the shipping Address book. For example:
 
-    lbracketuserdb function=get_shipping nickname=Dad]
+    [userdb function=get_shipping nickname=Dad]
 
 See Address Book below.
 
@@ -3860,9 +3860,9 @@ Gets the names of shipping address book entries and places them in the
 variable C<address_book>. By default, it does not return the values.
 To have the values returned, set the parameter C<show> to 1, as in:
 
-    lbracketset name=shipping_nic         interpolate=1]
-      lbracketuserdb function=get_shipping_names show=1]
-    lbracket/set]
+    [set name=shipping_nic         interpolate=1]
+      [userdb function=get_shipping_names show=1]
+    [/set]
 
 names
 
@@ -3872,7 +3872,7 @@ Active parameters: nickname, billing, bill_field
 
 Place an entry in the billing accounts book. For example:
 
-    lbracketuserdb function=set_billing nickname=discover]
+    [userdb function=set_billing nickname=discover]
 
 See Accounts Book below.
 
@@ -3882,7 +3882,7 @@ Active parameters: nickname, billing, bill_field
 
 Recall an entry from the billing accounts book. For example:
 
-    lbracketuserdb function=get_billing nickname=visa]
+    [userdb function=get_billing nickname=visa]
 
 See Accounts Book below.
 
@@ -3895,7 +3895,7 @@ database.
 
 Save the contents of a shopping cart.
 
-    lbracketuserdb function=set_cart nickname=christmas]
+    [userdb function=set_cart nickname=christmas]
 
 See Carts below.
 
@@ -3905,7 +3905,7 @@ Active parameters: nickname, carts_field, target
 
 Recall a saved shopping cart.
 
-    lbracketuserdb function=get_cart nickname=mom_birthday]
+    [userdb function=get_cart nickname=mom_birthday]
 
 Setting C<target> saves to a different shopping cart than the default
 main cart. The C<carts_field> controls the database field used for
@@ -3917,19 +3917,19 @@ Active parameters: location, acl_field, delete
 
 Set a simple acl. For example:
 
-    lbracketuserdb function=set_acl location=cartcfg/editcart]
+    [userdb function=set_acl location=cartcfg/editcart]
 
 This allows the current user to access the page "cartcfg/editcart" if
 it is access-protected.
 
 To delete access, do:
 
-    lbracketuserdb function=set_acl location=cartcfg/editcart delete=1]
+    [userdb function=set_acl location=cartcfg/editcart delete=1]
 
 To display the setting at the same time as setting, use the C<show>
 attribute:
 
-    lbracketuserdb function=set_acl location=cartcf/editcart show=1]
+    [userdb function=set_acl location=cartcf/editcart show=1]
 
 =item check_acl
 
@@ -3938,12 +3938,12 @@ Active parameters: location, acl_field
 Checks the simple access control listing for a location, returning 1
 if allowed and the empty string if not allowed.
 
-    lbracketif type=ex        compare="lbracketuserdb
+    [if type=ex        compare="[userdb
                     function=check_acl
                     location=cartcfg/editcart]"
     ]
-    lbracketpage cartcfg/editcart]Edit your cart configurationlbracket/page]
-    lbracket/if]
+    [page cartcfg/editcart]Edit your cart configuration[/page]
+    [/if]
 
 licit
 
@@ -3954,7 +3954,7 @@ delete
 
 Sets a complex access control value. Takes the form:
 
-    lbracketuserdb function=set_fi            mode=rw
+    [userdb function=set_fi            mode=rw
             location=products/inventory.txt]
 
 e_acl
@@ -3969,7 +3969,7 @@ Active parameters: location, mode, db_acl_field, file_acl_field
 Checks a complex access control value and returns a true/false (1/0)
 value. Takes the form:
 
-    lbracketuserdb function=check_            mode=w
+    [userdb function=check_            mode=w
             location=inventory]
 
 b_acl
@@ -3978,17 +3978,17 @@ where mode is any value to be checked with C<check_file_acl>. It will
 return true, if the mode string is contained within the entry for that
 location. For example:
 
-    lbracketif type=ex        compare="lbracketuserdb
+    [if type=ex        compare="[userdb
                     function=check_db_acl
                     mode=w
                     location=inventory]"
     ]
-    lbracketuserdb function=set_acl location=cartcfg/edit_inventory]
-    lbracketpage cartcfg/edit_inventory]You may edit the inventory databaselbracket/page]
-    lbracketelse]
-    lbracketuserdb function=set_acl location=cartcfg/edit_inventory delete=1]
+    [userdb function=set_acl location=cartcfg/edit_inventory]
+    [page cartcfg/edit_inventory]You may edit the inventory database[/page]
+    [else]
+    [userdb function=set_acl location=cartcfg/edit_inventory delete=1]
     Sorry, you can't edit inventory.
-    lbracket/if]
+    [/if]
 
 licit
 
@@ -4026,16 +4026,16 @@ box or in a set of links.
 To get the names of the addresses, use the C<get_shipping_names>
 function:
 
-   lbracketuserdb function=get_shipping_names]
+   [userdb function=get_shipping_names]
 
 By default, they are placed in the variable C<address_book>. Here is a
 little snippet that builds a select box:
 
-   <FORM ACTION="lbracketprocess-target]" METHOD=POST>
-   lbracketuserdb function=get_shipping_names]
-   lbracketif value address_book]
+   <FORM ACTION="[process-target]" METHOD=POST>
+   [userdb function=get_shipping_names]
+   [if value address_book]
    <SELECT NAME="s_nickname">
-   lbracketloop arg="lbracketvalue address_book]"] <OPTION> lbracketloop-code] lbracket/loop]
+   [loop arg="[value address_book]"] <OPTION> [loop-code] [/loop]
    </SELECT>
    <INPUT TYPE=submit NAME=mv_check VALUE="Recall Shipping">
    </FORM>
@@ -4044,11 +4044,11 @@ The same principle works with accounts, carts, and preferences.
 
 To restore a cart based on the above, put in an C<mv_check> routine:
 
-   lbracketset Recall Shipping]
+   [set Recall Shipping]
    mv_todo=return
    mv_nextpage=ord/basket
-   lbracketuserdb function=get_shipping nickname="lbracketvalue s_nickname]"]
-   lbracket/set]
+   [userdb function=get_shipping nickname="[value s_nickname]"]
+   [/set]
 
 When the C<mv_check> variable is encountered, the contents of the
 scratch variable C<Recall Shipping> are processed and the shipping
@@ -4059,7 +4059,7 @@ course.
 To change the fields that are recalled or saved, use the C<shipping>
 parameter:
 
-   lbracketuserdb function=get_shipping
+   [userdb function=get_shipping
            nickname=city_and_state
            shipping="city state"]
 
@@ -4109,7 +4109,7 @@ default, the following fields:
 The field C<p_nickname> acts as a key to select the preference set. To
 change the values that are included with the C<preferences> parameter:
 
-   lbracketuserdb function=set_preferences
+   [userdb function=set_preferences
            preferences="email_copy email fax_order fax"]
 
 or in catalog.cfg:
@@ -4144,7 +4144,7 @@ name of the page to be allowed. It will not match substrings.
 
 For example, if the user C<flycat> followed this link:
 
-   <A HREF="lbracketarea cartcfg/master_edit]">Edit</A>
+   <A HREF="[area cartcfg/master_edit]">Edit</A>
 
 Access would be allowed if the contents of the userdb were:
 
@@ -4158,11 +4158,11 @@ and disallowed if it were:
 
 Access can be enabled with:
 
-   lbracketuserdb function=set_acl location="cartcfg/master_edit"]
+   [userdb function=set_acl location="cartcfg/master_edit"]
 
 Access can be disallowed with:
 
-   lbracketuserdb function=set_acl
+   [userdb function=set_acl
            delete=1
            location="cartcfg/master_edit"]
 
@@ -4429,7 +4429,7 @@ DEPRECATED BEHAVIOR: (replace with session tag). In addition, the
 [data ...]  tag can access a number of elements in the Interchange
 session database:
 
-    accesses           Accesses within the last 30 s    arg                The argument passed in a lbracketpage ...] or lbracketarea ...] tag
+    accesses           Accesses within the last 30 s    arg                The argument passed in a [page ...] or [area ...] tag
     browser            The user browser string
     cybercash_error    Error from last CyberCash operation
     cybercash_result   Hash of results from CyberCash (access with usertag)
@@ -4457,7 +4457,7 @@ them. Case is sensitive, so in a pinch you could call the database
 
 =head2 db_date
 
-   # lbracketdb-date table f   #
+   # [db-date table f   #
    # This tag returns the last-modified time of a database table,
    # 'products' by default. Accepts a POSIX strftime value for
    # date format; uses '%A %d %b %Y' by default.
@@ -4478,7 +4478,7 @@ them. Case is sensitive, so in a pinch you could call the database
                . $Vend::Cfg->{Database}{$db}{'file'};
 
        # get last modified time
-       $mtime = (stat ($dbfile))lbracket9];
+       $mtime = (stat ($dbfile))[9];
 
        if (defined ($mtime)) {
                return POSIX::strftime($format, localtime($mtime));

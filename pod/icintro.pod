@@ -2,7 +2,7 @@
 
 Interchange Introduction
 
-=head1 INTRODUCTION TO INTERCHANGE
+=head1 INTRODUCTION TO INTERCHANGE(TM)
 
 Akopia's Interchange is the industry's most widely distributed and
 implemented  open source e-commerce  platform. The software is
@@ -598,8 +598,8 @@ routines be written instead of using C<AllowGlobal>.
 None, though by accepting a performance penalty many Interchange tags
 can be embedded inside of regular HTML. For example:
 
-   lbracketpragma no_html_parse 0]
-    <A HREF="lbrackethref minivend_page]">Link</A>
+   [pragma no_html_parse 0]
+    <A HREF="[href minivend_page]">Link</A>
     <SCRIPT LANGUAGE=MV MV="set Action">
         mv_todo=return
         mv_nextpage=your_page
@@ -661,7 +661,7 @@ Akopia receives many partnering requests. Keep in mind:
 =item Payment Gateways
 
 There are literally dozens of different companies doing e-commerce
-payment services on the Web. Akopia has received inquiries from many
+payment services on the web. Akopia has received inquiries from many
 of them over time. The only way Akopia will consider putting in
 support for a specific payment gateway is if it is a funded consulting
 project. This usually costs thousands of dollars and is prohibitive.
@@ -683,9 +683,8 @@ that they be sent a copy of the CD-ROM.
 
 =item Reselling
 
-Interchange is Gnu GPL licensed and may not be resold. Interchange is
-freely downloaded. See the <www.gnu.org> Web site for more
-information.
+Interchange is GNU GPL licensed. See the GNU web site
+C<http://www.gnu.org/> for more information.
 
 =item Akopia Services
 
@@ -703,10 +702,9 @@ complete site development and integration, from needs assessment and
 planning to testing and deployment.
 
 Akopia's Professional Services team is experienced and trained to
-maximize the power and flexibility of the Interchange platform. 
-Akopia offers professional services for projects of all sizes and
-scopes, from smaller projects to traditional full lifecycle
-engagements.
+maximize the power and flexibility of the Interchange platform. Akopia
+offers professional services for projects of all sizes and scopes,
+from smaller projects to traditional full lifecycle engagements.
 
 Akopia professional services include:
 

@@ -2,15 +2,15 @@
 
 Interchange Configuration
 
-=head1 CONFIGURATION OF AKOPIA INTERCHANGE TM
+=head1 CONFIGURATION OF AKOPIA INTERCHANGE(TM)
 
 Akopia Interchange is the industry's most widely distributed and
 implemented open source e-commerce platform. This document provides
 detailed configuration instructions for Interchange and the Construct
 Something demo store demo included with the program, and answers a
-variety of frequently asked questions. The Interchange TM program must
-be installed before continuing. For more information on the
-Installation process, see the Installation (ICINSTALL.SDF) manual.
+variety of frequently asked questions. The Interchange program must be
+installed before continuing. For more information on the Installation
+process, see the Installation (icinstall) manual.
 
 =head1 CREATING A CATALOG
 
@@ -20,7 +20,7 @@ Interchange tags will be referred to as either tags or elements in
 this document.
 
 There are multiple steps required to set up a custom Interchange
-catalog. Refer to the Reference Tags (ICTAGS.SDF) manual for more
+catalog. Refer to the Reference Tags (ictags) manual for more
 information about Interchange tags and how they are used during
 initial set up a catalog. The demo catalogs provide examples of these
 tags and how they are used.
@@ -465,25 +465,25 @@ account information, preferences, and more. See C<UserDB>.
 
 =back
 
-=head2 IML - Interchange Markup Language
+=head2 ITL - Interchange Tag Language
 
-Interchange functions are accessed via IML, the Interchange Markup
-Language. The pages in the catalog are in HTML, but use IML tags to
-provide access to Interchange's functions. IML tags use C<[square
-brackets]> instead of angular brackets. They are usually called
-Interchange tags or just tags. They are similar to HTML in syntax.
-There are both <I>standalone</I> and <I>container</I> tags. A
+Interchange functions are accessed via ITL, the Interchange Tag
+Language. The pages in the catalog are in HTML, but use ITL to provide
+access to Interchange's functions. ITL tags are delimited by C<[square
+brackets]> instead of angle brackets. They are usually called
+Interchange tags or just tags. They are similar to HTML in syntax in
+that there are both <I>standalone</I> and <I>container</I> tags. A
 standalone tag has no ending element. For example:
 
-   lbracketvalue name]
+   [value name]
 
 This tag inserts the user's name, providing it has been provided in a
 form. A container tag has both a beginning and an ending element. For
 example:
 
-   lbracketif value name]
+   [if value name]
    You have a name.
-   lbracket/if]
+   [/if]
 
 These tags perform various display and data modification operations
 for the user session. There are over 80 standard predefined tags; the
@@ -494,59 +494,59 @@ the standard tags.
 As an introduction, a few of the tag names and their general function
 follow:
 
- lbracketaccessories]     Access product accessory functions
-lbracketarea]            Insert a re-written Interchange URL
-lbracketcatch]
-  lbracket/catch]
-lbracketchecked]         Conditionally check an HTML check/radio box
-lbracketcurrency]        Formats a number as currency for current locale
-  lbracket/currency]
-lbracketdata]            Access a database or user session element
-lbracketerror]           Check/display form processing errors
-lbracketfile]            Insert the contents of a file
-lbracketflag]            Set an Interchange flag
-lbracketfly-list]        Show an item "on-the-fly" in an arbitrary page
-lbracket lbracket/fly-list]
-lbracketfly-tax]               Builds a tax rate
-lbrackethtml_table]      Create an HTML table from a query or list
-lbracketinclude]         Include a file with complete Interchange interpretation
-lbracketitem-list]       Iterate over a shopping cart
-  lbracket/item-list]
-lbracketlabel]           Set a label for goto
-lbracketloop]            Iterate over an arbitrary list
-  lbracket/loop]
-lbracketmvasp]           ASP-style Perl programming area
-lbracketno-match]        Define area of region results displayed when no match
-  lbracket/no-match]
-lbracketnitems]          Show number of items for a shopping cart
-lbracketorder]           Create HTML link to order an item
-lbracketpage]            Create A HREF with re-written URL to call Interchange page
-lbracketperl]            Embed output of arbitrary Perl in the page
-  lbracket/perl]
-lbracketprice]           Show price of an item
-lbracketprocess]         Create URL for Interchange form processing
-lbracketquery]           Perform any of several types of SQL query
-  lbracket/query]
-lbracketrecord]          Set a database record
-lbracketregion]          Define an area of the page as a search list/query
-lbracketrow]             Used with [col] -- rudimentary text tables for order reports
-  lbracket/row]
-lbracketsalestax]        Show amount of salestax for shopping cart
-lbracketscratch]         Access a scratch variable
-lbracketsearch-list]     Display output of an Interchange search
-  lbracket/search-list]
-lbracketselected]        Conditional selection of drop-down <SELECT ...>
-lbracketset]             Set a scratch variable
-  lbracket/set]
-lbracketsort]            Set sort order for iterating lists
-  lbracket/sort]
-lbracketsubtotal]        Calculate subtotal without tax or shipping
-lbrackettotal-cost]      Calculate order total with tax, handling, and shipping
-lbrackettry]
-  lbracket/try]
-lbracketuserdb]          Access user database functions
-lbracketvalue]           Display form value
-lbracketvalue_extended]  Display form array values or do file upload functions
+ [accessories]     Access product accessory functions
+[area]            Insert a re-written Interchange URL
+[catch]
+  [/catch]
+[checked]         Conditionally check an HTML check/radio box
+[currency]        Formats a number as currency for current locale
+  [/currency]
+[data]            Access a database or user session element
+[error]           Check/display form processing errors
+[file]            Insert the contents of a file
+[flag]            Set an Interchange flag
+[fly-list]        Show an item "on-the-fly" in an arbitrary page
+  [/fly-list]
+[fly-tax]                 Builds a tax rate
+[html_table]      Create an HTML table from a query or list
+[include]         Include a file with complete Interchange interpretation
+[item-list]       Iterate over a shopping cart
+  [/item-list]
+[label]           Set a label for goto
+[loop]            Iterate over an arbitrary list
+  [/loop]
+[mvasp]           ASP-style Perl programming area
+[no-match]        Define area of region results displayed when no match
+  [/no-match]
+[nitems]          Show number of items for a shopping cart
+[order]           Create HTML link to order an item
+[page]            Create A HREF with re-written URL to call Interchange page
+[perl]            Embed output of arbitrary Perl in the page
+  [/perl]
+[price]           Show price of an item
+[process]         Create URL for Interchange form processing
+[query]           Perform any of several types of SQL query
+  [/query]
+[record]          Set a database record
+[region]          Define an area of the page as a search list/query
+[row]             Used with [col] -- rudimentary text tables for order reports
+  [/row]
+[salestax]        Show amount of salestax for shopping cart
+[scratch]         Access a scratch variable
+[search-list]     Display output of an Interchange search
+  [/search-list]
+[selected]        Conditional selection of drop-down <SELECT ...>
+[set]             Set a scratch variable
+  [/set]
+[sort]            Set sort order for iterating lists
+  [/sort]
+[subtotal]        Calculate subtotal without tax or shipping
+[total-cost]      Calculate order total with tax, handling, and shipping
+[try]
+  [/try]
+[userdb]          Access user database functions
+[value]           Display form value
+[value_extended]  Display form array values or do file upload functions
 
 A complete list of tags and all tag syntax is available in ICTAGS.POD.
 
@@ -564,7 +564,7 @@ Instead of:
 
 Use:
 
-   <A HREF="lbracketarea shirts]">Shirts</A>
+   <A HREF="[area shirts]">Shirts</A>
 
 =head2 Images
 
@@ -616,13 +616,13 @@ perhaps to place an ALT string or a JavaScript construct. It was
 originally named C<area> because it also can be used in a client-side
 image map.
 
-       <A HREF="lbracketarea catalog]" ALT="Main catalog page">
+       <A HREF="[area catalog]" ALT="Main catalog page">
 
 The optional arg is used just as in the page tag.
 
 The optional C<form> argument is used to encode a form in the link.
 
-       <A HREF="lbracketarea                mv_order_item=99-102
+       <A HREF="[area                mv_order_item=99-102
                mv_order_size=L
                mv_order_quantity=1
                mv_separate_items=1
@@ -641,7 +641,7 @@ See above for more information.
 
 Expands into </a>. Used with the page element, such as:
 
-    lbracketpage shirts]Our shirt collectionlbracket/page].
+    [page shirts]Our shirt collection[/page].
 
 =back
 
@@ -671,8 +671,8 @@ scratch value C<mv_no_count> is set, then the page count will not be
 appended. This is not dependent on cookies. So, if placed in the
 initial page:
 
-    lbracketset mv_no_session_id]1lbracke    lbracketset mv_no_count]1lbracket/set]
-    lbracketset mv_add_dot_html]1lbracket/set]
+    [set mv_no_session_id]1    [set mv_no_count]1[/set]
+    [set mv_add_dot_html]1[/set]
 
 /set]
 
@@ -707,7 +707,7 @@ session ID.
 
 The optional C<form> argument allows for encoding a form in the link.
 
-        lbracketpage                 mv_order_item=99-102
+        [page                 mv_order_item=99-102
                 mv_order_size=L
                 mv_order_quantity=1
                 mv_separate_items=1
@@ -737,7 +737,7 @@ with http:, ftp:, or the like.
 
 Expands into </a>. Used with the page element, such as:
 
-  lbracketpage shirts]Our shirt collectionlbracket/page].
+  [page shirts]Our shirt collection[/page].
 
 \TIP: A small efficiency boost in large pages is to just use the </A>
 tag.
@@ -756,7 +756,7 @@ special C<[order item-code]> tag:
 
 Named parameters:
 
-        lbracketorder code="sku" href="page" cart="cartname"* base="table"]
+        [order code="sku" href="page" cart="cartname"* base="table"]
 
 Expands into a hypertext link which will include the specified code in
 the list of products to order and display the order page. C<Code>
@@ -770,15 +770,15 @@ the item.
 
 Example:
 
-Order a lbracketorder TK112]Toasterlbracket/order] today.
+Order a [order TK112]Toaster[/order] today.
 
 Note that this is the same as:
 
-Order a lbracketpage order TK112]Toaster</A> today.
+Order a [page order TK112]Toaster</A> today.
 
 You can change frames for the order with:
 
-Order a <A HREF="lbracketarea order TK112]" TARGET=newframe>Toaster</A> today.
+Order a <A HREF="[area order TK112]" TARGET=newframe>Toaster</A> today.
 
 =item [/order]
 
@@ -790,7 +790,7 @@ C<[order TK112]>ToasterC<[/order]> today.
 To order with a form, you set the form variable C<mv_order_item> to
 the item-code/SKU and use the C<refresh> action:
 
- <FORM ACTION="lbracketprocess-target]"<INPUT TYPE=hidden  NAME="mv_todo"        VALUE="refresh">
+ <FORM ACTION="[process-target]"<INPUT TYPE=hidden  NAME="mv_todo"        VALUE="refresh">
 <INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="TK112">
 
 Order <INPUT NAME="mv_order_quantity" SIZE=3 VALUE=1> toaster
@@ -802,7 +802,7 @@ METHOD=POST>
 
 Groups of items may be batched:
 
- <FORM ACTION="lbracketprocess-target]"<INPUT TYPE=hidden  NAME="mv_todo"        VALUE="refresh">
+ <FORM ACTION="[process-target]"<INPUT TYPE=hidden  NAME="mv_todo"        VALUE="refresh">
 
 <INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="TK112">
 <INPUT NAME="mv_order_quantity" SIZE=3> Standard Toaster
@@ -827,7 +827,7 @@ how it is done.
 When a form is sent to Interchange, the program reads the values and
 places them in the user session. The following form:
 
- <FORM ACTION="lbracketarea index]"<INPUT TYPE=hidden NAME=mv_action VALUE=return>
+ <FORM ACTION="[area index]"<INPUT TYPE=hidden NAME=mv_action VALUE=return>
 <INPUT TYPE=hidden NAME=foo VALUE=bar>
 <INPUT TYPE=submit NAME="Make foo=bar">
 </FORM>
@@ -837,7 +837,7 @@ METHOD=POST>
 will make the C<[value foo]> tag equal to C<bar> on the next page,
 then, send you to the page C<index>(.html). Same for this link:
 
- <A HREF="lbracketare                    form='
+ <A HREF="[are                    form='
                       foo=bar
                       mv_action=return
                     ']">Make foo=bar</A>
@@ -1008,20 +1008,20 @@ C<mv_locale> and C<mv_currency>.
 This allows:
 
     Dollar Pr
-    lbracketsetlocale en_US]
-    lbracketitem-list]
-    lbracketitem-code]: lbracketitem-price]<BR>
-    lbracket/item-list]
+    [setlocale en_US]
+    [item-list]
+    [item-code]: [item-price]<BR>
+    [/item-list]
 
     Franc Pricing:
 
-    lbracketsetlocale fr_FR]
-    lbracketitem-list]
-    lbracketitem-code]: lbracketitem-price]<BR>
-    lbracket/item-list]
+    [setlocale fr_FR]
+    [item-list]
+    [item-code]: [item-price]<BR>
+    [/item-list]
 
-    lbracketcomment] Return to the user's default locale lbracket/comment]
-    lbracketsetlocale]
+    [comment] Return to the user's default locale [/comment]
+    [setlocale]
 
 cing:
 
@@ -1070,11 +1070,11 @@ Another, perhaps better, way to do this is right in the page. The
 C<[LC]> ... C<[/LC]> pragma pair permits specification of
 locale-dependent text.
 
- lbracketLC]
+ [LC]
            This is the default text.
-   lbracketfr_FR] Text for the fr_FR locale. lbracket/fr_FR]
-   lbracketde_DE] Text for the de_DE locale. lbracket/de_DE]
- lbracket/LC]
+   [fr_FR] Text for the fr_FR locale. [/fr_FR]
+   [de_DE] Text for the de_DE locale. [/de_DE]
+ [/LC]
 
 Or place an entire new page in place of the default one if the locale
 key is defined. When locale is in force, and a key named C<HTMLsuffix>
@@ -1127,7 +1127,7 @@ Care is required when editing pages with localization information.
 Changing even one character of the message will change the key value
 and invalidate the message for other languages. To prevent this, use:
 
-   lbracketL key]The default.lbracket/L]
+   [L key]The default.[/L]
 
 The key C<msg_key> will then be used to index the message. This may be
 preferable for many applications.
@@ -1372,10 +1372,10 @@ If this arbitrary database named C<letters>:
 
 and this loop:
 
-   lbracketloop 19-202 00-0011 99-102]
-   lbracketsort letters:letter]
-   lbracketloop-data letters letter]   lbracketloop-code]
-   lbracket/loop]
+   [loop 19-202 00-0011 99-102]
+   [sort letters:letter]
+   [loop-data letters letter]   [loop-code]
+   [/loop]
 
 used the default C setting for LC_COLLATE, it would display:
 
@@ -1473,15 +1473,15 @@ future versions of Interchange.
 Perl code can be directly embedded in Interchange pages. The code is
 specified as:
 
-   lbracketperl]
+   [perl]
        $name    = $Values->{name};
        $browser = $Session->{browser};
        return "Hi, $name! How do you like your $browser?";
-   lbracket/perl]
+   [/perl]
 
 ASP syntax can be used with:
 
-   lbracketmvasp]
+   [mvasp]
        <%
        $name    = $Values->{name};
        $browser = $Session->{browser};
@@ -1490,7 +1490,7 @@ ASP syntax can be used with:
        <%
            HTML "How do you like your $browser?";
        %>
-   lbracket/mvasp]
+   [/mvasp]
 
 The two snippets above are essentially equivalent.
 
@@ -1506,7 +1506,7 @@ files and programs available to Interchange.
 
 Named parameters:
 
-   lbracketperl tables="tables-to-open"* subs=1 global=1* no_return=1*]
+   [perl tables="tables-to-open"* subs=1 global=1* no_return=1*]
 
 =back
 
@@ -1553,10 +1553,10 @@ item first.
 
 Example:
 
-    lbracketperl tables="products pri        $key = $Values->{sku};
+    [perl tables="products pri        $key = $Values->{sku};
         $title = $Tag->data('products', 'title', $key):
         return "You looked up the title $title";
-    lbracket/perl]
+    [/perl]
 
 ing"]
 
@@ -1578,9 +1578,9 @@ use.
 
 Examples:
 
-   # If the item might contain a single   lbracketperl]
+   # If the item might contain a single   [perl]
    $comments = $Values->{comments};
-   lbracket/perl]
+   [/perl]
 
 quote
 
@@ -1615,42 +1615,42 @@ other problem with the code, there will be no output.
 Here is a simple one which does the equivalent of the classic hello.pl
 program:
 
-   lbracketperl] my $tmp = "Hello, world!"; $tmp; lbracket/perl]
+   [perl] my $tmp = "Hello, world!"; $tmp; [/perl]
 
 Of course, there is no need to set the variable. It is there just to
 show the capability.
 
 To echo the user's browser, but within some HTML tags:
 
-   lbracketperl]
+   [perl]
    my $html = '<H5>';
    $html .= $Session->{browser};
    $html .= '</H5>';
    $html;
-   lbracket/perl]
+   [/perl]
 
 To show the user their name and the current time:
 
-   lbracketperl arg=values]
+   [perl arg=values]
 
    my $string = "Hi, " . $Values->{name} ". The time is now ";
    $string .= $Tag->time();
    $string;
 
-   lbracket/perl]
+   [/perl]
 
 =head2 ASP-Like Perl
 
 Interchange supports an ASP-like syntax using the C<mvasp> tag.
 
-   lbracketmvasp]
+   [mvasp]
    <HTML><BODY>
        This is HTML.<BR>
 
    <% HTML "This is code<BR>"; %>
        More HTML.<BR>
    <% $Document->write("Code again.<BR>") %>
-   lbracket/mvasp]
+   [/mvasp]
 
 If no closing C<[/mvasp]> tag is present, the remainder of the page
 will be seen as ASP.
@@ -1664,10 +1664,10 @@ any Interchange tags will not.
 There is a shorthand <% = $foo %>, which is exactly equivalent to <%
 $Document->write($foo); %> or <% HTML $foo; %>
 
-   lbracketmvasp]
+   [mvasp]
    <HTML><BODY>
        This is HTML.<BR>
-       lbracketvalue name] will show up as &#91;value name].<BR>
+       [value name] will show up as &#91;value name].<BR>
 
        &#95_VARIABLE__ value is equal to: __VARIABLE__
 
@@ -1755,7 +1755,7 @@ of events.
 
 Shopping carts are an array of hash references. Here is an example of
 a session cart array containing a C<main> and a C<layaway> cart.
-        'main' => lbracket
+        'main' => [
                     {
                         'code' => '00-0011',
                         'mv_ib' => 'products',
@@ -1771,7 +1771,7 @@ a session cart array containing a C<main> and a C<layaway> cart.
                         'color' => 'BLUE'
                     }
                 ],
-        'layaway' => lbracket
+        'layaway' => [
                     {
                         'code' => '00-341',
                         'mv_ib' => 'products',
@@ -1920,8 +1920,8 @@ best)
     $search = {
 
             mv_searchspec => 'Mona Lisa',
-            mv_search_field => lbracket 'title', 'artist', 'price' ],
-            mv_return_fields    => lbracket 'title' ]
+            mv_search_field => [ 'title', 'artist', 'price' ],
+            mv_return_fields    => [ 'title' ]
 
         };
 
@@ -2052,7 +2052,7 @@ A reference to the scratch values ala C<[scratch foo]>.
 
 is equivalent to:
 
-    lbracketset foo]barlbracket/set]
+    [set foo]bar[/set]
 
 =item $Session
 
@@ -2066,7 +2066,7 @@ A reference to the session values ala C<[data session username]>.
 
 is equivalent to:
 
-    lbracketdata session browser]
+    [data session browser]
 
 Values can also be set. If the value of C<[data session source]>
 needed to be changed, for example, set:
@@ -2099,13 +2099,13 @@ or
 
 Named parameters:
 
-    lbracketmvasp tables="products pricing"]
+    [mvasp tables="products pricing"]
 
 or
 
 Positional parameters:
 
-    lbracketmvasp products pricing]
+    [mvasp products pricing]
 
 Any tag can be called.
 
@@ -2118,7 +2118,7 @@ Any tag can be called.
 
 is the same as:
 
-    lbracketdata table=userdb column=name key="lbracketdata session username]"]
+    [data table=userdb column=name key="[data session username]"]
 
 If the tag has a dash (C<->) in it, use an underscore instead:
 
@@ -2153,14 +2153,14 @@ If using the option hash method, and the tag has container text,
 either specify it in the hash parameter C<body> or add it as the next
 argument. The two calls:
 
-    $Tag->item_l                        'body' => "lbracketitem-code] lbracketitem-field title]",
+    $Tag->item_l                        'body' => "[item-code] [item-field title]",
                     });
 
 st( {
 
 and
 
-    $Tag->item_list( { }, "lbracketitem-code] lbracketitem-field title]")
+    $Tag->item_list( { }, "[item-code] [item-field title]")
 
 are equivalent.
 
@@ -2178,7 +2178,7 @@ A reference to the user form values ala C<[value foo]>.
 
 is equivalent to:
 
-    lbracketvalue foo]
+    [value foo]
 
 =item &Log
 
@@ -2265,7 +2265,7 @@ referenced (in embedded Perl) by any catalog.
 
 Specifies catalog identifiers that may define subroutines and UserTag
 entries that can operate with the full permissions of the server.
-DON'T USE THIS UNLESS THE CATALOG USER IS TRUSTED IMPLICITLY.> Default
+DON'T USE THIS UNLESS THE CATALOG USER IS TRUSTED IMPLICITLY. Default
 is blank.
 
    AllowGlobal  simple
@@ -3054,7 +3054,7 @@ will trigger an action. The page name will be shifted up, and the
 C<order> stripped from the page name. So this custom C<order> action
 would essentially perform a no-op, and a URL like:
 
-   <A HREF="lbracketarea order/nextpage]"> Go to the next page </A>
+   <A HREF="[area order/nextpage]"> Go to the next page </A>
 
 would be the equivalent of "[area nextpage]." If the action does not
 return a true (non-zero, non-blank) status, no page will be displayed
@@ -3062,8 +3062,8 @@ by Interchange, not even the special C<missing> page. A response may
 also be generated via Perl or MVASP.
 
 The standard C<process> action has a number of associated
-C<FormAction> settings. Besides using Perl, IML tags may be used in an
-action, though they are not nearly as efficient.
+C<FormAction> settings. Besides using Perl, Interchange tags may be
+used in an action, though they are not nearly as efficient.
 
 =head2 AlwaysSecure
 
@@ -3118,7 +3118,7 @@ page is even determined.
 As an example, to remap any C<mv_nextpage> accesses to the C<private>
 subdirectory of pages, set:
 
-   Autoload   lbracketperl] $CGI->{mv_nextpage} =~ s:^private/:public/:; lbracket/perl]
+   Autoload   [perl] $CGI->{mv_nextpage} =~ s:^private/:public/:; [/perl]
 
 =head2 CommonAdjust
 
@@ -3556,7 +3556,7 @@ format the item with the following call:
    $item = Vend::Parse::do_tag($Vend::Cfg->{OnFly},
                                    $code,
                                    $quantity,
-                                   $flylbracket$j],
+                                   $fly[$j],
                                );
 
 $fly[$j] is the value of C<mv_order_fly> for that item. An C<onfly>
@@ -3701,12 +3701,12 @@ is enabled in the demo catalog.
 To enable a pragma for only a particular page, set it anywhere in the
 page:
 
-   lbracketpragma no_html_parse]
+   [pragma no_html_parse]
 
 To disable a pragma for a particular page, set it anywhere in the
 page:
 
-   lbracketpragma no_html_parse 0]
+   [pragma no_html_parse 0]
 
 B<Note: >This is a good place to place a DTD.
 
@@ -3906,10 +3906,10 @@ search in the file 'dict.product':
  __NAME__ dict_search
  mv_search_file=dict.product
  mv_return_fields=1
- lbracketif value fast_search]
+ [if value fast_search]
    mv_dict_limit=-1
    mv_last=1
- lbracket/if]
+ [/if]
  __END__
 
 The C<__NAME__> is the value to be specified in the C<mv_profile>
@@ -3919,7 +3919,7 @@ variable on the search form, as in
 
 or with mp=profile in the one-click search.
 
- lbracketpage scan se=Renaissance/mp=dict_search]Renaissance Artlbracket/page]
+ [page scan se=Renaissance/mp=dict_search]Renaissance Art[/page]
 
 Multiple profiles can reside in the same file, if separated by
 C<__END__> tokens. C<__NAME__> tokens should be left-aligned, and
@@ -4025,12 +4025,11 @@ The default is file-based sessions, which provides the best
 performance and reliablility in most environments.
 
 If you are planning on running Interchange servers with an NFS-mounted
-filesystem as the session target, you must set SessionType to "NFS". The
-other requisites are usually:
+filesystem as the session target, you must set SessionType to "NFS".
+The other requisites are usually:
 
-	1. fcntl() supported in Perl
-	2. lock daemon running on server system
-	3. lock daemon running on interchange server
+1. fcntl() supported in Perl 2. lock daemon running on server system
+3. lock daemon running on interchange server
 
 =head2 SpecialPage
 
@@ -4160,10 +4159,10 @@ the ONLY thing on the line, with no leading or trailing white space.
 Do not append a semicolon to the marker. The above would be called
 with:
 
-   lbracketperl]
+   [perl]
        my $cart = $Carts->{main};
        return sort_cart($cart);
-   lbracket/perl]
+   [/perl]
 
 and will display an HTML table of the items in the current shopping
 cart, sorted by the quantity. Syntax errors will be reported at
@@ -4191,11 +4190,11 @@ C<[data session username]>.
 Probably most usefully set by embedded Perl code in certain
 situations. For example:
 
-   lbracketcalc]
+   [calc]
        # Restrict edit to owned fields
        $Config->{TableRestrict}{products} = 'owner=username';
        return;
-   lbracket/calc]
+   [/calc]
 
 When using SQL-based databases, in effect it turns the base search
 query
@@ -4204,7 +4203,7 @@ query
 
 into
 
-   select * from products where owner = 'lbracketdata session username]'
+   select * from products where owner = '[data session username]'
 
 Interchange databases are similarly affected, though the methodology
 is different. Also may be useful in "mall" situations, where user is
@@ -4449,7 +4448,7 @@ directory by default. The directory must exist. The source ASCII files
 should be present in that directory, and the DBM files are created
 there. Existing files will be overwritten.
 
-   offline -c catalog lbracket-d offline_dir]
+   offline -c catalog [-d offline_dir]
 
 Do a C<perldoc VENDROOT/bin/offline> for full documentation.
 
@@ -5229,7 +5228,7 @@ a shopping cart entry line, but this is too much trouble.
 The attribute information is placed on the form with form fields,
 like:
 
- <INPUT TYPE=XXXXX NAME="lbracketmodifier-name size]" VALUE="lbracketitem-modifier size]">
+ <INPUT TYPE=XXXXX NAME="[modifier-name size]" VALUE="[item-modifier size]">
 
 The embedded Perl capability of Interchange means that you can
 discover the number of items on order of each type, and build quite
@@ -5241,7 +5240,7 @@ should help you. Try ordering the T-Shirt and visiting its flypage.
 As always, check the error log. The most common problem is something
 like:
 
-   akopia.com 3Ex5lvta:akopia.com - lbracket01/Sep/1997:09:08:43] simple /cgi-bin/simple
+   akopia.com 3Ex5lvta:akopia.com - [01/Sep/1997:09:08:43] simple /cgi-bin/simple
    > Encryption error:
    >
 
@@ -5290,28 +5289,28 @@ is C<pages/ord/report.html> or C<etc/report>.
 
 Set up two MIME regions in that file. First, at the top of the file:
 
-   lbrackettag mime type TEXT/PLAIN; CHARSET=US-ASCII]lbracket/tag]
-   lbrackettag mime Order Text]
+   [tag mime type TEXT/PLAIN; CHARSET=US-ASCII][/tag]
+   [tag mime Order Text]
 
-   ORDER DATE: lbracketcalc]localtimelbracket/calc]
-   ORDER NUMBER: lbracketvalue mv_order_number]
+   ORDER DATE: [calc]localtime[/calc]
+   ORDER NUMBER: [value mv_order_number]
 
-   Name: lbracketvalue name]
-   Company: lbracketvalue company]
+   Name: [value name]
+   Company: [value company]
 
    (Rest of order text, including item list)
-   lbracket/tag]
+   [/tag]
 
 Then, at the bottom of the report.html file, put the credit card info:
 
-   lbracketif value mv_credit_card_info]
-   lbrackettag mime type application/pgp-encrypted]lbracket/tag]
-   lbrackettag mime Credit Card Information]
+   [if value mv_credit_card_info]
+   [tag mime type application/pgp-encrypted][/tag]
+   [tag mime Credit Card Information]
 
-   lbracketvalue mv_credit_card_info]
+   [value mv_credit_card_info]
 
-   lbracket/tag]
-   lbracket/if]
+   [/tag]
+   [/if]
 
 Once this is done, you can read mail using your PGP client as a helper
 application to decode the MIME attachment. This does not require a
@@ -5339,16 +5338,16 @@ embedded Perl script, you can use:
 If it is the number of line items you need, then you can use a Perl
 script:
 
-   lbracketperl]
+   [perl]
        return scalar @{$Carts->{main}};
-   lbracket/perl]
+   [/perl]
 
 (The 'main' refers to the main shopping cart.)
 
 If you have SeparateItems in effect, and need the number of unique
 items, you could use:
 
-   lbracketperl]
+   [perl]
        my $cart = $Carts->{main};
        foreach my $item (@$cart) {
    @items = split /\|/, $items;
@@ -5357,7 +5356,7 @@ items, you could use:
    $count++ unless $seen{$_}++;
    }
    $count;
-   lbracket/perl]
+   [/perl]
 
 =head2 The demo doesn't do...(pick one)
 
@@ -5406,7 +5405,7 @@ around this bug. So, if you use Stronghold, you should update.
 Interchange also allows you to have forms with METHOD=GET.  To use,
 set the session ID in your form:
 
-   <INPUT TYPE=hidden NAME=mv_session_id VALUE="lbracketdata session id]">
+   <INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 
 You might then try METHOD=GET on forms that have problems. This may
 prevent errors due to one of the causes above.
@@ -5531,10 +5530,10 @@ your catalog.
 On your pages (this is from a search results page, the [item-.... ...]
 notation may be different depending on your context):
 
- lbracketitem-price]<br><!-- german is default -->
-lbracketsetlocale eur_EUR]
-  lbracketcurrency convert=1]lbracketitem-field price]lbracket/currency]<br><!-- the euro -->
-lbracketsetlocale]
+ [item-price]<br><!-- german is default -->
+[setlocale eur_EUR]
+  [currency convert=1][item-field price][/currency]<br><!-- the euro -->
+[setlocale]
 
 Any questions? Read the docs about "Internationalization."
 
@@ -5634,13 +5633,13 @@ Interchange can return VERY fast SQL search results. But you need to
 at least give it something to work with. The proper method for fast
 selection is:
 
- lbracketquery sql="select code,category,title,price from products" ]
+ [query sql="select code,category,title,price from products" ]
 
-Category: lbracketsql-param category]<BR>
-Title:    <A HREF="lbracketarea lbracketsql-code]]"> lbracketsql-param title] </A><BR>
-Price:    <A HREF="lbracketarea order lbracketsql-param 0]]"> lbracketsql-param price] </A><BR>
+Category: [sql-param category]<BR>
+Title:    <A HREF="[area [sql-code]]"> [sql-param title] </A><BR>
+Price:    <A HREF="[area order [sql-param 0]]"> [sql-param price] </A><BR>
 
-lbracket/sql]
+[/sql]
 
 This is especially powerful when you consider a joined query like:
 
@@ -5737,6 +5736,4 @@ and all previous versions.
 =back
 
 =back
-
-
 
