@@ -1,0 +1,1 @@
+code	parent	artid	mod_time	created	username	email	name	host	score	lastscore	reason	anon	extended	subject	comment	additional
