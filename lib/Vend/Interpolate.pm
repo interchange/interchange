@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.48 2001-04-13 21:05:59 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.49 2001-04-15 05:59:10 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.48 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.49 $, 10);
 
 @EXPORT = qw (
 
@@ -128,7 +128,8 @@ BEGIN {
 						/;
 }
 
-use vars @Share_vars, @Share_routines, qw/$Calc_initialized $Calc_reset $ready_safe/;
+use vars @Share_vars, @Share_routines,
+		 qw/$ready_safe $safe_safe/;
 use vars qw/%Filter %Ship_handler $Safe_data/;
 
 $ready_safe = new Safe;
@@ -136,13 +137,18 @@ $ready_safe->untrap(qw/sort ftfile/);
 
 sub reset_calc {
 #::logDebug("resetting calc");
-	if(defined $Vend::Cfg->{ActionMap}{_mvsafe}) {
+	if(! $Global::Foreground and $Vend::Cfg->{ActionMap}{_mvsafe}) {
 #::logDebug("already made");
 		$ready_safe = $Vend::Cfg->{ActionMap}{_mvsafe};
 	}
 	else {
 #::logDebug("new one made");
 		$ready_safe = new Safe 'MVSAFE';
+#::logDebug("::Instance::SearchObject=" . join ",", keys %$::Instance::SearchObject);
+		if($Global::Foreground) {
+			package MVSAFE;
+			reset 'A-Za-z_';
+		}
 		$ready_safe->untrap(@{$Global::SafeUntrap});
 		no strict 'refs';
 		$Document   = new Vend::Document;
@@ -154,16 +160,22 @@ sub reset_calc {
 		$DbSearch   = new Vend::DbSearch;
 		$TextSearch = new Vend::TextSearch;
 		$Tag        = new Vend::Tags;
-		$Tmp        = {};
 	}
-	$Calc_reset = 1;
-	undef $Calc_initialized;
+	$Tmp        = {};
+	undef $s;
+	undef $q;
+	undef $item;
+	%Db = ();
+	%Sql = ();
+	undef $Shipping;
+	$Vend::Calc_reset = 1;
+	undef $Vend::Calc_initialized;
 	return $ready_safe;
 }
 
 sub init_calc {
 #::logDebug("initting calc");
-	reset_calc() unless $Calc_reset;
+	reset_calc() unless $Vend::Calc_reset;
 	$CGI_array                   = \%CGI::values_array;
 	$CGI        = $Safe{cgi}     = \%CGI::values;
 	$Carts      = $Safe{carts}   = $::Carts;
@@ -172,9 +184,10 @@ sub init_calc {
 	$Scratch    = $Safe{scratch} = $::Scratch;
 	$Values     = $Safe{values}  = $::Values;
 	$Session                     = $Vend::Session;
-	$Search                      = $Vend::SearchObject ||= {};
+	$Search                      = $::Instance->{SearchObject} ||= {};
 	$Variable   = $::Variable;
-	$Calc_initialized = 1;
+	$Vend::Calc_initialized = 1;
+	
 	return;
 }
 
@@ -450,7 +463,7 @@ sub cache_html {
 
 	# Comment facility
 
-	reset_calc() unless $Calc_reset;
+	reset_calc() unless $Vend::Calc_reset;
 
 	$CacheInvalid = 0;
 
@@ -523,14 +536,12 @@ sub interpolate_html {
 	my ($name, @post);
 	my ($bit, %post);
 
-	reset_calc() unless $Calc_reset;
+	reset_calc() unless $Vend::Calc_reset;
 
 	defined $::Variable->{MV_AUTOLOAD}
 		and $html =~ s/^/$::Variable->{MV_AUTOLOAD}/;
 
 	1 while $html =~ s/\[pragma\s+(\w+)(?:\s+(\w+))?\]/$Vend::Cfg->{Pragma}{$1} = (length($2) ? $2 : 1), ''/ige;
-
-#::logDebug("Vend::Cfg->{Pragma} -> " . ::uneval_it(\%Vend::Cfg->{Pragma}));
 
 	vars_and_comments(\$html);
 
@@ -623,15 +634,21 @@ sub tag_record {
 sub try {
 	my ($label, $opt, $body) = @_;
 	$label = 'default' unless $label;
-	delete $Vend::Session->{try}{$label};
+	$Vend::Session->{try}{$label} = '';
 	my $out;
 	my $save;
 	$save = delete $SIG{__DIE__} if defined $SIG{__DIE__};
+	$Vend::Try = $label;
 	eval {
 		$out = interpolate_html($body);
 	};
+	undef $Vend::Try;
 	$SIG{__DIE__} = $save if defined $save;
-	$Vend::Session->{try}{$label} = $@ if $@;
+	if($@) {
+		$Vend::Session->{try}{$label} .= "\n" 
+			if $Vend::Session->{try}{$label};
+		$Vend::Session->{try}{$label} .= $@;
+	}
 	if ($opt->{status}) {
 		return $@ ? 0 : 1;
 	}
@@ -649,7 +666,7 @@ sub catch {
 		unless $patt = $Vend::Session->{try}{$label};
 	$body =~ m{\[([^\]]*$patt[^\]]*)\](.*)\[/\1\]}s
 		and return $2;
-	$body =~ s{\[([^\]]*)\].*\[/\1\]}{}s;
+	$body =~ s{\[([^\]]*)\].*\[/\1\]}{}sg;
 	return $body;
 }
 
@@ -2136,12 +2153,7 @@ EOF
 
 # END MVASP
 
-use vars qw/$ready_safe $safe_safe $extra_safe/;
-use vars qw/$Calc_initialized/;
-use vars qw/$Items/;
-
 $safe_safe = new Safe;
-$extra_safe = new Safe;
 
 sub tag_perl {
 	my ($tables, $opt,$body) = @_;
@@ -2161,7 +2173,7 @@ sub tag_perl {
 	}
 
 #::logDebug("tag_perl: tables=$tables opt=" . ::uneval($opt) . " body=$body");
-#::logDebug("tag_perl initialized=$Calc_initialized: carts=" . ::uneval($::Carts));
+#::logDebug("tag_perl initialized=$Vend::Calc_initialized: carts=" . ::uneval($::Carts));
 	if($opt->{subs} || (defined $opt->{arg} and $opt->{arg} =~ /\bsub\b/)) {
 		no strict 'refs';
 		for(keys %{$Global::GlobalSub}) {
@@ -2203,7 +2215,7 @@ sub tag_perl {
 
 	$Tag = $hole->wrap($Tag);
 
-	init_calc() if ! $Calc_initialized;
+	init_calc() if ! $Vend::Calc_initialized;
 	$ready_safe->share(@share) if @share;
 
 	if($Vend::Cfg->{Tie_Watch}) {
@@ -2244,11 +2256,16 @@ sub tag_perl {
 	if ($@) {
 #::logDebug("tag_perl failed $@");
 		my $msg = $@;
+		if($Vend::Try) {
+			$Vend::Session->{try}{$Vend::Try} .= "\n" 
+				if $Vend::Session->{try}{$Vend::Try};
+			$Vend::Session->{try}{$Vend::Try} .= $@;
+		}
 		logError( "Safe: %s\n%s\n" , $msg, $body );
 		logGlobal({ level => 'debug' }, "Safe: %s\n%s\n" , $msg, $body );
 		return $opt->{failure};
 	}
-#::logDebug("tag_perl initialized=$Calc_initialized: carts=" . ::uneval($::Carts));
+#::logDebug("tag_perl initialized=$Vend::Calc_initialized: carts=" . ::uneval($::Carts));
 
 	if ($opt->{no_return}) {
 		$Vend::Session->{mv_perl_result} = $result;
@@ -3314,13 +3331,13 @@ sub tag_calc {
 		$result = eval($body);
 	}
 	else {
-		init_calc() if ! $Calc_initialized;
+		init_calc() if ! $Vend::Calc_initialized;
 		$result = $ready_safe->reval($body);
 	}
 
 	if ($@) {
-		my $msg;
-		$msg .= $@;
+		my $msg = $@;
+		$Vend::Session->{try}{$Vend::Try} = $msg if $Vend::Try;
 		logGlobal({ level => 'debug' }, "Safe: %s\n%s\n" , $msg, $body);
 		logError("Safe: %s\n%s\n" , $msg, $body);
 		return $MVSAFE::Safe ? '' : 0;
@@ -3708,7 +3725,7 @@ sub tag_search_list {
 	my $obj;
 
 	$obj = $opt->{object}
-			|| $Vend::SearchObject{$opt->{label}}
+			|| $::Instance->{SearchObject}{$opt->{label}}
 			|| perform_search()
 			|| return;
 	$text =~ s:\[if-(field\s+|data\s+):[if-item-$1:gi
@@ -3778,7 +3795,7 @@ sub tag_more_list {
 	) = @_;
 #::logDebug("more_list: opt=$opt label=$opt->{label}");
 	return undef if ! $opt;
-	$q = $opt->{object} || $Vend::SearchObject{$opt->{label}};
+	$q = $opt->{object} || $::Instance->{SearchObject}{$opt->{label}};
 	return '' unless $q->{matches} > $q->{mv_matchlimit};
 	my($arg,$inc,$last,$m);
 	my($adder,$pages);
@@ -4494,7 +4511,7 @@ my $once = 0;
 											:	pull_else($4)!ige;
 		$run =~ s#$B$QR{_calc}$E$QR{'/_calc'}#tag_calc($1)#ige;
 		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#
-					init_calc() if ! $Calc_initialized;
+					init_calc() if ! $Vend::Calc_initialized;
 					($Vend::Cfg->{Sub}{$1} || sub { 'ERROR' })->($2,$row)
 				#ige;
 		$run =~ s#$B$QR{_filter}$E$QR{'/_filter'}#filter_value($1,$2)#ige;
@@ -4650,7 +4667,7 @@ sub iterate_hash_list {
 		$run =~ s#$B$QR{_tag}($All$E[-_]tag[-_]\1\])#
 						tag_dispatch($1,$count, $item, $hash, $2)#ige;
 		$run =~ s#$B$QR{_calc}$E$QR{'/_calc'}#tag_calc($1)#ige;
-		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#init_calc() if ! $Calc_initialized;($Vend::Cfg->{Sub}{$1} || sub { 'ERROR' })->($2,$item)#ige;
+		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#init_calc() if ! $Vend::Calc_initialized;($Vend::Cfg->{Sub}{$1} || sub { 'ERROR' })->($2,$item)#ige;
 		$run =~ s#$B$QR{_filter}$E$QR{'/_filter'}#filter_value($1,$2)#ige;
 		$run =~ s#$B$QR{_last}$E$QR{'/_last'}#
                     my $tmp = interpolate_html($1);
@@ -5018,8 +5035,9 @@ sub region {
 		}
 		elsif ($opt->{search}) {
 #::logDebug("opt->search object label=$opt->{label}.");
-			if($opt->{more} and $Vend::SearchObject{''}) {
-				$obj = $Vend::SearchObject{''};
+			if($opt->{more} and $::Instance->{SearchObject}{''}) {
+				$obj = $::Instance->{SearchObject}{''};
+#::logDebug("cached search");
 			}
 			else {
 				$c = {	mv_search_immediate => 1,
@@ -5027,12 +5045,13 @@ sub region {
 						};
 				my $params = escape_scan($opt->{search});
 				Vend::Scan::find_search_params($c, $params);
+#::logDebug("perform_search");
 				$obj = perform_search($c);
 			}
 		}
 		else {
 #::logDebug("try labeled object label=$opt->{label}.");
-			$obj = $Vend::SearchObject{$opt->{label}};
+			$obj = $::Instance->{SearchObject}{$opt->{label}};
 		}
 #::logDebug("no found object") if ! $obj;
 		if(! $obj) {
@@ -5043,7 +5062,7 @@ sub region {
 				} if ! $obj;
 		}
 		finish_search($obj);
-		$Vend::SearchObject{$opt->{label}} = $opt->{object} = $obj;
+		$::Instance->{SearchObject}{$opt->{label}} = $opt->{object} = $obj;
 #::logDebug("labeling as '$opt->{label}'");
 	}
 	my $prefix = defined $opt->{list_prefix} ? $opt->{list_prefix} : 'list';
@@ -5321,7 +5340,7 @@ sub apply_discount {
 
 	my $subtotal = item_subtotal($item);
 
-	init_calc() unless $Calc_initialized;
+	init_calc() unless $Vend::Calc_initialized;
 	# Calculate any formalas found
 	foreach $formula (@formulae) {
 		next unless $formula;
@@ -5395,7 +5414,7 @@ sub read_shipping {
 	my @flines = split /\n/, readfile($file);
 	if ($Vend::Cfg->{CustomShipping} =~ /^select\s+/i) {
 		($Vend::Cfg->{SQL_shipping} = 1, return)
-			if $Vend::Foreground;
+			if $Global::Foreground;
 		my $ary;
 		my $query = interpolate_html($Vend::Cfg->{CustomShipping});
 		eval {
@@ -5823,9 +5842,13 @@ sub timed_build {
 
 	return Vend::Interpolate::interpolate_html(shift)
 		if $abort
-		or ! $Vend::Cookie
-		or $Vend::BuildingPages
-		or ! $opt->{login} && $Vend::Session->{logged_in};
+		or ( ! $opt->{force}
+				and
+				(   ! $Vend::Cookie
+					or $Vend::BuildingPages
+					or ! $opt->{login} && $Vend::Session->{logged_in}
+				)
+			);
 
     if($opt->{noframes} and $Vend::Session->{frames}) {
         return '';

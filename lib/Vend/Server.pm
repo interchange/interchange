@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.32 2001-04-13 20:38:52 heins Exp $
+# $Id: Server.pm,v 1.8.2.33 2001-04-15 05:59:11 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.32 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.33 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -403,7 +403,7 @@ sub canon_status {
 sub respond {
 	# $body is now a reference
     my ($s, $body) = @_;
-
+show_times("begin response send") if $Global::ShowTimes;
 	my $status;
 	if($Vend::StatusLine) {
 		$status = $Vend::StatusLine =~ /(?:^|\n)Status:\s+(.*)/i
@@ -431,6 +431,7 @@ sub respond {
 		print MESSAGE $$body;
 		undef $Vend::StatusLine;
 		$Vend::ResponseMade = 1;
+show_times("end response send") if $Global::ShowTimes;
 		return;
 	}
 
@@ -445,6 +446,7 @@ sub respond {
 
 	if($Vend::ResponseMade || $CGI::values{mv_no_header} ) {
 		print $fh $$body;
+show_times("end response send") if $Global::ShowTimes;
 		return 1;
 	}
 
@@ -518,6 +520,7 @@ sub respond {
 
     print $fh "\r\n";
     print $fh $$body;
+show_times("end response send") if $Global::ShowTimes;
     $Vend::ResponseMade = 1;
 }
 
@@ -875,22 +878,32 @@ sub read_cgi_data {
 	return 1;
 }
 
+
 sub connection {
     my (%env, $entity);
-    my $http;
-#::logDebug ("begin connection: " . (join " ", times()));
+
+  ### This resets all $Vend::variable settings so we start
+  ### completely initialized. It only affects the Vend package,
+  ### not any Vend::XXX packages.
+	reset_vars();
+
+	if($Global::ShowTimes) {
+		@Vend::Times = times();
+		::logDebug ("begin connection. Summary time set to zero");
+	}
     read_cgi_data(\@Global::argv, \%env, \$entity)
     	or return 0;
-	$http = new Vend::Server \*MESSAGE, \%env, \$entity;
-#::logDebug("begin dispatch: " . (join " ", times()));
+    show_times('end cgi read') if $Global::ShowTimes;
+
+    my $http = new Vend::Server \*MESSAGE, \%env, \$entity;
 
 	# Can log all CGI inputs
 	log_http_data($http) if $Global::Logging;
 
+	show_times("begin dispatch") if $Global::ShowTimes;
     ::dispatch($http) if $http;
-#::logDebug ("end connection: " . (join " ", times()));
-	undef $Vend::ResponseMade;
-	undef $Vend::InternalHTTP;
+	show_times("end connection") if $Global::ShowTimes;
+	undef $Vend::Cfg;
 }
 
 ## Signals
@@ -945,6 +958,16 @@ unless ($Global::Windows) {
 
 $Routine_TERM = sub { $SIG{TERM} = $Routine_TERM; $Signal_Terminate = 1 };
 $Routine_INT  = sub { $SIG{INT} = $Routine_INT; $Signal_Terminate = 1 };
+
+sub reset_vars {
+	package Vend;
+	reset 'A-Z';
+	reset 'a-z';
+	package CGI;
+	reset 'A-Z';
+	reset 'a-z';
+#::logDebug("Reset vars");
+}
 
 sub setup_signals {
     @orig_signal{@trapped_signals} =
@@ -1321,7 +1344,7 @@ sub start_page {
 		}
 		elsif (! $pid) {
 			unless( $pid = fork ) {
-				$Vend::Foreground = 1 if $no_fork;
+				$Global::Foreground = 1 if $no_fork;
 
 				if($do_message) {
 					::logGlobal(
@@ -1401,7 +1424,7 @@ sub start_soap {
 				open(STDERR, ">&Vend::DEBUG");
 				select(STDERR); $| = 1; select(STDOUT);
 
-				$Vend::Foreground = 1;
+				$Global::Foreground = 1;
 
 				if($do_message) {
 					::logGlobal(
@@ -1450,6 +1473,8 @@ sub server_page {
 	my $spawn;
 	my $handled = 0;
 	
+	$Global::Foreground ||= $no_fork;
+
     for (;;) {
 
 	  my $n;
@@ -1466,8 +1491,6 @@ my $pretty_vector = unpack('b*', $rin);
 		do {
 			$n = select($rout = $rin, undef, undef, $tick);
 		} while $n == -1 && $!{EINTR} && ! $Signal_Terminate;
-
-		undef $Vend::Cfg;
 
 #::logDebug("pid=$$ cycle=$c handled=$handled tick=$tick vector=$pretty_vector n=$n num_servers=$Num_servers");
         if ($n == -1) {
@@ -1502,7 +1525,7 @@ my $pretty_vector = unpack('b*', $rin);
 			}
 
 			CHECKHOST: {
-				undef $Vend::OnlyInternalHTTP;
+				undef $Global::OnlyInternalHTTP;
 				last CHECKHOST if $unix_socket{$p};
 				my $connector;
 				(undef, $ok) = sockaddr_in($ok);
@@ -1512,7 +1535,7 @@ my $pretty_vector = unpack('b*', $rin);
 				(undef, $dns_name) = gethostbyaddr($ok, AF_INET);
 				$dns_name = "UNRESOLVED_NAME" if ! $dns_name;
 				last CHECKHOST if $dns_name =~ /$Global::TcpHost/;
-				$Vend::OnlyInternalHTTP = "$dns_name/$connector";
+				$Global::OnlyInternalHTTP = "$dns_name/$connector";
 			}
 			$spawn = 1;
 		}
@@ -1533,13 +1556,11 @@ my $pretty_vector = unpack('b*', $rin);
 #::logDebug ("Spawning connection, " .  ($no_fork ? 'no fork, ' : 'forked, ') .  scalar localtime());
 			if($no_fork) {
 				### Careful, returns after MaxRequests or terminate signal
-				$Vend::NoFork = {};
 				$::Instance = {};
 				$handled++;
 #::logDebug("begin non-forked ::connection()");
 				connection();
 #::logDebug("end non-forked ::connection()");
-				undef $Vend::NoFork;
 				undef $::Instance;
 			}
 			elsif(! defined ($pid = fork) ) {
@@ -1592,14 +1613,6 @@ my $pretty_vector = unpack('b*', $rin);
 
 			close MESSAGE;
 
-			# Below only happens with Windows or foreground debugs.
-			# Prevent corruption of changed $Vend::Cfg entries
-			# (only VendURL/SecureURL at this point).
-			if($Vend::Save and $Vend::Cfg) {
-				Vend::Util::copyref($Vend::Save, $Vend::Cfg);
-				undef $Vend::Save;
-			}
-			undef $Vend::Cfg;
 		}
 
 		return 1
@@ -1634,8 +1647,6 @@ my $pretty_vector = unpack('b*', $s_vector);
 			$n = select($rout = $rin, undef, undef, $tick);
 		} while $n == -1 && $!{EINTR} && ! $Signal_Terminate;
 
-		undef $Vend::Cfg;
-
         if ($n == -1) {
 			last if $!{EINTR} and $Signal_Terminate;
 			my $msg = $!;
@@ -1647,11 +1658,8 @@ my $pretty_vector = unpack('b*', $s_vector);
 			next;
 		}
         else {
-#::logDebug("SOAP n=$n pid=$$ c=$c time=" . join '|', times());
 			while (($p, $v) = each %s_vec_map) {
-#::logDebug("SOAP trying p=$p v=$v vec=$pretty_vector pid=$$ c=$c");
         		next unless vec($rout, $v, 1);
-#::logDebug("SOAP accepting p=$p v=$v pid=$$ c=$c");
 				$Global::TcpPort = $p;
 				$ok = accept(MESSAGE, $s_fh_map{$p});
 				last;
@@ -1688,12 +1696,17 @@ my $pretty_vector = unpack('b*', $s_vector);
 				(undef, $dns_name) = gethostbyaddr($ok, AF_INET);
 				$dns_name = $connector if ! $dns_name;
 				last CHECKHOST if $dns_name =~ /$Global::TcpHost/;
-				$Vend::OnlyInternalHTTP = "$dns_name/$connector";
+				$Global::OnlyInternalHTTP = "$dns_name/$connector";
 			}
 
 			$handled++;
 			my %env;
 			my $entity;
+			
+			reset_vars();
+
+			$Vend::OnlyInternalHTTP = $Global::OnlyInternalHTTP;
+
 			$Vend::Cfg = http_soap(\*MESSAGE, \%env, \$entity);
 
 			my $result;
@@ -1740,8 +1753,8 @@ my $pretty_vector = unpack('b*', $s_vector);
 
 	  return if $Signal_Terminate;
 	  return 1 if $handled > ($Global::SOAP_MaxRequests || 10);
-	  undef $Vend::Session;
 	  ::put_session() if $Vend::HaveSession;
+	  undef $Vend::Session;
 	  undef $Vend::HaveSession;
     }
 
@@ -1954,7 +1967,7 @@ sub server_both {
 	my $no_fork;
 	if($Global::Windows or $Global::DEBUG ) {
 		$no_fork = 1;
-		$Vend::Foreground = 1;
+		$Global::Foreground = 1;
 		::logGlobal({ level => 'info' }, "Running in foreground, OS=$^O, debug=$Global::DEBUG\n");
 	}
 	else {
@@ -1979,7 +1992,6 @@ sub server_both {
 		$| = 1;
 		open(STDERR, ">&Vend::DEBUG");
 		select(STDERR); $| = 1; select(STDOUT);
-		$Vend::Foreground = 0;
 #::logDebug("s_vector=" . unpack('b*', $s_vector));
 		if($s_vector) {
 			start_soap(1);
@@ -1992,7 +2004,6 @@ sub server_both {
 		$p_vector = $vector ^ $ipc_vector;
 		start_page(1,$Global::PreFork);
 	}
-	
 
 	my $c = 0;
 	my $only_ipc = $master_ipc;
@@ -2086,10 +2097,8 @@ my $pretty_vector = unpack('b*', $rin);
 			last SPAWN unless defined $spawn;
 #::logDebug #("Spawning connection, " .  ($no_fork ? 'no fork, ' : 'forked, ') .  scalar localtime() . "\n");
 			if(defined $no_fork) {
-				$Vend::NoFork = {};
 				$::Instance = {};
 				connection();
-				undef $Vend::NoFork;
 				undef $::Instance;
 			}
 			elsif(! defined ($pid = fork) ) {
@@ -2149,15 +2158,6 @@ my $pretty_vector = unpack('b*', $rin);
 			}
 
 			close MESSAGE;
-
-			# Below only happens with Windows or foreground debugs.
-			# Prevent corruption of changed $Vend::Cfg entries
-			# (only VendURL/SecureURL at this point).
-			if($Vend::Save and $Vend::Cfg) {
-				Vend::Util::copyref($Vend::Save, $Vend::Cfg);
-				undef $Vend::Save;
-			}
-			undef $Vend::Cfg;
 		}
 
 		last if $Signal_Terminate || $Signal_Debug;
@@ -2261,16 +2261,20 @@ sub run_server {
 
 	::logGlobal({ level => 'info' }, server_start_message());
 
-	if($Global::PreFork) {
+	if($Global::PreFork || $Global::DEBUG || $Global::Windows) {
 		eval {
 			require Tie::ShadowHash;
 		};
 		if($@) {
-			die ::errmsg("Running in PreFork mode requires Tie::ShadowHash module.") . "\n";
+			my $reason;
+			if($Global::PreFork)	{ $reason = 'in PreFork mode' }
+			elsif($Global::DEBUG)	{ $reason = 'in DEBUG mode' }
+			elsif($Global::Windows)	{ $reason = 'under Windows' }
+			die ::errmsg("Running $reason requires Tie::ShadowHash module.") . "\n";
 		}
 	}
 
-    if ($Global::Windows) {
+    if ($Global::Windows || $Global::DEBUG) {
         my $running = grab_pid($pidh);
         if ($running) {
 			print errmsg(

@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.2
 #
-# $Id: interchange.PL,v 1.15.2.35 2001-04-14 09:39:30 heins Exp $
+# $Id: interchange.PL,v 1.15.2.36 2001-04-15 05:59:13 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -57,7 +57,7 @@ use lib '/usr/local/interchange';
 use strict;
 
 BEGIN {
-	$Vend::Foreground = 1;
+	$Global::Foreground = 1;
 	
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
 		if defined $ENV{MINIVEND_ROOT};
@@ -1477,15 +1477,8 @@ sub config_named_catalog {
      	return undef;
     }
 
-	if ($c->{IPC}) {
-		my $dir = '.';
-		$dir = $c->{IPCdir} if $c->{IPCdir};
-		dump_structure($c, "$dir/$g->{name}");
-		chmod($c->{IPCmode} | 0644 , "$dir/$g->{name}")
-	}
 	dump_structure($c, $g->{name}) if $Global::DumpStructure;
 
-	#delete $c->{Source} unless $Global::KeepSource;
 	my $stime = scalar localtime();
 	Vend::Util::writefile(">$Global::ConfDir/status.$g->{name}", "$stime\n");
 	Vend::Util::writefile(">$c->{ConfDir}/status.$g->{name}", "$stime\n");
@@ -1638,11 +1631,6 @@ my %action = (
 sub dispatch {
 	my($http) = @_;
 	$H = $http;
-	if($Vend::Foreground) {
-		Vend::Interpolate::reset_calc();
-	}
-#::logDebug ("begin dispatch: " . (join " ", times()) . "\n");
-#::logDebug ("begin dispatch, locale LC_CTYPE: " . POSIX::setlocale(POSIX::LC_CTYPE()) . "\n");
 
 	adjust_cgi();
 
@@ -1665,7 +1653,7 @@ EOF
 		return;
 	}
 
-	if($Global::PreFork) {
+	if($Global::Foreground) {
 		my %hash;
 		tie %hash, 'Tie::ShadowHash', $Global::Selector{$CGI::script_name} ;
 		$Vend::Cfg = \%hash;
@@ -1694,7 +1682,7 @@ EOF
 ##   Variable
 
 	my $catref = $Global::Catalog{$Vend::Cfg->{CatalogName}};
-	if(! $Vend::Foreground and defined $catref->{directive}) {
+	if(! $Global::Foreground and defined $catref->{directive}) {
 		no strict 'refs';
 		my ($key, $val);
 		while ( ($key, $val) = each %{$catref->{directive}}) {
@@ -1779,7 +1767,10 @@ EOF
 	tie_static_dbm() if $Vend::Cfg->{StaticDBM};
 # END STATICPAGE
 	umask $Vend::Cfg->{Umask};
+
+#show_times("end cgi and config mapping") if $Global::ShowTimes;
 	open_database();
+#show_times("end open_database") if $Global::ShowTimes;
 
 	$CGI::user = Vend::Util::check_authorization($CGI::authorization)
 		if defined $CGI::authorization;
@@ -1971,6 +1962,7 @@ EOF
 
 	$CGI::pragma = 'no-cache'
 		if delete $::Scratch->{mv_no_cache};
+#show_times("end session get") if $Global::ShowTimes;
 
 	$Vend::FinalPath = $Vend::Session->{last_url} = $CGI::path_info;
 	if(	defined $Vend::Session->{one_time_path_alias}{$Vend::FinalPath} ) {
@@ -2044,6 +2036,7 @@ EOF
 			my $sub = $Vend::Cfg->{Sub}{$macro} || $Global::GlobalSub->{$macro};
 			$sub->();
 		}
+#show_times("end global Autoload macro") if $Global::ShowTimes;
 	}
 
 	if ($macro = $Vend::Cfg->{Filter}) {
@@ -2080,6 +2073,7 @@ EOF
 		else {
 			interpolate_html($macro);
 		}
+#show_times("end session Autoload macro") if $Global::ShowTimes;
 	}
 
     # If the cgi-bin program was invoked with no extra path info,
@@ -2132,10 +2126,12 @@ EOF
 		$Vend::FinalPath = join "", @path;
 	}
 
+#show_times("end path/action resolve") if $Global::ShowTimes;
+
 	eval {
 		if(defined $sub) {
-#::logDebug("found sub");
 				$status = $sub->($Vend::FinalPath);
+#show_times("end action") if $Global::ShowTimes;
 		}
 		else {
 			$status = 1;
@@ -2162,8 +2158,8 @@ EOF
 		if ! defined $CGI::values{mv_nextpage};
 
 	do_page() if $status;
+#show_times("end page display") if $Global::ShowTimes;
 
-#::logDebug ("end dispatch: " . (join " ", times()) . "\n");
 
 	if(my $macro = $Vend::Cfg->{AutoEnd}) {
 		if($macro =~ /\[\w+/) {
@@ -2173,6 +2169,7 @@ EOF
 			$sub = $Vend::Cfg->{Sub}{$macro} || $Global::GlobalSub->{$macro};
 			$sub->();
 		}
+#show_times("end AutoEnd macro") if $Global::ShowTimes;
 	}
   }
 
@@ -2185,15 +2182,8 @@ EOF
 	close_database();
 
 	undef $H;
-	if($Vend::Save) {
-		copyref ($Vend::Save, $Vend::Cfg);
-		undef $Vend::Save;
-	}
-	undef $Vend::Cfg;
 
-# DEBUG
-#::logDebug ("closed all: " .  join " ", times() . "\n");
-# END DEBUG
+#show_times("end dispatch cleanup") if $Global::ShowTimes;
 
 	return 1;
 }
@@ -2761,7 +2751,7 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 	#undef $Global::DumpStructure;
 
 	if ($Vend::mode eq 'serve') {
-		undef $Vend::Foreground;
+		undef $Global::Foreground;
 
 		# Here we prepare enter the daemon mode.
 
@@ -2804,7 +2794,7 @@ if ($@) {
 	if ($Global::DisplayErrors) {
 		print "$msg\n";
 	}
-	die "$msg\n" if $Vend::Foreground;
+	die "$msg\n" if $Global::Foreground;
 }
 
 =head1 SEE ALSO

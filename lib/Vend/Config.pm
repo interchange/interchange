@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.40 2001-04-11 22:08:34 heins Exp $
+# $Id: Config.pm,v 1.25.2.41 2001-04-15 05:59:09 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -98,7 +98,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.40 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.41 $, 10);
 
 my %CDname;
 
@@ -313,6 +313,7 @@ sub global_directives {
 	['HammerLock',		 'integer',     	 30],
 	['DebugFile',		  undef,     	     ''],
 	['DataTrace',		 'integer',     	 0],
+	['ShowTimes',		 'yesno',	     	 0],
 	['ErrorFile',		  undef,     	     undef],
 	['SysLog',			 'hash',     	     undef],
 	['Logging',			 'integer',     	 0],
@@ -1563,7 +1564,7 @@ sub parse_message {
 						$configfile,
 				);
 
-	if($info_only and $Vend::Foreground) {
+	if($info_only and $Global::Foreground) {
 		print $msg;
 	}
 	else {
@@ -1892,19 +1893,6 @@ my %Default = (
 					}
 					return 1;
 				},
-### Getting ready to nix this
-#		# Turn the array of IPC keys into a hash value so that we can
-#		# grep for enables
-#		IPC => sub {
-#					my $ref = shift;
-#					return 1 unless ref $ref;
-#					my $hash = {};
-#					for(@$ref) {
-#						$hash->{$_} = 1;
-#					}
-#					$C->{IPCkeys} = $hash;
-#					return 1;
-#				},
 		SOAP_Socket => sub {
 					shift;
 					return 1 if $Have_set_global_defaults;

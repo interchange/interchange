@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.28 2001-04-13 21:06:00 heins Exp $
+# $Id: Util.pm,v 1.14.2.29 2001-04-15 05:59:11 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -60,6 +60,7 @@ require Exporter;
 	secure_vendUrl
 	send_mail
 	setup_escape_chars
+	show_times
 	string_to_ref
 	tag_nitems
 	uneval
@@ -75,7 +76,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.28 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.29 $, 10);
 
 BEGIN {
 	eval {
@@ -1493,6 +1494,15 @@ sub errmsg {
 	return sprintf $fmt, @strings;
 }
 
+sub show_times {
+	my $message = shift || 'time mark';
+	my @times = times();
+	for( my $i = 0; $i < @times; $i++) {
+		$times[$i] -= $Vend::Times[$i];
+	}
+	logDebug("$message: " . join " ", @times);
+}
+
 sub logGlobal {
     my($msg) = shift;
 	my $opt;
@@ -1538,7 +1548,7 @@ sub logGlobal {
 
 	my $nl = ($opt and $opt->{strip}) ? '' : "\n";
 
-	print "$msg$nl" if $Vend::Foreground and ! $Vend::Log_suppress && ! $Vend::Quiet;
+	print "$msg$nl" if $Global::Foreground and ! $Vend::Log_suppress && ! $Vend::Quiet;
 
 	$fn =~ s/^([^|>])/>>$1/
 		or $nolock = 1;
@@ -1579,7 +1589,7 @@ sub logError {
 		$msg = errmsg($msg, @_);
 	}
 
-	print "$msg\n" if $Vend::Foreground and ! $Vend::Log_suppress && ! $Vend::Quiet;
+	print "$msg\n" if $Global::Foreground and ! $Vend::Log_suppress && ! $Vend::Quiet;
 
 	$Vend::Session->{last_error} = $msg;
 

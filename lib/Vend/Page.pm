@@ -1,6 +1,6 @@
 # Page.pm - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 1.5.6.4 2001-04-09 06:24:05 heins Exp $
+# $Id: Page.pm,v 1.5.6.5 2001-04-15 05:59:11 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -48,7 +48,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 1.5.6.4 $, 10);
+$VERSION = substr(q$Revision: 1.5.6.5 $, 10);
 
 my $wantref = 1;
 
@@ -130,8 +130,8 @@ sub do_search {
 	$c->{mv_cache_key} = generate_key($Vend::Session->{last_search})
 			unless defined $c->{mv_cache_key};
 
-	$Vend::SearchObject{''} = perform_search($c);
-	$CGI::values{mv_nextpage}	= $Vend::SearchObject{''}->{mv_search_page}
+	$::Instance->{SearchObject}{''} = perform_search($c);
+	$CGI::values{mv_nextpage}	= $::Instance->{SearchObject}{''}->{mv_search_page}
 							 	|| find_special_page('search')
 		if ! $CGI::values{mv_nextpage};
 	return 1;
@@ -160,8 +160,8 @@ sub do_scan {
 		$c->{mv_cache_key} = generate_key(create_last_search($c));
 	}
 
-	$Vend::SearchObject{''} = perform_search($c);
-	$CGI::values{mv_nextpage} = $Vend::SearchObject{''}->{mv_search_page}
+	$::Instance->{SearchObject}{''} = perform_search($c);
+	$CGI::values{mv_nextpage} = $::Instance->{SearchObject}{''}->{mv_search_page}
 							 	|| find_special_page('search')
 		if ! $CGI::values{mv_nextpage};
 	return 1;
