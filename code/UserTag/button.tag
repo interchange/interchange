@@ -2,7 +2,7 @@ UserTag button Order name src text
 UserTag button addAttr
 UserTag button attrAlias value text
 UserTag button hasEndTag
-UserTag button Version $Id: button.tag,v 1.6 2002-11-04 15:46:52 mheins Exp $
+UserTag button Version $Id: button.tag,v 1.7 2003-01-13 23:11:00 mheins Exp $
 UserTag button Documentation <<EOD
 
 =pod
@@ -220,8 +220,9 @@ sub {
 		$a_after = '</a>';
 	}
 
+	$opt->{link_href} ||= 'javascript: void 0';
 	$out .= <<EOF;
-<A HREF="javascript:void 0"$opt->{extra} onMouseOver="window.status='$wstatus'"
+<A HREF="$opt->{link_href}"$opt->{extra} onMouseOver="window.status='$wstatus'"
 	onClick="$confirm mv_click_map_unique(document.$opt->{form}, '$clickname', '$text') && $opt->{form}.submit(); return(false);"
 	ALT="$wstatus"><IMG ALT="$wstatus" SRC="$src" border=$opt->{border}$position>$a_before$anchor$a_after
 EOF
