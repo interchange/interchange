@@ -1,6 +1,6 @@
 # Rare.pm - Interchange routines rarely used or not requiring much performance
 # 
-# $Id: Control.pm,v 1.2 2000-07-12 03:08:10 heins Exp $
+# $Id: Control.pm,v 1.3 2000-08-19 04:15:34 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -226,7 +226,7 @@ sub change_global_directive {
 	$Global::Structure->{$ref->[0]} = $ref->[1]
 		if $Global::DumpStructure;
 
-	dump_structure($Global::Structure, $Global::ConfigFile)
+	dump_structure($Global::Structure, "$Global::ConfDir/$Global::ConfigFile")
 		if $Global::DumpStructure;
 	return 1;
 }

@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.14 2000-08-07 05:38:15 heins Exp $
+# $Id: Config.pm,v 1.15 2000-08-19 04:15:34 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -101,7 +101,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.14 $, 10);
+$VERSION = substr(q$Revision: 1.15 $, 10);
 
 my %CDname;
 
@@ -1116,7 +1116,7 @@ GLOBLOOP:
 		Vend::Parse::global_init;
 	}
 
-	dump_structure($Global::Structure, $Global::ConfigFile)
+	dump_structure($Global::Structure, "$Global::ConfDir/$Global::ConfigFile")
 		if $Global::DumpStructure;
 	return 1;
 }
