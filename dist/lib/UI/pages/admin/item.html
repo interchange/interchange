@@ -24,7 +24,6 @@
 [set icon_name]icon_item.gif[/set]
 @_UI_STD_HEAD_@
 
-
 [comment]
 <!-- sequence_edit: [cgi ui_sequence_edit] -->
 <!-- item_id_left: [cgi item_id_left] -->
@@ -325,7 +324,6 @@ EOF
 [/if]
 
 [search-region more=1 sort="[scratch item_special_sort]" arg="[scratch item_sparams]"]
-[on-match]
 [calc] 
 	my $so   = $CGI->{ui_sort_option};
 	my $fld  = $CGI->{ui_sort_field};
@@ -431,7 +429,6 @@ EOF
 	return $out;
 [/calc]
 </tr>
-[/on-match]
 [search-list]
 <tr class=[item-alternate 2]rowalt[else]rownorm[/else][/item-alternate]>
 
@@ -522,7 +519,7 @@ Inventory
 [/search-list]
 [no-match]
 <tr>
-<td colspan=6 align=left>
+<td align=left>
 <br>
 <B>[L]Nothing matched[/L].</B>
 <br><br>
@@ -581,4 +578,4 @@ mv_nextpage=@@MV_PAGE@@
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ Revision: $Id: item.html,v 2.15 2003-02-12 03:59:11 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ Revision: $Id: item.html,v 2.16 2003-04-23 13:04:06 mheins Exp $ -->
