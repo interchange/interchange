@@ -15,17 +15,16 @@
 [set icon_name]icon_regen.gif[/set]
 @_UI_STD_HEAD_@
 
-[L]Reconfiguring catalog[/L]: ...<BR>[seti reconfig_status][reconfigure][/seti]
+[L]Reconfiguring catalog[/L]: ...<BR>
+[tmp name=RECONFIG_STATUS send=1][reconfigure][/tmp]
 
-[loop arg="[scratch its]"]
-[reconfig-wait send=1]
-[/loop]
+[reconfig-wait]
 
 [if scratch possible_timeout]
  [L]WARNING: Reconfiguration may have timed out[/L].<BR>
 [L]Last config[/L]: [reconfig-time]
 [else]
-[L]SUCCESS[/L]
+[L]SUCCESS[/L], config time [file name=`"etc/status.$Config->{CatalogName}"`]
 [value name=ui_changes_made set=""]
 [/else]
 [/if]
@@ -35,4 +34,4 @@
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.1.2.1 $ -->
