@@ -230,6 +230,10 @@ dist/construct/images/navigation/poweredby.gif
 dist/construct/images/navigation/recalculate_button.gif
 dist/construct/images/navigation/whitey.gif
 dist/construct/images/poweredby.gif
+dist/construct/images/smallamex.png
+dist/construct/images/smalldisc.png
+dist/construct/images/smallmc.png
+dist/construct/images/smallvisa.png
 dist/construct/images/thumb/gift_certificate.gif
 dist/construct/images/thumb/os28004_b.gif
 dist/construct/images/thumb/os28005_b.gif
@@ -302,6 +306,7 @@ dist/construct/pages/recurring_orders.html
 dist/construct/pages/recurring_orders_added.html
 dist/construct/pages/recurring_orders_removed.html
 dist/construct/pages/results.html
+dist/construct/pages/results_big.html
 dist/construct/pages/returns.html
 dist/construct/pages/ship_addresses.html
 dist/construct/pages/ship_addresses_added.html
@@ -364,7 +369,12 @@ dist/construct/special_pages/sec_faq.html
 dist/construct/special_pages/security.html
 dist/construct/special_pages/violation.html
 dist/construct/templates/cart
+dist/construct/templates/components/best_horizontal
+dist/construct/templates/components/best_vertical
 dist/construct/templates/components/cart
+dist/construct/templates/components/cart_display
+dist/construct/templates/components/cart_tiny
+dist/construct/templates/components/category_vertical
 dist/construct/templates/components/cross_horizontal
 dist/construct/templates/components/cross_vertical
 dist/construct/templates/components/promo_horizontal
@@ -382,6 +392,12 @@ dist/construct/templates/regions/LEFTRIGHT_BOTTOM
 dist/construct/templates/regions/LEFTRIGHT_TOP
 dist/construct/templates/regions/NOLEFT_BOTTOM
 dist/construct/templates/regions/NOLEFT_TOP
+dist/construct/templates/regions/SEL_ALL_BOTTOM
+dist/construct/templates/regions/SEL_ALL_TOP
+dist/construct/templates/regions/SEL_LEFT_BOTTOM
+dist/construct/templates/regions/SEL_LEFT_TOP
+dist/construct/templates/sel_all
+dist/construct/templates/sel_left
 dist/construct/tmp/.empty
 dist/construct/upload/.empty
 dist/error.log
@@ -396,7 +412,6 @@ dist/lib/UI/pages/admin/affiliates.html
 dist/lib/UI/pages/admin/bug_report.html
 dist/lib/UI/pages/admin/build_related.html
 dist/lib/UI/pages/admin/button_builder.html
-dist/lib/UI/pages/admin/change_t.pl
 dist/lib/UI/pages/admin/compedit.html
 dist/lib/UI/pages/admin/config.html
 dist/lib/UI/pages/admin/customer.html
@@ -559,6 +574,7 @@ dist/locale.error
 dist/src/compile.pl
 dist/src/config.h.in
 dist/src/configure
+dist/src/cpan_local_install
 dist/src/mod_perl_tlink.pl
 dist/src/mvctl.c
 dist/src/syscfg.in
@@ -574,6 +590,7 @@ dist/usertag/db_date
 dist/usertag/email
 dist/usertag/email_raw
 dist/usertag/fcounter
+dist/usertag/get_url
 dist/usertag/loc
 dist/usertag/rand
 dist/usertag/reconfig
