@@ -1,0 +1,3 @@
+UserTag debug  hasEndTag
+UserTag debug  Interpolate
+UserTag debug  MapRoutine   Vend::Util::logDebug
