@@ -3,21 +3,21 @@
 		delete $Values->{showinactive};
 		$Values->{showactive} = 1;
 		$Scratch->{active_sense} = 'ne';
-		$Scratch->{active_img} = 'admin/right.gif';
+		$Scratch->{active_img} = '@_UI_IMG_@admin/right.gif';
 		$Scratch->{active_nm} = 'deactivate';
 	}
 	elsif($CGI->{showinactive}) {
 		delete $Values->{showactive};
 		$Values->{showinactive} = 1;
 		$Scratch->{active_sense} = 'eq';
-		$Scratch->{active_img} = 'admin/left.gif';
+		$Scratch->{active_img} = '@_UI_IMG_@admin/left.gif';
 		$Scratch->{active_nm} = 'activate';
 	}
 	elsif(! $Values->{showactive} and ! $Values->{showinactive}) {
 		delete $Values->{showinactive};
 		$Values->{showactive} = 1;
 		$Scratch->{active_sense} = 'ne';
-		$Scratch->{active_img} = 'admin/right.gif';
+		$Scratch->{active_img} = '@_UI_IMG_@admin/right.gif';
 		$Scratch->{active_nm} = 'deactivate';
 	}
 	return;
