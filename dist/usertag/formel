@@ -63,7 +63,7 @@ sub {
     if ($opt->{'size'}) {
 		if ($type eq 'textarea') {
 			my ($rows, $cols) = split (/\s*[,x\s]\s*/, $opt->{'size'});
-			$sizestr = "rows=$rows cols=$cols";
+			$sizestr = " rows=$rows cols=$cols";
 		} else {
 	        $sizestr = " size=$opt->{size}";
 		}
