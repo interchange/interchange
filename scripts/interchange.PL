@@ -1,10 +1,34 @@
-#$self = {
-#	INSTALLPRIVLIB => '/usr/local/interchange/lib',
-#	INSTALLARCHLIB => '/usr/local/interchange',
-#};
+my $base = $ARGV[0] || '/work/interchange';
+$self = {
+	INSTALLARCHLIB => $base,
+	INSTALLBIN     => "$base/bin",
+	INSTALLDIRS    => 'perl',
+	INSTALLMAN1DIR => "$base/doc",
+	INSTALLMAN3DIR => "$base/doc",
+	INSTALLPRIVLIB => "$base/lib",
+	INSTALLSCRIPT  => "$base/bin",
+};
+
+my %Special;
 
 use Config;
-require 'scripts/initp.pl';
+
+eval {
+	require 'scripts/initp.pl';
+};
+
+if(! $MV::Self ) {
+	$MV::Self = $self;
+	$Special{perlpath} = $Config{perlpath};
+	$Special{perlpath} .= <<EOF;
+
+
+eval 'exec $Config{perlpath} -S \$0 \${1+"\$@"}'
+    if 0; # not running under some shell
+EOF
+	$Special{perlpath} =~ s/\s+$//;
+}
+
 
 sub doit {
 	my ($key) = @_;
@@ -14,7 +38,8 @@ sub doit {
 		return $val;
 	}
 	return $MV::Self->{$key} unless $key =~ /[a-z]/;
-	return $Config{$key};
+	return $Special{$key} if defined $Special{$key};
+	$Config{$key};
 }
 
 DOIT: {
@@ -25,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.7.5
 #
-# $Id: interchange.PL,v 1.15.2.52 2001-06-29 00:08:32 jon Exp $
+# $Id: interchange.PL,v 1.15.2.53 2001-06-29 03:58:37 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -428,20 +453,46 @@ sub update_quantity {
 				errmsg("'%s' for item %s is not numeric/integer", $quantity, $item);
     	}
     	$::Values->{"quantity$i"} = delete $CGI::values{"quantity$i"};
-		my $sku;
-		next unless $sku = delete $CGI::values{"mv_sku$i"};
-		if($sku ne $line->{code}) {
-			if($line->{mv_mp}) {
-				$line->{mv_sku} = $line->{code} = $sku;
+		SKUSET: {
+			my $sku;
+			my $found_option;
+			last SKUSET unless $sku = delete $CGI::values{"mv_sku$i"};
+			my @sku = split /\0/, $sku, -1;
+			for(@sku[1..$#sku]) {
+				if (not length $_) {
+				$_ = $::Variable->{MV_VARIANT_JOINER} || '0';
+				next;
+				}
+				$found_option++;
 			}
-			elsif (! $line->{mv_sku}) {
-				$line->{mv_sku} = $line->{code};
-				$line->{code} 	= $sku;
+
+			if(@sku > 1 and ! $found_option) {
+				splice @sku, 1;
 			}
-			else {
-				$line->{code}	= $sku;
+
+			$sku = join "-", @sku;
+
+			my $ib;
+			unless($ib 	= ::product_code_exists_tag($sku)) {
+				push @{$Vend::Session->{warnings} ||= []},
+					errmsg("Not a valid option combination: %s", $sku);
+					last SKUSET;
 			}
-			$line->{mv_ib} 	= ::product_code_exists_tag($sku);
+
+			$line->{mv_ib} = $ib;
+
+			if($sku ne $line->{code}) {
+				if($line->{mv_mp}) {
+					$line->{mv_sku} = $line->{code} = $sku;
+				}
+				elsif (! $line->{mv_sku}) {
+					$line->{mv_sku} = $line->{code};
+					$line->{code} 	= $sku;
+				}
+				else {
+					$line->{code}	= $sku;
+				}
+			}
 		}
     }
 #::logDebug("after update, cart is: " . ::uneval($cart));

@@ -1,10 +1,34 @@
-#$self = {
-#	INSTALLPRIVLIB => '/usr/local/interchange/lib',
-#	INSTALLARCHLIB => '/usr/local/interchange',
-#};
+my $base = $ARGV[0] || '/work/interchange';
+$self = {
+	INSTALLARCHLIB => $base,
+	INSTALLBIN     => "$base/bin",
+	INSTALLDIRS    => 'perl',
+	INSTALLMAN1DIR => "$base/doc",
+	INSTALLMAN3DIR => "$base/doc",
+	INSTALLPRIVLIB => "$base/lib",
+	INSTALLSCRIPT  => "$base/bin",
+};
+
+my %Special;
 
 use Config;
-require 'scripts/initp.pl';
+
+eval {
+	require 'scripts/initp.pl';
+};
+
+if(! $MV::Self ) {
+	$MV::Self = $self;
+	$Special{perlpath} = $Config{perlpath};
+	$Special{perlpath} .= <<EOF;
+
+
+eval 'exec $Config{perlpath} -S \$0 \${1+"\$@"}'
+    if 0; # not running under some shell
+EOF
+	$Special{perlpath} =~ s/\s+$//;
+}
+
 
 sub doit {
 	my ($key) = @_;
@@ -14,7 +38,8 @@ sub doit {
 		return $val;
 	}
 	return $MV::Self->{$key} unless $key =~ /[a-z]/;
-	return $Config{$key};
+	return $Special{$key} if defined $Special{$key};
+	$Config{$key};
 }
 
 DOIT: {
@@ -25,7 +50,7 @@ DOIT: {
 #
 # Interchange configuration dumper
 #
-# $Id: configdump.PL,v 1.8.2.1.2.1 2001-05-23 03:11:08 jon Exp $
+# $Id: configdump.PL,v 1.8.2.1.2.2 2001-06-29 03:58:37 heins Exp $
 #
 # Copyright 1999, 2000 by Stefan Hornburg <racke@linuxia.de>
 #
