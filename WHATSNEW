@@ -27,6 +27,9 @@ Packaging
 
 * No need to restart Interchange for log rotation.
 
+* Separate package creation process into architecture dependent
+  and architecture independent run (fixes Debian bug #172940)
+
 
 ------------------------------------------------------------------------------
 

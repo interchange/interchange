@@ -1,3 +1,11 @@
+interchange (4.8.7-1) unstable; urgency=low
+
+  * new upstream release
+  * separate package creation process into architecture dependent
+	and architecture independent run (Closes: #172940)
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 22 Jan 2003 01:24:52 +0100
+
 interchange (4.8.6.20021206-1) unstable; urgency=high
 
   * need to specifiy INSTALLSCRIPT for Perl 5.8.x in order to get
