@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.130 2002-11-23 01:46:00 mheins Exp $
+# $Id: Interpolate.pm,v 2.131 2002-11-23 03:20:40 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.130 $, 10);
+$VERSION = substr(q$Revision: 2.131 $, 10);
 
 @EXPORT = qw (
 
@@ -5230,12 +5230,9 @@ sub tag_loop_list {
 			};
 		}
 		else {
-			my @keys = grep $_ ne 'code', keys %$meta;
-			unshift @keys, 'code';
 			$opt->{object} = {
 					matches		=> 1,
-					mv_results	=> [ [ @{$meta}{@keys} ] ],
-					mv_field_names => \@keys,
+					mv_results	=> [ $meta ],
 			};
 		}
 		return region($opt, $text);
