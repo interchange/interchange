@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.8 2002-09-27 07:16:57 mheins Exp $
+# $Id: Editor.pm,v 1.9 2002-09-27 15:26:40 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8 $, 10);
+$VERSION = substr(q$Revision: 1.9 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -2828,7 +2828,7 @@ EOF
 #::logDebug("set start_at_index to $ctl_index");
 		}
 #::logDebug("control index now=$ctl_index");
-		col_chunk $col, $display;
+		col_chunk $namecol, $display;
 	}
 
 	for(sort keys %link_row) {
