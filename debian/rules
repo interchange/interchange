@@ -33,6 +33,7 @@ APXS=/usr/bin/apxs
 # (From mod-perl packaging)
 DEV_DPKG_VERSION := $(shell dpkg -s apache-dev | awk '/Version:/ {print $2}')
 DEV_VERSION := $(shell echo $(DEV_DPKG_VERSION) | sed "s/^Version: \(.*\)-.*$$/\1/")
+IC_VERSION := $(shell dpkg-parsechangelog | perl -ne 'print $$1 if /^Version: (.*?)-(.*)$$/')
 
 build: build-stamp
 build-stamp:
@@ -117,6 +118,8 @@ install: build
 # install logrotate configuration file
 	install -m 0755 -d $(TMP)/etc/logrotate.d/
 	install -m 0644 debian/interchange.logrotate $(TMP)/etc/logrotate.d/interchange
+# make VERSION file
+	echo 'Variable VERSION $(IC_VERSION)' > $(TMP)/usr/lib/interchange/VERSION
 	dh_movefiles
 	touch install-stamp
 
