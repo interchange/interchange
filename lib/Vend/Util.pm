@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.46 2003-01-21 16:09:09 mheins Exp $
+# $Id: Util.pm,v 2.47 2003-01-23 20:14:14 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -85,7 +85,7 @@ require HTML::Entities;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.46 $, 10);
+$VERSION = substr(q$Revision: 2.47 $, 10);
 
 BEGIN {
 	eval {
@@ -461,9 +461,17 @@ sub setlocale {
 sub currency {
 	my($amount, $noformat, $convert, $opt) = @_;
 	$opt = {} unless $opt;
-	
-	$amount = $amount / $Vend::Cfg->{PriceDivide}
-		if $convert and $Vend::Cfg->{PriceDivide} != 0;
+
+	my $pd = $Vend::Cfg->{PriceDivide};
+	if($opt->{locale}) {
+		$convert = 1;
+		$pd = $Vend::Cfg->{Locale_repository}{$opt->{locale}}{PriceDivide};
+	}
+
+	if($pd and $convert) {
+		$amount = $amount / $pd;
+	}
+
 	return $amount if $noformat;
 	my $loc;
 	my $sep;
@@ -471,6 +479,7 @@ sub currency {
 	my $fmt;
 	my $precede = '';
 	my $succede = '';
+
 	my $loc = $opt->{locale}
 			|| $::Scratch->{mv_currency_tmp}
 			|| $::Scratch->{mv_currency}
