@@ -4,6 +4,7 @@
 
 ------------------------------------------------------------------------------
 
+
 Interchange 4.8.1 released 2001-08-06.
 
 Foundation
@@ -24,7 +25,7 @@ Admin UI
 
 * Add MV_DEMO_MODE variable and MVC_DEMOMODE makecat setting.
 
-* Swedish UI locale (sv_SE) added.
+* Swedish UI locale (sv_SE) added by Tommi Labermo <tommi.labermo@surfnet.fi>.
 
 * Many more i18n improvements from Stefan Hornburg.
 
@@ -72,6 +73,10 @@ Admin UI
 
 * Make "Detect Settings" dependent on MV_DEMO_MODE.
 
+* Don't die if ImageMagick not there. Give error saying bad thumbs.
+
+Tags
+----
 * In display tag, add option for cases where we don't want a translation
   (e.g. mv_metadata may be written in another language).
 
@@ -86,8 +91,6 @@ Admin UI
 
   - Copy correct thumb filename (rarely caused trouble since we usually
     use the same filename for both).
-
-* Don't die if ImageMagick not there. Give error saying bad thumbs.
 
 * return-to tag: When mv_data_table was in ui_return_to, would get
   transformed to the name of the table variable set to a blank value.
