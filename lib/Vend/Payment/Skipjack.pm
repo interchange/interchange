@@ -1,6 +1,6 @@
 # Vend::Payment::Skipjack - Interchange Skipjack support
 #
-# $Id: Skipjack.pm,v 2.0.2.1 2002-01-24 05:07:03 jon Exp $
+# $Id: Skipjack.pm,v 2.0.2.2 2002-02-09 03:44:24 mheins Exp $
 #
 # Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Payment::Skipjack;
 
 =head1 Interchange Skipjack Support
 
-Vend::Payment::Skipjack $Revision: 2.0.2.1 $
+Vend::Payment::Skipjack $Revision: 2.0.2.2 $
 
 =head1 SYNOPSIS
 
@@ -97,8 +97,9 @@ The active settings are:
 
 =item id
 
-Your account ID number, supplied by Skipjack when you sign up.
-Global parameter is MV_PAYMENT_ID.
+Your account ID number, supplied by Skipjack when you sign up. Use the
+supplied HTML Serial Numbers (Nova or Vital) while testing in development 
+mode. Global parameter is MV_PAYMENT_ID.
 
 =item vendor
 
@@ -163,6 +164,10 @@ The Skipjack URL to submit to. Default is:
 
 	https://www.skipjackic.com/scripts/evolvcc.dll?Authorize
 
+Add the following to catalog.cfg while in development mode:
+
+	Route skipjack submit_url 'https://developer.skipjackic.com/scripts/evolvcc.dll?Authorize'
+
 =back
 
 =head2 Troubleshooting
@@ -189,7 +194,7 @@ If nothing works:
 
 Make sure you "Require"d the module in interchange.cfg:
 
-    Require module Vend::Payment::iTransact
+    Require module Vend::Payment::Skipjack
 
 =item *
 
@@ -440,6 +445,8 @@ sub skipjack {
 		%actual = map_actual();
 	}
 
+#::logDebug("Mapping: " . ::uneval(%actual));
+
 	if($opt->{test} || charge_param('test')) {
 		sj_test_values($opt, \%actual);
 	}
@@ -520,7 +527,9 @@ sub skipjack {
 		);
 	}
 
-	my $submit_url = $opt->{submit_url}
+#::logDebug("Values to be sent: " . ::uneval(%values));
+
+	$opt->{submit_url} = $opt->{submit_url}
 				   || 'https://www.skipjackic.com/scripts/evolvcc.dll?Authorize';
 
 	my $thing = post_data($opt, \%values);
