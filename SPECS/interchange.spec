@@ -7,7 +7,7 @@
 
 Summary: Interchange web application platform
 Name: interchange
-Version: 4.9.1
+Version: 4.9.2
 Release: 1
 Vendor: Interchange Development Group
 Group: System Environment/Daemons

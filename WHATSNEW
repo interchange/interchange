@@ -6,6 +6,124 @@
 ------------------------------------------------------------------------------
 
 
+Interchange 4.9.2 not yet released
+
+Core
+----
+* New ability to run Interchange entirely inside Apache and mod_perl.
+  See POD documentation inside Vend::ModPerl.
+
+* Add new cron facility:
+
+  - While we don't keep the time, and a scheduler will have to set the
+    execution time, it allows ITL to be run without the hassles of having
+    to deal with HTTP.
+  - Use $Vend::Cfg->{Cron} for setup.
+  - Emails either to command line address or $Vend::Cfg->{Cron}{email}.
+  - Logs to $Vend::Cfg->{Cron}{log}.
+  - Can add session dump when $Vend::Cfg->{Cron}{add_session}.
+  - Base directory set by $Vend::Cfg->{Cron}{base_directory}, defaults
+    to etc/cron.
+
+* Add First and Last links to more-list, with ability to customize via
+  [first-anchor] and [last-anchor] containers.
+
+* New support for database-native sequences for MySQL, PostgreSQL, and Oracle:
+
+  - To do a minimal sequenced table, all you need to do is:
+
+    Database  sequenced sequenced.txt __DBIDSN__
+    Database  sequenced AUTO_SEQUENCE sequenced
+
+  - The parameter passed to AUTO_SEQUENCE (in the above, "sequenced") will
+    be used as the sequence name for Postgres and Oracle (and presumably
+    others that emulate them).
+
+    For MySQL, the same technique that Stefan introduced is used, with an
+    AUTO_INCREMENT field. The value in AUTO_SEQUENCE is just a non-false
+    value. The behavior depends on the definition of
+    $capability->{LAST_SEQUENCE_FUNCTION}.
+
+    If MySQL is the DB in use,
+
+    $key = $s->autonumber();
+
+    returns nothing and the key will be later found with
+
+    $key = $s->last_sequence_value($key);
+
+    and returned in $db->set_slice, etc. ($db->set_row also uses this, but
+    the key value is never returned. You can get it with
+    $db->last_sequence_value if you need it.)
+
+    If PostgreSQL/Oracle is used, the key is returned with
+
+    $key = $s->autonumber();
+
+    and is just parroted back with
+
+    $key = $s->last_sequence_value($key);
+
+    If the table is being created, the sequence will be created as well. If
+    it exists, it will not be dropped. If the "code" or key field is not
+    set with a COLUMN_DEF, the field type to be used will be found in
+    $capability->{SEQUENCE_KEY}.
+
+    Capablility entries used:
+
+    SEQUENCE_CREATE         Query to create a sequence on table creation.
+    SEQUENCE_QUERY          Query to get next value in sequence.
+    SEQUENCE_KEY            Type definition for key field when AUTO_SEQUENCE
+                            table is created.
+    SEQUENCE_VALUE_FUNCTION Query to get current value of sequence.
+    SEQUENCE_LAST_FUNCTION  Query to get key when MySQL behavior is wanted.
+
+  - Can automatically drop existing sequence if:
+
+    Database sometable AUTO_SEQUENCE_DROP 1
+
+* Add BASE_CAPABILITY configuration parameter to allow testing of a new
+  SQL database type with settings based on one of the known types. If
+  behavior is different in particulars, that capability can be modified
+  in the config file.
+
+* In Vend::Config, fix incompatibility in Perl 5.005-style regex that
+  causes rejection of certain Locale settings.
+
+* Remove unnecessary CGI variable mappings at end of Vend::Config.
+
+* Fix call to [item-tag object name].
+
+* Add Filter alias e = encode_entites.
+
+Extensions
+----------
+* Various Quickbooks updates:
+
+  - Fixed: When an auto-created user orders from the same company as an
+    existing Quickbooks customer, it overwrites the customer.
+
+  - Save the auto-created user id (e.g. U00001) and use it in the Customer
+    Name as a unique identifier, just as logged-in users.
+
+  - New variables for easy customization of export features via Admin UI,
+    documented via item-specific meta referenced in the ic_qb.pod.
+
+  - Fixed: "INTL" showing up without country (now matches US or USA).
+
+  - Put the company name on a separate line in Ship-to and Bill-to
+    addresses. Now utilizing all 5 lines.
+
+  - Item names allowed length up to 45 (may cause problems with versions
+    older than 2000).
+
+  - Optionally cause Quickbooks invoice number to be blank, to keep
+    Quickbook's invoice number progression unmodified.
+
+
+------------------------------------------------------------------------------
+
+
 Interchange 4.9.1 released 2002-07-22
 
 
