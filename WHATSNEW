@@ -26,6 +26,8 @@ Core
 * Limit data part of Vend::File:writefile error message to 120 characters in
   order to avoid disk abuse, resolve scalar references.
 
+* Add filter option to [scratch], the same as with [value] and [cgi].
+
 UI
 --
 
@@ -76,6 +78,15 @@ Foundation
 
 * Changes to search form(s) now that HIDE_FIELD works
 
+* Fix ordering of THEME_CSS so it will be set in high-traffic and
+  PreFork mode.
+
+Options
+-------
+
+* Add inventory function back in. Mysteriously removed during the
+  Options rewrite.
+
 Payment
 -------
 
@@ -91,6 +102,11 @@ Shadow
 
 * Add stubs for commit and rollback methods, thanks to Thomas Weiss 
   <pater.noster@gmx.net> for report.
+
+i18n
+----
+
+* Add and improve foundation and UI translations.
 
 
 ------------------------------------------------------------------------------
