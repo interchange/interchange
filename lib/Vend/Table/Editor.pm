@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.44 2003-10-19 16:54:53 mheins Exp $
+# $Id: Editor.pm,v 1.45 2003-12-10 21:26:09 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.44 $, 10);
+$VERSION = substr(q$Revision: 1.45 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -3304,7 +3304,7 @@ EOF
 #::logDebug("meta-title=$opt->{meta_title}");
 				my $title = errmsg($opt->{meta_title}, $t, $c);
 				$meta_string = <<EOF;
-<a href="$meta_url"$opt->{meta_extra} tabindex=9999><img src="$opt->{meta_image}" title="$title" $opt->{meta_image_extra}></A></A>
+<a href="$meta_url"$opt->{meta_extra} tabindex=9999><img src="$opt->{meta_image}" title="$title" $opt->{meta_image_extra}></a>
 EOF
 				if($meta_specific) {
 					$title = errmsg($opt->{meta_title_specific}, $t, $c, $key);
