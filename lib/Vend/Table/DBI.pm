@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.20 2002-07-03 18:32:08 mheins Exp $
+# $Id: DBI.pm,v 2.21 2002-07-09 00:03:20 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.20 $, 10);
+$VERSION = substr(q$Revision: 2.21 $, 10);
 
 use strict;
 
@@ -1134,8 +1134,7 @@ sub set_row {
 	{
 		eval {
 			$val = $s->quote($fields[$ki], $s->[$KEY]);
-			$s->[$DBI]->do("delete from $s->[$TABLE] where $s->[$KEY] = $val")
-				unless $s->[$CONFIG]{Clean_start};
+			$s->[$DBI]->do("delete from $s->[$TABLE] where $s->[$KEY] = $val");
 		};
 	}
 
