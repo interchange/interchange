@@ -1,6 +1,6 @@
 COMPANY
 Your company name
-Foundation Site
+Foundation Store
 
 STYLE
 Default theme
@@ -11,7 +11,7 @@ Sample data type?
 tools	computer	reports	none
 
 DOMAINNAME
-Your base domain
+Your base domain for email addresses
 
 SOMESQL
 Set to 1 if you want to use MySQL, PostgreSQL, Oracle, or DB2
@@ -23,11 +23,11 @@ Set to 1 if you want to use MySQL
 
 {MYSQL}SQLDB
 Database to use (will be created)
-test___MVC_CATALOGNAME__	intchg
+test___MVC_CATALOGNAME__	interch
 
 {MYSQL}SQLDSN
 DBI DSN to use
-dbi:mysql:test___MVC_CATALOGNAME__
+dbi:mysql:__MVC_SQLDB__
 
 {MYSQL}SQLUSER
 Username for MySQL (if any)
@@ -38,28 +38,28 @@ Password for MySQL (if any)
 	pass
 
 {MYSQL}MYSQLCREATE
-Set to 1 to create 'test___MVC_CATALOGNAME__' with mysqladmin
+Set to 1 to create '__MVC_SQLDB__' with mysqladmin
 1	0
 
 {MYSQLCREATE}MYSQLCREATEOPT
 Extra options for creation
 	-p	-u root -p
 
-{SOMESQL and ! '1'}PGSQL
+{SOMESQL and ! '__MVC_MYSQL__'}PGSQL
 Set to 1 if you want to use PostgreSQL
 	1	0
 
 {PGSQL}SQLDB
 Database to use (will be created)
-test___MVC_CATALOGNAME__	interchange
+test___MVC_CATALOGNAME__	interch
 
 {PGSQL}SQLDSN
 DBI DSN to use
-dbi:Pg:dbname=test___MVC_CATALOGNAME__
+dbi:Pg:dbname=__MVC_SQLDB__
 
 {PGSQL}SQLUSER
 Username for PostgreSQL (if any)
-	mike
+	__MVC_CATUSER__	interch
 
 {PGSQL}SQLPASS
 Password for PostgreSQL (if any)
@@ -69,7 +69,7 @@ Password for PostgreSQL (if any)
 Timestamp for PostgreSQL (if any)
 2000-01-01
 
-{SOMESQL and ! '1' and ! ''}ORACLE
+{SOMESQL and ! '__MVC_MYSQL__' and ! '__MVC_PGSQL__'}ORACLE
 Set to 1 if you want to use Oracle
 1	0
 
@@ -79,7 +79,7 @@ dbi:Oracle:
 
 {ORACLE}SQLUSER
 Username for Oracle (if any)
-	intchg
+	__MVC_CATALOGNAME__	__MVC_CATUSER__	interch
 
 {ORACLE}SQLPASS
 Password for Oracle (if any)
@@ -93,34 +93,25 @@ Timestamp for Oracle (if any)
 Field name suffix for Oracle
 _field
 
-{SOMESQL and ! '1' and ! '' and ! ''}DB2
+{SOMESQL and ! '__MVC_MYSQL__' and ! '__MVC_PGSQL__' and ! '__MVC_ORACLE__'}DB2
 Set to 1 if you want to use DB2
 	1	0
 
 {DB2}SQLDB
 Database to use (will be created)
-test___MVC_CATALOGNAME__	intchg
+test___MVC_CATALOGNAME__	interch
 
 {DB2}SQLDSN
 DBI DSN to use
-dbi:DB2:test___MVC_CATALOGNAME__
+dbi:DB2:__MVC_SQLDB__
 
 {DB2}SQLUSER
 Username for DB2 (if any)
-	intchg
+	__MVC_CATALOGNAME__	__MVC_CATUSER__	interch
 
 {DB2}SQLPASS
 Password for DB2 (if any)
 	pass
-
-{DB2}DB2CREATE
-Set to 1 to create 'test___MVC_CATALOGNAME__' with db2admin
-1	0
-
-{DB2CREATE}DB2CREATEOPT
-Extra options for creation
-	-p	-u root -p
-
 
 SUPERUSER
 Account name that will control this catalog
@@ -175,7 +166,7 @@ Whether you accept purchase orders
 0	1
 
 PAYPOSTAL
-Whether you allow orders without payment, to be completed by mail
+Whether you allow orders without payment to be completed by mail
 0	1
 
 PAYCC
@@ -210,7 +201,7 @@ Secure server URL
 https://__MVC_SERVERNAME__
 
 TAXFIELD
-The field which determines taxing
+The field which determines tax rate
 state	country
 
 LOGDIR
@@ -222,27 +213,27 @@ The base directory for sessions and temps
 	/var/cache/interchange/__MVC_CATALOGNAME__
 
 IMGADDCART
-Your image selection for the "Add to cart" icon
+Image to use for the "Add to cart" icon
 __MVC_STYLE__/add_cart.gif
 
 IMGMOREINFO
-Your image selection for the "More information" icon
+Image to use for the "More information" icon
 __MVC_STYLE__/more_info.gif
 
 IMGCONTINUE
-Your image selection for the "Continue Shopping" button
+Image to use for the "Continue Shopping" button
 __MVC_STYLE__/continue_shopping.gif
 
 IMGCHECKOUT
-Your image selection for the "Check Out" button
+Image to use for the "Check Out" button
 __MVC_STYLE__/checkout_button.gif
 
 IMGRECALC
-Your image selection for the "Recalculate" button
+Image to use for the "Recalculate" button
 __MVC_STYLE__/recalculate_button.gif
 
 IMGRECALC
-Your image selection for the "Place Order" button
+Image to use for the "Place Order" button
 __MVC_STYLE__/recalculate_button.gif
 
 DICTPRICESTD
