@@ -23,7 +23,7 @@ at install time.
 
 If you are already an experienced CVS user, the information is:
 
-	spec          :pserver:anon_cvs@akopia.com:/anon_cvs/repository
+	spec          :pserver:anon_cvs@cvs.akopia.com:/anon_cvs/repository
 	password      anon_cvs
 	distribution  interchange
 
@@ -36,12 +36,12 @@ few steps below.
 
 Using bash/ksh/sh, type at the shell prompt:
 
-	$ CVSROOT=:pserver:anon_cvs@akopia.com:/anon_cvs/repository
+	$ CVSROOT=:pserver:anon_cvs@cvs.akopia.com:/anon_cvs/repository
 	$ export CVSROOT
 
 If you use tcsh/csh, do:
 
-	% setenv CVSROOT :pserver:anon_cvs@akopia.com:/anon_cvs/repository
+	% setenv CVSROOT :pserver:anon_cvs@cvs.akopia.com:/anon_cvs/repository
 
 =item Log in to cvs
 
@@ -74,9 +74,9 @@ to make a distribution tar file:
 	Writing Makefile for Interchange
 	$ make tardist
 	/usr/local/bin/perl -I/YOUR/PERL/LIB -MExtUtils::Manifest=manicopy,maniread \
-	-e "manicopy(maniread(),'interchange-4.5.6', 'best');"
-	mkdir interchange-4.5.6
-	mkdir interchange-4.5.6/dist
+	-e "manicopy(maniread(),'interchange-4.5.7', 'best');"
+	mkdir interchange-4.5.7
+	mkdir interchange-4.5.7/dist
 	....
 	$ ls interch*
 	interchange-4.X.X.tar.gz
