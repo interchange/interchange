@@ -11,62 +11,7 @@
 		$CGI->{ui_hide_key} = 1;
 		$CGI->{mv_data_table} = 'userdb';
 	}
-	if(! $CGI->{ui_data_fields}) {
-		$CGI->{ui_data_fields} = <<EOF;
 
-username
-
-=General/Shipping
-company
-fname
-lname
-address1
-address2
-city
-state
-zip
-country
-email
-mv_shipmode
-phone_day
-phone_night
-fax
-
-=Billing
-b_company
-b_fname
-b_lname
-b_address1
-b_address2
-b_city
-b_state
-b_zip
-b_country
-b_phone
-
-=Other
-fax_order
-dealer
-price_level
-project_id
-credit_limit
-inactive
-email_copy
-mail_list
-
-=Permissions
-db_acl
-file_acl
-EOF
-					
-	}
-
-	if(! $CGI->{mv_blob_field}) {
-		$CGI->{mv_blob_title} = 'Profiles';
-		$CGI->{mv_blob_field} = 'preferences';
-		$CGI->{mv_blob_label} = 'nothing';
-		$CGI->{mv_blob_pointer} = 'p_nickname';
-	}
 	if(! $CGI->{ui_return_to}) {
 		$CGI->{ui_return_to} = join "\0",
 									'__UI_BASE__/customer_view',

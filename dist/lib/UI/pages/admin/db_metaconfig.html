@@ -30,33 +30,33 @@
 [/if]
 
 
-<blockquote>
-[page href=__UI_BASE__/db_metaconfig_select
-		form="
-			ui_table=[cgi ui_table]
-			ui_view=[cgi ui_view]
-		"]Configure Select Page</A><BR>
-[page href=__UI_BASE__/db_metaconfig_edit
-		form="
-			ui_table=[cgi ui_table]
-			ui_view=[cgi ui_view]
-		"]Configure Edit Page</A><BR>
-[page href=__UI_BASE__/db_metaconfig_spread
-		form="
-			ui_table=[cgi ui_table]
-			ui_view=[cgi ui_view]
-		"]Configure Spreadsheet Display</A><br>
-</blockquote>
-
 [table-editor
 	table=mv_metadata
 	view=dbconfig
+	no-table-meta=1
+	tabbed=1
+	table_width=900
+	tab_width=150
+	break_row_class=rmarq
+	panel_width=900
+	panel_height=700
+	no-meta=1
+	left_width=160
+	label_cell_valign=top
+	help_cell_width=200
+	start_at="[cgi start_at]"
+
 
 	key="[scratch tmp_dbcode]"
 
 	ui_data_fields="
+
+		=General
+
 		code
 		name
+		extended.file_upload
+		extended.tabbed
 
 		=Select page display
 
@@ -67,40 +67,92 @@
 
 		=Edit page display
 
-		extended.file_upload
 		extended.ui_data_fields
+		extended.bottom_buttons
+		extended.top_buttons
+
+		=Tabbed display
+
+		extended.tab_width
+		extended.tab_height
+		extended.panel_width
+		extended.panel_height
+		extended.tab_horiz_offset
+		extended.tab_vert_offset
+
+		=HTML formatting of edit page
+
+		extended.table_width
+		extended.left_width
+		extended.data_row_class
+		extended.break_row_class
+		extended.spacer_row_class
+		extended.combo_row_class
+		extended.label_cell_class
+		extended.data_cell_class
+		extended.widget_cell_class
+		extended.help_cell_class
 
 		=Spreadsheet page display
 
 		extended.spread_fields
 		extended.spread_height
 		extended.spread_width
+		extended.spread_textarea
 		extended.spread_textarea_rows
+		extended.spread_meta
 
-		=HTML page display
-
-		extended.table_width
-		extended.left_width
 	"
 
 	label=`{
 		code							=> 'View::Table',
 		name							=> 'Description',
 		height							=> 'Rows on select page',
-		'extended.ui_sort_field'		=> 'Sort by on select page',
-		'extended.ui_show_fields'		=> 'Show on select page',
-		'extended.ui_special_add'		=> 'Special Additions',
+		'extended.bottom_buttons'		=> 'Buttons only on bottom',
 		'extended.file_upload'		=> 'Allow file upload for this table',
-		'extended.ui_data_fields'		=> 'Fields to edit',
+		'extended.left_width' => 'Width specification for label column',
+		'extended.panel_height'			=> 'Panel Height',
+		'extended.panel_width'			=> 'Panel Width',
 		'extended.spread_fields'		=> 'Fields to edit',
 		'extended.spread_height'		=> 'Number of rows',
-		'extended.spread_width'			=> 'Column width',
+		'extended.spread_meta'			=> 'Fields to meta display',
+		'extended.spread_textarea'		=> 'Fields for textarea display',
 		'extended.spread_textarea_rows' => 'Rows in a textarea',
-		'extended.left_width' => 'Width specification for label column',
+		'extended.spread_width'			=> 'Column width',
+		'extended.tab_height'			=> 'Tab Height',
+		'extended.tab_horiz_offset'		=> 'Tab Horizontal Offset',
+		'extended.tab_vert_offset'		=> 'Tab Vertical Offset',
+		'extended.tab_width'			=> 'Tab Width',
+		'extended.tabbed'				=> 'Use tabbed display',
 		'extended.table_width' => 'Width specification for editor table',
+		'extended.ui_data_fields'		=> 'Fields to edit',
+		'extended.ui_display_only'		=> 'Fields for display only',
+		'extended.ui_show_fields'		=> 'Show on select page',
+		'extended.ui_sort_field'		=> 'Sort by on select page',
+		'extended.ui_special_add'		=> 'Special Additions',
+		'extended.data_row_class'		=> 'Data row class',
+		'extended.break_row_class'		=> 'Break row class',
+		'extended.spacer_row_class'		=> 'Spacer row class',
+		'extended.combo_row_class'		=> 'User widget row class',
+		'extended.label_cell_class'		=> 'Label cell class (standard row)',
+		'extended.data_cell_class'		=> 'Data cell class (standard row)',
+		'extended.widget_cell_class'	=> 'Widget cell class (standard row)',
+		'extended.help_cell_class'		=> 'Help cell class (standard row)',
+		'extended.bottom_buttons'		=> 'Buttons only on bottom',
+		'extended.top_buttons'		=> 'Buttons only on top',
+
 	}`
 
 	help=`{
+		'extended.panel_height'			=> 'Default 600 pixels.',
+		'extended.panel_width'			=> 'Default 800 pixels.',
+		'extended.tab_height'			=> 'Default 30 pixels.',
+		'extended.tab_horiz_offset'		=> 'Tab Horizontal Offset',
+		'extended.tab_vert_offset'		=> 'Tab Vertical Offset',
+		'extended.tab_width'			=> 'Default 100 pixels.',
+		'extended.tabbed'				=> 'Use the tabbed display, broken into tabs as you label sections.',
+		'extended.ui_data_fields'		=> 'Breaks can be embedded in the fields by placing &quot;=Title String&quot; on a line by itself and surrounding with blank lines.',
+		'extended.ui_display_only'		=> 'Will not be set, only shown.',
 		'extended.ui_special_add'		=> 'Only applies to certain pages (Items uses this)',
 	}`
 
@@ -108,19 +160,35 @@
 		code							=> 'text_40',
 		name							=> 'text_40',
 		height							=> 'text_5',
-		'extended.ui_sort_field'		=> 'select',
-		'extended.ui_show_fields'		=> 'move_combo_8',
 		'extended.file_upload'			=> 'yesno',
-		'extended.ui_data_fields'		=> 'move_combo_8',
+		'extended.left_width'			=> 'text_8',
+		'extended.panel_height'			=> 'text_5',
+		'extended.panel_width'			=> 'text_5',
 		'extended.spread_fields'		=> 'move_combo_8',
 		'extended.spread_height'		=> 'text_5',
-		'extended.spread_width'			=> 'text_5',
+		'extended.spread_meta'			=> 'checkbox_left_4',
+		'extended.spread_textarea'		=> 'checkbox_left_4',
 		'extended.spread_textarea_rows' => 'text_5',
+		'extended.spread_width'			=> 'text_5',
+		'extended.ui_special_add'		=> 'multiple',
+		'extended.tab_height'			=> 'text_5',
+		'extended.tab_horiz_offset'		=> 'text_5',
+		'extended.tab_vert_offset'		=> 'text_5',
+		'extended.tab_width'			=> 'text_5',
+		'extended.tabbed'				=> 'yesno',
+		'extended.table_width'		    => 'text_8',
+		'extended.ui_data_fields'		=> 'move_combo_8',
+		'extended.ui_display_only'		=> 'text_40',
+		'extended.ui_show_fields'		=> 'move_combo_8',
+		'extended.ui_sort_field'		=> 'select',
+		'extended.bottom_buttons'		=> 'yesno',
+		'extended.top_buttons'		=> 'yesno',
 	}`
 
 	filter=`{
 		height							=> 'digits',
 		'extended.ui_special_add'		=> 'null_to_comma',
+		'extended.spread_meta' => 'null_to_space',
 	}`
 
 	database=`{
@@ -128,16 +196,19 @@
 		'extended.ui_show_fields'		=> $CGI->{ui_table},
 		'extended.ui_data_fields'		=> $CGI->{ui_table},
 		'extended.spread_fields'		=> $CGI->{ui_table},
+		'extended.spread_meta'			=> $CGI->{ui_table},
+		'extended.spread_textarea'		=> $CGI->{ui_table},
 	}`
 
 	height=`{
 		'extended.ui_sort_field'		=> 8,
 		'extended.ui_show_fields'		=> 8,
-		'extended.ui_data_fields'		=> 8,
+		'extended.ui_data_fields'		=> 16,
 		'extended.spread_fields'		=> 8,
 	}`
 
 	width=`{
+		'extended.ui_data_fields'		=> 30,
 		'extended.ui_show_fields'		=> 30,
 	}`
 
@@ -146,6 +217,8 @@
 		'extended.ui_show_fields'		=> 'columns',
 		'extended.ui_data_fields'		=> 'columns',
 		'extended.spread_fields'		=> 'columns',
+		'extended.spread_meta'			=> 'columns',
+		'extended.spread_textarea'		=> 'columns',
 		'extended.ui_special_add'		=> q{NONE,
 Qty price;pricing:q5:rn=Qty price,
 Options;options:o_enable:r=Options,

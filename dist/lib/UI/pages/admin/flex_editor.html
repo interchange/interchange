@@ -21,16 +21,18 @@
 		[L]Select for table edit[/L]:
 		 [cgi mv_data_table]
 		[if cgi ui_meta_view]
-		 (<b>[page href="__UI_BASE__/db_metaconfig_edit"
+		 (<b>[page href="__UI_BASE__/db_metaconfig"
 				 form='
 				 ui_table=[cgi mv_data_table]
 				 ui_view=[cgi ui_meta_view]
+				 start_at=extended.ui_data_fields
 		 '][cgi ui_meta_view]</b> [L]view[/L]</A>)
 		 [/if]
-		 (<b>[page href="__UI_BASE__/db_metaconfig_edit"
+		 (<b>[page href="__UI_BASE__/db_metaconfig"
 				 form='
 				 ui_table=[cgi mv_data_table]
 				 ui_view=[cgi ui_meta_view]
+				 start_at=extended.ui_data_fields
 				 '][L]standard view[/L]</A>)
 		[/if-mm]
 		 [/if]

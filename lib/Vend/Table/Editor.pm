@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.5 2002-09-23 20:38:39 mheins Exp $
+# $Id: Editor.pm,v 1.6 2002-09-24 01:37:31 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.5 $, 10);
+$VERSION = substr(q$Revision: 1.6 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -1056,60 +1056,61 @@ sub resolve_options {
 	}
 
 	my @mapdirect = qw/
-		mv_data_decode
-		mv_data_table
+		bottom_buttons
+		break_cell_class
+		break_cell_style
+		break_row_class
+		break_row_style
+		data_cell_class
+		data_cell_style
+		data_row_class
+		data_row_style
+		file_upload
+		help_cell_class
+		help_cell_style
+		label_cell_class
+		label_cell_style
+		left_width
 		mv_blob_field
+		mv_blob_label
 		mv_blob_nick
 		mv_blob_pointer
-		mv_blob_label
 		mv_blob_title
-		widget_cell_class
-		label_cell_class
-		data_cell_class
-		help_cell_class
-		break_cell_class
-		spacer_row_class
-		break_row_class
-		title_row_class
-		data_row_class
-		widget_cell_style
-		label_cell_style
-		data_cell_style
-		help_cell_style
-		break_cell_style
-		spacer_row_style
-		break_row_style
-		title_row_style
-		data_row_style
-		left_width
-		table_width
-		tabbed
-		tab_bgcolor_template
-		tab_height
-		tab_width
-		tab_cellspacing
-		tab_cellpadding
+		mv_data_decode
+		mv_data_table
+		mv_update_empty
 		panel_height
-		panel_width
 		panel_id
-		file_upload
+		panel_width
+		spacer_row_class
+		spacer_row_style
+		start_at
+		tab_bgcolor_template
+		tab_cellpadding
+		tab_cellspacing
+		tab_height
 		tab_horiz_offset
 		tab_vert_offset
+		tab_width
+		tabbed
+		table_width
+		title_row_class
+		title_row_style
+		top_buttons
 		ui_break_before
 		ui_break_before_label
 		ui_data_fields
 		ui_data_fields_all
 		ui_data_key_name
+		ui_delete_box
 		ui_display_only
 		ui_hide_key
 		ui_meta_specific
 		ui_meta_view
-		ui_nextpage
 		ui_new_item
-		ui_delete_box
-		mv_update_empty
-		bottom_buttons
-		top_buttons
+		ui_nextpage
+		widget_cell_class
+		widget_cell_style
 	/;
 
 	for(grep defined $tmeta->{$_}, @mapdirect) {
@@ -1133,7 +1134,7 @@ sub resolve_options {
 			my @keys = grep $_ =~ $row->[0], @cgi;
 			for(@keys) {
 				/^ui_\w+:(\S+)/
-					and $row->[1]->{$1} = $CGI->{$_};
+					and $opt->{$row->[1]}{$1} = $CGI->{$_};
 			}
 		}
 
@@ -1741,12 +1742,11 @@ EOF
 			}
 
 			unless ($opt->{nosave}) {
-				$blob_widget = $Tag->widget({
+				$blob_widget = display(undef, undef, undef, {
 									name => 'mv_blob_nick',
 									type => $opt->{ui_blob_widget} || 'combo',
 									filter => 'nullselect',
-									override => 1,
-									set => "$set",
+									value => $opt->{mv_blob_nick},
 									passed => join (",", @wid_data{ sort keys %wid_data }) || 'default',
 									});
 				my $msg1 = errmsg('Save to');
@@ -2170,6 +2170,7 @@ EOF
 
 	my @do = grep /\S/, split /[\0,\s]+/, $opt->{ui_display_only};
 	for(@do) {
+#::logDebug("display_only: $_");
 		$email_cols{$_} = 1 if $opt->{mailto};
 		$display_only{$_} = 1;
 		push @extra_cols, $_;
@@ -2274,7 +2275,7 @@ EOF
    <td$opt->{label_cell_extra}> 
      {BLABEL}{LABEL}{ELABEL}
    </td>
-   <td$opt->{data_cell_extra}>{WIDGET}{HELP_EITHER}&nbsp;<a href="{HELP_URL}" title="{HELP\$">$opt->{help_anchor}</a>{/HELP_EITHER?}&nbsp;{META_URL?}<A HREF="{META_URL}">$opt->{meta_anchor}</A>{/META_URL?}
+   <td$opt->{data_cell_extra}>{WIDGET}{HELP_EITHER?}&nbsp;<a href="{HELP_URL}" title="{HELP}">$opt->{help_anchor}</a>{/HELP_EITHER?}&nbsp;{META_URL?}<A HREF="{META_URL}">$opt->{meta_anchor}</A>{/META_URL?}
    </td>
 EOF
 		}
@@ -2486,14 +2487,6 @@ $l_pkey</td>};
 	my @extra_hidden;
 	my $icount = 0;
 	foreach my $col (@cols) {
-		if($link_before{$col}) {
-			my $h = { ROW => delete $link_row{$link_before{$col}} };
-			col_chunk "_SPREAD_$link_before{$col}", $h;
-		}
-		if($opt->{include_before} and $opt->{include_before}{$col}) {
-			my $h = { ROW => $opt->{include_before}{$col} };
-			col_chunk "_INCLUDE_$link_before{$col}", $h;
-		}
 		my $t;
 		my $c;
 		my $k;
@@ -2503,6 +2496,9 @@ $l_pkey</td>};
 				my $kval = $key || $override->{$col} || $default->{$col};
 				push @extra_hidden,
 					qq{<INPUT TYPE=hidden NAME="$col" VALUE="$kval">};
+				if($break{$col}) {
+					$titles[$ctl_index] = $break_label{$col};
+				}
 				next;
 			}
 			elsif ($opt->{ui_new_item}) {
@@ -2607,7 +2603,8 @@ $l_pkey</td>};
 
 		$namecol = $col unless $namecol;
 
-		$type = 'value' if $do and ! ($opt->{wizard} || ! $opt->{mailto});
+#::logDebug("display_only=$do col=$c");
+		$type = $widget->{$c} = 'value' if $do and ! ($opt->{wizard} || $opt->{mailto});
 
 		if (! length $currval and defined $default->{$c}) {
 			$currval = $default->{$c};
@@ -2750,12 +2747,22 @@ EOF
 				$update_ctl = 1;
 			}
 		}
+		if($link_before{$col}) {
+			my $h = { ROW => delete $link_row{$link_before{$col}} };
+			col_chunk "_SPREAD_$link_before{$col}", $h;
+		}
+		if($opt->{include_before} and $opt->{include_before}{$col}) {
+			my $h = { ROW => $opt->{include_before}{$col} };
+			col_chunk "_INCLUDE_$link_before{$col}", $h;
+		}
 		$ctl_index++ if $update_ctl;
 		if($opt->{start_at} and $opt->{start_at} eq $namecol) {
 			$opt->{start_at_index} = $ctl_index;
+#::logDebug("set start_at_index to $ctl_index");
 		}
 #::logDebug("control index now=$ctl_index");
 		col_chunk $c, $display;
+		$titles[0] = $t if ! $titles[0];
 	}
 
 	for(sort keys %link_row) {

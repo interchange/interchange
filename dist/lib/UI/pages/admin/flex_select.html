@@ -37,10 +37,11 @@
 		[cgi page_title]
 	[or]
 		[L]Select for table edit[/L]:
-		[page href="__UI_BASE__/db_metaconfig_select" secure="[scratch page_secure]"
+		[page href="__UI_BASE__/db_metaconfig" secure="[scratch page_secure]"
 				 form='
 						 ui_view=[cgi ui_meta_view]
 						 ui_table=[cgi mv_data_table]
+						 start_at=height
 				 '][cgi mv_data_table]</A>
 	[/either]
 [/tmp]

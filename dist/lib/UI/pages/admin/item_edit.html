@@ -1,31 +1,7 @@
 [perl tables="__UI_META_TABLE__"]
 	$CGI->{mv_data_table} = $Config->{ProductFiles}[0];
 	$CGI->{ui_hide_key} = 1 unless $CGI->{ui_new_item};
-	if(! $CGI->{ui_data_fields}) {
-		$CGI->{ui_data_fields} =
-				tag_data('__UI_META_TABLE__', 'options', $CGI->{mv_data_table})
-				|| $Variable->{UI_ITEM_FIELDS}
-				|| 'sku description category comment price image weight size color';
-	}
 
-	if(! $CGI->{ui_break_before}) {
-		if($CGI->{ui_data_fields} =~ /\n[ \t]*\r?\n/) {
-			my @breaks;
-			my @break_labels;
-			$CGI->{ui_data_fields} =~ s/\r\n/\n/g;
-			$CGI->{ui_data_fields} =~ s/\r/\n/g;
-			while ($CGI->{ui_data_fields} =~ s/\n+(?:\n=(.*)\n)?\n+(\w+)/\n$2/) {
-				push @breaks, $2;
-				push @break_labels, "$2=$1" if $1;
-			}
-			$CGI->{ui_break_before} = join " ", @breaks;
-			$CGI->{ui_break_before_label} = join ",", @break_labels;
-		}
-		else {
-			$CGI->{ui_break_before} = $Variable->{UI_ITEM_BREAK}
-									|| 'image size';
-		}
-	}
 	if(! $CGI->{ui_return_to} or $CGI->{ui_sequence_edit}) {
 		my @args = (
 			 '__UI_BASE__/item',
@@ -67,16 +43,13 @@
 [set icon_name]icon_item.gif[/set]
 
 [if-mm super]
-[tmp page_banner][page href="__UI_BASE__/flex_editor"
+[tmp page_banner][page href="__UI_BASE__/db_metaconfig"
 				 form='
-				 mv_data_table=__UI_META_TABLE__
-				 ui_meta_view=dbconfig
-				 ui_data_fields=code name height field outboard options help help_url display_filter
-				 ui_break_before=height display_filter
-				 page_title=[L]Change display information[/L]: [cgi mv_data_table]
+				 ui_table=[cgi mv_data_table]
+				 ui_view=[cgi ui_meta_view]
 				 ui_return_to=__UI_BASE__/item
-				 ui_return_to=ui_scrub_table=1
-				 item_id=[cgi mv_data_table]
+				 mv_return_table=[cgi mv_data_table]
+				 start_at=extended.ui_data_fields
 		 '][L]Item editor[/L]</A> [msg arg.0="<B>[cgi item_id]</B>"]edit item %s[/msg]
 [/tmp]
 [else]

@@ -25,7 +25,6 @@
 									email
 									comment
 									order_number';
-		$CGI->{"ui_te_pre_filter:email"} = 'mailto';
 					
 	}
 	if(! $CGI->{mv_blob_field}) {
@@ -60,7 +59,7 @@
 @_UI_STD_HEAD_@
 <P>
 <SPAN class=clabel style="width: 150">
-[table-editor cgi=1 nodelete=1 nosave=1]
+[table-editor cgi=1 nodelete=1 nosave=1 no-table-meta=1 tabbed=0 break_row_class=rmarq]
 </SPAN>
 
 @_UI_STD_FOOTER_@

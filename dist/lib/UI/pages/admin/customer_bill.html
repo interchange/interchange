@@ -14,8 +14,6 @@
 	if(! $CGI->{ui_data_fields}) {
 		$CGI->{ui_data_fields} = 'username b_company b_fname b_lname b_address1 b_address2 b_city b_state b_zip b_country email b_phone phone_day phone_night';
 		$CGI->{ui_display_only} = 'email phone_day phone_night';
-		$CGI->{"ui_te_pre_filter:email"} = 'mailto';
-					
 	}
 	if(! $CGI->{mv_blob_field}) {
 		$CGI->{mv_blob_title} = '<B>Accounts book</B>';
@@ -47,7 +45,7 @@
 
 @_UI_STD_HEAD_@
 <P>
-[table-editor cgi=1]
+[table-editor cgi=1 no-table-meta=1]
 
 @_UI_STD_FOOTER_@
 <!-- page: @@MV_PAGE@@ -->

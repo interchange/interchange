@@ -62,6 +62,55 @@ EOF
 [set icon_name][/set]
 
 @_UI_STD_HEAD_@
-[table-editor cgi=1]
+
+[table-editor
+	item_id="[cgi item_id]"
+	table="[cgi mv_data_table]"
+	no-table-meta=1
+	no-meta=1
+	ui_data_fields="
+		=Label
+
+		code
+		label
+
+		=Widget
+
+		type
+		filter
+		width
+		height
+		options
+
+	   =Help
+
+	   help
+	   help_url
+
+	   =Database lookup
+
+	   lookup
+	   field
+	   db
+	   lookup_query
+	   lookup_exclude
+
+	   =Advanced
+
+	   outboard
+	   pre_filter
+	   prepend
+	   append
+
+	   =Extended
+
+	   extended
+	"
+	tabbed=1
+	panel_width=800
+	panel_height=700
+	table_width=800
+	][/table-editor]
+
 @_UI_STD_FOOTER_@
 <!-- page: @@MV_PAGE@@ -->
