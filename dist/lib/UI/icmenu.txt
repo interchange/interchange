@@ -1,58 +1,66 @@
-code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	special	help_name
-0001	Admin	01					admin/genconfig		Info					
-0002	Admin	02					admin/tax		Tax					
-0003	Admin	03					admin/ship		Shipping					
-0004	Admin	04					admin/payment		Payment					
-0005	Admin	05					admin/access		Access					
-0006	Admin	06					admin/preferences		Preferences					
-0007	Admin	07					admin/flex_select	mv_data_table=variable&page_title=Knar editor&ui_meta_specific=1&help_name=knar.main&ui_description_fields=code&ui_return_to=admin/preferences Variable	Knar					
-0008	Admin	08					admin/gentable		Tables					
-0009	Admin	09					admin/reconfig	ui_changes_made	&nbsp;&nbsp;&nbsp;Apply Changes					
-0010	Admin	10	1		no_dbmenu	mv_data_table	admin/flex_select	mv_data_table=[cgi mv_data_table]	Edit					
-0011	Admin	11			no_dbmenu	mv_data_table	admin/import_table	mv_data_table=[cgi mv_data_table]	Import Data					
-0012	Admin	12			no_dbmenu	mv_data_table	admin/export_table	mv_data_table=[cgi mv_data_table]	Export Data					
-0013	Admin	13			no_dbmenu	mv_data_table	admin/spread	mv_data_table=[cgi mv_data_table]	Spreadsheet					
-0014	Admin	14			no_dbmenu	mv_data_table	admin/flex_editor	mv_data_table=[cgi mv_data_table]&item_id=new	New Entry					
-0015	Admin	15			no_dbmenu	mv_data_table	admin/gentable		&nbsp;&nbsp;&nbsp;&nbsp;Re-select Table					
-0016	Admin	16	1			access_menu	admin/access		Users					
-0017	Admin	17				access_menu	admin/group		Groups					
-0018	Content	01					admin/page		Page Edit					
-0019	Content	02					admin/file_transfer		File Transfer					
-0020	Customers	01		showactive			admin/customer	showactive=1	Active Customers					
-0021	Customers	02		showinactive			admin/customer	showinactive=1	Inactive Customers					
-0022	Customers	03					admin/flex_editor	page_title=Create new customer&mv_data_table=userdb&help_name=create.new.customer&item_id=new&ui_return_to=admin/customer	Create new customer					
-0023	Customers	04	1		deletecustomer	customer	admin/customer_view	customer=[cgi customer]	View					
-0024	Customers	05			deletecustomer	customer	admin/customer_ship	customer=[cgi customer]	Shipping					
-0025	Customers	06			deletecustomer	customer	admin/customer_bill	customer=[cgi customer]	Billing					
-0026	Customers	07			deletecustomer	customer	admin/customer_comments	customer=[cgi customer]	Feedback					
-0027	Customers	08			deletecustomer	customer	admin/customer_all	customer=[cgi customer]	All					
-0028	Customers	09			deletecustomer	customer	admin/customer_pref	customer=[cgi customer]	Preferences					
-0029	Customers	10			deletecustomer	customer	admin/entry	customer=[cgi customer]	Enter Order					
-0030	Design	01					admin/layout		Site layout					
-0031	Design	02					admin/search_wizard		Search Builder					
-0032	Design	03					admin/button_builder		Button Builder					
-0033	Design	04					admin/regenerate		Generate Static					
-0034	Design	05					admin/file_transfer		File Transfer					
-0035	Design	06					admin/page		Page Edit					
-0036	Items	01					admin/item		Item list					
-0044	Items	02					admin/item_edit	item_id=new&ui_new_item=1	&nbsp;&nbsp;&nbsp;&nbsp;Create new item					
-0045	Items	03				item_id	admin/item_edit	item_id=new&ui_new_item=1&ui_clone_id=[cgi item_id]&ui_clone_tables=[var UI_ITEM_TABLES]	&nbsp;&nbsp;&nbsp;&nbsp;Clone item					
-0037	Items	04				item_id			&nbsp;&nbsp;&nbsp;sku: [cgi item_id]					
-0038	Items	13	1			item_id	admin/item_edit	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Edit					
-0039	Items	14				item_id	admin/item_price	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Pricing					
-0040	Items	15				item_id	admin/item_up	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Up-sell					
-0041	Items	16				item_id	admin/item_cross	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Cross-sell					
-0042	Items	17				item_id	admin/item_feature	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Promotion					
-0043	Items	18				item_id	admin/item_inventory	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Inventory					
-0046	Items	19				item_id	admin/item_option	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Options					
-0047	Merchandising	01					admin/merchandising		Product Merchandising					
-0048	Merchandising	02					admin/affiliates		Affiliates					
-0049	Merchandising	03					admin/build_related		Generate "others who ..."					
-0050	Merchandising	04	1		affiliates		admin/flex_editor	page_title=Create new affiliate&mv_data_table=affiliate&help_name=create.new.affiliate&ui_new_item=1&item_id=new&ui_return_to=admin/affiliates&icon_name=admin/icon_people.gif	Create new affiliate					
-0051	None	1		!nevairbe					<font size="-1"><b>Welcome to Interchange</b></font>					
-0052	Orders	01		!showarchive			admin/order	showpending=1	Pending Orders					
-0053	Orders	02		showarchive			admin/order	showarchive=1	Archived Orders					
-0054	Orders	03					admin/entry		Enter Order					
-0055	Reports	01					admin/orderstats		Orders					
-0056	Reports	02					admin/trafficstats		Traffic					
-0057	Reports	03					admin/tablereport		Custom					
+code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	special	help_name	img_dn	img_up	img_sel	url
+0001	Top	01		Orders		order	admin/order		Orders					B2.gif	B2_b.gif	B2_b.gif	
+0002	Top	02		Customers		userdb	admin/customer		Customers					B3.gif	B3_b.gif	B3_b.gif	
+0003	Top	03		Items		item	admin/item		Items					B4.gif	B4_b.gif	B4_b.gif	
+0004	Top	04		Content		page	admin/page		Content					B5.gif	B5_b.gif	B5_b.gif	
+0005	Top	05		Design		layout	admin/layout		Design					B6.gif	B6_b.gif	B6_b.gif	
+0006	Top	06		Merchandising		item	admin/merchandising		Merchandising					B7.gif	B7_b.gif	B7_b.gif	
+0007	Top	07		Reporting		stats	admin/orderstats		Reporting					B8.gif	B8_b.gif	B8_b.gif	
+0008	Top	07		Admin		admin	admin/genconfig		Administration					B9.gif	B9_b.gif	B9_b.gif	
+0009	Admin	01					admin/genconfig		Info								
+0010	Admin	02					admin/tax		Tax								
+0011	Admin	03					admin/ship		Shipping								
+0012	Admin	04					admin/payment		Payment								
+0013	Admin	05					admin/access		Access								
+0014	Admin	06					admin/preferences		Preferences								
+0015	Admin	07					admin/flex_select	mv_data_table=variable&page_title=Knar editor&ui_meta_specific=1&help_name=knar.main&ui_description_fields=code&ui_return_to=admin/preferences Variable	Knar								
+0016	Admin	08					admin/gentable		Tables								
+0017	Admin	09					admin/reconfig	ui_changes_made	&nbsp;&nbsp;&nbsp;Apply Changes								
+0018	Admin	10	1		no_dbmenu	mv_data_table	admin/flex_select	mv_data_table=[cgi mv_data_table]	Edit								
+0019	Admin	11			no_dbmenu	mv_data_table	admin/import_table	mv_data_table=[cgi mv_data_table]	Import Data								
+0020	Admin	12			no_dbmenu	mv_data_table	admin/export_table	mv_data_table=[cgi mv_data_table]	Export Data								
+0021	Admin	13			no_dbmenu	mv_data_table	admin/spread	mv_data_table=[cgi mv_data_table]	Spreadsheet								
+0022	Admin	14			no_dbmenu	mv_data_table	admin/flex_editor	mv_data_table=[cgi mv_data_table]&item_id=new	New Entry								
+0023	Admin	15			no_dbmenu	mv_data_table	admin/gentable		&nbsp;&nbsp;&nbsp;&nbsp;Re-select Table								
+0024	Admin	16	1			access_menu	admin/access		Users								
+0025	Admin	17				access_menu	admin/group		Groups								
+0026	Content	01					admin/page		Page Edit								
+0027	Content	02					admin/file_transfer		File Transfer								
+0028	Customers	01		showactive			admin/customer	showactive=1	Active Customers								
+0029	Customers	02		showinactive			admin/customer	showinactive=1	Inactive Customers								
+0030	Customers	03					admin/flex_editor	page_title=Create new customer&mv_data_table=userdb&help_name=create.new.customer&item_id=new&ui_return_to=admin/customer	Create new customer								
+0031	Customers	04	1		deletecustomer	customer	admin/customer_view	customer=[cgi customer]	View								
+0032	Customers	05			deletecustomer	customer	admin/customer_ship	customer=[cgi customer]	Shipping								
+0033	Customers	06			deletecustomer	customer	admin/customer_bill	customer=[cgi customer]	Billing								
+0034	Customers	07			deletecustomer	customer	admin/customer_comments	customer=[cgi customer]	Feedback								
+0035	Customers	08			deletecustomer	customer	admin/customer_all	customer=[cgi customer]	All								
+0036	Customers	09			deletecustomer	customer	admin/customer_pref	customer=[cgi customer]	Preferences								
+0037	Customers	10			deletecustomer	customer	admin/entry	customer=[cgi customer]	Enter Order								
+0038	Design	01					admin/layout		Site layout								
+0039	Design	02					admin/search_wizard		Search Builder								
+0040	Design	03					admin/button_builder		Button Builder								
+0041	Design	04					admin/regenerate		Generate Static								
+0042	Design	05					admin/file_transfer		File Transfer								
+0043	Design	06					admin/page		Page Edit								
+0044	Items	01					admin/item		Item list								
+0045	Items	02					admin/item_edit	item_id=new&ui_new_item=1	&nbsp;&nbsp;&nbsp;&nbsp;Create new item								
+0046	Items	03				item_id	admin/item_edit	item_id=new&ui_new_item=1&ui_clone_id=[cgi item_id]&ui_clone_tables=[var UI_ITEM_TABLES]	&nbsp;&nbsp;&nbsp;&nbsp;Clone item								
+0047	Items	04				item_id			&nbsp;&nbsp;&nbsp;sku: [cgi item_id]								
+0048	Items	13	1			item_id	admin/item_edit	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Edit								
+0049	Items	14				item_id	admin/item_price	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Pricing								
+0050	Items	15				item_id	admin/item_up	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Up-sell								
+0051	Items	16				item_id	admin/item_cross	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Cross-sell								
+0052	Items	17				item_id	admin/item_feature	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Promotion								
+0053	Items	18				item_id	admin/item_inventory	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Inventory								
+0054	Items	19				item_id	admin/item_option	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Options								
+0055	Merchandising	01					admin/merchandising		Product Merchandising								
+0056	Merchandising	02					admin/affiliates		Affiliates								
+0057	Merchandising	03					admin/build_related		Generate ""others who ...""								
+0058	Merchandising	04	1		affiliates		admin/flex_editor	page_title=Create new affiliate&mv_data_table=affiliate&help_name=create.new.affiliate&ui_new_item=1&item_id=new&ui_return_to=admin/affiliates&icon_name=admin/icon_people.gif	Create new affiliate								
+0059	None	1		!nevairbe					<font size=""-1""><b>Welcome to Interchange</b></font>								
+0060	Orders	01		!showarchive			admin/order	showpending=1	Pending Orders								
+0061	Orders	02		showarchive			admin/order	showarchive=1	Archived Orders								
+0062	Orders	03					admin/entry		Enter Order								
+0063	Reports	01					admin/orderstats		Orders								
+0064	Reports	02					admin/trafficstats		Traffic								
+0065	Reports	03					admin/tablereport		Custom								
