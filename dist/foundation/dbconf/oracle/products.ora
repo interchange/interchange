@@ -11,15 +11,16 @@ Database  products  KEY          sku
 Database  products  COLUMN_DEF   "sku=VARCHAR2(64) PRIMARY KEY"
 Database  products  COLUMN_DEF   "description=VARCHAR2(128)"
 Database  products  COLUMN_DEF   "title=VARCHAR2(128) DEFAULT ''"
-Database  products  POSTCREATE   "CREATE INDEX products_title ON products (title)"
+Database  products  INDEX         title
 Database  products  COLUMN_DEF   "template_page=VARCHAR2(64)"
 Database  products  COLUMN_DEF   "comment__MVC_FIELDMUNGE__=VARCHAR2(2000)"
 Database  products  COLUMN_DEF   "thumb=VARCHAR2(128)"
 Database  products  COLUMN_DEF   "image=VARCHAR2(64)"
 Database  products  COLUMN_DEF   "price=DECIMAL(12,2)"
-Database  products  POSTCREATE   "CREATE INDEX products_price ON products (price)"
+Database  products  INDEX         price
 Database  products  COLUMN_DEF   "category=VARCHAR2(64)"
-Database  products  POSTCREATE   "CREATE INDEX products_category ON products (category)"
+Database  products  INDEX         category
+Database  products  INDEX         prod_group
 Database  products  COLUMN_DEF   "nontaxable=VARCHAR2(3)"
 Database  products  COLUMN_DEF   "weight=VARCHAR2(12) DEFAULT '0'"
 Database  products  COLUMN_DEF   "size__MVC_FIELDMUNGE__=VARCHAR2(96)"

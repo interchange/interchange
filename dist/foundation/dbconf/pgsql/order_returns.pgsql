@@ -14,4 +14,4 @@ Database  order_returns  COLUMN_DEF   "nitems=VARCHAR(9) NOT NULL"
 Database  order_returns  COLUMN_DEF   "total=VARCHAR(12) NOT NULL"
 Database  order_returns  COLUMN_DEF   "return_date=varchar(32) NOT NULL"
 Database  order_returns  COLUMN_DEF   "update_date=timestamp"
-Database  order_returns  POSTCREATE   "create index order_returns_order_number on order_returns (order_number)"
+Database  order_returns  INDEX         order_number

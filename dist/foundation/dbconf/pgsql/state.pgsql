@@ -13,5 +13,5 @@ Database  state  COLUMN_DEF   "state=VARCHAR(20) DEFAULT '' NOT NULL"
 Database  state  COLUMN_DEF   "postcode=VARCHAR(20) DEFAULT '' NOT NULL"
 Database  state  COLUMN_DEF   "tax=text"
 Database  state  COLUMN_DEF   "name=VARCHAR(64) DEFAULT '' NOT NULL"
-Database  state  POSTCREATE   "create index state_country on state (country)"
-Database  state  POSTCREATE   "create index state_sorder on state (sorder)"
+Database  state  INDEX         country
+Database  state  INDEX         sorder

@@ -19,3 +19,4 @@ Database  pricing  COLUMN_DEF   "w5=VARCHAR(12)"
 Database  pricing  COLUMN_DEF   "w10=VARCHAR(12)"
 Database  pricing  COLUMN_DEF   "w25=VARCHAR(12)"
 Database  pricing  COLUMN_DEF   "w100=VARCHAR(12)"
+Database  pricing  INDEX         price_group

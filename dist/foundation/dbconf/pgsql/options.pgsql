@@ -32,9 +32,9 @@ Database options COLUMN_DEF "sku=varchar(64) NOT NULL DEFAULT ''"
 Database options COLUMN_DEF "volume=varchar(20)"
 Database options COLUMN_DEF "weight=varchar(20)"
 Database options COLUMN_DEF "wholesale=varchar(20)"
-Database options POSTCREATE "create index options_o_enable on options (o_enable)"
-Database options POSTCREATE "create index options_o_group on options (o_group)"
-Database options POSTCREATE "create index options_o_master on options (o_master)"
-Database options POSTCREATE "create index options_o_sort on options (o_sort)"
-Database options POSTCREATE "create index options_sku on options (sku)"
+Database options INDEX       o_enable
+Database options INDEX       o_group
+Database options INDEX       o_master
+Database options INDEX       o_sort
+Database options INDEX       sku
 Database options ChopBlanks 1

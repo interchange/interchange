@@ -53,3 +53,5 @@ Database  transactions  COLUMN_DEF   "status=VARCHAR(32)"
 Database  transactions  COLUMN_DEF   "parent=VARCHAR(9)"
 Database  transactions  COLUMN_DEF   "comments=text"
 Database  transactions  COLUMN_DEF   "currency_locale=varchar(32)"
+Database  transactions  INDEX         store_id
+Database  transactions  INDEX         order_number

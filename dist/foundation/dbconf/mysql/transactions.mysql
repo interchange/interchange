@@ -7,8 +7,10 @@ Database  transactions  PASS         __SQLPASS__
 endif
 Database  transactions  transactions.raw  SQL
 Database  transactions  COLUMN_DEF   "code=char(14) NOT NULL PRIMARY KEY"
-Database  transactions  COLUMN_DEF   "store_id=CHAR(9) DEFAULT '' NOT NULL, index(store_id)"
-Database  transactions  COLUMN_DEF   "order_number=CHAR(14) NOT NULL, index(order_number)"
+Database  transactions  COLUMN_DEF   "store_id=CHAR(9) DEFAULT '' NOT NULL"
+Database  transactions  INDEX         store_id
+Database  transactions  COLUMN_DEF   "order_number=CHAR(14) NOT NULL"
+Database  transactions  INDEX         order_number
 Database  transactions  COLUMN_DEF   "session=CHAR(32) NOT NULL"
 Database  transactions  COLUMN_DEF   "username=CHAR(20) default '' NOT NULL"
 Database  transactions  COLUMN_DEF   "shipmode=CHAR(32) NOT NULL"

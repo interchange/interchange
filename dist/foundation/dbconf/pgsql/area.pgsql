@@ -9,5 +9,5 @@ Database  area  DEFAULT_TYPE text
 Database  area  COLUMN_DEF   "code=VARCHAR(12) NOT NULL PRIMARY KEY"
 Database  area  COLUMN_DEF   "name=VARCHAR(128) DEFAULT '' NOT NULL"
 Database  area  COLUMN_DEF   "sort=VARCHAR(3) DEFAULT '00' NOT NULL"
-Database  area  POSTCREATE   "create index area_sort on area (sort)"
-Database  area  POSTCREATE   "create index area_name on area (name)"
+Database  area  INDEX        sort
+Database  area  INDEX        name

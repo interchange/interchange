@@ -9,10 +9,10 @@ endif
 Database  merchandising  DEFAULT_TYPE VARCHAR2(2000)
 Database  merchandising  COLUMN_DEF   "sku=VARCHAR2(64) PRIMARY KEY"
 Database  merchandising  COLUMN_DEF   "featured=VARCHAR2(32) DEFAULT ''"
-Database  merchandising  POSTCREATE   "CREATE INDEX merchandising_featured ON merchandising (featured)"
+Database  merchandising  INDEX         featured
 Database  merchandising  COLUMN_DEF   "start_date=VARCHAR2(24) DEFAULT ''"
-Database  merchandising  POSTCREATE   "CREATE INDEX merchandising_start_date ON merchandising (start_date)"
+Database  merchandising  INDEX         start_date
 Database  merchandising  COLUMN_DEF   "finish_date=VARCHAR2(24) DEFAULT ''"
-Database  merchandising  POSTCREATE   "CREATE INDEX merchandising_finish_date ON merchandising (finish_date)"
+Database  merchandising  INDEX         finish_date
 Database  merchandising  COLUMN_DEF   "cross_category=VARCHAR2(64) DEFAULT ''"
-Database  merchandising  POSTCREATE   "CREATE INDEX merchandising_cross_category ON merchandising (cross_category)"
+Database  merchandising  INDEX         cross_category

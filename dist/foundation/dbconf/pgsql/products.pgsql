@@ -21,3 +21,7 @@ Database  products  COLUMN_DEF   "size=VARCHAR(96)"
 Database  products  COLUMN_DEF   "color=VARCHAR(96)"
 Database  products  COLUMN_DEF   "related=text"
 Database  products  COLUMN_DEF   "featured=VARCHAR(32)"
+Database  products  INDEX         description
+Database  products  INDEX         price
+Database  products  INDEX         category
+Database  products  INDEX         prod_group

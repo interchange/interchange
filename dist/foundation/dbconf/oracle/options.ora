@@ -32,8 +32,8 @@ Database options COLUMN_DEF   "o_label=VARCHAR2(2000)"
 Database options COLUMN_DEF   "o_value=VARCHAR2(2000)"
 Database options COLUMN_DEF   "o_height=INTEGER"
 Database options COLUMN_DEF   "o_width=INTEGER"
-Database options POSTCREATE   "CREATE INDEX options_o_enable ON options (o_enable)"
-Database options POSTCREATE   "CREATE INDEX options_o_group ON options (o_group)"
-Database options POSTCREATE   "CREATE INDEX options_o_master ON options (o_master)"
-Database options POSTCREATE   "CREATE INDEX options_o_sort ON options (o_sort)"
-Database options POSTCREATE   "CREATE INDEX options_sku ON options (sku)"
+Database options INDEX         o_enable
+Database options INDEX         o_group
+Database options INDEX         o_master
+Database options INDEX         o_sort
+Database options INDEX         sku

@@ -8,13 +8,13 @@ endif
 Database  state  AUTO_NUMBER  00001
 Database  state  COLUMN_DEF   "code=VARCHAR2(8) NOT NULL PRIMARY KEY"
 Database  state  COLUMN_DEF   "country=VARCHAR2(20) DEFAULT ''"
-Database  state  POSTCREATE   "CREATE INDEX state_country ON state (country)"
+Database  state  INDEX         country
 Database  state  COLUMN_DEF   "sorder=VARCHAR2(8) NOT NULL"
-Database  state  POSTCREATE   "CREATE INDEX state_sorder on state (sorder)"
+Database  state  INDEX         sorder
 Database  state  COLUMN_DEF   "state=VARCHAR2(20) DEFAULT ''"
-Database  state  POSTCREATE   "CREATE INDEX state_state ON state (state)"
+Database  state  INDEX         state
 Database  state  COLUMN_DEF   "postcode=VARCHAR2(20) DEFAULT ''"
-Database  state  POSTCREATE   "CREATE INDEX state_postcode ON state (postcode)"
+Database  state  INDEX         postcode
 Database  state  COLUMN_DEF   "tax=VARCHAR2(2000)"
 Database  state  COLUMN_DEF   "name=VARCHAR2(64) DEFAULT ''"
-Database  state  POSTCREATE   "CREATE INDEX state_name ON state (name)"
+Database  state  INDEX         name

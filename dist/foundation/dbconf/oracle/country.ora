@@ -13,4 +13,4 @@ Database  country  COLUMN_DEF   "shipmodes=VARCHAR2(64)"
 Database  country  COLUMN_DEF   "name=VARCHAR2(32) DEFAULT ''"
 Database  country  COLUMN_DEF   "iso=CHAR(3) DEFAULT '' NOT NULL"
 Database  country  COLUMN_DEF   "isonum=CHAR(3) DEFAULT '' NOT NULL"
-Database  country  POSTCREATE   "CREATE INDEX country_name ON country (name)"
+Database  country  INDEX         name

@@ -6,8 +6,8 @@ ifdef SQLPASS
 Database  orderline  PASS         __SQLPASS__
 endif
 Database  orderline  COLUMN_DEF   "code=char(14) NOT NULL PRIMARY KEY"
-Database  orderline  COLUMN_DEF   "store_id=CHAR(9) DEFAULT '' NOT NULL, index(store_id)"
-Database  orderline  COLUMN_DEF   "order_number=CHAR(14) NOT NULL, index(order_number)"
+Database  orderline  COLUMN_DEF   "store_id=CHAR(9) DEFAULT '' NOT NULL"
+Database  orderline  COLUMN_DEF   "order_number=CHAR(14) NOT NULL"
 Database  orderline  COLUMN_DEF   "session=CHAR(32) NOT NULL"
 Database  orderline  COLUMN_DEF   "username=CHAR(20) default '' NOT NULL"
 Database  orderline  COLUMN_DEF   "shipmode=CHAR(32) default '' NOT NULL"
@@ -25,3 +25,4 @@ Database  orderline  COLUMN_DEF   "order_date=varchar(32) NOT NULL"
 Database  orderline  COLUMN_DEF   "update_date=timestamp"
 Database  orderline  COLUMN_DEF   "status=VARCHAR(32)"
 Database  orderline  COLUMN_DEF   "parent=CHAR(9)"
+Database  orderline  INDEX         store_id order_number
