@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.139 2004-04-16 16:31:04 mheins Exp $
+# $Id: Config.pm,v 2.140 2004-04-30 20:09:38 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.139 $, 10);
+$VERSION = substr(q$Revision: 2.140 $, 10);
 
 my %CDname;
 my %CPname;
@@ -329,6 +329,7 @@ sub global_directives {
 	['TrustProxy',		 'list_wildcard_full', ''],
 	['AcrossLocks',		 'yesno',            'No'],
     ['DNSBL',            'array',            ''],
+	['NotRobotUA',		 'list_wildcard',      ''],
 	['RobotUA',			 'list_wildcard',      ''],
 	['RobotIP',			 'list_wildcard_full', ''],
 	['RobotHost',		 'list_wildcard_full', ''],
