@@ -165,10 +165,32 @@ part of the UI configuration file.
 
 =back
 
-=head2 Additional database fields
+=head2 Additional database fields -- userdb
 
-Quickbooks requires an account to debit for the split transactions it uses
-to track item sails. If you don't create these fields to relate to each SKU,
+Quickbooks requires a couple more fields than Interchange has. If you
+want the user to retain their customer number, add the following field to the
+"userdb" table:
+
+    customer_number
+
+It can be an integer number field if your database needs that information.
+To add the field in MySQL, you can issue the following queries at
+the mysql prompt:
+
+    alter table userdb add column customer_number int;
+
+If you don't add it, it just means that a new customer number will be assigned
+every time.
+
+WARNING: If you are using Interchange DBM files and have live data it
+is not recommended you add this field unless you are positive you will
+not overwrite your data. If you are not a developer, get one to help you.
+In any case, back up your userdb.gdbm or userdb.db file first.
+
+=head2 Additional database fields -- inventory
+
+Quicken also needs an account to debit for the split transactions it uses
+to track item sales. If you don't create these fields to relate to each SKU,
 the account "Other Income" will be used in the exports.
 
 Add the following fields to the "inventory" table:
@@ -197,29 +219,20 @@ statement if you wish).
 There are some Require directives to ensure that the needed UserTag definitions
 are included in the catalog, as well as the Route which is used
 
-=head2 Add quickbooks order route to order pages
+=head2 Add quickbooks order route
 
-Edit the checkout pages, pages/ord/checkout.html (and possibly
-pages/multi/checkout.html), in your Catalog Directory. Find the hidden field
-referring to C<mv_order_route>.
+In the Interchange UI, there is a Preferences area "ORDER_ROUTES". You should
+add the C<quickbooks> route. Place it after the transaction logging step, i.e.
 
-If the line looks like this:
+    code     ORDER_ROUTES
+	Variable log quickbooks main copy_user
 
-  <INPUT TYPE=hidden NAME=mv_order_route VALUE="log main copy_user">
-
-You will want to change it to:
-
-  <INPUT TYPE=hidden NAME=mv_order_route VALUE="log quickbooks main copy_user">
-
-If it looks like:
-
-  <INPUT TYPE=hidden NAME=mv_order_route
-         VALUE="[either]__ORDER_ROUTES__[or]log main copy_user[/either]">
-
-you will want to change the Variable/Knar entry ORDER_ROUTES to include
-the C<quickbooks> route. Place it after the transaction logging step, i.e.
+ADVANCED: If you know Interchange Variable settings, you can add it directly:
 
     Variable ORDER_ROUTES  log quickbooks main copy_user
+
+Also, you can use other methods to set order routes. See the Interchange
+Reference Guide.
 
 =head2 Restart the catalog
 
