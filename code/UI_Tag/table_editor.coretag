@@ -174,9 +174,14 @@ sub {
 	}
 
 	my $rowcount = 0;
+	my $action = $opt->{action} || 'set';
+	my $wizard_next   = $opt->{wizard_next}   || 'return';
+	my $wizard_cancel = $opt->{wizard_cancel} || 'back';
 	my $rowdiv = $opt->{across} || 1;
 	my $span = $rowdiv * 2;
 	my $oddspan = $span - 1;
+	my $def = $opt->{default_ref} || $::Values;
+#::logDebug("view=$opt->{ui_meta_view}, default_ref: " . uneval($def));
 	$opt->{table_width} = '60%' if ! $opt->{table_width};
 	$opt->{left_width} = '30%' if ! $opt->{left_width};
 	if (! $opt->{inner_table_width}) {
@@ -244,14 +249,14 @@ sub {
 	else {
 		if($opt->{action_click}) {
 			$ntext = <<EOF;
-mv_todo=return
+mv_todo=$wizard_next
 ui_wizard_action=Next
 mv_click=$opt->{action_click}
 EOF
 		}
 		else {
 			$ntext = <<EOF;
-mv_todo=return
+mv_todo=$wizard_next
 ui_wizard_action=Next
 mv_click=ui_override_next
 EOF
@@ -264,14 +269,14 @@ EOF
 mv_form_profile=
 ui_wizard_action=Cancel
 mv_nextpage=$hidgo
-mv_todo=back
+mv_todo=$wizard_cancel
 EOF
 		if($opt->{mv_prevpage}) {
 			$btext = $Scratch->{$opt->{back_text}} = <<EOF;
 mv_form_profile=
 ui_wizard_action=Back
 mv_nextpage=$opt->{mv_prevpage}
-mv_todo=return
+mv_todo=$wizard_next
 EOF
 		}
 		else {
@@ -287,8 +292,8 @@ EOF
 	$Scratch->{$opt->{cancel_text}} = $ctext if $ctext;
 	$Scratch->{$opt->{back_text}}   = $btext if $btext;
 
-	$opt->{next_text} = HTML::Entities::encode($opt->{next_text});
-	$opt->{back_text} = HTML::Entities::encode($opt->{back_text});
+	$opt->{next_text} = HTML::Entities::encode($opt->{next_text}, $ESCAPE_CHARS::std);
+	$opt->{back_text} = HTML::Entities::encode($opt->{back_text}, $ESCAPE_CHARS::std);
 	$opt->{cancel_text} = HTML::Entities::encode($opt->{cancel_text});
 
 	$Scratch->{$opt->{next_text}}   = $ntext if $ntext;
@@ -466,7 +471,7 @@ $prof
 &fatal=1
 $success
 mv_form_profile=mandatory
-&set=mv_todo set
+&set=mv_todo $action
 EOP
 [/perl]
 EOF
@@ -521,6 +526,7 @@ EOF
 
 	$opt->{ui_data_fields} =~ s/\r\n/\n/g;
 	$opt->{ui_data_fields} =~ s/\r/\n/g;
+#::logDebug("ui_data_fields=$opt->{ui_data_fields}");
 
 	if($opt->{ui_data_fields} =~ /\n\n/) {
 #::logDebug("Found break fields");
@@ -798,10 +804,12 @@ EOF
 	}
 	$opt->{enctype} = $opt->{file_upload} ? ' ENCTYPE="multipart/form-data"' : '';
 
-	my $out = <<EOF;
-[restrict]
+	my $wo = $opt->{widgets_only};
+	my @out;
+	push @out, '[restrict]' if $opt->{reparse};
+	push @out, <<EOF unless $wo;
 <FORM METHOD=$opt->{method} ACTION="$opt->{href}"$opt->{form_name}$opt->{enctype}>
-$sidstr<INPUT TYPE=hidden NAME=mv_todo VALUE="set">
+$sidstr<INPUT TYPE=hidden NAME=mv_todo VALUE="$action">
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_filter">
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="$opt->{mv_nextpage}">
 <INPUT TYPE=hidden NAME=mv_data_table VALUE="$table">
@@ -832,14 +840,14 @@ EOF
 		next unless length $opt->{$_};
 		my $val = $opt->{$_};
 		$val =~ s/"/&quot;/g;
-		$out .= qq{<INPUT TYPE=hidden NAME=$_ VALUE="$val">\n};
+		push @out, qq{<INPUT TYPE=hidden NAME=$_ VALUE="$val">\n} unless $wo;
 	}
 
 	for (@cgi_set) {
 		next unless length $CGI->{$_};
 		my $val = $CGI->{$_};
 		$val =~ s/"/&quot;/g;
-		$out .= qq{<INPUT TYPE=hidden NAME=$_ VALUE="$val">\n};
+		push @out, qq{<INPUT TYPE=hidden NAME=$_ VALUE="$val">\n} unless $wo;
 	}
 
 	if($opt->{mailto}) {
@@ -861,25 +869,25 @@ EOF
 		elsif ($CGI::values{ui_return_to}) {
 			@$r_ary = ( $CGI::values{ui_return_to} ); 
 		}
-		$out .= $Tag->return_to();
+		push @out, $Tag->return_to() unless $wo;
 #::logDebug("return-to stack = " . ::uneval($r_ary));
 	}
 
 	if(ref $opt->{hidden}) {
 		my ($hk, $hv);
 		while ( ($hk, $hv) = each %{$opt->{hidden}} ) {
-			$out .= qq{<INPUT TYPE=hidden NAME="$hk" VALUE="$hv">\n};
+			push @out, qq{<INPUT TYPE=hidden NAME="$hk" VALUE="$hv">\n} unless $wo;
 		}
 	}
 
-	$out .= <<EOF;
+	push @out, <<EOF unless $wo;
 <table class=touter border="" cellspacing="0" cellpadding="0" width="$opt->{table_width}">
 <tr>
   <td>
 
 <table class=tinner  width="$opt->{inner_table_width}" cellspacing=0 cellmargin=0 width="100%" cellpadding="2" align="center" border="0">
 EOF
-	$out .= <<EOF unless $opt->{no_top};
+	push @out, <<EOF unless $opt->{no_top} or $wo;
 <tr class=rtitle> 
 <td align=right colspan=$span><img src="$opt->{clear_image}" width=1 height=3 alt=x></td>
 </tr>
@@ -892,16 +900,16 @@ EOF
 						|| $mlabel;
       if ($extra_ok and ! $opt->{no_top} and ! $opt->{nosave}) {
 	  	if($opt->{back_text}) {
-		  $out .= <<EOF;
+		  push @out, <<EOF unless $wo;
 <TR class=rnorm>
 <td>&nbsp;</td>
 <td align=left colspan=$oddspan class=cdata>
 EOF
-			$out .= <<EOF if ! $opt->{bottom_buttons};
+			push @out, <<EOF if not $wo || $opt->{bottom_buttons};
 <INPUT TYPE=submit NAME=mv_click VALUE="$opt->{back_text}">&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
 <BR>
 EOF
-			$out .= <<EOF;
+			push @out, <<EOF unless $wo;
 $mlabel
 </TD>
 </TR>
@@ -912,16 +920,16 @@ $mlabel
 EOF
 		}
 		elsif ($opt->{wizard}) {
-		  $out .= <<EOF;
+		  push @out, <<EOF unless $wo;
 <TR class=rnorm>
 <td>&nbsp;</td>
 <td align=left colspan=$oddspan class=cdata>
 EOF
-			$out .= <<EOF if ! $opt->{bottom_buttons};
+			push @out, <<EOF if (! $wo and ! $opt->{bottom_buttons});
 <INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
 <BR>
 EOF
-			$out .= <<EOF;
+			push @out, <<EOF unless $wo;
 $mlabel
 </TD>
 </TR>
@@ -932,7 +940,7 @@ $mlabel
 EOF
 		}
 		else {
-		  $out .= <<EOF;
+		  push @out, <<EOF unless $wo;
 <TR class=rnorm>
 <td>&nbsp;</td>
 <td align=left colspan=$oddspan class=cdata>
@@ -950,7 +958,7 @@ EOF
 		}
 	}
 
-	$out .= $blob_widget;
+	push @out, $blob_widget unless $wo;
 
 	  #### Extra buttons
 
@@ -1046,7 +1054,7 @@ EOF
 		my $tabs = join " ", @tables;
 		$set =~ s/_TABLES_/$tabs/g;
 		$Scratch->{clone_tables} = $set;
-		$out .= <<EOF;
+		push @out, <<EOF unless $wo;
 <tr class=rtitle>
 <td colspan=$span>
 $tabform<INPUT TYPE=hidden NAME=mv_check VALUE="clone_tables">
@@ -1059,6 +1067,7 @@ EOF
 	my %break;
 	my %break_label;
 	if($opt->{ui_break_before}) {
+#::logDebug("Have a break_before");
 		my @tmp = grep /\S/, split /[\s,\0]+/, $opt->{ui_break_before};
 		@break{@tmp} = @tmp;
 		if($opt->{ui_break_before_label}) {
@@ -1123,13 +1132,16 @@ EOF
 
 	if($opt->{defaults}) {
 		for(@cols) {
-			if($opt->{wizard}) {
-				$default->{$_} = $::Values->{$_} if defined $::Values->{$_};
+			if($opt->{force_defaults}) {
+				$default->{$_} = $override->{$_} = $def->{$_};
+			}
+			elsif($opt->{wizard}) {
+				$default->{$_} = $def->{$_} if defined $def->{$_};
 			}
 			else {
 				next if defined $default->{$_};
-				next unless defined $::Values->{$_};
-				$default->{$_} = $::Values->{$_};
+				next unless defined $def->{$_};
+				$default->{$_} = $def->{$_};
 			}
 		}
 	}
@@ -1162,6 +1174,8 @@ EOF
 	my %serialize;
 	my %serial_data;
 
+	my @controls;
+
 	foreach my $col (@cols) {
 		my $t;
 		my $c;
@@ -1170,7 +1184,7 @@ EOF
 		if($col eq $keycol) {
 			if($opt->{ui_hide_key}) {
 				my $kval = $key || $override->{$col} || $default->{$col};
-				$out .= <<EOF;
+				push @controls, <<EOF;
 	<INPUT TYPE=hidden NAME="$col" VALUE="$kval">
 EOF
 				next;
@@ -1180,6 +1194,7 @@ EOF
 			}
 		}
 
+		my $w = '';
 		my $do = $display_only{$col};
 		
 		my $currval;
@@ -1258,7 +1273,7 @@ EOF
 					$sd = tag_data($tt, $tc, $k);
 				}
 				else {
-					$sd = $data->{$col} || $::Values->{$col};
+					$sd = $data->{$col} || $def->{$col};
 				}
 #Debug("serial_data=$sd");
 				$serial_data{$col} = $sd;
@@ -1330,7 +1345,7 @@ EOF
 										width => $width->{$c},
 										template => $template,
 									});
-		if($super and ! $opt->{no_meta} and ($Variable->{UI_META_LINK} || $::Values->{ui_meta_force}) ) {
+		if($super and ! $opt->{no_meta} and ($Variable->{UI_META_LINK} || $def->{ui_meta_force}) ) {
 			$meta .= '<BR><FONT SIZE=1>';
 			# Get global variables
 			my $base = $Tag->var('UI_BASE', 1);
@@ -1369,26 +1384,29 @@ EOF
 		$display =~ s/\~META\~/$meta/g;
 		$display =~ s/\~ERROR\~/$Tag->error({ name => $c, keep => 1 })/eg;
         
-		if ($break{$namecol}) {
+		if (! $wo and $break{$namecol}) {
 			while($rowcount % $rowdiv) {
-				$out .= '<TD>&nbsp;</td><TD>&nbsp;</td>';
+				$w .= '<TD>&nbsp;</td><TD>&nbsp;</td>';
 				$rowcount++;
 			}
-			$out .= "</TR>\n";
-			$out .= <<EOF if $break{$namecol};
+			$w .= "</TR>\n";
+			$w .= <<EOF if $break{$namecol};
 <TR class=rbreak>
 	<TD COLSPAN=$span class=cbreak>$break_label{$namecol}<IMG SRC="$opt->{clear_image}" WIDTH=1 HEIGHT=1 alt=x></TD>
 </TR>
 EOF
 			$rowcount = 0;
 		}
-		$out .= "<tr class=rnorm>" unless $rowcount++ % $rowdiv;
-		$out .= $display;
-		$out .= "</TR>\n" unless $rowcount % $rowdiv;
+		$w .= "<tr class=rnorm>" unless $rowcount++ % $rowdiv;
+		$w .= $display;
+		$w .= "</TR>\n" unless $rowcount % $rowdiv;
+		push @controls, $w;
 	}
 
+	my @firstout = splice @out, 0;
+
 	while($rowcount % $rowdiv) {
-		$out .= '<TD>&nbsp;</td><TD>&nbsp;</td>';
+		push @out, '<TD>&nbsp;</td><TD>&nbsp;</td>' unless $wo;
 		$rowcount++;
 	}
 
@@ -1409,20 +1427,21 @@ EOF
 			if is_hash($serial_data{$_});
 		$serial_data{$_} =~ s/\&/&amp;/g;
 		$serial_data{$_} =~ s/"/&quot;/g;
-		$out .= qq{<INPUT TYPE=hidden NAME="$_" VALUE="$serial_data{$_}">};
+		push @out, qq{<INPUT TYPE=hidden NAME="$_" VALUE="$serial_data{$_}">}
+			unless $wo;
 		push @serial_fields, @{$serialize{$_}};
 	}
 
-	if(@serial_fields) {
-		$out .= qq{<INPUT TYPE=hidden NAME="ui_serial_fields" VALUE="};
-		$out .= join " ", @serial_fields;
-		$out .= qq{">};
+	if(! $wo and @serial_fields) {
+		push @out, qq{<INPUT TYPE=hidden NAME="ui_serial_fields" VALUE="};
+		push @out, join " ", @serial_fields;
+		push @out, qq{">};
 	}
 
 	###
 	### Here the user can include some extra stuff in the form....
 	###
-	$out .= <<EOF if $opt->{include_form};
+	push @out, <<EOF if ! $wo and $opt->{include_form};
 <tr class=rnorm>
 <td colspan=$span>$opt->{include_form}</td>
 </tr>
@@ -1434,7 +1453,7 @@ EOF
 	}
 	$passed_fields = join " ", @cols;
 
-	$out .= <<EOF;
+	push @out, <<EOF unless $wo;
 <INPUT TYPE=hidden NAME=mv_data_fields VALUE="$passed_fields">
 <tr class=rspacer>
 <td colspan=$span ><img src="$opt->{clear_image}" height=3 alt=x></td>
@@ -1444,7 +1463,7 @@ EOF
   SAVEWIDGETS: {
   	last SAVEWIDGETS if $opt->{nosave}; 
 	  	if($opt->{back_text}) {
-		  $out .= <<EOF;
+		  push @out, <<EOF unless $wo;
 <TR class=rnorm>
 <td>&nbsp;</td>
 <td align=left colspan=$oddspan class=cdata>
@@ -1452,7 +1471,7 @@ EOF
 EOF
 		}
 		elsif($opt->{wizard}) {
-		  $out .= <<EOF;
+		  push @out, <<EOF unless $wo;
 <TR class=rnorm>
 <td>&nbsp;</td>
 <td align=left colspan=$oddspan class=cdata>
@@ -1460,7 +1479,7 @@ EOF
 EOF
 		}
 		else {
-		  $out .= <<EOF;
+		  push @out, <<EOF unless $wo;
 <TR class=rnorm>
 <td>&nbsp;</td>
 <td align=left colspan=$oddspan class=cdata>
@@ -1483,7 +1502,7 @@ EOF
 		$checked = ''
 			if defined $opt->{mv_auto_export} and ! $opt->{mv_auto_export};
 		my $autoexpstr = errmsg('Auto-export');		
-		$out .= <<EOF unless $opt->{noexport} or $opt->{nosave};
+		push @out, <<EOF unless $wo or $opt->{noexport} or $opt->{nosave};
 <small>
 &nbsp;
 &nbsp;
@@ -1510,13 +1529,13 @@ EOF
 						$extra
 					!,
 					});
-		$out .= <<EOF if ! $opt->{nosave};
+		push @out, <<EOF if !($wo || $opt->{nosave});
 <BR><BR><A
 onClick="return confirm('Are you sure you want to delete $key?')"
 HREF="$url"><IMG SRC="delete.gif" ALT="Delete $key" BORDER=0></A> Delete
 EOF
 	}
-	$out .= <<EOF;
+	push @out, <<EOF unless $wo;
 </small>
 </td>
 </tr>
@@ -1551,18 +1570,24 @@ EOF
 	}
 	$Tag->error( { all => 1 } );
 
-	$out .= <<EOF unless $opt->{no_bottom} and ! $message;
+	push @out, <<EOF unless $wo or ($opt->{no_bottom} and ! $message);
 <tr class=rtitle>
 <td colspan=$span><!-- $Scratch->{$opt->{next_text}} -->$message<img src="$opt->{clear_image}" height=3 alt=x></td>
 </tr>
 EOF
-	$out .= <<EOF;
+	push @out, <<EOF unless $wo;
 </table>
 </td></tr></table>
 
 </form>
-[/restrict]
 EOF
+	push @out, '[/restrict]' if $opt->{reparse};
 
+	if($wo) {
+		return @controls if wantarray;
+		return join "", @controls;
+	}
+show_times("end table editor call item_id=$key") if $Global::ShowTimes;
+	return join "", @firstout, @controls, @out;
 }
 EOR

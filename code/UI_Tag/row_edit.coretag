@@ -93,8 +93,7 @@ sub {
 			
 			if($ta{$_} || $text =~ /\n/) {
 				my $rows = $opt->{height} || 4;
-				$text =~ s/</&lt;/g;
-				$text =~ s/\[/&#91;/g;
+				HTML::Entities::encode($text, $ESCAPE_CHARS::std);
 				$out .= <<EOF;
 <TD><TEXTAREA NAME="$_" COLS="$size" ROWS="$rows">$text</TEXTAREA>$msg</TD>
 EOF

@@ -27,9 +27,11 @@ sub {
 	my $mtab;
 	my $record;
 
+	my $no_meta = $CGI::values{ui_no_meta_display};
+#::logDebug("no_meta=$no_meta");
 	METALOOK: {
 		## No meta display wanted
-		last METALOOK if $CGI::values{no_meta_display};
+		last METALOOK if $no_meta;
 		## No meta display possible
 		$table and $column or $opt->{meta}
 			or last METALOOK;
@@ -84,10 +86,10 @@ sub {
 		}
 	}
 
-#::logDebug("metarecord=$record");
 	my $w;
 
 	METAMAKE: {
+		last METAMAKE if $no_meta;
 		if( ! $record ) {
 			$record = { %$opt };
 		}
@@ -211,6 +213,7 @@ sub {
 
 		while( my ($k, $v) = each %things) {
 			next if length $record->{$k};
+			next unless defined $v;
 			$record->{$k} = $v;
 		}
 
@@ -227,14 +230,12 @@ sub {
 	if(! defined $w) {
 		my $text = $opt->{value};
 		my $iname = $opt->{name} || $column;
-		my $DECODE_CHARS = qq{[<"\000-\037\177-\377};
 
 		# Count lines for textarea
 		my $count;
 		$count = $text =~ s/(\r\n|\r|\n)/$1/g;
 
-		HTML::Entities::encode($text, '&');
-		HTML::Entities::encode($text, $DECODE_CHARS);
+		encode($text, $ESCAPE_CHARS::std);
 		my $size;
 		if ($count) {
 			$count++;

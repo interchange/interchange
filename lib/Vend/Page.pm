@@ -1,6 +1,6 @@
 # Vend::Page - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 2.3 2001-10-13 20:35:21 mheins Exp $
+# $Id: Page.pm,v 2.4 2002-02-08 23:08:21 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -45,7 +45,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 
 my $wantref = 1;
 
@@ -119,9 +119,7 @@ sub display_page {
 		return 1;
 	}
 	else {
-		$name =~ s/\&/&amp;/g;
-		$name =~ s/\[/&#91;/g;
-		$name =~ s/\</&lt;/g;
+		HTML::Entities::encode($name, $ESCAPE_CHARS::std);
 		display_special_page(find_special_page('missing'), $name);
 		return 0;
 	}

@@ -4,7 +4,8 @@
 	my @tables = split /\s+/, $Scratch->{tables};
 	my $out;
 	for(@tables) {
-		$tables{$_} = [ $Db{$_}->columns() ];
+		my $string = $Tag->db_columns($_);
+		$tables{$_} = [ grep /\S/, split /\s+/, $string ];
 	}
 	$out = "<SCRIPT LANGUAGE=JAVASCRIPT>\n<!-- \n";
 

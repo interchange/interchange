@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.57 2002-02-06 22:34:09 mheins Exp $
+# $Id: Interpolate.pm,v 2.58 2002-02-08 23:08:21 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.57 $, 10);
+$VERSION = substr(q$Revision: 2.58 $, 10);
 
 @EXPORT = qw (
 
@@ -259,9 +259,6 @@ my $XD    = qr{[-_]};
 my $Gvar  = qr{\@\@([A-Za-z0-9]\w+[A-Za-z0-9])\@\@};
 my $Evar  = qr{\@_([A-Za-z0-9]\w+[A-Za-z0-9])_\@};
 my $Cvar  = qr{__([A-Za-z0-9]\w*?[A-Za-z0-9])__};
-
-my %Comment_out = ( '<' => '&lt;', '[' => '&#91;', '_' => '&#95;', );
-
 
 
 my @th = (qw!
@@ -1088,7 +1085,7 @@ sub tag_data {
 					return scalar localtime(shift);
 				},
 	'encode_entities' => sub {
-					return HTML::Entities::encode(shift);
+					return HTML::Entities::encode(shift, $ESCAPE_CHARS::std);
 				},
 	'decode_entities' => sub {
 					return HTML::Entities::decode(shift);

@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.12 2002-02-07 21:33:21 mheins Exp $
+# $Id: Form.pm,v 2.13 2002-02-08 23:08:21 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,6 +25,7 @@
 package Vend::Form;
 
 require HTML::Entities;
+*encode = \&HTML::Entities::encode_entities;
 use Vend::Interpolate;
 use Vend::Util;
 use Vend::Tags;
@@ -36,7 +37,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.12 $, 10);
+$VERSION = substr(q$Revision: 2.13 $, 10);
 
 @EXPORT = qw (
 	display
@@ -130,7 +131,7 @@ my $Tag = new Vend::Tags;
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
 		.
-		qq(>{VALUE}{APPEND})
+		qq(>{ENCODED}{APPEND})
 		,
 	boxstd =>
 		qq(<input type="{VARIANT}" name="{NAME}" value="{TVALUE}")
@@ -272,7 +273,7 @@ EOF
 		s/\*$// and $attr->{selected} = 1;
 
 		($attr->{value},$attr->{label}) = @$_;
-		
+		encode($attr->{label}, $ESCAPE_CHARS::std);
 		if($attr->{value} =~ /^\s*\~\~(.*)\~\~\s*$/) {
 			my $lab = $1;
 			$lab =~ s/"/&quot;/g;
@@ -603,9 +604,9 @@ sub dropdown {
 	
 	for(@$opts) {
 		my ($value, $label) = @$_;
+		encode($label, $ESCAPE_CHARS::std);
 		if($value =~ /^\s*\~\~(.*)\~\~\s*$/) {
 			my $label = $1;
-			$label =~ s/"/&quot;/g;
 			if($optgroup_one++) {
 				$run .= "</optgroup>";
 			}
@@ -633,7 +634,7 @@ sub dropdown {
 		}
 
 		my $vvalue = $value;
-		$vvalue =~ s/"/&quot;/;
+		encode($vvalue, $ESCAPE_CHARS::std);
 		$run .= qq| value="$vvalue"|;
 		if (length($default)) {
 			$regex	= qr/$re_b\Q$value\E$re_e/;
@@ -753,6 +754,7 @@ sub box {
 
 	for(@$opts) {
 		my($value,$label) = @$_;
+		encode($label, $ESCAPE_CHARS::std);
 		if($value =~ /^\s*\~\~(.*)\~\~\s*$/) {
 			my $lab = $1;
 			$lab =~ s/"/&quot;/g;
@@ -790,7 +792,7 @@ sub box {
 			$default =~ $regex and $opt->{selected} = 1;
 		}
 
-		$opt->{tvalue} = HTML::Entities::encode($value);
+		$opt->{tvalue} = encode($value, $ESCAPE_CHARS::std);
 
 		$label =~ s/ /&nbsp;/g if $xlt;
 		$opt->{tlabel} = $label;
@@ -890,18 +892,18 @@ if($opt->{debug}) {
 		return join "", @out;
 	}
 
+	if($opt->{override}) {
+		$opt->{value} = $opt->{default};
+	}
+
+	$opt->{default} = $opt->{value}    if defined $opt->{value};
+
 	if($opt->{pre_filter} and defined $opt->{value}) {
 		$opt->{value} = Vend::Interpolate::filter_value(
 							$opt->{pre_filter},
 							$opt->{value},
 						);
 	}
-
-	if($opt->{override}) {
-		$opt->{value} = $opt->{default};
-	}
-
-	$opt->{default} = $opt->{value}    if defined $opt->{value};
 
 	my $ishash;
 	if(ref ($item) eq 'HASH') {
@@ -1064,7 +1066,7 @@ if($opt->{debug}) {
 	}
 
 	$opt->{value} = $opt->{default} if ! defined $opt->{value};
-    $opt->{encoded} = HTML::Entities::encode($opt->{value});
+    $opt->{encoded} = encode($opt->{value}, $ESCAPE_CHARS::std);
 
 	# Action taken for various types
 	my %daction = (
@@ -1083,6 +1085,7 @@ if($opt->{debug}) {
 		select      => \&dropdown,
 		show        => \&show_data,
 		value       => sub { my $opt = shift; return $opt->{encoded} },
+		realvalue   => sub { my $opt = shift; return $opt->{value} },
 		yesno		=> \&yesno,
 	);
 

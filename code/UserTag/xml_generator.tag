@@ -184,7 +184,7 @@ sub {
 				$out .= qq{\t<$rtag key="$key">\n};
 				for (my $i = 0; $i < $cnt; $i++) {
 					next if $opt->{skip_empty} && length($f[$i]) == 0;
-					HTML::Entities::encode_entities($f[$i]);
+					HTML::Entities::encode($f[$i]);
 					$out .= qq{\t\t<$ftag name="$fields[$i]">$f[$i]</$ftag>\n};
 				}
 				$out .= qq{\t</$rtag>\n};
