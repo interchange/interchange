@@ -5,6 +5,7 @@ Makefile.PL
 QuickStart
 README
 README.cvs
+README.debian
 README.rpm
 SPECS/interchange-4.6.0-rh6.spec
 SPECS/interchange-4.6.0-rh7.spec

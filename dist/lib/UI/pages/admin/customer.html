@@ -205,7 +205,7 @@ mv_nextpage=@@MV_PAGE@@
 		my ($f, $n) = @_;
 		my $out = 'ui_sort_option=';
 		$out .= 'n' if $n;
-		return $out unless $fld eq $f;
+		return $out unless ($fld eq $f) || ($f eq 'username');
 		return $out if $so =~ /r/;
 		return $out . 'r';
 	}
