@@ -38,19 +38,23 @@
 		my $k = $1;
 		unshift @layout, "[set $k]" . $CGI->{$_} . '[/set]';
 	}
-	foreach $one (@layout) {
-		if( $one eq 'UI_CONTENT') {
-			my $content = shift @insert;
+	if (@layout) {
+		foreach $one (@layout) {
+			if( $one eq 'UI_CONTENT') {
+				my $content = shift @insert;
 #Log("inserting $content");
-			$content =~ s/\r?\n/\n/g;
-			push @out, $content;
+				$content =~ s/\r?\n/\n/g;
+				push @out, $content;
+			}
+			elsif ($one =~ /^[A-Z]\w+$/) {
+				push @out, '@_' . $one . '_@';
+			}
+			else {
+				push @out, $one;
+			}
 		}
-		elsif ($one =~ /^[A-Z]\w+$/) {
-			push @out, '@_' . $one . '_@';
-		}
-		else {
-			push @out, $one;
-		}
+	} else {
+		push @out, $CGI->{ui_content};
 	}
 	$Scratch->{ui_output_page} = "tmp/$Session->{id}.preview";
 	$Tag->write_relative_file($Scratch->{ui_output_page}, (join "\n", @out));
@@ -59,4 +63,4 @@
 [if cgi ui_page_preview]
 [include include/page_save]
 [/if]
-[include file="[scratch ui_output_page]"]
+[include file="[scratch ui_output_page]" locale=1]
