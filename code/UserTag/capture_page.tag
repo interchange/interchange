@@ -14,6 +14,8 @@ sub {
 		Vend::Page::do_scan($opt->{scan});
 	}
 
+	$::Scratch->{mv_no_count} = 1;
+
 	my $pageref = Vend::Page::display_page($page,{return => 1});
 
 	return Vend::File::writefile (">$file", $pageref, 
