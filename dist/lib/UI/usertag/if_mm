@@ -162,7 +162,7 @@ sub {
 		($group, @groups) = map { s/^/:/; $_ } @groups;
 		goto CHECKIT;
 	}
-::logDebug("if-mm: func=$func field=$field status=$status reverse=$reverse");
+#::logDebug("if-mm: func=$func field=$field status=$status reverse=$reverse");
 	return $status
 		? (
 			Vend::Interpolate::pull_if($text, $reverse)
