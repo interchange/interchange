@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.46 2004-07-23 03:03:39 mheins Exp $
+# $Id: Shadow.pm,v 1.47 2004-12-14 23:03:47 racke Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.46 $, 10);
+$VERSION = substr(q$Revision: 1.47 $, 10);
 
 # CREDITS
 #
@@ -333,6 +333,19 @@ sub query {
 			unless (@map_matches = $s->_map_entries($colref, \@map_entries)) {
 				return $s->[$OBJ]->query($opt, $text, @arg);				
 			}
+
+			if (@$colref == 1 && $qref->{distinct}->[0]) {
+				# workaround for queries like
+				# "select distinct category from products order by category"
+				my ($dt, $dc) = $s->_map_field($colref->[0]);
+
+				$opt->{query} = "select distinct $dc from " . $dt->config('name');
+				if (@{$qref->{order}}) {
+					$opt->{query} .= " ORDER BY " . join(',', @{$qref->{order}});
+				}
+				
+				return $s->[$OBJ]->query($opt, $text, @arg);
+			}
 			
 			# scan columns for key field
 			my $keyname = $s->[$OBJ]->config('KEY');
@@ -466,13 +479,18 @@ sub _parse_sql {
 	}
 
 	$sqlinfo{command} = $stmt->command();
+	
 	for ($stmt->tables()) {
 		push (@{$sqlinfo{tables}}, $_->name());
 	}
 	for ($stmt->columns()) {
 		push (@{$sqlinfo{columns}}, $_->name());
+		push (@{$sqlinfo{distinct}}, $_->distinct());
 	}
-
+	for ($stmt->order()) {
+		push (@{$sqlinfo{order}}, $_->column() . ($_->desc ? ' DESC' : ''));
+	}
+	
 	\%sqlinfo;		   
 }
 
