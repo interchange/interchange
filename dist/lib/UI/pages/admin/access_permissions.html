@@ -10,7 +10,7 @@
 [bounce page="__UI_BASE__/access"]
 [/if]
 
-[seti page_title]Edit Permissions: [cgi user_id][/seti]
+[seti page_title][L]Edit Permissions[/L]: [cgi user_id][/seti]
 [set ui_class]Admin[/set]
 [set page_perm]access=v[/set]
 [set help_name]access.permissions[/set]
@@ -96,11 +96,11 @@
 
 <tr>
 <td bgcolor=__UI_C_INTBLOCK__ valign=top>&nbsp;</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>View list</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>View detail</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>Create</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>Edit</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>Delete</td>
+<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]View list[/L]</td>
+<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]View detail[/L]</td>
+<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]Create[/L]</td>
+<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]Edit[/L]</td>
+<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]Delete[/L]</td>
 </tr>
 
 [seti tables][list-databases][/seti]
@@ -162,7 +162,7 @@
 	my $perm;
 	my $title;
 	while( $perm = shift @permissions) {
-		$title = shift @permissions;
+		$title = $Tag->loc('',shift @permissions);
 		my $ref = $permref->{$perm} || {};
 		$out .= <<EOF;
 <tr>
