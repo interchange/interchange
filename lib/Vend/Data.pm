@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.31 2003-09-09 23:45:32 racke Exp $
+# $Id: Data.pm,v 2.32 2003-11-05 17:12:57 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -304,7 +304,7 @@ sub import_text {
 	if($options->{file}) {
 		$fn = $options->{file};
 		Vend::File::allowed_file($fn)
-			or die "No absolute file names like '$fn' allowed.\n";
+			or die ::errmsg("No absolute file names like '%s' allowed.\n", $fn);
 	}
 	else {
 		Vend::Util::writefile($fn, $text)
@@ -1851,8 +1851,8 @@ sub update_data {
 	unshift(@fields, $prikey);
 
     my @file_fields = split /[\s\0,]+/, $CGI::values{mv_data_file_field};
-    my @file_paths = split /[\s\0,]+/, $CGI::values{mv_data_file_path};
-    my @file_oldfiles = split /[\s\0,]+/, $CGI::values{mv_data_file_oldfile};
+    my @file_paths = split /\0/, $CGI::values{mv_data_file_path};
+    my @file_oldfiles = split /\0/, $CGI::values{mv_data_file_oldfile};
 
 	if($en_col) {
 		$en_col =~ s/^\s+//;
