@@ -45,7 +45,9 @@ if(! $db) {
 	$Scratch->{ui_error} = "Bad table '$table'.";
 	$Tag->bounce( { page => '__UI_BASE__/error' } );
 }
-
+if ($CGI->{item_id} eq 'new' && $db->config('AUTO_INCREMENT')) {
+    $Scratch->{arg} = $CGI->{item_id} = '';
+}
 $Values->{ui_data_key_name} = $db->config('KEY');
 
 if( $mdb and ! $CGI->{ui_data_fields} and ! $CGI->{ui_data_fields_all} and $mdb->record_exists($table) ) {
