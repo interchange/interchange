@@ -1,6 +1,6 @@
 [if !cgi mv_data_table]
 [calc]
-	$CGI->{mv_data_table} = $Values->{mv_data_table} = 'affiliate';
+	$CGI->{mv_data_table} = $Values->{mv_data_table} = '__UI_AFFILIATE_TABLE__';
 	return;
 [/calc]
 [/if]
@@ -48,7 +48,7 @@
 		[/else]
 		[/if]
 		st=db
-		fi=affiliate
+		fi=__UI_AFFILIATE_TABLE__
 		sp=@@MV_PAGE@@
 		ml=__UI_SZ_LIST_MERCH__
 "][on-match]
