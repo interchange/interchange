@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.13.4.2 2000-11-02 00:06:39 racke Exp $
+# $Id: Data.pm,v 1.13.4.3 2000-11-27 02:09:00 racke Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -563,7 +563,7 @@ sub tie_database {
 		}
 		else {
 			if($data->{GUESS_NUMERIC}) {
-				my $dir = $data->{dir} || $Vend::Cfg->{ProductDir};
+				my $dir = $data->{DIR} || $Vend::Cfg->{ProductDir};
 				my $fn = Vend::Util::catfile( $dir, $data->{file} );
 				my @fields = grep /\S/, split /\s+/, ::readfile("$fn.numeric");
 #::logDebug("fields=@fields");
@@ -636,17 +636,17 @@ sub import_database {
 	}
 
 	$base = $obj->{'name'};
-	$dir = $obj->{'dir'} if defined $obj->{'dir'};
+	$dir = $obj->{DIR} if defined $obj->{DIR};
 
 	$class_config = $db_config{$obj->{Class} || $Global::Default_database};
 
-#::logDebug ("params=$database_txt path='$path' base='$base' tail='$tail'") if $type == 9;
+::logDebug ("params=$database_txt path='$path' base='$base' tail='$tail' dir='$dir'") if $type == 9;
 	$table_name     = $name;
 	my $export;
 
   IMPORT: {
-	last IMPORT if $no_import and $obj->{'dir'};
-	last IMPORT if defined $obj->{IMPORT_ONCE} and $obj->{'dir'};
+	last IMPORT if $no_import and $obj->{DIR};
+	last IMPORT if defined $obj->{IMPORT_ONCE} and $obj->{DIR};
 #::logDebug ("first no_import_check: passed") if $type == 9;
 
     $database_txt = $database;
@@ -664,11 +664,11 @@ sub import_database {
 		$dir = $path;
 	}
 	else {
-		$dir = $Vend::Cfg->{ProductDir} || $Global::ConfigDir;
+		$dir = $obj->{DIR} || $Vend::Cfg->{ProductDir} || $Global::ConfigDir;
 		$database_txt = Vend::Util::catfile($dir,$database_txt);
 	}
 
-	$obj->{'dir'} = $dir;
+	$obj->{DIR} = $dir;
 
 	$obj->{ObjectType} = $class_config->{Class};
 
@@ -961,8 +961,9 @@ sub export_database {
 	my ($delim, $record_delim) = find_delimiter($type || $db->config('type'));
 
 	$file = $file || $db->config('file');
+	my $dir = $db->config('DIR');
 
-	$file = Vend::Util::catfile( $Vend::Cfg->{ProductDir}, $file)
+	$file = Vend::Util::catfile( $dir, $file)
 		unless Vend::Util::file_name_is_absolute($file);
 
 	my @cols = $db->columns();
