@@ -96,7 +96,7 @@ Or you can check status via this URL:
             mv_todo=return
             mv_nextpage=query/check_orders
      ']"
-
+[/if]
 Remember, you can always visit our site at:
 
     __SERVER_NAME__
