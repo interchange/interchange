@@ -37,7 +37,10 @@
 	}
 
 	my $ary;
+	# force substitution of [L..]-stuff off	
+	my $savelocale = delete $Config->{Locale};
 	my $current = $Tag->file($page);
+	$Config->{Locale} = $savelocale;
 	delete $CGI->{save_in_page};
 
 	# This call returns an array of hashes if exists
