@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.17 2001-03-22 22:49:49 jon Exp $
+# $Id: UserDB.pm,v 1.18 2001-05-18 17:55:48 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.17 $, 10);
+$VERSION = substr(q$Revision: 1.18 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -1116,7 +1116,7 @@ sub new_account {
 				if $self->{OPTIONS}{ignore_case};
 		}
 		die "Must have longer username.\n" unless length($self->{USERNAME}) > 1;
-		die "Can't have '$1' as username, unsafe characters.\n"
+		die "Can't have '$self->{USERNAME}' as username, unsafe characters.\n"
 			if $self->{USERNAME} !~ m{^$GOOD_CHARS+$};
 #::logDebug("new_account username: '$self->{USERNAME}'");
 		if ($self->{DB}->record_exists($self->{USERNAME})) {
