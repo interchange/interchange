@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.42 2003-10-15 22:03:20 racke Exp $
+# $Id: Shadow.pm,v 1.43 2003-10-16 13:09:59 racke Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.42 $, 10);
+$VERSION = substr(q$Revision: 1.43 $, 10);
 
 # CREDITS
 #
@@ -281,6 +281,11 @@ sub query {
 		$opt = {};
 	}
 	$opt->{query} = $opt->{sql} || $text if ! $opt->{query};
+
+	if($opt->{type}) {
+		$opt->{$opt->{type}} = 1 unless defined $opt->{$opt->{type}};
+	}
+
 	$s = $s->import_db() unless defined $s->[$OBJ];
 	
 	if ($opt->{query}) {
