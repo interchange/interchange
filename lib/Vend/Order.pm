@@ -2,7 +2,7 @@
 #
 # MiniVend version 4.0
 #
-# $Id: Order.pm,v 1.1 2000-05-26 18:50:39 heins Exp $
+# $Id: Order.pm,v 1.2 2000-06-05 05:35:59 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -33,7 +33,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -775,7 +775,8 @@ sub charge {
 	else {
 		$Vend::Session->{cybercash_error} = '';
 	}
-	$Vend::Session->{cybercash_id} = $result{'order-id'};
+	$Vend::Session->{payment_id} =
+		$Vend::Session->{cybercash_id} = $result{'order-id'};
 	if($Vend::Cfg->{EncryptProgram} =~ /(pgp|gpg)/) {
 		$CGI::values{mv_credit_card_force} = 1;
 		(
@@ -1731,13 +1732,15 @@ sub add_items {
        $attr{mv_mi}->[$i] = $group[$i] ? ++$Vend::Session->{pageCount} : 0;
 	}
 
-	my $separate =
-				$Vend::Cfg->{SeparateItems} ||
-				$CGI::values{mv_separate_items} ||
-				(
-					defined $Vend::Session->{scratch}->{mv_separate_items}
-				 && is_yes( $Vend::Session->{scratch}->{mv_separate_items} )
-				 );
+	my $separate = defined $CGI::values{mv_separate_items}
+					? is_yes($CGI::values{mv_separate_items})
+					: (
+						$Vend::Cfg->{SeparateItems} ||
+						(
+							defined $Vend::Session->{scratch}->{mv_separate_items}
+						 && is_yes( $Vend::Session->{scratch}->{mv_separate_items} )
+						 )
+						);
 	$j = 0;
 	my $set;
 	foreach $code (@items) {
