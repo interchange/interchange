@@ -26,7 +26,7 @@
 
 <FORM ACTION="[process]" METHOD=POST>
 <INPUT TYPE=hidden NAME=mv_click VALUE=MMLogin>
-<INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="[either][cgi destination][or]__UI_BASE__/index[/either]">
 <INPUT TYPE=hidden NAME=mv_doit  VALUE=return>
 
 [if session failure]
@@ -97,7 +97,11 @@ EOF
 <div align="right"><font size="2"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#000066">[L]Password[/L]</font><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;&nbsp;</font></b></font></div>
 </td>
 <td> 
-<INPUT TYPE=password NAME=mv_password VALUE="" SIZE=15 onChange="this.form.submit()">
+<INPUT TYPE=password NAME=mv_password VALUE="" SIZE=15
+[if !session browser =~ /msie.*mac/i]
+onChange="this.form.submit()"
+[/if]
+>
 </td>
 </tr>
 <tr> 

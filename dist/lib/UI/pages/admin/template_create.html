@@ -45,7 +45,7 @@ EOF
 
 	my $new;
 	if($CGI->{ui_template_new}) {
-Debug("found new template");
+#Debug("found new template");
 		$t_desc = $CGI->{ui_template_description} || $CGI->{ui_template_new};
 		$t_name = $CGI->{ui_template_new};
 		$t_name =~ s/^\W+//;
@@ -135,7 +135,7 @@ push @messages, "template from upload:\n$tref->{ui_definition}";
 	
    }
 
-Debug("t_name=$t_name");
+#Debug("t_name=$t_name");
 	$out .= <<EOF;
 <tr>
 	<td class=ralt><b>Template description</b></td>
@@ -326,11 +326,11 @@ EOF
 </tr>
 EOF
 
-Debug("calling read_ui_template $compdir/*");
+#Debug("calling read_ui_template $compdir/*");
 	my ($components) = $Tag->read_ui_template("$compdir/*");
 	my @copts;
 	for(@$components) {
-Debug("Found component: " . uneval($_));
+#Debug("Found component: " . uneval($_));
 		my $hash = $_;
 		my $key = $hash->{ui_component_name} || $hash->{ui_component};
 		my $val = $hash->{ui_component_label} || $hash->{ui_component_description};
@@ -373,7 +373,7 @@ Select only one for a fixed component, select none for a choice of all,
 or select the ones to give a choice of.
 EOF
 		my $r;
-Debug("element=$ref->{element}(or $ref->{element})");
+#Debug("element=$ref->{element}(or $ref->{element})");
 
 		$widget = $Tag->display( {
 						name => "$i.ui_control_component",
