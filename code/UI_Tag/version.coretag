@@ -163,10 +163,6 @@ sub {
 				'Storable'      => 'Session and search storage will be slower.',
 		'DBI' => q{Most people want to use SQL with Interchange, and this is a requirement.  You will also need the appropriate DBD module, i.e. DBD::mysql to support MySQL.},
 
-'Term::ReadKey' => q{Helps Term::ReadLine::Perl generate completions and editing for makecat and other interactive scripts from command line.},
-
-'Term::ReadLine::Perl' => q{Gives you filename completion and command history in the makecat program.  Not used otherwise.},
-
 'MIME::Base64' => q{Provides HTTP services for internal HTTP server and basic authentication.},
 
 'URI::URL' => q{Provides HTTP primitives for internal HTTP server.},
