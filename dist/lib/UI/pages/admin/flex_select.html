@@ -282,6 +282,10 @@ EOF
 		$CGI->{ui_description_fields} = join ",", $ref->columns();
 	}
 	else {
+		my $i = 0;
+		$CGI->{ui_show_fields} =~
+			s/(\w+)(?:\((.*?)\))?/ ($filter_show[$i++] = $2), $1/eg;
+#Log("filter_show: " . $Tag->uneval( { ref => \@filter_show } ));
 		$CGI->{ui_show_fields} =~ s/[\0,\s]+/,/g;
 		$CGI->{ui_description_fields} = $CGI->{ui_show_fields};
 	}
@@ -330,7 +334,13 @@ EOF
 <TABLE CELLSPACING=1 cellmargin=3>
 <TR BGCOLOR="__UI_C_TITLEBARBG__">
 [loop list="[cgi ui_description_fields]"]
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
+<TH[loop-calc]
+			my $extra = '';
+			while ($filter_show[ [loop-increment] - 1] =~ m/\b(v?align\s*=\w+)/gi) {
+				$extra .= " $1";
+			}
+			return $extra || ' ALIGN=LEFT';
+		[/loop-calc]><FONT COLOR="__UI_C_TITLEBARTXT__">
 	[loop-change 1][condition]1[/condition]&nbsp;&nbsp;&nbsp;&nbsp;[/loop-change 1]
 	<A HREF="[area href='__UI_BASE__/flex_group'
 					form='
@@ -383,9 +393,17 @@ sub {
 	return unless $line;
 	shift (@$line);
 	my $out = '';
+	my $i = 1;
 	for(@$line) {
+		my $filter = $filter_show[$i] || 'entities';
+		my $extra = '';
+
+		$extra .= " $1" while $filter =~ s/(v?align=\w+)//i;
+#Log("$i filter = $filter");
+
 		s/\[/&#91;/g;
-		$out .= "<TD>" . $Tag->filter('entities', $_) . "</TD>";
+		$out .= "<TD$extra>" . $Tag->filter($filter, $_) . "</TD>";
+		$i++;
 	}
 	return $out . "\n";
 }
