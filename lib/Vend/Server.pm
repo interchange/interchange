@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.11 2001-02-13 14:36:45 heins Exp $
+# $Id: Server.pm,v 1.8.2.12 2001-02-18 15:26:28 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.11 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.12 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -647,9 +647,7 @@ sub http_server {
 	}
 	my $cat = "/$catname";
 
-#::logDebug("cat=$cat allowglobal=$Global::AllowGlobal->{$cat}");
 	if($Global::Selector{$cat} and $Global::AllowGlobal->{$cat}) {
-#::logDebug("found mv_admin");
 		if ($$env{AUTHORIZATION}) {
 			$$env{REMOTE_USER} =
 					Vend::Util::check_authorization( delete $$env{AUTHORIZATION} );
@@ -665,17 +663,14 @@ EOF
 	}
 
 	if($Global::Selector{$cat} || $Global::SelectorAlias{$cat}) {
-#::logDebug("found direct catalog $cat");
 		$$env{SCRIPT_NAME} = $cat;
 		$$env{PATH_INFO} = join "/", '', @path;
 	}
 	elsif(-f "$Global::VendRoot/doc$path") {
-#::logDebug("found doc file");
 		$Vend::StatusLine = "HTTP/1.0 200 OK";
 		$doc = readfile("$Global::VendRoot/doc$path");
 	}
 	else {
-#::logDebug("not found");
 		$status = 404;
 		$Vend::StatusLine = "HTTP/1.0 404 Not found";
 		$doc = "$path not a Interchange catalog or help file.\n";
@@ -715,35 +710,30 @@ sub read_cgi_data {
 
     for (;;) {
         $block = _find(\$in, "\n");
-        if ($block =~ m/^[GPH]/) {
-#::logDebug("http block");
-           	return http_server($block, $in, @_);
-		}
-		elsif ($block =~ s/^ipc ([-\w]+)$//) {
-#::logDebug("ipc block");
-			my $cat = $1;
-		}
-		elsif (($n) = ($block =~ m/^arg (\d+)$/)) {
-#::logDebug("arg block");
-            $#$argv = $n - 1;
-            foreach $i (0 .. $n - 1) {
-                $$argv[$i] = _string(\$in);
-            }
-        } elsif (($n) = ($block =~ m/^env (\d+)$/)) {
-#::logDebug("env block");
+		if (($n) = ($block =~ m/^env (\d+)$/)) {
             foreach $i (0 .. $n - 1) {
                 $e = _string(\$in);
                 if (($key, $value) = ($e =~ m/^([^=]+)=(.*)$/s)) {
                     $$env{$key} = $value;
                 }
             }
-        } elsif ($block =~ m/^entity$/) {
-#::logDebug("entity block");
-            $$entity = _string(\$in);
-        } elsif ($block =~ m/^end$/) {
-#::logDebug("end block");
+        }
+		elsif ($block =~ m/^end$/) {
             last;
-        } else {
+        }
+		elsif ($block =~ m/^entity$/) {
+            $$entity = _string(\$in);
+		}
+        elsif ($block =~ m/^[GPH]/) {
+           	return http_server($block, $in, @_);
+        }
+		elsif (($n) = ($block =~ m/^arg (\d+)$/)) {
+            $#$argv = $n - 1;
+            foreach $i (0 .. $n - 1) {
+                $$argv[$i] = _string(\$in);
+            }
+        }
+		else {
 			die "Unrecognized block: $block\n";
         }
     }
