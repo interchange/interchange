@@ -17,7 +17,7 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0017	Admin	08					admin/gentable		Tables									
 0017b	Admin	08b					admin/auto_wizard		Wizard									
 0017c	Admin	08c					admin/test_code		Test code									
-0018	Admin	09					admin/reconfig	ui_changes_made	&nbsp;&nbsp;&nbsp;Apply Changes									
+0018	Admin	09					admin/reconfig		&nbsp;&nbsp;&nbsp;Apply Changes									
 0019	Admin	10	1		no_dbmenu	mv_data_table	admin/flex_select	mv_data_table=[cgi mv_data_table]	Edit									
 0020	Admin	11			no_dbmenu	mv_data_table	admin/import_table	mv_data_table=[cgi mv_data_table]	Import Data									
 0021	Admin	12			no_dbmenu	mv_data_table	admin/export_table	mv_data_table=[cgi mv_data_table]	Export Data									
