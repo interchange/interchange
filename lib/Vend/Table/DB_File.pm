@@ -1,6 +1,6 @@
 # Vend::Table::DB_File - Access an Interchange table stored in a DB file hash
 #
-# $Id: DB_File.pm,v 1.3.6.8 2001-06-29 02:19:28 jon Exp $
+# $Id: DB_File.pm,v 1.3.6.9 2001-06-29 14:09:41 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -23,7 +23,6 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DB_File;
-$VERSION = substr(q$Revision: 1.3.6.8 $, 10);
 use strict;
 use Fcntl;
 use DB_File;
@@ -31,7 +30,7 @@ use vars qw($VERSION @ISA);
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 1.3.6.8 $, 10);
+$VERSION = substr(q$Revision: 1.3.6.9 $, 10);
 
 sub create {
 	my ($class, $config, $columns, $filename) = @_;
