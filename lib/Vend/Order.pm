@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18.2.1 2000-11-30 02:57:01 heins Exp $
+# $Id: Order.pm,v 1.18.2.2 2000-12-11 01:48:25 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.1 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.2 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -60,11 +60,129 @@ use Text::ParseWords;
 
 my @Errors = ();
 my $Fatal = 0;
+my $And;
 my $Final = 0;
 my $Success;
 my $Profile;
 my $Fail_page;
 my $Success_page;
+
+sub _length {
+}
+
+my %Parse = (
+
+	'&charge'       =>	\&_charge,
+	'&credit_card'  =>	\&_credit_card,
+	'&return'       =>	\&_return,
+	'&fatal'       	=>	\&_fatal,
+	'&and'       	=>	\&_and_check,
+	'&or'       	=>	\&_or_check,
+	'&format'		=> 	\&_format,
+	'&success'		=> 	sub { $Success_page = $_[1] },
+	'&fail'         =>  sub { $Fail_page    = $_[1] },
+	'&final'		=>	\&_final,
+	'&calc'			=>  sub { Vend::Interpolate::tag_calc($_[1]) },
+	'&test'			=>	sub {		
+								my($ref,$params) = @_;
+								$params =~ s/\s+//g;
+								return $params;
+							},
+	'length'		=>  sub {
+							my($name, $value, $msg) = @_;
+#::logDebug("length check: msg='$msg'");
+							$msg =~ s/^(\d+)(?:\s*-(\d+))?\s*//
+								or return undef;
+							my $min = $1;
+							my $max = $2;
+							my $len = length($value);
+
+#::logDebug("length check: name=$name value=$value min=$min max=$max len=$len");
+							if($len < $min) {
+								$msg = ::errmsg(
+										"%s length %s less than minimum length %s.",
+										$name,
+										$len,
+										$min) if ! $msg;
+#::logDebug("length check failed: $msg");
+								return(0, $name, $msg);
+							}
+							elsif($max and $len > $max) {
+								$msg = ::errmsg(
+										"%s length %s more than maximum length %s.",
+										$name,
+										$len,
+										$max) if ! $msg;
+								return(0, $name, $msg);
+							}
+							return (1, $name, '');
+						},
+	'regex'			=>	sub {		
+							my($name, $value, $code) = @_;
+							my $message;
+
+							$code =~ s/\\/\\\\/g;
+							my @code = Text::ParseWords::shellwords($code);
+							if($code =~ /(["']).+?\1$/) {
+								$message = pop(@code);
+							}
+
+							for(@code) {
+								my $negate;
+								s/^!\s*// and $negate = 1;
+								my $op = $negate ? "!~" :  '=~';
+								my $regex = qr($_);
+								if($negate) {
+									$status = ($value !~ $regex);
+								}
+								else {
+									$status = ($value =~ $regex);
+								}
+								if(! $status) {
+									$message = "failed pattern - '$value' $op $_"
+										if ! $message;
+									return ( 0, $name, $message);
+								}
+							}
+							return (1, $name, '');
+						},
+	'unique'			=> sub {
+							my($name, $value, $code) = @_;
+
+							$code =~ s/(\w+)\s*//;
+							my $tab = $1
+								or return (0, $name, "no table specified");
+							my $db = database_exists_ref($tab)
+								or do {
+									my $msg = ::errmsg(
+										"Table %s doesn't exist",
+										$tab,
+									);
+									return(0, $name, $msg);
+								};
+							if($db->record_exists($value)) {
+								my $msg = ::errmsg(
+										"Key %s already exists in %s, try again.",
+										$value,
+										$tab,
+									);
+								return(0, $name, $msg);
+							}
+							return (1, $name, '');
+						},
+	'&set'			=>	sub {		
+								my($ref,$params) = @_;
+								my ($var, $value) = split /\s+/, $params, 2;
+								$::Values->{$var} = $value;
+							},
+	'&setcheck'			=>	sub {		
+								my($ref,$params) = @_;
+								my ($var, $value) = split /\s+/, $params, 2;
+								$::Values->{$var} = $value;
+								return ($value, $var, "$var set failed.");
+							},
+);
+
 
 sub _fatal {
 	$Fatal = ( defined($_[1]) && ($_[1] =~ /^[yYtT1]/) ) ? 1 : 0;
@@ -83,10 +201,23 @@ sub _format {
 	no strict 'refs';
 	my ($routine, $var, $val) = split /\s+/, $params, 3;
 
-	return (undef, $var, "No format check routine for '$routine'")
-		unless defined &{"_$routine"};
+	my (@return);
 
-	my (@return) = &{'_' . $routine}($ref,$var,$val);
+#::logDebug("routine='$routine' var='$var' val='$val'");
+	if( defined $Parse{$routine}) {
+#::logDebug("Parse routine=$routine defined");
+		@return = $Parse{$routine}->($var, $val, $message);
+		undef $message;
+	}
+	elsif (defined &{"_$routine"}) {
+		@return = &{'_' . $routine}($ref,$var,$val);
+	}
+	else {
+#::logDebug("Parse routine=_$routine NOT defined");
+		return (undef, $var, "No format check routine for '$routine'");
+	}
+
+#::logDebug("routine=$routine returning:" . ::uneval_it(\@return) );
 	if(! $return[0] and $message) {
 		$return[2] = $message;
 	}
@@ -127,10 +258,19 @@ sub chain_checks {
 }
 
 sub _and_check {
+	if(! length($_[1]) ) {
+#::logDebug("setting and");
+		$And = 1;
+		return (1);
+	}
 	return chain_checks(0, @_);
 }
 
 sub _or_check {
+	if(! length($_[1]) ) {
+		$And = 0;
+		return (1);
+	}
 	return chain_checks(1, @_);
 }
 
@@ -196,37 +336,6 @@ sub _credit_card {
 		return (1, 'mv_credit_card_valid');
 	}
 }
-
-my %Parse = (
-
-	'&charge'       =>	\&_charge,
-	'&credit_card'  =>	\&_credit_card,
-	'&return'       =>	\&_return,
-	'&fatal'       	=>	\&_fatal,
-	'&and'       	=>	\&_and_check,
-	'&or'       	=>	\&_or_check,
-	'&format'		=> 	\&_format,
-	'&success'		=> 	sub { $Success_page = $_[1] },
-	'&fail'         =>  sub { $Fail_page    = $_[1] },
-	'&final'		=>	\&_final,
-	'&calc'			=>  sub { Vend::Interpolate::tag_calc($_[1]) },
-	'&test'			=>	sub {		
-								my($ref,$params) = @_;
-								$params =~ s/\s+//g;
-								return $params;
-							},
-	'&set'			=>	sub {		
-								my($ref,$params) = @_;
-								my ($var, $value) = split /\s+/, $params, 2;
-								$::Values->{$var} = $value;
-							},
-	'&setcheck'			=>	sub {		
-								my($ref,$params) = @_;
-								my ($var, $value) = split /\s+/, $params, 2;
-								$::Values->{$var} = $value;
-								return ($value, $var, "$var set failed.");
-							},
-);
 
 sub valid_exp_date {
 	my ($expire) = @_;
@@ -936,9 +1045,12 @@ sub pgp_encrypt {
 
 sub do_check {
 		local($_) = shift;
+
+		my $ref = \%CGI::values;
+		my $vref = shift || $::Values;
+
 		$parameter = $_;
 		my($var, $val, $m, $message);
-		my $ref = \%CGI::values;
 		if (/^&/) {
 			($var,$val) = split /[\s=]+/, $parameter, 2;
 		}
@@ -948,7 +1060,7 @@ sub do_check {
 			$m = $v =~ s/\s+(.*)// ? $1 : undef;
 			($var,$val) =
 				('&format',
-				  $v . ' ' . $k  . ' ' .  $::Values->{$k}
+				  $v . ' ' . $k  . ' ' .  $vref->{$k}
 				  );
 		}
 		else {
@@ -959,7 +1071,7 @@ sub do_check {
 
 #::logDebug("checking profile $Profile: var=$var val=$val Fatal=$Fatal Final=$Final");
 		if (defined $Parse{$var}) {
-			($val, $var, $message) = &{$Parse{$var}}($ref, $val, $m || undef);
+			($val, $var, $message) = &{$Parse{$var}}($ref, $val, $m);
 		}
 		else {
 			logError( "Unknown order check parameter in profile %s: %s=%s",
@@ -974,7 +1086,7 @@ sub do_check {
 }
 
 sub check_order {
-	my ($profile) = @_;
+	my ($profile, $vref) = @_;
     my($codere) = '[-\w_#/.]+';
 	my $params;
 	if(defined $Vend::Cfg->{OrderProfileName}->{$profile}) {
@@ -993,7 +1105,9 @@ sub check_order {
 
 	my $ref = \%CGI::values;
 	$params = interpolate_html($params);
+	$params =~ s/\\\n//g;
 	@Errors = ();
+	$And = 1;
 	$Fatal = $Final = 0;
 
 	my($var,$val);
@@ -1001,7 +1115,9 @@ sub check_order {
 	my(@param) = split /[\r\n]+/, $params;
 	my $m;
 	my $join;
-	
+	my $last_one = 1;
+#::logDebug("complete profile:\n$params\n");
+
 	for(@param) {
 		if($join) {
 			$_ = "$join$_";
@@ -1015,10 +1131,22 @@ sub check_order {
 		}
 		s/^\s+//;
 		s/\s+$//;
-		($val, $var, $message) = do_check($_);
-#::logDebug("check returned val='$val' var=" . (defined $var ? 'DEFINED' : 'UNDEF'));
+		($val, $var, $message) = do_check($_, $vref);
 		next if ! defined $var;
+		if(defined $And) {
+			if($And) {
+				$val = ($last_one && $val);
+			}
+			else {
+				$val = ($last_one || $val);
+			}
+#::logDebug("And defined, val=$val.");
+			undef $And;
+		}
+#::logDebug("check returned val='$val' last_one='$last_one' var=" . (defined $var ? 'DEFINED' : 'UNDEF'));
+		$last_one = $val;
 		if ($val) {
+#::logDebug("Deleting message $Vend::Session->{errors}{$var} for $var.");
  			$::Values->{"mv_status_$var"} = $message
 				if defined $message and $message;
 			delete $Vend::Session->{errors}{$var};
@@ -1029,9 +1157,16 @@ sub check_order {
 # LEGACY
 			$::Values->{"mv_error_$var"} = $message;
 # END LEGACY
+#::logDebug("Failing, setting message=$message for $var.");
 			$Vend::Session->{errors} = {}
 				if ! $Vend::Session->{errors};
-			$Vend::Session->{errors}{$var} = $message;
+			if( $Vend::Session->{errors}{$var} ) {
+				$Vend::Session->{errors}{$var} .= " AND $message"
+					if $message;
+			}
+			else {
+				$Vend::Session->{errors}{$var} = $message || "$var: failed check";
+			}
 			push @Errors, "$var: $message";
 		}
 #::logDebug("profile status now=$status");
@@ -1043,7 +1178,7 @@ sub check_order {
 	}
 	my $errors = join "\n", @Errors;
 	$errors = '' unless defined $errors and ! $Success;
-#::logDebug("FINISH checking profile $Profile: Fatal=$Fatal Final=$Final Status=$status");
+#::logDebug("FINISH checking profile $Profile: Fatal=$Fatal Final=$Final Status=$status\nErrors:\n$errors\n");
 	if($status) {
 		$::Values->{mv_nextpage} = $CGI::values{mv_nextpage} = $Success_page
 			if $Success_page;
@@ -1226,6 +1361,7 @@ sub _mandatory {
 	my($ref,$var,$val) = @_;
 	return (1, $var, '')
 		if (defined $ref->{$var} and $ref->{$var} =~ /\S/);
+#::logDebug("failed mandatory check with $var=$ref->{$var}");
 	return (undef, $var, "blank");
 }
 
@@ -1718,14 +1854,18 @@ sub add_items {
 		}
 	}
 
-    my ($group, $found_master, $mv_mi, $mv_si, @group);
+    my ($group, $found_master, $mv_mi, $mv_si, $mv_mp, @group, @modular);
 
-    @group = split /\0/, (delete $CGI::values{mv_order_group} || ''), -1;
-    for( $i = 0; $i < @group; $i++ ) {
-       $attr{mv_mi}->[$i] = $group[$i] ? ++$Vend::Session->{pageCount} : 0;
+	my $separate;
+	if( $CGI::values{mv_order_modular} ) {
+		@modular = split /\0/, delete $CGI::values{mv_order_modular};
+		for( my $i = 0; $i < @modular; $i++ ) {
+		   $attr{mv_mp}->[$i] = $modular[$i] if $modular[$i];
+		}
+		$separate = 1;
 	}
-
-	my $separate = defined $CGI::values{mv_separate_items}
+	else {
+		$separate = defined $CGI::values{mv_separate_items}
 					? is_yes($CGI::values{mv_separate_items})
 					: (
 						$Vend::Cfg->{SeparateItems} ||
@@ -1734,6 +1874,13 @@ sub add_items {
 						 && is_yes( $Vend::Session->{scratch}->{mv_separate_items} )
 						 )
 						);
+	}
+
+    @group   = split /\0/, (delete $CGI::values{mv_order_group} || ''), -1;
+    for( my $i = 0; $i < @group; $i++ ) {
+       $attr{mv_mi}->[$i] = $group[$i] ? ++$Vend::Session->{pageCount} : 0;
+	}
+
 	$j = 0;
 	my $set;
 	foreach $code (@items) {
@@ -1803,11 +1950,13 @@ sub add_items {
           if(@group) {
            if($attr{mv_mi}->[$j]) {
               $item->{mv_mi} = $mv_mi = $attr{mv_mi}->[$j];
+              $item->{mv_mp} = $mv_mp = $attr{mv_mp}->[$j];
               $item->{mv_si} = $mv_si = 0;
            }
            else {
               $item->{mv_mi} = $mv_mi;
               $item->{mv_si} = ++$mv_si;
+              $item->{mv_mp} = $attr{mv_mp}->[$j] || $mv_mp;
            }
 			}
 
