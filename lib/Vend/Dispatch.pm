@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.29 2004-01-30 17:35:03 mheins Exp $
+# $Id: Dispatch.pm,v 1.30 2004-02-02 20:53:28 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.29 $, 10);
+$VERSION = substr(q$Revision: 1.30 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1438,6 +1438,10 @@ EOF
     if (! $Vend::FinalPath || $Vend::FinalPath =~ m:^/+$:) {
 		$Vend::FinalPath = find_special_page('catalog');
     }
+
+	if($CGI::put_ref and my $act = $Vend::Cfg->{Special}{put_handler} ) {
+		$Vend::FinalPath =~ s:^/*:$act/:;
+	}
 
 	$Vend::FinalPath =~ s:^/+::;
 	$Vend::FinalPath =~ s/(\.html?)$//
