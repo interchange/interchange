@@ -377,7 +377,7 @@ sub initialize {
 			$MV::Default{PREFIX} = '/usr/local/interchange';
 		}
 		else {
-			$MV::Default{PREFIX} = "$ENV{HOME}/mvend";
+			$MV::Default{PREFIX} = "$ENV{HOME}/interchange";
 		}
 	}
 	if($MV::Default{rpmbuilddir} or $MV::Default{RPMBUILDDIR}) {

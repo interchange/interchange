@@ -95,7 +95,7 @@ Demo Store Install Walkthrough
      To begin:
 
      Change to the directory in which Interchange is installed:
-            cd /home/user/mvend
+            cd /home/user/interchange
      Run the makecat script
             bin/makecat
 
@@ -456,12 +456,12 @@ ask.
 <--That is, after you START or RESTART the Interchange server.  8-)
 <--It is best done with:
 <--
-<--        /home/user/mvend/bin/interchange -r
+<--        /home/user/interchange/bin/interchange -r
 <--
 <--For session expiration, you might want to place a line like this in your
 <--crontab:
 <--
-<--44 4 * * * /home/user/mvend/bin/expireall -r
+<--44 4 * * * /home/user/interchange/bin/expireall -r
 <--
 <--It will prevent the session databases from getting too large.
 
@@ -469,7 +469,7 @@ ask.
     That's it.  The demo store should be installed and ready to go.  Now
     you want to start the Interchange server:
 
-        /home/user/mvend/bin/interchange -r
+        /home/user/interchange/bin/interchange -r
 
     You should see something like this:
 

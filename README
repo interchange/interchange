@@ -134,8 +134,8 @@ There are two demo applications included; one is not so aptly named "simple",
 the other is "barry".
 
 To install the demo, go to the directory where you installed 
-Interchange (default is "mvend" in your home directory or /usr/local/interchange
-for root installations) and run:
+Interchange (default is "interchange" in your home directory or
+/usr/local/interchange for root installations) and run:
 
     bin/makecat barry
 
