@@ -5,12 +5,13 @@ ui_component_label: Small cart for left/right display
 
 [/comment]
 
+<tr><td align="center">
+
+  <table>
+
 <!-- BEGIN COMPONENT [control component cart_tiny] -->
 [if items]
  <tr> 
-   <td>
-   <p>&nbsp;</p>
-   </td>
    <td width="119" bgcolor="__BARBG__" valign="top"><br clear=all>
 	<table width="102" border="1" cellspacing="0" cellpadding="0" bordercolor="__BARCONTRAST__">
 	<tr><td>
@@ -46,5 +47,8 @@ ui_component_label: Small cart for left/right display
 </td>
 </tr>
 [/if]
+
+  </table>
+</td></tr>
 
 <!-- END COMPONENT [control component cart_tiny] -->
