@@ -19,7 +19,7 @@
 # MA  02111-1307  USA.
 
 UserTag formel Order label name type size
-UserTag formel Version 0.06
+UserTag formel Version 0.07
 UserTag formel addAttr
 UserTag formel Routine <<EOF
 sub {
@@ -72,7 +72,7 @@ sub {
 		$sizestr .= " maxlength=$opt->{maxlength}";
 	}
 
-	if ($type eq 'radio') {		
+	if ($type eq 'radio' || $type eq 'checkbox') {		
 		my ($rlabel, $rvalue, $select);
 		
 		for my $button (split (/\s*,\s*/, $opt->{choices})) {
@@ -90,7 +90,7 @@ sub {
 
 			$rlabel = &$labelproc($rlabel, 1);
 			
-			$elhtml .= qq{<input type=radio name=$name value="${rvalue}"$select> $rlabel};
+			$elhtml .= qq{<input type=$type name=$name value="${rvalue}"$select> $rlabel};
 		}
 		# delete error implicitly
 		&$labelproc();
@@ -173,7 +173,7 @@ attribute of the HTML tag.
 =item type
 
 The type of the form element (supported are text, textarea,
-radio and select).
+checkbox, radio and select).
 
 =item size
 
@@ -191,7 +191,7 @@ is the name of the form element.
 
 =item choices
 
-Comma-separated list of choices for radio and select types.
+Comma-separated list of choices for radio, checkbox and select types.
 To display labels different from the values, use the
 C<value1=label1,value2=label2,...> notation.
 
