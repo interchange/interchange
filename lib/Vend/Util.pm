@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.77 2005-01-29 01:08:49 jonc Exp $
+# $Id: Util.pm,v 2.78 2005-01-30 14:43:29 jonc Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -87,7 +87,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.77 $, 10);
+$VERSION = substr(q$Revision: 2.78 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1893,7 +1893,7 @@ sub send_mail {
 			$from = $1;
 		}
 		push @extra_headers, "From: $from" unless (grep /^From:\s*(\S.+)$/i, @extra_headers);
-		push @extra_headers, 'Date: ' . Vend::Interpolate::mvtime() unless (grep /^Date:\s*.$/i, @extra_headers);
+		push @extra_headers, 'Date: ' . POSIX::strftime('%a, %d %b %y %H:%M:%S %Z', localtime(time())) unless (grep /^Date:\s*.$/i, @extra_headers);
 
 		my $mime = '';
 		$mime = Vend::Interpolate::mime('header', {}, '') if $use_mime;
