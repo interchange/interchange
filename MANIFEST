@@ -549,6 +549,7 @@ dist/lib/UI/pages/admin/spread.html
 dist/lib/UI/pages/admin/spread_control.html
 dist/lib/UI/pages/admin/tablereport.html
 dist/lib/UI/pages/admin/tax.html
+dist/lib/UI/pages/admin/tax_simple.html
 dist/lib/UI/pages/admin/template.html
 dist/lib/UI/pages/admin/template_edit.html
 dist/lib/UI/pages/admin/template_new.html
