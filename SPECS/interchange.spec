@@ -195,7 +195,7 @@ exit 0
 EOF
 
 cat > $RPM_BUILD_ROOT/etc/logrotate.d/interchange <<EOF
-/var/log/interchange/* {
+/var/log/interchange/*log {
         rotate 4
         weekly
         compress
