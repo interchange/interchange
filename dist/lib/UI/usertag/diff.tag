@@ -20,7 +20,9 @@ sub {
         my $col = $2;
         my $key = $3;
         $currfn = "tmp/$Vend::SessionName.current";
-        Vend::Util::writefile(">$currfn", tag_data($table, $col, $key));
+		my $data = tag_data($table, $col, $key);
+		$data =~ s/\r\n?/\n/g if $opt->{ascii};
+        Vend::Util::writefile(">$currfn", $data);
     }
     else {
         $currfn = $curr;
@@ -30,11 +32,14 @@ sub {
         my $col = $2;
         my $key = $3;
         $prevfn = "tmp/$Vend::SessionName.previous";
-        Vend::Util::writefile(">$prevfn", tag_data($table, $col, $key));
+		my $data = tag_data($table, $col, $key);
+		$data =~ s/\r\n?/\n/g if $opt->{ascii};
+        Vend::Util::writefile(">$prevfn", $data);
     }
     else {
         $prevfn = $prev;
     }
+#Debug("diff command: 'diff $opt->{flags} $prevfn $currfn'");
     return `diff $opt->{flags} $prevfn $currfn`;
 }
 EOR
