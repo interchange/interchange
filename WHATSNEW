@@ -23,10 +23,8 @@ Core
   of other browsers, to get intermittent "CGI mapping error" failures
   when POSTing forms.
 
-* Fixed a bug in profiles that kept &calc, &return, etc. from ever failing
-  (because no variable name was associated with them). Even if you returned
-  a false value, the profile passed. Now false values cause the profile to
-  fail properly.
+* Fix addAttr setting for [order] tag, restoring ability to use 'base' and
+  'cart' attributes.
 
 Usertags
 --------
@@ -73,7 +71,7 @@ Packaging
 
 * Turned Depends of the libapache-mod-interchange Debian package on 
   interchange into a Suggests, thanks to Christopher F. Miller 
-  <cfm.maine.com> for the suggestion.
+  <cfm@maine.com> for the suggestion.
 
 * doc-base support added to libapache-mod-interchange Debian package.
 
@@ -103,8 +101,6 @@ Interchange 4.8.5 released 2002-05-06.
 * Improved German UI localization file.
 
 * Clean up minor things on a few Foundation and UI pages.
-
-* Remove last uses of implicit 'int' tag attribute in some UI pages.
 
 
 ------------------------------------------------------------------------------
