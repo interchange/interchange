@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.5.8
 #
-# $Id: interchange.PL,v 1.8.4.1 2000-10-14 14:48:05 racke Exp $
+# $Id: interchange.PL,v 1.8.4.2 2000-10-18 07:39:45 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -80,6 +80,10 @@ BEGIN {
 		$Global::ExeName = 'interchange';
 		$Global::ConfigFile = 'interchange.cfg';
 	}
+    elsif(-f '/etc/interchange/interchange.cfg') {
+        $Global::ExeName = 'interchange';
+        $Global::ConfigFile = '/etc/interchange/interchange.cfg';
+    }
 
 	$Global::InitialErrorFile = $Global::ErrorFile = "$Global::VendRoot/error.log";
 
