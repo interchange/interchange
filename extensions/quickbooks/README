@@ -1,9 +1,8 @@
 NAME
     Interchange QuickBooks -- QuickBooks support for transactions and items
 
-  Version
-
-    This document describes software based on Interchange 4.5.x.
+VERSION
+    This document describes software based on Interchange 4.5 and later.
 
 DESCRIPTION
     Interchange is a business-to-business and business-to-consumer internet
@@ -16,7 +15,7 @@ DESCRIPTION
     QuickBooks has an import/export format called IIF, a mnemonic for Intuit
     Interchange Format. Fitting, eh?
 
-    The standard capabilities of Interchange allow producition of IIF files
+    The standard capabilities of Interchange allow production of IIF files
     for transaction passing. With some support from Interchange UserTags,
     can even import and export item listings.
 
@@ -31,9 +30,8 @@ CONTENTS
       qb.catalog.cfg                Route for quickbooks transaction logging
 
 INSTALLATION
-    To install this extension, the basic steps are:
+    To set up this extension, the basic steps are:
 
-        * Untar the distribution to the extensions directory.
         * Create and copy directories and files.
         * Add additional database fields.
         * Modify catalog.cfg with additions.
@@ -50,26 +48,25 @@ INSTALLATION
     Catalog Directory
         This is the main directory for the catalog, where catalog.cfg
         resides. It will have a NAME, the name for the catalog. (Some common
-        Interchange demo names are "construct", "barry", and "simple".)
+        Interchange demo names are "foundation", "construct", "barry", and
+        "simple".)
 
         Common locations:
 
             /var/lib/interchange/NAME
-            $HOME/catalogs/NAME
             /usr/local/interchange/catalogs/NAME
+            $HOME/catalogs/NAME
 
-        We will use the path "/var/lib/interchange/construct" in these
+        We will use the path "/var/lib/interchange/foundation" in these
         examples.
 
     Interchange software directory
         This is the main directory for your Interchange server, where the
-        file "interchange.cfg" or "minivend.cfg" resides. Common locations:
+        file "interchange.cfg" resides. Common locations:
 
-            /usr/local/interchange
-            /usr/local/minivend
             /usr/lib/interchange
+            /usr/local/interchange
             $HOME/ic
-            $HOME/mvend
 
         We will use the path "/usr/lib/interchange" in these examples.
 
@@ -78,21 +75,7 @@ INSTALLATION
         will require write permission on directories it must modify to do
         its work.
 
-        We will use the user ID "interchange" in these examples.
-
-  Untar the extension
-
-    The assumption is that you will untar the distribution tar file to the
-    subdirectory "extensions" in your Interchange software directory. If you
-    stored it in the directory "/tmp", the command would be:
-
-            cd /usr/lib/interchange
-            gzip -dc /tmp/ic_qb*.tar.gz | tar xvf -
-
-    This will create the directory "extensions" if it doesn't already exist.
-
-    If you place the distribution somewhere else you must adjust your paths
-    in the example commands given below.
+        We will use the user ID "interch" in these examples.
 
   Create and copy directories and files
 
@@ -101,7 +84,7 @@ INSTALLATION
     It is assumed you have tools and knowledge to create directories with
     the proper permissions. Any directories that will contain varying files
     like order transaction logs will require write permission for the
-    Interchange user (daemon); pages and configuration only need have read
+    Interchange daemon user; pages and configuration only need have read
     permission.
 
     Make orders directory
@@ -109,15 +92,15 @@ INSTALLATION
         doesn't already exist. (It may be a symbolic link to another
         location.) It must have write permission on it.
 
-            cd /var/lib/interchange/construct
+            cd /var/lib/interchange/foundation
             mkdir orders
 
         If you are doing this as root, also do:
 
-            chown interchange orders
+            chown interch orders
 
         This directory is used to store the QuickBooks IIF files produced
-        for orders. The files are createed with the form:
+        for orders. The files are created with the form:
 
             qbYYYYMMDD.iif
 
@@ -131,23 +114,23 @@ INSTALLATION
         UNIX command line:
 
             cp -r /usr/lib/interchange/extensions/quickbooks/pages/admin/quickbooks \
-                  /var/lib/interchange/construct/pages
+                  /var/lib/interchange/foundation/pages
 
     Copy report generation file etc/trans_quickbooks
         This file is used to generate the IIF file(s) for transaction
         oimport into QuickBooks.
 
             cp /usr/lib/interchange/extensions/quickbooks/etc/trans_quickbooks \
-               /var/lib/interchange/construct/etc
+               /var/lib/interchange/foundation/etc
 
     Copy usertags
         If you want to use the UI item import/export, two usertags are
         required. The easiest thing is just to copy them to the Interchange
-        Software Directory subdirectory "dist/lib/UI/usertag", which is
-        #included as a part of the UI configuration file.
+        software directory subdirectory "lib/UI/usertag", which is #included
+        as a part of the UI configuration file.
 
             cd /usr/lib/interchange
-            cp -i extensions/quickbooks/usertag/* dist/lib/UI/usertag
+            cp -i extensions/quickbooks/usertag/* lib/UI/usertag
 
   Additional database fields -- userdb
 
@@ -219,7 +202,7 @@ INSTALLATION
         Variable ORDER_ROUTES  log quickbooks main copy_user
 
     Also, you can use other methods to set order routes. See the Interchange
-    Reference Guide.
+    reference documentation.
 
   Restart the catalog
 
@@ -262,13 +245,13 @@ DISCUSSION
     QuickBooks has a taxing system whereby tax rates are defined by customer
     location. There is usually also a generic "Sales Tax Item", such as
     contained in the sample company data. This allows Interchange to
-    calculate the salestax. If that item is not present then you will need
+    calculate the sales tax. If that item is not present then you will need
     to create it.
 
   Shipping
 
     Interchange will add a generic item "Shipping" to each order that has a
-    shipping cost. It's MEMO field will contain the text description of the
+    shipping cost. Its MEMO field will contain the text description of the
     mode. If that item is not in your QuickBooks item definitions, then you
     must create it.
 
@@ -281,5 +264,5 @@ DISCUSSION
     parentheses after the company or name.
 
 AUTHOR
-    Mike Heins, Akopia, Inc. <heins@akopia.com>.
+    Mike Heins, Red Hat, Inc. <mheins@redhat.com>.
 
