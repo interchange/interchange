@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.27 2003-03-13 22:07:17 jon Exp $
+# $Id: Form.pm,v 2.28 2003-03-26 17:08:19 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -37,7 +37,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.27 $, 10);
+$VERSION = substr(q$Revision: 2.28 $, 10);
 
 @EXPORT = qw (
 	display
@@ -1265,11 +1265,11 @@ sub parse_type {
 		if($type =~ /nbsp/i) {
 			$opt->{nbsp} = 1;
 		}
-		elsif ($type  =~ /left[\s_]*(\d?)/i ) {
+		elsif ($type  =~ /left[\s_]*(\d*)/i ) {
 			$opt->{breakmod} = $1;
 			$opt->{left} = 1;
 		}
-		elsif ($type  =~ /right[\s_]*(\d?)/i ) {
+		elsif ($type  =~ /right[\s_]*(\d*)/i ) {
 			$opt->{breakmod} = $1;
 			$opt->{right} = 1;
 		}
