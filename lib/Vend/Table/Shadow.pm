@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.13 2002-09-30 20:58:05 racke Exp $
+# $Id: Shadow.pm,v 1.14 2002-11-12 10:34:44 racke Exp $
 #
 # Copyright (C) 2002 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.13 $, 10);
+$VERSION = substr(q$Revision: 1.14 $, 10);
 
 # TODO
 #
@@ -116,15 +116,9 @@ sub quote {
 
 sub numeric {
 	my ($s, $column) = @_;
-	my ($map, $locale);
-
-	$s = $s->import_db() if ! defined $s->[$OBJ];
-	$locale = $::Scratch->{mv_locale} || 'default';
-	if (exists $s->[$CONFIG]->{MAP}->{$column}->{$locale}) {
-		$column = $s->[$CONFIG]->{MAP}->{$column}->{$locale};
-	}
-	
-	return $s->numeric($column);
+	$s = $s->import_db() unless defined $s->[$OBJ];
+	my ($orig_db, $orig_col) = $s->_map_field($column);
+	return $orig_db->numeric($orig_col);
 }
 
 sub column_index {
@@ -237,6 +231,31 @@ sub reset {
 	$s->[$OBJ]->reset();
 }
 
+# _map_field returns the shadowed database and column for a given field
+sub _map_field {
+	my ($s, $column) = @_;
+	my ($db, $sdb, $scol);
+	
+	my $locale = $::Scratch->{mv_locale} || 'default';
+
+	if (exists $s->[$CONFIG]->{MAP}->{$column}->{$locale}) {
+		my $map = $s->[$CONFIG]->{MAP}->{$column}->{$locale};
+
+		if (exists $map->{table}) {
+			$db = Vend::Data::database_exists_ref($map->{table})
+					   or die "unknown table $map->{table} in mapping for column $column of $s->[$TABLE] for locale $locale";
+			$sdb = $db;
+		} else {
+			$sdb = $s->[$OBJ];
+		}
+		$scol = $map->{column};
+	} else {
+		$sdb = $s->[$OBJ];
+		$scol = $column;
+	}
+	return ($sdb, $scol);
+}
+	
 sub _map_hash {
 	my ($s, $key, $href) = @_;
 
