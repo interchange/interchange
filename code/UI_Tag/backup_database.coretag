@@ -55,6 +55,7 @@ sub {
 							table => $table,
 							file => $file,
 							type => 'TAB',
+							where => $opt->{where},
 						},
 					);
 		};
