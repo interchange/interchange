@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.17 2001-10-09 22:29:57 mheins Exp $
+# $Id: Interpolate.pm,v 2.18 2001-10-10 19:45:23 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.17 $, 10);
+$VERSION = substr(q$Revision: 2.18 $, 10);
 
 @EXPORT = qw (
 
@@ -5360,6 +5360,11 @@ sub tag_sql_list {
 	if($opt->{ma}) {
 		# Find the sort field and alpha options....
 		Vend::Scan::parse_profile_ref($object, $opt);
+		# Contents of mv_return_fields must be of the same type
+		# (numeric here) as the contents of mv_sort_field
+		@{$object->{mv_return_fields}} = map {$nh->{$_}} @{$object->{mv_return_fields}};
+		# We need to turn the hash reference into a search object
+		$object = new Vend::Search (%$object);
 		# Delete this so it will meet conditions for creating a more
 		delete $object->{mv_matchlimit};
 	}
