@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.86 2002-07-19 05:07:17 mheins Exp $
+# $Id: Interpolate.pm,v 2.87 2002-07-22 17:44:41 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.86 $, 10);
+$VERSION = substr(q$Revision: 2.87 $, 10);
 
 @EXPORT = qw (
 
@@ -3638,8 +3638,9 @@ sub tag_more_list {
 		$border =~ s/\D//g;
 	}
 
-	$r =~ s:\[link[-_]template\]($All)\[/link[-_]template\]::i;
-	$link_template = $1 || '<A HREF="$URL$">$ANCHOR$</A>';
+	$r =~ s:\[link[-_]template\]($All)\[/link[-_]template\]::i
+		and $link_template = $1;
+	$link_template ||= q{<A HREF="$URL$">$ANCHOR$</A>};
 
 	if(! $chunk or $chunk >= $total) {
 		return '';
