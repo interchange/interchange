@@ -33,6 +33,12 @@ sub {
 					help        
 					label       
 					override    
+					passed      
+					outboard
+					append
+					prepend
+					lookup
+					field
 					pre_filter  
 					widget      
 					width       
@@ -70,9 +76,17 @@ sub {
 	my $filter      = $opt->{filter};
 	my $height      = $opt->{widget_height};
 	my $help        = $opt->{help};
+	my $help_url    = $opt->{help_url};
 	my $label       = $opt->{label};
 	my $override    = $opt->{override};
 	my $pre_filter  = $opt->{pre_filter};
+	my $passed      = $opt->{passed};
+	my $outboard    = $opt->{outboard};
+	my $prepend     = $opt->{prepend};
+	my $append      = $opt->{append};
+	my $lookup      = $opt->{lookup};
+	my $database    = $opt->{database};
+	my $field       = $opt->{field};
 	my $widget      = $opt->{widget};
 	my $width       = $opt->{widget_width};
 #::logDebug("widget=" . ::uneval_it($widget) );
@@ -82,6 +96,58 @@ sub {
 	my $blabel      ;
 	my $elabel      ;
 	my $mlabel = '';
+
+	if($opt->{wizard}) {
+		$opt->{noexport} = 1;
+		$opt->{next_text} = 'Next -->' unless $opt->{next_text};
+		$opt->{cancel_text} = 'Cancel' unless $opt->{cancel_text};
+		$opt->{back_text} = '<-- Back' unless $opt->{back_text};
+	}
+	else {
+		$opt->{cancel_text} = 'Cancel' unless $opt->{cancel_text};
+		$opt->{next_text} = "Ok" unless $opt->{next_text};
+	}
+
+	my $ntext;
+	my $btext;
+	my $ctext;
+	unless ($opt->{wizard} || $opt->{nosave}) {
+		$Scratch->{$opt->{next_text}} = $Tag->return_to('click', 1);
+	}
+	else {
+		$ntext = $Scratch->{$opt->{next_text}} = <<EOF;
+mv_todo=return
+mv_click=ui_override_next
+EOF
+		my $hidgo = $opt->{hidden}{ui_return_to} || $CGI->{return_to};
+		$hidgo =~ s/\0.*//s;
+		$ctext = $Scratch->{$opt->{cancel_text}} = <<EOF;
+mv_form_profile=
+mv_nextpage=$hidgo
+mv_todo=return
+EOF
+		$btext = $Scratch->{$opt->{back_text}} = <<EOF;
+mv_form_profile=
+mv_nextpage=$opt->{mv_prevpage}
+mv_todo=return
+EOF
+	}
+
+	for(qw/next_text back_text cancel_text/) {
+		$opt->{"orig_$_"} = $opt->{$_};
+	}
+
+	$Scratch->{$opt->{next_text}}   = $ntext if $ntext;
+	$Scratch->{$opt->{cancel_text}} = $ctext if $ctext;
+	$Scratch->{$opt->{back_text}}   = $btext if $btext;
+
+	$opt->{next_text} = HTML::Entities::encode($opt->{next_text});
+	$opt->{back_text} = HTML::Entities::encode($opt->{back_text});
+	$opt->{cancel_text} = HTML::Entities::encode($opt->{cancel_text});
+
+	$Scratch->{$opt->{next_text}}   = $ntext if $ntext;
+	$Scratch->{$opt->{cancel_text}} = $ctext if $ctext;
+	$Scratch->{$opt->{back_text}}   = $btext if $btext;
 
 	if($opt->{cgi}) {
 		my @mapdirect = qw/
@@ -120,12 +186,20 @@ sub {
 			[ qr/^ui_te_default:/, $default ],
 			[ qr/^ui_te_extra:/, $extra ],
 			[ qr/^ui_te_widget:/, $widget ],
+			[ qr/^ui_te_passed:/, $passed ],
+			[ qr/^ui_te_outboard:/, $outboard ],
+			[ qr/^ui_te_prepend:/, $prepend ],
+			[ qr/^ui_te_append:/, $append ],
+			[ qr/^ui_te_lookup:/, $lookup ],
+			[ qr/^ui_te_database:/, $database ],
+			[ qr/^ui_te_field:/, $field ],
 			[ qr/^ui_te_override:/, $override ],
 			[ qr/^ui_te_filter:/, $filter ],
 			[ qr/^ui_te_pre_filter:/, $pre_filter ],
 			[ qr/^ui_te_widget_height:/, $height ],
 			[ qr/^ui_te_widget_width:/, $width ],
 			[ qr/^ui_te_help:/, $help ],
+			[ qr/^ui_te_help_url:/, $help_url ],
 		);
 		my @cgi = keys %{$CGI};
 		foreach my $row (@hmap) {
@@ -151,6 +225,7 @@ sub {
 	if($opt->{ui_profile} or $check) {
 		$Tag->error( { all => 1 } ) if ! $CGI->{mv_form_profile};
 		my $prof = $opt->{ui_profile} || '';
+		my $success = $opt->{ui_profile_success};
 		if(ref $check) {
 			while ( my($k, $v) = each %{$check}) {
 				$error->{$k} = 1;
@@ -175,13 +250,32 @@ sub {
 		$opt->{hidden} = {} if ! $opt->{hidden};
 		$opt->{hidden}{mv_form_profile} = 'ui_profile';
 		my $fail = $opt->{mv_failpage} || $Global::Variable->{MV_PAGE};
-		$prof .= <<EOF;
+		$Scratch->{ui_profile} = <<EOF;
+[perl]
+#Debug("cancel='$opt->{orig_cancel_text}' back='$opt->{orig_back_text}' click=\$CGI->{mv_click}");
+	my \@clicks = split /\\0/, \$CGI->{mv_click};
+	
+	my \$fail = '$fail';
+	for( qq{$opt->{orig_cancel_text}}, qq{$opt->{orig_back_text}}) {
+#Debug("compare is '\$_'");
+		next unless \$_;
+		my \$cancel = \$_;
+		for(\@clicks) {
+#Debug("click is '\$_'");
+			return if \$_ eq \$cancel; 
+		}
+	}
+	
+	return <<EOP;
+$prof
 &fail=$fail
 &fatal=1
+$success
 mv_form_profile=mandatory
 &set=mv_todo set
+EOP
+[/perl]
 EOF
-		$Scratch->{ui_profile} = $prof;
 		$blabel = '<span style="font-weight: normal">';
 		$elabel = '</span>';
 		$mlabel = ($opt->{message_label} || '&nbsp;&nbsp;&nbsp;<B>Bold</B> fields are required');
@@ -256,7 +350,7 @@ EOF
 #::logDebug("Found break fields");
 		my @breaks;
 		my @break_labels;
-		while ($opt->{ui_data_fields} =~ s/\n+(?:\n=(.*))?\n+(\w+)/\n$2/) {
+		while ($opt->{ui_data_fields} =~ s/\n+(?:\n[ \t]*=(.*))?\n+[ \t]*(\w+)/\n$2/) {
 			push @breaks, $2;
 			push @break_labels, "$2=$1" if $1;
 		}
@@ -444,19 +538,19 @@ EOF
 			unless ($opt->{nosave}) {
 				$blob_widget = $Tag->widget({
 									name => 'mv_blob_nick',
-									type => 'combo',
+									type => $opt->{ui_blob_widget} || 'combo',
 									filter => 'nullselect',
 									override => 1,
 									set => "$set",
 									passed => join (",", @wid_data{ sort keys %wid_data }) || 'default',
 									});
-				$blob_widget = <<EOF;
+				$blob_widget = <<EOF unless $opt->{ui_blob_hidden};
 <B>Save to:</B> $blob_widget&nbsp;
 <INPUT TYPE=checkbox NAME=mv_blob_only VALUE=1$checked>&nbsp;Save&nbsp;here&nbsp;only</SMALL>
 EOF
 			}
 
-			$blob_widget = <<EOF;
+			$blob_widget = <<EOF unless $opt->{ui_blob_hidden};
 <TR class=rnorm>
 	 <td class=clabel width="$opt->{left_width}">
 	   <SMALL>$opt->{mv_blob_title}<BR>
@@ -495,9 +589,11 @@ EOF
 	$opt->{mv_update_empty} = 1 unless defined $opt->{mv_update_empty};
 
 	my $url_base = $opt->{secure} ? $Config->{SecureURL} : $Config->{VendURL};
+#Debug("Urlbase=$url_base");
 	$opt->{href} = "$url_base/ui" if ! $opt->{href};
 	$opt->{href} = "$url_base/$opt->{href}"
 		if $opt->{href} !~ m{^(https?:|)/};
+#Debug("href=$opt->{href}");
 
 	$opt->{method} = $opt->{get} ? 'GET' : 'POST';
 	$opt->{enctype} = $opt->{file_upload} ? ' ENCTYPE="multipart/form-data"' : '';
@@ -556,7 +652,7 @@ EOF
 	if($opt->{cgi}) {
 		my $r_ary = $Vend::Session->{ui_return_stack};
 
-::logDebug("ready to maybe push/pop return-to from stack, stack = " . ::uneval($r_ary));
+#::logDebug("ready to maybe push/pop return-to from stack, stack = " . ::uneval($r_ary));
 		if($CGI::values{ui_return_stack}++) {
 			push @$r_ary, $CGI::values{ui_return_to};
 			$CGI::values{ui_return_to} = $r_ary->[0];
@@ -565,11 +661,8 @@ EOF
 			@$r_ary = ( $CGI::values{ui_return_to} ); 
 		}
 		$out .= $Tag->return_to();
-::logDebug("return-to stack = " . ::uneval($r_ary));
+#::logDebug("return-to stack = " . ::uneval($r_ary));
 	}
-
-	$Scratch->{Ok} = $Tag->return_to('click', 1)
-		unless $opt->{nosave};
 
 	if(ref $opt->{hidden}) {
 		my ($hk, $hv);
@@ -579,12 +672,13 @@ EOF
 	}
 
 	$out .= <<EOF;
-<table class=touter  width="$opt->{table_width}" border="" cellspacing="0" cellpadding="0">
+<table class=touter border="" cellspacing="0" cellpadding="0">
 <tr>
   <td>
 
-<table class=tinner cellspacing=0 cellmargin=0 width="100%" cellpadding="2" align="center" border="0">
-
+<table class=tinner  width="$opt->{table_width}" cellspacing=0 cellmargin=0 width="100%" cellpadding="2" align="center" border="0">
+EOF
+	$out .= <<EOF unless $opt->{no_top};
 <tr class=rtitle> 
 <td align=right colspan=$span><img src="$opt->{clear_image}" width=1 height=3 alt=x></td>
 </tr>
@@ -595,11 +689,38 @@ EOF
 	  					|| $linecount > 4
 						|| defined $opt->{include_form}
 						|| $mlabel;
-      $out .= <<EOF if $extra_ok and ! $opt->{nosave};
+      if ($extra_ok and ! $opt->{no_top} and ! $opt->{nosave}) {
+	  	if($opt->{back_text}) {
+		  $out .= <<EOF;
 <TR class=rnorm>
 <td>&nbsp;</td>
 <td align=left colspan=$oddspan>
-<B><INPUT TYPE=submit NAME=mv_click VALUE="Ok">
+EOF
+			$out .= <<EOF if ! $opt->{bottom_buttons};
+<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{back_text}">
+&nbsp;
+<INPUT TYPE=submit NAME=mv_click VALUE="Cancel">
+&nbsp;
+<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}">
+</B>
+<BR>
+EOF
+			$out .= <<EOF;
+$mlabel
+</TD>
+</TR>
+
+<tr class=rspacer>
+<td colspan=$span><img src="$opt->{clear_image}" width=1 height=3 alt=x></td>
+</tr>
+EOF
+		}
+		else {
+		  $out .= <<EOF;
+<TR class=rnorm>
+<td>&nbsp;</td>
+<td align=left colspan=$oddspan>
+<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}">
 </B>
 &nbsp;
 <INPUT TYPE=submit NAME=mv_click VALUE="Cancel">$mlabel
@@ -610,6 +731,8 @@ EOF
 <td colspan=$span><img src="$opt->{clear_image}" width=1 height=3 alt=x></td>
 </tr>
 EOF
+		}
+	}
 
 	$out .= $blob_widget;
 
@@ -776,9 +899,14 @@ EOF
 
 	if($opt->{defaults}) {
 		for(@cols) {
-			next if defined $default->{$_};
-			next unless defined $Values->{$_};
-			$default->{$_} = $Values->{$_};
+			if($opt->{wizard}) {
+				$default->{$_} = $Values->{$_} if defined $Values->{$_};
+			}
+			else {
+				next if defined $default->{$_};
+				next unless defined $Values->{$_};
+				$default->{$_} = $Values->{$_};
+			}
 		}
 	}
 
@@ -803,7 +931,8 @@ EOF
      </table>
    </td>
 EOF
-
+	$row_template =~ s/~BLABEL~/$blabel/g;
+	$row_template =~ s/~ELABEL~/$elabel/g;
 	foreach my $col (@cols) {
 		my $t;
 		my $c;
@@ -811,8 +940,9 @@ EOF
 		my $tkey_message;
 		if($col eq $keycol) {
 			if($opt->{ui_hide_key}) {
+				my $kval = $key || $override->{$col} || $default->{$col};
 				$out .= <<EOF;
-	<INPUT TYPE=hidden NAME="$col" VALUE="$key">
+	<INPUT TYPE=hidden NAME="$col" VALUE="$kval">
 EOF
 				next;
 			}
@@ -915,10 +1045,18 @@ EOF
 										filter => $filter->{$c},
 										height => $height->{$c},
 										help => $help->{$c},
+										help_url => $help_url->{$c},
 										label => $label->{$c},
 										key => $key,
 										name => $col,
 										override => $overridden,
+										field => $field->{$c},
+										passed => $passed->{$c},
+										outboard => $outboard->{$c},
+										append => $append->{$c},
+										prepend => $prepend->{$c},
+										lookup => $lookup->{$c},
+										db => $database->{$c},
 										pre_filter => $pre_filter->{$c},
 										table => $t,
 										type => $widget->{$c} || $type,
@@ -1019,16 +1157,41 @@ EOF
 
   SAVEWIDGETS: {
   	last SAVEWIDGETS if $opt->{nosave}; 
-	$out .= <<EOF;
-
+	  	if($opt->{back_text}) {
+      $out .= <<EOF;
 <TR class=rnorm>
 <td>&nbsp;</td>
 <td align=left colspan=$oddspan>
-<B><INPUT TYPE=submit NAME=mv_click VALUE=Ok></B>
+<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{back_text}">
 &nbsp;
+<INPUT TYPE=submit NAME=mv_click VALUE="Cancel">
 &nbsp;
-<INPUT TYPE=submit NAME=mv_click VALUE=Cancel>
+<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}">
+</B>
 EOF
+		}
+		else {
+		  $out .= <<EOF;
+<TR class=rnorm>
+<td>&nbsp;</td>
+<td align=left colspan=$oddspan>
+<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}">
+</B>
+&nbsp;
+<INPUT TYPE=submit NAME=mv_click VALUE="Cancel">
+EOF
+		}
+#
+#	$out .= <<EOF;
+#
+#<TR class=rnorm>
+#<td>&nbsp;</td>
+#<td align=left colspan=$oddspan>
+#<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
+#&nbsp;
+#&nbsp;
+#<INPUT TYPE=submit NAME=mv_click VALUE=Cancel>
+#EOF
 	if($Tag->if_mm('tables', "$table=x") and ! $db->config('LARGE') ) {
 		my $checked = ' CHECKED';
 		$checked = ''
@@ -1101,11 +1264,12 @@ EOF
 	}
 	$Tag->error( { all => 1 } );
 
-	$out .= <<EOF;
+	$out .= <<EOF unless $opt->{no_bottom} and ! $message;
 <tr class=rtitle>
-<td colspan=$span><!-- $Scratch->{Ok} -->$message<img src="$opt->{clear_image}" height=3 alt=x></td>
+<td colspan=$span><!-- $Scratch->{$opt->{next_text}} -->$message<img src="$opt->{clear_image}" height=3 alt=x></td>
 </tr>
-
+EOF
+	$out .= <<EOF;
 </table>
 </td></tr></table>
 
