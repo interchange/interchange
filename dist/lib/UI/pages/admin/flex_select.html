@@ -514,8 +514,9 @@ sub {
 		$extra .= " $1" while $filter =~ s/(v?align=\w+)//i;
 #Log("$i filter = $filter");
 
+		$_ = $Tag->filter($filter, $_);
 		s/\[/&#91;/g;
-		$out .= "<TD$extra>" . $Tag->filter($filter, $_) . "</TD>";
+		$out .= "<TD$extra>$_</TD>";
 		$i++;
 	}
 	return $out . "\n";
