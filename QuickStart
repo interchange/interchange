@@ -6,15 +6,10 @@ This program is free software; you can redistribute it
 and/or modify it under the terms of the GNU General Public
 License as published by the Free Software Foundation; either
 version 2 of the License, or (at your option) any later
-version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+version. See the
 GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public
-License along with this program; if not, write to the Free
+The GNU General Public
+License is distributed with this program; if not, write to the Free
 Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 MA  02111-1307  USA.
 
@@ -29,15 +24,14 @@ Intro
     This document is a subset of the complete Interchange documentation.
     Most of the information contained here is is duplicated in the general
     Interchange documentation. This document is designed to give you a
-    starting point. Interchange is fairly complex and can take a lot of
-    time and effort to master. Don't Panic.
+    starting point. 
 
 What happened to Minivend and Tallyman?
-    First there was Minivend, the open source ecommerce system begun by
+    First there was Minivend, the open source e-commerce system begun by
     Mike Heins about five years ago. Thousands of sites are using it,
-    and it has evolved into a powerful and versatile tool over the years.
-    Separately, Akopia was started by an experienced ecommerce development
-    team with the goal of making a sophisticated open source ecommerce
+    and it evolved into a powerful and versatile tool over the years.
+    Separately, Akopia was started by an experienced e-commerce development
+    team with the goal of making a sophisticated open source e-commerce
     system that's intuitive and easy to use. Minivend was very feature
     rich, but difficult to learn and use. Tallyman was intuitive, and
     had great content management features, but lacked many of Minivend's
@@ -63,6 +57,7 @@ Requirements:
 
 Install Walkthrough
 
+		**The installation procedure described here applies to the tarball installation only.**
         Make sure that you have user permissions to do the following:
              Write on the catalog install directory
              Read on the Apache config file (if possible)
@@ -81,6 +76,7 @@ Install Walkthrough
 
 Demo Store Install Walkthrough
 
+		**The installation procedure described here applies to the tarball installation only.**
      We'll be walking the whole install and setup process. The text
      that you'll see during the install will be displayed with <-- next
      to it. What's marked with --> is what you'll need to enter in.
