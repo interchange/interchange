@@ -1,6 +1,6 @@
 # Vend::Page - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 2.17 2004-03-28 20:29:39 mheins Exp $
+# $Id: Page.pm,v 2.18 2004-04-02 17:19:20 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -46,7 +46,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.17 $, 10);
+$VERSION = substr(q$Revision: 2.18 $, 10);
 
 my $wantref = 1;
 
@@ -139,6 +139,17 @@ sub display_page {
 		return 1;
 	}
 	else {
+		my $handled;
+		my $newpage;
+		if(my $subname = $Vend::Cfg->{SpecialSub}{missing}) {
+			my $sub = $Vend::Cfg->{Sub}{$subname} || $Global::GlobalSub->{$subname};
+			($handled, $newpage) = $sub->($name)
+				if $sub;
+		}
+		if($handled) {
+			return display_page($newpage) if $newpage;
+			return 0;
+		}
 		HTML::Entities::encode($name, $ESCAPE_CHARS::std);
 		display_special_page(find_special_page('missing'), $name);
 		return 0;

@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.135 2004-03-07 06:59:50 mheins Exp $
+# $Id: Config.pm,v 2.136 2004-04-02 17:19:21 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.135 $, 10);
+$VERSION = substr(q$Revision: 2.136 $, 10);
 
 my %CDname;
 my %CPname;
@@ -461,6 +461,7 @@ sub catalog_directives {
 	['ImageDirInternal', undef,     	     ''],
 	['ImageDir',	 	 undef,     	     ''],
 	['DeliverImage',     'yesno',			 'no'],
+	['SpecialSub',       'hash',			 ''],
 	['UseCode',		 	 undef,     	     'yes'],
 	['SetGroup',		 'valid_group',      ''],
 	['UseModifier',		 'array',     	     ''],
