@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.19 2002-07-20 14:56:08 mheins Exp $
+# $Id: Parse.pm,v 2.20 2002-08-02 03:07:32 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.19 $, 10);
+$VERSION = substr(q$Revision: 2.20 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -480,24 +480,11 @@ sub goto_buf {
 		$$buf = '';
 		return;
 	}
-	while($$buf =~ s!  .+?
-							(
-								(?:
-								\[ label \s+ (?:name \s* = \s* ["']?)?	|
-								<[^>]+? \s+ mv.label \s*=\s*["']?		|
-								<[^>]+? \s+
-									mv \s*=\s*["']? label
-									[^>]*? \s+ mv.name\s*=\s*["']?		|
-								<[^>]+? \s+ mv \s*=\s*["']? label  \s+  |
-								)
-								(\w+)
-							|
-								</body\s*>
-							)
-					!$1!ixs )
-	{
-			last if $name eq $2;
-	}
+	$$buf =~ s!.*?\[label\s+(?:name\s*=\s*(?:["'])?)?($name)['"]*\s*\]!!is
+		and return;
+	$$buf =~ s:.*?</body\s*>::is
+		and return;
+	$$buf = '';
 	return;
 	# syntax color "'
 }
@@ -638,9 +625,9 @@ sub start {
 					if $attr->{abort};
 				return ($self->{SEND} = 1);
 			}
-			goto_buf($args[0], \$Initialized->{_buf});
+			goto_buf($args[0], $buf);
 			$self->{ABORT} = 1;
-			$self->{SEND} = 1 if ! $Initialized->{_buf};
+			$self->{SEND} = 1 if ! $$buf;
 			return 1;
 		}
 		elsif($tag eq 'bounce') {
