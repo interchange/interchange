@@ -18,7 +18,7 @@ sub {
 	my @names;
 	my $regex;
 	eval {
-		$regex = qr{$suf$}o;
+		$regex = qr{$suf$};
 	};
 	return undef if $@;
 	my $wanted = sub {
