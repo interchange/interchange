@@ -72,8 +72,6 @@ if($TermRead) {
 	};
 }
 
-my $Windows = $^O =~ /win32/i ? 1 : 0;
-
 sub compare_file {
 	my($first,$second) = @_;
 	return 0 unless -s $first == -s $second;
@@ -352,10 +350,10 @@ sub initialize {
         close UID;
     }
 
-#warn "Got past open UID file , uid=$uid user=$> Windows=$Windows\n";
+#warn "Got past open UID file , uid=$uid user=$>\n";
 
 	GETUID: {
-		if($> == 0 and ! $MV::Default{INTERCHANGE_USER} and ! $Windows) {
+		if($> == 0 and ! $MV::Default{INTERCHANGE_USER}) {
 			$uid = my_prompt(
 				qq{Interchange cannot be run as root. Which user should run Interchange? },
 				($uid || 'interch'),
@@ -370,7 +368,7 @@ sub initialize {
 		elsif ($uid = $MV::Default{INTERCHANGE_USER}) {
 			# do nothing
 		}
-		elsif (! $Windows) {
+		else {
 			eval {
 				$uid = scalar getpwuid($>);
 			};
@@ -422,7 +420,6 @@ sub initialize {
 		print "\n";
 		$realdir =~ s:[\\/]\s*$::;
 		$realdir =~ s:^\s*::;
-		$MV::Default{final} = $realdir if $Windows;
 	}
 	else {
 		$MV::Default{final} =~ s:[\\/]\s*$::;
@@ -461,44 +458,6 @@ sub initialize {
 
 #warn "Got past mvtags build\n" ; #if $X{RPMBUILDDIR};
 
-	if($Windows) {
-		mk_initp(\%X);
-		my ($in, $out);
-		my $ref = delete $X{PL_FILES};
-		if(! -d 'bin') {
-			File::Path::mkpath('bin');
-		}
-		my (@f);
-		while ( ($in, $out) = each %$ref) {
-			system "$^X $in";
-			if($?) {
-				die "Error making $in into $out: $!\n";
-			}
-			my $targ = $out;
-			$targ =~ s:.*/::;
-			File::Copy::copy($out, 'bin');
-			push @f, "bin/$targ";
-			system "pl2bat.bat $out";
-			if($?) {
-				warn "PL2BAT did not succeed for $out.\n";
-			}
-			else {
-				File::Copy::copy("$out.bat", 'bin');
-				push @f, "bin/$targ.bat";
-			}
-		}
-		# Check for extra needed libraries
-		extra_libs($realdir);
-		my $wanted = sub {
-				return unless -f $_;
-				push @f, $File::Find::name;
-		};
-		File::Find::find($wanted, 'lib');
-		for (@f) {
-			install_file('.', $realdir, $_);
-		}
-	}
-#warn "Got past Windows stuff\n" ; #if $X{RPMBUILDDIR};
 	if($MV::Default{final}) {
 		$ = 0;
 		for(glob "_*") {
@@ -799,36 +758,31 @@ EOF
 
 	@ARGV = grep ! $delete{$_}, @saveargs;
 
-if($Windows) {
-	&initialize;
-}
-else {
-	WriteMakefile(
-		NAME       => "Interchange",
-		MAN3PODS => {
-						'pod/icbackoffice.pod' => 'blib/man3/icbackoffice.8',
-						'pod/icconfig.pod'		=> 'blib/man3/icconfig.8',
-						'pod/icdatabase.pod'	=> 'blib/man3/icdatabase.8',
-						'pod/icinstall.pod'		=> 'blib/man3/icinstall.8',
-						'pod/icintro.pod'		=> 'blib/man3/icintro.8',
-						'pod/ictemplates.pod'	=> 'blib/man3/ictemplates.8',
-						'pod/mv_metadata.pod'	=> 'blib/man3/mv_metadata.8',
-						'pod/mvtags.pod'       => 'blib/man3/mvtags.8',
-						},
-		DISTNAME => "interchange",
-		clean    => {
-					FILES=> "lib/IniConf.pm _uid _db_storable _session_storable lib/File/CounterFile.pm scripts/initp.pl scripts/compile_link scripts/config_prog scripts/configdump scripts/dump scripts/expire scripts/localize scripts/expireall scripts/makecat scripts/interchange scripts/offline scripts/restart scripts/update dist/simple/download/mvtags.pod",
-				   },
-
-		dist     => {
-						CI => "ci -l -t-Initial",
-						SUFFIX   => ".gz",
-						DIST_DEFAULT => 'all tardist',
-						COMPRESS => "gzip -9f",
-						ZIP_FLAGS => '-pr9',
+WriteMakefile(
+	NAME       => "Interchange",
+	MAN3PODS => {
+					'pod/icbackoffice.pod'	=> 'blib/man3/icbackoffice.8',
+					'pod/icconfig.pod'		=> 'blib/man3/icconfig.8',
+					'pod/icdatabase.pod'	=> 'blib/man3/icdatabase.8',
+					'pod/icinstall.pod'		=> 'blib/man3/icinstall.8',
+					'pod/icintro.pod'		=> 'blib/man3/icintro.8',
+					'pod/ictemplates.pod'	=> 'blib/man3/ictemplates.8',
+					'pod/mv_metadata.pod'	=> 'blib/man3/mv_metadata.8',
+					'pod/mvtags.pod'		=> 'blib/man3/mvtags.8',
 					},
-		VERSION_FROM => "scripts/interchange.PL",
-		EXE_FILES  => [],
-		CONFIGURE  => \&initialize,
-	);
-}
+	DISTNAME => "interchange",
+	clean    => {
+				FILES=> "lib/IniConf.pm _uid _db_storable _session_storable lib/File/CounterFile.pm scripts/initp.pl scripts/compile_link scripts/config_prog scripts/configdump scripts/dump scripts/expire scripts/localize scripts/expireall scripts/makecat scripts/interchange scripts/offline scripts/restart scripts/update dist/simple/download/mvtags.pod",
+			   },
+
+	dist     => {
+					CI => "ci -l -t-Initial",
+					SUFFIX   => ".gz",
+					DIST_DEFAULT => 'all tardist',
+					COMPRESS => "gzip -9f",
+					ZIP_FLAGS => '-pr9',
+				},
+	VERSION_FROM => "scripts/interchange.PL",
+	EXE_FILES  => [],
+	CONFIGURE  => \&initialize,
+);
