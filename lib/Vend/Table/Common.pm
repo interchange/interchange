@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.15 2002-06-27 22:24:10 jon Exp $
+# $Id: Common.pm,v 2.16 2002-07-09 01:59:59 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.15 $, 10);
+$VERSION = substr(q$Revision: 2.16 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -354,6 +354,7 @@ sub set_slice {
 		unshift @$fary, $keyname;
 		unshift @$vary, $key;
 	}
+
 	my @current;
 
 	@current = $s->row($key)
@@ -361,8 +362,13 @@ sub set_slice {
 
 	@current[ map { $s->column_index($_) } @$fary ] = @$vary;
 
-	$s->set_row(@current)
-		or die "failed to create row slice routine.";
+	$key = $s->set_row(@current);
+	length($key) or
+		::logError(
+			"Did set_slice with empty key on table %s",
+			$s->[$CONFIG]{name},
+		);
+
 	return $key;
 }
 
@@ -407,8 +413,9 @@ sub clone_set {
 sub stuff_row {
     my ($s, @fields) = @_;
 	my $key = $fields[$s->[$KEY_INDEX]];
+#::logDebug("stuff key=$key");
 	$fields[$s->[$KEY_INDEX]] = $key = $s->autonumber()
-		if ! $key;
+		if ! length($key);
 	$s->filter(\@fields, $s->[$COLUMN_INDEX], $s->[$CONFIG]{FILTER_TO})
 		if $s->[$CONFIG]{FILTER_TO};
     $s->[$TIE_HASH]{"k$key"} = join("\t", map(stuff($_), @fields));
