@@ -1,4 +1,4 @@
-UserTag image Version 0.02
+UserTag image Version 0.03
 UserTag image Order src
 UserTag image AddAttr
 UserTag image Documentation <<EOD
@@ -51,8 +51,8 @@ Parameters for this tag are:
 =item alt
 
 Text to use for the <img alt="..."> attribute. By default, this will
-be filled with the B<description> from the product database if a sku is
-provided.
+be filled with the B<description> from the product database if a sku (not
+a filename) is provided.
 
 =item default
 
@@ -62,11 +62,24 @@ found in the product table B<image> field are not found.
 
 Defaults to scratch mv_defaultimage if set.
 
+=item descriptionfields
+
+A whitespace-separated list of fields in the product database from which
+to draw the description, used as the default in alt and title attributes.
+Catalog variable DESCRIPTIONFIELDS is a fallback if this option is not
+passed in.
+
 =item dir_only
 
 Set this attribute to 1 to return only the text of configuration
 variable ImageDir or ImageDirSecure, depending on whether the page is
 being delivered through the web server by http or https.
+
+=item exists_only
+
+Set this attribute to 1 if you want to check only whether an appropriate
+image file exists. The tag will return '1' if an image exists, and nothing
+if not.
 
 =item force
 
@@ -130,7 +143,11 @@ sub {
 	my ($src, $opt) = @_;
 	my ($image, $path, $secure, $sku);
 	my ($imagedircurrent, $imagedir, $imagedirsecure);
-	my @descriptionfields = qw( description );
+
+	my @descriptionfields = grep /\S/, split /\s+/,
+		$opt->{descriptionfields} || $::Variable->{DESCRIPTIONFIELDS};
+	@descriptionfields = qw( description ) if ! @descriptionfields;
+
 	my @imagefields = qw( image );
 	my @imagesuffixes = qw( jpg gif png jpeg );
 	my $filere = qr/\.\w{2,4}$/;
@@ -253,6 +270,7 @@ sub {
 		}
 
 		return unless $image;
+		return 1 if $opt->{exists_only};
 
 		if ($opt->{getsize} and $path) {
 			eval {
