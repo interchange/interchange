@@ -1,6 +1,6 @@
 # Vend::Payment - Interchange payment processing routines
 #
-# $Id: Payment.pm,v 2.3 2002-06-17 22:24:08 jon Exp $
+# $Id: Payment.pm,v 2.4 2002-07-18 16:13:56 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -306,9 +306,13 @@ sub charge {
 
 	# Uses the {precision} -> MV_PAYMENT_PRECISION options if set
 	my $precision = charge_param('precision') || 2;
+	my $penny     = charge_param('penny_pricing') || 0;
 
 	my $amount = $pay_opt->{amount} || Vend::Interpolate::total_cost();
 	$amount = round_to_frac_digits($amount, $precision);
+	$amount = sprintf "%.${precision}f", $amount;
+	$amount *= 100 if $penny;
+
 	$pay_opt->{total_cost} = $amount;
 	$pay_opt->{amount} = "$currency $amount";
 
@@ -321,11 +325,17 @@ sub charge {
 	delete $Vend::Session->{payment_result}; 
 	delete $Vend::Session->{cybercash_result}; ### Deprecated
 
+#::logDebug("Called charge at " . scalar(localtime));
+#::logDebug("Charge caller is " . join(':', caller));
+
+#::logDebug("mode=$pay_opt->{gateway}");
+#::logDebug("pay_opt=" . ::uneval($pay_opt));
 	# Default to the gateway same as charge type if no gateway specified,
 	# and set the gateway in the session for logging on completion
 	if(! $opt->{gateway}) {
 		$pay_opt->{gateway} = charge_param('gateway') || $charge_type;
 	}
+	#$charge_type ||= $pay_opt->{gateway};
 	$Vend::Session->{payment_mode} = $pay_opt->{gateway};
 
 	# See if we are in test mode
@@ -346,6 +356,7 @@ sub charge {
 	my %result;
 
 	if($sub) {
+#::logDebug("Charge sub");
 		# Calling a defined GlobalSub payment mode
 		# Arguments are the passed option hash (if any) and the route hash
 		eval {
@@ -363,6 +374,7 @@ sub charge {
 		}
 	}
 	elsif($charge_type =~ /^\s*custom\s+(\w+)(?:\s+(.*))?/si) {
+#::logDebug("Charge custom");
 		# MV4 and IC4.6.x methods
 		my (@args);
 		@args = Text::ParseWords::shellwords($2) if $2;
@@ -389,6 +401,7 @@ sub charge {
 			$charge_type =~ /^internal_test(?:[ _]+(.*))?/
 		  )
 	{
+#::logDebug("Internal test");
 
 		# Test mode....
 
@@ -412,6 +425,7 @@ sub charge {
 		$result{MStatus} = $status if defined $status;
 	}
 	elsif ($Vend::CC3) {
+#::logDebug("Charge legacy cybercash");
 		### Deprecated
 		eval {
 			%result = cybercash($pay_opt);
@@ -423,6 +437,7 @@ sub charge {
 		}
 	}
 	else {
+#::logDebug("Unknown charge type");
 		my $msg = errmsg("Unknown charge type: %s", $charge_type);
 		::logError($msg);
 		$result{MStatus} = $msg;
