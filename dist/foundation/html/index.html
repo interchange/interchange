@@ -2,36 +2,69 @@
 <head>
   <title>Welcome to __MVC_COMPANY__, an Interchange catalog!</title>
   <style type="text/css">
+    TD {
+      font-family: Helvetica;
+      font-size: 11;
+    }
+    A.categorybar:link, A.categorybar:active, A.categorybar:visited {
+      color: #FFFFFF;
+      font-family: Helvetica;
+      font-size: 13;
+      font-weight: bold;
+    }
     A:link, A:active, A:visited {
-      color: #CC0000;
+      color: #CC3333;
+      font-family: Helvetica;
+      font-size: 11;
     }
     .contentbar1 {
-      background-color: #DDDDDD;
+      background-color: #EEEEEE;
+      font-family: Helvetica;
+      font-size: 11;
+    }
+    .categorybar {
+      background-color: #993333;
+      font-family: Helvetica;
+      font-size: 11;
     }
   </style>
 </head>
 
 <body bgcolor="#FFFFFF">
 
-<table border="0" cellspacing="0" cellpadding="0">
+<table border="0" align=center cellspacing="0" cellpadding="0">
 <tr>
-  <td align="center" colspan="2">
+  <td align="left">
     <img src="__MVC_IMAGEURL__/navigation/a1.gif">
-    <p>
-    <big>Welcome to __MVC_COMPANY__!</big>
-    <p>
+  </td>
+  <td align="right">
+    <big><b>Welcome to __MVC_COMPANY__.</b></big>
+  </td>
+</tr>
+<tr>
+  <td colspan=2>&nbsp;</td>
+</tr>
+<tr class="categorybar">
+  <td align=center colspan=2>
+    <table cellpadding=5 align=center>
+    <tr class="categorybar">
+      <td colspan=2>&nbsp;</td>
+    </tr>
+    <tr class="categorybar">
+      <td class="categorybar" width="50%" align="center">
+        <A class="categorybar" HREF="__MVC_CGIURL__/index.html">Customer Entrance</A>
+      </td>
+      <td class="categorybar" width="50%" align="center">
+        <A class="categorybar" HREF="__MVC_CGIURL__/admin/index.html">Admin Interface</A>
+      </td>
+    </tr>
+    <tr class="categorybar">
+      <td colspan=2>&nbsp;</td>
+    </tr>
   </td>
 </tr>
 <tr class="contentbar1">
-  <td width="40%" align="center">
-    <A HREF="__MVC_CGIURL__/index.html">Enter as customer</A>
-  </td>
-  <td width="40%" align="center">
-    <A HREF="__MVC_CGIURL__/admin/index.html">Admin interface</A>
-  </td>
-</tr>
-<tr>
-  <td colspan="2">
+  <td colspan="2" width="95%">
     <br>
     <B>If the above links do not work</B>, the Interchange server may not
     be running.  Try one of these to restart it:</b>
@@ -42,10 +75,11 @@
     </blockquote>
   </td>
 </tr>
-<tr>
-  <td class="contentbar1" colspan="2">
+<tr class="contentbar1">
+  <td width="95%" class="contentbar1" colspan="2">
+    <br>
     This is the "foundation" demonstration of the Interchange electronic
-    catalog system. Links that will help you to use this software:
+    catalog system.<br><b>Links that will help you to use this software:</b>
     <P>
     <UL>
     <LI><A HREF="http://developer.akopia.com/">Main Interchange developer site</A><BR>
@@ -57,7 +91,8 @@
     <LI><A HREF="http://www.perl.com/">Perl Information</A><BR>
     <LI><A HREF="http://www.w3.org/">WWW Resources</A><BR>
     <LI><A HREF="http://www.apache.org/httpd.html">Apache Web Server</A><BR>
-  </td
+    <br>
+  </td>
 </tr>
 </table>
 
