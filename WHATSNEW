@@ -953,8 +953,39 @@ Miscellaneous
 * Fix a bug that prevented the cgi-bin link program from being associated 
   with the chosen owner and group. The patch was created and tested by Carl
   Bailey.
+  
+Extensions
+----------
 
+* Quickbooks updates:
 
+  - Documentation built from updated Interchange + Quickbooks HOWTO.
+
+  - Major change to IIF generation routine:
+    - IIF files are generated on-demand via the Admin UI
+	- In-route method still available
+	- New "Generate new IIF files" and "download IIF files"
+	
+  - New "qb_safe" filter, to cater to Quickbooks sensative side.
+  
+  - New default values (like defaulting to cash receipt instead of invoice)
+  
+  - Payment and Shipping methods are recorded in corresponding Quickbooks fields.
+  
+  - Allow customization of the transaction account (new default is "Checking")
+  
+  - Optionally set the transaction class (e.g., to track online sales in a
+    separate class from walk-in sales, and report on them differently). 
+  
+  - Optional Item Prefixes (e.g. if all items are accounting in Quickbooks under
+    a given category.
+	
+  - Optionally get the tax agency from the "state" table, falling back to the
+    configured default tax agency.
+ 
+  - Bug fixes
+
+  
 ------------------------------------------------------------------------------
 
 

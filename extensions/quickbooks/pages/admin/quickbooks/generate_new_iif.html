@@ -1,0 +1,85 @@
+[set page_title]Quickbooks -- Generate new IIF files[/set]
+[set help_name]quickbooks[/set]
+[set icon_name]icon_config.gif[/set]
+@_UI_STD_HEAD_@
+
+<!-- BEGIN CONTENT -->
+
+[if type=explicit compare=|
+	[calc]
+		return '' unless $CGI->{ 'go' };
+		# User must have chosen at least one limiting factor before selecting orders.
+		for ( 'date_from', 'order_number', 'order_from' ) {
+			return 1 if $CGI->{ $_ };
+		}
+		return '';
+	[/calc]
+|]
+	<font color=red>Generating...</font><BR><BR><BR>
+	
+	<!-- zero out the file so that it starts fresh for all the coming orders.-->
+	[log create=1 umask=022 file=">orders/0_qb_results.iif" type=text interpolate=0 hide=1][/log]
+	
+	[tmp sql]
+		SELECT		*
+		FROM		transactions
+		WHERE		1=1		
+		[if cgi date_from]
+			AND order_ymd >= '[cgi date_from]'
+			AND order_ymd <= '[cgi date_to]'
+		[/if]
+		[if cgi order_number]
+			AND order_number = '[cgi order_number]'
+		[/if]
+		[if cgi order_from]
+			AND order_number >= '[cgi order_from]'
+			AND order_number <= '[cgi order_to]'
+		[/if]
+	[/tmp]		
+
+	[query prefix=tx list=1 type=list sql='[scratch sql]']
+		[no-match] No Match.  Query was <pre>[scratch sql]</pre> [/no-match]
+		[list]
+			Processing [tx-param order_number]<BR>
+			[tmp hideme]@_TRANS_QUICKBOOKS_@[/tmp]
+			<!-- [scratch hideme] -->
+		[/list]
+	[/query]
+	
+	<font color=red>...done</font><BR><BR><BR>
+[/if]
+
+We do not recommend generating more than 100 IIF files at a time, due to the load on the system.<BR>
+
+<form action="[area __UI_BASE__/quickbooks/generate_new_iif]" method="POST">
+	<input type=hidden name="mv_session_id" value="[data session id]">
+	Date FROM:<input type=text name="date_from" value="[cgi date_from]"> (YYYYMMDD, e.g. 20021101)<BR>
+	Date TO:<input type=text name="date_to" value="[cgi date_to]"> (YYYYMMDD e.g. 20021131)<BR>
+	
+	<BR>
+	<BR>  - AND - <BR>
+	<BR>
+	
+	Order Number:<input type=text name="order_number" value="[cgi order_number]"> (For just one order, e.g. 20025003)<BR>
+	
+	<input type=hidden name="go" value="1">
+	<input type=submit value="Generate new IIF file for these dates">
+</form>
+
+We do not recommend generating more than 100 IIF files at a time, due to the load on the system.<BR>
+<BR>
+Please note that this process may continue even after the page is loaded, and may take quite some time.  <BR>
+<BR>
+<BR>
+<h2>
+	[page
+		href="__UI_BASE__/file_transfer"
+		form="
+			action=chdir
+			dir=orders/new
+	"]IIF download directory</a>
+</h2>
+
+<!-- END CONTENT -->
+
+@_UI_STD_FOOTER_@

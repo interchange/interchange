@@ -13,6 +13,7 @@
 <td bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
+
 [if-mm advanced items]
 <tr><td align=left bgcolor=__UI_C_INTBLOCK__>
 <font size="+1" face="arial,helvetica,sans-serif">
@@ -37,13 +38,25 @@
 </td></tr>
 [/if-mm]
 
-[if-mm advanced orders]
 <tr><td align=left bgcolor=__UI_C_INTBLOCK__>
-<font size="+1" face="arial,helvetica,sans-serif">
-<a href="[area __UI_BASE__/quickbooks/import_items]">Download new orders</a>
-</font>
+	<font size="+1" face="arial,helvetica,sans-serif">
+		<a href="[area __UI_BASE__/quickbooks/generate_new_iif]">Generate new orders</a>
+	</font>
 </td></tr>
-[/if-mm]
+
+<tr><td align=left bgcolor=__UI_C_INTBLOCK__>
+	<font size="+1" face="arial,helvetica,sans-serif">
+		[page
+			href="__UI_BASE__/file_transfer"
+			form="
+				action=chdir
+				dir=orders/new
+			"
+		]Download generated orders</a>
+	</font>
+</td></tr>
+
+
 
 <tr>
 <td bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
