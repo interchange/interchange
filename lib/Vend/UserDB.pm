@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.9 2000-09-20 07:56:05 heins Exp $
+# $Id: UserDB.pm,v 1.10 2000-09-28 10:00:08 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.9 $, 10);
+$VERSION = substr(q$Revision: 1.10 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -1102,6 +1102,8 @@ sub new_account {
 		return undef;
 	}
 	
+	$Vend::Session->{login_table} = $self->{DB_ID};
+
 	1;
 }
 
