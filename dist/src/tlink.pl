@@ -1,24 +1,24 @@
 #!/usr/bin/perl -wT
 # tlink.pl: runs as a cgi program and passes request to Vend server
 #
-# Id: tlink.pl,v 1.3 2000/11/03 04:44:14 heins Exp $
+#   $Id: tlink.pl,v 1.3.2.1.2.1 2000-12-17 06:50:51 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of the
-# License, or (at your option) any later version.
+#    This program is free software; you can redistribute it and/or
+#    modify it under the terms of the GNU General Public License as
+#    published by the Free Software Foundation; either version 2 of the
+#    License, or (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#    General Public License for more details.
 #
-# You should have received a copy of the GNU General Public
-# License along with this program; if not, write to the Free
-# Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-# MA  02111-1307  USA.
+#    You should have received a copy of the GNU General Public
+#    License along with this program; if not, write to the Free
+#    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+#    MA  02111-1307  USA.
 
 require 5.002;
 use strict;
@@ -51,7 +51,7 @@ Content-type: text/html
 
 <HTML><HEAD><TITLE>Interchange server not running</TITLE></HEAD>
 <BODY BGCOLOR="#FFFFFF">
-<H3>We're sorry, the Interchange server is unavailable...</H3>
+<H3>We're sorry, the Interchange server was not running...</H3>
 <P>
 We are out of service or may be experiencing high system demand,
 please try again soon.
@@ -74,11 +74,13 @@ sub die_page {
   exit(1);
 }
 
+
 my $Entity = '';
 
 # Read the entity from stdin if present.
 
 sub get_entity {
+
   return '' unless defined $ENV{CONTENT_LENGTH};
   my $len = $ENV{CONTENT_LENGTH} || 0;
   return '' unless $len;
@@ -91,6 +93,20 @@ sub get_entity {
       unless $check == $len;
 
   $Entity;
+
+}
+
+
+
+sub send_arguments {
+
+	my $count = @ARGV;
+	my $val = "arg $count\n";
+	for(@ARGV) {
+		$val .= length($_);
+		$val .= " $_\n";
+	}
+	return $val;
 }
 
 sub send_environment () {
@@ -109,7 +125,6 @@ sub send_environment () {
 sub send_entity {
 	return '' unless defined $ENV{CONTENT_LENGTH};
 	my $len = $ENV{CONTENT_LENGTH};
-
 	return '' unless $len > 0;
 
 	my $val = "entity\n";
@@ -122,7 +137,7 @@ $SIG{ALRM} = sub { server_not_running(); exit 1; };
 
 eval { alarm $LINK_TIMEOUT; };
 
-my ($remote, $port, $iaddr, $proto, $line);
+my ($remote, $port, $iaddr, $paddr, $proto, $line);
 
 $remote = $LINK_HOST;
 $port   = $LINK_PORT;
@@ -132,6 +147,8 @@ if ($port =~ /\D/) { $port = getservbyname($port, 'tcp'); }
 die_page("no port") unless $port;
 
 $iaddr = inet_aton($remote);
+$paddr = sockaddr_in($port,$iaddr);
+
 $proto = getprotobyname('tcp');
 
 socket(SOCK, PF_INET, SOCK_STREAM, $proto)	or die "socket: $!\n";
@@ -139,7 +156,7 @@ socket(SOCK, PF_INET, SOCK_STREAM, $proto)	or die "socket: $!\n";
 my $ok;
 
 do {
-   $ok = connect(SOCK, sockaddr_in($port,$iaddr));
+   $ok = connect(SOCK, $paddr);
 } while ( ! defined $ok and $! =~ /interrupt/i);
 
 my $def = defined $ok;
@@ -151,10 +168,11 @@ select SOCK;
 $| = 1;
 select STDOUT;
 
-warn "Command line arguments deprecated.  Ignoring!\n" if(@ARGV);
+print SOCK send_arguments();
 print SOCK send_environment();
 print SOCK send_entity();
 print SOCK "end\n";
+
 
 while(<SOCK>) {
 	print;
@@ -162,3 +180,19 @@ while(<SOCK>) {
 
 close (SOCK)								or die "close: $!\n";
 exit;
+
+
+
+get_entity();
+
+print SOCK send_arguments();
+print SOCK send_environment();
+print SOCK send_entity();
+
+while(<SOCK>) {
+	print;
+}
+
+close (SOCK)								or die "close: $!\n";
+exit;
+
