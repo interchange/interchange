@@ -311,10 +311,10 @@
                <td style="padding: 5px">[page href="admin/order_status"
 			   							 form="order=[loop-code]"
 									]
-                [display    table=transactions
+                [display    table=orderline
                             column=status
-                            key="[loop-code]"
-                            arbitrary=order_view
+                            key="[sql-code]"
+                            type=display
                 ]</A>
 [calc]
 	$total_weight += ([field field=weight key="[sql-param sku]"] + 0 || 0) * [sql-data orderline quantity];
@@ -411,4 +411,4 @@ vieworder=
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: order_view.html,v 2.12 2003-04-14 19:42:46 racke Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order_view.html,v 2.13 2003-04-22 12:10:30 mheins Exp $ -->
