@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.16 2003-01-01 14:16:48 racke Exp $
+# $Id: Shadow.pm,v 1.17 2003-01-01 15:07:13 racke Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.16 $, 10);
+$VERSION = substr(q$Revision: 1.17 $, 10);
 
 # TODO
 #
@@ -190,7 +190,8 @@ sub foreign {
 sub field {
 	my ($s, $key, $column) = @_;
 	my ($map, $locale, $db);
-	
+
+	$s = $s->import_db() unless defined $s->[$OBJ];
 	$s->_map_column($key, $column);
 }
 
