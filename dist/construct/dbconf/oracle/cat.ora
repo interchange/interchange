@@ -1,3 +1,4 @@
+Database  cat  UPPERCASE  1
 Database  cat  cat.txt __SQLDSN__
 #ifdef SQLUSER
 Database  cat  USER         __SQLUSER__

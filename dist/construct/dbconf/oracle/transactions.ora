@@ -1,3 +1,4 @@
+Database  transactions  UPPERCASE  1
 Database  transactions  transactions.txt __SQLDSN__
 #ifdef SQLUSER
 Database  transactions  USER         __SQLUSER__

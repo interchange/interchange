@@ -1,3 +1,4 @@
+Database  area  UPPERCASE  1
 Database  area  area.txt __SQLDSN__
 #ifdef SQLUSER
 Database  area  USER         __SQLUSER__

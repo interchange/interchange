@@ -1,3 +1,4 @@
+Database  recurring_items  UPPERCASE  1
 Database  recurring_items  recurring_items.txt __SQLDSN__
 #ifdef SQLUSER
 Database  recurring_items  USER         __SQLUSER__

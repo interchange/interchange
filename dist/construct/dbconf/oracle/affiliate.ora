@@ -1,3 +1,4 @@
+Database  affiliate  UPPERCASE  1
 Database  affiliate  affiliate.txt __SQLDSN__
 #ifdef SQLUSER
 Database  affiliate  USER         __SQLUSER__

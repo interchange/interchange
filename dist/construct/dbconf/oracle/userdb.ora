@@ -1,3 +1,4 @@
+Database  userdb  UPPERCASE  1
 Database  userdb  userdb.txt __SQLDSN__
 #ifdef SQLUSER
 Database  userdb  USER         __SQLUSER__

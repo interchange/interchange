@@ -1,3 +1,4 @@
+Database  gift_certs  UPPERCASE  1
 Database  gift_certs  gift_certs.txt __SQLDSN__
 #ifdef SQLUSER
 Database  gift_certs  USER         __SQLUSER__

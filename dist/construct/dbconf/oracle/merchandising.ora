@@ -1,3 +1,4 @@
+Database  merchandising  UPPERCASE  1
 Database  merchandising  merchandising.txt __SQLDSN__
 #ifdef SQLUSER
 Database  merchandising  USER         __SQLUSER__

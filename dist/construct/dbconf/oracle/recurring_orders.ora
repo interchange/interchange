@@ -1,3 +1,4 @@
+Database  recurring_orders  UPPERCASE  1
 Database  recurring_orders  recurring_orders.txt __SQLDSN__
 #ifdef SQLUSER
 Database  recurring_orders  USER         __SQLUSER__
