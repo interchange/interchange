@@ -1393,6 +1393,7 @@ EOF
 		my $checked = ' CHECKED';
 		$checked = ''
 			if defined $opt->{mv_auto_export} and ! $opt->{mv_auto_export};
+		my $autoexpstr = errmsg('Auto-export');		
 		$out .= <<EOF unless $opt->{noexport} or $opt->{nosave};
 <small>
 &nbsp;
@@ -1400,7 +1401,7 @@ EOF
 &nbsp;
 &nbsp;
 &nbsp;
-	<INPUT TYPE=checkbox NAME=mv_auto_export VALUE="$table"$checked>&nbsp;Auto-export
+	<INPUT TYPE=checkbox NAME=mv_auto_export VALUE="$table"$checked>&nbsp;$autoexpstr
 EOF
 
 	}
