@@ -50,6 +50,8 @@
 [bounce page="__UI_BASE__/error"]
 [/if-mm]
 
+[tmp can_delete][if-mm advanced order=d]1[/if-mm][/tmp]
+
 [include include/order_delete_archive]
 
 [calc]
@@ -231,6 +233,7 @@
 		[scratch archive_nm]order=1
 		order=[item-code]
 	"]<IMG SRC="[scratch archive_img]" HEIGHT=10 WIDTH=11 ALT="[scratch archive_nm] [item-code]" BORDER=0></A>
+[if scratch can_delete]
 <A HREF="[area
 	href='@@MV_PAGE@@'
 	form='
@@ -238,6 +241,7 @@
 		order=[item-code]
 	']"
 	onClick="return confirm('Are you sure you want to delete order [item-code]?')"><IMG src="delsm.gif" ALT="DELETE [item-code]" BORDER=0></A>
+[/if]
 </TD>
 <TD>[page href=__UI_BASE__/order_view form="order=[item-code]"][item-code]</A></TD>
 <TD>
@@ -269,11 +273,11 @@
 </tr>
 [/more-list]
 </table>
-[if-mm advanced order=d]
+[if scratch can_delete]
 [button form=batch text="[L]Delete checked orders[/L]"
  confirm='[L]Are you sure you want to delete the checked orders?[/L]']deleteorder=1
 [/button]
-[/if-mm]
+[/if]
 &nbsp;&nbsp;&nbsp;[button form=batch src="[scratch archive_img]"
 			text=`
 			my $tmp = "$Scratch->{archive_nm} checked orders";
