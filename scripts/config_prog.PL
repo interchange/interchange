@@ -25,11 +25,9 @@ DOIT: {
 #
 # Interchange program configurator
 #
-# $Id: config_prog.PL,v 1.6.2.1.2.3 2001-02-02 07:39:29 heins Exp $
+# $Id: config_prog.PL,v 1.6.2.1.2.4 2001-05-23 03:47:38 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
-#
-# See the file 'Changes' for information.
+# Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -60,8 +58,6 @@ Getopt::Long::config(qw/permute/);
 use vars qw/$Self/;
 
 BEGIN {
-	use Config;
-	&::logError( "Threaded perl not supported" ) if ($Config{ usethreads } || $Config{ useithreads } );
 	$Self = {
 		INSTALLPRIVLIB => '/usr/local/interchange/lib',
 #		INSTALLPRIVLIB => '~_~INSTALLPRIVLIB~_~',
@@ -159,7 +155,7 @@ config_prog -- Configure Interchange programs with MakeMaker variables
 
 =head1 VERSION
 
-# $Id: config_prog.PL,v 1.6.2.1.2.3 2001-02-02 07:39:29 heins Exp $
+# $Id: config_prog.PL,v 1.6.2.1.2.4 2001-05-23 03:47:38 jon Exp $
 
 =head1 DESCRIPTION
 
@@ -167,7 +163,7 @@ No documentation planned.
 
 =head1 SEE ALSO
 
-mvdocs(8), compile_link(1), config_prog(1), configdump(1), dump(1), expire(1),
+compile_link(1), config_prog(1), configdump(1), dump(1), expire(1),
 expireall(1), localize(1), makecat(1), interchange(1), offline(1),
 restart(1), update(1)
 

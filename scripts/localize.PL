@@ -25,11 +25,9 @@ DOIT: {
 #
 # Interchange localizer
 #
-# $Id: localize.PL,v 1.7.2.1.2.5 2001-05-20 14:29:23 racke Exp $
+# $Id: localize.PL,v 1.7.2.1.2.6 2001-05-23 03:47:38 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
-#
-# See the file 'Changes' for information.
+# Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -58,9 +56,6 @@ use Getopt::Std;
 use vars qw($opt_c $opt_d $opt_l $opt_M $opt_m $opt_o $opt_t $opt_u);
 
 BEGIN {
-	use Config;
-	&::logError( "Threaded perl not supported" ) if ($Config{ usethreads } || $Config{ useithreads } );
-
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
 		if defined $ENV{MINIVEND_ROOT};
 
@@ -375,7 +370,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-# $Id: localize.PL,v 1.7.2.1.2.5 2001-05-20 14:29:23 racke Exp $
+# $Id: localize.PL,v 1.7.2.1.2.6 2001-05-23 03:47:38 jon Exp $
 
 =head1 SYNOPSIS
 
@@ -445,7 +440,7 @@ one level. Subsequent .bak files will be overwritten.
 
 =head1 SEE ALSO
 
-mvdocs(8), http://www.akopia.com/
+http://developer.akopia.com/
 
 =head1 AUTHOR
 

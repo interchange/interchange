@@ -25,17 +25,12 @@ DOIT: {
 #
 # Interchange database builder and indexer
 #
-# $Id: offline.PL,v 1.7.2.1.2.1 2000-12-21 12:14:48 heins Exp $
+# $Id: offline.PL,v 1.7.2.1.2.2 2001-05-23 03:47:38 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# See the file 'Changes' for information.
+# This program was originally based on Vend 0.2 and 0.3
+# Copyright 1995-96 by Andrew M. Wilcox <awilcox@world.std.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -70,9 +65,6 @@ $Data::Dumper::Terse = 1;
 $Data::Dumper::Indent = 2;
 
 BEGIN {
-	use Config;
-	&::logError( "Threaded perl not supported" ) if ($Config{ usethreads } || $Config{ useithreads } );
-
 	eval {
 		require 5.004;
 		require FindBin;
@@ -277,7 +269,7 @@ offline -- Interchange offline database builder
 
 =head1 VERSION
 
-# $Id: offline.PL,v 1.7.2.1.2.1 2000-12-21 12:14:48 heins Exp $
+# $Id: offline.PL,v 1.7.2.1.2.2 2001-05-23 03:47:38 jon Exp $
 
 =head1 DESCRIPTION
 
@@ -285,7 +277,7 @@ Skeleton POD to avoid make errors.
 
 =head1 SEE ALSO
 
-mvdocs(8), interchange(1), http://www.akopia.com/
+interchange(1), http://developer.akopia.com/
 
 =cut
 _EoP_

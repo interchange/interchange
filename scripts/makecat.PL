@@ -25,11 +25,9 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.32.4.11 2001-04-20 18:49:36 jon Exp $
+# $Id: makecat.PL,v 1.32.4.12 2001-05-23 03:47:38 jon Exp $
 #
-# Copyright (C) 1996-2001 Akopia, Inc. <info@akopia.com>
-#
-# See the file 'Changes' for information.
+# Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -2178,7 +2176,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 1.32.4.11 2001-04-20 18:49:36 jon Exp $
+# $Id: makecat.PL,v 1.32.4.12 2001-05-23 03:47:38 jon Exp $
 
 =head1 INTRODUCTION
 
@@ -2533,7 +2531,7 @@ Interchange has many, many, functions and features; they are too numerous
 to describe in this venue. Complete information can be found at
 its web site:
 
-        http://www.akopia.com/
+        http://developer.akopia.com/
 
 Interchange requires Perl 5.005 or higher; more information on Perl can
 be seen at:
@@ -2542,7 +2540,7 @@ be seen at:
 
 =head1 SEE ALSO
 
-mvdocs(8), interchange(1), http://www.akopia.com/
+interchange(1)
 
 =head1 LICENSE
 
@@ -2566,7 +2564,6 @@ direct help with the system. Use the Interchange mail lists:
 
 General information and documentation for Interchange is at:
 
-    http://www.akopia.com/
     http://developer.akopia.com/
 
 =cut

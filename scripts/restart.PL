@@ -25,11 +25,9 @@ DOIT: {
 #
 # Interchange restarter
 #
-# $Id: restart.PL,v 1.8.2.1.2.1 2001-02-02 07:48:49 heins Exp $
+# $Id: restart.PL,v 1.8.2.1.2.2 2001-05-23 03:47:38 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
-#
-# See the file 'Changes' for information.
+# Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -49,9 +47,6 @@ DOIT: {
 use strict;
 
 BEGIN {
-	use Config;
-	&::logError( "Threaded perl not supported" ) if ($Config{ usethreads } || $Config{ useithreads } );
-
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
 		if defined $ENV{MINIVEND_ROOT};
 	$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
@@ -178,7 +173,7 @@ a system startup script.
 
 =head1 SEE ALSO
 
-interchange(1), mvdocs(8), http://www.akopia.com/
+interchange(1), http://developer.akopia.com/
 
 =head1 AUTHOR
 

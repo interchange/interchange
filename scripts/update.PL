@@ -25,11 +25,9 @@ DOIT: {
 #
 # Interchange database updater
 #
-# $Id: update.PL,v 1.7.2.1 2000-12-05 19:35:43 zarko Exp $
+# $Id: update.PL,v 1.7.2.1.2.1 2001-05-23 03:47:38 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
-#
-# See the file 'Changes' for information.
+# Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -58,9 +56,6 @@ use Vend::Data;
 use Vend::Util;
 
 BEGIN {
-	use Config;
-	&::logError( "Threaded perl not supported" ) if ($Config{ usethreads } || $Config{ useithreads } );
-
 	eval {
 		require 5.004;
 		require FindBin;
@@ -336,7 +331,7 @@ C<update> program will terminate with an error.
 
 =head1 SEE ALSO
 
-http://www.akopia.com/
+http://developer.akopia.com/
 
 =head1 AUTHOR
 

@@ -25,17 +25,12 @@ DOIT: {
 #
 # Interchange session expiration
 #
-# $Id: expire.PL,v 1.8.2.1.2.2 2001-04-26 09:04:26 racke Exp $
+# $Id: expire.PL,v 1.8.2.1.2.3 2001-05-23 03:47:38 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# See the file 'Changes' for information.
+# This program was originally based on Vend 0.2 and 0.3
+# Copyright 1995-96 by Andrew M. Wilcox <awilcox@world.std.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -66,9 +61,6 @@ use Getopt::Std;
 use vars qw/$opt_c $opt_r $opt_e $opt_f $opt_u $opt_v $opt_x/;
 
 BEGIN {
-	use Config;
-	&::logError( "Threaded perl not supported" ) if ($Config{ usethreads } || $Config{ useithreads } );
-
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
 		if defined $ENV{MINIVEND_ROOT};
 	$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
@@ -316,7 +308,7 @@ temporary files.
 
 =head1 SEE ALSO
 
-mvdocs(8), expireall(1), http://www.akopia.com/
+expireall(1), http://developer.akopia.com/
 
 =head1 AUTHOR
 

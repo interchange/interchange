@@ -25,11 +25,9 @@ DOIT: {
 #
 # Interchange link program configurator
 #
-# $Id: compile_link.PL,v 1.8.2.1.2.3 2001-05-04 17:31:05 heins Exp $
+# $Id: compile_link.PL,v 1.8.2.1.2.4 2001-05-23 03:47:38 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
-#
-# See the file 'Changes' for information.
+# Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -61,8 +59,6 @@ use vars qw/$Self/;
 Getopt::Long::config(qw/permute/);
 
 BEGIN {
-	use Config;
-	&::logError( "Threaded perl not supported" ) if ($Config{ usethreads } || $Config{ useithreads } );
 	$::Self = {
 		LINK_HOST      => 'localhost',
 		LINK_PORT      => 7786,
@@ -389,7 +385,7 @@ sending its timeout page.
 
 =head1 SEE ALSO
 
-makecat(1), http://www.akopia.com/
+makecat(1), http://developer.akopia.com/
 
 =head1 AUTHOR
 
