@@ -6,6 +6,9 @@ Interchange is designed to be compatible between major versions, and
 for the most part a catalog designed under Interchange 4.6 should
 be compatible with 4.7.
 
+Full information on upgrades is available in the document icupgrade(8)
+(in the distribution in pod/icupgrade.pod).
+
 To upgrade from another 4.x version, it is recommended that you:
 
     1. Make a tar backup of your Interchange software directory, i.e.
