@@ -47,7 +47,8 @@ mv_todo=return
 <td>
 <select name="ui_template" size=1>
 [calc]
-	@files = $Tag->list_glob('templates/*');
+	my $tdir = $Variable->{UI_TEMPLATE_DIR} || 'templates';
+	@files = $Tag->list_glob("$tdir/*");
     $selected = ' SELECTED';
 	for(@files) {
 		next unless -f $_;

@@ -66,7 +66,7 @@ EOF
 
 	my $current;
 	if (! $CGI->{ui_page_backup}) {
-		$current = $Scratch->{ui_current_content};
+		$current = $Scratch->{ui_current_content} || '<!-- content -->';
 	}
 	else {
 		$current = tag_data('backup', 'page_text', $CGI->{ui_page_backup});
@@ -78,6 +78,7 @@ EOF
 					);
 		}
 	}
+
 
 	my %hidden;
 	my $control_display =  $CGI->{ui_content_edit}
@@ -116,6 +117,7 @@ EOF
 
 #Log("template reference: " . uneval($tref) );
 
+	$t_name =~ s:.*/::;
 	my $t_file = "$template_dir/$t_name";
 
 	push @messages, "template: $t_name; t_file=$t_file";
