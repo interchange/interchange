@@ -13,6 +13,10 @@ upsell_in_cart:
 	label: Put upsell come-in under item
 	type: yesno
 
+continue_shopping:
+        label: Show continue shopping button
+        type: yesno
+
 [/comment]
 <!-- BEGIN COMPONENT [control component cart] -->
 
@@ -321,7 +325,7 @@ EOF
 	  <td align="center" valign="center"> 
     		[button
      		  text="[L]Check Out[/L]"
-		  src="__THEME__/checkout_button.gif"
+		  src="__IMAGE_DIR__/__THEME__/checkout_button.gif"
 		  hidetext=1
 		  form=basket
 		  ]
@@ -333,7 +337,7 @@ EOF
 	    [if type=explicit compare="[control continue_shopping]"]
     	      [button
 		text="[L]Continue shopping[/L]"
-     		src="continue_shopping.gif"
+     		src="__IMAGE_DIR__/__THEME__/continue_shopping.gif"
 		hidetext=1
 		form=basket
 	      ]
@@ -402,7 +406,7 @@ EOF
   [else]
       [button
           text="[L]Save This Cart[/L]"
-          src="__THEME__/savecart.gif"
+          src="__IMAGE_DIR__/__THEME__/savecart.gif"
           extra="class=contentbar2"
           hidetext=1
           form=basket
@@ -414,7 +418,7 @@ EOF
       [/button]
       [button
           text="[L]Set As Recurring Order[/L]"
-          src="__THEME__/saverecur.gif"
+          src="__IMAGE_DIR__/__THEME__/saverecur.gif"
           extra="class=contentbar2"
           hidetext=1
           form=basket
