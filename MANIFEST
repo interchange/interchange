@@ -8,6 +8,7 @@ README.debian
 README.rpm
 SPECS/interchange.spec
 TODO
+UPGRADE
 WHATSNEW
 configure
 debian/TODO
@@ -304,6 +305,7 @@ dist/foundation/templates/components/cart_tiny
 dist/foundation/templates/components/category_horizontal
 dist/foundation/templates/components/category_vertical
 dist/foundation/templates/components/cross
+dist/foundation/templates/components/fortune
 dist/foundation/templates/components/modular_buy
 dist/foundation/templates/components/modular_update
 dist/foundation/templates/components/none
@@ -657,6 +659,7 @@ dist/lib/UI/usertag/export_database.tag
 dist/lib/UI/usertag/file_info.tag
 dist/lib/UI/usertag/file_navigator.tag
 dist/lib/UI/usertag/filters.tag
+dist/lib/UI/usertag/get_gpg_keys.tag
 dist/lib/UI/usertag/global_value.tag
 dist/lib/UI/usertag/grep_mm.tag
 dist/lib/UI/usertag/if_key_exists.tag
@@ -723,6 +726,7 @@ dist/usertag/email_raw.tag
 dist/usertag/fcounter.tag
 dist/usertag/fedex_query.tag
 dist/usertag/formel.tag
+dist/usertag/fortune.tag
 dist/usertag/get_url.tag
 dist/usertag/image.tag
 dist/usertag/load_cart.tag
@@ -746,15 +750,15 @@ eg/globalsub/signio
 eg/globalsub/test_card
 eg/grant.sql
 eg/ifdef
-eg/make_gnumeric.sh
+eg/te
 eg/usertag/benchmark
 eg/usertag/sleep
-eg/usertag/table_organize
 extensions/quickbooks/README
 extensions/quickbooks/etc/trans_quickbooks
 extensions/quickbooks/ic_qb.pod
 extensions/quickbooks/pages/admin/quickbooks/export_coa.html
 extensions/quickbooks/pages/admin/quickbooks/export_items.html
+extensions/quickbooks/pages/admin/quickbooks/get_orders.html
 extensions/quickbooks/pages/admin/quickbooks/import_items.html
 extensions/quickbooks/pages/admin/quickbooks/index.html
 extensions/quickbooks/qb.catalog.cfg
