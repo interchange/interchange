@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Cart.pm,v 1.2.6.1 2000-11-25 00:08:21 heins Exp $
+# $Id: Cart.pm,v 1.2.6.2 2000-12-13 16:11:15 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,7 +27,7 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 1.2.6.1 $, 10);
+$VERSION = substr(q$Revision: 1.2.6.2 $, 10);
 
 use strict;
 
@@ -142,9 +142,9 @@ sub toss_cart {
 	my $i;
 	my (@master);
 	my (@cascade);
-    DELETE: for (;;) {
-        foreach $i (0 .. $#$s) {
-            if ($s->[$i]->{quantity} <= 0) {
+	DELETE: for (;;) {
+		foreach $i (0 .. $#$s) {
+			if ($s->[$i]->{quantity} <= 0) {
 				next if defined $s->[$i]->{mv_control} and
 								$s->[$i]->{mv_control} =~ /\bnotoss\b/;
 				if ($s->[$i]->{mv_mi} && ! $s->[$i]->{mv_si}) {
@@ -153,12 +153,12 @@ sub toss_cart {
 				elsif ( $s->[$i]->{mv_ci} ) {
 					push (@master, $s->[$i]->{mv_ci});
 				}
-                splice(@$s, $i, 1);
-                next DELETE;
-            }
-        }
-        last DELETE;
-    }
+				splice(@$s, $i, 1);
+				next DELETE;
+			}
+		}
+		last DELETE;
+	}
 
 	return 1 unless @master;
 	my $mi;
@@ -187,7 +187,7 @@ sub toss_cart {
 			@{$s} = @items[sort {$a <=> $b} keys %save];
 		}
 	}
-    1;
+	1;
 }
 
 =head2 Test footer for item toss

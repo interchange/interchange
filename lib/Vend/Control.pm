@@ -1,6 +1,6 @@
 # Control.pm - Interchange routines rarely used or not requiring much performance
 # 
-# $Id: Control.pm,v 1.6 2000-10-19 12:08:12 heins Exp $
+# $Id: Control.pm,v 1.6.2.1 2000-12-13 16:11:15 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -176,13 +176,13 @@ EOF
 }
 
 sub change_catalog_directive {
-    my($cat, $line) = @_;
-    $line =~ s/^\s+//;
-    my($dir,$val) = split /\s+/, $line, 2;
-    my $ref = Vend::Config::set_directive($dir,$val);
-    die "Bad directive '$line'.\n" unless defined $ref;
-    $cat->{$ref->[0]} = $ref->[1];
-    return 1;
+	my($cat, $line) = @_;
+	$line =~ s/^\s+//;
+	my($dir,$val) = split /\s+/, $line, 2;
+	my $ref = Vend::Config::set_directive($dir,$val);
+	die "Bad directive '$line'.\n" unless defined $ref;
+	$cat->{$ref->[0]} = $ref->[1];
+	return 1;
 }
 
 sub change_global_directive {

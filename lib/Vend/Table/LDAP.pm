@@ -1,6 +1,6 @@
 # Table/LDAP.pm: LDAP pseudo-table
 #
-# $Id: LDAP.pm,v 1.6 2000-09-29 17:45:59 heins Exp $
+# $Id: LDAP.pm,v 1.6.6.1 2000-12-13 16:11:52 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,7 +27,7 @@
 
 package Vend::Table::LDAP;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 1.6.6.1 $, 10);
 use strict;
 
 use vars qw(
@@ -104,7 +104,7 @@ sub open_table {
 	unshift @$columns, pop @$ki;
 	@$columns = map { lc $_ } @$columns;
 #::logDebug('columns=' . ::uneval($columns));
-    my $column_index = Vend::Table::Common::create_columns($columns, $config);
+	my $column_index = Vend::Table::Common::create_columns($columns, $config);
 	my $s = [
 				$config,
 				$config->{name},
@@ -117,17 +117,17 @@ sub open_table {
 }
 
 sub create {
-    my ($class, $config, $columns, $tablename) = @_;
+	my ($class, $config, $columns, $tablename) = @_;
 
-    $config = {} unless defined $config;
+	$config = {} unless defined $config;
 
-    die "columns argument $columns is not an array ref\n"
-        unless CORE::ref($columns) eq 'ARRAY';
+	die "columns argument $columns is not an array ref\n"
+		unless CORE::ref($columns) eq 'ARRAY';
 	my $base = $config->{BASE_DN};
 	my $host = $config->{LDAP_HOST};
 	my $port = 389;
 	($host, $port) = split /:/, $host if ($host =~ /:/);
-    my $column_index = Vend::Table::Common::create_columns($columns, $config);
+	my $column_index = Vend::Table::Common::create_columns($columns, $config);
 	my $ldap = Net::LDAP->new($host, port => $port) or die "Unable to connect to LDAP server $host:$port\n";
 #::logDebug("created object " . ::uneval($ldap));
 	$ldap->bind(
@@ -147,7 +147,7 @@ sub create {
 	);
 	my $m = $ldap->add($e);
 #::logDebug("added entry");
-    my $s = [
+	my $s = [
 				$config,
 				$config->{name},
 				$columns,
@@ -157,7 +157,7 @@ sub create {
 			];
 #::logDebug("Created database $config->{name}" . ::uneval($s));
 #::logDebug("Created database $config->{name}");
-    bless $s, $class;
+	bless $s, $class;
 }
 
 sub new {
@@ -183,26 +183,26 @@ sub field {
 }
 
 sub row {
-    my ($s, $key) = @_;
+	my ($s, $key) = @_;
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
 	my $rh = row_hash($key);
 	my @a = ();
 	@a = @$rh->{@{$s->[$COLUMN_NAMES]}};
-    return @a;
+	return @a;
 }
 
 sub row_hash {
-    my ($s, $key) = @_;
+	my ($s, $key) = @_;
 #::logDebug("LDAP row_hash $key");
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
 	my $ki = $s->[$CONFIG]->{KEY};
-   	my $n = $s->[$FILENAME];
+	my $n = $s->[$FILENAME];
 	my $b = $s->[$CONFIG]->{BASE_DN};
 	my $m = $s->[$TIE_HASH]->search(
 		base => "db=$n, $b",
 		filter => "(&(objectclass=mv_data)($ki=$key))",
 	);
-    die "There is no row with index '$key'" unless ($m->count > 0);
+	die "There is no row with index '$key'" unless ($m->count > 0);
 	my $e = $m->entry(0);
 	my %row;
 	my $c;
@@ -211,29 +211,29 @@ sub row_hash {
 		my $d = $e->get($c);
 		$row{$c} = pop @$d;
 	}
-    return \%row;
+	return \%row;
 }
 
 *row_array = \&row;
 
 sub columns {
-    my ($s) = @_;
+	my ($s) = @_;
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
-    return @{$s->[$COLUMN_NAMES]};
+	return @{$s->[$COLUMN_NAMES]};
 }
 
 
 sub field_settor {
-    my ($s, $column) = @_;
+	my ($s, $column) = @_;
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
-    return sub {
-        my ($key, $value) = @_;
+	return sub {
+		my ($key, $value) = @_;
 		my $n = $s->[$FILENAME];
 		my $b = $s->[$CONFIG]->{BASE_DN};
 		my $ki = $s->[$CONFIG]->{KEY};
 		my $code;
 		if ($s->record_exists($key)) {
-        	my $m = $s->[$TIE_HASH]->modify(
+			my $m = $s->[$TIE_HASH]->modify(
 				dn => "$ki=$key, db=$n, $b",
 				modify => [ $column => $value ],
 			);
@@ -251,17 +251,17 @@ sub field_settor {
 		}
 		$code and die "Failed to set row $ki=$key: $code";
 		return undef;
-    };
+	};
 }
 
 sub set_field {
-    my ($s, $key, $column, $value) = @_;
+	my ($s, $key, $column, $value) = @_;
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
-    if($s->[$CONFIG]{Read_only}) {
+	if($s->[$CONFIG]{Read_only}) {
 		::logError("Attempt to set $s->[$CONFIG]{name}::${column}::$key in read-only table");
 		return undef;
 	}
-    my %row;
+	my %row;
 	my $code;
 	my $ki = $s->[$CONFIG]->{KEY};
 	my $n = $s->[$CONFIG]{name};
@@ -292,7 +292,7 @@ sub set_field {
 }
 
 sub set_row {
-    my ($s, @fields) = @_;
+	my ($s, @fields) = @_;
 #	my $x = 0;
 #	my $subname;
 #	while ((undef, undef, undef, $subname) = caller($x++))
@@ -335,7 +335,7 @@ sub set_row {
 }
 
 sub inc_field {
-    my ($s, $key, $column, $adder) = @_;
+	my ($s, $key, $column, $adder) = @_;
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
 	my $f = field($key, $column);
 	$f += $adder;
@@ -343,9 +343,9 @@ sub inc_field {
 }
 
 sub each_record {
-    my ($s) = @_;
+	my ($s) = @_;
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
-    my $key;
+	my $key;
 	my @r;
 	my $ki = $s->[$CONFIG]->{KEY};
 	unless (defined $s->[$EACH]) {
@@ -384,16 +384,16 @@ sub each_record {
 }
 
 sub each_nokey {
-    my (@ary) = each_record(@_);
+	my (@ary) = each_record(@_);
 	shift @ary;
 	return @ary;
 }
 
 sub record_exists {
-    my ($s, $key) = @_;
+	my ($s, $key) = @_;
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
 	my $ki = $s->[$CONFIG]->{KEY};
-   	my $n = $s->[$CONFIG]{name};
+	my $n = $s->[$CONFIG]{name};
 	my $b = $s->[$CONFIG]->{BASE_DN};
 	my $m = $s->[$TIE_HASH]->search(
 		base => "db=$n, $b",
@@ -403,19 +403,19 @@ sub record_exists {
 	{
 #::logDebug("$ki=$key, db=$n, $b exists");
 	}
-    return $m->count;
+	return $m->count;
 }
 
 *test_record = \&record_exists;
 
 sub delete_record {
-    my ($s, $key) = @_;
+	my ($s, $key) = @_;
 #    delete($s->[$TIE_HASH]{$key});
 #::logDebug("delete $key not impl.");
 }
 
 sub clear_table {
-    my ($s) = @_;
+	my ($s) = @_;
 #::logDebug("clear table not impl.");
 }
 
@@ -430,13 +430,13 @@ sub ref {
 }
 
 sub query {
-    my($s, $opt, $text, @arg) = @_;
+	my($s, $opt, $text, @arg) = @_;
 
-    if(! CORE::ref($opt) ) {
-        unshift @arg, $text;
-        $text = $opt;
-        $opt = {};
-    }
+	if(! CORE::ref($opt) ) {
+		unshift @arg, $text;
+		$text = $opt;
+		$opt = {};
+	}
 
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
 	$opt->{query} = $opt->{sql} || $text if ! $opt->{query};
@@ -456,7 +456,7 @@ sub query {
 	}
 
 	my $query;
-    $query = ! scalar @arg
+	$query = ! scalar @arg
 			? $opt->{query}
 			: sprintf_substitute ($s, $opt->{query}, \@arg);
 
@@ -525,18 +525,18 @@ eval {
 
 #::logDebug("tabs='@tabs' columns='@na' vals='@vals' update=$update"); 
 
-    my $search;
-    if ("\L$opt->{st}" eq 'db' ) {
+	my $search;
+	if ("\L$opt->{st}" eq 'db' ) {
 		for(@tabs) {
 			s/\..*//;
 		}
-        $search = new Vend::DbSearch;
+		$search = new Vend::DbSearch;
 #::logDebug("created DbSearch object: " . ::uneval($search));
 	}
 	else {
-        $search = new Vend::TextSearch;
+		$search = new Vend::TextSearch;
 #::logDebug("created TextSearch object: " . ::uneval($search));
-    }
+	}
 
 	my %fh;
 	my $i = 0;

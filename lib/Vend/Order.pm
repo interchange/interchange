@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18.2.2 2000-12-11 01:48:25 heins Exp $
+# $Id: Order.pm,v 1.18.2.3 2000-12-13 16:11:15 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.2 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.3 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -385,20 +385,20 @@ Jon Orwant, from Business::CreditCard and well-known algorithms
 =cut
 
 sub luhn {
-    my ($number) = @_;
-    my ($i, $sum, $weight);
+	my ($number) = @_;
+	my ($i, $sum, $weight);
 
-    $number =~ s/\D//g;
+	$number =~ s/\D//g;
 
-    return 0 unless length($number) >= 13 && 0+$number;
+	return 0 unless length($number) >= 13 && 0+$number;
 
-    for ($i = 0; $i < length($number) - 1; $i++) {
-        $weight = substr($number, -1 * ($i + 2), 1) * (2 - ($i % 2));
-        $sum += (($weight < 10) ? $weight : ($weight - 9));
-    }
+	for ($i = 0; $i < length($number) - 1; $i++) {
+		$weight = substr($number, -1 * ($i + 2), 1) * (2 - ($i % 2));
+		$sum += (($weight < 10) ? $weight : ($weight - 9));
+	}
 
-    return 1 if substr($number, -1) == (10 - $sum % 10) % 10;
-    return 0;
+	return 1 if substr($number, -1) == (10 - $sum % 10) % 10;
+	return 0;
 }
 
 
@@ -625,7 +625,7 @@ sub testsendmserver {
 sub map_actual {
 
 	# Allow remapping of payment variables
-    my %map = qw(
+	my %map = qw(
 		mv_credit_card_number       mv_credit_card_number
 		name                        name
 		fname                       fname
@@ -651,7 +651,7 @@ sub map_actual {
 		mv_credit_card_exp_year     mv_credit_card_exp_year
 		cyber_mode                  mv_cyber_mode
 		amount                      amount
-    );
+	);
 
 	# Allow remapping of the variable names
 	my $remap = $::Variable->{MV_PAYMENT_REMAP} || $::Variable->{CYBER_REMAP};
@@ -690,55 +690,55 @@ sub charge {
 	my (%actual) = map_actual();
 
 #::logDebug ("cyber_charge, mode val=$::Values->{mv_cyber_mode} cgi=$CGI::values{mv_cyber_mode} actual=$actual{cyber_mode}");
-    my $currency =  $::Variable->{MV_PAYMENT_CURRENCY}
+	my $currency =  $::Variable->{MV_PAYMENT_CURRENCY}
 					|| $::Variable->{CYBER_CURRENCY}
 					|| 'usd';
-    $actual{mv_credit_card_exp_month} =~ s/\D//g;
-    $actual{mv_credit_card_exp_month} =~ s/^0+//;
-    $actual{mv_credit_card_exp_year} =~ s/\D//g;
-    $actual{mv_credit_card_exp_year} =~ s/\d\d(\d\d)/$1/;
+	$actual{mv_credit_card_exp_month} =~ s/\D//g;
+	$actual{mv_credit_card_exp_month} =~ s/^0+//;
+	$actual{mv_credit_card_exp_year} =~ s/\D//g;
+	$actual{mv_credit_card_exp_year} =~ s/\d\d(\d\d)/$1/;
 
-    $actual{mv_credit_card_number} =~ s/\D//g;
+	$actual{mv_credit_card_number} =~ s/\D//g;
 
-    my $exp = $actual{mv_credit_card_exp_month} . '/' .
-    		  $actual{mv_credit_card_exp_year};
+	my $exp = $actual{mv_credit_card_exp_month} . '/' .
+			  $actual{mv_credit_card_exp_year};
 
-    $actual{cyber_mode} = 'mauthcapture'
+	$actual{cyber_mode} = 'mauthcapture'
 		unless $actual{cyber_mode};
 
-    my($orderID);
-    my($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime(time());
+	my($orderID);
+	my($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime(time());
 
-    # We'll make an order ID based on date, time, and PID
+	# We'll make an order ID based on date, time, and PID
 
-    # $mon is the month index where Jan=0 and Dec=11, so we use
-    # $mon+1 to get the more familiar Jan=1 and Dec=12
-    $orderID = sprintf("%02d%02d%02d%02d%02d%05d",
-            $year + 1900,$mon + 1,$mday,$hour,$min,$$);
+	# $mon is the month index where Jan=0 and Dec=11, so we use
+	# $mon+1 to get the more familiar Jan=1 and Dec=12
+	$orderID = sprintf("%02d%02d%02d%02d%02d%05d",
+			$year + 1900,$mon + 1,$mday,$hour,$min,$$);
 
-    # The following characters are illegal in an order ID:
-    #    : < > = + @ " % = &
-    #
-    # If you want, you could use a line similar to the following
-    # to remove these illegal characters:
+	# The following characters are illegal in an order ID:
+	#    : < > = + @ " % = &
+	#
+	# If you want, you could use a line similar to the following
+	# to remove these illegal characters:
 
-    $orderID =~ tr/:<>=+\@\"\%\&/_/d;
+	$orderID =~ tr/:<>=+\@\"\%\&/_/d;
 
-    #
-    # Or use something like the following line to only allow
-    # alphanumeric and dash, converting other characters to underscore:
-    #    $orderID =~ tr/A-Za-z0-9\-/_/c;
+	#
+	# Or use something like the following line to only allow
+	# alphanumeric and dash, converting other characters to underscore:
+	#    $orderID =~ tr/A-Za-z0-9\-/_/c;
 
-    # Our test order ID only contains digits, so we don't have
-    # to strip any characters here. You might have to if you
-    # use a different scheme.
+	# Our test order ID only contains digits, so we don't have
+	# to strip any characters here. You might have to if you
+	# use a different scheme.
 
 	my $precision = $::Variable->{CYBER_PRECISION} || 2;
-    $amount = Vend::Interpolate::total_cost();
+	$amount = Vend::Interpolate::total_cost();
 	$amount = sprintf("%.${precision}f", $amount);
-    $amount = "$currency $amount";
+	$amount = "$currency $amount";
 
-    my %result;
+	my %result;
 
 	if($charge_type =~ /^\s*custom\s+(\w+)(?:\s+(.*))?/si) {
 		my ($sub, @args);
@@ -751,7 +751,7 @@ sub charge {
 		$Vend::Session->{payment_result} =
 			$Vend::Session->{cybercash_result} = \%result;
 	}
-    elsif ($actual{cyber_mode} =~ /^minivend_test(?:_(.*))?/) {
+	elsif ($actual{cyber_mode} =~ /^minivend_test(?:_(.*))?/) {
 		my $status = $1 || 'success';
 		# Interchange test mode
 		my %payment = (
@@ -777,7 +777,7 @@ sub charge {
 		$result{MStatus} = $status;
 		$Vend::Session->{payment_result} =
 			$Vend::Session->{cybercash_result} = \%result;
-    }
+	}
 	elsif ($Vend::CC3) {
 		# Live interface operations follow
 		$Vend::CC3server = 1;
@@ -843,7 +843,7 @@ sub charge {
 			#		$POP{'pop.avs_code'};
 			#		$POP{'pop.price'};
 		}
-    }
+	}
 
 	if($result{MStatus} !~ /^success/) {
 		$Vend::Session->{cybercash_error} = $result{MErrMsg};
@@ -879,18 +879,18 @@ sub charge {
 
 
 sub report_field {
-    my($field_name, $seen) = @_;
-    my($field_value, $r);
+	my($field_name, $seen) = @_;
+	my($field_value, $r);
 
-    $field_value = $Vend::Session->{'values'}->{$field_name};
-    if (defined $field_value) {
+	$field_value = $Vend::Session->{'values'}->{$field_name};
+	if (defined $field_value) {
 		$$seen{$field_name} = 1;
 		$r = $field_value;
-    }
+	}
 	else {
 		$r = "<no input box>";
-    }
-    $r;
+	}
+	$r;
 }
 
 #sub create_onfly {
@@ -970,17 +970,17 @@ sub onfly {
 sub mail_order {
 	my ($email, $order_no) = @_;
 	$email = $Vend::Cfg->{MailOrderTo} unless $email;
-    my($body, $ok);
-    my($subject);
+	my($body, $ok);
+	my($subject);
 # LEGACY
-    $body = readin($::Values->{mv_order_report})
+	$body = readin($::Values->{mv_order_report})
 		if $::Values->{mv_order_report};
 # END LEGACY
 #::logDebug( sprintf "found body length %s in values->mv_order_report", length($body));
-    $body = readfile($Vend::Cfg->{OrderReport})
+	$body = readfile($Vend::Cfg->{OrderReport})
 		if ! $body;
 #::logDebug( sprintf "found body length %s in OrderReport", length($body));
-    unless (defined $body) {
+	unless (defined $body) {
 		::logError(
 			q{Cannot find order report in:
 
@@ -994,7 +994,7 @@ trying one more time. Fix this.},
 		$body = readin($Vend::Cfg->{OrderReport});
 		return undef if ! $body;
 	}
-    return undef unless defined $body;
+	return undef unless defined $body;
 
 	$order_no = update_order_number() unless $order_no;
 
@@ -1009,15 +1009,15 @@ trying one more time. Fix this.},
 	$subject = $::Values->{mv_order_subject} || "ORDER %n";
 
 	if(defined $order_no) {
-	    $subject =~ s/%n/$order_no/;
+		$subject =~ s/%n/$order_no/;
 	}
 	else { $subject =~ s/\s*%n\s*//g; }
 
 #::logDebug("Now ready to send mail, subject=$subject");
 
 #### change this to use Vend::Mail::send
-    $ok = send_mail($email, $subject, $body);
-    return $ok;
+	$ok = send_mail($email, $subject, $body);
+	return $ok;
 }
 
 sub pgp_encrypt {
@@ -1087,7 +1087,7 @@ sub do_check {
 
 sub check_order {
 	my ($profile, $vref) = @_;
-    my($codere) = '[-\w_#/.]+';
+	my($codere) = '[-\w_#/.]+';
 	my $params;
 	if(defined $Vend::Cfg->{OrderProfileName}->{$profile}) {
 		$profile = $Vend::Cfg->{OrderProfileName}->{$profile};
@@ -1147,10 +1147,10 @@ sub check_order {
 		$last_one = $val;
 		if ($val) {
 #::logDebug("Deleting message $Vend::Session->{errors}{$var} for $var.");
- 			$::Values->{"mv_status_$var"} = $message
+			$::Values->{"mv_status_$var"} = $message
 				if defined $message and $message;
 			delete $Vend::Session->{errors}{$var};
- 			delete $::Values->{"mv_error_$var"};
+			delete $::Values->{"mv_error_$var"};
 		}
 		else {
 			$status = 0;
@@ -1687,12 +1687,12 @@ sub route_order {
 			Vend::Util::writefile($route->{track}, $page)
 				or ::logError("route tracking error writing $route->{track}: $!");
 			my $mode = $route->{track_mode} || '';
-            if ($mode =~ s/^0+//) {
-                chmod oct($mode), $fn;
-            }
-            elsif ($mode) {
-                chmod $mode, $fn;
-            }
+			if ($mode =~ s/^0+//) {
+				chmod oct($mode), $fn;
+			}
+			elsif ($mode) {
+				chmod $mode, $fn;
+			}
 		}
 		if ($route->{individual_track}) {
 			my $fn = Vend::Util::catfile(
@@ -1703,12 +1703,12 @@ sub route_order {
 			Vend::Util::writefile( $fn, $page,	)
 				or ::logError("route tracking error writing $fn: $!");
 			my $mode = $route->{track_mode} || '';
-            if ($mode =~ s/^0+//) {
-                chmod oct($mode), $fn;
-            }
-            elsif ($mode) {
-                chmod $mode, $fn;
-            }
+			if ($mode =~ s/^0+//) {
+				chmod oct($mode), $fn;
+			}
+			elsif ($mode) {
+				chmod $mode, $fn;
+			}
 		}
 	};
 		if($@) {
@@ -1798,7 +1798,6 @@ sub route_order {
 }
 
 sub add_items {
-
 	my($items,$quantities) = @_;
 
 	$items = $CGI::values{mv_order_item} if ! defined $items;
@@ -1854,7 +1853,7 @@ sub add_items {
 		}
 	}
 
-    my ($group, $found_master, $mv_mi, $mv_si, $mv_mp, @group, @modular);
+	my ($group, $found_master, $mv_mi, $mv_si, $mv_mp, @group, @modular);
 
 	my $separate;
 	if( $CGI::values{mv_order_modular} ) {
@@ -1876,19 +1875,19 @@ sub add_items {
 						);
 	}
 
-    @group   = split /\0/, (delete $CGI::values{mv_order_group} || ''), -1;
-    for( my $i = 0; $i < @group; $i++ ) {
-       $attr{mv_mi}->[$i] = $group[$i] ? ++$Vend::Session->{pageCount} : 0;
+	@group   = split /\0/, (delete $CGI::values{mv_order_group} || ''), -1;
+	for( my $i = 0; $i < @group; $i++ ) {
+	   $attr{mv_mi}->[$i] = $group[$i] ? ++$Vend::Session->{pageCount} : 0;
 	}
 
 	$j = 0;
 	my $set;
 	foreach $code (@items) {
-	   undef $item;
-       $quantity = defined $quantities[$j] ? $quantities[$j] : 1;
-       ($j++,next) unless $quantity;
-	   $set = $quantity =~ s/^=//;
-	    if(! $fly[$j]) {
+		undef $item;
+		$quantity = defined $quantities[$j] ? $quantities[$j] : 1;
+		($j++,next) unless $quantity;
+		$set = $quantity =~ s/^=//;
+		if(! $fly[$j]) {
 			$base = product_code_exists_tag($code, $bases[$j] || undef);
 		}
 		else {
@@ -1904,7 +1903,7 @@ sub add_items {
 			};
 			if($@) {
 				::logError(
-				"failed on-the-fly item add with error %s for: tag=%s sku=%s, qty=%s, passed=%s",
+					"failed on-the-fly item add with error %s for: tag=%s sku=%s, qty=%s, passed=%s",
 					$@,
 					$Vend::Cfg->{OnFly},
 					$code,
@@ -1920,7 +1919,6 @@ sub add_items {
 		}
 
 		INCREMENT: {
-
 			# Check that the item has not been already ordered.
 			# But let us order separates if so configured
 			$found = -1;
@@ -1947,17 +1945,17 @@ sub add_items {
 				if ! $item;
 
 			# Add the master item/sub item ids if appropriate
-          if(@group) {
-           if($attr{mv_mi}->[$j]) {
-              $item->{mv_mi} = $mv_mi = $attr{mv_mi}->[$j];
-              $item->{mv_mp} = $mv_mp = $attr{mv_mp}->[$j];
-              $item->{mv_si} = $mv_si = 0;
-           }
-           else {
-              $item->{mv_mi} = $mv_mi;
-              $item->{mv_si} = ++$mv_si;
-              $item->{mv_mp} = $attr{mv_mp}->[$j] || $mv_mp;
-           }
+			if(@group) {
+				if($attr{mv_mi}->[$j]) {
+					$item->{mv_mi} = $mv_mi = $attr{mv_mi}->[$j];
+					$item->{mv_mp} = $mv_mp = $attr{mv_mp}->[$j];
+					$item->{mv_si} = $mv_si = 0;
+				}
+				else {
+					$item->{mv_mi} = $mv_mi;
+					$item->{mv_si} = ++$mv_si;
+					$item->{mv_mp} = $attr{mv_mp}->[$j] || $mv_mp;
+				}
 			}
 
 			if($Vend::Cfg->{UseModifier}) {
@@ -1983,7 +1981,7 @@ sub add_items {
 			else {
 #::logDebug("adding to line");
 # TRACK
-                $Vend::Track->add_item($cart,$item);
+				$Vend::Track->add_item($cart,$item);
 # END TRACK
 				push @$cart, $item;
 			}
@@ -2005,8 +2003,8 @@ EOF
 #### recode this in Vend::Mail as send
 # LEGACY4
 sub send_mail {
-    my($to, $subject, $body, $reply, $use_mime, @extra_headers) = @_;
-    my($ok);
+	my($to, $subject, $body, $reply, $use_mime, @extra_headers) = @_;
+	my($ok);
 #::logDebug("send_mail: to=$to subj=$subject r=$reply mime=$use_mime\n");
 
 	unless (defined $use_mime) {
@@ -2024,7 +2022,7 @@ sub send_mail {
 		$reply =~ s/\s+$/\n/;
 	}
 
-    $ok = 0;
+	$ok = 0;
 	my $none;
 
 	if("\L$Vend::Cfg->{SendMailProgram}" eq 'none') {
@@ -2032,13 +2030,13 @@ sub send_mail {
 		$ok = 1;
 	}
 
-    SEND: {
+	SEND: {
 		last SEND if $none;
 		open(MVMAIL,"|$Vend::Cfg->{SendMailProgram} $to") or last SEND;
 		my $mime = '';
 		$mime = Vend::Interpolate::mime('header', {}, '') if $use_mime;
 		print MVMAIL "To: $to\n", $reply, "Subject: $subject\n"
-	    	or last SEND;
+			or last SEND;
 		for(@extra_headers) {
 			s/\s*$/\n/;
 			print MVMAIL $_
@@ -2046,7 +2044,7 @@ sub send_mail {
 		}
 		$mime =~ s/\s*$/\n/;
 		print MVMAIL $mime
-	    	or last SEND;
+			or last SEND;
 		print MVMAIL $body
 				or last SEND;
 		print MVMAIL Vend::Interpolate::do_tag('mime boundary') . '--'
@@ -2054,9 +2052,9 @@ sub send_mail {
 		print MVMAIL "\r\n\cZ" if $Global::Windows;
 		close MVMAIL or last SEND;
 		$ok = ($? == 0);
-    }
-    
-    if ($none or !$ok) {
+	}
+
+	if ($none or !$ok) {
 		logError("Unable to send mail using %s\nTo: %s\nSubject: %s\n%s\n\n%s",
 				$Vend::Cfg->{SendMailProgram},
 				$to,
@@ -2064,9 +2062,9 @@ sub send_mail {
 				$reply,
 				$body,
 		);
-    }
+	}
 
-    $ok;
+	$ok;
 }
 # END LEGACY4
 

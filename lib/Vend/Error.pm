@@ -1,6 +1,6 @@
 # Error.pm - Handle Interchange error pages and messages
 # 
-# $Id: Error.pm,v 1.3 2000-07-12 03:08:10 heins Exp $
+# $Id: Error.pm,v 1.3.6.1 2000-12-13 16:11:15 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -37,7 +37,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.3.6.1 $ =~ /(\d+)\.(\d+)/);
 
 my $wantref = 1;
 
@@ -69,20 +69,20 @@ sub get_locale_message {
 # browser bug or bad html pages.
 
 sub interaction_error {
-    my($msg) = @_;
-    my($page);
+	my($msg) = @_;
+	my($page);
 
-    logError( "Difficulty interacting with browser: %s", $msg );
+	logError( "Difficulty interacting with browser: %s", $msg );
 
-    $page = readin(find_special_page('interact'));
-    if (defined $page) {
+	$page = readin(find_special_page('interact'));
+	if (defined $page) {
 		$page =~ s#\[message\]#$msg#ig;
 		::response(::interpolate_html($page, 1));
-    }
+	}
 	else {
 		logError( "Missing special page: interact" , '');
 		::response("$msg\n");
-    }
+	}
 }
 
 sub minidump {

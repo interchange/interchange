@@ -1,6 +1,6 @@
 # Table/GDBM.pm: access a table stored in a GDBM file
 #
-# $Id: GDBM.pm,v 1.3.6.1 2000-11-30 02:51:14 heins Exp $
+# $Id: GDBM.pm,v 1.3.6.2 2000-12-13 16:11:52 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ use GDBM_File;
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 1.3.6.1 $, 10);
+$VERSION = substr(q$Revision: 1.3.6.2 $, 10);
 
 sub new {
 	my ($class, $obj) = @_;
@@ -40,35 +40,35 @@ sub new {
 }
 
 sub create {
-    my ($class, $config, $columns, $filename) = @_;
+	my ($class, $config, $columns, $filename) = @_;
 
-    $config = {} unless defined $config;
-    my ($File_permission_mode, $Fast_write)
-        = @$config{'File_permission_mode', 'Fast_write'};
-    $File_permission_mode = 0666 unless defined $File_permission_mode;
-    $Fast_write = 1 unless defined $Fast_write;
+	$config = {} unless defined $config;
+	my ($File_permission_mode, $Fast_write)
+		= @$config{'File_permission_mode', 'Fast_write'};
+	$File_permission_mode = 0666 unless defined $File_permission_mode;
+	$Fast_write = 1 unless defined $Fast_write;
 
-    die "columns argument $columns is not an array ref\n"
-        unless CORE::ref($columns) eq 'ARRAY';
+	die "columns argument $columns is not an array ref\n"
+		unless CORE::ref($columns) eq 'ARRAY';
 
-    # my $column_file = "$filename.columns";
-    # my @columns = @$columns;
-    # open(COLUMNS, ">$column_file")
-    #    or die "Couldn't create '$column_file': $!";
-    # print COLUMNS join("\t", @columns), "\n";
-    # close(COLUMNS);
+	# my $column_file = "$filename.columns";
+	# my @columns = @$columns;
+	# open(COLUMNS, ">$column_file")
+	#    or die "Couldn't create '$column_file': $!";
+	# print COLUMNS join("\t", @columns), "\n";
+	# close(COLUMNS);
 
-    my $column_index = Vend::Table::Common::create_columns($columns, $config);
+	my $column_index = Vend::Table::Common::create_columns($columns, $config);
 
-    my $tie = {};
-    my $flags = GDBM_NEWDB;
-    $flags |= GDBM_FAST if $Fast_write;
-    my $dbm = tie(%$tie, 'GDBM_File', $filename, $flags, $File_permission_mode)
-        or die "Could not create '$filename': $!";
+	my $tie = {};
+	my $flags = GDBM_NEWDB;
+	$flags |= GDBM_FAST if $Fast_write;
+	my $dbm = tie(%$tie, 'GDBM_File', $filename, $flags, $File_permission_mode)
+		or die "Could not create '$filename': $!";
 
-    $tie->{'c'} = join("\t", @$columns);
+	$tie->{'c'} = join("\t", @$columns);
 
-    my $s = [
+	my $s = [
 				$config,
 				$filename,
 				$columns,
@@ -77,42 +77,42 @@ sub create {
 				$tie,
 				$dbm
 			];
-    bless $s, $class;
+	bless $s, $class;
 }
 
 sub open_table {
-    my ($class, $config, $filename) = @_;
+	my ($class, $config, $filename) = @_;
 	my @caller = caller();
 #::logDebug("opening table class=$class filename=$filename config=" . ::uneval($config) . " caller=@caller");
-    my $tie = {};
+	my $tie = {};
 
-    my $flags = GDBM_READER;
+	my $flags = GDBM_READER;
 
-    if (! $config->{Read_only}) {
+	if (! $config->{Read_only}) {
 		$flags = GDBM_WRITER;
 		if(! defined $config->{AutoNumberCounter}) {
 			$config->{AutoNumberCounter} = new File::CounterFile
 										"$config->{DIR}/$config->{name}.autonumber",
 										$config->{AUTO_NUMBER} || '00001';
 		}
-    }
+	}
 
 	my $dbm;
-    my $failed = 0;
+	my $failed = 0;
 
-    while( $failed < 10 ) {
-        $dbm = tie(%$tie, 'GDBM_File', $filename, $flags, 0777)
-            and undef($failed), last;
-        $failed++;
-        select(undef,undef,undef,$failed * .100);
-    }
+	while( $failed < 10 ) {
+		$dbm = tie(%$tie, 'GDBM_File', $filename, $flags, 0777)
+			and undef($failed), last;
+		$failed++;
+		select(undef,undef,undef,$failed * .100);
+	}
 
-    die ::errmsg("Could not tie to '%s': %s", $filename, $!)
-        if $failed;
-    my $columns = [split(/\t/, $tie->{'c'})];
-    my $column_index = Vend::Table::Common::create_columns($columns, $config);
+	die ::errmsg("Could not tie to '%s': %s", $filename, $!)
+		if $failed;
+	my $columns = [split(/\t/, $tie->{'c'})];
+	my $column_index = Vend::Table::Common::create_columns($columns, $config);
 
-    my $s = [
+	my $s = [
 				$config,
 				$filename,
 				$columns,
@@ -121,7 +121,7 @@ sub open_table {
 				$tie,
 				$dbm
 			];
-    bless $s, $class;
+	bless $s, $class;
 }
 
 # Unfortunate hack need for Safe searches
