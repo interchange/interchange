@@ -197,6 +197,7 @@ code/UserTag/title_bar.tag
 code/UserTag/ups_query.tag
 code/UserTag/usertrack.tag
 code/UserTag/usps_query.tag
+code/UserTag/values_space.tag
 code/UserTag/var.tag
 code/UserTag/weight.tag
 code/Widget/gpg_keys.widget
@@ -1278,7 +1279,6 @@ LICENSE
 Makefile.PL
 MANIFEST
 MANIFEST.SKIP
-META.yml			Module meta-data (added by MakeMaker)
 README
 README.cvs
 README.debian
@@ -1373,6 +1373,7 @@ SPECS/interchange-cron
 SPECS/interchange-init
 SPECS/interchange-logrotate
 SPECS/interchange-wrapper
+SPECS/interchange.cfg.patch
 SPECS/interchange.spec
 test.pl
 UPGRADE

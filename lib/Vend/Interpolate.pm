@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.207 2004-03-07 03:14:41 mheins Exp $
+# $Id: Interpolate.pm,v 2.208 2004-04-13 01:10:14 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.207 $, 10);
+$VERSION = substr(q$Revision: 2.208 $, 10);
 
 @EXPORT = qw (
 
@@ -2448,6 +2448,20 @@ sub tag_counter {
 sub tag_value_extended {
     my($var, $opt) = @_;
 
+	my $vspace = $opt->{values_space};
+	my $vref;
+	if (defined $vspace) {
+		if ($vspace eq '') {
+			$vref = $Vend::Session->{values};
+		}
+		else {
+			$vref = $Vend::Session->{values_repository}{$vspace} ||= {};
+		}
+	}
+	else {
+		$vref = $::Values;
+	}
+
 	my $yes = $opt->{yes} || 1;
 	my $no = $opt->{'no'} || '';
 
@@ -2471,7 +2485,7 @@ sub tag_value_extended {
 		return $$CGI::put_ref;
 	}
 
-	my $val = $CGI::values{$var} || $::Values->{$var} || return undef;
+	my $val = $CGI::values{$var} || $vref->{$var} || return undef;
 	$val =~ s/</&lt;/g unless $opt->{enable_html};
 	$val =~ s/\[/&#91;/g unless $opt->{enable_itl};
 	
@@ -2719,24 +2733,34 @@ sub tag_mail {
 sub tag_value {
     my($var,$opt) = @_;
 #::logDebug("called value args=" . uneval(\@_));
-    my($value);
-
 	local($^W) = 0;
-	$::Values->{$var} = $opt->{set} if defined $opt->{set};
-	$value = defined $::Values->{$var} ? ($::Values->{$var}) : '';
-    if ($value) {
-		# Eliminate any Interchange tags
-		$value =~ s/\[/&#91;/g;
-    }
+
+	my $vspace = $opt->{values_space};
+	my $vref;
+	if (defined $vspace) {
+		if ($vspace eq '') {
+			$vref = $Vend::Session->{values};
+		}
+		else {
+			$vref = $Vend::Session->{values_repository}{$vspace} ||= {};
+		}
+	}
+	else {
+		$vref = $::Values;
+	}
+
+	$vref->{$var} = $opt->{set} if defined $opt->{set};
+
+	my $value = defined $vref->{$var} ? $vref->{$var} : '';
+	$value =~ s/\[/&#91;/g unless $opt->{enable_itl};
 	if($opt->{filter}) {
 		$value = filter_value($opt->{filter}, $value, $var);
-		$::Values->{$var} = $value unless $opt->{keep};
+		$vref->{$var} = $value unless $opt->{keep};
 	}
 	$::Scratch->{$var} = $value if $opt->{scratch};
 	return '' if $opt->{hide};
     return $opt->{default} if ! $value and defined $opt->{default};
-	$value =~ s/</&lt;/g
-		unless $opt->{enable_html};
+	$value =~ s/</&lt;/g unless $opt->{enable_html};
     return $value;
 }
 
