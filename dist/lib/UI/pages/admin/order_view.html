@@ -178,7 +178,7 @@
 </font>
 
 <P>
-<B>Status:<B> [page href=__UI_BASE__/order_status form="order=[loop-code]"]
+<B>[L]Status[/L]:<B> [page href=__UI_BASE__/order_status form="order=[loop-code]"]
                 [display    table=transactions
                             column=status
                             key="[loop-code]"
@@ -226,7 +226,7 @@
 	$total_weight += ([field field=weight key="[sql-param sku]"] + 0 || 0) * [sql-data orderline quantity];
 	return;
 [/calc]
-[sql-filter upper]<B>[sql-data orderline status]</B>[/sql-filter]
+<B>[sql-filter loc upper][sql-data orderline status][/sql-filter]</B>
 <BR>&nbsp;
 </font></td>
 
