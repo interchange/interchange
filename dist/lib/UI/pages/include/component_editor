@@ -126,7 +126,7 @@ function visible (index, base) {
 </script>
 
 [if type=explicit compare="[error all=1 show_var=1 keep=1]"]
-<B>There were errors:<br>
+<B>[L]The following errors occurred:[/L]<br>
 <blockquote>
 <FONT color="__CONTRAST__">
 	[error all=1 keep=1 show_error=1 show_label=1 joiner="<br>"]
