@@ -69,15 +69,13 @@ function open_quicklinks() {
 <img src="admin/cleardot.gif" width="12">
 
 <a href="[area admin/order]">
-<img src="admin/icon_orders.gif" height="16" width="16" border="0" 
- >
+<img src="admin/icon_orders.gif" height="16" width="16" border="0">
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
  color="__UI_C_TITLEBARTXT__">
  &nbsp;Orders
 </font></a>
 
 <img src="admin/cleardot.gif" width="22">
-
 
 <a href="[area admin/item]">
 <img src="admin/icon_item.gif" height="16" width="16" border="0" >
@@ -103,12 +101,9 @@ function open_quicklinks() {
  color="__UI_C_TITLEBARTXT__">
 &nbsp;Apply Changes
 </font></a>
-
 </td>
 
 <td align="right" valign="middle" height="22">
-
-
 <a href="javascript:open_quicklinks()">
 <img src="admin/icon_pages.gif" height="16" width="16" border="0">
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"

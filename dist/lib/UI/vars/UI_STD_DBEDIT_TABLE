@@ -101,7 +101,7 @@ EOF
 									});
 		$Document->write(<<EOF) if $break{$col};
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
 </tr>
 EOF
 		$Document->write(<<EOF);
@@ -117,6 +117,10 @@ EOF
 	}
 %>
 [/mvasp]
+
+<tr>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
+</tr>
 
 </table>
 
