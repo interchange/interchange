@@ -26,7 +26,26 @@ UI_LOCALE=$RET
 
 #DEBHELPER#
 
-/etc/init.d/interchange restart
+# Check if we run the startup
+if [ -f /var/run/interchange-install ]; then
+	PACKAGES=""
+	exec 4</var/run/interchange-install
+	while read <&4 PKG; do
+		if [ ! "$PKG" = "interchange-ui" ]; then
+			PACKAGES="$PKG $PACKAGES"
+		fi
+	done
+	if [ -z "$PACKAGES" ]; then
+		rm /var/run/interchange-install
+	else 
+		exec 5>/var/run/interchange-install
+		for PKG in $PACKAGES; do
+			echo "$PKG" >&5
+		done
+	fi
+fi
+
+/etc/init.d/interchange start
 
 # Don't wait on Interchange to close file handles
 db_stop

@@ -21,8 +21,10 @@ interchange (4.8.1-1) unstable; urgency=low
   * Standards-Version updated
   * dependencies to debconf added to interchange-ui and
     interchange-cat-foundation to keep lintian happy
+  * restart server only once if both interchange and interchange-ui
+  	are installed
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sun, 12 Aug 2001 23:20:58 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 13 Aug 2001 11:38:01 +0200
   
 interchange (4.6.5-1) unstable; urgency=high
 

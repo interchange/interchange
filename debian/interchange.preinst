@@ -28,7 +28,7 @@ fi
 # the installed interchange packages, so only one server
 # restart is needed 
 
-echo interchange > /var/run/interchange-install
+echo interchange >> /var/run/interchange-install
 
 #DEBHELPER#
 
