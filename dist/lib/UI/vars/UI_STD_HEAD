@@ -79,6 +79,15 @@ function MM_swapImage() { //v3.0
 }
 //-->
 </script>
+<STYLE TYPE="text/css">
+<!--
+.margin { margin-top: 0px; margin-left: 0px}
+a:link { text-decoration: none; font-weight: bold; color: __UI_C_LINK__ }
+a:hover { text-decoration: underline; font-weight: bold; color: __UI_C_LINK__ }
+a:active { text-decoration: none; font-weight: bold; color: __UI_C_ALINK__ }
+a:visited { text-decoration: none; font-weight: bold; color: __UI_C_VLINK__ }
+-->
+</STYLE>
 [scratch meta_header][set meta_header][/set]
 </head>
 
@@ -96,7 +105,7 @@ function MM_swapImage() { //v3.0
 [/if-mm][if-mm advanced content]5	B5.gif	B5_b.gif	B5_b.gif	__UI_BASE__/page		Content edit	Content
 [/if-mm][if-mm advanced layout]6	B6.gif	B6_b.gif	B6_b.gif	__UI_BASE__/layout		Site design	Design
 [/if-mm][if-mm advanced items]7	B7.gif	B7_b.gif	B7_b.gif	__UI_BASE__/merchandising		merchandising	Merchandising
-[/if-mm][if-mm advanced stats]8	B8.gif	B8_b.gif	B8_b.gif	__UI_BASE__/genreport		Statistics and reports	Reports
+[/if-mm][if-mm advanced stats]8	B8.gif	B8_b.gif	B8_b.gif	__UI_BASE__/orderstats		Statistics and reports	Reports
 [/if-mm][if-mm advanced admin]9	B9.gif	B9_b.gif	B9_b.gif	__UI_BASE__/genconfig		System administration	Admin
 [/if-mm][/tmp]
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
