@@ -51,7 +51,7 @@ DOIT: {
 # Interchange catalog initialization update and query tool
 # inspired by chkconfig(8).
 #
-# $Id: chkcat.PL,v 1.2 2001-09-07 06:30:00 jon Exp $
+# $Id: chkcat.PL,v 1.3 2001-09-12 20:15:59 jon Exp $
 #
 # Copyright (C) 2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -69,9 +69,9 @@ DOIT: {
 # along with this program; if not, write to the Free Software Foundation,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 
-use lib '/usr/lib/interchange/lib';
+use lib '/usr/local/interchange/lib';
 #use lib '~_~INSTALLPRIVLIB~_~';
-use lib '/usr/lib/interchange';
+use lib '/usr/local/interchange';
 #use lib '~_~INSTALLARCHLIB~_~';
 
 require 5.005;
@@ -82,8 +82,8 @@ use Vend::Config;
 BEGIN {
 	$Global::VendRoot = $ENV{MINIVEND_ROOT} if defined $ENV{MINIVEND_ROOT};
 
-	$Global::VendRoot = $Global::VendRoot || '/usr/lib/interchange';
-	#$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
+	$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
+#	$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
 
 	$Global::ConfigFile = 'interchange.cfg';
 }
@@ -170,8 +170,9 @@ for (@ARGV) {
 	die $usage unless $action eq 'on' or $action eq 'off';
 
 	# find out position in initialization list from each config file itself
-	s/\.cfg$//;
-	s/^S\d+//;
+	s:.*/::;	# tolerate leading directories
+	s/\.cfg$//;	# tolerate full filename with '.cfg'
+	s/^S\d+//;	# tolerate symlink names
 	my $cfg = $_;
 	my $cfgfile = "$init_dir/$cfg.cfg";
 	my $header = Vend::Util::get_cfg_header($cfgfile);
@@ -203,7 +204,8 @@ if ($list) {
 
 	# first print out configs that are on
 	opendir RC_D, $rc_dir or die "Unable to open directory '$rc_dir': $!\n";
-	%on = map { s/^S(\d+)//; $_ => $1 } grep { -f "$rc_dir/$_" } readdir RC_D;
+	%on = map { s/^S(\d+)//; $_ => $1 } grep { /^S/ and -f "$rc_dir/$_" }
+		readdir RC_D;
 	closedir RC_D;
 	print "$_ on $on{$_}\n" for sort { $on{$a} <=> $on{$b} } keys %on;
 
@@ -211,7 +213,8 @@ if ($list) {
 
 	# get a list of all configs
 	opendir INIT_D, $init_dir or die "Unable to open directory '$init_dir': $!\n";
-	$off{$_} = '-' for grep { -e "$init_dir/$_" && s/\.cfg$// } readdir INIT_D;
+	$off{$_} = '-' for grep { /^\w+\.cfg$/ && -e "$init_dir/$_" && s/\.cfg$// }
+		readdir INIT_D;
 	closedir INIT_D;
 	# remove those that are on
 	delete $off{$_} for keys %on;
@@ -238,7 +241,7 @@ Text sent to standard output is designed to be easily machine-parsable.
 
 =head1 VERSION
 
-# $Id: chkcat.PL,v 1.2 2001-09-07 06:30:00 jon Exp $
+# $Id: chkcat.PL,v 1.3 2001-09-12 20:15:59 jon Exp $
 
 =head1 AUTHOR
 
