@@ -1,4 +1,5 @@
 [if !cgi mv_data_table]
+[or cgi ui_scrub_table]
 [calc]
 	$CGI->{mv_data_table} = $Values->{mv_data_table} = $Config->{ProductFiles}[0];
 	return;
@@ -80,12 +81,25 @@
 [/if]
 
 [set ui_class]Items[/set]
-[set page_title]Item editor[/set]
-[set table_perm]__UI_PRODUCT_TABLE__=v[/set]
+[tmp page_title]Item editor[/tmp]
+[if-mm super]
+[tmp page_banner][page href="__UI_BASE__/flex_editor"
+				 form='
+				 mv_data_table=__UI_META_TABLE__
+				 ui_meta_view=dbconfig
+				 ui_data_fields=code name height field outboard options help help_url display_filter
+				 ui_break_before=height display_filter
+				 page_title=Change display information: [cgi mv_data_table]
+				 ui_return_to=__UI_BASE__/item
+				 ui_return_to=ui_scrub_table=1
+				 item_id=[cgi mv_data_table]
+		 ']Item editor</A>
+[/tmp]
+[/if-mm]
+[set table_perm]__ProductFiles_0__=v[/set]
 [set help_name]item.editor[/set]
 [set icon_name]admin/icon_item.gif[/set]
 @_UI_STD_HEAD_@
-
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 [if scratch ui_message]
@@ -100,25 +114,152 @@
 <INPUT NAME=ui_text_qualification>
 <INPUT TYPE=submit VALUE="Limit with search">
 </FORM>
-[if cgi ui_text_qualification]
-<H3>Entries containing "[cgi ui_text_qualification]"</H3>
-[/if]
-[search-region more=1 arg="
-		[if cgi ui_text_qualification]
-		se=[cgi ui_text_qualification]
-		su=yes
-		[else]ra=yes[/else][/if]
-		[if cgi ui_sort_field]
+[perl tables="[cgi mv_data_table] __UI_META_TABLE__"]
+	my $ref = $Db{$CGI->{mv_data_table}};
+	my $mref = $Db{__UI_META_TABLE__};
+	
+	if (! $ref) {
+		$Scratch->{keypos} = 0;
+		return;
+	}
+	elsif (! $mref) {
+		$Scratch->{keypos} = 0;
+	}
+
+	my $meta;
+	if($mref and $mref->record_exists($CGI->{mv_data_table}) ) {
+		$meta = $mref->row_hash($CGI->{mv_data_table});
+	}
+	else {
+		$meta = {};
+	}
+	if($CGI->{ui_flex_key}) {
+		$Scratch->{keypos} = $CGI->{ui_flex_key};
+	}
+	else {
+		$Scratch->{keyname} = $ref->config('KEY');
+		$Scratch->{keypos} = $ref->config('KEY_INDEX');
+	}
+
+	$Config->{NoSearch} = '';
+	$ui_text_qualification = $CGI->{ui_text_qualification};
+	if ($ui_text_qualification and $CGI->{ui_text_qualification} =~ /[<!=>\^]/ ) {
+		$CGI->{ui_text_qualification} = "co=1\n";
+
+		my @entries = split /\s+(and|or)\s+/i,  $ui_text_qualification;
+		my $or;
+		for(@entries) {
+			if(/^or$/i) {
+				$or = 1;
+				$CGI->{ui_text_qualification} .= "os=1\n";
+				next;
+			}
+			elsif(/^and$/i) {
+				$or = 0;
+				$CGI->{ui_text_qualification} .= "os=0\n";
+				next;
+			}
+			my ($f, $op, $s) = split /\s*([<=!>\^]+)\s*/, $_, 2;
+			$op = "eq" if $op eq "==";
+			$op = "rm" if $op eq "=";
+			if($op eq '^') {
+				$op = 'rm';
+				$CGI->{ui_text_qualification} .= "bs=1\nsu=1\n";
+			}
+			else {
+				$CGI->{ui_text_qualification} .= "bs=0\nsu=0\n";
+			}
+			$CGI->{ui_text_qualification} .= "se=$s\nsf=$f\nop=$op\n";
+			if($op =~ /[<>]/ and $s =~ /^[\d.]+$/) {
+				$CGI->{ui_text_qualification} .= "nu=1\n";
+			}
+			else {
+				$CGI->{ui_text_qualification} .= "nu=0\n";
+			}
+		}
+		if(defined $or) {
+			$CGI->{ui_text_qualification} .= $or ? "os=1\n" : "os=0\n";
+		}
+
+		$out_message =  <<EOF;
+<H3>Entries matching "$ui_text_qualification"</H3>
+EOF
+	}
+	elsif ($ui_text_qualification) {
+		$CGI->{ui_text_qualification} = "se=$CGI->{ui_text_qualification}";
+		$out_message =  <<EOF;
+<H3>Entries matching "$CGI->{ui_text_qualification}"</H3>
+EOF
+	}
+	else {
+		$CGI->{ui_text_qualification} = "ra=yes";
+	}
+
+	$CGI->{ui_sort_field} = $meta->{lookup} || $Scratch->{keyname}
+		if ! $CGI->{ui_sort_field};
+	$CGI->{ui_list_size} = $meta->{height}
+		if ! $CGI->{ui_list_size};
+	if(! ($CGI->{ui_show_fields} = $meta->{field}) ) {
+		$CGI->{ui_show_fields} = '*';
+		$CGI->{ui_description_fields} = join ",", $ref->columns();
+	}
+	else {
+
+		$CGI->{ui_show_fields} =~ s/[\0,\s]+/,/g;
+		$CGI->{ui_description_fields} = $CGI->{ui_show_fields};
+	}
+
+	# Set in item editor area
+	@special = grep /\S/, split /[,\0]+/, $meta->{outboard};
+	unless (@special) {
+		@special = (
+			'Qty price',
+			'Up-sell',
+			'Cross-sell',
+			'Promo',
+			'Inventory',
+			);
+	}
+	@special = grep $_ !~ /^none$/i, @special;
+
+	$Scratch->{ui_show_special} = join ("\n", '', @special, '');
+	@cols = split /[\s,\0]+/, $CGI->{ui_description_fields};
+	for(@cols) {
+		$numeric{$_} = 1 if $ref->numeric($_);
+	}
+
+	return $out_message;
+[/perl]
+
+<!-- tq: [cgi ui_text_qualification] -->
+
+[if cgi ui_show_fields]
+	[tmp sparams]
+			fi=[cgi mv_data_table]
+			st=db
+			[cgi ui_text_qualification]
+			su=1
+			md=1
+			ml=[cgi ui_list_size]
 			tf=[cgi ui_sort_field]
 			to=[cgi ui_sort_option]
-		[else]
-			tf=__UI_ITEM_DESCRIPTION__
-		[/else]
-		[/if]
+			rf=[cgi ui_show_fields]
+	[/tmp]
+[else]
+	[tmp sparams]
+		fi=[cgi mv_data_table]
 		st=db
-		sp=@@MV_PAGE@@
-		ml=__UI_SZ_LIST_ITEMS__
-"][on-match]
+		[cgi ui_text_qualification]
+		md=1
+		tf=[scratch keypos]
+		rf=[scratch keypos]
+	[/tmp]
+[/else]
+[/if]
+
+
+[search-region more=1 arg="[scratch sparams]"]
+[on-match]
 [calc] 
 	my $so   = $CGI->{ui_sort_option};
 	my $fld  = $CGI->{ui_sort_field};
@@ -127,7 +268,7 @@
 		my ($f, $n) = @_;
 		my $out = 'ui_sort_option=';
 		$out .= 'n' if $n;
-		return $out unless ($fld eq $f) || ($f eq '__UI_ITEM_DESCRIPTION__');
+		return $out unless ($fld eq $f) || ($f eq '__DescriptionField__');
 		return $out if $so =~ /r/;
 		return $out . 'r';
 	}
@@ -137,52 +278,129 @@
 <FORM ACTION="[area __UI_BASE__/item_edit]" METHOD=POST>
 <INPUT TYPE=hidden NAME=mv_action VALUE=back>
 <TABLE border=0 CELLSPACING=0 width="90%">
-<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
 <TR BGCOLOR="__UI_C_TITLEBARBG__">
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
-	return "ui_sort_field=sku\n" . sortrev('sku');
-	`]SKU</TH>
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
-	return "ui_sort_field=__UI_ITEM_DESCRIPTION__\n" . sortrev('__UI_ITEM_DESCRIPTION__');
-	`]Description</TH>
-<TH ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
-	return "ui_sort_field=price\n" . sortrev('price', 1);
-	`]Price</TH>
-<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Qty pricing</TH>
-<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Up-sell</TH>
-<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Cross-sell</TH>
-<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Promotion</TH>
-<TH ALIGN=right><FONT COLOR="__UI_C_TITLEBARTXT__">Inventory</TH>
-
+[loop list="[cgi ui_description_fields]"]
+<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
+	[loop-change 1][condition]1[/condition]&nbsp;&nbsp;&nbsp;&nbsp;[/loop-change 1]
+				<A HREF="[area
+							href='__UI_BASE__/item_group'
+							form='
+								mv_arg=[loop-code]
+								mv_data_table=[cgi mv_data_table]
+							']"><IMG ALT="select by [loop-code]" SRC="@_UI_IMG_@admin/layout.gif" BORDER=0></A></TH>
+[/loop]
+[calc]
+	my $special = $CGI->{ui_show_special};
+	my $out = '';
+	for(@special) {
+		$out .= <<EOF;
+<TH>&nbsp;</TH>
+EOF
+	}
+	return $out;
+[/calc]
 </tr>
-<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
-<tr bgcolor="#FFFFFF" height=2><td colspan=8></td></tr>
+<TR BGCOLOR="__UI_C_TITLEBARBG__">
+[loop list="[cgi ui_description_fields]"]
+<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
+	[loop-change 1][condition]1[/condition]&nbsp;&nbsp;&nbsp;&nbsp;[/loop-change 1]
+	<A HREF="[area href='@@MV_PAGE@@'
+					form=`
+						my $f = '[loop-code]';
+						my $o = '';
+						$o .= 'r'
+							if $CGI->{ui_sort_field} eq $f
+									and
+								$CGI->{ui_sort_option} !~ /r/;
+						$o .= 'n' if $numeric{$f};
+						return qq(
+							ui_text_qualification=$ui_text_qualification
+							mv_data_table=$CGI->{mv_data_table}
+							ui_sort_field=$f
+							ui_sort_option=$o
+						);
+					`
+				]">[either][data table="__UI_META_TABLE__" column=label key="[cgi mv_data_table]::[loop-code]"][or][loop-code][/either]</TH>
+[/loop]
+[calc]
+	my $special = $CGI->{ui_show_special};
+	my $out = '';
+	for(@special) {
+		$out .= <<EOF;
+<TH ALIGN=CENTER><small><FONT COLOR="__UI_C_TITLEBARTXT__">$_</TH>
+EOF
+	}
+	return $out;
+[/calc]
+</tr>
 [/on-match]
 [search-list]
 <TR [item-alternate 2]BGCOLOR="__UI_T_ROW_EVEN__"[else]BGCOLOR="__UI_T_ROW_ODD__"[/else][/item-alternate]>
-<TD><INPUT TYPE=checkbox NAME=item_id VALUE="[item-code]"> [page href=__UI_BASE__/item_edit form="item_id=[item-code]"][item-code]</A></TD>
-<TD>[filter 30][item-description][/filter]</TD>
-<TD ALIGN=RIGHT>[item-price]</TD>
+
+<TD><INPUT TYPE=checkbox NAME=item_id VALUE="[item-code]">&nbsp;&nbsp;[page href=__UI_BASE__/item_edit form="item_id=[item-code]"][item-code]</A></TD>
+[item-sub show_line]
+sub {
+	my $extra = shift;
+	$extra =~ s/^[\s%]+//;
+	$extra =~ s/[\s%]+$//;
+	my (%extra) = split /\n%%\n/, $extra;
+	my $line = shift;
+	return unless $line;
+	shift (@$line);
+	my $out = '';
+	for(@$line) {
+		s/\[/&#91;/g;
+		$out .= "<TD>" . $Tag->filter('entities', $_) . "</TD>";
+	}
+	for(@special) {
+		$out .= $extra{$_};
+	}
+	return $out . "\n";
+}
+[/item-sub]
+[item-exec show_line]
+Options
+%%
+<TD ALIGN=CENTER>[page href=__UI_BASE__/item_option form="
+	item_id=[item-code]
+"][if-item-data options o_enable]Yes[else]No[/else][/if-item-data]</A>
+</TD>
+%%
+Qty price
+%%
 <TD ALIGN=CENTER>[page href=__UI_BASE__/item_price form="
 	item_id=[item-code]
 "][if-item-data pricing sku]Yes[else]No[/else][/if-item-data]</A>
 </TD>
+%%
+Up-sell
+%%
 <TD ALIGN=CENTER>[page href=__UI_BASE__/item_up form="
 	item_id=[item-code]
 "][if-item-data merchandising upsell_to]Yes[else]No[/else][/if-item-data]</a>
 </TD>
+%%
+Cross-sell
+%%
 <TD ALIGN=CENTER>[page href=__UI_BASE__/item_cross form="
 	item_id=[item-code]
 "][either][if-item-data merchandising cross_category]Yes[/if-item-data][or][if-item-data merchandising cross_sell]Yes[/if-item-data][or]No[/either]</a>
 </TD>
+%%
+Promo
+%%
 <TD ALIGN=CENTER>[page href=__UI_BASE__/item_feature form="
 	item_id=[item-code]
 "][if-item-data merchandising featured]Yes[else]No[/else][/if-item-data]</a>
 </TD>
+%%
+Inventory
+%%
 <TD ALIGN=right>[page href=__UI_BASE__/item_inventory form="
 	item_id=[item-code]
 "][if-item-data inventory quantity ne ''][item-data inventory quantity][else]N/A[/else][/if-item-data]</a>
 </TD>
+[/item-exec]
 </tr>
 
 [/search-list]
