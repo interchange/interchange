@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.17 2003-05-07 17:25:19 racke Exp $
+# $Id: Dispatch.pm,v 1.18 2003-05-10 19:59:45 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.17 $, 10);
+$VERSION = substr(q$Revision: 1.18 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -68,11 +68,19 @@ sub http {
 
 sub response {
 	my $possible = shift;
-	if(defined $possible) {
+	return if $Vend::Sent;
+	if($::Pragma->{download}) {
+		my $out = ref $possible ? $$possible : $possible;
+		# do nothing
+	}
+	elsif(defined $possible) {
 		push @Vend::Output, ( ref $possible ? $possible : \$possible);
 	}
-#::logDebug("output=" . ::uneval(\@Vend::Output) . "\nnames=" . ::uneval(\%Vend::OutPtr) . "\nfilters=" . ::uneval(\%Vend::OutFilter));
-	if($Vend::MultiOutput) {
+
+	if($::Pragma->{download}) {
+		$H->respond(ref $possible ? $possible : \$possible);
+	}
+	elsif($Vend::MultiOutput) {
 		for my $space (keys %Vend::OutPtr) {
 			my $things = $Vend::OutPtr{$space} || [];
 			for my $ptr (@$things) {
