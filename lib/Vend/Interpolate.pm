@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.33 2000-10-14 13:36:46 heins Exp $
+# $Id: Interpolate.pm,v 1.34 2000-10-17 15:31:34 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.33 $, 10);
+$VERSION = substr(q$Revision: 1.34 $, 10);
 
 @EXPORT = qw (
 
@@ -272,6 +272,7 @@ my @th = (qw!
 		else
 		elsif
 		matches
+		match_count
 		modifier_name
 		more
 		more_list
@@ -362,6 +363,7 @@ my @th = (qw!
 	'else_end'		=> qr($T{else}\]($All)$T{'/else'}\s*$),
 	'elsif_end'		=> qr($T{elsif}\s+($All)$T{'/elsif'}\s*$),
 	'matches'		=> qr($T{matches}\]),
+	'match_count'		=> qr($T{match_count}\]),
 	'modifier_name'	=> qr($T{modifier_name}$Spacef(\w+)\]),
 	'more'			=> qr($T{more}\]),
 	'more_list'		=> qr($T{more_list}$Optx$Optx$Optx$Optx$Optx\]($Some)$T{'/more_list'}),
@@ -3153,6 +3155,7 @@ sub tag_more_list {
 	$m = $first . '-' . $last;
 	$r =~ s,$QR{more},$list,g;
 	$r =~ s,$QR{matches},$m,g;
+	$r =~ s,$QR{match_count},$q->{matches},g;
 
 	$r;
 
