@@ -86,6 +86,13 @@ sub {
 		$done_something = 1;
 	}
 
+	if($opt->{hostname}) {
+		require Sys::Hostname;
+		push @out, Sys::Hostname::hostname()
+			|| errmsg("unable to determine hostname");
+		$done_something = 1;
+	}
+
 	if(not $opt->{db} || $opt->{modules} || $done_something) {
 		$opt->{db} = 1;
 		push @out, "Interchange Version $::VERSION";
@@ -114,6 +121,7 @@ sub {
 			push @out, "<BLOCKQUOTE>$avail</BLOCKQUOTE>";
 		}
 	}
+
 	if($opt->{modules}) {
 		my %wanted = ( qw/
 					Safe::Hole       Safe::Hole
@@ -149,6 +157,7 @@ sub {
 			}
 		}
 	}
+
 	return join $joiner, @out;
 }
 EOR
