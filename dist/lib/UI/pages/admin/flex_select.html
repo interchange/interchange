@@ -26,7 +26,7 @@
 	[either]
 		[cgi page_title]
 	[or]
-		Select for table edit: [cgi mv_data_table]
+		[L]Select for table edit[/L]: [cgi mv_data_table]
 	[/either]
 [/tmp]
 [tmp page_banner]
@@ -36,14 +36,14 @@
 		[cgi page_title]
 	[or]
 		[loop list="[cgi mv_data_table]"]
-		Select for table edit:
+		[L]Select for table edit[/L]:
 		[page href="__UI_BASE__/flex_editor"
 				 form='
 				 mv_data_table=__UI_META_TABLE__
 				 ui_meta_view=dbconfig
 				 ui_data_fields=code name height field options attribute width type display_filter help help_url
 				 ui_break_before=height display_filter
-				 page_title=Change display information: [loop-code]
+				 page_title=[L]Change display information[/L]: [loop-code]
 				 ui_return_to=__UI_BASE__/gentable
 				 ui_return_stack=1
 				 item_id=[loop-code]
@@ -148,6 +148,7 @@
 [update values]
 <!-- ----- BEGIN REAL STUFF ----- -->
 <FORM ACTION="[area @@MV_PAGE@@]" METHOD=GET>
+<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 <INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
 <INPUT TYPE=hidden NAME=mv_action        VALUE=back>
 <INPUT TYPE=hidden NAME=ui_show_fields VALUE="[cgi ui_show_fields]">
@@ -169,7 +170,7 @@
 		[/loop]
 </td>
 <td>
-<input NAME=ui_text_qualification size=16><INPUT TYPE=submit VALUE="Limit with search">
+<input NAME=ui_text_qualification size=16><INPUT TYPE=submit VALUE="[L]Limit with search[/L]">
 </td>
 </tr>
 </table>
@@ -200,7 +201,7 @@
 				key="[data session username]"][/tmp]
 [/if-mm]
 
-[set tmp_nomatch_message]<B>No records.</b>[/set]
+[set tmp_nomatch_message]<B>[L]No records[/L].</b>[/set]
 [set tmp_like_spec][/set]
 [perl tables="[cgi mv_data_table] __UI_META_TABLE__"]
 	my $tab = $CGI->{mv_data_table};
@@ -531,8 +532,8 @@ sub {
 [if scratch tmp_like_spec]
 	<tr>
 	<td colspan="[scratch tmp_ncols]" align=left>
-	Or enter a query by example to select a set of records.
-	Each input will match on the <i>beginning</i> text in the field.
+	[L]Or enter a query by example to select a set of records.[/L]
+	[L]Each input will match on the <i>beginning</i> text in the field.[/L]
 	</td>
 	</tr>
 	[loop list="[cgi ui_description_fields]"]
@@ -543,7 +544,7 @@ sub {
 	[/loop]
 	<tr>
 	<td colspan="[scratch tmp_ncols]" align=left>
-	<input type=submit value=Find>
+	<input type=submit value="[L]Find[/L]">
 	</td>
 	</tr>
 [/if]
@@ -559,7 +560,7 @@ More rows: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
 
 [on-match]
 [if !cgi ui_meta_view]
-[button text="Edit checked records in sequence"]
+[button text="[L]Edit checked records in sequence[/L]"]
 ui_sequence_edit=[calc]
 	$CGI->{item_id_left} = $CGI->{item_id};
 	$CGI->{item_id_left} =~ s/\0+/,/g;
@@ -579,8 +580,8 @@ mv_todo=return
 
 &nbsp;&nbsp;&nbsp;&nbsp;
 
-[button text="Delete checked records"
-		confirm="Are you sure you want to delete the checked records?"]
+[button text="[L]Delete checked records[/L]"
+		confirm="[L]Are you sure you want to delete the checked records?[/L]"]
 [flag type=write table="[cgi mv_data_table]"]
 deleterecords=1
 mv_click=db_maintenance
