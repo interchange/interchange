@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.27 2002-07-23 13:17:24 mheins Exp $
+# $Id: DBI.pm,v 2.28 2002-07-24 21:41:07 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.27 $, 10);
+$VERSION = substr(q$Revision: 2.28 $, 10);
 
 use strict;
 
@@ -1072,8 +1072,8 @@ sub set_slice {
 		}
 		for(my $i = 0; $i < @$fary; $i++) {
 			next unless $fary->[$i] eq $s->[$KEY];
-			splice @$fary, $i;
-			splice @$vary, $i;
+			splice @$fary, $i, 1;
+			splice @$vary, $i, 1;
 			last;
 		}
 			unshift @$fary, $s->[$KEY];
