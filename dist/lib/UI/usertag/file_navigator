@@ -12,24 +12,127 @@ sub {
 	my $base_url = $Vend::Cfg->{VendURL}
 				. '/'
 				. $base_admin;
-	if($CGI::values{action} eq 'chdir') {
+	my $full_path;
+	my $action = $CGI::values{action} || '';
+	my $already_found;
+	my @errors;
+	my @messages;
+
+	$Vend::Session->{ui_cwd} = $opt->{initial_dir}
+		if $opt->{initial_dir};
+
+	if($action eq 'chdir') {
 		my $newdir = $CGI::values{dir} || '.';
-		if(Vend::Util::file_name_is_absolute($newdir) or $newdir =~ m{^\.\.|\.\./}) {
-			$Scratch->{ui_error} = 'Security violation';
-			$Tag->bounce("$base_admin/error");
-			return undef;
+		if(
+			Vend::Util::file_name_is_absolute($newdir)
+				or
+			$newdir =~ m{^\.\.|\.\./}
+			)
+		{
+			$Scratch->{ui_error} = ::errmsg('Security violation');
+			return interpolate_html("[bounce page='$base_admin/error']");
 		}
 		if(! -d $newdir) {
-			$Scratch->{ui_error} = "$newdir not a directory";
-			$Tag->bounce("$base_admin/error");
+			$Scratch->{ui_error} = ::errmsg("%s not a directory", $newdir);
+			return interpolate_html("[bounce page='$base_admin/error']");
 		}
 		$Vend::Session->{ui_cwd} = $newdir || '.';
 	}
+
 	my $curdir = $Vend::Session->{ui_cwd} || '.';
 	$curdir =~ s:/+$::;
 	my @files;
 
-	if($curdir eq '.') {
+	FINDNAV: {
+		if($action eq 'find') {
+			my $regex;
+			my $string = $CGI::values{find};
+			if($string !~ /\S/) {
+				push @errors, ::errmsg("Refuse to find a blank or whitespace.");
+				last FINDNAV;
+			}
+			elsif( $string =~ /\(\s*\?\s*\{/) {
+				$Scratch->{ui_error} = ::errmsg('Security violation');
+				return interpolate_html("[bounce page='$base_admin/error']");
+			}
+			else {
+				eval {
+					if($string =~ /\*/ and $string !~ /\.\*/) {
+						$regex =~ s/\*/.*/g;
+					}
+					$regex = qr{$string};
+				};
+			}
+
+			if($@ or ! $regex) {
+				push @errors, ::errmsg("%s is not a good search.", $regex);
+				last FINDNAV;
+			}
+
+			$full_path = 1;
+			require File::Find;
+			my $wanted;
+
+			local($SIG{__WARN__}) = sub { push @errors, $_ };
+
+			my %exclude;
+			if($CGI::values{find_action} =~ /\bfilename\b/) {
+				$wanted = sub {
+					push @files, $File::Find::name
+						if $_ =~ $regex;
+				};
+			}
+			else {
+				if($curdir eq '.' and ! $CGI::values{find_session}) {
+					%exclude = (qw! ./session 1 session 1 tmp 1 ./tmp 1!);
+				}
+				$wanted = sub {
+					local ($/) = undef;
+					if( -d $_ and $exclude{$File::Find::dir}) {
+						$File::Find::prune = 1;
+						return;
+					}
+					return unless -f _;
+					-s _ > 1_000_000
+						and do {
+							push(@errors,
+								errmsg("%s: refuse to find in megabyte-sized files",
+										$File::Find::name)
+								);
+							return;
+						};
+					open(TMPFINDNAV, "< $_")
+						or do {
+							push(@errors,
+								errmsg("%s: permission denied", $File::Find::name)
+								);
+							return;
+						};
+					my $str = <TMPFINDNAV>;
+					$str =~ $regex
+						and push (@files, $File::Find::name);
+					return;
+				};
+			}
+			File::Find::find($wanted, $curdir);
+
+			 s:^./:: for @files;
+
+			if(@files) {
+				push @messages, errmsg("Found %s files.", scalar @files);
+				$already_found = 1;
+			}
+			else {
+				undef $full_path;
+				push @errors, errmsg("No files found.");
+			}
+		}
+	}
+
+	if($already_found) {
+		# do nothing
+	}
+	elsif($curdir eq '.') {
 		if($dir_mask eq '*') {
 			@files = grep $_ ne 'CVS', glob('*');
 		}
@@ -52,10 +155,17 @@ sub {
 	my $dn_img = qq{<img src="$imgpath/down.gif" align=center border=0 height=22 width=20 title="download ~FN~">};
 	my $vw_img = qq{<img src="$imgpath/index.gif" align=center border=0 height=22 width=20 title="view ~FN~">};
 	my $ed_img = qq{<img src="$imgpath/layout.gif" align=center border=0 height=22 width=20 title="edit ~FN~">};
-	my $dir_img = qq{<img src="$imgpath/folder.gif" align=center border=0 height=22 width=20 title="toggle ~FN~">};
+	my $dir_img = qq{<img src="$imgpath/folder.gif" align=center border=0 height=22 width=20 title="change directory to ~FN~">};
+	my $del_img = qq{<img src="$imgpath/delete.gif" align=center border=0 height=20 width=20 title="DELETE ~FN~">};
+
+	my $del_string = '';
+	$Tag->if_mm('advanced', 'delete_files')
+		and do {
+			$del_string = qq{<A onClick="return confirm('Are you sure you want to delete the file ~FN~?')" HREF="$Vend::Cfg->{VendURL}/$this_page?mv_click=file_maintenance&ui_delete_file=~FN~&mv_action=back">$del_img</A>};
+		};
 
 	my $ftmpl = <<EOF;
-<A HREF="$Vend::Cfg->{VendURL}/ui_download/~FN~?mv_no_cache=1">$dn_img</A><A HREF="$base_url/upload_file?mv_arg=~FN~&ui_return_to=$this_page&mv_no_cache=1">$up_img</A><A HREF="$base_url/do_view?mv_arg=~FN~&mv_no_cache=1">$vw_img&nbsp;%s</A><BR>
+<A HREF="$Vend::Cfg->{VendURL}/ui_download/~FN~?mv_no_cache=1">$dn_img</A>$del_string<A HREF="$base_url/upload_file?mv_arg=~FN~&ui_return_to=$this_page&mv_no_cache=1">$up_img</A><A HREF="$base_url/do_view?mv_arg=~FN~&mv_no_cache=1">$vw_img&nbsp;%s</A><BR>
 EOF
 
 	my $utmpl = <<EOF;
@@ -70,7 +180,7 @@ EOF
 	}
 	else {
 		$ftmpl_ed = <<EOF;
-<A HREF="$Vend::Cfg->{VendURL}/ui_download/~FN~?mv_no_cache=1">$dn_img</A><A HREF="$base_url/upload_file?mv_arg=~FN~&ui_return_to=$this_page&mv_no_cache=1">$up_img</A><A HREF="$base_url/page_edit?ui_page=~FN~&ui_return_to=$this_page&mv_no_cache=1">$ed_img&nbsp;%s</A><BR>
+<A HREF="$Vend::Cfg->{VendURL}/ui_download/~FN~?mv_no_cache=1">$dn_img</A>$del_string<A HREF="$base_url/upload_file?mv_arg=~FN~&ui_return_to=$this_page&mv_no_cache=1">$up_img</A><A HREF="$base_url/page_edit?ui_page=~FN~&ui_return_to=$this_page&mv_no_cache=1">$ed_img&nbsp;%s</A><BR>
 EOF
 	}
 
@@ -86,7 +196,8 @@ EOF
 
 	for(@files) {
 		my $fn = $_;
-		$fn =~ s:.*/::;
+		$fn =~ s:.*/::
+			unless $full_path;
 		my $fe = $_;
 		$fe =~ s!([^-\w./:,])!sprintf('%%%02x', ord($1) )!eg;
 		if(-d $_) {
@@ -104,12 +215,20 @@ EOF
 	if($nd ne '.') {
 		$nd =~ s:/[^/]*$::
 		  or $nd = '.';
-		my $msg = $nd eq '.' ? "(up to base directory)" : "(up to $nd)";
+		my $msg = $nd eq '.'
+				? "<large><b>..</b></large>"
+				: "<large><b>..</b></large>";
 		unshift @dir, [ $nd, $msg, $dtmpl ];
 	}
 
 	unshift @dir, [ "$curdir/", '(new file)', $utmpl ];
 
+	for(@errors) {
+		$out .= "<span class=cerror>$_</span><br>";
+	}
+	for(@messages) {
+		$out .= "<span class=cmessage>$_</span><br>";
+	}
 	for (@dir, @plain) {
 		$_->[2] = sprintf($_->[2], $_->[1]);
 		$_->[2] =~ s/~FN~/$_->[0]/g;
