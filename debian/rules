@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 #
-# Copyright 2000,2001,2002,2003 by Stefan Hornburg (Racke) <racke@linuxia.de>
+# Copyright 2000,2001,2002,2003,2005 by Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -41,7 +41,8 @@ build-stamp:
 	dh_testdir
 
 # Compile main stuff
-	env MINIVEND_FORCE_THREADS=1 $(PERL) Makefile.PL force=1 \
+	touch _allow_threads
+	env $(PERL) Makefile.PL force=1 \
 		INTERCHANGE_USER=interchange \
 		PREFIX=/usr/lib/interchange
 	$(MAKE)
