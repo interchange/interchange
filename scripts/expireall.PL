@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange session expiration for all catalogs
 #
-# $Id: expireall.PL,v 1.8 2000-09-25 16:57:54 zarko Exp $
+# $Id: expireall.PL,v 1.8.2.1 2000-12-05 19:35:43 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -57,6 +57,9 @@ use vars qw/$opt_e $opt_f $opt_n $opt_r/;
 
 
 BEGIN {
+	use Config;
+	&::logError( "Threaded perl not supported" ) if ($Config{ usethreads } || $Config{ useithreads } );
+
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
 		if defined $ENV{MINIVEND_ROOT};
 
@@ -144,7 +147,7 @@ expireall -- Run Interchange expire on all catalogs
 
 =head1 VERSION
 
-$Id: expireall.PL,v 1.8 2000-09-25 16:57:54 zarko Exp $
+$Id: expireall.PL,v 1.8.2.1 2000-12-05 19:35:43 zarko Exp $
 
 =head1 DESCRIPTION
 

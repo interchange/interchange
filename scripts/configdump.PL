@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange configuration dumper
 #
-# $Id: configdump.PL,v 1.8 2000-09-25 16:35:28 zarko Exp $
+# $Id: configdump.PL,v 1.8.2.1 2000-12-05 19:35:43 zarko Exp $
 #
 # Copyright 1999, 2000 by Stefan Hornburg <racke@linuxia.de>
 #
@@ -56,6 +56,9 @@ use Vend::Config;
 use Vend::Util;
 
 BEGIN {
+	use Config;
+	&::logError( "Threaded perl not supported" ) if ($Config{ usethreads } || $Config{ useithreads } );
+
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
 		if defined $ENV{MINIVEND_ROOT};
 

@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange link program configurator
 #
-# $Id: compile_link.PL,v 1.8 2000-11-14 18:59:48 jon Exp $
+# $Id: compile_link.PL,v 1.8.2.1 2000-12-05 19:35:41 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -58,25 +58,29 @@ use Getopt::Long;
 
 Getopt::Long::config(qw/permute/);
 
-my $Self = {
-	LINK_HOST      => 'localhost',
-	LINK_PORT      => 7786,
-	LINK_TIMEOUT   => 30,
-	LINK_FILE      => '/usr/local/interchange/etc/socket',
-#	LINK_FILE      => '~_~INSTALLARCHLIB~_~/etc/socket',
-	SRC_DIR        => '/usr/local/interchange/src',
-#	SRC_DIR        => '~_~INSTALLARCHLIB~_~/src',
-	INSTALLPRIVLIB => '/usr/local/interchange/lib',
-#	INSTALLPRIVLIB => '~_~INSTALLPRIVLIB~_~',
-	INSTALLARCHLIB => '/usr/local/interchange',
-#	INSTALLARCHLIB => '~_~INSTALLARCHLIB~_~',
-	INSTALLMAN1DIR => '/usr/local/interchange/doc',
-#	INSTALLMAN1DIR => '~_~INSTALLMAN1DIR~_~',
-	INSTALLSCRIPT => '/usr/local/interchange/bin',
-#	INSTALLSCRIPT => '~_~INSTALLARCHLIB~_~/bin',
-	INSTALLBIN => '/usr/local/interchange/bin',
-#	INSTALLBIN => '~_~INSTALLBIN~_~',
-};
+BEGIN {
+	use Config;
+	&::logError( "Threaded perl not supported" ) if ($Config{ usethreads } || $Config{ useithreads } );
+	$::Self = {
+		LINK_HOST      => 'localhost',
+		LINK_PORT      => 7786,
+		LINK_TIMEOUT   => 30,
+		LINK_FILE      => '/usr/local/interchange/etc/socket',
+#		LINK_FILE      => '~_~INSTALLARCHLIB~_~/etc/socket',
+		SRC_DIR        => '/usr/local/interchange/src',
+#		SRC_DIR        => '~_~INSTALLARCHLIB~_~/src',
+		INSTALLPRIVLIB => '/usr/local/interchange/lib',
+#		INSTALLPRIVLIB => '~_~INSTALLPRIVLIB~_~',
+		INSTALLARCHLIB => '/usr/local/interchange',
+#		INSTALLARCHLIB => '~_~INSTALLARCHLIB~_~',
+		INSTALLMAN1DIR => '/usr/local/interchange/doc',
+#		INSTALLMAN1DIR => '~_~INSTALLMAN1DIR~_~',
+		INSTALLSCRIPT => '/usr/local/interchange/bin',
+#		INSTALLSCRIPT => '~_~INSTALLARCHLIB~_~/bin',
+		INSTALLBIN => '/usr/local/interchange/bin',
+#		INSTALLBIN => '~_~INSTALLBIN~_~',
+	};
+}
 
 ### END CONFIGURATION VARIABLES
 
@@ -91,22 +95,22 @@ Configures Interchange link program.
 options:
 
   -b dir, --build=dir   Alternate build directory
-                         (default $Self->{SRC_DIR})
+                         (default $::Self->{SRC_DIR})
   -f, --force           Force compile even if already there
   -h host, --host=host  Name of host the TCP link should contact
-                         (default $Self->{LINK_HOST})
+                         (default $::Self->{LINK_HOST})
   -i, --inetmode        Copy the tlink file to outputfile
   -n, --nostrip         Don't try and strip(1) the executable files
   -o cgifile,           Write it to a specific file as well as the
      --output=cgifile    link catalog directory
-  -p port, --port=port  Port number to use (default $Self->{LINK_PORT})
+  -p port, --port=port  Port number to use (default $::Self->{LINK_PORT})
   -s socketfile,        Location of UNIX socket (default
-      --socket=file      $Self->{INSTALLARCHLIB}/etc/socket)
-  -w N, --timeout=N     Number of seconds before timeout (default $Self->{LINK_TIMEOUT})
+      --socket=file      $::Self->{INSTALLARCHLIB}/etc/socket)
+  -w N, --timeout=N     Number of seconds before timeout (default $::Self->{LINK_TIMEOUT})
   -u, --unixmode        Copy the vlink file to outputfile (default)
   --nosuid              Don't change mode to suid for vlink (CGIWRAP)
   --perl                Use Perl tlink program
-  --source              Alternate source dir (default $Self->{SRC_DIR})
+  --source              Alternate source dir (default $::Self->{SRC_DIR})
 EOF
 
 my $Output;
@@ -121,12 +125,12 @@ my $Build_dir;
 
 my %optctl = (
 
-    'port'          => \ $Self->{LINK_PORT},
-    'timeout'       => \ $Self->{LINK_TIMEOUT},
-    'host'          => \ $Self->{LINK_HOST},
-    'socket'        => \ $Self->{LINK_FILE},
+    'port'          => \ $::Self->{LINK_PORT},
+    'timeout'       => \ $::Self->{LINK_TIMEOUT},
+    'host'          => \ $::Self->{LINK_HOST},
+    'socket'        => \ $::Self->{LINK_FILE},
     'build'         => \ $Build_dir,
-    'source'        => \ $Self->{SRC_DIR},
+    'source'        => \ $::Self->{SRC_DIR},
     'inetmode'      => \ $Inet,
     'unixmode'      => \ $Unix,
     'nosuid'        => \ $NoSUID,
@@ -162,7 +166,7 @@ GetOptions(\%optctl, @options)			or die "\n$USAGE\n";
 
 sub doit {
 	my ($self, $orig, $template, $preamble, $key, $postamble) = @_;
-	my $replace =  $Self->{$key} || $Config{$key};
+	my $replace =  $::Self->{$key} || $Config{$key};
 #warn <<EOF;
 #orig=$orig
 #template=$template
@@ -181,7 +185,7 @@ if($Build_dir) {
 		mkdir $Build_dir, 0777
 			or die "Could not make directory $Build_dir: $!\n";
 	}
-	my @files = glob("$Self->{SRC_DIR}/*");
+	my @files = glob("$::Self->{SRC_DIR}/*");
 	for(@files) {
 		next unless -f $_;
 		File::Copy::copy($_, $Build_dir)
@@ -191,7 +195,7 @@ if($Build_dir) {
 		or die "Couldn't change to build directory: $!\n";
 }
 else {
-	chdir $Self->{SRC_DIR}
+	chdir $::Self->{SRC_DIR}
 		or die "Couldn't change to source directory: $!\n";
 }
 
@@ -215,9 +219,9 @@ foreach my $targ (@edit_files) {
 	local($/);
 	$_ = <IN>;
 	close IN;
-	s{(~@~(\w+)~@~)}{doit($Self, $1, '', '', $2, '')}eg;
-	s{(.*)(\n[ 	]*#(.*)~_~(\w+)~_~(.*))}{doit($Self, $1, $2, $3, $4, $5)}eg;
-	s{(.*)(\n[ 	]*/\*(.*)~_~(\w+)~_~(.*)\*/)}{doit($Self, $1, $2, $3, $4, $5)}eg;
+	s{(~@~(\w+)~@~)}{doit($::Self, $1, '', '', $2, '')}eg;
+	s{(.*)(\n[ 	]*#(.*)~_~(\w+)~_~(.*))}{doit($::Self, $1, $2, $3, $4, $5)}eg;
+	s{(.*)(\n[ 	]*/\*(.*)~_~(\w+)~_~(.*)\*/)}{doit($::Self, $1, $2, $3, $4, $5)}eg;
 	print OUT $_;
 	close OUT or die "close $targ: $!\n";
 	unlink $src;
@@ -230,7 +234,7 @@ COMPILE: {
 	use vars qw/$CC $DEFS $LIBS $CFLAGS/;
 
 	if($Perl_tlink) {
-		$Intermediate = 'tlink.pl.$Self->{LINK_HOST}.$Self->{LINK_PORT}';
+		$Intermediate = 'tlink.pl.$::Self->{LINK_HOST}.$::Self->{LINK_PORT}';
 		$Intermediate =~ s/\W/./g;
 		File::Copy::copy('tlink.pl', $Intermediate)
 			or die "Cannot write intermediate file $Intermediate: $!\n";
@@ -247,11 +251,11 @@ COMPILE: {
 
 	# Compile
 
-	my $vlink_file = $Self->{LINK_FILE};
+	my $vlink_file = $::Self->{LINK_FILE};
 	$vlink_file =~ s/[^A-Za-z0-9.]/_/g;
 	$vlink_file = "vlink.$vlink_file";
 
-	my $tlink_file = "tlink.$Self->{LINK_HOST}.$Self->{LINK_PORT}";
+	my $tlink_file = "tlink.$::Self->{LINK_HOST}.$::Self->{LINK_PORT}";
 	$tlink_file =~ s/\W/./g;
 
 	$Intermediate = $Inet ? $tlink_file : $vlink_file;

@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange session dumper
 #
-# $Id: dump.PL,v 1.8 2000-09-25 16:51:27 zarko Exp $
+# $Id: dump.PL,v 1.8.2.1 2000-12-05 19:35:43 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -64,6 +64,9 @@ use Vend::Util;
 use Vend::Config;
 
 BEGIN {
+	use Config;
+	&::logError( "Threaded perl not supported" ) if ($Config{ usethreads } || $Config{ useithreads } );
+
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
 		if defined $ENV{MINIVEND_ROOT};
 
@@ -248,7 +251,7 @@ dump -- Interchange session dumper
 
 =head1 VERSION
 
-$Id: dump.PL,v 1.8 2000-09-25 16:51:27 zarko Exp $
+$Id: dump.PL,v 1.8.2.1 2000-12-05 19:35:43 zarko Exp $
 
 =head1 SEE ALSO
 
