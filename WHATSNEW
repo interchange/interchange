@@ -10,6 +10,10 @@ Interchange 4.8.7 released 2003-01-24.
 Core
 ----
 
+* Fix bug where Interchange got stuck into an infinite loop on startup in case
+  of wrong SQL database access information, which occurs on the second table
+  maybe due to the bad setting in DBI.
+
 * UserDB.pm: [userdb function=logout clear=1] will now restore the appropriate
   ScratchDefault and ValuesDefault values instead of simply deleting the
   scratches and values under its control.
