@@ -10,6 +10,12 @@ UserTag loc Order locale
 UserTag loc Routine <<EOF
 sub {
     my ($locale, $message) = @_;
+    if($::Pragma->{no_locale_parse}) {
+		my $begin = '[L';
+		$begin .= " $locale" if $locale;
+		$begin .= ']';
+		return $begin . $message . '[/L]';
+	}
     return $message unless $Vend::Cfg->{Locale};
     my $ref;
     if($locale) {

@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.62 2003-07-12 04:47:10 mheins Exp $
+# $Id: Util.pm,v 2.63 2003-07-26 22:01:12 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -87,7 +87,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.62 $, 10);
+$VERSION = substr(q$Revision: 2.63 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -963,6 +963,8 @@ sub find_locale_bit {
 
 sub parse_locale {
 	my ($input) = @_;
+
+	return if $::Pragma->{no_locale_parse};
 
 	# avoid copying big strings
 	my $r = ref($input) ? $input : \$input;
