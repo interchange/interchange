@@ -51,6 +51,11 @@ Core
 
   Thanks to Daniel Hutchinson for finding the problem!
 
+* Add no_requery option to Vend::Table::DBI::query method to ensure that
+  SQL::Statement will not be called. Use it when you are sure your table is
+  in the database referenced....avoids errors on multiple key inserts that
+  might return undef.
+
 Menu
 ----
 
@@ -112,6 +117,15 @@ UI
 * Check for SQL::Statement version (with hooks for testing any version,
   lower or higher) at admin index load time, and provide warning that
   things won't work properly.
+
+* Allow multiple help window destinations.
+
+* Remove preferred payment method from customer view and change primitive
+  used to display username.
+
+* Fix "admin/bg.gif not found" error.
+
+* Allow pass of nodelete and mv_auto_export options in URL.
 
 Payment
 -------
