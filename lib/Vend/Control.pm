@@ -1,6 +1,6 @@
 # Vend::Control - Routines that alter the running Interchange daemon
 # 
-# $Id: Control.pm,v 2.5 2002-09-16 23:06:31 mheins Exp $
+# $Id: Control.pm,v 2.6 2003-02-02 21:04:22 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -29,7 +29,7 @@ require Exporter;
 @EXPORT = qw/
 				signal_reconfig
 				signal_add
-				signal_cron
+				signal_jobs
 				signal_remove
 				control_interchange
 				change_catalog_directive
@@ -50,20 +50,20 @@ sub signal_reconfig {
 	}
 }
 
-sub signal_cron {
+sub signal_jobs {
 	shift;
-	$Vend::mode = 'cron';
+	$Vend::mode = 'jobs';
 	my $arg = shift;
 	my ($cat, $job) = split /\s*=\s*/, $arg, 2;
-	$Vend::CronCat = $cat;
-#::logGlobal("signal_cron: called cron cat=$cat job=$job");
-	$job = join ",", $job, $Vend::CronJob;
+	$Vend::JobsCat = $cat;
+#::logGlobal("signal_jobs: called cat=$cat job=$job");
+	$job = join ",", $job, $Vend::JobsJob;
 	$job =~ s/^,+//;
 	$job =~ s/,+$//;
-	$Vend::CronJob = $job;
-	Vend::Util::writefile("$Global::RunDir/restart", "cron $cat $job\n");
-#::logGlobal("signal_cron: wrote file, ready to control_interchange");
-	control_interchange('cron', 'HUP');
+	$Vend::JobsJob = $job;
+	Vend::Util::writefile("$Global::RunDir/restart", "jobs $cat $job\n");
+#::logGlobal("signal_jobs: wrote file, ready to control_interchange");
+	control_interchange('jobs', 'HUP');
 }
 
 sub signal_remove {
@@ -110,11 +110,11 @@ EOF
 		$sig = $mode ne 'kill' ? 'TERM' : 'KILL';
 	}
 	my $msg;
-	if($mode eq 'cron') {
+	if($mode eq 'jobs') {
 		$msg = errmsg(
 					"Dispatching jobs=%s for cat %s to Interchange server %s with %s.\n",
-					$Vend::CronJob,
-					$Vend::CronCat,
+					$Vend::JobsJob,
+					$Vend::JobsCat,
 					$pid,
 					$sig,
 				);

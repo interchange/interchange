@@ -3,7 +3,7 @@
 #
 # Interchange version 4.9.7
 #
-# $Id: interchange.PL,v 2.66 2003-01-14 02:25:54 mheins Exp $
+# $Id: interchange.PL,v 2.67 2003-02-02 21:04:23 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and others.
 # http://www.icdevgroup.org/
@@ -246,7 +246,7 @@ use autouse 'Vend::Imagemap' => qw/action_map/;
 use autouse 'Vend::Control' => qw/
 											signal_reconfig
 											signal_add
-											signal_cron
+											signal_jobs
 											signal_remove
 											control_interchange
 											remove_catalog
@@ -392,29 +392,29 @@ Add a catalog to the system. Information taken from the input file
 The information is in the form of a standard Interchange catalog line,
 and must be in the single-line format.
 
-=item --cron=catalog[=job]
+=item --runjobs=catalog[=job]
 
-Run a cron group which is a series of files in a directory with
+Run a jobs group which is a series of files in a directory with
 the name corresponding to the C<job>. For instance, if you 
 set up a directory called "weekly" in your pages directory
 for the catalog C<foundation>, you can run those files with:
 
-	interchange --cron=foundation=weekly
+	interchange --runjobs=foundation=weekly
 
 Files ending in .html (or whatever HTMLsuffix is for that catalog)
 are skipped. It is not tree-recursive -- directories are ignored.
 
 Results can be emailed to an address if you specify --email=address,
-and they will be put in the cron log file.
+and they will be put in the jobs log file.
 
-Alternatively jobs can be specified with --job=jobname B<before>
-the --cron option. In other words, this will work:
+Alternatively jobs can be specified with --jobgroup=jobname B<before>
+the --runjobs option. In other words, this will work:
 
-	interchange --job=weekly --cron=foundation
+	interchange --jobgroup=weekly --runjobs=foundation
 
 This will NOT work:
 
-	interchange --cron=foundation --job=weekly
+	interchange --runjobs=foundation --jobgroup=weekly
 
 =item -d dir, --dir=dir
 
@@ -428,7 +428,7 @@ Exclude catalog from this startup.
 
 =item -email=address
 
-Email address to email cron job results to.
+Email address to email jobs results to.
 
 =item -f file, --config=file
 
@@ -443,14 +443,14 @@ Display help on command line options.
 Run with internet-domain socket only. Normally Interchange runs with
 both UNIX- and internet-domain sockets (except on Windows).
 
-=item --job=job
+=item --jobgroup=job
 
-Sets the job for --cron if that is not included in the --cron
-call. MUST precede the --cron entry on the command line.
+Sets the job for --runjobs if that is not included in the --runjobs
+call. MUST precede the --runjobs entry on the command line.
 
-	interchange --job=weekly --cron=foundation
+	interchange --jobgroup=weekly --runjobs=foundation
 
-See --cron for an explanation of what this does.
+See --runjobs for an explanation of what this does.
 
 =item --kill [signal]
 
@@ -542,8 +542,6 @@ Command line options (first letter will usually work):
 
      --add=catalog         add a catalog to operation; parms taken from the
                            standard input as a "Catalog ..." directive
-     --cron=catalog[=job]  run cron jobs for a particular catalog
-                           (can use --job and -email)
      -d dir, --dir=dir     directory for VendRoot (interchange.cfg, error.log, etc.)
      -e name,
         --exclude=name     exclude catalog
@@ -553,12 +551,14 @@ Command line options (first letter will usually work):
      --files spec          filespec (perl regexp OK) for static page tree
      -h, --help            display this message
      -i, --inetmode        run with Internet-domain socket (TCP)
-     --job=jobname         cron jobs to run (hourly, daily, weekly, etc.)
+     --jobgroup=jobname    job group to run (hourly, daily, weekly, etc.)
      --kill [signal]       kill server ungracefully (9 or with optional signal)
      -q, --quiet           suppress informational messages on startup
      --reconfig=catalog    reconfig a particular catalog on the server
      --remove=catalog      remove a catalog from operation
      --restart             restart server
+     --runjobs=catalog[=job]  run jobs for a particular catalog
+                           (can use --jobgroup and -email)
      --serve               start server (default) (-start is alias)
      --stop                stop server gracefully
      -t, --test            report problems with config files
@@ -641,9 +641,9 @@ sub parse_options {
 		version         => sub { version(); exit 0 },
 		stop			=> \&control_interchange,
 		add				=> \&signal_add,
-		email			=> \$Vend::CronEmail,
-		job				=> \$Vend::CronJob,
-		cron			=> \&signal_cron,
+		email			=> \$Vend::JobsEmail,
+		jobgroup		=> \$Vend::JobsJob,
+		runjobs			=> \&signal_jobs,
 		remove			=> \&signal_remove,
 		kill			=> \&control_interchange,
 		Ignore 			=> \$ignore,
@@ -703,17 +703,17 @@ sub parse_options {
 		add|a=s
         confdir=s
         configfile|config|c|f=s
-        cron=s
         dir|vendroot|d=s
         email=s
         exclude|e=s
         help|h
         inetmode|inet|i
-        job=s
+        jobgroup=s
         kill:s
         log|logfile|l=s
         quiet|q
         rundir=s
+		runjobs=s
 		pidfile=s
 		reconfig=s
 		remove=s

@@ -22,6 +22,10 @@ Core
 * Remove wrong default for DatabaseDefault, could cause error when a
   DatabaseDefault value had not been previously set.
 
+* Renamed Cron configuration directive to Jobs because that is a more
+  appropriate. Commandline options --job and --cron renamed as well
+  to --jobgroup and --runjobs.
+
 Menu
 ----
 

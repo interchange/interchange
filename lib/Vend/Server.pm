@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.25 2002-12-13 14:11:35 mheins Exp $
+# $Id: Server.pm,v 2.26 2003-02-02 21:04:22 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.25 $, 10);
+$VERSION = substr(q$Revision: 2.26 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -1047,10 +1047,10 @@ EOF
 					{
 						::remove_catalog($1);
 					}
-					elsif( $directive =~ /^cron$/i) {
+					elsif( $directive =~ /^jobs$/i) {
 						my ($cat, @jobs) = grep /\S/, split /[\s,\0]+/, $value;
 #::logGlobal("restart line found value='$value'");
-						run_cron($cat, @jobs);
+						run_jobs($cat, @jobs);
 					}
 					else {
 						::change_global_directive($directive, $value);
@@ -2253,27 +2253,27 @@ sub touch_pid {
 		or die "PID $$ conflict: can't lock\n";
 }
 
-sub cron_job {
+sub jobs_job {
 	my ($cat, @jobs) = @_;
 	for my $job (@jobs) {
 		Vend::Dispatch::run_in_catalog($cat, $job);
 	}
 }
 
-sub run_cron {
+sub run_jobs {
 	my ($cat, @jobs) = @_;
 
-#::logGlobal("Vend::Server::run_cron: run cron cat=cat jobs=@jobs");
+#::logGlobal("Vend::Server::run_jobs: run jobs cat=cat jobs=@jobs");
 	my $pid;
 	if($Global::Foreground) {
 		$::Instance = {};
 		eval {
-			cron_job($cat, @jobs);
+			jobs_job($cat, @jobs);
 		};
 		if($@) {
 			my $msg = $@;
 			::logGlobal({ level => 'error' }, "Runtime error: %s" , $msg);
-			logError("Runtime cron error: %s", $msg)
+			logError("Runtime jobs error: %s", $msg)
 				if defined $Vend::Cfg->{ErrorFile};
 		}
 		clean_up_after_fork();
@@ -2293,12 +2293,12 @@ sub run_cron {
 			eval { 
 				touch_pid() if $Global::PIDcheck;
 				&$Sig_inc;
-				cron_job($cat, @jobs);
+				jobs_job($cat, @jobs);
 			};
 			if ($@) {
 				my $msg = $@;
 				::logGlobal({ level => 'error' }, "Runtime error: %s" , $msg);
-				logError("Runtime cron error: %s", $msg)
+				logError("Runtime jobs error: %s", $msg)
 					if defined $Vend::Cfg->{ErrorFile};
 			}
 			clean_up_after_fork();

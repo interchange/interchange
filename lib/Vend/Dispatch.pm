@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.9 2003-01-23 19:18:47 mheins Exp $
+# $Id: Dispatch.pm,v 1.10 2003-02-02 21:04:22 racke Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.9 $, 10);
+$VERSION = substr(q$Revision: 1.10 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -664,22 +664,22 @@ sub run_in_catalog {
 	#$Vend::Log_suppress = 1;
 
 	unless ($Vend::Quiet) {
-		logGlobal("Run catalog '%s' cron group=%s", $cat, $job || 'INTERNAL');
+		logGlobal("Run catalog '%s' jobs group=%s", $cat, $job || 'INTERNAL');
 	}
 	#undef $Vend::Log_suppress;
 
 	open_cat($cat);
 
-	logError("Run cron group=%s", $job || 'INTERNAL');
+	logError("Run jobs group=%s", $job || 'INTERNAL');
 
-	my $croncfg = $Vend::Cfg->{Cron};
+	my $jobscfg = $Vend::Cfg->{Jobs};
 
 	my $dir;
 	my @itl;
 	if($job) {
-		my $ct = $croncfg->{base_directory} || 'etc/cron';
+		my $ct = $jobscfg->{base_directory} || 'etc/jobs';
 		my $gt = '';
-		$gt = "$Global::ConfDir/$ct" if $croncfg->{use_global};
+		$gt = "$Global::ConfDir/$ct" if $jobscfg->{use_global};
 
 		for my $d ($ct, $gt) {
 #::logGlobal("check directory=$d for $job");
@@ -693,7 +693,7 @@ sub run_in_catalog {
 			@f = grep ! -d $_, @f;
 			@f = grep $_ !~ /$Vend::Cfg->{HTMLsuffix}$/, @f;
 			for(@f) {
-#::logGlobal("found cron piece file=$_");
+#::logGlobal("found jobs piece file=$_");
 				push @itl, [$_, readfile($_)];
 			}
 		}
@@ -707,7 +707,7 @@ sub run_in_catalog {
 
 	if(@itl) {
 		# Run once at beginning
-		run_macro($croncfg->{initialize});
+		run_macro($jobscfg->{initialize});
 
 		# initialize or autoload can create session
 		# but must handle all aspects
@@ -718,45 +718,47 @@ sub run_in_catalog {
 
 		for(@itl) {
 			# Run once at beginning of each job
-			run_macro($croncfg->{autoload});
+			run_macro($jobscfg->{autoload});
 
 			push @out, interpolate_html($_->[1]);
 		}
 	}
 	else {
-		logGlobal("Empty cron job=%s", $job);
+		logGlobal("Empty job=%s", $job);
 	}
 	my $out = join "", @out;
 	$out =~ s/^\s+//;
 	$out =~ s/\s+$/\n/;
-	$out .= full_dump() if $croncfg->{add_session};
+	$out .= full_dump() if $jobscfg->{add_session};
+
+	logError("Finished jobs group=%s", $job || 'INTERNAL');
 	
 	close_cat();
 
-	# don't send email and/or write log entry if cron job returns
-	# no output (in spirit of the real cron)
+	# don't send email and/or write log entry if job returns
+	# no output (in spirit of the cron daemon)
 	return unless $out;
 	
-	if(my $addr = $Vend::CronEmail || $croncfg->{email}) {
-		my $subject = $croncfg->{subject} || 'Interchange cron results for job: %s';
+	if(my $addr = $Vend::JobsEmail || $jobscfg->{email}) {
+		my $subject = $jobscfg->{subject} || 'Interchange results for job: %s';
 		$subject = errmsg($subject, $job);
-		my $from = $croncfg->{from} || $Vend::Cfg->{MailOrderTo};
+		my $from = $jobscfg->{from} || $Vend::Cfg->{MailOrderTo};
 		Vend::Interpolate::tag_mail($addr,
 									{
 										from => $from,
 										to => $addr,
 										subject => $subject,
-										reply_to => $croncfg->{reply_to},
+										reply_to => $jobscfg->{reply_to},
 										mailer => "Interchange $::VERSION",
-										extra => $croncfg->{extra_headers},
+										extra => $jobscfg->{extra_headers},
 									    log_error => 1,
 									},
 									$out,
 								);
 	}
 
-	if($croncfg->{log}) {
-		logData($croncfg->{log}, $out);
+	if($jobscfg->{log}) {
+		logData($jobscfg->{log}, $out);
 	}
 
 	return $out;
