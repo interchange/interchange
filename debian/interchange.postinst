@@ -48,9 +48,6 @@ chmod u+s /usr/lib/cgi-bin/ic/*
 # Ensure correct permissions for catalog base directory
 chown $USER.$GROUP /var/lib/interchange/catalogs
 
-# Make makecat.cfg accessible for the interchange user
-chown $USER.$GROUP /etc/interchange/makecat.cfg
-
 # Record debconf configuration in two files
 # 1. Stuff needed for the init script
 
@@ -80,6 +77,9 @@ echo DOCROOT=$RET >> $INITCFG
 # and make senses to be configured by debconf
 
 /usr/sbin/interchangeconfig
+
+# Make configuration files owned by the interchange user
+chown -R $USER.$GROUP /etc/interchange
 
 #DEBHELPER#
 
