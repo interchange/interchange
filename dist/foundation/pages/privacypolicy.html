@@ -3,7 +3,7 @@ ui_template: Yes
 ui_template_name: leftonly
 [/comment]
 
-[tmp page_title]__COMPANY__ -- Privacy Policy[/tmp]
+[tmp page_title]__COMPANY__ -- [L]Privacy Policy[/L][/tmp]
 
 [control reset=1]
 
@@ -27,7 +27,7 @@ ui_template_name: leftonly
 [component]random[/component]
 [size]2[/size]
 [cols]2[/cols]
-[banner]See.....[/banner]
+[banner][L]See...[/L][/banner]
 [/control-set]
 
 [control reset=1]
@@ -38,20 +38,20 @@ ui_template_name: leftonly
 
 <blockquote>
 <p>&nbsp;</p>
-<p>We don't give out your information to anyone!</p>
-<p>We can be contacted at:</p>
+<p>[L]We don't give out your information to anyone![/L]</p>
+<p>[L]We can be contacted at[/L]:</p>
 <p>
 __COMPANY__<br>
 __ADDRESS__<br>
 __CITY__<br>
 [if variable PHONE]
-Phone: __PHONE__<br>
+[L]Phone[/L]: __PHONE__<br>
 [/if]
 [if variable FAX]
-Fax: __FAX__<br>
+[L]Fax[/L]: __FAX__<br>
 [/if]
 [if variable TOLLFREE]
-Toll free: __TOLLFREE__<br>
+[L]Toll free[/L]: __TOLLFREE__<br>
 [/if]
 <a href="mailto:__EMAIL_INFO__">__EMAIL_INFO__</a>
 </p>

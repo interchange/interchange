@@ -5,8 +5,10 @@ Account Management Functions	Account Management Functions			Functies rekeningond
 Additional Shipping Addresses	Additional Shipping Addresses			Additionele verzendadressen
 Address	Address			Adres
 Advanced Search	Advanced Search			Uitgebreid zoeken
+Approximate Credit	Approximate Credit			Credit circa
 April		April	Avril	April
 August		August	Aout	Augustus
+Be sure to list the RMA number issued below on your shipping label.	Be sure to list the RMA number issued below on your shipping label.			Vergeet niet het onderstaande RMA nummer te vermelden op uw verzendsticker.
 Below are our automated customer service options. If you need to talk to someone please %sclick here%s.	Below are our automated customer service options. If you need to talk to someone please %sclick here%s.			Onderstaand vindt U onze geautomatiseerde klantenservice mogelijkheden. Wilt U een medewerker spreken, %sklik dan hier%s.
 Billing Address	Billing Address			Verzendadres
 Buy it Now!	Buy it Now!			Koop nu!
@@ -22,8 +24,12 @@ Comment on this product.	Comment on this product.			Geef uw mening over dit prod
 Company	Company			Bedrijf
 Contact Us	Contact Us			Neem contact met ons op
 Country	Country			Land
+Create Account	Create Account			Aanmaken rekening
+Credit Amount	Credit Amount			Credit bedrag
 Customer Satisfaction Survey	Customer Satisfaction Survey			Klantentevredenheidsonderzoek
 Customer Service	Customer Service			Klantenservice
+Date Issued	Date Issued			Datum uitgifte
+Day Phone	Day Phone			Telefoon overdag
 Daytime Phone	Daytime Phone			Telefoon overdag
 December		Dezember	D&eacute;cembre	December
 Email	Email			
@@ -33,6 +39,7 @@ Fax	Fax			Fax
 February		Februar	F&eacute;vrier	Februari
 First	First			Eerste
 First Name	First Name			Voornaam
+Hello and thank you for your interest in %s products.	Hello and thank you for your interest in %s products.			Hallo en bedankt voor uw interesse in de producten van %s.
 Help	Help			Help
 INDEX_PAR1	    Welcome to the <b>Interchange</b> Foundation Store! This     site is intended to get you started building    your own e-business site. Replace the stock graphics, products,     and categories in this store to begin building your custom site.			Welkom bij de <b>Interchange</b> Foundation Store! Deze site is bedoeld om U op weg te helpen met het bouwen van uw eigen e-business site. Om te starten met uw eigen site vervangt U simpelweg de standaard afbeeldingen, producten en categorieen.
 If different than above	If different than above			Indien anders dan hierboven
@@ -40,6 +47,7 @@ If you would like further information on constructing a store like this, please 
 In Stock	In Stock			Op Voorraad
 In Stock Notification	In Stock Notification			Op voorraadmelding
 In-Stock Notification	In-Stock Notification			Op voorraadmelding
+Item Quantity	Item Quantity			Productaantal
 January		Januar	Janvier	Januari
 July		Juli	Juillet	Juli
 June		Juni	Juin	Juni
@@ -54,31 +62,44 @@ Lost your password?	Lost your password?			Wachtwoord vergeten?
 Mailing Status	Mailing Status			
 March		M&auml;rz	Mars	Maart
 May		Mai	Mai	Mei
+Name	Name			Naam
 New Account	New Account			Nieuwe rekening
 New items	New items			Nieuw artikel
 Next	Next			Volgende
 No	No			Nee
 No change, go to checkout	No change, go to checkout			Geen wijziging, ga naar kassa
+No items were selected for return.	No items were selected for return.			Er zijn geen producten geselecteerd om te retourneren.
 November		November	Novembre	November
+Number Of Items	Number Of Items			Aantal producten
 October		Oktober	Octobre	October
 Old password	Old password			Oud wachtwoord
 Or send an e-mail to	Or send an e-mail to			Of stuur een e-mail naar
 Or you can create a %snew account%s.	Or you can create a %snew account%s.			Of U kunt een %snieuwe rekening%s openen.
+Order Number	Order Number			Ordernummer
 Order Returns	Order Returns			Retourzendingen
 Order Tracking	Order Tracking			Traceren orders
 Other	Other			Ander
 Out Of Stock	Out Of Stock			Niet voorradig
+PROCESS_RETURNS_PAR1	Your return has been processed. Please ship the item(s) to the address below and your account will be credited for the returned amount. A return confirmation has also been emailed to you.			Uw retourzending is verwerkt. Stuur het(de) product(en) naar onderstaand adres en uw rekening zal worden gecrediteerd voor het bedrag dat de teruggestuurde goederen vertegenwoordigen. Ter confirmatie van deze retourzending is een email naar U verzonden.
 Password	Password			Wachtwoord
 Phone	Phone			Telefoon
 Please %scontact us%s if you have any questions for us.	Please %scontact us%s if you have any questions for us.			Hebt U nog vragen, neem dan vrijblijvend %scontact%s met ons op.
+Please use the information below to process your return	Please use the information below to process your return			Gebruik onderstaande informatie voor uw retourzending
+Please use your browser's back button to return to the order and select at least one item from the order to return.	Please use your browser's back button to return to the order and select at least one item from the order to return.			Gebruik de browser's 'Terug'-knop om terug te keren naar de order en selecteer minimaal een artikel dat U wilt retourneren.
+Please use your browser's back to enter a more appropriate value.	Please use your browser's back to enter a more appropriate value.			Gebruik de browser's 'Terug'-knop en vul een geschiktere waarde in.
 Preview	Preview			
 Previous	Previous			Vorige
 Price	Price			Prijs
 PriceDivide	1	0.5409	0.1632	
+Privacy Policy	Privacy Policy			
+Process Order Return	Process Order Return			Verwerken retourzending
 Product Views All	Product Views All			
 ProductFiles				
 Put me on these mail lists (if any)	Put me on these mail lists (if any)			Plaats mij op deze emaillijsten (indien aanwezig)
 Quantity	Quantity			Aantal
+RMA Number	RMA Number			RMA nummer
+Return Info	Return Info			Informatie retourzending
+Return request received.	Return request received.			Verzoek voor retourzending ontvangen.
 Save Acct. Info	Save Acct. Info			
 Save and Checkout	Save and Checkout			
 Saved Carts / Recurring Orders	Saved Carts / Recurring Orders			Opgeslagen winkelwagens / herhalingsorders
@@ -88,6 +109,7 @@ Search by Field	Search by Field			Zoek op veld
 Search for	Search for			Zoek voor
 See also	See also			Zie ook
 See also...	See also...			Zie ook...
+See...	See...			Zie...
 Send an email copy of my receipt	Send an email copy of my receipt			Stuur een copie per email
 September		September	Septembre	September
 Shipping Address	Shipping Address			Verzendadres
@@ -107,8 +129,13 @@ This item is currently in your %sshopping cart%s.	This item is currently in your
 Toll free	Toll free			
 Toll-free	Toll-free			
 United States	United States			Verenigde Staten
+Update item	Update item			Product bijwerken
 Username	Username			Gebruikersnaam
 Verify	Verify			Verifieer
+Verify Password	Verify Password			Verifieer wachtwoord
+We can be contacted at	We can be contacted at			Wij zijn te bereiken op
+We don't give out your information to anyone!	We don't give out your information to anyone!			Wij waken over uw informatie. Die zal nooit aan anderen worden uitgegeven!
+We have received your return request and have issued you an RMA number.	We have received your return request and have issued you an RMA number.			Wij hebben uw verzoek om goederen te retourneren ontvangen en hebben een RMA nummer toegekend.
 We need the bold fields to process your order	We need the bold fields to process your order			De vetgedrukte velden zijn nodig voor een correcte verwerking van dit formulier
 We would also like you to take our	We would also like you to take our			Wij stellen het zeer op prijs als u deelneemt aan ons
 Welcome	Welcome			Welkom
@@ -118,6 +145,7 @@ Yes	Yes			Ja
 You are already logged in.	You are already logged in.			U bent al aangemeld.
 You can contact us the following ways	You can contact us the following ways			U kunt ons als volgt bereiken
 You have been logged out.	You have been logged out.			U bent afgemeld.
+You may not return more items than you originally purchased.	You may not return more items than you originally purchased.			Het is niet toegestaan om meer artikelen te retourneren dan U hebt gekocht.
 You might also like...	You might also like...			Misschien houdt U ook van...
 Zip Code	Zip Code			Postcode
 Zip/Postal Code	Zip/Postal Code			Postcode

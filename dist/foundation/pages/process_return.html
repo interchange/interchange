@@ -4,7 +4,7 @@ ui_template_name: leftonly
 [/comment]
 
 [tmp members_only]1[/tmp]
-[tmp page_title]__COMPANY__ -- Process Order Return[/tmp]
+[tmp page_title]__COMPANY__ -- [L]Process Order Return[/L][/tmp]
 
 [control reset=1]
 
@@ -38,10 +38,9 @@ ui_template_name: leftonly
 
 [if !value return_items]
 
-No items were selected for return.
+[L]No items were selected for return.[/L]
 <br><br>
-Please use your browser's back button to return to the order and select at least
-one item from the order to return.
+[L]Please use your browser's back button to return to the order and select at least one item from the order to return.[/L]
 <br><br>
 
 [else]					  
@@ -87,20 +86,20 @@ $count ++;
 
 [if scratch qty_over]
 
-You may not return more items than you originally purchased.
+[L]You may not return more items than you originally purchased.[/L]
 <br><br>
-Please use your browser's back to enter a more appropriate value.
+[L]Please use your browser's back to enter a more appropriate value.[/L]
 <br><br>
 
 [else]					  
 
 [seti rma_number][counter etc/rma.number][/seti]
 
-Your return has been processed. Please ship the item(s) to the address 
+[L PROCESS_RETURNS_PAR1]Your return has been processed. Please ship the item(s) to the address 
 below and your account will be credited for the returned amount. 
-A return confirmation has also been emailed to you.
+A return confirmation has also been emailed to you.[/L]
 <br><br>
-Be sure to list the RMA number issued below on your shipping label.
+[L]Be sure to list the RMA number issued below on your shipping label.[/L]
 
 __COMPANY__<br>
 __ADDRESS__<br>
@@ -111,7 +110,7 @@ __CITY__<br><br>
   <td>
     <table cellpadding="4" cellspacing="4" border="0">
     <tr>
-      <td><b>RMA Number:</b></td>
+      <td><b>[L]RMA Number[/L]:</b></td>
       <td><b>[scratch rma_number]</b></td>
     </tr>
     </table>
@@ -126,15 +125,15 @@ __CITY__<br><br>
   <td>
     <table cellpadding="4" cellspacing="4" border="0">
     <tr>
-      <td><b>Order Number:</b></td>
+      <td><b>[L]Order Number[/L]:</b></td>
       <td><b>[value order_number]</b></td>
     </tr>
     <tr>
-      <td><b>Number Of Items:</b></td>
+      <td><b>[L]Number Of Items[/L]:</b></td>
       <td><b>[scratch total_qty]</b></td>
     </tr>
     <tr>
-      <td><b>Approximate Credit:</b></td>
+      <td><b>[L]Approximate Credit[/L]:</b></td>
       <td><b>[currency][scratch return_credit][/currency]</b></td>
     </tr>							
     </table>
@@ -154,20 +153,20 @@ __CITY__<br><br>
                     from="[value email] <[value email]>"
                     reply="[value email] <[value email]>"]
 
-Return request received.
+[L]Return request received.[/L]
 
-      Company: [value company]
-         Name: [value fname] [value lname]
-        Email: [value email]
-    Day Phone: [value phone_day]
-Evening Phone: [value phone_night]
+      [L]Company[/L]: [value company]
+         [L]Name[/L]: [value fname] [value lname]
+        [L]Email[/L]: [value email]
+    [L]Day Phone[/L]: [value phone_day]
+[L]Evening Phone[/L]: [value phone_night]
 		
-   RMA Number: [scratch rma_number]
-  Date Issued: [tag time]%Y%m%d %H:%M:%S[/tag]		
+   [L]RMA Number[/L]: [scratch rma_number]
+  [L]Date Issued[/L]: [tag time]%Y%m%d %H:%M:%S[/tag]		
 		
- Order Number: [value order_number]
-Item Quantity: [scratch total_qty]
-Credit Amount: [currency][scratch return_credit][/currency]
+ [L]Order Number[/L]: [value order_number]
+[L]Item Quantity[/L]: [scratch total_qty]
+[L]Credit Amount[/L]: [currency][scratch return_credit][/currency]
 					
 [/email]
 
@@ -183,26 +182,26 @@ Credit Amount: [currency][scratch return_credit][/currency]
                     from="__COMPANY__ <__ORDERS_TO__>"
                     reply="__COMPANY__ <__ORDERS_TO__>"]
 
-Hello and thank you for your interest in __COMPANY__ products.
+[msg arg.0="__COMPANY__"]Hello and thank you for your interest in %s products.[/msg]
 
-We have received your return request and have issued you an RMA number.
+[L]We have received your return request and have issued you an RMA number.[/L]
 
-Please use the information below to process your return:
+[L]Please use the information below to process your return[/L]:
 
-Shipping Address:
+[L]Shipping Address[/L]:
 
 __COMPANY__
 __ADDRESS__
 __CITY__
 
-Return Info:
+[L]Return Info[/L]:
 
-   RMA Number: [scratch rma_number]
-  Date Issued: [tag time]%Y%m%d %H:%M:%S[/tag]
+   [L]RMA Number[/L]: [scratch rma_number]
+  [L]Date Issued[/L]: [tag time]%Y%m%d %H:%M:%S[/tag]
 		
- Order Number: [value order_number]
-Item Quantity: [scratch total_qty]
-Credit Amount: [currency][scratch return_credit][/currency]
+ [L]Order Number[/L]: [value order_number]
+[L]Item Quantity[/L]: [scratch total_qty]
+[L]Credit Amount[/L]: [currency][scratch return_credit][/currency]
 					
 [/email]
 
