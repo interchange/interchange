@@ -485,7 +485,7 @@ sub initialize {
 			for $imgfile (@imgfiles) {
 				$fname = basename($imgfile);
 				next if -f "$locale/$fname";
-				symlink ("../en_US/$fname", "de_DE/$fname")
+				symlink ("../en_US/$fname", "$locale/$fname")
 					|| die "Couldn't create symlink $realdir/share/interchange/$locale/$fname: $!\n";
 			}
 		}
