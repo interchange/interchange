@@ -1,3 +1,11 @@
+interchange (4.8.6.20021206-1) unstable; urgency=high
+
+  * need to specifiy INSTALLSCRIPT for Perl 5.8.x in order to get
+    the scripts installed to /usr/lib/interchange/bin
+    (Closes: #168308, #168510, #169217)
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri,  6 Dec 2002 03:38:45 +0100
+
 interchange (4.8.6.20021108-1) unstable; urgency=low
 
   * removed debug code that inadvertently crept in
