@@ -446,6 +446,33 @@ Menu
 * Add "items" check to menu to allow showing an entry only if items are
   in the cart. Works for current cart ($Vend::Items) only.
 
+* Optimization for tree-based menus, allow reliable build with
+  [timed-build]. Example:
+
+	[timed-build file=tmp/the_tree minutes=10 force=1]
+	[menu	name=the_tree
+			menu-type=tree
+			js-prefix=the_tree_
+			timed=1
+	][/menu]
+	[/timed-build]
+	[menu open-script=1 js-prefix="the_tree_"/]
+
+  This allows the tree to retain its opened status without having to
+  build a different timed-build file for every combination.
+
+  Now tree and flyout menus should be easily usable in a catalog without
+  worrying about processor power.
+
+* Add configurability for the open/collapse/explode variable. Before this,
+  you could only have one tree per page and have it keep the open status. Now:
+
+  	[menu name=foo menu-type=tree js_prefix=foo open_variable=foo_open][/menu]
+
+  	[menu name=bar menu-type=tree js_prefix=bar open_variable=bar_open][/menu]
+
+  will work for the appropriate menu. (The other will collapse.)
+
 * Don't add .html extension if file already has extension.
 
 Form
@@ -903,20 +930,22 @@ Static Page Generation
 
 * Remove this feature completely from Interchange:
 
-  -- remove configuration directives StaticIndex, StaticSessionDefault,
-     StaticTrack (introduced in 4.9.x)
+  -- remove configuration directives ClearCache (not in use),
+     StaticIndex, StaticSessionDefault, StaticTrack (introduced in 4.9.x)
   -- deprecate configuration directives NoCache, Static, StaticAll,
      StaticDBM, StaticDepth, StaticFly, StaticLogged, StaticPage,
      StaticPath, StaticPattern, StaticSuffix
   -- remove UI tag regenerate
-  -- remove InvalidateCache attribute from usertags
+  -- remove InvalidateCache attribute from distributed usertags
   -- remove build flag from [tag] usertag
   -- remove UI pages (regen and regenerate)
+  -- remove support from foundation and test catalog
   -- remove path_adjust Pragma which is only useful in conjunction with
      StaticPath configuration directive
   -- remove Vend::Interpolate::cache_html, Vend::Interpolate::resolve_static, 
      Vend::Interpolate::static_url and Vend::Session::tie_static_dbm routines
-  
+  -- remove variables $Vend::AccumulatingLinks, @Vend::Links, 
+     %Vend::LinkFound, $Vend::ForceBuild, $Vend::CachePage.
   
 Miscellaneous
 -------------
