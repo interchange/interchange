@@ -3,8 +3,8 @@
 	$CGI->{access_menu} = 1;
 	return;
 [/calc]
-[seti page_title]Administrator Edit: [cgi user_id][/seti]
-[seti page_banner]Administrator Edit: <b>[cgi user_id]</b>[/seti]
+[seti page_title][L]Administrator Edit[/L]: [cgi user_id][/seti]
+[seti page_banner][L]Administrator Edit[/L]: <b>[cgi user_id]</b>[/seti]
 [set ui_class]Admin[/set]
 [set page_perm]access=v[/set]
 [set help_name]admin.edit[/set]
@@ -45,7 +45,7 @@ If creating new user, go to password entry page after this.
 <input type="hidden" name="user_id" value="[cgi user_id]">
 <tr>
 <td bgcolor=__UI_C_INTBLOCK__ align=right>
-<small>Real name</small>
+<small>[L]Real name[/L]</small>
 </td>
 <td bgcolor=__UI_C_INTBLOCK__>
 <input type=text size=40 name=name maxlength=100 value="[filter entities][loop-data __UI_ACCESS_TABLE__ name][/filter]">
@@ -55,7 +55,7 @@ If creating new user, go to password entry page after this.
 
 <tr>
 <td bgcolor=__UI_C_INTBLOCK__ align=right>
-<small>User name</small>
+<small>[L]User name[/L]</small>
 </td>
 <td bgcolor=__UI_C_INTBLOCK__>
 [if cgi ui_hide_key]
@@ -63,7 +63,7 @@ If creating new user, go to password entry page after this.
 	<input type=hidden name=username value="[loop-code]">[loop-code]
 [else]
 	[if-mm !advanced access=c]
-	[set ui_error]No permission to create user.[/set]
+	[set ui_error][L]No permission to create user.[/L][/set]
 	[bounce page="__UI_BASE__/error"]
 	[/set]
 	[/if-mm]
@@ -76,7 +76,7 @@ If creating new user, go to password entry page after this.
 
 <tr>
 <td bgcolor=__UI_C_INTBLOCK__ align=right>
-<small>Super-user</small>
+<small>[L]Super-user[/L]</small>
 </td>
 <td bgcolor=__UI_C_INTBLOCK__>
 <INPUT type=checkbox name=super value=1 [if-loop-data __UI_ACCESS_TABLE__ super]checked[/if-loop-data]>
@@ -87,7 +87,7 @@ If creating new user, go to password entry page after this.
 
 <tr>
 <td bgcolor=__UI_C_INTBLOCK__ align=right>
-<small>Groups</small>
+<small>[L]Groups[/L]</small>
 </td>
 <td bgcolor=__UI_C_INTBLOCK__>
 [calc]
@@ -126,19 +126,19 @@ If creating new user, go to password entry page after this.
 <p>
 
 [if-mm advanced access=e]
-	[button text=Ok]
+	[button text=[L]Ok[/L]]
 		[calc]$CGI->{groups} =~ s/://g; return[/calc]
 		mv_todo=set
 	[/button]
 	[if cgi user_id ne 'NEW']
-		[button text=Permissions]
+		[button text=[L]Permissions[/L]]
 			mv_todo=set
 			mv_nextpage=__UI_BASE__/access_permissions
 		[/button]
 	[/if]
-	<input type=submit value="Cancel">
+	<input type=submit value="[L]Cancel[/L]">
 [else]
-	[button text=Back]
+	[button text=[L]Back[/L]]
 	mv_todo=back
 	[/button]
 [/else]
