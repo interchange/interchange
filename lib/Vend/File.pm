@@ -1,6 +1,6 @@
 # Vend::File - Interchange file functions
 #
-# $Id: File.pm,v 2.5 2003-04-05 01:58:02 mheins Exp $
+# $Id: File.pm,v 2.6 2003-04-05 01:58:48 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -52,7 +52,7 @@ use Errno;
 use Vend::Util;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK $errstr);
-$VERSION = substr(q$Revision: 2.5 $, 10);
+$VERSION = substr(q$Revision: 2.6 $, 10);
 
 sub writefile {
     my($file, $data, $opt) = @_;
@@ -526,14 +526,14 @@ my %intrinsic = (
 	ic_super => sub { return 1 if $Vend::superuser; },
 	ic_admin => sub { return 1 if $Vend::admin; },
 	ic_logged => sub {
-					my ($fn, $write, $sub) = @_;
+					my ($fn, $checkpath, $write, $sub) = @_;
 					return 0 unless $Vend::username;
 					return 0 unless $Vend::Session->{logged_in};
 					return 0 if $sub and $Vend::login_table ne $sub;
 					return 1;
 					},
 	ic_session => sub {
-					my ($fn, $write, $sub, $compare) = @_;
+					my ($fn, $checkpath, $write, $sub, $compare) = @_;
 					my $false = $sub =~ s/^!\s*//;
 					my $status	= length($compare)
 								? ($Vend::Session->{$sub} eq $compare)
@@ -542,7 +542,7 @@ my %intrinsic = (
 					return $false;
 					},
 	ic_scratch => sub {
-					my ($fn, $write, $sub, $compare) = @_;
+					my ($fn, $checkpath, $write, $sub, $compare) = @_;
 					my $false = $sub =~ s/^!\s*//;
 					my $status	= length($compare)
 								? ($::Scratch->{$sub} eq $compare)
@@ -551,7 +551,7 @@ my %intrinsic = (
 					return $false;
 					},
 	ic_userdb => sub {
-		my ($fn, $write, $profile, $sub, $mode) = @_;
+		my ($fn, $checkpath, $write, $profile, $sub, $mode) = @_;
 		return 0 unless $Vend::username;
 		return 0 unless $Vend::Session->{logged_in};
 		$profile ||= 'default';
@@ -565,13 +565,17 @@ my %intrinsic = (
 		);
 		return undef unless $u->can($func);
 		my $status = $u->$func( %o );
-		::logDebug("status=$status back from userdb: " . ::uneval(\%o));
+		unless(defined $status) {
+			$o{location} = $checkpath;
+			$status = $u->$func( %o );
+		}
+#::logDebug("status=$status back from userdb: " . ::uneval(\%o));
 		return $status;
 	},
 );
 
 sub _intrinsic {
-	my ($thing, $fn, $write) = @_;
+	my ($thing, $fn, $checkpath, $write) = @_;
 	$thing =~ s/^\s+//;
 	$thing =~ s/\s+$//;
 	my @checks = split /\s*;\s*/, $thing;
@@ -584,7 +588,7 @@ sub _intrinsic {
 				$errstr = ::errmsg("Bad intrinsic check '%s', denying.", $_);
 				return undef;
 			};
-		unless( $sub->($fn, $write, @args) ) {
+		unless( $sub->($fn, $checkpath, $write, @args) ) {
 			## $errstr is package global
 			$errstr = ::errmsg(
 						"Failed intrinsic check '%s'%s for %s, denying.",
@@ -639,10 +643,10 @@ sub file_control {
 	CHECKPATH: {
 		do {
 			if(ref($subref->{$f}) eq 'CODE') {
-				return $subref->{$f}->($fn, $write, @caller);
+				return $subref->{$f}->($fn, $f, $write, @caller);
 			}
 			elsif ($subref->{$f}) {
-				return _intrinsic($subref->{$f}, $fn, $write);
+				return _intrinsic($subref->{$f}, $fn, $f, $write);
 			}
 		} while $f =~ s{/[^/]*$}{};
 	}
