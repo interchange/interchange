@@ -11,15 +11,9 @@ everything after </body>
 EOD
 
 UserTag get-url Routine <<EOR
+require LWP::Simple;
 sub {
 	my ($url, $opt) = @_;
-	eval {
-		require LWP::Simple;
-	};
-	if($@) {
-		::logError("Cannot use get-url tag, no LWP modules installed.");
-		return undef;
-	}
 	my $html = LWP::Simple::get($url);
 	if($opt->{strip}) {
 		$html =~ s/.*<body[^>]*>//si;

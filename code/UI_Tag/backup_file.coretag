@@ -1,10 +1,11 @@
 UserTag backup-file Order file
 UserTag backup-file AddAttr
 UserTag backup-file Routine <<EOR
+require File::Copy;
+require File::Path;
+require File::Basename;
 sub {
 	my ($file, $opt) = @_;
-	require File::Copy;
-	require File::Path;
 	my $bu_file = "backup/$file";
 	$bu_file =~ s://+:/:g ;
 	$bu_file =~ m:(.*)/: ;

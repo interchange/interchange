@@ -26,6 +26,11 @@ sub {
 	}
 	return $Tag->area($default) if ! $href;
 	my $form = '';
+	if($opt->{var_exclude}) {
+		for(split /[\s,\0]+/, $opt->{var_exclude}) {
+			$var_exclude{$_} = 1;
+		}
+	}
 	for(grep !$var_exclude{$_}, keys %$cgi) {
 		$form .= "\n$_=";
 		$form .= join("\n$_=", split /\0/, $cgi->{$_});
