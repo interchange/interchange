@@ -238,16 +238,26 @@ sub {
 		$Scratch->{$opt->{next_text}} = $Tag->return_to('click', 1);
 	}
 	else {
-		$ntext = $Scratch->{$opt->{next_text}} = <<EOF;
+		if($opt->{action_click}) {
+			$ntext = <<EOF;
+mv_todo=return
+mv_click=$opt->{action_click}
+EOF
+		}
+		else {
+			$ntext = <<EOF;
 mv_todo=return
 mv_click=ui_override_next
 EOF
+		}
+		$Scratch->{$opt->{next_text}} = $ntext;
+
 		my $hidgo = $opt->{hidden}{ui_return_to} || $CGI->{return_to};
 		$hidgo =~ s/\0.*//s;
 		$ctext = $Scratch->{$opt->{cancel_text}} = <<EOF;
 mv_form_profile=
 mv_nextpage=$hidgo
-mv_todo=return
+mv_todo=back
 EOF
 		if($opt->{mv_prevpage}) {
 			$btext = $Scratch->{$opt->{back_text}} = <<EOF;
