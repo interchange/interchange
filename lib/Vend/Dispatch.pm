@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.2 2002-09-27 07:16:55 mheins Exp $
+# $Id: Dispatch.pm,v 1.3 2002-10-30 17:39:06 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.3 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1367,7 +1367,7 @@ EOF
 		$CGI::values{mv_todo} = $CGI::values{mv_action}
 			if ! defined $CGI::values{mv_todo}
 			and ! defined $CGI::values{mv_doit};
-		$Vend::Action = 'process';
+		$Vend::Action = $CGI->{mv_ui} ? 'ui' : 'process';
 		$CGI::values{mv_nextpage} = $Vend::FinalPath
 			if ! defined $CGI::values{mv_nextpage};
 	}

@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.19 2002-10-14 20:05:33 mheins Exp $
+# $Id: Form.pm,v 2.20 2002-10-30 17:39:06 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -37,7 +37,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.19 $, 10);
+$VERSION = substr(q$Revision: 2.20 $, 10);
 
 @EXPORT = qw (
 	display
@@ -684,11 +684,17 @@ If you want another behavior the same widget can be constructed with:
 sub yesno {
 	my $opt = shift;
 	$opt->{value} = is_yes($opt->{value});
-	my @opts = (
+	my @opts;
+	my $routine = $opt->{subwidget} || \&dropdown;
+	if($opt->{variant} eq 'checkbox') {
+		@opts = [1, ' '];
+	}
+	else {
+		@opts = (
 					['', errmsg('No')],
 					['1', errmsg('Yes')],
 				);
-	my $routine = $opt->{subwidget} || \&dropdown;
+	}
 	return $routine->($opt, \@opts);
 }
 

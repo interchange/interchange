@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.16 2002-10-27 05:09:39 mheins Exp $
+# $Id: Editor.pm,v 1.17 2002-10-30 17:39:06 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.16 $, 10);
+$VERSION = substr(q$Revision: 1.17 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -331,6 +331,8 @@ sub display {
 			}
 		}
 
+		$record->{type} ||= $opt->{default_widget};
+
 		$record->{name} ||= $column;
 #::logDebug("record now=" . ::uneval($record));
 
@@ -390,7 +392,17 @@ sub display {
 #::logDebug("formatting prepend/append");
 		for(qw/append prepend/) {
 			next unless $record->{$_};
-			$record->{$_} = expand_values($record->{$_});
+			if($opt->{restrict_allow}) {
+				$record->{$_} = $Tag->restrict({
+									log => 'none',
+									enable => $opt->{restrict_allow},
+									disable => $opt->{restrict_deny},
+									body => $record->{$_},
+								});
+			}
+			else {
+				$record->{$_} = expand_values($record->{$_});
+			}
 			$record->{$_} = Vend::Util::resolve_links($record->{$_});
 			$record->{$_} =~ s/_UI_VALUE_/$opt->{value}/g;
 			$record->{$_} =~ /_UI_URL_VALUE_/
@@ -1096,6 +1108,7 @@ sub resolve_options {
 		data_cell_style
 		data_row_class
 		data_row_style
+		default_widget
 		file_upload
 		help_cell_class
 		help_cell_style
@@ -1698,7 +1711,7 @@ EOF
 
 	my $key_message;
 	if($opt->{ui_new_item} and ! $opt->{notable}) {
-		if( ! $db->config('_Auto_number') ) {
+		if( ! $db->config('_Auto_number') and ! $db->config('AUTO_SEQUENCE') ) {
 			$db->config('AUTO_NUMBER', '000001');
 			$key = $db->autonumber($key);
 		}
@@ -1917,7 +1930,13 @@ EOF
 
 	my $url_base = $opt->{secure} ? $Vend::Cfg->{SecureURL} : $Vend::Cfg->{VendURL};
 
-	$opt->{href} = "$url_base/ui" if ! $opt->{href};
+	if(! $opt->{href}) {
+		$opt->{href} = $opt->{mv_nextpage};
+		$opt->{hidden}{mv_ui} = 1
+			if $Vend::admin and ! defined $opt->{hidden}{mv_ui};
+		$opt->{hidden}{mv_action} = $opt->{action};
+	}
+
 	$opt->{href} = "$url_base/$opt->{href}"
 		if $opt->{href} !~ m{^(https?:|)/};
 
@@ -1935,6 +1954,7 @@ EOF
 
 	my $restrict_begin;
 	my $restrict_end;
+
 	if($opt->{reparse} and ! $opt->{promiscuous}) {
 		$restrict_begin = qq{[restrict allow="$opt->{restrict_allow}"]};
 		$restrict_end = '[/restrict]';
@@ -2711,7 +2731,6 @@ $l_pkey</td>};
 				unless $do and ! $opt->{mailto};
 		}
 
-		my $type;
 		my $overridden;
 
 		$currval = $data->{$col} if defined $data->{$col};
@@ -2783,7 +2802,8 @@ $l_pkey</td>};
 		$namecol = $col unless $namecol;
 
 #::logDebug("display_only=$do col=$c");
-		$type = $widget->{$c} = 'value' if $do and ! ($opt->{wizard} || $opt->{mailto});
+		$widget->{$c} = 'value'
+			if $do and ! ($opt->{wizard} || $opt->{mailto});
 
 		if (! length $currval and defined $default->{$c}) {
 			$currval = $default->{$c};
@@ -2878,7 +2898,7 @@ EOF
 			}
 		}
 
-#::logDebug("col=$c currval=$currval widget=$widget->{$c} label=$label->{$c} (type=$type)");
+#::logDebug("col=$c currval=$currval widget=$widget->{$c} label=$label->{$c}");
 		my $display = display($t, $c, $key, {
 							append				=> $append->{$c},
 							applylocale			=> 1,
@@ -2886,6 +2906,7 @@ EOF
 							column				=> $c,
 							db					=> $database->{$c},
 							default				=> $currval,
+							default_widget		=> $opt->{default_widget},
 							extra				=> $extra->{$c},
 							fallback			=> 1,
 							field				=> $field->{$c},
@@ -2910,9 +2931,10 @@ EOF
 							pre_filter			=> $pre_filter->{$c},
 							prepend				=> $prepend->{$c},
 							return_hash			=> 1,
+							restrict_allow      => $opt->{restrict_allow},
 							specific			=> $opt->{ui_meta_specific},
 							table				=> $t,
-							type				=> $widget->{$c} || $type,
+							type				=> $widget->{$c},
 							ui_no_meta_display	=> $opt->{ui_no_meta_display},
 							width				=> $width->{$c},
 						});
@@ -2991,6 +3013,7 @@ EOF
 	$::Scratch->{mv_data_enable} = '';
 	if($opt->{auto_secure}) {
 		$::Scratch->{mv_data_enable} .= "$table:" . join(",", @data_enable) . ':';
+		$::Scratch->{mv_data_enable} .=  $opt->{item_id};
 		$::Scratch->{mv_data_enable_key} = $opt->{item_id};
 	}
 	if(@ext_enable) {

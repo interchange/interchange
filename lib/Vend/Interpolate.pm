@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.122 2002-10-29 17:04:32 jon Exp $
+# $Id: Interpolate.pm,v 2.123 2002-10-30 17:39:06 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.122 $, 10);
+$VERSION = substr(q$Revision: 2.123 $, 10);
 
 @EXPORT = qw (
 
@@ -628,10 +628,14 @@ sub interpolate_html {
 	my ($name, @post);
 	my ($bit, %post);
 
-	defined $::Variable->{MV_AUTOLOAD}
-		and $html =~ s/^/$::Variable->{MV_AUTOLOAD}/;
-
+	my $toplevel;
+	if(defined $Vend::PageInit and ! $Vend::PageInit) {
+		defined $::Variable->{MV_AUTOLOAD}
+			and $html =~ s/^/$::Variable->{MV_AUTOLOAD}/;
+		$toplevel = 1;
+	}
 #::logDebug("opt=" . uneval($opt));
+
 	vars_and_comments(\$html)
 		unless $opt and $opt->{onfly};
 
@@ -639,6 +643,12 @@ sub interpolate_html {
 	my $parse = new Vend::Parse;
 	$parse->parse($html);
 	while($parse->{_buf}) {
+		if($toplevel and $parse->{SEND}) {
+			delete $parse->{SEND};
+			substitute_image(\$parse->{OUT});
+			::response(\$parse->{OUT});
+			$parse->{OUT} = '';
+		}
 		$parse->parse('');
 	}
 	substitute_image(\$parse->{OUT});
