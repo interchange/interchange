@@ -1,5 +1,5 @@
   <center>
-    <p><a href="http://www.akopia.com/interchange"><img src="__THEME_IMG_DIR__poweredby.gif" border="0"></a></p>
+    <p><a href="http://interchange.redhat.com"><img src="__THEME_IMG_DIR__poweredby.gif" border="0"></a></p>
     [if type=explicit compare="__MV_DEMO_MODE__"]
       <p>[page admin/index]Admin</a></p>
     [/if]
@@ -8,6 +8,8 @@
   </td>
 </tr>
 </table>
+
+<br>
 
 </body>
 </html>
