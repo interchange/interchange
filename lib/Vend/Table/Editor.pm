@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.11 2002-10-03 17:26:29 mheins Exp $
+# $Id: Editor.pm,v 1.12 2002-10-04 13:40:17 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.11 $, 10);
+$VERSION = substr(q$Revision: 1.12 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -1481,6 +1481,7 @@ EOF
 		$prof .= "\n" unless $prof =~ /\n\s*\z/;
 		if(ref $check) {
 			while ( my($k, $v) = each %$check ) {
+				next unless length $v;
 				$error->{$k} = 1;
 				$v =~ s/\s+$//;
 				$v =~ s/^\s+//;
@@ -1568,6 +1569,12 @@ EOF
 			or return $die->("table-editor: bad table '%s'", $table);
 	}
 
+	$opt->{ui_data_fields} =~ s/[,\0\s]+/ /g;
+
+	if($opt->{ui_wizard_fields}) {
+		$opt->{ui_data_fields} = $opt->{ui_display_only} = $opt->{ui_wizard_fields};
+	}
+
 	if(! $opt->{ui_data_fields}) {
 		if( $opt->{notable}) {
 			::logError("table_editor: no place to get fields!");
@@ -1576,12 +1583,6 @@ EOF
 		else {
 			$opt->{ui_data_fields} = join " ", $db->columns();
 		}
-	}
-
-	$opt->{ui_data_fields} =~ s/[,\0\s]+/ /g;
-
-	if($opt->{ui_wizard_fields}) {
-		$opt->{ui_data_fields} = $opt->{ui_display_only} = $opt->{ui_wizard_fields};
 	}
 
 	my $keycol;
