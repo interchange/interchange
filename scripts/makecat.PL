@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.26.4.6 2000-11-20 13:29:41 racke Exp $
+# $Id: makecat.PL,v 1.26.4.7 2000-12-05 14:37:01 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -737,8 +737,12 @@ unless (-f $Configfile) {
 }
 
 $Cfg = new IniConf -file => $Configfile;
-
-die "Can't read config file $Configfile: $!\n" unless defined $Cfg;
+unless ($Cfg) {
+	if (@IniConf::errors) {
+		print join("\n", @IniConf::errors, '');
+	}
+	die "Can't parse config file $Configfile\n";
+}
 my @parms;
 
 unless($Reconfigure or $Cfg->val('base', 'vendroot')) {
@@ -2075,7 +2079,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.26.4.6 2000-11-20 13:29:41 racke Exp $
+$Id: makecat.PL,v 1.26.4.7 2000-12-05 14:37:01 racke Exp $
 
 =head1 INTRODUCTION
 
