@@ -1,6 +1,6 @@
 #$self = {
-#	INSTALLPRIVLIB => '/usr/local/minivend/lib',
-#	INSTALLARCHLIB => '/usr/local/minivend',
+#	INSTALLPRIVLIB => '/usr/local/interchange/lib',
+#	INSTALLARCHLIB => '/usr/local/interchange',
 #};
 
 use Config;
@@ -42,9 +42,9 @@ DOIT: {
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-use lib '/usr/local/minivend/lib';
+use lib '/usr/local/interchange/lib';
 #use lib '~_~INSTALLPRIVLIB~_~';
-use lib '/usr/local/minivend';
+use lib '/usr/local/interchange';
 #use lib '~_~INSTALLARCHLIB~_~';
 
 BEGIN {
@@ -52,7 +52,7 @@ BEGIN {
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
 		if defined $ENV{MINIVEND_ROOT};
 
-$Global::VendRoot = $Global::VendRoot || '/usr/local/minivend';
+$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
 #$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
 	$Global::ErrorFile = "$Global::VendRoot/error.log";
 }

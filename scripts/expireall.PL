@@ -1,6 +1,6 @@
 #$self = {
-#	INSTALLPRIVLIB => '/usr/local/minivend/lib',
-#	INSTALLARCHLIB => '/usr/local/minivend',
+#	INSTALLPRIVLIB => '/usr/local/interchange/lib',
+#	INSTALLARCHLIB => '/usr/local/interchange',
 #};
 
 use Config;
@@ -26,14 +26,14 @@ DOIT: {
 # expireall - Expire all interchange catalogs
 #
 
-use lib '/usr/local/minivend/lib';
+use lib '/usr/local/interchange/lib';
 #use lib '~_~INSTALLPRIVLIB~_~';
-use lib '/usr/local/minivend';
+use lib '/usr/local/interchange';
 #use lib '~_~INSTALLARCHLIB~_~';
 
 use Getopt::Std;
 
-$VendRoot = $VendRoot || '/usr/local/minivend';
+$VendRoot = $VendRoot || '/usr/local/interchange';
 #$VendRoot = $VendRoot || '~_~INSTALLARCHLIB~_~';
 
 ## END CONFIGURABLE VARIABLES
@@ -106,7 +106,7 @@ expireall -- Run Interchange expire on all catalogs
 
 =head1 VERSION
 
-$Id: expireall.PL,v 1.4 2000-09-19 18:40:29 zarko Exp $
+$Id: expireall.PL,v 1.5 2000-09-20 19:58:01 zarko Exp $
 
 =head1 DESCRIPTION
 

@@ -1,6 +1,6 @@
 #$self = {
-#	INSTALLPRIVLIB => '/usr/local/minivend/lib',
-#	INSTALLARCHLIB => '/usr/local/minivend',
+#	INSTALLPRIVLIB => '/usr/local/interchange/lib',
+#	INSTALLARCHLIB => '/usr/local/interchange',
 #};
 
 use Config;
@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange link program configurator
 #
-# $Id: compile_link.PL,v 1.4 2000-09-19 18:40:28 zarko Exp $
+# $Id: compile_link.PL,v 1.5 2000-09-20 19:58:01 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -46,9 +46,9 @@ DOIT: {
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-use lib '/usr/local/minivend/lib';
+use lib '/usr/local/interchange/lib';
 #use lib '~_~INSTALLPRIVLIB~_~';
-use lib '/usr/local/minivend';
+use lib '/usr/local/interchange';
 #use lib '~_~INSTALLARCHLIB~_~';
 
 use Getopt::Long;
@@ -58,19 +58,19 @@ my $Self = {
 	LINK_HOST      => 'localhost',
 	LINK_PORT      => 7786,
 	LINK_TIMEOUT   => 30,
-	LINK_FILE      => '/usr/local/minivend/etc/socket',
+	LINK_FILE      => '/usr/local/interchange/etc/socket',
 #	LINK_FILE      => '~_~INSTALLARCHLIB~_~/etc/socket',
-	SRC_DIR        => '/usr/local/minivend/src',
+	SRC_DIR        => '/usr/local/interchange/src',
 #	SRC_DIR        => '~_~INSTALLARCHLIB~_~/src',
-	INSTALLPRIVLIB => '/usr/local/minivend/lib',
+	INSTALLPRIVLIB => '/usr/local/interchange/lib',
 #	INSTALLPRIVLIB => '~_~INSTALLPRIVLIB~_~',
-	INSTALLARCHLIB => '/usr/local/minivend',
+	INSTALLARCHLIB => '/usr/local/interchange',
 #	INSTALLARCHLIB => '~_~INSTALLARCHLIB~_~',
-	INSTALLMAN1DIR => '/usr/local/minivend/doc',
+	INSTALLMAN1DIR => '/usr/local/interchange/doc',
 #	INSTALLMAN1DIR => '~_~INSTALLMAN1DIR~_~',
-	INSTALLSCRIPT => '/usr/local/minivend/bin',
+	INSTALLSCRIPT => '/usr/local/interchange/bin',
 #	INSTALLSCRIPT => '~_~INSTALLARCHLIB~_~/bin',
-	INSTALLBIN => '/usr/local/minivend/bin',
+	INSTALLBIN => '/usr/local/interchange/bin',
 #	INSTALLBIN => '~_~INSTALLBIN~_~',
 };
 
