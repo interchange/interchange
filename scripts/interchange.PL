@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.0
 #
-# $Id: interchange.PL,v 1.15.2.17 2001-03-06 15:28:02 heins Exp $
+# $Id: interchange.PL,v 1.15.2.18 2001-03-08 13:53:12 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -1551,7 +1551,6 @@ sub adjust_cgi {
 
     $CGI::user = $CGI::remote_user if $CGI::remote_user;
 	undef $CGI::authorization if $CGI::remote_user;
-	$Vend::Cookie = $CGI::cookie;
 
 	unless ($Global::FullUrl) {
 		$CGI::script_name = $CGI::script_path;
@@ -1755,7 +1754,6 @@ EOF
 	$CGI::user = Vend::Util::check_authorization($CGI::authorization)
 		if defined $CGI::authorization;
 
-	my $from_cookie;
 	$sessionid = $CGI::values{mv_session_id} || undef;
 
 	if (defined $CGI::cookie and
@@ -1773,7 +1771,7 @@ EOF
 			unless defined $CGI::values{mv_pc} and $CGI::values{mv_pc} eq 'RESET';
 		$CGI::cookiehost = $3;
 		$CGI::cookieuser = $4;
-		$from_cookie = 1;
+		$Vend::CookieID = $Vend::Cookie = 1;
     }
 
 	$CGI::host = 'nobody' if $Vend::Cfg->{WideOpen};
@@ -1816,7 +1814,7 @@ RESOLVEID: {
 			last RESOLVEID;
 		}
 		my $now = time;
-		if(! $from_cookie) {
+		if(! $Vend::CookieID) {
 			if( is_retired($sessionid) ) {
 				new_session();
 				last RESOLVEID;

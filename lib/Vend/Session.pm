@@ -1,6 +1,6 @@
 # Session.pm - Interchange Sessions
 #
-# $Id: Session.pm,v 1.7.2.3 2001-02-26 00:55:33 heins Exp $
+# $Id: Session.pm,v 1.7.2.4 2001-03-08 13:53:18 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -30,7 +30,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.7.2.3 $, 10);
+$VERSION = substr(q$Revision: 1.7.2.4 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -232,7 +232,8 @@ sub new_session {
 		}
     }
 	count_ip(1);
-	$CGI::cookie = $Vend::Cookie = '';
+	undef $Vend::CookieID;
+	undef $Vend::Cookie;
     $Vend::SessionName = $name;
     init_session();
 #::logDebug("init_session $Vend::SessionName is: " . ::uneval($Vend::Session));

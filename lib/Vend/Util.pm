@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.12 2001-02-28 20:23:38 heins Exp $
+# $Id: Util.pm,v 1.14.2.13 2001-03-08 13:53:18 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -79,7 +79,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.12 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.13 $, 10);
 
 BEGIN {
 	eval {
@@ -1040,7 +1040,7 @@ sub vendUrl {
 
 	my($id, $ct);
 	$id = $Vend::SessionID
-		unless $can_cache and $CGI::cookie && $::Scratch->{mv_no_session_id};
+		unless $can_cache and $Vend::Cookie && $::Scratch->{mv_no_session_id};
 	$ct = ++$Vend::Session->{pageCount}
 		unless $can_cache and $::Scratch->{mv_no_count};
 

@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.21 2001-03-07 17:54:45 heins Exp $
+# $Id: Server.pm,v 1.8.2.22 2001-03-08 13:53:17 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.21 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.22 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -451,7 +451,7 @@ sub respond {
 		else { print $fh "HTTP/1.0 $status\r\n"; }
 	}
 
-	if ( (	! $CGI::cookie && ! $::Instance->{CookiesSet}
+	if ( (	! $Vend::CookieID && ! $::Instance->{CookiesSet}
 			or defined $Vend::Expire
 			or defined $::Instance->{Cookies}
 		  )

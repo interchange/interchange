@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.25 2001-03-07 17:57:48 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.26 2001-03-08 13:53:16 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.25 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.26 $, 10);
 
 @EXPORT = qw (
 
@@ -5696,7 +5696,7 @@ sub timed_build {
 
 	return Vend::Interpolate::interpolate_html(shift)
 		if $abort
-		or !  $CGI::cookie
+		or ! $Vend::Cookie
 		or $Vend::BuildingPages
 		or ! $opt->{login} && $Vend::Session->{logged_in};
 
