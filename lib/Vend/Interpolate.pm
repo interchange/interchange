@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.38 2002-01-16 02:10:19 jon Exp $
+# $Id: Interpolate.pm,v 2.39 2002-01-16 05:16:12 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.38 $, 10);
+$VERSION = substr(q$Revision: 2.39 $, 10);
 
 @EXPORT = qw (
 
@@ -5725,7 +5725,6 @@ sub tag_loop_list {
 
 	my $delim;
 
-  RESOLVELOOP: {
 	if($opt->{search}) {
 #::logDebug("loop resolve search");
 		if($opt->{more} and $Vend::More_in_progress) {
@@ -5742,31 +5741,31 @@ sub tag_loop_list {
 		$opt->{lr} = 1 unless
 						defined $opt->{lr}
 						or $opt->{quoted};
-		redo RESOLVELOOP;
 	}
-	elsif ($opt->{lr}) {
+
+	if ($fn = $opt->{fn} || $opt->{mv_field_names}) {
+		$fn = [ grep /\S/, split /[\s,]+/, $fn ];
+	}
+
+	if ($opt->{lr}) {
 #::logDebug("loop resolve line");
 		$list =~ s/^\s+//;
 		$list =~ s/\s+$//;
-		last RESOLVELOOP unless $list;
-		$delim	 = $opt->{delimiter} || "\t";
-		my $splittor = $opt->{record_delim} || "\n";
-		if ($splittor eq "\n") {
-			$list =~ s/\r\n/\n/g;
-		}
+		if ($list) {
+			$delim = $opt->{delimiter} || "\t";
+			my $splittor = $opt->{record_delim} || "\n";
+			if ($splittor eq "\n") {
+				$list =~ s/\r\n/\n/g;
+			}
 
-		eval {
-			@rows = map { [ split /\Q$delim/o, $_ ] } split /\Q$splittor/, $list;
-		};
+			eval {
+				@rows = map { [ split /\Q$delim/o, $_ ] } split /\Q$splittor/, $list;
+			};
+		}
 	}
 	elsif($opt->{acclist}) {
 #::logDebug("loop resolve acclist");
-		if($fn = $opt->{fn} || $opt->{mv_field_names}) {
-			$fn = [ grep /\S/, split /[\s,]+/, $fn ];
-		}
-		else {
-			$fn = [ qw/option label/ ];
-		}
+		$fn = [ qw/option label/ ] unless $fn;
 		eval {
 			my @items = split /\s*,\s*/, $list;
 			for(@items) {
@@ -5794,14 +5793,19 @@ sub tag_loop_list {
 			@rows = map { [$_] } @l;
 		};
 	}
-  }
+
 	if($@) {
 		::logError("bad split delimiter in loop list: $@");
 #::logDebug("loop resolve error $@");
 	}
+
+	# head_skip pulls rows off the top, and uses the last row to
+	# set the field names if mv_field_names/fn option was not set
 	if ($opt->{head_skip}) {
 		my $i = 0;
-		$fn = shift(@rows) while $i++ < $opt->{head_skip};
+		my $last_row;
+		$last_row = shift(@rows) while $i++ < $opt->{head_skip};
+		$fn ||= $last_row;
 	}
 
 	$opt->{object} = {
