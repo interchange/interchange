@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/sh -e
 #
 # interchange.init - Interchange start-stop script
 #
@@ -10,36 +10,18 @@ NAME=interchange
 DESC="Interchange Server"
 USERNAME=interchange
 
+test -f $DAEMON || exit 0
+
 # modes that Interchange uses 
 # possible values are
 # --unix            Unix mode only (default)
 # --inetmode        Internet mode only
 # --unix --inetmode Unix and Internet mode
-: ${MODE="--unix"}
-
-test -f $DAEMON || exit 0
-
-function check_mode () {
-	 echo -n "Check which mode(s) the Interchange Server should use: "
-	 db_get interchange/mode
-	 echo $RET
-	 case "$RET" in
-		 "unix mode") : MODE=--unix;;
-		 "internet mode") MODE=--inetmode;;
-		 "both") MODE="";;
-	 esac
-	 db_stop
-}
-
-set -e
+MODE="--unix"
+. /etc/interchange/init.cfg
 
 case "$1" in
   start)
-	 # Source debconf library.
-	 . /usr/share/debconf/confmodule
-
-	check_mode
-
 	echo -n "Starting $DESC: "
 	start-stop-daemon --start --quiet --pidfile /var/run/interchange/$NAME.pid \
 		--chuid $USERNAME --exec $DAEMON -- --serve $MODE \
@@ -71,15 +53,10 @@ case "$1" in
 	#	just the same as "restart".
 	#
 
-	# Source debconf library.
-	. /usr/share/debconf/confmodule
-
 	echo -n "Restarting $DESC: "
 	start-stop-daemon --stop --pidfile /var/run/interchange/$NAME.pid
 	echo "$NAME."
     sleep 1
-
-	check_mode
 
     start-stop-daemon --start --quiet --pidfile /var/run/interchange/$NAME.pid \
 		--chuid $USERNAME --exec $DAEMON -- --serve $MODE \
