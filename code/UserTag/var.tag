@@ -1,6 +1,6 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org)
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: var.tag,v 1.8 2004-09-24 12:01:48 docelic Exp $
+# $Id: var.tag,v 1.9 2004-09-24 15:30:23 docelic Exp $
 
 UserTag var Interpolate 1
 UserTag var Order name global filter

@@ -1,6 +1,6 @@
-# Copyright 2002,2004 Interchange Development Group (http://www.icdevgroup.org)
+# Copyright 2002, 2004 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: button.tag,v 1.13 2004-09-24 12:20:55 docelic Exp $
+# $Id: button.tag,v 1.14 2004-09-24 15:30:23 docelic Exp $
 
 UserTag button Order name src text
 UserTag button addAttr
@@ -165,8 +165,7 @@ sub {
 
 	my $position = '';
 	for(qw/height width vspace hspace align/) {
-		# QUOTING (needs fix?)
-		$position .= " $_=$opt->{$_}" if $opt->{$_};
+		$position .= " $_='$opt->{$_}'" if $opt->{$_};
 	}
 
 	my $anchor = '';
@@ -188,7 +187,7 @@ sub {
 	$out .= <<EOF;
 <a href="$opt->{link_href}"$opt->{extra} onMouseOver="window.status='$wstatus'"
 	onClick="$confirm mv_click_map_unique(document.$opt->{form}, '$clickname', '$text') && $opt->{form}.submit(); return(false);"
-	alt="$wstatus"><img alt="$wstatus" src="$src" border=$opt->{border}$position>$a_before$anchor$a_after
+	alt="$wstatus"><img alt="$wstatus" src="$src" border='$opt->{border}'$position>$a_before$anchor$a_after
 EOF
 
 	my $function = '';
