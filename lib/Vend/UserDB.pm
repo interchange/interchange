@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.13.6.9 2001-03-07 17:57:49 heins Exp $
+# $Id: UserDB.pm,v 1.13.6.10 2001-03-14 18:29:31 jason Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.13.6.9 $, 10);
+$VERSION = substr(q$Revision: 1.13.6.10 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -1242,8 +1242,13 @@ sub get_cart {
 		return undef;
 	}
 #::logDebug ("to=$to nick=$options{target} from=$from cart=" . ::uneval_it($cart));
-	@$to = @$cart;
 
+	if($options{merge}) {
+		$to = [] unless ref $to;
+		push(@$to,@$cart);
+	} else {
+		@$to = @$cart;
+	}
 }
 
 sub set_cart {
