@@ -5,10 +5,14 @@
 ------------------------------------------------------------------------------
 
 
-Interchange 4.8.6 not yet released.
+Interchange 4.8.6 
 
 Core
 ----
+
+* IMPORTANT: All Interchange installations should update to 4.8.6.
+
+* Close serious security hole that can occur when running in INET mode.
 
 * Global configuration directive LockType works now as advertised in the
   documentation (problem reported by Bill Carr <bill@worldwideimpact.com>).
@@ -146,6 +150,11 @@ Packaging
 
 * Fix bug in Makefile.PL when nocopy option passed, which wasn't fatal
   before Perl 5.8.0.
+
+* Moved man pages in "doc" directory to "man".
+
+* Added code to makecat to enable turning on INET mode and setting
+  TcpMap when making a catalog using INET mode.
 
 I18N
 ----
