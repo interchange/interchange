@@ -203,7 +203,7 @@ sub {
 					name => $desc,
 					inactive => 0,
 					page => $sku,
-				};
+				} unless $opt->{no_leafs};
 			}
 
 			for(@rows) {
