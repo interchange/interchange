@@ -1,6 +1,6 @@
 # Vend::Payment - Interchange payment processing routines
 #
-# $Id: Payment.pm,v 2.11 2003-06-18 17:34:44 jon Exp $
+# $Id: Payment.pm,v 2.12 2003-11-13 16:12:41 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -23,7 +23,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.11 $, 10);
+$VERSION = substr(q$Revision: 2.12 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -180,15 +180,52 @@ sub map_actual {
 	my %actual;
 	my $key;
 
+	my %billing_set;
+	my @billing_set = qw/
+							b_address1
+							b_address2
+							b_address3
+							b_city
+							b_state
+							b_zip
+							b_country
+						/;
+
+	my @billing_ind = qw/
+							b_address1
+							b_city
+						/;
+
+	if(my $str = $::Variable->{MV_PAYMENT_BILLING_SET}) {
+		@billing_set = grep $_ !~ /\W/, split /[\s,\0]+/, $str;
+	}
+	if(my $str = $::Variable->{MV_PAYMENT_BILLING_INDICATOR}) {
+		@billing_ind = grep $_ !~ /\W/, split /[\s,\0]+/, $str;
+	}
+
+	@billing_set{@billing_set} = @billing_set;
+
+	my $no_billing_xfer = 1;
+
+	for(@billing_ind) {
+		$no_billing_xfer = 0  unless length($vref->{$_});
+	}
+
 	# pick out the right values, need alternate billing address
 	# substitution
 	foreach $key (keys %map) {
-		$actual{$key} = $vref->{$map{$key}} || $cref->{$key}
-			and next;
+		$actual{$key} = $vref->{$map{$key}} || $cref->{$key};
 		my $secondary = $key;
 		next unless $secondary =~ s/^b_//;
+		if ($billing_set{$key}) {
+			next if $no_billing_xfer;
+			$actual{$key} = $vref->{$secondary};
+			next;
+		}
+		next if $actual{$key};
 		$actual{$key} = $vref->{$map{$secondary}} || $cref->{$map{$secondary}};
 	}
+
 	$actual{name}		 = "$actual{fname} $actual{lname}"
 		if $actual{lname};
 	$actual{b_name}		 = "$actual{b_fname} $actual{b_lname}"
