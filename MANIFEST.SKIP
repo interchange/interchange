@@ -49,6 +49,7 @@ _$
 ^lib/src/syscfg$
 ^pm_to_blib$
 ^pod/mvtags.pod$
+^pod/QuickStart.pod$
 ^run(/|$)
 ^scripts/.*[a-z]$
 ^scripts/initp.PL$
