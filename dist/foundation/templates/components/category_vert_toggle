@@ -1,0 +1,104 @@
+[comment]
+ui_component: category_vert_toggle
+ui_component_type: vertical
+ui_component_group: Navigation
+ui_component_label: Collapsable Vertical Category List
+
+page_class:
+	label: Page class
+	widget: select
+	lookup: which_page
+	db: area
+	help: Defines which sets of items should be displayed
+	advanced: 1
+
+set_selector:
+	label: Page area selector
+	widget: select
+	db: area
+	lookup: sel
+	help: Defines which sets of items should be displayed
+	advanced: 1
+[/comment]
+
+<!--- provided by Randy Moore <ramoore@axion-it.net> and Brendan Crosser-McGay <brendan@paymentonline.com> ---> 
+
+<tr><td align="left" class="categorybar">
+  <br>
+  <table width="90%" align="center" cellpadding=0 cellspacing=0 border=0>
+
+<!-- BEGIN COMPONENT [control component category_vert_toggle] -->
+[set found_cat][/set]
+[loop
+	prefix=box
+	search="
+		fi=area
+		st=db
+		tf=sort
+		ac=0
+		ac=0
+		co=yes
+		
+		sf=sel
+		op=eq
+		se=[control set_selector left]
+
+		sf=which_page
+		op=rm
+		se=[control page_class all|@@MV_PAGE@@]
+"]
+
+  <tr> 
+    <td valign="top" class="categorybar">
+      [tmp holder][cgi cats][/tmp]
+      [if scratch holder eq "[box-data area code]"]
+        <a href="[process]?mv_action=refresh&cats=&mv_nextpage=index" class="barlink"><font size="+1">-</font></a>
+      [else]
+        <a href="[process]?mv_todo=refresh&mv_nextpage=@@MV_PAGE@@&cats=[box-data area code]" class="barlink"><font size="+1">+</font></a>
+      [/else]
+      [/if]
+      <b>&nbsp;[box-exec bar_link]area[/box-exec]</b>
+    </td>
+  </tr>
+  <tr> 
+    <td valign="top" class="categorybar">
+      [set found_cat]1[/set]
+      [loop prefix=cat
+	search="
+		fi=cat
+		st=db
+		tf=sort
+		tf=name
+		rf=code,name
+		sf=sel
+		se=[box-code]
+	"]
+	[if scratch holder eq "[box-data area code]"]
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          [cat-exec bar_link]cat[/cat-exec]
+          <br>
+        [/if]
+      [/loop]
+    </td>
+  </tr>
+
+[/loop]
+[if !scratch found_cat]
+	<tr>
+		<td class="categorybar">
+[loop 
+    search="
+        ra=yes
+        tf=description
+    "
+    ]
+      &nbsp;&nbsp;[page [loop-code]][loop-field description][/page]<BR>
+[/loop]
+	  </td>
+	</tr>
+[/if]
+  </table>
+  <br>
+</td></tr>
+
+<!-- END COMPONENT [control component category_vert_toggle] -->
