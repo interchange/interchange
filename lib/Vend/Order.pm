@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.14.4.6 2001-01-31 13:29:21 racke Exp $
+# $Id: Order.pm,v 1.14.4.7 2001-02-06 18:07:57 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.14.4.6 $, 10);
+$VERSION = substr(q$Revision: 1.14.4.7 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1650,6 +1650,15 @@ sub route_order {
 	}
 
 	foreach $msg (@out) {
+	    my $func = shift (@$msg);
+		my $sub;
+		
+		if ($func =~ /^\w+$/) {
+			$sub = $Vend::Cfg->{Sub}{$func} || $Global::GlobalSub->{$func};
+		} else {
+			$sub = sub {send_mail (@_)};
+		}
+		
 		eval {
 #### change this to use Vend::Mail::send		  
 			$sub->(@$msg);
