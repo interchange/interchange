@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.19.4.3 2000-10-26 10:32:07 racke Exp $
+# $Id: DBI.pm,v 1.19.4.4 2000-10-26 19:23:03 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.19.4.3 $, 10);
+$VERSION = substr(q$Revision: 1.19.4.4 $, 10);
 
 use strict;
 
@@ -524,11 +524,9 @@ sub row_hash {
 
 sub row_settor {
 	my ($s, @columns) = @_;
-	my ($i, $haskey, @quote);
+	my ($i, $haskey);
 	for ($i = 0; $i < @columns; $i++) {
         $haskey = 1 if $columns[$i] eq $s->[$KEY];
-		push @quote, $i 
-			unless $s->[$CONFIG]{NUMERIC}{$columns[$i]};
 	}
 	return sub {
 		my(@values, @parts) = @_;
@@ -542,14 +540,11 @@ sub row_settor {
             ::logError('DBI insertion without key value and AUTO_INCREMENT set');
             return undef;
         }
-                
-		for(@quote) {
-			$values[$_] = $s->[$DBI]->quote($values[$_]);
-		}
+
 		my $key = $values[0];
 		if($update) {
             for (@columns) {
-                push (@parts, " $_ = " . shift(@values));
+                push (@parts, " $_ = " . $s->quote(shift(@values), $_));
             }
             $query = "update $s->[$TABLE] set "
                 . join (', ', @parts)
