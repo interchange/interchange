@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.12 2001-03-06 15:10:29 heins Exp $
+# $Id: DBI.pm,v 1.25.2.13 2001-03-07 17:57:51 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.12 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.13 $, 10);
 
 use strict;
 
@@ -852,6 +852,27 @@ sub field_settor {
     };
 }
 
+sub foreign {
+    my ($s, $key, $foreign) = @_;
+	$s = $s->import_db() if ! defined $s->[$DBI];
+	my $idx;
+	if( $s->[$TYPE] and $idx = $s->column_index($foreign) )  {
+		$foreign = $s->[$NAME][$idx];
+	}
+	$key = $s->[$DBI]->quote($key)
+		unless exists $s->[$CONFIG]{NUMERIC}{$foreign};
+	my $query = "select $s->[$KEY] from $s->[$TABLE] where $foreign = $key";
+#::logDebug("DBI field: key=$key column=$column query=$query");
+    my $sth;
+	eval {
+		$sth = $s->[$DBI]->prepare($query);
+		$sth->execute();
+	};
+	return '' if $@;
+	my $data = ($sth->fetchrow_array())[0];
+	return '' unless $data =~ /\S/;
+	$data;
+}
 sub field {
     my ($s, $key, $column) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];

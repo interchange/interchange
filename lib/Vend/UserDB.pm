@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.13.6.8 2001-02-26 06:13:44 heins Exp $
+# $Id: UserDB.pm,v 1.13.6.9 2001-03-07 17:57:49 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.13.6.8 $, 10);
+$VERSION = substr(q$Revision: 1.13.6.9 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -289,6 +289,7 @@ sub new {
 			PRESENT		=>	{ },
 			DB_ID		=>	$options{database} || 'userdb',
 			OPTIONS		=>	\%options,
+			OUTBOARD	=>  $options{outboard}	|| '',
 			LOCATION	=>	{
 						USERNAME	=> $options{user_field} || 'username',
 						BILLING		=> $options{bill_field} || 'accounts',
@@ -600,6 +601,12 @@ sub get_values {
 		$ignore{$_} = 1;
 	}
 
+	my %outboard;
+	if($self->{OUTBOARD}) {
+		%outboard = split /[\s=,]+/, $self->{OUTBOARD};
+		push @fields, keys %outboard;
+	}
+
 	if($self->{OPTIONS}->{scratch}) {
 		my (@s) = split /[\s,]+/, $self->{OPTIONS}{scratch} ;
 		@scratch{@s} = @s;
@@ -610,11 +617,20 @@ sub get_values {
 			$self->{PRESENT}->{$_} = 1;
 			next;
 		}
+		my $val;
+		if ($outboard{$_}) {
+			my ($t, $c, $k) = split /:+/, $outboard{$_};
+			$val = ::tag_data($t, ($c || $_), $self->{USERNAME}, { foreign => $k });
+		}
+		else {
+			$val = $self->{DB}->field($self->{USERNAME}, $_);	
+		}
+
 		if($scratch{$_}) {
-			$::Scratch->{$_} = $self->{DB}->field($self->{USERNAME}, $_);	
+			$::Scratch->{$_} = $val;
 			next;
 		}
-		$::Values->{$_} = $self->{DB}->field($self->{USERNAME}, $_);	
+		$::Values->{$_} = $val;
 	}
 
 	my $area;
@@ -650,15 +666,34 @@ sub set_values {
 		@scratch{@s} = @s;
 	}
 
+	my $val;
+	my %outboard;
+	if($self->{OUTBOARD}) {
+		%outboard = split /[\s=,]+/, $self->{OUTBOARD};
+		push @fields, keys %outboard;
+	}
+
 	for( @fields ) {
 #::logDebug("set_values saving $_ as $::Values->{$_}\n");
+		my $val;
 		if ($scratch{$_}) {
-			$self->{DB}->set_field($user, $_, $::Scratch->{$_})
+			$val = $::Scratch->{$_}
 				if defined $::Scratch->{$_};	
-			next;
 		}
-		$self->{DB}->set_field($user, $_, $::Values->{$_})
-			if defined $::Values->{$_};	
+		else {
+			$val = $::Values->{$_}
+				if defined $::Values->{$_};	
+		}
+
+		next if ! defined $val;
+
+		if($outboard{$_}) {
+			my ($t, $c, $k) = split /:+/, $outboard{$_};
+			::tag_data($t, ($c || $_), $self->{USERNAME}, { value => $val, foreign => $k });
+		}
+		else {
+			$self->{DB}->set_field($user, $_, $val);
+		}
 	}
 	1;
 }

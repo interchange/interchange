@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.17.2.11 2001-02-25 15:32:10 heins Exp $
+# $Id: Data.pm,v 1.17.2.12 2001-03-07 17:57:48 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -180,10 +180,11 @@ sub product_description {
 }
 
 sub database_field {
-    my ($db, $key, $field_name) = @_;
+    my ($db, $key, $field_name, $foreign) = @_;
     $db = database_exists_ref($db) or return undef;
-    return '' unless $db->test_record($key);
     return '' unless defined $db->test_column($field_name);
+	$key = $db->foreign($key, $foreign) if $foreign;
+    return '' unless $db->test_record($key);
     return $db->field($key, $field_name);
 }
 
@@ -274,10 +275,13 @@ sub import_text {
 }
 
 sub set_field {
-    my ($db, $key, $field_name, $value, $append) = @_;
+    my ($db, $key, $field_name, $value, $append, $foreign) = @_;
 
 	$db = database_exists_ref($db);
     return undef unless defined $db->test_column($field_name);
+
+	$key = $db->foreign($key, $foreign)
+		if $foreign;
 
 	# Create it if it doesn't exist
 	unless ($db->record_exists($key)) {

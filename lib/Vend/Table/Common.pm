@@ -1,6 +1,6 @@
 # Table/Common.pm: Common access methods for Interchange Databases
 #
-# $Id: Common.pm,v 1.16.4.4 2000-12-17 07:08:30 heins Exp $
+# $Id: Common.pm,v 1.16.4.5 2001-03-07 17:57:51 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -25,7 +25,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.16.4.4 $, 10);
+$VERSION = substr(q$Revision: 1.16.4.5 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -374,6 +374,18 @@ if($Storable) {
 else {
 	*set_row = \&stuff_row;
 	*row = \&unstuff_row;
+}
+
+sub foreign {
+    my ($s, $key, $foreign) = @_;
+	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
+	$key = $s->quote($key, $foreign);
+    my $q = "select $s->[$CONFIG]{KEY} from $s->[$CONFIG]{name} where $foreign = $key";
+::logDebug("foreign key query = $q");
+    my $ary = $s->query({ sql => $q });
+::logDebug("foreign key query returned" . ::uneval($ary));
+	return undef unless $ary and $ary->[0];
+	return $ary->[0][0];
 }
 
 sub field {

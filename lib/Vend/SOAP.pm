@@ -1,6 +1,6 @@
 # SOAP.pm:  handle SOAP connections
 #
-# $Id: SOAP.pm,v 1.1.2.5 2001-02-28 20:23:38 heins Exp $
+# $Id: SOAP.pm,v 1.1.2.6 2001-03-07 17:57:49 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -33,7 +33,7 @@ use Vend::SOAP::Transport;
 use strict;
 
 use vars qw($VERSION @ISA $AUTOLOAD);
-$VERSION = substr(q$Revision: 1.1.2.5 $, 10);
+$VERSION = substr(q$Revision: 1.1.2.6 $, 10);
 @ISA = qw/SOAP::Server/;
 
 my %Allowed_tags;
@@ -195,14 +195,14 @@ sub Values {
 	open_soap_session();
 	my $putref;
 	my $ref = $Vend::Session->{values};
-::logDebug("ref from session is " . ::uneval($ref));
+#::logDebug("ref from session is " . ::uneval($ref));
 	if($putref = shift) {
 		$ref = $Vend::Session->{values} = {}
 			if ! ref($ref);
 		%{$ref} = %{$putref};
 	}
 	close_soap_session();
-::logDebug("ref from session is now " . ::uneval($ref));
+#::logDebug("ref from session is now " . ::uneval($ref));
 	return $ref;
 }
 

@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.24 2001-03-07 15:06:31 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.25 2001-03-07 17:57:48 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.24 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.25 $, 10);
 
 @EXPORT = qw (
 
@@ -716,11 +716,10 @@ sub tag_data {
 			}
 		}
 		else {
-#::logDebug("set_field: table=$selector key=$key field=$field value=$opt->{value}");
-			if($opt->{filter}) {
-				$opt->{value} = filter_value($opt->{filter}, $opt->{value}, $field);
-			}
-			return set_field($selector,$key,$field,$opt->{value},$opt->{append});
+			$opt->{value} = filter_value($opt->{filter}, $opt->{value}, $field)
+				if $opt->{filter};
+::logDebug("set_field: table=$selector key=$key field=$field foreign=$opt->{foreign} value=$opt->{value}");
+			return set_field($selector,$key,$field,$opt->{value},$opt->{append}, $opt->{foreign});
 		}
 	}
 	elsif ($opt->{hash}) {
@@ -729,7 +728,7 @@ sub tag_data {
 	}
 
 	#The most common , don't enter a block, no accoutrements
-	return ed(database_field($selector,$key,$field));
+	return ed(database_field($selector,$key,$field,$opt->{foreign}));
 
 }
 
