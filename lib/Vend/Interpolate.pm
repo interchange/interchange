@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.96 2002-08-02 01:33:34 mheins Exp $
+# $Id: Interpolate.pm,v 2.97 2002-08-02 03:22:27 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.96 $, 10);
+$VERSION = substr(q$Revision: 2.97 $, 10);
 
 @EXPORT = qw (
 
@@ -3940,7 +3940,7 @@ sub labeled_list {
 	return '' if ! $obj;
 
 	my $ary = $obj->{mv_results};
-	return if (! $ary or ! ref $ary or ! $text or ! defined $ary->[0]);
+	return if (! $ary or ! ref $ary or ! defined $ary->[0]);
 	
 	my $save_unsafe = $MVSAFE::Unsafe || '';
 	$MVSAFE::Unsafe = 1;
@@ -4311,8 +4311,10 @@ sub iterate_array_list {
 	my ($i, $end, $count, $text, $ary, $opt_select, $fh, $opt) = @_;
 
 	my $r = '';
+	$opt ||= {};
+
 	# Optimize for no-match, on-match, etc
-	if($text !~ /\[(?:if-)?$Prefix-/) {
+	if(! $opt->{iterator} and $text !~ /\[(?:if-)?$Prefix-/) {
 		for(; $i <= $end; $i++) {
 			$r .= $text;
 		}
@@ -4349,6 +4351,24 @@ my $once = 0;
 		$Vend::Cfg->{Sub}{$name} = $sub;
 	}
 
+	my $oexec = { %$opt };
+
+	if($opt->{iterator}) {
+		my $sub = $Vend::Cfg->{Sub}{$opt->{iterator}}
+				|| $Global::GlobalSub->{$opt->{iterator}};
+		if(! $sub) {
+			logError(
+				"list iterator subroutine '%s' called but not defined. Skipping.",
+				$opt->{iterator},
+			);
+			return '';
+		}
+		for( ; $i <= $end ; $i++ ) {
+			$r .= $sub->($text, $ary->[$i], $oexec);
+		}
+		return $r;
+	}
+
 	1 while $text =~ s{(\[(if[-_]$Prefix[-_][a-zA-Z]+)(?=.*\[\2)\s.*\[/\2\])}
 					  {
 					  	resolve_nested_if($1, $2)
@@ -4362,9 +4382,6 @@ my $once = 0;
 		::logOnce(@field_msg, $1, "$Orig_prefix-param") #ige;
 	$run =~ s#$IB$QR{_param_if}# defined $fh->{$3} ||
 		::logOnce(@field_msg, $3, "if-$Orig_prefix-param") #ige;
-
-	$opt ||= {};
-	my $oexec = { %$opt };
 
 	for( ; $i <= $end ; $i++, $count++ ) {
 		$row = $ary->[$i];
@@ -4450,18 +4467,16 @@ sub iterate_hash_list {
 	my($i, $end, $count, $text, $hash, $opt_select, $opt) = @_;
 
 	my $r = '';
+	$opt ||= {};
 
 	# Optimize for no-match, on-match, etc
-	# Ugly second regex is for quantity-name/modifier-name, wish they would
-	# go away
-	if($text !~ /\[/) {
+	if(! $opt->{iterator} and $text !~ /\[/) {
 		for(; $i <= $end; $i++) {
 			$r .= $text;
 		}
 		return $r;
 	}
 
-	$opt ||= {};
 	my $code_field = $opt->{code_field} || 'mv_sku';
 	my ($run, $code, $return, $item);
 
@@ -4485,12 +4500,30 @@ sub iterate_hash_list {
 	}
 #::logDebug("subhidden: $opt->{subhidden}");
 
+	my $oexec = { %$opt };
+
+	if($opt->{iterator}) {
+		my $sub = $Vend::Cfg->{Sub}{$opt->{iterator}}
+				|| $Global::GlobalSub->{$opt->{iterator}};
+		if(! $sub) {
+			logError(
+				"list iterator subroutine '%s' called but not defined. Skipping.",
+				$opt->{iterator},
+			);
+			return '';
+		}
+
+		for( ; $i <= $end ; $i++ ) {
+			$r .= $sub->($text, $hash->[$i], $oexec);
+		}
+		return $r;
+	}
+
 	1 while $text =~ s{(\[(if[-_]$Prefix[-_][a-zA-Z]+)(?=.*\[\2)\s.*\[/\2\])}
 					  {
 					  	resolve_nested_if($1, $2)
 					  }se;
 
-	my $oexec = { %$opt };
 
 	for ( ; $i <= $end; $i++, $count++) {
 		$item = $hash->[$i];
