@@ -1,5 +1,5 @@
 LICENSE
-MANIFEST			This list of files
+MANIFEST
 MANIFEST.SKIP
 Makefile.PL
 README
@@ -20,6 +20,7 @@ code/Filter/lc.filter
 code/Filter/line.filter
 code/Filter/linkdecode.filter
 code/Filter/next_sequential.filter
+code/Filter/qb_safe.filter
 code/SystemTag/accessories.coretag
 code/SystemTag/accounting.coretag
 code/SystemTag/area.coretag
@@ -258,7 +259,6 @@ dist/catalog_after.cfg
 dist/catalog_before.cfg
 dist/error.log
 dist/etc/.empty
-dist/etc/jobs/i18n/update_locales
 dist/foundation/backup/.empty
 dist/foundation/catalog.cfg
 dist/foundation/config/additional_fields
@@ -1203,21 +1203,25 @@ eg/usps/makezone
 extensions/ECML/Vend/ECML.pm
 extensions/ECML/ecml.coretag
 extensions/Interchange.pm
-extensions/quickbooks/README
-extensions/quickbooks/etc/trans_quickbooks
-extensions/quickbooks/ic_qb.pod
-extensions/quickbooks/mv_metadata-additions.asc
+extensions/quickbooks/README.html
+extensions/quickbooks/README.txt
+extensions/quickbooks/legacy/qb.catalog.cfg
+extensions/quickbooks/legacy/trans_quickbooks
+extensions/quickbooks/menus/Admin.txt.append
 extensions/quickbooks/pages/admin/quickbooks/export_coa.html
 extensions/quickbooks/pages/admin/quickbooks/export_items.html
+extensions/quickbooks/pages/admin/quickbooks/generate_new_iif.html
 extensions/quickbooks/pages/admin/quickbooks/get_orders.html
 extensions/quickbooks/pages/admin/quickbooks/import_items.html
 extensions/quickbooks/pages/admin/quickbooks/index.html
-extensions/quickbooks/qb.catalog.cfg
+extensions/quickbooks/products/mv_metadata.asc.append
+extensions/quickbooks/products/variable.txt.append
 extensions/quickbooks/qb_getord.pl
 extensions/quickbooks/usertag/export_quicken_coa.tag
 extensions/quickbooks/usertag/export_quicken_items.tag
 extensions/quickbooks/usertag/get_quicken_orders.tag
 extensions/quickbooks/usertag/import_quicken_items.tag
+extensions/quickbooks/vars/TRANS_QUICKBOOKS
 extra/Business/Fedex.pm
 extra/Business/UPS.pm
 extra/File/Spec.pm
