@@ -1,6 +1,6 @@
 # Vend::Payment::TCLink - Interchange TrustCommerce TCLink support
 #
-# $Id: TCLink.pm,v 1.5 2004-06-07 20:59:18 mheins Exp $
+# $Id: TCLink.pm,v 1.6 2004-06-09 17:13:46 mheins Exp $
 #
 # Copyright (C) 2002 TrustCommerce <developer@trustcommerce.com>
 #
@@ -356,7 +356,7 @@ sub trustcommerce {
 			if defined $result{$result_map{$_}};
 	}
 
-	if ($result{status} == 'approved') {
+	if ($result{status} eq 'approved') {
 		$result{MStatus} = 'success';
 	}
 	else {
