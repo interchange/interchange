@@ -11,14 +11,13 @@
 #
 #    Developers do not need to manually edit POT or PO files.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: interchange (5.0.1-1)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2004-02-28 20:38-0800\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2004-03-26 16:39+0100\n"
+"Last-Translator: Stefan Hornburg <racke@linuxia.de>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-15\n"
@@ -27,7 +26,6 @@ msgstr ""
 #. Type: boolean
 #. Description
 #: ../interchange-cat-foundation.templates:4
-#, fuzzy
 msgid "Create the Interchange demo catalog?"
 msgstr "Möchten Sie den Interchange-Demokatalog angelegt haben ?"
 
@@ -44,7 +42,6 @@ msgstr ""
 #. Type: boolean
 #. Description
 #: ../interchange-cat-foundation.templates:11
-#, fuzzy
 msgid "Remove demo catalog on package purge?"
 msgstr "Soll der Interchange-Demokatalog durch --purge gelöscht werden ?"
 
@@ -67,7 +64,6 @@ msgstr "immer, auf Nachfrage, niemals"
 #. Type: select
 #. Description
 #: ../interchange-cat-foundation.templates:19
-#, fuzzy
 msgid "Policy for replacing existing demo catalogs:"
 msgstr "Richtlinie für das Ersetzen einer vorhandenen Demokatalog-Installation"
 
@@ -84,7 +80,6 @@ msgstr ""
 #. Type: boolean
 #. Description
 #: ../interchange-cat-foundation.templates:26
-#, fuzzy
 msgid "Replace the Interchange demo catalog?"
 msgstr "Interchange Demokatalog ersetzen ?"
 
@@ -98,7 +93,7 @@ msgstr "Es ist bereits ein Demokatalog vorhanden."
 #. Description
 #: ../interchange-cat-foundation.templates:32
 msgid "Username for this catalog's administration:"
-msgstr ""
+msgstr "Benutzername für die Katalogadministration:"
 
 #. Type: string
 #. Description
@@ -116,7 +111,7 @@ msgstr ""
 #. Description
 #: ../interchange-cat-foundation.templates:40
 msgid "Password for this catalog's administration:"
-msgstr ""
+msgstr "Passwort für die Katalogadministration:"
 
 #. Type: password
 #. Description
@@ -136,13 +131,13 @@ msgstr ""
 #. Description
 #: ../interchange-cat-foundation.templates:49
 msgid "Enable demo mode?"
-msgstr ""
+msgstr "Demomodus aktivieren?"
 
 #. Type: multiselect
 #. Description
 #: ../interchange-cat-foundation.templates:54
 msgid "Additional locales for the storefront:"
-msgstr ""
+msgstr "Zusätzliche Sprachen für den Katalog"
 
 #. Type: multiselect
 #. Description
@@ -152,32 +147,31 @@ msgid ""
 "of different languages. Each selected locale will increase the memory "
 "footprint of the Interchange server processes, so it is recommended to "
 "choose only locales which are really needed."
-msgstr ""
+msgstr "Der Interchange Demokatalog kann dem Benutzer in verschiedenen Sprachen präsentiert werden. Jede ausgewählte Sprache erhöht den Hauptspeicherbedarf der Interchange-Prozesse. Wählen Sie deshalb bitte nur Sprachen aus, die sie wirklich benöötigen."
 
 #. Type: select
 #. Description
 #: ../interchange-cat-foundation.templates:64
 msgid "Default locale for the storefront:"
-msgstr ""
+msgstr "Voreingestellte Sprache für den Katalog:"
 
 #. Type: select
 #. Description
 #: ../interchange-cat-foundation.templates:64
-#, fuzzy
 msgid "Please select the default locale for the Interchange demo catalog."
-msgstr "Interchange Demokatalog ersetzen ?"
+msgstr "Bitte wählen die Standardlokalisierung für den Interchange-Demokatalog aus."
 
 #. Type: select
 #. Choices
 #: ../interchange.templates:3
 msgid "unix mode, internet mode, both"
-msgstr ""
+msgstr "Unixmodus, Internetmodus, beide"
 
 #. Type: select
 #. Description
 #: ../interchange.templates:5
 msgid "Start mode:"
-msgstr ""
+msgstr "Startmodus:"
 
 #. Type: select
 #. Description
@@ -186,12 +180,14 @@ msgid ""
 "Unix mode is is the most secure way to run Interchange, for there is no way "
 "for systems on the internet to interact with the Interchange server."
 msgstr ""
+"Unixmodus ist die sicherste Betriebsart für Interchange, da keine\n"
+"Rechner im Internet mit dem Interchangeserver in Berührung kommen können."
 
 #. Type: string
 #. Description
 #: ../interchange.templates:12
 msgid "Username to run the server as:"
-msgstr ""
+msgstr "Benutzernamen für den Interchange-Server:"
 
 #. Type: string
 #. Description
@@ -201,13 +197,13 @@ msgid ""
 "permissions. Please note that using another user has serious security "
 "implications. Don't choose root, it is not recommended and will be discarded "
 "anyway."
-msgstr ""
+msgstr "Hier legen Sie den Benutzer für den Interchangeserver und Dateirechte fest. Wenn Sie einen anderen Benutzer auswählen, kann das ernste Sicherheitsprobleme haben. Bitte nicht root auswählen, es ist nicht empfohlen und würde ignoriert werden."
 
 #. Type: boolean
 #. Description
 #: ../interchange.templates:21
 msgid "Create the user ${USER}?"
-msgstr ""
+msgstr "Benutzer ${USER} anlegen ?"
 
 #. Type: note
 #. Description
@@ -215,13 +211,13 @@ msgstr ""
 msgid ""
 "You have been warned. Either choose an appropriate user or stay with the "
 "default."
-msgstr ""
+msgstr "Sie sind gewarnt worden. Bitte wählen Sie entweder einen geeigneten Benutzer aus oder akzeptieren die Voreinstellung."
 
 #. Type: string
 #. Description
 #: ../interchange.templates:32
 msgid "Group name to run the server as:"
-msgstr ""
+msgstr "Gruppennamen für den Interchangeserver:"
 
 #. Type: string
 #. Description
@@ -231,13 +227,13 @@ msgid ""
 "permissions. Please note that using another user has serious security "
 "implications. Don't choose root, it is not recommended and will be discarded "
 "anyway."
-msgstr ""
+msgstr "Hier legen Sie die Benutzergruppe für den Interchangeserver und Dateirechte fest. Wenn Sie eine andere Benutzergruppe auswählen, kann das ernste Sicherheitsprobleme haben. Bitte nicht root auswählen, es ist nicht empfohlen und würde ignoriert werden."
 
 #. Type: note
 #. Description
 #: ../interchange.templates:40
 msgid "Impossible to run interchange as root !"
-msgstr ""
+msgstr "Interchange kann nicht als Benutzer root gestartet werden !"
 
 #. Type: note
 #. Description
@@ -245,19 +241,19 @@ msgstr ""
 msgid ""
 "You have been warned. Either choose an appropriate group or stay with the "
 "default."
-msgstr ""
+msgstr "Sie sind gewarnt worden. Bitte wählen Sie entweder eine geeignete Benutzergruppe aus oder akzeptieren die Voreinstellung."
 
 #. Type: boolean
 #. Description
 #: ../interchange.templates:47
 msgid "Create the group ${GROUP}?"
-msgstr ""
+msgstr "Gruppe ${GROUP} anlegen ?"
 
 #. Type: string
 #. Description
 #: ../interchange.templates:57
 msgid "Static HTML files location:"
-msgstr ""
+msgstr "Pfad für statische HTML-Dateien:"
 
 #. Type: string
 #. Description
@@ -269,7 +265,7 @@ msgstr ""
 #. Description
 #: ../interchange.templates:63
 msgid "Enable debug mode?"
-msgstr ""
+msgstr "Debugmodus aktivieren?"
 
 #. Type: boolean
 #. Description
@@ -277,13 +273,13 @@ msgstr ""
 msgid ""
 "Debug mode is only useful if you modified the Interchange sources "
 "accordingly."
-msgstr ""
+msgstr "Debugmodus ist nur nützlich wenn Sie die Interchangequellen modifiziert haben."
 
 #. Type: string
 #. Description
 #: ../interchange.templates:70
 msgid "Directory for GnuPG public keyring:"
-msgstr ""
+msgstr "Verzeichnis für den öffentlichen Schlüsselbund für GnuPG"
 
 #. Type: string
 #. Description
@@ -299,13 +295,13 @@ msgstr ""
 #: ../interchange.templates:70
 msgid ""
 "Please choose the directory Interchange uses for the GnuPG public keyring."
-msgstr ""
+msgstr "Bitte das Verzeichnis für den öffentlichen Schlüsselbund für GnuPG auswählen.\n"
 
 #. Type: select
 #. Choices
 #: ../interchange.templates:80
 msgid "low, high, rpc"
-msgstr ""
+msgstr "niedrig, hoch, rpc"
 
 #. Type: select
 #. Description
@@ -326,7 +322,7 @@ msgstr ""
 #. Description
 #: ../interchange.templates:90
 msgid "Enable the FullURL directive?"
-msgstr ""
+msgstr "FullURL-Direktive aktivieren?"
 
 #. Type: boolean
 #. Description
@@ -340,7 +336,7 @@ msgstr ""
 #. Description
 #: ../interchange.templates:96
 msgid "SOAP server not available"
-msgstr ""
+msgstr "SOAP-Server ist nicht verfügbar"
 
 #. Type: note
 #. Description
@@ -355,19 +351,19 @@ msgstr ""
 #. Description
 #: ../interchange.templates:104
 msgid "Enable the SOAP server?"
-msgstr ""
+msgstr "SOAP-Server aktivieren ?"
 
 #. Type: boolean
 #. Description
 #: ../interchange.templates:104
 msgid "This setting determines if the SOAP server is started or not."
-msgstr ""
+msgstr "Mit dieser Einstellung entscheiden Sie, ob der SOAP-Server gestartet wird oder nicht."
 
 #. Type: boolean
 #. Description
 #: ../interchange.templates:110
 msgid "Enable robots settings?"
-msgstr ""
+msgstr "Roboteinstellungen aktivieren ?"
 
 #. Type: boolean
 #. Description
@@ -383,7 +379,7 @@ msgstr ""
 #. Description
 #: ../interchange.templates:118
 msgid "Important Perl Incompatibility"
-msgstr ""
+msgstr "Wichtige Perl-Inkompatibilität"
 
 #. Type: note
 #. Description
@@ -400,7 +396,6 @@ msgstr ""
 #. Type: select
 #. Description
 #: ../interchange-ui.templates:5
-#, fuzzy
 msgid "Default language for user interface:"
 msgstr "Vordefinierte Sprache des UI"
 

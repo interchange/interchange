@@ -4,7 +4,7 @@ interchange (5.0.1-1) unstable; urgency=low
   * switch to gettext-based debconf templates (Closes: #235494, thanks to
     Martin Quinson <Martin.Quinson@tuxfamily.org> for the patch)
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu, 25 Mar 2004 19:24:09 +0100
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 26 Mar 2004 16:44:42 +0100
 
 interchange (5.0.0-2) unstable; urgency=low
 
