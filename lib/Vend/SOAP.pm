@@ -1,6 +1,6 @@
 # Vend::SOAP - Handle SOAP connections for Interchange
 #
-# $Id: SOAP.pm,v 2.13 2003-06-18 17:34:44 jon Exp $
+# $Id: SOAP.pm,v 2.14 2003-06-23 14:59:14 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2000-2002 Red Hat, Inc.
@@ -35,7 +35,7 @@ require SOAP::Transport::HTTP;
 use strict;
 
 use vars qw($VERSION @ISA $AUTOLOAD);
-$VERSION = substr(q$Revision: 2.13 $, 10);
+$VERSION = substr(q$Revision: 2.14 $, 10);
 @ISA = qw/SOAP::Server/;
 
 my %Allowed_tags;
@@ -172,11 +172,16 @@ sub tag_soap {
 sub tag_soap_entity {
 	my ($opt) = @_;
 	my ($obj);
-        
+
 	if ($opt->{tree}) {
-		$opt->{value} = map {tag_soap_entity($_)} @{$opt->{value}};
+		my @values = map {tag_soap_entity($_)} @{$opt->{value}};
+		$opt->{value} = \@values;
 	}
-	$obj = new SOAP::Data (%$opt);
+	eval {$obj = new SOAP::Data (%$opt);};
+	if ($@) {
+		logError ("soap_entity failed: $@");
+		return;
+	}
 	return $obj;
 }
 
@@ -382,6 +387,7 @@ sub AUTOLOAD {
 		$sub = $Vend::Cfg->{SOAP_Action}{$routine};
 		Vend::Interpolate::init_calc();
 		new Vend::Tags;
+		new Vend::Parse;	# enable catalog usertags within SOAP actions
 	} elsif (! $Allowed_tags{$routine}) {
 		die ::errmsg("Not allowed routine: %s", $routine);
 	} else {
