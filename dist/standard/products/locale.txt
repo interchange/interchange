@@ -14,7 +14,7 @@ Additional Shipping Addresses	Additional Shipping Addresses			Additionele verzen
 Address	Address	Adresse		Adres
 Admin	Admin			Administratie
 Admin interface	Admin interface			Administratie interface
-Advanced	Advanced			Verfijnd zoeken
+Advanced	Advanced	Erweitert			Verfijnd zoeken
 Advanced Search	Advanced Search			Uitgebreid zoeken
 Affiliate code	Affiliate code			
 Affiliate headquarters	Affiliate headquarters			
@@ -40,6 +40,7 @@ Buy	Buy	Kaufen		Kopen
 Buy List	Buy List			Bestellijst
 Buy it Now!	Buy it Now!			Koop nu!
 Buy now	Buy now			Koop nu
+BUY NOW		JETZT KAUFEN
 C.O.D.	C.O.D.			Rembours
 CANCELED_MSG1	If you wish to order another item, we would like you to do so, butunfortunately you will have to re-enter any account information.			
 CANCEL_PAR1	Please confirm your request to stop shopping by clicking the button below. Allitems will be cleared from your shopping cart, your name and address informationwill be expunged, and all saved settings from your visit will disappear.			Bevestig alstublieft uw verzoek om met winkelen te stoppen door op onderstaande knop te klikken. Als U dat doet worden alle producten uit uw winkelwagen verwijderd, uw naam en adresinformatie worden gewist en alle bewaarde instellingen tijdens uw bezoek zullen verdwijnen.
@@ -261,6 +262,7 @@ Return request received.	Return request received.			Verzoek voor retourzending o
 Returns	Returns			Retour producten
 Routing Number	Routing Number			
 SALES TAX	SALES TAX			BTW
+SEARCH		SUCHEN
 SECURITY PROBLEM	SECURITY PROBLEM			BEVEILIGINGSPROBLEEM
 SHIPPING	SHIPPING			VERZENDING
 SHIPPING<BR>HANDLING	SHIPPING<BR>HANDLING			VERZENDING<BR>BEHANDELING
