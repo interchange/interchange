@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.2
 #
-# $Id: interchange.PL,v 1.15.2.28 2001-04-04 07:29:36 jon Exp $
+# $Id: interchange.PL,v 1.15.2.29 2001-04-07 05:41:54 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -2845,22 +2845,24 @@ both were produced in 1995.
 
 Contributions to Interchange have been made by:
 
-    Andreas Koenig     
+    Andreas Koenig
     Bill Randle
-    Birgitt Funk       
-    Bob Jordan         
-    Brian Bullen       
-    Bruce Albrecht     
+    Birgitt Funk
+    Bob Jordan
+    Brian Bullen
+    Bruce Albrecht
     Cameron Prince
     Christian Mueller
     Christopher Thompson
     Dave Adams
+    Dan Browning
     Dan Busarow
     Dave Wingate
     Dennis Cronin
-    Don Grodecki       
-    Frank Bonita       
-    Gunnar Hellekson   
+    Don Grodecki
+    Ed LaFrance
+    Frank Bonita
+    Gunnar Hellekson
     Hans-Joachim Leidinger
     Heinz Wittenbecher
     Jason Holt
