@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.54 2003-07-29 23:56:54 jon Exp $
+# $Id: DBI.pm,v 2.55 2003-08-04 05:11:20 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.54 $, 10);
+$VERSION = substr(q$Revision: 2.55 $, 10);
 
 use strict;
 
@@ -519,8 +519,6 @@ sub new {
 
 sub open_table {
     my ($class, $config, $tablename) = @_;
-	
-	my $dot = $config->{HIDE_AUTO_FILES} ? '.' : '';
 
 	$config->{PRINTERROR} = 0 if ! defined $config->{PRINTERROR};
 	$config->{RAISEERROR} = 1 if ! defined $config->{RAISEERROR};
@@ -533,9 +531,11 @@ sub open_table {
 
     if (! $config->{AUTO_SEQUENCE} and ! defined $config->{AutoNumberCounter}) {
 	    eval {
+			my $dot = $config->{HIDE_AUTO_FILES} ? '.' : '';
 			$config->{AutoNumberCounter} = new Vend::CounterFile
 									"$config->{DIR}/$dot$config->{name}.autonumber",
-									$config->{AUTO_NUMBER} || '00001';
+									$config->{AUTO_NUMBER} || '00001',
+									$config->{AUTO_NUMBER_DATE};
 		};
 		if($@) {
 			::logError("Cannot create AutoNumberCounter: %s", $@);

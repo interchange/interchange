@@ -1,6 +1,6 @@
 # Vend::Table::DB_File - Access an Interchange table stored in a DB file hash
 #
-# $Id: DB_File.pm,v 2.9 2003-07-12 13:40:43 mheins Exp $
+# $Id: DB_File.pm,v 2.10 2003-08-04 05:11:20 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -31,7 +31,7 @@ use vars qw($VERSION @ISA);
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = substr(q$Revision: 2.10 $, 10);
 
 sub create {
 	my ($class, $config, $columns, $filename) = @_;
@@ -83,9 +83,11 @@ sub open_table {
 		$flags = O_RDWR;
 		if(! defined $config->{AutoNumberCounter}) {
 			eval {
+				my $dot = $config->{HIDE_AUTO_FILES} ? '.' : '';
 				$config->{AutoNumberCounter} = new Vend::CounterFile
-											"$config->{DIR}/$config->{name}.autonumber",
-											$config->{AUTO_NUMBER} || '00001';
+									"$config->{DIR}/$dot$config->{name}.autonumber",
+									$config->{AUTO_NUMBER} || '00001',
+									$config->{AUTO_NUMBER_DATE};
 			};
 			if($@) {
 				::logError("Cannot create AutoNumberCounter: %s", $@);

@@ -1,6 +1,6 @@
 # Vend::Table::SDBM - Access an Interchange table stored in Perl's internal SDBM
 #
-# $Id: SDBM.pm,v 2.9 2003-07-12 13:40:43 mheins Exp $
+# $Id: SDBM.pm,v 2.10 2003-08-04 05:11:20 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -24,7 +24,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::SDBM;
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = substr(q$Revision: 2.10 $, 10);
 use strict;
 use Fcntl;
 use SDBM_File;
@@ -32,7 +32,7 @@ use vars qw($VERSION @ISA);
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = substr(q$Revision: 2.10 $, 10);
 
 sub create {
 	my ($class, $config, $columns, $filename) = @_;
@@ -101,9 +101,11 @@ sub open_table {
 		$flags = O_RDWR;
 		if(! defined $config->{AutoNumberCounter}) {
 			eval {
+				my $dot = $config->{HIDE_AUTO_FILES} ? '.' : '';
 				$config->{AutoNumberCounter} = new Vend::CounterFile
-											"$config->{DIR}/$config->{name}.autonumber",
-											$config->{AUTO_NUMBER} || '00001';
+									"$config->{DIR}/$dot$config->{name}.autonumber",
+									$config->{AUTO_NUMBER} || '00001',
+									$config->{AUTO_NUMBER_DATE};
 			};
 			if($@) {
 				::logError("Cannot create AutoNumberCounter: %s", $@);

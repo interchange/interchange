@@ -1,10 +1,11 @@
 # This -*-perl -*- module implements a persistent counter class.
 #
-# $Id: CounterFile.pm,v 1.2 2003-06-18 17:34:44 jon Exp $
+# $Id: CounterFile.pm,v 1.3 2003-08-04 05:11:20 mheins Exp $
 #
 
 package Vend::CounterFile;
 use Vend::Util;
+use POSIX qw/strftime/;
 
 
 =head1 NAME
@@ -97,10 +98,18 @@ eval {
 };
 
 sub Version { $VERSION; }
-$VERSION = sprintf("%d.%02d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/);
 
-$MAGIC           = "#COUNTER-1.0\n";   # first line in counter files
-$DEFAULT_INITIAL = 0;                  # default initial counter value
+# first line in counter file, regex to match good value
+$MAGIC           = "#COUNTER-1.0\n";    # first line in standard counter files
+# first line in date counter files
+$MAGIC_RE        = qr/^#COUNTER-1.0-(gmt|date)-([A-Za-z0-9]+)/;
+$MAGIC_DATE      = "#COUNTER-1.0-date"; # start of first line in date counter files
+$MAGIC_GMT       = "#COUNTER-1.0-gmt";  # start of first line in gmt counter files
+
+$DEFAULT_INITIAL	 	= 0;          # default initial counter value
+$DEFAULT_DATE_INITIAL	= '0000';     # default initial counter value in date mode
+$DATE_FORMAT     = '%Y%m%d';
 
  # default location for counter files
 $DEFAULT_DIR     ||= $ENV{TMPDIR} || "/usr/tmp";
@@ -115,11 +124,15 @@ use overload ('++'     => \&inc,
 
 sub new
 {
-	my($class, $file, $initial) = @_;
+	my($class, $file, $initial, $date) = @_;
 	croak "No file specified\n" unless defined $file;
 
 	$file = "$DEFAULT_DIR/$file" unless $file =~ /^[\.\/]/;
-	$initial = $DEFAULT_INITIAL unless defined $initial;
+	$initial = $date ? $DEFAULT_DATE_INITIAL : $DEFAULT_INITIAL
+		unless defined $initial;
+
+	my $gmt;
+	my $magic_value;
 
 	local($/, $\) = ("\n", undef);
 	my $value;
@@ -129,23 +142,75 @@ sub new
 		my $first_line = <F>;
 		$value = <F>;
 		close(F);
-		croak "Bad counter magic '$first_line' in $file" unless $first_line eq $MAGIC;
+		if($first_line eq $MAGIC) {
+			# do nothing
+		}
+		elsif( $first_line =~ $MAGIC_RE) {
+			$date = $1;
+			$initial = $2;
+#::logDebug("read existing date counter, date=$date initial=$initial");
+			$gmt = 1 if $date eq 'gmt';
+			$magic_value = $first_line;
+		}
+		else {
+			chomp($first_line);
+			croak ::errmsg("Bad counter magic '%s' in %s", $first_line, $file);
+		}
 		chomp($value);
 	} else {
 		open(F, ">$file") or croak "Can't create $file: $!";
-		print F $MAGIC;
-		print F "$initial\n";
+		if($date) {
+			my $ivalue;
+			if($date eq 'gmt') {
+				$magic_value = $MAGIC_GMT . "-$initial\n";
+				print F $magic_value;
+				$ivalue = strftime('%Y%m%d', gmtime()) . $initial;
+				print F "$ivalue\n";
+				$gmt = 1;
+			}
+			else {
+				$magic_value = $MAGIC_DATE . "-$initial\n";
+				print F $magic_value;
+				$ivalue = strftime('%Y%m%d', localtime()) . $initial;
+				print F "$ivalue\n";
+			}
+			$value = $ivalue;
+		}
+		else {
+			print F $MAGIC;
+			print F "$initial\n";
+			$value = $initial;
+		}
 		close(F);
-		$value = $initial;
 	}
 
-	bless { file    => $file,  # the filename for the counter
+	my $s = { file    => $file,  # the filename for the counter
 		   'value'  => $value, # the current value
 			updated => 0,      # flag indicating if value has changed
+			initial => $initial,      # initial value for date-based
+			magic_value => $magic_value,      # initial magic value for date-based
+			date	=> $date,  # flag indicating date-based counter
+			gmt		=> $gmt,   # flag indicating GMT for date
 			# handle => XXX,   # file handle symbol. Only present when locked
 		  };
+#::logDebug("counter object created: " . ::uneval($s));
+	return bless $s;
 }
 
+sub inc_value {
+	my $self = shift;
+	$self->{'value'}++, return unless $self->{date};
+	my $datebase = $self->{gmt}
+				 ? strftime($DATE_FORMAT, gmtime())
+				 : strftime($DATE_FORMAT, localtime());
+	$self->{value} = $datebase . ($self->{initial} || $DEFAULT_DATE_INITIAL)
+		if $self->{value} lt $datebase;
+	my $inc = substr($self->{value}, 8);
+#::logDebug("initial=$self->{initial} inc before autoincrement value=$inc");
+	$inc++;
+#::logDebug("initial=$self->{initial} inc after  autoincrement value=$inc");
+	$self->{value} = $datebase . $inc;
+}
 
 sub locked
 {
@@ -167,9 +232,10 @@ sub lock
 
 	local($/) = "\n";
 	my $magic = <$fh>;
-	if ($magic ne $MAGIC) {
+	if ($magic ne $MAGIC and $magic !~ $MAGIC_RE ) {
 		$self->unlock;
-		croak("Bad counter magic '$magic' in $file");
+		chomp $magic;
+		croak errmsg("Bad counter magic '%s' in %s on lock", $magic, $file);
 	}
 	chomp($self->{'value'} = <$fh>);
 
@@ -197,7 +263,7 @@ sub unlock
 		croak "Can't seek to beginning: $!"
 				if ! $sstatus;
 
-		print $fh $MAGIC;
+		print $fh $self->{magic_value} || $MAGIC;
 		print $fh "$self->{'value'}\n";
 	}
 
@@ -212,11 +278,11 @@ sub inc
 	my($self) = @_;
 
 	if ($self->locked) {
-		$self->{'value'}++;
+		$self->inc_value();
 		$self->{updated} = 1;
 	} else {
 		$self->lock;
-		$self->{'value'}++;
+		$self->inc_value();
 		$self->{updated} = 1;
 		$self->unlock;
 	}
@@ -231,12 +297,16 @@ sub dec
 	if ($self->locked) {
 		croak "Autodecrement is not magical in perl"
 			unless $self->{'value'} =~ /^\d+$/;
+		croak "cannot decrement date-based counters"
+			if $self->{date};
 		$self->{'value'}--;
 		$self->{updated} = 1;
 	} else {
 		$self->lock;
 		croak "Autodecrement is not magical in perl"
 			unless $self->{'value'} =~ /^\d+$/;
+		croak "cannot decrement date-based counters"
+			if $self->{date};
 		$self->{'value'}--;
 		$self->{updated} = 1;
 		$self->unlock;
