@@ -120,21 +120,43 @@ sub {
 					},
 	};
 	my $out = '';
+	my @litems;
+	if($Variable->{UI_DBCONFIG}) {
+		@litems = (
+				'[L]edit[/L]',
+				'[L]import[/L]',
+				'[L]export[/L]',
+				'[L]upload[/L]',
+				'[L]download[/L]',
+				'[L]config[/L]',
+				'[L]Table name[/L] ([L]description[/L])',
+				);
+	}
+	else {
+		@litems = (
+				'[L]edit[/L]',
+				'[L]import[/L]',
+				'[L]export[/L]',
+				'[L]upload[/L]',
+				'[L]download[/L]',
+				'[L]Table name[/L] ([L]description[/L])',
+				);
+	}
 	if(! $dblist_done_one++) {
 		$out .= '<tr>';
-		#### Uncomment this "for" and comment out the one below to experiment
-		#### with dbconfig (which is not working yet)
-		#for('[L]edit[/L]', '[L]import[/L]', '[L]export[/L]', '[L]upload[/L]', '[L]download[/L]', '[L]config[/L]', '[L]Table name[/L] ([L]description[/L])') {  # Add "report"
-		for('[L]edit[/L]', '[L]import[/L]', '[L]export[/L]', '[L]upload[/L]', '[L]download[/L]', '[L]Table name[/L] ([L]description[/L])') {  # Add "report"
+		for(@litems) {  # Add "report"
 			$out .= qq{<td bgcolor="__UI_C_TITLEBARBG__" align=center><font size="-1" color="__UI_C_TITLEBARTXT__">$_</td>};
 		}
 		$out .= "</tr>";
 	}
 	$out .= '<tr>';
-	#### Uncomment this "for" and comment out the one below to experiment
-	#### with dbconfig (which is not working yet)
-	#for(qw/edit import export upload download config/) {  # Add "report"
-	for(qw/edit import export upload download/) {  # Add "report"
+
+	my @mitems = (qw/edit import export upload download/);
+	if($Variable->{UI_DBCONFIG}) {
+		push @mitems, 'config';
+	}
+
+	for(@mitems) {  # Add "report"
 		my $line = $ref->{$_};
 		$out .= <<EOF;
 <td ALIGN=center><A HREF="$line->{url}"><img src="$line->{img}" border=0 alt="$_ $tab" title="$_ $tab" align=top></A></td>
