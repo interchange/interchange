@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Payment.pm,v 1.1.2.4 2001-04-10 05:03:39 heins Exp $
+# $Id: Payment.pm,v 1.1.2.5 2001-04-11 08:09:15 heins Exp $
 #
 # Copyright (C) 1996-2000 Red Hat, Inc., http://www.redhat.com
 #
@@ -22,7 +22,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.1.2.4 $, 10);
+$VERSION = substr(q$Revision: 1.1.2.5 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -40,6 +40,9 @@ use Vend::Util;
 use Vend::Interpolate;
 use Vend::Order;
 use strict;
+
+use vars qw/%order_id_check/;
+use vars qw/$Have_LWP $Have_Net_SSLeay/;
 
 my $pay_opt;
 
@@ -175,8 +178,6 @@ sub map_actual {
 	return %actual;
 }
 
-use vars qw/%order_id_check/;
-
 %order_id_check = (
 	cybercash => sub {
 					my $val = shift;
@@ -278,6 +279,9 @@ sub charge {
 	# and set the gateway in the session for logging on completion
 	$pay_opt->{gateway} = $charge_type if ! $opt->{gateway};
 	$Vend::Session->{payment_mode} = $pay_opt->{gateway};
+
+	# See if we are in test mode
+	$pay_opt->{test} = charge_param('test');
 
 	# just convenience
 	my $gw = $pay_opt->{gateway};
@@ -459,6 +463,84 @@ sub testsendmserver {
 					);
 	};
 	return ('MStatus', 'success', 'order-id', $oid || 'COUNTER_FAILED');
+}
+
+sub post_data {
+	my ($opt, $query) = @_;
+
+	unless ($Have_Net_SSLeay or $Have_LWP) {
+		die "No Net::SSLeay or Crypt::SSLeay found.\n";
+	}
+
+	my $submit_url = $opt->{submit_url};
+	my $server;
+	my $port = $opt->{port} || 443;
+	my $script;
+	my $protocol = $opt->{protocol} || 'https';
+	if($submit_url) {
+		$server = $submit_url;
+		$server =~ s{^https://}{}i;
+		$server =~ s{(/.*)}{};
+		$port = $1 if $server =~ s/:(\d+)$//;
+		$script = $1;
+	}
+	elsif ($opt->{host}) {
+		$server = $opt->{host};
+		$script = $opt->{script};
+		$script =~ s:^([^/]):/$1:;
+		$submit_url = join "",
+						$protocol,
+						'://',
+						$server,
+						($port ? ":$port" : ''),
+						$script,
+						;
+	}
+	my %header = ( 'User-Agent' => "Vend::Payment (Interchange version $::VERSION)");
+	if($opt->{extra_headers}) {
+		for(keys %{$opt->{extra_headers}}) {
+			$header{$_} = $opt->{extra_headers}{$_};
+		}
+	}
+
+	my %result;
+	if($Have_Net_SSLeay) {
+#::logDebug("placing Net::SSLeay request: host=$server, port=$port, script=$script");
+#::logDebug("values: " . ::uneval($query) );
+		my ($page, $response, %reply_headers)
+                = post_https(
+					   $server, $port, $script,
+                	   make_headers( %header ),
+                       make_form(    %$query ),
+					);
+		my $header_string = '';
+
+		for(keys %reply_headers) {
+			$header_string .= "$_: $reply_headers{$_}\n";
+		}
+#::logDebug("received Net::SSLeay header: $header_string");
+		$result{status_line} = $response;
+		$result{status_line} =~ /^HTTP\S+\s+(\d+)/
+			and $result{response_code} = $1;
+		$result{header_string} = $header_string;
+		$result{result_page} = $page;
+	}
+	else {
+		my @query = %{$query};
+		my $ua = new LWP::UserAgent;
+		my $req = POST($submit_url, \@query, %header);
+#::logDebug("placing LWP request: " . ::uneval_it($req) );
+		my $resp = $ua->request($req);
+		$result{status_line} = $resp->status_line();
+		$result{status_line} =~ /(\d+)/
+			and $result{response_code} = $1;
+		$result{header_string} = $resp->as_string();
+		$result{header_string} =~ s/\r?\n\r?\n.*//s;
+#::logDebug("received LWP header: $header_string");
+		$result{result_page} = $resp->content();
+	}
+#::logDebug("returning thing: " . ::uneval_it(\%result) );
+	return \%result;
 }
 
 

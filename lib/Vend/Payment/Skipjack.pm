@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Skipjack.pm,v 1.1.2.2 2001-04-11 05:53:24 heins Exp $
+# $Id: Skipjack.pm,v 1.1.2.3 2001-04-11 08:09:16 heins Exp $
 #
 # Copyright (C) 1999-2001 Red Hat, Inc., http://www.redhat.com
 #
@@ -27,7 +27,7 @@ package Vend::Payment::Skipjack;
 
 =head1 Interchange Skipjack Support
 
-Vend::Payment::Skipjack $Revision: 1.1.2.2 $
+Vend::Payment::Skipjack $Revision: 1.1.2.3 $
 
 =head1 SYNOPSIS
 
@@ -240,12 +240,15 @@ with integration for a fee.
 There is actually nothing *in* Vend::Payment::Skipjack. It changes packages
 to Vend::Payment and places things there.
 
-=head1 AUTHOR
+=head1 AUTHORS
 
 Originally developed by New York Connect Net (http://nyct.net)
 Michael Bacarella <mbac@nyct.net>
 
 Modified for GetCareer.com by Slipstream.com by Troy Davis <troy@slipstream.com>
+
+LWP/Crypt::SSLeay interface code by Matthew Schick,
+<mschick@brightredproductions.com>.
 
 Interchange implementation by Mike Heins, <mheins@redhat.com>.
 
@@ -384,75 +387,6 @@ use vars qw/$Have_LWP $Have_Net_SSLeay/;
 		'-11'	=>	'FAILED ADDING RECURRING PAYMENT (-11)',
 		'-12'	=>	'INVALID FREQUENCY (-12)'
 );
-
-sub post_data {
-	my ($opt, $query) = @_;
-
-	my $submit_url = $opt->{submit_url};
-	my $server;
-	my $port = $opt->{port} || 443;
-	my $script;
-	my $protocol = $opt->{protocol} || 'https';
-	if($submit_url) {
-		$server = $submit_url;
-		$server =~ s{^https://}{}i;
-		$server =~ s{(/.*)}{};
-		$port = $1 if $server =~ s/:(\d+)$//;
-		$script = $1;
-	}
-	elsif ($opt->{host}) {
-		$server = $opt->{host};
-		$script = $opt->{script};
-		$script =~ s:^([^/]):/$1:;
-		$submit_url = join "",
-						$protocol,
-						'://',
-						$server,
-						($port ? ":$port" : ''),
-						$script,
-						;
-	}
-
-	my %result;
-	if($Have_Net_SSLeay) {
-#::logDebug("placing Net::SSLeay request: host=$server, port=$port, script=$script");
-#::logDebug("values: " . ::uneval($query) );
-		my ($page, $response, %reply_headers)
-                = post_https(
-					   $server, $port, $script,
-                	   make_headers(
-					   	'User-Agent' =>
-								"Vend::Payment (Interchange version $::VERSION)"
-						),
-                       make_form( %$query ),
-					);
-		my $header_string = '';
-
-		for(keys %reply_headers) {
-			$header_string .= "$_: $reply_headers{$_}\n";
-		}
-#::logDebug("received Net::SSLeay header: $header_string");
-		$result{status_line} = $response;
-		$result{status_line} =~ /^HTTP\S+\s+(\d+)/
-			and $result{response_code} = $1;
-		$result{header_string} = $header_string;
-		$result{result_page} = $page;
-	}
-	else {
-		my $ua = new LWP::UserAgent;
-		my $req = POST($submit_url, $query);
-#::logDebug("placing LWP request: " . ::uneval_it($req) );
-		my $resp = $ua->request($req);
-		$result{status_line} = $resp->status_line();
-		$result{status_line} =~ /(\d+)/
-			and $result{response_code} = $1;
-		$result{header_string} = $resp->as_string();
-		$result{header_string} =~ s/\r?\n\r?\n.*//s;
-#::logDebug("received LWP header: $header_string");
-		$result{result_page} = $resp->content();
-	}
-	return \%result;
-}
 
 sub sj_test_values {
 	my ($inopt, $inval) = @_;

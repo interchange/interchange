@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: AuthorizeNet.pm,v 1.1.2.2 2001-04-10 05:03:40 heins Exp $
+# $Id: AuthorizeNet.pm,v 1.1.2.3 2001-04-11 08:09:16 heins Exp $
 #
 # Copyright (C) 1999-2001 Red Hat, Inc., http://www.redhat.com
 #
@@ -37,7 +37,7 @@ package Vend::Payment::AuthorizeNet;
 
 =head1 Interchange AuthorizeNet Support
 
-Vend::Payment::AuthorizeNet $Revision: 1.1.2.2 $
+Vend::Payment::AuthorizeNet $Revision: 1.1.2.3 $
 
 =head1 SYNOPSIS
 
@@ -49,7 +49,13 @@ Vend::Payment::AuthorizeNet $Revision: 1.1.2.2 $
 
 =head1 PREREQUISITES
 
-Net::SSLeay
+  Net::SSLeay
+ 
+    or
+  
+  LWP::UserAgent and Crypt::SSLeay
+
+Only one of these need be present and working.
 
 =head1 DESCRIPTION
 
@@ -164,10 +170,17 @@ Make sure you "Require"d the module in interchange.cfg:
 
 =item *
 
-Make sure Net::SSLeay is installed and working. You can test to see whether
-your Perl thinks it is:
+Make sure either Net::SSLeay or Crypt::SSLeay and LWP::UserAgent are installed
+and working. You can test to see whether your Perl thinks they are:
 
     perl -MNet::SSLeay -e 'print "It works\n"'
+
+or
+
+    perl -MLWP::UserAgent -MCrypt::SSLeay -e 'print "It works\n"'
+
+If either one prints "It works." and returns to the prompt you should be OK
+(presuming they are in working order otherwise).
 
 =item *
 
@@ -219,10 +232,43 @@ Mark Stosberg <mark@summersault.com>, based on original code by Mike Heins
 
 =cut
 
+BEGIN {
+
+	my $selected;
+	eval {
+		package Vend::Payment;
+		require Net::SSLeay;
+		import Net::SSLeay qw(post_https make_form make_headers);
+		$selected = "Net::SSLeay";
+	};
+
+	$Vend::Payment::Have_Net_SSLeay = 1 unless $@;
+
+	unless ($Vend::Payment::Have_Net_SSLeay) {
+
+		eval {
+			package Vend::Payment;
+			require LWP::UserAgent;
+			require HTTP::Request::Common;
+			require Crypt::SSLeay;
+			import HTTP::Request::Common qw(POST);
+			$selected = "LWP and Crypt::SSLeay";
+		};
+
+		$Vend::Payment::Have_LWP = 1 unless $@;
+
+	}
+
+	unless ($Vend::Payment::Have_Net_SSLeay or $Vend::Payment::Have_LWP) {
+		die __PACKAGE__ . " requires Net::SSLeay or Crypt::SSLeay";
+	}
+
+	::logGlobal("%s payment module initialized, using %s", __PACKAGE__, $selected)
+		unless $Vend::Quiet;
+
+}
+
 package Vend::Payment;
-
-use Net::SSLeay qw(post_https make_form make_headers);
-
 sub authorizenet {
 	my ($user, $amount) = @_;
 
@@ -263,14 +309,11 @@ sub authorizenet {
 							);
     }
 
-    my $server  =   $opt->{server}
-					|| 'secure.authorize.net';
+    $opt->{host}   ||= 'secure.authorize.net';
 
-    my $script 	=   $opt->{script}
-					|| '/gateway/transact.dll';
+    $opt->{script} ||= '/gateway/transact.dll';
 
-    my $port    =   $opt->{port}
-					|| 443;
+    $opt->{port}   ||= 443;
 
 	my $precision = $opt->{precision} 
                     || 2;
@@ -367,18 +410,15 @@ sub authorizenet {
     my $string = join '&', @query;
 
 #::logDebug("Authorizenet query: " . ::uneval(\%query));
-    my ($page, $response, %reply_headers)
-                = post_https($server, $port, $script,
-                	   make_headers( Referer => $referer),
-                       make_form(
-                               %query
-                       ));
+    $opt->{extra_headers} = { Referer => $referer };
+
+    my $thing    = post_data($opt, \%query);
+    my $page     = $thing->{result_page};
+    my $response = $thing->{status_line};
 	
     # Minivend names are on the  left, Authorize.Net on the right
     my %result_map = ( qw/
-            MStatus               x_response_code
             pop.status            x_response_code
-            MErrMsg               x_response_reason_text
             pop.error-message     x_response_reason_text
             order-id              x_trans_id
             pop.order-id          x_trans_id
@@ -392,37 +432,45 @@ sub authorizenet {
 
 #::logDebug(qq{\nauthorizenet page: $page response: $response\n});
 
-    my ($response_code,
-    	$response_subcode,
-    	$response_reason_code,
-    	$response_reason_text,
-    	$auth_code,
-    	$avs_code,
-    	$trans_id) = split (/,/,$page);
+    my %result;
+    @result{
+		qw/
+			x_response_code
+			x_response_subcode
+			x_response_reason_code
+			x_response_reason_text
+			x_auth_code
+			x_avs_code
+			x_trans_id
+		/
+		}
+		 = split (/,/,$page);
     	
 #::logDebug(qq{authorizenet response_reason_text=$response_reason_text response_code: $response_code});    	
 
-    my %result;
-    if ($response_code == 1) {
+    for (keys %result_map) {
+        $result{$_} = $result{$result_map{$_}}
+            if defined $result{$result_map{$_}};
+    }
+
+    if ($result{x_response_code} == 1) {
     	$result{MStatus} = 'success';
-    	# order-id and auth_code are set to 0 if Authorize.net in test mode.
-		# Order.pm interprets order-id == 0 as authorization error.
-		$result{'order-id'} = $trans_id || 1;
-		$result{'auth_code'} = $auth_code;
+		$result{'order-id'} ||= $opt->{order_id};
     }
 	else {
     	$result{MStatus} = 'failure';
+		delete $result{'order-id'};
 
 		# NOTE: A lot more AVS codes could be checked for here.
-    	if ($avs_code eq 'N') {
+    	if ($result{x_avs_code} eq 'N') {
 			my $msg = $opt->{message_avs} ||
 				q{You must enter the correct billing address of your credit card.  The bank returned the following error: %s};
-			$result{MErrMsg} = errmsg($msg, $response_reason_text);
+			$result{MErrMsg} = errmsg($msg, $result{x_response_reason_text});
     	}
 		else {
 			my $msg = $opt->{message_declined} ||
 				"Authorizenet error: %s. Please call in your order or try again.";
-    		$result{MErrMsg} = errmsg($msg, $response_reason_text);
+    		$result{MErrMsg} = errmsg($msg, $result{x_response_reason_text});
     	}
     }
 

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: iTransact.pm,v 1.1.2.4 2001-04-11 05:42:31 heins Exp $
+# $Id: iTransact.pm,v 1.1.2.5 2001-04-11 08:09:16 heins Exp $
 #
 # Copyright (C) 1999-2001 Red Hat, Inc., http://www.redhat.com
 #
@@ -27,7 +27,7 @@ package Vend::Payment::iTransact;
 
 =head1 Interchange iTransact Support
 
-Vend::Payment::iTransact $Revision: 1.1.2.4 $
+Vend::Payment::iTransact $Revision: 1.1.2.5 $
 
 =head1 SYNOPSIS
 
@@ -218,8 +218,6 @@ BEGIN {
 
 package Vend::Payment;
 
-use vars qw/$Have_LWP $Have_Net_SSLeay/;
-
 sub itransact {
 	my ($opt, $amount) = @_;
 
@@ -260,17 +258,21 @@ sub itransact {
 	my $exp_month = @month[$actual{mv_credit_card_exp_month} - 1];
 	my $precision = $opt->{precision} || charge_param('precision') || 2;
    
-	$amount = $opt->{total_cost} || undef;
+	$amount = "$opt->{total_cost}" || undef;
 
     if(! $amount) {
 			$amount = Vend::Interpolate::total_cost();
 			$amount = Vend::Util::round_to_frac_digits($amount,$precision);
     }
 
-	my $address = $actual{b_address1};
-	$address .= ", $actual{b_address2}" if $actual{b_address2};
-
-#::logDebug("address: $address\n actual-address: " . $actual{b_address});
+	my $gen;
+	if($opt->{test} and $gen = charge_param('generate_error') ) {
+#::logDebug("trying to generate error");
+		$actual{mv_credit_card_number} = '4111111111111112'
+			if $gen =~ /number/;
+		$exp_year = '2000'
+			if $gen =~ /date/;
+	}
 
 	my %values = (
 				  vendor_id   =>   $user,
@@ -299,54 +301,20 @@ sub itransact {
 	$hp = "http://$hp" unless $hp =~ /^\w+:/;
 	$values{home_page} = $hp;
 
-	my $submit_url = $opt->{submit_url}
-				   || 'https://secure.itransact.com/cgi-bin/rc/ord.cgi';
+	$opt->{submit_url} ||= 'https://secure.itransact.com/cgi-bin/rc/ord.cgi';
 
 	my %result;
-	my $result_page;
-	my $header_string;
 
-	if($Have_Net_SSLeay) {
-		my $server = $submit_url;
-		$server =~ s{^https://}{}i;
-		$server =~ s{(/.*)}{};
-		my $script = $1;
-		
-		my $port = $opt->{port} || 443;
-#::logDebug("placing Net::SSLeay request: host=$server, port=$port, script=$script");
-		my ($page, $response, %reply_headers)
-                = post_https(
-					   $server, $port, $script,
-                	   make_headers(
-					   	'User-Agent' =>
-								"Vend::Payment (Interchange version $::VERSION)"
-						),
-                       make_form( %values),
-					);
-		$header_string = '';
-		for(keys %reply_headers) {
-			$header_string .= "$_: $reply_headers{$_}\n";
-		}
-#::logDebug("received Net::SSLeay header: $header_string");
-		$result_page = $page;
-	}
-	else {
-		my $ua = new LWP::UserAgent;
-		my $req = POST($submit_url, \%values);
-#::logDebug("placing LWP request: " . ::uneval($req) );
-		my $resp = $ua->request($req);
-		$header_string = $resp->as_string();
-#::logDebug("received LWP header: $header_string");
-		$result_page = $resp->content();
-	}
+#::logDebug("sending query: " . ::uneval(\%values));
+
+	my $thing         = post_data($opt, \%values);
+	my $header_string = $thing->{header_string};
+	my $result_page   = $thing->{result_page};
 
 	## check for errors
 	my $error;
 
 #::logDebug("request returned: $result_page");
-
-#$result{result_page} = $result_page;
-#$result{header_string} = $header_string;
 
 	if ($header_string =~ m/^Location: success/mi) {
 		$result{MStatus} = 'success';
@@ -360,9 +328,11 @@ sub itransact {
 		}
 		elsif($result_page =~ m{<title>\s*error\s*</title>}i) {
 		  $error = $result_page;
-		  $error =~ s/<body.*//si;
-		  $error =~ s/\<.*?\>//g;
-		  $error =~ s/[^-A-Za-z_0-9 ]//g;
+		  $error =~ s/.*?<body.*?>//is;
+		  $error =~ s/<.*?>//g;
+		  $error =~ s/\s+/ /g;
+		  $error =~ s/\s+$//;
+		  $error =~ s/^\s+$//;
 		}
 		else {
 		  ## something very bad happened
@@ -371,7 +341,7 @@ sub itransact {
 
 #::logDebug("iTransact Error: " . $error);
 		$result{MStatus} = 'denied';
-		$result{ErrMsg} = $error;
+		$result{MErrMsg} = $error;
 	}
 
 	return %result;

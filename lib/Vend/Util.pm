@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.23 2001-04-08 19:15:47 heins Exp $
+# $Id: Util.pm,v 1.14.2.24 2001-04-11 08:09:15 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -80,7 +80,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.23 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.24 $, 10);
 
 BEGIN {
 	eval {
@@ -222,6 +222,7 @@ sub round_to_frac_digits {
 		$int++;
 		$frac = 0 x $digits;
 	}
+	$frac .= '0' while length($frac) < $digits;
 	return "$int.$frac";
 }
 
