@@ -46,6 +46,9 @@ Usertags
   profiles from working right ($Values->{whatever} etc.). Also tolerate
   profiles that don't end with a newline (e.g. when quoted with |...|).
 
+* [fedex-query] -- Updated FedEx URL, reported by Rick Boykin
+  <rick@epitomedesign.com>
+
 Admin UI
 --------
 
