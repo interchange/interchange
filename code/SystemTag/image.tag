@@ -1,8 +1,10 @@
-# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 2002, 2004 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: image.tag,v 1.10 2004-10-16 17:59:20 docelic Exp $
+# $Id: image.tag,v 1.11 2004-11-09 11:13:04 docelic Exp $
 
 UserTag image Order src
+UserTag image AttrAlias geometry makesize
+UserTag image AttrAlias resize makesize
 UserTag image AddAttr
 UserTag image Routine <<EOR
 sub {
@@ -69,7 +71,9 @@ sub {
 	}
 
 	if($opt->{name_only} and $src) {
-		return $src =~ /$absurlre/ ? $src : "$imagedircurrent$src";
+		my $ret = $src =~ /$absurlre/ ? $src : "$imagedircurrent$src";
+		$ret =~ s/%(?!25)/%25/g;
+		return $ret;
 	}
 
 	if ($src =~ /$absurlre/) {
@@ -150,8 +154,10 @@ sub {
 			my $fn = $1;
 			my $siz = $opt->{makesize};
 			MOGIT: {
-				$siz =~ s/\W+//g;
-				$siz =~ m{^\d+x\d+$}
+				# Support complete mogrify -geometry syntax
+				# This matches: AxB, A or xB, followed by 0, 1, or 2 [+-]number
+				# specs, followed by none or one of @!%><.
+				$siz =~ m{^(()|\d+())(x\d+\3|x\d+\2|\3)([+-]\d+){0,2}([@!%><])?$}
 					or do {
 						logError("%s: Unable to make image with bad size '%s'", 'image tag', $siz);
 						last MOGIT;
@@ -223,6 +229,7 @@ sub {
 	$image = $imagedircurrent . $image unless
 		$image =~ /$absurlre/ or substr($image, 0, 1) eq '/';
 
+	$image =~ s/%(?!25)/%25/g;
 	return $image if $opt->{src_only};
 
 	$opt->{title} = $opt->{alt} if ! defined $opt->{title} and $opt->{alt};
