@@ -30,8 +30,8 @@ Set up password protection for your e-commerce site.
 	label.code="Catalog Identifier"
 	widget.code=text_10
 
-	ui_data_fields="code adminuser adminpass shopuser shoppass enablesecure"
-	ui_display_only="adminuser adminpass shopuser shoppass enablesecure"
+	ui_data_fields="code adminuser adminpass shopuser shoppass firstname enablesecure"
+	ui_display_only="adminuser adminpass shopuser shoppass firstname enablesecure"
 	ui_hide_key=1
 
 	label.adminuser="Site Administrator Name"
@@ -51,6 +51,10 @@ Set up password protection for your e-commerce site.
 	label.shoppass="Site User Password"
 	help.shoppass="Password for shop user. Do not use a system password here."
 	widget.shoppass=password_15
+
+	label.firstname="First Name"
+	help.firstname="Your first name, for use with the site user account."
+	widget.firstname=text_15
 
 	label.enablesecure="Use SSL Web Server"
 	help.enablesecure="Select Yes if your Stronghold or other SSL secure server is set up"

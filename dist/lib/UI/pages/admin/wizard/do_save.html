@@ -1,4 +1,5 @@
 [flag type=write table=country]
+[flag type=write table=userdb]
 [flag type=write table=access]
 [flag type=write table=variable]
 [flag type=write table=area]
@@ -8,9 +9,10 @@
 @_UI_STD_HEAD_@
 &nbsp;<br>
 
-<!-- [perl tables="access variable country"]
+<!-- [perl tables="access variable userdb country"]
 	my $vdb = $Db{variable};
 	my $adb = $Db{access};
+	my $udb = $Db{userdb};
 
 my %doit = (
 abouttext           => sub {
@@ -124,20 +126,15 @@ products            => sub {
                     },
 shipzip             => 'UPS_ORIGIN',
 shoppass           => sub {
-						$adb->set_field(
+						$udb->set_field(
 								$Values->{shopuser},
 								'password',
-								$Tag->crypt($Values->{shoppass}),
+								$Values->{shoppass},
 								);
-						$adb->set_field(
-								$Values->{adminuser},
-								'name',
-								'Shop user',
-								);
-						$adb->set_field(
-								$Values->{adminuser},
-								'super',
-								'',
+						$udb->set_field(
+								$Values->{shopuser},
+								'fname',
+								$Values->{firstname},
 								);
 					},
 shopuser            => undef,
