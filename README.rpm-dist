@@ -31,8 +31,7 @@ the Interchange user ID to write/create files.
 
 Sessions and temporary files: /var/cache/interchange.
 
-Documentation: /usr/share/doc/interchange-x.y.z. (On Red Hat Linux 6.x
-systems this is /usr/doc/interchange-x.y.z instead.)
+Documentation: /usr/share/doc/interchange-x.y.z.
 
 On a dedicated production server, it is wise to segregate as many of these
 directories as possible onto their own partitions, to prevent problems if
@@ -42,7 +41,7 @@ disk corruption problems.
 
 INSTALL
 
-rpm -Uvh interchange-*.rpm interchange-foundation-*.rpm interchange-doc-*.rpm
+rpm -Uvh interchange-4.9.x.i386.rpm interchange-foundation-4.9.x.i386.rpm
 
 
 STARTING/RESTARTING INTERCHANGE
@@ -87,11 +86,6 @@ installation:
    DocumentRoot /var/www/html
    ScriptAlias  /cgi-bin/ /var/www/cgi-bin/
 
-   or
-
-   DocumentRoot /home/httpd/html
-   ScriptAlias  /cgi-bin/ /home/httpd/cgi-bin/
-
 -- ServerName must be the same as what is revealed by `hostname` when
    the foundation RPM is installed. If it is not, temporarily change the
    hostname with a command like 'hostname new.host.name' and then install
@@ -107,7 +101,7 @@ installation:
 
 INSTALL
 
-rpm -Uvh interchange-foundation-demo-*.rpm
+rpm -Uvh interchange-foundation-demo-4.9.x.rpm
 
 
 USING THE DEMO
