@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.6.2
 #
-# $Id: interchange.PL,v 1.17 2000-12-07 19:37:51 jon Exp $
+# $Id: interchange.PL,v 1.18 2000-12-30 15:17:13 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -1355,9 +1355,6 @@ EOF
 
 	my $from_cookie;
 	$sessionid = $CGI::values{mv_session_id} || undef;
-	$Vend::OnlyProducts = defined $Vend::Cfg->{ProductFiles}->[1]
-						  ? undef
-						  : $Vend::Cfg->{ProductFiles}->[0];
 
 	if (defined $CGI::cookie and
 		 $CGI::cookie =~ /\bMV_SESSION_ID=(\w{8,32})
