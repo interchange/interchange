@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.2
 #
-# $Id: interchange.PL,v 1.15.2.33 2001-04-10 20:31:41 heins Exp $
+# $Id: interchange.PL,v 1.15.2.34 2001-04-11 15:40:00 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -2857,32 +2857,33 @@ Original author of Vend, ancestor to Minivend and Interchange, was Andrew
 Wilcox. Interchange was based on Vend 0.2, with portions from Vend 0.3;
 both were produced in 1995.
 
-# columnize with "pr -t -2 | expand -8"
+# columnize with "pr -t -2 | expand -8 | sed 's/^/    '"
 
 Contributions to Interchange have been made by:
 
-    Andreas Koenig                      Jeff Carnahan
-    Bill Randle                         Jeff Nappi
-    Birgitt Funk                        Jochen Wiedmann
-    Bob Jordan                          Jon Jensen
-    Brian Bullen                        Keiko
-    Bruce Albrecht                      Keith Oberlin
-    Cameron Prince                      Larry Leszczynski
-    Christian Mueller                   Marc Austin
-    Christopher Thompson                Mark Stosberg
-    Dave Adams                          Michael McCune
+    Andreas Koenig                      Jeff Nappi
+    Bill Dawkins                        Jochen Wiedmann
+    Bill Randle                         Jon Jensen
+    Birgitt Funk                        Keiko
+    Bob Jordan                          Keith Oberlin
+    Brian Bullen                        Larry Leszczynski
+    Bruce Albrecht                      Marc Austin
+    Cameron Prince                      Mark Stosberg
+    Christian Mueller                   Matthew Schick
+    Christopher Thompson                Michael McCune
     Dan Browning                        Michael Wilk
     Dan Busarow                         Mike Frager
-    Dave Wingate                        Neil Evans
-    Dennis Cronin                       Raj Goel
-    Don Grodecki                        Ray Desjardins
-    Ed LaFrance                         Sonny Cook
-    Frank Bonita                        Tim Baverstock
-    Gunnar Hellekson                    Ton Verhagen
+    Dave Adams                          Neil Evans
+    Dave Wingate                        Raj Goel
+    Dennis Cronin                       Ray Desjardins
+    Don Grodecki                        Sonny Cook
+    Ed LaFrance                         Tim Baverstock
+    Frank Bonita                        Ton Verhagen
+    Gunnar Hellekson                    Troy Davis
     Hans-Joachim Leidinger              Victor Nolton
     Heinz Wittenbecher                  William Dan Terry
-    Jason Holt
-    and many others
+    Jason Holt                          and many others
+    Jeff Carnahan
 
 and, of course, the entire Perl team without whom Interchange could not exist.
 
