@@ -17,6 +17,9 @@
 <!-- ----- BEGIN REAL STUFF ----- -->
 [update values]
 [loop list="[value-extended order]"]
+
+<p>
+&nbsp;
 <table width=100% cellpadding=3 cellspacing=0>
 <tr>
 <td colspan=6 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" height=1></td>
@@ -134,27 +137,27 @@ Ship To:
 <!-- ----- Order information ----- -->
 
 <tr>
-<td width=50 align=center bgcolor="__UI_C_TOPBLOCKBAR__">
+<td width=50 align=center bgcolor="__UI_C_INTBLOCKBAR__">
 <font size=2>
 <b>Qty.</b></font></td>
 
-<td width=230 align=left bgcolor="__UI_C_TOPBLOCKBAR__">
+<td width=230 align=left bgcolor="__UI_C_INTBLOCKBAR__">
 <font size=2>
 <b>Name</b></font></td>
 
-<td width=100 align=left bgcolor="__UI_C_TOPBLOCKBAR__">
+<td width=100 align=left bgcolor="__UI_C_INTBLOCKBAR__">
 <font size=2>
 <b>SKU</b></font></td>
 
-<td width=70 align=right bgcolor="__UI_C_TOPBLOCKBAR__">
+<td width=70 align=right bgcolor="__UI_C_INTBLOCKBAR__">
 <font size=2>
 <b>Each</b></font></td>
 
-<td width=70 align=right bgcolor="__UI_C_TOPBLOCKBAR__">
+<td width=70 align=right bgcolor="__UI_C_INTBLOCKBAR__">
 <font size=2>
 <b>Discount</b></font></td>
 
-<td width=80 align=right bgcolor="__UI_C_TOPBLOCKBAR__">
+<td width=80 align=right bgcolor="__UI_C_INTBLOCKBAR__">
 <font size=2>
 <b>Total</b></font></td>
 </tr>
@@ -198,7 +201,7 @@ Options: [sql-data orderline options]
 &nbsp;[sql-data orderline discount]
 </font></td>
 
-<td width=80 align=right bgcolor="__UI_C_TOPBLOCKBAR__">
+<td width=80 align=right bgcolor="__UI_C_INTBLOCKBAR__">
 <font size=2>
 [sql-data orderline subtotal]
 
@@ -212,7 +215,7 @@ Options: [sql-data orderline options]
 <td colspan=5 align=right>
 <font size=2>Product Total:</font>
 </td>
-<td align=right bgcolor="__UI_C_TOPBLOCKBAR__">
+<td align=right bgcolor="__UI_C_INTBLOCKBAR__">
 <font size=2>[loop-data transactions subtotal]</font>
 </td>
 </tr>
@@ -223,7 +226,7 @@ Options: [sql-data orderline options]
 <td colspan=5 align=right>
 <font size=2>Tax:</font>
 </td>
-<td align=right bgcolor="__UI_C_TOPBLOCKBAR__">
+<td align=right bgcolor="__UI_C_INTBLOCKBAR__">
 <font size=2>[loop-data transactions salestax]</font>
 </td>
 </tr>
@@ -234,7 +237,7 @@ Options: [sql-data orderline options]
 <td colspan=5 align=right>
 <font size=2>Shipping: [loop-data transactions shipmode]</font>
 </td>
-<td align=right bgcolor="__UI_C_TOPBLOCKBAR__">
+<td align=right bgcolor="__UI_C_INTBLOCKBAR__">
 <font size=2>
 [loop-data transactions shipping]</font>
 </td>
@@ -246,7 +249,7 @@ Options: [sql-data orderline options]
 <td colspan=5 align=right>
 <font size=3><b>Grand total:</b></font>
 </td>
-<td align=right bgcolor="__UI_C_TOPBLOCKBAR__">
+<td align=right bgcolor="__UI_C_INTBLOCKBAR__">
 <font size=3><b>[loop-data transactions total_cost]<br></b></font>
 </td>
 </tr>
@@ -259,7 +262,7 @@ Options: [sql-data orderline options]
 <td colspan=5 align=right>
 <font size=2>Total weight:</font>
 </td>
-<td align=right bgcolor="__UI_C_TOPBLOCKBAR__">
+<td align=right bgcolor="__UI_C_INTBLOCKBAR__">
 <font size=2>5</font>
 </td>
 </tr>
@@ -270,7 +273,7 @@ Options: [sql-data orderline options]
 <td colspan=5 align=right>
 <font size=2>Total volume:</font>
 </td>
-<td align=right bgcolor="__UI_C_TOPBLOCKBAR__">
+<td align=right bgcolor="__UI_C_INTBLOCKBAR__">
 <font size=2>0</font>
 </td>
 </tr>

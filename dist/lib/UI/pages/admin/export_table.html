@@ -190,6 +190,8 @@ EOF
 <form action="[area @@MV_PAGE@@]" method="POST" ENCTYPE="multipart/form-data">
 <INPUT TYPE=hidden NAME=mv_action     VALUE=return>
 <INPUT TYPE=hidden NAME=ui_return_to VALUE="__UI_BASE__/genconfig">
+
+
 <table cellpadding=3 cellspacing=0>
 <tr>
 <td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
@@ -197,8 +199,27 @@ EOF
 
 <tr>
 <td bgcolor="__UI_C_INTBLOCK__">
+Table to export
+</td>
+<td bgcolor="__UI_C_INTBLOCK__">
+<select name="mv_data_table" size=10 onChange="populateTable(
+			this.form.mv_data_table.options,
+			this.form.ui_sort_field.options,
+			this.form.mv_data_table.options[this.form.mv_data_table.selectedIndex].value
+			)">
+[loop list="[scratch user_tables]"]<option value="[loop-code]"> [loop-code]
+[/loop]
+</select>
+</td>
+</tr>
 
-		[L]Export as[/L]<BR>
+
+
+<tr>
+<td bgcolor="__UI_C_INTBLOCK__">
+[L]Export as[/L]<BR>
+</td>
+<td bgcolor="__UI_C_INTBLOCK__">
         <SELECT NAME="mv_data_export_type">
             <OPTION VALUE=""> [L]Current type[/L]
             <OPTION VALUE="DEFAULT"> [L]System default[/L]
@@ -208,14 +229,24 @@ EOF
             <OPTION VALUE="%%"> %%/%%%
             <OPTION VALUE="LINE"> [L]Line mode[/L]
         </SELECT>
-		<P>
+</td>
+</tr>
 
-	[L]Export to file[/L] <INPUT NAME=mv_data_file SIZE=40><BR>
-	<I>([L]leave empty for default file[/L])</I>
-	<P>
+<tr>
+<td bgcolor="__UI_C_INTBLOCK__">
+	[L]Export to file[/L]<br>
+	<small><I>([L]leave empty for default file[/L])</I></small>
+</td>
+<td bgcolor="__UI_C_INTBLOCK__">
+ <INPUT NAME=mv_data_file SIZE=40>
+</td>
+</tr>
 
-	[L]Sort by column[/L]
-	<BR>
+<tr>
+<td bgcolor="__UI_C_INTBLOCK__">
+[L]Sort by column[/L]
+</td>
+<td bgcolor="__UI_C_INTBLOCK__">
 	<SELECT NAME=ui_sort_field>
 		<OPTION VALUE=""> unsorted
 		[loop list=|
@@ -224,8 +255,14 @@ EOF
 		<OPTION>[loop-code]
 		[/loop]
 	</SELECT>
-	<BR>
+</td>
+</tr>
+
+<tr>
+<td bgcolor="__UI_C_INTBLOCK__">
 	[L]Sort options[/L]<BR>
+</td>
+<td bgcolor="__UI_C_INTBLOCK__">
 	<SELECT NAME=ui_sort_option>
 		<OPTION VALUE=""> default (alpha)
 		<OPTION VALUE="r"> reverse
@@ -234,23 +271,19 @@ EOF
 		<OPTION VALUE="f"> case-insensitive
 		<OPTION VALUE="rf"> case-insensitive, reverse
 	</SELECT>
-	<P>
-	<INPUT TYPE=submit NAME=mv_click VALUE="[L]Export[/L]"><BR><BR>
+</td>
+</tr>
+
+<tr>
+<td bgcolor="__UI_C_INTBLOCK__" colspan=2>
+
+<center>
+<INPUT TYPE=submit NAME=mv_click VALUE="[L]Export[/L]">
+</center>
 [set [L]Export[/L]]
 ui_export_database=1
 [/set]
 
-</td>
-<td bgcolor="__UI_C_INTBLOCK__">
-
-<select name="mv_data_table" size=10 onChange="populateTable(
-			this.form.mv_data_table.options,
-			this.form.ui_sort_field.options,
-			this.form.mv_data_table.options[this.form.mv_data_table.selectedIndex].value
-			)">
-[loop list="[scratch user_tables]"]<option value="[loop-code]"> [loop-code]
-[/loop]
-</select>
 </td>
 </tr>
 

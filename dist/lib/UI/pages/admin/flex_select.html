@@ -57,13 +57,16 @@
 <INPUT TYPE=hidden NAME=page_banner VALUE="[cgi page_banner]">
 <INPUT TYPE=hidden NAME=ui_data_fields VALUE="[either][cgi mv_data_fields][or][db-columns table="[cgi mv_data_table]"][/either]">
 <INPUT TYPE=hidden NAME=ui_break_before VALUE="[cgi ui_break_before]">
+
+<p>
+&nbsp;
 <table cellpadding=3 cellspacing=0>
 <tr>
 <td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_LEFT_WIDTH__ colspan=2>
+<td bgcolor="__UI_C_INTBLOCK__" width=__UI_OVERALL_WIDTH__ colspan=2>
 <input type="submit" name="mv_click" value="New item">
 [set New item]item_id=new[/set]
 </td>
@@ -71,11 +74,11 @@
 </td></tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__">
+<td bgcolor="__UI_C_INTBLOCK__" width="__UI_LEFT_WIDTH__">
 
 <input type="submit" name="show_edit_cmd" value="Edit item">
 <br>
@@ -118,7 +121,7 @@ mv_nextpage=__UI_BASE__/spread
  onClick="return confirm('Are you sure you want to delete this item?')">
 
 </td>
-<td bgcolor="__UI_C_INTBLOCK__">
+<td bgcolor="__UI_C_INTBLOCK__" width="__UI_RIGHT_WIDTH__">
 
 [if cgi ui_flex_key]
 [seti keypos][cgi ui_flex_key][/seti]
