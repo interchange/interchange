@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.26.4.2 2000-10-18 06:56:23 racke Exp $
+# $Id: makecat.PL,v 1.26.4.3 2000-10-18 14:58:02 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -114,7 +114,7 @@ usage: $0 [options] [catalogname]
 options:
 
     -F    Force make of catalog with defaults
-    -f    Configuration file (default is $0.cfg)
+    -c    Configuration file (default is etc/makecat.cfg)
     -l    File to log to (default makecat.log)
     -r    Reconfigure defaults
 
@@ -170,7 +170,7 @@ if (scalar @ARGV > 1) {
 	    'cgiurl'            => \$Conf{cgiurl},
 	    'demotype'          => \$Conf{demotype},
 	    'documentroot'      => \$Conf{documentroot},
-	    'f'                 => \$Configfile,
+	    'c'                 => \$Configfile,
 	    'homedir'           => \$Conf{homedir},
 	    'imagedir'          => \$Conf{imagedir},
 	    'imageurl'          => \$Conf{imageurl},
@@ -219,8 +219,7 @@ if (scalar @ARGV > 1) {
 	    cgiurl|script=s
 	    demotype|template=s
 	    documentroot=s
-	    f=s
-	    i
+	    c=s
 	    homedir=s
 	    imagedir=s
 	    imageurl=s
@@ -1439,6 +1438,7 @@ ADDITIONAL: {
 	}
 	my $said = 0;
 	while(<ADDL>) {
+		my $noprompt = '';
 		s/\s+$//;
 		s/__MVC_([A-Z0-9]+)(__)?/substitute($1,$2)/eg;
 		my ($var, $prompt, $default) = split /\n/, $_, 3;
@@ -1454,8 +1454,8 @@ ADDITIONAL: {
 			next unless $true;
 		}
 		$var =~ s/\s+//g;
-		$var =~ s:^(!)::;
-		my $noprompt = $1;
+		$var =~ s:^!::
+			and $noprompt = 1;
 		$var = lc $var;
 		my $ucvar = uc $var;
 		if($default =~ /\t/) {
@@ -1464,11 +1464,11 @@ ADDITIONAL: {
 			$default = $history[0];
 			sethistory(@history);
 		}
-		if (defined $help{$ucvar}) {
-			$help{$ucvar} =~ s/__MVC_([A-Z0-9]+)(__)?/substitute($1,$2)/eg;
-			print $help{$ucvar};
-		}
 		unless ($noprompt) {
+			if (defined $help{$ucvar}) {
+				$help{$ucvar} =~ s/__MVC_([A-Z0-9]+)(__)?/substitute($1,$2)/eg;
+				print $help{$ucvar};
+			}
 			print "found more to ask.\n\n" unless $said++;
 			$Conf{$var} = prompt(
 							do_msg("$prompt: ", 50),
@@ -2071,7 +2071,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.26.4.2 2000-10-18 06:56:23 racke Exp $
+$Id: makecat.PL,v 1.26.4.3 2000-10-18 14:58:02 racke Exp $
 
 =head1 INTRODUCTION
 
@@ -2121,7 +2121,7 @@ There are just a few flag-based options:
 
 Force make of catalog with defaults supplied on command line.
 
-=item C<-f>
+=item C<-c>
 
 Configuration file -- default is makecat.cfg in Interchange Confdir (etc) directory.
 
@@ -2311,8 +2311,6 @@ catalog directories:
 
   diff -r interchange/construct catalogs/construct
 
-NOTE: C<diff> is usually only available on UNIX.
-
 You will see that the files are mostly the same, except that certain
 macro strings have been replaced with the answers you gave to the script.
 For example, if you answered C<www.mydomain.com> at the prompt
@@ -2433,7 +2431,7 @@ its web site:
 Interchange requires Perl 5.005 or higher; more information on Perl can
 be seen at:
 
-        http://www.perl.com
+        http://www.perl.com/
 
 =head1 SEE ALSO
 
@@ -2441,7 +2439,7 @@ mvdocs(8), interchange(1), http://www.akopia.com/
 
 =head1 LICENSE
 
-Interchange comes with ABSOLUTELY NO WARRANTY.  This is free software, and
+Interchange comes with ABSOLUTELY NO WARRANTY. This is free software, and
 you are welcome to redistribute and modify it under the terms of the
 GNU General Public License.
 
