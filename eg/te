@@ -84,7 +84,7 @@ at http://www.fsf.org/copyleft/gpl.html for more details.
 
 =head1 VERSION
 
-$Id: te,v 2.7 2002-11-26 15:21:56 jon Exp $
+$Id: te,v 2.8 2004-06-08 00:07:56 jon Exp $
 
 =head1 CHANGELOG
 
@@ -118,6 +118,9 @@ in the search. (By Mike Heins.)
 
 2002-09-03. Add option -n to number rows in comments. Allow setting of
 persistent options in environment variable TE_OPTIONS.
+
+2004-06-07. Fixed bug that misinterpreted file as having no data rows
+when last line of file was empty.
 
 =cut
 
@@ -230,7 +233,8 @@ EOF
 		}
 		print OUT "#\n";
 	}
-	if (@fields) {
+	my $have_rows = ($. > 1);
+	if ($have_rows) {
 		print OUT <<EOF;
 # You can uncomment the following lines to use as a template for inserting
 # a new row into the table. Copy as many times as needed to add many rows.
@@ -244,7 +248,7 @@ EOF
 #
 EOF
 	}
-	print OUT join("\n", map { (@fields ? '#' : '') . $_ . ":" } @fieldnames);
+	print OUT join("\n", map { ($have_rows ? '#' : '') . $_ . ":" } @fieldnames);
 	print OUT "\n#\n";
 	close IN;
 	print OUT <<EOF;
