@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.8.6
 #
-# $Id: interchange.PL,v 2.7.2.14 2002-06-27 22:38:25 jon Exp $
+# $Id: interchange.PL,v 2.7.2.15 2002-07-03 16:22:22 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -1972,7 +1972,10 @@ RESOLVEID: {
 								? ($Vend::Session->{shost})
 								: ($Vend::Session->{ohost});
 
-			if(! $compare_host) {
+			if($Vend::Cfg->{WideOpen}) {
+				# do nothing, no host checking
+			}
+			elsif(! $compare_host) {
 				# don't drop the session on the first time we switch
 				# over to the secure server
 				unless ($CGI::secure
