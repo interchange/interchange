@@ -1,6 +1,6 @@
 # Vend::Page - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 2.15 2003-09-10 16:50:51 mheins Exp $
+# $Id: Page.pm,v 2.15.2.1 2004-03-28 20:32:40 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -46,7 +46,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.15 $, 10);
+$VERSION = substr(q$Revision: 2.15.2.1 $, 10);
 
 my $wantref = 1;
 
@@ -56,16 +56,17 @@ sub display_special_page {
 
 	undef $Vend::write_redirect;
 
-	$name =~ m/[\[<]+/g
+	$name =~ m/[\[<]|[\@_]_[A-Z]\w+_[\@_]|\@\@[A-Z]\w+\@\@/
 		and do {
 			::logGlobal(
 					"Security violation -- scripting character in page name '%s'.",
 					$name,
 				);
-			$name = 'violation';
+			$name = find_special_page('violation');
+			1 while $subject =~ s/[\@_]_/_/g;
 		};
 
-	$subject = $subject || 'unspecified error';
+	$subject ||= 'unspecified error';
 
 	my $noname = $name;
 	$noname =~ s:^\.\./::;
@@ -88,17 +89,17 @@ sub display_page {
 	my($name, $opt) = @_;
 	my($page);
 
-	$name =~ m/[\[<]+/g
+	$name ||= $CGI::values{mv_nextpage};
+
+	$name =~ m/[\[<]|[\@_]_[A-Z]\w+_[\@_]|\@\@[A-Z]\w+\@\@/
 		and do {
 			::logGlobal(
 					"Security violation -- scripting character in page name '%s'.",
 					$name,
 				);
-			$name = 'violation';
+			$name = find_special_page('violation');
 			return display_special_page($name);
 		};
-
-	$name = $CGI::values{mv_nextpage} unless $name;
 
 	if($Vend::Cfg->{ExtraSecure} and
 		$Vend::Cfg->{AlwaysSecure}->{$name}
