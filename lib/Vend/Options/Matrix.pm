@@ -1,6 +1,6 @@
 # Vend::Options::Matrix - Interchange Matrix product options
 #
-# $Id: Matrix.pm,v 1.4 2003-04-18 19:29:17 mheins Exp $
+# $Id: Matrix.pm,v 1.5 2003-08-05 21:46:19 racke Exp $
 #
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
 # Copyright (C) 2002-2003 Interchange Development Group <interchange@icdevgroup.org>
@@ -23,11 +23,11 @@
 
 package Vend::Options::Matrix;
 
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 
-=head1 Interchange Matrix Options Support
+=head1 NAME
 
-Vend::Options::Matrix $Revision: 1.4 $
+Vend::Options::Matrix - Interchange Matrix Options Support
 
 =head1 SYNOPSIS
 

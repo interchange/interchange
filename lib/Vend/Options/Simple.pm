@@ -1,6 +1,6 @@
 # Vend::Options::Simple - Interchange Simple product options
 #
-# $Id: Simple.pm,v 1.1 2003-02-12 03:59:13 mheins Exp $
+# $Id: Simple.pm,v 1.2 2003-08-05 21:46:19 racke Exp $
 #
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
 # Copyright (C) 2002-2003 Interchange Development Group <interchange@icdevgroup.org>
@@ -23,11 +23,11 @@
 
 package Vend::Options::Simple;
 
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 
-=head1 Interchange Simple Options Support
+=head1 NAME
 
-Vend::Options::Simple $Revision: 1.1 $
+Vend::Options::Simple - Interchange Simple Options Support
 
 =head1 SYNOPSIS
 

@@ -1664,6 +1664,37 @@ sub date {
 
 1;
 
+=head1 NAME
+
+Vend::Accounting::SQL-Ledger - SQL-Ledger Accounting Interface for Interchange
+
+=head1 DESCRIPTION
+
+This module is an attempt to create a set of callable routines 
+that will allow the easy integration of the SQL-Ledger Accounting 
+package with Interchange. 
+
+It handles the mapping of the Interchange variable names to the 
+appropriate SQL-Ledger ones as well as parsing the html returned 
+by the SQL-Ledger "API".
+
+Background: SQL-Ledger Accounting "www.sql-ledger.org" 
+is a multiuser, double entry, accounting system written in Perl 
+and is licensed under the GNU General Public License. 
+
+The SQL-Ledger API: SQL-Ledger functions can be accessed from the 
+command line by passing all the variables in one long string to 
+the perl script. The variable=value pairs must be separated by an 
+ampersand. See "www.sql-ledger.org/misc/api.html" for more details 
+on the command line interface. 
+
+------------------------------------------------------------------
+
+This module also happens to be the author's first perl module and probably 
+his second or third perl program in addition to "Hello World". :) 
+
+So please go easy on me. -Daniel  
+
 =head1 Schema
 
 CREATE SEQUENCE "id" start 1 increment 1 maxvalue 2147483647 minvalue 1  cache 1 ;
@@ -1886,34 +1917,5 @@ CREATE TABLE "exchangerate" (
 	"buy" double precision,
 	"sell" double precision
 );
-
-SLInterface
-
-SQL-Ledger Accounting Interface for Interchange
-
-This module is an attempt to create a set of callable routines 
-that will allow the easy integration of the SQL-Ledger Accounting 
-package with Interchange. 
-
-It handles the mapping of the Interchange variable names to the 
-appropriate SQL-Ledger ones as well as parsing the html returned 
-by the SQL-Ledger "API".
-
-Background: SQL-Ledger Accounting "www.sql-ledger.org" 
-is a multiuser, double entry, accounting system written in Perl 
-and is licensed under the GNU General Public License. 
-
-The SQL-Ledger API: SQL-Ledger functions can be accessed from the 
-command line by passing all the variables in one long string to 
-the perl script. The variable=value pairs must be separated by an 
-ampersand. See "www.sql-ledger.org/misc/api.html" for more details 
-on the command line interface. 
-
-------------------------------------------------------------------
-
-This module also happens to be the author's first perl module and probably 
-his second or third perl program in addition to "Hello World". :) 
-
-So please go easy on me. -Daniel  
 
 =cut
