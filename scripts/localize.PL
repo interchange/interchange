@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange localizer
 #
-# $Id: localize.PL,v 2.0.2.1 2001-08-30 13:56:05 racke Exp $
+# $Id: localize.PL,v 2.0.2.2 2001-10-01 13:22:58 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -271,7 +271,6 @@ sub write_structure {
 	if($key) {
 		$Locale->{$def}->{$key} = $default;
 		$Comment{$key} = $default;
-		$Comment{$key} =~ s/\n/\n# /g;
 	}
 	else {
 		$Locale->{$def}->{$default} = $default;
@@ -402,7 +401,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-# $Id: localize.PL,v 2.0.2.1 2001-08-30 13:56:05 racke Exp $
+# $Id: localize.PL,v 2.0.2.2 2001-10-01 13:22:58 racke Exp $
 
 =head1 SYNOPSIS
 
