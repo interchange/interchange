@@ -150,6 +150,9 @@ EOF
 	untie %Vend::StaticDBM;
 	$Vend::Cfg->{Static} = 1;
 	my @links = ( [ $initial, '' ] );;
+	for my $force (keys %force_build) {
+		push (@links, [ $force, '' ]);
+	}
 	my %found;
 	%Vend::Links = ();
 	%Vend::LinkFound = ();
