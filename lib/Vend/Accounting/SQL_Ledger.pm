@@ -1664,7 +1664,7 @@ sub date {
 
 1;
 
-=head
+=head1 Schema
 
 CREATE SEQUENCE "id" start 1 increment 1 maxvalue 2147483647 minvalue 1  cache 1 ;
 
