@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.76 2002-07-03 19:01:44 mheins Exp $
+# $Id: Interpolate.pm,v 2.77 2002-07-04 06:03:53 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.76 $, 10);
+$VERSION = substr(q$Revision: 2.77 $, 10);
 
 @EXPORT = qw (
 
@@ -2588,6 +2588,13 @@ sub tag_counter {
 			}
 			elsif($dsn =~ /^dbi:Pg:/i) {
 				my $sth = $dbh->prepare("select nextval('$seq')")
+					or die $diemsg;
+				$sth->execute()
+					or die $diemsg;
+				($val) = $sth->fetchrow_array;
+			}
+			elsif($dsn =~ /^dbi:Oracle:/i) {
+				my $sth = $dbh->prepare("select $seq.nextval from dual")
 					or die $diemsg;
 				$sth->execute()
 					or die $diemsg;
