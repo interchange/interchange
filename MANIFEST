@@ -581,8 +581,6 @@ dist/usertag/ups_query
 dist/usertag/usertrack
 dist/usertag/var
 dist/usertag/xml_generator
-eg/check
-eg/checkstat.sh
 eg/compact
 eg/globalsub/signio
 eg/grant.sql
@@ -610,6 +608,12 @@ extra/HTML/Entities.pm
 extra/IniConf.pm
 extra/URI/URL.pm
 hints.pl
+interchange-4.5.6/dist/build/makecat.redhat
+interchange-4.5.6/dist/construct/images/gift_certificate.gif
+interchange-4.5.6/dist/construct/images/navigation/b4.gif
+interchange-4.5.6/dist/construct/images/navigation/d1.gif
+interchange-4.5.6/dist/lib/UI/pages/admin/matrix_edit.html
+interchange-4.5.6/share/akopia/ui/admin/icon_orders.gif
 lib/Vend/Cart.pm
 lib/Vend/Config.pm
 lib/Vend/Control.pm
