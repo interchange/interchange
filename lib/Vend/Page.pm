@@ -1,6 +1,6 @@
 # Page.pm - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 1.5.6.2 2001-02-14 05:03:55 jon Exp $
+# $Id: Page.pm,v 1.5.6.3 2001-02-26 00:52:04 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -48,7 +48,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 1.5.6.2 $, 10);
+$VERSION = substr(q$Revision: 1.5.6.3 $, 10);
 
 my $wantref = 1;
 
@@ -108,14 +108,12 @@ sub display_page {
 
 sub do_page {
 	display_page();
-	put_session();
 }
 
 ## DO SEARCH
 sub do_search {
 	my($c) = \%CGI::values;
 	::update_user();
-	::put_session();
 #::logDebug($more);
 	if ($c->{mv_more_matches}) {
 		$Vend::Session->{last_search} = "scan/MM=$c->{mv_more_matches}";
@@ -142,7 +140,6 @@ sub do_scan {
 	my($path) = @_;
 	my ($key,$page);
 
-	put_session();
 	my $c = {};
 	$Vend::ScanPassed = "scan/$path";
 	find_search_params($c,$path);
@@ -161,7 +158,6 @@ sub do_scan {
 	}
 
 	$Vend::SearchObject{''} = perform_search($c);
-	put_session();
 	$CGI::values{mv_nextpage} = $Vend::SearchObject{''}->{mv_search_page}
 							 	|| find_special_page('search')
 		if ! $CGI::values{mv_nextpage};
