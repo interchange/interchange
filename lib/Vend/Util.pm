@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.20 2002-02-08 23:08:21 mheins Exp $
+# $Id: Util.pm,v 2.21 2002-02-16 18:27:19 mheins Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -82,7 +82,7 @@ require HTML::Entities;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.20 $, 10);
+$VERSION = substr(q$Revision: 2.21 $, 10);
 
 BEGIN {
 	eval {
@@ -117,16 +117,15 @@ $ESCAPE_CHARS::ok_in_url =
 ## This is a character class for HTML::Entities
 $ESCAPE_CHARS::std = "^\n\t !\#\$%\'-;=?-Z\\\]-~";
 
-## HTML::Entities caches this, let's get it cached right away so
-## each child doesn't have to re-eval
-{
-	my $junk = HTML::Entities::encode(">>>123<<<", $ESCAPE_CHARS::std);
-}
-
 my $need_escape;
 
 sub setup_escape_chars {
     my($ok, $i, $a, $t);
+
+	## HTML::Entities caches this, let's get it cached right away so
+	## each child doesn't have to re-eval
+	my $junk = ">>>123<<<";
+	HTML::Entities::encode($junk, $ESCAPE_CHARS::std);
 
     foreach $i (0..255) {
         $a = chr($i);
