@@ -13,14 +13,8 @@ Stefan Hornburg (Racke) <racke@linuxia.de>. Please keep this
 in mind before file a complaint about it to the
 Redhat's ecommerce division.
 
-Adding new languages
-====================
-
-Just drop a file $LOCALE.cfg in this directory, which contains
-a value for MV_LANG_NAME and add the file to the MANIFEST.
-
-UI Translations
-===============
+Existing translations
+=====================
 
 German (de_DE):
 Stefan Hornburg (Racke) <racke@linuxia.de>
@@ -36,3 +30,69 @@ Chen Naor <chen@lilux.co.il>
 
 Swedish (sv_SE):
 Tommi Labermo <tommi.labermo@surfnet.fi>
+
+Translation Hints
+=================
+
+Edit $LOCALE.cfg in the following way:
+
+MV_LANG_NAME
+------------
+
+Enter the _native_ name of the $LOCALE, e.g. Deutsch for
+the German locale.
+
+"MV_LANG_NAME",
+undef,
+
+"MV_LANG_NAME",
+"Deutsch",
+
+MV_LANG_DIRECTION
+-----------------
+
+Put "rtl" here _only_ if your language is written from right to
+left (like Hebrew, Arabic and Persian).
+
+"MV_LANG_DIRECTION",
+undef,
+
+"MV_LANG_DIRECTION",
+"rtl",
+
+Short strings
+-------------
+
+Just translate the first string.
+
+"About Your Company",
+undef,
+
+"About Your Company",
+"Über Ihre Firma",
+
+Larger chunks of text:
+----------------------
+
+Just translate the text in the comment.
+
+# Please be patient after clicking the Finish button.
+# If you are uploading a large spreadsheet file, the server may take
+# several minutes to process your data.
+"WIZARD_STEP_PREVIEW_PAR_1",
+undef,
+
+# Please be patient after clicking the Finish button.
+# If you are uploading a large spreadsheet file, the server may take
+# several minutes to process your data.
+"WIZARD_STEP_PREVIEW_PAR_1",
+"Nach dem Betätigen des Abschließen-Buttons gedulden Sie sich bitte.
+Beim Hochladen von größeren Spreadsheetdateien benötigt der Server
+u.U. mehrere Minuten um die Daten zu verarbeiten.",
+
+Adding new languages
+====================
+
+Just drop a file $LOCALE.cfg in this directory, which contains
+a value for MV_LANG_NAME and add the file to the MANIFEST.
+
