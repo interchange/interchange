@@ -1,6 +1,6 @@
 # Vend::File - Interchange file functions
 #
-# $Id: File.pm,v 2.1 2003-04-01 04:12:32 mheins Exp $
+# $Id: File.pm,v 2.2 2003-04-02 03:06:18 ramoore Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -52,7 +52,7 @@ use Errno;
 use Vend::Util;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2 $, 10);
 
 sub writefile {
     my($file, $data, $opt) = @_;
@@ -228,7 +228,18 @@ sub flock_lock {
     my $flag = $excl ? $flock_LOCK_EX : $flock_LOCK_SH;
 
     if ($wait) {
-        flock($fh, $flag) or die "Could not lock file: $!\n";
+	my $trylimit = $Vend::Cfg->{Limit}{file_lock_retries} || 5;
+	my $failedcount;
+        while (
+                ! flock($fh, $flag)
+                    and
+                $failedcount < $trylimit
+               )
+        {
+           $failedcount++;
+           select(undef,undef,undef,0.05 * $failedcount);
+        }
+        die "Could not lock file after $trylimit tries: $!\n" if ($failedcount == $trylimit);
         return 1;
     }
     else {
