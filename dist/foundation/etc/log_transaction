@@ -1,4 +1,5 @@
 #### begin [value mv_order_number] #####
+[tmpn auto_create][/tmpn]
 [loop list="transactions orderline inventory userdb"]
 [flag type=write table="[loop-code]"]
 [/loop]
@@ -77,7 +78,7 @@ Payment processing...payment_method=[value mv_order_profile]
 
 [else]
 	Offline credit card [value mv_credit_card_type] [value mv_credit_card_reference].
-	Payment: [value name=mv_payment set="COD"]
+	Payment: [value name=mv_payment set="credit_card"]
 [/else]
 [/if]
 
@@ -95,6 +96,12 @@ Payment processing...payment_method=[value mv_order_profile]
 [goto if="[scratch mv_route_failed]"]
 
 [if type=explicit compare=`
+		if($Session->{admin} and $Values->{order_desk_entry}) {
+			## This is ordered from admin, don't login
+			## We scrub that order_desk_entry value below if not admin
+			return 0;
+		}
+		delete $Values->{order_desk_entry};
 		return 1 if ! $Session->{logged_in} or $Session->{login_table} ne 'userdb';
 		return 0;
 		`]
@@ -128,10 +135,52 @@ There was an error adding you to the customer table.
 
 [/if]
 
+[if value order_desk_entry]
+[try]
+	[tmpn tmp_compare][/tmpn]
+	[tmp tmp_username][data table=userdb col=username key="[value customer_id]"][/tmp]
+	[if !scratch tmp_username]
+		[tmp hide_status][userdb
+							function=new_account
+							no-login=1
+							assign-username=1
+							password='[value zip]'
+							verify='[value zip]'
+		][/tmp]
+		[tmp tmp_username][data session auto_created_user][/tmp]
+		[if scratch hide_status]
+			Auto-created user [scratch tmp_username], no login.
+			[userdb function=save scratch=NONE username="[scratch tmp_username]" hide=1]
+		[/if]
+	[/if]
+
+	[value name=customer_id set="[scratch tmp_username]" hide=1]
+	[if !value customer_id]
+	Auto-create of user failed.
+	[perl] die errmsg("Auto-create of user failed."); [/perl]
+	[/else]
+	[/if]
+[/try]
+[catch error-set="Customer record creation" error-scratch="mv_route_failed"]
+There was an error adding to the customer table.
+[/catch]
+
+[/if]
+
+
 [comment][perl] Log("Starting report."); [/perl][/comment]
 
 [try]
 
+[if value order_desk_entry]
+[tmp tmp_username][value customer_id][/tmp]
+[tmp tmp_source][value name=salesperson default=ORDER_DESK][/tmp]
+Order desk entry, set next page to: [cgi name=mv_nextpage set="admin/order_view"]
+[else]
+[tmp tmp_username][data session username][/tmp]
+[tmp tmp_source][data session source][/tmp]
+[/else]
+[/if]
 [seti total_cost][total-cost noformat=1][/seti]
 Add main order [value mv_order_number] to transactions:
 [import table=transactions type=LINE continue=NOTES]
@@ -139,7 +188,7 @@ code: [value mv_order_number]
 store_id: __STORE_ID__
 order_number: [value mv_order_number]
 session: [data session id]
-username: [data session username]
+username: [scratch tmp_username]
 shipmode: [value mv_shipmode] ([shipping-desc])
 shipping: [shipping noformat=1]
 nitems: [nitems]
@@ -182,7 +231,7 @@ deleted: 0
 archived: 0
 complete: 0
 comments: [value filter=mac name=gift_note]
-affiliate: [data session source]
+affiliate: [scratch tmp_source]
 campaign: [value campaign]
 parent: __PARENT__
 po_number: [value filter=strip name=po_number] 
@@ -214,7 +263,7 @@ code: [value mv_order_number]-[item-increment]
 store_id: __STORE_ID__
 order_number: [value mv_order_number]
 session: [data session id]
-username: [data session username]
+username: [scratch tmp_username]
 shipmode: [item-modifier mv_shipmode]
 sku: [item-code]
 options: [item-filter mac strip][item-options report=1 type=value][/item-filter]
@@ -225,7 +274,7 @@ mv_mi: [item-modifier mv_mi]
 mv_si: [item-modifier mv_si]
 mv_mp: [item-modifier mv_mp]
 order_date: [value order_date]
-affiliate: [data session source]
+affiliate: [scratch tmp_source]
 campaign: [value campaign]
 status: pending
 description: [filter mac][item-description][/filter]
@@ -283,10 +332,49 @@ There was an error transferring accounting information: $ERROR$
 [/if]
 
 [try]
-[tmpn tmp_user_save]FAILED[/tmpn]
-[if type=explicit compare="[userdb save]"]
+[tmpn tmp_user_save]NO[/tmpn]
+[tmpn tmp_save][/tmpn]
+[if value order_desk_entry]
+
+	[calc]
+		## Set this so that we can go to admin/order_view[/comment]
+		$CGI->{order} = $Values->{mv_order_number};
+
+		my @funcs;
+		#### Commented out until separate functions built
+		#for(qw/shipping billing/) {
+		#	next if $Values->{"no_save_$_"};
+		#	push @funcs, "set_$_";
+		#	$Scratch->{tmp_user_save} = '';
+		#}
+		@funcs = 'save' unless $Values->{no_save};
+		$Scratch->{tmp_save} = join(" ", @funcs);
+		my $msg = errmsg("Order %s entered for customer %s",
+						 $Values->{mv_order_number},
+						 $Scratch->{tmp_username},
+						);
+		$Tag->warnings($msg);
+		return;
+	[/calc]
+	[seti tmp_user_save]
+	[loop list="[scratch tmp_save]"]
+			[loop-code]=[userdb
+							function="[loop-code]"
+							profile=default
+							username="[scratch tmp_username]"
+							scratch=NONE
+						] [/loop]
+	[/seti]
+	[calc]
+		$Scratch->{tmp_user_save} =~ s/^\s+//;
+		$Scratch->{tmp_user_save} =~ s/\s+$//;
+		$Scratch->{tmp_user_save} =~ s/\s+/ /g;
+		return;
+	[/calc]
+
+[elsif type=explicit compare="[userdb save]"]
 [tmpn tmp_user_save]SUCCESS[/tmpn]
-[/if]
+[/elsif][/if]
 Saved user information to user database: [scratch tmp_user_save]
 [if scratch auto_create]
 	Logout auto-created user: [userdb function=logout clear=0 clear_cart=0]

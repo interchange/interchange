@@ -22,12 +22,152 @@
 
 @_UI_STD_HEAD_@
 
+[calc]
+	return unless $CGI->{customer};
+	%$Values = ();
+	$Values->{customer_id} = $CGI->{customer} eq 'NEW' ? '' : $CGI->{customer};
+	return;
+[/calc]
+
+[if cgi repeat_order]
+	[perl tables=orderline]
+		my $db = $Db{orderline};
+		my $on = $db->quote($CGI->{repeat_order}, 'order_number');
+		my $q  = qq{SELECT   sku,quantity,username
+					FROM     orderline
+					WHERE    order_number = $on
+					ORDER BY order_number};
+		my $ary = $db->query($q) || [];
+		my @i; my @q;
+		@$Items = ();
+		for(@$ary) {
+			push @i, $_->[0];
+			push @q, $_->[1];
+		}
+		if (@i) {
+			if($CGI->{pull_customer}) {
+				%$Values = ();
+				$Values->{customer_id} = $ary->[0][2];
+			}
+		}
+		else {
+			$Tag->warnings(errmsg("Order number %s not found", $on));
+		}
+		$CGI->{mv_order_item} = join "\0", @i;
+		$CGI->{mv_order_quantity} = join "\0", @q;
+		$CGI->{mv_todo} = 'refresh';
+		return;
+	 [/perl]
+	 [if cgi mv_order_item][update process][/if]
+[/if]
+
 <!-- ----- BEGIN REAL STUFF ----- -->
+<!-- begin initialization -->
+<!-- [set old_browser]1[/set][calc]
+	## Browser check, standalone so syntax error will not
+	## kill init code
+	my $regex = $Variable->{MV_DHTML_BROWSER};
+	$regex ||= 'MSIE [5-9].*Windows|Mozilla.*Gecko';
 
-<FORM ACTION="[process secure=1]" METHOD="POST">
+	$regex = qr/$regex/;
+	if($Session->{browser} =~ $regex) {
+		delete $Scratch->{old_browser};
+	}
+	return $Scratch->{old_browser} ? 'Not a DHTML browser' : 'DHTML browser';
+[/calc] -->
 
+[perl tables="country products"]
+
+	## This section sets the shipping, handling, taxing, and payment
+	## initializations, as well as browser check
+
+	## Start with payment mode if none there
+	$Values->{mv_order_profile} ||= $Variable->{DEFAULT_PAYMENT_MODE}
+								||'credit_card';
+
+	## Check for COD order
+
+	my @handling;
+
+	if($Values->{mv_handling}) {
+			@handling = split /[\s,\0]+/, $Values->{mv_handling};
+			@handling = grep /\S/ && $_ ne 'cod', @handling;
+			$Values->{mv_handling} = join " ", @handling;
+	}
+
+	if($Values->{mv_order_profile} eq 'cod') {
+			push @handling, 'cod';
+	}
+
+	if(@handling) {
+			$Values->{mv_handling} = join " ", @handling;
+	}
+#Debug("mv_handling=$Values->{mv_handling}");
+    my $db = $Db{country} or return;
+ 
+    my $domestic = $Variable->{DOMESTIC_SHIPPING} || 'US CA';
+    $domestic =~ s/\W+/ /g;
+    my @dom = grep /\S/, split /\s+/, $domestic;
+    my %dom;
+    @dom{@dom} = @dom;
+    my $modes;
+    if($Values->{country}) {
+        $modes = tag_data('country', 'shipmodes', $Values->{country});
+        @modes = grep /\S/, split /[\s,\0]+/, $modes;
+    }
+    
+    delete $Scratch->{only_download};
+    my $hardgoods;
+    for(@$Items) {
+        next if tag_data('__ProductFiles_0__', 'download', $_->{code});
+        $hardgoods = 1;
+    }
+
+    ! $hardgoods and $Scratch->{only_download} = 1;
+
+    return unless @modes;
+    my %modes;
+    @modes{@modes} = @modes;
+
+    if(! $modes{$Values->{mv_shipmode}}) {
+        $Values->{mv_shipmode} = shift @modes;
+    }
+    return;
+[/perl]
+<!-- end initialization -->
+
+<FORM ACTION="[process secure=1]" METHOD="POST" name=checkout>
+
+[page	href="admin/entry_items"
+		form="
+			hiddens=customer
+			caller=entry
+			customer=[either][cgi customer][or][value customer_id][/either]
+		"]Select items from list</A>
+[comment] Get previous order numbers for possible repeat [/comment]
+[if value customer_id]
+	[query
+		sql="	
+			select order_number from transactions
+			where username = '[value customer_id]'
+			order by order_date desc
+		"
+		list=1
+	]
+	[on-match]
+		<select name=repeat_order>
+		<option value="">none
+	[/on-match]
+		[list]<option>[sql-code][/list]
+	[on-match]
+		</select> <input type=submit value="Repeat previous order by [value customer_id]">
+	[/on-match]
+	[/query]
+[/if]
 <INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+<INPUT TYPE=hidden NAME=mv_values_space VALUE="order_entry">
 <INPUT TYPE=hidden NAME=mv_todo VALUE="refresh">
+<INPUT TYPE=hidden NAME=order_desk_entry VALUE="1">
 <INPUT TYPE=hidden NAME=mv_search_page VALUE="__UI_BASE__/entry_select">
 <table border=0 __UI_T_PROPERTIES__>
 	<COL WIDTH="10%">
@@ -169,69 +309,23 @@
 </TBODY>
 </TABLE>
 
-[if type=explicit compare="[error all=1 show_var=1 keep=1]"]
+[if errors]
 <P>
 <FONT COLOR=__CONTRAST__>There were errors in your last entry.</FONT>
-They are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
+Pointers are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
+	<ul>
+		<li>
+			[error all=1 show_var=1 keep=1 show_error=1 joiner="<LI>"]
+	</ul>
 <P>
 [/if]
 <INPUT TYPE=hidden NAME=mv_doit          VALUE=refresh>
 <INPUT TYPE=hidden NAME=mv_nextpage      VALUE="@@MV_PAGE@@">
-[comment] checkout_profile in etc/profiles.order [/comment]
-<INPUT TYPE=hidden NAME=mv_order_profile VALUE=checkout_profile>
-[comment] Order routes in catalog.cfg [/comment]
-
 <br>
 <TABLE border=0 WIDTH=600><TR><TD class=rmarq>
 [L]Shipping Address[/L]
 </TD></TR></TABLE>
 
-[calc]
-	return unless $CGI->{customer};
-	$Values->{customer_id} = $CGI->{customer}
-		unless $CGI->{customer} eq 'NEW';
-	for (qw/
-				username
-				password
-				company
-				fname
-				lname
-				address1
-				address2
-				address3
-				city
-				state
-				zip
-				country
-				phone_day
-				mv_shipmode
-				b_nickname
-				b_fname
-				b_lname
-				b_address1
-				b_address2
-				b_address3
-				b_city
-				b_state
-				b_zip
-				b_country
-				b_phone
-				mv_credit_card_type
-				mv_credit_card_exp_month
-				mv_credit_card_exp_year
-				mv_credit_card_info
-				email
-				fax
-				phone_night
-				fax_order
-				order_numbers
-				email_copy
-				mail_list
-		/)
-	{
-		$Values->{$_} = '';
-	}
-[/calc]
 
 [loop list=`$Values->{customer_id} || 'NEW'`]
 
@@ -242,6 +336,13 @@ They are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
 	<TD>
 		<INPUT TYPE=text NAME=customer_id VALUE="[value customer_id]" size=30>
 		<INPUT TYPE=checkbox NAME=new_customer_id VALUE=1 [if !value customer_id]CHECKED[else]onClick="this.form.customer_id.value=''; this.form.submit()"[/else][/if]>[L]New customer[/L]
+	</TD>
+</TR>
+
+<TR>
+	<TD ALIGN=RIGHT>[error name=company std_label=[L]Company[/L]]</TD>
+	<TD ALIGN=LEFT>
+		<INPUT TYPE=text NAME=company VALUE="[value name=company default="[loop-data userdb company]"]" size=60>
 	</TD>
 </TR>
 
@@ -352,23 +453,30 @@ mv_todo=back
 [/set]
 
 [set [L]Clear[/L]]
-customer_id=
-customer=NEW
+[calc]	
+	for(keys %$CGI) {
+		$CGI->{$_} = '';
+	}
+[/calc]
 mv_todo=return
+customer=NEW
+mv_nextpage=@@MV_PAGE@@
 [/set]
 
 
 <TR>
 	<TD>&nbsp;</TD>
 	<TD>
-	<B><INPUT TYPE=submit NAME=mv_click VALUE=[L]Find[/L]>
-	<INPUT TYPE=submit NAME=mv_click VALUE=[L]Clear[/L]></B>
+	<B><INPUT TYPE=submit NAME=mv_click VALUE="[L]Find[/L]">
+	<INPUT TYPE=submit NAME=mv_click VALUE="[L]Clear[/L]"></B>
 	 </TD>
 </TR>
 <TR>
 	<TD>&nbsp;</TD>
 	<TD>
 		<SMALL><I>[msg arg.0="<B>" arg.1="</B>"]%sBold%s fields needed to process the order[/msg]</I></SMALL>
+		<br>
+		<span class=cmessage><input type=checkbox name=no_save value=1 [checked no_save_shipping 1]> Don't save address in user record</span>
 	</TD>
 </TR>
 
@@ -382,7 +490,7 @@ mv_todo=return
 [if !scratch only_downloadable]
 <P>
 <TABLE WIDTH=600><TR><TD class=rmarq>
-[L]Choose your shipping method[/L]
+[L]Shipping method[/L]
 </TD></TR></TABLE>
 
 <P>
@@ -392,7 +500,7 @@ mv_todo=return
 		]
     [shipping
 		label=1
-		mode=| [data table=country key='[default country US]' sf=selector col=shipmodes]|
+		mode=| [data table=country key='[either][value country]' sf=selector col=shipmodes]|
 		]
     </SELECT>
 </TD>
@@ -408,94 +516,6 @@ mv_todo=return
 </TR></TABLE>
 [/if]
 
-
-[if variable CREDIT_CARDS_ACCEPTED =~ /\S/]
-<TABLE WIDTH=600><TR><TD class=rmarq>
-[error std_label="<B>Credit Card Information</B>" name=mv_credit_card_valid]
-</TD></TR></TABLE>
-
-<P>  
-<TABLE><TR><TD VALIGN=TOP>
-Card Number<BR>
-<INPUT TYPE=text NAME=mv_credit_card_number SIZE=19 VALUE="">
-[if variable MV_PAYMENT_MODE =~ /minivend_test/]
-	<BR>Interchange test should yield:
-		<INPUT TYPE=radio NAME=mv_payment_test VALUE=success CHECKED>Success
-		<INPUT TYPE=radio NAME=mv_payment_test VALUE=success>Failure
-[/if]
-</TD>
-<TD VALIGN=TOP>
- Expires 
-<BR>
-  	<SELECT NAME=mv_credit_card_exp_month>
-		<OPTION VALUE=1 [selected mv_credit_card_exp_month 1]> 01 - January
-		<OPTION VALUE=2 [selected mv_credit_card_exp_month 2]> 02 - February
-		<OPTION VALUE=3 [selected mv_credit_card_exp_month 3]> 03 - March
-		<OPTION VALUE=4 [selected mv_credit_card_exp_month 4]> 04 - April
-		<OPTION VALUE=5 [selected mv_credit_card_exp_month 5]> 05 - May
-		<OPTION VALUE=6 [selected mv_credit_card_exp_month 6]> 06 - June
-		<OPTION VALUE=7 [selected mv_credit_card_exp_month 7]> 07 - July
-		<OPTION VALUE=8 [selected mv_credit_card_exp_month 8]> 08 - August
-		<OPTION VALUE=9 [selected mv_credit_card_exp_month 9]> 09 - September
-		<OPTION VALUE=10 [selected mv_credit_card_exp_month 10]> 10 - October
-		<OPTION VALUE=11 [selected mv_credit_card_exp_month 11]> 11 - November
-		<OPTION VALUE=12 [selected mv_credit_card_exp_month 12]> 12 - December
-	</SELECT>
-	<SELECT NAME=mv_credit_card_exp_year>
-		<OPTION VALUE=00 [selected mv_credit_card_exp_year 00]> 2000
-		<OPTION VALUE=01 [selected mv_credit_card_exp_year 01]> 2001
-		<OPTION VALUE=02 [selected mv_credit_card_exp_year 02]> 2002
-		<OPTION VALUE=03 [selected mv_credit_card_exp_year 03]> 2003
-		<OPTION VALUE=04 [selected mv_credit_card_exp_year 04]> 2004
-		<OPTION VALUE=05 [selected mv_credit_card_exp_year 05]> 2005
-		<OPTION VALUE=06 [selected mv_credit_card_exp_year 06]> 2006
-		<OPTION VALUE=07 [selected mv_credit_card_exp_year 07]> 2007
-		<OPTION VALUE=08 [selected mv_credit_card_exp_year 08]> 2008
-		<OPTION VALUE=09 [selected mv_credit_card_exp_year 09]> 2009
-		<OPTION VALUE=10 [selected mv_credit_card_exp_year 10]> 2010
-	</SELECT>
-</TD></TR></TABLE>
-
-<INPUT TYPE=radio NAME=fax_order VALUE=0
-		[if !value fax_order]CHECKED[/if]>
-<I>Charge credit card</I><BR>
-
-[if variable CHECK_ACCEPTED]
-	<INPUT TYPE=radio NAME=fax_order VALUE=1 [checked fax_order 1]>
-	<I>Call customer for payment information</I><BR>
-[/if]
-
-[if variable PO_ACCEPTED]
-	<INPUT TYPE=radio NAME=fax_order VALUE=2 [checked fax_order 2]>
-	<I>I will pay by purchase order</I> 
-	[error name=credit_limit_ok std_label="PO Number" required=1]&nbsp;<INPUT NAME=po_number VALUE="[value po_number]" SIZE=14>
-		[if type=data
-			term="userdb::credit_limit::[value customer_id]"
-			op=">"
-			compare=0.01]
-			<BR>
-		Current credit limit:
-			[currency]
-			[data table=userdb col=credit_limit key="[value customer_id]"]
-			[/currency]
-		
-			[if type=data
-				term="userdb::credit_limit::[value customer_id]"
-				op=<
-				compare="[total-cost noformat=1]"
-				]
-			<BR>
-			<FONT COLOR=__CONTRAST__>Order total [total-cost] exceeds credit limit, please call.</FONT>
-			[/if]
-			<BR>
-		[/if]
-	</I><BR>
-[/if]
-
-[if variable COD_ACCEPTED]
-	<INPUT TYPE=radio NAME=fax_order VALUE=3 [checked fax_order 3]>
-	<I>I will pay by COD ([handling cod] extra charge will be added)</I><BR>
-[/if]
 <br>
 <TABLE WIDTH=__UI_MAIN_WIDTH__><TR><TD class=rmarq>
 Billing Address (if different)
@@ -507,6 +527,13 @@ Billing Address (if different)
 	<TD>
 		<INPUT TYPE=text NAME=b_fname VALUE="[value name=b_fname default="[loop-data userdb b_fname]"]" size=20>
 		<B>Last </B><INPUT TYPE=text NAME=b_lname VALUE="[value name=b_lname default="[loop-data userdb b_lname]"]" size=30>
+	</TD>
+</TR>
+
+<TR>
+	<TD ALIGN=RIGHT>Company</TD>
+	<TD ALIGN=LEFT>
+		<INPUT TYPE=text NAME=b_company VALUE="[value name=b_company default="[loop-data userdb b_company]"]" size=50>
 	</TD>
 </TR>
 
@@ -540,6 +567,12 @@ Billing Address (if different)
 		<INPUT TYPE=text NAME=b_country VALUE="[value name=b_country default="[loop-data userdb b_country]"]" size=20>
 	</TD>
 </TR>
+<TR>
+	<TD ALIGN=RIGHT><B>Phone</B></TD>
+	<TD>
+		<INPUT TYPE=text NAME=b_phone VALUE="[value name=b_phone default="[loop-data userdb b_phone]"]" size=20>
+	</TD>
+</TR>
 
 </TABLE><br>
 
@@ -549,33 +582,524 @@ Email preferences
 
 <TABLE>
 <TR>
-	<TD valign=bottom>
+	<TD valign=top>
+		<b>Send receipt</b><br>
 		<INPUT TYPE=radio NAME=email_copy [checked name=email_copy value=1 default=1] VALUE="1">Yes
 		<INPUT TYPE=radio NAME=email_copy [checked name=email_copy value=0] VALUE="0">No
 	</TD>
-	<TD valign=bottom>
-		<I>Send an email copy of my receipt</I>
-	</TD>
-</TR>
-<TR>
-	<TD valign=bottom>
-		<INPUT TYPE=radio NAME=mail_list [if-loop-data userdb mail_list]CHECKED[/if-loop-data] VALUE="1">Yes
-		<INPUT TYPE=radio NAME=mail_list [if-loop-data userdb mail_list][else]CHECKED[/else][/if-loop-data] VALUE="0">No
-	</TD>
-	<TD valign=bottom>
-		<I>Put customer on email information list</I>
+	<td>
+		&nbsp;
+		&nbsp;
+	</td>
+	<TD valign=top>
+		<b>Put on email lists</b><br>
+		[display table=userdb col=mail_list type=checkbox_left_2]
 	</TD>
 </TR>
 </TABLE>
 
+<!-- begin payment_select -->
+<table cellspacing="0" cellpadding="0" width="600">
+  <tr>
+    <td>
+       <table border="0" cellspacing="0" cellpadding="0" width="100%">
+          <tr class="rmarq">
+            <td colspan=4 class="rmarq"><b>[L]Payment Method[/L]</b></td>
+          </tr>
+          <tr>
+            <td colspan=4 class="contentbar1">&nbsp;</td>
+          </tr>                                                   
+          <tr>
+            <td class="contentbar1">&nbsp;</td>
+            <td class="contentbar1">
+
+[if !scratch old_browser]
+<script>
+var possible = ['credit_card', 'cod', 'postal', 'online_check', 'purchase_order'];
+
+function visible (selnam) {
+
+	if(selnam == undefined) {
+		var form = document.checkout;
+		if(form == undefined) 
+			return;
+		var selec = form.mv_order_profile;
+		if(selec.selectedIndex == undefined)
+			selec.selectedIndex = 0;
+		selnam = selec.options[selec.selectedIndex].value;
+	}
+
+	// alert("selnam=" + selnam);
+
+	var sel = document.getElementById(selnam);
+	// alert("sel=" + sel);
+	if(sel == undefined) 
+		return;
+	
+	for(var i = 0; i < possible.length; i++) {
+		var xel = document.getElementById(possible[i]);
+		if(xel != undefined) {
+			xel.style.zIndex = 0;
+			xel.style.visibility = 'Hidden';
+		}
+	}
+
+	sel.style.visibility = 'Visible';
+	sel.style.zIndex = 2;
+
+	return;
+}
+</script>
+[/if]
+
+              <SELECT NAME="mv_order_profile"
+			  	onChange="[if scratch old_browser]
+								this.form.submit()
+							[else]
+								visible()
+							[/else]
+							[/if]">
+              [if variable CREDIT_CARDS_ACCEPTED]
+              <option [selected mv_order_profile credit_card] value="credit_card">[L]Credit Card[/L]
+              [/if]
+              [if variable CHECK_ACCEPTED]
+              <option [selected mv_order_profile online_check] value="online_check">[L]Online Check[/L]
+              [/if]
+              [if variable PO_ACCEPTED]
+              <option [selected mv_order_profile purchase_order] value="purchase_order">[L]Company P.O.[/L]
+              [/if]
+              [if variable POSTAL_ACCEPTED]
+              <option [selected mv_order_profile postal] value="postal">[L]Postal Billing[/L]
+              [/if]
+              [if variable COD_ACCEPTED]
+              <option [selected mv_order_profile cod] value="cod">[L]C.O.D.[/L]
+              [/if]
+              </SELECT>
+            </td>
+            <td colspan="2" class="contentbar1"> 
+			  [if scratch old_browser]
+              ([L]will update display[/L])
+			  [/if]
+            </td>                              
+          </tr>
+          <tr>
+            <td class="contentbar1" colspan="4">&nbsp;</td>
+          </tr>
+          </table>
+                                                        
+        </td>
+      </tr>
+      </table>                                          
+
+<!-- end   payment_select -->
+
+<!-- begin payment_widgets -->
+<div
+    style="
+            Position:Relative;
+            Left:0; Top:0;
+            Visibility:Visible;
+			height: 160px;
+            z-index:1;
+	">
+	<div 
+		id=credit_card
+		style="
+				Position:Absolute;
+				Left:0; Top:0;
+				Visibility:Hidden;
+				z-index:0;
+		">
+      <!--- credit card information --->
+      <table cellspacing=0 cellpadding="0" width="600">
+      <tr>
+        <td>
+          <table border=0 cellspacing=0 cellpadding=4 width="100%">
+          <tr>
+            <td colspan="2" class="rmarq" width="30%">
+              <b>
+              [error std_label="[L]Credit Card Information[/L]" name=mv_credit_card_valid]
+              </b>
+            </td>
+            <td class="rmarq">
+              [calc]
+                my $accepted = $Variable->{CREDIT_CARDS_ACCEPTED};
+                my (@out);
+                my (@cc);
+                my $out;
+                push @cc, 'visa' if $accepted =~ /visa/;
+                push @cc, 'mc' if $accepted =~ /mc/;
+                push @cc, 'disc' if $accepted =~ /discover/;
+                push @cc, 'amex' if $accepted =~ /amex/;
+                for (@cc) {
+                  push @out, qq{<IMG id="img_$_" SRC="__IMAGE_DIR__/small$_.png">};
+                }
+                return join '&nbsp;&nbsp;', @out;
+              [/calc]
+            </td>
+          </tr>
+          <tr>
+            <td align=right class="contentbar1" width="30%">
+              <b>[L]Card Number[/L]: </b>
+            </td>
+            <td colspan=2 class="contentbar1">
+<script>
+	var cards = [ 'visa', 'mc', 'disc', 'amex' ];
+	var cardimg = new Array;
+	for( var i = 0; i < cards.length; i++) {
+		var el = document.getElementById('img_' + cards[i]);
+		if(el != undefined) {
+			cardimg[cards[i]] = el;
+			el.border = 0;
+		}
+	}
+
+	function highlight_card (num) {
+
+		var ti = document.getElementById('textindication');
+		ti.innerHTML = '';
+		var e;
+		for(e in cardimg) {
+			cardimg[e].border = 0;
+		}
+
+		var type;
+		var desc;
+
+		if(num == undefined) 
+			return;
+
+		if(num.substr(0,1) == '4')  {
+			type = 'visa';
+			desc = '(Visa)';
+		}
+
+		if(
+			desc == undefined &&
+			num.substr(0,2) == '51' ||
+			num.substr(0,2) == '52' ||
+			num.substr(0,2) == '53' ||
+			num.substr(0,2) == '54' ||
+			num.substr(0,2) == '55'
+		)
+		{
+			type = 'mc';
+			desc = '(Mastercard)';
+		}
+
+		if(
+			desc == undefined &&
+			num.substr(0,4) == '6011'
+			)
+		{
+			type = 'disc';
+			desc = '(Discover card)';
+		}
+
+		if(
+			desc == undefined &&
+			num.substr(0,2) == '34' ||
+			num.substr(0,2) == '37'
+			)
+		{
+			type = 'amex';
+			desc = '(American Express card)';
+		}
+
+		if(
+			desc == undefined &&
+			num.substr(0,2) == '36' ||
+			num.substr(0,2) == '30'
+			)
+		{
+			type = 'diners';
+			desc = '(Diners Club card)';
+		}
+
+		if(
+			desc == undefined &&
+			num.substr(0,2) == '38'
+			)
+		{
+			type = 'carteblanche';
+			desc = '(Carte Blanche)';
+		}
+
+		if(
+			desc == undefined &&
+			num.substr(0,1) == '2'
+			)
+		{
+			type = 'enroute';
+			desc = '(En Route)';
+		}
+
+		if(
+			desc == undefined &&
+			num.substr(0,2) == '56'
+			)
+		{
+			type = 'bankcard';
+			desc = '(BankCard)';
+		}
+
+		if(
+			desc == undefined &&
+			num.substr(0,1) == '3' ||
+			num.substr(0,4) == '2131' ||
+			num.substr(0,4) == '1800'
+			)
+		{
+			type = 'jcb';
+			desc = '(JCB card)';
+		}
+
+		var el = cardimg[type];
+// alert("el is " + el);
+		if( el != undefined ) {
+			el.border = 2;
+		}
+		if( desc != undefined ) {
+			ti.innerHTML = desc;
+		}
+	}
+</script>
+              <b><INPUT TYPE=text NAME=mv_credit_card_number SIZE=22 onChange="highlight_card(this.value)"></b> <i id=textindication style="font-size: smaller"></i>
+            </td>
+          </tr>
+		  [if variable MV_DEMO_MODE]
+		  <tr>
+		  	<td class=contentbar1>
+			</td>
+		  	<td colspan=2 class=contentbar1>
+              ([L]test number[/L] <A HREF="javascript:void 0" onclick="checkout.mv_credit_card_number.value='4111 1111 1111 1111'; highlight_card('4'); return false;">4111 1111 1111 1111</A>)
+			</td>
+		  </tr>
+		  [/if]
+          <tr>
+            <td align=right class="contentbar1">
+              <b>[L]Expiration[/L]: </b>
+            </td>
+            <td colspan=2 class="contentbar1">
+
+                [display
+					name=mv_credit_card_exp_month
+					type=select
+					default="[value name=mv_credit_card_exp_year default='[loop-data userdb mv_credit_card_exp_year]']"
+                        passed=|
+1=01 - [L]January[/L],
+2=02 - [L]February[/L],
+3=03 - [L]March[/L],
+4=04 - [L]April[/L],
+5=05 - [L]May[/L],
+6=06 - [L]June[/L],
+7=07 - [L]July[/L],
+8=08 - [L]August[/L],
+9=09 - [L]September[/L],
+10=10 - [L]October[/L],
+11=11 - [L]November[/L],
+12=12 - [L]December[/L]|]
+
+        
+                <SELECT NAME=mv_credit_card_exp_year>
+                [comment]
+                This should always return the current year as the first, then
+                7 more years.
+                [/comment]
+                [display
+					type=select
+					name=mv_credit_card_exp_year
+					default="[value name=mv_credit_card_exp_year default='[loop-data userdb mv_credit_card_exp_year]']"
+					passed=`
+                my $year = $Tag->time( '', { format => '%Y' }, '%Y' );
+                my $out = '';
+				my @out;
+                for ($year .. $year + 7) {
+                        /\d\d(\d\d)/;
+                        $last_two = $1;
+                        push @out, "$last_two=$_";
+                }
+                return join ",", @out;
+                `]
+
+              </td>
+            </tr>
+            </table>
+                                                
+          </td>
+        </tr>
+        </table>
+	</div>
+	<div 
+		id=postal
+		style="
+				Position:Absolute;
+				Left:0; Top:0;
+				Visibility:Hidden;
+				z-index:0;
+		">
+		[L NEW_BROWSER_PAYMENT_MSG1]We will wait for a check sent to us referencing the order number you receive on your receipt.[/L]
+        </div>
+	<div 
+		id=cod
+		style="
+				Position:Absolute;
+				Left:0; Top:0;
+				Visibility:Hidden;
+				z-index:0;
+		">
+		[msg arg.0="[handling cod]"]There will be a %s charge added for COD.[/msg]
+        </div>
+        
+	<div 
+		id=online_check
+		style="
+				Position:Absolute;
+				Left:0; Top:0;
+				Visibility:Hidden;
+				z-index:0;
+		">
+        <table border="0" cellspacing="0" cellpadding="0" width="600">
+        <tr>
+          <td>
+            <table border="0" cellspacing="0" cellpadding="4"  width="100%">
+            <tr>
+              <td class="rmarq" colspan="2">
+                <b>&nbsp;&nbsp;[L]Check Information[/L]</b>
+              </td>
+              <td class="rmarq">&nbsp;</td>
+              <td class="rmarq">&nbsp;</td>
+            </tr>
+            <tr>
+              <td align="right" class="contentbar1">
+                [error name=check_acct std_label="[L]Account Number[/L]" required=1]
+              </td>
+              <td colspan="3 align="left" class="contentbar1">
+                <b>
+                <INPUT TYPE=text NAME=check_acct SIZE=22 value="[value check_acct]">
+                </b>
+              </td>
+            </tr>
+            <tr>
+              <td align="right" class="contentbar1">
+                [error name=check_route std_label="[L]Routing Number[/L]" required=1]
+                
+              </td>
+              <td align="left" colspan="3" class="contentbar1">
+                <b><INPUT TYPE=text NAME=check_route SIZE=22 value="[value check_route]"></b>
+              </td>
+            </tr>
+            <tr>
+              <td align="right" class="contentbar1">
+                [error name=check_num std_label="[L]Check Number[/L]" required=1]
+              </td>
+              <td align="left" colspan="3" class="contentbar1">
+                <b>
+                <INPUT TYPE=text NAME=check_num SIZE=22 value="[value check_num]">
+                </b>
+              </td>
+                </tr>
+            <tr>
+              <td align="right" class="contentbar1">
+                [error name=check_bank_phone std_label="[L]Bank Phone[/L]" required=1]
+                
+              </td>
+              <td align="left" colspan="3" class="contentbar1">
+                <b>
+                <INPUT TYPE=text NAME=check_bank_phone SIZE=22 value="[value check_bank_phone]">
+                </b>
+              </td>
+                </tr>
+			<tr>
+				<td colspan=4 class=contentbar1>&nbsp;</td>
+			</tr>
+		  </table>
+		</td>
+	  </tr>
+	</table>
+	</div>
+	<div 
+		id=purchase_order
+		style="
+				Position:Absolute;
+				Left:0; Top:0;
+				Visibility:Visible;
+				z-index:0;
+		">
+ 
+        <table cellspacing="0" cellpadding="0" width="600">
+        <tr>
+          <td>
+            <table border="0" cellspacing="0" cellpadding="0" width="100%">
+            <tr class="rmarq">
+              <td class="rmarq" colspan="2">
+                <b> [L]P.O. Information[/L] </b>
+              </td>
+              <td colspan=2 class="rmarq">&nbsp;</td>
+            </tr>
+            <tr>
+              <td align=right class="contentbar1" width="30%">
+                [error name=credit_limit_ok std_label="[L]PO Number[/L]" required=1] &nbsp; &nbsp;
+              </td>
+              <td align=left colspan=3 class="contentbar1">
+                <b>
+                <INPUT NAME=project_id VALUE="[value project_id]" SIZE=14>
+                </b>
+              </td>
+            </tr>
+			<tr>
+				<td colspan=4 class=contentbar1>&nbsp;</td>
+			</tr>
+        
+            [if type=data
+                term="userdb::credit_limit::[data session username]"
+                op=">"
+                compare=0.01]
+        
+            <tr>
+              <td align=right valign=top class=contentbar1>
+                <b> Available credit </b>&nbsp;&nbsp;&nbsp;
+              </td>
+              <td align=left colspan=3 class=contentbar1>
+                [currency]
+                [data table=userdb col=credit_limit key="[data session username]"]
+                [/currency]
+                
+                [if type=data
+                        term="userdb::credit_limit::[data session username]"
+                        op=<
+                        compare="[total-cost noformat=1]"
+                ]
+                <BR>
+                [msg arg.0="[total-cost]"]Order total %s exceeds credit limit, please call.[/L]
+                [/if]
+                <BR>
+              </td>
+            </tr>
+        
+            [/if]
+			<tr>
+				<td colspan=4 class=contentbar1>&nbsp;</td>
+			</tr>
+            </table>
+                                                
+          </td>
+        </tr>
+        </table>
+	</div>
+</div>
+
+<script>
+	visible('[either][value mv_order_profile][or]credit_card[/either]');
+</script>
+<!-- end   payment_widgets -->
 <CENTER>
 [set [L]Place Order[/L]]
 	mv_todo=submit
-	mv_nextpage=admin/order
-	[value name=mv_order_route set="log_entry main copy_user" hide=1]
+	[value name=mv_order_route set="entry" hide=1]
 [/set]
 
-<INPUT name=mv_click TYPE=submit VALUE="[L]Place Order[/L]">
+<INPUT name=mv_click TYPE=submit VALUE="[L]Place Order[/L]" style="font-weight: bold">
 </CENTER>
 
 <P>
@@ -584,11 +1108,6 @@ Email preferences
 </FORM>
 [/loop]
 [error all=1 hide=1 comment="Clear errors"]
-
-</TD></TR></TABLE>
-__MENUBOTTOM__
-__COPYRIGHT__
-<!-- current page: @@MV_PAGE@@ -->
 
 <!-- ----- END REAL STUFF ----- -->
 

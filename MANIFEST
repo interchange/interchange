@@ -152,6 +152,7 @@ code/UI_Tag/list_glob.coretag
 code/UI_Tag/list_keys.coretag
 code/UI_Tag/list_pages.coretag
 code/UI_Tag/menu_load.coretag
+code/UI_Tag/meta_info.coretag
 code/UI_Tag/meta_record.coretag
 code/UI_Tag/mm_locale.coretag
 code/UI_Tag/mm_value.coretag
@@ -256,7 +257,6 @@ dist/catalog_after.cfg
 dist/catalog_before.cfg
 dist/error.log
 dist/etc/.empty
-dist/etc/jobs/i18n/update_locales
 dist/foundation/backup/.empty
 dist/foundation/catalog.cfg
 dist/foundation/config/additional_fields
@@ -976,6 +976,7 @@ dist/lib/UI/pages/admin/do_upload_page.html
 dist/lib/UI/pages/admin/do_view.html
 dist/lib/UI/pages/admin/edit_metaconfig.html
 dist/lib/UI/pages/admin/entry.html
+dist/lib/UI/pages/admin/entry_items.html
 dist/lib/UI/pages/admin/entry_select.html
 dist/lib/UI/pages/admin/env_vars.html
 dist/lib/UI/pages/admin/error.html
@@ -1112,6 +1113,7 @@ dist/lib/UI/pages/admin/wizard/step_tax.html
 dist/lib/UI/pages/include/Options/Matrix
 dist/lib/UI/pages/include/Options/Simple
 dist/lib/UI/pages/include/Options/old/item_option_matrix
+dist/lib/UI/pages/include/Options/old/item_option_modular
 dist/lib/UI/pages/include/Options/old/item_option_simple
 dist/lib/UI/pages/include/component_editor
 dist/lib/UI/pages/include/menus/Accounting.txt

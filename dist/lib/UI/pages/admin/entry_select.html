@@ -79,7 +79,7 @@
 		rf=username,lname,fname
 "]
 <pre>
-<select name=customer size=10>
+<select name=customer size=10 onDblClick="this.form.submit()">
 [search-list]<OPTION VALUE="[item-code]">[item-code]: [item-pos 1], [item-pos 2]</OPTION>
 [/search-list]
 [no-match]<OPTION VALUE=""> -- no matching customers --[/no-match]
