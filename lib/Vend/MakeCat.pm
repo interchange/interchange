@@ -2,7 +2,7 @@
 #
 # MakeCat.pm - routines for catalog configurator
 #
-# $Id: MakeCat.pm,v 1.11 2000-09-25 16:50:48 jon Exp $
+# $Id: MakeCat.pm,v 1.12 2000-09-27 12:05:12 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -62,7 +62,7 @@ sethistory
 use strict;
 
 use vars qw($Force $Error $History $VERSION);
-$VERSION = substr(q$Revision: 1.11 $, 10);
+$VERSION = substr(q$Revision: 1.12 $, 10);
 
 $Force = 0;
 $History = 0;
@@ -323,8 +323,8 @@ sub can_do_suid {
 
 sub get_id {
 	return 'everybody' if $^O =~ /win32/i;
-    my $file = -f "$::VendRoot/error.log"
-                ? "$::VendRoot/error.log" : '';
+    my $file = -f "$Global::VendRoot/error.log"
+                ? "$Global::VendRoot/error.log" : '';
     return '' unless $file;
     my ($name);
 
