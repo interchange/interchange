@@ -36,7 +36,7 @@ __UI_META_TABLE__
 	@menufields = qw/
         code mgroup msort next_line indicator exclude_on depends_on page
         form name super inactive description help_name img_dn img_up
-        img_sel img_icon url
+        img_sel img_icon url member
 	/;
 
 	$Tag->tmp('qmenu_fdata');
@@ -107,6 +107,14 @@ __UI_META_TABLE__
 				my $gfield = $Variable->{MV_TREE_GROUP_FIELD} || 'mgroup';
 				my $sfield = $Variable->{MV_TREE_SORT_FIELD} || 'msort';
 
+				my @valid;
+				for(my $i = 0; $i < @fields; $i++) {
+					push @valid, $i if defined $db->test_column($fields[$i]);
+				}
+#Debug("valid entries=" . join(',', @valid));
+
+				@fields = @fields[@valid];
+
 				my $gptr;
 				my $sptr;
 				for(my $i = 1; $i < @fields; $i++) {
@@ -135,6 +143,7 @@ __UI_META_TABLE__
 					my @row = split /\t/, $_, $num;
 					my @f = @fields;
 					$#row = $last;
+					@row = @row[@valid];
 					my $lev = $row[$sptr];
 #Debug("menu level=$lev");
 					$row[$gptr] = $menuname;
@@ -423,31 +432,45 @@ sub old_link {
 			$blob =~ s/.*?>//;
 			1 while $blob =~ s{<.*?>}{};
 			$anchor = $blob;
+			my $sort = $start;
+			$sort =~ s/./x/;
 			my($href, $parms) = split /\?/, $link, 2;
-			push @out, 
-				join "\t", $start, '', 0, $start, $href, $parms, $anchor, $desc;
-			$start++;
+			my %record = (
+				code => $start++,
+				msort => $sort,
+				page => $href,
+				form => $parms,
+				name => $anchor,
+				description => $desc,
+			);
+
+			push @out, join "\t", @record{@menufields};
 		}
+
 		$Scratch->{qmenu_data} = join "\n", @out, '';
 		$CGI->{qmenu_name} = '';
 		$CGI->{qmenu_new} ||= 'Untitled';
 	}
 
-	my @files = sort $Tag->list_glob("$menupath/*.txt");
+	my $files = $Tag->list_pages({
+											base => $menupath,
+											ext => '.txt',
+											arrayref => 1,
+										});
+#Debug("files=" . join(",", @$files));
 	my @names;
-	for(@files) {
+	for(@$files) {
 		my $tmp = $_;
-		$tmp =~ s:.*/::;
-		$tmp =~ s/\.txt$//;
 		$tmp =~ s/%([A-Fa-f0-9]{2})/chr(hex $1)/eg;
+		$_ = "$menupath/$_.txt";
 		push @names, $tmp;
 	}
 
-	@qmenu{@names} = @files;
+	@qmenu{@names} = @$files;
 
 	my @fdata = "code\tfile";
 	for(my $i = 0; $i < @names; $i++) {
-		push @fdata, "$names[$i]\t$files[$i]";
+		push @fdata, "$names[$i]\t$files->[$i]";
 	}
 	$Scratch->{qmenu_fdata} = join "\n", @fdata;
 
@@ -977,6 +1000,7 @@ sub {
 		var f = document.qmenuform;
 		var el = f.treebutton;
 		var ch = f.qmenu_tree;
+		var cht = f.qmenu_write_tree;
 		var tel = document.getElementById('treebox');
 // alert("change mode, el=" + el);
 		if(mode == 'tree') {
@@ -984,6 +1008,7 @@ sub {
 			lines[1][MSORT] = 0;
 			el.value = "Set simple mode";
 			ch.checked = 1;
+			cht.checked = 1;
 			tel.style.visibility = 'Visible';
 		}
 		else {
@@ -991,6 +1016,7 @@ sub {
 			lines[1][MSORT] = 'x';
 			el.value = "Set tree mode";
 			ch.checked = 0;
+			cht.checked = 0;
 			tel.style.visibility = 'Hidden';
 		}
 		var i;
