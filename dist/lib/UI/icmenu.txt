@@ -22,6 +22,7 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0021	Admin	12			no_dbmenu	mv_data_table	admin/export_table	mv_data_table=[cgi mv_data_table]	Export Data									
 0022	Admin	13			no_dbmenu	mv_data_table	admin/spread	mv_data_table=[cgi mv_data_table]	Spreadsheet									
 0022b	Admin	13b			no_dbmenu	mv_data_table	admin/search_replace	mv_data_table=[cgi mv_data_table]	Search/Replace									
+0022c	Admin	13c			no_dbmenu	mv_data_table	admin/direct_sql	mv_data_table=[cgi mv_data_table]	Direct SQL									
 0023	Admin	14			no_dbmenu	mv_data_table	admin/flex_editor	mv_data_table=[cgi mv_data_table]&ui_new_item=1	New Entry									
 0024	Admin	15			no_dbmenu	mv_data_table	admin/gentable		&nbsp;&nbsp;&nbsp;&nbsp;Re-select Table									
 0025	Admin	16	1			access_menu	admin/access		Users									
