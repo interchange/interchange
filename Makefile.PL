@@ -221,8 +221,8 @@ sub extra_libs {
 		require Storable;
 	};
 	unless ($@) {
-				my $def = 's';
-		        print <<EOF if $MV::Default{storable};
+		my $def = 's';
+        print <<EOF if $MV::Default{storable};
 
 You appear to have Raphael Manfredi's Storable module installed.
 This module will significantly improve your DBM storage and fetch times.
@@ -310,18 +310,18 @@ sub initialize {
 							scripts/update
 						)];
 	$X{PL_FILES}  = {qw(
-							scripts/compile_link.PL scripts/compile_link
-							scripts/config_prog.PL scripts/config_prog
-							scripts/configdump.PL  scripts/configdump
-							scripts/dump.PL        scripts/dump
-							scripts/expire.PL      scripts/expire
-							scripts/expireall.PL   scripts/expireall
-							scripts/localize.PL    scripts/localize
-							scripts/makecat.PL     scripts/makecat
-							scripts/interchange.PL    scripts/interchange
-							scripts/offline.PL     scripts/offline
-							scripts/restart.PL     scripts/restart
-							scripts/update.PL      scripts/update
+							scripts/compile_link.PL	scripts/compile_link
+							scripts/config_prog.PL	scripts/config_prog
+							scripts/configdump.PL	scripts/configdump
+							scripts/dump.PL			scripts/dump
+							scripts/expire.PL		scripts/expire
+							scripts/expireall.PL	scripts/expireall
+							scripts/localize.PL		scripts/localize
+							scripts/makecat.PL		scripts/makecat
+							scripts/interchange.PL	scripts/interchange
+							scripts/offline.PL		scripts/offline
+							scripts/restart.PL		scripts/restart
+							scripts/update.PL		scripts/update
 						)};
 
 	if(! $MV::Default{force} and ! $MV::Default{PREFIX}) {
@@ -440,7 +440,7 @@ sub initialize {
 			if ! $MV::Default{INSTALLMAN3DIR};
 	}
 
-	my @re_link  = qw( interchange bin/minivend );
+	my @re_link = qw( interchange bin/minivend );
 	my @re_dir  = qw();
 	my @re_copy = qw();
 
@@ -494,7 +494,7 @@ sub initialize {
 		chdir 'dist';
 		for (@re_dir) {
 			mkdir $_, 0777
-			 or @re_copy = ();
+				or @re_copy = ();
 		}
 		while ($_ = shift @re_copy ) {
 			my $from = $_;
@@ -616,9 +616,9 @@ EOF
 				or die "Couldn't change directory to $realdir: $!\n";
 			system $^X, 'src/cpan_local_install';
 			eval {
-					require Storable;
-					open JUNK, ">_session_storable"
-						and close JUNK;
+				require Storable;
+				open JUNK, ">_session_storable"
+					and close JUNK;
 			};
 			eval {
 				require Business::UPS;
@@ -656,9 +656,9 @@ EOF
 
 sub regularize {
 	for (@_) {
-			s/[\\]\n//g;
-			s/\n\s+/ /g;
-			s/\s+$//g;
+		s/[\\]\n//g;
+		s/\n\s+/ /g;
+		s/\s+$//g;
 	}
 	wantarray ? @_ : $_[0];
 }
@@ -746,20 +746,21 @@ GetOptions(\%optctl, @options)
 @ARGV = grep ! $delete{$_}, @saveargs;
 
 WriteMakefile(
-	NAME       => "Interchange",
+	NAME     => "Interchange",
 	MAN3PODS => {
 					'pod/icbackoffice.pod'	=> 'blib/man3/icbackoffice.8',
+					'pod/iccattut.pod'		=> 'blib/man3/iccattut.8',
 					'pod/icconfig.pod'		=> 'blib/man3/icconfig.8',
 					'pod/icdatabase.pod'	=> 'blib/man3/icdatabase.8',
 					'pod/icinstall.pod'		=> 'blib/man3/icinstall.8',
 					'pod/icintro.pod'		=> 'blib/man3/icintro.8',
+					'pod/ictags.pod'		=> 'blib/man3/ictags.8',
 					'pod/ictemplates.pod'	=> 'blib/man3/ictemplates.8',
-					'pod/mv_metadata.pod'	=> 'blib/man3/mv_metadata.8',
-					'pod/mvtags.pod'		=> 'blib/man3/mvtags.8',
+					'pod/icupgrade.pod'		=> 'blib/man3/icupgrade.8',
 					},
 	DISTNAME => "interchange",
 	clean    => {
-				FILES=> "lib/IniConf.pm _uid _db_storable _session_storable lib/File/CounterFile.pm scripts/initp.pl scripts/compile_link scripts/config_prog scripts/configdump scripts/dump scripts/expire scripts/localize scripts/expireall scripts/makecat scripts/interchange scripts/offline scripts/restart scripts/update dist/simple/download/mvtags.pod",
+				FILES => "lib/IniConf.pm _uid _db_storable _session_storable lib/File/CounterFile.pm scripts/initp.pl scripts/compile_link scripts/config_prog scripts/configdump scripts/dump scripts/expire scripts/localize scripts/expireall scripts/makecat scripts/interchange scripts/offline scripts/restart scripts/update",
 			   },
 
 	dist     => {
