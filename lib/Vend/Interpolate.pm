@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.103 2002-08-10 02:30:26 mheins Exp $
+# $Id: Interpolate.pm,v 2.104 2002-08-12 16:16:18 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.103 $, 10);
+$VERSION = substr(q$Revision: 2.104 $, 10);
 
 @EXPORT = qw (
 
@@ -3117,6 +3117,10 @@ sub tag_area {
 
 	if ($opt->{search}) {
 		$page = escape_scan($opt->{search});
+	}
+	elsif ($page =~ /^[a-z][a-z]+:/) {
+		### Javascript or absolute link
+		return $page;
 	}
 	elsif ($page eq 'scan') {
 		$page = escape_scan($arg);

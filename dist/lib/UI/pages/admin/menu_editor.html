@@ -6,6 +6,7 @@ Hit action for no-content
 [/if]
 
 [set page_title]Menu construction[/set]
+[tmpn dhtml_required]1[/tmpn]
 [set ui_class]Design[/set]
 [set page_banner]Menu constructor: Make a quick menu[/set]
 [set page_perm]layout=e[/set]
@@ -1768,8 +1769,8 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 					wid = [jsq]<input type=text name="$nn" onChange="form_changed(1);">[/jsq];
 				}
 				document.write([jsq]
-		<tr onMouseOver="show_title(1, '$helptext')" onMouseOut="show_title(0)">
-			<td class=clabel>
+		<tr>
+			<td class=clabel onMouseOver="show_title(1, '$helptext')" onMouseOut="show_title(0)">
 				$lab
 			</td>
 			<td class=cdata>

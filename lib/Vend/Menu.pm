@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange payment processing routines
 #
-# $Id: Menu.pm,v 2.5 2002-08-11 15:56:24 mheins Exp $
+# $Id: Menu.pm,v 2.6 2002-08-12 16:16:18 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.5 $, 10);
+$VERSION = substr(q$Revision: 2.6 $, 10);
 
 use Vend::Util;
 use strict;
@@ -654,6 +654,8 @@ EOF
 		$row = \%line;
 	}
 
+	$row->{mv_ip} = $opt->{mv_ip}++ || 0;
+	$row->{mv_increment} = ++$opt->{mv_incrmement};
 #::logDebug("here's a row: " . ::uneval($row)) if $row->{debug};
 
 	for(@{$opt->{_transform}}) {

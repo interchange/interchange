@@ -35,13 +35,24 @@ Variable UI_STD_FOOTER  <<EOV
         [tmp window_name][tag time]%m%d%H%M%S[/tag][/tmp]
         [if session logged_in]
         <font size="1">
-	[if-mm advanced gentable]<a href="[area __UI_BASE__/gentable]"><small>[msg]Tables[/msg]</small></A> - [/if-mm]
-	<a href="javascript:window.name = 'mainwindow[scratch window_name]';window.open('[area href=|admin/quicklinks| arg=|[scratch window_name]|]','Quicklinks[scratch window_name]','top=0,left=0,scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=170,height=700'); void 0"><small>[msg]Quicklinks[/msg]</small></A> - 
-        [/if]
-	[if-mm advanced reconfig]
-	<A href="[area __UI_BASE__/reconfig]"><small>[msg]Apply changes[/msg]</small></A> - 
-	[/if-mm]
-        <A href="[area __UI_BASE__/login]"><small>[msg]Log out[/msg]</small></A>
+[menu
+	name=Bottom
+	ui_security=depends_on
+	superuser=super
+	full_interpolate=page
+	localize="name,description"
+	]
+	{MV_IP?}- {/MV_IP?}<a href="{HREF}" title="{DESCRIPTION}" sytle="font-size: 9pt;">{NAME}</A>
+[menu-footer]
+[if-mm super]
+	[if scratch ui_meta_link]
+&nbsp;&nbsp;&nbsp;&nbsp;<a
+			href="[area href='admin/menu_editor' form='qmenu_name=Bottom']"
+			style="font-size: 7pt">edit</A>
+	[/if]
+[/if-mm]
+[/menu-footer]
+[/menu]
       </td>
       <td valign="top" align="right" nowrap>
         <a href="@_INTERCHANGE_URL_@"><img border="0" src="poweredby.gif" align="top"></a> &nbsp;

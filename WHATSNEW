@@ -15,7 +15,7 @@ Core
 * New ability to run Interchange entirely inside Apache and mod_perl.
   See POD documentation inside scripts/ic_mod_perl.PL for details.
 
-* Add new cron facility:
+* Add new Jobs and Cron facility:
 
   - While we don't keep the time, and a scheduler will have to set the
     execution time, it allows ITL to be run without the hassles of having
@@ -40,9 +40,9 @@ Core
   and the new tag [menu ...], which builds various types of DHTMl and
   standard HTML menus based on browser type.
 
-  The menu editor can edit simple menus or tree-based menus. Eventually
-  all UI menus will use this, and a simple menu component (i.e. a link list)
-  can be placed in the public-facing catalog.
+  The menu editor can edit simple menus or tree-based menus.
+  All UI menus use this. A simple menu component (i.e. a link list)
+  and a tree-based list are provided for Foundation.
 
 * New support for database-native sequences for MySQL, PostgreSQL, and Oracle:
 

@@ -41,6 +41,11 @@ Variable UI_STD_HEAD <<EOV
 	[/if]
 [/if-mm]
 [calc]
+	$Tag->tmpn('ui_meta_link');
+	$Scratch->{ui_meta_link} = defined $Values->{ui_meta_force}
+							 ?  $Values->{ui_meta_force}
+							 :  $Variable->{UI_META_LINK};
+
 	delete $Scratch->{no_login_required};
 	@parms = grep /^ui_class_/, keys %$Scratch;
 	my $last;
@@ -50,20 +55,8 @@ Variable UI_STD_HEAD <<EOV
 	} 
 	$last =~ s/ui_class_//;
 	$ui_tag = (delete $Scratch->{ui_class} || $last || 'None');
-	my $sparams = <<EOF;
-		fi=@_UI_MENU_TABLE_@
-		st=db
-		rf=*
-		co=yes
-		tf=msort
-
-		sf=mgroup
-		se=$ui_tag
-		op=rm
-EOF
 	$Scratch->{ui_class} = $ui_tag;
 	$Scratch->{"ui_class_$ui_tag"} = 1;
-	$Scratch->{ui_menu_sparams} = $sparams;
 	return;
 [/calc]
 [if scratch table_perm]
@@ -92,6 +85,20 @@ EOF
 	[set page_perm][/set]
 	[bounce page="__UI_BASE__/error"]
 	[/if-mm]
+[/if]
+[if scratch dhtml_required]
+	[calc]
+	$regex = qr/MSIE [5-9].*Windows|Mozilla.*Gecko/;
+	if ($Session->{browser} =~ $regex) {
+		delete $Scratch->{old_browser};
+	}
+	else {
+		$Scratch->{old_browser} = 1;
+		$Scratch->{ui_error} = "Modern browser like Mozilla or MSIE 5 required for page accessed.";
+	}
+	return;
+	[/calc]
+	[bounce page="__UI_BASE__/error" if="[scratch old_browser]"]
 [/if]
 <html[scratch ui_language_direction]>
 <head>
@@ -228,11 +235,7 @@ function MM_swapImage() {
 	 </td>
 	 <td align=right>
 	 [if-mm super]
-	 [if type=explicit compare=`
-	 		return $Values->{ui_meta_force}
-				if defined $Values->{ui_meta_force};
-			return $Variable->{UI_META_LINK};
-			`]
+	 [if scratch ui_meta_link]
 	  <A HREF="[area href=__UI_BASE__/menu_editor form="qmenu_name=Top"]"
 	  	style="font-size: 7pt" class=ctitle>edit</A>
 	 [/if]
@@ -260,21 +263,14 @@ function MM_swapImage() {
   <tr bgcolor="__UI_C_TITLEBARBG__"> 
     <td valign=center nowrap><font face="Verdana, Arial, Helvetica, sans-serif" size="-1"><img src="bg.gif" height=19 width=3 align=middle alt=x>&nbsp;&nbsp;&nbsp;&nbsp;[/menu-header]{NEXT_LINE?}</td><td></td></tr><tr bgcolor="__UI_C_INTBLOCKBAR__"><td nowrap valign=center><img src="bg.gif" height=19 width=3 align=middle alt=x>
 &nbsp;&nbsp;&nbsp;&nbsp;{/NEXT_LINE?}{PAGE?}<A
-	HREF="{HREF}"
+	href="{HREF}" title="{DESCRIPTION}"
 	style="
 		{INDICATED?}color: __UI_C_TITLEBARTXT__; font-size: 10pt;{/INDICATED?}
 		{INDICATED:}color: __UI_C_TITLEBARCONT__; font-size: 10pt;{/INDICATED:}
 ">{NAME}</A>{/PAGE?}{PAGE:}{NAME}{/PAGE:}&nbsp;&nbsp;&nbsp;&nbsp;[menu-footer]
 	</td><td align=right>
 	 [if-mm super]
-	 [if type=explicit compare=`
-			if (defined $Values->{ui_meta_force}) {
-				return $Values->{ui_meta_force};
-			}
-			else {
-				return $Variable->{UI_META_LINK};
-			}
-			`]
+	 [if scratch ui_meta_link]
 	<A HREF="[area href=__UI_BASE__/menu_editor form="qmenu_name=[scratch ui_class]"]"
 	  	style="font-size: 7pt" class=ctitle>edit</A>
 	[/if]

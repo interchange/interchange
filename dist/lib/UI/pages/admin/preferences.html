@@ -56,27 +56,39 @@
 
 [/loop]
 
-[if !variable UI_META_LINK]
+[if-mm super]
 <tr>
 <td bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
 <td bgcolor=__UI_C_INTBLOCK__>
-	[if value ui_meta_force]
+	[if type=explicit compare=`
+			return
+				(! defined $Values->{ui_meta_force} and $Variable->{UI_META_LINK})
+				 ||
+				$Values->{ui_meta_force};
+			`]
 	[page href="@@MV_PAGE@@"
 			form="
 				mv_action=return
-				ui_meta_force=0"][L]Turn off meta links in database edit[/L]</A></td>
+				ui_meta_force=0"][L]Turn off meta links in database edit[/L]</A>
+	[elsif variable UI_META_LINK]
+	[page href="@@MV_PAGE@@"
+			form="
+				mv_action=return
+				ui_meta_force=1"][L]Turn on meta links in database edit[/L]</A>
+	[/elsif]
 	[else]
 	[page href="@@MV_PAGE@@"
 			form="
 				mv_action=return
-				ui_meta_force=1"][L]Temporarily turn on meta links in database edit[/L]</A></td>
+				ui_meta_force=1"][L]Temporarily turn on meta links in database edit[/L]</A>
 	[/else]
 	[/if]
+	</td>
 </tr>
-[/if]
+[/if-mm]
 
 <tr>
 <td bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
