@@ -12,7 +12,7 @@ Version: 4.5.7
 Copyright: GNU General Public License
 Release: 1
 URL: http://developer.akopia.com/
-Packager: Mike Heins <nospam@minivend.com>
+Packager: Akopia <info@akopia.com>
 Distribution: Red Hat Linux Applications CD
 Vendor: Akopia, Inc.
 Source: http://ftp.minivend.com/interchange/beta/interchange-4.5.7.tar.gz
@@ -21,10 +21,9 @@ Obsoletes: interchange
 
 BuildRoot: /var/tmp/interchange
 
-# From the manual
 %description
-Interchange is the most powerful free shopping cart system available today. Its features
-and power rival the costliest commercial systems.
+Interchange is the most powerful free ecommerce system available today.
+Its features and power rival the costliest commercial systems.
 
 %prep
 %setup
@@ -49,12 +48,10 @@ then
 fi
 rm -rf $RBR
 mkdir -p $RBR
-mkdir -p $RBR/usr/doc/%{interchange_package}-%{version}
 make install
 gzip $RBR/usr/man/man*/* 2>/dev/null
 cp extra/HTML/Entities.pm $RBR/usr/lib/interchange/build
 cp extra/IniConf.pm $RBR/usr/lib/interchange/build
-cp QuickStart WHATSNEW README README.rpm README.cvs $RBR/usr/doc/%{interchange_package}-%{version}
 chown -R root.root $RBR
 cd $RBR/usr/lib/interchange
 export PERL5LIB=$RBR/usr/lib/interchange/lib
@@ -93,6 +90,11 @@ fi
 useradd -M -r -d /var/lib/interchange -s /bin/bash -c "Interchange server" %{interchange_user} 2> /dev/null || true 
 
 %files
+%doc QuickStart
+%doc WHATSNEW
+%doc README
+%doc README.rpm
+%doc README.cvs
 %config(noreplace) /etc/interchange.cfg
 %config(noreplace) /etc/logrotate.d/interchange
 %config /etc/rc.d/init.d/interchange
@@ -104,7 +106,6 @@ useradd -M -r -d /var/lib/interchange -s /bin/bash -c "Interchange server" %{int
 /usr/lib/interchange
 /usr/man/man1
 /usr/man/man8
-/usr/doc/%{interchange_package}-%{version}
 %dir /var/lib/interchange
 /var/log/interchange
 /var/run/interchange
