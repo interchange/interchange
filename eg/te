@@ -4,8 +4,8 @@
 
 =head1 NAME
 
-te (table editor) - front-end for simplifying editing tab-delimited
-ASCII databases
+te (table editor) - front-end that simplifies editing tab-delimited
+ASCII tables
 
 =head1 SYNOPSIS
 
@@ -13,8 +13,9 @@ B<te> I<file1> [ I<file2> ... ]
 
 =head1 DESCRIPTION
 
-This program makes it easier to edit tab-delimited ASCII databases,
-such as are used with Red Hat Interchange.
+This program makes it easier to edit tab-delimited ASCII tables, such
+as are used with Interchange (see icdevgroup.org), and can be exported
+from many popular spreadsheet and database applications.
 
 It converts tab-delimited ASCII files that have one record per line into
 temporary files with one field per line, each line beginning with the
@@ -55,6 +56,9 @@ As is customary with many Unix applications, you can set the environment
 variables VISUAL or EDITOR to point to your favorite text editor. If
 neither of those is set, my favorite editor, B<vi>(1) is used.
 
+Options will also be read from environment variable TE_OPTIONS if it is
+set.
+
 =head1 LIMITATIONS
 
 There is currently no way to add or delete entire columns from the
@@ -80,7 +84,7 @@ at http://www.fsf.org/copyleft/gpl.html for more details.
 
 =head1 VERSION
 
-$Id $
+$Id: te,v 2.5 2002-09-04 04:19:05 jon Exp $
 
 =head1 CHANGELOG
 
@@ -103,12 +107,17 @@ using running Perl's platform-specific chomp. If preserving a trailing
 solitary CR in the last field of a line is important, you'll want to
 change this behavior.
 
-2002-08-40. Add option -s for starting value support (really only vi).
+2002-08-30. Add option -s for starting value support (really only vi).
 
 	te -s os28004 <file>
 
 Jumps to first occurrence of "os28004" in <file>. Option -i ignores case
-in the search.
+in the search. (By Mike Heins.)
+
+2002-09-02. Add option -f to handle files without field names.
+
+2002-09-03. Add option -n to number rows in comments. Allow setting of
+persistent options in environment variable TE_OPTIONS.
 
 =cut
 
@@ -129,38 +138,36 @@ Edit tab-delimited file with easy field name delineation.
 Options:
         -i       Ignores case on vim jump search.
         -s TEXT  Jumps to first line where TEXT is. Only for vim.
+	-f       Do not look for field names on first line of file.
+	-n       Number rows in comments
+
+See 'man te' or 'perldoc $0' for more information.
+
 EOF
 
-use vars qw/$opt_i $opt_s/;
-getopts('is:') or die "$@\n$USAGE";
+unshift @ARGV, Text::ParseWords::shellwords($ENV{TE_OPTIONS})
+	if defined $ENV{TE_OPTIONS};
+
+use vars qw/$opt_i $opt_s $opt_f $opt_n/;
+getopts('is:fn') or die "$@\n$USAGE";
 
 die $USAGE unless @ARGV;
 
 my @ED = Text::ParseWords::shellwords($ENV{VISUAL} || $ENV{EDITOR} || 'vi');
 
-if($opt_s) {
-        my $pushed;
-        if($opt_i) {
-                push @ED, '-c';
-                $pushed++;
-                push @ED, q{set ic};
-        }
-        push @ED, '-c';
-        $opt_s =~ s:/:\\/:g;
-        $opt_s =~ s:":\\":g;
-        push @ED, qq{/$opt_s/};
+if ($opt_s) {
+	if ($opt_i) {
+		push @ED, '-c', 'set ic';
+		$opt_s = lc $opt_s;
+	}
+	$opt_s =~ s:/:\\/:g;
+	push @ED, '-c', qq{/$opt_s/};
 }
 
 # run gvim in foreground mode, since it otherwise immediately returns
 # control to us and we never get the user's changes
 if($ED[0] =~ /\bgvim\b/) {
-        my $ffound;
-        for(@ED) {
-                next unless $_ eq '-f';
-                $ffound = 1;
-                last;
-        }
-        push @ED, '-f' unless $ffound;
+	push @ED, '-f' unless grep $_ eq '-f', @ED;
 }
 
 for my $filename (@ARGV) {
@@ -178,24 +185,33 @@ for my $filename (@ARGV) {
                 warn "Error 'opening' $filename for reading: $!\n";
                 next;
         }
+
+	# get field names
         $_ = <IN>;
         s/\x0d?\x0a?$//;
-        die "Error in '$filename' header: null field name found\n" if /\t\t/;
         $fieldcount = tr/\t/\t/ + 1;
+	if ($opt_f) {
+		@fieldnames = map { "field$_" } (1 .. $fieldcount);
+		seek IN, 0, 0;
+	}
+	else {
+		die "Error in '$filename' header: null field name found\n" if /\t\t/;
         @fieldnames = split /\t/, $_, $fieldcount;
+	}
+
         ($name, $path) = fileparse($filename);
 
         # I tried keeping the whole file in memory (for MD5's sake) instead of
         # first writing to disk, but doing it this way turned out to be about 5
         # times faster and used 1/10th the memory on large files. (My benchmark
-        # was a 12 MB products.txt database for Interchange.)
+	# was a 12 MB products.txt table for Interchange.)
 
         $tmpfile = "$path.$name.tmp.$$";
         open OUT, ">$tmpfile" or die "Error opening '$tmpfile' for writing: $!\n";
         print STDERR "Prettifying $filename\n";
         print OUT <<EOF;
 #
-# This is a temporary file, automatically generated from the database file:
+# This is a temporary file, automatically generated from the data file:
 #
 # $filename
 #
@@ -203,8 +219,10 @@ for my $filename (@ARGV) {
 # format and will replace the original file.
 #
 EOF
+	my $rowcount = 0;
         while (<IN>) {
                 s/\x0d?\x0a?$//;
+		++$rowcount, print OUT "# row $rowcount\n" if $opt_n;
                 @fields = split /\t/, $_, $fieldcount;
                 for (my $i = 0; $i < @fieldnames; $i++) {
                         print OUT $fieldnames[$i], ":",
@@ -261,7 +279,7 @@ EOF
         print STDERR "Importing changes back into '$filename'\n";
         $newfile = "$path.$name.new.$$";
         open OUT, ">$newfile" or die "Error opening '$newfile' for writing: $!\n";
-        print OUT join("\t", @fieldnames), "\n";
+	print OUT join("\t", @fieldnames), "\n" unless $opt_f;
         my $tabcounter = 0;
         my $fieldpos = 0;
         my $done;
