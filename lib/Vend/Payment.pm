@@ -1,6 +1,6 @@
 # Vend::Payment - Interchange payment processing routines
 #
-# $Id: Payment.pm,v 2.7 2002-10-17 04:46:24 mheins Exp $
+# $Id: Payment.pm,v 2.8 2002-11-18 16:33:47 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,13 +22,12 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 
 @ISA = qw(Exporter);
 
 @EXPORT = qw(
 				charge
-				cyber_charge
 				charge_param
 		);
 
@@ -604,9 +603,6 @@ sub post_data {
 	return \%result;
 }
 
-
-# Old, old, old but still supported
-*cyber_charge = \&Vend::Payment::charge;
 
 1;
 __END__

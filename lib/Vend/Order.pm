@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.36 2002-11-09 06:07:18 mheins Exp $
+# $Id: Order.pm,v 2.37 2002-11-18 16:33:47 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.36 $, 10);
+$VERSION = substr(q$Revision: 2.37 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -37,7 +37,6 @@ $VERSION = substr(q$Revision: 2.36 $, 10);
 	do_order
 	check_order
 	check_required
-	cyber_charge
 	encrypt_standard_cc
 	mail_order
 	onfly
@@ -714,24 +713,6 @@ sub encrypt_standard_cc {
 
 	return @return;
 
-}
-
-# Old, old, old but still supported
-*cyber_charge = \&Vend::Payment::charge;
-
-sub report_field {
-	my($field_name, $seen) = @_;
-	my($field_value, $r);
-
-	$field_value = $Vend::Session->{'values'}->{$field_name};
-	if (defined $field_value) {
-		$$seen{$field_name} = 1;
-		$r = $field_value;
-	}
-	else {
-		$r = "<no input box>";
-	}
-	$r;
 }
 
 sub onfly {
