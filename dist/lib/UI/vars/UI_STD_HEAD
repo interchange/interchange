@@ -58,7 +58,7 @@ Variable UI_STD_HEAD <<EOV
 		$last = $_;
 	} 
 	$last =~ s/ui_class_//;
-	$ui_tag = (delete $Scratch->{ui_class} || $last || 'None');
+	$ui_tag = (delete $Scratch->{ui_class} || $CGI->{ui_class} || $last || 'None');
 	$Scratch->{ui_class} = $ui_tag;
 	$Scratch->{"ui_class_$ui_tag"} = 1;
 	return;
@@ -117,14 +117,12 @@ function checkAll(form,what,uncheck) {
    form.elements[what].checked=true;
   }
  } else {
-  if (what != "deleteid" || sure()) {
    var checkval;
    if (uncheck == 1) { checkval=false; } else { checkval=true; }
    for (i=0; i < n; i++) {
     check = form.elements[what][i];
     check.checked = checkval;
    }
-  }
  }
 }
 function addItem(selector, receptor, joiner) {
