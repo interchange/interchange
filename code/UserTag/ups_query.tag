@@ -110,7 +110,7 @@ sub {
 		($tmpcost, $zone, $error) = getUPS( $mode, $origin, $zip, $w, $country);
 
 		$shipping += $tmpcost;
-		if($cache) {
+		if($cache and $shipping) {
 			$cline{updated} = $now || time();
 			$cline{cost} = $shipping || $error;
 			$db->set_slice($cache_code, \%cline);
