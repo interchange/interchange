@@ -1,8 +1,0 @@
-sku	featured	banner_text	banner_image	blurb_begin	blurb_end	timed_promotion	start_date	finish_date	upsell_to	cross_sell	cross_category	others_bought	times_ordered	
-00009	specials			Great new Athlon Systems	At the best price. Order now!		20001211	20001211		00011				
-7000098	specials			Feel the power....	for your MP3s		20001215	20001215						
-7000084				Save your whole library on disk!			20001215	20001215						
-00011														
-7000039							20001217	20001217						
-7000037							20001217	20001217						
-00010	specials						20001219	20001219						
