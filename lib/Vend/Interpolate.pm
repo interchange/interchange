@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.155 2003-04-02 19:08:29 mheins Exp $
+# $Id: Interpolate.pm,v 2.156 2003-04-04 12:49:04 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.155 $, 10);
+$VERSION = substr(q$Revision: 2.156 $, 10);
 
 @EXPORT = qw (
 
@@ -1849,6 +1849,10 @@ sub tag_perl {
 			my $db = database_exists_ref($tab);
 			next unless $db;
 			$db = $db->ref();
+			if($db->config('type') == 10) {
+				my @extra_tabs = $db->_shared_databases();
+				push (@tab, @extra_tabs);
+			}
 			if($hole) {
 				$Sql{$tab} = $hole->wrap($db->dbh())
 					if $db->can('dbh');
