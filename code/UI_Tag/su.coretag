@@ -34,7 +34,6 @@ sub {
 	if ($opt->{create_user}) {
 		# these settings must be done before any access to the table
 		$Vend::WriteDatabase{$table} = 1;
-		$Vend::Cfg->{DynamicData}{$table} = 1;
 	}
 
 	my $super  = $Tag->if_mm('super');
