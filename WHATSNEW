@@ -5,11 +5,14 @@
 
 ------------------------------------------------------------------------------
 
+
 Interchange 4.9.6 not yet released.
 
 
 Core
 ----
+
+* Perl version 5.6.0 or newer is now a requirement to run Interchange.
 
 * Add new global directive TrustProxy, which allows the administrator to
   designate certain IP addresses or hostnames as trusted proxies, whose

@@ -3,7 +3,7 @@
 #
 # Interchange version 4.9.6
 #
-# $Id: interchange.PL,v 2.64 2002-12-12 16:08:07 mheins Exp $
+# $Id: interchange.PL,v 2.65 2002-12-14 17:59:30 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and others.
 # http://www.icdevgroup.org/
@@ -127,6 +127,10 @@ require Exporter;
 
 BEGIN {
 	$VERSION = '4.9.6';
+
+	unless ($] >= 5.006) {
+		die "Interchange $VERSION requires Perl 5.6.0 or later,\nbut you're trying to run it under Perl $]. Exiting.\n";
+	}
 }
 
 use Fcntl;

@@ -1,12 +1,14 @@
 #!/bin/sh
 
-# $Id: configure,v 2.10 2002-12-12 16:08:07 mheins Exp $
+# $Id: configure,v 2.11 2002-12-14 17:59:30 jon Exp $
+
+ICVERSION='4.9.6'
 
 cat <<EOF
 
- Interchange Version 4.9.6 Configuration
+ Interchange Version $ICVERSION Configuration
 
- Copyright 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+ Copyright 1996-2002 Red Hat, Inc. and Interchange Development Group
 
  Interchange was originally based on Vend 0.2 and 0.3
  Copyright 1995, 1996 Andrew M. Wilcox <amw@wilcoxsolutions.com>
@@ -52,7 +54,7 @@ do
 	while true
 	do
 		if test -n "$PERL"
-		then VER=`$PERL -e '((print $]), exit 1) unless $] >= 5.005 || $^V; print $^V ? sprintf("%vd", $^V) : $]'`
+		then VER=`$PERL -e '((print $]), exit 1) unless $] >= 5.006 or $^V; printf "%vd", $^V'`
 		else false
 		fi
 		if [ $? -eq 0 ]
@@ -68,16 +70,16 @@ do
 				if [ -n "$VER" ]
 				then
 					echo "Found Perl $VER as $PERL"
-					echo "Perl version not high enough!"
+					echo "Interchange $ICVERSION requires Perl version 5.6.0 or newer!"
 					VER=""
 				else
-					echo "Perl version not high enough or Perl not found."
+					echo "Perl not found! Perl 5.6.0 or newer is required to run Interchange $ICVERSION."
 				fi
 			fi
 		fi
 	
 		echo
-		echo "I need to know where the Perl interpreter resides (version 5.005 or higher)."
+		echo "I need to know where the Perl interpreter resides (version 5.6.0 or higher)."
 		echo "It was not 'perl' or 'perl5', or it was not in your path. Please enter a full"
 		echo "path name, or just press <enter> to quit."
 		echo
@@ -97,9 +99,9 @@ done
 
 if test ! -f .cpan.tried
 then
-echo
-echo "If you get a CPAN error, rerun the configuration and it should go away."
-echo
+	echo
+	echo "If you get a CPAN error, rerun the configuration and it should go away."
+	echo
 fi
 
 $PERL Makefile.PL $*
