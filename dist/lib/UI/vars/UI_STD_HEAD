@@ -1,9 +1,9 @@
 Variable UI_STD_INIT <<EOV
-[calc]
+[calcn]
+	# is this browser able to grok DHTML ?
 	my $regex = $Tag->var('MV_DHTML_BROWSER', 2) || 'MSIE.*Windows|Mozilla.*Gecko';
 	$Scratch->{ui_old_browser} = $Session->{browser} !~ /$regex/;
-	return '';
-[/calc][perl]
+
 	# call only once per page
 	return if $Config->{ImageDirOriginal};
 
@@ -26,7 +26,7 @@ Variable UI_STD_INIT <<EOV
 	}
 
 	''
-[/perl]
+[/calcn]
 EOV
 
 Variable UI_STD_HEAD <<EOV
