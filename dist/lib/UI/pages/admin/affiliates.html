@@ -37,7 +37,7 @@
 <INPUT TYPE=submit VALUE="Limit with search">
 </FORM>
 [if cgi ui_text_qualification]
-<H3>Entries containing "[cgi ui_text_qualification]"</H3>
+<H3>[msg arg.0="[cgi ui_text_qualification]"]Entries containing "%s"[/msg]</H3>
 [/if]
 [search-region more=1 arg="
 		[if cgi ui_text_qualification]
