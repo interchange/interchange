@@ -42,6 +42,10 @@ Core and usertags
 
 * Make mv_more_alpha working in query tags.
 
+* Fixed get_option_hash in Util.pm, thanks to Javier Martin
+  <martin@trymedia.com>, who discovered and analyzed this bug
+  (in his case any options for &charge are ignored)
+
 * New option -D for localize script (Don't put default locale in output.),
   insert comments only if they are distinct from the key
 
