@@ -1,7 +1,7 @@
 Interchange-4.5.0 changes -- the start of the Tallyman merge.
-* Many, many, changes and improvments to the user interface. So
-  much that Minimate is broken out again and made separate.
-  See the UI online help for changes.
+* Many, many, changes and improvments to the user interface.
+  Minimate is broken out again and made separate; the UI should
+  have all of its functionality. See the UI online help for changes.
 * LDAP support. You can now keep data in LDAP servers, with 
   normal Minivend Database connectivity. Searchable, too!
   Put in catalog.cfg:

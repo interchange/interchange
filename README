@@ -32,7 +32,7 @@ for more information.
 
 --------------------------------------------------------------
 
-                        M I N I V E N D
+                        I N T E R C H A N G E
                                        
    Interchange is a full-featured electronic catalog system (commonly known
    as a shopping cart) with online ordering capability. It is a high-end
@@ -51,6 +51,8 @@ The information you need is in the following files:
     
     Copying    Your Interchange license -- please read.
 
+    QuickStart Document to help you install Interchange
+
     WHATSNEW   Change information for all versions in this
                version family.
 
@@ -64,7 +66,7 @@ Major files/directories in the distribution:
                 files and modules. Includes:
 
                 minivend.cfg.dist   Distribution minivend.cfg
-                basic/              The basic MV catalog demo application.
+                barry/              The "barry" catalog demo application.
                 simple/             The not so aptly named "simple" demo
                                     application.
                 src/                C and Perl code for CGI links
@@ -87,8 +89,8 @@ UNIX INSTALLATION
 ------------------
 Here is the short version:
 
-    gzip -dc minivend-4.xx.tar.gz | tar xvf -
-    cd minivend-4*
+    gzip -dc interchange-4.x.x.tar.gz | tar xvf -
+    cd interchange-4*
     perl Makefile.PL
     make
     make test && make install
@@ -100,18 +102,7 @@ Here is the short version:
 
 WINDOWS INSTALLATION
 --------------------
-Not yet. When is not yet determined, but it will not be soon.
-If you are very experienced, you might try installing the ZIP
-file with "perl Makefile.PL". But *at least* the following problems will
-be present:
-
-    1. You need to put "SessionType  DB_File" in catalog.cfg.
-    2. Minimate will not work (unless you can build Safe::Hole).
-    3. You probably need to use Apache since we no longer support
-       cygwin.dll and tlink.exe. If you can get tlink.pl running
-       on other web servers, patches are welcome.
-
-Do not use it in a production system.
+Interchange will not yet run reliably on Windows.
 
 -------------------------------------------------------------------
 
@@ -132,25 +123,29 @@ The workaround is to set in minivend.cfg:
     Housekeeping 1
 
 Windows does not support fork(), so the server runs in the foreground. There
-are other differences; the canonical installation is UNIX.
+are other differences, and there may be portablity problems. Interchange is
+not yet tested to run on Windows; the canonical installation is UNIX.
 
 -------------------------------------------------------------------
 
                          D E M O
 
 There are two demo applications included; one is not so aptly named "simple",
-the other is "basic". For the best instructional experience, start
-with "basic" and then try "simple".
+the other is "barry".
 
 To install the demo, go to the directory where you installed 
 Interchange (default is "mvend" in your home directory or /usr/local/minivend
 for root installations) and run:
 
-    bin/makecat basic
+    bin/makecat barry
 
      or 
 
     bin/makecat simple
+
+     or 
+
+    bin/makecat any_id_you_pick
 
 Follow the prompts and after restarting the Interchange server you
 should be able to access the demo catalog.

@@ -2,6 +2,7 @@ LICENSE
 MANIFEST
 MANIFEST.SKIP
 Makefile.PL
+QuickStart
 README
 README.rpm
 SPECS/minivend-4.04.spec
@@ -66,6 +67,7 @@ dist/barry/images/admin/icon_regen.gif
 dist/barry/images/admin/icon_regen_anim.gif
 dist/barry/images/admin/icon_stats.gif
 dist/barry/images/admin/index.gif
+dist/barry/images/admin/layout.gif
 dist/barry/images/admin/plus.gif
 dist/barry/images/admin/red_logo.gif
 dist/barry/images/admin/reddot.gif
@@ -496,6 +498,7 @@ dist/simple/images/admin/icon_regen.gif
 dist/simple/images/admin/icon_regen_anim.gif
 dist/simple/images/admin/icon_stats.gif
 dist/simple/images/admin/index.gif
+dist/simple/images/admin/layout.gif
 dist/simple/images/admin/plus.gif
 dist/simple/images/admin/red_logo.gif
 dist/simple/images/admin/reddot.gif

@@ -85,6 +85,13 @@ You can use your up arrow to look at the encrypted form of
 
 SUPASSWD
 .
-You should probably change this, but if you selected encrypted
-passwords you might want to use your up arrow to set the default
-initially.
+You can use Interchange's companion configuration
+interface, to do upload/download of files, manipulation of
+the database, reconfiguration of the catalog, and much more.
+.
+To enable the UI, you will need a "super-user" account
+name that has full access.
+.
+The initial password is "pass". CHANGE IT! You can do this
+by going to the admin menu and selecting the superuser and
+then "Change password".
