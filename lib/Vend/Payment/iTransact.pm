@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: iTransact.pm,v 1.1.2.2 2001-04-10 05:03:40 heins Exp $
+# $Id: iTransact.pm,v 1.1.2.3 2001-04-10 05:22:42 heins Exp $
 #
 # Copyright (C) 1999-2001 Red Hat, Inc., http://www.redhat.com
 #
@@ -27,7 +27,7 @@ package Vend::Payment::iTransact;
 
 =head1 Interchange iTransact Support
 
-Vend::Payment::iTransact $Revision: 1.1.2.2 $
+Vend::Payment::iTransact $Revision: 1.1.2.3 $
 
 =head1 SYNOPSIS
 
@@ -364,7 +364,7 @@ sub itransact {
 		  $error = ::errmsg("Unknown error");
 		}
 
-::logDebug("iTransact Error: " . $error);
+#::logDebug("iTransact Error: " . $error);
 		$result{MStatus} = 'denied';
 		$result{ErrMsg} = $error;
 	}

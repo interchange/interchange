@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Signio.pm,v 1.1.2.1 2001-04-10 05:03:40 heins Exp $
+# $Id: Signio.pm,v 1.1.2.2 2001-04-10 05:22:42 heins Exp $
 #
 # Copyright (C) 1999-2001 Red Hat, Inc., http://www.redhat.com
 #
@@ -27,7 +27,7 @@ package Vend::Payment::Signio;
 
 =head1 Interchange Signio Support
 
-Vend::Payment::Signio $Revision: 1.1.2.1 $
+Vend::Payment::Signio $Revision: 1.1.2.2 $
 
 =head1 SYNOPSIS
 
@@ -384,7 +384,7 @@ sub signio {
     for (keys %varmap) {
         $query{$_} = $actual{$varmap{$_}};
     }
-::logDebug("signio query: " . ::uneval(\%query));
+#::logDebug("signio query: " . ::uneval(\%query));
 
     my @query;
 
@@ -414,14 +414,14 @@ sub signio {
     my $decline;
 
 	if($stdin) {
-::logDebug(qq{signio STDIN call: $exe $server $port - $timeout > $tempfile});
+#::logDebug(qq{signio STDIN call: $exe $server $port - $timeout > $tempfile});
 		open(PFPRO, "| $exe $server $port - $timeout > $tempfile")
 			or die "exec pfpro-file: $!\n";
 		print PFPRO $string;
 		close PFPRO;
 	}
 	else {
-::logDebug(qq{signio call: $exe $server $port "$string" $timeout > $tempfile});
+#::logDebug(qq{signio call: $exe $server $port "$string" $timeout > $tempfile});
 		system(qq{$exe $server $port "$string" $timeout > $tempfile});
 	}
 
@@ -469,7 +469,7 @@ sub signio {
             if defined $result{$result_map{$_}};
     }
 
-::logDebug(qq{signio decline=$decline result: } . ::uneval( \%result));
+#::logDebug(qq{signio decline=$decline result: } . ::uneval( \%result));
 
     return %result;
 }
