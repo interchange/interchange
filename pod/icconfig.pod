@@ -4018,10 +4018,19 @@ The type of session management to be used. Use one of the following:
    DB_File     Berkeley DB
    DBI         DBI (don't use this!)
    File        File-based sessions (the default)
+   NFS         File-based sessions, forces use of fcntl locking
    GDBM        GDBM
 
 The default is file-based sessions, which provides the best
 performance and reliablility in most environments.
+
+If you are planning on running Interchange servers with an NFS-mounted
+filesystem as the session target, you must set SessionType to "NFS". The
+other requisites are usually:
+
+	1. fcntl() supported in Perl
+	2. lock daemon running on server system
+	3. lock daemon running on interchange server
 
 =head2 SpecialPage
 
