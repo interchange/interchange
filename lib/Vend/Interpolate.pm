@@ -1,8 +1,8 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.9.2.29 2003-01-24 06:51:52 jon Exp $
+# $Id: Interpolate.pm,v 2.9.2.22 2002-11-29 11:55:42 racke Exp $
 #
-# Copyright (C) 1996-2003 Red Hat, Inc. and
+# Copyright (C) 1996-2002 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.9.2.29 $, 10);
+$VERSION = substr(q$Revision: 2.9.2.22 $, 10);
 
 @EXPORT = qw (
 
@@ -84,8 +84,6 @@ BEGIN {
 		$hole = new Safe::Hole;
 	};
 }
-
-my $tag_wrapped;
 
 use strict;
 use Vend::Util;
@@ -1199,7 +1197,7 @@ sub input_filter {
 	}
 	$opt->{routine} = $routine if $routine =~ /\S/;
 	$Vend::Session->{Filter} = {} if ! $Vend::Session->{Filter};
-	$Vend::Session->{Filter}{$varname} = $opt->{op} if $opt->{op};
+	$Vend::Session->{Filter}{$varname} = $opt;
 	return;
 }
 
@@ -2491,7 +2489,7 @@ sub tag_perl {
 		}
 	}
 
-	$Tag = $hole->wrap($Tag) if $hole and ! $tag_wrapped++;
+	$Tag = $hole->wrap($Tag);
 
 	init_calc() if ! $Vend::Calc_initialized;
 	$ready_safe->share(@share) if @share;
@@ -3754,8 +3752,7 @@ my %cond_op = (
    '!=' => sub { $_[0] != $_[1] },
    '=~' => sub { 
    				 my $re;
-				 $_[1] =~ s:^/(.*)/([imsx]*)\s*$:$1:;
-				 $2 and substr($_[1], 0, 0) = "(?$2)";
+				 $_[1] =~ s:^/(.*)/$:$1:;
    				 eval { $re = qr/$_[1]/ };
 				 if($@) {
 					::logError("bad regex %s in if-PREFIX-data", $_[1]);
@@ -3765,8 +3762,7 @@ my %cond_op = (
 				},
    '!~' => sub { 
    				 my $re;
-				 $_[1] =~ s:^/(.*)/([imsx]*)\s*$:$1:;
-				 $2 and substr($_[1], 0, 0) = "(?$2)";
+				 $_[1] =~ s:^/(.*)/$:$1:;
    				 eval { $re = qr/$_[1]/ };
 				 if($@) {
 					::logError("bad regex %s in if-PREFIX-data", $_[1]);
@@ -3779,7 +3775,7 @@ my %cond_op = (
 sub pull_cond {
 	my($string, $reverse, $cond, $lhs) = @_;
 #::logDebug("pull_cond string='$string' rev='$reverse' cond='$cond' lhs='$lhs'");
-	my ($op, $rhs) = split /\s+/, $cond, 2;
+	my ($op, $rhs) = split /\s+/, $cond;
 	$rhs =~ s/^(["'])(.*)\1$/$2/;
 	if(! defined $cond_op{$op} ) {
 		::logError("bad conditional operator %s in if-PREFIX-data", $op);
@@ -4094,6 +4090,7 @@ sub tag_search_list {
 		$page,
 		$prefix,
 		$more_id,
+		$form_arg,
 		$session,
 		);
 
@@ -4159,9 +4156,6 @@ sub tag_more_list {
 	if($q->{mv_more_id}) {
 		$more_id = $q->{mv_more_id};
 		$form_arg .= "\nmi=$more_id";
-	}
-	else {
-		$more_id = undef;
 	}
 
 	if($r =~ s:\[border\]($All)\[/border\]::i) {
@@ -5464,7 +5458,6 @@ sub region {
 
 	if($opt->{ml} and ! defined $obj->{mv_matchlimit} ) {
 		$obj->{mv_matchlimit} = $opt->{ml};
-		$obj->{mv_more_decade} = $opt->{md};
 		$obj->{matches} = scalar @{$obj->{mv_results}};
 		$obj->{mv_cache_key} = generate_key(substr($page,0,100));
 		$obj->{mv_first_match} = $opt->{fm} if $opt->{fm};
