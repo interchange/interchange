@@ -593,7 +593,10 @@ EOF
 		$vsize++;
 	}
 
-	$Scratch->{ui_current_content} = $content;
+	$Scratch->{ui_current_content} = $Tag->filter({
+													op		=> 'encode_entities',
+													body	=> $content,
+													});
 
 	my $content_widget;
 	if($control_display{content}) {
