@@ -83,14 +83,14 @@ ui_template_name: leftright
 
 [list]<div>
 <b>[news-param title]</b><br>
-<small>Posted on [convert-date][news-param posted_on][/convert-date] by [if-news-param posted_email]<a href="mailto:[news-param posted_email]">[news-param posted_by]</a>[else][news-param posted_by][/else][/if-news-param]</small><br>
+<small>[L]Posted on[/L] [convert-date][news-param posted_on][/convert-date] by [if-news-param posted_email]<a href="mailto:[news-param posted_email]">[news-param posted_by]</a>[else][news-param posted_by][/else][/if-news-param]</small><br>
 <br>
 [if session arg]
 [or value mv_search_match_count == 1]
   [news-param body]
 [else]
   [filter 200][news-param body][/filter]<br>
-  <a href="[area href="news" arg="[news-param code]"]">Read more...</a>
+  <a href="[area href="news" arg="[news-param code]"]">[L]Read more[/L]...</a>
 [/else]
 [/if]
 </div><br><br>
