@@ -1,6 +1,6 @@
 # Table/LDAP.pm: LDAP pseudo-table
 #
-# $Id: LDAP.pm,v 1.6.6.8 2001-04-17 16:53:26 jason Exp $
+# $Id: LDAP.pm,v 1.6.6.9 2001-05-14 19:18:43 jason Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,7 +27,7 @@
 
 package Vend::Table::LDAP;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 1.6.6.8 $, 10);
+$VERSION = substr(q$Revision: 1.6.6.9 $, 10);
 use strict;
 
 use vars qw(
@@ -642,7 +642,7 @@ eval {
 #::logDebug("search spec: " . Vend::Util::uneval($spec));
 #::logDebug("name hash: " . Vend::Util::uneval(\%nh));
 #::logDebug("ref returned: " . substr(Vend::Util::uneval($ref), 0, 100));
-e:logDebug("opt is: " . Vend::Util::uneval($opt));
+#:logDebug("opt is: " . Vend::Util::uneval($opt));
 	if($@) {
 		::logError("MVSQL query failed for $opt->{table}: $@\nquery was: $query");
 		$return = $opt->{failure} || undef;
