@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange link program configurator
 #
-# $Id: compile_link.PL,v 1.8.2.1.2.2 2000-12-21 13:05:37 heins Exp $
+# $Id: compile_link.PL,v 1.8.2.1.2.3 2001-05-04 17:31:05 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -89,7 +89,7 @@ BEGIN {
 my $prog = $0;
 $prog =~ s:.*/::;
 my $USAGE = <<EOF;
-usage: $prog [-t tcp_port] [-s sockfile] [-h host] [-w secs] \
+usage: $prog [-p tcp_port] [-s sockfile] [-h host] [-w secs] \
              [--perl] [-o outputfile] [--suid]
 
 Configures Interchange link program.
