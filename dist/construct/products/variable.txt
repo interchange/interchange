@@ -1,56 +1,56 @@
 code	Variable	pref_group
-UI_C_TITLEBARBG	#336699	Admin colors
-UI_META_LINK	1	Admin control
-ORDERS_TO	cbp@InternetExpertsLLC.com	Order
-UPS_ORIGIN	00000	Shipping
-UI_C_TOPBLOCKBAR	#336699	Admin colors
+ADDRESS	__MVC_ADDRESS__	Company
+CATALOG_STATIC	No	Static pages
+CGI_URL	__MVC_CGIURL__	Directories and Paths
+CHECK_ACCEPTED	1	Payment
+CITY	__MVC_CITY__	Company
+COD_ACCEPTED	0	Payment
+COMPANY	__MVC_COMPANY__	Company
 CREDIT_CARDS_ACCEPTED	visa mc discover amex	Payment
-UI_C_INTBLOCK	#CCCC99	Admin colors
-LOGO		Template
-SAMPLEURL	http://demo.minivend.com/construct	Directories and Paths
-UI_C_BG	#FFFFFF	Admin colors
-UI_C_TITLEBARTXT	#CCCCCC	Admin colors
-PGSQL		Database
-SERVER_NAME	demo.minivend.com/~construct	Directories and Paths
+DOCROOT	__MVC_DOCROOT__	Directories and Paths
+ENCRYPTOR	none	Payment
+FAX	__MVC_FAX__	Company
 IMAGE_DIR	/~construct/images	Directories and Paths
 LOGGED_STATIC	1	Static pages
-SAMPLEHTML	/home/construct/www/construct	Directories and Paths
-UPS_COUNTRY_FIELD	country	Shipping
-UI_T_BG	beige	Admin colors
-TAXSHIPPING		Tax
-DOCROOT	/home/construct/www	Directories and Paths
-UI_LEFT_WIDTH	150	Admin layout
-UI_C_ALINK	#000000	Admin colors
-TAXFIELD	state	Tax
-SMLOGO		Template
-UI_BOTTOMIMG	poweredby.gif	Admin layout
-TAXRATE	VA=7.5, UT=7.25	Tax
-UI_C_VLINK	#000000	Admin colors
-CGI_URL	/construct.cgi	Directories and Paths
-SOMESQL	1	Database
-UI_ITEM_FIELDS	description image thumb comment size color sku price weight category	Item display
-UI_C_LINK	#000000	Admin colors
-FAX	(555) 555-5556	Company
-PO_ACCEPTED	0	Payment
-UI_TRAFFIC_STATS	/home/construct/catalogs/construct/logs/usertrack	Directories and Paths
+LOGO		Template
 MULTIORDER		Order
-TOLLFREE	(888) 555-5555	Company
-UI_C_INTBLOCKBAR	#999966	Admin colors
-ADDRESS	123 Any St.	Company
-UI_RIGHT_WIDTH	450	Admin layout
-CHECK_ACCEPTED	1	Payment
-CITY	Anytown, USA 00000	Company
-ENCRYPTOR	none	Payment
-TEMPLATE	green1	Template
 MYSQL	1	Database
+ORDERS_TO	cbp@InternetExpertsLLC.com	Order
+PGSQL		Database
+PHONE	(555) 555-5555	Company
+PO_ACCEPTED	0	Payment
+SAMPLEHTML	/home/construct/www/construct	Directories and Paths
+SAMPLEURL	http://demo.minivend.com/construct	Directories and Paths
 SECURE_SERVER	http://demo.minivend.com/~construct	Directories and Paths
-UI_OVERALL_WIDTH	750	Admin layout
-COMPANY	Construct Something	Company
+SERVER_NAME	demo.minivend.com/~construct	Directories and Paths
+SMLOGO		Template
+SOMESQL	1	Database
 SQLPASS		Database
-COD_ACCEPTED	0	Payment
 SQLUSER		Database
 TAXAREA	VA UT	Tax
-CATALOG_STATIC	No	Static pages
+TAXFIELD	state	Tax
+TAXRATE	VA=7.5, UT=7.25	Tax
+TAXSHIPPING		Tax
+TEMPLATE	green1	Template
+TOLLFREE	(888) 555-5555	Company
+UI_BOTTOMIMG	poweredby.gif	Admin layout
+UI_C_ALINK	#000000	Admin colors
+UI_C_BG	#FFFFFF	Admin colors
 UI_C_HEADERTXT	#333333	Admin colors
-PHONE	(555) 555-5555	Company
+UI_C_INTBLOCKBAR	#999966	Admin colors
+UI_C_INTBLOCK	#CCCC99	Admin colors
+UI_C_LINK	#000000	Admin colors
+UI_C_TITLEBARBG	#336699	Admin colors
+UI_C_TITLEBARTXT	#CCCCCC	Admin colors
+UI_C_TOPBLOCKBAR	#336699	Admin colors
+UI_C_VLINK	#000000	Admin colors
+UI_ITEM_FIELDS	description image thumb comment size color sku price weight category	Item display
+UI_LEFT_WIDTH	150	Admin layout
+UI_META_LINK	1	Admin control
+UI_OVERALL_WIDTH	750	Admin layout
+UI_RIGHT_WIDTH	450	Admin layout
+UI_T_BG	beige	Admin colors
+UI_TRAFFIC_STATS	/home/construct/catalogs/construct/logs/usertrack	Directories and Paths
+UPS_COUNTRY_FIELD	country	Shipping
+UPS_ORIGIN	00000	Shipping
 UPS_POSTCODE_FIELD	zip	Shipping
