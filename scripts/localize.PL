@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange localizer
 #
-# $Id: localize.PL,v 1.7.2.1.2.3 2001-05-18 18:40:55 racke Exp $
+# $Id: localize.PL,v 1.7.2.1.2.4 2001-05-18 19:58:32 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -176,16 +176,19 @@ my $two;
 
 if($opt_u) {
 	my $icmenu = "$opt_u/icmenu.txt";
-	my $headline;
+	my ($headline, @cols);
 	
 	open (ICMENU, $icmenu)
 		|| die  "Couldn't read UI menu file $icmenu: $!\n";
 	$headline = <ICMENU>;
-	unless ((split /\t/, $headline)[9] eq 'name') {
+	@cols = split (/\t/, $headline);
+	unless ($cols[9] eq 'name' && $cols[12] eq 'special') {
 		die "Malformed UI menu file $icmenu\n";
 	}
 	while (<ICMENU>) {
-		write_structure (undef, (split /\t/)[9]);
+		@cols = split (/\t/);
+		write_structure (undef, $cols[9]);
+		write_structure (undef, $cols[12]) if $cols[12];
 	}
 	close (ICMENU);
 }
@@ -369,7 +372,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-# $Id: localize.PL,v 1.7.2.1.2.3 2001-05-18 18:40:55 racke Exp $
+# $Id: localize.PL,v 1.7.2.1.2.4 2001-05-18 19:58:32 racke Exp $
 
 =head1 SYNOPSIS
 
