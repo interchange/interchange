@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.207 2004-03-07 03:14:41 mheins Exp $
+# $Id: Interpolate.pm,v 2.207.2.1 2004-07-07 17:11:42 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.207 $, 10);
+$VERSION = substr(q$Revision: 2.207.2.1 $, 10);
 
 @EXPORT = qw (
 
@@ -5320,6 +5320,7 @@ sub timed_build {
 
 	my $secs;
 	CHECKDIR: {
+		last CHECKDIR if Vend::File::file_name_is_absolute($file);
 		last CHECKDIR if $file and $file !~ m:/:;
 		my $dir;
 		if ($file) {
