@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.10.4.1 2000-11-05 23:12:17 racke Exp $
+# $Id: Util.pm,v 1.10.4.2 2000-11-06 01:27:15 racke Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -77,7 +77,7 @@ use Config;
 use Fcntl;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.10.4.1 $, 10);
+$VERSION = substr(q$Revision: 1.10.4.2 $, 10);
 
 BEGIN {
 	eval {
@@ -232,6 +232,16 @@ sub commify {
     return $_;
 }
 
+sub safe_sprintf {
+	my $fmt = shift;
+	my $save = POSIX::setlocale (&POSIX::LC_NUMERIC);
+	return sprintf($fmt, @_) if $save eq 'C';
+	POSIX::setlocale (&POSIX::LC_NUMERIC, 'C');
+	my $val = sprintf($fmt, @_);
+	POSIX::setlocale (&POSIX::LC_NUMERIC, $save);
+	return $val;
+}
+
 sub picture_format {
 	my($amount, $pic, $sep, $point) = @_;
     $pic	= reverse $pic;
@@ -239,7 +249,7 @@ sub picture_format {
 	$sep	= ',' unless defined $sep;
 	$pic =~ /(#+)\Q$point/;
 	my $len = length($1);
-	$amount = sprintf('%.' . $len . 'f', $amount);
+	$amount = safe_sprintf('%.' . $len . 'f', $amount);
 	$amount =~ tr/0-9//cd;
 	my (@dig) = split //, $amount;
 	$pic =~ s/#/pop(@dig)/eg;
@@ -336,8 +346,7 @@ sub currency {
 		$fmt = "%.2f";
 	}
 
-	POSIX::setlocale (&POSIX::LC_NUMERIC, "C");
-	$amount = sprintf $fmt, $amount;
+	$amount = safe_sprintf($fmt, $amount);
 	$amount =~ s/\./$dec/ if defined $dec;
 	$amount = commify($amount, $sep || undef)
 		if $Vend::Cfg->{PriceCommas};
