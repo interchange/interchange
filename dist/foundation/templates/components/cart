@@ -104,7 +104,7 @@ upsell_in_cart:
 	    		<INPUT TYPE=checkbox NAME="[quantity-name]" onClick="this.form.action='[process]', this.form.submit()" VALUE=0>
 	  	</TD>
 	  	<TD><b>[item-sku]</b></TD>
-	  	<td>[page [item-sku]]<b>[item-data products description]</b></A>
+	  	<td>[page [item-sku]]<b>[item-description]</b></A>
 
 	[if scratch dealer]
 	[if-item-data pricing sku]
