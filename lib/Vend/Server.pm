@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.31 2001-04-09 06:27:42 heins Exp $
+# $Id: Server.pm,v 1.8.2.32 2001-04-13 20:38:52 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.31 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.32 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -87,6 +87,7 @@ my @Map =
      'script_name' => 'SCRIPT_NAME',
      'secure' => 'HTTPS',
      'server_name' => 'SERVER_NAME',
+     'server_host' => 'HTTP_HOST',
      'server_port' => 'SERVER_PORT',
      'useragent' => 'HTTP_USER_AGENT',
 );
