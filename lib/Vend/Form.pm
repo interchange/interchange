@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.24 2003-02-01 21:45:16 mheins Exp $
+# $Id: Form.pm,v 2.25 2003-02-08 20:08:11 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -37,7 +37,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.24 $, 10);
+$VERSION = substr(q$Revision: 2.25 $, 10);
 
 @EXPORT = qw (
 	display
@@ -199,8 +199,8 @@ sub attr_list {
 	$body =~ s!\{([A-Z_]+)\}!$hash->{lc $1}!g;
 	$body =~ s!\{([A-Z_]+)\|($Some)\}!$hash->{lc $1} || $2!eg;
 	$body =~ s!\{([A-Z_]+)\s+($Some)\}! $hash->{lc $1} ? $2 : ''!eg;
-	$body =~ s!\{([A-Z_]+)\?\}($Some){/\1\?\}! $hash->{lc $1} ? $2 : ''!eg;
-	$body =~ s!\{([A-Z_]+)\:\}($Some){/\1\:\}! $hash->{lc $1} ? '' : $2!eg;
+	1 while $body =~ s!\{([A-Z_]+)\?\}($Some){/\1\?\}! $hash->{lc $1} ? $2 : ''!eg;
+	1 while $body =~ s!\{([A-Z_]+)\:\}($Some){/\1\:\}! $hash->{lc $1} ? '' : $2!eg;
 	return $body;
 }
 
@@ -665,9 +665,13 @@ sub dropdown {
 			$select = '';
 		}
 
-		my $extra;
-		if($price->{$value}) {
-			$extra = currency($price->{$value}, undef, 1);
+		my $extra = '';
+		my $attr = {};
+		if(my $p = $price->{$value}) {
+			$attr->{negative} = $p < 0 ? 1 : 0;
+			$attr->{price_noformat} = $p;
+			$attr->{absolute} = currency(abs($p), undef, 1);
+			$attr->{price} = $extra = currency($p, undef, 1);
 			$extra = " ($extra)";
 		}
 
@@ -680,13 +684,19 @@ sub dropdown {
 		}
 		$run .= ' SELECTED' if $select;
 		$run .= '>';
-		if($label) {
+		if($opt->{option_template}) {
+			$attr->{label} = $label || $value;
+			$attr->{value} = $value;
+			$run .= attr_list($opt->{option_template}, $attr);
+		}
+		elsif($label) {
 			$run .= $limit->($label);
+			$run .= $extra;
 		}
 		else {
 			$run .= $limit->($value);
+			$run .= $extra;
 		}
-		$run .= $extra if $extra;
 	}
 	$run .= "</optgroup>" if $optgroup_one++;
 	$run .= attr_list($Template{selecttail}, $opt);
@@ -820,8 +830,13 @@ sub box {
 		$opt->{selected} = '' if defined $opt->{value};
 
 		my $extra;
-		if($price->{$value}) {
-			$label .= "&nbsp;(" . currency($price->{$value}, undef, 1) . ")";
+		my $attr = { label => $label };
+		if(my $p = $price->{$value}) {
+			$attr->{negative} = $p < 0 ? 1 : 0;
+			$attr->{price_noformat} = $p;
+			$attr->{absolute} = currency(abs($p), undef, 1);
+			$attr->{price} = $extra = currency($p, undef, 1);
+			$label .= "&nbsp;($attr->{price})";
 		}
 
 		$value eq ''
@@ -838,8 +853,14 @@ sub box {
 
 		$opt->{tvalue} = encode($value, $ESCAPE_CHARS::std);
 
-		$label =~ s/ /&nbsp;/g if $xlt;
-		$opt->{tlabel} = $label;
+		if($opt->{option_template}) {
+			$opt->{tlabel} = attr_list($opt->{option_template}, $attr);
+			$opt->{tlabel} =~ s/ /&nbsp;/g if $xlt;
+		}
+		else {
+			$label =~ s/ /&nbsp;/g if $xlt;
+			$opt->{tlabel} = $label;
+		}
 
 		$run .= attr_list($template, $opt);
 		$run .= '</TR>' if $inc && ! ($i % $inc);
