@@ -18,6 +18,7 @@ sub {
 	else {
 		return "<B>$column</B>" if ! ::tag_data($meta, 'type', $keyloc);
 	}
+    return '' if ::tag_data($meta, 'type', $keyloc) eq 'hidden';
 	my $label;
 	$label = Vend::Interpolate::tag_data($meta, 'label', $keyloc) || $column;
 	my $out;
