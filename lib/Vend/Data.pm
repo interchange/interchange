@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.35 2004-03-04 00:17:37 mheins Exp $
+# $Id: Data.pm,v 2.36 2004-04-02 17:37:46 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -2017,13 +2017,14 @@ sub update_data {
 						 next;
 					};
 				Vend::Interpolate::tag_value_extended(
-										$file_fields[$i],
-										{
-											outfile => $outfile,
-											umask => '022',
-											yes => '1',
-										}
-										)
+						$file_fields[$i],
+						{
+							outfile => $outfile,
+							umask => $::Scratch->{mv_create_umask} || '022',
+							auto_create_dir => $::Scratch->{mv_auto_create_dir},
+							yes => '1',
+						}
+					)
 					or do {
 						 logError("failed to write %s: %s", $outfile, $!);
 						 next;
