@@ -27,6 +27,7 @@ sub {
 		backup	=> ['./backup/*'],
 		config	=> ['./config/*'],
 		upload	=> ['./upload/*'],
+		download	=> ['./download/*'],
 	);
 
 	my $export_and_exclude = sub {
@@ -185,19 +186,20 @@ EOF
 
 		$dbname{$dsn} = $dbname;
 
-		$dsn{$dsn} = join " ", $map->{command}, @args, $dbname;
 		if (my $user = $o->{USER}) {
 			$user{$dsn} = $user;
 			my $tpl = $map->{user};
 			$tpl =~ s/\%s/$user/g
-					and $dsn{$dsn} .= " $tpl";
+					and push @args, " $tpl";
 		}
 		if (my $pass = $o->{PASS}) {
 			$pass{$dsn} = $pass;
 			my $tpl = $map->{pass};
 			$tpl =~ s/\%s/$pass/g
-					and $dsn{$dsn} .= " $tpl";
+					and push @args, " $tpl";
 		}
+
+		$dsn{$dsn} = join " ", $map->{command}, @args, $dbname;
 	}
 
 	for my $t (keys %export) {
@@ -284,7 +286,7 @@ EOF
 	my %restore;
 	for(@vars) {
 		my $val = $CGI::values{$_} || $::Variable->{$_};
-		my $pref = $val, tag_data('variable', 'pref_group', $_);
+		my $pref = tag_data('variable', 'pref_group', $_);
 		push @vdb, join("\t", $_, $val, $pref);
 		if($_ eq 'SQLDSN') {
 			my $thing = $restore{sqldsn} = $val;
