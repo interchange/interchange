@@ -93,7 +93,16 @@ __NAME__ db_maintenance
 [if cgi deleterecords]
 [and !scratch nevair]
 	[flag type=write table="[cgi mv_data_table] [cgi ui_delete_tables]"]
-	[perl tables="[cgi mv_data_table] [cgi ui_delete_tables]"]
+
+    [tmp mod_tables][/tmp]
+    [calc]
+        # get the tables to pass to the next perl tag
+        my @tables = qw/[cgi mv_data_table] [cgi ui_delete_tables]/;
+        map { s/:.*//; } @tables;
+        $Scratch->{'mod_tables'} = join(' ',@tables);
+    [/calc]
+
+	[perl tables="[scratch mod_tables]"]
 		my $idp;
 		return unless delete $CGI->{deleterecords};
 		for(qw/ui_delete_id item_id/) {
