@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.184 2003-07-24 12:34:23 mheins Exp $
+# $Id: Interpolate.pm,v 2.185 2003-07-26 16:00:26 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.184 $, 10);
+$VERSION = substr(q$Revision: 2.185 $, 10);
 
 @EXPORT = qw (
 
@@ -514,9 +514,6 @@ sub vars_and_comments {
 	## We never want to interpolate vars if in restricted mode
 	return if $Vend::restricted;
 	local($^W) = 0;
-
-	# Remove Minivend 3 legacy [new] tags
-	$$html =~ s/\[new\]//g;
 
 	# Set whole-page pragmas from [pragma] tags
 	1 while $$html =~ s/\[pragma\s+(\w+)(?:\s+(\w+))?\]/
