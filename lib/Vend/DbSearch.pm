@@ -1,6 +1,6 @@
 # Vend::DbSearch - Search indexes with Interchange
 #
-# $Id: DbSearch.pm,v 2.7 2002-01-22 21:38:28 jason Exp $
+# $Id: DbSearch.pm,v 2.8 2002-02-03 07:11:09 mheins Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
@@ -26,7 +26,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 
 use Search::Dict;
 use strict;
@@ -68,8 +68,8 @@ sub init {
 
 	# autovivify references of nested data structures we use below, since they
 	# don't yet exist at daemon startup time before configuration is done
-	$Vend::Cfg->{ProductFiles}[0];
-	$::Variable->{MV_DEFAULT_SEARCH_TABLE};
+	$Vend::Cfg->{ProductFiles}[0] or 1;
+	$::Variable->{MV_DEFAULT_SEARCH_TABLE} or 1;
 
 	@{$s}{keys %Default} = (values %Default);
 	$s->{mv_all_chars}	        = [1];
