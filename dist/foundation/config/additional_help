@@ -103,3 +103,18 @@ name that has full access.
 The initial password is "pass". CHANGE IT! You can do this
 by going to the admin menu and selecting the superuser and
 then "Change password".
+
+STYLE
+.
+You can select one of several color schemes:
+.
+    blueyellow (default) Blues and Yellows
+    fixedwidth           Fixed width display
+    foundation           Foundation Red
+    grayorange           Gray and Orange
+    grayscale            Grays
+    greens               Green
+    purpleyellow         Purple and Yellow
+.
+You get the idea. Choose one.
+.

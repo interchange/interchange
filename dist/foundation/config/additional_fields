@@ -2,9 +2,9 @@ COMPANY
 Your company name
 Foundation Store
 
-!STYLE
+STYLE
 Default theme
-foundation
+blueyellow	fixedwidth	foundation	grayorange	grayscale	greens	purpleyellow
 
 SAMPDATATYPE
 Sample data type?

@@ -1,0 +1,15 @@
+    [include file="templates/components/[control component none]" group=content][control]
+
+  <br><br>
+  <center>
+  <a href="http://www.icdevgroup.org/">
+    <img src="__THEME_IMG_DIR__poweredby.gif" border="0"></a>
+  </center>
+  <br><br>
+
+  </td>
+</tr>
+</table>
+
+</body>
+</html>

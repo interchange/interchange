@@ -1,0 +1,64 @@
+<!-- BEGIN NOLEFT_TOP -->
+
+[if scratch members_only]
+    [set members_only][/set]
+    [if !session logged_in]
+    [set mv_successpage]@@MV_PAGE@@[/set]
+    [bounce page=login]
+    [/if]
+[/if]
+
+<html>
+<head>
+  <title>[scratch page_title]</title>
+  __THEME_CSS__
+</head>
+
+<body marginheight="0" marginwidth="0" bgcolor="__BACKGROUND__">
+
+<!--- top left and right logo --->
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+  <td align="left" valign="middle" class="maincontent">
+    &nbsp;<img src="__THEME_LOGO__">
+  </td>        	
+</tr>
+</table>
+
+<!--- menu bar along the top --->
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<tr class="categorybar">
+  <td class="categorybar" width="100%" height="1"><img src="__THEME_IMG_DIR__clear.gif" height="1"></td>
+</tr>
+<tr>
+  <td width="100%" class="menubar">
+    <a href="[area index]"><img name="Home" border="0" src="__THEME_IMG_DIR__home.gif"></a>
+      <img src="__THEME_IMG_DIR__sep.gif">
+    <a href="[area login]">
+    [if session logged_in]
+      <img alt="Log Out" border="0" src="__THEME_IMG_DIR__logout.gif"></a>
+    [else]
+      <img alt="Log In" border="0" src="__THEME_IMG_DIR__login.gif"></a>
+    [/else]
+    [/if]
+      <img src="__THEME_IMG_DIR__sep.gif">
+    <a href="[area ord/basket]"><img alt="Your Cart" border="0" src="__THEME_IMG_DIR__cart.gif"></a>
+      <img src="__THEME_IMG_DIR__sep.gif">
+    <a href="[area ord/checkout]"><img alt="Check Out" border="0" src="__THEME_IMG_DIR__checkout.gif"></a>
+      <img src="__THEME_IMG_DIR__sep.gif">
+    <a href="[area customerservice]"><img alt="Customer Service" border="0" src="__THEME_IMG_DIR__service.gif"></a>
+      <img src="__THEME_IMG_DIR__sep.gif">
+    <a href="[area aboutus]"><img alt="About Us" border="0" src="__THEME_IMG_DIR__about.gif"></a>
+  </td>
+</tr>
+<tr class="categorybar">
+  <td class="categorybar" width="100%" height="1"><img src="__THEME_IMG_DIR__clear.gif" height="1"></td>
+</tr>
+</table>
+
+<!--- left category column, main content column, and right special column --->
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<tr> 
+  <td width="95%" valign="top" align="center" class="maincontent"> 
+    [include file="templates/components/[control component none]" group=content][control]
+

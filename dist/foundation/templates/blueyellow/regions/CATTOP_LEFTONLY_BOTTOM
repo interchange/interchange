@@ -1,0 +1,15 @@
+    [include file="templates/components/[control component none]" group=content][control]
+
+  <center>
+    <p><a href="http://www.icdevgroup.org/"><img src="__THEME_IMG_DIR__poweredby.gif" border="0"></a></p>
+    [if variable MV_DEMO_MODE]
+      <p>[page admin/index]Admin</a></p>
+    [/if]
+  </center>
+
+  </td>
+</tr>
+</table>
+
+</body>
+</html>
