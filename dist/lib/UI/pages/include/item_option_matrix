@@ -174,9 +174,9 @@
 [/if]
 <TABLE CELLSPACING=0 cellpadding=2 cellmargin=3 width="100%">
 <TR BGCOLOR="__UI_C_TITLEBARBG__">
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">SKU</TH>
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">Description</TH>
-<TH ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__">Price</TH>
+<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">[L]SKU[/L]</TH>
+<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">[L]Description[/L]</TH>
+<TH ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__">[L]Price[/L]</TH>
 <TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">&nbsp;</TH>
 </tr>
 [loop prefix=variant
@@ -247,7 +247,7 @@ HREF="[area
 	<INPUT TYPE=hidden NAME=mv_data_table VALUE="[cgi mv_data_table]">
 	<INPUT TYPE=hidden NAME=item_id VALUE="[cgi item_id]">
 	<INPUT TYPE=hidden NAME=explode VALUE="1">
-	<INPUT TYPE=submit VALUE="Create all possible combinations">
+	<INPUT TYPE=submit VALUE="[L]Create all possible combinations[/L]">
 	</form>
 </td>
 </tr>
@@ -276,12 +276,12 @@ HREF="[area
 <table __UI_T_PROPERTIES__ WIDTH=100%>
 <tr class=rtitle>
 	<td class=ctitle colspan=3>
-		<H2>Add Variant</H2>
+		<H2>[L]Add Variant[/L]</H2>
 	</td>
 </tr>
 <tr class=rtitle>
-	<td class=ctitle>Option name</td>
-	<td class=ctitle>Choices</td>
+	<td class=ctitle>[L]Option name[/L]</td>
+	<td class=ctitle>[L]Choices[/L]</td>
 	<td class=ctitle>&nbsp;</td>
 </tr>
 [tmp built_js]
@@ -419,7 +419,7 @@ HREF="[area
 			ui_te_default:sku=[cgi item_id]
 			ui_data_fields=code sku o_group o_label o_value price
 			ui_te_widget:sku=hidden_text
-		"]<IMG SRC="plus.gif" ALT="Add new option" BORDER=0 ALIGN=MIDDLE></A> &nbsp;<font size=2>Add new option</font>
+		"]<IMG SRC="plus.gif" ALT="[L]Add new option[/L]" BORDER=0 ALIGN=MIDDLE></A> &nbsp;<font size=2>[L]Add new option[/L]</font>
 <br>
 [if scratch do_clone]
 [query
@@ -436,7 +436,7 @@ HREF="[area
 	more=1]<SELECT NAME=ui_clone_id>
 <OPTION VALUE=""> --
 [list]<OPTION VALUE="[clone-code]">[clone-filter 30][clone-description][/clone-filter][/list]
-</SELECT>[more-list]<BR>[more]<BR>[/more-list][/query]<br>[button text="Clone options"]
+</SELECT>[more-list]<BR>[more]<BR>[/more-list][/query]<br>[button text="[L]Clone options[/L]"]
 [flag type=write table="[cgi mv_data_table]"]
 ui_clone_options=1
 mv_todo=back

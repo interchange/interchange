@@ -100,7 +100,7 @@
         [either]
                 [cgi page_title]
         [or]
-        Item option editor: [data table="products" col="description" key="[cgi item_id]"] ([cgi item_id])
+        [L]Item option editor[/L]: [data table="products" col="description" key="[cgi item_id]"] ([cgi item_id])
         [/either]
 [/tmp]
 [tmp page_banner]
@@ -109,7 +109,7 @@
         [or]
                 [cgi page_title]
         [or]
-        Item option editor: <B>[data table="products" col="description" key="[cgi item_id]"]</B> ([cgi item_id])
+        [L]Item option editor[/L]: <B>[data table="products" col="description" key="[cgi item_id]"]</B> ([cgi item_id])
         [/either]
 [/tmp]
 [tmp help_name][either][cgi help_name][or]item.option[/either][/tmp]
@@ -220,26 +220,26 @@ mv_nextpage="@@MV_PAGE@@"
 </tr>
 
 <tr class=rnorm>
-        <td class=clabel colspan=2>Option type:
+        <td class=clabel colspan=2>[L]Option type[/L]:
                 [if-loop-data @_MV_OPTION_TABLE_@ o_matrix]
-                        Matrix [tmp matrix_or_modular]1[/tmp]
+                        [L]Matrix[/L] [tmp matrix_or_modular]1[/tmp]
 					[if-loop-data @_MV_OPTION_TABLE_@ o_matrix == 2]
 							(separate widgets)
 					[/if-loop-data]
                 [/if-loop-data]
                 [if-loop-data @_MV_OPTION_TABLE_@ o_modular]
 					[if-loop-data !@_MV_OPTION_TABLE_@ o_matrix]
-                        Modular [tmp matrix_or_modular]1[/tmp]
+                        [L]Modular[/L] [tmp matrix_or_modular]1[/tmp]
 					[/if-loop-data]
                 [/if-loop-data]
                 [if !scratch matrix_or_modular]
-                        Simple
+                        [L]Simple[/L]
                 [/if]
 &nbsp; &nbsp; &nbsp;
                 [page href="@@MV_PAGE@@" form="
                         ui_change_options=1
                         item_id=[loop-code]
-                        "]Change</A><br>
+                        "][L]Change[/L]</A><br>
         </td>
 </tr>
 <tr class=rtitle>
@@ -251,12 +251,12 @@ mv_nextpage="@@MV_PAGE@@"
 [/loop]
 
 [if type=data term="[cgi mv_data_table]::o_matrix::[cgi item_id]"]
-        [include include/item_option_matrix]
+        [include file="include/item_option_matrix" locale="[scratch mv_locale]"]
 [elsif type=data term="[cgi mv_data_table]::o_modular::[cgi item_id]"]
-        [include include/item_option_modular]
+        [include file="include/item_option_modular" locale="[scratch mv_locale]"]
 [/elsif]
 [else]
-        [include include/item_option_simple]
+        [include file="include/item_option_simple" locale="[scratch mv_locale]"]
 [/else]
 [/if]
 
