@@ -4,8 +4,9 @@ UserTag write-relative-file Documentation <<EOD
 
 	[write-relative-file file=name]content[/write-relative-file]
 
-Writes a file C<name> in the catalog directory. C<name> must be relative; 
-it will return undef if the file name is absolute or contains C<..>.
+Writes a file C<name> in the catalog directory. C<name> is subject to
+file control (e.g. it must be relative), it will return undef if
+the check isn't passed.
 
 =cut
 
@@ -17,15 +18,8 @@ UserTag write-relative-file Routine <<EOR
 sub {
 	my ($file, $data) = @_;
 #::logDebug("writing $file");
-	$file =~ m:(.*)/:;
-	return undef if Vend::File::absolute_or_relative($file);
-	my $dir = $1;
-	use File::Path;
-	if($dir and ! -d $dir) {
-		return undef if -e $dir;
-		File::Path::mkpath([$dir]);
-	}
-	Vend::Util::writefile(">$file", $data);
+	return undef unless Vend::File::allowed_file($file, 1);
+	Vend::File::writefile(">$file", $data, {auto_create_dir => 1});
 }
 EOR
 
