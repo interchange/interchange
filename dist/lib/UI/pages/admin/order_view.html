@@ -6,7 +6,18 @@
 @_UI_STD_HEAD_@
 [calc]
 	delete $Scratch->{ui_bounce};
-	return if $CGI->{order};
+	if ($CGI->{order}) {
+		if($CGI->{deliver_encrypted}) {
+			my $dir = q{__ORDER_DIRECTORY__} || 'orders';
+			my $ord = $Tag->filter('filesafe', $CGI->{order});
+			$Tag->deliver({
+							file => "orders/$ord",
+							get_encrypted => 1,
+							type => 'application/pgp-encrypted',
+						});
+		}
+		return;
+	}
 	$CGI->{order} = $CGI->{mv_arg} 
 		or $Scratch->{ui_bounce} = '__UI_BASE__/order';
 	return;
@@ -109,8 +120,24 @@
 			  	mv_data_table=transactions
 				item_id=[loop-code]
 				ui_return_to=__UI_BASE__/order
-			"]Edit order</a></tr>
+			"][L]Edit order[/L]</a>
+	</td>
 </tr>
+
+[if type=file term="[either]__ORDER_DIRECTORY__[or]orders[/either]/[loop-code]"]
+<tr>
+	<td align=right>&nbsp;</td>
+	<td>[page href="process/[loop-code].pgp"
+			  add_dot_html=0
+			  form="
+			  	deliver_encrypted=1
+				mv_todo=return
+				mv_nextpage=@@MV_PAGE@@
+				order=[loop-code]
+			"][L]Decrypt Credit Card[/L]</a>
+	</td>
+</tr>
+[/if]
 
 </table>
 
@@ -427,4 +454,4 @@ vieworder=
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order_view.html,v 2.8 2002-10-27 04:36:04 mheins Exp $ -->
