@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.91 2003-01-03 22:55:54 racke Exp $
+# $Id: Config.pm,v 2.92 2003-01-04 23:50:43 kwalsh Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -46,7 +46,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.91 $, 10);
+$VERSION = substr(q$Revision: 2.92 $, 10);
 
 my %CDname;
 
@@ -3238,6 +3238,7 @@ sub parse_dirconfig {
 			next unless -f "$dir/$_";
 #::logDebug("reading key=$_ from $dir/$_");
 			$ref->{$_} = readfile("$dir/$_", $Global::NoAbsolute, 0);
+			$ref->{$_} = substitute_variable($ref->{$_}) if $C->{ParseVariables};
 			$sref->{$_} = "$dir/$_";
 		}
 	}
