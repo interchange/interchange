@@ -76,7 +76,7 @@ sub {
 	}
 
 	if($opt->{perl}) {
-		push @out, ($^V ? sprintf("%vd", $^V) : $]) . " (called with: $^X)";
+		push @out, ($^V ? sprintf("%vd", $^V) : $]) . errmsg(" (called with: %s)", $^X);
 		$done_something = 1;
 	}
 
@@ -138,14 +138,14 @@ sub {
 		for( sort keys %wanted) {
 			eval "require $_";
 			if($@) {
-				my $info = $info{$_} || "May affect program operation.";
-				push @out, "$_ not found. $info"
+				my $info = $Tag->loc('', $info{$_} || "May affect program operation.");
+				push @out, "$_ " . $Tag->loc('', 'not found') . ". $info"
 			}
 			else {
 				no strict 'refs';
 				my $ver = ${"$_" . "::VERSION"};
 				$ver = $ver ? "v$ver" : 'no version info';
-				push @out, "$_ found ($ver).";
+				push @out, "$_ " . $Tag->loc('', 'found') . " ($ver).";
 			}
 		}
 	}
