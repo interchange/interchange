@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.20 2002-11-23 03:59:43 mheins Exp $
+# $Id: Editor.pm,v 1.21 2002-12-13 12:53:22 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.20 $, 10);
+$VERSION = substr(q$Revision: 1.21 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -932,7 +932,7 @@ my %o_default_var = (qw/
 
 my %o_default_defined = (
 	mv_update_empty		=> 1,
-	restrict_allow		=> 'page area',
+	restrict_allow		=> 'page area var cgi',
 );
 
 my %o_default = (
@@ -1193,6 +1193,7 @@ sub resolve_options {
 		panel_height
 		panel_id
 		panel_width
+		restrict_allow
 		spacer_row_class
 		spacer_row_style
 		spacer_height
