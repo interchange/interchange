@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18.2.3 2000-12-13 16:11:15 zarko Exp $
+# $Id: Order.pm,v 1.18.2.4 2001-01-19 17:28:04 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.3 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.4 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1528,13 +1528,16 @@ sub route_order {
 	my @route_complete;
 	my @route_failed;
 
+	### This used to be the check_only
 	# Here we return if it is only a check
-	return route_profile_check(@routes) if $check_only;
+	#return route_profile_check(@routes) if $check_only;
 
 	# Careful! If you set it on one order and not on another,
 	# you must delete in between.
-	$::Values->{mv_order_number} = counter_number($main->{counter})
-			unless $Vend::Session->{mv_order_number};
+	if(! $check_only) {+
+		$::Values->{mv_order_number} = counter_number($main->{counter})
+				unless $Vend::Session->{mv_order_number};
+	}
 
 	my $value_save = { %{$::Values} };
 
@@ -1547,13 +1550,14 @@ sub route_order {
 		my $pre_encrypted;
 		my $credit_card_info;
 
-		if($route->{inline_profile}) {
+		if(! $check_only and $route->{inline_profile}) {
 			my $status;
 			eval {
 				($status, undef, $errors) = check_order($route->{inline_profile});
 				die "$errors\n" unless $status;
 			};
 		}
+
 		if ($CGI::values{mv_credit_card_number}) {
 			if(! $CGI::values{mv_credit_card_type} and
 				 $CGI::values{mv_credit_card_number} )
@@ -1584,6 +1588,19 @@ sub route_order {
 			next;
 		}
 	eval {
+
+		if ($check_only and $route->{profile}) {
+			my ($status, $final, $missing) = check_order($route->{profile});
+			if(! $status) {
+				die errmsg(
+				"Route %s failed order profile %s. Final=%s. Errors:\n\n%s\n\n",
+				$c,
+				$route->{profile},
+				$final,
+				$missing,
+				)
+			}
+		}
 
 		if($route->{cyber_mode}) {
 			my $save = $CGI::values{mv_cyber_mode};
@@ -1620,6 +1637,8 @@ sub route_order {
 							);
 		}
 
+	  PROCESS: {
+	  	last PROCESS if $check_only;
 		if($Vend::Session->{mv_order_number}) {
 			$::Values->{mv_order_number} = $Vend::Session->{mv_order_number};
 		}
@@ -1710,6 +1729,7 @@ sub route_order {
 				chmod $mode, $fn;
 			}
 		}
+	  } # end PROCESS
 	};
 		if($@) {
 			my $err = $@;
@@ -1728,6 +1748,15 @@ sub route_order {
 
 	} #BUILD
 	my $msg;
+
+	if($check_only) {
+		if(@route_failed) {
+			return (0, 0, $errors);
+		}
+		else {
+			return (1, 1, '');	
+		}
+	}
 
 	foreach $msg (@out) {
 		eval {
