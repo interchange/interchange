@@ -1,0 +1,28 @@
+#!/bin/sh
+
+### Decrypt X mailcap -- use 
+### 
+### To enable, put this file in /usr/local/bin/gpg_display
+### Then in $HOME/.mailcap put:
+###
+### application/pgp-encrypted;/usr/local/bin/gpg_display
+### 
+### To add from Mozilla instead:
+###
+###   Edit->Preferences->Helper Applications->New type
+###
+###    Description        PGP-encrypted content
+###    File Extension     pgp,gpg
+###    MIME type          application/pgp-encrypted
+###    Application to use /usr/local/bin/gpg_display
+
+
+TERMCMD="xterm"
+GPGCMD="gpg"
+
+if test -n "$2"
+then
+	$GPGCMD -d -o - $1 | less -e -c -Ps"Press any key to continue"
+else
+	$TERMCMD -e $0 $1 1
+fi
