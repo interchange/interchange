@@ -17,6 +17,10 @@ Miscellaneous
 
 * Update copyright notices, Interchange URLs, and email addresses.
 
+Packaging
+---------
+
+* Cleanse mod_interchange directory in Debian's clean target.
 
 ------------------------------------------------------------------------------
 
