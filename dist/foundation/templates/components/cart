@@ -259,7 +259,7 @@ EOF
 
 [item-tag-address
 			set="[cgi mv_an[item-modifier mv_ip]]"
-			address_label=city
+			address_label=nick
 			nick="[cgi mv_an[item-modifier mv_ip]]"
 			if="[value separate_addresses]"
 			form="
