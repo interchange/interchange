@@ -1,6 +1,6 @@
 # Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: jsq.coretag,v 1.4 2004-10-08 20:41:49 docelic Exp $
+# $Id: jsq.coretag,v 1.5 2004-11-08 18:27:54 mheins Exp $
 
 UserTag jsquote Alias jsq
 UserTag jsq hasEndTag
@@ -19,6 +19,7 @@ sub {
 		  or 
 		( s/'/\\'/g,  s/\r/\\r/g, s/(^|[^\\])\$\{?(\w+)\}?/$1' + $2 + '/g, $_ = qq{'$_'} );
 	}
+	@lines = "''" unless @lines;
 	return join (" +\n", @lines);
 }
 EOR

@@ -1,6 +1,6 @@
 # Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: jsqn.coretag,v 1.3 2004-10-08 20:41:49 docelic Exp $
+# $Id: jsqn.coretag,v 1.4 2004-11-08 18:27:54 mheins Exp $
 
 UserTag jsqn hasEndTag
 UserTag jsqn NoReparse
@@ -18,6 +18,7 @@ sub {
 		  or 
 		( s/'/\\'/g,  s/\r/\\r/g, $_ = qq{'$_'} );
 	}
+	@lines = "''" unless @lines;
 	return join (" +\n", @lines);
 }
 EOR
