@@ -19,7 +19,7 @@
 # MA  02111-1307  USA.
 
 UserTag formel Order label name type size
-UserTag formel Version 0.09
+UserTag formel Version 0.091
 UserTag formel addAttr
 UserTag formel Routine <<EOF
 sub {
@@ -137,7 +137,8 @@ sub {
 
 	if ($type eq 'display') {
 		# try to handle widget with UI tag display
-		$elhtml = $Tag->display($opt->{table} || 'products', $name);
+		$elhtml = $Tag->display($opt->{table} || 'products', $name, '', 
+			{value => $Values->{$name}});
 	} elsif ($opt->{reset}) {
 		if ($type eq 'textarea') {
 	        $elhtml = qq{<textarea name="${name}"$sizestr></textarea>};
@@ -244,6 +245,11 @@ Discards the user input if set to 1.
 Label container in case of errors. The default is
 <font color="__CONTRAST__">%s</font>. If the variable
 CONTRAST doesn't exist, the color red is used instead.
+
+=item table
+
+Pass this database to the display tag.
+Only used for display types. 
 
 =back
 
