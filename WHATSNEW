@@ -82,6 +82,9 @@ UI
 
 I18N
 --------
+
+* localization support added to UI usertag file_info
+
 * Hebrew locale from Chen Naor <chen@lilux.co.il> added.
 
 * Japanese locale from Murahashi <murahashi@ayayu.com> and
