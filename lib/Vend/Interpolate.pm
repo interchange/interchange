@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.235 2005-03-16 18:50:59 jon Exp $
+# $Id: Interpolate.pm,v 2.236 2005-03-29 17:40:56 jon Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.235 $, 10);
+$VERSION = substr(q$Revision: 2.236 $, 10);
 
 @EXPORT = qw (
 
@@ -1127,6 +1127,17 @@ sub conditional {
                 last;
             }
         }
+	}
+	elsif($base eq 'control') {
+		$op = 0;
+		if (defined $::Scratch->{control_index}
+			and defined $::Control->[$Scratch->{control_index}]) {
+			$op = qq%$::Control->[$::Scratch->{control_index}]{$term}%;
+			$op = "q{$op}"
+				unless defined $noop;
+			$op .= qq% $operator $comp%
+				if defined $comp;
+		}
 	}
 	else {
 		$op =	qq%$term%;
