@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange link program configurator
 #
-# $Id: compile_link.PL,v 1.8.2.1.2.1 2000-12-21 12:11:54 heins Exp $
+# $Id: compile_link.PL,v 1.8.2.1.2.2 2000-12-21 13:05:37 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -55,6 +55,8 @@ use strict;
 use Config;
 use File::Copy;
 use Getopt::Long;
+
+use vars qw/$Self/;
 
 Getopt::Long::config(qw/permute/);
 
