@@ -25,7 +25,7 @@ DOIT: {
 #
 # MiniVend version 4.0xxx
 #
-# $Id: minivend.PL,v 1.3 2000-06-04 04:18:54 heins Exp $
+# $Id: minivend.PL,v 1.4 2000-06-05 05:42:22 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -547,6 +547,7 @@ my %Ignore = qw(
 	mv_check  1
 	mv_click  1
 	mv_nextpage  1
+	mv_more_ip  1
 	mv_credit_card_number  1
 	);
 

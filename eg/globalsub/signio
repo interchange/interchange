@@ -191,9 +191,10 @@ sub signio {
             $Vend::Session->{payment_error} = $result{RESPMSG};
     }
     else {
-        $decline = $decline >> 8;
         $result{'pop.status'} =
         $result{'MStatus'} = 'success';
+
+        $Vend::Session->{payment_id} = $result{'pop.order-id'};
 
         $Vend::Session->{cybercash_error}   =
             $Vend::Session->{payment_error} = $result{RESPMSG};
