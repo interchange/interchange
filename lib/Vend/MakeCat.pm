@@ -1,8 +1,8 @@
 # Vend::MakeCat - Routines for Interchange catalog configurator
 #
-# $Id: MakeCat.pm,v 2.13 2004-07-27 19:40:45 jon Exp $
+# $Id: MakeCat.pm,v 2.14 2005-01-24 22:08:50 jon Exp $
 #
-# Copyright (C) 2002-2004 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -111,7 +111,7 @@ use vars qw/
 	%Window
 /;
 
-$VERSION = substr(q$Revision: 2.13 $, 10);
+$VERSION = substr(q$Revision: 2.14 $, 10);
 
 $Force = 0;
 $History = 0;
