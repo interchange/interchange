@@ -1,4 +1,4 @@
-[strip int][if !cgi mv_data_table]
+[strip interpolate=1][if !cgi mv_data_table]
 [or cgi ui_scrub_table]
 [calc]
 	$CGI->{mv_data_table} = $Values->{mv_data_table} = $Config->{ProductFiles}[0];
