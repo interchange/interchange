@@ -67,8 +67,8 @@
 				table="[cgi mv_data_table]"
 				col.o_enable=1
 				col.o_master=1
-				col.o_modular=1
-				col.o_matrix=1
+				col.o_modular=0
+				col.o_matrix=2
 				key="[cgi item_id]"
 				]
         [/elsif]
@@ -184,11 +184,11 @@
 	
 	return unless $record->{o_enable};
 
-	if($record->{o_matrix}) {
-	    $Scratch->{setting} = $record->{o_modular} ? 'matrix-separate' : 'matrix';
-	}
-	elsif ($record->{o_modular}) {
+	if ($record->{o_modular}) {
 	    $Scratch->{setting} = 'modular';
+	}
+	elsif($record->{o_matrix}) {
+	    $Scratch->{setting} = $record->{o_matrix} == 2 ? 'matrix-separate' : 'matrix';
 	}
 	else {
 	    $Scratch->{setting} = 'simple';
@@ -223,7 +223,7 @@ mv_nextpage="@@MV_PAGE@@"
         <td class=clabel colspan=2>Option type:
                 [if-loop-data @_MV_OPTION_TABLE_@ o_matrix]
                         Matrix [tmp matrix_or_modular]1[/tmp]
-					[if-loop-data @_MV_OPTION_TABLE_@ o_modular]
+					[if-loop-data @_MV_OPTION_TABLE_@ o_matrix == 2]
 							(separate widgets)
 					[/if-loop-data]
                 [/if-loop-data]

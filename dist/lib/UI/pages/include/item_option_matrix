@@ -54,6 +54,7 @@
 [/loop][/tmp]
 
 [tmp tmp_price][price noformat=1 code="[cgi item_id]"][/tmp]
+[tmp tmp_whole][field field=wholesale code="[cgi item_id]"][/tmp]
 [tmp tmp_desc][description code="[cgi item_id]"][/tmp]
 [perl tables="[cgi mv_data_table] __UI_ITEM_TABLES__"]
 #Debug("opts: $Scratch->{all_opts}");
@@ -64,8 +65,10 @@
 		return undef;
 	}
 	my $id = $CGI->{item_id};
-	my $desc = $Scratch->{tmp_desc};
-	my $price = $Scratch->{tmp_price};
+	my %default = (
+		price		=> $Scratch->{tmp_price},
+		wholesale	=> $Scratch->{tmp_whole},
+	);
 #Debug("opts: $Scratch->{all_opts}");
 	my @opts = grep /\S/, split /\n/, $Scratch->{all_opts};
 #Debug( "options raw: " . $Tag->uneval( { ref => \@opts } ) );
@@ -79,6 +82,7 @@
 		my (@o) = grep /\S/, split /\s*,\s*/, $o;
 		for(@o) {
 			my ($k, $v) = split /\s*=\s*/, $_;
+			$k = '__MV_VARIANT_JOINER__' || '0' if ! length($k);
 			$v =~ s/\*$//;
 			push @ary, [ $k, $v ];
 		}
@@ -131,14 +135,19 @@
 	for( my $i = 0; $i < @options; $i++) {
 		my $key = "$id-$options[$i]";
 		die ::errmsg("No key for create!") unless $key;
-		$odb->set_field($key, 'description', "$desc, $descriptions[$i]");
+		$odb->set_field($key, 'description', "$Scratch->{tmp_desc}, $descriptions[$i]");
 		$hashes[$i]->{code} = $id;
 		$hashes[$i]->{noformat} = 1;
 		$hashes[$i]->{quantity} = 1;
 		$price = $Tag->price( $id, $hashes[$i] );
+		for(keys %default) {
+			$odb->set_field($key, $_, $default{$_})
+				if $odb->test_column($_);
+		}
 		$odb->set_field($key, 'price', $price);
 		$odb->set_field($key, 'sku', $id);
 		$odb->set_field($key, 'o_matrix', 1);
+		$odb->set_field($key, 'o_enable', 1);
 	}
 	$odb->set_field($id, 'o_matrix', 1);
 
@@ -339,12 +348,16 @@ HREF="[area
 							+ this_form.$parm\[this_form.$parm.selectedIndex].text;
 		joiner = ', ';
 	}
- 	if(this_form.$parm\[this_form.$parm.selectedIndex].value != '') {
-			other_form.code.value =
-					other_form.code.value
-					+ '-'
-					+ this_form.$parm\[this_form.$parm.selectedIndex].value;
+ 	if(this_form.$parm\[this_form.$parm.selectedIndex].value == '') {
+		this_form.$parm\[this_form.$parm.selectedIndex].value = '__MV_VARIANT_JOINER__';
 	}
+ 	if(this_form.$parm\[this_form.$parm.selectedIndex].value == '') {
+		this_form.$parm\[this_form.$parm.selectedIndex].value = '0';
+	}
+	other_form.code.value =
+			other_form.code.value
+			+ '-'
+			+ this_form.$parm\[this_form.$parm.selectedIndex].value;
 	_NEXT_DESC_
 EOF
 	$Scratch->{built_js} =~ s/_NEXT_DESC_/$piece/;
@@ -439,17 +452,19 @@ mv_nextpage=@@MV_PAGE@@
 [table-editor
 	table_width=400
 	default.o_matrix=1
+	default.o_enable=1
 	default.quantity=1
 	default.sku=`$CGI->{item_id}`
 	extra.description="wrap=auto"
 	form_name=variant
 	key=""
 	table=options
-	ui_data_fields="code sku products:description:sku description price wholesale inventory:quantity weight o_matrix"
+	ui_data_fields="code sku products:description:sku description price wholesale inventory:quantity weight o_enable o_matrix"
 	ui_display_only=products:description:sku
 	ui_meta_view="variant"
 	ui_new_item=1
 	widget.o_matrix=hidden
+	widget.o_enable=hidden
 	widget.sku="hidden_text"
 ]
 

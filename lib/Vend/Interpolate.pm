@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.92 2001-07-01 12:02:11 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.93 2001-07-02 21:46:33 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.92 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.93 $, 10);
 
 @EXPORT = qw (
 
@@ -1902,50 +1902,21 @@ sub tag_options {
 	my @out;
 
 	my @rf;
-	if($record->{o_matrix} and ! $record->{o_modular}) {
-#::logDebug("matrix options, item='$item'");
-#code	o_master	sku	o_group	o_sort	phantom	o_enable	o_matrix	o_modular	o_default	o_label	o_value	o_widget	o_footer	o_header	o_height	o_width	description	price	wholesale	differential	weight	volume	mv_shipmode	o_exclude	o_include
-		for(qw/code o_enable o_group description price weight volume differential o_widget/) {
-			push @rf, ($map{$_} || $_);
-		}
-		my $lcol = $map{sku} || 'sku';
-		my $lval = $db->quote($sku, $lcol);
-		
-		my $q = "SELECT " . join(",", @rf);
-		$q .= " FROM $table where $lcol = $lval";
-		my $ary = $db->query($q); 
-		my $ref;
-		my $price = {};
-		foreach $ref (@$ary) {
-			# skip unless enabled
-			next unless $ref->[1];
-			# skip unless description
-			next unless $ref->[3];
-			$ref->[3] =~ s/,/&#44;/g;
-			$ref->[3] =~ s/=/&#61;/g;
-			$price->{$ref->[0]} = $ref->[4];
-			push @out, "$ref->[0]=$ref->[3]";
-		}
-		$out .= "<td>" if $opt->{td};
-		$out .= tag_accessories(
-							$sku,
-							'',
-							{ 
-								passed => join(",", @out),
-								type => $opt->{type} || $ref->[8] || 'select',
-								attribute => 'code',
-								name => 'mv_sku',
-								price_data => $price,
-								price => $opt->{price},
-								item => $item,
-								default => undef,
-							},
-							$item || undef,
-						);
-		$out .= "</td>" if $opt->{td};
+
+	if($opt->{display_type}) {
+		$opt->{display_type} = lc $opt->{display_type};
 	}
-	elsif($record->{o_matrix}) {
-#::logDebug("matrix options, simple selector");
+	elsif (! $record->{o_matrix}) {
+		# Do nothing
+	}
+	elsif ($record->{o_matrix} == 2) {
+		$opt->{display_type} = 'separate';
+	}
+	elsif ($record->{o_matrix}) {
+		$opt->{display_type} = 'single';
+	}
+
+	if($record->{o_matrix} and $opt->{display_type} eq 'separate') {
 		for(qw/code o_enable o_group o_value o_label o_widget price/) {
 			push @rf, ($map{$_} || $_);
 		}
@@ -2014,6 +1985,46 @@ sub tag_options {
 			$out .= $begin;
 			$out .= join $opt->{joiner}, @out;
 		}
+	}
+	elsif($record->{o_matrix}) {
+		for(qw/code o_enable o_group description price weight volume differential o_widget/) {
+			push @rf, ($map{$_} || $_);
+		}
+		my $lcol = $map{sku} || 'sku';
+		my $lval = $db->quote($sku, $lcol);
+		
+		my $q = "SELECT " . join(",", @rf);
+		$q .= " FROM $table where $lcol = $lval";
+		my $ary = $db->query($q); 
+		my $ref;
+		my $price = {};
+		foreach $ref (@$ary) {
+			# skip unless enabled
+			next unless $ref->[1];
+			# skip unless description
+			next unless $ref->[3];
+			$ref->[3] =~ s/,/&#44;/g;
+			$ref->[3] =~ s/=/&#61;/g;
+			$price->{$ref->[0]} = $ref->[4];
+			push @out, "$ref->[0]=$ref->[3]";
+		}
+		$out .= "<td>" if $opt->{td};
+		$out .= tag_accessories(
+							$sku,
+							'',
+							{ 
+								passed => join(",", @out),
+								type => $opt->{type} || $ref->[8] || 'select',
+								attribute => 'code',
+								name => 'mv_sku',
+								price_data => $price,
+								price => $opt->{price},
+								item => $item,
+								default => undef,
+							},
+							$item || undef,
+						);
+		$out .= "</td>" if $opt->{td};
 	}
 	elsif($record->{o_modular}) {
 #::logDebug("modular options");
