@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.0.2.11 2003-01-24 03:37:06 jon Exp $
+# $Id: Server.pm,v 2.0.2.12 2003-01-24 04:45:34 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.0.2.11 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.12 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -39,16 +39,6 @@ use strict;
 
 sub new {
     my ($class, $fh, $env, $entity) = @_;
-	if(@Global::argv > 1) {
-		(
-			$CGI::script_name,
-			$CGI::values{mv_session_id}, 
-			$CGI::query_string
-		) = @Global::argv;
-		map_cgi();
-		$Global::FastMode = 1;
-		return bless { fh => $fh }, $class;
-	}
     populate($env);
     my $http = {
 					fh => $fh,
