@@ -123,7 +123,6 @@ code/UI_Tag/cp.coretag
 code/UI_Tag/crypt.coretag
 code/UI_Tag/db_columns.coretag
 code/UI_Tag/db_hash.coretag
-code/UI_Tag/dbinfo.coretag
 code/UI_Tag/diff.coretag
 code/UI_Tag/diffmerge.coretag
 code/UI_Tag/directive_value.coretag
@@ -136,9 +135,7 @@ code/UI_Tag/filters.coretag
 code/UI_Tag/get_gpg_keys.coretag
 code/UI_Tag/global_value.coretag
 code/UI_Tag/grep_mm.coretag
-code/UI_Tag/if_key_exists.coretag
 code/UI_Tag/if_mm.coretag
-code/UI_Tag/if_sql.coretag
 code/UI_Tag/image_collate.coretag
 code/UI_Tag/import_fields.coretag
 code/UI_Tag/jsq.coretag
@@ -156,10 +153,8 @@ code/UI_Tag/quick_table.coretag
 code/UI_Tag/read_shipping.coretag
 code/UI_Tag/reconfig.coretag
 code/UI_Tag/reconfig_time.coretag
-code/UI_Tag/reconfig_wait.coretag
 code/UI_Tag/regenerate.coretag
 code/UI_Tag/return_to.coretag
-code/UI_Tag/rotate_file.coretag
 code/UI_Tag/rotate_table.coretag
 code/UI_Tag/row_edit.coretag
 code/UI_Tag/run_profile.coretag
@@ -172,8 +167,6 @@ code/UI_Tag/unlink_file.coretag
 code/UI_Tag/update_order_status.tag
 code/UI_Tag/version.coretag
 code/UI_Tag/widget.coretag
-code/UI_Tag/with.coretag
-code/UI_Tag/write_page.coretag
 code/UI_Tag/write_relative_file.coretag
 code/UI_Tag/write_shipping.coretag
 code/UserTag/bar_button.tag
@@ -185,7 +178,6 @@ code/UserTag/delete_cart.tag
 code/UserTag/email.tag
 code/UserTag/email_raw.tag
 code/UserTag/env.tag
-code/UserTag/fcounter.tag
 code/UserTag/fedex_query.tag
 code/UserTag/formel.tag
 code/UserTag/fortune.tag
@@ -287,8 +279,8 @@ dist/foundation/dbconf/default_db/transactions.dbm
 dist/foundation/dbconf/default_db/tree.dbm
 dist/foundation/dbconf/default_db/userdb.dbm
 dist/foundation/dbconf/default_db/variable.dbm
-dist/foundation/dbconf/locales/default.cfg
 dist/foundation/dbconf/locales/de_DE.cfg
+dist/foundation/dbconf/locales/default.cfg
 dist/foundation/dbconf/mysql/2ndDayAir.dbm
 dist/foundation/dbconf/mysql/Ground.dbm
 dist/foundation/dbconf/mysql/NextDayAir.dbm
@@ -635,6 +627,7 @@ dist/foundation/pages/survey/graph.html
 dist/foundation/pages/survey/graph.png.html
 dist/foundation/pages/survey/standard.html
 dist/foundation/pages/swap_results.html
+dist/foundation/pages/test_order.html
 dist/foundation/products/2ndDayAir.csv
 dist/foundation/products/450.csv
 dist/foundation/products/Ground.csv
