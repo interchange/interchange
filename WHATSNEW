@@ -48,6 +48,15 @@ Core
   This should only be necessary on systems with threads enabled,
   which is NOT recommended for IC.
 
+* Allow overriding LENGTH_EXCEPTION_DEFAULT with individual LENGTH_EXCEPTION.
+  This just makes LENGTH_EXCEPTION accept values like:
+
+  	Database transactions LENGTH_EXCEPTION_DEFAULT  truncate_log
+  	Database transactions LENGTH_EXCEPTION          update_date=ignore
+
+* Don't run set_defaults at all for a subcatalog, as they should be set
+  for the base catalog.
+
 Tables
 ------
 
@@ -233,6 +242,18 @@ Table Editor
   This allows foreign table lookup queries to be tailored for the record
   currently being edited in the table editor.
 
+* Allow hidden fields to come from all_opts again (was disrupting
+  surveys).
+
+* Add new link_blank_auto setting for table linking. This has the
+  effect of:
+
+  -- Automatically using auto-numbering
+  -- setting the foreign key column to match the key of the
+     edited record (as you would have to do to return the row
+     once entered)
+  -- Making both those fields hidden and non-changeable.
+
 Foundation
 ----------
 
@@ -247,6 +268,10 @@ Foundation
   inactive will not be found in search.
 
 * Add --[L]select state[/L]-- blank option to shipping address form.
+
+* Add support for all IC-recognized credit card types.
+
+* Removed obsolete log_entry route and etc/log_entry file.
 
 Usertags
 --------
@@ -279,6 +304,9 @@ Usertags
     scan="fi=products/st=db/co=yes/sf=category/se=[loop-code]" 
     auto_create_dir=1]
   [/loop]
+
+* Allow database text files in subsidiary directories of products
+  for [xfer-catalog] Usertag.
 
 Jobs
 ----
