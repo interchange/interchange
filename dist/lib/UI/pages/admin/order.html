@@ -24,7 +24,6 @@
 		$Scratch->{archive_nm} = 'archive';
 		$Scratch->{archive_label} = 'pending';
 	}
-	$Scratch->{archive_label} = $Tag->loc('', "$Scratch->{archive_label} displayed");
 	return;
 [/calc]
 [set icon_name]icon_orders.gif[/set]
@@ -265,7 +264,7 @@
 [more-list]
 <tr>
 <td colspan=6 align=center>
-[msg arg.0="[matches]" arg.1="[value mv_search_match_count]" arg.2="[scratch archive_label]"]Orders %s of %s %s.[/msg] [L]More orders[/L]: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
+[msg arg.0="[matches]" arg.1="[value mv_search_match_count]"]Orders %s of %s [scratch archive_label] displayed.[/msg] [L]More orders[/L]: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
 </td>
 </tr>
 [/more-list]
@@ -278,7 +277,7 @@
 &nbsp;&nbsp;&nbsp;[button form=batch src="[scratch archive_img]"
 			text=`
 			my $tmp = "$Scratch->{archive_nm} checked orders";
-			return $Tag->loc('', "\u$tmp");
+			return errmsg("\u$tmp");
 			`]
 [scratch archive_nm]order=1[/button]
 </FORM>
