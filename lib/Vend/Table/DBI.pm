@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.13 2000-08-07 05:38:16 heins Exp $
+# $Id: DBI.pm,v 1.14 2000-09-05 20:36:20 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.13 $, 10);
+$VERSION = substr(q$Revision: 1.14 $, 10);
 
 use strict;
 
@@ -381,14 +381,16 @@ sub field_accessor {
     my ($s, $column) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
 	$column = $s->[$NAME][ $s->column_index($column) ]; 
+	my $q = "select $column from $s->[$TABLE] where $s->[$KEY] = ?";
+	my $sth = $s->[$DBI]->prepare($q)
+		or die "field_accessor statement ($q) -- bad result.\n";
+#::logDebug("binding sub to $q");
     return sub {
         my ($key) = @_;
-		$key = $s->[$DBI]->quote($key)
-			unless exists $s->[$CONFIG]{NUMERIC}{$s->[$KEY]};
-        my $sth = $s->[$DBI]->prepare
-			("select $column from $s->[$TABLE] where $s->[$KEY] = $key")
-				or die $DBI::errstr;
-		($sth->fetchrow)[0];
+		$sth->bind_param(1, $key);
+		$sth->execute();
+        my ($return) = $sth->fetchrow_array();
+		return $return;
     };
 }
 
