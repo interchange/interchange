@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.29 2001-04-01 03:58:10 heins Exp $
+# $Id: Server.pm,v 1.8.2.30 2001-04-01 04:25:44 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.29 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.30 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -351,10 +351,12 @@ sub create_cookie {
 	my($domain,$path) = @_;
 	my  $out;
 	my @jar;
-	@jar = [	($::Instance->{CookieName} || 'MV_SESSION_ID'),
+	push @jar, [
+				($::Instance->{CookieName} || 'MV_SESSION_ID'),
 				defined $::Instance->{ClearCookie} ? '' : $Vend::SessionName,
 				$Vend::Expire || undef,
-			];
+			]
+		unless $Vend::CookieID;
 	push @jar, ['MV_STATIC', 1] if $Vend::Cfg->{Static};
 	push @jar, @{$::Instance->{Cookies}}
 		if defined $::Instance->{Cookies};
