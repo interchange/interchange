@@ -17,12 +17,12 @@ members_only:
 	description: Members only
 
 component_before:
-	options: =none, specials=Specials, random=Random items
+	options: =none, specials=Specials, random=Random items, upsell_horiz_2=Two upsell items, upsell_horiz_3=Three upsell items
 	widget: select
 	description: Component before content
 
 component_after:
-	options: =none, specials=Specials, random=Random items
+	options: =none, specials=Specials, random=Random items, upsell_horiz_2=Two upsell items, upsell_horiz_3=Three upsell items
 	widget: select
 	description: Component after content
 
