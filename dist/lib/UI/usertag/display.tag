@@ -77,9 +77,9 @@ EOF
 	$label = $column if ! $label;
 	my %sub = (
 		WIDGET		=> $widget,
-		HELP		=> errmsg($help),
+		HELP		=> $opt->{applylocale} ? errmsg($help) : $help,
 		HELP_URL	=> $help_url,
-		LABEL		=> errmsg($label),
+		LABEL		=> $opt->{applylocale} ? errmsg($label) : $label,
 	);
 	# Strip the {TAG} {/TAG} pairs if nothing there
 	$template =~ s#{([A-Z_]+)}(.*?){/\1}#$sub{$1} ? $2: '' #ges;

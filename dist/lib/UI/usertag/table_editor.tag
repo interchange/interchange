@@ -1220,6 +1220,7 @@ EOF
 		$template =~ s/~TKEY~/$tkey_message || ''/eg;
 ::logDebug("col=$c widget=$widget->{$c} (type=$type)");
 		my $display = $Tag->display({
+										applylocale => 1,
 										arbitrary => $opt->{ui_meta_view},
 										column => $c,
 										default => $currval,
