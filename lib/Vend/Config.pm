@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.23.2.4 2000-11-15 21:46:24 zarko Exp $
+# $Id: Config.pm,v 1.23.2.5 2000-11-15 21:49:52 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -103,7 +103,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.23.2.4 $, 10);
+$VERSION = substr(q$Revision: 1.23.2.5 $, 10);
 
 my %CDname;
 
@@ -1221,7 +1221,7 @@ EOF
 			}
 		}
 
-		close_database();
+		Vend::Data::close_database();
 	};
 
 	undef $Vend::Cfg;
