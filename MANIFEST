@@ -1043,4 +1043,3 @@ SPECS/interchange.spec
 test.pl
 UPGRADE
 WHATSNEW
-META.yml                                 Module meta-data (added by MakeMaker)
