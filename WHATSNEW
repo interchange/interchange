@@ -15,6 +15,15 @@ Interchange 4.6.4
 * Fixed bug with encrypted-password users not being logged in after
   new account creation. Reported by tamas.kohegyi@unforgettable.com.
 
+* Add CGIWRAP workaround. Remove bogus PATH_INFO that is prepended to
+  SCRIPT_NAME.
+
+* Add unusable password hash for group ':backup' in access.asc. It was
+  possible to access the admin interface with this username and no password.
+
+* Disallow login attempts with group names, usernames with invalid
+  characters, and blank usernames or passwords.
+
 
 Interchange 4.6.3
 
