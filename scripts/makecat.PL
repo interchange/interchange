@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.31 2000-10-18 14:52:57 racke Exp $
+# $Id: makecat.PL,v 1.32 2000-11-03 23:29:03 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -732,7 +732,7 @@ unless (-f $Configfile) {
 	$Reconfigure = 1;
 }
 
-$Cfg = new IniConf -file => $Configfile, -nocase => 1;
+$Cfg = new IniConf -file => $Configfile;
 
 die "Can't read config file $Configfile: $!\n" unless defined $Cfg;
 my @parms;
@@ -762,7 +762,7 @@ EOF
 			printf CFGFILE "%-19s =\n", $_;
 		}
 		close(CFGFILE)					or die "Can't close $Configfile: $!\n";
-		$Cfg = new IniConf -file => $Configfile, -nocase => 1;
+		$Cfg = new IniConf -file => $Configfile;
 		die "Can't read config file $Configfile: $!\n" unless defined $Cfg;
 		redo CHECKEXIST;
 	}
@@ -2071,7 +2071,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.31 2000-10-18 14:52:57 racke Exp $
+$Id: makecat.PL,v 1.32 2000-11-03 23:29:03 heins Exp $
 
 =head1 INTRODUCTION
 
