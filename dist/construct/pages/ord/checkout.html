@@ -147,7 +147,7 @@ They are shown in <FONT COLOR=__CONTRAST__>__CONTRAST__</FONT> below.</FONT>
       <td>
 
   <table width="455" border="0" cellspacing="0" cellpadding="0" bordercolor="#FF9900">
-		<TR bgcolor="#669999">
+		<TR bgcolor="#669999" VALIGN=TOP>
                         <td width="9%"><font color="#FFFFFF" __FFACE__ size="0"><b>Remove</b></font></td>
                         <td width="13%" align=center> 
                           <font color="#FFFFFF" size="2" __FFACE__><b><font size="1">SKU</font></b></font>
@@ -158,10 +158,10 @@ They are shown in <FONT COLOR=__CONTRAST__>__CONTRAST__</FONT> below.</FONT>
                         <td width="13%" align="center"> 
                           <font __FFACE__ size="1" color="#FFFFFF"><b>Quantity</b></font>
                         </td>
-                        <td width="19%" align="right"> 
+                        <td width="19%" align="center"> 
                           <b><font size="1" __FFACE__ color="#FFFFFF">Price</font></b>
                         </td>
-                        <td align="right" width="19%"> 
+                        <td align=center width="19%"> 
                           <font __FFACE__ size="1" color="#FFFFFF"><b>Extension</b></font>
                         </td>
 		</TR>
@@ -171,7 +171,7 @@ They are shown in <FONT COLOR=__CONTRAST__>__CONTRAST__</FONT> below.</FONT>
 [item-list]
 
 <TR bgcolor="[item-alternate 2]#CCCCCC[else]#CCCC99[/else][/item-alternate]">
-	<TD align=center valign=top>
+	<TD align=center>
 	<FONT SIZE="-2"><INPUT TYPE=checkbox NAME="[quantity-name]"
 			   onClick="this.form.action='[process-target]',
 			   			this.form.submit()"
@@ -192,42 +192,50 @@ They are shown in <FONT COLOR=__CONTRAST__>__CONTRAST__</FONT> below.</FONT>
 [seti count][item-data inventory quantity][/seti]
 [if scratch count eq 0]
 	<a href="[area stock-alert [item-code]]"><font __FFACE__ size="1" color="#FF0000">Back Ordered</FONT>
-[else]
-	<font __FFACE__ size="1">Sizes:</font> <FONT SIZE=1>[item-accessories size][item-accessories color]</FONT>
-[/else]
 [/if]
+	[if-item-data options o_enable]
+	[table-organize cols=4 table=' ' font="size=1" pretty=1]
+	[item-options td=1 label=1 bold=1]
+	[/table-organize]
+	[/if-item-data]
 	</TD>
-	<TD ALIGN=CENTER valign=top><font __FFACE__ size="1"><INPUT TYPE=text NAME="[quantity-name]" VALUE="[item-quantity]" SIZE=3></FONT></TD>
+	<TD ALIGN=CENTER><INPUT TYPE=text NAME="[quantity-name]" VALUE="[item-quantity]" SIZE=3></TD>
 	<TD ALIGN=RIGHT><font __FFACE__ size="1">[discount-price]</font>[if discount [item-code]]<BR><font __FFACE__ size="1" COLOR=__CONTRAST__>Item is discounted [item-discount]</FONT>[/if]</TD>
 	<TD ALIGN=RIGHT><font __FFACE__ size="1">[item-subtotal]</font></TD>
 </TR>
-<TR bgcolor="[item-alternate 2]#CCCCCC[else]#CCCC99[/else][/item-alternate]"><TD ALIGN=CENTER COLSPAN=6><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="2" BORDER="0"></td></TR>
+
+<!--SPACER-->
+<TR bgcolor="[item-alternate 2]#CCCCCC[else]#CCCC99[/else][/item-alternate]"> <TD ALIGN=CENTER COLSPAN=6><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="2" BORDER="0"></td></TR>
+<!--/SPACER-->
+
+[if session logged_in]
 <TR bgcolor="[item-alternate 2]#CCCCCC[else]#CCCC99[/else][/item-alternate]">
-<TD COLSPAN=2 align="right"><font __FFACE__ size="1" ><b>Address To Ship To:</b></font></td>
-<TD COLSPAN=4 align="left">&nbsp;
-[if !value shipto_[item-increment]][value name=shipto_[item-increment] set="primary" hide=1][/if]
-[loop search="
- ra=yes
- st=db
- sq=select * from ship_addresses where username = '[data session username]'
- ml=1000
- tf=entry
-"]
-	[on-match][data session username]
-		<SELECT NAME=shipto_[item-increment]>
-		<OPTION VALUE="primary" [selected shipto_[item-increment] primary]> Primary
-	[/on-match]
-	[list]
-		<OPTION VALUE="[loop-data ship_addresses code]" [selected shipto_[item-increment] [loop-data ship_addresses code]]> [loop-data ship_addresses addr_nick]
-	[/list]
-	[on-match]</SELECT>[/on-match]
-	[no-match]<OPTION TYPE=hidden NAME=shipto_[item-increment] VALUE="primary">Primary[/no-match]
-[/loop]
-		
-<a href="[area ship_addresses]"><font __FFACE__ size="1" >Add New Address</font></a>
+<TD ALIGN=CENTER COLSPAN=2 VALIGN=TOP>
+		<FONT SIZE=1>
+		[if value separate_addresses]
+		[page href="@@MV_PAGE@@" form="
+			separate_addresses=0
+			mv_action=return
+		"]Same shipping address</A><br>
+		[page href="ord/basket" form="edit_addresses=1"]Edit address</A><br>
+		[page href="ship_addresses" form="ui_return_to=@@MV_PAGE@@"]Add address</A>
+		[else]
+		[page href="@@MV_PAGE@@" form="
+			separate_addresses=1
+			mv_action=return
+		"]Separate shipping</A>
+		[/else]
+		[/if]
+		</FONT>
+</td>
+<TD COLSPAN=4 VALIGN=TOP>
+		[if value separate_addresses]
+		<FONT SIZE=1><PRE>[item-modifier mv_ad]</pre></FONT>
+		[/if]&nbsp;
 </td>
 </TR>
-<TR bgcolor="[item-alternate 2]#CCCCCC[else]#CCCC99[/else][/item-alternate]"><TD ALIGN=CENTER COLSPAN=6><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="4" BORDER="0"></td></TR>
+[/if]
+
 
 [/item-list]
 [/then]
@@ -246,25 +254,25 @@ They are shown in <FONT COLOR=__CONTRAST__>__CONTRAST__</FONT> below.</FONT>
 <table width="455" border="0" cellspacing="0" cellpadding="0" bordercolor="#FF9900">
 [if scratch order_discounted eq 1]
 <TR>
-	<TD ALIGN=RIGHT width="350"><font color="ff0000" face="sans-serif">Discount: </font></TD>
-	<TD ALIGN=RIGHT><font face="sans-serif">-[currency][scratch coupon_amount][/currency]</font></TD>
+	<TD ALIGN=RIGHT width="350"><font color="ff0000">Discount: </font></TD>
+	<TD ALIGN=RIGHT>-[currency][scratch coupon_amount][/currency]</TD>
 </TR>
 [/if]
 <TR>
-	<TD ALIGN=RIGHT width="350"><font face="sans-serif">Subtotal: </font></TD>
-	<TD ALIGN=RIGHT><font face="sans-serif">[subtotal]</font></TD>
+	<TD ALIGN=RIGHT width="350">Subtotal: </TD>
+	<TD ALIGN=RIGHT>[subtotal]</TD>
 </TR>
 <TR>
-	<TD ALIGN=RIGHT width="350"><font face="sans-serif">Sales Tax: </font></TD>
-	<TD ALIGN=RIGHT><font face="sans-serif">[salestax]</font></TD>
+	<TD ALIGN=RIGHT width="350">Sales Tax: </TD>
+	<TD ALIGN=RIGHT>[salestax]</TD>
 </TR>
 <TR>
-	<TD ALIGN=RIGHT width="350"><font face="sans-serif">Shipping: </font></TD>
-	<TD ALIGN=RIGHT><font face="sans-serif">[shipping]</font></TD>
+	<TD ALIGN=RIGHT width="350">Shipping: </TD>
+	<TD ALIGN=RIGHT>[shipping]</TD>
 </TR>
 <TR>
-	<TD ALIGN=RIGHT width="350"><font face="sans-serif">TOTAL: </font></TD>
-	<TD ALIGN=RIGHT><font face="sans-serif">[total-cost]</font></TD>
+	<TD ALIGN=RIGHT width="350">TOTAL: </TD>
+	<TD ALIGN=RIGHT>[total-cost]</TD>
 </TR>
 
 </table>
@@ -288,6 +296,18 @@ They are shown in <FONT COLOR=__CONTRAST__>__CONTRAST__</FONT> below.</FONT>
                                 <td bgcolor="#0099FF">&nbsp;</td>
                                 <td bgcolor="#0099FF">&nbsp;</td>
                               </tr>
+							  [if scratch dealer]
+                              <tr> 
+                                <td align="right"><font __FFACE__ size="1">[error name=address1 std_label=Company required=1]</font>
+                                </td>
+                                <td align="left"><b><font __FFACE__ size="1"> 
+                                    <INPUT TYPE=text NAME=company VALUE="[value company]" size="20" maxlength="40">
+                                    </font></b>
+                                </td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                              </tr>
+							  [/if]
                               <tr> 
                                 <td align=right> 
                                   <font __FFACE__ size="1">[error name=fname std_label="First Name" required=1]</font>
@@ -301,34 +321,23 @@ They are shown in <FONT COLOR=__CONTRAST__>__CONTRAST__</FONT> below.</FONT>
                                 <td align="left"> <INPUT TYPE=text NAME=lname VALUE="[value lname]" size="20"></td>
                               </tr>
                               <tr> 
-							  [if scratch dealer]
-                                <td align="right"><font __FFACE__ size="1">[error name=company std_label=Company required=1]</font>
-							  [else]
-                                <td align="right"><font __FFACE__ size="1">Company</font>
-							  [/else]
-							  [/if]
-                                </td>
-                                <td align="left"><b><font __FFACE__ size="1"> 
-                                    <INPUT TYPE=text NAME=company VALUE="[value company]" size="20" maxlength="40">
-                                    </font></b>
-                                </td>
-                                <td>&nbsp;</td>
-                                <td>&nbsp;</td>
-                              </tr>
-                              <tr> 
                                 <td align="right"><font __FFACE__ size="1">[error name=address1 std_label=Address required=1]</font>
                                 </td>
-                                <td align="left" colspan=3><b><font __FFACE__ size="1"> 
-                                    <INPUT TYPE=text NAME=address1 VALUE="[value address1]" size="64" maxlength="64">
+                                <td align="left"><b><font __FFACE__ size="1"> 
+                                    <INPUT TYPE=text NAME=address1 VALUE="[value address1]" size="20" maxlength="40">
                                     </font></b>
                                 </td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
                               </tr>
                               <tr> 
                                 <td>&nbsp;</td>
-                                <td align="left" colspan=3><b><font __FFACE__ size="1"> 
-                                    <INPUT TYPE=text NAME=address2 VALUE="[value address2]" size="64" maxlength="64">
+                                <td align="left"><b><font __FFACE__ size="1"> 
+                                    <INPUT TYPE=text NAME=address2 VALUE="[value address2]" size="20" maxlength="40">
                                     </font></b>
                                 </td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
                               </tr>
                               <tr> 
                                 <td align="right"><font __FFACE__ size="1">[error name=city std_label="City" required=1]</font>
@@ -382,7 +391,7 @@ They are shown in <FONT COLOR=__CONTRAST__>__CONTRAST__</FONT> below.</FONT>
                               <tr> 
                                 <td align="right"><b><font __FFACE__ size="1">Country</font></b>
                                 </td>
-                                <td colspan="3"> 
+                                <td colspan="2"> 
 		[if value country =~ /(^$|US|CA)/]
 		<SELECT NAME=country onChange="this.form.submit()">
 			<OPTION VALUE="US"> United States
@@ -404,8 +413,9 @@ They are shown in <FONT COLOR=__CONTRAST__>__CONTRAST__</FONT> below.</FONT>
 			</SELECT>
 		[/else]
 		[/if]
-		<font __FFACE__ size="1">(will update display)</font>
                                 </td>
+                                <td colspan="2"> <font __FFACE__ size="1">(will 
+                                  update display)</font></td>
                               </tr>
                               <tr> 
                                 <td align="right"><font __FFACE__ size="1">[error name=phone_day std_label="Daytime Phone" required=1]</font>
@@ -533,6 +543,16 @@ They are shown in <FONT COLOR=__CONTRAST__>__CONTRAST__</FONT> below.</FONT>
                                 <td bgcolor="#0099FF">&nbsp;</td>
                               </tr>
                               <tr> 
+                                <td align="right"><b><font __FFACE__ size="1">Company</font></b>
+                                </td>
+                                <td align="left"><b><font __FFACE__ size="1"> 
+                                    <INPUT TYPE=text NAME=b_company VALUE="[value b_company]" size="20" maxlength="20">
+                                    </font></b>
+                                </td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                              </tr>
+                              <tr> 
                                 <td align="right"><b><font __FFACE__ size="1">First 
                                     Name</font></b>
                                 </td>
@@ -547,29 +567,23 @@ They are shown in <FONT COLOR=__CONTRAST__>__CONTRAST__</FONT> below.</FONT>
                                 </td>
                               </tr>
                               <tr> 
-                                <td align="right"><b><font __FFACE__ size="1">Company</font></b>
-                                </td>
-                                <td align="left"><b><font __FFACE__ size="1"> 
-                                    <INPUT TYPE=text NAME=b_company VALUE="[value b_company]" size="20" maxlength="20">
-                                    </font></b>
-                                </td>
-                                <td>&nbsp;</td>
-                                <td>&nbsp;</td>
-                              </tr>
-                              <tr> 
                                 <td align="right"><b><font __FFACE__ size="1">Address</font></b>
                                 </td>
-                                <td align="left" colspan=3><b><font __FFACE__ size="1"> 
-                                    <INPUT TYPE=text NAME=b_address1 VALUE="[value b_address1]" size="64" maxlength="64">
+                                <td align="left"><b><font __FFACE__ size="1"> 
+                                    <INPUT TYPE=text NAME=b_address1 VALUE="[value b_address1]" size="20" maxlength="20">
                                     </font></b>
                                 </td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
                               </tr>
                               <tr> 
                                 <td>&nbsp;</td>
-                                <td align="left" colspan=3><b><font __FFACE__ size="1"> 
-                                    <INPUT TYPE=text NAME=b_address2 VALUE="[value b_address2]" size="64" maxlength="64">
+                                <td align="left"><b><font __FFACE__ size="1"> 
+                                    <INPUT TYPE=text NAME=b_address2 VALUE="[value b_address2]" size="20">
                                     </font></b>
                                 </td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
                               </tr>
                               <tr> 
                                 <td align="right"><b><font __FFACE__ size="1">City</font></b>
