@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.13.4.7 2001-02-10 01:41:41 racke Exp $
+# $Id: Data.pm,v 1.13.4.8 2001-09-11 11:00:08 racke Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -40,12 +40,14 @@ db_column_exists
 export_database
 import_database
 increment_field
+item_category
 item_description
 item_field
 item_price
 item_subtotal
 sql_query
 open_database
+product_category
 product_code_exists_ref
 product_code_exists_tag
 product_description
@@ -171,6 +173,12 @@ sub product_price {
 		},
 		$q
 	);
+}
+
+sub product_category {
+	my ($code, $base) = @_;
+    return "" unless $base = product_code_exists_ref($code, $base || undef);
+    return database_field($base, $code, $Vend::Cfg->{CategoryField});
 }
 
 sub product_description {
@@ -1403,6 +1411,12 @@ sub item_price {
 		if ! $quantity and exists $item->{mv_cache_price};
 #::logDebug("item_price final: $price");
 	return $price;
+}
+
+sub item_category {
+	my $item = shift;
+	my $base = $Vend::Database{$item->{mv_ib}} || $Products;
+	return database_field($base, $item->{code}, $Vend::Cfg->{CategoryField});
 }
 
 sub item_description {
