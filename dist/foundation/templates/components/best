@@ -9,7 +9,7 @@ banner:
 	code: banner
 	type: text
 	width: 40
-	default: Best Sellers...
+	default: [L]Best sellers...[/L]
 
 toprow_css:
 	advanced: 1
@@ -39,7 +39,7 @@ cols:
 <table width="95%" align=center>
 <tr> 
   <td class="categorybar"> 
-    [control banner Best sellers...]
+    [control name=banner default="[L]Best sellers...[/L]"]
   </td>
 </tr>
 <tr>
@@ -76,12 +76,12 @@ cols:
 		[/if-loop-field]
 		<tr> 
 			<td align="center" colspan="2">
-				Our Price: <b>[loop-price]</b>
+				[L]Our Price[/L]: <b>[loop-price]</b>
 			</td>
 		</tr>
 		<tr> 
 			<td align="center">
-				<a href="[area [loop-code]]">More Info</a>&nbsp;
+				<a href="[area [loop-code]]">[L]More Info[/L]</a>&nbsp;
 			</td>
 			<td align="center">
 				[if-loop-data options o_modular]
@@ -89,7 +89,7 @@ cols:
 				[else][order [loop-code]]
 				[/else]
 				[/if-loop-data]
-				<img src="__THEME_IMG_DIR__buynow.gif" border="0" alt="buy now"></A>
+				<img src="__THEME_IMG_DIR__buynow.gif" border="0" alt="[L]buy now[/L]"></A>
 			</td>
 		</tr>
 		</table>

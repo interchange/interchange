@@ -16,7 +16,7 @@ upsell_in_cart:
 [/comment]
 <!-- BEGIN COMPONENT [control component cart] -->
 
-<br><b>Your Current Shopping Cart:</b><br>
+<br><b>[L]Your Current Shopping Cart[/L]:</b><br>
 
 <table width="95%" cellspacing="0">
 <tr>
@@ -30,8 +30,7 @@ upsell_in_cart:
 	[/calc]
 	[if scratch have_cookie]
 	[elsif scratch tried]
-    		You must have cookies set to leave the basket. Check out now or forever
-    		lose your shopping cart.
+    		[L CART_MSG1]You must have cookies set to leave the basket. Check out now or forever lose your shopping cart.[/L]
 	[/elsif]
 	[else]
 		[set tried]1[/set]
@@ -51,12 +50,12 @@ upsell_in_cart:
       		<td>
         		<table cellspacing="0" cellpadding="4" border="0">
 			<TR>
-          			<td class="contentbar2"><b>&nbsp;Remove</b></td>
-			        <td class="contentbar2" align="center"><b>SKU</b></td>
-          			<td class="contentbar2"><b>Description</b></td>
-          			<td class="contentbar2"><b>Quantity</b></td>
-          			<td class="contentbar2" align="center"><b>Price</b></td>
-          			<td class="contentbar2"><b>Extension&nbsp;</b></td>
+          			<td class="contentbar2"><b>&nbsp;[L]Remove[/L]</b></td>
+			        <td class="contentbar2" align="center"><b>[L]SKU[/L]</b></td>
+          			<td class="contentbar2"><b>[L]Description[/L]</b></td>
+          			<td class="contentbar2"><b>[L]Quantity[/L]</b></td>
+          			<td class="contentbar2" align="center"><b>[L]Price[/L]</b></td>
+          			<td class="contentbar2"><b>[L]Extension[/L]&nbsp;</b></td>
 			</TR>
 			<TBODY>
 	
@@ -98,7 +97,7 @@ upsell_in_cart:
 	[if scratch dealer]
 	[if-item-data pricing sku]
 	    <BR>[page quantity [item-code]]
-	    QUANTITY PRICING</A>
+	    [L]QUANTITY PRICING[/L]</A>
 	[/if-item-data]
 	[/if]
 	[if-item-field weight]
@@ -107,13 +106,13 @@ upsell_in_cart:
 	[if-item-param mv_min_under]
 		<br>
 		<span style="color: __CONTRAST__; font-size: 8pt">
-		Minimum order quantity of [item-param mv_min_quantity] enforced.
+		[msg arg.0="[item-param mv_min_quantity]"]Minimum order quantity of %s enforced.[/msg]
 		</span>
 	[/if-item-param]
 	[if-item-param mv_max_over]
 		<br>
 		<span style="color: __CONTRAST__; font-size: 8pt">
-		Maximum order quantity of [item-param mv_max_quantity] enforced.
+		[msg arg.0="[item-param mv_max_quantity]"]Maximum order quantity of %s enforced.[/msg]
 		</span>
 	[/if-item-param]
 
@@ -133,7 +132,7 @@ upsell_in_cart:
 		my $out = <<'EOF';
 	    <TABLE>
 	    <TR class="contentbar2">
-              <TD>Customers who bought this item also bought:</TD>
+              <TD>[L]Customers who bought this item also bought[/L]:</TD>
 	    </TR>
             <TR class="[item-calc]$row_class || 'contentbar1'[/item-calc]">
 	      <TD>
@@ -157,7 +156,7 @@ EOF
 	<TABLE CELLPADDING=0 CELLSPACING=0>
 	<TR class="contentbar2">
 		<TD class="contentbar1">
-			Other items you may like:
+			[L]Other items you may like[/L]:
 	      	</TD>
 	      	<TD class="contentbar1"></TD>
 	</TR>
@@ -190,7 +189,7 @@ EOF
 [input-filter name="[quantity-name]" op="nullselect digits_dot"][/input-filter]
 
 [if-item-field gift_cert]
-	  <TD ALIGN=CENTER><small>Amount of gift:</small></TD>
+	  <TD ALIGN=CENTER><small>[L]Amount of gift[/L]:</small></TD>
 	  <TD ALIGN=CENTER><INPUT TYPE=text NAME="[quantity-name]" VALUE="[item-quantity]" SIZE=7></TD>
 	  <TD ALIGN=right>
 	    [item-subtotal]
@@ -201,15 +200,15 @@ EOF
 	  </TD>
 	[if discount [item-code]]
 	  <TD ALIGN=right>
-	    Regular price <STRIKE>[item-price]</STRIKE>
+	    [L]Regular price[/L] <STRIKE>[item-price]</STRIKE>
 	    <BR>
-	    <B>Your price: [discount-price]<br>
-	    You save: [item-difference]
+	    <B>[L]Your price[/L]: [discount-price]<br>
+	    [L]You save[/L]: [item-difference]
 	  </TD>
 	  <TD ALIGN=right>
 	    <strike>[item-subtotal]</strike><br>
 	    <B>[item-discount-subtotal]<BR>
-	    You save: [item-discount]</b>
+	    [L]You save[/L]: [item-discount]</b>
 	  </TD>
 	[else]
 	  <TD ALIGN=right>[item-price]</TD>
@@ -244,7 +243,7 @@ EOF
 	    {textarea}
 	    </SMALL>
 	  </TD>
-	  <TD><INPUT TYPE=submit VALUE=Save></TD>
+	  <TD><INPUT TYPE=submit VALUE=[L]Save[/L]></TD>
 [else]
 	  <TD COLSPAN=2>
 	    <SMALL>Retrieve:<BR>
@@ -273,14 +272,14 @@ EOF
 		[page href="@@MV_PAGE@@" form="
 			separate_addresses=0
 			mv_action=return
-		"]Same shipping address</A>&nbsp;&nbsp;&nbsp;
-		[page href="@@MV_PAGE@@" form="edit_addresses=1"]<small>Edit address</small></A>&nbsp;&nbsp;&nbsp;
-		[page href="ship_addresses" form="ui_return_to=@@MV_PAGE@@"]<small>Add address</small></A>
+		"][L]Same shipping address[/L]</A>&nbsp;&nbsp;&nbsp;
+		[page href="@@MV_PAGE@@" form="edit_addresses=1"]<small>[L]Edit address[/L]</small></A>&nbsp;&nbsp;&nbsp;
+		[page href="ship_addresses" form="ui_return_to=@@MV_PAGE@@"]<small>[L]Add address[/L]</small></A>
 		[else]
 		[page href="@@MV_PAGE@@" form="
 			separate_addresses=1
 			mv_action=return
-		"]Separate shipping addresses</A>
+		"][L]Separate shipping addresses[/L]</A>
 		[/else]
 		[/if]
 	  </td>
@@ -294,7 +293,7 @@ EOF
 
 	<TR>
 	  <TD ALIGN=CENTER COLSPAN=6 class="contentbar1">
-	    <b>No items at the moment.</b>
+	    <b>[L]No items at the moment.[/L]</b>
 	  </TD>
 	</TR>
 
@@ -321,7 +320,7 @@ EOF
 	  </td>
 	  <td align="center" valign="center"> 
     		[button
-     		  text="Check Out"
+     		  text="[L]Check Out[/L]"
 		  src="__THEME__/checkout_button.gif"
 		  hidetext=1
 		  form=basket
@@ -333,7 +332,7 @@ EOF
 	  <td align="center">
 	    [if type=explicit compare="[control continue_shopping]"]
     	      [button
-		text="Continue shopping"
+		text="[L]Continue shopping[/L]"
      		src="continue_shopping.gif"
 		hidetext=1
 		form=basket
@@ -347,13 +346,13 @@ EOF
             <table cellspacing="0" cellpadding="4" border="0">
             <tr> 
               <td align=right class="contentbar1">
-                Shipping Weight:
+                [L]Shipping Weight[/L]:
               </td>
               <td class="contentbar2" align="right">[summary format="%s" total=1]</td>
             </tr>
             <tr>
               <td align="right" class="contentbar1">
-                <b>Subtotal:</b>
+                <b>[L]Subtotal[/L]:</b>
               </td>
               <td class="contentbar2" align=right><b>[subtotal]</b></td>
             </tr>
@@ -377,32 +376,32 @@ EOF
 [if session logged_in][then]
   [if value save_cart eq 'recurring']
     	    <FORM ACTION="[process-target]" METHOD=POST>
-    	    To save this recurring order, give it a nickname, then press 'Save Cart'.<br>
-    	    Nickname:
+    	    [L]To save this recurring order, give it a nickname, then press 'Save Cart'.[/L]<br>
+    	    [L]Nickname[/L]:
     	    <INPUT TYPE=TEXT NAME="c_nickname" SIZE=11 VALUE="[scratch just_nickname]">
     	    <input type=hidden name=mv_session_id value="[data session id]">
-			<INPUT TYPE=HIDDEN NAME="c_recurring" VALUE="1">
+	    <INPUT TYPE=HIDDEN NAME="c_recurring" VALUE="1">
     	    <INPUT TYPE=HIDDEN NAME="save_cart" VALUE="recurring">
     	    <INPUT TYPE=HIDDEN NAME="mv_todo" VALUE="return">
     	    <INPUT TYPE=HIDDEN NAME="mv_check" VALUE="Save Cart">
-    	    <INPUT TYPE=SUBMIT VALUE="Save Cart">
+    	    <INPUT TYPE=SUBMIT VALUE="[L]Save Cart[/L]">
     	    </FORM>
   [elsif value save_cart eq 'cart']
     	    <FORM ACTION="[process-target]" METHOD=POST>
-    	    To save this cart, give it a nickname, then press 'Save Cart'.<br>
-    	    Nickname:
+    	    [L]To save this cart, give it a nickname, then press 'Save Cart'.[/L]<br>
+    	    [L]Nickname[/L]:
     	    <INPUT TYPE=TEXT NAME="c_nickname" SIZE=11 VALUE="[scratch just_nickname]">
     	    <INPUT TYPE=HIDDEN NAME="c_recurring" VALUE="0">
     	    <INPUT TYPE=HIDDEN NAME="save_cart" VALUE="cart">
     	    <INPUT TYPE=HIDDEN NAME="mv_todo" VALUE="return">
     	    <INPUT TYPE=HIDDEN NAME="mv_check" VALUE="Save Cart">
-			<input type=hidden name=mv_session_id vlaue="[data session id]">
-    	    <INPUT TYPE=SUBMIT VALUE="Save Cart">
+	    <input type=hidden name=mv_session_id vlaue="[data session id]">
+    	    <INPUT TYPE=SUBMIT VALUE="[L]Save Cart[/L]">
 	    </FORM>
   [/elsif]
   [else]
       [button
-          text="Save This Cart"
+          text="[L]Save This Cart[/L]"
           src="__THEME__/savecart.gif"
           extra="class=contentbar2"
           hidetext=1
@@ -414,7 +413,7 @@ EOF
           save_cart=cart
       [/button]
       [button
-          text="Set As Recurring Order"
+          text="[L]Set As Recurring Order[/L]"
           src="__THEME__/saverecur.gif"
           extra="class=contentbar2"
           hidetext=1

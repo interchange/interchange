@@ -17,12 +17,12 @@ ui_label: Small cart for left/right display
       <table border="0" cellspacing="0" cellpadding="2">
       <tr>
         <td colspan="2" align="center" class="categorybar">
-	  <small>Cart Contents</small>
+	  <small>[L]Cart Contents[/L]</small>
 	</td>
       </tr>
       <tr>
-	<td align="left" class="menubar">Description</td>
-	<td align="right" class="menubar">Quantity</td>
+	<td align="left" class="menubar">[L]Description[/L]</td>
+	<td align="right" class="menubar">[L]Quantity[/L]</td>
       </tr>
 [item-list]
 	[item-next][item-modifier mv_si][/item-next]

@@ -8,7 +8,7 @@ ui_label: Cross-sell or specific feature
 
 banner:
 	code: banner
-	default: See also...
+	default: [L]See also...[/L]
 	label: Top row banner
 	type: text
 	width: 40
@@ -66,7 +66,7 @@ random:
 <table width="[control width 95%]" align="[control table_align center]">
 <tr> 
   <td class="categorybar">
-    &nbsp;<b>[control banner Best sellers...]</b>
+    &nbsp;<b>[control name=banner default="[L]See also...[/L]"]</b>
   </td>
 </tr>
 <tr>
@@ -115,12 +115,12 @@ random:
 				[/else]
 				[/if-loop-data]
   		<img src="__THEME_IMG_DIR__buynow.gif" border="0" align="top"></a>
-	        <a href="[area [loop-code]]">More Info</a>
+	        <a href="[area [loop-code]]">[L]More Info[/L]</a>
               </td>
 	    </tr>
 	    <tr> 
 	      <td align="left">
-		Our Price: <B>[loop-price]</B>
+		[L]Our Price[/L]: <B>[loop-price]</B>
 	      </td>
 	    </tr>
 	    </table>

@@ -40,7 +40,7 @@ discount_css:
 <!-- see if was published -->
 <br>
 <!--Change some content-->
-Welcome Affiliate Program Visitor:
+[L]Welcome Affiliate Program Visitor[/L]:
 
 <br>
 
@@ -58,7 +58,7 @@ Welcome Affiliate Program Visitor:
 					return 0;
 					`]
 [currency][scratch coupon_amount][/currency]
-Off Coupon Active
+[L]Off Coupon Active[/L]
 [/if]
 
 [/if]

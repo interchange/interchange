@@ -107,14 +107,14 @@ imagedirurl:
     <td valign="top" align="right" colspan=3>
 	<a href="[history-scan]&expandall=1">
 	[scratch showtoggleon]
-	<font class="categorybar"><b>Show All Subcategories</b></a>
+	<font class="categorybar"><b>[L]Show All Subcategories[/L]</b></a>
 </tr>
 <tr>
     <td valign="top" align="right" colspan=3>
 	<a href="[history-scan]&collapseall=1">
 	[scratch showtoggleoff]
 	<font class="categorybar">
-	<b>Collapse All Categories</b></a>
+	<b>[L]Collapse All Categories[/L]</b></a>
     </td>
 </tr>
 
