@@ -1,6 +1,7 @@
 various stuff
 =============
 
+write wrappers for the binaries
 include UI only if interchange-ui is installed
 
 documentation
