@@ -1,6 +1,6 @@
 # Session.pm - Interchange Sessions
 #
-# $Id: Session.pm,v 1.7.2.2 2000-12-17 07:26:37 heins Exp $
+# $Id: Session.pm,v 1.7.2.3 2001-02-26 00:55:33 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -30,7 +30,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.7.2.2 $, 10);
+$VERSION = substr(q$Revision: 1.7.2.3 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -39,6 +39,7 @@ $VERSION = substr(q$Revision: 1.7.2.2 $, 10);
 check_save
 dump_sessions
 expire_sessions
+close_session
 get_session
 init_session
 new_session
@@ -138,10 +139,19 @@ NFS => [ 1, 0, sub {
 # SESSIONS implemented using DBM
 
 sub get_session {
+	my $seed = shift;
+
+	if($seed and ! $Vend::SessionID) {
+#::logDebug("received seed=$seed");
+		$Vend::SessionID = $seed;
+	}
+	$Vend::SessionName = session_name() if ! $Vend::SessionName;
+#::logDebug("session name now $Vend::SessionName");
+
 	$Vend::HaveSession = 0;
 	open_session();
 	my $new;
-	$new = read_session() unless $Vend::ExternalProgram;
+	$new = read_session($seed) unless $Vend::ExternalProgram;
 	unless($File_sessions) {
 		lock_session();
 		close_session();
@@ -151,6 +161,7 @@ sub get_session {
 }
 
 sub put_session {
+	return unless $Vend::HaveSession;
 	unless($File_sessions) {
 		open_session();
 		write_session();
@@ -234,13 +245,15 @@ sub new_session {
 }
 
 sub close_session {
-#::logDebug ("close session id=$Vend::SessionID  name=$Vend::SessionName\n");
-	return 1 if ! defined $Vend::SessionOpen;
+#::logDebug ("try to close session id=$Vend::SessionID  name=$Vend::SessionName");
+	return 0 if ! defined $Vend::SessionOpen;
 
 	unless($DB_sessions) {
+#::logDebug ("close session id=$Vend::SessionID  name=$Vend::SessionName");
 		undef $DB_object;
 		untie %Vend::SessionDBM
 			or die "Could not close $Vend::Cfg->{SessionDatabase}: $!\n";
+		undef $Vend::SessionOpen;
 	}
 	
 	return 1 unless $Lock_sessions;
@@ -250,6 +263,7 @@ sub close_session {
     close(Vend::SessionLock)
 		or die "Could not close '$Vend::Cfg->{SessionLockFile}': $!\n";
 	undef $Vend::SessionOpen;
+	return 1;
 }
 
 sub write_session {
@@ -334,6 +348,7 @@ EOF
 }
 
 sub read_session {
+	my $seed = shift;
     my($s);
 
 #::logDebug ("read session id=$Vend::SessionID  name=$Vend::SessionName\n");
@@ -352,7 +367,7 @@ sub read_session {
 		};
 		
 #::logDebug ("Session:\n$s\n");
-	return new_session() unless $s;
+	return new_session($seed) unless $s;
     $Vend::Session = ref $s ? $s : evalr($s);
     die "Could not eval '$s' from session dbm: $@\n" if $@;
 
@@ -381,10 +396,10 @@ sub session_name {
 	if(defined $CGI::user and $CGI::user) {
 		$host = escape_chars($CGI::user);
 	}
-	elsif(defined $CGI::cookieuser) {
+	elsif($CGI::cookieuser) {
 		$host = $CGI::cookieuser;
 	}
-	elsif(defined $CGI::cookiehost) {
+	elsif($CGI::cookiehost) {
 		$host = $CGI::cookiehost;
 	}
 	else {
