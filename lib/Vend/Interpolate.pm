@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.47 2001-04-13 10:22:11 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.48 2001-04-13 21:05:59 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.47 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.48 $, 10);
 
 @EXPORT = qw (
 
@@ -3167,10 +3167,11 @@ sub form_link {
 		$Vend::Session->{$aloc}{$href} = $opt->{alias};
 	}
 
-	my $base = ! $opt->{secure} ? ($Vend::Cfg->{VendURL}) : $Vend::Cfg->{SecureURL};
 
 	$href = 'process' unless $href;
 	$href =~ s:^/+::;
+	$opt->{secure} = 1 if exists $Vend::Cfg->{AlwaysSecure}{$href};
+	my $base = ! $opt->{secure} ? ($Vend::Cfg->{VendURL}) : $Vend::Cfg->{SecureURL};
 	$href = "$base/$href"     unless $href =~ /^\w+:/;
 
 	my $extra = '';
