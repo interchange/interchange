@@ -11,8 +11,6 @@ SPECS/interchange.spec
 UPGRADE_FROM_MV3
 WHATSNEW
 configure
-dist/build/makecat.redhat
-dist/build/makedirs.redhat
 dist/catalog_after.cfg
 dist/catalog_before.cfg
 dist/construct/backup/.empty
@@ -596,6 +594,9 @@ eg/globalsub/signio
 eg/grant.sql
 eg/ifdef
 eg/make_gnumeric.sh
+eg/usertag/benchmark
+eg/usertag/sleep
+eg/usertag/table_organize
 extensions/quickbooks/README
 extensions/quickbooks/etc/trans_quickbooks
 extensions/quickbooks/ic_qb.pod
