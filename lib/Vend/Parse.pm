@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12.2.26 2001-06-29 02:19:25 jon Exp $
+# $Id: Parse.pm,v 1.12.2.27 2001-06-29 03:20:56 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,8 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12.2.26 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.27 $, 10);
+
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -71,6 +72,7 @@ my %PosNumber =	( qw!
 				ecml             2
 				either           0
 				error            1
+				warnings         1
 				export           1
 				field            2
 				file             2
@@ -156,6 +158,7 @@ my %Order =	(
 				ecml			=> [qw( name function )],
 				either		    => [qw( )],
                 error           => [qw( name )],
+                warnings        => [qw( message )],
 				export			=> [qw( table )],
 				field			=> [qw( name code )],
 				file			=> [qw( name type )],
@@ -245,6 +248,7 @@ my %addAttr = (
 					default			1
 					ecml            1
 					error           1
+					warnings        1
 					export          1
 					flag            1
 					harness         1
@@ -491,6 +495,7 @@ my %Routine = (
 											return;
 										},
 				error			=> \&Vend::Interpolate::tag_error,
+				warnings		=> \&Vend::Interpolate::tag_warnings,
 				export			=> \&Vend::Interpolate::export,
 				field			=> \&Vend::Data::product_field,
 				file			=> \&Vend::Interpolate::tag_file,
@@ -747,6 +752,7 @@ my %Alias = (
 						url				urldecode
 						urld			urldecode
 						href			area
+						warning			warnings
 						shipping_description	shipping_desc
 						process_target	process
 				),

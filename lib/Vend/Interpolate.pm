@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.85 2001-06-29 02:19:25 jon Exp $
+# $Id: Interpolate.pm,v 1.40.2.86 2001-06-29 03:20:56 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.85 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.86 $, 10);
 
 @EXPORT = qw (
 
@@ -1904,8 +1904,9 @@ sub tag_options {
 	my @out;
 
 	my @rf;
-	if($record->{o_matrix}) {
+	if($record->{o_matrix} and ! $record->{o_modular}) {
 #::logDebug("matrix options, item='$item'");
+#code	o_master	sku	o_group	o_sort	phantom	o_enable	o_matrix	o_modular	o_default	o_label	o_value	o_widget	o_footer	o_header	o_height	o_width	description	price	wholesale	differential	weight	volume	mv_shipmode	o_exclude	o_include
 		for(qw/code o_enable o_group description price weight volume differential o_widget/) {
 			push @rf, ($map{$_} || $_);
 		}
@@ -1944,6 +1945,76 @@ sub tag_options {
 							$item || undef,
 						);
 		$out .= "</td>" if $opt->{td};
+	}
+	elsif($record->{o_matrix}) {
+#::logDebug("matrix options, simple selector");
+		for(qw/code o_enable o_group o_value o_label o_widget price/) {
+			push @rf, ($map{$_} || $_);
+		}
+		my @def;
+		if($item->{code}) {
+			@def = split /-/, $item->{code};
+		}
+		my $fsel = $map{sku} || 'sku';
+		my $rsel = $db->quote($sku, $fsel);
+		my $rsort = $map{o_sort} || 'o_sort';
+		
+		my $q = "SELECT " .
+				join (",", @rf) .
+				" FROM $table where $fsel = $rsel ORDER BY $rsort";
+		my $ary = $db->query($q); 
+		my $ref;
+		my $i = 0;
+		foreach $ref (@$ary) {
+
+			next unless $ref->[3];
+			$i++;
+
+			# skip unless o_value
+			my $phony = { %$item };
+			$phony->{mv_sku} = $def[$i];
+
+			if ($opt->{label}) {
+				$ref->[4] = "<B>$ref->[4]</b>" if $opt->{bold};
+				push @out, $ref->[4];
+			}
+			push @out, tag_accessories(
+							$sku,
+							'',
+							{ 
+								passed => $ref->[3],
+								type => $opt->{type} || $ref->[5] || 'select',
+								attribute => 'mv_sku',
+								price_data => $ref->[6],
+								price => $opt->{price},
+								item => $phony,
+							},
+							$phony || undef,
+						);
+		}
+		
+		my $begin = tag_accessories(
+							$sku,
+							'',
+							{ 
+								type => 'hidden',
+								attribute => 'mv_sku',
+								item => $item,
+								default => $sku,
+							},
+							$item || undef,
+						);
+		if($opt->{td}) {
+			for(@out) {
+				$out .= "<td>$begin$_</td>";
+				$begin = '';
+			}
+		}
+		else {
+			$opt->{joiner} = '<BR>' if ! $opt->{joiner};
+			$out .= $begin;
+			$out .= join $opt->{joiner}, @out;
+		}
 	}
 	elsif($record->{o_modular}) {
 #::logDebug("modular options");
@@ -6186,6 +6257,36 @@ sub set_error {
 	
 	$ref->{$var} .= $error;
 	return tag_error($var, $opt);
+}
+
+sub push_warning {
+	$Vend::Session->{warnings} = [$Vend::Session->{warnings}]
+		if ! ref $Vend::Session->{warnings};
+	push @{$Vend::Session->{warnings}}, errmsg(@_);
+	return;
+}
+
+sub tag_warnings {
+	my($message, $opt) = @_;
+
+	if($message) {
+		my $param = ref $opt->{param} ? $opt->{param} : [$opt->{param}];
+		push_warning($opt->{message}, @$param);
+		return unless $opt->{show};
+	}
+
+	return unless $Vend::Session->{warnings};
+
+	my $out = $opt->{header} || "";
+	$out .= '<ul><li>' if $opt->{auto};
+	if(! length($opt->{joiner})) {
+		$opt->{joiner} = $opt->{auto} ? '<li>' : "\n";
+	}
+	$out .= join $opt->{joiner}, @{$Vend::Session->{warnings}};
+	$out .= '</ul>' if $opt->{auto};
+	$out .= $opt->{footer} if length($opt->{footer});
+	delete $Vend::Session->{warnings} unless $opt->{keep};
+	return $out;
 }
 
 sub tag_error {
