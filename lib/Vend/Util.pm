@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.18 2001-03-31 15:34:44 heins Exp $
+# $Id: Util.pm,v 1.14.2.19 2001-03-31 17:28:35 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -79,7 +79,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.18 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.19 $, 10);
 
 BEGIN {
 	eval {
@@ -1172,7 +1172,7 @@ if ($Global::LockType eq 'none') {
     $unlock_function = sub {1};
 }
 elsif ($Global::LockType =~ /fcntl/i) {
-    ::logDebug("using fcntl(2) locking");
+    logDebug("using fcntl(2) locking");
     $lock_function = \&flock_lock;
     $unlock_function = \&flock_unlock;
 }
@@ -1613,9 +1613,14 @@ sub logError {
 # Here for convenience in calls
 sub set_cookie {
     my ($name, $value, $expire) = @_;
-    $::Instance->{Cookies} = []
-        if ! $::Instance->{Cookies};
-    @{$::Instance->{Cookies}} = [$name, $value, $expire];
+	if (! $::Instance->{Cookies}) {
+		$::Instance->{Cookies} = []
+	}
+	else {
+		@{$::Instance->{Cookies}} =
+			grep $_->[0] ne $name, @{$::Instance->{Cookies}};
+	}
+    push @{$::Instance->{Cookies}}, [$name, $value, $expire];
     return;
 }
 

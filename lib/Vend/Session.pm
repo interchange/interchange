@@ -1,6 +1,6 @@
 # Session.pm - Interchange Sessions
 #
-# $Id: Session.pm,v 1.7.2.5 2001-03-31 14:14:49 heins Exp $
+# $Id: Session.pm,v 1.7.2.7 2001-03-31 17:28:35 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -30,7 +30,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.7.2.5 $, 10);
+$VERSION = substr(q$Revision: 1.7.2.7 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -214,7 +214,7 @@ sub new_session {
     my($seed) = @_;
     my($name);
 
-#::logDebug ("new session id=$Vend::SessionID  name=$Vend::SessionName\n");
+#::logDebug ("new session id=$Vend::SessionID  name=$Vend::SessionName seed=$seed");
 	open_session();
     for (;;) {
 		$Vend::SessionID = random_string() unless defined $seed;
