@@ -22,7 +22,7 @@ at a later date.
 </td></tr></table>
 <p>
 [table-editor 
-	table=variable
+	
 	left_width=180
 	table_width="500"
 	wizard=1
@@ -38,15 +38,7 @@ at a later date.
 	mv_prevpage="[either][cgi ui_prevpage][or]__UI_BASE__/wizard/step_ship[/either]"
 	hidden.ui_return_to="__UI_BASE__/wizard/index"
 
-	ui_data_key=code
-	default.code="[value code]"
-	help.code="If this is the first time you have used this definition, you will need to assign a nickname. Only A-Z0-9 are valid."
-	label.code="Catalog Identifier"
-	widget.code=text_10
-
-	ui_data_fields="code paygate creditcards paycheck paymo paycod paypo"
-	ui_display_only="paygate creditcards paycheck paymo paycod paypo"
-	ui_hide_key="1"
+	ui_wizard_fields="paygate creditcards paycheck paymo paycod paypo"
 
 	label.paygate="Payment gateway"
 	help.paygate="Which payment gateway will you use for credit cards?"

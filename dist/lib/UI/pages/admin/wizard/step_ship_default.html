@@ -27,7 +27,7 @@ order basis.
 [/calc]
 
 [table-editor 
-	table=variable
+	
 	left_width=120
 	table_width="500"
 	wizard=1
@@ -41,11 +41,7 @@ order basis.
 	mv_prevpage="[either][cgi ui_prevpage][or]__UI_BASE__/wizard/step_ship[/either]"
 	hidden.ui_return_to="__UI_BASE__/wizard/index"
 
-	ui_data_key=code
-
-	ui_data_fields="code defaultshipd defaultshipi flatd flati"
-	ui_display_only="defaultshipd defaultshipi flatd flati"
-	ui_hide_key="1"
+	ui_wizard_fields="defaultshipd defaultshipi flatd flati"
 
 	label.defaultshipd="Flat-rate domestic ship mode"
 	widget.defaultshipd=select

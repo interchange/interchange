@@ -25,7 +25,7 @@ Select the UPS shipping options you want to offer.
 	return;
 [/calc]
 [table-editor 
-	table=variable
+	
 	left_width=120
 	table_width=500
 	wizard=1
@@ -39,12 +39,7 @@ Select the UPS shipping options you want to offer.
 	mv_prevpage="[either][cgi ui_prevpage][or]__UI_BASE__/wizard/step_ship[/either]"
 	hidden.ui_return_to="__UI_BASE__/wizard/index"
 
-	ui_data_key=code
-	widget.code=text_10
-
-	ui_data_fields="code shipzip upsmodes upsadder"
-	ui_display_only="shipzip upsmodes upsadder"
-	ui_hide_key="1"
+	ui_wizard_fields="shipzip upsmodes upsadder"
 
 	label.shipzip="Warehouse ZIP code"
 	check.shipzip=zip

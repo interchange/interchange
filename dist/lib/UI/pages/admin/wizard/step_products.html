@@ -49,7 +49,7 @@ click <b>Next</b> to upload the populated spreadsheet.
 </td></tr></table>
 
 [table-editor 
-	table=variable
+
 	left_width=120
 	table_width="500"
 	wizard=1
@@ -58,6 +58,7 @@ click <b>Next</b> to upload the populated spreadsheet.
 	no_top=1
 	no_bottom=1
    	row_template="[scratch row_template]"
+	hidden.did_products=1
 
 	mv_nextpage="[either][cgi ui_nextpage][or]__UI_BASE__/wizard/step_preview[/either]"
 	mv_prevpage="[either][cgi ui_prevpage][or]__UI_BASE__/wizard/step_about[/either]"
@@ -65,15 +66,7 @@ click <b>Next</b> to upload the populated spreadsheet.
 
 	file_upload=1
 
-	ui_data_key=code
-	default.code="[value code]"
-	help.code="If this is the first time you have used this definition, you will need to assign a nickname. Only A-Z0-9 are valid."
-	label.code="Catalog Identifier"
-	widget.code=text_10
-
-	ui_data_fields="code products"
-	ui_display_only="products"
-	ui_hide_key=1
+	ui_wizard_fields="products"
 
 	label.products="Products"
 	help.products="Select the Excel-format file you entered your products list into (optional)."

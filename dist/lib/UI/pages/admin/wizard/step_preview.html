@@ -84,7 +84,7 @@ it. Until then, MySQL and DBM only.
 
 		
 [table-editor 
-	table=variable
+	
 	left_width=120
 	table_width=500
 	wizard=1
@@ -101,13 +101,7 @@ it. Until then, MySQL and DBM only.
 	hidden.mv_click="write_flag"
 	hidden.mv_check=profile_save_values
 
-	ui_data_key=code
-	default.code="[value code]"
-	widget.code=text_10
-
-	ui_data_fields="code [scratch the_fields]"
-	ui_display_only="[scratch the_fields]"
-	ui_hide_key=1
+	ui_wizard_fields="[scratch the_fields]"
 
 	label.sampleorders="Insert sample order data"
 	help.sampleorders=`$Scratch->{tmessage}`

@@ -17,7 +17,7 @@ to the keyring at time of preview.
 [tmp tmp_pgpkeys][get-gpg-keys][/tmp]
 <p>
 [table-editor 
-	table=variable
+	
 	left_width=120
 	table_width=500
 	wizard=1
@@ -31,13 +31,7 @@ to the keyring at time of preview.
 	mv_prevpage="[either][cgi ui_prevpage][or]__UI_BASE__/wizard/step_pay[/either]"
 	hidden.ui_return_to="__UI_BASE__/wizard/index"
 
-	ui_data_fields="code pgpkeyid pgpkeytext"
-	ui_display_only="pgpkeyid pgpkeytext"
-
-	ui_data_key=code
-	widget.code=text_10
-
-	ui_hide_key=1
+	ui_wizard_fields="pgpkeyid pgpkeytext"
 
 	label.pgp="Enable PGP/GPG mode"
 	widget.pgp=yesno

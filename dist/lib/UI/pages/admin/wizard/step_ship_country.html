@@ -80,7 +80,7 @@ the CommerceLauncher.
 
 
 [table-editor 
-	table=variable
+	
 	left_width=120
 	table_width="500"
 	wizard=1
@@ -94,11 +94,7 @@ the CommerceLauncher.
 	mv_prevpage="[either][cgi ui_prevpage][or]__UI_BASE__/wizard/step_ship[/either]"
 	hidden.ui_return_to="__UI_BASE__/wizard/index"
 
-	ui_data_key=code
-
-	ui_data_fields="code defaultcountry defaultshipmode defaultshipzip"
-	ui_display_only="defaultcountry defaultshipmode defaultshipzip"
-	ui_hide_key="1"
+	ui_wizard_fields="defaultcountry defaultshipmode defaultshipzip"
 
 	check.defaultcountry=mandatory
 	label.defaultcountry="Default country"

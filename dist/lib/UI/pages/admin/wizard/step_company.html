@@ -62,7 +62,7 @@ in <b>Bold</b>.
 	no_bottom=1
 	no_top=1
    	row_template="[scratch row_template]"
-	table=variable
+
 	left_width=180
 	table_width=500
 	wizard=1
@@ -74,15 +74,7 @@ in <b>Bold</b>.
 	mv_nextpage="[either][cgi ui_nextpage][or]__UI_BASE__/wizard/step_email[/either]"
 	mv_prevpage="[either][cgi ui_prevpage][or]__UI_BASE__/wizard/index[/either]"
 
-	ui_data_key=code
-	default.code=`$Values->{code}`
-	help.code="If this is the first time you have used this definition, you will need to assign a nickname. Only A-Z0-9 are valid."
-	label.code="Catalog Identifier"
-	widget.code=text_10
-
-	ui_data_fields="code company domainname address city state zip country phone fax tollfree"
-	ui_display_only="company domainname address city state zip country phone fax tollfree"
-	ui_hide_key="1"
+	ui_wizard_fields="company domainname address city state zip country phone fax tollfree"
 
 	widget.company=text_40
 	label.company="Your company name"

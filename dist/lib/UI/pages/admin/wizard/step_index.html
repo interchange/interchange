@@ -37,7 +37,7 @@ can manipulate this text or enter new text.
 [/tmp]
 
 [table-editor 
-	table=variable
+	
 	left_width=120
 	table_width=500
 	wizard=1
@@ -53,15 +53,7 @@ can manipulate this text or enter new text.
 	mv_prevpage="[either][cgi ui_prevpage][or]__UI_BASE__/wizard/step_security[/either]"
 	hidden.ui_return_to="__UI_BASE__/wizard/index"
 
-	ui_data_key=code
-	default.code="[value code]"
-	help.code="If this is the first time you have used this definition, you will need to assign a nickname. Only A-Z0-9 are valid."
-	label.code="Catalog Identifier"
-	widget.code=text_10
-
-	ui_data_fields="code indextitle indextext"
-	ui_display_only="indextitle indextext"
-	ui_hide_key=1
+	ui_wizard_fields="indextitle indextext"
 
 	label.indextitle="Page Title"
 	help.indextitle="Title for the page (top bar)"

@@ -16,7 +16,7 @@ this is optional.)
 <p>
 
 [table-editor 
-	table=variable
+	
 	left_width=120
 	table_width=500
 	wizard=1
@@ -33,13 +33,7 @@ this is optional.)
 	mv_prevpage="[either][cgi ui_prevpage][or]__UI_BASE__/wizard/step_preview[/either]"
 	hidden.ui_return_to="__UI_BASE__/index"
 
-	ui_data_key=code
-	default.code="[value code]"
-	widget.code=text_10
-
-	ui_data_fields="code nukeorders nukeusers orderstart enablesecure"
-	ui_display_only="nukeorders nukeusers orderstart enablesecure"
-	ui_hide_key=1
+	ui_wizard_fields="nukeorders nukeusers orderstart enablesecure"
 
 	label.nukeorders="Delete sample order data"
 	help.nukeorders="Select Yes if you wish to start with an empty order database"
