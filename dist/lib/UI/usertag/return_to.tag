@@ -21,8 +21,8 @@ sub {
 	if($tablehack) {
 		my $found;
 		for (@args) {
-			if(s/^mv_data_table=//) {
-				$extra = "mv_return_table=$_\n";
+			if(s/^mv_data_table=(.*)//) {
+				$extra = "mv_return_table=$1\n";
 			}
 			elsif (s/^(ui|mv)_return_table=//) {
 				$found = "mv_return_table=$_\n";
@@ -35,6 +35,7 @@ sub {
 		$out .= qq{mv_nextpage=$page\n} if $page;
 		for(@args) {
 			my ($k, $v) = split /\s*=\s*/, $_, 2;
+			next unless length $k;
 			next if $k =~ /$opt->{exclude}/;
 			$v =~ s/__NULL__/\0/g;
 			$out .= qq{$k=$v\n};
