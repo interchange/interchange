@@ -145,6 +145,22 @@ sub compile_wizard {
 					$ref->{_break_labels} ||= ($blip = []);
 					next;
 				}
+				elsif($thing eq 'db_id') {
+					my ($t, $survey, $name) = split /:+/, $value, 3;
+					$thing = $name;
+					my $key = $survey . '::' . $name;
+					my $meta = $Tag->meta_record($key, undef, $t);
+					if($meta) {
+						for(keys %$meta) {
+							$ref->{$_} ||= {};
+							$ref->{$_}{$thing} = $meta->{$_};
+						}
+					}
+					$ref->{name}{$thing} = $thing;
+#::logDebug("meta record is " . ::uneval($meta));
+
+					undef $value;
+				}
 
 				$iip = $thing;
 				push @$qip, $iip;
@@ -153,7 +169,7 @@ sub compile_wizard {
 					push @$blip, "$iip=$break";
 					undef $break;
 				}
-				$ref->{label}{$iip} = $value;
+				$ref->{label}{$iip} = $value if $value;
 				next;
 			}
 
@@ -164,6 +180,16 @@ sub compile_wizard {
 			}
 			$ref->{$thing} ||= {};
 			$ref->{$thing}{$iip} = $value;
+		}
+		else {
+			unless (/^([A-Za-z]\w+)(?:=([^:]+))?\s*:\s*(.*)/s) {
+				$Tag->warnings(qq{Unrecognized "$_" in beginning section of script.});
+				next;
+			}
+			my $thing = $1;
+			my $modifier = $2;
+			my $value = $3;
+			$ref->{$thing} = $value;
 		}
 	}
 	push @pages, $ref;
@@ -412,7 +438,7 @@ EOF
 	$opts{no_meta} = 1;
 	$opts{defaults} = 1;
 	$opts{mv_cancelpage} ||= 'admin/index';
-	$opts{row_template} = <<'EOF';
+	$opts{row_template} ||= <<'EOF';
 {HELP?}<td>&nbsp;</td><td>
      <span style="color: blue">{HELP}</span>
 	 {HELP_URL?}<BR><A HREF="{HELP_URL}">more help</A>{/HELP_URL?}
