@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.16 2001-03-22 16:32:01 jon Exp $
+# $Id: Util.pm,v 1.14.2.17 2001-03-22 17:02:05 jon Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -79,7 +79,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.16 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.17 $, 10);
 
 BEGIN {
 	eval {
@@ -955,9 +955,9 @@ sub readfile_db {
 # Will also look in the *global* TemplateDir. (No need for the
 # extra overhead of local TemplateDir, probably also insecure.)
 #
-# To ensure security in multiple catalog setups, leading
-# / is not allowed unless $Global::NoAbsolute is set.
-#
+# To ensure security in multiple catalog setups, leading /
+# is not allowed if the second subroutine argument passed
+# (caller usually sends $Global::NoAbsolute) is true.
 
 # If catalog FileDatabase is enabled and there are no contents, we can retrieve
 # the file from the database.
