@@ -1,11 +1,11 @@
 <title>Shipping: Create/Edit</title>
 <p>
-<b>Name of this method</b><br>
-This is the internal name used for the shipping method, and should be a single word, like "air1". The order you enter the shipping methods is the order in which they will be presented to the customer. We recommend starting with the most common or least expensive method first. Here are some commonly used names for various shipping methods: standard ground shipping, standard flat rate shipping, three day shipping, second day shipping, next day air shipping, International shipping, US Mail shipping, etc.
+<b>Name of this Method</b><br>
+This is the internal name used for the shipping method, and should be a single word, like "air1." The order you enter the shipping methods is the order in which they will be presented to the customer. We recommend starting with the most common or least expensive method first. Here are some commonly used names for various shipping methods: standard ground shipping, standard flat rate shipping, three day shipping, second day shipping, next day air shipping, International shipping, U.S. Mail shipping, etc.
 </p>
 
 <p>
-<b>Label for this method</b><br>
+<b>Label for this Method</b><br>
 The name you specify here will appear in the list of available shipping
 methods shown to shoppers when they place orders. Take care to make
 them easy-to-understand. The name you enter should reflect the shipping
@@ -13,29 +13,29 @@ algorithm you choose.
 </p>
 
 <p>
-<b>Calculate based on this algorithm</b></br>
+<b>Calculate Based on this Algorithm</b></br>
 </p>
 
 <p>
 <ul>
 <li>
-<A href="shipping.price.html">Standard shipping by price:</a>
+<A href="shipping.price.html">Standard Shipping by Price:</a>
 shipping total based on the total price of the order. This can also be
 used to calculate a flat shipping price ($0 - infinity = $4.95) or a flat
 rate with big orders shipped free ($0 - 500 = $4.95 and $500 - infinity =
 free). The shipping charge can either be a flat charge or a percentage.
 <li>
-<a href="shipping.weight.html">Standard shipping by weight:</a>
+<a href="shipping.weight.html">Standard Shipping by Weight:</a>
 calculates shipping by total weight. To use this method, you must enter a
 weight for each item in your inventory. You can use any unit of measure
 you wish as long as you are consistent: if you enter your item prices
 in grams then configure shipping with pounds, your customers will not
 be happy when they are quoted huge shipping rates.
 <li>
-<a href="shipping.quantity.html">Standard by quantity:</a>
+<a href="shipping.quantity.html">Standard by Quantity:</a>
 charges an amount according to how many items are ordered.
 <li>
-<a href="shipping.ups.html">UPS zones-based:</a>
+<a href="shipping.ups.html">UPS Zones-Based:</a>
 Interchange is pre-configured with UPS zones tables for ground, three day
 select, second day air, and next day air. If you require zones support
 for Fedex, DHL, or USPS, please <a href="mailto:info@akopia.com">contact Akopia</a>.
@@ -43,7 +43,7 @@ for Fedex, DHL, or USPS, please <a href="mailto:info@akopia.com">contact Akopia<
 </p>
 
 <p>
-<b>Minimum shipping charge</b><br>
+<b>Minimum Shipping Charge</b><br>
 The amount you enter into this field will be the minimum allowed quote for 
 that particular shipping method. For example, if you want to charge no less 
 than $4.50 for ground shipping, enter "4.5" or "4.50" into this field. 
@@ -52,7 +52,7 @@ want each to have a minimum charge.
 </p>
 
 <p>
-<a name="additional"><b>Additional shipping calculation</b><br></a>
+<a name="additional"><b>Additional Shipping Calculation</b><br></a>
 Here, you can enter any additional calculation you would like to apply to
 the shipping calculation. This is especially useful for the zones-based
 shipping calculations. Very few merchants pay the full rates for UPS
@@ -76,8 +76,8 @@ a calculated shipping charge. Here's how it works.
 
 <p>
 Every shipping method needs to have a shipping algorithm 
-associated with it. The algorithm could be "shipping by total cost", 
-"shipping by quantity", or even a UPS weight based calculation. 
+associated with it. The algorithm could be "shipping by total cost," 
+"shipping by quantity," or even a UPS weight based calculation. 
 The administrator will typically have the option to set up several 
 parameters that the algorithm uses. The administrator then names 
 the shipping method whatever he/she wants. All available shipping 
@@ -93,12 +93,12 @@ may be modified by using the "additional shipping calculation" field.
 <p>
 Let's look at an example. Suppose that I want to implement a UPS based
 shipping system. I create three shipping methods, and call them "Regular",
-"Second day air" and "Next day air." Each method uses a corresponding UPS
+"Second Day Air," and "Next Day Air." Each method uses a corresponding UPS
 algorithm that calculates the shipping charge based on the weight of the
-customer's order, the UPS rate and zone tables. Easy enough -- but suppose
-that I have a special deal with UPS that gives me a 10% discount off the
-standard rate tables, because I ship a large volume of goods.  Obviously,
-I don't want have to manually edit the rate tables.  Instead I can use
+customer's order, the UPS rate and zone tables. Easy enough, but suppose
+that I have a special deal with UPS that gives me a 10 percent discount off the
+standard rate tables, because I ship a large volume of goods. Obviously,
+I don't want have to manually edit the rate tables. Instead I can use
 the "additional shipping calculation" field to automatically apply a 10%
 discount to whatever the UPS rate would have calculated.
 </p>
@@ -119,7 +119,7 @@ to the shipping charge, and charge the customer the new total.
 
 <p>
 Here's how it would work for a real customer. Customer A enters the site
-and orders 50 lbs. of goods to be shipped to Alaska by next day air. The
+and orders 50 lbs. of goods to be shipped to Alaska by "Next Day Air." The
 UPS algorithm determines that the cost would be $400. Interchange then
 substitutes 400 for "x" in your formula:
 </p>
@@ -142,7 +142,7 @@ x = x * .9
 
 <p>
 which would have had exactly the same effect. If you're a Perl 
-guru, you'll be happy to know that you could also have written
+guru, you'll be happy to know that you could also have written:
 </p>
 
 <p>
@@ -171,7 +171,7 @@ x = x * y + 300
 </p>
 
 <p>
-the "y" will be removed, and Interchange will see 
+the "y" will be removed, and Interchange will see: 
 </p>
 
 <p>
