@@ -83,6 +83,7 @@ ifdef TRAFFIC =~ /rpc/i
 Message RPC traffic settings.
 PreFork             Yes
 StartServers        5
+MaxServers          0
 MaxRequestsPerChild 100
 HouseKeeping        2
 PIDcheck            120
