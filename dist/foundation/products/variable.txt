@@ -1,7 +1,6 @@
 code	Variable	pref_group
 ADDRESS	__MVC_ADDRESS__	Company
 BAR_LINK_TEMPLATE	<A HREF="$URL$" CLASS="barlink">$ANCHOR$</A>	Admin colors
-CATALOG_STATIC	No	Static pages
 CGIWRAP	__MVC_CGIWRAP__	Admin Control
 CGI_DIR	__MVC_CGIDIR__	Admin Control
 CGI_URL	__MVC_CGIURL__	Directories and Paths
@@ -28,7 +27,6 @@ LINKMODE	__MVC_LINKMODE__	Admin Control
 LINKHOST	__MVC_LINKHOST__	Admin Control
 LINKPORT	__MVC_LINKPORT__	Admin Control
 LOCALES	__MVC_LOCALES__	Internationalization
-LOGGED_STATIC	1	Static pages
 LOGO	__MVC_LOGO__	Template
 MAILING_FROM	__MVC_COMPANY__ <__MVC_EMAILSERVICE__>	Mailings
 MAILING_MAX_DIRECT	50	Mailings
