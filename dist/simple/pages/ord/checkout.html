@@ -1,6 +1,17 @@
+[comment]
+ui_template: Yes
+ui_template_name: standalone
+ui_template_layout: LOGOBAR, MENUBAR, UI_CONTENT, MENUBOTTOM, COPYRIGHT
+ui_template_description: Page with top logo bar. menu bar and copyright at bottom.
+ui_control_element: page_title
+ui_control_element: members_only 0=No,1=Yes
+ui_control_description: Settable: Page title, Members only
+[/comment]
+[set members_only][/set]
 [set page_title]Check out -- __COMPANY__[/set]
 __LOGOBAR__
 __MENUBAR__
+<!-- BEGIN CONTENT -->
 <TABLE WIDTH=620 ALIGN=CENTER>
 <TR><TD>
 <FONT SIZE="-1" __CONTRAST__><B>NOTE:</B> If you access something above, it will not save anything you have entered.<BR>
@@ -29,60 +40,6 @@ __MENUBAR__
 [/elsif]
 [/if]
 -->
-
-[comment]
-Uncomment the area below to add some shipping modes "on the fly"
-[/comment]
-[comment]
-[shipping
-		mode="upsr upsb upsg ups3"
-		default=1
-		hide=1
-		add=|
-upsr: UPS Red with adder
-
-			min 0
-			max 0
-			perl 1
-			crit weight
-			qual $Values->{state};
-			cost e
-
-			min 0
-			max 150
-			cost u
-			crit AK HI
-			geo zip
-			table NextDayAir
-			adder 20
-			round yes
-
-			min 0
-			max 150
-			cost u
-			crit 
-			geo zip
-			table NextDayAir
-			adder 3
-			round yes
-			at_least 12
-
-			min 150
-			max 999999
-			cost e
-
-ups3: Priority Mail (max 10 lbs.)
-			min 0
-			max 10
-			crit weight
-			cost 5
-			min 10
-			max 999999
-			cost e
-
-|
-			]
-[/comment]
 
 [if !items]
 <TABLE WIDTH=600>
@@ -620,6 +577,7 @@ mv_todo=submit
 <FONT SIZE="-1" __CONTRAST__><B>NOTE:</B> If you access something below, it will not save anything you have entered.
 
 </TD></TR></TABLE>
+<!-- END CONTENT -->
 __MENUBOTTOM__
 __COPYRIGHT__
 <!-- current page: @@MV_PAGE@@ -->

@@ -1,33 +1,19 @@
-[tag flag build]
-[pragma no_html_parse]
-[set page_title]Browse the Art Store[/set]
 [comment]
-	The __VALUES__ below are MiniVend Variable settings.
-	In this case, they come from these settings in catalog.cfg:
-
-	# There are some different color schemes provided
-	Variable TEMPLATE brown1
-	## Set some menubars and headers
-	ConfigDir config/__TEMPLATE__
-	Variable      LEFTSIDE   <leftside
-	Variable      RIGHTSIDE  <rightside
-	Variable      NO_RIGHT   <no_right
-	Variable      MENUBAR    <menubar
-	Variable      MENUBOTTOM <menubottom
-	Variable      LOGOBAR    <logobar
-	Variable      COPYRIGHT  <copyright
-	ConfigDir config
-
-	Each one comes from a file in this directory which
-	corresponds to the variable.
-
-	They have the effect of predefining a page layout without
-	having to maintain different pages.
-
+ui_template: Yes
+ui_template_name: templates/standard
+ui_template_layout: LOGOBAR, MENUBAR, LEFTSIDE, UI_CONTENT, NO_RIGHT, MENUBOTTOM, COPYRIGHT
+ui_template_description: Standard page with top and left areas. Menu bar and copyright at bottom.
+ui_control_element: page_title : 
+ui_control_element: members_only : 0=No,1=Yes
+ui_control_description: page_title: Page title
+ui_control_description: members_only : Members only
 [/comment]
+[set page_title]Browse the Art Store[/set]
+
 __LOGOBAR__
 __MENUBAR__
 __LEFTSIDE__
+<!-- BEGIN CONTENT -->
 
 [comment]
 
@@ -125,12 +111,9 @@ __LEFTSIDE__
 
 <P ALIGN=CENTER>
 
+<!-- END CONTENT -->
 __RIGHTSIDE__
 __MENUBOTTOM__
 __COPYRIGHT__
 
-[comment] And the footer as above. [/comment]
-__NO_RIGHT__
-__MENUBOTTOM__
-__COPYRIGHT__
 <!-- current page: @@MV_PAGE@@ -->

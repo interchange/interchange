@@ -1,6 +1,17 @@
+[comment]
+ui_template: Yes
+ui_template_name: standalone
+ui_template_layout: LOGOBAR, MENUBAR, UI_CONTENT, MENUBOTTOM, COPYRIGHT
+ui_template_description: Page with top logo bar. menu bar and copyright at bottom.
+ui_control_element: page_title
+ui_control_element: members_only 0=No,1=Yes
+ui_control_description: Settable: Page title, Members only
+[/comment]
+[set members_only][/set]
 [set page_title]Enter Billing Address[/set]
 __LOGOBAR__
 __MENUBAR__
+<!-- BEGIN CONTENT -->
 
 <TABLE WIDTH=600><TR><TD __HEADERBG__>
 <FONT SIZE="+2" COLOR="__HEADERTEXT__">Billing Address (if different)</FONT>
@@ -66,6 +77,7 @@ __MENUBAR__
 <INPUT TYPE=submit NAME=mv_click VALUE="Next --&gt;">
 </FORM>
 
+<!-- END CONTENT -->
 __MENUBOTTOM__
 __COPYRIGHT__
 

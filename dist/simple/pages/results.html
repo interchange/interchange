@@ -1,7 +1,18 @@
+[comment]
+ui_template: Yes
+ui_template_name: templates/standard
+ui_template_layout: LOGOBAR, MENUBAR, LEFTSIDE, UI_CONTENT, NO_RIGHT, MENUBOTTOM, COPYRIGHT
+ui_template_description: Standard page with top and left areas. Menu bar and copyright at bottom.
+ui_control_element: page_title : 
+ui_control_element: members_only : 0=No,1=Yes
+ui_control_description: page_title: Page title
+ui_control_description: members_only : Members only
+[/comment]
 [set name=page_title int]Search results -- [value-extended name=mv_searchspec joiner=" | "][/set]
 __LOGOBAR__
 __MENUBAR__
 __LEFTSIDE__
+<!-- BEGIN CONTENT -->
 
 [comment]
 	This is the default search results page. You can have
@@ -110,6 +121,7 @@ Sorry, no matches for <B>[value-extended name=mv_searchspec joiner=" | "]</B>.
 [/search-region]
 <P ALIGN=CENTER>
 
+<!-- END CONTENT -->
 __RIGHTSIDE__
 __MENUBOTTOM__
 __COPYRIGHT__
