@@ -1,6 +1,6 @@
 # Table/InMemory.pm: store a table in memory
 #
-# $Id: InMemory.pm,v 1.3.6.4 2001-04-13 10:33:45 heins Exp $
+# $Id: InMemory.pm,v 1.3.6.5 2001-04-14 09:26:55 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Table::InMemory;
 use Vend::Table::Common;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 1.3.6.4 $, 10);
+$VERSION = substr(q$Revision: 1.3.6.5 $, 10);
 use strict;
 
 # 0: column names
@@ -77,6 +77,7 @@ sub create {
 		unless CORE::ref($columns) eq 'ARRAY';
 
 	my $column_index = Vend::Table::Common::create_columns($columns, $config);
+	$config->{_Auto_number} = 1 if $config->{AUTO_NUMBER};
 
 	my $tie = {};
 	my $s = [

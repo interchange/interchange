@@ -1,6 +1,6 @@
 # Table/SDBM.pm: access a table stored in Perl's internal SDBM
 #
-# $Id: SDBM.pm,v 1.1.2.6 2001-04-13 10:33:45 heins Exp $
+# $Id: SDBM.pm,v 1.1.2.7 2001-04-14 09:26:55 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -26,7 +26,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::SDBM;
-$VERSION = substr(q$Revision: 1.1.2.6 $, 10);
+$VERSION = substr(q$Revision: 1.1.2.7 $, 10);
 use strict;
 use Fcntl;
 use SDBM_File;
@@ -34,7 +34,7 @@ use vars qw($VERSION @ISA);
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 1.1.2.6 $, 10);
+$VERSION = substr(q$Revision: 1.1.2.7 $, 10);
 
 sub create {
 	my ($class, $config, $columns, $filename) = @_;
@@ -94,6 +94,7 @@ sub open_table {
 
 	if (! $config->{Read_only}) {
 		undef $config->{Transactions};
+		$config->{_Auto_number} = 1 if $config->{AUTO_NUMBER};
 		$flags = O_RDWR;
 		if(! defined $config->{AutoNumberCounter}) {
 			eval {

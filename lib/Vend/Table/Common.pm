@@ -1,6 +1,6 @@
 # Table/Common.pm: Common access methods for Interchange Databases
 #
-# $Id: Common.pm,v 1.16.4.9 2001-04-13 10:33:44 heins Exp $
+# $Id: Common.pm,v 1.16.4.10 2001-04-14 09:26:55 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -25,7 +25,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.16.4.9 $, 10);
+$VERSION = substr(q$Revision: 1.16.4.10 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -138,6 +138,7 @@ sub unstuff {
 sub autonumber {
 	my $s = shift;
 	my $start;
+	return $s->[$CONFIG]{SEQUENCE_VAL} if $s->[$CONFIG]{AUTO_SEQUENCE};
 	return '' if not $start = $s->[$CONFIG]->{AUTO_NUMBER};
 	local($/) = "\n";
 	my $c = $s->[$CONFIG];

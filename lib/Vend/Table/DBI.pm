@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.26 2001-04-13 17:56:58 heins Exp $
+# $Id: DBI.pm,v 1.25.2.27 2001-04-14 09:26:55 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.26 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.27 $, 10);
 
 use strict;
 
@@ -145,6 +145,24 @@ my %known_capability = (
 	},
 	ALTER_ADD	 => { 
 		mysql => 'ALTER TABLE _TABLE_ ADD COLUMN _COLUMN_ _DEF_',
+	},
+	SEQUENCE_NO_EXPLICIT => { 
+		Pg => 1,
+	},
+	SEQUENCE_GET	 => { 
+		Oracle => 1,
+	},
+	SEQUENCE_VAL	 => { 
+		mysql => undef,
+		Pg => undef,
+	},
+	SEQUENCE_KEY	 => { 
+		mysql	=> 'INT PRIMARY KEY AUTO_INCREMENT',
+		Pg		=> 'SERIAL PRIMARY KEY',
+	},
+	SEQUENCE_LAST_FUNCTION	 => { 
+		mysql => 'select last_insert_id()',
+		Pg => 'select last_value from _TABLE___COLUMN__seq',
 	},
 	UPPER_COMPARE	 => { 
 		Oracle => 1,
@@ -347,7 +365,7 @@ sub open_table {
     @call = find_dsn($config);
     $dattr = pop @call;
 
-    if (! $config->{Read_only} and ! defined $config->{AutoNumberCounter}) {
+    if (! $config->{AUTO_SEQUENCE} and ! defined $config->{AutoNumberCounter}) {
 	    eval {
 			$config->{AutoNumberCounter} = new File::CounterFile
 									"$config->{DIR}/$config->{name}.autonumber",
@@ -358,6 +376,7 @@ sub open_table {
 			$config->{AutoNumberCounter} = '';
 		}
     }
+
 
 	unless($config->{dsn_id}) {
 		$config->{dsn_id} = join "_", grep ! ref($_), @call;
@@ -465,6 +484,9 @@ sub open_table {
 	if(! defined $config->{EXTENDED}) {
 		## side-effects here -- sets $config->{NUMERIC},
 		## $config->{_Numeric_ary}, reads GUESS_NUMERIC
+
+		$config->{_Auto_number} = $config->{AUTO_SEQUENCE} || $config->{AUTO_NUMBER};
+
 		if(! $config->{NAME}) {
 			$config->{NAME} = list_fields($db, $tablename, $config);
 		}
@@ -654,11 +676,21 @@ sub field_accessor {
 sub bind_entire_row {
 	my($s, $sth, $key, @fields) = @_;
 #::logDebug("bind_entire_row=" . ::uneval(\@_));
+#::logDebug("bind_entire_row=" . ::uneval(\@fields));
 	my $i;
 	my $numeric = $s->[$CONFIG]->{_Numeric_ary}
 		or die ::errmsg("improperly set up database, no numeric array.");
 	my $name = $s->[$NAME];
 	my $j = 1;
+
+	my $ki;
+	if($key and ! $fields[$ki = $s->[$CONFIG]{KEY_INDEX}] ) {
+		$name = [@$name];
+		splice @fields, $ki, 1;
+		splice @$name, $ki, 1;
+		undef $key;
+	}
+
 	for($i = 0; $i < scalar @$name; $i++, $j++) {
 #::logDebug("bind $j=$fields[$i]");
 		$sth->bind_param(
@@ -673,6 +705,7 @@ sub bind_entire_row {
 			$numeric->[ $s->[$CONFIG]{KEY_INDEX} ],
 			)
 		if $key;
+#::logDebug("last bind $j=$fields[$i]");
 	return;
 }
 
@@ -802,14 +835,30 @@ sub set_slice {
 		return undef;
 	}
 
+	my $tkey;
+	my $sql;
 	unless($s->record_exists($key)) {
 		$key = $s->set_row($key);
+		$tkey = $s->quote($key, $s->[$KEY]) if defined $key;
 	}
 
-	my $tkey = $s->quote($key, $s->[$KEY]);
+	if(defined $tkey) {
+		my $fstring = join ",", map { "$_=?" } @$fary;
+		$sql = "update $s->[$TABLE] SET $fstring WHERE $s->[$KEY] = $tkey";
+	}
+	else {
+		my $found;
+		for(my $i = 0; $i < @$fary; $i++) {
+			next unless $fary->[$i] eq $s->[$KEY];
+			splice @$fary, $i;
+			splice @$vary, $i;
+			last;
+		}
+		my $fstring = join ",", @$fary;
+		my $vstring	= join ",", map {"?"} @$vary;
+		$sql = "insert into $s->[$TABLE] ($fstring) VALUES ($vstring)";
+	}
 
-	my $fstring = join ",", map { "$_=?" } @$fary;
-	my $sql = "update $s->[$TABLE] SET $fstring WHERE $s->[$KEY] = $tkey";
 #::logDebug("set_slice query: $sql");
 #::logDebug("set_slice key/fields/values:\nkey=$key\n" . ::uneval($fary, $vary));
 	my $sth = $s->[$DBI]->prepare($sql)
@@ -823,13 +872,17 @@ sub set_row {
     my ($s, @fields) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
 	my $cfg = $s->[$CONFIG];
+	my $ki = $cfg->{KEY_INDEX};
+
+	my $popkey;
 
 	$s->filter(\@fields, $s->[$CONFIG]{COLUMN_INDEX}, $s->[$CONFIG]{FILTER_TO})
 		if $cfg->{FILTER_TO};
 	my ($val);
 
 	if(scalar @fields == 1) {
-		$fields[0] = $s->autonumber()
+		 return if $cfg->{AUTO_SEQUENCE};
+		 $fields[0] = $s->autonumber()
 			if ! length($fields[0]);
 		$val = $s->quote($fields[0], $s->[$KEY]);
 		my $key_string;
@@ -860,13 +913,31 @@ sub set_row {
 		}
 #::logDebug("def_ary query will be: insert into $s->[$TABLE] ($key_string) VALUES ($val_string)");
 		eval {
-			$s->[$DBI]->do("delete from $s->[$TABLE] where $s->[$KEY] = $val");
+			$s->[$DBI]->do("delete from $s->[$TABLE] where $s->[$KEY] = $val")
+				if $s->record_exists();
 			$s->[$DBI]->do("insert into $s->[$TABLE] ($key_string) VALUES ($val_string)");
 		};
 		die "$DBI::errstr\n" if $@;
 		return $fields[0];
 	}
 
+	if(! length($fields[$ki]) ) {
+		$fields[$ki] = $s->autonumber();
+		$popkey = 1 if $cfg->{SEQUENCE_NO_EXPLICIT} and $cfg->{AUTO_SEQUENCE};
+	}
+	elsif (	! $s->[$CONFIG]{Clean_start}
+			and defined $fields[$ki]
+			and $s->record_exists($fields[$ki])
+		)
+	{
+		eval {
+			$val = $s->quote($fields[$ki], $s->[$KEY]);
+			$s->[$DBI]->do("delete from $s->[$TABLE] where $s->[$KEY] = $val")
+				unless $s->[$CONFIG]{Clean_start};
+		};
+	}
+
+#::logDebug("set_row fields='" . join(',', @fields) . "'" );
 	if(! $cfg->{_Insert_h}) {
 		my (@ins_mark);
 		my $i = 0;
@@ -874,30 +945,46 @@ sub set_row {
 			push @ins_mark, '?';
 			$i++;
 		}
+		my $fstring = '';
+		if ($popkey) {
+			pop @ins_mark;
+			$fstring = ' (';
+			$fstring .= join ",", grep $_ ne $s->[$KEY], @{$s->[$NAME]};
+			$fstring .= ')';
+		}
 		my $ins_string = join ", ",  @ins_mark;
-		my $query = "INSERT INTO $s->[$TABLE] VALUES ($ins_string)";
-#::logDebug("set_row query=$query");
+		my $query = "INSERT INTO $s->[$TABLE]$fstring VALUES ($ins_string)";
+#::logDebug("set_row popkey=$popkey query=$query");
 		$cfg->{_Insert_h} = $s->[$DBI]->prepare($query);
 		die "$DBI::errstr\n" if ! defined $cfg->{_Insert_h};
 	}
 
-	if(! length($fields[$cfg->{KEY_INDEX}]) and $cfg->{AUTO_NUMBER}) {
-		$fields[$cfg->{KEY_INDEX}] = $s->autonumber();
-	}
+	splice (@fields, $cfg->{KEY_INDEX}, 1) if $popkey;
+#::logDebug("set_row fields='" . join(',', @fields) . "'" );
+    $s->bind_entire_row($cfg->{_Insert_h}, $popkey, @fields);
 
-	unless ($s->[$CONFIG]{Clean_start}) {
-		eval {
-			$val = $s->quote($fields[$cfg->{KEY_INDEX}], $s->[$KEY]);
-			$s->[$DBI]->do("delete from $s->[$TABLE] where $s->[$KEY] = $val")
-				unless $s->[$CONFIG]{Clean_start};
-		};
-	}
-
-    $s->bind_entire_row($cfg->{_Insert_h}, undef, @fields);
-	$val = $fields[$cfg->{KEY_INDEX}];
 	my $rc = $cfg->{_Insert_h}->execute()
 		or die "$DBI::errstr\n";
-##::logDebug("set_row rc=$rc key=$val");
+
+	$val	= $cfg->{AUTO_SEQUENCE}
+			?  $s->last_sequence_value()
+			: $fields[$ki];
+
+#::logDebug("set_row rc=$rc key=$val");
+	return $val;
+}
+
+sub last_sequence_value {
+	my $s = shift;
+	my $cfg = $s->[$CONFIG];
+	my $q = $cfg->{SEQUENCE_LAST_FUNCTION}
+		or return undef; 
+	$q =~ s/_TABLE_/$s->[$TABLE]/g;
+	$q =~ s/_COLUMN_/$s->[$KEY]/g;
+	my $val;
+	eval {
+	 $val = $s->[$DBI]->prepare($q)->fetchrow_arrayref()->[0];
+	};
 	return $val;
 }
 
@@ -1019,9 +1106,14 @@ sub set_field {
 	$value = $s->quote($value, $column);
 	my $query;
 	if(! $s->record_exists($rawkey)) {
-		$s->set_row($rawkey);
+		if( $s->[$CONFIG]{AUTO_SEQUENCE} ) {
+			$query = qq{INSERT INTO $s->[$TABLE] ($column) VALUES ($value)};
+		}
+		else {
+			$s->set_row($rawkey);
+		}
 	}
-	$query = <<EOF;
+	$query = <<EOF unless $query;
 update $s->[$TABLE] SET $column = $value where $s->[$KEY] = $key
 EOF
 	$s->[$DBI]->do($query)
@@ -1042,6 +1134,10 @@ sub record_exists {
     my ($s, $key) = @_;
     $s = $s->import_db() if ! defined $s->[$DBI];
     my $query;
+
+	# Does any SQL allow empty key?
+	return '' if ! length($key) and ! $s->[$CONFIG]{ALLOW_EMPTY_KEY};
+
     $query = $s->[$CONFIG]{Exists_handle}
         or
 	    $query = $s->[$DBI]->prepare(
@@ -1427,10 +1523,10 @@ eval {
 		die "DBI tables must be updated natively.\n";
 	}
 	elsif ($opt->{hashref}) {
-		$ref = $Vend::Interplate::Tmp->{$opt->{hashref}} = $search->hash($spec);
+		$ref = $Vend::Interpolate::Tmp->{$opt->{hashref}} = $search->hash($spec);
 	}
 	else {
-		$ref = $Vend::Interplate::Tmp->{$opt->{arrayref}} = $search->array($spec);
+		$ref = $Vend::Interpolate::Tmp->{$opt->{arrayref}} = $search->array($spec);
 	}
 };
 #::logDebug("search spec: " . Vend::Util::uneval($spec));

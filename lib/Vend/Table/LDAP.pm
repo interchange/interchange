@@ -1,6 +1,6 @@
 # Table/LDAP.pm: LDAP pseudo-table
 #
-# $Id: LDAP.pm,v 1.6.6.4 2001-04-13 10:33:45 heins Exp $
+# $Id: LDAP.pm,v 1.6.6.5 2001-04-14 09:26:55 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,7 +27,7 @@
 
 package Vend::Table::LDAP;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 1.6.6.4 $, 10);
+$VERSION = substr(q$Revision: 1.6.6.5 $, 10);
 use strict;
 
 use vars qw(
@@ -87,6 +87,7 @@ sub open_table {
 
 	# LDAP doesn't do these
 	undef $config->{Transactions};
+	$config->{_Auto_number} = 1 if $config->{AUTO_NUMBER};
   DOCONNECT: {
 	my $base = $config->{BASE_DN};
 	my $host = $config->{LDAP_HOST};
