@@ -31,7 +31,7 @@ Core and usertags
 
 	in your catalog.cfg file.
 
-* New filter restrict_html.  Called with:
+* New filter restrict_html. Called with:
 
 	[filter restrict_html.a.b.i.u.p.br]
 			<SCRIPT> malicious('Gotcha!') </SCRIPT>
@@ -41,15 +41,15 @@ Core and usertags
 
 * Fixed crash of page servers in PreFork mode due to phantom
   database entries created by unwanted auto-vivification in
-  $Vend::Cfg->{Database}. Much thanks to Chris Ochs who researched 
-  this problem which was plaguing a lot of people and wouldn't have 
-  found without his fine help.
+  $Vend::Cfg->{Database}. Much thanks to Chris Ochs who researched
+  this problem which was plaguing a lot of people and wouldn't have
+  been found without his fine help.
 
 * Fixed Vend::Util::round_to_frac_digits() to work if frac_digits are
   zero. Thanks to Shozo Murahashi <murahashi@ayayu.com> who
   investigated and detailed this problem.
 
-* Make mv_more_alpha working in query tags.
+* Make mv_more_alpha work in query tags.
 
 * Fixed get_option_hash in Util.pm, thanks to Javier Martin
   <martin@trymedia.com> who discovered and analyzed this bug
@@ -61,7 +61,7 @@ Core and usertags
 * Issue an error message if a search can not be performed due
   to the NoSearch directive.
 
-* Added hide option to usertags email and email_row.
+* Added hide option to usertags email and email_raw.
 
 * Check for Digest::MD5 instead of MD5 in the usertag version and
   the RPM spec file.
@@ -73,14 +73,34 @@ Core and usertags
 
 * New methods hash_query and get_slice added to the Table modules.
 
+* In cases where tabs end up in database fields, prevent corruption of
+  tab-delimited DB exports by filtering tabs to spaces.
+
 * Added workaround for a bug in FreeBSD stock Perl build that sometimes
   caused a segmentation fault when starting the Interchange daemon. If
   you're upgrading from an earlier verson of Interchange, be sure to grab
-  the appropriate setting in interchange.cfg.
+  the appropriate setting in interchange.cfg. Search the icconfig doc for
+  'MV_DOLLAR_ZERO' for more info.
+
+* Fix oversight that kept [on-match] and [no-match] from working with
+  [loop list=`...`].
+
+* Close security hole by disabling Safe :base_io group by default.
+
+* Log error message if order profile not found.
+
+* Add "filter" order check type. It runs the value through a filter and
+  checks that it is unchanged.
+
+* Support Database xxx NO_ASCII_INDEX attribute.
+
+* Prevent death when using row_hash in DBM types and non-existent key
+  is hit.
 
 Payment
 -------
 * Bank of America payment module added.
+* Added $transtype fix in AuthorizeNet module. Thanks to Javier Martin.
 
 Admin UI
 --------
@@ -98,6 +118,13 @@ Admin UI
 
 * New usertag diffmerge, improved usertag diff.
 
+* Bump matchlimit for order report queries to 100000.
+
+* Correct wizard help links. Thanks to John Beima for reporting.
+
+* Prevent limitations on database show for superuser in list_databases
+  usertag, found by Ed LaFrance.
+
 I18N
 ----
 * localization support added to UI usertag file_info.
@@ -108,6 +135,11 @@ I18N
   Hiroyuki Cozy Kojima <kojima@redhat.com> added.
 
 * Brazilian Portuguese locale from Jack Tsai <jack@3light.com.br> added.
+
+Documentation
+-------------
+* Add ic_howto_cvs by Dan Browning, ic_ecommerce by Ed LaFrance (based on
+  rediscovered parts of the Minivend 4 docs), and the long-lost IC FAQ.
 
 
 ------------------------------------------------------------------------------
