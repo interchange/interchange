@@ -23,6 +23,7 @@
 
             my $name = $CGI->{"opt_group_$key"};
             my $value = $CGI->{"opt_value_$key"};
+            my $label = $CGI->{"opt_label_$key"};
 
             next unless $name && $value;
 
@@ -56,14 +57,13 @@
 
             my $value = join(",\n",@value);
 
-            my $label = $name;
-            $label =~ s/\W/_/g;
+	    $key =~ s/_/-/g; # javascript won't handle form names with '-'
 
-            $odb->set_field($key,'o_label',$label);
             $odb->set_field($key,'sku',$CGI->{sku});
             $odb->set_field($key,'o_group',$name);
             $odb->set_field($key,'o_value',$value);
             $odb->set_field($key,'o_widget','select');
+	    $odb->set_field($key,'o_label',$label);
         }
 
         return '';
@@ -96,12 +96,13 @@
 
 <TABLE BORDER=0><TR><TD VALIGN=TOP>
 
-[query list=1 sql="select * from options where sku='[cgi item_id]' and o_group is not null"]
+[query list=1 sql="select * from options where sku='[filter op=sql interpolate=1][cgi item_id][/filter]' and o_group is not null"]
 [list]
 [if-sql-data options o_group]
+[calc] $Scratch->{mod_code} = q{[sql-code]}; $Scratch->{mod_code} =~ s/-/_/g; return;[/calc]
 [if scratch count][tmp count]0[/tmp][else][tmp count]1[/tmp][/else][/if]
 <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3 BGCOLOR="[if scratch count]__UI_T_ROW_EVEN__[else]__UI_T_ROW_ODD__[/else][/if]">
-<TR><TD VALIGN=CENTER>Name: <INPUT TYPE=text SIZE=20 NAME="opt_group_[sql-code]" VALUE="[sql-param o_group]">
+<TR><TD VALIGN=CENTER>Name: <INPUT TYPE=text SIZE=20 NAME="opt_group_[scratch mod_code]" VALUE="[filter entities][sql-param o_group][/filter]">
 
 <A HREF="[area href='@@MV_PAGE@@'
                form='deleterecords=1
@@ -112,15 +113,24 @@
                      mv_action=back
                      mv_nextpage=@@MV_PAGE@@
                     '
-         ]"><IMG SRC="delete.gif" ALT="Delete" ALIGN=CENTER BORDER=0></A></TD></TR>
+         ]"><IMG SRC="delete.gif" ALT="Delete" ALIGN=CENTER BORDER=0></A>
+<br>Label: <INPUT TYPE=text SIZE=20 NAME="opt_label_[scratch mod_code]" VALUE="[filter entities][sql-param o_label][/filter]">
+<INPUT TYPE=hidden NAME="reset_[scratch mod_code]" VALUE="[filter entities][sql-param o_label][/filter]">
+<script><!--
+document.write('<br><INPUT TYPE=checkbox [sql-calc]q{[sql-param o_label]} eq q{[sql-param o_group]} ? 'CHECKED' : undef;[/sql-calc]\n' +
+'	onClick="if (this.checked) { this.form.opt_label_[scratch mod_code].value = this.form.opt_group_[scratch mod_code].value; } else { this.form.opt_label_[scratch mod_code].value = this.form.reset_[scratch mod_code].value; }">\n' +
+'<font size=2>Set label to name</font>');
+// -->
+</script>
+</TD></TR>
 [tmp o_value][perl]
-    my @vals = split(',','[sql-param o_value]');
+    my @vals = split(',',q{[sql-param o_value]});
     map { s/[\r\n]//g; } @vals;
     return join("\n",@vals);
 [/perl][/tmp]
 
 <TR><TD>
-<TEXTAREA ROWS=5 COLS=30 NAME="opt_value_[sql-code]">[scratch o_value]</TEXTAREA>
+<TEXTAREA ROWS=5 COLS=30 NAME="opt_value_[scratch mod_code]">[scratch o_value]</TEXTAREA>
 </TD></TR>
 </TABLE>
 [/if-sql-data]
@@ -133,10 +143,15 @@
 </TD><TD><PRE>                          </PRE></TD><TD VALIGN=TOP>
 
 <B>Create a new option:</B><BR>
-Name: <INPUT TYPE=text SIZE=20 NAME="opt_group_" VALUE=""><BR>
-[seti o_value][perl]
-    my @vals = split(',','[sql-param o_value]');
-[/perl][/seti]
+Name: <INPUT TYPE=text SIZE=20 NAME="opt_group_" VALUE="">
+<br>Label: <INPUT TYPE=text SIZE=20 NAME="opt_label_">
+<script><!--
+document.write('<br><INPUT TYPE=checkbox\n' +
+'	onClick="if (this.checked) { this.form.opt_label_.value = this.form.opt_group_.value; } else { this.form.opt_label_.value = \'\'; }">\n' +
+'<font size=2>Set label to name</font>');
+// -->
+</script>
+<BR>
 <TEXTAREA ROWS=5 COLS=30 NAME="opt_value_"></TEXTAREA>
 <BR>
 [button text="Create option"]

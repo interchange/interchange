@@ -80,10 +80,6 @@
 	[scratch profile_about]
 [/seti]
 
-[set profile_finalize]
-	finalized=required
-[/set]
-
 [set profile_preview]
 	site_created=required
 [/set]
