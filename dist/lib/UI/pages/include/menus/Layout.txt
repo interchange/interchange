@@ -1,0 +1,5 @@
+code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url	member
+001		x001					admin/menu_editor		Menu Editor		0	A powerful tree and menu manipulation facility							
+002		x002					admin/menu_loader		Menu loader		0	Load menus from a database							
+003		x003					admin/layout		Layout Editor		1	One way to arrange categories on your site							
+004		x004					admin/layout_auto		Auto-populate		1	Read fields from a database to populate this							

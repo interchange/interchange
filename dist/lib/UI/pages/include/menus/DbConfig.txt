@@ -1,0 +1,4 @@
+code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url	member
+001		x001					admin/dbconfig	mv_data_table=%5Bcgi%20mv_data_table%5D	Table Configuration		0	Configure a table							
+002		x002				mv_dbconf	admin/dbconfig_save	mv_data_table=%5Bcgi%20mv_data_table%5D	Save Table Configuration		0								
+003		x003					admin/gentable		Tables		0								
