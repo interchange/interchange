@@ -2,7 +2,7 @@
 #
 # UI::ContentEditor - Interchange page/component edit
 # 
-# $Id: ContentEditor.pm,v 2.4 2002-06-27 20:18:36 mheins Exp $
+# $Id: ContentEditor.pm,v 2.5 2002-08-31 08:13:32 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -23,7 +23,7 @@
 
 package UI::ContentEditor;
 
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 $DEBUG = 0;
 
 use POSIX qw/strftime/;
@@ -1421,9 +1421,8 @@ sub format_page {
 	my @header;
 
 	my $slots = delete $ref->{ui_slots} || [];
-	push @header, "ui_$type: $name";
-	push @header, "ui_type: $type";
 	push @header, "ui_name: $name";
+	push @header, "ui_type: $type";
 	push @header, "ui_page_template: $ref->{ui_page_template}";
 	push @header, "ui_version: " . $Tag->version();
 	delete $ref->{ui_name};
@@ -1432,6 +1431,7 @@ sub format_page {
 	delete $ref->{ui_slots};
 	delete $ref->{ui_version};
 	delete $ref->{ui_page_template};
+	delete $ref->{ui_page_picture};
 	my $body = delete $ref->{CONTENT};
 	$body =~ s/\r\n/\n/g;
 	$body =~ s/\r/\n/g;
