@@ -1,6 +1,6 @@
 # Vend::Payment::ECHO - Interchange ECHO support
 #
-# $Id: ECHO.pm,v 1.1 2002-08-23 17:40:00 danb Exp $
+# $Id: ECHO.pm,v 1.2 2002-08-26 23:23:12 danb Exp $
 #
 # Copyright (C) 2002 
 #      Electric Pulp. <info@electricpulp.com> 
@@ -34,7 +34,7 @@ package Vend::Payment::ECHO;
 
 =head1 Interchange ECHO Support
 
-Vend::Payment::ECHO $Revision: 1.1 $
+Vend::Payment::ECHO $Revision: 1.2 $
 
 =head1 AUTHOR
 
@@ -64,8 +64,7 @@ sign up for a test account at the following URL:
 	http://www.echo-inc.com/echotestapp.php
 
 This subroutine uses the OpenECHO module.  Make sure OpenECHO.pm is in your @INC
-array.  For your convenience, version 1.2 has been included with Interchange, 
-but you can get updated versions from:
+array.  It is available for download, see the following URLs:
   
   http://www.openecho.com/
   http://www.echo-inc.com/
