@@ -1,4 +1,8 @@
-[calc] $CGI->{no_dbmenu} = 1; $CGI->{access_menu} = 1; return [/calc]
+[calc]
+	$CGI->{no_dbmenu} = 1;
+	$CGI->{access_menu} = 1;
+	return;
+[/calc]
 [set page_title][L]Administrator Accounts[/L][/set]
 [set ui_class]Admin[/set]
 [set page_perm]access=l[/set]
@@ -6,6 +10,13 @@
 [set icon_name]icon_config.gif[/set]
 
 @_UI_STD_HEAD_@
+
+[calc]
+	$Config->{NoSearch} =~ s/\baccess\b//;
+	$Config->{NoSearch} =~ s/^\|//;
+	$Config->{NoSearch} =~ s/\|$//;
+	return;
+[/calc]
 
 <form action="[area ui]" method=POST name=accessform>
 <INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
