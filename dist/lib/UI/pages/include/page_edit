@@ -190,10 +190,10 @@ push @messages, "template from upload:\n$tref->{ui_definition}";
 ######## BEGIN INIT TEMPLATES
 		my $sep_template = <<EOF;
 <tr class=rheader>
-<td class=cheader colspan=2>Component ~NUMBER~ (~NAME~)</td>
+<td class=cheader colspan=2>[L]Component[/L] ~NUMBER~ (~NAME~)</td>
 </tr>
 <tr class=rnorm>
-<td class=clabel>Select component</td>
+<td class=clabel>[L]Select component[/L]</td>
 <td class=cdata>
 	<table width="100%">
 	<tr>
@@ -201,7 +201,7 @@ push @messages, "template from upload:\n$tref->{ui_definition}";
 			~NAMESEL~
 		</td>
 		<td class=clabel width="15%">
-			Type
+			[L]Type[/L]
 		</td>
 		<td class=cdata width="35%">
 			~TYPESEL~
@@ -296,10 +296,10 @@ EOF
 <td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__><b>Template</b> ($t_name)</td>
+	<td bgcolor=__UI_C_INTBLOCK__><b>[L]Template[/L]</b> ($t_name)</td>
 	<td bgcolor=__UI_C_INTBLOCK__><small>
 <select name="ui_template" size=1>
-<option value=""> Select a page template
+<option value=""> [L]Select a page template[/L]
 EOF
 
 	my ($data) = $Tag->read_ui_template("$template_dir/*");
@@ -319,7 +319,7 @@ EOF
 	</select>
 EOF
 	$out .= $Tag->button( {
-					text => "Change template",
+					text => "[L]Change template[/L]",
 					body => q{
 		mv_todo=back
 		[js]onclick="this.form.target='_self'"[/js]
@@ -340,7 +340,7 @@ EOF
 </tr>
 <tr>
 	<td bgcolor=__UI_C_INTBLOCK__>
-		<b>Template</b>
+		<b>[L]Template[/L]</b>
 	</td>
 	<td bgcolor=__UI_C_INTBLOCK__>
 		$t_name -- $t_desc
@@ -353,7 +353,7 @@ EOF
 	$out .= <<EOF;
 <tr>
 	<td class=ralt>
-		<b>Template sequence</b><br>
+		<b>[L]Template sequence[/L]</b><br>
 	</td>
 	<td class=ralt VALIGN=top>
 		$tref->{ui_template_layout}
@@ -361,8 +361,7 @@ EOF
 </tr>
 <tr>
 	<td class=ralt colspan=2>
-		<small><i>UI_CONTENT is the content portion(s), all others refer
-		to region variables elements.</i></small>
+		<small><i>[L]UI_CONTENT is the content portion(s), all others refer to region variables elements.[/L]</i></small>
 	</td>
 </tr>
 <tr class=rtitle>
@@ -472,16 +471,16 @@ EOF
 </tr>
 <tr class=ralt>
 	<td valign=top>
-	<b>Top of template</b>
+	<b>[L]Top of template[/L]</b>
 	<small><br><br>
 	<A HREF="$Config->{VendURL}/ui_download/$page?mv_no_cache=$Session->{pageCount}"><img src="down.gif" border=0 height=11 width=10 alt="download $page">download content</a>
-	<br><i>(will not reflect changes below unless saved)</I></small>
+	<br><i>[L](will not reflect changes below unless saved)[/L]</I></small>
 	</td>
 	<td>
 	<B>
 	<small>
 	<INPUT TYPE=file NAME=ui_upload_template_top><BR>
-	[button text="Upload new template portion from file"]
+	[button text="[L]Upload new template portion from file[/L]"]
 		mv_todo=return
 		[js]onclick="this.form.target='_self'"[/js]
 		mv_nextpage=@@MV_PAGE@@
@@ -491,7 +490,7 @@ EOF
 
 <tr class=ralt>
 	<td colspan=2 class=clabel>
-		<b>or input below:</b><br>
+		<b>[L]or input below:[/L]</b><br>
 		<TEXTAREA NAME=ui_template_top COLS=85 ROWS=20>$template_top_display</TEXTAREA>
 	</td>
 </tr>
@@ -659,7 +658,7 @@ EOF
 			if $tref->{ui_display_order};
 	}
 
-	push @controls, title_row("Page Settings")
+	push @controls, title_row("[L]Page Settings[/L]")
 		if @globals;
 	for my $g (@globals) {
 		my $set = $global->{$g};
@@ -704,14 +703,14 @@ EOF
 
 	push @controls, $preamble_widget if $preamble_widget;
 	
-	push @controls, title_row("Top Components") if @cobj;
+	push @controls, title_row("[L]Top Components[/L]") if @cobj;
 	for(my $i = 0; $i < @cobj; $i++) {
 		my $ref = $cobj[$i];
 		my $settings = $settings[$i] || {};
 		if($template_div and $i >= $template_div) {
-			push @controls, title_row("Content");
+			push @controls, title_row("[L]Content[/L]");
 			push @controls, $content_widget;
-			push @controls, title_row("Bottom Components");
+			push @controls, title_row("[L]Bottom Components[/L]");
 			undef $template_div;
 		}
 		my $c_name      = $ref->{ui_component} || 'none';
@@ -821,10 +820,10 @@ push @messages, "r key $_ set='$set' options=$options value=$Values->{$_} widget
 </tr>
 <tr class=ralt>
 	<td valign=top>
-	<b>Bottom of template</b>
+	<b>[L]Bottom of template[/L]</b>
 	<small><br><br>
 	<A HREF="$Config->{VendURL}/ui_download/$page?mv_no_cache=$Session->{pageCount}"><img src="down.gif" border=0 height=11 width=10 alt="download $page">download content</a>
-	<br><i>(will not reflect changes below unless saved)</I></small>
+	<br><i>[L](will not reflect changes below unless saved)[/L]</I></small>
 	</td>
 	<td>
 	<B>
@@ -863,20 +862,20 @@ EOF
 
 <tr class=ralt>
 <td colspan=2>
-[set Preview]
+[set [L]Preview[/L]]
 mv_todo=back
 mv_nextpage=__UI_BASE__/page_preview
 [/set]
 
-[set Save]
+[set [L]Save[/L]]
 mv_nextpage=__UI_BASE__/page_save
 [/set]
 
 [scratchd tmp_hidden]
-<INPUT TYPE=submit NAME=mv_click VALUE=Preview onClick="this.form.target='page_preview'; this.form.action='[area __UI_BASE__/page_preview]'">
+<INPUT TYPE=submit NAME=mv_click VALUE=[L]Preview[/L] onClick="this.form.target='page_preview'; this.form.action='[area __UI_BASE__/page_preview]'">
 <INPUT TYPE=hidden NAME=ui_return_to VALUE="__UI_BASE__/page">
-<INPUT TYPE=submit NAME=mv_click VALUE=Save onClick="this.form.target='_self'; this.form.action='[area __UI_BASE__/page_save]'">
-<INPUT TYPE=submit NAME=mv_click VALUE=Cancel onClick="this.form.target='_self'; this.form.action='[area __UI_BASE__/page]'"><br>
+<INPUT TYPE=submit NAME=mv_click VALUE=[L]Save[/L] onClick="this.form.target='_self'; this.form.action='[area __UI_BASE__/page_save]'">
+<INPUT TYPE=submit NAME=mv_click VALUE=[L]Cancel[/L] onClick="this.form.target='_self'; this.form.action='[area __UI_BASE__/page]'"><br>
 [comment]
 <!-- may come back someday -->
 <INPUT TYPE=checkbox NAME=ui_save_t_in_page VALUE=1 [cgi save_in_page]> Save template in page
