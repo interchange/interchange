@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.29 2001-03-18 19:31:02 heins Exp $
+# $Id: Config.pm,v 1.25.2.30 2001-03-19 17:48:58 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -98,7 +98,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.29 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.30 $, 10);
 
 my %CDname;
 
@@ -1635,12 +1635,9 @@ sub parse_locale {
 				or config_warn(errmsg("bad Locale setting in %s: %s", $name,$settings)),
 						$sethash = {};
 		}
-		elsif(index($settings, "\n") > -1) {
-			$settings =~ s/^(\S+\s+)"([\000-\377]*)"\s+$/$1$2/;
-			$sethash = {};
-			%{$sethash} = split(/\s+/, $settings, 2);
-		}
 		else {
+			$settings =~ s/^\s+//;
+			$settings =~ s/\s+$//;
 			$sethash = {};
 			%{$sethash} = Text::ParseWords::shellwords($settings);
 		}
