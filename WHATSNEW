@@ -33,7 +33,7 @@ Core
   - To do a minimal sequenced table, all you need to do is:
 
     Database  sequenced sequenced.txt __DBIDSN__
-    Database  sequenced AUTO_SEQUENCE sequenced
+    Database  sequenced AUTO_SEQUENCE sequenced_seq
 
   - The parameter passed to AUTO_SEQUENCE (in the above, "sequenced") will
     be used as the sequence name for Postgres and Oracle (and presumably
