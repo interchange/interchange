@@ -1,4 +1,4 @@
-[set page_title]Edit Template[/set]
+[set page_title][L]Edit Template[/L][/set]
 [set ui_class]Content[/set]
 [set help_name]page.main[/set]
 [set icon_name]icon_pages.gif[/set]
@@ -17,7 +17,7 @@
         "]
 [on-match]
 <P>
-<b>[loc]Backup copies[/loc]</b>
+<b>[L]Backup copies[/L]</b>
 <BLOCKQUOTE>
 [/on-match]
 [list]
@@ -246,10 +246,10 @@ push @messages, "template from upload:\n$tref->{ui_definition}";
 ######## BEGIN INIT TEMPLATES
 		my $sep_template = <<EOF;
 <tr class=rheader>
-<td class=cheader colspan=2>Component ~NUMBER~ (~NAME~)</td>
+<td class=cheader colspan=2>[L]Component[/L] ~NUMBER~ (~NAME~)</td>
 </tr>
 <tr class=rnorm>
-<td class=clabel>Default&nbsp;component</td>
+<td class=clabel>[L]Default&nbsp;component[/L]</td>
 <td class=cdata>
 	<table width="100%">
 	<tr>
@@ -257,7 +257,7 @@ push @messages, "template from upload:\n$tref->{ui_definition}";
 			~NAMESEL~
 		</td>
 		<td class=clabel width="15%">
-			Type
+			[L]Type[/L]
 		</td>
 		<td class=cdata width="35%">
 			~TYPESEL~
@@ -351,7 +351,7 @@ EOF
 </tr>
 <tr>
 	<td bgcolor=__UI_C_INTBLOCK__>
-		<b>Template</b>
+		<b>[L]Template[/L]</b>
 	</td>
 	<td bgcolor=__UI_C_INTBLOCK__>
 		<span style="font-size: larger">$t_name</span>
@@ -359,7 +359,7 @@ EOF
 </tr>
 <tr>
 	<td bgcolor=__UI_C_INTBLOCK__>
-		<b>Description</b>
+		<b>[L]Description[/L]</b>
 	</td>
 	<td bgcolor=__UI_C_INTBLOCK__>
 		<INPUT TYPE=text NAME=ui_template_description VALUE="$outdesc" SIZE=60>
@@ -370,7 +370,7 @@ EOF
 	$out .= <<EOF;
 <tr>
 	<td class=ralt>
-		<b>Template sequence</b><br>
+		<b>[L]Template sequence[/L]</b><br>
 	</td>
 	<td class=ralt VALIGN=top>
 		$tref->{ui_template_layout}
@@ -378,8 +378,7 @@ EOF
 </tr>
 <tr>
 	<td class=ralt colspan=2>
-		<small><i>UI_CONTENT is the content portion(s), all others refer
-		to region variables elements.</i></small>
+		<small><i>[L]UI_CONTENT is the content portion(s), all others refer to region variables elements.[/L]</i></small>
 	</td>
 </tr>
 <tr class=rtitle>
@@ -601,7 +600,7 @@ EOF
 	@globals = @{$tref->{ui_display_order}}
 		if $tref->{ui_display_order};
 
-	push @controls, title_row("Page Settings");
+	push @controls, title_row("[L]Page Settings[/L]");
 
 	my $glob = '';
 	for my $g (@globals) {
@@ -619,7 +618,7 @@ EOF
 	my $preamble_widget = <<EOF;
 <tr class=ralt>
 	<td colspan=2 class=clabel>
-		Page Settings <I>(accessed via scratch in header/footer)</I>
+		[L]Page Settings[/L] <I>[L](accessed via scratch in header/footer)[/L]</I>
 		<TEXTAREA NAME=ui_template_setting COLS=85 ROWS=$vsize>$glob</TEXTAREA>
 	</td>
 </tr>
@@ -631,7 +630,7 @@ EOF
 	push @controls, <<EOF;
 <tr class=ralt>
 	<td colspan=2 class=clabel>
-	<b>Top of template</b><BR>
+	<b>[L]Top of template[/L]</b><BR>
 		<TEXTAREA NAME=ui_template_top COLS=85 ROWS=$vsize>$template_top_display</TEXTAREA>
 	</td>
 </tr>
@@ -644,32 +643,32 @@ EOF
 	my $content_widget = <<EOF;
 <tr>
    <td class=clabel width="$Variable->{UI_LEFT_WIDTH}"> 
-     Content tag restrict
+     [L]Content tag restrict[/L]
    </td>
    <td class=cdata> 
      <table cellspacing=0 cellmargin=0 width="100%">
        <tr> 
          <td class=cwidget> 
            <SELECT NAME="ui_template_limit_tag">
-		   		<OPTION VALUE="value page area">Yes
-		   		<OPTION VALUE=""$norest_select>No
+		   		<OPTION VALUE="value page area">[L]Yes[/L]
+		   		<OPTION VALUE=""$norest_select>[L]No[/L]
 		   </SELECT>
          </td>
-         <td class=chelp><i>Restricts embedded ITL tags to <b>page, area,</b> and <b>value</b></i></td>
+         <td class=chelp><i>[L]Restricts embedded ITL tags to <b>page, area,</b> and <b>value</b>[/L]</i></td>
        </tr>
      </table>
    </td>
 </tr>
 EOF
 
-	push @controls, title_row("Top Components") if @cobj;
+	push @controls, title_row("[L]Top Components[/L]") if @cobj;
 	for(my $i = 0; $i < @cobj; $i++) {
 		my $ref = $cobj[$i];
 		my $settings = $settings[$i] || {};
 		if($template_div and $i >= $template_div) {
-			push @controls, title_row("Content");
+			push @controls, title_row("[L]Content[/L]");
 			push @controls, $content_widget;
-			push @controls, title_row("Bottom Components");
+			push @controls, title_row("[L]Bottom Components[/L]");
 			undef $template_div;
 		}
 		my $c_name      = $ref->{ui_component} || 'none';
@@ -701,7 +700,7 @@ EOF
 	}
 
 	if(defined $template_div) {
-		push @controls, title_row("Content");
+		push @controls, title_row("[L]Content[/L]");
 		push @controls, $content_widget;
 		undef $template_div;
 	}
@@ -711,8 +710,8 @@ EOF
 	$out .= <<EOF;
 <tr class=ralt>
 	<td colspan=2 class=clabel>
-	<b>Bottom of template</b><br>
-		or input below:<br>
+	<b>[L]Bottom of template[/L]</b><br>
+		[L]or input below:[/L]<br>
 		<TEXTAREA NAME=ui_template_bot COLS=85 ROWS=20>$template_bot_display</TEXTAREA>
 	</td>
 </tr>
@@ -736,20 +735,20 @@ EOF
 
 <tr class=ralt>
 <td colspan=2>
-[set Preview]
+[set [L]Preview[/L]]
 mv_todo=back
 mv_nextpage=__UI_BASE__/template_preview
 [/set]
 
-[set Save]
+[set [L]Save[/L]]
 mv_nextpage=__UI_BASE__/template_save
 [/set]
 
 [scratchd tmp_hidden]
-<INPUT TYPE=submit NAME=mv_click VALUE=Preview onClick="this.form.target='template_preview'; this.form.action='[area __UI_BASE__/template_preview]'">
+<INPUT TYPE=submit NAME=mv_click VALUE="[L]Preview[/L]" onClick="this.form.target='template_preview'; this.form.action='[area __UI_BASE__/template_preview]'">
 <INPUT TYPE=hidden NAME=ui_return_to VALUE="__UI_BASE__/page">
-<INPUT TYPE=submit NAME=mv_click VALUE=Save onClick="this.form.target='_self'; this.form.action='[area __UI_BASE__/template_save]'">
-<INPUT TYPE=submit NAME=mv_click VALUE=Cancel onClick="this.form.target='_self'; this.form.action='[area __UI_BASE__/page]'"><br>
+<INPUT TYPE=submit NAME=mv_click VALUE="[L]Save[/L]" onClick="this.form.target='_self'; this.form.action='[area __UI_BASE__/template_save]'">
+<INPUT TYPE=submit NAME=mv_click VALUE="[L]Cancel[/L]" onClick="this.form.target='_self'; this.form.action='[area __UI_BASE__/page]'"><br>
 [comment]
 <!-- may come back someday -->
 <INPUT TYPE=checkbox NAME=ui_save_t_in_page VALUE=1 [cgi save_in_page]> Save template in page

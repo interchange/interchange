@@ -1,13 +1,13 @@
-[if-mm !advanced template][set ui_error]Need permission for template edit.[/set][bounce page="__UI_BASE__/error"][/if-mm]
+[if-mm !advanced template][set ui_error][L]Need permission for template edit.[/L][/set][bounce page="__UI_BASE__/error"][/if-mm]
 [if !session admin]
-	[set ui_error]Must be logged in as admin.[/set]
+	[set ui_error][L]Must be logged in as admin.[/L][/set]
 	[bounce page="__UI_BASE__/error"]
 [/if]
 
 [pragma strip_white]
 
 [if !cgi good_template]
-	[set ui_error]Not a good template -- must enter from template editor.[/set]
+	[set ui_error][L]Not a good template -- must enter from template editor.[/L][/set]
 	[bounce page="__UI_BASE__/error"]
 [/if]
 
