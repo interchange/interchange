@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.9.2.22 2002-11-29 11:55:42 racke Exp $
+# $Id: Interpolate.pm,v 2.9.2.23 2003-01-23 19:19:30 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.9.2.22 $, 10);
+$VERSION = substr(q$Revision: 2.9.2.23 $, 10);
 
 @EXPORT = qw (
 
@@ -5458,6 +5458,7 @@ sub region {
 
 	if($opt->{ml} and ! defined $obj->{mv_matchlimit} ) {
 		$obj->{mv_matchlimit} = $opt->{ml};
+		$obj->{mv_more_decade} = $opt->{md};
 		$obj->{matches} = scalar @{$obj->{mv_results}};
 		$obj->{mv_cache_key} = generate_key(substr($page,0,100));
 		$obj->{mv_first_match} = $opt->{fm} if $opt->{fm};
