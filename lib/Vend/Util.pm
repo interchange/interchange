@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.48 2003-02-07 16:41:57 mheins Exp $
+# $Id: Util.pm,v 2.49 2003-02-12 15:03:06 racke Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -85,7 +85,7 @@ require HTML::Entities;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.48 $, 10);
+$VERSION = substr(q$Revision: 2.49 $, 10);
 
 BEGIN {
 	eval {
@@ -580,7 +580,7 @@ sub hexify {
 
 sub unhexify {
     my $s = shift;
-    $s =~ s/%(..)/chr(hex($1))/ge;
+    $s =~ s/%([0-9A-Fa-f][0-9A-Fa-f])/chr(hex($1))/ge;
     return $s;
 }
 
