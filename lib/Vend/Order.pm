@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.9 2001-10-06 06:29:54 mheins Exp $
+# $Id: Order.pm,v 2.10 2001-11-08 16:17:31 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = substr(q$Revision: 2.10 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -112,6 +112,28 @@ my %Parse = (
 										$len,
 										$max) if ! $msg;
 								return(0, $name, $msg);
+							}
+							return (1, $name, '');
+						},
+	'filter'			=> sub {		
+							my($name, $value, $code) = @_;
+							my $message;
+							my $filter;
+
+							$code =~ s/\\/\\\\/g;
+							if($code =~ /(["']).+?\1$/) {
+								my @code = Text::ParseWords::shellwords($code);
+								$message = pop(@code);
+								$filter = join " ", @code;
+							}
+							else {
+								($filter, $message) = split /\s+/, $code, 2;
+							}
+
+							my $test = Vend::Interpolate::filter_value($filter, $value, $name);
+							if($test ne $value) {
+								$message ||= errmsg("%s caught by filter %s", $name, $filter);
+								return ( 0, $name, $message);
 							}
 							return (1, $name, '');
 						},
