@@ -830,8 +830,6 @@ scripts/makecat.PL
 scripts/offline.PL
 scripts/restart.PL
 scripts/update.PL
-share/interchange/de_DE/B1.gif
-share/interchange/de_DE/B10.gif
 share/interchange/de_DE/B2.gif
 share/interchange/de_DE/B2_b.gif
 share/interchange/de_DE/B3.gif
