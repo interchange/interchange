@@ -45,7 +45,7 @@ EOF
 
 	my $new;
 	if($CGI->{ui_template_new}) {
-Log("found new template");
+Debug("found new template");
 		$t_desc = $CGI->{ui_template_description} || $CGI->{ui_template_new};
 		$t_name = $CGI->{ui_template_new};
 		$t_name =~ s/^\W+//;
@@ -135,7 +135,7 @@ push @messages, "template from upload:\n$tref->{ui_definition}";
 	
    }
 
-Log("t_name=$t_name");
+Debug("t_name=$t_name");
 	$out .= <<EOF;
 <tr>
 	<td class=ralt><b>Template description</b></td>
@@ -175,7 +175,10 @@ EOF
 				 	(.*?)
 					<!--+ \s+ end \s+ component \s+ \1 \s+ --+> 
 				 | 
-				 	\[ include \s+ file \s*=\s*["'][^"]*/(\w+) ['"]
+				 	\[ include \s+ file \s*=\s*["'][^"]*/
+						(?:\[control \s+ component \s+ )?
+							(\w+)
+						\]? ['"]
 				 	(.*?)
 					\]  \s*  \[control\]
 				 )
@@ -211,7 +214,7 @@ EOF
 				 	(.*?)
 				 <!--+ \s+end \s+component \s+ \1 \s+ --+> 
 			}
-			{[include file="$compdir/$1"][control]}gsix;
+			{[include file="$compdir/[control component $1]"][control]}gsix;
 		
 	}
 
@@ -295,7 +298,7 @@ EOF
 
 	my $sep_template = <<EOF;
 <tr class=rtitle>
-<td colspan=2 class=ctitle>~NAME~ - ~DESC~<INPUT TYPE=hidden NAME="~VARNAME~" VALUE="~NAME~"</td>
+<td colspan=2 class=ctitle>Component #~INCREMENT~<br>~NAME~ - ~DESC~<INPUT TYPE=hidden NAME="~VARNAME~" VALUE="~NAME~"</td>
 </tr>
 EOF
 
@@ -323,6 +326,22 @@ EOF
 </tr>
 EOF
 
+Debug("calling read_ui_template $compdir/*");
+	my ($components) = $Tag->read_ui_template("$compdir/*");
+	my @copts;
+	for(@$components) {
+Debug("Found component: " . uneval($_));
+		my $hash = $_;
+		my $key = $hash->{ui_component_name} || $hash->{ui_component};
+		my $val = $hash->{ui_component_label} || $hash->{ui_component_description};
+		$key =~ s/"/&quot;/g;
+		$val =~ s/"/&quot;/g;
+		$val =~ s/,/&#44;/g;
+		push @copts, "$key=$val";
+	}
+
+	my $opt_string = join ",", @copts;
+
 	for(my $i = 0; $i < @cobj; $i++) {
 		my $ref = $cobj[$i];
 		my $c_name = $ref->{ui_component_name} || $ref->{ui_component} || 'None';
@@ -337,6 +356,7 @@ EOF
 		my @def;
 
 		my $titlebar = $sep_template;
+		$titlebar =~ s/~INCREMENT~/$i + 1/eg;
 		$titlebar =~ s/~NAME~/$c_name/g;
 		$titlebar =~ s/~DESC~/$c_label/g;
 		$titlebar =~ s/~VARNAME~/$i.ui_component/g;
@@ -348,58 +368,30 @@ EOF
 
 		my $deftext = $comp_default[$i];
 
+		my $help =<<EOF;
+Select only one for a fixed component, select none for a choice of all,
+or select the ones to give a choice of.
+EOF
 		my $r;
-Log("element=$ref->{element}(or $ref->{element})");
+Debug("element=$ref->{element}(or $ref->{element})");
 
-		if (ref $ref->{element}) {
-				my $widget;
-				my @order;
-				if($ref->{ui_display_order}) {
-					@order = @{$ref->{ui_display_order}};
-				}
-				else {
-					@order = sort keys %{$ref->{element}};
-				}
-				for(@order) {
-					$r = get_unified_ref($_, $ref);
-					my ($set) = $current =~ m{\[(seti?|tmp)\s+$_\](.*?)\[/\1\]};
-					my $t_set = $r->{$_};
-					my $wtype = $r->{widget} || '';
-					my $label = $r->{label} || $r->{description} || $_;
-					if($wtype eq 'break') {
-						push @controls, $break_template;
-						next;
-					}
-					my $options = $r->{options};
-push @messages, "r key $_ set='$set' options=$options value=$Values->{$_} widget=$wtype";
-					my $help = $r->{help} || '';
-
-					if(! $wtype) {
-						$wtype = 'text';
-						$r->{width} = 40
-							if ! $r->{width};
-					}
-					$widget = $Tag->display( {
-									name => "$i.ui_control_$_",
-									type => $wtype,
-									lookup => $r->{lookup},
-									db => $r->{db},
-									passed => $r->{options},
-									rows =>  $r->{height},
-									cols =>  $r->{width},
-									override => $set,
-									help => $help,
-									label =>  $label,
-									filter => $r->{filter},
-									pre_filter => $r->{prefilter},
-									template => $control_template,
-								});
-					push @messages, "widget='$widget'";
-					# No meta for now
-					$widget =~ s/~[A-Z]{3,}~//g;
-					push @controls, $widget;
-				}
-		}
+		$widget = $Tag->display( {
+						name => "$i.ui_control_component",
+						type => 'multiple',
+						passed => $opt_string,
+						rows =>  10,
+						cols =>  50,
+						override => $c_name,
+						default => $c_name,
+						help => $help,
+						label =>  "Component type",
+						filter => 'null_to_comma',
+						template => $control_template,
+					});
+		push @messages, "widget='$widget'";
+		# No meta for now
+		$widget =~ s/~[A-Z]{3,}~//g;
+		push @controls, $widget;
 
 	}
 
