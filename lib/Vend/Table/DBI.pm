@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.19.4.4 2000-10-26 19:23:03 racke Exp $
+# $Id: DBI.pm,v 1.19.4.5 2000-10-26 20:41:25 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.19.4.4 $, 10);
+$VERSION = substr(q$Revision: 1.19.4.5 $, 10);
 
 use strict;
 
@@ -542,9 +542,15 @@ sub row_settor {
         }
 
 		my $key = $values[0];
+
+		# quote values
+		for ($i = 0; $i < @columns; $i++) {
+			$values[$i] = $s->quote($values[$i], $columns[$i]);
+		}
+		
 		if($update) {
             for (@columns) {
-                push (@parts, " $_ = " . $s->quote(shift(@values), $_));
+                push (@parts, " $_ = " . shift(@values));
             }
             $query = "update $s->[$TABLE] set "
                 . join (', ', @parts)
