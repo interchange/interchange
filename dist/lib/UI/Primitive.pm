@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.21.4.5 $, 10);
+$VERSION = substr(q$Revision: 1.21.4.6 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -845,7 +845,8 @@ sub meta_display {
 									map { s/,/&#44;/g; $_} @files;
 		}
 		elsif ($record->{type} eq 'imagehelper') {
-            return imagehelper_widget($column, $value, $record->{outboard});
+            my $w = imagehelper_widget($column, $value, $record->{outboard});
+			return ($w, $record->{label}, $record->{help}, $record->{help_url});			
         }
 		for(qw/append prepend/) {
 			next unless $record->{$_};
