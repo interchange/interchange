@@ -13,6 +13,7 @@ sub {
 	my ($hist, $href, $cgi);
 	$exclude = qr/$exclude/ if $exclude;
 	for(my $i = $#$ref; $i >= 0; $i--) {
+		next if $ref->[$i][0] eq 'expired';
 		#Log("checking $ref->[$i][0] for $exclude");
 		if ($exclude and $ref->[$i][0] =~ $exclude) {
 			next;
