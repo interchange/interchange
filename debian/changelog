@@ -1,3 +1,9 @@
+interchange (4.8.7-1) unstable; urgency=low
+
+  * new upstream release
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu,  5 Sep 2002 01:03:05 +0200
+
 interchange (4.8.6-1) unstable; urgency=high
 
   * new upstream release, fixes security problem which allows access via
