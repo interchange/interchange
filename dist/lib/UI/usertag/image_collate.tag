@@ -24,11 +24,14 @@ sub {
 	if($archive =~ /\.zip$/i) {
 		$Exec = 'unzip -q -j';
 	}
-	elsif ($archive =~ /gz$/) {
+	elsif ($archive =~ /\.(tar\.|t)gz$/) {
 		$Exec = 'tar -x -z -f';
 	}
-	elsif ($archive =~ /bz2?$/) {
+	elsif ($archive =~ /\.bz2?$/) {
 		$Exec = 'tar -x -j -f';
+	}
+	elsif ($archive =~ /\.tar$/) {
+		$Exec = 'tar -x -f';
 	}
 	else {
 		my $tmp = $archive;
@@ -104,9 +107,7 @@ sub {
 			for(@$ary) {
 				my ($sku, $i_d, $t_d) = @$_;
 				$t_d = $thumb ? "$base$ext" : $t_d;
-				if($i_d ne "$base$ext" or $thumb) {
-					push @do, [$sku, "$base$ext", "$base$ext"];
-				}
+				push @do, [$sku, "$base$ext", $t_d];
 			}
 		}
 		else {
@@ -115,9 +116,7 @@ sub {
 				for(@$ary) {
 					my ($sku, $i_d, $t_d) = @$_;
 					$t_d = $thumb ? "$base$ext" : $t_d;
-					if($i_d ne "$base$ext" or $thumb) {
-						push @do, [$sku, "$base$ext", $t_d];
-					}
+					push @do, [$sku, "$base$ext", $t_d];
 				}
 			}
 		}
@@ -135,7 +134,7 @@ sub {
 		$db->set_slice($sku, [$i_f, $t_f], $_)
 			or return tmp_error("unable to set table=%s for sku=%s.", $table, $sku);
 		File::Copy::copy($_->[0], 'items');
-		File::Copy::copy($_->[0], 'thumb') if $thumb;
+		File::Copy::copy($_->[1], 'thumb') if $thumb;
 	}
 
 	my @errors;
