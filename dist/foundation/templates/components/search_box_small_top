@@ -17,7 +17,8 @@ matches:
   <tr> 
     <td class="menubar"> 
       <br>     
-      <form action="[area search]">
+      <form action="[area search]" method=post>
+	  <input type=hidden name=mv_session_id value="[data session id]">
       <table border="0" width="95%">
       <tr> 
 	<td align="left">
