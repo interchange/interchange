@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.111 2002-09-18 00:45:56 jon Exp $
+# $Id: Interpolate.pm,v 2.112 2002-09-19 03:25:47 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.111 $, 10);
+$VERSION = substr(q$Revision: 2.112 $, 10);
 
 @EXPORT = qw (
 
@@ -440,11 +440,12 @@ undef %T;
 
 sub get_joiner {
 	my ($joiner, $default) = @_;
+	return $default      unless defined $joiner and length $joiner;
 	if($joiner eq '\n') {
 		$joiner = "\n";
 	}
 	elsif($joiner =~ m{\\}) {
-		$joiner = tag_calc("qq{$joiner}");
+		$joiner = $safe_safe->reval("qq{$joiner}");
 	}
 	return length($joiner) ? $joiner : $default;
 }
