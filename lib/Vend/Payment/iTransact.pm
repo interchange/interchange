@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: iTransact.pm,v 1.1.2.3 2001-04-10 05:22:42 heins Exp $
+# $Id: iTransact.pm,v 1.1.2.4 2001-04-11 05:42:31 heins Exp $
 #
 # Copyright (C) 1999-2001 Red Hat, Inc., http://www.redhat.com
 #
@@ -27,7 +27,7 @@ package Vend::Payment::iTransact;
 
 =head1 Interchange iTransact Support
 
-Vend::Payment::iTransact $Revision: 1.1.2.3 $
+Vend::Payment::iTransact $Revision: 1.1.2.4 $
 
 =head1 SYNOPSIS
 
@@ -150,9 +150,14 @@ Make sure you set your account ID properly.
 
 Try an order, then put this code in a page:
 
+    <XMP>
     [calc]
-        $Tag->uneval( { ref => $Session->{payment_result} );
+        my $string = $Tag->uneval( { ref => $Session->{payment_result} });
+        $string =~ s/{/{\n/;
+        $string =~ s/,/,\n/g;
+        return $string;
     [/calc]
+    </XMP>
 
 That should show what happened.
 
