@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.32 2003-11-05 17:12:57 mheins Exp $
+# $Id: Data.pm,v 2.33 2003-12-09 11:05:41 racke Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -1814,7 +1814,7 @@ sub update_data {
 
 	my $en_col;
 #::logDebug("data_enable=$::Scratch->{mv_data_enable}, checking");
-	if($::Scratch->{mv_data_enable} =~ /^(\w+):(.*?):/) {
+	if($::Scratch->{mv_data_enable} =~ /^(\w+):(.*?):/s) {
 		# check for single key and possible set of columns
 		my $en_table = $1;
 		$en_col   = $2;
