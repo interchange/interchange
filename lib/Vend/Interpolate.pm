@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.20 2001-02-18 17:41:41 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.21 2001-02-26 01:01:00 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.20 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.21 $, 10);
 
 @EXPORT = qw (
 
@@ -514,6 +514,7 @@ sub vars_and_comments {
 
 sub interpolate_html {
 	my ($html, $wantref) = @_;
+	return undef if $Vend::NoInterpolate;
 	my ($name, @post);
 	my ($bit, %post);
 
@@ -2118,7 +2119,18 @@ sub tag_perl {
 	my ($result,@share);
 #::logDebug("tag_perl MVSAFE=$MVSAFE::Safe opts=" . ::uneval($opt));
 
-	return undef if $MVSAFE::Safe;
+	if($Vend::NoInterpolate) {
+		::logGlobal({ level => 'alert' },
+					"Attempt to interpolate perl/ITL from RPC, no permissions."
+					);
+		return undef;
+	}
+
+	if ($MVSAFE::Safe) {
+		::logGlobal({ level => 'alert' }, "Attempt to call perl from within Safe.");
+		return undef;
+	}
+
 #::logDebug("tag_perl: tables=$tables opt=" . ::uneval($opt) . " body=$body");
 #::logDebug("tag_perl initialized=$Calc_initialized: carts=" . ::uneval($::Carts));
 	if($opt->{subs} || (defined $opt->{arg} and $opt->{arg} =~ /\bsub\b/)) {
@@ -2171,6 +2183,8 @@ sub tag_perl {
 			}
 		};
 	}
+
+	#$hole->wrap($Tag);
 
 	$MVSAFE::Safe = 1;
 	if (
@@ -3210,6 +3224,11 @@ sub tag_process {
 sub tag_calc {
 	my($body) = @_;
 	my $result;
+	if($Vend::NoInterpolate) {
+		::logGlobal({ level => 'alert' },
+					"Attempt to interpolate perl/ITL from RPC, no permissions."
+					);
+	}
 
 	if($MVSAFE::Safe) {
 		$result = eval($body);
