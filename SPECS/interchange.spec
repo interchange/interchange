@@ -271,7 +271,7 @@ find $RPM_BUILD_ROOT/%{_prefix}/lib/interchange/bin -type f | xargs chmod 755
 for i in %build_cats
 do
 	touch $RPM_BUILD_ROOT/var/log/interchange/$i.error.log
-	ln -s ../../../log/$i.error.log $RPM_BUILD_ROOT/var/lib/interchange/$i/error.log
+	ln -s ../../../log/interchange/$i.error.log $RPM_BUILD_ROOT/var/lib/interchange/$i/error.log
 done
 mv interchange.cfg $RPM_BUILD_ROOT/etc/interchange.cfg
 ln -s /etc/interchange.cfg .
