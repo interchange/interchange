@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.2 2000-05-28 22:20:25 heins Exp $
+# $Id: DBI.pm,v 1.3 2000-06-05 05:36:34 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.3 $, 10);
 
 use strict;
 
@@ -491,16 +491,12 @@ sub set_field {
 	$key   = $s->quote($key, $s->[$KEY]);
 	$value = $s->quote($value, $column);
 	my $query;
-	if($s->record_exists($rawkey)) {
-		$query = <<EOF;
+	if(! $s->record_exists($rawkey)) {
+		$s->set_row($rawkey, $rawkey);
+	}
+	$query = <<EOF;
 update $s->[$TABLE] SET $column = $value where $s->[$KEY] = $key
 EOF
-	}
-	else {
-		$query = <<EOF;
-insert into $s->[$TABLE] ($s->[$KEY], $column) VALUES ($key, $value)
-EOF
-	}
 	$s->[$DBI]->do($query)
 		or die "$DBI::errstr\n";
 	return $rawval;

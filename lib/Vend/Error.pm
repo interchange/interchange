@@ -1,6 +1,6 @@
 # Error.pm - Handle MiniVend error pages and messages
 # 
-# $Id: Error.pm,v 1.1 2000-05-26 18:50:38 heins Exp $
+# $Id: Error.pm,v 1.2 2000-06-05 05:36:34 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -37,13 +37,13 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.1 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/);
 
 my $wantref = 1;
 
 sub get_locale_message {
 	my ($code, $message, @arg) = @_;
-	if (defined $Vend::Cfg->{Locale}{$code}) {
+	if ($Vend::Cfg->{Locale} and defined $Vend::Cfg->{Locale}{$code}) {
 		$message = $Vend::Cfg->{Locale}{$code};
 	}
 	elsif ($Global::Locale and defined $Global::Locale->{$code}) {
@@ -60,7 +60,7 @@ sub get_locale_message {
 			$message = $tmp if $tmp;
 		}
 	}
-	return sprintf($message, @arg) if ! defined $Vend::Cfg->{Locale}{$code}
+	return sprintf($message, @arg);
 }
 
 ## INTERFACE ERROR
