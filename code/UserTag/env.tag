@@ -1,8 +1,7 @@
-# Copyright 2004 Interchange Development Group (http://www.icdevgroup.org)
-# Copyright 2001 Red Hat, Inc.
+# Copyright 2001,2004 Interchange Development Group (http://www.icdevgroup.org)
 # Copyright 2001 Ed LaFrance <edl@newmediaems.com>
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: env.tag,v 1.6 2004-09-24 12:08:50 docelic Exp $
+# $Id: env.tag,v 1.7 2004-09-24 12:23:20 docelic Exp $
 
 Usertag env Order arg
 Usertag env PosNumber 1
