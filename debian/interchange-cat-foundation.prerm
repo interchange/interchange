@@ -17,6 +17,15 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
+# Source debconf library
+. /usr/share/debconf/confmodule
+
 /usr/sbin/interchangeconfig USE_FOUNDATION=
+
+db_get interchange-cat-foundation/install
+if [ "$RET" = "true" ]; then
+	# remove catalog from running server
+	/usr/sbin/interchange --remove=foundation
+fi
 
 #DEBHELPER#
