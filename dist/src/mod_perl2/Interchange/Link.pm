@@ -2,7 +2,7 @@
 
 # tlink.pl: runs as a cgi program and passes request to Interchange server
 #
-# $Id: Link.pm,v 1.2 2004-06-29 05:48:42 mheins Exp $
+# $Id: Link.pm,v 1.3 2004-06-29 13:15:03 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc.
 # Copyright (C) 2002-2004 Interchange Development Group
@@ -45,7 +45,7 @@ Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 
 =head1 VERSION
 
-$Revision: 1.2 $
+$Revision: 1.3 $
 
 =head1 SYNOPSIS
 
@@ -150,7 +150,7 @@ Normally this takes the form of:
 
 Note that your file permissions for the socket file need to allow the
 Apache User uid to read and write it. This usually means "SocketPerms
-0666" or in interchange.cfg.  You can also do "SocketPerms 0666" if you
+0666" or in interchange.cfg.  You can also do "SocketPerms 0660" if you
 set the group of the containing directory to the Apache Group value,
 and change the directory permissions to enable the setgid bit. (That is
 accomplished with "chmod g+s <directory>".)
