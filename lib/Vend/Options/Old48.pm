@@ -1,6 +1,6 @@
 # Vend::Options::Old48 - Interchange 4.8 compatible product options
 #
-# $Id: Old48.pm,v 1.4 2003-12-04 03:52:18 mheins Exp $
+# $Id: Old48.pm,v 1.4.2.1 2004-04-15 19:27:39 mheins Exp $
 #
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
 # Copyright (C) 2002-2003 Interchange Development Group <interchange@icdevgroup.org>
@@ -23,7 +23,7 @@
 
 package Vend::Options::Old48;
 
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.4.2.1 $, 10);
 
 =head1 NAME
 
@@ -242,12 +242,11 @@ sub display_options_matrix {
 			push @rf, ($map->{$_} || $_);
 		}
 		my $ccol = $map->{code} || 'code';
-		my $cval = $db->quote("$sku-%");
 		my $lcol = $map->{sku} || 'sku';
 		my $lval = $db->quote($sku, $lcol);
 
 		my $q = "SELECT " . join(",", @rf);
-		$q .= " FROM $tname where $lcol = $lval AND $ccol like $cval $rsort";
+		$q .= " FROM $tname where $lcol = $lval AND code <> $lval $rsort";
 #::logDebug("tag_options matrix query: $q");
 		my $ary = $db->query($q); 
 #::logDebug("tag_options matrix ary: " . ::uneval($ary));
@@ -388,7 +387,7 @@ sub display_options_simple {
 	my $q = "SELECT " . join (",", @rf) . " FROM $tname where $fsel = $rsel";
 
 	if(my $rsort = find_sort($opt)) {
-		$q .= $rsort;
+		$q .= " $rsort";
 	}
 #::logDebug("tag_options simple query: $q");
 
