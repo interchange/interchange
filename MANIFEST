@@ -16,6 +16,7 @@ code/ActionMap/foo.am
 code/Filter/date2time.filter
 code/Filter/lc.filter
 code/SystemTag/accessories.coretag
+code/SystemTag/accounting.coretag
 code/SystemTag/area.coretag
 code/SystemTag/assign.coretag
 code/SystemTag/attr_list.coretag
@@ -53,6 +54,8 @@ code/SystemTag/include.coretag
 code/SystemTag/index.coretag
 code/SystemTag/input_filter.coretag
 code/SystemTag/item_list.coretag
+code/SystemTag/levies.coretag
+code/SystemTag/levy_list.coretag
 code/SystemTag/log.coretag
 code/SystemTag/loop.coretag
 code/SystemTag/mail.coretag
@@ -869,6 +872,7 @@ extensions/ECML/ecml.coretag
 extensions/quickbooks/README
 extensions/quickbooks/etc/trans_quickbooks
 extensions/quickbooks/ic_qb.pod
+extensions/quickbooks/mv_metadata-additions.asc
 extensions/quickbooks/pages/admin/quickbooks/export_coa.html
 extensions/quickbooks/pages/admin/quickbooks/export_items.html
 extensions/quickbooks/pages/admin/quickbooks/get_orders.html
@@ -880,6 +884,16 @@ extensions/quickbooks/usertag/export_quicken_coa.tag
 extensions/quickbooks/usertag/export_quicken_items.tag
 extensions/quickbooks/usertag/get_quicken_orders.tag
 extensions/quickbooks/usertag/import_quicken_items.tag
+extensions/sql-ledger/SLInterface.pm
+extensions/sql-ledger/SLInterface.pm.orig
+extensions/sql-ledger/UserDB.pm
+extensions/sql-ledger/UserDB.pm.orig
+extensions/sql-ledger/catalog.cfg
+extensions/sql-ledger/dan_message
+extensions/sql-ledger/new_account.html
+extensions/sql-ledger/realperl.tag
+extensions/sql-ledger/sl_interface.tag
+extensions/sql-ledger/trans_sqlledger.v1
 extra/Business/Fedex.pm
 extra/Business/UPS.pm
 extra/File/Spec.pm
