@@ -59,7 +59,7 @@ sub {
 	}
 
 	if($opt->{perl}) {
-		push @out, "$] (called with: $^X)";
+		push @out, ($^V ? sprintf("%vd", $^V) : $]) . " (called with: $^X)";
 		$done_something = 1;
 	}
 
