@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.9.0
 #
-# $Id: interchange.PL,v 2.9 2001-09-04 13:24:18 mheins Exp $
+# $Id: interchange.PL,v 2.10 2001-10-06 07:03:37 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -528,6 +528,7 @@ sub update_data {
 	my($key,$value);
     # Update a database record
 	# Check to see if this is allowed
+::logDebug("mv_data_enable=$::Scratch->{mv_data_enable}");
 	if(! $::Scratch->{mv_data_enable}) {
 		logError(
 			 "Attempted database update without permission, table=%s key=%s.",
@@ -644,7 +645,7 @@ sub update_data {
 
 	while (($key, $value) = each %CGI::values) {
 		next unless defined $data{$key};
-		$count = (@{$data{$key}} = split /\0/, $value);
+		$count = (@{$data{$key}} = split /\0/, $value, -1);
 		$max = $count, $maxname = $key if $count > $max;
 		$min = $count, $minname = $key if $count < $min;
 	}
@@ -845,6 +846,11 @@ sub update_data {
 			push(@v, $value);
 		}
 
+		if(! length($select_key) ) {
+			next if  defined $CGI::values{mv_update_empty_key}
+					 and   ! $CGI::values{mv_update_empty_key};
+		}
+
 		if($function eq 'delete') {
 			$base_db->delete_record($select_key);
 		}
@@ -877,10 +883,15 @@ sub update_data {
 #::logDebug("update_data: blob string=$string");
 				$blob = $safe->reval($string);
 #::logDebug("update_data: blob object=$blob");
-				$blob = {} if ! $blob;
-				$blob->{$blob_nick} = {}
-					if ! $blob->{$blob_nick};
-				$brec = $blob->{$blob_nick};
+				$blob = {} unless ref($blob) eq 'HASH';
+				$brec = $blob;
+				my @keys = split /::/, $blob_nick;
+				for(@keys) {
+					unless ( ref($brec->{$_}) eq 'HASH') {
+						$brec->{$_} = {};
+					}
+					$brec = $brec->{$_};
+				}
 			}
 			while($field = shift @k) {
 				$value = shift @v;
@@ -960,7 +971,6 @@ sub update_data {
 	}
 	return;
 }
-
 # Parse the mv_click and mv_check special variables
 sub parse_click {
 	my ($ref, $click, $extra) = @_;

@@ -16,6 +16,44 @@ __NAME__ process_filter
 		}
 	}
   }
+
+  SERIALIZE: {
+  	last SERIALIZE unless $CGI->{ui_serial_fields};
+#Debug("Found serialzed values $CGI->{ui_serial_fields}");
+	my(@scols) = split /\s+/, $CGI->{ui_serial_fields};
+	my(@cols) = split /\s+/, $CGI->{mv_data_fields};
+	my %serial_data;
+	for(@scols) {
+#Debug("serial field $_");
+		my $val = defined $CGI->{$_} ? $CGI->{$_} : '';
+#Debug("serial field $_ value=$val");
+		m/(\w+)\.(.*)/
+			or next;
+		my $maincol = $1;
+		my $hashkey = $2;
+		if(! $serial_data{$maincol}) {
+			for(@cols) {
+				next unless /^(\w+:+)?$maincol$/;
+				$serial_data{$maincol} = delete $CGI->{$_};
+				last;
+			}
+		}
+
+		$serial_data{$maincol} = dotted_hash(
+									$serial_data{$maincol},
+									$hashkey,
+									$val,
+								);
+
+	}
+	for(keys %serial_data) {
+		$CGI->{$_} = $serial_data{$_};
+	}
+	for(@cols) {
+#Debug("after serialize data for $_: $CGI->{$_}");
+	}
+  }
+
 	my @uploads = grep /^ui_upload_file_path:/, keys %$CGI;
 #Debug("Check uploads: " . join ",", @uploads);
 	return unless @uploads;
@@ -37,7 +75,7 @@ __NAME__ process_filter
 		my $isfile = $Tag->value_extended( { name => $key, test => 'isfile' } );
 #Debug("cgi->$key isfile='$isfile'");
 		next unless $isfile;
-		$path =~ s,/+$,,;
+		$path =~ s,[\\/]+$,,;
 		my $fn = $CGI->{$key};
 		$fn =~ s,.*/,,;
 		$fn =~ s,.*\\,,;

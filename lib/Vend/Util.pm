@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.4 2001-09-07 04:38:27 jon Exp $
+# $Id: Util.pm,v 2.5 2001-10-06 07:03:37 mheins Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -36,12 +36,14 @@ require Exporter;
 	errmsg
 	escape_chars
 	evalr
+	dotted_hash
 	file_modification_time
 	file_name_is_absolute
 	find_special_page
 	format_log_msg
 	generate_key
 	get_option_hash
+	is_hash
 	is_no
 	is_yes
 	l
@@ -77,7 +79,7 @@ use Text::ParseWords;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 
 BEGIN {
 	eval {
@@ -765,6 +767,51 @@ sub string_to_ref {
 	}
 	my $safe = $Vend::Interpolate::safe_safe || new Safe;
 	return $safe->reval($string);
+}
+
+sub is_hash {
+	return ref($_[0]) eq 'HASH';
+}
+
+sub dotted_hash {
+	my($hash, $key, $value) = @_;
+::logDebug("dotted_hash hash=$hash key=$key");
+	$hash = get_option_hash($hash) unless is_hash($hash);
+::logDebug("dotted_hash hash=$hash key=$key after get_option_hash");
+	unless (is_hash($hash)) {
+		return undef unless defined $value;
+		$hash = {};
+	}
+	my @keys = split /[\.:]+/, $key;
+	my $final;
+	my $ref;
+
+	if(! defined $value) {
+		# Retrieving
+::logDebug("dotted_hash retrieving key=$key");
+		$ref = $hash->{shift @keys};
+		for(@keys) {
+			return undef unless is_hash($ref);
+			$ref = $ref->{$_};
+		}
+::logDebug("dotted_hash returning value=$ref");
+		return $ref;
+	}
+
+	# Storing
+	$final = pop @keys;
+::logDebug("dotted_hash storing key=$key final=$final value=$value");
+	$ref = $hash;
+
+	for(@keys) {
+		$ref->{$_} = {} unless is_hash($ref->{$_});
+		$ref = $ref->{$_};
+	}
+
+	$ref->{$final} = $value;
+	$hash = uneval_it($hash);
+::logDebug("dotted_hash returning=$hash");
+	return $hash;
 }
 
 sub get_option_hash {
@@ -1655,6 +1702,14 @@ sub logError {
 # Here for convenience in calls
 sub set_cookie {
     my ($name, $value, $expire, $domain, $path) = @_;
+
+    # Set expire to now + some time if expire string is something like
+    # "30 days" or "7 weeks" or even "60 minutes"
+	if($expire =~ /^\s*\d+[\s\0]*[A-Za-z]\S*\s*$/) {
+		my $add = Vend::Config::time_to_seconds($expire);
+		$expire = time() + $add if $add;
+	}
+
 	if (! $::Instance->{Cookies}) {
 		$::Instance->{Cookies} = []
 	}
@@ -2063,8 +2118,7 @@ sub send_mail {
 	$ok;
 }
 
-
-sub Vend::Util::get_cfg_header {
+sub get_cfg_header {
 	my ($file) = @_;
 	my $cfg = {};
 	local ($_, *IN);

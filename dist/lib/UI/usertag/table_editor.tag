@@ -129,6 +129,7 @@ sub {
 	my @messages;
 	my @errors;
 
+#Debug("labels=" . uneval($opt->{label}));
 	FORMATS: {
 		no strict 'refs';
 		my $ref;
@@ -209,6 +210,7 @@ sub {
 	my $widget      = $opt->{widget};
 	my $width       = $opt->{widget_width};
 #::logDebug("widget=" . ::uneval_it($widget) );
+#::logDebug("label=" . ::uneval_it($label) );
 
 	#my $blabel      = $opt->{begin_label} || '<b>';
 	#my $elabel      = $opt->{end_label} || '</b>';
@@ -241,12 +243,14 @@ sub {
 		if($opt->{action_click}) {
 			$ntext = <<EOF;
 mv_todo=return
+ui_wizard_action=Next
 mv_click=$opt->{action_click}
 EOF
 		}
 		else {
 			$ntext = <<EOF;
 mv_todo=return
+ui_wizard_action=Next
 mv_click=ui_override_next
 EOF
 		}
@@ -256,12 +260,14 @@ EOF
 		$hidgo =~ s/\0.*//s;
 		$ctext = $Scratch->{$opt->{cancel_text}} = <<EOF;
 mv_form_profile=
+ui_wizard_action=Cancel
 mv_nextpage=$hidgo
 mv_todo=back
 EOF
 		if($opt->{mv_prevpage}) {
 			$btext = $Scratch->{$opt->{back_text}} = <<EOF;
 mv_form_profile=
+ui_wizard_action=Back
 mv_nextpage=$opt->{mv_prevpage}
 mv_todo=return
 EOF
@@ -750,8 +756,16 @@ EOF
 EOF
 
 		if($opt->{mv_blob_nick}) {
-			my $ref = $blob->{$opt->{mv_blob_nick}}
-				or last DOBLOB;
+			my @keys = split /::/, $opt->{mv_blob_nick};
+			my $ref = $blob->{shift @keys};
+			for(@keys) {
+				my $prior = $ref;
+				undef $ref;
+				eval {
+					$ref = $prior->{$_};
+				};
+				last DOBLOB unless ref $ref;
+			}
 			for(keys %$ref) {
 				$data->{$_} = $ref->{$_};
 			}
@@ -1070,7 +1084,7 @@ EOF
 	my %email_cols;
 	my %ok_col;
 
-	while($passed_fields =~ s/(\w+:+\S+)//) {
+	while($passed_fields =~ s/(\w+[.:]+\S+)//) {
 		push @extra_cols, $1;
 	}
 
@@ -1091,17 +1105,25 @@ EOF
 
 	if($opt->{ui_data_fields}) {
 		for(@dbcols, @extra_cols) {
-			unless (/^(\w+):+(\S+)/) {
+			unless (/^(\w+)([.:]+)(\S+)/) {
 				$ok_col{$_} = 1;
 				next;
 			}
 			my $t = $1;
-			my $c = $2;
+			my $s = $2;
+			my $c = $3;
+			if($s eq '.') {
+				$c = $t;
+				$t = $table;
+			}
+			else {
+				$c =~ s/\..*//;
+			}
 			next unless $Tag->db_columns( { name	=> $t, columns	=> $c, });
 			$ok_col{$_} = 1;
 		}
 	}
-	
+
 	@cols = grep $ok_col{$_}, split /\s+/, $opt->{ui_data_fields};
 
 	if($opt->{defaults}) {
@@ -1141,6 +1163,10 @@ EOF
 	$row_template =~ s/~OPT:(\w+)~/$opt->{$1}/g;
 	$row_template =~ s/~BLABEL~/$blabel/g;
 	$row_template =~ s/~ELABEL~/$elabel/g;
+
+	my %serialize;
+	my %serial_data;
+
 	foreach my $col (@cols) {
 		my $t;
 		my $c;
@@ -1162,9 +1188,14 @@ EOF
 		my $do = $display_only{$col};
 		
 		my $currval;
+		my $serialize;
+
 		if($col =~ /(\w+):+([^:]+)(?::+(\S+))?/) {
 			$t = $1;
 			$c = $2;
+			$c =~ /(.+?)\.\w.*/
+				and $col = "$t:$1"
+					and $serialize = $c;
 			$k = $3 || undef;
 			push @ext_enable, ("$t:$c" . $k ? ":$k" : '')
 				unless $do;
@@ -1172,7 +1203,10 @@ EOF
 		else {
 			$t = $table;
 			$c = $col;
-			push @data_enable, $c
+			$c =~ /(.+?)\.\w.*/
+				and $col = $1
+					and $serialize = $c;
+			push @data_enable, $col
 				unless $do and ! $opt->{mailto};
 		}
 
@@ -1216,6 +1250,37 @@ EOF
 			$overridden = 1;
 		}
 
+		my $namecol;
+		if($serialize) {
+#Debug("serialize=$serialize");
+			if($serialize{$col}) {
+				push @{$serialize{$col}}, $serialize;
+			}
+			else {
+				my $sd;
+				if($col =~ /:/) {
+					my ($tt, $tc) = split /:+/, $col;
+					$sd = tag_data($tt, $tc, $k);
+				}
+				else {
+					$sd = $data->{$col} || $::Values->{$col};
+				}
+#Debug("serial_data=$sd");
+				$serial_data{$col} = $sd;
+				$opt->{hidden}{$col} = $data->{$col};
+				$serialize{$col} = [$serialize];
+			}
+			$c =~ /\.(.*)/;
+			my $hk = $1;
+#Debug("fetching serial_data for $col hk=$hk data=$serial_data{$col}");
+			$currval = dotted_hash($serial_data{$col}, $hk);
+#Debug("fetched hk=$hk value=$currval");
+			$overridden = 1;
+			$namecol = $c = $serialize;
+		}
+
+		$namecol = $col unless $namecol;
+
 		$type = 'value' if $do and ! ($opt->{wizard} || ! $opt->{mailto});
 
 		if (! length $currval and defined $default->{$c}) {
@@ -1240,7 +1305,7 @@ EOF
 			$template =~ s/\$LABEL\$/$Tag->error($parm)/eg;
 		}
 		$template =~ s/~TKEY~/$tkey_message || ''/eg;
-#::logDebug("col=$c widget=$widget->{$c} (type=$type)");
+#::logDebug("col=$c widget=$widget->{$c} label=$label->{$c} (type=$type)");
 		my $display = $Tag->display({
 										applylocale => 1,
 										arbitrary => $opt->{ui_meta_view},
@@ -1254,7 +1319,7 @@ EOF
 										help_url => $help_url->{$c},
 										label => $label->{$c},
 										key => $key,
-										name => $col,
+										name => $namecol,
 										override => $overridden,
 										field => $field->{$c},
 										passed => $passed->{$c},
@@ -1308,15 +1373,15 @@ EOF
 		$display =~ s/\~META\~/$meta/g;
 		$display =~ s/\~ERROR\~/$Tag->error({ name => $c, keep => 1 })/eg;
         
-		if ($break{$col}) {
+		if ($break{$namecol}) {
 			while($rowcount % $rowdiv) {
 				$out .= '<TD>&nbsp;</td><TD>&nbsp;</td>';
 				$rowcount++;
 			}
 			$out .= "</TR>\n";
-			$out .= <<EOF if $break{$col};
+			$out .= <<EOF if $break{$namecol};
 <TR class=rbreak>
-	<TD COLSPAN=$span class=cbreak>$break_label{$col}<IMG SRC="$opt->{clear_image}" WIDTH=1 HEIGHT=1 alt=x></TD>
+	<TD COLSPAN=$span class=cbreak>$break_label{$namecol}<IMG SRC="$opt->{clear_image}" WIDTH=1 HEIGHT=1 alt=x></TD>
 </TR>
 EOF
 			$rowcount = 0;
@@ -1338,6 +1403,24 @@ EOF
 	}
 	if(@ext_enable) {
 		$Scratch->{mv_data_enable} .= " " . join(" ", @ext_enable) . " ";
+	}
+
+	my @serial = keys %serialize;
+	my @serial_fields;
+	for (@serial) {
+#Debug("$_ serial_data=$serial_data{$_}");
+		$serial_data{$_} = uneval($serial_data{$_})
+			if is_hash($serial_data{$_});
+		$serial_data{$_} =~ s/\&/&amp;/g;
+		$serial_data{$_} =~ s/"/&quot;/g;
+		$out .= qq{<INPUT TYPE=hidden NAME="$_" VALUE="$serial_data{$_}">};
+		push @serial_fields, @{$serialize{$_}};
+	}
+
+	if(@serial_fields) {
+		$out .= qq{<INPUT TYPE=hidden NAME="ui_serial_fields" VALUE="};
+		$out .= join " ", @serial_fields;
+		$out .= qq{">};
 	}
 
 	###

@@ -1,6 +1,6 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 2.4 2001-09-07 15:03:04 mheins Exp $
+# $Id: Primitive.pm,v 2.5 2001-10-06 07:03:36 mheins Exp $
 
 # Copyright (C) 1998-2001 Red Hat, Inc. <interchange@redhat.com>
 
@@ -25,7 +25,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -808,26 +808,23 @@ sub meta_display {
 			$base_entry_value = $value =~ /::/ ? $table : $value;
 		}
 	}
-	my $tag = '';
-	if($o->{arbitrary}) {
-		$tag = "$o->{arbitrary}::";
-	}
-	my (@tries) = "$tag${table}::$column";
-	if($key) {
-		# Don't think we need table::key combo anymore....
-		# unshift @tries, "$tag${table}::${column}::$key", "$tag${table}::$key";
-		unshift @tries, "$tag${table}::${column}::$key";
+
+	my (@tries) = "${table}::$column";
+	unshift @tries, "${table}::${column}::$key"
+		if $key;
+
+	my $view;
+	if($view = $o->{arbitrary}) {
+		unshift @tries, "$o->{arbitrary}::${table}::${column}";
+		unshift @tries, "$o->{arbitrary}::${table}::${column}::$key" if $key;
 	}
 
 	my $sess = $Vend::Session->{mv_metadata} || {};
 
-	if($tag and $o->{fallback}) {
-		push @tries, "${table}::${column}::$key", "${table}::${column}";
-	}
-
 	push @tries, { type => $o->{type} }
 		if $o->{type} || $o->{label};
 
+#::logDebug("calling meta_display with type=$o->{type}");
 	for $metakey (@tries) {
 		my $record;
 		unless ( $record = $sess->{$metakey} and ref $record ) {
@@ -845,15 +842,28 @@ sub meta_display {
 		}
 		my $opt;
 
+		# Get additional settings from extended field, which is a serialized
+		# hash
+		my $hash;
 		if($record->{extended}) {
-			my $hash = Vend::Util::get_option_hash($record->{extended});
+			$hash = Vend::Util::get_option_hash($record->{extended});
 			if(ref $hash) {
-				for (keys %$hash) {
-					$record->{$_} = $hash->{$_};
-				}
+				@$record{keys %$hash} = values %$hash;
+			}
+			else {
+				undef $hash;
 			}
 		}
-		## Here we allow override with the display tag...
+
+		# Allow view settings to be placed in the extended area
+		if($view and $hash and $hash->{view}) {
+			my $view_hash = $record->{view}{$view};
+			ref $view_hash
+				and @$record{keys %$view_hash} = values %$view_hash;
+		}
+
+		## Here we allow override with the display tag, even with views and
+		## extended
 		my @override = grep defined $o->{$_},
 						qw/
 							append
@@ -966,6 +976,27 @@ sub meta_display {
 			$record->{passed}  = '1=' . ::errmsg('No');
 			$record->{passed} .= ',=' . ::errmsg('Yes');
 			$o->{type} = 'select' unless $o->{type} =~ /radio/;
+		}
+		elsif ($record->{type} =~ s/^custom\s+//s) {
+			my $wid = lc $record->{type};
+			$wid =~ tr/-/_/;
+			my $w;
+			$record->{attribute} ||= $column;
+			$record->{table}     ||= $meta_db;
+			$record->{rows}      ||= $record->{height};
+			$record->{cols}      ||= $record->{width};
+			$record->{field}     ||= 'options';
+			$record->{name}      ||= $column;
+			$record->{outboard}  ||= $metakey;
+			my $Tag = new Vend::Tags;
+			eval {
+				$w = $Tag->$wid($record->{name}, $value, $record, $o);
+			};
+			if($@) {
+				::logError("error using custom widget %s: %s", $wid, $@);
+			}
+			return $w unless $o->{template};
+			return ($w, $record->{label}, $record->{help}, $record->{help_url});
 		}
 		elsif ($record->{type} eq 'option_format') {
 			my $w = option_widget($record->{name}, $value);
