@@ -148,7 +148,7 @@ N
 N
 -[item-quantity]
 [item-price noformat=1]
-[item-field title]
+[item-filter 30][item-field title][/item-filter]
 
 [if-item-field nontaxable]N[else][scratch NAMEISTAXABLE][/else][/if-item-field]
 N
