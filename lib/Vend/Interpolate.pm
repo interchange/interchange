@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.156 2003-04-04 12:49:04 racke Exp $
+# $Id: Interpolate.pm,v 2.157 2003-04-07 12:13:43 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.156 $, 10);
+$VERSION = substr(q$Revision: 2.157 $, 10);
 
 @EXPORT = qw (
 
@@ -118,7 +118,6 @@ use constant OPT   => 7;
 use vars qw(%Data_cache);
 
 my $wantref = 1;
-my $CacheInvalid = 1;
 
 # MVASP
 
@@ -693,7 +692,6 @@ sub try {
 # session variable
 sub tag_data {
 	my($selector,$field,$key,$opt,$flag) = @_;
-	$CacheInvalid = 1 if defined $Vend::Cfg->{DynamicData}->{$selector};
 
 	local($Safe_data);
 	$Safe_data = 1 if $opt->{safe_data};
@@ -702,7 +700,6 @@ sub tag_data {
 
 	if ( not $db = database_exists_ref($selector) ) {
 		if($selector eq 'session') {
-			$CacheInvalid = 1;
 			if(defined $opt->{value}) {
 				$opt->{value} = filter_value($opt->{filter}, $opt->{value}, $field)
 					if $opt->{filter};
@@ -739,7 +736,6 @@ sub tag_data {
 	}
 	elsif (defined $opt->{value}) {
 #::logDebug("alter table: table=$selector alter=$opt->{alter} field=$field value=$opt->{value}");
-		$CacheInvalid = 1;
 		if ($opt->{alter}) {
 			$opt->{alter} =~ s/\W+//g;
 			$opt->{alter} = lc($opt->{alter});
@@ -1264,28 +1260,24 @@ sub conditional {
 	}
 
 	if($base eq 'session') {
-		$CacheInvalid = 1;
 		$op =	qq%$Vend::Session->{$term}%;
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
 				if defined $comp;
 	}
 	elsif($base eq 'scratch') {
-		$CacheInvalid = 1;
 		$op =	qq%$::Scratch->{$term}%;
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
 				if defined $comp;
 	}
 	elsif($base =~ /^value/) {
-		$CacheInvalid = 1;
 		$op =	qq%$::Values->{$term}%;
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
 				if defined $comp;
 	}
 	elsif($base eq 'cgi') {
-		$CacheInvalid = 1;
 		$op =	qq%$CGI::values{$term}%;
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
@@ -1302,21 +1294,18 @@ sub conditional {
 		$status = $ready_safe->reval($comp);
 	}
 	elsif($base eq 'variable') {
-		$CacheInvalid = 1;
 		$op =	qq%$::Variable->{$term}%;
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
 				if defined $comp;
 	}
 	elsif($base eq 'global') {
-		$CacheInvalid = 1;
 		$op =	qq%$Global::Variable->{$term}%;
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
 				if defined $comp;
 	}
     elsif($base eq 'items') {
-        $CacheInvalid = 1;
 		my $cart;
         if($term) {
         	$cart = $::Carts->{$term} || undef;
@@ -1331,8 +1320,6 @@ sub conditional {
     }
 	elsif($base eq 'data') {
 		my($d,$f,$k) = split /::/, $term;
-		$CacheInvalid = 1
-			if defined $Vend::Cfg->{DynamicData}->{$d};
 		$op = database_field($d,$k,$f);
 #::logDebug ("tag_if db=$d fld=$f key=$k\n");
 		$op = "q{$op}" unless defined $noop;
@@ -1348,14 +1335,12 @@ sub conditional {
 				if defined $comp;
 	}
 	elsif($base eq 'discount') {
-		$CacheInvalid = 1;
 		$op =	qq%$Vend::Session->{discount}->{$term}%;
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
 				if defined $comp;
 	}
 	elsif($base eq 'ordered') {
-		$CacheInvalid = 1;
 		$operator = 'main' unless $operator;
 		my ($attrib, $i);
 		$op = '';
@@ -1378,7 +1363,6 @@ sub conditional {
 		#$op =~ s/[^rwxezfdTsB]//g;
 		#$op = substr($op,0,1) || 'f';
 		undef $noop;
-		$CacheInvalid = 1;
 		$op = 'f';
 		$op = qq|-$op "$term"|;
 	}
@@ -1406,7 +1390,6 @@ sub conditional {
 		$op = $warn;
 	}
 	elsif($base eq 'validcc') {
-		$CacheInvalid = 1;
 		no strict 'refs';
 		$status = Vend::Order::validate_whole_cc($term, $operator, $comp);
 	}
@@ -2014,7 +1997,6 @@ sub flag {
 			$dbname =~ s/:.*//;
 #::logDebug("tag flag write $dbname=$value");
 			$Vend::WriteDatabase{$dbname} = $value;
-			$Vend::Cfg->{DynamicData}->{$dbname} = $value;
 		}
 	}
 	elsif($flag =~ /^transactions?/i) {
@@ -2942,7 +2924,6 @@ sub tag_cart {
 
 sub tag_shipping_desc {
 	my $mode = 	shift;
-	$CacheInvalid = 1 unless $mode;
 	$mode = $mode || $::Values->{mv_shipmode} || 'default';
 	return '' unless defined $Vend::Cfg->{Shipping_desc}{$mode};
 	return $Vend::Cfg->{Shipping_desc}{$mode};
@@ -5945,7 +5926,8 @@ sub shipping {
 		elsif ($what =~ s/^([uA-Z])\s*//) {
 			my $zselect = $o->{zone} || $1;
 			my ($type, $geo, $adder, $mod, $sub);
-			($type, $geo, $adder) = @{$o}{qw/table geo adder/};
+			($type, $adder) = @{$o}{qw/table adder/};
+			$o->{geo} ||= 'zip';
 			if(! $type) {
 				$what = interpolate_html($what);
 				($type, $geo, $adder, $mod, $sub) = split /\s+/, $what, 5;
@@ -5953,13 +5935,10 @@ sub shipping {
 				$o->{round}    = 1  if $mod =~ /round/;
 				$o->{at_least} = $1 if $mod =~ /min\s*([\d.]+)/;
 			}
-			elsif (! $o->{geo}) {
-				$geo = interpolate_html($what);
-			}
 			else {
 				$geo = $::Values->{$o->{geo}} || $o->{default_geo};
 			}
-
+#::logDebug("ready to tag_ups type=$type geo=$geo total=$total zone=$zselect options=$o");
 			$cost = tag_ups($type,$geo,$total,$zselect,$o);
 			$final += $cost;
 			last SHIPIT unless $o->{continue};
@@ -6793,7 +6772,7 @@ sub levies {
 				$sort = $type eq 'handling' ? 100 : 500;
 			}
 			$cost = shipping($mode);
-			$l->{description} ||= tag_shipping_desc($mode);
+			$l->{description} = tag_shipping_desc($mode);
 		}
 		elsif($type eq 'custom') {
 			my $sub;

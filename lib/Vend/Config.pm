@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.108 2003-04-04 12:47:04 racke Exp $
+# $Id: Config.pm,v 2.109 2003-04-07 12:13:43 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.108 $, 10);
+$VERSION = substr(q$Revision: 2.109 $, 10);
 
 my %CDname;
 my %CPname;
@@ -461,7 +461,7 @@ sub catalog_directives {
 	['MinQuantityField', undef,     	     ''],
 	['LogFile', 		  undef,     	     'etc/log'],
 	['Pragma',		 	 'boolean_value',    ''],
-	['DynamicData', 	 'boolean',     	 ''],
+	['DynamicData', 	 'warn',     	 ''],
 	['NoImport',	 	 'boolean',     	 ''],
 	['NoImportExternal', 'yesno',	     	 'no'],
 	['CommonAdjust',	 undef,  	     	 ''],
