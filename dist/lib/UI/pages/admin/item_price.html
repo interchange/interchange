@@ -1,3 +1,4 @@
+@_UI_STD_INIT_@
 [if !cgi item_id]
 	[bounce page="__UI_BASE__/item"]
 [/if]
@@ -19,7 +20,7 @@
 		my $colstring = join "\n", @cols;
 		$CGI->{ui_data_fields} = qq{
 
-=Base Pricing
+=[L]Base Pricing[/L]
 
 price_group
 sku
@@ -27,7 +28,7 @@ __ProductFiles_0__:__DescriptionField__
 __ProductFiles_0__:price
 __ProductFiles_0__:wholesale
 
-=Quantity Pricing
+=[L]Quantity Pricing[/L]
 
 $colstring
 };
