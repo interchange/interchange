@@ -1,12 +1,12 @@
-[set page_title]Company E-Mail Addresses[/set]
+[set page_title][L]Company E-Mail Addresses[/L][/set]
 [set ui_checklist]1[/set]
 [set help_name]wizard.email[/set]
 @_UI_STD_HEAD_@
 
 <table width=500><tr><td align=left>
-Enter your request routing email addresses. These email addresses
+[L WIZARD_STEP_EMAIL_PAR_1]Enter your request routing email addresses. These email addresses
 will be posted on your website for customers to use to request more
-information. The required fields are displayed in <b>Bold</b>.
+information. The required fields are displayed in <b>Bold</b>.[/L]
 </td></tr></table>
 <p>
 [table-editor 
@@ -28,25 +28,25 @@ information. The required fields are displayed in <b>Bold</b>.
 
 	ui_data_key=code
 	default.code="[value code]"
-	help.code="If this is the first time you have used this definition, you will need to assign a nickname. Only A-Z0-9 are valid."
-	label.code="Catalog Identifier"
+	help.code="[L]If this is the first time you have used this definition, you will need to assign a nickname. Only A-Z0-9 are valid.[/L]"
+	label.code="[L]Catalog Identifier[/L]"
 	widget.code=text_10
 
 	ui_wizard_fields="mailorderto emailinfo emailservice"
 
-	label.mailorderto="Orders sent to"
+	label.mailorderto="[L]Orders sent to[/L]"
 	widget.mailorderto=text_40
-	help.mailorderto="If no emailed order confirmations should be sent to your order desk, use NONE"
+	help.mailorderto="[L]If no emailed order confirmations should be sent to your order desk, use NONE[/L]"
 	default.mailorderto=`'orders@' . $Values->{domainname}`
 
-	label.emailinfo="Info requests sent to"
+	label.emailinfo="[L]Info requests sent to[/L]"
 	widget.emailinfo=text_40
-	help.emailinfo="Address where product information requests be sent"
+	help.emailinfo="[L]Address where product information requests be sent[/L]"
 	default.emailinfo=`'sales@' . $Values->{domainname}`
 
-	label.emailservice="Service requests sent to"
+	label.emailservice="[L]Service requests sent to[/L]"
 	widget.emailservice=text_40
-	help.emailservice="Address where customer service inquiries requests be sent"
+	help.emailservice="[L]Address where customer service inquiries requests be sent[/L]"
 	default.emailservice=`'service@' . $Values->{domainname}`
 ]
 
