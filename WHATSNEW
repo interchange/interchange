@@ -180,6 +180,12 @@ UI
 
 * Fix link_rows_blank setting in table editor for form linking.
 
+* Restore capability to show only part of session.
+
+* Solve annoying problem where you edit a view-specific field display
+  and have to re-enter custom view information that is already
+  present in a modified base meta display.
+
 Payment
 -------
 
