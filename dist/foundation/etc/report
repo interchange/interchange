@@ -119,7 +119,8 @@ Gift Note or Special Instructions:
 [tag	op=mime
 		interpolate=1
 		type=application/pgp-encrypted
-		description="CreditCard_[value mv_order_number]"]
+		attach_only=1
+		description="CreditCard_[value mv_order_number].asc"]
 [value mv_credit_card_info]
 [/tag]
 [/if]
