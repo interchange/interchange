@@ -241,6 +241,7 @@ debian/interchange.files
 debian/interchange.init
 debian/interchange.logrotate
 debian/interchange.postinst
+debian/interchange.postrm
 debian/interchange.preinst
 debian/interchange.prerm
 debian/interchange.templates

@@ -1,4 +1,4 @@
-interchange (4.9.7-1) unstable; urgency=low
+interchange (4.9.7-0.8) unstable; urgency=low
 
   * new upstream release
   * new debconf option for traffic, use low traffic as default
@@ -13,8 +13,9 @@ interchange (4.9.7-1) unstable; urgency=low
     invoking interchange --add/--remove from interchange-cat-foundation
     postinst script (thanks to Doug Alcorn <doug@lathi.net> for reporting
     the problem)
+  * remove configuration files handled by interchangeconfig on purge
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon,  7 Apr 2003 13:13:13 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 15 Apr 2003 13:30:02 +0200
 
 interchange (4.8.6.20021206-1) unstable; urgency=high
 
