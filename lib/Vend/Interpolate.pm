@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret MiniVend tags
 # 
-# $Id: Interpolate.pm,v 1.2 2000-05-28 22:20:25 heins Exp $
+# $Id: Interpolate.pm,v 1.3 2000-06-05 05:34:32 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.3 $, 10);
 
 @EXPORT = qw (
 
@@ -245,6 +245,7 @@ my @th = (qw!
 		_field
 		_increment
 		_last
+		_line
 		_match
 		_modifier
 		_next
@@ -323,6 +324,7 @@ my @th = (qw!
 	'_field_if_wo'	=> qr($T{_field}$Spacef(!?)\s*($Codere)\]),
 	'_increment'	=> qr($T{_increment}\]),
 	'_last'			=> qr($T{_last}\]\s*($Some)\s*),
+	'_line'			=> qr($T{_line}$Opt\]),
 	'_modifier'		=> qr($T{_modifier}$Spacef(\w+)\]),
 	'_modifier_if'	=> qr($T{_modifier}$Spacef(!?)$Spaceo($Codere)\]($Some)),
 	'_next'			=> qr($T{_next}\]\s*($Some)\s*),
@@ -751,7 +753,7 @@ sub tag_data {
 					for(@some) {
 						return $_ if length $_;
 					}
-					return;
+					return '';
 				},
 	'lc' =>		sub {
 					use locale;
@@ -2727,7 +2729,7 @@ sub more_link {
 	my ($next, $last, $arg);
 	my $list = '';
 	$pa =~ s/__PAGE__/$inc/g;
-	my $form_arg = "mv_nextpage=$page";
+	my $form_arg = "mv_more_ip=1\nmv_nextpage=$page";
 	$form_arg .= "\npf=$prefix" if $prefix;
 	$next = ($inc-1) * $chunk;
 #::logDebug("more_link: inc=$inc current=$current");
@@ -2819,7 +2821,7 @@ sub tag_more_list {
 			$arg .= $first - 1;
 			$arg .= ":$chunk";
 			$list .= '<A HREF="';
-			my $form_arg = "mv_nextpage=$page";
+			my $form_arg = "mv_more_ip=1\nmv_nextpage=$page";
 			$form_arg .= "\npf=$prefix" if $prefix;
 			$list .= tag_area( "scan/MM=$arg", '', { form => $form_arg });
 			$list .= '">';
@@ -2847,7 +2849,7 @@ sub tag_more_list {
 		$last = $last > ($total - 1) ? $total - 1 : $last;
 		$arg = "$session:$next:$last:$chunk";
 		$next_tag .= '<A HREF="';
-		my $form_arg = "mv_nextpage=$page";
+		my $form_arg = "mv_more_ip=1\nmv_nextpage=$page";
 		$form_arg .= "\npf=$prefix" if $prefix;
 		$next_tag .= tag_area( "scan/MM=$arg", '', { form => $form_arg });
 		$next_tag .= '">';
@@ -3177,6 +3179,14 @@ sub iterate_array_list {
 my $once = 0;
 #::logDebug("iterating array $i to $end. count=$count opt_select=$opt_select ary=" . ::uneval($ary));
 
+	if($text =~ m/^$B$QR{_line}\s*$/is) {
+		my $i = $1 || 0;
+		my $count = scalar values %$fh;
+		$count--;
+		my (@ary) = sort { $fh->{$a} <=> $fh->{$b} } keys %$fh;
+		$r .= join "\t", @ary[$i .. $count];
+		$r .= "\n";
+	}
 	for( ; $i <= $end ; $i++, $count++ ) {
 		$row = $ary->[$i];
 		last unless defined $row;
@@ -3204,6 +3214,7 @@ my $once = 0;
 		$run =~ s#$IB$QR{_field_if}$IE$QR{'/_field'}#
 				  product_field($2, $code)	?	pull_if($3,$1)
 											:	pull_else($3,$1)#ige;
+		$run =~ s:$B$QR{_line}:join "\t", @{$row}[ ($1 || 0) .. $#$row]:ige;
 	    $run =~ s:$B$QR{_increment}:$count:ig;
 		$run =~ s:$B$QR{_accessories}:
 						tag_accessories($code,$1,{}):ige;
@@ -3260,6 +3271,7 @@ sub iterate_hash_list {
 				  							?	pull_else($2)
 											:	pull_if($2)#ge;
 		tag_labeled_data_row($code,\$run);
+		$run =~ s:$B$QR{_line}:join "\t", @{$hash}:ge;
 		$run =~ s#$IB$QR{_param_if}$IE$QR{'/_param'}#
 				  $item->{$2}	?	pull_if($3,$1)
 								:	pull_else($3,$1)#ige;
@@ -3343,7 +3355,7 @@ sub query {
 	$opt->{query} = $query
 		if $query;
 
-	if (! defined $MVSAFE::Safe) {
+	if (! $opt->{wantarray} and ! defined $MVSAFE::Safe) {
 		my $result = $db->query($opt, $text);
 		return (ref $result) ? '' : $result;
 	}
@@ -3832,9 +3844,39 @@ sub read_shipping {
 	}
 
     open(SHIPPING, $file) or do {
-			logError("Could not open shipping file %s: %s" , $file, $!)
-				if $Vend::Cfg->{CustomShipping};
-			return undef;
+			if ($Vend::Cfg->{CustomShipping} =~ /^select\s+/i) {
+				($Vend::Cfg->{SQL_shipping} = 1, return)
+					if $Vend::Foreground;
+				$file = "$Vend::Cfg->{ScratchDir}/shipping.asc";
+				my $ary;
+				my $query = interpolate_html($Vend::Cfg->{CustomShipping});
+				eval {
+					$ary = query($query, { wantarray => 1} );
+				};
+				if(! ref $ary) {
+					logError("Could not make shipping query %s: %s" ,
+								$Vend::Cfg->{CustomShipping},
+								$@);
+					return undef;
+				}
+				my $out;
+				for(@$ary) {
+					$out .= join "\t", @$_;
+					$out .= "\n";
+					Vend::Util::writefile(">$file", $out);
+				}
+				open(SHIPPING, $file) or do {
+					logError("Could not make shipping query %s: %s" ,
+								$Vend::Cfg->{CustomShipping},
+								$!);
+					return undef;
+				};
+			}
+			else {
+				logError("Could not open shipping file %s: %s" , $file, $!)
+					if $Vend::Cfg->{CustomShipping};
+				return undef;
+			}
 		};
 	$Vend::Cfg->{Shipping_desc} = {}
 		if ! $Vend::Cfg->{Shipping_desc};
@@ -4908,6 +4950,7 @@ sub tag_shipping {
 	}
 	$Vend::Cfg->{shipping_line} = [] 
 		if $opt->{reset_modes};
+	read_shipping(undef, $opt) if $Vend::Cfg->{SQL_shipping};
 	read_shipping(undef, $opt) if $opt->{add};
 	read_shipping($opt->{file}) if $opt->{file};
 	my $out;
