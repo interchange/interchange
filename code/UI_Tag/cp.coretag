@@ -1,9 +1,9 @@
 UserTag cp Order from to
 UserTag cp addAttr
 UserTag cp Routine <<EOR
+require File::Copy;
 sub {
 	my ($from, $to, $opt) = @_;
-	require File::Copy;
 #Debug("cp from=$from to=$to umask=$opt->{umask}");
 	my $save_mask;
 	if($opt->{umask}) {
