@@ -11,22 +11,15 @@
 [/comment]
 
 [set ui_class]Merchandising[/set]
-[set page_title]Merchandising Editor[/set]
+[set page_title][L]Merchandising Editor[/L][/set]
 [set table_perm]1[/set]
 [set help_name]merchandising[/set]
-[set icon_name]admin/icon_item.gif[/set]
+[set icon_name]icon_item.gif[/set]
 @_UI_STD_HEAD_@
 
 
 <!-- ----- BEGIN REAL STUFF ----- -->
-[if scratch ui_message]
-<BLOCKQUOTE>
-	[scratch ui_message]
-	[set ui_message][/set]
-</BLOCKQUOTE>
-<p>
-&nbsp;
-[/if]
+
 [flag type=write table=merchandising]
 [perl tables="merchandising __UI_META_TABLE__"]
 	my $db = $Db{merchandising};
@@ -55,13 +48,28 @@
 	return;
 [/perl]
 
+[output name=search_box]
 <FORM ACTION="[area @@MV_PAGE@@]">
 <INPUT NAME=ui_text_qualification>
-<INPUT TYPE=submit VALUE="Limit with search">
+<INPUT TYPE=submit VALUE="[L]Limit with search[/L]">
 </FORM>
+
+
+[output name=""]
+
 [if cgi ui_text_qualification]
-<H3>Entries containing "[cgi ui_text_qualification]"</H3>
+	[calc]
+		return if $CGI->{mv_like_spec};
+		$Scratch->{page_banner} ||= $Scratch->{page_title};
+		$Scratch->{page_banner} .= errmsg(
+																'-- entries containing "%s"',
+																$CGI->{ui_text_qualification},
+																);
+		return;
+	[/calc]
 [/if]
+
+
 [search-region more=1 arg="
 		[if cgi ui_text_qualification]
 		se=[cgi ui_text_qualification]
@@ -92,60 +100,71 @@
 	}
 	return;
 [/calc]
-<TABLE border=0 CELLSPACING=0 width="90%">
-<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
-<TR BGCOLOR="__UI_C_TITLEBARBG__">
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
+<table width="100%" border=0 cellpadding=0 cellspacing=1 class=rseparator>
+<tr class=rhead>
+<td align=left>[page href=@@MV_PAGE@@ extra=rhead form=`
 	return "ui_sort_field=sku\n" . sortrev('sku');
-	`]SKU</TH>
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
+	`][L]SKU[/L]</td>
+<td align=left>[page href=@@MV_PAGE@@ extra=rhead form=`
 	return "ui_sort_field=description\n" . sortrev('description');
-	`]Description</TH>
-<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Qty pricing</TH>
-<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Up-sell</TH>
-<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Cross-sell</TH>
-<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Promotion</TH>
-<TH><FONT COLOR="__UI_C_TITLEBARTXT__">&nbsp;</TH>
+	`][L]Description[/L]</td>
+<td align=center>[L]Qty pricing[/L]</td>
+<td align=center>[L]Up-sell[/L]</td>
+<td align=center>[L]Cross-sell[/L]</td>
+<td align=center>[L]Promotion[/L]</td>
+<td>&nbsp;</td>
 </tr>
-<tr bgcolor="#000000" height=1><td colspan=7></td></tr>
-<tr bgcolor="#FFFFFF" height=2><td colspan=7></td></tr>
 [/on-match]
 [search-list]
-<TR [item-alternate 2]BGCOLOR="__UI_T_ROW_EVEN__"[else]BGCOLOR="__UI_T_ROW_ODD__"[/else][/item-alternate]>
-<TD>[page href=__UI_BASE__/item_edit form="item_id=[item-code]"][item-code]</A></TD>
-<TD>[filter 30][item-description][/filter]</TD>
-<TD ALIGN=CENTER>[page href=__UI_BASE__/item_price form="
+<tr [item-alternate 2]class=rownorm[else]class=rowalt[/else][/item-alternate]>
+<td>[page href=__UI_BASE__/item_edit
+			form="
+				ui_return_to=@@MV_PAGE@@
+				item_id=[item-code]
+			"][item-code]</A></td>
+<td>[filter 30][item-description][/filter]</td>
+<td align=center>[page href=__UI_BASE__/item_price form="
+	ui_return_to=@@MV_PAGE@@
+	merchandising=1
 	item_id=[item-code]
-"][if-item-data pricing sku]Yes[else]No[/else][/if-item-data]</A>
-</TD>
-<TD ALIGN=CENTER>[page href=__UI_BASE__/item_up form="
+"][if-item-data pricing sku][L]Yes[/L][else][L]No[/L][/else][/if-item-data]</A>
+</td>
+<td align=center>[page href=__UI_BASE__/item_up form="
+	ui_return_to=@@MV_PAGE@@
+	merchandising=1
 	item_id=[item-code]
-"][if-item-data merchandising upsell_to]Yes[else]No[/else][/if-item-data]</a>
-</TD>
-<TD ALIGN=CENTER>[page href=__UI_BASE__/item_cross form="
+"][if-item-data merchandising upsell_to][L]Yes[/L][else][L]No[/L][/else][/if-item-data]</a>
+</td>
+<td align=center>[page href=__UI_BASE__/item_cross form="
+	ui_return_to=@@MV_PAGE@@
+	merchandising=1
 	item_id=[item-code]
-"][if-item-data merchandising cross_sell]Yes[else]No[/else][/if-item-data]</a>
-</TD>
-<TD ALIGN=CENTER>[page href=__UI_BASE__/item_feature form="item_id=[item-code]"][if-item-data merchandising featured][item-exec do_timed][item-code][/item-exec][display table=merchandising column=featured type=display key="[item-code]"][else]none[/else][/if-item-data]</a></td>
-<TD ALIGN=CENTER>[if-item-data merchandising timed_promotion]<font size=1>[item-exec show_exp][item-code][/item-exec]</font>[else]&nbsp;[/else][/if-item-data]
-</TD>
+"][if-item-data merchandising cross_sell][L]Yes[/L][else][L]No[/L][/else][/if-item-data]</a>
+</td>
+<td align=center>[page href=__UI_BASE__/item_feature
+		form="
+			ui_return_to=@@MV_PAGE@@
+			merchandising=1
+			item_id=[item-code]
+		"][if-item-data merchandising featured][item-exec do_timed][item-code][/item-exec][display table=merchandising column=featured type=display key="[item-code]"][else][L]none[/L][/else][/if-item-data]</a></td>
+<td align=center>[if-item-data merchandising timed_promotion]<font size=1>[item-exec show_exp][item-code][/item-exec]</font>[else]&nbsp;[/else][/if-item-data]
+</td>
 </tr>
 [/search-list]
 [no-match]
 <tr>
 <td colspan=6 align=left>
 <br>
-<B>Nothing matched.</B>
+<B>[L]Nothing matched.[/L]</B>
 <br><br>
 </td>
 </tr>
 [/no-match]
-<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
-<tr bgcolor="#FFFFFF" height=8><td colspan=8></td></tr>
+<tr class=rborder height=1><td colspan=8></td></tr>
 [more-list]
-<tr>
+<tr class=rownorm>
 <td colspan=6 align=center>
-More items: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
+[L]More items[/L]: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
 </td>
 </tr>
 [/more-list]

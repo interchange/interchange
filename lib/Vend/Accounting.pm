@@ -1,6 +1,6 @@
 # Vend::Accounting - Interchange payment processing routines
 #
-# $Id: Accounting.pm,v 2.2 2002-09-16 23:06:31 mheins Exp $
+# $Id: Accounting.pm,v 2.2.2.1 2003-01-25 22:21:27 racke Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@heins.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Accounting;
 
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.2.2.1 $, 10);
 
 use Vend::Util;
 use LWP::UserAgent;

@@ -1,9 +1,10 @@
 __NAME__ MMLogin
 mv_todo=return
 [if type=explicit compare="[userdb function=login profile=ui]"]
-mv_nextpage=__UI_BASE__/index
+mv_nextpage=[either][cgi mv_nextpage][or]__UI_BASE__/index[/either]
 [else]
 mv_username=[perl]$Session->{ui_username} = $Session->{username} = '';[/perl]
+mv_nextpage=[either][cgi mv_failpage][or]__UI_BASE__/login[/either]
 [/else]
 [/if]
 __END__
@@ -14,6 +15,19 @@ mv_nextpage=[either][cgi mv_successpage][or][cgi mv_nextpage][/either]
 [else]
 mv_username=
 mv_nextpage=[either][cgi mv_failpage][or][cgi mv_nextpage][/either]
+[/else]
+[/if]
+__END__
+
+__NAME__ MMsu
+[if type=explicit
+    compare=|
+		[su username='[cgi user]' admin='[cgi admin]' ]
+		|
+]
+mv_nextpage=[calc]$CGI->{dest} || $Config->{SpecialPage}{catalog}[/calc]
+[else]
+[calc]$Session->{ui_error} = "Failed to su to user $CGI->{user}"; return;[/calc]
 [/else]
 [/if]
 __END__

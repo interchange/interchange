@@ -1,14 +1,11 @@
-# Session.pm - Interchange Sessions
+# Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 1.6.4.1 2000-11-27 02:34:34 racke Exp $
+# $Id: Session.pm,v 1.6.4.2 2003-01-25 22:21:28 racke Exp $
 # 
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
+# This program was originally based on Vend 0.2 and 0.3
+# Copyright 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,13 +21,12 @@
 # License along with this program; if not, write to the Free
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
-#
 
 package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.6.4.1 $, 10);
+$VERSION = substr(q$Revision: 1.6.4.2 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -39,11 +35,15 @@ $VERSION = substr(q$Revision: 1.6.4.1 $, 10);
 check_save
 dump_sessions
 expire_sessions
+close_session
 get_session
 init_session
+is_retired
 new_session
 put_session
+retire_id
 session_name
+tie_static_dbm
 
 );
 
@@ -138,10 +138,19 @@ NFS => [ 1, 0, sub {
 # SESSIONS implemented using DBM
 
 sub get_session {
+	my $seed = shift;
+
+	if($seed and ! $Vend::SessionID) {
+#::logDebug("received seed=$seed");
+		$Vend::SessionID = $seed;
+	}
+	$Vend::SessionName = session_name() if ! $Vend::SessionName;
+#::logDebug("session name now $Vend::SessionName");
+
 	$Vend::HaveSession = 0;
 	open_session();
 	my $new;
-	$new = read_session() unless $Vend::ExternalProgram;
+	$new = read_session($seed) unless $Vend::ExternalProgram;
 	unless($File_sessions) {
 		lock_session();
 		close_session();
@@ -151,6 +160,7 @@ sub get_session {
 }
 
 sub put_session {
+	return unless $Vend::HaveSession;
 	unless($File_sessions) {
 		open_session();
 		write_session();
@@ -194,22 +204,44 @@ sub count_ip {
 		my $grace = time() - ($Global::Variable->{MV_ROBOT_EXPIRE} || 86400);
 		unlink $fn if -M $fn < $grace;
 	}
-	return File::CounterFile->new($fn)->inc() if $inc;
-	return File::CounterFile->new($fn)->value();
+	return Vend::CounterFile->new($fn)->inc() if $inc;
+	return Vend::CounterFile->new($fn)->value();
 }
 
+sub is_retired {
+	my $id = shift;
+	mkdir "$Vend::Cfg->{ScratchDir}/retired", 0777
+		unless -d "$Vend::Cfg->{ScratchDir}/retired";
+	my $fn = Vend::Util::get_filename($id, 2, 1, "$Vend::Cfg->{ScratchDir}/retired");
+	return -f $fn ? 1 : 0;
+}
+
+sub retire_id {
+	my $id = shift;
+	return unless $id =~ /^\w+$/;
+	mkdir "$Vend::Cfg->{ScratchDir}/retired", 0777
+		unless -d "$Vend::Cfg->{ScratchDir}/retired";
+	my $fn = Vend::Util::get_filename($id, 2, 1, "$Vend::Cfg->{ScratchDir}/retired");
+	open(TMPRET, ">$fn")
+		or die "retire id open: $!\n";
+	close(TMPRET);
+	return;
+}
 
 sub new_session {
     my($seed) = @_;
     my($name);
 
-#::logDebug ("new session id=$Vend::SessionID  name=$Vend::SessionName\n");
+#::logDebug ("new session id=$Vend::SessionID  name=$Vend::SessionName seed=$seed");
 	open_session();
     for (;;) {
-		$Vend::SessionID = random_string() unless defined $seed;
+		unless (defined $seed) {
+			$Vend::SessionID = random_string();
+			undef $Vend::CookieID;
+		}
 		undef $seed;
-		if (::is_retired($Vend::SessionID)) {
-			::retire_id($Vend::SessionID);
+		if (is_retired($Vend::SessionID)) {
+			retire_id($Vend::SessionID);
 			next;
 		}
 		$name = session_name();
@@ -220,8 +252,9 @@ sub new_session {
 			last unless exists $Vend::SessionDBM{$name};
 		}
     }
+	$Vend::new_session = 1;
 	count_ip(1);
-	$CGI::cookie = $Vend::Cookie = '';
+	undef $Vend::Cookie;
     $Vend::SessionName = $name;
     init_session();
 #::logDebug("init_session $Vend::SessionName is: " . ::uneval($Vend::Session));
@@ -234,13 +267,15 @@ sub new_session {
 }
 
 sub close_session {
-#::logDebug ("close session id=$Vend::SessionID  name=$Vend::SessionName\n");
-	return 1 if ! defined $Vend::SessionOpen;
+#::logDebug ("try to close session id=$Vend::SessionID  name=$Vend::SessionName");
+	return 0 if ! defined $Vend::SessionOpen;
 
 	unless($DB_sessions) {
+#::logDebug ("close session id=$Vend::SessionID  name=$Vend::SessionName");
 		undef $DB_object;
 		untie %Vend::SessionDBM
 			or die "Could not close $Vend::Cfg->{SessionDatabase}: $!\n";
+		undef $Vend::SessionOpen;
 	}
 	
 	return 1 unless $Lock_sessions;
@@ -250,6 +285,7 @@ sub close_session {
     close(Vend::SessionLock)
 		or die "Could not close '$Vend::Cfg->{SessionLockFile}': $!\n";
 	undef $Vend::SessionOpen;
+	return 1;
 }
 
 sub write_session {
@@ -257,15 +293,14 @@ sub write_session {
 #::logDebug ("write session id=$Vend::SessionID  name=$Vend::SessionName\n");
 	my $time = time;
     $Vend::Session->{'time'} = $time;
-    my $save = $Vend::Session->{'user'};
-    undef $Vend::Session->{'user'};
-    #undef $Vend::Session->{'arg'};
+	delete $Vend::Session->{values}->{mv_credit_card_number};
+    my $save = delete $Vend::Session->{'user'};
 	for(@Vend::TmpScratch) {
-#::logDebug ("delete TmpScratch=$_");
 		delete $::Scratch->{$_};
 	}
 	$Vend::Session->{username} = $Vend::username;
 	$Vend::Session->{admin} = $Vend::admin;
+	$Vend::Session->{superuser} = $Vend::superuser;
     $s = ! $File_sessions ? uneval_fast($Vend::Session) : $Vend::Session;
     $Vend::SessionDBM{$Vend::SessionName} = $s or 
 		die "Data was not stored in SessionDBM\n";
@@ -334,6 +369,7 @@ EOF
 }
 
 sub read_session {
+	my $seed = shift;
     my($s);
 
 #::logDebug ("read session id=$Vend::SessionID  name=$Vend::SessionName\n");
@@ -352,7 +388,7 @@ sub read_session {
 		};
 		
 #::logDebug ("Session:\n$s\n");
-	return new_session() unless $s;
+	return new_session($seed) unless $s;
     $Vend::Session = ref $s ? $s : evalr($s);
     die "Could not eval '$s' from session dbm: $@\n" if $@;
 
@@ -360,12 +396,15 @@ sub read_session {
 
 	$Vend::username = $Vend::Session->{username};
 	$Vend::admin    = $Vend::Session->{admin};
+	$Vend::superuser   = $Vend::Session->{superuser};
 
 	$Vend::Session->{arg}  = $Vend::Argument;
 
-    $::Values	= $Vend::Session->{'values'};
+    $::Values	= $Vend::Session->{values};
     $::Scratch	= $Vend::Session->{scratch};
     $::Carts	= $Vend::Session->{carts};
+    $Vend::Interpolate::Tmp ||= {};
+    $::Control	= $Vend::Interpolate::Tmp->{control} = [];
 	tie $Vend::Items, 'Vend::Cart';
 }
 
@@ -377,13 +416,15 @@ my $joiner = $Global::Windows ? '_' : ':';
 sub session_name {
     my($host, $user, $fn, $proxy);
 
+	return $Vend::SessionID if $::Instance->{ExternalCookie};
+
 	if(defined $CGI::user and $CGI::user) {
 		$host = escape_chars($CGI::user);
 	}
-	elsif(defined $CGI::cookieuser) {
+	elsif($CGI::cookieuser) {
 		$host = $CGI::cookieuser;
 	}
-	elsif(defined $CGI::cookiehost) {
+	elsif($CGI::cookiehost) {
 		$host = $CGI::cookiehost;
 	}
 	else {
@@ -406,16 +447,17 @@ sub init_session {
 		'arg'		=> $Vend::Argument,
 		'browser'	=> $CGI::useragent,
 		'referer'	=> $CGI::referer,
+		'spider'	=> $CGI::values{mv_tmp_session},
 		'scratch'	=> { %{$Vend::Cfg->{ScratchDefault}} },
 		'values'	=> { %{$Vend::Cfg->{ValuesDefault}} },
 		'carts'		=> {main => []},
+		'levies'	=> {main => []},
     };
 	$Vend::Session->{shost} = $CGI::remote_addr
 		if $CGI::secure;
-	$::Values     = $Vend::Session->{'values'};
+	$::Values     = $Vend::Session->{values};
 	$::Scratch	  = $Vend::Session->{scratch};
-	$::Scratch->{mv_locale} = $Vend::Cfg->{DefaultLocale}
-		if ! $::Scratch->{mv_locale} and $Vend::Cfg->{DefaultLocale};
+	$::Scratch->{mv_locale} ||= $Vend::Cfg->{DefaultLocale};
 	$::Carts	  = $Vend::Session->{carts};
 	tie $Vend::Items, 'Vend::Cart';
 	$::Values->{mv_shipmode} = $Vend::Cfg->{DefaultShipping}
@@ -509,8 +551,8 @@ sub check_save {
 
 	$time = $time || time();
 
-	if(defined $Vend::Session->{'values'}->{mv_expire_time}) {
-		$expire = $Vend::Session->{'values'}->{mv_expire_time};
+	if(defined $::Values->{mv_expire_time}) {
+		$expire = $::Values->{mv_expire_time};
 		unless($expire =~ /^\d{6,}$/) {
 			$expire = Vend::Config::time_to_seconds($expire);
 		}
@@ -521,6 +563,39 @@ sub check_save {
 
 	return ($expire > $time);
 }	
+
+sub tie_static_dbm {
+	my $rw = shift;
+	untie(%Vend::StaticDBM) if $rw;
+	if($Global::GDBM) {
+        my $flags = $rw ? &GDBM_WRITER : &GDBM_READER;
+        $flags = &GDBM_NEWDB
+            if $rw && (! -f "$Vend::Cfg->{StaticDBM}.gdbm");
+        tie(%Vend::StaticDBM,
+            'GDBM_File',
+            "$Vend::Cfg->{StaticDBM}.gdbm",
+            $flags,
+            $Vend::Cfg->{'FileCreationMask'},
+        )
+        or $Vend::Cfg->{SaveStaticDBM} = delete $Vend::Cfg->{StaticDBM};
+	}
+	elsif ($Global::DB_File) {
+		tie(%Vend::StaticDBM,
+			'DB_File',
+			"$Vend::Cfg->{StaticDBM}.db",
+			($rw ? &O_RDWR | &O_CREAT : &O_RDONLY),
+			$Vend::Cfg->{'FileCreationMask'},
+			)
+		or undef $Vend::Cfg->{StaticDBM};
+	}
+	else {
+        $Vend::Cfg->{SaveStaticDBM} = delete $Vend::Cfg->{StaticDBM};
+	}
+	::logError("Failed to create StaticDBM %s", $Vend::Cfg->{StaticDBM})
+		if $rw && ! $Vend::Cfg->{StaticDBM};
+	return $Vend::Cfg->{StaticDBM} || undef;
+}
+
 
 1;
 

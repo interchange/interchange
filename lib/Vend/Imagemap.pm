@@ -1,16 +1,14 @@
-#!/usr/bin/perl
+# Vend::Imagemap - Interpret NCSA imagemaps in Interchange
 #
-# Imagemap.pm -- interpret NCSA imagemap in CGI program
-#
-# $Id: Imagemap.pm,v 1.2 2000-07-12 03:08:10 heins Exp $
+# $Id: Imagemap.pm,v 1.2.4.1 2003-01-25 22:21:27 racke Exp $
 #
 # This module adapted from the Perl imagemap program by:
 #
 # V. Khera <khera@kciLink.com>  7-MAR-1995
 #
-# documentation for the imagemap file follows that of the NCSA imagemap
-# program.  Each point is an x,y tuple.  Each line in the map consists of
-# one of the following formats.  Comment lines start with "#".
+# Documentation for the imagemap file follows that of the NCSA imagemap
+# program. Each point is an x,y tuple. Each line in the map consists of
+# one of the following formats. Comment lines start with "#".
 #
 #   circle action center edgepoint
 #   rect action upperleft lowerright
@@ -18,10 +16,10 @@
 #   poly action point1 point2 point3 point4 ... pointN
 #   default action
 #
-# using "point" and "default" in the same map makes no sense.  if "point"
+# Using "point" and "default" in the same map makes no sense. If "point"
 # is used, the action for the closest one is selected.
 #
-# To use, define an image submit map on your form
+# To use, define an image submit map on your form:
 #
 #   <input type=image name=mv_todo SRC="image_url">
 #   You can pass a "client-side" imagemap like this:
@@ -32,15 +30,13 @@
 #
 # If the @map passed parameter contains a NUL (\0) in the first array
 # position, the map is assumed to be null-separated and @map is built
-# by splitting it.  This allows a null-separated todo.map with
-# multiple values (parsed by a cgi-lib.pl or the like) to be
-# referenced.
+# by splitting it. This allows a null-separated todo.map with multiple
+# values (parsed by a cgi-lib.pl or the like) to be referenced.
 #
 # usage:
 #
-#   use Imagemap;
+#   use Vend::Imagemap;
 #   $action = action_map($x, $y, @map);
-#
 
 package Vend::Imagemap;
 require Exporter;
@@ -50,7 +46,7 @@ require Exporter;
 @EXPORT = qw(action_map);
 use strict;
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.2.4.1 $, 10);
 
 my $Action = "";
 my $minDistance = -1;

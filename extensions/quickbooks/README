@@ -1,284 +1,270 @@
-=head1 NAME
+NAME
+    Interchange QuickBooks -- QuickBooks support for transactions and items
 
-Interchange QuickBooks -- QuickBooks support for transactions and items
+VERSION
+    This document describes software based on Interchange 4.5 and later.
 
-=head2 Version
+DESCRIPTION
+    Interchange is a business-to-business and business-to-consumer internet
+    ordering and cataloguing product. It has the ability to take orders via
+    the World Wide Web, and store transaction data.
 
-This document describes software based on Interchange 4.5.x.
+    This document describes how to interface Interchange with QuickBooks,
+    the popular small-business accounting program from Intuit.
 
-=head1 DESCRIPTION
+    QuickBooks has an import/export format called IIF, a mnemonic for Intuit
+    Interchange Format. Fitting, eh?
 
-Interchange is a business-to-business and business-to-consumer internet
-ordering and cataloguing product. It has the ability to take orders via the
-World Wide Web, and store transaction data.
+    The standard capabilities of Interchange allow production of IIF files
+    for transaction passing. With some support from Interchange UserTags,
+    can even import and export item listings.
 
-This document describes how to interface Interchange with QuickBooks, the
-popular small-business accounting program from Intuit.
+CONTENTS
+    The following files are used with this extension:
 
-QuickBooks has an import/export format called IIF, a mnemonic for Intuit
-Interchange Format. Fitting, eh?
+      ic_qb.pod                     The source for this document
+      usertag/import_quicken_items  UserTag for importing items
+      usertag/export_quicken_items  UserTag for exporting items
+      pages/admin/quickbooks/*      Menu support for Interchange UI
+      etc/trans_quickbooks          Report file used with quickbooks route
+      qb.catalog.cfg                Route for quickbooks transaction logging
 
-The standard capabilities of Interchange allow producition of IIF files
-for transaction passing.  With some support from Interchange UserTags,
-can even import and export item listings.
+INSTALLATION
+    To set up this extension, the basic steps are:
 
-=head1 CONTENTS
+        * Create and copy directories and files.
+        * Add additional database fields (if any).
+        * Modify catalog.cfg with additions.
+        * Add "quickbooks" order route to default route (or pages in setups
+		  that use an mv_order_route form field).
+        * Restart Interchange.
+        * Export your items from Interchange catalog (or import your
+          existing QuickBooks items to Interchange).
+        * Test.
 
-The following files are used with this extension:
+  Terms and locations
 
-  ic_qb.pod                     The source for this document
-  usertag/import_quicken_items  UserTag for importing items
-  usertag/export_quicken_items  UserTag for exporting items
-  pages/admin/quickbooks/*      Menu support for Interchange UI
-  etc/trans_quickbooks          Report file used with quickbooks route
-  qb.catalog.cfg                Route for quickbooks transaction logging
+    Several terms are used in the examples.
 
-=head1 INSTALLATION
+    Catalog Directory
+        This is the main directory for the catalog, where catalog.cfg
+        resides. It will have a NAME, the name for the catalog. (Some common
+        Interchange demo names are "foundation", "construct", "barry", and
+        "simple".)
 
-To install this extension, the basic steps are:
+        Common locations:
 
-    * Untar the distribution to the extensions directory.
-    * Create and copy directories and files.
-    * Add additional database fields.
-    * Modify catalog.cfg with additions.
-    * Add "quickbooks" order route to checkout pages.
-    * Restart Interchange.
-    * Export your items from Interchange catalog (or import your
-      existing QuickBooks items to Interchange).
-    * Test.
+            /var/lib/interchange/NAME
+            /usr/local/interchange/catalogs/NAME
+            $HOME/catalogs/NAME
 
-=head2 Terms and locations
+        We will use the path "/var/lib/interchange/foundation" in these
+        examples.
 
-Several terms are used in the examples.
+    Interchange software directory
+        This is the main directory for your Interchange server, where the
+        file "interchange.cfg" resides. Common locations:
 
-=over 4
+            /usr/lib/interchange
+            /usr/local/interchange
+            $HOME/ic
 
-=item Catalog Directory
+        We will use the path "/usr/lib/interchange" in these examples.
 
-This is the main directory for the catalog, where catalog.cfg resides. It
-will have a NAME, the name for the catalog. (Some common Interchange
-demo names are C<construct>, C<barry>, and C<simple>.)
+    Interchange User
+        The Interchange daemon runs as a user ID that cannot be root. It
+        will require write permission on directories it must modify to do
+        its work.
 
-Common locations:
+        We will use the user ID "interch" in these examples.
 
-    /var/lib/interchange/NAME
-    $HOME/catalogs/NAME
-    /usr/local/interchange/catalogs/NAME
+  Create and copy directories and files
 
-We will use the path C</var/lib/interchange/construct> in these examples.
+    This extension requires you to add some files to your catalog.
 
-=item Interchange software directory
+    It is assumed you have tools and knowledge to create directories with
+    the proper permissions. Any directories that will contain varying files
+    like order transaction logs will require write permission for the
+    Interchange daemon user; pages and configuration only need have read
+    permission.
 
-This is the main directory for your Interchange server, where the file
-C<interchange.cfg> or C<minivend.cfg> resides. Common locations:
+    Make orders directory
+        Create the directory "orders" in your Catalog Directory if it
+        doesn't already exist. (It may be a symbolic link to another
+        location.) It must have write permission on it.
 
-    /usr/local/interchange
-    /usr/local/minivend
-    /usr/lib/interchange
-    $HOME/ic
-    $HOME/mvend
+            cd /var/lib/interchange/foundation
+            mkdir orders
 
-We will use the path C</usr/lib/interchange> in these examples.
+        If you are doing this as root, also do:
 
-=item Interchange User
+            chown interch orders
 
-The Interchange daemon runs as a user ID that cannot be root. It will require
-write permission on directories it must modify to do its work.
+        This directory is used to store the QuickBooks IIF files produced
+        for orders. The files are created with the form:
 
-We will use the user ID C<interchange> in these examples.
+            qbYYYYMMDD.iif
 
-=back
+        Each day will have a file, and when a day is complete you should
+        download the orders. (There are other schemes possible.)
 
-=head2 Untar the extension
+    Copy pages
+        You will want the Interchange UI support if you are using the UI. It
+        provides links for importing/exporting items, downloading and
+        viewing IIF files, and possibly other functions over time. At the
+        UNIX command line:
 
-The assumption is that you will untar the distribution tar file to
-the subdirectory C<extensions> in your Interchange software directory.
-If you stored it in the directory C</tmp>, the command would be:
+            cp -r /usr/lib/interchange/extensions/quickbooks/pages/admin/quickbooks \
+                  /var/lib/interchange/foundation/pages
 
-	cd /usr/lib/interchange
-	gzip -dc /tmp/ic_qb*.tar.gz | tar xvf -
+    Copy report generation file etc/trans_quickbooks
+        This file is used to generate the IIF file(s) for transaction
+        oimport into QuickBooks.
 
-This will create the directory C<extensions> if it doesn't already
-exist.
+            cp /usr/lib/interchange/extensions/quickbooks/etc/trans_quickbooks \
+               /var/lib/interchange/foundation/etc
 
-If you place the distribution somewhere else you must adjust your paths
-in the example commands given below.
+    Copy usertags
+        If you want to use the UI item import/export, two usertags are
+        required. The easiest thing is just to copy them to the Interchange
+        software directory subdirectory "lib/UI/usertag", which is #included
+        as a part of the UI configuration file.
 
-=head2 Create and copy directories and files
+            cd /usr/lib/interchange
+            cp -i extensions/quickbooks/usertag/* lib/UI/usertag
 
-This extension requires you to add some files to your catalog.
+  Additional database fields -- userdb
 
-It is assumed you have tools and knowledge to create directories with the
-proper permissions. Any directories that will contain varying files like
-order transaction logs will require write permission for the Interchange
-user (daemon); pages and configuration only need have read permission.
+    Quickbooks requires a couple more fields than Interchange has. If you
+    want the user to retain their customer number, add the following field
+    to the "userdb" table:
 
-=over 4
+        customer_number
 
-=item Make orders directory
+    It can be an integer number field if your database needs that
+    information. To add the field in MySQL, you can issue the following
+    queries at the mysql prompt:
 
-Create the directory C<orders> in your Catalog Directory if it doesn't already
-exist. (It may be a symbolic link to another location.) It must have write
-permission on it.
+        alter table userdb add column customer_number int;
 
-    cd /var/lib/interchange/construct
-    mkdir orders
+    If you don't add it, it just means that a new customer number will be
+    assigned every time.
 
-If you are doing this as root, also do:
+    WARNING: If you are using Interchange DBM files and have live data it is
+    not recommended you add this field unless you are positive you will not
+    overwrite your data. If you are not a developer, get one to help you. In
+    any case, back up your userdb.gdbm or userdb.db file first.
 
-    chown interchange orders
+  Additional database fields -- inventory
 
-This directory is used to store the QuickBooks IIF files produced for orders.
-The files are createed with the form:
+    Quicken also needs an account to debit for the split transactions it
+    uses to track item sales. If you don't create these fields to relate to
+    each SKU, the account "Other Income" will be used in the exports.
 
-    qbYYYYMMDD.iif
+    Add the following fields to the "inventory" table if they don't
+	already exist:
 
-Each day will have a file, and when a day is complete you should download
-the orders. (There are other schemes possible.)
+        account
+        cogs_account
 
-=item Copy pages
+    To add the fields in MySQL, you can issue the following queries at the
+    mysql prompt:
 
-You will want the Interchange UI support if you are using the UI. It provides
-links for importing/exporting items, downloading and viewing IIF files, and
-possibly other functions over time. At the UNIX command line:
+        alter table inventory add column account char(20);
+        alter table inventory add column cogs_account char(20);
 
-    cp -r /usr/lib/interchange/extensions/quickbooks/pages/admin/quickbooks \
-          /var/lib/interchange/construct/pages
+    Other SQL databases will have similar facilities.
 
-=item Copy report generation file etc/trans_quickbooks
+    If you are using Interchange DBM files, just export the inventory
+    database, stop the Interchange server (to prevent corruption), add the
+    fields on the first line by editing the "inventory.txt" file, then
+    restart Interchange.
 
-This file is used to generate the IIF file(s) for transaction oimport
-into QuickBooks.
+  Modify catalog.cfg with additions:
 
-    cp /usr/lib/interchange/extensions/quickbooks/etc/trans_quickbooks \
-       /var/lib/interchange/construct/etc
+    Add the entries in qb.catalog.cfg to catalog.cfg (you can use a #include
+    statement if you wish).
 
-=item Copy usertags
+    There are some Require directives to ensure that the needed UserTag
+    definitions are included in the catalog, as well as the Route which is
+    used
 
-If you want to use the UI item import/export, two usertags are required.
-The easiest thing is just to copy them to the Interchange Software
-Directory subdirectory C<dist/lib/UI/usertag>, which is #included as a
-part of the UI configuration file.
+  Add quickbooks order route
 
-    cd /usr/lib/interchange
-    cp -i extensions/quickbooks/usertag/* dist/lib/UI/usertag
+    In the Interchange UI, there is a Preferences area "ORDER_ROUTES". You
+    should add the "quickbooks" route. Place it after the transaction
+    logging step, i.e.
 
-=back
+        code     ORDER_ROUTES
+            Variable log quickbooks main copy_user
 
-=head2 Additional database fields
+    ADVANCED: If you know Interchange Variable settings, you can add it
+    directly:
 
-Quickbooks requires an account to debit for the split transactions it uses
-to track item sails. If you don't create these fields to relate to each SKU,
-the account "Other Income" will be used in the exports.
+        Variable ORDER_ROUTES  log quickbooks main copy_user
 
-Add the following fields to the "inventory" table:
+    Also, you can use other methods to set order routes. See the Interchange
+    reference documentation.
 
-    account
-    cogs_account
+  Restart the catalog
 
-To add the fields in MySQL, you can issue the following queries at
-the mysql prompt:
+    This can be done by restarting the Interchange server or by clicking
+    "Apply Changes" in the UI.
 
-    alter table inventory add column account char(20);
-    alter table inventory add column cogs_account char(20);
+  Export the items
 
-Other SQL databases will have similar facilities.
+    You can access the Quickbooks UI index by making your URL:
 
-If you are using Interchange DBM files, just export the inventory
-database, stop the Interchange server (to prevent corruption), add the
-fields on the first line by editing the C<inventory.txt> file, then
-restart Interchange.
+        http://YOURCATALOG_URL/admin/quickbooks/index
 
-=head2 Modify catalog.cfg with additions:
+    It will provide options for importing and exporting items. This is
+    necessary so QuickBooks will be able to take orders for your items.
 
-Add the entries in qb.catalog.cfg to catalog.cfg (you can use a #include
-statement if you wish).
+    QuickBooks uses the product "name" as an SKU, along with an integer
+    reference number. Either you need to make your SKUs match the integer
+    reference number, or you must ensure your product title is unique.
 
-There are some Require directives to ensure that the needed UserTag definitions
-are included in the catalog, as well as the Route which is used
+  Test
 
-=head2 Add quickbooks order route to order pages
+    Place a test order on your Interchange catalog once you have finished
+    installing. You should find a file in the "orders" directory with the
+    name "qbYYYYMMDD.iif". (YYYY=year, MM=month, DD=day.) Transfer this file
+    to your QuickBooks machine and run File/Import and select that file as
+    the source. This should import the customer and order into the system.
+    If it doesn't work, it may be due to lack of sales tax or shipping
+    definitions, discussed below.
 
-Edit the checkout pages, pages/ord/checkout.html (and possibly
-pages/multi/checkout.html), in your Catalog Directory. Find the hidden field
-referring to C<mv_order_route>.
+DISCUSSION
+    The interface provided works for the sample company data distributed
+    with QuickBooks. There are certain requirements to make sure it works in
+    your environment.
 
-If the line looks like this:
+    Also, you can change the configuration by editing the file
+    etc/trans_quickbooks to suit your IIF file needs.
 
-  <INPUT TYPE=hidden NAME=mv_order_route VALUE="log main copy_user">
+  Sales Tax
 
-You will want to change it to:
+    QuickBooks has a taxing system whereby tax rates are defined by customer
+    location. There is usually also a generic "Sales Tax Item", such as
+    contained in the sample company data. This allows Interchange to
+    calculate the sales tax. If that item is not present then you will need
+    to create it.
 
-  <INPUT TYPE=hidden NAME=mv_order_route VALUE="log quickbooks main copy_user">
+  Shipping
 
-If it looks like:
+    Interchange will add a generic item "Shipping" to each order that has a
+    shipping cost. Its MEMO field will contain the text description of the
+    mode. If that item is not in your QuickBooks item definitions, then you
+    must create it.
 
-  <INPUT TYPE=hidden NAME=mv_order_route
-         VALUE="[either]__ORDER_ROUTES__[or]log main copy_user[/either]">
+  Customer Imports
 
-you will want to change the Variable/Knar entry ORDER_ROUTES to include
-the C<quickbooks> route. Place it after the transaction logging step, i.e.
+    To generate a QuickBooks transtype of INVOICE, a CUSTOMER is required.
+    Interchange outputs a CUST IIF record for each sale with the customer
+    information. Since QuickBooks uses the customer name or company to
+    generate the unique listing, we place the Interchange username in
+    parentheses after the company or name.
 
-    Variable ORDER_ROUTES  log quickbooks main copy_user
-
-=head2 Restart the catalog
-
-This can be done by restarting the Interchange server or by clicking
-C<Apply Changes> in the UI.
-
-=head2 Export the items 
-
-You can access the Quickbooks UI index by making your URL:
-
-    http://YOURCATALOG_URL/admin/quickbooks/index
-
-It will provide options for importing and exporting items. This is necessary
-so QuickBooks will be able to take orders for your items.
-
-QuickBooks uses the product "name" as an SKU, along with an integer reference
-number. Either you need to make your SKUs match the integer reference number,
-or you must ensure your product title is unique.
-
-=head2 Test
-
-Place a test order on your Interchange catalog once you have finished installing.
-You should find a file in the C<orders> directory with the name C<qbYYYYMMDD.iif>.
-(YYYY=year, MM=month, DD=day.) Transfer this file to your QuickBooks machine and
-run File/Import and select that file as the source. This should import the customer
-and order into the system. If it doesn't work, it may be due to lack of sales tax
-or shipping definitions, discussed below.
-
-=head1 DISCUSSION
-
-The interface provided works for the sample company data distributed with
-QuickBooks. There are certain requirements to make sure it works in your
-environment.
-
-Also, you can change the configuration by editing the file etc/trans_quickbooks
-to suit your IIF file needs.
-
-=head2 Sales Tax
-
-QuickBooks has a taxing system whereby tax rates are defined by customer location.
-There is usually also a generic C<Sales Tax Item>, such as contained in the sample
-company data. This allows Interchange to calculate the salestax. If that item is
-not present then you will need to create it.
-
-=head2 Shipping
-
-Interchange will add a generic item C<Shipping> to each order that has a shipping
-cost. It's MEMO field will contain the text description of the mode. If that item
-is not in your QuickBooks item definitions, then you must create it.
-
-=head2 Customer Imports
-
-To generate a QuickBooks transtype of INVOICE, a CUSTOMER is
-required. Interchange outputs a CUST IIF record for each sale with the
-customer information. Since QuickBooks uses the customer name or company
-to generate the unique listing, we place the Interchange username in
-parentheses after the company or name.
-
-=head1 AUTHOR
-
-Mike Heins, Akopia, Inc. <heins@akopia.com>.
+AUTHOR
+    Mike Heins, mike@perusion.com
 

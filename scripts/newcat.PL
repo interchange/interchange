@@ -3,7 +3,7 @@
 #
 # Interchange catalog configurator with curses
 #
-# $Id: newcat.PL,v 2.6 2002-06-27 18:55:50 jon Exp $
+# $Id: newcat.PL,v 2.6.2.1 2003-01-25 22:21:32 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #

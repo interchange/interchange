@@ -1,7 +1,8 @@
-[seti page_title]Search wizard[/seti]
+[seti page_title][L]Search Builder[/L][/seti]
 [set help_name]search_builder[/set]
 [set ui_class]Design[/set]
-[set icon_name]admin/icon_config.gif[/set]
+[set display_class]type5[/set]
+[set icon_name]icon_config.gif[/set]
 [seti name=tables][list-databases][/seti]
 [seti meta_header]
 [perl table="[scratch tables]"]
@@ -227,22 +228,26 @@ EOF
 
 @_UI_STD_HEAD_@
 
-<FORM NAME=search_wizard ACTION="[process]" METHOD=POST>
+<FORM NAME=search_wizard ACTION="[process]" METHOD=GET>
 <INPUT TYPE=hidden NAME=mv_todo VALUE=back>
+<INPUT TYPE=hidden NAME=ui_target VALUE="[cgi ui_target]">
+<INPUT TYPE=hidden NAME=ui_source_form VALUE="[cgi ui_source_form]">
+<INPUT TYPE=hidden NAME=ui_source_var VALUE="[cgi ui_source_var]">
+<INPUT TYPE=hidden NAME=display_class VALUE="[cgi display_class]">
 [return-to]
 
 <P>
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <TR>
-	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="20%" VALIGN=top>
-		<small><B>Search Table</B></small>
+	<TD class=rnorm WIDTH="20%" VALIGN=top>
+		[L]Search Table[/L]
 	</TD>
-	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="40%" VALIGN=top>
+	<TD class=rnorm WIDTH="40%" VALIGN=top>
 	<SELECT NAME=search_table>
 	[if !value search_table]
 	[calc]
@@ -256,50 +261,45 @@ EOF
 	[/loop]
 	</SELECT>
 	</TD>
-	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="40%" VALIGN=top>
-	<SMALL>
-	The search must be based on a table, by default the main items table.<br><br>
-	<small>
-	NOTE: It is possible to search multiple tables in Interchange, but that is
-	not supported by this wizard.</small>
-	</small>
+	<TD class=rnorm WIDTH="40%" VALIGN=top>
+	[L]The search must be based on a table, by default the main items table.[/L]</small><br><br>
+	[L]NOTE: It is possible to search multiple tables in Interchange, 
+but that is not supported by this wizard.[/L]
 	</TD>
 </tr>
 
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <TR>
-	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="20%" VALIGN=top>
-		<small><B>Search locality</B></small>
+	<TD class=rnorm WIDTH="20%" VALIGN=top>
+		[L]Search locality[/L]
 	</TD>
-	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="40%" VALIGN=top>
+	<TD class=rnorm WIDTH="40%" VALIGN=top>
 	<select name=search_type>
-	<OPTION VALUE="db"> Database
-	<OPTION VALUE="text" [selected search_type text]> Text file
+	<OPTION VALUE="db"> [L]Database[/L]
+	<OPTION VALUE="text" [selected search_type text]> [L]Text file[/L]
 	</select>
 
 	</TD>
-	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="40%" VALIGN=top>
-	<SMALL>
-	For full-text searches, it is usually better to search the text file
-	source of the database (create at [page __UI_BASE__/genexport]Direct table export[/page]). When using SQL databases, the coordinated field-based searches are much
+	<TD class=rnorm WIDTH="40%" VALIGN=top>
+	[msg arg.0="[page __UI_BASE__/export_table][L]Direct table export[/L]</a>"]For full-text searches, it is usually better to search the text file
+	source of the database (create at %s). When using SQL databases, the coordinated field-based searches are much
 	faster when the first search term is "equals to".
-	</small>
 	</TD>
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <TR>
-	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="20%" VALIGN=top>
-		<small><B>Search Template</B></small>
+	<TD class=rnorm WIDTH="20%" VALIGN=top>
+		[L]Search Template[/L]
 	</TD>
-	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="40%" VALIGN=top>
+	<TD class=rnorm WIDTH="40%" VALIGN=top>
 	<select NAME="search_template">
 		<option value=""> --default ([calc] $Config->{Special}{results} [/calc]) --
 		[loop option=search_template list="[list-pages]"]
@@ -307,93 +307,85 @@ EOF
 		[/loop]
 	</select>
 	</TD>
-	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="40%" VALIGN=top>
-	<SMALL>
+	<TD class=rnorm WIDTH="40%" VALIGN=top>
 	The results of the search are sent to a page template, by default
 	<b>[calc]$Config->{Special}{results};[/calc]</B>.<P>
 	If you select a page, it should have the [search-region] area necessary
 	to read and build the search.
-	</small>
 	</TD>
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 
 <TR>
-	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="20%" VALIGN=top>
-		<small><B>Page size</B></small>
+	<TD class=rnorm WIDTH="20%" VALIGN=top>
+		[L]Page size[/L]
 	</TD>
-	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="40%" VALIGN=top>
+	<TD class=rnorm WIDTH="40%" VALIGN=top>
 	<SELECT NAME="matchlimit">
 		[loop list="50 1 2 3 5 10 20 25 50 100 9999" option=matchlimit]<OPTION>[loop-code][/loop]
 	</SELECT>
 	</TD>
-	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="40%" VALIGN=top>
-	<SMALL>
-	You can limit the number of results per page, and use the
-	template &#91;more-list] to page between matches. The default is 50.
+	<TD class=rnorm WIDTH="40%" VALIGN=top>
+	[L]You can limit the number of results per page, and use the
+	template &#91;more-list] to page between matches. The default is 50.[/L]
 	</TD>
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <TR>
-	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="20%" VALIGN=top>
-		<small><B>Unique only</B></small>
+	<TD class=rnorm WIDTH="20%" VALIGN=top>
+		[L]Unique only[/L]
 	</TD>
-	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="40%" VALIGN=top>
+	<TD class=rnorm WIDTH="40%" VALIGN=top>
 	<SELECT NAME="unique_results">
-		<OPTION VALUE="">No
-		<OPTION VALUE="1" [selected unique_results 1]>Yes
+		<OPTION VALUE="">[L]No[/L]
+		<OPTION VALUE="1" [selected unique_results 1]>[L]Yes[/L]
 	</SELECT>
 	</TD>
-	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="40%" VALIGN=top>
-	<SMALL>
-	Normally one search result is returned for every matching record. If you
-	wish to eliminate duplicate result returns, you can use this.
+	<TD class=rnorm WIDTH="40%" VALIGN=top>
+	[L]Normally one search result is returned for every matching record. If you
+	wish to eliminate duplicate result returns, you can use this.[/L]
 	</TD>
 </tr>
 
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <TR>
-	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="20%" VALIGN=top>
-		<small><B>Allow full expressions</B></small>
+	<TD class=rnorm WIDTH="20%" VALIGN=top>
+		[L]Allow full expressions[/L]
 	</TD>
-	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="40%" VALIGN=top>
+	<TD class=rnorm WIDTH="40%" VALIGN=top>
 	<SELECT NAME="allow_regex">
-		<OPTION VALUE="">No
-		<OPTION VALUE="1" [selected allow_regex 1]>Yes
+		<OPTION VALUE="">[L]No[/L]
+		<OPTION VALUE="1" [selected allow_regex 1]>[L]Yes[/L]
 	</SELECT>
 	</TD>
-	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="40%" VALIGN=top>
-	<SMALL>
-	Normally characters are searched for literally, i.e. a period
+	<TD class=rnorm WIDTH="40%" VALIGN=top>
+	[L]Normally characters are searched for literally, i.e. a period
 	will match a period. If you wish to use the power of Perl regular
 	expressions in your matching criteria, select <B>Yes</B>. Bear 
 	in mind that some things you enter may not behave just as you
 	might think they will; see <i>perldoc perlre</i> for a complete
-	description of what Perl regular expressions are.
-	</TD>
+	description of what Perl regular expressions are.[/L]
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_INTBLOCK__>
-[button text="Cancel"]
-	[return-to click]
-[/button]&nbsp;&nbsp;&nbsp;&nbsp;[button text="Next -->"]
+<td colspan=3 class=rnorm>
+<input type=submit name=mv_click value="[L]Cancel[/L]">&nbsp;&nbsp;&nbsp;&nbsp;[button text="[L]Next[/L] -->"]
 	mv_nextpage=__UI_BASE__/search_wizard2
 [/button]
 </tr>

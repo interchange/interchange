@@ -1,6 +1,6 @@
 # Vend::Payment::TCLink - Interchange TrustCommerce TCLink support
 #
-# $Id: TCLink.pm,v 1.1 2002-07-24 15:36:05 kwalsh Exp $
+# $Id: TCLink.pm,v 1.1.2.1 2003-01-25 22:21:30 racke Exp $
 #
 # Copyright (C) 2002 TrustCommerce <developer@trustcommerce.com>
 #
@@ -30,7 +30,7 @@ package Vend::Payment::TCLink;
 
 =head1 Interchange TrustCommerce Support
 
-Vend::Payment::TCLink $Revision: 1.1 $
+Vend::Payment::TCLink $Revision: 1.1.2.1 $
 
 =head1 SYNOPSIS
 

@@ -1,35 +1,11 @@
-#$self = {
-#	INSTALLPRIVLIB => '/usr/local/interchange/lib',
-#	INSTALLARCHLIB => '/usr/local/interchange',
-#};
-
-use Config;
-require 'scripts/initp.pl';
-
-sub doit {
-	my ($key) = @_;
-	my $val;
-	if ($MV::Self->{RPMBUILDDIR} and $val = $MV::Self->{$key}) {
-		$val =~ s!^$MV::Self->{RPMBUILDDIR}/!/!; 
-		return $val;
-	}
-	return $MV::Self->{$key} unless $key =~ /[a-z]/;
-	return $Config{$key};
-}
-
-DOIT: {
-	local ($/);
-	local($_) = <<'_EoP_';
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
 # Interchange database updater
 #
-# $Id: update.PL,v 1.7 2000-09-25 16:08:06 zarko Exp $
+# $Id: update.PL,v 1.7.4.1 2003-01-25 22:21:32 racke Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
-#
-# See the file 'Changes' for information.
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -233,6 +209,8 @@ global_config();
 
 chdir $dir or die "Couldn't change directory to $dir: $!\n";
 
+$Vend::ExternalProgram = $Vend::Quiet = 1;
+
 $Vend::Cfg = config($name, $dir, "$dir/etc", ($subconfig || undef));
 $::Variable = $Vend::Cfg->{Variable};
 
@@ -333,17 +311,9 @@ C<update> program will terminate with an error.
 
 =head1 SEE ALSO
 
-http://www.akopia.com/
+http://interchange.redhat.com/
 
 =head1 AUTHOR
 
-Mike Heins, <heins@akopia.com>
+Mike Heins, <mheins@redhat.com>
 
-_EoP_
-	s{.*\n(#(.*)~_~(\w+)~_~(.*))}{$2 . doit($3) . "$4\n$1"}eg;
-	my $file = $0;
-	$file =~ s/\.PL$//;
-	open(OUT, ">$file") 
-		or die "Create $file: $!\n";
-	print OUT $_;
-}

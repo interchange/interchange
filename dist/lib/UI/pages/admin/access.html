@@ -1,23 +1,25 @@
-[calc] $CGI->{no_dbmenu} = 1; $CGI->{access_menu} = 1; return [/calc]
-[set page_title]Administrator Accounts[/set]
+[calc]
+	$CGI->{no_dbmenu} = 1;
+	$CGI->{access_menu} = 1;
+	return;
+[/calc]
+[set page_title][L]Administrator Accounts[/L][/set]
 [set ui_class]Admin[/set]
 [set page_perm]access=l[/set]
 [set help_name]access.main[/set]
-[set icon_name]admin/icon_config.gif[/set]
+[set icon_name]icon_config.gif[/set]
 
 @_UI_STD_HEAD_@
-[if scratch ui_message]
-<P>
-<BLOCKQUOTE>
-	[scratch ui_message][set ui_message][/set]
-</BLOCKQUOTE>
-<P>
-&nbsp;
-[/if]
 
+[calc]
+	$Config->{NoSearch} =~ s/\baccess\b//;
+	$Config->{NoSearch} =~ s/^\|//;
+	$Config->{NoSearch} =~ s/\|$//;
+	return;
+[/calc]
 
 <form action="[area ui]" method=POST name=accessform>
-<farm action="/cgi-bin/test-cgi" name=accessform>
+<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 <INPUT TYPE=hidden NAME=mv_todo VALUE=back>
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/user_edit">
 <INPUT TYPE=hidden NAME=ui_hide_key VALUE="1">
@@ -31,14 +33,14 @@
 <center>
 <table __UI_T_PROPERTIES__>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 [if-mm advanced access=c]
 
 <tr>
-<td colspan=2 bgcolor="__UI_C_INTBLOCK__">
+<td colspan=2 class=rnorm>
 
-[button text="Create new administrator" src="@_UI_IMG_@admin/create.gif"]
+[button text="[L]Create new user[/L]"]
 mv_nextpage=__UI_BASE__/user_edit
 user_id=NEW
 ui_hide_key=0
@@ -48,35 +50,35 @@ ui_hide_key=0
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 [/if-mm]
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_LEFT_WIDTH__>
+<td class=rnorm width=__UI_LEFT_WIDTH__>
 
 [if-mm advanced access=e]
-	[button name=mv_junk value="Edit administrator" src="@_UI_IMG_@admin/edit.gif"][/button]<p>
+	[button name=mv_junk value="[L]Edit user[/L]"][/button]<p>
 [/if-mm]
 
 [if-mm advanced perm=v]
-[button value="Show permissions" src="@_UI_IMG_@admin/show.gif"]
+[button value="[L]Show permissions[/L]"]
 mv_nextpage=__UI_BASE__/access_permissions
 ui_return_to=@@MV_PAGE@@
 [/button]<p>
 [/if-mm]
 
 [if-mm advanced access=e]
-[button value="Change password" src="@_UI_IMG_@admin/change_password.gif"]
+[button value="[L]Change password[/L]"]
 mv_nextpage=__UI_BASE__/user_change_pass
 ui_hide_key=0
 [/button]
 <p>[/if-mm]
 
 [if-mm advanced access=d]
-[button text="Delete administrator"
+[button text="[L]Delete user[/L]"
 		form=accessform
-		confirm="Are you sure you want to delete this administrator?"
+		confirm="[L]Are you sure you want to delete this administrator?[/L]"
 		]
 mv_todo=return
 mv_nextpage=@@MV_PAGE@@
@@ -84,53 +86,62 @@ mv_nextpage=@@MV_PAGE@@
 [perl table="__UI_ACCESS_TABLE__"]
 	my $db = $Db{__UI_ACCESS_TABLE__};
 	if(! $db) {
-		$Scratch->{ui_message} = "Bad access table __UI_ACCESS_TABLE__";
+		$Scratch->{ui_message} = errmsg("Bad access table '%s'", '__UI_ACCESS_TABLE__');
 		return;
 	}
 	unless ( $db->delete_record($CGI->{user_id}) ) {
 		$Scratch->{ui_message} =
-			"Failed to delete administrator $CGI->{user_id} from table __UI_ACCESS_TABLE__";
+			errmsg("Failed to delete administrator %s from table %s", $CGI->{user_id}, '__UI_ACCESS_TABLE__');
 		return;
 	}
 	$Scratch->{ui_message} =
-			"Deleted administrator $CGI->{user_id} from table __UI_ACCESS_TABLE__";
-	return;
+			errmsg("Deleted administrator %s from table %s", $CGI->{user_id},
+  '__UI_ACCESS_TABLE__');
+	return ;
 [/perl]
+[/button]
+[/if-mm]
+
+[if-mm super]
+[button text="[L]Switch to user[/L]" form=accessform]
+mv_todo=return
+mv_nextpage=@@MV_PAGE@@
+mv_click=MMsu
+admin=1
+user=[cgi user_id]
+dest=admin/index
 [/button]
 [/if-mm]
 
 </td>
 
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_RIGHT_WIDTH__>
+<td class=rnorm width=__UI_RIGHT_WIDTH__>
 <select name="user_id" size=10>
 [loop search="
 		fi=access
 		st=db
+		ml=1000
 		co=yes
 		sf=username
 		se=:
 		bs=yes
 		ne=1
-		tf=name
+		tf=name,username
+		to=f
 	"]
   <option value="[loop-code]">[loop-code] -- [loop-data access name][if-loop-data access super]*[/if-loop-data]
 [/loop]
-</select>&nbsp;<B>* superuser</B>
+</select>&nbsp;<B>* [L]Site Administrator[/L]</B>
 </td>
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>
 
 <p>
-
-[button text="Back"]
-mv_todo=back
-mv_nextpage=index
-[/button]
 
 </form>
 

@@ -1,149 +1,205 @@
+@_UI_STD_INIT_@
+[if config SalesTax ne multi]
+	[bounce page="__UI_BASE__/tax_simple"]
+[/if]
 [calc]
-	$Values->{mv_data_table} = $CGI->{mv_data_table} = 'variable';
+	$Values->{mv_data_table} = $CGI->{mv_data_table} = 'country';
 	$CGI->{no_dbmenu} = 1;
 	return;
 [/calc]
-[set table_perm]1[/set]
+[flag type=write table=country]
+[flag type=write table=state]
+[set page_perm]tax[/set]
 [set ui_class]Admin[/set]
-[set page_title]Tax configuration[/set]
+[set page_title][L]Tax configuration[/L][/set]
 [set help_name]tax.main[/set]
-[set icon_name]admin/icon_config.gif[/set]
+[set icon_name]icon_config.gif[/set]
 @_UI_STD_HEAD_@
 
-[flag type=write table=variable]
 <!-- ----- BEGIN REAL STUFF ----- -->
-[perl tables=variable]
-	delete $Scratch->{changes};
-	return unless $CGI->{tax_format} eq 'do';
-	for (my $i = 0; $i < 1000; $i++) {
-		last unless defined $CGI->{"taxarea$i"};
-		next if defined $CGI->{"Delete$i.x"};
-		my $area = $CGI->{"taxarea$i"};
-		my $rate = $CGI->{"taxrate$i"};
-		my $ship = $CGI->{"taxship$i"};
-		push @areas, ($area || 'new');
-		push @rates, "$area=$rate";
-		push (@taxes, $area) if $CGI->{"taxship$i"};
+
+
+<FORM ACTION="[area @@MV_PAGE@@]" METHOD=GET>
+<table __UI_T_PROPERTIES__>
+<input type=hidden name=mv_action value="go">
+<tr>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+<tr>
+<td colspan=2  class=rnorm>
+<B>Set tax type</B>
+</td>
+</tr>
+<tr>
+<td colspan=2 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+<tr>
+<td class=rnorm align=right>
+<B>Country</B>
+</td>
+<td class=rnorm>
+	      <SELECT onChange="this.form.submit()" NAME=taxcountry>
+		  <OPTION VALUE="US">[L]United States[/L]
+	      [loop option=taxcountry search="
+				ra=yes
+				fi=country
+				st=db
+				rf=code,name
+				ml=1000
+				tf=name
+	      "]
+	      <OPTION VALUE="[loop-code]"> [loop-data country name] 
+	      [/loop]
+	      </SELECT>
+</td>
+</tr>
+
+[if value taxcountry]
+[try]
+[perl tables="country state"]
+	my $col   = $::Variable->{MV_COUNTRY_TAX_FIELD} || 'tax';
+	my $taxdata;
+	my $out;
+	my $set;
+	if($CGI->{tax_set}) {
+		if($CGI->{taxtype} eq '' or $CGI->{taxtype} eq 'none') {
+			$taxdata = '';
+		}
+		elsif($CGI->{taxtype} eq 'simple:state') {
+			$taxdata = 'simple:state';
+		}
+		elsif($CGI->{taxtype} eq 'state') {
+			$taxdata = 'state';
+		}
+		else {
+			$taxdata = $CGI->{taxdata} || 'default = 10%, food = 0';
+		}
+		tag_data('country', $col, $CGI->{taxcountry}, { value => $taxdata });
+		if($taxdata eq 'state') {
+			my $sdb = $Db{state};
+			my (@row) = split /\0/, $CGI->{taxstate};
+			my (@val) = split /\0/, $CGI->{taxstate_data};
+			my $scol   = $::Variable->{MV_STATE_TAX_FIELD} || 'tax';
+
+			for(my $i = 0; $i < @row; $i++) {
+				$sdb->set_field($row[$i], $scol, $val[$i]);
+			}
+		}
 	}
-	$Scratch->{taxarea} = join " ", @areas;
-	$Scratch->{taxrate} = join ",", @rates;
-	$Scratch->{taxship} = join " ", @taxes;
-	$Scratch->{changes} = 1;
-	return;
+	else {
+		$taxdata = tag_data('country', $col, $Values->{taxcountry});
+	}
+	if(! length($taxdata) ) {
+		# None
+		$Values->{taxtype} = 'none';
+		delete $Values->{taxdata};
+	}
+	elsif($taxdata eq 'simple:state') {
+		$Values->{taxtype} = 'simple:state';
+		delete $Values->{taxdata};
+	}
+	elsif($taxdata eq 'state') {
+		$Values->{taxtype} = 'state';
+		delete $Values->{taxdata};
+	}
+	else {
+		$Values->{taxtype} = 'vat';
+		$Values->{taxdata} = $taxdata;
+	}
+	return unless $set;
+	$out = ::errmsg(
+				"set tax type for %s to: %s",
+				$CGI->{taxcountry},
+				$Values->{taxtype},
+			);
+	return qq{
+		<tr>
+		<td class=rnorm align=right>
+		<B>Action</B>
+		</td>
+		<td class=rnorm>
+		$out
+		</td>
+		</tr>
+	};
 [/perl]
-[if scratch changes]
-	<!-- setting:
-	[perl tables=variable]
-	my $db = $Db{variable};
-	$Values->{ui_changes_made} = 1;
+[/try]
 
-	my %sets = qw/taxarea TAXAREA taxrate TAXRATE taxship TAXSHIPPING/;
-
-	my ($v, $k);
-	while( ($v, $k) = each %sets) {
-		$out .= "Set $k ($Scratch->{$v}): ";
-		$out .= $db->set_field($k, 'Variable', delete $Scratch->{$v});
-	}
-	return $out;
-	[/perl]
-	exporting: [export variable] -->
-[/if]
-
-[if type=explicit
-	compare=|
-			[newer
-				source=__UI_PRODUCT_DIR__/variable.txt
-				target=`"$Config->{ConfDir}/status.$Config->{CatalogName}"`
-				]
-			|]
-[value name=ui_changes_made set=1 hide=1]
-<FONT COLOR="__CONTRAST__">You need to [page __UI_BASE__/reconfig @@MV_PAGE@@]apply changes[/page] for changes to take effect.</FONT>
-[/if]
-
-[calc]
-		@areas = grep /\S/, split /\s+/, tag_data(qw/variable Variable TAXAREA/);
-		@rates = grep /\S/, split /,/, tag_data(qw/variable Variable TAXRATE/);
-		my $taxship = tag_data(qw/variable Variable TAXSHIPPING/);
-		$taxship = " $taxship ";
-		my $i;
-		my $last = -1;
-		for ($i = 0; $i < scalar @areas; $i++) {
-			my $rate = $rates[$i];
-			$rate =~ s/.*=//;
-			$rate =~ s/[^\d.]//g;
-			my $ship = ($taxship =~ / $areas[$i] /i) ? $areas[$i] : '';
-			push @out, "$i\t$areas[$i]\t$rate\t$ship";
-			$last = $i;
-		}
-		if ($CGI->{addnewtax}) {
-			$last++;
-			push @out, "$last\tnew";
-		}
-		$Scratch->{its} = join "\n", @out;
-		return;
-[/calc]
-<p>
-<form action="[area @@MV_PAGE@@]" method=POST>
-<INPUT TYPE=hidden NAME=tax_format VALUE=do>
-<TABLE width="90%" border=0 callpadding=0 cellspacing=0>
-<tr bgcolor="#000000" height=1><td colspan=4></td></tr>
-<TR BGCOLOR="#__UI_C_TOPBLOCKBAR__">
-<TD VALIGN="top" width="20%">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<b>Location</b>
-</td>
-<TD align=center VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<b>Tax Rate (%)</b>
-</td>
-<TD align=center VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<b>Apply tax to shipping charge</b>
-</td>
-<TD VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-&nbsp;
-</td>
-</tr>
-<tr bgcolor="#000000" height=1><td colspan=4></td></tr>
-<tr bgcolor="#FFFFFF" height=2><td colspan=4></td></tr>
-
-[loop lr=1 list="[scratch its]"]
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__">
-<input type=text name="taxarea[loop-code]" size=40 value="[loop-pos 1]">
+<td class=rnorm align=right>
+<B>Tax type</B>
 </td>
-
-<td align=center bgcolor="__UI_C_INTBLOCK__">
-<input type=text name="taxrate[loop-code]" 
- size=7 value="[loop-pos 2]">
+<td class=rnorm>
+[catch]Trouble getting/setting tax data.[/catch]
+	      <SELECT NAME=taxtype>
+		  <OPTION VALUE="">[L]No tax[/L]
+		  <OPTION VALUE="state" [selected taxtype state]>[L]State/Province based[/L]
+		  <OPTION VALUE="vat" [selected taxtype vat]>[L]VAT, based on country and tax category[/L]
+	      </SELECT>
 </td>
-
-<td bgcolor="__UI_C_INTBLOCK__" align=center valign=center>
-<INPUT TYPE=CHECKBOX NAME=taxship[loop-code] VALUE="1"[if-loop-pos 3] CHECKED[/if-loop-pos]>
-</td>
-
-<td bgcolor="__UI_C_INTBLOCK__" align=lrft valign=center>
-<INPUT TYPE=image src="@_UI_IMG_@admin/delete.gif" width=20 height=20 border=0 NAME=Delete[loop-code]>
-</td>
-
 </tr>
-[/loop]
+	[if value taxdata]
 <tr>
-<td colspan=4 bgcolor="__UI_C_INTBLOCK__"><a href="[area href=@@MV_PAGE@@ form='addnewtax=ok']"><img src="@_UI_IMG_@admin/plus.gif" width=20 height=20 border=0></a></td>
+<td class=rnorm align=right>
+<B>Tax Data</B>
+</td>
+<td class=rnorm>
+	      <TEXTAREA NAME=taxdata ROWS=8 COLS=60>[value taxdata]</TEXTAREA>
+</td>
+</tr>
+	[/if]
+	[if value taxtype eq 'state']
+<tr>
+<td class=rnorm align=right colspan=2>
+<B>State Tax Data</B>
+</td>
 </tr>
 
-<tr bgcolor="#000000" height=1><td colspan=4></td></tr>
+<tr>
+[query list=1
+	sql="select code,name,tax from state where country = '[value taxcountry]'"
+	]
+<tr>
+<td class=rnorm align=right>
+<INPUT TYPE=hidden NAME=taxstate VALUE="[sql-code]">
+[sql-param name]
+</td>
+<td class=rnorm>
+<INPUT TYPE=text SIZE=60 NAME=taxstate_data VALUE="[sql-param tax]">
+</td>
+</tr>
+[/query]
+	[/if]
 
+<tr>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+<tr>
+<td colspan=2  class=rnorm>
+<B>
+<INPUT TYPE=submit NAME=tax_set VALUE="[L]Set tax type[/L]">
+</B>
+</td>
+</tr>
+[else]
+<tr>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+<tr>
+<td colspan=2  class=rnorm>
+<B>
+<INPUT TYPE=submit VALUE="[L]Get current tax data[/L]">
+</B>
+</td>
+</tr>
+[/else]
+[/if]
+<tr>
+<td colspan=2 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
 </table>
-
-<p>
-[button text="Update values"]
-mv_todo=return
-[/button]
-</form>
-
-
+</FORM>
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@

@@ -1,35 +1,11 @@
-#$self = {
-#	INSTALLPRIVLIB => '/usr/local/interchange/lib',
-#	INSTALLARCHLIB => '/usr/local/interchange',
-#};
-
-use Config;
-require 'scripts/initp.pl';
-
-sub doit {
-	my ($key) = @_;
-	my $val;
-	if ($MV::Self->{RPMBUILDDIR} and $val = $MV::Self->{$key}) {
-		$val =~ s!^$MV::Self->{RPMBUILDDIR}/!/!; 
-		return $val;
-	}
-	return $MV::Self->{$key} unless $key =~ /[a-z]/;
-	return $Config{$key};
-}
-
-DOIT: {
-	local ($/);
-	local($_) = <<'_EoP_';
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
 # Interchange restarter
 #
-# $Id: restart.PL,v 1.8 2000-09-25 16:24:05 zarko Exp $
+# $Id: restart.PL,v 1.8.4.1 2003-01-25 22:21:32 racke Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
-#
-# See the file 'Changes' for information.
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -107,8 +83,8 @@ my($name,$Trysu);
 if ($< == 0) {
 	$name = get_id() || 'YOUR_INTERCHANGE_USER_NAME';
 	die "Interchange user ID not set in $Global::VendRoot/_uid.\n" if $name eq 'YOUR_INTERCHANGE_USER_NAME';
-	if(-t) {
-		print <<EOM unless $force;
+	if(! $force and -t) {
+		print <<EOM;
 
 The Interchange server should not be run as root. It should run
 as a the user name you configured in when you set up the catalogs.
@@ -175,18 +151,10 @@ a system startup script.
 
 =head1 SEE ALSO
 
-interchange(1), mvdocs(8), http://www.akopia.com/
+interchange(1), http://interchange.redhat.com/
 
 =head1 AUTHOR
 
-Mike Heins, <heins@akopia.com>
+Mike Heins, <mheins@redhat.com>
 
 
-_EoP_
-	s{.*\n(#(.*)~_~(\w+)~_~(.*))}{$2 . doit($3) . "$4\n$1"}eg;
-	my $file = $0;
-	$file =~ s/\.PL$//;
-	open(OUT, ">$file") 
-		or die "Create $file: $!\n";
-	print OUT $_;
-}

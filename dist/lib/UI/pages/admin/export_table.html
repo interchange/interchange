@@ -1,17 +1,11 @@
-[if cgi mv_data_table]
-[if-mm function=!export table="[cgi mv_data_table]"]
-[set ui_error]Not allowed to export table '[cgi mv_data_table]'.[/seti]
-[bounce page="__UI_BASE__/error"]
-[/if-mm]
-[/if]
-[set page_title]Individual Table Export[/set]
+[set page_title][L]Individual Table Export[/L][/set]
+[set table_perm]=x[/set]
 [set ui_class]Admin[/set]
-[set table_perm]1[/set]
 [set help_name]export.main[/set]
-[set icon_name]admin/icon_config.gif[/set]
+[set icon_name]icon_config.gif[/set]
 @_UI_STD_HEAD_@
 
-[page __UI_BASE__/dbdownload]Multiple table export[/page]<BR>
+[page __UI_BASE__/dbdownload][L]Multiple table export[/L]</a><BR>
 
 [seti user_tables][loop list="[list-databases]"][if-mm function=export table="[loop-code]"][loop-code]
 [/if-mm][/loop][/seti]
@@ -25,7 +19,7 @@ __UI_META_TABLE__[/seti]
 	for(@tables) {
 		#Log("table $_");
 		unless (ref $Db{$_}) {
-			Log("bad table $_");
+			Log("bad table %s", $_);
 			next;
 		}
 		$tables{$_} = [ $Db{$_}->columns() ];
@@ -169,9 +163,9 @@ EOF
 		Sorting: [value ui_sort_field]:[value ui_sort_option][/if]
 		[/quick-table]
 	[else]
-	<FONT SIZE=5 COLOR=RED>
+	<blockquote class=cerror>
 		Database export error: [data session last_error]
-	</FONT>
+	</blockquote>
 	[/else]
 	[/if]
 [/if]
@@ -182,20 +176,21 @@ EOF
 [/if]
 
 <form action="[area @@MV_PAGE@@]" method="POST" ENCTYPE="multipart/form-data">
+<input type=hidden name=mv_session_id value="[data session id]">
 <INPUT TYPE=hidden NAME=mv_action     VALUE=return>
 <INPUT TYPE=hidden NAME=ui_return_to VALUE="__UI_BASE__/genconfig">
 
 
 <table __UI_T_PROPERTIES__>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__">
-Table to export
+<td class=rnorm>
+[L]Table to export[/L]
 </td>
-<td bgcolor="__UI_C_INTBLOCK__">
+<td class=rnorm>
 <select name="mv_data_table" onChange="populateTable(
 			this.form.mv_data_table.options,
 			this.form.ui_sort_field.options,
@@ -210,39 +205,39 @@ Table to export
 
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__">
-Export as<BR>
+<td class=rnorm>
+[L]Export as[/L]<BR>
 </td>
-<td bgcolor="__UI_C_INTBLOCK__">
+<td class=rnorm>
         <SELECT NAME="mv_data_export_type">
-            <OPTION VALUE=""> Current type
-            <OPTION VALUE="DEFAULT"> System default
-            <OPTION VALUE="TAB"> TAB delimited
-            <OPTION VALUE="CSV"> CSV
-            <OPTION VALUE="PIPE"> PIPE separated
+            <OPTION VALUE=""> [L]Current type[/L]
+            <OPTION VALUE="DEFAULT"> [L]System default[/L]
+            <OPTION VALUE="TAB"> [L]TAB delimited[/L]
+            <OPTION VALUE="CSV"> [L]CSV[/L]
+            <OPTION VALUE="PIPE"> [L]PIPE separated[/L]
             <OPTION VALUE="%%"> %%/%%%
-            <OPTION VALUE="LINE"> Line mode
+            <OPTION VALUE="LINE"> [L]Line mode[/L]
         </SELECT>
 </td>
 </tr>
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__">
-	Export to file<br>
-	<small><I>(leave empty for default file)</I></small>
+<td class=rnorm>
+	[L]Export to file[/L]<br>
+	<small><I>([L]leave empty for default file[/L])</I></small>
 </td>
-<td bgcolor="__UI_C_INTBLOCK__">
+<td class=rnorm>
  <INPUT NAME=mv_data_file SIZE=40>
 </td>
 </tr>
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__">
-Sort by column
+<td class=rnorm>
+[L]Sort by column[/L]
 </td>
-<td bgcolor="__UI_C_INTBLOCK__">
+<td class=rnorm>
 	<SELECT NAME=ui_sort_field>
-		<OPTION VALUE=""> unsorted
+		<OPTION VALUE=""> [L]unsorted[/L]
 		[loop list=|
 						[db-columns name="[value mv_data_table]"]
 					|]
@@ -253,28 +248,28 @@ Sort by column
 </tr>
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__">
-	Sort options<BR>
+<td class=rnorm>
+	[L]Sort options[/L]<BR>
 </td>
-<td bgcolor="__UI_C_INTBLOCK__">
+<td class=rnorm>
 	<SELECT NAME=ui_sort_option>
-		<OPTION VALUE=""> default (alpha)
-		<OPTION VALUE="r"> reverse
-		<OPTION VALUE="n"> numeric
-		<OPTION VALUE="rn"> reverse numeric
-		<OPTION VALUE="f"> case-insensitive
-		<OPTION VALUE="rf"> case-insensitive, reverse
+		<OPTION VALUE=""> [L]default (alpha)[/L]
+		<OPTION VALUE="r"> [L]reverse[/L]
+		<OPTION VALUE="n"> [L]numeric[/L]
+		<OPTION VALUE="rn"> [L]reverse numeric[/L]
+		<OPTION VALUE="f"> [L]case-insensitive[/L]
+		<OPTION VALUE="rf"> [L]case-insensitive[/L], [L]reverse[/L]
 	</SELECT>
 </td>
 </tr>
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__" colspan=2>
+<td class=rnorm colspan=2>
 
 <center>
-<INPUT TYPE=submit NAME=mv_click VALUE="Export">
+<INPUT TYPE=submit NAME=mv_click VALUE="[L]Export[/L]">
 </center>
-[set Export]
+[set [L]Export[/L]]
 ui_export_database=1
 [/set]
 
@@ -282,7 +277,7 @@ ui_export_database=1
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

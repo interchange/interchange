@@ -1,35 +1,11 @@
-#$self = {
-#	INSTALLPRIVLIB => '/usr/local/interchange/lib',
-#	INSTALLARCHLIB => '/usr/local/interchange',
-#};
-
-use Config;
-require 'scripts/initp.pl';
-
-sub doit {
-	my ($key) = @_;
-	my $val;
-	if ($MV::Self->{RPMBUILDDIR} and $val = $MV::Self->{$key}) {
-		$val =~ s!^$MV::Self->{RPMBUILDDIR}/!/!; 
-		return $val;
-	}
-	return $MV::Self->{$key} unless $key =~ /[a-z]/;
-	return $Config{$key};
-}
-
-DOIT: {
-	local ($/);
-	local($_) = <<'_EoP_';
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
 # Interchange configuration dumper
 #
-# $Id: configdump.PL,v 1.8 2000-09-25 16:35:28 zarko Exp $
+# $Id: configdump.PL,v 1.8.4.1 2003-01-25 22:21:32 racke Exp $
 #
-# Copyright 1999, 2000 by Stefan Hornburg <racke@linuxia.de>
-#
-# See the file 'Changes' for information.
+# Copyright 1999-2002 by Stefan Hornburg <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -94,7 +70,7 @@ unless ($#ARGV == 0) {
     exit 1;
 }
     
-my ($catalog, $name);
+my $catalog;
 
 $Vend::Cfg = {};
 
@@ -183,7 +159,7 @@ to standard output. This includes the default settings too.
 
 =head1 SEE ALSO
 
-mvdocs(8), dump(1), makecat(1), interchange(1)
+dump(1), makecat(1), interchange(1)
 
 =head1 LICENSE
 
@@ -202,11 +178,3 @@ Stefan Hornburg, <racke@linuxia.de>
 
 =cut
 
-_EoP_
-	s{.*\n(#(.*)~_~(\w+)~_~(.*))}{$2 . doit($3) . "$4\n$1"}eg;
-	my $file = $0;
-	$file =~ s/\.PL$//;
-	open(OUT, ">$file") 
-		or die "Create $file: $!\n";
-	print OUT $_;
-}

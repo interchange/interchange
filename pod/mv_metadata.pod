@@ -1,138 +1,0 @@
-=head1 NAME
-
-mv_metadata - Display formatting for the Interchange UI
-
-=head2 VERSION
-
-0.01
-
-=head1 SYNOPSIS
-
-[display table=tablename column=fieldname key=key arbitrary=tag filter=op ...]
-
-=head1 DESCRIPTION
-
-The Interchange UI uses the mv_metadata table to discover formatting
-information for field, table, and view display. The information is kept
-in fields in the mv_metadata table, and is used to select the display,
-the HTML input type, the size (height and width where appropriate), label,
-help text, additional help URL, and default value display.
-
-It works in conjunction with the [display ...] tag defined in the Interchange
-UI as well as in specific pages in the UI.
-
-
-In the simplest use, the formatting information for a table form field
-is called with:
-
-	[display table=products column=category key="os28007"]
-
-The mv_metadata table is scanned for the following keys:
-
-	products::category::os28007
-	products::category
-
-If a row is found with one of those keys, then the information in the
-row is used to set the display widget. If no row is found, an INPUT TYPE=TEXT
-widget is displayed. If the data is all digits, a size of 8 is used,
-otherwise the size is 60.
-
-If the following row were found (not all fields shown, would be tab-separated
-in the actual data):
-
-  code                type   width height label     options
-  products::category  text   20           Category
-
-Then an input C<<>C<INPUT TYPE=text SIZE=20 VALUE="*category*">> with a 
-field label of I<Category> would be output.
-
-If the following row were found:
-
-  code                type   width height label     options
-  products::category  select              Category  =none, product=Hardware
-
-Then the following would be output:
-
-	<SELECT NAME=category>
-	<OPTION VALUE="">none
-	<OPTION VALUE="product">Hardware
-	</SELECT>
-
-The standard widget types are:
-
-=over 4
-
-=item text
-
-The default. Uses the fields:
-
-	width   size of input box
-
-=item textarea
-
-Format a <TEXTAREA> </TEXTAREA> pair. Uses the fields:
-
-	width   COLS for textarea
-	height  ROWS for textarea
-
-=item select
-
-Format a <SELECT> </SELECT> pair with appropriate options. Uses the fields:
-
-  height          SIZE for select
-  default         Default for SELECTED
-  options         Options for a fixed list (or prepended to a lookup)
-  lookup          signals a lookup (used as field name if "field" empty)
-  field           field to look up possible values in
-  db              table to look up in if not current table
-  lookup_exclude  regular expression to exclude certain values from lookup
-
-=back
-
-=head1 AUTHOR
-
-Mike Heins, <heins@akopia.com>. Questions should be directed to the
-Minivend user list, <minivend-users@minivend.com>.
-
- item	field	database	view
- code
- type
- width
- height
- field
- db
- name
- outboard
- options
- attribute
- label
- help
- lookup
- filter
- help_url
- pre_filter
- lookup_exclude
- prepend
- append
- code	type	width	height	field	db	name	outboard	options	attribute	label	help	lookup	filter	help_url	pre_filter	lookup_exclude	prepend	append
- colconfig::mv_metadata::code	hidden_text									Selector								
- colconfig::mv_metadata::db	combo							tables					nullselect					
- colconfig::mv_metadata::field	text	20						columns::		Field to use for lookup							
- colconfig::mv_metadata::filter	multiple		5					filesafe=Safe for file name,    uc=Upper case,    nullselect=First non-null (combo box),    null_to_space=Translate null to space,    null_to_comma=Translate null to comma,    lc=Lower case,    digits_dot=Decimal number (not negative),    backslash=Remove backslashes,    namecase=Name case,    name=Turn LAST,FIRST into FIRST LAST,    digits=Digits only,    word=Word chars only (A-z0-9_),    unix=DOS to UNIX,    dos=UNIX to DOS,    mac=UNIX to MAC,    gate=Only allow if scratch set,    no_white=No whitespace,    strip=Strip leading/trailing whitespace,    sql=Escape single quotes (SQL),    text2html=Simple text to HTML,    urlencode=URL encode (%20, etc),    pagefile=Safe for Interchange page name,    entities=HTML entities (&amp; -> &amp;amp;), date_change=MM/DD/YYYY to YYYYMMDD					null_to_space					
- colconfig::mv_metadata::height	text	4								Select page rows	Number of rows to display at selector page.		digits					
- colconfig::mv_metadata::help	textarea	70	4							Help	displays at top of page							
- colconfig::mv_metadata::help_url	text	70	4							Help URL	links below help text							
- colconfig::mv_metadata::lookup	text	20																
- colconfig::mv_metadata::name	text	70	4							Description								
- colconfig::mv_metadata::type	select							select=Select box, text=Text entry*,textarea=Textarea,combo=Combo Select, radio=Radio box, radio_nbsp=Radio (nbsp), checkbox=Check box, check_nbsp=Checkbox (nbsp), hidden_text=Hidden (show text), multiple=Multiple Select, imagedir=Image listing, date=Date selector,display=Text of option		Widget type			filesafe					
- dbconfig::mv_metadata::code	hidden_text									Database table								
- dbconfig::mv_metadata::db	combo							tables					nullselect					
- dbconfig::mv_metadata::field	checkbox							columns::		List on select page	Must have the key field (usually it is the first one)		null_to_comma					
- dbconfig::mv_metadata::filter	multiple		5					filesafe=Safe for file name,    uc=Upper case,    nullselect=First non-null (combo box),    null_to_space=Translate null to space,    null_to_comma=Translate null to comma,    lc=Lower case,    digits_dot=Decimal number (not negative),    backslash=Remove backslashes,    namecase=Name case,    name=Turn LAST,FIRST into FIRST LAST,    digits=Digits only,    word=Word chars only (A-z0-9_),    unix=DOS to UNIX,    dos=UNIX to DOS,    mac=UNIX to MAC,    gate=Only allow if scratch set,    no_white=No whitespace,    strip=Strip leading/trailing whitespace,    sql=Escape single quotes (SQL),    text2html=Simple text to HTML,    urlencode=URL encode (%20, etc),    pagefile=Safe for Interchange page name,    entities=HTML entities (&amp; -> &amp;amp;), date_change=MM/DD/YYYY to YYYYMMDD					null_to_space					
- dbconfig::mv_metadata::height	text	4								Select page rows	Number of rows to display at selector page.		digits					
- dbconfig::mv_metadata::help	textarea	70	4							Help	displays at top of page							
- dbconfig::mv_metadata::help_url	text	70	4							Help URL	links below help text							
- dbconfig::mv_metadata::lookup	text	20																
- dbconfig::mv_metadata::name	text	70	4							Description								
- dbconfig::mv_metadata::type	select							select=Select box, text=Text entry*,textarea=Textarea,combo=Combo Select, radio=Radio box, radio_nbsp=Radio (nbsp), checkbox=Check box, check_nbsp=Checkbox (nbsp), hidden_text=Hidden (show text), multiple=Multiple Select, imagedir=Image listing, date=Date selector,display=Text of option		Widget type			filesafe					
- dbconfig::mv_metadata::width	text	4											digits					

@@ -11,7 +11,7 @@ Sample data type?
 tools	reports	none
 
 SOMESQL
-Set to 1 if you want to use MySQL, PostgreSQL, Oracle, or SQLite
+Set to 1 if you want to use MySQL, PostgreSQL, Oracle, or DB2
 	1	0
 
 {SOMESQL}MYSQL
@@ -68,7 +68,7 @@ Timestamp for PostgreSQL (if any)
 
 {SOMESQL and ! '__MVC_MYSQL__' and ! '__MVC_PGSQL__'}ORACLE
 Set to 1 if you want to use Oracle
-0	1
+1	0
 
 {ORACLE}SQLDSN
 DBI DSN to use
@@ -90,17 +90,25 @@ Timestamp for Oracle (if any)
 Field name suffix for Oracle
 _field
 
-{SOMESQL and ! '__MVC_MYSQL__' and ! '__MVC_PGSQL__' and ! '__MVC_ORACLE__'}SQLITE
-Set to 1 if you want to use SQLite
-1	0
+{SOMESQL and ! '__MVC_MYSQL__' and ! '__MVC_PGSQL__' and ! '__MVC_ORACLE__'}DB2
+Set to 1 if you want to use DB2
+	1	0
 
-{SQLITE}SQLDB
-Database file to use (will be created)
-__MVC_CATROOT__/products/sqlite.db
+{DB2}SQLDB
+Database to use (will be created)
+test___MVC_CATALOGNAME__	interch
 
-{SQLITE}SQLDSN
+{DB2}SQLDSN
 DBI DSN to use
-dbi:SQLite:__MVC_SQLDB__
+dbi:DB2:__MVC_SQLDB__
+
+{DB2}SQLUSER
+Username for DB2 (if any)
+	__MVC_CATALOGNAME__	__MVC_CATUSER__	interch
+
+{DB2}SQLPASS
+Password for DB2 (if any)
+	pass
 
 SUPERUSER
 Account name that will control this catalog

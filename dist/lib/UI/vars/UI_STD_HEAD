@@ -1,26 +1,83 @@
+## UI Header vars, version: $Id: UI_STD_HEAD,v 1.25.4.5 2003-01-25 22:21:23 racke Exp $
+Variable UI_STD_INIT <<EOV
+[calcn]
+	# is this browser able to grok DHTML ?
+	# (Called separately to prevent bad user value in MV_DHTML_BROWSER
+	# from crashing init...)
+	my $regex = q{__MV_DHTML_BROWSER__}
+				|| 'MSIE.*5.5|MSIE.*6|Mozilla\W*5|Mozilla.*Gecko';
+	$Scratch->{ui_old_browser} = $Session->{browser} !~ /$regex/;
+	return;
+[/calcn][calcn]
+	# call only once per page
+	return if $Config->{ImageDirOriginal};
+
+	# determine catalog URL before mangling config URLs
+	$Scratch->{ui_catalog_url} = $Tag->area('index');
+
+	# replace ImageDir variables with UI equivalents to take advantage
+	# of Interchange's automatic image path rewriting
+	$Config->{ImageDirOriginal} = $Config->{ImageDir};
+	$Config->{ImageDirSecureOriginal} = $Config->{ImageDirSecure};
+	$Variable->{UI_IMG} = $Config->{ImageDir} =
+		$Tag->image( { ui => 1, secure => 0, dir_only => 1 } );
+	$Config->{ImageDirSecure} =
+		$Tag->image( { ui => 1, secure => 1, dir_only => 1 } );
+
+	# force using secure URL for this page?
+	$Config->{VendURLOriginal} = $Config->{VendURL};
+	if ($Variable->{UI_SECURE} or $Tag->var('UI_SECURE', 1)) {
+		$Variable->{UI_IMG} = $Config->{ImageDirSecure};
+		$Config->{VendURL} = $Config->{SecureURL};
+	}
+
+	''
+[/calcn][page-meta]
+EOV
+
 Variable UI_STD_HEAD <<EOV
-[strip interpolate=1]
+[tag pragma strip_white][/tag]
+[tag pragma no_image_rewrite 0][/tag]
+@_UI_STD_INIT_@
 [if-mm !logged_in]
+	[set ui_checklist][/set]
+	[set icon_name][/set]
+	[set page_perm][/set]
+	[set table_perm][/set]
 	[if !scratch no_login_required]
-		[bounce page="__UI_BASE__/login"]
+		[bounce href=|
+			[area href="__UI_BASE__/login" form="destination=[var MV_PAGE 1]"]
+		|]
 	[/if]
 [/if-mm]
 [calc]
+	$Tag->tmpn('ui_meta_link');
+	$Scratch->{ui_meta_link} = defined $Values->{ui_meta_force}
+							 ?  $Values->{ui_meta_force}
+							 :  $Variable->{UI_META_LINK};
+
 	delete $Scratch->{no_login_required};
 	@parms = grep /^ui_class_/, keys %$Scratch;
 	my $last;
 	for(@parms) {
 		delete $Scratch->{$_};
 		$last = $_;
-		$last =~ s/ui_class_//;
 	} 
-	$ui_tag = delete $Scratch->{ui_class} || $last;
+	$last =~ s/ui_class_//;
+	if($CGI->{display_class}) {
+		$Scratch->{display_class} = $CGI->{display_class};
+	}
+	if($Scratch->{check_publish} and $Scratch->{check_publish} =~ /^[1yt].?.?$/) {
+		$Scratch->{check_publish} = q{ onClick="return check_publish()" };
+	}
+	$ui_tag = (delete $Scratch->{ui_class} || $CGI->{ui_class} || $last || 'None');
+	$Scratch->{ui_class} = $ui_tag;
 	$Scratch->{"ui_class_$ui_tag"} = 1;
-	return $out;
+	return;
 [/calc]
 [if scratch table_perm]
 	[calc]
-		my $table = $CGI->{mv_data_table} || $Value->{mv_data_table};
+		my $table = $CGI->{mv_data_table} || $Values->{mv_data_table};
 		if($Scratch->{table_perm} =~ /^\s*=(\w+)/) {
 			$Scratch->{table_perm} = "$CGI->{mv_data_table}=$1";
 		}
@@ -33,240 +90,247 @@ Variable UI_STD_HEAD <<EOV
 		return;
 	[/calc]
 	[if-mm function="!tables" table="[scratch table_perm]"]
-	[seti ui_error]Sorry, no permission [scratch table_perm] for table [cgi mv_data_table] in [var MV_PAGE 1].[/seti]
+	[seti ui_error][msg arg.0="[scratch table_perm]" arg.1="[cgi mv_data_table]" arg.2="[var MV_PAGE 1]"]Sorry, no permission '%s' for table '%s' in '%s'.[/msg][/seti]
 	[set table_perm][/set]
 	[bounce page="__UI_BASE__/error"]
 	[/if-mm]
 [/if]
 [if scratch page_perm]
 	[if-mm function="!advanced" name="[scratch page_perm]"]
-	[seti ui_error]Sorry, no permission for page [scratch page_perm][/seti]
+	[seti ui_error][msg arg.0="[scratch page_perm]"]Sorry, no permission for page '%s'.[/msg][/seti]
 	[set page_perm][/set]
 	[bounce page="__UI_BASE__/error"]
 	[/if-mm]
 [/if]
-[/strip]<html>
-<head>
-<title>[scratch page_title]</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<script language="JavaScript">
-<!--
-function MM_swapImgRestore() { //v3.0
-  var i,x,a=document.MM_sr; for(i=0;a&&i<a.length&&(x=a[i])&&x.oSrc;i++) x.src=x.oSrc;
-}
 
-function addItem(selector, receptor, joiner) {
-	if(joiner == null) {
-		joiner = " ";
-	}
-	else {
-		joiner = "\n";
-	}
-    if(receptor.value != '') {
-        receptor.value = receptor.value + joiner;
-    }
-    if(selector[selector.selectedIndex].value != null) {
-        receptor.value = receptor.value + selector[selector.selectedIndex].value;
-    }
-    else {
-        if(selector[selector.selectedIndex].text != null) {
-        receptor.value = receptor.value + selector[selector.selectedIndex].text;
-        }
-    }
-    return true;
-}
-
-function open_help(url) {
-  opts="top=0,left=0,scrollbars,status=no,menubar=no,location=yes,toolbar=no,resizable=yes,fullsize=no,width=__UI_HELP_WIDTH__,height=__UI_HELP_HEIGHT__";
-  window.open(url, 'Help', opts);
-}
-
-function MM_preloadImages() { //v3.0
-  var d=document; if(d.images){ if(!d.MM_p) d.MM_p=new Array();
-    var i,j=d.MM_p.length,a=MM_preloadImages.arguments; for(i=0; i<a.length; i++)
-    if (a[i].indexOf("#")!=0){ d.MM_p[j]=new Image; d.MM_p[j++].src=a[i];}}
-}
-
-function MM_findObj(n, d) { //v3.0
-  var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
-    d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
-  if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];
-  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=MM_findObj(n,d.layers[i].document); return x;
-}
-
-function MM_swapImage() { //v3.0
-  var i,j=0,x,a=MM_swapImage.arguments; document.MM_sr=new Array; for(i=0;i<(a.length-2);i+=3)
-   if ((x=MM_findObj(a[i]))!=null){document.MM_sr[j++]=x; if(!x.oSrc) x.oSrc=x.src; x.src=a[i+2];}
-}
-//-->
-</script>
-<STYLE TYPE="text/css">
-<!--
-body { font-family: Verdana, Arial, Helvetica, sans-serif }
-.margin { margin-top: 0px; margin-left: 0px}
-a:link { text-decoration: none; font-weight: normal; color: __UI_C_LINK__ }
-a:hover { text-decoration: underline; font-weight: normal; color: __UI_C_LINK__ }
-a:active { text-decoration: none; font-weight: normal; color: __UI_C_ALINK__ }
-a:visited { text-decoration: none; font-weight: normal; color: __UI_C_VLINK__ }
--->
-</STYLE>
-[scratch meta_header][set meta_header][/set]
-</head>
-
-<body [scratch ui_body_extra] bgcolor="__UI_C_BG__"  onLoad="MM_preloadImages('@_UI_IMG_@navigation/B3_b.gif','@_UI_IMG_@navigation/B4_b.gif','@_UI_IMG_@navigation/B5_b.gif','@_UI_IMG_@navigation/B6_b.gif','@_UI_IMG_@navigation/B7_b.gif','@_UI_IMG_@navigation/B2_b.gif','@_UI_IMG_@navigation/B8_b.gif','@_UI_IMG_@navigation/B9_b.gif','@_UI_IMG_@navigation/A1_b.gif','@_UI_IMG_@navigation/A2_b.gif','@_UI_IMG_@navigation/A3_b.gif')" td align="0" valign="0" leftmargin=" 0" topmargin=" 0" marginwidth=" 0" marginheight=" 0">
-<!-- ----- BEGIN TITLEBAR ----- -->
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
-  <tr>
-    <td><A HREF="http://www.akopia.com"><img src="@_UI_IMG_@navigation/akopia_logo.gif" width="69" height="53" border=0 alt="Akopia logo"></A></td><td align="right" valign="bottom" nowrap><a href="[if session logged_in]@_UI_ABOUT_NORMAL_URL_@[else]@_UI_ABOUT_LOGIN_URL_@[/else][/if]" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('About','','@_UI_IMG_@navigation/A1_b.gif',1)"><img name="About" border="0" src="@_UI_IMG_@navigation/A1.gif" width="102" height="38" alt=About></a><a href="[area __UI_BASE__/index]" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Index','','@_UI_IMG_@navigation/A2_b.gif',1)"><img name="Index" border="0" src="@_UI_IMG_@navigation/A2.gif" width="294" height="38" alt=Menu></a><a href="javascript:open_help('__UI_HELP_BASE_URL__/[scratch help_name].html')" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Help','','@_UI_IMG_@navigation/A3_b.gif',1)"><img name="Help" border="0" src="@_UI_IMG_@navigation/A3.gif" width="125" height="38" alt=Help></a></td>
-  </tr></table>
-
-[tmp ui_menu_content]code	img_dn	img_up	img_sel	page	url	alt	name
-[if-mm advanced order]2	B2.gif	B2_b.gif	B2_b.gif	__UI_BASE__/order		Order administration	Orders
-[/if-mm][if-mm advanced userdb]3	B3.gif	B3_b.gif	B3_b.gif	__UI_BASE__/customer		Customer administration	Customers
-[/if-mm][if-mm advanced item]4	B4.gif	B4_b.gif	B4_b.gif	__UI_BASE__/item		Item management	Items
-[/if-mm][if-mm advanced page]5	B5.gif	B5_b.gif	B5_b.gif	__UI_BASE__/page		Content edit	Content
-[/if-mm][if-mm advanced layout]6	B6.gif	B6_b.gif	B6_b.gif	__UI_BASE__/layout		Site design	Design
-[/if-mm][if-mm advanced item]7	B7.gif	B7_b.gif	B7_b.gif	__UI_BASE__/merchandising		merchandising	Merchandising
-[/if-mm][if-mm advanced stats]8	B8.gif	B8_b.gif	B8_b.gif	__UI_BASE__/orderstats		Statistics and reports	Reports
-[/if-mm][if-mm advanced admin]9	B9.gif	B9_b.gif	B9_b.gif	__UI_BASE__/genconfig		System administration	Admin
-[/if-mm][/tmp]
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
-  <tr bgcolor="#000000"> 
-    <td><img src="@_UI_IMG_@navigation/spacer1.gif" width="1" height="1" alt=line></td>
-  </tr>
-  <tr bgcolor="#FFFFFF"> 
-    <td><img src="@_UI_IMG_@navigation/spacer2.gif" width="1" height="1" alt=line></td>
-  </tr>
-  <tr bgcolor="#99CCFF"> 
-    <td nowrap> 
-      <div align="left"><img src="@_UI_IMG_@navigation/B1.gif" width="9" height="19" alt=line>[loop
-	  prefix=am
-	  head_skip=1
-	  list="[scratch ui_menu_content]"
-	  lr=1]<!-- class=[am-param name]=[scratch ui_class_[am-param name]] --><a href="[area [am-param page]]" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('[am-param name]','','@_UI_IMG_@navigation/[am-param img_up]',1)"><img name="[am-param name]" alt="[am-param alt]" border="0" src="@_UI_IMG_@navigation/[if scratch ui_class_[am-param name]][am-param img_up][else][am-param img_dn][/else][/if]"></a>[/loop]<img src="@_UI_IMG_@navigation/B10.gif" width="17" height="19" alt=line></div>
-    </td>
-  </tr>
-</table>
-
-[loop
-	lr=1
-	head_skip=1
-	prefix=sm
-	list=`$Variable->{"UI_SUBMENU_$ui_tag"};`
-][sm-calc]
-	my $pre  = '';
-	my $post = '';
-	my $indicator = q{[sm-param indicator]};
-	my $exclude = q{[sm-param exclude_on]};
-#Log("indicator=$indicator");
-	my $depend = q{[sm-param depends_on]};
-	return '' if $exclude and $CGI->{$exclude};
-	return '' if $depend and ! $CGI->{$depend};
-	my $name = q{[sm-param name]};
-	my $next = q{[sm-param next_line]};
-	if($name =~ s/^((&nbsp;)+)//i) {
-		$pre = $1;
-	}
-	if($name =~ s/((&nbsp;)+)$//i) {
-		$post = $1;
-	}
-	$name =~ s/ /&nbsp;/g;
-	my $page = q{[sm-param page]};
-	my $form = q{[sm-param form]};
-#Log("Form is: $form");
-	$form =~ tr/&/\n/;
-#Log("Form is: $form");
-	my $out = '';
-	$out .= <<'EOF' if ! $sm_once++;
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
-  <tr> 
-    <td bgcolor="__UI_C_TOPBLOCKBAR__"><img src="@_UI_IMG_@navigation/spacer3.gif" width=1 height=1 alt=line></td>
-  </tr>
-  <tr bgcolor="A1C6FF"> 
-    <td><img src="@_UI_IMG_@navigation/spacer4.gif" width=1 height=1 alt=line></td>
-  </tr>
-  <tr bgcolor="__UI_C_TITLEBARBG__"> 
-    <td valign=center nowrap><font face="Verdana, Arial, Helvetica, sans-serif" size="-1"><img src="@_UI_IMG_@admin/bg.gif" height=19 width=3 align=middle alt=x>&nbsp;&nbsp;&nbsp;&nbsp;
-EOF
-	$out .= $pre;
-	$out .= q{</td></tr><tr bgcolor="__UI_C_INTBLOCKBAR__"><td nowrap valign=center><img src="@_UI_IMG_@admin/bg.gif" height=19 width=3 align=middle alt=x>&nbsp;&nbsp;&nbsp;&nbsp;
-}
-		if $next;
-	$out .= qq{<A HREF="} if $page;
-	$out .= $Tag->area( { href => $page, form => $form } )
-		if $page;
-	$out .= qq{">} if $page;
-	my $fc = q{__UI_C_TITLEBARCONT__};
-	my $rev = $indicator =~ s/^!//;
-
-#Log("indicator=$indicator rev=$rev CGI=$CGI->{$indicator} VALUES=$Values->{$indicator}");
-
-	if($indicator) {
-		if($rev) {
-			$fc = q{__UI_C_TITLEBARTXT__}
-				if ! ($CGI->{$indicator} || $Values->{$indicator});
-		}
-		else {
-			$fc = q{__UI_C_TITLEBARTXT__}
-				if ($CGI->{$indicator} || $Values->{$indicator});
-		}
-	}
-	elsif($Tag->var('MV_PAGE', 1) eq $page) {
-#Log("page presence select");
-		$fc = q{__UI_C_TITLEBARTXT__};
-	}
-
-	$out .= qq{<FONT face="Verdana, Arial, Helvetica, sans-serif" COLOR="$fc" SIZE="-1">$name</FONT>};
-	$out .= '</A>' if $page;
-	$out .= $post;
-[/sm-calc]&nbsp;&nbsp;&nbsp; [/loop]
-	[calc]
-	return unless $sm_once;
-	return q!<tr bgcolor="#000000"><td><IMG SRC="@_UI_IMG_@admin/bg.gif" WIDTH="1" HEIGHT="1" alt=x></td></tr>
-                 </td></tr></table>!;
-	[/calc]
-<!-- ----- END MENUBAR ----- -->
-[if !scratch ui_no_title]
-<table width="100%">
-<TR>
-<TD WIDTH="20">&nbsp;</td><TD>
-          <br>
-		[if scratch icon_name]<img src="@_UI_IMG_@[scratch icon_name]" width=16 height=16 border=0 valign=top alt=icon> &nbsp; [/if]
-	   <font size="+1" face="Verdana,arial,helvetica,sans-serif" color="__UI_C_HEADERTXT__">[either][scratch page_banner][or][scratch page_title][/either]&nbsp;</font><p>
-    [if type=explicit compare="[error all=1 show_var=1 keep=1]"]
-	<P>
-	<B>Error:</B>
-	<BLOCKQUOTE class=cerror>
-		[error all=1 show_error=1 joiner="<br>"]
-	</BLOCKQUOTE>
-	</P>
-	[/if]
-	[if scratch ui_failure]
-	<P>
-	<BLOCKQUOTE>
-	<FONT COLOR="__CONTRAST__">[scratchd ui_failure]</FONT>
-	</BLOCKQUOTE>
-	</P>
-	[/if]
-	[if scratch ui_message]
-	<P>
-	<BLOCKQUOTE>
-	<FONT COLOR="__UI_C_SUCCESS__">[scratchd ui_message]</FONT>
-	</BLOCKQUOTE>
-	</P>
-	[/if]
+[if scratch superuser]
+	[if-mm !super]
+	[seti ui_error][msg arg.0="[var MV_PAGE 1]"]Sorry, must be superuser for page '%s'.[/msg][/seti]
+	[bounce page="__UI_BASE__/error"]
+	[/if-mm]
 [/if]
-[comment] Clear these puppies [/comment]
-[calc]
-	for (qw/
-				page_title
-				page_banner
-				icon_name
-				help_name
-				page_perm
-				table_perm
-				ui_body_extra
-		/) { delete $Scratch->{$_} }
-	return;
-[/calc]
+[if scratch dhtml_required]
+[and scratch ui_old_browser]
+	[seti ui_error][loc]Modern browser like Mozilla or MSIE 5 required for page accessed[/loc][/seti]
+	[bounce page="__UI_BASE__/error"]
+[/if]
+
+[output name=fixed_menu]
+[if session logged_in]
+[menu
+	name=Fixed
+	ui_security=depends_on
+	extra_value.check_publish=`$Scratch->{check_publish}`
+	superuser=super
+	full_interpolate=page
+	localize="name,description"
+	]
+	<td nowrap>&nbsp;<a href="{HREF}" {CHECK_PUBLISH} title="{DESCRIPTION}" class=toplink>{NAME}</a>&nbsp;</td>
+[menu-footer]
+[if-mm super]
+	[if scratch ui_meta_link]
+			<td nowrap>
+				&nbsp;&nbsp;<a
+					href="[area href='admin/menu_editor' form='qmenu_name=Fixed']"
+					style="font-size: 7pt" class=edittablink {CHECK_PUBLISH} title="[msg]Edit this menu[/msg]">edit</A>
+			&nbsp;&nbsp;</td>
+	[/if]
+[/if-mm]
+[/menu-footer]
+[/menu]
+[/if]
+
+[output name=top_tabs]
+[menu
+	  name="[either][scratch top_menu][or]Top[/either]"
+	  superuser=super
+	  inactive=inactive
+	  localize=name
+	  indicator=indicator
+	  ui_security=depends_on
+	  extra_value.check_publish=`$Scratch->{check_publish}`
+	  link_class=menufont
+	  entities=description
+	  ]
+{INDICATED:}
+	<!-- class={NAME} down -->
+               <td height=15 class=tabdown>
+                  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+                     <tr>
+                        <td class=tabdownleft><a href="{HREF}" {CHECK_PUBLISH} title="{DESCRIPTION}" class=tablink><img src="bg.gif" width=24 height=15 border=0></A></td>
+                        <td nowrap class=tabdownfill><a href="{HREF}" {CHECK_PUBLISH} title="{DESCRIPTION}" class=tablink>{NAME}</a></td>
+                        <td class=tabdownright><a href="{HREF}" {CHECK_PUBLISH} title="{DESCRIPTION}" class=tablink><img src="bg.gif" width=24 height=15 border=0></A></td>
+                     </tr>
+                            <tr><td colspan=3 class=darkshade><img src="bg.gif" height=1></td></tr>
+                            <tr><td colspan=3 class=lightshade><img src="bg.gif" height=1></td></tr>
+                  </table>
+               </td>
+{/INDICATED:}
+{INDICATED?}
+<!-- tab: {NAME} (up) -->
+               <td class=block1>
+                  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+                     <tr>
+                        <td class=tableft><a href="{HREF}" {CHECK_PUBLISH} title="{DESCRIPTION}" class=tablink><img src="bg.gif" width=24 height=15 border=0></A></td>
+                        <td nowrap class=tabfill><a href="{HREF}" {CHECK_PUBLISH} title="{DESCRIPTION}" class=tablink>{NAME}</a></td>
+                        <td class=tabright><a href="{HREF}" {CHECK_PUBLISH} title="{DESCRIPTION}" class=tablink><img src="bg.gif" width=24 height=15 border=0></A></td>
+                     </tr>
+                  </table>
+               </td>
+{/INDICATED?}
+[/menu]
+	<!-- menu edit=Top -->
+	[if-mm super][if scratch ui_meta_link]
+               <td height=15 class=tabdown>
+                  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+                     <tr>
+                        <td class=tabdownleft><a href="[area href='admin/menu_editor' form='qmenu_name=Top']" {CHECK_PUBLISH} title="[msg]Edit these menu tabs[/msg]"><img src="bg.gif" width=24 height=15 border=0></td>
+                        <td nowrap class=tabdownfill><a href="[area href='admin/menu_editor' form='qmenu_name=[either][scratch top_menu][or]Top[/either]']" {CHECK_PUBLISH} title="[msg]Edit these menu tabs[/msg]" class=edittablink>edit</A></td>
+                        <td class=tabdownright><a href="[area href='admin/menu_editor' form='qmenu_name=Top']" {CHECK_PUBLISH} title="[msg]Edit these menu tabs[/msg]"><img src="bg.gif" width=24 height=15 border=0></td>
+                     </tr>
+							<tr><td colspan=3 class=darkshade><img src="bg.gif" height=1></td></tr>
+							<tr><td colspan=3 class=lightshade><img src="bg.gif" height=1></td></tr>
+                  </table>
+               </td>
+[/if][/if-mm]
+
+[output name=second_tabs]
+[menu
+	name="[either][scratch second_menu][or][scratch ui_class][/either]"
+	superuser=super
+	exclude_on=exclude_on
+	depends_on=depends_on
+	expand_values=name,page
+	expand_values_form=form
+	extra_value.check_publish=`$Scratch->{check_publish}`
+	localize=name
+	indicator=indicator
+	last_line="[if scratch third_menu]next_line[/if]"
+	indicator_page=page
+	inactive=inactive
+	entities=description
+	nbsp=name
+	reparse=1
+]
+<!-- PAGE=[var MV_PAGE 1] -->
+{NEXT_LINE?}[output name=third_tabs]{/NEXT_LINE?}
+{INDICATED?}
+<td class=block3> 
+   <table width="100%" border=0 cellspacing=0 cellpadding=0>
+	  <tr> 
+		 <td class=subtableft><a href="{HREF}" {CHECK_PUBLISH} title="{DESCRIPTION}"><img src="bg.gif" width=16 height=16 border=0></a></td>
+		 <td nowrap class=subtabfill><a href="{HREF}" {CHECK_PUBLISH} title="{DESCRIPTION}" class=subtablink>{NAME}</a></td>
+		 <td class=subtabright><a href="{HREF}" {CHECK_PUBLISH} title="{DESCRIPTION}"><img src="bg.gif" width=16 height=16 border=0></a></td>
+	  </tr>
+	  <tr> 
+		 <td colspan=3 class=subtabfilllwr><img src="bg.gif" height=1></td>
+	  </tr>
+   </table>
+</td>
+{/INDICATED?}
+{INDICATED:}
+<td class=subtabdown> 
+   <table width="100%" border=0 cellspacing=0 cellpadding=0>
+	  <tr> 
+		 <td class=subtabdownleft><a href="{HREF}" {CHECK_PUBLISH} title="{DESCRIPTION}"><img src="bg.gif" width=16 height=16 border=0></a></td>
+		 <td nowrap class=subtabdownfill><a href="{HREF}" {CHECK_PUBLISH} title="{DESCRIPTION}" class=subtablink>{NAME}</a></td>
+		 <td class=subtabdownright><a href="{HREF}" {CHECK_PUBLISH} title="{DESCRIPTION}"><img src="bg.gif" width=16 height=16 border=0></a></td>
+	  </tr>
+	  <tr> 
+		 <td colspan=3 class=darkshade><img src="bg.gif" height=1></td>
+	  </tr>
+	  <tr> 
+		 <td colspan=3 class=lightshade><img src="bg.gif" height=1></td>
+   </table>
+</td>
+{/INDICATED:}
+[/menu]
+[output name=second_tabs]
+<!-- menu edit=Second -->
+[if-mm super][if scratch ui_meta_link]
+<td class=subtabdown> 
+   <table width="100%" border=0 cellspacing=0 cellpadding=0>
+	  <tr> 
+		 <td class=subtabdownleft><img src="bg.gif" width=16 height=16></td>
+		 <td nowrap class=subtabdownfill><a href="[area href='admin/menu_editor' form='qmenu_name=[either][scratch second_menu][or][scratch ui_class][/either]']" {CHECK_PUBLISH} title="[msg]Edit these menu tabs[/msg]" class=edittablink>edit</a></td>
+		 <td class=subtabdownright><img src="bg.gif" width=16 height=16></td>
+	  </tr>
+	  <tr> 
+		 <td colspan=3 class=darkshade><img src="bg.gif" height=1></td>
+	  </tr>
+	  <tr> 
+		 <td colspan=3 class=lightshade><img src="bg.gif" height=1></td>
+   </table>
+</td>
+[/if][/if-mm]
+
+[if scratch third_menu]
+[output name=third_tabs]
+[menu
+	name="[scratch third_menu]"
+	superuser=super
+	extra_value.check_publish=`$Scratch->{check_publish}`
+	exclude_on=exclude_on
+	depends_on=depends_on
+	expand_values=name,page
+	expand_values_form=form
+	localize=name
+	indicator=indicator
+	indicator_page=page
+	inactive=inactive
+	entities=description
+	nbsp=name
+	reparse=1
+]
+<!-- PAGE=[var MV_PAGE 1] -->
+{INDICATED?}
+<td class=block3> 
+   <table width="100%" border=0 cellspacing=0 cellpadding=0>
+	  <tr> 
+		 <td class=subtableft><a href="{HREF}" {CHECK_PUBLISH} title="{DESCRIPTION}"><img src="bg.gif" width=16 height=16 border=0></a></td>
+		 <td nowrap class=subtabfill><a href="{HREF}" {CHECK_PUBLISH} title="{DESCRIPTION}" class=subtablink>{NAME}</a></td>
+		 <td class=subtabright><a href="{HREF}" {CHECK_PUBLISH} title="{DESCRIPTION}"><img src="bg.gif" width=16 height=16 border=0></a></td>
+	  </tr>
+	  <tr> 
+		 <td colspan=3 class=subtabfilllwr><img src="bg.gif" height=1></td>
+	  </tr>
+   </table>
+</td>
+{/INDICATED?}
+{INDICATED:}
+<td class=subtabdown> 
+   <table width="100%" border=0 cellspacing=0 cellpadding=0>
+	  <tr> 
+		 <td class=subtabdownleft><a href="{HREF}" {CHECK_PUBLISH} title="{DESCRIPTION}"><img src="bg.gif" width=16 height=16 border=0></a></td>
+		 <td nowrap class=subtabdownfill><a href="{HREF}" {CHECK_PUBLISH} title="{DESCRIPTION}" class=subtablink>{NAME}</a></td>
+		 <td class=subtabdownright><a href="{HREF}" {CHECK_PUBLISH} title="{DESCRIPTION}"><img src="bg.gif" width=16 height=16 border=0></a></td>
+	  </tr>
+	  <tr> 
+		 <td colspan=3 class=darkshade><img src="bg.gif" height=1></td>
+	  </tr>
+	  <tr> 
+		 <td colspan=3 class=lightshade><img src="bg.gif" height=1></td>
+   </table>
+</td>
+{/INDICATED:}
+[/menu]
+	<!-- menu edit=Third -->
+	[if-mm super][if scratch ui_meta_link]
+	<td class=subtabdown> 
+	   <table width="100%" border=0 cellspacing=0 cellpadding=0>
+		  <tr> 
+			 <td class=subtabdownleft><img src="bg.gif" width=16 height=16></td>
+			 <td nowrap class=subtabdownfill><a href="[area href='admin/menu_editor' form='qmenu_name=[scratch third_menu]']" {CHECK_PUBLISH} title="[msg]Edit these menu tabs[/msg]" class=edittablink>edit</a></td>
+			 <td class=subtabdownright><img src="bg.gif" width=16 height=16></td>
+		  </tr>
+		  <tr> 
+			 <td colspan=3 class=darkshade><img src="bg.gif" height=1></td>
+		  </tr>
+		  <tr> 
+			 <td colspan=3 class=lightshade><img src="bg.gif" height=1></td>
+	   </table>
+	</td>
+	[/if][/if-mm]
+[/if]
+[output name=""]
 EOV

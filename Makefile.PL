@@ -31,9 +31,7 @@ my @mods_to_get;
 my @remove_old;
 my $Lock_troubles;
 
-$VERSION = '4.6.5';
-
-# See if we have the CPAN module
+$VERSION = '4.9.7';
 
 my @os_hints;
 eval {
@@ -51,27 +49,7 @@ my @chown_files = qw/
 use lib './lib';
 
 
-my $origdir;
-if ($changed_dir_initially) {
-	$origdir = cwd();
-}
-elsif($ENV{PWD}) {
-	## We will try
-	$origdir = $ENV{PWD};
-}
-else {
-	print <<EOF;
-We know this sounds dumb, but we need to know the current directory. Your
-system administratory appears to have set up your system so that you cannot
-search the directory path above you. Were you to ever change directory
-to /tmp or something, you couldn't even walk the tree back to your own
-directory.
-
-EOF
-
-	$origdir = my_prompt(qq{What is the directory you are in currently? });
-
-}
+my $origdir = cwd();
 
 # See if we have Term::ReadLine::Perl
 eval {
@@ -87,16 +65,17 @@ unless($@) {
 
 my $term;
 if($TermRead) {
-	$term = new Term::ReadLine 'MakeFile';
-	$Prompt_sub = sub {
+	eval {
+		$term = new Term::ReadLine 'MakeFile';
+	};
+
+	! $@ and $Prompt_sub = sub {
 		my($prompt, $default) = @_;
 		$prompt .= "[$default] "
 			if defined $default && !$ENV{PERL_RL};
 		return $term->readline($prompt, $default);
 	};
 }
-
-my $Windows = $^O =~ /win32/i ? 1 : 0;
 
 sub compare_file {
 	my($first,$second) = @_;
@@ -179,9 +158,10 @@ sub copyright_prompt {
 
  Interchange V$VERSION
  
-  Copyright (C) 1996-2001 Akopia, Inc. <info\@akopia.com>
-
+ Copyright (C) 1996-2003 Red Hat, Inc., and Interchange Development Group.
  Interchange is free under the terms of the GNU General Public License.
+
+ http://www.icdevgroup.org/
 
 EOF
 }
@@ -208,9 +188,6 @@ sub extra_libs {
 
 	my @extra_lib_dirs;
 	my @extra_lib_files;
-	# We will use our own version of File::CounterFile always
-	push @extra_lib_dirs, 'File';
-	push @extra_lib_files, 'File/CounterFile.pm';
 
 	eval {
 		require IniConf;
@@ -236,29 +213,42 @@ sub extra_libs {
 	}
 
 	eval {
+		require Tie::ShadowHash;
+	};
+	if ($@) {
+		push @extra_lib_dirs, 'Tie';
+		push @extra_lib_files, 'Tie/ShadowHash.pm';
+	}
+
+	eval {
+		require Business::Fedex;
+	};
+	if ($@) {
+		push @extra_lib_dirs, 'Business';
+		push @extra_lib_files, 'Business/Fedex.pm';
+	}
+
+	eval {
 		require Storable;
 	};
 	unless ($@) {
-				my $def = 's';
-		        print <<EOF if $MV::Default{storable};
+		my $def = 's';
+        print <<EOF if $MV::Default{storable};
 
 You appear to have Raphael Manfredi's Storable module installed.
-
-This module will significantly improve your DBM storage and
-fetch times.
+This module will significantly improve your DBM storage and fetch times.
 
 You can reply one of:
 
-		n -- Don't use Storable
-		s -- Use for sessions only, won't break existing databases
-		y -- Use for both sessions and databases
+	n -- Don't use Storable
+	s -- Use for sessions only, won't break existing databases
+	y -- Use for both sessions and databases
 
 It is recommended that all installations reply S unless there is a need for
 improved performance in Interchange DBM databases.
 
-If you reply YES and you use any GDBM or DB_File databases
-they will NEED TO BE REMADE for ALL CATALOGS using this
-Interchange server instance.
+If you reply YES and you use any GDBM or DB_File databases they will
+NEED TO BE REMADE for ALL CATALOGS using this Interchange server instance.
 EOF
 
 		if($ENV{MINIVEND_STORABLE_DB} || -f "$realdir/_db_storable" || -f "_db_storable") {
@@ -313,37 +303,28 @@ sub mk_initp {
 }
 
 sub initialize {
-    my %X;
 #warn "Got to initialize\n";
-    $X{INSTALLDIRS}     = "perl";
-	$X{EXE_FILES}  = [qw(
-							scripts/compile_link
-							scripts/config_prog
-							scripts/configdump
-							scripts/dump
-							scripts/expire
-							scripts/expireall
-							scripts/localize
-							scripts/makecat
-							scripts/interchange
-							scripts/offline
-							scripts/restart
-							scripts/update
-						)];
-	$X{PL_FILES}  = {qw(
-							scripts/compile_link.PL scripts/compile_link
-							scripts/config_prog.PL scripts/config_prog
-							scripts/configdump.PL  scripts/configdump
-							scripts/dump.PL        scripts/dump
-							scripts/expire.PL      scripts/expire
-							scripts/expireall.PL   scripts/expireall
-							scripts/localize.PL    scripts/localize
-							scripts/makecat.PL     scripts/makecat
-							scripts/interchange.PL    scripts/interchange
-							scripts/offline.PL     scripts/offline
-							scripts/restart.PL     scripts/restart
-							scripts/update.PL      scripts/update
-						)};
+	my @scripts = map { "scripts/$_" } qw(
+		compile_link
+		config_prog
+		configdump
+		dump
+		expire
+		expireall
+		findtags
+		ic_mod_perl
+		interchange
+		localize
+		makecat
+		newcat
+		offline
+		restart
+		update
+	);
+	my %X;
+	$X{INSTALLDIRS}	= "perl";
+	$X{EXE_FILES}	= [ @scripts ];
+	$X{PL_FILES}	= { 'relocate.pl' => [ @scripts ] };
 
 	if(! $MV::Default{force} and ! $MV::Default{PREFIX}) {
 		if($> == 0) {
@@ -358,7 +339,7 @@ sub initialize {
 		$MV::Default{RPMBUILDDIR} = $X{RPMBUILDDIR};
 	}
 
-	return %X if $MV::Default{nocopy};
+	return \%X if $MV::Default{nocopy};
 
     my $uid = $MV::Default{INTERCHANGE_USER};
     if(-f "_uid") {
@@ -368,10 +349,10 @@ sub initialize {
         close UID;
     }
 
-#warn "Got past open UID file , uid=$uid user=$> Windows=$Windows\n";
+#warn "Got past open UID file , uid=$uid user=$>\n";
 
 	GETUID: {
-		if($> == 0 and ! $MV::Default{INTERCHANGE_USER} and ! $Windows) {
+		if($> == 0 and ! $MV::Default{INTERCHANGE_USER}) {
 			$uid = my_prompt(
 				qq{Interchange cannot be run as root. Which user should run Interchange? },
 				($uid || 'interch'),
@@ -386,7 +367,7 @@ sub initialize {
 		elsif ($uid = $MV::Default{INTERCHANGE_USER}) {
 			# do nothing
 		}
-		elsif (! $Windows) {
+		else {
 			eval {
 				$uid = scalar getpwuid($>);
 			};
@@ -418,27 +399,29 @@ sub initialize {
 
 	my $realdir;
 
+	$origdir =~ s:[\\/]\s*$::;
+	$origdir =~ s:^\s*::;
+
 	if(! $MV::Default{final}) {
 		&copyright_prompt();
 
 		# don't suggest install target same as software source directory
 		$MV::Default{PREFIX} = '' if
-			$MV::Default{PREFIX} =~ /^\Q$origdir/;
+			$MV::Default{PREFIX} eq $origdir;
 
 		{
 			$realdir = my_prompt(
 								"Where is your Interchange to be installed? ",
 								$MV::Default{PREFIX},
 								);
-			if ($realdir =~ /^\s*\Q$origdir/) {
+			$realdir =~ s:[\\/]\s*$::;
+			$realdir =~ s:^\s*::;
+			if ($realdir eq $origdir) {
 				warn "Can't install in software source directory!\n";
 				redo;
 			}
 		}
 		print "\n";
-		$realdir =~ s:[\\/]\s*$::;
-		$realdir =~ s:^\s*::;
-		$MV::Default{final} = $realdir if $Windows;
 	}
 	else {
 		$MV::Default{final} =~ s:[\\/]\s*$::;
@@ -447,7 +430,7 @@ sub initialize {
 	}
 
 	die "Can't install in software source directory!\n" if
-		! $MV::Default{force} && $realdir =~ /^\Q$origdir/;
+		! $MV::Default{force} && $realdir eq $origdir;
 
 #warn "Got past realdir prompt\n" ; #if $X{RPMBUILDDIR};
 
@@ -456,67 +439,19 @@ sub initialize {
 	$X{INSTALLARCHLIB}	= "$realdir";
 	$X{INSTALLPRIVLIB}	= "$realdir/lib";
 	if(! $MV::Default{final}) {
-		$X{INSTALLMAN1DIR}	= "$realdir/doc"
+		$X{INSTALLMAN1DIR}	= "$realdir/man"
 			if ! $MV::Default{INSTALLMAN1DIR};
-		$X{INSTALLMAN3DIR}	= "$realdir/doc"
+		$X{INSTALLMAN3DIR}	= "$realdir/man"
 			if ! $MV::Default{INSTALLMAN3DIR};
 	}
 
-	if (! -f 'pod/mvtags.pod') {
-		chdir 'lib'
-			or die "Cannot chdir to ./lib: $!\n";
-		system("$^X Vend/Tagref.pm > ../pod/mvtags.pod");
-		chdir '..'
-			or die "Cannot chdir back to ..: $!\n";
-	}
-	my @re_link  = qw( interchange bin/minivend );
-	my @re_dir  = qw( simple/download );
-	my @re_copy = qw(	
-						../pod/mvtags.pod simple/download/mvtags.pod
-						);
+	my @re_link = qw( interchange bin/minivend );
+	my @re_dir  = qw();
+	my @re_copy = qw();
 
-#warn "Got past mvtags build\n" ; #if $X{RPMBUILDDIR};
-
-	if($Windows) {
-		mk_initp(\%X);
-		my ($in, $out);
-		my $ref = delete $X{PL_FILES};
-		if(! -d 'bin') {
-			File::Path::mkpath('bin');
-		}
-		my (@f);
-		while ( ($in, $out) = each %$ref) {
-			system "$^X $in";
-			if($?) {
-				die "Error making $in into $out: $!\n";
-			}
-			my $targ = $out;
-			$targ =~ s:.*/::;
-			File::Copy::copy($out, 'bin');
-			push @f, "bin/$targ";
-			system "pl2bat.bat $out";
-			if($?) {
-				warn "PL2BAT did not succeed for $out.\n";
-			}
-			else {
-				File::Copy::copy("$out.bat", 'bin');
-				push @f, "bin/$targ.bat";
-			}
-		}
-		# Check for extra needed libraries
-		extra_libs($realdir);
-		my $wanted = sub {
-				return unless -f $_;
-				push @f, $File::Find::name;
-		};
-		File::Find::find($wanted, 'lib');
-		for (@f) {
-			install_file('.', $realdir, $_);
-		}
-	}
-#warn "Got past Windows stuff\n" ; #if $X{RPMBUILDDIR};
+	my $upgrade;
 	if($MV::Default{final}) {
-		$ = 0;
+		$^W = 0;
 		for(glob "_*") {
 			File::Copy::copy($_, $realdir);
 		}
@@ -530,27 +465,39 @@ sub initialize {
 		# install share/ files from MANIFEST
 		chomp(my @sharefiles = grep m:^share/:, @files);
 		install_file('.', $realdir, $_) for @sharefiles;
+		# install code/ files from MANIFEST
+		chomp(my @codefiles = grep m:^code/:, @files);
+		install_file('.', $realdir, $_) for @codefiles;
+		# create symbolic links for images used for
+		# other languages either not yet translated
+		# or without embedded text
+		my @imgfiles = grep m:^share/interchange/en_US/:, @sharefiles;
+		my @loc;
+		@loc = map { s:.*/::; s/\.cfg$//; $_ } glob('dist/lib/UI/locales/*_*.cfg');
+		my $cwd = cwd();
+		my ($locale, $imgfile, $fname);
+		chdir("$realdir/share/interchange")
+			|| die "Couldn't enter directory $realdir/share/interchange: $!\n";
+
+		for $locale (@loc) {
+			unless (-d $locale) {
+				mkdir ($locale, 0777)
+					|| die "Couldn't create directory $realdir/share/interchange/$locale: $!\n";
+			}
+			for $imgfile (@imgfiles) {
+				$fname = basename($imgfile);
+				next if -f "$locale/$fname";
+				symlink ("../en_US/$fname", "$locale/$fname")
+					|| die "Couldn't create symlink $realdir/share/interchange/$locale/$fname: $!\n";
+			}
+		}
+		chdir($cwd)
+			|| die "Couldn't enter directory $cwd: $!\n";
 
 #warn "Got past install SHAREFILES\n" ; #if $X{RPMBUILDDIR};
 
-		# build context-sensitive admin help files
-		my $sourcedir = cwd();
-		BUILD_HELP_HTML: {
-			chdir "$realdir/share/akopia/ui/help" or last BUILD_HELP_HTML;
-			local $/;
-			open HELP_MAKE, "help_make.pl" or
-				warn("Unimportant: Unable to open help_make.pl\n"), last BUILD_HELP_HTML;
-			my $help_make = <HELP_MAKE>;
-			close HELP_MAKE;
-			print "Generating admin help HTML\n";
-			eval $help_make;
-			warn("Unimportant: Error generating admin help HTML\n") if $@;
-		}
-		chdir $sourcedir;
-
-#warn "Got past install Helpfiles\n" ; #if $X{RPMBUILDDIR};
-
 		# install dist/ files from MANIFEST
+		print "Installing dist/ files\n";
 		@files = grep m:^dist/:, @files;
 		chomp(@files);
 		@files = map { s:^dist/::; $_} @files;
@@ -559,7 +506,7 @@ sub initialize {
 		chdir 'dist';
 		for (@re_dir) {
 			mkdir $_, 0777
-			 or @re_copy = ();
+				or @re_copy = ();
 		}
 		while ($_ = shift @re_copy ) {
 			my $from = $_;
@@ -568,6 +515,7 @@ sub initialize {
 			File::Copy::copy($from, $to);
 		}
 		for (@files) {
+			$upgrade ||= -f "$realdir/$_";
 			install_file('.', $realdir, $_);
 		}
 		chdir '..';
@@ -670,20 +618,33 @@ EOF
 		}
 		if(@mods_to_get) {
 			my $mods = join "\n\t", @mods_to_get;
-			print <<EOF;
+			
+			if ($MV::Default{nocpaninstall}) {
+				print <<EOF;
+You do not appear to have all the required modules installed. You are missing:
+
+	$mods
+
+Please run src/cpan_local_install to install them.
+EOF
+  				exit ($MV::Default{force} ? 0 : 1);
+			} else {
+				print <<EOF;
 You do not appear to have all the required modules installed. You are missing:
 
 	$mods
 
 Trying to install now.
 EOF
+			}
+
 			chdir $realdir
 				or die "Couldn't change directory to $realdir: $!\n";
 			system $^X, 'src/cpan_local_install';
 			eval {
-					require Storable;
-					open JUNK, ">_session_storable"
-						and close JUNK;
+				require Storable;
+				open JUNK, ">_session_storable"
+					and close JUNK;
 			};
 			eval {
 				require Business::UPS;
@@ -701,16 +662,27 @@ EOF
 			}
 			system $^X, 'src/cpan_local_install', '-c';
 		}
+		if($upgrade) {
+		print <<EOF;
+
+Since this was an update, you are now ready to restart and ensure
+your catalogs run as expected. You do NOT need to re-run makecat,
+though you can always do that to make a new catalog. Never run
+makecat on an existing catalog.
+
+EOF
+		}
+		else {
 		print <<EOF;
 
 You are now ready to cd to $realdir and run 'bin/makecat'
 to set up your first catalog.
 
 EOF
+		}
 		exit;
 
 	}
-
 
 	# Check for extra needed libraries
 	extra_libs($realdir);
@@ -722,9 +694,9 @@ EOF
 
 sub regularize {
 	for (@_) {
-			s/[\\]\n//g;
-			s/\n\s+/ /g;
-			s/\s+$//g;
+		s/[\\]\n//g;
+		s/\n\s+/ /g;
+		s/\s+$//g;
 	}
 	wantarray ? @_ : $_[0];
 }
@@ -751,16 +723,16 @@ sub MY::install {
 VERBINST=0
 
 mv_install ::
-			\$(PERL) Makefile.PL force $uidparm final=\$(INSTALLARCHLIB)
+			\$(PERL) Makefile.PL force nocpaninstall=\$(NOCPANINSTALL) $uidparm final=\$(INSTALLARCHLIB)
 
-install :: all pure_install doc_install mv_install
+install :: all pure_install mv_install
 
 EOF
 	$new .= <<EOF;
 rpm_move ::
 		\$(PERL) Makefile.PL force=1 rpmbuilddir=$MV::Default{RPMBUILDDIR} final=\$(INSTALLARCHLIB)
 
-rpm_build :: all pure_install doc_install rpm_move
+rpm_build :: all pure_install rpm_move
 
 EOF
 	$_ = $self->MM::install;
@@ -768,84 +740,82 @@ EOF
 	$_;
 }
 
-	my %mv_specific = qw/
-						STORABLE 1 PREFIX 1 FORCE 1 FINAL 1 RPMBUILDDIR 1 INTERCHANGE_USER 1
-					  /;
-	my %delete;
-	use Getopt::Long;
-	my @saveargs = @ARGV;
-	my %optctl = (
-		'junk'			=> sub { 1 },
-		'<>'			=> sub {
-								my ($arg) = @_;
+sub MY::postamble {
+	return <<'EOF';
+UIDIR=dist/lib/UI
+UILCDIR=$(UIDIR)/locales
+
+localefiles:
+	@for langfile in $(UILCDIR)/*_*.cfg; do \
+		lang=`basename $$langfile .cfg`; \
+		mv $$langfile $$langfile.old; \
+		cat $(UILCDIR)/default.cfg >> $$langfile.old; \
+		if ! $(INSTALLBIN)/localize -n -m $$langfile.old -u $(UIDIR) -l $$lang `find $(UIDIR) -type f -not -empty` > $$langfile; then \
+		echo "Failed to generate locale file $$langfile"; \
+		mv $$langfile.old $$langfile; \
+		fi; \
+	done
+EOF
+}
+
+my %mv_specific = qw/
+	STORABLE 1 PREFIX 1 FORCE 1 FINAL 1 RPMBUILDDIR 1 INTERCHANGE_USER 1
+/;
+my %delete;
+use Getopt::Long;
+my @saveargs = @ARGV;
+my %optctl = (
+	'junk'			=> sub { 1 },
+	'<>'			=> sub {
+							my ($arg) = @_;
 	#warn "checking option $arg\n";
-								my ($opt, $val);
-								if($arg !~ /=/) {
-									$opt = $arg;
-									$val = 1;
-								}
-								else {
-									($opt, $val) = split /=/, $arg, 2;
-								}
+							my ($opt, $val);
+							if($arg !~ /=/) {
+								$opt = $arg;
+								$val = 1;
+							}
+							else {
+								($opt, $val) = split /=/, $arg, 2;
+							}
 
-								$delete{$arg} = 1 if $mv_specific{uc $opt};
-									
-								$MV::Default{$opt} = $val;
-								return;
-							},
-	);
+							$delete{$arg} = 1 if $mv_specific{uc $opt};
 
-	my @options = ( qw/
-		junk
-		<>
-	/ );
-
-	Getopt::Long::config(qw/permute/);
-	GetOptions(\%optctl, @options)
-		or die "Bad option get\n";
-
-	if($MV::Default{PREFIX} and ! $changed_dir_initially) {
-		$origdir = cwd();
-	}
-
-#	use Data::Dumper;
-#	$Data::Dumper::Terse = $Data::Dumper::Indent = 2;
-#	print "ARGV: " . Dumper(\@ARGV);
-#	print "OPT: " . Dumper(\%MV::Default);
-
-	@ARGV = grep ! $delete{$_}, @saveargs;
-
-if($Windows) {
-	&initialize;
-}
-else {
-	WriteMakefile(
-		NAME       => "Interchange",
-		MAN3PODS => {
-						'pod/icbackoffice.pod'	=> 'blib/man3/icbackoffice.8',
-						'pod/iccattut.pod'		=> 'blib/man3/iccattut.8',
-						'pod/icconfig.pod'		=> 'blib/man3/icconfig.8',
-						'pod/icdatabase.pod'	=> 'blib/man3/icdatabase.8',
-						'pod/icinstall.pod'		=> 'blib/man3/icinstall.8',
-						'pod/icintro.pod'		=> 'blib/man3/icintro.8',
-						'pod/ictemplates.pod'	=> 'blib/man3/ictemplates.8',
-						'pod/mv_metadata.pod'	=> 'blib/man3/mv_metadata.8',
-						'pod/mvtags.pod'		=> 'blib/man3/mvtags.8',
+							$MV::Default{$opt} = $val;
+							return;
 						},
-		DISTNAME => "interchange",
-		clean    => {
-					FILES=> "lib/IniConf.pm _uid _db_storable _session_storable lib/File/CounterFile.pm scripts/initp.pl scripts/compile_link scripts/config_prog scripts/configdump scripts/dump scripts/expire scripts/localize scripts/expireall scripts/makecat scripts/interchange scripts/offline scripts/restart scripts/update dist/simple/download/mvtags.pod",
-				   },
+);
 
-		dist     => {
-						CI => "ci -l -t-Initial",
-						SUFFIX   => ".gz",
-						DIST_DEFAULT => 'all tardist',
-						COMPRESS => "gzip -9f",
-						ZIP_FLAGS => '-pr9',
-					},
-		VERSION_FROM => "scripts/interchange.PL",
-		EXE_FILES  => [],
-		CONFIGURE  => \&initialize,
-	);
-}
+my @options = ( qw/
+	junk
+	<>
+/ );
+
+Getopt::Long::config(qw/permute/);
+GetOptions(\%optctl, @options)
+	or die "Bad option get\n";
+
+#use Data::Dumper;
+#$Data::Dumper::Terse = $Data::Dumper::Indent = 2;
+#print "ARGV: " . Dumper(\@ARGV);
+#print "OPT: " . Dumper(\%MV::Default);
+
+@ARGV = grep ! $delete{$_}, @saveargs;
+
+WriteMakefile(
+	NAME     => "Interchange",
+	DISTNAME => "interchange",
+	clean    => {
+				FILES => "lib/IniConf.pm _uid _db_storable _session_storable lib/File/CounterFile.pm scripts/initp.pl scripts/compile_link scripts/config_prog scripts/configdump scripts/dump scripts/expire scripts/localize scripts/expireall scripts/makecat scripts/ic_mod_perl scripts/interchange scripts/newcat scripts/offline scripts/restart scripts/update",
+			   },
+
+	dist     => {
+					CI => "ci -l -t-Initial",
+					SUFFIX   => ".gz",
+					DIST_DEFAULT => 'all tardist',
+					COMPRESS => "gzip -9f",
+					ZIP_FLAGS => '-pr9',
+				},
+	VERSION_FROM => "scripts/interchange.PL",
+	EXE_FILES  => [],
+	CONFIGURE  => \&initialize,
+);

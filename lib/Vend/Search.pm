@@ -1,10 +1,8 @@
-#!/usr/bin/perl -w
+# Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 1.6.4.4 2000-12-05 20:37:31 racke Exp $
+# $Id: Search.pm,v 1.6.4.5 2003-01-25 22:21:28 racke Exp $
 #
-# Vend::Search -- Base class for search engines
-#
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,13 +18,10 @@
 # License along with this program; if not, write to the Free
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
-#
 
-#
-#
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 1.6.4.4 $, 10);
+$VERSION = substr(q$Revision: 1.6.4.5 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -96,6 +91,25 @@ my %maytag = (
 
 my (@hashable) = (qw/mv_return_fields mv_range_look mv_search_field mv_sort_field/);
 
+sub search_reference {
+	my ($s, $ref) = @_;
+	my $c = { mv_searchtype => 'ref', label => ref($s), mv_search_file => '__none__' };
+
+	my $ns = $s->{mv_next_search};
+	$ns = $::Scratch->{$ns} unless $ns =~ /=/;
+	my $params = Vend::Interpolate::escape_scan($ns);
+#::logDebug("search_params: $params");
+	Vend::Scan::find_search_params($c, $params);
+
+	$c->{mv_return_filtered} = 1;
+	$c->{mv_return_fields} = '*';
+	$c->{mv_field_names} = $s->{mv_field_names};
+	$c->{mv_search_reference} = $ref;
+#::logDebug("Ref ready to search: " . ::uneval($c));
+	my $o = Vend::Scan::perform_search($c);
+	return @{$o->{mv_results} || []};
+}
+
 sub hash_fields {
 	my ($s, $fn, @laundry) = @_;
 	my %fh;
@@ -135,10 +149,10 @@ sub hash_fields {
 
 sub escape {
     my($s, @text) = @_;
-#::logDebug( "text=@text");
+#::logDebug( "escaped text=" . ::uneval(\@text));
 	return @text if ! $s->{mv_all_chars}[0];
 	@text = map {quotemeta $_} @text;
-#::logDebug( "text=@text");
+#::logDebug( "escaped text=" . ::uneval(\@text));
     return @text;
 }
 
@@ -199,15 +213,15 @@ sub dump_coord {
 			$msg,
             $s->{mv_coordinate},
 			scalar @$specs,
-			::uneval($specs),
+			Vend::Util::uneval($specs),
 			scalar @{$s->{mv_search_field}},
-			::uneval($s->{mv_search_field}),
+			Vend::Util::uneval($s->{mv_search_field}),
 			scalar @{$s->{mv_column_op}},
-			::uneval($s->{mv_column_op}),
+			Vend::Util::uneval($s->{mv_column_op}),
 			scalar @{$s->{mv_numeric}},
-			::uneval($s->{mv_numeric}),
+			Vend::Util::uneval($s->{mv_numeric}),
 			scalar @{$s->{mv_negate}},
-			::uneval($s->{mv_negate}),
+			Vend::Util::uneval($s->{mv_negate}),
 			;
 }
 
@@ -227,8 +241,8 @@ sub spec_check {
 	my $all_chars = $s->{mv_all_chars}[0];
 
 	while ($i < @specs) {
-#::logDebug("i=$i specs=$#specs");
-		if($#specs and length($specs[$i]) == 0) { # should add a switch
+#::logDebug("i=$i specs=$#specs mv_min_string=$s->{mv_min_string}");
+		if($#specs and length($specs[$i]) == 0 and $s->{mv_min_string} != 0) { # should add a switch
 			if($s->{mv_coordinate}) {
 		        splice(@{$s->{mv_search_group}}, $i, 1);
 		        splice(@{$s->{mv_search_field}}, $i, 1);
@@ -243,14 +257,6 @@ sub spec_check {
 		    splice(@specs, $i, 1);
 		}
 		else {
-			if(length($specs[$i]) < $s->{mv_min_string}) {
-				my $msg = <<EOF;
-Search strings must be at least $s->{mv_min_string} characters.
-You had '$specs[$i]' as one of your search strings.
-EOF
-				$s->{matches} = -1;
-				return undef;
-			}
 			COLOP: {
 				last COLOP unless $s->{mv_coordinate};
 #::logDebug("i=$i, begin_string=$s->{mv_begin_string}[$i]");
@@ -260,9 +266,9 @@ EOF
 				if(	$s->{mv_column_op}[$i] =~ /([=][~]|rm|em)/ ) {
 					$specs[$i] = quotemeta $specs[$i]
 						if $s->{mv_all_chars}[$i];
-					$s->{regex_specs} = []
-						unless $s->{regex_specs};
 					last COLOP if $s->{mv_begin_string}[$i];
+					last COLOP if $s->{mv_column_op}[$i] eq 'em';
+					$s->{regex_specs} ||= [];
 					$specs[$i] =~ /(.*)/;
 					push @{$s->{regex_specs}}, $1
 				}
@@ -283,6 +289,7 @@ EOF
 	}
 
 #::logDebug("regex_specs=" . ::uneval($s->{regex_specs}));
+#::logDebug("eq_specs_sql=" . ::uneval($s->{eq_specs_sql}));
 
 	if ( ! $s->{mv_exact_match} and ! $s->{mv_coordinate}) {
 		my $string = join ' ', @specs;
@@ -365,41 +372,107 @@ sub more_matches {
 	return $obj;
 }
 
+sub more_alpha {
+	my ($s, $out) = @_;
+	my ($sfpos, $letter, $sortkey, $last, @alphaspecs, $i);
+	my $alphachars = $s->{mv_more_alpha_chars} || 3;
+
+	# determine position of sort field within results
+	for ($i = 0; $i < @{$s->{mv_return_fields}}; $i++) {
+		last if $s->{mv_return_fields}->[$i] eq $s->{mv_sort_field}->[0];
+	}
+	$sfpos = $i;
+	
+	# add dummy record
+	@alphaspecs = (['']);
+		
+	$last = 0;
+	for ($i = 0; $i < @$out; $i++) {
+		$sortkey = $out->[$i]->[$sfpos];
+		$letter = substr($sortkey,0,1);
+
+		if ($letter ne substr($alphaspecs[$last]->[0],0,1)) {
+			# add record if first letter has changed
+			push (@alphaspecs, [$sortkey, 1, $i]);
+			# add last pointer to previous record
+			push (@{$alphaspecs[$last++]}, $i - 1);
+		} elsif ($alphachars > 1
+				 && $i - $alphaspecs[$last]->[2] >= $s->{mv_matchlimit}) {
+			# add record if match limit is exceeded and significant
+			# letters are different
+			for (my $c = 2; $c <= $alphachars; $c++) {
+				if (substr($sortkey,0,$c)
+					ne substr($alphaspecs[$last]->[0],0,$c)) {
+					push (@alphaspecs, [$sortkey, $c, $i]);
+					# add last pointer to previous record
+					push (@{$alphaspecs[$last++]}, $i - 1);
+					last;
+				}
+			}
+		}
+			
+	}
+	# add last pointer to last record
+	push (@{$alphaspecs[$last]}, $i - 1);
+	# remove dummy record
+	shift (@alphaspecs);
+	$s->{mv_alpha_list} = \@alphaspecs;
+}
+
 # Returns a field weeding function based on the search specification.
 # Input is the raw line and the delimiter, output is the fields
 # specified in the return_field specification
+# If we get a third parameter, $makeref, we need to build a reference
 sub get_return {
-	my($s, $final) = @_;
+	my($s, $final, $makeref) = @_;
 	my ($return_sub);
 
-	# We will pick out the return fields later if sorting
-	if(! $final and $s->{mv_sort_field}) {
-		return ( sub {@_}, 1);
-	}
+	if($makeref) {
+		# Avoid the hash key lookup, it is a closure
+		my $delim = $s->{mv_index_delim};
 
-	if(! $s->{mv_return_fields}) {
-		my $delim = $s->{mv_index_delim} || "\t";
-#::logDebug("code return. delim='$delim'");
-		$return_sub = sub {
-				$_[0] =~ s/$delim.*//s;
-				my $ary = [ $_[0] ];
-#::logDebug("ary is:" . ::uneval($ary));
-				return $ary;
-				};
+		# We will pick out the return fields later if sorting
+		# This returns
+		if( $s->{mv_sort_field} || $s->{mv_next_search}) {
+			return ( 
+				sub {
+					[ split /$delim/o, shift(@_) ]
+				},
+				1,
+			);
+		}
+		elsif($s->{mv_return_fields}) {
+			my @fields = @{$s->{mv_return_fields}};
+			$return_sub = sub {
+							return [ (split /$delim/o, shift(@_))[@fields] ]
+						};
+		}
+		else {
+			$return_sub = sub {
+							$_[0] =~ s/$delim.*//s;
+							return [ $_[0] ];
+					};
+		}
 	}
 	else {
-		my $delim = $s->{mv_index_delim};
-#::logDebug("rf[0]='$s->{mv_return_fields}[0]'");
-		my @fields = @{$s->{mv_return_fields}};
-#::logDebug("delim='$delim' fields='@fields'");
-		$return_sub = sub {
-			chomp($_[0]);
-			my $ary = [
-				(split /\Q$delim/o, $_[0])[@fields]
-				];
-#::logDebug("line is:$_[0]\nary is:" . ::uneval($ary));
-				return $ary;
-		};
+		# We will pick out the return fields later if sorting
+		# This returns
+		if(! $final and $s->{mv_sort_field} || $s->{mv_next_search}) {
+			return ( sub { [ @{ shift(@_) } ] }, 1);
+		}
+
+		if(! $s->{mv_return_fields}) {
+			$return_sub = sub {
+								return [ $_[0]->[0] ];
+						};
+		}
+		else {
+			my @fields = @{$s->{mv_return_fields}};
+			$return_sub = sub {
+				my $ref = [ @{$_[0]}[@fields] ];
+				return $ref;
+			};
+		}
 	}
 	return $return_sub;
 }
@@ -477,15 +550,36 @@ sub code_join {
 	$out .= ' ) ';
 }
 
+sub create_field_hash {
+	my $s = shift;
+	my $fn = $s->{mv_field_names}
+		or return;
+	my $fh = {};
+	my $idx = 0;
+	for(@$fn) {
+		$fh->{$idx} = $idx;
+		$fh->{$_} = $idx++;
+	}
+	return $fh;
+}
+
 # Returns a screening function based on the search specification.
 # The $f is a reference to previously created search function which does
 # a pattern match on the line.
+# Makeref says we have to build a reference from the supplied text line
 sub get_limit {
-	my($s, $f) = @_;
+	my($s, $f, $makeref) = @_;
 	my $limit_sub;
 	my $range_code = '';
 	my $rd = $s->{mv_record_delim} || '\n';
-	my $code       = "sub {\nmy \$line = shift; chomp \$line; \$line =~ tr/$rd//d;\n";
+	my $code;
+	if($makeref) {
+		$code       = "sub {\nmy \$line = [split /$s->{mv_index_delim}/, shift(\@_)];\n";
+	}
+	else {
+		$code       = "sub {\nmy \$line = shift;\n";
+	}
+	$code .= "my \@fields = \@\$line;\n";
 	my $join_key;
 	$join_key = defined $s->{mv_return_fields} ? $s->{mv_return_fields}[0] : 0;
 	$join_key = 0 if $join_key eq '*';
@@ -516,33 +610,37 @@ sub get_limit {
 	}
 	# Add the code to get the join data if it is there
 	if(@join_fields) {
+		$s->{mv_field_hash} = create_field_hash($s) 
+			unless $s->{mv_field_hash};
 		$code .= <<EOF;
-my \$key = (split m{$s->{mv_index_delim}}, \$line)[$join_key];
+my \$key = \$line->[$join_key];
 EOF
 		for(@join_fields) {
 			my ($table, $col) = split /:+/, $_, 2;
 			if($table) {
 				$wild_card = 0;
 				$code .= <<EOF;
-\$line .= qq{$s->{mv_index_delim}} .
-		  Vend::Data::database_field('$table', \$key, '$col');
+push \@fields, Vend::Data::database_field('$table', \$key, '$col');
 EOF
 			}
 			elsif ($col =~ tr/:/,/) {
 				$col =~ tr/ \t//d;
+				my @col = map { $s->{mv_field_hash}{$_} } split /,/, $col;
+				@col = grep defined $_, @col;
+				$col = join ",", @col;
+				next unless $col;
 				$wild_card = 1;
 				$col =~ s/[^\d,.]//g;
 			$code .= <<EOF;
-my \$addl = join " ", (split m{\Q$s->{mv_index_delim}\E}, \$line)[$col];
-\$line .= qq{$s->{mv_index_delim}} . \$addl;
+my \$addl = join " ", \@fields[$col];
+push \@fields, \$addl;
 EOF
 			}
 			else {
 				$wild_card = 1;
 				$code .= <<EOF;
-my \$addl = \$line;
-\$addl =~ tr/$s->{mv_index_delim}/ /;
-\$line .= qq{$s->{mv_index_delim}} . \$addl;
+my \$addl = join " ", \@fields;
+push \@fields, \$addl;
 EOF
 			}
 		}
@@ -552,7 +650,7 @@ EOF
 
 	if ( ref $s->{mv_range_look} )  {
 		$range_code = <<EOF;
-return $joiner \$s->range_check(qq{$s->{mv_index_delim}},\$line);
+return $joiner \$s->range_check(\$line);
 EOF
 	}
 	if ( $s->{mv_coordinate} ) {
@@ -563,10 +661,12 @@ EOF
 		 }
 		 my $callchar = $fields =~ /,/ ? '@' : '$';
 		 $code .= <<EOF;
-	my \@fields = split /\\Q$s->{mv_index_delim}/, \$line;
 	\@fields = ${callchar}fields[$fields];
-#::logDebug("fields=" . join "|", \@fields);
 EOF
+		$code .= <<EOF if $Global::DebugFile and $CGI::values{debug};
+   ::logDebug("fields=" . join "|", \@fields);
+EOF
+
 		my @specs;
 		# For a limiting function, can't if orsearch
 
@@ -652,12 +752,14 @@ EOF
 #::logDebug("coderef=" . ::uneval_it(\@code));
 
 		undef $f if $s->{mv_search_relate} =~ s/\bor\b/or/ig;
+		undef $f unless $s->{regex_specs} or $s->{eq_specs};
 		DOLIMIT: {
 #::logDebug(::uneval_it({%$s}));
 #::logDebug("do_limit.");
 			last DOLIMIT if $f;
 #::logDebug("do_limit past f.");
 			last DOLIMIT if $s->{mv_small_data};
+			last DOLIMIT if $s->{eq_specs_sql};
 			last DOLIMIT if (grep $_, @{$s->{mv_orsearch}});
 			last DOLIMIT if defined $s->{mv_search_relate}
 							&& $s->{mv_search_relate} =~ s/\bor\b/or/i;
@@ -681,7 +783,8 @@ EOF
 			};
 			undef $f if $@;
 		}
-#::logDebug("filter function code is: $f");
+		::logDebug("filter function code is: $f")
+			if $Global::DebugFile and $CGI::values{debug};
 		use locale;
 		$f = eval $f if $f and ! ref $f;
 		die($@) if $@;
@@ -707,11 +810,12 @@ EOF
 		}
 		$code .= $relate;
 		$code .= "\n}\n";
-#::logDebug("coordinate search code is:\n$code");
+		::logDebug("coordinate search code is:\n$code")
+			if $Global::DebugFile and $CGI::values{debug};
 	}
 	elsif ( @{$s->{mv_search_field}} )  {
 		if(! $s->{mv_begin_string}[0]) {
-#::logDebug("Not begin, sub=f");
+#::logDebug("Not begin, sub=$f");
 			$sub = $f;
 		}
 		elsif (! $s->{mv_orsearch}[0] ) {
@@ -734,10 +838,8 @@ EOF
 		}
 		 $code .= $range_code;
 		 $code .= <<EOF;
-	my \@fields = (split /\\Q$s->{mv_index_delim}/, \$line)[$fields];
-	my \$field = join q{$s->{mv_index_delim}}, \@fields;
-	\$_ = \$field;
-	return(\$_ = \$line) if &\$sub();
+	local(\$_) = join q{$s->{mv_index_delim}}, \@\$line[$fields];
+	return(1) if &\$sub();
 	return undef;
 }
 EOF
@@ -765,8 +867,8 @@ EOF
 # Check to see if the fields specified in the range_look array
 # meet the criteria
 sub range_check {
-	my($s,$index_delim,$line) = @_;
-	my @fields = (split /\Q$index_delim/, $line)[@{$s->{mv_range_look}}];
+	my($s,$line) = @_;
+	my @fields = @$line[@{$s->{mv_range_look}}];
 	my $i = 0;
 	for(@fields) {
 		no strict 'refs';
@@ -888,7 +990,7 @@ sub save_context {
 	for (@save) {
 		$return->{$_} = $s->{$_};
 	}
-	::uneval_fast($return);
+	Vend::Util::uneval_fast($return);
 }
 
 sub dump_options {
@@ -898,15 +1000,16 @@ sub dump_options {
 		$Data::Dumper::Indent = 3;
 		$Data::Dumper::Terse = 1;
 	}
-	return ::uneval($s);
+	return Vend::Util::uneval($s);
 }
 
 sub search_error {
-	my ($s, $msg) = @_;
+	my ($s, $msg, @args) = @_;
 	$s->{mv_search_error} = [] if ! $s->{mv_search_error};
+	$msg = ::errmsg($msg, @args);
 	push @{$s->{mv_search_error}}, $msg;
 	$s->{matches} = -1;
-	::logError ("search error: $msg");
+	::logError ("search error: %s", $msg);
 	return undef;
 }
 
@@ -917,9 +1020,19 @@ sub save_more {
 	delete $s->{dbref} if defined $s->{dbref};
 	my $id = $s->{mv_more_id} || $Vend::SessionID;
 	$id .= ".$s->{mv_cache_key}";
-	if ($s->{matches} > $s->{mv_matchlimit}) {
+	if ($s->{matches} > $s->{mv_matchlimit} and $s->{mv_matchlimit} > 0) {
 		$s->{overflow} = 1;
 		$s->{mv_next_pointer} = $s->{mv_matchlimit};
+	}
+	if ($s->{mv_more_alpha}) {
+		unless ($s->{mv_sort_field} and @{$s->{mv_sort_field}}) {
+			return $s->search_error("mv_sort_field required for mv_more_alpha");
+		}
+		unless ($s->{mv_return_fields}
+				and grep {$_ eq $s->{mv_sort_field}->[0]} @{$s->{mv_return_fields}}) {
+					return $s->search_error("mv_sort_field missing in mv_return_fields (required for mv_more_alpha)");
+		}
+		more_alpha($s,$out);
 	}
 	
 	$file = Vend::Util::get_filename($id,undef,undef,$Vend::Cfg->{StaticScratch}); 
@@ -954,7 +1067,7 @@ use vars qw/ %Sort_field /;
 sub sort_search_return {
     my ($s, $target) = @_;
 
-	@Flds	= @{$s->{mv_sort_field}};
+	@Flds	= @{$s->{mv_sort_field} || []};
 	for(@Flds) {
 		next if /^\d+$/;
 		$_ = $s->{field_hash}{$_}
@@ -978,18 +1091,13 @@ my %Sorter = (
 	rn	=> sub { $_[1] <=> $_[0]			},
 );
 
-	my $last = 'none';
 	my $i;
 	my $max = 0;
 	for($i = 0; $i < @Flds; $i++) {
 		$max = $Flds[$i] if $Flds[$i] > $max;
-		if (! $Opts[$i]) {
-			$Opts[$i] = $last;
-			next;
-		}
+		$Opts[$i] = 'none', next unless $Opts[$i];
 		$Opts[$i] = lc $Opts[$i];
 		$Opts[$i] = 'none' unless defined $Sort_field{$Opts[$i]};
-		$last = $Opts[$i];
 	}
 #::logDebug("sort_search_return: flds='@Flds' opts='@Opts'");
 
@@ -998,8 +1106,8 @@ my %Sorter = (
 	my $delim = quotemeta $s->{mv_index_delim};
 	my $code = <<EOF;
 sub {
-	my \@a = (split /$delim/, \$a, $max)[$f_string];
-	my \@b = (split /$delim/, \$b, $max)[$f_string];
+	my \@a = \@{\$a}[$f_string];
+	my \@b = \@{\$b}[$f_string];
 	my \$r;
 EOF
 #::logDebug("No define of Sort_field") if ! defined $Sort_field{'none'};
@@ -1037,6 +1145,7 @@ eval {
 
 	# Prime sort routine
 	use locale;
+	local($^W);
 	sort { $routine } ('30','31') or 1;
 
 	@$target = sort { &$routine } @$target;

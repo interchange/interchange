@@ -1,8 +1,8 @@
-# SessionDB.pm:  stores session information in files
+# Vend::SessionDB - Stores Interchange session information in files
 #
-# $Id: SessionDB.pm,v 1.2 2000-07-12 03:08:11 heins Exp $
+# $Id: SessionDB.pm,v 1.2.4.1 2003-01-25 22:21:28 racke Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,9 +19,6 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-
-# $Id: SessionDB.pm,v 1.2 2000-07-12 03:08:11 heins Exp $
-
 package Vend::SessionDB;
 require Tie::Hash;
 @ISA = qw(Tie::Hash);
@@ -30,7 +27,7 @@ use strict;
 use Vend::Util;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.2.4.1 $, 10);
 
 my $SessionDB;
 my $SessionLock;
@@ -103,7 +100,7 @@ sub STORE {
 	$self->{DB}->set_row($key) unless $self->{DB}->record_exists($key);
 	return $self->{DB}->set_field($key, 'sessionlock', $val) if $locking;
 	$self->{DB}->set_field( $key, 'session', $val);
-    return 1;
+	return 1;
 }
 	
 1;

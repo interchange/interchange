@@ -9,6 +9,9 @@
 
 # Edited only for references to Minivend, changed to Interchange
 # by Mike Heins. Thanks, guys!
+
+# Patches for AUTH_CAPTURE and VOID support contributed by
+# nferrari@ccsc.com (Nelson H Ferrari)
  
 Variable AUTHORIZENET_HELP <<EOV
  
@@ -24,6 +27,9 @@ Variable AUTHORIZENET_HELP <<EOV
  Variable MV_PAYMENT_SECRET  YourAuthorizeNetPassword 
  Variable MV_PAYMENT_MODE    custom authorizenet 
  Variable MV_PAYMENT_REFERER A valid referering url (match this with your setting on secure.authorize.net 
+
+ # If planning to do AUTH_ONLY or other with special admin page
+ Variable MV_PAYMENT_REMAP order_id=mv_order_id auth_code=mv_auth_code
   
  3. Make sure CreditCardAuto is off (default in Interchange demos) 
  
@@ -77,15 +83,18 @@ sub authorizenet {
                         $actual{mv_credit_card_exp_month}, 
                         $actual{mv_credit_card_exp_year};                     
                          
-	 $actual{cyber_mode} = 'AUTH_CAPTURE' 
+	# Using mv_payment_mode for compatibility with older versions, probably not
+	# necessary.
+	$actual{cyber_mode} = $actual{mv_payment_mode} || 'AUTH_CAPTURE'
         unless $actual{cyber_mode}; 
-	 
+
 	my %type_map = ( 
 		mauth_capture 			=>	'AUTH_CAPTURE', 
 		mauthonly				=>	'AUTH_ONLY', 
 		CAPTURE_ONLY			=>  'CAPTURE_ONLY', 
 		CREDIT					=>	'CREDIT', 
 		VOID					=>	'VOID', 
+		AUTH_ONLY				=>	'AUTH_ONLY',
 		PRIOR_AUTH_CAPTURE		=>	'PRIOR_AUTH_CAPTURE', 
  
 	);                        
@@ -109,24 +118,27 @@ sub authorizenet {
  
     # $mon is the month index where Jan=0 and Dec=11, so we use 
     # $mon+1 to get the more familiar Jan=1 and Dec=12 
-    $orderID = sprintf("%02d%02d%02d%02d%02d%05d%s", 
-            $year + 1900,$mon + 1,$mday,$hour,$min,$Vend::SessionName); 
+    $orderID = sprintf("%04d%02d%02d%02d%02d%05d%s", 
+            $year + 1900,$mon + 1,$mday,$hour,$min,$$,$Vend::SessionName); 
              
     my %query = ( 
+#                    x_Test_Request	=> $::Variable->{MV_PAYMENT_TEST},
                     x_Card_Num		=> $actual{mv_credit_card_number}, 
-                    x_First_Name        => $actual{b_fname}, 
-                    x_Last_Name         => $actual{b_lname},
-                    x_Address           => $actual{address}, 
-                    x_City              => $actual{b_city}, 
-                    x_State             => $actual{b_state}, 
-                    x_Zip		=> $actual{zip},
-                    x_Type		=> $actual{mv_payment_mode}, 
+                    x_First_Name    => $actual{b_fname}, 
+                    x_Last_Name     => $actual{b_lname},
+                    x_Address       => $actual{b_address}, 
+                    x_City          => $actual{b_city}, 
+                    x_State         => $actual{b_state}, 
+                    x_Zip			=> $actual{b_zip},
+					x_Type			=> $actual{cyber_mode},
                     x_Amount    	=> $amount, 
                     x_Exp_Date  	=> $exp,
                     x_Method    	=> 'CC',
-                    x_Invoice_Num       => $actual{mv_order_number},
-#                    x_Company           => $actual{company},
-#                    x_Phone             => $actaul{day_phone},  
+					x_Trans_ID		=> $actual{order_id},
+					x_Auth_Code		=> $actual{auth_code},
+                    x_Invoice_Num   => $actual{mv_order_number},
+#                    x_Company      => $actual{company},
+#                    x_Phone        => $actaul{day_phone},  
                     x_Password  	=> $secret, 
                     x_Login     	=> $user, 
                     x_Version   	=> '3.0', 
@@ -186,14 +198,18 @@ sub authorizenet {
     	$avs_code, 
     	$trans_id) = split (/,/,$page); 
     	 
-#::logError(qq{authorizenet response_reason_text=$response_reason_text response_code: $response_code});    	 
+::logError(qq{authorizenet response_reason_text=$response_reason_text response_code: $response_code});    	 
  
     my %result; 
     if ($response_code == 1) { 
     	$result{MStatus} = 'success'; 
-    	$result{'order-id'} = 1; # ? Why this this set to 1? -mark 
+    	# order-id and auth_code are set to 0 if Authorize.net in test mode.
+		# Order.pm interprets order-id == 0 as authorization error.
+		$result{'order-id'} = $trans_id || 1;
+		$result{'auth_code'} = $auth_code;
     } else { 
     	$result{MStatus} = 'failure'; 
+    	$Vend::Session->{MStatus} = 'failure'; 
  
 		# NOTE: A lot more AVS codes could be checked for here.  
     	if ($avs_code eq 'N') { 
@@ -204,6 +220,7 @@ sub authorizenet {
 					$response_reason_text,
 					);
     	} 
+		$Vend::Session->{payment_error} = $result{MErrMsg};
     } 
      
     return (%result); 

@@ -1,14 +1,12 @@
-# Table/Common.pm: Common access methods for Interchange Databases
+# Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 1.15.4.1 2000-11-27 02:39:22 racke Exp $
+# $Id: Common.pm,v 1.15.4.2 2003-01-25 22:21:31 racke Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
+# This program was originally based on Vend 0.2 and 0.3
+# Copyright 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,12 +23,13 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.15.4.1 $, 10);
+$VERSION = substr(q$Revision: 1.15.4.2 $, 10);
 use strict;
 
 package Vend::Table::Common;
 require Vend::DbSearch;
 require Vend::TextSearch;
+require Vend::CounterFile;
 use Vend::Util;
 
 use Exporter;
@@ -137,11 +136,15 @@ sub unstuff {
 sub autonumber {
 	my $s = shift;
 	my $start;
-	return '' if not $start = $s->[$CONFIG]->{AUTO_NUMBER};
+	my $cfg = $s->[$CONFIG];
+
+	return $s->autosequence() if $cfg->{AUTO_SEQUENCE};
+
+	return '' if not $start = $cfg->{AUTO_NUMBER};
 	local($/) = "\n";
 	my $c = $s->[$CONFIG];
 	if(! defined $c->{AutoNumberCounter}) {
-		$c->{AutoNumberCounter} = new File::CounterFile
+		$c->{AutoNumberCounter} = new Vend::CounterFile
 									"$c->{DIR}/$c->{name}.autonumber", $start;
 	}
 	my $num;
@@ -150,6 +153,10 @@ sub autonumber {
 	} while $s->record_exists($num);
 	return $num;
 }
+
+# These don't work in non-DBI databases
+sub commit   { 1 }
+sub rollback { 0 }
 
 sub numeric {
 	return exists $_[0]->[$CONFIG]->{NUMERIC}->{$_[1]};
@@ -241,9 +248,16 @@ sub record_exists {
     return $r;
 }
 
+sub name {
+	my ($s) = shift;
+	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
+	return $s->[$CONFIG]{name};
+}
+
 sub row_hash {
     my ($s, $key) = @_;
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
+	return undef unless $s->record_exists($key);
 	my %row;
     @row{ @{$s->[$COLUMN_NAMES]} } = $s->row($key);
 	return \%row;
@@ -252,7 +266,8 @@ sub row_hash {
 sub unstuff_row {
     my ($s, $key) = @_;
     my $line = $s->[$TIE_HASH]{"k$key"};
-    die "There is no row with index '$key'" unless defined $line;
+    die "There is no row with index '$key' in database $s->[$FILENAME]"
+		unless defined $line;
     return map(unstuff($_), split(/\t/, $line, 9999))
 		unless $s->[$CONFIG]{FILTER_FROM};
 	my @f = map(unstuff($_), split(/\t/, $line, 9999));
@@ -305,6 +320,69 @@ sub row_settor {
     };
 }
 
+sub get_slice {
+    my ($s, $key, $fary) = @_;
+	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
+
+	return undef unless $s->record_exists($key);
+
+	if(ref $fary ne 'ARRAY') {
+		shift; shift;
+		$fary = [ @_ ];
+	}
+
+	my @result = ($s->row($key))[ map { $s->column_index($_) } @$fary ];
+	return wantarray ? @result : \@result;
+}
+
+sub set_slice {
+    my ($s, $key, $fary, $vary) = @_;
+	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
+
+    if($s->[$CONFIG]{Read_only}) {
+		::logError(
+			"Attempt to set slice of %s in read-only table %s",
+			$key,
+			$s->[$CONFIG]{name},
+		);
+		return undef;
+	}
+
+	if(ref $fary ne 'ARRAY') {
+		my $href = $fary;
+		if(ref $href ne 'HASH') {
+			$href = { $fary, $vary, @_ }
+		}
+		$vary = [ values %$href ];
+		$fary = [ keys   %$href ];
+	}
+
+	my $keyname = $s->[$CONFIG]{KEY};
+
+	my ($found_key) = grep $_ eq $keyname, @$fary;
+
+	if(! $found_key) {
+		unshift @$fary, $keyname;
+		unshift @$vary, $key;
+	}
+
+	my @current;
+
+	@current = $s->row($key)
+		if $s->record_exists($key);
+
+	@current[ map { $s->column_index($_) } @$fary ] = @$vary;
+
+	$key = $s->set_row(@current);
+	length($key) or
+		::logError(
+			"Did set_slice with empty key on table %s",
+			$s->[$CONFIG]{name},
+		);
+
+	return $key;
+}
+
 sub field_settor {
     my ($s, $column) = @_;
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
@@ -317,11 +395,38 @@ sub field_settor {
     };
 }
 
+sub clone_row {
+	my ($s, $old, $new) = @_;
+	return undef unless $s->record_exists($old);
+	my @ary = $s->row($old);
+	$ary[$s->[$KEY_INDEX]] = $new;
+	$s->set_row(@ary);
+	return $new;
+}
+
+sub clone_set {
+	my ($s, $col, $old, $new) = @_;
+	return unless $s->column_exists($col);
+	my $sel = $s->quote($old, $col);
+	my $name = $s->[$CONFIG]{name};
+	my ($ary, $nh, $na) = $s->query("select * from $name where $col = $sel");
+	my $fpos = $nh->{$col} || return undef;
+	$s->config('AUTO_NUMBER', '000001') unless $s->config('AUTO_NUMBER');
+	for(@$ary) {
+		my $line = $_;
+		$line->[$s->[$KEY_INDEX]] = '';
+		$line->[$fpos] = $new;
+		$s->set_row(@$line);
+	}
+	return $new;
+}
+
 sub stuff_row {
     my ($s, @fields) = @_;
 	my $key = $fields[$s->[$KEY_INDEX]];
+#::logDebug("stuff key=$key");
 	$fields[$s->[$KEY_INDEX]] = $key = $s->autonumber()
-		if ! $key;
+		if ! length($key);
 	$s->filter(\@fields, $s->[$COLUMN_INDEX], $s->[$CONFIG]{FILTER_TO})
 		if $s->[$CONFIG]{FILTER_TO};
     $s->[$TIE_HASH]{"k$key"} = join("\t", map(stuff($_), @fields));
@@ -333,7 +438,7 @@ sub freeze_row {
 	my $key = $fields[$s->[$KEY_INDEX]];
 #::logDebug("freeze key=$key");
 	$fields[$s->[$KEY_INDEX]] = $key = $s->autonumber()
-		if ! $key;
+		if ! length($key);
 	$s->filter(\@fields, $s->[$COLUMN_INDEX], $s->[$CONFIG]{FILTER_TO})
 		if $s->[$CONFIG]{FILTER_TO};
 	$s->[$TIE_HASH]{"k$key"} = Storable::freeze(\@fields);
@@ -347,6 +452,18 @@ if($Storable) {
 else {
 	*set_row = \&stuff_row;
 	*row = \&unstuff_row;
+}
+
+sub foreign {
+    my ($s, $key, $foreign) = @_;
+	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
+	$key = $s->quote($key, $foreign);
+    my $q = "select $s->[$CONFIG]{KEY} from $s->[$CONFIG]{name} where $foreign = $key";
+#::logDebug("foreign key query = $q");
+    my $ary = $s->query({ sql => $q });
+#::logDebug("foreign key query returned" . ::uneval($ary));
+	return undef unless $ary and $ary->[0];
+	return $ary->[0][0];
 }
 
 sub field {
@@ -389,6 +506,10 @@ sub inc_field {
     $value = $row[$s->column_index($column)] += $adder;
     $s->set_row(@row);
     return $value;
+}
+
+sub create_sql {
+    return undef;
 }
 
 sub touch {
@@ -451,19 +572,28 @@ sub each_record {
 my $sup;
 my $restrict;
 my $rfield;
+my $hfield;
 my $rsession;
 
 sub each_nokey {
-    my ($s) = @_;
+    my ($s, $qual) = @_;
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
     my ($key);
 
-	if (
-		! defined $restrict
-		and 
-		$restrict = ($Vend::Cfg->{TableRestrict}{$s->config('name')} || 0)
-		)
-	{
+	if (! defined $restrict) {
+		# Support hide_field
+		if($qual) {
+#::logDebug("Found qual=$qual");
+			$hfield = $qual;
+			if($hfield =~ s/^\s+WHERE\s+(\w+)\s*!=\s*1($|\s+)//) {
+				my $hf = $1;
+#::logDebug("Found hf=$hf");
+				$s->test_column($hf) and $hfield = $s->column_index($hf);
+			}
+#::logDebug("hf index=$hfield");
+		}
+		if($restrict = ($Vend::Cfg->{TableRestrict}{$s->config('name')} || 0)) {
+#::logDebug("restricted?");
 		$sup =  ! defined $Global::SuperUserFunction
 					||
 				$Global::SuperUserFunction->();
@@ -477,6 +607,8 @@ sub each_nokey {
 			$rsession = $Vend::Session->{$rsession};
 		}
 	}
+		$restrict = 1 if $hfield and $s->[$CONFIG]{HIDE_FIELD} eq $hfield;
+	}
 
     for (;;) {
         $key = each %{$s->[$TIE_HASH]};
@@ -488,12 +620,20 @@ sub each_nokey {
 		$key =~ s/^k// or next;
 		if($restrict) {
 			my (@row) = $s->row($key);
-##::logDebug("each_nokey: '$row[$rfield]' eq '$rsession' ??");
-			next if $row[$rfield] ne $rsession;
-			return @row;
+#::logDebug("each_nokey: rfield='$row[$rfield]' eq '$rsession' ??") if defined $rfield;
+#::logDebug("each_nokey: hfield='$row[$hfield]'") if defined $hfield;
+			next if defined $hfield and $row[$hfield];
+			next if defined $rfield and $row[$rfield] ne $rsession;
+			return \@row;
 		}
-		return $s->row($key);
+		return [ $s->row($key) ];
     }
+}
+
+sub suicide { 1 }
+
+sub isopen {
+	return defined $_[0]->[$TIE_HASH];
 }
 
 sub delete_record {
@@ -514,11 +654,19 @@ sub sprintf_substitute {
 	return sprintf $query, @$fields;
 }
 
+sub hash_query {
+	my ($s, $query, $opt) = @_;
+	$opt ||= {};
+	$opt->{query} = $query;
+	$opt->{hashref} = 1;
+	return scalar $s->query($opt);
+}
+
 sub query {
     my($s, $opt, $text, @arg) = @_;
 
     if(! CORE::ref($opt)) {
-        unshift @arg, $text;
+        unshift @arg, $text if defined $text;
         $text = $opt;
         $opt = {};
     }
@@ -526,7 +674,7 @@ sub query {
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
 	$opt->{query} = $opt->{sql} || $text if ! $opt->{query};
 
-#::logDebug("receieved query. object=" . ::uneval($opt));
+#::logDebug("receieved query. object=" . ::uneval_it($opt));
 
 	if(defined $opt->{values}) {
 		# do nothing
@@ -554,6 +702,7 @@ sub query {
 	my $update;
 	my %nh;
 	my @na;
+	my @update_fields;
 	my @out;
 
 	if($opt->{STATEMENT}) {
@@ -565,8 +714,10 @@ sub query {
 		eval {
 			($spec, $stmt) = Vend::Scan::sql_statement($query, $ref);
 		};
-		if(! CORE::ref $spec) {
-			::logError("Bad SQL, query was: $query");
+		if($@) {
+			my $msg = ::errmsg("SQL query failed: %s\nquery was: %s", $@, $query);
+			Carp::croak($msg) if $Vend::Try;
+			::logError($msg);
 			return ($opt->{failure} || undef);
 		}
 		my @additions = grep length($_) == 2, keys %$opt;
@@ -578,7 +729,19 @@ sub query {
 	for (@tabs) {
 		s/\..*//;
 	}
-	if (! defined $s || $tabs[0] ne $s->[$CONFIG]{name}) {
+
+	my $reroute;
+	my $tname = $s->[$CONFIG]{name};
+	if ($tabs[0] ne $tname) {
+		if("$tabs[0]_txt" eq $tname or "$tabs[0]_asc" eq $tname) {
+			$tabs[0] = $spec->{fi}[0] = $tname;
+		}
+		else {
+			$reroute = 1;
+		}
+	}
+
+	if($reroute) {
 		unless ($s = $Vend::Database{$tabs[0]}) {
 			::logError("Table %s not found in databases", $tabs[0]);
 			return $opt->{failure} || undef;
@@ -601,14 +764,37 @@ eval {
 	
 	@na = @{$spec->{rf}}     if $spec->{rf};
 
+	$spec->{ml} = $opt->{ml} || '1000';
 	$spec->{fn} = [$s->columns];
-	if(! @na) {
-		@na = ! $update || $update eq 'INSERT' ? '*' : $codename;
+
+	my $sub;
+
+	if($update eq 'INSERT') {
+		@update_fields = $spec->{rf} ? @{$spec->{rf}} : @{$spec->{fn}};
+		@na = $codename;
+		$sub = $s->row_settor(@update_fields);
 	}
-	@na = @{$spec->{fn}}       if $na[0] eq '*';
+	elsif($update eq 'UPDATE') {
+		@update_fields = @{$spec->{rf}};
+#::logDebug("update fields: " . uneval(\@update_fields));
+		my $key = $s->config('KEY');
+		@na = ($codename);
+		$sub = sub {
+					my $key = shift;
+					$s->set_slice($key, [@update_fields], \@_);
+				};
+	}
+	elsif($update eq 'DELETE') {
+		@na = $codename;
+		$sub = sub { delete_record($s, @_) };
+	}
+	else {
+		@na = @{$spec->{fn}}   if ! scalar(@na) || $na[0] eq '*';
+	}
+
 	$spec->{rf} = [@na];
 
-#::logDebug("tabs='@tabs' columns='@na' vals='@vals' update=$update"); 
+#::logDebug("tabs='@tabs' columns='@na' vals='@vals' uf=@update_fields update=$update"); 
 
     my $search;
     if (! defined $opt->{st} or "\L$opt->{st}" eq 'db' ) {
@@ -616,11 +802,11 @@ eval {
 			s/\..*//;
 		}
         $search = new Vend::DbSearch;
-#::logDebug("created DbSearch object: " . ::uneval($search));
+#::logDebug("created DbSearch object: " . ::uneval_it($search));
 	}
 	else {
         $search = new Vend::TextSearch;
-#::logDebug("created TextSearch object: " . ::uneval($search));
+#::logDebug("created TextSearch object: " . ::uneval_it($search));
     }
 
 	my %fh;
@@ -629,46 +815,28 @@ eval {
 	$i = 0;
 	%fh = map { ($_, $i++) } @{$spec->{fn}};
 
-#::logDebug("field hash: " . Vend::Util::uneval(\%fh)); 
+#::logDebug("field hash: " . Vend::Util::uneval_it(\%fh)); 
 	for ( qw/rf sf/ ) {
 		next unless defined $spec->{$_};
 		map { $_ = $fh{$_} } @{$spec->{$_}};
 	}
 
 	if($update) {
-#::logDebug("Updating, update=$update");
-#		$relocate = $stmt->{MV_VALUE_RELOCATE}
-#			if defined $stmt->{MV_VALUE_RELOCATE};
 		$opt->{row_count} = 1;
 		die "Reached update query without object"
 			if ! $s;
-#		if($relocate) {
-#			my $code = splice(@vals, $stmt->{MV_VALUE_RELOCATE}, 1);
-#			unshift(@vals, $code) if $update ne 'UPDATE';
-##::logDebug("relocating values col=$relocate: columns='@na' vals='@vals'"); 
-#		}
-#		elsif (!defined $relocate) {
-#			die "Must have code field to insert"
-#				 if $update eq 'INSERT';
-#			unshift(@na, $codename);
-##::logDebug("NOT defined relocating values col=$relocate: columns='@na' vals='@vals'"); 
-#		}
-		my $sub = $update eq 'DELETE'
-					? sub { delete_record($s, @_) }
-					: $s->row_settor(@na);
 #::logDebug("Update operation is $update, sub=$sub");
 		die "Bad row settor for columns @na"
 			if ! $sub;
 		if($update eq 'INSERT') {
-			&$sub(@vals);
-			$ref = [$vals[0]];
+			$sub->(@vals);
+			$ref = [[ $vals[0] ]];
 		}
 		else {
-#::logDebug("Supposed to search..., spec=" . ::uneval($spec));
 			$ref = $search->array($spec);
-#::logDebug("Returning ref=" . ::uneval($ref));
-			for(@{$ref}) {
-				&$sub($_->[0], @vals);
+			for(@$ref) {
+#::logDebug("returned =" . uneval($_) . ", update values: " . uneval(\@vals));
+				$sub->($_->[0], @vals);
 			}
 		}
 	}
@@ -691,9 +859,15 @@ eval {
 		$return = $opt->{failure} || undef;
 	}
 
-	return scalar @{$ref || []}
-		if $opt->{row_count};
-	return Vend::Interpolate::region($opt, $text)
+	if ($opt->{row_count}) {
+		my $rc = $ref ? scalar @$ref : 0;
+		return $rc unless $opt->{list};
+		$ref = [ [ $rc ] ];
+		@na = [ 'row_count' ];
+		%nh = ( 'rc' => 0, 'count' => 0, 'row_count' => 0 );
+	}
+
+	return Vend::Interpolate::tag_sql_list($text, $ref, \%nh, $opt, \@na)
 		if $opt->{list};
 	return Vend::Interpolate::html_table($opt, $ref, \@na)
 		if $opt->{html};
@@ -740,9 +914,29 @@ sub import_ascii_delimited {
 		$format = 'NONE';
 	}
 
-    open(IN, "+<$infile")
-		or die "Couldn't open '$infile' read/write: $!\n";
-	lockfile(\*IN, 1, 1) or die "lock\n";
+	my $realfile;
+	if($options->{PRELOAD}) {
+		if (-f $infile and $options->{PRELOAD_EMPTY_ONLY}) {
+			# Do nothing, no preload
+		}
+		else {
+			$realfile = -f $infile ? $infile : '';
+			$infile = $options->{PRELOAD};
+			$infile = "$Global::VendRoot/$infile" if ! -f $infile;
+			($infile = $realfile, undef $realfile) if ! -f $infile;
+		}
+	}
+
+	if(! defined $realfile) {
+		open(IN, "+<$infile")
+			or die ::errmsg("Couldn't open '%s' read/write: %s", $infile, $!);
+		lockfile(\*IN, 1, 1)
+			or die ::errmsg("lock '%s': %s", $infile, $!);
+	}
+	else {
+		open(IN, "<$infile")
+			or die ::errmsg("Couldn't open '%s' for read: %s", $infile, $!);
+	}
 
 	my $field_hash;
 	my $para_sep;
@@ -875,11 +1069,11 @@ EndOfExcel
 	my @i;  # Array of field names for sort
 	my @o;  # Array of sort options
 	my %comma;
-	if($options->{INDEX}) {
+	if($options->{INDEX} and ! $options->{NO_ASCII_INDEX}) {
 		my @f; my $f;
 		my @n;
 		my $i;
-		@f = split /[\s,]+/, $options->{INDEX};
+		@f = @{$options->{INDEX}};
 		foreach $f (@f) {
 			my $found = 0;
 			$i = 0;
@@ -1069,7 +1263,33 @@ EndOfRoutine
 );
 
     eval $format{$format};
-    die $@ if $@;
+	die ::errmsg("$options->{name} import failed: %s", $@) if $@;
+    if($realfile) {
+		close IN
+			or die ::errmsg("close preload file %s: %s", $infile, $!) . "\n";
+		if(-f $realfile) {
+			open(IN, "+<$realfile")
+				or die ::errmsg(
+					"Couldn't open user file %s read/write: %s",
+					$realfile,
+					$!) . "\n";
+			lockfile(\*IN, 1, 1) or die "lock\n";
+			<IN>;
+			eval $format{$format};
+			die ::errmsg("%s import failed: %s", $options->{name}, $@) if $@;
+		}
+		elsif (! open(IN, ">$realfile") ) {
+				warn ::errmsg(
+					"can't create %s import failed: %s",
+									$options->{file}, $@
+								);
+		} 
+		else {
+			print IN join($options->{DELIMITER}, @field_names);
+			print IN $/;
+			close IN;
+		}
+	}
 	if(@fh) {
 		my $no_sort;
 		my $sort_sub;
@@ -1105,17 +1325,80 @@ EndOfRoutine
 			File::Copy::copy(@{$_});
 		}
 	}
+	$out->commit() if $out->config('HAS_TRANSACTIONS');
 	delete $out->[$CONFIG]{Clean_start};
+	delete $out->[$CONFIG]{_Dirty};
 	unlockfile(\*IN) or die "unlock\n";
     close(IN);
+	my $dot = $out->[$CONFIG]{HIDE_AUTO_FILES} ? '.' : '';
 	if($numeric_guess) {
-		my $fn = Vend::Util::catfile($out->[$CONFIG]{DIR}, $out->[$CONFIG]{file});
+		my $fn = Vend::Util::catfile($out->[$CONFIG]{DIR}, "$dot$out->[$CONFIG]{file}");
 		Vend::Util::writefile(
 					">$fn.numeric",
 					join " ", map { $field_names[$_] } @possible,
 		);
 	}
     return $out;
+}
+
+sub import_from_ic_db {
+    my ($infile, $options, $table_name) = @_;
+
+	my $tname = $options->{MIRROR}
+		or die errmsg(
+				"Memory mirror table not specified for table %s.",
+				$table_name,
+			);
+#::logDebug("Importing mirrored $table_name from $tname");
+
+	$Vend::Database{$tname} =
+		Vend::Data::import_database($Vend::Cfg->{Database}{$tname})
+			unless $Vend::Database{$tname};
+
+	my $idb = Vend::Data::database_exists_ref($tname)
+		or die errmsg(
+				"Memory mirror table %s does not exist (yet) to create mirror %s.\n",
+				$tname,
+				$table_name,
+			);
+
+	my @field_names = $idb->columns;
+
+	my $odb;
+
+	if($options->{ObjectType}) {
+		no strict 'refs';
+		$odb = &{"$options->{ObjectType}::create"}(
+									$options->{ObjectType},
+									$options,
+									\@field_names,
+									$table_name,
+								);
+	}
+	else {
+		$odb = $options->{Object};
+	}
+
+#::logDebug("idb=$idb odb=$odb");
+	eval {
+		my $f;
+		while($f = $idb->each_nokey($options->{MIRROR_QUAL})) {
+#::logDebug("importing key=$f->[0]");
+			$odb->set_row(@$f);
+		}
+	};
+
+	if($@) {
+		die ::errmsg(
+				"Problem with mirror import from source %s to target %s\n",
+				$tname,
+				$table_name,
+				);
+	}
+	
+	$odb->[$CONFIG]{Mirror_complete} = 1;
+	delete $odb->[$CONFIG]{Clean_start};
+    return $odb;
 }
 
 my $white = ' \t';
@@ -1165,39 +1448,10 @@ sub parse {
     return @a;
 }
 
-eval join('',<DATA>) || die $@ unless caller();
-1;
-
-__DATA__
-
-my @tests =
-  (
-   '' => [''],
-   ',' => ['', ''],
-   'a' => ['a'],
-   ',a' => ['', 'a'],
-   'a,' => ['a', ''],
-   ',,' => ['', '', ''],
-   ' a , b , c ' => ['a', 'b', 'c'],
-   '""' => [''],
-   '" a , b "' => [' a , b '],
-   "1,\t2, 3 " => ['1', '2', '3'],
-   ' a b c , d e f ' => ['a b c', 'd e f'],
-   ' " a"",b ",c' => [' a",b ', 'c'],
-   );
-
-my $errors = 0;
-my ($in, $out, @a, @b);
-while (($in, $out) = splice(@tests, 0, 2)) {
-    @a = @$out;
-    @b = parse($in);
-    if (@a != @b or grep($_ ne shift @a, @b)) {
-        print "'$in' parsed as ",
-              join(' ',map("<$_>",@b)),
-              " instead of the expected ",
-              join(' ',map("<$_>",@$out)), "\n";
-        ++$errors;
-    }
+sub reset {
+	undef $restrict;
 }
-print "All tests successful\n" unless $errors;
+
 1;
+
+__END__

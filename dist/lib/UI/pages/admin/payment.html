@@ -1,12 +1,13 @@
+[flag type=write table=variable]
 [set page_title]Payment Options[/set]
 [set ui_class]Admin[/set]
 [set help_name]payment.main[/set]
-[set icon_name]admin/icon_config.gif[/set]
+[set icon_name]icon_config.gif[/set]
+[set page_perm]payment[/set]
 @_UI_STD_HEAD_@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
-[flag type=write table=variable]
 <!-- ----- BEGIN REAL STUFF ----- -->
 [perl tables=variable]
 	delete $Scratch->{change_payment};
@@ -41,7 +42,7 @@
 				]
 			|]
 [value name=ui_changes_made set=1 hide=1]
-<FONT COLOR="__CONTRAST__">You need to [page __UI_BASE__/reconfig @@MV_PAGE@@]apply changes[/page] for changes to take effect.</FONT>
+<span class=cerror>You need to [page __UI_BASE__/reconfig @@MV_PAGE@@]apply changes</a> for changes to take effect.</span>
 [/if]
 
 [calc]
@@ -66,23 +67,28 @@ EOF
 <INPUT TYPE=hidden NAME=change_payment VALUE=do>
 
 <table __UI_T_PROPERTIES__>
+
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__><b>Name</b></td>
-<td bgcolor=__UI_C_INTBLOCK__><b>Accepted</b></td>
+<td class=rmarq>Name</td>
+<td class=rmarq>Accepted</td>
+</tr>
+
+<tr>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 [loop list="[scratch its]" lr=1]
 <tr>
 
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 [loop-pos 1]
 </td>
 
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 
 <select name="cc_accepted[loop-increment]">
 <option value=""> Not Accepted
@@ -95,11 +101,11 @@ EOF
 
 <tr>
 
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 Online Check
 </td>
 
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 
 <select name="check">
 <option value="0"> Not Accepted
@@ -112,11 +118,11 @@ Online Check
 
 <tr>
 
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 COD
 </td>
 
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 
 <select name="cod">
 <option value="0"> Not Accepted
@@ -130,11 +136,11 @@ COD
 
 <tr>
 
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 Postal billing
 </td>
 
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 
 <select name="postal">
 <option value="0"> Not Accepted
@@ -147,11 +153,11 @@ Postal billing
 
 <tr>
 
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 Purchase Order
 </td>
 
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 
 <select name="po">
 <option value="0"> Not Accepted
@@ -161,8 +167,21 @@ Purchase Order
 </td>
 
 </tr>
+
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+<tr class=rnorm>
+	<td>&nbsp;</td>
+	<td>
+		<input type=submit name="update" value="Update">
+	</td>
+</tr>
+
+
+<tr>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>
@@ -171,13 +190,6 @@ Purchase Order
 [/loop]
 
 <p>
-
-<input type=submit name="update" value="Update">
-
-[button text="Back"]
-mv_todo=back
-mv_nextpage=__UI_BASE__/genconfig
-[/button]
 
 </form>
 

@@ -1,6 +1,6 @@
 # Vend::Payment::Skipjack - Interchange Skipjack support
 #
-# $Id: Skipjack.pm,v 2.4 2002-09-04 16:06:51 mheins Exp $
+# $Id: Skipjack.pm,v 2.4.2.1 2003-01-25 22:21:30 racke Exp $
 #
 # Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Payment::Skipjack;
 
 =head1 Interchange Skipjack Support
 
-Vend::Payment::Skipjack $Revision: 2.4 $
+Vend::Payment::Skipjack $Revision: 2.4.2.1 $
 
 =head1 SYNOPSIS
 

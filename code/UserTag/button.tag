@@ -2,7 +2,7 @@ UserTag button Order name src text
 UserTag button addAttr
 UserTag button attrAlias value text
 UserTag button hasEndTag
-UserTag button Version $Id: button.tag,v 1.7 2003-01-13 23:11:00 mheins Exp $
+UserTag button Version $Id: button.tag,v 1.7.2.1 2003-01-25 22:20:36 racke Exp $
 UserTag button Documentation <<EOD
 
 =pod

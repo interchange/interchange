@@ -4,59 +4,28 @@
 			return;
 	[/calc]
 [/if-mm]
-[set page_title]Orders by day for a month[/set]
-[set icon_name]admin/icon_stats.gif[/set]
+[set page_title][L]Orders by day for a month[/L][/set]
+[set icon_name]icon_stats.gif[/set]
 [set help_name]orderstats.view[/set]
 @_UI_STD_HEAD_@
 
-[calc]
-	if ($comm_field = $Tag->var('UI_COMMISSION_FIELD')) {
-		$Scratch->{comm_select} = ", $comm_field";
-        $Scratch->{comm_states} = [split (/\s+/, '__UI_COMMISSION_STATES__')];
-		if (@{$Scratch->{comm_states}}) {
-		    $Scratch->{comm_select} .= ', status';
-		}
-		$Scratch->{cols} = 5;
-	} else {
-		$Scratch->{comm_select} = '';
-		$Scratch->{cols} = 4;
-	}
-	return;
-[/calc]
-
-<TABLE width="90%" border=0 callpadding=0 cellspacing=0>
-<tr bgcolor="#000000" height=1><td colspan=4></td></tr>
-<TR BGCOLOR="#__UI_C_TOPBLOCKBAR__">
-<TD VALIGN="top" width="20%">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Date</B>
-</FONT>
-</TD>
-<TD VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Affiliate/Campaign</B>
-</FONT>
-</TD>
-<TD ALIGN=center VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Number of Orders</B>
-</FONT>
-</TD>
-<TD ALIGN=right VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Revenue</B>
-</FONT>
-</TD>
-[if scratch comm_select]
-<TD ALIGN=right VALIGN="top">
-<FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Commission Owed</B>
-</FONT>
-</TD>
-[/if]
+<TABLE width="90%" border=0 cellpadding=0 cellspacing=0>
+<tr class=rborder height=1><td colspan=4></td></tr>
+<TR class=rmarq>
+	<TD VALIGN="top" width="20%">
+		[L]Date[/L]
+	</TD>
+	<TD VALIGN="top">
+		[L]Affiliate[/L]/[L]Campaign[/L]
+	</TD>
+	<TD ALIGN=center VALIGN="top">
+		[L]Number of Orders[/L]
+	</TD>
+	<TD ALIGN=right VALIGN="top">
+		[L]Revenue[/L]
+	</TD>
 </TR>
-<tr bgcolor="#000000" height=1><td colspan=[scratch cols]></td></tr>
-<tr bgcolor="#FFFFFF" height=2><td colspan=[scratch cols]></td></tr>
+<tr class=rborder height=1><td colspan=4></td></tr>
 
 <!-- will default to current if not set:
 		[seti today][tag time]%Y%m[/tag][/seti]
@@ -102,6 +71,7 @@ EOF
 
 [query	hashref=main
 	st=db
+	ml=100000
 	table=transactions
 	nu=0,0,0,0
 	sql="
@@ -109,7 +79,8 @@ EOF
 		FROM  transactions
 		WHERE deleted != '1' [scratch date_limit] [scratch synd_limit]
 	"][/query]
-
+[tmp ALL][L]ALL[/L][/tmp]
+[tmp TOTAL][L]GRAND TOTAL[/L][/tmp]
 [perl tables="store"]
 	my %sales;
 	$master = {};
@@ -159,7 +130,7 @@ EOF
 	foreach $month (sort { $a <=> $b } keys %$master) {
 		my $year = $month;
 		$year =~ s/(\d\d\d\d)(\d\d)(\d\d)/$1/;
-		my $mname = $names{$2};
+		my $mname = errmsg($names{$2});
 		my $day = $3;
 		$day =~ s/^0+//;
 		my $subtotal_sales  = 0;
@@ -175,13 +146,13 @@ EOF
 			}
 			$subtotal_sales  += $record->{sales};
 			$subtotal_quantity += $record->{orders};
-			($syn, $camp) = split /\0/, $id, 2;
-			my $synlabel = $syn || '(none)';
+			($syn, $camp) = split /-/, $id, 2;
+			my $synlabel = $syn || errmsg('(none)');
 			my $burl = $Tag->area('__UI_BASE__/reports/order/Detail', $month);
 			my $url = qq{<A HREF="$burl$syndstring">$mname&nbsp;$day,&nbsp;$year</A>}
 				if $mname;
 			$out .= <<EOF;
-	<TR BGCOLOR=__UI_C_INTBLOCK__>
+	<TR class=rnorm>
 	<TD VALIGN=top>
 	$url&nbsp;
 	</FONT>
@@ -217,13 +188,13 @@ EOF
 		}
 		$subtotal_sales  = $Tag->currency({}, $subtotal_sales);		
 		$out .= <<EOF;
-	<TR BGCOLOR=__UI_C_INTBLOCK__>
+	<TR class=rnorm>
 	<TD VALIGN=top>
 	&nbsp;
 	</FONT>
 	</TD>
 	<TD VALIGN=top>
-	ALL<BR><HR color=black size=1>
+	$Scratch->{ALL}<BR><HR color=black size=1>
 	</FONT>
 	</TD>
 	<TD ALIGN=center VALIGN=top>
@@ -245,13 +216,13 @@ EOF
 				. $Tag->currency({}, $total_commission) . '</TD>';
 		}
 		$out .= <<EOF;
-	<TR BGCOLOR=__UI_C_INTBLOCK__>
+	<TR class=rnorm>
 	<TD VALIGN="top">
-	GRAND TOTAL
+	$Scratch->{TOTAL}
 	</FONT>
 	</TD>
 	<TD VALIGN="top">
-	ALL
+	$Scratch->{ALL}
 	</FONT>
 	</TD>
 	<TD ALIGN=center VALIGN="top">
@@ -264,7 +235,7 @@ EOF
 	</TD>
 	$commstr
 	</TR>
-	<tr bgcolor="#000000" height=1><td colspan=$Scratch->{cols}></td></tr>
+	<tr class=rborder height=1><td colspan=4></td></tr>
 EOF
 [/perl]
 </TABLE>

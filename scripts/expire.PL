@@ -1,41 +1,14 @@
-#$self = {
-#	INSTALLPRIVLIB => '/usr/local/interchange/lib',
-#	INSTALLARCHLIB => '/usr/local/interchange',
-#};
-
-use Config;
-require 'scripts/initp.pl';
-
-sub doit {
-	my ($key) = @_;
-	my $val;
-	if ($MV::Self->{RPMBUILDDIR} and $val = $MV::Self->{$key}) {
-		$val =~ s!^$MV::Self->{RPMBUILDDIR}/!/!; 
-		return $val;
-	}
-	return $MV::Self->{$key} unless $key =~ /[a-z]/;
-	return $Config{$key};
-}
-
-DOIT: {
-	local ($/);
-	local($_) = <<'_EoP_';
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
 # Interchange session expiration
 #
-# $Id: expire.PL,v 1.8.4.1 2000-10-26 07:03:28 racke Exp $
+# $Id: expire.PL,v 1.8.4.2 2003-01-25 22:21:32 racke Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# See the file 'Changes' for information.
+# This program was originally based on Vend 0.2 and 0.3
+# Copyright 1995-96 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -59,11 +32,6 @@ use lib '/usr/local/interchange';
 
 use strict;
 use Fcntl;
-use Vend::Session;
-use Vend::Config qw(get_catalog_default parse_time);
-use Vend::Util qw/errmsg/;
-use Getopt::Std;
-use vars qw/$opt_c $opt_r $opt_e $opt_f $opt_u $opt_v $opt_x/;
 
 BEGIN {
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
@@ -101,34 +69,85 @@ $Vend::SessionName     = 'utility';
 #select a DBM
 
 BEGIN {
-	$Global::GDBM = $Global::DB_File = 0;
-    AUTO: {
-        last AUTO if
-            (defined $ENV{MINIVEND_DBFILE} and $Global::DB_File = 1);
-        last AUTO if
-            (defined $ENV{MINIVEND_NODBM});
-        eval {require GDBM_File and $Global::GDBM = 1} ||
-        eval {require DB_File and $Global::DB_File = 1};
-    }
+	$Global::GDBM = $Global::DB_File = $Global::SDBM =
+# LDAP
+	$Global::LDAP =
+# END LDAP
+# SQL
+	$Global::DBI =
+# END SQL
+	0;
+
+# SQL
+	# This is for standard DBI
+	eval {
+			die if $ENV{MINIVEND_NODBI};
+			require DBI and $Global::DBI = 1
+	};
+# END SQL
+# LDAP
+	eval {
+		die if $ENV{MINIVEND_NOLDAP};
+		require Net::LDAP and $Global::LDAP = 1
+	};
+# END LDAP
+
+	# Now can use any type of database
+	AUTO: {
+		last AUTO if 
+			(defined $ENV{MINIVEND_DBFILE} and $Global::DB_File = 1);
+		last AUTO if 
+			(defined $ENV{MINIVEND_SDBM} and $Global::SDBM = 1);
+		last AUTO if 
+			(defined $ENV{MINIVEND_NODBM});
+		eval {require GDBM_File and $Global::GDBM = 1};
+		last AUTO if 
+			(defined $ENV{MINIVEND_GDBM} and $Global::GDBM = 1);
+		last AUTO if
+				!   $ENV{MINIVEND_ALLDBM}
+				and $Global::GDBM;
+		eval {require DB_File and $Global::DB_File = 1};
+		last AUTO if
+				!   $ENV{MINIVEND_ALLDBM}
+				and $Global::GDBM || $Global::DB_File;
+		eval {require SDBM_File and $Global::SDBM = 1};
+	}
+
 	if($Global::GDBM) {
 		require Vend::Table::GDBM;
 		import GDBM_File;
 		$Global::GDBM = 1;
+		$Global::Default_database = 'GDBM'
+			unless defined $Global::Default_database;
 	}
-	elsif($Global::DB_File) {
+	if($Global::DB_File) {
 		require Vend::Table::DB_File;
 		import DB_File;
 		$Global::DB_File = 1;
+		$Global::Default_database = 'DB_FILE'
+			unless defined $Global::Default_database;
 	}
-	else {
-		die "Can't use expire without DBM sessions.\n";
+	if($Global::SDBM) {
+		require Vend::Table::SDBM;
+		import SDBM_File;
+		$Global::SDBM = 1;
+		$Global::Default_database = 'SDBM'
+			unless defined $Global::Default_database;
 	}
+	$Global::Default_database = 'MEMORY'
+			unless defined $Global::Default_database;
+	require Vend::Table::InMemory;
 }
 
-sub logGlobal {
-	ref $_[0] and shift(@_);
-	warn(errmsg(@_)) unless $Vend::Quiet;
-}
+use Vend::Session;
+use Vend::Config qw(get_catalog_default global_config parse_time);
+use Vend::Util qw/errmsg/;
+use Getopt::Std;
+use vars qw/$opt_c $opt_r $opt_e $opt_f $opt_u $opt_v $opt_x/;
+
+sub logGlobal {  }
+sub logError  {  }
+sub logDebug  {  }
 
 sub is_retired {}
 
@@ -167,6 +186,13 @@ $catalog    = $opt_c || undef;
 $expiretime = $opt_e || undef;
 $reorg      = $opt_r;
 
+if($opt_f) {
+	$Global::ConfigFile = $opt_f;
+}
+else {
+	$Global::ConfigFile = "$Global::VendRoot/$Global::ConfigFile";
+}
+
 GETOPT: {
 
 	last GETOPT if $catalog;
@@ -201,24 +227,25 @@ my $g;
 
 if(defined $catalog) {
 	my($name,$dir,$param);
-	chdir $Global::VendRoot;
-	open(GLOBAL, "< $Global::ConfigFile") or
-		die "No global configuration file? Aborting.\n";
-	while(<GLOBAL>) {
-		next unless /^\s*((?:sub)?catalog)\s+($catalog\s+.*)/i;
-		Vend::Config::parse_catalog($1, $2);
-	}
-	close GLOBAL;
-	die "Catalog $catalog not found in $Global::ConfigFile.\n"
-		unless $Global::Catalog{$catalog};
+
+	# Parse the interchange.cfg file to look for script/catalog info
+	# but don't read in the core tags
+	$Vend::ControllingInterchange = 1;
+	chdir $Global::VendRoot
+		or die "Couldn't change to $Global::VendRoot: $!\n";
+	global_config();
+
 	$g = $Global::Catalog{$catalog};
 	chdir $g->{dir} or die "chdir to $g->{dir}: $!\n";
-	$Vend::Cfg = Vend::Config::config(
+	eval {$Vend::Cfg = Vend::Config::config(
 					$g->{name},
 					$g->{dir},
 					"$g->{dir}/etc",
 					$g->{base} || undef,
-					);
+					)};
+    if ($@) {
+        die "$0: Configuration for catalog $catalog failed: $@\n";
+    }
 }
 else {
 	$Vend::Cfg->{ScratchDir} = '/tmp';
@@ -236,7 +263,8 @@ print "$Vend::Cfg->{CatalogName} expire="
   if $opt_v;
 
 
-if ($Vend::Cfg->{SessionType} eq 'File' ) {
+if ($Vend::Cfg->{SessionType} eq 'File'
+	or $Vend::Cfg->{SessionType} eq 'NFS') {
 	require File::Find;
 	my $expire = $Vend::Cfg->{SessionExpire} + 60;
 	$expire /= 86400;
@@ -279,7 +307,7 @@ expire -- expire Interchange session files and databases
 
 =head1 VERSION
 
-1.0
+1.1
 
 =head1 SYNOPSIS
 
@@ -322,18 +350,9 @@ Sets the global configuration file.
 
 =head1 SEE ALSO
 
-mvdocs(8), expireall(1), http://www.akopia.com/
+expireall(1), http://interchange.redhat.com/
 
 =head1 AUTHOR
 
-Mike Heins, <heins@akopia.com>
+Mike Heins, <mheins@redhat.com>
 
-
-_EoP_
-	s{.*\n(#(.*)~_~(\w+)~_~(.*))}{$2 . doit($3) . "$4\n$1"}eg;
-	my $file = $0;
-	$file =~ s/\.PL$//;
-	open(OUT, ">$file") 
-		or die "Create $file: $!\n";
-	print OUT $_;
-}

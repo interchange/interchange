@@ -10,11 +10,12 @@
 [/if-mm]
 [/comment]
 
+
 [set ui_class]Merchandising[/set]
 [set page_title]Affiliates manager[/set]
 [set table_perm]1[/set]
 [set help_name]affiliate.manager[/set]
-[set icon_name]admin/icon_people.gif[/set]
+[set icon_name]icon_people.gif[/set]
 [calc]
         $CGI->{affiliates} = 1;
         return;
@@ -37,7 +38,7 @@
 <INPUT TYPE=submit VALUE="Limit with search">
 </FORM>
 [if cgi ui_text_qualification]
-<H3>Entries containing "[cgi ui_text_qualification]"</H3>
+<H3>[msg arg.0="[cgi ui_text_qualification]"]Entries containing "%s"[/msg]</H3>
 [/if]
 [search-region more=1 arg="
 		[if cgi ui_text_qualification]
@@ -48,7 +49,7 @@
 			tf=[cgi ui_sort_field]
 			to=[cgi ui_sort_option]
 		[else]
-			tf=name
+			tf=description
 		[/else]
 		[/if]
 		st=db
@@ -70,45 +71,49 @@
 	}
 	return;
 [/calc]
-[seti key][dbinfo table=__UI_AFFILIATE_TABLE__ attrib=KEY][/seti]
 <TABLE border=0 CELLSPACING=0 width="90%">
-<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
-<TR BGCOLOR="__UI_C_TITLEBARBG__">
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
-	return "ui_sort_field=$Scratch->{key}\n" . sortrev($Scratch->{key});
-	`]Code</TH>
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
+<tr class=rspacer><td colspan=8></td></tr>
+<tr class=rmarq>
+<td>[page
+					extra=rmarq
+					href=@@MV_PAGE@@
+					form=`
+							return "ui_sort_field=affiliate\n" . sortrev('affiliate');
+					`]Code</td>
+<td>[page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=name\n" . sortrev('name');
-	`]Name</TH>
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">Linkback and entry URLs</TH>
-<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Reports</TH>
-<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
-	return "ui_sort_field=active\n" . sortrev('active');
-	`]Active</TH>
+	` extra=rmarq]Name</td>
+<td class=rmarq>Linkback and entry URLs</td>
+<td align=center class=rmarq>Reports</td>
+	<td align=center class=rmarq>
+	[page href=@@MV_PAGE@@ extra=rmarq
+		form=`
+			return "ui_sort_field=active\n" . sortrev('active');
+		`]Active</a>
+	</td>
 </tr>
-<tr bgcolor="#000000" height=1><td colspan=5></td></tr>
-<tr bgcolor="#FFFFFF" height=2><td colspan=5></td></tr>
+<tr class=rspacer><td colspan=5></td></tr>
 [/on-match]
 [search-list]
-<TR [item-alternate 2]BGCOLOR="__UI_T_ROW_EVEN__"[else]BGCOLOR="__UI_T_ROW_ODD__"[/else][/item-alternate]>
+<TR [item-alternate 2]class=rnorm[else]class=ralt[/else][/item-alternate]>
 <TD VALIGN=top>[page
 				href=__UI_BASE__/flex_editor
 				form="
 					item_id=[item-code]
-					page_title=Edit affiliate -- [item-data __UI_AFFILIATE_TABLE__ name]
-					page_banner=Edit affiliate: <B>[item-data __UI_AFFILIATE_TABLE__ name]</B>
+					page_title=Edit affiliate -- [item-data affiliate name]
+					page_banner=Edit affiliate: <B>[item-data affiliate name]</B>
 					mv_data_table=__UI_AFFILIATE_TABLE__
-					icon_name=admin/icon_people.gif
+					icon_name=icon_people.gif
 					ui_return_to=__UI_BASE__/affiliates
 					help_name=affiliate.edit
 				"][item-code]</A></TD>
-<TD VALIGN=top>[item-data __UI_AFFILIATE_TABLE__ name]</TD>
-<TD VALIGN=top><font size=-1>linkback:&nbsp;<A href="[item-data __UI_AFFILIATE_TABLE__ url]">[item-data __UI_AFFILIATE_TABLE__ url]</A><br>
+<TD VALIGN=top>[item-data affiliate name]</TD>
+<TD VALIGN=top><span style="font-size: small">linkback:&nbsp;<A href="[item-data affiliate url]">[item-data affiliate url]</A><br>
 entry:&nbsp;[calc]
 	my $url = $Config->{VendURL};
 	$url .=  q{?mv_pc=[item-code]};
 	return qq{<A HREF="$url">$url</A>};
-[/calc]</font>
+[/calc]</span>
 </TD>
 <TD ALIGN=CENTER VALIGN=TOP>[page href="__UI_BASE__/reports/order/ByAffiliate"
 				form="
@@ -120,7 +125,7 @@ entry:&nbsp;[calc]
 				start_date=[tag time]%Y%m[/tag]
 				affiliate=[item-code]
 				"]Traffic</A></td>
-<TD ALIGN=CENTER VALIGN=top>[if-item-data __UI_AFFILIATE_TABLE__ active]Yes[else]No[/else][/if-item-data]
+<TD ALIGN=CENTER VALIGN=top>[if-item-data affiliate active]Yes[else]No[/else][/if-item-data]
 </TD>
 </tr>
 [/search-list]
@@ -133,8 +138,7 @@ entry:&nbsp;[calc]
 </td>
 </tr>
 [/no-match]
-<tr bgcolor="#000000" height=1><td colspan=5></td></tr>
-<tr bgcolor="#FFFFFF" height=8><td colspan=5></td></tr>
+<tr class=rborder height=1><td colspan=5></td></tr>
 [more-list]
 <tr>
 <td colspan=5 align=center>

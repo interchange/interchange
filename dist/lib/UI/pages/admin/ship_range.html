@@ -2,7 +2,8 @@
 [set ui_class]Admin[/set]
 [set page_banner]Shipping method tables[/set]
 [set help_name]shipping.methodtables[/set]
-[set icon_name]admin/icon_config.gif[/set]
+[set page_perm]shipping[/set]
+[set icon_name]icon_config.gif[/set]
 @_UI_STD_HEAD_@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
@@ -13,11 +14,11 @@
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td colspan=5 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=5 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td colspan=5 align=left bgcolor=__UI_C_INTBLOCK__>
+<td colspan=5 align=left class=rnorm>
 &nbsp;
 <p>
 <b> -- Standard shipping by weight</b>
@@ -29,22 +30,22 @@ Borderline values are rounded up the next bracket.
 </tr>
 
 <tr>
-<td align=left colspan=5 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=1 height=1></td>
+<td align=left colspan=5 class=rborder><img src="bg.gif" width=1 height=1></td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__><b>Start range</b></td>
-<td bgcolor=__UI_C_INTBLOCK__><b>End range</b></td>
-<td bgcolor=__UI_C_INTBLOCK__><b>Charge type</b></td>
-<td bgcolor=__UI_C_INTBLOCK__><b>Charge amount</b></td>
-<td bgcolor=__UI_C_INTBLOCK__> &nbsp; </td>
+<td class=rnorm><b>Start range</b></td>
+<td class=rnorm><b>End range</b></td>
+<td class=rnorm><b>Charge type</b></td>
+<td class=rnorm><b>Charge amount</b></td>
+<td class=rnorm> &nbsp; </td>
 </tr>
 
 <tr>
 
-<td bgcolor=__UI_C_TOPBLOCKBAR__ align=center> 0 </td>
-<td align=center bgcolor=__UI_C_TOPBLOCKBAR__> (infinity) </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rborder align=center> 0 </td>
+<td align=center class=rborder> (infinity) </td>
+<td class=rnorm>
 
 <select name="1005_type">
 <option value=0> Flat rate </option>
@@ -52,24 +53,24 @@ Borderline values are rounded up the next bracket.
 </select>
 </td>
 
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 <input size=7 name="1005_val" value="0">
 </td>
 
-<td bgcolor=__UI_C_INTBLOCK__>
-<a href="shipping?sid=1005&deleteprice=1005"><img src="@_UI_IMG_@admin/delete.gif" alt="Delete this range" width=20 height=20 border=0></a>
+<td class=rnorm>
+<a href="shipping?sid=1005&deleteprice=1005"><img src="delete.gif" alt="Delete this range" width=20 height=20 border=0></a>
 </td>
 
 </tr>
 
 <tr>
-<td colspan=5 bgcolor=__UI_C_INTBLOCK__>
-<a href="shipping?addnewprice=ok&sid=1005"><img src="@_UI_IMG_@admin/plus.gif" alt="Add a new range" width=20 height=20 border=0></a>
+<td colspan=5 class=rnorm>
+<a href="shipping?addnewprice=ok&sid=1005"><img src="plus.gif" alt="Add a new range" width=20 height=20 border=0></a>
 </td>
 </tr>
 
 <tr>
-<td colspan=5 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=5 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

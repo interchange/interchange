@@ -1,41 +1,14 @@
-#$self = {
-#	INSTALLPRIVLIB => '/usr/local/interchange/lib',
-#	INSTALLARCHLIB => '/usr/local/interchange',
-#};
-
-use Config;
-require 'scripts/initp.pl';
-
-sub doit {
-	my ($key) = @_;
-	my $val;
-	if ($MV::Self->{RPMBUILDDIR} and $val = $MV::Self->{$key}) {
-		$val =~ s!^$MV::Self->{RPMBUILDDIR}/!/!; 
-		return $val;
-	}
-	return $MV::Self->{$key} unless $key =~ /[a-z]/;
-	return $Config{$key};
-}
-
-DOIT: {
-	local ($/);
-	local($_) = <<'_EoP_';
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
 # Interchange database builder and indexer
 #
-# $Id: offline.PL,v 1.7 2000-09-25 16:42:51 zarko Exp $
+# $Id: offline.PL,v 1.7.4.1 2003-01-25 22:21:32 racke Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# See the file 'Changes' for information.
+# This program was originally based on Vend 0.2 and 0.3
+# Copyright 1995-96 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -274,7 +247,7 @@ offline -- Interchange offline database builder
 
 =head1 VERSION
 
-$Id: offline.PL,v 1.7 2000-09-25 16:42:51 zarko Exp $
+# $Id: offline.PL,v 1.7.4.1 2003-01-25 22:21:32 racke Exp $
 
 =head1 DESCRIPTION
 
@@ -282,14 +255,6 @@ Skeleton POD to avoid make errors.
 
 =head1 SEE ALSO
 
-mvdocs(8), interchange(1), http://www.akopia.com/
+interchange(1), http://interchange.redhat.com/
 
 =cut
-_EoP_
-	s{.*\n(#(.*)~_~(\w+)~_~(.*))}{$2 . doit($3) . "$4\n$1"}eg;
-	my $file = $0;
-	$file =~ s/\.PL$//;
-	open(OUT, ">$file") 
-		or die "Create $file: $!\n";
-	print OUT $_;
-}

@@ -8,7 +8,7 @@ __NAME__ ui_order_button_build
 	delete $Scratch->{test_button};
 	my $result = <<EOF;
 <tr>
-<td colspan=2  bgcolor=__UI_C_INTBLOCK__ VALIGN=TOP>
+<td colspan=2  class=rnorm VALIGN=TOP>
 	<B>Resulting button</B><BR>
 <TEXTAREA ROWS=5 COLS=70 NAME="item_result">
 EOF

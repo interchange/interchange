@@ -1,8 +1,9 @@
-[set page_title]Individual Table Import[/set]
+[if-mm super][flag type=write table="ichelp"][/if-mm]
+[set page_title][L]Table Import[/L][/set]
 [set table_perm]=i[/set]
 [set help_name]import.main[/set]
 [set ui_class]Admin[/set]
-[set icon_name]admin/icon_config.gif[/set]
+[set icon_name]icon_config.gif[/set]
 @_UI_STD_HEAD_@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
@@ -17,14 +18,16 @@
 		return;
 	[/calc]
 [/if]
+
+
 [if type=explicit compare="[value-extended
 							name=upload_file
 							test=isfile]"]
 	[title-bar]
 	[if cgi ui_import_convert]
-		Importing multiple tables:
+		[L]Importing multiple tables:[/L]
 	[else]
-		Import of table [cgi mv_data_file]:
+		[msg arg.0="[cgi mv_data_table]"]Import of table %s:[/msg]
 	[/else]
 	[/if]
 	[calc]
@@ -58,21 +61,24 @@
 	[value-extended
 		name=upload_file
 		outfile="upload/[cgi ui_upload_filename]"
-		yes="Upload succeeded"
-		no="Upload FAILED"
+		yes="[L]Upload succeeded[/L]"
+		no="[L]Upload FAILED[/L]"
 		]
 	<P>
 	[if type=!file term="upload/[cgi ui_upload_filename]"]
-		<B>Import file [cgi ui_upload_filename] not found!!!</B>
+		<B>[msg arg.0="[cgi ui_upload_filename]"]Import file %s not found!!![/msg]</B>
 	[elsif cgi ui_upload_ext eq add]
 	[import-fields
 					add=1
+					autonumber="[cgi ui_autonumber]"
 					convert="[cgi ui_import_convert]"
 					delete="[cgi ui_allow_delete]"
+					filter_field="[cgi ui_filter_field]"
 					dir=backup
 					file="upload/[cgi ui_upload_filename]"
 					move=1
 					multiple="[cgi ui_allow_multiple]"
+					transactions="[cgi ui_import_transactions]"
 					quiet="[cgi ui_import_quiet]"
 					table="[cgi mv_data_table]"
 	]
@@ -85,8 +91,26 @@
 					file="upload/[cgi ui_upload_filename]"
 					move=1
 					multiple="[cgi ui_allow_multiple]"
+					transactions="[cgi ui_import_transactions]"
 					quiet="[cgi ui_import_quiet]"
 					table="[cgi mv_data_table]"
+					filter_field="[cgi ui_filter_field]"
+	]
+	[/elsif]
+	[elsif cgi ui_upload_ext eq cleanse]
+	[import-fields
+	                add=1
+					convert="[cgi ui_import_convert]"
+					cleanse=1
+					delete="[cgi ui_allow_delete]"
+					dir=backup
+					file="upload/[cgi ui_upload_filename]"
+					move=1
+					multiple="[cgi ui_allow_multiple]"
+					transactions="[cgi ui_import_transactions]"
+					quiet="[cgi ui_import_quiet]"
+					table="[cgi mv_data_table]"
+					filter_field="[cgi ui_filter_field]"
 	]
 	[/elsif]
 	[/if]
@@ -98,47 +122,91 @@
 	return;
 [/calc]
 <form action="[area @@MV_PAGE@@]" method="POST" ENCTYPE="multipart/form-data">
+<input type=hidden name=mv_session_id value="[data session id]">
 <INPUT TYPE=hidden NAME=mv_action     VALUE=return>
-<INPUT TYPE=hidden NAME=ui_return_to VALUE="__UI_BASE__/genxport">
+<INPUT TYPE=hidden NAME=ui_return_to VALUE="__UI_BASE__/gentable">
 <table __UI_T_PROPERTIES__>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+	<td colspan=3 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+<tr class=rnorm>
+	<td class=clabel>Table Name</td>
+	<td class=cdata>
+		
+		<select name="mv_data_table">
+		[loop
+			list="[list-databases extended=i]"
+			option=mv_data_table
+		]<option value="[loop-code]">[loop-code][/loop]
+		</select>
+	</td>
+</tr>
+<tr class=rnorm>
+	<td class=clabel>Import from File</td>
+	<td class=cdata>
+	<input type=file name=upload_file>
+	<BR>
+	<input type="submit" value="[L]Import[/L]">
 </tr>
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__">
-<input type=file name=upload_file>
-<BR>
-<input type="submit" value="Import">
+	<td colspan=3 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+<tr class=rnorm>
+	<td colspan=2 valign=top>
 <br>
-<hr>
 <SELECT NAME=ui_upload_ext>
-	<OPTION VALUE=add> Add new items if present
-	<OPTION VALUE=update> Ignore new items
-</SELECT>&nbsp;&nbsp;&nbsp;<INPUT TYPE=checkbox NAME=ui_allow_delete VALUE=1> Allow delete
+	<OPTION VALUE=add> [L]Add new items if present[/L]
+	<OPTION VALUE=cleanse> [L]Replace existing items[/L]
+	<OPTION VALUE=update> [L]Ignore new items[/L]
+</SELECT>&nbsp;&nbsp;&nbsp;<SMALL><INPUT TYPE=checkbox NAME=ui_allow_delete VALUE=1> [L]Allow delete[/L]
+&nbsp;&nbsp;<INPUT TYPE=checkbox NAME=ui_autonumber VALUE=1 CHECKED> [L]Autonumber if no key[/L]
+<INPUT TYPE=checkbox NAME=ui_import_transactions VALUE=1> [L]Use transactions[/L]</SMALL>
 <BR><select NAME=ui_import_convert>
-		<OPTION VALUE=0> Single table
-		<OPTION VALUE=1> Gnumeric simple tex
+		<OPTION VALUE=0> [L]Single table[/L]
+		<OPTION VALUE=1> [L]Gnumeric simple tex[/L]
 		[if type=explicit compare="[version modtest='Spreadsheet::ParseExcel' extended=1]"]
-		<OPTION VALUE=2> XLS Spreadsheet
+		<OPTION VALUE=2> [L]XLS Spreadsheet[/L]
 		[/if]
 		</select>
 
-<BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=0 [checked name=ui_import_quiet value=0]> Show summary/add record/delete record messages
-<BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=1 [checked name=ui_import_quiet value=1 default=1]> Show summary messages only
-<BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=2 [checked name=ui_import_quiet value=2]> Show *no* messages
+<BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=0 [checked name=ui_import_quiet value=0]> [L]Show summary/add record/delete record messages[/L]
+<BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=1 [checked name=ui_import_quiet value=1 default=1]> [L]Show summary messages only[/L]
+<BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=2 [checked name=ui_import_quiet value=2]> [L]Show *no* messages[/L]
 </td>
-<td bgcolor="__UI_C_INTBLOCK__">
+	
+	<td valign=top>
+		<b>Field filters</b><br>
+		<textarea name=ui_filter_field cols=30 rows=3>[data
+												table="mv_metadata"
+												field="extended.filter_field"
+												serial=1
+												key="[cgi mv_data_table]"]</textarea>
+		<br>
+		<i>
+			Specified one per line:
+			<blockquote>
+<pre>
+	fieldname1=filter
+	fieldname2=filter1 filter2 
+</pre>
+			</blockquote>
+			If multiple tables, must specify table as well:
+			<blockquote>
+<pre>
+	table1:fieldname1=filter
+	table2:fieldname2=filter1 filter2 
+</pre>
+			</blockquote>
+		</i>
+	</td>
 
-<select name="mv_data_table">
-[loop list="[list-databases extended=i]" option=mv_data_table]<option value="[loop-code]"> [loop-code]
-[/loop]
-</select>
-</td>
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

@@ -1,26 +1,20 @@
 [tmp page_perm]techadmin[/tmp]
-[tmp page_title]Administration: [data session arg] table information[/tmp]
-[tmp page_banner]<i>[calc]$Config->{CatalogName}[/calc]</i> table information [if session arg]([data session arg])[/if][/tmp]
+[tmp page_title][L]Administration[/L]: [cgi name=mv_data_table filter=entities keep=1] [L]table information[/L][/tmp]
+[tmp page_banner]<i>[calc]$Config->{CatalogName}[/calc]</i> [L]table information[/L] [if cgi mv_data_table]([cgi name=mv_data_table filter=entities keep=1])[/if][/tmp]
 [set ui_class]Admin[/set]
 [tmp help_name]genconfig.main[/tmp]
-[tmp icon_name]admin/icon_config.gif[/tmp]
+[tmp icon_name]icon_config.gif[/tmp]
 @_UI_STD_HEAD_@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
 <center>
-<table __UI_T_PROPERTIES__>
-
-<tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-<tr><td align=left bgcolor=__UI_C_INTBLOCK__>
-<TABLE border=0 width="100%">
+<table width="100%" border=0 cellpadding=2 cellspacing=0 class=rseparator>
 
 [perl tables="[list-databases] __UI_META_TABLE__"]
 	my @tables;
-	if($Session->{arg}) {
-		@tables = split /[\s,\0]+/, $Session->{arg};
+	if($CGI->{mv_data_table}) {
+		@tables = split /[\s,\0]+/, $CGI->{mv_data_table};
 	}
 	else {
 		@tables = sort keys %{$Config->{Database}};
@@ -49,7 +43,7 @@
 	@ignore{@ignore} = @ignore;
 
 	my %typemap = (
-		1	=> 'DBM/Memory, default delimiter',
+		1	=> 'DBM/Memory, auto-detect delimiter',
 		2	=> 'DBM/Memory, LINE delimiter',
 		3	=> 'DBM/Memory, %% delimiter',
 		4	=> 'DBM/Memory, CSV delimiter',
@@ -59,22 +53,35 @@
 		8	=> 'DBI/SQL',
 		9	=> 'LDAP',
 	);
+	my $tcount = 0;
 	for (@tables) {
 		my $tname = $_;
+		my $rclass = ($tcount++ % 2) ? 'rownorm' : 'rowalt';
 		my $tinfo = '';
 		if($mdb and $mdb->record_exists($tname) ) {
 			$tinfo = $mdb->field($tname, 'label');
 			if($tinfo) {
-				$tinfo = "<br>($tinfo)";
+				$tinfo .= "<br>($tinfo)";
 			}
 		}
+
 		my $ref = $Config->{Database}{$_};
 		my $class = $ref->{Class};
 		my $file  = $ref->{file};
 		my $dfile = ($class eq 'DBI' ? $ref->{db_file_extended} : $ref->{db_file});
 		my $dfn   = $dfile;
 		$dfile =~ s:^$Config->{ProductDir}/::o;
-		my $dir   = $ref->{dir} || $Config->{ProductDir};
+		my $dir   = $ref->{DIR} || $Config->{ProductDir};
+		my %delim_map = (
+			"|" => 'PIPE',
+			"\t" => 'TAB',
+			"\n" => 'LINE',
+		);
+
+		my $delim;
+		$delim = $ref->{delimiter};
+		$delim   = $delim_map{$delim} || $delim;
+
 		my $type  = $typemap{$ref->{type}};
 
 		$type .= " DSN=$ref->{DSN}" if $ref->{DSN};
@@ -88,34 +95,43 @@
 		$dfile .= "</TT>";
 		my $obj   = $ref->{Object};
 		$out .= <<EOF;
-<TR>
-	<TH VALIGN=TOP ALIGN=RIGHT width="15%">
-	$tname$tinfo
-	</TH>
-	<td VALIGN=TOP>
-		<TABLE border=1 width="100%">
-		<tr>
-			<th valign=top align=left>Type</th>
-			<td>$type</td>
+		<tr class=rhead>
+			<td valign=TOP align=center class=rhead colspan=2>
+			<b>$tname$tinfo</b>
+			</td>
 		</tr>
-		<tr>
-			<th valign=top align=left width="30%">Class</th>
-			<td>$class</td>
+		<tr class=rownorm>
+			<th valign=top align=left class=clabel>Type</th>
+			<td class=cdata>$type</td>
 		</tr>
-		<tr>
-			<th valign=top align=left width="30%">Directory</th>
-			<td>$dir</td>
+		<tr class=rownorm>
+			<th valign=top align=left width="30%" class=clabel>Class</th>
+			<td class=cdata>$class</td>
 		</tr>
-		<tr>
-			<th valign=top align=left width="30%">Text File</th>
-			<td>$file</td>
+		<tr class=rownorm>
+			<th valign=top align=left width="30%" class=clabel>Directory</th>
+			<td class=cdata>$dir</td>
 		</tr>
-		<tr>
-			<th valign=top align=left width="30%">DB File</th>
-			<td>$dfile</td>
+		<tr class=rownorm>
+			<th valign=top align=left width="30%" class=clabel>Text File</th>
+			<td class=cdata>$file</td>
 		</tr>
+		<tr class=rownorm>
+			<th valign=top align=left width="30%" class=clabel>DB File</th>
+			<td class=cdata>$dfile</td>
+		</tr>
+EOF
+
+		$out .= <<EOF if $delim;
 		<tr>
-			<th colspan=2>Other</th>
+			<th valign=top align=left width="30%">Delimiter</th>
+			<td>$delim</td>
+		</tr>
+EOF
+
+		$out .= <<EOF;
+		<tr class=rhead>
+			<td colspan=2 class=rhead>Parameters</th>
 		</tr>
 EOF
 		for(sort keys %{$ref}) {
@@ -123,9 +139,9 @@ EOF
 			my $key = $_;
 			my $r = $ref->{$_};
 			my $o = <<EOF;
-		<tr>
-			<th valign=top align=left width="30%">$_</th>
-			<td>
+		<tr class=rownorm>
+			<td valign=top align=left width="30%" class=clabel>$_</td>
+			<td class=cdata>
 EOF
 			if(! defined $r) {
 				$o .= "undef";
@@ -162,9 +178,6 @@ EOF
 		}
 
 		$out .= <<EOF;
-		</table>
-	</TD>
-</TR>
 EOF
 
 	}
@@ -172,16 +185,6 @@ EOF
 [/perl]
 
 </TABLE>
-
-</td></tr>
-
-<tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-
-</table>
-</center>
-
 
 <!-- ----- END REAL STUFF ----- -->
 

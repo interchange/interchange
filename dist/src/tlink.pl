@@ -1,24 +1,25 @@
 #!/usr/bin/perl -wT
-# tlink.pl: runs as a cgi program and passes request to Vend server
+
+# tlink.pl: runs as a cgi program and passes request to Interchange server
 #
-#   $Id: tlink.pl,v 1.2.4.1 2000-11-27 02:05:31 racke Exp $
+# $Id: tlink.pl,v 1.2.4.2 2003-01-25 22:21:24 racke Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
-#    This program is free software; you can redistribute it and/or
-#    modify it under the terms of the GNU General Public License as
-#    published by the Free Software Foundation; either version 2 of the
-#    License, or (at your option) any later version.
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
 #
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#    General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
 #
-#    You should have received a copy of the GNU General Public
-#    License along with this program; if not, write to the Free
-#    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-#    MA  02111-1307  USA.
+# You should have received a copy of the GNU General Public
+# License along with this program; if not, write to the Free
+# Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+# MA  02111-1307  USA.
 
 require 5.002;
 use strict;
@@ -53,8 +54,8 @@ Content-type: text/html
 <BODY BGCOLOR="#FFFFFF">
 <H3>We're sorry, the Interchange server was not running...</H3>
 <P>
-We are out of service or may be experiencing high system demand,
-please try again soon.
+We are out of service or may be experiencing high system demand.
+Please try again soon.
 
 </BODY></HTML>
 EOF
@@ -65,7 +66,7 @@ EOF
 #
 sub die_page {
   printf("Content-type: text/plain\r\n\r\n");
-  printf("We are sorry, but the cgi-bin server is unavailable due to a\r\n");
+  printf("We are sorry, but the Interchange server is unavailable due to a\r\n");
   printf("system error.\r\n\r\n");
   printf("%s: %s (%d)\r\n", $_[0], $!, $?);
   if($ERROR_ACTION =~ /not/i) {
@@ -86,6 +87,9 @@ sub get_entity {
   return '' unless $len;
 
   my $check;
+
+  # Can't hurt, helps Windows people
+  binmode(STDIN);
 
   $check = read(STDIN, $Entity, $len);
 

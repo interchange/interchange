@@ -1,9 +1,9 @@
-[set page_title]Static site generation[/set]
-[set page_banner]Static site generation[/set]
+[set page_title][L]Static site generation[/L][/set]
+[set page_banner][L]Static site generation[/L][/set]
 [set page_perm]regen[/set]
 [set help_name]regen.main[/set]
 [set ui_class]Design[/set]
-[set icon_name]admin/icon_config.gif[/set]
+[set icon_name]icon_config.gif[/set]
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
@@ -14,13 +14,13 @@
 
 <table __UI_T_PROPERTIES__>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__" width="__UI_LEFT_WIDTH__" valign=top>
+<td class=rnorm width="__UI_LEFT_WIDTH__" valign=top>
 
-<input type="submit" value="Regenerate"><BR><BR>
-<input type=checkbox name=ui_build_verbose> Verbose<br>
+<input type="submit" value="[L]Regenerate[/L]"><BR><BR>
+<input type=checkbox name=ui_build_verbose> [L]Verbose[/L]<br>
 <select NAME=ui_max_build>
 <option VALUE=100>100
 <option VALUE=200>200
@@ -31,7 +31,7 @@
 <option VALUE=10000>10,000
 </select>
 </td>
-<td bgcolor="__UI_C_INTBLOCK__" width="__UI_RIGHT_WIDTH__">
+<td class=rnorm width="__UI_RIGHT_WIDTH__">
 
 [tmp pages][/tmp]
 
@@ -58,6 +58,7 @@
 			$_ = '' if defined $check->{$test};
 		} while ($test =~ s:(.*)/.*:$1:);
 	}
+	@pages = grep length($_), @pages;
 	$Scratch->{pages} = join "\n", grep $_, @pages;
 
     # Generated selection of forced pages
@@ -75,7 +76,7 @@
 [/calc]
 
 [if config StaticAll]
-<b>Entry page:</b><br>
+<b>[L]Entry page:[/L]</b><br>
 
 
 <select name="ui_initial_page">
@@ -87,14 +88,14 @@
 	<table>
 		<tr>
 			<td>
-			<b>Force build of:</b><br>
+			<b>[L]Force build of:[/L]</b><br>
 			<select name="ui_force_build" multiple size=25>
 			[scratchd forced_pages]  
 			</select>
 			</td>
 			<td>
 
-			<b>Never build:</b><br>
+			<b>[L]Never build:[/L]</b><br>
 			<select name="ui_never_build" multiple size=25>
 			[loop prefix=never list="[scratch pages]"]
 				<option>[never-code]
@@ -107,7 +108,7 @@
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

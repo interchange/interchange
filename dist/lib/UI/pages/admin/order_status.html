@@ -1,300 +1,184 @@
+[calc]
+	$Values->{ui_data_fields} = $CGI->{ui_data_fields} = 'status archive delete';
+	$CGI->{mv_data_table} = 'transactions';
+	$CGI->{item_id} ||= $CGI->{order};
+	$CGI->{order} = $CGI->{item_id};
+	return;
+[/calc]
+
+[if cgi ship_auto]
+[calc]
+	my $orders = join ",", delete $CGI->{item_id}, delete $CGI->{item_id_left};
+	$orders =~ s/-_NULL_-/\0/g;
+	$orders =~ s/\0+/,/g;
+	$orders =~ s/,+/,/g;
+	delete $CGI->{order};
+	$Scratch->{order_list} = $orders;
+[/calc]
+[loop list="[scratch order_list]"]
+	[update-order-status
+			order_number="[loop-code]"
+			ship_all=1
+			[if-loop-data transactions order_id]
+			settle_transaction="__SETTLE_TRANSACTION__"
+			[/if-loop-data]
+			archive=1]
+[/loop]
+			
+
+
+[/if]
 [if !cgi order]
 	[bounce page="__UI_BASE__/order"]
 [/if]
 
-[calc]
-	$Values->{ui_data_fields} = $CGI->{ui_data_fields} = 'status archive delete';
-	$CGI->{mv_data_table} = 'transactions';
-	$Scratch->{arg} = $CGI->{item_id} = $CGI->{order};
-	return;
-[/calc]
-
-@_UI_STD_DBEDIT_HEAD_@
 [set ui_class]Orders[/set]
-[seti page_title]Order status -- [cgi order][/seti]
-[tmp page_banner]Order status: order <B>[page href="__UI_BASE__/order_view" form="order=[cgi order]"][cgi order]</A></B>[/tmp]
+[seti page_title][L]Order status[/L] -- [cgi order][/seti]
+[tmp page_banner][L]Order status[/L]: [L]order[/L] <B>[page href="__UI_BASE__/order_view" form="order=[cgi order]"][cgi order]</A></B>[/tmp]
 [set help_name]item.edit[/set]
-[set icon_name]admin/icon_item.gif[/set]
+[set icon_name]icon_item.gif[/set]
 
 @_UI_STD_HEAD_@
 
-[tmp order_lines_tmp][loop search="
-			fi=orderline
-			st=db
-			sf=order_number
-			se=[cgi order]
-			ml=1000
-	"][loop-code] [/loop][/tmp]
+[tmp form_include]
+<tr class=rnorm>
+<td class=clabel align=center style="font-size: larger">
+	Actions
+</td>
+<td class=cdata>
+	<div 
+		style="
+			border: 2px solid black;
+			padding: 8px;
+		">
 
-<FORM METHOD=POST ACTION="[area ui]" NAME=transactions>
-<INPUT TYPE=hidden NAME=mv_doit VALUE="set">
-<INPUT TYPE=hidden NAME=mv_click VALUE="process_filter">
-<INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/order_view">
-<INPUT TYPE=hidden NAME=code VALUE="[cgi order]">
-<INPUT TYPE=hidden NAME=mv_data_table VALUE="[value mv_data_table]">
-<INPUT TYPE=hidden NAME=ui_meta_specific VALUE="[cgi ui_meta_specific]">
-<INPUT TYPE=hidden NAME=mv_data_key VALUE="[value ui_data_key_name]">
-<INPUT TYPE=hidden NAME=mv_update_empty VALUE="1">
-<INPUT TYPE=hidden NAME=mv_data_fields VALUE="code status archived deleted">
-<table width="95%"><tr><td BGCOLOR="__UI_C_TOPBLOCKBAR__">
-<table width="100%"><tr><td BGCOLOR="__UI_C_TITLEBARBG__">
-<table CELLSPACING=0 CELLMARGIN=0 WIDTH="100%">
-[loop list="[cgi order]"]
-<TR>
-<TD ALIGN=RIGHT><B>Order date</B></TD>
-<TD BGCOLOR="__UI_T_ROW_ODD__">
-[convert-date][loop-data transactions order_date][/convert-date]</TD>
-</TR>
-<TR>
-<TD ALIGN=RIGHT><B>Status last updated</B></TD>
-<TD BGCOLOR="__UI_T_ROW_ODD__">
-[convert-date][loop-data transactions update_date][/convert-date]</TD>
-</TR>
-[loop prefix=row list="status deleted archived"]
-[display table=transactions column="[row-code]" key="[loop-code]"
-										template=|
-<TR BGCOLOR="__UI_T_ROW_ODD__">
-<TD BGCOLOR="__UI_C_TITLEBARBG__" ALIGN=right>
-	<FONT COLOR="__UI_C_TITLEBARTXT__"><B>$LABEL$</B></FONT>
-</TD>
-<TD VALIGN=TOP>
-	<TABLE CELLSPACING=0 CELLMARGIN=0><TR><TD>$WIDGET$</TD><TD><I>$HELP$</I>{HELPURL}<BR><A HREF="$HELP_URL$">help</A>{/HELPURL}</TD></TR></TABLE>
-</TD>
-</TR>
-|]
-[/loop]
-<TR>
-<TD ALIGN=RIGHT>&nbsp;</TD>
-<TD BGCOLOR="__UI_T_ROW_ODD__">
-[if-mm advanced order]
-	[button form=transactions bold=1 text="Ship checked order lines, send email to customer if appropriate"]
+	[tmp tmp_orderid][data table=transactions col=order_id key="[cgi order]"][/tmp]
+<script>
+	var have_orderid = '[scratch tmp_orderid]';
+	function copasetic (el,form) {
+		if(have_orderid == '')
+			return;
+		if(el.name == 'ship_all') {
+			if(el.options[el.selectedIndex].value == 0) {
+				if(form.void_transaction != undefined)
+					form.void_transaction.checked = false;
+				if(form.settle_transaction != undefined)
+					form.settle_transaction.checked = false;
+				form.do_archive.checked = false;
+			}
+			if(el.options[el.selectedIndex].value == 1) {
+				if(form.void_transaction != undefined)
+					form.void_transaction.checked = false;
+				if(form.settle_transaction != undefined)
+					form.settle_transaction.checked = true;
+				form.do_archive.checked = true;
+			}
+			if(el.options[el.selectedIndex].value == 2) {
+				if(form.void_transaction != undefined)
+					form.void_transaction.checked = true;
+				if(form.settle_transaction != undefined)
+					form.settle_transaction.checked = false;
+				form.do_archive.checked = true;
+			}
+		}
+		else {
+			if (el.name == 'settle_transaction') {
+				if(el.checked == true) {
+					form.ship_all.selectedIndex = 1;
+					form.void_transaction.checked = false;
+				}
+			}
+			if(el.name == 'void_transaction') {
+				if(el.checked == true) {
+					form.ship_all.selectedIndex = 2;
+					form.settle_transaction.checked = false;
+				}
+			}
+		}
+	}
+	document.tform.tracking_number.focus();
+</script>
+
+	<select name=ship_all onChange="copasetic(this, this.form)">
+		<option value=0> Ship per status above
+		<option value=1 SELECTED> Ship all lines
+		<option value=2> Cancel order
+	</select>
+
+	[button form=tform
+			extra='style="font-weight: bold"'
+			text="[L]Update the order[/L]"]
 	mv_todo=back
 	order=[cgi code]
 	[tag flag write]orderline transactions[/tag]
-	[perl tables="orderline transactions userdb __UI_META_TABLE__"]
-		my $odb = $Db{orderline}
-			or die "No orderline database!\n";
-		my $tdb = $Db{transactions}
-			or die "No transactions database!\n";
-		my $udb = $Db{userdb}
-			or die "No userdb database!\n";
-
-		my $on = $Scratch->{ship_notice_order_number} = $CGI->{code};
-		my $user       = $tdb->field($on, 'username');
-		my $wants_copy = $udb->field($user, 'email_copy');
-#Log("Order number=$on username=$user wants=$wants_copy");
-		delete $Scratch->{ship_notice_username};
-		delete $Scratch->{ship_notice_email};
-		if($wants_copy) {
-			$Scratch->{ship_notice_username} = $user;
-			$Scratch->{ship_notice_email} = $udb->field($user, 'email')
-				or delete $Scratch->{ship_notice_username};
-		}
-
-		if($CGI->{status} =~ /\d\d\d\d/) {
-			$tdb->set_field($on, 'status', $CGI->{status});
-		}
-		else {
-			$tdb->set_field($on, 'status', 'shipped');
-		}
-
-		my @shiplines = grep /\S/, split /\0/, $CGI->{lines_shipped};
-		my $to_ship = scalar @shiplines;
-
-		my $count_q = "select * from orderline where order_number = '$on'";
-		my $lines_ary =  $odb->query($count_q);
-		if(! $lines_ary) {
-			$Scratch->{ui_message} = "No order lines for order $on";
-			return;
-		}
-		my $total_lines = scalar @$lines_ary;
-
-		my $odb_keypos = $odb->config('KEY_INDEX');
-
-		# See if some items have already shipped
-		my %already;
-		for(@$lines_ary) {
-			my $code = $_->[$odb_keypos];
-			my $status = $odb->field($code, 'status');
-			if($status eq 'shipped') {
-				$already{$code} = $code;
-			}
-		}
-		
-		my $ship_mesg;
-		my $g_status;
-		my %shipping;
-
-		@shipping = grep ! $already{$_}, @shipping;
-		@shipping{@shiplines} = @shiplines;
-
-		if($total_lines == $to_ship) {
-			$ship_mesg = "Order $on complete, $total_lines lines set shipped.";
-			$Scratch->{ship_notice_complete} = $ship_mesg;
-			$g_status = 'shipped';
-		}
-		else {
-			$ship_mesg = "Order $on partially shipped ($to_ship of $total_lines lines).";
-			delete $Scratch->{ship_notice_complete};
-			$g_status = 'partial';
-		}
-
-		my $minor_mesg = '';
-
-		my $email_mesg = $Scratch->{ship_notice_username}
-						? "Email copy sent to $Scratch->{ship_notice_email}."
-						: "No email copy sent as per user preference.";
-
-		# Actually update the orderline database
-		for(@$lines_ary) {
-			my $code = $_->[$odb_keypos];
-			next if $already{$code};
-			my $status = $shipping{$code} ? 'shipped' : 'backorder';
-			$odb->set_field($code, 'status', $status)
-				or do {
-					$Scratch->{ui_message} = "Orderline $code ship status update failed.";
-					return;
-				};
-
-		}
-
-		for(keys %already) {
-			$shipping{$_} = $_;
-		}
-
-		my $total_shipped_now = scalar keys %shipping; 
-
-
-		delete $Scratch->{ship_now_complete};
-		if (
-			$total_lines != scalar @shipping
-				and
-			$total_shipped_now == $total_lines 
-		  )
-		{
-			$g_status = 'shipped';
-			$Scratch->{ship_now_complete} = 1
-				if $total_shipped_now == $total_lines;
-			$ship_mesg = "Order $on now complete (all $total_lines lines).";
-		}
-
-		$tdb->set_field($on, 'status', $g_status);
-
-		$Scratch->{ui_message} = "$ship_mesg $email_mesg";
-		delete $Scratch->{ship_notice_username};
-		delete $Scratch->{ship_notice_email};
-		if($wants_copy) {
-			$Scratch->{ship_notice_username} = $user;
-			$Scratch->{ship_notice_email} = $tdb->field($on, 'email')
-				or $Scratch->{ship_notice_email} = $tdb->field($on, 'email')
-				or delete $Scratch->{ship_notice_username};
-		}
-		return;
-	[/perl]
-
+	[update-order-status order-number="[cgi code]"]
 	[if scratch ship_notice_username]
 	[email-raw][include etc/ship_notice][/email-raw]
 	[/if]
 
-	[/button] <BR>
-
-	[loop prefix=partial list="[scratch order_lines_tmp]"]
-	<INPUT TYPE=checkbox NAME=lines_shipped VALUE="[partial-code]" CHECKED> Line [partial-increment] ([partial-filter 16][partial-data orderline description][/partial-filter])<BR>
-	[/loop]
-	<BR>
-	[button bold=1 text="Change global status"]
-	order=[cgi code]
-	[/button]&nbsp;&nbsp;&nbsp;
-	[button text="Cancel"]
-	mv_nextpage=__UI_BASE__/order_view
-	order=[cgi code]
-	mv_todo=back
 	[/button]
-[else]
-	[button text="Back"]
-	mv_nextpage=__UI_BASE__/order_view
-	order=[cgi code]
-	mv_todo=back
-	[/button]
-[/else]
-[/if-mm]
-</TD>
-</table>
-</td></tr></table>
-</td></tr></table>
-</FORM>
 
-[/loop]
+	Email
+	<select name=send_email>
+		<option value="">[L]Use customer preference[/L]</option>
+		<option value="0">[L]No[/L]</option>
+		<option value="1">[L]Yes[/L]</option>
+	</select>
+	[if variable SETTLE_TRANSACTION]
+	<br>
+		[if scratch tmp_orderid]
+			<input type=checkbox name=settle_transaction value=1
+				onChange="copasetic(this, this.form)"
+				[if type=scratch term=tmp_orderid op="!~" compare="/[-*]$/"] CHECKED [/if]>
+					<b>Settle transaction</b>
+			&nbsp;
+			&nbsp;
+			<input type=checkbox name=void_transaction onChange="copasetic(this, this.form)" value=1> <b>Void transaction </b>
 
-<h2>Individual line item status</H2>
-<TABLE>
-[loop search="
-		fi=orderline
-		st=db
-		sf=order_number
-		se=[cgi order]
-		ml=1000
-"]
-[calc]
-	$Values->{ui_data_fields} = $CGI->{ui_data_fields} = 'code status delete';
-	$CGI->{mv_data_table} = 'transactions';
-	$Scratch->{arg} = $CGI->{item_id} = $CGI->{order};
-	return;
-[/calc]
+		[/if]
+	[/if]
+			&nbsp;
+			&nbsp;
+			<input type=checkbox name=do_archive value=1 CHECKED> <b>Archive transaction at end</b>
+	</div>
+</td>
+</tr>
+[/tmp]
 
-<TR><TD>
+[table-editor 
+	table=transactions
+	key="[cgi order]"
+	output_map=1
+	button_delete=1
+	form-name=tform
+	table-width="100%"
+	next-text="Update status only, no ship function"
+	ok-button-style="font-weight: normal; font-size: smaller"
+	no-table-meta=1
+	mv-nextpage="__UI_BASE__/order"
+	ui_data_fields="code status tracking_number order_id auth_code archived deleted"
+	include-form="[scratch form_include]"
+	include-before="order_id"
+	help.order_id='<span style="font-size: larger;font-weight: bold">* = settled, - = voided</span>'
+	link-table=orderline
+	link-key=order_number
+	link-before=order_id
+	link-no-blank=1
+	link-label="Ordered Items"
+	hidden.ui_sequence_destination="@@MV_PAGE@@"
+/]
 
-@@UI_STD_DBEDIT_HEAD@@
-<FORM METHOD=POST ACTION="[area ui]" NAME="orderline[loop-increment]">
-<INPUT TYPE=hidden NAME=mv_doit VALUE="set">
-<INPUT TYPE=hidden NAME=mv_click VALUE="process_filter">
-<INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
-<INPUT TYPE=hidden NAME=code VALUE="[loop-code]">
-<INPUT TYPE=hidden NAME=order VALUE="[cgi order]">
-<INPUT TYPE=hidden NAME=mv_data_table VALUE="orderline">
-<INPUT TYPE=hidden NAME=ui_meta_specific VALUE="[cgi ui_meta_specific]">
-<INPUT TYPE=hidden NAME=mv_data_key VALUE="code">
-<INPUT TYPE=hidden NAME=mv_update_empty VALUE="1">
-<INPUT TYPE=hidden NAME=mv_data_fields VALUE="code status">
-<table width="95%"><tr><td BGCOLOR="__UI_C_TOPBLOCKBAR__">
-<table width="100%"><tr><td BGCOLOR="__UI_C_TITLEBARBG__">
-<table CELLSPACING=0 CELLMARGIN=0 WIDTH="100%">
-<TR>
-<TD ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__"><B>SKU/Description</B></TD>
-<TD BGCOLOR="__UI_T_ROW_ODD__">
-SKU: [loop-data orderline sku], [loop-data orderline quantity]@[filter %.2f][loop-data orderline price][/filter] = [currency][loop-data orderline subtotal][/currency]<BR>
-[loop-data orderline description]
-</TD>
-</TR>
-<TR>
-<TD ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__"><B>Last updated</B></TD>
-<TD BGCOLOR="__UI_T_ROW_ODD__">
-[convert-date][loop-data orderline update_date][/convert-date]</TD>
-</TR>
-[display table=orderline column="status" key="[loop-code]"
-										template=|
-<TR BGCOLOR="__UI_T_ROW_ODD__">
-<TD BGCOLOR="__UI_C_TITLEBARBG__" ALIGN=right>
-	<FONT COLOR="__UI_C_TITLEBARTXT__"><B>$LABEL$</B></FONT>
-</TD>
-<TD VALIGN=TOP>
-	<TABLE CELLSPACING=0 CELLMARGIN=0><TR><TD>$WIDGET$</TD><TD><I>$HELP$</I>{HELPURL}<BR><A HREF="$HELP_URL$">help</A>{/HELPURL}</TD></TR></TABLE>
-</TD>
-</TR>
-|]
-<TR>
-<TD ALIGN=RIGHT>&nbsp;</TD>
-<TD BGCOLOR="__UI_T_ROW_ODD__">
-<INPUT TYPE=submit VALUE="Update status of line [loop-increment]">
-</TD>
-</table>
-</td></tr></table>
-</td></tr></table>
-</FORM>
-
-</TD></TR>
-[/loop]
-</TABLE>
+<script>
+	var f = document.tform;
+	if(f != undefined) {
+		var str = f.order_id.value;
+// alert("in check, str=" + str);
+		if(str.match(/\*$/) ) {
+			f.settle_transaction.checked = false;
+// alert("set checked status!");
+		}
+	}
+</script>
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order_status.html,v 1.2.4.1 2003-01-25 22:21:14 racke Exp $ -->

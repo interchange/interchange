@@ -1,6 +1,0 @@
-sku	featured	banner_text	banner_image	blurb_begin	blurb_end	start	finish	upsell_to	cross_sell	others_bought
-george	bookpick			Curiosity he had....	luck he didn't.<br>Curious George Rides a Bike	20000806	20000806		
-jurr	specials			Roooaarrr!	your way through this nailbiter.<br>Jurassic Park	20000806	20000806		
-okl	specials			No wrath....	just grape shoes.<BR>Tatami Oklahoma Flats	20000806	20000806		
-pedal	specials			Pedal like the wind	No nonsense, no toe clips, no problems.<BR>Flat ATB Pedals	20000806	20000806		
-shoeleather	bookpick			Don't wear it out...	before you read <i>Shoe Leather</i>	20000806	20000806		

@@ -19,7 +19,7 @@
 	$Config->{NoSearch} = '';
 	my $db = $Db{userdb};
 	if(! $db) {
-		$Scratch->{error_message} = "<FONT CLASS=error>Error: no userdb database.</FONT><BR>";
+		$Scratch->{error_message} = "<span class=cerror>Error: no userdb database.</span><BR>";
 		$Scratch->{ui_location} = "__UI_BASE__/error";
 		return;
 	}
@@ -63,9 +63,9 @@
 	}
 	if(@errors) {
 		my $plural = @errors > 1 ? 's' : '';
-		return "<FONT CLASS=error>Error$plural:<UL><LI>" .
+		return "<span class=cerror>Error$plural:<UL><LI>" .
 				join ("<LI>", @errors)                    .
-				"</UL></FONT><BR>";
+				"</UL></span><BR>";
 	}
 	if($CGI->{viewnext}) {
 		#Log("viewnext");
@@ -112,7 +112,7 @@
 [bounce href=`delete $Scratch->{ui_location}`]
 [/if]
 
-[set icon_name]admin/icon_people.gif[/set]
+[set icon_name]icon_people.gif[/set]
 [seti page_title]
 	[if value showinactive]
 	Customers: Inactive customers
@@ -128,30 +128,29 @@
 
 
 [if scratch message]
-<BLOCKQUOTE>
-[scratch message]
-</BLOCKQUOTE>
-[set message][/set]
+	<blockquote class=cmessage>
+		[scratchd message]
+	</blockquote>
 [/if]
-</font>
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
 <!-- ----- Show the active/inactive buttons ----- -->
 
-<form action="[area __UI_BASE__/customer]" method=POST>
+<form action="[process href=@@MV_PAGE@@]" method=POST>
+<input type=hidden name=mv_session_id value="[data session id]">
 <INPUT TYPE=hidden NAME=mv_action VALUE=return>
 
 <input type=hidden name=inactive value="false">
 
 <table __UI_T_PROPERTIES__>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 [if value showinactive]
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_MAIN_WIDTH__ colspan=2>
+<td class=rnorm width=__UI_MAIN_WIDTH__ colspan=2>
 [button name="showactive" text="Show active customers"][/button]
 [set active_sense]eq[/set]
 </td>
@@ -159,7 +158,7 @@
 [else]
 [value name=showinactive set=""]
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_MAIN_WIDTH__ colspan=2>
+<td class=rnorm width=__UI_MAIN_WIDTH__ colspan=2>
 <input type=submit name="showinactive" value="Show inactive customers">
 [set active_sense]ne[/set]
 </td>
@@ -168,13 +167,13 @@
 [/if]
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rnorm><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <!-- ----- Show the operation buttons ----- -->
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_LEFT_WIDTH__>
+<td class=rnorm width=__UI_LEFT_WIDTH__>
 
 [button name="viewcustomer" text="View customer"][/button]<br>
 
@@ -217,7 +216,7 @@ mv_todo=return
 <input type=submit name="xload" value="Export customers">
 [/comment]
 </td>
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_RIGHT_WIDTH__>
+<td class=rnorm width=__UI_RIGHT_WIDTH__>
 <SMALL>Specific customer <INPUT TYPE=text NAME=customer VALUE="">
 [button text="Start list here"]
 [calc]
@@ -255,7 +254,7 @@ mv_nextpage=@@MV_PAGE@@
 </td></tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 </table>
 

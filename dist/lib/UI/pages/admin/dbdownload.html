@@ -1,7 +1,7 @@
-[set page_title]Database export[/set]
+[set page_title][L]Database export[/L][/set]
 [set ui_class]Admin[/set]
 [set help_name]dbdownload.main[/set]
-[set icon_name]admin/icon_config.gif[/set]
+[set icon_name]icon_config.gif[/set]
 [set page_perm]dbdownload[/set]
 [set exported_tables][/set]
 [if cgi ui_do_export]
@@ -13,63 +13,46 @@
 			 grep /\S/, split /[,\s\0]+/, $CGI->{ui_do_export};
 	[/calc] -->
 [/if]
+
 @_UI_STD_HEAD_@
 
 [if scratch exported_tables]
 <BLOCKQUOTE>
-	[backup-database
+	[msg arg.0='[backup-database
 		compress="[cgi ui_compress]"
-		gnumeric="[cgi ui_gnumeric]"
 		xls="[cgi ui_export_xls]"
+		max_xls_string="[cgi ui_export_max_xls_string]"
 		tables="[scratch exported_tables]"
-	] tables backed up.
+	]']%s tables backed up.[/msg]
 </BLOCKQUOTE>
 [/if]
 
 [set mv_deliver][/set]
 
-[if file backup/DBDOWNLOAD.all.gz]
-<BLOCKQUOTE>
-	[calc] $Scratch->{mv_deliver} .= ' backup/DBDOWNLOAD.all.gz'; return; [/calc]
-	[page href="ui/backup/DBDOWNLOAD.all.gz"
-			form="
-				mv_data_file=backup/DBDOWNLOAD.all.gz
-				mv_todo=deliver
-			"]Download compressed gnumeric file ([file-info name="backup/DBDOWNLOAD.all.gz" date=1])</A><BR>
-</BLOCKQUOTE>
-[/if]
 
-[if file backup/DBDOWNLOAD.all]
-	[calc] $Scratch->{mv_deliver} .= ' backup/DBDOWNLOAD.all'; return; [/calc]
-	[page href="ui/backup/DBDOWNLOAD.all"
-			form="
-				mv_data_file=backup/DBDOWNLOAD.all
-				mv_todo=deliver
-			"]Download gnumeric file ([file-info name="backup/DBDOWNLOAD.all" date=1])</A><BR>
-[/if]
 [if file backup/DBDOWNLOAD.xls]
 	[calc] $Scratch->{mv_deliver} .= ' backup/DBDOWNLOAD.xls'; return; [/calc]
 	[page href="ui/backup/DBDOWNLOAD.xls"
 			form="
 				mv_data_file=backup/DBDOWNLOAD.xls
 				mv_todo=deliver
-			"]Download XLS file ([file-info name="backup/DBDOWNLOAD.xls" date=1])</A><BR>
+			"][L]Download XLS file[/L] ([file-info name="backup/DBDOWNLOAD.xls" date=1])</A><BR>
 [/if]
 
 [if scratch ui_error]
-	<B>Errors on last operation:</B>
+	<B>[L]Errors on last operation[/L]:</B>
 	[scratch ui_error][set ui_error][/set]
 [/if]
 
-<form ACTION="[area @@MV_PAGE@@]" method="post">
+<form ACTION="[area @@MV_PAGE@@]" method="POST" NAME=dbdownload>
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" height=1></td>
+<td class=rborder><img src="bg.gif" height=1></td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rborder>
 &nbsp;
 <p>
 
@@ -86,27 +69,29 @@ What data would you like to export?
 	<BR>
 [/loop]
 </blockquote>
+<A HREF="javascript:checkAll(document.dbdownload, 'ui_do_export', 1)">Uncheck all</A><BR>
+<A HREF="javascript:checkAll(document.dbdownload, 'ui_do_export', 0)">Check all</A>
 </td>
 <td valign=top>
 	<B>Options:</B><BR><BR>
 	<BLOCKQUOTE>
 	<INPUT TYPE=checkbox NAME=ui_compress VALUE=on [checked ui_compress on]> Compress (if available)<BR>
-	<INPUT TYPE=radio VALUE=0 NAME=ui_gnumeric  [if !value ui_gnumeric]
-												CHECKED
-												[/if]
-												>
-		No Gnumeric output<BR>
-
-	<INPUT TYPE=radio NAME=ui_gnumeric VALUE=on [checked ui_gnumeric on]>
-		Gnumeric simple text format<BR>
-	<INPUT TYPE=radio NAME=ui_gnumeric VALUE=compressed [checked ui_gnumeric compressed]>
-		Gnumeric simple text format, compressed
 	[if type=explicit compare="[version extended=1 modtest='Spreadsheet::WriteExcel']"]
-	<BR><INPUT TYPE=checkbox VALUE=1 NAME=ui_export_xls> Create XLS spreadsheet
+	<BR><INPUT TYPE=checkbox VALUE=1 NAME=ui_export_xls [checked name=ui_export_xls value=1]> Create XLS spreadsheet
+	<SELECT NAME=ui_export_max_xls_string>
+[loop lr=1 option=ui_export_max_xls_string cgi=1 list="
+0	Max string length 255
+1024	1024 (compatible with some)
+4096	4096 (compatible with some)
+16384	16384 (compatible with some)
+"]
+<OPTION VALUE="[loop-code]"> [loop-pos 1]
+[/loop]
+	</SELECT>
 	[/if]
 	</BLOCKQUOTE>
 	<p>
-	<input type=submit name="do_download" value="Perform export">
+	<input type=submit name="do_download" value="[L]Perform export[/L]">
 	</td>
 </tr>
 </table>
@@ -115,7 +100,7 @@ What data would you like to export?
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

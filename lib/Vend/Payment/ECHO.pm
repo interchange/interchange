@@ -1,6 +1,6 @@
 # Vend::Payment::ECHO - Interchange ECHO support
 #
-# $Id: ECHO.pm,v 1.3 2002-08-27 05:12:52 kwalsh Exp $
+# $Id: ECHO.pm,v 1.3.2.1 2003-01-25 22:21:30 racke Exp $
 #
 # Copyright (C) 2002 
 #      Electric Pulp. <info@electricpulp.com> 
@@ -34,7 +34,7 @@ package Vend::Payment::ECHO;
 
 =head1 Interchange ECHO Support
 
-Vend::Payment::ECHO $Revision: 1.3 $
+Vend::Payment::ECHO $Revision: 1.3.2.1 $
 
 =head1 AUTHOR
 

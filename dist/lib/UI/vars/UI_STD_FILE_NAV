@@ -1,24 +1,65 @@
 Variable UI_STD_FILE_NAV <<EONav
-<center>
-<table cellpadding=3 cellspacing=0 width=__UI_MAIN_WIDTH__>
+<table cellpadding=3 cellspacing=0 width="85%">
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1 alt=x></td>
+<td class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1 alt=x></td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 	<table WIDTH=100%>
 		<tr>
 			<td WIDTH=__UI_LEFT_WIDTH__>
 				<SMALL>
-				<IMG SRC="@_UI_IMG_@admin/index.gif" HEIGHT=11 WIDTH=10> view<BR>
-				<IMG SRC="@_UI_IMG_@admin/down.gif" HEIGHT=11 WIDTH=10> download<BR>
-				<IMG SRC="@_UI_IMG_@admin/up.gif" HEIGHT=11 WIDTH=10> upload [if session arg]<a href="[area href="__UI_BASE__/upload_file" arg="[data session arg]/" form="ui_return_to=[var MV_PAGE 1]"]">new file to [data session arg]</a>[else](select directory to upload new file)[/else][/if]<BR>
-				<IMG SRC="@_UI_IMG_@admin/layout.gif" HEIGHT=11 WIDTH=10> edit (if applicable)
+				<IMG SRC="index.gif" HEIGHT=11 WIDTH=10> [msg]view[/msg]<BR>
+				<IMG SRC="down.gif" HEIGHT=11 WIDTH=10> [msg]download[/msg]<BR>
+				[if-mm advanced delete_files]
+				<IMG SRC="delete.gif" HEIGHT=10 WIDTH=10> [msg]DELETE[/msg]<BR>
+				[/if-mm]
+				<IMG SRC="up.gif" HEIGHT=11 WIDTH=10> [msg]upload[/msg]<BR>
+				<IMG SRC="layout.gif" HEIGHT=11 WIDTH=10> [msg]edit (if applicable)[/msg]
 				</SMALL>
 			</td>
 			<td>
+			<FORM ACTION="[area @_MV_PAGE_@]" METHOD=GET>
+			<INPUT TYPE=hidden NAME=mv_action VALUE=back>
+			<INPUT TYPE=hidden NAME=action VALUE=find>
+			[msg]Find files in and under current directory:[/msg]<BR>
+			<INPUT NAME=find VALUE="[calc]
+										return unless $CGI->{find};
+										my $str = $CGI->{find};
+										$str =~ s/"/&quot;/g;
+										return $str;
+									[/calc]">
+			<SELECT NAME="find_action">
+			<OPTION>[msg]In contents[/msg]
+			<OPTION VALUE="filename" [selected
+										cgi=1
+										name=find_action
+										value=filename]>[msg]By file name[/msg]
+			</SELECT>
+			<INPUT TYPE=submit VALUE="[msg]Find files[/msg]"><BR>
+			<small>
+			<INPUT TYPE=checkbox NAME="find_session" VALUE=1 [checked cgi=1 name=find_session value=1]> [msg]Look in session and temporary files[/msg]
+			&nbsp;&nbsp;&nbsp;
+			[if type=explicit
+				compare=`
+					my $status;
+					if(defined $CGI->{details}) {
+						$status = $CGI->{details};
+					}
+					else {
+						$status = $Session->{ui_file_details};
+					}
+					$Scratch->{details_coming} = $status;
+			`]
+			[page href="@_MV_PAGE_@" form="details=0"][msg]Hide file details[/msg]</A>
+			[else]
+			[page href="@_MV_PAGE_@" form="details=1"][msg]Show file details[/msg]</A>
+			[/else]
+			[/if]
+			</small>
+			</FORM>
 			</td>
 		</tr>
 	</table>
@@ -26,27 +67,44 @@ Variable UI_STD_FILE_NAV <<EONav
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1 alt=x></td>
+<td class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1 alt=x></td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 
+[if scratch details_coming]
 	[file-navigator
 		mask="[scratch dir_mask]"
 		include_mask="[scratch include_mask]"
 		exclude_mask="[scratch exclude_mask]"
 		view_link="[scratch view_link]"
 		start_open="[scratch start_open]"
+		initial_dir="[cgi initial_dir]"
 	]
+[else]
+<table width="100%">
+[table-organize columns=3 columnize=1 min-rows=15 interpolate=1]
+	[file-navigator
+		mask="[scratch dir_mask]"
+		include_mask="[scratch include_mask]"
+		exclude_mask="[scratch exclude_mask]"
+		template=|<TD width="33%">%s</TD>|
+		view_link="[scratch view_link]"
+		start_open="[scratch start_open]"
+		initial_dir="[cgi initial_dir]"
+	]
+[/table-organize]
+</table>
+[/else]
+[/if]
 
 </td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1 alt=x></td>
+<td class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1 alt=x></td>
 </tr>
 
 </table>
-</center>
 EONav

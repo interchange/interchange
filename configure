@@ -1,19 +1,20 @@
 #!/bin/sh
 
+# $Id: configure,v 1.2.4.2 2003-01-25 22:20:30 racke Exp $
+
+ICVERSION='4.9.7'
+
 cat <<EOF
 
- Akopia Interchange Version 4.6.x Configuration
+ Interchange Version $ICVERSION Configuration
 
- Copyright 1996-2000 Akopia, Inc, <support@akopia.com>
+ Copyright 1996-2003 Red Hat, Inc. and Interchange Development Group
 
- Interchange was originally based on Vend 0.2
- Copyright 1995 Andrew M. Wilcox <awilcox@maine.com>
- 
- Portions from Vend 0.3
- Copyright 1995, 1996 Andrew M. Wilcox <awilcox@maine.com>
+ Interchange was originally based on Vend 0.2 and 0.3
+ Copyright 1995, 1996 Andrew M. Wilcox <amw@wilcoxsolutions.com>
 
- Distributed under the GNU General Public License, see
- the file Copying for license information.
+ Distributed under the GNU General Public License.
+ See the file LICENSE for license information.
 
 EOF
 
@@ -53,7 +54,7 @@ do
 	while true
 	do
 		if test -n "$PERL"
-		then VER=`$PERL -e '((print $]), exit 1) if $] !~ /^5\.\d+/; print $]'`
+		then VER=`$PERL -e '((print $]), exit 1) unless $] >= 5.006 or $^V; printf "%vd", $^V'`
 		else false
 		fi
 		if [ $? -eq 0 ]
@@ -66,19 +67,23 @@ do
 				TESTPERL=perl5
 				break
 			else
-				echo $VER
-				VER=""
-				echo "Perl version not high enough or Perl not found."
+				if [ -n "$VER" ]
+				then
+					echo "Found Perl $VER as $PERL"
+					echo "Interchange $ICVERSION requires Perl version 5.6.0 or newer!"
+					VER=""
+				else
+					echo "Perl not found! Perl 5.6.0 or newer is required to run Interchange $ICVERSION."
+				fi
 			fi
 		fi
 	
 		echo
-		echo "I need to know where the Perl 5 interpreter resides."
-		echo "It was not 'perl' or 'perl5', or it was not in your"
-		echo "path.  Please enter a fully-qualified path name,"
-		echo "or just press ENTER to exit.. (what did I say?)"
+		echo "I need to know where the Perl interpreter resides (version 5.6.0 or higher)."
+		echo "It was not 'perl' or 'perl5', or it was not in your path. Please enter a full"
+		echo "path name, or just press <enter> to quit."
 		echo
-		echo $F "Where is your Perl 5, please? $E"
+		echo $F "Where is your Perl, please? $E"
 		read PERL
 		if test -z "$PERL"
 		then exit 1
@@ -94,12 +99,11 @@ done
 
 if test ! -f .cpan.tried
 then
-echo
-echo "If you get a CPAN error, rerun the configuration and it"
-echo "should go away."
-echo
+	echo
+	echo "If you get a CPAN error, rerun the configuration and it should go away."
+	echo
 fi
 
-$PERL Makefile.PL
+$PERL Makefile.PL $*
 make
 make test && make install

@@ -1,14 +1,11 @@
-# Util.pm - Interchange utility functions
+# Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 1.10.4.5 2001-04-15 14:07:08 racke Exp $
+# $Id: Util.pm,v 1.10.4.6 2003-01-25 22:21:28 racke Exp $
 # 
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
+# This program was originally based on Vend 0.2 and 0.3
+# Copyright 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,49 +32,60 @@ require Exporter;
 	check_security
 	copyref
 	currency
+	dbref
 	dump_structure
 	errmsg
 	escape_chars
 	evalr
+	dotted_hash
 	file_modification_time
 	file_name_is_absolute
 	find_special_page
 	format_log_msg
 	generate_key
 	get_option_hash
+	hash_string
+	hexify
+	is_hash
 	is_no
 	is_yes
+	l
 	lockfile
 	logData
 	logDebug
 	logError
 	logGlobal
+	logOnce
 	logtime
 	random_string
 	readfile
 	readin
+	round_to_frac_digits
 	secure_vendUrl
+	send_mail
 	setup_escape_chars
+	set_lock_type
+	show_times
+	string_to_ref
 	tag_nitems
 	uneval
 	uneval_it
 	uneval_fast
+	unhexify
 	unlockfile
 	vendUrl
 );
 
-# LEGACY4
-push @EXPORT, qw(
-	send_mail
-);
-# END LEGACY4
-
 use strict;
 use Config;
 use Fcntl;
+use Errno;
+use Text::ParseWords;
+require HTML::Entities;
+use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.10.4.5 $, 10);
+$VERSION = substr(q$Revision: 1.10.4.6 $, 10);
 
 BEGIN {
 	eval {
@@ -102,8 +110,30 @@ $ESCAPE_CHARS::ok_in_filename =
 		'-:_.$/'
 	;
 
+$ESCAPE_CHARS::ok_in_url =
+		'ABCDEFGHIJKLMNOPQRSTUVWXYZ' .
+		'abcdefghijklmnopqrstuvwxyz' .
+		'0123456789'				 .
+		'-_./~='
+	;
+
+## This is an alias for a commonly-used function
+sub dbref {
+	return Vend::Data::database_exists_ref(@_);
+}
+
+## This is a character class for HTML::Entities
+$ESCAPE_CHARS::std = "^\n\t !\#\$%\'-;=?-Z\\\]-~";
+
+my $need_escape;
+
 sub setup_escape_chars {
     my($ok, $i, $a, $t);
+
+	## HTML::Entities caches this, let's get it cached right away so
+	## each child doesn't have to re-eval
+	my $junk = ">>>123<<<";
+	HTML::Entities::encode($junk, $ESCAPE_CHARS::std);
 
     foreach $i (0..255) {
         $a = chr($i);
@@ -114,7 +144,17 @@ sub setup_escape_chars {
 			$t = $a;
         }
         $ESCAPE_CHARS::translate[$i] = $t;
+        if (index($ESCAPE_CHARS::ok_in_url,$a) == -1) {
+			$t = '%' . sprintf( "%02X", $i );
+        }
+		else {
+			$t = $a;
+        }
+        $ESCAPE_CHARS::translate_url[$i] = $t;
     }
+
+	my $string = "[^$ESCAPE_CHARS::ok_in_url]";
+	$need_escape = qr{$string};
 }
 
 # Replace any characters that might not be safe in a filename (especially
@@ -130,8 +170,23 @@ sub escape_chars {
     }
 
     # safe now
-    $r =~ /(.*)/;
-    $r = $1;
+    return $r;
+}
+
+# Replace any characters that might not be safe in an URL
+# with the %HH notation.
+
+sub escape_chars_url {
+    my($in) = @_;
+	return $in unless $in =~ $need_escape;
+    my($c, $r);
+
+    $r = '';
+    foreach $c (split(//, $in)) {
+		$r .= $ESCAPE_CHARS::translate_url[ord($c)];
+    }
+
+    # safe now
     return $r;
 }
 
@@ -182,7 +237,7 @@ sub format_log_msg {
 	push @params, logtime();
 
 	# Catalog name
-	my $string = ! defined $Vend::Cfg ? '-' : ($Vend::Cfg->{CatalogName} || '-');
+	my $string = ! defined $Vend::Cfg ? '-' : ($Vend::Cat || '-');
 	push @params, $string;
 
 	# Path info and script
@@ -202,7 +257,8 @@ sub round_to_frac_digits {
 		# use what we were given
 	}
 	elsif ( $Vend::Cfg->{Locale} ) {
-		$digits = $Vend::Cfg->{Locale}{frac_digits} || 2;
+		$digits = $Vend::Cfg->{Locale}{frac_digits};
+		$digits = 2 if ! defined $digits;
 	}
 	else {
 		$digits = 2;
@@ -221,7 +277,39 @@ sub round_to_frac_digits {
 		$int++;
 		$frac = 0 x $digits;
 	}
+	$frac .= '0' while length($frac) < $digits;
 	return "$int.$frac";
+}
+
+use vars qw/%MIME_type/;
+%MIME_type = (qw|
+			jpg		image/jpeg
+			gif		image/gif
+			jpeg	image/jpeg
+			png		image/png
+			xpm		image/xpm
+			htm		text/html
+			html	text/html
+			txt		text/plain
+			asc		text/plain
+			csv		text/plain
+			xls		application/vnd.ms-excel
+			default application/octet-stream
+		|
+		);
+# Return a mime type based on either catalog configuration or some defaults
+sub mime_type {
+	my ($val) = @_;
+	$val =~ s:.*\.::s;
+
+	! length($val) and return $Vend::Cfg->{MimeType}{default} || 'text/plain';
+
+	$val = lc $val;
+
+	return $Vend::Cfg->{MimeType}{$val}
+				|| $MIME_type{$val}
+				|| $Vend::Cfg->{MimeType}{default}
+				|| $MIME_type{default};
 }
 
 # Return AMOUNT formatted as currency.
@@ -277,6 +365,16 @@ sub setlocale {
     my ($locale, $currency, $opt) = @_;
 #::logDebug("original locale " . (defined $locale ? $locale : 'undef') );
 #::logDebug("default locale  " . (defined $::Scratch->{mv_locale} ? $::Scratch->{mv_locale} : 'undef') );
+
+	if($opt->{get}) {
+	    my $loc     = $Vend::Cfg->{Locale_repository} or return;
+	    my $currloc = $Vend::Cfg->{Locale} or return;
+	    for(keys %$loc) {
+			return $_ if $loc->{$_} eq $currloc;
+	    }
+	    return;
+	}
+
     $locale = $::Scratch->{mv_locale} unless defined $locale;
 #::logDebug("locale is now   " . (defined $locale ? $locale : 'undef') );
 
@@ -328,21 +426,44 @@ sub setlocale {
             $Vend::Cfg->{$_} = $curr->{$_}
                 if defined $curr->{$_};
         }
-        @{$Vend::Cfg->{Locale}}{@Vend::Config::Locale_keys_currency} =
-                @{$curr}{@Vend::Config::Locale_keys_currency};
     }
 
-    $::Scratch->{mv_locale}   = $locale    if $opt->{persist} and $locale;
-    $::Scratch->{mv_currency} = $currency  if $opt->{persist} and $currency;
+	if(my $ref = $Vend::Cfg->{CodeDef}{LocaleChange}) {
+		$ref = $ref->{Routine};
+		if($ref->{all}) {
+			$ref->{all}->($locale, $opt);
+		}
+		if($ref->{lc $locale}) {
+			$ref->{lc $locale}->($locale, $opt);
+		}
+	}
+
+    if($opt->{persist}) {
+		$::Scratch->{mv_locale}   = $locale		if $locale;
+		delete $::Scratch->{mv_currency_tmp};
+		delete $::Scratch->{mv_currency};
+		$::Scratch->{mv_currency} = $currency if $currency;
+	}
+	elsif($currency) {
+		Vend::Interpolate::set_tmp('mv_currency_tmp')
+			unless defined $::Scratch->{mv_currency_tmp};
+		$::Scratch->{mv_currency_tmp} = $currency;
+	}
+	else {
+		delete $::Scratch->{mv_currency_tmp};
+		delete $::Scratch->{mv_currency};
+	}
+
     return '';
 }
 
 
 sub currency {
 	my($amount, $noformat, $convert, $opt) = @_;
-#::logDebug("currency called: amount=$amount no=$noformat convert=$convert");
 	$opt = {} unless $opt;
-	$amount = $amount / $Vend::Cfg->{PriceDivide} if $convert;
+	
+	$amount = $amount / $Vend::Cfg->{PriceDivide}
+		if $convert and $Vend::Cfg->{PriceDivide} != 0;
 	return $amount if $noformat;
 	my $loc;
 	my $sep;
@@ -350,7 +471,22 @@ sub currency {
 	my $fmt;
 	my $precede = '';
 	my $succede = '';
-	if ($loc = $opt->{locale} || $Vend::Cfg->{Locale}) {
+	my $loc = $opt->{locale}
+			|| $::Scratch->{mv_currency_tmp}
+			|| $::Scratch->{mv_currency}
+			|| $Vend::Cfg->{Locale};
+
+	if(ref($loc)) {
+		## Do nothing, is a hash reference
+	}
+	elsif($loc) {
+		$loc = $Vend::Cfg->{Locale_repository}{$loc};
+	}
+	
+	if (! $loc) {
+		$fmt = "%.2f";
+	}
+	else {
 		$sep = $loc->{mon_thousands_sep} || $loc->{thousands_sep} || ',';
 		$dec = $loc->{mon_decimal_point} || $loc->{decimal_point} || '.';
 		return picture_format($amount, $loc->{price_picture}, $sep, $dec)
@@ -367,9 +503,6 @@ sub currency {
 				$succede = " $succede" if $loc->{p_sep_by_space};
 			}
 		}
-	}
-	else {
-		$fmt = "%.2f";
 	}
 
 	$amount = safe_sprintf($fmt, $amount);
@@ -409,7 +542,6 @@ eval {require Digest::MD5 };
 if(! $@) {
 	$Md = new Digest::MD5;
 	$Keysub = sub {
-#::logDebug("key gen args: '@_'");
 					@_ = time() unless @_;
 					$Md->reset();
 					$Md->add(@_);
@@ -441,6 +573,15 @@ sub unhexify {
     my $s = shift;
     $s =~ s/%(..)/chr(hex($1))/ge;
     return $s;
+}
+
+*unescape_chars = \&unhexify;
+
+sub unescape_full {
+    my $url = shift;
+    $url =~ tr/+/ /;
+    $url =~ s/<!--.*?-->//sg;
+    return unhexify($url);
 }
 
 ## UNEVAL
@@ -637,8 +778,8 @@ sub logData {
 
 
 sub file_modification_time {
-    my ($fn) = @_;
-    my @s = stat($fn) or die "Can't stat '$fn': $!\n";
+    my ($fn, $tolerate) = @_;
+    my @s = stat($fn) or ($tolerate and return 0) or die "Can't stat '$fn': $!\n";
     return $s[9];
 }
 
@@ -692,13 +833,10 @@ sub check_gate {
 
 	my $gate;
 	if ($gate = readfile("$gatedir/.access_gate") ) {
-#::logDebug("found access_gate");
 		$f =~ s:.*/::;
 		$gate = Vend::Interpolate::interpolate_html($gate);
-#::logDebug("f=$f gate=$gate");
 		if($gate =~ m!^$f(?:\.html?)?[ \t]*:!m ) {
 			$gate =~ s!.*(\n|^)$f(?:\.html?)?[ \t]*:!!s;
-#::logDebug("gate=$gate");
 			$gate =~ s/\n[\S].*//s;
 			$gate =~ s/^\s+//;
 		}
@@ -712,26 +850,96 @@ sub check_gate {
 	return $gate;
 }
 
-sub get_option_hash {
-	if (ref $_[0]) {
-		return $_[0] unless ref $_[1];
-		for(keys %{$_[1]}) {
-			$_[0]->{$_} = $_[1]->{$_}
-				unless defined $_[0]->{$_};
-		}
+sub string_to_ref {
+	my ($string) = @_;
+	if(! $Vend::Cfg->{ExtraSecure} and $MVSAFE::Safe) {
+		return eval $string;
 	}
-	return {} unless $_[0] =~ /\S/;
+	elsif ($MVSAFE::Safe) {
+		die errmsg("not allowed to eval in Safe mode.");
+	}
+	my $safe = $Vend::Interpolate::safe_safe || new Safe;
+	return $safe->reval($string);
+}
+
+sub is_hash {
+	return ref($_[0]) eq 'HASH';
+}
+
+sub dotted_hash {
+	my($hash, $key, $value, $delete_empty) = @_;
+	$hash = get_option_hash($hash) unless is_hash($hash);
+	unless (is_hash($hash)) {
+		return undef unless defined $value;
+		$hash = {};
+	}
+	my @keys = split /[\.:]+/, $key;
+	my $final;
+	my $ref;
+
+	if(! defined $value) {
+		# Retrieving
+		$ref = $hash->{shift @keys};
+		for(@keys) {
+			return undef unless is_hash($ref);
+			$ref = $ref->{$_};
+		}
+		return $ref;
+	}
+
+	# Storing
+	$final = pop @keys;
+	$ref = $hash;
+
+	for(@keys) {
+		$ref->{$_} = {} unless is_hash($ref->{$_});
+		$ref = $ref->{$_};
+	}
+
+	if($delete_empty and ! length($value)) {
+		delete $ref->{$final};
+	}
+	else {
+		$ref->{$final} = $value;
+	}
+
+	$hash = uneval_it($hash);
+	return $hash;
+}
+
+sub get_option_hash {
 	my $string = shift;
 	my $merge = shift;
+	if (ref $string) {
+		return $string unless ref $merge;
+		for(keys %{$merge}) {
+			$string->{$_} = $merge->{$_}
+				unless defined $string->{$_};
+		}
+		return $string;
+	}
+	return {} unless $string =~ /\S/;
 	$string =~ s/^\s+//;
 	$string =~ s/\s+$//;
 	if($string =~ /^{/ and $string =~ /}/) {
-		return $Vend::Interpolate::ready_safe->reval($string);
+		return string_to_ref($string);
 	}
-	my @opts = split /\s*,\s*/, $string;
+
+	my @opts;
+	unless ($string =~ /,/) {
+		@opts = grep $_ ne "=", Text::ParseWords::shellwords($string);
+		for(@opts) {
+			s/^(\w[-\w]*\w)=(["'])(.*)\2$/$1$3/;
+		}
+	}
+	else {
+		@opts = split /\s*,\s*/, $string;
+	}
+
 	my %hash;
 	for(@opts) {
 		my ($k, $v) = split /[\s=]+/, $_, 2;
+		$k =~ s/-/_/g;
 		$hash{$k} = $v;
 	}
 	if($merge) {
@@ -744,6 +952,26 @@ sub get_option_hash {
 	return \%hash;
 }
 
+## This simply returns a hash of words, which may be quoted shellwords
+## Replaces most of parse_hash in Vend::Config
+sub hash_string {
+	my($settings, $ref) = @_;
+
+	return $ref if ! $settings or $settings !~ /\S/;
+
+	$ref ||= {};
+
+	$settings =~ s/^\s+//;
+	$settings =~ s/\s+$//;
+	my(@setting) = Text::ParseWords::shellwords($settings);
+
+	my $i;
+	for ($i = 0; $i < @setting; $i += 2) {
+		$ref->{$setting[$i]} = $setting[$i + 1];
+	}
+	return $ref;
+}
+
 ## READIN
 
 my $Lang;
@@ -751,11 +979,57 @@ my $Lang;
 sub find_locale_bit {
 	my $text = shift;
 	$Lang = $::Scratch->{mv_locale} unless defined $Lang;
-#::logDebug("find_locale: $Lang");
 	$text =~ m{\[$Lang\](.*)\[/$Lang\]}s
 		and return $1;
 	$text =~ s{\[(\w+)\].*\[/\1\].*}{}s;
 	return $text;
+}
+
+sub parse_locale {
+	my ($input) = @_;
+
+	# avoid copying big strings
+	my $r = ref($input) ? $input : \$input;
+	
+	if($Vend::Cfg->{Locale}) {
+		my $key;
+		$$r =~ s~\[L(\s+([^\]]+))?\]([\000-\377]*?)\[/L\]~
+						$key = $2 || $3;		
+						defined $Vend::Cfg->{Locale}{$key}
+						?  ($Vend::Cfg->{Locale}{$key})	: $3 ~eg;
+		$$r =~ s~\[LC\]([\000-\377]*?)\[/LC\]~
+						find_locale_bit($1) ~eg;
+		undef $Lang;
+	}
+	else {
+		$$r =~ s~\[L(?:\s+[^\]]+)?\]([\000-\377]*?)\[/L\]~$1~g;
+	}
+
+	# return scalar string if one get passed initially
+	return ref($input) ? $input : $$r;
+}
+
+sub teleport_name {
+	my ($file, $teleport, $table) = @_;
+	my $db;
+	return $file
+		unless	 $teleport
+			and  $db = Vend::Data::database_exists_ref($table);
+
+	my @f = qw/code base_code expiration_date show_date page_text/;
+	my ($c, $bc, $ed, $sd, $pt) = @{$Vend::Cfg->{PageTableMap}}{@f};
+	my $q = qq{
+		SELECT $c from $table
+		WHERE  $bc = '$file'
+		AND    $ed <  $teleport
+		AND    $sd >= $teleport
+		ORDER BY $sd DESC
+	};
+	my $ary = $db->query($q);
+	if($ary and $ary->[0]) {
+		$file = $ary->[0][0];
+	}
+	return $file;
 }
 
 # Reads in a page from the page directory with the name FILE and ".html"
@@ -765,7 +1039,11 @@ sub find_locale_bit {
 # Substitutes Locale bits as necessary.
 
 sub readin {
-    my($file, $only) = @_;
+    my($file, $only, $locale) = @_;
+
+	## We don't want to try if we are forcing a flypage
+	return undef if $Vend::ForceFlypage;
+
     my($fn, $contents, $gate, $pathdir, $dir, $level);
     local($/);
 
@@ -773,21 +1051,48 @@ sub readin {
 		if defined $Global::Variable->{MV_PAGE};
 	$Global::Variable->{MV_PAGE} = $file;
 
+	$file =~ s#^\s+##;
+	$file =~ s#\s+$##;
 	$file =~ s#\.html?$##;
 	if($file =~ m{\.\.} and $file =~ /\.\..*\.\./) {
 		::logError( "Too many .. in file path '%s' for security.", $file );
 		$file = find_special_page('violation');
 	}
+	$file =~ s#//+#/#g;
+	$file =~ s#/+$##g;
 	($pathdir = $file) =~ s#/[^/]*$##;
 	$pathdir =~ s:^/+::;
 	my $try;
 	my $suffix = $Vend::Cfg->{HTMLsuffix};
+	my $db_tried;
+	$locale = 1 unless defined $locale;
+	my $record;
   FINDPAGE: {
-	foreach $try (
-					$Vend::Cfg->{PageDir},
-					@{$Vend::Cfg->{TemplateDir}},
-					@{$Global::TemplateDir}          )
-	{
+  	## If PageTables is set, we try to find the page in the table first
+	## but only once, without the suffix
+  	if(! $db_tried++ and $Vend::Cfg->{PageTables}) {
+		my $teleport = $Vend::Session->{teleport};
+		my $field = $Vend::Cfg->{PageTableMap}{page_text};
+		foreach my $t (@{$Vend::Cfg->{PageTables}}) {
+			my $db = Vend::Data::database_exists_ref($t);
+			if($teleport) {
+				$file = teleport_name($file, $teleport, $t);
+			}
+			$record = $db->row_hash($file)
+				or next;
+			$contents = $record->{$field};
+			last FINDPAGE if length $contents;
+			undef $contents;
+		}
+	}
+
+	my @dirs = ($Vend::Cfg->{PreviewDir},
+				$Vend::Cfg->{PageDir},
+				@{$Vend::Cfg->{TemplateDir}},
+				@{$Global::TemplateDir});
+
+	foreach $try (@dirs) {
+		next unless $try;
 		$dir = $try . "/" . $pathdir;
 		if (-f "$dir/.access") {
 			if (-s _) {
@@ -806,13 +1111,13 @@ sub readin {
 		}
 
 		if( defined $level and ! check_security($file, $level, $gate) ){
-			my $realm = $::Variable->{COMPANY} || $Vend::Cfg->{CatalogName};
+			my $realm = $::Variable->{COMPANY} || $Vend::Cat;
 			$Vend::StatusLine = <<EOF if $Vend::InternalHTTP;
 HTTP/1.0 401 Unauthorized
 WWW-Authenticate: Basic realm="$realm"
 EOF
-			if(-f "$try/violation.$suffix") {
-				$fn = "$try/violation.$suffix";
+			if(-f "$try/violation$suffix") {
+				$fn = "$try/violation$suffix";
 			}
 			else {
 				$file = find_special_page('violation');
@@ -837,42 +1142,44 @@ EOF
 		$suffix = '.html';
 		redo FINDPAGE;
 	}
-	elsif($Vend::Cfg->{Locale}) {
-		my $key;
-		$contents =~ s~\[L(\s+([^\]]+))?\]([\000-\377]*?)\[/L\]~
-						$key = $2 || $3;		
-						defined $Vend::Cfg->{Locale}{$key}
-						?  ($Vend::Cfg->{Locale}{$key})	: $3 ~eg;
-		$contents =~ s~\[LC\]([\000-\377]*?)\[/LC\]~
-						find_locale_bit($1) ~eg;
-		undef $Lang;
+  }
+
+	if(! defined $contents) {
+		$contents = readfile_db("pages/$file");
+	}
+
+	return unless defined $contents;
+	
+	parse_locale(\$contents);
+
+	return $contents unless wantarray;
+	return ($contents, $record);
+}
+
+sub readfile_db {
+	my ($name) = @_;
+	return unless $Vend::Cfg->{FileDatabase};
+	my ($tab, $col) = split /:+/, $Vend::Cfg->{FileDatabase};
+	my $db = $Vend::Interpolate::Db{$tab} || ::database_exists_ref($tab)
+		or return undef;
+#::logDebug("tab=$tab exists, db=$db");
+
+	# I guess this is the best test
+	if($col) {
+		return undef unless $db->column_exists($col);
+	}
+	elsif ( $col = $Global::Variable->{LANG} and $db->column_exists($col) ) {
+		#do nothing
 	}
 	else {
-		$contents =~ s~\[L(?:\s+[^\]]+)?\]([\000-\377]*?)\[/L\]~$1~g;
+		$col = 'default';
+		return undef unless $db->column_exists($col);
 	}
-  }
-  if($Vend::Cfg->{HTMLmirror}) {
-  	my $mir = $fn;
-  	$mir =~ s:([^/]+)$:.$1:;
-#::logDebug("mirror $mir");
-  	if	(
-			-f $mir
-				and 
-			file_modification_time($fn) <= file_modification_time($mir)
-		)
-	{
-		return $contents;
-	}
-	else {
-		# We want to work anyway
-		open (MIR, ">$mir")
-			or return $contents;
-		Vend::Interpolate::vars_and_comments(\$contents, 1);
-		print MIR $contents;
-		close MIR;
-	}
-  }
-  $contents;
+
+#::logDebug("col=$col exists, db=$db");
+	return undef unless $db->record_exists($name);
+#::logDebug("ifile=$name exists, db=$db");
+	return $db->field($name, $col);
 }
 
 # Reads in an arbitrary file.  Returns the entire contents,
@@ -880,80 +1187,164 @@ EOF
 # Careful, needs the full path, or will be read relative to
 # VendRoot..and will return binary. Should be tested by
 # the user.
+
+# Will also look in the *global* TemplateDir. (No need for the
+# extra overhead of local TemplateDir, probably also insecure.)
 #
-# To ensure security in multiple catalog setups, leading
-# / is not allowed unless $Global::NoAbsolute is set.
-#
+# To ensure security in multiple catalog setups, leading /
+# is not allowed if the second subroutine argument passed
+# (caller usually sends $Global::NoAbsolute) is true.
+
+# If catalog FileDatabase is enabled and there are no contents, we can retrieve
+# the file from the database.
+
 sub readfile {
-    my($file, $no, $loc) = @_;
+    my($ifile, $no, $loc) = @_;
     my($contents);
     local($/);
 
-	if($no and (::file_name_is_absolute($file) or $file =~ m#\.\./.*\.\.#)) {
-		::logError("Can't read file '%s' with NoAbsolute set" , $file);
-		::logGlobal({}, "Can't read file '%s' with NoAbsolute set" , $file );
+	if($no and (file_name_is_absolute($ifile) or $ifile =~ m#\.\./.*\.\.#)) {
+		::logError("Can't read file '%s' with NoAbsolute set" , $ifile);
+		::logGlobal({ level => 'auth'}, "Can't read file '%s' with NoAbsolute set" , $ifile );
 		return undef;
 	}
 
-    return undef if ! -f $file;
-    return undef if ! open(READIN, "< $file");
+	my $file;
 
-	$Global::Variable->{MV_FILE} = $file;
+	if (file_name_is_absolute($ifile) and -f $ifile) {
+		$file = $ifile;
+	}
+	else {
+		for( ".", @{$Global::TemplateDir} ) {
+			next if ! -f "$_/$ifile";
+			$file = "$_/$ifile";
+			last;
+		}
+	}
 
-	binmode(READIN) if $Global::Windows;
-	undef $/;
-	$contents = <READIN>;
-	close(READIN);
+	if(! $file) {
+		$contents = readfile_db($ifile);
+		return undef unless defined $contents;
+	}
+	else {
+		return undef unless open(READIN, "< $file");
+		$Global::Variable->{MV_FILE} = $file;
 
-	if ($Vend::Cfg->{Locale} and ($loc or $Vend::Cfg->{Locale}->{readfile}) ) {
-		my $key;
-		$contents =~ s~\[L(\s+([^\]]+))?\]([\000-\377]*?)\[/L\]~
-						$key = $2 || $3;		
-						defined $Vend::Cfg->{Locale}->{$key}
-						?  ($Vend::Cfg->{Locale}->{$key})	: $3 ~eg;
-		$contents =~ s~\[LC\]([\000-\377]*?)\[/LC\]~
-						find_locale_bit($1) ~eg;
-		undef $Lang;
+		binmode(READIN) if $Global::Windows;
+		undef $/;
+		$contents = <READIN>;
+		close(READIN);
+	}
+
+	if (
+		$Vend::Cfg->{Locale}
+			and
+		(defined $loc ? $loc : $Vend::Cfg->{Locale}->{readfile} )
+		)
+	{
+		parse_locale(\$contents);
 	}
     return $contents;
 }
 
 sub is_yes {
-    return( defined($_[$[]) && ($_[$[] =~ /^[yYtT1]/));
+    return( defined($_[0]) && ($_[0] =~ /^[yYtT1]/));
 }
 
 sub is_no {
-	return( !defined($_[$[]) || ($_[$[] =~ /^[nNfF0]/));
+	return( !defined($_[0]) || ($_[0] =~ /^[nNfF0]/));
 }
 
 # Returns a URL which will run the ordering system again.  Each URL
 # contains the session ID as well as a unique integer to avoid caching
 # of pages by the browser.
 
+my @scratches = qw/
+				add_dot_html
+				add_source
+				link_relative
+				match_security
+				/;
+
 sub vendUrl {
-    my($path, $arguments, $r) = @_;
+    my($path, $arguments, $r, $opt) = @_;
     $r = $Vend::Cfg->{VendURL}
 		unless defined $r;
 
+	my $secure;
+	my $can_cache = ! $Vend::Cfg->{NoCache}{$path};
 	my @parms;
 
 	if(exists $Vend::Cfg->{AlwaysSecure}{$path}) {
 		$r = $Vend::Cfg->{SecureURL};
 	}
 
+	$opt ||= {};
+	my %skip = qw/form 1 href 1 reparse 1/;
+
+	for(@scratches) {
+		next if defined $opt->{$_};
+		next unless defined $::Scratch->{"mv_$_"};
+		$skip{$_} = 1;
+		$opt->{$_} = $::Scratch->{"mv_$_"};
+	}
+
+	my $extra;
+	if($opt->{form}) {
+		$path = 'process' unless $path;
+		if($opt->{form} eq 'auto') {
+			my $form = '';
+			while( my ($k, $v) = each %$opt) {
+				next if $skip{$k};
+				$k =~ s/^__//;
+				$form .= "$k=$v\n";
+			}
+			$opt->{form} = $form;
+		}
+		push @parms, Vend::Interpolate::escape_form($opt->{form});
+	}
+
 	my($id, $ct);
 	$id = $Vend::SessionID
-		unless $CGI::cookie && $::Scratch->{mv_no_session_id};
+		unless $opt->{no_session_id}
+		or     ($Vend::Cookie and $can_cache and $::Scratch->{mv_no_session_id});
 	$ct = ++$Vend::Session->{pageCount}
-		unless $::Scratch->{mv_no_count};
+		unless $opt->{no_count} or ($can_cache && $::Scratch->{mv_no_count});
 
+	if($opt->{match_security}) {
+		$opt->{secure} = $CGI::secure;
+	}
+
+	if($opt->{no_session}) {
+		undef $id;
+		undef $ct;
+	}
+
+	if($opt->{link_relative}) {
+		my $cur = $Global::Variable->{MV_PAGE};
+		$cur =~ s{/[^/]+$}{}
+			and $path = "$cur/$path";
+	}
+
+	if($opt->{secure} or exists $Vend::Cfg->{AlwaysSecure}{$path}) {
+		$r = $Vend::Cfg->{SecureURL};
+	}
+
+	$path = escape_chars_url($path)
+		if $path =~ $need_escape;
     $r .= '/' . $path;
-	$r .= '.html' if $::Scratch->{mv_add_dot_html} and $r !~ /\.html?$/;
-	push @parms, "$::VN->{mv_session_id}=$id"			 	if defined $id;
-	push @parms, "$::VN->{mv_arg}=" . hexify($arguments)	if defined $arguments;
-	push @parms, "$::VN->{mv_pc}=$ct"                 	if defined $ct;
-	push @parms, "$::VN->{mv_cat}=$Vend::Cfg->{CatalogName}"
-														if defined $Vend::VirtualCat;
+	$r .= '.html' if $opt->{add_dot_html} and $r !~ /\.html?$/;
+
+	if($opt->{add_source} and $Vend::Session->{source}) {
+		my $sn = hexify($Vend::Session->{source});
+		push @parms, "$::VN->{mv_source}=$sn";
+	}
+
+	push @parms, "$::VN->{mv_session_id}=$id"			 if $id;
+	push @parms, "$::VN->{mv_arg}=" . hexify($arguments) if defined $arguments;
+	push @parms, "$::VN->{mv_pc}=$ct"                 	 if $ct;
+	push @parms, "$::VN->{mv_cat}=$Vend::Cat"            if $Vend::VirtualCat;
+
 	if($Vend::AccumulatingLinks) {
 		my $key = $path;
 		$key =~ s/\.html?$//;
@@ -965,20 +1356,36 @@ sub vendUrl {
 		push(@Vend::Links, [$key, $value]) unless $Vend::LinkFound{$key}++;
 
 	}
-	return $r unless @parms;
-    return $r . '?' . join("&", @parms);
+
+    $r .= '?' . join($Global::UrlJoiner, @parms) if @parms;
+	if($opt->{anchor}) {
+		$opt->{anchor} =~ s/^#//;
+		$r .= $opt->{anchor};
+	}
+	return $r;
 } 
 
 sub secure_vendUrl {
-	return vendUrl($_[0], $_[1], $Vend::Cfg->{SecureURL});
+	return vendUrl($_[0], $_[1], $Vend::Cfg->{SecureURL}, $_[3]);
 }
+
+my %strip_vars;
+my $strip_init;
 
 sub change_url {
 	my $url = shift;
-	return $url if $url =~ m{^(?:\w+:)?/};
-#::logDebug("changed $url");
+	return $url if $url =~ m{^\w+:};
+	return $url if $url =~ m{^/};
+	if(! $strip_init) {
+		for(qw/mv_session_id mv_pc/) {
+			$strip_vars{$_} = 1;
+			$strip_vars{$::IV->{$_}} = 1;
+		}
+	}
+	my $arg;
 	my @args;
-	($url, @args) = split /[?&]/, $url;
+	($url, $arg) = split /[?&]/, $url, 2;
+	@args = grep ! $strip_vars{$_}, split $Global::UrlSplittor, $arg;
 	return Vend::Interpolate::tag_area( $url, '', {
 											form => join "\n", @args,
 										} );
@@ -989,8 +1396,6 @@ sub resolve_links {
 	$html =~ s/(<a\s+[^>]*href\s*=\s*)(["'])([^'"]+)\2/$1 . $2 . change_url($3) . $2/gei;
 	return $html;
 }
-
-my $use = undef;
 
 ### flock locking
 
@@ -1010,10 +1415,8 @@ sub flock_lock {
     }
     else {
         if (! flock($fh, $flag | $flock_LOCK_NB)) {
-            if ($! =~ m/^Try again/
-                or $! =~ m/^Resource temporarily unavailable/
-                or $! =~ m/^Operation would block/) {
-                return 0;
+            if ($!{EAGAIN} or $!{EWOULDBLOCK}) {
+				return 0;
             }
             else {
                 die "Could not lock file: $!\n";
@@ -1041,9 +1444,7 @@ sub fcntl_lock {
     }
     else {
         if (fcntl($fh, $op, $struct) < 0) {
-            if ($! =~ m/^Try again/
-                or $! =~ m/^Resource temporarily unavailable/
-                or $! =~ m/^Operation would block/) {
+            if ($!{EAGAIN} or $!{EWOULDBLOCK}) {
                 return 0;
             }
             else {
@@ -1058,9 +1459,7 @@ sub fcntl_unlock {
     my ($fh) = @_;
 	my $struct = pack('sslli', F_UNLCK, 0, 0, 0, $$);
 	if (fcntl($fh, F_SETLK, $struct) < 0) {
-		if ($! =~ m/^Try again/
-                or $! =~ m/^Resource temporarily unavailable/
-                or $! =~ m/^Operation would block/) {
+		if ($!{EAGAIN} or $!{EWOULDBLOCK}) {
 			return 0;
 		}
 		else {
@@ -1070,35 +1469,41 @@ sub fcntl_unlock {
 	return 1;
 }
 
-### Select based on os, vestigial
+my $lock_function = \&flock_lock;
+my $unlock_function = \&flock_unlock;
 
-my $lock_function;
-my $unlock_function;
-
-unless (defined $use) {
-    my $os = $Vend::Util::Config{'osname'};
-	$use = 'flock';
-	if ($os =~ /win32/i) {
-        $use = 'none';
+sub set_lock_type {
+	if ($Global::LockType eq 'none') {
+		logDebug("using NO locking");
+		$lock_function = sub {1};
+		$unlock_function = sub {1};
 	}
+	elsif ($Global::LockType =~ /fcntl/i) {
+		logDebug("using fcntl(2) locking");
+		$lock_function = \&fcntl_lock;
+		$unlock_function = \&fcntl_unlock;
+	}
+	else {
+		$lock_function = \&flock_lock;
+		$unlock_function = \&flock_unlock;
+	}
+	return; # VOID
 }
-        
-if ($use eq 'none') {
-    print "using NO locking\n";
-    $lock_function = sub {1};
-    $unlock_function = sub {1};
-}
-else {
-    $lock_function = \&flock_lock;
-    $unlock_function = \&flock_unlock;
-}
-    
+ 
 sub lockfile {
     &$lock_function(@_);
 }
 
 sub unlockfile {
     &$unlock_function(@_);
+}
+
+### Still necessary, sad to say.....
+if($Global::Windows) {
+	set_lock_type('none');
+}
+elsif($^O =~ /hpux/) {
+	set_lock_type('fcntl');
 }
 
 # Returns the total number of items ordered.
@@ -1120,9 +1525,10 @@ sub tag_nitems {
 	if($opt->{qualifier}) {
 		$attr = $opt->{qualifier};
 		my $qr;
-		$qr = qr{$opt->{compare}}
-			if $opt->{compare};
-		if($opt->{compare}) {
+		eval { 
+			$qr = qr{$opt->{compare}} if $opt->{compare};
+		};
+		if($qr) {
 			$sub = sub { 
 							$_[0] =~ $qr;
 						};
@@ -1181,7 +1587,7 @@ sub check_authorization {
 	}
 	else {
 		$pwinfo = $Vend::Cfg->{UserDatabase} unless $pwinfo;
-		undef $use_crypt unless $::Variable->{MV_USE_CRYPT};
+		undef $use_crypt if $::Variable->{MV_NO_CRYPT};
 		$cmp_pw = Vend::Interpolate::tag_data($pwinfo, 'password', $user)
 			if defined $Vend::Cfg->{Database}{$pwinfo};
 	}
@@ -1243,7 +1649,6 @@ sub check_security {
 	}
 	elsif ($reconfig eq '2') {
 		$msg = "access protected database $item";
-#::logDebug("passed gate of $gate");
 		return 1 if is_yes($gate);
 	}
 	elsif ($reconfig eq '3') {
@@ -1266,7 +1671,7 @@ ALERT: Attempt to %s at %s from:
 	SCRIPT_NAME  %s
 	PATH_INFO    %s
 EOF
-		logGlobal ({}, $fmt,
+		logGlobal ({level => 'auth'}, $fmt,
 						$msg,
 						$CGI::script_name,
 						$CGI::host,
@@ -1287,7 +1692,7 @@ EOF
 		ne  $Vend::Cfg->{Password})
 	{
 		::logGlobal(
-				{},
+				{level => 'auth'},
 				"ALERT: Password mismatch, attempt to %s at %s from %s",
 				$msg,
 				$CGI::script_name,
@@ -1311,7 +1716,9 @@ ALERT: Attempt to %s %s per user name:
 	PATH_INFO    %s
 EOF
 
-		::logGlobal($fmt,
+		::logGlobal(
+			{level => 'auth'},
+			$fmt,
 			$CGI::script_name,
 			$msg,
 			$CGI::remote_host,
@@ -1338,7 +1745,9 @@ Attempt to %s on %s, secure operations disabled.
 	SCRIPT_NAME  %s
 	PATH_INFO    %s
 EOF
-		::logGlobal ($fmt,
+		::logGlobal (
+				{level => 'auth'},
+				$fmt,
 				$msg,
 				$CGI::script_name,
 				$CGI::host,
@@ -1353,15 +1762,6 @@ EOF
 
 	# Authorized if got here
 	return 1;
-}
-
-# Replace the escape notation %HH with the actual characters.
-#
-sub unescape_chars {
-    my($in) = @_;
-
-    $in =~ s/%(..)/chr(hex($1))/ge;
-    $in;
 }
 
 
@@ -1381,7 +1781,7 @@ sub find_special_page {
 
 sub logDebug {
 	return unless $Global::DebugFile;
-	print caller() . ':debug: ', @_, "\n";
+	print caller() . ':debug: ', errmsg(@_), "\n";
 }
 
 sub errmsg {
@@ -1393,18 +1793,31 @@ sub errmsg {
 	elsif($Global::Locale and defined $Global::Locale->{$fmt}) {
 	 	$location = $Global::Locale;
 	}
-	return sprintf $fmt, @strings if ! $location;
-	if(ref $location->{$fmt}) {
-		$fmt = $location->{$fmt}[0];
-		@strings = @strings[ @{ $location->{$fmt}[1] } ];
+	if($location) {
+		if(ref $location->{$fmt}) {
+			$fmt = $location->{$fmt}[0];
+			@strings = @strings[ @{ $location->{$fmt}[1] } ];
+		}
+		else {
+			$fmt = $location->{$fmt};
+		}
 	}
-	else {
-		$fmt = $location->{$fmt};
+	return scalar(@strings) ? sprintf $fmt, @strings : $fmt;
+}
+
+*l = \&errmsg;
+
+sub show_times {
+	my $message = shift || 'time mark';
+	my @times = times();
+	for( my $i = 0; $i < @times; $i++) {
+		$times[$i] -= $Vend::Times[$i];
 	}
-	return sprintf $fmt, @strings;
+	logDebug("$message: " . join " ", @times);
 }
 
 sub logGlobal {
+	return 1 if $Vend::ExternalProgram;
     my($msg) = shift;
 	my $opt;
 	if(ref $msg) {
@@ -1421,34 +1834,39 @@ sub logGlobal {
 	if($opt and $Global::SysLog) {
 		$fn = "|" . ($Global::SysLog->{command} || 'logger');
 
-		my $leveled;
+		my $prioritized;
+		my $tagged;
+		my $facility = 'local3';
 		if($opt->{level} and defined $Global::SysLog->{$opt->{level}}) {
-			$fn .= " -p $Global::SysLog->{$opt->{level}}";
-			$leveled = 1;
+			my $stuff =  $Global::SysLog->{$opt->{level}};
+			if($stuff =~ /\./) {
+				$facility = $stuff;
+			}
+			else {
+				$facility .= ".$stuff";
+			}
+			$prioritized = 1;
 		}
 
-		my $tag = '';
-		if($Global::SysLog->{tag}) {
-			$tag = " -t $Global::SysLog->{tag}"
-				unless "\L$Global::Syslog->{tag}" eq 'none';
-		}
-		else {
-			$tag = " -t interchange";
-		}
-		$tag .= ".$opt->{level}" if $tag and ! $leveled;
+		my $tag = $Global::SysLog->{tag} || 'interchange';
 
-		$fn .= $tag;
+		$facility .= ".info" unless $prioritized;
+
+		$fn .= " -p $facility";
+		$fn .= " -t $tag" unless "\L$tag" eq 'none';
 
 		if($opt->{socket}) {
 			$fn .= " -u $opt->{socket}";
 		}
 	}
 
-	print "$msg\n" if $Vend::Foreground and ! $Vend::Log_suppress && ! $Vend::Quiet;
+	my $nl = ($opt and $opt->{strip}) ? '' : "\n";
+
+	print "$msg$nl" if $Global::Foreground and ! $Vend::Log_suppress && ! $Vend::Quiet;
 
 	$fn =~ s/^([^|>])/>>$1/
 		or $nolock = 1;
-#::logDebug("logging with $fn");
+
     $msg = format_log_msg($msg) if ! $nolock;
 
 	$Vend::Errors .= $msg if $Global::DisplayErrors;
@@ -1485,7 +1903,7 @@ sub logError {
 		$msg = errmsg($msg, @_);
 	}
 
-	print "$msg\n" if $Vend::Foreground and ! $Vend::Log_suppress && ! $Vend::Quiet;
+	print "$msg\n" if $Global::Foreground and ! $Vend::Log_suppress && ! $Vend::Quiet;
 
 	$Vend::Session->{last_error} = $msg;
 
@@ -1505,7 +1923,8 @@ sub logError {
     };
     if ($@) {
 		chomp $@;
-		logGlobal ("Could not %s error file %s: %s\nto report this error: %s",
+		logGlobal ({ level => 'info' },
+					"Could not %s error file %s: %s\nto report this error: %s",
 					$@,
 					$Vend::Cfg->{ErrorFile},
 					$!,
@@ -1514,12 +1933,44 @@ sub logError {
     }
 }
 
+# Front-end to log routines that ignores repeated identical
+# log messages after the first occurrence
+my %logOnce_cache;
+my %log_sub_map = (
+	data	=> \&logData,
+	debug	=> \&logDebug,
+	error	=> \&logError,
+	global	=> \&logGlobal,
+);
+
+# First argument should be log type (see above map).
+# Rest of arguments are same as if calling log routine directly.
+sub logOnce {
+	return if exists $logOnce_cache{"@_"};
+	my $log_sub = $log_sub_map{ lc(shift) } || $log_sub_map{error};
+	$log_sub->(@_) and ++$logOnce_cache{"@_"};
+}
+
+
 # Here for convenience in calls
 sub set_cookie {
-    my ($name, $value, $expire) = @_;
-    $::Instance->{Cookies} = []
-        if ! $::Instance->{Cookies};
-    @{$::Instance->{Cookies}} = [$name, $value, $expire];
+    my ($name, $value, $expire, $domain, $path) = @_;
+
+    # Set expire to now + some time if expire string is something like
+    # "30 days" or "7 weeks" or even "60 minutes"
+	if($expire =~ /^\s*\d+[\s\0]*[A-Za-z]\S*\s*$/) {
+		my $add = Vend::Config::time_to_seconds($expire);
+		$expire = time() + $add if $add;
+	}
+
+	if (! $::Instance->{Cookies}) {
+		$::Instance->{Cookies} = []
+	}
+	else {
+		@{$::Instance->{Cookies}} =
+			grep $_->[0] ne $name, @{$::Instance->{Cookies}};
+	}
+    push @{$::Instance->{Cookies}}, [$name, $value, $expire, $domain, $path];
     return;
 }
 
@@ -1690,16 +2141,251 @@ sub canonpath {
 	return &{$canonpath_routine}(@_);
 }
 
-# LEGACY4
-*send_mail = \&Vend::Order::send_mail;
-# END LEGACY4
-
 #print "catfile a b c --> " . catfile('a', 'b', 'c') . "\n";
 #print "catdir a b c --> " . catdir('a', 'b', 'c') . "\n";
 #print "canonpath a/b//../../c --> " . canonpath('a/b/../../c') . "\n";
 #print "file_name_is_absolute a/b/c --> " . file_name_is_absolute('a/b/c') . "\n";
 #print "file_name_is_absolute a:b/c --> " . file_name_is_absolute('a:b/c') . "\n";
 #print "file_name_is_absolute /a/b/c --> " . file_name_is_absolute('/a/b/c') . "\n";
+
+#my $MIME_Lite;
+#eval {
+#	require MIME::Lite;
+#	$MIME_Lite = 1;
+#	require Net::SMTP;
+#};
+#
+#sub mime_lite_send {
+#	my ($opt, $body) = @_;
+#
+#	if(! $MIME_Lite) {
+#		return send_mail(
+#			$opt->{to},
+#			$opt->{subject},
+#			$body,
+#			$opt->{reply},
+#			undef,
+#			split /\n+/, $opt->{extra}
+#			);
+#	}
+#
+#	my %special = qw/
+#		as_string 1
+#		internal  1
+#	/;
+#	my $mime = new MIME::Lite;;
+#
+#	my @ary;
+#	my $popt = {};
+#	my $mopt = {};
+#	for(keys %$opt) {
+#		if(ref $opt->{$_}) {
+#			push @ary, [ $_, delete $opt->{$_} ];
+#		}
+#		if($special{$_}) {
+#			$popt->{$_} = delete $opt->{$_};
+#		}
+#		my $m = $_;
+#		s/_/-/g;
+#		s/(\w+)/\L\u$1/g;
+#		s/-/_/g;
+#		$mopt->{$_} = $opt->{$m};
+#	}
+#
+#}
+
+sub send_mail {
+	my($to, $subject, $body, $reply, $use_mime, @extra_headers) = @_;
+
+	my @headers;
+	if(ref $to) {
+		my $head = $to;
+		$body = $subject;
+		undef $subject;
+		for(@$head) {
+			if( /^To:\s*(.+)/ ) {
+				$to = $1;
+			}
+			elsif (/Reply-to:\s*(.+)/) {
+				$reply = $_;
+			}
+			elsif (/^subj(?:ect)?:\s*(.+)/i) {
+				$subject = $1;
+			}
+			elsif($_) {
+				push @extra_headers, $_;
+			}
+		}
+	}
+
+
+	my($ok);
+#::logDebug("send_mail: to=$to subj=$subject r=$reply mime=$use_mime\n");
+
+	unless (defined $use_mime) {
+		$use_mime = $::Instance->{MIME} || undef;
+	}
+
+	if(!defined $reply) {
+		$reply = $::Values->{mv_email}
+				?  "Reply-To: $::Values->{mv_email}\n"
+				: '';
+	}
+	elsif ($reply) {
+		$reply = "Reply-To: $reply\n"
+			unless $reply =~ /^reply-to:/i;
+		$reply =~ s/\s+$/\n/;
+	}
+
+	$ok = 0;
+	my $none;
+	my $using = $Vend::Cfg->{SendMailProgram};
+
+	if($using =~ /^(none|Net::SMTP)$/i) {
+		$none = 1;
+		$ok = 1;
+	}
+
+	SEND: {
+#::logDebug("testing sendmail send none=$none");
+		last SEND if $none;
+#::logDebug("in Sendmail send $using");
+		open(MVMAIL,"|$Vend::Cfg->{SendMailProgram} -t") or last SEND;
+		my $mime = '';
+		$mime = Vend::Interpolate::mime('header', {}, '') if $use_mime;
+		print MVMAIL "To: $to\n", $reply, "Subject: $subject\n"
+			or last SEND;
+		for(@extra_headers) {
+			s/\s*$/\n/;
+			print MVMAIL $_
+				or last SEND;
+		}
+		$mime =~ s/\s*$/\n/;
+		print MVMAIL $mime
+			or last SEND;
+		print MVMAIL $body
+				or last SEND;
+		print MVMAIL Vend::Interpolate::do_tag('mime boundary') . '--'
+			if $use_mime;
+		print MVMAIL "\r\n\cZ" if $Global::Windows;
+		close MVMAIL or last SEND;
+		$ok = ($? == 0);
+	}
+
+	SMTP: {
+		my $mhost = $::Variable->{MV_SMTPHOST} || $Global::Variable->{MV_SMTPHOST};
+		my $helo =  $Global::Variable->{MV_HELO};
+		last SMTP unless $none and $mhost;
+		eval {
+			require Net::SMTP;
+		};
+		last SMTP if $@;
+		$ok = 0;
+		$using = "Net::SMTP (mail server $mhost)";
+#::logDebug("using $using");
+		undef $none;
+
+		my $smtp = new Net::SMTP $mhost;
+		$smtp->hello($helo) if $helo;
+#::logDebug("smtp object $smtp");
+
+		my $from = $::Variable->{MV_MAILFROM}
+				|| $Global::Variable->{MV_MAILFROM}
+				|| $Vend::Cfg->{MailOrderTo};
+		
+		for(@extra_headers) {
+			s/\s*$/\n/;
+			next unless /^From:\s*(\S.+)$/mi;
+			$from = $1;
+		}
+		my $mime = '';
+		$mime = Vend::Interpolate::mime('header', {}, '') if $use_mime;
+		$smtp->mail($from)
+			or last SMTP;
+#::logDebug("smtp accepted from=$from");
+
+		my @to;
+		my @addr = split /\s*,\s*/, $to;
+		for (@addr) {
+			if(/\s/) {
+				## Uh-oh. Try to handle
+				if ( m{( <.+?> | [^\s,]+\@[^\s,]+ ) }x ) {
+					push @to, $1
+				}
+				else {
+					logError("Net::SMTP sender skipping unparsable address %s", $_);
+				}
+			}
+			else {
+				push @to, $_;
+			}
+		}
+		
+		@addr = $smtp->recipient(@to, { SkipBad => 1 });
+		if(scalar(@addr) != scalar(@to)) {
+			logError(
+				"Net::SMTP not able to send to all addresses of %s",
+				join(", ", @to),
+			);
+		}
+
+#::logDebug("smtp accepted to=" . join(",", @addr));
+
+		$smtp->data();
+
+		push @extra_headers, $reply if $reply;
+		for ("To: $to", "Subject: $subject", @extra_headers) {
+			next unless $_;
+			s/\s*$/\n/;
+#::logDebug(do { my $it = $_; $it =~ s/\s+$//; "datasend=$it" });
+			$smtp->datasend($_)
+				or last SMTP;
+		}
+
+		if($use_mime) {
+			$mime =~ s/\s*$/\n/;
+			$smtp->datasend($mime)
+				or last SMTP;
+		}
+		$smtp->datasend("\n");
+		$smtp->datasend($body)
+			or last SMTP;
+		$smtp->datasend(Vend::Interpolate::do_tag('mime boundary') . '--')
+			if $use_mime;
+		$smtp->dataend()
+			or last SMTP;
+		$ok = $smtp->quit();
+	}
+
+	if ($none or !$ok) {
+		logError("Unable to send mail using %s\nTo: %s\nSubject: %s\n%s\n\n%s",
+				$using,
+				$to,
+				$subject,
+				$reply,
+				$body,
+		);
+	}
+
+	$ok;
+}
+
+sub get_cfg_header {
+	my ($file) = @_;
+	my $cfg = {};
+	local ($_, *IN);
+	unless (open IN, "<$file") {
+		my @msg = ("Can't open config file '%s': %s\n", $file, $!);
+		logError(@msg);
+		return { error => errmsg(@msg) };
+	}
+	while (<IN>) {
+		($cfg->{position} = $1, last) if /^\s*#\s*position\s*:\s*(\d+)/i;
+	}
+	close IN;
+	return $cfg;
+}
+
 
 1;
 __END__

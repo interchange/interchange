@@ -1,4 +1,4 @@
-## $Id: next_sequential.filter,v 1.1 2002-10-14 21:35:02 mheins Exp $
+## $Id: next_sequential.filter,v 1.1.2.1 2003-01-25 22:20:31 racke Exp $
 CodeDef next_sequential Filter
 CodeDef next_sequential Routine <<EOR
 sub {

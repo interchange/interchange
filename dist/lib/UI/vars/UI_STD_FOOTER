@@ -1,47 +1,19 @@
 Variable UI_STD_FOOTER  <<EOV
-[if !scratch ui_no_title]
-				</td>
-		</tr>
-</table>
-[/if]
-<center>
-<table cellpadding="0" cellspacing="0" border="0" width="100%">
-        <tr>
-                <td colspan="2">
-                        <br>
-                                <hr noshade size="2" width="100%">
-                </td>
-        </tr>
-        <tr>
-			<td valign=top>
-					&nbsp;&nbsp;&nbsp;&nbsp; <a href="http://developer.akopia.com/"><font face="Verdana,Arial,Helvetica,sans-serif" size="1"><b>Akopia Interchange&#8482;</b></font></a><font face="Verdana,Arial,Helvetica,sans-serif" size="1"><b> - &copy;2000 Akopia, Inc. &nbsp;&nbsp;&nbsp;&nbsp;Username: [data session username]
-					 &nbsp;&nbsp;&nbsp;&nbsp; StoreID: <A HREF="[area index]">[calc]$Config->{CatalogName}[/calc] </b></a>&nbsp;&nbsp;&nbsp;[tag time]%d %B, %Y %H:%M:%S[/tag]</font>
-			</td>
-			<td valign=top align="right">
-[tmp window_name][tag time]%m%d%H%M%S[/tag][/tmp]
-			<table>
-			<tr>
-				<td>
-<font face="Verdana,Arial,Helvetica,sans-serif" size="1">
-[if session logged_in]
-	<a href="[area __UI_BASE__/gentable]">Tables</A><br>
-
-	<a href="javascript:window.name = 'mainwindow[scratch window_name]';window.open('[area href=|admin/quicklinks| arg=|[scratch window_name]|]','Quicklinks[scratch window_name]','top=0,left=0,scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=170,height=700'); void 0">Quicklinks</A><br>
-[/if]
-			[if-mm advanced reconfig]
-			<A href="[area __UI_BASE__/reconfig]">Apply changes</A><br>
-			[/if-mm]
-			<A href="[area __UI_BASE__/login]">Log out</A>
-				</td>
-				<td>
-			<a href="[area admin/index]"><img height="46" width="90" border="0" src="@_UI_IMG_@__UI_BOTTOMIMG__" align=top></a><br>
-				</td>
-			</tr>
-			</table>
-        </tr>
-</table>
-</center> 
-</body>
-</html>
-
+[unpack]
+[include file="include/templates/ui_[either][scratch display_class][or]type1[/either]"]
+[/unpack]
+[comment] Clear these puppies [/comment][calc]
+	for (qw/
+				page_title
+				page_banner
+				icon_name
+				help_name
+				page_perm
+				table_perm
+				ui_body_extra
+				display_class
+		/) { delete $Scratch->{$_} }
+	return;
+[/calc]
+	
 EOV

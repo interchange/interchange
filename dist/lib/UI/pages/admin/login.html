@@ -1,8 +1,21 @@
+[if session logged_in]
+	[if session su]
+		[su exit=1]
+		[calc]delete $Session->{su}; return; [/calc]
+		[bounce page="__UI_BASE__/index"]
+	[else]
+	[userdb function=logout clear=1 hide=1]
+	[/else]
+	[/if]
+[/if]
+[if !global Windows]
+[index table=ichelp export_only=1]
+[/if]
 [set mv_no_count][/set]
+[set mv_no_session_id][/set]
 [set no_login_required]1[/set]
-[set ui_class]None[/set]
-[set page_title]Welcome to Interchange[/set]
-[set page_banner]&nbsp;[/set]
+[set ui_class]Login[/set]
+[set page_title]Interchange: Log in to Administration[/set]
 [set help_name]logout.main[/set]
 @_UI_STD_HEAD_@
 
@@ -11,8 +24,12 @@
 <div align=center>
 <table width="60%" border="0" cellspacing="0" cellpadding="0" height="200">
 <tr>
-<td bgcolor="#EEEEEE" width="700"> <font size="3"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#000066">&nbsp;&nbsp;</font></b></font> 
-<table width="250" border="1" cellspacing="0" cellpadding="0" bordercolorlight="#6699FF" bordercolordark="#6699FF" align="center">
+<td valign=top style="
+			border: 2px solid #996633;
+			background-color: #EEEEEE;
+		"
+width="700"> <font size="3"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#000066">&nbsp;&nbsp;</font></b></font> 
+<table width="250" border="1" cellspacing="0" cellpadding="0" align="center">
 <tr>
 <td>
 <table width="250" border="0" cellspacing="0" cellpadding="0" align="center" bgcolor="#FFFFFF">
@@ -20,13 +37,11 @@
 <FONT COLOR=__CONTRAST__>[scratch ui_error]</FONT>
 [set ui_error][/set]
 [/if]
-<!-- logout: [if session logged_in]
-[userdb logout]
-[/if] -->
 
 <FORM ACTION="[process]" METHOD=POST>
 <INPUT TYPE=hidden NAME=mv_click VALUE=MMLogin>
-<INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="[either][cgi destination][or]__UI_BASE__/index[/either]">
+<INPUT TYPE=hidden NAME=destination VALUE="[cgi destination]">
 <INPUT TYPE=hidden NAME=mv_doit  VALUE=return>
 
 [if session failure]
@@ -63,8 +78,8 @@
 <H1>Admin interface will not work properly.</H1>
 Please install needed Perl modules:
 <small>
-<blockquote>
-	<FONT COLOR="__UI_C_CONTRAST__">$imp</FONT>
+<blockquote class=cerror>
+	$imp
 </blockquote>
 <blockquote>
 	$minor
@@ -97,9 +112,31 @@ EOF
 <div align="right"><font size="2"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#000066">[L]Password[/L]</font><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;&nbsp;</font></b></font></div>
 </td>
 <td> 
-<INPUT TYPE=password NAME=mv_password VALUE="" SIZE=15 onChange="this.form.submit()">
+<INPUT TYPE=password NAME=mv_password VALUE="" SIZE=15
+[if !session browser =~ /msie.*mac/i]
+onChange="this.form.submit()"
+[/if]
+>
 </td>
 </tr>
+[value name=currlocale set="[either][getlocale][or]en_US[/either]" hide=1]
+[comment] UI_LOCALE definition in ui.cfg, make empty to remove box [/comment]
+[loop acclist=1 option=currlocale list="[version extended=1 global_locale_options=1]"]
+[on-match]
+<tr> 
+<td> 
+<div align="right"><font size="2"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#000066">[L]Language[/L]</font><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;&nbsp;</font></b></font></div>
+</td>
+<td> 
+	<select name="ui_locale">
+[/on-match]
+		[list]<option value=[loop-code]>[loop-param label]
+		[/list]
+[on-match]</select>
+</td>
+</tr>[/on-match]
+[/loop]
+
 <tr> 
 <td>&nbsp;</td>
 <td> 

@@ -8,7 +8,7 @@
 [/if-mm]
 [seti page_title][cgi report_title][/seti]
 [set ui_class]Reports[/set]
-[set icon_name]admin/icon_stats.gif[/set]
+[set icon_name]icon_stats.gif[/set]
 [set help_name]report[/set]
 [calc]
 	$Scratch->{head_put} = '@' . '_UI_STD_HEAD_@';
@@ -412,7 +412,7 @@ EOF
 Report name: <INPUT NAME=report_name VALUE="[cgi report_title]"><INPUT TYPE=submit VALUE=Save><BR CLEAR=LEFT>
 <TEXTAREA ROWS=50 COLS=80 NAME=page>
 &#91;set page_title][cgi report_title][/set]
-&#91;set icon_name]admin/icon_stats.gif[/set]
+&#91;set icon_name]icon_stats.gif[/set]
 &#91;set table_perm]1[/set]
 [scratch head_put]
 <TABLE>

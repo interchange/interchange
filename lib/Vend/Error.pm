@@ -1,8 +1,8 @@
-# Error.pm - Handle Interchange error pages and messages
+# Vend::Error - Handle Interchange error pages and messages
 # 
-# $Id: Error.pm,v 1.3 2000-07-12 03:08:10 heins Exp $
+# $Id: Error.pm,v 1.3.4.1 2003-01-25 22:21:27 racke Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,9 +37,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/);
-
-my $wantref = 1;
+$VERSION = substr(q$Revision: 1.3.4.1 $, 10);
 
 sub get_locale_message {
 	my ($code, $message, @arg) = @_;
@@ -48,6 +46,12 @@ sub get_locale_message {
 	}
 	elsif ($Global::Locale and defined $Global::Locale->{$code}) {
 		$message = $Global::Locale->{$code};
+	}
+	elsif ($Vend::Cfg->{Locale} and -f "$Global::ConfDir/$code.html" ) {
+		$message = readfile("$Global::ConfDir/$code.$::Scratch->{mv_locale}");
+	}
+	elsif (-f "$Global::ConfDir/$code.html") {
+		$message = readfile("$Global::ConfDir/$code.html");
 	}
 	if($message !~ /\s/) {
 		if($message =~ /^http:/) {
@@ -77,7 +81,8 @@ sub interaction_error {
     $page = readin(find_special_page('interact'));
     if (defined $page) {
 		$page =~ s#\[message\]#$msg#ig;
-		::response(::interpolate_html($page, 1));
+		::interpolate_html($page, 1);
+		::response();
     }
 	else {
 		logError( "Missing special page: interact" , '');
@@ -104,19 +109,35 @@ EOF
 }
 
 sub full_dump {
-	my $out = minidump();
+	my $portion = shift;
+	my $out = '';
+	if($portion) {
+		$out .= "###### SESSION ($portion) #####\n";
+		$out .= uneval($Vend::Session->{$portion});
+		$out .= "\n###### END SESSION    #####\n";
+		$out =~ s/\0/\\0/g;
+		return $out;
+	}
+
+	$out = minidump();
 	local($Data::Dumper::Indent) = 2;
 	$out .= "###### ENVIRONMENT     #####\n";
-	$out .= ::uneval(::http()->{env});
+	if(my $h = ::http()) {
+		$out .= uneval($h->{env});
+	}
+	else {
+		$out .= uneval(\%ENV);
+	}
 	$out .= "\n###### END ENVIRONMENT #####\n";
 	$out .= "###### CGI VALUES      #####\n";
-	$out .= ::uneval(\%CGI::values);
+	$out .= uneval(\%CGI::values);
 	$out .= "\n###### END CGI VALUES  #####\n";
 	$out .= "###### SESSION         #####\n";
-	$out .= ::uneval($Vend::Session);
+	$out .= uneval($Vend::Session);
 	$out .= "\n###### END SESSION    #####\n";
+	$out =~ s/\0/\\0/g;
+	return $out;
 }
-
 
 sub do_lockout {
 	my ($cmd);
@@ -128,7 +149,7 @@ sub do_lockout {
 		system $cmd;
 		$msg .= errmsg("\nBad status %s from '%s': %s\n", $?, $cmd, $!)
 			if $?;
-		logGlobal( $msg);
+		logGlobal({level => 'notice'}, $msg);
 	}
 	$Vend::Cfg->{VendURL} = $Vend::Cfg->{SecureURL} = 'http://127.0.0.1';
 	logError($msg);

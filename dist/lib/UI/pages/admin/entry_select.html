@@ -1,6 +1,6 @@
 [set page_perm]userdb[/set]
 [set ui_class]Orders[/set]
-[set icon_name]admin/icon_orders.gif[/set]
+[set icon_name]icon_orders.gif[/set]
 [set page_title] Select Customer [/set]
 
 @_UI_STD_HEAD_@
@@ -18,29 +18,30 @@
 <!-- ----- BEGIN REAL STUFF ----- -->
 
 <form action="[process]" method=POST>
+<input type=hidden name=mv_session_id value="[data session id]">
 <INPUT TYPE=hidden NAME=mv_todo VALUE=return>
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/entry">
 
 <table __UI_T_PROPERTIES__>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <!-- ----- Show the operation buttons ----- -->
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_LEFT_WIDTH__>
+<td class=rnorm width=__UI_LEFT_WIDTH__>
 
 <input type=submit value="Select"><br>
 
 <br>
 
 </td>
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_RIGHT_WIDTH__>
+<td class=rnorm width=__UI_RIGHT_WIDTH__>
 
 <!-- ----- Show the customer list box ----- -->
 
@@ -90,7 +91,7 @@
 </td></tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 </table>
 

@@ -1,10 +1,10 @@
-# Vend/TextSearch.pm:  Search indexes with Perl
+# Vend::TextSearch - Search indexes with Perl
 #
-# $Id: TextSearch.pm,v 1.7 2000-09-27 22:17:06 heins Exp $
+# $Id: TextSearch.pm,v 1.7.4.1 2003-01-25 22:21:28 racke Exp $
 #
-# ADAPTED FOR USE WITH INTERCHANGE from Search::TextSearch
+# Adapted for use with Interchange from Search::TextSearch
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,37 +28,37 @@ require Exporter;
 use vars qw(@ISA);
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.7 $, 10);
+$VERSION = substr(q$Revision: 1.7.4.1 $, 10);
 
 use Search::Dict;
 use strict;
 
 sub array {
 	my ($s, $opt) = @_;
-	$s->{mv_list_only} = 1;
-	Vend::Scan::perform_search($opt, undef, $s);
+	$s->{mv_list_only} = 1; # makes perform_search only return results array
+	return Vend::Scan::perform_search($opt, undef, $s);
 }
 
 sub hash {
 	my ($s, $opt) = @_;
 	$s->{mv_return_reference} = 'HASH';
-	$s->{mv_list_only} = 1;
-	Vend::Scan::perform_search($opt, undef, $s);
+	$s->{mv_list_only} = 1; # makes perform_search only return results array
+	return Vend::Scan::perform_search($opt, undef, $s);
 }
 
 sub list {
 	my ($s, $opt) = @_;
-	$s->{mv_list_only} = 1;
 	$s->{mv_return_reference} = 'LIST';
-	Vend::Scan::perform_search($opt, undef, $s);
+	$s->{mv_list_only} = 1; # makes perform_search only return results array
+	return Vend::Scan::perform_search($opt, undef, $s);
 }
 
 my %Default = (
-        matches                 => 0,
-        mv_head_skip            => 1,
-        mv_index_delim          => "\t",
-        mv_matchlimit           => 50,
-        mv_min_string           => 1,
+		matches                 => 0,
+		mv_head_skip            => 1,
+		mv_index_delim          => "\t",
+		mv_matchlimit           => 50,
+		mv_min_string           => 1,
 	);
 
 
@@ -66,22 +66,22 @@ sub init {
 	my ($s, $options) = @_;
 
 	@{$s}{keys %Default} = (values %Default);
-    $s->{mv_base_directory}     = $Vend::Cfg->{ProductDir} || 'products',
-    $s->{mv_begin_string}       = [];
-    $s->{mv_all_chars}	        = [1];
-    $s->{mv_case}               = [];
-    $s->{mv_column_op}          = [];
-    $s->{mv_negate}             = [];
-    $s->{mv_numeric}            = [];
-    $s->{mv_orsearch}           = [];
-    $s->{mv_searchspec}	        = [];
-    $s->{mv_search_group}       = [];
-    $s->{mv_search_field}       = [];
-    $s->{mv_search_file}        = $::Variable->{MV_DEFAULT_SEARCH_FILE}
+	$s->{mv_base_directory}     = $Vend::Cfg->{ProductDir} || 'products',
+	$s->{mv_begin_string}       = [];
+	$s->{mv_all_chars}	        = [1];
+	$s->{mv_case}               = [];
+	$s->{mv_column_op}          = [];
+	$s->{mv_negate}             = [];
+	$s->{mv_numeric}            = [];
+	$s->{mv_orsearch}           = [];
+	$s->{mv_searchspec}	        = [];
+	$s->{mv_search_group}       = [];
+	$s->{mv_search_field}       = [];
+	$s->{mv_search_file}        = $::Variable->{MV_DEFAULT_SEARCH_FILE}
 									|| ['products.asc'];
-    $s->{mv_searchspec}         = [];
-    $s->{mv_sort_option}        = [];
-    $s->{mv_substring_match}    = [];
+	$s->{mv_searchspec}         = [];
+	$s->{mv_sort_option}        = [];
+	$s->{mv_substring_match}    = [];
 
 	for(keys %$options) {
 		$s->{$_} = $options->{$_};
@@ -91,7 +91,7 @@ sub init {
 }
 
 sub new {
-    my ($class, %options) = @_;
+	my ($class, %options) = @_;
 	my $s = new Vend::Search;
 	bless $s, $class;
 	$s->init(\%options);
@@ -140,19 +140,9 @@ sub search {
 	$s->{mv_return_delim} = $s->{mv_index_delim}
 		unless defined $s->{mv_return_delim};
 
-    if(ref $s->{mv_range_look}) {
-        unless( scalar(@{$s->{mv_range_look}}) == scalar(@{$s->{mv_range_min}}) and
-                scalar(@{$s->{mv_range_look}}) == scalar(@{$s->{mv_range_max}}) ) {
-			$s->{mv_search_warning}
-				= "Must have min and max values for range -- aborting range look.";
-			undef $s->{mv_range_look};
-		}
-	}
 	@specs = @{$s->{mv_searchspec}};
 
 	@pats = $s->spec_check(@specs);
-
-	return undef if $s->{matches} == -1;
 
 	if ($s->{mv_coordinate}) {
 		undef $f;
@@ -194,19 +184,19 @@ sub search {
 
 		# Get field names only if no sort (will throw it off) or
 		# not already defined
-        if($s->{mv_head_skip} == 1) {
-            chomp($field_names = <SEARCH>);
-        }
-        elsif($s->{mv_head_skip} > 1) {
-            while(<SEARCH>) {
+		if($s->{mv_head_skip} == 1) {
+			chomp($field_names = <SEARCH>);
+		}
+		elsif($s->{mv_head_skip} > 1) {
+			while(<SEARCH>) {
 				chomp($field_names = $_);
-                last if $. >= $s->{mv_head_skip};
-            }
-        }
+				last if $. >= $s->{mv_head_skip};
+			}
+		}
 		if($field_names) {
 			$field_names =~ s/^\s+//;
 			my @laundry = (qw/mv_search_field mv_range_look mv_return_fields/);
-            $s->hash_fields(
+			$s->hash_fields(
 						[ split /\Q$s->{mv_index_delim}/, $field_names ],
 						@laundry,
 			);
@@ -216,14 +206,15 @@ sub search {
 		my $prospect;
 
 		eval {
-			($limit_sub, $prospect) = $s->get_limit($f);
+			# 1 refers to fact you have to make ref from line
+			($limit_sub, $prospect) = $s->get_limit($f, 1);
 		};
 
 		$@  and  return $s->search_error("Limit subroutine creation: $@");
 
 		$f = $prospect if $prospect;
 
-		eval {($return_sub, $delayed_return) = $s->get_return()};
+		eval {($return_sub, $delayed_return) = $s->get_return( undef, 1 )};
 
 		$@  and  return $s->search_error("Return subroutine creation: $@");
 
@@ -267,59 +258,62 @@ sub search {
 
 		if($s->{mv_dict_end} && defined $limit_sub) {
 			while(<SEARCH>) {
-#::logDebug("$_");
-				last if &$dict_limit($_);
-				next unless ! defined $f or &$f();
-				next unless &$limit_sub($_);
+				last if $dict_limit->($_);
+				next unless $limit_sub->($_);
+				chomp;
 				(push @out, $searchfile and last)
 					if $s->{mv_return_file_name};
-				push @out, &$return_sub($_);
+				push @out, $return_sub->($_);
 			}
 		}
 		elsif($s->{mv_dict_end}) {
 			while(<SEARCH>) {
-				last if &$dict_limit($_);
+				last if $dict_limit->($_);
 				next unless &$f();
+				chomp;
 				(push @out, $searchfile and last)
 					if $s->{mv_return_file_name};
-				push @out, &$return_sub($_);
+				push @out, $return_sub->($_);
 			}
 		}
-		elsif(! defined $f and defined $limit_sub) {
+		elsif($limit_sub) {
+#::logDebug("limit_sub");
 			while(<SEARCH>) {
-				next unless &$limit_sub($_);
+				next unless $limit_sub->($_);
+				chomp;
 				(push @out, $searchfile and last)
 					if $s->{mv_return_file_name};
-				push @out, &$return_sub($_);
+				push @out, $return_sub->($_);
 			}
 		}
-		elsif(defined $limit_sub) {
-			while(<SEARCH>) {
-				next unless &$f();
-				next unless &$limit_sub($_);
-				(push @out, $searchfile and last)
-					if $s->{mv_return_file_name};
-				push @out, &$return_sub($_);
-			}
-		}
-		elsif (!defined $f) {
+		elsif (! $f) {
 			return $s->search_error('No search definition');
 		}
 		else {
+#::logDebug("no limit_sub");
 			while(<SEARCH>) {
 				next unless &$f();
+				chomp;
 				(push @out, $searchfile and last)
 					if $s->{mv_return_file_name};
-				push @out, &$return_sub($_);
+				push @out, $return_sub->($_);
 			}
 		}
 		close SEARCH;
 		$s->restore_specs();
 	}
 
+#::logDebug("before delayed return: self=" . ::Vend::Util::uneval_it({%$s}));
+#::logDebug("before delayed return: out=" . ::Vend::Util::uneval_it(\@out));
+
+	# Search the results and return
+	if($s->{mv_next_search}) {
+		@out = $s->search_reference(\@out);
+#::logDebug("did next_search: " . ::uneval(\@out));
+	}
+
 	$s->{matches} = scalar(@out);
 
-#::logDebug("before delayed return: self=" . ::Vend::Util::uneval_it({%$s}));
 	if($delayed_return and $s->{matches} > 0) {
 		$s->hash_fields($s->{mv_field_names}, qw/mv_sort_field/);
 #::logDebug("after hash fields: self=" . ::Vend::Util::uneval_it({%$s}));
@@ -328,16 +322,22 @@ sub search {
 		@out = map { $delayed_return->($_) } @out;
 	}
 #::logDebug("after delayed return: self=" . ::Vend::Util::uneval_it({%$s}));
+#::logDebug("after delayed return: out=" . ::Vend::Util::uneval_it(\@out));
 
 	if($s->{mv_unique}) {
 		my %seen;
 		@out = grep ! $seen{$_->[0]}++, @out;
-		$s->{matches} = scalar(@out);
 	}
 
-    if ($s->{matches} > $s->{mv_matchlimit}) {
-        $s->save_more(\@out)
-            or ::logError("Error saving matches: $!");
+	if($s->{mv_max_matches} > 0) {
+		splice @out, $s->{mv_max_matches};
+	}
+
+	$s->{matches} = scalar(@out);
+
+	if ($s->{matches} > $s->{mv_matchlimit} and $s->{mv_matchlimit} > 0) {
+		$s->save_more(\@out)
+			or ::logError("Error saving matches: $!");
 		if ($s->{mv_first_match}) {
 			splice(@out,0,$s->{mv_first_match});
 			$s->{mv_next_pointer} = $s->{mv_first_match} + $s->{mv_matchlimit};
@@ -378,8 +378,8 @@ sub search {
 					if $s->{mv_next_pointer} > $s->{matches};
 			}
 		}
-        $#out = $s->{mv_matchlimit} - 1;
-    }
+		$#out = $s->{mv_matchlimit} - 1;
+	}
 
 	if(! $s->{mv_return_reference}) {
 		$s->{mv_results} = \@out;

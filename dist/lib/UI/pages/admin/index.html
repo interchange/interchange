@@ -1,3 +1,6 @@
+[if !global Windows]
+[index table=ichelp export_only=1]
+[/if]
 [strip interpolate=1]
 [if-mm !logged_in]
 	[bounce page="__UI_BASE__/login"]
@@ -13,7 +16,7 @@ if ($startpage = $Tag->mm_value('startpage')) {
 [set page_title]Interchange Administration[/set]
 [tmp ui_no_title]1[/tmp]
 [set icon_name][/set]
-[set help_name]index[/set]
+[set help_name]home[/set]
 [set ui_class]None[/set]
 
 [seti meta_header]
@@ -58,14 +61,16 @@ function open_quicklinks() {
 
 [/strip]
 @_UI_STD_HEAD_@
-<table width="100%" border="0" cellspacing="0" cellpadding="0" height="320" width=700 bgcolor="#eeeeee">
+<table width="100%" border=0 cellspacing=0 cellpadding=0 height=320 width=700 bgcolor="#eeeeee">
 <tr>
-<td valign=top>
+<td valign=top style="
+		border: 2px solid #996633;
+">
 <br><br><br>
 <div align=center>
-<table width="90%" border="1" cellspacing=0 cellpadding="0" bordercolorlight="#6699FF" bordercolordark="#6699FF">
-<tr>
-<td bgcolor="#FFFFFF">
+<table width="90%" border="1" cellspacing=0 cellpadding="0" bgcolor="#FFFFFF">
+<tr class=ralt>
+<td>
 <br>						
 <div align=center>
 <table border=0 cellspacing=3 cellpadding=2>
@@ -86,8 +91,8 @@ function open_quicklinks() {
 <H1>Admin interface will not work properly.</H1>
 Please install needed Perl modules:
 <small>
-<blockquote>
-	<FONT COLOR="__UI_C_CONTRAST__">$imp</FONT>
+<blockquote class=cerror>
+	$imp
 </blockquote>
 <blockquote>
 	$minor
@@ -115,174 +120,76 @@ EOF
 	return $out;
 [/calc]
 
-[if-mm advanced order]
+[perl tables="__UI_META_TABLE__ mv_metadata"]
+	delete $Scratch->{merge_complete};
+	delete $Scratch->{do_merge};
+	my $tab = q{__UI_META_TABLE__} || 'mv_metadata';
+	my $db = $Db{$tab}
+		or do {
+			$Scratch->{merge_complete}
+				= errmsg("Cannot merge: no meta table '%s'", $tab);
+			return;
+		};
+
+	my $newver = $Tag->version();
+	$Scratch->{newver} = $newver;
+	my $compnew = $newver;
+	$compnew =~ s/\D+//g;
+
+	my $curver = 0;
+	if($db->record_exists('ui-version')) {
+		$curver = $db->field("ui-version", 'label');
+	}
+
+	$Scratch->{curver} = $curver;
+	my $compcur = $curver;
+	$compcur =~ s/\D+//g;
+
+	if ($curver eq $newver) {
+		## All is copasetic
+	}
+	elsif($compcur gt $compnew) {
+		## I guess this is OK
+	}
+	else {
+		return qq{
+<TR>
+<TD COLSPAN=3>
+<blockquote class=titlebox>
+UI update appears to have been done and metadata has not
+been updated for this catalog...
+	<blockquote>
+		[page href=admin/merge_meta extra=class=titlebox]Merge Metadata</a>
+	</blockquote>
+</blockquote>
+</TD>
+</TR>
+		};
+	}
+	return;
+[/perl]
+
+[menu
+	  name=Top
+	  superuser=super
+	  inactive=inactive
+	  localize=name,description
+	  ui_security=depends_on
+	  lr=1]
 <tr>
 <td valign="top">
-<font color="#000066">
-<img src="@_UI_IMG_@admin/icon_orders.gif">
+	  {IMG_ICON?}
+<img src="{IMG_ICON}">
+	  {/IMG_ICON?}
 </td>
 <td valign="top">
-<b>
-<font face="Arial, Helvetica, sans-serif">
-&nbsp;<a href="[area __UI_BASE__/order]">Orders</a></font>
-</b>
-</font>
+&nbsp;<a href="{HREF}">{NAME}</a>
 </td>
 <td valign="top">
-<font size="-1" face="Arial, Helvetica, sans-serif">
-View and manage incoming orders, archive and access past orders 
-</font>
+{DESCRIPTION}
 </td>
 </tr>
-[/if-mm]
-
-[if-mm advanced page]
-<tr>
-<td valign="top">
-<font color="#000066">
-<img src="@_UI_IMG_@admin/icon_pages.gif">
-</td>
-<td valign="top">
-<b>
-<font face="Arial, Helvetica, sans-serif">
-&nbsp;<a href="[area __UI_BASE__/page]">Content</a></font>
-</b>
-</font>
-</td>
-<td valign="top">
-<font size="-1" face="Arial, Helvetica, sans-serif">
-Create, edit, upload and download pages 
-</font>
-</td>
-</tr>
-[/if-mm]
-
-[if-mm advanced userdb]
-<tr>
-<td valign="top">
-<font color="#000066">
-<img src="@_UI_IMG_@admin/icon_people.gif">
-</td>
-<td valign="top">
-<b>
-<font face="Arial, Helvetica, sans-serif">
-&nbsp;<a href="[area __UI_BASE__/customer]">Customers</a></font>
-</b>
-</font>
-</font>
-</td>
-<td valign="top">
-<font size="-1" face="Arial, Helvetica, sans-serif">
-View and manage customer information and order history 
-</font>
-</td>
-</tr>
-[/if-mm]
-
-[if-mm advanced sitedesign]
-<tr>
-<td valign="top">
-<font color="#000066">
-<img src="@_UI_IMG_@admin/icon_design.gif">
-</td>
-<td valign="top">
-<b>
-<font face="Arial, Helvetica, sans-serif">
-&nbsp;<a href="[area __UI_BASE__/layout]">Design</a></font>
-</b>
-</font>
-</td>
-<td valign="top">
-<font size="-1" face="Arial, Helvetica, sans-serif">
-Organize site navigation, manage site layout 
-</font>
-</td>
-</tr>
-[/if-mm]
-
-[if-mm advanced item]
-</tr>
-<td valign="top">
-<font color="#000066">
-<img src="@_UI_IMG_@admin/icon_item.gif">
-</td>
-<td valign="top">
-<b>
-<font face="Arial, Helvetica, sans-serif">
-&nbsp;<a href="[area __UI_BASE__/item]">Items</a></font>
-</b>
-</font>
-</td>
-<td valign="top">
-<font size="-1" face="Arial, Helvetica, sans-serif">
-Add and edit items displayed for sale on the site 
-</font>
-</td>
-</tr>
-[/if-mm]
-
-[if-mm advanced stats]
-<tr>
-<td valign="top">
-<font color="#000066">
-<img src="@_UI_IMG_@admin/icon_stats.gif">
-</td>
-<td valign="top">
-<b>
-<font face="Arial, Helvetica, sans-serif">
-&nbsp;<a href="[area __UI_BASE__/orderstats]">Reporting</a></font>
-</b>
-</font>
-</td>
-<td valign="top">
-<font size="-1" face="Arial, Helvetica, sans-serif">
-View statistics on orders and site traffic, create custom reports 
-</font>
-</td>
-</tr>
-[/if-mm]
-</tr>
-
-[if-mm advanced item]
-<tr>
-<td valign="top">
-<font color="#000066">
-<img src="@_UI_IMG_@admin/icon_merch.gif">
-</td>
-<td valign="top">
-<b>
-<font face="Arial, Helvetica, sans-serif">
-&nbsp;<a href="[area __UI_BASE__/merchandising]">Merchandising</a></font>
-</b>
-</font>
-</td>
-<td valign="top">
-<font size="-1" face="Arial, Helvetica, sans-serif">
-Set up quantity pricing, up-sell, promotions, and affiliates 
-</font>
-</td>
-[/if-mm]
-
-[if-mm advanced techadmin]
-<tr>
-<td valign="top">
-<font color="#000066">
-<img src="@_UI_IMG_@admin/icon_config.gif">
-</td>
-<td valign="top">
-<b>
-<font face="Arial, Helvetica, sans-serif">
-&nbsp;<a href="[area __UI_BASE__/genconfig]">Administration</a></font>
-</b>
-</font>
-</td>
-<td valign="top">
-<font size="-1" face="Arial, Helvetica, sans-serif">
-Administrator and developer-oriented tools 
-</font>
-</td>
-</tr>
-[/if-mm]
+[/menu]
 
 </table>
 </div>

@@ -1,35 +1,11 @@
-#$self = {
-#	INSTALLPRIVLIB => '/usr/local/interchange/lib',
-#	INSTALLARCHLIB => '/usr/local/interchange',
-#};
-
-use Config;
-require 'scripts/initp.pl';
-
-sub doit {
-	my ($key) = @_;
-	my $val;
-	if ($MV::Self->{RPMBUILDDIR} and $val = $MV::Self->{$key}) {
-		$val =~ s!^$MV::Self->{RPMBUILDDIR}/!/!; 
-		return $val;
-	}
-	return $MV::Self->{$key} unless $key =~ /[a-z]/;
-	return $Config{$key};
-}
-
-DOIT: {
-	local ($/);
-	local($_) = <<'_EoP_';
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.26.4.8 2000-12-05 16:06:17 racke Exp $
+# $Id: makecat.PL,v 1.26.4.9 2003-01-25 22:21:32 racke Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
-#
-# See the file 'Changes' for information.
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -56,6 +32,7 @@ use Config;
 use File::Find;
 use File::Copy;
 use File::Path;
+use Sys::Hostname;
 use Vend::MakeCat;
 use Vend::Util;
 use Getopt::Long;
@@ -67,6 +44,7 @@ Getopt::Long::config(qw/permute/);
 #Getopt::Long::config(qw/debug/);
 
 BEGIN {
+
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
 		if defined $ENV{MINIVEND_ROOT};
 	$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
@@ -83,7 +61,7 @@ BEGIN {
 		$Global::ExeName = 'minivend';
 		$Global::ConfigFile = 'minivend.cfg';
 	}
-	elsif(-f "$Global::VendRoot/interchange.cfg.dist") {
+	else {
 		$Global::ExeName = 'interchange';
 		$Global::ConfigFile = 'interchange.cfg';
 	}
@@ -105,7 +83,7 @@ my $Configfile;
 my $Cfg;
 my $Logfile = 'makecat.log';
 my $catalog_name;
-my %Conf;
+use vars qw( %Conf );
 my $Inetmode;
 my $Windows;
 my $pid;
@@ -122,6 +100,8 @@ options:
     -l    File to log to (default makecat.log)
     -r    Reconfigure defaults
 
+    [catalogname] must contain alphanumerics and hyphens only.
+
     Defaults:
     --basedir=directory        Base directory for catalogs
     --cgibase=url_fragment     Base URL for link programs
@@ -137,10 +117,11 @@ options:
     --cgidir=directory         The directory the CGI link should go to
     --servername=server        Name of server (www.whatever.domain)
     --cgiurl=url_fragment      The path to the CGI link (no server name)
-    --demotype=template        The template catalog (construct is the default)
+    --demotype=template        The template catalog (foundation is the default)
     --mailorderto=email        Email address to send orders
 
     Optional:
+    --catalogconf=file         Specify separate configuration file for catalogs
     --catuser=username         The user files should be owned by (if root)
     --sharedir=directory       The directory where shared admin images go
     --shareurl=url             The URL to prefix shared admin images with
@@ -148,7 +129,7 @@ options:
     --imageurl=url             The URL to prefix images with
     --linkmode=mode            UNIX or INET (link program vlink or tlink)
     --linkprogram=file         Use file as link program instead of vlink/tlink
-    --nocfg                    Don't add to $Global::ExeName.cfg
+    --nocfg                    Don't add to $Global::ConfigFile
     --nocopy                   Don't actually copy the files, just test
     --norunning                Don't add to running server
     --noumask                  Don't set umask
@@ -166,6 +147,7 @@ if (scalar @ARGV > 1) {
 	    'F'                 => \$Vend::MakeCat::Force,
 	    'aliases'           => \$Conf{aliases},
 	    'basedir'           => \$Conf{basedir},
+	    'catalogconf'       => \$Conf{catalogconf},
 	    'catalogname'       => \$catalog_name,
 	    'catroot'           => \$Conf{catroot},
 	    'catuser'           => \$Conf{catuser},
@@ -180,6 +162,8 @@ if (scalar @ARGV > 1) {
 	    'imageurl'          => \$Conf{imageurl},
 	    'l'                 => \$Logfile,
 	    'linkmode'          => \$Conf{linkmode},
+	    'linkhost'          => \$Conf{linkhost},
+	    'linkport'          => \$Conf{linkport},
 	    'linkprogram'       => \$Conf{linkprogram},
 	    'mailorderto'       => \$Conf{mailorderto},
 	    'interchangegroup'  => \$Conf{interchangegroup},
@@ -215,6 +199,7 @@ if (scalar @ARGV > 1) {
 	    F
 	    aliases=s
 	    basedir|base=s
+	    catalogconf=s		
 	    catalogname|name=s
 	    catroot|dir=s
 	    catuser|user=s
@@ -229,6 +214,8 @@ if (scalar @ARGV > 1) {
 	    imageurl=s
 	    l=s
 	    linkmode=s
+	    linkhost=s
+	    linkport=s
 	    linkprogram=s
 	    mailorderto=s
 	    interchangegroup|minivendgroup|group=s
@@ -245,12 +232,15 @@ if (scalar @ARGV > 1) {
 	    serverconf|conf=s
 	    servername|server=s
 	    sharedir=s
-	    shareurl=s
+	    shareurl:s
 	    vendroot|mvdir=s
 	    <>
 	/);
 
 	GetOptions(\%optctl, @options)			or die "\n$USAGE\n";
+}
+elsif ($ARGV[0] =~ /^(--help|-h(elp)?)$/i) {
+	die "\n$USAGE\n";
 }
 
 $catalog_name = shift unless $catalog_name;
@@ -275,13 +265,16 @@ NOTE: This will be the name of 'vlink' or 'tlink', the link CGI
 program. Depending on your CGI setup, it may also have the 
 extension .cgi added.
 
-If you are doing the demo for the first time, you might use "construct".
+Only the characters [-a-zA-Z0-9_] are allowed, and it is strongly suggested
+that the catalog name be all lower case.
+
+If you are doing the demo for the first time, you might use "foundation".
 
 EOF
    $catalog_name = prompt ("Catalog name? ");
 }
 
-die "$USAGE\n" unless $catalog_name;
+die "$catalog_name -- $USAGE\n" unless $catalog_name =~ /^[-\w]+$/;
 
 if($Conf{homedir}) {
 	die "Directory set with --homedir=$Conf{homedir} is not a directory.\n"
@@ -422,14 +415,14 @@ FINDCGIDIR: {
 
 my $isroot = 0;
 if ($< == 0) {
-	$isroot = 1 unless $Windows;
+	$isroot = 1 unless $Windows or $Conf{relocate};
 }
 
 $Conf{catalogname} = $catalog_name;
 
 my %Initial;
 
-my %IfRoot = (qw( permtype 1 interchangeuser 1 interchangegroup 1 catuser 1));
+my %IfRoot = (qw( permtype 1 interchangeuser 1 interchangegroup 1 catuser 1 linkmode 1));
 
 my %Prefix = (
 	vendroot     =>  $Global::VendRoot,
@@ -444,11 +437,14 @@ my %Prefix = (
 	interchangeuser =>  sub {  return 'everybody' if $Windows;
 							get_id(); },
 	interchangegroup=>  '',
-    servername	 =>  $Config{myhostname},
+    servername => sub {
+						return Sys::Hostname::hostname() || $Config{myhostname};
+					},
+    linkmode     =>  'UNIX',
     documentroot =>  $ENV{MVC_DOCUMENTROOT} || $DocrootDefault,
 	cgidir       =>  $ENV{MVC_CGIDIR} || $CgiDefault,
 	cgibase      =>  $ENV{MVC_CGIBASE} || $CgiUrlDefault,
-	demotype     =>  $ENV{MVC_DEMOTYPE} || 'construct',
+	demotype     =>  $ENV{MVC_DEMOTYPE} || 'foundation',
     catuser      =>  sub {
 							$ENV{MVC_CATUSER} ||
 							($isroot ? '' : $Conf{'interchangeuser'})
@@ -466,7 +462,6 @@ my %Prefix = (
 							$dir =~ s/^\~/$userdir/;
 							return $dir;
 							},
-	aliases      =>  sub { return "/" . $catalog_name },
 	cgiurl       =>  sub {
 							return $ENV{MVC_CGIURL} if $ENV{MVC_CGIURL};
 							my $url = '';
@@ -506,7 +501,6 @@ my %Prefix = (
 							return $ENV{MVC_SHAREURL} if $ENV{MVC_SHAREURL};
 							my $url = '';
 							$url = $Tilde if defined $Tilde;
-							$url .= '/';
 							return $url;
 						},
 
@@ -538,8 +532,19 @@ my %Postprocess = (
 	catroot			=> \&directory_process,
 	relocate		=> \&strip_trailing_slash,
 	shareurl		=> \&strip_trailing_slash,
+	sharedir		=> \&strip_trailing_slash,
 
 );
+
+sub sum_it {
+	my ($file) = @_;
+	open(IT, "<$file")
+		or return undef;
+	my $data = '';
+	$data .= $_ while (<IT>);
+	close IT;
+	return unpack("%32c*", $data);
+}
 
 sub prefix {
 	my ($parm, $nodefault) = @_;
@@ -559,13 +564,23 @@ my %History = (
     demotype =>  sub {
 						my @dir; 
 						@dir = sort map { s:(.*)/.*:$1:; $_ } glob("*/catalog.cfg");
-						@dir = grep $_ ne 'construct', @dir;
-						unshift(@dir, 'construct') if -f 'construct/catalog.cfg';
-						unshift(@dir, 'barry') if -f 'barry/catalog.cfg';
-						unshift(@dir, 'simple') if $catalog_name =~ /simp/;
+						@dir = grep $_ ne 'foundation', @dir;
+						unshift(@dir, 'foundation') if -f 'foundation/catalog.cfg';
+						unshift(@dir, 'construct')
+							if  -f 'construct/catalog.cfg'
+							and $catalog_name =~ /^construct/;
+						unshift(@dir, 'barry')
+							if  -f 'barry/catalog.cfg'
+							and $catalog_name =~ /^barry/;
+						unshift(@dir, 'art')
+							if  -f 'art/catalog.cfg'
+							and $catalog_name =~ /^art/;
+						my %seen;
+						@dir = grep !$seen{$_}++, @dir;
 						return @dir;
 					},
 
+	linkmode => sub { return ('UNIX', 'INET') },
     documentroot =>  sub {
 						if(defined $Servers->{$Servername}) {
 							return $Servers->{$Servername}->{documentroot}
@@ -743,6 +758,7 @@ unless ($Cfg) {
 	}
 	die "Can't parse config file $Configfile\n";
 }
+
 my @parms;
 
 unless($Reconfigure or $Cfg->val('base', 'vendroot')) {
@@ -760,10 +776,16 @@ CHECKEXIST: {
 	unless(@parms) {
 		@parms = $Cfg->Parameters('legalconfig');
 		undef $Cfg;
+		my $user_time = "run by ";
+		$user_time .= scalar getpwuid($>);
+		$user_time .= " at ";
+		$user_time .= scalar localtime();
+
 		open(CFGFILE, ">>$Configfile")	or die "Can't write $Configfile: $!\n";
 		print CFGFILE <<EOF;
 
 # New catalog definition '$catalog_name' written by makecat
+# $user_time
 [catalog $catalog_name]
 EOF
 		for(@parms) {
@@ -825,7 +847,6 @@ EOF
 		$not_set = 1;
 		if(findexe('locate')) {
 			@conf = findfiles('httpd.conf');
-			$Cfg->setval('base', 'serverconf', join(" ", @conf));
 		}
 		else {
 			print <<EOF;
@@ -837,15 +858,18 @@ command). This may take as many as several minutes.
 EOF
 			$ask = prompt("Find httpd.conf files? ", 'y');
 			@conf = findfiles('httpd.conf') if $ask =~ /^\s*y/i;
-			$Cfg->setval('base', 'serverconf', join(" ", @conf));
 		}
 	}
-	sethistory(@conf);
-	$httpdconf = prompt("Enter path to httpd.conf file: ", $conf[0])
-		if $not_set;
 
+	sethistory(@conf);
+	if ($not_set) {
+		$httpdconf = prompt("Enter path to httpd.conf file: ", $conf[0]);
+		$Cfg->setval('base', 'serverconf', $httpdconf);
+	}
+	else {
+		$httpdconf = shift @conf;
+	}
 	last FINDCONF if $httpdconf =~ /^none$/i;
-	$Cfg->setval('base', 'serverconf', $httpdconf);
 
 	if($httpdconf) {
 		$Servers = conf_parse_http($httpdconf);
@@ -890,7 +914,7 @@ SETDEFAULTS: {
 			print <<EOF unless $Windows;
 
 This demo configuration sometimes requires root permissions,
-depending on your ISP.  It needs to copy a few files to the CGI
+depending on your ISP. It needs to copy a few files to the CGI
 and HTML directories.
 
 You must either have your own CGI directory, or be able to run
@@ -914,7 +938,7 @@ MULTIPLE GROUP or GROUP is appropriate when multiple users will be running
 catalogs on the same server.
 
 MULTIPLE GROUP is the best way. Put each user in their own group, and
-place the Interchange user in that group.  In this mode, only the user of
+place the Interchange user in that group. In this mode, only the user of
 each catalog and the Interchange server may read database and error files --
 files that may contain sensitive information. If the user's default UMASK
 is 2 on a UNIX system, then this the most troublefree mode of operation.
@@ -971,7 +995,7 @@ a choice of all available servers.
 
 There is a "history" mechanism that will allow you to use the up
 and down arrows on your terminal (assuming you have a standard terminal)
-to cycle between possible choices.  This should contain the available
+to cycle between possible choices. This should contain the available
 servers.
 
 EOF
@@ -1013,6 +1037,10 @@ EOF
 			sethistory(@history);
 		}
 		$val = prefix($p, 1) || $Cfg->val("base", $p) || $hval;
+		if (! $isroot and defined $IfRoot{$p}) {
+			$Conf{$p} = $val;
+			next;
+		}
 		print "\n";
 		print description($p);
 		print "\n\n";
@@ -1048,7 +1076,7 @@ print "######### BEGINNING CATALOG CONFIGURATION #########\n";
 print <<EOF if defined $Vend::MakeCat::Prompt_sub;
 
 During many of the following operations, defaults are placed in
-a buffer for you.  You may use the up and down arrows to toggle
+a buffer for you. You may use the up and down arrows to toggle
 between the defaults.
 
 If you made a mistake on a *previous* entry and realize that
@@ -1070,10 +1098,20 @@ SETSERVER: {
 
 	@ask = $Cfg->val('global', 'askconfig');
 
-
+	my $redid;
+	my $next_force;
 	for ($i = 0; $i < scalar @ask; $i++) {
 		$p = $ask[$i];
-		if (defined $History{$p}) {
+		if ($redid) {
+#print("###redo###\n");
+			# Handle the &-d option, don't want to force first time
+			if (defined $next_force and ! $next_force) {
+#print("###force next###\n");
+				$next_force = 1;
+			}
+			$val = $Conf{$p};
+		}
+		elsif (defined $History{$p}) {
 			@history = &{$History{$p}}(prefix($p));
 			sethistory(@history);
 			$val =	prefix($p,1)							||
@@ -1091,19 +1129,42 @@ SETSERVER: {
 			next;
 		}
 		print "\n";
-		print description($p);
-		print "\n\n";
+
+		unless($redid) {
+			print description($p);
+			print "\n\n";
+		}
+		else {
+			undef $redid;
+		}
+
 		my $msg = pretty($p) . "? ";
 		$Conf{$p} = prompt ($msg, $val);
+#print("###force=$Vend::MakeCat::Force###\n");
 		if(defined $Postprocess{$p}) {
 			$Conf{$p} = $Postprocess{$p}->($Conf{$p});
 		}
 		if($Conf{$p} eq '@') {
 			$Conf{$p} = $val;
+			$redid = 1;
+			$next_force = 0 if $next_force;
 			$i--;
 			$i = 0 if $i < 0;
 			redo;
 		}
+		elsif ($Conf{$p} eq '&-d') {
+			print "OK, I will run with defaults after this prompt.\n";
+			$Conf{$p} = $val;
+			$redid = 1;
+			$next_force = 0;
+			redo;
+		}
+
+		if ($next_force) {
+#print("###force now###\n");
+			$Vend::MakeCat::Force = 1;
+		}
+
 		$Cfg->setval("catalog $catalog_name", $p, $Conf{$p});
 	}
 
@@ -1165,43 +1226,53 @@ entered:
 
 EOF
 
-	$tempurl  = prompt ("\nPlease re-enter or confirm: ",
+		if ($Vend::MakeCat::Force) {
+			$tempurl = $Conf{sampleurl};
+		} else {
+			$tempurl  = prompt ("\nPlease re-enter or confirm: ",
 						"http://$Conf{servername}/$guessdir");
-
+		}
 	}
 
 	$Conf{sampleurl} = $tempurl;
 
 }
 
-$mvuid = $Windows ? 'everybody' : (getpwnam($Conf{interchangeuser}))[2];
-unless (defined $mvuid) {
-	die "$Conf{interchangeuser} is not a valid user name on this machine.\n";
+if ($Windows) {
+	$mvuid = $catuid = 'everybody';
+	$mvgid = $catgid = 'nogroup';
+}
+elsif ($Conf{relocate}) {
+	$mvuid = $catuid = $mvgid = $catgid = 'nobody';
+}
+else {
+	$mvuid = (getpwnam($Conf{interchangeuser}))[2];
+	die "$Conf{interchangeuser} is not a valid user name on this machine.\n"
+		unless defined $mvuid;
+
+	if ($Conf{interchangegroup}) {
+		$mvgid = getgrnam($Conf{interchangegroup});
+		die "$Conf{interchangegroup} is not a valid group name on this machine.\n"
+			unless defined $mvgid;
+	}
+	else {
+		$mvgid = (getpwnam($Conf{interchangeuser}))[3];
+		$Conf{interchangegroup} = getgrgid($mvgid)
+	}
+
+	($catuid, $catgid) = (getpwnam($Conf{catuser}))[2,3];
+	die "$Conf{catuser} is not a valid user name on this machine.\n"
+		unless defined $catuid;
 }
 
-# Fix supplied by Paul V. Shevtsov
 if($isroot) {
 	chown ($mvuid, $mvgid, $Configfile)
 		or warn "\nCouldn't set ownership of $Configfile: $!\n";
-}
-
-if ($Conf{interchangegroup}) {
-	$mvgid = $Windows ? 'nogroup' : getgrnam($Conf{interchangegroup});
-	unless (defined $mvgid) {
-		die "$Conf{interchangegroup} is not a valid group name on this machine.\n";
+	if(! $Conf{permtype} or $Conf{permtype} =~ /^[MUmu]/) {
+		$Conf{catgroup} = getgrgid($catgid);
 	}
-}
-else {
-	$mvgid = $Windows ? 'nogroup' : (getpwnam($Conf{interchangeuser}))[3];
-}
-
-if($Windows) {
-	($catuid,$catgid) = ('everybody', 'nogroup');
-}
-else {
-	($catuid,$catgid) = (getpwnam($Conf{catuser}))[2,3];
-	unless (defined $catuid) {
-		die "$Conf{catuser} is not a valid user name on this machine.\n";
+	else {
+		$Conf{catgroup} = getgrgid($mvgid);
 	}
 }
 
@@ -1262,22 +1333,50 @@ EOF
 		$lm = "i";
 		$Inetmode = 1;
 
-		$prog = "$Conf{relocate}$Conf{vendroot}/src/tlink";
+		my $defport;
+		my $defhost;
 
-		$default = 7786;
-		my $lp;
+	  INETASK: {
+		my (@hosts);
+		my (@ports);
+		$prog = "$Conf{relocate}$Conf{vendroot}/src/tlink";
+		my $the_one = sum_it($prog);
+
+		my @poss = glob("$Conf{relocate}$Conf{vendroot}/src/tlink.*.*");
+		for (@poss) {
+			my $name = $_;
+			/tlink\.(.*)\.(\d+)$/
+				or next;
+			my ($h, $p) = ($1, $2);
+			push @hosts, $h;
+			push @ports, $p;
+			my $one = sum_it($_);
+			next unless $one eq $the_one;
+			$defhost = $h;
+			$defport = $p;
+		}
+
+		my %seen;
+		sethistory(grep !$seen{$_}++, @ports);
+		$default = $defport || $Conf{linkport} || 7786;
+		$lp = $lh = '';
 		while(! $lp) {
 			$lp = prompt("TCP socket to use? ", $default);
+			redo INETASK if $lp eq '@';
 			if($lp !~ /^\d+$/ or $lp < 1024) {
 				print "Looking for an integer number > 1024 here.\n";
 				undef $lp;
 			}
 		}
-		$default = 'localhost';
-		my $lh;
+
+		sethistory(grep !$seen{$_}++, @hosts);
+		$default = $defhost || $Conf{linkhost} || 'localhost';
 		while(! $lh) {
 			$lh = prompt("Link host? ", $default);
+			redo INETASK if $lh eq '@';
 		}
+		unlink $prog unless $lh eq $defhost && $lp eq $defport;
+	  } # END INETASK
 	}
 	elsif($ask =~ /^\s*n/i) {
 		$prog = "NONE";
@@ -1445,11 +1544,27 @@ ADDITIONAL: {
 		close ADDLHELP;
 	}
 	my $said = 0;
+	my $redid;
+	my $next_force;
 	while(<ADDL>) {
 		my $noprompt = '';
+		my $grp;
 		s/\s+$//;
 		s/__MVC_([A-Z0-9]+)(__)?/substitute($1,$2)/eg;
 		my ($var, $prompt, $default) = split /\n/, $_, 3;
+		$var =~ s/\t(.*)//;
+		next unless $var;
+		$grp = $1 || $var;
+
+		if ($redid) {
+#print("###redo###\n");
+			# Handle the &-d option, don't want to force first time
+			if (defined $next_force and ! $next_force) {
+#print("###force next###\n");
+				$next_force = 1;
+			}
+			$val = $Conf{$p};
+		}
 		if($var =~ s/{\s*([A-Z0-9]+)(\s*\S.*?)?\s*}\s*//) {
 			my $param = $1;
 			my $test = $2;
@@ -1473,7 +1588,7 @@ ADDITIONAL: {
 			sethistory(@history);
 		}
 		unless ($noprompt) {
-			if (defined $help{$ucvar}) {
+			if (defined $help{$ucvar} and ! $redid) {
 				$help{$ucvar} =~ s/__MVC_([A-Z0-9]+)(__)?/substitute($1,$2)/eg;
 				print $help{$ucvar};
 			}
@@ -1484,10 +1599,23 @@ ADDITIONAL: {
 										|| $Conf{$var}
 										|| $default)
 									);
+			if ($Conf{$var} eq '&-d') {
+				print "OK, I will run with defaults after this prompt.\n";
+				$Conf{$var} = $default;
+				$redid = 1;
+				$next_force = 0;
+				redo;
+			}
 		}
 		else {
 			$Conf{$var} = delete $ENV{"MVC_$ucvar"} || $Conf{$var} || $default;
 		}
+
+		if ($next_force) {
+#print("###force now###\n");
+			$Vend::MakeCat::Force = 1;
+		}
+
 	}
 	close ADDL;
 }
@@ -1495,6 +1623,7 @@ ADDITIONAL: {
 CRYPTPW: {
 	my $pw = substitute('CRYPTPW', '__');
 	last CRYPTPW unless $pw;
+	last CRYPTPW if substitute('ALREADYCRYPT', '__');
 	my @letters = ('A' .. 'Z', 'a' .. 'z');
 	my $salt = $letters[ int rand(scalar @letters) ];
 	$salt .= $letters[ int rand(scalar @letters) ];
@@ -1508,11 +1637,13 @@ PRECMD: {
 	print "\nFound system commands to run.\n\n";
 	local ($/) = "";
 	while(<ADDL>) {
+		my $unprompted;
 		s/\s+$//;
 		s/__MVC_([A-Z0-9]+)(__)?/substitute($1,$2)/eg;
 		my ($command, $prompt) = split /\n/, $_, 2;
 		$command =~ s/^\s+//;
 		$command =~ s/\s+$//;
+		$command =~ s/^!// and $unprompted = 1;
 		if($command =~ s/{\s*([A-Z0-9]+)(\s*\S.*?)?\s*}\s*//) {
 			my $param = $1;
 			my $test = $2;
@@ -1525,7 +1656,8 @@ PRECMD: {
 			next unless $true;
 		}
 		print "$prompt\n\n";
-		my $ans = prompt( qq{run "$command"? }, 'y' );
+		print "Running: $command\n" if $unprompted;
+		my $ans = $unprompted ? 'y' : prompt( qq{run "$command"? }, 'y' );
 		if($ans =~ /^\s*y/i) {
 			system $command;
 			if($?) {
@@ -1612,8 +1744,8 @@ else {
 );
 
 sub set_owner {
+	return unless $> == 0;
 	my($file) = @_;
-	return unless $isroot;
 	my ($user, $group) = ($mvuid, $mvgid);
 	if($Conf{permtype} =~ /^m/i) { $user = $catuid; $group = $catgid; }
 	elsif($Conf{permtype} =~ /^g/i) { $group = $catgid; }
@@ -1747,6 +1879,20 @@ EOF
 		}
 
 		print "done.\n";
+
+		if($CGIwrap and $isroot) {
+			print <<EOF;
+Since you selected the SUEXEC/CGIwrap option and are root, we aren't sure
+which user and group you intended to own the link program. We have selected
+the catalog user's UID/GID ($catuid/$catgid), but this may not match your
+server definition. If you get a server error, change the ownership to its
+proper value and ensure that the SUID bit is turned off on the link
+program ($cginame).
+
+EOF
+			chown($catuid, $catgid, $cginame) or die "\nchown $cginame: $!\n";
+			prompt("Press <ENTER> to continue....");
+		}
 	}
 
 	my $chg_to_catuser = sub {
@@ -1770,15 +1916,16 @@ EOF
 			chdir "$Conf{relocate}$Conf{vendroot}"
 				or die "\nchdir $Conf{relocate}$Conf{vendroot}: $!\n";
 			# remember directories so we can chown below
-			chdir "share" or die "\nchdir 'share': $!\n";
+			chdir "share" or die "error.\nchdir 'share': $!\n";
 			map { push @sharedirs, $_ if -d $_ } glob('*');
 			chdir "..";
-			# copy everything except some HTML help file stuff
-			my $exclude_pattern = '((^|/)src(/|$)|\.pl$)';
-			copy_dir("share", "$Conf{relocate}$Conf{sharedir}", $exclude_pattern) or die;
+			copy_dir("share", "$Conf{relocate}$Conf{sharedir}") or die;
 		};
-		if ($@) {
-			print "\nError installing share/ files: $@\n" if $@;
+		if (! @sharedirs) {
+			print "none found.\n";
+		}
+		elsif ($@) {
+			print "error.\nError installing share/ files: $@\n";
 		} else {
 			File::Find::find(
 				$chg_to_catuser,
@@ -1869,11 +2016,13 @@ POSTCMD: {
 	print "\nFound additional system commands to run.\n\n";
 	local ($/) = "";
 	while(<ADDL>) {
+		my $unprompted;
 		s/\s+$//;
 		s/__MVC_([A-Z0-9]+)(__)?/substitute($1,$2)/eg;
 		my ($command, $prompt) = split /\n/, $_, 2;
 		$command =~ s/^\s+//;
 		$command =~ s/\s+$//;
+		$command =~ s/^!// and $unprompted = 1;
 		if($command =~ s/{\s*([A-Z0-9]+)(\s*\S.*?)?\s*}\s*//) {
 			my $param = $1;
 			my $test = $2;
@@ -1886,7 +2035,8 @@ POSTCMD: {
 			next unless $true;
 		}
 		print "$prompt\n\n";
-		my $ans = prompt( qq{run "$command"? }, 'y' );
+		print "Running: $command\n" if $unprompted;
+		my $ans = $unprompted ? 'y' : prompt( qq{run "$command"? }, 'y' );
 		if($ans =~ /^\s*y/i) {
 			system $command;
 			if($?) {
@@ -1900,13 +2050,25 @@ POSTCMD: {
 	close ADDL;
 }
 	my $add;
+	my $add_tcp;
+	my $add_inet;
 
 	umask(07) unless $Conf{noumask};
 
 	$add = prefix('nocfg') ? 'n' : 'y';
-	$yes = prompt "Add catalog to $Global::ConfigFile? ", $add;
-
+	if ($Conf{catalogconf}) {
+		$yes = prompt "Add catalog to $Conf{catalogconf}? ", $add;
+	} else {
+		$yes = prompt "Add catalog to $Global::ConfigFile? ", $add;
+	}
 	$add = prefix('norunning') ? 'n' : 'y';
+
+	if($yes and $Inetmode) {
+		$add_tcp = prompt "Add port $lp to TcpMap in interchange.cfg if necessary? ", $add;
+		$add_tcp = is_yes($add_tcp);
+		$add_inet = prompt "Set Interchange to run in INET mode if necessary? ", $add;
+		$add_inet = is_yes($add_inet);
+	}
 
 	if($pid) {
 		$add_to_running = prompt "Add catalog to server running on PID $pid? ", $add;
@@ -1915,20 +2077,31 @@ POSTCMD: {
 
 	my $full = '';
 	my $newcfgline;
+	my $tcpmark;
 
 	$newcfgline = sprintf "%-10s %s %s %s %s\n", 'Catalog',
 				$catalog_name, $Conf{catroot}, $full . $Conf{cgiurl}, $Conf{aliases};
 
 	if( is_yes($yes) ) {
 		my ($newcfgline, $mark, @out);
-		my ($tmpfile) = "$Global::ConfigFile.$$";
-		if (-f $Global::ConfigFile) {
-			File::Copy::copy ($Global::ConfigFile, $tmpfile)
-				or die "\nCouldn't copy $Global::ConfigFile: $!\n";
+		my $tmpfile;
+
+		if ($Conf{catalogconf}) {
+			$tmpfile = "$Conf{catalogconf}.$$";
+			File::Copy::copy ($Conf{catalogconf}, $tmpfile)
+					or die "\nCouldn't copy $Conf{catalogconf}: $!\n";
+        } else {
+        	$tmpfile= "$Global::ConfigFile.$$";
+			if (-f $Global::ConfigFile) {
+				File::Copy::copy ($Global::ConfigFile, $tmpfile)
+					or die "\nCouldn't copy $Global::ConfigFile: $!\n";
+			}	
+			else {
+				File::Copy::copy("$Global::ConfigFile.dist", $tmpfile)
+					or die "\nCouldn't copy $Global::ConfigFile.dist: $!\n";
+			}	
 		}
-		else {
-			File::Copy::copy("$Global::ConfigFile.dist", $tmpfile);
-		}
+
 		open(CFG, "< $tmpfile")
 			or die "\nCouldn't open $tmpfile: $!\n";
 		while(<CFG>) {
@@ -1937,6 +2110,10 @@ POSTCMD: {
 				if s/^(catalog\s+$catalog_name\s+)/#$1/io;
 			$full = is_yes($1)
 				if /^\s*fullurl\s+(.*)/i;
+			if ($add_tcp and /^tcpmap\s+/i and $_ !~ /\b$lh:$lp\b/) {
+				$tcpmark = /^tcpmap\s+[^<]+$/i ? $. : $. + 1;
+				$tcpmark-- if $mark;
+			}
 			push @out, $_;
 		}
 		close CFG;
@@ -1944,11 +2121,35 @@ POSTCMD: {
 		if($full) {
 			$full = $Conf{servername};
 		}
-		open(NEWCFG, ">$Global::ConfigFile")
-			or die "\nCouldn't write $Global::ConfigFile: $!\n";
+
+		if ($Conf{catalogconf}) {
+			open(NEWCFG, ">$Conf{catalogconf}")
+				or die "\nCouldn't write $Conf{catalogconf}: $!\n";
+		} else {
+			open(NEWCFG, ">$Global::ConfigFile")
+				or die "\nCouldn't write $Global::ConfigFile: $!\n";
+		}
 
 		$newcfgline = sprintf "%-13s %s %s %s %s\n", 'Catalog',
 				$catalog_name, $Conf{catroot}, $full . $Conf{cgiurl}, $Conf{aliases};
+
+		if($tcpmark) {
+			$out[$tcpmark] =~ s/\s*$/ $lh:$lp -\n/;
+		}
+
+		if($add_inet) {
+			my $found_inetmode;
+			for(@out) {
+				next unless /^\s*inet_mode\s+/i;
+				$_ = "Inet_Mode Yes\n";
+				$found_inetmode = 1;
+				last;
+			}
+			if(! $found_inetmode) {
+				push @out, "Inet_Mode Yes\n";
+			}
+		}
+
 		if (defined $mark) {
 			print NEWCFG @out[0..$mark-1];
 			print NEWCFG $newcfgline;
@@ -1960,6 +2161,7 @@ POSTCMD: {
 			print NEWCFG $newcfgline;
 			print NEWCFG @out;
 		}
+
 		close NEWCFG || die "close: $!\n";
 		unlink $tmpfile;
 		if($isroot) {
@@ -2079,7 +2281,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.26.4.8 2000-12-05 16:06:17 racke Exp $
+# $Id: makecat.PL,v 1.26.4.9 2003-01-25 22:21:32 racke Exp $
 
 =head1 INTRODUCTION
 
@@ -2226,18 +2428,18 @@ For testing on your local machine, just use C<localhost>.
 =item --cgiurl=url_fragment
 
 The path to the CGI link (no server name). For a catalog named
-C<construct>, this would normally be one of:
+C<foundation>, this would normally be one of:
 
-    --cgiurl=/cgi-bin/construct
+    --cgiurl=/cgi-bin/foundation
 
 or 
 
-    --cgiurl=/construct.cgi
+    --cgiurl=/foundation.cgi
 
 
 =item --demotype=template
 
-The template catalog. The default is <construct>.
+The template catalog. The default is <foundation>.
 
 =item --mailorderto=email
 
@@ -2266,6 +2468,14 @@ The directory where template images go.
 =item --imageurl=url
 
 The URL to prefix images with.
+
+=item --sharedir=directory
+
+The directory where shared admin images go.
+
+=item --shareurl=url
+
+The URL to prefix shared admin images with.
 
 =item --nocfg
 
@@ -2300,24 +2510,29 @@ URL to access HTML for catalog.
 
 Don't set umask to the value implied by mode.
 
+=item --catalogconf=file
+
+Use file as configuration file for catalog definitions. This option
+has been designed for the use with Debian installations.
+
 =back
 
 =head1 DESCRIPTION
 
-C<makecat> needs a template catalog to operate on. The I<foundation site> and
-I<construct something> demo templates are distributed with Interchange. You can
+C<makecat> needs a template catalog to operate on. The I<Foundation
+Store> demo template is distributed with Interchange. You can
 also look for additional demo catalogs (mostly for ideas) at
-http://developer.akopia.com/.
+http://interchange.redhat.com/.
 
 B<IMPORTANT NOTE:> You only make a catalog once. All further configuration
 is done by editing the files within the I<catalog directory>.
 
 A catalog template contains an image of a configured catalog. The best
-way to see what the makecat program does is to configure the 'construct'
+way to see what the makecat program does is to configure the 'foundation'
 demo and then run a recursive C<diff> on the template and configured
 catalog directories:
 
-  diff -r interchange/construct catalogs/construct
+  diff -r interchange/foundation catalogs/foundation
 
 You will see that the files are mostly the same, except that certain
 macro strings have been replaced with the answers you gave to the script.
@@ -2344,7 +2559,7 @@ substituted, and include (at least):
     MVC_DOCUMENTROOT MVC_VENDROOT
     MVC_ENCRYPTOR
 
-(Not all of these are present in the construct template, and
+(Not all of these are present in the foundation template, and
 quite a few more may be defined.)  In fact, any environment variable that
 is set and begins with MVC_ will be substituted for by the C<makecat>
 script. So if you wanted to set up a configurable parameter to customize
@@ -2363,7 +2578,7 @@ B<IMPORTANT NOTE:> The template directory is located in the Interchange
 software directory, i.e. where C<interchange.cfg> resides. You normally do
 not edit files in the template directory.  If you want to try creating
 your own template, it is recommended that you name it something besides
-construct and copy the C<construct> demo directory to it as a starting point.
+foundation and copy the C<foundation> demo directory to it as a starting point.
 Templates are normally placed in the Interchange base directory, but can
 be located anywhere -- the script will prompt you for location if it
 cannot find a template.
@@ -2416,7 +2631,7 @@ This will cause the prompt:
     We need to create an SQL database for your Interchange
     database tables.
      
-    Run command "mysqladmin create test_construct"?
+    Run command "mysqladmin create test_foundation"?
 
 If the response is "y" or "yes", then the command will be run
 by passing it through the Perl system() function. As with any
@@ -2434,7 +2649,7 @@ Interchange has many, many, functions and features; they are too numerous
 to describe in this venue. Complete information can be found at
 its web site:
 
-        http://www.akopia.com/
+        http://interchange.redhat.com/
 
 Interchange requires Perl 5.005 or higher; more information on Perl can
 be seen at:
@@ -2443,7 +2658,7 @@ be seen at:
 
 =head1 SEE ALSO
 
-mvdocs(8), interchange(1), http://www.akopia.com/
+interchange(1)
 
 =head1 LICENSE
 
@@ -2453,29 +2668,28 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-Copyright 1995-2000, Akopia, Inc.. All rights reserved except as in the
+Copyright 1995-2002, Red Hat, Inc. All rights reserved except as in the
 license.
 
 =cut
 
 =head1 AUTHOR
 
-Mike Heins, <heins@akopia.com>. Please do not contact the author for
-direct help with the system. Use the Interchange mail lists:
+Mike Heins, <mheins@redhat.com>. Please do not contact the author for
+direct help with the system. Use the Interchange mail list:
 
-    interchange-users	(English, subscribe at http://developer.akopia.com/)
+    interchange-users
 
-General information and documentation for Interchange is at:
+Information on subscribing to the list, and general information and
+documentation for Interchange is at:
 
-    http://www.akopia.com/
-    http://developer.akopia.com/
+    http://interchange.redhat.com/
 
 =cut
 
 __END__
 
-# Sample catalog definition
-[catalog construct]
+[catalog foundation]
 basedir         =
 catroot         =
 catuser         =
@@ -2483,7 +2697,7 @@ cgibase         =
 cgibin          =
 cgidir          =
 cgiurl          =
-demotype        = construct
+demotype        = foundation
 documentroot    =
 imagedir        =
 imageurl        =
@@ -2492,47 +2706,6 @@ interchangegroup=
 interchangeuser =
 samplehtml      =
 sampleurl       =
-servername      =
-vendroot        =
-
-[catalog barry]
-basedir         =
-catroot         =
-catuser         =
-cgibase         =
-cgibin          =
-cgidir          =
-cgiurl          =
-demotype        = barry
-documentroot    =
-imagedir        =
-imageurl        =
-mailorderto     =
-interchangegroup=
-interchangeuser =
-samplehtml      =
-sampleurl       =
-servername      =
-vendroot        =
-
-# Simple catalog definition
-[catalog simple]
-basedir         =
-catroot         =
-catuser         =
-cgibase         =
-cgibin          =
-cgidir          =
-cgiurl          =
-demotype        = simple
-documentroot    =
-imagedir        =
-imageurl        =
-mailorderto     =
-interchangegroup=
-interchangeuser =
-samplehtml      =
-sampleurl       = 
 servername      =
 vendroot        =
 
@@ -2549,6 +2722,7 @@ interchangeuser=
 serverconf=
 servername=
 vendroot=
+linkmode=
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
@@ -2574,6 +2748,7 @@ demotype
 documentroot
 imagedir
 imageurl
+linkmode
 mailorderto
 interchangegroup
 interchangeuser
@@ -2616,6 +2791,7 @@ shareurl
 vendroot
 basedir
 interchangeuser
+linkmode
 EOF
 
 # 
@@ -2671,11 +2847,4 @@ servername=1
 sharedir=1
 shareurl=1
 vendroot=1
-_EoP_
-	s{.*\n(#(.*)~_~(\w+)~_~(.*))}{$2 . doit($3) . "$4\n$1"}eg;
-	my $file = $0;
-	$file =~ s/\.PL$//;
-	open(OUT, ">$file") 
-		or die "Create $file: $!\n";
-	print OUT $_;
-}
+linkmode=1

@@ -1,182 +1,115 @@
+[tmp passuser][either][cgi username][or][cgi user_id][/either][/tmp]
 [calc]
 	$CGI->{no_dbmenu} = 1;
 	$CGI->{access_menu} = 1;
-	return [/calc]
-[seti page_title]Change password: [cgi user_id][/seti]
-[seti page_banner]Change password: <B>[cgi user_id]</B>[/seti]
+	return;
+[/calc]
+[seti page_title][L]Change password[/L]: [scratch passuser][/seti]
+[seti page_banner][L]Change password[/L]: <b>[scratch passuser]</b>[/seti]
 [set ui_class]Admin[/set]
 [set page_perm]access=e[/set]
 [set help_name]change.password[/set]
-[set icon_name]admin/icon_config.gif[/set]
-[set no_old_needed][/set]
+[set icon_name]icon_config.gif[/set]
+[tmp old_needed]1[/tmp]
 [if-mm super]
 	[calc]
-		$Scratch->{no_old_needed} = 1
-			unless $CGI->{user_id} eq $Session->{username};
+		# Note that the final authority on whether the old password is needed
+		# is &Vend::UserDB::change_pass -- this logic is for widget display only.
+		$Scratch->{old_needed} = 0 if $CGI->{user_id} ne $Session->{username};
 		return;
 	[/calc]
 [/if-mm]
 @_UI_STD_HEAD_@
 
 [if session failure]
-<P>
-&nbsp;
-<BLOCKQUOTE>
-<FONT COLOR=RED>[L]Failure:[/L]</FONT> [data session failure][data base=session field=failure value=""]
-</BLOCKQUOTE>
-<P>
-&nbsp;
+	<blockquote class=cerror>
+		[L]Failure:[/L] [data session failure][data base=session field=failure value=""]
+	</blockquote>
 [/if]
 
 [if scratch ui_message]
-<P>
-<BLOCKQUOTE>
-	[scratch ui_message][set ui_message][/set]
-</BLOCKQUOTE>
-<P>
-&nbsp;
+	<blockquote class=cmessage>
+		[scratchd ui_message]
+	</blockquote>
 [/if]
 
-[if scratch no_old_needed]
-[then]
-[set no_old_needed][/set]
-[loop list="[cgi user_id]"]
-
-[set check_match]
-[calc]
-	if ($CGI->{password} eq $CGI->{verify}) {
-		$CGI->{password} = $Tag->filter( 'crypt', $CGI->{password} );
-		return 'mv_todo=set';
-	}
-	$Session->{failure} = "Password and verify do not match.";
-	return "mv_todo=back\nmv_nextpage=@@MV_PAGE@@";
-[/calc]
-[/set]
-
-<form action="[area ui]" method="post">
-<INPUT TYPE=hidden NAME=mv_todo VALUE=back>
-<INPUT TYPE=hidden NAME=mv_nextpage VALUE=__UI_BASE__/access>
-<INPUT TYPE=hidden NAME=mv_data_table VALUE="[value mv_data_table]">
-<INPUT TYPE=hidden NAME=mv_data_key VALUE="username">
-<INPUT TYPE=hidden NAME=mv_click VALUE="check_match">
-<INPUT TYPE=hidden NAME=mv_data_fields VALUE="username password">
-
-<table __UI_T_PROPERTIES__>
-
-<tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-
-<tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
-<small>User name</small>
-</td>
-<td bgcolor=__UI_C_INTBLOCK__>
-	<input type=hidden name=mv_data_function value="update">
-	<input type=hidden name=username value="[loop-code]">[loop-code]
-</td>
-</tr>
-
-<tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-<tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
-<small>New password</small>
-</td>
-<td bgcolor=__UI_C_INTBLOCK__>
-<INPUT TYPE=password NAME=password VALUE="" SIZE=10>
-</td>
-</tr>
-
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
-<small>Verify password</small>
-</td>
-<td bgcolor=__UI_C_INTBLOCK__>
-<INPUT TYPE=password SIZE=10 NAME=verify VALUE="">
-</td>
-</tr>
-
-
-<tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-
-</table>
-
-<p>
-
-[set Ok]
-[/if-mm]
-[/set]
-[if-mm advanced access=e]
-	[set Ok]
-	mv_todo=set
-	[/set]
-	<input type=submit name="mv_click" value="Ok">
-	<input type=submit value="Cancel">
-[else]
-	[set Back]
-	mv_todo=back
-	[/set]
-	<input type=submit value="Back">
-[/else]
-[/if-mm]
-
-</form>
-[/loop]
-[/then]
-[else]
-
 <FORM ACTION="[process]" METHOD=POST>
-	<INPUT TYPE=hidden NAME=mv_click VALUE=MMChange>
-	<INPUT TYPE=hidden NAME=mv_todo  VALUE=back>
-	<INPUT TYPE=hidden NAME=mv_nextpage VALUE=__UI_BASE__/access>
-	<INPUT TYPE=hidden NAME=mv_failpage VALUE=@@MV_PAGE@@>
-	<INPUT TYPE=hidden NAME=mv_username VALUE="[cgi user_id]">
+<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+<INPUT TYPE=hidden NAME=mv_todo     VALUE=back>
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE=__UI_BASE__/access>
+<INPUT TYPE=hidden NAME=mv_failpage VALUE=@@MV_PAGE@@>
+<INPUT TYPE=hidden NAME=mv_username VALUE="[scratch passuser]">
+<INPUT TYPE=hidden NAME=user_id     VALUE="[scratch passuser]">
+
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
-<small>Old password</small>
+<td class=rnorm align=right>
+<small>[L]User name[/L]</small>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
-<INPUT TYPE=password NAME=mv_password_old VALUE="" SIZE=10>
-</td>
-</tr>
-
-
-<tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
-<small>New password</small>
-</td>
-<td bgcolor=__UI_C_INTBLOCK__>
-<INPUT TYPE=password NAME=mv_password VALUE="" SIZE=10>
+<td class=rnorm>
+[scratch passuser]
 </td>
 </tr>
 
+[if scratch old_needed]
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
-<small>Verify password</small>
+<td class=rnorm align=right>
+<small>[L]Old password[/L]</small>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
-<INPUT TYPE=password NAME=mv_verify VALUE="" SIZE=10>
+<td class=rnorm>
+<INPUT TYPE=password NAME=mv_password_old VALUE="" SIZE=12>
+</td>
+</tr>
+[/if]
+
+<tr>
+<td class=rnorm align=right>
+<small>[L]New password[/L]</small>
+</td>
+<td class=rnorm>
+<INPUT TYPE=password NAME=mv_password VALUE="" SIZE=12>
 </td>
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td class=rnorm align=right>
+<small>[L]Verify password[/L]</small>
+</td>
+<td class=rnorm>
+<INPUT TYPE=password NAME=mv_verify VALUE="" SIZE=12>
+</td>
+</tr>
+
+<tr>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </TABLE>
-<INPUT TYPE=submit VALUE="Change" SIZE=10>
-</FORM>
+
+[if-mm advanced access=e]
+	[button text="[if scratch old_needed][L]Change[/L][else][L]Set Password[/L][/else][/if]"]
+		mv_todo=set
+		mv_click=MMChange
+	[/button]
+	[button text=[L]Permissions[/L]]
+		mv_todo=set
+		mv_click=MMChange
+		mv_nextpage=__UI_BASE__/access_permissions
+	[/button]
+	[button text=[L]Cancel[/L]]
+	[/button]
+[else]
+	[button text=[L]Back[/L]]
+	[/button]
 [/else]
-[/if]
+[/if-mm]
+
+</FORM>
 
 @_UI_STD_FOOTER_@
 

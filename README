@@ -1,134 +1,108 @@
-Interchange V4.6.5
+-----------------------------------------------------------------------------
 
-Copyright (C) 1996-2001 Akopia, Inc. <info@akopia.com>
+                           I N T E R C H A N G E
 
-Originally based on Vend 0.2
-Copyright 1995 by Andrew M. Wilcox
+Interchange 4.9.7
 
-Portions from Vend 0.3
-Copyright 1995,1996 by Andrew M. Wilcox
+Copyright (C) 1996-2003 Red Hat, Inc., and Interchange Development Group.
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the
-Free Software Foundation; either version 2 of the License, or (at your
-option) any later version.
+Originally based on Vend 0.2 and 0.3, copyright 1995-96 by Andrew M. Wilcox.
 
-This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
-for more details.
+This program is offered without warranty of any kind.
+See the file LICENSE for redistribution terms.
 
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+-----------------------------------------------------------------------------
 
+Interchange is a full-featured electronic catalog system with
+online ordering; real-time credit card processing hooks; high-end
+database access and retrieval with SQL support; product categorizing,
+merchandising, and discounting; basic customer relationship management;
+dynamic content presentation; content management; internationalization
+and localization support; real-time tax and shipping hooks; reporting;
+and web-based administration.
 
-Welcome to Interchange! This program is completely unsupported, without
-warranty of any kind. The author is interested in problems, suggestions,
-or comments, but does not have time to offer free individual support
-in most cases. See the Akopia website at http://www.akopia.com/
-for more information.
+Interchange absolutely REQUIRES Perl 5.6.0 or later on a Unix-like operating
+system.
 
--------------------------------------------------------------------
+-----------------------------------------------------------------------------
 
-                        I N T E R C H A N G E
+More information is in the following files and directories:
 
-Interchange is a full-featured electronic catalog system (commonly known
-as a shopping cart) with online ordering capability. It is a high-end
-database access and retrieval system with SQL support via the Perl DBI.
+LICENSE          The text of the GNU General Public License (GPL) under which
+                 Interchange is supplied.
 
-A full list of its features is available at:
+README.rpm-dist  Notes on using Interchange when installed from RPM packages.
 
-        http://www.akopia.com/
+README.debian    Notes on using Interchange when installed from Debian packages.
 
-IMPORTANT NOTE: Interchange absolutely REQUIRES Perl 5.005 or Perl 5.6.
+README.cvs       How to access the CVS repository to track ongoing development.
 
-The information you need is in the following files:
+WHATSNEW         Changes per version for this version family.
 
-    README     This file: Copyright info, roadmap to installation
-               and pointers to support system
+UPGRADE          Instructions on how to upgrade from an earlier Interchange
+                 version.
 
-    LICENSE    Your Interchange license -- please read.
-
-    QuickStart Document to help you install Interchange
-
-    WHATSNEW   Change information for all versions in this
-               version family.
-
-    MANIFEST   List of all core distribution files.
+-----------------------------------------------------------------------------
 
 Major files/directories in the distribution:
 
-    Makefile.PL The installation script.
+Makefile.PL    Script to create a Makefile, used for installation.
 
-    dist/       The distribution files, exclusive of executable
-                files and modules. Includes:
+dist/          The distribution files, exclusive of executable
+               files and modules. Includes:
 
-                interchange.cfg.dist   Distribution interchange.cfg
-                construct/             The new catalog demo application
-                src/                   C and Perl code for CGI links
-                lib/                   User interface
-                usertag/               Some fairly-standard usertags
+               interchange.cfg.dist   Distribution interchange.cfg
+               foundation/            Demo catalog skeleton, used by makecat
+               src/                   C and Perl code for CGI links
+               lib/                   Back-end administrative interface
+               code/                  Usertags and other customizable code
 
-    extra/      Some not-always-needed Perl libraries.
+extra/         Some not-always-needed Perl libraries.
 
-    lib/        The library modules needed to run Interchange.
+hints.pl       OS-specific configuration settings. None currently used.
 
-    pod/        Manual pages, viewable with perldoc.
+lib/           The library modules needed to run Interchange.
 
-    scripts/    The executable files, relocated to bin/ in the run
-                directory.
+scripts/       The executable files, relocated to bin/ in the install
+               directory.
 
-    test.pl     The installation test script.
+relocate.pl    Script that adjusts paths in scripts/ for installation into
+               bin/.
 
--------------------------------------------------------------------
+test.pl        The installation test script.
 
-UNIX INSTALLATION
-------------------
-Here is the short version:
+-----------------------------------------------------------------------------
 
-    gzip -dc interchange-4.6.*.tar.gz | tar xvf -
-    cd interchange-4.6.*
-    ./configure
+                          I N S T A L L A T I O N
 
-The 'configure' script is basically a shortcut for:
+You can install Interchange as root for a multi-user system-wide setup, or
+as an unprivileged user who will be the only one modifying Interchange files.
 
-    perl Makefile.PL
-    make
-    make test && make install
+Here is the quick installation summary:
 
-Then you will need to make your first Interchange catalog. See the
-section 'DEMO' below.
+gzip -dc interchange-4.9.?.tar.gz | tar xvf -
+cd interchange-4.9.?
+./configure
 
-Remember to check http://developer.akopia.com/ for documentation and
-help from other users if you have any trouble.
+The configure script asks where you'd like to install Interchange, and
+(against common practice) also install it.
 
-PLEASE NOTE:
-After making configuration changes, make sure to restart the server.
-It won't take but a few seconds, and changes in configurable options
-don't take effect until it is done. You may even change a page and not
-see the effect until the server is restarted.
+The Interchange server doesn't do much if it isn't servicing one or more
+actual catalogs, so you next need to make your first Interchange catalog,
+as described in the next section.
 
-WINDOWS INSTALLATION
---------------------
-Interchange will not yet run reliably on Windows.
+-----------------------------------------------------------------------------
 
--------------------------------------------------------------------
+                                 D E M O
 
-                             D E M O
+There is a demo catalog skeleton included called 'foundation'.
 
-There is a demo application included called "construct".
+To build your own catalog from the demo, go to the directory where you
+installed Interchange (default is "interchange" in your home directory,
+/usr/local/interchange for root installations, or /usr/lib/interchange
+for RPM installations) and run:
 
-To install the demo, go to the directory where you installed Interchange
-(default is "interchange" in your home directory, /usr/local/interchange
-for root installations, or /usr/lib/interchange for RPM installations)
-and run:
-
-    bin/makecat construct
-
-     or
-
-    bin/makecat any_id_you_pick
+bin/makecat
 
 Follow the prompts and after restarting the Interchange server you
 should be able to access the demo catalog.
@@ -137,62 +111,27 @@ Please note that some functionality (notably the reporting features)
 may not be available if you are not using an SQL database such as
 MySQL or PostgreSQL.
 
-Visit http://demo.akopia.com/ to see a live demo on our servers.
+Visit http://demo.icdevgroup.org/ to try out a live demo.
 
--------------------------------------------------------------------
+-----------------------------------------------------------------------------
 
-                     D O C U M E N T A T I O N
+                         D O C U M E N T A T I O N
 
-The documentation is in several man pages and HTML files in the doc/
-subdirectory of the main Interchange directory.
+A documentation package is available, with documentation in many different
+formats. This and other information is available at the Interchange home on
+the web:
 
-There is extended documentation available at
-http://developer.akopia.com/
-which includes user-annotated documentation, HTML versions of the manual,
-and a user-contributed code library.
+http://www.icdevgroup.org/
 
--------------------------------------------------------------------
+-----------------------------------------------------------------------------
 
-                      A V A I L A B I L I T Y
-                              A N D
-                     C O M P A T I B I L I T Y
+                         C O M P A T I B I L I T Y
 
-Interchange 4 has been tested on Linux, FreeBSD, Solaris 2.x, and Digital
-UNIX/Tru64. Its predecessor Minivend 3 also reportedly runs on SCO, AIX,
-and other Unix ports. It should work on any UNIX or Win32 OS with Perl
-5.005 or higher.
+Interchange is regularly tested on Linux, FreeBSD, and Solaris. It
+has also been used on OpenBSD, Digital UNIX/Tru64, SCO, AIX, and other
+Unix variants. It should work on any Unix with Perl 5.005 or higher and
+the necessary Perl modules.
 
-IMPORTANT NOTE FOR BSD USERS: Interchange has been known to segfault when
-reading sockets on Perl. This occurs more frequently on a busy system.
-The workaround is to set in minivend.cfg:
+-----------------------------------------------------------------------------
 
-    MaxServers   0
-    Housekeeping 1
-
-Windows does not support fork(), so the server runs in the foreground. There
-are other differences, and there may be portablity problems. Interchange is
-not yet tested to run on Windows; the canonical installation is UNIX.
-
--------------------------------------------------------------------
-
-                    K N O W N   P R O B L E M S
-
-BSDI, FreeBSD, NetBSD:
-    You will need to make sure the following are in effect
-    in minivend.cfg:
-
-        MaxServers 0
-        Housekeeping 1
-
-    Expect lots of crashes if you don't do this.
-
-Apache with suEXEC:
-    VLINK/UNIX socket mode will not work well unless you do the
-    install as a normal user. If you are going to support multiple
-    users, you must use TLINK/INET mode.
-
-Windows:
-    Interchange will not work properly with Windows. No strategy
-    has been yet developed for providing reliable operation on Windows.
-
--------------------------------------------------------------------
+(end)

@@ -4,11 +4,29 @@
 			return;
 	[/calc]
 [/if-mm]
-[seti page_title]Orders by Affiliate[if cgi affiliate]: [cgi affiliate][/if][/seti]
-[set icon_name]admin/icon_stats.gif[/set]
+[seti page_title][L]Orders by Affiliate[/L][if cgi affiliate]: [cgi affiliate][/if][/seti]
+[set icon_name]icon_stats.gif[/set]
 [set help_name]orderstats.view[/set]
 
 @_UI_STD_HEAD_@
+<TABLE width="90%" border=0 cellpadding=0 cellspacing=0>
+<tr class=rborder height=1><td colspan=4></td></tr>
+<TR class=rmarq>
+	<TD VALIGN=top width="20%">
+		[L]Date[/L]
+	</TD>
+	<TD VALIGN=top>
+		[L]Affiliate[/L]
+	</TD>
+	<TD ALIGN=right VALIGN=top>
+		[L]Number of Orders[/L]
+	</TD>
+	<TD ALIGN=right VALIGN=top>
+		[L]Revenue[/L]
+	</TD>
+</TR>
+<tr class=rborder height=1><td colspan=4></td></tr>
+
 [calc]
 	if($Session->{arg}) {
 		$Scratch->{date_limit} = "AND order_date like '$Session->{arg}%'";
@@ -94,6 +112,7 @@ EOF
 
 [query
 	st=db
+	ml=100000
 	table=transactions
 	hashref=main
 	sql="
@@ -102,7 +121,8 @@ EOF
 			WHERE deleted != '1' [scratch date_limit] [scratch synd_limit]
 			order by affiliate, [scratch campaign_field], order_date
 	"][/query]
-
+[tmp ALL][L]ALL[/L][/tmp]
+[tmp TOTAL][L]GRAND TOTAL[/L][/tmp]
 [perl tables="transactions"]
 	my %sales;
 	$master = {};
@@ -153,7 +173,7 @@ EOF
 	foreach $month (sort { $b <=> $a } keys %$master) {
 		my $year = $month;
 		$year =~ s/(\d\d\d\d)(\d\d)/$1/;
-		my $mname = $names{$2};
+		my $mname = errmsg($names{$2});
 		my $subtotal_sales  = 0;
 		my $subtotal_quantity  = 0;
         my $subtotal_commission = 0;
@@ -166,19 +186,19 @@ EOF
 			$subtotal_quantity += $record->{orders};
             $subtotal_commission += $record->{commission};
 			($syn, $camp) = split /\0/, $id, 2;
-			my $synlabel = $syn || '(none)';
+			my $synlabel = $syn || errmsg'(none)';
 			my $burl = $Tag->area('__UI_BASE__/reports/order/Monthly', $month);
 			my $url = qq{<A HREF="$burl$syndstring">$mname&nbsp;$year</A>}
 				if $mname;
 			$out .= <<EOF;
-	<TR BGCOLOR=__UI_C_INTBLOCK__>
+	<TR class=rnorm>
 	<TD VALIGN=top>
 	$url&nbsp;
 	</TD>
 	<TD VALIGN=top>
 	<A HREF="$burl&affiliate=$syn">$synlabel</A>&nbsp;<A HREF="$burl&affiliate=$syn&campaign=$camp">$camp</A>
 	</TD>
-	<TD ALIGN=center VALIGN=top>
+	<TD ALIGN=right VALIGN=top>
 	$record->{orders}
 	</TD>
 	<TD ALIGN=right VALIGN=top>
@@ -199,14 +219,14 @@ EOF
 		$subtotal_sales  = $Tag->currency({}, $subtotal_sales);
         $subtotal_commission = $Tag->currency({}, $subtotal_commission);
 		$out .= <<EOF;
-	<TR BGCOLOR="__UI_C_INTBLOCK__">
+	<TR class=rnorm>
 	<TD VALIGN=top>
 	&nbsp;
 	</TD>
 	<TD VALIGN=top>
-	ALL<BR><HR color=black size=1>
+	$Scratch->{ALL}<BR><HR color=black size=1>
 	</TD>
-	<TD ALIGN=center VALIGN=top>
+	<TD ALIGN=right VALIGN=top>
 	$subtotal_quantity
 	</TD>
 	<TD ALIGN=right VALIGN=top>
@@ -224,16 +244,16 @@ EOF
 		$total_sales  = $Tag->currency({}, $total_sales);
         $total_commission = $Tag->currency({}, $total_commission);
 		$out .= <<EOF;
-	<TR BGCOLOR="__UI_C_INTBLOCK__">
+	<TR class=rnorm>
 	<TD VALIGN="top">
 
-	GRAND TOTAL
+	$Scratch->{TOTAL}
 	</TD>
 	<TD VALIGN="top">
 
-	ALL
+	$Scratch->{ALL}
 	</TD>
-	<TD ALIGN=center VALIGN="top">
+	<TD ALIGN=right VALIGN="top">
 
 	$total_quantity
 	</TD>
@@ -249,10 +269,7 @@ EOF
 	$total_commission
 	</TD>
 	</TR>
-EOF
-    }
-    $out .= <<EOF; 
-	<tr bgcolor="#000000" height=1><td colspan=[scratch cols]></td></tr>
+	<tr class=rborder height=1><td colspan=[scratch cols]></td></tr>
 
 EOF
 [/perl]

@@ -1,6 +1,6 @@
 # Vend::Swish - Search indexes with Swish-e
 #
-# $Id: Swish.pm,v 1.1 2002-10-17 04:03:13 mheins Exp $
+# $Id: Swish.pm,v 1.1.2.1 2003-01-25 22:21:28 racke Exp $
 #
 # Adapted from Vend::Glimpse
 #
@@ -25,7 +25,7 @@ package Vend::Swish;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.1.2.1 $, 10);
 use strict;
 
 sub array {

@@ -1,6 +1,6 @@
 # Vend::DbSearch - Search indexes with Interchange
 #
-# $Id: RefSearch.pm,v 2.5 2002-07-15 13:41:12 mheins Exp $
+# $Id: RefSearch.pm,v 2.5.2.1 2003-01-25 22:21:28 racke Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
@@ -26,7 +26,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.5 $, 10);
+$VERSION = substr(q$Revision: 2.5.2.1 $, 10);
 
 use strict;
 

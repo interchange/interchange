@@ -1,23 +1,24 @@
 #!/usr/bin/perl
-# tlink.pl: runs as a cgi program and passes request to Vend server
+
+# tlink.pl: runs as a cgi program and passes request to Interchange server
 #
-#   $Id: mod_perl_tlink.pl,v 1.2 2000-07-12 03:08:10 heins Exp $
+# $Id: mod_perl_tlink.pl,v 1.2.4.1 2003-01-25 22:21:24 racke Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
-#    This program is free software; you can redistribute it and/or
-#    modify it under the terms of the GNU General Public License as
-#    published by the Free Software Foundation; either version 2 of the
-#    License, or (at your option) any later version.
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
 #
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#    General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
 #
-#    You should have received a copy of the GNU General Public License
-#    along with this program; if not, write to the Free Software
-#    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 require 5.005;
 use strict;
@@ -75,8 +76,8 @@ sub server_not_running {
 <BODY BGCOLOR="#FFFFFF">
 <H3>We're sorry, the Interchange server was not running...</H3>
 <P>
-We are out of service or may be experiencing high system demand,
-please try again soon.
+We are out of service or may be experiencing high system demand.
+Please try again soon.
 
 <H3>This is it:</H3>
 <PRE>
@@ -94,7 +95,7 @@ EOF
 #
 sub die_page {
   $r->print("Content-type: text/plain\r\n\r\n");
-  $r->print("We are sorry, but the cgi-bin server is unavailable due to a\r\n");
+  $r->print("We are sorry, but the Interchange server is unavailable due to a\r\n");
   $r->print("system error.\r\n\r\n");
   $r->print(sprintf "%s: %s (%d)\r\n", $_[0], $!, $?);
   if($ERROR_ACTION =~ /not/i) {

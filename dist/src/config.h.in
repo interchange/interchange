@@ -22,7 +22,7 @@
  * This must be in the local filesystem, not an NFS mounted one. The
  * configure script will normally set this for you.
  *
- * LINK_TIMEOUT (both tlink.c and vlink.c
+ * LINK_TIMEOUT (both tlink.c and vlink.c)
  * Define timeout in seconds to wait for the server to start listening
  * on the socket.
  *

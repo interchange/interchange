@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.22 2003-01-20 16:50:28 mheins Exp $
+# $Id: Menu.pm,v 2.22.2.1 2003-01-25 22:21:28 racke Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.22 $, 10);
+$VERSION = substr(q$Revision: 2.22.2.1 $, 10);
 
 use Vend::Util;
 use strict;

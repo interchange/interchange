@@ -1,35 +1,11 @@
-#$self = {
-#	INSTALLPRIVLIB => '/usr/local/interchange/lib',
-#	INSTALLARCHLIB => '/usr/local/interchange',
-#};
-
-use Config;
-require 'scripts/initp.pl';
-
-sub doit {
-	my ($key) = @_;
-	my $val;
-	if ($MV::Self->{RPMBUILDDIR} and $val = $MV::Self->{$key}) {
-		$val =~ s!^$MV::Self->{RPMBUILDDIR}/!/!; 
-		return $val;
-	}
-	return $MV::Self->{$key} unless $key =~ /[a-z]/;
-	return $Config{$key};
-}
-
-DOIT: {
-	local ($/);
-	local($_) = <<'_EoP_';
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
 # Interchange program configurator
 #
-# $Id: config_prog.PL,v 1.6 2000-10-04 23:36:31 heins Exp $
+# $Id: config_prog.PL,v 1.6.4.1 2003-01-25 22:21:31 racke Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
-#
-# See the file 'Changes' for information.
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -57,18 +33,22 @@ use Getopt::Long;
 
 Getopt::Long::config(qw/permute/);
 
-my $Self = {
-	INSTALLPRIVLIB => '/usr/local/interchange/lib',
-#	INSTALLPRIVLIB => '~_~INSTALLPRIVLIB~_~',
-	INSTALLARCHLIB => '/usr/local/interchange',
-#	INSTALLARCHLIB => '~_~INSTALLARCHLIB~_~',
-	INSTALLMAN1DIR => '/usr/local/interchange/doc',
-#	INSTALLMAN1DIR => '~_~INSTALLMAN1DIR~_~',
-	INSTALLSCRIPT => '/usr/local/interchange/bin',
-#	INSTALLSCRIPT => '~_~INSTALLARCHLIB~_~/bin',
-	INSTALLBIN => '/usr/local/interchange/bin',
-#	INSTALLBIN => '~_~INSTALLBIN~_~',
-};
+use vars qw/$Self/;
+
+BEGIN {
+	$Self = {
+		INSTALLPRIVLIB => '/usr/local/interchange/lib',
+#		INSTALLPRIVLIB => '~_~INSTALLPRIVLIB~_~',
+		INSTALLARCHLIB => '/usr/local/interchange',
+#		INSTALLARCHLIB => '~_~INSTALLARCHLIB~_~',
+		INSTALLMAN1DIR => '/usr/local/interchange/doc',
+#		INSTALLMAN1DIR => '~_~INSTALLMAN1DIR~_~',
+		INSTALLSCRIPT => '/usr/local/interchange/bin',
+#		INSTALLSCRIPT => '~_~INSTALLARCHLIB~_~/bin',
+		INSTALLBIN => '/usr/local/interchange/bin',
+#		INSTALLBIN => '~_~INSTALLBIN~_~',
+	};
+}
 
 ### END CONFIGURATION VARIABLES
 
@@ -126,13 +106,10 @@ DOIT: {
 sub doit {
 	my ($self, $orig, $template, $preamble, $key, $postamble) = @_;
 	my $replace =  $Self->{$key} || $Config{$key};
-#warn <<EOF;
-#orig=$orig
-#template=$template
-#key=$key
-#replace=$replace
-#EOF
+
 	return "$orig$template" unless defined $replace;
+	$preamble =~ s/~_~(\w+)~_~/$Self->{$1} || $Config{$1}/eg;
+	$postamble =~ s/~_~(\w+)~_~/$Self->{$1} || $Config{$1}/eg;
 	return "$preamble$replace$postamble$template";
 }
 
@@ -156,7 +133,7 @@ config_prog -- Configure Interchange programs with MakeMaker variables
 
 =head1 VERSION
 
-$Id: config_prog.PL,v 1.6 2000-10-04 23:36:31 heins Exp $
+# $Id: config_prog.PL,v 1.6.4.1 2003-01-25 22:21:31 racke Exp $
 
 =head1 DESCRIPTION
 
@@ -164,16 +141,8 @@ No documentation planned.
 
 =head1 SEE ALSO
 
-mvdocs(8), compile_link(1), config_prog(1), configdump(1), dump(1), expire(1),
+compile_link(1), config_prog(1), configdump(1), dump(1), expire(1),
 expireall(1), localize(1), makecat(1), interchange(1), offline(1),
 restart(1), update(1)
 
 =cut
-_EoP_
-	s{.*\n(#(.*)~_~(\w+)~_~(.*))}{$2 . doit($3) . "$4\n$1"}eg;
-	my $file = $0;
-	$file =~ s/\.PL$//;
-	open(OUT, ">$file") 
-		or die "Create $file: $!\n";
-	print OUT $_;
-}

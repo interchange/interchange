@@ -3,7 +3,7 @@
 #
 # Interchange session expiration for all catalogs
 #
-# $Id: findtags.PL,v 1.1 2002-08-10 17:34:03 mheins Exp $
+# $Id: findtags.PL,v 1.1.2.1 2003-01-25 22:21:32 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #

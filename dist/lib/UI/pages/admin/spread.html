@@ -7,226 +7,249 @@
 	[either]
 		[cgi page_title]
 	[or]
-		Spreadsheet Edit: [cgi mv_data_table]
+		[L]Spreadsheet Edit:[/L] [cgi mv_data_table]
+	[/either]
+[/seti]
+[seti page_banner]
+	[either]
+		[cgi page_banner]
+	[or]
+		Spreadsheet Edit: [page href=__UI_BASE__/db_metaconfig
+								form="
+									ui_table=[cgi mv_data_table]
+									ui_view=[cgi ui_meta_view]
+									start_at=extended.spread_height
+								"][cgi mv_data_table]</A>
 	[/either]
 [/seti]
 [set ui_class]Admin[/set]
 [seti help_name][either][cgi help_name][or]gensql.main[/either][/seti]
-[seti icon_name][either][cgi icon_name][or]admin/icon_config.gif[/either][/seti]
+[seti icon_name][either][cgi icon_name][or]icon_config.gif[/either][/seti]
+
 @_UI_STD_HEAD_@
 
-[perl tables="[cgi mv_data_table]"]
+[tmp extra_title]
+[loop list="[cgi mv_data_table]"]
+	[if-loop-data __UI_META_TABLE__ name]
+	<B>[loop-data __UI_META_TABLE__ name]</B>
+	[/if-loop-data]
+	[if-loop-data __UI_META_TABLE__ help_url]
+	&nbsp;&nbsp;&nbsp;<small><A HREF="[loop-data __UI_META_TABLE__ help_url]">help</A></small>
+	[/if-loop-data]
+	[if-loop-data __UI_META_TABLE__ help]
+	<i>[loop-data __UI_META_TABLE__ name]</i>
+	[/if-loop-data]
+[/loop]
+[/tmp]
+[calc]
+	$Scratch->{page_banner} .= $Scratch->{extra_title};
+	$Scratch->{page_title} .= $Scratch->{extra_title};
+	return;
+[/calc]
+
+[output name=search_box]
+<FORM ACTION="[area href="[either][cgi ui_searchpage][or]@@MV_PAGE@@[/either]"]" METHOD=GET>
+<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+<INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
+<INPUT TYPE=hidden NAME=ui_meta_view     value="[cgi ui_meta_view]">
+<INPUT TYPE=hidden NAME=mv_action        VALUE=back>
+<INPUT TYPE=hidden NAME=ui_show_fields VALUE="[cgi ui_show_fields]">
+<span class=s3>[L]Limit with search[/L]:</span> <input NAME=ui_text_qualification size=16 class=s2> 
+</FORM>
+[output name=""]
+
+[perl tables="[cgi mv_data_table] __UI_META_TABLE__"]
 	my $table = $CGI->{mv_data_table};
 	my $db = $Db{$table};
-	$Values->{mv_data_table} = $table;
-	$Values->{ui_data_key_name} = $Db{$table}->config('KEY');
-	$Values->{ui_data_fields} =
-		$CGI->{ui_data_fields} ||
-		$CGI->{mv_data_fields} ||
-		$Values->{"spread:$table:ui_data_fields"} ||
-		join(" ", $db->columns());
-	my @fields;
-	@fields = grep
-				$_ ne $Values->{ui_data_key_name},
-				split /[\0\s,]+/, $Values->{ui_data_fields};
-	$Values->{ui_data_fields} = join " ", @fields;
-	$Values->{"ui_spread_meta:$table"} = $CGI->{"ui_spread_meta:$table"}
-		if defined $CGI->{"ui_spread_meta:$table"};
-	$Values->{ui_meta_display} = $Values->{"ui_spread_meta:$table"};
+	my $mrec = $Tag->meta_record($table, $CGI->{ui_meta_view}) || {};
+	my $sp = q{@@MV_PAGE@@};
+	$mrec ||= {};
+	$mrec->{spread_fields} ||= join(" ", $db->columns());
+	$mrec->{spread_height} ||= 10;
+	my $key = $CGI->{ui_data_key_name} = $db->config('KEY');
+	$mrec->{spread_sort} ||= $key;
+	$CGI->{ui_description_field} = $mrec->{label};
 
-	if($Values->{"ui_spreadsheet_rows:$table"}) {
-		$Values->{"ui_spreadsheet_rows"} = $Values->{"ui_spreadsheet_rows:$table"};
+	my $qualbase = qq{
+				sp=$sp
+				st=db
+				ml=$mrec->{spread_height}
+				ms=0
+			};
+	my $qualsimple = qq{
+				fi=$table
+				rf=$CGI->{ui_data_key_name}
+				tf=$mrec->{spread_sort}
+			};
+	my $qual;
+	my $sstring;
+	if(! $CGI->{ui_text_qualification}) {
+		$qual = "ra=yes";
+	}
+	elsif ($CGI->{ui_text_qualification} =~ /^\s*select/ ) {
+		$qual = "sq=$CGI->{ui_text_qualification}";
+		$sstring = join "\n", $qualbase, $qual;
+	}
+	elsif ($CGI->{ui_text_qualification} =~ /=/ ) {
+		my ($f, $s) = split /\s*=\s*/, $CGI->{ui_text_qualification} , 2;
+		$qual = "co=1\nop=eq\nse=$s\nsf=$f";
+	}
+	elsif ($CGI->{ui_text_qualification}) {
+		$qual = "se=$CGI->{ui_text_qualification}";
 	}
 	else {
-		$Values->{"ui_spreadsheet_rows"} = 10;
+		$qual = "ra=yes";
 	}
 
-	if($Values->{"ui_textarea_rows:$table"}) {
-		$Values->{"ui_textarea_rows"} = $Values->{"ui_textarea_rows:$table"};
-	}
-	else {
-		$Values->{"ui_textarea_rows"} = 4;
-	}
+	$sstring ||= join "\n", $qualbase, $qualsimple, $qual;
 
-	if($CGI->{"ui_spread_size:$table"}) {
-		$Values->{"ui_spread_size"}
-			= $Values->{"ui_spread_size:$table"}
-			= $CGI->{"ui_spread_size:$table"};
-	}
-	elsif($Values->{"ui_spread_size:$table"}) {
-		$Values->{"ui_spread_size"} = $Values->{"ui_spread_size:$table"};
-	}
-	else {
-		$Values->{"ui_spread_size"} = 12;
-	}
+	my @fields = split /[\0\s,]+/, $mrec->{spread_fields};
+	@fields = grep length($_) && $_ ne $key, @fields;
 
+	$CGI->{mv_data_fields} = join " ", @fields;
+
+	$CGI->{mrec_textarea_rows} ||= 4;
+
+	$CGI->{mrec_spread_width} ||= $mrec->{spread_width} || 12; 
+
+	$Scratch->{mrec_options} = $sstring;
+
+	$Scratch->{ui_num_col} = scalar(@fields) + 2;
+	$Scratch->{ui_most_col} = $Scratch->{ui_num_col} - 1; 
+	$Config->{NoSearch} = '';
 	return;
 [/perl]
-[if scratch ui_failure]
-<BLOCKQUOTE>
-<FONT COLOR=__CONTRAST__>Error: [scratch ui_failure]</FONT>
-[set ui_failure][/set]
-</BLOCKQUOTE>
-[/if]
+
+[output name="top_of_form"]
 <FORM METHOD=POST ACTION="[base-url]/ui">
 <INPUT TYPE=hidden NAME="mv_todo" VALUE="set">
 <INPUT TYPE=hidden NAME="mv_nextpage" VALUE="@@MV_PAGE@@">
-<INPUT TYPE=hidden NAME="mv_data_table" VALUE="[value mv_data_table]">
-<INPUT TYPE=hidden NAME="mv_data_key" VALUE="[value ui_data_key_name]">
+<INPUT TYPE=hidden NAME="mv_data_table" VALUE="[cgi mv_data_table]">
+<INPUT TYPE=hidden NAME="mv_data_key" VALUE="[cgi ui_data_key_name]">
 <INPUT TYPE=hidden NAME="mv_data_decode" VALUE="yes">
+<INPUT TYPE=hidden NAME="mv_data_multiple" VALUE="1">
+<INPUT TYPE=hidden NAME="mv_click" VALUE="process_filter">
 <INPUT TYPE=hidden NAME="mv_update_empty" VALUE="1">
+<INPUT TYPE=hidden NAME="mv_update_empty_key" VALUE="0">
+<INPUT TYPE=hidden NAME="ui_meta_view" value="[cgi ui_meta_view]">
 <INPUT TYPE=hidden NAME="ui_text_qualification" value="[cgi ui_text_qualification]">
-[calc]
-for(@{$CGI_array->{'ui_return_to'}}) {
-	$out .= <<EOF;
-<INPUT TYPE=hidden NAME=ui_return_to VALUE="$_">
-EOF
-}
-return $out;
-[/calc]
-<INPUT TYPE=hidden NAME="mv_data_fields"
-	VALUE="[db-columns columns='[value ui_data_fields]']">
-
+<INPUT TYPE=hidden NAME="ui_return_to" value="[cgi ui_return_to]">
+<INPUT TYPE=hidden NAME="mv_data_fields" VALUE="[cgi mv_data_fields]">
 <INPUT TYPE=hidden NAME="mv_data_function" VALUE="update">
 
+[output name=""]
 [calc]
-	@areas = grep /\S/, split /[\s,\0]+/, $Values->{ui_data_fields};
-	$Scratch->{ui_num_col} = scalar(@areas) + 2;
-	$Config->{NoSearch} = '';
-	if ($CGI->{ui_text_qualification} and $CGI->{ui_text_qualification} =~ /=/ ) {
-		my ($f, $s) = split /\s*=\s*/, $CGI->{ui_text_qualification} , 2;
-		$CGI->{ui_text_qualification} = "co=1\nop=eq\nse=$s\nsf=$f";
-	}
-	elsif ($CGI->{ui_text_qualification}) {
-		$CGI->{ui_text_qualification} = "se=$CGI->{ui_text_qualification}";
-	}
-	else {
-		$CGI->{ui_text_qualification} = "ra=yes";
-	}
-	$CGI->{ui_description_field} =
-		q{[data table=__UI_META_TABLE__
-				col=field
-				key="[cgi mv_data_table]"
-			]};
-
-	return;
 [/calc]
 
-[if !value ui_spreadsheet_rows]
-[value name=ui_spreadsheet_rows set=10 hide=1]
-[/if]
-[search-region more=1 arg="
-				[cgi ui_text_qualification]
-				ml=[value ui_spreadsheet_rows]
-				rf=[value ui_data_key_name]
-				tf=[value ui_data_key_name]
-				st=db
-				sp=@@MV_PAGE@@
-				fi=[value mv_data_table]
-			"]
-[rotate-table reparse=0 rotate="[value ui_rotate_spread]" interpolate=1]
-
-<table __UI_T_PROPERTIES__>
-
-<tr>
-<td colspan="[scratch ui_num_col]" bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-
-[with param=table value="[value mv_data_table]"]
-<TR BGCOLOR="__UI_C_INTBLOCK__" CELLPADDING=2>
-	<TH ALIGN=CENTER>&nbsp;</TH>
-	<TH ALIGN=CENTER>[value ui_data_key_name]</TH>
-	[row-edit
-		columns="[value ui_data_fields]"
-		height=`$Values->{"ui_textarea_rows:$Values->{mv_data_table}"}`
-		textarea="[value name='ui_textarea_fields:[value mv_data_table]']"
-		]
-</TR>
-
-<tr>
-<td colspan="[scratch ui_num_col]" bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-
-	[search-list]
-	[if-mm keys [item-code]]
-<TR BGCOLOR="__UI_C_INTBLOCK__">
-	<td><input type=checkbox name="batch_id" value="[item-code]"><input type=hidden name="[value ui_data_key_name]" value="[item-code]"></td>
-	<TD>
-	[page href="__UI_BASE__/flex_editor"
-	form=|
-		page_title=Edit [value mv_data_table]: [item-code]
-		mv_data_table=[value mv_data_table]
-		item_id=[item-code]
-	|]<small><small><u>edit</u></small></small>&nbsp;<b>[item-code]</b></A>
-	</TD>
-	[row-edit
-		key="[item-code]"
-		size="[value ui_spread_size]"
-		columns="[value ui_data_fields]"
-		height=`
-					my $tab = $Values->{mv_data_table};
-					return $Values->{"ui_textarea_rows:$tab"};
-				`
-		textarea=`
-					my $tab = $Values->{mv_data_table};
-					return $Values->{"ui_textarea_fields:$tab"};
-			`
-		]
-</TR>
-	[/if-mm]
-	[set row_number][item-increment][/set]
-	[/search-list]
-
-<TR BGCOLOR="__UI_C_INTBLOCK__">
-	<td COLSPAN=2>
-	<input type=text size=12 name="[value ui_data_key_name]">
-	</TD>
-	[row-edit blank=1 size="[value ui_spread_size]" columns="[value ui_data_fields]"]
-</TR>
+[search-region more=1 arg="[scratch mrec_options]"]
+<table width="100%" border=0 cellpadding=0 cellspacing=1 class=rseparator>
 
 [more-list]
+[prev-anchor]&nbsp;&nbsp;<span style="font-size: larger; font-weight: bolder">&lt;</span>&nbsp;&nbsp;[/prev-anchor]
+[next-anchor]&nbsp;&nbsp;<span style="font-size: larger; font-weight: bolder">&gt;</span>&nbsp;&nbsp;[/next-anchor]
+[first-anchor]&nbsp;<span style="font-size: larger; font-weight: bolder">&lt;&lt;</span>[/first-anchor]
+[last-anchor]&nbsp;<span style="font-size: larger; font-weight: bolder">&gt;&gt;</span>[/last-anchor]
+[page-anchor]&nbsp;<span style="font-size: larger; font-weight: bolder">$PAGE$</span>[/page-anchor]
 <tr>
-<td colspan="[scratch ui_num_col]" bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan="[scratch ui_num_col]" class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__>&nbsp;</td>
-<td colspan="[calc]$Scratch->{ui_num_col} - 1[/calc]" bgcolor=__UI_C_INTBLOCK__>
-	<FONT SIZE="+1">More pages: [more] </FONT>
+<td class=rhead>&nbsp;</td>
+<td colspan="[scratch ui_most_col]" class=rhead>
+	[msg arg.0=`q{[more]}`]More pages: %s[/msg]
 </td>
 </tr>
 [/more-list]
 
+<TR class=rhead CELLPADDING=2>
+	<td align=center>&nbsp;</td>
+	<td>[cgi ui_data_key_name]</td>
+	[row-edit columns="[cgi mv_data_fields]" ]
+</TR>
+
+	[search-list]
+	[item-sub addnum]
+		my $inc = shift;
+		my $out = '';
+		if($ss_row_num) {
+			$out = $ss_row_num . '_';
+		}
+		$ss_row_num++ if $inc;
+		return $out;
+	[/item-sub]
+	[if-mm keys [item-code]]
+<TR class=rownorm>
+	<td valign=top><input type=checkbox name="batch_id" value="[item-code]"><input type=hidden name="[item-exec addnum][/item-exec][cgi ui_data_key_name]" value="[item-code]"></td>
+	<TD valign=top>
+	[page href="__UI_BASE__/flex_editor"
+	form=|
+		page_title=Edit [cgi mv_data_table]: [item-code]
+		mv_data_table=[cgi mv_data_table]
+		ui_meta_specific=[cgi ui_meta_specific]
+		item_id=[item-code]
+	|][item-code]</A>
+	</TD>
+	[row-edit
+		key="[item-code]"
+		extra="valign=top"
+		pointer="[item-exec addnum]1[/item-exec]"
+		columns="[cgi mv_data_fields]"
+		ui_meta_specific="[cgi ui_meta_specific]"
+		]
+</tr>
+	[/if-mm]
+	[set row_number][item-increment][/set]
+	[/search-list]
+
 <tr>
-<td colspan="[scratch ui_num_col]" bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan="[scratch ui_num_col]" class=rhead><b>New record</b></td>
 </tr>
 
+<TR class=rhead CELLPADDING=2>
+	<TH ALIGN=CENTER>&nbsp;</TH>
+	<TH ALIGN=CENTER>[cgi ui_data_key_name]</TH>
+	[row-edit columns="[cgi mv_data_fields]"]
+</TR>
+
+
+<TR class=rownorm>
+	<td COLSPAN=2 valign=top>
+	<input type=text size=12 name="999999_[cgi ui_data_key_name]">
+	</TD>
+	[row-edit
+		blank=1
+		pointer=999999
+		extra="valign=top"
+		columns="[cgi mv_data_fields]"
+		extra="valign=top"
+		]
+</TR>
+
+[more-list]
+[prev-anchor]&nbsp;&nbsp;<span style="font-size: larger; font-weight: bolder">&lt;</span>&nbsp;&nbsp;[/prev-anchor]
+[next-anchor]&nbsp;&nbsp;<span style="font-size: larger; font-weight: bolder">&gt;</span>&nbsp;&nbsp;[/next-anchor]
+[first-anchor]&nbsp;<span style="font-size: larger; font-weight: bolder">&lt;&lt;</span>[/first-anchor]
+[last-anchor]&nbsp;<span style="font-size: larger; font-weight: bolder">&gt;&gt;</span>[/last-anchor]
+[page-anchor]&nbsp;<span style="font-size: larger; font-weight: bolder">$PAGE$</span>[/page-anchor]
 <tr>
-<td colspan="[scratch ui_num_col]" bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td class=rhead>&nbsp;</td>
+<td colspan="[scratch ui_most_col]" class=rhead>
+	[msg arg.0=`q{[more]}`]More pages: %s[/msg]
+</td>
 </tr>
+[/more-list]
 
-<tr>
-<td bgcolor=__UI_C_INTBLOCK__>&nbsp;</td>
-<td colspan="[calc]$Scratch->{ui_num_col} - 1[/calc]" bgcolor=__UI_C_INTBLOCK__>
+</TABLE>
+</center>
+[/search-region]
 
-
-[set Cancel]
-mv_todo=back
-[return-to click]
-[/set]
-
-	[set OK]
-	[/set]
-	<B></B>&nbsp;&nbsp;&nbsp;[button text="Ok" bold=1]
+[output name=top_buttons]
+	[button text="[L]Ok[/L]" extra=|style="font-weight: bold"|]
 		mv_todo=set
 		[return-to click]
-	[/button]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	[button text="Change display"]
-	mv_todo=return
-	mv_data_table=[cgi mv_data_table]
-	mv_nextpage=__UI_BASE__/spread_control
 	[/button]
-	[button text="Delete checked rows"
-		confirm="Are you sure you want to delete the checked rows?"]
+	[button text="[L]Delete checked[/L]"
+		confirm="[L]Are you sure you want to delete the checked rows?[/L]"]
 [flag type=write table="[cgi mv_data_table]"]
 mv_nextpage=__UI_BASE__/flex_select
 mv_auto_export=
@@ -252,29 +275,62 @@ mv_todo=return
 		return;
 	[/perl]
 [else]
-	[set ui_message]Not authorized to delete items.[/set]
+	[set ui_message][L]Not authorized to delete items.[/L][/set]
 [/else]
 [/if-mm]
 	[return-to click]
-[/button]&nbsp;&nbsp;&nbsp;
-	[button text=Cancel]
-		mv_todo=back
-		[return-to click]
-	[/button]
+[/button]
+
+	<INPUT TYPE=submit NAME=mv_click VALUE="[L]Cancel[/L]" type=s3>
+
+[output name=bottom_buttons]
+
 	[if-mm super]
-	<BR><b><INPUT TYPE=checkbox NAME=mv_auto_export [if !scratch ui_too_large]CHECKED [/if]VALUE="[value mv_data_table]">
-		Auto-export</b>
+	<INPUT TYPE=checkbox NAME=mv_auto_export [if !scratch ui_too_large]CHECKED [/if]VALUE="[cgi mv_data_table]" class=s3>
+		<span class=s3>[L]Auto-export[/L]</span>
 	[/if-mm]
 
-</td>
-</tr>
+	[button text="[L]Ok[/L]" extra=|style="font-weight: bold"|]
+		mv_todo=set
+		[return-to click]
+	[/button]
+	[button text="[L]Delete checked[/L]"
+		confirm="[L]Are you sure you want to delete the checked rows?[/L]"]
+[flag type=write table="[cgi mv_data_table]"]
+mv_nextpage=__UI_BASE__/flex_select
+mv_auto_export=
+mv_todo=return
+[if-mm tables =d]
+	[perl tables="[cgi mv_data_table]"]
+		my $tab = $CGI->{mv_data_table};
+		my $db  = $Db{$tab};
+		unless ($db) {
+			$Scratch->{ui_message} = "No table '$tab'";
+			return;
+		}
+		my @items = split /\0/, $CGI->{batch_id};
+		foreach my $item (@items) {
+			if ($db->delete_record($item)) {
+				$out .= "Deleted $item from table $tab<BR>";
+			}
+			else {
+				$out .= "Item $item not in $tab table (or delete failed)<BR>";
+			}
+		}
+		$Scratch->{ui_message} = $out;
+		return;
+	[/perl]
+[else]
+	[set ui_message][L]Not authorized to delete items.[/L][/set]
+[/else]
+[/if-mm]
+	[return-to click]
+[/button]
 
-</TABLE>
-[/rotate-table]
-</center>
-[/search-region]
+	<INPUT TYPE=submit NAME=mv_click VALUE="[L]Cancel[/L]" type=s3>
+[output name="bottom_of_form"]
+
 </FORM>
-
 
 
 <!-- ----- END REAL STUFF ----- -->

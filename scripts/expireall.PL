@@ -1,35 +1,11 @@
-#$self = {
-#	INSTALLPRIVLIB => '/usr/local/interchange/lib',
-#	INSTALLARCHLIB => '/usr/local/interchange',
-#};
-
-use Config;
-require 'scripts/initp.pl';
-
-sub doit {
-	my ($key) = @_;
-	my $val;
-	if ($MV::Self->{RPMBUILDDIR} and $val = $MV::Self->{$key}) {
-		$val =~ s!^$MV::Self->{RPMBUILDDIR}/!/!; 
-		return $val;
-	}
-	return $MV::Self->{$key} unless $key =~ /[a-z]/;
-	return $Config{$key};
-}
-
-DOIT: {
-	local ($/);
-	local($_) = <<'_EoP_';
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
 # Interchange session expiration for all catalogs
 #
-# $Id: expireall.PL,v 1.8.4.1 2000-10-26 07:03:28 racke Exp $
+# $Id: expireall.PL,v 1.8.4.2 2003-01-25 22:21:32 racke Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
-#
-# See the file 'Changes' for information.
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -85,26 +61,42 @@ $prog =~ s:.*/::;
 my $USAGE = <<EOF;
 usage: $prog [-r] [-f file]
 
-	-f    Alternate interchange.cfg file
-	-r    Use reorganize parameter in command
+    -f    Alternate interchange.cfg file
+    -n    Do not unlink files
+    -r    Use reorganize parameter in command
 
 Expire all listed Interchange catalogs. Will read information from
 either the file passed with -f or:
 
-	$Global::VendRoot/interchange.cfg
+    $Global::VendRoot/interchange.cfg
 
 EOF
 
+use Vend::Config;
+
+$Vend::ExternalProgram = 1;
+$Vend::Quiet = 1;
+
 getopts('e:f:rn') or die "$@\n$USAGE\n";
 
-($Global::ConfigFile = $opt_f)
-	if defined $opt_f;
+sub logGlobal { shift(@_) if ref $_[0]; printf @_; print "\n" }
+sub logError { }
+sub logDebug { }
 
 my $flag = '';
+
+if($opt_f) {
+	$Global::ConfigFile = $opt_f;
+	$flag .= qq{ -f "$opt_f"};
+}
+else {
+	$Global::ConfigFile = "$Global::VendRoot/$Global::ConfigFile";
+}
+
 my @cats;
 
 if ($opt_r) {
-	$flag .= '-r';
+	$flag .= ' -r';
 }
 
 if($opt_e) {
@@ -120,22 +112,14 @@ unless ($opt_n) {
 }
 
 # Parse the interchange.cfg file to look for script/catalog info
-PARSECFG: {
-	my(@cfglines,%seen);
+# but don't read in the core tags
+$Vend::ControllingInterchange = 1;
+chdir $Global::VendRoot or die "Couldn't change to $Global::VendRoot: $!\n";
+global_config();
 
-	open(GLOBAL, "< $Global::ConfigFile") or die "Couldn't read $Global::ConfigFile: $!\n";
-	while(<GLOBAL>) {
-		push(@cfglines, $_) if /^\s*catalog\s+/i;
-	}
-	close GLOBAL;
-
-	@cfglines = grep !$seen{$_}++, @cfglines;
-
-	for(@cfglines) {
-		next unless /^\s*(?:sub)?catalog\s+([-\w_]+)/i;
-		push(@cats, $1);
-	}
-
+while( my($name, $cat) = each %Global::Catalog ) {
+	next if $cat->{base};
+	push @cats, $name;
 }
 
 for(@cats) {
@@ -148,7 +132,7 @@ expireall -- Run Interchange expire on all catalogs
 
 =head1 VERSION
 
-$Id: expireall.PL,v 1.8.4.1 2000-10-26 07:03:28 racke Exp $
+# $Id: expireall.PL,v 1.8.4.2 2003-01-25 22:21:32 racke Exp $
 
 =head1 DESCRIPTION
 
@@ -156,15 +140,7 @@ Skeleton POD to avoid make errors.
 
 =head1 SEE ALSO
 
-mvdocs(8), expire(1), http://www.akopia.com/
+expire(1), http://interchange.redhat.com/
 
 
 =cut
-_EoP_
-	s{.*\n(#(.*)~_~(\w+)~_~(.*))}{$2 . doit($3) . "$4\n$1"}eg;
-	my $file = $0;
-	$file =~ s/\.PL$//;
-	open(OUT, ">$file") 
-		or die "Create $file: $!\n";
-	print OUT $_;
-}

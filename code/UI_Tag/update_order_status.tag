@@ -1,6 +1,6 @@
 UserTag update-order-status Order order_number
 UserTag update-order-status addAttr
-UserTag update-order-status Version $Id: update_order_status.tag,v 1.6 2003-01-14 00:20:17 mheins Exp $
+UserTag update-order-status Version $Id: update_order_status.tag,v 1.6.2.1 2003-01-25 22:20:35 racke Exp $
 UserTag update-order-status Routine <<EOR
 sub {
 	my ($on, $opt) = @_;

@@ -1,18 +1,38 @@
+[if cgi fieldmeta]
+	[cgi name=item_id set="[cgi fieldmeta]"]
+[/if]
 [if !cgi item_id]
 	[bounce page="__UI_BASE__/gentable"]
 [/if]
 [calc]
 	my $location = $CGI->{item_id};
 	my @parts = split /::/, $location;
-	($m_table, $m_col, $m_key) = @parts;
-	my $string = "Meta field edit: ";
-	$string .= "table=$m_table column=$m_col";
-	$string .= " key=$m_key" if $m_key;
-	$Scratch->{page_title} = $string;
+	if($Config->{Database}{$parts[0]}) {
+		($m_table, $m_col, $m_key) = @parts;
+	}
+	else {
+		($m_view, $m_table, $m_col, $m_key) = @parts;
+	}
+	my @frags;
+	push(@frags,errmsg('Meta field edit') . ':');
+    push(@frags,errmsg('view=%s', $m_view)) if $m_view;
+    push(@frags,errmsg('table=%s column=%s', $m_table, $m_col));
+	push(@frags,errmsg('key=%s', $m_key)) if $m_key;
+	$Scratch->{page_title} = join(' ',@frags);
 
-	$string = <<EOF;
+	my $string = <<EOF;
 	<B>Meta information edit&nbsp;&nbsp;&nbsp;</b><BR>
 	<table>
+EOF
+
+	$string .= <<EOF if $m_view;
+	<tr>
+	<td align=right>view:</td>
+	<td><B>$m_view</b></td>
+	</tr>
+EOF
+
+	$string .= <<EOF;
 	<tr>
 	<td align=right>table:</td>
 	<td><B>$m_table</b></td>
@@ -39,13 +59,58 @@ EOF
 	}
 	return;
 [/calc]
-@_UI_STD_DBEDIT_HEAD_@
 
-[set ui_class]Admin[/set]
+[set ui_class]Tables[/set]
 [set help_name]meta.edit[/set]
-[set icon_name][/set]
+[set icon_name]icon_config.gif[/set]
 
 @_UI_STD_HEAD_@
-@_UI_STD_DBEDIT_TABLE_@
+
+[table-editor
+	item_id="[cgi item_id]"
+	table="[cgi mv_data_table]"
+	no-table-meta=1
+	no-meta=1
+	ui_data_fields="
+		=Typical
+
+		code
+		label
+		type
+		filter
+		width
+		height
+		options
+
+	   =Help
+
+	   help
+	   help_url
+
+	   =Database lookup
+
+	   lookup
+	   field
+	   db
+	   lookup_query
+	   lookup_exclude
+
+	   =Advanced
+
+	   outboard
+	   pre_filter
+	   prepend
+	   append
+
+	   =Extended
+
+	   extended
+	"
+	widget.extended="textarea_5_50"
+	ui_style=1
+	output_map=1
+	tabbed=1
+	][/table-editor]
+
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 1.1.2.3 $ -->

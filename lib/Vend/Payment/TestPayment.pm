@@ -1,6 +1,6 @@
 # Vend::Payment::TestPayment - Interchange payment test module
 #
-# $Id: TestPayment.pm,v 1.3 2002-10-18 06:56:24 mheins Exp $
+# $Id: TestPayment.pm,v 1.3.2.1 2003-01-25 22:21:30 racke Exp $
 #
 # Copyright (C) 2002 Cursor Software Limited.
 # All Rights Reserved.
@@ -27,7 +27,7 @@ package Vend::Payment::TestPayment;
 
 =head1 Interchange payment test module
 
-Vend::Payment::TestPayment $Revision: 1.3 $
+Vend::Payment::TestPayment $Revision: 1.3.2.1 $
 
 =head1 SYNOPSIS
 
@@ -190,7 +190,7 @@ BEGIN {
 	unless $Vend::Quiet;
 }
 
-$VERSION = substr(q$Revision: 1.3 $,10);
+$VERSION = substr(q$Revision: 1.3.2.1 $,10);
 
 package Vend::Payment;
 

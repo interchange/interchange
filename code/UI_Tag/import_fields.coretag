@@ -1,6 +1,6 @@
 UserTag import_fields Order table
 UserTag import_fields addAttr
-UserTag import_fields Version $Revision: 1.6 $
+UserTag import_fields Version $Revision: 1.6.2.1 $
 UserTag import_fields Routine <<EOR
 sub {
 	my($table, $opt) = @_;

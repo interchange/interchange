@@ -1,35 +1,11 @@
-#$self = {
-#	INSTALLPRIVLIB => '/usr/local/interchange/lib',
-#	INSTALLARCHLIB => '/usr/local/interchange',
-#};
-
-use Config;
-require 'scripts/initp.pl';
-
-sub doit {
-	my ($key) = @_;
-	my $val;
-	if ($MV::Self->{RPMBUILDDIR} and $val = $MV::Self->{$key}) {
-		$val =~ s!^$MV::Self->{RPMBUILDDIR}/!/!; 
-		return $val;
-	}
-	return $MV::Self->{$key} unless $key =~ /[a-z]/;
-	return $Config{$key};
-}
-
-DOIT: {
-	local ($/);
-	local($_) = <<'_EoP_';
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
 # Interchange link program configurator
 #
-# $Id: compile_link.PL,v 1.6.4.2 2000-11-14 21:23:02 racke Exp $
+# $Id: compile_link.PL,v 1.6.4.3 2003-01-25 22:21:31 racke Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
-#
-# See the file 'Changes' for information.
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -56,34 +32,38 @@ use Config;
 use File::Copy;
 use Getopt::Long;
 
+use vars qw/$Self/;
+
 Getopt::Long::config(qw/permute/);
 
-my $Self = {
-	LINK_HOST      => 'localhost',
-	LINK_PORT      => 7786,
-	LINK_TIMEOUT   => 30,
-	LINK_FILE      => '/usr/local/interchange/etc/socket',
-#	LINK_FILE      => '~_~INSTALLARCHLIB~_~/etc/socket',
-	SRC_DIR        => '/usr/local/interchange/src',
-#	SRC_DIR        => '~_~INSTALLARCHLIB~_~/src',
-	INSTALLPRIVLIB => '/usr/local/interchange/lib',
-#	INSTALLPRIVLIB => '~_~INSTALLPRIVLIB~_~',
-	INSTALLARCHLIB => '/usr/local/interchange',
-#	INSTALLARCHLIB => '~_~INSTALLARCHLIB~_~',
-	INSTALLMAN1DIR => '/usr/local/interchange/doc',
-#	INSTALLMAN1DIR => '~_~INSTALLMAN1DIR~_~',
-	INSTALLSCRIPT => '/usr/local/interchange/bin',
-#	INSTALLSCRIPT => '~_~INSTALLARCHLIB~_~/bin',
-	INSTALLBIN => '/usr/local/interchange/bin',
-#	INSTALLBIN => '~_~INSTALLBIN~_~',
-};
+BEGIN {
+	$::Self = {
+		LINK_HOST      => 'localhost',
+		LINK_PORT      => 7786,
+		LINK_TIMEOUT   => 30,
+		LINK_FILE      => '/usr/local/interchange/etc/socket',
+#		LINK_FILE      => '~_~INSTALLARCHLIB~_~/etc/socket',
+		SRC_DIR        => '/usr/local/interchange/src',
+#		SRC_DIR        => '~_~INSTALLARCHLIB~_~/src',
+		INSTALLPRIVLIB => '/usr/local/interchange/lib',
+#		INSTALLPRIVLIB => '~_~INSTALLPRIVLIB~_~',
+		INSTALLARCHLIB => '/usr/local/interchange',
+#		INSTALLARCHLIB => '~_~INSTALLARCHLIB~_~',
+		INSTALLMAN1DIR => '/usr/local/interchange/doc',
+#		INSTALLMAN1DIR => '~_~INSTALLMAN1DIR~_~',
+		INSTALLSCRIPT => '/usr/local/interchange/bin',
+#		INSTALLSCRIPT => '~_~INSTALLARCHLIB~_~/bin',
+		INSTALLBIN => '/usr/local/interchange/bin',
+#		INSTALLBIN => '~_~INSTALLBIN~_~',
+	};
+}
 
 ### END CONFIGURATION VARIABLES
 
 my $prog = $0;
 $prog =~ s:.*/::;
 my $USAGE = <<EOF;
-usage: $prog [-t tcp_port] [-s sockfile] [-h host] [-w secs] \
+usage: $prog [-p tcp_port] [-s sockfile] [-h host] [-w secs] \
              [--perl] [-o outputfile] [--suid]
 
 Configures Interchange link program.
@@ -173,7 +153,7 @@ sub doit {
 	return "$preamble$replace$postamble$template";
 }
 
-if($Build_dir) {
+if($Build_dir and $Build_dir ne $Self->{SRC_DIR}) {
 	if (-e $Build_dir and (! -d _ or ! -w _)) {
 		die "Cannot use $Build_dir for build directory.\n";
 	}
@@ -206,6 +186,9 @@ my @edit_files = qw/config.h tlink.pl vlink.pl/;
 
 foreach my $targ (@edit_files) {
 	my $src = "$targ.tmp";
+	die "Source file $src doesn't exist\n" if ! -e $targ;
+	die "Can't edit a directory\n"         if -d $targ;
+	die "Can't edit a directory\n"         if -d $src;
 	rename $targ, $src
 		or die "Couldn't rename $targ to $src: $!\n";
 	open (IN, "< $src")
@@ -383,18 +366,9 @@ sending its timeout page.
 
 =head1 SEE ALSO
 
-makecat(1), http://www.akopia.com/
+makecat(1), http://interchange.redhat.com/
 
 =head1 AUTHOR
 
-Mike Heins, <heins@akopia.com>
+Mike Heins, <mheins@redhat.com>
 
-
-_EoP_
-	s{.*\n(#(.*)~_~(\w+)~_~(.*))}{$2 . doit($3) . "$4\n$1"}eg;
-	my $file = $0;
-	$file =~ s/\.PL$//;
-	open(OUT, ">$file") 
-		or die "Create $file: $!\n";
-	print OUT $_;
-}

@@ -10,13 +10,22 @@
 [bounce page="__UI_BASE__/access"]
 [/if]
 
-[seti page_title]Edit Permissions: [cgi user_id][/seti]
+[seti page_title][L]Edit Permissions[/L]: [cgi user_id][/seti]
 [set ui_class]Admin[/set]
 [set page_perm]access=v[/set]
 [set help_name]access.permissions[/set]
-[set icon_name]admin/icon_config.gif[/set]
+[set icon_name]icon_config.gif[/set]
 
 [set process_perm]
+[flag type=write table="__UI_ACCESS_TABLE__"]
+[tmp ui_owner][db-hash
+				table="__UI_ACCESS_TABLE__"
+				column="table_control"
+				key="[cgi user_id]"][/tmp]
+[calc] $Scratch->{ui_owner} .= ";" if $Scratch->{ui_owner} =~ /\S/; return; [/calc]
+<!-- [calc]
+	$tc = [scratch ui_owner] '';
+[/calc] -->
 [perl]
 	my @filters = grep /^ui_filter:/, keys %$CGI;
 	foreach my $key (@filters) {
@@ -37,85 +46,93 @@
 	$CGI->{yes_tables} =~ s/\w+=(?:\s+|$)//g;
 	$CGI->{yes_tables} =~ s/(\w+)=vecdix(\s+|$)/$1$2/g;
 
+	$CGI->{owner_field} =~ s/\0//g;
+	$CGI->{owner_field} =~ s/,$//;
+	my (%of) = split /[=,]/, $CGI->{owner_field};
+
+	for(keys %of) {
+		if($of{$_} !~ /\S/) {
+			next unless defined $tc->{$_};
+			delete $tc->{$_}{owner_field};
+		}
+		else {
+			$tc->{$_}{owner_field} = $of{$_};
+		}
+	}
+
+	$CGI->{table_control} = $Tag->uneval( { ref => $tc } );
+	$CGI->{owner_field} =~ s/\w+=(?:\s+|$)//g;
+	$CGI->{owner_field} =~ s/(\w+)=vecdix(\s+|$)/$1$2/g;
+
 	$CGI->{no_tables} =~ s/\0/ /g;
 	
 	$CGI->{mv_todo} = 'set';
-	$CGI->{mv_nextpage} = '@@MV_PAGE@@';# unless $CGI->{mv_nextpage};
 	return;
 [/perl]
 [/set]
 
 @_UI_STD_HEAD_@
-[if scratch ui_message]
-<P>
-<BLOCKQUOTE>
-	[scratch ui_message][set ui_message][/set]
-</BLOCKQUOTE>
-<P>
-&nbsp;
-[/if]
-
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
-[if scratch ui_failure]
-	<FONT COLOR=RED>Failed: [scratch ui_failure][set ui_failure][/set]</FONT><BR>
-[/if]
-
+[output name=top_of_form]
 <FORM METHOD=POST ACTION="[area ui]">
+<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 <INPUT TYPE=hidden NAME=mv_doit VALUE="set">
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_perm">
-<INPUT TYPE=hidden NAME=mv_nextpage VALUE="[cgi ui_return_to]">
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="[either][cgi ui_return_to][or]__UI_BASE__/access[/either]">
 <INPUT TYPE=hidden NAME=user_id VALUE="[cgi user_id]">
 <INPUT TYPE=hidden NAME=username VALUE="[cgi user_id]">
 <INPUT TYPE=hidden NAME=mv_data_table VALUE="[value mv_data_table]">
 <INPUT TYPE=hidden NAME=mv_data_key VALUE="username">
 <INPUT TYPE=hidden NAME=mv_update_empty VALUE="1">
-<INPUT TYPE=hidden NAME=mv_data_fields VALUE="username yes_functions no_tables yes_tables">
+<INPUT TYPE=hidden NAME=mv_data_fields VALUE="username yes_functions no_tables yes_tables table_control">
 <INPUT TYPE=hidden NAME="mv_data_function" VALUE="update">
+[output name=""]
 
+[tabbed-display
+	js-prefix="perm_"
+	width=800
+	height=800
+	]
+[tabbed-panel Editor Functions]
+<table width="100%" border=0 cellpadding=0 cellspacing=1 class=rseparator>
 
-<table __UI_T_PROPERTIES__>
-
-<tr>
-<td colspan=6 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=600 height=1></td>
-</tr>
-
-<tr>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>&nbsp;</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>View list</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>View detail</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>Create</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>Edit</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>Delete</td>
+<tr class=rhead>
+<td class=rhead valign=top>&nbsp;</td>
+<td class=rhead valign=top>[L]View list[/L]</td>
+<td class=rhead valign=top>[L]View detail[/L]</td>
+<td class=rhead valign=top>[L]Create[/L]</td>
+<td class=rhead valign=top>[L]Edit[/L]</td>
+<td class=rhead valign=top>[L]Delete[/L]</td>
 </tr>
 
 [seti tables][list-databases][/seti]
 [perl tables="__UI_META_TABLE__ __UI_ACCESS_TABLE__"]
 
 	my @permissions = (
-        item		=> 'Item editor',
-        page		=> 'Page editor',
-        cat			=> 'Category editor',
-        tax			=> 'Tax editor',
-        shipping	=> 'Shipping editor',
-        payment		=> 'Payment editor',
-        affiliate	=> 'Affiliates editor',
-        itemtype	=> 'Item type editor',
-        pagetype	=> 'Page type editor',
-        grouptype	=> 'Group type editor',
-        matrix		=> 'Matrix editor',
-        knar		=> 'Knar editor',
-        access		=> 'Administrator Permissions',
-        group		=> 'Access Group editor',
-        perm		=> 'Permission editor',
-        layout		=> 'Layout editor',
+        item		=> '[L]Item editor[/L]',
+        page		=> '[L]Page editor[/L]',
+        cat			=> '[L]Category editor[/L]',
+        tax			=> '[L]Tax editor[/L]',
+        shipping	=> '[L]Shipping editor[/L]',
+        payment		=> '[L]Payment editor[/L]',
+        affiliate	=> '[L]Affiliates editor[/L]',
+        itemtype	=> '[L]Item type editor[/L]',
+        pagetype	=> '[L]Page type editor[/L]',
+        grouptype	=> '[L]Group type editor[/L]',
+        matrix		=> '[L]Matrix editor[/L]',
+        knar		=> '[L]Knar editor[/L]',
+        access		=> '[L]Administrator Permissions[/L]',
+        group		=> '[L]Access Group editor[/L]',
+        perm		=> '[L]Permission editor[/L]',
+        layout		=> '[L]Layout editor[/L]',
 	);
 	my %extra = qw/userdb 1 order 1/;
 	my $current = tag_data('__UI_ACCESS_TABLE__', 'yes_functions', $CGI->{user_id});
 	my $out = '';
 	my @ary = grep /\S/, split /[\s,\0]+/, $current;
-	my @some = qw/l v e c d/;
+	my @some = qw/l v c e d/;
 	my @more = qw/a u p/;
 	my @all = (@some, @more);
 	my %all;
@@ -141,27 +158,29 @@
 #DEBUG
 #	$out .= <<EOF;
 #<tr>
-#<td colspan=6 bgcolor=__UI_C_INTBLOCK__ valign=top>
+#<td colspan=6 class=rownorm valign=top>
 #$string
 #</td>
 #EOF
 
 	my $perm;
 	my $title;
+	my $inc = 0;
 	while( $perm = shift @permissions) {
 		$title = shift @permissions;
 		my $ref = $permref->{$perm} || {};
+		my $class = $inc++ % 2 ? 'rownorm' : 'rowalt';
 		$out .= <<EOF;
-<tr>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>
+<tr class=$class>
+<td class=$class valign=top>
 <b>$title</b>
 <input type=hidden value="$perm=" name="yes_functions">
 </td>
 EOF
 		for(@some) {
 			$out .= <<EOF;
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>
-<INPUT type=checkbox value=$_ name="yes_functions"$ref->{$_}>
+<td class=$class valign=top>
+<INPUT type=checkbox class=s3 value=$_ name="yes_functions"$ref->{$_}>
 </td>
 EOF
 		}
@@ -169,35 +188,28 @@ EOF
 	}
 	my $ref = $permref->{order};
 	$out .= <<EOF;
-<tr>
-<td colspan=6 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-
 </table>
- 
-<br>
+[/tabbed-panel]
 
-<table __UI_T_PROPERTIES__>
+[tabbed-panel Other Functions]
 
-<tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=600 height=1></td>
-</tr>
+<table width="100%" border=0 cellpadding=0 cellspacing=1 class=rseparator>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>
-<b>Order manager:</b>
+<td class=rownorm valign=top>
+<b>[L]Order manager[/L]:</b>
 <INPUT type=hidden value="order=" name="yes_functions">
-<li><INPUT type=checkbox value=l name="yes_functions"$ref->{l}> View list
-<li><input type=checkbox value=v name="yes_functions"$ref->{v}> View single
-<li><input type=checkbox value=d name="yes_functions"$ref->{d}> Delete
-<li><input type=checkbox value=e name="yes_functions"$ref->{e}> Edit
-<li><input type=checkbox value=c name="yes_functions"$ref->{c}> Input new
-<li><input type=checkbox value=a name="yes_functions"$ref->{a}> Archive
-<li><input type=checkbox value=u name="yes_functions"$ref->{u}> Un-archive
+<li><INPUT type=checkbox value=l name="yes_functions"$ref->{l}> [L]View list[/L]
+<li><input type=checkbox value=v name="yes_functions"$ref->{v}> [L]View single[/L]
+<li><input type=checkbox value=d name="yes_functions"$ref->{d}> [L]Delete[/L]
+<li><input type=checkbox value=e name="yes_functions"$ref->{e}> [L]Edit[/L]
+<li><input type=checkbox value=c name="yes_functions"$ref->{c}> [L]Input new[/L]
+<li><input type=checkbox value=a name="yes_functions"$ref->{a}> [L]Archive[/L]
+<li><input type=checkbox value=u name="yes_functions"$ref->{u}> [L]Un-archive[/L]
 <INPUT type=hidden value="," name="yes_functions">
 <p>
 </td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top ROWSPAN=2>
+<td class=rownorm valign=top ROWSPAN=2>
 EOF
 	@permissions = (
 		orderstats		=> 'Order statistics utility',
@@ -206,15 +218,19 @@ EOF
 		stats			=> 'Stats menu',
 		techadmin		=> 'Technical Admin menu',
 		sitedesign		=> 'Site Design menu',
-		config			=> 'Apply changes',
+		reconfig		=> 'Apply changes',
+		delete_files	=> 'Delete owned files',
 		dbupload		=> 'Database importer',
 		dbdownload		=> 'Database exporter',
 		layupload		=> 'Layout importer',
 		laydownload		=> 'Layout exporter',
+		gentable		=> 'List tables',
 		gensql			=> 'Direct SQL utility',
+		dbconfig		=> 'Database configuration',
+		files			=> 'Modify Files',
 	);
 	while($perm = shift @permissions ) {
-		$title = shift @permissions;
+		$title = errmsg(shift @permissions);
 		my $on = defined $permref->{$perm} ? ' CHECKED' : '';
 		$out .= <<EOF;
 <li><INPUT type=checkbox value="$perm," name="yes_functions"$on> <b>$title</b>
@@ -227,15 +243,15 @@ EOF
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>
-<b>Administrator Permissions:</b>
+<td class=rownorm valign=top>
+<b>[L]Customer Edit Permissions[/L]:</b>
 <INPUT type=hidden value="userdb=" name="yes_functions">
-<li><INPUT type=checkbox value=l name="yes_functions"$ref->{l}> View list
-<li><input type=checkbox value=v name="yes_functions"$ref->{v}> View single
-<li><input type=checkbox value=d name="yes_functions"$ref->{d}> Delete
-<li><input type=checkbox value=e name="yes_functions"$ref->{e}> Edit
-<li><input type=checkbox value=c name="yes_functions"$ref->{c}> Input new
-<li><input type=checkbox value=p name="yes_functions"$ref->{p}> Mail password
+<li><INPUT type=checkbox value=l name="yes_functions"$ref->{l}> [L]View list[/L]
+<li><input type=checkbox value=v name="yes_functions"$ref->{v}> [L]View single[/L]
+<li><input type=checkbox value=d name="yes_functions"$ref->{d}> [L]Delete[/L]
+<li><input type=checkbox value=e name="yes_functions"$ref->{e}> [L]Edit[/L]
+<li><input type=checkbox value=c name="yes_functions"$ref->{c}> [L]Input new[/L]
+<li><input type=checkbox value=p name="yes_functions"$ref->{p}> [L]Mail password[/L]
 <INPUT type=hidden value="," name="yes_functions">
 <p>
 </td>
@@ -244,39 +260,29 @@ EOF
 	return $out;
 [/perl]
 
-<tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=600 height=1></td>
-</tr>
-
 </table>
 
-<p>
+[/tabbed-panel]
 
-<table cellpadding=3 cellspacing=0 width=100%>
+[tabbed-panel Table Permissions]
+
+<table width="100%" border=0 cellpadding=0 cellspacing=1 class=rseparator>
 
 <tr>
-<td colspan=8 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=600 height=1></td>
+<td colspan=9 class=rhead ALIGN=center><B>[L]Table Permissions[/L]</B></td>
 </tr>
 
 <tr>
-<td colspan=8 bgcolor=__UI_C_INTBLOCK__ ALIGN=center><B>Table Permissions</B></td>
+<td class=rhead valign=top>&nbsp;</td>
+<td class=rhead valign=top>[L]HIDE[/L]</td>
+<td class=rhead valign=top>[L]View[/L]</td>
+<td class=rhead valign=top>[L]Edit[/L]</td>
+<td class=rhead valign=top>[L]Create[/L]</td>
+<td class=rhead valign=top>[L]Delete[/L]</td>
+<td class=rhead valign=top>[L]Import[/L]</td>
+<td class=rhead valign=top>[L]Export[/L]</td>
+<td class=rhead valign=top>[L]Owner field[/L]</td>
 </tr>
-
-<tr>
-<td colspan=8 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=600 height=1></td>
-</tr>
-
-<tr>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>&nbsp;</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>HIDE</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>View</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>Edit</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>Create</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>Delete</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>Import</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>Export</td>
-</tr>
-
 
 [perl]
 
@@ -284,6 +290,7 @@ EOF
 					|| $Scratch->{tables};
 	$current =~ s/\s+/ /g;
 	my $no = tag_data('__UI_ACCESS_TABLE__', 'no_tables', $CGI->{user_id});
+
 	$no =~ s/\s+/ /g;
 	#Log("no = $no");
 	my (@no) = split /\s+/, $no;
@@ -329,49 +336,61 @@ EOF
 
 	my $perm;
 	my $title;
+	my $inc = 0;
 	while( $perm = shift @permissions) {
 		$title = shift @permissions;
+		my $class = $inc++ % 2 ? 'rownorm' : 'rowalt';
 		my $ref = $permref->{$perm} || {};
 		$out .= <<EOF;
-<tr>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>
+<tr class=$class>
+<td class=$class valign=top>
 <b>$title</b>
 <input type=hidden value="$perm=" name="yes_tables">
 </td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>
-<INPUT type=checkbox value="$perm" name="no_tables"$no{$perm}>
+<td class=$class valign=top>
+<INPUT type=checkbox class=s3 value="$perm" name="no_tables"$no{$perm}>
 </td>
 EOF
 		for(@all) {
 			$out .= <<EOF;
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>
+<td class=$class valign=top>
 <INPUT type=checkbox value=$_ name="yes_tables"$ref->{$_}>
 </td>
 EOF
 		}
+
+		my $of = '';
+		if($tc->{$perm}) {
+			$of = $tc->{$perm}{owner_field};
+		}
+		$out .= <<EOF;
+<td class=$class valign=top>
+<INPUT type=hidden value="$perm=" name="owner_field">
+<INPUT type=text value="$of" name="owner_field" size=10>
+<INPUT type=hidden value="," name="owner_field">
+</td>
+EOF
 		$out =~ s!(<.td>\s*)$!<input type=hidden value="," name="yes_tables">$1</tr>!;
 	}
 	#$Scratch->{string} = $string;
 	return $out;
 	[/perl]
 
-<tr>
-<td colspan=8 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=600 height=1></td>
-</tr>
-
 </table>
+[/tabbed-panel]
+[/tabbed-display]
 
-<input type=submit value="Ok">
+[output name=top_buttons]
+	<input type=submit value="[L]Ok[/L]" class=s3 style="font-weight: bold; width: 40px; text-align: center">
+	<input type=submit name=mv_click value="[L]Cancel[/L]" class=s3>
 
-[button text="Cancel"]
-mv_todo=back
-mv_nextpage=[either][value-extended name=ui_return_to index=0][or]__UI_BASE__/access[/either]
-mv_data_table=[cgi mv_data_table]
-[/button]
+[output name=bottom_buttons]
+	<input type=submit value="[L]Ok[/L]" class=s3 style="font-weight: bold; width: 40px; text-align: center">
+	<input type=submit name=mv_click value="[L]Cancel[/L]" class=s3>
 
-<BR>
-
+[output name=bottom_of_form]
 </form>
+[output name=""]
 @_UI_STD_FOOTER_@
 
 <!-- page: @@MV_PAGE@@ -->

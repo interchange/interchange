@@ -1,11 +1,11 @@
-[set page_title]Upload File[/set]
-[set page_banner]Upload File[/set]
+@_UI_STD_INIT_@[set page_title][L]Upload File[/L][/set]
+[set page_banner][L]Upload File[/L][/set]
 [set ui_class]Content[/set]
 [set page_perm]files[/set]
-[set icon_name]admin/icon_config.gif[/set]
+[set icon_name]icon_config.gif[/set]
 
 [if-mm function="!files" name="[data session arg]"]
-[seti ui_error]Not authorized to upload file [data session arg].[/seti]
+[seti ui_error][msg arg.0="[data session arg]"]Not authorized to upload file %s.[/msg][/seti]
 [bounce page="__UI_BASE__/error"]
 [/if-mm]
 
@@ -22,19 +22,19 @@
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td class=rnorm>
 	[if type=explicit compare=`$Session->{arg} =~ m{[^/]$}`]
-	Uploading file <b>[data session arg]</B>
+	[msg arg.0="[data session arg]"]Uploading file <b>%s</B>[/msg]
 	<INPUT type=hidden NAME=ui_upload_fn VALUE="[data session arg]">
 	[elsif session arg]
-	Uploading file to 
-	<INPUT NAME=ui_upload_fn VALUE="[data session arg]" SIZE=40>
+	[msg arg.0="[data session arg]"]Uploading file to <b>%s</B>[/msg]
+	<INPUT type=hidden NAME=ui_upload_fn VALUE="[data session arg]">
 	[comment]
-	<B>File to upload</B>
+	<B>[L]File to upload[/L]</B>
 		<BLOCKQUOTE>
 		<INPUT NAME=ui_upload_fn type=hidden VALUE="[data session arg]">
 		<INPUT NAME=ui_upload_fn SIZE=40>
@@ -42,7 +42,7 @@
 	[/comment]
 	[/elsif]
 	[else]
-	<B>File to upload</B>
+	<B>[L]File to upload[/L]</B>
 		<BLOCKQUOTE>
 		<INPUT NAME=ui_upload_fn SIZE=40>
 		</BLOCKQUOTE>
@@ -53,56 +53,56 @@
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 [set existing][/set]
 [if type=explicit compare=`$CGI->{ui_image_preview} =~ m{[^/]$}`]
 [set existing]1[/set]
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__>
-Preview: <BR>
+<td class=rnorm>
+[L]Preview:[/L] <BR>
 <IMG SRC="[cgi ui_image_preview]">
 </td>
 </tr>
 [/if]
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__>
-<B>Local file</B><BR>
+<td class=rnorm>
+<B>[L]Local file[/L]</B><BR>
 	<BLOCKQUOTE>
 	<INPUT TYPE=file NAME="ui_upload_file" SIZE=40>
 	</BLOCKQUOTE>
 <P>
-<B>Upload mode</B>
+<B>[L]Upload mode[/L]</B>
 	<BLOCKQUOTE>
 [if session arg =~ /\.(gif|jpe?g|png)$/i]
 [or cgi ui_upload_binary]
-	<INPUT NAME=ui_upload_ascii TYPE=radio VALUE=1>&nbsp;ASCII<BR>
-	<INPUT NAME=ui_upload_ascii TYPE=radio VALUE=0 CHECKED>&nbsp;Binary
+	<INPUT NAME=ui_upload_ascii TYPE=radio VALUE=1>&nbsp;[L]ASCII[/L]<BR>
+	<INPUT NAME=ui_upload_ascii TYPE=radio VALUE=0 CHECKED>&nbsp;[L]Binary[/L]
 	<P>
 	[if scratch existing]
-	<INPUT NAME=ui_upload_newfn TYPE=radio VALUE=1>&nbsp;Use new file name<BR>
-	<INPUT NAME=ui_upload_newfn TYPE=radio VALUE=0 CHECKED>&nbsp;Use existing file name
+	<INPUT NAME=ui_upload_newfn TYPE=radio VALUE=1>&nbsp;[L]Use new file name[/L]<BR>
+	<INPUT NAME=ui_upload_newfn TYPE=radio VALUE=0 CHECKED>&nbsp;[L]Use existing file name[/L]
 	[/if]
 [else]
-	<INPUT NAME=ui_upload_ascii TYPE=radio VALUE=1 CHECKED>&nbsp;ASCII<BR>
-	<INPUT NAME=ui_upload_ascii TYPE=radio VALUE=0>&nbsp;Binary
+	<INPUT NAME=ui_upload_ascii TYPE=radio VALUE=1 CHECKED>&nbsp;[L]ASCII[/L]<BR>
+	<INPUT NAME=ui_upload_ascii TYPE=radio VALUE=0>&nbsp;[L]Binary[/L]
 [/else]
 [/if]
 	</BLOCKQUOTE>
 <P>
-<B>Backup mode</B>
+<B>[L]Backup mode[/L]</B>
 	<BLOCKQUOTE>
 	[if cgi ui_backup]
-	<INPUT NAME=ui_backup TYPE=radio VALUE=1 CHECKED>&nbsp;Back up<BR>
-	<INPUT NAME=ui_backup TYPE=radio VALUE=0>&nbsp;NO backup
+	<INPUT NAME=ui_backup TYPE=radio VALUE=1 CHECKED>&nbsp;[L]Back up[/L]<BR>
+	<INPUT NAME=ui_backup TYPE=radio VALUE=0>&nbsp;[L]NO backup[/L]
 	[else]
-	<INPUT NAME=ui_backup TYPE=radio VALUE=1>&nbsp;Back up<BR>
-	<INPUT NAME=ui_backup TYPE=radio VALUE=0 CHECKED>&nbsp;NO backup
+	<INPUT NAME=ui_backup TYPE=radio VALUE=1>&nbsp;[L]Back up[/L]<BR>
+	<INPUT NAME=ui_backup TYPE=radio VALUE=0 CHECKED>&nbsp;[L]NO backup[/L]
 	[/else]
 	[/if]
 	</BLOCKQUOTE>
 <P>
-[button text="Upload" src="@_UI_IMG_@admin/upload.gif"]
+[button text="[L]Upload[/L]" src="upload.gif"]
 	[calc]
 		if( $CGI->{ui_upload_newfn} or $CGI->{ui_upload_fn} =~ m:/$:) {
 			my $image = $CGI->{ui_upload_file};
@@ -128,17 +128,14 @@ Preview: <BR>
 		return;
 	[/calc]
 [/button]
-[button text="Cancel" src="@_UI_IMG_@admin/dalete.gif"]
-	[return-to click]
-	mv_todo=back
-[/button]
+<INPUT TYPE=submit NAME=mv_click VALUE=[L]Cancel[/L]>
 
 </FORM>
 </td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

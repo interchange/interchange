@@ -1,6 +1,6 @@
 # Vend::SOAP - Handle SOAP connections for Interchange
 #
-# $Id: SOAP.pm,v 2.3 2002-11-18 16:55:15 mheins Exp $
+# $Id: SOAP.pm,v 2.3.2.1 2003-01-25 22:21:28 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -34,7 +34,7 @@ require SOAP::Transport::HTTP;
 use strict;
 
 use vars qw($VERSION @ISA $AUTOLOAD);
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.3.2.1 $, 10);
 @ISA = qw/SOAP::Server/;
 
 my %Allowed_tags;

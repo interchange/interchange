@@ -1,35 +1,11 @@
-#$self = {
-#	INSTALLPRIVLIB => '/usr/local/interchange/lib',
-#	INSTALLARCHLIB => '/usr/local/interchange',
-#};
-
-use Config;
-require 'scripts/initp.pl';
-
-sub doit {
-	my ($key) = @_;
-	my $val;
-	if ($MV::Self->{RPMBUILDDIR} and $val = $MV::Self->{$key}) {
-		$val =~ s!^$MV::Self->{RPMBUILDDIR}/!/!; 
-		return $val;
-	}
-	return $MV::Self->{$key} unless $key =~ /[a-z]/;
-	return $Config{$key};
-}
-
-DOIT: {
-	local ($/);
-	local($_) = <<'_EoP_';
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
 # Interchange localizer
 #
-# $Id: localize.PL,v 1.7 2000-09-25 16:38:49 zarko Exp $
+# $Id: localize.PL,v 1.7.4.1 2003-01-25 22:21:32 racke Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
-#
-# See the file 'Changes' for information.
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -55,7 +31,7 @@ use strict;
 use Vend::Util qw(readfile escape_chars);
 require Vend::Config;
 use Getopt::Std;
-use vars qw($opt_c $opt_d $opt_l $opt_M $opt_m $opt_o $opt_t);
+use vars qw($opt_c $opt_d $opt_l $opt_M $opt_m $opt_n $opt_o $opt_t $opt_u);
 
 BEGIN {
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
@@ -75,7 +51,7 @@ BEGIN {
 my $USAGE = <<EOF;
 $0 -- produce localization file from set of pages
 
-usage:    localize -l lg_CC [-d lg_CC] [-m file|-t] file [file2 file3 ...]
+usage:    localize -l lg_CC [-d lg_CC] [-m file|-t] [-u dir] file [file2 file3 ...]
 
 OPTIONS
 
@@ -84,12 +60,15 @@ OPTIONS
     -d lg_CC   Create default domain file with Locale lg_CC as prefix
     -l lg_CC   Create file with Locale lg_CC as prefix
     -m <file>  Read existing information to merge from <file>
+    -n         Don't write comments
     -M         When in -c mode, prefix MM_ to make minimate_compatible; 
                when in regular mode, strip MM_ from [LC] defs
     -o         Rewrite [L] sections with [L msgNNNN], adjust file and data
                -- mutually exclusive with -c
-    -t         Two page mode, mutually exclusive with -m
-
+    -t         Two page mode, mutually exclusive with -m 
+    -u <dir>   UI directory, e.g. /usr/lib/interchange/lib/UI. This can
+	           be used to include the menu titles in the output.
+	  
 lg_CC refers to the POSIX norm of specifying two-letter
 language and country codes to refer to a locale.
     
@@ -107,7 +86,7 @@ one level. Subsequent .bak files will be overwritten.
 
 EOF
 
-getopts('cd:l:Mm:ot') or die "$USAGE\n";
+getopts('cd:l:Mm:notu:') or die "$USAGE\n";
 
 die "$USAGE\n" if $@;
 die "$USAGE\n" unless $opt_l;
@@ -160,16 +139,34 @@ elsif ( open(CONFIG, "< $opt_m") ) {
 else {
 	warn "Couldn't read merge file $opt_m, continuing without.\n";
 }
-
+		
 $C->{Locale_repository} = {} unless $C->{Locale_repository};
 
 my $Locale = $C->{Locale_repository};
-
 my $one_text;
 my $two_text;
 my $one;
 my $two;
 
+if($opt_u) {
+	my $icmenu = "$opt_u/icmenu.txt";
+	my ($headline, @cols);
+	
+	open (ICMENU, $icmenu)
+		|| die  "Couldn't read UI menu file $icmenu: $!\n";
+	$headline = <ICMENU>;
+	@cols = split (/\t/, $headline);
+	unless ($cols[9] eq 'name' && $cols[12] eq 'special') {
+		die "Malformed UI menu file $icmenu\n";
+	}
+	while (<ICMENU>) {
+		@cols = split (/\t/);
+		write_structure (undef, $cols[9]);
+		write_structure (undef, $cols[12]) if $cols[12];
+	}
+	close (ICMENU);
+}
+		
 if($opt_t) {
 	$one = shift;
 	$two = shift || die "$USAGE\n";
@@ -223,6 +220,7 @@ sub getkey {
 
 sub write_structure {
 	my($key, $default) = @_;
+
 	if($key) {
 		$Locale->{$def}->{$key} = $default;
 		$Comment{$key} = $default;
@@ -290,6 +288,12 @@ foreach $file (@ARGV) {
 print STDERR ".";
 					substitute_lc($1);
 		}
+        while ($data =~ m:\[loc\](\s*[^\[].*?[^\]]\s*)\[/loc\]:gsi) {
+					write_structure(undef, $1);
+		}
+        while ($data =~ m:\[msg(\s+arg\.\d+=".*?")*\s*\](\s*[^\[].*?[^\]]\s*)\[/msg\]:gsi) {
+					write_structure(undef, $2);
+		}
 	}
 
 	if($opt_c || $opt_o) {
@@ -306,20 +310,21 @@ my $l = $Locale->{$opt_l};
 my($text, $dat, $cmt);
 
 foreach $key (sort keys %$d) {
-
 		$dat = ($Comment{$key} || '') and
 			$dat =~ s/\n/\n# /g;
 
 		$def_text .= "# $dat\n" if $dat;
 
-		if ($dat) {
-			$cmt = $dat;
-		}
-		else {
-			$cmt = $key;
-			$cmt =~ s/\n/\n# /g;
-		}
-		$loc_text .= "# $cmt\n";
+        unless ($opt_n) {
+		    if ($dat) {
+			    $cmt = $dat;
+		    }
+		    else {
+			    $cmt = $key;
+			    $cmt =~ s/\n/\n# /g;
+		    }
+		    $loc_text .= "# $cmt\n";
+        }
 
 		$text = &$Uneval($key);
 		$loc_text .= "$text,\n";
@@ -350,7 +355,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-$Id: localize.PL,v 1.7 2000-09-25 16:38:49 zarko Exp $
+# $Id: localize.PL,v 1.7.4.1 2003-01-25 22:21:32 racke Exp $
 
 =head1 SYNOPSIS
 
@@ -387,6 +392,10 @@ Read existing information to merge from <file>. Can contain multiple locales.
 When in C<-c> mode, prefix MM_ to make minimate_compatible; 
 when in regular mode, strip MM_ from [LC] defs
 
+=item C<-n>
+
+Don't write comments in the output.
+
 =item C<-o>
 
 Rewrite [L] sections with [L msgNNNN], adjust file and data.
@@ -395,6 +404,11 @@ Mutually exclusive with C<-c>.
 =item C<-t>
 
 Two page mode, mutually exclusive with C<-m.>
+
+=item C<-u dir>
+
+UI directory, e.g. /usr/lib/interchange/lib/UI. This can
+be used to include the menu titles in the output.
 
 =back
 
@@ -415,19 +429,13 @@ one level. Subsequent .bak files will be overwritten.
 
 =head1 SEE ALSO
 
-mvdocs(8), http://www.akopia.com/
+http://interchange.redhat.com/
 
 =head1 AUTHOR
 
-Mike Heins, <heins@akopia.com>. Valuable contributions made by Stefan Hornburg,
-<racke@linuxia.net>.
+Mike Heins, <mheins@redhat.com>.
+
+Valuable contributions made by Stefan Hornburg, <racke@linuxia.de>.
+
 =cut
 
-_EoP_
-	s{.*\n(#(.*)~_~(\w+)~_~(.*))}{$2 . doit($3) . "$4\n$1"}eg;
-	my $file = $0;
-	$file =~ s/\.PL$//;
-	open(OUT, ">$file") 
-		or die "Create $file: $!\n";
-	print OUT $_;
-}

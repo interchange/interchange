@@ -1,14 +1,11 @@
-# Control.pm - Interchange routines rarely used or not requiring much performance
+# Vend::Control - Routines that alter the running Interchange daemon
 # 
-# $Id: Control.pm,v 1.5.4.1 2000-10-20 10:18:42 racke Exp $
+# $Id: Control.pm,v 1.5.4.2 2003-01-25 22:21:27 racke Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
+# This program was originally based on Vend 0.2 and 0.3
+# Copyright 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,6 +29,7 @@ require Exporter;
 @EXPORT = qw/
 				signal_reconfig
 				signal_add
+				signal_cron
 				signal_remove
 				control_interchange
 				change_catalog_directive
@@ -47,28 +45,45 @@ sub signal_reconfig {
 	my (@cats) = @_;
 	for(@cats) {
 		my $ref = $Global::Catalog{$_}
-			or die ::errmsg("Unknown catalog '%s'. Stopping.\n", $_);
-		Vend::Util::writefile("$Global::ConfDir/reconfig", "$ref->{script}\n");
+			or die errmsg("Unknown catalog '%s'. Stopping.\n", $_);
+		Vend::Util::writefile("$Global::RunDir/reconfig", "$ref->{script}\n");
 	}
+}
+
+sub signal_cron {
+	shift;
+	$Vend::mode = 'cron';
+	my $arg = shift;
+	my ($cat, $job) = split /\s*=\s*/, $arg, 2;
+	$Vend::CronCat = $cat;
+#::logGlobal("signal_cron: called cron cat=$cat job=$job");
+	$job = join ",", $job, $Vend::CronJob;
+	$job =~ s/^,+//;
+	$job =~ s/,+$//;
+	$Vend::CronJob = $job;
+	Vend::Util::writefile("$Global::RunDir/restart", "cron $cat $job\n");
+#::logGlobal("signal_cron: wrote file, ready to control_interchange");
+	control_interchange('cron', 'HUP');
 }
 
 sub signal_remove {
 	shift;
 	$Vend::mode = 'reconfig';
 	my $cat = shift;
-	Vend::Util::writefile("$Global::ConfDir/restart", "remove catalog $cat\n");
+	Vend::Util::writefile("$Global::RunDir/restart", "remove catalog $cat\n");
 	control_interchange('remove', 'HUP');
 }
 
 sub signal_add {
 	$Vend::mode = 'reconfig';
-	Vend::Util::writefile("$Global::ConfDir/restart", <>);
+	Vend::Util::writefile("$Global::RunDir/restart", <>);
 	control_interchange('add', 'HUP');
 }
 
 sub control_interchange {
 	my ($mode, $sig, $restart) = @_;
 
+	$Vend::ControllingInterchange = 1;
 	unless(-f $Global::PIDfile) {
 		warn errmsg(
 			"The Interchange server was not running (%s).\n",
@@ -77,14 +92,13 @@ sub control_interchange {
 		exit 1 unless $restart;
 		return;
 	}
-	Vend::Server::open_pid()
+	my $pidh = Vend::Server::open_pid()
 		or die errmsg(
 				"Couldn't open PID file %s: %s\n",
 				$Global::PIDfile,
 				$!,
 				);
-	my $pid = Vend::Server::grab_pid();
-	Vend::Server::unlink_pid();
+	my $pid = Vend::Server::grab_pid($pidh);
 	if(! $pid) {
 		warn errmsg(<<EOF);
 The previous Interchange server was not running and probably
@@ -95,8 +109,26 @@ EOF
 	if(! $sig) {
 		$sig = $mode ne 'kill' ? 'TERM' : 'KILL';
 	}
-	print "Killing Interchange server $pid with $sig.\n"
-		unless $Vend::Quiet;
+	my $msg;
+	if($mode eq 'cron') {
+		$msg = errmsg(
+					"Dispatching jobs=%s for cat %s to Interchange server %s with %s.\n",
+					$Vend::CronJob,
+					$Vend::CronCat,
+					$pid,
+					$sig,
+				);
+	}
+	else {
+		$msg = errmsg(
+					"Killing Interchange server %s with %s.\n",
+					$pid,
+					$sig,
+				);
+	} 
+
+	print $msg unless $Vend::Quiet;
+
 	kill $sig, $pid
 		or die errmsg("Interchange server would not stop.\n");
 	exit 0 unless $restart;
@@ -108,7 +140,7 @@ sub remove_catalog {
 	my @aliases;
 
 	unless(defined $g) {
-		::logGlobal( "Attempt to remove non-existant catalog %s." , $name );
+		logGlobal( {level => 'error'}, "Attempt to remove non-existant catalog %s." , $name );
 		return undef;
 	}
 
@@ -151,7 +183,7 @@ sub add_catalog {
 			if (exists $Global::Selector{$_}
 				and $Global::SelectorAlias{$_} ne $g->{'script'})
 			{
-				logGlobal("Alias %s used a second time, skipping.", $_);
+				logGlobal({level => 'notice'}, "Catalog ScriptAlias %s used a second time, skipping.", $_);
 				next;
 			}
 			elsif (m![^-\w_\~:#/.]!) {
@@ -162,7 +194,7 @@ sub add_catalog {
 		}
 	}
 
-	Vend::Util::writefile("$Global::ConfDir/reconfig", "$script\n");
+	Vend::Util::writefile("$Global::RunDir/reconfig", "$script\n");
 	my $msg = <<EOF;
 Added/changed catalog %s:
 
@@ -170,7 +202,7 @@ Added/changed catalog %s:
  Script:    %s
 EOF
 	
-	logGlobal( $msg, $name, $dir, $script);
+	logGlobal({level => 'notice'},  $msg, $name, $dir, $script);
 
 	$Global::Selector{$g->{script}} = $c;
 }
@@ -197,7 +229,7 @@ sub change_global_directive {
 	$Global::Structure->{$ref->[0]} = $ref->[1]
 		if $Global::DumpStructure;
 
-	dump_structure($Global::Structure, "$Global::ConfDir/$Global::ExeName")
+	dump_structure($Global::Structure, "$Global::RunDir/$Global::ExeName")
 		if $Global::DumpStructure;
 	return 1;
 }

@@ -1,38 +1,36 @@
-[if-mm !reconfig]
-[set ui_error]Not authorized to regenerate.[/set]
+@_UI_STD_INIT_@[if-mm !advanced reconfig]
+[set ui_error][L]Not authorized to regenerate.[/L][/set]
 [bounce page="__UI_BASE__/error"]
 [/if-mm]
 [set help_name]reconfig[/set]
 [set ui_class]Admin[/set]
-[set page_title]Reconfiguring....[/set]
-[seti meta_header]
-[set name=its int][calc]
-					$hk = q{[global-value Global::HouseKeeping]};
-					$hk += 2;
-					return join " ", 1 .. $hk;
-				[/calc][/set]
-[/seti]
-[set icon_name]admin/icon_regen.gif[/set]
+[set page_title][L]Reconfiguring[/L]....[/set]
+[tmp meta_header]
+<META HTTP-EQUIV="refresh" content="[calc]
+		my $secs = $Tag->global_value('Global::HouseKeeping') || 10;
+		$secs += 2;
+		my $url = $Tag->area({
+							href => 'admin/genconfig',
+							form => 'start_at_index=1',
+							});
+		return "$secs; URL=$url";
+		[/calc]">
+[/tmp]
+
+[set icon_name]icon_regen.gif[/set]
+
 @_UI_STD_HEAD_@
 
-[L]Reconfiguring catalog[/L]: ...<BR>[seti reconfig_status][reconfigure][/seti]
-
-[loop arg="[scratch its]"]
-[reconfig-wait send=1]
-[/loop]
-
-[if scratch possible_timeout]
- [L]WARNING: Reconfiguration may have timed out[/L].<BR>
-[L]Last config[/L]: [reconfig-time]
+[L]Reconfiguring catalog[/L]...
+[if type=explicit compare="[reconfigure]"]
+[L]Catalog reconfigure request was sent successfully, please wait....[/L]
 [else]
-[L]SUCCESS[/L]
-[value name=ui_changes_made set=""]
+[L]Catalog reconfigure request failed.[/L]
 [/else]
 [/if]
-(<A HREF="[area href="[either][data session arg][or]__UI_BASE__/index[/either]"]">[L]return[/L]</A>)<BR>
 </HTML>
 
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 1.9.4.2 $ -->

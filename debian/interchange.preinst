@@ -1,8 +1,6 @@
-# Vend::Tags - Interpret Interchange tags for Safe
-# 
-# $Id: Tags.pm,v 1.2.4.2 2003-01-25 22:21:28 racke Exp $
+#! /bin/sh
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright 2001 by Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,30 +17,18 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-package Vend::Tags;
+# Older versions have a /usr/lib/interchange/etc directory,
+# which we need to remove in order to place a symlink there
 
-require AutoLoader;
+if [ "$1" = "upgrade" ] && dpkg --compare-versions $2 lt 4.8.0-1; then
+	rm -rf /usr/lib/interchange/etc
+fi
 
-use vars qw($AUTOLOAD @ISA);
+# We use the file /var/run/interchange-install to record 
+# the installed interchange packages, so only one server
+# restart is needed 
 
-sub new {
-	return bless {}, shift;
-}
+echo interchange >> /var/run/interchange-install
 
-sub DESTROY {
-	1;
-}
+#DEBHELPER#
 
-sub AUTOLOAD {
-	shift;
-	my $routine = $AUTOLOAD;
-	$routine =~ s/.*:://;
-	if(ref($_[0]) =~ /HASH/) {
-		@_ = Vend::Parse::resolve_args($routine, @_);
-	}
-	return Vend::Parse::do_tag($routine, @_);
-}
-
-1;
-
-__END__

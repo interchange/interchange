@@ -1,9 +1,9 @@
-[calc] $CGI->{no_dbmenu} = 1; $CGI->{access_menu} = 1; return [/calc]
-[set page_title]Admin Group Manager[/set]
+[calc]$Config->{NoSearch} = ''; $CGI->{no_dbmenu} = 1; $CGI->{access_menu} = 1; return [/calc]
+[set page_title][L]Administration Group Manager[/L][/set]
 [set ui_class]Admin[/set]
 [set page_perm]group=l[/set]
 [set help_name]group.main[/set]
-[set icon_name]admin/icon_config.gif[/set]
+[set icon_name]icon_config.gif[/set]
 
 @_UI_STD_HEAD_@
 [if scratch ui_message]
@@ -16,29 +16,30 @@
 [/if]
 
 <form action="[area ui]" method=POST>
+<input type=hidden name=mv_session_id value="[data session id]">
 <INPUT TYPE=hidden NAME=mv_todo VALUE=back>
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/group_edit">
 <INPUT TYPE=hidden NAME=ui_hide_key VALUE="1">
 
-<table __UI_T_PROPERTIES__>
+<table cellpadding=3 cellspacing=0 width="70%">
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=600 height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=600 height=1></td>
 </tr>
 
-[set Create new group]
+[set [L]Create new group[/L]]
 mv_nextpage=__UI_BASE__/group_edit
 group_id=NEW
 ui_hide_key=0
 [/set]
 
-[set Show permissions]
+[set [L]Show permissions[/L]]
 user_id=[cgi group_id]
 mv_nextpage=__UI_BASE__/access_permissions
 ui_return_to=@@MV_PAGE@@
 [/set]
 
 
-[set Delete group]
+[set [L]Delete group[/L]]
 mv_nextpage=@@MV_PAGE@@
 [flag type=write table="__UI_ACCESS_TABLE__"]
 [if-mm advanced access=d]
@@ -64,26 +65,26 @@ mv_nextpage=@@MV_PAGE@@
 [/set]
 
 <tr>
-<td colspan=2 bgcolor="__UI_C_INTBLOCK__">
-<input type="submit" name="mv_click" value="Create new group">
+<td colspan=2 class=rnorm>
+<input type="submit" name="mv_click" value="[L]Create new group[/L]">
 </td>
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=600 height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=600 height=1></td>
 </tr>
 
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__" width=150>
-<input type="submit" value="Edit group"><br>
-<input type="submit" name="mv_click" value="Show permissions"><p>
+<td class=rnorm width=150>
+<input type="submit" value="[L]Edit group[/L]"><br><br>
+<input type="submit" name="mv_click" value="[L]Show permissions[/L]"><p>
 [if-mm advanced access=d]
-<input type="submit" name="mv_click" value="Delete group" 
- onClick="return confirm('Are you sure you want to delete this group?')">
+<input type="submit" name="mv_click" value="[L]Delete group[/L]" 
+ onClick="return confirm('[L]Are you sure you want to delete this group?[/L]')">
 [/if-mm]
 </td>
 
-<td bgcolor="__UI_C_INTBLOCK__" width=450>
+<td class=rnorm width=450>
 <select name="group_id" size=10>
 [loop search="fi=access/st=db/co=yes/sf=username/se=:/bs=yes/tf=name"]
   <option value="[loop-code]">[loop-data access name]
@@ -93,19 +94,17 @@ mv_nextpage=@@MV_PAGE@@
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=600 height=1></td>
+<td colspan=2 class=rborder><img src="bg.gif" width=600 height=1></td>
 </tr>
 
 </table>
 
 <p>
 
-[set Back]
+[set [L]Back[/L]]
 mv_todo=back
 mv_nextpage=index
 [/set]
-
-<input type=submit name="mv_click" value="Back">
 
 </form>
 

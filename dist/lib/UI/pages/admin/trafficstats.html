@@ -1,67 +1,69 @@
-[if !advanced report]
+@_UI_STD_INIT_@[if-mm !advanced trafficstats]
+[set ui_error]
+[L]Not authorized for traffic statistics.[/L]
+[/set]
 [bounce page="__UI_BASE__/error"]
 [value name=saved_report set=""]
-[/if]
-[set page_title]Traffic Statistics[/set]
+[/if-mm]
+[set page_title][L]Traffic Statistics[/L][/set]
 [set ui_class]Reports[/set]
-[set icon_name]admin/icon_stats.gif[/set]
+[set icon_name]icon_stats.gif[/set]
 [set help_name]stats.traffic[/set]
 @_UI_STD_HEAD_@
 
-<table border=0 __UI_T_PROPERTIES__>
-<tr bgcolor="#000000" height=1><td colspan=2></td></tr>
+<table border=0 __UI_T_PROPERTIES__ width="60%">
+<tr class=rborder height=1><td colspan=2></td></tr>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><FONT COLOR="__UI_C_TITLEBARTXT__">View Stats for this Month Only</FONT></td>
+<td colspan=2 class=rmarq>[L]View stats for this month only[/L]</td>
 </tr>
-<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
-<tr bgcolor="#FFFFFF" height=2><td colspan=8></td></tr>
+<tr class=rborder height=1><td colspan=8></td></tr>
 <tr>
-<td bgcolor="__UI_C_INTBLOCK__" colspan=2>
+<td class=rnorm colspan=2>
 
-<A HREF="[area href=__UI_BASE__/reports/traffic/ByAffiliate]">Overall by month</A><BR>
+<A HREF="[area href=__UI_BASE__/reports/traffic/ByAffiliate]">[L]Overall by month[/L]</A><BR>
 <A HREF="[area href=__UI_BASE__/reports/traffic/ByAffiliate
 				form="
 						ui_by_day=1
 						ui_begin_date=[tag time]%Y%m[/tag]
-				"]">By day for this month</A><BR>
+				"]">[L]By day for this month[/L]</A><BR>
 
 </td>
 </tr>
-<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
+<tr class=rborder height=1><td colspan=8></td></tr>
 
 </table>
 <br>
-<table border=0 __UI_T_PROPERTIES__>
-<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
+<table border=0 __UI_T_PROPERTIES__ width="60%">
+<tr class=rborder height=1><td colspan=8></td></tr>
 <tr>
-<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><FONT COLOR="__UI_C_TITLEBARTXT__">View Stats for Any Period of Time</FONT></td>
+<td colspan=3 class=rmarq>[L]View stats for any period of time[/L]</td>
 </tr>
-<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
-<tr bgcolor="#FFFFFF" height=2><td colspan=8></td></tr>
+<tr class=rborder height=1><td colspan=8></td></tr>
 
 <FORM ACTION="[process]">
+<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 <INPUT TYPE=hidden NAME=mv_todo VALUE=return>
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/reports/traffic/ByAffiliate">
 
 <TR>
-<TD bgcolor="__UI_C_INTBLOCK__">
+<TD class=rnorm>
 
-Beginning:<BR>
+[L]Beginning:[/L]<BR>
 	[widget type=date name=ui_begin_date]
 
 </TD>
-<TD bgcolor="__UI_C_INTBLOCK__">
+<TD class=rnorm>
 
-Ending:<BR>
+[L]Ending:[/L]<BR>
 	[widget type=date name=ui_end_date]
 
 </TD>
 [if-mm advanced affiliate=l]
-<TD bgcolor="__UI_C_INTBLOCK__">
+<TD class=rnorm>
 
-For affiliate:<BR>
+[L]For affiliate:[/L]<BR>
 	<SELECT NAME=affiliate>
-		<OPTION VALUE=""> --all--
+		<OPTION VALUE=""> --[L]all[/L]--
 		[loop search="
 			fi=affiliate
 			st=db
@@ -76,22 +78,22 @@ For affiliate:<BR>
 </TD>
 </TR>
 <TR>
-<TD COLSPAN=3 bgcolor="__UI_C_INTBLOCK__">
+<TD COLSPAN=3 class=rnorm>
 [else]
 </TR>
 <TR>
-<TD COLSPAN=3 bgcolor="__UI_C_INTBLOCK__">
+<TD COLSPAN=3 class=rnorm>
 [/else]
 [/if-mm]
-	[set By day]
+	[set [L]By day[/L]]
 	ui_by_day=1
 	[/set]
 	<BLOCKQUOTE>
-	<INPUT TYPE=submit VALUE="By month">&nbsp;&nbsp;&nbsp;&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="By day">
+	<INPUT TYPE=submit VALUE="[L]By month[/L]">&nbsp;&nbsp;&nbsp;&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="[L]By day[/L]">
 	</BLOCKQUOTE>
 </TD>
 </TR>
-<tr bgcolor="#000000" height=1><td colspan=8></td></tr>
+<tr class=rborder height=1><td colspan=8></td></tr>
 </TABLE>
 </FORM>
 </td>

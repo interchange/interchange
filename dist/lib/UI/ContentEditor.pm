@@ -2,7 +2,7 @@
 #
 # UI::ContentEditor - Interchange page/component edit
 # 
-# $Id: ContentEditor.pm,v 2.8 2003-01-22 15:26:59 mheins Exp $
+# $Id: ContentEditor.pm,v 2.8.2.1 2003-01-25 22:21:12 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -23,7 +23,7 @@
 
 package UI::ContentEditor;
 
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = substr(q$Revision: 2.8.2.1 $, 10);
 $DEBUG = 0;
 
 use POSIX qw/strftime/;

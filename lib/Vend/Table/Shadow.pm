@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.19 2003-01-03 11:55:22 racke Exp $
+# $Id: Shadow.pm,v 1.19.2.1 2003-01-25 22:21:31 racke Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.19 $, 10);
+$VERSION = substr(q$Revision: 1.19.2.1 $, 10);
 
 # TODO
 #

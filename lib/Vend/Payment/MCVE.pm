@@ -1,6 +1,6 @@
 # Vend::Payment::MCVE - Interchange MCVE support
 #
-# $Id: MCVE.pm,v 1.2 2002-09-16 23:06:32 mheins Exp $
+# $Id: MCVE.pm,v 1.2.2.1 2003-01-25 22:21:30 racke Exp $
 #
 # Author: Tom Friedel (tom@readyink.com) for Carlc Internet Services (http://www.carlc.com)
 #
@@ -22,11 +22,11 @@
 package Vend::Payment::MCVE;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.2.2.1 $, 10);
 
 =head1 Interchange MCVE support
 
-Vend::Payment::MCVE $Revision: 1.2 $
+Vend::Payment::MCVE $Revision: 1.2.2.1 $
 
 =head1 SYNOPSIS
 

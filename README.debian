@@ -3,27 +3,38 @@ Interchange Debian Packages
 
 This document contains information about the Interchange Debian packages.
 
-Status
-------
-
-The Interchange Debian packages are experimental and should not used
-on production systems. They may hose your installation. You have been
-warned! Please note that these packages contain several modifications 
-not (yet) approved by Akopia.
-
 Feedback
 --------
 
 Please send your comments and bug reports to Stefan Hornburg (Racke)
-<racke@linuxia.de>.
+<racke@linuxia.de>. He is the Interchange core developer responsible 
+for the Interchange Debian packages. 
 
 APT Sources
 ===========
 
-Interchange Debian packages for unstable (sid) are part of the Debian
-distribution.
+Interchange Debian packages for stable (woody), testing (sarge) 
+and unstable (sid) are part of the official Debian distribution.
 
-Interchange Debian packages for stable (potato) are available from:
+Up-to-date Interchange Debian packages for stable are available from:
 
-deb http://ftp.minivend.com/interchange/debian interchange main
-deb-src http://ftp.minivend.com/interchange/debian interchange main
+deb http://ftp.icdevgroup.org/interchange/debian interchange main
+deb-src http://ftp.icdevgroup.org/interchange/debian interchange main
+
+Debian Specific Changes
+=======================
+
+* all catalog configuration should we put into catalogs.cfg, so that 
+  /etc/interchange/interchange.cfg can upgraded easily 
+
+* any global usertags used locally should go into /etc/interchange/usertag
+  and they'll be included if they have the extension .tag
+
+Other Notes
+===========
+
+* if the selected Interchange user (default: interchange, may be changed
+  through debconf) doesn't exists at installation time, it will created.
+  Due to security reasons the shell for this user will be set to
+  /bin/false and the password for this user will be disabled. Use 
+  su -s /bin/sh if you need to become the Interchange user.

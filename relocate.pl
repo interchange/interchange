@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 # relocate.pl
-# $Id: relocate.pl,v 2.1 2002-06-27 18:56:43 jon Exp $
+# $Id: relocate.pl,v 2.1.2.1 2003-01-25 22:20:30 racke Exp $
 #
 # Rewrite pathnames or other values that need to be hardcoded in
 # files. Take a commented line, remove the leading hash character,

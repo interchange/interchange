@@ -1,12 +1,22 @@
-[set page_title]Order manager: View order[/set]
+[set page_title][L]Order manager[/L]: [L]View order[/L][/set]
 [set ui_class]Orders[/set]
-[set page_banner]View order[/set]
 [set help_name]order.view[/set]
-[set icon_name]admin/icon_orders.gif[/set]
+[set icon_name]icon_orders.gif[/set]
 @_UI_STD_HEAD_@
 [calc]
 	delete $Scratch->{ui_bounce};
-	return if $CGI->{order};
+	if ($CGI->{order}) {
+		if($CGI->{deliver_encrypted}) {
+			my $dir = q{__ORDER_DIRECTORY__} || 'orders';
+			my $ord = $Tag->filter('filesafe', $CGI->{order});
+			$Tag->deliver({
+							file => "orders/$ord",
+							get_encrypted => 1,
+							type => 'application/pgp-encrypted',
+						});
+		}
+		return;
+	}
 	$CGI->{order} = $CGI->{mv_arg} 
 		or $Scratch->{ui_bounce} = '__UI_BASE__/order';
 	return;
@@ -15,373 +25,360 @@
 	[bounce page="[scratch ui_bounce]"]
 [/if]
 
-[if scratch ui_message]
-<BLOCKQUOTE>
-	[scratch ui_message]
-	[set ui_message][/set]
-</BLOCKQUOTE>
-<p>
-&nbsp;
-[/if]
-
-
 <!-- ----- BEGIN REAL STUFF ----- -->
 [update values]
+[perl tables=country]### pre-open database for calcs below[/perl] 
+
 [loop list="[value-extended order]"]
-
-<table __UI_T_PROPERTIES__>
-<tr>
-<td colspan=6 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" height=1></td>
-</tr>
-
-<tr>
-<td colspan=6 align=left bgcolor=__UI_C_INTBLOCK__>
-<b>Order number: [loop-code] Order date: [convert-date][loop-data transactions order_date][/convert-date]</b>
-</td>
-</tr>
-
-<tr>
-<td colspan=6 align=left bgcolor=__UI_C_INTBLOCK__>
-<b>Customer: 
-[if-loop-data transactions username]
-<A HREF="[area
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+   <tr> 
+      <td> 
+         <table width="100%" border="0" cellpadding="6" cellspacing="1" class="rseparator">
+            <tr> 
+               <td width="25%" nowrap class="block4bold">User Name: &nbsp; <a href="[area href="admin/customer_view" form="customer=[loop-data transactions username]"]" title="View customer"><span class="maincontent">[loop-data transactions username]</span></a></td>
+               <td width="25%" nowrap class="block4bold">
+			   	Order Status: &nbsp;
+					[page href="admin/order_status" form="order=[loop-code]"]
+						<span class="alert">Pending</span>
+					</a>
+					[if-loop-data transactions archived == 1]
+					([L]archived[/L])
+					[/if-loop-data]
+					[if-loop-data transactions deleted == 1]
+					([L]deleted[/L])
+					[/if-loop-data]
+					
+				</td>
+               <td width="25%" nowrap class="block4bold">
+			   		
+					Affiliate: &nbsp;
+					[if-loop-data transactions affiliate]
+						[page href="admin/affiliate"
+							  form="affiliate=[loop-data transactions affiliate]"
+						]<span class="maincontent">[loop-data transactions affiliate]</span></A>
+					[else]
+							<span class="maincontent">none</span>
+					[/else]
+					[/if-loop-data]
+				</td>
+                <td width="25%" nowrap class="block4bold">
+			   		Order Date: &nbsp; <span class="maincontent">
+						[convert-date fmt="%b %e, %Y %l:%M %P"][loop-data transactions order_date][/convert-date]
+					</span>
+				</td>
+            </tr>
+         </table>
+      </td>
+   </tr>
+   <tr> 
+      <td height="6"><img src="bg.gif" width="1" height="6"></td>
+   </tr>
+   <tr> 
+      <td> 
+         <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr> 
+               <!-- CUSTOMER DETAILS -->
+		[loop prefix=customer list="[loop-data transactions username]"]
+               <td width="33%" valign="top"> 
+                  <table width="100%" height="160" border="0" cellpadding="6" cellspacing="1" class="rseparator">
+                     <tr> 
+               
+                        <td height="1%" class="block4"><a href="[area href='admin/customer_view' form='customer=[loop-data transactions username]']">Customer Details</a></td>
+                     </tr>
+                     <tr> 
+                        <td height="99%" valign="top" class="block4"> 
+                           <table width="100%" border="0" cellspacing="0" cellpadding="1">
+                              <tr> 
+                                 <td width="30%" class="block4bold">Customer:</td>
+                                 <td width="70%" class="maincontent"><a href="[area href='admin/customer_view' form='customer=[loop-data transactions username]']">[customer-data userdb fname] [customer-data userdb lname]</a> 
+                                 </td>
+                              </tr>
+                              <tr> 
+                                 <td class="block4bold"> [L]Company[/L]:</td>
+                                 <td class="maincontent">[customer-data userdb company]</td>
+                              </tr>
+                              <tr> 
+                                 <td nowrap class="block4bold">[L]Home phone[/L]:</td>
+                                 <td class="maincontent">[customer-data userdb phone_night]</td>
+                              </tr>
+                              <tr> 
+                                 <td nowrap class="block4bold"> [L]Work phone[/L]:</td>
+                                 <td class="maincontent">[customer-data userdb phone_night]</td>
+                              </tr>
+                              <tr> 
+                                 <td class="block4bold">[L]Email[/L]:</td>
+                                 <td class="maincontent"><a href="mailto:[customer-data userdb email]">[loop-data transactions email]</a></td>
+                              </tr>
+                              <tr> 
+                                 <td nowrap class="block4bold">[L]Payment type[/L]:</td>
+                                 <td class="maincontent">[loop-data transactions payment_method]</td>
+                              </tr>
+                              <tr> 
+                                 <td height="15" colspan="2" class="block4bold"><img src="bg.gif" width="1" height="1"></td>
+                              </tr>
+                           </table>
+                        </td>
+                     </tr>
+                  </table>
+               </td>
+		[/loop]
+               <td width="3"><img src="bg.gif" width="3" height="1"></td>
+               <!-- BILLING DETAILS -->
+               <td width="33%" valign="top"> 
+                  <table width="100%" height="160" border="0" cellpadding="6" cellspacing="1" class="rseparator">
+                     <tr> 
+                        <td height="1%" class="block4"><a href="#">Billing Details</a></td>
+                     </tr>
+                     <tr> 
+                        <td height="99%" valign="top" class="block4"> 
+[if-loop-data transactions b_address1]
+	[loop prefix=bill list="[loop-code]"]
+                           <table width="100%" border="0" cellspacing="0" cellpadding="1">
+                              <tr> 
+                                 <td width="30%" class="block4bold">[L]Name[/L]:</td>
+                                 <td width="70%" class="maincontent"><A HREF="[area
 				href=__UI_BASE__/customer_view
 				arg="[loop-data transactions username]"
-		]"><u>[loop-data transactions fname] [loop-data transactions lname]</u></A>
+		]"><u>[loop-data transactions b_fname] [loop-data transactions b_lname]</A>
+                                 </td>
+                              </tr>
+							  [if-bill-data transactions b_company]
+                              <tr> 
+                                 <td width="30%" class="block4bold">[L]Company[/L]:</td>
+                                 <td width="70%" class="maincontent">
+								 	[loop-data transactions b_company]
+                                 </td>
+                              </tr>
+							  [/if-bill-data]
+                              <tr> 
+                                 <td valign="top" class="block4bold">[L]Address[/L]:</td>
+                                 <td class="maincontent">
+								 [loop-data transactions b_address1]
+								 [if-bill-data transactions b_address2]
+								 <br>
+								 [loop-data transactions b_address2]
+								 [/if-bill-data]
+								 </td>
+                              </tr>
+							  [if-bill-data transactions b_country =~ /^US|^CA/]
+                              <tr> 
+                                 <td class="block4bold">[L]City, State, Zip[/L]:</td>
+                                 <td class="maincontent">[loop-data transactions b_city], [loop-data transactions state]  [loop-data transactions zip]</td>
+                              </tr>
+							  [else]
+                              <tr> 
+                                 <td class="block4bold">[L]City[/L]:</td>
+                                 <td class="maincontent">[loop-data transactions b_city]</td>
+                              </tr>
+							  		[if-bill-data transactions b_state]
+                              <tr> 
+                                 <td class="block4bold">[L]State[/L]:</td>
+                                 <td class="maincontent">[loop-data transactions b_state]</td>
+                              </tr>
+								    [/if-bill-data]
+							  		[if-bill-data transactions b_zip]
+                              <tr> 
+                                 <td class="block4bold">[L]Postal code[/L]:</td>
+                                 <td class="maincontent">[loop-data transactions b_zip]</td>
+                              </tr>
+								    [/if-bill-data]
+							  [/else]
+							  [/if-bill-data]
+                              <tr> 
+                                 <td class="block4bold">[L]Country[/L]:</td>
+                                 <td class="maincontent">[data table=country col=name key="[loop-data transactions b_country]"]</td>
+                              </tr>
+                              <tr> 
+                                 <td height="15" colspan="2" class="block4bold"><img src="bg.gif" width="1" height="1"></td>
+                              </tr>
+                           </table>
+		[/loop]
 [else]
-		[loop-data transactions fname] [loop-data transactions lname]
+						<i>Same as shipping address</i>
 [/else]
 [/if-loop-data]
-		</b>
-</td>
-</tr>
-
-<!-- ----- Affiliate Check ----- -->
-[if-loop-data transactions affiliate]
-<tr>
-<td colspan=6 align=left bgcolor=__UI_C_INTBLOCK__>
-<b>Affiliate: [data table="__UI_AFFILIATE_TABLE__" column=name key="[loop-data transactions affiliate]"]</b>
-</td>
-</tr>
-[/if-loop-data]
-
-<tr>
-<td colspan=2 valign=top>
-
-<!-- ----- Customer information ----- -->
-
-<table>
-<tr><td align=right>
-<font size=2><b> Company: </b></font>
-</td><td><font size=2>[loop-data transactions company]</font></td></tr>
-
-<tr><td align=right>
-<font size=2><b> Home phone: </b></font>
-</td><td><font size=2>[loop-data transactions phone_night]</font></td></tr>
-
-<tr><td align=right>
-<font size=2><b> Work phone: </b></font>
-</td><td><font size=2>[loop-data transactions phone_day]</font></td></tr>
-
-<tr><td align=right>
-<font size=2><b> Email: </b></font>
-</td><td><font size=2> <a href="mailto:[loop-data transactions email]"><U>[loop-data transactions email]</U></a></font></td></tr>
-
-<tr><td align=right>
-<font size=2><b> Payment type: </b></font>
-</td><td><font size=2>[loop-data transactions payment_method]</a></font></tr>
-
-</table>
-
-</td><td valign=top colspan=4>
-[set bill_address]
-[loop-data transactions b_fname] [loop-data transactions b_lname]<br>
-[loop-data transactions b_address1]<br>
-[if-loop-data transactions b_address2]
-[loop-data transactions b_address2]<br>
-[/if-loop-data]
-[loop-data transactions b_city], [loop-data transactions b_state] [loop-data transactions b_zip]<br>
-[/set]
-
-[set ship_address]
-[loop-data transactions fname] [loop-data transactions lname]<br>
-[loop-data transactions address1]<br>
-[if-loop-data transactions address2]
-[loop-data transactions address2]<br>
-[/if-loop-data]
-[loop-data transactions city], [loop-data transactions state] [loop-data transactions zip]<br>
-[/set]
-
-<font size=2>
-<p>
-[if-loop-data transactions username]
-<A HREF="[area
-				href=__UI_BASE__/flex_editor
-				form=|
-					ui_return_to=__UI_BASE__/order_view
-					ui_return_to=order=[cgi order]
-					ui_hide_key=1
-					ui_data_fields=username company b_fname b_lname b_address1 b_address2 b_city b_state b_zip b_country b_email b_phone_day b_phone_night
-					page_title=Customer: [loop-data transactions fname] [loop-data transactions lname]
-					item_id=[loop-data transactions username]
-					mv_data_table=userdb
-				|
-		]"><b><u>Bill To</u>:</b></A>
-[else]
-		<b>Bill To:</b>
-[/else]
-[/if-loop-data]
-<blockquote>
-[if-loop-data transactions b_address1]
-[scratch bill_address]
-[else]
-[scratch ship_address]
-[/else]
-[/if-loop-data]
-</blockquote>
-
-<b>
-[if-loop-data transactions username]
-<A HREF="[area
-				href=__UI_BASE__/flex_editor
-				form=|
-					ui_return_to=__UI_BASE__/order_view
-					ui_return_to=mv_arg=[cgi order]
-					ui_hide_key=1
-					ui_data_fields=username company fname lname address1 address2 city state zip country email phone_day phone_night
-					page_title=Customer: [loop-data transactions fname] [loop-data transactions lname]
-					item_id=[loop-data transactions username]
-					mv_data_table=userdb
-				|
-		]"><b><u>Ship To</u>:</b></A>
-[else]
-		<b>Ship To:</b>
-[/else]
-[/if-loop-data]
-<br>
-<blockquote>
-[scratch ship_address]
-</blockquote>
-</font>
-
-<P>
-<B>Status:<B>[seti statestr][display    table=transactions
+                        </td>
+                     </tr>
+                  </table>
+               </td>
+               <td width="3"><img src="bg.gif" width="3" height="1"></td>
+               <!-- SHIPPING DETAILS -->
+               <td width="34%" valign="top"> 
+                  <table width="100%" height="160" border="0" cellpadding="6" cellspacing="1" class="rseparator">
+                     <tr> 
+                        <td height="1%" class="block4"><a href="#">Shipping Details</a></td>
+                     </tr>
+                     <tr> 
+                        <td height="99%" valign="top" class="block4"> 
+                           <table width="100%" border="0" cellspacing="0" cellpadding="1">
+                              <tr> 
+                                 <td width="30%" class="block4bold">[L]Name[/L]:</td>
+                                 <td width="70%" class="maincontent"><A HREF="[area
+				href=__UI_BASE__/customer_view
+				arg="[loop-data transactions username]"
+		]"><u>[loop-data transactions fname] [loop-data transactions lname]</A>
+                                 </td>
+                              </tr>
+							  [if-loop-data transactions company]
+                              <tr> 
+                                 <td width="30%" class="block4bold">[L]Company[/L]:</td>
+                                 <td width="70%" class="maincontent">
+								 	[loop-data transactions company]
+                                 </td>
+                              </tr>
+							  [/if-loop-data]
+                              <tr> 
+                                 <td valign="top" class="block4bold">[L]Address[/L]:</td>
+                                 <td class="maincontent">
+								 [loop-data transactions address1]
+								 [if-loop-data transactions address2]
+								 <br>
+								 [loop-data transactions address2]
+								 [/if-loop-data]
+								 </td>
+                              </tr>
+							  [if-loop-data transactions country =~ /^US|^CA/]
+                              <tr> 
+                                 <td class="block4bold">[L]City, State, Zip[/L]:</td>
+                                 <td class="maincontent">[loop-data transactions city], [loop-data transactions state]  [loop-data transactions zip]</td>
+                              </tr>
+							  [else]
+                              <tr> 
+                                 <td class="block4bold">[L]City[/L]:</td>
+                                 <td class="maincontent">[loop-data transactions city]</td>
+                              </tr>
+							  		[if-loop-data transactions state]
+                              <tr> 
+                                 <td class="block4bold">[L]State[/L]:</td>
+                                 <td class="maincontent">[loop-data transactions state]</td>
+                              </tr>
+								    [/if-loop-data]
+							  		[if-loop-data transactions zip]
+                              <tr> 
+                                 <td class="block4bold">[L]Postal code[/L]:</td>
+                                 <td class="maincontent">[loop-data transactions zip]</td>
+                              </tr>
+								    [/if-loop-data]
+							  [/else]
+							  [/if-loop-data]
+                              <tr> 
+                                 <td class="block4bold">[L]Country[/L]:</td>
+                                 <td class="maincontent">[data table=country col=name key="[loop-data transactions country]"]</td>
+                              </tr>
+                              <tr> 
+                                 <td height="15" colspan="2" class="block4bold"><img src="bg.gif" width="1" height="1"></td>
+                              </tr>
+                           </table>
+                        </td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </td>
+   </tr>
+   <tr> 
+      <td height=6><img src="bg.gif" width=1 height=6></td>
+   </tr>
+   <tr> 
+      <td> 
+         <!-- CUSTOMERS ORDER GRID -->
+         <table width="100%" border=0 cellpadding=0 cellspacing=1 class=rseparator>
+            <tr> 
+               <td width="14%" class=rhead style="padding: 5px">[L]Status[/L]</td>
+               <td width="14%" class=rhead style="padding: 5px">[L]SKU[/L]</td>
+               <td width="14%" class=rhead style="padding: 5px">[L]Name[/L]</td>
+               <td width="14%" class=rhead style="padding: 5px; text-align: right">[L]Qty[/L]</td>
+               <td width="14%" class=rhead style="padding: 5px; text-align: right">[L]Unit Price[/L]</td>
+               <td width="14%" class=rhead style="padding: 5px; text-align: right">[L]Total[/L]</td>
+            </tr>
+[query list=1 sql="select * from orderline where order_number = '[loop-code]'"]
+            <tr class="[sql-alternate 2]rowalt[else]rownorm[/else][/sql-alternate]"> 
+               <td style="padding: 5px">[page href="admin/order_status"
+			   							 form="order=[loop-code]"
+									]
+                [display    table=transactions
                             column=status
                             key="[loop-code]"
                             arbitrary=order_view
-                ][/seti]
-[page href=__UI_BASE__/order_status form="order=[loop-code]"]
-[if scratch statestr !~ /^<.*>$/]
-[scratchd statestr]
-[else]
-[loop-data transactions status]
-[/else]
-[/if]
-</A>
-[set bill_address][/set]
-[set ship_address][/set]
-</td></tr>
-
-<!-- ----- Order information ----- -->
-
-<tr>
-<td width=50 align=center bgcolor="__UI_C_INTBLOCKBAR__">
-<font size=2>
-<b>Status</b></font></td>
-
-<td width=230 align=left bgcolor="__UI_C_INTBLOCKBAR__">
-<font size=2>
-<b>Name</b></font></td>
-
-<td width=100 align=left bgcolor="__UI_C_INTBLOCKBAR__">
-<font size=2>
-<b>SKU</b></font></td>
-
-<td width=50 align=center bgcolor="__UI_C_INTBLOCKBAR__">
-<font size=2>
-<b>Qty.</b></font></td>
-
-<td width=70 align=right bgcolor="__UI_C_INTBLOCKBAR__">
-<font size=2>
-<b>Each</b></font></td>
-
-<td width=70 align=right bgcolor="__UI_C_INTBLOCKBAR__">
-<font size=2>
-<b>Discount</b></font></td>
-
-<td width=80 align=right bgcolor="__UI_C_INTBLOCKBAR__">
-<font size=2>
-<b>Total</b></font></td>
-</tr>
-[query st=db sql="select * from orderline where order_number = '[loop-data transactions order_number]'" list=1]
-<tr><td width=50 align=center bgcolor=__UI_C_INTBLOCK__>
-<font size=2>
 [calc]
 	$total_weight += ([field field=weight key="[sql-param sku]"] + 0 || 0) * [sql-data orderline quantity];
 	return;
 [/calc]
-[sql-filter upper]<B>[sql-data orderline status]</B>[/sql-filter]
-<BR>&nbsp;
-</font></td>
-
-<td width=330 bgcolor=__UI_C_INTBLOCK__>
-<font size=2>
-[either][sql-data orderline description][or][data table=__UI_PRODUCT_TABLE__ col=description key="[sql-data orderline sku]"][/either]
-[if-sql-data orderline size]
-<BR>
-Size: [sql-data orderline size]
-[/if-sql-data]
-[if-sql-data orderline color]
-<BR>
-Color: [sql-data orderline color]
-[/if-sql-data]
-
-[if-sql-data orderline options]
-<BR>
-Options: [sql-data orderline options]
-[/if-sql-data]
-</font></td>
-
-<td width=100 align=left bgcolor=__UI_C_INTBLOCK__>
-<font size=2>
-[sql-data orderline sku]
-</font></td>
-
-<td width=50 align=right bgcolor=__UI_C_INTBLOCK__>
-<font size=2>
-[sql-data orderline quantity]
-</font></td>
-
-<td width=70 align=right bgcolor=__UI_C_INTBLOCK__>
-<font size=2>
-[currency][sql-data orderline price][/currency]
-</font></td>
-
-<td width=70 align=right bgcolor=__UI_C_INTBLOCK__>
-<font size=2>
-&nbsp;[sql-data orderline discount]
-</font></td>
-
-<td width=80 align=right bgcolor="__UI_C_INTBLOCKBAR__">
-<font size=2>
-[currency][sql-data orderline subtotal][/currency]
-
-</font></td>
-</tr>
+               <td style="padding: 5px">[sql-param sku]</td>
+               <td style="padding: 5px">[sql-filter 30.][sql-param description][/sql-filter]</td>
+               <td align=right style="padding: 5px">[sql-param quantity]</td>
+               <td align=right style="padding: 5px">[sql-param price]</td>
+               <td align=right style="padding: 5px">[sql-param subtotal]</td>
+            </tr>
 [/query]
-
-<!-- ----- Product total ----- -->
-
-<tr>
-<td colspan=6 align=right>
-<font size=2>Product Total:</font>
-</td>
-<td align=right bgcolor="__UI_C_INTBLOCKBAR__">
-<font size=2>[currency][loop-data transactions subtotal][/currency]</font>
-</td>
-</tr>
-
-<!-- ----- Tax total ----- -->
-
-<tr>
-<td colspan=6 align=right>
-<font size=2>Tax:</font>
-</td>
-<td align=right bgcolor="__UI_C_INTBLOCKBAR__">
-<font size=2>[currency][loop-data transactions salestax][/currency]</font>
-</td>
-</tr>
-
-<!-- ----- Shipping total ----- -->
-
-<tr>
-<td colspan=6 align=right>
-<font size=2>Shipping: [loop-data transactions shipmode]</font>
-</td>
-<td align=right bgcolor="__UI_C_INTBLOCKBAR__">
-<font size=2>
-[currency][loop-data transactions shipping][/currency]</font>
-</td>
-</tr>
-
-<!-- ----- Grand total ----- -->
-
-<tr>
-<td colspan=6 align=right>
-<font size=3><b>Grand total:</b></font>
-</td>
-<td align=right bgcolor="__UI_C_INTBLOCKBAR__">
-<font size=3><b>[currency][loop-data transactions total_cost][/currency]<br></b></font>
-</td>
-</tr>
-
-<!-- ----- Weight total ----- -->
-
-<tr></tr>
-
-<tr>
-<td colspan=6 align=right>
-<font size=2>Total weight:</font>
-</td>
-<td align=right bgcolor="__UI_C_INTBLOCKBAR__">
-<font size=2>[calc] $total_weight [/calc]</font>
-</td>
-</tr>
-
-<!-- ----- Volume total ----- -->
-
-<tr>
-<td colspan=6 align=right>
-<font size=2>Total volume:</font>
-</td>
-<td align=right bgcolor="__UI_C_INTBLOCKBAR__">
-<font size=2>0</font>
-</td>
-</tr>
-<tr>
-<td colspan=6>
-<b>Comments:</b>
-</td>
-</tr>
-
-<tr>
-<td colspan=7 align=left bgcolor=__UI_C_INTBLOCK__>
-<pre>[loop-data transactions comments]</pre>
-</td>
-</tr>
-
-<tr>
-<td colspan=7 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" height=1></td>
-</tr>
-
+            <tr> 
+               <td height=4 colspan=5 class=lightshade><img src="bg.gif" width=1 height=4></td>
+               <td class=lightshade><img src="bg.gif" width=1 height=4></td>
+            </tr>
+            <tr> 
+               <td height=39 colspan=5 align=right class=rsubbold>[L]Item Total[/L]:</td>
+               <td class=rownorm align=right>[currency][loop-data transactions subtotal][/currency]</td>
+            </tr>
+            <tr> 
+               <td colspan=5 align=right class=rsubbold>[L]Tax:[/L]</td>
+               <td class=rownorm align=right>[currency][loop-data transactions salestax][/currency]</td>
+            </tr>
+            <tr> 
+               <td colspan=5 align=right class=rsubbold>[L]Total Weight:[/L]</td>
+               <td class=rownorm align=right>[calc]$total_weight[/calc]</td>
+            </tr>
+			[if-loop-data transactions handling > 0]
+            <tr> 
+               <td colspan=5 align=right class=rsubbold>[L]Shipping[/L]</td>
+               <td class=rownorm align=right>[currency][loop-data transactions shipping][/currency]</td>
+            </tr>
+			[/if-loop-data]
+            <tr> 
+               <td colspan=5 align=right class=rsubbold>[L]Shipping[/L]</td>
+               <td class=rownorm align=right>[currency][loop-data transactions shipping][/currency]</td>
+            </tr>
+            <tr> 
+               <td colspan=5 align=right class=rsubbold>[L]GRAND TOTAL:[/L]</td>
+               <td class=rownormbold align=right>[currency][loop-data transactions total_cost][/currency]</td>
+            </tr>
+         </table>
+      </td>
+   </tr>
 </table>
-<SMALL>
+
+
+[output name=bottom_buttons]
 <form action="[area __UI_BASE__/order]" method=post>
+<input type=hidden name=mv_session_id value="[data session id]">
 <input type=hidden name=mv_action value=back>
 <input type=hidden name=order value="[loop-data transactions order_number]">
 <input type=hidden name=archive value=false>
 <input type=hidden name=viewnext value=1>
-[set Return]
+[set [L]Return[/L]]
 viewnext=
 vieworder=
 [/set]
-<input type=submit name=mv_click value="Return">
-<input type=submit name="vieworder" value="View next order">
+<input type=submit name=mv_click value="[L]Return[/L]" class=s3>
+<input type=submit name="vieworder" value="[L]View next order[/L]" class=s3>
 
 [if-loop-data transactions archived]
-<input type=submit name="unarchiveorder" value="Un-archive order and view next">
+<input type=submit name="unarchiveorder" value="[L]Un-archive order and view next[/L]" class=s3>
 [else]
-<input type=submit name="archiveorder" value="Archive order and view next">
+<input type=submit name="archiveorder" value="[L]Archive order and view next[/L]" class=s3>
 [/else]
 [/if-loop-data]
-<input type=submit name="deleteorder" value="Delete order and view next" 
- onClick="return confirm('Are you sure you want to delete this order?')">
-
+[if-mm advanced order=d]
+<input type=submit name="deleteorder" value="[L]Delete order and view next[/L]" 
+ onClick="return confirm('[L]Are you sure you want to delete this order?[/L]')" class=s3>
+[/if-mm]
 </form>
-</SMALL>
+
+[output]
 
 [/loop]
+
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order_view.html,v 1.16.4.6 2003-01-25 22:21:14 racke Exp $ -->

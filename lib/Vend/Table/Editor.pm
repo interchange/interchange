@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.23 2003-01-15 14:32:48 racke Exp $
+# $Id: Editor.pm,v 1.23.2.1 2003-01-25 22:21:31 racke Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.23 $, 10);
+$VERSION = substr(q$Revision: 1.23.2.1 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;

@@ -1,9 +1,0 @@
-affiliate	name	campaigns	join_date	url	timeout	active	password
-bill	Bill's books						
-joe	Joe's Garage						
-bob	Low Bob's						
-tim	Tiny Tim's						
-rosie	Rosy Cheeks						
-mary	Wedding Shop						
-jean	Denim Unlimited						
-judy	Puppets Galore						

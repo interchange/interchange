@@ -7,45 +7,32 @@
 		$CGI->{mv_data_table} = 'merchandising';
 	}
 	if(! $CGI->{ui_data_fields}) {
-		$CGI->{ui_data_fields} = 'sku __UI_PRODUCT_TABLE__:__UI_ITEM_DESCRIPTION__ cross_sell cross_category blurb_begin blurb_end';
-		$CGI->{ui_display_only} = '__UI_PRODUCT_TABLE__:__UI_ITEM_DESCRIPTION__';
+		$CGI->{ui_data_fields} = 'sku __ProductFiles_0__:__DescriptionField__ cross_sell cross_category blurb_begin blurb_end';
+		$CGI->{ui_display_only} = '__ProductFiles_0__:__DescriptionField__';
 	}
 	if(! $CGI->{ui_break_before}) {
 		$CGI->{ui_break_before} = 'blurb_begin';
 	}
-	my @args = (
-		 '__UI_BASE__/item_edit',
-		 "item_id=$CGI->{item_id}",
-		 "item_id_left=$CGI->{item_id_left}",
-		 "ui_sequence_edit=$CGI->{ui_sequence_edit}",
-	);
-	$CGI->{ui_return_to} = join "\0", @args;
+	if(! $CGI->{ui_return_to}) {
+		my @args = (
+			 '__UI_BASE__/item_edit',
+			 "item_id=$CGI->{item_id}",
+			 "item_id_left=$CGI->{item_id_left}",
+			 "ui_sequence_edit=$CGI->{ui_sequence_edit}",
+		);
+		$CGI->{ui_return_to} = join "\0", @args;
+	}
 	return;
 [/calc]
-@_UI_STD_DBEDIT_HEAD_@
 
 [seti page_title]Cross-selling: [cgi item_id][/seti]
 [seti page_banner]Cross-selling: edit item <B>[page href="__UI_BASE__/item_edit" form="item_id=[cgi item_id]"][cgi item_id]</A></B>[/seti]
 [set help_name]crosssell[/set]
-[set icon_name]admin/icon_item.gif[/set]
+[set icon_name]icon_item.gif[/set]
 
 @_UI_STD_HEAD_@
 <P>
-@_UI_STD_DBEDIT_TABLE_@
-
-[if-mm super]
-<A HREF="[area href=admin/flex_editor
-				form='
-					item_id=[cgi item_id]
-					mv_data_table=__UI_PRODUCT_TABLE__
-					page_title=Edit items: [cgi item_id]
-					help_name=inventory.edit
-					ui_no_meta_display=1
-					ui_hide_key=1
-					ui_return_to=admin/item
-					icon_name=admin/icon_item.gif
-					']">No meta display</A>
-[/if-mm]
+[table-editor cgi=1 output_map=1]
 
 @_UI_STD_FOOTER_@
 <!-- page: @@MV_PAGE@@ -->

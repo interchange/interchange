@@ -1,10 +1,10 @@
-# Vend/Glimpse.pm:  Search indexes with Glimpse
+# Vend::Glimpse - Search indexes with Glimpse
 #
-# $Id: Glimpse.pm,v 1.4 2000-09-19 18:58:39 zarko Exp $
+# $Id: Glimpse.pm,v 1.4.4.1 2003-01-25 22:21:27 racke Exp $
 #
-# ADAPTED FOR USE WITH INTERCHANGE from Search::Glimpse
+# Adapted for use with Interchange from Search::Glimpse
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,66 +20,64 @@
 # License along with this program; if not, write to the Free
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
-#
-#
 
 package Vend::Glimpse;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.4.4.1 $, 10);
 use strict;
 
 sub array {
 	my ($s, $opt) = @_;
-	$s->{mv_list_only} = 1;
-	Vend::Scan::perform_search($opt, undef, $s);
+	$s->{mv_list_only} = 1; # makes perform_search only return results array
+	return Vend::Scan::perform_search($opt, undef, $s);
 }
 
 sub hash {
 	my ($s, $opt) = @_;
 	$s->{mv_return_reference} = 'HASH';
-	$s->{mv_list_only} = 1;
-	Vend::Scan::perform_search($opt, undef, $s);
+	$s->{mv_list_only} = 1; # makes perform_search only return results array
+	return Vend::Scan::perform_search($opt, undef, $s);
 }
 
 sub list {
 	my ($s, $opt) = @_;
-	$s->{mv_list_only} = 1;
 	$s->{mv_return_reference} = 'LIST';
-	Vend::Scan::perform_search($opt, undef, $s);
+	$s->{mv_list_only} = 1; # makes perform_search only return results array
+	return Vend::Scan::perform_search($opt, undef, $s);
 }
 
 my %Default = (
-        matches                 => 0,
-        mv_head_skip            => 0,
-        mv_index_delim          => "\t",
-        mv_record_delim         => "\n",
-        mv_matchlimit           => 50,
-        mv_max_matches          => 2000,
-        mv_min_string           => 4,
-	);
+		matches                 => 0,
+		mv_head_skip            => 0,
+		mv_index_delim          => "\t",
+		mv_record_delim         => "\n",
+		mv_matchlimit           => 50,
+		mv_max_matches          => 2000,
+		mv_min_string           => 4,
+);
 
 
 sub init {
 	my ($s, $options) = @_;
 
 	@{$s}{keys %Default} = (values %Default);
-    $s->{mv_base_directory}     = $Vend::Cfg->{ProductDir} || 'products',
-    $s->{mv_begin_string}       = [];
-    $s->{mv_all_chars}	        = [1];
-    $s->{mv_case}               = [];
-    $s->{mv_column_op}          = [];
-    $s->{mv_negate}             = [];
-    $s->{mv_numeric}            = [];
-    $s->{mv_orsearch}           = [];
-    $s->{mv_searchspec}	        = [];
-    $s->{mv_search_group}       = [];
-    $s->{mv_search_field}       = [];
-    $s->{mv_search_file}        = [];
-    $s->{mv_searchspec}         = [];
-    $s->{mv_sort_option}        = [];
-    $s->{mv_substring_match}    = [];
+	$s->{mv_base_directory}     = $Vend::Cfg->{ProductDir} || 'products',
+	$s->{mv_begin_string}       = [];
+	$s->{mv_all_chars}	        = [1];
+	$s->{mv_case}               = [];
+	$s->{mv_column_op}          = [];
+	$s->{mv_negate}             = [];
+	$s->{mv_numeric}            = [];
+	$s->{mv_orsearch}           = [];
+	$s->{mv_searchspec}	        = [];
+	$s->{mv_search_group}       = [];
+	$s->{mv_search_field}       = [];
+	$s->{mv_search_file}        = [];
+	$s->{mv_searchspec}         = [];
+	$s->{mv_sort_option}        = [];
+	$s->{mv_substring_match}    = [];
 	$s->{mv_field_file}         = $::Variable->{MV_DEFAULT_SEARCH_FILE}[0];
 	$s->{glimpse_cmd} = $Vend::Cfg->{Glimpse} || 'glimpse';
 
@@ -91,7 +89,7 @@ sub init {
 }
 
 sub new {
-    my ($class, %options) = @_;
+	my ($class, %options) = @_;
 	my $s = new Vend::Search;
 	bless $s, $class;
 	$s->init(\%options);
@@ -124,38 +122,30 @@ sub search {
 	$s->{mv_return_delim} = $s->{mv_index_delim}
 		unless defined $s->{mv_return_delim};
 
-    if(ref $s->{mv_range_look}) {
-        unless( scalar(@{$s->{mv_range_look}}) == scalar(@{$s->{mv_range_min}}) and
-                scalar(@{$s->{mv_range_look}}) == scalar(@{$s->{mv_range_max}}) ) {
-			$s->{mv_search_warning}
-				= "Must have min and max values for range -- aborting range look.";
-			undef $s->{mv_range_look};
-		}
-	}
+	return $s->search_error("Search with glimpse, no glimpse configured.")
+		if ! $s->{glimpse_cmd};
+
 	@specs = @{$s->{mv_searchspec}};
 
 	@pats = $s->spec_check(@specs);
 
-	return $s->search_error("Search with glimpse, no glimpse configured.")
-		if ! $s->{glimpse_cmd};
-
 	return undef if $s->{matches} == -1;
 
-    # Build glimpse line
+	# Build glimpse line
 	my @cmd;
-    push @cmd, $s->{glimpse_cmd};
+	push @cmd, $s->{glimpse_cmd};
 	push @cmd, "-H $s->{mv_base_directory}"
 			unless $s->{glimpse_cmd} =~ /\s+-H/;
 
-    if ($s->{mv_spelling_errors}) {
-        $s->{mv_spelling_errors} = int  $s->{mv_spelling_errors};
-        push @cmd, '-' . $s->{mv_spelling_errors};
-    }
-	
-    push @cmd, "-i" unless $s->{mv_case};
-    push @cmd, "-h" unless $s->{mv_return_file_name};
-    push @cmd, "-y -L $s->{mv_max_matches}:0:$s->{mv_max_matches}";
-    push(@cmd, "-F '$s->{mv_search_file}[0]'")
+	if ($s->{mv_spelling_errors}) {
+		$s->{mv_spelling_errors} = int  $s->{mv_spelling_errors};
+		push @cmd, '-' . $s->{mv_spelling_errors};
+	}
+
+	push @cmd, "-i" unless $s->{mv_case} and $s->{mv_case}[0];
+	push @cmd, "-h" unless $s->{mv_return_file_name};
+	push @cmd, "-y -L $s->{mv_max_matches}:0:$s->{mv_max_matches}";
+	push(@cmd, "-F '$s->{mv_search_file}[0]'")
 		if defined $s->{mv_search_file}[0];
 
 	push(@cmd, '-w') unless $s->{mv_substring_match};
@@ -214,7 +204,17 @@ sub search {
 	
 	my $spec = join $joiner, @pats;
 	$spec =~ s/'/./g;
-    push @cmd, "'$spec'";
+
+	if(length($spec) < $s->{mv_min_string}) {
+		my $msg = errmsg(
+					"Glimpse search string less than minimum %s characters: %s",
+					$s->{mv_min_string},
+					$spec,
+				);
+		return $s->search_error($msg);
+	}
+
+	push @cmd, "'$spec'";
 
 	$joiner = $spec;
 	$joiner =~ s/['";,]//g;
@@ -240,18 +240,18 @@ EOF
 
 		# Get field names only if no sort (will throw it off) or
 		# not already defined
-        if($s->{mv_field_file}) {
+		if($s->{mv_field_file}) {
 			$s->{mv_field_file} =
 					::catfile($Vend::Cfg->{ProductDir}, $s->{mv_field_file})
 				unless ::file_name_is_absolute($s->{mv_field_file});
 			open(FF, "< $s->{mv_field_file}")
 				or return $s->search_error("can't open fields file");
-            chomp($field_names = <FF>);
-        }
+			chomp($field_names = <FF>);
+		}
 		if($field_names) {
 			$field_names =~ s/^\s+//;
 			my @laundry = (qw/mv_search_field mv_range_look mv_return_fields/);
-            $s->hash_fields(
+			$s->hash_fields(
 						[ split /\Q$s->{mv_index_delim}/, $field_names ],
 						@laundry,
 			);
@@ -262,14 +262,14 @@ EOF
 		my $prospect;
 
 		eval {
-			($limit_sub, $prospect) = $s->get_limit($f);
+			($limit_sub, $prospect) = $s->get_limit($f, 1);
 		};
 
 		$@  and  return $s->search_error("Limit subroutine creation: $@");
 
 		$f = $prospect if $prospect;
 
-		eval {($return_sub, $delayed_return) = $s->get_return()};
+		eval {($return_sub, $delayed_return) = $s->get_return(undef, 1)};
 
 		$@  and  return $s->search_error("Return subroutine creation: $@");
 
@@ -321,7 +321,7 @@ EOF
 		$s->hash_fields($s->{mv_field_names}, qw/mv_sort_field/);
 #::logDebug("gsearch after hash fields: self=" . ::Vend::Util::uneval_it({%$s}));
 		$s->sort_search_return(\@out);
-		$delayed_return = $s->get_return(1);
+		$delayed_return = $s->get_return(1,1);
 		@out = map { $delayed_return->($_) } @out;
 	}
 #::logDebug("after delayed return: self=" . ::Vend::Util::uneval_it({%$s}));
@@ -332,17 +332,17 @@ EOF
 		$s->{matches} = scalar(@out);
 	}
 
-    if ($s->{matches} > $s->{mv_matchlimit}) {
-        $s->save_more(\@out)
-            or ::logError("Error saving matches: $!");
+	if ($s->{matches} > $s->{mv_matchlimit} and $s->{mv_matchlimit} > 0) {
+		$s->save_more(\@out)
+			or ::logError("Error saving matches: $!");
 		if ($s->{mv_first_match}) {
 			splice(@out,0,$s->{mv_first_match});
 			$s->{mv_next_pointer} = $s->{mv_first_match} + $s->{mv_matchlimit};
 			$s->{mv_next_pointer} = 0
 				if $s->{mv_next_pointer} > $s->{matches};
 		}
-        $#out = $s->{mv_matchlimit} - 1;
-    }
+		$#out = $s->{mv_matchlimit} - 1;
+	}
 
 	if(! $s->{mv_return_reference}) {
 		$s->{mv_results} = \@out;

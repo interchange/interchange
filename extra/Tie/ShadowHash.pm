@@ -1,5 +1,5 @@
 # Tie::ShadowHash -- Merge multiple data sources into a hash.  -*- perl -*-
-# $Id: ShadowHash.pm,v 2.0 2001-07-18 02:23:07 jon Exp $
+# $Id: ShadowHash.pm,v 2.0.4.1 2003-01-25 22:21:26 racke Exp $
 #
 # Copyright 1999 by Russ Allbery <rra@stanford.edu>
 #
@@ -25,7 +25,7 @@ use strict;
 use vars qw($VERSION);
 
 # The version of this module is its CVS revision.
-($VERSION = (split (' ', q$Revision: 2.0 $ ))[1]) =~ s/\.(\d)$/.0$1/;
+($VERSION = (split (' ', q$Revision: 2.0.4.1 $ ))[1]) =~ s/\.(\d)$/.0$1/;
 
 
 ############################################################################

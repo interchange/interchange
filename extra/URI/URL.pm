@@ -1,6 +1,6 @@
 package URI::URL;
 
-$VERSION = "4.14";   # $Date: 2000-05-26 18:50:31 $
+$VERSION = "4.14";   # $Date: 2003-01-25 22:21:26 $
 sub Version { $VERSION; }
 
 require 5.004;
