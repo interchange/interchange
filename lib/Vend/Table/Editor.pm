@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.19 2002-11-20 18:52:17 mheins Exp $
+# $Id: Editor.pm,v 1.20 2002-11-23 03:59:43 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.19 $, 10);
+$VERSION = substr(q$Revision: 1.20 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -1338,7 +1338,7 @@ sub resolve_options {
 	}
 
 	# init the row styles
-	foreach my $rtype (qw/data break combo spacer/) {
+	foreach my $rtype (qw/data break combo spacer title/) {
 		my $mainp = $rtype . '_row_extra';
 		my $thing = '';
 		for my $ptype (qw/class style align valign width/) {
@@ -1383,8 +1383,8 @@ sub resolve_options {
 
 	# Make standard fixed rows
 	$opt->{spacer_row} = <<EOF;
-<tr class=$opt->{spacer_row_class}>
-<td colspan=$span class=$opt->{spacer_row_class}><img src="$opt->{clear_image}" width=1 height="$opt->{spacer_height}" alt=x></td>
+<tr$opt->{spacer_row_extra}>
+<td colspan=$span $opt->{spacer_row_extra}><img src="$opt->{clear_image}" width=1 height="$opt->{spacer_height}" alt=x></td>
 </tr>
 EOF
 
@@ -1964,18 +1964,18 @@ EOF
 			}
 
 			$blob_widget = <<EOF unless $opt->{ui_blob_hidden};
-<TR class=$opt->{data_row_class}>
-	 <td class=$opt->{label_cell_class} width="$opt->{left_width}">
+<TR$opt->{data_row_extra}>
+	 <td width="$opt->{left_width}"$opt->{label_cell_extra}>
 	   <SMALL>$opt->{mv_blob_title}<BR>
 		$loaded_from
 	 </td>
-	 <td class=$opt->{widget_cell_class}>
+	 <td$opt->{widget_cell_extra}>
 	 	$blob_widget&nbsp;
 	 </td>
 </TR>
 
 <tr>
-<td colspan=$span class=$opt->{border_cell_class}><img src="$opt->{clear_image}" width=1 height="$opt->{border_height}" alt=x></td>
+<td colspan=$span$opt->{border_cell_extra}><img src="$opt->{clear_image}" width=1 height="$opt->{border_height}" alt=x></td>
 </tr>
 EOF
 
@@ -2118,15 +2118,15 @@ EOF
 EOF
 	chunk ttag(), 'NO_TOP', <<EOF; # unless $opt->{no_top} or $wo;
 <tr> 
-<td colspan=$span class=$opt->{border_cell_class}><img src="$opt->{clear_image}" width=1 height="$opt->{border_height}" alt=x></td>
+<td colspan=$span$opt->{border_cell_extra}><img src="$opt->{clear_image}" width=1 height="$opt->{border_height}" alt=x></td>
 </tr>
 EOF
 
 	if ($opt->{intro_text}) {
 #::logDebug("intro_text=$opt->{intro_text}");
 		chunk ttag(), <<EOF;
-<tr> 
-	<td colspan=$span class=$opt->{title_cell_class}>$opt->{intro_text}</td>
+<tr $opt->{title_row_extra}> 
+	<td colspan=$span $opt->{title_cell_extra}>$opt->{intro_text}</td>
 </tr>
 EOF
 	}
@@ -2139,9 +2139,9 @@ EOF
 	if ($extra_ok and ! $opt->{no_top} and ! $opt->{nosave}) {
 	  	if($opt->{back_text}) {
 		  chunk ttag(), '', <<EOF; # unless $wo;
-<TR class=$opt->{data_row_class}>
+<tr$opt->{data_row_extra}>
 <td>&nbsp;</td>
-<td align=left colspan=$oddspan class=$opt->{data_cell_class}>
+<td align=left colspan=$oddspan$opt->{data_cell_extra}>
 EOF
 			chunk 'COMBINED_BUTTONS_TOP', 'BOTTOM_BUTTONS', <<EOF; # if ! $opt->{bottom_buttons};
 <INPUT TYPE=submit NAME=mv_click VALUE="$opt->{back_text}">&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
@@ -2156,9 +2156,9 @@ EOF
 		}
 		elsif ($opt->{wizard}) {
 		  chunk ttag(), 'NO_TOP', <<EOF;
-<TR class=$opt->{data_row_class}>
+<TR$opt->{data_row_extra}>
 <td>&nbsp;</td>
-<td align=left colspan=$oddspan class=$opt->{data_cell_class}>
+<td align=left colspan=$oddspan$opt->{data_cell_extra}>
 EOF
 			chunk 'WIZARD_BUTTONS_TOP', 'BOTTOM_BUTTONS NO_TOP', <<EOF; # if ! $opt->{bottom_buttons};
 <INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
@@ -2173,9 +2173,9 @@ EOF
 		}
 		else {
 		  chunk ttag(), 'BOTTOM_BUTTONS NO_TOP', <<EOF;
-<TR class=$opt->{data_row_class}>
+<TR$opt->{data_row_extra}>
 <td>&nbsp;</td>
-<td align=left colspan=$oddspan class=$opt->{data_cell_class}>
+<td align=left colspan=$oddspan$opt->{data_cell_extra}>
 EOF
 
 		  $opt->{ok_button_style} = 'font-weight: bold; width: 40px; text-align: center'
@@ -2308,7 +2308,7 @@ EOF
 		$::Scratch->{clone_tables} = $set;
 		chunk ttag(), <<EOF; # unless $wo;
 <tr>
-<td colspan=$span class=$opt->{border_cell_class}>
+<td colspan=$span$opt->{border_cell_extra}>
 EOF
 		chunk 'CLONE_TABLES', <<EOF;
 $tabform<INPUT TYPE=hidden NAME=mv_check VALUE="clone_tables">
@@ -3165,9 +3165,9 @@ EOF
   	last SAVEWIDGETS if $wo || $opt->{nosave}; 
 #::logDebug("in SAVEWIDGETS");
 		chunk ttag(), <<EOF;
-<TR class=$opt->{data_row_class}>
+<TR$opt->{data_row_extra}>
 <td>&nbsp;</td>
-<td align=left colspan=$oddspan class=$opt->{data_cell_class}>
+<td align=left colspan=$oddspan$opt->{data_cell_extra}>
 EOF
 
 
@@ -3179,9 +3179,9 @@ EOF
 		}
 		elsif($opt->{wizard}) {
 			chunk 'WIZARD_BUTTONS_BOTTOM', <<EOF;
-<TR class=$opt->{data_row_class}>
+<TR$opt->{data_row_extra}>
 <td>&nbsp;</td>
-<td align=left colspan=$oddspan class=$opt->{data_cell_class}>
+<td align=left colspan=$oddspan$opt->{data_cell_extra}>
 <INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
 EOF
 		}
@@ -3279,7 +3279,7 @@ EOF
 
 	chunk ttag(), 'NO_BOTTOM _MESSAGE', <<EOF;
 <tr>
-	<td colspan=$span class=$opt->{border_cell_class}>
+	<td colspan=$span$opt->{border_cell_extra}>
 EOF
 
 	chunk 'MESSAGE_TEXT', 'NO_BOTTOM', $message; # unless $wo or ($opt->{no_bottom} and ! $message);
@@ -3292,7 +3292,7 @@ EOF
 #::logDebug("tcount=$tcount_all, prior to closing table");
 	chunk ttag(), <<EOF; # unless $wo;
 <tr> 
-<td colspan=$span class=$opt->{border_cell_class}><img src="$opt->{clear_image}" width=1 height="$opt->{border_height}" alt=x></td>
+<td colspan=$span$opt->{border_cell_extra}><img src="$opt->{clear_image}" width=1 height="$opt->{border_height}" alt=x></td>
 </tr>
 </table>
 </td></tr></table>
