@@ -3,7 +3,7 @@
 #
 # Interchange version 4.9.7
 #
-# $Id: interchange.PL,v 2.68 2003-04-01 04:12:31 mheins Exp $
+# $Id: interchange.PL,v 2.69 2003-04-08 22:47:07 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and others.
 # http://www.icdevgroup.org/
@@ -34,6 +34,16 @@ use lib '/usr/local/interchange';
 #use lib '~_~INSTALLARCHLIB~_~';
 
 use strict;
+
+use Config;
+
+BEGIN {
+	if($Config{usethreads} || $Config{useithreads} || $Config{use5005threads}) {
+		die "Interchange will not work with a thread-enabled perl.\n";
+	}
+}
+
+no Config;
 
 BEGIN {
 	$Global::Foreground = 1;

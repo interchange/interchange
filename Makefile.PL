@@ -59,6 +59,10 @@ unless($@) {
 	$ENV{PERL_RL} = 'Perl';
 }
 
+if($Config{usethreads} || $Config{useithreads} || $Config{use5005threads}) {
+	die "Interchange will not work with a thread-enabled perl.\n";
+}
+
 my $term;
 if($TermRead) {
 	eval {
