@@ -11,6 +11,7 @@ This file documents all changes of the LINUXIA branch of Interchange.
 - replaced hardcoded name for affiliate table with UI_AFFILIATE_TABLE
   (catalog_before.cfg: 1.17.4.3, affiliates.html: 1.10.4.3-5)
 - UI_IMG fix for poweredby.gif (UI_STD_FOOTER: CVS 1.11.4.2)
+- sort by DescriptionField instead of hardcoded field name (item.html: 1.18.4.4)
 
 Changes that made into the main branch:
 

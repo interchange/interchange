@@ -19,6 +19,7 @@
 
 [perl tables="[cgi mv_data_table] __UI_META_TABLE__"]
 	delete $Scratch->{ui_location};
+    $Scratch->{description_field} = $Config->{DescriptionField};
 	if($CGI->{ui_sequence_edit}) {
 		my $doit;
 		if($CGI->{item_id_left} =~ s/^(.*?),//) {
@@ -112,7 +113,7 @@
 			tf=[cgi ui_sort_field]
 			to=[cgi ui_sort_option]
 		[else]
-			tf=description
+			tf=[scratch description_field]
 		[/else]
 		[/if]
 		st=db
