@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.98 2001-07-15 18:11:42 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.99 2001-07-16 18:46:18 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.98 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.99 $, 10);
 
 @EXPORT = qw (
 
@@ -1865,6 +1865,15 @@ sub tag_options {
 	$opt = get_option_hash($opt);
 	my $table = $opt->{table} || $::Variable->{MV_OPTION_TABLE} || 'options';
 
+	if($opt->{report}) {
+		$opt->{joiner} = ', '    if ! $opt->{joiner};
+		$opt->{separator} = ': ' if ! $opt->{separator};
+		$opt->{type} = 'display' if ! $opt->{type};
+	}
+	else {
+		$opt->{joiner} = '<BR>' if ! $opt->{joiner};
+	}
+
 	my $db = $Db{$table} || Vend::Data::database_exists_ref($table);
 	$db->record_exists($sku)
 		or return;
@@ -2046,8 +2055,10 @@ sub tag_options {
 				$ref->[4] = "<B>$ref->[4]</b>" if $opt->{bold};
 				push @out, $ref->[4];
 			}
-			push @out, qq{<input type=hidden name=mv_item_option value="$ref->[2]">}
-						. tag_accessories(
+			my $precursor = $opt->{report}
+						  ? "$ref->[2]$opt->{separator}"
+						  : qq{<input type=hidden name="mv_item_option" value="$ref->[2]">};
+			push @out, $precursor . tag_accessories(
 							$sku,
 							'',
 							{ 
