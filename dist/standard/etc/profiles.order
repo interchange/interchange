@@ -96,7 +96,7 @@ email=email
 
 prof_po_accepted=required This site doesn't accept purchase orders. You should not have been offered that option; please contact us.
 
-project_id=required Please include your PO number
+po_number=required Please include your PO number
 
 [if session logged_in]	[cgi name=logged_in_po set=1 hide=1]
 [else]					[cgi name=logged_in_po set=""]	[/else]
