@@ -5,6 +5,19 @@
 ------------------------------------------------------------------------------
 
 
+Interchange 4.8.6 not yet released.
+
+Core
+----
+
+* SOAP server returns proper headers now, which not only makes it compliant 
+  with the SOAP standard, but also makes it work with the more recent versions
+  of SOAP::Lite, including the latest 0.55 with the security fix.
+
+
+------------------------------------------------------------------------------
+
+
 Interchange 4.8.5 released 2002-05-06.
 
 * Fix bug in Vend::Util::send_mail, introduced when preventing possible
