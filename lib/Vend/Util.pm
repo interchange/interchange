@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.10.4.2 2000-11-06 01:27:15 racke Exp $
+# $Id: Util.pm,v 1.10.4.3 2000-11-06 01:53:47 racke Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -77,7 +77,7 @@ use Config;
 use Fcntl;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.10.4.2 $, 10);
+$VERSION = substr(q$Revision: 1.10.4.3 $, 10);
 
 BEGIN {
 	eval {
@@ -232,10 +232,24 @@ sub commify {
     return $_;
 }
 
+my %safe_locale = ( 
+						C     => 1,
+						en_US => 1,
+						en_UK => 1,
+					);
+
 sub safe_sprintf {
+	# need to supply $fmt as a scalar to prevent prototype problems
 	my $fmt = shift;
+
+	# query the locale
 	my $save = POSIX::setlocale (&POSIX::LC_NUMERIC);
-	return sprintf($fmt, @_) if $save eq 'C';
+
+	# This should be faster than doing set every time....but when
+	# is locale C anymore? Should we set this by default?
+	return sprintf($fmt, @_) if $safe_locale{$save};
+
+	# Need to set.
 	POSIX::setlocale (&POSIX::LC_NUMERIC, 'C');
 	my $val = sprintf($fmt, @_);
 	POSIX::setlocale (&POSIX::LC_NUMERIC, $save);
@@ -249,7 +263,7 @@ sub picture_format {
 	$sep	= ',' unless defined $sep;
 	$pic =~ /(#+)\Q$point/;
 	my $len = length($1);
-	$amount = safe_sprintf('%.' . $len . 'f', $amount);
+	$amount = sprintf('%.' . $len . 'f', $amount);
 	$amount =~ tr/0-9//cd;
 	my (@dig) = split //, $amount;
 	$pic =~ s/#/pop(@dig)/eg;
