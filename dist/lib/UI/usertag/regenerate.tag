@@ -276,9 +276,6 @@ EOF
 		}
 	}
 
-	my $imgpath = $::Variable->{UI_IMG} || $Global::Variable->{UI_IMG} || '';
-	$imgpath .= "admin";
-
 	$Vend::Session = $save_session;
 	$Vend::StatusLine = $save_status;
 	%CGI::values = %save_cgi;
@@ -301,7 +298,7 @@ EOF
        <tr>
        <td>
           <br><br>
-        <img src="$imgpath/icon_regen.gif"
+        <img src="icon_regen.gif"
             width=16 height=16 border=0 valign=top> &nbsp;
        <font size="+1" face="Verdana,arial,helvetica,sans-serif" color="#000000">Regeneration complete in $end seconds.&nbsp;<br></font></td></tr>
         </table>

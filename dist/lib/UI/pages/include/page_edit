@@ -14,7 +14,6 @@
 [perl tables="[list-databases] __UI_META_TABLE__"] 
 
 	# Some inits
-	my $imgpath = $Tag->var('UI_IMG', 2);
 	my $template_dir = $Variable->{UI_TEMPLATE_DIR} || 'templates';
 	my $out = '';
 	my $ver = $Tag->version();
@@ -163,7 +162,7 @@ push @messages, "template from upload:\n$tref->{ui_definition}";
 	</td>
 </tr>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr>
 	<td bgcolor=__UI_C_INTBLOCK__><b>Template</b> ($t_name)</td>
@@ -226,7 +225,7 @@ EOF
 	</td>
 </tr>
 <tr class=rtitle>
-<td colspan=2 class=ctitle><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=ctitle><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 EOF
 
@@ -327,13 +326,13 @@ EOF
 
 	$out .= <<EOF if $CGI->{ui_show_template};
 <tr class=cmarq>
-<td colspan=2><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr class=ralt>
 	<td valign=top>
 	<b>Top of template</b>
 	<small><br><br>
-	<A HREF="$Config->{VendURL}/ui_download/$page?mv_no_cache=$Session->{pageCount}"><img src="${imgpath}admin/down.gif" border=0 height=11 width=10 alt="download $page">download content</a>
+	<A HREF="$Config->{VendURL}/ui_download/$page?mv_no_cache=$Session->{pageCount}"><img src="down.gif" border=0 height=11 width=10 alt="download $page">download content</a>
 	<br><i>(will not reflect changes below unless saved)</I></small>
 	</td>
 	<td>
@@ -355,7 +354,7 @@ EOF
 	</td>
 </tr>
 <tr>
-<td colspan=2 class=rtitle><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rtitle><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 EOF
 
 
@@ -466,19 +465,19 @@ EOF
 
 	my $break_template = <<EOF;
 <tr class=cmarq>
-<td colspan=2><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 EOF
 
 	my $title_template = <<EOF;
 <tr class=rborder>
-<td colspan=2><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr class=rtitle>
 <td colspan=2 class=ctitle><span style="font-size: larger; font-weight: bold">~TITLE~</span></td>
 </tr>
 <tr class=rborder>
-<td colspan=2><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 EOF
 
@@ -682,13 +681,13 @@ push @messages, "r key $_ set='$set' options=$options value=$Values->{$_} widget
 	
 	$out .= <<EOF if $CGI->{ui_show_template};
 <tr>
-<td colspan=2 class=rtitle><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rtitle><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr class=ralt>
 	<td valign=top>
 	<b>Bottom of template</b>
 	<small><br><br>
-	<A HREF="$Config->{VendURL}/ui_download/$page?mv_no_cache=$Session->{pageCount}"><img src="${imgpath}admin/down.gif" border=0 height=11 width=10 alt="download $page">download content</a>
+	<A HREF="$Config->{VendURL}/ui_download/$page?mv_no_cache=$Session->{pageCount}"><img src="down.gif" border=0 height=11 width=10 alt="download $page">download content</a>
 	<br><i>(will not reflect changes below unless saved)</I></small>
 	</td>
 	<td>

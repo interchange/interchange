@@ -136,7 +136,6 @@
 			}
 	}
 	my $out = '';
-	my $imgpath = $Tag->var('UI_IMG', 1) || $Variable->{UI_IMG} || '';
 #Log("t_name=$t_name");
 	$out .= <<EOF;
 <tr bgcolor="__UI_C_TITLEBARBG__">
@@ -151,7 +150,7 @@
 	</td>
 </tr>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr>
 	<td bgcolor=__UI_C_INTBLOCK__><b>Template</b></td>
@@ -218,7 +217,7 @@ EOF
 	</td>
 </tr>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 EOF
 	}
@@ -231,7 +230,7 @@ EOF
 		if($_->[0] eq 'break') {
 			$out .= <<EOF;
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 EOF
 			next;
@@ -281,13 +280,13 @@ EOF
 
 	$out .= <<EOF;
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr>
 	<td bgcolor=__UI_C_INTBLOCK__ valign=top>
 	<b>Content</b>
 	<small><br><br>
-	<A HREF="$Config->{VendURL}/ui_download/$page?mv_no_cache=$Session->{pageCount}"><img src="${imgpath}admin/down.gif" border=0 height=11 width=10 alt="download $page">download content</a>
+	<A HREF="$Config->{VendURL}/ui_download/$page?mv_no_cache=$Session->{pageCount}"><img src="down.gif" border=0 height=11 width=10 alt="download $page">download content</a>
 	<br><i>(will not reflect changes below unless saved)</I></small>
 	</td>
 	<td bgcolor=__UI_C_INTBLOCK__>
@@ -304,7 +303,7 @@ EOF
 
 [comment]
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="${imgpath}bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 [/comment]
 

@@ -326,8 +326,7 @@ EOF
 	}
 	### end build of error checking
 
-	my $ui_img = $Variable->{UI_IMG} || $Global::Variable->{UI_IMG};
-	$opt->{clear_image} = "${ui_img}bg.gif" if ! $opt->{clear_image};
+	$opt->{clear_image} = "bg.gif" if ! $opt->{clear_image};
 
 #::logDebug("table-editor opt: " . ::uneval($opt));
 	my $die = sub {
@@ -1262,7 +1261,7 @@ EOF
 		$out .= <<EOF if ! $opt->{nosave};
 <BR><BR><A
 onClick="return confirm('Are you sure you want to delete $key?')"
-HREF="$url"><IMG SRC="${ui_img}admin/delete.gif" ALT="Delete $key" BORDER=0></A> Delete
+HREF="$url"><IMG SRC="delete.gif" ALT="Delete $key" BORDER=0></A> Delete
 EOF
 	}
 	$out .= <<EOF;

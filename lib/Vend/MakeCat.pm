@@ -2,7 +2,7 @@
 #
 # MakeCat.pm - routines for catalog configurator
 #
-# $Id: MakeCat.pm,v 1.12.6.5 2001-06-09 06:26:37 jon Exp $
+# $Id: MakeCat.pm,v 1.12.6.6 2001-06-11 14:02:34 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -62,7 +62,7 @@ sethistory
 use strict;
 
 use vars qw($Force $Error $History $VERSION);
-$VERSION = substr(q$Revision: 1.12.6.5 $, 10);
+$VERSION = substr(q$Revision: 1.12.6.6 $, 10);
 
 $Force = 0;
 $History = 0;
@@ -206,8 +206,7 @@ EOF
 #
 EOF
 	shareurl => <<EOF,
-# The URL base for the administration user interface images. Sets the
-# Variable UI_IMG directive in the UI configuration file, ui.cfg.
+# The URL base for the administration user interface images.
 # This is a URL fragment, not an entire URL. If you set ShareDir to be
 # the same as DocumentRoot, this would just be a '/'.
 #
