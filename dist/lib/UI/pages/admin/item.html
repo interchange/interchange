@@ -11,14 +11,24 @@
 <!-- item_id_left: [cgi item_id_left] -->
 [if cgi deleterecords]
 [if-mm function="!tables" table="[cgi mv_data_table]"]
+[set ui_error]Not allowed to delete from [cgi mv_data_table].[/set]
 [bounce page="__UI_BASE__/error"]
 [else]
 <!-- flag write for delete: [flag type=write table="[cgi mv_data_table]"] -->
+[tmp extra_tables][loop list=`
+	my @tab = grep /\S/, split /[\s,\0]+/,  q{__UI_ITEM_TABLES__};
+	my %seen;
+	for (@tab) {
+		s/:.*//;
+		next if $seen{$_}++;
+	}
+	return join " ", @tab;
+	`][if-mm tables [loop-code]=d][loop-code] [flag type=write table="[loop-code]"][/if-mm][/loop][/tmp]
 [/else]
 [/if-mm]
 [/if]
 
-[perl tables="[cgi mv_data_table] __UI_META_TABLE__"]
+[perl tables="[cgi mv_data_table] [scratch extra_tables] __UI_META_TABLE__"]
 	delete $Scratch->{ui_location};
 	if($CGI->{ui_sequence_edit}) {
 		my $doit;
@@ -48,32 +58,54 @@
 		return;
 	}
 
-	return unless $CGI->{item_id};
-	return unless delete $CGI->{deleterecords};
-	return unless $Tag->if_mm('tables', '=d');
-
-	delete $Scratch->{ui_location};
-	$Config->{NoSearch} = '';
-	my $tab = $CGI->{mv_data_table} or return;
-
-	my $db = $Db{$tab};
-	if(! ref $db) {
-		$Scratch->{error_message} = "<FONT CLASS=error>Error: no <B>$tab</B> database.</FONT><BR>";
-		$Scratch->{ui_location} = "__UI_BASE__/error";
-		return;
-	}
-
-	for(grep $_, @{$CGI_array->{item_id}}) {
-		$db->delete_record($_)
-			or push @errors, $@;
-	}
-	if(@errors) {
-		my $plural = @errors > 1 ? 's' : '';
-		return "<FONT CLASS=error>Error$plural:<UL><LI>" .
-				join ("<LI>", @errors)                    .
-				"</UL></FONT><BR>";
-	}
-	return;
+#	return unless $CGI->{item_id};
+#	return unless delete $CGI->{deleterecords};
+#	return unless $Tag->if_mm('tables', '=d');
+#
+#	delete $Scratch->{ui_location};
+#	$Config->{NoSearch} = '';
+#	
+#	my $out = '';
+#	for(@{$CGI_array->{item_id}}) {
+#		my $key = $_;
+#		my $db;
+#		for( $CGI->{mv_data_table}, qw/__UI_ITEM_TABLES__/) {
+#			my ($t, $col) = split /:/, $_;
+#			if ( $Tag->if_mm('!tables', "$t=d") ) {
+#				push @errors, "Not authorized to delete from table $t";
+#				next;
+#			}
+#			unless ($db = $Db{$t}) {
+#				push @errors, "Table $t not available.";
+#				next;
+#			}
+#			if($col) {
+#				next unless length ($key);
+#				$key = $db->quote($key, $col);
+#				$out .= "deleted ";
+#				$out .= $db->query("delete from $t where $col = $key");
+#				$out .= " records from $t where $col = $key</BR>";
+#			}
+#			else {
+#				next unless $db->record_exists($key);
+#				$db->delete_record($key)
+#					or do {
+#						push @errors, $@;
+#						next;
+#					};
+#				$out .= "deleted $key from $t<br>";
+#			}
+#		}
+#	}
+#
+#	if(@errors) {
+#		my $plural = @errors > 1 ? 's' : '';
+#		$out .= "<FONT CLASS=error>Error$plural:<UL><LI>" .
+#				join ("<LI>", @errors)                    .
+#				"</UL></FONT><BR>";
+#	}
+#	$Scratch->{ui_message} = $out;
+#	return;
 [/perl]
 
 [if scratch ui_location]
@@ -102,18 +134,26 @@
 @_UI_STD_HEAD_@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
+<table>
+<tr>
 [if scratch ui_message]
+<td>
+Message:
 <BLOCKQUOTE>
 	[scratchd ui_message]
 </BLOCKQUOTE>
 <p>
 &nbsp;
+</td>
 [/if]
-
-<FORM ACTION="[area @@MV_PAGE@@]">
+<td>
+<FORM ACTION="[area @@MV_PAGE@@]" name=itemlist>
 <INPUT NAME=ui_text_qualification>
 <INPUT TYPE=submit VALUE="Limit with search">
 </FORM>
+</td>
+</tr>
+</table>
 [perl tables="[cgi mv_data_table] __UI_META_TABLE__"]
 	my $ref = $Db{$CGI->{mv_data_table}};
 	my $mref = $Db{__UI_META_TABLE__};
@@ -204,7 +244,10 @@ EOF
 		$CGI->{ui_description_fields} = join ",", $ref->columns();
 	}
 	else {
-
+		my $i = 0;
+		$CGI->{ui_show_fields} =~
+			s/(\w+)(?:\((.*?)\))?/ ($filter_show[$i++] = $2), $1/eg;
+#Log("filter_show: " . $Tag->uneval( { ref => \@filter_show } ));
 		$CGI->{ui_show_fields} =~ s/[\0,\s]+/,/g;
 		$CGI->{ui_description_fields} = $CGI->{ui_show_fields};
 	}
@@ -302,7 +345,13 @@ EOF
 </tr>
 <TR BGCOLOR="__UI_C_TITLEBARBG__">
 [loop list="[cgi ui_description_fields]"]
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
+<TH[loop-calc]
+			my $extra = '';
+			while ($filter_show[ [loop-increment] - 1] =~ m/\b(v?align\s*=\w+)/gi) {
+				$extra .= " $1";
+			}
+			return $extra || ' ALIGN=LEFT';
+		[/loop-calc]><FONT COLOR="__UI_C_TITLEBARTXT__">
 	[loop-change 1][condition]1[/condition]&nbsp;&nbsp;&nbsp;&nbsp;[/loop-change 1]
 	<A HREF="[area href='@@MV_PAGE@@'
 					form=`
@@ -348,9 +397,15 @@ sub {
 	return unless $line;
 	shift (@$line);
 	my $out = '';
+	my $i = 1;
 	for(@$line) {
+		my $extra = '';
+		my $filter = $filter_show[$i] || 'entities';
+		$extra .= " $1" while $filter =~ s/(v?align=\w+)//i;
+#Log("$i filter = $filter");
 		s/\[/&#91;/g;
-		$out .= "<TD>" . $Tag->filter('entities', $_) . "</TD>";
+		$out .= "<TD$extra>" . $Tag->filter($filter, $_) . "</TD>";
+		$i++;
 	}
 	for(@special) {
 		$out .= $extra{$_};
@@ -444,12 +499,16 @@ mv_todo=return
 &nbsp;&nbsp;&nbsp;&nbsp;
 
 [button text="Delete checked items"
-		confirm="Are you sure you want to delete the checked items?"]
+		confirm="Are you sure you want to delete the checked items\n__UI_ITEM_TABLES__?"
+]
 [flag type=write table="[cgi mv_data_table]"]
 deleterecords=1
+ui_delete_tables=__UI_ITEM_TABLES__
+mv_click=db_maintenance
 mv_todo=back
 mv_nextpage=@@MV_PAGE@@
 [/button]
+<INPUT TYPE=hidden NAME=mv_data_table VALUE="[cgi mv_data_table]">
 </FORM>
 
 [/search-region]
