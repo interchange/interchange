@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.218 2004-07-24 17:34:32 mheins Exp $
+# $Id: Interpolate.pm,v 2.219 2004-07-28 18:21:41 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.218 $, 10);
+$VERSION = substr(q$Revision: 2.219 $, 10);
 
 @EXPORT = qw (
 
@@ -1352,29 +1352,15 @@ sub conditional {
 		$noop = 1;
 		$newcomp = $comp;
 		undef $comp;
+		$newcomp =~ s/^(["'])(.*)\1$/$2/s or
+			$newcomp =~ s/^qq?([{(])(.*)[})]$/$2/s or
+				$newcomp =~ s/^qq?(\S)(.*)\1$/$2/s;
 	}
 
 	local($^W) = 0;
 	undef $@;
 #::logDebug("cond: base=$base term=$term op=$operator comp=$comp newcomp=$newcomp nooop=$noop\n");
 #::logDebug (($reverse ? '!' : '') . "cond: base=$base term=$term op=$operator comp=$comp");
-	my %stringop = ( qw! eq 1 ne 1 gt 1 lt 1! );
-
-	if(defined $stringop{$operator}) {
-		if(! $noop) {
-			$comp =~ /^(["']).*\1$/ or
-			$comp =~ /^qq?([{(]).*[})]$/ or
-			$comp =~ /^qq?(\S).*\1$/ or
-			(index ($comp, '}') == -1 and $comp = 'q{' . $comp . '}')
-				or
-			(index ($comp, '!') == -1 and $comp = 'q!' . $comp . '!')
-		}
-	    else {
-			$newcomp =~ s/^(["'])(.*)\1$/$2/s or
-				$newcomp =~ s/^qq?([{(])(.*)[})]$/$2/s or
-					$newcomp =~ s/^qq?(\S)(.*)\1$/$2/s;
-		}
-	}
 
 #::logDebug ("cond: base=$base term=$term op=$operator comp=$comp\n");
 
