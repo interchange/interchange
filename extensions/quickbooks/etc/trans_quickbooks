@@ -25,38 +25,35 @@ Checking shipping: HASSHIPPING=[scratch HASSHIPPING]
 	[seti ADDR1][if value company][value company] -- [/if][if value b_fname][value b_fname] [value b_lname][else][value fname] [value lname][/else][/if][/seti]
 	[seti ADDR2][value b_address1][if value b_address2], [value b_address2][/if][/seti]
 	[seti ADDR3][value b_city], [value b_state] [value b_zip][/seti]
-	[seti ADDR4][if value b_country ne US]INTL: [data table=country col=name key="[value b_country]"][/if][/seti]
-	[seti ADDR5][value phone_day] [value phone_night] [value email][/seti]
+	[seti ADDR4][if value b_country][if value b_country ne US]INTL: [data table=country col=name key="[value b_country]"][/if][/if][/seti]
 	[seti SADDR1][if value company][value company] -- [/if][value fname] [value lname][/seti]
 	[seti SADDR2][value address1][if value address2], [value address2][/if][/seti]
 	[seti SADDR3][value city], [value state] [value zip][/seti]
 	[seti SADDR4][if value country ne US]INTL: [data table=country col=name key="[value country]"][/if][/seti]
-	[seti SADDR5][value phone_day][/seti]
 [/then]
 [else]
 	[seti ADDR1][if value company][value company] -- [/if][value fname] [value lname][/seti]
 	[seti ADDR2][value address1][if value address2], [value address2][/if][/seti]
 	[seti ADDR3][value city], [value state] [value zip][/seti]
 	[seti ADDR4][if value country ne US]INTL: [data table=country col=name key="[value country]"][/if][/seti]
-	[seti ADDR5][value phone_day] [value phone_night] [value email][/seti]
 	[seti SADDR1][if value company][value company] -- [/if][value fname] [value lname][/seti]
 	[seti SADDR2][value address1][if value address2], [value address2][/if][/seti]
 	[seti SADDR3][value city], [value state] [value zip][/seti]
 	[seti SADDR4][if value country ne US]INTL: [data table=country col=name key="[value country]"][/if][/seti]
-	[seti SADDR5][value phone_day][/seti]
 [/else]
 [/if]
 
 [seti CUSTNAME][either][value company][or][value lname], [value fname][/either] ([data session username])[/seti]
-[if scratch auto_create][set TRNSTYPE]CASH SALE[/set][else][set TRNSTYPE]INVOICE[/set][/else][/if]
+[set TRNSTYPE]INVOICE[/set]
 [seti DATE][tag time]%m/%d/%y[/tag][/seti]
 [seti FILEDATE][tag time]%Y%m%d[/tag][/seti]
 Setting customer number: [if !value customer_number][value name=customer_number set="[fcounter etc/qbcust.number]"][userdb save][/if]
-[seti qb_trans]!CUST	NAME	REFNUM	TIMESTAMP	BADDR1	BADDR2	BADDR3	BADDR4	BADDR5	SADDR1	SADDR2	SADDR3	SADDR4	SADDR5	PHONE1	PHONE2	FAXNUM	NOTE	CONT1	CONT2	CTYPE	TERMS	TAXABLE	LIMIT	RESALENUM	REP	TAXITEM	NOTEPAD	SALUTATION	COMPANYNAME	FIRSTNAME	MIDINIT	LASTNAME	CUSTFLD1	CUSTFLD2	CUSTFLD3	CUSTFLD4	CUSTFLD5	CUSTFLD6	CUSTFLD7	CUSTFLD8	CUSTFLD9	CUSTFLD10	CUSTFLD11	CUSTFLD12	CUSTFLD13	CUSTFLD14	CUSTFLD15	JOBDESC	JOBTYPE	JOBSTATUS	JOBSTART	JOBPROJEND	JOBEND	HIDDEN	DELCOUNT
+[seti qb_trans]!CUST	NAME	REFNUM	TIMESTAMP	EMAIL	BADDR1	BADDR2	BADDR3	BADDR4	BADDR5	SADDR1	SADDR2	SADDR3	SADDR4	SADDR5	PHONE1	PHONE2	FAXNUM	NOTE	CONT1	CONT2	CTYPE	TERMS	TAXABLE	LIMIT	RESALENUM	REP	TAXITEM	NOTEPAD	SALUTATION	COMPANYNAME	FIRSTNAME	MIDINIT	LASTNAME	CUSTFLD1	CUSTFLD2	CUSTFLD3	CUSTFLD4	CUSTFLD5	CUSTFLD6	CUSTFLD7	CUSTFLD8	CUSTFLD9	CUSTFLD10	CUSTFLD11	CUSTFLD12	CUSTFLD13	CUSTFLD14	CUSTFLD15	JOBDESC	JOBTYPE	JOBSTATUS	JOBSTART	JOBPROJEND	JOBEND	HIDDEN	DELCOUNT
 [filter tabbed]CUST
 [scratch CUSTNAME]
 [value customer_number]
 [tag time]%s[/tag]
+[value email]
 [scratch ADDR1]
 [scratch ADDR2]
 [scratch ADDR3]
@@ -70,7 +67,7 @@ Setting customer number: [if !value customer_number][value name=customer_number 
 [value name=phone_day filter=mac]
 [value name=phone_night filter=mac]
 [value name=fax filter=mac]
-[value name=gift_note filter=mac]
+[value name=gift_note filter=mac] 
 [value fname] [value lname]
 [value b_fname] [value b_lname]
 Retail
@@ -109,11 +106,10 @@ Cash
 [comment]JOBDESC[/comment]
 N
 __STORE_ID__[/filter]
-!TRNS	TRNSID	TRNSTYPE	DATE	ACCNT	NAME	CLASS	AMOUNT	DOCNUM	MEMO	CLEAR	TOPRINT	NAMEISTAXABLE	ADDR1	ADDR2	ADDR3	ADDR4	ADDR5	SADDR1	SADDR2	SADDR3	SADDR4	SADDR5
+!TRNS	TRNSTYPE	DATE	ACCNT	NAME	CLASS	AMOUNT	DOCNUM	MEMO	CLEAR	TOPRINT	NAMEISTAXABLE	ADDR1	ADDR2	ADDR3	ADDR4	ADDR5	SADDR1	SADDR2	SADDR3	SADDR4	SADDR5
 !SPL	SPLID	TRNSTYPE	DATE	ACCNT	NAME	CLASS	AMOUNT	DOCNUM	MEMO	CLEAR	QNTY	PRICE	INVITEM	PAYMETH	TAXABLE	VALADJ	SERVICEDATE	OTHER2	EXTRA
 !ENDTRNS
 [filter tabbed]TRNS
-[value mv_order_number]
 [scratch TRNSTYPE]
 [scratch DATE]
 Accounts Receivable
@@ -121,7 +117,7 @@ Accounts Receivable
 
 [total-cost noformat=1]
 [value mv_order_number]
-[value name=gift_note filter=mac]
+[value name=gift_note filter=mac] - Order Number: [value mv_order_number]
 N
 N
 [scratch NAMEISTAXABLE]
