@@ -1,0 +1,49 @@
+[loop
+    random="[either][scratch component_vsize][or]3[/either]"
+    search="ra=yes/ml=1000"
+ ] 
+                <table width="132" border="0" cellspacing="0" cellpadding="0">
+                    <tr bgcolor="#FF9900" align="center" valign="middle"> 
+						  <td><font size="2" color="#FFFFFF"><i><b><font face="Verdana, Arial, Helvetica, sans-serif">[scratch vbanner]</font></b></i></font></td>
+					</tr>
+					<tr align="center"> 
+					  <td>
+[list]
+							<table width="132" border="0" cellspacing="0" cellpadding="0">
+							  <tr> 
+								<td width="132" align="center"><font color="#000000" size="1" face="Verdana, Arial, Helvetica, sans-serif"><b>[loop-field description]</b></font></td>
+							  </tr>
+							  <tr> 
+								<td width="132" align="center"><font color="#000000" size="1" face="Verdana, Arial, Helvetica, sans-serif"><font size="2"><b>[order [loop-code]]Buy Now[/order]</b></font></font></td>
+							  </tr>
+							  <tr> 
+								<td width="132" align="center"> 
+								  <table width="80" border="0" cellspacing="0" cellpadding="0">
+									<tr> 
+									  <td><img src="thumb/[loop-field display]" width="80" height="80"></td>
+									</tr>
+								  </table>
+								</td>
+							  </tr>
+							  <tr> 
+								<td width="132" align="center" height="5">&nbsp;</td>
+							  </tr>
+							  <tr> 
+								<td width="132" align="center"><font color="#000000" size="1" face="Verdana, Arial, Helvetica, sans-serif">Our 
+								  Price:</font> <font color="#000000" size="1" face="Verdana, Arial, Helvetica, sans-serif">[loop-price]</font></td>
+							  </tr>
+							  <tr> 
+								<td width="132" align="center"><font color="#0099FF" size="1" face="Verdana, Arial, Helvetica, sans-serif"><A HREF="[area [loop-code]]"><font size="2">More Information</font></a></font></td>
+							  </tr>
+							  <tr> 
+								<td width="132" align="center">&nbsp;</td>
+							  </tr>
+							</table>
+[/list]
+                          </td>
+                        </tr>
+                        <tr align="center">
+                          <td>&nbsp;</td>
+                        </tr>
+                      </table>
+[/loop]
