@@ -195,7 +195,7 @@ sub {
 	my $error       = $opt->{error};
 	my $extra       = $opt->{extra};
 	my $filter      = $opt->{filter};
-	my $height      = $opt->{widget_height};
+	my $height      = $opt->{height};
 	my $help        = $opt->{help};
 	my $help_url    = $opt->{help_url};
 	my $label       = $opt->{label};
@@ -210,7 +210,7 @@ sub {
 	my $database    = $opt->{database};
 	my $field       = $opt->{field};
 	my $widget      = $opt->{widget};
-	my $width       = $opt->{widget_width};
+	my $width       = $opt->{width};
 #::logDebug("widget=" . ::uneval_it($widget) );
 #::logDebug("label=" . ::uneval_it($label) );
 
@@ -258,7 +258,7 @@ EOF
 		}
 		$Scratch->{$opt->{next_text}} = $ntext;
 
-		my $hidgo = $opt->{hidden}{ui_return_to} || $CGI->{return_to};
+		my $hidgo = $opt->{mv_cancelpage} || $opt->{hidden}{ui_return_to} || $CGI->{return_to};
 		$hidgo =~ s/\0.*//s;
 		$ctext = $Scratch->{$opt->{cancel_text}} = <<EOF;
 mv_form_profile=
@@ -369,8 +369,8 @@ EOF
 			[ qr/^ui_te_override:/, $override ],
 			[ qr/^ui_te_filter:/, $filter ],
 			[ qr/^ui_te_pre_filter:/, $pre_filter ],
-			[ qr/^ui_te_widget_height:/, $height ],
-			[ qr/^ui_te_widget_width:/, $width ],
+			[ qr/^ui_te_height:/, $height ],
+			[ qr/^ui_te_width:/, $width ],
 			[ qr/^ui_te_help:/, $help ],
 			[ qr/^ui_te_help_url:/, $help_url ],
 		);
@@ -1308,6 +1308,7 @@ EOF
 										default => $currval,
 										extra => $extra->{$c},
 										fallback => 1,
+										field => $field->{$c},
 										filter => $filter->{$c},
 										height => $height->{$c},
 										help => $help->{$c},
@@ -1316,7 +1317,6 @@ EOF
 										key => $key,
 										name => $namecol,
 										override => $overridden,
-										field => $field->{$c},
 										passed => $passed->{$c},
 										options => $options->{$c},
 										outboard => $outboard->{$c},
