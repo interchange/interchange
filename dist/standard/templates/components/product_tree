@@ -42,15 +42,15 @@ link_style:
 	widget: text
 	width: 60
 
-link_open_style:
+link_style_open:
 	help: Set the CSS style for toggled open links (default "font-size: larger;")
 	label: Open CSS style
 	widget: text
 	width: 60
 
-link_closed_style:
+link_style_closed:
 	help: Set the CSS style for toggled closed links (default "font-size: larger;")
-	label: Open CSS style
+	label: Closed CSS style
 	widget: text
 	width: 60
 [/comment]
