@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.59 2002-02-16 08:17:14 mheins Exp $
+# $Id: Interpolate.pm,v 2.60 2002-02-18 01:00:21 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.59 $, 10);
+$VERSION = substr(q$Revision: 2.60 $, 10);
 
 @EXPORT = qw (
 
@@ -2159,12 +2159,6 @@ sub pragma {
 	}
 
 	$::Pragma->{$pragma} = $value;
-	if($pragma eq 'no_html_parse') {
-		$Vend::Parse::find_tag	= $value
-									?  qr{^([^[]+)}
-									:  qr{^([^[<]+)}
-									;
-	}
 	return;
 }
 

@@ -1,6 +1,6 @@
 # Vend::Parser - Interchange parser class
 #
-# $Id: Parser.pm,v 2.3 2002-02-08 05:22:40 mheins Exp $
+# $Id: Parser.pm,v 2.4 2002-02-18 01:00:21 mheins Exp $
 #
 # Copyright (C) 1997-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -66,7 +66,7 @@ use strict;
 
 use HTML::Entities ();
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 
 
 sub new
@@ -82,9 +82,6 @@ sub eof
 	shift->parse(undef);
 }
 
-
-use vars qw/$Find_tag/;
-
 sub parse
 {
 	my $self = shift;
@@ -96,11 +93,6 @@ sub parse
 		return $self;
 	}
 	$$buf .= $_[0];
-	$Find_tag	= $::Pragma->{no_html_parse}
-				?  qr{^([^[]+)}
-				:  qr{^([^[<]+)}
-				;
-#::logDebug("no_html_parse=$::Pragma->{no_html_parse} Find_tag=$Find_tag");
 
 	my $eaten;
 	# Parse html text in $$buf.  The strategy is to remove complete
@@ -108,7 +100,7 @@ sub parse
 	# it is a token or not, or the $$buf is empty.
 	while (1) {  # the loop will end by returning when text is parsed
 		# First we try to pull off any plain text (anything before a "<" char)
-		if ($$buf =~ s/$Find_tag// ) {
+		if ($$buf =~ s/^([^[]+)// ) {
 #my $eat = $1;
 #::logDebug("plain eat='$eat'");
 #$self->text($eat);
@@ -266,144 +258,6 @@ sub parse
 				$$buf = $eaten;  # need more data to parse
 				return $self;
 			}
-		} elsif ($$buf =~ s|^<||) {
-			# start tag
-			$eaten = '<';
-#::logDebug("do < tag") if ! $Tmp::DoneDebug++;
-
-			# This first thing we must find is a tag name.  RFC1866 says:
-			#   A name consists of a letter followed by letters,
-			#   digits, periods, or hyphens. The length of a name is
-			#   limited to 72 characters by the `NAMELEN' parameter in
-			#   the SGML declaration for HTML, 9.5, "SGML Declaration
-			#   for HTML".  In a start-tag, the element name must
-			#   immediately follow the tag open delimiter `<'.
-			if ($$buf =~ s|^(([a-zA-Z][-a-zA-Z0-9._]*)((?:\s+[^>]+)?\s+[mM][Vv]\s*=)\s*)||) {
-#::logDebug("REALLY do < tag") if ! $Tmp::DoneDebug++;
-				$eaten .= $1;
-				$self->{HTML} = 1;
-
-				my ($tag, $end_tag);
-				my ($nopush, $element);
-				my %attr;
-				my @attrseq;
-				my $old;
-
-				$end_tag = $2;
-#::logDebug("end_tag='$end_tag' eat='$eaten'");
-				( $$buf =~ s|^((['"])(.*?)\2\s*)||s and $tag = $3 )
-				or
-				( $$buf =~ s|^(([a-zA-Z][-a-zA-Z0-9._]*)\s*)|| and $tag = $2)
-				or ($self->text($eaten), next);
-				$eaten .= $1;
-				if( index($tag, " ") != -1 ) {
-					($tag, $attr{OLD}) = split /\s+/, $tag, 2;
-				}
-#::logDebug("< tag='$tag' eat='$eaten'");
-				$tag = lc $tag;
-
-				# Then we would like to find some attributes
-				#
-				# Arrgh!! Since stupid Netscape violates RCF1866 by
-				# using "_" in attribute names (like "ADD_DATE") of
-				# their bookmarks.html, we allow this too.
-				while (	$$buf =~ s|^(([a-zA-Z][-a-zA-Z0-9._]*)\s*)|| ) {
-					$eaten .= $1;
-#::logDebug("in parse, eaten=$eaten");
-					my $attr = lc $2;
-					$attr =~ s/^mv\.?//
-						or $tag =~ /^urld/
-						or undef $attr;
-					$attr =~ s/\.(.*)//
-						and $element = $1;
-						
-					my $val;
-					
-					# The attribute might take an optional value (first we
-					# check for an unquoted value)
-					if ($$buf =~ s~(^=\s*([^\!\|\@\"\'\`\]\s][^\]>\s]*)\s*)~~) {
-						$eaten .= $1;
-						next unless defined $attr;
-						$val = $2;
-					# or quoted by " or ' or # or $ or |
-					} elsif ($$buf =~ s~(^=\s*(["\'])(.*?)\2\s*)~~s) {
-						$eaten .= $1;
-						next unless defined $attr;
-						$val = $3;
-						HTML::Entities::decode($val) if $attr{entities};
-					# or quoted by `` to send to [calc]
-					} elsif ($$buf =~ s~(^=\s*([\`\|]?)(.*?)\2\s*)~~s) {
-						$eaten .= $1;
-						if    ($2 eq '`') {
-							$val = Vend::Interpolate::tag_calc($3)
-								unless defined $Vend::Cfg->{AdminSub}{calc};
-						}
-						elsif ($2 eq '|') {
-								$val = $3;
-								$val =~ s/^\s+//;
-								$val =~ s/\s+$//;
-						}
-						else {
-							die "parse error!";
-						}
-					# truncated just after the '=' or inside the attribute
-					} elsif ($$buf =~ m|^(=\s*)$|s or
-							 $$buf =~ m|^(=\s*[\"\'].*)|s) {
-#::logDebug("Truncated? eaten=$eateni buf=$$buf");
-						$$buf = "$eaten$1";
-						return $self;
-					} 
-
-					if(defined $element) {
-#::logDebug("Found element: $element val=$val");
-						if(! ref $attr{$attr}) {
-							if ($element =~ /[A-Za-z]/) {
-								$attr{$attr} = { $element => $val };
-							}
-							else {
-								$attr{$attr} = [ ];
-								$attr{$attr}->[$element] = $val;
-							}
-							push (@attrseq, $attr);
-						}
-						elsif($attr{$attr} =~ /ARRAY/) {
-							if($element =~ /\D/) {
-								push @{$attr{$attr}}, $val;
-							}
-							else {
-								$attr{$attr}->[$element] = $val;
-							}
-						}
-						elsif ($attr{$attr} =~ /HASH/) {
-							$attr{$attr}->{$element} = $val;
-						}
-						undef $element;
-						next;
-					}
-					$attr{$attr} = $val;
-					push(@attrseq, $attr) unless $nopush;
-				}
-
-				# At the end there should be a closing "\] or >"
-				if ($$buf =~ s|^>|| ) {
-					$self->start($tag, \%attr, \@attrseq, "$eaten>", $end_tag);
-				} elsif (length $$buf) {
-#::logDebug("not conforming, eaten $eaten");
-					# Not a conforming start tag, regard it as normal text
-					$self->text($eaten);
-				} else {
-					$$buf = $eaten;  # need more data to know
-					return $self;
-				}
-
-			} elsif (length $$buf) {
-#::logDebug("eaten $eaten");
-				$self->text($eaten);
-			} else {
-				#$$buf = $eaten;  # need more data to parse
-				return $self;
-			}
-
 		} elsif (length $$buf) {
 			::logDebug("remaining: $$buf");
 			die $$buf; # This should never happen

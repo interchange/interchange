@@ -4,7 +4,6 @@ UserTag checked             Implicit     multiple multiple
 UserTag checked             Implicit     default default
 UserTag checked             InvalidateCache
 UserTag checked             PosNumber    2
-UserTag checked             replaceAttr  input checked
 UserTag checked             Routine      <<EOR
 sub {
 	my ($field,$value,$opt) = @_;

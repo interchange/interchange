@@ -1,6 +1,7 @@
-UserTag attr-list           Order        hash
+UserTag attr-list           addAttr
 UserTag attr-list           hasEndTag
-UserTag attr-list           PosNumber    1
+UserTag attr-list           PosNumber 0
+UserTag attr-list           noRearrange
 UserTag attr-list           Routine      <<EOR
 sub {
 	my ($opt, $body) = @_;

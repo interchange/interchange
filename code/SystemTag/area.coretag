@@ -2,6 +2,4 @@ UserTag area                Order        href arg
 UserTag area                addAttr
 UserTag area                Implicit     secure secure
 UserTag area                PosNumber    2
-UserTag area                replaceAttr  form action
-UserTag area                replaceAttr  a href
 UserTag area                MapRoutine   Vend::Interpolate::tag_area

@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.37 2002-02-06 18:23:14 jon Exp $
+# $Id: Config.pm,v 2.38 2002-02-18 01:00:21 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.37 $, 10);
+$VERSION = substr(q$Revision: 2.38 $, 10);
 
 my %CDname;
 
@@ -3086,23 +3086,17 @@ my %tagCanon = ( qw(
 	cannest			canNest
 	description  	Description
 	documentation	Documentation
-	endhtml			endHTML
 	gobble			Gobble
 	hasendtag		hasEndTag
 	implicit		Implicit
-	inserthtml		insertHTML
-	insidehtml		insideHTML
 	interpolate		Interpolate
 	invalidatecache	InvalidateCache
 	isendanchor		isEndAnchor
-	lookaheadhtml	lookaheadHTML
 	order			Order
 	posnumber		PosNumber
 	posroutine		PosRoutine
 	maproutine		MapRoutine
 	noreparse		NoReparse
-	replaceattr		replaceAttr
-	replacehtml		replaceHTML
 	required		Required
 	routine			Routine
 	version			Version
@@ -3113,7 +3107,6 @@ my %tagAry 	= ( qw! Order 1 Required 1 Version 1 ! );
 my %tagHash	= ( qw!
                 attrAlias   1
                 Implicit    1
-                replaceAttr 1
 				! );
 my %tagBool = ( qw!
                 ActionMap   1

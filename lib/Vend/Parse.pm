@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.12 2002-02-09 04:13:38 mheins Exp $
+# $Id: Parse.pm,v 2.13 2002-02-18 01:00:21 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.12 $, 10);
+$VERSION = substr(q$Revision: 2.13 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -260,68 +260,6 @@ my %Alias = (
 					buzzard		=> 'data table=products column=artist key=',
 			);
 
-my %replaceAttr = (
-					area			=> { qw/ a 	href form action/},
-					process			=> { qw/ form action		/},
-					checked			=> { qw/ input checked		/},
-					selected		=> { qw/ option selected	/},
-			);
-
-my %replaceHTML = (
-				qw(
-					del .*
-					pre .*
-					xmp .*
-					script .*
-				)
-			);
-
-my %insertHTML = (
-				qw(
-
-				form	process|area
-				a 		area
-				input	checked
-				option  selected
-				)
-			);
-
-my %lookaheadHTML = (
-				qw(
-
-				if 		then|elsif|else
-				unless 	then|elsif|else
-				)
-			);
-
-my %rowfixHTML = (	qw/
-						td	item_list|loop|sql_list
-					/	 );
-# Only for containers
-my %insideHTML = (
-				qw(
-					select	loop|item_list|tag
-				)
-
-				);
-
-# Only for containers
-my %endHTML = (
-				qw(
-
-				tr 		.*
-				td 		.*
-				th 		.*
-				del 	.*
-				script 	.*
-				table 	if
-				object 	perl
-				param 	perl
-				font 	if
-				a 		if
-				)
-			);
-
 my %Interpolate = (
 
 				qw(
@@ -364,6 +302,8 @@ sub new {
 	$Initialized = $self;
 }
 
+my %noRearrange = qw/attr_list/;
+
 my %Documentation;
 use vars '%myRefs';
 
@@ -372,19 +312,14 @@ use vars '%myRefs';
      addAttr         => \%addAttr,
      attrAlias       => \%attrAlias,
 	 Documentation   => \%Documentation,
-	 endHTML         => \%endHTML,
 	 hasEndTag       => \%hasEndTag,
+	 noRearrange     => \%noRearrange,
 	 Implicit        => \%Implicit,
-	 insertHTML	     => \%insertHTML,
-	 insideHTML	     => \%insideHTML,
 	 Interpolate     => \%Interpolate,
 	 InvalidateCache => \%InvalidateCache,
-	 lookaheadHTML   => \%lookaheadHTML,
 	 Order           => \%Order,
 	 PosNumber       => \%PosNumber,
 	 PosRoutine      => \%PosRoutine,
-	 replaceAttr     => \%replaceAttr,
-	 replaceHTML     => \%replaceHTML,
 	 Routine         => \%Routine,
 );
 
@@ -418,7 +353,7 @@ sub do_tag {
         $tag = $Alias{$tag};
 	};
 	if(
-		( ref($_[-1]) && scalar @{$Order{$tag}} > scalar @_ ) 
+		( ref($_[-1]) && scalar @{$Order{$tag}} > scalar @_ and ! $noRearrange{$tag}) 
 	)
 	{
 		my $text;
@@ -562,330 +497,6 @@ sub goto_buf {
 	}
 	return;
 	# syntax color "'
-}
-
-sub html_start {
-    my($self, $tag, $attr, $attrseq, $origtext, $end_tag) = @_;
-#::logDebug("HTML tag=$tag Interp='$Interpolate{$tag}' origtext=$origtext attributes:\n" . ::uneval($attr));
-	$tag =~ tr/-/_/;   # canonical
-	$Vend::CurrentTag = $tag = lc $tag;
-
-	my $buf = \$self->{_buf};
-
-	if (defined $Vend::Cfg->{AdminSub}{$tag}) { 
-	
-		if($Vend::restricted) {
-			::logError(
-				"Restricted tag (%s) attempted during restriction '%s'",
-				$origtext,
-				$Vend::restricted,
-				);
-			$self->{OUT} .= $origtext;
-			return 1;
-		}
-		elsif (! $Vend::admin) {
-			::response(
-						get_locale_message (
-							403,
-							"Unauthorized for admin tag %s",
-							$tag,
-							)
-						);
-			return ($self->{ABORT} = 1);
-		}
-
-	}
-
-	$end_tag = lc $end_tag;
-#::logDebug("tag=$tag end_tag=$end_tag buf length " . length($$buf)) if $Monitor{$tag};
-#::logDebug("attributes: ", %{$attr}) if $Monitor{$tag};
-	my($tmpbuf);
-    # $attr is reference to a HASH, $attrseq is reference to an ARRAY
-	my($return_html);
-
-	unless (defined $Routine{$tag}) {
-		if(defined $Alias{$tag}) {
-#::logDebug("origtext: $origtext");
-			my $alias = $Alias{$tag};
-			$tag =~ s/_/[-_]/g;
-			$origtext =~ s/$tag/$alias/i
-				or return 0;
-			$$buf = $origtext . $$buf;
-			return 1;
-		}
-		elsif ($tag eq 'urldecode') {
-			$attr->{urldecode} = 1;
-			$return_html = $origtext;
-			$return_html =~ s/\s+.*//s;
-		}
-		else {
-			$self->{OUT} .= $origtext;
-			return 1;
-		}
-	}
-
-	if(defined $InvalidateCache{$tag} and !$attr->{cache}) {
-		$self->{INVALID} = 1;
-	}
-
-	my $trib;
-	foreach $trib (@$attrseq) {
-		# Attribute aliases
-		if(defined $attrAlias{$tag} and $attrAlias{$tag}{$trib}) {
-			my $new = $attrAlias{$tag}{$trib} ;
-			$attr->{$new} = delete $attr->{$trib};
-			$trib = $new;
-		}
-		elsif (0 and defined $Alias{$trib}) {
-			my $new = $Alias{$trib} ;
-			$attr->{$new} = delete $attr->{$trib};
-			$trib = $new;
-		}
-		# Parse tags within tags, only works if the [ is the
-		# first character.
-		$attr->{$trib} =~ s/%([A-Fa-f0-9]{2})/chr(hex($1))/eg if $attr->{urldecode};
-		next unless $attr->{$trib} =~ /\[\w+[-\w]*\s*[\000-\377]*\]/;
-
-		my $p = new Vend::Parse;
-		$p->parse($attr->{$trib});
-		$attr->{$trib} = $p->{OUT};
-		$self->{INVALID} += $p->{INVALID};
-	}
-
-	if($tag eq 'urldecode') {
-		$self->{OUT} .= build_html_tag($return_html, $attr, $attrseq);
-		return 1;
-	}
-
-	$attr->{enable_html} = 1 if $Vend::Cfg->{Promiscuous};
-	$attr->{decode} = 1 unless defined $attr->{'decode'};
-	$attr->{reparse} = 1 unless	defined $NoReparse{$tag}
-								||	defined $attr->{'reparse'};
-	$attr->{'undef'} = undef;
-
-	my ($routine,@args);
-
-	if ($attr->{OLD}) {
-	# HTML old-style tag
-		$attr->{interpolate} = 1 if defined $Interpolate{$tag};
-		if(defined $PosNumber{$tag}) {
-			if($PosNumber{$tag} > 1) {
-				@args = split /\s+/, $attr->{OLD}, $PosNumber{$tag};
-				push(@args, undef) while @args < $PosNumber{$tag};
-			}
-			elsif ($PosNumber{$tag}) {
-				@args = $attr->{OLD};
-			}
-		}
-		@{$attr}{ @{ $Order{$tag} } } = @args;
-		$routine =  $PosRoutine{$tag} || $Routine{$tag};
-	}
-	else {
-	# New style tag, HTML or otherwise
-		$routine = $Routine{$tag};
-		$attr->{interpolate} = 1
-			if defined $Interpolate{$tag} and ! defined $attr->{interpolate};
-		@args = @{$attr}{ @{ $Order{$tag} } };
-	}
-	$args[scalar @{$Order{$tag}}] = $attr if $addAttr{$tag};
-
-	if($tag =~ /^[gb]o/) {
-		if($tag eq 'goto') {
-			return 1 if resolve_if_unless($attr);
-			if(! $args[0]) {
-				$$buf = '';
-				$Initialized->{_buf} = '';
-				$self->{ABORT} = 1
-					if $attr->{abort};
-				return ($self->{SEND} = 1);
-			}
-			goto_buf($args[0], \$Initialized->{_buf});
-			$self->{ABORT} = 1;
-			return 1;
-		}
-		elsif($tag eq 'bounce') {
-			return 1 if resolve_if_unless($attr);
-			if(! $attr->{href} and $attr->{page}) {
-				$attr->{href} = Vend::Interpolate::tag_area($attr->{page});
-			}
-			$Vend::StatusLine = '' if ! $Vend::StatusLine;
-			$Vend::StatusLine .= <<EOF;
-Status: 302 moved
-Location: $attr->{href}
-EOF
-			$$buf = '';
-			$Initialized->{_buf} = '';
-			return ($self->{SEND} = 1);
-		}
-	}
-
-#::logDebug("tag=$tag end_tag=$end_tag attributes:\n" . Vend::Util::uneval($attr)) if$Monitor{$tag};
-
-	my $prefix = '';
-	my $midfix = '';
-	my $postfix = '';
-	my @out;
-
-	if($insertHTML{$end_tag}
-		and ! $attr->{noinsert}
-		and $tag =~ /^($insertHTML{$end_tag})$/) {
-		$origtext =~ s/>\s*$//;
-		@out = Text::ParseWords::shellwords($origtext);
-		shift @out;
-		@out = grep $_ !~ /^[Mm][Vv][=.]/, @out
-			unless $attr->{showmv};
-		if (defined $replaceAttr{$tag}
-			and $replaceAttr{$tag}->{$end_tag}
-			and	! $attr->{noreplace})
-		{
-			my $t = $replaceAttr{$tag}->{$end_tag};
-			@out = grep $_ !~ /^($t)\b/i, @out;
-			unless(defined $implicitHTML{$t}) {
-				$out[0] .= qq{ \U$t="};
-				$out[1] = defined $out[1] ? qq{" } . $out[1] : '"';
-			}
-			else { $midfix = ' ' }
-		}
-		else {
-			$out[0] = " " . $out[0] . " "
-				if $out[0];
-		}
-		if (@out) {
-			$out[$#out] .= '>';
-		}
-		else {
-			@out = '>';
-		}
-#::logDebug("inserted " . join "|", @out);
-	}
-
-	if($hasEndTag{$tag}) {
-		my $rowfix;
-		# Handle embedded tags, but only if interpolate is 
-		# defined (always if using old tags)
-		if (defined $replaceHTML{$end_tag}
-			and $tag =~ /^($replaceHTML{$end_tag})$/
-			and ! $attr->{noreplace} )
-		{
-			$origtext = '';
-			$tmpbuf = find_html_end($end_tag, $buf);
-			$tmpbuf =~ s:</$end_tag\s*>::;
-			HTML::Entities::decode($tmpbuf) if $attr->{decode};
-			$tmpbuf =~ tr/\240/ /;
-		}
-		else {
-			@out = Text::ParseWords::shellwords($origtext);
-			($attr->{showmv} and
-					@out = map {s/^[Mm][Vv]\./mv-/} @out)
-				or @out = grep ! /^[Mm][Vv][=.]/, @out;
-			$out[$#out] =~ s/([^>\s])\s*$/$1>/;
-			$origtext = join " ", @out;
-
-			if (defined $lookaheadHTML{$tag} and ! $attr->{nolook}) {
-				$tmpbuf = $origtext . find_html_end($end_tag, $buf);
-				while($$buf =~ s~^\s*(<([A-Za-z][-A-Z.a-z0-9]*)[^>]*)\s+
-								[Mm][Vv]\s*=\s*
-								(['"]) \[?
-									($lookaheadHTML{$tag})\b(.*?)
-								\]?\3~~ix ) 
-				{
-					my $orig = $1;
-					my $enclose = $4;
-					my $adder = $5;
-					my $end = lc $2;
-					$tmpbuf .= "[$enclose$adder]"	.  $orig	.
-								find_html_end($end, $buf)	.
-								"[/$enclose]";
-				}
-			}
-			# Syntax color '" 
-			# GACK!!! No table row attributes in some editors????
-			elsif (defined $rowfixHTML{$end_tag}
-				and $tag =~ /^($rowfixHTML{$end_tag})$/
-				and $attr->{rowfix} )
-			{
-				$rowfix = 1;
-				$tmpbuf = '<tr>' . $origtext . find_html_end('tr', $buf);
-#::logDebug("Tmpbuf: $tmpbuf");
-			}
-			elsif (defined $insideHTML{$end_tag}
-					and ! $attr->{noinside}
-					and $tag =~ /^($insideHTML{$end_tag})$/i) {
-				$prefix = $origtext;
-				$tmpbuf = find_html_end($end_tag, $buf);
-				$tmpbuf =~ s:</$end_tag\s*>::;
-				$postfix = "</$end_tag>";
-				HTML::Entities::decode($tmpbuf) if $attr->{'decode'};
-				$tmpbuf =~ tr/\240/ / if $attr->{'decode'};
-			}
-			else {
-				$tmpbuf = $origtext . find_html_end($end_tag, $buf);
-			}
-		}
-
-		$tmpbuf =~ s/%([A-Fa-f0-9]{2})/chr(hex($1))/eg if $attr->{urldecode};
-
-		if ($attr->{interpolate}) {
-			my $p = new Vend::Parse;
-			$p->parse($tmpbuf);
-			$tmpbuf =  $p->{OUT};
-		}
-
-		$tmpbuf =  $attr->{prepend} . $tmpbuf if defined $attr->{prepend};
-		$tmpbuf .= $attr->{append}            if defined $attr->{append};
-
-		if (! $attr->{reparse}) {
-			$self->{OUT} .= $prefix . &{$routine}(@args,$tmpbuf) . $postfix;
-		}
-		elsif (! defined $rowfix) {
-			$$buf = $prefix . &{$routine}(@args,$tmpbuf) . $postfix . $$buf
-		}
-		else {
-			$tmpbuf = &{$routine}(@args,$tmpbuf);
-			$tmpbuf =~ s|<tr>||i;
-			$$buf = $prefix . $tmpbuf . $postfix . $$buf;
-		}
-
-
-	}
-	else {
-		if(! @out and $attr->{prepend} or $attr->{append}) {
-			my @tmp;
-			@tmp = Text::ParseWords::shellwords($origtext);
-			shift @tmp;
-			@tmp = grep $_ !~ /^[Mm][Vv][=.]/, @tmp
-				unless $attr->{showmv};
-			$postfix = $attr->{prepend} ? "<\U$end_tag " . join(" ", @tmp) : '';
-			$prefix = $attr->{append} ? "<\U$end_tag " . join(" ", @tmp) : '';
-		}
-		if(! $attr->{interpolate}) {
-			if(@out) {
-				$self->{OUT} .= "<\U$end_tag ";
-				if 		($out[0] =~ / > \s*$ /x ) { }   # End of tag, do nothing
-				elsif	($out[0] =~ / ^[^"]*"$/x ) {     # End of tag
-					$self->{OUT} .= shift(@out);
-				}
-				else {
-					unshift(@out, '');
-				}
-			}
-			$self->{OUT} .= $prefix . &$routine( @args ) . $midfix;
-			$self->{OUT} .= join(" ", @out) . $postfix;
-		}
-		else {
-			if(@out) {
-				$$buf = "<\U$end_tag " . &$routine( @args ) . $midfix . join(" ", @out) . $$buf;
-			}
-			else {
-				$$buf = $prefix . &$routine( @args ) . $postfix . $$buf;
-			}
-		}
-	}
-
-	$self->{SEND} = $attr->{'send'} || undef;
-#::logDebug("Returning from $tag");
-	return 1;
-
 }
 
 sub eval_die {

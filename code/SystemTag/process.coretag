@@ -1,6 +1,5 @@
 UserTag process             Order        target secure
 UserTag process             addAttr
-UserTag process             replaceAttr  form action
 UserTag process             Routine   <<EOR
 # Returns the href to process the completed order form or do the search.
 sub {
