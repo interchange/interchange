@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.14 2001-10-06 06:26:46 mheins Exp $
+# $Id: Interpolate.pm,v 2.15 2001-10-06 06:41:10 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.14 $, 10);
+$VERSION = substr(q$Revision: 2.15 $, 10);
 
 @EXPORT = qw (
 
@@ -458,11 +458,11 @@ sub substitute_image {
 			$Vend::Cfg->{ImageDir};
 
 		if ($dir) {
-			$$text =~ s#(<i\w+\s+[^>]*?src=")(?!https?:)([^/][^"]+)#
+			$$text =~ s#(<i\w+\s+[^>]*?src=")(?!\w+:)([^/][^"]+)#
 						$1 . $dir . $2#ige;
-	        $$text =~ s#(<body\s+[^>]*?background=")(?!https?:)([^/][^"]+)#
+	        $$text =~ s#(<body\s+[^>]*?background=")(?!\w+:)([^/][^"]+)#
 						$1 . $dir . $2#ige;
-	        $$text =~ s#(<t(?:[dhr]|able)\s+[^>]*?background=")(?!https?:)([^/][^"]+)#
+	        $$text =~ s#(<t(?:[dhr]|able)\s+[^>]*?background=")(?!\w+:)([^/][^"]+)#
 						$1 . $dir . $2#ige;
 		}
 	}
@@ -624,6 +624,11 @@ sub filter_value {
 		@args = ();
 		if(/%/) {
 			$value = sprintf($_, $value);
+			next;
+		}
+		if (/^(\d+)(\.?)$/) {
+			substr($value, $1) = $2 ? '...' : ''
+				if length($value) > $1;
 			next;
 		}
 		while( s/\.([^.]+)$//) {
