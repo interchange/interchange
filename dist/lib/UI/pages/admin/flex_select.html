@@ -62,7 +62,7 @@
 [/if]
 
 [if-mm function="!tables" table="[cgi mv_data_table]"]
-[tmp errorurl][area href="__UI_BASE__/error" secure="@_UI_SECURE_@"][/tmp]
+[tmp errorurl][area href="__UI_BASE__/error" secure="[either]@@UI_SECURE@@[or]__UI_SECURE__[/either]"][/tmp]
 [bounce href="[scratch errorurl]"]
 [/if-mm]
 
