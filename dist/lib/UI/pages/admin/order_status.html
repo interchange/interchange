@@ -104,9 +104,9 @@
 </script>
 
 	<select name=ship_all onChange="copasetic(this, this.form)">
-		<option value=0> Ship per status above
-		<option value=1 SELECTED> Ship all lines
-		<option value=2> Cancel order
+		<option value=0> [L]Ship per status above[/L]
+		<option value=1 SELECTED> [L]Ship all lines[/L]
+		<option value=2> [L]Cancel order[/L]
 	</select>
 
 	[button form=tform
@@ -122,7 +122,7 @@
 
 	[/button]
 
-	Email
+	[L]Email[/L]
 	<select name=send_email>
 		<option value="">[L]Use customer preference[/L]</option>
 		<option value="0">[L]No[/L]</option>
@@ -134,16 +134,16 @@
 			<input type=checkbox name=settle_transaction value=1
 				onChange="copasetic(this, this.form)"
 				[if type=scratch term=tmp_orderid op="!~" compare="/[-*]$/"] CHECKED [/if]>
-					<b>Settle transaction</b>
+					<b>[L]Settle transaction[/L]</b>
 			&nbsp;
 			&nbsp;
-			<input type=checkbox name=void_transaction onChange="copasetic(this, this.form)" value=1> <b>Void transaction </b>
+			<input type=checkbox name=void_transaction onChange="copasetic(this, this.form)" value=1> <b>[L]Void transaction[/L]</b>
 
 		[/if]
 	[/if]
 			&nbsp;
 			&nbsp;
-			<input type=checkbox name=do_archive value=1 CHECKED> <b>Archive transaction at end</b>
+			<input type=checkbox name=do_archive value=1 CHECKED> <b>[L]Archive transaction at end[/L]</b>
 	</div>
 </td>
 </tr>
@@ -156,7 +156,7 @@
 	button_delete=1
 	form-name=tform
 	table-width="100%"
-	next-text="Update status only, no ship function"
+	next-text="[L]Update status only, no ship function[/L]"
 	ok-button-style="font-weight: normal; font-size: smaller"
 	no-table-meta=1
 	mv-nextpage="__UI_BASE__/order"
@@ -164,12 +164,12 @@
 	include-form="[scratch form_include]"
 	include-before="order_id"
 	widget.code=hidden_text
-	help.order_id='<span style="font-size: larger;font-weight: bold">* = settled, - = voided</span>'
+	help.order_id='<span style="font-size: larger;font-weight: bold">* = [L]settled[/L], - = [L]voided[/L]</span>'
 	link-table=orderline
 	link-key=order_number
 	link-before=order_id
 	link-no-blank=1
-	link-label="Ordered Items"
+	link-label="[L]Ordered Items[/L]"
 	hidden.ui_sequence_destination="@@MV_PAGE@@"
 /]
 
@@ -186,4 +186,4 @@
 </script>
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: order_status.html,v 2.14 2003-11-21 17:10:17 edl Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order_status.html,v 2.15 2003-12-09 16:30:45 ton Exp $ -->
