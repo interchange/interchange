@@ -1,6 +1,6 @@
 # Vend/TextSearch.pm:  Search indexes with Perl
 #
-# $Id: TextSearch.pm,v 1.6 2000-09-19 18:58:39 zarko Exp $
+# $Id: TextSearch.pm,v 1.7 2000-09-27 22:17:06 heins Exp $
 #
 # ADAPTED FOR USE WITH INTERCHANGE from Search::TextSearch
 #
@@ -28,7 +28,7 @@ require Exporter;
 use vars qw(@ISA);
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 1.7 $, 10);
 
 use Search::Dict;
 use strict;
@@ -390,20 +390,17 @@ sub search {
 		@out = map { join $s->{mv_return_delim}, @$_ } @out;
 		$s->{mv_results} = join $s->{mv_record_delim}, @out;
 	}
-	else {
-		my $col = scalar @{$s->{mv_return_fields}};
-		my @col;
+	elsif($s->{mv_return_reference} eq 'HASH') {
 		my @names;
-		@names = @{$s->{mv_field_names}};
+		@names = @{ $s->{mv_field_names} }[ @{$s->{mv_return_fields}} ];
 		$names[0] eq '0' and $names[0] = 'code';
-		my %hash;
-		my $key;
+		my @ary;
 		for (@out) {
-			@col = split /$s->{mv_return_delim}/, $_, $col;
-			$hash{$col[0]} = {};
-			@{ $hash{$col[0]} } {@names} = @col;
+			my $h = {};
+			@{ $h } {@names} = @$_;
+			push @ary, $h;
 		}
-		$s->{mv_results} = \%hash;
+		$s->{mv_results} = \@ary;
 	}
 	return $s;
 }
