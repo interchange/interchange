@@ -7,8 +7,8 @@
 [set icon_name]icon_config.gif[/set]
 
 [calc]
+	my $old = $Scratch->{xfer_catname} = $Config->{CatalogName};
 	return if $CGI->{do_xfer};
-	my $old = $Config->{CatalogName};
 	my $new = $CGI->{rename};
 	return unless $old and $new;
 	$new =~ s/[^-\w]+//g;
@@ -47,9 +47,23 @@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
+<span class=cmessage>
 [if scratch xfer_success]
-<span class=cmessage>Catalog output successfully.</span>
+Catalog output successfully.
 [/if]
+
+[if type=file term="[scratch xfer_catname].tar.gz"]
+<p>
+	[calc] $Scratch->{mv_deliver} .= " $Scratch->{xfer_catname}.tar.gz" ; return; [/calc]
+	[page add_dot_html=0 href="ui/[scratch xfer_catname].tar.gz"
+			form="
+				mv_data_file=[scratch xfer_catname].tar.gz
+				mv_content_type=application/x-gzip
+				mv_todo=deliver
+			"][L]Download transfer file[/L] ([file-info name="[scratch xfer_catname].tar.gz"])</A><BR>
+</p>
+[/if]
+</span>
 <table __UI_T_PROPERTIES__>
 <tr>
 <td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
@@ -169,4 +183,4 @@ CGI_DIR=CGI directory (where to copy link file)
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Revision: 1.1 $ -->
+<!-- page: @@MV_PAGE@@  version: $Revision: 1.2 $ -->
