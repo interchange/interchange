@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.5 2000-07-12 03:08:12 heins Exp $
+# $Id: UserDB.pm,v 1.6 2000-07-20 07:15:47 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.5 $, 10);
+$VERSION = substr(q$Revision: 1.6 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -946,6 +946,8 @@ sub login {
 		}
 		return undef;
 	}
+
+	$Vend::Session->{login_table} = $self->{DB_ID};
 	
 	1;
 }
@@ -1253,10 +1255,10 @@ sub userdb {
 				$Vend::Cfg->{AdminUserDB}{$user->{PROFILE}}
 				)
 			{
-::logDebug("logged in $Vend::username via $user->{DB_ID} -- ADMIN");
+#::logDebug("logged in $Vend::username via $user->{DB_ID} -- ADMIN");
 				$Vend::admin = 1;
 			}
-::logDebug("logged in $Vend::username via $user->{DB_ID}");
+#::logDebug("logged in $Vend::username via $user->{DB_ID}");
 			undef $Vend::Cookie
 				unless $Vend::Cfg->{StaticLogged};
 			::update_user();
@@ -1285,7 +1287,9 @@ sub userdb {
 			$user->clear_values();
 		}
 		delete $Vend::Session->{logged_in};
-		delete $Vend::Session->{'username'};
+		delete $Vend::Session->{login_table};
+		delete $Vend::Session->{username};
+		delete $CGI::values{mv_username};
 		undef $Vend::username;
 		delete $::Values->{mv_username};
 		$user->log('logout') if $options{'log'};

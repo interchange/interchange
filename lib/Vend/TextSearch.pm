@@ -1,6 +1,6 @@
 # Vend/TextSearch.pm:  Search indexes with Perl
 #
-# $Id: TextSearch.pm,v 1.3 2000-07-12 03:08:12 heins Exp $
+# $Id: TextSearch.pm,v 1.4 2000-07-20 07:15:47 heins Exp $
 #
 # ADAPTED FOR USE WITH MINIVEND from Search::TextSearch
 #
@@ -28,7 +28,7 @@ require Exporter;
 use vars qw(@ISA);
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 
 use Search::Dict;
 use strict;
@@ -185,7 +185,7 @@ sub search {
 	while ( $searchfile = shift @searchfiles ) {
 
 		my $field_names;
-		open(SEARCH, $searchfile)
+		-f $searchfile && open(SEARCH, "< $searchfile")
 			or ::logError( "Couldn't open search file '$searchfile': $!"), next;
 		$s->adjust_delimiter(\*SEARCH) if $s->{mv_delimiter_auto};
 		my $line;

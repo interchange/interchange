@@ -1,6 +1,6 @@
 # Vend/Glimpse.pm:  Search indexes with Glimpse
 #
-# $Id: Glimpse.pm,v 1.2 2000-07-12 03:08:10 heins Exp $
+# $Id: Glimpse.pm,v 1.3 2000-07-20 07:15:47 heins Exp $
 #
 # ADAPTED FOR USE WITH MINIVEND from Search::Glimpse
 #
@@ -27,7 +27,7 @@ package Vend::Glimpse;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.3 $, 10);
 use strict;
 
 sub array {
@@ -244,7 +244,7 @@ EOF
 			$s->{mv_field_file} =
 					::catfile($Vend::Cfg->{ProductDir}, $s->{mv_field_file})
 				unless ::file_name_is_absolute($s->{mv_field_file});
-			open(FF, $s->{mv_field_file})
+			open(FF, "< $s->{mv_field_file}")
 				or return $s->search_error("can't open fields file");
             chomp($field_names = <FF>);
         }

@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.4 2000-07-12 03:08:12 heins Exp $
+# $Id: Util.pm,v 1.5 2000-07-20 07:15:47 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -74,7 +74,7 @@ use Config;
 use Fcntl;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 
 BEGIN {
 	eval {
@@ -248,7 +248,10 @@ sub picture_format {
 
 sub setlocale {
     my ($locale, $currency, $opt) = @_;
+#::logDebug("original locale " . (defined $locale ? $locale : 'undef') );
+#::logDebug("default locale  " . (defined $::Scratch->{mv_locale} ? $::Scratch->{mv_locale} : 'undef') );
     $locale = $::Scratch->{mv_locale} unless defined $locale;
+#::logDebug("locale is now   " . (defined $locale ? $locale : 'undef') );
 
     if ( $locale and not defined $Vend::Cfg->{Locale_repository}{$locale}) {
         ::logError( "attempt to set non-existant locale '%s'" , $locale );
@@ -450,7 +453,7 @@ sub uneval_it_file {
 sub eval_it_file {
 	my ($fn) = @_;
 	local($/) = undef;
-	open(UNEV, $fn) or return undef;
+	open(UNEV, "< $fn") or return undef;
 	my $ref = evalr(<UNEV>);
 	close UNEV;
 	return $ref;
@@ -506,7 +509,8 @@ sub writefile {
 					File::Path::mkpath($dir);
 				}
 			}
-			open(MVLOGDATA, "$file") or die "open\n";
+			# We have checked for beginning > or | previously
+			open(MVLOGDATA, $file) or die "open\n";
 			lockfile(\*MVLOGDATA, 1, 1) or die "lock\n";
 			seek(MVLOGDATA, 0, 2) or die "seek\n";
 			if(ref $data) {
@@ -561,7 +565,8 @@ sub logData {
 
     eval {
 		unless($file =~ s/^[|]\s*//) {
-			open(MVLOGDATA, "$file")	or die "open\n";
+			# We have checked for beginning > or | previously
+			open(MVLOGDATA, $file)		or die "open\n";
 			lockfile(\*MVLOGDATA, 1, 1)	or die "lock\n";
 			seek(MVLOGDATA, 0, 2)		or die "seek\n";
 			print(MVLOGDATA "$msg\n")	or die "write to\n";
@@ -768,7 +773,7 @@ EOF
 			$fn = $try . "/" . escape_chars($file) . $suffix;
 		}
 
-		if (open(MVIN, $fn)) {
+		if (open(MVIN, "< $fn")) {
 			binmode(MVIN) if $Global::Windows;
 			undef $/;
 			$contents = <MVIN>;
@@ -841,7 +846,7 @@ sub readfile {
 	}
 
     return undef if ! -f $file;
-    return undef if ! open(READIN, $file);
+    return undef if ! open(READIN, "< $file");
 
 	$Global::Variable->{MV_FILE} = $file;
 
@@ -893,7 +898,7 @@ sub vendUrl {
 		unless $::Scratch->{mv_no_count};
 
     $r .= '/' . $path;
-	$r .= '.html' if $::Scratch->{mv_add_dot_html} and $r !~ /\.html?/;
+	$r .= '.html' if $::Scratch->{mv_add_dot_html} and $r !~ /\.html?$/;
 	push @parms, "$::VN->{mv_session_id}=$id"			 	if defined $id;
 	push @parms, "$::VN->{mv_arg}=" . hexify($arguments)	if defined $arguments;
 	push @parms, "$::VN->{mv_pc}=$ct"                 	if defined $ct;
@@ -1330,6 +1335,7 @@ sub logGlobal {
 	$Vend::Errors .= $msg if $Global::DisplayErrors;
 
     eval {
+		# We have checked for beginning > or | previously
 		open(MVERROR, $fn) or die "open\n";
 		if(! $nolock) {
 			lockfile(\*MVERROR, 1, 1) or die "lock\n";

@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.11 2000-07-12 03:08:10 heins Exp $
+# $Id: Config.pm,v 1.12 2000-07-20 07:15:47 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -101,7 +101,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.11 $, 10);
+$VERSION = substr(q$Revision: 1.12 $, 10);
 
 my %CDname;
 
@@ -429,6 +429,9 @@ sub catalog_directives {
     ['PriceDefault',	 undef,              'price'],
     ['PriceField',		 undef,              'price'],
 	['Shipping',         'locale',           ''],
+    ['IPC',		 		 'array',     	 	 ''],
+    ['IPCmode',		 	 'integer',    	 	 '0777'],
+    ['IPCdir',		 	 undef,    	 	     ''],
 
     ];
 
@@ -665,7 +668,7 @@ CONFIGLOOP:
 	# main configuration file.  If there is a file, then we
 	# will do it (after pushing the main one on @include).
 	
-    open(CONFIG, $configfile)
+    -f $configfile && open(CONFIG, "< $configfile")
 		or do {
 			my $msg = "Could not open configuration file '" . $configfile .
 					"' for catalog '" . $catalog . "':\n$!";
@@ -997,7 +1000,7 @@ GLOBLOOP:
 #print "recalling $configfile (pos $tellmark)\n";
 		}
 
-    open(GLOBAL, $configfile)
+    -f $configfile && open(GLOBAL, "< $configfile")
 		or do {
 			my $msg = errmsg(
 						"Could not open global configuration file '%s': %s",
@@ -1262,7 +1265,7 @@ sub parse_varname {
 	}
 	else {
 		if (! $Global::VarName) {
-			unless (-s "$Global::ConfDir/varnames") {
+			unless (-s "$Global::ConfDir/varnames" && -r _) {
 				$settings = $Varnames . "\n$settings";
 				Vend::Util::writefile("$Global::ConfDir/varnames", $Varnames);
 			}
@@ -1570,6 +1573,18 @@ my %Default = (
 								$C->{AdminUserDB} = {} unless $C->{AdminUserDB};
 								$C->{AdminUserDB}{$_} = $set->{$_}{admin};
 							}
+							return 1;
+						},
+		# Turn the array of IPC keys into a hash value so that we can
+		# grep for enables
+		IPC => sub {
+							my $ref = shift;
+							return 1 unless ref $ref;
+							my $hash = {};
+							for(@$ref) {
+								$hash->{$_} = 1;
+							}
+							$C->{IPCkeys} = $hash;
 							return 1;
 						},
 		TcpMap => sub {
@@ -2621,8 +2636,7 @@ sub parse_subroutine {
 	}
 
 	no strict 'refs';
-	$c = ${"Global::$var"}
-		unless defined $C;
+	$c = defined $C ? $C->{$var} : ${"Global::$var"};
 
 	$value =~ s/\s*sub\s+(\w+)\s*{/sub {/;
 	config_error("Bad $var: no subroutine name? ") unless $name = $1;

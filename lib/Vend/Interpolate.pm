@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.12 2000-07-12 03:08:10 heins Exp $
+# $Id: Interpolate.pm,v 1.13 2000-07-20 07:15:47 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.12 $, 10);
+$VERSION = substr(q$Revision: 1.13 $, 10);
 
 @EXPORT = qw (
 
@@ -647,7 +647,7 @@ sub catch {
 # Returns the text of a configurable database field or a 
 # variable
 sub tag_data {
-	my($selector,$field,$key,$opt) = @_;
+	my($selector,$field,$key,$opt,$flag) = @_;
 	$CacheInvalid = 1 if defined $Vend::Cfg->{DynamicData}->{$selector};
 
 	if ( not defined $Vend::Database{$selector}) {
@@ -694,6 +694,10 @@ sub tag_data {
 			$opt->{value} = filter_value($opt->{filter}, $opt->{value}, $field);
 		}
 		return set_field($selector,$key,$field,$opt->{value},$opt->{append});
+	}
+	elsif ($opt->{hash}) {
+		my $db = ::database_exists_ref($selector);
+		return $db->row_hash($key);
 	}
 
 	#The most common , don't enter a block, no accoutrements
@@ -1771,6 +1775,7 @@ sub mime {
 							':=' . $$
 		unless defined $::Instance->{MIME_BOUNDARY};
 
+	my $msg_type = $opt->{attach_only} ? "multipart/mixed" : "multipart/alternative";
 	if($option eq 'reset') {
 		undef $::Instance->{MIME_TIMESTAMP};
 		undef $::Instance->{MIME_BOUNDARY};
@@ -1787,7 +1792,7 @@ sub mime {
 		$id = _mime_id();
 		$out = <<EndOFmiMe;
 MIME-Version: 1.0
-Content-Type: MULTIPART/MIXED; BOUNDARY="$::Instance->{MIME_BOUNDARY}"
+Content-Type: $msg_type; BOUNDARY="$::Instance->{MIME_BOUNDARY}"
 Content-ID: $id
 EndOFmiMe
 	}
@@ -1797,12 +1802,13 @@ EndOFmiMe
 	else {
 		$id = _mime_id();
 		$::Instance->{MIME} = 1;
+		my $desc = $opt->{description} || $option;
 		my $type = $opt->{type} || 'TEXT/PLAIN; CHARSET=US-ASCII';
 		$out = <<EndOFmiMe;
 --$::Instance->{MIME_BOUNDARY}
 Content-Type: $type
 Content-ID: $id
-Content-Description: $option
+Content-Description: $desc
 
 $text
 EndOFmiMe
@@ -2339,16 +2345,16 @@ sub tag_page {
 
 	while($Vend::Cookie and ! $arg) {
 		if(defined $Vend::StaticDBM{$page}) {
-		  $page = $Vend::StaticDBM{$page} || $page;
+		  $page = $Vend::StaticDBM{$page} || "$page$Vend::Cfg->{StaticSuffix}";
 		}
 		elsif (defined $Vend::Cfg->{StaticPage}{$page}) {
 		  $page = $Vend::Cfg->{StaticPage}{$page}
 					if $Vend::Cfg->{StaticPage}{$page};
+		  $page .= $Vend::Cfg->{StaticSuffix};
 		}
 		else {
 			last;
 		}
-		$page .= $Vend::Cfg->{StaticSuffix};
 		return '<a href="' . $urlroutine->($page,undef,$Vend::Cfg->{StaticPath}) . '">';
 	}
 	
@@ -2376,17 +2382,20 @@ sub tag_area {
 
 	while($Vend::Cookie and ! $arg) {
 		if(defined $Vend::StaticDBM{$page}) {
-		  $page = $Vend::StaticDBM{$page} || $page;
+		  $page = $Vend::StaticDBM{$page} || "$page$Vend::Cfg->{StaticSuffix}";
 		}
 		elsif (defined $Vend::Cfg->{StaticPage}{$page}) {
 		  $page = $Vend::Cfg->{StaticPage}{$page}
 					if $Vend::Cfg->{StaticPage}{$page};
+		  $page .= $Vend::Cfg->{StaticSuffix};
 		}
 		else {
 			last;
 		}
-		$page .= $Vend::Cfg->{StaticSuffix};
-		return $urlroutine->($page,undef,$Vend::Cfg->{StaticPath});
+#::logDebug("static page=$page");
+		my $url = $urlroutine->($page,undef,$Vend::Cfg->{StaticPath});
+#::logDebug("static url=$page");
+		return $url;
 	}
     return $urlroutine->($page, $arg);
 }
@@ -2694,7 +2703,6 @@ sub tag_sort_hash {
 }
 
 my %Prev;
-my %Sub;
 
 sub compile_sub {
 }
@@ -3166,7 +3174,6 @@ sub labeled_list {
 	$count++;
 	# Zero the on-change hash
 	undef %Prev;
-	undef %Sub;
 
 	if(defined $opt->{option}) {
 		$opt_value = $opt->{option};
@@ -3251,7 +3258,6 @@ sub iterate_array_list {
 	my ($run, $row, $code, $return);
 my $once = 0;
 #::logDebug("iterating array $i to $end. count=$count opt_select=$opt_select ary=" . ::uneval($ary));
-
 	if($text =~ m/^$B$QR{_line}\s*$/is) {
 		my $i = $1 || 0;
 		my $count = scalar values %$fh;
@@ -3263,8 +3269,9 @@ my $once = 0;
 	while($text =~ s#$B$QR{_sub}$E$QR{'/_sub'}##i) {
 		my $name = $1;
 		my $routine = $2;
-		$Sub{''} = sub { ::errmsg('undefined sub') }
-			unless defined $Sub{''};
+		## Not necessary?
+		## $Vend::Cfg->{Sub}{''} = sub { ::errmsg('undefined sub') }
+		##	unless defined $Vend::Cfg->{Sub}{''};
 		$routine = 'sub { ' . $routine . ' }' unless $routine =~ /^\s*sub\s*{/;
 		my $sub;
 		eval {
@@ -3275,7 +3282,7 @@ my $once = 0;
 			$sub = sub { ::errmsg('ERROR') };
 		}
 #::logDebug("sub $name: $sub --> $routine");
-		$Sub{$name} = $sub;
+		$Vend::Cfg->{Sub}{$name} = $sub;
 	}
 	for( ; $i <= $end ; $i++, $count++ ) {
 		$row = $ary->[$i];
@@ -3320,7 +3327,7 @@ my $once = 0;
 											?	pull_if($4)
 											:	pull_else($4)!ige;
 		$run =~ s#$B$QR{_calc}$E$QR{'/_calc'}#tag_calc($1)#ige;
-		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#($Sub{$1} || sub { 'ERROR' })->($2,$row)#ige;
+		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#($Vend::Cfg->{Sub}{$1} || sub { 'ERROR' })->($2,$row)#ige;
 		$run =~ s#$B$QR{_filter}$E$QR{'/_filter'}#filter_value($1,$2)#ige;
 		$run =~ s#$B$QR{_last}$E$QR{'/_last'}#
                     my $tmp = interpolate_html($1);
@@ -3484,7 +3491,6 @@ sub html_table {
 		my $splittor = quotemeta $opt->{record_delim} || "\n";
 		my (@rows) = split /$splittor/, $ary;
 		$na = [ split /$delimiter/, shift @rows ] if $opt->{th};
-::logDebug("html_table rows: " . ::uneval($na));
 		$ary = [];
 		my $count = scalar @$na || -1;
 		for (@rows) {
@@ -3940,7 +3946,7 @@ sub read_shipping {
 				|| Vend::Util::catfile($Vend::Cfg->{ProductDir},'shipping.asc');
 	}
 
-    open(SHIPPING, $file) or do {
+    open(SHIPPING, "< $file") or do {
 			if ($Vend::Cfg->{CustomShipping} =~ /^select\s+/i) {
 				($Vend::Cfg->{SQL_shipping} = 1, return)
 					if $Vend::Foreground;
@@ -3962,7 +3968,7 @@ sub read_shipping {
 					$out .= "\n";
 					Vend::Util::writefile(">$file", $out);
 				}
-				open(SHIPPING, $file) or do {
+				open(SHIPPING, "< $file") or do {
 					logError("Could not make shipping query %s: %s" ,
 								$Vend::Cfg->{CustomShipping},
 								$!);
@@ -4272,10 +4278,14 @@ sub timed_build {
     my $opt = shift;
 	my $abort;
 
+	if (defined $opt->{if}) {
+		$abort = 1 if ! $opt->{if}; 
+	}
+
 	my $saved_file;
 	if($opt->{scan}) {
-		$saved_file = $Vend::Session->{last_search};
-		$abort = 1 if $file =~ m:MM=:;
+		$saved_file = $Vend::ScanPassed;
+		$abort = 1 if ! $saved_file || $file =~ m:MM=:;
 	}
 
 	return Vend::Interpolate::interpolate_html(shift)
@@ -4294,10 +4304,12 @@ sub timed_build {
 		last CHECKDIR if $file;
 		my $dir = $Vend::Cfg->{StaticDir};
 		$dir = ! -d $dir || ! -w _ ? 'timed' : do { $static = 1; $dir };
+
 		$file = $saved_file || $Vend::Flypart || $Global::Variable->{MV_PAGE};
+#::logDebug("static=$file");
 		if($saved_file) {
 			$file = $saved_file;
-			$file =~ s/(\W)/sprintf("%02x", ord($1))/eg;
+			$file =~ s/([^-\w=%])/sprintf("%02x", ord($1))/eg;
 		}
 		else {
 		 	$saved_file = $file = ($Vend::Flypart || $Global::Variable->{MV_PAGE});
@@ -4312,6 +4324,8 @@ sub timed_build {
 		$file = Vend::Util::catfile($dir, $file);
 	}
 
+#::logDebug("saved=$saved_file");
+#::logDebug("file=$file exists=" . -f $file);
 	if($opt->{minutes}) {
         $secs = int($opt->{minutes} * 60);
     }
@@ -4327,6 +4341,9 @@ sub timed_build {
 		if ($Vend::Cfg->{StaticDBM} and ::tie_static_dbm(1) ) {
 			if ($opt->{scan}) {
 				$file =~ s:.*/::;
+				$saved_file =~ s!=([^/]+)=!=$1%3d!g;
+				$saved_file =~ s!=([^/]+)-!=$1%2d!g;
+#::logDebug("saved_file=$saved_file");
 				$Vend::StaticDBM{$saved_file} = $file;
 			}
 			else {

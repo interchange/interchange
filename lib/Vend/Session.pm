@@ -1,6 +1,6 @@
 # Session.pm - Interchange Sessions
 #
-# $Id: Session.pm,v 1.3 2000-07-12 03:08:11 heins Exp $
+# $Id: Session.pm,v 1.4 2000-07-20 07:15:47 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -30,7 +30,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -213,6 +213,7 @@ sub new_session {
     $Vend::SessionName = $name;
     init_session();
 #::logDebug("init_session $Vend::SessionName is: " . ::uneval($Vend::Session));
+#::logDebug("init_session $Vend::SessionName");
 	$Vend::HaveSession = 1;
 	return if $File_sessions || $DB_sessions;
 	write_session();
@@ -397,6 +398,8 @@ sub init_session {
 		if $CGI::secure;
 	$::Values     = $Vend::Session->{'values'};
 	$::Scratch	  = $Vend::Session->{scratch};
+	$::Scratch->{mv_locale} = $Vend::Cfg->{DefaultLocale}
+		if ! $::Scratch->{mv_locale} and $Vend::Cfg->{DefaultLocale};
 	$::Carts	  = $Vend::Session->{carts};
 	tie $Vend::Items, 'Vend::Cart';
 	$::Values->{mv_shipmode} = $Vend::Cfg->{DefaultShipping}

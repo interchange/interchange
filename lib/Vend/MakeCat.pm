@@ -2,7 +2,7 @@
 #
 # MakeCat.pm - routines for catalog configurator
 #
-# $Id: MakeCat.pm,v 1.3 2000-07-12 03:08:10 heins Exp $
+# $Id: MakeCat.pm,v 1.4 2000-07-20 07:15:47 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -61,7 +61,7 @@ sethistory
 use strict;
 
 use vars qw($Force $Error $History $VERSION);
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 
 $Force = 0;
 $History = 0;
@@ -335,10 +335,11 @@ my $Windows = ($^O =~ /win32/i ? 1 : 0);
 
 sub compare_file {
     my($first,$second) = @_;
+    return 0 unless -f $first && -f $second;
     return 0 unless -s $first == -s $second;
     local $/;
-    open(FIRST, $first) or return undef;
-    open(SECOND, $second) or (close FIRST and return undef);
+    open(FIRST, "< $first") or return undef;
+    open(SECOND, "< $second") or (close FIRST and return undef);
     binmode(FIRST);
     binmode(SECOND);
     $first = '';
@@ -394,7 +395,7 @@ sub install_file {
     }
 
     if( ! $Windows and -f $targfile and ! compare_file($srcfile, $targfile) ) {
-        open (GETVER, $targfile)
+        open (GETVER, "< $targfile")
             or die "Couldn't read $targfile for version update: $!\n";
         while(<GETVER>) {
             /VERSION\s+=.*?\s+([\d.]+)/ or next;
@@ -415,7 +416,7 @@ sub install_file {
 	if($opt->{Substitute}) {
 			my $bak = "$targfile.mv";
 			rename $targfile, $bak;
-			open(SOURCE, $bak)			or die "open $bak: $!\n";
+			open(SOURCE, "< $bak")			or die "open $bak: $!\n";
 			open(TARGET, ">$targfile")		or die "create $targfile: $!\n";
 			local($/) = undef;
 			my $page = <SOURCE>; close SOURCE;
@@ -552,7 +553,7 @@ sub add_catalog {
 		else {
 			File::Copy::copy("$file.dist", $tmpfile);
 		}
-		open(CFG, $tmpfile)
+		open(CFG, "< $tmpfile")
 			or die "Couldn't open $tmpfile: $!\n";
 		$newcfgline = sprintf "%-19s %s\n", $directive, $value;
 		while(<CFG>) {
@@ -584,7 +585,7 @@ sub add_catalog {
 			my $pid;
 			PID: {
 				local ($/);
-				open(PID,$pidfile) or die "open $pidfile: $!\n";
+				open(PID, "< $pidfile") or die "open $pidfile: $!\n";
 				$pid = <PID>;
 				$pid =~ /(\d+)/;
 				$pid = $1;
@@ -636,7 +637,7 @@ sub conf_parse_http {
 	my $servers = {};
 	my $newfile;
 
-	open(HTTPDCONF, $file)
+	open(HTTPDCONF, "< $file")
 		or do { $Error = "Can't open $file: $!"; return undef};
 	local($/) = undef;
 	my $data = <HTTPDCONF>;
@@ -664,7 +665,7 @@ sub conf_parse_http {
 
 	SRMCONF: {
 		if (-f $newfile) {
-			open(HTTPDCONF, $newfile)
+			open(HTTPDCONF, "< $newfile")
 				or last SRMCONF;
 			$data .= <HTTPDCONF>;
 			close(HTTPDCONF);

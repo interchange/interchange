@@ -1,6 +1,6 @@
 # Vend/Scan.pm:  Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 1.3 2000-07-12 03:08:11 heins Exp $
+# $Id: Scan.pm,v 1.4 2000-07-20 07:15:47 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -29,7 +29,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 
 use strict;
 use Vend::Util;
@@ -215,7 +215,7 @@ my %Parse = (
 								find_search_params($ref, $p);
 								return $val;
 							},
-	#base_directory      => 	\&_file_security_scalar,
+	base_directory      	=> 	\&_dir_security_scalar,
 	mv_field_file          => 	\&_file_security_scalar,
 	mv_search_file         => 	\&_file_security,
 
@@ -384,7 +384,7 @@ sub finish_search {
 # Search for an item with glimpse or text engine
 sub perform_search {
     my($c,$more_matches,$pre_made) = @_;
-
+#::logDebug('searching....');
 	if (!$c) {
 		return undef unless $Vend::Session->{search_params};
 		($c, $more_matches) = @{$Vend::Session->{search_params}};
@@ -810,7 +810,7 @@ sub _find_field {
 
 	if(defined $file) {
 		my $dir = $s->{mv_base_directory} || $Vend::Cfg->{ProductDir};
-		open (Vend::Scan::FIELDS, "$dir/$file")
+		open (Vend::Scan::FIELDS, "< $dir/$file")
 			or return undef;
 		chomp($line = <Vend::Scan::FIELDS>);
 		my $delim;
@@ -885,6 +885,11 @@ sub _file_security {
     }
     return $passed if @$passed;
 	return [];
+}
+
+sub _dir_security_scalar {
+    return undef if ! -d $_->[0];
+	return $_->[0];
 }
 
 sub _file_security_scalar {

@@ -1,6 +1,6 @@
 # Static.pm - Interchange static page routines
 # 
-# $Id: Static.pm,v 1.3 2000-07-12 03:08:12 heins Exp $
+# $Id: Static.pm,v 1.4 2000-07-20 07:15:47 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -245,7 +245,7 @@ EOF
 		print "Building from files listed in .build file.\n";
 		$build_list = 1;
 		$all = 0;
-		open(BUILD, "$basedir/.build")
+		open(BUILD, "< $basedir/.build")
 			or die "Couldn't open build spec $basedir/.build: $!\n";
 		my $suf = $Vend::Cfg->{StaticSuffix};
 		while(<BUILD>) {

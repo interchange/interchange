@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.2 2000-07-12 03:08:11 heins Exp $
+# $Id: Parse.pm,v 1.3 2000-07-20 07:15:47 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,12 +27,12 @@
 
 package Vend::Parse;
 
-# $Id: Parse.pm,v 1.2 2000-07-12 03:08:11 heins Exp $
+# $Id: Parse.pm,v 1.3 2000-07-20 07:15:47 heins Exp $
 
 require Vend::Parser;
 
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/);
 
 use Safe;
 use Vend::Util;
@@ -44,7 +44,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.3 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -240,6 +240,7 @@ my %addAttr = (
 					process         1
 					query			1
                     sql             1
+					setlocale       1
                     record          1
                     region          1
                     search_region   1
@@ -790,6 +791,9 @@ use vars '%myRefs';
 sub do_tag {
 	my $tag = shift;
 #::logDebug("Parse-do_tag: tag=$tag caller=" . caller());
+	die errmsg("Unauthorized for admin tag %s", $tag)
+		if defined $Vend::Cfg->{AdminSub}{$tag} and ! $Vend::admin;
+	
 	if (! defined $Routine{tag} and (not $tag = $Alias{$tag}) ) {
 		::logError("Tag '$tag' not defined.");
 		return undef;
@@ -938,6 +942,13 @@ sub html_start {
     my($self, $tag, $attr, $attrseq, $origtext, $end_tag) = @_;
 #::logDebug("HTML tag=$tag Interp='$Interpolate{$tag}' origtext=$origtext attributes:\n" . ::uneval($attr));
 	$tag =~ tr/-/_/;   # canonical
+
+	if (defined $Vend::Cfg->{AdminSub}{$tag} and ! $Vend::admin) {
+		$Vend::StatusLine = "Status: 403\nContent-Type: text/html";
+		::response( errmsg("Unauthorized for admin tag %s", $tag) );
+		return ($self->{ABORT} = 1);
+	}
+
 	$end_tag = lc $end_tag;
 	my $buf = \$self->{_buf};
 #::logDebug("tag=$tag end_tag=$end_tag buf length " . length($$buf)) if $Monitor{$tag};
@@ -1243,6 +1254,12 @@ sub start {
 #::logDebug("tag=$tag buf length " . length($$buf));
 #::logDebug("tag=$tag Interp='$Interpolate{$tag}' origtext=$origtext attributes:\n" . ::uneval($attr));
 	my($tmpbuf);
+	if (defined $Vend::Cfg->{AdminSub}{$tag} and ! $Vend::admin) {
+		$Vend::StatusLine = "Status: 403\nContent-Type: text/html";
+		::response( errmsg("Unauthorized for admin tag %s", $tag) );
+		return ($self->{ABORT} = 1);
+	}
+
     # $attr is reference to a HASH, $attrseq is reference to an ARRAY
 	unless (defined $Routine{$tag}) {
 		if(defined $Alias{$tag}) {

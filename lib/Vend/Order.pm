@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.5 2000-07-12 03:08:11 heins Exp $
+# $Id: Order.pm,v 1.6 2000-07-20 07:15:47 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.5 $, 10);
+$VERSION = substr(q$Revision: 1.6 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -207,6 +207,7 @@ my %Parse = (
 	'&success'		=> 	sub { $Success_page = $_[1] },
 	'&fail'         =>  sub { $Fail_page    = $_[1] },
 	'&final'		=>	\&_final,
+	'&calc'			=>  sub { Vend::Interpolate::tag_calc($_[1]) },
 	'&test'			=>	sub {		
 								my($ref,$params) = @_;
 								$params =~ s/\s+//g;
@@ -300,7 +301,7 @@ sub encrypt_cc {
 	$cmd = $Vend::Cfg->{EncryptProgram};
 	$cmd = '' if "\L$cmd" eq 'none';
 
-	my $tempfile = $Vend::SessionID . '.cry';
+	my $tempfile = $Vend::Cfg->{ScratchDir} . '/' . $Vend::SessionID . '.cry';
 
 	#Substitute the filename
 	if ($cmd =~ s/%f/$tempfile/) {
@@ -312,7 +313,7 @@ sub encrypt_cc {
 
 	# Send the CC to a tempfile if incoming
 	if($infile) {
-		open(CARD, ">$tempfile") ||
+		open(CARD, ">$Vend::Cfg->{ScratchDir}/$tempfile") ||
 			die "Couldn't write $tempfile: $!\n";
 		# Put the cardnumber there, and maybe password first
 		$enclair .= "\r\n\cZ\r\n" if $Global::Windows;
@@ -333,7 +334,7 @@ sub encrypt_cc {
 		close CRYPT;
 		$status = $cmd ? $? : 0;
 
-		open(CARD, $tempfile) || warn "open $tempfile: $!\n";
+		open(CARD, "< $tempfile") || warn "open $tempfile: $!\n";
 		$encrypted = <CARD>;
 		close CARD;
 	}
@@ -1022,8 +1023,8 @@ sub check_order {
 	elsif($profile =~ /^\d+$/) {
 		$params = $Vend::Cfg->{OrderProfile}->[$profile];
 	}
-	elsif(defined $Vend::Session->{scratch}->{$profile}) {
-		$params = $Vend::Session->{scratch}->{$profile};
+	elsif(defined $::Scratch->{$profile}) {
+		$params = $::Scratch->{$profile};
 	}
 	else { return undef }
 	return undef unless $params;

@@ -1,6 +1,6 @@
 # Table/Common.pm: Common access methods for Interchange Databases
 #
-# $Id: Common.pm,v 1.6 2000-07-12 03:08:12 heins Exp $
+# $Id: Common.pm,v 1.7 2000-07-20 07:15:47 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -25,7 +25,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 1.7 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -767,6 +767,11 @@ sub import_ascii_delimited {
 	my $idx = 0;
 
 	my($field_count, @field_names);
+	
+	if($options->{hs}) {
+		my $i = 0;
+		<IN> while $i++ < $options->{hs};
+	}
 	if($options->{field_names}) {
 		@field_names = @{$options->{field_names}};
 
@@ -816,6 +821,7 @@ sub import_ascii_delimited {
 			$para_sep = $options->{NOTES_SEPARATOR} || "\f";
 		}
 	}
+
 	local($/) = "\n" . $para_sep ."\n"
 		if $para_sep;
 

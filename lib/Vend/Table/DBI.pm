@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.10 2000-07-12 03:08:12 heins Exp $
+# $Id: DBI.pm,v 1.11 2000-07-20 07:15:47 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.10 $, 10);
+$VERSION = substr(q$Revision: 1.11 $, 10);
 
 use strict;
 
@@ -581,7 +581,7 @@ sub fields_index {
 	for( my $i = 0; $i < @$fields; $i++) {
 		$idx{lc $fields->[$i]} = $i;
 		next unless defined $alias->{lc $fields->[$i]};
-::logDebug("alias found: $fields->[$i] = $alias->{lc $fields->[$i]} = $i");
+#::logDebug("alias found: $fields->[$i] = $alias->{lc $fields->[$i]} = $i");
 		$idx{ $alias->{ lc $fields->[$i] } } = $i;
 	}
 	return \%idx;
