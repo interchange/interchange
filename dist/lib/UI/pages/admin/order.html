@@ -57,7 +57,7 @@
 	my $db = $Db{transactions};
 	if(! $db) {
 		$Scratch->{ui_error} = "<FONT CLASS=error>Error: no transactions database.</FONT><BR>";
-		$Scratch->{ui_location} = "__UI_BASE__/error";
+		$Scratch->{ui_location} = $Tag->area("__UI_BASE__/error");
 		return;
 	}
 
