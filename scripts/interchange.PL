@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.9.0
 #
-# $Id: interchange.PL,v 2.25 2002-03-18 20:11:06 jon Exp $
+# $Id: interchange.PL,v 2.26 2002-03-20 06:23:04 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -1744,12 +1744,8 @@ sub url_history {
 my %action = (
     process	=> \&do_process,
 	ui_wrap => \&UI::Primitive::ui_wrap,
-    ui=> sub { 
+	ui		=> sub { 
 					&UI::Primitive::ui_acl_global();
-					&do_process(@_);
-				   },
-    minimate=> sub { 
-					&MiniMate::CfgMgr::mm_acl_global;
 					&do_process(@_);
 				   },
     scan	=> \&do_scan,
