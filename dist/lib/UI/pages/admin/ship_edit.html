@@ -1,7 +1,7 @@
 [set help_name]shipping.edit[/set]
 [set ui_class]Admin[/set]
-[seti page_title]Shipping options: edit method [cgi ui_shipmode][/seti]
-[seti page_banner]Shipping options: edit method <I>[cgi ui_shipmode]</I>[/seti]
+[seti page_title][L]Shipping options[/L]: [msg arg.0="[cgi ui_shipmode]"]edit method %s[/msg][/seti]
+[seti page_banner][L]Shipping options[/L]: [msg arg.0="<I>[cgi ui_shipmode]</I>"]edit method %s[/msg][/seti]
 [set page_perm]shipping[/set]
 [set icon_name]icon_config.gif[/set]
 [set meta_header]
@@ -182,7 +182,7 @@
 
 <tr>
 <td class=rnorm align=right WIDTH="__UI_LEFT_WIDTH">
-<small>Name of this method</small><BR><small><i>(letters/digits only)</i></small>
+<small>[L]Name of this method[/L]</small><BR><small><i>([L]letters/digits only[/L])</i></small>
 </td>
 <td class=rnorm>
 <input type=text size=40 name="ui_shipmode" value="[value ui_shipmode]">
@@ -191,7 +191,7 @@
 
 <tr>
 <td class=rnorm align=right WIDTH="__UI_LEFT_WIDTH">
-<small>Label for this method</small>
+<small>[L]Label for this method[/L]</small>
 </td>
 <td class=rnorm>
 <input type=text size=40 name="ui_ship_description" value="[value ui_ship_description]">
@@ -201,17 +201,17 @@
 
 <tr>
 <td class=rnorm align=right>
-<small>Total based on this criteria</small>
+<small>[L]Total based on this criteria[/L]</small>
 </td>
 <td class=rnorm>
 
 <select name=ui_ship_criteria>
 [loop lr=1 option=ui_ship_criteria list="
-_subtotal	Price
-weight	Weight
-volume	Volume
-quantity	Item quantity
-custom	Custom -->
+_subtotal	[L]Price[/L]
+weight	[L]Weight[/L]
+volume	[L]Volume[/L]
+quantity	[L]Item quantity[/L]
+custom	[L]Custom[/L] -->
 "
 ]<OPTION VALUE="[loop-code]">[loop-pos 1][/loop]
 </select>&nbsp;<INPUT NAME=ui_ship_custom_criteria VALUE="[value custom_criteria]">
@@ -222,17 +222,17 @@ custom	Custom -->
 
 <tr>
 <td class=rnorm align=right>
-<small>Calculate based on this algorithm</small>
+<small>[L]Calculate based on this algorithm[/L]</small>
 </td>
 <td class=rnorm>
 <select name=ui_ship_type onChange="check_for_ups(this.form,
 			this.options[this.selectedIndex].value) && this.form.submit()">
 [loop lr=1 option=ui_ship_type
-		list="_subtotal	Standard shipping by price
-weight	Standard shipping by weight
-volume	Standard shipping by volume
-quantity	Standard shipping by quantity
-UPSI	Internal UPS lookup
+		list="_subtotal	[L]Standard shipping by price[/L]
+weight	[L]Standard shipping by weight[/L]
+volume	[L]Standard shipping by volume[/L]
+quantity	[L]Standard shipping by quantity[/L]
+UPSI	[L]Internal UPS lookup[/L]
 [available_www_shipping]
 "]<OPTION VALUE="[loop-code]">[loop-pos 1]
 [/loop]
@@ -243,7 +243,7 @@ UPSI	Internal UPS lookup
 
 <tr>
 <td class=rnorm align=right valign=top>
-<BR><small>Apply this method by country<BR><I>(select as many as desired)</I></small>
+<BR><small>[L]Apply this method by country[/L]<BR><I>([L]select as many as desired[/L])</I></small>
 </td>
 <td class=rnorm>
 <FONT SIZE=-1>
@@ -275,7 +275,7 @@ EOF
 		 <OPTION VALUE="[loop-code]"> [loop-param name]
 [/loop]
 
-</select>&nbsp;&nbsp;<INPUT TYPE=checkbox NAME=ui_ship_country_invert VALUE=1> <B>except</B> these countries
+</select>&nbsp;&nbsp;<INPUT TYPE=checkbox NAME=ui_ship_country_invert VALUE=1> [msg arg.0="<B>" arg.1="</B>"]%sexcept%s these countries[/msg]
 
 </td>
 </tr>
@@ -283,7 +283,7 @@ EOF
 
 <tr>
 <td class=rnorm align=right>
-<small>Minimum shipping charge</small>
+<small>[L]Minimum shipping charge[/L]</small>
 </td>
 <td class=rnorm>
 <input type=text size=10 name="ui_ship_at_least" value="[value ui_ship_at_least]">
@@ -292,7 +292,7 @@ EOF
 
 <tr>
 <td class=rnorm align=right>
-<small>Additional shipping calculation</small><BR><I><SMALL>(number only is additional charge)</SMALL></I>
+<small>[L]Additional shipping calculation[/L]</small><BR><I><SMALL>(number only is additional charge)</SMALL></I>
 </td>
 <td class=rnorm>
 <input type=text size=50 name="ui_ship_adder" value="[value ui_ship_adder]">
@@ -305,8 +305,8 @@ EOF
 </td>
 <td class=rnorm>
 <SELECT NAME=ui_ship_round>
-<OPTION VALUE=""> No
-<OPTION VALUE="1" [selected ui_ship_round 1]> Yes
+<OPTION VALUE=""> [L]No[/L]
+<OPTION VALUE="1" [selected ui_ship_round 1]> [L]Yes[/L]
 </SELECT>
 </td>
 </tr>
@@ -314,12 +314,12 @@ EOF
 
 <tr>
 <td class=rnorm align=right>
-<small>Allow to be zero cost</small>
+<small>[L]Allow to be zero cost[/L]</small>
 </td>
 <td class=rnorm>
 <SELECT NAME=ui_ship_free>
-<OPTION VALUE=""> No
-<OPTION VALUE="1" [selected ui_ship_free 1]> Yes
+<OPTION VALUE=""> [L]No[/L]
+<OPTION VALUE="1" [selected ui_ship_free 1]> [L]Yes[/L]
 </SELECT>
 </td>
 </tr>
@@ -327,7 +327,7 @@ EOF
 
 <tr>
 <td class=rnorm align=right>
-<small>Message when zero</small>
+<small>[L]Message when zero[/L]</small>
 </td>
 <td class=rnorm>
 <INPUT NAME=ui_ship_message VALUE="[either][value ui_ship_message][or]Nothing to ship![/either]">
@@ -341,7 +341,7 @@ EOF
 	[seti available_ups_internal][available_ups_internal][/seti]
 	<tr>
 	<td class=rnorm align=right>
-	<small>UPS Zone chart</small>
+	<small>[L]UPS Zone chart[/L]</small>
 	</td>
 	<td class=rnorm>
 	<SELECT NAME=ui_ship_zone>
@@ -355,7 +355,7 @@ EOF
 
 	<tr>
 	<td class=rnorm align=right>
-	<small>Table for lookups</small>
+	<small>[L]Table for lookups[/L]</small>
 	</td>
 	<td class=rnorm>
 	<SELECT NAME=ui_ship_table>
@@ -369,7 +369,7 @@ EOF
   [else]
 	<tr>
 	<td class=rnorm align=right>
-	<small>UPS Origin Zone</small>[if variable UPS_ORIGIN]<BR><SMALL><I>(default __UPS_ORIGIN__)</I></SMALL>[/if]
+	<small>[L]UPS Origin Zone[/L]</small>[if variable UPS_ORIGIN]<BR><SMALL><I>(default __UPS_ORIGIN__)</I></SMALL>[/if]
 	</td>
 	<td class=rnorm>
 	<input type=text size=50 name="ui_ship_origin" value="[value ui_ship_origin]">
@@ -380,7 +380,7 @@ EOF
 
   <tr>
   <td class=rnorm align=right>
-  <small>Field that chooses UPS destination</small>[if variable UPS_POSTCODE_FIELD]<BR><SMALL><I>(default __UPS_POSTCODE_FIELD__)</I></SMALL>[/if]
+  <small>[L]Field that chooses UPS destination[/L]</small>[if variable UPS_POSTCODE_FIELD]<BR><SMALL><I>(default __UPS_POSTCODE_FIELD__)</I></SMALL>[/if]
   </td>
   <td class=rnorm>
   <input type=text size=50 name="ui_ship_geo" value="[value ui_ship_geo]">
@@ -400,10 +400,10 @@ EOF
 
 <p>
 
-[button text="Finished"]
+[button text="[L]Finished[/L]"]
 	do_update_cmd=Ok
 [/button]
-[button text="Next -->"]
+[button text="[L]Next -->[/L]"]
 	do_update_cmd=Ok
 	ui_bounce_url=__UI_BASE__/ship_data
 [/button]
