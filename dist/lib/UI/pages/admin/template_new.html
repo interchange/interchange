@@ -6,7 +6,7 @@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
-<form action="[area __UI_BASE__/template_edit]" method=POST ENCTYPE="multipart/form-data">
+<form action="[area href="__UI_BASE__/template_edit" secure="__UI_SECURE__"]" method=POST ENCTYPE="multipart/form-data">
 <input type=hidden name=mv_action value=back>
 
 [if scratch ui_error]
@@ -114,7 +114,7 @@ mv_todo=return
 5. [L]Click this button to create the template[/L]:
 </td>
 <td>
-<input type="submit" name="mv_click" value="[L]Create new template[/L]" onClick="this.form.target='_self'"> <INPUT TYPE=checkbox NAME=ui_show_template VALUE=1 CHECKED>Show template top/bottom<BR>
+<input type="submit" name="mv_click" value="[L]Create new template[/L]" onClick="this.form.target='_self'"><INPUT TYPE=hidden NAME=ui_show_template VALUE=1>
 </td>
 </tr>
 

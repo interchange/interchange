@@ -16,7 +16,9 @@
 		last;
 	}
 	my ($ary) = $Tag->read_ui_template($page);
-	$Scratch->{ui_template_version} = $ary->[0]->{ui_template_version};
+	return unless 
+		$Scratch->{ui_template_version} = $ary->[0]->{ui_template_version};
+	$Scratch->{ui_template_structure} = $ary->[0];
 	return;
 [/perl]
 

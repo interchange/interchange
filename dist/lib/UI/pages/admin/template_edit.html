@@ -6,7 +6,7 @@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
-<form action="[base-url]/__MV_PAGE__" method=POST ENCTYPE="multipart/form-data">
+<form action="[area @@MV_PAGE@@]" method=POST ENCTYPE="multipart/form-data">
 <input type=hidden name=mv_action value=back>
 
 <table __UI_T_PROPERTIES__>
@@ -23,8 +23,11 @@
 	my $template_dir = $Variable->{UI_TEMPLATE_DIR} || 'templates';
 	my $out = '';
 
+	$CGI->{ui_show_template} = 1 unless defined $CGI->{ui_show_template};
+
 	sub bleach_it {
 		my $val = shift;
+		$val =~ s:.*/::;
 		$val =~ s/\W+/_/g;
 		$val =~ s/_+/_/g;
 		return lc($val);
@@ -57,10 +60,9 @@ EOF
 		$new = 1;
 	}
 	else {
-		$t_name = $CGI->{ui_template};
+		$t_name = bleach_it($CGI->{ui_template});
 	}
 
-	$t_desc = $Tag->filter('entities', $t_desc);
 	my $t_file = "$template_dir/$t_name";
 
 	push @messages, "template: $t_name; t_file=$t_file";
@@ -156,6 +158,9 @@ Debug("trying to read: $template_dir/$theme/$rdir/$bot");
 		$tref->{ui_template_description} = $t_desc if $t_desc =~ /\S/;
 	}
 
+	$t_desc = $tref->{ui_template_description} unless $t_desc;
+	$t_desc = $Tag->filter('entities', $t_desc);
+
 #Debug("t_name=$t_name");
 	$out .= <<EOF;
 <tr>
@@ -250,7 +255,7 @@ EOF
 			$template_div = $cnum unless $template_div;
 		}
 		my $ref = $tref->{ui_display_order} || [];
-		@comp_order = @$ref;
+		@comp_order = @{$ref}[0..$cnum - 1];
 
 	}
 
@@ -508,7 +513,16 @@ mv_nextpage=__UI_BASE__/template_save
 <INPUT TYPE=hidden NAME=ui_return_to VALUE="__UI_BASE__/page">
 <INPUT TYPE=submit NAME=mv_click VALUE=Save onClick="this.form.target='_self'">
 <INPUT TYPE=submit NAME=mv_click VALUE=Cancel onClick="this.form.target='_self'"><br>
-<INPUT TYPE=checkbox NAME=ui_save_t_in_page VALUE=1 [cgi save_in_page]> Save template in page
+
+Show template:<BR>
+[if cgi ui_show_template]
+	<input type=radio name=ui_show_template value="1" CHECKED> Yes&nbsp;&nbsp;&nbsp;
+	<input type=radio name=ui_show_template value="0"> No
+[else]
+	<input type=radio name=ui_show_template value="1"> Yes&nbsp;&nbsp;&nbsp;
+	<input type=radio name=ui_show_template value="0" CHECKED> No
+[/else]
+[/if]
 
 </td>
 </tr>
