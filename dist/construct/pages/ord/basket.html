@@ -17,12 +17,12 @@ members_only:
 	description: Members only
 
 component_before:
-	options: =none, specials=Specials, random=Random items
+	options: =none, specials=Specials, random=Random items, upsell_horiz_2=Two upsell items, upsell_horiz_3=Three upsell items
 	widget: select
 	description: Component before content
 
 component_after:
-	options: =none, specials=Specials, random=Random items
+	options: =none, specials=Specials, random=Random items, upsell_horiz_2=Two upsell items, upsell_horiz_3=Three upsell items
 	widget: select
 	description: Component after content
 
@@ -32,13 +32,15 @@ bgcolor:
 	description: Background color
 [/comment]
 
-[set page_title]__COMPANY__ -- Shopping Cart[/set]
 [set page_banner]Shopping Cart Contents[/set]
-
+[set bgcolor]#FFFFFF[/set]
+[set component_before][/set]
+[set component_after]upsell_horiz_3[/set]
+[set members_only]0[/set]
+[set page_title]__COMPANY__ -- Shopping Cart[/set]
 __LEFTONLY_TOP__
 
 <!-- BEGIN CONTENT -->
-
 
 <p>
 [if type=explicit compare="q{[read-cookie MV_SESSION_ID]}"]
@@ -85,17 +87,21 @@ lose your shopping cart.
 [if items]
 [then]
 [item-list]
-[seti eo][perl interpolate=1]
+[calc]
 my $item = '[item-increment]';
+my $up = q{[item-data merchandising upsell_to]};
+if($up) {
+	$Scratch->{upsell} .= " $up";
+	$Scratch->{upsell} =~ s/^\s+//;
+}
 if ($item % 2 == 1) {
-$Scratch->{color} = "#CCCCCC";
+	$Scratch->{color} = "#CCCCCC";
 }
 else {
-$Scratch->{color} = "#CCCC99";
+	$Scratch->{color} = "#CCCC99";
 }
 return;
-[/perl]
-[/seti]
+[/calc]
 
 <TR bgcolor="[scratch color]">
 	<TD align=center valign=top>
@@ -148,8 +154,8 @@ EOF
 	[/if-item-modifier]
 	
 <br>
-[seti count][data table=inventory column=quantity key='[item-code]'][/seti]
-[if scratch count eq 0]
+[set count][item-data inventory quantity][/set]
+[if scratch count < 1]
 	<a href="[area stock-alert [item-code]]"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FF0000">Back Ordered</FONT>
 [else]
 	<font face="Verdana, Arial, Helvetica, sans-serif" size="1">Sizes:</font> <FONT SIZE=1>[item-accessories size][item-accessories color]</FONT>
