@@ -1,6 +1,6 @@
 # Tagref.pm - Document Interchange tags
 # 
-# $Id: Tagref.pm,v 1.3 2000-09-10 21:25:55 heins Exp $
+# $Id: Tagref.pm,v 1.4 2000-09-21 23:20:29 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -23,11 +23,11 @@ package Vend::Tagref;
 use lib "$Global::VendRoot/lib";
 use lib '../lib';
 
-# $Id: Tagref.pm,v 1.3 2000-09-10 21:25:55 heins Exp $
+# $Id: Tagref.pm,v 1.4 2000-09-21 23:20:29 zarko Exp $
 
 use Vend::Parse;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/);
 
 use vars '%myRefs';
 
@@ -539,7 +539,7 @@ bounce
 The [bounce ...] tag is designed to send an HTTP redirect (302 status code)
 to the browser and redirect it to another (possibly Interchange-parsed) page.
 
-It will stop MML code execution at that point; further tags will not
+It will stop ITL code execution at that point; further tags will not
 be run through the parser. Bear in mind that if you are inside a looping
 list, that list will run to completion and the [bounce] tag will not
 be seen until the loop is complete.
@@ -550,7 +550,7 @@ Example of bouncing to an Interchange parsed page:
 	[bounce href="[area violation]"]
 	[/if]
 
-Note the URL is produced by the C<[area ...]> MML tag.
+Note the URL is produced by the C<[area ...]> ITL tag.
 
 Since the HTTP says the URL needs to be absolute, this one might
 cause a browser warning:
@@ -1479,7 +1479,7 @@ with the [set name]value[/set] element.
 
 =item session
 
-the minivend session variables. of particular interest
+the interchange session variables. of particular interest
 are i<login>, i<frames>, i<secure>, and i<browser>.
 
 =item validcc
@@ -1493,9 +1493,9 @@ for targets if nothing else is passed.
 
 =item value
 
-the minivend user variables, typically set in search,
+the interchange user variables, typically set in search,
 control, or order forms. variables beginning with c<mv_>
-are minivend special values, and should be tested/used
+are interchange special values, and should be tested/used
 with caution.
 
 =back
@@ -2814,14 +2814,14 @@ BEGIN
 %%
 =head1 NAME
 
-mvtags - MML TAG REFERENCE
+mvtags - ITL TAG REFERENCE
 
 =head1 DESCRIPTION
 
-MML stands for Minivend Markup Language. Minivend was the predecessor
-to Interchange.
+ITL stands for Interchange Tag Language. ITL is a superset of MML, or Minivend
+Markup Language. Minivend was the predecessor to Interchange.
 
-There are dozens of MML pre-defined tag functions. If you don't see
+There are dozens of ITL pre-defined tag functions. If you don't see
 just what you need, you can use C<USER DEFINED TAGS> to create tags just as
 powerful as the pre-defined ones.
 
@@ -2895,7 +2895,7 @@ are B<not> container tags.)
 A container tag will have its output re-parsed for more Interchange tags
 by default. If you wish to inhibit this behavior, you must explicitly
 set the attribute B<reparse> to 0.  Note that you will almost always
-wish the default action. The only container MML tag that doesn't have
+wish the default action. The only container ITL tag that doesn't have
 reparse set by default is C<[mvasp]>.
 
 With some exceptions ([include] is among them) among them) the
@@ -3048,7 +3048,7 @@ The region is only output when a field or other repeating value between
 similar to database reports to be easily formatted.  The repeating value
 must be a tag interpolated in the search process, such as
 C<[PREFIX-field field]> or C<[PREFIX-data database field]>. If you need
-access to MML tags, you can use [PREFIX-calc] with a $Tag->foo() 
+access to ITL tags, you can use [PREFIX-calc] with a $Tag->foo() 
 call.
 
 Of course, this will only work as you expect when the search results
@@ -3186,7 +3186,7 @@ C<mv_return_field> or C<rf>. The default is only to return the code of
 the search result, but by setting those parameters you can return more
 than one item.
 
-In a [query ...] MML tag you can select multiple return fields with
+In a [query ...] ITL tag you can select multiple return fields with
 something like:
 
     [query prefix=prefix sql="select foo, bar from baz where foo=buz"]
@@ -3260,7 +3260,7 @@ etc. C<[modifier-name quantity]> would be the same as C<[quantity-name]>.
 
 =head1 TAGS
 
-Each MML tag is show below. Calling information is defined for the main tag,
+Each ITL tag is show below. Calling information is defined for the main tag,
 sub-tags are described in C<Sub-tags>.
 
 
