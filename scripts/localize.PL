@@ -3,9 +3,10 @@
 #
 # Interchange localizer
 #
-# $Id: localize.PL,v 2.4 2003-04-01 22:07:07 racke Exp $
+# $Id: localize.PL,v 2.5 2003-04-01 22:24:30 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -231,7 +232,7 @@ sub parse_menufile {
 	}
 	while (<ICMENU>) {
 		@cols = split (/\t/);
-		write_structure (undef, $cols[$namecol]);
+		write_structure (undef, $cols[$namecol]) if $cols[$namecol];
 		write_structure (undef, $cols[$dsccol]) if $cols[$dsccol];
 	}
 	close (ICMENU);
@@ -374,7 +375,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-# $Id: localize.PL,v 2.4 2003-04-01 22:07:07 racke Exp $
+# $Id: localize.PL,v 2.5 2003-04-01 22:24:30 racke Exp $
 
 =head1 SYNOPSIS
 
