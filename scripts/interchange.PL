@@ -23,9 +23,9 @@ DOIT: {
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# Interchange version 4.5.x
+# Interchange version 4.5.6
 #
-# $Id: interchange.PL,v 1.3 2000-09-23 18:49:30 heins Exp $
+# $Id: interchange.PL,v 1.4 2000-09-25 14:19:41 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
