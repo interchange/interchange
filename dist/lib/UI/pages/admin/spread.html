@@ -111,8 +111,8 @@
 <FORM METHOD=POST ACTION="[base-url]/ui">
 <INPUT TYPE=hidden NAME="mv_todo" VALUE="set">
 <INPUT TYPE=hidden NAME="mv_nextpage" VALUE="@@MV_PAGE@@">
-<INPUT TYPE=hidden NAME="mv_data_table" VALUE="[value mv_data_table]">
-<INPUT TYPE=hidden NAME="mv_data_key" VALUE="[value ui_data_key_name]">
+<INPUT TYPE=hidden NAME="mv_data_table" VALUE="[cgi mv_data_table]">
+<INPUT TYPE=hidden NAME="mv_data_key" VALUE="[cgi ui_data_key_name]">
 <INPUT TYPE=hidden NAME="mv_data_decode" VALUE="yes">
 <INPUT TYPE=hidden NAME="mv_data_multiple" VALUE="1">
 <INPUT TYPE=hidden NAME="mv_click" VALUE="process_filter">
@@ -185,8 +185,8 @@
 	<TD valign=top>
 	[page href="__UI_BASE__/flex_editor"
 	form=|
-		page_title=Edit [value mv_data_table]: [item-code]
-		mv_data_table=[value mv_data_table]
+		page_title=Edit [cgi mv_data_table]: [item-code]
+		mv_data_table=[cgi mv_data_table]
 		item_id=[item-code]
 	|]<small><small><u>edit</u></small></small>&nbsp;<b>[item-code]</b></A>
 	</TD>
@@ -296,7 +296,7 @@ mv_todo=return
 [/button]&nbsp;&nbsp;&nbsp;
 	<INPUT TYPE=submit NAME=mv_click VALUE="[L]Cancel[/L]">
 	[if-mm super]
-	<BR><b><INPUT TYPE=checkbox NAME=mv_auto_export [if !scratch ui_too_large]CHECKED [/if]VALUE="[value mv_data_table]">
+	<BR><b><INPUT TYPE=checkbox NAME=mv_auto_export [if !scratch ui_too_large]CHECKED [/if]VALUE="[cgi mv_data_table]">
 		[L]Auto-export[/L]</b>
 	[/if-mm]
 
