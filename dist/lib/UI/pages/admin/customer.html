@@ -274,7 +274,12 @@ so there's a full line across the page even if table cells are blank.
 [no-match]
 <TR>
 	<TD COLSPAN=4>
-	No [if value showinactive]in[/if]active customers.
+[if value showinactive]
+    [L]No inactive customers.[/L]
+[else]
+	[L]No active customers.[/L]
+[/else]
+[/if]
 	</td>
 </tr>
 [/no-match]
@@ -289,6 +294,7 @@ so there's a full line across the page even if table cells are blank.
 <tr bgcolor="#FFFFFF" height=8><td colspan=8></td></tr>
 
 </table>
+[on-match]
 [if scratch can_delete]
 [button form=batch text="[L]Delete checked customers[/L]"
  confirm='[L]Are you sure you want to delete the checked customers?[/L]']deletecustomer=1
@@ -299,6 +305,7 @@ so there's a full line across the page even if table cells are blank.
 			return "\u$tmp";
 			`]
 [scratch active_nm]=1[/button]
+[/on-match]
 </FORM>
 [/search-region]
 
