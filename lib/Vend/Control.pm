@@ -1,6 +1,6 @@
 # Vend::Control - Routines that alter the running Interchange daemon
 # 
-# $Id: Control.pm,v 2.8 2003-07-27 16:06:53 racke Exp $
+# $Id: Control.pm,v 2.9 2003-07-29 00:12:39 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -59,7 +59,7 @@ sub signal_jobs {
 	
 	$Vend::JobsCat = $cat;
 	if ($delay =~ /^(\d+)$/) {
-		$delay + time;
+		$delay += time;
 	} else {
 		$delay = 0;
 	}
