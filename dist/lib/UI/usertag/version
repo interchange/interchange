@@ -1,1 +1,70 @@
-UserTag version Routine sub { $::VERSION }
+UserTag version Order extended
+UserTag version addAttr
+UserTag version Routine <<EOR
+sub {
+	return $::VERSION unless shift;
+	my $opt = shift;
+	my $joiner = $opt->{joiner} || '<BR>';
+	my @out;
+	if(not $opt->{db} || $opt->{modules}) {
+		$opt->{db} = 1;
+		push @out, "Interchange Version $::VERSION";
+		push @out, "";
+	}
+	if($opt->{db}) {
+		if($Global::GDBM) {
+			push @out, "GDBM available (v$GDBM_File::VERSION)";
+		}
+		else {
+			push @out, "No GDBM.";
+		}
+		if($Global::DB_File) {
+			push @out, "Berkeley DB_File available (v$DB_File::VERSION)";
+		}
+		else {
+			push @out, "No Berkeley DB_File.";
+		}
+		if($Global::LDAP) {
+			push @out, "LDAP available (v$Net::LDAP::VERSION)";
+		}
+		if($Global::DBI and $DBI::VERSION) {
+			push @out, "DBI enabled (v$DBI::VERSION), available drivers:";
+			my $avail = join $joiner, DBI->available_drivers;
+			push @out, "<BLOCKQUOTE>$avail</BLOCKQUOTE>";
+		}
+	}
+	if($opt->{modules}) {
+		my %wanted = ( qw/
+					Safe::Hole       Safe::Hole
+					SQL::Statement   SQL::Statement
+					MD5              MD5
+					LWP::Simple      LWP
+					Tie::Watch       Tie::Watch       
+					MIME::Base64     MIME::Base64
+					URI::URL         URI::URL 
+					Storable         Storable
+				/);
+		my %info = (
+				'Safe::Hole'    => 'IMPORTANT: SQL and some tags will not work in embedded Perl.',
+				'SQL::Statement'=> 'IMPORTANT: UI Database editors will not work properly.',
+				'MD5'           => 'IMPORTANT: cache keys and other search-related functions will not work.',
+				'LWP::Simple'   => 'External UPS lookup and other internet-related functions will not work.',
+				'Tie::Watch'    => 'Minor: cannot set watch points in catalog.cfg.',
+				'MIME::Base64'  => 'Minor: Internal HTTP server will not work.',
+				'URI::URL'      => 'Minor: Internal HTTP server will not work.', 
+				'Storable'      => 'Session and search storage will be slower.',
+		);
+		for( sort keys %wanted) {
+			eval "require $_";
+			if($@) {
+				my $info = $info{$_} || "May affect program operation.";
+				push @out, "$_ not found. $info"
+			}
+			else {
+				push @out, "$_ found.";
+			}
+		}
+	}
+	return join $joiner, @out;
+}
+EOR

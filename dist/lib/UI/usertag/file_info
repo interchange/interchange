@@ -4,6 +4,12 @@ UserTag file-info addAttr
 UserTag file-info Routine <<EOR
 sub {
 	my ($fn, $opt) = @_;
+	if($opt->{server}) {
+		$fn = "$Global::VendRoot/$fn"
+	}
+	elsif($opt->{conf}) {
+		$fn = "$Global::ConfDir/$fn"
+	}
 	my @stat = stat($fn);
 	my %info;
 	my @ary;

@@ -1,3 +1,5 @@
+#ifndef USERTAG_BUTTON
+Variable USERTAG_BUTTON 1
 UserTag button Order name src text
 UserTag button addAttr
 UserTag button attrAlias value text
@@ -107,7 +109,9 @@ sub {
 		if(! $onclick and $confirm) {
 			$onclick = qq{ onclick="return $confirm"};
 		}
-		$out = qq{<INPUT TYPE="submit" NAME="$name" VALUE="$text"$onclick>};
+		my $out = $opt->{bold} ? "<B>" : '';
+		$out .= qq{<INPUT TYPE="submit" NAME="$name" VALUE="$text"$onclick>};
+		$out .= "</B>" if $opt->{bold};
 		if(@js) {
 			$out =~ s/ /join "\n", '', @js, ''/e;
 		}
@@ -121,6 +125,7 @@ sub {
 	$name =~ s/"/&quot;/g;
 
 	my $clickname = $name;
+	$out .= "</B>" if $opt->{bold};
 	my $clickvar = $name;
 	if($image and $name eq 'mv_click') {
 		$clickvar = $text;
@@ -168,4 +173,4 @@ EOF
 	return $out;
 }
 EOR
-
+#endif

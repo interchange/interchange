@@ -11,6 +11,26 @@ sub {
 	$db = $db->ref() unless $Vend::Interpolate::Db{$table};
 	my $text;
 	my $size;
+	my $widget;
+	my $label;
+	my $help;
+	my $help_url;
+
+	my $template = $opt->{template};
+	if($template and $template !~ /\s/) {
+		$template = <<'EOF';
+<TR>
+<TD>
+	<B>$LABEL$</B>
+</TD>
+<TD VALIGN=TOP>
+	<TABLE CELLSPACING=0 CELLMARGIN=0><TR><TD>$WIDGET$</TD><TD><I>$HELP$</I>{HELPURL}<BR><A HREF="$HELP_URL$">help</A>{/HELPURL}</TD></TR></TABLE>
+</TD>
+</TR>
+EOF
+		$opt->{template} = 1;
+	}
+
 #::logDebug("meta call: table=$table col=$column key=$key text=$text");
 	eval {
 		$text = $db->field($key,$column);
@@ -20,37 +40,52 @@ sub {
 
 	if(! $CGI::values{ui_no_meta_display}) {
 #::logDebug("meta call: table=$table col=$column key='$key' text=$text");
-		my $out = UI::Primitive::meta_display($table,$column,$key,$text);
-#::logDebug("past meta_display, out=$out");
-		$out =~ s/<(input|select)\s+/<$1 $opt->{js} /i
+		($widget, $label, $help, $help_url) = UI::Primitive::meta_display($table,$column,$key,$text,undef,undef,$opt);
+::logDebug("past meta_display, help=$help url=$help_url label=$label");
+		$widget =~ s/<(input|select)\s+/<$1 $opt->{js} /i
 			if $opt->{js};
-		return $out if $out;
 	}
 
-	my $DECODE_CHARS = qq{[<"\000-\037\177-\377};
+	if(! $widget) {
+		my $iname = $opt->{name} || $column;
+		my $DECODE_CHARS = qq{[<"\000-\037\177-\377};
 
-	# Count lines for textarea
-	my $count;
-	$count = $text =~ s/(\r\n|\r|\n)/$1/g;
+		# Count lines for textarea
+		my $count;
+		$count = $text =~ s/(\r\n|\r|\n)/$1/g;
 
-	HTML::Entities::encode($text, '&');
-	HTML::Entities::encode($text, $DECODE_CHARS);
-	if ($count) {
-		$count++;
-		$count = 20 if $count > 20;
-		return <<EOF;
-<TEXTAREA NAME="$column" COLS=60 ROWS=$count>$text</TEXTAREA>
+		HTML::Entities::encode($text, '&');
+		HTML::Entities::encode($text, $DECODE_CHARS);
+		if ($count) {
+			$count++;
+			$count = 20 if $count > 20;
+			$widget = <<EOF;
+	<TEXTAREA NAME="$iname" COLS=60 ROWS=$count>$text</TEXTAREA>
+EOF
+		}
+		elsif ($text =~ /^\d+$/) {
+			$size = 8;
+		}
+		else {
+			$size = 60;
+		}
+			$widget = <<EOF;
+	<INPUT NAME="$iname" SIZE=$size VALUE="$text">
 EOF
 	}
-	elsif ($text =~ /^\d+$/) {
-		$size = 8;
-	}
-	else {
-		$size = 60;
-	}
-		return <<EOF;
-<INPUT NAME="$column" SIZE=$size VALUE="$text">
-EOF
+	return $widget unless $template;
+	$label = $column if ! $label;
+	my %sub = (
+		WIDGET		=> $widget,
+		HELP		=> $help,
+		HELP_URL	=> $help_url,
+		LABEL		=> $label,
+	);
+	# Strip the {TAG} {/TAG} pairs if nothing there
+	$template =~ s#{(\w+)}(.*?){/\1}#$sub{$1} ? $2: '' #ges;
+	# Insert the TAG
+	$template =~ s/\$([A-Z_]+)\$/$sub{$1}/g;
+	return $template;
 }
 EOR
 
