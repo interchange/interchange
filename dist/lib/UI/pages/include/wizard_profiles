@@ -90,7 +90,6 @@
 [/set]
 
 [set profile_launch]
-	site_launched=required
 [/set]
 
 [set profile_save_values]
