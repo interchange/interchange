@@ -71,7 +71,7 @@ function open_quicklinks() {
 	my $data = q{[version extended=1 modules=1 joiner="<P>"]};
 	$dbstatus = q{[version extended=1 modtest="GDBM_File"][version extended=1 modtest="DB_File"]};
 	return unless $data =~ /IMPORTANT/ or $dbstatus < 1;
-	my @lines = grep /not\s+found/, split '<P>', $data;
+	my @lines = grep /not\s+found|IMPORTANT/, split /<P>/, $data;
 	my @important = grep /IMPORTANT/, @lines;
 	my @minor = grep $_ !~ /IMPORTANT/, @lines;
 	my $imp = join '<P>', @important;

@@ -154,6 +154,8 @@ sub {
                     URI::URL                URI::URL
 
 				/);
+		my %l_than = ('SQL::Statement' => '0.1021');
+		my %g_than = ('SQL::Statement' => '0.1021');
 		my %info = (
 				'Safe::Hole'    => 'IMPORTANT: SQL and some tags will not work in embedded Perl.',
 				'SQL::Statement'=> 'IMPORTANT: UI Database editors will not work properly.',
@@ -199,13 +201,39 @@ sub {
 
 		);
 		foreach my $name ( sort keys %wanted) {
+			no strict 'refs';
 			eval "require $name";
 			if($@) {
 				my $info = errmsg($info{$name} || "May affect program operation.");
 				push @out, "$name " . errmsg('not found') . ". $info"
 			}
+			elsif($l_than{$name}) {
+				my $ver = ${"${name}::VERSION"};
+				$ver =~ s/^(\d+\.\d+)\..*/$1/;
+				if($ver > $l_than{$name}) {
+					my $info = errmsg($info{$name} || "May affect program operation.");
+					my $ex = errmsg(
+								'%s too high a version, need %s or lower',
+								$ver,
+								$l_than{$name},
+							);
+					push @out, "$name $ex. $info";
+				}
+			}
+			elsif($g_than{$name}) {
+				my $ver = ${"${name}::VERSION"};
+				$ver =~ s/^(\d+\.\d+)\..*/$1/;
+				if($ver < $g_than{$name}) {
+					my $info = errmsg($info{$name} || "May affect program operation.");
+					my $ex = errmsg(
+								'%s too low a version, need %s or higher',
+								$ver,
+								$g_than{$name},
+							);
+					push @out, "$name $ex. $info";
+				}
+			}
 			else {
-				no strict 'refs';
 				my $ver = ${"$name" . "::VERSION"};
 				$ver = $ver ? "v$ver" : 'no version info';
 				push @out, "$name " . errmsg('found') . " ($ver).";
