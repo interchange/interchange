@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.0
 #
-# $Id: interchange.PL,v 1.15.2.21 2001-03-23 15:03:41 heins Exp $
+# $Id: interchange.PL,v 1.15.2.22 2001-03-23 15:33:42 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -2659,7 +2659,7 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 
 	@action{keys %{$Global::ActionMap}} = (values %{$Global::ActionMap})
 		if $Global::ActionMap;
-	@form_action{keys %{$Global::FormAction}} = (values %{$Global::FormAction});
+	@form_action{keys %{$Global::FormAction}} = (values %{$Global::FormAction})
 		if $Global::FormAction;
 
 #::logDebug(::uneval(\%Global::Catalog));
