@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.7 2000-09-19 18:58:39 zarko Exp $
+# $Id: Server.pm,v 1.7.2.1 2000-10-06 19:49:24 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,14 +28,21 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.7 $, 10);
+$VERSION = substr(q$Revision: 1.7.2.1 $, 10);
 
+use strict;
 use POSIX qw(setsid strftime);
+use Vend::Data;
+use Vend::Error;
+use Vend::Interpolate;
+use Vend::Page;
+use Vend::Session;
+use Vend::Track;
 use Vend::Util;
 use Fcntl;
 use Config;
 use Socket;
-use strict;
+use File::CounterFile;
 
 sub new {
     my ($class, $fh, $env, $entity) = @_;
@@ -297,7 +304,7 @@ sub canon_status {
 
 sub respond {
 	# $body is now a reference
-    my ($s, $body) = @_;
+	my ($s, $body) = @_;
 
 	my $status;
 	if($Vend::StatusLine) {
@@ -312,9 +319,9 @@ sub respond {
 		$Vend::StatusLine .= ($Vend::StatusLine =~ /^Content-Type:/im)
 							? '' : "\r\nContent-Type: text/html\r\n";
 # TRACK
-        $Vend::StatusLine .= "X-Track: " . $Vend::Track->header() . "\r\n";
-# END TRACK        
-        $Vend::StatusLine .= "Pragma: no-cache\r\n"
+		$Vend::StatusLine .= "X-Track: " . $Vend::Track->header() . "\r\n";
+# END TRACK
+		$Vend::StatusLine .= "Pragma: no-cache\r\n"
 			if delete $::Scratch->{mv_no_cache};
 		print Vend::Server::MESSAGE canon_status($Vend::StatusLine);
 		print Vend::Server::MESSAGE "\r\n";
@@ -324,7 +331,7 @@ sub respond {
 		return;
 	}
 
-    my $fh = $s->{fh};
+	my $fh = $s->{fh};
 
 # SUNOSDIGITAL
 #	 Fix for SunOS, Ultrix, Digital UNIX
@@ -343,9 +350,9 @@ sub respond {
 		my $save = select $fh;
 		$| = 1;
 		select $save;
-        $Vend::StatusLine .= "X-Track: " . $Vend::Track->header() . "\r\n";
+		$Vend::StatusLine .= "X-Track: " . $Vend::Track->header() . "\r\n";
 # END TRACK                            
-        $Vend::StatusLine .= "Pragma: no-cache\r\n"
+		$Vend::StatusLine .= "Pragma: no-cache\r\n"
 			if delete $::Scratch->{mv_no_cache};
 		$status = '200 OK' if ! $status;
 		if(defined $Vend::StatusLine) {
@@ -355,7 +362,9 @@ sub respond {
 			$Vend::ResponseMade = 1;
 			undef $Vend::StatusLine;
 		}
-		else { print $fh "HTTP/1.0 $status\r\n"; }
+		else {
+			print $fh "HTTP/1.0 $status\r\n";
+		}
 	}
 
 	if ( (	! $CGI::cookie && ! $::Instance->{CookiesSet}
@@ -365,7 +374,6 @@ sub respond {
 			and $Vend::Cfg->{Cookies}
 		)
 	{
-
 		my @domains;
 		@domains = ('');
 		if ($Vend::Cfg->{CookieDomain}) {
@@ -388,24 +396,24 @@ sub respond {
 		foreach $d (@domains) {
 			foreach $p (@paths) {
 				print $fh create_cookie($d, $p);
-			}
+			}	
 		}
 		$::Instance->{CookiesSet} = delete $::Instance->{Cookies};
-    }
+	}
 
-    if (defined $Vend::StatusLine) {
+	if (defined $Vend::StatusLine) {
 		print $fh canon_status($Vend::StatusLine);
 	}
 	elsif(! $Vend::ResponseMade) {        
 		print $fh canon_status("Content-Type: text/html");
 # TRACK        
-        print $fh canon_status("X-Track: " . $Vend::Track->header() . "\r\n");
+		print $fh canon_status("X-Track: " . $Vend::Track->header() . "\r\n");
 # END TRACK
 	}
 
-    print $fh "\r\n";
-    print $fh $$body;
-    $Vend::ResponseMade = 1;
+	print $fh "\r\n";
+	print $fh $$body;
+	$Vend::ResponseMade = 1;
 }
 
 sub read_entity_body {
@@ -682,7 +690,7 @@ sub read_cgi_data {
         }
     }
 	if($Vend::OnlyInternalHTTP) {
-		my $msg = ::errmsg(
+		my $msg = errmsg(
 						"attempt to connect from unauthorized host '%s'",
 						$Vend::OnlyInternalHTTP,
 					);
@@ -700,7 +708,7 @@ sub connection {
     	or return 0;
 	$http = new Vend::Server \*Vend::Server::MESSAGE, \%env, $entity;
 #::logGlobal ("begin dispatch: " . (join " ", times()) . "\n");
-    ::dispatch($http);
+    dispatch($http);
 #::logDebug ("end connection: " . (join " ", times()) . "\n");
 	undef $Vend::ResponseMade;
 	undef $Vend::InternalHTTP;
@@ -1112,7 +1120,7 @@ sub server_both {
             }
             else {
 				my $msg = $!;
-				$msg = ::errmsg("error '%s' from select." , $msg );
+				$msg = errmsg("error '%s' from select." , $msg );
 				::logGlobal({}, $msg );
                 die "$msg\n";
             }
@@ -1169,7 +1177,7 @@ sub server_both {
 				undef $::Instance;
 			}
 			elsif(! defined ($pid = fork) ) {
-				my $msg = ::errmsg("Can't fork: %s", $!);
+				my $msg = errmsg("Can't fork: %s", $!);
 				::logGlobal({}, $msg );
 				die ("$msg\n");
 			}
@@ -1216,7 +1224,7 @@ sub server_both {
 			# Prevent corruption of changed $Vend::Cfg entries
 			# (only VendURL/SecureURL at this point).
 			if($Vend::Save and $Vend::Cfg) {
-				Vend::Util::copyref($Vend::Save, $Vend::Cfg);
+				::copyref($Vend::Save, $Vend::Cfg);
 				undef $Vend::Save;
 			}
 			undef $Vend::Cfg;
@@ -1384,6 +1392,658 @@ sub run_server {
             }
         }
     }                
+}
+
+## FILE PERMISSIONS
+
+sub set_file_permissions {
+	my($r, $w, $p, $u);
+
+	$r = $Vend::Cfg->{'ReadPermission'};
+	if    ($r eq 'user')  { $p = 0400;   $u = 0277; }
+	elsif ($r eq 'group') { $p = 0440;   $u = 0227; }
+	elsif ($r eq 'world') { $p = 0444;   $u = 0222; }
+	else                  { die "Invalid value for ReadPermission\n"; }
+
+	$w = $Vend::Cfg->{'WritePermission'};
+	if    ($w eq 'user')  { $p += 0200;  $u &= 0577; }
+	elsif ($w eq 'group') { $p += 0220;  $u &= 0557; }
+	elsif ($w eq 'world') { $p += 0222;  $u &= 0555; }
+	else                  { die "Invalid value for WritePermission\n"; }
+
+	$Vend::Cfg->{'FileCreationMask'} = $p;
+	$Vend::Cfg->{'Umask'} = $u;
+}
+
+## 
+
+sub adjust_cgi {
+	my($host);
+
+	die "REQUEST_METHOD is not defined" unless defined $CGI::request_method
+		or @Global::argv;
+
+	# The great and really final AOL fix
+	#
+	$host      = $CGI::remote_host;
+	$CGI::ip   = $CGI::remote_addr;
+
+	if($Global::DomainTail and $host) {
+		$host =~ s/.*?([-A-Za-z0-9]+\.[A-Za-z]+)$/$1/;
+	}
+	elsif($Global::IpHead) {
+		$host = $Global::IpQuad == 0 ? 'nobody' : '';
+		my @ip;
+		@ip = split /\./, $CGI::ip;
+		$CGI::ip = '';
+		$CGI::ip = join ".", @ip[0 .. ($Global::IpQuad - 1)] if $Global::IpQuad;
+	}
+	#
+	# end AOL fix
+
+	$CGI::host = $host || $CGI::ip;
+
+	if($CGI::remote_user) {
+		$CGI::user = $CGI::remote_user;
+		undef $CGI::authorization;
+	}
+	$Vend::Cookie = $CGI::cookie;
+
+	unless ($Global::FullUrl) {
+		$CGI::script_name = $CGI::script_path;
+	}
+	else {
+		if($CGI::server_port eq '80') {
+			$CGI::server_port = '';
+		} else {
+			$CGI::server_port = ":$CGI::server_port";
+		}
+		$CGI::script_name = $CGI::server_name .
+					$CGI::server_port .
+					$CGI::script_path;
+	}
+}
+
+sub url_history {
+	$Vend::Session->{History} = []
+		unless defined $Vend::Session->{History};
+	shift @{$Vend::Session->{History}}
+		if $#{$Vend::Session->{History}} >= $Vend::Cfg->{History};
+	if($CGI::pragma =~ /\bno-cache\b/ || $CGI::values{mv_no_cache}) {
+		push (@{$Vend::Session->{History}},  [ 'expired', {} ]);
+	} else {
+		push (@{$Vend::Session->{History}},  [ $CGI::path_info, \%CGI::values ]);
+	}
+	return;
+}
+
+## DISPATCH
+
+# Parse the invoking URL and dispatch to the handling subroutine.
+
+my %action = (
+	process	=> \&::do_process,
+	ui_wrap => \&UI::Primitive::ui_wrap,
+	ui=> sub { 
+			&UI::Primitive::ui_acl_global();
+			\&::do_process(@_);
+		 },
+	minimate=> sub { 
+			&MiniMate::CfgMgr::mm_acl_global;
+			\&::do_process(@_);
+		       },
+	scan	=> \&do_scan,
+	search	=> \&do_search,
+	order	=> \&::do_order,
+	obtain	=> \&::do_order,
+);
+
+my $H;
+sub http {
+	return $H;
+}
+
+sub response {
+	my($output) = @_;
+	return 1 if $Vend::BuildingPages;
+	my $out = ref $output ? $output : \$output;
+	if(defined $Vend::CheckHTML) {
+		require Vend::External;
+		Vend::External::check_html($out);
+	}
+	$H->respond($out);
+}
+
+sub dispatch {
+	my($http) = @_;
+	$H = $http;
+	if($Vend::Foreground) {
+		Vend::Interpolate::reset_calc();
+	}
+#::logDebug ("begin dispatch: " . (join " ", times()) . "\n");
+#::logDebug ("begin dispatch, locale LC_CTYPE: " . POSIX::setlocale(POSIX::LC_CTYPE()) . "\n");
+
+	adjust_cgi();
+
+	my($sessionid);
+	my(@path);
+	my($g, $action);
+
+	unless (defined $Global::Selector{$CGI::script_name}) {
+		my $msg = ::get_locale_message(
+						403,
+						"Undefined catalog: %s",
+						$CGI::script_name,
+						);
+		$Vend::StatusLine = <<EOF;
+Status: 404 Not Found
+Content-Type: text/plain
+EOF
+		response($msg);
+		logGlobal($msg);
+		return;
+	}
+	$Vend::Cfg = $Global::Selector{$CGI::script_name};
+
+## Uncomment this to get global directive setting on a per-catalog basis
+## Probably only useful for:
+##
+##   DebugFile
+##   DisplayErrors
+##   DomainTail
+##   ErrorLog
+##   FullUrl
+##   GlobalSub
+##   HitCount
+##   IpHead
+##   IpQuad
+##   Locale
+##   LockoutCommand
+##   NoAbsolute
+##   SafeUntrap
+##   UserTag
+##   Variable
+
+	my $catref = $Global::Catalog{$Vend::Cfg->{CatalogName}};
+	if(! $Vend::Foreground and defined $catref->{directive}) {
+		no strict 'refs';
+		my ($key, $val);
+		while ( ($key, $val) = each %{$catref->{directive}}) {
+#::logDebug("directive key=$key val=" . ::uneval($val));
+			${"Global::$key"} = $val;
+		}
+	}
+
+	# See if it is a subcatalog
+	if (defined $Vend::Cfg->{BaseCatalog}) {
+		my $name = $Vend::Cfg->{BaseCatalog};
+		my $ref = $Global::Catalog{$name};
+		my $c = $Vend::Cfg;
+		$Vend::Cfg = $Global::Selector{$ref->{'script'}};
+		for(keys %{$c->{Replace}}) {
+			undef $Vend::Cfg->{$_};
+		}
+		::copyref($c, $Vend::Cfg);
+		if($Vend::Cfg->{Variable}{MV_LANG}) {
+			my $loc = $Vend::Cfg->{Variable}{MV_LANG};
+			$Vend::Cfg->{Locale} = $Vend::Cfg->{Locale_repository}{$loc}
+					if defined $Vend::Cfg->{Locale_repository}{$loc};
+		}
+		$Vend::Cfg->{StaticPage} = {}
+			unless $Vend::Cfg->{Static};
+	}
+	$::Variable = $Vend::Cfg->{Variable};
+
+
+	if (defined $Global::SelectorAlias{$CGI::script_name}
+		and ! defined $Vend::InternalHTTP                 )
+	{
+		my $real = $Global::SelectorAlias{$CGI::script_name};
+		if(defined $Vend::NoFork) {
+			$Vend::Save = {} unless $Vend::Save;
+			$Vend::Save->{VendURL}   = $Vend::Cfg->{VendURL};
+			$Vend::Save->{SecureURL} = $Vend::Cfg->{SecureURL};
+		}
+		unless ($CGI::secure                                        or
+			$Vend::Cfg->{SecureURL} =~ m{$CGI::script_name$}    and
+			$Vend::Cfg->{VendURL}   !~ m{/nph-[^/]+$} 	    and
+			$Vend::Cfg->{VendURL}   !~ m{$CGI::script_name$} )
+		{
+			$Vend::Cfg->{VendURL}   =~ s!$real!$CGI::script_name!;
+			$Vend::Cfg->{SecureURL} =~ s!$real!$CGI::script_name!;
+		}
+	}
+	elsif ($Vend::InternalHTTP) {
+		$Vend::Cfg->{VendURL} = "http://" .
+					$CGI::http_host .
+					$CGI::script_path;
+		$Vend::Cfg->{ImageDir} = $Vend::Cfg->{ImageDirInternal}
+			if  $Vend::Cfg->{ImageDirInternal};
+	}
+
+	if($Global::HitCount) {
+		my $ctr = new File::CounterFile
+			"$Global::ConfDir/hits.$Vend::Cfg->{CatalogName}";
+		$ctr->inc();
+	}
+
+	if ($Vend::Cfg->{SetGroup}) {
+		eval {
+			$) = "$Vend::Cfg->{SetGroup} $Vend::Cfg->{SetGroup}";
+		};
+		if ($@) {
+			my $msg = $@;
+			logGlobal( "Can't set group to GID %s: %s",
+					$Vend::Cfg->{SetGroup}, $msg
+				 );
+			logError("Can't set group to GID %s: %s",
+					$Vend::Cfg->{SetGroup}, $msg
+				 );
+		}
+	}
+
+	chdir $Vend::Cfg->{VendRoot} 
+		or die "Couldn't change to $Vend::Cfg->{VendRoot}: $!\n";
+	set_file_permissions();
+# STATICPAGE
+	::tie_static_dbm() if $Vend::Cfg->{StaticDBM};
+# END STATICPAGE
+	umask $Vend::Cfg->{Umask};
+	::open_database();
+
+	$CGI::user = Vend::Util::check_authorization($CGI::authorization)
+		if defined $CGI::authorization;
+
+	my $from_cookie;
+	$sessionid = $CGI::values{mv_session_id} || undef;
+	$Vend::OnlyProducts = defined $Vend::Cfg->{ProductFiles}->[1]
+					  ? undef
+					  : $Vend::Cfg->{ProductFiles}->[0];
+
+	if (defined $CGI::cookie and
+		 $CGI::cookie =~ /\bMV_SESSION_ID=(\w{8,32})
+                                  [:_] (
+                                   # An IP ADDRESS
+                                   (\d{1,3}\.
+                                    \d{1,3}\.
+                                    \d{1,3}\.
+                                    \d{1,3})
+                                   |
+                                   # A user name or domain
+                                   ([A-Za-z0-9][-\@A-Za-z.0-9]+)
+                                  )?\b/x)
+	{
+		$sessionid = $1
+			unless defined $CGI::values{mv_pc} and $CGI::values{mv_pc} eq 'RESET';
+		$CGI::cookiehost = $3 || undef;
+		$CGI::cookieuser = $4 || undef;
+		$from_cookie = 1;
+	}
+
+	$CGI::host = 'nobody' if $Vend::Cfg->{WideOpen};
+
+	if(! $sessionid) {
+		my $id = $::Variable->{MV_SESSION_ID};
+		$sessionid = $CGI::values{$id} if $CGI::values{$id};
+		if (! $sessionid and $Vend::Cfg->{FallbackIP}) {
+			$sessionid = ::generate_key($CGI::remote_addr . $CGI::useragent);
+		}
+	}
+	elsif ($sessionid !~ /^\w+$/) {
+		my $msg = ::get_locale_message(
+						403,
+						"Unauthorized for that session %s. Logged.",
+						$sessionid,
+						);
+		$Vend::StatusLine = <<EOF;
+Status: 403 Unauthorized
+Content-Type: text/plain
+EOF
+		response($msg);
+		logGlobal($msg);
+		return;
+	}
+
+# DEBUG
+#::logDebug ("session='$sessionid' cookie='$CGI::cookie' chost='$CGI::cookiehost'");
+# END DEBUG
+
+RESOLVEID: {
+	if ($sessionid) {
+		$Vend::SessionID = $sessionid;
+		$Vend::SessionName = ::session_name();
+		# if not it will return false and a new session has been created.
+		# The IP address will be counted for robot_resolution
+		if(! ::get_session()) {
+			::retire_id($sessionid);
+			last RESOLVEID;
+		}
+		my $now = time;
+		if(! $from_cookie) {
+			if( ::is_retired($sessionid) ) {
+				::new_session();
+				last RESOLVEID;
+			}
+			my $compare_host = $CGI::secure
+						? ($Vend::Session->{shost})
+						: ($Vend::Session->{ohost});
+
+			if(! $compare_host) {
+				::new_session() unless $CGI::secure;
+				$Vend::Session->{shost} = $CGI::secure;
+			}
+			elsif ($compare_host ne $CGI::remote_addr) {
+				::new_session();
+			}
+		}
+		if ($now - $Vend::Session->{'time'} > $Vend::Cfg->{SessionExpire}) {
+			::retire_id($sessionid);
+			::new_session();
+			last RESOLVEID;
+		}
+		elsif($Vend::Cfg->{RobotLimit}) {
+			if ($now - $Vend::Session->{'time'} > 30) {
+				$Vend::Session->{accesses} = 0;
+			}
+			else {
+				$Vend::Session->{accesses}++;
+				if($Vend::Session->{'accesses'} > $Vend::Cfg->{RobotLimit}) {
+					my $msg = ::errmsg(
+						"WARNING: POSSIBLE BAD ROBOT. %s accesses with no 30 second pause.",
+						$Vend::Session->{accesses},
+					);
+					::do_lockout($msg);
+				}
+			}
+		}
+	}
+	else {
+		if($Vend::Cfg->{RobotLimit}) {
+			if (Vend::Session::count_ip() > $Vend::Cfg->{RobotLimit}) {
+				my $msg;
+				# Here they can get it back if they pass expiration time
+				my $wait = $Global::Variable->{MV_ROBOT_EXPIRE} || 86400;
+				$wait /= 3600;
+				$msg = ::errmsg(<<EOF, $wait); 
+Too many new ID assignments for this IP address. Please wait at least %d hours
+before trying again. Only waiting that period will allow access. Terminating.
+EOF
+				$msg = ::get_locale_message(403, $msg);
+				::do_lockout($msg);
+				$Vend::StatusLine = <<EOF;
+Status: 403 Forbidden
+Content-Type: text/plain
+EOF
+					response($msg);
+					return;
+			}
+		}
+		::new_session();
+	}
+}
+
+#::logDebug("session name='$Vend::SessionName'\n");
+::logError("session id='$Vend::SessionID'");
+
+	$Vend::Interpolate::Calc_initialized = 0;
+	$CGI::values{mv_session_id} = $Vend::Session->{id} = $Vend::SessionID;
+
+	if($Vend::Cfg->{CookieLogin}) {
+		COOKIELOGIN: {
+			last COOKIELOGIN if $Vend::Session->{logged_in};
+			last COOKIELOGIN if defined $CGI::values{mv_username};
+			last COOKIELOGIN unless
+				$CGI::values{mv_username} = Vend::Util::read_cookie('MV_USERNAME');
+			my $password;
+			last COOKIELOGIN unless
+				$password = Vend::Util::read_cookie('MV_PASSWORD');
+			$CGI::values{mv_password} = $password;
+			local(%SIG);
+			undef $SIG{__DIE__};
+			eval {
+				Vend::UserDB::userdb('login');
+			};
+			if($@) {
+				$Vend::Session->{failure} .= $@;
+			}
+		}
+	}
+
+	$Vend::Session->{'arg'} = $Vend::Argument = ($CGI::values{mv_arg} || undef);
+#::logDebug("arg is $Vend::Session->{arg}");
+	if($CGI::values{mv_pc} and $CGI::values{mv_pc} =~ /[A-Za-z]/) {
+		$Vend::Session->{'source'} =	$CGI::values{mv_pc} eq 'RESET'
+						? ''
+						: $CGI::values{mv_pc};
+	}
+
+	$Vend::Session->{'user'} = $CGI::user;
+::logError("username='$Vend::Session->{username}'");
+::logError("loggedin='".$Vend::Session->{logged_in}."'");
+
+	undef $Vend::Cookie if 
+		$Vend::Session->{logged_in} && ! $Vend::Cfg->{StaticLogged};
+
+	$CGI::pragma = 'no-cache'
+		if delete $::Scratch->{mv_no_cache};
+
+	$Vend::FinalPath = $Vend::Session->{last_url} = $CGI::path_info;
+	if(defined $Vend::Session->{one_time_path_alias}{$Vend::FinalPath}) {
+		$CGI::path_info =
+		$Vend::FinalPath =
+		delete $Vend::Session->{one_time_path_alias}{$Vend::FinalPath};
+	} 
+	elsif( defined $Vend::Session->{path_alias}{$Vend::FinalPath}	) {
+		$CGI::path_info =
+		$Vend::FinalPath =
+		$Vend::Session->{path_alias}{$Vend::FinalPath};
+	}
+	url_history($Vend::FinalPath) if $Vend::Cfg->{History};
+
+# TRACK
+	$Vend::Track = new Vend::Track();
+# END TRACK
+
+	if($Vend::Cfg->{DisplayErrors} and $Global::DisplayErrors) {
+		$SIG{"__DIE__"} = sub {
+					my $msg = shift;
+					response( <<EOF);
+<HTML><HEAD><TITLE>Fatal Interchange Error</TITLE></HEAD><BODY>
+<H1>FATAL error</H1>
+<PRE>$msg</PRE>
+</BODY></HTML>
+EOF
+					exit 0;
+				      };
+	}
+
+# LEGACY
+	ROUTINES: {
+		last ROUTINES unless index($Vend::FinalPath, '/process/') == 0;
+		while ($Vend::FinalPath =~ s:/process/(locale|language|currency)/([^/]*)/:/process/:) {
+			$::Scratch->{"mv_$1"} = $2;
+		}
+		$Vend::FinalPath =~ s:/process/page/:/:;
+	}
+	my $locale;
+	if($locale = $::Scratch->{mv_language}) {
+		$Global::Variable->{LANG}
+			= $::Variable->{LANG} = $locale;
+	}
+
+	if ($Vend::Cfg->{Locale}								and
+		$locale = $::Scratch->{mv_locale}	and
+		defined $Vend::Cfg->{Locale_repository}->{$locale}
+		)
+	{ 
+		$Global::Variable->{LANG}
+				= $::Variable->{LANG}
+				= $::Scratch->{mv_language}
+				= $locale
+			 if ! $::Scratch->{mv_language};
+		Vend::Util::setlocale(	$locale,
+								($::Scratch->{mv_currency} || undef),
+								{ persist => 1 }
+							);
+	}
+# END LEGACY
+
+	my $macro;
+	if ($macro = $Vend::Cfg->{Autoload}) {
+		if($macro =~ /\[\w+/) {
+			::interpolate_html($macro);
+		}
+		elsif ($macro =~ /^\w+$/) {
+			my $sub = $Vend::Cfg->{Sub}{$macro} || $Global::GlobalSub->{$macro};
+			$sub->();
+		}
+	}
+
+	if ($macro = $Vend::Cfg->{Filter}) {
+		for(keys %$macro) {
+			Vend::Interpolate::input_filter_do($_, { 'op' => $macro->{$_} } );
+		}
+	}
+
+	if (
+		defined $Vend::Session->{Filter} and
+		$macro = $Vend::Session->{Filter}
+		)
+	{
+		for(keys %$macro) {
+			Vend::Interpolate::input_filter_do($_, $macro->{$_});
+		}
+	}
+
+	if (
+		defined $Vend::Session->{Autoload} and
+		$macro = $Vend::Session->{Autoload}
+		)
+	{
+		if(ref $macro) {
+			for (@$macro) {
+				::interpolate_html($_);
+			}
+		}
+		else {
+			::interpolate_html($macro);
+		}
+	}
+
+	# If the cgi-bin program was invoked with no extra path info,
+	# just display the catalog page.
+	if (! $Vend::FinalPath || $Vend::FinalPath =~ m:^/+$:) {
+		$Vend::FinalPath = ::find_special_page('catalog');
+	}
+
+	$Vend::FinalPath =~ s:^/+::;
+	$Vend::FinalPath =~ s/(\.html?)$//;
+	$Vend::Session->{extension} = $1 || '';
+#::logDebug("path=$Vend::FinalPath");
+
+DOACTION: {
+	@path = split('/', $Vend::FinalPath, 2);
+	if (defined $CGI::values{mv_action}) {
+		$CGI::values{mv_todo} = $CGI::values{mv_action}
+			if ! defined $CGI::values{mv_todo}
+			and ! defined $CGI::values{mv_doit};
+		if($path[0] eq 'ui_wrap') {
+			$Vend::Action = 'ui_wrap';
+			delete $CGI::values{mv_action};
+			shift(@path);
+			$CGI::values{mv_nextpage} = $path[0]
+				if ! defined $CGI::values{mv_nextpage};
+			$path[0] = "process/$path[0]";
+		}
+		else {
+			$Vend::Action = 'process';
+			$CGI::values{mv_nextpage} = $Vend::FinalPath
+				if ! defined $CGI::values{mv_nextpage};
+		}
+	}
+	else {
+		$Vend::Action = shift @path;
+	}
+
+#::logGlobal("action=$Vend::Action path=$Vend::FinalPath");
+::logError ("action=$Vend::Action path=$Vend::FinalPath");
+	my ($sub, $status);
+	Vend::Interpolate::reset_calc();
+	if(defined $Vend::Cfg->{ActionMap}{$Vend::Action}) {
+		$sub = $Vend::Cfg->{ActionMap}{$Vend::Action};
+		Vend::Interpolate::init_calc();
+		$CGI::values{mv_nextpage} = $Vend::FinalPath
+			if ! defined $CGI::values{mv_nextpage};
+	}
+	elsif ( defined ($sub = $action{$Vend::Action}) )  {
+		Vend::Interpolate::init_calc();
+		$Vend::FinalPath = join "", @path;
+	}
+
+	eval {
+		if(defined $sub) {
+#::logDebug("found sub");
+				$status = $sub->($Vend::FinalPath);
+		}
+		else {
+			$status = 1;
+		}
+	};
+	(undef $Vend::RedoAction, redo DOACTION) if $Vend::RedoAction;
+
+	if($@) {
+		undef $status;
+		my $err = $@;
+		my $template = <<EOF;
+Sorry, there was an error in processing this form action. Please 
+report the error or try again later.
+EOF
+		$template .= "\n\nError: %s\n"
+				if $Global::DisplayErrors && $Vend::Cfg->{DisplayErrors}
+			;
+		$template = ::get_locale_message(500, $template, $err);
+		$template .= "($err)";
+		response($template);
+	}
+
+	$CGI::values{mv_nextpage} = $Vend::FinalPath
+		if ! defined $CGI::values{mv_nextpage};
+
+	::do_page() if $status;
+
+#::logDebug ("end dispatch: " . (join " ", times()) . "\n");
+
+	if(my $macro = $Vend::Cfg->{AutoEnd}) {
+		if($macro =~ /\[\w+/) {
+			::interpolate_html($macro);
+		}
+		elsif ($macro =~ /^\w+$/) {
+			$sub = $Vend::Cfg->{Sub}{$macro} || $Global::GlobalSub->{$macro};
+			$sub->();
+		}
+	}
+  }
+
+# TRACK
+	$Vend::Track->filetrack();
+# END TRACK
+
+::logError("havsession=$Vend::HaveSession");
+	::put_session() if $Vend::HaveSession;
+	::close_database();
+
+	undef $H;
+	if($Vend::Save) {
+		::copyref($Vend::Save, $Vend::Cfg);
+		undef $Vend::Save;
+	}
+	undef $Vend::Cfg;
+
+# DEBUG
+#::logDebug ("closed all: " .  join " ", times() . "\n");
+# END DEBUG
+
+	return 1;
 }
 
 1;

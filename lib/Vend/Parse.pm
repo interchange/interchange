@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.9 2000-10-04 09:45:42 heins Exp $
+# $Id: Parse.pm,v 1.9.2.1 2000-10-06 19:49:24 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,12 +27,12 @@
 
 package Vend::Parse;
 
-# $Id: Parse.pm,v 1.9 2000-10-04 09:45:42 heins Exp $
+# $Id: Parse.pm,v 1.9.2.1 2000-10-06 19:49:24 zarko Exp $
 
 require Vend::Parser;
 
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.9 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.9.2.1 $ =~ /(\d+)\.(\d+)/);
 
 use Safe;
 use Vend::Util;
@@ -44,7 +44,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.9 $, 10);
+$VERSION = substr(q$Revision: 1.9.2.1 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -432,7 +432,7 @@ my %Routine = (
 											my @ary = split /\[or\]/, shift;
 											my $result;
 											while(@ary) {
-												$result = interpolate_html(shift @ary);
+												$result = Vend::Interpolate::interpolate_html(shift @ary);
 												$result =~ s/^\s+//;
 												$result =~ s/\s+$//;
 												return $result if $result;
@@ -966,7 +966,7 @@ sub html_start {
 
 	if (defined $Vend::Cfg->{AdminSub}{$tag} and ! $Vend::admin) {
 		$Vend::StatusLine = "Status: 403\nContent-Type: text/html";
-		::response( errmsg("Unauthorized for admin tag %s", $tag) );
+		Vend::Server::response( errmsg("Unauthorized for admin tag %s", $tag) );
 		return ($self->{ABORT} = 1);
 	}
 
@@ -1088,6 +1088,7 @@ sub html_start {
 			$Vend::StatusLine .= <<EOF;
 Status: 302 moved
 Location: $attr->{href}
+Content-type: text/html
 EOF
 			$$buf = '';
 			$Initialized->{_buf} = '';
@@ -1277,7 +1278,7 @@ sub start {
 	my($tmpbuf);
 	if (defined $Vend::Cfg->{AdminSub}{$tag} and ! $Vend::admin) {
 		$Vend::StatusLine = "Status: 403\nContent-Type: text/html";
-		::response( errmsg("Unauthorized for admin tag %s", $tag) );
+		Vend::Server::response( errmsg("Unauthorized for admin tag %s", $tag) );
 		return ($self->{ABORT} = 1);
 	}
 
@@ -1388,6 +1389,7 @@ sub start {
 			$Vend::StatusLine .= <<EOF;
 Status: 302 moved
 Location: $attr->{href}
+Content-type: text/html
 EOF
 			$$buf = '';
 			$Initialized->{_buf} = '';

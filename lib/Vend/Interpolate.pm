@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.29 2000-10-04 19:05:10 heins Exp $
+# $Id: Interpolate.pm,v 1.29.2.1 2000-10-06 19:49:23 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.29 $, 10);
+$VERSION = substr(q$Revision: 1.29.2.1 $, 10);
 
 @EXPORT = qw (
 
@@ -430,7 +430,7 @@ sub cache_html {
 	$parse->parse($html);
 	while($parse->{_buf}) {
 		substitute_image(\$parse->{OUT});
-		::response( \$parse->{OUT});
+		Vend::Server::response( \$parse->{OUT});
 		$full .= $parse->{OUT};
 		$parse->{OUT} = '';
 		$parse->parse('');
@@ -677,7 +677,7 @@ sub tag_data {
 	elsif($opt->{increment}) {
 		$CacheInvalid = 1;
 #::logDebug("increment_field: key=$key field=$field value=$opt->{value}");
-		return increment_field($Vend::Database{$selector},$key,$field,$opt->{value} || 1);
+		return Vend::Data::increment_field($Vend::Database{$selector},$key,$field,$opt->{value} || 1);
 	}
 	elsif (defined $opt->{value}) {
 #::logDebug("set_field: table=$selector key=$key field=$field value=$opt->{value}");
@@ -685,15 +685,15 @@ sub tag_data {
 		if($opt->{filter}) {
 			$opt->{value} = filter_value($opt->{filter}, $opt->{value}, $field);
 		}
-		return set_field($selector,$key,$field,$opt->{value},$opt->{append});
+		return Vend::Data::set_field($selector,$key,$field,$opt->{value},$opt->{append});
 	}
 	elsif ($opt->{hash}) {
-		my $db = ::database_exists_ref($selector);
+		my $db = Vend::Data::database_exists_ref($selector);
 		return $db->row_hash($key);
 	}
 
 	#The most common , don't enter a block, no accoutrements
-	return database_field($selector,$key,$field);
+	return Vend::Data::database_field($selector,$key,$field);
 
 }
 
@@ -1031,7 +1031,7 @@ sub conditional {
 		my($d,$f,$k) = split /::/, $term;
 		$CacheInvalid = 1
 			if defined $Vend::Cfg->{DynamicData}->{$d};
-		$op = database_field($d,$k,$f);
+		$op = Vend::Data::database_field($d,$k,$f);
 #::logDebug ("tag_if db=$d fld=$f key=$k\n");
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
@@ -1039,7 +1039,7 @@ sub conditional {
 	}
 	elsif($base eq 'field') {
 		my($f,$k) = split /::/, $term;
-		$op = product_field($f,$k);
+		$op = Vend::Data::product_field($f,$k);
 #::logDebug("tag_if field fld=$f key=$k\n");
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
@@ -1104,7 +1104,7 @@ sub conditional {
         }
         else {
             for(@{$Vend::Cfg->{UseModifier}}) {
-                next unless product_field($_,$term);
+                next unless Vend::Data::product_field($_,$term);
                 $status = 1;
                 last;
             }
@@ -1442,7 +1442,7 @@ sub tag_accessories {
 		$data = $passed;
 	}
 	else {
-		$data = $db ? tag_data($db, $field, $code) : product_field($field,$code);
+		$data = $db ? tag_data($db, $field, $code) : Vend::Data::product_field($field,$code);
 	}
 
 	unless ($data || $type =~ /^text|^hidden/i) {
@@ -2136,7 +2136,7 @@ sub initialize_banner_directory {
 		$category =~ s/'/''/g;
 		$append .= " = '$category'";
 	}
-	my $db = database_exists_ref($t);
+	my $db = Vend::Data::database_exists_ref($t);
 	if(! $db) {
 		my $weight_file = "$dir/total_weight";
 		return undef if -f $weight_file;
@@ -3382,18 +3382,18 @@ my $once = 0;
 	    $run =~ s#$B$QR{_pos}#$row->[$1]#ig;
 #::logDebug("fh: " . ::uneval($fh) . ::uneval($row)) unless $once++;
 		$run =~ s#$IB$QR{_field_if}$IE$QR{'/_field'}#
-				  product_field($2, $code)	?	pull_if($3,$1)
+				  Vend::Data::product_field($2, $code)	?	pull_if($3,$1)
 											:	pull_else($3,$1)#ige;
 		$run =~ s:$B$QR{_line}:join "\t", @{$row}[ ($1 || 0) .. $#$row]:ige;
 	    $run =~ s:$B$QR{_increment}:$count:ig;
 		$run =~ s:$B$QR{_accessories}:
 						tag_accessories($code,$1,{}):ige;
 		$run =~ s:$B$QR{_code}:$code:ig;
-		$run =~ s:$B$QR{_description}:product_description($code):ige;
-		$run =~ s:$B$QR{_field}:product_field($1, $code):ige;
+		$run =~ s!$B$QR{_description}!Vend::Data::product_description($code)!ige;
+		$run =~ s!$B$QR{_field}!Vend::Data::product_field($1, $code)!ige;
 		tag_labeled_data_row($code, \$run);
 		$run =~ s!$B$QR{_price}!
-					currency(product_price($code,$1), $2)!ige;
+					currency(Vend::Data::product_price($code,$1), $2)!ige;
 
 		1 while $run =~ s!$B$QR{_change}$E$QR{'/_change'}\1\]!
 							check_change($1,$3,undef,$2)
@@ -3448,7 +3448,7 @@ sub iterate_hash_list {
 				  $item->{$2}	?	pull_if($3,$1)
 								:	pull_else($3,$1)#ige;
 		$run =~ s#$IB$QR{_field_if}$IE$QR{'/_field'}#
-				  product_field($2, $code)	?	pull_if($3,$1)
+				  Vend::Data::product_field($2, $code)	?	pull_if($3,$1)
 											:	pull_else($3,$1)#ge;
 		$run =~ s#$IB$QR{_modifier_if}$IE$QR{'/_modifier'}#
 				  $item->{$2}	?	pull_if($3,$1)
@@ -3461,27 +3461,25 @@ sub iterate_hash_list {
 		$run =~ s:$B$QR{_param}:$item->{$1}:g;
 		$run =~ s:$QR{quantity_name}:quantity$item->{mv_ip}:g;
 		$run =~ s:$QR{modifier_name}:$1$item->{mv_ip}:g;
-		$run =~ s!$B$QR{_subtotal}!currency(item_subtotal($item),$1)!ge;
+		$run =~ s!$B$QR{_subtotal}!currency(Vend::Data::item_subtotal($item),$1)!ge;
 		$run =~ s!$B$QR{discount_subtotal}!
 						currency( discount_price(
-										$item,item_subtotal($item)
+										$item,Vend::Data::item_subtotal($item)
 									),
 								$1
 								)!ge;
 		$run =~ s:$B$QR{_code}:$code:g;
-		$run =~ s:$B$QR{_field}:item_field($item, $1) || $item->{$1}:ge;
-		$run =~ s:$B$QR{_description}:
-							item_description($item) || $item->{description}
-							:ge;
-		$run =~ s!$B$QR{_price}!currency(item_price($item,$1), $2)!ge;
+		$run =~ s!$B$QR{_field}!Vend::Data::item_field($item, $1) || $item->{$1}!ge;
+		$run =~ s!$B$QR{_description}!Vend::Data::item_description($item) || $item->{description}!ge;
+		$run =~ s!$B$QR{_price}!currency(Vend::Data::item_price($item,$1), $2)!ge;
 		$run =~ s!$QR{discount_price}!
 					currency(
-						discount_price($item, item_price($item,$1), $1 || 1)
+						discount_price($item, Vend::Data::item_price($item,$1), $1 || 1)
 						, $2
 						)!ge;
 		$run =~ s!$B$QR{_discount}!
 					currency(item_discount($item->{code},
-											item_price($item, $1),
+											Vend::Data::item_price($item, $1),
 											$item->{quantity}), $2)!ge;
 		1 while $run =~ s!$B$QR{_change}$E$QR{'/_change'}\1\]!
 							check_change($1,$3,undef,$2)
@@ -3851,7 +3849,7 @@ sub fly_page {
 
 	$Vend::Flypart = $code;
 
-	my $base = product_code_exists_ref($code);
+	my $base = Vend::Data::product_code_exists_ref($code);
 #::logDebug("fly_page: code=$code base=$base page=" . substr($page, 0, 100));
 	return undef unless $base || $opt->{onfly};
 
@@ -3861,10 +3859,10 @@ sub fly_page {
 		$selector = 'passed in tag';
 	}
 	elsif(	$selector = $Vend::Cfg->{PageSelectField}
-			and db_column_exists($base,$selector)
+			and Vend::Data::db_column_exists($base,$selector)
 		)
 	{
-			$selector = database_field($base, $code, $selector)
+			$selector = Vend::Data::database_field($base, $code, $selector)
 	}
 
 	$selector = find_special_page('flypage')
@@ -3955,7 +3953,7 @@ sub apply_discount {
 	push(@formulae, $item->{mv_discount})
 		if defined $item->{mv_discount};
 
-	my $subtotal = item_subtotal($item);
+	my $subtotal = Vend::Data::item_subtotal($item);
 
 	init_calc() unless $Calc_initialized;
 	# Calculate any formalas found
@@ -4887,20 +4885,20 @@ sub shipping {
 	elsif ( index($field, ':') != -1) {
 #::logDebug("outboard field selection");
 		my ($base, $field) = split /:+/, $field;
-		my $db = database_exists_ref($base);
-		unless ($db and db_column_exists($db,$field) ) {
+		my $db = Vend::Data::database_exists_ref($base);
+		unless ($db and Vend::Data::db_column_exists($db,$field) ) {
 			logError("Bad shipping field '$field' or table '$base'. Returning 0");
 			goto SHIPFORMAT;
 		}
     	foreach $i (0 .. $#$Vend::Items) {
 			my $item = $Vend::Items->[$i];
-			$total += (database_field($base, $item->{code}, $field) || 0) *
+			$total += (Vend::Data::database_field($base, $item->{code}, $field) || 0) *
 						$item->{quantity};
 		}
 	}
 	else {
 #::logDebug("standard field selection");
-		unless (column_exists $field) {
+		unless (Vend::Data::column_exists $field) {
 			logError("Custom shipping field '$field' doesn't exist. Returning 0");
 			goto SHIPFORMAT;
 		}
@@ -5003,7 +5001,7 @@ sub shipping {
 						$item->{$_} = tag_data($1, $_, $item->{code});
 					}
 					else {
-						$item->{$_} = product_field($_, $item->{code});
+						$item->{$_} = Vend::Data::product_field($_, $item->{code});
 					}
 					$sum->{$_} += $item->{$_} if defined $sum;
 				}
@@ -5139,8 +5137,8 @@ sub taxable_amount {
     foreach $i (0 .. $#$Vend::Items) {
 		$item =	$Vend::Items->[$i];
 		next if is_yes( $item->{mv_nontaxable} );
-		next if is_yes( item_field($item, $Vend::Cfg->{NonTaxableField}) );
-		$tmp = item_subtotal($item);
+		next if is_yes( Vend::Data::item_field($item, $Vend::Cfg->{NonTaxableField}) );
+		$tmp = Vend::Data::item_subtotal($item);
 		unless (defined $Vend::Session->{discount}) {
 			$taxable += $tmp;
 		}

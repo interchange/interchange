@@ -1,6 +1,6 @@
 # Static.pm - Interchange static page routines
 # 
-# $Id: Static.pm,v 1.4 2000-07-20 07:15:47 heins Exp $
+# $Id: Static.pm,v 1.4.2.1 2000-10-06 19:49:31 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -218,7 +218,7 @@ EOF
 	chdir $Vend::Cfg->{VendRoot} 
 		or die "Couldn't change to $Vend::Cfg{VendRoot}: $!\n";
 	$Vend::Cfg->{ReadPermission} = 'world';
-	::set_file_permissions();
+	Vend::Server::set_file_permissions();
 	umask $Vend::Cfg->{Umask};
 
 	$spec = $Vend::BuildSpec || $Vend::Cfg->{StaticPattern} || '';
