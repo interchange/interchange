@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.9 2001-01-28 08:42:01 heins Exp $
+# $Id: Util.pm,v 1.14.2.10 2001-02-05 13:28:44 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -79,7 +79,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.9 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.10 $, 10);
 
 BEGIN {
 	eval {
@@ -376,7 +376,9 @@ sub currency {
 	my($amount, $noformat, $convert, $opt) = @_;
 #::logDebug("currency called: amount=$amount no=$noformat convert=$convert");
 	$opt = {} unless $opt;
-	$amount = $amount / $Vend::Cfg->{PriceDivide} if $convert;
+	
+	$amount = $amount / $Vend::Cfg->{PriceDivide}
+		if $convert and $Vend::Cfg->{PriceDivide} != 0;
 	return $amount if $noformat;
 	my $loc;
 	my $sep;
@@ -1031,6 +1033,7 @@ sub vendUrl {
     $r = $Vend::Cfg->{VendURL}
 		unless defined $r;
 
+	my $can_cache = ! $Vend::Cfg->{NoCache}{$path};
 	my @parms;
 
 	if(defined $Vend::Cfg->{AlwaysSecure}{$path}) {
@@ -1039,9 +1042,9 @@ sub vendUrl {
 
 	my($id, $ct);
 	$id = $Vend::SessionID
-		unless $CGI::cookie && $::Scratch->{mv_no_session_id};
+		unless $can_cache and $CGI::cookie && $::Scratch->{mv_no_session_id};
 	$ct = ++$Vend::Session->{pageCount}
-		unless $::Scratch->{mv_no_count};
+		unless $can_cache and $::Scratch->{mv_no_count};
 
     $r .= '/' . $path;
 	$r .= '.html' if $::Scratch->{mv_add_dot_html} and $r !~ /\.html?$/;
