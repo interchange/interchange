@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25 2000-11-22 06:36:54 heins Exp $
+# $Id: DBI.pm,v 1.25.2.1 2000-11-25 00:26:28 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.1 $, 10);
 
 use strict;
 
@@ -51,9 +51,11 @@ use vars qw/
 $TIE_HASH = $DBI;
 
 my %Cattr = ( qw(
+					RAISEERROR     	RaiseError
 					PRINTERROR     	PrintError
 					AUTOCOMMIT     	AutoCommit
 				) );
+my @Cattr = keys %Cattr;
 
 my %Dattr = ( qw(
 					WARN			Warn
@@ -66,6 +68,7 @@ my %Dattr = ( qw(
 					LONGTRUNCOK    	LongTruncOk
 					LONGREADLEN    	LongReadLen
 				) );
+my @Dattr = keys %Dattr;
 
 sub find_dsn {
 	my ($config) = @_;
@@ -75,18 +78,23 @@ sub find_dsn {
 	foreach $param (qw! DSN USER PASS !) {
 		$out[$i++] = $config->{ $param } || undef;
 	}
-	foreach $param (keys %$config) {
-		if(defined $Dattr{$param}) {
-			$dattr = { AutoCommit => 1, PrintError => 1 }
-				unless defined $dattr;
-			$dattr->{$Dattr{$param}} = $config->{$param};
+
+	my @other = grep defined $config->{$_}, @Dattr;
+	
+	if(@other) {
+		$dattr = { };
+		$cattr = { };
+		for(@other) {
+			$dattr->{$Dattr{$_}} = $config->{$_};
+			$cattr->{$Cattr{$_}} = $config->{$_}
+				if defined $Cattr{$_};
 		}
-		next unless defined $Cattr{$param};
-		$cattr = {} unless defined $cattr;
-		$cattr->{$Cattr{$param}} = $config->{$param};
 	}
+	
 	$out[3] = $cattr || undef;
 	$out[4] = $dattr || undef;
+#::logDebug("out# = " . scalar(@out));
+#::logDebug("out dump= " . ::uneval(\@out)) if $Vend::Cfg->{CatalogName} eq 'construct';
 	@out;
 }
 
@@ -107,6 +115,40 @@ sub import_db {
 }
 
 my $Info;
+
+my %known_capability = (
+	AUTO_INDEX_PRIMARY_KEY => {
+		Oracle	=> 1
+	},
+	HAS_LIMIT => {
+		mysql	=> 1,
+		Pg		=> 1,
+		Oracle	=> 1,
+	},
+	ALTER_DELETE => { 
+		mysql => 'ALTER TABLE _TABLE_ DROP _COLUMN_',
+	},
+	ALTER_CHANGE => { 
+		mysql => 'ALTER TABLE _TABLE_ CHANGE COLUMN _COLUMN_ _COLUMN_ _DEF_',
+	},
+	ALTER_ADD	 => { 
+		mysql => 'ALTER TABLE _TABLE_ ADD COLUMN _COLUMN_ _DEF_',
+	},
+);
+
+sub check_capability {
+	my ($config, $driver_name) = @_;
+	return if $config->{_Checked_capability}++;
+
+	my ($k, $known);
+	while ( ($k, $known) = each %known_capability ) {
+		if(! defined $config->{$k} ) {
+#::logDebug("checking $driver_name cap $k: $known->{$driver_name}");
+			$config->{$k} = $known->{$driver_name}
+				if defined $known->{$driver_name};
+		}
+	}
+}
 
 sub create {
     my ($class, $config, $columns, $tablename) = @_;
@@ -137,10 +179,10 @@ sub create {
 		return bless [$config, $tablename, undef, undef, undef, $db], $class;
 	}
 
+	check_capability($config, $db->{Driver}{Name});
+
     die "columns argument $columns is not an array ref\n"
         unless CORE::ref($columns) eq 'ARRAY';
-
-	my $oracle = 1 if $db->{Driver}->{Name} =~ /Oracle/;
 
 	if(defined $dattr) {
 		for(keys %$dattr) {
@@ -182,34 +224,46 @@ sub create {
 	$query .= join ",\n", @cols;
 	$query .= "\n)\n";
 
-	# test creation of table
-	TESTIT: {
-		my $q = $query;
-		eval {
-			$db->do("drop table ic_test_create")
-		};
-		$q =~ s/create\s+table\s+\S+/create table ic_test_create/;
-		if(! $db->do($q) ) {
-			::logError(
-						"bad table creation statement:\n%s\n\nError: %s",
-						$query,
-						$DBI::errstr,
-			);
-			warn "$DBI::errstr\n";
-			return undef;
-		}
-		$db->do("drop table ic_test_create")
+	if($config->{CREATE_SQL}) {
+#::logDebug("Trying to create with specified CREATE_SQL:\n$config->{CREATE_SQL}");
+		$db->do($config->{CREATE_SQL})
+			or die ::errmsg(
+				"DBI: Create table '%s' failed, explicit CREATE_SQL. Error: %s\n",
+				$tablename,
+				$DBI::errstr,
+				);
 	}
+	else {
+		# test creation of table
+		TESTIT: {
+			my $q = $query;
+			eval {
+				$db->do("drop table ic_test_create")
+			};
+			$q =~ s/create\s+table\s+\S+/create table ic_test_create/;
+			if(! $db->do($q) ) {
+				::logError(
+							"unable to create test table:\n%s\n\nError: %s",
+							$query,
+							$DBI::errstr,
+				);
+				warn "$DBI::errstr\n";
+				return undef;
+			}
+			$db->do("drop table ic_test_create")
+		}
 
-	eval {
-		$db->do("drop table $tablename")
-			and $config->{Clean_start} = 1
-			or warn "$DBI::errstr\n";
-	};
-#::logDebug("Trying to create with:$query");
-	$db->do($query)
-		or warn "DBI: Create table '$tablename' failed: $DBI::errstr\n";
-	::logError("table %s created: %s" , $tablename, $query );
+		eval {
+			$db->do("drop table $tablename")
+				and $config->{Clean_start} = 1
+				or warn "$DBI::errstr\n";
+		};
+	#::logDebug("Trying to create with:$query");
+		$db->do($query)
+			or warn "DBI: Create table '$tablename' failed: $DBI::errstr\n";
+		::logError("table %s created: %s" , $tablename, $query );
+
+	}
 
 	if(ref $config->{POSTCREATE}) {
 		for(@{$config->{POSTCREATE}} ) {
@@ -220,7 +274,7 @@ sub create {
 								$DBI::errstr,
 					);
 		}
-	} elsif ($oracle and ($config->{COLUMN_DEF}->{$key} =~ /PRIMARY\s+KEY/i)) {
+	} elsif ($config->{AUTO_INDEX_PRIMARY_KEY}) {
 		# Oracle automatically creates indexes on primary keys,
 		# so we don't need to do it again
 	} else {
@@ -246,6 +300,8 @@ sub new {
 sub open_table {
     my ($class, $config, $tablename) = @_;
 	
+	$config->{PRINTERROR} = 0 if ! defined $config->{PRINTERROR};
+	$config->{RAISEERROR} = 1 if ! defined $config->{RAISEERROR};
     my @call = find_dsn($config);
     my $dattr = pop @call;
     my $db;
@@ -257,12 +313,12 @@ sub open_table {
 			$DBI_connect_count{$config->{dsn_id}}++;
 		}
 	}
-#::logDebug("db_file: $config->{db_file}");
-#::logDebug("db_file_extended: $config->{db_file_extended}");
 	unless ($db = $DBI_connect_cache{ $config->{dsn_id} }) {
+#::logDebug("connecting to " . ::uneval(\@call));
 		eval {
 			$db = DBI->connect( @call );
 		};
+#::logDebug("DBI didn't die");
 		if(! $db) {
 			my $msg = $@ || $DBI::errstr;
 			if(! $msg) {
@@ -279,9 +335,11 @@ sub open_table {
 #::logDebug("connected to $config->{dsn_id}");
 	}
 
-#	if(! $Info and ($Info = $db->table_info()) ) {
+	check_capability($config, $db->{Driver}{Name});
+
+	if(! $Info and ($db->can('table_info') and $Info = $db->table_info()) ) {
 #::logDebug("$tablename table_info: " . ::uneval($Info->fetchall_arrayref()));
-#	}
+	}
 
     unless ($config->{hot_dbi}) {
 		$DBI_connect_count{$config->{dsn_id}}++;
@@ -460,6 +518,79 @@ sub bind_entire_row {
 			)
 		if $key;
 	return;
+}
+
+sub add_column {
+	my ($s, $column, $def) = @_;
+	return $s->alter_column($column, $def, 'ALTER_ADD');
+}
+
+sub change_column {
+	my ($s, $column, $def) = @_;
+	return $s->alter_column($column, $def, 'ALTER_CHANGE');
+}
+
+sub delete_column {
+	my ($s, $column, $def) = @_;
+	return $s->alter_column($column, $def, 'ALTER_DELETE');
+}
+
+sub alter_column {
+	my ($s, $column, $def, $function) = @_;
+	$s = $s->import_db() if ! defined $s->[$DBI];
+	$function = 'ALTER_CHANGE' unless $function;
+	my $template = $s->config($function);
+	if(! $template) {
+		::logError(
+			$s->config(
+				'last_error',
+				::errmsg(
+					"No %s template defined for table %s. Skipping.",
+					$function,
+					$s->[$TABLE],
+				),
+			),
+		);
+		return undef;
+	}
+
+	if($function =~ /^(ALTER_CHANGE)$/ and ! $s->column_exists($column) ) {
+		::logError(
+			$s->config(
+				'last_error',
+				::errmsg(
+					"Column '%s' doesn't exist in table %s. Skipping.",
+					$column,
+					$s->[$TABLE],
+				),
+			),
+		);
+		return undef;
+	}
+
+	$template =~ s/\b_TABLE_\b/$s->[$TABLE]/g;
+	$template =~ s/\b_COLUMN_\b/$column/g;
+	$template =~ s/\b_DEF_\b/$def/g;
+
+	my $rc;
+	eval {
+		$rc = $s->[$DBI]->do($template);
+	};
+
+	if($@) {
+		::logError(
+			$s->config(
+				'last_error',
+				::errmsg(
+					"'%s' failed. Error: %s",
+					$template,
+				),
+			),
+		);
+		return undef;
+	}
+
+	return $rc;
 }
 
 sub set_row {
@@ -864,7 +995,7 @@ sub query {
 
 		eval {
 			if($update and $s->[$CONFIG]{Read_only}) {
-				my $msg = errmsg(
+				my $msg = ::errmsg(
 							"Attempt to do update on read-only table.\nquery: %s",
 							$query,
 						  );
