@@ -8,7 +8,7 @@
 Summary: Interchange web application platform
 Name: interchange
 Version: 4.9.8
-Release: 1
+Release: 2
 Vendor: Interchange Development Group
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
@@ -25,7 +25,6 @@ Requires: perl-Business-UPS
 Requires: perl-Digest-MD5
 Requires: perl-MIME-Base64
 Requires: perl-Safe-Hole
-Requires: perl-SQL-Statement
 Requires: perl-Storable
 Requires: perl-URI
 Requires: perl-libnet
@@ -375,6 +374,9 @@ fi
 
 
 %changelog
+* Tue Jul 29 2003 Jon Jensen <jon@icdevgroup.org> 4.9.8-2
+- Remove dependency on SQL::Statement.
+
 * Wed Jun 18 2003 Jon Jensen <jon@icdevgroup.org> 4.9.8-1
 - Update for new release
 
