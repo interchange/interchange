@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.53 2004-06-07 03:08:08 mheins Exp $
+# $Id: Server.pm,v 2.54 2004-06-08 03:03:01 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.53 $, 10);
+$VERSION = substr(q$Revision: 2.54 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -857,9 +857,9 @@ sub read_cgi_data {
 sub connection {
     my (%env, $entity);
 
-  ### This resets all $Vend::variable settings so we start
-  ### completely initialized. It only affects the Vend package,
-  ### not any Vend::XXX packages.
+	# This resets all $Vend::variable settings so we start
+	# completely initialized. It only affects the Vend and CGI packages,
+	# not any Vend::XXX packages.
 	reset_vars();
 
 	if($Global::ShowTimes) {
