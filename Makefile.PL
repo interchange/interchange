@@ -440,9 +440,9 @@ sub initialize {
 	$X{INSTALLARCHLIB}	= "$realdir";
 	$X{INSTALLPRIVLIB}	= "$realdir/lib";
 	if(! $MV::Default{final}) {
-		$X{INSTALLMAN1DIR}	= "$realdir/doc"
+		$X{INSTALLMAN1DIR}	= "$realdir/man"
 			if ! $MV::Default{INSTALLMAN1DIR};
-		$X{INSTALLMAN3DIR}	= "$realdir/doc"
+		$X{INSTALLMAN3DIR}	= "$realdir/man"
 			if ! $MV::Default{INSTALLMAN3DIR};
 	}
 

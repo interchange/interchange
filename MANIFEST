@@ -832,7 +832,6 @@ lib/Vend/TextSearch.pm
 lib/Vend/Track.pm
 lib/Vend/UserDB.pm
 lib/Vend/Util.pm
-perl/Interchange.pm
 pod/ic_ecommerce.pod
 pod/ic_howto_cvs.pod
 pod/icadvanced.pod

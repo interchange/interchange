@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.2.2.11 2002-08-11 14:17:45 mheins Exp $
+# $Id: Config.pm,v 2.2.2.12 2002-08-11 15:24:03 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.2.2.11 $, 10);
+$VERSION = substr(q$Revision: 2.2.2.12 $, 10);
 
 my %CDname;
 
@@ -1946,7 +1946,7 @@ my %Default = (
 						$Global::TcpMap = {};
 					}
 					return 1 if @sets;
-					$Global::TcpMap->{7786} = '-';
+					$Global::TcpMap->{'localhost:7786'} = '-';
 					return 1;
 				},
 		Database => sub {

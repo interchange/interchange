@@ -95,7 +95,11 @@ Mall  Yes
 # Additional Safe operations to untrap beyond the standard "ftfile sort".
 SafeUntrap  rand
 
-TcpMap 7786 -
+TcpMap localhost:7786 -
+
+## Whether INET and UNIX ports will be used
+Unix_Mode Yes
+Inet_Mode No
 
 # Include back office administration UI if variable set above.
 ifdef UI

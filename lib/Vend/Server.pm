@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.0.2.5 2002-07-08 22:44:26 edl Exp $
+# $Id: Server.pm,v 2.0.2.6 2002-08-11 15:24:03 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.0.2.5 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.6 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -770,6 +770,10 @@ sub http_server {
 
 	my (@path) = $url->path_components();
 	my $path = $url->path();
+	if($path =~ m{\.\./}) {
+		logGlobal("Attempted breakin using path=$path, will show 404");
+		$path =~ s{\.\./}{}g;
+	}
 	my $doc;
 	my $status = 200;
 
@@ -807,7 +811,7 @@ EOF
 	else {
 		$status = 404;
 		$Vend::StatusLine = "HTTP/1.0 404 Not found";
-		$doc = "$path not a Interchange catalog or help file.\n";
+		$doc = "Not an Interchange catalog or help file.\n";
 	}
 
 	if($$env{REQUEST_METHOD} eq 'HEAD') {

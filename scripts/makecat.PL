@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.5.2.5 2002-02-04 15:51:08 jon Exp $
+# $Id: makecat.PL,v 2.5.2.6 2002-08-11 15:24:03 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -2124,6 +2124,8 @@ POSTCMD: {
 	close ADDL;
 }
 	my $add;
+	my $add_tcp;
+	my $add_inet;
 
 	umask(07) unless $Conf{noumask};
 
@@ -2135,6 +2137,13 @@ POSTCMD: {
 	}
 	$add = prefix('norunning') ? 'n' : 'y';
 
+	if($yes and $Inetmode) {
+		$add_tcp = prompt "Add port $lp to TcpMap in interchange.cfg if necessary? ", $add;
+		$add_tcp = is_yes($add_tcp);
+		$add_inet = prompt "Set Interchange to run in INET mode if necessary? ", $add;
+		$add_inet = is_yes($add_inet);
+	}
+
 	if($pid) {
 		$add_to_running = prompt "Add catalog to server running on PID $pid? ", $add;
 		$add_to_running = is_yes($add_to_running);
@@ -2142,6 +2151,7 @@ POSTCMD: {
 
 	my $full = '';
 	my $newcfgline;
+	my $tcpmark;
 
 	$newcfgline = sprintf "%-10s %s %s %s %s\n", 'Catalog',
 				$catalog_name, $Conf{catroot}, $full . $Conf{cgiurl}, $Conf{aliases};
@@ -2174,6 +2184,10 @@ POSTCMD: {
 				if s/^(catalog\s+$catalog_name\s+)/#$1/io;
 			$full = is_yes($1)
 				if /^\s*fullurl\s+(.*)/i;
+			if ($add_tcp and /^tcpmap\s+/i and $_ !~ /\b$lh:$lp\b/) {
+				$tcpmark = /^tcpmap\s+[^<]+$/i ? $. : $. + 1;
+				$tcpmark-- if $mark;
+			}
 			push @out, $_;
 		}
 		close CFG;
@@ -2192,6 +2206,24 @@ POSTCMD: {
 
 		$newcfgline = sprintf "%-13s %s %s %s %s\n", 'Catalog',
 				$catalog_name, $Conf{catroot}, $full . $Conf{cgiurl}, $Conf{aliases};
+
+		if($tcpmark) {
+			$out[$tcpmark] =~ s/\s*$/ $lh:$lp -\n/;
+		}
+		
+		if($add_inet) {
+			my $found_inetmode;
+			for(@out) {
+				next unless /^\s*inet_mode\s+/i;
+				$_ = "Inet_Mode Yes\n";
+				$found_inetmode = 1;
+				last;
+			}
+			if(! $found_inetmode) {
+				push @out, "Inet_Mode Yes\n";
+			}
+		}
+
 		if (defined $mark) {
 			print NEWCFG @out[0..$mark-1];
 			print NEWCFG $newcfgline;
@@ -2203,6 +2235,7 @@ POSTCMD: {
 			print NEWCFG $newcfgline;
 			print NEWCFG @out;
 		}
+
 		close NEWCFG || die "close: $!\n";
 		unlink $tmpfile;
 		if($isroot) {
@@ -2322,7 +2355,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.5.2.5 2002-02-04 15:51:08 jon Exp $
+# $Id: makecat.PL,v 2.5.2.6 2002-08-11 15:24:03 mheins Exp $
 
 =head1 INTRODUCTION
 
