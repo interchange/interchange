@@ -35,9 +35,9 @@
       <td> 
          <table width="100%" border="0" cellpadding="6" cellspacing="1" class="rseparator">
             <tr> 
-               <td width="25%" nowrap class="block4bold">User Name: &nbsp; <a href="[area href="admin/customer_view" form="customer=[loop-data transactions username]"]" title="View customer"><span class="maincontent">[loop-data transactions username]</span></a></td>
+               <td width="25%" nowrap class="block4bold">[L]User Name[/L]: &nbsp; <a href="[area href="admin/customer_view" form="customer=[loop-data transactions username]"]" title="View customer"><span class="maincontent">[loop-data transactions username]</span></a></td>
                <td width="25%" nowrap class="block4bold">
-			   	Order Status: &nbsp;
+			   	[L]Order Status[/L]: &nbsp;
 					[page href="admin/order_status" form="order=[loop-code]"]
 						<span class="alert">[display table=transactions col=status type=display key="[loop-code]"]</span>
 					</a>
@@ -51,18 +51,18 @@
 				</td>
                <td width="25%" nowrap class="block4bold">
 			   		
-					Affiliate: &nbsp;
+					[L]Affiliate[/L]: &nbsp;
 					[if-loop-data transactions affiliate]
 						[page href="admin/affiliate"
 							  form="affiliate=[loop-data transactions affiliate]"
 						]<span class="maincontent">[loop-data transactions affiliate]</span></A>
 					[else]
-							<span class="maincontent">none</span>
+							<span class="maincontent">[L]none[/L]</span>
 					[/else]
 					[/if-loop-data]
 				</td>
                 <td width="25%" nowrap class="block4bold">
-			   		Order Date: &nbsp; <span class="maincontent">
+			   		[L]Order Date[/L]: &nbsp; <span class="maincontent">
 						[convert-date fmt="%b %e, %Y %l:%M %P"][loop-data transactions order_date][/convert-date]
 					</span>
 				</td>
@@ -83,13 +83,13 @@
                   <table width="100%" height="160" border="0" cellpadding="6" cellspacing="1" class="rseparator">
                      <tr> 
                
-                        <td height="1%" class="block4"><a href="[area href='admin/customer_view' form='customer=[loop-data transactions username]']">Customer Details</a></td>
+                        <td height="1%" class="block4"><a href="[area href='admin/customer_view' form='customer=[loop-data transactions username]']">[L]Customer Details[/L]</a></td>
                      </tr>
                      <tr> 
                         <td height="99%" valign="top" class="block4"> 
                            <table width="100%" border="0" cellspacing="0" cellpadding="1">
                               <tr> 
-                                 <td width="30%" class="block4bold">Customer:</td>
+                                 <td width="30%" class="block4bold">[L]Customer[/L]:</td>
                                  <td width="70%" class="maincontent"><a href="[area href='admin/customer_view' form='customer=[loop-data transactions username]']">[customer-data userdb fname] [customer-data userdb lname]</a> 
                                  </td>
                               </tr>
@@ -153,7 +153,7 @@
                <td width="33%" valign="top"> 
                   <table width="100%" height="160" border="0" cellpadding="6" cellspacing="1" class="rseparator">
                      <tr> 
-                        <td height="1%" class="block4"><a href="#">Billing Details</a></td>
+                        <td height="1%" class="block4"><a href="#">[L]Billing Details[/L]</a></td>
                      </tr>
                      <tr> 
                         <td height="99%" valign="top" class="block4"> 
@@ -220,7 +220,7 @@
                            </table>
 		[/loop]
 [else]
-						<i>Same as shipping address</i>
+						<i>[L]Same as shipping address[/L]</i>
 [/else]
 [/if-loop-data]
                         </td>
@@ -232,7 +232,7 @@
                <td width="34%" valign="top"> 
                   <table width="100%" height="160" border="0" cellpadding="6" cellspacing="1" class="rseparator">
                      <tr> 
-                        <td height="1%" class="block4"><a href="#">Shipping Details</a></td>
+                        <td height="1%" class="block4"><a href="#">[L]Shipping Details[/L]</a></td>
                      </tr>
                      <tr> 
                         <td height="99%" valign="top" class="block4"> 
@@ -362,11 +362,11 @@
                <td class=rownorm align=right>[currency][loop-data transactions subtotal][/currency]</td>
             </tr>
             <tr> 
-               <td colspan=5 align=right class=rsubbold>[L]Tax:[/L]</td>
+               <td colspan=5 align=right class=rsubbold>[L]Tax[/L]:</td>
                <td class=rownorm align=right>[currency][loop-data transactions salestax][/currency]</td>
             </tr>
             <tr> 
-               <td colspan=5 align=right class=rsubbold>[L]Total Weight:[/L]</td>
+               <td colspan=5 align=right class=rsubbold>[L]Total Weight[/L]:</td>
                <td class=rownorm align=right>[calc]$total_weight[/calc]</td>
             </tr>
 			[if-loop-data transactions handling > 0]
@@ -423,4 +423,4 @@ vieworder=
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: order_view.html,v 2.14 2003-05-12 19:30:12 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order_view.html,v 2.15 2003-07-22 22:27:54 racke Exp $ -->
