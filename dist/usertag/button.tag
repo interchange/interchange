@@ -91,7 +91,8 @@ sub {
 	if(! $name or $name eq 'mv_click') {
 		$action =~ s/^\s+//;
 		$action =~ s/\s+$//;
-		$::Scratch->{$text} = $action;
+		my $set_text = HTML::Entities::decode($text);
+		$::Scratch->{$set_text} = $action;
 		$name = 'mv_click' if ! $name;
 	}
 	
