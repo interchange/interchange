@@ -166,7 +166,8 @@ do
 		--catuser=%ic_user \
 		--mailorderto=%{ic_user}@$HOST \
 		cachedir=$CACHEDIR/$i \
-		logdir=$LOGDIR/$i
+		logdir=$LOGDIR/$i \
+		demomode=1
 done
 
 # Clean up empty placeholder files used to keep CVS from pruning away
@@ -203,14 +204,14 @@ find . -path .$ICBASE/foundation -prune -mindepth $DIRDEPTH -maxdepth $DIRDEPTH 
 
 %pre
 
-/sbin/service interchange stop > /dev/null 2>&1
+/sbin/service interchange stop > /dev/null 2>&1 || :
 
 # Create interch user/group if they don't already exist
 [ -z "`grep ^%{ic_group}: /etc/group`" ] && \
-	/usr/sbin/groupadd -g 52 %ic_group
+	/usr/sbin/groupadd -g 52 %ic_group || :
 [ -z "`grep ^%{ic_user}: /etc/passwd`" ] && \
-	/usr/sbin/useradd -u 52 -c "Interchange server" \
-	-s /bin/bash -r -d %{_localstatedir}/lib/interchange %ic_user
+	/usr/sbin/useradd -u 52 -g interch -c "Interchange server" \
+	-s /bin/bash -r -d %{_localstatedir}/lib/interchange %ic_user || :
 
 
 %files foundation
@@ -345,7 +346,9 @@ do
 	fi
 
 	# Remove Catalog directive from interchange.cfg
-	perl -pi -e "s/^\s*Catalog\s+$i\s[^\n]+\n//i" %{_sysconfdir}/interchange.cfg
+	if [ -e %{_sysconfdir}/interchange.cfg ]; then
+		perl -pi -e "s/^\s*Catalog\s+$i\s[^\n]+\n//i" %{_sysconfdir}/interchange.cfg
+	fi
 
 	# Remove leftover machine-generated files
 	rm -rf %{_localstatedir}/cache/interchange/$i/tmp/*
@@ -368,8 +371,10 @@ rm -f %filelist
 
 %changelog
 * Mon Apr 29 2002 Jon Jensen <jon@redhat.com> 4.8.4-9
+- Request uid and gid to be 52, Red Hat's assigned numbers for Interchange.
+- Start IC daemon in UNIX mode only by default.
+- Build foundation-demo with MV_DEMO_MODE set by default.
 - Back out Stronghold index.html patch.
-- Force uid and gid to be 52, Red Hat's assigned numbers for Interchange.
 - Adapt a few more Gary-isms (manpage filelist, NOCPANINSTALL setting).
 
 * Fri Feb 15 2002 Jon Jensen <jon@redhat.com> 4.8.4-8
