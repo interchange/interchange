@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.92 2003-01-04 23:50:43 kwalsh Exp $
+# $Id: Config.pm,v 2.93 2003-01-12 06:47:09 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -46,7 +46,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.92 $, 10);
+$VERSION = substr(q$Revision: 2.93 $, 10);
 
 my %CDname;
 
@@ -2780,6 +2780,7 @@ my %Hash_ref = (  qw!
 							DEFAULT_SESSION       DEFAULT_SESSION
 							FIELD_ALIAS   FIELD_ALIAS
 							NUMERIC       NUMERIC
+							PREFER_NULL   PREFER_NULL
 							WRITE_CATALOG WRITE_CATALOG
 					! );
 

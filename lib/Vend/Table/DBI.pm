@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.38 2002-12-08 15:55:23 racke Exp $
+# $Id: DBI.pm,v 2.39 2003-01-12 06:47:09 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.38 $, 10);
+$VERSION = substr(q$Revision: 2.39 $, 10);
 
 use strict;
 
@@ -752,6 +752,8 @@ sub test_column {
 sub quote {
 	my($s, $value, $field) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
+	return 'NULL' if $field and ! length($value)
+		and exists $s->[$CONFIG]->{PREFER_NULL}{$field};
 	return $s->[$DBI]->quote($value)
 		unless $field and exists $s->[$CONFIG]->{NUMERIC}{$field};
 	$value = 0 if ! length($value);
@@ -1167,6 +1169,16 @@ sub set_slice {
 		$fary = [ keys   %$href ];
 	}
 
+	if ($s->[$CONFIG]->{PREFER_NULL}) {
+		my $prefer_null = $s->[$CONFIG]->{PREFER_NULL};
+		my $i = 0;
+		for (@$fary) {
+			undef $vary->[$i]
+				if exists $prefer_null->{$_} and $vary->[$i] eq '';
+			++$i;
+		}
+	}
+
     if($s->[$CONFIG]->{LENGTH_EXCEPTION_DEFAULT}) {
 
 		my $lcfg   = $s->[$CONFIG]{FIELD_LENGTH_DATA}
@@ -1248,7 +1260,15 @@ sub set_row {
 
 	$s->filter(\@fields, $s->[$CONFIG]{COLUMN_INDEX}, $s->[$CONFIG]{FILTER_TO})
 		if $cfg->{FILTER_TO};
-	my ($val);
+
+	if ($cfg->{PREFER_NULL}) {
+		for (keys %{$cfg->{PREFER_NULL}}) {
+			my $i = $cfg->{COLUMN_INDEX}{$_};
+			undef $fields[$i] if $fields[$i] eq '';
+		}
+	}
+
+	my $val;
 
 	if(scalar @fields == 1) {
 		 return if $cfg->{AUTO_SEQUENCE};
@@ -1479,11 +1499,14 @@ sub set_field {
 
 	$key = $s->autonumber()  if ! length($key);
 
+	undef $value if $value eq '' and exists $s->[$CONFIG]{PREFER_NULL}{$column};
+
 	my $rawkey = $key;
 	my $rawval = $value;
 
 	$key   = $s->quote($key, $s->[$KEY]);
 	$value = $s->quote($value, $column);
+
 	my $query;
 	if(! $s->record_exists($rawkey)) {
 		if( $s->[$CONFIG]{AUTO_SEQUENCE} ) {
