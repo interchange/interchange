@@ -65,7 +65,7 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0071	Wizard	05		grouppolicy			admin/wizard/step_grouppolicy		About Your Preferences	1			grouppolicy					
 0018	Admin	09					admin/reconfig	ui_changes_made	&nbsp;&nbsp;&nbsp;Apply Changes									
 0069	Wizard	03	1	company			admin/wizard/step_company		Company Information	1			compinfo					
-0007	Top	07		Reporting		stats	admin/orderstats		Reporting			View statistics on orders and site traffic, create custom reports		B8.gif	B8_b.gif	B8_b.gif	icon_stats.gif	
+0007	Top	07		Reports		stats	admin/orderstats		Reports			View statistics on orders and site traffic, create custom reports		B8.gif	B8_b.gif	B8_b.gif	icon_stats.gif	
 0058	Merchandising	02					admin/affiliates		Affiliates									
 0017b	Admin	08b					admin/wizard/index		Wizard									
 0074	Wizard	08	1	pay			admin/wizard/step_pay		Payment Preferences	1			payment					
