@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.32.4.13 2001-06-09 22:50:11 heins Exp $
+# $Id: makecat.PL,v 1.32.4.14 2001-06-14 16:05:37 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -505,7 +505,6 @@ my %Prefix = (
 							return $ENV{MVC_SHAREURL} if $ENV{MVC_SHAREURL};
 							my $url = '';
 							$url = $Tilde if defined $Tilde;
-							$url .= '/';
 							return $url;
 						},
 
@@ -905,7 +904,7 @@ SETDEFAULTS: {
 			print <<EOF unless $Windows;
 
 This demo configuration sometimes requires root permissions,
-depending on your ISP.  It needs to copy a few files to the CGI
+depending on your ISP. It needs to copy a few files to the CGI
 and HTML directories.
 
 You must either have your own CGI directory, or be able to run
@@ -929,7 +928,7 @@ MULTIPLE GROUP or GROUP is appropriate when multiple users will be running
 catalogs on the same server.
 
 MULTIPLE GROUP is the best way. Put each user in their own group, and
-place the Interchange user in that group.  In this mode, only the user of
+place the Interchange user in that group. In this mode, only the user of
 each catalog and the Interchange server may read database and error files --
 files that may contain sensitive information. If the user's default UMASK
 is 2 on a UNIX system, then this the most troublefree mode of operation.
@@ -986,7 +985,7 @@ a choice of all available servers.
 
 There is a "history" mechanism that will allow you to use the up
 and down arrows on your terminal (assuming you have a standard terminal)
-to cycle between possible choices.  This should contain the available
+to cycle between possible choices. This should contain the available
 servers.
 
 EOF
@@ -1063,7 +1062,7 @@ print "######### BEGINNING CATALOG CONFIGURATION #########\n";
 print <<EOF if defined $Vend::MakeCat::Prompt_sub;
 
 During many of the following operations, defaults are placed in
-a buffer for you.  You may use the up and down arrows to toggle
+a buffer for you. You may use the up and down arrows to toggle
 between the defaults.
 
 If you made a mistake on a *previous* entry and realize that
@@ -2180,7 +2179,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 1.32.4.13 2001-06-09 22:50:11 heins Exp $
+# $Id: makecat.PL,v 1.32.4.14 2001-06-14 16:05:37 jon Exp $
 
 =head1 INTRODUCTION
 
