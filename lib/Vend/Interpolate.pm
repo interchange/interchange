@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.9 2000-12-21 11:26:40 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.10 2000-12-31 14:45:32 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.9 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.10 $, 10);
 
 @EXPORT = qw (
 
@@ -492,28 +492,9 @@ sub var_ui_sub {
 
 sub vars_and_comments {
 	my $html = shift;
-	# Substitute defines from configuration file
 	local($^W) = 0;
+	# Remove Minivend 3 legacy stuff
 	$$html =~ s/\[new\]//g;
-
-	if($UI::Editing) {
-		$$html =~ s#
-				^\s*
-					@_
-						([A-Za-z0-9]\w*?[A-Za-z0-9])
-					_@
-				\s*$
-					
-				#	$UI::Editing->($1, $Global::Variable) #gemx; 
-		$$html =~ s#
-				^\s*
-					__
-						([A-Za-z0-9]\w*?[A-Za-z0-9])
-					__
-				\s*$
-				#	$UI::Editing->($1) #gemx; 
-
-	}
 
 	$$html =~ s#\@\@([A-Za-z0-9]\w+[A-Za-z0-9])\@\@#$Global::Variable->{$1}#g;
 	$$html =~ s#\@_([A-Za-z0-9]\w+[A-Za-z0-9])_\@#$::Variable->{$1} || $Global::Variable->{$1}#ge
