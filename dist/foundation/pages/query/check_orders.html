@@ -39,7 +39,9 @@ ui_template_name: leftonly
     [index table=orderline export-only=1]
 [/if]
 
-[query arrayref=orders
+[query 
+table=transactions
+arrayref=orders
 	sql="SELECT
 		code,status,tracking_number,nitems,subtotal,shipping,handling,total_cost,payment_method,order_date
 		FROM transactions

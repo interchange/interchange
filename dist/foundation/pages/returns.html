@@ -24,7 +24,10 @@ ui_template_name: leftonly
 
 <br>
 
-[query st=db arrayref=orders
+[query 
+st=db 
+arrayref=orders
+table=transactions
 		sql="SELECT
 			code,status,nitems,subtotal,shipping,handling,total_cost,payment_method,order_date
 			FROM transactions
