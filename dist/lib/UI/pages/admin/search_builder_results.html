@@ -1,0 +1,119 @@
+[if-mm !tables]
+[seti ui_error]Not authorized for table [cgi mv_data_table][/seti]
+[bounce page="__UI_BASE__/error"]
+[/if-mm]
+[if-mm !advanced report]
+[seti ui_error]Not authorized for reporting functions.[/seti]
+[bounce page="__UI_BASE__/error"]
+[/if-mm]
+[seti page_title][cgi report_title][/seti]
+[set icon_name]admin/icon_stats.gif[/set]
+[set help_name]report[/set]
+
+@@UI_STD_HEAD@@
+
+[seti name=tables][list-databases][/seti]
+[perl table="[scratch tables]"]
+	$vals = {};
+	my $current_table = $CGI->{search_table};
+	%saved = %$CGI;
+	
+	for(keys %saved) {
+		push @del, $_ unless length($saved{$_});
+	}
+	for(@del) {
+		delete $saved{$_};
+	}
+	unless ($current_table) {
+		$Scratch->{search_string} = "";
+		$Scratch->{search_page} = "<TR><TD>NO CURRENT TABLE</TD></TR>";
+		return;
+	}
+
+	my @look = (
+		qw/
+            search_field  
+            search_spec   
+            search_op     
+            case_sensitive
+            begin_string  
+            substring     
+			numeric
+		/
+	);
+	my %xlt = (
+		qw/
+            search_spec       se
+            search_field      sf
+            search_op         op
+            case_sensitive    cs
+            begin_string      bs
+            substring         ss
+		/
+	);
+	my %found;
+	for( keys %{$CGI} ) {
+		next unless /^([A-Za-z_]+)(\d+)$/;
+		my $item = $1;
+		my $idx  = $2;
+		$found{$item} = 1 if length $CGI->{"$item$idx"};
+		$vals->{$item} = []  
+			unless defined $vals->{$item};
+		$vals->{$item}[$idx] = $CGI->{"$item$idx"};
+	}
+	return "No tables/columns selected" unless defined $vals->{search_table};
+	
+	foreach my $one (0 .. 2) {
+		if($CGI->{"search_field$one"} and $CGI->{"search_spec$one"}) {
+			for (@look) {
+				push @string, qq!$xlt{$_}=$CGI->{"$_$one"}!
+					if $found{$_};
+			}
+			push @string, "";
+		}
+	}
+
+	if(! scalar @string) {
+		push @string, "ra=yes";
+	}
+	else {
+		unshift @string, '', "co=1", '';
+	}
+	unshift @string, "sp=$CGI->{search_template}"
+		if $CGI->{search_template};
+	unshift @string, "st=$CGI->{search_type}"
+		if $CGI->{search_type};
+	unshift @string, '', "fi=$current_table";
+
+	if ($CGI->{matchlimit}) {
+		push @string, "ml=$CGI->{matchlimit}";
+	}
+
+	if($vals->{sort_order}) {
+		for(my $i = 0; $i < scalar @{$vals->{sort_order}}; $i++) {
+			my $f = $vals->{sort_order}[$i];
+			last unless $f;
+			push @string, "tf=$f";
+			push @string, "to=" . $vals->{sort_option}[$i];
+		}
+	}
+	$page = '[' . "area\thref=scan\n";
+	$page .= "\tsearch=|\n\t\t";
+	$page .= join "\n\t\t", @string;
+	$page .= "\n\t|\n]";
+	$Scratch->{search_page} = $page;
+	$Scratch->{rows} = scalar(@string) + 5;
+	return;
+[/perl]
+<A HREF="[scratch name=search_page interpolate=1]" TARGET=test>Test</A>
+
+<FORM>
+<TEXTAREA COLS=80 ROWS="[scratch rows]" NAME=junk>[scratch search_page]</TEXTAREA>
+</FORM>
+
+<A HREF="[scratch name=search_page interpolate=1]" TARGET=test>Test</A>
+
+[set search_page][/set]
+[set search_string][/set]
+@@UI_STD_FOOTER@@
+

@@ -250,7 +250,36 @@ EOF
 </SELECT> (all items removed when first one is)
 </td>
 </tr>
-
+[loop prefix=macro list=`join "\n", @{$Config->{UseModifier}};`]
+<tr>
+<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<B>[macro-code] (if any)</B>
+</td>
+<td bgcolor=__UI_C_INTBLOCK__>
+<SELECT NAME=item_modifier_[macro-code]>
+<OPTION VALUE=""> --none specified--
+[calc]
+	@things = grep /\S/, split /\s*,\s*/, <<EOF;
+[loop search="
+	ra=yes
+	un=yes
+	rf=[macro-code]
+	tf=[macro-code]
+	rd=
+"][loop-code],[/loop]
+EOF
+	my $out = '';
+	for(@things) {
+		my($v,$l) = split /\s*=\s*/, $_, 2;
+		$out .= qq{<OPTION VALUE="$v">} . ($l || $v);
+	}
+	return $out;
+[/calc]
+</SELECT>
+[/loop]
+</td>
+</tr>
+[comment]
 [calc]
 	my $out = '';
 	for(@{$Config->{UseModifier}}) {
@@ -269,6 +298,7 @@ EOF
 	}
 	return $out;
 [/calc]
+[/comment]
 <tr>
 <td bgcolor=__UI_C_INTBLOCK__ align=right>
 <B>Action</B>

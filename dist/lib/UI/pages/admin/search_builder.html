@@ -1,271 +1,356 @@
-[set page_title]Search builder[/set]
-[set help_name]search.builder[/set]
-[set icon_name]admin/icon_pages.gif[/set]
-[set mv_no_session_id][/set]
-[set empty_basket]
-	[calc]
-		@{$Carts->{main}} = ();
-		return;
-	[/calc]
-[/set]
-[set search_button_build]
-[perl]
-	delete $Scratch->{search_result};
-	delete $Scratch->{test_button};
-	my $result = <<EOF;
-<tr>
-<td colspan=2  bgcolor=__UI_C_INTBLOCK__ VALIGN=TOP>
-	<B>Resulting button</B><BR>
-<TEXTAREA ROWS=5 COLS=70 NAME="search_result">
-EOF
-	$result =~ s/\s+$//;
-	my @parms;
-	BUILD: {
-		if(! $CGI->{search_id}) {
-			$result .= "ERROR: no item selected";
-			last BUILD;
-		}
-		my (@items) = split /\0/, $CGI->{search_id};
-		for (@items) {
-			push @parms, "mv_order_item=$_";
-		}
-		my @ones;
-		QUANTITY: {
-			last QUANTITY if ! length $CGI->{search_quantity};
-			$CGI->{search_quantity} =~ s/[\s\0,]+$//;
-			@ones = split /[\0,\s]/, $CGI->{search_quantity};
-			for(@ones) {
-				if(/[^\d.]/) {
-					$result .= "Error: item quantities must be numbers";
-					last BUILD;
-				}
-				if( ! $Config->{FractionalItems} and $_ =~ /\./) {
-					$result .= "Error: item quantities must be integers with FractionalItems=no";
-					last BUILD;
-				}
-				push @parms, "mv_order_quantity=$_";
-			}
-		}
-		if(length $CGI->{search_separate}) {
-			push @parms, "mv_separate_items=$CGI->{search_separate}";
-		}
-		if(length $CGI->{search_destination}) {
-			push @parms, "mv_nextpage=$CGI->{search_destination}";
-		}
-		if(length $CGI->{search_group}) {
-			push @parms, "mv_order_group=$CGI->{search_group}";
-		}
-		for my $mod (@{$Config->{UseModifier}}) {
-			if($CGI->{"search_modifier_$mod"}) {
-				@ones = split /\s*,\s*/, $CGI->{"search_modifier_$mod"};
-				for(@ones) {
-					push @parms, qq!mv_order_$mod=$_!;
-				}
-			}
-		}
+[if-mm !tables]
+[set ui_error]Not authorized for table.[/set]
+[bounce href="[area __UI_BASE__/error]"]
+[/if-mm]
+[if !advanced report]
+[bounce page="__UI_BASE__/error"]
+[value name=saved_report set=""]
+[/if]
+
+[if cgi mv_data_table]
+[value name=saved_search set=""]
+[/if]
+
+[seti page_title]Search builder[/seti]
+[set help_name]report[/set]
+[set icon_name]admin/icon_config.gif[/set]
+[seti name=tables][list-databases][/seti]
+[seti meta_header]
+[perl table="[scratch tables]"]
+
+	my @tables = split /\s+/, $Scratch->{tables};
+	my $out;
+	for(@tables) {
+		$tables{$_} = [ $Db{$_}->columns() ];
 	}
-	my $button;
-	if(@parms) {
-		if($CGI->{search_button}) {
-			my $url = $Config->{VendURL} . '/order';
-			$button = qq{<FORM ACTION="$url" METHOD=POST>\n};
-			for(@parms) {
-				my ($name, $value) = split /=/, $_, 2;
-				$value =~ s/"/&quot;/g;
-				$button .= qq{<INPUT TYPE=hidden NAME=$name VALUE="$value">\n};
-			}
-			$button .= qq{<INPUT TYPE=submit VALUE="Test button"></FORM>};
+	$out = "<SCRIPT LANGUAGE=JAVASCRIPT>\n<!-- \n";
+
+	my $saved = $Values->{saved_search};
+	my (@wanted) = qw/
+						num_columns
+						search_name
+						search_table
+						search_template
+						unique_only
+						matchlimit
+						/;
+	if(ref $saved) {
+		for (@wanted) {
+			delete $Values->{$_};
+			$Values->{$_} = $saved->{$_}
+				if defined $saved->{$_}; 
 		}
-		else {
-			$button = $Tag->area(
-							{
-								href => 'order',
-								form => join ("\n", @parms),
-							}
-						);
-		}
-		$result .= $button;
-	}
-	$result .= "</TEXTAREA>\n";
-	if ($CGI->{search_button} and $button) {
-		$Scratch->{test_button} = $button;
-		$Scratch->{test_button} =~ s/METHOD=/TARGET=search_test METHOD=/;
+		$Values->{mv_data_table} =
+			$CGI->{mv_data_table} =
+				$saved->{search_table}
+			if $saved->{search_table};
+				
+		$max_columns = $saved->{num_columns} || 5;
 	}
 	else {
-		$Scratch->{test_button} = qq{<B><A HREF="$button" TARGET=search_test><FONT COLOR=__CONTRAST__>Test order link</FONT></A></B><BR>&nbsp;};
+		$Values->{mv_data_table} = $CGI->{mv_data_table} || $Config->{ProductFiles}[0];
+		$saved = {};
+		$max_columns = 2;
 	}
-	$result .= "</td></tr>\n\n";
-	$Scratch->{search_result} = $result;
+
+	foreach my $tab (sort keys %tables) {
+		my $cols = $tables{$tab};
+		my $row = (qq{ var ary_$tab = new Array ("('-- default(key) --', '', true,true)","('All columns', '*', true,true)",});
+		for(@$cols) {
+			$row .= qq{"('$_')",\n};
+		}
+		$row =~ s/,$/);/;
+		$out .= $row;
+		if ($tab eq $Values->{mv_data_table}) {
+			$Scratch->{selected_table_options} =
+			   join '<OPTION>', '', @$cols;
+			$Scratch->{selected_table_columns} =
+			   join "\n", @$cols;
+			$Scratch->{default_key} = $Db{$tab}->config('KEY');
+		}
+	}
+	$Scratch->{column_nums} = join " ", 0 .. $max_columns;
+	for(my $i = 0; $i <= $max_columns ; $i++) {
+
+		for (
+				qw/ search_table
+					search_field
+					search_op
+					search_spec
+					case_sensitive
+					begin_string
+					substring
+					numeric
+					sort_order
+					sort_option
+				/
+			)
+		{ delete $Values->{"$_$i"}; }
+
+		next if ! $saved;
+
+		for(
+			qw/ search_table
+				search_field
+				search_op
+				search_spec
+				case_sensitive
+				begin_string
+				substring
+				numeric
+				sort_order
+				sort_option
+			/
+			)
+		{ $Values->{"$_$i"} = $saved->{"$_$i"}; }
+		my $tab = $saved->{"search_table0"}
+		            or next;
+		$Values->{"return$i"}  .= "<OPTION SELECTED VALUE='$tab'>$tab</OPTION>";
+	}
+	$out .= <<EOF;
+
+function populate(table_options,selected) {
+	var foundKey = false;
+	for (var i=0; i < table_options.length; i++) {
+		if (table_options[i].text == selected) {
+			table_options[i].selected = true;
+			foundKey = true;
+		}
+		else {
+			table_options[i].selected = false;
+		}
+	}
+	if(foundKey == false) {
+		table_options[0].selected = true;
+	}
+	return true;
+}
+
+function populateTable(table_options,column_options,selected) {
+	var selectedArray = eval ( "ary_" + selected );
+	var currentTable = "$Values->{mv_data_table}";
+	var currentArray = eval ( "ary_" + currentTable );
+	while (selectedArray.length < column_options.length) {
+		column_options[(column_options.length - 1)] = null;
+	}
+	for (var i=0; i < selectedArray.length; i++) {
+		eval("column_options[i]=" + "new Option" + selectedArray[i]);
+	}
+	if (table_options[0].value == '') {
+		table_options[0]= null;
+    }
+   return true;
+}
+// End -->
+</SCRIPT>
+EOF
 [/perl]
-[/set]
+[/seti]
+
+[calc] $Config->{NoSearch} = ''; [/calc]
 
 @@UI_STD_HEAD@@
 
-<!-- ----- BEGIN REAL STUFF ----- -->
+[seti table_list]
+	[loop prefix=table list="[scratch tables]" option=search_table]
+	<OPTION VALUE="[table-code]">[table-code]</OPTION>
+	[/loop]
+[/seti]
 
-[if scratch ui_failure]
-	<FONT COLOR=RED>Failed:
-	[scratch ui_failure][set ui_failure][/set]</FONT><BR>
-[/if]
-
-[scratch test_button]
-
-<FORM METHOD=GET ACTION="[area @@MV_PAGE@@]">
-<INPUT TYPE=hidden NAME=mv_click VALUE="order_button_build">
-<INPUT TYPE=hidden NAME=mv_action VALUE="return">
-
-<table cellpadding=3 cellspacing=0>
-
-<tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
-</tr>
-<tr>
-<td colspan=2  bgcolor=__UI_C_INTBLOCK__>
-	<B>Build an order button or link</B>
-</td>
-</tr>
-
-[scratch search_result]
-
+<P>
+<TABLE CELLPADDING=3 CELLSPACING=0>
 <tr>
 <td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
-<B>Type</B>
-</td>
-<td bgcolor=__UI_C_INTBLOCK__>
-<SELECT NAME=search_button>
-<OPTION VALUE=0>Link
-<OPTION VALUE=1 [selected search_button 1]>Button
-</SELECT>
-</td>
+<td colspan=2 bgcolor=__UI_C_INTBLOCK__>
+<FORM NAME=report ACTION="[area __UI_BASE__/search_builder_results]" METHOD=POST>
+<INPUT TYPE=submit VALUE=Run>
+[if-mm advanced mml]
+<INPUT TYPE=submit NAME=generate_page VALUE="Generate definition">
+[/if-mm]</td>
 </tr>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
-<B>Item code</B>
-</td>
-<td bgcolor=__UI_C_INTBLOCK__>
-[perl]
-	my $table = $Config->{ProductFiles}[0];
-	$Scratch->{keypos} = $Config->{Database}{$table}{KEYINDEX} || '0';
-	$Scratch->{flex_description} = $Config->{DescriptionField};
-	return;
-[/perl]
-[loop more=1
-	search="
-		st=db
-		ra=yes
-		md=1
-		tf=[scratch flex_description]
-		rf=[scratch keypos],[scratch flex_description]
-	"
-]
-<select name="search_id" MULTIPLE size=5>
-[list]<option value="[loop-code]">[loop-pos 1]
-[/list]
-</select>
-[more-list]<BR>Too big for one page: [more][/more-list]
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
+</tr>
+
+<TR>
+	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH=20%>
+		<B>Search Info</B>
+	</TD>
+	<TD BGCOLOR="__UI_C_INTBLOCK__">
+	<TABLE>
+	<TR>
+		<TH>Base table</TD>
+		<TH>Template</TD>
+		<TH>Page Size</TD>
+		<TH>Unique only?</TD>
+	</TR>
+	<TR>
+		<TD>
+	<SELECT NAME=search_table onChange="
+		[loop list="[scratch column_nums]"]
+		populate( this.form.search_table[loop-code].options,
+			this.form.search_table.options[this.form.search_table.selectedIndex].value
+		);
+		populateTable(
+			this.form.search_table.options,
+			this.form.return[loop-code].options,
+			this.form.search_table.options[this.form.search_table.selectedIndex].value
+		);
+		[/loop]
+		">
+	[scratch table_list]
+	</SELECT>
+		</TD>
+		<TD>
+	<INPUT NAME="search_template" VALUE="[value search_template]">
+		</TD>
+		<TD>
+	<SELECT NAME="matchlimit">
+		[loop list="50 1 2 3 5 10 20 25 50 100 9999" option=matchlimit]<OPTION>[loop-code][/loop]
+	</SELECT>
+		</TD>
+		<TD>
+	<SELECT NAME="unique_results">
+		<OPTION VALUE="">No
+		<OPTION VALUE="1" [selected unique_results 1]>Yes
+	</SELECT>
+		</TD>
+	</TR>
+	</TABLE>
+</TR>
+
+<tr>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
+</tr>
+
+[loop list="[scratch column_nums]"]
+<TR>
+	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH=20%>
+		<B>Search filter</B>
+		[loop-change 1][condition]only[/condition]
+		<BR>
+		<SMALL><SMALL><I>First must be in base table.<BR>Faster performance if "equal to" for SQL tables.<BR>Faster performance if "regular expression match " for text searches.<BR></I></SMALL></SMALL>
+		[/loop-change 1]
+	</TD>
+	<TD BGCOLOR="__UI_C_INTBLOCK__">
+	<FONT SIZE="-1">
+	<SELECT NAME="search_table[loop-code]" onChange="populateTable(
+			this.form.search_table[loop-code].options,
+			this.form.search_field[loop-code].options,
+			this.form.search_table[loop-code].options[this.form.search_table[loop-code].selectedIndex].value
+			)">
+	[value search_table[loop-code]]
+	[scratch table_list]
+	</SELECT>
+	<SELECT NAME="search_field[loop-code]">
+	<OPTION VALUE="[value search_field[loop-code]]">[value name=search_field[loop-code] default="--"]
+	<OPTION VALUE="">--none--
+	[scratch selected_table_options]
+	</SELECT>
+	<FONT SIZE=1>
+	<SELECT NAME="search_op[loop-code]">
+	[loop prefix=op list="eq	equal to
+ne	not equal to
+rm	Regular expression match
+rn	Regular expression negate
+gt	Greater than
+ge	Greater than or equal
+lt	Less than
+le	Less than or equal
+>	Greater than (numeric)
+>=	Greater than or equal (numeric)
+<	Less than (numeric)
+<=	Less than or equal (numeric)
+"    lr=1 option=search_op[loop-code] ]<OPTION VALUE="[op-code]">[op-pos 1]</OPTION>
+	[/loop]
+	</SELECT></FONT>&nbsp;<INPUT NAME="search_spec[loop-code]" VALUE="[value search_spec[loop-code]]"><BR>
+	<SELECT NAME=case_sensitive[loop-code]>
+	<OPTION VALUE="">Not case-sensitive
+	<OPTION VALUE=1 [selected case_sensitive[loop-code] 1]>Yes, case-sensitive
+	</SELECT>
+	<SELECT NAME=substring[loop-code]>
+	<OPTION VALUE="">Match words
+	<OPTION VALUE=1 [selected substring[loop-code] 1]>Match partial
+	</SELECT>
+	<SELECT NAME=begin_string[loop-code]>
+	<OPTION VALUE="">Match anywhere in field
+	<OPTION VALUE=1 [selected begin_string[loop-code] 1]>Match beginning
+	</SELECT>
+</TR>
 [/loop]
 
-</td>
+<tr>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
 </tr>
+
+
+[loop list="[scratch column_nums]"]
+<TR>
+	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH=20%>
+		<B>Sort order [loop-increment]</B>
+	</TD>
+	<TD BGCOLOR="__UI_C_INTBLOCK__">
+	<SELECT NAME="sort_order[loop-code]">
+	<OPTION VALUE="[value sort_order[loop-code]]">[value name=sort_order[loop-code] default="--"]
+	<OPTION VALUE="">--none--
+	[scratch selected_table_options]
+	</SELECT>
+	<SELECT NAME="sort_option[loop-code]">
+	<OPTION VALUE="x"> Normal
+	<OPTION VALUE="n" [selected sort_option[loop-code] n]> Numeric
+	<OPTION VALUE="r" [selected sort_option[loop-code] r]> Reverse
+	<OPTION VALUE="f" [selected sort_option[loop-code] f]> Case-insensitive
+	<OPTION VALUE="nr" [selected sort_option[loop-code] nr]> Reverse numeric
+	<OPTION VALUE="fr" [selected sort_option[loop-code] fr]> Reverse case-insensitive
+	</SELECT>
+	Break:
+	[if value break[loop-code]]
+	<INPUT TYPE=radio NAME="break[loop-code]" VALUE=""> no
+	<INPUT TYPE=radio NAME="break[loop-code]" VALUE=1 CHECKED> yes
+	[else]
+	<INPUT TYPE=radio NAME="break[loop-code]" VALUE="" CHECKED> no
+	<INPUT TYPE=radio NAME="break[loop-code]" VALUE=1> yes
+	[/else]
+	[/if]
+
+	</TD>
+</TR>
+[/loop]
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
-<B>Specific Quantity</B>
-</td>
-<td bgcolor=__UI_C_INTBLOCK__>
-
-<INPUT NAME=search_quantity> <I>(Separate multiple quantities by commas)</I>
-
-</td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
 </tr>
 
-[calc]
-	my $ary = $Config->{ProductFiles};
-	return unless scalar @$ary > 1;
-	my $out = <<'EOF';
-<tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
-A specific database
-</td>
-<td bgcolor=__UI_C_INTBLOCK__>
-<SELECT NAME=search_db>
-EOF
-	for(@$ary) {
-		$out .= "<OPTION>$_";
-	}
-	$out .= <<EOF;
-</SELECT>
-</td>
-</tr>
-EOF
-[/calc]
+<TR>
+	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH=20% VALIGN=TOP>
+		<B>Column return</B><BR>
+	</TD>
+	<TD BGCOLOR="__UI_C_INTBLOCK__" ALIGN=LEFT>
+	<FONT SIZE="-1">
+	[loop list="[scratch column_nums]"]
+	<SELECT NAME="return[loop-code]">
+	<OPTION VALUE="[value return[loop-code]]">[value name=return[loop-code] default="--"]
+	<OPTION VALUE="">--default (key)--
+	[scratch selected_table_options]
+	</SELECT>
+	[/loop]
+	</TD>
+</TR>
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
-<B>Separate line?</B>
-</td>
-<td bgcolor=__UI_C_INTBLOCK__>
-
-<SELECT NAME=search_separate>
-	<OPTION VALUE=0> No
-	<OPTION VALUE=1> Yes
-	<OPTION VALUE="" SELECTED> Default [calc]
-			return $Config->{SeparateItems} ? '(yes)' : '(no)';
-		[/calc]
-</SELECT>
-</td>
+<td colspan=2 bgcolor=__UI_C_INTBLOCK__>
+<INPUT TYPE=submit VALUE=Run>
+[if-mm advanced mml]
+<INPUT TYPE=submit NAME=generate_page VALUE="Generate definition">
+[/if-mm]</td>
 </tr>
 
+</TABLE>
 
-<tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
-<B>Group items?</B>
-</td>
-<td bgcolor=__UI_C_INTBLOCK__>
+</FORM>
 
-<SELECT NAME=search_group>
-	<OPTION VALUE=""> No
-	<OPTION VALUE=1> Yes
-</SELECT> (all items removed when first one is)
-</td>
-</tr>
-
-[calc]
-	my $out = '';
-	for(@{$Config->{UseModifier}}) {
-		$out .= <<EOF;
-<tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
-<B>$_ (if any)</B>
-</td>
-<td bgcolor=__UI_C_INTBLOCK__>
-<INPUT NAME=search_modifier_$_>
- <I>(Separate multiple values by commas)</I>
-</SELECT>
-</td>
-</tr>
-EOF
-	}
-	return $out;
-[/calc]
-<tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
-<B>Action</B>
-</td>
-<td bgcolor=__UI_C_INTBLOCK__>
-<INPUT TYPE=submit VALUE=Build>
-</td>
-</tr>
-
-</table>
-
-</form>
-
-<BR>
 @@UI_STD_FOOTER@@
-<!-- page: @@MV_PAGE@@ -->
