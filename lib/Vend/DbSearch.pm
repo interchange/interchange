@@ -1,6 +1,6 @@
 # Vend/DbSearch.pm:  Search indexes with Perl
 #
-# $Id: DbSearch.pm,v 1.7 2000-09-27 22:17:06 heins Exp $
+# $Id: DbSearch.pm,v 1.8 2000-12-02 05:29:17 heins Exp $
 #
 # ADAPTED FOR USE WITH INTERCHANGE from Search::TextSearch
 #
@@ -26,7 +26,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.7 $, 10);
+$VERSION = substr(q$Revision: 1.8 $, 10);
 
 use Search::Dict;
 use strict;
@@ -76,7 +76,10 @@ sub init {
     $s->{mv_numeric}            = [];
     $s->{mv_orsearch}           = [];
     $s->{mv_search_field}       = [];
-    $s->{mv_search_file}        = [@{$Vend::Cfg->{ProductFiles}}];
+    $s->{mv_search_file}        =	[ @{
+										$::Variable->{MV_DEFAULT_SEARCH_FILE}
+										||	$Vend::Cfg->{ProductFiles}
+										} ];
     $s->{mv_search_group}       = [];
     $s->{mv_searchspec}         = [];
     $s->{mv_sort_option}        = [];
@@ -212,6 +215,7 @@ sub search {
 
 		if(! defined $f and defined $limit_sub) {
 #::logDebug("no f, limit, dbref=$dbref");
+			local($_);
 			while($_ = join "\t", $dbref->each_nokey($qual || undef) ) {
 				next unless &$limit_sub($_);
 				push @out, &$return_sub($_);
@@ -219,6 +223,7 @@ sub search {
 		}
 		elsif(defined $limit_sub) {
 #::logDebug("f and limit, dbref=$dbref");
+			local($_);
 			while($_ = join "\t", $dbref->each_nokey($qual || undef) ) {
 				next unless &$f();
 				next unless &$limit_sub($_);
@@ -230,6 +235,7 @@ sub search {
 		}
 		else {
 #::logDebug("f and no limit, dbref=$dbref");
+			local($_);
 			while($_ = join "\t", $dbref->each_nokey($qual || undef) ) {
 				next unless &$f();
 				push @out, &$return_sub($_);

@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# $Id: Search.pm,v 1.8 2000-10-19 03:32:13 heins Exp $
+# $Id: Search.pm,v 1.9 2000-12-02 05:29:17 heins Exp $
 #
 # Vend::Search -- Base class for search engines
 #
@@ -26,7 +26,7 @@
 #
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 1.8 $, 10);
+$VERSION = substr(q$Revision: 1.9 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -253,15 +253,18 @@ EOF
 			}
 			COLOP: {
 				last COLOP unless $s->{mv_coordinate};
+#::logDebug("i=$i, begin_string=$s->{mv_begin_string}[$i]");
 				$s->{mv_all_chars}[$i] = $all_chars
 					if ! defined $s->{mv_all_chars}[$i];
+				last COLOP if $s->{mv_search_relate} =~ s/\bor\b/or/ig;
 				if(	$s->{mv_column_op}[$i] =~ /([=][~]|rm|em)/ ) {
 					$specs[$i] = quotemeta $specs[$i]
 						if $s->{mv_all_chars}[$i];
 					$s->{regex_specs} = []
 						unless $s->{regex_specs};
+					last COLOP if $s->{mv_begin_string}[$i];
 					$specs[$i] =~ /(.*)/;
-					push @{$s->{regex_specs}}, $1;
+					push @{$s->{regex_specs}}, $1
 				}
 				elsif(	$s->{mv_column_op}[$i] =~ /^(==?|eq)$/ ) {
 					$s->{eq_specs} = []
@@ -278,6 +281,8 @@ EOF
 			$i++;
 		}
 	}
+
+#::logDebug("regex_specs=" . ::uneval($s->{regex_specs}));
 
 	if ( ! $s->{mv_exact_match} and ! $s->{mv_coordinate}) {
 		my $string = join ' ', @specs;
@@ -574,6 +579,8 @@ EOF
 		my @negates =  map { $_ ? 'not ' : ''} @{$s->{mv_negate}};
 		my @begin = 	@{$s->{mv_begin_string}};
 		my @group = 	@{$s->{mv_search_group}};
+#::logDebug("Ops=" .  ::uneval(\@ops));
+#::logDebug("Begin=" . join ",", @begin);
 #::logDebug("Group=" . join ",", @group);
 #::logDebug("Ors=" . join ",", @{$s->{mv_orsearch}});
 		my @code;
@@ -581,14 +588,17 @@ EOF
 		my ($i, $start, $term, $like);
 		for($i = 0; $i < $field_count; $i++) {
 			undef $candidate, undef $f 
-				if $s->{mv_orsearch}[$i];
+				if $begin[$i] or $s->{mv_orsearch}[$i];
 			if($ops[$i]) {
+				$ops[$i][0] =~ s/m\{$/m{^/ if $begin[$i];
 				$start = $ops[$i][0];
+#::logDebug("Op now=" .  ::uneval($ops[$i]));
 				($term  = $ops[$i][1] || '')
 					and $cases[$i]
 					and $term =~ s/i$//
 					and defined $candidate
 					and $candidate = 1;
+#::logDebug("Candidate now=$candidate");
 			}
 			else {
 				$start = '=~ m{';
@@ -601,7 +611,7 @@ EOF
 					$start .= '\b' unless $begin[$i];
 				}
 				$term .= 'i' unless $cases[$i];
-				$candidate = 1 if defined $candidate;
+				$candidate = 1 if defined $candidate and ! $begin[$i];
 			}
 			if ($start =~ s/LIKE$//) {
 				$specs[$i] =~ s/^(%)?([^%]*)(%)?$/$2/;
@@ -627,7 +637,7 @@ EOF
 				undef $candidate if $candidate;
 			 }
 			 my $grp = $group[$i] || 0;
-			 my $frag = qq{($negates[$i]\$fields[$i] $start$specs[$i]$term )};
+			 my $frag = qq{$negates[$i]\$fields[$i] $start$specs[$i]$term};
 			 unless ($code[$grp]) {
 				 $code[$grp] = [ $frag ];
 			 }
@@ -638,13 +648,18 @@ EOF
 		}
 #::logDebug("coderef=" . ::uneval_it(\@code));
 
+		undef $f if $s->{mv_search_relate} =~ s/\bor\b/or/ig;
 		DOLIMIT: {
 #::logDebug(::uneval_it({%$s}));
+#::logDebug("do_limit.");
 			last DOLIMIT if $f;
+#::logDebug("do_limit past f.");
 			last DOLIMIT if $s->{mv_small_data};
+			last DOLIMIT if (grep $_, @{$s->{mv_orsearch}});
 			last DOLIMIT if defined $s->{mv_search_relate}
-							&& $s->{mv_search_relate} =~ /\bor\b/;
+							&& $s->{mv_search_relate} =~ s/\bor\b/or/i;
 			my @pats;
+#::logDebug("regex_specs=" . ::uneval($s->{regex_specs}));
 			for(@{$s->{regex_specs}}) {
 				push @pats, $_;
 			}
@@ -658,12 +673,8 @@ EOF
 				last DOLIMIT;
 			}
 			eval {
-				if(grep $_, @{$s->{mv_orsearch}}) {
-					$f = $s->create_search_or( 0, 1, 0, @pats);
-				}
-				else {
-					$f = $s->create_search_and( 0, 1, 0, @pats);
-				}
+#::logDebug("filter function going and...");
+				$f = $s->create_search_and( 0, 1, 0, @pats);
 			};
 			undef $f if $@;
 		}
@@ -697,9 +708,11 @@ EOF
 	}
 	elsif ( @{$s->{mv_search_field}} )  {
 		if(! $s->{mv_begin_string}[0]) {
+#::logDebug("Not begin, sub=f");
 			$sub = $f;
 		}
 		elsif (! $s->{mv_orsearch}[0] ) {
+#::logDebug("Begin, sub creating and");
 			$sub = create_search_and(
 						$s->{mv_index_delim},		# Passing non-reference first
 						$s->{mv_case}[0],	# means beginning of string search
@@ -708,9 +721,10 @@ EOF
 						@{$s->{mv_searchspec}});
 		}
 		else {
+#::logDebug("Begin, sub creating or");
 			$sub = create_search_or(
-						$s->{mv_index_delim},
-						$s->{mv_case}[0],
+						$s->{mv_index_delim},		# Passing non-reference first
+						$s->{mv_case}[0],	# means beginning of string search
 						$s->{mv_substring_match}[0],
 						$s->{mv_negate}[0],
 						@{$s->{mv_searchspec}});
