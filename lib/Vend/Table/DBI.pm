@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.1 2000-05-26 18:50:42 heins Exp $
+# $Id: DBI.pm,v 1.2 2000-05-28 22:20:25 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 
 use strict;
 
@@ -248,7 +248,7 @@ sub open_table {
 		}
 	}
 
-	$config->{NAME} = list_fields($db, $tablename)
+	$config->{NAME} = list_fields($db, $tablename, $config)
 		if ! $config->{NAME};
 	$config->{COLUMN_INDEX} = fields_index($config->{NAME})
 		if ! $config->{COLUMN_INDEX};
@@ -560,7 +560,7 @@ sub fields_index {
 }
 
 sub list_fields {
-	my($db, $name) = @_;
+	my($db, $name, $config) = @_;
 	my @fld;
 
 	my $sth = $db->prepare("select * from $name")
@@ -569,6 +569,9 @@ sub list_fields {
 	# Wish we didn't have to do this, but we cache the columns
 	$sth->execute()		or die "$DBI::errstr\n";
 
+	if($config and $config->{NAME_REQUIRES_FETCH}) {
+		$sth->fetch();
+	}
 	@fld = @{$sth->{NAME}};
 	return \@fld;
 }

@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret MiniVend tags
 # 
-# $Id: Interpolate.pm,v 1.1 2000-05-26 18:50:39 heins Exp $
+# $Id: Interpolate.pm,v 1.2 2000-05-28 22:20:25 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 
 @EXPORT = qw (
 
@@ -736,6 +736,16 @@ sub tag_data {
 					use locale;
 					return uc(shift);
 				},
+	'null_to_space' =>		sub {
+					my $val = shift;
+					$val =~ s/\0+/ /g;
+					return $val;
+				},
+	'null_to_comma' =>		sub {
+					my $val = shift;
+					$val =~ s/\0+/,/g;
+					return $val;
+				},
 	'nullselect' =>		sub {
 					my @some = split /\0+/, shift;
 					for(@some) {
@@ -1196,8 +1206,9 @@ sub build_accessory_select {
 		$run .= " $type ";
 	}
 	elsif ($type  =~ /^multi/i ) {
-		$run .= ' MULTIPLE';
+			$run .= ' MULTIPLE';
 	}
+
 	$run .= '>';
 	
 	for(@opts) {
