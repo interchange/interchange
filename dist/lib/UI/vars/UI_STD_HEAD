@@ -267,7 +267,7 @@ EOF
 	my $depend = q{[sm-param depends_on]};
 	return '' if $exclude and $CGI->{$exclude};
 	return '' if $depend and ! $CGI->{$depend};
-	my $name = $Tag->msg(q{[sm-param name]});
+	my $name = errmsg(q{[sm-param name]});
 	my $page = q{[sm-param page]};
 	my $form = q{[sm-param form]};
 	for(\$name, \$page, \$form) {
