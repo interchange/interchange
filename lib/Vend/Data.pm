@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.41 2004-06-04 06:17:16 mheins Exp $
+# $Id: Data.pm,v 2.42 2004-06-07 03:01:45 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -1918,7 +1918,8 @@ sub update_data {
 	}
 	$function = 'update' unless $function;
 
-	my (%data);
+	my %data;
+	my %sneakdata;
 	for(@fields) {
 		$data{$_} = [];
 	}
@@ -1993,10 +1994,34 @@ sub update_data {
 
 		for (my $i = 0; $i < @file_fields; $i++) {
 			my $nm = $file_fields[$i];
-			unless (length($data{$nm}->[0])) {
+
+			next if $nm =~ /__\d+$/;
+			my $dref;
+			my $dmain;
+			my $ntag = '';
+			if($nm =~ m{^(\d+)_} and $CGI::values{$nm}) {
+				$ntag = $1;
+				$ntag .= "_";
+				$sneakdata{$nm}->[0] =  $CGI::values{$nm};
+				for(qw/ mv_data_file_name_to_ mv_data_file_size_to_ /) {
+					my $t = $_ . $nm;
+					my $fld = $CGI::values{$t}
+						or next;
+					$fld = "$ntag$fld";
+					$sneakdata{$fld}->[0] = $CGI::values{$fld};
+				}
+				$dref = $sneakdata{$nm};
+				$dmain = \%sneakdata;
+			}
+			else {
+				$dref = $data{$nm};
+				$dmain = \%data;
+			}
+
+			unless (length($dref->[0])) {
 				# no need for a file update
 				if($file_oldfiles[$i]) {
-					$data{$nm}->[0] = $file_oldfiles[$i];
+					$dref->[0] = $file_oldfiles[$i];
 				}
 				else {
 					$skip_for_now{$nm} = 1;
@@ -2005,13 +2030,12 @@ sub update_data {
 			}
 
 			# remove path components
-			$data{$nm}->[0] =~ s:.*/::; 
-			$data{$nm}->[0] =~ s:.*\\::; 
+			$dref->[0] =~ s:.*/::; 
+			$dref->[0] =~ s:.*\\::; 
 
 			if (length ($file_paths[$i])) {
 				# real file upload
-				$outfile = join('/', $file_paths[$i], $data{$nm}->[0]);
-#::logDebug("file upload: field=$nm path=$file_paths[$i] outfile=$outfile");
+				$outfile = join('/', $file_paths[$i], $dref->[0]);
 				my $ok;
 				if (-f $outfile) {
 					eval {
@@ -2039,7 +2063,7 @@ sub update_data {
 										}
 										)
 					or do {
-						 logError("%s is not a file.", $data{$nm}->[0]);
+						 logError("%s is not a file.", $dref->[0]);
 						 next;
 					};
 				Vend::Interpolate::tag_value_extended(
@@ -2059,13 +2083,13 @@ sub update_data {
 			else {
 				# preparing to dump file contents into database column
 				if(my $nfield = $CGI::values{"mv_data_file_name_to_$nm"}) {
-					$data{$nfield}->[0] = $data{$nm}->[0];
+					$dmain->{"$ntag$nfield"}->[0] = $dmain->{$nm}->[0];
 				}
-				$data{$nm}->[0]
+				$dmain->{$nm}->[0]
 					= Vend::Interpolate::tag_value_extended ($nm,
 						{file_contents => 1});
 				if(my $sfield = $CGI::values{"mv_data_file_size_to_$nm"}) {
-					$data{$sfield}->[0] = length $data{$nm}->[0];
+					$dmain->{"$ntag$sfield"}->[0] = length $dmain->{$nm}->[0];
 				}
 			}
 		}
@@ -2148,7 +2172,6 @@ sub update_data {
 #::logDebug("iteration of update_data:db=$base_db key=$prikey data=" . ::uneval(\%data));
 		@k = (); @v = ();
 		for(keys %data) {
-#::logDebug("iteration of field $_");
 
 			next if $skip_for_now{$_};
 			next unless (length($value = $data{$_}->[$i]) || $CGI::values{mv_update_empty} );
@@ -2271,12 +2294,20 @@ sub update_data {
 				if $CGI::values{mv_data_email};
 		}
 	}
+
+	%skip_for_now = ();
+
 	if(my $new = shift(@multis)) {
-#::logDebug("Doing multi for $new");
 		last SETDATA unless length $CGI::values{"${new}_$multiqual"};
 		for(@fields) {
-			my $value = $CGI::values{$_} = $CGI::values{"${new}_$_"};
-			$data{$_} = [ $value ];
+			my $t = $new . "_$_";
+			if($sneakdata{$t}) {
+				$data{$_} = delete $sneakdata{$t};
+			}
+			else {
+				$data{$_} = [ $CGI::values{$_} = $CGI::values{$t} ];
+			 
+			}
 		}
 		redo SETDATA;
 	}
@@ -2285,7 +2316,6 @@ sub update_data {
 	if($CGI::values{mv_data_return_key}) {
 		my @keys = split /\0/, $CGI::values{mv_data_return_key};
 		for(@keys) {
-#::logDebug("return_key, setting $_");
 			$CGI::values{$_} = join("\0", @rows_set);
 		}
 	}
@@ -2323,6 +2353,38 @@ sub update_data {
 			}
 		}
 
+		my @file_death;
+		my %filekill;
+		my %filemove;
+
+		for(my $i = 0; $i < @file_fields; $i++) {
+			push(@file_death, $i), next unless $file_fields[$i] =~ $some;
+			if($file_fields[$i] =~ $this) {
+				my $k = $file_fields[$i];
+				$k =~ s/$this//;
+				$filemove{$file_fields[$i]} = $k;
+			}
+		}
+
+		my $i;
+		while (defined($i = pop @file_death)) {
+			splice @file_fields, $i, 1;
+			splice @file_paths, $i, 1;
+			splice @file_oldfiles, $i, 1;
+		}
+
+		for(@file_fields) {
+			if(my $new = $filemove{$_}) {
+				$_ = $new;
+			}
+
+		}
+
+		while(my ($k,$v) = each %filemove) {
+			$CGI::file{$v} = delete $CGI::file{$k};
+		}
+
+
 		$::Scratch->{mv_data_enable} = delete $::Scratch->{"mv_data_enable__$new"};
 		delete $::Scratch->{mv_data_enable_key};
 
@@ -2332,6 +2394,9 @@ sub update_data {
 		}
 
 		@CGI::values{keys %cgiset} = values %cgiset;
+		$CGI::values{mv_data_file_field} = join "\0", @file_fields;
+		$CGI::values{mv_data_file_path} = join "\0", @file_paths;
+		$CGI::values{mv_data_file_oldfiles} = join "\0", @file_oldfiles;
 #::logDebug("Reloading, function=$CGI::values{mv_data_function}");
 		update_data();
 	}

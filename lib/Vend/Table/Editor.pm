@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.57 2004-04-16 16:23:12 mheins Exp $
+# $Id: Editor.pm,v 1.58 2004-06-07 03:01:45 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.57 $, 10);
+$VERSION = substr(q$Revision: 1.58 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -403,7 +403,8 @@ sub display {
 			last METAMAKE;
 		}
 
-#::logDebug("formatting prepend/append/lookup_query");
+		$opt->{restrict_allow} ||= $record->{restrict_allow};
+#::logDebug("formatting prepend/append/lookup_query name=$opt->{name} restrict_allow=$opt->{restrict_allow}");
 		for(qw/append prepend lookup_query/) {
 			next unless $record->{$_};
 			if($opt->{restrict_allow}) {
@@ -1556,6 +1557,8 @@ sub resolve_options {
 		$opt->{$mainp} = $thing;
 	}
 
+	$opt->{ui_data_fields} ||= $opt->{ui_wizard_fields};
+
 	###############################################################
 	# Get the field display information including breaks and labels
 	###############################################################
@@ -2011,7 +2014,7 @@ EOF
 	$opt->{ui_data_fields} =~ s/[,\0\s]+/ /g;
 
 	if($opt->{ui_wizard_fields}) {
-		$opt->{ui_data_fields} = $opt->{ui_display_only} = $opt->{ui_wizard_fields};
+		$opt->{ui_display_only} = $opt->{ui_data_fields};
 	}
 
 	if(! $opt->{ui_data_fields}) {
@@ -2333,6 +2336,12 @@ EOF
     $hidden->{mv_nextpage}   = $opt->{mv_nextpage};
     $hidden->{mv_data_table} = $table;
     $hidden->{mv_data_key}   = $keycol;
+	if($opt->{cgi}) {
+		$hidden->{mv_return_table}   = $CGI->{mv_return_table} || $table;
+	}
+	else {
+		$hidden->{mv_return_table}   = $table;
+	}
 
 	chunk 'HIDDEN_ALWAYS', 'OUTPUT_MAP', <<EOF;
 <INPUT TYPE=hidden NAME=mv_session_id VALUE="$Vend::Session->{id}">
@@ -3458,6 +3467,8 @@ EOF
 #::logDebug("include_before: $col $opt->{include_before}{$col}");
 			my $chunk = delete $opt->{include_before}{$col};
 			if($opt->{include_form_interpolate}) {
+				$Vend::Interpolate::Tmp->{table_editor_data} = $data;
+#::logDebug("data to include=" . ::uneval($data));
 				$chunk = interpolate_html($chunk);
 			}
 			elsif($opt->{include_form_expand}) {
