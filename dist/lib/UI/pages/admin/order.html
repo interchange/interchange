@@ -24,6 +24,7 @@
 		$Scratch->{archive_nm} = 'archive';
 		$Scratch->{archive_label} = 'pending';
 	}
+	$Scratch->{archive_label} = $Tag->loc('', $Scratch->{archive_label});
 	return;
 [/calc]
 [set icon_name]icon_orders.gif[/set]
