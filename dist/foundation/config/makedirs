@@ -45,8 +45,8 @@ then
 	touch        __MVC_RELOCATE__$LOGDIR/error.log
 	if test -n "$CATUSER"
 	then
-		chown $CATUSER  __MVC_RELOCATE__$LOGDIR/error.log
-		chgrp $CATGROUP __MVC_RELOCATE__$LOGDIR/error.log
+		[ -n "$CATUSER"  ] && chown $CATUSER  __MVC_RELOCATE__$LOGDIR/error.log
+		[ -n "$CATGROUP" ] && chgrp $CATGROUP __MVC_RELOCATE__$LOGDIR/error.log
 	fi
 else
 	LOGDIR='__MVC_CATROOT__'
@@ -57,8 +57,8 @@ else
 	touch        __MVC_RELOCATE__$LOGDIR/error.log
 	if test -n "$CATUSER"
 	then
-		chown $CATUSER  __MVC_RELOCATE__$LOGDIR/error.log
-		chgrp $CATGROUP __MVC_RELOCATE__$LOGDIR/error.log
+		[ -n "$CATUSER"  ] && chown $CATUSER  __MVC_RELOCATE__$LOGDIR/error.log
+		[ -n "$CATGROUP" ] && chgrp $CATGROUP __MVC_RELOCATE__$LOGDIR/error.log
 	fi
 fi
 
@@ -86,8 +86,8 @@ if test -n "$CATUSER"
 then
 	for i in $LOGDIR/logs $LOGDIR/orders $CACHEDIR/session $CACHEDIR/tmp
 	do
-		chown $CATUSER __MVC_RELOCATE__$i
-		chgrp $CATGROUP __MVC_RELOCATE__$i
+		[ -n "$CATUSER"  ] && chown $CATUSER __MVC_RELOCATE__$i
+		[ -n "$CATGROUP" ] && chgrp $CATGROUP __MVC_RELOCATE__$i
 	done
 fi
 
