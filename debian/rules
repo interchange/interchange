@@ -78,6 +78,8 @@ install: build
 # Create symbolic link for the configuration files. Makes
 # more sense than script hacking.
 	ln -s /etc/interchange/interchange.cfg $(TMP)/usr/lib/interchange
+	mkdir -p $(TMP)/etc/interchange
+	mv $(TMP)/usr/lib/interchange/etc/jobs $(TMP)/etc/interchange/jobs
 	rm -r $(TMP)/usr/lib/interchange/etc
 	ln -s /etc/interchange $(TMP)/usr/lib/interchange/etc
 # Setup wrapper and config script
