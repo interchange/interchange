@@ -1,4 +1,15 @@
-<!-- ----- BEGIN REAL STUFF ----- -->
+[if cgi ui_clone_options]
+[and cgi ui_clone_id]
+[perl interpolate=1 tables="[cgi mv_data_table]"]
+	my $db = $Db{[cgi mv_data_table]}
+		or return;
+	my ($k,$v);
+	$db->clone_row($CGI->{ui_clone_id}, $CGI->{sku});
+	$db->clone_set('o_master', $CGI->{ui_clone_id}, $CGI->{sku});
+	return;
+[/perl]
+[/if]
+
 [if scratch ui_failure]
 <P>
 <BLOCKQUOTE>
@@ -28,6 +39,7 @@
 <TR BGCOLOR="__UI_C_TITLEBARBG__">
 	<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">SKU</TH>
 	<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">Master</TH>
+	<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">Group</TH>
 	<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">Description</TH>
 	<TH ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__">Price</TH>
 </TR>
@@ -42,23 +54,36 @@
 				href=__UI_BASE__/flex_editor
 				form=|
 					mv_data_table=[cgi mv_data_table]
-					ui_page_title=[cgi ui_page_title]
-					ui_page_banner=[cgi ui_page_banner]
 					ui_class=Items
-					ui_meta_view=modular
 					ui_hide_key=1
-					ui_te_override:description={url.description}
-					ui_display_only=products:description
-					ui_data_fields=code sku o_master o_enable products:description
 					ui_meta_specific=[cgi ui_meta_specific]
+					ui_meta_view=modular
+					{phantom?}
+					ui_te_widget:o_default=text
+					ui_te_width:o_default=20
+					ui_te_help:o_default=Override the option defaults, select SKU to use instead
+					{/phantom?}
+					ui_page_banner=[cgi ui_page_banner]
+					ui_page_title=[cgi ui_page_title]
 					ui_return_to=@@MV_PAGE@@
-					ui_return_to=ui_return_table=[cgi mv_data_table]
-					ui_return_to=sku=[cgi item_id]
+					ui_return_to=item_id=[cgi item_id]
+					ui_return_to=ignore_sku=1
 					item_id={code}
-				|]{sku}</A></TD>
+				|]{sku|no sku}</A>{o_default *}</TD>
 <TD>{o_master}</td>
-<TD>{products.description}</td>
-<TD ALIGN=RIGHT>{products.price}</td>
+<TD>{o_group} {phantom?}[page href=__UI_BASE__/flex_editor
+			form=|
+				mv_data_table=[cgi mv_data_table]
+				ui_meta_view=modular_create
+				ui_te_default:o_master={sku}
+				ui_te_default:o_group={o_group}
+				ui_class=Items
+				ui_return_to=@@MV_PAGE@@
+				ui_return_to=item_id=[cgi item_id]
+				ui_return_to=ignore_sku=1
+			|]add</A>{/phantom?}</TD></td>
+<TD>{description|{products.description}}</td>
+<TD ALIGN=RIGHT>{price|{products.price}}</td>
 </tr>
 [/seti]
 [comment]
@@ -133,6 +158,11 @@
 			my $level = $ref->{level} * 28;
 			$ref->{ui_spacer} = qq{<IMG SRC="@_UI_IMG_@admin/bg.gif" HEIGHT=1 WIDTH=$level>};
 		}
+		for(qw/ products.description description /) {
+			if(length($ref->{$_}) >=30) {
+				substr($ref->{$_}, 27) = '...';
+			}
+		}
 		my $indent = $ref->{level} + 1;
 		if($ref->{o_enable}) {
 			if($expand->{$code} or $explode && ! defined $expand->{$code}) {
@@ -151,14 +181,14 @@
 				 qq{<IMG SRC="@_UI_IMG_@admin/bg.gif" HEIGHT=1 WIDTH=14>};
 		}
 		my $body = $Scratch->{mod_template};
-Log("body first:\n$body\n\n") unless $Scratch->{debug_body};
+#Log("body first:\n$body\n\n") unless $Scratch->{debug_body};
 		$body =~ s!(\{\w+)\%2e(\w+\})!$1.$2!g;
 		$body =~ s!\{([-\w.]+)\}!$ref->{$1}!g;
 		$body =~ s!\{([-\w.]+)\|([\000-\377]*?)\}!$ref->{$1} || $2!eg;
 		$body =~ s!\{([-\w.]+)\s+([\000-\377]*?)\}! $ref->{$1} ? $2 : ''!eg;
 		$body =~ s!\{([-\w.]+)\?\}([\000-\377]*?){/\1\?\}! $ref->{$1} ? $2 : ''!eg;
 		$body =~ s!\{([-\w.]+):\}([\000-\377]*?){/\1:\}! $ref->{$1} ? '' : $2!eg;
-Log("body now:\n$body\n\n") unless $Scratch->{debug_body}++;
+#Log("body now:\n$body\n\n") unless $Scratch->{debug_body}++;
 		return $body;
 	}
 	return;
@@ -168,13 +198,16 @@ Log("body now:\n$body\n\n") unless $Scratch->{debug_body}++;
 	hashref=master
 	sql="SELECT * FROM options
 			WHERE o_master = '[cgi name=item_id filter=sql]'
-			ORDER BY o_sort
+			ORDER BY o_group, o_sort
 		"]
 [sql-sub o_display]
 	my $master = shift;
+	my %above;
+	$above{$CGI->{sku}} = 1;
+	$above{$master} = 1;
 	my $row = shift;
 	my @rows;
-Log("received master=$master row=$row modular=$row->{o_enable}");
+#Log("received master=$master row=$row modular=$row->{o_enable}");
 	my @stack = ( [ $row ] );
 	ARY: for (;;) {
 		my $ary;
@@ -185,8 +218,11 @@ Log("received master=$master row=$row modular=$row->{o_enable}");
 				or last ROW;
 			$row->{level} = scalar(@stack);
 			push(@rows, $row);
-			next ROW if ! $row->{o_enable};
 			my $sku = $row->{sku};
+			if($above{$sku}++) {
+				last ARY;
+			}
+			next ROW if ! $row->{o_enable};
 			my $code = $row->{code};
 			if( $expand->{$code}
 					or 
@@ -222,17 +258,61 @@ Log("received master=$master row=$row modular=$row->{o_enable}");
 [page href=__UI_BASE__/flex_editor
 		form="
 			mv_data_table=[cgi mv_data_table]
-			ui_class=Items
-			ui_data_fields=code sku o_master o_enable
-			ui_preload:options:o_enable=1
-			ui_meta_view=modular
+			ui_class=Admin
+			ui_data_fields=code sku o_master o_group phantom o_enable description
+			ui_te_widget:sku=text_20
+			ui_te_check:sku=unique products
+			ui_meta_view=modular_create
 			ui_hide_key=1
 			ui_new_item=1
 			ui_page_banner=[cgi ui_page_banner]
 			ui_page_title=[cgi ui_page_title]
 			ui_return_to=@@MV_PAGE@@
-			ui_return_to=ui_return_table=[cgi mv_data_table]
-			ui_return_to=sku=[cgi item_id]
-		"]<IMG SRC="@_UI_IMG_@admin/plus.gif" ALT="Add new option" BORDER=0></A>
+			ui_return_to=item_id=[cgi item_id]
+			ui_return_to=ignore_sku=1
+		"]<IMG SRC="@_UI_IMG_@admin/plus.gif" ALT="Add new option" BORDER=0>Add option</A>
 &nbsp;&nbsp;
 
+
+[page href=__UI_BASE__/item_option_phantom
+		form="
+			mv_data_table=[cgi mv_data_table]
+			ui_class=Items
+			item_id=[cgi item_id]
+			ui_return_to=@@MV_PAGE@@
+			ui_return_to=ui_return_table=[cgi mv_data_table]
+			ui_return_to=item_id=[cgi item_id]
+			ui_return_to=ignore_sku=1
+		"]<IMG SRC="@_UI_IMG_@admin/plus.gif" ALT="Add new option" BORDER=0> Add phantom</A>
+&nbsp;&nbsp;
+<FORM ACTION="[area @@MV_PAGE@@]">
+<input type=hidden name=mv_action value=back>
+<input type=hidden name=mv_data_table value="[cgi mv_data_table]">
+<INPUT TYPE=hidden NAME=sku VALUE="[cgi item_id]">
+<INPUT TYPE=hidden NAME=item_id VALUE="[cgi item_id]">
+<INPUT TYPE=hidden NAME=ignore_sku	VALUE="1">
+
+[loop
+	prefix=clone
+	search="
+		st=db
+		fi=[cgi mv_data_table]
+		co=yes
+
+		se=1
+		sf=o_modular
+
+		un=yes
+	"
+	more=1]<SELECT NAME=ui_clone_id>
+<OPTION VALUE=""> --
+[list]
+<OPTION VALUE="[clone-code]">[clone-filter 20][clone-description][/clone-filter]
+[/list]
+</SELECT>[more-list]<BR>[more]<BR>[/more-list][/loop]&nbsp;[button text="Clone options"]
+[flag type=write table="[cgi mv_data_table]"]
+ui_clone_options=1
+mv_todo=back
+mv_nextpage=@@MV_PAGE@@
+[/button]
+</FORM>

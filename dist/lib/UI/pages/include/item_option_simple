@@ -1,4 +1,17 @@
 [update values]
+[if cgi ui_clone_options]
+[and cgi ui_clone_id]
+[perl interpolate=1 tables="[cgi mv_data_table]"]
+	my $db = $Db{[cgi mv_data_table]}
+		or return;
+	my ($k,$v);
+	$db->clone_row($CGI->{ui_clone_id}, $CGI->{sku});
+	$db->clone_set('sku', $CGI->{ui_clone_id}, $CGI->{sku});
+	return;
+[/perl]
+[/if]
+
+
 <!-- ----- BEGIN REAL STUFF ----- -->
 <FORM ACTION="[area @@MV_PAGE@@]" METHOD=post>
 [if scratch ui_failure]

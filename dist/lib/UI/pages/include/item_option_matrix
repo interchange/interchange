@@ -1,4 +1,15 @@
-<!-- ----- BEGIN REAL STUFF ----- -->
+[if cgi ui_clone_options]
+[and cgi ui_clone_id]
+[perl interpolate=1 tables="[cgi mv_data_table]"]
+	my $db = $Db{[cgi mv_data_table]}
+		or return;
+	my ($k,$v);
+	$db->clone_row($CGI->{ui_clone_id}, $CGI->{sku});
+	$db->clone_set('sku', $CGI->{ui_clone_id}, $CGI->{sku});
+	return;
+[/perl]
+[/if]
+
 [if scratch ui_failure]
 <P>
 <BLOCKQUOTE>
