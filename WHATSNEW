@@ -11,6 +11,9 @@ Interchange 5.0.0 not yet released.
 Core
 ----
 
+* Fixed Vend::Table::Common bug which prevented Database property HIDE_FIELD
+  from working properly.
+
 * On 2002-10-21 Canada Post changed symbol NF to NL to reflect the province of
   Newfoundland changing its name to "Newfoundland and Labrador". For details
   see:
@@ -30,6 +33,8 @@ UI
   crashes.
 
 * Fix content editor to actually use the selected template for new pages.
+
+* Fixed so inactive/HIDE_FIELD are always ignored for record display in UI.
 
 Usertags
 --------
@@ -53,7 +58,23 @@ Usertags
 Foundation
 ----------
 
+* Error handling on account maintenance form works better.
+
+* Fixed issue with checkout page payment forms and Mozilla
+  which might cause Place Order button to be obscured in
+  some cases.
+
+* Separate shipping addresses now appear in customer email
+  copy and are logged to the orderline table. Also appear
+  in UI order view and on ship notice emails when appropriate.
+
+* Fixed a few bugs with RMA demo and added line-item details.
+
 * Change Newfoundland from NF to NL in "state" table.
+
+* Added simple demo of contact form
+
+* Changes to search form(s) now that HIDE_FIELD works
 
 Payment
 -------

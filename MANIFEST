@@ -421,6 +421,7 @@ dist/foundation/etc/mail_receipt
 dist/foundation/etc/order.number
 dist/foundation/etc/profiles.login
 dist/foundation/etc/profiles.order
+dist/foundation/etc/profiles.misc
 dist/foundation/etc/receipt.html
 dist/foundation/etc/report
 dist/foundation/etc/return.number
@@ -633,6 +634,7 @@ dist/foundation/pages/browse.html
 dist/foundation/pages/canceled.html
 dist/foundation/pages/change_password.html
 dist/foundation/pages/contact.html
+dist/foundation/pages/contact_form.html
 dist/foundation/pages/customerservice.html
 dist/foundation/pages/deliver.html
 dist/foundation/pages/flypage.html
@@ -707,6 +709,7 @@ dist/foundation/special_pages/cc_not_valid.html
 dist/foundation/special_pages/confirmation.html
 dist/foundation/special_pages/failed.html
 dist/foundation/special_pages/interact.html
+dist/foundation/special_pages/send_contact_form.html
 dist/foundation/special_pages/missing.html
 dist/foundation/special_pages/needfield.html
 dist/foundation/special_pages/nomatch.html
