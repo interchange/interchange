@@ -2,7 +2,15 @@ interchange (5.1.0-1) unstable; urgency=low
 
   * new upstream version
 
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sun, 28 Dec 2003 14:47:21 +0100
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sat,  3 Apr 2004 00:29:41 +0200
+
+interchange (5.0.1-1) unstable; urgency=high
+
+  * new upstream release (Closes: #240800, upstream fix for security hole)
+  * switch to gettext-based debconf templates (Closes: #235494, thanks to
+    Martin Quinson <Martin.Quinson@tuxfamily.org> for the patch)
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 26 Mar 2004 16:44:42 +0100
 
 interchange (5.0.0-2) unstable; urgency=low
 
