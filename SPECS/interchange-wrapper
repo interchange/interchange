@@ -4,26 +4,26 @@
 # Calls Interchange with special locations of files as installed by RPM
 # http://interchange.redhat.com/
 
-ICBASE=/usr/lib/interchange
-ETCBASE=/etc
-RUNBASE=/var/run
-LOGBASE=/var/log
+IC=/usr/lib/interchange
+ETC=/etc
+RUN=/var/run/interchange
+LOG=/var/log/interchange
 
-RUNSTRING="$ICBASE/interchange/bin/interchange \
+RUNSTRING="$IC/bin/interchange \
 	--unix \
-	-configfile $ETCBASE/interchange.cfg \
-	-pidfile $RUNBASE/interchange/interchange.pid \
-	-logfile $LOGBASE/interchange/error.log \
-	ErrorFile=$LOGBASE/interchange/error.log \
-	PIDfile=$RUNBASE/interchange/interchange.pid \
-	-confdir $ICBASE/etc \
-	-rundir $RUNBASE/interchange \
-	SocketFile=$RUNBASE/interchange/socket \
-	IPCsocket=$RUNBASE/interchange/socket.ipc"
+	-configfile $ETC/interchange.cfg \
+	-pidfile $RUN/interchange.pid \
+	-logfile $LOG/error.log \
+	ErrorFile=$LOG/error.log \
+	PIDfile=$RUN/interchange.pid \
+	-confdir $IC/etc \
+	-rundir $RUN \
+	SocketFile=$RUN/socket \
+	IPCsocket=$RUN/socket.ipc"
 
 if test "`whoami`" = root
 then 
-	exec su interch -c "$RUNSTRING $*"
+	exec su - interch -c "$RUNSTRING $*"
 else
 	exec $RUNSTRING $*
 fi
