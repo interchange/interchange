@@ -11,6 +11,12 @@ is in percent. The default below taxes Ohio at 6% and
 Illinois at 7.25 percent. More states can be added or
 you can have only one. Should correspond to TAXAREA.
 
+SOMESQL
+.
+Minivend has a workable internal database, but many things will
+work better (and a few worse) if you use a SQL database. Minivend
+can configure MySQL and Postgres in a test configuration.
+
 MYSQL
 .
 You can select this to use MySQL in your test catalog. Careful!

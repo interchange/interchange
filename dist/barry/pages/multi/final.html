@@ -70,8 +70,22 @@ They are shown in <FONT COLOR=__CONTRAST__>__CONTRAST__</FONT> below.</FONT>
 <P>
 [/if]
 
+[if variable CREDIT_CARDS_ACCEPTED =~ /\S/]
 <TABLE WIDTH=600><TR><TD __HEADERBG__>
-<FONT SIZE="+2" COLOR=__HEADERTEXT__>[error std_label="Credit Card Information" name=mv_credit_card_valid]</FONT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<IMG SRC="smallvisa.png">&nbsp;&nbsp;<IMG SRC="smallmc.png">
+<FONT SIZE="+2" COLOR=__HEADERTEXT__>[error std_label="Credit Card Information" name=mv_credit_card_valid]</FONT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[calc]
+	my $accepted = $Variable->{CREDIT_CARDS_ACCEPTED};
+	my (@out);
+	my (@cc);
+	my $out;
+	push @cc, 'visa' if $accepted =~ /visa/;
+	push @cc, 'mc' if $accepted =~ /mc/;
+	push @cc, 'disc' if $accepted =~ /discover/;
+	push @cc, 'amex' if $accepted =~ /amex/;
+	for (@cc) {
+		push @out, qq{<IMG SRC="small$_.png">};
+	}
+	return join '&nbsp;&nbsp;', @out;
+[/calc]
 </TD></TR></TABLE>
 
 <TABLE><TR><TD VALIGN=TOP>
@@ -118,23 +132,56 @@ Card Number <FONT SIZE=1>(test number 4111 1111 1111 1111)</FONT><BR>
 <TR><TD COLSPAN=2>
 <BLOCKQUOTE>
 [if scratch some_downloadable]
-	<I><B>To download items, you must pay by credit card</B></I><BR>
-	<INPUT TYPE=radio NAME=fax_order VALUE=0 CHECKED>
-	<I>Pay by credit card</I><BR>
-	<INPUT TYPE=radio NAME=fax_order VALUE=1>
-	<I>I will call with payment information (can't download now)</I><BR>
-[else]
+	<I><B>To download items, you must pay by credit card [if variable PO_ACCEPTED]or purchase order[/if]</B></I><BR>
+	[value name=fax_order set=0 hide=1]
+[/if]
+
 	<INPUT TYPE=radio NAME=fax_order VALUE=0
 		[if !value fax_order]CHECKED[/if]>
 	<I>Pay by credit card</I><BR>
-	<INPUT TYPE=radio NAME=fax_order VALUE=1 [checked fax_order 1]>
-	<I>I will call with payment information</I><BR>
 	[if value tried_credit_card]
 	<INPUT TYPE=checkbox NAME=mv_credit_card_force VALUE=1>
 	<I>Force this card number to be taken</I><BR>
 	[/if]
-[/else]
 [/if]
+
+[if variable CHECK_ACCEPTED]
+	<INPUT TYPE=radio NAME=fax_order VALUE=1 [checked fax_order 1]>
+	<I>I will call with payment information</I><BR>
+[/if]
+
+[if variable PO_ACCEPTED]
+	<INPUT TYPE=radio NAME=fax_order VALUE=2 [checked fax_order 2]>
+	<I>I will pay by purchase order</I> 
+	[error name=credit_limit_ok std_label="PO Number" required=1]&nbsp;<INPUT NAME=po_number VALUE="[value po_number]" SIZE=14>
+		[if type=data
+			term="userdb::credit_limit::[data session username]"
+			op=">"
+			compare=0.01]
+			<BR>
+		Current credit limit:
+			[currency]
+			[data table=userdb col=credit_limit key="[data session username]"]
+			[/currency]
+		
+			[if type=data
+				term="userdb::credit_limit::[data session username]"
+				op=<
+				compare="[total-cost noformat=1]"
+				]
+			<BR>
+			<FONT COLOR=__CONTRAST__>Order total [total-cost] exceeds credit limit, please call.</FONT>
+			[/if]
+			<BR>
+		[/if]
+	</I><BR>
+[/if]
+
+[if variable COD_ACCEPTED]
+	<INPUT TYPE=radio NAME=fax_order VALUE=3 [checked fax_order 3]>
+	<I>I will pay by COD ([handling cod] extra charge will be added)</I><BR>
+[/if]
+
 </BLOCKQUOTE>
 </TD></TR></TABLE>
 

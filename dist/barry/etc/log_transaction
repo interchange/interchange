@@ -68,6 +68,7 @@ status: pending
 affiliate: [data session source]
 campaign: [value campaign]
 parent: __PARENT__
+po_number: [value filter=strip po_number] 
 [/import]
 [comment][perl] Log("Past transactions entry."); [/perl][/comment][item-list]Added [item-code] to orderline: [import table=orderline type=LINE continue=NOTES]
 code: [value mv_order_number]-[item-increment]

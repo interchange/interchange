@@ -32,23 +32,59 @@ green1	blue1	yellow1
 
 TAXAREA
 Area(s) to tax in
-VA
+VA UT
 
 TAXRATE
 Percentage rate(s) for tax in different areas
-VA=7.5
+VA=7.5, UT=7.25
 
 UPSADDER
 Amount to add on to standard UPS costs
 3.00
 
-MYSQL
-Set to 1 if you want to use MySQL
+SOMESQL
+Set to 1 if you want to use MySQL or Postgres
 0	1
 
-PGSQL
+{SOMESQL}MYSQL
+Set to 1 if you want to use MySQL
+1	0
+
+{MYSQL}SQLDB
+Database to use (will be created)
+test___MVC_CATALOGNAME__	minivend
+
+{MYSQL}SQLDSN
+DBI DSN to use
+dbi:mysql:__MVC_SQLDB__
+
+{MYSQL}SQLUSER
+Username for MySQL (if any)
+	minivend
+
+{MYSQL}SQLPASS
+Password for MySQL (if any)
+	pass
+
+{SOMESQL and ! '__MVC_MYSQL__'}PGSQL
 Set to 1 if you want to use PostGres
-0	1
+1	0
+
+{PGSQL}SQLDB
+Database to use (will be created)
+test___MVC_CATALOGNAME__	minivend
+
+{PGSQL}SQLDSN
+DBI DSN to use
+dbi:Pg:dbname=__MVC_SQLDB__
+
+{PGSQL}SQLUSER
+Username for Postgres (if any)
+	minivend
+
+{PGSQL}SQLPASS
+Password for Postgres (if any)
+	pass
 
 SUPERUSER
 Account name that will control this catalog

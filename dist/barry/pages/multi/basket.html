@@ -22,9 +22,7 @@ lose your shopping cart.
   This next is a MiniVend UserTag -- if you see it in the page, then
   you don't have it defined in catalog.cfg.
 [/comment]
-<BR>
-<BR>
-<P>
+
 [table-font FACE="verdana,arial, helvetica" size="2"]
 <TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH="100%" ALIGN=CENTER>
 	<COL WIDTH="10%">
@@ -92,7 +90,7 @@ lose your shopping cart.
 			onClick="this.form.action='[process-target]',
 					this.form.submit()"
 			VALUE="[loop-code]"></TD>
-		<TD><FONT SIZE="1">[loop-field name]</TD>
+		<TD><FONT SIZE="1">[loop-field title]</TD>
 		</TR>	
 		[/if]
 	[/loop]
@@ -164,23 +162,22 @@ lose your shopping cart.
 [if session logged_in]
 [and value show_saved]
 [userdb function=get_cart_names hide=1]
-
 <P>
 <FORM ACTION="[process-target secure=1]" METHOD=POST>
 <INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 <INPUT TYPE=hidden NAME=mv_todo VALUE=return>
-<INPUT TYPE=hidden NAME=mv_nextpage VALUE="ord/basket">
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="multi/basket">
 <TABLE BORDER=0 CELLPADDING=4 CELLSPACING=0 ALIGN=CENTER WIDTH=100%>
 <TR><TD COLSPAN=3 BGCOLOR="__TITLEBG__" ALIGN=CENTER><FONT SIZE="+2" FACE="arial,helvetica" COLOR="__TITLETEXT__">Cart Storage Area</FONT><BR></TD></TR>
-	<COL WIDTH="40%">
-	<COL WIDTH="40%">
+	<COL WIDTH="50%">
+	<COL WIDTH="30%">
 	<COL WIDTH="20%">
 	<THEAD>
 		<TR __HEADERBG__ VALIGN=TOP>
-			<TH __HEADERBG__ WIDTH="40%">
+			<TH __HEADERBG__ WIDTH="50%">
 				<P><FONT COLOR="__HEADERTEXT__"><FONT FACE="helvetica, sans-serif">New Cart Name</FONT></FONT></P>
 			</TH>
-			<TH __HEADERBG__ WIDTH="40%">
+			<TH __HEADERBG__ WIDTH="30%">
 				<P><FONT COLOR="__HEADERTEXT__"><FONT FACE="helvetica, sans-serif">Existing Cart Name</FONT></FONT></P>
 			</TH>
 			<TH __HEADERBG__ WIDTH="20%">
@@ -189,9 +186,17 @@ lose your shopping cart.
 		</TR>
 	</THEAD>
 	<TBODY>
-<TR VALIGN=TOP><TD __TABLEFG__ VALIGN=top ALIGN=center WIDTH="40%">
-	<INPUT TYPE=text NAME=c_nickname0 SIZE=20 VALUE="[tag time]%b-%d-%Y:%H:%M[/tag]">
-	</TD><TD __TABLEFG__ WIDTH="40%">
+<TR VALIGN=TOP><TD __TABLEFG__ VALIGN=top ALIGN=center WIDTH="50%">
+	<INPUT TYPE=text NAME=c_nickname0 SIZE=10 VALUE="">&nbsp;<SELECT NAME=c_nickname0>
+		<OPTION VALUE=wishlist> Wish List
+		<OPTION VALUE=daily> Daily order
+		<OPTION VALUE=weekly> Weekly order
+		<OPTION VALUE=monthly> Monthly order
+		<OPTION VALUE=yearly> Yearly order
+		<OPTION VALUE=temp> Temporary
+		<OPTION>[tag time]%b-%d-%Y:%H:%M[/tag]
+	</SELECT>
+	</TD><TD __TABLEFG__ WIDTH="30%" ALIGN=center>
 		<SELECT NAME=c_nickname MULTIPLE>
 		[loop arg="[value carts]" option=c_nickname]
 		[sort code]
@@ -205,7 +210,7 @@ lose your shopping cart.
 	</TD></TR>
 [set Save to new cart]
 [value name=c_nickname set="[value c_nickname0]"]
-[userdb function=set_cart nickname="[value c_nickname]"]
+[userdb function=set_cart nickname="[value name=c_nickname filter='nullselect no_white']"]
 [/set]
 
 [set Save to existing cart]
@@ -240,7 +245,6 @@ lose your shopping cart.
 </TABLE>
 </FORM>
 [/if]
-
 [/table-font]
 
 [set Continue shopping]
