@@ -364,6 +364,13 @@ Interchange 4.7.0
   * Improved speed of import by pre-setting numeric array and no
     longer requiring tests for each field on each row.
 
+  * Debian packaging files added (supplied by Stefan Hornburg 
+    <racke@linuxia.de>).
+
+  * Usertag formel added which composes form elements and
+    signals errors (supplied by Stefan Hornburg 
+    <racke@linuxia.de>).
+
 Interchange 4.6.1
 
 * Added MS Excel import/export capability.
