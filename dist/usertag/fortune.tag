@@ -1,7 +1,7 @@
 UserTag fortune Order short
 UserTag fortune addAttr
 UserTag fortune Documentation <<EOF
-This tag uses the fortune(1) command to display a randome saying.
+This tag uses the fortune(1) command to display a random saying.
 
 Options:
 
