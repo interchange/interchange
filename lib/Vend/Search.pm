@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.13 2002-10-10 21:24:45 mheins Exp $
+# $Id: Search.pm,v 2.14 2002-10-18 07:10:46 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.13 $, 10);
+$VERSION = substr(q$Revision: 2.14 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -241,8 +241,8 @@ sub spec_check {
 	my $all_chars = $s->{mv_all_chars}[0];
 
 	while ($i < @specs) {
-#::logDebug("i=$i specs=$#specs");
-		if($#specs and length($specs[$i]) == 0) { # should add a switch
+#::logDebug("i=$i specs=$#specs mv_min_string=$s->{mv_min_string}");
+		if($#specs and length($specs[$i]) == 0 and $s->{mv_min_string} != 0) { # should add a switch
 			if($s->{mv_coordinate}) {
 		        splice(@{$s->{mv_search_group}}, $i, 1);
 		        splice(@{$s->{mv_search_field}}, $i, 1);
@@ -289,6 +289,7 @@ sub spec_check {
 	}
 
 #::logDebug("regex_specs=" . ::uneval($s->{regex_specs}));
+#::logDebug("eq_specs_sql=" . ::uneval($s->{eq_specs_sql}));
 
 	if ( ! $s->{mv_exact_match} and ! $s->{mv_coordinate}) {
 		my $string = join ' ', @specs;
@@ -758,6 +759,7 @@ EOF
 			last DOLIMIT if $f;
 #::logDebug("do_limit past f.");
 			last DOLIMIT if $s->{mv_small_data};
+			last DOLIMIT if $s->{eq_specs_sql};
 			last DOLIMIT if (grep $_, @{$s->{mv_orsearch}});
 			last DOLIMIT if defined $s->{mv_search_relate}
 							&& $s->{mv_search_relate} =~ s/\bor\b/or/i;

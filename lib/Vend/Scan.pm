@@ -1,6 +1,6 @@
 # Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 2.16 2002-08-10 02:30:26 mheins Exp $
+# $Id: Scan.pm,v 2.17 2002-10-18 07:10:46 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -29,7 +29,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 2.16 $, 10);
+$VERSION = substr(q$Revision: 2.17 $, 10);
 
 use strict;
 use Vend::Util;
@@ -849,6 +849,7 @@ sub _verbatim_array {
 	my @fields;
 #::logDebug("receiving verbatim_array: " . ::uneval (\@_));
 	@fields = ref $_[1] ? @{$_[1]} : split /\0/, $_[1], -1;
+	@fields = ('') if ! @fields;
 	unshift(@fields, @{$_[2]}) if $_[2];
 	return \@fields;
 }
