@@ -1,6 +1,6 @@
 # Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 2.11 2002-06-23 01:20:10 jon Exp $
+# $Id: Scan.pm,v 2.12 2002-07-09 17:42:12 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -29,7 +29,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 2.11 $, 10);
+$VERSION = substr(q$Revision: 2.12 $, 10);
 
 use strict;
 use Vend::Util;
@@ -76,6 +76,7 @@ my @Order = ( qw(
 	mv_more_id
 	mv_min_string
 	mv_max_matches
+	mv_no_hide
 	mv_orsearch
 	mv_range_min
 	mv_range_max
@@ -146,6 +147,7 @@ my %Scan = ( qw(
 	ms  mv_min_string
 	ne  mv_negate
 	ng  mv_negate
+	nh  mv_no_hide
 	np  mv_nextpage
 	ns  mv_next_search
 	nu  mv_numeric
@@ -195,6 +197,7 @@ my %Parse = (
 	mv_substring_match      =>  \&_yes_array,
 	mv_column_op            =>  \&_array,
 	mv_coordinate           =>  \&_yes,
+	mv_no_hide              =>  \&_yes,
 
 	mv_field_names          =>	\&_array,
 	mv_spelling_errors      => 	sub { my $n = int($_[1]); $n < 8 ? $n : 1; },

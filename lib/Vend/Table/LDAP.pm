@@ -1,6 +1,6 @@
 # Vend::Table::LDAP - Interchange LDAP pseudo-table access
 #
-# $Id: LDAP.pm,v 2.3 2002-06-27 22:24:10 jon Exp $
+# $Id: LDAP.pm,v 2.4 2002-07-09 17:42:12 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -24,7 +24,7 @@
 
 package Vend::Table::LDAP;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 use strict;
 
 use vars qw(
@@ -663,6 +663,7 @@ eval {
 *column_exists	= \&Vend::Table::Common::column_exists;
 *numeric		= \&Vend::Table::Common::numeric;
 *isopen			= \&Vend::Table::Common::isopen;
+*reset			= \&Vend::Table::Common::reset;
 *suicide		= \&Vend::Table::Common::suicide;
 *test_column	= \&Vend::Table::Common::test_column;
 

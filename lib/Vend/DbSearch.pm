@@ -1,6 +1,6 @@
 # Vend::DbSearch - Search indexes with Interchange
 #
-# $Id: DbSearch.pm,v 2.13 2002-06-23 01:20:10 jon Exp $
+# $Id: DbSearch.pm,v 2.14 2002-07-09 17:42:12 mheins Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
@@ -26,7 +26,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.13 $, 10);
+$VERSION = substr(q$Revision: 2.14 $, 10);
 
 use Search::Dict;
 use strict;
@@ -131,15 +131,11 @@ sub search {
 		s:.*/::;
 		s/\..*//;
 	}
-#::logDebug ("searching: searchfiles='@searchfiles', obj=" . ::uneval($s));
 	my $dbref = $s->{table} || undef;
-#::logDebug("before db mapping: self=" . ::Vend::Util::uneval_it({%$s}));
 
-#::logDebug("searching $searchfiles[0], keys Database before=" . join ",", grep /backup/, keys %{$Vend::Cfg->{Database}});
 	if( ! $dbref ) {
 		$s->{dbref} = $dbref = Vend::Data::database_exists_ref($searchfiles[0]);
 	}
-#::logDebug("searching $searchfiles[0], keys  after=" . join ",", grep /backup/, keys %{$Vend::Cfg->{Database}});
 	if(! $dbref) {
 		return $s->search_error(
 			"search file '$searchfiles[0]' is not a valid database reference."
@@ -186,11 +182,9 @@ sub search {
 	$@  and  return $s->search_error("Function creation: $@");
 
 	if(ref $s->{mv_like_field} and ref $s->{mv_like_spec}) {
-#::logDebug("Entering like_spec");
 		my $ary = [];
 		for(my $i = 0; $i < @{$s->{mv_like_field}}; $i++) {
 			my $col = $s->{mv_like_field}[$i];
-#::logDebug("Checking column '$col'");
 			next unless length($col);
 			my $val = $s->{mv_like_spec}[$i];
 			length($val) or next;
@@ -213,20 +207,18 @@ sub search {
 			$s->{eq_specs_sql} = [] if ! $s->{eq_specs_sql};
 			push @{$s->{eq_specs_sql}}, @$ary;
 		}
-#::logDebug("like_spec: " . join ",", @$ary);
 	}
 
 	my $qual;
 	if($s->{eq_specs_sql}) {
 		$qual = ' WHERE ';
-		my $joiner = ' AND ';
-		$joiner = ' OR ' if $s->{mv_orsearch}[0];
+		my $joiner = $s->{mv_orsearch}[0] ? ' OR ' : ' AND ';
 		$qual .= join $joiner, @{$s->{eq_specs_sql}};
 	}
 
 	$s->save_specs();
-#::logDebug("searchfiles=@searchfiles");
 	foreach $searchfile (@searchfiles) {
+		my $lqual = $qual || '';
 		$searchfile =~ s/\..*//;
 		my $db;
 		if (! $s->{mv_one_sql_table} ) {
@@ -237,7 +229,15 @@ sub search {
 						), next;
 			
 			$dbref = $s->{dbref} = $db->ref();
+			$dbref->reset();
 			@fn = $dbref->columns();
+		}
+
+		if(! $s->{mv_no_hide} and my $hf = $dbref->config('HIDE_FIELD')) {
+#::logDebug("found hide_field $hf");
+			$lqual =~ s/^\s*WHERE\s+/ WHERE $hf != 1 /
+				or $lqual = " WHERE $hf != 1";
+#::logDebug("lqual now '$lqual'");
 		}
 		$s->hash_fields(\@fn);
 		my $prospect;
@@ -253,12 +253,11 @@ sub search {
 
 		$@  and  return $s->search_error("Return subroutine creation: $@");
 
-#::logDebug("qual=$qual");
 		if(! defined $f and defined $limit_sub) {
 #::logDebug("no f, limit, dbref=$dbref");
 			local($_);
 			my $ref;
-			while($ref = $dbref->each_nokey($qual) ) {
+			while($ref = $dbref->each_nokey($lqual) ) {
 				next unless $limit_sub->($ref);
 				push @out, $return_sub->($ref);
 			}
@@ -267,7 +266,7 @@ sub search {
 #::logDebug("f and limit, dbref=$dbref");
 			local($_);
 			my $ref;
-			while($ref = $dbref->each_nokey($qual) ) {
+			while($ref = $dbref->each_nokey($lqual) ) {
 				$_ = join "\t", @$ref;
 				next unless &$f();
 				next unless $limit_sub->($ref);
@@ -281,7 +280,7 @@ sub search {
 #::logDebug("f and no limit, dbref=$dbref");
 			local($_);
 			my $ref;
-			while($ref = $dbref->each_nokey($qual) ) {
+			while($ref = $dbref->each_nokey($lqual) ) {
 #::logDebug("f and no limit, ref=$ref");
 				$_ = join "\t", @$ref;
 				next unless &$f();
@@ -366,7 +365,6 @@ sub search {
 		$#out = $s->{mv_matchlimit} - 1;
 	}
 #::logDebug("after hash fields: self=" . ::Vend::Util::uneval_it({%$s}));
-#::logDebug("after delayed return: self=" . ::Vend::Util::uneval_it({%$s}));
 
 	if(! $s->{mv_return_reference}) {
 		$s->{mv_results} = \@out;

@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.16 2002-07-09 01:59:59 jon Exp $
+# $Id: Common.pm,v 2.17 2002-07-09 17:42:12 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.16 $, 10);
+$VERSION = substr(q$Revision: 2.17 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -557,19 +557,27 @@ sub each_record {
 my $sup;
 my $restrict;
 my $rfield;
+my $hfield;
 my $rsession;
 
 sub each_nokey {
-    my ($s) = @_;
+    my ($s, $qual) = @_;
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
     my ($key);
 
-	if (
-		! defined $restrict
-		and 
-		$restrict = ($Vend::Cfg->{TableRestrict}{$s->config('name')} || 0)
-		)
-	{
+	if (! defined $restrict) {
+		# Support hide_field
+		if($qual) {
+#::logDebug("Found qual=$qual");
+			$hfield = $qual;
+			if($hfield =~ s/^\s+WHERE\s+(\w+)\s*!=\s*1($|\s+)//) {
+				my $hf = $1;
+#::logDebug("Found hf=$hf");
+				$s->test_column($hf) and $hfield = $s->column_index($hf);
+			}
+#::logDebug("hf index=$hfield");
+		}
+		if($restrict = ($Vend::Cfg->{TableRestrict}{$s->config('name')} || 0)) {
 #::logDebug("restricted?");
 		$sup =  ! defined $Global::SuperUserFunction
 					||
@@ -584,6 +592,8 @@ sub each_nokey {
 			$rsession = $Vend::Session->{$rsession};
 		}
 	}
+		$restrict = 1 if $hfield and $s->[$CONFIG]{HIDE_FIELD} eq $hfield;
+	}
 
     for (;;) {
         $key = each %{$s->[$TIE_HASH]};
@@ -595,8 +605,10 @@ sub each_nokey {
 		$key =~ s/^k// or next;
 		if($restrict) {
 			my (@row) = $s->row($key);
-##::logDebug("each_nokey: '$row[$rfield]' eq '$rsession' ??");
-			next if $row[$rfield] ne $rsession;
+#::logDebug("each_nokey: rfield='$row[$rfield]' eq '$rsession' ??") if defined $rfield;
+#::logDebug("each_nokey: hfield='$row[$hfield]'") if defined $hfield;
+			next if defined $hfield and $row[$hfield];
+			next if defined $rfield and $row[$rfield] ne $rsession;
 			return \@row;
 		}
 		return [ $s->row($key) ];
@@ -1404,6 +1416,10 @@ sub parse {
     }
     $expect and push @a, '';
     return @a;
+}
+
+sub reset {
+	undef $restrict;
 }
 
 1;

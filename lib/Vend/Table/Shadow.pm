@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.3 2002-05-27 12:52:43 racke Exp $
+# $Id: Shadow.pm,v 1.4 2002-07-09 17:42:12 mheins Exp $
 #
 # Copyright (C) 2002 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 
 # TODO
 #
@@ -117,6 +117,12 @@ sub each_nokey {
 	$s = $s->import_db() unless defined $s->[$OBJ];
 	::logDebug('COLUMNS: ' . $s->columns());
 	return $s->[$OBJ]->each_nokey($qual);
+}
+
+sub reset {
+	my ($s, $key) = @_;
+	$s = $s->import_db() unless defined $s->[$OBJ];
+	$s->[$OBJ]->reset();
 }
 
 1;

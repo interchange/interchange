@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.21 2002-07-09 00:03:20 jon Exp $
+# $Id: DBI.pm,v 2.22 2002-07-09 17:42:12 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.21 $, 10);
+$VERSION = substr(q$Revision: 2.22 $, 10);
 
 use strict;
 
@@ -1790,6 +1790,7 @@ eval {
 	return wantarray ? ($ref, \%nh, \@na) : $ref;
 }
 
+*reset = \&Vend::Table::Common::reset;
 *autonumber = \&Vend::Table::Common::autonumber;
 
 1;
