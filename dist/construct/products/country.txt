@@ -111,6 +111,7 @@ ME	ME	air_D surf_D	Madeira Islands
 MG	MG	air_F surf_F	Madagascar
 MK	MK	air_E surf_E	Macedonia
 ML	ML	air_E surf_E	Mali
+MM	MM	air_F surf_F	Myanmar (Burma)
 MO	MO	air_E surf_E	Macao
 MQ	MQ	air_C surf_C	Martinique
 MR	MR	air_F surf_F	Mauritania
@@ -185,7 +186,6 @@ VU	VU	air_D surf_D	Vanuatu
 WF	WF	air_F surf_F	Wallis and Furuna Islands
 WS	WS	air_D surf_D	Western Samoa
 XB	XB	air_E surf_E	Bosnia-Herzegovina
-MM	MM	air_F surf_F	Myanmar (Burma)
 XE	XE	air_F surf_F	Corsica
 XO	XO	air_D surf_D	Pitcairn Island
 XS	XS	air_E surf_E	Serbia-Montenegro
