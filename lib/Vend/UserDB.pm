@@ -1,16 +1,29 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.13.6.21 2001-04-19 11:25:43 racke Exp $
+# $Id: UserDB.pm,v 1.13.6.22 2001-06-19 17:43:23 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
-# **** ALL RIGHTS RESERVED ****
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.13.6.21 $, 10);
+$VERSION = substr(q$Revision: 1.13.6.22 $, 10);
 
-use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
+use vars qw!
+	$VERSION
+	@S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS
+	%S_to_B %B_to_S
+	$USERNAME_GOOD_CHARS $USERNAME_MIN_LENGTH $PASSWORD_MIN_LENGTH
+!;
 
 use Vend::Data;
 use Vend::Util;
@@ -184,7 +197,6 @@ qw!
 
 @B_FIELDS = ( 
 qw!
-
 	b_nickname
 	b_name
 	b_fname
@@ -215,8 +227,10 @@ the preference set.
 
 =cut
 
-# valid characters in user names
-my $GOOD_CHARS = '[-A-Za-z0-9_@.]';
+# user name and password restrictions
+$USERNAME_GOOD_CHARS = '[-A-Za-z0-9_@.]';
+$USERNAME_MIN_LENGTH = 2;
+$PASSWORD_MIN_LENGTH = 4;
 
 @P_FIELDS = qw ( p_nickname email fax email_copy phone_night mail_list fax_order );
 
@@ -571,7 +585,6 @@ sub clear_values {
 	if($self->{OPTIONS}->{scratch}) {
 		my (@s) = split /[\s,]+/, $self->{OPTIONS}{scratch} ;
 		@scratch{@s} = @s;
-#::logError("scratch ones: " . join " ", @s);
 	}
 
 	for(@fields) {
@@ -963,12 +976,11 @@ sub login {
 		if ref $_[0];
 
 	my(%options) = @_;
-	my $user_data;
+	my ($user_data, $pw);
 
-	# Note that this trailing newline is important! The string is used in a
-	# die() statement, and without a trailing newline, Perl will append path
-	# and line info, which should be avoided.
-	my $stock_error = ::errmsg("Invalid user name or password.\n");
+	# Show this generic error message on login page to avoid
+	# helping would-be intruders
+	my $stock_error = ::errmsg("Invalid user name or password.");
 	
 	eval {
 		unless($self) {
@@ -992,36 +1004,81 @@ sub login {
 		# We specifically check for login attempts with group names to see if
 		# anyone is trying to exploit a former vulnerability in the demo catalog.
 		if ($self->{USERNAME} =~ /^:/) {
-			logError("Attempted login with group name '%s'",
-				$self->{USERNAME});
-			die $stock_error, "\n";
-		}
-		if ($self->{USERNAME} !~ m{^$GOOD_CHARS+$}) {
-			logError("Attempted login with illegal user name '%s'",
-				$self->{USERNAME});
-			die $stock_error, "\n";
-		}
-		unless ($self->{DB}->record_exists($self->{USERNAME})) {
-			logError("Attempted login with nonexistent user name '%s'",
-				$self->{USERNAME});
-			die $stock_error, "\n";
-		}
-		unless ($user_data = $self->{DB}->row_hash($self->{USERNAME})) {
-			logError("Failed fetch of user data for user name '%s'",
+			logError("Denied attempted login with group name '%s'",
 				$self->{USERNAME});
 			die $stock_error, "\n";
 		}
 
-		my $db_pass = $user_data->{ $self->{LOCATION}{PASSWORD} };
-		my $pw = $self->{PASSWORD};
-
-		if($self->{CRYPT}) {
-			$self->{PASSWORD} = crypt($pw,$db_pass);
+		# Username must be long enough
+		if (length($self->{USERNAME}) < $USERNAME_MIN_LENGTH) {
+			logError("Denied attempted login for user name '%s'; must have at least %s characters",
+				$self->{USERNAME}, $USERNAME_MIN_LENGTH);
+			die $stock_error, "\n";
 		}
-		unless ($self->{PASSWORD} eq $db_pass) {
-			logError("Attempted login by user '%s' with incorrect password",
+
+		# Username must contain only valid characters
+		if ($self->{USERNAME} !~ m{^$USERNAME_GOOD_CHARS+$}) {
+			logError("Denied attempted login for user name '%s' with illegal characters",
 				$self->{USERNAME});
 			die $stock_error, "\n";
+		}
+
+		# Fail if password is too short
+		if (length($self->{PASSWORD}) < $PASSWORD_MIN_LENGTH) {
+			logError("Denied attempted login with user name '%s' and password less than %s characters",
+				$self->{USERNAME}, $PASSWORD_MIN_LENGTH);
+			die $stock_error, "\n";
+		}
+
+		# Allow entry to global AdminUser without checking access database
+		ADMINUSER: {
+			if ($Global::AdminUser) {
+				my $pwinfo = $Global::AdminUser;
+				$pwinfo =~ s/^\s+//; $pwinfo =~ s/\s+$//;
+				my ($adminuser, $adminpass) = split /[\s:]+/, $pwinfo;
+				last ADMINUSER unless $adminuser eq $self->{USERNAME};
+				unless ($adminpass) {
+					logError("Refusing to use AdminUser variable with user '%s' and empty password", $adminuser);
+					last ADMINUSER;
+				}
+				my $test = $Global::Variable->{MV_NO_CRYPT}
+						 ? $self->{PASSWORD}
+						 : crypt($self->{PASSWORD}, $adminpass);
+				if ($test eq $adminpass) {
+					$user_data = {};
+					$Vend::admin = $Vend::superuser = 1;
+					logError("Successful superuser login by AdminUser '%s'", $adminuser);
+				} else {
+					logError("Password given with user name '%s' didn't match AdminUser password", $adminuser);
+				}
+			}
+		}
+
+		# If not superuser, an entry must exist in access database
+		unless ($Vend::superuser) {
+			unless ($self->{DB}->record_exists($self->{USERNAME})) {
+				logError("Denied attempted login with nonexistent user name '%s'",
+					$self->{USERNAME});
+				die $stock_error, "\n";
+			}
+			unless ($user_data = $self->{DB}->row_hash($self->{USERNAME})) {
+				logError("Login denied after failed fetch of user data for user '%s'",
+					$self->{USERNAME});
+				die $stock_error, "\n";
+			}
+			my $db_pass = $user_data->{ $self->{LOCATION}{PASSWORD} };
+			unless ($db_pass) {
+				logError("Refusing to use blank password from '%s' database for user '%s'", $self->{DB_ID}, $self->{USERNAME});
+				die $stock_error, "\n";
+			}
+			$pw = $self->{PASSWORD};
+			$self->{PASSWORD} = crypt($pw, $db_pass) if $self->{CRYPT};
+			unless ($self->{PASSWORD} eq $db_pass) {
+				logError("Denied attempted login by user '%s' with incorrect password",
+					$self->{USERNAME});
+				die $stock_error, "\n";
+			}
+			logError("Successful login by user '%s'", $self->{USERNAME});
 		}
 
 		if($self->{PRESENT}->{ $self->{LOCATION}{EXPIRATION} } ) {
@@ -1051,8 +1108,9 @@ sub login {
 									  );
 			};
 			if ($@) {
-				::logError ("Failed to record timestamp in UserDB: %s", $@);
-				die $stock_error, "\n";
+				my $msg = ::errmsg("Failed to record timestamp in UserDB: %s", $@);
+				::logError($msg);
+				die $msg, "\n";
 			}
 		}
 		$self->log('login') if $options{'log'};
@@ -1065,7 +1123,6 @@ sub login {
 	if($@) {
 		if(defined $self) {
 			$self->{ERROR} = $@;
-#::logDebug( "Vend::UserDB error: %s\n", $@ );
 		}
 		else {
 			::logError( "Vend::UserDB error: %s\n", $@ );
@@ -1075,13 +1132,10 @@ sub login {
 
 	PRICING: {
 		my $pprof;
-#::logDebug( "in pricing determination");
 		last PRICING
 			unless	$self->{LOCATION}{PRICING}
 			and		$pprof = $user_data->{ $self->{LOCATION}{PRICING} };
-#::logDebug( "PRICING PRESENT");
 
-#::logDebug( "trying profile set=$pprof");
 		Vend::Interpolate::tag_profile(
 								$pprof,
 								{ tag => $self->{OPTIONS}{profile} },
@@ -1128,8 +1182,8 @@ sub change_pass {
 
 		die ::errmsg("Must have old password") . "\n"
 			if	$self->{OLDPASS} ne $db_pass;
-		die ::errmsg("Must enter at least 4 characters for password.") . "\n"
-			unless length($self->{PASSWORD}) > 3;
+		die ::errmsg("Must enter at least %s characters for password.", $PASSWORD_MIN_LENGTH) . "\n"
+			if length($self->{PASSWORD}) < $PASSWORD_MIN_LENGTH;
 		die ::errmsg("Password and check value don't match.") . "\n"
 			unless $self->{PASSWORD} eq $self->{VERIFY};
 
@@ -1194,8 +1248,8 @@ sub new_account {
 		die ::errmsg("Sorry, reserved user name.") . "\n"
 			if $self->{OPTIONS}{username_mask} 
 				and $self->{USERNAME} =~ m!$self->{OPTIONS}{username_mask}!;
-		die ::errmsg("Must enter at least 4 characters for password.") . "\n"
-			unless length($self->{PASSWORD}) > 3;
+		die ::errmsg("Must enter at least %s characters for password.", $PASSWORD_MIN_LENGTH) . "\n"
+			if length($self->{PASSWORD}) < $PASSWORD_MIN_LENGTH;
 		die ::errmsg("Password and check value don't match.") . "\n"
 			unless $self->{PASSWORD} eq $self->{VERIFY};
 
@@ -1219,15 +1273,13 @@ sub new_account {
 			$self->{USERNAME} = lc $self->{USERNAME}
 				if $self->{OPTIONS}{ignore_case};
 		}
-		die ::errmsg("Must have longer username.") . "\n" unless length($self->{USERNAME}) > 1;
-		die ::errmsg("Can't have '%s' as username, unsafe characters.", $self->{USERNAME}) . "\n"
-			if $self->{USERNAME} !~ m{^$GOOD_CHARS+$};
-#::logDebug("new_account username: '$self->{USERNAME}'");
+		die ::errmsg("Can't have '%s' as username; it contains illegal characters.", $self->{USERNAME}) . "\n"
+			if $self->{USERNAME} !~ m{^$USERNAME_GOOD_CHARS+$};
+		die ::errmsg("Must have at least %s characters in username.", $USERNAME_MIN_LENGTH) . "\n"
+			if length($self->{USERNAME}) < $USERNAME_MIN_LENGTH;
 		if ($self->{DB}->record_exists($self->{USERNAME})) {
-#::logDebug("new_account username: '$self->{USERNAME}' exists");
 			die ::errmsg("Username already exists.") . "\n"
 		}
-#::logDebug("new_account username: '$self->{USERNAME}' doesn't exist");
 		my $pass = $self->{DB}->set_field(
 						$self->{USERNAME},
 						$self->{LOCATION}{PASSWORD},
@@ -1414,10 +1466,8 @@ sub userdb {
 				$Vend::Cfg->{AdminUserDB}{$user->{PROFILE}}
 				)
 			{
-#::logDebug("logged in $Vend::username via $user->{DB_ID} -- ADMIN");
 				$Vend::admin = 1;
 			}
-#::logDebug("logged in $Vend::username via $user->{DB_ID}");
 			undef $Vend::Cookie
 				unless $Vend::Cfg->{StaticLogged};
 			::update_user();
@@ -1449,6 +1499,7 @@ sub userdb {
 		Vend::Interpolate::tag_profile("", { restore => 1 });
 		delete $Vend::Session->{logged_in};
 		undef $Vend::admin;
+		undef $Vend::superuser;
 		delete $Vend::Session->{login_table};
 		delete $Vend::Session->{username};
 		delete $CGI::values{mv_username};
@@ -1501,14 +1552,12 @@ sub userdb {
 	
 	if(defined $status) {
 		delete $Vend::Session->{failure};
-#::logDebug("userdb success=$user->{ERROR}\n");
 		$Vend::Session->{success} = $user->{MESSAGE};
 		if($options{show_message}) {
 			$status = $user->{MESSAGE};
 		}
 	}
 	else {
-#::logDebug("userdb failure=$user->{ERROR}\n");
 		$Vend::Session->{failure} = $user->{ERROR};
 		if($options{show_message}) {
 			$status = $user->{ERROR};
