@@ -1,0 +1,61 @@
+Database  userdb  userdb.txt __SQLDSN__
+#ifdef SQLUSER
+Database  userdb  USER         __SQLUSER__
+#endif
+#ifdef SQLPASS
+Database  userdb  PASS         __SQLPASS__
+#endif
+Database  userdb  COLUMN_DEF   "code=VARCHAR(20) NOT NULL PRIMARY KEY"
+Database  userdb  COLUMN_DEF   "password=VARCHAR(20) NOT NULL"
+Database  userdb  COLUMN_DEF   "acl=text"
+Database  userdb  COLUMN_DEF   "mod_time=timestamp DEFAULT '2000-01-01'"
+Database  userdb  COLUMN_DEF   "s_nickname=text"
+Database  userdb  COLUMN_DEF   "company=VARCHAR(30)"
+Database  userdb  COLUMN_DEF   "fname=VARCHAR(20)"
+Database  userdb  COLUMN_DEF   "lname=VARCHAR(30)"
+Database  userdb  COLUMN_DEF   "address1=VARCHAR(64)"
+Database  userdb  COLUMN_DEF   "address2=VARCHAR(64)"
+Database  userdb  COLUMN_DEF   "address3=VARCHAR(64)"
+Database  userdb  COLUMN_DEF   "city=VARCHAR(30)"
+Database  userdb  COLUMN_DEF   "state=VARCHAR(10)"
+Database  userdb  COLUMN_DEF   "zip=VARCHAR(10)"
+Database  userdb  COLUMN_DEF   "country=VARCHAR(10)"
+Database  userdb  COLUMN_DEF   "phone_day=VARCHAR(20)"
+Database  userdb  COLUMN_DEF   "mv_shipmode=VARCHAR(64)"
+Database  userdb  COLUMN_DEF   "b_nickname=text"
+Database  userdb  COLUMN_DEF   "b_fname=VARCHAR(20)"
+Database  userdb  COLUMN_DEF   "b_lname=VARCHAR(30)"
+Database  userdb  COLUMN_DEF   "b_address1=VARCHAR(64)"
+Database  userdb  COLUMN_DEF   "b_address2=VARCHAR(64)"
+Database  userdb  COLUMN_DEF   "b_address3=VARCHAR(64)"
+Database  userdb  COLUMN_DEF   "b_city=VARCHAR(30)"
+Database  userdb  COLUMN_DEF   "b_state=VARCHAR(10)"
+Database  userdb  COLUMN_DEF   "b_zip=VARCHAR(10)"
+Database  userdb  COLUMN_DEF   "b_country=VARCHAR(10)"
+Database  userdb  COLUMN_DEF   "b_phone=VARCHAR(20)"
+Database  userdb  COLUMN_DEF   "mv_credit_card_type=VARCHAR(16)"
+Database  userdb  COLUMN_DEF   "mv_credit_card_exp_month=VARCHAR(2)"
+Database  userdb  COLUMN_DEF   "mv_credit_card_exp_year=VARCHAR(4)"
+Database  userdb  COLUMN_DEF   "mv_credit_card_info=TEXT"
+Database  userdb  COLUMN_DEF   "p_nickname=text"
+Database  userdb  COLUMN_DEF   "email=VARCHAR(42)"
+Database  userdb  COLUMN_DEF   "fax=VARCHAR(20)"
+Database  userdb  COLUMN_DEF   "phone_night=VARCHAR(20)"
+Database  userdb  COLUMN_DEF   "fax_order=VARCHAR(2)"
+Database  userdb  COLUMN_DEF   "address_book=TEXT"
+Database  userdb  COLUMN_DEF   "accounts=TEXT"
+Database  userdb  COLUMN_DEF   "preferences=TEXT"
+Database  userdb  COLUMN_DEF   "carts=TEXT"
+Database  userdb  COLUMN_DEF   "owner=VARCHAR(20)"
+Database  userdb  COLUMN_DEF   "file_acl=TEXT"
+Database  userdb  COLUMN_DEF   "db_acl=TEXT"
+Database  userdb  COLUMN_DEF   "order_numbers=TEXT"
+Database  userdb  COLUMN_DEF   "email_copy=VARCHAR(1)"
+Database  userdb  COLUMN_DEF   "mail_list=varchar(64)"
+Database  userdb  COLUMN_DEF   "project_id=VARCHAR(20)"
+Database  userdb  COLUMN_DEF   "account_id=VARCHAR(20)"
+Database  userdb  COLUMN_DEF   "order_dest=VARCHAR(32)"
+Database  userdb  ChopBlanks   1
+
+# Prevent problems with abstime representation
+UserDB    default    time_field    none

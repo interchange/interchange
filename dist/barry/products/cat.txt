@@ -1,0 +1,7 @@
+code	area	selector	name	banner_text	image	sort	url	page	item
+B1	Books	fiction	Fiction				
+B2	Books	kids	Kids' Books				
+B3	Books	non-fiction	Non-Fiction				
+B4	Books	misc	Misc. Books				
+S1	Specials	index	Need Forks?	We've got the Cranks for you! Race Face Turbine only $249.00	cranky.gif	1			rst381
+S2	Specials	index	Cranky?	We got em! and 40% off RST 381 TL<br>$134.00	clamps.gif	1			rfset

@@ -1,0 +1,171 @@
+<!-- begin leftside -->
+	<tr>
+	<td bgcolor="#6699FF" valign="top">
+		<br>
+			<table cellpadding="0" cellspacing="0" border="0" align="center">
+				<tr>
+					<td width="130" colspan="3" bgcolor="#ffffff"><img src="space.gif" width="130" height="1"></td>
+				</tr>
+[if session logged_in]
+				<tr>
+					<td width="1" bgcolor="#ffffff"><img src="space.gif" width="1" height="1"></td>
+					<td width="128">
+		<img src="space.gif" width="128" height="1"><br>
+		<font face="verdana" size="2"><b>
+		&nbsp;&nbsp;[value fname] [value lname]<p>
+		&nbsp;&nbsp;<a href="[area query/check_orders]">order status</A><br>
+		&nbsp;&nbsp;<a href="[area logout]">log out</a><br>&nbsp;</td>
+					<td width="1" bgcolor="#ffffff"><img src="space.gif" width="1" height="1"></td>
+				</tr>
+				<tr>
+					<td width="130" colspan="3" bgcolor="#ffffff"><img src="space.gif" width="130" height="1"></td>
+				</tr>
+[else]
+				<tr>
+					<td width="1" bgcolor="#ffffff"><img src="space.gif" width="1" height="1"></td>
+					<td width="128"><img src="space.gif" width="128" height="1"><br>&nbsp;&nbsp;<a href="[area login]"><img src="login.gif" border="0"></a></td>
+					<td width="1" bgcolor="#ffffff"><img src="space.gif" width="1" height="1"></td>
+				</tr>
+				<tr>
+					<td width="130" colspan="3" bgcolor="#ffffff"><img src="space.gif" width="130" height="1"></td>
+				</tr>
+				<tr>
+					<td width="1" bgcolor="#ffffff"><img src="space.gif" width="1" height="1"></td>
+					<td width="128"><img src="space.gif" width="128" height="1"><br>&nbsp;&nbsp;<a href="[area new_account]"><img src="create.gif" border="0"></a></td>
+					<td width="1" bgcolor="#ffffff"><img src="space.gif" width="1" height="1"></td>
+				</tr>
+[/else]
+[/if]
+				<tr>
+					<td width="130" colspan="3" bgcolor="#ffffff"><img src="space.gif" width="130" height="1"></td>
+				</tr>
+				<tr>
+					<td width="130" colspan="3"><img src="space.gif" width="1" height="4"></td>
+				</tr>
+			</table>
+			<table cellpadding="0" cellspacing="0" border="0" align="center">
+				<tr>
+					<td width="130" colspan="3" bgcolor="#ffffff"><img src="space.gif" width="130" height="1"></td>
+				</tr>
+				<tr>
+					<td width="1" bgcolor="#ffffff"><img src="space.gif" width="1" height="1"></td>
+					<td width="128"><img src="space.gif" width="128" height="1"><br>&nbsp;&nbsp;<a href="[area about]"><img src="about.gif" border="0"></a></td>
+					<td width="1" bgcolor="#ffffff"><img src="space.gif" width="1" height="1"></td>
+				</tr>
+				<tr>
+					<td width="130" colspan="3" bgcolor="#ffffff"><img src="space.gif" width="130" height="1"></td>
+				</tr>
+				<tr>
+					<td width="130" colspan="3"><img src="space.gif" width="1" height="4"></td>
+				</tr>
+			</table>
+
+[loop search="
+	fi=area.txt
+	tf=sort
+	ra=yes
+	rf=selector,name,banner_img,url
+	un=yes
+" prefix=box]
+<!-- begin area loop -->
+
+			<table cellpadding="0" cellspacing="0" border="0" align="center">
+				<tr>
+					<td width="130" colspan="3" bgcolor="#ffffff"><img src="space.gif" width="130" height="1"></td>
+				</tr>
+				<tr>
+					<td width="1" bgcolor="#ffffff"><img src="space.gif" width="1" height="1"></td>
+					<td width="128"><img src="space.gif" width="128" height="1"><br>&nbsp;&nbsp;<a href="[if-box-param url][box-param url][else][area 
+						href=scan
+						search='
+							sf=category
+							se=[box-code]
+							va=category=[box-code]
+						'][/else][/if-box-param]"><img src="[box-param banner_img]" border="0"></a></td>
+					<td width="1" bgcolor="#ffffff"><img src="space.gif" width="1" height="1"></td>
+				</tr>
+
+[set found_cat][/set]
+[loop prefix=cat
+	search="
+		fi=cat.txt
+		tf=name
+		sf=area
+		se=[box-param selector]
+		rf=selector,page,name
+	"
+	]
+[cat-change catmark][condition]1[/condition]
+			</table>
+[/cat-change catmark]
+<!-- begin cat_loop -->
+[set found_cat]1[/set]
+[if !scratch done_begin]
+[set done_begin]1[/set]
+
+			<table cellpadding="0" cellspacing="0" border="0" align="center">
+				<tr>
+					<td width="130" colspan="3" bgcolor="#ffffff"><img src="space.gif" width="130" height="1"></td>
+				</tr>
+				<tr>
+					<td width="1" bgcolor="#ffffff"><img src="space.gif" width="1" height="1"></td>
+					<td width="128"><img src="space.gif" width="128" height="1"><br>
+					<font face="verdana" size="2"><b>
+[/if]
+					&nbsp;&nbsp;<a href="[area scan
+							co=yes
+							sf=category
+							se=[box-param selector]
+							sg=0
+							os=0
+							bs=1
+							op=rm
+							sf=subcategory
+							se=[cat-code]
+							sg=1
+							os=1
+							op=rm
+							bs=1
+							sf=addl_category
+							se=[cat-code]
+							sg=1
+							os=1
+							op=em
+					]">[cat-param name]</a><br>
+<!-- end cat_loop -->
+	[/loop]
+	[if scratch done_begin]
+<!-- done_begin true -->
+	[set done_begin][/set]
+					<br>
+					</b></font>
+					</td>
+					<td width="1" bgcolor="#ffffff"><img src="space.gif" width="1" height="1"></td>
+				</tr>
+				<tr>
+					<td width="130" colspan="3" bgcolor="#ffffff"><img src="space.gif" width="130" height="1"></td>
+				</tr>
+				<tr>
+					<td width="130" colspan="3"><img src="space.gif" width="4" height="4"></td>
+				</tr>
+			</table>
+<!-- end done_begin -->
+	[/if]
+	[if !scratch found_cat]
+<!-- not found_cat -->
+				<tr>
+					<td width="130" colspan="3" bgcolor="#ffffff"><img src="space.gif" width="130" height="1"></td>
+				</tr>
+				<tr>
+					<td width="130" colspan="3"><img src="space.gif" width="4" height="4"></td>
+				</tr>
+			</table>
+<!-- end !found_cat -->
+	[/if]
+<!-- end area loop -->
+[/loop]
+			
+	</td>
+	<td bgcolor="ffffff"><img src="space.gif" width="1" height="600" align="left"></td>
+	<td bgcolor="ffffff" valign="top" width="344" valign="top">
+<!-- end leftside -->

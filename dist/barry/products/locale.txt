@@ -1,0 +1,26 @@
+code	en_US	de_DE	fr_FR
+January		Januar	Janvier
+February		Februar	F&eacute;vrier
+March		M&auml;rz	Mars
+April		April	Avril
+May		Mai	Mai
+June		Juni	Juin
+July		Juli	Juillet
+August		August	Aout
+September		September	Septembre
+October		October	Octobre
+November		November	Novembre
+December		Dezember	D&eacute;cembre
+PriceDivide	1	0.5409	0.1632
+ProductFiles			
+currency_symbol	$	DM	FF
+decimal_point	.	.	.
+default	1	0	0
+frac_digits	2	2	2
+mon_decimal_point	.	,	,
+mon_thousand_sep		 	
+mon_thousands_sep	,	,	.
+p_cs_precedes	1		
+p_sep_by_space			1
+price_picture		DM ### ### ###,##	
+products		de_products	produits

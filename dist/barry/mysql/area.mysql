@@ -1,0 +1,13 @@
+Database  area  area.txt __SQLDSN__
+#ifdef SQLUSER
+Database  area  USER         __SQLUSER__
+#endif
+#ifdef SQLPASS
+Database  area  PASS         __SQLPASS__
+#endif
+Database  area  COLUMN_DEF   "code=char(12) NOT NULL PRIMARY KEY"
+Database  area  COLUMN_DEF   "selector=CHAR(20) NOT NULL"
+Database  area  COLUMN_DEF   "name=CHAR(64) DEFAULT '' NOT NULL"
+Database  area  COLUMN_DEF   "banner_img=CHAR(64)"
+Database  area  COLUMN_DEF   "subs=CHAR(128)"
+Database  area  COLUMN_DEF   "sort=char(3) DEFAULT 'ZZ' NOT NULL, index(sort)"

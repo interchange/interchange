@@ -1,0 +1,71 @@
+[set page_title]Enter Billing Address[/set]
+__LOGOBAR__
+__MENUBAR__
+
+<TABLE WIDTH=600><TR><TD __HEADERBG__>
+<FONT SIZE="+2" COLOR="__HEADERTEXT__">Billing Address (if different)</FONT>
+</TD></TR></TABLE>
+
+<FORM ACTION="[process secure=1]" METHOD=POST>
+<INPUT TYPE=hidden NAME=mv_todo VALUE=return>
+<TABLE>
+<TR>
+	<TD ALIGN=RIGHT><B>Name</B></TD>
+	<TD>
+		<INPUT TYPE=text NAME=b_fname VALUE="[value b_fname]" size=20>
+		<INPUT TYPE=text NAME=b_lname VALUE="[value b_lname]" size=30>
+	</TD>
+</TR>
+
+<TR>
+	<TD ALIGN=RIGHT><B>Address</B></TD>
+	<TD ALIGN=LEFT>
+		<INPUT TYPE=text NAME=b_address VALUE="[value b_address1]" size=20>
+		<INPUT TYPE=text NAME=b_address VALUE="[value b_address2]" size=30>
+	</TD>
+</TR>
+<TR>
+	<TD ALIGN=RIGHT><B>City, State, Postal Code</B></TD>
+	<TD>
+		<INPUT TYPE=text NAME=b_city VALUE="[value b_city]" size=20>
+		<INPUT TYPE=text NAME=b_state VALUE="[value b_state]" size=3>
+		<INPUT TYPE=text NAME=b_zip VALUE="[value b_zip]" size=10>
+	</TD>
+</TR>
+<TR>
+	<TD ALIGN=RIGHT><B>Country</B></TD>
+	<TD>
+		<INPUT TYPE=text NAME=b_country VALUE="[value b_country]" size=2>
+	</TD>
+</TR>
+</TABLE>
+
+[if session logged_in]
+<TR>
+	<TD>&nbsp;</TD>
+	<TD>
+	<FONT SIZE="-1">
+	<I>If you want to save this address in your address book,
+	[if value address_book]or recall a saved address,[/if]
+	click the button below.<BR></I>
+
+	<B><INPUT TYPE=submit NAME=mv_click VALUE="Go to address book"></B>
+	</FONT>
+	</TD>
+</TR>
+[/if]
+
+[if value mv_shipmode]
+<INPUT TYPE=radio NAME=mv_nextpage VALUE="multi/final" CHECKED> Use shipping mode [shipping-desc] ([shipping])
+<INPUT TYPE=radio NAME=mv_nextpage VALUE="multi/shipping"> Change shipping
+[else] 
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="multi/shipping"> Select shipping
+[/else]
+[/if]
+<P>
+<INPUT TYPE=submit NAME=mv_click VALUE="Next --&gt;">
+</FORM>
+
+__MENUBOTTOM__
+__COPYRIGHT__
+
