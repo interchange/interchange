@@ -150,7 +150,8 @@ Core
 File
 ----
 
-* Add new Vend::File module with minimal functions.
+* Add new Vend::File module with minimal functions, changed UserTags
+  to support it.
 
 * Relocate following routines (and their subsidiaries) from Vend::Util:
 
@@ -203,6 +204,42 @@ File
 
 * Changed display_special_page so that special page entries with ../
   will not break things.
+
+* Created $Vend::File::errstr which is set to get the error message,
+  otherwise defaults to the standard one.
+
+* Add both global- and catalog-level FileControl directive that allows
+  mapping subroutines (or named pre-existing subroutines) to a path.
+  Does a depth-first search starting with the file name.
+
+* In either interchange.cfg (takes priority) or catalog.cfg put:
+
+	FileControl include/junk  <<EOR
+	sub {
+		my ($fn, $write, @caller) = @_;
+
+		## Allow write to files containing "foo"
+		if($write) {
+			return $fn =~ /foo/;
+		}
+
+		## Allow read if file doesn't contain "bar"
+		return $fn !~ /bar/;
+	}
+	EOR
+
+* In either interchange.cfg (takes priority) or catalog.cfg put:
+
+	FileControl  include/junk  some_sub
+
+  This uses either Sub or GlobalSub
+
+* Only in interchange.cfg, you can put a mapped routine name:
+
+	FileControl  include/junk  Vend::SomeModule::file_control
+
+* If no FileControl is not set, the checks are not done for performance
+  reasons.
 
 Options
 -------
@@ -325,6 +362,16 @@ Menu
 			specific-image-link=1
 			reparse=0]
 
+* Add ability to load tree-based menus where items inhabit more than
+  one category. To wit:
+
+    code    sku       prod_group        category
+    1       os28003   Tools             Brushes
+    2       os28003   Painting Supplies Brushes
+
+  The tree will allow search and find of these items in more than
+  one category.
+
 Form
 ----
 
@@ -444,6 +491,8 @@ UI
 * Make spreadsheet search not word-boundary dependent.
 
 * Allow exclusion of fields for database imports.
+
+* Fixed typo in file_navigator tag.
 
 Payment
 -------
@@ -605,6 +654,10 @@ Shadow Database
   lookup in the database structure which didn't work properly
 
 * each_nokey is now properly replacing the shadowed fields.
+
+* Moved configuration code to the module itself.
+
+* Add name method.
 
 Miscellaneous
 -------------
