@@ -46,23 +46,36 @@ sub {
     }
 
     if ($opt->{'size'}) {
-        $sizestr = " size=$opt->{size}";
+		if ($type eq 'textarea') {
+			my ($rows, $cols) = split (/\s*[,x\s]\s*/, $opt->{'size'});
+			$sizestr = "rows=$rows cols=$cols";
+		} else {
+	        $sizestr = " size=$opt->{size}";
+		}
     }
 
     if ($Tag->error($name)) {
 		if ($opt->{signal}) {
 			$labelhtml = sprintf($opt->{signal}, $label);
 		} else {
-	        $labelhtml = "<font color=\"$contrast\">$label</font>";
+	        $labelhtml = qq{<font color="$contrast">$label</font>};
 		}
     } else {      
         $labelhtml = $label;
     }
 
     if ($opt->{reset}) {
-        $elhtml = "<input type=$type name=${name}$sizestr>";
+		if ($type eq 'textarea') {
+	        $elhtml = qq{<textarea name="${name}"$sizestr></textarea>};
+		} else {
+	        $elhtml = qq{<input type=$type name="${name}"$sizestr>};
+		}
     } else {
-        $elhtml = "<input type=$type name=$name value=\"$::Values->{$name}\"$sizestr>";
+		if ($type eq 'textarea') {
+	        $elhtml = qq{<textarea name="${name}"$sizestr>$::Values->{$name}</textarea>};
+		} else {
+	        $elhtml = qq{<input type=$type name=$name value="$::Values->{$name}"$sizestr>};
+		}
     }
 
     if ($opt->{order}) {
