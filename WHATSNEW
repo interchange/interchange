@@ -117,18 +117,22 @@ Extensions
     Name as a unique identifier, just as logged-in users.
 
   - New variables for easy customization of export features via Admin UI,
-    documented via item-specific meta referenced in the ic_qb.pod.
+    documented via item-specific meta referenced in the documentation.
 
   - Fixed: "INTL" showing up without country (now matches US or USA).
 
   - Put the company name on a separate line in Ship-to and Bill-to
     addresses. Now utilizing all 5 lines.
 
-  - Item names allowed length up to 45 (may cause problems with versions
-    older than 2000).
+  - Item name updates:
+    - Length filter now customizable via QB_ITEM_LENGTH
+    - Default is 30 (backwards compatible)
+    - Item name taken from 'title' first, if any, then 'description' second.
 
   - Optionally cause Quickbooks invoice number to be blank, to keep
     Quickbook's invoice number progression unmodified.
+  
+  - Accompanying documentation.
 
 
 Payment
