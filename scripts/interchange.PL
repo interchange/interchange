@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.0
 #
-# $Id: interchange.PL,v 1.15.2.16 2001-03-01 17:41:06 heins Exp $
+# $Id: interchange.PL,v 1.15.2.17 2001-03-06 15:28:02 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -1635,9 +1635,8 @@ EOF
 		logGlobal($msg);
 		return;
 	}
-	
-	use Tie::ShadowHash;
-	if($Global::NoFork) {
+
+	if($Global::PreFork) {
 		my %hash;
 		tie %hash, 'Tie::ShadowHash', $Global::Selector{$CGI::script_name} ;
 		$Vend::Cfg = \%hash;
@@ -2136,6 +2135,7 @@ EOF
 # END TRACK
 
 	put_session() if $Vend::HaveSession;
+	close_session() if $Vend::SessionOpen;
 	close_database();
 
 	undef $H;
