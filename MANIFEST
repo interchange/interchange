@@ -202,6 +202,7 @@ code/UserTag/load_cart.tag
 code/UserTag/loc.tag
 code/UserTag/page_meta.tag
 code/UserTag/rand.tag
+code/UserTag/report_table.tag
 code/UserTag/save_cart.tag
 code/UserTag/summary.tag
 code/UserTag/table_organize.tag
@@ -1238,6 +1239,7 @@ lib/Vend/Payment/AuthorizeNet.pm
 lib/Vend/Payment/BoA.pm
 lib/Vend/Payment/CyberCash.pm
 lib/Vend/Payment/ECHO.pm
+lib/Vend/Payment/Linkpoint.pm
 lib/Vend/Payment/MCVE.pm
 lib/Vend/Payment/PSiGate.pm
 lib/Vend/Payment/Signio.pm
