@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.39 2002-11-04 21:36:37 racke Exp $
+# $Id: Util.pm,v 2.40 2002-11-09 06:03:36 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -83,7 +83,7 @@ require HTML::Entities;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.39 $, 10);
+$VERSION = substr(q$Revision: 2.40 $, 10);
 
 BEGIN {
 	eval {
@@ -1491,9 +1491,10 @@ sub tag_nitems {
 	if($opt->{qualifier}) {
 		$attr = $opt->{qualifier};
 		my $qr;
-		$qr = qr{$opt->{compare}}
-			if $opt->{compare};
-		if($opt->{compare}) {
+		eval { 
+			$qr = qr{$opt->{compare}} if $opt->{compare};
+		};
+		if($qr) {
 			$sub = sub { 
 							$_[0] =~ $qr;
 						};
