@@ -116,7 +116,7 @@
 [if cgi ui_flex_key]
 [seti keypos][cgi ui_flex_key][/seti]
 [elsif type=data term="__UI_META_TABLE__::outboard::[cgi mv_data_table]"]
-[seti keypos][data table=__UI_META_TABLE__ col=outboard key="[cgi mv_data_table]"][/set]
+[seti keypos][data table=__UI_META_TABLE__ col=outboard key="[cgi mv_data_table]"][/seti]
 [/elsif]
 [else]
 [set keypos]0[/set]

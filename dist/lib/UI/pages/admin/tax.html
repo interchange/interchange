@@ -1,17 +1,72 @@
+[calc]$CGI->{mv_data_table} = 'variable'; return;[/calc]
+[set table_perm]1[/set]
 [set page_title]Tax configuration[/set]
 [set help_name]tax.main[/set]
 [set icon_name]admin/icon_config.gif[/set]
 @@UI_STD_HEAD@@
-
+[flag type=write table=variable]
 <!-- ----- BEGIN REAL STUFF ----- -->
-
+[perl tables=variable]
+	return unless $CGI->{tax_format} eq 'do';
+	for (my $i = 0; $i < 1000; $i++) {
+		last unless defined $CGI->{"taxarea$i"};
+		next if defined $CGI->{"Delete$i.x"};
+		my $area = $CGI->{"taxarea$i"};
+		my $rate = $CGI->{"taxrate$i"};
+		my $ship = $CGI->{"taxship$i"};
+		push @areas, ($area || 'new');
+		push @rates, "$area=$rate";
+		push (@taxes, $area) if $CGI->{"taxship$i"};
+	}
+	$Scratch->{taxarea} = join " ", @areas;
+	$Scratch->{taxrate} = join ",", @rates;
+	$Scratch->{taxship} = join " ", @taxes;
+	return;
+[/perl]
+[if scratch taxarea]
+	<!-- areas: [data table=variable
+						col=Variable
+						key=TAXAREA
+						value="[scratch taxarea]"] -->
+	<!-- rates: [data table=variable
+						col=Variable
+						key=TAXRATE
+						value="[scratch taxrate]"] -->
+	<!-- rates: [data table=variable
+						col=Variable
+						key=TAXSHIPPING
+						value="[scratch taxship]"] -->
+	[set taxarea][/set]
+	[set taxrate][/set]
+[/if]
+[calc]
+		@areas = grep /\S/, split /\s+/, tag_data(qw/variable Variable TAXAREA/);
+		@rates = grep /\S/, split /,/, tag_data(qw/variable Variable TAXRATE/);
+		my $taxship = tag_data(qw/variable Variable TAXSHIPPING/);
+		$taxship = " $taxship ";
+		my $i;
+		for ($i = 0; $i < scalar @areas; $i++) {
+			my $rate = $rates[$i];
+			$rate =~ s/.*=//;
+			$rate =~ s/[^\d.]//g;
+			my $ship = ($taxship =~ / $areas[$i] /i) ? $areas[$i] : '';
+			push @out, "$i\t$areas[$i]\t$rate\t$ship";
+			$last = $i;
+		}
+		if ($CGI->{addnewtax}) {
+			$last++;
+			push @out, "$last\tnew";
+		}
+		$Scratch->{its} = join "\n", @out;
+		return;
+[/calc]
 <p>
-<form action=tax method=post>
-
+<form action="[area @@MV_PAGE@@]" method=POST>
+<INPUT TYPE=hidden NAME=tax_format VALUE=do>
 <table cellpadding=3 cellspacing=0>
 
 <tr>
-<td colspan=3 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+<td colspan=4 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
 </tr>
 
 <tr>
@@ -23,32 +78,41 @@
 <b>Percentage</b>
 </td>
 
+<td align=center bgcolor="#94a0e0">
+<b>Tax?</b>
+</td>
+
 <td bgcolor="#94a0e0">
 &nbsp;
 </td>
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+<td colspan=4 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
 </tr>
-
+[loop lr=1 list="[scratch its]"]
 <tr>
 <td bgcolor="#94a0e0">
-<input type=text name="1000_label" size=40 value="IL">
+<input type=text name="taxarea[loop-code]" size=40 value="[loop-pos 1]">
 </td>
 
 <td bgcolor="#94a0e0">
-<input type=text name="1000_percent" 
- size=5 value="6.44">
+<input type=text name="taxrate[loop-code]" 
+ size=5 value="[loop-pos 2]">
 </td>
 
 <td bgcolor="#94a0e0" align=center valign=center>
-<a href="tax?deletetax=1000"><img src="admin/delete.gif" width=20 height=20 border=0></a>
+<INPUT TYPE=CHECKBOX NAME=taxship[loop-code] VALUE="1"[if-loop-pos 3] CHECKED[/if-loop-pos]>
+</td>
+
+<td bgcolor="#94a0e0" align=center valign=center>
+<INPUT TYPE=image src="admin/delete.gif" width=20 height=20 border=0 NAME=Delete[loop-code]>
 </td>
 
 </tr>
+[/loop]
 <tr>
-<td colspan=3 bgcolor="#94a0e0"><a href="tax?addnewtax=ok"><img src="admin/plus.gif" width=20 height=20 border=0></a></td>
+<td colspan=4 bgcolor="#94a0e0"><a href="[area href=@@MV_PAGE@@ form='addnewtax=ok']"><img src="admin/plus.gif" width=20 height=20 border=0></a></td>
 </tr>
 
 <tr>
