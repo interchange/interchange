@@ -4,20 +4,21 @@
 [set page_perm]layout=e[/set]
 [set help_name]layout.edit[/set]
 [set icon_name]icon_pages.gif[/set]
-[seti ui_body_extra][/seti]
+[set ui_body_extra][/set]
 
 @_UI_STD_HEAD_@
 <!-- ----- BEGIN REAL STUFF ----- -->
 <table __UI_T_PROPERTIES__>
 
+[flag type=write table=area]
+[flag type=write table=cat]
+
 [if cgi newarea]
 <!-- Creating area: 
-[flag type=write table=area]
 [value name=area set="[counter file=etc/area.recordnumber start=1000]" hide=1]
 [data table=area column=name key="[value area]" value="[cgi newarea]"] -->
 [elsif cgi newcat]
 <!-- Creating category: 
-[flag type=write table=cat]
 [value name=cat set="[counter file=etc/cat.recordnumber start=1000]" hide=1]
 [data table=cat column=name key="[value cat]" value="[cgi newcat]"]
 [data table=cat column=sel key="[value cat]" value="[value area]"] -->
@@ -53,6 +54,7 @@
 </select>
 <br>
 <select name="area" size=10 onchange="this.form.submit()">
+[calc]$Scratch->{start_sort} = 0; $Scratch->{area_sort} = []; return;[/calc]
 [loop   search="
 			fi=area
 			tf=sel
@@ -69,9 +71,25 @@
 			rf=code,name,sel
 		"
 		option=area ]
-<option value="[loop-code]">[loop-param sel] -- [loop-filter 20][loop-param name][/loop-filter]
+<option value="[loop-code]">[loop-param sel] -- [loop-filter 20][loop-param name][/loop-filter][loop-calc]
+	push @{ $Scratch->{area_sort} }, [
+		q/[loop-code]/,
+		sprintf('%03d', ++$Scratch->{start_sort})
+	];
+	return;
+[/loop-calc]
 [/loop]
 </select>
+
+[perl tables=area]
+	my $db = $Db{area} || return;
+	my $settor = $db->field_settor('sort');
+	foreach ( @{ $Scratch->{area_sort} } ) {
+		$settor->( @$_ );
+	}
+	delete $Scratch->{start_sort};
+	return;
+[/perl]
 <br>
 
 <small>
@@ -82,11 +100,21 @@
 	[flag type=write table=area]
 	[perl tables=area]
 		my $db = $Db{area} || return;
-		my $curr = $db->field($CGI->{area}, 'sort');
-		$curr =~ s/^0+//;
-		$curr = 1 if ! $curr || $curr < 0;
-		$curr--;
-		$db->set_field($CGI->{area}, 'sort', sprintf("%02d", $curr));
+		my $arr = delete $Scratch->{area_sort};
+		my $sort;
+
+		foreach (reverse @$arr) {
+			# Swap sort with previous one
+			if ($sort) {
+				$db->set_field($CGI->{area}, 'sort', $_->[1]);
+				$db->set_field($_->[0], 'sort', $sort);
+				last;
+			}
+			# Current: swap with next
+			if ( $CGI->{area} eq $_->[0] ) {
+				$sort = $_->[1];
+			}
+		}
 		return;
 	[/perl]
 [/button]
@@ -96,11 +124,21 @@
 	[flag type=write table=area]
 	[perl tables=area]
 		my $db = $Db{area} || return;
-		my $curr = $db->field($CGI->{area}, 'sort');
-		$curr =~ s/^0+//;
-		$curr = 0 if ! $curr || $curr < 0;
-		$curr++;
-		$db->set_field($CGI->{area}, 'sort', sprintf("%02d", $curr));
+		my $arr = delete $Scratch->{area_sort};
+		my $sort;
+
+		foreach (@$arr) {
+			# Swap sort with previous one
+			if ($sort) {
+				$db->set_field($CGI->{area}, 'sort', $_->[1]);
+				$db->set_field($_->[0], 'sort', $sort);
+				last;
+			}
+			# Current: swap with next
+			if ( $CGI->{area} eq $_->[0] ) {
+				$sort = $_->[1];
+			}
+		}
 		return;
 	[/perl]
 [/button]
@@ -113,7 +151,7 @@
 [button
 	text="Delete section" src="delete.gif" 
 	confirm="Are you sure you want to delete this section?"
- hidetext=1]
+	hidetext=1]
 	[tag flag write]area[/tag]
 	[if-mm advanced sitedesign=d]
 		[perl tables="area"]
@@ -151,6 +189,7 @@
 <B>Contains:</B><BR>
 
 <select name="cat" size=10 [if !value cat]onChange="this.form.submit()"[/if]>
+[calc]$Scratch->{start_sort} = 0; $Scratch->{cat_sort} = []; return;[/calc]
 [loop   search="
 			fi=cat
 			st=db
@@ -167,10 +206,27 @@
 
 			rf=code,name,sort
 			" option=cat]
-<OPTION VALUE="[loop-code]">[loop-param name]
+<OPTION VALUE="[loop-code]">[loop-param name][loop-calc]
+	push @{ $Scratch->{cat_sort} }, [
+		q/[loop-code]/,
+		sprintf('%04d', ++$Scratch->{start_sort})
+	];
+	return;
+[/loop-calc]
 [/loop]
 </select>
+
+[perl tables=cat]
+	my $db = $Db{cat} || return;
+	my $settor = $db->field_settor('sort');
+	foreach ( @{ $Scratch->{cat_sort} } ) {
+		$settor->( @$_ );
+	}
+	delete $Scratch->{start_sort};
+	return;
+[/perl]
 <br>
+
 <small>
 [button text="Category properties" hspace=2 vspace=5 hidetext=1 src="icon_pages.gif"][/button]
 
@@ -178,11 +234,21 @@
 	[flag type=write table=cat]
 	[perl tables=cat]
 		my $db = $Db{cat} || return;
-		my $curr = $db->field($CGI->{cat}, 'sort');
-		$curr =~ s/^0+//;
-		$curr = 1 if ! $curr || $curr < 0;
-		$curr--;
-		$db->set_field($CGI->{cat}, 'sort', sprintf("%02d", $curr));
+		my $arr = delete $Scratch->{cat_sort};
+		my $sort;
+
+		foreach (reverse @$arr) {
+			# Swap sort with previous one
+			if ($sort) {
+				$db->set_field($CGI->{cat}, 'sort', $_->[1]);
+				$db->set_field($_->[0], 'sort', $sort);
+				last;
+			}
+			# Current: swap with next
+			if ( $CGI->{cat} eq $_->[0] ) {
+				$sort = $_->[1];
+			}
+		}
 		return;
 	[/perl]
 [/button]
@@ -191,11 +257,21 @@
 	[flag type=write table=cat]
 	[perl tables=cat]
 		my $db = $Db{cat} || return;
-		my $curr = $db->field($CGI->{cat}, 'sort');
-		$curr =~ s/^0+//;
-		$curr = 0 if ! $curr || $curr < 0;
-		$curr++;
-		$db->set_field($CGI->{cat}, 'sort', sprintf("%02d", $curr));
+		my $arr = delete $Scratch->{cat_sort};
+		my $sort;
+
+		foreach (@$arr) {
+			# Swap sort with previous one
+			if ($sort) {
+				$db->set_field($CGI->{cat}, 'sort', $_->[1]);
+				$db->set_field($_->[0], 'sort', $sort);
+				last;
+			}
+			# Current: swap with next
+			if ( $CGI->{cat} eq $_->[0] ) {
+				$sort = $_->[1];
+			}
+		}
 		return;
 	[/perl]
 [/button]
@@ -1058,11 +1134,6 @@ return;
 </table>
 
 <BR>
+
 @_UI_STD_FOOTER_@
 <!-- page: @@MV_PAGE@@ -->
-
-
-
-
-
-
