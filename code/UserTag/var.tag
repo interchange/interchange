@@ -1,18 +1,12 @@
-# [var name=variablename global=1|2 filter=somefilter]
-#
-# This tag allows access to variables within other variables (or
-# anywhere else, but in regular pages the direct non-tag notations
-# shown on the right-hand side below are faster).
-#
-# [var VARIABLE]   is equivalent to __VARIABLE__
-# [var VARIABLE 1] is equivalent to @@VARIABLE@@
-# [var VARIABLE 2] is equivalent to @_VARIABLE_@
-#
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: var.tag,v 1.8 2004-09-24 12:01:48 docelic Exp $
+
 UserTag var Interpolate 1
 UserTag var Order name global filter
 UserTag var Routine <<EOR
 sub {
-    my ($key, $global, $filter) = @_;
+	my ($key, $global, $filter) = @_;
 	my $value;
 	if ($global and $global != 2) {
 		$value = $Global::Variable->{$key};
@@ -32,3 +26,4 @@ sub {
 	return $value;
 }
 EOR
+
