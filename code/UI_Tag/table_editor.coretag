@@ -1264,6 +1264,13 @@ EOF
 		}
 	}
 
+	my $show_meta;
+	if($super and ! $opt->{no_meta}) {
+		$show_meta = defined $def->{ui_meta_force}
+					?  $def->{ui_meta_force}
+					: $::Variable->{UI_META_LINK};
+	}
+
 	foreach my $col (@cols) {
 		my $t;
 		my $c;
@@ -1443,7 +1450,7 @@ EOF
 			next;
 		}
 
-		if($super and ! $opt->{no_meta} and ($Variable->{UI_META_LINK} || $def->{ui_meta_force}) ) {
+		if($show_meta) {
 			$meta .= '<BR><FONT SIZE=1>';
 			# Get global variables
 			my $base = $Tag->var('UI_BASE', 1);

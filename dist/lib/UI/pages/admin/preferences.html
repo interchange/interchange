@@ -94,8 +94,28 @@
 <td bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
-<tr><td bgcolor=__UI_C_INTBLOCK__>
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<table width="100%">
+		<tr>
+			<td width="30%">
+[if !variable UI_REGISTERED]
 <a href="http://interchange.redhat.com/cgi-bin/ic/register.html">[L]Register[/L]</a>
+[/if]
+
+			</td>
+			<td>
+<FORM ACTION="[process href="__UI_BASE__/flex_select"]" METHOD=GET>
+<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+<INPUT TYPE=hidden NAME=mv_data_table    VALUE="variable">
+<INPUT TYPE=hidden NAME=ui_meta_specific VALUE="1">
+<INPUT TYPE=hidden NAME=mv_action        VALUE=back>
+Search for a preference: <input NAME=ui_text_qualification size=16><INPUT TYPE=submit VALUE="[L]Search[/L]">
+</FORM>
+			</td>
+		</tr>
+	</table>
+
 </td></tr>
 
 <tr>
@@ -104,8 +124,6 @@
 
 </table>
 </center>
-
-
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
