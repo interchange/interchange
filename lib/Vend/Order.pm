@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.6.2.8 2002-06-04 18:33:01 racke Exp $
+# $Id: Order.pm,v 2.6.2.9 2002-06-05 07:38:12 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.6.2.8 $, 10);
+$VERSION = substr(q$Revision: 2.6.2.9 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -845,8 +845,7 @@ sub do_check {
 
 sub check_order {
 	my ($profile, $vref) = @_;
-	$Vend::Session->{errors} = {}
-		unless ref $Vend::Session->{errors} eq 'HASH';
+	my($codere) = '[-\w_#/.]+';
 	my $params;
 	$Profile = $profile;
 	if(defined $Vend::Cfg->{OrderProfileName}->{$profile}) {
@@ -865,6 +864,7 @@ sub check_order {
 	}
 	return undef unless $params;
 
+	my $ref = \%CGI::values;
 	$params = interpolate_html($params);
 	$params =~ s/\\\n//g;
 	@Errors = ();
@@ -905,7 +905,7 @@ sub check_order {
 		s/^\s+//;
 		s/\s+$//;
 		($val, $var, $message) = do_check($_, $vref);
-#::logDebug("param=$_|val=$val|var=$var|message=$message");
+		next if ! defined $var;
 		if(defined $And) {
 			if($And) {
 				$val = ($last_one && $val);
@@ -916,36 +916,36 @@ sub check_order {
 			undef $And;
 		}
 		$last_one = $val;
-		$status = 0 unless $val;
-		if ($var) {
-			if ($val) {
-				$::Values->{"mv_status_$var"} = $message
-					if defined $message and $message;
-				delete $Vend::Session->{errors}{$var};
-				delete $::Values->{"mv_error_$var"};
+		if ($val) {
+			$::Values->{"mv_status_$var"} = $message
+				if defined $message and $message;
+			delete $Vend::Session->{errors}{$var};
+			delete $::Values->{"mv_error_$var"};
+		}
+		else {
+			$status = 0;
+# LEGACY
+			$::Values->{"mv_error_$var"} = $message;
+# END LEGACY
+			$Vend::Session->{errors} = {}
+				if ! $Vend::Session->{errors};
+			if( $No_error ) {
+				# do nothing
+			}
+			elsif( $Vend::Session->{errors}{$var} ) {
+				if ($message and $Vend::Session->{errors}{$var} !~ /\Q$message/) {
+					$Vend::Session->{errors}{$var} = errmsg(
+						'%s and %s',
+						$Vend::Session->{errors}{$var},
+						$message
+					);
+				}
 			}
 			else {
-# LEGACY
-				$::Values->{"mv_error_$var"} = $message;
-# END LEGACY
-				if( $No_error ) {
-					# do nothing
-				}
-				elsif( $Vend::Session->{errors}{$var} ) {
-					if ($message and $Vend::Session->{errors}{$var} !~ /\Q$message/) {
-						$Vend::Session->{errors}{$var} = errmsg(
-							'%s and %s',
-							$Vend::Session->{errors}{$var},
-							$message
-						);
-					}
-				}
-				else {
-					$Vend::Session->{errors}{$var} = $message ||
-						errmsg('%s: failed check', $var);
-				}
-				push @Errors, "$var: $message";
+				$Vend::Session->{errors}{$var} = $message ||
+					errmsg('%s: failed check', $var);
 			}
+			push @Errors, "$var: $message";
 		}
 		if (defined $Success) {
 			$status = $Success;
