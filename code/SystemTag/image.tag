@@ -141,6 +141,11 @@ image filenames.
 Image filename to use. May also be a plain sku, or an image basename
 which will be tried with various image suffixes (.jpg, .gif, .png, etc.)
 
+=item src_only
+
+Return only the image source location that would normally go in the
+HTML src="..." attribute of the <img> tag.
+
 =item title
 
 Text to use for the <img title="..."> attribute, used by more recent
@@ -366,6 +371,11 @@ sub {
 		}
 	}
 
+	$image = $imagedircurrent . $image unless
+		$image =~ /$absurlre/ or substr($image, 0, 1) eq '/';
+
+	return $image if $opt->{src_only};
+
 	$opt->{title} = $opt->{alt} if ! defined $opt->{title} and $opt->{alt};
 
 	my $opts = '';
@@ -381,8 +391,6 @@ sub {
 	if($opt->{extra}) {
 		$opts .= " $opt->{extra}";
 	}
-	$image = $imagedircurrent . $image unless
-		$image =~ /$absurlre/ or substr($image, 0, 1) eq '/';
 	$image =~ s/"/&quot;/g;
 	return qq{<img src="$image"$opts>};
 }
