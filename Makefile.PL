@@ -330,7 +330,7 @@ sub initialize {
 		$MV::Default{RPMBUILDDIR} = $X{RPMBUILDDIR};
 	}
 
-	return %X if $MV::Default{nocopy};
+	return \%X if $MV::Default{nocopy};
 
     my $uid = $MV::Default{INTERCHANGE_USER};
     if(-f "_uid") {
