@@ -1,6 +1,6 @@
 UserTag include             Order        file locale
 UserTag include             PosNumber    2
-UserTag include             Version      $Revision: 1.4 $
+UserTag include             Version      $Revision: 1.5 $
 UserTag include             Routine      <<EOR
 sub {
 	my ($file, $locale) = @_;
@@ -9,16 +9,17 @@ sub {
 	$::Instance->{include_depth} ||= 0;
 	my $limit = $Vend::Cfg->{Limit}{include_depth} || 10;
 
-	if($::Instance->{include_depth} >= $limit) {
-		logError(
-				"Depth of include exceeds limit of %s for file %s.", 
+	if($::Instance->{include_depth}++ >= $limit) {
+		logOnce(
+				'error',
+				"Depth of include (%s) exceeds limit of %s for file %s.", 
 				$::Instance->{include_depth},
+				$limit,
 				$file,
 			);
 		return;
 	}
 
-	$::Instance->{include_depth}++;
 	my $out = Vend::Interpolate::interpolate_html(
 					Vend::Util::readfile($file, undef, $locale)
 				);
