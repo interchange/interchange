@@ -1,4 +1,4 @@
-code	store_id	order_number	session_field	username	shipmode	sku	quantity	price	subtotal	shipping	taxable	size_field	color	options	order_date	update_date	status	parent	affiliate	campaign	description
+code	store_id	order_number	session__MVC_FIELDMUNGE__	username	shipmode	sku	quantity	price	subtotal	shipping	taxable	size__MVC_FIELDMUNGE__	color	options	order_date	update_date	status	parent	affiliate	campaign	description
 00011-1		00011	AhGiHXgR	jrollins		os29000	1	44.99	44.99			3'			20001006	__MVC_SQLUDATE__	pending				3' Step Ladder
 00001-1		00001	AhGiHXgR	T00001		os28080	1	19.99	19.99			1"			20001006	__MVC_SQLUDATE__	shipped				"The Blade" Hand Planer
 00014-1		00014	9bmBpw9j	T00003		os28084	3	19.99	59.97			24'			20001006	__MVC_SQLUDATE__	pending				Tape Measure
