@@ -14,8 +14,8 @@ predecessor to Interchange.
 
 These tags perform various display and modification operations for the
 user session. There nearly 100 standard predefined tags, and the
-UserTag facility allows you to create tags fully as powerful that
-perform your own functions.
+UserTag facility allows you to create tags that perform your own
+functions and can be just as powerful as the built-in tags.
 
 This document covers Interchange versions 4.7-4.8.
 
@@ -94,9 +94,10 @@ tag output in the browser. For example, if [value name] expands to
 
 Technical notes
 
-While '<!--[' and '[' are interchangeable, the Interchange parser does
-not replace ']-->' with ']' unless it sees '<!--[' elsewhere in the
-page.
+While '<!--[' and '[' are completely interchangeable, the Interchange
+parser does not replace ']-->' with ']' unless it also sees '<!--[' at
+least once somewhere on the page. (This is a small parsing speed
+optimization.)
 
 See the I<Template Parsing Order> appendix if you are modifying the
 special administrative interface pages and intend to use this syntax.
@@ -153,9 +154,9 @@ B<Note - Disabling HTML-embedded tags for performance: >
 
 Avoid the HTML-embedded usage if you can.
 
-The foundation catalog included with interchange disables parsing of
+The Foundation catalog included with Interchange disables parsing of
 the HTML-embedded syntax. This is for better performance, since it
-saves the server from checking every HTML tag for interchange tag
+saves the server from checking every HTML tag for Interchange tag
 calls. This is done in the catalog by setting the pragma
 no_html_parse in catalog.cfg.
 
@@ -163,15 +164,16 @@ no_html_parse in catalog.cfg.
 
 I<Named vs. Positional Parameters>
 
-There are two styles of supplying parameters to a tag - named and
+There are two styles of supplying parameters to a tag: named and
 positional.
 
-In the named style you supply a parameter/value pair just as most HTML
-tags use:
+In the named style you supply a parameter name=value pair just as most
+HTML tags use:
 
     [value name="foo"]
 
-The same thing can be accomplished for the [I<value>] tag with
+The positional-style tag that accomplishes the same thing looks like
+this:
 
     [value foo]
 
@@ -180,11 +182,32 @@ The parameter name is the first positional parameter for the
 common tags, and Interchange interprets them somewhat faster. If you
 wish to avoid ambiguity you can always use named calling.
 
-In most cases, tags specified in the positional fashion will work the
-same as named parameters. The only time you will need to modify them
-is when there is some ambiguity as to which parameter is which
-(usually due to whitespace), or when you need to use the output of a
-tag as the parameter or attribute for another tag.
+In most cases, tag parameters specified in the positional fashion work
+the same as named parameters. However, there are a few situations
+where you need to use named parameters:
+
+=over 4
+
+=item 1.
+
+If you want to specify a parameter that comes positionally after a
+parameter that you want to omit, e.g. omit the first parameter but
+specify the second. The parser would have no way of knowing which is
+which, so you just specify the second by name. This is rare, though,
+because the first positional parameters are usually required for a
+given tag anyway.
+
+=item 2.
+
+When there is some ambiguity as to which parameter is which, usually
+due to whitespace.
+
+=item 3.
+
+When you need to use the output of a tag as the parameter or attribute
+for another tag.
+
+=back
 
 Interpolating parameters
 
@@ -224,7 +247,7 @@ I<For container tags (interpolated)>
 
 =item *
 
-If true ("interpolate=1"), the interchange server will first process
+If true ("interpolate=1"), the Interchange server will first process
 any tags within the body text before passing it to the enclosing tag.
 
 =item *
@@ -248,7 +271,7 @@ explanation and examples).
 
 (Note: The mixing of 'interpolate' and 'reparse' logic occurred
 because 'interpolate' already worked this way when 'reparse' was added
-to interchange. This may be fixed in a later release...)
+to Interchange. This may be fixed in a later release...)
 
 Most standalone tags are not reparsed by default (i.e., interpolate=0
 by default). There are some exceptions, such as the [I<include>] tag.
@@ -361,7 +384,7 @@ an attribute array or hash value.
 
 Perl calls
 
-Before passing attributes to a tag, the interchange parser would
+Before passing attributes to a tag, the Interchange parser would
 convert the above example to an anonymous array reference. It would
 use the resulting arrayref as the value for the 'search' attribute in
 this example.
@@ -727,6 +750,9 @@ with mv_return_field or rf. The default is only to return the
 code of the search result, but by setting those parameters you can
 return more than one item.
 
+[PREFIX-pos N] outputs the I<N>th field as returned; [PREFIX-param]
+returns it by name.
+
 In a [query ...] ITL tag you can select multiple return fields with
 something like:
 
@@ -736,8 +762,8 @@ something like:
 
 In this case, [prefix-code] and [prefix-param foo] are synonymns, for
 foo is the first returned parameter and becomes the code for this
-row. Another synonym is [prefix-param 0]; and [prefix-param 1] is the
-same as [prefix-param bar].
+row. Another synonym is [prefix-pos 0]; and [prefix-pos 1] is the same
+as [prefix-param bar].
 
 [I<PREFIX-price>]
 
@@ -810,7 +836,7 @@ main tag, sub-tags are described in Sub-tags.
 
 =head2 accessories
 
-A swiss-army-knife widget builder, this provides access to
+A Swiss-army-knife widget builder, this provides access to
 Interchange's product option attributes (e.g., to choose or access
 product options such as a shirt's size or color).
 
@@ -821,7 +847,7 @@ Or more - see also I<Looping tags and Sub-tags>.
 
 Summary
 
-    [accessories code arg other_named_attributes]
+    [accessories code arg]
     [accessories code=os28044 arg="size, radio, ... " other_named_attributes] deprecated
     [accessories code=os28044 attribute=size type=radio ... other_named_attributes]
 
@@ -1217,6 +1243,40 @@ combo   I<(default is 1 row, 16 columns, like 'combo_1_16')>
 
 =back
 
+In any of the option building types, you can append the string
+ranges and a special option processing will be done -- any option
+matching the pattern [A-Za-z0-0]..[A-Za-z0-0] will be expanded into a
+comma separated range between the bounds. The same behavior is
+accomplished by passing the accessories tag option ranges. For
+example:
+
+
+    [accessories name=foo type=select ranges=1 "A..C,1..5,10,20"]
+      and
+    [accessories name=foo type="select ranges" passed="A..C,1..5,10,20"]
+
+      will both output:
+
+    <select NAME="foo">
+    <option VALUE="A">A
+    <option VALUE="B">B
+    <option VALUE="C">C
+    <option VALUE="1">1
+    <option VALUE="2">2
+    <option VALUE="3">3
+    <option VALUE="4">4
+    <option VALUE="5">5
+    <option VALUE="10">10
+    <option VALUE="15">15
+    <option VALUE="20">20
+    </select>
+
+The above applies to any of the option building types -- check,
+combo, combo_move, labels, multiple, options, radio,
+reverse_combo, and select. It will refuse to produce more than
+5000 options -- that limit can be changed with Limit option_list N
+in catalog.cfg, where N is an integer greater than 0.
+
 I<column>
 
 The column of the table corresponding to the attribute will
@@ -1400,7 +1460,7 @@ I<price>
 
 When combined with the price_data tag attribute, this allows you to
 force prices for item attributes. You probably do not want to use
-this; just let the tag pick pu prices from your database table(s) when
+this; just let the tag pick up prices from your database table(s) when
 appropriate.
 
 If you are passing attribute values, you can use this to control the
@@ -1482,7 +1542,8 @@ I<empty>
 Requires 'I<type>=links'.
 
 Setting 'empty=1' includes a hyperlink for the empty "--select--"
-option. See the example in form above.
+option. See the example in form above; if empty=1 had been
+specified, three links would have been generated.
 
 I<secure>
 
@@ -1542,18 +1603,8 @@ Called Routine for positonal:
 
 B<ASP-like Perl call:>
 
-    $Tag->and(
-        {
-         type => VALUE,
-         term => VALUE,
-         op => VALUE,
-         compare => VALUE,
-        }
-    )
-
- OR
-
-    $Tag->and($type, $term, $op, $compare);
+Not applicable. The [and ...] tag only is used with [if ...], and Perl
+logic obviates the [if ...] tag.
 
 Attribute aliases
 
@@ -1588,7 +1639,7 @@ the I<page> tag - these are equivalent:
 
 Summary
 
-    [area href arg other_named_attributes]
+    [area href arg]
     [area href=dir/page arg=page_arguments other_named_attributes]
 
  Parameters   Description                               Default
@@ -1956,7 +2007,7 @@ rotation>.
 
 Summary
 
-    [banner category other_named_attributes]
+    [banner category]
     [banner category=my_category other_named_attributes]
 
  Parameters   Description                               Default
@@ -2114,16 +2165,8 @@ Called Routine:
 
 B<ASP-like Perl call:>
 
-    $Tag->bounce(
-        {
-         href => VALUE,
-         if => VALUE,
-        }
-    )
-
- OR
-
-    $Tag->bounce($href, $if);
+None. This tag doesn't work with embedded Perl due to special
+processing.
 
 Description
 
@@ -2246,63 +2289,114 @@ price, total, subtotal, shipping, and nitems tags.
 
 =head2 catch
 
-See also [try.
+The page content contained within the [catch I<label>][/catch]
+block executes if the correspondingly labelled  try block fails.
 
-Process body text if the  [try block generates an error.
+You can also return a result based on the error message caught in the
+try block with paired subtags, like S<this:>
+
+   [error message]body text[/error message]
+
+Note that this feature excises I<all> tag/endtag pairs if
+interpolation is turned off, so the catch tag interpolates by
+default.
+
+See also [try].
 
 Summary
 
-Parameters: B<label>
+    [try my_label]
+        Body text to return if no error
+    [/try]
+    .
+    .
+    .
+    [catch label=my_label other_named_attributes]
+        [/Pattern matching error message 1/]
+            Return this if error 1 occurs
+        [/Pattern matching error message 1/]
 
-=over 4
+        [/Pattern matching error message 2/]
+            Return this if error 2 occurs, etc.
+        [/Pattern matching error message 2/]
 
-=item *
+        Default body text to process if try block caused an error
+    [/catch]
 
-label
+ Parameters   Description                               Default
+ label        The label shared by the paired try and catch blocks'default'
 
-=over 8
+ Attributes                        Default
+ interpolate                       Yes
+ reparse                           Yes
 
-=item *
+ Other_Charactreristics            
+ Invalidates cache                 No
+ Container tag                     Yes
+ Has Subtags                       [Error message text]body[/Error message text]
 
-The label specifying the corresponding [try block. Defaults to
-'default'.
+B<Tag expansion example>
 
-=back
+Ignoring whitespace, the following would return division result if
+successful, 0 on a division by zero, or an error S<message:>
 
-=back
-
-ONLY THE B<> PARAMETERS ARE POSITIONAL.
-
-B<The attribute hash reference is passed> after the parameters but
-before the container text argument. B<This may mean that there are
-parameters not shown here.>
-
-Must pass named parameter interpolate=1 to cause interpolation.
-
-This is a container tag, i.e. [catch] FOO [/catch]. Nesting: NO
-
-Invalidates cache: B<no>
-
-Called Routine:
+   [set divisor]0[/set]
+   [try label=div]
+      [perl] eval(1 / [scratch divisor]) [/perl]
+   [/try]
+   [catch div]
+      [/Illegal division by zero/]
+         0
+      [/Illegal division by zero/]
+      [/eval "string" trapped by operation mask/]
+         Perl Safe error
+      [/eval "string" trapped by operation mask/]
+      Other division error
+   [/catch]
+---
+   Perl Safe error
 
 B<ASP-like Perl call:>
 
-    $Tag->catch(
-        {
-         label => VALUE,
-        },
-        BODY
-    )
+    $Tag->catch(  { label => I<'my_label'>, },
+                  $body  );
 
- OR
+or similarly with positional parameters,
 
-    $Tag->catch($label, $ATTRHASH, $BODY);
+    $Tag->catch($label, $attribute_hash_reference, $body);
+
+See Also
+
+I<try>
 
 Description
 
-Process body text if the  [try block generates an error.
+The page content contained within the [catch I<label>][/catch]
+block executes if the correspondingly labelled  try block fails.
+The catch block executes in place on the page if triggered (I<i.e.>,
+it does not return its result in place of the try block).
 
-See also [try.
+You can also return a result based on the error message caught in the
+try block with paired subtags, like S<this:>
+
+   [/error message/]special catch block for the error[/error message/]
+
+The error message to use in the special block will generally be part
+of the entry the error generates in your error log.  For example, a
+division by zero error generates something like the following in the
+error log:
+
+   127.0.0.1 4cU3Pgsh:127.0.0.1 - [24/May/2001:14:45:07 -0400]\
+   tag /cgi-bin/tag72/tag Safe: Illegal division by zero\
+   at (eval 526) line 2.
+
+(note that trailing backslashes in the example indicate a continued
+line).
+
+I<label>
+
+This is the label specifying the corresponding [try block. Defaults
+to 'default'.
 
 =head2 cgi
 
@@ -2604,7 +2698,7 @@ start parameter.
 The counter is implemented using Perl's File::Counter module, which
 protects the file against simultaneous access by multiple processes.
 
-WARNING: This tag will not work under Safe, i.e. in embedded Perl.
+WARNING: This tag will not work under I<Safe>, i.e. in embedded Perl.
 
 Additional parameters:
 
@@ -2947,24 +3041,6 @@ doesn't correspond to a standard Interchange tag, you can use the
                                             [/calc][/currency]
     [/item-list]
 
-%% dump %% Prints a dump of the current user session as expanded by
-Data::Dumper. Includes any CGI environment passed from the server.
-
-For an example, create a page containing <XMP>[dump]</XMP> and see
-what it displays.
-
-%% either %% The [either]this[or]that[/either] implements a
-check for the first non-zero, non-blank value. It splits on [or], and
-then parses each piece in turn. If a value returns true (in the Perl
-sense - non-zero, non-blank) then subsequent pieces will be discarded
-without interpolation.
-
-Example:
-
-  [either][value must_be_here][or][bounce href="[area incomplete]"][/either]
-
-Always strips leading and trailing whitespace.
-
 =head2 dump
 
 Dumps client connection information, cart contents, query value,
@@ -3068,53 +3144,61 @@ past purchase from other companies.
 
 It translates into ECML from the following Interchange variables:
 
-Ecom_BillTo_Online_Email            b_email Ecom_BillTo_Postal_City   
-         b_city Ecom_BillTo_Postal_CountryCode      b_country
-Ecom_BillTo_Postal_Name_First       b_fname
-Ecom_BillTo_Postal_Name_Last        b_lname
-Ecom_BillTo_Postal_Name_Middle      b_mname
-Ecom_BillTo_Postal_Name_Prefix      b_title
-Ecom_BillTo_Postal_Name_Suffix      b_name_suffix
-Ecom_BillTo_Postal_PostalCode       b_zip Ecom_BillTo_Postal_StateProv
-       b_state Ecom_BillTo_Postal_Street_Line1     b_address1
-Ecom_BillTo_Postal_Street_Line2     b_address2
-Ecom_BillTo_Postal_Street_Line3     b_address3
-Ecom_BillTo_Telecom_Phone_Number    b_phone_day Ecom_ConsumerOrderID  
-             mv_order_number Ecom_Payment_Card_ExpDate_Day      
-mv_credit_card_exp_day Ecom_Payment_Card_ExpDate_Month    
-mv_credit_card_exp_month Ecom_Payment_Card_ExpDate_Year     
-mv_credit_card_exp_year Ecom_Payment_Card_Name              c_name
-Ecom_Payment_Card_Number            mv_credit_card_number
-Ecom_Payment_Card_Protocol          payment_protocols_available
-Ecom_Payment_Card_Type              mv_credit_card_type
-Ecom_Payment_Card_Verification      mv_credit_card_verify
-Ecom_ReceiptTo_Online_Email         r_email Ecom_ReceiptTo_Postal_City
-         r_city Ecom_ReceiptTo_Postal_CountryCode   r_country
-Ecom_ReceiptTo_Postal_Name_First    r_fname
-Ecom_ReceiptTo_Postal_Name_Last     r_lname
-Ecom_ReceiptTo_Postal_Name_Middle   r_mname
-Ecom_ReceiptTo_Postal_Name_Prefix   r_title
-Ecom_ReceiptTo_Postal_Name_Suffix   r_name_suffix
-Ecom_ReceiptTo_Postal_PostalCode    r_zip
-Ecom_ReceiptTo_Postal_StateProv     r_state
-Ecom_ReceiptTo_Postal_Street_Line1  r_address1
-Ecom_ReceiptTo_Postal_Street_Line2  r_address2
-Ecom_ReceiptTo_Postal_Street_Line3  r_address3
-Ecom_ReceiptTo_Telecom_Phone_Number r_phone Ecom_SchemaVersion        
-         ecml_version Ecom_ShipTo_Online_Email            email
-Ecom_ShipTo_Postal_City             city
-Ecom_ShipTo_Postal_CountryCode      country
-Ecom_ShipTo_Postal_Name_Combined    name Ecom_ShipTo_Postal_Name_First
-      fname Ecom_ShipTo_Postal_Name_Last        lname
-Ecom_ShipTo_Postal_Name_Middle      mname
-Ecom_ShipTo_Postal_Name_Prefix      title
-Ecom_ShipTo_Postal_Name_Suffix      name_suffix
-Ecom_ShipTo_Postal_PostalCode       zip Ecom_ShipTo_Postal_StateProv  
-     state Ecom_ShipTo_Postal_Street_Line1     address1
-Ecom_ShipTo_Postal_Street_Line2     address2
-Ecom_ShipTo_Postal_Street_Line3     address3
-Ecom_ShipTo_Telecom_Phone_Number    phone Ecom_TransactionComplete    
-       end_transaction_flag
+ ECML                                     Interchange variable
+ Ecom_BillTo_Online_Email                 b_email
+ Ecom_BillTo_Postal_City                  b_city
+ Ecom_BillTo_Postal_CountryCode           b_country
+ Ecom_BillTo_Postal_Name_First            b_fname
+ Ecom_BillTo_Postal_Name_Last             b_lname
+ Ecom_BillTo_Postal_Name_Middle           b_mname
+ Ecom_BillTo_Postal_Name_Prefix           b_title
+ Ecom_BillTo_Postal_Name_Suffix           b_name_suffix
+ Ecom_BillTo_Postal_PostalCode            b_zip
+ Ecom_BillTo_Postal_StateProv             b_state
+ Ecom_BillTo_Postal_Street_Line1          b_address1
+ Ecom_BillTo_Postal_Street_Line2          b_address2
+ Ecom_BillTo_Postal_Street_Line3          b_address3
+ Ecom_BillTo_Telecom_Phone_Number         b_phone_day
+ Ecom_ConsumerOrderID                     mv_order_number
+ Ecom_Payment_Card_ExpDate_Day            mv_credit_card_exp_day
+ Ecom_Payment_Card_ExpDate_Month          mv_credit_card_exp_month
+ Ecom_Payment_Card_ExpDate_Year           mv_credit_card_exp_year
+ Ecom_Payment_Card_Name                   c_name
+ Ecom_Payment_Card_Number                 mv_credit_card_number
+ Ecom_Payment_Card_Protocol               payment_protocols_available
+ Ecom_Payment_Card_Type                   mv_credit_card_type
+ Ecom_Payment_Card_Verification           mv_credit_card_verify
+ Ecom_ReceiptTo_Online_Email              r_email
+ Ecom_ReceiptTo_Postal_City               r_city
+ Ecom_ReceiptTo_Postal_CountryCode        r_country
+ Ecom_ReceiptTo_Postal_Name_First         r_fname
+ Ecom_ReceiptTo_Postal_Name_Last          r_lname
+ Ecom_ReceiptTo_Postal_Name_Middle        r_mname
+ Ecom_ReceiptTo_Postal_Name_Prefix        r_title
+ Ecom_ReceiptTo_Postal_Name_Suffix        r_name_suffix
+ Ecom_ReceiptTo_Postal_PostalCode         r_zip
+ Ecom_ReceiptTo_Postal_StateProv          r_state
+ Ecom_ReceiptTo_Postal_Street_Line1       r_address1
+ Ecom_ReceiptTo_Postal_Street_Line2       r_address2
+ Ecom_ReceiptTo_Postal_Street_Line3       r_address3
+ Ecom_ReceiptTo_Telecom_Phone_Number      r_phone
+ Ecom_SchemaVersion                       ecml_version
+ Ecom_ShipTo_Online_Email                 email
+ Ecom_ShipTo_Postal_City                  city
+ Ecom_ShipTo_Postal_CountryCode           country
+ Ecom_ShipTo_Postal_Name_Combined         name
+ Ecom_ShipTo_Postal_Name_First            fname
+ Ecom_ShipTo_Postal_Name_Last             lname
+ Ecom_ShipTo_Postal_Name_Middle           mname
+ Ecom_ShipTo_Postal_Name_Prefix           title
+ Ecom_ShipTo_Postal_Name_Suffix           name_suffix
+ Ecom_ShipTo_Postal_PostalCode            zip
+ Ecom_ShipTo_Postal_StateProv             state
+ Ecom_ShipTo_Postal_Street_Line1          address1
+ Ecom_ShipTo_Postal_Street_Line2          address2
+ Ecom_ShipTo_Postal_Street_Line3          address3
+ Ecom_ShipTo_Telecom_Phone_Number         phone
+ Ecom_TransactionComplete                 end_transaction_flag
 
 Once the form variables are input and sent to Interchange, the [ecml
 function=mapback] tag will cause the input results to be mapped back
@@ -3126,6 +3210,12 @@ and map the results back. If you have fname and lname, then it
 will not.
 
 =head2 either
+
+The [either]this[or]that[/either] implements a check for the first
+non-zero, non-blank value. It splits on [or], and then parses each
+piece in turn. If a value returns true (in the Perl sense: non-zero,
+non-blank) then subsequent pieces will be discarded without
+interpolation.
 
 Summary
 
@@ -3849,7 +3939,7 @@ name=foo filter="lookup.products.price.extra"] will send ('bar',
 
 =head2 flag
 
-Controls interchange flags. For example, flags affect database access
+Controls Interchange flags. For example, flags affect database access
 and transactions for those databases able to support these features.
 See also the [tag] tag.
 
@@ -3894,10 +3984,10 @@ transactions
 
 =item *
 
-Reopens the database in transactions mode if Safe.pm is not active
+Reopens the database in transactions mode if I<Safe.pm> is not active
 (e.g., in a global subroutine, usertag or [perl global=1] tag). The
 limitation exists because it is not possible to reopen a database
-within Safe.pm.
+within I<Safe.pm>.
 
 =back
 
@@ -4153,38 +4243,68 @@ variable values, and the SalesTax directive value.
 
 =head2 goto
 
-(I think this is deprecated, but I'm not sure)
+Skips page content between [goto I<name>] and [label I<name>].
+Note that the goto tag is not interpreted in the standard way, and
+you cannot use the '$Tag->goto()' Perl syntax. Note also that skipping
+endtags with goto will probably break your page.
 
 Summary
 
-Parameters: B<name if>
+   [goto name=label_name if=condition]
+     content to skip
+   [label name=label_name]
 
-Positional parameters in same order.
+or positionally,
 
-Pass attribute hash as last to subroutine: B<no>
+   [goto name if]
+     content to skip
+   [label name]
 
-Must pass named parameter interpolate=1 to cause interpolation.
+ Parameters   Description                               Default
+ name         The name set in the corresponding [label] tagnone
+ if           Condition for goto. Should evaluate to truth value before tag is parsed.true
 
-Invalidates cache: B<no>
-
-Called Routine:
+ Other_Charactreristics            
+ Container tag                     No, but you use it like this:[goto name=label_name if=condition]body text[label label_name]
+ Has Subtags                       [label] interpreted by goto
 
 B<ASP-like Perl call:>
 
-    $Tag->goto(
-        {
-         name => VALUE,
-         if => VALUE,
-        }
-    )
-
- OR
-
-    $Tag->goto($name, $if);
+No Perl call available (Note that this tag is not parsed in the
+standard way).
 
 Description
 
-B<NO Description>
+Skips page content between [goto I<name>] and [label I<name>].
+Note that the goto tag is not interpreted in the standard way, and
+you cannot use the '$Tag->goto()' Perl syntax. Note also that skipping
+endtags with goto will probably break your page.
+
+The correspondingly named [label] tag marks the end of the page
+content the goto should skip. Note that the [label] tag is not
+an end tag, but simply a marker for the end of the text to skip.
+
+B<Technical note (Interchange 4.8): >This tag may not work properly if
+you have more than one goto/label pair on a page.
+
+
+
+I<name>
+
+This should match the name set in a [label] tag I<after> the goto tag
+in the page (i.e., don't create loops).
+
+I<if>
+
+Condition for goto. If the argument to 'if' is true, the tag will
+skip the text between the goto and <label>.  Note that the tag
+itself does not evaluate the condition. The condition must evaluate to
+a true or false value before the goto tag processes it.
+
+For example, this will not execute the goto:
+
+   [set go]0[/set]
+   [goto name="there" if="[scratch go]"]
 
 =head2 handling
 
@@ -4470,19 +4590,8 @@ Called Routine for positonal:
 
 B<ASP-like Perl call:>
 
-    $Tag->if(
-        {
-         type => VALUE,
-         term => VALUE,
-         op => VALUE,
-         compare => VALUE,
-        },
-        BODY
-    )
-
- OR
-
-    $Tag->if($type, $term, $op, $compare, $BODY);
+Not applicable. Any [if ...] call can be better and more efficiently
+done with Perl.
 
 Attribute aliases
 
@@ -4592,7 +4701,7 @@ directives in your Interchange configuration file (or the defaults).
     Auto credit card validation is enabled.
     [/if]
 
-I<data  database::field::key>
+I<data database::field::key>
 
 The Interchange databases. Retrieves a field in the database and
 returns true or false based on the value.
@@ -4694,6 +4803,18 @@ refer to a part number of 99-102.
 
   [if ordered 99-102 main size eq 'large'] ... [/if]
 
+I<pragma>
+
+The Interchange Pragma settings, set with the L<catalog.cfg> directive
+Pragma or with [pragma name].
+
+    [if pragma dynamic_variables]
+    __THE_VARIABLE__
+    [else]
+    [data table=variable column=Variable key=THE_VARIABLE]
+    [/else]
+    [/if]
+
 I<scratch>
 
 The Interchange scratchpad variables, which can be set with the [set
@@ -4708,7 +4829,7 @@ name]value[/set] element.
 
 I<session>
 
-the interchange session variables. of particular interest are
+the Interchange session variables. of particular interest are
 i<login>, i<frames>, i<secure>, and i<browser>.
 
 I<validcc>
@@ -4721,8 +4842,8 @@ CreditCardAuto variables for targets if nothing else is passed.
 
 I<value>
 
-the interchange user variables, typically set in search, control, or
-order forms. variables beginning with c<mv_> are interchange special
+the Interchange user variables, typically set in search, control, or
+order forms. variables beginning with c<mv_> are Interchange special
 values, and should be tested/used with caution.
 
 The I<field> term is the specifier for that area. For example, [if
@@ -4892,16 +5013,7 @@ Called Routine:
 
 B<ASP-like Perl call:>
 
-    $Tag->include(
-        {
-         file => VALUE,
-         locale => VALUE,
-        }
-    )
-
- OR
-
-    $Tag->include($file, $locale);
+Not applicable.
 
 Description
 
@@ -5027,50 +5139,6 @@ Description
 
 Creates an index for the specified table.
 
-=head2 input_filter
-
-Summary
-
-Parameters: B<name>
-
-Positional parameters in same order.
-
-B<The attribute hash reference is passed> after the parameters but
-before the container text argument. B<This may mean that there are
-parameters not shown here.>
-
-Must pass named parameter interpolate=1 to cause interpolation.
-
-This is a container tag, i.e. [input_filter] FOO [/input_filter].
-Nesting: NO
-
-Invalidates cache: B<YES>
-
-Called Routine:
-
-B<ASP-like Perl call:>
-
-    $Tag->input_filter(
-        {
-         name => VALUE,
-        },
-        BODY
-    )
-
- OR
-
-    $Tag->input_filter($name, $ATTRHASH, $BODY);
-
-Attribute aliases
-
-            ops ==> op
-            var ==> name
-            variable ==> name
-
-Description
-
-B<NO Description>
-
 =head2 item_list
 
 Summary
@@ -5093,6 +5161,11 @@ Invalidates cache: B<YES>
 Called Routine:
 
 B<ASP-like Perl call:>
+
+    NOTE: This would not usually be used with embedded Perl -- a better
+    choice would normally be:
+
+                 for(@$Items) { CODE }
 
     $Tag->item_list(
         {
@@ -5279,37 +5352,14 @@ enter the quantity to order.
 
 =head2 label
 
-The page label for goto. I believe this is deprecated.
+The page label for goto. See [goto] tag for description.  Note that
+this is not a standard tag, but is simply a marker used by goto.
 
-Summary
+Parameter: B<name>
 
-Parameters: B<name>
-
-Positional parameters in same order.
-
-Pass attribute hash as last to subroutine: B<no>
-
-Must pass named parameter interpolate=1 to cause interpolation.
-
-Invalidates cache: B<no>
-
-Called Routine:
-
-B<ASP-like Perl call:>
-
-    $Tag->label(
-        {
-         name => VALUE,
-        }
-    )
-
- OR
-
-    $Tag->label($name);
-
-Description
-
-The page label for goto. I believe this is deprecated.
+   [goto name=label_name if=condition]
+     content to skip
+   [label name=label_name]
 
 =head2 log
 
@@ -5403,7 +5453,7 @@ quot (delimited entries)
 
 =item *
 
-error (add interchange error formatting and time/location stamps)
+error (add Interchange error formatting and time/location stamps)
 
 =back
 
@@ -5478,6 +5528,11 @@ Called Routine:
 
 B<ASP-like Perl call:>
 
+    NOTE: This would not usually be used with embedded Perl -- a better
+    choice would normally be:
+
+                 for(@list) { CODE }
+
     $Tag->loop(
         {
          list => VALUE,
@@ -5510,9 +5565,9 @@ on a page.
 Loop lists can be nested reliably in Interchange by using the
 prefix="tag" parameter. New syntax:
 
-    [loop arg="A B C"]
-        [loop prefix=mid arg="[loop-code]1 [loop-code]2 [loop-code]3"]
-            [loop prefix=inner arg="X Y Z"]
+    [loop list="A B C"]
+        [loop prefix=mid list="[loop-code]1 [loop-code]2 [loop-code]3"]
+            [loop prefix=inner list="X Y Z"]
                 [mid-code]-[inner-code]
             [/loop]
         [/loop]
@@ -5527,6 +5582,58 @@ as in a one-click search:
 
 The above will show all items with a category containing the whole
 world "Americana", and will work the same in both old and new syntax.
+
+Ranges are accepted when you pass a list if you set the ranges
+option:
+
+    [loop list="A..Z" ranges=1][loop-code] [/loop]
+
+The above lists all of the characters from A to Z. Any Perl
+incrementing variable list will work, but most commonly a range would
+be something like 1..100. You can mix regular sets -- 1..5 10 20
+would produce the list 1 2 3 4 5 10 20.
+
+If you surround the repeating text section with a [list] [/list]
+anchor, the more-list, ml=N, and on-match / no-match processing is
+done just as in [query] and [search-region].
+
+Using the acclist option will parse Interchange option lists, as
+used in product options. The value is available with [loop-code],
+the label with [loop-param label]. If the size data for SKU
+TS-007 was set to the string S=Small, M=Medium, L=Large, XL=Extra
+Large then you could produce a select list of options this way:
+
+    [loop list="[data products size TS-007]" acclist=1]
+            [on-match]<SELECT NAME=mv_order_size>[/on-match]
+                [list]<OPTION VALUE="[loop-code]"> [loop-param label]</OPTION>[/list]
+        [on-match]</SELECT>[/on-match]
+    [/loop]
+
+Of course the above is probably more easily produced with
+[accessories code=TS-007 attribute=size], but there will be other
+uses for the capability. For instance:
+
+         <SELECT NAME=Season>
+    [loop acclist=1
+                list="
+                        Q1=Winter,
+                        Q2=Spring,
+                        Q3=Summer,
+                        Q4=Fall
+                "]> <OPTION VALUE="[loop-code]"> [loop-param label]</OPTION>
+    [/loop]
+
+If your parameter list needs to have spaces in the parameters,
+surround them with double or single quotes and set the quoted=1
+option: in product options. If the size data for SKU TS-007 was set
+to the string S=Small, M=Medium, L=Large, XL=Extra Large then you
+could produce a select list of options this way:
+
+    [loop list="[data products size TS-007]" acclist=1]
+            [on-match]<SELECT NAME=mv_order_size>[/on-match]
+                [list]<OPTION VALUE="[loop-code]"> [loop-param label]</OPTION>[/list]
+        [on-match]</SELECT>[/on-match]
+    [/loop]
 
 [if-loop-data table column] IF [else] ELSE [/else][/if-loop-field]
 
@@ -5768,7 +5875,7 @@ delimiters allow you to mix HTML and perl code.
 
 Summary
 
-    [mvasp tables other_named_attributes] ASP here [/mvasp]
+    [mvasp tables] ASP here [/mvasp]
     [mvasp tables="db1 db2 ..." other_named_attributes] ASP here [/mvasp]
 
  Parameters   Description                               Default
@@ -5863,15 +5970,66 @@ See the I<ASP-Like Perl> section of I<Interchange Programming>.
 
 =head2 nitems
 
+Returns the total number of items ordered.  Uses the current cart if
+none specified.
+
 Summary
 
 Parameters: B<name>
 
-Positional parameters in same order.
+=over 4
 
-B<The attribute hash reference is passed> to the subroutine after the
-parameters as the last argument. B<This may mean that there are
-parameters not shown here.>
+=item *
+
+name
+
+=over 8
+
+=item *
+
+Cart name
+
+=item *
+
+S<Default:> current cart
+
+=back
+
+=item *
+
+qualifier
+
+=over 8
+
+=item *
+
+An item attribute that must be true in order to count the item.
+
+=item *
+
+S<Default:> None
+
+=back
+
+=item *
+
+compare
+
+=over 8
+
+=item *
+
+Regular expression the specified qualifier attribute's value must
+match to be counted. This replaces the truth value comparison.
+
+=item *
+
+S<Default:> None (uses truth value of the specified qualifier
+attribute)
+
+=back
+
+=back
 
 Must pass named parameter interpolate=1 to cause interpolation.
 
@@ -5896,13 +6054,35 @@ Description
 Expands into the total number of items ordered so far. Takes an
 optional cart name as a parameter.
 
-=head2 onfly
+=head2 options
+
+Builds HTML widgets as defined in the options table for selecting
+options associated with a given product. This tag handles simple,
+matrix or modular options.  See also the accessories tag.
+
+Here is an illustrative example from the 'tools' sample data set of
+the foundation S<catalog:>
+
+ ===
+   [options code=os28005]
+---
+   <input type=hidden name=mv_item_option value="logo">
+     <SELECT NAME="mv_order_logo">
+     <OPTION VALUE="c">Construct Something
+     <OPTION VALUE="y" SELECTED>Your Logo</SELECT><BR>
+   <input type=hidden name=mv_item_option value="color">
+     <INPUT TYPE="radio" NAME="mv_order_color" VALUE="BLK" >&nbsp;Black
+     <INPUT TYPE="radio" NAME="mv_order_color" VALUE="BEIGE" >&nbsp;Beige
+     <INPUT TYPE="radio" NAME="mv_order_color" VALUE="WHITE" >&nbsp;White<BR>
+   <input type=hidden name=mv_item_option value="bristle">
+     <SELECT NAME="mv_order_bristle">
+     <OPTION VALUE="synthetic">Synthetic
+     <OPTION VALUE="camel">Camel Hair</SELECT>
+Z<>===
 
 Summary
 
-Parameters: B<code quantity>
-
-Positional parameters in same order.
+Parameters: B<code>
 
 =over 4
 
@@ -5914,83 +6094,171 @@ code
 
 =item *
 
-Unique key (typically sku) if not already set
+Product key (usually sku).
+
+=item *
+
+No default
 
 =back
 
 =item *
 
-quantity
+table
 
 =over 8
 
 =item *
 
-How many (if not already set)
+Table to use for option attributes.
+
+=item *
+
+S<Default:> 'options'
 
 =back
 
 =item *
 
-text
+td
 
 =over 8
 
 =item *
 
-Delimited list of additional item fields and values to set. Default
-delimiter is the pipe ('|') character.
+Results as table rows. For example, compare the following example from
+the 'tools' sample data set with the earlier example:
+
+Z<>===
+
+=back
+
+=back
+   [options code=os28005 td=1]
+---
+   <td><input type=hidden name=mv_item_option value="logo">
+      <SELECT NAME="mv_order_logo">
+      <OPTION VALUE="c">Construct Something
+      <OPTION VALUE="y" SELECTED>Your Logo</SELECT></td>
+   <td><input type=hidden name=mv_item_option value="color">
+      <INPUT TYPE="radio" NAME="mv_order_color" VALUE="BLK" >&nbsp;Black
+      <INPUT TYPE="radio" NAME="mv_order_color" VALUE="BEIGE" >&nbsp;Beige
+      <INPUT TYPE="radio" NAME="mv_order_color" VALUE="WHITE" >&nbsp;White</td>
+   <td><input type=hidden name=mv_item_option value="bristle">
+      <SELECT NAME="mv_order_bristle">
+      <OPTION VALUE="synthetic">Synthetic
+      <OPTION VALUE="camel">Camel Hair</SELECT></td>
+Z<>===
+
+(Note that the output was reformatted to fit this page)
+
+=over 4
+
+=item *
+
+price
+
+=over 8
+
+=item *
+
+S<Default:> False
+
+=item *
+
+Boolean. If set and the options have prices, the HTML widget(s) will
+show the prices. This is like the price attribute of the
+accessories tag.
 
 =over 12
 
+=item
+
+Note that the price_data setting comes from the 'price' column of
+the options table.
+
+
+Technical note-- If your options table has different mappings, you can
+control this with $::Variable->{MV_OPTION_TABLE_MAP}
+
+=back
+
+=back
+
 =item *
 
-text="field1=val1|field2=val2|field3=val3"
+label
+
+=over 8
+
+=item *
+
+Shows labels for the options with the widgets.
+
+=item *
+
+S<Default:> False
 
 =back
 
 =back
 
+The following example (using another item from the 'tools' data)
+illustrates the price and label S<attributes:>
+
+ ===
+   [options code=os28011 label=1 price=1]
+---
+   Handle<BR>
+     <input type=hidden name=mv_item_option value="handle">
+       <SELECT NAME="mv_order_handle">
+       <OPTION VALUE="W">Wood handle
+       <OPTION VALUE="E">Ebony handle ($20.00)</SELECT><BR>
+   Blade material<BR>
+     <input type=hidden name=mv_item_option value="blade">
+       <SELECT NAME="mv_order_blade">
+       <OPTION VALUE="P">Plastic blade ($-1.22)
+       <OPTION VALUE="S" SELECTED>Steel blade
+       <OPTION VALUE="T">Titanium blade ($100.00)</SELECT>
+Z<>===
+
+(again, the output has been reformatted to fit the page).
+
+=over 4
+
+=item *
+
+bold
+
+=over 8
+
+=item *
+
+Boldfaces the labels if the 'label' option is set.
+
+=item *
+
+S<Default:> False
+
 =back
 
-B<The attribute hash reference is passed> to the subroutine after the
-parameters as the last argument. B<This may mean that there are
-parameters not shown here.>
+=item *
 
-Must pass named parameter interpolate=1 to cause interpolation.
+joiner
 
-Invalidates cache: B<no>
+=over 8
 
-Called Routine:
+=item *
 
-B<ASP-like Perl call:>
+The joiner for the widgets.
 
-    $Tag->onfly(
-        {
-         code => VALUE,
-         quantity => VALUE,
-        }
-    )
+=item *
 
- OR
+S<Default:> <BR>
 
-    $Tag->onfly($code, $quantity, $ATTRHASH);
+=back
 
-Description
-
-B<NO Description>
-
-=head2 options
-
-Summary
-
-Parameters: B<code>
-
-Positional parameters in same order.
-
-B<The attribute hash reference is passed> to the subroutine after the
-parameters as the last argument. B<This may mean that there are
-parameters not shown here.>
+=back
 
 Must pass named parameter interpolate=1 to cause interpolation.
 
@@ -6009,10 +6277,6 @@ B<ASP-like Perl call:>
  OR
 
     $Tag->options($code, $ATTRHASH);
-
-Description
-
-B<NO Description>
 
 =head2 or
 
@@ -6159,7 +6423,7 @@ these are equivalent:
 
 Summary
 
-    [page href arg other_named_attributes]
+    [page href arg]
     [page href=dir/page arg=page_arguments other_named_attributes]
 
  Parameters   Description                               Default
@@ -6272,10 +6536,10 @@ mv_pc, and any arguments supplied with the arg attribute:
        [page  href="http://www.elsewhere.net/cgi/script"
               form="cgi_1=ONE
                     cgi_2=TWO"
-               arg="interchange argument"]External link</A>
+               arg="Interchange argument"]External link</A>
 
        <A HREF="http://www.elsewhere.net/cgi/script?\
-        mv_session_id=6CZ2whqo&mv_pc=1&mv_arg=interchange%20argument&\
+        mv_session_id=6CZ2whqo&mv_pc=1&mv_arg=Interchange%20argument&\
         cgi_1=ONE&cgi_2=TWO">External link</A>
 
 I<search>
@@ -6339,7 +6603,7 @@ These are identical:
    [/page]
 
 
-Here is the same thing from a non-interchange page (e.g., a home
+Here is the same thing from a non-Interchange page (e.g., a home
 page), assuming '/cgi-bin/mycatalog' is the CGI path to Interchange's
 vlink):
 
@@ -6456,7 +6720,7 @@ See also I<Interchange Programming>.
 
 Summary
 
-    [perl tables other_named_attributes] Code here [/perl]
+    [perl tables] Code here [/perl]
     [perl tables="db1 db2 ..." other_named_attributes] Code here [/perl]
 
  Parameters   Description                               Default
@@ -6470,6 +6734,10 @@ Summary
  arg="subs"                        Same as subs
  global                            No
  file                              none
+ number_errors                     none
+ eval_label                        none
+ short_errors                      none
+ trim_errors                       none
  interpolate                       No
  reparse                           Yes
 
@@ -6507,7 +6775,7 @@ Description
 This tag allows you to embed perl code within an Interchange page. The
 code will run under the restrictions of Perl's I<Safe> module by
 default. Perl's 'warnings' and 'strict' pragmas are both turned
-off, and Safe will block you from turning them on, since it blocks
+off, and I<Safe> will block you from turning them on, since it blocks
 Perl's 'use' command. (This is not usually a problem, since you
 should probably use an alternative such as a usertag if your code is
 complex enough to need strict.)
@@ -6569,9 +6837,9 @@ products S<table:>
         return ($min_price > $sale_price) ? $min_price : $sale_price;
     [/perl]
 
-If you do not do this, your code will fail with a runtime Safe error
-when it tries to look up 'our_cost' in the products database with the
-data tag.
+If you do not do this, your code will fail with a runtime I<Safe>
+error when it tries to look up 'our_cost' in the products database
+with the data tag.
 
 Even if you properly specify the tables to pre-open, some database
 operations will still be restricted because Safe mode prohibits
@@ -6584,8 +6852,8 @@ pre-opened by using an item first.
 
 Technical note:
 
-Safe objects (including database handles) may persist within a page,
-and the perl tag does not necessarily destroy objects created
+I<Safe> objects (including database handles) may persist within a
+page, and the perl tag does not necessarily destroy objects created
 earlier in the page. As a result, your code may work even though you
 did not set 'tables' properly, only to break later when you change
 something elsewhere on the page.
@@ -6601,8 +6869,8 @@ For example, this will work because the first call to [accessories
   [/perl]
 
 If you remove the first [accessories ...] tag, then the
-$Tag->accessories call will fail with a Safe error unless you also set
-'tables=products' in the perl tag.
+$Tag->accessories call will fail with a I<Safe> error unless you also
+set 'tables=products' in the perl tag.
 
 The moral of this story is to ensure that you pass all necessary
 tables in the perl tag.
@@ -6622,7 +6890,7 @@ For example,
     [/perl]
 
 will return 'It Broke' because the $Tag->Data(...) call will fail
-under the Safe module (see I<tables> above).
+under the I<Safe> module (see I<tables> above).
 
 I<no_return>
 
@@ -6673,14 +6941,14 @@ If you have set the AllowGlobal catalog directive, setting
 global=1 will turn off I<Safe> protection within the tag.
 
 The code within the tag will then be able to do anything the user ID
-running interchange can. This seriously compromises security, and you
+running Interchange can. This seriously compromises security, and you
 should know what you are doing before using it in a public site. It is
 especially dangerous if a single Interchange server is shared by
 multiple companies or user IDs.
 
 Also, full 'use strict' checking is turned on by default when in
 global mode. You can turn it off by using 'no strict;' within your
-code. Note that any strict errors will go to the interchange error
+code. Note that any strict errors will go to the Interchange error
 logs, and the tag itself will fail silently within the page.
 
 I<file>
@@ -6697,11 +6965,38 @@ would execute myscript.pl and expand to its return value.
 Absolute filenames (or filenames containing '../') are prohibited by
 the NoAbsolute catalog directive.
 
-If the filename is not absolute, interchange first looks for a file in
+If the filename is not absolute, Interchange first looks for a file in
 the current directory, then in the list set with the TemplateDir
 catalog directive. If it fails to find a file by that name, it then
 looks for an entry by that name in the database specified with the
 FileDatabase catalog directive.
+
+I<file>
+
+Add line numbers to the source code displayed in the error.log,
+amazingly useful if some of the perl is being generated elsewhere and
+interpolated.
+
+I<eval_label>
+
+Set to a string, will replace the (eval ###) in the error message with
+this label, handy to quickly track down bugs when you have more than
+one perl block in the page, especially if you are using
+I<short_errors>.
+
+I<short_errors>
+
+If set to a true value, syntax errors and the like in perl tags will
+log just the error, not the whole source code of the block in
+question, handy when you have the code open in an editor anyway and
+don't want the error itself to get scrolled away when running 'tail -f
+error.log'.
+
+I<trim_errors>
+
+If set to a number, and the error produced includes a line number,
+then only that number of lines before and after the broken line itself
+will be displayed, instead of the whole block.
 
 =head2 price
 
@@ -6836,76 +7131,56 @@ See I<Product Discounts>.
 
 =head2 process
 
-Summary
+This is a shortcut for the 'process' action, expanding to your catalog
+URL and session ID.  It is analogous to the area tag, but is more
+limited. The following expansion is S<illuastrative:>
 
-Aliases for tag
+   [process target=targetframe]
+---
+   http://www.here.com/cgi-bin/mycatalog/process.html?\
+   id=6CZ2whqo" TARGET="targetframe
 
-process_target
+(the trailing backslash indicates continuation, i.e., the result
+should be only one line)
 
-Parameters: B<target secure>
+Note the mismatched quotes in the expansion.  Your surrounding HTML
+should supply the containing quotes, like S<this:>
 
-ONLY THE B<> PARAMETERS ARE POSITIONAL.
+   <A HREF="[process target=targetframe]">...
 
-B<The attribute hash reference is passed> to the subroutine after the
-parameters as the last argument. B<This may mean that there are
-parameters not shown here.>
-
-Must pass named parameter interpolate=1 to cause interpolation.
-
-Invalidates cache: B<no>
-
-Called Routine:
-
-B<ASP-like Perl call:>
-
-    $Tag->process(
-        {
-         target => VALUE,
-         secure => VALUE,
-        }
-    )
-
- OR
-
-    $Tag->process($target, $secure, $ATTRHASH);
-
-Description
-
-B<NO Description>
-
-=head2 profile
+Alias:  B<process_target>
 
 Summary
 
-Parameters: B<name>
+    [process target secure]
+    [process target=targetframe secure=1 other_named_attributes]
 
-Positional parameters in same order.
+ Parameters   Description                               Default
+ target       The target frame or window                None
+ secure       Boolean.  If true (secure=1), the URL will link to your secure server.No
 
-B<The attribute hash reference is passed> to the subroutine after the
-parameters as the last argument. B<This may mean that there are
-parameters not shown here.>
+ Attributes                        Default
+ interpolate (reparse)             No
 
-Must pass named parameter interpolate=1 to cause interpolation.
+ Other_Charactreristics            
+ Invalidates cache                 No
+ Container tag                     No
 
-Invalidates cache: B<YES>
+B<Tag expansion example:>
 
-Called Routine:
+   [process targetframe 1]
+---
+   http://secure.here.com/cgi-bin/mycatalog/process.html?\
+   id=6CZ2whqo" TARGET="targetframe
 
 B<ASP-like Perl call:>
 
-    $Tag->profile(
-        {
-         name => VALUE,
-        }
-    )
+    $Tag->process(  { target => 'frametarget',
+                      secure => 1, } );
 
- OR
+or similarly with positional parameters,
 
-    $Tag->profile($name, $ATTRHASH);
-
-Description
-
-B<NO Description>
+    $Tag->process($target, $secure, $attribute_hash_reference);
 
 =head2 query
 
@@ -6916,7 +7191,7 @@ module (included with Bundle::Interchange from CPAN).
 
 Summary
 
-    [query sql other_named_attributes]
+    [query sql]
     [query sql="SQL_query_text" other_named_attributes]
 
  Parameters   Description                               Default
@@ -6951,7 +7226,7 @@ B<Tag usage example:>
 
 This will list sku, description and price for ten products per page,
 followed by hyperlinks to the other pages of the list. Note that you
-may interpolate interchange tags in the usual way if you double-quote
+may interpolate Interchange tags in the usual way if you double-quote
 the SQL statement.
 
    [query sql="select sku, description, price from products where price < [value mv_arg]"
@@ -7016,7 +7291,7 @@ See also the example at the end of the Summary section above.
 Perl and ASP usage
 
 If you are calling $Tag->query within a perl tag (or whenever the
-code is secured by the Safe.pm module), you must be sure to set the
+code is secured by the I<Safe.pm> module), you must be sure to set the
 tables attribute properly in the enclosing perl tag (see the
 perl tag documentation for detail).
 
@@ -7025,7 +7300,9 @@ textref) work as usual, returning an appropriate string. Note that you
 may also have access to the results as an array reference in
 $Vend::Interpolate::Tmp->{''} for the life of the page.
 
-If you do not set a I<type>, or
+If you do not set a I<type>, the tag will return a reference to an
+array of array references, since the default with no I<type> is
+arrayref="".
 
 If you call $Tag->query in scalar context and set I<arrayref> or
 I<hashref>, it will return your results as a reference to an array of
@@ -7057,8 +7334,14 @@ The following examples should be S<illustrative:>
     return $Tag->uneval( $results );
   [/perl]
 
-See also 'I<wantarray>=1' if you use this call in a GlobalSub or
-global UserTag.
+B<Technical Note: >The $Tag->query() call works a bit differently in
+GlobalSubs and UserTags than within a perl tag.  Specifically, in a
+GlobalSub or global UserTag, if you call query() in list context and
+want the three references (i.e., results, column hash and column
+array), then you need to set the 'I<wantarray>=1' attribute in the
+query() call.  See the I<wantarray> attribute.
+
+
 
 I<sql>
 
@@ -7270,27 +7553,12 @@ to return references as it would if called within an ordinary
 [perl] tag. Note that it does not force list context if you call
 $Tag->query in scalar context.
 
-Technical note - the ordinary [query
-
-=over 4
-
-=over 8
-
-=over 12
-
-=item
-
-] ... [/query] usage forces scalar context on the query call and
-suppresses the return value for those types that would return
-references if $Tag->query were called within a [perl] tag. The
-wantarray option is needed because global subs and usertags are also
-affected by this unless you set wantarray.
-
-=back
-
-=back
-
-=back
+Technical note - the ordinary [query ...] ... [/query] usage
+forces scalar context on the query call and suppresses the return
+value for those types that would return references if $Tag->query
+were called within a [perl] tag. The wantarray option is needed
+because global subs and usertags are also affected by this unless you
+set wantarray.
 
 =head2 read_cookie
 
@@ -7348,42 +7616,65 @@ since there is no name for the HTTP_COOKIE string S<input:>
 
   $Tag->read_cookie('MV_SESSION_ID', "MV_SESSION_ID=UnHyaDQj:127.0.0.1; ...");
 
-=head2 record
+=head2 restrict
+
+Restrict tag execution in a region. If a restricted tag is
+encountered, it is simply output.
 
 Summary
 
-No parameters.
+    [restrict tag1 tag2]
+    [restrict policy=deny enable="page area value"]
 
-B<The attribute hash reference is passed> to the subroutine after the
-parameters as the last argument. B<This may mean that there are
-parameters not shown here.>
+ Attributes   Description                               Default
+ policy       Whether to allow or deny by default.      deny
+ enable       Tags to enable when default policy is deny.none
+ disable      Tags to disable. Overrides enable.        none
 
-Must pass named parameter interpolate=1 to cause interpolation.
+ Attributes                        Default
+ interpolate (reparse)             No
 
-Invalidates cache: B<no>
+ Other_Charactreristics            
+ Invalidates cache                 Yes
+ Container tag                     No
 
-Called Routine:
+B<Usage example:>
+
+   [read-cookie name=MV_SESSION_ID]
+------------------------------------------------------
+   6CZ2whqo
 
 B<ASP-like Perl call:>
 
-    $Tag->record(
-        {
-        }
-    )
-
- OR
-
-    $Tag->record($ATTRHASH);
-
-Attribute aliases
-
-            code ==> key
-            column ==> col
-            field ==> col
+    N/A. Cannot be called effectively.
 
 Description
 
-B<NO Description>
+Restrict tag execution in a region. If a restricted tag is
+encountered, it is simply output. It can be used to allow certain tags
+in a user-editable region, while denying dangerous tags. Or it can be
+used to restrict all tag execution in a region.
+
+I<policy>
+
+Default is deny, which makes most sense. You then specifically
+enable certain ITL tags. If you set allow by default, you must be
+very careful that you really are disabling all of what you consider to
+be dangerous tags.
+
+I<enable>
+
+A space-separated or comma-separated list of tags to disable when the
+default policy is deny. Has no effect when the default policy is
+allow, and any tags passed in the disable parameter override the
+enable.
+
+I<disable>
+
+A space-separated or comma-separated list of tags to disable when the
+default policy is allow. If you have a list of tags that are
+enabled, perhaps stored in a scratch variable, you can disable some of
+those tags since this takes precedence over the enable.
 
 =head2 row
 
@@ -7530,35 +7821,48 @@ variable is set with a [set] value [/set] container pair.)
 
 =head2 scratchd
 
+Deletes the named scratch variable and returns its value before the
+deletion. For example,
+
+    [scratchd varname_to_delete]
+
+deletes the scratch variable I<varname_to_delete>.
+
+See also the scratch and set tags.
+
 Summary
 
-Parameters: B<name>
+    [scratchd P_PARAM]
+    [scratchd N_PARAM other_named_attributes]
 
-Positional parameters in same order.
+ Parameters   Description                               Default
+ name         Name of scratch variable to delete        None
 
-Pass attribute hash as last to subroutine: B<no>
+ Attributes                        Default
+ interpolate (reparse)             No
 
-Must pass named parameter interpolate=1 to cause interpolation.
+ Other_Charactreristics            
+ Invalidates cache                 Yes
+ Container tag                     No
 
-Invalidates cache: B<YES>
+B<Tag expansion example:>
 
-Called Routine:
+   [set myvar]This is myvar[/set]
+   .
+   .
+   .
+   [scratchd myvar]
+---
+   This is myvar
 
 B<ASP-like Perl call:>
 
-    $Tag->scratchd(
-        {
-         name => VALUE,
-        }
-    )
-
- OR
-
-    $Tag->scratchd($name);
+    $Tag->scratchd($name, $attribute_hash_reference);
 
 Description
 
-B<NO Description>
+Deletes the named scratch variable and returns its value before the
+deletion.
 
 =head2 search_list
 
@@ -7870,15 +8174,74 @@ default.
 
 =head2 setlocale
 
+Sets locale and/or currency for the current page. Can be made
+persistent for the user with the 'persist' option. Resets default
+locale if called without arguments.  See also I<Setting the Locale> in
+the template documentation.
+
 Summary
 
-Parameters: B<locale currency>
+B<Parameters:> B<locale currency>
+
+=over 4
+
+=item *
+
+locale
+
+=over 8
+
+=item *
+
+The locale to use.
+
+=item *
+
+S<Default:> [scratch mv_locale] (see also 'persist' attribute)
+
+=back
+
+=item *
+
+currency
+
+=over 8
+
+=item *
+
+The currency format to use.
+
+=item *
+
+S<Default:> [scratch mv_currency] (see also 'persist' attribute)
+
+=back
+
+=back
 
 Positional parameters in same order.
 
-B<The attribute hash reference is passed> to the subroutine after the
-parameters as the last argument. B<This may mean that there are
-parameters not shown here.>
+B<Named Attrbutes>
+
+=over 4
+
+=item *
+
+persist
+
+=over 8
+
+=item *
+
+Setting 'persist=1' also sets the scratch variables, B<mv_locale>
+and B<mv_currency> to specified locale and currency. This makes the
+locale settings persistent for the user's session. Otherwise
+(persist=0), the setlocale tag affects the remainder of the
+current page only.
+
+=back
+
+=back
 
 Must pass named parameter interpolate=1 to cause interpolation.
 
@@ -7901,19 +8264,316 @@ B<ASP-like Perl call:>
 
 Description
 
-B<NO Description>
+Immediately sets the locale to locale, and will cause it to persist
+in future user pages if the persist is set to a non-zero, non-blank
+value. If the currency attribute is set, the pricing and
+currency-specific locale keys and Interchange configuration directives
+are modified to that locale. If there are no arguments, it sets it
+back to the user's default locale as defined in the scratch variables
+mv_locale and mv_currency.
+
+This S<allows:>
+
+    Dollar Pricing:
+
+    [setlocale en_US]
+    [item-list]
+    [item-code]: [item-price]<BR>
+    [/item-list]
+
+    Franc Pricing:
+
+    [setlocale fr_FR]
+    [item-list]
+    [item-code]: [item-price]<BR>
+    [/item-list]
+
+    [comment] Return to the user's default locale [/comment]
+    [setlocale]
 
 =head2 shipping
+
+Returns the cost of shipping the items in the cart via the shipping
+mode set with the B<mode> parameter. See also the I<Shipping> section
+of the Database documentation.
 
 Summary
 
 Parameters: B<mode>
 
-Positional parameters in same order.
+=over 4
 
-B<The attribute hash reference is passed> to the subroutine after the
-parameters as the last argument. B<This may mean that there are
-parameters not shown here.>
+=item *
+
+mode
+
+=over 8
+
+=item *
+
+S<Aliases:> B<name>, B<modes>
+
+=item *
+
+Whitespace, null or comma delimited list of modes for which to
+calculate shipping cost.  See also mv_shipmode.
+
+=item *
+
+S<Default:> [value mv_handling] if B<handling=1> or [value
+mv_shipmode] or 'default'
+
+=back
+
+=item *
+
+table
+
+=over 8
+
+=item *
+
+S<Alias:> B<tables>
+
+=item *
+
+Whitespace-delimited list of tables containing shipping data required
+for perl or query calculations (I<e.g.>, in the 'PERL' field of your
+shipping database - see I<Shipping>). You must specify the tables to
+get past the Perl 'I<Safe.pm>' proctection. For example, you will get
+'I<Safe>' errors if you refer to an SQL table without specifying it
+here.
+
+=item *
+
+S<Default:> None
+
+=back
+
+=item *
+
+cart
+
+=over 8
+
+=item *
+
+S<Alias:> B<carts>
+
+=item *
+
+Comma-delimited list of names of carts to calculate shipping cost for.
+
+=item *
+
+S<Default:> current cart
+
+=back
+
+=item *
+
+convert
+
+=over 8
+
+=item *
+
+Applies the conversion (if any) set with the PriceDivide catalog
+configuration directive.
+
+=item *
+
+S<Default:> True
+
+=back
+
+=item *
+
+noformat
+
+=over 8
+
+=item *
+
+Returns result as a number rather than a string formatted for the
+current locale's currency.
+
+=item *
+
+S<Default:> True
+
+=back
+
+=item *
+
+handling
+
+=over 8
+
+=item *
+
+Boolean-- use [value mv_handling] rather than [value mv_shipping] as
+first default for B<mode>. Note that this attribute matters only if
+you do not specify the B<mode> in the tag.
+
+=item *
+
+Note that this is set by the [handling tag (which calls the
+shipping tag internally).  You should probably use the handling tag
+rather than setting this directly.
+
+=item *
+
+S<Default:> False
+
+=back
+
+=item *
+
+reset_modes
+
+=over 8
+
+=item *
+
+Clears list of modes in $Vend::Cfg->{Shipping_line}
+
+=item *
+
+S<Default:> False
+
+=back
+
+=item *
+
+add
+
+=over 8
+
+=item *
+
+Adds the argument to B<add> as data for a shipping.asc file (in
+$Vend::Cfg->{ScratchDir}/) and sets it.
+
+=back
+
+=item *
+
+file
+
+=over 8
+
+=item *
+
+Filename to read shipping from (default is usual shipping database,
+e.g., shipping.asc)
+
+=back
+
+=item *
+
+label
+
+=over 8
+
+=item *
+
+By default, returns HTML <OPTION ...> widget for shipping mode(s),
+including description and cost. You can override the widget with the
+B<format> attribute.  Note that B<label> overrides B<noformat>.
+
+=item *
+
+Here is an example from the foundation checkout.html page:
+
+   [shipping
+
+=back
+
+=back
+     label=1
+     mode=|[data table=country key='[default country US]' col=shipmodes]|
+   ]
+
+=over 4
+
+=item *
+
+format
+
+=over 8
+
+=item *
+
+Format for results with B<label> attribute.
+
+=item *
+
+S<Default:> '<OPTION VALUE="%M"%S>%D (%F)'
+
+=item *
+
+For example,
+
+=over 12
+
+=item
+
+[shipping mode="FLAT"
+
+=over 16
+
+=item
+
+label=1
+
+
+format="My Format Desc %D Price %F"]
+
+=back
+
+=back
+
+=back
+
+=item *
+
+default
+
+=over 8
+
+=item *
+
+Resets shipping mode to default of [value mv_shipmode]
+
+=back
+
+=item *
+
+hide
+
+=over 8
+
+=item *
+
+Suppresses output
+
+=back
+
+=item *
+
+reset_message
+
+=over 8
+
+=item *
+
+Boolean. Blanks the session's current shipping message (i.e.,
+$Session->{ship_message}).
+
+=back
+
+=back
 
 Must pass named parameter interpolate=1 to cause interpolation.
 
@@ -7942,51 +8602,51 @@ Attribute aliases
 
 Description
 
-The shipping cost of the items in the basket via mode - the default
-mode is the shipping mode currently selected in the mv_shipmode
-variable. See I<SHIPPING>.
+This tag calculates the shipping cost for items in the current cart
+via the specified shipping mode (usually set in the mv_shipmode
+variable).  See the I<Shipping> section of the Database documentation
+for detail.
 
 Rounding
 
-The tag rounds the calculated shipping cost to a locale-specific
-number of fractional digits (e.g., to the nearest penny, or 2 digits
-after the decimal point in the USA).
+Note that the tag rounds the calculated shipping cost to a
+locale-specific number of fractional digits (e.g., to the nearest
+penny, or 2 digits after the decimal point in the USA).
 
 =head2 shipping_desc
 
+Returns the shipping description for the specified shipping B<mode>. 
+See the I<Shipping> section of the Database documentation.  See also
+shipping.asc database for shipping modes.
+
+S<Alias:> B<shipping_description>
+
+The two tags below are identical in S<operation:>
+
+   [shipping_desc mode]
+   [shipping_description mode]
+
 Summary
 
-Aliases for tag
+    [shipping_desc mode]
+    [shipping_desc mode=shipping_mode]
 
-shipping_description
+ Parameters   Description                 Default
+ mode         Shipping mode. This is a key into the shipping.asc database. See Shipping documentation.mv_shipmode, or 'default' if mv_shipmode not set
 
-Parameters: B<mode>
+ Other_Charactreristics            
+ Invalidates cache                 Yes, but only if no mode given
+ Container tag                     No
 
-Positional parameters in same order.
+B<Tag expansion example:>
 
-Pass attribute hash as last to subroutine: B<no>
-
-Must pass named parameter interpolate=1 to cause interpolation.
-
-Invalidates cache: B<no>
-
-Called Routine:
+   [shipping_desc 1DM]
+---
+   UPS Next Day Air Early AM
 
 B<ASP-like Perl call:>
 
-    $Tag->shipping_desc(
-        {
-         mode => VALUE,
-        }
-    )
-
- OR
-
-    $Tag->shipping_desc($mode);
-
-Description
-
-B<NO Description>
+    $Tag->shipping_desc( $mode );
 
 =head2 soap
 
@@ -8026,35 +8686,29 @@ B<NO Description>
 
 =head2 strip
 
+Strips leading and trailing whitespace from the contained body text.
+
 Summary
+
+    [strip]
+       Body text to strip
+    [/strip]
 
 No parameters.
 
-Pass attribute hash as last to subroutine: B<no>
-
-Must pass named parameter interpolate=1 to cause interpolation.
-
-This is a container tag, i.e. [strip] FOO [/strip]. Nesting: NO
-
-Invalidates cache: B<no>
-
-Called Routine:
+ Other_Charactreristics            
+ Invalidates cache                 No
+ Container tag                     Yes
+ Has Subtags                       No
 
 B<ASP-like Perl call:>
 
-    $Tag->strip(
-        {
-        },
-        BODY
-    )
+   $Tag->strip($BODY);
 
- OR
+or even better, just do it directly like this
 
-    $Tag->strip($BODY);
-
-Description
-
-B<NO Description>
+   $BODY =~ s/^\s+//;
+   $BODY =~ s/\s+$//;
 
 =head2 subtotal
 
@@ -8246,7 +8900,7 @@ following is the string for Thursday, April 30, 1997.
 
     [tag time]%A, %B %d, %Y[/tag]
 
-I<touch >
+I<touch>
 
 Touches a database to allow use of the tag_data() routine in
 user-defined subroutines. If this is not done, the routine will error
@@ -8319,7 +8973,7 @@ it yourself.
 
 NOTE: You can adjust time globally for an Interchange installation by
 setting the $ENV{TZ} variable on many systems. Set TZ in your
-environment and then restart interchange:
+environment and then restart Interchange:
 
         ## bash/ksh/sh
         TZ=PST7PDT; export TZ
@@ -8383,6 +9037,10 @@ displacement from GMT, and the second alphabetical string is the zone
 name when in daylight savings time. NOTE: This may not work on all
 operating systems.
 
+I<zerofix>
+
+Strips leading zeroes from numbers.
+
 =head2 timed_build
 
 Summary
@@ -8436,6 +9094,20 @@ should be rebuilt, then it will not be rebuilt until the output file
 is removed.
 
 Accepts the following parameters:
+
+I<auto>
+
+Turns on automatic region processing. The text of the timed-build
+region is processed to determine a unique checksum or digest (using
+MD5), and that file name is checked in the directory tmp/auto-timed
+(assuming ScratchDir is set to tmp). If no number of minutes is
+supplied, 60 is assumed.
+
+This is designed to automatically build regions of commonly used areas
+without having to manage the file name yourself.
+
+Implies login=1, but will still abort if no session ID cookie has
+been sent. Use force=1 to ignore cookie status.
 
 I<file>
 
@@ -8677,8 +9349,8 @@ from the tag call:
 
         <table>
     [tree   start=99
-            parent=parent_fld
-            child=child_fld
+            master=parent_fld
+            subordinate=child_fld
             autodetect=1
                         spacing=4
             full=1]
@@ -8707,18 +9379,18 @@ I<table>
 Database table which contains the tree. Must be a valid Interchange
 table identifier.
 
-I<parent>
+I<master>
 
 The column which is used to determine the parent of the item.
 
 I<subordinate>
 
 The child column, which determines which items are sub-items of the
-current one. Used to re-query for items with its value in parent.
+current one. Used to re-query for items with its value in master.
 
 I<start_item>
 
-The first item to be followed, i.e. the parent value of all the
+The first item to be followed, i.e. the master value of all the
 top-level items.
 
 I<autodetect>
@@ -8830,54 +9502,276 @@ list with option=1, set the tag prefix with prefix, etc.
 
 =head2 try
 
-See catch for description.
+Allows you to trap errors. Interchange processes the body text of the
+[try][/try] block and returns it normally if it does not
+generate an error. If it does generate an error, interchange executes
+the [catch][/catch] block.
+
+See also 'catch'.
 
 Summary
 
-Parameters: B<label>
+    [try label=my_label other_named_attributes]
+        Body text to return if no error
+    [/try]
+    .
+    .
+    .
+    [catch my_label]
+        Body text to return if try block caused an error
+    [/catch]
 
-Positional parameters in same order.
+ Parameters   Description                               Default
+ label        The label shared by the paired try and catch blocks'default'
 
-B<The attribute hash reference is passed> after the parameters but
-before the container text argument. B<This may mean that there are
-parameters not shown here.>
+ Attributes            Description             Default
+ status                Returns 0 (failed) or 1 (succeeded) instead of page outputnone
+ hide                  Suppresses page output  No
+ clean                 Suppress try block output if it has an errorNo
+ interpolate           See Interpolating ParametersNo
+ reparse               See Interpolating ParametersYes
 
-Must pass named parameter interpolate=1 to cause interpolation.
+ Other_Charactreristics            
+ Invalidates cache                 No
+ Container tag                     Yes
 
-This is a container tag, i.e. [try] FOO [/try]. Nesting: NO
+B<Tag expansion example:>
 
-Invalidates cache: B<no>
-
-Called Routine:
+   [set divisor]0[/set]
+   [try label=div]
+      [calc] 1 / [scratch divisor] [/calc]
+   [/try]
+   [catch div]Division error[/catch]
+---
+   Division Error
 
 B<ASP-like Perl call:>
 
-    $Tag->try(
-        {
-         label => VALUE,
-        },
-        BODY
-    )
+    $Tag->try(    { label  => I<'try_catch_label'>,
+                    status => 1, },
+                  $try_body  );
 
- OR
+    $Tag->catch(  { label  => I<'try_catch_label'>, },
+                  $catch_body )
 
-    $Tag->try($label, $ATTRHASH, $BODY);
+or similarly with positional parameters,
+
+    $Tag->try($label, $attribute_hash_reference, $try_body);
+    $Tag->catch($label, $attribute_hash_reference, $catch_body);
+
+See Also
+
+catch
 
 Description
 
-B<NO Description>
+Allows you to trap errors. Interchange processes the body text of the
+[try][/try] block and returns it normally if it does not
+generate an error. If it does generate an error, interchange executes
+the [catch][/catch] block. The catch block executes where it is
+on the page (I<i.e.>, it does not replace the output of the try
+block).
+
+Note that the catch block must occur after the [try] block in the
+document.
+
+I<label>
+
+The try and catch blocks are matched by this label.
+
+Technical S<note:>
+
+The try tag will also place a result in the $Session object.  For
+example, the following returns the 'Illegal division by zero...' error
+message if it S<occurs:>
+
+   [try label=divide][calc] 1 / [scratch divisor] [/calc][/try]
+
+   [catch divide]
+      [calc]$Session->{try}{divide}[/calc]
+   [/catch]
+
+The $Session->{try}{divide} object will be set to the empty string
+('') if there was no error, or it will contain the error message if
+there was an error.
+
+The [perl] and [calc] tags also set
+$Session->{try}->{I<active_label>} on errors.
+
+I<status>
+
+Suppresses try block output and returns 1 if no error or 0 if an
+error occurred instead.  Executes the catch block as usual in case
+of an error.
+
+I<hide>
+
+Suppresses try block output (regardless of success or failure). 
+Executes the catch block as usual in case of an error.
+
+I<clean>
+
+Setting 'clean=1' will cause the try block to suppress its
+output only if it has an error. Otherwise (clean=0 or not set), the
+try block will return whatever partial output it has completed
+before the error.  The catch block will work as usual.
 
 =head2 update
+
+Forces an update of the specified interchange function. Function may
+be one of the S<following:>
+
+=over 4
+
+=item *
+
+B<cart> (updates current or named cart)
+
+=item *
+
+B<process> (updates order or search)
+
+=item *
+
+B<values> (updates user-entered fields)
+
+=item *
+
+B<data> (updates database, using current B<mv_> CGI form variables)
+
+=back
 
 Summary
 
 Parameters: B<function>
 
-ONLY THE B<> PARAMETERS ARE POSITIONAL.
+=over 4
 
-B<The attribute hash reference is passed> to the subroutine after the
-parameters as the last argument. B<This may mean that there are
-parameters not shown here.>
+=item *
+
+function
+
+=over 8
+
+=item *
+
+cart
+
+=over 12
+
+=item *
+
+Upates current or named cart (see name attribute)
+
+=back
+
+=item *
+
+process
+
+=over 12
+
+=item *
+
+Updates an order or a search page
+
+=back
+
+=item *
+
+values
+
+=over 12
+
+=item *
+
+Updates user-entered fields
+
+=back
+
+=item *
+
+data
+
+=over 12
+
+=item *
+
+Updates database, using current B<mv_> CGI form variables, for
+S<example:>
+
+=over 16
+
+=item *
+
+B<mv_data_table> Table to update
+
+
+=item *
+
+B<mv_data_key> Key into table
+
+
+=item *
+
+B<mv_data_fields> Fields to update (space or null delimited)
+
+
+=item *
+
+B<mv_data_function> One of the S<following:>
+
+=over 20
+
+=item *
+
+delete
+
+
+=item *
+
+update
+
+
+=item *
+
+insert
+
+
+=item *
+
+delete
+
+=back
+
+
+=item *
+
+etc.
+
+=back
+
+=back
+
+=back
+
+=item *
+
+name
+
+=over 8
+
+=item *
+
+Cart name to update (if 'function=cart')
+
+=item *
+
+S<Default:> current cart
+
+=back
+
+=back
 
 Must pass named parameter interpolate=1 to cause interpolation.
 
@@ -8899,7 +9793,28 @@ B<ASP-like Perl call:>
 
 Description
 
-B<NO Description>
+Forces an update of the specified interchange function. Function may
+be one of the S<following:>
+
+=over 4
+
+=item *
+
+B<cart> (updates current or named cart)
+
+=item *
+
+B<process> (updates order or search)
+
+=item *
+
+B<values> (updates user-entered fields)
+
+=item *
+
+B<data> (updates database, using current B<mv_> CGI form variables)
+
+=back
 
 =head2 userdb
 
@@ -9000,13 +9915,13 @@ userdb. The global parameters (default in parens):
 =head2 value
 
 Returns the the current value of the named form input field.
-HTML-escapes interchange tags in the result for security.
+HTML-escapes Interchange tags in the result for security.
 
 Can also set a new value within the current page.
 
 Summary
 
-    [value name other_named_attributes]
+    [value name]
     [value name=form_var_name other_named_attributes]
 
  Parameters   Description                               Default
@@ -9295,8 +10210,8 @@ Called with:
     [/quick_table]
 
 As is the case with [perl] tag, user tags run under the Perl
-Safe.pm module with warnings disabled. Unlike [perl] tags, however,
-user tags use Perl's 'strict' pragma.
+I<Safe.pm> module with warnings disabled. Unlike [perl] tags,
+however, user tags use Perl's 'strict' pragma.
 
 The properties for UserTag are:
 
@@ -9522,58 +10437,1277 @@ This is not recommended for the novice, though - keep it simple. 8-)
 =head1 Standard Usertags
 
 The distribution includes a number of prebuilt usertags in the
-interchange_root/usertag directory. Some of these are used by the
-foundation catalog or its administrative interface.
+usertag directory in the Interchange software directory. Some of
+these are used by the foundation catalog or its administrative
+interface.
 
-=head2 I<bar_button>
+=head2 bar_button
 
-=head2 I<delete_cart>
+Displays content based on current page. Could be used for building
+e.g. menu bars.
 
-=head2 I<fedex_query>
+Summary
 
-=head2 I<loc>
+    [bar-button page current]...[selected]...[/selected][/bar-button]
+    [bar-button page=page current=current-page]...[selected]...[/selected][/bar-button]
 
-=head2 I<reconfig_wait>
+B<Positional parameters: >The first line shows the usage with
+positional parameters (given in order). The second line shows usage
+with named parameters.
 
-=head2 I<title_bar>
 
-=head2 I<xml_generator>
 
-=head2 I<button>
+ Parameters   Description                               Default
+ page         Name of page for which this bar-button is definednone
+ current      Name of the current page                  Current page: MV_PAGE
 
-=head2 I<email>
+ Other_Charactreristics            
+ Invalidates cache                 No
+ Macro                             No
+ Has end tag                       [/bar-button]
 
-=head2 I<formel>
+B<Tag expansion example:>
 
-=head2 I<rand>
+To build a simple '3-button' menu bar one could put the following on
+each of the pages. The results of this code for page2 are shown below.
 
-=head2 I<save_cart>
+        <table><tr>
+        [bar-button page=page1]
+        <TD><A HREF="[area page1]">PAGE-1</A></TD>
+        [selected]
+        <TD bgcolor="red"><A HREF="[area page1]"><B>PAGE-1-selected</B></A></TD>
+        [/selected]
+        [/bar-button]
+        [bar-button page=page2]
+        <TD><A HREF="[area page2]">PAGE-2</A></TD>
+        [selected]
+        <TD bgcolor="red"><A HREF="[area page2]"><B>PAGE-2-selected</B></A></TD>
+        [/selected]
+        [/bar-button]
+        [bar-button page=page3]
+        <TD><A HREF="[area page3]">PAGE-3</A></TD>
+        [selected]
+        <TD bgcolor="red"><A HREF="[area page3]"><B>PAGE-3-selected</B></A></TD>
+        [/selected]
+        [/bar-button]
+        </tr></table>
+------------------------------------------------------
+        PAGE-1    PAGE-2-selected    PAGE-3
 
-=head2 I<ups_query>
+B<ASP-like Perl call:>
 
-=head2 I<convert_date>
+    $Tag->button_bar(  { page => $page,
+                     current  => $current,
+                         body => $body}  );
 
-=head2 I<email_raw>
+or similarly,
 
-=head2 I<get_url>
+    $Tag->area($page, $current, $body);
 
-=head2 I<reconfig>
+See Also
 
-=head2 I<summary>
+bar_link routine
 
-=head2 I<usertrack>
+Description
 
-=head2 I<db_date>
+Displays content based on current page. The content between the
+[selected][/selected] tags will be displayed only if the name of the
+curent page matches the name that was passed to the page parameter
+(page=page-name). The default content will be displayed when there is
+no match.
 
-=head2 I<fcounter>
+I<page>
 
-=head2 I<load_cart>
+The name of the page for which this definition of the bar-button is
+defined.
 
-=head2 I<reconfig_time>
+I<current>
 
-=head2 I<table_organize>
+The name of the current page. Defaults to current page MV_PAGE.
 
-=head2 I<var>
+=head2 button
+
+=head2 convert_date
+
+This tag converts a given date format into another format.
+
+Summary
+
+    [convert_date day* other_named_attributes>[/convert_date]
+    [convert_date day=n* other_named_attributes[/convert_date]
+
+B<Positional parameters: >The first line shows the usage with
+positional parameters (given in order). The second line shows usage
+with named parameters.
+
+
+
+ Parameters   Description                               Default
+ days         The number of days from or before today   none
+
+ Attributes                        Default
+ format                            '%d-%b-%Y %I:%M%p' or '%d-%b-%Y'
+ fmt - Alias for format            none
+ raw                               none
+ zerofix                           none
+
+ Other_Charactreristics            
+ Invalidates cache                 No
+ Macro                             No
+ Has end tag                       [/convert_date]
+
+B<Tag expansion example:>
+
+  a. [convert-date][/convert-date]
+  b. [convert-date 1][/convert-date]
+  c. [convert-date -1][/convert-date]
+  d. [convert-date]2001-5-1[/convert-date]
+  e. [convert-date]2001-05-01[/convert-date]
+  f. [convert-date]20010515[/convert-date]
+  g. [convert-date raw=1]2001-05-18[/convert-date]
+  h. [convert-date fmt="%d-%m-%Y"]2001-05-18[/convert-date]
+  i. [convert-date]200 1 -  --051 =9[/convert-date]
+  j. [convert-date]2001 -  --05 -20 11 1 5[/convert-date]
+  k. [convert-date raw=1]2001-05-21 11:15[/convert-date]
+------------------------------------------------------
+  a. 18-May-2001 03:15AM (todays day and time)
+  b. 19-May-2001 03:15AM (today + 1 day)
+  c. 17-May-2001 03:15AM (today - 1 day)
+  d. 01-May-2001
+  e. 01-May-2001
+  f. 15-May-2001
+  g. 20010518
+  h. 18-05-2001
+  i. 19-May-2001
+  j. 20-May-2001 11:15AM
+  k. 200105211115
+
+B<ASP-like Perl call:>
+
+    $Tag->convert_date( { day => 1 } );
+
+    $Tag->convert_date( { body => "2001-05-19 15:35",
+                       format => "%d-%m-%Y %H:%M", } );
+
+or similarly with positional parameters,
+
+    $Tag->convert_date( 1 );
+
+Description
+
+This tag converts almost any given date format into another, possibly
+user defined, format.
+
+I<days>
+
+Number of days from or before today's date and time. Will only be used
+if nothing is supplied between the tags.
+
+I<format>
+
+POSIX time format string of your choice. See Unix strftime(3) manpage
+for complete details.
+
+I<raw>
+
+If this option is set to true, will display given date in raw format,
+e.g. yyyymmdd or yyyymmddHHMM.
+
+I<zerofix>
+
+Strips leading zeroes from numbers.
+
+=head2 db_date
+
+This tag returns the time of last access of the database source file.
+
+Summary
+
+    [db_date table* format*]
+
+B<Positional parameters: >The first line shows the usage with
+positional parameters (given in order). The second line shows usage
+with named parameters.
+
+
+
+ Parameters   Description                               Default
+ table        Table name.                               products
+ format       POSIX time format string                  %A %d %b %Y
+
+ Other_Charactreristics            
+ Invalidates cache                 No
+ Macro                             No
+ Has end tag                       No
+
+B<Tag expansion example:>
+
+   [db-date]
+   [db-date cat]
+   [db-date table=cat format="%d %b %Y"]
+------------------------------------------------------
+   Wednesday 02 May 2001 (products.txt)
+   Wednesday 03 May 2001 (cat.txt)
+   03 May 2001 (cat.txt)
+
+B<ASP-like Perl call:>
+
+    $Tag->db_date( { table => cat,
+                    format => "%d %b %Y", } );
+
+or similarly with positional parameters,
+
+    $Tag->db_date( "cat", "%d %b %Y" );
+
+Description
+
+This tag returns the time of last access of the database source file.
+
+I<table>
+
+Table name. Defaults to products if not specified.
+
+I<format>
+
+POSIX time format string. See Unix strftime(3) manpage for details.
+Defaults to '%A %d %b %Y' when not specified.
+
+=head2 delete_cart
+
+This tag deletes a cart from the userdb.
+
+Summary
+
+    [delete_cart nickname]
+    [delete_cart nickname="cart-name"]
+
+B<Positional parameters: >The first line shows the usage with
+positional parameters (given in order). The second line shows usage
+with named parameters.
+
+
+
+ Parameters   Description                               Default
+ nickname     Must be an existing nickname              none
+
+ Other_Charactreristics            
+ Invalidates cache                 No
+ Macro                             No
+ Has end tag                       No
+
+B<Tag expansion example:>
+
+   [delete_cart mycart]
+   [delete_cart nickname="mycart"]
+------------------------------------------------------
+
+B<ASP-like Perl call:>
+
+    $Tag->delete_cart( { nickname => "mycart", } );
+
+or similarly with positional parameters,
+
+    $Tag->delete_cart( "mycart" );
+
+See Also
+
+I<userdb>, I<load_cart>, I<save_cart> and pages
+templates/components/saved_carts_list_small, pages/saved_carts.html
+for more examples.
+
+Description
+
+Deletes a cart with name nickname from the user database. Basically
+the same as [userdb function=delete_cart nickname=mcart].
+
+I<nickname>
+
+Nickname of cart to be deleted.
+
+=head2 email
+
+This tag takes a recipient address and a body text and uses the
+SendmailProgram with -t option to send email.
+
+Summary
+
+    [email to subject* reply* from* extra*]Your message[/email]
+    [email to=to_address subject=subject reply=reply_address
+        from=from_address extra=extra_headers]Your message[/email]
+
+B<Positional parameters: >The first line shows the usage with
+positional parameters (given in order). The second line shows usage
+with named parameters.
+
+
+
+ Parameters   Description                               Default
+ to           Email address of recipient                none
+ subject      Subject line                              String: <no subject>
+ reply        Email address to be used for the reply-to headernone
+ from         Senders email address                     First address in MailOrderTo configuration variable
+ extra        Additional headers to be included         none
+
+ Other_Charactreristics            
+ Invalidates cache                 No
+ Macro                             No
+ Has end tag                       [/email]
+
+B<Tag expansion example:>
+
+   [email
+          to="foo@bar.com"
+     subject="Greetings"
+        from="bar@foo.com"
+   ]
+   Hello World
+   [/email]
+------------------------------------------------------
+
+B<ASP-like Perl call:>
+
+    $Tag->email(  { to => $to,
+                  from => $from,
+               subject => $subject,
+                 reply => $reply,
+                 extra => $extra,
+                  body => $body }  );
+
+or similarly,
+
+    $Tag->email($to, $subject, $reply, $from, $extra, $body);
+
+See Also
+
+I<email_raw> and etc/mail_receipt, pages/process_return.html,
+pages/stock-alert-added.html for examples.
+
+Description
+
+Will send the content between the [email][/email] tags as an email to
+the recipient (to) using the SendmailProgram with -t option.
+
+extra
+
+Extra headers to be included. Example: Errors-To:
+errors@yourdomain.com
+
+from
+
+Email address identifying the sender of the message. Will use the
+first email address of the MailOrderTo configuration variable if it is
+not supplied.
+
+reply
+
+Email address to be used for the Reply-to header. No Reply-to header
+will be present if this parameter is omitted.
+
+subject
+
+Short text describing the content of the message. The Subject line of
+an email message. The string <no subject> will be substituted if this
+parameter is omitted.
+
+to
+
+Valid email address(es) of the recipient(s). This parameter is
+required.
+
+=head2 email_raw
+
+This tag takes a raw email message, B<including headers>, and uses the
+SendmailProgram with -t option.
+
+Summary
+
+    [email_raw]Your message incuding headers[/email_raw]
+
+ Other_Charactreristics            
+ Invalidates cache                 No
+ Macro                             No
+ Has end tag                       [/email_raw]
+
+B<Tag expansion example:>
+
+   [email_raw]
+From: foo@bar.com
+To: bar@foo.com
+Subject: baz
+
+The text of the message.
+   [/email_raw]
+------------------------------------------------------
+
+The headers must be at the beginning of the line, and the header must
+have a valid To: or it will not be delivered.
+
+B<ASP-like Perl call:>
+
+    $Tag->email_raw(  { body => $body }  );
+
+or similarly,
+
+    $Tag->email_raw($body);
+
+See Also
+
+I<email>
+
+Description
+
+Will send the content between the [email_raw][/email_raw] tags as a
+raw email message to the recipient specified in the supplied headers
+using the SendmailProgram with -t option.
+
+=head2 fcounter
+
+=head2 fedex_query
+
+=head2 formel
+
+=head2 get-url
+
+Fetch a URL and return the contents.
+
+Summary
+
+    [get-url url]
+    [get-url url="valid-url" strip=1*]
+
+B<Positional parameters: >The first line shows the usage with
+positional parameters (given in order). The second line shows usage
+with named parameters.
+
+
+
+ Parameters   Description                               Default
+ url          Must be a valid URL. Meaning, you have to supply the protocol.Examplehttp://demo.akopia.com/ftp://ftp.akopia.com/none
+
+ Attributes                        Default
+ strip                             none
+
+ Other_Charactreristics            
+ Invalidates cache                 No
+ Macro                             No
+ Has end tag                       No
+
+B<Tag expansion example:>
+
+   [get-url http://demo.akopia.com/]
+   [get-url url="http://demo.akopia.com/" strip=1]
+------------------------------------------------------
+
+B<ASP-like Perl call:>
+
+    $Tag->get_url( { url => "http://demo.akopia.com/", } );
+
+    $Tag->get_url( { url => "http://demo.akopia.com/",
+                   strip => 1, } );
+
+or similarly with positional parameters,
+
+    $Tag->get_url( "http://demo.akopia.com/" );
+
+Description
+
+Uses the LWP libraries (LWP::Simple) to fetch a URL and returns the
+contents.
+
+I<strip>
+
+If the strip option is set, strips everything up to <body> and
+everything after </body>.
+
+I<url>
+
+Must be a valid URL (including protocol).
+
+=head2 load_cart
+
+This tag loads a cart by name from the userdb.
+
+Summary
+
+    [load_cart nickname]
+    [load_cart nickname="cart-name"]
+
+B<Positional parameters: >The first line shows the usage with
+positional parameters (given in order). The second line shows usage
+with named parameters.
+
+
+
+ Parameters   Description                               Default
+ nickname     Must be an existing nickname.Nickname is constructed from:a name parttime modified (time the cart was saved by save_cart tag)type (c for cart, r for recurring)none
+
+ Other_Charactreristics            
+ Invalidates cache                 No
+ Macro                             No
+ Has end tag                       No
+
+B<Tag expansion example:>
+
+   [load_cart mycart:990102732:c]
+   [load_cart nickname="mycart:990102732:c"]
+------------------------------------------------------
+
+B<ASP-like Perl call:>
+
+    $Tag->load_cart( { nickname => "mycart:990102732:c", } );
+
+or similarly with positional parameters,
+
+    $Tag->load_cart( "mycart:990102732:c" );
+
+See Also
+
+I<userdb>, I<delete_cart>, I<save_cart> and pages
+templates/components/saved_carts_list_small, pages/saved_carts.html
+for more examples.
+
+Description
+
+Loads a cart with name nickname from the user database. It will be
+merged with the current cart. Basically the same as [userdb
+function=get_cart nickname=cartname merge=1].
+
+I<nickname>
+
+Nickname of cart to be loaded. See above.
+
+=head2 loc
+
+=head2 rand
+
+=head2 reconfig
+
+=head2 reconfig_time
+
+=head2 reconfig_wait
+
+=head2 save_cart
+
+This tag saves the current cart or recurring order in the userdb under
+a given name.
+
+Summary
+
+    [save_cart nickname recurring]
+    [save_cart nickname="cart-name" recurring=1]
+
+B<Positional parameters: >The first line shows the usage with
+positional parameters (given in order). The second line shows usage
+with named parameters.
+
+
+
+ Parameters   Description                               Default
+ nickname     Label for the cart.                       none
+ recurring    Set to true if recurring. Set to false, or ommit if cart.none
+
+ Other_Charactreristics            
+ Invalidates cache                 No
+ Macro                             No
+ Has end tag                       No
+
+B<Tag expansion example:>
+
+   [save_cart mycart]
+   [save_cart nickname=mycart recurring=1]
+------------------------------------------------------
+
+B<ASP-like Perl call:>
+
+    $Tag->save_cart( { nickname => mycart,
+                      recurring => 1, } );
+
+or similarly with positional parameters,
+
+    $Tag->save_cart( "mycart", "1" );
+
+See Also
+
+I<userdb>, I<delete_cart>, I<load_cart> and pages
+templates/components/saved_carts_list_small, pages/saved_carts.html
+for more examples.
+
+Description
+
+Saves the current cart with name nickname in the user database.
+Basically the same as [userdb function=set_cart nickname=cartname]
+
+I<nickname>
+
+Nickname for the current cart to be saved. You can use same nickname
+for different carts. An index will be added if there are more carts
+with the same nickname.
+
+I<recurring>
+
+Set to true if recurring. Set to false, or simply ommit it, if it is a
+cart.
+
+=head2 summary
+
+This tag calculates column totals.
+
+Summary
+
+    [summary amount]
+    [summary amount=n.nn other_named_attributes]
+
+B<Positional parameters: >The first line shows the usage with
+positional parameters (given in order). The second line shows usage
+with named parameters.
+
+
+
+ Parameters   Description                               Default
+ amount       Numerical value to be added to previous totalnone
+
+ Attributes                        Default
+ currency                          none
+ format                            none
+ hide                              none, no hiding
+ name                              ONLY0000, internal use only
+ reset                             none
+ total                             none
+
+ Other_Charactreristics            
+ Invalidates cache                 No
+ Macro                             No
+ Has end tag                       No
+
+B<Tag expansion example:>
+
+   [loop list="10 20 30.5"]
+   [summary amount="[loop-code]" hide=1]
+   [/loop]
+   [summary total=1 format="%.3f"]
+   [summary total=1 currency=1]
+------------------------------------------------------
+   60.500
+   $60.50
+
+B<ASP-like Perl call:>
+
+    $Tag->summary( { amount => 10.5,
+                       hide => 1, } );
+
+    $Tag->summary( { amount => 25,
+                       name => mytotal,
+                   currency => 1, } );
+
+or similarly with positional parameters,
+
+    $Tag->summary( 10.5, $attribute_hash_reference );
+
+See Also
+
+templates/components/cart, pages/ord/checkout.html for more examples.
+
+Description
+
+The summary tag provides you with an easy way to calculate and display
+totals. The display of the amounts is fully customizable. You can hide
+diplay, or you can show the amounts with the proper currency
+formatting according to the locale, or you can define your own
+formatting. Any number of summaries can be kept on a page.
+
+I<currency>
+
+The amount or total will be diplayed according to the currency
+formatting of the current locale if this attribute is set to true (non
+blank or zero).
+
+I<format>
+
+You can choose any formatting of the amount you like. Just set the
+format attribute to the desired formatting string (%s, %.2f etc.).
+When both, currency and format attributes are set, the format
+attribute will take precedence. So it doesn't make much sense to set
+them both at the same time.
+
+I<hide>
+
+Will suppress the display of amount when set to true.
+
+I<name>
+
+You can calculate as many totals as you like on the same page. Just
+supply a different label for each summary.
+
+I<reset>
+
+Will erase the total(s) if set to true. Be careful tough. It will
+reset ALL totals when you have no name attribute supplied. If you have
+provided a label for the name atribute then it will only reset the
+total for that particular label. All others won't be touched.
+
+I<total>
+
+Will show the total instead of the amount if set to true.
+
+=head2 table_organize
+
+Takes an unorganized set of table cells and organizes them into rows
+based on the number of columns.
+
+Summary
+
+    [table-organize cols* other_named_attributes]
+             [loop ....] <td> [loop-tags] </td> [/loop]
+        [/table-organize]
+
+    [table-organize cols=n* other_named_attributes]
+             [loop ....] <td> [loop-tags] </td> [/loop]
+        [/table-organize]
+
+B<Positional parameters: >The first line shows the usage with
+positional parameters (given in order). The second line shows usage
+with named parameters.
+
+
+
+ Parameters   Description                               Default
+ cols         Number of columns.                        2
+ columns      Alias for cols.                           2
+
+ Attributes                        Default
+ caption                           none
+ columnize                         none
+ embed                             none
+ filler                            &nbsp;
+ limit                             none
+ pretty                            none
+ rows                              none
+ table                             none
+ td                                none
+ tr                                none
+
+ Other_Charactreristics            
+ Invalidates cache                 No
+ Macro                             No
+ Has end tag                       [/table-organize]
+
+B<Tag expansion example:>
+
+This example produces a table that (1) alternates rows with background
+colors "#EEEEEE" and "#FFFFFF", and (2) aligns the columns right,
+center, left:
+
+        [table-organize
+            cols=3
+            pretty=1
+            tr.0='bgcolor="#EEEEEE"'
+            tr.1='bgcolor="#FFFFFF"'
+            td.0='align=right'
+            td.1='align=center'
+            td.2='align=left'
+            ]
+            [loop list="1 2 3 1a 2a 3a 1b"] <td> [loop-code] </td> [/loop]
+        [/table-organize]
+------------------------------------------------------
+        <tr bgcolor="#EEEEEE">
+                <td align=right>1</td>
+                <td align=center>2</td>
+                <td align=left>3</td>
+        </tr>
+        <tr bgcolor="#FFFFFF">
+                <td align=right>1a</td>
+                <td align=center>2a</td>
+                <td align=left>3a</td>
+        </tr>
+        <tr bgcolor="#EEEEEE">
+                <td align=right>1b</td>
+                <td align=center>&nbsp;</td>
+                <td align=left>&nbsp;</td>
+        </tr>
+
+If the attribute columnize=1 is present, the result will look like:
+
+            <tr bgcolor="#EEEEEE">
+                    <td align=right>1</td>
+                    <td align=center>1a</td>
+                    <td align=left>1b</td>
+            </tr>
+            <tr bgcolor="#FFFFFF">
+                    <td align=right>2</td>
+                    <td align=center>2a</td>
+                    <td align=left>&nbsp;</td>
+            </tr>
+            <tr bgcolor="#EEEEEE">
+                    <td align=right>3</td>
+                    <td align=center>3a</td>
+                    <td align=left>&nbsp;</td>
+            </tr>
+
+See the source for more ideas on how to extend this tag.
+
+B<ASP-like Perl call:>
+
+    $Tag->table_organize( { cols => 3,
+                            pretty => 1, }, $BODY );
+
+or similarly with positional parameters:
+
+    $Tag->table_organize( $cols, $attribute_hash_reference, $BODY );
+
+See Also
+
+pages/flypage.html, pages/quantity.html,
+templates/components/best_horizontal, templates/components/cart,
+templates/components/cross_horizontal, templates/components/random,
+templates/components/random_vertical, templates/components/upsell
+
+Description
+
+Takes an unorganized set of table cells and organizes them into rows
+based on the number of columns; it will also break them into separate
+tables.
+
+If the number of cells are not on an even modulus of the number of
+columns, then "filler" cells are pushed on.
+
+I<cols (or columns)>
+
+Number of columns. This argument defaults to 2 if not present.
+
+I<rows>
+
+Optional number of rows. Implies "table" parameter.
+
+I<table>
+
+If present, will cause a surrounding <TABLE> </TABLE> pair with the
+attributes specified in this option.
+
+I<caption>
+
+Table <CAPTION> container text, if any. Can be an array.
+
+I<td>
+
+Attributes for table cells. Can be an array.
+
+I<tr>
+
+Attributes for table rows. Can be an array.
+
+I<columnize>
+
+Will display cells in (newspaper) column order, i.e. rotated.
+
+I<pretty>
+
+Adds newline and tab characters to provide some reasonable indenting.
+
+I<filler>
+
+Contents to place in empty cells put on as filler. Defaults to
+"&nbsp;".
+
+I<limit>
+
+Maximum number of cells to use. Truncates extra cells silently.
+
+I<embed>
+
+If you want to embed other tables inside, make sure they are called
+with lower case <td> elements, then set the embed tag and make the
+cells you wish to organize be <TD> elements. To switch that sense, and
+make the upper-case or mixed case be the ignored cells, set the embed
+parameter to "lc".
+
+    [table-organize embed=lc]
+                <td>
+                        <TABLE>
+                                <TR>
+                                <TD> something
+                                </TD>
+                                </TR>
+                        </TABLE>
+                </td>
+    [/table-organize]
+
+or
+
+    [table-organize embed=uc]
+                <TD>
+                        <table>
+                                <tr>
+                                <td> something
+                                </td>
+                                </tr>
+                        </table>
+                </TD>
+    [/table-organize]
+
+The "tr", "td", and "caption" attributes can be specified with
+indexes; if they are, then they will alternate according to the
+modulus.
+
+The "td" option array size should probably always equal the number of
+columns; if it is bigger, then trailing elements are ignored. If it is
+smaller, no attribute is used.
+
+=head2 title_bar
+
+Creates a quick title bar.
+
+Summary
+
+    [title-bar width size color]My title[/title-bar]
+    [title-bar width=600 size=5 color="#ff0000"]My title[/title-bar]
+
+B<Positional parameters: >The first line shows the usage with
+positional parameters (given in order). The second line shows usage
+with named parameters.
+
+
+
+ Parameters   Description                               Default
+ color        Background color the bar.Defaults tovariable HEADERBG or#444444HEADERBG or #444444
+ size         Font size                                 6
+ width        Width of the title bar                    500
+
+ Other_Charactreristics            
+ Invalidates cache                 No
+ Macro                             No
+ Has end tag                       [/title-bar]
+
+B<Tag expansion example:>
+
+   [title-bar 600 5 red]My title[/title-bar]
+   [title-bar width=600 size=5 color="#ff0000"]My title[/title-bar]
+------------------------------------------------------
+
+B<ASP-like Perl call:>
+
+    $Tag->title_bar( { body => "My Title", } );
+
+    $Tag->title_bar( { width => 400,
+                       color => "#0000ff",
+                        body => "My title", } );
+
+or similarly with positional parameters,
+
+    $Tag->title_bar( 600, 5, "red", "My title" );
+
+Description
+
+Quickly adds a title bar to your pages without having to type the html
+each time. Background color, width of the bar and size of the text can
+be customized by setting the appropriate parameter. The text color
+defaults to variable HEADERTEXT or when its not present to white.
+
+I<color>
+
+Sets the background color of the bar. You can set the color as 'red',
+'#ff0000', or 'bgcolor="#ff0000"'.
+
+I<size>
+
+Determines the size of the text. Parameter shoud be set to a value
+accepted by the HTML <font> tag size attribute.
+
+I<width>
+
+Sets the width of the bar.
+
+=head2 ups_query
+
+=head2 usertrack
+
+=head2 var
+
+=head2 xml_generator
+
+This is a quick and dirty tag that generates XML tags based upon one
+of two types of data (delimited and session).
+
+Summary
+
+    [xml-generator type* other_named_attributes][/xml-generator]
+    [xml-generator type=value* other_named_attributes][/xml-generator]
+    [xml-generator type=value* other_named_attributes][][/xml-generator]
+
+*Optional
+
+B<Positional parameters: >The first line shows the usage with
+positional parameters (given in order). The second line shows usage
+with named parameters.
+
+
+
+ Parameters   Description                               Default
+ type         Data type. Delimited or session           delimited
+
+ Attributes                        Default
+ attributes                        none
+ dbdump                            none
+ delimiter                         \t
+ field_names                       &nbsp;
+ separator                         \n
+ toplevel_tag                      'table' for delimited type and 'session' for other type
+ record_tag                        record
+ field_tag                         field
+ key_name                          none
+ spacer                            [\s,]+
+ no_second                         none
+ skip_empty                        none
+
+ Other_Charactreristics            
+ Invalidates cache                 No
+ Macro                             No
+ Has end tag                       [/xml-generator]
+
+B<Tag expansion example:>
+
+ [xml-generator
+    type=delimited
+    attributes="date"
+    date="[tag time]%d-%b-%Y[/tag]"
+    toplevel_tag=products]code  description     price
+[query list=1 sql="select sku, description, price from products" prefix=xml][xml-code]  [xml-param description] [xml-param price]
+[/query][/xml-generator]
+------------------------------------------------------
+<products date="18-May-2001">
+        <record key="os28113">
+                <code>os28113</code>
+                <description>The Claw Hand Rake</description>
+                <price>14.99</price>
+        </record>
+        <record key="os28006">
+                <code>os28006</code>
+                <description>Painters Brush Set</description>
+                <price>29.99</price>
+        </record>
+        ...
+</products>
+
+B<ASP-like Perl call:>
+
+    $Tag->xml_generator( {type => delimited,
+                      toplevel_tag => apex,  }, $BODY );
+
+
+or similarly with positional parameters,
+
+    $Tag->xml_generator( $type, $attribute_hash_reference, $BODY );
+
+Description
+
+I<type>
+
+delimited
+
+Accepts a delimited and separated (default is TAB delimiter and
+newline separator) list of records such as that generated by an
+'[item-list]', '[sql]', or '[loop search=""]' ITL tag.
+
+session
+
+When the type is not delimited, it can contain any hash reference into
+the Interchange session. Examples are:
+
+        values       The form values
+        scratch      Scratch values
+        errors       Error values
+        other        Any other Session key, for example "source" for
+                     [data session source]
+
+If the value is a hash, then it will be sent as an XML record with the
+top level equal to "session", and a second_level tag equal to the hash
+name, and keys as separate XML container tags. If the parameter "that
+is equal to the type" is given, only those fields will be shown.
+Otherwise the entire hash will be shown. For example, this tag:
+
+        [xml-generator type="values" values="fname lname"][/xml-generator]
+
+will generate:
+
+        <session>
+                <values>
+                        <fname>First</fname>
+                        <lname>Last</lname>
+                </values>
+        </session>
+
+if it is a scalar, then only the second level will be done:
+
+        [xml-generator type="cybercash_id"][/xml-generator]
+
+will do the equivalent of:
+
+        <session>
+                <cybercash_id>[data session cybercash_id]</cybercash_id>
+        </session>
+
+So bringing it all together, the following:
+
+        [xml-generator type="values scratch source"
+                       values="fname lname"
+                       scratch="downloads"][/xml-generator]
+will generate:
+
+        <session>
+                <values>
+                        <fname>First</fname>
+                        <lname>Last</lname>
+                </values>
+                <scratch>
+                        <downloads>0</downloads>
+                </scratch>
+                <source>Partner1</source>
+        </session>
+
+I<no_second>
+
+Prevents the second-level tags from being generated. Extending the
+last example in the "session" type above, this
+
+        [xml-generator  type="values scratch source"
+                        no_second=1
+                        values="fname lname"
+                        scratch="downloads"][/xml-generator]
+will generate:
+
+        <session>
+                <fname>First</fname>
+                <lname>Last</lname>
+                <downloads>0</downloads>
+                <source>Partner1</source>
+        </session>
+
+I<attributes>
+
+The attributes (if any) to pass on to the top level tag. For instance,
+
+        [xml-generator
+              attributes="date"
+              date="[tag time]%d-%b-%Y[/tag]"
+              toplevel_tag=order
+        ][/xml-generator]
+
+will generate a toplevel tag pair of:
+
+        <order date="18-Mar-2001">
+        </order>
+
+I<dbdump>
+
+Will dump all tables in the catalog when this attribute is set true.
+Used attributes are "toplevel_tag", "record_tag", "field_tag", and
+"skip_empty" or default values (resp. 'table', 'record', 'field').
+
+ Output format:
+    <database name="catalogname">
+        <toplevel_tag name="tablename1">
+            <record_tag key="value of first field-1">
+                <field_tag name="fieldname1">fieldvalue1</field_tag>
+                <field_tag name="fieldname2">fieldvalue2</field_tag>
+                        </record_tag>
+            <record_tag key="value of first field-2">
+                <field_tag name="fieldname1">fieldvalue1</field_tag>
+                <field_tag name="fieldname2">fieldvalue2</field_tag>
+                        </record_tag>
+                </toplevel_tag>
+        <toplevel_tag name="tablename2">
+            <record_tag key="value of first field-1">
+                <field_tag name="fieldname1">fieldvalue1</field_tag>
+                <field_tag name="fieldname2">fieldvalue2</field_tag>
+                        </record_tag>
+                </toplevel_tag>
+        </database>
+
+B<Important note:> All tables are read into memory. So be warned, this
+could be a real memory hog.
+
+Ton Verhagen's proposal:
+
+=over 4
+
+=item 1.
+
+Add option to select tables. E.g. dump_tables="products cat area"
+and/or
+
+=item 2.
+
+Add option to select an output file. E.g. dump_file="tabledump.XML".
+Send output to file line by line.
+
+=back
+
+I<delimiter>
+
+Character used as delimiter of fields in delimited data type. Defaults
+to a tab character.
+
+I<field_names>
+
+Space or comma-delimited list of field names to be used for delimited
+data type. Should be in the same order as in the data list provided
+(between the tags).
+
+Another way of providing the field names would be:
+
+    [xml-generator .....]fieldname-1    fieldname-2     fieldname-3
+        [field value list
+         delimited by option delimiter and
+         separated by option separator][/xml-generator]
+
+B<Note: >Field name list B<must> be tab delimited.
+
+Ton Verhagen's humble opinion: This should change in future versions!
+Use option delimiter instead.
+
+I<separator>
+
+Character used as line separator in list between
+[xml-separator][xml-separator] tags and in output 'session' data type.
+Defaults to a newline, "\n".
+
+I<toplevel_tag>
+
+The toplevel tag name to use. Defaults to "table" for the 'dbdump
+mode' and delimited type, and "session" for the other.
+
+I<record_tag>
+
+Defines the tag name for the record tag. Defaults to 'record'. Used
+for 'dbdump mode' and delimited type.
+
+I<field_tag>
+
+Defines the tag name for the field tag. Defaults to 'field'. Only used
+in 'dbdump mode'.
+
+I<key_name>
+
+Only used in delimited data type. Defines fieldname to determine key
+value in "record_tag".
+
+    <record_tag key="value of field with name defined by key_name"> ....
+
+I<spacer>
+
+Character used as delimiter in type parameter definition and
+corresponding attributes. Defaults to '[\s,]+' (one or more whitespace
+or comma).
+
+    [xml-generator type="values|scratch"
+                       values="value1|value2"
+                                   scratch="scratch1|scratch2"
+                                   spacer="|"
+                                   ][/xml-generator]
+
+I<skip_empty>
+
+Only used in I<dbdump> mode (dbdump=1). Will skip empty fields if this
+attribute is set true.
 
 Tag Entry Format
 
@@ -9582,7 +11716,9 @@ Tag Entry Format
 Alias: B<pedagogy>, B<dummy_alias>
 
 B<Note: >[B<dummy> ...], [B<pedagogy> ...] and [B<dummy-alias> ...]
-are equivalent.
+are equivalent. If the tag has an endtag, you must not mix aliases
+between the tag and its endtag (i.e., [dummy] ... [/pedagogy] would
+not work).
 
 
 
@@ -9591,13 +11727,12 @@ not an actual tag.
 
 Summary
 
-    [dummy first second other_named_attributes][/dummy]
+    [dummy first second][/dummy]
     [dummy first=first_args second=second_args other_named_attributes][/dummy]
 
-B<Positional parameters>
-
-The first line shows the usage with positional parameters (given in
-order). The second line shows usage with named parameters.
+B<Positional parameters: >The first line shows the usage with
+positional parameters (given in order). The second line shows usage
+with named parameters.
 
 
 
@@ -9613,7 +11748,7 @@ order). The second line shows usage with named parameters.
  interpolate (body)                Yes
  reparse                           No
 
- Other_Charactreristics            
+ Other_Characteristics             
  Invalidates cache                 No
  Macro                             No
  Has end tag                       [/dummy]
@@ -9644,14 +11779,16 @@ the actual tag syntax or expansion.
 
 
 
-ASP-like Perl call
+B<ASP-like Perl call:>
 
-    $Tag->area(  { href => URI_base,
-                   arg  => CGI_GET_arguments, }  );
+    $Tag->dummy(  { first  => 'goober',
+                    second => 'foobar',
+                    more   => $snafu, },  $body_text  );
+
 
 or similarly,
 
-    $Tag->area($href, $arg, $attribute_hash_reference);
+    $Tag->dummy($first, $second, $attribute_hash_reference, $body_text);
 
 Description
 
@@ -9790,9 +11927,10 @@ tags using the standard [tagname] syntax.
 
 =item *
 
-However, if you want to HTML-comment out an interchange tag in content
-that will be fed raw to a browser, you must include whitespace, like
-this, '<!-- [tagname] -->'.
+However, if you want to HTML-comment out an Interchange tag in content
+that will be fed raw to a browser, you must include whitespace between
+the HTML comment delimiters and the tag, like this, '<!--  [tagname] 
+-->'.
 
 =back
 
@@ -9812,7 +11950,26 @@ interpolate settings, of course).
 =item *
 
 Some tags (e.g., [loop]) process I<prefix>-tags in their contained
-body text. The I<prefix>-tags are not handled recursively.
+body text. Hence, the I<prefix>-tags are not handled recursively.
+
+=item *
+
+Some tags are interpreted in the lib/Vend/Parse.pm:start routine. You
+cannot call them with the '$Tag->I<tagname>' syntax. They S<are:>
+
+=over 12
+
+=item *
+
+The [goto] tag. Note also that the goto tag handles the
+[label] tag.
+
+
+=item *
+
+The [bounce] tag.
+
+=back
 
 =back
 
@@ -9884,92 +12041,92 @@ S<order:>
 
 =item 1.
 
-Check for I<prefix>_line and prepare for it if present (does not
-process I<prefix>-line at this time)
+Check for I<prefix>_B<line> and prepare for it if present (does not
+process I<prefix>-B<line> at this time)
 
 =item 2.
 
-I<prefix>-sub definitions processed
+I<prefix>-B<sub> definitions processed
 
 =item 3.
 
-if-I<prefix>-I<etc.> nesting resolved
+B<if>-I<prefix>-I<etc.> nesting resolved
 
 =item 4.
 
-I<prefix>-alternate processed
+I<prefix>-B<alternate> processed
 
 =item 5.
 
-if-I<prefix>-param  processed
+B<if>-I<prefix>-B<param>  processed
 
 =item 6.
 
-if-I<prefix>-pos  processed
+B<if>-I<prefix>-B<pos>  processed
 
 =item 7.
 
-I<prefix>-pos  processed
+I<prefix>-B<pos>  processed
 
 =item 8.
 
-if-I<prefix>-field  processed
+B<if>-I<prefix>-B<field>  processed
 
 =item 9.
 
-I<prefix>-line  processed
+I<prefix>-B<line>  processed
 
 =item 10.
 
-I<prefix>-increment  processed
+I<prefix>-B<increment>  processed
 
 =item 11.
 
-I<prefix>-accessories  processed
+I<prefix>-B<accessories>  processed
 
 =item 12.
 
-I<prefix>-options  processed
+I<prefix>-B<options>  processed
 
 =item 13.
 
-I<prefix>-code  processed
+I<prefix>-B<code>  processed
 
 =item 14.
 
-I<prefix>-description  processed
+I<prefix>-B<description>  processed
 
 =item 15.
 
-I<prefix>-field  processed
+I<prefix>-B<field>  processed
 
 =item 16.
 
-I<prefix>-price  processed
+I<prefix>-B<price>  processed
 
 =item 17.
 
-I<prefix>-change  processed
+I<prefix>-B<change>  processed
 
 =item 18.
 
-I<prefix>-calc  processed
+I<prefix>-B<calc>  processed
 
 =item 19.
 
-I<prefix>-exec  processed
+I<prefix>-B<exec>  processed
 
 =item 20.
 
-I<prefix>-filter  processed
+I<prefix>-B<filter>  processed
 
 =item 21.
 
-I<prefix>-last  processed
+I<prefix>-B<last>  processed
 
 =item 22.
 
-I<prefix>-next  processed
+I<prefix>-B<next>  processed
 
 =item 23.
 
@@ -9988,138 +12145,138 @@ In hash-list context, subtags are processed in the following S<order:>
 
 =item 1.
 
-I<prefix>-sub definitions processed
+I<prefix>-B<sub> definitions processed
 
 =item 2.
 
-if-I<prefix>-I<etc.> nesting resolved
+B<if>-I<prefix>-I<etc.> nesting resolved
 
 =item 3.
 
-I<prefix>-alternate processed
+I<prefix>-B<alternate> processed
 
 =item 4.
 
-I<prefix>-line  processed
+I<prefix>-B<line>  processed
 
 =item 5.
 
-if-I<prefix>-param  processed
+B<if>-I<prefix>-B<param>  processed
 
 =item 6.
 
-if-I<prefix>-field  processed
+B<if>-I<prefix>-B<field>  processed
 
 =item 7.
 
-if-I<prefix>-modifier  processed (if-I<prefix>-param and
-if-I<prefix>-modifier are functionally identical except for parse
-order)
+B<if>-I<prefix>-B<modifier>  processed (B<if>-I<prefix>-B<param> and
+B<if>-I<prefix>-B<modifier> are functionally identical except for
+parse order)
 
 =item 8.
 
-I<prefix>-increment  processed
+I<prefix>-B<increment>  processed
 
 =item 9.
 
-I<prefix>-accessories  processed
+I<prefix>-B<accessories>  processed
 
 =item 10.
 
-I<prefix>-options  processed
+I<prefix>-B<options>  processed
 
 =item 11.
 
-I<prefix>-sku  processed
+I<prefix>-B<sku>  processed
 
 =item 12.
 
-I<prefix>-code  processed
+I<prefix>-B<code>  processed
 
 =item 13.
 
-I<prefix>-quantity  processed
+I<prefix>-B<quantity>  processed
 
 =item 14.
 
-I<prefix>-modifier  processed
+I<prefix>-B<modifier>  processed
 
 =item 15.
 
-I<prefix>-param  processed
+I<prefix>-B<param>  processed
 
 =item 16.
 
-I<prefix>-quantity-name  processed
+I<prefix>-B<quantity-name>  processed
 
 =item 17.
 
-I<prefix>-modifier-name  processed
+I<prefix>-B<modifier-name>  processed
 
 =item 18.
 
-I<prefix>-subtotal  processed
+I<prefix>-B<subtotal>  processed
 
 =item 19.
 
-I<prefix>-discount-subtotal  processed
+I<prefix>-B<discount-subtotal>  processed
 
 =item 20.
 
-I<prefix>-code  processed again differently (operating on new
-instances of I<prefix>-code in output of above?)
+I<prefix>-B<code>  processed again differently (operating on new
+instances of I<prefix>-B<code> in output of above?)
 
 =item 21.
 
-I<prefix>-field  processed
+I<prefix>-B<field>  processed
 
 =item 22.
 
-I<prefix>-description  processed
+I<prefix>-B<description>  processed
 
 =item 23.
 
-I<prefix>-price  processed
+I<prefix>-B<price>  processed
 
 =item 24.
 
-I<prefix>-discount-price  processed
+I<prefix>-B<discount-price>  processed
 
 =item 25.
 
-I<prefix>-difference  processed
+I<prefix>-B<difference>  processed
 
 =item 26.
 
-I<prefix>-discount  processed
+I<prefix>-B<discount>  processed
 
 =item 27.
 
-I<prefix>-change  processed
+I<prefix>-B<change>  processed
 
 =item 28.
 
-I<prefix>-tag  processed (*** CHECK THIS TAG NAME ***)
+I<prefix>-B<tag>  processed (*** CHECK THIS TAG NAME ***)
 
 =item 29.
 
-I<prefix>-calc  processed
+I<prefix>-B<calc>  processed
 
 =item 30.
 
-I<prefix>-exec  processed
+I<prefix>-B<exec>  processed
 
 =item 31.
 
-I<prefix>-filter  processed
+I<prefix>-B<filter>  processed
 
 =item 32.
 
-I<prefix>-last  processed
+I<prefix>-B<last>  processed
 
 =item 33.
 
-I<prefix>-next  processed
+I<prefix>-B<next>  processed
 
 =item 34.
 
@@ -10135,6 +12292,8 @@ containing tag)
 Search and Form Variables
 
 Variable Names
+
+I<other>
 
  Name                scan   Type   Description
  mv_all_chars        ac     S      Turns on punctuation matching
@@ -10225,67 +12384,67 @@ Abbreviations
 
 The two-letter abbreviations are mapped with these letters:
 
- Abbr                              Long name
- DL                                mv_raw_dict_look
- MM                                mv_more_matches
- SE                                mv_raw_searchspec
- ac                                mv_all_chars
- ar                                mv_arg
- bd                                mv_base_directory
- bs                                mv_begin_string
- ck                                mv_cache_key
- co                                mv_coordinate
- cs                                mv_case
- cv                                mv_verbatim_columns
- de                                mv_dict_end
- df                                mv_dict_fold
- di                                mv_dict_limit
- dl                                mv_dict_look
- do                                mv_dict_order
- dp                                mv_delay_page
- dr                                mv_record_delim
- em                                mv_exact_match
- er                                mv_spelling_errors
- fi                                mv_search_file
- fm                                mv_first_match
- fn                                mv_field_names
- hs                                mv_head_skip
- id                                mv_session_id
- il                                mv_index_delim
- ix                                mv_index_delim
- lb                                mv_search_label
- lo                                mv_list_only
- lr                                mv_line_return
- lr                                mv_search_line_return
- ml                                mv_matchlimit
- mm                                mv_max_matches
- mp                                mv_profile
- ms                                mv_min_string
- ne                                mv_negate
- np                                mv_nextpage
- nu                                mv_numeric
- op                                mv_column_op
- os                                mv_orsearch
- pc                                mv_pc
- ra                                mv_return_all
- rd                                mv_return_delim
- rf                                mv_return_fields
- rg                                mv_range_alpha
- rl                                mv_range_look
- rm                                mv_range_min
- rn                                mv_return_file_name
- rr                                mv_return_reference
- rs                                mv_return_spec
- rx                                mv_range_max
- se                                mv_searchspec
- sf                                mv_search_field
- si                                mv_search_immediate
- sp                                mv_search_page
- sq                                mv_sql_query
- st                                mv_searchtype
- su                                mv_substring_match
- tf                                mv_sort_field
- to                                mv_sort_option
- un                                mv_unique
- va                                mv_value
+ Abbr  Long name
+ DL    mv_raw_dict_look
+ MM    mv_more_matches
+ SE    mv_raw_searchspec
+ ac    mv_all_chars
+ ar    mv_arg
+ bd    mv_base_directory
+ bs    mv_begin_string
+ ck    mv_cache_key
+ co    mv_coordinate
+ cs    mv_case
+ cv    mv_verbatim_columns
+ de    mv_dict_end
+ df    mv_dict_fold
+ di    mv_dict_limit
+ dl    mv_dict_look
+ do    mv_dict_order
+ dp    mv_delay_page
+ dr    mv_record_delim
+ em    mv_exact_match
+ er    mv_spelling_errors
+ fi    mv_search_file
+ fm    mv_first_match
+ fn    mv_field_names
+ hs    mv_head_skip
+ id    mv_session_id
+ il    mv_index_delim
+ ix    mv_index_delim
+ lb    mv_search_label
+ lo    mv_list_only
+ lr    mv_line_return
+ lr    mv_search_line_return
+ ml    mv_matchlimit
+ mm    mv_max_matches
+ mp    mv_profile
+ ms    mv_min_string
+ ne    mv_negate
+ np    mv_nextpage
+ nu    mv_numeric
+ op    mv_column_op
+ os    mv_orsearch
+ pc    mv_pc
+ ra    mv_return_all
+ rd    mv_return_delim
+ rf    mv_return_fields
+ rg    mv_range_alpha
+ rl    mv_range_look
+ rm    mv_range_min
+ rn    mv_return_file_name
+ rr    mv_return_reference
+ rs    mv_return_spec
+ rx    mv_range_max
+ se    mv_searchspec
+ sf    mv_search_field
+ si    mv_search_immediate
+ sp    mv_search_page
+ sq    mv_sql_query
+ st    mv_searchtype
+ su    mv_substring_match
+ tf    mv_sort_field
+ to    mv_sort_option
+ un    mv_unique
+ va    mv_value
 

@@ -136,9 +136,17 @@ directives.
 
 =head2 ActionMap *global*
 
-Specifies an action for use as a default. If the same action is
-specified in catalog.cfg, it will pertain. See ActionMap in that
-section.
+Allows setting of Interchange form actions, usually with a Perl
+subroutine. Actions are page names like:
+
+ process  Perform a processing function
+order    Order items
+scan     Search based on path info
+search   Search based on submitted form variables
+
+The global version of ActionMap applies to all catalogs. If the same
+action is specified in catalog.cfg, it will pertain. See
+ActionMap in that section.
 
 =head2 AddDirective *global*
 
@@ -173,21 +181,23 @@ Default is blank.
 
    AllowGlobal  simple
 
+Using AllowGlobal is never necessary, and is always dangerous in a
+multi-user environment. Its use is not recommended.
+
 =head2 AutoVariable *global*
 
 Specifies directives which should be translated to Variable settings.
 For scalars, the directive name becomes the Variable name and yields
-its value, i.e. DescriptionField becomes
-__DescriptionField__, which would by default be description.
-Array variables have a _N added, where _N is the ordinal index,
-i.e. ProductFiles becomes __ProductFiles_0__,
-__ProductFiles_1__, etc. Hash variables have a _KEY added, i.e.
-SpecialPage becomes __SpecialPage_missing__,
-__SpecialPage_violation, etc. Doesn't handle hash keys that have
+its value, i.e. ErrorFile becomes __ErrorFile__, which would
+by default be error.log. Array variables have a _N added, where
+_N is the ordinal index, i.e. SafeUntrap becomes
+__SafeUntrap_0__, __SafeUntrap_1__, etc. Hash variables
+have a _KEY added, i.e. SysLog becomes __SysLog_command__,
+__SysLog_facility__, etc. Doesn't handle hash keys that have
 non-word characters or whitespace. Only single-level arrays and hashes
 are translated properly.
 
-   AutoVariable  PriceField DescriptionField ProductFiles SpecialPage
+See AutoVariable in catalog.cfg.
 
 =head2 Catalog *global*
 
@@ -366,6 +376,16 @@ Tells Interchange to dump the structure of catalogs and the
 Interchange server to a file with the catalog name and the extension
 .structure. Use this to see how directives have been set.
 
+=head2 EncryptProgram *global*
+
+Specifies the default encryption program that should be used to
+encrypt credit card numbers and other sensitive information. Default
+is gpg if found on the system; then pgpe, if found; then pgp,
+and finally none, disabling encryption.
+
+This is used to set the default in catalog.cfg, which has its own
+independent setting of EncryptProgram.
+
 =head2 Environment *global*
 
 Environment variables to inherit from the calling CGI link program. An
@@ -480,6 +500,11 @@ systems, this wakeup is the only time the server will terminate in
 response to a stop command. Default is 60.
 
    HouseKeeping    5
+
+=head2 Inet_Mode *global*
+
+Determines whether INET-domain sockets will be monitored on startup.
+Overridden by the command-line parameter -i. Default is Yes.
 
 =head2 IpHead *global*
 
@@ -643,6 +668,43 @@ return an error message and refuse to start.
 A value of 'none' will disable the sending of emailed orders. Orders
 must be read from a tracking file, log, or by other means.
 
+=head2 SOAP *global*
+
+If set to Yes, allows handling of SOAP rpc requests.
+
+=head2 SOAP_Host
+
+The list of hosts that are allowed to connect to for SOAP rpc
+requests. Default is localhost 127.0.0.1.
+
+=head2 SOAP_MaxRequests
+
+The maximum number of requests a SOAP rpc server will handle before it
+commits suicide and asks for a replacement server. This prevents
+runaway memory leaks.
+
+=head2 SOAP_Perms
+
+The permissions that should be set on a SOAP UNIX-domain socket.
+Default is 0660, which allows only programs running as the same UID
+as Interchange to access the socket.
+
+=head2 SOAP_Socket
+
+A list of sockets which should be monitored for SOAP requests. If they
+fit the form NNN.NNN.NNN.NNN:PPPP, they are IP addresses and ports for
+monitoring INET-domain sockets, any other pattern is assumed to be a
+file name for monitoring in the UNIX domain.
+
+   SOAP_Socket 12.23.13.31:7770 1.2.3.4:7770 /var/run/interchange/soap
+
+=head2 SOAP_StartServers
+
+The number of SOAP servers which should be started to handle SOAP
+requests. Default is 1.
+
+   SOAP_StartServers   10
+
 =head2 SocketFile *global*
 
 The name of the file which is used for UNIX-domain socket
@@ -664,6 +726,13 @@ used for the UNIX-domain socket. Temporarily set this to 666 on the
 command line to debug a permission problem on vlink.
 
    bin/interchange -r SocketPerms=0666
+
+=head2 StartServers
+
+The number of Interchange page servers which should be started to
+handle page requests when in PreFork mode. Default is 1.
+
+   SOAP_StartServers   10
 
 =head2 SubCatalog *global*
 
@@ -819,6 +888,17 @@ POST has been submitted. The default is 'No', which means that GET
 data is ignored during a POST. Unfortunately this has to be a global
 setting because at URL parse time, the Interchange daemon doesn't yet
 know which catalog it's dealing with (due to catalog aliases, etc.).
+
+=head2 UrlSepChar *global*
+
+Sets the character which separates form parameters in
+Interchange-generated URLs. Default is &.
+
+=head2 Unix_Mode *global*
+
+Determines whether the UNIX-domain socket will be monitored on
+startup. Overridden by the command-line parameter -u. Default is
+Yes.
 
 =head2 UserTag *global*
 
@@ -1103,6 +1183,20 @@ Some values are used by Interchange and are not legal:
        quantity
        item
 
+=head2 AutoVariable
+
+Specifies directives which should be translated to Variable settings.
+For scalars, the directive name becomes the Variable name and yields
+its value, i.e. DescriptionField becomes
+__DescriptionField__, which would by default be description.
+Array variables have a _N added, where _N is the ordinal index,
+i.e. ProductFiles becomes __ProductFiles_0__,
+__ProductFiles_1__, etc. Hash variables have a _KEY added,
+i.e. SpecialPage becomes __SpecialPage_missing__,
+__SpecialPage_violation__, etc. Doesn't handle hash keys that
+have non-word characters or whitespace. Only single-level arrays and
+hashes are translated properly.
+
 =head2 CommonAdjust
 
 Settings for Interchange pricing. See Chained pricing.
@@ -1325,6 +1419,48 @@ Default is description. It is not a fatal error if this field does
 not exist. This is especially important for on-the-fly items. If there
 is an attribute set to the same name as DescriptionField, this will
 be used for display.
+
+=head2 DirConfig
+
+DirConfig allows you to batch-set a bunch of variables from files.
+The syntax:
+
+DirConfig  directive-name directory-glob
+
+directive-name is usually Variable, but could be any hash-based
+directive. (No other standard directives currently make sense to set
+this way.)
+
+directory-glob is a filespec that could encompass multiple
+directories. Files are ignored.
+
+The directories are read for file *names* that contain only word
+characters, i.e. something that would be a valid Variable. (This alone
+might make it not suitable for other uses, but picking up the junk
+from the in-directory-backup-file people would be intolerable.)
+
+Then the contents of the file is used to set the variable of the file
+name.
+
+The source file name is kept in
+$Vend::Cfg->{DirConfig}{Variable}{VARNAME}, for use if
+dynamic_variables Pragma is set.
+
+Pragma dynamic_variables enables dynamic updating of variables from
+files. Pragma dynamic_variables_files_only restricts dynamic
+variables to files only -- otherwise variables are dynamically read
+from the VarDatabase definition as well.
+
+With dynamic variables, all @_VARIABLE_@ and __VARIABLE__ settings are
+checked first to see if the source file is defined. If there is a key
+present, even if its contents are blank, it is returned. Example: in
+the case of this catalog.cfg entry:
+
+DirConfig   Variable   templates/foundation/regions
+
+If the file NOLEFT_TOP is present at catalog config time,
+__NOLEFT_TOP__ will equal [include
+templates/foundation/regions/NOLEFT_TOP].
 
 =head2 DisplayErrors
 
@@ -1725,9 +1861,13 @@ page:
 
    [pragma my_pragma_name 0]
 
-There are currently only three pragmas:
+Descriptions of each pragma follow.
 
 =over 4
+
+=item dynamic_variables
+
+=item dynamic_variables_file_only
 
 =item no_html_parse
 
@@ -1769,6 +1909,60 @@ into:
 
 When pragma no_image_rewrite B<is> set, the <img> tag would remain
 unchanged.
+
+=over 4
+
+=item safe_data
+
+=back
+
+By default Interchange does not allow data returned from databases to
+be reparsed for Interchange tags. Setting the safe_data pragma
+eliminates this restriction.
+
+If for some reason you want to have tags in your database, for
+example, to use [page ...] for catalog-internal hyperlinks in your
+product descriptions, you need to enable safe_data. Some things to
+consider:
+
+=over 4
+
+=item 1.
+
+It may be better to use the safe_data attribute available to certain
+tags instead of the pragma, or perhaps to use [pragma] for a whole
+page or [tag pragma] ... [/tag] for a small block, instead of a
+catalog-wide Pragma directive.
+
+=item 2.
+
+In any case it is strongly recommended that you surround the area with
+[restrict] ... [/restrict] tags to allow only the specific (hopefully
+relatively safe) set of tags you expect to appear, such as [page] or
+[area]. Expect security compromises if you allow [calc] or [perl], or
+other extremely powerful tags.
+
+=item 3.
+
+Be certain that you know everywhere the data in your database will be
+used. Will it always be possible to reparse for tags? What about when
+it's used to create an emailed plain-text receipt -- will a literal
+'[page ...]' tag show up in the product description on the receipt?
+Would the desired output of '<a href="...">' be any better in a
+plaintext situation? What if you access your database from
+applications other than Interchange? You'll then have to decide what
+to do with such tags; perhaps you can simply strip them, but will the
+missing tag output cause you any trouble?
+
+=back
+
+In short, safe_data is disabled by default for a reason, and you
+should be very careful if you decide to enable it.
+
+(Watch out for parse order with [tag pragma] or [restrict] when used
+with lists that retrieve data from the database, as in [prefix-*] and
+the flypage. Loops parse before regular tags like [tag] and
+[restrict], and thus aren't affected by it.)
 
 =over 4
 

@@ -2783,11 +2783,11 @@ There are two styles of setting which can be mixed in the same file.
 The first is line-based and expects six or more TAB-separated fields.
 They would look like:
 
-default No shipping weight  0   99999999    0
+ default No shipping weight  0   99999999    0
 
-upsg    UPS Ground  weight  0   0   e Nothing to ship! upsg    UPS
-Ground  weight  0   150 u Ground [default zip 98366] 3.00 upsg    UPS
-Ground  weight  150 999999  e @@TOTAL@@ lbs too heavy for UPS
+upsg    UPS Ground  weight  0   0   e Nothing to ship!
+upsg    UPS Ground  weight  0   150 u Ground [default zip 98366] 3.00
+upsg    UPS Ground  weight  150 999999  e @@TOTAL@@ lbs too heavy for UPS
 
 The second is a freeform method with a mode: Description text
 introducing the mode line. The special encoding is called out by
@@ -3088,31 +3088,29 @@ Here is an example shipping file using all of the methods of
 determining shipping cost.
 
 B<Note: >The columns are lined up for reading convenience. The actual
-entries should have ONE tab between fields.
+entries should have B<one> tab between fields.
 
-global Option   n/a               0   0      g PriceDivide
+ global Option   n/a               0   0      g PriceDivide
 
 rpsg   RPS      quantity          0   0      R RPS products/rps.csv
-rpsg   RPS      quantity          0   5      7.00 rpsg   RPS     
-quantity          6   10     10.00 rpsg   RPS      quantity         
-11  150    x .95
+rpsg   RPS      quantity          0   5      7.00
+rpsg   RPS      quantity          6   10     10.00
+rpsg   RPS      quantity          11  150    x .95
 
-usps   US Post  price             0   0      0 usps   US Post  price  
-          0   50     f 7 + (1 * @@TOTAL@@ / 10) usps   US Post  price 
-           50  100    f 12 + (.90 * @@TOTAL@@ / 10) usps   US Post 
-price             100 99999  f @@TOTAL@@ * .05
+usps   US Post  price             0   0      0
+usps   US Post  price             0   50     f 7 + (1 * @@TOTAL@@ / 10)
+usps   US Post  price             50  100    f 12 + (.90 * @@TOTAL@@ / 10)
+usps   US Post  price             100 99999  f @@TOTAL@@ * .05
 
-upsg   UPS      weight [value       0      e Nothing to ship state]0.
-upsg   UPS      AK HI             0   150    u upsg [default zip 980]
-12.00 round upsg   UPS                        0   150    u Ground
-[default zip 980] 2.00 round upsg   UPS                        150
-9999   e @@TOTAL@@ lb too heavy for UPS
+upsg   UPS      weight [value state]  0   0    e Nothing to ship.
+upsg   UPS      AK HI             0   150    u upsg [default zip 980] 12.00 round
+upsg   UPS                        0   150    u Ground [default zip 980] 2.00 round
+upsg   UPS                        150 9999   e @@TOTAL@@ lb too heavy for UPS
 
-upsca  UPS/CA   weight            0   0      c C UPS_Canada
-products/can.csv upsca  UPS/CA   weight            -1   -1    o
-PriceDivide=0 upsca  UPS/CA   weight            0   150    C upsca
-[default zip A7G] 5.00 upsca  UPS/CA   weight            150 99999  e
-@@TOTAL@@ lb too heavy for UPS
+upsca  UPS/CA   weight            0   0      c C UPS_Canada products/can.csv
+upsca  UPS/CA   weight            -1   -1    o PriceDivide=0
+upsca  UPS/CA   weight            0   150    C upsca [default zip A7G] 5.00
+upsca  UPS/CA   weight            150 99999  e @@TOTAL@@ lb too heavy for UPS
 
 =over 4
 

@@ -13,29 +13,27 @@ can use in a template.
 
 =head2 Overview
 
-MOVE THIS SECTION BELOW NEXT
-
 The search builder can be used to generate very complex reports on the
 database, or to help in the construction of ITL templates. Select a
-"Base table" which will be the foundation for the report. Specify the
-maximum number of rows to be returned at once, and whether to show
+"Base table" that will be the foundation for the report. Specify the
+maximum number of rows to be returned at one time, and whether to show
 only unique entries.
 
 The "Search filter" narrows down the list of rows returned by matching
-columns of the table based on various criteria. Up to three separate
-conditions may be specified. The returned rows must match all
+table columns based on various criteria. Up to three separate
+conditions can be specified. The returned rows must match all
 criteria.
 
 Finally, select any sorting options desired for displaying the
 results, and narrow down the list of columns returned if desired.
 Clicking "Run" will run the search immediately and display the
-results. "Generate definition" will display an ITL tag which can be
-placed in a template and which will return the results when executed.
+results. "Generate definition" will display an ITL tag that can be
+placed in a template and that will return the results when executed.
 
 To build complex order forms and reports, Interchange has a complete
-tag language with over 80 different functions, dubbed ITL, for
-Interchange Tag Language. It allows access to and control over any of
-an unlimited number of database tables, multiple shopping carts, user
+tag language with over 80 different functions called Interchange Tag
+Language (ITL). It allows access to and control over any of an
+unlimited number of database tables, multiple shopping carts, user
 name/address information, discount, tax, and shipping information,
 search of files and databases, and much more.
 
@@ -45,17 +43,17 @@ strongly considered. Most of the tests use Perl code, but Interchange
 uses the Safe.pm module with its default restrictions to help ensure
 that improper code will not crash the server or modify the wrong data.
 
-Perl can also be embedded within the page, and if given the proper
-permission by the system administrator, can call upon resources from
-other computers and networks.
+Perl can also be embedded within the page and, if given the proper
+permission by the system administrator, call upon resources from other
+computers and networks.
 
 =head1 About Variable Replacement
 
 Variable substitution is a simple and often used feature of
 Interchange templates. It allows you to set a variable to a particular
 value in the F<catalog.cfg> directory. Then, by placing that variable
-name on a page, envoke that value to be used. Before anything else is
-done on a template, all variable tokens are replaced by variable
+name on a page, you envoke that value to be used. Before anything else
+is done on a template, all variable tokens are replaced by variable
 values. There are three types of variable tokens:
 
 __VARIABLENAME__ is replaced by the catalog variable called
@@ -71,7 +69,7 @@ VARIABLENAME.
 For more information on how to use the Variable configuration file
 directive to set global variables in interchange.cfg and catalog
 variables in catalog.cfg, see the I<Red Hat Interchange 4.8:
-Development Configuration Guide>.
+Development Guide>.
 
 =head1 Using Interchange Template Tags
 

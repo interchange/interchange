@@ -558,7 +558,7 @@ capability is not available.
 
 =back
 
-=head2 [display] tag and mv_metadata
+=head2 display tag and mv_metadata
 
 Interchange can store meta information for selected columns of tables
 in a site's database. This meta information is used when the user
