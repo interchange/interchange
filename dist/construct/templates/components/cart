@@ -153,8 +153,8 @@ EOF
 			<a href="[area stock-alert [item-code]]"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FF0000">Back Ordered</FONT>
 		[/if-item-data]
 	[/if-item-modifier]
-	[if-item-modifier size]
-		<font face="Verdana, Arial, Helvetica, sans-serif" size="1">Sizes:</font> <FONT SIZE=1>[item-accessories size][item-accessories color]</FONT>
+	[if-item-modifier size__MVC_FIELDMUNGE__]
+		<font face="Verdana, Arial, Helvetica, sans-serif" size="1">Sizes:</font> <FONT SIZE=1>[item-accessories size__MVC_FIELDMUNGE__][item-accessories color]</FONT>
 	[/if-item-modifier]
 </TD>
 
