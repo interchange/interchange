@@ -1,0 +1,568 @@
+UserTag table-editor Order mv_data_table item_id
+UserTag table-editor addAttr
+UserTag table-editor AttrAlias clone ui_clone_id
+UserTag table-editor AttrAlias table mv_data_table
+UserTag table-editor AttrAlias mv_data_fields ui_data_fields
+UserTag table-editor AttrAlias key   item_id
+UserTag table-editor AttrAlias view  ui_meta_view
+UserTag table-editor hasEndTag
+UserTag table-editor Routine <<EOR
+sub {
+	my ($table, $key, $opt, $template) = @_;
+	return undef unless $table;
+
+	package Vend::Interpolate;
+	#use vars qw/$Values $Scratch $Db $Tag $Config $CGI $Variable/;
+
+	init_calc();
+
+	my $error = sub {
+		::logError(@_);
+		$Scratch->{ui_error} .= "<BR>\n" if $Scratch->{ui_error};
+		$Scratch->{ui_error} .= ::errmsg(@_);
+		return undef;
+	};
+
+	my $db = Vend::Data::database_exists_ref($table)
+		or return $error->('table-editor: bad table %s', $table);
+
+	$Variable->{UI_META_TABLE} = 'mv_metadata' if ! $Variable->{UI_META_TABLE};
+
+	my $mdb = Vend::Data::database_exists_ref($Variable->{UI_META_TABLE})
+		or return $error->('table-editor: bad meta table %s', $table);
+
+	my $keycol = $db->config('KEY');
+
+	$opt->{form_name} = qq{ NAME="$opt->{form_name}"}
+		if $opt->{form_name};
+
+	my $widget = ref $opt->{widget} ? $opt->{widget} : {};
+	my $extra = ref $opt->{extra} ? $opt->{extra} : {};
+	my $default = ref $opt->{default} ? $opt->{default} : {};
+	my $override = ref $opt->{override} ? $opt->{override} : {};
+	my $filter = ref $opt->{filter} ? $opt->{filter} : {};
+	my $height = ref $opt->{height} ? $opt->{height} : {};
+	my $width = ref $opt->{width} ? $opt->{width} : {};
+
+	###############################################################
+	# Get the field display information including breaks and labels
+	###############################################################
+	if( $mdb
+		and ! $opt->{ui_data_fields}
+		and ! $opt->{ui_data_fields_all}
+		and $mdb->record_exists($table)
+		)
+	{
+		$opt->{ui_data_fields} = $mdb->field($table, 'options');
+		$opt->{ui_data_fields} =~ s/\r\n/\n/g;
+		$opt->{ui_data_fields} =~ s/\r/\n/g;
+		if($opt->{ui_data_fields} =~ /\n\n/) {
+			my @breaks;
+			my @break_labels;
+			while ($opt->{ui_data_fields} =~ s/\n+(?:\n=(.*)\n)?\n+(\w+)/\n$2/) {
+				push @breaks, $2;
+				push @break_labels, "$2=$1" if $1;
+			}
+			$opt->{ui_break_before} = join " ", @breaks;
+			$opt->{ui_break_before_label} = join ",", @break_labels;
+		}
+		$opt->{ui_data_fields} =~ s/^\s+//;
+		$opt->{ui_data_fields} =~ s/\s+$//;
+	}
+
+	$opt->{ui_data_fields} = $opt->{mv_data_fields} || (join " ", $db->columns())
+		if ! $opt->{ui_data_fields};
+
+	$opt->{ui_data_fields} =~ s/[,\0\s]+/ /g;
+	###############################################################
+
+	my $linecount;
+
+	CANONCOLS: {
+		my @cols = split /[,\0\s]/, $opt->{ui_data_fields};
+		@cols = grep /:/ || $db->column_exists($_), @cols;
+
+		$opt->{ui_data_fields} = join " ", @cols;
+
+		$linecount = scalar @cols;
+	}
+
+	my $url = $Tag->area('ui');
+
+	my $key_message;
+	if($opt->{ui_new_item}) {
+		if( ! $db->config('AUTO_NUMBER') ) {
+			$db->config('AUTO_NUMBER', '000001');
+			$key = $db->autonumber($key);
+		}
+		else {
+			$key = '';
+			$opt->{mv_data_auto_number} = 1;
+			$key_message = '(new key will be assigned if left blank)';
+		}
+	}
+
+	my $data;
+	my $exists;
+
+	if($opt->{ui_clone_id} and $db->record_exists($opt->{ui_clone_id})) {
+		$data = $db->row_hash($opt->{ui_clone_id})
+			or
+			return $error->('table-editor: row_hash function failed for %s.', $key);
+		$data->{$keycol} = $key;
+	}
+	elsif ($db->record_exists($key)) {
+		$data = $db->row_hash($key);
+		$exists = 1;
+	}
+#::logDebug("data is: " . ::uneval($data));
+	$data = { $keycol => $key }
+		if ! $data;
+
+	if(! $opt->{mv_data_function}) {
+		$opt->{mv_data_function} = $exists ? 'update' : 'insert';
+	}
+
+	$opt->{mv_nextpage} = $Global::Variable->{MV_PAGE} if ! $opt->{mv_nextpage};
+	$opt->{mv_update_empty} = 1 unless defined $opt->{mv_update_empty};
+
+	my $url_base = $opt->{secure} ? $Config->{SecureURL} : $Config->{VendURL};
+	$opt->{href} = "$url_base/ui" if ! $opt->{href};
+	$opt->{href} = "$url_base/$opt->{href}"
+		if $opt->{href} !~ m{^(https?:|)/};
+
+	$opt->{method} = $opt->{get} ? 'GET' : 'POST';
+
+	my $out = <<EOF;
+<FORM METHOD=$opt->{method} ACTION="$opt->{href}"$opt->{form_name}>
+<INPUT TYPE=hidden NAME=mv_todo VALUE="set">
+<INPUT TYPE=hidden NAME=mv_click VALUE="process_filter">
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="$opt->{mv_nextpage}">
+<INPUT TYPE=hidden NAME=mv_data_table VALUE="$table">
+<INPUT TYPE=hidden NAME=mv_data_key VALUE="$keycol">
+EOF
+
+	my @opt_set = (qw/
+						ui_meta_specific
+						ui_hide_key
+						ui_meta_view
+						ui_data_decode
+						mv_update_empty
+						mv_data_auto_number
+						mv_data_function
+				/ );
+
+	my @cgi_set = ( qw/
+						item_id_left
+						ui_sequence_edit
+					/ );
+
+	for(@opt_set) {
+		next unless length $opt->{$_};
+		my $val = $opt->{$_};
+		$val =~ s/"/&quot;/g;
+		$out .= qq{<INPUT TYPE=hidden NAME=$_ VALUE="$val">\n};
+	}
+
+	for (@cgi_set) {
+		next unless length $CGI->{$_};
+		my $val = $CGI->{$_};
+		$val =~ s/"/&quot;/g;
+		$out .= qq{<INPUT TYPE=hidden NAME=$_ VALUE="$val">\n};
+	}
+
+
+	if(ref $opt->{hidden}) {
+		my ($hk, $hv);
+		while ( ($hk, $hv) = each %{$opt->{hidden}} ) {
+			$out .= qq{<INPUT TYPE=hidden NAME="$hk" VALUE="$hv">\n};
+		}
+	}
+
+	my $ui_img = $Variable->{UI_IMG} || $Global::Variable->{UI_IMG};
+	$opt->{clear_image} = "admin/bg.gif" if ! $opt->{clear_image};
+	$opt->{clear_image} = "$ui_img$opt->{clear_image}"
+		if $opt->{clear_image} !~ m{^(https?:|)/};
+
+	$out .= <<EOF;
+<table width="60%" border="" cellspacing="0" cellpadding="0" bordercolor="$Variable->{UI_C_TITLEBARBG}">
+<tr>
+  <td>
+
+<table cellspacing=0 cellmargin=0 width="100%" cellpadding="2" align="center" border="0">
+
+<tr bgcolor="$Variable->{UI_C_TITLEBARBG}"> 
+<td align=right colspan=2><img src="$opt->{clear_image}" width=1 height=3 alt=x></td>
+</tr>
+EOF
+
+	  #### Extra buttons
+      $out .= <<EOF if $linecount > 4;
+<TR BGCOLOR="$Variable->{UI_T_ROW_EVEN}">
+<td>&nbsp;</td>
+<td align=left>
+<B><INPUT TYPE=submit NAME=mv_click VALUE="Ok">
+</B>
+&nbsp;
+<INPUT TYPE=submit NAME=mv_click VALUE="Cancel">
+</TD>
+</TR>
+
+<tr BGCOLOR="$Variable->{UI_C_TITLEBARBG}">
+<td colspan=2><img src="$opt->{clear_image}" width=1 height=3 alt=x></td>
+</tr>
+
+EOF
+	  #### Extra buttons
+
+	if($opt->{ui_new_item} and $opt->{ui_clone_tables}) {
+		my @sets;
+		my %seen;
+		my @tables = split /[\s\0,]+/, $opt->{ui_clone_tables};
+		for(@tables) {
+			if(/:/) {
+				push @sets, $_;
+			}
+			s/:.*//;
+		}
+
+		@tables = grep ! $seen{$_}++ && defined $Config->{Database}{$_}, @tables;
+
+		my $tab = '';
+		my $set .= <<'EOF';
+[flag type=write table="_TABLES_"]
+[perl tables="_TABLES_"]
+	delete $Scratch->{clone_tables};
+	return if ! $CGI->{ui_clone_id};
+	return if ! $CGI->{ui_clone_tables};
+	my $id = $CGI->{ui_clone_id};
+
+	my $out = "Cloning id=$id...";
+
+	my $new =  $CGI->{$CGI->{mv_data_key}}
+		or do {
+				$out .= ("clone $id: no mv_data_key '$CGI->{mv_data_key}'");
+				$Scratch->{ui_message} = $out;
+				return;
+		};
+
+	if($new =~ /\0/) {
+		$new =~ s/\0/,/g;
+		Log("cannot clone multiple keys '$new'.");
+		return;
+	}
+
+	my %possible;
+	my @possible = qw/_TABLES_/;
+	@possible{@possible} = @possible;
+	my @tables = grep /\S/, split /[\s,\0]+/, $CGI->{ui_clone_tables};
+	my @sets = grep /:/, @tables;
+	@tables = grep $_ !~ /:/, @tables;
+	for(@tables) {
+		next unless $possible{$_};
+		my $db = $Db{$_};
+		next unless $db;
+		my $new = 
+		my $res = $db->clone_row($id, $new);
+		if($res) {
+			$out .= "cloned $id to to $new in table $_<BR>\n";
+		}
+		else {
+			$out .= "FAILED clone of $id to to $new in table $_<BR>\n";
+		}
+	}
+	for(@sets) {
+		my ($t, $col) = split /:/, $_;
+		my $db = $Db{$t} or next;
+		my $res = $db->clone_set($col, $id, $new);
+		if($res) {
+			$out .= "cloned $col=$id to to $col=$new in table $t<BR>\n";
+		}
+		else {
+			$out .= "FAILED clone of $col=$id to to $col=$new in table $t<BR>\n";
+		}
+	}
+	$Scratch->{ui_message} = $out;
+	return;
+[/perl]
+EOF
+		my $tabform = '';
+		@tables = grep $Tag->if_mm( { table => "$_=i" } ), @tables;
+
+		for(@tables) {
+			my $db = Vend::Data::database_exists_ref($_)
+				or next;
+			next unless $db->record_exists($opt->{ui_clone_id});
+			$tabform .= <<EOF;
+<INPUT TYPE=CHECKBOX NAME=ui_clone_tables VALUE="$_"> clone to <b>$_</B><BR>
+EOF
+		}
+		for(@sets) {
+			my ($t, $col) = split /:/, $_;
+			$tabform .= <<EOF;
+<INPUT TYPE=CHECKBOX NAME=ui_clone_tables VALUE="$_"> clone entries of <b>$t</B> matching on <B>$col</B><BR>
+EOF
+		}
+
+		my $tabs = join " ", @tables;
+		$set =~ s/_TABLES_/$tabs/g;
+		$Scratch->{clone_tables} = $set;
+		$out .= <<EOF;
+<tr BGCOLOR="$Variable->{UI_C_TITLEBARBG}">
+<td colspan=2>
+$tabform<INPUT TYPE=hidden NAME=mv_check VALUE="clone_tables">
+<INPUT TYPE=hidden NAME=ui_clone_id VALUE="$opt->{ui_clone_id}">
+</td>
+</tr>
+EOF
+	}
+
+	my %break;
+	my %break_label;
+	if($opt->{ui_break_before}) {
+		my @tmp = grep /\S/, split /[\s,\0]+/, $opt->{ui_break_before};
+		@break{@tmp} = @tmp;
+		if($opt->{ui_break_before_label}) {
+			@tmp = grep /\S/, split /\s*[,\0]\s*/, $opt->{ui_break_before_label};
+			for(@tmp) {
+				my ($br, $lab) = split /\s*=\s*/, $_;
+				$break_label{$br} = $lab;
+			}
+		}
+	}
+	if(!$db) {
+		return "<TR><TD>Broken table '$table'</TD></TR>";
+	}
+
+	my $passed_fields = $opt->{ui_data_fields};
+
+	my @extra_cols;
+	my %ok_col;
+	while($passed_fields =~ s/(\w+:+\S+)//) {
+		push @extra_cols, $1;
+	}
+	my (@cols)  = split /\s+/, $Tag->db_columns( {
+										name	=> $table,
+										columns	=> $passed_fields,
+										passed_order => 1,
+									});
+
+	if($opt->{ui_data_fields}) {
+		for(@cols, @extra_cols) {
+			unless (/^(\w+):+(\S+)/) {
+				$ok_col{$_} = 1;
+				next;
+			}
+			my $t = $1;
+			my $c = $2;
+			next unless $Tag->db_columns( { name	=> $t, columns	=> $c, });
+			$ok_col{$_} = 1;
+		}
+		@cols = grep $ok_col{$_}, split /\s+/, $opt->{ui_data_fields};
+	}
+
+	my %display_only;
+	if($opt->{ui_display_only}) {
+		my @do = split /[\0,\s]+/, $opt->{ui_display_only};
+		for(@do) {
+			$display_only{$_} = 1;
+			$opt->{ui_data_fields} =~ s/\b$_\b//;
+		}
+	}
+
+	my $super = $Tag->if_mm('super');
+
+	my $refkey = $key;
+
+	foreach my $col (@cols) {
+		my $t;
+		my $c;
+		my $k;
+		my $tkey_message;
+		if($col eq $keycol) {
+			if($opt->{ui_hide_key}) {
+				$out .= <<EOF;
+	<INPUT TYPE=hidden NAME="$col" VALUE="$key">
+EOF
+				next;
+			}
+			elsif ($opt->{ui_new_item}) {
+				$tkey_message = $key_message;
+			}
+		}
+
+		my $do = $display_only{$col};
+		
+		my $currval;
+		if($col =~ /(\w+):+([^:]+)(?::+(\S+))?/) {
+			$t = $1;
+			$c = $2;
+			$k = $3 || undef;
+			$Scratch->{mv_data_enable} .= " $t "
+				unless $do or $Scratch->{mv_data_enable} =~ /\b$t\b/;
+		}
+		else {
+			$t = $table;
+			$c = $col;
+		}
+
+		my $type;
+		if($do or $col =~ /:/) {
+			if(defined $k) {
+				my $check = $k;
+				undef $k;
+				for( $override, $data, $default) {
+					next unless defined $_->{$check};
+					$k = $_->{$check};
+					last;
+				}
+			}
+			else {
+				$k = defined $key ? $key : $refkey;
+			}
+			$currval = tag_data($t, $c, $k) if defined $k;
+			$type = 'value' if $do;
+Log("hit display_only for $col, t=$t, c=$c, k=$k, currval=$currval");
+		}
+		elsif (defined $override->{$c} ) {
+			$currval = $override->{$c};
+			$override = 1;
+Log("hit preload for $col,currval=$currval");
+		}
+		elsif (defined $CGI->{"ui_preload:$t:$c"} ) {
+			$currval = delete $CGI->{"ui_preload:$t:$c"};
+			$override = 1;
+Log("hit preload for $col,currval=$currval");
+		}
+		elsif( length $data->{$col} ) {
+Log("hit data->col for $col, t=$t, c=$c, k=$k, currval=$currval");
+			$currval = $data->{$col};
+		}
+		elsif (defined $default->{$c} ) {
+			$currval = $default->{$c};
+Log("hit preload for $col,currval=$currval");
+		}
+
+		my $meta = '';
+		my $display = $Tag->display({
+										table => $t,
+										column => $c,
+										name => $col,
+										key => $key,
+										type => $widget->{$c} || $type,
+										height => $height->{$c},
+										width => $width->{$c},
+										filter => $filter->{$c},
+										default => $currval,
+										override => $override,
+										arbitrary => $opt->{ui_meta_view},
+										extra => $extra->{$c},
+										fallback => 1,
+										template => qq(
+ <TR BGCOLOR="$Variable->{UI_T_ROW_EVEN}">
+   <td align=left width=150> 
+     <font color="$Variable->{UI_C_TEXT}" size="-1"><b>\$LABEL\$</b>~META~
+   </td>
+   <td valign=TOP> 
+     <table cellspacing=0 cellmargin=0 width="100%">
+       <tr> 
+         <td width="60%"> 
+           <FONT SIZE="-1">\$WIDGET\$</FONT>
+         </td>
+         <td><FONT SIZE="-1">$tkey_message<i>\$HELP\$</i>{HELPURL}<BR><A HREF="\$HELP_URL\$">help</A>{/HELPURL}</FONT></td>
+       </tr>
+     </table>
+   </td>
+ </tr>
+),
+									});
+		if($super and ($Variable->{UI_META_LINK} || $Values->{ui_meta_force}) ) {
+			$meta .= '<BR><FONT SIZE=1>';
+			# Get global variables
+			my $base = $Tag->var('UI_BASE', 1);
+			my $page = $Tag->var('MV_PAGE', 1);
+			my $id = $t . "::$c";
+			$id = $opt->{ui_meta_view} . "::$id"
+				if $opt->{ui_meta_view} and $opt->{ui_meta_view} ne 'metaconfig';
+
+			$meta .= $Tag->page(
+							{	href => "$base/meta_editor",
+								form => qq{
+										item_id=$id
+										ui_return_to=$page
+										ui_return_to=item_id=$Scratch->{arg}
+										ui_return_to=ui_return_table=$t
+										}
+							});
+			$meta .= 'meta</A>';
+			$meta .= '<br>' . $Tag->page(
+							{	href => "$base/meta_editor",
+								form => qq{
+										item_id=${t}::${c}::$key
+										mv_data_table=mv_metadata
+										ui_hide_key=1
+										ui_meta_view=metaconfig
+										ui_return_to=$page
+										ui_return_to=item_id=$Scratch->{arg}
+										ui_return_to=ui_return_table=$t
+										}
+							}) . 'item-specific meta</A></FONT>'
+				if $opt->{ui_meta_specific};
+			$meta .= '</FONT>';
+		}
+        
+		$out .= <<EOF if $break{$col};
+<TR BGCOLOR="$Variable->{UI_T_ROW_ODD}">
+	<TD COLSPAN=2><B>$break_label{$col}</B><IMG SRC="$opt->{clear_image}" WIDTH=1 HEIGHT=1 alt=x></TD>
+</TR>
+EOF
+		$display =~ s/\~META\~/$meta/g;
+		$out .= $display;
+	}
+
+	$out .= <<EOF;
+<INPUT TYPE=hidden NAME=mv_data_fields VALUE="$opt->{ui_data_fields}">
+<tr>
+<td colspan=2 BGCOLOR="$Variable->{UI_C_TITLEBARBG}"><img src="$opt->{clear_image}" height=3 alt=x></td>
+</tr>
+
+<TR BGCOLOR="$Variable->{UI_T_ROW_EVEN}">
+<td>&nbsp;</td>
+<td align=left>
+<B><INPUT TYPE=submit VALUE=Ok></B>
+&nbsp;
+&nbsp;
+<INPUT TYPE=submit NAME=mv_click VALUE=Cancel>
+EOF
+
+	if($Tag->if_mm('tables', "$table=x") and ! $db->config('LARGE') ) {
+		my $checked = $opt->{export} ? ' CHECKED' : '';
+		$out .= <<EOF;
+<small>
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+	<INPUT TYPE=checkbox NAME=mv_auto_export VALUE="$table"$checked>&nbsp;Auto-export
+EOF
+
+	}
+
+	$out .= <<EOF;
+</small>
+</td>
+</tr>
+
+<tr>
+<td colspan=2 BGCOLOR="$Variable->{UI_C_TITLEBARBG}"><img src="$opt->{clear_image}" height=3 alt=x></td>
+</tr>
+
+</table>
+</td></tr></table>
+
+</form>
+EOF
+
+}
+EOR
