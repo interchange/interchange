@@ -124,7 +124,7 @@ sub regen_build {
 sub {
 	$initial = shift || $CGI::values{ui_initial_page} || $Vend::Cfg->{SpecialPage}{catalog};
 	my $verbose = $CGI::values{ui_build_verbose} || '';
-	my $max_links = $CGI::values{ui_build_max} || '500';
+	my $max_links = $CGI::values{ui_max_build} || '500';
 	my $links_done = 0;
 	if($CGI::values{ui_force_build}) {
 		my @tmp = split /\0/, $CGI::values{ui_force_build};
