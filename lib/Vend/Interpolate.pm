@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.35 2001-03-24 21:05:47 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.36 2001-03-27 19:47:36 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.35 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.36 $, 10);
 
 @EXPORT = qw (
 
@@ -6611,7 +6611,7 @@ sub salestax {
 	if($Vend::Cfg->{SalesTax} =~ /\[/) {
 		my $cost = interpolate_html($Vend::Cfg->{SalesTax});
 		$Vend::Items = $save if $save;
-		return round_to_frac_digits($cost);
+		return Vend::Util::round_to_frac_digits($cost);
 	}
 	elsif($Vend::Cfg->{SalesTaxFunction}) {
 		$tax_hash = tag_calc($Vend::Cfg->{SalesTaxFunction});
@@ -6625,7 +6625,7 @@ sub salestax {
 	if(! $tax_hash) {
 		my $cost = fly_tax();
 		$Vend::Items = $save if $save;
-		return round_to_frac_digits($cost);
+		return Vend::Util::round_to_frac_digits($cost);
 	}
 #::logDebug("got to tax function: " . ::uneval($tax_hash));
 
