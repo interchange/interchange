@@ -767,6 +767,8 @@ i18n
 
 * Localize script now groks new menu database files.
 
+* Add Italian UI translation from Marco Mescoli <m.mescoli@omnibit.nu>.
+
 Foundation
 ----------
 

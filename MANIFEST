@@ -926,6 +926,7 @@ dist/lib/UI/locales/default.cfg
 dist/lib/UI/locales/en_US.cfg
 dist/lib/UI/locales/es_ES.cfg
 dist/lib/UI/locales/he_IL.cfg
+dist/lib/UI/locales/it_IT.cfg
 dist/lib/UI/locales/ja_JP.cfg
 dist/lib/UI/locales/nl_NL.cfg
 dist/lib/UI/locales/pt_BR.cfg
