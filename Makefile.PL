@@ -443,23 +443,14 @@ sub initialize {
 			if ! $MV::Default{INSTALLMAN3DIR};
 	}
 
-	if (! -f 'pod/mvtags.pod') {
-		chdir 'lib'
-			or die "Cannot chdir to ./lib: $!\n";
-		system("$^X Vend/Tagref.pm > ../pod/mvtags.pod");
-		chdir '..'
-			or die "Cannot chdir back to ..: $!\n";
-	}
 	my @re_link  = qw( interchange bin/minivend );
-	my @re_dir  = qw( simple/download );
-	my @re_copy = qw(	
-						../pod/mvtags.pod simple/download/mvtags.pod
-						);
+	my @re_dir  = qw();
+	my @re_copy = qw();
 
 #warn "Got past mvtags build\n" ; #if $X{RPMBUILDDIR};
 
 	if($MV::Default{final}) {
-		$ = 0;
+		$^W = 0;
 		for(glob "_*") {
 			File::Copy::copy($_, $realdir);
 		}
