@@ -127,7 +127,7 @@ ui_template_name: leftright
 			  [if ordered [item-code]]
 			  <FONT COLOR="#FF0000">This item is currently in your [page ord/basket]shopping cart</a>.</font><br>
 			  [/if]
-			  [item-field comment]
+			  [item-field comment__MVC_FIELDMUNGE__]
 [if-item-data merchandising others_bought]
 [perl tables=products]
 my $hash = [item-data merchandising others_bought];
