@@ -210,6 +210,14 @@ sub extra_libs {
 	}
 
 	eval {
+		require Tie::ShadowHash;
+	};
+	if ($@) {
+		push @extra_lib_dirs, 'Tie';
+		push @extra_lib_files, 'Tie/ShadowHash.pm';
+	}
+
+	eval {
 		require Business::Fedex;
 	};
 	if ($@) {
