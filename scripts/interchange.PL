@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.8.7
 #
-# $Id: interchange.PL,v 2.7.2.20 2003-01-24 06:51:53 jon Exp $
+# $Id: interchange.PL,v 2.7.2.21 2003-01-24 07:30:44 jon Exp $
 #
 # Copyright (C) 1996-2003 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
@@ -2180,7 +2180,7 @@ EOF
 
 	if ($macro = $Vend::Cfg->{Filter}) {
 		for(keys %$macro) {
-			Vend::Interpolate::input_filter_do($_, { 'op' => $macro->{$_} } );
+			Vend::Interpolate::input_filter_do($_, { op => $macro->{$_} });
 		}
 	}
 
@@ -2190,7 +2190,7 @@ EOF
 		)
 	{
 		for(keys %$macro) {
-			Vend::Interpolate::input_filter_do($_, $macro->{$_});
+			Vend::Interpolate::input_filter_do($_, { op => $macro->{$_} });
 		}
 	}
 
