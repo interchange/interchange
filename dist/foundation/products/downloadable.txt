@@ -1,1 +1,0 @@
-sku	dl_location	dl_type

@@ -1,7 +1,0 @@
-#! /bin/sh -e
-
-/usr/sbin/interchangeconfig
-
-#DEBHELPER#
-
-/etc/init.d/interchange restart
