@@ -270,24 +270,20 @@ function addItem(selector, receptor, joiner) {
 
 [menu
 	  name=Top
-	  menu-type=flyout
-	  anchor_down=1
 	  inactive=inactive
 	  localize=name
 	  indicator=indicator
 	  ui_security=depends_on
-	  flyout_class=tabdark
 	  link_class=menufont
 	  entities=description
-	  lr=1]
-{MV_LEVEL:}
+	  ]
 {INDICATED:}
 	<!-- class={NAME} down -->
 											<td valign=bottom>
 												<table width="100%" border=0 cellspacing=0 cellpadding=0>
 													<tr>
 														<td width=14 rowspan=3 class=shrink><a
-			href="{PAGE}"
+			href="{HREF}"
 			title="{DESCRIPTION}"><img border=0 src="tab_dark_left.gif"></A></td>
 														<td height=1 width=69 class=tabborder><img src="bg.gif" height=1></td>
 														<td width=2 rowspan=3><img src="tab_dark_right.gif"></td>
@@ -298,7 +294,7 @@ function addItem(selector, receptor, joiner) {
 													<tr>
 														<td height=13 align=left valign=top><a
 		id="{CODE}"
-		href="{PAGE}"
+		href="{HREF}"
 		onMouseOver="mousein(this)"
 		onMouseOut="mouseout(this)"
 		title="{DESCRIPTION}"
@@ -340,7 +336,6 @@ function addItem(selector, receptor, joiner) {
 </table>
 </td>
 {/INDICATED?}
-{/MV_LEVEL:}
 [/menu]
 										</tr>
 									</table>
