@@ -64,7 +64,7 @@
 [/seti]
 
 [set profile_products]
-	products=required
+	products=defined
 [/set]
 
 [set profile_index]
@@ -80,6 +80,10 @@
 	[scratch profile_about]
 [/seti]
 
+[set profile_finalize]
+	finalized=required
+[/set]
+
 [set profile_preview]
 	site_created=required
 [/set]
@@ -90,76 +94,13 @@
 
 [set profile_save_values]
 [perl]
-    my @vals = qw/
-abouttext
-abouttitle
-address
-adminpass
-adminuser
-authnetmode
-city
-company
-country
-creditcards
-cyberid
-cyberkey
-cybermode
-defaultshipd
-defaultshipi
-domainname
-emailinfo
-emailservice
-enablesecure
-fax
-fedadder
-fedmodes
-flatd
-flati
-indextext
-indextitle
-mailorderto
-orderstart
-paycheck
-paycod
-paygate
-paymentid
-paymentreferer
-paymentsecret
-paymentserver
-paymo
-paypo
-pgp
-pgpkeyid
-pgpkeytext
-phone
-products
-sampleorders
-sampleproducts
-shipmethod
-shipzip
-shoppass
-shopuser
-signiomode
-state
-style
-taxlocation
-taxrate
-taxship
-tollfree
-upsadder
-upsmodes
-zip
-    /;
-
 	my $fn = "upload/$Session->{username}.wizard";
-	my $ref = {};
-	$ref->{$_} = $Values->{$_} for @vals;
 
 	my $status = $Tag->log( {
 			file => $fn,
 			create => 1,
 			type => 'text',
-			body => $Tag->uneval( { ref => $ref } ),
+			body => $Tag->uneval( { ref => $Values } ),
 	});
 	if($status) {
 		$Scratch->{ui_message} = errmsg(
