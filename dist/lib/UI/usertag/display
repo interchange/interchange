@@ -16,7 +16,7 @@ sub {
 	my $help;
 	my $help_url;
 
-	my $template = $opt->{template};
+	my $template = $opt->{type} eq 'hidden' ? '' : $opt->{template};
 	if($template and $template !~ /\s/) {
 		$template = <<'EOF';
 <TR>
