@@ -26,23 +26,26 @@
 </BLOCKQUOTE>
 [/if]
 
+[set mv_deliver][/set]
+
 [if file backup/DBDOWNLOAD.all.gz]
 <BLOCKQUOTE>
+	[calc] $Scratch->{mv_deliver} .= ' backup/DBDOWNLOAD.all.gz'; return; [/calc]
 	[page href="ui/backup/DBDOWNLOAD.all.gz"
 			form="
 				mv_data_file=backup/DBDOWNLOAD.all.gz
 				mv_todo=deliver
-			"]Download compressed gnumeric file</A><BR>
+			"]Download compressed gnumeric file ([file-info name="backup/DBDOWNLOAD.all.gz" date=1])</A><BR>
 </BLOCKQUOTE>
 [/if]
 
 [if file backup/DBDOWNLOAD.all]
-	[calc] $Scratch->{mv_deliver} = 'backup/DBDOWNLOAD.all'; return; [/calc]
+	[calc] $Scratch->{mv_deliver} .= ' backup/DBDOWNLOAD.all'; return; [/calc]
 	[page href="ui/backup/DBDOWNLOAD.all"
 			form="
 				mv_data_file=backup/DBDOWNLOAD.all
 				mv_todo=deliver
-			"]Download gnumeric file</A><BR>
+			"]Download gnumeric file ([file-info name="backup/DBDOWNLOAD.all" date=1])</A><BR>
 [/if]
 [if file backup/DBDOWNLOAD.xls]
 	[calc] $Scratch->{mv_deliver} .= ' backup/DBDOWNLOAD.xls'; return; [/calc]
@@ -50,7 +53,7 @@
 			form="
 				mv_data_file=backup/DBDOWNLOAD.xls
 				mv_todo=deliver
-			"]Download XLS file</A><BR>
+			"]Download XLS file ([file-info name="backup/DBDOWNLOAD.xls" date=1])</A><BR>
 [/if]
 
 [if scratch ui_error]
@@ -76,7 +79,7 @@
 What data would you like to export?
 <blockquote>
 [loop list="[list-databases]"]
-<INPUT type=checkbox value="[loop-code]" name="ui_do_export" [if-loop-data __UI_META_TABLE__ backup][else]CHECKED[/else][/if-loop-data]> [loop-code]
+<INPUT type=checkbox value="[loop-code]" name="ui_do_export" [if-loop-data __UI_META_TABLE__ display_filter][else]CHECKED[/else][/if-loop-data]> [loop-code]
 	[if-loop-data __UI_META_TABLE__ name]
 		(<small>[loop-data __UI_META_TABLE__ name]</small>)
 	[/if-loop-data]
