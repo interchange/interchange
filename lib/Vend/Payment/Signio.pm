@@ -1,6 +1,6 @@
 # Vend::Payment::Signio - Interchange support for Signio/Verisign Payflow Pro
 #
-# $Id: Signio.pm,v 2.5 2003-01-21 03:51:10 jon Exp $
+# $Id: Signio.pm,v 2.6 2003-02-14 21:41:18 jon Exp $
 #
 # Copyright (C) 1999-2003 Red Hat, Inc. and Interchange Development Group
 #
@@ -23,7 +23,7 @@ package Vend::Payment::Signio;
 
 =head1 Interchange support for Signio/Verisign Payflow Pro
 
-Vend::Payment::Signio $Revision: 2.5 $
+Vend::Payment::Signio $Revision: 2.6 $
 
 =head1 SYNOPSIS
 
@@ -445,15 +445,17 @@ sub signio {
     }
 
     my %varmap = ( qw/
-                            ACCT     mv_credit_card_number
-                            ZIP      b_zip
-                            STREET   b_address
+						ACCT		mv_credit_card_number
+						ZIP			b_zip
+						STREET		b_address
+						SHIPTOZIP	zip
+						COMMENT1	comment1
+						COMMENT2	comment2
         /
     );
 
     my %query = (
                     AMT         => $amount,
-                    SHIPTOZIP   => $actual{zip},
                     EXPDATE     => $exp,
                     TENDER      => 'C',
                     PWD         => $secret,
