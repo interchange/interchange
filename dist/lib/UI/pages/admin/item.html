@@ -34,7 +34,7 @@
 
 [if cgi deleterecords]
 [if-mm function="!tables" table="[cgi mv_data_table]"]
-[set ui_error]Not allowed to delete from [cgi mv_data_table].[/set]
+[set ui_error][msg arg.0="[cgi mv_data_table]"]Not allowed to delete from %s.[/msg][/set]
 [bounce page="__UI_BASE__/error"]
 [else]
 <!-- flag write for delete: [flag type=write table="[cgi mv_data_table]"] -->
@@ -92,7 +92,7 @@
 <tr>
 [if scratch ui_message]
 <td>
-Message:
+[L]Message[/L]:
 <BLOCKQUOTE>
 	[scratchd ui_message]
 </BLOCKQUOTE>
@@ -103,7 +103,7 @@ Message:
 <td>
 <FORM ACTION="[area @@MV_PAGE@@]" name=itemlist>
 <INPUT NAME=ui_text_qualification>
-<INPUT TYPE=submit VALUE="Limit with search">
+<INPUT TYPE=submit VALUE="[L]Limit with search[/L]">
 </FORM>
 </td>
 </tr>
@@ -466,35 +466,35 @@ Options
 %%
 <TD ALIGN=CENTER>[page href=__UI_BASE__/item_option form="
 	item_id=[item-code]
-"][if-item-data options o_enable]Yes[else]No[/else][/if-item-data]</A>
+"][if-item-data options o_enable][L]Yes[/L][else][L]No[/L][/else][/if-item-data]</A>
 </TD>
 %%
 Qty price
 %%
 <TD ALIGN=CENTER>[page href=__UI_BASE__/item_price form="
 	item_id=[item-code]
-"][if-item-data pricing sku]Yes[else]No[/else][/if-item-data]</A>
+"][if-item-data pricing sku][L]Yes[/L][else][L]No[/L][/else][/if-item-data]</A>
 </TD>
 %%
 Up-sell
 %%
 <TD ALIGN=CENTER>[page href=__UI_BASE__/item_up form="
 	item_id=[item-code]
-"][if-item-data merchandising upsell_to]Yes[else]No[/else][/if-item-data]</a>
+"][if-item-data merchandising upsell_to][L]Yes[/L][else][L]No[/L][/else][/if-item-data]</a>
 </TD>
 %%
 Cross-sell
 %%
 <TD ALIGN=CENTER>[page href=__UI_BASE__/item_cross form="
 	item_id=[item-code]
-"][either][if-item-data merchandising cross_category]Yes[/if-item-data][or][if-item-data merchandising cross_sell]Yes[/if-item-data][or]No[/either]</a>
+"][either][if-item-data merchandising cross_category][L]Yes[/L][/if-item-data][or][if-item-data merchandising cross_sell][L]Yes[/L][/if-item-data][or][L]No[/L][/either]</a>
 </TD>
 %%
 Promo
 %%
 <TD ALIGN=CENTER>[page href=__UI_BASE__/item_feature form="
 	item_id=[item-code]
-"][if-item-data merchandising featured]Yes[else]No[/else][/if-item-data]</a>
+"][if-item-data merchandising featured][L]Yes[/L][else][L]No[/L][/else][/if-item-data]</a>
 </TD>
 %%
 Inventory
