@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.21.4.3 $, 10);
+$VERSION = substr(q$Revision: 1.21.4.4 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -776,7 +776,12 @@ sub meta_display {
 				my $dbname = $record->{db} || $table;
 				my $db = Vend::Data::database_exists_ref($dbname);
 				last LOOK unless $db;
-				my $query = "select DISTINCT $key, $fld FROM $dbname ORDER BY $fld";
+				my $query;
+				if ($record->{lookup_key}) {
+					$query = "select DISTINCT $record->{lookup_key}, $fld FROM $dbname ORDER BY $fld";
+				} else {
+					$query = "select DISTINCT $key, $fld FROM $dbname ORDER BY $fld";
+				}
 				my $ary = $db->query($query);
 				last LOOK unless ref($ary);
 				if(! scalar @$ary) {

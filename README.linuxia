@@ -20,6 +20,8 @@ This file documents all changes of the LINUXIA branch of Interchange.
   the Debian setup (expire.PL/expireall.PL: 1.8.4.1)
 - log form action errors (interchange.PL: 1.8.4.6)
 - bugfix for DBI.pm (1.19.4.3)
+- mv_metadata field lookup key added 
+  (meta_editor.html: 1.1.2.2, Primitive.pm: 1.21.4.4)
 
 Changes that made into the main branch:
 
