@@ -25,9 +25,9 @@ DOIT: {
 #
 # Interchange version 4.6.2
 #
-# $Id: interchange.PL,v 1.20 2001-02-03 07:53:29 heins Exp $
+# $Id: interchange.PL,v 1.21 2001-02-07 15:09:22 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Akopia, Inc. <info@akopia.com>
 #
 # This program was originally based on Vend 0.2
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -1781,7 +1781,7 @@ sub dump_env {
 }
 
 sub version {
-	print "Interchange version $VERSION Copyright 1996-2000 Akopia, Inc.\n";
+	print "Interchange version $VERSION Copyright 1996-2001 Akopia, Inc.\n";
 }
 
 =head1 NAME
@@ -1794,7 +1794,7 @@ interchange [--options] [file]
 
 =head1 VERSION
 
-4.0
+4.6.2
 
 =head1 DESCRIPTION
 
@@ -1803,16 +1803,15 @@ It allows customers to select items to buy from catalog pages. The program
 tracks user information in sessions and interacts with an HTTP server
 through sockets.
 
-Interchange has many, many, functions and features; they are too numerous
-to describe in this venue. Complete information can be found at
-its web site:
+Interchange has many, many, functions and features; they are too numerous to
+describe in this venue. Complete information can be found at its web site:
 
 		http://www.akopia.com/
 
 Interchange requires Perl 5.005 or higher; more information on Perl can
 be seen at:
 
-		http://www.perl.com
+		http://www.perl.com/
 
 =head1 OPTIONS
 
@@ -2411,8 +2410,7 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-Copyright 1995-2000, Mike Heins. All rights reserved except as in the
-license.
+Copyright 1995-2001 Akopia, Inc. All rights reserved except as in the license.
 
 =cut
 
@@ -2435,9 +2433,8 @@ have come into being without him.
 
 Stefan Hornburg has had his hand in many parts of Interchange, and is by
 far the most prolific bug-finder. He also was primarily responsible for
-bringing MiniMate, precursor to the Interchange UI database editor,
-to being as a supported facility. He continues to make valuable
-contributions.
+bringing MiniMate, precursor to the Interchange UI database editor, to
+being as a supported facility. He continues to make valuable contributions.
 
 =head1 ACKNOWLEDGEMENTS
 
