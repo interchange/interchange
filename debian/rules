@@ -101,7 +101,7 @@ install: build
 	for file in dist/src/*; do if test -f $$file; then cp $$file $(TMP)/usr/lib/interchange/src; fi; done
 # UI images and stuff
 	mkdir -p $(TMP)/var/www/interchange
-	for dir in share/interchange/*; do cp -r $$dir $(TMP)/var/www/interchange; done
+	for dir in $(TMP)/usr/lib/interchange/share/interchange/*; do mv $$dir $(TMP)/var/www/interchange; done
 	rm -r $(TMP)/usr/lib/interchange/share/interchange
 # mod_interchange
 	mkdir -p $(TMP)/usr/lib/apache/1.3

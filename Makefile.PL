@@ -469,7 +469,29 @@ sub initialize {
 		# install share/ files from MANIFEST
 		chomp(my @sharefiles = grep m:^share/:, @files);
 		install_file('.', $realdir, $_) for @sharefiles;
-
+		# create symbolic links for images used for
+		# other languages either not yet translated
+		# or without embedded text
+		my @imgfiles = grep m:^share/interchange/en_US/:, @sharefiles;
+		my $cwd = cwd();
+		my ($locale, $imgfile, $fname);
+		chdir("$realdir/share/interchange")
+			|| die "Couldn't enter directory $realdir/share/interchange: $!\n";
+		for $locale ('de_DE') {
+			unless (-d $locale) {
+				mkdir ($locale, 0777)
+					|| die "Couldn't create directory $realdir/share/interchange/$locale: $!\n";
+			}
+			for $imgfile (@imgfiles) {
+				$fname = basename($imgfile);
+				next if -f "$locale/$fname";
+				symlink ("../en_US/$fname", "de_DE/$fname")
+					|| die "Couldn't create symlink $realdir/share/interchange/$locale/$fname: $!\n";
+			}
+		}
+		chdir($cwd)
+			|| die "Couldn't enter directory $cwd: $!\n";
+		
 #warn "Got past install SHAREFILES\n" ; #if $X{RPMBUILDDIR};
 
 		# install dist/ files from MANIFEST
