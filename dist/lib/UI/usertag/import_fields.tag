@@ -123,20 +123,24 @@ EOF
 
 	} # end CONVERT
 
+	my $change_sub;
 	if($opt->{multiple}) {
 		undef $table;
-		sub import_fields_change_db {
+		$change_sub = sub {
 			my $table = shift;
 #::logDebug("changing table to $table");
 			$db = Vend::Data::database_exists_ref($table);
+#::logDebug("db now=$db");
 			die "Non-existent table '$table'\n" unless $db;
-			$db = $db->ref() unless $Vend::Interpolate::Db{$table};
+			$db = $db->ref();
+#::logDebug("db now=$db");
 			if($opt->{autonumber} and ! $db->config('AUTO_NUMBER') ) {
 				 $db->config('AUTO_NUMBER', '1000');
 			}
+#::logDebug("db now=$db");
 			$tmsg = "table $table: ";
 			return;
-		}
+		};
 	}
 	else {
 		$db = Vend::Data::database_exists_ref($table);
@@ -173,8 +177,9 @@ EOF
 	if(! $table) {
 		$table = <UPDATE>;
 		chomp $table;
-		import_fields_change_db($table);
+		$change_sub->($table);
 	}
+#::logDebug("db now=$db");
 	if(! $opt->{fields}) {
 		$fields = <UPDATE>;
 		chomp $fields;
@@ -207,7 +212,7 @@ EOF
 			$out .= "${tmsg}$delcount records deleted.\n" if $delcount;
 			$out .= "${tmsg}$addcount records added.\n" if $addcount;
 			$delcount = $totcount = $addcount = 0;
-			import_fields_change_db($1);
+			$change_sub->($1);
 			redo TABLE;
 		}
 		if(! $k and ! length($k)) {
