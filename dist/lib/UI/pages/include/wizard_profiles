@@ -54,7 +54,6 @@
 	adminpass=required
 	shopuser=required
 	shoppass=required
-	enablesecure=required
 [/set]
 
 [seti profile_grouppolicy]
