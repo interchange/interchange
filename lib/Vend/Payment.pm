@@ -1,6 +1,6 @@
 # Vend::Payment - Interchange payment processing routines
 #
-# $Id: Payment.pm,v 2.0 2001-07-18 02:23:14 jon Exp $
+# $Id: Payment.pm,v 2.1 2001-07-20 21:43:45 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.0 $, 10);
+$VERSION = substr(q$Revision: 2.1 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -313,7 +313,9 @@ sub charge {
 
 	# Default to the gateway same as charge type if no gateway specified,
 	# and set the gateway in the session for logging on completion
-	$pay_opt->{gateway} = $charge_type if ! $opt->{gateway};
+	if(! $opt->{gateway}) {
+		$pay_opt->{gateway} = charge_param('gateway') || $charge_type;
+	}
 	$Vend::Session->{payment_mode} = $pay_opt->{gateway};
 
 	# See if we are in test mode

@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.1 2001-07-19 11:50:59 racke Exp $
+# $Id: Order.pm,v 2.2 2001-07-20 21:43:45 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -91,21 +91,18 @@ my %Parse = (
 							},
 	'length'		=>  sub {
 							my($name, $value, $msg) = @_;
-#::logDebug("length check: msg='$msg'");
 							$msg =~ s/^(\d+)(?:\s*-(\d+))?\s*//
 								or return undef;
 							my $min = $1;
 							my $max = $2;
 							my $len = length($value);
 
-#::logDebug("length check: name=$name value=$value min=$min max=$max len=$len");
 							if($len < $min) {
 								$msg = errmsg(
 										"%s length %s less than minimum length %s.",
 										$name,
 										$len,
 										$min) if ! $msg;
-#::logDebug("length check failed: $msg");
 								return(0, $name, $msg);
 							}
 							elsif($max and $len > $max) {
@@ -210,9 +207,7 @@ sub _format {
 
 	my (@return);
 
-#::logDebug("routine='$routine' var='$var' val='$val'");
 	if( defined $Parse{$routine}) {
-#::logDebug("Parse routine=$routine defined");
 		@return = $Parse{$routine}->($var, $val, $message);
 		undef $message;
 	}
@@ -220,11 +215,9 @@ sub _format {
 		@return = &{'_' . $routine}($ref,$var,$val);
 	}
 	else {
-#::logDebug("Parse routine=_$routine NOT defined");
 		return (undef, $var, errmsg("No format check routine for '%s'", $routine));
 	}
 
-#::logDebug("routine=$routine returning:" . ::uneval_it(\@return) );
 	if(! $return[0] and $message) {
 		$return[2] = $message;
 	}
@@ -238,35 +231,27 @@ sub chain_checks {
 	$mess = "$checks $err";
 	while($mess =~ s/(\S+=\w+)[\s,]*//) {
 		my $check = $1;
-#::logDebug("chain check $check, remaining '$mess'");
 		($val, $var, $message) = do_check($check);
-#::logDebug("chain check $check result: var=$var val=$val mess='$mess'");
 		return undef if ! defined $var;
 		if($val and $or) {
 			1 while $mess =~ s/(\S+=\w+)[\s,]*//;
-#::logDebug("chain check $check or succeeded, returning '$val'");
 			return ($val, $var, $message)
 		}
 		elsif ($val) {
-#::logDebug("chain check $check and succeeded, remaining '$mess'");
 			$result = 1;
 			next;
 		}
 		else {
-#::logDebug("chain check $check or=$or failed, remaining '$mess'");
 			next if $or;
 			1 while $mess =~ s/(\S+=\w+)[\s,]*//;
-#::logDebug("chain check $check and returning failed, var=$var val=$val mess='$mess'");
 			return($val, $var, $mess);
 		}
 	}
-#::logDebug("chain check $check returning, var=$var val=$val mess='$mess'");
 	return ($val, $var, $mess);
 }
 
 sub _and_check {
 	if(! length($_[1]) ) {
-#::logDebug("setting and");
 		$And = 1;
 		return (1);
 	}
@@ -283,7 +268,6 @@ sub _or_check {
 
 sub _charge {
 	my ($ref, $params, $message) = @_;
-#::logDebug("called _charge: ref=$ref params=$params message=$message");
 	my $result;
 	my $opt;
 	if ($params =~ /^custom\s+/) {
@@ -408,7 +392,6 @@ sub valid_exp_date {
 		$month = $CGI::values{mv_credit_card_exp_month};
 		$year = $CGI::values{mv_credit_card_exp_year};
 	}
-#::logDebug("check exp: mon=$month year=$year");
 	return '' if $month !~ /^\d+$/ || $year !~ /^\d+$/;
 	return '' if $month <1 || $month > 12;
 	$year += ($year < 70) ? 2000 : 1900 if $year < 1900;
@@ -457,7 +440,6 @@ sub luhn {
 
 sub build_cc_info {
 	my ($cardinfo, $template) = @_;
-#::logDebug("Entering sub build_cc_info");
 
 	if (ref $cardinfo eq 'SCALAR') {
 		$cardinfo = { MV_CREDIT_CARD_NUMBER => $$cardinfo };
@@ -488,7 +470,6 @@ sub build_cc_info {
 
 	$cardinfo->{MV_CREDIT_CARD_TYPE} ||=
 		guess_cc_type($cardinfo->{MV_CREDIT_CARD_NUMBER});
-#::logDebug("attrlist:\n".join("\n",map { $_.":".$cardinfo->{$_} } keys %$cardinfo));
 
 	return Vend::Interpolate::tag_attr_list($template, $cardinfo);
 }
@@ -552,7 +533,6 @@ sub encrypt_standard_cc {
 	# remove unwanted chars from card number
 	$num =~ tr/0-9//cd;
 
-#::logDebug ("encrypt_standard_cc: $num $month/$year $type");
 	# error will be pushed on this if present
 	my @return = (
 				'',			# 0- Whether it is valid
@@ -596,7 +576,6 @@ sub encrypt_standard_cc {
 	}
 
 	$type = guess_cc_type($num) unless $type;
-#::logDebug("encrypt_standard_cc: type is: $type\n");
 
 	if ($type and $opt->{accepted} and $opt->{accepted} !~ /\b$type\b/i) {
 		my $msg = errmsg("Sorry, we don't accept credit card type '%s'.", $type);
@@ -626,10 +605,8 @@ sub encrypt_standard_cc {
 	my $check_string = $num;
 	$check_string =~ s/(\d\d).*(\d\d\d\d)$/$1**$2/;
 	
-#::logDebug("Building mv_credit_card_info in sub encrypt_standard_cc");
 	my $encrypt_string = $separate ? $num :
 		build_cc_info( [$num, $month, $year, $cvv2, $type] );
-#::logDebug("mv_credit_card_info:".$encrypt_string);
 	$info = pgp_encrypt ($encrypt_string);
 
 	unless (defined $info) {
@@ -666,7 +643,6 @@ sub report_field {
 
 sub onfly {
 	my ($code, $qty, $opt) = @_;
-#::logDebug("called onfly");
 	my $item_text;
 	if (ref $opt) {
 		$item_text = $opt->{text} || '';
@@ -717,7 +693,6 @@ sub mail_order {
 	$body = readin($::Values->{mv_order_report})
 		if $::Values->{mv_order_report};
 # END LEGACY
-#::logDebug( sprintf "found body length %s in values->mv_order_report", length($body));
 	$body = readfile($Vend::Cfg->{OrderReport})
 		if ! $body;
 	unless (defined $body) {
@@ -807,7 +782,6 @@ sub pgp_encrypt {
 
 sub do_check {
 		local($_) = shift;
-#::logDebug("do_check param: $_");
 		my $ref = \%CGI::values;
 		my $vref = shift || $::Values;
 
@@ -831,7 +805,6 @@ sub do_check {
 		}
 		$val =~ s/&#(\d+);/chr($1)/ge;
 
-#::logDebug("checking profile $Profile: var=$var val=$val Fatal=$Fatal Final=$Final");
 		if (defined $Parse{$var}) {
 			($val, $var, $message) = &{$Parse{$var}}($ref, $val, $m);
 		}
@@ -843,14 +816,12 @@ sub do_check {
 					);
 			return undef;
 		}
-#::logDebug("profile $Profile check result: var=$var val='$val' message='$message' Fatal=$Fatal Final=$Final");
 		return ($val, $var, $message);
 }
 
 sub check_order {
 	my ($profile, $vref) = @_;
 	my($codere) = '[-\w_#/.]+';
-#::logDebug("call profile $profile");
 	my $params;
 	if(defined $Vend::Cfg->{OrderProfileName}->{$profile}) {
 		$profile = $Vend::Cfg->{OrderProfileName}->{$profile};
@@ -880,7 +851,6 @@ sub check_order {
 	my $join;
 	my $here;
 	my $last_one = 1;
-#::logDebug("complete profile:\n$params\n");
 
 	for(@param) {
 		if(/^$here$/) {
@@ -915,13 +885,10 @@ sub check_order {
 			else {
 				$val = ($last_one || $val);
 			}
-#::logDebug("And defined, val=$val.");
 			undef $And;
 		}
-#::logDebug("check returned val='$val' last_one='$last_one' var=" . (defined $var ? 'DEFINED' : 'UNDEF'));
 		$last_one = $val;
 		if ($val) {
-#::logDebug("Deleting message $Vend::Session->{errors}{$var} for $var.");
 			$::Values->{"mv_status_$var"} = $message
 				if defined $message and $message;
 			delete $Vend::Session->{errors}{$var};
@@ -932,7 +899,6 @@ sub check_order {
 # LEGACY
 			$::Values->{"mv_error_$var"} = $message;
 # END LEGACY
-#::logDebug("Failing, setting message=$message for $var.");
 			$Vend::Session->{errors} = {}
 				if ! $Vend::Session->{errors};
 			if( $No_error ) {
@@ -953,7 +919,6 @@ sub check_order {
 			}
 			push @Errors, "$var: $message";
 		}
-#::logDebug("profile status now=$status");
 		if (defined $Success) {
 			$status = $Success;
 			last;
@@ -1156,7 +1121,6 @@ sub _mandatory {
 	my($ref,$var,$val) = @_;
 	return (1, $var, '')
 		if (defined $ref->{$var} and $ref->{$var} =~ /\S/);
-#::logDebug("failed mandatory check with $var=$ref->{$var}");
 	return (undef, $var, errmsg("blank"));
 }
 
@@ -1235,7 +1199,6 @@ sub route_profile_check {
 	undef $SIG{__DIE__};
 	foreach my $c (@routes) {
 		$Vend::Interpolate::Values = $::Values = { %$value_save };
-#::logDebug("profile: $c");
 		eval {
 			my $route = $Vend::Cfg->{Route_repository}{$c}
 				or do {
@@ -1262,14 +1225,13 @@ sub route_profile_check {
 			last if $final;
 		}
 	}
-#::logDebug("profile=$c status=$status final=$final failed=$failed errors=$errors missing=$missing");
+#::logDebug("check_only -- profile=$c status=$status final=$final failed=$failed errors=$errors missing=$missing");
 	$Vend::Interpolate::Values = $::Values = { %$value_save };
 	return (! $failed, $final, $errors);
 }
 
 sub route_order {
 	my ($route, $save_cart, $check_only) = @_;
-#::logDebug("in sub route_order");
 	my $main = $Vend::Cfg->{Route};
 	return unless $main;
 	$route = 'default' unless $route;
@@ -1312,6 +1274,7 @@ sub route_order {
 	
 	my @route_complete;
 	my @route_failed;
+	my @route_done;
 	my $route_checked;
 
 	### This used to be the check_only
@@ -1390,9 +1353,7 @@ sub route_order {
 			next unless $main->{expandable};
 			next if $override_key{$_};
 			next unless $route->{$_} =~ /\[/;
-#::logDebug("expanding $_ from=$route->{$_}");
 			$route->{$_} = ::interpolate_html($route->{$_});
-#::logDebug("expanded $_ to=$route->{$_}");
 		}
 		#####
 		#####
@@ -1410,7 +1371,6 @@ sub route_order {
 			}
 		}
 
-#::logDebug($Data::Dumper::Indent = 3 and "Route $c:\n" . Data::Dumper::Dumper($route) .	"values:\n" .  Data::Dumper::Dumper($::Values));
 		$Vend::Interpolate::Values = $::Values = { %$value_save };
 		$::Values->{mv_current_route} = $c;
 		my $pre_encrypted;
@@ -1419,21 +1379,21 @@ sub route_order {
 		Vend::Interpolate::flag( 'transactions', {}, $route->{transactions})
 			if $route->{transactions};
 
+	eval {
+
 		if(! $check_only and $route->{inline_profile}) {
 			my $status;
-			eval {
-				($status, undef, $errors) = check_order($route->{inline_profile});
-				die "$errors\n" unless $status;
-			};
+			my $err;
+			($status, undef, $err) = check_order($route->{inline_profile});
+#::logDebug("inline profile returned status=$status errors=$err");
+			die "$err\n" unless $status;
 		}
 
 		if ($CGI::values{mv_credit_card_number}) {
 			$CGI::values{mv_credit_card_type} ||=
 				guess_cc_type($CGI::values{mv_credit_card_number});
-#::logDebug("Building mv_credit_card_info in sub route_order");
 			my %attrlist = map { uc($_) => $CGI::values{$_} } keys %CGI::values;
 			$::Values->{mv_credit_card_info} = build_cc_info(\%attrlist);
-#::logDebug("mv_credit_card_info:".$::Values->{mv_credit_card_info});
 		}
 		elsif ($::Values->{mv_credit_card_info}) {
 			$::Values->{mv_credit_card_info} =~ /BEGIN\s+PGP\s+MESSAGE/
@@ -1441,7 +1401,6 @@ sub route_order {
 		}
 
 		$Vend::Items = $shelf->{$c};
-	eval {
 
 		if ($check_only and $route->{profile}) {
 			$route_checked = 1;
@@ -1459,9 +1418,7 @@ sub route_order {
 
 		if($route->{payment_mode}) {
 			my $ok;
-			eval {
-				$ok = Vend::Payment::charge($route->{payment_mode});
-			};
+			$ok = Vend::Payment::charge($route->{payment_mode});
 			unless ($ok) {
 				die errmsg("Failed online charge for routing %s: %s",
 								$c,
@@ -1513,7 +1470,6 @@ sub route_order {
 		}
 		$page = interpolate_html($page) if $page;
 
-#::logDebug("MIME=$::Instance->{MIME}");
 		$use_mime   = $::Instance->{MIME} || undef;
 		$::Instance->{MIME} = $save_mime  || undef;
 
@@ -1587,20 +1543,23 @@ sub route_order {
 	  } # end PROCESS
 	};
 		if($@) {
+#::logDebug("route failed: $c");
 			my $err = $@;
 			$errors .=  errmsg(
 							"Error during creation of order routing %s:\n%s",
 							$c,
 							$err,
 						);
-			unless ($route->{error_ok}) {
-				push @route_failed, @route_complete;
-				push @route_failed, $c;
+			if ($route->{error_ok}) {
+				push @route_complete, $c;
 				next BUILD;
 			}
 			next BUILD if $route->{continue};
+			push @route_failed, $c;
+			@out = ();
+			@route_done = @route_complete;
 			@route_complete = ();
-			last BUILD;
+			last ROUTES;
 		}
 
 		push @route_complete, $c;
@@ -1702,6 +1661,7 @@ sub route_order {
 			=~ s/^(\s*\w+\s+)(\d\d)[\d ]+(\d\d\d\d)/$1$2 NEED ENCRYPTION $3/;
 	# If we give a defined value, the regular mail_order routine will not
 	# be called
+#::logDebug("route errors=$errors supplant=$main->{supplant}");
 	if($main->{supplant}) {
 		return ($status, $::Values->{mv_order_number}, $main);
 	}
@@ -1749,7 +1709,6 @@ sub add_items {
 	}
 
 	if(defined $CGI::values{mv_item_option}) {
-#::logDebug("adding modifiers");
 		$Vend::Cfg->{UseModifier} = [] if ! $Vend::Cfg->{UseModifier};
 		my %seen;
 		my @mods = (grep $_ !~ /^mv_/, split /\0/, $CGI::values{mv_item_option});
@@ -1852,7 +1811,6 @@ sub add_items {
 			foreach $i (0 .. $#$cart) {
 				if ($cart->[$i]->{'code'} eq $code) {
 					next unless $base eq $cart->[$i]->{mv_ib};
-#::logDebug("incrementing line $i");
 					$found = $i;
 					# Increment quantity. This is different than
 					# the standard handling because we are ordering
@@ -1896,16 +1854,13 @@ sub add_items {
 						$key = $table;
 						$table = $base;
 					}
-#::logDebug("AutoModifer fetch $key: $table :: $key :: $code");
 					$item->{$key} = tag_data($table, $key, $code);
 				}
 			}
 			if($lines[$j] =~ /^\d+$/ and defined $cart->[$lines[$j]] ) {
-#::logDebug("editing line $lines[$j]");
 				$cart->[$lines[$j]] = $item;
 			}
 			else {
-#::logDebug("adding to line");
 # TRACK
 				$Vend::Track->add_item($cart,$item) if $Vend::Track;
 # END TRACK
