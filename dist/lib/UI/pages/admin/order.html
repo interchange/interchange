@@ -29,7 +29,7 @@
 [value name=mv_data_table set=transactions hide=1]
 [if-mm !tables]
 [set ui_error]
-	Not authorized for order administration. Contact administrator?
+	[L]Not authorized for order administration. Contact administrator?[/L]
 [/set]
 [bounce page="__UI_BASE__/error"]
 [/if-mm]
@@ -228,6 +228,7 @@
 	return;
 [/calc]
 <FORM ACTION="[process]" METHOD=POST NAME=batch>
+<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
 <INPUT TYPE=hidden NAME=mv_todo VALUE=back>
 <TABLE border=0 CELLSPACING=0 width="90%">
