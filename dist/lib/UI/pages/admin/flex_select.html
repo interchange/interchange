@@ -63,7 +63,7 @@
 	delete $Scratch->{ui_location};
 	if($CGI->{ui_sequence_edit}) {
 		my $doit;
-		if($CGI->{item_id_left} =~ s/^(.*?)\t//) {
+		if($CGI->{item_id_left} =~ s/^(.*?),//) {
 			$CGI->{item_id} = $1;
 			$doit = 1;
 		}
@@ -351,8 +351,8 @@ More rows: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
 [button text="Edit checked records in sequence"]
 ui_sequence_edit=[calc]
 	$CGI->{item_id_left} = $CGI->{item_id};
-	$CGI->{item_id_left} =~ s/\0+/\t/g;
-	if($CGI->{item_id_left} =~ s/^(.*?)\t//) {
+	$CGI->{item_id_left} =~ s/\0+/,/g;
+	if($CGI->{item_id_left} =~ s/^(.*?),//) {
 		$CGI->{item_id} = $1;
 		return 1;
 	}
