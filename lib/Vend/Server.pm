@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.8 2001-01-28 08:41:17 heins Exp $
+# $Id: Server.pm,v 1.8.2.10 2001-02-07 11:38:40 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.8 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.10 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -452,8 +452,8 @@ sub respond {
 		@paths = ('/');
 		if($Global::Mall) {
 			my $ref = $Global::Catalog{$Vend::Cfg->{CatalogName}};
-			@paths = ($ref->{'script'});
-			push (@paths, @{$ref->{'alias'}}) if defined $ref->{'alias'};
+			@paths = ($ref->{script});
+			push (@paths, @{$ref->{alias}}) if defined $ref->{alias};
 			if ($Global::FullUrl) {
 				# remove domain from script
 				for (@paths) { s:^[^/]+/:/: ; }
@@ -475,9 +475,11 @@ sub respond {
 	elsif(! $Vend::ResponseMade) {        
 		print $fh canon_status("Content-Type: text/html");
 # TRACK        
-        print $fh canon_status("X-Track: " . $Vend::Track->header() . "\r\n");
+        print $fh canon_status("X-Track: " . $Vend::Track->header());
 # END TRACK
 	}
+	print $fh canon_status("Pragma: no-cache")
+		if delete $::Scratch->{mv_no_cache};
 
     print $fh "\r\n";
     print $fh $$body;
@@ -1275,7 +1277,18 @@ sub server_both {
 
 		# clean up dies during spawn
 		if ($@) {
-			::logGlobal({ level => 'error' }, "Died in server spawn: %s", $@ ) if $@;
+			my $msg = $@;
+			::logGlobal({ level => 'error' }, "Died in server spawn: %s", $msg );
+
+			$Vend::Cfg = { } if ! $Vend::Cfg;
+
+			my $content;
+			if($content = get_locale_message(500, '', $msg)) {
+				print Vend::Server::MESSAGE canon_status("Content-type: text/html");
+				print Vend::Server::MESSAGE $content;
+			}
+
+			close Vend::Server::MESSAGE;
 
 			# Below only happens with Windows or foreground debugs.
 			# Prevent corruption of changed $Vend::Cfg entries
