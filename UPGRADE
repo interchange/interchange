@@ -9,12 +9,14 @@ Interchange is designed to be drop-in compatible in its major version.
           upgrading from another 5.x version.
 
  4.8.x -- There should be only a few issues in upgrading from 4.8.x; known
-          issues are shown below.
+          issues are shown below. The major change is in the admin UI,
+          and you will have a distinctly different look and feel 
+          in that area. Most people find it an improvement.
           
- 4.6.x -- Upgrading from 4.6.x and before is problematic, and you would
-          be well-advised to find a competent consultant to help you.
-          interchange-biz@icdevgroup.org is a mail list designed to
-          help Interchange users connect with consultants.
+ 4.6.x -- Upgrading from 4.6.x and before is problematic if you rely on
+          the admin UI -- particularly if you have customized it. The public-
+          facing side should be fairly straightforward to port. See
+          "UPGRADING FROM 4.6.x" below.
 
 INSTALLING INTERCHANGE IN THE SAME LOCATION
 --------------------------------------------
@@ -63,7 +65,7 @@ That's it. Verify your catalog's operation, and you are live.
 
 KNOWN ISSUES UPGRADING FROM 5.0.x
 
-	None.
+    None.
 
 
 KNOWN ISSUES UPGRADING FROM 4.8.x
@@ -91,16 +93,9 @@ UPGRADE NOTES FOR FOUNDATION-STYLE CATALOGS
   You should post the question to the user mail list or contact a
   competent Interchange consultant at interchange-biz@icdevgroup.org.
 
-* You might receive a message about "history-scan tag overrides global
-  definition". This is because that tag was moved into the Interchange
-  global UserTag area.
+* You will probably receive a message about "history-scan tag overrides global
+  definition". See the section "PROBLEMS WITH USERTAGS" below.
   
-  To stop this message, simply remove the history-scan
-  UserTag from your catalog.cfg file. 
-  
-  If you customized that tag, you will have to either perform the
-  customizations on the global tag or put up with the message.
-
 * The static-page build capability is no longer supported in
   Interchange 5. You will receive warnings about "Directive StaticPath
   no longer supported at line XXX". 
@@ -229,11 +224,15 @@ in much the same way.
 
 UPGRADING FROM 4.6.x
 
-It is not recommended that you update your catalog from 4.6.x unless
-you are very proficient in Perl and Interchange. It is usually better
-to build a new catalog from scratch, and integrate your look and 
-feel with that. Contact a competent Interchange consultant to help
-(interchange-biz@icdevgroup.org).
+The public-facing side of a 4.6.x catalog is fairly straightforward to
+port. The Admin UI is problematic, particularly if you have customized
+it.
+
+You should be able to update a catalog from 4.6.x if you are reasonably
+proficient in Perl and/or Interchange. If you expect to rely on the
+backend admin UI, it is sometimes better to build a new catalog from
+scratch, and integrate your look and feel with that. Contact a competent
+Interchange consultant to help (interchange- biz@icdevgroup.org).
 
 That being said, here are some of the issues.
 
