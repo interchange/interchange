@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.68 2002-06-17 22:24:07 jon Exp $
+# $Id: Interpolate.pm,v 2.69 2002-06-18 15:01:45 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.68 $, 10);
+$VERSION = substr(q$Revision: 2.69 $, 10);
 
 @EXPORT = qw (
 
@@ -5600,7 +5600,7 @@ sub shipping {
 		my $q = interpolate_html($lines[0][QUERY]);
 		$q =~ s/=\s+?\s*/= '$mode' /g;
 		$q =~ s/\s+like\s+?\s*/ LIKE '%$mode%' /ig;
-		my $ary = query($q);
+		my $ary = query($q, { wantarray => 1 });
 		if(ref $ary) {
 			@lines = @$ary;
 #::logDebug("shipping lines reselected with SQL: " . ::uneval(\@lines));
