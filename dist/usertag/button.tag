@@ -6,7 +6,7 @@ UserTag button Documentation <<EOD
 This tag creates an mv_click button either as a <INPUT TYPE=submit ...>
 or a JavaScript-linked <A HREF=....><img src=...> combination.
 
-[button text="Delete item" confirm="Are you sure? src="delete.gif"]
+[button text="Delete item" confirm="Are you sure?" src="delete.gif"]
 	[comment]
 		This is the action, same as [set Delete item] action [/set]
 	[/comment]
