@@ -433,7 +433,6 @@ dist/foundation/images/blueyellow/cart.gif
 dist/foundation/images/blueyellow/checkout.gif
 dist/foundation/images/blueyellow/checkout_button.gif
 dist/foundation/images/blueyellow/continue_shopping.gif
-dist/foundation/images/blueyellow/gift_certificate_large.gif
 dist/foundation/images/blueyellow/go.gif
 dist/foundation/images/blueyellow/home.gif
 dist/foundation/images/blueyellow/littlebar.gif
@@ -507,7 +506,6 @@ dist/foundation/images/grayorange/cart.gif
 dist/foundation/images/grayorange/checkout.gif
 dist/foundation/images/grayorange/checkout_button.gif
 dist/foundation/images/grayorange/continue_shopping.gif
-dist/foundation/images/grayorange/gift_certificate_large.gif
 dist/foundation/images/grayorange/go.gif
 dist/foundation/images/grayorange/home.gif
 dist/foundation/images/grayorange/littlebar.gif
@@ -533,7 +531,6 @@ dist/foundation/images/grayscale/cart.gif
 dist/foundation/images/grayscale/checkout.gif
 dist/foundation/images/grayscale/checkout_button.gif
 dist/foundation/images/grayscale/continue_shopping.gif
-dist/foundation/images/grayscale/gift_certificate_large.gif
 dist/foundation/images/grayscale/go.gif
 dist/foundation/images/grayscale/home.gif
 dist/foundation/images/grayscale/littlebar.gif
@@ -559,7 +556,6 @@ dist/foundation/images/greens/cart.gif
 dist/foundation/images/greens/checkout.gif
 dist/foundation/images/greens/checkout_button.gif
 dist/foundation/images/greens/continue_shopping.gif
-dist/foundation/images/greens/gift_certificate_large.gif
 dist/foundation/images/greens/go.gif
 dist/foundation/images/greens/home.gif
 dist/foundation/images/greens/littlebar.gif
@@ -586,7 +582,6 @@ dist/foundation/images/purpleyellow/cart.gif
 dist/foundation/images/purpleyellow/checkout.gif
 dist/foundation/images/purpleyellow/checkout_button.gif
 dist/foundation/images/purpleyellow/continue_shopping.gif
-dist/foundation/images/purpleyellow/gift_certificate_large.gif
 dist/foundation/images/purpleyellow/go.gif
 dist/foundation/images/purpleyellow/home.gif
 dist/foundation/images/purpleyellow/littlebar.gif
@@ -661,8 +656,6 @@ dist/foundation/pages/results_big.html
 dist/foundation/pages/returns.html
 dist/foundation/pages/saved_carts.html
 dist/foundation/pages/ship_addresses.html
-dist/foundation/pages/ship_addresses_added.html
-dist/foundation/pages/ship_addresses_removed.html
 dist/foundation/pages/splash.html
 dist/foundation/pages/stock-alert-added.html
 dist/foundation/pages/stock-alert.html
