@@ -3,6 +3,7 @@
 	$CGI->{no_dbmenu} = 1;
 	return;
 [/calc]
+[flag type=write table=variable]
 [set table_perm]1[/set]
 [set ui_class]Admin[/set]
 [set page_title][L]Tax configuration[/L][/set]
@@ -10,7 +11,6 @@
 [set icon_name]icon_config.gif[/set]
 @_UI_STD_HEAD_@
 
-[flag type=write table=variable]
 <!-- ----- BEGIN REAL STUFF ----- -->
 [perl tables=variable]
 	delete $Scratch->{changes};

@@ -1,8 +1,3 @@
-[set table_perm]__ProductFiles_0__=v[/set]
-[set help_name]item.editor[/set]
-[set icon_name]icon_item.gif[/set]
-@_UI_STD_HEAD_@
-
 [if !cgi mv_data_table]
 [or cgi ui_scrub_table]
 [calc]
@@ -10,6 +5,26 @@
 	return;
 [/calc]
 [/if]
+[set ui_class]Items[/set]
+[tmp page_title]Item editor[/tmp]
+[if-mm super]
+[tmp page_banner][page href="__UI_BASE__/flex_editor"
+				 form='
+				 mv_data_table=__UI_META_TABLE__
+				 ui_meta_view=dbconfig
+				 ui_data_fields=code name height field outboard options help help_url display_filter
+				 ui_break_before=height display_filter
+				 page_title=Change display information: [cgi mv_data_table]
+				 ui_return_to=__UI_BASE__/item
+				 ui_return_to=ui_scrub_table=1
+				 item_id=[cgi mv_data_table]
+		 ']Item editor</A>
+[/tmp]
+[/if-mm]
+[set table_perm]__ProductFiles_0__=v[/set]
+[set help_name]item.editor[/set]
+[set icon_name]icon_item.gif[/set]
+@_UI_STD_HEAD_@
 
 
 [comment]
@@ -66,76 +81,11 @@
 		return;
 	}
 
-#	return unless $CGI->{item_id};
-#	return unless delete $CGI->{deleterecords};
-#	return unless $Tag->if_mm('tables', '=d');
-#
-#	delete $Scratch->{ui_location};
-#	$Config->{NoSearch} = '';
-#	
-#	my $out = '';
-#	for(@{$CGI_array->{item_id}}) {
-#		my $key = $_;
-#		my $db;
-#		for( $CGI->{mv_data_table}, qw/__UI_ITEM_TABLES__/) {
-#			my ($t, $col) = split /:/, $_;
-#			if ( $Tag->if_mm('!tables', "$t=d") ) {
-#				push @errors, "Not authorized to delete from table $t";
-#				next;
-#			}
-#			unless ($db = $Db{$t}) {
-#				push @errors, "Table $t not available.";
-#				next;
-#			}
-#			if($col) {
-#				next unless length ($key);
-#				$key = $db->quote($key, $col);
-#				$out .= "deleted ";
-#				$out .= $db->query("delete from $t where $col = $key");
-#				$out .= " records from $t where $col = $key</BR>";
-#			}
-#			else {
-#				next unless $db->record_exists($key);
-#				$db->delete_record($key)
-#					or do {
-#						push @errors, $@;
-#						next;
-#					};
-#				$out .= "deleted $key from $t<br>";
-#			}
-#		}
-#	}
-#
-#	if(@errors) {
-#		my $plural = @errors > 1 ? 's' : '';
-#		$out .= "<FONT CLASS=error>Error$plural:<UL><LI>" .
-#				join ("<LI>", @errors)                    .
-#				"</UL></FONT><BR>";
-#	}
-#	$Scratch->{ui_message} = $out;
-#	return;
 [/perl]
 
 [if scratch ui_location]
 	[bounce href=`delete $Scratch->{ui_location}`]
 [/if]
-
-[set ui_class]Items[/set]
-[tmp page_title]Item editor[/tmp]
-[if-mm super]
-[tmp page_banner][page href="__UI_BASE__/flex_editor"
-				 form='
-				 mv_data_table=__UI_META_TABLE__
-				 ui_meta_view=dbconfig
-				 ui_data_fields=code name height field outboard options help help_url display_filter
-				 ui_break_before=height display_filter
-				 page_title=Change display information: [cgi mv_data_table]
-				 ui_return_to=__UI_BASE__/item
-				 ui_return_to=ui_scrub_table=1
-				 item_id=[cgi mv_data_table]
-		 ']Item editor</A>
-[/tmp]
-[/if-mm]
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 <table>
