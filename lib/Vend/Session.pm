@@ -1,6 +1,6 @@
 # Session.pm - Interchange Sessions
 #
-# $Id: Session.pm,v 1.7 2000-11-12 20:52:25 heins Exp $
+# $Id: Session.pm,v 1.6 2000-09-16 01:04:53 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -30,7 +30,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.7 $, 10);
+$VERSION = substr(q$Revision: 1.6 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -116,18 +116,6 @@ File => [ 1, 0, sub {
 					%Vend::SessionDBM,
 					'Vend::SessionFile',
 					$Vend::Cfg->{SessionDatabase}
-				)
-				or die "Could not tie to $Vend::Cfg->{SessionDatabase}: $!\n";
-			},
-		],
-
-
-NFS => [ 1, 0, sub {
-				tie(
-					%Vend::SessionDBM,
-					'Vend::SessionFile',
-					$Vend::Cfg->{SessionDatabase},
-					1,
 				)
 				or die "Could not tie to $Vend::Cfg->{SessionDatabase}: $!\n";
 			},

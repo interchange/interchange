@@ -6,7 +6,6 @@ sub {
 	my($table, $opt) = @_;
 	use strict;
 	my $out;
-#::logDebug("options for import_fields: " . ::uneval(\@_) );
 	local($SIG{__DIE__});
 	$SIG{"__DIE__"} = sub {
                             my $msg = shift;
@@ -26,102 +25,10 @@ EOF
 	my $currdb;
 	my $tmsg = '';
 	my $db;
-
-	CONVERT: {
-		last CONVERT if ! $opt->{convert};
-		if ($opt->{convert} eq 'auto') {
-			if($file =~ /\.(txt|all)$/i) {
-				last CONVERT;
-			}
-			elsif($file =~ /\.xls$/i) {
-				$opt->{convert} = 'xls';
-				redo CONVERT;
-			}
-			else {
-				$file =~ s:.*\.::
-					or $file = 'none';
-				return "Failed: unknown file extension ''";
-			}
-		}
-		elsif ($opt->{convert} eq 'xls') {
-			eval {
-				require Spreadsheet::ParseExcel;
-				import Spreadsheet::ParseExcel;
-				my $oExcel = new Spreadsheet::ParseExcel;
-
-				my $oBook = $oExcel->Parse($file);
-				my($iR, $iC, $oWkS, $oWkC);
-
-				my $sheets = {};
-
-					for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
-					   my $oWkS = $oBook->{Worksheet}[$iSheet]
-										or next;
-
-					   for(qw/MaxCol MaxRow MinCol MinRow/) {
-						   die "No $_!"           if ! defined $oWkS->{$_};
-					   }
-
-					   my $sname =  $oWkS->{Name};
-					   $sheets->{$sname} =  "$sname\n";
-					   my $maxcol;
-					   my $mincol;
-
-					   my $iC;
-
-					   my $iR = $oWkS->{MinRow};
-
-					   for($iC = $oWkS->{MinCol} ; $iC <= $oWkS->{MaxCol} ; $iC++) {
-							   $oWkC = $oWkS->{Cells}[$iR][$iC];
-							   if(! $oWkC or ! $oWkC->Value) {
-								  $maxcol = $iC;
-								  $maxcol--;
-								  last;
-							   }
-							   $maxcol = $iC;
-					   }
-
-					   $mincol = $oWkS->{MinCol};
-					   my @out;
-
-					   for( ; $iR <= $oWkS->{MaxRow}; $iR++) {
-						  my $row = $oWkS->{Cells}[$iR];
-						  @out = ();
-						  for($iC = $mincol; $iC <= $maxcol; $iC++) {
-							if(! defined $row->[$iC]) {
-								push @out, "";
-								next;
-							}
-							push @out, $row->[$iC]->Value;
-						  }
-						  $sheets->{$sname} .= join "\t", @out;
-						  $sheets->{$sname} .= "\n";
-					   }
-					}
-
-					my @print;
-					for(sort keys %$sheets) {
-						push @print, $sheets->{$_};
-					}
-					$file =~ s/(\.xls)?$/.txt/i;
-					open OUT, ">$file"
-						or die "Cannot write $file: $!\n";
-					print OUT join "\cL", @print;
-					close OUT;
-			};
-			die "Excel conversion failed: $@\n" if $@;
-		}
-		else {
-			# other types, or assume gnumeric simple text
-		}
-
-	} # end CONVERT
-
 	if($opt->{multiple}) {
 		undef $table;
 		sub import_fields_change_db {
 			my $table = shift;
-#::logDebug("changing table to $table");
 			$db = Vend::Data::database_exists_ref($table);
 			die "Non-existent table '$table'\n" unless $db;
 			$db = $db->ref() unless $Vend::Interpolate::Db{$table};
@@ -134,7 +41,6 @@ EOF
 		die "Non-existent table '$table'\n" unless $db;
 		$db = $db->ref() unless $Vend::Interpolate::Db{$table};
 	}
-
 	$out = '<PRE>';
 	my $delimiter = quotemeta $opt->{delimiter} || "\t";
 	open(UPDATE, $file)

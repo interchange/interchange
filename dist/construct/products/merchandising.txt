@@ -1,6 +1,6 @@
 sku	featured	banner_text	banner_image	blurb_begin	blurb_end	timed_promotion	start_date	finish_date	upsell_to	cross_sell	cross_category	others_bought	times_ordered
 gift_cert	expired					1	20001012	20001012				{'os28066' => "1",}	1
-os28004	new						20001001	20001231		os28005 os28006 os28007	Paintbrushes	{'os28087' => "1",'os28068a' => "1",}	1
+os28004	new						20001001	20001231		os28005 os28006 0s28007	Paintbrushes	{'os28087' => "1",'os28068a' => "1",}	1
 os28005	new						20001001	20001231	os28006	os28004	Rollers		
 os28006	new						20001001	20001231		os28004	Rollers		
 os28007	specials						20001001	20001130	os28006	os28004	Rollers		

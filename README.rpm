@@ -2,11 +2,11 @@ NAME
     README.rpm - Interchange RPM for Redhat Systems
 
 VERSION
-    4.6.1
+    4.6.0
 
 SYNOPSIS
-    rpm -Uvh interchange-4.6.1-1.rh6.i386.rpm
-    rpm -Uvh interchange-4.6.1-1.rh7.i386.rpm
+    rpm -Uvh interchange-4.6.0-1.rh6.i386.rpm
+    rpm -Uvh interchange-4.6.0-1.rh7.i386.rpm
 
 DESCRIPTION
     The Interchange 4 RPM is designed to integrate Interchange with a stock

@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12 2000-11-11 20:45:12 heins Exp $
+# $Id: Parse.pm,v 1.10 2000-10-16 16:11:09 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,12 +27,12 @@
 
 package Vend::Parse;
 
-# $Id: Parse.pm,v 1.12 2000-11-11 20:45:12 heins Exp $
+# $Id: Parse.pm,v 1.10 2000-10-16 16:11:09 zarko Exp $
 
 require Vend::Parser;
 
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.12 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.10 $ =~ /(\d+)\.(\d+)/);
 
 use Safe;
 use Vend::Util;
@@ -44,7 +44,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12 $, 10);
+$VERSION = substr(q$Revision: 1.10 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -64,7 +64,7 @@ my %PosNumber =	( qw!
                 bounce           2
                 cart             1
                 cgi              1
-                checked          2
+                checked          4
                 counter          1
                 currency         2
                 data             3
@@ -87,7 +87,7 @@ my %PosNumber =	( qw!
                 html_table       0
                 if               1
                 import           2
-                include          2
+                include          1
                 input_filter     1
                 index            1
                 label            1
@@ -108,7 +108,7 @@ my %PosNumber =	( qw!
                 scratchd         1
 				record			 0
                 region		     0
-                selected         2
+                selected         3
                 set              1
                 seti             1
                 setlocale        2
@@ -142,7 +142,7 @@ my %Order =	(
 				catch			=> [qw( label )],
 				cgi				=> [qw( name  )],
 				'currency'		=> [qw( convert noformat )],
-				checked			=> [qw( name value )],
+				checked			=> [qw( name value multiple default)],
 				counter			=> [qw( file )],
 				data			=> [qw( table field key )],
 				default			=> [qw( name default )],
@@ -169,7 +169,7 @@ my %Order =	(
 				'index'			=> [qw( table )],
 				import 			=> [qw( table type )],
 				input_filter 	=> [qw( name )],
-				include			=> [qw( file locale )],
+				include			=> [qw( file )],
 				item_list		=> [qw( name )],
 				label			=> [qw( name )],
 				log				=> [qw( file )],
@@ -191,7 +191,7 @@ my %Order =	(
 				search_region	=> [qw( arg   )],
 				region			=> [qw( )],
 				record			=> [qw( )],
-				selected		=> [qw( name value )],
+				selected		=> [qw( name value multiple )],
 				set_cookie		=> [qw( name value expire )],
 				setlocale		=> [qw( locale currency )],
 				set				=> [qw( name )],
@@ -222,7 +222,6 @@ my %addAttr = (
 					area            1
 					banner          1
 					catch           1
-					checked         1
 					counter         1
 					data			1
 					default			1
@@ -246,7 +245,6 @@ my %addAttr = (
 					process         1
 					query			1
                     sql             1
-					selected        1
 					setlocale       1
                     record          1
                     region          1
@@ -453,7 +451,7 @@ my %Routine = (
 				include			=> sub {
 									&Vend::Interpolate::interpolate_html(
 										&Vend::Util::readfile
-											($_[0], $Global::NoAbsolute, $_[1])
+											($_[0], $Global::NoAbsolute)
 										  );
 									},
 				input_filter	=> \&Vend::Interpolate::input_filter,

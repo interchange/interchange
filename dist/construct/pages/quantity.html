@@ -32,7 +32,7 @@ ui_template_name: leftonly
                                     <tr> 
                                       <td>
 [if-loop-field image]
-<IMG SRC="items/[loop-field image]" ALT="[loop-description]" BORDER="0">
+<IMG SRC="items/[loop-field image]" ALT="[loop-field title]" BORDER="0">
 [/if-loop-field]							  
 									  </td>
                                     </tr>
@@ -42,7 +42,7 @@ ui_template_name: leftonly
                                   <table border="0" cellpadding="3" cellspacing="0">
                                     <tr> 
                                       <td valign="top"> 
-                                        <p><font __FFACE__ size="1"><b><i>[loop-description]</i></b></font></p>
+                                        <p><font __FFACE__ size="1"><b><i>[loop-field title]</i></b></font></p>
                                       </td>
                                     </tr>
                                     <tr> 

@@ -74,12 +74,12 @@ to make a distribution tar file:
 	Writing Makefile for Interchange
 	$ make tardist
 	/usr/local/bin/perl -I/YOUR/PERL/LIB -MExtUtils::Manifest=manicopy,maniread \
-	-e "manicopy(maniread(),'interchange-4.6.1', 'best');"
-	mkdir interchange-4.6.1
-	mkdir interchange-4.6.1/dist
+	-e "manicopy(maniread(),'interchange-4.6.0', 'best');"
+	mkdir interchange-4.6.0
+	mkdir interchange-4.6.0/dist
 	....
 	$ ls interch*
-	interchange-4.6.1.tar.gz
+	interchange-4.X.X.tar.gz
 
 =head2 Unpack and install
 
@@ -131,20 +131,3 @@ files for changes. In particular, mv_metadata.asc is used to format
 and present quite a few things in the user interface. You may have
 to merge the databases manually. In most cases, you can import them
 into a spreadsheet or database.
-
-=head1 Troubleshooting
-
-Some problems can occur due to the CVS image being dynamic.
-
-=head2 MANIFEST out of sync -- file not found
-
-If you get a complaint that a "file is not found" when trying to do 
-a C<make tardist> or C<make dist>, just do:
-
-	rm MANIFEST
-	make manifest
-
-=head2 Trying to run from the CVS directory
-
-If you install in the directory where your CVS image lives, you will have
-problems.

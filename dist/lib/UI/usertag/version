@@ -29,17 +29,6 @@ sub {
 		$done_something = 1;
 	}
 
-	if($opt->{modtest}) {
-		eval "require $opt->{modtest}";
-		if($@) {
-			push @out, 0;
-		}
-		else {
-			push @out, 1;
-		}
-		$done_something = 1;
-	}
-
 	if($opt->{pid}) {
 		push @out, ::readfile($Global::PIDfile);
 		$done_something = 1;

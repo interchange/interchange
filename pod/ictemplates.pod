@@ -2,19 +2,19 @@
 
 Interchange Templates
 
-=head1 AKOPIA INTERCHANGE(TM) TEMPLATES
+=head1 AKOPIA INTERCHANGE TM TEMPLATES
 
 Akopia Interchange is the industry's most widely distributed and
-implemented open source e-commerce platform. Interchange is designed
-to build pages based on templates from a database. This document
-discusses, in detail, how to build forms and report templates with
-Interchange's tag language, ITL (Interchange Tag Language). A number
-of frequently asked questions are also discussed.
+implemented open source e-commerce platform. . Interchange TM is
+designed to build pages based on templates from a database. This
+document discusses, in detail, how to build forms and report templates
+with Interchange's tag language, IML (Interchange Markup Language). A
+number of frequently asked questions are also discussed.
 
 =head2 Overview
 
 The search builder can be used to generate very complex reports on the
-database, or to help in the construction of ITL templates. Select a
+database, or to help in the construction of IML templates. Select a
 "Base table" which will be the foundation for the report. Specify the
 maximum number of rows to be returned at once, and whether to show
 only unique entries.
@@ -27,15 +27,15 @@ criteria.
 Finally, select any sorting options desired for displaying the
 results, and narrow down the list of columns returned if desired.
 Clicking "Run" will run the search immediately and display the
-results. "Generate definition" will display an ITL tag which can be
+results. "Generate definition" will display an IML tag which can be
 placed in a template and which will return the results when executed.
 
 To build complex order forms and reports, Interchange has a complete
-tag language with over 80 different functions, dubbed ITL, for
-Interchange Tag Language. It allows access to and control over any of
-an unlimited number of database tables, multiple shopping carts, user
-name/address information, discount, tax, and shipping information,
-search of files and databases, and much more.
+tag language with over 80 different functions, dubbed IML, for
+Interchange Markup Language. It allows access to and control over any
+of an unlimited number of database tables, multiple shopping carts,
+user name/address information, discount, tax, and shipping
+information, search of files and databases, and much more.
 
 There is some limited conditional capability with the C<[if ...]> tag,
 but when doing complex operations, use of embedded Perl/ASP should be
@@ -47,156 +47,133 @@ Perl can also be embedded within the page, and if given the proper
 permission by the system administrator, can call upon resources from
 other computers and networks.
 
-=head1 VARIABLE REPLACEMENT
-
-Variable substitution is a simple and oft-used feature of Interchange
-templates. Before anything else is done on a template, all variable
-tokens are replaced by variable values. There are three types of
-variable tokens:
-
-C<__VARIABLENAME__> is replaced by the catalog variable called
-VARIABLENAME.
-
-C<@@VARIABLENAME@@> is replaced by the global variable called
-VARIABLENAME.
-
-C<@_VARIABLENAME_@> is replaced by the catalog variable VARIABLENAME
-if it exists; otherwise, it is replaced by the global variable
-VARIABLENAME.
-
-See the C<icconfig> documentation for information on how to use the
-C<Variable> configuration file directive to set global variables in
-C<interchange.cfg> and catalog variables in C<catalog.cfg>.
-
 =head1 INTERCHANGE TAGS
 
- [accessories]        Access product accessory functions
-[area]               Insert a re-written Interchange URL
-[banner]             Insert a random or rotating ad banner
-[bounce]             Insert header to redirect to a different URL
-[calc]               Perform Perl calculations (low overhead)
-  [/calc]
-[cart]               Set the current shopping cart name
-[cgi]                Insert a CGI form value
-[checked]            Conditionally check an HTML check/radio box
-[comment]            Insert comments in Interchange pages
-  [/comment]
-[col]                Used with [row] -- rudimentary text tables for order
-  [/col]             reports
-[condition]          Sets a condition inside [if explicit] and others
-  [/condition]
-[counter]            Increment, decrement, or read a file-based counter
-[currency]           Formats a number like currency for current locale
-  [/currency]
-[data]               Access a database or user session element
-[default]            Insert a variable but with a default response if blank
-[description]        Output a product description
-[discount]           Set a product discount coupon
-  [/discount]
-[discount-price]     Show the discounted price (only in [item-list])
-[dump]               Dump the session information (for errors and debugging)
-[ecml]               Translate to-from Electronic Commerce Modeling Language
-                     field
-[else]               Defines else region for [if ...], [if-PREFIX-field ..]
-  [/else]            and others
-[elsif]              Defines elsif region for [if ...] (not available for
-  [/elsif]           [if-PREFIX-field]
-[error]              Check/display form processing errors
-[field]              Access a product database field
-[file]               Insert the contents of a file
-[flag]               Set a minivend flag
-[fly-list]           Show an item "on-the-fly" in an arbitrary page
-  [/fly-list]
-[goto]               goto an arbitrary page location, skipping the rest
-[html_table]         create an HTML table from a query or list
-[if]                 Perform any of many conditional tests
-  [/if]
-[if-PREFIX-data]     Display region only if database element non-empty
-  [/if-PREFIX-data]
-[if-PREFIX-field]    Display region only if field non-empty
-  [/if-PREFIX-field]
-[if-PREFIX-param]    Display only if item passed parameter set
-  [/if-PREFIX-param]
-[include]            Include a file with complete Interchange interpretation
-[import]             Import ASCII text into a database
-[index]              Create a searchable ASCII index
-[input_filter]       Create an input filter
-[PREFIX-accessories] Product accessory functions (set select box)
-[PREFIX-alternate]   Alternation for table/line build
-[/PREFIX-alternate
-[PREFIX-change]      Grouping of items in list display
-  [/PREFIX-change]
-[PREFIX-code]        Insert current item SKU/code/row identifier
-[PREFIX-data]        Insert data entry corresponding to current SKU
-[PREFIX-description] Insert description corresponding to current SKU
-[PREFIX-discount]    Show amount of discount for current SKU
-[PREFIX-field]       Insert product database entry corresponding to current SKU
-[PREFIX-increment]   Count for list
-[PREFIX-last]        Stop displaying if condition is met
-  [/PREFIX-last]
-[PREFIX-next]        Skip item if condition is met
-  [/PREFIX-next]
-[PREFIX-list]        Iterate over a shopping cart
-  [/PREFIX-list]
-[PREFIX-param]       Show element from list.
-[PREFIX-pos]         Show positional element from list.
-[PREFIX-price]       Display price of item with any discounts/price breaks/
-                     adjustments
-[PREFIX-quantity]    Show quantity ordered on shopping cart line
+ lbracketaccessories]     Access product accessory functions
 
-[PREFIX-subtotal]    Subtotal for the item (item-quantity * item-price)
-[label]              Set a label for goto
-[loop]               Iterate over an arbitrary list
-  [/loop]
-[matches]            Show number of matches from search
-[modifier-name]      Place a variable name that corresponds to an attribute
-                     (in item-list)
-[more]               Show region of search list only if more matches
-[more-list]          Display more matches list with links to next series
-  [/more-list]
-[mvasp]              ASP-style Perl programming area
-[no-match]           Define area of region results displayed when no match
-  [/no-match]
-[nitems]             Show number of items for a shopping cart
-[order]              Create HTML link to order an item
-[page]               Create A HREF with re-written URL to call Interchange page
-[perl]               Embed output of arbitrary Perl in the page
-  [/perl]
-[price]              Show price of an item
-[process]            Create URL for Interchange form processing
-[quantity-name]      Place a variable name that corresponds to item quantity
-[query]              Perform any of several types of SQL query
-  [/query]
-[read_cookie]        Read a cookie sent by the user
-[record]             Set a database record
-[row]                Used with [col] -- rudimentary text tables for order
-  [/row]             reports
-[salestax]           Show amount of salestax for shopping cart
-[scratch]            Access a scratch variable
-[search-region]      Define an area of the page as a search list/query
-  [/search-region]
-[selected]           Conditional selection of drop-down <SELECT ...>
-[set]                Set a scratch variable
-  [/set]
-[set_cookie]         Send a cookie to the user
-[setlocale]          Set the locale
-[shipping]           Calculate shipping
-[shipping-desc]      Show shipping description
-[sort]               Set sort order for iterating lists
-  [/sort]
-[strip]              Strip leading/trailing whitespace
-  [/strip]
-[subtotal]           Calculate subtotal without tax or shipping
-[tag]                Miscellaneous functions
-  [/tag]
-[then]               Define THEN region for [if ...]
-  [/then]
-[timed_build]        Build region of page on timed basis
-[total-cost]         Calculate order total with tax, handling, and shipping
-[userdb]             Access user database functions
-[update]             Perform Interchange actions
-[value]              Display form value
-[value_extended]     Display form array values or do file upload functions
+lbracketarea]            Insert a re-written Interchange URL
+lbracketbanner]                Insert a random or rotating ad banner
+lbracketbounce]          Insert header to redirect to a different URL
+lbracketcalc]            Perform Perl calculations (low overhead)
+  lbracket/calc]
+lbracketcart]            Set the current shopping cart name
+lbracketcgi]             Insert a CGI form value
+lbracketchecked]         Conditionally check an HTML check/radio box
+lbracketcomment]         Insert comments in Interchange pages
+  lbracket/comment]
+lbracketcol]             Used with lbracketrow] -- rudimentary text tables for order reports
+  lbracket/col]
+lbracketcondition]       Sets a condition inside lbracketif explicit] and others
+  lbracket/condition]
+lbracketcounter]               Increment, decrement, or read a file-based counter
+lbracketcurrency]        Formats a number like currency for current locale
+  lbracket/currency]
+lbracketdata]            Access a database or user session element
+lbracketdefault]         Insert a variable but with a default response if blank
+lbracketdescription]     Output a product description
+lbracketdiscount]        Set a product discount coupon
+  lbracket/discount]
+lbracketdiscount-price]  Show the discounted price (only in lbracketitem-list])
+lbracketdump]          Dump the session information (for errors and debugging)
+lbracketecml]            Translate to-from Electronic Commerce Modeling Language field
+lbracketelse]            Defines else region for lbracketif ...], lbracketif-PREFIX-field ..] and
+  lbracket/else]         others
+lbracketelsif]           Defines elsif region for lbracketif ...](not available for lbracketif-PREFIX-
+  lbracket/elsif]        field]
+lbracketerror]           Check/display form processing errors
+lbracketfield]           Access a product database field
+lbracketfile]            Insert the contents of a file
+lbracketflag]            Set a minivend flag
+lbracketfly-list]        Show an item "on-the-fly" in an arbitrary page
+  lbracket/fly-list]
+lbracketgoto]            goto an arbitrary page location, skipping the rest
+lbrackethtml_table]      create an HTML table from a query or list
+lbracketif]              Perform any of many conditional tests
+  lbracket/if
+lbracketif-PREFIX-data]    Display region only if database element non-empty
+  lbracket/if-PREFIX-data
+lbracketif-PREFIX-field]   Display region only if field non-empty
+  lbracket/if-PREFIX-field
+lbracketif-PREFIX-param]   Display only if item passed parameter set
+  lbracket/if-PREFIX-param
+lbracketinclude]         Include a file with complete Interchange interpretation
+lbracketimport]          Import ASCII text into a database
+lbracketindex]           Create a searchable ASCII index
+lbracketinput_filter]    Create an input filter
+lbracketPREFIX-accessories]Product accessory functions (set select box)
+lbracketPREFIX-alternate]  Alternation for table/line build
+lbracket/PREFIX-alternate
+lbracketPREFIX-change]     Grouping of items in list display
+  lbracket/PREFIX-change
+lbracketPREFIX-code]       Insert current item SKU/code/row identifier
+lbracketPREFIX-data]       Insert data entry corresponding to current SKU
+lbracketPREFIX-description]Insert description corresponding to current SKU
+lbracketPREFIX-discount]   Show amount of discount for current SKU
+lbracketPREFIX-field]      Insert product database entry corresponding to current SKU
+lbracketPREFIX-increment]  Count for list
+lbracketPREFIX-last]       Stop displaying if condition is met
+  lbracket/PREFIX-last]
+lbracketPREFIX-next]       Skip item if condition is met
+  lbracket/PREFIX-next]
+lbracketPREFIX-list]       Iterate over a shopping cart
+  lbracket/PREFIX-list]
+lbracketPREFIX-param]      Show element from list.
+lbracketPREFIX-pos]        Show positional element from list.
+lbracketPREFIX-price]      Display price of item with any discounts/price breaks/adjustments
+lbracketPREFIX-quantity]   Show quantity ordered on shopping cart line
+
+lbracketPREFIX-subtotal]   Subtotal for the item (item-quantity * item-price)
+lbracketlabel]           Set a label for goto
+lbracketloop]            Iterate over an arbitrary list
+  lbracket/loop]
+lbracketmatches]         Show number of matches from search
+lbracketmodifier-name]   Place a variable name that corresponds to an attribute (in item-list)
+lbracketmore]            Show region of search list only if more matches
+lbracketmore-list]       Display more matches list with links to next series
+  lbracket/more-list]
+lbracketmvasp]           ASP-style Perl programming area
+lbracketno-match]        Define area of region results displayed when no match
+  lbracket/no-match]
+lbracketnitems]          Show number of items for a shopping cart
+lbracketorder]           Create HTML link to order an item
+<lbracket>page]            Create A HREF with re-written URL to call Interchange page
+lbracketperl]            Embed output of arbitrary Perl in the page
+  lbracket/perl]
+lbracketprice]           Show price of an item
+lbracketprocess]         Create URL for Interchange form processing
+lbracketquantity-name]   Place a variable name that corresponds to item quantity
+lbracketquery]           Perform any of several types of SQL query
+  lbracket/query]
+lbracketread_cookie]     Read a cookie sent by the user
+lbracketrecord]          Set a database record
+<lbracket>row]             Used with lbracketcol] -- rudimentary text tables for order reports
+  lbracket/row]
+lbracketsalestax]        Show amount of salestax for shopping cart
+lbracketscratch]         Access a scratch variable
+lbracketsearch-region]   Define an area of the page as a search list/query
+  lbracket/search-region]
+lbracketselected]        Conditional selection of drop-down <SELECT ...>
+lbracketset]             Set a scratch variable
+  lbracket/set]
+lbracketset_cookie]      Send a cookie to the user
+lbracketsetlocale]       Set the locale
+lbracketshipping]        Calculate shipping
+lbracketshipping-desc]   Show shipping description
+lbracketsort]            Set sort order for iterating lists
+  lbracket/sort]
+lbracketstrip]           Strip leading/trailing whitespace
+  lbracket/strip]
+lbracketsubtotal]        Calculate subtotal without tax or shipping
+lbrackettag]             Miscellaneous functions
+  lbracket/tag]
+lbracketthen]            Define THEN region for lbracketif ...]
+  lbracket/then]
+lbrackettimed_build]     Build region of page on timed basis
+lbrackettotal-cost]      Calculate order total with tax, handling, and shipping
+lbracketuserdb]          Access user database functions
+lbracketupdate]          Perform Interchange actions
+lbracketvalue]           Display form value
+lbracketvalue_extended]  Display form array values or do file upload functions
 
 =head2 Tag Syntax
 
@@ -206,29 +183,29 @@ same, where a parameter="parameter value" can be passed.
 
 Summary:
 
-   [tag parameter]             Tag called with positional parameter
-   [tag parameter=value]       Tag called with named parameter
-   [tag parameter="the value"] Tag called with space in parameter
-   [tag 1 2 3]                 Tag called with multiple positional parameters
-   [tag foo=1 bar=2 baz=3]     Tag called with multiple named parameters
-   [tag foo=`2 + 2`]           Tag called with calculated parameter
-   [tag foo="[value bar]"]     Tag called with tag inside parameter
-   [tag foo="[value bar]"]
+   lbrackettag parameter]             Tag called with positional parameter
+   lbrackettag parameter=value]       Tag called with named parameter
+   lbrackettag parameter="the value"] Tag called with space in parameter
+   lbrackettag 1 2 3]                 Tag called with multiple positional parameters
+   lbrackettag foo=1 bar=2 baz=3]     Tag called with multiple named parameters
+   lbrackettag foo=`2 + 2`]           Tag called with calculated parameter
+   lbrackettag foo="lbracketvalue bar]"]     Tag called with tag inside parameter
+   lbrackettag foo="lbracketvalue bar]"]
        Container text.         Container tag.
-   [/tag]
+   lbracket/tag]
 
 Most tags can accept some positional parameters. This speeds up
 parsing and is simpler to write in many cases.
 
 Here is an example tag:
 
-   [value name=city]
+   lbracketvalue name=city]
 
 This will cause Interchange to look in the user form value array and
 return the value of the form parameter C<city>, which might have been
 set with:
 
-   City: <INPUT TYPE=text NAME=city VALUE="[value city]">
+   City: <INPUT TYPE=text NAME=city VALUE="lbracketvalue city]">
 
 Note that the value was pre-set with the previous value of C<city> (if
 any). It uses the positional style -- C<name> is the first positional
@@ -237,7 +214,7 @@ derived from other Interchange tags; for instance [value [value
 formfield]] will not work. But if the named parameter syntax is used,
 the parameters can contain other tags, such as:
 
-   [value name="[value formfield]"]
+   lbracketvalue name="lbracketvalue formfield]"]
 
 There is one exception to the above rule when using the [item-list],
 [loop ...], [sql ...], and other list tags. These will be examined in
@@ -245,10 +222,10 @@ following sections.
 
 Many Interchange tags are container tags:
 
-   [set Checkout]
+   lbracketset Checkout]
        mv_nextpage=ord/checkout
        mv_todo=return
-   [/set]
+   lbracket/set]
 
 Tags and parameter names are not case sensitive, so [VALUE
 NAME=something] would work just as well. Interchange convention is to
@@ -258,35 +235,35 @@ pages are easier to read, but this sense can easily be reversed.
 Single quotes work just as well as double quotes, and can prevent
 ambiguity.
 
-   [value name=b_city set='[value city]']
+   lbracketvalue name=b_city set='lbracketvalue city]']
 
 Backticks, the other single quote, cause the parameter contents to be
 evaluated as Perl code via the C<[calc]> tag. (This is in MV3.15 and
 above.) For example:
 
-   [value name=row_value set=`$row_value += 1`]
+   lbracketvalue name=row_value set=`$row_value += 1`]
 
 is the same as
 
-   [value name=row_value set="[calc]$row_value += 1[/calc]"]
+   lbracketvalue name=row_value set="lbracketcalc]$row_value += 1lbracket/calc]"]
 
 Pipes are also quoting characters, but have the special behavior of
 stripping leading and trailing whitespace. For example:
 
-       [loop list="code        field    field2  field3
+       lbracketloop list="code        field    field2  field3
        k1    A1    A2    A3
        k2      B1      B2      B3"]
-       [loop-increment][loop-code]
-       [/loop]
+       lbracketloop-increment]lbracketloop-code]
+       lbracket/loop]
 
 might be more elegantly expressed as:
 
-    [loop list=|
+    lbracketloop list=|
             k1    A1    A2    A3
             k2    B1    B2    B3"]
     |]
-        [loop-increment][loop-code]
-    [/loop]
+        lbracketloop-increment]lbracketloop-code]
+    lbracket/loop]
 
 What is done with the results of the tag depends on whether it is a
 container or standalone tag. A container tag is one which has an end
@@ -351,7 +328,7 @@ write]products[/tag]> to mark the C<products> database writable.
 In addition, the C<[data ...]> tag can access a number of elements in
 the Interchange session database:
 
-    accesses      Accesses within the last 30 s    arg           The argument passed in a [page ...] or [area ...] tag
+    accesses      Accesses within the last 30 s    arg           The argument passed in a lbracketpage ...] or lbracketarea ...] tag
     browser       The user browser string
     host          Interchange's idea of the host (modified by DomainTail)
     last_error    The last error from the error logging
@@ -411,32 +388,32 @@ hidden fields in a form.
 
 An order profile would be set with:
 
-  [set che  name=required You must give us your name.
+  lbracketset che  name=required You must give us your name.
   address=required Oops! No address.
-  [/set]
+  lbracket/set]
   <INPUT TYPE=hidden NAME=mv_order_profile VALUE="checkout">
 
 kout]
 
 A search profile would be set with:
 
-  [set substring  mv_substring_match=yes
+  lbracketset substring  mv_substring_match=yes
   mv_case=yes
-  [/set]
+  lbracket/set]
   <INPUT TYPE=hidden NAME=mv_profile VALUE="substring_case">
 
 case]
 
 To do the same as C<[set foo]bar[/set]> in embedded Perl:
 
-    [calc]$Scratch->{foo} = 'bar'; return;[/calc]
+    lbracketcalc]$Scratch->{foo} = 'bar'; return;lbracket/calc]
 
 =item [seti variable][value something][/seti]
 
 Same as C<[set] [/set]>, except it interpolates the container text.
 The above is the same as:
 
-    [set name=variable interpolate=1][value something][/set]
+    lbracketset name=variable interpolate=1]lbracketvalue something]lbracket/set]
 
 =item [tmp name]value[/tmp]
 
@@ -447,7 +424,7 @@ Same as [seti] but does not persist.
 Returns the contents of a scratch variable to the page. C<[scratch
 foo]> is the same as, but faster than:
 
-    [perl]$Scratch->{foo}[/perl]
+    lbracketperl]$Scratch->{foo}lbracket/perl]
 
 =item [scratchd]
 
@@ -494,11 +471,11 @@ a page.
 
 Loop lists can be nested by using different prefixes:
 
-    [loop prefix=size list="Small Medium L        [loop prefix=color list="Red White Blue"]
-            [color-code]-[size-code]<BR>
-        [/loop]
+    lbracketloop prefix=size list="Small Medium L        lbracketloop prefix=color list="Red White Blue"]
+            lbracketcolor-code]-lbracketsize-code]<BR>
+        lbracket/loop]
         <P>
-    [/loop]
+    lbracket/loop]
 
 rge"]
 
@@ -520,8 +497,8 @@ Small
 The search="args" parameter will return an arbitrary search, just as
 in a one-click search:
 
-    [loop search="se=Americana/sf=cate        [loop-code] [loop-field title]
-    [/loop]
+    lbracketloop search="se=Americana/sf=cate        lbracketloop-code] lbracketloop-field title]
+    lbracket/loop]
 
 ory"]
 
@@ -558,7 +535,7 @@ C<N>, the text will be displayed. If an C<[else]NOT DIVISIBLE TEXT
 [/else]> is present, then the NOT DIVISIBLE TEXT will be displayed.
 For example:
 
-    [loop-alternate 2]EVEN[else]ODD[/else][/loop-alte    [loop-alternate 3]BY 3[else]NOT by 3[/else][/loop-alternate]
+    lbracketloop-alternate 2]EVENlbracketelse]ODDlbracket/else]lbracket/loop-alte    lbracketloop-alternate 3]BY 3lbracketelse]NOT by 3lbracket/else]lbracket/loop-alternate]
 
 nate]
 
@@ -610,10 +587,10 @@ iteration will terminate. If the evaluated number is negative, the
 item itself will be skipped. If the evaluated number is positive, the
 item itself will be shown, but will be last on the list.
 
-      [loop-last]        return -1 if '[loop-field weight]' eq '';
-        return 1 if '[loop-field weight]' < 1;
+      lbracketloop-last]lbracke        return -1 if 'lbracketloop-field weight]' eq '';
+        return 1 if 'lbracketloop-field weight]' < 1;
         return 0;
-        [/calc][/loop-last]
+        lbracket/calc]lbracket/loop-last]
 
 calc]
 
@@ -629,7 +606,7 @@ Evaluates the output of the ITL tags encased inside. If it evaluates
 to a numerical non-zero number (i.e., 1, 23, or -1), the loop will be
 skipped with no output. Example:
 
-      [loop-next][calc][loop-field weight] < 1[/calc][/loop-next]
+      lbracketloop-next]lbracketcalc]lbracketloop-field weight] < 1lbracket/calc]lbracket/loop-next]
 
 If this is contained in your C<[loop list]> and the product's weight
 field is less than 1, a numerical C<1> will be output from the
@@ -689,48 +666,48 @@ compare="compare"]>
 Allows conditional building of HTML based on the setting of various
 Interchange session and database values. The general form is:
 
-    [if type term op co    [then]
+    lbracketif type term op co    lbracketthen]
                                 If true, this is printed on the document.
-                                The [then] [/then] is optional in most
+                                The lbracketthen] lbracket/then] is optional in most
                                 cases. If ! is prepended to the type
                                 setting, the sense is reversed and
                                 this will be output for a false condition.
-    [/then]
-    [elsif type term op compare]
+    lbracket/then]
+    lbracketelsif type term op compare]
                                 Optional, tested when if fails.
-    [/elsif]
-    [else]
+    lbracket/elsif]
+    lbracketelse]
                                 Optional, printed when all above fail.
-    [/else]
-    [/if]
+    lbracket/else]
+    lbracket/if]
 
 pare]
 
 The C<[if]> tag can also have some variants:
 
-    [if explicit][condition] CODE [/cond                Displayed if valid Perl CODE returns a true value.
-    [/if]
+    lbracketif explicit]lbracketcondition] CODE lbracket/cond                Displayed if valid Perl CODE returns a true value.
+    lbracket/if]
 
 tion]
 
 Some Perl-style regular expressions can be written, and combine
 conditions:
 
-    [if value name =~ /^m                                This is the if with Mike.
-    [elsif value name =~ /^sally/i]
+    lbracketif value name =~ /^m                                This is the if with Mike.
+    lbracketelsif value name =~ /^sally/i]
                                 This is an elsif with Sally.
-    [/elsif]
-    [elsif value name =~ /^barb/i]
-    [or value name =~ /^mary/i]
+    lbracket/elsif]
+    lbracketelsif value name =~ /^barb/i]
+    lbracketor value name =~ /^mary/i]
                                 This is an elsif with Barb or Mary.
-    [elsif value name =~ /^pat/i]
-    [and value othername =~ /^mike/i]
+    lbracketelsif value name =~ /^pat/i]
+    lbracketand value othername =~ /^mike/i]
                                 This is an elsif with Pat and Mike.
-    [/elsif]
-    [else]
+    lbracket/elsif]
+    lbracketelse]
                                 This is the else, no name I know.
-    [/else]
-    [/if]
+    lbracket/else]
+    lbracket/if]
 
 ke/i]
 
@@ -741,21 +718,21 @@ tag sequence:
 
 This will not work:
 
-   [if value name =~ /[value b_name]/]
+   lbracketif value name =~ /lbracketvalue b_name]/]
        Shipping name matches billing name.
-   [/if]
+   lbracket/if]
 
 This will not work. Do this instead:
 
-   [if type=value term=name op="=~" compare="/[value b_name]/"]
+   lbracketif type=value term=name op="=~" compare="/lbracketvalue b_name]/"]
        Shipping name matches billing name.
-   [/if]
+   lbracket/if]
 
 As an alternative:
 
-   [if type=value term=high_water op="<" compare="[shipping noformat=1]"]
+   lbracketif type=value term=high_water op="<" compare="lbracketshipping noformat=1]"]
        Shipping cost is too high, charter a truck.
-   [/if]
+   lbracket/if]
 
 There are many test targets available:
 
@@ -766,8 +743,8 @@ There are many test targets available:
 The Interchange configuration variables. These are set by the
 directives in the Interchange configuration file (or the defaults).
 
-    [if config CreditCar    Auto credit card validation is enabled.
-    [/if]
+    lbracketif config CreditCar    Auto credit card validation is enabled.
+    lbracket/if]
 
 Auto]
 
@@ -776,30 +753,30 @@ Auto]
 The Interchange databases. Retrieves a field in the database and
 returns true or false based on the value.
 
-    [if data products::size::9    There is size information.
-    [else]
+    lbracketif data products::size::9    There is size information.
+    lbracketelse]
     No size information.
-    [/else]
-    [/if]
+    lbracket/else]
+    lbracket/if]
 
-    [if data products::size::99-102 =~ /small/i]
+    lbracketif data products::size::99-102 =~ /small/i]
     There is a small size available.
-    [else]
+    lbracketelse]
     No small size available.
-    [/else]
-    [/if]
+    lbracket/else]
+    lbracket/if]
 
 -102]
 
 If another tag is needed to select the key, and it is not a looping
 tag construct, named parameters must be used:
 
-    [set code]99-102    [if type=data term="products::size::[scratch code]"]
+    lbracketset code]99-102lbracke    lbracketif type=data term="products::size::lbracketscratch code]"]
     There is size information.
-    [else]
+    lbracketelse]
     No size information.
-    [/else]
-    [/if]
+    lbracket/else]
+    lbracket/if]
 
 /set]
 
@@ -807,8 +784,8 @@ tag construct, named parameters must be used:
 
 Checks to see if a discount is present for an item.
 
-    [if discount 9    Item is discounted.
-    [/if]
+    lbracketif discount 9    Item is discounted.
+    lbracket/if]
 
 -102]
 
@@ -819,16 +796,16 @@ C<[condition]> C<[/condition]> tag pair, it will be used to make the
 comparison. Arguments can be passed to import data from user space,
 just as with the C<[perl]> tag.
 
-    [if exp    [condition]
+    lbracketif exp    lbracketcondition]
         $country = $ values =~{country};
         return 1 if $country =~ /u\.?s\.?a?/i;
         return 0;
-    [/condition]
+    lbracket/condition]
     You have indicated a US address.
-    [else]
+    lbracketelse]
     You have indicated a non-US address.
-    [/else]
-    [/if]
+    lbracket/else]
+    lbracket/if]
 
 icit]
 
@@ -841,14 +818,14 @@ are many situations where it is useful.
 Tests for existence of a file. Useful for placing image tags only if
 the image is present.
 
-    [if file /home/user/www/images/[item-code    <IMG SRC="[item-code].gif">
-    [/if]
+    lbracketif file /home/user/www/images/lbracketitem-code    <IMG SRC="lbracketitem-code].gif">
+    lbracket/if]
 
     or
 
-    [if type=file term="/home/user/www/images/[item-code].gif"]
-    <IMG SRC="[item-code].gif">
-    [/if]
+    lbracketif type=file term="/home/user/www/images/lbracketitem-code].gif"]
+    <IMG SRC="lbracketitem-code].gif">
+    lbracket/if]
 
 .gif]
 
@@ -861,10 +838,10 @@ The Interchange shopping carts. If not specified, the cart used is the
 main cart. Usually used as a litmus test to see if anything is in the
 cart. For example:
 
-  [if items]You have items in your shopping cart
-  [if items layaway]You have items on layaway.[/if]
+  lbracketif items]You have items in your shopping cart.lbrack
+  lbracketif items layaway]You have items on layaway.lbracket/if]
 
-[/if]
+t/if]
 
 =item ordered
 
@@ -872,46 +849,46 @@ Order status of individual items in the Interchange shopping carts. If
 not specified, the cart used is the main cart. The following items
 refer to a part number of 99-102.
 
-  [if ordered 99-102] ...    Checks the status of an item on order, true if item
+  lbracketif ordered 99-102] ... lbrack    Checks the status of an item on order, true if item
     99-102 is in the main cart.
 
-  [if ordered 99-102 layaway] ... [/if]
+  lbracketif ordered 99-102 layaway] ... lbracket/if]
     Checks the status of an item on order, true if item
     99-102 is in the layaway cart.
 
-  [if ordered 99-102 main size] ... [/if]
+  lbracketif ordered 99-102 main size] ... lbracket/if]
     Checks the status of an item on order in the main cart,
     true if it has a size attribute.
 
-  [if ordered 99-102 main size =~ /large/i] ... [/if]
+  lbracketif ordered 99-102 main size =~ /large/i] ... lbracket/if]
     Checks the status of an item on order in the main cart,
     true if it has a size attribute containing 'large'.
     THE CART NAME IS REQUIRED IN THE OLD SYNTAX. The new
     syntax for that one would be:
 
-    [if type=ordered term="99-102" compare="size =~ /large/i"]
+    lbracketif type=ordered term="99-102" compare="size =~ /large/i"]
 
     To make sure it is exactly large, you could use:
 
-    [if ordered 99-102 main size eq 'large'] ... [/if]
+    lbracketif ordered 99-102 main size eq 'large'] ... lbracket/if]
 
-  [if ordered 99-102 main lines] ... [/if]
+  lbracketif ordered 99-102 main lines] ... lbracket/if]
       Special case -- counts the lines that the item code is
       present on. (Only useful, of course, when mv_separate_items
       or SeparateItems is defined.)
 
-[/if]
+t/if]
 
 =item scratch
 
 The Interchange scratchpad variables, which can be set with the C<[set
 name]value[/set]> element.
 
-    [if scratch mv_separate_    Ordered items will be placed on a separate line.
-    [else]
+    lbracketif scratch mv_separate_    Ordered items will be placed on a separate line.
+    lbracketelse]
     Ordered items will be placed on the same line.
-    [/else]
-    [/if]
+    lbracket/else]
+    lbracket/if]
 
 tems]
 
@@ -947,23 +924,23 @@ As an example, consider buttonbars for frame-based setups. It would be
 nice to display a different buttonbar (with no frame targets) for
 sessions that are not using frames:
 
-   [if session frames]
-       [buttonbar 1]
-   [else]
-       [buttonbar 2]
-   [/else]
-   [/if]
+   lbracketif session frames]
+       lbracketbuttonbar 1]
+   lbracketelse]
+       lbracketbuttonbar 2]
+   lbracket/else]
+   lbracket/if]
 
 Another example might be the when search matches are displayed. If
 using the string C<[value mv_match_count] titles found>, it will
 display a plural for only one match. Use:
 
-   [if value mv_match_count != 1]
-       [value mv_match_count] matches found.
-   [else]
+   lbracketif value mv_match_count != 1]
+       lbracketvalue mv_match_count] matches found.
+   lbracketelse]
        Only one match was found.
-   [/else]
-   [/if]
+   lbracket/else]
+   lbracket/if]
 
 The op term is the compare operation to be used. Compare operations
 are as in Perl:
@@ -1057,15 +1034,15 @@ your hack.
 Perl code can be directly embedded in Interchange pages. The code is
 specified as:
 
-    [perl]
+    lbracketperl]
         $name    = $Values->{name};
         $browser = $Session->{browser};
         return "Hi, $name! How do you like your $browser?";
-    [/perl]
+    lbracket/perl]
 
 ASP syntax can be used with:
 
-    [mvasp]
+    lbracketmvasp]
         <%
         $name    = $Values->{name};
         $browser = $Session->{browser};
@@ -1074,7 +1051,7 @@ ASP syntax can be used with:
         <%
             HTML "How do you like your $browser?";
         %>
-    [/mvasp]
+    lbracket/mvasp]
 
 The two snippets above are essentially equivalent.
 
@@ -1214,16 +1191,16 @@ for it allows the naming of fields so that the order in which they
 appear in the database will not have to be remembered. The following
 two imports are identical in effect:
 
-    [import table=o    code: [value mv_order_number]
-    shipping_mode: [shipping-description]
+    lbracketimport table=o    code: lbracketvalue mv_order_number]
+    shipping_mode: lbracketshipping-description]
     status: pending
-    [/import]
+    lbracket/import]
 
-    [import table=orders]
-    shipping_mode: [shipping-description]
+    lbracketimport table=orders]
+    shipping_mode: lbracketshipping-description]
     status: pending
-    code: [value mv_order_number]
-    [/import]
+    code: lbracketvalue mv_order_number]
+    lbracket/import]
 
 ders]
 
@@ -1305,20 +1282,20 @@ and the color C<RED> is 0.75 extra. There are also quantity pricing
 breaks (see the demo C<pricing> database. So the following will be
 true:
 
-    [price  code=            size=L]              is $10.00
+    lbracketprice  code=            size=L]              is $10.00
 
-    [price  code=99-102
+    lbracketprice  code=99-102
             size=XL]             is $11.00
 
-    [price  code=99-102
+    lbracketprice  code=99-102
             color=RED
             size=XL]             is $11.75
 
-    [price  code=99-102
+    lbracketprice  code=99-102
             size=XL
             quantity=10]         is $10.00
 
-    [price  code=99-102
+    lbracketprice  code=99-102
             size=S]              is $9.50
 
 9-102
@@ -1356,7 +1333,7 @@ If an asterisk is the last character of the label text, the item is
 the default selection. If no default is specified, the first will be
 the default. An example:
 
-    [accessories TK112 color]
+    lbracketaccessories TK112 color]
 
 This will search the product database for a field named "color." If an
 entry "beige=Almond, gold=Harvest Gold, White*, green=Avocado" is
@@ -1410,7 +1387,7 @@ and variables.
 Interchange has a built-in banner rotation system designed to show ads
 or other messages according to category and an optional weighting.
 
-The C<[banner ...]> ITL tag is used to implement it.
+The C<[banner ...]> IML tag is used to implement it.
 
 The weighting system pre-builds banners in the directory 'Banners,'
 under the temporary directory. It will build one copy of the banner
@@ -1517,7 +1494,7 @@ anner
 
 Tag would be:
 
-    [banner weighted=1 category="tech"]
+    lbracketbanner weighted=1 category="tech"]
 
 This will find *all* banners with a weight >= 1 where the C<category>
 field is equal to C<tech>. The files will be made into the director
@@ -1527,7 +1504,7 @@ C<tmp/Banners/tech>.
 
 To select weighted banners:
 
-    [banner weighted=1]
+    lbracketbanner weighted=1]
 
 This will find *all* banners with a weight >= 1. (Remember, integers
 only.) The files will be made into the director C<tmp/Banners>.
@@ -1546,11 +1523,11 @@ percent of the time.
 
 =item categorized, not rotating
 
-    [banner category="tech"]
+    lbracketbanner category="tech"]
 
 This is equivalent to:
 
-    [data table=banner col=banner key=tech
+    lbracketdata table=banner col=banner key=tech
 
 The differences are that it is not selected if "rotate" field is
 blank; if not selected, the default banner is displayed.
@@ -1564,11 +1541,11 @@ anner
 Interchange tags can be inserted in the category parameter, if
 desired:
 
-    [banner category="[value interest]"]
+    lbracketbanner category="lbracketvalue interest]"]
 
 =item categorized and rotating
 
-    [banner category="tech"]
+    lbracketbanner category="tech"]
 
 The difference between this and above is the database.
 
@@ -1587,11 +1564,11 @@ of course.
 Interchange tags can be inserted in the category parameter, if
 desired:
 
-    [banner category="[value interest]"]
+    lbracketbanner category="lbracketvalue interest]"]
 
 =item multi-level categorized
 
-    [banner category="tech:hw"] or [banner category="tech:sw"]
+    lbracketbanner category="tech:hw"] or lbracketbanner category="tech:sw"]
 
 If have a colon-separated category, Interchange will select the most
 specific ad available. If the C<banner> table looks like this:
@@ -1616,7 +1593,7 @@ C<(*)>.
 
 Tag syntax:
 
-    [        weighted=1*
+    lbracket        weighted=1*
         category=category*
         once=1*
         separator=sep*
@@ -1704,7 +1681,7 @@ named attributes: C<[currency convert=1*]>
 When passed a value of a single number, formats it according to the
 currency specification. For instance:
 
-    [currency]4[/currency]
+    lbracketcurrency]4lbracket/currency]
 
 will display:
 
@@ -1716,7 +1693,7 @@ set, it will convert according to PriceDivide> for the current locale.
 If Locale is set to C<fr_FR>, and F<PriceDivide> for C<fr_FR> is
 0.167, using the following sequence:
 
-    [currency convert=1] [calc] 500.00 + 1000.00 [/calc] [/currency]
+    lbracketcurrency convert=1] lbracketcalc] 500.00 + 1000.00 lbracket/calc] lbracket/currency]
 
 will cause the number 8.982,04 to be displayed.
 
@@ -1757,7 +1734,7 @@ The parameters are:
 
     width=nn        The column width, including the gutter. M                    supplied, there is no default. A shorthand method
                     is to just supply the number as the first parameter,
-                    as in [col 20].
+                    as in lbracketcol 20].
 
     gutter=n        The number of spaces used to separate the column (on
                     the right-hand side) from the next. Default is 2.
@@ -1862,7 +1839,7 @@ TEXT[/else]> is present, the NOT DIVISIBLE TEXT will be displayed.
 
 For example:
 
-    [item-alternate 2]EVEN[else]ODD[/else][/item-alte    [item-alternate 3]BY 3[else]NOT by 3[/else][/item-alternate]
+    lbracketitem-alternate 2]EVENlbracketelse]ODDlbracket/else]lbracket/item-alte    lbracketitem-alternate 3]BY 3lbracketelse]NOT by 3lbracket/else]lbracket/item-alternate]
 
 nate]
 
@@ -1909,10 +1886,10 @@ the list iteration will terminate. If the evaluated number is
 negative, the item itself will be skipped. If the evaluated number is
 positive, the item itself will be shown but will be last on the list.
 
-      [item-last]        return -1 if '[item-field weight]' eq '';
-        return 1 if '[item-field weight]' < 1;
+      lbracketitem-last]lbracke        return -1 if 'lbracketitem-field weight]' eq '';
+        return 1 if 'lbracketitem-field weight]' < 1;
         return 0;
-        [/calc][/item-last]
+        lbracket/calc]lbracket/item-last]
 
 calc]
 
@@ -1935,7 +1912,7 @@ Evaluates the output of the Interchange tags encased inside. If it
 evaluates to a numerical non-zero number (i.e., 1, 23, or -1), the
 item will be skipped with no output. Example:
 
-      [item-next][calc][item-field weight] < 1[/calc][/item-next]
+      lbracketitem-next]lbracketcalc]lbracketitem-field weight] < 1lbracket/calc]lbracket/item-next]
 
 If this is contained in the C<[item-list]> (or C<[search-list]> or
 flypage) and the product's weight field is less than 1, a numerical
@@ -2017,7 +1994,7 @@ Determine page via form action and variables
 If a form action, in almost all cases the page to display will be
 determined by the C<mv_nextpage> form value. Example:
 
-    <FORM ACTION="[proc    <INPUT TYPE=hidden NAME=mv_todo VALUE=return>
+    <FORM ACTION="lbracketproc    <INPUT TYPE=hidden NAME=mv_todo VALUE=return>
     <SELECT NAME=mv_nextpage>
     <OPTION VALUE=index>Main page
     <OPTION VALUE=browse>Product listing
@@ -2049,9 +2026,9 @@ C<[item-*]> tags cannot be used on the default on-the-fly page. To use
 a [search-region] or [item-list] tag, change the default with the
 prefix parameter. Example:
 
-   [item-list prefix=cart]
-   [cart-code] -- title=[cart-data products title]
-   [/item-list]
+   lbracketitem-list prefix=cart]
+   lbracketcart-code] -- title=lbracketcart-data products title]
+   lbracket/item-list]
 
 To have an on-the-fly page mixed in reliably, use the idiom
 C<[fly-list prefix=fly code="[data session arg]"]> C<[/flylist]> pair.
@@ -2062,20 +2039,20 @@ C<[fly-list prefix=fly code="[data session arg]"]> C<[/flylist]> pair.
 
 Other parameters:
 
-    prefix=label     Allows [label-code], [label-description]
+    prefix=label     Allows lbracketlabel-code], lbracketlabel-description]
 
 Defines an area in a random page which performs the flypage lookup
 function, implementing the tags below:
 
-   [fly-list code="[data session     (contents of flypage.html)
-   [/fly-list]
+   lbracketfly-list code="lbracketdata session     (contents of flypage.html)
+   lbracket/fly-list]
 
 rg]"]
 
 If placed around the contents of the demo flypage, in a file named
 <flypage2.html>, it will make these two calls display identical pages:
 
-    [page 00-0011] One way to display the Mona Lisa [    [page flypage2 00-0011] Another way to display the Mona Lisa [/page]
+    lbracketpage 00-0011] One way to display the Mona Lisa lbracket    lbracketpage flypage2 00-0011] Another way to display the Mona Lisa lbracket/page]
 
 page]
 
@@ -2088,14 +2065,14 @@ build the on-the-fly page.
 
 Active tags in their order of interpolation:
 
- [if-item-field field]    Tests for a non-empty, non-zero value in field
-[if-item-data db field]  Tests for a non-empty, non-zero field in db
-[item-code]              Product code of the displayed item
-[item-accessories args]  Accessory information (see accessories)
-[item-description]       Description field information
-[item-price quantity*]   Product price (at quantity)
-[item-field field]       Product database field
-[item-data db field]     Database db entry for field
+ lbracketif-item-field field]    Tests for a non-empty, non-zero value in field
+lbracketif-item-data db field]  Tests for a non-empty, non-zero field in db
+lbracketitem-code]              Product code of the displayed item
+lbracketitem-accessories args]  Accessory information (see accessories)
+lbracketitem-description]       Description field information
+lbracketitem-price quantity*]   Product price (at quantity)
+lbracketitem-field field]       Product database field
+lbracketitem-data db field]     Database db entry for field
 
 =head2 Special Pages
 
@@ -2149,7 +2126,7 @@ code.
 Essentially this is the same as a 404 error in HTTP. To deliberately
 display a 404 error, just put this in special_pages/missing.html:
 
-    [tag op=header]Status: 404 missing[/tag]
+    lbrackettag op=header]Status: 404 missinglbracket/tag]
 
 =item noproduct (special_pages/noproduct.html)
 
@@ -2201,7 +2178,7 @@ check, and the output of the checker should be appended to the browser
 output as a comment, visible if the page or frame source are viewed.
 To do this occasionally, use a Variable setting:
 
-   Variable  CHECK_HTML    [flag type=checkhtml]
+   Variable  CHECK_HTML    lbracketflag type=checkhtml]
 
 and place __CHECK_HTML__ in the pages.  Then set the Variable to the
 empty string to disable it.
@@ -2237,7 +2214,7 @@ Most of these special fields begin with C<mv_>, and include:
  Name               scan Type  Description
 
 mv_all_chars         ac  S   Turns on punctuation matching
-mv_arg[0-9]+             A   Parameters for mv_subroutine (mv_arg0,mv_arg1,...)
+mv_arglbracket0-9]+             A   Parameters for mv_subroutine (mv_arg0,mv_arg1,...)
 mv_base_directory    bd  S   Sets base directory for search file names
 mv_begin_string      bs  S   Pattern must match beginning of field
 mv_case              cs  S   Turns on case sensitivity
@@ -2357,7 +2334,7 @@ search of the default products database(s). Normally hard-coded paths
 are not used, but a Interchange tag can be used to specify it for
 portability:
 
-    <FORM ACTION="[area search]" METHOD    <INPUT NAME=mv_searchspec>
+    <FORM ACTION="lbracketarea search]" METHOD    <INPUT NAME=mv_searchspec>
     </FORM>
 
 POST>
@@ -2365,7 +2342,7 @@ POST>
 The tag C<[process]> is often seen in Interchange forms. The above can
 be called equivalently with:
 
-    <FORM ACTION="[process]" METHOD    <INPUT TYPE=hidden NAME=mv_todo VALUE=search>
+    <FORM ACTION="lbracketprocess]" METHOD    <INPUT TYPE=hidden NAME=mv_todo VALUE=search>
     <INPUT NAME=mv_searchspec>
     </FORM>
 
@@ -2377,7 +2354,7 @@ Setting the special variable C<mv_action> causes the page name to be
 ignored as the action source. The above forms can use this as a
 synonym:
 
-    <FORM ACTION="[area foo]" METHOD    <INPUT TYPE=hidden NAME=mv_action VALUE=search>
+    <FORM ACTION="lbracketarea foo]" METHOD    <INPUT TYPE=hidden NAME=mv_action VALUE=search>
     <INPUT NAME=mv_searchspec>
     </FORM>
 
@@ -2473,11 +2450,11 @@ Interchange can set multiple variables with a single button or form
 control. First define the variable set (or profile, as in search and
 order profiles) inside a scratch variable:
 
- [set Search by Category]
+ lbracketset Search by Category]
  mv_search_field=category
  mv_search_file=categories
  mv_todo=search
- [/set]
+ lbracket/set]
 
 The special variable C<mv_click> sets variables just as if they were
 put in on the form. It is controlled by a single button, as in:
@@ -2501,13 +2478,13 @@ tags. The profile is interpolated for Interchange tags before being
 used. This may not always operate as expected. For instance, if the
 following was set:
 
-   [set check]
-   [cgi name=mv_todo set=bar hide=1]
+   lbracketset check]
+   lbracketcgi name=mv_todo set=bar hide=1]
    mv_todo=search
-   [if cgi mv_todo eq 'search']
+   lbracketif cgi mv_todo eq 'search']
    do something
-   [/if]
-   [/set]
+   lbracket/if]
+   lbracket/set]
 
 The if condition is guaranteed to be false, because the tag
 interpretation takes place before the evaluation of the variable
@@ -2526,8 +2503,8 @@ Perl:
    ...
    </FORM>
 
-   [set Invalid Input]
-   [perl]
+   lbracketset Invalid Input]
+   lbracketperl]
    my $type        = $CGI->{mv_searchtype};
    my $spell_check = $CGI->{mv_spelling_errors};
    my $out = '';
@@ -2536,8 +2513,8 @@ Perl:
        $CGI->{mv_nextpage} = 'special/cannot_spell_check';
    }
    return;
-   [/perl]
-   [/set]
+   lbracket/perl]
+   lbracket/set]
 
 =head2 Checks and Selections
 
@@ -2571,9 +2548,9 @@ for any of a variety of values. Not case sensitive.
 Here is a drop-down menu that remembers an item-modifier color
 selection:
 
-    <SELECT NAME="c    <OPTION [selected name=color value=blue]> Blue
-    <OPTION [selected name=color value=green]> Green
-    <OPTION [selected name=color value=red]> Red
+    <SELECT NAME="c    <OPTION lbracketselected name=color value=blue]> Blue
+    <OPTION lbracketselected name=color value=green]> Green
+    <OPTION lbracketselected name=color value=red]> Red
     </SELECT>
 
 lor">
@@ -2582,9 +2559,9 @@ For databases or large lists of items, sometimes it is easier to use
 C<[loop list="foo bar"]> and its C<option> parameter. The above can be
 achieved with:
 
-    <SELECT NAME=    [loop list="Blue Green Red" option=color]
-    <OPTION> [loop-code]
-    [/loop]
+    <SELECT NAME=    lbracketloop list="Blue Green Red" option=color]
+    <OPTION> lbracketloop-code]
+    lbracket/loop]
     </SELECT>
 
 olor>
@@ -2625,7 +2602,7 @@ multiple values for the same variable name. As an example, to allow
 the user to order multiple items with one click, set up a form like
 this:
 
- <FORM METHOD=POST ACTION="[process-order]">
+ <FORM METHOD=POST ACTION="lbracketprocess-order]">
 <input type=checkbox name="mv_order_item" value="M3243"> Item M3243
 <input type=checkbox name="mv_order_item" value="M3244"> Item M3244
 <input type=checkbox name="mv_order_item" value="M3245"> Item M3245
@@ -2638,13 +2615,13 @@ values, causing the order of any items that are checked.
 
 To place a "delete" checkbox on the shopping basket display:
 
- <FORM METHOD=POST ACTION="[process-order]">
-[item-list]
-  <input type=checkbox name="[quantity-name]" value="0"> Delete
-  Part number: [item-code]
-  Quantity: <input type=text name="[quantity-name]" value="[item-quantity]">
-  Description: [item-description]
-[/item-list]
+ <FORM METHOD=POST ACTION="lbracketprocess-order]">
+lbracketitem-list]
+  <input type=checkbox name="lbracketquantity-name]" value="0"> Delete
+  Part number: lbracketitem-code]
+  Quantity: <input type=text name="lbracketquantity-name]" value="lbracketitem-quantity]">
+  Description: lbracketitem-description]
+lbracket/item-list]
 <input type=hidden name="mv_doit" value="refresh">
 <input type=submit name="mv_junk" value="Order Checked Items">
 </FORM>
@@ -2664,7 +2641,7 @@ file upload.
 
 File upload is simple. Define a form like:
 
-   <FORM ACTION="[process-target] METHOD=POST ENCTYPE="multipart/form-data">
+   <FORM ACTION="lbracketprocess-target] METHOD=POST ENCTYPE="multipart/form-data">
    <INPUT TYPE=hidden NAME=mv_todo     VALUE=return>
    <INPUT TYPE=hidden NAME=mv_nextpage VALUE=test>
    <INPUT TYPE=file NAME=newfile>
@@ -2677,24 +2654,24 @@ C<mv_nextpage> and used with the above form, it will write the file
 specified:
 
    <PRE>
-   Uploaded file name: [value-extended name=newfile]
-   Is newfile a file? [value-extended name=newfile yes=Yes no=No test=isfile]
+   Uploaded file name: lbracketvalue-extended name=newfile]
+   Is newfile a file? lbracketvalue-extended name=newfile yes=Yes no=No test=isfile]
 
-   Write the file. [value-extended name=newfile outfile=junk.upload]
+   Write the file. lbracketvalue-extended name=newfile outfile=junk.upload]
    Write again with
-    indication: [value-extended name=newfile
+    indication: lbracketvalue-extended name=newfile
                                outfile=junk.upload
                                yes="Written."]
                                no=FAILED]
 
    And the file contents:
-   [value-extended name=newfile file_contents=1]
+   lbracketvalue-extended name=newfile file_contents=1]
    </PRE>
 
 The [value-extended] tag also allows access to the array values of
 stacked variables. Use the following form:
 
-   <FORM ACTION="[process-target] METHOD=POST ENCTYPE="multipart/form-data">
+   <FORM ACTION="lbracketprocess-target] METHOD=POST ENCTYPE="multipart/form-data">
    <INPUT TYPE=hidden NAME=testvar VALUE="value0">
    <INPUT TYPE=hidden NAME=testvar VALUE="value1">
    <INPUT TYPE=hidden NAME=testvar VALUE="value2">
@@ -2703,18 +2680,18 @@ stacked variables. Use the following form:
 
 and page:
 
-   testvar element 0: [value-extended name=testvar index=0]
-   testvar element 1: [value-extended name=testvar index=1]
+   testvar element 0: lbracketvalue-extended name=testvar index=0]
+   testvar element 1: lbracketvalue-extended name=testvar index=1]
    testvar elements:
-    joined with a space:   |[value-extended name=testvar]|
-    joined with a newline: |[value-extended
+    joined with a space:   |lbracketvalue-extended name=testvar]|
+    joined with a newline: |lbracketvalue-extended
                                joiner="\n"
                                name=testvar
                                index="*"]|
-    first two only:    |[value-extended
+    first two only:    |lbracketvalue-extended
                                name=testvar
                                index="0..1"]|
-    first and last:    |[value-extended
+    first and last:    |lbracketvalue-extended
                                name=testvar
                                index="0,2"]|
 
@@ -2722,7 +2699,7 @@ to observe this in action.
 
 The syntax for C<[value-extended ...]> is:
 
- named: [value-extended
+ named: lbracketvalue-extended
            name=formfield
            outfile=filename*
            ascii=1*
@@ -2830,13 +2807,13 @@ the database parameters:
 scratch space to allow data set functions. Usually it is put in an
 mv_click that precedes the data set function. For example:
 
-    [set update_dat    [if type=data term="userdb::trusted::[data session username]"]
-        [set mv_data_enable]1[/set]
-    [else]
-        [set mv_data_enable]0[/set]
-    [/else]
-    [/if]
-    [/set]
+    lbracketset update_dat    lbracketif type=data term="userdb::trusted::lbracketdata session username]"]
+        lbracketset mv_data_enable]1lbracket/set]
+    lbracketelse]
+        lbracketset mv_data_enable]0lbracket/set]
+    lbracket/else]
+    lbracket/if]
+    lbracket/set]
     <INPUT TYPE=hidden NAME=mv_click VALUE=update_database>
 
 base]
@@ -2887,15 +2864,15 @@ The second actually performs the update. It uses the C<[loop]> tag
 with only one value to place default/existing values in the form based
 on the input from the first form:
 
-   <FORM METHOD=POST ACTION="[process]">
+   <FORM METHOD=POST ACTION="lbracketprocess]">
     <INPUT TYPE=HIDDEN name="mv_doit" value="return">
     <INPUT TYPE=HIDDEN name="mv_nextpage" value="update_proj">
     Sales Order Number <INPUT TYPE=TEXT SIZE=8
                             NAME="update_code"
-                            VALUE="[value update_code]">
+                            VALUE="lbracketvalue update_code]">
     <INPUT TYPE=SUBMIT name="mv_submit"  Value="Select">
     </FORM>
-<FORM METHOD=POST ACTION="[process]">
+<FORM METHOD=POST ACTION="lbracketprocess]">
    <INPUT TYPE=HIDDEN NAME="mv_data_table"    VALUE="ship_status">
    <INPUT TYPE=HIDDEN NAME="mv_data_key"      VALUE="code">
    <INPUT TYPE=HIDDEN NAME="mv_data_function" VALUE="update">
@@ -2904,15 +2881,15 @@ on the input from the first form:
                VALUE="code,custid,comments,status">
    <PRE>
 
-   [loop arg="[value update_code]"]
-   Sales Order <INPUT TYPE=TEXT NAME="code    SIZE=10 VALUE="[loop-code]">
+   lbracketloop arg="lbracketvalue update_code]"]
+   Sales Order <INPUT TYPE=TEXT NAME="code    SIZE=10 VALUE="lbracketloop-code]">
   Customer No. <INPUT TYPE=TEXT NAME="custid" SIZE=30
-                   VALUE="[loop-field custid]">
+                   VALUE="lbracketloop-field custid]">
       Comments <INPUT TYPE=TEXT NAME="comments"
-                   SIZE=30 VALUE="[loop-field comments]">
+                   SIZE=30 VALUE="lbracketloop-field comments]">
         Status <INPUT TYPE=TEXT NAME="status"
-                   SIZE=10 VALUE="[loop-field status]">
-   [/loop]
+                   SIZE=10 VALUE="lbracketloop-field status]">
+   lbracket/loop]
    </PRE>
 
        <INPUT TYPE=hidden NAME="mv_todo" VALUE="set">
@@ -2947,9 +2924,9 @@ reset it.
 In general, you don't need to quote the following tags which are
 interpreted first within a list:
 
-   [item-code] [item-data ...] [item-field ...] etc.
-   [loop-code] [loop-data ...] [loop-field ...] etc.
-   [foo-code]  [foo-data ...]   [foo-field ...] etc.
+   lbracketitem-code] lbracketitem-data ...] lbracketitem-field ...] etc.
+   lbracketloop-code] lbracketloop-data ...] lbracketloop-field ...] etc.
+   lbracketfoo-code]  lbracketfoo-data ...]   lbracketfoo-field ...] etc.
 
 This is because they are interpreted as a part of the surrounding
 C<[loop]>, C<[item-list]>, C<[search-list]>, C<[sql list]>, or C<[tag
@@ -2957,18 +2934,18 @@ each table]> constructs.
 
 So this will work:
 
-   [item-list]
-   [page [item-field url]]detailed info[/page] on [item-description]
-   [/item-list]
+   lbracketitem-list]
+   lbracketpage lbracketitem-field url]]detailed infolbracket/page] on lbracketitem-description]
+   lbracket/item-list]
 
 This will I<not> work:
 
-   [page [value mypage]]
+   lbracketpage lbracketvalue mypage]]
 
 The [value ...] tag is not interpolated before page, and the parser
 will not know to do so. It needs to be instead:
 
-   [page href="[value mypage]"]
+   lbracketpage href="lbracketvalue mypage]"]
 
 You might wonder why unquoted tags are even allowed. The answer is
 performance. If you have large lists of tags you can achieve

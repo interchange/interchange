@@ -13,7 +13,6 @@
 [flag type=write table=variable]
 <!-- ----- BEGIN REAL STUFF ----- -->
 [perl tables=variable]
-	delete $Scratch->{changes};
 	return unless $CGI->{tax_format} eq 'do';
 	for (my $i = 0; $i < 1000; $i++) {
 		last unless defined $CGI->{"taxarea$i"};
@@ -28,25 +27,25 @@
 	$Scratch->{taxarea} = join " ", @areas;
 	$Scratch->{taxrate} = join ",", @rates;
 	$Scratch->{taxship} = join " ", @taxes;
-	$Scratch->{changes} = 1;
 	return;
 [/perl]
-[if scratch changes]
-	<!-- setting:
-	[perl tables=variable]
-	my $db = $Db{variable};
-	$Values->{ui_changes_made} = 1;
-
-	my %sets = qw/taxarea TAXAREA taxrate TAXRATE taxship TAXSHIPPING/;
-
-	my ($v, $k);
-	while( ($v, $k) = each %sets) {
-		$out .= "Set $k ($Scratch->{$v}): ";
-		$out .= $db->set_field($k, 'Variable', delete $Scratch->{$v});
-	}
-	return $out;
-	[/perl]
-	exporting: [export variable] -->
+[if scratch taxarea]
+	[value name=ui_changes_made set=1 hide=1]
+	<!-- areas: [data table=variable
+						col=Variable
+						key=TAXAREA
+						value="[scratch taxarea]"] -->
+	<!-- rates: [data table=variable
+						col=Variable
+						key=TAXRATE
+						value="[scratch taxrate]"] -->
+	<!-- rates: [data table=variable
+						col=Variable
+						key=TAXSHIPPING
+						value="[scratch taxship]"] -->
+	[set taxarea][/set]
+	[set taxrate][/set]
+	<!-- exporting: [export variable] -->
 [/if]
 
 [if type=explicit
@@ -66,7 +65,6 @@
 		my $taxship = tag_data(qw/variable Variable TAXSHIPPING/);
 		$taxship = " $taxship ";
 		my $i;
-		my $last = -1;
 		for ($i = 0; $i < scalar @areas; $i++) {
 			my $rate = $rates[$i];
 			$rate =~ s/.*=//;

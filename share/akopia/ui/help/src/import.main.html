@@ -1,47 +1,12 @@
 <title>Table Import</title>
 <p>
 The <b>Table Import</b> page allows you to upload a file from your computer
-to Interchange in order to update one of Interchange's internal tables. This
-can be done in one of several formats -- TAB-delimited text, Gnumeric simple text,
-or Excel XLS workbook.
+to Interchange in order to update one of Interchange's internal tables. This can be done in one of several formats.
 </p>
 
 <p>
-You can import slices of a table -- the only column that is required is 
-the key column (for example, <B>sku</B> is usually the key column for 
-<i>products</i> and <i>inventory</i>).
-
-<P>
-For instance, to update only the quantity
-for a series of items in <i>inventory</i>, create a file with two columns, the 
-<B>sku</B> and <B>quantity</b>. Not all items must be updated, so you can
-just upload the ones to be added or changed.
-</p>
-
-<p>
-If you wish rows to be added when a new key is found, keep the default selection
-<b>Add new items if present</b>. To only update existing rows, change
-that to <b>Ignore new items</b>.
-</p>
-
-<p>
-To upload changes to a single table in TAB-delimited format,
-select a TAB-delimited file to send to Interchange by clicking <b>Browse...</b>,
+Select a tab-delimited file to send to Interchange by clicking <b>Browse...</b>,
 and a table to update from the list on the right. Then select whether to
 add new rows from your file to the table, or to only update rows that are in
 both your file and the table.
 </p>
-
-<p>To upload changes to multiple tables in <B>Gnumeric simple-text</B> format,
-select it and use <b>Browse...</b>, then select your upload options.
-The table selection is not important because the table is selected from
-with the Gnumeric simple-text file.
-</P>
-
-<P>
-Uploading in <B>Excel/XLS</b> format requires that the module Spreadsheet::ParseExcel
-be installed on your server. Check with your admin if you need this and
-the option is not present in the file format chooser. Otherwise, you simply
-select the <tt>.xls</tt> file with <B>Browse...</b> and upload as with
-Gnumeric simple-text format.
-
