@@ -54,6 +54,10 @@ Username for Postgres (if any)
 Password for Postgres (if any)
 	pass
 
+{PGSQL}!SQLUDATE
+Timestamp for Postgres (if any)
+2000-01-01
+
 SUPERUSER
 Account name that will control this catalog
 interchange	__MVC_CATUSER__
