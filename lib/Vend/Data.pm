@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.17 2002-10-06 00:03:34 mheins Exp $
+# $Id: Data.pm,v 2.18 2002-11-26 15:17:32 jon Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -492,7 +492,7 @@ sub db_column_exists {
 }
 
 sub close_database {
-	my($db, $name);
+	my $name;
 	undef $Products;
 	while( ($name)	= each %Vend::Database ) {
     	$Vend::Database{$name}->close_table()
