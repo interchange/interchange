@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.3 2002-10-30 17:39:06 mheins Exp $
+# $Id: Dispatch.pm,v 1.4 2002-11-05 09:35:56 kwalsh Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -737,6 +737,10 @@ sub adjust_cgi {
 
     die "REQUEST_METHOD is not defined" unless defined $CGI::request_method
 		or @Global::argv;
+
+	if ($Global::HostnameLookups && !$CGI::remote_host && $CGI::remote_addr && !$CGI::values{mv_tmp_session}) {
+		$CGI::remote_host = gethostbyaddr(Socket::inet_aton($CGI::remote_addr),Socket::AF_INET);
+	}
 
 	# The great and really final AOL fix
 	#

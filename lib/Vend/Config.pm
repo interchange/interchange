@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.77 2002-10-31 20:07:04 jon Exp $
+# $Id: Config.pm,v 2.78 2002-11-05 09:35:56 kwalsh Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -45,7 +45,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.77 $, 10);
+$VERSION = substr(q$Revision: 2.78 $, 10);
 
 my %CDname;
 
@@ -289,9 +289,10 @@ sub global_directives {
 	['TemplateDir',      'root_dir_array', 	 ''],
 	['DomainTail',		 'yesno',            'Yes'],
 	['AcrossLocks',		 'yesno',            'No'],
-	['RobotUA',			 'list_wildcard',    ''],
-	['RobotIP',			 'list_wildcard_full',    ''],
-	['RobotHost',			 'list_wildcard_full',    ''],
+	['RobotUA',			 'list_wildcard',      ''],
+	['RobotIP',			 'list_wildcard_full', ''],
+	['RobotHost',		 'list_wildcard_full', ''],
+	['HostnameLookups',	 'yesno',            'No'],
 	['TolerateGet',		 'yesno',            'No'],
 	['PIDcheck',		 'integer',          '0'],
 	['LockoutCommand',    undef,             ''],
@@ -1509,7 +1510,7 @@ sub watch {
 }
 
 sub get_wildcard_list {
-	my($var, $value) = @_;
+	my($var, $value, $base) = @_;
 
 	$value =~ s/^\s+//;
 	$value =~ s/\s+$//;
@@ -1521,11 +1522,16 @@ sub get_wildcard_list {
 		$value =~ s/\*/.*/g;
 		$value =~ s/\?/./g;
 		my @items = grep /\S/, split /\s*,\s*/, $value;
-		s/\s+/\\s+/g for (@items);
+		for (@items) {
+			s/\s+/\\s+/g;
+			my $extra = $_;
+			if ($base && $extra =~ s/^\.\*\\\.//){
+				push(@items,$extra) if $extra;
+			}
+		}
 		$value = join '|', @items;
 	}
-	$value = parse_regex($var, $value);
-	return $value;
+	return parse_regex($var, $value);
 }
 
 # Set up an ActionMap or FormAction
@@ -2427,12 +2433,12 @@ sub parse_array_complete {
 }
 
 sub parse_list_wildcard {
-	my $value = get_wildcard_list(@_);
+	my $value = get_wildcard_list(@_,0);
 	return qr/$value/i;
 }
 
 sub parse_list_wildcard_full {
-	my $value = '^(' . get_wildcard_list(@_) . ')$';
+	my $value = '^(' . get_wildcard_list(@_,1) . ')$';
 	return qr/$value/i;
 }
 
