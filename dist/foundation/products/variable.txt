@@ -51,6 +51,11 @@ PGSQL	__MVC_PGSQL__	Database
 PHONE	__MVC_PHONE__	Company
 POSTAL_ACCEPTED	0	Payment
 PO_ACCEPTED	__MVC_PAYPO__	Payment
+PUBLISH_DO_RCS	0	Admin Control
+PUBLISH_NO_PAGE_ROOT	0	Admin Control
+PUBLISH_PUT_IMAGES	images	Admin Control
+PUBLISH_PUT_PAGES	pages	Admin Control
+PUBLISH_QUIT_ON_RCS_ERROR	0	Admin Control
 SAMPLEHTML	__MVC_SAMPLEHTML__	Directories and Paths
 SAMPLEURL	__MVC_SAMPLEURL__	Directories and Paths
 SECURE_ENABLE	__MVC_ENABLESECURE__	General

@@ -71,6 +71,10 @@ sub {
 						tables  tables
 						table   tables
 					/;
+	my %prefix_func = qw/
+						filematch  files
+						pagematch  pages
+					/;
 
 	my $table = $CGI::values{mv_data_table} || $::Values->{mv_data_table};
 	
@@ -92,12 +96,39 @@ sub {
 		my $file = $field || $Global::Variable->{MV_PAGE};
 		# strip trailing slashes for checks on directories
 		$file =~ s%/+$%%;                     
+#::logDebug("check=$check file=$file record=$record->{$check} prefix=$opt->{prefix}");
 		my @files =  UI::Primitive::list_glob($record->{$check}, $opt->{prefix});
+#::logDebug("check yielded files=" . join(",", @files));
 		if(! @files) {
 			$status = '';
 			last CHECKIT;
 		}
 		$status = ui_check_acl("$file$extended", join(" ", @files));
+#::logDebug("check status=$status");
+		last CHECKIT;
+	}
+	if($check = $prefix_func{$func}) {
+		$status = '', last CHECKIT unless $record->{$check};
+		my $file = $field;
+		# strip trailing slashes for checks on directories
+#::logDebug("check=$check file=$file record=$record->{$check}");
+		my @allow =  split /\s+/, $record->{$check};
+		$status = '';
+		for(@allow) {
+#::logDebug("check file=$file against allow=$_");
+			if(s/^\!//) {
+				if ($file =~ /^$_/) {
+#::logDebug("denied based on $_");
+					$status = '';
+					last CHECKIT;
+				}
+			}
+			else {
+				next unless $file =~ /^$_\b/;
+				$status = 1; 
+			}
+		}
+#::logDebug("check Yielded status=$status");
 		last CHECKIT;
 	}
 	if($bool_func{$func} ) {
