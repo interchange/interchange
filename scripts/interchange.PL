@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.9.0
 #
-# $Id: interchange.PL,v 2.26 2002-03-20 06:23:04 jon Exp $
+# $Id: interchange.PL,v 2.27 2002-05-09 10:02:33 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -2140,6 +2140,7 @@ EOF
 	# Do it here so we can use autoloads and such
 	Vend::Interpolate::reset_calc() if $Global::Foreground;
 	Vend::Interpolate::init_calc();
+	new Vend::Tags;
 # LEGACY
 	ROUTINES: {
 		last ROUTINES unless index($Vend::FinalPath, '/process/') == 0;
