@@ -61,6 +61,20 @@ sub {
 		$done_something = 1;
 	}
 
+	if($opt->{global_locale_options}) {
+		my @loc;
+		my $curr = $Global::Locale;
+		
+		while ( my($k,$v) = each %$Global::Locale_repository ) {
+			next unless $k =~ /_/;
+			push @loc, "$v->{MV_LANG_NAME}~:~$k=$v->{MV_LANG_NAME}";
+		}
+		if(@loc > 1) {
+			push @out, join ",", map { s/.*~:~//; $_ } sort @loc;
+		}
+		$done_something = 1;
+	}
+
 	if($opt->{perl}) {
 		push @out, ($^V ? sprintf("%vd", $^V) : $]) . " (called with: $^X)";
 		$done_something = 1;

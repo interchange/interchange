@@ -107,9 +107,9 @@ onChange="this.form.submit()"
 >
 </td>
 </tr>
-
+[value name=currlocale set="[either][getlocale][or]en_US[/either]" hide=1]
 [comment] UI_LOCALE definition in ui.cfg, make empty to remove box [/comment]
-[loop acclist=1 list="@@UI_LOCALES@@"]
+[loop acclist=1 option=currlocale list="[version extended=1 global_locale_options=1]"]
 [on-match]
 <tr> 
 <td> 
