@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12 2000-11-11 20:45:12 heins Exp $
+# $Id: Parse.pm,v 1.12.2.1 2000-11-30 02:45:49 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,12 +27,12 @@
 
 package Vend::Parse;
 
-# $Id: Parse.pm,v 1.12 2000-11-11 20:45:12 heins Exp $
+# $Id: Parse.pm,v 1.12.2.1 2000-11-30 02:45:49 heins Exp $
 
 require Vend::Parser;
 
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.12 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.12.2.1 $ =~ /(\d+)\.(\d+)/);
 
 use Safe;
 use Vend::Util;
@@ -44,7 +44,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.1 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -96,11 +96,13 @@ my %PosNumber =	( qw!
                 mvasp            1
                 nitems           1
                 onfly            2
+                options          1
                 order            2
 				or				 1
                 page             2
                 perl             1
                 price            1
+                profile          1
 				query			 1
                 row              1
                 salestax         2
@@ -180,7 +182,9 @@ my %Order =	(
 				page			=> [qw( href arg )],
 				perl			=> [qw( tables )],
 				mvasp			=> [qw( tables )],
+				options			=> [qw( code )],
 				price			=> [qw( code )],
+				profile			=> [qw( name )],
 				process      	=> [qw( target secure )],
 				query			=> [qw( sql )],
 				read_cookie		=> [qw( name )],
@@ -241,8 +245,10 @@ my %addAttr = (
 					page            1
 					mvasp           1
 				    nitems			1
+				    options			1
 					perl            1
 					price			1
+					profile			1
 					process         1
 					query			1
                     sql             1
@@ -323,6 +329,7 @@ my %InvalidateCache = (
 				mvasp		1
 				nitems		1
 				perl		1
+				profile		1
 				'salestax'	1
 				scratch		1
 				scratchd	1
@@ -467,6 +474,7 @@ my %Routine = (
 				loop			=> \&Vend::Interpolate::tag_loop_list,
 				nitems			=> \&Vend::Util::tag_nitems,
 				onfly			=> \&Vend::Order::onfly,
+				options			=> \&Vend::Interpolate::tag_options,
 				order			=> \&Vend::Interpolate::tag_order,
 				page			=> \&Vend::Interpolate::tag_page,
 				perl			=> \&Vend::Interpolate::tag_perl,
@@ -475,6 +483,7 @@ my %Routine = (
 # END MVASP
 				price        	=> \&Vend::Interpolate::tag_price,
 				process      	=> \&Vend::Interpolate::tag_process,
+				profile      	=> \&Vend::Interpolate::tag_profile,
 				query			=> \&Vend::Interpolate::query,
 				read_cookie     => \&Vend::Util::read_cookie,
 				row				=> \&Vend::Interpolate::tag_row,
