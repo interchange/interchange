@@ -91,7 +91,6 @@ Core:
   field types in SQL and by looking at the import data on DBM. You can
   see this in operation in the UPS tables "Ground", etc.
 
-* 
 * Removed auto-index of key field if POSTCREATE statement exists.
 
 * Added some more better auto-numbering support. Still not ready
@@ -138,7 +137,7 @@ Core:
 
 * Fixed SpecialPage handling of salestax.asc, thanks to Jeff Carnahan.
 
-* Fixed _postcode() routine in Order.pml, thanks to Brett Harrison.
+* Fixed _postcode() routine in Order.pm, thanks to Brett Harrison.
 
 * Fixed longstanding problem with demo catalog whereby the UserDB
   defined the username field as "user" but it was actually named
