@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.38 2001-04-08 19:15:47 heins Exp $
+# $Id: Config.pm,v 1.25.2.39 2001-04-08 19:19:24 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -98,7 +98,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.38 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.39 $, 10);
 
 my %CDname;
 
@@ -1462,7 +1462,7 @@ sub parse_require {
 	my $uname = uc $name;
 	$uname =~ s/.*\s+//;
 	for(@requires) {
-		$vref->{"MV_REQUIRED_${uname}_$_"} = 1;
+		$vref->{"MV_REQUIRE_${uname}_$_"} = 1;
 		next if defined $require->{$_};
 		next if $testsub->($_);
 		delete $vref->{"MV_REQUIRED_${uname}_$_"};
