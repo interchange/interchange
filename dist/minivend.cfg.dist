@@ -24,7 +24,7 @@ Variable  TEST_VARIABLE Test of global variable OK.
 
 #ifdef TRAFFIC =~ /low/i
 Message Low traffic settings.
-HouseKeeping 5
+HouseKeeping 3
 MaxServers   5
 PIDcheck     300
 #endif
@@ -35,6 +35,9 @@ HouseKeeping 2
 MaxServers   10
 PIDcheck     120
 #endif
+
+# No real downside to adding this....
+Mall       Yes
 
 SafeUntrap ftfile sort rand
 
