@@ -210,8 +210,8 @@ function visible (index, base) {
 		<tr>
 			<td id=clicker>
 	<h3 id="silent_display">[L]Page Attributes/Controls[/L]</h3>
-			Name: <b>[page-param ui_name]</b><BR>
-			Source: [page-param ui_source]
+			[L]Name[/L]: <b>[page-param ui_name]</b><BR>
+			[L]Source[/L]: [page-param ui_source]
 		[page-sub foo_sub]
 			shift;
 			my $item = shift;
