@@ -8,8 +8,9 @@ sub {
 	my ($label, $opt, $body) = @_;
 	$label = 'default' unless $label;
 	my $patt;
+	my $error;
 	return pull_else($body) 
-		unless $patt = $Vend::Session->{try}{$label};
+		unless $error = $Vend::Session->{try}{$label};
 
 	$body = pull_if($body);
 
@@ -17,6 +18,7 @@ sub {
 		#----------------------------------------------------------------
 		# Convert multiple errors to 'or' list and compile it.
 		# Note also the " at (eval ...)" kludge to strip the line numbers
+		$patt = $error;
 		$patt =~ s/(?: +at +\(eval .+\).+)?\n\s*/|/g;
 		$patt =~ s/^\s*//;
 		$patt =~ s/\|$//;
@@ -24,7 +26,7 @@ sub {
 		#----------------------------------------------------------------
 	}
 
-	my $found;
+	my @found;
 	while ($body =~ s{
 						\[/
 							(.+?)
@@ -34,16 +36,25 @@ sub {
 						(?:\1)?/?
 						\]}{}sx ) {
 		my $re;
-		my $error = $2;
+		my $emsg = $2;
 		eval {
 			$re = qr{$1}
 		};
 		next if $@;
-		next unless $patt =~ $re;
-		$found = $error;
+		if($emsg =~ $patt) {
+			push @found, $emsg;
+		}
+		next unless $error =~ $re;
+		push @found, $emsg;
 		last;
 	}
-	$body = $found if $found;
+
+	if(@found) {
+		$body = join $opt->{joiner} || "\n", @found;
+	}
+	else {
+		$body =~ s/\$ERROR\$/$error/g;
+	}
 
 	$body =~ s/\s+$//;
 	$body =~ s/^\s+//;
