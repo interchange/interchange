@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.155 2005-02-03 14:52:19 docelic Exp $
+# $Id: Config.pm,v 2.156 2005-02-14 06:33:16 danb Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -49,7 +49,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.155 $, 10);
+$VERSION = substr(q$Revision: 2.156 $, 10);
 
 my %CDname;
 my %CPname;
@@ -560,6 +560,7 @@ sub catalog_directives {
 	['Levies',		 	 'array',     	 	 ''],
 	['Levy',		 	 'locale',     	 	 ''],
 	['AutoVariable',	 'autovar',     	 ''],
+	['ErrorDestination', 'hash',             '']
 
 	];
 
