@@ -36,60 +36,60 @@ from other companies.
 
 It translates into ECML from the following Interchange variables:
 
-  Ecom_BillTo_Online_Email            b_email
-  Ecom_BillTo_Postal_City             b_city
-  Ecom_BillTo_Postal_CountryCode      b_country
-  Ecom_BillTo_Postal_Name_First       b_fname
-  Ecom_BillTo_Postal_Name_Last        b_lname
-  Ecom_BillTo_Postal_Name_Middle      b_mname
-  Ecom_BillTo_Postal_Name_Prefix      b_title
-  Ecom_BillTo_Postal_Name_Suffix      b_name_suffix
-  Ecom_BillTo_Postal_PostalCode       b_zip
-  Ecom_BillTo_Postal_StateProv        b_state
-  Ecom_BillTo_Postal_Street_Line1     b_address1
-  Ecom_BillTo_Postal_Street_Line2     b_address2
-  Ecom_BillTo_Postal_Street_Line3     b_address3
-  Ecom_BillTo_Telecom_Phone_Number    b_phone_day
-  Ecom_ConsumerOrderID                mv_order_number
-  Ecom_Payment_Card_ExpDate_Day       mv_credit_card_exp_day
-  Ecom_Payment_Card_ExpDate_Month     mv_credit_card_exp_month
-  Ecom_Payment_Card_ExpDate_Year      mv_credit_card_exp_year
-  Ecom_Payment_Card_Name              c_name
-  Ecom_Payment_Card_Number            mv_credit_card_number
-  Ecom_Payment_Card_Protocol          payment_protocols_available
-  Ecom_Payment_Card_Type              mv_credit_card_type
-  Ecom_Payment_Card_Verification      mv_credit_card_verify
-  Ecom_ReceiptTo_Online_Email         r_email
-  Ecom_ReceiptTo_Postal_City          r_city
-  Ecom_ReceiptTo_Postal_CountryCode   r_country
-  Ecom_ReceiptTo_Postal_Name_First    r_fname
-  Ecom_ReceiptTo_Postal_Name_Last     r_lname
-  Ecom_ReceiptTo_Postal_Name_Middle   r_mname
-  Ecom_ReceiptTo_Postal_Name_Prefix   r_title
-  Ecom_ReceiptTo_Postal_Name_Suffix   r_name_suffix
-  Ecom_ReceiptTo_Postal_PostalCode    r_zip
-  Ecom_ReceiptTo_Postal_StateProv     r_state
-  Ecom_ReceiptTo_Postal_Street_Line1  r_address1
-  Ecom_ReceiptTo_Postal_Street_Line2  r_address2
-  Ecom_ReceiptTo_Postal_Street_Line3  r_address3
-  Ecom_ReceiptTo_Telecom_Phone_Number r_phone
-  Ecom_SchemaVersion                  ecml_version
-  Ecom_ShipTo_Online_Email            email
-  Ecom_ShipTo_Postal_City             city
-  Ecom_ShipTo_Postal_CountryCode      country
-  Ecom_ShipTo_Postal_Name_Combined    name
-  Ecom_ShipTo_Postal_Name_First       fname
-  Ecom_ShipTo_Postal_Name_Last        lname
-  Ecom_ShipTo_Postal_Name_Middle      mname
-  Ecom_ShipTo_Postal_Name_Prefix      title
-  Ecom_ShipTo_Postal_Name_Suffix      name_suffix
-  Ecom_ShipTo_Postal_PostalCode       zip
-  Ecom_ShipTo_Postal_StateProv        state
-  Ecom_ShipTo_Postal_Street_Line1     address1
-  Ecom_ShipTo_Postal_Street_Line2     address2
-  Ecom_ShipTo_Postal_Street_Line3     address3
-  Ecom_ShipTo_Telecom_Phone_Number    phone
-  Ecom_TransactionComplete            end_transaction_flag
+	Ecom_BillTo_Online_Email            b_email
+	Ecom_BillTo_Postal_City             b_city
+	Ecom_BillTo_Postal_CountryCode      b_country
+	Ecom_BillTo_Postal_Name_First       b_fname
+	Ecom_BillTo_Postal_Name_Last        b_lname
+	Ecom_BillTo_Postal_Name_Middle      b_mname
+	Ecom_BillTo_Postal_Name_Prefix      b_title
+	Ecom_BillTo_Postal_Name_Suffix      b_name_suffix
+	Ecom_BillTo_Postal_PostalCode       b_zip
+	Ecom_BillTo_Postal_StateProv        b_state
+	Ecom_BillTo_Postal_Street_Line1     b_address1
+	Ecom_BillTo_Postal_Street_Line2     b_address2
+	Ecom_BillTo_Postal_Street_Line3     b_address3
+	Ecom_BillTo_Telecom_Phone_Number    b_phone_day
+	Ecom_ConsumerOrderID                mv_order_number
+	Ecom_Payment_Card_ExpDate_Day       mv_credit_card_exp_day
+	Ecom_Payment_Card_ExpDate_Month     mv_credit_card_exp_month
+	Ecom_Payment_Card_ExpDate_Year      mv_credit_card_exp_year
+	Ecom_Payment_Card_Name              c_name
+	Ecom_Payment_Card_Number            mv_credit_card_number
+	Ecom_Payment_Card_Protocol          payment_protocols_available
+	Ecom_Payment_Card_Type              mv_credit_card_type
+	Ecom_Payment_Card_Verification      mv_credit_card_verify
+	Ecom_ReceiptTo_Online_Email         r_email
+	Ecom_ReceiptTo_Postal_City          r_city
+	Ecom_ReceiptTo_Postal_CountryCode   r_country
+	Ecom_ReceiptTo_Postal_Name_First    r_fname
+	Ecom_ReceiptTo_Postal_Name_Last     r_lname
+	Ecom_ReceiptTo_Postal_Name_Middle   r_mname
+	Ecom_ReceiptTo_Postal_Name_Prefix   r_title
+	Ecom_ReceiptTo_Postal_Name_Suffix   r_name_suffix
+	Ecom_ReceiptTo_Postal_PostalCode    r_zip
+	Ecom_ReceiptTo_Postal_StateProv     r_state
+	Ecom_ReceiptTo_Postal_Street_Line1  r_address1
+	Ecom_ReceiptTo_Postal_Street_Line2  r_address2
+	Ecom_ReceiptTo_Postal_Street_Line3  r_address3
+	Ecom_ReceiptTo_Telecom_Phone_Number r_phone
+	Ecom_SchemaVersion                  ecml_version
+	Ecom_ShipTo_Online_Email            email
+	Ecom_ShipTo_Postal_City             city
+	Ecom_ShipTo_Postal_CountryCode      country
+	Ecom_ShipTo_Postal_Name_Combined    name
+	Ecom_ShipTo_Postal_Name_First       fname
+	Ecom_ShipTo_Postal_Name_Last        lname
+	Ecom_ShipTo_Postal_Name_Middle      mname
+	Ecom_ShipTo_Postal_Name_Prefix      title
+	Ecom_ShipTo_Postal_Name_Suffix      name_suffix
+	Ecom_ShipTo_Postal_PostalCode       zip
+	Ecom_ShipTo_Postal_StateProv        state
+	Ecom_ShipTo_Postal_Street_Line1     address1
+	Ecom_ShipTo_Postal_Street_Line2     address2
+	Ecom_ShipTo_Postal_Street_Line3     address3
+	Ecom_ShipTo_Telecom_Phone_Number    phone
+	Ecom_TransactionComplete            end_transaction_flag
 
 Once the form variables are input and sent to Interchange, the [ecml function=mapback]
 tag will cause the input results to be mapped back from the ECML names to the
@@ -258,7 +258,7 @@ EOF
 		$run .= '<OPTION';
 		my $select = '';
 		s/\*$// and $select = 1;
-		if ($default) {
+		if($default) {
 			$select = '';
 		}
 		my ($value,$label) = split /=/, $_, 2;
@@ -266,7 +266,7 @@ EOF
 			$value =~ s/"/&quot;/;
 			$run .= qq| VALUE="$value"|;
 		}
-		if ($default) {
+		if($default) {
 			my $regex = quotemeta $value;
 			$default =~ /(?:\0|^)$regex(?:\0|$)/ and $select = 1;
 		}
@@ -274,8 +274,7 @@ EOF
 		$run .= '>';
 		if($label) {
 			$run .= $label;
-		}
-		else {
+		} else {
 			$run .= $value;
 		}
 	}
@@ -289,17 +288,15 @@ sub unfix {
 	my $ecml = $def->{ecml};
 	if($ecml =~ /^Ecom_ShipTo_/) {
 		# do nothing
-	}
-	elsif($ecml =~ /^Ecom_BillTo_/) {
+	} elsif($ecml =~ /^Ecom_BillTo_/) {
 		$pre = 'b_';
-	}
-	elsif($ecml =~ /^Ecom_ReceiptTo_/) {
+	} elsif($ecml =~ /^Ecom_ReceiptTo_/) {
 		$pre = 'r_';
 	}
 	my($var,$split,$index) = split /:/, $def->{attribute};
 	my $join = $split;
 #::logError("ECML unfix: attribute=$def->{attribute}, join=|$join|, split=$split, index=$index var=$var");
-	if ($join eq '<CRLF>') {
+	if($join eq '<CRLF>') {
 		($join, $split) = ("\r", '[\r\n]+');
 	}
 	$join = '' if $join =~ /^[[\\]/;
@@ -307,17 +304,13 @@ sub unfix {
 	if($pos =~ /(\d+)$/) {
 		$pos = $1;
 		$pos--;
-	}
-	elsif ($pos =~ /Name_Last/) {
+	} elsif($pos =~ /Name_Last/) {
 		$pos = 2;
-	}
-	elsif ($pos =~ /Name_First/) {
+	} elsif($pos =~ /Name_First/) {
 		$pos = 0;
-	}
-	elsif ($pos =~ /Name_Middle/) {
+	} elsif($pos =~ /Name_Middle/) {
 		$pos = 1;
-	}
-	else {
+	} else {
 		$pos = 0;
 	}
 	$pre = '' if index($var, $pre) == 0;
@@ -340,17 +333,15 @@ sub fieldfix {
 	my $pre = '';
 	if($self->{ecml} =~ /^Ecom_ShipTo_/) {
 		# do nothing
-	}
-	elsif($self->{ecml} =~ /^Ecom_BillTo_/) {
+	} elsif($self->{ecml} =~ /^Ecom_BillTo_/) {
 		$pre = 'b_';
-	}
-	elsif($self->{ecml} =~ /^Ecom_ReceiptTo_/) {
+	} elsif($self->{ecml} =~ /^Ecom_ReceiptTo_/) {
 		$pre = 'r_';
 	}
 	my($var,$split,$index) = split /:/, $def->{attribute};
 	my $join = $split;
 #::logError("ECML fieldfix: attribute=$def->{attribute}, join=|$join|, split=$split, index=$index var=$var");
-	if ($join eq '<CRLF>') {
+	if($join eq '<CRLF>') {
 		($join, $split) = ('', '[\r\n]+');
 	}
 	$join = '' if $join =~ /^[[\\]/;
@@ -389,8 +380,7 @@ sub widget {
 								|| $::Values->{$self->{name}}
 								|| '';
 		$value = $self->fieldfix($def, $value) if $def->{attribute};
-	}
-	else {
+	} else {
 		$value = '';
 	}
 

@@ -1,6 +1,6 @@
 # SessionDB.pm:  stores session information in files
 #
-# $Id: SessionDB.pm,v 1.2 2000-07-12 03:08:11 heins Exp $
+# $Id: SessionDB.pm,v 1.2.2.1 2000-11-07 22:41:47 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 
-# $Id: SessionDB.pm,v 1.2 2000-07-12 03:08:11 heins Exp $
+# $Id: SessionDB.pm,v 1.2.2.1 2000-11-07 22:41:47 zarko Exp $
 
 package Vend::SessionDB;
 require Tie::Hash;
@@ -30,7 +30,7 @@ use strict;
 use Vend::Util;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.2.2.1 $, 10);
 
 my $SessionDB;
 my $SessionLock;
@@ -77,7 +77,7 @@ sub NEXTKEY {
 sub EXISTS {
 	my($self,$key) = @_;
 #::logDebug("$self EXISTS check: $key");
-	if ($key =~ s/^LOCK_//) {
+	if($key =~ s/^LOCK_//) {
 		return undef unless $self->{DB}->record_exists($key);
 		return undef unless $self->{DB}->field($key, 'sessionlock');
 		return 1;
@@ -103,7 +103,7 @@ sub STORE {
 	$self->{DB}->set_row($key) unless $self->{DB}->record_exists($key);
 	return $self->{DB}->set_field($key, 'sessionlock', $val) if $locking;
 	$self->{DB}->set_field( $key, 'session', $val);
-    return 1;
+	return 1;
 }
 	
 1;

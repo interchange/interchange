@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Cart.pm,v 1.2 2000-07-12 03:08:10 heins Exp $
+# $Id: Cart.pm,v 1.2.2.1 2000-11-07 22:41:45 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,7 +27,7 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.2.2.1 $, 10);
 
 use strict;
 
@@ -48,13 +48,12 @@ sub STORE {
 		for(keys %$::Carts) {
 			$name = $_ if $::Carts->{$_} eq $cart;
 		}
-		if (! $name) {
+		if(! $name) {
 			$name = 'UNKNOWN';
 			$::Carts->{UNKNOWN} = $cart;
 		}
 		$Vend::CurrentCart = $name;
-	}
-	else {
+	} else {
 		$Vend::CurrentCart = $cart;
 	}
 	return $::Carts->{$Vend::CurrentCart};
@@ -68,19 +67,19 @@ sub toss_cart {
 	my($s) = @_;
 	my $i;
 	my (@master);
-    DELETE: for (;;) {
-        foreach $i (0 .. $#$s) {
-            if ($s->[$i]->{quantity} <= 0) {
+	DELETE: for (;;) {
+	        foreach $i (0 .. $#$s) {
+			if($s->[$i]->{quantity} <= 0) {
 				next if defined $s->[$i]->{mv_control} and
 								$s->[$i]->{mv_control} =~ /\bnotoss\b/;
 				push (@master, $s->[$i]->{mv_mi})
 					if $s->[$i]->{mv_mi} && ! $s->[$i]->{mv_si};
-                splice(@$s, $i, 1);
-                next DELETE;
-            }
-        }
-        last DELETE;
-    }
+				splice(@$s, $i, 1);
+				next DELETE;
+			}
+		}
+		last DELETE;
+	}
 
 	return 1 unless @master;
 	my $mi;
@@ -88,14 +87,14 @@ sub toss_cart {
 	my @items;
 	# Brute force delete for subitems of any deleted master items
 	foreach $mi (@master) {
-        foreach $i (0 .. $#$s) {
-            $save{$i} = 1
+		foreach $i (0 .. $#$s) {
+			$save{$i} = 1
 				unless $s->[$i]->{mv_si} and $s->[$i]->{mv_mi} eq $mi;
-        }
+		}
 	}
 	@items = @$s;
 	@{$s} = @items[sort {$a <=> $b} keys %save];
-    1;
+	1;
 }
 
 sub get_cart {

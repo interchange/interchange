@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Document.pm - Document object for embedded Perl/ASP
 # 
-# $Id: Document.pm,v 1.2.2.1 2000-10-06 19:49:22 zarko Exp $
+# $Id: Document.pm,v 1.2.2.2 2000-11-07 22:41:45 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -63,8 +63,7 @@ sub review {
 	my $idx;
 	if( defined ($idx = shift) ) {
 		return $Out[$idx];
-	}
-	else {
+	} else {
 		return @Out;
 	}
 }
