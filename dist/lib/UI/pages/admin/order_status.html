@@ -23,6 +23,9 @@
 			settle_transaction="__SETTLE_TRANSACTION__"
 			[/if-loop-data]
 			archive=1]
+	[if scratch ship_notice_username]
+	[email-raw][include etc/ship_notice][/email-raw]
+	[/if]
 [/loop]
 			
 
@@ -181,4 +184,4 @@
 </script>
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: order_status.html,v 2.11 2003-01-14 02:25:50 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order_status.html,v 2.12 2003-04-01 23:17:36 ramoore Exp $ -->
