@@ -20,6 +20,16 @@
 [perl tables="[cgi mv_data_table] __UI_META_TABLE__"]
 	delete $Scratch->{ui_location};
     $Scratch->{description_field} = $Config->{DescriptionField};
+	my $tab = $CGI->{mv_data_table} or return;
+
+	my $db = $Db{$tab};
+	if(! ref $db) {
+		$Scratch->{error_message} = "<FONT CLASS=error>Error: no <B>$tab</B> database.</FONT><BR>";
+		$Scratch->{ui_location} = "__UI_BASE__/error";
+		return;
+	}
+    $Values->{ui_data_key_name} = $db->config('KEY');
+    $Values->{ui_data_key_numeric} = $db->config('NUMERIC')->{$db->config('KEY')};
 	if($CGI->{ui_sequence_edit}) {
 		my $doit;
 		if($CGI->{item_id_left} =~ s/^(.*?),//) {
@@ -54,14 +64,6 @@
 
 	delete $Scratch->{ui_location};
 	$Config->{NoSearch} = '';
-	my $tab = $CGI->{mv_data_table} or return;
-
-	my $db = $Db{$tab};
-	if(! ref $db) {
-		$Scratch->{error_message} = "<FONT CLASS=error>Error: no <B>$tab</B> database.</FONT><BR>";
-		$Scratch->{ui_location} = "__UI_BASE__/error";
-		return;
-	}
 
 	for(grep $_, @{$CGI_array->{item_id}}) {
 		$db->delete_record($_)
@@ -141,10 +143,10 @@
 <tr bgcolor="#000000" height=1><td colspan=8></td></tr>
 <TR BGCOLOR="__UI_C_TITLEBARBG__">
 <TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
-	return "ui_sort_field=sku\n" . sortrev('sku');
+	return "ui_sort_field=$Values->{ui_data_key_name}\n" . sortrev($Values->{ui_data_key_name}, $Values->{ui_data_key_numeric});
 	`]SKU</TH>
 <TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
-	return "ui_sort_field=description\n" . sortrev('description');
+	return "ui_sort_field=$Scratch->{description_field}\n" . sortrev($Scratch->{description_field});
 	`]Description</TH>
 <TH ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=price\n" . sortrev('price', 1);
