@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.105 2003-04-02 19:08:29 mheins Exp $
+# $Id: Config.pm,v 2.106 2003-04-03 21:30:22 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.105 $, 10);
+$VERSION = substr(q$Revision: 2.106 $, 10);
 
 my %CDname;
 my %CPname;
@@ -3245,56 +3245,7 @@ sub parse_database {
 			}
 		}
 		elsif ($p eq 'MAP') {
-			my @f = split(/\s+/, $val);
-			my %parms;
-			my %map_options = (fallback => 1);
-			my ($map_table, $map_column);
-			
-			if (@f < 2) {
-				config_error("At least two parameters needed for MAP.");
-			} elsif (@f == 2) {
-				@f = ($f[0], 'default', $f[1]);
-			}
-
-			my $field = shift @f;
-
-			if (@f % 2) {
-				config_error("Incomplete parameter list for MAP.");
-			}
-
-			# now we have a valid configuration and change the database type
-			# if necessary
-
-			unless ($d->{type} eq 10) {
-				$d->{OrigClass} = $d->{Class};
-				$d->{Class} = 'SHADOW';
-				$d->{type} = 10;
-			}
-
-			while (@f) {
-				my $map_key = shift @f;
-				my $map_value = shift @f;
-
-				if (exists $map_options{$map_key}) {
-					# option like fallback
-					$d->{MAP}->{$field}->{$map_key} = $map_value;
-				} else {
-					# mapping direction
-					if ($map_value =~ m%^((.*?)::(.*?)/)?(.*?)::(.*)%) {
-						if ($1) {
-							$d->{MAP}->{$field}->{$map_key} = {lookup_table => $2,
-															   lookup_column => $3,
-															   table => $4,
-															   column => $5}
-						} else {
-							$d->{MAP}->{$field}->{$map_key} = {table => $4,
-															   column => $5};
-						}
-					} else {
-						$d->{MAP}->{$field}->{$map_key} = {column => $map_value};
-					}
-				}
-			}
+			Vend::Table::Shadow::_parse_config_line ($d, $val);
 		}
 
 		else {

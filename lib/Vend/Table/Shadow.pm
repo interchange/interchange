@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.26 2003-04-03 15:43:38 racke Exp $
+# $Id: Shadow.pm,v 1.27 2003-04-03 21:30:22 racke Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.26 $, 10);
+$VERSION = substr(q$Revision: 1.27 $, 10);
 
 # TODO
 #
@@ -289,6 +289,60 @@ sub reset {
 	my ($s, $key) = @_;
 	$s = $s->import_db() unless defined $s->[$OBJ];
 	$s->[$OBJ]->reset();
+}
+
+sub _parse_config_line {
+	my ($d, $val) = @_;
+	my @f = split(/\s+/, $val);
+	my %parms;
+	my %map_options = (fallback => 1);
+	my ($map_table, $map_column);
+			
+	if (@f < 2) {
+		Vend::Config::config_error("At least two parameters needed for MAP.");
+	} elsif (@f == 2) {
+		@f = ($f[0], 'default', $f[1]);
+	}
+
+	my $field = shift @f;
+
+	if (@f % 2) {
+		Vend::Config::config_error("Incomplete parameter list for MAP.");
+	}
+
+	# now we have a valid configuration and change the database type
+	# if necessary
+
+	unless ($d->{type} eq 10) {
+		$d->{OrigClass} = $d->{Class};
+		$d->{Class} = 'SHADOW';
+		$d->{type} = 10;
+	}
+
+	while (@f) {
+		my $map_key = shift @f;
+		my $map_value = shift @f;
+
+		if (exists $map_options{$map_key}) {
+			# option like fallback
+			$d->{MAP}->{$field}->{$map_key} = $map_value;
+		} else {
+			# mapping direction
+			if ($map_value =~ m%^((.*?)::(.*?)/)?(.*?)::(.*)%) {
+				if ($1) {
+					$d->{MAP}->{$field}->{$map_key} = {lookup_table => $2,
+													   lookup_column => $3,
+													   table => $4,
+													   column => $5}
+				} else {
+					$d->{MAP}->{$field}->{$map_key} = {table => $4,
+													   column => $5};
+				}
+			} else {
+				$d->{MAP}->{$field}->{$map_key} = {column => $map_value};
+			}
+		}
+	}
 }
 
 sub _parse_sql {
