@@ -31,7 +31,7 @@ flock    ON, LOCK_EX	or die "lock $fn: $!\n";
 seek     ON, 0, 0       or die "seek $fn: $!\n";
 truncate ON, 0          or die "truncate $fn: $!\n";
 
-print    ON  strftime("%Y%m%d0000\n", localtime() );
+print    ON  strftime("#COUNTER-1.0\n%Y%m%d0000\n", localtime() );
 
 close    ON             or die "close $fn: $!\n";
 
