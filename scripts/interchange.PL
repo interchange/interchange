@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.0
 #
-# $Id: interchange.PL,v 1.15.2.6 2000-12-11 02:01:54 heins Exp $
+# $Id: interchange.PL,v 1.15.2.7 2000-12-11 08:30:33 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -430,8 +430,13 @@ sub update_quantity {
 		my $sku;
 		next unless $sku = delete $CGI::values{"mv_sku$i"};
 		if($sku ne $line->{code}) {
-			$line->{mv_sku} = $line->{code} unless $line->{mv_sku};
-			$line->{code} 	= $sku;
+			if($line->{mv_mp}) {
+				$line->{mv_sku} = $line->{code} = $sku;
+			}
+			elsif (! $line->{mv_sku}) {
+				$line->{mv_sku} = $line->{code};
+				$line->{code} 	= $sku;
+			}
 			$line->{mv_ib} 	= ::product_code_exists_tag($sku);
 		}
     }
