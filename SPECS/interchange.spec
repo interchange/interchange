@@ -295,6 +295,9 @@ ln -s $RPMICLOG
 touch $RPM_BUILD_ROOT$RPMICLOG
 chown %{ic_user}.%ic_group $RPM_BUILD_ROOT$RPMICLOG
 
+# Make a symlink from docroot area into /usr{/share}/doc/interchange-x.x.x.
+ln -s %{_docdir}/interchange-%ic_version $RPM_BUILD_ROOT$DOCROOT/interchange/doc
+
 # I don't know of a way to exclude a subdirectory from one of the directories
 # listed in the %files section, so I have to use this monstrosity to generate
 # a list of all directories in /usr/lib/interchange except the foundation demo
@@ -530,6 +533,10 @@ rm -f %filelist_main
 
 
 %changelog
+
+* Fri Jul 27 2001 Jon Jensen <jon@redhat.com>
+- Make a symlink to /usr{/share}/doc/interchange-x.x.x in
+  /var/www/html/interchange/doc.
 
 * Sat Jul 14 2001 Jon Jensen <jon@redhat.com>
 - Add some files to list for replacing RPM_CHANGE_HOST to real hostname.
