@@ -1,6 +1,6 @@
 # Copyright 2002, 2004 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: image.tag,v 1.11 2004-11-09 11:13:04 docelic Exp $
+# $Id: image.tag,v 1.12 2004-12-03 22:14:05 mheins Exp $
 
 UserTag image Order src
 UserTag image AttrAlias geometry makesize
@@ -167,9 +167,20 @@ sub {
 				
 				my $newpath = "$dir/$fn";
 				if(-f $newpath) {
-					$image =~ s:(/?)([^/]+$):$1$siz/$2:;
-					$path = $newpath;
-					last MOGIT;
+					if($opt->{check_date}) {
+						my $mod1 = -M $newpath;
+						my $mod2 = -M $path;
+						unless ($mod2 < $mod1) {
+							$image =~ s:(/?)([^/]+$):$1$siz/$2:;
+							$path = $newpath;
+							last MOGIT;
+						}
+					}
+					else {
+						$image =~ s:(/?)([^/]+$):$1$siz/$2:;
+						$path = $newpath;
+						last MOGIT;
+					}
 				}
 
 				$mask = umask(02);
