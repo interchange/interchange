@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.200 2003-12-03 23:50:39 jon Exp $
+# $Id: Interpolate.pm,v 2.201 2003-12-04 02:35:39 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.200 $, 10);
+$VERSION = substr(q$Revision: 2.201 $, 10);
 
 @EXPORT = qw (
 
@@ -4862,8 +4862,6 @@ sub region {
     return $page;
 }
 
-my $List_it = 1;
-
 sub tag_loop_list {
 	my ($list, $opt, $text) = @_;
 
@@ -4871,7 +4869,7 @@ sub tag_loop_list {
 	my @rows;
 
 	$opt->{prefix} = 'loop' unless defined $opt->{prefix};
-	$opt->{label}  =  "loop" . $List_it++ . $Global::Variable->{MV_PAGE}
+	$opt->{label}  =  "loop" . ++$::Instance->{List_it} . $Global::Variable->{MV_PAGE}
 						unless defined $opt->{label};
 
 #::logDebug("list is: " . uneval($list) );
