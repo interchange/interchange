@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.31 2003-04-23 20:38:35 racke Exp $
+# $Id: Form.pm,v 2.32 2003-04-23 20:54:39 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -37,7 +37,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.31 $, 10);
+$VERSION = substr(q$Revision: 2.32 $, 10);
 
 @EXPORT = qw (
 	display
@@ -690,7 +690,7 @@ sub dropdown {
 		if (length($default)) {
 			$regex	= qr/$re_b\Q$value\E$re_e/;
 			$default =~ $regex and $select = 1;
-		} elsif (defined($default) && $value == '') {
+		} elsif (defined($default) && length($value) == 0) {
 			$select = 1;
 		}
 		$run .= ' SELECTED' if $select;
