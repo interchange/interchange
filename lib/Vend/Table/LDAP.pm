@@ -1,6 +1,6 @@
 # Table/LDAP.pm: LDAP pseudo-table
 #
-# $Id: LDAP.pm,v 1.3 2000-09-23 21:09:09 heins Exp $
+# $Id: LDAP.pm,v 1.4 2000-09-25 15:51:58 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,7 +27,7 @@
 
 package Vend::Table::LDAP;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 use strict;
 
 use vars qw(
@@ -78,7 +78,7 @@ sub close_table {
 sub open_table {
 	my ($class, $config, $tablename) = @_;
 #::logDebug("LDAP open_table $tablename" . ::uneval($config));
-	my $tablename = $config->{name};
+	$tablename = $config->{name} || $tablename;
 	my $base = $config->{BASE_DN};
 	my $host = $config->{LDAP_HOST};
 	my $port = 389;
@@ -432,7 +432,7 @@ sub ref {
 sub query {
     my($s, $opt, $text, @arg) = @_;
 
-    if(! ref $opt) {
+    if(! CORE::ref($opt) ) {
         unshift @arg, $text;
         $text = $opt;
         $opt = {};

@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.18 2000-09-24 21:15:57 heins Exp $
+# $Id: DBI.pm,v 1.19 2000-09-25 15:51:57 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.18 $, 10);
+$VERSION = substr(q$Revision: 1.19 $, 10);
 
 use strict;
 
@@ -758,7 +758,7 @@ sub sprintf_substitute {
 sub query {
     my($s, $opt, $text, @arg) = @_;
 
-    if(! ref $opt) {
+    if(! CORE::ref($opt)) {
         unshift @arg, $text;
         $text = $opt;
         $opt = {};
