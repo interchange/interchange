@@ -1,8 +1,8 @@
-# Track.pm - Interchange User Tracking
+# Vend::Track - Interchange User Tracking
 #
-# $Id: Track.pm,v 1.3.6.3 2001-04-24 15:30:34 racke Exp $
+# $Id: Track.pm,v 1.3.6.4 2001-06-29 02:19:26 jon Exp $
 #
-# Copyright 2000 by Stefan Hornburg <racke@linuxia.de>
+# Copyright (C) 2000 by Stefan Hornburg <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ package Vend::Track;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.3.6.3 $, 10);
+$VERSION = substr(q$Revision: 1.3.6.4 $, 10);
 
 @ISA = qw(Exporter);
 

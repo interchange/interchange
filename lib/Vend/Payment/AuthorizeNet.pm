@@ -1,11 +1,11 @@
-#!/usr/bin/perl
+# Vend::Payment::AuthorizeNet - Interchange AuthorizeNet support
 #
-# $Id: AuthorizeNet.pm,v 1.1.2.3 2001-04-11 08:09:16 heins Exp $
+# $Id: AuthorizeNet.pm,v 1.1.2.4 2001-06-29 02:19:26 jon Exp $
 #
-# Copyright (C) 1999-2001 Red Hat, Inc., http://www.redhat.com
+# Copyright (C) 1999-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # by mark@summersault.com with code reused and inspired by
-#	Mike Heins <mike@minivend.com>
+#	Mike Heins <mheins@redhat.com>
 #	webmaster@nameastar.net
 #   Jeff Nappi <brage@cyberhighway.net>
 #   Paul Delys <paul@gi.alaska.edu>
@@ -28,6 +28,7 @@
 # License along with this program; if not, write to the Free
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
+
 # Connection routine for AuthorizeNet version 3 using the 'ADC Direct Response'
 # method.
 
@@ -37,7 +38,7 @@ package Vend::Payment::AuthorizeNet;
 
 =head1 Interchange AuthorizeNet Support
 
-Vend::Payment::AuthorizeNet $Revision: 1.1.2.3 $
+Vend::Payment::AuthorizeNet $Revision: 1.1.2.4 $
 
 =head1 SYNOPSIS
 

@@ -1,8 +1,8 @@
-# SessionFile.pm:  stores session information in files
+# Vend::SessionFile - Stores Interchange session information in files
 #
-# $Id: SessionFile.pm,v 1.4.2.2 2001-02-26 00:53:45 heins Exp $
+# $Id: SessionFile.pm,v 1.4.2.3 2001-06-29 02:19:26 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ use strict;
 use Vend::Util;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.4.2.2 $, 10);
+$VERSION = substr(q$Revision: 1.4.2.3 $, 10);
 
 my $SessionDir;
 my $CommDir;

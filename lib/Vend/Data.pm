@@ -1,13 +1,10 @@
-# Data.pm - Interchange databases
+# Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 1.17.2.21 2001-04-24 15:30:34 racke Exp $
+# $Id: Data.pm,v 1.17.2.22 2001-06-29 02:19:25 jon Exp $
 # 
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
+# This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
 #
 # This program is free software; you can redistribute it and/or modify

@@ -1,13 +1,10 @@
-# Util.pm - Interchange utility functions
+# Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.37 2001-06-27 21:32:29 heins Exp $
+# $Id: Util.pm,v 1.14.2.38 2001-06-29 02:19:26 jon Exp $
 # 
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
+# This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -77,7 +74,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.37 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.38 $, 10);
 
 BEGIN {
 	eval {

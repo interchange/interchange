@@ -1,13 +1,10 @@
-# Server.pm:  listen for cgi requests as a background server
+# Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.41 2001-06-15 17:38:40 heins Exp $
+# $Id: Server.pm,v 1.8.2.42 2001-06-29 02:19:25 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
+# This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -28,7 +25,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.41 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.42 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;

@@ -1,12 +1,12 @@
-#!/usr/bin/perl
+# Vend::Payment::iTransact - Interchange iTransact Support
 #
-# $Id: iTransact.pm,v 1.1.2.5 2001-04-11 08:09:16 heins Exp $
+# $Id: iTransact.pm,v 1.1.2.6 2001-06-29 02:19:26 jon Exp $
 #
-# Copyright (C) 1999-2001 Red Hat, Inc., http://www.redhat.com
+# Copyright (C) 1999-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # Written by Cameron Prince <cprince@redhat.com> and
 # Mark Johnson <markj@redhat.com>,
-# based on code by Mike Heins <mike@minivend.com>
+# based on code by Mike Heins <mheins@redhat.com>
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ package Vend::Payment::iTransact;
 
 =head1 Interchange iTransact Support
 
-Vend::Payment::iTransact $Revision: 1.1.2.5 $
+Vend::Payment::iTransact $Revision: 1.1.2.6 $
 
 =head1 SYNOPSIS
 

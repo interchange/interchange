@@ -1,8 +1,8 @@
-# Error.pm - Handle Interchange error pages and messages
+# Vend::Error - Handle Interchange error pages and messages
 # 
-# $Id: Error.pm,v 1.3.6.6 2001-02-26 00:59:23 heins Exp $
+# $Id: Error.pm,v 1.3.6.7 2001-06-29 02:19:25 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 1.3.6.6 $, 10);
+$VERSION = substr(q$Revision: 1.3.6.7 $, 10);
 
 my $wantref = 1;
 

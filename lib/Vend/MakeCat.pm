@@ -1,15 +1,10 @@
-#!/usr/local/bin/perl
+# Vend::MakeCat - Routines for Interchange catalog configurator
 #
-# MakeCat.pm - routines for catalog configurator
+# $Id: MakeCat.pm,v 1.12.6.8 2001-06-29 02:19:25 jon Exp $
 #
-# $Id: MakeCat.pm,v 1.12.6.7 2001-06-14 16:05:38 jon Exp $
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
-#
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
+# This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -26,8 +21,6 @@
 # License along with this program; if not, write to the Free
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
-
-## END CONFIGURABLE VARIABLES
 
 package Vend::MakeCat;
 
@@ -62,7 +55,7 @@ sethistory
 use strict;
 
 use vars qw($Force $Error $History $VERSION);
-$VERSION = substr(q$Revision: 1.12.6.7 $, 10);
+$VERSION = substr(q$Revision: 1.12.6.8 $, 10);
 
 $Force = 0;
 $History = 0;

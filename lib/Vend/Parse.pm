@@ -1,13 +1,10 @@
-# Parse.pm - Parse Interchange tags
+# Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12.2.25 2001-06-15 18:09:01 heins Exp $
+# $Id: Parse.pm,v 1.12.2.26 2001-06-29 02:19:25 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
+# This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -38,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12.2.25 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.26 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 

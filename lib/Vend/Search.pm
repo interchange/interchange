@@ -1,10 +1,8 @@
-#!/usr/bin/perl -w
+# Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 1.8.2.11 2001-05-28 18:47:10 jon Exp $
+# $Id: Search.pm,v 1.8.2.12 2001-06-29 02:19:25 jon Exp $
 #
-# Vend::Search -- Base class for search engines
-#
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,13 +18,10 @@
 # License along with this program; if not, write to the Free
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
-#
 
-#
-#
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 1.8.2.11 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.12 $, 10);
 
 use strict;
 use vars qw($VERSION);

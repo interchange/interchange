@@ -1,8 +1,8 @@
-# SOAP/Transport.pm:  handle SOAP connections
+# SOAP::Transport - Handle Interchange SOAP connections
 #
-# $Id: Transport.pm,v 1.1.2.1 2001-02-26 00:06:25 heins Exp $
+# $Id: Transport.pm,v 1.1.2.2 2001-06-29 02:19:27 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,15 +25,13 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: Transport.pm,v 1.1.2.1 2001-02-26 00:06:25 heins Exp $
-#
 # ======================================================================
 
 package Vend::SOAP::Transport;
 
 use strict;
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.1.2.1 $, 10);
+$VERSION = substr(q$Revision: 1.1.2.2 $, 10);
 
 # ======================================================================
 

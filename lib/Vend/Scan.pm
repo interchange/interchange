@@ -1,8 +1,8 @@
-# Vend/Scan.pm:  Prepare searches for Interchange
+# Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 1.7.2.7 2001-06-07 15:59:49 jason Exp $
+# $Id: Scan.pm,v 1.7.2.8 2001-06-29 02:19:25 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 1.7.2.7 $, 10);
+$VERSION = substr(q$Revision: 1.7.2.8 $, 10);
 
 use strict;
 use Vend::Util;

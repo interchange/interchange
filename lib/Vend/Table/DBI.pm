@@ -1,8 +1,8 @@
-# Table/DBI.pm: access a table stored in an DBI/DBD Database
+# Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 1.25.2.35 2001-06-09 20:01:09 racke Exp $
+# $Id: DBI.pm,v 1.25.2.36 2001-06-29 02:19:28 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.35 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.36 $, 10);
 
 use strict;
 

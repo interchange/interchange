@@ -1,13 +1,10 @@
-# Table/GDBM.pm: access a table stored in a GDBM file
+# Vend::Table::GDBM - Access an Interchange table stored in a GDBM file
 #
-# $Id: GDBM.pm,v 1.3.6.7 2001-04-14 09:26:55 heins Exp $
+# $Id: GDBM.pm,v 1.3.6.8 2001-06-29 02:19:28 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
+# This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -32,7 +29,7 @@ use GDBM_File;
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 1.3.6.7 $, 10);
+$VERSION = substr(q$Revision: 1.3.6.8 $, 10);
 
 sub new {
 	my ($class, $obj) = @_;

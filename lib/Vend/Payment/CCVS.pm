@@ -1,10 +1,10 @@
-#!/usr/bin/perl
+# Vend::Payment::CCVS - Interchange CCVS support
 #
-# $Id: CCVS.pm,v 1.1.2.1 2001-04-10 05:05:43 heins Exp $
+# $Id: CCVS.pm,v 1.1.2.2 2001-06-29 02:19:26 jon Exp $
 #
-# Copyright (C) 1999-2001 Red Hat, Inc., http://www.redhat.com
+# Copyright (C) 1999-2001 Red Hat, Inc. <interchange@redhat.com>
 #
-#	Author: Mike Heins <mike@minivend.com>
+# Author: Mike Heins <mheins@redhat.com>
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,14 +20,12 @@
 # License along with this program; if not, write to the Free
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
-# Connection routine for AuthorizeNet version 3 using the 'ADC Direct Response'
-# method.
 
 package Vend::Payment::CCVS;
 
 =head1 Interchange CCVS support
 
-Vend::Payment::CCVS $Revision: 1.1.2.1 $
+Vend::Payment::CCVS $Revision: 1.1.2.2 $
 
 =head1 SYNOPSIS
 

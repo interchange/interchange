@@ -1,13 +1,11 @@
-package Vend::Parser;
-
-# $Id: Parser.pm,v 1.2.6.7 2001-06-14 14:38:20 heins Exp $
-#
 # Vend::Parser - Interchange parser class
-# Copyright 1997-2001 by Michael J. Heins <heins@akopia.com>
+#
+# $Id: Parser.pm,v 1.2.6.8 2001-06-29 02:19:25 jon Exp $
+#
+# Copyright (C) 1997-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # Based on HTML::Parser
 # Copyright 1996 Gisle Aas. All rights reserved.
-#
 
 =head1 NAME
 
@@ -49,7 +47,7 @@ expanded.
 
 =head1 COPYRIGHT
 
-Copyright 1997-2001 Akopia, Inc.  
+Copyright 1997-2001 Red Hat, Inc.  
 Original HTML::Parser module copyright 1996 Gisle Aas.
 
 This library is free software; you can redistribute it and/or
@@ -57,17 +55,18 @@ modify it under the same terms as Perl itself.
 
 =head1 AUTHORS
 
-Vend::Parser - Mike Heins <heins@akopia.com>  
+Vend::Parser - Mike Heins <mheins@redhat.com>  
 HTML::Parser - Gisle Aas <aas@sn.no>
 
 =cut
 
+package Vend::Parser;
 
 use strict;
 
 use HTML::Entities ();
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.2.6.7 $, 10);
+$VERSION = substr(q$Revision: 1.2.6.8 $, 10);
 
 
 sub new

@@ -1,10 +1,10 @@
-# Vend/Glimpse.pm:  Search indexes with Glimpse
+# Vend::Glimpse - Search indexes with Glimpse
 #
-# $Id: Glimpse.pm,v 1.4.6.1 2000-12-13 16:17:58 zarko Exp $
+# $Id: Glimpse.pm,v 1.4.6.2 2001-06-29 02:19:25 jon Exp $
 #
-# ADAPTED FOR USE WITH INTERCHANGE from Search::Glimpse
+# Adapted for use with Interchange from Search::Glimpse
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,14 +20,12 @@
 # License along with this program; if not, write to the Free
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
-#
-#
 
 package Vend::Glimpse;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.4.6.1 $, 10);
+$VERSION = substr(q$Revision: 1.4.6.2 $, 10);
 use strict;
 
 sub array {

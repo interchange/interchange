@@ -1,10 +1,10 @@
-# Vend/DbSearch.pm:  Search indexes with Perl
+# Vend::DbSearch - Search indexes with Interchange
 #
-# $Id: DbSearch.pm,v 1.7.6.5 2001-03-21 16:55:39 heins Exp $
+# $Id: DbSearch.pm,v 1.7.6.6 2001-06-29 02:19:25 jon Exp $
 #
-# ADAPTED FOR USE WITH INTERCHANGE from Search::TextSearch
+# Adapted for use with Interchange from Search::TextSearch
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.7.6.5 $, 10);
+$VERSION = substr(q$Revision: 1.7.6.6 $, 10);
 
 use Search::Dict;
 use strict;

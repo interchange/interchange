@@ -1,13 +1,10 @@
-# Page.pm - Handle Interchange page routing
+# Vend::Page - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 1.5.6.5 2001-04-15 05:59:11 heins Exp $
+# $Id: Page.pm,v 1.5.6.6 2001-06-29 02:19:25 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
+# This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -48,7 +45,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 1.5.6.5 $, 10);
+$VERSION = substr(q$Revision: 1.5.6.6 $, 10);
 
 my $wantref = 1;
 

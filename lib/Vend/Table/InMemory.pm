@@ -1,13 +1,10 @@
-# Table/InMemory.pm: store a table in memory
+# Vend::Table::InMemory - Store an Interchange table in memory
 #
-# $Id: InMemory.pm,v 1.3.6.5 2001-04-14 09:26:55 heins Exp $
+# $Id: InMemory.pm,v 1.3.6.6 2001-06-29 02:19:28 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
+# This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -28,7 +25,7 @@
 package Vend::Table::InMemory;
 use Vend::Table::Common;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 1.3.6.5 $, 10);
+$VERSION = substr(q$Revision: 1.3.6.6 $, 10);
 use strict;
 
 # 0: column names

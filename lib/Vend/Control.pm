@@ -1,13 +1,10 @@
-# Control.pm - Interchange routines rarely used or not requiring much performance
+# Vend::Control - Routines that alter the running Interchange daemon
 # 
-# $Id: Control.pm,v 1.6.2.4 2001-05-25 17:04:43 jon Exp $
+# $Id: Control.pm,v 1.6.2.5 2001-06-29 02:19:25 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
+# This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
 #
 # This program is free software; you can redistribute it and/or modify

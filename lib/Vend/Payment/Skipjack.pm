@@ -1,12 +1,12 @@
-#!/usr/bin/perl
+# Vend::Payment::Skipjack - Interchange Skipjack support
 #
-# $Id: Skipjack.pm,v 1.1.2.3 2001-04-11 08:09:16 heins Exp $
+# $Id: Skipjack.pm,v 1.1.2.4 2001-06-29 02:19:26 jon Exp $
 #
-# Copyright (C) 1999-2001 Red Hat, Inc., http://www.redhat.com
+# Copyright (C) 1999-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # Written by Cameron Prince <cprince@redhat.com> and
 # Mark Johnson <markj@redhat.com>,
-# based on code by Mike Heins <mike@minivend.com>
+# based on code by Mike Heins <mheins@redhat.com>
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ package Vend::Payment::Skipjack;
 
 =head1 Interchange Skipjack Support
 
-Vend::Payment::Skipjack $Revision: 1.1.2.3 $
+Vend::Payment::Skipjack $Revision: 1.1.2.4 $
 
 =head1 SYNOPSIS
 

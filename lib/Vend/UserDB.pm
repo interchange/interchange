@@ -1,6 +1,6 @@
-#!/usr/bin/perl
+# Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 1.13.6.23 2001-06-28 22:06:05 jon Exp $
+# $Id: UserDB.pm,v 1.13.6.24 2001-06-29 02:19:26 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -16,7 +16,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.13.6.23 $, 10);
+$VERSION = substr(q$Revision: 1.13.6.24 $, 10);
 
 use vars qw!
 	$VERSION

@@ -1,13 +1,10 @@
-# Table/Common.pm: Common access methods for Interchange Databases
+# Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 1.16.4.12 2001-06-07 16:00:31 jason Exp $
+# $Id: Common.pm,v 1.16.4.13 2001-06-29 02:19:28 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
+# This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -25,7 +22,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.16.4.12 $, 10);
+$VERSION = substr(q$Revision: 1.16.4.13 $, 10);
 use strict;
 
 package Vend::Table::Common;

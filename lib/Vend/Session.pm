@@ -1,13 +1,10 @@
-# Session.pm - Interchange Sessions
+# Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 1.7.2.10 2001-06-19 00:22:57 heins Exp $
+# $Id: Session.pm,v 1.7.2.11 2001-06-29 02:19:26 jon Exp $
 # 
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
+# This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -24,13 +21,12 @@
 # License along with this program; if not, write to the Free
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
-#
 
 package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.7.2.10 $, 10);
+$VERSION = substr(q$Revision: 1.7.2.11 $, 10);
 
 @ISA = qw(Exporter);
 

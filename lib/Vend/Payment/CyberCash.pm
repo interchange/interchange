@@ -1,9 +1,8 @@
-#!/usr/bin/perl
+# Vend::Payment::CyberCash - Interchange CyberCash support
 #
-# $Id: CyberCash.pm,v 1.1.2.3 2001-06-08 15:45:38 heins Exp $
+# $Id: CyberCash.pm,v 1.1.2.4 2001-06-29 02:19:26 jon Exp $
 #
-# Copyright (C) 1999-2001 Red Hat, Inc., http://www.redhat.com
-#
+# Copyright (C) 1999-2001 Red Hat, Inc. <interchange@redhat.com>
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,14 +22,13 @@
 # Connection routine for CyberCash version 3 using the 'MCKLib3_2 Direct'
 # method.
 
-
 package Vend::Payment::CyberCash;
 
-$VERSION = substr(q$Revision: 1.1.2.3 $, 10);
+$VERSION = substr(q$Revision: 1.1.2.4 $, 10);
 
 =head1 Interchange CyberCash Support
 
-Vend::Payment::CyberCash $Revision: 1.1.2.3 $
+Vend::Payment::CyberCash $Revision: 1.1.2.4 $
 
 =head1 SYNOPSIS
 

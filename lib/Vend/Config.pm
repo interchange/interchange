@@ -1,6 +1,6 @@
-# Config.pm - Configure Interchange
+# Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.55 2001-06-29 00:59:58 heins Exp $
+# $Id: Config.pm,v 1.25.2.56 2001-06-29 02:19:25 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.55 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.56 $, 10);
 
 my %CDname;
 
