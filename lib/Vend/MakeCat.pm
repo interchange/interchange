@@ -1,6 +1,6 @@
 # Vend::MakeCat - Routines for Interchange catalog configurator
 #
-# $Id: MakeCat.pm,v 2.7 2001-09-04 20:15:53 jon Exp $
+# $Id: MakeCat.pm,v 2.8 2002-01-11 09:45:12 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,6 +28,7 @@ use Cwd;
 use File::Find;
 use File::Copy;
 use File::Basename;
+use Sys::Hostname;
 use Vend::Util;
 require Safe;
 $Safe = new Safe;
@@ -109,7 +110,7 @@ use vars qw/
 	%Window
 /;
 
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 
 $Force = 0;
 $History = 0;
@@ -2142,7 +2143,7 @@ sub conf_parse_http {
 		}
 		
 		if($handle eq ' ') {
-			$servname = `hostname` unless $servname;
+			$servname = Sys::Hostname::hostname() unless $servname;
 			$servname =~ s/\s+$//;
 			$main = $servname;
 			$servers->{$servname} = {} if ! $servers->{$servname};

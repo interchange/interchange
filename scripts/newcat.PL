@@ -52,7 +52,7 @@ DOIT: {
 #
 # Interchange catalog configurator with curses
 #
-# $Id: newcat.PL,v 2.2 2001-09-01 14:26:50 mheins Exp $
+# $Id: newcat.PL,v 2.3 2002-01-11 09:45:12 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -80,6 +80,7 @@ use Config;
 use File::Find;
 use File::Copy;
 use File::Path;
+use Sys::Hostname;
 use Vend::MakeCat;
 use Vend::Util;
 use Vend::Config;
@@ -575,9 +576,7 @@ if ($> == 0) {
 									if $Servers->{$_}{Master}
 							}
 						}
-						my $host = `hostname`;
-						chomp $host;
-						return $host || $Config{myhostname};
+						return Sys::Hostname::hostname() || $Config{myhostname};
 					},
 	samplehtml   =>  sub {
 						return $ENV{MVC_SAMPLEHTML} if $ENV{MVC_SAMPLEHTML};

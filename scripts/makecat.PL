@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.10 2001-10-04 20:48:23 jon Exp $
+# $Id: makecat.PL,v 2.11 2002-01-11 09:45:12 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -79,6 +79,7 @@ use Config;
 use File::Find;
 use File::Copy;
 use File::Path;
+use Sys::Hostname;
 use Vend::MakeCat;
 use Vend::Util;
 use Getopt::Long;
@@ -476,9 +477,7 @@ my %Prefix = (
 							get_id(); },
 	interchangegroup=>  '',
     servername => sub {
-						my $host = `hostname`;
-						chomp $host;
-						return $host || $Config{myhostname};
+						return Sys::Hostname::hostname() || $Config{myhostname};
 					},
     linkmode     =>  'UNIX',
     documentroot =>  $ENV{MVC_DOCUMENTROOT} || $DocrootDefault,
@@ -2279,7 +2278,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.10 2001-10-04 20:48:23 jon Exp $
+# $Id: makecat.PL,v 2.11 2002-01-11 09:45:12 jon Exp $
 
 =head1 INTRODUCTION
 
