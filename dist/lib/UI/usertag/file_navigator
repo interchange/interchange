@@ -137,28 +137,31 @@ sub {
 		$expand->{$Vend::Session->{arg}} = ! $expand->{$Vend::Session->{arg}};
 	}
 
-	my $up_img = '<img src="admin/up.gif" border=0 height=11 width=10 alt="upload ~FN~">';
-	my $dn_img = '<img src="admin/down.gif" border=0 height=11 width=10 alt="download ~FN~">';
-	my $vw_img = '<img src="admin/index.gif" border=0 height=11 width=10 alt="view ~FN~">';
-	my $ed_img = '<img src="admin/layout.gif" border=0 height=11 width=10 alt="edit ~FN~">';
-	my $dir_img = '<img src="admin/folder.gif" border=0 height=11 width=10 alt="toggle ~FN~">';
+	my $imgpath = $::Variable->{UI_IMG} || $Global::Variable->{UI_IMG} || '';
+	$imgpath .= "admin";
+
+	my $up_img = qq{<img src="$imgpath/up.gif" border=0 height=11 width=10 alt="upload ~FN~">};
+	my $dn_img = qq{<img src="$imgpath/down.gif" border=0 height=11 width=10 alt="download ~FN~">};
+	my $vw_img = qq{<img src="$imgpath/index.gif" border=0 height=11 width=10 alt="view ~FN~">};
+	my $ed_img = qq{<img src="$imgpath/layout.gif" border=0 height=11 width=10 alt="edit ~FN~">};
+	my $dir_img = qq{<img src="$imgpath/folder.gif" border=0 height=11 width=10 alt="toggle ~FN~">};
 	$ftmpl = <<EOF;
-<img src="admin/bg.gif" height=1 hspace=%d><A HREF="$base_url/do_view?mv_arg=~FN~&mv_no_cache=$ec">$vw_img</A><A HREF="$Vend::Cfg->{VendURL}/ui_download/~FN~?mv_no_cache=$ec">$dn_img</A>&nbsp;<A HREF="$base_url/upload_file?mv_arg=~FN~&ui_return_to=$this_page&mv_no_cache=$ec">$up_img</A>&nbsp;%s<BR>
+<img src="$imgpath/bg.gif" height=1 hspace=%d><A HREF="$base_url/do_view?mv_arg=~FN~&mv_no_cache=$ec">$vw_img</A><A HREF="$Vend::Cfg->{VendURL}/ui_download/~FN~?mv_no_cache=$ec">$dn_img</A>&nbsp;<A HREF="$base_url/upload_file?mv_arg=~FN~&ui_return_to=$this_page&mv_no_cache=$ec">$up_img</A>&nbsp;%s<BR>
 EOF
 
 	if($opt->{edit_only}) {
 		$ftmpl_ed = <<EOF;
-<img src="admin/bg.gif" height=1 hspace=%d><A HREF="$base_url/page_edit?ui_page=~FN~&ui_return_to=$this_page&mv_no_cache=$ec">$ed_img&nbsp;%s</A><BR>
+<img src="$imgpath/bg.gif" height=1 hspace=%d><A HREF="$base_url/page_edit?ui_page=~FN~&ui_return_to=$this_page&mv_no_cache=$ec">$ed_img&nbsp;%s</A><BR>
 EOF
 	}
 	else {
 		$ftmpl_ed = <<EOF;
-<img src="admin/bg.gif" height=1 hspace=%d><A HREF="$base_url/do_view?mv_arg=~FN~&mv_no_cache=$ec">$vw_img</A>&nbsp;<A HREF="$Vend::Cfg->{VendURL}/ui_download/~FN~?mv_no_cache=$ec">$dn_img</A>&nbsp;<A HREF="$base_url/upload_file?mv_arg=~FN~&ui_return_to=$this_page&mv_no_cache=$ec">$up_img</A>&nbsp;<A HREF="$base_url/page_edit?ui_page=~FN~&ui_return_to=$this_page&mv_no_cache=$ec">$ed_img</A>&nbsp;%s<BR>
+<img src="$imgpath/bg.gif" height=1 hspace=%d><A HREF="$base_url/do_view?mv_arg=~FN~&mv_no_cache=$ec">$vw_img</A>&nbsp;<A HREF="$Vend::Cfg->{VendURL}/ui_download/~FN~?mv_no_cache=$ec">$dn_img</A>&nbsp;<A HREF="$base_url/upload_file?mv_arg=~FN~&ui_return_to=$this_page&mv_no_cache=$ec">$up_img</A>&nbsp;<A HREF="$base_url/page_edit?ui_page=~FN~&ui_return_to=$this_page&mv_no_cache=$ec">$ed_img</A>&nbsp;%s<BR>
 EOF
 	}
 
 	$dtmpl = <<EOF;
-<IMG SRC="admin/bg.gif" HEIGHT=1 HSPACE=%d><A HREF="${this}mv_arg=%s&mv_no_cache=$ec"><img src="admin/%s" ALIGN=textmiddle border=0 HEIGHT=16 WIDTH=15>%s</A><BR>
+<IMG SRC="$imgpath/bg.gif" HEIGHT=1 HSPACE=%d><A HREF="${this}mv_arg=%s&mv_no_cache=$ec"><img src="$imgpath/%s" ALIGN=textmiddle border=0 HEIGHT=16 WIDTH=15>%s</A><BR>
 EOF
 
 	my @out;
