@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.2 2002-05-27 12:43:26 racke Exp $
+# $Id: Shadow.pm,v 1.3 2002-05-27 12:52:43 racke Exp $
 #
 # Copyright (C) 2002 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.3 $, 10);
 
 # TODO
 #
@@ -31,6 +31,13 @@ use strict;
 
 use vars qw($CONFIG $TABLE $KEY $NAME $TYPE $OBJ);
 ($CONFIG, $TABLE, $KEY, $NAME, $TYPE, $OBJ) = (0 .. 5);
+
+sub config {
+	my ($s, $key, $value) = @_;
+	$s = $s->import_db() if ! defined $s->[$OBJ];
+	return $s->[$CONFIG]{$key} unless defined $value;
+	$s->[$CONFIG]{$key} = $value;
+}
 
 sub import_db {
 	my($s) = @_;
