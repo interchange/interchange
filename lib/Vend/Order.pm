@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18.2.18 2001-04-12 04:56:47 heins Exp $
+# $Id: Order.pm,v 1.18.2.19 2001-04-13 10:31:54 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.18 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.19 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1887,73 +1887,9 @@ sub add_items {
 	Vend::Cart::toss_cart($cart);
 }
 
-#### recode this in Vend::Mail as send
-# LEGACY4
-sub send_mail {
-	my($to, $subject, $body, $reply, $use_mime, @extra_headers) = @_;
-	my($ok);
-#::logDebug("send_mail: to=$to subj=$subject r=$reply mime=$use_mime\n");
 
-	unless (defined $use_mime) {
-		$use_mime = $::Instance->{MIME} || undef;
-	}
-
-	if(!defined $reply) {
-		$reply = $::Values->{mv_email}
-				?  "Reply-To: $::Values->{mv_email}\n"
-				: '';
-	}
-	elsif ($reply) {
-		$reply = "Reply-To: $reply\n"
-			unless $reply =~ /^reply-to:/i;
-		$reply =~ s/\s+$/\n/;
-	}
-
-	$ok = 0;
-	my $none;
-
-	if("\L$Vend::Cfg->{SendMailProgram}" eq 'none') {
-		$none = 1;
-		$ok = 1;
-	}
-
-	SEND: {
-		last SEND if $none;
-		open(MVMAIL,"|$Vend::Cfg->{SendMailProgram} $to") or last SEND;
-		my $mime = '';
-		$mime = Vend::Interpolate::mime('header', {}, '') if $use_mime;
-		print MVMAIL "To: $to\n", $reply, "Subject: $subject\n"
-			or last SEND;
-		for(@extra_headers) {
-			s/\s*$/\n/;
-			print MVMAIL $_
-				or last SEND;
-		}
-		$mime =~ s/\s*$/\n/;
-		print MVMAIL $mime
-			or last SEND;
-		print MVMAIL $body
-				or last SEND;
-		print MVMAIL Vend::Interpolate::do_tag('mime boundary') . '--'
-			if $use_mime;
-		print MVMAIL "\r\n\cZ" if $Global::Windows;
-		close MVMAIL or last SEND;
-		$ok = ($? == 0);
-	}
-
-	if ($none or !$ok) {
-		logError("Unable to send mail using %s\nTo: %s\nSubject: %s\n%s\n\n%s",
-				$Vend::Cfg->{SendMailProgram},
-				$to,
-				$subject,
-				$reply,
-				$body,
-		);
-	}
-
-	$ok;
-}
-# END LEGACY4
+# Compatibility with old globalsub payment
+*send_mail = \&Vend::Util::send_mail;
 
 # Compatibility with old globalsub payment
 *map_actual = \&Vend::Payment::map_actual;

@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.25 2001-04-11 22:09:01 heins Exp $
+# $Id: Util.pm,v 1.14.2.26 2001-04-13 10:31:54 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -80,7 +80,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.25 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.26 $, 10);
 
 BEGIN {
 	eval {
@@ -1795,16 +1795,134 @@ sub canonpath {
 	return &{$canonpath_routine}(@_);
 }
 
-# LEGACY4
-*send_mail = \&Vend::Order::send_mail;
-# END LEGACY4
-
 #print "catfile a b c --> " . catfile('a', 'b', 'c') . "\n";
 #print "catdir a b c --> " . catdir('a', 'b', 'c') . "\n";
 #print "canonpath a/b//../../c --> " . canonpath('a/b/../../c') . "\n";
 #print "file_name_is_absolute a/b/c --> " . file_name_is_absolute('a/b/c') . "\n";
 #print "file_name_is_absolute a:b/c --> " . file_name_is_absolute('a:b/c') . "\n";
 #print "file_name_is_absolute /a/b/c --> " . file_name_is_absolute('/a/b/c') . "\n";
+
+#my $MIME_Lite;
+#eval {
+#	require MIME::Lite;
+#	$MIME_Lite = 1;
+#	require Net::SMTP;
+#};
+#
+#sub mime_lite_send {
+#	my ($opt, $body) = @_;
+#
+#	if(! $MIME_Lite) {
+#		return send_mail(
+#			$opt->{to},
+#			$opt->{subject},
+#			$body,
+#			$opt->{reply},
+#			undef,
+#			split /\n+/, $opt->{extra}
+#			);
+#	}
+#
+#	my %special = qw/
+#		as_string 1
+#		internal  1
+#	/;
+#	my $mime = new MIME::Lite;;
+#
+#	my @ary;
+#	my $popt = {};
+#	my $mopt = {};
+#	for(keys %$opt) {
+#		if(ref $opt->{$_}) {
+#			push @ary, [ $_, delete $opt->{$_} ];
+#		}
+#		if($special{$_}) {
+#			$popt->{$_} = delete $opt->{$_};
+#		}
+#		my $m = $_;
+#		s/_/-/g;
+#		s/(\w+)/\L\u$1/g;
+#		s/-/_/g;
+#		$mopt->{$_} = $opt->{$m};
+#	}
+#
+#}
+
+sub send_mail {
+	my($to, $subject, $body, $reply, $use_mime, @extra_headers) = @_;
+
+#	if($MIME::Lite::VERSION and ! ($use_mime || $::Instance->{MIME}) ) {
+#		mime_lite_send( {
+#							to => $to,
+#							extra => $to,
+#							subject => $subject,
+#							extra => join "\n", @extra_headers,
+#							reply => $reply,
+#						}, $body);
+#	}
+
+	my($ok);
+#::logDebug("send_mail: to=$to subj=$subject r=$reply mime=$use_mime\n");
+
+	unless (defined $use_mime) {
+		$use_mime = $::Instance->{MIME} || undef;
+	}
+
+	if(!defined $reply) {
+		$reply = $::Values->{mv_email}
+				?  "Reply-To: $::Values->{mv_email}\n"
+				: '';
+	}
+	elsif ($reply) {
+		$reply = "Reply-To: $reply\n"
+			unless $reply =~ /^reply-to:/i;
+		$reply =~ s/\s+$/\n/;
+	}
+
+	$ok = 0;
+	my $none;
+
+	if("\L$Vend::Cfg->{SendMailProgram}" eq 'none') {
+		$none = 1;
+		$ok = 1;
+	}
+
+	SEND: {
+		last SEND if $none;
+		open(MVMAIL,"|$Vend::Cfg->{SendMailProgram} $to") or last SEND;
+		my $mime = '';
+		$mime = Vend::Interpolate::mime('header', {}, '') if $use_mime;
+		print MVMAIL "To: $to\n", $reply, "Subject: $subject\n"
+			or last SEND;
+		for(@extra_headers) {
+			s/\s*$/\n/;
+			print MVMAIL $_
+				or last SEND;
+		}
+		$mime =~ s/\s*$/\n/;
+		print MVMAIL $mime
+			or last SEND;
+		print MVMAIL $body
+				or last SEND;
+		print MVMAIL Vend::Interpolate::do_tag('mime boundary') . '--'
+			if $use_mime;
+		print MVMAIL "\r\n\cZ" if $Global::Windows;
+		close MVMAIL or last SEND;
+		$ok = ($? == 0);
+	}
+
+	if ($none or !$ok) {
+		logError("Unable to send mail using %s\nTo: %s\nSubject: %s\n%s\n\n%s",
+				$Vend::Cfg->{SendMailProgram},
+				$to,
+				$subject,
+				$reply,
+				$body,
+		);
+	}
+
+	$ok;
+}
 
 1;
 __END__
