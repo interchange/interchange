@@ -27,6 +27,7 @@ sub {
     my ($label, $name, $type, $size, $opt) = @_;
     my ($labelhtml, $elhtml, $fmt);
     my $contrast = $::Variable->{CONTRAST} || 'red';
+	my $checkfor = $opt->{'checkfor'} || $name;
     my $sizestr = '';
 
     # set defaults
@@ -68,7 +69,7 @@ sub {
 		return sprintf ($fmt, $labelhtml, $elhtml);
 	}
 
-    if ($Tag->error($name)) {
+    if ($Tag->error($checkfor)) {
 		if ($opt->{signal}) {
 			$labelhtml = sprintf($opt->{signal}, $label);
 		} else {
@@ -132,15 +133,20 @@ The width of the form element.
 
 Other options are:
 
-=item order
+=item checkfor
 
-Whether the user-visible description or the form element
-comes first. Default is the first (order=0).
+The name which get passed to the Error tag. The default
+is the name of the form element.
 
 =item format
 
 The container format string for the label and the form element.
 The default is C<%s %s>. 
+
+=item order
+
+Whether the user-visible description or the form element
+comes first. Default is the first (order=0).
 
 =item reset
 
