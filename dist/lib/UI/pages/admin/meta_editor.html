@@ -125,11 +125,6 @@ EOF
 	   extended.data_cell_class
 	   extended.data_cell_style
 
-	   =File Upload
-
-	   extended.name_to
-	   extended.size_to
-
 	   =Advanced
 
 	   outboard
@@ -143,8 +138,6 @@ EOF
 
 	options	=> {
 		'extended.ui_sort_option' => qq{=--default--,f=Case insensitive, fr=Case insensitive/Reverse, n=Numeric, nr=Reverse Numeric},
-		'extended.size_to' => qq{columns::$m_table},
-		'extended.name_to' => qq{columns::$m_table},
 		'field' => qq{columns::$m_table},
 	},
 
@@ -180,8 +173,6 @@ EOF
 		'extended.maxlength' => 'Maxlength',
 		'extended.check' => 'Profile check',
 		'extended.blank_default' => 'Default value',
-		'extended.size_to' => 'Field to store uploadblob size in',
-		'extended.name_to' => 'Field to store uploadblob file name in',
 		'extended.restrict_allow' => 'Allow these ITL tags',
 		'display_filter' => 'Display filter',
 	},
@@ -191,8 +182,6 @@ EOF
 		'extended.maxlength' => 'For text widget (HTML maxlength=NN)',
 		'extended.blank_default' => 'Applies only when empty',
 		'extended.check' => 'Standard IC mv_profile checks -- required, postcode, etc.',
-		'extended.size_to' => 'if any -- must be in fields of table editor',
-		'extended.name_to' => 'if any -- must be in fields of table editor',
 		'extended.restrict_allow' => 'in append/prepend/lookup_query',
 		'display_filter' => 'Only used for hidden_text type',
 	},
@@ -200,8 +189,6 @@ EOF
 		extended => "textarea_5_50",
 		'extended.ui_more_alpha' => 'yesno',
 		'extended.ui_sort_option' => 'select',
-		'extended.size_to' => 'select',
-		'extended.name_to' => 'select',
 		'extended.fs_no_group' => 'yesno',
 		'extended.fs_display_filter' => 'text_50',
 		'extended.fs_data_calc' => 'textarea_4_70',
@@ -284,4 +271,4 @@ EOF
 	][/table-editor]
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Revision: 2.13 $ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.14 $ -->
