@@ -1,12 +1,6 @@
-[if cgi mv_data_table]
-[if-mm function=!export table="[cgi mv_data_table]"]
-[set ui_error][msg arg.0="[cgi mv_data_table]"]Not allowed to export table '%s'.[/msg][/seti]
-[bounce page="__UI_BASE__/error"]
-[/if-mm]
-[/if]
 [set page_title][L]Individual Table Export[/L][/set]
+[set table_perm]=x[/set]
 [set ui_class]Admin[/set]
-[set table_perm]1[/set]
 [set help_name]export.main[/set]
 [set icon_name]icon_config.gif[/set]
 @_UI_STD_HEAD_@
