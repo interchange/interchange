@@ -10,7 +10,7 @@ Summary: Interchange is a powerful database access and HTML templating daemon fo
 Group: Applications/Internet
 Version: 4.5.6
 Copyright: GNU General Public License
-Release: 4
+Release: 5
 URL: http://developer.akopia.com/
 Packager: Mike Heins <nospam@minivend.com>
 Distribution: Red Hat Linux Applications CD
