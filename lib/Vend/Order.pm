@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.13 2000-09-27 22:09:54 zarko Exp $
+# $Id: Order.pm,v 1.14 2000-10-06 17:18:58 sonny Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.13 $, 10);
+$VERSION = substr(q$Revision: 1.14 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -157,7 +157,7 @@ sub _credit_card {
 	my $sub;
 	$params =~ s/^\s+//;
 	$params =~ s/\s+$//;
-	if($params =~ s/\s+keep$//i) {
+	if($params =~ s/\s+keep//i) {
 		my (%cgi) = %$ref;
 		$ref = \%cgi;
 	}
