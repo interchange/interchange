@@ -1,9 +1,8 @@
 # Vend::SQL_Parser - Interchange SQL parser class
 #
-# $Id: SQL_Parser.pm,v 2.8 2004-02-19 23:06:21 mheins Exp $
+# $Id: SQL_Parser.pm,v 2.9 2004-02-20 01:10:27 jon Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
-# Copyright (C) 1997-2002 Red Hat, Inc.
+# Copyright (C) 2003-2004 Interchange Development Group
 #
 # Based on HTML::Parser
 # Copyright 1996 Gisle Aas. All rights reserved.
@@ -19,7 +18,7 @@ be evaluated for an Interchange search spec.
 
 =head1 COPYRIGHT
 
-Copyright 2002-2003 Interchange Development Group
+Copyright 2003-2004 Interchange Development Group
 Original SQL::Statement module copyright 1998 Jochen Wiedman.
 
 This library is free software; you can redistribute it and/or
@@ -38,7 +37,7 @@ use strict;
 use Vend::Util;
 use Text::ParseWords;
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = substr(q$Revision: 2.9 $, 10);
 
 sub new {
 	my $class = shift;
