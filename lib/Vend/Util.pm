@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.1.2.9 2002-06-27 22:38:24 jon Exp $
+# $Id: Util.pm,v 2.1.2.10 2002-07-20 14:59:41 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -74,7 +74,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.1.2.9 $, 10);
+$VERSION = substr(q$Revision: 2.1.2.10 $, 10);
 
 BEGIN {
 	eval {
@@ -1136,7 +1136,8 @@ sub secure_vendUrl {
 
 sub change_url {
 	my $url = shift;
-	return $url if $url =~ m{^(?:\w+:)?/};
+	return $url if $url =~ m{^\w+:};
+	return $url if $url =~ m{^/};
 #::logDebug("changed $url");
 	my $arg;
 	my @args;
