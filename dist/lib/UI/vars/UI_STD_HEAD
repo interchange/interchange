@@ -233,6 +233,20 @@ EOF
           <br>
 		[if scratch icon_name]<img src="@_UI_IMG_@[scratch icon_name]" width=16 height=16 border=0 valign=top alt=icon> &nbsp; [/if]
 	   <font size="+1" face="Verdana,arial,helvetica,sans-serif" color="__UI_C_HEADERTXT__">[either][scratch page_banner][or][scratch page_title][/either]&nbsp;</font><p>
+	[if scratch ui_failure]
+	<P>
+	<BLOCKQUOTE>
+	<FONT COLOR="__CONTRAST__">[scratchd ui_failure]</FONT>
+	</BLOCKQUOTE>
+	</P>
+	[/if]
+	[if scratch ui_message]
+	<P>
+	<BLOCKQUOTE>
+	<FONT COLOR="__UI_C_SUCCESS__">[scratchd ui_message]</FONT>
+	</BLOCKQUOTE>
+	</P>
+	[/if]
 [/if]
 [comment] Clear these puppies [/comment]
 [calc]
