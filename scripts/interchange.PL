@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.6.0
 #
-# $Id: interchange.PL,v 1.8.2.3 2000-11-06 18:11:36 zarko Exp $
+# $Id: interchange.PL,v 1.8.2.4 2000-11-07 19:21:27 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -375,21 +375,10 @@ sub update_quantity {
 
 }
 
-sub set_db {
-	my ($base, $thing) = @_;
-	return ($base, $thing) unless $thing =~ /^(\w+):+(.*)/;
-	my $t = $1;
-	my $c = $2;
-	$Vend::WriteDatabase = 1 if $::Scratch->{mv_data_enable} =~ /\b$t\b/;
-	my $db = ::database_exists_ref($t);
-	return undef unless $db;
-	return ($db->ref(), $c);
-}
-
 ## Update the user-entered fields.
 sub update_data {
 	my($key,$value);
-    # Update a database record
+	# Update a database record
 
 	# Check to see if this is allowed
 	if(! $::Scratch->{mv_data_enable}) {
@@ -432,9 +421,9 @@ sub update_data {
 	}
 	$Vend::WriteDatabase{$table} = 1;
 
-    my $base_db = database_exists_ref($table)
-        or die "Not a defined database '$table': $!\n";
-    $base_db = $base_db->ref();
+	my $base_db = database_exists_ref($table)
+		or die "Not a defined database '$table': $!\n";
+	$base_db = $base_db->ref();
 
 	my @fields		= grep $_ && $_ ne $prikey,
 						split /[\s\0,]+/, $CGI::values{mv_data_fields};
@@ -446,16 +435,15 @@ sub update_data {
 		$data{$_} = [];
 	}
 
-    while (($key, $value) = each %CGI::values) {
-        next unless defined $data{$key};
+	while (($key, $value) = each %CGI::values) {
+		next unless defined $data{$key};
 		@{$data{$key}} = split /\0/, $value;
 	}
 
 	if (not defined $data{$prikey}) {
 		logError("No key '%s' in field specifier %s", $prikey, 'mv_data_fields');
 		return undef;
-	}
-	elsif ( ! @{$data{$prikey}}) {
+	} elsif ( ! @{$data{$prikey}}) {
 		logError("No key '%s' found for function='%s' table='%s'",
 					$prikey, $function, $CGI::values{mv_data_table},
 					);
@@ -489,16 +477,28 @@ sub update_data {
 
 		if($function eq 'delete') {
 			$base_db->delete_record($select_key);
-		}
-		else {
+		} else {
 			my $field;
 			$key = $data{$prikey}->[$i];
 			while($field = shift @k) {
 				$value = shift @v;
 				next if $field eq $prikey;
-				my ($d, $f) = set_db($base_db, $field);
-#::logDebug("update_data:db=$d key=$key field=$f value=$value");
-				$d->set_field($key, $f, $value);
+
+				if($field =~ /^(\w+):+(.*)/) {
+					my $d = $1;
+					my $f = $2;
+					$Vend::WriteDatabase = 1 if $::Scratch->{mv_data_enable} =~ /\b$d\b/;
+					$d = ::database_exists_ref($d);
+					if($d) {
+						$base_db = $d->ref();
+						$field = $f;
+					} else {
+						$base_db = $field = undef;
+					}
+				}
+
+#::logDebug("update_data:db=$base_db key=$key field=$field value=$value");
+				$base_db->set_field($key, $field, $value);
 			}
 		}
 	}
@@ -612,7 +612,7 @@ sub update_values {
 
 sub update_user {
 	my($key,$value);
-    # Update the user-entered fields.
+	# Update the user-entered fields.
 
 	add_items() if defined $CGI::values{mv_order_item};
 	update_values();
@@ -621,12 +621,11 @@ sub update_user {
 		my(@checks) = split /\s*[,\0]+\s*/, delete $CGI::values{mv_check};
 		my($check);
 		foreach $check (@checks) {
-				parse_click $::Values, $check, \%CGI::values;	
+			parse_click $::Values, $check, \%CGI::values;	
 		}
 	}
 
 	check_save if defined $CGI::values{mv_save_session};
-
 }
 
 ## DO PROCESS
@@ -699,7 +698,6 @@ EOF
 }
 
 my %form_action = (
-
 	search	=> \&do_search,
 	deliver	=> \&do_deliver,
 	submit	=>
@@ -771,8 +769,7 @@ my %form_action = (
 					my $mode = $CGI::values{mv_payment_mode};
 					if (! $ok and defined $Vend::Cfg->{ActionMap}{$mode}) {
 						($ok, $status) = $Vend::Cfg->{ActionMap}{$mode}->();
-					}
-					elsif(
+					} elsif(
 							$Vend::Cfg->{CyberCash}
 							and defined $CGI::values{mv_cyber_mode}
 						)
@@ -792,7 +789,7 @@ my %form_action = (
 					# not be used ($ok would have been defined)
 
 # TRACK
-                    $Vend::Track->finish_order ();
+					$Vend::Track->finish_order ();
 # END TRACK
 
 #::logDebug("Order number=$order_no\n");
@@ -816,8 +813,7 @@ my %form_action = (
 								$msg,
 							);
 						}
-					}
-					else {
+					} else {
 						display_special_page(
 								find_special_page('failed'),
 								errmsg('Error transmitting order(%s): %s', $!, $@),
@@ -871,43 +867,39 @@ $form_action{go} = $form_action{return};
 # Process the completed order or search page.
 
 sub do_process {
-
 	do_click();
 
-    my $todo = $CGI::values{mv_todo};
+	my $todo = $CGI::values{mv_todo};
 
 	# Maybe we have an imagemap input, if not, use $doit
-    if ( ! defined $todo) {
+	if( ! defined $todo) {
 		if (defined $CGI::values{'mv_todo.x'}) {
 				my $x = $CGI::values{'mv_todo.x'};
 				my $y = $CGI::values{'mv_todo.y'};
 				my $map = $CGI::values{'mv_todo.map'};
 				$todo = Vend::Imagemap::action_map($x,$y,$map);
-		}
-		elsif (defined $CGI::values{'mv_todo.submit.x'}) {
+		} elsif (defined $CGI::values{'mv_todo.submit.x'}) {
 			$todo = 'submit';
-		}
-		elsif (defined $CGI::values{'mv_todo.checkout.x'}) {
+		} elsif (defined $CGI::values{'mv_todo.checkout.x'}) {
 			$todo = 'checkout';
-		}
-		elsif (defined $CGI::values{'mv_todo.return.x'}) {
+		} elsif (defined $CGI::values{'mv_todo.return.x'}) {
 			$todo = 'return';
-		}
-		else {
+		} else {
 			$todo = $CGI::values{mv_doit} if defined $CGI::values{mv_doit};
 		}
 	}
 
 	my ($sub, $status);
-	#Now determine the action on the todo
-    if (defined $Vend::Cfg->{FormAction}{$todo}) {
+	# Now determine the action on the todo
+	if(defined $Vend::Cfg->{FormAction}{$todo}) {
 		$sub = $Vend::Cfg->{FormAction}{$todo};
 		new Vend::Parse;
-	}
-    elsif (not $sub = $form_action{$todo} ) {
+	} elsif(defined $form_action{$todo}) {
+		$sub = $form_action{$todo};
+	} else {
 		interaction_error("No action passed for processing\n");
 		return;
-    }
+	}
 	eval {
 		$status = $sub->($todo);
 	};
@@ -927,138 +919,6 @@ EOF
 	}
 
 	return $status;
-}
-
-sub config_named_catalog {
-	my ($cat_name, $source, $build) = @_;
-	my ($g,$c,$conf);
-
-	$g = $Global::Catalog{$cat_name};
-	unless (defined $g) {
-		logGlobal( "Can't find catalog '%s'" , $cat_name );
-		return undef;
-	}
-
-	$Vend::Log_suppress = 1;
-    logGlobal( "Config '%s' %s", $g->{'name'}, $source )
-		unless $Vend::Quiet;
-	undef $Vend::Log_suppress;
-
-    chdir $g->{'dir'}
-            or die "Couldn't change to $g->{'dir'}: $!\n";
-    $conf = $g->{'dir'} . '/etc';
-    eval {
-        $c = config($g->{'name'},
-					$g->{'dir'},
-					$conf,
-					$g->{'base'} || undef,
-# OPTION_EXTENSION
-#					$Vend::CommandLine->{$g->{'name'}} || undef
-# END OPTION_EXTENSION
-					);
-    };
-
-    if($@) {
-		my $msg = $@;
-        logGlobal( "%s config error: %s" , $g->{'name'}, $msg );
-     	return undef;
-    }
-
-	return $c if defined $g->{'base'};
-
-	eval {
-		$Vend::Cfg = $c;	
-# STATICPAGE
-	READSTATIC: {
-			my $basedir = $c->{PageDir};
-			if ($c->{Static}) {
-				last READSTATIC if $c->{StaticDBM};
-				last READSTATIC if ! -f "$basedir/.static";
-				print "loading static page names..." unless $Vend::Quiet;
-				last READSTATIC if $c->{StaticDBM};
-				open STATICPAGE, "< $basedir/.static"
-					or warn <<EOF;
-Couldn't read static page status file $basedir/.static: $!
-EOF
-				while(<STATICPAGE>) {
-					chomp;
-					s/\t(.*)//;
-					$c->{StaticPage}->{$_} = $1 || '';
-				}
-				close STATICPAGE;
-			}
-		}
-# END STATICPAGE
-		$::Variable = $Vend::Cfg->{Variable};
-		Vend::Data::read_salestax();
-		Vend::Data::read_shipping();
-		open_database(1);
-		my $db;
-
-		LREAD: {
-			last LREAD unless $db = $Vend::Cfg->{LocaleDatabase};
-			$db = database_exists_ref($db)
-				or last LREAD;
-			$db = $db->ref();
-			my ($k, @f);	# key and fields
-			my @l;			# refs to locale repository
-			my @n;			# names of locales
-
-			@n = $db->columns();
-			my $extra;
-			for(@n) {
-				$Vend::Cfg->{Locale_repository}{$_} = {}
-					unless $Vend::Cfg->{Locale_repository}{$_};
-				push @l, $Vend::Cfg->{Locale_repository}{$_};
-			}
-			my $i;
-			while( ($k , @f ) = $db->each_record) {
-				for ($i = 0; $i < @f; $i++) {
-					next unless length($f[$i]);
-					$l[$i]->{$k} = $f[$i];
-				}
-			}
-			unless ($Vend::Cfg->{Locale}) {
-				for(@n) {
-					next unless $Vend::Cfg->{Locale_repository}{$_}{'default'};
-					$Vend::Cfg->{DefaultLocale} = $_;
-					$Vend::Cfg->{Locale} = $Vend::Cfg->{Locale_repository}{$_};
-					last;
-				}
-				unless ($Vend::Cfg->{Locale}) {
-					$Vend::Cfg->{Locale} = $Vend::Cfg->{Locale_repository}{$n[0]};
-					$Vend::Cfg->{DefaultLocale} = $n[0];
-				}
-			}
-		}
-
-		close_database();
-	};
-
-	undef $Vend::Cfg;
-	undef $Vend::BuildingPages;  # In case of eval error
-    if($@) {
-		my $msg = $@;
-		$msg =~ s/\s+$//;
-        logGlobal( "%s config error: %s" , $g->{'name'}, $msg );
-     	return undef;
-    }
-
-	if ($c->{IPC}) {
-		my $dir = '.';
-		$dir = $c->{IPCdir} if $c->{IPCdir};
-		dump_structure($c, "$dir/$g->{name}");
-		chmod($c->{IPCmode} | 0644 , "$dir/$g->{name}")
-	}
-	dump_structure($c, $g->{name}) if $Global::DumpStructure;
-
-	undef $c->{Source};
-	my $stime = scalar localtime();
-	Vend::Util::writefile(">$Global::ConfDir/status.$g->{name}", "$stime\n");
-	Vend::Util::writefile(">$c->{ConfDir}/status.$g->{name}", "$stime\n");
-
-	return $c;
-
 }
 
 sub is_retired {
