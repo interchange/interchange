@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.6.2
 #
-# $Id: interchange.PL,v 1.18 2000-12-30 15:17:13 heins Exp $
+# $Id: interchange.PL,v 1.19 2001-01-31 13:16:19 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -2454,6 +2454,7 @@ Contributions to Interchange have been made by:
     Don Grodecki       
     Frank Bonita       
     Gunnar Hellekson   
+    Hans-Joachim Leidinger
     Heinz Wittenbecher
     Jason Holt
     Jeff Carnahan
