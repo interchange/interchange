@@ -677,6 +677,8 @@ dist/lib/UI/usertag/rotate_file.tag
 dist/lib/UI/usertag/rotate_table.tag
 dist/lib/UI/usertag/row_edit.tag
 dist/lib/UI/usertag/run_profile.tag
+dist/lib/UI/usertag/set_alias.tag
+dist/lib/UI/usertag/set_click.tag
 dist/lib/UI/usertag/substitute_file.tag
 dist/lib/UI/usertag/table_editor.tag
 dist/lib/UI/usertag/uneval.tag
