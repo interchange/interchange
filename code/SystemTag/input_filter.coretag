@@ -4,6 +4,5 @@ UserTag input-filter        attrAlias    var name
 UserTag input-filter        attrAlias    variable name
 UserTag input-filter        attrAlias    ops op
 UserTag input-filter        hasEndTag
-UserTag input-filter        InvalidateCache
 UserTag input-filter        PosNumber    1
 UserTag input-filter        MapRoutine   Vend::Interpolate::input_filter

@@ -1,6 +1,5 @@
 UserTag levies            Order        group
 UserTag levies            addAttr
-UserTag levies            InvalidateCache
 UserTag levies            PosNumber    1
 UserTag levies            Routine     <<EOR
 sub {

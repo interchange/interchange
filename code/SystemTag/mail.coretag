@@ -1,6 +1,5 @@
 UserTag mail                Order        to
 UserTag mail                addAttr
 UserTag mail                hasEndTag
-UserTag mail                InvalidateCache
 UserTag mail                PosNumber    1
 UserTag mail                MapRoutine   Vend::Interpolate::tag_mail

@@ -1,4 +1,3 @@
 UserTag cart                Order        name
-UserTag cart                InvalidateCache
 UserTag cart                PosNumber    1
 UserTag cart                MapRoutine   Vend::Interpolate::tag_cart

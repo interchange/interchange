@@ -2,7 +2,6 @@ UserTag checked             Order        name value
 UserTag checked             addAttr
 UserTag checked             Implicit     multiple multiple
 UserTag checked             Implicit     default default
-UserTag checked             InvalidateCache
 UserTag checked             PosNumber    2
 UserTag checked             Routine      <<EOR
 sub {

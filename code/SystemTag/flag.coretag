@@ -3,6 +3,5 @@ UserTag flag                addAttr
 UserTag flag                attrAlias    tables table
 UserTag flag                attrAlias    flag type
 UserTag flag                attrAlias    name type
-UserTag flag                InvalidateCache
 UserTag flag                PosNumber    1
 UserTag flag                MapRoutine   Vend::Interpolate::flag

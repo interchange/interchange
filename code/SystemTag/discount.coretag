@@ -1,6 +1,5 @@
 UserTag discount            Order        code
 UserTag discount            hasEndTag
-UserTag discount            InvalidateCache
 UserTag discount            PosNumber    1
 UserTag discount            Routine      <<EOR
 # Sets the value of a discount field

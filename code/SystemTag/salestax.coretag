@@ -1,7 +1,6 @@
 UserTag salestax            Order        name noformat
 UserTag salestax            attrAlias    cart name
 UserTag salestax            addAttr
-UserTag salestax            InvalidateCache
 UserTag salestax            PosNumber    2
 UserTag salestax            Routine <<EOR
 sub {

@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.25 2003-03-18 11:32:24 racke Exp $
+# $Id: Parse.pm,v 2.26 2003-05-07 01:07:29 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.25 $, 10);
+$VERSION = substr(q$Revision: 2.26 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -84,14 +84,6 @@ my %hasEndTag = (
 				)
 			);
 
-
-my %InvalidateCache = (
-
-			qw(
-                if          1
-                unless      1
-			   )
-			);
 
 my %Implicit = (
 
@@ -300,7 +292,6 @@ sub new {
     my $class = shift;
 	my $opt = shift;
     my $self = new Vend::Parser;
-	$self->{INVALID} = 0;
 
 	add_tags($Vend::Cfg->{UserTag})
 		unless $Vend::Tags_added++;
@@ -397,7 +388,6 @@ use vars '%myRefs';
 	 noRearrange     => \%noRearrange,
 	 Implicit        => \%Implicit,
 	 Interpolate     => \%Interpolate,
-	 InvalidateCache => \%InvalidateCache,
 	 Order           => \%Order,
 	 PosNumber       => \%PosNumber,
 	 PosRoutine      => \%PosRoutine,
@@ -649,10 +639,6 @@ sub start {
 		}
 	}
 
-	if(defined $InvalidateCache{$tag} and !$attr->{cache}) {
-		$self->{INVALID} = 1;
-	}
-
 	my $trib;
 	foreach $trib (@$attrseq) {
 		# Attribute aliases
@@ -668,7 +654,6 @@ sub start {
 		my $p = new Vend::Parse;
 		$p->parse($attr->{$trib});
 		$attr->{$trib} = ${$p->{OUT}};
-		$self->{INVALID} += $p->{INVALID};
 	}
 
 	$attr->{enable_html} = 1 if $Vend::Cfg->{Promiscuous};

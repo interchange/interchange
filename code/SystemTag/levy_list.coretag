@@ -2,7 +2,6 @@ UserTag levy-list           Order        name
 UserTag levy-list           addAttr
 UserTag levy-list           attrAlias    cart name
 UserTag levy-list           hasEndTag
-UserTag levy-list           InvalidateCache
 UserTag levy-list           Routine      <<EOR
 sub {
 	my($cart,$opt,$text) = @_;

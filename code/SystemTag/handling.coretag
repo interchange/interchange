@@ -4,6 +4,5 @@ UserTag handling            attrAlias    tables table
 UserTag handling            attrAlias    carts cart
 UserTag handling            attrAlias    modes mode
 UserTag handling            attrAlias    name mode
-UserTag handling            InvalidateCache
 UserTag handling            PosNumber    1
 UserTag handling            MapRoutine   Vend::Interpolate::tag_handling

@@ -1,6 +1,5 @@
 UserTag default             Order        name default
 UserTag default             addAttr
-UserTag default             InvalidateCache
 UserTag default             PosNumber    2
 UserTag default             Routine      <<EOR
 # Returns the text of a user entered field named VAR.

@@ -1,6 +1,5 @@
 UserTag cgi                 Order        name
 UserTag cgi                 addAttr
-UserTag cgi                 InvalidateCache
 UserTag cgi                 PosNumber    1
 UserTag cgi                 Routine <<EOR
 sub {

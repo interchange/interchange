@@ -1,5 +1,4 @@
 UserTag scratch             Order        name
-UserTag scratch             InvalidateCache
 UserTag scratch             PosNumber    1
 UserTag scratch             Routine <<EOR
 sub {
