@@ -10,9 +10,10 @@
 #
 UserTag var Interpolate 1
 UserTag var Order name global include
+UserTag var addAttr
 UserTag var Routine <<EOR
 sub {
-    my ($key, $global) = @_;
+    my ($key, $global, $include, $opt) = @_;
 	my $value;
 	if ($global and $global != 2) {
 		$value = $Global::Variable->{$key};
