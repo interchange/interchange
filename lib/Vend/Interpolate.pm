@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.23 2001-10-19 00:32:37 mheins Exp $
+# $Id: Interpolate.pm,v 2.24 2001-10-26 00:17:32 edl Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.23 $, 10);
+$VERSION = substr(q$Revision: 2.24 $, 10);
 
 @EXPORT = qw (
 
@@ -6238,6 +6238,9 @@ sub tag_order {
 	push(@parms, "mv_order_item=$code");
 	push(@parms, "mv_order_mv_ib=$opt->{base}")
 		if($opt->{base});
+
+	push(@parms, "mv_cartname=$opt->{cart}")
+		if($opt->{cart});
 
 	push(@parms, "mv_order_quantity=$quantity")
 		if($quantity);
