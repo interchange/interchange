@@ -54,7 +54,7 @@ sub {
 		$where .= " AND ($opt->{where})";
 	}
 
-	my $qb = "select * from $table where $parent = $qkey$where$sort";
+	my $qb = "SELECT * FROM $table WHERE $parent = $qkey$where$sort";
 
 	my $ary = $db->query( {
 							hashref => 1,
@@ -81,6 +81,46 @@ sub {
 	}
 
 	my $enable;
+
+	my $qsub;
+
+	my $donemsg;
+	my $dbh = $db->dbh();
+	my $qs_query = "SELECT * FROM $table WHERE $parent = ?$where$sort";
+	if($dbh and $db->config('Class') eq 'DBI') {
+		my $sth = $dbh->prepare($qs_query)
+				or die errmsg(
+						"tree failed to prepare query: %s\nError was: %s",
+						$qs_query,
+						$DBI::errstr,
+						);
+		$qsub = sub {
+#::logDebug("executing query sub DBI style"); # while ! $donemsg++;
+			my $parm = shift;
+			my @ary;
+			$sth->execute($parm)
+				or die errmsg(
+						"tree failed to prepare query for '%s': %s\nError was: %s",
+						$parm,
+						$qs_query,
+						$DBI::errstr,
+						);
+			while(my $ref = $sth->fetchrow_hashref()) {
+				push @ary, { %$ref };
+			}
+			return \@ary;
+		};
+	}
+	else {
+		$qsub = sub {
+			my $parm = shift;
+#::logDebug("executing query sub regular style"); # while ! $donemsg++;
+			$parm = $db->quote($parm, $parent);
+			my $q = $qs_query;
+			$q =~ s/\s\?\s/ $parm /;
+			$db->query( { hashref => 1, sql => $q });
+		};
+	}
 
 
 	$memo = {} if ! $memo;
@@ -146,15 +186,8 @@ EOF
 
 			my $a;
 			if ($opt->{autodetect} or ! $stop) {
-				my $key = $db->quote($next, $parent);
-				my $q = "SELECT * FROM $table WHERE $parent = $key$where$sort";
 #::logDebug("next row query=$q");
-				$a = $db->query(
-									{ 
-										hashref => 1,
-										sql => $q,
-									}
-						);
+				$a = $qsub->($next);
 				$above->{$next} = 1 if $a and scalar @{$a};
 			}
 
