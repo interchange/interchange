@@ -1,5 +1,5 @@
 [set page_perm]template[/set]
-[set page_title][L]Content: edit components[/L][/set]
+[set page_title][L]Edit components[/L][/set]
 [set ui_class]Content[/set]
 [set help_name]page.editor[/set]
 [set icon_name]icon_pages.gif[/set]
@@ -63,12 +63,12 @@
 </blockquote>
 [/if]
 
-<div class=titlebox>Edit components</div>
+<div class=titlebox>[L]Edit components[/L]</div>
 
 [if session content_edit]
 	<A HREF="[area href=@@MV_PAGE@@ form='ui_content_op=purge']"
-				onClick="return confirm('Are you sure you want to purge all in-process edits?')"
-	>Purge all in-process (including page, template, component edits)</A> <br>
+				onClick="return confirm('[L]Are you sure you want to purge all in-process edits?[/L]')"
+	>[L]Purge all in-process (including page, template, component edits)[/L]</A> <br>
 [/if]
 
 	[calc] tmp_display_in_progress('component'); [/calc]
@@ -80,7 +80,7 @@
 					new=1
 				]"><img src="layout.gif" border=0 align=center> [L]New component[/L]</A><br><br>
 
-<div class=titlebox>Existing component</div>
+<div class=titlebox>[L]Existing components[/L]</div>
 <br>
 
 	[loop acclist=1 list="[content-info components=1 no-none=1]"]
