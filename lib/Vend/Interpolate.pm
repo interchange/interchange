@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.32 2001-03-21 17:40:23 jon Exp $
+# $Id: Interpolate.pm,v 1.40.2.33 2001-03-21 22:48:59 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.32 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.33 $, 10);
 
 @EXPORT = qw (
 
@@ -6606,16 +6606,14 @@ sub salestax {
         tag_cart($cart);
     }
 
-	my $amount = taxable_amount();
-	my($r, $code);
-	# Make it upper case for state and overseas postal
-	# codes, zips don't matter
-	my(@code) = map { (uc $::Values->{$_}) || '' }
-					split /[,\s]+/, $Vend::Cfg->{SalesTax};
-	push(@code, 'DEFAULT');
 
 	my $tax_hash;
-	if($Vend::Cfg->{SalesTaxFunction}) {
+	if($Vend::Cfg->{SalesTax} =~ /\[/) {
+		my $cost = interpolate_html($Vend::Cfg->{SalesTax});
+		$Vend::Items = $save if $save;
+		return $cost;
+	}
+	elsif($Vend::Cfg->{SalesTaxFunction}) {
 		$tax_hash = tag_calc($Vend::Cfg->{SalesTaxFunction});
 #::logDebug("found custom tax function: " . ::uneval($tax_hash));
 	}
@@ -6630,6 +6628,14 @@ sub salestax {
 		return $cost;
 	}
 #::logDebug("got to tax function: " . ::uneval($tax_hash));
+
+	my $amount = taxable_amount();
+	my($r, $code);
+	# Make it upper case for state and overseas postal
+	# codes, zips don't matter
+	my(@code) = map { (uc $::Values->{$_}) || '' }
+					split /[,\s]+/, $Vend::Cfg->{SalesTax};
+	push(@code, 'DEFAULT');
 
 	$tax_hash = { DEFAULT => } if ! ref($tax_hash) =~ /HASH/;
 
