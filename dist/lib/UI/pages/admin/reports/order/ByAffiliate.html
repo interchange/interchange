@@ -31,17 +31,22 @@ EOF
 
 	$Scratch->{synd_limit} = '';
 	$Scratch->{campaign_field} = 'campaign';
+	$Scratch->{parent_field} = '';
+	$Scratch->{comm_select} = '';
 	return unless $CGI->{affiliate};
-	$Scratch->{synd_limit} = "AND affiliate = '$CGI->{affiliate}'";
+
 	if ($parent_field = $Tag->var('UI_AFFILIATE_PARENT_FIELD')) {
-	    $Scratch->{synd_limit} .= " OR $parent_field = '$CGI->{affiliate}'";
+	    $Scratch->{synd_limit} .= "AND (affiliate = '$CGI->{affiliate}' OR $parent_field = '$CGI->{affiliate}')";
 		$Scratch->{campaign_field} = $parent_field;
+		$Scratch->{comm_select} .= ', parent_comm';
+		$Scratch->{parent_field} = $parent_field;
 	} else {
+		$Scratch->{synd_limit} = "AND affiliate = '$CGI->{affiliate}'";
 	    $Scratch->{synd_limit} .= " AND campaign = '$CGI->{campaign}'"
 		    if $CGI->{campaign};
 	}
 	if ($Tag->var('UI_COMMISSION_FIELD')) {
-		$Scratch->{comm_select} = ", __UI_COMMISSION_FIELD__";
+		$Scratch->{comm_select} .= ", __UI_COMMISSION_FIELD__";
         $Scratch->{comm_states} = [split (/\s+/, '__UI_COMMISSION_STATES__')];
 		if (@{$Scratch->{comm_states}}) {
 		    $Scratch->{comm_select} .= ', status';
@@ -120,7 +125,12 @@ EOF
 		if ($Scratch->{comm_select}) {
 			if (! @{$Scratch->{comm_states}} 
 				|| grep {$_ eq $line->{status}} @{$Scratch->{comm_states}}) {
-	            $ref->{commission} += $line->{commission};
+				if ($Scratch->{parent_field} 
+					&& $line->{$Scratch->{parent_field}} eq $CGI->{affiliate}) {
+					$ref->{commission} += $line->{parent_comm};
+				} else {
+					$ref->{commission} += $line->{commission};
+				}
             }
         }
 		$ref->{orders}++;
