@@ -13,6 +13,14 @@ Log("Returning with no ui_page");
 		next unless defined $CGI->{$key};
 		$CGI->{$key} = $Tag->filter($val, $CGI->{$key}, $key);
 	}
+
+	sub regular {
+		local($_) = shift;
+		s/\r\n/\n/g;
+		tr/\r/\n/;
+		return $_;
+	}
+
 	if(! $CGI->{ui_template_layout}) {
 		$CGI->{ui_template} = $Tag->filter('filesafe', $CGI->{ui_template});
 		$CGI->{ui_template_layout} = $Tag->read_ui_template( 
@@ -34,10 +42,10 @@ Log("elements: $CGI->{ui_template_layout}");
 	}
 
 	if(! $found_set) {
-		$CGI->{ui_page_setting_text} =~ s/\r\n/\n/g;
-		$CGI->{ui_page_setting_text} =~ tr/\r/\n/;
-		push @layout, $CGI->{ui_page_setting_text};
+		push @layout, regular($CGI->{ui_page_setting_text});
 	}
+
+	push @layout, '';
 
 	@insert = split /\0/, ($CGI->{ui_content} || 'Page content.'); 
 
@@ -53,14 +61,15 @@ Log("components: " . join ",", @components);
 		$CGI->{ui_component_text} =~ s/\r\n/\n/g;
 		$CGI->{ui_component_text} =~ tr/\r/\n/;
 		push @layout, $CGI->{ui_component_text};
+		push @layout, '';
 	}
 	else {
 		for(@components) {
 			my $digit = $_;
 			my $comp = $CGI->{"$digit.ui_component"};
 
-			my $out = "\n[control-set]\n";
-			$out .= "[component]";
+			my $out = "\n  [control-set]\n";
+			$out .= "    [component]";
 			$out .= $comp;
 			$out .= "[/component]\n";
 
@@ -73,12 +82,21 @@ Log("components: " . join ",", @components);
 				$out .= $val;
 				$out .= "[/$name]\n";
 			}
-			$out .= "[/control-set]\n";
+			$out .= "  [/control-set]\n";
 			push @layout, $out;
 		}
 	}
 
-	push @layout, '[control reset=1]' if @components;
+	push @layout, "[control reset=1]\n" if @components;
+
+	if ($CGI->{ui_page_preamble}) {
+		my $pre = regular($CGI->{ui_page_preamble});
+		push @layout, <<EOF;
+<!-- BEGIN PREAMBLE -->
+$pre
+<!-- END PREAMBLE -->
+EOF
+	}
 
 	push @layout, split /[\0\s,]+/, $CGI->{ui_template_layout};
 
@@ -96,6 +114,15 @@ Log("components: " . join ",", @components);
 	$def_string =~ s/\r\n?/\n/g;
 	unshift @layout, '[' . "comment]\n$def_string\n[" . "/comment]\n";
 
+	if ($CGI->{ui_page_postamble}) {
+		my $pre = regular($CGI->{ui_page_postamble});
+		push @layout, <<EOF;
+<!-- BEGIN POSTAMBLE -->
+$pre
+<!-- END POSTAMBLE -->
+EOF
+	}
+
 	foreach $one (@layout) {
 		if( $one eq 'UI_CONTENT') {
 			my $content = shift @insert;
@@ -105,7 +132,14 @@ Log("components: " . join ",", @components);
 			else {
 				$content =~ s/\r?\n/\n/g;
 			}
-			$content = "\n<!-- BEGIN CONTENT -->\n$content\n<!-- END CONTENT -->\n";
+
+			my $before = '';
+			my $after = '';
+			if($CGI->{ui_template_limit_tag}) {
+				$before = "[restrict $CGI->{ui_template_limit_tag}]\n";
+				$after  = "\n[/restrict]";
+			}
+			$content = "\n$before<!-- BEGIN CONTENT -->\n$content\n<!-- END CONTENT -->$after\n";
 			#Log("inserting $content");
 			push @out, $content;
 		}
@@ -118,7 +152,6 @@ Log("components: " . join ",", @components);
 			#Log("inserted set $one");
 		}
 	}
-
 	delete $Scratch->{ui_output_page};
 
 	my $page = $Tag->filter('filesafe', $CGI->{ui_page});

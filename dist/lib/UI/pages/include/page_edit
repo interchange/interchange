@@ -19,12 +19,10 @@
 	my $ver = $Tag->version();
 	my $current = $Scratch->{ui_current_content};
 	my %hidden;
-	my %control_display = map { ($_, 1) } split /[\s\0,]/,
-											(  $CGI->{ui_content_edit}
-											|| $Values->{ui_content_edit}
-											|| $Variable->{UI_CONTENT_EDIT}
-											|| 'template page components content'
-											);
+	my $control_display =  $CGI->{ui_content_edit}
+						|| $Values->{ui_content_edit}
+						|| $Variable->{UI_CONTENT_EDIT}
+						|| 'template page components content';
 #Log("current begins: " . substr($current, 0, 1000) );
 
 	sub tmp_error {
@@ -133,6 +131,75 @@ push @messages, "template from upload:\n$tref->{ui_definition}";
 
 	$t_desc = $tref->{ui_template_description} if ! $t_desc;
 
+######## BEGIN INIT TEMPLATES
+		my $sep_template = <<EOF;
+<tr class=rheader>
+<td class=cheader colspan=2>Component ~NUMBER~ (~NAME~)</td>
+</tr>
+<tr class=rnorm>
+<td class=clabel>Select component</td>
+<td class=cdata>
+	<table width="100%">
+	<tr>
+		<td class=cdata width="50%">
+			~NAMESEL~
+		</td>
+		<td class=clabel width="15%">
+			Type
+		</td>
+		<td class=cdata width="35%">
+			~TYPESEL~
+		</td>
+	</tr>
+	</table>
+</tr>
+EOF
+
+		my $break_template = <<EOF;
+<tr class=cmarq>
+<td colspan=2><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+EOF
+
+		my $title_template = <<EOF;
+<tr class=rborder>
+<td colspan=2><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+<tr class=rtitle>
+<td colspan=2 class=ctitle><span style="font-size: larger; font-weight: bold">~TITLE~</span></td>
+</tr>
+<tr class=rborder>
+<td colspan=2><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+EOF
+
+		my $control_template = <<EOF;
+<tr>
+   <td class=clabel width="$Variable->{UI_LEFT_WIDTH}"> 
+     \$LABEL\$~META~
+   </td>
+   <td class=cdata> 
+     <table cellspacing=0 cellmargin=0 width="100%">
+       <tr> 
+         <td class=cwidget> 
+           \$WIDGET\$
+         </td>
+         <td class=chelp>~TKEY~<i>\$HELP\$</i>{HELPURL}<BR><A HREF="\$HELP_URL\$">help</A>{/HELPURL}</FONT></td>
+       </tr>
+     </table>
+   </td>
+</tr>
+EOF
+
+######## END INIT TEMPLATES
+
+	sub title_row {
+		my $title = shift;
+		my $out = $title_template;
+		$out =~ s/~TITLE~/$title/g;
+		return $out;
+	}
+
 	if($tref and ! $template_top) {
 		my @el = split /[\s,\0]+/, $tref->{ui_template_layout};
 		my $i = -1;
@@ -154,21 +221,19 @@ push @messages, "template from upload:\n$tref->{ui_definition}";
 #Log("Template top: $template_top");
 	}
 
+	$control_display = $tref->{ui_template_edit}
+		if $tref->{ui_template_edit};
+
+	my %control_display = map { ($_, 1) } split /[\s\0,]/, $control_display;
+
 Log("t_name=$t_name");
 
 	my $page = $CGI->{ui_page};
 
-	$out .= <<EOF;
-<tr bgcolor="__UI_C_TITLEBARBG__">
-	<td><font color="__UI_C_TITLEBARTXT__"><b>Page file</b></font></td>
-	<td><font color="__UI_C_TITLEBARTXT__"><b>
-		$page
-		<INPUT TYPE=hidden NAME=ui_page VALUE="$page">
-		<INPUT TYPE=hidden NAME=ui_template_layout VALUE="$tref->{ui_template_layout}">
-		</b></font>
-	</td>
-</tr>
-EOF
+	$out .= title_row( errmsg("Page file: %s", $page ) );
+	$hidden{ui_page}			= $page;
+	$hidden{ui_template_layout} = $tref->{ui_template_layout};
+
 	if($control_display{template}) {
 		$out .= <<EOF;
 <tr>
@@ -461,72 +526,6 @@ EOF
 		return $out .= qq{</SELECT>};
 	}
 
-	my $sep_template = <<EOF;
-<tr class=rheader>
-<td class=cheader colspan=2>Component ~NUMBER~ (~NAME~)</td>
-</tr>
-<tr class=rnorm>
-<td class=clabel>Select component</td>
-<td class=cdata>
-	<table width="100%">
-	<tr>
-		<td class=cdata width="50%">
-			~NAMESEL~
-		</td>
-		<td class=clabel width="15%">
-			Type
-		</td>
-		<td class=cdata width="35%">
-			~TYPESEL~
-		</td>
-	</tr>
-	</table>
-</tr>
-EOF
-
-	my $break_template = <<EOF;
-<tr class=cmarq>
-<td colspan=2><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-EOF
-
-	my $title_template = <<EOF;
-<tr class=rborder>
-<td colspan=2><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-<tr class=rtitle>
-<td colspan=2 class=ctitle><span style="font-size: larger; font-weight: bold">~TITLE~</span></td>
-</tr>
-<tr class=rborder>
-<td colspan=2><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
-</tr>
-EOF
-
-	sub title_row {
-		my $title = shift;
-		my $out = $title_template;
-		$out =~ s/~TITLE~/$title/g;
-		return $out;
-	}
-
-	my $control_template = <<EOF;
-<tr>
-   <td class=clabel width="$Variable->{UI_LEFT_WIDTH}"> 
-     \$LABEL\$~META~
-   </td>
-   <td class=cdata> 
-     <table cellspacing=0 cellmargin=0 width="100%">
-       <tr> 
-         <td class=cwidget> 
-           \$WIDGET\$
-         </td>
-         <td class=chelp>~TKEY~<i>\$HELP\$</i>{HELPURL}<BR><A HREF="\$HELP_URL\$">help</A>{/HELPURL}</FONT></td>
-       </tr>
-     </table>
-   </td>
-</tr>
-EOF
-
 	my $vsize = $content =~ tr/\n/\n/;
 
 	if($vsize < 20) {
@@ -541,13 +540,56 @@ EOF
 
 	$Scratch->{ui_current_content} = $content;
 
-	my $content_widget = <<EOF;
+	my $content_widget;
+	if($control_display{content}) {
+		$content_widget = <<EOF;
 <tr class=ralt>
 	<td colspan=2 class=clabel>
 		<TEXTAREA NAME=ui_content COLS=85 ROWS=$vsize>[scratch ui_current_content]</TEXTAREA>
 	</td>
 </tr>
 EOF
+	}
+	else {
+		$hidden{ui_content} = '[scratch ui_current_content]';
+	}
+
+	my $preamble_widget;
+  PREAMBLE: {
+  	last PREAMBLE unless $Scratch->{ui_page_preamble} = $pref->{ui_page_preamble};
+	if($control_display{preamble}) {
+		$preamble_widget = <<EOF;
+<tr class=ralt>
+	<td colspan=2 class=clabel>
+		Page Preamble <I>(code executed after settings and before header)</I>
+		<TEXTAREA NAME=ui_page_preamble COLS=85 ROWS=$vsize>[scratch ui_page_preamble]</TEXTAREA>
+	</td>
+</tr>
+EOF
+	}
+	else {
+		$hidden{ui_page_preamble} =  $Scratch->{ui_page_preamble};
+	}
+ }
+
+	my $postamble_widget;
+  POSTAMBLE: {
+  	last POSTAMBLE unless $Scratch->{ui_page_postamble} = $pref->{ui_page_postamble};
+	if($control_display{postamble}) {
+		$postamble_widget = <<EOF;
+<tr class=ralt>
+	<td colspan=2 class=clabel>
+		Page Postamble <I>(code executed after all other)</I>
+		<TEXTAREA NAME=ui_page_postamble COLS=85 ROWS=$vsize>[scratch ui_page_postamble]</TEXTAREA>
+	</td>
+</tr>
+EOF
+	}
+	else {
+		$hidden{ui_page_postamble} = $Scratch->{ui_page_postamble};
+	}
+ }
+
 
 	my @globals;
 	if(! $control_display{page}) {
@@ -601,6 +643,8 @@ EOF
 		$hidden{ui_component_text} = $pref->{ui_component_text};
 	}
 
+	push @controls, $preamble_widget if $preamble_widget;
+	
 	push @controls, title_row("Top Components") if @cobj;
 	for(my $i = 0; $i < @cobj; $i++) {
 		my $ref = $cobj[$i];
@@ -708,6 +752,8 @@ push @messages, "r key $_ set='$set' options=$options value=$Values->{$_} widget
 		undef $template_div;
 	}
 
+	push @controls, $postamble_widget if $postamble_widget;
+
 	$out .= join "\n", @controls;
 	
 	$out .= <<EOF if $CGI->{ui_show_template};
@@ -739,6 +785,9 @@ push @messages, "r key $_ set='$set' options=$options value=$Values->{$_} widget
 	</td>
 </tr>
 EOF
+
+	$hidden{ui_template_limit_tag} = $tref->{ui_template_limit_tag};
+
 	my $hidden = '';
 	for(keys %hidden) {
 		$hidden .= qq{<input type=hidden name="$_" value="};
