@@ -1,0 +1,9 @@
+CodeDef md5 Filter
+CodeDef md5 Routine <<EOR
+
+use Digest::MD5;
+
+sub {
+	return Digest::MD5::md5_hex($_[0]);
+}
+EOR

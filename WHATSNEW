@@ -6,7 +6,7 @@
 ------------------------------------------------------------------------------
 
 
-Interchange 5.0.0 not yet released.
+Interchange 5.0.0 released 2003-12-12.
 
 Core
 ----
@@ -49,8 +49,8 @@ Core
 UI
 --
 
-* Force user to enter name of new page/template/component name to avoid server
-  crashes.
+* Force user to enter name of new page/template/component name to avoid
+  server crashes.
 
 * Fix content editor to actually use the selected template for new pages.
 
@@ -60,34 +60,35 @@ UI
   This fixes a rare problem that only occurs when using multiple external
   databases in one catalog.
 
-* Improve [flex-select] so that key column can have formatting options 
-  via mv_metadata just like all other columns in a table.
-  The value that is passed to the flex_editor is unadulterated in all cases.
+* Improve [flex-select] so that key column can have formatting options
+  via mv_metadata just like all other columns in a table. The value
+  that is passed to the flex_editor is unadulterated in all cases.
 
 * Make description and icon of menu item 'Tables' a bit more appropriate.
 
 * Add "-" spacer between items in top menu.
 
-* Remove "Accounting" from menus and replace with "Reports". Not
-  active by default.
+* Remove "Accounting" from menus and replace with "Reports". Not active
+  by default.
 
 * Remove unused code in item select page.
 
 * Add [traffic-report] tag and modified admin/reports/traffic/ByAffiliate
   page which calls it. Now reports on large files without crashing the
-  system. Probably can handle up to 500MB files with on any kind
-  of a reasonable server.
+  system. Probably can handle up to 500 MB files with on any kind of a
+  reasonable server.
 
-Usertags
---------
+Usertags and Filters
+--------------------
 
-* new Usertag [report-table] generates an HTML table based on
+* New Usertag [report-table] generates an HTML table based on
   the results of a query, with bells and whistles. Can do horizontal
-  (colspan) and vertical (rowspan) subheaders, apply any Interchange filter
-  or widget to any column, add a CSS class to any column, link cell contents
-  (and add parameters to the link based on any column in the query results),
-  add virtual columns based on internal variables (such as the line number),
-  and skip rows based on an array of toggles you specify.
+  (colspan) and vertical (rowspan) subheaders, apply any Interchange
+  filter or widget to any column, add a CSS class to any column, link
+  cell contents (and add parameters to the link based on any column in
+  the query results), add virtual columns based on internal variables
+  (such as the line number), and skip rows based on an array of toggles
+  you specify.
   
   Good for making quick tables, sophisticated reports, and easy forms.
   Written by Christopher Wenham <cwenham@synesmedia.com>.
@@ -95,10 +96,12 @@ Usertags
 * [formel] fetches the label for the display type from the metadata 
   if not passed with the parameters.
 
-* removed unfinished [find] usertag 
+* Removed unfinished [find] usertag.
 
-* Allow customization of [warnings auto=1] with class, style, extra as in many
-  IC tags.
+* Allow customization of [warnings auto=1] with class, style, extra as in
+  many IC tags.
+
+* Added new "md5" filter that calls Digest::MD5::md5_hex.
 
 * Let [image] handle maddening new ImageMagick behavior that won't operate on
   the file named.
@@ -108,9 +111,8 @@ Foundation
 
 * Error handling on account maintenance form works better.
 
-* Fixed issue with checkout page payment forms and Mozilla
-  which might cause Place Order button to be obscured in
-  some cases.
+* Fixed issue with checkout page payment forms and Mozilla which
+  might cause Place Order button to be obscured in some cases.
 
 * Separate shipping addresses now appear in customer email
   copy and are logged to the orderline table. Also appear
@@ -120,9 +122,9 @@ Foundation
 
 * Change Newfoundland from NF to NL in "state" table.
 
-* Added simple demo of contact form
+* Added simple demo of contact form.
 
-* Changes to search form(s) now that HIDE_FIELD works
+* Changes to search form(s) now that HIDE_FIELD works.
 
 * Fix ordering of THEME_CSS so it will be set in high-traffic and
   PreFork mode.
@@ -147,7 +149,8 @@ Payment
 Jobs
 ----
 
-* Remove update_locales job - as a consequence of the removal of the [find] usertag
+* Remove update_locales job, as a consequence of the removal of the
+  [find] usertag.
 
 Shadow
 ------
@@ -164,17 +167,17 @@ i18n
 
 * Add and improve foundation and UI translations.
 
-* localize script is now able to detect backtick quoting in [msg]
+* localize script is now able to detect backtick quoting in [msg].
   
 Debian
 ------
 
 * Add Interchange variable MV_GETPPID_BROKEN to
   /etc/interchange/features.cfg in order to start Interchange 
-  properly on systems with threaded Perl (Closes: #221939)
+  properly on systems with threaded Perl (Closes: #221939).
 
 * Revive USE_FOUNDATION handling in interchange-ui postinst to
-  keep 4.8.x interchange-cat-foundation catalogs running
+  keep 4.8.x interchange-cat-foundation catalogs running.
 
 Miscellaneous
 -------------
