@@ -1,6 +1,6 @@
 # Table/Common.pm: Common access methods for Interchange Databases
 #
-# $Id: Common.pm,v 1.13 2000-09-25 15:27:07 heins Exp $
+# $Id: Common.pm,v 1.14 2000-09-25 15:29:10 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -25,7 +25,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.13 $, 10);
+$VERSION = substr(q$Revision: 1.14 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -516,7 +516,7 @@ sub sprintf_substitute {
 sub query {
     my($s, $opt, $text, @arg) = @_;
 
-    if(! ref $opt) {
+    if(! CORE::ref($opt)) {
         unshift @arg, $text;
         $text = $opt;
         $opt = {};
