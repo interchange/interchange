@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.26.4.3 2000-10-18 14:58:02 racke Exp $
+# $Id: makecat.PL,v 1.26.4.4 2000-10-23 12:45:30 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -63,7 +63,7 @@ use IniConf;
 use Cwd;
 use vars qw/$CGIwrap/;
 
-Getopt::Long::config(qw/permute no_ignore_case/);
+Getopt::Long::config(qw/permute/);
 #Getopt::Long::config(qw/debug/);
 
 BEGIN {
@@ -2071,7 +2071,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.26.4.3 2000-10-18 14:58:02 racke Exp $
+$Id: makecat.PL,v 1.26.4.4 2000-10-23 12:45:30 racke Exp $
 
 =head1 INTRODUCTION
 

@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.5.8
 #
-# $Id: interchange.PL,v 1.8.4.4 2000-10-20 15:26:47 racke Exp $
+# $Id: interchange.PL,v 1.8.4.5 2000-10-23 12:46:33 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -1658,7 +1658,7 @@ EOF
 	$Vend::FinalPath =~ s:^/+::;
 	$Vend::FinalPath =~ s/(\.html?)$//;
 	$Vend::Session->{extension} = $1 || '';
-::logDebug("path=$Vend::FinalPath");
+#::logDebug("path=$Vend::FinalPath");
 
   DOACTION: {
     @path = split('/', $Vend::FinalPath, 2);
