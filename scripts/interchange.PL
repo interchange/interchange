@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.0
 #
-# $Id: interchange.PL,v 1.15.2.5 2000-12-07 08:35:50 heins Exp $
+# $Id: interchange.PL,v 1.15.2.6 2000-12-11 02:01:54 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -359,13 +359,14 @@ my @Scan_modifiers = qw/
 
 # Returns undef if interaction error
 sub update_quantity {
-    return 1 unless defined  $CGI::values{"quantity0"};
+    return 1 unless defined  $CGI::values{"quantity0"}
+		|| $CGI::values{mv_quantity_update};
 	my($h, $i, $quantity, $modifier, $cart);
 
 	$cart = Vend::Cart::get_cart($CGI::values{mv_cartname});
 
 	my @mods;
-	@mods = @{$Vend::Cfg->{UseModifier}} if ! $Vend::Cfg->{UseModifier};
+	@mods = @{$Vend::Cfg->{UseModifier}} if $Vend::Cfg->{UseModifier};
 
 #::logDebug("adding modifiers");
 	push(@mods, (grep $_ !~ /^mv_/, split /\0/, $CGI::values{mv_item_option}))
@@ -400,11 +401,8 @@ sub update_quantity {
 		my $line = $cart->[$i];
 		$line->{mv_ip} = $i;
     	$quantity = $CGI::values{"quantity$i"};
-    	if (! defined $quantity) {
-        	interaction_error("Variable '$quantity' not passed from form\n");
-        	return undef;
-		}
-    	elsif ($quantity =~ m/^\d*$/) {
+    	next unless defined $quantity;
+    	if ($quantity =~ m/^\d*$/) {
         	$line->{'quantity'} = $quantity || 0;
     	}
     	elsif ($quantity =~ m/^[\d.]+$/
