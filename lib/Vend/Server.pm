@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.12 2001-02-18 15:26:28 heins Exp $
+# $Id: Server.pm,v 1.8.2.13 2001-02-18 16:37:46 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.12 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.13 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -391,9 +391,9 @@ sub respond {
 # END TRACK        
         $Vend::StatusLine .= "Pragma: no-cache\r\n"
 			if delete $::Scratch->{mv_no_cache};
-		print Vend::Server::MESSAGE canon_status($Vend::StatusLine);
-		print Vend::Server::MESSAGE "\r\n";
-		print Vend::Server::MESSAGE $$body;
+		print MESSAGE canon_status($Vend::StatusLine);
+		print MESSAGE "\r\n";
+		print MESSAGE $$body;
 		undef $Vend::StatusLine;
 		$Vend::ResponseMade = 1;
 		return;
@@ -490,7 +490,7 @@ sub _read {
     my ($r);
     
     do {
-        $r = sysread(Vend::Server::MESSAGE, $$in, 512, length($$in));
+        $r = sysread(MESSAGE, $$in, 512, length($$in));
     } while (!defined $r and $!{EINTR});
     die "read: $!" unless defined $r;
     die "read: closed" unless $r > 0;
@@ -627,7 +627,7 @@ sub http_server {
 	@{$argv} = $url->keywords();
 
 	(undef, $Remote_addr) =
-				sockaddr_in(getpeername(Vend::Server::MESSAGE));
+				sockaddr_in(getpeername(MESSAGE));
 	$$env{REMOTE_HOST} = gethostbyaddr($Remote_addr, AF_INET);
 	$Remote_addr = inet_ntoa($Remote_addr);
 
@@ -754,7 +754,7 @@ sub connection {
 #::logDebug ("begin connection: " . (join " ", times()) . "\n");
     read_cgi_data(\@Global::argv, \%env, \$entity)
     	or return 0;
-	$http = new Vend::Server \*Vend::Server::MESSAGE, \%env, \$entity;
+	$http = new Vend::Server \*MESSAGE, \%env, \$entity;
 #::logDebug("begin dispatch: " . (join " ", times()) . "\n");
 
 	# Can log all CGI inputs
@@ -979,7 +979,7 @@ EOF
 # Can have both INET and UNIX on same system
 sub server_both {
     my ($socket_filename) = @_;
-    my ($n, $rin, $rout, $pid, $tick);
+    my ($n, $rin, $rout, $sin, $sout, $pid, $tick);
 
 	$Vend::MasterProcess = $$;
 
@@ -1017,20 +1017,49 @@ sub server_both {
 	unlink "$Global::ConfDir/mode.inet", "$Global::ConfDir/mode.unix";
 
 	if($Global::Unix_Mode) {
-		socket(Vend::Server::USOCKET, AF_UNIX, SOCK_STREAM, 0) || die "socket: $!";
+		socket(USOCKET, AF_UNIX, SOCK_STREAM, 0) || die "socket: $!";
 
-		setsockopt(Vend::Server::USOCKET, SOL_SOCKET, SO_REUSEADDR, pack("l", 1));
+		setsockopt(USOCKET, SOL_SOCKET, SO_REUSEADDR, pack("l", 1));
 
-		bind(Vend::Server::USOCKET, pack("S", AF_UNIX) . $socket_filename . chr(0))
+		bind(USOCKET, pack("S", AF_UNIX) . $socket_filename . chr(0))
 			or die "Could not bind (open as a socket) '$socket_filename':\n$!\n";
-		listen(Vend::Server::USOCKET,$so_max) or die "listen: $!";
+		listen(USOCKET,$so_max) or die "listen: $!";
 
 		$rin = '';
-		vec($rin, fileno(Vend::Server::USOCKET), 1) = 1;
+		vec($rin, fileno(USOCKET), 1) = 1;
 		$vector |= $rin;
-		open(Vend::Server::INET_MODE_INDICATOR, ">$Global::ConfDir/mode.unix")
+		open(INET_MODE_INDICATOR, ">$Global::ConfDir/mode.unix")
 			or die "creat $Global::ConfDir/mode.unix: $!";
-		close(Vend::Server::INET_MODE_INDICATOR);
+		close(INET_MODE_INDICATOR);
+
+		chmod $Global::SocketPerms, $socket_filename;
+		if($Global::SocketPerms & 077) {
+			::logGlobal({ level => 'warn' },
+							"ALERT: %s socket permissions are insecure; are you sure you want permssions %o?",
+							$Global::SocketFile,
+							$Global::SocketPerms,
+						);
+		}
+	}
+
+	my $soapin;
+	my $soapout;
+	if($Global::SOAP) {
+		my $fn = "$socket_filename.soap";
+		socket(SSOCKET, AF_UNIX, SOCK_STREAM, 0) || die "socket: $!";
+
+		setsockopt(SSOCKET, SOL_SOCKET, SO_REUSEADDR, pack("l", 1));
+
+		bind(SSOCKET, pack("S", AF_UNIX) . $fn . chr(0))
+			or die "Could not bind (open as a socket) '$fn':\n$!\n";
+		listen(SSOCKET,$so_max) or die "listen: $!";
+
+		$rin = '';
+		vec($rin, fileno(USOCKET), 1) = 1;
+		$vector |= $rin;
+		open(SOAP_MODE_INDICATOR, ">$Global::ConfDir/mode.soap")
+			or die "creat $Global::ConfDir/mode.unix: $!";
+		close(SOAP_MODE_INDICATOR);
 
 		chmod $Global::SocketPerms, $socket_filename;
 		if($Global::SocketPerms & 077) {
@@ -1188,9 +1217,9 @@ sub server_both {
             }
         }
 
-        elsif (	$Global::Unix_Mode && vec($rout, fileno(Vend::Server::USOCKET), 1) ) {
+        elsif (	$Global::Unix_Mode && vec($rout, fileno(USOCKET), 1) ) {
 			undef $Vend::OnlyInternalHTTP;
-            my $ok = accept(Vend::Server::MESSAGE, Vend::Server::USOCKET);
+            my $ok = accept(MESSAGE, USOCKET);
             die "accept: $!" unless defined $ok;
 			$spawn = 1;
 		}
@@ -1203,7 +1232,7 @@ sub server_both {
 			while (($p, $v) = each %vec_map) {
         		next unless vec($rout, $v, 1);
 				$Global::TcpPort = $p;
-				$ok = accept(Vend::Server::MESSAGE, $fh_map{$p});
+				$ok = accept(MESSAGE, $fh_map{$p});
 			}
 #::logDebug("port $Global::TcpPort");
             die "accept: $!" unless defined $ok;
@@ -1272,7 +1301,7 @@ sub server_both {
 				}
 				exit(0);
 			}
-			close Vend::Server::MESSAGE;
+			close MESSAGE;
 			last SPAWN if $no_fork;
 			wait;
 		}
@@ -1287,11 +1316,11 @@ sub server_both {
 
 			my $content;
 			if($content = get_locale_message(500, '', $msg)) {
-				print Vend::Server::MESSAGE canon_status("Content-type: text/html");
-				print Vend::Server::MESSAGE $content;
+				print MESSAGE canon_status("Content-type: text/html");
+				print MESSAGE $content;
 			}
 
-			close Vend::Server::MESSAGE;
+			close MESSAGE;
 
 			# Below only happens with Windows or foreground debugs.
 			# Prevent corruption of changed $Vend::Cfg entries
@@ -1343,14 +1372,14 @@ sub unlink_pid {
 sub grab_pid {
     my $ok = lockfile(\*Vend::Server::Pid, 1, 0);
     if (not $ok) {
-        chomp(my $pid = <Vend::Server::Pid>);
+        chomp(my $pid = <Pid>);
         return $pid;
     }
     {
         no strict 'subs';
-        truncate(Vend::Server::Pid, 0) or die "Couldn't truncate pid file: $!\n";
+        truncate(Pid, 0) or die "Couldn't truncate pid file: $!\n";
     }
-    print Vend::Server::Pid $$, "\n";
+    print Pid $$, "\n";
     return 0;
 }
 
@@ -1358,10 +1387,10 @@ sub grab_pid {
 
 sub open_pid {
 
-    open(Vend::Server::Pid, "+>>$Global::PIDfile")
+    open(Pid, "+>>$Global::PIDfile")
         or die "Couldn't open '$Global::PIDfile': $!\n";
-    seek(Vend::Server::Pid, 0, 0);
-    my $o = select(Vend::Server::Pid);
+    seek(Pid, 0, 0);
+    my $o = select(Pid);
     $| = 1;
     {
         no strict 'refs';
@@ -1403,7 +1432,7 @@ sub run_server {
     }
     else {
 
-        fcntl(Vend::Server::Pid, F_SETFD, 0)
+        fcntl(Pid, F_SETFD, 0)
             or die "Can't fcntl close-on-exec flag for '$Global::PIDfile': $!\n";
         my ($pid1, $pid2);
         if ($pid1 = fork) {
@@ -1447,12 +1476,12 @@ sub run_server {
 
                 setsid();
 
-                fcntl(Vend::Server::Pid, F_SETFD, 1)
+                fcntl(Pid, F_SETFD, 1)
                     or die "Can't fcntl close-on-exec flag for '$Global::PIDfile': $!\n";
 
 				$next = server_both($Global::SocketFile);
 
-				unlockfile(\*Vend::Server::Pid);
+				unlockfile(\*Pid);
 				opendir(CONFDIR, $Global::ConfDir) 
 					or die "Couldn't open directory $Global::ConfDir: $!\n";
 				my @running = grep /^mvrunning/, readdir CONFDIR;
