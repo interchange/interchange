@@ -19,6 +19,7 @@ _$
 \.linux.warned
 \bCVS\b
 \bRCS\b
+^interchange-[0-9]+\..*
 ^lib/Business
 ^lib/File
 ^lib/HTML
