@@ -1,6 +1,6 @@
 # Vend::Options::Matrix - Interchange Matrix product options
 #
-# $Id: Matrix.pm,v 1.1 2003-02-12 03:59:13 mheins Exp $
+# $Id: Matrix.pm,v 1.2 2003-02-12 13:55:18 racke Exp $
 #
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
 # Copyright (C) 2002-2003 Interchange Development Group <interchange@icdevgroup.org>
@@ -23,11 +23,11 @@
 
 package Vend::Options::Matrix;
 
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 
 =head1 Interchange Matrix Options Support
 
-Vend::Options::Matrix $Revision: 1.1 $
+Vend::Options::Matrix $Revision: 1.2 $
 
 =head1 SYNOPSIS
 
@@ -133,18 +133,16 @@ sub display_options {
 
 	my $inv_func;
 
-	use constant {
-		SEP_CODE		=> 0,
-		SEP_GROUP		=> 1,
-		SEP_VALUE		=> 2,
-		SEP_LABEL		=> 3,
-		SEP_WIDGET		=> 4,
-		SEP_PRICE		=> 5,
-		SEP_WHOLE		=> 6,
-		CODE			=> 0,
-		DESCRIPTION		=> 1,
-		PRICE			=> 2,
-	};
+	use constant SEP_CODE		=> 0;
+	use constant SEP_GROUP		=> 1;
+	use constant SEP_VALUE		=> 2;
+	use constant SEP_LABEL		=> 3;
+	use constant SEP_WIDGET		=> 4;
+	use constant SEP_PRICE		=> 5;
+	use constant SEP_WHOLE		=> 6;
+	use constant CODE			=> 0;
+	use constant DESCRIPTION	=> 1;
+	use constant PRICE			=> 2;
 
 #::logDebug("ready to query options");
 	if($opt->{display_type} eq 'separate') {
