@@ -7,16 +7,16 @@ Variable   UI   1
 Variable   TRAFFIC    low
 #Variable   TRAFFIC    high
 
-#Uncomment to log to debug file /tmp/mvdebug
-#Variable   DEBUG     1
-
 Environment  MOD_PERL
+
+#Uncomment to log to debug file /tmp/icdebug
+#Variable   DEBUG     1
 
 # You can set the Variable DEBUG above then tail -f the DebugFile
 # You can also see Interchange and catalog data structures
 #ifdef @DEBUG
-Message Sending debug to /tmp/mvdebug.
-DebugFile /tmp/mvdebug
+Message Sending debug to /tmp/icdebug.
+DebugFile /tmp/icdebug
 GlobalSub sub test_global_sub { return 'Test of global subroutine OK.' }
 Variable  TEST_VARIABLE Test of global variable OK.
 #endif
