@@ -37,26 +37,28 @@ ui_template_name: leftonly
 @_LEFTONLY_TOP_@
 
 <!-- BEGIN CONTENT -->
-		<blockquote>
-                    <p>&nbsp;</p>
-                    <p>We don't give out your information to anyone!</p>
-                    <p>We can be contacted at:</p>
-                    <p>__COMPANY__<br>
-						__ADDRESS__<br>
-						__CITY__
-					[if variable PHONE]
-					<br>Phone: __PHONE__
-					[/if]
-					[if variable FAX]
-					<br>Fax: __FAX__
-					[/if]
-					[if variable TOLLFREE]
-					<br>Toll free: __TOLLFREE__
-					[/if]
-                      <br>
-                      <a href="mailto:__EMAIL_INFO__">__EMAIL_INFO__</a></font></p>
-                    <p>&nbsp; </p>
-		</blockquote>
+
+<blockquote>
+<p>&nbsp;</p>
+<p>We don't give out your information to anyone!</p>
+<p>We can be contacted at:</p>
+__COMPANY__<br>
+__ADDRESS__<br>
+__CITY__
+[if variable PHONE]
+<br>Phone: __PHONE__
+[/if]
+[if variable FAX]
+<br>Fax: __FAX__
+[/if]
+[if variable TOLLFREE]
+<br>Toll free: __TOLLFREE__
+[/if]
+<br>
+<a href="mailto:__EMAIL_INFO__">__EMAIL_INFO__</a>
+<p>&nbsp;</p>
+</blockquote>
+
 <!-- END CONTENT -->
 
 @_LEFTONLY_BOTTOM_@

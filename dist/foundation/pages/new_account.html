@@ -33,10 +33,10 @@ ui_template_name: leftonly
 [if !scratch new]
 				  
 [if session failure]
-<P>
-<b>[data session failure]</b>
-[data base=session field=failure value=""]
-<P>
+  <P>
+  <b>[data session failure]</b>
+  [data base=session field=failure value=""]
+  <P>
 [/if]
 
 [else]
@@ -45,6 +45,7 @@ ui_template_name: leftonly
 [/if]
 
 <table border="0" cellspacing="0" cellpadding="0">
+
 [set NewAccount]
 [if type=explicit compare="[userdb new_account]"]
 mv_nextpage=account
@@ -53,61 +54,65 @@ mv_nextpage=new_account
 [/else]
 [/if]
 [/set]
-	<FORM ACTION="[process-target]" METHOD=POST>
-	<INPUT TYPE=hidden NAME=mv_click VALUE=NewAccount>
-	<INPUT TYPE=hidden NAME=mv_doit  VALUE=return>
-	<INPUT TYPE=hidden NAME=function  VALUE=new_account>
-	<INPUT TYPE=hidden NAME=mv_nextpage VALUE=ord/basket>
 
-                          <tr> 
-                            <td> 
-                              <table border="0" cellspacing="0" cellpadding="2">
-                                <tr> 
-                                  <td align="right" class="contentbar2">
-				    <b>Username:</b></font>
-				  </td>
-                                  <td class="contentbar2" align="left"> 
-                                    <input type="text" NAME=mv_username VALUE="">
-                                  </td>
-                                </tr>
-                                <tr> 
-                                  <td align="right" class="contentbar2"> 
-                                    <b>Password:</b>
-				  </td>
-                                  <td align="left" class="contentbar2"> 
-                                    <INPUT TYPE=password NAME=mv_password VALUE="">
-                                  </td>
-                                </tr>
-                                <tr> 
-                                  <td align="right" class="contentbar2"> 
-                                    <b>Verify Password:</b>
-                                  </td>
-                                  <td align="left" class="contentbar2"> 
-                                    <INPUT TYPE=password NAME=mv_verify VALUE="">
-                                  </td>
-                                </tr>
-                                <tr class="contentbar1"> 
-                                  <td>&nbsp;</td>
-                                  <td> 
-                                    <INPUT TYPE=submit VALUE="Create Account">
-                                  </td>
-                                </tr>
-                                <tr class="contentbar1"> 
-                                  <td align="right"> 
-                                    <INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1>
-                                  </td>
-                                  <td>Log me in automatically (sets cookie)</td>
-                                </tr>
-                                <tr class="contentbar1"> 
-                                  <td align="right" colspan="2">&nbsp;</td>
-                                </tr>
-                              </table>
-                            </td>
-                          </tr>
-						  </form>
-                        </table>
-                      </div>
-                      <p>&nbsp;</p>
+<FORM ACTION="[process-target]" METHOD=POST>
+<INPUT TYPE=hidden NAME=mv_click VALUE=NewAccount>
+<INPUT TYPE=hidden NAME=mv_doit  VALUE=return>
+<INPUT TYPE=hidden NAME=function  VALUE=new_account>
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE=ord/basket>
+
+<tr> 
+  <td> 
+    <table border="0" cellspacing="0" cellpadding="2">
+    <tr> 
+      <td align="right" class="contentbar2">
+        <b>Username:</b>
+      </td>
+      <td class="contentbar2" align="left"> 
+        <input type="text" NAME=mv_username VALUE="">
+      </td>
+    </tr>
+    <tr> 
+      <td align="right" class="contentbar2"> 
+        <b>Password:</b>
+      </td>
+      <td align="left" class="contentbar2"> 
+        <INPUT TYPE=password NAME=mv_password VALUE="">
+      </td>
+    </tr>
+    <tr> 
+      <td align="right" class="contentbar2"> 
+        <b>Verify Password:</b>
+      </td>
+      <td align="left" class="contentbar2"> 
+        <INPUT TYPE=password NAME=mv_verify VALUE="">
+      </td>
+    </tr>
+    <tr class="contentbar1"> 
+      <td>&nbsp;</td>
+      <td> 
+        <INPUT TYPE=submit VALUE="Create Account">
+      </td>
+    </tr>
+    <tr class="contentbar1"> 
+      <td align="right"> 
+        <INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1>
+      </td>
+      <td>Log me in automatically (sets cookie)</td>
+    </tr>
+    <tr class="contentbar1"> 
+      <td align="right" colspan="2">&nbsp;</td>
+    </tr>
+    </table>
+    
+  </td>
+</tr>
+
+</form>
+</table>
+
+<p>&nbsp;</p>
+
 <!-- END CONTENT -->
 
 @_LEFTONLY_BOTTOM_@

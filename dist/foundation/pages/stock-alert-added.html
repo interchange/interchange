@@ -18,38 +18,37 @@ ui_template_name: leftonly
 [set members_only]0[/set]
 [set page_banner]Stock Alerting[/set]
 [set page_title]__COMPANY__ -- Stock Alerting[/set]
+
 @_LEFTONLY_TOP_@
 
 <!-- BEGIN CONTENT -->
+
 [if session arg]
-	[seti code][data session arg][/seti]
+  [seti code][data session arg][/seti]
 [/if]
 
-      <TABLE cellPadding=8 border="0">
-        <TBODY>
-        <TR>
-          <TD align=left vAlign=top><FONT __FFACE__ size=2>
-		  <b>Your request has been sent sucessfully.</b></font>
-		  <br><br>
-		  <FONT __FFACE__ size=2>
-		  We will contact you once your selected item becomes available.<br><br>
-		  Thank you for your interest in our products.
-		  </FONT></TD>
-		</TR>
-		</TBODY>
-	  </TABLE>
-	<p>
-	
+<TABLE cellPadding=8 border="0">
+<TBODY>
+<TR>
+  <TD align=left vAlign=top>
+    <b>Your request has been sent sucessfully.</b>
+    <br><br>
+    We will contact you once your selected item becomes available.<br><br>
+    Thank you for your interest in our products.
+  </TD>
+</TR>
+</TBODY>
+</TABLE>
 
 [set name=alert_added interpolate=1]
 
 [comment] SEND REPORT OF NEW ALERT ENTRY [/comment]
 
 [email
-					to="[value email]"
-                    subject="__COMPANY__ - Stock Alert Request"
-                    from="__COMPANY__ <__EMAIL_INFO__>"
-                    reply="__COMPANY__ <__EMAIL_INFO__>"]
+		to="[value email]"
+                subject="__COMPANY__ - Stock Alert Request"
+                from="__COMPANY__ <__EMAIL_INFO__>"
+                reply="__COMPANY__ <__EMAIL_INFO__>"]
 
 Hello and thank you for your interest in __COMPANY__ products.
 

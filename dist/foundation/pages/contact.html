@@ -34,6 +34,7 @@ ui_template_name: leftonly
 [set members_only]0[/set]
 [set page_banner]Contact Us[/set]
 [set page_title]__COMPANY__ -- Contact Us[/set]
+
 @_LEFTONLY_TOP_@
 
 <!-- BEGIN CONTENT -->
@@ -42,33 +43,38 @@ ui_template_name: leftonly
 <tr>
   <td align="left">
 
-<br>
+    <br>
 
-This is a demonstartion "Contact Us" page for Interchange.  Here are the values
-you entered when you installed this catalog:<br><br>
+    This is a demonstartion "Contact Us" page for Interchange.  
+    Here are the values you entered when you installed this catalog:
 
-<b>__COMPANY__</b><br>
-__ADDRESS__<br>
-__CITY__<br>
-Phone: __PHONE__<br>
-Fax: __FAX__<br>
-[if variable TOLLFREE]
-Tollfree: __TOLLFREE__<br>
+    <br><br>
 
-<br>
-If you would like further information 
-on constructing a store like this, 
-please contact:
-<br>
+    <b>__COMPANY__</b><br>
+    __ADDRESS__<br>
+    __CITY__<br>
+    Phone: __PHONE__<br>
+    Fax: __FAX__<br>
 
-<p><a href="http://www.akopia.com">http://www.akopia.com</a></p>
-e-mail: <a href="info@akopia.com">info@akopia.com</a>
+    [if variable TOLLFREE]
+    Tollfree: __TOLLFREE__<br>
 
-                          </td>
-                      </tr>
-                    </table>
+    <br>
 
-                    <p>&nbsp; </p>
+    If you would like further information 
+    on constructing a store like this, 
+    please contact:
+    <br>
+
+    <p><a href="http://www.akopia.com">http://www.akopia.com</a></p>
+    e-mail: <a href="info@akopia.com">info@akopia.com</a>
+
+  </td>
+</tr>
+</table>
+
+<br><br>
+
 <!-- END CONTENT -->
 
 @_LEFTONLY_BOTTOM_@

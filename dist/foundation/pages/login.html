@@ -17,6 +17,7 @@ ui_template_name: leftonly
 
 [set page_banner]Log In[/set]
 [set page_title]__COMPANY__ -- Log In[/set]
+
 @_LEFTONLY_TOP_@
 
 <!-- BEGIN CONTENT -->
@@ -25,19 +26,20 @@ ui_template_name: leftonly
 <tr>
   <td>
 
-    [if session failure]
+[if session failure]
+
       <br><br>
       <B>[calc] delete $Session->{failure}[/calc]</b>
       <br>
     [/if]
 
-[set mv_no_cache]1[/set]
-[set New Account]
-mv_nextpage=new_account
-[set new]1[/set]
-[/set]
+    [set mv_no_cache]1[/set]
+    [set New Account]
+    mv_nextpage=new_account
+    [set new]1[/set]
+    [/set]
 
-[if !session logged_in]
+    [if !session logged_in]
 
     <FORM ACTION="[process secure=1]" METHOD=POST>
     <INPUT TYPE=hidden NAME=mv_todo  VALUE=return>

@@ -91,46 +91,51 @@ ui_template_name: leftright
 
 [on-match]
 <FORM ACTION="[area nothing]" METHOD=POST>
-<INPUT TYPE=hidden  NAME="mv_action"        VALUE="refresh">
+<INPUT TYPE=hidden  NAME="mv_action" VALUE="refresh">
 <INPUT TYPE=hidden  NAME="mv_separate_items"  VALUE="0">
-<INPUT TYPE=hidden  NAME="mv_click"        VALUE="munge_quantity">
+<INPUT TYPE=hidden  NAME="mv_click" VALUE="munge_quantity">
 [/on-match]
 
 <table width="90%" border="0" cellspacing="2" cellpadding="3">
 <tr class="contentbar2"> 
   <td width="100" align="center"><b>Product</b></td>
   <td width="30" align="center"><b>SKU</b></td>
-  <td width="30" align="center"><b>Stock</b></td>						
+  <td width="30" align="center"><b>Stock</b></td>
   <td width="30" align="center"><b>Price</b></td>
   <td width="30" align="center"><b>Qty</b></td>
-  <td width="30" align="center"><b>Buy</b></td>										
+  <td width="30" align="center"><b>Buy</b></td>
 </tr>
 </table>
 
 [search-list]
 
 [item-change 1][condition][item-field category][/condition]
-			<br>
-                    <table width="90%" border="0" cellspacing="0" cellpadding="0">
-                      <tr class="contentbar1"> 
-                        <td class="cheader">&nbsp;[either][value banner_text][or][item-field category][/either]</td>
-		      </tr>
-                      <tr bgcolor="ffffff" valign="middle"> 
-                        <td> 
-					</td></tr>
-                    </table>
+
+<br>
+
+<table width="90%" border="0" cellspacing="0" cellpadding="0">
+<tr class="contentbar1"> 
+  <td>&nbsp;[either][value banner_text][or][item-field category][/either]</td>
+</tr>
+<tr valign="middle"> 
+  <td>&nbsp;</td>
+</tr>
+</table>
 
 [/item-change 1]
 					
-                    <table width="90%" cellspacing="0" cellpadding="0">
-                      <tr valign="middle"> 
-                        <td align=center height="5"> 
-                          <div align="left"> 
-                            <table border="0" cellspacing="0" cellpadding="3" bordercolor="#FFFFFF" align="center" width="100%">
-                              <tr> 
-                                <td valign="top" width="100"><INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="[item-code]"><a href="[area [item-code]]">[item-description]</a></td>
-				<td valign="top" width="30">[item-code]</td>
-				<td valign="top" width="30" align="center">[item-calc]
+<table width="90%" cellspacing="0" cellpadding="0">
+<tr valign="middle"> 
+  <td align=center> 
+    <table border="0" cellspacing="0" cellpadding="3" align="center" width="100%">
+    <tr> 
+      <td valign="top" width="100">
+	<INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="[item-code]">
+	<a href="[area [item-code]]">[item-description]</a>
+      </td>
+      <td valign="top" width="30">[item-code]</td>
+      <td valign="top" width="30" align="center">
+	[item-calc]
 	my $q = q{[item-data inventory quantity]};
 	if($q > 0) {
 		return <<EOF;
@@ -142,16 +147,16 @@ EOF
 <a href="[area stock-alert [item-code]]"><b>N</b></a>
 EOF
 	}
-[/item-calc]</td>
-				<td valign="top" width="30">[item-price]</td>
-				<td valign=top width=30><input type=hidden name="mv_oi[item-increment]" value=""><input type=text name=mv_order_quantity size=2 value=""></td>
-				<td valign=top width=30><input type=submit value=Buy onClick="this.form.mv_oi[item-increment].value='[item-code]'"></td>
-                              </tr>
-                            </table>
-                          </div>
-                        </td>
-                      </tr>
-                    </table>
+[/item-calc]
+      </td>
+      <td valign="top" width="30">[item-price]</td>
+      <td valign=top width=30><input type=hidden name="mv_oi[item-increment]" value=""><input type=text name=mv_order_quantity size=2 value=""></td>
+      <td valign=top width=30><input type=submit value=Buy onClick="this.form.mv_oi[item-increment].value='[item-code]'"></td>
+    </tr>
+    </table>   
+  </td>
+</tr>
+</table>
 					
 [/search-list]
 [on-match]
@@ -160,7 +165,8 @@ EOF
 [/on-match]
 
 [no-match]
-<BR><BR><BLOCKQUOTE>
+<BR><BR>
+<BLOCKQUOTE>
 Sorry, no matches for <B>[calc]
 			my $joiner = ' AND ';
 			$joiner = ' OR ' if
@@ -170,11 +176,16 @@ Sorry, no matches for <B>[calc]
 			return join $joiner, @str;
 			[/calc]
 [if value mv_search_error]
-<P><B>Errors:
-<BR> [value-extended name=mv_search_error joiner="<BR>"]
+<P>
+<B>
+Errors:
+<BR> 
+[value-extended name=mv_search_error joiner="<BR>"]
 </B>
 [/if]
-<BR><BR></BLOCKQUOTE>
+
+<BR><BR>
+</BLOCKQUOTE>
 [/no-match]
 <BR CLEAR=LEFT>
 [more-list]

@@ -38,6 +38,7 @@ ui_template_name: leftright
 [set members_only]0[/set]
 [set page_banner] [/set]
 [set page_title]__COMPANY__ -- Search results[/set]
+
 @_LEFTRIGHT_TOP_@
 
 <!-- BEGIN CONTENT -->
@@ -51,68 +52,76 @@ ui_template_name: leftright
 [search-list]
 
 [item-change 1][condition][item-field category][/condition]
-                    <table width="50%" border="0" cellspacing="0" cellpadding="0">
-                      <tr class="contentbar1"> 
-                        <td class="contentbar1" width="100%">&nbsp;<big>[either][value banner_text][or][item-field category][/either]</big></td>
-                      </tr>
-                    </table>
+
+<table width="50%" border="0" cellspacing="0" cellpadding="0">
+<tr class="contentbar1"> 
+  <td class="contentbar1" width="100%">
+    &nbsp;<big>[either][value banner_text][or][item-field category][/either]</big>
+  </td>
+</tr>
+</table>
 [/item-change 1]
 					
-                    <table width="50%" border="0" cellspacing="0" cellpadding="0">
-                      <tr valign="middle"> 
-                        <td align=center> 
-                            <table border="0" cellspacing="0" cellpadding="3" bordercolor="#FFFFFF" align="center">
-                              <tr> 
-                                <td valign="top" align="center"> 
-                                  <table width="25%" border="0" cellspacing="0" cellpadding="0">
-                                    <tr> 
-                                      <td>[if-item-field image]<A HREF="[area [item-code]]"><img src="items/[item-field image]" ALT="[item-description]" BORDER="0"></A>[/if-item-field]</td>
-                                    </tr>
-                                  </table>
-                                </td>
-                                <td align="center"> 
-                                  <table border="0" cellpadding="3" cellspacing="0">
-<FORM ACTION="[process-target]" METHOD=POST>
-<INPUT TYPE=hidden  NAME="mv_todo"        VALUE="refresh">
-<INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="[item-code]">
-                                    <tr> 
-                                      <td valign="top" class="contentbar2"> 
-                                        <b>&nbsp;[item-description]</b>
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td align="center">&nbsp;</td>
-                                    </tr>
-                                    <tr> 
-                                      <td align="center">&nbsp;</td>
-                                    </tr>
-                                    <tr> 
-                                      <td align="center">Amount: <input type="text" name="mv_order_quantity" size="8" value="25.00">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td class="contentbar1" align="center"> 
-                                        <input type="submit" value="Buy it Now!">
-                                      </td>
-                                    </tr>
-</FORM>
-                                  </table>
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td colspan="2"> 
-				  [item-field comment]
-                                </td>
-                              </tr>
-                            </table>
-                        </td>
-                      </tr>
-                    </table><br>
+<table width="50%" border="0" cellspacing="0" cellpadding="0">
+<tr valign="middle"> 
+  <td align=center> 
+    <table border="0" cellspacing="0" cellpadding="3" align="center">
+    <tr> 
+      <td valign="top" align="center"> 
+        <table width="25%" border="0" cellspacing="0" cellpadding="0">
+        <tr> 
+          <td>[if-item-field image]<A HREF="[area [item-code]]"><img src="items/[item-field image]" ALT="[item-description]" BORDER="0"></A>[/if-item-field]</td>
+        </tr>
+        </table>
+      </td>
+      <td align="center"> 
+        <table border="0" cellpadding="3" cellspacing="0">
+	<FORM ACTION="[process-target]" METHOD=POST>
+	<INPUT TYPE=hidden  NAME="mv_todo"        VALUE="refresh">
+ 	<INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="[item-code]">
+        <tr> 
+          <td valign="top" class="contentbar2"> 
+            <b>&nbsp;[item-description]</b>
+          </td>
+        </tr>
+        <tr> 
+          <td align="center">&nbsp;</td>
+        </tr>
+        <tr> 
+          <td align="center">&nbsp;</td>
+        </tr>
+        <tr> 
+          <td align="center">
+	    Amount: 
+	    <input type="text" name="mv_order_quantity" size="8" value="25.00">
+          </td>
+        </tr>
+        <tr> 
+          <td class="contentbar1" align="center"> 
+            <input type="submit" value="Buy it Now!">
+          </td>
+        </tr>
+	</FORM>
+        </table>
+      </td>
+    </tr>
+    <tr> 
+      <td colspan="2"> 
+        [item-field comment]
+      </td>
+    </tr>
+    </table>
+  </td>
+  </tr>
+</table>
+
+<br>
 					
 [/search-list]
 
 [no-match]
-<BR><BR><BLOCKQUOTE>
+<BR><BR>
+<BLOCKQUOTE>
 Sorry, no matches for <B>[value-extended name=mv_searchspec joiner=" | "]</B>.
 [if value mv_search_error]
 <P><B>Errors:
@@ -130,6 +139,7 @@ Matches [matches] of [match-count] found.
 [/more-list]
 
 [/search-region]
+
 <!-- END CONTENT -->
 
 @_LEFTRIGHT_BOTTOM_@

@@ -37,12 +37,15 @@ ui_template_name: leftonly
 @_LEFTONLY_TOP_@
 
 <!-- BEGIN CONTENT -->
-<p><font __FFACE__ size="2">
+
 Please confirm your request to stop shopping by click the button below. All
 items will be cleared from your shopping cart.
+
 <br><br>
+
 Thank you for visiting.
-</font></p>
+
+<br><br>
 					
 <FORM ACTION="[process]" METHOD="POST">
 <INPUT TYPE=hidden NAME=mv_doit      VALUE=refresh>
@@ -50,13 +53,13 @@ Thank you for visiting.
 <INPUT TYPE=hidden NAME=mv_nextpage  VALUE=ord/basket>
 
 [item-list]
-<input type=hidden name="[quantity-name]" value=0>
+  <input type=hidden name="[quantity-name]" value=0>
 [/item-list]
 
-<FONT FACE="arial,helvetica">
 <INPUT TYPE=submit VALUE="Remove Shopping Cart Items">
-</FONT>
+
 </form>
+
 <!-- END CONTENT -->
 
 @_LEFTONLY_BOTTOM_@

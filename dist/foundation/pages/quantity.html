@@ -28,64 +28,67 @@ ui_template_name: leftonly
 <br>
 				  
 [fly-list code="[data session arg]"]
-                    <table width="50%" border="0" cellspacing="0" cellpadding="0">
-                      <tr class="contentbar1"> 
-                        <td>
-				<big>[item-field category]</big>
-			</td>
-                      </tr>
-                    </table>
+                    
+<table width="50%" border="0" cellspacing="0" cellpadding="0">
+<tr class="contentbar1"> 
+  <td>
+    <big>[item-field category]</big>
+  </td>
+</tr>
+</table>
 					
-                    <table width="50%" border="0" cellspacing="0" cellpadding="0">
-                      <tr valign="middle"> 
-                        <td align=center> 
-                            <table border="0" cellspacing="0" cellpadding="3" bordercolor="#FFFFFF" align="center">
-                              <tr> 
-                                <td valign="top" align="center"> 
+<table width="50%" border="0" cellspacing="0" cellpadding="0">
+<tr valign="middle"> 
+  <td align=center> 
+    <table border="0" cellspacing="0" cellpadding="3" bordercolor="#FFFFFF" align="center">
+    <tr> 
+      <td valign="top" align="center"> 
 [if-item-field image]
 <IMG SRC="items/[item-field image]" ALT="[item-description]" BORDER="0">
 [/if-item-field]							  
-                                </td>
-                                <td valign="top" align="center"> 
-                                  <table border="0" cellpadding="3" cellspacing="0">
-                                    <tr> 
-                                      <td valign="top" class="contentbar2"> 
-                                        <b>[item-description]</b>
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td align="center"><font __FFACE__>&nbsp;</font></td>
-                                    </tr>
-									
+      </td>
+      <td valign="top" align="center"> 
+        <table border="0" cellpadding="3" cellspacing="0">
+        <tr> 
+          <td valign="top" class="contentbar2"> 
+            <b>[item-description]</b>
+          </td>
+        </tr>
+        <tr> 
+          <td align="center">&nbsp;</td>
+        </tr>									
 [seti count][data table=inventory column=quantity key='[item-code]'][/seti]
 [if scratch count eq 0]
-                                    <tr> 
-                                      <td align="center"><font __FFACE__ size="1" color="#FF0000"><b>Out Of Stock</b></font><br><br>
-									  <font __FFACE__ size="1"><a href="[area stock-alert [item-code]]">In Stock Notification</a></font></td>
-                                    </tr>
+        <tr> 
+          <td align="center">
+	    <b>Out Of Stock</b>
+	    <br><br>
+	    <a href="[area stock-alert [item-code]]">In Stock Notification</a>
+          </td>
+        </tr>
 [else]
-                                    <tr> 
-                                      <td align="center"><font __FFACE__ size="1" color="#008000"><b>In Stock</b></font></td>
-                                    </tr>
+        <tr> 
+          <td align="center"><font __FFACE__ size="1" color="#008000"><b>In Stock</b></font></td>
+        </tr>
 [/else]
 [/if]									
-                                    <tr> 
-                                      <td align="center"><font __FFACE__>&nbsp;</font></td>
-                                    </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td colspan="2" class="contentbar1"> 
-					[item-field comment]
-                                </td>
-                              </tr>
-                            </table>
-                        </td>
-                      </tr>
-                    </table><br>
+        <tr> 
+          <td align="center"><font __FFACE__>&nbsp;</font></td>
+        </tr>
+        </table>
+      </td>
+    </tr>
+    <tr> 
+      <td colspan="2" class="contentbar1"> 
+	[item-field comment]
+      </td>
+    </tr>
+    </table>
+  </td>
+</tr>
+</table>
 					
-			  
+<br>			  
 <p>
 
 [set quantities]1 5 10 25[/set]
@@ -97,13 +100,10 @@ ui_template_name: leftonly
 				$Scratch->{qp_columns}++;
 				return;
 			[/calc]
+
 [loop prefix="part" list="[data session arg]"]
 
 <TABLE CELLSPACING=0 CELLPADDING=0 width="250">
-<TR>
-<TD class="contentbar1" COLSPAN="[scratch qp_columns]" VALIGN=BOTTOM ALIGN=CENTER>
-	</TD>
-</tr>
 [table-organize
 			caption="Quantity Pricing"
 			rows="2"
@@ -112,22 +112,20 @@ ui_template_name: leftonly
 			tr.1=|class="contentbar1"|
 			cols="[scratch qp_columns]"
 			]
-	<TD WIDTH=70 VALIGN=BOTTOM ALIGN=LEFT>
-	Part No.
-	</TD>
-	<TD VALIGN=TOP><font __FFACE__ size="2">[part-code]</font></TD>
-	[loop list="[scratch quantities]"]
-	<TD VALIGN=BOTTOM ALIGN=RIGHT> <font __FFACE__ size="2"> [loop-code] </font> </TD>
-	<TD VALIGN=TOP ALIGN=RIGHT>	<font __FFACE__ size="2">
-		[order code="[part-code]" quantity="[loop-code]"][price code="[part-code]" quantity="[loop-code]"]</A>
-	</font>
-	</TD>
-	[/loop]
+  <TD WIDTH=70 VALIGN=BOTTOM ALIGN=LEFT>
+    Part No.
+  </TD>
+  <TD VALIGN=TOP>[part-code]</TD>
+  [loop list="[scratch quantities]"]
+  <TD VALIGN=BOTTOM ALIGN=RIGHT>[loop-code]</TD>
+  <TD VALIGN=TOP ALIGN=RIGHT>
+    [order code="[part-code]" quantity="[loop-code]"][price code="[part-code]" quantity="[loop-code]"]</A>	
+  </TD>
+  [/loop]
 [/table-organize]
 </TABLE>
 
 [/loop]
-</CENTER>
 
 [/fly-list]
 

@@ -39,19 +39,16 @@ ui_template_name: leftonly
 
 [if !value return_items]
 
-					<p>
-                    <p><font __FFACE__ size="2" color="#669999"> 
-					No items were selected for return.
-					<br><br>
-					Please use your browser's back button to return to the order and select at least
-					one item from the order to return.
-					  </font></p>
+No items were selected for return.
+<br><br>
+Please use your browser's back button to return to the order and select at least
+one item from the order to return.
+<br><br>
 
 [else]					  
 
 [set ret_num_items][/set]
 [set qty_over][/set]
-
 
 [perl tables="orderline"]
 
@@ -91,69 +88,62 @@ $count ++;
 
 [if scratch qty_over]
 
-					<p>
-                    <p><font __FFACE__ size="2" color="#669999"> 
-					You may not return more items than you originally purchased.
-					<br><br>
-					Please use your browser's back to enter a more appropriate value.
-					  </font></p>
+You may not return more items than you originally purchased.
+<br><br>
+Please use your browser's back to enter a more appropriate value.
+<br><br>
 
 [else]					  
 
 [seti rma_number][counter etc/rma.number][/seti]
 
-					<p>
-                    <p><font __FFACE__ size="2" color="#669999"> 
-					Your return has been processed. Please ship the item(s) to the address below and your
-					account will be credited for the returned amount. A return confirmation has also been
-					emailed to you.
-					<br><br>
-					Be sure to list the RMA number issued below on your shipping label.
-					  </font></p>
-                    <p><font __FFACE__ size="2" color="#999999">__COMPANY__<br>
-                      11480 Sunset Hills Road<br>
-                      Suite 200 East<br>
-                      Reston, VA 20190<br>
-						</font><font __FFACE__ size="2" color="#FF9900"><br>
-                      </font></p>					  
-                    <table width="300" border="1" cellspacing="0" cellpadding="0" bordercolordark="#FF9900" bordercolorlight="#FF9900">
-                      <tr>
-                        <td>
-							<table cellpadding="4" cellspacing="4" border="0">
-							<tr>
-							<td><font __FFACE__ size="2"><b>RMA Number:</b></font></td>
-							<td><font __FFACE__ size="2"><b>[scratch rma_number]</b></font></td>
-							</tr>
-							</table>
-                          </td>
-                      </tr>
-                    </table>
-					
-					<p>
-					
-					<table width="300" border="0" cellspacing="0" cellpadding="0" bordercolordark="#FF9900" bordercolorlight="#FF9900">
-                      <tr>
-                        <td>
-							<table cellpadding="4" cellspacing="4" border="0">
-							<tr>
-							<td><font __FFACE__ size="2"><b>Order Number:</b></font></td>
-							<td><font __FFACE__ size="2"><b>[value order_number]</b></font></td>
-							</tr>
-							<tr>
-							<td><font __FFACE__ size="2"><b>Number Of Items:</b></font></td>
-							<td><font __FFACE__ size="2"><b>[scratch total_qty]</b></font></td>
-							</tr>
-							<tr>
-							<td><font __FFACE__ size="2"><b>Approximate Credit:</b></font></td>
-							<td><font __FFACE__ size="2"><b>[currency][scratch return_credit][/currency]</b></font></td>
-							</tr>							
-							</table>
-                          </td>
-                      </tr>
-                    </table>
+Your return has been processed. Please ship the item(s) to the address 
+below and your account will be credited for the returned amount. 
+A return confirmation has also been emailed to you.
+<br><br>
+Be sure to list the RMA number issued below on your shipping label.
 
+__COMPANY__<br>
+__ADDRESS__<br>
+__CITY__<br><br>
+
+<table border="1" cellspacing="0" cellpadding="0">
+<tr>
+  <td>
+    <table cellpadding="4" cellspacing="4" border="0">
+    <tr>
+      <td><b>RMA Number:</b></td>
+      <td><b>[scratch rma_number]</b></td>
+    </tr>
+    </table>
+  </td>
+</tr>
+</table>
 					
-                    <p>&nbsp; </p>
+<p>
+					
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+  <td>
+    <table cellpadding="4" cellspacing="4" border="0">
+    <tr>
+      <td><b>Order Number:</b></td>
+      <td><b>[value order_number]</b></td>
+    </tr>
+    <tr>
+      <td><b>Number Of Items:</b></td>
+      <td><b>[scratch total_qty]</b></td>
+    </tr>
+    <tr>
+      <td><b>Approximate Credit:</b></td>
+      <td><b>[currency][scratch return_credit][/currency]</b></td>
+    </tr>							
+    </table>
+  </td>
+</tr>
+</table>
+
+<p>&nbsp; </p>
 
 [set name=return1 interpolate=1]
 
@@ -203,10 +193,8 @@ Please use the information below to process your return:
 Shipping Address:
 
 @_COMPANY_@
-11480 Sunset Hills Road
-Suite 200 East
-Reston, VA 20190
-
+@_ADDRESS_@
+@_CITY_@
 
 Return Info:
 
@@ -216,7 +204,6 @@ Return Info:
  Order Number: [value order_number]
 Item Quantity: [scratch total_qty]
 Credit Amount: [currency][scratch return_credit][/currency]
-
 					
 [/email]
 
