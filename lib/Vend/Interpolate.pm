@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.13 2001-09-29 09:29:17 racke Exp $
+# $Id: Interpolate.pm,v 2.14 2001-10-06 06:26:46 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.13 $, 10);
+$VERSION = substr(q$Revision: 2.14 $, 10);
 
 @EXPORT = qw (
 
@@ -149,6 +149,8 @@ BEGIN {
 							&Log
 							&Debug
 							&uneval
+							&get_option_hash
+							&dotted_hash
 							&HTML
 							&interpolate_html
 						/;
@@ -456,11 +458,11 @@ sub substitute_image {
 			$Vend::Cfg->{ImageDir};
 
 		if ($dir) {
-			$$text =~ s#(<i\w+\s+[^>]*?src=")(?!\w+:)([^/][^"]+)#
+			$$text =~ s#(<i\w+\s+[^>]*?src=")(?!https?:)([^/][^"]+)#
 						$1 . $dir . $2#ige;
-	        $$text =~ s#(<body\s+[^>]*?background=")(?!\w+:)([^/][^"]+)#
+	        $$text =~ s#(<body\s+[^>]*?background=")(?!https?:)([^/][^"]+)#
 						$1 . $dir . $2#ige;
-	        $$text =~ s#(<t(?:[dhr]|able)\s+[^>]*?background=")(?!\w+:)([^/][^"]+)#
+	        $$text =~ s#(<t(?:[dhr]|able)\s+[^>]*?background=")(?!https?:)([^/][^"]+)#
 						$1 . $dir . $2#ige;
 		}
 	}
@@ -618,22 +620,22 @@ sub filter_value {
 	my @filters = Text::ParseWords::shellwords($filter); 
 	my @args;
 	for (@filters) {
-		next unless $_;
+		next unless length($_);
 		@args = ();
 		if(/%/) {
 			$value = sprintf($_, $value);
 			next;
 		}
-		if (/^(\d+)(\.?)$/) {
-			substr($value, $1) = $2 ? '...' : ''
-				if length($value) > $1;
-			next;
-		}
 		while( s/\.([^.]+)$//) {
 			unshift @args, $1;
 		}
+		if(/^\d+$/) {
+			substr($value , $_) = ''
+				if length($value) > $_;
+			next;
+		}
 		unless (defined $Filter{$_}) {
-			::logError ('Unknown filter %s', $_);
+			::logError ("Unknown filter '%s'", $_);
 			next;
 		}
 		unshift @args, $value, $tag;
@@ -2268,12 +2270,12 @@ sub tag_accessories {
 	}
 
 #::logDebug("item in tag_accessories: " . ::uneval_it($item));
-	if($item) {
-#::logDebug("default from attribute=$attribute, value=$item->{$attribute}");
-		$default = $item->{$attribute} || '';
+	if(exists $item->{$attribute}) {
+::logDebug("default from attribute=$attribute, value=$item->{$attribute}");
+		$default = $item->{$attribute};
 	}
 	elsif (exists $opt->{default}) {
-#::logDebug("default from opt");
+::logDebug("default from opt");
 		$default = $opt->{default};
 	}
 	elsif ($name) {
@@ -5396,7 +5398,20 @@ sub region {
 
 		$::Instance->{SearchObject}{$opt->{label}} = $opt->{object} = $obj;
 	}
-	my $prefix = defined $opt->{list_prefix} ? $opt->{list_prefix} : 'list';
+	my $lprefix;
+	my $mprefix;
+	if(defined $opt->{list_prefix}) {
+		$lprefix = $opt->{list_prefix};
+		$mprefix = "(?:$opt->{list_prefix}-)?";
+	}
+	elsif (defined $opt->{prefix}) {
+		$lprefix = "(?:$opt->{prefix}-)?list";
+		$mprefix = "(?:$opt->{prefix}-)?";
+	}
+	else {
+		$lprefix = "list";
+		$mprefix = "";
+	}
 
 #::logDebug("region: opt:\n" . ::uneval($opt) . "\npage:" . substr($page,0,100));
 
@@ -5424,14 +5439,22 @@ sub region {
 	$opt->{prefix} = $obj->{prefix} if $obj->{prefix};
 
 	$page =~ s!$QR{more_list}! tag_more_list($1,$2,$3,$4,$5,$opt,$6)!ge;
-	$page =~ s!$QR{no_match}!
-					$obj->{matches} > 0 ? '' : $1
-					!ge;
-	$page =~ s!$QR{on_match}!
-					$obj->{matches} <= 0 ? '' : $1
-					!ge;
-	$page =~ s:\[$prefix\]($Some)\[/$prefix\]:labeled_list($opt,$1,$obj):ige
-		or $page = labeled_list($opt,$page,$obj) ;
+	$page =~   s!
+					\[ ( $mprefix  on[-_]match )\]
+						($Some)
+					\[/\1\]
+				!
+					$obj->{matches} > 0 ? tag_attr_list($2, $opt) : ''
+				!xige;
+	$page =~   s!
+					\[ ( $mprefix  no[-_]match )\]
+						($Some)
+					\[/\1\]
+				!
+					$obj->{matches} > 0 ? '' : tag_attr_list($2, $opt)
+				!xige;
+	$page =~ s:\[($lprefix)\]($Some)\[/\1\]:labeled_list($opt,$2,$obj):ige
+		or $page = labeled_list($opt,$page,$obj);
 #::logDebug("past labeled_list");
 
     return $page;
@@ -7136,9 +7159,23 @@ sub taxable_amount {
 		}
     }
 
+	if (defined $Vend::Session->{discount}->{ENTIRE_ORDER}) {
+		$Vend::Interpolate::q = tag_nitems();
+		$Vend::Interpolate::s = $taxable;
+		my $cost = $Vend::Interpolate::ready_safe->reval(
+							 $Vend::Session->{discount}{ENTIRE_ORDER},
+						);
+		if($@) {
+			logError
+				"Discount ENTIRE_ORDER has bad formula. Returning normal subtotal.";
+			$cost = $taxable;
+		}
+		$taxable = $cost;
+	}
+
 	$Vend::Items = $save if defined $save;
 
-	$taxable;
+	return $taxable;
 }
 
 sub tag_handling {
