@@ -1,4 +1,3 @@
-ifndef @UI_TAG_TITLE_BAR
 UserTag title-bar Order  width size color
 UserTag title-bar PosNumber 3
 UserTag title-bar Interpolate 1
@@ -17,4 +16,3 @@ sub {
 EOF
 }
 EOR
-endif
