@@ -25,6 +25,8 @@ if(! $MV::Self ) {
 
 eval 'exec $Config{perlpath} -S \$0 \${1+"\$@"}'
     if 0; # not running under some shell
+    [catalogname] must contain alphanumerics and hyphens only.
+
 EOF
 	$Special{perlpath} =~ s/\s+$//;
 }
@@ -50,7 +52,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.32.4.19 2001-06-29 03:58:37 heins Exp $
+# $Id: makecat.PL,v 1.32.4.20 2001-07-16 17:21:48 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -141,6 +143,8 @@ options:
     -c    Configuration file (default is etc/makecat.cfg)
     -l    File to log to (default makecat.log)
     -r    Reconfigure defaults
+
+    [catalogname] must contain alphanumerics and hyphens only.
 
     Defaults:
     --basedir=directory        Base directory for catalogs
@@ -298,13 +302,16 @@ NOTE: This will be the name of 'vlink' or 'tlink', the link CGI
 program. Depending on your CGI setup, it may also have the 
 extension .cgi added.
 
+Only the characters [-a-zA-Z0-9_] are allowed, and it is strongly suggested
+that the catalog name be all lower case.
+
 If you are doing the demo for the first time, you might use "foundation".
 
 EOF
    $catalog_name = prompt ("Catalog name? ");
 }
 
-die "$USAGE\n" unless $catalog_name;
+die "$catalog_name -- $USAGE\n" unless $catalog_name =~ /^[-\w]+$/;
 
 if($Conf{homedir}) {
 	die "Directory set with --homedir=$Conf{homedir} is not a directory.\n"
@@ -2206,7 +2213,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 1.32.4.19 2001-06-29 03:58:37 heins Exp $
+# $Id: makecat.PL,v 1.32.4.20 2001-07-16 17:21:48 heins Exp $
 
 =head1 INTRODUCTION
 
