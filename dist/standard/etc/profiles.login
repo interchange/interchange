@@ -5,6 +5,7 @@ __NAME__ Logout_choice
 	[set mv_no_session_id]1[/set]
 	[if cgi clear_cart]
 	[calc] @$Items = (); return; [/calc]
+	[/if]
 	mv_nextpage=[either][cgi mv_successpage][or][cgi mv_nextpage][/either]
 [else]
 	mv_nextpage=[either][cgi mv_failpage][or][cgi mv_nextpage][/either]
