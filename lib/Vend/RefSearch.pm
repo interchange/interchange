@@ -1,6 +1,6 @@
 # Vend::DbSearch - Search indexes with Interchange
 #
-# $Id: RefSearch.pm,v 2.6 2003-06-18 17:34:44 jon Exp $
+# $Id: RefSearch.pm,v 2.7 2004-07-23 02:48:58 mheins Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
@@ -27,7 +27,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.7 $, 10);
 
 use strict;
 
@@ -159,6 +159,18 @@ sub search {
 	my $target = $s->{mv_search_reference};
 
 #::logDebug("target: " . ::uneval($target));
+	if(! ref $target) {
+		my $label = $target;
+		my $sr = $::Instance->{SearchObject}{$label};
+		if(! $sr) {
+			return $s->search_error("$label is not a target nor a label referencing a previous search");
+		}
+		$target= $sr->{mv_results};
+		$s->{mv_field_names} ||= $sr->{mv_field_names};
+	}
+
+#::logDebug("field names=" . ::uneval($s->{mv_field_names}));
+#::logDebug("target now: " . ::uneval($target));
 	if(
 		ref($target) ne 'ARRAY'
 			or
