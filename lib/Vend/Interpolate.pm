@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.230 2005-01-25 03:54:19 jon Exp $
+# $Id: Interpolate.pm,v 2.231 2005-01-25 04:17:58 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.230 $, 10);
+$VERSION = substr(q$Revision: 2.231 $, 10);
 
 @EXPORT = qw (
 
@@ -3898,7 +3898,7 @@ sub map_list_routines {
 }
 
 sub alternate {
-	my ($count, $inc, $end) = @_;
+	my ($count, $inc, $end, $page_start, $array_last) = @_;
 
 	if(! length($inc)) {
 		$inc ||= $::Values->{mv_item_alternate} || 2;
@@ -3911,13 +3911,19 @@ sub alternate {
 		$status = 1 unless $count - 1 == $end;
 	}
 	elsif($inc eq '0' or $inc eq 'first_only') {
-		$status = 1 if $count == 1;
+		$status = 1 if $count == 1 || $count == ($page_start + 1);
 	}
 	elsif($inc eq 'except_first') {
-		$status = 1 unless $count == 1;
+		$status = 1 unless $count == 1 || $count == ($page_start + 1);
 	}
-	elsif('last_only') {
+	elsif($inc eq 'last_only') {
 		$status = 1 if $count - 1 == $end;
+	}
+	elsif($inc eq 'absolute_last') {
+		$status = 1 if $count == $array_last;
+	}
+	elsif($inc eq 'absolute_first') {
+		$status = 1 if $count == 1;
 	}
 	return ! $status;
 }
@@ -3925,6 +3931,8 @@ sub alternate {
 sub iterate_array_list {
 	my ($i, $end, $count, $text, $ary, $opt_select, $fh, $opt, $fa) = @_;
 #::logDebug("passed opt=" . ::uneval($opt));
+	my $page_start = $i;
+	my $array_last = scalar @{$ary || []};
 	my $r = '';
 	$opt ||= {};
 
@@ -4033,7 +4041,7 @@ my $once = 0;
 
 	    $run = $text;
 		$run =~ s#$B$QR{_alternate}$E$QR{'/_alternate'}#
-						  alternate($count, $1, $end)
+						  alternate($count, $1, $end, $page_start, $array_last)
 				  							?	pull_else($2)
 											:	pull_if($2)#ige;
 		1 while $run =~ s#$IB$QR{_param_if}$IE[-_]param\1\]#
