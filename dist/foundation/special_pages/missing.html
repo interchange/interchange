@@ -1,5 +1,10 @@
+[if type=explicit compare=`q{[subject]} =~ m{^admin/}` ]
+[set ui_failure]<h2>Sorry, the page ([subject]) was not found</h2>[/set]
+[include admin/error.html]
+[else]
+
 [tmp page_title]
-Sorry, the page (@@MV_PREV_PAGE@@) was not found
+Sorry, the page ([subject]) was not found
 [/tmp]
 @_NOLEFT_TOP_@
 
@@ -14,3 +19,5 @@ to browsing our catalog</a>, if you wish.
 
 @_NOLEFT_BOTTOM_@
 <!-- current page: @@MV_PAGE@@ -->
+[/else]
+[/if]
