@@ -61,7 +61,7 @@ __UI_META_TABLE__
 									else              { "\\$1" }
 								}eg;
 			$text =~ s/\r\n/\n/g;
-			$Tag->backup_file($menufile);
+			$Tag->backup_file($menufile) if -f $menufile;
 			if($Tag->write_relative_file($menufile, $text) ) {
 				$Tag->warnings( errmsg(
 									"Menu '%s' saved to file %s.",
