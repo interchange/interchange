@@ -51,7 +51,15 @@ sub {
 		}
 	}
 
-    my $out = POSIX::strftime($fmt, @t);
+	my ($current, $out);
+	if ($Scratch->{mv_locale}) {
+		$current = POSIX::setlocale(&POSIX::LC_TIME);
+		POSIX::setlocale(&POSIX::LC_TIME, $Scratch->{mv_locale});
+		$out = POSIX::strftime($fmt, @t);
+		POSIX::setlocale(&POSIX::LC_TIME, $current);
+	} else {	 
+        $out = POSIX::strftime($fmt, @t);
+    }
 	$out =~ s/\b0(\d)\b/$1/g if $opt->{zerofix};
 	return $out;
 }
