@@ -1,20 +1,37 @@
 UserTag save_cart Order nickname recurring
 UserTag save_cart Routine <<EOR
 sub {
-    my($nickname,$recurring) = @_;
+	my($nickname,$recurring) = @_;
 
-    $nickname =~ s/://g;
+	my $add = 0;
+	my %names = ();
 
-    map {
-        $Tag->userdb({function => 'delete_cart', nickname => $_});
-    } grep(/^$nickname:/i,split("\n",$Tag->value('carts')));
+	$nickname =~ s/://g;
+	$recurring = ($recurring?"r":"c");
 
-    my $nn = join(':',$nickname,time(),$recurring?"r":"c");
+	foreach(split("\n",$Tag->value('carts'))) {
+		my($n,$t,$r) = split(':',$_);
+		$names{$n} = $r;
+		if($r eq $recurring) {
+			if($n eq $nickname) {
+				#$Tag->userdb({function => 'delete_cart', nickname => $_});
+				$add = 1;
+			}
+		}
+	}
+	if($add) {
+		while($names{"$nickname,$add"} eq $recurring) {
+			$add++;
+		}
+		$nickname .= ",$add";
+	}
 
-    $Tag->userdb({function => 'set_cart', nickname => $nn});
+	my $nn = join(':',$nickname,time(),$recurring);
 
-    $Carts->{main} = [];
+	$Tag->userdb({function => 'set_cart', nickname => $nn});
 
-    return '';
+	$Carts->{main} = [];
+
+	return '';
 }
 EOR
