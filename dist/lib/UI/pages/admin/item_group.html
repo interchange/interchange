@@ -125,10 +125,6 @@ EOF
 		$CGI->{ui_show_fields} =~ s/[\0,\s]+/,/g;
 		$CGI->{ui_description_fields} = $CGI->{ui_show_fields};
 	}
-	@cols = split /[\s,\0]+/, $CGI->{ui_description_fields};
-	for(@cols) {
-		$numeric{$_} = 1 if $ref->numeric($_);
-	}
 
 	return $out_message;
 [/perl]
