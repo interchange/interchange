@@ -879,7 +879,7 @@ sub {
 	$opts{notable} = 1;
 	$opts{no_meta} = 1;
 	$opts{defaults} = 1;
-	$opts{mv_cancelpage} ||= 'admin/index';
+	$opts{mv_cancelpage} ||= 'index';
 	$opts{row_template} ||= $opt->{row_template} || <<'EOF' unless $opts{display_type};
 {HELP?}<td>&nbsp;</td><td>
      <span style="color: blue">{HELP}</span>
