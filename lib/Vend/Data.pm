@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.28 2003-06-18 17:34:44 jon Exp $
+# $Id: Data.pm,v 2.29 2003-06-25 16:38:17 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -2316,8 +2316,6 @@ sub update_data {
 
 	return;
 }
-
-*dbref = \&database_exists_ref;
 
 1;
 

@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.118 2003-06-18 17:34:44 jon Exp $
+# $Id: Config.pm,v 2.119 2003-06-25 16:38:17 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.118 $, 10);
+$VERSION = substr(q$Revision: 2.119 $, 10);
 
 my %CDname;
 my %CPname;
@@ -1167,6 +1167,8 @@ sub config_named_catalog {
 
 	dump_structure($c, $g->{name}) if $Global::DumpStructure;
 
+	delete $c->{Source};
+
 	my $stime = scalar localtime();
 	Vend::Util::writefile(">$Global::RunDir/status.$g->{name}", "$stime\n");
 	Vend::Util::writefile(">$c->{ConfDir}/status.$g->{name}", "$stime\n");
@@ -1555,6 +1557,8 @@ GLOBLOOP:
 
 	dump_structure($Global::Structure, "$Global::RunDir/$Global::ExeName")
 		if $Global::DumpStructure and ! $Vend::ExternalProgram;
+
+	delete $Global::Structure->{Source};
 
 	%CDname = ();
 	return 1;

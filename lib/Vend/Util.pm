@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.59 2003-06-18 17:34:44 jon Exp $
+# $Id: Util.pm,v 2.60 2003-06-25 16:38:17 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -58,7 +58,6 @@ require Exporter;
 	logGlobal
 	logOnce
 	logtime
-	parse_locale
 	random_string
 	readfile
 	readin
@@ -88,7 +87,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.59 $, 10);
+$VERSION = substr(q$Revision: 2.60 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -115,9 +114,7 @@ $ESCAPE_CHARS::ok_in_url =
 	;
 
 ## This is an alias for a commonly-used function
-sub dbref {
-	return Vend::Data::database_exists_ref(@_);
-}
+*dbref = \&Vend::Data::database_exists_ref;
 
 ## This is a character class for HTML::Entities
 $ESCAPE_CHARS::std = "^\n\t !\#\$%\'-;=?-Z\\\]-~";
@@ -470,7 +467,6 @@ sub currency {
 	}
 
 	return $amount if $noformat;
-	my $loc;
 	my $sep;
 	my $dec;
 	my $fmt;

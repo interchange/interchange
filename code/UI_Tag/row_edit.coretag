@@ -13,7 +13,7 @@ sub {
 	my $mdb = ::database_exists_ref($mtab);
 	$opt->{view} ||= $CGI->{ui_meta_view};
 
-	my $view = UI::Primitive::meta_record($table, $opt->{view}) || {};
+	my $view = Vend::Table::Editor::meta_record($table, $opt->{view}) || {};
 	
 	my $tm_extra = '';
 	my $ta_extra = '';

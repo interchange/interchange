@@ -1,6 +1,6 @@
 # Vend::File - Interchange file functions
 #
-# $Id: File.pm,v 2.10 2003-06-18 17:34:44 jon Exp $
+# $Id: File.pm,v 2.11 2003-06-25 16:38:17 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -32,7 +32,6 @@ require Exporter;
 	absolute_or_relative
 	allowed_file
 	catfile
-	check_security
 	exists_filename
 	file_allow
 	file_modification_time
@@ -54,7 +53,7 @@ use Errno;
 use Vend::Util;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK $errstr);
-$VERSION = substr(q$Revision: 2.10 $, 10);
+$VERSION = substr(q$Revision: 2.11 $, 10);
 
 sub writefile {
     my($file, $data, $opt) = @_;
@@ -505,21 +504,6 @@ sub canonpath {
 #print "file_name_is_absolute a/b/c --> " . file_name_is_absolute('a/b/c') . "\n";
 #print "file_name_is_absolute a:b/c --> " . file_name_is_absolute('a:b/c') . "\n";
 #print "file_name_is_absolute /a/b/c --> " . file_name_is_absolute('/a/b/c') . "\n";
-
-sub check_user_read {
-	my $fn = shift;
-	my $un = $Global::CatalogUser->{$Vend::Cat}
-		or return undef;
-	my ($own, $grown) = (stat($fn))[4,5];
-	return 0 unless defined $own;
-	my $uid = getpwnam($un);
-	return 1 if $uid eq $own;
-	my @members = split /\s+/, (getgrgid($grown))[3];
-	for(@members) {
-		return 1 if $un eq $_;
-	}
-	return 0;
-}
 
 my %intrinsic = (
 	ic_super => sub { return 1 if $Vend::superuser; },

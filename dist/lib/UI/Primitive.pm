@@ -1,6 +1,6 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 2.22 2003-06-18 17:34:43 jon Exp $
+# $Id: Primitive.pm,v 2.23 2003-06-25 16:38:17 mheins Exp $
 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1998-2002 Red Hat, Inc.
@@ -27,7 +27,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 2.22 $, 10);
+$VERSION = substr(q$Revision: 2.23 $, 10);
 
 $DEBUG = 0;
 
@@ -47,7 +47,6 @@ $DECODE_CHARS = qq{&[<"\000-\037\177-\377};
 		list_glob
 		list_images
 		list_pages
-		meta_record
 		ui_acl_enabled
 		ui_check_acl
 	);
@@ -569,53 +568,6 @@ sub rotate {
 		utime $now, $now, $base;
 	}
 	return 1;
-}
-
-
-sub meta_record {
-	my ($item, $view, $mdb) = @_;
-
-#::logDebug("meta_record: item=$item view=$view mdb=$mdb");
-	return undef unless $item;
-
-	if(! ref ($mdb)) {
-		my $mtable = $mdb || $::Variable->{UI_META_TABLE} || 'mv_metadata';
-#::logDebug("meta_record mtable=$mtable");
-		$mdb = Vend::Data::database_exists_ref($mtable)
-		or return undef;
-	}
-#::logDebug("meta_record has an item=$item and mdb=$mdb");
-
-	my $record;
-	if($view) {
-		$record = $mdb->row_hash("${view}::$item");
-	}
-	$record = $mdb->row_hash($item) if ! $record;
-#::logDebug("meta_record  record=$record");
-
-	return undef if ! $record;
-
-	# Get additional settings from extended field, which is a serialized
-	# hash
-	my $hash;
-	if($record->{extended}) {
-		$hash = Vend::Util::get_option_hash($record->{extended});
-		if(ref $hash eq 'HASH') {
-			@$record{keys %$hash} = values %$hash;
-		}
-		else {
-			undef $hash;
-		}
-	}
-
-	# Allow view settings to be placed in the extended area
-	if($view and $hash and $hash->{view}) {
-		my $view_hash = $record->{view}{$view};
-		ref $view_hash
-			and @$record{keys %$view_hash} = values %$view_hash;
-	}
-#::logDebug("return meta_record=" . ::uneval($record) );
-	return $record;
 }
 
 1;
