@@ -34,7 +34,7 @@ then
 	echo
 elif test -z "$HASMVUSER"
 then
-	adduser -d $LIBBASE/minivend -c "Minivend daemon" -r minivend
+	adduser -d $LIBBASE/minivend -c "Interchange daemon" -r minivend
 fi
 
 ETCDIRS="rc.d/init.d logrotate.d"
@@ -70,10 +70,10 @@ fi
 cat > $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d/minivend <<EOF
 #!/bin/sh
 #
-# Startup script for Minivend
+# Startup script for Interchange
 #
 # chkconfig: 345 96 4
-# description: Minivend is a database access and HTML templating system \
+# description: Interchange is a database access and HTML templating system \
 #	       focused on ecommerce
 # processname: minivend
 # pidfile: $RUNBASE/minivend/minivend.pid

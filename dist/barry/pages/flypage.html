@@ -1,7 +1,18 @@
+[comment]
+ui_template: Yes
+ui_template_name: standalone
+ui_template_layout: LOGOBAR, MENUBAR, NO_LEFT, UI_CONTENT, NO_RIGHT, MENUBOTTOM, COPYRIGHT
+ui_template_description: Standard page with top and left areas. Menu bar and copyright at bottom.
+ui_control_element: page_title : 
+ui_control_element: members_only : 0=No,1=Yes
+ui_control_description: page_title : Page title
+ui_control_description: members_only : Members only
+[/comment]
 [set page_title][item-description][/set]
 __LOGOBAR__
 __MENUBAR__
 __NO_LEFT__
+<!-- BEGIN CONTENT -->
 
 [comment]
 	This the special "flypage". When a page is called that
@@ -18,7 +29,7 @@ __NO_LEFT__
 	could come from another table.
 [/comment]
 [comment]
-  This next is a MiniVend UserTag -- if you see it in the page, then
+  This next is a Interchange UserTag -- if you see it in the page, then
   you don't have it defined in catalog.cfg.
 [/comment]
 <BR>
@@ -71,7 +82,8 @@ __NO_LEFT__
 </table>
 
 
+<!-- current page: @@MV_PAGE@@ -->
+<!-- END CONTENT -->
 __NO_RIGHT__
 __MENUBOTTOM__
 __COPYRIGHT__
-<!-- current page: @@MV_PAGE@@ -->

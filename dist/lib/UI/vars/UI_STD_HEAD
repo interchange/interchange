@@ -104,9 +104,9 @@ function open_quicklinks() {
 
 <td valign="middle" height="22">
 
-<img src="admin/cleardot.gif" width="12">
 
 [if-mm advanced order]
+<img src="admin/cleardot.gif" width="12">
 <a href="[area admin/order]">
 <img src="admin/icon_orders.gif" height="16" width="16" border="0">
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
@@ -115,9 +115,19 @@ function open_quicklinks() {
 </font></a>
 [/if-mm]
 
-<img src="admin/cleardot.gif" width="22">
+[if-mm advanced userdb]
+<img src="admin/cleardot.gif" width="12">
+<a href="[area admin/customer]">
+<img src="admin/icon_people.gif" height="16" width="16" border="0">
+<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
+ color="__UI_C_TITLEBARTXT__">
+ &nbsp;Customers
+</font></a>
+[/if-mm]
+
 
 [if-mm advanced item]
+<img src="admin/cleardot.gif" width="22">
 <a href="[area admin/item]">
 <img src="admin/icon_item.gif" height="16" width="16" border="0" >
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
@@ -126,9 +136,9 @@ function open_quicklinks() {
 </font></a>
 [/if-mm]
 
-<img src="admin/cleardot.gif" width="22">
 
 [if-mm advanced stats]
+<img src="admin/cleardot.gif" width="22">
 <a href="[area admin/genstats]">
 <img src="admin/icon_stats.gif" height="16" width="16" border="0" >
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"

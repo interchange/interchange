@@ -1,4 +1,4 @@
-# MiniVend database definition
+# Interchange database definition
 Database  pricing  pricing.txt __SQLDSN__
 #ifdef SQLUSER
 Database  pricing  USER         __SQLUSER__

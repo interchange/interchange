@@ -13,8 +13,8 @@ you can have only one. Should correspond to TAXAREA.
 
 SOMESQL
 .
-Minivend has a workable internal database, but many things will
-work better (and a few worse) if you use a SQL database. Minivend
+Interchange has a workable internal database, but many things will
+work better (and a few worse) if you use a SQL database. Interchange
 can configure MySQL and Postgres in a test configuration.
 
 MYSQL
@@ -33,7 +33,7 @@ be too surprised if this doesn't work.
 
 MULTIORDER
 .
-MiniVend can do order pages in any way; two examples are provided.
+Interchange can do order pages in any way; two examples are provided.
 The default is single-page.
 
 TEMPLATE
@@ -50,29 +50,13 @@ used. If you want to add a handling charge, do it here.
 
 SUPERUSER
 .
-You can use MiniMate, MiniVend's companion configuration
+You can use Interchange's companion configuration
 interface, to do upload/download of files, manipulation of
 the database, reconfiguration of the catalog, and much more.
 .
-To enable MiniMate, you will need a "super-user" account
+To enable the UI, you will need a "super-user" account
 name that has full access.
-
-NOCRYPT
 .
-If you set this to 0, passwords will be encrypted in the user
-database. If you set this to anything other than zero or a blank
-value, passwords will not be encrypted and will be readable in
-the user database. You can build encrypted passwords with
-the htpasswd command or other means.
-.
-Don't expect to be able to email users their passwords if
-you select encryption!
-.
-You can use your up arrow to look at the encrypted form of
-"pass" if you have Term::ReadLine installed.
-
-SUPASSWD
-.
-You should probably change this, but if you selected encrypted
-passwords you might want to use your up arrow to set the default
-initially.
+The initial password is "pass". CHANGE IT! You can do this
+by going to the admin menu and selecting the superuser and
+then "Change password".

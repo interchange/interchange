@@ -1,7 +1,18 @@
+[comment]
+ui_template: Yes
+ui_template_name: standard
+ui_template_layout: LOGOBAR, MENUBAR, LEFTSIDE, UI_CONTENT, RIGHTSIDE, MENUBOTTOM, COPYRIGHT
+ui_template_description: Page with top/left/right areas. Menu bar and copyright at bottom.
+ui_control_element: page_title : 
+ui_control_element: members_only : 0=No,1=Yes
+ui_control_description: page_title : Page title
+ui_control_description: members_only : Members only
+[/comment]
 [set page_title]Privacy Policy[/set]
 __LOGOBAR__
 __MENUBAR__
 __LEFTSIDE__
+<!-- BEGIN CONTENT -->
 
 [title-bar 400 4]Privacy Policy[/title-bar]
 <BLOCKQUOTE>
@@ -14,7 +25,8 @@ you ordered from us.
 </UL>
 </BLOCKQUOTE>
 
+<!-- current page: @@MV_PAGE@@ -->
+<!-- END CONTENT -->
 __RIGHTSIDE__
 __MENUBOTTOM__
 __COPYRIGHT__
-<!-- current page: @@MV_PAGE@@ -->

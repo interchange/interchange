@@ -1,9 +1,17 @@
-[set mv_add_dot_html]1[/set]
-[set mv_no_session_id]1[/set]
-[set mv_no_count]1[/set]
+[comment]
+ui_template: Yes
+ui_template_name: standard
+ui_template_layout: LOGOBAR, MENUBAR, NO_LEFT, UI_CONTENT, NO_RIGHT, MENUBOTTOM, COPYRIGHT
+ui_template_description: Page with top area only.
+ui_control_element: page_title : 
+ui_control_element: members_only : 0=No,1=Yes
+ui_control_description: page_title : Page title
+ui_control_description: members_only : Members only
+[/comment]
 __LOGOBAR__
 __MENUBAR__
 __NO_LEFT__
+<!-- BEGIN CONTENT -->
 <CENTER>
 <H1>Welcome to Barry's!</H1>
 <P>
@@ -31,8 +39,8 @@ catalog system. Links that will help you to use this software:</I>
 
 </TD></TR></TABLE>
 
+<!-- current page: @@MV_PAGE@@ -->
+<!-- END CONTENT -->
 __NO_RIGHT__
 __MENUBOTTOM__
 __COPYRIGHT__
-
-<!-- current page: @@MV_PAGE@@ -->
