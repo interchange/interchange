@@ -93,9 +93,23 @@ Payment
 Foundation
 ----------
 
+* Multi-language support, configured by the LOCALES and DEFAULTLOCALE
+  variables.
+
+* Updated region templates.
+
 * New PayflowPro control variables MV_PAYMENT_PARTNER and MV_PAYMENT_VENDOR.
 
 * Payment routes use now generic MV_PAYMENT_* variables.
+
+Shadow Database
+---------------
+
+* lookup_table option added
+
+* foreign method implemented
+
+* test_record calls underlying database now
 
 Installation
 ------------
