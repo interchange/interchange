@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.19 2002-05-14 11:28:19 kwalsh Exp $
+# $Id: Order.pm,v 2.20 2002-05-30 10:54:07 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.19 $, 10);
+$VERSION = substr(q$Revision: 2.20 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1139,7 +1139,7 @@ sub _phone_us_with_area_strict {
 
 sub _email {
 	my($ref, $var, $val) = @_;
-	if($val and $val =~ /[\040-\176]+\@[-A-Za-z0-9.]+\.[A-Za-z]+/) {
+	if($val and $val =~ /^[\040-\176]+\@[-A-Za-z0-9.]+\.[A-Za-z]+$/) {
 		return (1, $var, '');
 	}
 	else {
