@@ -1,10 +1,6 @@
 # Config.pm - Configure Interchange
 #
-<<<<<<< Config.pm
-# $Id: Config.pm,v 1.23.4.2 2000-10-20 10:18:42 racke Exp $
-=======
-# $Id: Config.pm,v 1.23.4.2 2000-10-20 10:18:42 racke Exp $
->>>>>>> 1.24
+# $Id: Config.pm,v 1.23.4.3 2000-10-20 15:25:17 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -97,7 +93,6 @@ use vars qw(
 			);
 use Safe;
 use Fcntl;
-use File::Basename;
 use Vend::Parse;
 use Vend::Util;
 
@@ -108,7 +103,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.23.4.2 $, 10);
+$VERSION = substr(q$Revision: 1.23.4.3 $, 10);
 
 my %CDname;
 
