@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange restarter
 #
-# $Id: restart.PL,v 1.2 2000-07-12 03:08:13 heins Exp $
+# $Id: restart.PL,v 1.3 2000-07-20 07:24:13 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -87,7 +87,7 @@ sub get_id {
 	@files = ("$Global::VendRoot/.uid", "$Global::VendRoot/_uid"); 
 	my $uid;
 	for(@files) {
-		open(UID, $_) or next;
+		open(UID, "< $_") or next;
 		$uid = <UID>;
 		chomp($uid);
 		last;

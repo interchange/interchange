@@ -82,7 +82,7 @@ PARSECFG: {
 	my $file;
 	my @cfglines;
 
-	open(MVCFG, $Configfile) or die "Couldn't read $Configfile: $!\n";
+	open(MVCFG, "< $Configfile") or die "Couldn't read $Configfile: $!\n";
 	while(<MVCFG>) { push(@cfglines, $_) if /^\s*catalog\s+/i }
 	close MVCFG;
 
@@ -106,7 +106,7 @@ expireall -- Run Interchange expire on all catalogs
 
 =head1 VERSION
 
-$Id: expireall.PL,v 1.2 2000-07-12 03:08:12 heins Exp $
+$Id: expireall.PL,v 1.3 2000-07-20 07:24:13 heins Exp $
 
 =head1 DESCRIPTION
 

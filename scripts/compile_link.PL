@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange link program configurator
 #
-# $Id: compile_link.PL,v 1.2 2000-07-12 03:08:12 heins Exp $
+# $Id: compile_link.PL,v 1.3 2000-07-20 07:24:13 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -206,7 +206,7 @@ foreach my $targ (@edit_files) {
 	my $src = "$targ.tmp";
 	rename $targ, $src
 		or die "Couldn't rename $targ to $src: $!\n";
-	open (IN, $src)
+	open (IN, "< $src")
 		or die "Couldn't read $src: $!\n";
 	open (OUT, ">$targ")
 		or die "Couldn't write $targ: $!\n";

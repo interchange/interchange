@@ -25,7 +25,7 @@ DOIT: {
 #
 # update - Interchange database updater
 #
-# $Id: update.PL,v 1.2 2000-07-12 03:08:13 heins Exp $
+# $Id: update.PL,v 1.3 2000-07-20 07:24:13 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -198,7 +198,7 @@ elsif (!defined $Inputfile and ! @Fields and !@Values) {
 
 my($name,$dir,$param,$subcat,$subconfig);
 chdir $Global::VendRoot;
-open(GLOBAL, $Global::ConfigFile) or
+open(GLOBAL, "< $Global::ConfigFile") or
     die "No global configuration file? Aborting.\n";
 while(<GLOBAL>) {
     next unless /^\s*(sub)?catalog\s+$Catalog\s+/i;
@@ -265,7 +265,7 @@ print "setting ${Name}::${field}::$Key=$val\n";
 	}
 }
 else {
-	open INPUT, $Inputfile or die "Couldn't open input file $Inputfile: $!\n";
+	open (INPUT, "< $Inputfile") or die "Couldn't open input file $Inputfile: $!\n";
 	while(<INPUT>) {
 		chomp;
 		s/[\r\cZ]+//;

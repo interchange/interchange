@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange session expiration
 #
-# $Id: expire.PL,v 1.2 2000-07-12 03:08:12 heins Exp $
+# $Id: expire.PL,v 1.3 2000-07-20 07:24:13 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -192,7 +192,7 @@ my $g;
 if(defined $catalog) {
 	my($name,$dir,$param);
 	chdir $Global::VendRoot;
-	open(GLOBAL, $Global::ConfigFile) or
+	open(GLOBAL, "< $Global::ConfigFile") or
 		die "No global configuration file? Aborting.\n";
 	while(<GLOBAL>) {
 		next unless /^\s*((?:sub)?catalog)\s+($catalog\s+.*)/i;

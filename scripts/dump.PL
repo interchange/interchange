@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange session dumper
 #
-# $Id: dump.PL,v 1.2 2000-07-12 03:08:12 heins Exp $
+# $Id: dump.PL,v 1.3 2000-07-20 07:24:13 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -189,7 +189,7 @@ die "too many args, aborting.\n"
 if(defined $catalog) {
 	my($name,$dir,$param,$subcat,$subconfig,$junk);
 	chdir $Global::VendRoot;
-	open(GLOBAL, $Global::ConfigFile) or
+	open(GLOBAL, "< $Global::ConfigFile") or
 		die "No global configuration file? Aborting.\n";
 	while(<GLOBAL>) {
 		next unless /^\s*(sub)?catalog\s+$catalog\s+/i;
@@ -239,7 +239,7 @@ dump -- Interchange session dumper
 
 =head1 VERSION
 
-$Id: dump.PL,v 1.2 2000-07-12 03:08:12 heins Exp $
+$Id: dump.PL,v 1.3 2000-07-20 07:24:13 heins Exp $
 
 =head1 SEE ALSO
 

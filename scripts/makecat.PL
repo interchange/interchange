@@ -296,7 +296,7 @@ READCONFIG: {
 	my $cfgfile = "etc/$catalog_name.makecat.cfg";
 
 	last READCONFIG unless -f $cfgfile;
-	open(READCONFIG, $cfgfile) or die "read $cfgfile: $!\n";
+	open(READCONFIG, "< $cfgfile") or die "read $cfgfile: $!\n";
 
 	while(<READCONFIG>) {
 			next unless /^\s*[A-Z]\w*\s+\S/;
@@ -1368,11 +1368,11 @@ else {
 
 ADDITIONAL: {
 	last ADDITIONAL unless -f "$dir/config/additional_fields";
-	open(ADDL, "$dir/config/additional_fields") 
+	open(ADDL, "< $dir/config/additional_fields") 
 		or last ADDITIONAL;
 	my %help;
 	local ($/) = "";
-	if(open(ADDLHELP, "$dir/config/additional_help") ) {
+	if(open(ADDLHELP, "< $dir/config/additional_help") ) {
 		while(<ADDLHELP>) {
 			my($parm,$help) = split /\n/, $_, 2;
 			$help =~ s/\s*$/\n\n/;
@@ -1418,7 +1418,7 @@ ADDITIONAL: {
 
 PRECMD: {
 	last PRECMD unless -f "$dir/config/precopy_commands";
-	open(ADDL, "$dir/config/precopy_commands") 
+	open(ADDL, "< $dir/config/precopy_commands") 
 		or last PRECMD;
 	print "\nFound system commands to run.\n\n";
 	local ($/) = "";
@@ -1554,7 +1554,7 @@ sub wanted {
         last EDIT unless (-f _);
         last EDIT unless (-T _);
   
-		open(IN, $file) or die "Couldn't open $name: $!\n";
+		open(IN, "< $file") or die "Couldn't open $name: $!\n";
 		open(OUT, ">$file.new") or die "Couldn't create $name.new: $!\n";
 		while(<IN>) {
 			( (print OUT $_), next) unless /__MV[CR]/;
@@ -1731,7 +1731,7 @@ EOF
 
 POSTCMD: {
 	last POSTCMD unless -f "$dir/config/postcopy_commands";
-	open(ADDL, "$dir/config/postcopy_commands") 
+	open(ADDL, "< $dir/config/postcopy_commands") 
 		or last POSTCMD;
 	print "\nFound additional system commands to run.\n\n";
 	local ($/) = "";
@@ -1796,7 +1796,7 @@ POSTCMD: {
 		else {
 			File::Copy::copy('minivend.cfg.dist', $tmpfile);
 		}
-		open(CFG, $tmpfile)
+		open(CFG, "< $tmpfile")
 			or die "\nCouldn't open $tmpfile: $!\n";
 		while(<CFG>) {
 			$mark = $. if /^#?catalog\s+/i;
@@ -1946,7 +1946,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.5 2000-07-12 03:08:12 heins Exp $
+$Id: makecat.PL,v 1.6 2000-07-20 07:24:13 heins Exp $
 
 =head1 INTRODUCTION
 

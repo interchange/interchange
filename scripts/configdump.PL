@@ -92,7 +92,7 @@ my($name,$dir,$param,$subcat,$subconfig,$junk);
 chdir $Global::VendRoot;
 
 if ($catalog) {
-    open(GLOBAL, $Global::ConfigFile) or
+    open(GLOBAL, "< $Global::ConfigFile") or
         die "No global configuration file? Aborting.\n";
     while(<GLOBAL>) {
         next unless /^\s*(sub)?catalog\s+$catalog\s+/i;

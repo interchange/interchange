@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.5.x
 #
-# $Id: minivend.PL,v 1.11 2000-07-12 03:08:12 heins Exp $
+# $Id: minivend.PL,v 1.12 2000-07-20 07:24:13 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -123,7 +123,7 @@ use vars qw($VERSION);
 require Exporter;
 
 BEGIN {
-	$VERSION = '4.5.3';
+	$VERSION = '4.5.4';
 }
 
 
@@ -960,7 +960,7 @@ sub config_named_catalog {
 			if ($c->{Static}) {
 				print "loading static page names..." unless $Vend::Quiet;
 				last READSTATIC if $c->{StaticDBM};
-				open STATICPAGE, "$basedir/.static"
+				open STATICPAGE, "< $basedir/.static"
 					or warn <<EOF;
 Couldn't read static page status file $basedir/.static: $!
 EOF
@@ -1029,7 +1029,14 @@ EOF
      	return undef;
     }
 
+	if ($c->{IPC}) {
+		my $dir = '.';
+		$dir = $c->{IPCdir} if $c->{IPCdir};
+		dump_structure($c, "$dir/$g->{name}");
+		chmod($c->{IPCmode} | 0644 , "$dir/$g->{name}")
+	}
 	dump_structure($c, $g->{name}) if $Global::DumpStructure;
+
 	undef $c->{Source};
 	my $stime = scalar localtime();
 	Vend::Util::writefile(">$Global::ConfDir/status.$g->{name}", "$stime\n");
@@ -1049,6 +1056,7 @@ sub is_retired {
 
 sub retire_id {
 	my $id = shift;
+	return unless $id =~ /^\w+$/;
 	mkdir "$Vend::Cfg->{ScratchDir}/retired", 0777
 		unless -d "$Vend::Cfg->{ScratchDir}/retired";
 	my $fn = Vend::Util::get_filename($id, 2, 1, "$Vend::Cfg->{ScratchDir}/retired");
@@ -1297,13 +1305,13 @@ EOF
 		}
 	}
 
-	chdir $Vend::Cfg->{'VendRoot'} 
-		or die "Couldn't change to $Vend::Cfg{'VendRoot'}: $!\n";
+	chdir $Vend::Cfg->{VendRoot} 
+		or die "Couldn't change to $Vend::Cfg->{VendRoot}: $!\n";
 	set_file_permissions();
 # STATICPAGE
 	tie_static_dbm() if $Vend::Cfg->{StaticDBM};
 # END STATICPAGE
-	umask $Vend::Cfg->{'Umask'};
+	umask $Vend::Cfg->{Umask};
 	open_database();
 
 	$CGI::user = Vend::Util::check_authorization($CGI::authorization)
@@ -1341,6 +1349,20 @@ EOF
 		if (! $sessionid and $Vend::Cfg->{FallbackIP}) {
 			$sessionid = generate_key($CGI::remote_addr . $CGI::useragent);
 		}
+	}
+	elsif ($sessionid !~ /^\w+$/) {
+		my $msg = get_locale_message(
+						403,
+						"Unauthorized for that session %s. Logged.",
+						$sessionid,
+						);
+		$Vend::StatusLine = <<EOF;
+Status: 403 Unauthorized
+Content-Type: text/plain
+EOF
+		::response($msg);
+		logGlobal($msg);
+		return;
 	}
 
 # DEBUG
@@ -1462,7 +1484,7 @@ EOF
 		$Vend::Session->{logged_in} && ! $Vend::Cfg->{StaticLogged};
 
 	$CGI::pragma = 'no-cache'
-		if delete $Vend::Session->{scratch}{mv_no_cache};
+		if delete $::Scratch->{mv_no_cache};
 
 	$Vend::FinalPath = $Vend::Session->{last_url} = $CGI::path_info;
 	if(	defined $Vend::Session->{one_time_path_alias}{$Vend::FinalPath} ) {
@@ -1498,18 +1520,18 @@ EOF
 	ROUTINES: {
 		last ROUTINES unless index($Vend::FinalPath, '/process/') == 0;
 		while ($Vend::FinalPath =~ s:/process/(locale|language|currency)/([^/]*)/:/process/:) {
-			$Vend::Session->{scratch}->{"mv_$1"} = $2;
+			$::Scratch->{"mv_$1"} = $2;
 		}
 		$Vend::FinalPath =~ s:/process/page/:/:;
 	}
 	my $locale;
-	if($locale = $Vend::Session->{scratch}->{mv_language}) {
+	if($locale = $::Scratch->{mv_language}) {
 		$Global::Variable->{LANG}
 			= $::Variable->{LANG} = $locale;
 	}
 
 	if ($Vend::Cfg->{Locale}								and
-		$locale = $Vend::Session->{scratch}->{mv_locale}	and
+		$locale = $::Scratch->{mv_locale}	and
 		defined $Vend::Cfg->{Locale_repository}->{$locale}
 		)
 	{ 
@@ -1519,7 +1541,8 @@ EOF
 				= $locale
 			 if ! $::Scratch->{mv_language};
 		Vend::Util::setlocale(	$locale,
-								($Vend::Session->{scratch}{mv_currency} || undef)
+								($::Scratch->{mv_currency} || undef),
+								{ persist => 1 }
 							);
 	}
 # END LEGACY
