@@ -98,6 +98,20 @@
 </td><td><font size=2>[loop-data transactions order_id]</a></font></tr>
 [/if-loop-data]
 
+<tr>
+	<td colspan=2>&nbsp;</td>
+</tr>
+
+<tr>
+	<td align=right>&nbsp;</td>
+	<td>[page href="__UI_BASE__/flex_editor"
+			  form="
+			  	mv_data_table=transactions
+				item_id=[loop-code]
+				ui_return_to=__UI_BASE__/order
+			"]Edit order</a></tr>
+</tr>
+
 </table>
 
 </td><td valign=top colspan=4>
@@ -315,6 +329,20 @@
 [currency][loop-data transactions shipping][/currency]</font>
 </td>
 </tr>
+
+<!-- ----- Handling total (if any) ----- -->
+
+[if-loop-data transactions handling > 0]
+<tr>
+<td colspan=6 align=right>
+<font size=2>[L]Handling[/L]:</font>
+</td>
+<td align=right class=rborder>
+<font size=2>
+[currency][loop-data transactions handling][/currency]</font>
+</td>
+</tr>
+[/if-loop-data]
 
 <!-- ----- Grand total ----- -->
 
