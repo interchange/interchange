@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.22 2001-04-10 20:23:53 heins Exp $
+# $Id: DBI.pm,v 1.25.2.23 2001-04-12 04:56:50 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.22 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.23 $, 10);
 
 use strict;
 
@@ -81,7 +81,7 @@ sub find_dsn {
 	}
 
 	if ($config->{Transactions}) {
-#::logDebug("Should be opened in transaction mode");
+#::logDebug("table $config->{name} should be opened in transaction mode");
 		$config->{AUTOCOMMIT} = 0;
 		undef $config->{dsn_id};
 	}
@@ -573,20 +573,36 @@ sub inc_field {
 sub commit {
     my ($s) = @_;
 #::logDebug("committing $s->[$TABLE], dsn_id=$s->[$CONFIG]{dsn_id}");
-	if (! defined $s->[$DBI]) {
-		::logError("commit attempted on non-open database handle for table: %s", $s->[$TABLE]);
-		return undef;
-	}
+
+	# This is pretty harmless, no?
+	return undef if ! defined $s->[$DBI];
+
+#	if (! defined $s->[$DBI]) {
+#		::logError(
+#			"commit attempted on non-open database handle for table: %s",
+#			$s->[$TABLE],
+#			);
+#		return undef;
+#	}
+
 	return $s->[$DBI]->commit();
 }
 
 sub rollback {
     my ($s) = @_;
+
 #::logDebug("rolling back $s->[$TABLE], dsn_id=$s->[$CONFIG]{dsn_id}");
-	if (! defined $s->[$DBI]) {
-		::logError("commit attempted on non-open database handle for table: %s", $s->[$TABLE]);
-		return undef;
-	}
+	# This is pretty harmless, no?
+	return undef if ! defined $s->[$DBI];
+
+#	if (! defined $s->[$DBI]) {
+#		::logError(
+#			"rollback attempted on non-open database handle for table: %s",
+#			$s->[$TABLE],
+#		);
+#		return undef;
+#	}
+
 	return $s->[$DBI]->rollback();
 }
 

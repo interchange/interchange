@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Signio.pm,v 1.1.2.2 2001-04-10 05:22:42 heins Exp $
+# $Id: Signio.pm,v 1.1.2.3 2001-04-12 04:56:48 heins Exp $
 #
 # Copyright (C) 1999-2001 Red Hat, Inc., http://www.redhat.com
 #
@@ -27,7 +27,7 @@ package Vend::Payment::Signio;
 
 =head1 Interchange Signio Support
 
-Vend::Payment::Signio $Revision: 1.1.2.2 $
+Vend::Payment::Signio $Revision: 1.1.2.3 $
 
 =head1 SYNOPSIS
 
@@ -370,6 +370,7 @@ sub signio {
 
     my %query = (
                     AMT         => $amount,
+                    SHIPTOZIP   => $actual{zip},
                     EXPDATE     => $exp,
                     TENDER      => 'C',
                     ORIGID      => $orderID,

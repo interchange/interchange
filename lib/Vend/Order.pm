@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18.2.17 2001-04-10 03:59:05 heins Exp $
+# $Id: Order.pm,v 1.18.2.18 2001-04-12 04:56:47 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.17 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.18 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1221,7 +1221,8 @@ sub route_profile_check {
 		eval {
 			my $route = $Vend::Cfg->{Route_repository}{$c}
 				or do {
-					::logError("Non-existent order route %s, skipping.", $c);
+					# Change to ::logDebug because of dynamic routes
+					::logDebug("Non-existent order route %s, skipping.", $c);
 					next;
 				};
 			if($route->{profile}) {
@@ -1250,30 +1251,11 @@ sub route_profile_check {
 
 sub route_order {
 	my ($route, $save_cart, $check_only) = @_;
+	my $main = $Vend::Cfg->{Route};
+	return unless $main;
+	$route = 'default' unless $route;
+
 	my $cart = [ @$save_cart ];
-	if(! $Vend::Cfg->{Route}) {
-		$Vend::Cfg->{Route} = {
-			report		=> $Vend::Cfg->{OrderReport},
-			receipt		=> $::Values->{mv_order_receipt} || find_special_page('receipt'),
-			encrypt_program	=> '',
-			encrypt		=> 0,
-			pgp_key		=> '',
-			pgp_cc_key	=> '',
-			payment_mode	=> '',
-			credit_card	=> 1,
-			profile		=> '',
-			inline_profile		=> '',
-			email		=> $Vend::Cfg->{MailOrderTo},
-			attach		=> 0,
-			counter		=> '',
-			increment	=> 0,
-			continue	=> 0,
-			partial		=> 0,
-			supplant	=> 0,
-			track   	=> '',
-			errors_to	=> $Vend::Cfg->{MailOrderTo},
-		};
-	}
 
 	my $main = $Vend::Cfg->{Route};
 
@@ -1327,15 +1309,62 @@ sub route_order {
 
 	my $value_save = { %{$::Values} };
 
+	my @trans_tables;
+
+	# Settable by user to indicate failure
+	delete $::Scratch->{mv_route_failed};
+
 	ROUTES: {
 		BUILD:
 	foreach $c (@routes) {
-		my $route = $Vend::Cfg->{Route_repository}{$c};
+		my $route = $Vend::Cfg->{Route_repository}{$c} || {};
 		$main = $route if $route->{master};
+
+		##### OK, can put variables in DB all the time. It can be dynamic
+		##### from the database if $main->{dynamic_routes} is set. ITL only if
+		##### $main->{expandable}.
+
+		if($Vend::Cfg->{RouteDatabase} and $main->{dynamic_routes}) {
+			my $ref = tag_data( $Vend::Cfg->{RouteDatabase},
+								undef,
+								$c, 
+								{ hash => 1 }
+								);
+#::logDebug("Read dynamic route %s from database, got: %s", $c, $ref );
+			$route = $ref if $ref;
+		}
+
+		if(! %$route) {
+			::logError("Non-existent order routing %s, skipping.", $c);
+			next;
+		}
+
+		# Tricky, tricky
+		if($route->{extended}) {
+			my $ref = get_option_hash($route->{extended});
+			if(ref $ref) {
+				for(keys %$ref) {
+#::logDebug("setting extended $_ = $ref->{$_}");
+					$route->{$_} = $ref->{$_};
+				}
+			}
+		}
+
+		for(keys %$route) {
+			$route->{$_} =~ s/^\s*__([A-Z]\w+)__\s*$/$::Variable->{$1}/;
+			next unless $main->{expandable};
+			next unless $route->{$_} =~ /\[/;
+#::logDebug("expanding $_ from=$route->{$_}");
+			$route->{$_} = ::interpolate_html($route->{$_});
+#::logDebug("expanded $_ to=$route->{$_}");
+		}
+		#####
+		#####
+		#####
 
 		# Compatibility 
 		if(! defined $route->{payment_mode} ) {
-			$route->{payment_mode} = $route->{cyber_mode};
+			$route->{payment_mode} = $route->{cybermode};
 		}
 		if($route->{cascade}) {
 			my @extra = grep /\S/, split /[\s,\0]+/, $route->{cascade};
@@ -1350,6 +1379,9 @@ sub route_order {
 		$::Values->{mv_current_route} = $c;
 		my $pre_encrypted;
 		my $credit_card_info;
+
+		Vend::Interpolate::flag( 'transactions', {}, $route->{transactions})
+			if $route->{transactions};
 
 		if(! $check_only and $route->{inline_profile}) {
 			my $status;
@@ -1384,10 +1416,6 @@ sub route_order {
 		}
 
 		$Vend::Items = $shelf->{$c};
-		if(! defined $Vend::Cfg->{Route_repository}{$c}) {
-			logError("Non-existent order routing %s", $c);
-			next;
-		}
 	eval {
 
 		if ($check_only and $route->{profile}) {
@@ -1476,7 +1504,7 @@ sub route_order {
 		}
 		elsif ($address = $route->{email}) {
 			$address = $::Values->{$address} if $address =~ /^\w+$/;
-			$subject = $::Values->{mv_order_subject} || 'ORDER %s';
+			$subject = $route->{subject} || $::Values->{mv_order_subject} || 'ORDER %s';
 			$subject =~ s/%n/%s/;
 			$subject = sprintf "$subject", $::Values->{mv_order_number};
 			$reply   = $route->{reply} || $main->{reply};
@@ -1525,6 +1553,12 @@ sub route_order {
 				chmod $mode, $fn;
 			}
 		}
+		if($::Scratch->{mv_route_failed}) {
+			my $msg = delete $::Scratch->{mv_route_error}
+					|| ::errmsg('Route %s failed.', $c);
+			::logError($msg);
+			die $msg;
+		}
 	  } # end PROCESS
 	};
 		if($@) {
@@ -1534,8 +1568,11 @@ sub route_order {
 							$c,
 							$err,
 						);
-			push @route_failed, @route_complete;
-			push @route_failed, $c;
+			unless ($route->{error_ok}) {
+				push @route_failed, @route_complete;
+				push @route_failed, $c;
+				next BUILD;
+			}
 			next BUILD if $route->{continue};
 			@route_complete = ();
 			last BUILD;
@@ -1594,6 +1631,9 @@ sub route_order {
 
 	for(@route_failed) {
 		my $route = $Vend::Cfg->{Route_repository}{$_};
+		if($route->{transactions}) {
+			Vend::Interpolate::flag( 'rollback', {}, $route->{transactions})
+		}
 		next unless $route->{rollback};
 		Vend::Interpolate::tag_perl(
 					$route->{rollback_tables},
@@ -1601,8 +1641,12 @@ sub route_order {
 					$route->{rollback}
 		);
 	}
+
 	for(@route_complete) {
 		my $route = $Vend::Cfg->{Route_repository}{$_};
+		if($route->{transactions}) {
+			Vend::Interpolate::flag( 'commit', {}, $route->{transactions})
+		}
 		next unless $route->{commit};
 		Vend::Interpolate::tag_perl(
 					$route->{commit_tables},

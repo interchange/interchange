@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.43 2001-04-11 15:11:37 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.44 2001-04-12 04:56:46 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.43 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.44 $, 10);
 
 @EXPORT = qw (
 
@@ -728,6 +728,7 @@ sub tag_data {
 	}
 	elsif ($opt->{hash}) {
 		my $db = ::database_exists_ref($selector);
+		return undef unless $db->record_exists($key);
 		return $db->row_hash($key);
 	}
 
