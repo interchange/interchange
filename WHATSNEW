@@ -86,6 +86,13 @@ Core
 
 * Fix problem with invalid cookie if FullUrl is enabled and there is no path.
 
+* Allow standard handler for PUT operations. To enable, do:
+
+	SpecialPage  put_handler  some_action
+
+  The some_action action (could be a page) will be prepended to
+  any path sent with the PUT.
+
 UserTag
 -------
 
@@ -104,7 +111,9 @@ UI
 * let [row_edit] honor spread_width meta setting
 
 * display an error message if for whatever reason the regions directory is
-  empty+
+  empty
+
+* fix item_price.html in order to keep secure mode
 
 Foundation
 ----------
@@ -115,6 +124,9 @@ Foundation
 
 * Add missing [timed-build] to category_vertical_tree component.
 
+* Improve layout of order tracking page, use [convert-date] for date
+  display.
+
 TableEditor
 -----------
 
@@ -123,6 +135,14 @@ TableEditor
 
 * Make containing form name (i.e. <form name=foo ...>) available
   to the widget.
+
+* Allow setting of a disabled.param=1 entry so that you can show
+  widgets in a table editor yet not accept data from them. The DISABLED=1
+  flag will be set in the widget (which normally grays it out) and
+  it will be set to be display_only.
+
+* Pass the form and form_name parameters to Vend::Form for use in
+  widgets.
 
 Menu
 ----
@@ -166,6 +186,10 @@ i18n
 
 * Japanese UI translation update from Murahashi <murahashi@ayayu.com>.
 
+* Improve translation of UI and foundation store.
+
+* [LC] uses DefaultLocale setting if $Scratch->{mv_locale} isn't available
+
 SOAP
 ----
 
@@ -178,6 +202,7 @@ Debian
   module out of the package (Closes: #224435, thanks to Henrik Holmboe
   <elements@hack.se> for the bug report)
 
+* Check for existence of expireall binary in cron script.
 
 ------------------------------------------------------------------------------
 
