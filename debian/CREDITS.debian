@@ -9,3 +9,8 @@ Marcelo E. Magallon <mmagallo@debian.org> for:
 
 Michael Bilow <mike@bilow.com> for:
 - providing an 400mod_interchange.info
+
+Doug Alcorn <doug@lathi.net> for:
+- reporting that an empty mode no longer triggers both unix and inet mode
+  in 4.9.x
+

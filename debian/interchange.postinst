@@ -75,9 +75,9 @@ db_get interchange/mode
 case "$RET" in
 	"unix mode") MODE=--unix;;
 	"internet mode") MODE=--inetmode;;
-	"both") MODE="";;
+	"both") MODE="--unix --inetmode";;
 esac
-echo MODE=$MODE >> $INITCFG
+echo MODE=\"$MODE\" >> $INITCFG
 echo USER=$USER >> $INITCFG
 echo GROUP=$GROUP >> $INITCFG
 

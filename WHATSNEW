@@ -15,6 +15,8 @@ Debian
 
 * Allow selection of traffic setting with debconf and interchangeconfig.
 
+* Specify unix and inet modes explicitly if user selects both. 
+
 * Check if /etc/init.d/interchange and /usr/sbin/interchangeconfig are 
   executable in interchange-ui maintainer scripts.
 

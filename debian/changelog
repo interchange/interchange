@@ -2,6 +2,9 @@ interchange (4.9.7-1) unstable; urgency=low
 
   * new upstream release
   * new debconf option for traffic, use low traffic as default
+  * specify unix and inet modes explicitly if user selects both (thanks to
+    Doug Alcorn <doug@lathi.net> for reporting the changed behaviour in
+    4.9.x)
   * check if /etc/init.d/interchange and /usr/sbin/interchangeconfig are
     executable in interchange-ui maintainer scripts
   * UPGRADE and README.cvs added to interchange.docs
