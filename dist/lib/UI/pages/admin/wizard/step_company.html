@@ -1,0 +1,121 @@
+[set page_title]Describe your Company[/set]
+[set ui_checklist]1[/set]
+@_UI_STD_HEAD_@
+
+<table><tr><td width=500>
+Enter your company information. This contact information will be displayed
+to users visiting your e-commerce site. The required fields are displayed
+in <b>Bold</b>.
+</td></tr></table>
+
+[if session browser =~ /.*/i]
+[comment] Using a browser that supports <OPTION GROUP> tags [/comment]
+[tmp state_options]
+[loop search='
+		fi=state.txt
+		rf=state,country,name
+		tf=country,name
+		ra=yes
+		ml=1000
+	'][loop-change 1][condition][loop-pos 1][/condition],~~[loop-pos 1]~~[/loop-change 1]
+	,[loop-code]=[loop-pos 2][/loop][/tmp]
+
+[tmp country_options]
+=--select--[loop search='
+		fi=country.txt
+		rf=0,name
+		tf=name
+		ra=yes
+		ml=1000
+	'],
+[loop-code]=[loop-pos 1][/loop][/tmp]
+[else]
+[tmp state_options]
+[loop search='
+		fi=state.txt
+		rf=state,country,name
+		tf=country,name
+		ra=yes
+		ml=1000
+	'][loop-code]=[loop-pos 2],[/loop][/tmp]
+
+[tmp country_options]
+=--select--[loop search='
+		fi=country.txt
+		rf=0,name
+		tf=name
+		ra=yes
+		ml=1000
+	'],[loop-code]=[loop-pos 1][/loop][/tmp]
+[/else]
+[/if]
+
+[table-editor 
+
+	bottom_buttons=1
+	defaults=1
+	no_bottom=1
+	no_top=1
+   	row_template="[scratch row_template]"
+	table=variable
+	left_width=120
+	table_width=500
+	wizard=1
+
+	ui_profile="*company"
+
+	hidden.ui_return_to="__UI_BASE__/wizard/index"
+	mv_failpage=@@MV_PAGE@@
+	mv_nextpage=__UI_BASE__/wizard/step_email
+	mv_prevpage=__UI_BASE__/wizard/index
+
+	ui_data_key=code
+	default.code=`$Values->{code}`
+	help.code="If this is the first time you have used this definition, you will need to assign a nickname. Only A-Z0-9 are valid."
+	label.code="Catalog Identifier"
+	widget.code=text_10
+
+	ui_data_fields="code company domainname address city state zip country phone fax tollfree"
+	ui_display_only="company domainname address city state zip country phone fax tollfree"
+	ui_hide_key="1"
+
+	widget.company=text_40
+	label.company="Your company name"
+
+	label.domainname="Main domain name"
+	widget.domainname=text_40
+	help.domainname="Base Internet domain name, e.g. yourcompany.com"
+
+	label.address="Street address"
+	widget.address=text_40
+
+	label.city="City"
+	widget.city=text_40
+
+	passed.state=`$Scratch->{state_options}`
+	widget.state=select
+	label.state="State"
+	help.state="Two-letter state code"
+
+	widget.zip=text_10
+	label.zip="ZIP/Postal code"
+
+	label.country="Country"
+	passed.country=`$Scratch->{country_options}`
+	widget.country=select
+
+	label.phone="Telephone number"
+	widget.phone=text_20
+	help.phone="If you don't wish to provide this, leave blank and it will not be shown."
+
+	label.fax="Fax number"
+	widget.fax=text_20
+	help.fax="If you don't wish to provide this, leave blank and it will not be shown."
+
+	label.tollfree="Toll-free number"
+	widget.tollfree=text_20
+	help.tollfree="If you don't have one or don't wish to provide it, leave blank and it will not be shown."
+
+]
+
+@_UI_STD_FOOTER_@

@@ -1,0 +1,107 @@
+[set help_name]payment[/set]
+[set page_title]Payment Configuration[/set]
+[set ui_checklist]1[/set]
+@_UI_STD_HEAD_@
+
+[if session browser =~ /mozilla.*gecko/i]
+	[set options_paygate]~~Offline credit card handling~~,none=no credit cards, pgp=PGP sent Credit cards,~~Real-time payment~~, cc=CyberCash, signio=Signio/Verisign, authorize=Authorize.net[/set]
+[else]
+	[set options_paygate]none=no credit cards, pgp=PGP sent Credit cards,cc=CyberCash, signio=Signio/Verisign, authorize=Authorize.net[/set]
+[/else]
+[/if]
+
+<table><tr><td width=500>
+Select your payment processing preferences. The payment gateway determines how
+you will securely process credit card information. The various <B>Accept</B>
+options determine which options will be displayed on your checkout form.
+
+</td></tr></table>
+
+[table-editor 
+	table=variable
+	left_width=120
+	table_width="500"
+	wizard=1
+	defaults=1
+	bottom_buttons=1
+	no_top=1
+	no_bottom=1
+   	row_template="[scratch row_template]"
+
+	ui_profile="*pay"
+
+	mv_nextpage=__UI_BASE__/wizard/step_security
+	mv_prevpage=__UI_BASE__/wizard/step_ship
+	hidden.ui_return_to="__UI_BASE__/wizard/index"
+
+	ui_data_key=code
+	default.code="[value code]"
+	help.code="If this is the first time you have used this definition, you will need to assign a nickname. Only A-Z0-9 are valid."
+	label.code="Catalog Identifier"
+	widget.code=text_10
+
+	ui_data_fields="code paygate creditcards paycheck paymo paycod paypo"
+	ui_display_only="paygate creditcards paycheck paymo paycod paypo"
+	ui_hide_key="1"
+
+	label.paygate="Payment gateway"
+	help.paygate="Which payment gateway will you use for credit cards?"
+	widget.paygate=select
+	passed.paygate=`delete $Scratch->{options_paygate}`
+	default.paygate="pgp"
+
+	label.creditcards="Which cards?"
+	help.creditcards="Select credit cards to accept"
+	widget.creditcards=checkbox_left_2
+	filter.creditcards="checkbox null_to_space"
+	passed.creditcards="visa=Visa, mc=MasterCard, amex=American Express, discover=Discover"
+	default.creditcards="visa mc amex discover"
+
+	label.paycheck="Accept checks?"
+	help.paycheck="Enable online checks for your payment gateway (if supported)"
+	widget.paycheck=checkbox
+	filter.paycheck=checkbox
+	passed.paycheck="1=&nbsp;"
+
+	label.paymo="Accept money orders?"
+	help.paymo="Enable money-order option on checkout form."
+	widget.paymo=checkbox
+	filter.paymo=checkbox
+	passed.paymo="1=&nbsp;"
+
+	label.paycod="Accept COD payment?"
+	help.paycod="Enable COD option on checkout form."
+	widget.paycod=checkbox
+	filter.paycod=checkbox
+	passed.paycod="1=&nbsp;"
+
+	label.paypo="Accept purchase orders?"
+	help.paypo="Enable Interchange purchase order handling"
+	widget.paypo=checkbox
+	filter.paypo=checkbox
+	passed.paypo="1=&nbsp;"
+]
+[set ui_override_next]
+	[perl]
+		Debug("override next code");
+		if ($CGI->{paygate} eq 'pgp') {
+			$CGI->{mv_nextpage} = '__UI_BASE__/wizard/step_pay_pgp';
+		}
+		elsif ($CGI->{paygate} eq 'cc') {
+			$CGI->{mv_nextpage} = '__UI_BASE__/wizard/step_pay_cyber';
+		}
+		elsif ($CGI->{paygate} eq 'signio') {
+			$CGI->{mv_nextpage} = '__UI_BASE__/wizard/step_pay_signio';
+		}
+		elsif ($CGI->{paygate} eq 'authorize') {
+			$CGI->{mv_nextpage} = '__UI_BASE__/wizard/step_pay_auth';
+		}
+		else {
+			$CGI->{mv_nextpage} = '__UI_BASE__/wizard/step_security';
+		}
+		delete $Scratch->{ui_override_next};
+		return;
+	[/perl]
+[/set]
+
+@_UI_STD_FOOTER_@

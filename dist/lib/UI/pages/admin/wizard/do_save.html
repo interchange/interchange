@@ -1,0 +1,351 @@
+[flag type=write table=country]
+[flag type=write table=access]
+[flag type=write table=variable]
+[flag type=write table=area]
+[flag type=write table=cat]
+[value name=site_created set=1 hide=1]
+[set ui_checklist]1[/set]
+@_UI_STD_HEAD_@
+&nbsp;<br>
+
+<!-- [perl tables="access variable country"]
+	my $vdb = $Db{variable};
+	my $adb = $Db{access};
+
+my %doit = (
+abouttext           => sub {
+						my $content = $Values->{abouttext};
+						$content =~ s/\r\n/\n/g;
+						$content =~ s/\r//g;
+						$Tag->substitute_file(
+								{ 
+									content => 1,
+									file => 'pages/aboutus.html',
+									body => $content,
+								}
+						);
+                    },
+abouttitle          => sub {
+						$Tag->substitute_file(
+								{ 
+									scratch => 'page_title',
+									file => 'pages/aboutus.html',
+									body => $Values->{abouttitle},
+								}
+						);
+                    },
+adminpass           => sub {
+						$adb->set_field(
+								$Values->{adminuser},
+								'password',
+								$Tag->crypt($Values->{adminpass}),
+								);
+						$adb->set_field(
+								$Values->{adminuser},
+								'name',
+								'Admin user',
+								);
+						$adb->set_field(
+								$Values->{adminuser},
+								'super',
+								1,
+								);
+					},
+adminuser           => undef,
+address             => 'ADDRESS',
+city                => 'TOWN',
+company             => 'COMPANY',
+country             => 'COUNTRY',
+domainname          => 'DOMAINNAME',
+emailinfo           => 'EMAIL_INFO',
+emailservice        => 'EMAIL_SERVICE',
+fax                 => 'FAX',
+fedadder            => sub {
+						return unless $Values->{shipmethod} =~ /\bfed/i;
+						$Tag->substitute_file(
+								{ 
+									begin => q{FEDE:.*adder\s*=>\s*["']?},
+									global => 1,
+									end => q!["']?\s*[,}]!,
+									greedy => 0,
+									file => 'products/shipping.asc',
+									body => $Values->{fedadder},
+								}
+						);
+                    },
+fedmodes            => 'FEDEX_MODES',
+indextext           => sub {
+						my $content = $Values->{indextext};
+						$content =~ s/\r\n/\n/g;
+						$content =~ s/\r//g;
+						$Tag->substitute_file(
+								{ 
+									content => 1,
+									file => 'pages/index.html',
+									body => $content,
+								}
+						);
+                    },
+indextitle          => sub {
+						$Tag->substitute_file(
+								{ 
+									scratch => 'page_title',
+									file => 'pages/index.html',
+									body => $Values->{indextitle},
+								}
+						);
+                    },
+enablesecure        => 'SECURE_ENABLE',
+defaultshipi	    => 'SHIP_DEFAULT_INTL',
+defaultshipd	    => 'SHIP_DEFAULT_DOM',
+flati		    => 'SHIP_FLAT_INTL_RATE',
+flatd		    => 'SHIP_FLAT_DOM_RATE',
+paymentreferer      => 'MV_PAYMENT_REFERER',
+paymentsecret       => 'MV_PAYMENT_SECRET',
+paymentid           => 'MV_PAYMENT_ID',
+paymentserver       => 'MV_PAYMENT_SERVER',
+authnetmode         => 'AUTHNET_MODE',
+signiomode          => 'SIGNIO_MODE',
+cyberkey            => 'CYBER_KEY',
+cyberid             => 'CYBER_ID',
+cyberfile           => 'CYBER_CONFIGFILE',
+cybermode           => 'CYBER_MODE',
+mailorderto         => 'ORDERS_TO',
+paycheck            => 'CHECK_ACCEPTED',
+paycod              => 'COD_ACCEPTED',
+paygate             => 'PAYGATE',
+paymo               => 'POSTAL_ACCEPTED',
+paypo               => 'PO_ACCEPTED',
+pgp                 => 'PGP',
+pgpkeyid            => 'PGP_KEY',
+phone               => 'PHONE',
+products            => sub {
+                    },
+shipzip             => 'UPS_ORIGIN',
+shoppass           => sub {
+						$adb->set_field(
+								$Values->{shopuser},
+								'password',
+								$Tag->crypt($Values->{shoppass}),
+								);
+						$adb->set_field(
+								$Values->{adminuser},
+								'name',
+								'Shop user',
+								);
+						$adb->set_field(
+								$Values->{adminuser},
+								'super',
+								'',
+								);
+					},
+shopuser            => undef,
+style               => 'STYLE',
+creditcards         => 'CREDIT_CARDS_ACCEPTED',
+state               => 'STATE',
+taxlocation         => 'TAXAREA',
+taxrate             => 'TAXRATE',
+taxship             => 'TAXSHIPPING',
+tollfree            => 'TOLLFREE',
+upsadder            => sub {
+						my $mode = $Values->{shipmethod};
+						$mode =~ s/\W/ /g;
+						return unless $Values->{shipmethod} =~ /ups/i;
+						my $status = $Tag->substitute_file(
+								{ 
+									begin => q{UPSE:.*adder\s*=>\s*["']?},
+									global => 1,
+									end => q!["']?\s*[,}]!,
+									greedy => 0,
+									file => 'products/shipping.asc',
+									body => $Values->{upsadder},
+								}
+						);
+						return $status;
+                    },
+upsmodes            => 'UPS_MODES',
+zip                 => 'ZIP',
+
+);
+
+	for (keys %doit) {
+		my $val;
+		next unless $val = $doit{$_};
+		if( ref($val) =~ /CODE/) {
+			my $status = $val->();
+			push @messages, "$_ subroutine returned $status.";
+		}
+		elsif($val =~ /\w+/) {
+			$vdb->set_field($val, 'Variable', $Values->{$_});
+			push @messages, "$_ set $val to '$Values->{$_}' in variable.";
+		}
+		else {
+			@errors, "Don't know what to do with $_=$val";
+		}
+	}
+
+	if($Db{country}) {
+		my @all = grep /^\w+$/, split /[\s,\0]+/, $Values->{upsmodes};
+		push @all, grep /^\w+$/, split /[\s,\0]+/, $Values->{fedmodes};
+		unshift @all, grep /^\w+$/, split /[\s,\0]+/, $Values->{defaultshipi};
+		unshift @all, grep /^\w+$/, split /[\s,\0]+/, $Values->{defaultshipd};
+		my %seen;
+		@all = grep ! $seen{$_}++, @all;
+		my %intl =  qw/
+				FLATI 1 PERI 1 FREE 1
+				FIP 1 FIE 1
+				XPR 1 XDM 1 XPRL 1 XDML 1 XPD 1
+		/;
+		my @na_modes = grep ! $intl{$_}, @all;
+		my @intl_modes = grep $intl{$_}, @all;
+		my $na_string = join " ", splice @na_modes;
+		my $intl_string = join " ", splice @intl_modes;
+		my $db = $Db{country};
+		my ($k, @f);
+		my $rc = $db->query(qq{
+					update country set shipmodes = '$intl_string' where code != 'US'
+					});
+push @messages, "set shipmodes to '$intl_string' in $rc countries";
+		$rc = $db->query(qq{
+					update country set shipmodes = '$na_string'
+					where code = 'US'
+					});
+push @messages, "set shipmodes to '$na_string' in US";
+		$rc = $db->query(qq{
+					update country set shipmodes = '$na_string'
+					where code = 'CA'
+					});
+push @messages, "set shipmodes to '$na_string' in Canada";
+	}
+
+	$out = "Messages: <BR>";
+	$out .= join "<BR>", @messages;
+	return $out unless @errors;
+	$out .= "<P>Errors: <BR>";
+	$out .= join "<BR>", @errors;
+[/perl] -->
+
+<blockquote>
+[if value sampleproducts]
+[and value products =~ /\.xls$/i]
+	[import-fields
+					convert="xls"
+					add=1
+					dir=backup
+					file="upload/[value products]"
+					move=1
+					multiple="1"
+					quiet="2"
+					table="products"
+	]
+[/if]
+[if value sampleorders]
+[flag type=write table=userdb]
+[flag type=write table=transactions]
+[flag type=write table=orderline]
+	[import-fields
+					convert=xls
+					add=1
+					dir=backup
+					file="upload/sampledata.xls"
+					move=1
+					multiple=1
+					quiet=2
+					table=userdb
+	]
+[/if]
+[if value sampleproducts]
+[perl tables="area cat products"]
+	my $go_page = 'index';
+	$CGI->{mv_nextpage} = '@@MV_PAGE@@';
+	my $ptab = 'products'
+		or return "no area source table";
+	my $pdb = $Db{$ptab}
+		or return "area source table bad";
+	my $adb = $Db{area}
+		or return "no area table";
+	my $cdb = $Db{cat}
+		or return "no cat table";
+	my $acol = 'prod_group';
+	my $ccol = 'category';
+	if(! $acol and ! $ccol ) {
+		return "no column to populate either";
+	}
+
+	my $selector = '';
+	my $selcode = '';
+
+	my %area_defaults = (
+		name => undef,
+		which_page	=> 'all',
+		sort	=> '05',
+		sel	=> 'left',
+		display_type => 'name',
+	);
+	my %catmap;
+	my %cat_defaults = (
+		link_type => 'simple',
+		sort	=> '05',
+		display_type => 'name'
+	);
+	$adb->query('delete from area');
+	$cdb->query('delete from cat');
+	if($acol) {
+		$adb->config('AUTO_NUMBER', '1000') if ! $adb->config('AUTO_NUMBER');
+		return "area column $acol doesn't exist"
+			unless $pdb->column_exists($acol);
+		my $ary = $pdb->query("select distinct $acol from $ptab order by $acol")
+			or return "area column query failed";
+		for(@$ary) {
+			my ($area) = (@$_);
+			my $key = $adb->set_row('');
+			return "no autonumbering available" if ! $key;
+			$catmap{$area} = $key;
+			for(keys %area_defaults) {
+				$adb->set_field($key, $_, $area_defaults{$_} || $area);
+			}
+		}
+	}
+
+	my %catdone;
+	if($ccol) {
+		$cdb->config('AUTO_NUMBER', '1000') if ! $cdb->config('AUTO_NUMBER');
+		return "cat column $ccol doesn't exist"
+			unless $pdb->column_exists($ccol);
+		my $ary = $pdb->query("select $acol, $ccol from $ptab order by $ccol")
+			or return "cat column query failed";
+		for(@$ary) {
+			my ($area, $cat) = (@$_);
+			next if $catdone{$cat}++;
+			my $key = $cdb->set_row('');
+			return "no cat autonumbering available" if ! $key;
+
+			$cat_defaults{name} = $cat;
+			$cat_defaults{sel} = $catmap{$area};
+			$cat_defaults{selector} = "$ccol=$cat";
+			
+			for(keys %cat_defaults) {
+				Log("setting col=$_ key=$key = $cat_defaults{$_}");
+				$cdb->set_field($key, $_, $cat_defaults{$_});
+			}
+		}
+	}
+	my $out = $Tag->uneval( { ref => \%catmap } );
+	$out =~ s/,/,\n/g;
+	#return '<XMP>' . $Tag->uneval( { ref => \%catmap } ) . "</XMP";
+	return "<P>Categories built.</P>";
+[/perl]
+[/if]
+<P>[if type=explicit compare="[reconfig]"]
+Catalog activated with new values.
+[/if]</P>
+
+<P>
+Your catalog is now operational for testing.
+</P>
+<blockquote>
+<LARGE><A HREF="[area index]">Preview</P></LARGE>
+</blockquote>
+
+</blockquote>
+@_UI_STD_FOOTER_@

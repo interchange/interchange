@@ -1,0 +1,56 @@
+[set page_title]Set Up PGP Information[/set]
+[set ui_checklist]1[/set]
+@_UI_STD_HEAD_@
+
+<table width=500><tr><td align=left>
+Enter the values used to enable payment processing through PGP or GnuPG.
+</td></tr></table>
+
+[set do_gpg_key]
+	[if cgi pgpkeytext =~ /\S/]
+	[calc]
+		$CGI->{pgpkeyid} = q{[add-gpg-key name=pgpkeytext return_id=1]};
+		return;
+	[/calc]
+	[/if]
+[/set]
+
+[table-editor 
+	table=variable
+	left_width=120
+	table_width=500
+	wizard=1
+	defaults=1
+	bottom_buttons=1
+	no_top=1
+	no_bottom=1
+   	row_template="[scratch row_template]"
+
+	mv_nextpage=__UI_BASE__/wizard/step_security
+	mv_prevpage=__UI_BASE__/wizard/step_pay
+	hidden.ui_return_to="__UI_BASE__/wizard/index"
+
+	ui_data_fields="code pgp pgpkeyid pgpkeytext"
+	ui_display_only="pgp pgpkeyid pgpkeytext"
+
+	ui_data_key=code
+	widget.code=text_10
+
+	ui_hide_key=1
+	hidden.mv_click="do_gpg_key"
+
+	label.pgp="Enable PGP/GPG mode"
+	widget.pgp=yesno
+	default.pgp=1
+
+	label.pgpkeyid="PGP/GPG key selection"
+	help.pgpkeyid="This is either the key ID or the email address associated with the PGP/GPG key"
+	widget.pgpkeyid=text_40
+
+	label.pgpkeytext="PGP/GPG Public Key"
+	help.pgpkeytext="Export an ASCII-armored version of your key, and paste it in."
+	widget.pgpkeytext=textarea_20_60
+	override.pgpkeytext=" "
+]
+
+@_UI_STD_FOOTER_@

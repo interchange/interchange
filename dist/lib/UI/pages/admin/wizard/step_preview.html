@@ -1,0 +1,108 @@
+[set page_title]Preview Your Site[/set]
+[set ui_checklist]1[/set]
+@_UI_STD_HEAD_@
+
+[perl tables="transactions products"]
+	my $pdb = $Db{products};
+	my $tdb = $Db{transactions};
+	my $pcount = $pdb->query( 
+					{
+						sql => 'select * from products',
+						row_count => 1,
+					}
+					);
+	my $tcount = $tdb->query( 
+					{
+						sql => 'select * from transactions',
+						row_count => 1,
+					}
+					);
+	delete $Scratch->{pmessage};
+	delete $Scratch->{pdefault};
+	if($pcount > 0) {
+		$Scratch->{pmessage} = "$pcount products currently in the database - select Yes to add/replace products";
+		$Values->{sampleproducts} = $Scratch->{pdefault} = '';
+		$Scratch->{pwidget} = "yesno";
+	}
+	else {
+		$Scratch->{pmessage} = "No products currently in the database - select No to add no products";
+		$Scratch->{pwidget} = "hidden";
+		$Values->{sampleproducts} = $Scratch->{pdefault} = '1';
+	}
+
+	delete $Scratch->{tmessage};
+	delete $Scratch->{tdefault};
+	if($tcount > 0) {
+		$Scratch->{tmessage} = "$tcount orders currently in the database - select Yes to add/replace orders";
+		$Values->{sampleorders} = $Scratch->{tdefault} = '';
+	}
+	else {
+		$Scratch->{tmessage} = "No orders currently in the database - select No to leave blank";
+		$Values->{sampleorders} = $Scratch->{tdefault} = '1';
+	}
+	return;
+[/perl]
+
+[table-editor 
+	table=variable
+	left_width=120
+	table_width=500
+	wizard=1
+	defaults=1
+	bottom_buttons=1
+	next_text=Finish
+	no_top=1
+	no_bottom=1
+   	row_template="[scratch row_template]"
+
+	ui_profile="*preview"
+
+	mv_nextpage=__UI_BASE__/wizard/do_save
+	mv_prevpage=__UI_BASE__/wizard/step_finalize
+	hidden.ui_return_to="__UI_BASE__/wizard/index"
+
+	ui_data_key=code
+	default.code="[value code]"
+	widget.code=text_10
+
+	ui_data_fields="code sampleproducts sampleorders enablesecure"
+	ui_display_only="sampleproducts sampleorders enablesecure"
+	ui_hide_key=1
+
+	label.sampleorders="Insert sample order data"
+	help.sampleorders=`$Scratch->{tmessage}`
+	widget.sampleorders=yesno
+
+	label.sampleproducts="Insert sample products data"
+	help.sampleproducts=`$Scratch->{pmessage}`
+	widget.sampleproducts=`$Scratch->{pwidget}`
+
+	label.enablesecure="Enable Secure (SSL)"
+	help.enablesecure="Select Yes if your Stronghold secure server is set up"
+	widget.enablesecure=select
+	passed.enablesecure="0=No, 1=Yes"
+]
+
+<table><tr><td width=500>
+<P>
+When you press <B>Finish</B>, the following will occur:
+</P>
+<UL>
+<LI>Your settings will be placed in the catalog
+<LI>Your products will be put in the database
+<LI>Your content pages will be created
+<LI>The secure web server will be enabled (optional until launch)
+<LI>Sample customers and order data will be put in the database (optional)
+</UL>
+
+<P>
+At that point you may begin testing by following the Preview link, and
+changing the configuration with Interchange's administration tool.
+</P>
+<P>
+After you are satisfied with your catalog, you can launch and begin taking
+orders.
+</P>
+</td></tr></table>
+
+@_UI_STD_FOOTER_@

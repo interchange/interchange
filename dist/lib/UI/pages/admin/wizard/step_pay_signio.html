@@ -1,0 +1,53 @@
+[set page_title]Set Up AuthorizeNet Information[/set]
+[set ui_checklist]1[/set]
+@_UI_STD_HEAD_@
+
+<table width=500><tr><td align=left>
+Enter the values used to enable payment processing through Signio/Verisign.
+</td></tr></table>
+
+[table-editor 
+	table=variable
+	left_width=120
+	table_width=500
+	wizard=1
+	defaults=1
+	bottom_buttons=1
+	no_top=1
+	no_bottom=1
+   	row_template="[scratch row_template]"
+
+	mv_nextpage=__UI_BASE__/wizard/step_security
+	mv_prevpage=__UI_BASE__/wizard/step_pay
+	hidden.ui_return_to="__UI_BASE__/wizard/index"
+
+	ui_data_key=code
+	default.code="[value code]"
+	widget.code=text_10
+
+	ui_data_fields="code signiomode paymentid paymentsecret paymentserver"
+	ui_display_only="signiomode paymentid paymentsecret paymentserver"
+	ui_hide_key=1
+
+	label.signiomode="Enable Signio"
+	widget.signiomode=select
+	passed.signiomode="custom signio=Enable, =Disabled"
+	default.signiomode="custom signio"
+
+	label.paymentid="Signio account ID"
+	help.paymentid="You should have received this when you signed up"
+	widget.paymentid=text_20
+	check.paymentid=mandatory
+
+	label.paymentsecret="Signio password"
+	help.paymentsecret="You should have received this when you signed up -- sometimes known as 'secret'"
+	widget.paymentsecret=text_20
+	check.paymentsecret=mandatory
+
+	label.paymentserver="Payment server"
+	widget.paymentserver=select
+	passed.paymentserver="test.signio.com=Test server (test.signio.com), connect.signio.com=Live server (connect.signio.com)"
+	check.paymentserver=mandatory
+]
+
+@_UI_STD_FOOTER_@

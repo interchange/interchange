@@ -1,0 +1,66 @@
+[set page_title]Company "Index" page[/set]
+[set ui_checklist]1[/set]
+@_UI_STD_HEAD_@
+
+<table><tr><td width=500>
+Enter the title and content to be displayed on your <b>Index</b> page. The
+<b>Content</b> section contains sample text formatted in HTML. You can
+choose to manipulate this text or enter new text.
+</td></tr></table>
+
+[tmp default_indextext]
+<p>&nbsp;</p>
+<img src="image.gif" width="313" height="252" align="top"></p>
+<p>
+	<large>
+	Welcome to [if value company][value company], [/if]the Internet's premier source of ...
+	</large>
+</p>
+<p>
+	This foundation site is intended to give you the start you need
+	to design your own Interchange site. Just replace the stock
+	graphics, products, and categories we have here with your own,
+	and you're good to go.
+</p>
+<p>
+	Thank you for visiting.
+</p>
+[/tmp]
+[table-editor 
+	table=variable
+	left_width=120
+	table_width=500
+	wizard=1
+	defaults=1
+	bottom_buttons=1
+	no_top=1
+	no_bottom=1
+   	row_template="[scratch row_template]"
+
+	ui_profile="*index"
+
+	mv_nextpage=__UI_BASE__/wizard/step_about
+	mv_prevpage=__UI_BASE__/wizard/step_products
+	hidden.ui_return_to="__UI_BASE__/wizard/index"
+
+	ui_data_key=code
+	default.code="[value code]"
+	help.code="If this is the first time you have used this definition, you will need to assign a nickname. Only A-Z0-9 are valid."
+	label.code="Catalog Identifier"
+	widget.code=text_10
+
+	ui_data_fields="code indextitle indextext"
+	ui_display_only="indextitle indextext"
+	ui_hide_key=1
+
+	label.indextitle="Page &lt;TITLE&gt;"
+	help.indextitle="Title for the page (top bar)"
+	widget.indextitle=text
+	default.indextitle=`'Welcome' . ($Values->{company} ? ' to ' . $Values->{company} : '') . "!"`
+
+	label.indextext="Content"
+	widget.indextext=textarea_18_80
+	default.indextext=`$Scratch->{default_indextext}`
+]
+
+@_UI_STD_FOOTER_@

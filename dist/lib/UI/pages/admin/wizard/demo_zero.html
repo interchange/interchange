@@ -1,0 +1,54 @@
+
+[perl]
+%vars = (
+	abouttext => undef,
+	contacttext => undef,
+	indextext => undef,
+	address => undef,
+	adminpass => undef,
+	adminuser => undef,
+	city => undef,
+	code => undef,
+	company => undef,
+	country => undef,
+	domainname => undef,
+	mailorderto => undef,
+	emailservice => undef,
+	fedmodes => undef,
+	fedadder => undef,
+	upsmodes => undef,
+	upsadder => undef,
+	emailinfo => undef,
+	finalize => undef,
+	logo => undef,
+	paycheck => undef,
+	paycod => undef,
+	paygate => undef,
+	paymo => undef,
+	paypo => undef,
+	phone => undef,
+	products => undef,
+	shipmethod => undef,
+	shipzip => undef,
+	shoppass => undef,
+	shopuser => undef,
+	smlogo => undef,
+	style => undef,
+	state => undef,
+	taxlocation => undef,
+	taxrate => undef,
+	taxship => undef,
+	tollfree => undef,
+	zip => undef,
+);
+
+#for(keys %vars) {
+for (keys %$Values) {
+	delete $Values->{$_};
+	$out .= "$_=$Values->{$_}<BR>";
+}
+delete $Scratch->{$_} for keys %$Scratch;
+return $out;
+[/perl]
+
+[bounce page=__UI_BASE__/wizard/index]

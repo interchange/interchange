@@ -1,0 +1,58 @@
+[set page_title]Upload Products[/set]
+[set ui_checklist]1[/set]
+@_UI_STD_HEAD_@
+
+<table><tr><td width=500>
+This section allows you to enter your products. To use the Interchange spreadsheet:<br>
+<ol>
+<li>Download the Interchange Spreadsheet Template
+<a href="__IMAGE_DIR__/template.xls">products.xls</a>.
+<li>Or download one of our spreadsheets preloaded with sample products:
+	<UL>
+	<LI><a href="__IMAGE_DIR__/construct.xls">Construct Something</A>
+	<LI><a href="__IMAGE_DIR__/computer.xls">Computer Store</A>
+	<LI><a href="__IMAGE_DIR__/reports.xls">Marketing Reports</A>
+	</UL>
+<li>Add your products to the spreadsheet and click <b>Save</b>.
+<li>Click <b>Browse</b>. Find the location where you saved products.xls and
+click <b>Next</b> to upload the populated spreadsheet.
+</ol>
+</td></tr></table>
+
+[table-editor 
+	table=variable
+	left_width=120
+	table_width="500"
+	wizard=1
+	defaults=1
+	bottom_buttons=1
+	no_top=1
+	no_bottom=1
+   	row_template="[scratch row_template]"
+
+	ui_profile="*products"
+
+	mv_nextpage=__UI_BASE__/wizard/step_index
+	mv_prevpage=__UI_BASE__/wizard/step_security
+	hidden.ui_return_to="__UI_BASE__/wizard/index"
+
+	file_upload=1
+
+	ui_data_key=code
+	default.code="[value code]"
+	help.code="If this is the first time you have used this definition, you will need to assign a nickname. Only A-Z0-9 are valid."
+	label.code="Catalog Identifier"
+	widget.code=text_10
+
+	ui_data_fields="code products"
+	ui_display_only="products"
+	ui_hide_key=1
+
+	label.products="Products"
+	help.products="Select the Excel-format file you entered your products list into (optional)."
+	widget.products=uploadhelper
+	outboard.products=upload
+	default.products="products.xls"
+]
+
+@_UI_STD_FOOTER_@

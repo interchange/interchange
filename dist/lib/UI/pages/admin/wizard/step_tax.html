@@ -1,0 +1,73 @@
+[set page_title]Tax Settings[/set]
+[set ui_checklist]1[/set]
+@_UI_STD_HEAD_@
+
+[calc] undef $Variable->{UI_META_LINK}; [/calc]
+
+[table-editor
+	table=variable
+	left_width=120
+	table_width=500
+	wizard=1
+	defaults=1 
+	bottom_buttons=1
+	no_top=1
+	no_bottom=1
+   	row_template="[scratch row_template]"
+
+	ui_profile="*tax"
+
+	mv_nextpage=__UI_BASE__/wizard/step_ship 
+	mv_prevpage=__UI_BASE__/wizard/step_email
+	hidden.ui_return_to="__UI_BASE__/wizard/index" 
+
+	ui_data_key=code 
+	default.code="[value code]" 
+	help.code="If this is the first time you have used this definition, you will need to assign a nickname. Only A-Z0-9 are valid." 
+	label.code="Catalog Identifier" 
+	widget.code=text_10 
+
+	ui_data_fields="code taxlocation taxrate taxship" 
+	ui_display_only="taxlocation taxrate taxship" 
+	ui_hide_key="1" 
+
+	label.taxlocation="Tax location" 
+	help.taxlocation="The location this tax applies to (often a state, possibly a country)" 
+	widget.taxlocation=text_20 
+	help_url.taxlocation="http://www.akopia.com/" 
+	default.taxlocation="[value state]" 
+
+	label.taxrate="Tax rate" 
+	help.taxrate="Percentage of order assessed for tax" 
+	widget.taxrate=text_5
+
+	label.taxship="Tax shipping?" 
+	help.taxship="Check this box if tax should be applied to shipping costs" 
+	widget.taxship=checkbox 
+	filter.taxship=checkbox 
+	passed.taxship="1=&nbsp;&nbsp;&nbsp;&nbsp;"
+] 
+
+<table><tr><td width=500>
+<P>
+Sales tax settings allows you to specify what locations (<STRONG>TAX
+LOCATION</STRONG>) you are required to collect sales tax from. For
+example, if your company is located in California, you may be required to
+collect sales tax of 7.25% (<STRONG>TAX RATE</STRONG>) for certain items
+that you sell to customers in California. Interchange will determine at
+checkout, where your customer is located. It does this by checking the
+"ship to" information that they fill in. If the customer is located in
+a <STRONG>TAX LOCATION</STRONG> that you have specified, the amount of
+the order is multiplied by the <STRONG>TAX RATE</STRONG> that you have
+specified and is added to the&nbsp;cost of the products ordered. Some
+companies are required to collect sales tax in more than one state.
+</P>
+<P>
+Once your catalog is installed, you will be able to easily add more
+locations using the Interchange administration tool. If you are not
+required to collect sales tax (please refer to the appropriate friendly,
+helpful taxing authority for your area), leave these fields blank.
+</p>   
+</td></tr></table>
+
+@_UI_STD_FOOTER_@

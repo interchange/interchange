@@ -1,0 +1,61 @@
+[set page_title]Set Up Cybercash Information[/set]
+[set ui_checklist]1[/set]
+@_UI_STD_HEAD_@
+
+<table width=500><tr><td align=left>
+Enter the values used to enable payment processing through CyberCash.
+</td></tr></table>
+
+[table-editor 
+	table=variable
+	left_width=120
+	table_width=500
+	wizard=1
+	defaults=1
+	bottom_buttons=1
+	no_top=1
+	no_bottom=1
+   	row_template="[scratch row_template]"
+
+	mv_nextpage=__UI_BASE__/wizard/step_security
+	mv_prevpage=__UI_BASE__/wizard/step_pay
+	hidden.ui_return_to="__UI_BASE__/wizard/index"
+
+	ui_data_key=code
+	default.code="[value code]"
+	help.code="If this is the first time you have used this definition, you will need to assign a nickname. Only A-Z0-9 are valid."
+	label.code="Catalog Identifier"
+	widget.code=text_10
+
+	ui_data_fields="code cybermode cyberid cyberkey"
+	ui_display_only="cybermode cyberid cyberkey"
+	ui_hide_key="1"
+
+	label.cybermode="Cybercash mode"
+	help.cybermode="This normally doesn't matter in CyberCash 3.x -- used to enable"
+	widget.cybermode=select
+	passed.cybermode="mauthonly=Auth only, mauthcapture=Settle immediately,=Disabled"
+
+	label.cyberfile="Cybercash configuration file"
+	help.cyberfile="The default should be OK if you insert the values below..."
+	widget.cyberfile=imagehelper
+	filter.cyberfile=nullselect
+	default.cyberfile=etc/merchant_conf
+
+	label.cyberid="Cybercash ID"
+	help.cyberid=`
+		my $comp = $Values->{company};
+		$comp =~ s/\W//g;
+		$comp = lc $comp;
+		$comp .= '-';
+		$comp .= int(rand(100));
+		"Usually a value like $comp";
+	`
+	widget.cyberid=text_30
+
+	label.cyberkey="Cybercash Merchant Key"
+	help.cyberkey="Supplied by Cybercash, a 57-character random string"
+	widget.cyberkey=text_57
+]
+
+@_UI_STD_FOOTER_@

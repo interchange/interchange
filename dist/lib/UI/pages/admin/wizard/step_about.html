@@ -1,0 +1,82 @@
+[set page_title]Company "About Us" Page[/set]
+[set ui_checklist]1[/set]
+@_UI_STD_HEAD_@
+
+<table><tr><td width=500>
+Enter the title and content to be displayed on your <b>About Us</b> page.
+The <b>Content</b> section contains sample text formatted in HTML. You can
+manipulate this sample text or enter all new text.
+</td></tr></table>
+
+[tmp default_abouttext]
+<p>
+<B>[if value company][value company] is[else]We are[/else][/if]</B> the Internet's premier provider of ...
+</p>
+
+<p>
+The key to [if value company]the [value company][else]our product[/else][/if] line is the ergonomic ...
+</p>
+
+<p>
+We can be contacted at:
+
+	<BLOCKQUOTE>
+	[value company]<br>
+	[value address]<br>
+	[value city], [value state] [value zip]<br>
+	<BR>[if value phone]
+	Phone: [value phone]<br>
+	[/if][if value fax]
+	Fax: [value fax]<br>
+	[/if][if value tollfree]
+	Toll-free: [value tollfree]<BR>
+	[/if]</blockquote>
+</p>
+
+<p>
+If you would like further information, please contact:
+
+	<BLOCKQUOTE>
+	<a href="mailto:[value emailinfo]">[value emailinfo]</a>
+	</BLOCKQUOTE>
+</p>
+[/tmp]
+
+[table-editor 
+	table=variable
+	left_width=120
+	table_width=500
+	wizard=1
+	defaults=1
+	bottom_buttons=1
+	no_top=1
+	no_bottom=1
+   	row_template="[scratch row_template]"
+
+	ui_profile="*about"
+
+	mv_nextpage=__UI_BASE__/wizard/step_finalize
+	mv_prevpage=__UI_BASE__/wizard/step_index
+	hidden.ui_return_to="__UI_BASE__/wizard/index"
+
+	ui_data_key=code
+	default.code="[value code]"
+	help.code="If this is the first time you have used this definition, you will need to assign a nickname. Only A-Z0-9 are valid."
+	label.code="Catalog Identifier"
+	widget.code=text_10
+
+	ui_data_fields="code abouttitle abouttext"
+	ui_display_only="abouttitle abouttext"
+	ui_hide_key=1
+
+	label.abouttitle="Page &lt;TITLE&gt;"
+	help.abouttitle="Title for the page (top bar)"
+	widget.abouttitle=text
+	default.abouttitle=`'About ' . ($Values->{company} || 'Us')`
+
+	label.abouttext="Content"
+	widget.abouttext=textarea_18_80
+	default.abouttext=`$Scratch->{default_abouttext}`
+]
+
+@_UI_STD_FOOTER_@

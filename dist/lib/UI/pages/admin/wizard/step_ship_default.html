@@ -1,0 +1,94 @@
+[set page_title]Shipping Configuration[/set]
+[set ui_checklist]1[/set]
+@_UI_STD_HEAD_@
+
+<table><tr><td width=500>
+You can select which rate will be offered first to your customers
+both international and domestic.
+<P>
+If you did select Federal Express or UPS modes, and want to <i>add</i> a flat
+rate charge to the list of options you offer, select it.
+</td></tr></table>
+
+[calc]
+	delete $Scratch->{no_ups_fed};
+	$Scratch->{ups_modes} =~ s/^\s+//;
+	$Scratch->{ups_modes} =~ s/\s+$//;
+	$Scratch->{fed_modes} =~ s/^\s+//;
+	$Scratch->{fed_modes} =~ s/\s+$//;
+	my @modes =  grep /.=/, split /\s*,\s*/, $Scratch->{ups_modes};
+	push @modes, grep /.=/, split /\s*,\s*/, $Scratch->{fed_modes};
+	my @active =  grep /^\w+$/, split /[\s,\0]+/, $Values->{upsmodes};
+	push @active, grep /^\w+$/, split /[\s,\0]+/, $Values->{fedmodes};
+
+	my %mode_hash;
+
+	for (@modes) {
+		($mode, $desc) = split /\s*=\s*/, $_, 2;
+		$desc =~ s/,/&#44/g;
+		$mode_hash{$mode} = $desc;
+	}
+
+	my @out;
+	for (@active) {
+		push @out, "$_=$mode_hash{$_}";
+	}
+
+	push @out, "FLATD=Flat rate per order";
+	push @out, "PERD=Per item cost";
+	push @out, "FLATI=Flat rate per order (int'l)";
+	push @out, "PERI=Per item cost (int'l)";
+	push @out, "FREE=Free shipping";
+
+	if(! @active) {
+		$Scratch->{no_ups_fed} = 1;
+	}
+	$Scratch->{all_ship_modes} = join ",\n", @out;
+	return;
+[/calc]
+
+[table-editor 
+	table=variable
+	left_width=120
+	table_width="500"
+	wizard=1
+	defaults=1
+	bottom_buttons=1
+	no_top=1
+	no_bottom=1
+   	row_template="[scratch row_template]"
+
+	mv_nextpage=__UI_BASE__/wizard/step_pay
+	mv_prevpage=__UI_BASE__/wizard/step_ship
+	hidden.ui_return_to="__UI_BASE__/wizard/index"
+
+	ui_data_key=code
+
+	ui_data_fields="code defaultshipd defaultshipi flatd flati"
+	ui_display_only="defaultshipd defaultshipi flatd flati"
+	ui_hide_key="1"
+
+	check.defaultshipd=mandatory
+	label.defaultshipd="Default domestic ship mode"
+	help.defaultshipd="You must select something, even if it is Free Shipping"
+	widget.defaultshipd=select
+	passed.defaultshipd=`$Scratch->{all_ship_modes}`
+
+	check.defaultshipi=mandatory
+	label.defaultshipi="Default Int'l ship mode"
+	help.defaultshipi="You must select something, even if it is Free Shipping"
+	widget.defaultshipi=select
+	passed.defaultshipi=`$Scratch->{all_ship_modes}`
+
+	check.flatd=mandatory
+	label.flatd="Domestic Flat/Per item rate"
+	widget.flatd=text_10
+	default.flatd="0.00"
+
+	check.flati=mandatory
+	label.flati="Int'l Flat/Per item rate"
+	widget.flati=text_10
+	default.flati="0.00"
+]
+
+@_UI_STD_FOOTER_@
