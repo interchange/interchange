@@ -1,6 +1,6 @@
 #! /bin/sh
 #
-# Copyright 2001,2002 by Stefan Hornburg (Racke) <racke@linuxia.de>
+# Copyright 2001,2002,2003 by Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -85,7 +85,7 @@ db_get interchange/docroot
 echo DOCROOT=$RET >> $INITCFG
 
 db_get interchange/gpghome
-echo GPGHOME=$GPGHOME >> $INITCFG
+echo GPGHOME=$RET >> $INITCFG
 
 # 2. Settings which influence the global configuration
 # and make senses to be configured by debconf

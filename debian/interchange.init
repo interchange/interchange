@@ -2,7 +2,7 @@
 #
 # interchange.init - Interchange start-stop script
 #
-# Copyright (C) 2000,2001,2002 Stefan Hornburg (Racke) <racke@linuxia.de>
+# Copyright (C) 2000,2001,2002,2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ MODE="--unix"
 USER=interchange
 . /etc/interchange/init.cfg
 
-if [ "$GPGDIR" ]; then
+if [ "$GPGHOME" ]; then
 	export GNUPGHOME=$GPGHOME
 fi
 
