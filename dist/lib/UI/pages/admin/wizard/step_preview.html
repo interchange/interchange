@@ -1,30 +1,27 @@
-[set page_title]Preview[/set]
+[set page_title][L]Preview[/L][/set]
 [set ui_checklist]1[/set]
 [set help_name]wizard.preview[/set]
 @_UI_STD_HEAD_@
 
 <p>
 
-To preview your site, click <b>Finish</b>. The following will occur:
+[L]To preview your site, click <b>Finish</b>. The following will occur[/L]:
 <p>
-<li>A new online catalog will be created based on the configuration you
-have specified into the CommerceLauncher.
-<li>Your product data will be entered in the database.
-<li>Your content pages will be created.
-<li>The secure web server will be enabled (if selected, optional until
-launch.) 
-<li>Sample customers and order data will be put in the database (if
-selected.) 
+<li>[L]A new online catalog will be created based on the configuration you have specified into the CommerceLauncher.[/L]
+<li>[L]Your product data will be entered in the database.[/L]
+<li>[L]Your content pages will be created.[/L]
+<li>[L]The secure web server will be enabled (if selected, optional until launch.)[/L]
+<li>[L]Sample customers and order data will be put in the database (if selected.)[/L]
 <p>
-Please be patient after clicking the Finish button.
+[L WIZARD_STEP_PREVIEW_PAR_1]Please be patient after clicking the Finish button.
 If you are uploading a large spreadsheet file, the server may take
-several minutes to process your data.
+several minutes to process your data.[/L]
 <p>
-When you are satisfied with your catalog, click Launch to begin taking
-orders. 
+[L WIZARD_STEP_PREVIEW_PAR_2]When you are satisfied with your catalog, click Launch to begin taking
+orders.[/L] 
 <p>
-In order to launch, you must have a secure (SSL) connection and payment
-options selected.
+[L WIZARD_STEP_PREVIEW_PAR_3]In order to launch, you must have a secure (SSL) connection and payment
+options selected.[/L]
 
 <p>
 
@@ -46,12 +43,12 @@ options selected.
 	delete $Scratch->{pmessage};
 	delete $Scratch->{pdefault};
 	if($pcount > 0) {
-		$Scratch->{pmessage} = "$pcount products currently in the database - select Yes to add/replace products";
+		$Scratch->{pmessage} = errmsg("%s products currently in the database - select Yes to add/replace products", $pcount);
 		$Values->{sampleproducts} = $Scratch->{pdefault} = '';
 		$Scratch->{pwidget} = "yesno";
 	}
 	else {
-		$Scratch->{pmessage} = "No products currently in the database - select No to add no products";
+		$Scratch->{pmessage} = errmsg("No products currently in the database - select No to add no products");
 		$Scratch->{pwidget} = "hidden";
 		$Values->{sampleproducts} = $Scratch->{pdefault} = '1';
 	}
@@ -59,11 +56,11 @@ options selected.
 	delete $Scratch->{tmessage};
 	delete $Scratch->{tdefault};
 	if($tcount > 0) {
-		$Scratch->{tmessage} = "$tcount orders currently in the database - select Yes to add/replace orders";
+		$Scratch->{tmessage} = errmsg("%s orders currently in the database - select Yes to add/replace orders", $tcount);
 		$Values->{sampleorders} = $Scratch->{tdefault} = '';
 	}
 	else {
-		$Scratch->{tmessage} = "No orders currently in the database - select No to leave blank";
+		$Scratch->{tmessage} = errmsg("No orders currently in the database - select No to leave blank");
 		$Values->{sampleorders} = $Scratch->{tdefault} = '';
 	}
 	return;
@@ -81,9 +78,9 @@ it. Until then, MySQL and DBM only.
 [/comment]
 
 [if variable PGSQL]
-	[tmp the_fields]sampleproducts buildcat enablesecure[/tmp]
+	[tmp the_fields][L]sampleproducts buildcat enablesecure[/L][/tmp]
 [else]
-	[tmp the_fields]sampleproducts buildcat sampleorders enablesecure[/tmp]
+	[tmp the_fields][L]sampleproducts buildcat sampleorders enablesecure[/L][/tmp]
 [/else]
 [/if]
 
@@ -108,20 +105,20 @@ it. Until then, MySQL and DBM only.
 
 	ui_wizard_fields="[scratch the_fields]"
 
-	label.sampleorders="Insert sample order data"
+	label.sampleorders="[L]Insert sample order data[/L]"
 	help.sampleorders=`$Scratch->{tmessage}`
 	widget.sampleorders=yesno
 
-	label.buildcat="Rebuild category lists"
+	label.buildcat="[L]Rebuild category lists[/L]"
 	widget.buildcat=select
-	passed.buildcat="Yes, No"
+	passed.buildcat="[L]Yes, No[/L]"
 
-	label.sampleproducts="Insert products data"
+	label.sampleproducts="[L]Insert products data[/L]"
 	help.sampleproducts=`$Scratch->{pmessage}`
 	widget.sampleproducts=`$Scratch->{pwidget}`
 
-	label.enablesecure="Enable Secure (SSL)"
-	help.enablesecure="Select Yes if your Stronghold secure server is set up"
+	label.enablesecure="[L]Enable Secure (SSL)[/L]"
+	help.enablesecure="[L]Select Yes if your Stronghold secure server is set up[/L]"
 	widget.enablesecure=yesno
 ]
 
