@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.32.4.14 2001-06-14 16:05:37 jon Exp $
+# $Id: makecat.PL,v 1.32.4.15 2001-06-15 02:48:28 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -82,7 +82,7 @@ BEGIN {
 		$Global::ExeName = 'minivend';
 		$Global::ConfigFile = 'minivend.cfg';
 	}
-	elsif(-f "$Global::VendRoot/interchange.cfg.dist") {
+	else {
 		$Global::ExeName = 'interchange';
 		$Global::ConfigFile = 'interchange.cfg';
 	}
@@ -143,7 +143,7 @@ options:
     --imageurl=url             The URL to prefix images with
     --linkmode=mode            UNIX or INET (link program vlink or tlink)
     --linkprogram=file         Use file as link program instead of vlink/tlink
-    --nocfg                    Don't add to $Global::ExeName.cfg
+    --nocfg                    Don't add to $Global::ConfigFile
     --nocopy                   Don't actually copy the files, just test
     --norunning                Don't add to running server
     --noumask                  Don't set umask
@@ -246,6 +246,9 @@ if (scalar @ARGV > 1) {
 	/);
 
 	GetOptions(\%optctl, @options)			or die "\n$USAGE\n";
+}
+elsif ($ARGV[0] =~ /^(--help|-h(elp)?)$/i) {
+	die "\n$USAGE\n";
 }
 
 $catalog_name = shift unless $catalog_name;
@@ -2027,7 +2030,8 @@ POSTCMD: {
 				or die "\nCouldn't copy $Global::ConfigFile: $!\n";
 		}
 		else {
-			File::Copy::copy("$Global::ConfigFile.dist", $tmpfile);
+			File::Copy::copy("$Global::ConfigFile.dist", $tmpfile)
+				or die "\nCouldn't copy $Global::ConfigFile.dist: $!\n";
 		}
 		open(CFG, "< $tmpfile")
 			or die "\nCouldn't open $tmpfile: $!\n";
@@ -2179,7 +2183,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 1.32.4.14 2001-06-14 16:05:37 jon Exp $
+# $Id: makecat.PL,v 1.32.4.15 2001-06-15 02:48:28 jon Exp $
 
 =head1 INTRODUCTION
 
