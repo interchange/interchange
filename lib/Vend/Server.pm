@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.0.2.12 2003-01-24 04:45:34 jon Exp $
+# $Id: Server.pm,v 2.0.2.13 2003-01-24 05:00:47 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.0.2.12 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.13 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -1996,7 +1996,7 @@ sub server_both {
 			if($Global::SocketPerms & 033) {
 				::logGlobal( {
 					level => 'warn' },
-					"ALERT: %s socket permissions are insecure; are you sure you want permssions %o?",
+					"ALERT: %s socket permissions are insecure; are you sure you want permissions %o?",
 					$_,
 					$Global::SocketPerms,
 				);
