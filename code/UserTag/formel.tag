@@ -19,7 +19,7 @@
 # MA  02111-1307  USA.
 
 UserTag formel Order label name type size
-UserTag formel Version 0.091
+UserTag formel Version 0.092
 UserTag formel addAttr
 UserTag formel Routine <<EOF
 sub {
@@ -201,6 +201,8 @@ specify width and height (e.g. 70x10 or 20,4).
 =back
 
 Other options are:
+
+=over 4
 
 =item cause
 
