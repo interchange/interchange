@@ -185,7 +185,7 @@
 
 		if($update_visit) {
 			$visits++;
-			$visit_number = '$_->[1]:' . $visit_by_session{$_->[1]}++;
+			$visit_number = "$_->[1]:" . $visit_by_session{$_->[1]}++;
 			$visit_by_period{$per}++;
 			$visit_by_day{$_->[0]}++;
 			$visit_by_user{$_->[2]}++;
@@ -233,7 +233,7 @@ EOF
 			$pct = '';
 			$pct = $action_by_visit{$_} / $visit_by_period{$one} * 100
 				if $visit_by_period{$one};
-			$pct = $pct <= 0 ? '' : sprintf( "<FONT SIZE=1><BR>%.1f%%</FONT>", $pct);
+			$pct = $pct <= 0 ? '' : sprintf( "<FONT SIZE=1><BR>%.2f%%</FONT>", $pct);
 			$out .= <<EOF;
 <TD VALIGN="top" ALIGN=CENTER>
 $count$pct
