@@ -94,6 +94,7 @@ sub {
 	my $out = '';
 	my $confirm = '';
 	if($opt->{confirm}) {
+		$opt->{confirm} =~ s/'/\\'/g;
 		$confirm = "confirm('$opt->{confirm}')";
 	}
 
@@ -102,25 +103,36 @@ sub {
 		$onclick = qq{onClick="$confirm$onclick"};
 	}
 
-	# return submit button if not an image
+	# Constructing form button. Will be sent back in
+	# all cases, either as the primary button or as
+	# the <noscript> option for js-challenged browsers.
+
+	$text =~ s/"/&quot;/g;
+	$name =~ s/"/&quot;/g;
+
+	if(! $onclick and $confirm) {
+		$onclick = qq{ onclick="return $confirm"};
+	}
+	$out = qq{<INPUT TYPE="submit" NAME="$name" VALUE="$text"$onclick>};
+
+	if(@js) {
+		$out =~ s/ /join "\n", '', @js, ''/e;
+	}
+
+	# return form button only if not an image
+
 	if(! $image) {
-		$text =~ s/"/&quot;/g;
-		$name =~ s/"/&quot;/g;
-		if(! $onclick and $confirm) {
-			$onclick = qq{ onclick="return $confirm"};
-		}
-		$out = qq{<INPUT TYPE="submit" NAME="$name" VALUE="$text"$onclick>};
-		if(@js) {
-			$out =~ s/ /join "\n", '', @js, ''/e;
-		}
 		return $out;
 	}
 
 	# If we got here the button is an image
-	$text =~ s/"/&quot;/g;
+	# Wrap form button code in <noscript>
+
+	my $no_script = qq!<noscript>$out</noscript>\n!;
+	$out = '';
+
 	my $wstatus = $opt->{alt} || $text;
-	$wstatus =~ s/'/&#39;/g;
-	$name =~ s/"/&quot;/g;
+	$wstatus =~ s/'/\\'/g;
 
 	my $clickname = $name;
 	my $clickvar = $name;
@@ -166,6 +178,20 @@ sub {
 	onClick="$confirm ($opt->{form}.$clickname.value='$text') && $opt->{form}.submit(); return(false);"
 	ALT="$wstatus"><IMG ALT="$wstatus" SRC="$src" border=$opt->{border}$position></A>$anchor
 EOF
+
+	# Must escape escapes and single quotes for js write function. Also must get rid of
+	# newlines and carriage returns.
+
+	$out =~ s/(['\\])/\\$1/g;
+	$out =~ s/[\n\r]+/ /g;
+	$out = <<EOV;
+<script language="javascript1.2">
+<!--
+document.write('$out');
+// -->
+</script>
+$no_script
+EOV
 
 	return $out;
 }
