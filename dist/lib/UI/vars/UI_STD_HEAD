@@ -1,9 +1,11 @@
+## UI Header vars, version: $Id: UI_STD_HEAD,v 2.34 2002-10-27 18:51:02 mheins Exp $
 Variable UI_STD_INIT <<EOV
 [calcn]
 	# is this browser able to grok DHTML ?
 	# (Called separately to prevent bad user value in MV_DHTML_BROWSER
 	# from crashing init...)
-	my $regex = $Tag->var('MV_DHTML_BROWSER', 2) || 'MSIE.*Windows|Mozilla.*Gecko';
+	my $regex = q{__MV_DHTML_BROWSER__}
+				|| 'MSIE.*5.5|MSIE.*6|Mozilla\W*5|Mozilla.*Gecko';
 	$Scratch->{ui_old_browser} = $Session->{browser} !~ /$regex/;
 	return;
 [/calcn][calcn]
