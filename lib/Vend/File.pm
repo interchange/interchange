@@ -1,6 +1,6 @@
 # Vend::File - Interchange file functions
 #
-# $Id: File.pm,v 2.13 2003-11-24 21:09:00 racke Exp $
+# $Id: File.pm,v 2.14 2003-12-03 17:04:26 jon Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -53,7 +53,7 @@ use Errno;
 use Vend::Util;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK $errstr);
-$VERSION = substr(q$Revision: 2.13 $, 10);
+$VERSION = substr(q$Revision: 2.14 $, 10);
 
 sub writefile {
     my($file, $data, $opt) = @_;
@@ -280,7 +280,7 @@ sub fcntl_lock {
                 return 0;
             }
             else {
-                die "Could not lock file: $!\n";
+                die "Could not fcntl_lock file: $!\n";
             }
         }
         return 1;
