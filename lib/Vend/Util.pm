@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.71 2004-03-07 03:14:41 mheins Exp $
+# $Id: Util.pm,v 2.72 2004-05-28 22:38:03 jon Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -87,7 +87,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.71 $, 10);
+$VERSION = substr(q$Revision: 2.72 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1178,10 +1178,6 @@ sub vendUrl {
 	my $secure;
 	my @parms;
 
-	if(exists $Vend::Cfg->{AlwaysSecure}{$path}) {
-		$r = $Vend::Cfg->{SecureURL};
-	}
-
 	my %skip = qw/form 1 href 1 reparse 1/;
 
 	for(@scratches) {
@@ -1213,10 +1209,6 @@ sub vendUrl {
 	$ct = ++$Vend::Session->{pageCount}
 		unless $opt->{no_count};
 
-	if($opt->{match_security}) {
-		$opt->{secure} = $CGI::secure;
-	}
-
 	if($opt->{no_session}) {
 		undef $id;
 		undef $ct;
@@ -1226,6 +1218,10 @@ sub vendUrl {
 		my $cur = $Global::Variable->{MV_PAGE};
 		$cur =~ s{/[^/]+$}{}
 			and $path = "$cur/$path";
+	}
+
+	if($opt->{match_security}) {
+		$opt->{secure} = $CGI::secure;
 	}
 
 	if($opt->{secure} or exists $Vend::Cfg->{AlwaysSecure}{$path}) {
