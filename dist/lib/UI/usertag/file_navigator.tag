@@ -290,7 +290,7 @@ EOF
 		unshift @dir, [ $nd, $msg, $dtmpl ];
 	}
 
-	unshift @dir, [ "$curdir/", '(new file)', $utmpl ];
+	unshift @dir, [ "$curdir/", errmsg('(new file)'), $utmpl ];
 
 	@dir = () if $opt->{no_dirs};
 
