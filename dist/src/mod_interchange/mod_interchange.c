@@ -25,8 +25,8 @@
  */
 
 /*
- *  $Revision: 1.1 $
- *  $Date: 2001-02-12 22:39:15 $
+ *  $Id: mod_interchange.c,v 1.2 2001-03-09 07:11:22 jon Exp $
+ *
 */
 
 #include "httpd.h"
@@ -52,8 +52,8 @@ module MODULE_VAR_EXPORT interchange_module;
 typedef struct ic_conf_struct
 {
 	struct sockaddr *sockaddr;  /* Socket of Interchange Server */
-	int				family;		/* The Socket family of that one */
-	socklen_t		size;		/* The size of the socket */
+	int				family;		/* The socket family of that one */
+	NET_SIZE_T		size;		/* The size of the socket */
 	char			*address;	/* Human readable version of the above */
 } ic_conf_rec;
 
@@ -78,10 +78,10 @@ ic_create_dir_config(pool *p, char *dir)
 	inet_aton( IC_DEFAULT_ADDR, &inet_sock->sin_addr );
 	inet_sock->sin_port   = htons( IC_DEFAULT_PORT );
 
-	conf_rec->sockaddr = (struct sockaddr *)inet_sock;
-	conf_rec->size     = sizeof (struct sockaddr_in);
-	conf_rec->family   = PF_INET;
-	conf_rec->address  = IC_DEFAULT_ADDR ":" "IC_DEFAULT_PORT";
+	conf_rec->sockaddr  = (struct sockaddr *)inet_sock;
+	conf_rec->size      = sizeof (struct sockaddr_in);
+	conf_rec->family    = PF_INET;
+	conf_rec->address   = IC_DEFAULT_ADDR ":" "IC_DEFAULT_PORT";
 
 	return conf_rec;
 }
@@ -106,7 +106,7 @@ ic_server_cmd(cmd_parms *parms, void *mconfig, const char *arg)
 			return "not enough memory";
 
 		unix_sock->sun_family = AF_LOCAL;
-		strncpy( unix_sock->sun_path, conf_rec->address,
+		ap_cpystrn( unix_sock->sun_path, conf_rec->address,
 				 sizeof (unix_sock->sun_path));
 
 		conf_rec->family   = PF_LOCAL;
@@ -210,7 +210,7 @@ ic_send_request( request_rec *r, ic_conf_rec *conf_rec, BUFF *ic_buff )
 	 */
 	if ( ap_bputs( "arg 0\n", ic_buff ) < 0 ) {
 		ap_log_reason( "error writing to Interchange", r->uri, r );
-		return SERVER_ERROR;
+		return HTTP_INTERNAL_SERVER_ERROR;
 	}
 	ap_reset_timeout( r );
 
@@ -226,7 +226,7 @@ ic_send_request( request_rec *r, ic_conf_rec *conf_rec, BUFF *ic_buff )
 	for (e = env, env_count = 0;  *e != NULL;  ++e, ++env_count);
 	if ( ap_bprintf( ic_buff, "env %d\n", env_count ) < 0 ) {
 		ap_log_reason( "error writing to Interchange", r->uri, r );
-		return SERVER_ERROR;
+		return HTTP_INTERNAL_SERVER_ERROR;
 	}
 	ap_reset_timeout( r );
 
@@ -234,7 +234,7 @@ ic_send_request( request_rec *r, ic_conf_rec *conf_rec, BUFF *ic_buff )
 	for ( e = env;  *e != NULL;  ++e) {
 		if ( ap_bprintf(ic_buff, "%d %s\n", strlen(*e), *e ) < 0 ) {
 			ap_log_reason( "error writing to Interchange", r->uri, r );
-			return SERVER_ERROR;
+			return HTTP_INTERNAL_SERVER_ERROR;
 		}
 		ap_reset_timeout( r );
 	}
@@ -251,7 +251,7 @@ ic_send_request( request_rec *r, ic_conf_rec *conf_rec, BUFF *ic_buff )
 
 			if (ap_bprintf( ic_buff, "entity\n%ld ", length ) < 0 ) {
 				ap_log_reason( "error writing to Interchange", r->uri, r );
-				return SERVER_ERROR;
+				return HTTP_INTERNAL_SERVER_ERROR;
 			}
 
 			while ( (len_read =
@@ -263,18 +263,18 @@ ic_send_request( request_rec *r, ic_conf_rec *conf_rec, BUFF *ic_buff )
 				/* Send that to Interchange */
 				if ( ap_bwrite( ic_buff, buffer, len_read ) != len_read ) {
 					ap_log_reason( "error writing to Interchange", r->uri, r );
-					return SERVER_ERROR;
+					return HTTP_INTERNAL_SERVER_ERROR;
 				}
 				ap_reset_timeout(r);
 			}
 			if ( len_read < 0 ) {
 				ap_log_reason( "error reading from client", r->uri, r );
-				return SERVER_ERROR;
+				return HTTP_INTERNAL_SERVER_ERROR;
 			}
 			/* Send end of line */
 			if ( ap_bputc( '\n', ic_buff ) < 0 ) {
 				ap_log_reason( "error writing to Interchange", r->uri, r );
-				return SERVER_ERROR;
+				return HTTP_INTERNAL_SERVER_ERROR;
 			}
 		}
 	}
@@ -282,12 +282,12 @@ ic_send_request( request_rec *r, ic_conf_rec *conf_rec, BUFF *ic_buff )
 	/* We are done */
 	if ( ap_bputs( "end\n", ic_buff ) < 0 ) {
 		ap_log_reason( "error writing to Interchange", r->uri, r );
-		return SERVER_ERROR;
+		return HTTP_INTERNAL_SERVER_ERROR;
 	}
 	ap_reset_timeout( r );
 	if ( ap_bflush( ic_buff ) < 0 ) {
 		ap_log_reason( "error writing to Interchange", r->uri, r );
-		return SERVER_ERROR;
+		return HTTP_INTERNAL_SERVER_ERROR;
 	}
 
 	ap_kill_timeout( r );
@@ -307,7 +307,7 @@ ic_transfer_response( request_rec *r, ic_conf_rec *conf_rec,
 	int cur_reading_elt;
 	int cur_writing_elt;
 
-	/* For select(3) */
+	/* For ap_select */
 	fd_set readers,writers;
 	int client_fd,ic_fd,maxfd;
 	int reading,writing;
@@ -321,7 +321,7 @@ ic_transfer_response( request_rec *r, ic_conf_rec *conf_rec,
 					   "Error while scanning response headers: %s",
 					   error_buff );
 
-		return SERVER_ERROR;
+		return HTTP_INTERNAL_SERVER_ERROR;
 	}
 
 	/* Send beggining of the response */
@@ -330,7 +330,7 @@ ic_transfer_response( request_rec *r, ic_conf_rec *conf_rec,
 	/* Make sure all headers are flushed */
 	if ( ap_rflush( r ) < 0 ) {
 		ap_log_reason( "error sending headers to client", r->uri, r );
-		return SERVER_ERROR;
+		return HTTP_INTERNAL_SERVER_ERROR;
 	}
 	ap_reset_timeout(r);
 
@@ -340,13 +340,13 @@ ic_transfer_response( request_rec *r, ic_conf_rec *conf_rec,
 	{
 		ap_log_reason( "error turning non blocking I/O on client",
 					   r->uri, r );
-		return SERVER_ERROR;
+		return HTTP_INTERNAL_SERVER_ERROR;
 	}
 	if ( (rc = ap_bnonblock( ic_buff, B_RD ) ) != 0 )
 	{
 		ap_log_reason( "error turning non blocking I/O on Interchange",
 					   r->uri, r );
-		return SERVER_ERROR;
+		return HTTP_INTERNAL_SERVER_ERROR;
 	}
 	ap_bsetflag( ic_buff, B_SAFEREAD, 1 );
 
@@ -360,12 +360,12 @@ ic_transfer_response( request_rec *r, ic_conf_rec *conf_rec,
 	resp_buff_arr = ap_make_array(r->pool, 5, sizeof(ic_response_buffer ) );
 	if ( !resp_buff_arr ) {
 		ap_log_reason( "failed to allocate response buffer", r->uri, r );
-		return SERVER_ERROR;
+		return HTTP_INTERNAL_SERVER_ERROR;
 	}
 	/* Create the first element */
 	if ( ap_push_array( resp_buff_arr ) == NULL ) {
 		ap_log_reason( "failed to allocate first element", r->uri, r );
-		return SERVER_ERROR;
+		return HTTP_INTERNAL_SERVER_ERROR;
 	}
 	cur_reading_elt = 0, cur_writing_elt = 0;
 
@@ -385,10 +385,10 @@ ic_transfer_response( request_rec *r, ic_conf_rec *conf_rec,
 		if ( writing )
 			FD_SET(client_fd, &writers);
 
-		if ( ( rc = select( maxfd, &readers, &writers, NULL, NULL ) ) < 0 )
+		if ( ( rc = ap_select( maxfd, &readers, &writers, NULL, NULL ) ) < 0 )
 		{
-			ap_log_reason( "error in select", r->uri, r );
-			return SERVER_ERROR;
+			ap_log_reason( "error in ap_select", r->uri, r );
+			return HTTP_INTERNAL_SERVER_ERROR;
 		}
 
 		if ( reading && FD_ISSET( ic_fd, &readers ) )
@@ -409,7 +409,7 @@ ic_transfer_response( request_rec *r, ic_conf_rec *conf_rec,
 			if ( read_len < 0 ) {
 				ap_log_reason( "error while reading Interchange response",
 							   r->uri, r );
-				return SERVER_ERROR;
+				return HTTP_INTERNAL_SERVER_ERROR;
 			} else if ( read_len == 0 ) {
 				reading = 0;
 			} else {
@@ -424,7 +424,7 @@ ic_transfer_response( request_rec *r, ic_conf_rec *conf_rec,
 					if ( !resp_buff ) {
 						ap_log_reason( "error while allocating "
 									   "response buffer", r->uri, r );
-						return SERVER_ERROR;
+						return HTTP_INTERNAL_SERVER_ERROR;
 					}
 					cur_reading_elt++;
 				}
@@ -448,7 +448,7 @@ ic_transfer_response( request_rec *r, ic_conf_rec *conf_rec,
 				if ( write_len < 0 ) {
 					ap_log_reason( "error while sending response",
 								   r->uri, r );
-					return SERVER_ERROR;
+					return HTTP_INTERNAL_SERVER_ERROR;
 				}
 				resp_buff->pos += write_len;
 
@@ -482,7 +482,7 @@ ic_transfer_response( request_rec *r, ic_conf_rec *conf_rec,
 	/* Push everything to the client */
 	if ( ap_bflush( client_buff ) < 0 ) {
 		ap_log_reason( "error sending response to client", r->uri, r);
-		return SERVER_ERROR;
+		return HTTP_INTERNAL_SERVER_ERROR;
 	}
 
 	ap_kill_timeout(r);
@@ -502,12 +502,12 @@ ic_handler( request_rec *r)
 	if ( ! conf_rec ) {
 		ap_log_reason( "interchange-handler not configured properly",
 					   r->uri, r);
-		return SERVER_ERROR;
+		return HTTP_INTERNAL_SERVER_ERROR;
 	}
 
 	ic_buff = ic_connect( r, conf_rec );
 	if ( !ic_buff )
-		return SERVER_ERROR;
+		return HTTP_INTERNAL_SERVER_ERROR;
 
 	result = ic_send_request( r, conf_rec, ic_buff );
 	if ( result != OK )
