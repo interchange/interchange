@@ -41,48 +41,48 @@ mv_nextpage=new_account
 
 [if !session logged_in]
 
-    <FORM ACTION="[process secure=1]" METHOD=POST>
-    <INPUT TYPE=hidden NAME=mv_todo  VALUE=return>
-    <INPUT TYPE=hidden NAME=mv_click VALUE=Login>
-    <INPUT TYPE=hidden NAME=mv_failpage VALUE="login">
-	<INPUT TYPE=hidden NAME=mv_successpage VALUE="[either][scratchd mv_successpage][or]member/service[/either]">
-    <INPUT TYPE=hidden NAME=mv_nextpage VALUE="index">
-    <input type=hidden name=mv_session_id value="[data session id]">
+    <form action="[process secure=1]" method="POST">
+    <input type="hidden" name="mv_todo"  value="return">
+    <input type="hidden" name="mv_click" value="Login">
+    <input type="hidden" name="mv_failpage" value="login">
+    <input type="hidden" name="mv_successpage" value="[either][scratchd mv_successpage][or]member/service[/either]">
+    <input type="hidden" name="mv_nextpage" value="index">
+    <input type="hidden" name="mv_session_id" value="[data session id]">
 
     <table border="0" align="center">
     <tr>
       <td class="contentbar1" align="center"> 
 	<table align="center">
 	<tr> 
-	  <td align=right class="contentbar2">
+	  <td align="right" class="titletab_small">
 	    [L]Username[/L]
 	  </td>
-	  <td class="contentbar2">
-	    <INPUT NAME=mv_username VALUE="[scratch cookie_username]">
+	  <td class="titletab_small">
+	    <input name="mv_username" value="[scratch cookie_username]">
 	  </td>
 	</tr>
 	<tr>
-	  <td align=right class="contentbar2">
+	  <td align="right" class="titletab_small">
 	    [L]Password[/L]
 	  </td>
-	  <td class="contentbar2">
-	    <INPUT TYPE=password NAME=mv_password VALUE="">
+	  <td class="titletab_small">
+	    <input type="password" name="mv_password" VALUE="">
 	  </td>
 	</tr>
 	<tr>
 	  <td>&nbsp;</td>
-	  <td class="contentbar1">
-	    <input type=submit value="[L]Log In[/L]">
-	    <input type="submit" NAME="mv_click" value="[L]New Account[/L]">
+	  <td>
+	    <input class="button3" type=submit value="[L]Log In[/L]">
+	    <input class="button3" type="submit" NAME="mv_click" value="[L]New Account[/L]">
 	  </td>
 	</tr>
 	[if config CookieLogin]
 	<tr>
-	  <td align=right class="contentbar1"> 
-	    <INPUT TYPE=hidden NAME=mv_cookie_password VALUE=0>
-	    <INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1 [if scratch cookie_username]CHECKED[/if]>
+	  <td align="right" class="contentbar1"> 
+	    <input type="hidden" name="mv_cookie_password" value="0">
+	    <input type="checkbox" name="mv_cookie_password" value="1" [if scratch cookie_username]CHECKED[/if]>
 	  </td>
-	  <td class="contentbar1">
+	  <td>
 	    [L]Log me in automatically (sets cookie)[/L]
 	  </td>
 	</tr>
@@ -96,18 +96,18 @@ mv_nextpage=new_account
 
 [else]
 
-    <FORM ACTION="[process]" METHOD=POST>
-    <input type=hidden name=mv_session_id value="[data session id]">
-    <INPUT TYPE=hidden NAME=mv_todo  VALUE=return>
-    <INPUT TYPE=hidden NAME=mv_click VALUE=Logout_choice>
-    <INPUT TYPE=hidden NAME=mv_nextpage VALUE="login">
+    <form action="[process]" method="POST">
+    <input type="hidden" name="mv_session_id" value="[data session id]">
+    <input type="hidden" name="mv_todo" value="return">
+    <input type="hidden" name="mv_click" value="Logout_choice">
+    <input type="hidden" name="mv_nextpage" value="login">
 
     <table align="center">
     <tr>
       <td class="contentbar1" align="center"> 
 	<table>
-	<tr class=contentbar2> 
-	  <td colspan=2 class=contentbar2>
+	<tr class="titletab_small"> 
+	  <td colspan="2" class="titletab_small">
 	    <b>[L]You are already logged in.[/L]</b>
 	  </td>
 	</tr>
@@ -115,17 +115,17 @@ mv_nextpage=new_account
 	  <td>&nbsp;</td>
 	  <td class="contentbar1">
 	  	<br>&nbsp;<br>
-	    <INPUT TYPE=submit VALUE="Log out"> <INPUT TYPE=checkbox NAME=clear_values CHECKED VALUE=1>&nbsp;[L]Clear&nbsp;name/address[/L][if items]&nbsp;&nbsp;<INPUT TYPE=checkbox NAME=clear_cart CHECKED VALUE=1>&nbsp;[L]Clear&nbsp;cart[/L][/if]<BR>
+	    <input name="submit" value="[L]Log Out[/L]">
+            <input type="checkbox" name="clear_values" checked value="1">&nbsp;[L]Clear&nbsp;name/address[/L][if items]&nbsp;&nbsp;<input type="checkbox" name="clear_cart" checked value="1">&nbsp;[L]Clear&nbsp;cart[/L][/if]<BR>
 	  	<br>&nbsp;<br>
 	  </td>
 	</tr>
-	<tr class=contentbar2> 
+	<tr class="titletab_small"> 
 	  <td colspan=2>
-	    [msg arg.0="<A HREF='[area new_account]'>" arg.1="</a>"]Or you can create a %snew account%s.[/msg]
+	    [msg arg.0="<a href='[area new_account]'>" arg.1="</a>"]Or you can create a %snew account%s.[/msg]
 	  </td>
 	</tr>
 	</table>
-		
       </td>
     </tr>
     </table>
@@ -136,9 +136,10 @@ mv_nextpage=new_account
 [/if]
 
 	<p>
-	<center>
+	<center>	
 	[page lost_password][L]Lost your password?[/L]</a>
 	</center>
+	</p>
 
   </td>
 </tr>

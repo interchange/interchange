@@ -70,7 +70,7 @@ function do_address (form, clear) {
 <input type=hidden NAME=mv_failpage      value="ord/billing">
 <input type=hidden name=mv_form_profile  value="Check_billing">
 
-<table width="95%" align=center>
+<table width="100%" align=center>
 <tr>
   <td align="left" width="100%" align=center>
 
@@ -93,7 +93,7 @@ function do_address (form, clear) {
         </blockquote>
         </p>
         <p>
-    [msg arg.0="<FONT color='__CONTRAST__'>" arg.1="</FONT>"]The areas you need to correct are shown in %sthis color%s below.[/msg]</B>
+    [msg arg.0="<FONT color='__CONTRAST__'>" arg.1="</FONT>"]Please correct the areas listed above which are highlighted in %sthis color%s in the form.[/msg]</B>
     </p>
 	[/tmp]
     [/if]
@@ -128,7 +128,7 @@ function do_address (form, clear) {
 
 	<table align="center" cellspacing=0 width="__CHECKOUT_FORM_WIDTH__">
 	  <tr>
-		<td class=titlebox style="padding: 12px; border-bottom: 0">
+		<td class="titletab_large">
 			Billing Address <small>[scratch get_message]</small>
 		</td>
 	  </tr>
@@ -181,7 +181,6 @@ function do_address (form, clear) {
 			<INPUT TYPE=text NAME=b_address2 VALUE="[value b_address2]" size=40 maxlength="64">
 		  </td>
 		</tr>
-	  [if type=!data term="country::no_state::[value country]"]
 		<tr>
 		  <td align=right>
 			[error name=b_city std_label="[L]City[/L]" required=1]
@@ -196,17 +195,6 @@ function do_address (form, clear) {
 			<INPUT TYPE=text NAME=b_state VALUE="[value b_state]" size="5" maxlength="5">
 		  </td>
 		</tr>
-      [else]
-		<tr>
-		  <td align=right>
-			[error name=b_city std_label="[L]City[/L]" required=1]
-		  </td>
-		  <td colspan=3>
-			<INPUT TYPE=text NAME=b_city VALUE="[value b_city]" size="20">
-		  </td>
-		</tr>
-      [/else]
-      [/if]
 		<tr>
 		  <td align=right>
 			[error name=b_zip std_label="[L]Zip/Postal Code[/L]" required=1]
@@ -223,7 +211,7 @@ function do_address (form, clear) {
 		  [display
 		  		name=b_country
 		  		type=select
-				value="[either][value b_country][or]__SHIP_DEFAULT_COUNTRY__[/either]"
+				default=__SHIP_DEFAULT_COUNTRY__
 				lookup_query="select code,name from country where shipmodes != '' order by name"
 		  ]
 		  </td>
@@ -262,7 +250,7 @@ function do_address (form, clear) {
 					this.form.submit();
 				"
 				value="&lt;-- [L]Back[/L]" class=button3>
-				<input type=submit value="Next --&gt;" class=button1 style="font-weight: bold">
+				<input type=submit value="Next --&gt;" class=button3 style="font-weight: bold">
 		</td>
 	  </tr>
 	  [if scratch error_display]

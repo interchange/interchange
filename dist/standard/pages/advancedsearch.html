@@ -47,42 +47,58 @@ ui_template_name: leftright
 
 [tmp matchlimit]10[/tmp]
 
-<table width="95%" border="0">
+<table width="100%" border="0">
 <tr>
 <td>
 <br>
 
-<big><b>[L]Advanced Search[/L]</b></big>
-<br><br>
+<h1>[L]Advanced Search[/L]</h1>
+<br>
 
 <p>
 <form action="[area search]" method=post>
-<input type=hidden name=mv_session_id value="[data session id]">
-<b>[L]Search by Field[/L]:</b><br>
-[L]Search for[/L]
-<input type=text name=se size=20>
-<input type=hidden name=st value=db>
-<input type=hidden name=co value=1>
-[if module-version Text::Query]
-<input type=hidden name=op value=aq>
-[else]
-<input type=hidden name=op value=rm>
-[/else]
-[/if]
-[L]in[/L]
-<select name=sf>
-<option value=":sku:price:comment:description:category:author">--[L]all fields[/L]--
-[loop
-	acclist=1
-	list="sku=SKU,price=Price"
-]
-<option value="[loop-code]">[loop-param label]
-[/loop]
-</select>
-<input type=hidden name=sf value=category>
-&nbsp;
-<input type=submit value="[L]SEARCH[/L]" class=button2>
-<table>
+<table width="100%">
+	<tr>
+		<td colspan="2">
+			<input type=hidden name=mv_session_id value="[data session id]">
+			<b>[L]Search by Field[/L]:</b><br><br>
+		</td>
+	</tr>
+	<tr>
+		<td width="50%">
+			[L]Search for[/L]
+		</td>
+		<td>
+			<input type=text name=se size=20>
+			<input type=hidden name=st value=db>
+			<input type=hidden name=co value=1>		
+			[if module-version Text::Query]
+			<input type=hidden name=op value=aq>
+			[else]
+			<input type=hidden name=op value=rm>
+			[/else]
+			[/if]
+		</td>
+	</tr>
+	<tr>
+		<td>
+			[L]In fields[/L]
+			
+		</td>
+		<td>
+			<select name=sf>
+			<option value=":sku:price:comment:description:category:author">--[L]all fields[/L]--
+			[loop
+				acclist=1
+				list="sku=SKU,price=Price"
+			]
+			<option value="[loop-code]">[loop-param label]
+			[/loop]
+			</select>
+			<input type=hidden name=sf value=category>
+			&nbsp;
+		</td>
+	</tr>
 	<tr>
 		<td>
 			Full words only
@@ -123,36 +139,42 @@ ui_template_name: leftright
 		[scratch cat_widget]
 		</td>
 	</tr>
+	<tr>
+		<td colspan="2" align="center"><br>
+			<input type=submit value="[L]SEARCH[/L]" class=button3>
+		</td>
+	</tr>
 </table>
 </form>
 </p>
 
 <p>
-<b>[L]Search by Price[/L]:</b><br>
-<form action="[area search]" method=post>
-<input type=hidden name=mv_session_id value="[data session id]">
-<input type=hidden name=st value=db>
-<input type=hidden name=co value=1>
-<input type=hidden name=sf value=price>
-<input type=hidden name=sf value=price>
-<input type=hidden name=sf value=category>
-<input type=hidden name=nu value=1>
-<input type=hidden name=nu value=1>
-<input type=hidden name=nu value=0>
-<input type=hidden name=op value=ge>
-<input type=hidden name=op value=le>
-<input type=hidden name=op value=eq>
-<table>
+<table width="100%">
 	<tr>
-		<td>
+		<td colspan="2">
+			<b>[L]Search by Price[/L]:</b><br><br>
+			<form action="[area search]" method=post>
+			<input type=hidden name=mv_session_id value="[data session id]">
+			<input type=hidden name=st value=db>
+			<input type=hidden name=co value=1>
+			<input type=hidden name=sf value=price>
+			<input type=hidden name=sf value=price>
+			<input type=hidden name=sf value=category>
+			<input type=hidden name=nu value=1>
+			<input type=hidden name=nu value=1>
+			<input type=hidden name=nu value=0>
+			<input type=hidden name=op value=ge>
+			<input type=hidden name=op value=le>
+			<input type=hidden name=op value=eq>
+		</td>
+	</tr>
+	<tr>
+		<td width="50%">
 			[L]Minimum Price[/L]
 		</td>
 		<td>
 			<input type=text name=se size=8 maxlength=12>
-		</td>
-		<td rowspan=3>
-			<input type=submit value="[L]SEARCH[/L]" class=button2>
-		</td>
+		</td>		
 	</tr>
 	<tr>
 		<td>
@@ -168,6 +190,11 @@ ui_template_name: leftright
 		</td>
 		<td>
 			[scratch cat_widget]
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2" align="center"><br>
+			<input type=submit value="[L]SEARCH[/L]" class=button3>
 		</td>
 	</tr>
 </table>

@@ -54,50 +54,50 @@ mv_nextpage=new_account
 [/if]
 [/set]
 
-<FORM ACTION="[process]" METHOD=POST>
-<input type=hidden name=mv_session_id value="[data session id]">
-<INPUT TYPE=hidden NAME=mv_click VALUE=NewAccount>
-<INPUT TYPE=hidden NAME=mv_doit  VALUE=return>
-<INPUT TYPE=hidden NAME=function  VALUE=new_account>
-<INPUT TYPE=hidden NAME=mv_nextpage VALUE=ord/basket>
+<form action="[process]" method="POST">
+<input type="hidden" name="mv_session_id" value="[data session id]">
+<input type="hidden" name="mv_click" value="NewAccount">
+<input type="hidden" name="mv_doit" value="return">
+<input type="hidden" name="function" value="new_account">
+<input type="hidden" name="mv_nextpage" value="ord/basket">
 
 <tr> 
   <td> 
     <table border="0" cellspacing="0" cellpadding="2">
     <tr> 
-      <td align="right" class="contentbar2">
+      <td align="right" class="titletab_small">
         <b>[L]Username[/L]:</b>
       </td>
-      <td class="contentbar2" align="left"> 
-        <input type="text" NAME=mv_username VALUE="">
+      <td class="titletab_small" align="left"> 
+        <input type="text" name="mv_username" value="">
       </td>
     </tr>
     <tr> 
-      <td align="right" class="contentbar2"> 
+      <td align="right" class="titletab_small"> 
         <b>[L]Password[/L]:</b>
       </td>
-      <td align="left" class="contentbar2"> 
-        <INPUT TYPE=password NAME=mv_password VALUE="">
+      <td align="left" class="titletab_small"> 
+        <input type="password" name="mv_password" value="">
       </td>
     </tr>
     <tr> 
-      <td align="right" class="contentbar2"> 
+      <td align="right" class="titletab_small"> 
         <b>[L]Verify Password[/L]:</b>
       </td>
-      <td align="left" class="contentbar2"> 
-        <INPUT TYPE=password NAME=mv_verify VALUE="">
+      <td align="left" class="titletab_small"> 
+        <input type="password" name="mv_verify" value="">
       </td>
     </tr>
-    <tr class="contentbar1"> 
+    <tr class="contentbar1">
       <td>&nbsp;</td>
       <td> 
-        <INPUT TYPE=submit VALUE="[L]Create Account[/L]">
+        <input type="submit" value="[L]Create Account[/L]">
       </td>
     </tr>
 	[if config CookieLogin]
     <tr class="contentbar1"> 
       <td align="right"> 
-        <INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1>
+        <input type="checkbox" name="mv_cookie_password" value="1">
       </td>
       <td>[L]Log me in automatically (sets cookie)[/L]</td>
     </tr>

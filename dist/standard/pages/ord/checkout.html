@@ -11,7 +11,7 @@ ui_template_name: noleft
 
 <!-- BEGIN CONTENT -->
 
-<table width="95%">
+<table width="100%">
 <tr>
   <td align="left" width="100%">
 
@@ -33,7 +33,7 @@ ui_template_name: noleft
         </blockquote>
         </p>
         <p>
-    [msg arg.0="<FONT color='__CONTRAST__'>" arg.1="</FONT>"]The areas you need to correct are shown in %sthis color%s below.[/msg]</B>
+    [msg arg.0="<FONT color='__CONTRAST__'>" arg.1="</FONT>"]Please correct the areas listed above which are highlighted in %sthis color%s in the form.[/msg]</B>
     </p>
     [/if]
 
@@ -81,7 +81,7 @@ ui_template_name: noleft
 	  <tr>
 		<td>
 				<br>
-				[include include/checkout/mailing_status]
+				[include include/checkout/mailing_status]				
 		</td>
 	  </tr>
 	  <tr>
@@ -113,6 +113,12 @@ ui_template_name: noleft
 		  <table align="center" cellpadding="10" cellspacing="10">
 			[if items]
 			<tr>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 			  <td>
 			  <input type=submit value="[L]Recalculate[/L]" class=button3>
 			  </td>
@@ -122,7 +128,7 @@ ui_template_name: noleft
 					  text="[L]Place Order[/L]"
 					  wait-text="-- [L]Wait[/L] --"
 					  form=checkout
-					  class=button1
+					  class=button3
 					  style="font-weight: bold"
 			  ]
 					  mv_todo=submit
@@ -131,6 +137,12 @@ ui_template_name: noleft
 			</tr>
 			[else]
 			<tr>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 			  <td>
 			  <b>[L]No items in your shopping cart![/L]</b>
 			  </td>

@@ -30,7 +30,7 @@ ui_template_name: noleft
 <input type=hidden NAME=mv_failpage      value="ord/shipping">
 <input type=hidden name=mv_form_profile  value="Check_shipping">
 
-<table width="95%" align=center>
+<table width="100%" align=center>
 <tr>
   <td align="left" width="100%" align=center>
 
@@ -53,7 +53,7 @@ ui_template_name: noleft
         </blockquote>
         </p>
         <p>
-    [msg arg.0="<FONT color='__CONTRAST__'>" arg.1="</FONT>"]The areas you need to correct are shown in %sthis color%s below.[/msg]</B>
+    [msg arg.0="<FONT color='__CONTRAST__'>" arg.1="</FONT>"]Please correct the areas listed above which are highlighted in %sthis color%s in the form.[/msg]</B>
     </p>
     [/tmp]
     [/if]
@@ -78,7 +78,7 @@ ui_template_name: noleft
 
 	<table align="center" cellspacing=0 width="__CHECKOUT_FORM_WIDTH__">
 	  <tr>
-		<td class=titlebox style="padding: 12px; border-bottom: 0">
+		<td class="titletab_large">
 			Shipping Address <small>[scratch get_message]</small>
 		</td>
 	  </tr>
@@ -128,7 +128,6 @@ ui_template_name: noleft
 		  <INPUT TYPE=text NAME=city VALUE="[value city]" size="20" maxlength="20">
 		</td>
 	  </tr>
-	  [if type=!data term="country::no_state::[value country]"]
 	  <tr>
 		<td align=right>
 			[error name=state std_label="[L]State/Province[/L]" required=1]
@@ -156,7 +155,6 @@ ui_template_name: noleft
 		  [/loop]
 		</td>
 	  </tr>
-	  [/if]
 	  <tr>
 		<td align="right">
 		  [error name=zip std_label="[L]Zip/Postal Code[/L]" required=1] 
@@ -258,7 +256,7 @@ ui_template_name: noleft
 					this.form.submit();
 				"
 				value="&lt;-- [L]Back[/L]" class=button3>
-				<input type=submit value="Next --&gt;" class=button1 style="font-weight: 500">
+				<input type=submit value="Next --&gt;" class=button3 style="font-weight: 500">
 		</td>
 	  </tr>
 	  [if scratch error_display]
@@ -291,6 +289,5 @@ ui_template_name: noleft
 
 
 <!-- END CONTENT -->
-<!-- Version: $Id: shipping.html,v 1.4 2005-01-25 04:13:13 mheins Exp $ -->
 
 @_NOLEFT_BOTTOM_@

@@ -35,37 +35,37 @@ often and have not already done so, you can create a new account.[/L]
 
 [warnings auto=1]
 
-<table width="90%" align=center cellspacing=0>
+<table width="90%" align="center" cellspacing="0">
 <tr>
-	<td width="30%" align=center valign=bottom class=titlebox style="border-bottom: 0">
+	<td width="30%" align="center" valign="bottom" class="titletab_large">
 		[L]Log in to account[/L]
 	</td>
-	<td width="5%" valign=top>
+	<td width="5%" valign="top">
 	</td>
-	<td width="30%" align=center valign=bottom class=titlebox style="border-bottom: 0">
+	<td width="30%" align="center" valign="bottom" class="titletab_large">
 		[L]Create a new account[/L]
 	</td>
-	<td width="5%" valign=top>
+	<td width="5%" valign="top">
 	</td>
-	<td width="30%" align=center valign=bottom class=titlebox style="border-bottom: 0">
+	<td width="30%" align="center" valign="bottom" class="titletab_large">
 		[L]Don't create an account[/L]
 	</td>
 <tr>
-	<td width="30%" valign=top class=shadowbox>
-		<FORM ACTION="[process secure=1]" METHOD=POST>
-		<INPUT TYPE=hidden NAME=mv_todo  VALUE=return>
-		<INPUT TYPE=hidden NAME=mv_click VALUE=Login>
-		<INPUT TYPE=hidden NAME=mv_failpage VALUE="@@MV_PAGE@@">
-		<INPUT TYPE=hidden NAME=mv_successpage VALUE="ord/country">
-		<INPUT TYPE=hidden NAME=mv_nextpage VALUE="ord/country">
-		<input type=hidden name=mv_session_id value="[data session id]">
+	<td width="30%" valign="top" class="shadowbox">
+		<form action="[process secure=1]" method="POST">
+		<input type="hidden" name="mv_todo" value="return">
+		<input type="hidden" name="mv_click" value="Login">
+		<input type="hidden" name="mv_failpage" value="@@MV_PAGE@@">
+		<input type="hidden" name="mv_successpage" value="ord/country">
+		<input type="hidden" name="mv_nextpage" value="ord/country">
+		<input type="hidden" name="mv_session_id" value="[data session id]">
 
 		<table border="0" align="center" width="100%" height="100%">
 		<tr>
 		  <td align="center"> 
 		<table align="center">
 		<tr> 
-		  <td align=right>
+		  <td align="right">
 			[L]Username[/L]
 		  </td>
 		  <td>
@@ -73,24 +73,24 @@ often and have not already done so, you can create a new account.[/L]
 		  </td>
 		</tr>
 		<tr>
-		  <td align=right>
+		  <td align="right">
 			[L]Password[/L]
 		  </td>
 		  <td>
-			<INPUT TYPE=password NAME=mv_password VALUE="">
+			<input type="password" name="mv_password" value="">
 		  </td>
 		</tr>
 		<tr>
 		  <td>&nbsp;</td>
 		  <td>
-			<input type=submit value="[L]Log In[/L] --&gt;" class=button1>
+			<input type="submit" value="[L]Log In[/L] --&gt;" class="button3">
 		  </td>
 		</tr>
 		[if config CookieLogin]
 		<tr>
-		  <td align=right>
-			<INPUT TYPE=hidden NAME=mv_cookie_password VALUE=0>
-			<INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1>
+		  <td align="right">
+			<input type="hidden" name="mv_cookie_password" value="0">
+			<input type="checkbox" name="mv_cookie_password" value="1">
 		  </td>
 		  <td>
 			[L]Log me in automatically (sets cookie)[/L]
@@ -104,19 +104,19 @@ often and have not already done so, you can create a new account.[/L]
 		
 		</form>
 	</td>
-	<td width="5%" valign=top>
+	<td width="5%" valign="top">
 		&nbsp;
 	</td>
-	<td width="30%" valign=top class=shadowbox>
+	<td width="30%" valign="top" class="shadowbox">
 		<table border="0" align="center" width="100%" height="100%">
 
-		<FORM ACTION="[process secure=1]" METHOD=POST>
-		<input type=hidden name=mv_session_id value="[data session id]">
-		<INPUT TYPE=hidden NAME=mv_click VALUE=NewAccount>
-		<INPUT TYPE=hidden NAME=mv_failpage VALUE="@@MV_PAGE@@">
-		<INPUT TYPE=hidden NAME=mv_successpage VALUE="ord/country">
-		<INPUT TYPE=hidden NAME=mv_nextpage VALUE="ord/country">
-		<INPUT TYPE=hidden NAME=mv_todo  VALUE=return>
+		<form action="[process secure=1]" method="POST">
+		<input type="hidden" name="mv_session_id" value="[data session id]">
+		<input type="hidden" name="mv_click" value=NewAccount>
+		<input type="hidden" name="mv_failpage" value="@@MV_PAGE@@">
+		<input type="hidden" name="mv_successpage" value="ord/country">
+		<input type="hidden" name="mv_nextpage" value="ord/country">
+		<input type="hidden" name="mv_todo"  value="return">
 
 		<tr> 
 		  <td>
@@ -126,7 +126,7 @@ often and have not already done so, you can create a new account.[/L]
 				[L]Username[/L]:
 			  </td>
 			  <td align="left"> 
-				<input type="text" NAME=mv_username VALUE="">
+				<input type="text" name="mv_username" value="">
 			  </td>
 			</tr>
 			<tr> 
@@ -134,7 +134,7 @@ often and have not already done so, you can create a new account.[/L]
 				[L]Password[/L]:
 			  </td>
 			  <td align="left"> 
-				<INPUT TYPE=password NAME=mv_password VALUE="">
+				<input type="password" name="mv_password" value="">
 			  </td>
 			</tr>
 			<tr> 
@@ -142,19 +142,19 @@ often and have not already done so, you can create a new account.[/L]
 				[L]Verify Password[/L]:
 			  </td>
 			  <td align="left"> 
-				<INPUT TYPE=password NAME=mv_verify VALUE="">
+				<input type="password" name="mv_verify" value="">
 			  </td>
 			</tr>
 			<tr> 
 			  <td>&nbsp;</td>
 			  <td> 
-				<INPUT TYPE=submit VALUE="[L]Create[/L] --&gt;" class=button1>
+				<input="submit" value="[L]Create[/L] --&gt;" class="button3">
 			  </td>
 			</tr>
 			[if config CookieLogin]
 			<tr> 
 			  <td align="right"> 
-				<INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1>
+				<input type="checkbox" name="mv_cookie_password" value="1">
 			  </td>
 			  <td>[L]Log me in automatically (sets cookie)[/L]</td>
 			</tr>
@@ -172,10 +172,10 @@ often and have not already done so, you can create a new account.[/L]
 
 
 	</td>
-	<td width="5%" valign=top>
+	<td width="5%" valign="top">
 		&nbsp;
 	</td>
-	<td width="30%" valign=top class=shadowbox style="padding-left: 10px">
+	<td width="30%" valign="top" class="shadowbox" style="padding-left: 10px">
 		<br>
 		[L]I would prefer not to create an account at all.[/L] 
 			<blockquote>

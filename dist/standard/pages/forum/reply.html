@@ -43,7 +43,7 @@ ui_template_name: leftonly
 				created => $Tag->convert_date( { fmt => '%Y%m%d%H%M' }),
 				artid => $code,
 				subject => "Comments on $desc",
-				username => "interch",
+				username => $Session->{username},
 				name => "Product Manager",
 				email => $Variable->{FORUM_EMAIL_NOTIFY} || '',
 				score => 1,
@@ -105,10 +105,10 @@ ui_template_name: leftonly
 	<B>[cgi name=subject filter=restrict_html]<br>
 	by 
 		[if !session logged_in]
-			[either]__FORUM_ANON_NAME__[or]Anonymous Coward[/either]
+			[either]blah[or]Guest user[/either]
 		[else]
 			[if cgi anon]
-			[either]__FORUM_ANON_NAME__[or]Anonymous Coward[/either]
+			[either]__FORUM_ANON_NAME__[or]Guest user[/either]
 			[else]
 			[either][value handle][or][value fname][or][data session username][/either]
 			[/else]

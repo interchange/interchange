@@ -37,27 +37,25 @@ ui_template_name: leftonly
 
 <!-- BEGIN CONTENT -->
 
-<br><br>
-
-<p>
-[L]Welcome to[/L] <b>__COMPANY__</b>!
-</p>
-
-<p>
-[msg arg.0="[page contact]" arg.1="</a>"]Please %scontact us%s if you have any questions for us.[/msg]
-</p>
-<br><br>
-
-<table width="80%">
+<br>
+<table width="100%">
 <tr>
   <td>
+	<h1>
+	[L]Welcome to[/L] <b>__COMPANY__</b>!
+	</h1>
+
 	<p>
-    [msg arg.0="<a href='@_INTERCHANGE_URL_@'>" arg.1="</a>"]This is a demo store. If you would like further information on how you can build a store or how you can get custom services, please %svisit our web site%s.[/msg]
+	[msg arg.0="[page contact]" arg.1="</a>"]Please %scontact us%s if you have any questions for us.[/msg]<br>
+	</p>
+
+	<p>
+	[msg arg.0="<a href='@_INTERCHANGE_URL_@'>" arg.1="</a>"]This is a demo store. If you would like further information on how you can build a store or how you can get custom services, please %svisit our web site%s.[/msg]
 	</p>
 
     <p>
 	[L]Or send an e-mail to[/L]: <a href="mailto:@_INTERCHANGE_EMAIL_@">@_INTERCHANGE_EMAIL_@</a>.
-	</p>
+	<br><br></p>
   </td>
 </tr>
 </table>

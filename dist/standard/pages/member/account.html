@@ -69,8 +69,8 @@ ui_template_name: leftonly
 
 <br>
 
-<table border="0" cellspacing="0" cellpadding="0" align="center" width="75%">
-<tr class="contentbar2"> 
+<table border="0" cellspacing="0" cellpadding="4" align="center" width="75%">
+<tr class="titletab_small"> 
   <td class="contentbar2" colspan=4>
     <big>&nbsp;<b>[L]Shipping Address[/L]</b> <i>([L]primary[/L])</i></big>
   </td>
@@ -210,7 +210,7 @@ ui_template_name: leftonly
   <td>&nbsp;</td>
   <td>&nbsp;</td>
 </tr>
-<tr class="contentbar2">
+<tr class="titletab_small">
   <td>
     [L]Mailing Status[/L]
   </td>
@@ -254,9 +254,9 @@ ui_template_name: leftonly
 
 <p>&nbsp;</p>
 
-<table border="0" cellspacing="0" cellpadding="0" align="center" width="75%">
-<tr class="contentbar2"> 
-  <td class="contentbar2" colspan=4>
+<table border="0" cellspacing="0" cellpadding="4" align="center" width="75%">
+<tr class="titletab_small"> 
+  <td class="titletab_small" colspan=4>
     <big>&nbsp;<b>[L]Billing Address[/L]</b></big> - <i>[L]If different than above[/L]</i>
   </td>
 </tr>
@@ -332,7 +332,7 @@ ui_template_name: leftonly
 
 <p>&nbsp;</p>
 
-<INPUT TYPE=SUBMIT VALUE="[L]Save Acct. Info[/L]">
+<INPUT TYPE=SUBMIT VALUE="[L]Save Acct. Info[/L]" class="button3">
 
 [if items]
   [set Save and Checkout]
@@ -340,7 +340,7 @@ ui_template_name: leftonly
   [/set]
 
   <INPUT TYPE=hidden VALUE="Save and Checkout" NAME="mv_click"  >
-  <INPUT TYPE=SUBMIT VALUE="[L]Save and Checkout[/L]">
+  <INPUT TYPE=SUBMIT VALUE="[L]Save and Checkout[/L]" class="button3">
   <br><br>
   <A HREF="[area ord/checkout]">[L]No change, go to checkout[/L]</A>
 [/if]

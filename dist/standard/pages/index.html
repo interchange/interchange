@@ -3,7 +3,7 @@ ui_page: index.html
 ui_type: page
 ui_name: index.html
 ui_page_template: leftright
-ui_version: 4.9.8
+ui_version: 5.3.0-200410200658
 ui_source: pages/index.html
 ui_template: Yes
 ui_template_name: leftright
@@ -21,7 +21,7 @@ ui_template_name: leftright
 [/control-set]
 [control-set]
 	[component]product_tree[/component]
-	[link_class]barlink[/link_class]
+	[link_class][/link_class]
 	[link_class_closed][/link_class_closed]
 	[link_class_open][/link_class_open]
 	[link_closed_style][/link_closed_style]
@@ -36,14 +36,21 @@ ui_template_name: leftright
 [control-set]
 	[component]cross[/component]
 	[banner][L]Specials[/L][/banner]
-	[cols]2[/cols]
-	[size]2[/size]
+	[buttons][/buttons]
+	[cols]3[/cols]
+	[cross_codes][/cross_codes]
+	[random][/random]
+	[size]3[/size]
 [/control-set]
 [control-set]
 	[component]random[/component]
 	[banner][L]See also...[/L][/banner]
+	[buttons][/buttons]
 	[cols]1[/cols]
+	[matches]3[/matches]
+	[pool]100[/pool]
 	[size]3[/size]
+	[table_width]150[/table_width]
 [/control-set]
 [control-set]
 	[component][/component]
@@ -53,32 +60,29 @@ ui_template_name: leftright
 [/control-set]
 [control reset=1]
 
-
 @_LEFTRIGHT_TOP_@
 <!-- BEGIN CONTENT -->
-<table width="95%" border="0">
+[set strTemp]10[/set]
+[set strColumn]Description, prod_group[/set]
+<table width="100%" border="0">
 <tr> 
   <td>
-    <br>
-    [L INDEX_PAR1]
-    Welcome to the <b>Interchange</b> Foundation Store! This 
-    site is intended to get you started building
+[L INDEX_PAR1]
+    <h1>Welcome to the Interchange Standard Store!</h1>
+    <p><br>This site is intended to get you started building
     your own e-business site. Replace the stock graphics, products, 
-    and categories in this store to begin building your custom site.[/L]
-    <br><br>
+    and categories in this store to begin building your custom site.</p>
+    <p>Please note that any products purchased will not be delivered nor 
+    will the customer be billed. Any products found on this site is to 
+    be treated as fictional.
+    </p>[/L]
+    <p>[L]Take our[/L]
+               [page
+                       href=survey/standard
+                       form="survey_start=customer_satisfaction"
+               ][L]Customer Satisfaction Survey[/L]</A>.</p>
   </td>
 </tr>
-<tr> 
-  <td>
-    <br>
-    [L]Take our[/L] 
-		[page
-			href=survey/standard
-			form="survey_start=customer_satisfaction"
-		][L]Customer Satisfaction Survey[/L]</A>.
-  </td>
-</tr>
-
 [if !scratch gift_cert_code]
 	[seti gift_cert_code][read-cookie MV_GIFT_CERT_CODE][/seti]
 	[seti gift_cert_check][read-cookie MV_GIFT_CERT_CHECK][/seti]
@@ -99,10 +103,9 @@ ui_template_name: leftright
 [/if]
 
 <tr> 
-  <td>
-    <br>
-    [L]Generate test order to fill the sample order database[/L]:
-		[page href=test_order][L]Do test order[/L]</A>.
+  <td>    
+    <p>[L]Generate test order to fill the sample order database[/L]:
+		<a href="[area href="test_order"]">[L]Do test order[/L]</a>.<br><br></p>
   </td>
 </tr>
 </table>

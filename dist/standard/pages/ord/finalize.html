@@ -23,7 +23,7 @@ ui_template_name: noleft
 <input type=hidden NAME=mv_nextpage      value="ord/finalize">
 <input type=hidden NAME=mv_failpage      value="ord/finalize">
 
-<table width="95%">
+<table width="100%">
 <tr>
   <td align="left" width="100%" align=center>
 
@@ -38,7 +38,7 @@ ui_template_name: noleft
         </blockquote>
         </p>
         <p>
-    [msg arg.0="<FONT color='__CONTRAST__'>" arg.1="</FONT>"]The areas you need to correct are shown in %sthis color%s below.[/msg]</B>
+    [msg arg.0="<FONT color='__CONTRAST__'>" arg.1="</FONT>"]Please correct the areas listed above which are highlighted in %sthis color%s in the form.[/msg]</B>
     </p>
 	[/tmp]
     [/if]
@@ -50,7 +50,7 @@ ui_template_name: noleft
 
 	<table align="center" cellspacing=0 width="__CHECKOUT_FORM_WIDTH__">
 	  <tr>
-		<td class=titlebox style="padding: 12px; border-bottom: 0">
+		<td class="titletab_large">
 			Review your order details
 		</td>
 	  </tr>
@@ -58,13 +58,13 @@ ui_template_name: noleft
 		<td class=shadowbox style="padding: 12px">
 
         <table cellspacing="0" cellpadding="5" border="0" width="100%">
-        <TR class="contentbar2">
-          <td class="contentbar2">&nbsp;<b>[L]Remove[/L]</b></td>
-          <td class="contentbar2" align="center"><b>[L]SKU[/L]</b></td>
-          <td class="contentbar2"><b>[L]Description[/L]</b></td>
-          <td class="contentbar2"><b>[L]Quantity[/L]</b></td>
-          <td class="contentbar2" align="center"><b>[L]Price[/L]</b></td>
-          <td class="contentbar2"><b>[L]Extension[/L]&nbsp;</b></td>
+        <TR class="titletab_small">
+          <td class="titletab_small">&nbsp;<b>[L]Remove[/L]</b></td>
+          <td class="titletab_small" align="center"><b>[L]SKU[/L]</b></td>
+          <td class="titletab_small"><b>[L]Description[/L]</b></td>
+          <td class="titletab_small"><b>[L]Quantity[/L]</b></td>
+          <td class="titletab_small" align="center"><b>[L]Price[/L]</b></td>
+          <td class="titletab_small"><b>[L]Extension[/L]&nbsp;</b></td>
         </TR>
         <TBODY>
 
@@ -72,12 +72,12 @@ ui_template_name: noleft
         [then]
         [item-list]
 
-        <TR class="[item-alternate 2]maincontent[else]contentbar1[/else][/item-alternate]">
+        <TR class="[item-alternate 2]cartdisplay[else]cartdisplay_alt[/else][/item-alternate]">
           <TD align=center valign=top>
             <INPUT TYPE=checkbox NAME="[quantity-name]" onClick="this.form.action='[process]', this.form.submit()" VALUE=0>
           </TD>
           <TD><b>[item-sku]</b></TD>
-          <TD>[page [item-sku]]<b>[item-description]</b></a>
+          <TD><a href="[area href="item-sku"]" class="cartlink"><b>[item-description]</b></a>
 
                 [table-organize cols=4 table=' ' font="size=1" pretty=1]
                     [item-options td=1 label=1 bold=1 price=1]
@@ -100,7 +100,7 @@ ui_template_name: noleft
         [/then]
         [else]
         <TR>
-          <TD ALIGN=CENTER COLSPAN=6 class="contentbar2">
+          <TD ALIGN=CENTER COLSPAN=6 class="titletab_small">
             [L]No items at the moment.[/L]
           </TD>
         </TR>
@@ -115,7 +115,7 @@ ui_template_name: noleft
         <TR>
           <td align="left">
                         [if items]
-            <INPUT TYPE=submit VALUE="[L]Recalculate[/L]" class=button1>
+            <INPUT TYPE=submit VALUE="[L]Recalculate[/L]" class=button3>
                         [/if]
           </td>
           <td align="right">
@@ -150,8 +150,8 @@ ui_template_name: noleft
 		[/else]
 		[/if]
             <tr>
-              <td align=right class=contentbar2>[L]TOTAL[/L]:</TD>
-              <td align=right class=contentbar2>[total-cost]</TD>
+              <td align=right class="titletab_small">[L]TOTAL[/L]:</TD>
+              <td align=right class="titletab_small">[total-cost]</TD>
             </tr>
             </table>
 		</td>
@@ -171,7 +171,7 @@ ui_template_name: noleft
 	<td>
 	<table align="center" cellspacing=0 width="__CHECKOUT_FORM_WIDTH__">
 	  <tr>
-		<td class=titlebox style="padding: 12px; border-bottom: 0">
+		<td class="titletab_large" style="padding: 12px; border-bottom: 0">
 			Mailing status
 		</td>
 	  </tr>
@@ -222,7 +222,7 @@ ui_template_name: noleft
 
 	<table align="center" cellspacing=0 width="__CHECKOUT_FORM_WIDTH__">
 	  <tr>
-		<td class=titlebox style="padding: 12px; border-bottom: 0">
+		<td class="titletab_large">
 			Payment and submit order
 		</td>
 	  </tr>
@@ -240,7 +240,7 @@ ui_template_name: noleft
 						[value fname] [value lname]<br>
 						[value address1]<br>
 						[if value address2][value address2]<br>[/if]
-						[value city][if value state], [value state][/if]  [value zip]<br>
+						[value city], [value state]  [value zip]<br>
 						[value country]
 						</blockquote>
 						</td>
@@ -251,7 +251,7 @@ ui_template_name: noleft
 						[value b_fname] [value b_lname]<br>
 						[value b_address1]<br>
 						[if value b_address2][value b_address2]<br>[/if]
-						[value b_city][if value b_state], [value b_state][/if]  [value b_zip]<br>
+						[value b_city], [value b_state]  [value b_zip]<br>
 						[value b_country]
 						</blockquote>
 						</td>
@@ -297,7 +297,7 @@ ui_template_name: noleft
 					this.form.submit();
 				"
 				value="&lt;-- [L]Back[/L]" class=button3>
-				[button text="[L]Place Order[/L]" wait-text="-- Wait --"  class=button1 id=placebutton style="font-weight: bold"]
+				[button text="[L]Place Order[/L]" wait-text="-- Wait --"  class=button3 id=placebutton style="font-weight: bold"]
 					mv_todo=submit
 				[/button]
 		</div>

@@ -35,24 +35,24 @@ ui_template_name: leftonly
 [set upsell][item-data merchandising upsell_to][/set]
 [set cross_codes][item-data merchandising cross_sell][/set]
 
-  <FORM ACTION="[area href="[item-code]"]" METHOD=POST>
-  <INPUT TYPE=hidden  NAME="mv_action"  VALUE="refresh">
-  <INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="[item-code]">
-  <input type=hidden name=mv_session_id value="[data session id]">
+  <form action="[area href="ord/basket.html"]" method="POST">
+  <input type="hidden" name="mv_action"  value="refresh">
+  <input type="hidden" name="mv_order_item"  value="[item-code]">
+  <input type="hidden" name="mv_session_id" value="[data session id]">
 
   <table width="70%" border="0" cellspacing="0" cellpadding="5">
   <tr valign="middle"> 
-    <td align=center class="titlebar1">
-      <big>[item-field category] : <b>[item-description]</b></big>
+    <td align="left">
+      <h1>[item-description]</h1>
     </td>
   </tr>
   <tr valign="middle"> 
-    <td align=center> 
-      <table cellspacing=0 cellpadding=3 align=center>
+    <td align="center"> 
+      <table cellspacing="0" cellpadding="3" align="center">
       <tr> 
 	<td valign="center" align="left"> 
 	  [if-item-field image]
-	    <IMG SRC="items/[item-field image]" ALT="[item-filter encode_entities][item-description][/item-filter]" title="[item-filter encode_entities][item-description][/item-filter]" BORDER=0>
+	    <img src="items/[item-field image]" slt="[item-filter encode_entities][item-description][/item-filter]" title="[item-filter encode_entities][item-description][/item-filter]" border="0">
  	  [/if-item-field]
 	</td>
 	<td valign="center" align="center"> 
@@ -178,7 +178,7 @@ ui_template_name: leftonly
 	  </td>
 	  <td align="right">					
 
-	    <input type="submit" value="[L]BUY NOW[/L]" class=button3>
+	    <input type="submit" value="[L]BUY NOW[/L]" class="button2">
 
 	  </td>
 	</tr>
@@ -189,9 +189,9 @@ ui_template_name: leftonly
 [if variable FORUM_PRODUCTS]
   <tr>
   	<td>
-		[forum top="[item-code]" display_page="forum/display" /]
+		[forum top="[item-code]" display_page="forum/display/"]
 		<p>
-		[page href="forum/reply"
+		[page href="forum/submit"
 				form="
 					product=1
 					mv_arg=[item-code]
