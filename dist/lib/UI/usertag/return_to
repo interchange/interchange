@@ -37,7 +37,7 @@ sub {
                                     form => join "\n", @args,
                                 })
 		if $opt->{scratch};
-::logDebug("return-to returns:\n$out\n");
+#::logDebug("return-to returns:\n$out\n");
     return $out;
 }
 EOR
