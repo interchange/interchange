@@ -1,28 +1,9 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: fortune.tag,v 1.4 2004-10-03 15:41:19 docelic Exp $
+
 UserTag fortune Order short
 UserTag fortune addAttr
-UserTag fortune Documentation <<EOF
-
-=pod
-
-This tag uses the fortune(1) command to display a random saying.
-
-Options:
-
-    short=yes|no*       Select only short (< 1
-		60 chars) fortunes
-    no-computer=yes|no* No computer fortunes.
-    a=1                 Select from all fortunes, even potentially offensive ones.
-    o=1                 Select only from potentially offensive fortunes.
-    raw=1               Don't do any HTML formatting
-
-Example:
-
-	[fortune short=yes]
-
-=cut
-
-EOF
-
 UserTag fortune Routine <<EOR
 sub {
 	my ($short, $opt) = @_;
@@ -34,7 +15,7 @@ sub {
 	}
 
 	if(is_yes($opt->{no_computer}) ) {
-     	push @flags, qw/
+		push @flags, qw/
 			6% education 
 			6% food 
 			6% humorists 
@@ -51,7 +32,7 @@ sub {
 			6% sports 
 			6% work
 			10% wisdom
-		/;
+			/;
 	}
 
 	my $out = '';
@@ -60,7 +41,7 @@ sub {
 	while (<FORT>) {
 		$out .= $_
 	}
-	
+
 	unless($opt->{raw}) {
 		$out = filter_value('text2html', $out);
 		$out =~ s/--(?!:.*--)/<br>--/s;
@@ -68,3 +49,4 @@ sub {
 	return $out;
 }
 EOR
+
