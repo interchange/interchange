@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.3 2002-09-20 16:57:15 mheins Exp $
+# $Id: Editor.pm,v 1.4 2002-09-23 17:57:18 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -429,10 +429,6 @@ sub display {
 		}
 	}
 
-#::logDebug("widget=$w");
-	# don't output label if widget is hidden form variable only
-	return $w if $w =~ /^\s*<input\s[^>]*type\s*=\W*hidden\b[^>]*>\s*$/i;
-
 	if(! defined $w) {
 		my $text = $opt->{value};
 		my $iname = $opt->{name} || $column;
@@ -464,7 +460,13 @@ EOF
 
 	my $array_return = wantarray;
 
-	return $w unless $template || $array_return;
+#::logDebug("widget=$w");
+
+	# don't output label if widget is hidden form variable only
+	# and not an array type
+	undef $template if $w =~ /^\s*<input\s[^>]*type\s*=\W*hidden\b[^>]*>\s*$/i;
+
+	return $w unless $template || $opt->{return_hash} || $array_return;
 
 	if($template and $template !~ /\s/) {
 		$template = <<'EOF';
@@ -495,7 +497,12 @@ EOF
 #::logDebug("passed meta_url=$opt->{meta_url}");
       $sub{HELP_EITHER} = $sub{HELP} || $sub{HELP_URL};
 
-	if($array_return) {
+	if($opt->{return_hash}) {
+		$sub{OPT} = $opt;
+		$sub{RECORD} = $record;
+		return \%sub;
+	}
+	elsif($array_return) {
 		return ($w, $sub{LABEL}, $sub{HELP}, $record->{help_url});
 	}
 	else {
@@ -877,6 +884,7 @@ sub editor_init {
 	%outhash = ();
 	%alias = ();
 	$tcount_all = 0;
+	$ctl_index = 0;
 }
 
 my %o_default_length = (
@@ -891,6 +899,15 @@ my %o_default_var = (qw/
 my %o_default_defined = (
 	mv_update_empty		=> 1,
 	restrict_allow		=> 'page area',
+	widget_cell_class	=> 'cwidget',
+	label_cell_class	=> 'clabel',
+	data_cell_class	=> 'cdata',
+	help_cell_class	=> 'chelp',
+	break_cell_class	=> 'cbreak',
+	spacer_row_class => 'rspacer',
+	break_row_class => 'rbreak',
+	title_row_class => 'rmarq',
+	data_row_class => 'rnorm',
 );
 
 my %o_default = (
@@ -906,9 +923,29 @@ my %o_default = (
 
 # Build maps for ui_te_* option pass
 my @cgi_opts = qw/
-        append check database default extra field filter height help
-        help_url lookup options outboard override passed pre_filter
-        prepend widget width
+
+	append
+	check
+	database
+	default
+	extra
+	field
+	filter
+	height
+	help
+	help_url
+	label
+	lookup
+	options
+	outboard
+	override
+	passed
+	pre_filter
+	prepend
+	template
+	widget
+	width
+
 /;
 
 my @hmap;
@@ -959,27 +996,28 @@ sub resolve_options {
 		no strict 'refs';
 		my $ref;
 		for(qw/
-					default     
-					error       
-					extra       
-					filter      
-					height      
-					help        
-					label       
-					override    
-					passed      
-					options      
-					outboard
-					append
-					prepend
-					lookup
-					lookup_query
-					field
-					pre_filter  
-					left_width
-					widget      
-					width       
-					meta       
+                    append
+                    default
+					database
+                    error
+                    extra
+                    field
+                    filter
+                    height
+                    help
+                    label
+                    lookup
+                    lookup_query
+                    meta
+                    options
+                    outboard
+                    override
+                    passed
+                    pre_filter
+                    prepend
+                    template
+                    widget
+                    width
 				/ )
 		{
 			next if ref $opt->{$_};
@@ -1003,6 +1041,24 @@ sub resolve_options {
 		mv_blob_pointer
 		mv_blob_label
 		mv_blob_title
+		widget_cell_class
+		label_cell_class
+		data_cell_class
+		help_cell_class
+		break_cell_class
+		spacer_row_class
+		break_row_class
+		title_row_class
+		data_row_class
+		widget_cell_style
+		label_cell_style
+		data_cell_style
+		help_cell_style
+		break_cell_style
+		spacer_row_style
+		break_row_style
+		title_row_style
+		data_row_style
 		left_width
 		table_width
 		tabbed
@@ -1120,6 +1176,44 @@ sub resolve_options {
 		$opt->{$k} ||= $v;
 	}
 
+	# init the row styles
+	foreach my $rtype (qw/data break combo spacer/) {
+		my $mainp = $rtype . '_row_extra';
+		my $thing = '';
+		for my $ptype (qw/class style align valign width/) {
+			my $parm = $rtype . '_row_' . $ptype;
+			$opt->{$parm} ||= $tmeta->{$parm};
+			if(defined $opt->{$parm}) {
+				$thing .= qq{ $ptype="$opt->{$parm}"};
+			}
+		}
+		$opt->{$mainp} ||= $tmeta->{$mainp};
+		if($opt->{$mainp}) {
+			$thing .= " " . $opt->{$mainp};
+		}
+		$opt->{$mainp} = $thing;
+	}
+
+	# Init the cell styles
+
+	for my $ctype (qw/label data widget help break/) {
+		my $mainp = $ctype . '_cell_extra';
+		my $thing = '';
+		for my $ptype (qw/class style align valign width/) {
+			my $parm = $ctype . '_cell_' . $ptype;
+			$opt->{$parm} ||= $tmeta->{$parm};
+			if(defined $opt->{$parm}) {
+				$thing .= qq{ $ptype="$opt->{$parm}"};
+			}
+		}
+		$opt->{$mainp} ||= $tmeta->{$mainp};
+		if($opt->{$mainp}) {
+			$thing .= " " . $opt->{$mainp};
+		}
+		$opt->{$mainp} = $thing;
+	}
+
+
 	###############################################################
 	# Get the field display information including breaks and labels
 	###############################################################
@@ -1178,7 +1272,7 @@ sub resolve_options {
 # UserTag table-editor MapRoutine Vend::Table::Editor::editor
 sub editor {
 
-	my ($table, $key, $opt, $template) = @_;
+	my ($table, $key, $opt, $overall_template) = @_;
 show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 
 	use vars qw/$Tag/;
@@ -1199,12 +1293,12 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	$key = $opt->{item_id};
 #::logDebug("key after resolve_options: $key");
 
-	my $rowdiv = $opt->{across} || 1;
+	my $rowdiv         = $opt->{across}    || 1;
+	my $cells_per_span = $opt->{cell_span} || 2;
 	my $rowcount = 0;
-	my $span = $rowdiv * 2;
+	my $span = $rowdiv * $cells_per_span;
 	my $oddspan = $span - 1;
 	my $def = $opt->{default_ref} || $::Values;
-
 
 	my $append       = $opt->{append};
 	my $check        = $opt->{check};
@@ -1227,13 +1321,14 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	my $passed       = $opt->{passed};
 	my $pre_filter   = $opt->{pre_filter};
 	my $prepend      = $opt->{prepend};
+	my $template     = $opt->{template};
 	my $widget       = $opt->{widget};
 	my $width        = $opt->{width};
 
 	#my $blabel      = $opt->{begin_label} || '<b>';
 	#my $elabel      = $opt->{end_label} || '</b>';
-	my $blabel      ;
-	my $elabel      ;
+	my $blabel = $opt->{blabel};
+	my $elabel = $opt->{elabel};
 	my $mlabel = '';
 
 	my $ntext;
@@ -1384,8 +1479,8 @@ mv_form_profile=mandatory
 EOP
 [/perl]
 EOF
-		$blabel = '<span style="font-weight: normal">';
-		$elabel = '</span>';
+		$opt->{blabel} = '<span style="font-weight: normal">';
+		$opt->{elabel} = '</span>';
 		$mlabel = ($opt->{message_label} || '&nbsp;&nbsp;&nbsp;<B>Bold</B> fields are required');
 		$have_errors = $Tag->error( {
 									all => 1,
@@ -1709,7 +1804,7 @@ EOF
 
 	no strict 'subs';
 
-	chunk 'FORM_BEGIN', 'WO', 'TOP_PORTION', <<EOF; # unless $wo;
+	chunk 'FORM_BEGIN', 'WO', 'TOP_OF_FORM', <<EOF; # unless $wo;
 $restrict_begin<FORM METHOD=$opt->{method} ACTION="$opt->{href}"$opt->{form_name}$opt->{enctype}$opt->{form_extra}>
 $sidstr<INPUT TYPE=hidden NAME=mv_todo VALUE="$opt->{action}">
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_filter">
@@ -1747,7 +1842,7 @@ EOF
 		$val =~ s/"/&quot;/g;
 		push @o, qq{<INPUT TYPE=hidden NAME=$_ VALUE="$val">\n}; # unless $wo;
 	}
-	chunk 'HIDDEN_OPT', '', 'TOP_PORTION', join("", @o);
+	chunk 'HIDDEN_OPT', '', 'TOP_OF_FORM', join("", @o);
   }
 
   CGISET: {
@@ -1758,7 +1853,7 @@ EOF
 		$val =~ s/"/&quot;/g;
 		push @o, qq{<INPUT TYPE=hidden NAME=$_ VALUE="$val">\n}; # unless $wo;
 	}
-	chunk 'HIDDEN_CGI', join("", @o);
+	chunk 'HIDDEN_CGI', '', 'TOP_OF_FORM', join("", @o);
   }
 
 	if($opt->{mailto}) {
@@ -1780,7 +1875,7 @@ EOF
 		elsif ($CGI::values{ui_return_to}) {
 			@$r_ary = ( $CGI::values{ui_return_to} ); 
 		}
-		chunk 'RETURN_TO', 'WO', $Tag->return_to(); # unless $wo;
+		chunk 'RETURN_TO', '', 'TOP_OF_FORM', $Tag->return_to(); # unless $wo;
 #::logDebug("return-to stack = " . ::uneval($r_ary));
 	}
 
@@ -1817,17 +1912,16 @@ EOF
 						|| $mlabel;
 	if ($extra_ok and ! $opt->{no_top} and ! $opt->{nosave}) {
 	  	if($opt->{back_text}) {
-		  chunk ttag(), 'WO', <<EOF; # unless $wo;
+		  chunk ttag(), '', <<EOF; # unless $wo;
 <TR class=rnorm>
 <td>&nbsp;</td>
 <td align=left colspan=$oddspan class=cdata>
 EOF
-			chunk 'WIZARD_BUTTONS_TOP', 'BOTTOM_BUTTONS', <<EOF; # if ! $opt->{bottom_buttons};
+			chunk 'WIZARD_BUTTONS_TOP', 'BOTTOM_BUTTONS', 'TOP_BUTTONS', <<EOF; # if ! $opt->{bottom_buttons};
 <INPUT TYPE=submit NAME=mv_click VALUE="$opt->{back_text}">&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
 <BR>
 EOF
-			chunk 'MLABEL', 'WO', $mlabel;
-			chunk_alias 'MLABEL', 'FORM_TOP';
+			chunk 'MLABEL', '', 'MESSAGES', $mlabel;
 			chunk ttag(), <<EOF;
 </TD>
 </TR>
@@ -1843,11 +1937,11 @@ EOF
 <td>&nbsp;</td>
 <td align=left colspan=$oddspan class=cdata>
 EOF
-			chunk 'WIZARD_BUTTONS_TOP', 'BOTTOM_BUTTONS', <<EOF; # if ! $opt->{bottom_buttons};
+			chunk 'WIZARD_BUTTONS_TOP', 'BOTTOM_BUTTONS NO_TOP', 'TOP_BUTTONS', <<EOF; # if ! $opt->{bottom_buttons};
 <INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
 <BR>
 EOF
-			chunk 'MLABEL', 'BOTTOM_BUTTONS', $mlabel;
+			chunk 'MLABEL', 'BOTTOM_BUTTONS', 'MESSAGES', $mlabel;
 			chunk ttag(), <<EOF;
 </TD>
 </TR>
@@ -1858,7 +1952,7 @@ EOF
 EOF
 		}
 		else {
-		  chunk ttag(), 'BOTTOM_BUTTONS', <<EOF;
+		  chunk ttag(), 'BOTTOM_BUTTONS NO_TOP', <<EOF;
 <TR class=rnorm>
 <td>&nbsp;</td>
 <td align=left colspan=$oddspan class=cdata>
@@ -1867,21 +1961,25 @@ EOF
 		  $opt->{ok_button_style} = 'font-weight: bold; width: 40px; text-align: center'
 		  	unless defined $opt->{ok_button_style};
 		  	
-		  chunk 'OK_TOP', 'BOTTOM_BUTTONS', <<EOF;
+		  chunk 'OK_TOP', 'NO_TOP', 'TOP_BUTTONS', <<EOF;
 <INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}" style="$opt->{ok_button_style}">
 EOF
-		  chunk ttag(), 'NOCANCEL BOTTOM_BUTTONS', <<EOF; # unless $opt->{nocancel};
+		  chunk ttag(), 'NOCANCEL BOTTOM_BUTTONS NO_TOP', 'TOP_BUTTONS', <<EOF;
 &nbsp;
 <INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}" style="$opt->{cancel_button_style}">
 EOF
 
-		  chunk 'RESET_TOP', '_SHOW_RESET BOTTOM_BUTTONS', <<EOF;
+		  chunk
+		  	'RESET_TOP',
+			'_SHOW_RESET BOTTOM_BUTTONS NO_TOP',
+			'TOP_BUTTONS',
+			<<EOF;
 &nbsp;
 <INPUT TYPE=reset>
 EOF
 
-			chunk 'MLABEL', 'BOTTOM_BUTTONS', $mlabel;
-			chunk ttag(), 'BOTTOM_BUTTONS', , <<EOF;
+			chunk 'MLABEL', 'BOTTOM_BUTTONS', 'MESSAGES', $mlabel;
+			chunk ttag(), 'BOTTOM_BUTTONS NO_TOP', <<EOF;
 </TD>
 </TR>
 
@@ -2107,33 +2205,8 @@ EOF
 	my @data_enable = ($opt->{mv_blob_pointer}, $opt->{mv_blob_field});
 	my @ext_enable;
 
-	# Init the cell stuff
-	my %td_extra;
-	my %td_default = (
-			widget_cell_class	=> 'cwidget',
-			label_cell_class	=> 'clabel',
-			data_cell_class	=> 'cdata',
-			help_cell_class	=> 'chelp',
-	);
-
-	for my $ctype (qw/label data widget help/) {
-		$td_extra{$ctype} = '';
-		for my $ptype (qw/class style align valign width/) {
-			my $parm = $ctype . '_cell_' . $ptype;
-			if(defined $opt->{$parm}) {
-				$td_extra{$ctype} .= qq{ $ptype="$opt->{$parm}"};
-			}
-			elsif ($td_default{$parm}) {
-				$td_extra{$ctype} .= qq{ $ptype="$td_default{$parm}"};
-			}
-		}
-		if(my $thing = $opt->{$ctype . "_cell_extra"}) {
-			$td_extra{$ctype} .= " $thing";
-		}
-	}
-
 	if($opt->{left_width} and ! $opt->{label_cell_width}) {
-		$td_extra{label} .= qq{ width="$opt->{left_width}"};
+		$opt->{label_cell_extra} .= qq{ width="$opt->{left_width}"};
 	}
 
 	my $show_meta;
@@ -2166,31 +2239,31 @@ EOF
 			if $opt->{meta_style};
 	}
 
- 	my $row_template = $opt->{row_template};
+ 	my $row_template = convert_old_template($opt->{row_template});
 	
 	if(! $row_template) {
 		if($opt->{simple_row}) {
 			$opt->{help_anchor} ||= 'help';
 			$row_template = <<EOF;
-   <td$td_extra{label}> 
-     $blabel\$LABEL\$$elabel
+   <td$opt->{label_cell_extra}> 
+     {BLABEL}{LABEL}{ELABEL}
    </td>
-   <td$td_extra{widget}>\$WIDGET\${HELP_EITHER}&nbsp;<a href="\$HELP_URL\$" title="\$HELP\$">$opt->{help_anchor}</a>{/HELP_EITHER}&nbsp;{META_URL}<A HREF="\$META_URL\$">$opt->{meta_anchor}</A>{/META_URL}
+   <td$opt->{data_cell_extra}>{WIDGET}{HELP_EITHER}&nbsp;<a href="{HELP_URL}" title="{HELP\$">$opt->{help_anchor}</a>{/HELP_EITHER?}&nbsp;{META_URL?}<A HREF="{META_URL}">$opt->{meta_anchor}</A>{/META_URL?}
    </td>
 EOF
 		}
 		else {
 			$row_template = <<EOF;
-   <td$td_extra{label}> 
-     $blabel\$LABEL\$$elabel~META~
+   <td$opt->{label_cell_extra}> 
+     {BLABEL}{LABEL}{ELABEL}{META_STRING}
    </td>
-   <td$td_extra{data}>
+   <td$opt->{data_cell_extra}>
      <table cellspacing=0 cellmargin=0 width="100%">
        <tr> 
-         <td$td_extra{widget}>
-           \$WIDGET\$
+         <td$opt->{widget_cell_extra}>
+           {WIDGET}
          </td>
-         <td$td_extra{help}>~TKEY~<i>\$HELP\$</i>{HELP_URL}<BR><A HREF="\$HELP_URL\$">help</A>{/HELP_URL}</FONT></td>
+         <td$opt->{help_cell_extra}>{TKEY}{HELP?}<i>{HELP}</i>{/HELP?}{HELP_URL?}<BR><A HREF="{HELP_URL}">help</A>{/HELP_URL?}</FONT></td>
        </tr>
      </table>
    </td>
@@ -2199,9 +2272,15 @@ EOF
 	}
 
 	$row_template =~ s/~OPT:(\w+)~/$opt->{$1}/g;
-	$row_template =~ s/~BLABEL~/$blabel/g;
-	$row_template =~ s/~ELABEL~/$elabel/g;
-	$row_template =~ s/~([A-Z]+)_EXTRA~/$td_extra{lc $1}/g;
+	$row_template =~ s/~([A-Z]+)_EXTRA~/$opt->{"\L$1\E_extra"} || $opt->{"\L$1\E_cell_extra"}/g;
+
+	$opt->{combo_template} ||= <<EOF;
+<tr$opt->{combo_row_extra}><td colspan=$span>{ROW}</td></tr>
+EOF
+
+	$opt->{break_template} ||= <<EOF;
+<tr$opt->{break_row_extra}><td colspan=$span $opt->{break_cell_extra}>{ROW}</td></tr>
+EOF
 
 	my %serialize;
 	my %serial_data;
@@ -2270,7 +2349,8 @@ EOF
 
 			$ll ||= errmsg("Settings in table %s linked by %s", $lt, $lk);
 
-			my $tpl = $row_template;
+			my $whash = {};
+
 			my $ldb = database_exists_ref($lt)
 				or do {
 					logError("Bad table editor link table: %s", $lt);
@@ -2287,16 +2367,14 @@ EOF
 			$lf = join " ", @cf;
 			my $lextra = $opt->{link_extra} || '';
 			$lextra = " $lextra" if $lextra;
-			my $labside = <<EOF;
+
+			my @lout = q{<table cellspacing=0 cellpadding=1>};
+			push @lout, qq{<tr><td$lextra>
 <input type=hidden name="mv_data_table__$tcount" value="$lt">
 <input type=hidden name="mv_data_fields__$tcount" value="$lf">
 <input type=hidden name="mv_data_multiple__$tcount" value="1">
 <input type=hidden name="mv_data_key__$tcount" value="$l_pkey">
-$ll
-EOF
-
-			my @lout = q{<table cellspacing=0 cellpadding=1>};
-			push @lout, qq{<tr><td$lextra>$l_pkey</td>};
+$l_pkey</td>};
 			push @lout, $Tag->row_edit({ table => $lt, columns => $lf });
 			push @lout, '</tr>';
 
@@ -2341,25 +2419,24 @@ EOF
 			push @lout, $Tag->row_edit(\%o);
 			push @lout, '</tr>';
 			push @lout, "</table>";
-			$tpl =~ s{\$LABEL\$}{$labside}g;
-			$tpl =~ s{\$WIDGET\$}{join "", @lout}ge;
+			$whash->{LABEL}  = $ll;
+			$whash->{WIDGET} = join "", @lout;
 			my $murl = '';
 			if($show_meta) {
-				$murl = $Tag->page({
+				my $murl;
+				$murl = $Tag->area({
 							href => 'admin/db_metaconfig_spread',
 							form => qq(
 									ui_table=$lt
 									ui_view=$lv
 								),
 							});
-				$murl .= errmsg('meta');
-				$murl .= '</a>';
+				$whash->{META_URL} = $murl;
+				$whash->{META_STRING} = qq{<a href="$murl"$opt->{meta_extra}>};
+				$whash->{META_STRING} .= errmsg('meta') . '</a>';
+
 			}
-			$tpl =~ s{\~META\~}{$murl}g;
-			$tpl =~ s{\$HELP\$}{}g;
-			$tpl =~ s{\~TKEY\~}{}g;
-			$tpl =~ s!{HELP_URL}.*?{/HELP_URL}!!gs;
-			$link_row{$lt} = $tpl;
+			$link_row{$lt} = $whash;
 			if($lb) {
 				$link_before{$lb} = $lt;
 			}
@@ -2380,9 +2457,16 @@ EOF
         chunk ttag(), qq{<tr><td colspan=$span$extra>\n};
     }
 
+	my @extra_hidden;
+	my $icount = 0;
 	foreach my $col (@cols) {
 		if($link_before{$col}) {
-			col_chunk "SPREAD_$link_before{$col}", delete $link_row{$link_before{$col}};
+			my $h = { ROW => delete $link_row{$link_before{$col}} };
+			col_chunk "_SPREAD_$link_before{$col}", $h;
+		}
+		if($opt->{include_before} and $opt->{include_before}{$col}) {
+			my $h = { ROW => $opt->{include_before}{$col} };
+			col_chunk "_INCLUDE_$link_before{$col}", $h;
 		}
 		my $t;
 		my $c;
@@ -2391,9 +2475,8 @@ EOF
 		if($col eq $keycol) {
 			if($opt->{ui_hide_key}) {
 				my $kval = $key || $override->{$col} || $default->{$col};
-				col_chunk $col, <<EOF;
-	<INPUT TYPE=hidden NAME="$col" VALUE="$kval">
-EOF
+				push @extra_hidden,
+					qq{<INPUT TYPE=hidden NAME="$col" VALUE="$kval">};
 				next;
 			}
 			elsif ($opt->{ui_new_item}) {
@@ -2504,7 +2587,9 @@ EOF
 			$currval = $default->{$c};
 		}
 
-		my $template = $row_template;
+		$template->{$c} ||= $row_template;
+
+		my $err_string;
 		if($error->{$c}) {
 			my $parm = {
 					name => $c,
@@ -2518,7 +2603,12 @@ EOF
 [else]{REQUIRED <B>}{LABEL}{REQUIRED </B>}[/else]
 EOF
 			}
-			$template =~ s/\$LABEL\$/$Tag->error($parm)/eg;
+			$err_string = $Tag->error($parm);
+			if($template->{$c} !~ /{ERROR\??}/) {
+				$template->{$c} =~ s/{LABEL}/$err_string/g
+					and
+				$template->{$c} =~ s/\$LABEL\$/{LABEL}/g;
+			}
 		}
 
 		my $meta_string = '';
@@ -2571,7 +2661,6 @@ $meta_specific$opt->{meta_append}
 EOF
 		}
 
-		$template =~ s/~TKEY~/$tkey_message || ''/eg;
 #::logDebug("col=$c currval=$currval widget=$widget->{$c} label=$label->{$c} (type=$type)");
 		my $display = display($t, $c, $key, {
 										applylocale => 1,
@@ -2604,53 +2693,44 @@ EOF
 										table => $t,
 										type => $widget->{$c} || $type,
 										width => $width->{$c},
-										template => $template,
+										return_hash => 1,
 									});
 #::logDebug("finished display of col=$c");
+		my $update_ctl;
 
-		# don't use template if we have only a hidden HTML form variable
-		if ($display =~ /^\s*<input\s[^>]*type\s*=\W*hidden\b[^>]*>\s*$/i) {
-			col_chunk $c, $display . "\n";
+		if ($display->{WIDGET} =~ /^\s*<input\s[^>]*type\s*=\W*hidden\b[^>]*>\s*$/is) {
+			push @extra_hidden, $display->{WIDGET};
 			next;
 		}
+		$display->{TEMPLATE} = $template->{$c};
+		$display->{META_STRING} = $meta_string;
+		$display->{TKEY}   = $tkey_message;
+		$display->{BLABEL} = $blabel;
+		$display->{ELABEL} = $elabel;
+		$display->{ERROR}  = $err_string;
 
-		$display =~ s/\~META\~/$meta_string/g;
-
-		$display =~ s/\~ERROR\~/$Tag->error({ name => $c, keep => 1 })/eg;
-        
-		my $update_ctl;
-		if (! $wo and $break{$namecol}) {
-			push @titles, $break_label{$namecol};
-			if(@controls == 0 and @titles == 1) {
-				# do nothing
+		$update_ctl = 0;
+		if ($break{$namecol}) {
+#::logDebug("breaking on $namecol, control index=$ctl_index");
+			if(@controls == 0 and @titles == 0) {
+				$titles[0] = $break_label{$namecol};
 			}
-			else {
+			elsif(@titles == 0) {
+				$titles[1] = $break_label{$namecol};
 				$update_ctl = 1;
 			}
-
-			while($rowcount % $rowdiv) {
-				$w .= '<TD>&nbsp;</td><TD>&nbsp;</td>';
-				$rowcount++;
+			else {
+				push @titles, $break_label{$namecol};
+				$update_ctl = 1;
 			}
-			$w .= "</TR>\n";
-			unless ($opt->{tabbed}) {
-				$w .= <<EOF if $break{$namecol};
-	<TR class=rbreak>
-		<TD COLSPAN=$span class=cbreak>$break_label{$namecol}<IMG SRC="$opt->{clear_image}" WIDTH=1 HEIGHT=1 alt=x></TD>
-	</TR>
-EOF
-			}
-			$rowcount = 0;
 		}
-		$w .= "<tr class=rnorm>\n" unless $rowcount++ % $rowdiv;
-		$w .= $display;
-		$w .= "</TR>\n" unless $rowcount % $rowdiv;
-		col_chunk $c, $w;
 		$ctl_index++ if $update_ctl;
+#::logDebug("control index now=$ctl_index");
+		col_chunk $c, $display;
 	}
 
 	for(sort keys %link_row) {
-		col_chunk "SPREAD_$_", delete $link_row{$_};
+		col_chunk "_SPREAD_$_", { ROW => delete $link_row{$_} };
 	}
 
 	my $firstout = scalar(@out);
@@ -2660,7 +2740,7 @@ EOF
 	}
 
 	while($rowcount % $rowdiv) {
-		chunk ttag(), '<TD>&nbsp;</td><TD>&nbsp;</td>'; # unless $wo;
+		chunk ttag(), '<td colspan=$cells_per_span>&nbsp;</td>'; # unless $wo;
 		$rowcount++;
 	}
 
@@ -2697,11 +2777,7 @@ EOF
 	### Here the user can include some extra stuff in the form....
 	###
 	if($opt->{include_form}) {
-		chunk 'INCLUDE_FORM', <<EOF; # if ! $wo;
-<tr class=rnorm>
-<td colspan=$span>$opt->{include_form}</td>
-</tr>
-EOF
+		col_chunk '_INCLUDE_FORM', { ROW => $opt->{include_form} };
 	}
 	### END USER INCLUDE
 
@@ -2710,9 +2786,6 @@ EOF
 	}
 	$passed_fields = join " ", @cols;
 
-	chunk 'MV_DATA_FIELDS', <<EOF; # unless $wo;
-<INPUT TYPE=hidden NAME=mv_data_fields VALUE="$passed_fields">
-EOF
 
 	chunk ttag(), <<EOF;
 <tr class=rspacer>
@@ -2727,6 +2800,11 @@ EOF
 <td>&nbsp;</td>
 <td align=left colspan=$oddspan class=cdata>
 EOF
+
+		chunk 'EXTRA_HIDDEN', <<EOF; # unless $wo;
+<INPUT TYPE=hidden NAME=mv_data_fields VALUE="$passed_fields">@extra_hidden
+EOF
+
 	  	if($opt->{back_text}) {
 
 			chunk 'BOTTOM_BUTTONS', <<EOF;
@@ -2887,17 +2965,18 @@ show_times("end table editor call item_id=$key") if $Global::ShowTimes;
 #::logDebug("In tabbed display...controls=" . scalar(@controls) . ", titles=" . scalar(@titles));
 		my @tabcont;
 		for(@controls) {
-			push @tabcont, join "", map { $outhash{$_} } @$_;
+			push @tabcont, create_rows($opt, $_);
 		}
 		$opt->{panel_prepend} ||= '<table>';
 		$opt->{panel_append} ||= '</table>';
 		push @put, tabbed_display(\@titles,\@tabcont,$opt);
 	}
 	else {
-		for my $c (@controls) {
-			for (@$c) {
-				push @put, $outhash{$_};
-			}
+#::logDebug("titles=" . uneval(\@titles) . "\ncontrols=" . uneval(\@controls));
+		for(my $i = 0; $i < @controls; $i++) {
+			push @put, tag_attr_list($opt->{break_template}, { ROW => $titles[$i] })
+				if $titles[$i];
+			push @put, create_rows($opt, $controls[$i]);
 		}
 	}
 
@@ -2907,5 +2986,67 @@ show_times("end table editor call item_id=$key") if $Global::ShowTimes;
 	}
 	return join "", @put;
 }
+
+sub convert_old_template {
+	my $string = shift;
+	$string =~ s/\$WIDGET\$/{WIDGET}/g
+		or return $string;
+	$string =~ s!\{HELP_URL\}(.*)\{/HELP_URL\}!{HELP_URL?}$1\{/HELP_URL?}!gs;
+	$string =~ s/\$HELP\$/{HELP}/g;
+	$string =~ s/\$HELP_URL\$/{HELP_URL}/g;
+	$string =~ s/\~META\~/{META_STRING}/g;
+	$string =~ s/\$LABEL\$/{LABEL}/g;
+	$string =~ s/\~ERROR\~/{LABEL}/g;
+	$string =~ s/\~TKEY\~/{TKEY}/g;
+	$string =~ s/\~BLABEL\~/{BLABEL}/g;
+	$string =~ s/\~ELABEL\~/{ELABEL}/g;
+	return $string;
+}
+
+sub create_rows {
+	my ($opt, $columns) = @_;
+	$columns ||= [];
+
+	my $rowdiv			= $opt->{across}    || 1;
+	my $cells_per_span	= $opt->{cell_span} || 2;
+	my $rowcount		= 0;
+	my $span			= $rowdiv * $cells_per_span;
+	my $oddspan			= $span - 1;
+
+	my @out;
+
+	for(@$columns) {
+		# If doesn't exist, was brought in before.
+		my $ref = delete $outhash{$_}
+			or next;
+		if($opt->{ROW}) {
+			push @out, tag_attr_list($opt->{combo_template}, $ref, 1);
+			$rowcount = 0;
+			next;
+		}
+		my $w = '';
+		$w .= "<tr$opt->{data_row_extra}>\n" unless $rowcount++ % $rowdiv;
+		$w .= tag_attr_list($ref->{TEMPLATE}, $ref);
+		$w .= "</tr>" unless $rowcount % $rowdiv;
+		push @out, $w;
+	}	
+
+	if($rowcount % $rowdiv) {
+		my $w = '';
+		while($rowcount % $rowdiv) {
+			$w .= '<TD colspan=$cells_per_span>&nbsp;</td>';
+			$rowcount++;
+		}
+		$w .= "</tr>";
+		push @out, $w;
+	}
+	return join "\n", @out;
+}
+
+#			push @out, <<EOF if $break;
+#<tr$opt->{break_row_extra}>
+#	<td COLSPAN=$span$opt->{td_extra}{break}>$break_label{$namecol}</td>
+#</tr>
+#EOF
 
 1;
