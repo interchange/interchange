@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.110 2003-04-10 17:35:51 mheins Exp $
+# $Id: Config.pm,v 2.111 2003-05-03 16:41:02 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.110 $, 10);
+$VERSION = substr(q$Revision: 2.111 $, 10);
 
 my %CDname;
 my %CPname;
@@ -182,6 +182,7 @@ my %InitializeEmpty = (qw(
 
 my %AllowScalarAction = (qw(
 					FileControl			1
+					SOAP_Control		1
 				));
 
 my $StdTags;
@@ -304,6 +305,7 @@ sub global_directives {
 	['SOAP_MaxRequests', 'integer',           50],
 	['SOAP_StartServers', 'integer',          1],
 	['SOAP_Host',         undef,              'localhost 127.0.0.1'],
+	['SOAP_Control',     'action',           ''],
 	['IPCsocket',		 undef,	     	 	 "$Global::VendRoot/etc/socket.ipc"],
 	['HouseKeeping',     'integer',          60],
 	['Mall',	          'yesno',           'No'],
@@ -520,6 +522,7 @@ sub catalog_directives {
 	['SOAP',			 'yesno',			 'No'],
 	['SOAP_Enable',		 'hash',			 ''],
 	['SOAP_Action',		 'action',			 ''],				   
+	['SOAP_Control',     'action',             ''],		  
 	['UserDB',			 'locale',	     	 ''], 
 	['UserDatabase',	 undef,		     	 ''],  #undocumented
 	['RobotLimit',		 'integer',		      0],

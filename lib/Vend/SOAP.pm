@@ -1,6 +1,6 @@
 # Vend::SOAP - Handle SOAP connections for Interchange
 #
-# $Id: SOAP.pm,v 2.8 2003-03-18 13:37:02 racke Exp $
+# $Id: SOAP.pm,v 2.9 2003-05-03 16:41:02 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -34,7 +34,7 @@ require SOAP::Transport::HTTP;
 use strict;
 
 use vars qw($VERSION @ISA $AUTOLOAD);
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = substr(q$Revision: 2.9 $, 10);
 @ISA = qw/SOAP::Server/;
 
 my %Allowed_tags;
@@ -168,6 +168,60 @@ sub tag_soap {
 	return $result;
 }
 
+my %intrinsic = (local => sub {$CGI::remote_addr eq '127.0.0.1'},
+				never => sub {return 0},
+				always => sub {return 1});
+
+sub soap_gate {
+	my (@args, $status, $subref, $spath);
+
+	# check first global control configuration which takes
+	# precedence, then catalog control configuration
+	for $subref ($Global::SOAP_Control,
+				 $Vend::Cfg->{SOAP_Control}) {
+		@args = @_;
+				
+		while (@args) {
+			$spath = join('/', @args);
+			pop(@args);
+			next unless exists $subref->{$spath};
+
+			if (ref($subref->{$spath}) eq 'CODE') {
+				$status = $subref->{$spath}->($spath);
+			} elsif ($subref->{$spath}) {
+				$status = soap_control_intrinsic($subref->{$spath}, $spath);
+			}
+
+			# check found, done with loop
+			last;
+		}
+
+		last unless $status;
+	}
+	
+	die errmsg("Unauthorized access to '%s' method\n", join('/', @_))
+		unless $status;
+
+	return 1;
+}
+
+sub soap_control_intrinsic {
+	my ($checklist, $action) = @_;
+	my @checks = split /\s*;\s*/, $checklist;
+	my $status = 1;
+
+	for(@checks) {
+		my ($check, @args) = split /:/, $_;
+		my $sub = $intrinsic{$check} or return 0;
+		
+		unless( $sub->($action, @args) ) {
+			$status = 0;
+			last;
+		}
+	}
+	return $status;
+}
+
 # This is used to check the session name. If there is some reason
 # the session is retired, the returned ID will be different from the
 # passed ID and the client can cope.
@@ -218,6 +272,8 @@ sub session_id {
 
 sub Values {
 	shift;
+
+	soap_gate('Values');
 	open_soap_session();
 	my $putref;
 	my $ref = $::Values ||= {};
@@ -248,6 +304,8 @@ sub Session {
 
 sub Scratch {
 	shift;
+
+	soap_gate('Scratch');
 	open_soap_session();
 	my $putref;
 	my $ref = $Vend::Session->{scratch};
@@ -263,6 +321,9 @@ sub Scratch {
 sub Database {
 	shift;
 	my $name = shift;
+	
+	soap_gate('Database', $name);
+
 	my $ref = $Vend::Cfg->{Database};
 	return $ref->{$name} if $name;
 	return $ref;
@@ -300,12 +361,16 @@ sub AUTOLOAD {
 #::logDebug("session " . ::full_dump() );
 
     $routine =~ s/.*:://;
+	
 	if ($Vend::Cfg->{SOAP_Action}{$routine}) {
+		soap_gate ('Action', $routine);
 		$sub = $Vend::Cfg->{SOAP_Action}{$routine};
 		Vend::Interpolate::init_calc();
 		new Vend::Tags;
 	} elsif (! $Allowed_tags{$routine}) {
 		die ::errmsg("Not allowed routine: %s", $routine);
+	} else {
+		soap_gate ('Tag', $routine);
 	}
 
 	my $result;
