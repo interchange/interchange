@@ -37,22 +37,12 @@ sub {
 		return $stat[9];
 	}
 	if($opt->{date}) {
-		if($opt->{gmt}) {
-			return POSIX::strftime('%c', gmtime($stat[9]));
-		}
-		else {
-			return POSIX::strftime('%c', localtime($stat[9]));
-		}
+		return $Tag->time($Scratch->{mv_locale},{time => $stat[9], gmt => $opt->{gmt}},'%c');
 	}
 	$opt->{fmt} = '%f bytes, last modified %Y-%m-%d %H:%M:%S'
 		if ! $opt->{fmt};
 	$opt->{fmt} =~ s/%f/$size/g;
-	if($opt->{gmt}) {
-		return POSIX::strftime($opt->{fmt}, gmtime($stat[9]));
-	}
-	else {
-		return POSIX::strftime($opt->{fmt}, localtime($stat[9]));
-	}
+    $Tag->time($Scratch->{mv_locale},{time => $stat[9], gmt => $opt->{gmt}},$opt->{fmt});
 }
 EOR
 
