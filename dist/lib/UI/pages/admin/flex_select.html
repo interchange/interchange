@@ -574,7 +574,7 @@ mv_todo=return
 [/button]
 [/if]
 
-[comment][if-mm function="tables" table="[cgi mv_data_table]=d"][/comment]
+[if-mm function="tables" table="[cgi mv_data_table]=d"]
 &nbsp;&nbsp;&nbsp;&nbsp;
 [button text="[L]Delete checked records[/L]"
 		confirm="[L]Are you sure you want to delete the checked records?[/L]"]
@@ -582,7 +582,7 @@ mv_todo=return
 deleterecords=1
 mv_click=db_maintenance
 [/button]
-[comment][/if-mm][/comment]
+[/if-mm]
 
 [/on-match]
 </FORM>
