@@ -32,6 +32,7 @@
 	else {
 		$def_string = $CGI->{ui_short_definition};
 	}
+	$def_string =~ s/\r\n?/\n/g;
 	unshift @layout, '[' . "comment]\n$def_string\n[" . "/comment]\n";
 
 	foreach $one (@layout) {
