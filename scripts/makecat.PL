@@ -25,9 +25,9 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.32.4.4 2001-02-02 07:50:04 heins Exp $
+# $Id: makecat.PL,v 1.32.4.5 2001-02-07 12:25:04 heins Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Akopia, Inc. <info@akopia.com>
 #
 # See the file 'Changes' for information.
 #
@@ -67,8 +67,6 @@ Getopt::Long::config(qw/permute/);
 #Getopt::Long::config(qw/debug/);
 
 BEGIN {
-	use Config;
-	&::logError( "Threaded perl not supported" ) if ($Config{ usethreads } || $Config{ useithreads } );
 
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
 		if defined $ENV{MINIVEND_ROOT};
@@ -136,7 +134,7 @@ options:
     --cgidir=directory         The directory the CGI link should go to
     --servername=server        Name of server (www.whatever.domain)
     --cgiurl=url_fragment      The path to the CGI link (no server name)
-    --demotype=template        The template catalog (construct is the default)
+    --demotype=template        The template catalog (foundation is the default)
     --mailorderto=email        Email address to send orders
 
     Optional:
@@ -274,7 +272,7 @@ NOTE: This will be the name of 'vlink' or 'tlink', the link CGI
 program. Depending on your CGI setup, it may also have the 
 extension .cgi added.
 
-If you are doing the demo for the first time, you might use "construct".
+If you are doing the demo for the first time, you might use "foundation".
 
 EOF
    $catalog_name = prompt ("Catalog name? ");
@@ -447,7 +445,7 @@ my %Prefix = (
     documentroot =>  $ENV{MVC_DOCUMENTROOT} || $DocrootDefault,
 	cgidir       =>  $ENV{MVC_CGIDIR} || $CgiDefault,
 	cgibase      =>  $ENV{MVC_CGIBASE} || $CgiUrlDefault,
-	demotype     =>  $ENV{MVC_DEMOTYPE} || 'construct',
+	demotype     =>  $ENV{MVC_DEMOTYPE} || 'foundation',
     catuser      =>  sub {
 							$ENV{MVC_CATUSER} ||
 							($isroot ? '' : $Conf{'interchangeuser'})
@@ -558,10 +556,17 @@ my %History = (
     demotype =>  sub {
 						my @dir; 
 						@dir = sort map { s:(.*)/.*:$1:; $_ } glob("*/catalog.cfg");
-						@dir = grep $_ ne 'construct', @dir;
-						unshift(@dir, 'construct') if -f 'construct/catalog.cfg';
-						unshift(@dir, 'barry') if -f 'barry/catalog.cfg';
-						unshift(@dir, 'simple') if $catalog_name =~ /simp/;
+						@dir = grep $_ ne 'foundation', @dir;
+						unshift(@dir, 'foundation') if -f 'foundation/catalog.cfg';
+						unshift(@dir, 'construct')
+							if  -f 'construct/catalog.cfg'
+							and $catalog_name =~ /^construct/;
+						unshift(@dir, 'barry')
+							if  -f 'barry/catalog.cfg'
+							and $catalog_name =~ /^barry/;
+						unshift(@dir, 'simple')
+							if  -f 'simple/catalog.cfg'
+							and $catalog_name =~ /^simp/;
 						return @dir;
 					},
 
@@ -760,10 +765,16 @@ CHECKEXIST: {
 	unless(@parms) {
 		@parms = $Cfg->Parameters('legalconfig');
 		undef $Cfg;
+		my $user_time = "run by ";
+		$user_time .= scalar getpwuid($>);
+		$user_time .= " at ";
+		$user_time .= scalar localtime();
+
 		open(CFGFILE, ">>$Configfile")	or die "Can't write $Configfile: $!\n";
 		print CFGFILE <<EOF;
 
 # New catalog definition '$catalog_name' written by makecat
+# $user_time
 [catalog $catalog_name]
 EOF
 		for(@parms) {
@@ -825,7 +836,6 @@ EOF
 		$not_set = 1;
 		if(findexe('locate')) {
 			@conf = findfiles('httpd.conf');
-			$Cfg->setval('base', 'serverconf', join(" ", @conf));
 		}
 		else {
 			print <<EOF;
@@ -837,15 +847,18 @@ command). This may take as many as several minutes.
 EOF
 			$ask = prompt("Find httpd.conf files? ", 'y');
 			@conf = findfiles('httpd.conf') if $ask =~ /^\s*y/i;
-			$Cfg->setval('base', 'serverconf', join(" ", @conf));
 		}
 	}
-	sethistory(@conf);
-	$httpdconf = prompt("Enter path to httpd.conf file: ", $conf[0])
-		if $not_set;
 
+	sethistory(@conf);
+	if ($not_set) {
+		$httpdconf = prompt("Enter path to httpd.conf file: ", $conf[0]);
+		$Cfg->setval('base', 'serverconf', $httpdconf);
+	}
+	else {
+		$httpdconf = shift @conf;
+	}
 	last FINDCONF if $httpdconf =~ /^none$/i;
-	$Cfg->setval('base', 'serverconf', $httpdconf);
 
 	if($httpdconf) {
 		$Servers = conf_parse_http($httpdconf);
@@ -1070,10 +1083,20 @@ SETSERVER: {
 
 	@ask = $Cfg->val('global', 'askconfig');
 
-
+	my $redid;
+	my $next_force;
 	for ($i = 0; $i < scalar @ask; $i++) {
 		$p = $ask[$i];
-		if (defined $History{$p}) {
+		if ($redid) {
+#print("###redo###\n");
+			# Handle the &-d option, don't want to force first time
+			if (defined $next_force and ! $next_force) {
+#print("###force next###\n");
+				$next_force = 1;
+			}
+			$val = $Conf{$p};
+		}
+		elsif (defined $History{$p}) {
 			@history = &{$History{$p}}(prefix($p));
 			sethistory(@history);
 			$val =	prefix($p,1)							||
@@ -1091,19 +1114,42 @@ SETSERVER: {
 			next;
 		}
 		print "\n";
-		print description($p);
-		print "\n\n";
+
+		unless($redid) {
+			print description($p);
+			print "\n\n";
+		}
+		else {
+			undef $redid;
+		}
+
 		my $msg = pretty($p) . "? ";
 		$Conf{$p} = prompt ($msg, $val);
+#print("###force=$Vend::MakeCat::Force###\n");
 		if(defined $Postprocess{$p}) {
 			$Conf{$p} = $Postprocess{$p}->($Conf{$p});
 		}
 		if($Conf{$p} eq '@') {
 			$Conf{$p} = $val;
+			$redid = 1;
+			$next_force = 0 if $next_force;
 			$i--;
 			$i = 0 if $i < 0;
 			redo;
 		}
+		elsif ($Conf{$p} eq '&-d') {
+			print "OK, I will run with defaults after this prompt.\n";
+			$Conf{$p} = $val;
+			$redid = 1;
+			$next_force = 0;
+			redo;
+		}
+
+		if ($next_force) {
+#print("###force now###\n");
+			$Vend::MakeCat::Force = 1;
+		}
+
 		$Cfg->setval("catalog $catalog_name", $p, $Conf{$p});
 	}
 
@@ -1445,11 +1491,22 @@ ADDITIONAL: {
 		close ADDLHELP;
 	}
 	my $said = 0;
+	my $redid;
+	my $next_force;
 	while(<ADDL>) {
 		my $noprompt = '';
 		s/\s+$//;
 		s/__MVC_([A-Z0-9]+)(__)?/substitute($1,$2)/eg;
 		my ($var, $prompt, $default) = split /\n/, $_, 3;
+		if ($redid) {
+#print("###redo###\n");
+			# Handle the &-d option, don't want to force first time
+			if (defined $next_force and ! $next_force) {
+#print("###force next###\n");
+				$next_force = 1;
+			}
+			$val = $Conf{$p};
+		}
 		if($var =~ s/{\s*([A-Z0-9]+)(\s*\S.*?)?\s*}\s*//) {
 			my $param = $1;
 			my $test = $2;
@@ -1473,7 +1530,7 @@ ADDITIONAL: {
 			sethistory(@history);
 		}
 		unless ($noprompt) {
-			if (defined $help{$ucvar}) {
+			if (defined $help{$ucvar} and ! $redid) {
 				$help{$ucvar} =~ s/__MVC_([A-Z0-9]+)(__)?/substitute($1,$2)/eg;
 				print $help{$ucvar};
 			}
@@ -1484,10 +1541,33 @@ ADDITIONAL: {
 										|| $Conf{$var}
 										|| $default)
 									);
+## If we get around to arrayifying this, re-insert
+#			if($Conf{$var} eq '@') {
+#				$Conf{$var} = $default;
+#				$redid = 1;
+#				$next_force = 0 if $next_force;
+#				$i--;
+#				$i = 0 if $i < 0;
+#				redo;
+#			}
+#			elsif ($Conf{$p} eq '&-d') {
+			if ($Conf{$var} eq '&-d') {
+				print "OK, I will run with defaults after this prompt.\n";
+				$Conf{$var} = $default;
+				$redid = 1;
+				$next_force = 0;
+				redo;
+			}
 		}
 		else {
 			$Conf{$var} = delete $ENV{"MVC_$ucvar"} || $Conf{$var} || $default;
 		}
+
+		if ($next_force) {
+#print("###force now###\n");
+			$Vend::MakeCat::Force = 1;
+		}
+
 	}
 	close ADDL;
 }
@@ -1495,6 +1575,7 @@ ADDITIONAL: {
 CRYPTPW: {
 	my $pw = substitute('CRYPTPW', '__');
 	last CRYPTPW unless $pw;
+	last CRYPTPW if substitute('ALREADYCRYPT', '__');
 	my @letters = ('A' .. 'Z', 'a' .. 'z');
 	my $salt = $letters[ int rand(scalar @letters) ];
 	$salt .= $letters[ int rand(scalar @letters) ];
@@ -2085,7 +2166,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 1.32.4.4 2001-02-02 07:50:04 heins Exp $
+# $Id: makecat.PL,v 1.32.4.5 2001-02-07 12:25:04 heins Exp $
 
 =head1 INTRODUCTION
 
@@ -2459,14 +2540,14 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-Copyright 1995-2000, Akopia, Inc.. All rights reserved except as in the
+Copyright 1995-2001, Red Hat, Inc.. All rights reserved except as in the
 license.
 
 =cut
 
 =head1 AUTHOR
 
-Mike Heins, <heins@akopia.com>. Please do not contact the author for
+Mike Heins, <mheins@redhat.com>. Please do not contact the author for
 direct help with the system. Use the Interchange mail lists:
 
     interchange-users	(English, subscribe at http://developer.akopia.com/)
