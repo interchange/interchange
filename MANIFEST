@@ -991,6 +991,7 @@ dist/lib/UI/pages/admin/page_upload.html
 dist/lib/UI/pages/admin/payment.html
 dist/lib/UI/pages/admin/pref_colors.html
 dist/lib/UI/pages/admin/preferences.html
+dist/lib/UI/pages/admin/quick_question.html
 dist/lib/UI/pages/admin/quicklinks.html
 dist/lib/UI/pages/admin/reconfig.html
 dist/lib/UI/pages/admin/regen.html
@@ -1127,6 +1128,7 @@ eg/globalsub/authorizenet
 eg/globalsub/ccvs
 eg/globalsub/signio
 eg/globalsub/test_card
+eg/gpg_display
 eg/grant.sql
 eg/ifdef
 eg/news_feature/README
@@ -1275,6 +1277,7 @@ share/interchange/en_US/icon_stats.gif
 share/interchange/en_US/index.gif
 share/interchange/en_US/layout.gif
 share/interchange/en_US/left.gif
+share/interchange/en_US/meta.png
 share/interchange/en_US/plus.gif
 share/interchange/en_US/poweredby.gif
 share/interchange/en_US/right.gif
@@ -1284,6 +1287,7 @@ share/interchange/en_US/spacer2.gif
 share/interchange/en_US/spacer3.gif
 share/interchange/en_US/spacer4.gif
 share/interchange/en_US/spacer_tall.gif
+share/interchange/en_US/specmeta.png
 share/interchange/en_US/tab_dark_left.gif
 share/interchange/en_US/tab_dark_right.gif
 share/interchange/en_US/tab_light_left.gif

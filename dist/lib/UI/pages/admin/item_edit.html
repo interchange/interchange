@@ -19,11 +19,6 @@
 	[/loop]
 	[perl tables="[cgi mv_data_table]"]
 		my $db = $Db{$CGI->{mv_data_table}} or return;
-		unless ($db->config('AUTO_SEQUENCE')) {
-			$db->config('AUTO_NUMBER', '000001')
-				unless $db->config('AUTO_NUMBER');
-			$CGI->{item_id} = $db->autonumber();
-		}
 		if ($CGI->{ui_clone_id}) {
 			$CGI->{ui_clone_tables} = '__UI_CLONE_TABLES__' || '__UI_ITEM_TABLES__';
 			my $db = $Db{$CGI->{mv_data_table}} or return;
@@ -42,6 +37,15 @@
 [set help_name]edit.item[/set]
 [set icon_name]icon_item.gif[/set]
 
+[tmp edit_item_msg]
+[if cgi ui_new_item]
+	[msg]New item[/msg]
+[else]
+	[msg arg.0="<B>[cgi item_id]</B>"]edit item %s[/msg]
+[/else]
+[/if]
+[/tmp]
+
 [if-mm super]
 [tmp page_banner][page href="__UI_BASE__/db_metaconfig"
 				 form='
@@ -50,7 +54,7 @@
 				 ui_return_to=__UI_BASE__/item
 				 mv_return_table=[cgi mv_data_table]
 				 start_at=extended.ui_data_fields
-		 '][L]Item editor[/L]</A> [msg arg.0="<B>[cgi item_id]</B>"]edit item %s[/msg]
+		 '][L]Item editor[/L]</A> [scratch edit_item_msg]
 [/tmp]
 [else]
 [tmp page_banner][L]Item editor[/L]: [msg arg.0="<B>[cgi item_id]</B>"]edit item %s[/msg][/tmp]
@@ -76,4 +80,4 @@
 [/if-mm]
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.4 $ -->

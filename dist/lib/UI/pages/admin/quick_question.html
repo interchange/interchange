@@ -1,0 +1,22 @@
+<html>
+<head>
+<title>Quick question</title>
+<body style="[cgi name=style filter=entities]">
+[tmp litmus][if type="[cgi type]" term="[cgi term]"]1[/if][/tmp]
+[calc]
+	my $yes = $CGI->{yes} || errmsg('Yes');
+	my $no = $CGI->{no} || errmsg('No');
+	if($CGI->{yes_style}) {
+		$CGI->{yes_style} =~ $Tag->filter('entities', $CGI->{yes_style});
+		$yes = qq{<span style="$CGI->{yes_style}">$yes</span>};
+	}
+	if($CGI->{no_style}) {
+		$CGI->{no_style} =~ $Tag->filter('entities', $CGI->{no_style});
+		$yes = qq{<span style="$CGI->{no_style}">$no</span>};
+	}
+	my $status = $Scratch->{litmus};
+	$status = ! $status if $CGI->{reverse};
+	return $status ? $yes : $no;
+[/calc]
+</body>
+</html>
