@@ -5,14 +5,12 @@
 [perl]
 if ($goto = delete $Scratch->{ui_goto}) {
     $cgiref = $$goto[1];
-#	for (sort (keys %$cgiref)) {
-#		Log ("CGI $_: $$cgiref{$_}");
-#	}
 	$Scratch->{ui_location} = $cgiref->{mv_nextpage};
 }
+''
 [/perl]
-[if scratch ui_goto_url]
-[bounce page=`delete $Scratch->{ui_location}`]
+[if scratch ui_location]
+[bounce page="[scratch ui_location]"]
 [/if]
 [set page_title]Interchange Administration[/set]
 [tmp ui_no_title]1[/tmp]
