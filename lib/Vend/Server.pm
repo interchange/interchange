@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.18 2001-03-01 17:36:16 heins Exp $
+# $Id: Server.pm,v 1.8.2.19 2001-03-01 17:55:05 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.18 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.19 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -1757,7 +1757,7 @@ sub process_ipc {
 		$Page_servers--;
 		start_page(undef,$Global::PreFork,1);
 	}
-	elsif($thing =~ /^+\d+$/) {
+	elsif($thing =~ /^\d+$/) {
 		close $fh;
 		$Num_servers++;
 	}
