@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.29.4.9 2001-01-14 14:37:12 racke Exp $
+# $Id: Interpolate.pm,v 1.29.4.10 2001-02-06 23:30:51 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.29.4.9 $, 10);
+$VERSION = substr(q$Revision: 1.29.4.10 $, 10);
 
 @EXPORT = qw (
 
@@ -2179,8 +2179,12 @@ sub tag_value_extended {
 	};
 	::logError("value-extend $var: bad index") if $@;
 
-	if($opt->{filter}) {
-		for(@ary) {
+	for(@ary) {
+		# Eliminate any Interchange tags
+		s~<([A-Za-z]*[^>]*\s+[Mm][Vv]\s*=\s*)~&lt;$1~g;
+		s/\[/&#91;/g;
+		# Apply any filters specified
+		if($opt->{filter}) {
 			$_ = filter_value($opt->{filter}, $_, $var);
 		}
 	}
