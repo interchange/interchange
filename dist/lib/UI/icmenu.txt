@@ -49,9 +49,9 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0034	Customers	05			deletecustomer	customer	admin/customer_ship	customer=[cgi customer]	Shipping									
 0023	Admin	14			no_dbmenu	mv_data_table	admin/flex_editor	mv_data_table=[cgi mv_data_table]&ui_new_item=1	New Entry									
 0072	Wizard	06	1	tax			admin/wizard/step_tax		Tax Information	1			taxcalc					
-0061	None	1		!nevairbe					<font size=""-1""><b>Welcome to Interchange</b></font>									
+0061	None	1		!nevairbe					<font size="-1"><b>Welcome to Interchange</b></font>									
 0050	Items	13	1			item_id	admin/item_edit	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Edit									
-0059	Merchandising	03					admin/build_related		Generate ""others who ...""									
+0059	Merchandising	03					admin/build_related		Generate "others who ..."									
 0048	Items	03				item_id	admin/item_edit	ui_new_item=1&ui_clone_id=[cgi item_id]&ui_clone_tables=[var UI_ITEM_TABLES]	&nbsp;&nbsp;&nbsp;&nbsp;Clone item									
 0037	Customers	08			deletecustomer	customer	admin/customer_all	customer=[cgi customer]	All									
 0026	Admin	17				access_menu	admin/group		Groups									
