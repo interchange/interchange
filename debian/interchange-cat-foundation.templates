@@ -8,20 +8,22 @@ Description-de: Möchten Sie den Interchange-Demokatalog angelegt haben ?
  Ob der Demokatalog aus dem Foundation-Template installiert werden
  soll oder Sie ihn manuell mit makecat installieren möchten.
 
-Template: interchange-cat-foundation/overwrite
+Template: interchange-cat-foundation/replace
 Type: select
 Choices: always, ask, never
 Default: never
-Description: Policy for overwriting an existing demo catalog installation
- Whether to silently overwrite an existing demo catalog installation,
+Description: Policy for replacing an existing demo catalog installation
+ Whether to silently replace an existing demo catalog installation,
  ask for a confirmation or never touch an existing installation.
-Description-de: Richtlinie für das Überschreiben einer vorhandenen Demokatalog-installation
+Description-de: Richtlinie für das Ersetzen einer vorhandenen Demokatalog-Installation
  Sie können auswählen, ob eine vorhandene Installation des
- Demokatalogs ohne Nachfrage, auf Nachfrage oder niemals gelöscht
+ Demokatalogs ohne Nachfrage, auf Nachfrage oder niemals ersetzt
  werden soll.
 
 Template: interchange-cat-foundation/confirm
 Type: boolean
 Default: false
-Description: Overwrite the Interchange demo catalog ?
+Description: Replace the Interchange demo catalog ?
  There seems to already exist an Interchange demo catalog. 
+Description-de: Interchange Demokatalog ersetzen ?
+ Es ist bereits ein Demokatalog vorhanden.
