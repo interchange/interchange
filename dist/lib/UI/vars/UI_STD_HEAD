@@ -88,7 +88,7 @@ EOF
 	[bounce page="__UI_BASE__/error"]
 	[/if-mm]
 [/if]
-<html>
+<html[scratch ui_language_direction]>
 <head>
 <title>[scratch page_title]</title>
 <script language="JavaScript">
