@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.7 2002-08-02 15:32:47 racke Exp $
+# $Id: Shadow.pm,v 1.8 2002-08-02 17:09:30 racke Exp $
 #
 # Copyright (C) 2002 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.7 $, 10);
+$VERSION = substr(q$Revision: 1.8 $, 10);
 
 # TODO
 #
@@ -162,7 +162,6 @@ sub row {
 		for (my $i = 0; $i < @cols; $i++) {
 			$column = $cols[$i];
 			if (exists $s->[$CONFIG]->{MAP}->{$column}->{$locale}) {
-				$column = $s->[$CONFIG]->{MAP}->{$column}->{$locale};
 				$row[$i] = $s->field($key, $column);
 			}
 		}
