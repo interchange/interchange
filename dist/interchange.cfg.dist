@@ -1,4 +1,4 @@
-#Catalog   simple /home/mike/catalogs/simple /cgi-bin/simple /secure-bin/simple
+#Catalog   construct /var/lib/interchange/catalogs/construct /cgi-bin/construct
 
 # Set to 1 to include UI
 Variable   UI   1
