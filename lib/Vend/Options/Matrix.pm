@@ -1,6 +1,6 @@
 # Vend::Options::Matrix - Interchange Matrix product options
 #
-# $Id: Matrix.pm,v 1.3 2003-04-09 23:08:29 racke Exp $
+# $Id: Matrix.pm,v 1.4 2003-04-18 19:29:17 mheins Exp $
 #
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
 # Copyright (C) 2002-2003 Interchange Development Group <interchange@icdevgroup.org>
@@ -23,11 +23,11 @@
 
 package Vend::Options::Matrix;
 
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 
 =head1 Interchange Matrix Options Support
 
-Vend::Options::Matrix $Revision: 1.3 $
+Vend::Options::Matrix $Revision: 1.4 $
 
 =head1 SYNOPSIS
 
@@ -75,7 +75,9 @@ use vars qw/%Default/;
 				no_pricing => 1,
 				item_add_routine => 'Vend::Options::Matrix::testit',
 				table => 'options',
+				sort => 'o_sort',
 				variant_table => 'variants',
+				variant_sort => 'description',
 			);
 
 my $Admin_page;
@@ -128,7 +130,8 @@ sub display_options {
 	my @out;
 	my $out;
 	
-	my $rsort = find_sort($opt, $db, $loc);
+	# Will be different based on whether separate or not....
+	my $rsort;
 
 	my $inv_func;
 
@@ -154,6 +157,7 @@ sub display_options {
 		}
 		my $fsel = $map->{sku} || 'sku';
 		my $rsel = $db->quote($sku, $fsel);
+		$rsort = find_sort($opt, $db, $loc);
 		
 		my $q = "SELECT " .
 				join (",", @rf) .
@@ -237,6 +241,9 @@ sub display_options {
 			};
 
 		$opt->{type} ||= $record->{widget};
+		$rsort = $opt->{variant_sort} || $loc->{variant_sort};
+		$rsort = "ORDER BY $rsort" if $rsort;
+		$rsort ||= '';
 
 		for(qw/code description price/) {
 			push @rf, ($map->{$_} || $_);
