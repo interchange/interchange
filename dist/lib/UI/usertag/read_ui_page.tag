@@ -126,7 +126,7 @@ sub {
 		my ($ref, $key, $val) = @_;
 		$key = lc $key;
 		$key =~ tr/-/_/;
-Log("_setref key=$key val=$val");
+#Log("_setref key=$key val=$val");
 		$ref->{$key} = $val;
 	}
 
@@ -204,7 +204,7 @@ Log("_setref key=$key val=$val");
 
 	$ref->{ui_page_setting} = $tref;
 
-Log("page reference: " . uneval($ref) );
+#Log("page reference: " . uneval($ref) );
 	return uneval_it($ref) if $opt->{textref};
 	return $ref;
 
