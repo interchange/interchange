@@ -40,7 +40,7 @@ banner:
 <table width="[control table_width 90%]" align="center">
 <tr> 
   <td class="categorybar">
-    &nbsp;<b>[control banner See also]</b>
+    &nbsp;<b>[control name=banner default="[L]See also[/L]"]</b>
   </td>
 </tr>
 <tr>
@@ -70,7 +70,7 @@ banner:
 	</tr>
 	<tr> 
 	  <td nowrap align="center">
-	    <a href="[area [loop-code]]">More Info</a>
+	    <a href="[area [loop-code]]">[L]More Info[/L]</a>
 		[if-loop-data options o_modular]
 			[page [loop-code]]
 		[else]
@@ -82,7 +82,7 @@ banner:
 	</tr>
 	<tr> 
 	  <td align="center">
-	    Our Price: <b>[loop-price]</b>
+	    [L]Our Price[/L]: <b>[loop-price]</b>
 	  </td>
 	</tr>
 

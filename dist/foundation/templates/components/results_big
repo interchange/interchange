@@ -67,7 +67,7 @@ EOF
           <td align="center">
             <b>Out Of Stock</b>
             <br><br>
-            <a href="[area stock-alert [item-code]]">In Stock Notification</a>
+            <a href="[area stock-alert [item-code]]">[L]In Stock Notification[/L]</a>
           </td>
         </tr>
 EOF
@@ -79,7 +79,7 @@ EOF
 [if-item-data options o_modular]
         <tr> 
           <td align="center" colspan=2> 
-            [page [item-code]]Custom configure and buy</a>
+            [page [item-code]][L]Custom configure and buy[/L]</a>
           </td>
         </tr>
 [else]
@@ -95,7 +95,7 @@ EOF
         </tr>
         <tr> 
           <td align="center"> 
-            <input type="submit" value="Buy it Now!">
+            <input type="submit" value="[L]Buy it Now![/L]">
           </td>
         </tr>
 </FORM>
@@ -122,12 +122,11 @@ EOF
 
 <BR><BR>
 <BLOCKQUOTE>
-Sorry, no matches for <B>[value-extended name=mv_searchspec joiner=" | "]
-</B>.
+[msg arg.0="[value-extended name=mv_searchspec joiner=' | ']"]Sorry, no matches for <B>%s</B>.[/msg]
 
 [if value mv_search_error]
 <P>
-<B>Errors:
+<B>[L]Errors[/L]:
 <BR> 
 [value-extended name=mv_search_error joiner="<BR>"]
 </B>
@@ -142,7 +141,7 @@ Sorry, no matches for <B>[value-extended name=mv_searchspec joiner=" | "]
 [more-list]
 
 <BLOCKQUOTE>
-Matches [matches] of [match-count] found.
+[msg arg.0="[matches]" arg.1="[match-count]"]Matches %s of %s found.[/msg]
 <BR>[more]<BR>
 </BLOCKQUOTE>
 

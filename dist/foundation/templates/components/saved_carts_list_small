@@ -81,17 +81,17 @@ END
           <td colspan=3 align=center class="categorybar">
             [if explicit]
             [condition]'[loop-code]' eq 'saved_carts_carts'[/condition]
-              Saved Carts
+              [L]Saved Carts[/L]
             [else]
-              Recurring Orders
+              [L]Recurring Orders[/L]
             [/else]
             [/if]
            </td>
         </tr>
         <tr class="menubar">
           <td class="menubar" align="left">&nbsp;X</td>
-          <td align="center" class="menubar">&nbsp;Name</td>
-	  <td align="right" class="menubar">Modified&nbsp;</td>
+          <td align="center" class="menubar">&nbsp;[L]Name[/L]</td>
+	  <td align="right" class="menubar">[L]Modified[/L]&nbsp;</td>
         </tr>
 
         [scratch [loop-code]]

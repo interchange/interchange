@@ -21,7 +21,7 @@ cols:
 	type: select
 
 banner:
-	default: Specials
+	default: [L]Specials[/L]
 	label: Banner for top box
 	type: text
 	width: 40
@@ -31,7 +31,7 @@ banner:
 
 <table width="95%" align=center>
 <tr class="categorybar"> 
-  <td class="categorybar" align="left"><b>[control banner Specials]</b></td>
+  <td class="categorybar" align="left"><b>[control name=banner default="[L]Specials[/L]"]</b></td>
 </tr>
 <tr> 
   <td> 
@@ -88,7 +88,7 @@ banner:
 
 	  <tr> 
 		<td align="center" colspan="2">
-		  Our Price: <b>[loop-price]</b>
+		  [L]Our Price[/L]: <b>[loop-price]</b>
 		</td>
 	  </tr>
 	[if-loop-data merchandising blurb_end]
@@ -100,14 +100,14 @@ banner:
 	[else]
 	  <tr> 
 		<td align="center">
-		  <a href="[area [loop-code]]">More Info</a>&nbsp;
+		  <a href="[area [loop-code]]">[L]More Info[/L]</a>&nbsp;
 		</td>
 		<td align="center">
 		  [if-loop-data options o_modular]
 				[page [loop-code]]
 				[else][order [loop-code]]
 				[/else]
-				[/if-loop-data]<img border="0" alt="buy now" src="__THEME_IMG_DIR__buynow.gif"></a>
+				[/if-loop-data]<img border="0" alt="[L]buy now[/L]" src="__THEME_IMG_DIR__buynow.gif"></a>
 		</td>
 	  </tr>
 	[/else]

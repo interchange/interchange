@@ -7,7 +7,7 @@ ui_label: Random saying
 
 banner:
 	code: banner
-	default: Just a thought...
+	default: [L]Just a thought...[/L]
 	label: Banner Foo
 	type: text
 	width: 33
@@ -28,7 +28,7 @@ short:
       <table border=0 cellspacing=0 cellpadding=2>
       <tr>
         <td align=center class=categorybar>
-		[control banner Just a thought...]
+		[control name=banner default="[L]Just a thought...[/L]"]
 		</td>
       </tr>
       <tr>

@@ -34,8 +34,8 @@ matches:
 	      <INPUT MAXLENGTH=30 NAME=mv_searchspec type=text size=8>
 	    </td>
 	    <td align="right" valign="middle" width="45">
-	      <input type="image" alt="Search Go" width="45" border="0" src="__THEME_IMG_DIR__go.gif">
-	      <a href="[area advancedsearch]"><font size=-2 class="menubar">Advanced</a>
+	      <input type="image" alt="[L]Search Go[/L]" width="45" border="0" src="__THEME_IMG_DIR__go.gif">
+	      <a href="[area advancedsearch]"><font size=-2 class="menubar">[L]Advanced[/L]</a>
 	    </td>
       </tr>
       </table>

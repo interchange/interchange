@@ -21,7 +21,7 @@ matches:
       <table border="0" width="95%">
       <tr> 
 	    <td align="left">
-	  	  <INPUT TYPE=hidden NAME=mv_coordinate VALUE=1>
+	      <INPUT TYPE=hidden NAME=mv_coordinate VALUE=1>
 	      <INPUT TYPE=hidden NAME=mv_searchtype VALUE=db>
 	      <INPUT TYPE=hidden NAME=mv_matchlimit VALUE=[control matches 10]>
 	      <INPUT TYPE=hidden NAME=mv_sort_field VALUE=category>
@@ -33,8 +33,8 @@ matches:
 	      <INPUT MAXLENGTH=30 NAME=mv_searchspec type=text size=8>
 	    </td>
 	    <td align="right" valign="middle" width="45">
-	      <input type="image" alt="Search Go" width="45" border="0" src="__THEME_IMG_DIR__go.gif">
-	      <a href="[area advancedsearch]"><font size=-2 class="categorybar">Advanced</a>
+	      <input type="image" alt="[L]Search Go[/L]" width="45" border="0" src="__THEME_IMG_DIR__go.gif">
+	      <a href="[area advancedsearch]"><font size=-2 class="categorybar">[L]Advanced[/L]</a>
 	    </td>
       </tr>
       </table>

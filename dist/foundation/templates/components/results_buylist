@@ -67,12 +67,12 @@ ui_source: templates/components/results_buylist
 
 <table width="95%" border="0" cellspacing="0" cellpadding="3">
 <tr class="contentbar2"> 
-  <td><b>&nbsp;Product</b></td>
-  <td align="center"><b>SKU</b></td>
-  <td align="center"><b>Stock</b></td>
-  <td align="center"><b>Price</b></td>
-  <td align="center"><b>Qty</b></td>
-  <td align="center"><b>Buy</b></td>
+  <td><b>&nbsp;[L]Product[/L]</b></td>
+  <td align="center"><b>[L]SKU[/L]</b></td>
+  <td align="center"><b>[L]Stock[/L]</b></td>
+  <td align="center"><b>[L]Price[/L]</b></td>
+  <td align="center"><b>[L]Qty[/L]</b></td>
+  <td align="center"><b>[L]Buy[/L]</b></td>
 </tr>
 [/on-match]
 
@@ -97,12 +97,12 @@ ui_source: templates/components/results_buylist
         my $q = q{[item-data inventory quantity]};
         if($q > 0) {
                 return <<EOF;
-<font __FFACE__ size="1" color="#008000"><b>Yes</b></font>
+<font __FFACE__ size="1" color="#008000"><b>[L]Yes[/L]</b></font>
 EOF
         }
         else {
                 return <<EOF;
-<a href="[area stock-alert [item-code]]"><b>No</b></a>
+<a href="[area stock-alert [item-code]]"><b>[L]No[/L]</b></a>
 EOF
         }
 [/item-calc]
@@ -124,7 +124,7 @@ EOF
 [on-match]
 </table>
 
-<div align=right style="width:95%;"><br><INPUT TYPE=submit VALUE="Buy List"></div>
+<div align=right style="width:95%;"><br><INPUT TYPE=submit VALUE="[L]Buy List[/L]"></div>
 </FORM>
 [/on-match]
 
@@ -137,12 +137,12 @@ EOF
 [/comment]
 [tmp matchstring][value-extended name=mv_searchspec joiner=" | "][/tmp]
 [if scratch matchstring]
-Sorry, no matches for <B>[scratch matchstring]</B>.
+[msg arg.0="[scratch matchstring]"]Sorry, no matches for <B>%s</B>.[/msg]
 [/if]
 [if value mv_search_error]
 <P>
 <B>
-Errors:
+[L]Errors[/L]:
 <BR> 
 [value-extended name=mv_search_error joiner="<BR>"]
 </B>
@@ -154,7 +154,7 @@ Errors:
 <BR CLEAR=LEFT>
 [more-list]
 <BLOCKQUOTE>
-Matches [matches] of [match-count] found.
+[msg arg.0="[matches]" arg.1="[match-count]"]Matches %s of %s found.[/msg]
 <BR>[more]<BR>
 </BLOCKQUOTE>
 [/more-list]
