@@ -549,7 +549,6 @@ Inventory
 ui_sequence_edit=[calc]
 	$CGI->{item_id_left} = $CGI->{item_id};
 	$CGI->{item_id_left} =~ s/\0+/,/g;
-	Log("in ui_sequence_edit click");
 	if($CGI->{item_id_left} =~ s/^(.*?),//) {
 		$CGI->{item_id} = $1;
 		return 1;
@@ -583,4 +582,4 @@ mv_nextpage=@@MV_PAGE@@
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ Revision: $Id: item.html,v 2.19 2003-09-26 11:14:03 racke Exp $ -->
+<!-- page: @@MV_PAGE@@ Revision: $Id: item.html,v 2.20 2003-11-14 11:57:44 racke Exp $ -->
