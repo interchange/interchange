@@ -1,6 +1,6 @@
 # Table/Common.pm: Common access methods for Interchange Databases
 #
-# $Id: Common.pm,v 1.16 2000-11-03 04:41:10 heins Exp $
+# $Id: Common.pm,v 1.15 2000-09-30 14:56:33 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -25,7 +25,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.16 $, 10);
+$VERSION = substr(q$Revision: 1.15 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -142,7 +142,7 @@ sub autonumber {
 	my $c = $s->[$CONFIG];
 	if(! defined $c->{AutoNumberCounter}) {
 		$c->{AutoNumberCounter} = new File::CounterFile
-									"$c->{DIR}/$c->{name}.autonumber", $start;
+									"$c->{dir}/$c->{name}.autonumber", $start;
 	}
 	my $num;
 	do {
@@ -1109,7 +1109,7 @@ EndOfRoutine
 	unlockfile(\*IN) or die "unlock\n";
     close(IN);
 	if($numeric_guess) {
-		my $fn = Vend::Util::catfile($out->[$CONFIG]{DIR}, $out->[$CONFIG]{file});
+		my $fn = Vend::Util::catfile($out->[$CONFIG]{dir}, $out->[$CONFIG]{file});
 		Vend::Util::writefile(
 					">$fn.numeric",
 					join " ", map { $field_names[$_] } @possible,

@@ -1,12 +1,12 @@
 NAME
-    README.rpm - Interchange RPM for Redhat Systems
+    icrpm - Interchange RPM for Redhat Systems
 
-VERSION
-    4.6.1
+  VERSION
+
+    4.6.0
 
 SYNOPSIS
-    rpm -Uvh interchange-4.6.1-1.rh6.i386.rpm
-    rpm -Uvh interchange-4.6.1-1.rh7.i386.rpm
+    rpm -Uvh interchange-4.6.0-1.rpm
 
 DESCRIPTION
     The Interchange 4 RPM is designed to integrate Interchange with a stock
@@ -33,12 +33,11 @@ DESCRIPTION
         /usr/sbin/interchange, to start the Interchange server. This is
         called by /etc/rc.d/init.d/interchange.
 
-    Run
-        Run files go in /var/run/interchange. The subdirectory is needed
+    Run Run files go in /var/run/interchange/*. The subdirectory is needed
         to allow the Interchange user ID to write/create files.
 
     Logs
-        Logs go in /var/log/interchange. The subdirectory is needed to
+        Logs go in /var/log/interchange/*. The subdirectory is needed to
         allow the Interchange user ID to write/create files.
 
 ASSUMPTIONS
@@ -60,11 +59,11 @@ ASSUMPTIONS
          -- Hostname as revealed by `hostname` is the ServerName
          -- SuExec not enabled
 
-        If you have suEXEC enabled, you are responsible for changing
+        If you have SuExec enabled, you are responsible for changing
         permissions and running parameters appropriately. You can typically
-        disable suEXEC by running `chmod u-s /usr/bin/suexec'.
+        disable SuEXEC by running `chmod u-s /usr/bin/suexec'.
 
-        If you want to continue to use suEXEC, you will have to compile the
+        If you want to continue to user suexec, you will have to compile the
         appropriate INET mode link program and use it instead of VLINK.
 
     Logs
@@ -77,15 +76,15 @@ ASSUMPTIONS
         from /usr/sbin/interchange. In other words, don't expect
         /usr/lib/interchange/bin/restart to work.
 
-        Interchange will be started by this command (executed as root):
+        Interchange will be started by this command:
 
             /etc/rc.d/init.d/interchange start
 
-        and will be re-started by this command (executed as root):
+        and will be re-started by this command:
 
             /etc/rc.d/init.d/interchange restart
 
-        or possibly (executed as either root or the 'interch' user):
+        or possibly:
 
             /usr/sbin/interchange -r
 

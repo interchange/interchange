@@ -1,4 +1,4 @@
-Interchange V4.6.1
+Interchange V4.6.0
 
 Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 
@@ -8,25 +8,27 @@ Copyright 1995 by Andrew M. Wilcox
 Portions from Vend 0.3
 Copyright 1995,1996 by Andrew M. Wilcox
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the
-Free Software Foundation; either version 2 of the License, or (at your
-option) any later version.
+This program is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public
+License as published by the Free Software Foundation; either
+version 2 of the License, or (at your option) any later
+version.
 
-This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
-for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+You should have received a copy of the GNU General Public
+License along with this program; if not, write to the Free
+Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+MA  02111-1307  USA.
 
 
 Welcome to Interchange! This program is completely unsupported, without
 warranty of any kind. The author is interested in problems, suggestions,
 or comments, but does not have time to offer free individual support
-in most cases. See the Akopia website at http://www.akopia.com/
+in most cases. See the Interchange website at http://www.akopia.com/
 for more information.
 
 -------------------------------------------------------------------
@@ -87,8 +89,8 @@ UNIX INSTALLATION
 ------------------
 Here is the short version:
 
-    gzip -dc interchange-4.6.1.tar.gz | tar xvf -
-    cd interchange-4.6.1
+    gzip -dc interchange-4.6.0.tar.gz | tar xvf -
+    cd interchange-4.6.0
     ./configure
 
 The 'configure' script is basically a shortcut for:
@@ -177,7 +179,7 @@ not yet tested to run on Windows; the canonical installation is UNIX.
 
                     K N O W N   P R O B L E M S
 
-BSDI, FreeBSD, NetBSD:
+BSDI, FreeBSD, Net BSD:
     You will need to make sure the following are in effect
     in minivend.cfg:
 
@@ -186,7 +188,7 @@ BSDI, FreeBSD, NetBSD:
 
     Expect lots of crashes if you don't do this.
 
-Apache with suEXEC:
+Apache with SUEXEC:
     VLINK/UNIX socket mode will not work well unless you do the
     install as a normal user. If you are going to support multiple
     users, you must use TLINK/INET mode.

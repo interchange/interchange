@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14 2000-11-12 20:52:25 heins Exp $
+# $Id: Util.pm,v 1.10 2000-09-28 10:10:59 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -77,7 +77,7 @@ use Config;
 use Fcntl;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14 $, 10);
+$VERSION = substr(q$Revision: 1.10 $, 10);
 
 BEGIN {
 	eval {
@@ -232,30 +232,6 @@ sub commify {
     return $_;
 }
 
-my %safe_locale = ( 
-						C     => 1,
-						en_US => 1,
-						en_UK => 1,
-					);
-
-sub safe_sprintf {
-	# need to supply $fmt as a scalar to prevent prototype problems
-	my $fmt = shift;
-
-	# query the locale
-	my $save = POSIX::setlocale (&POSIX::LC_NUMERIC);
-
-	# This should be faster than doing set every time....but when
-	# is locale C anymore? Should we set this by default?
-	return sprintf($fmt, @_) if $safe_locale{$save};
-
-	# Need to set.
-	POSIX::setlocale (&POSIX::LC_NUMERIC, 'C');
-	my $val = sprintf($fmt, @_);
-	POSIX::setlocale (&POSIX::LC_NUMERIC, $save);
-	return $val;
-}
-
 sub picture_format {
 	my($amount, $pic, $sep, $point) = @_;
     $pic	= reverse $pic;
@@ -360,7 +336,7 @@ sub currency {
 		$fmt = "%.2f";
 	}
 
-	$amount = safe_sprintf($fmt, $amount);
+	$amount = sprintf $fmt, $amount;
 	$amount =~ s/\./$dec/ if defined $dec;
 	$amount = commify($amount, $sep || undef)
 		if $Vend::Cfg->{PriceCommas};
@@ -873,7 +849,7 @@ EOF
 # / is not allowed unless $Global::NoAbsolute is set.
 #
 sub readfile {
-    my($file, $no, $loc) = @_;
+    my($file, $no) = @_;
     my($contents);
     local($/);
 
@@ -893,7 +869,7 @@ sub readfile {
 	$contents = <READIN>;
 	close(READIN);
 
-	if ($Vend::Cfg->{Locale} and ($loc or $Vend::Cfg->{Locale}->{readfile}) ) {
+	if ($Vend::Cfg->{Locale} and $Vend::Cfg->{Locale}->{readfile}) {
 		my $key;
 		$contents =~ s~\[L(\s+([^\]]+))?\]([\000-\377]*?)\[/L\]~
 						$key = $2 || $3;		
@@ -1016,47 +992,6 @@ sub flock_unlock {
     flock($fh, $flock_LOCK_UN) or die "Could not unlock file: $!\n";
 }
 
-sub fcntl_lock {
-    my ($fh, $excl, $wait) = @_;
-    my $flag = $excl ? F_WRLCK : F_RDLCK;
-    my $op = $wait ? F_SETLKW : F_SETLK;
-
-	my $struct = pack('sslli', $flag, 0, 0, 0, $$);
-
-    if ($wait) {
-        fcntl($fh, $op, $struct) or die "Could not fcntl_lock file: $!\n";
-        return 1;
-    }
-    else {
-        if (fcntl($fh, $op, $struct) < 0) {
-            if ($! =~ m/^Try again/
-                or $! =~ m/^Resource temporarily unavailable/
-                or $! =~ m/^Operation would block/) {
-                return 0;
-            }
-            else {
-                die "Could not lock file: $!\n";
-            }
-        }
-        return 1;
-    }
-}
-
-sub fcntl_unlock {
-    my ($fh) = @_;
-	my $struct = pack('sslli', F_UNLCK, 0, 0, 0, $$);
-	if (fcntl($fh, F_SETLK, $struct) < 0) {
-		if ($! =~ m/^Try again/
-                or $! =~ m/^Resource temporarily unavailable/
-                or $! =~ m/^Operation would block/) {
-			return 0;
-		}
-		else {
-			die "Could not un-fcntl_lock file: $!\n";
-		}
-	}
-	return 1;
-}
 
 ### Select based on os, vestigial
 

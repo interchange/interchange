@@ -1,6 +1,6 @@
 # Vend/Scan.pm:  Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 1.7 2000-11-20 03:03:43 heins Exp $
+# $Id: Scan.pm,v 1.6 2000-10-13 19:31:59 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -29,7 +29,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 1.7 $, 10);
+$VERSION = substr(q$Revision: 1.6 $, 10);
 
 use strict;
 use Vend::Util;
@@ -340,7 +340,7 @@ sub parse_profile {
 	return undef unless $params;
 
 	if ( index($params, '[') != -1 or index($params, '__') != -1) {
-		$params = ::interpolate_html($params);
+		$params = interpolate_html($params);
 	}
 
 	my($p, $var,$val);

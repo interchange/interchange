@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40 2000-11-11 19:41:39 heins Exp $
+# $Id: Interpolate.pm,v 1.37 2000-10-18 20:18:19 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40 $, 10);
+$VERSION = substr(q$Revision: 1.37 $, 10);
 
 @EXPORT = qw (
 
@@ -354,12 +354,12 @@ my @th = (qw!
 	'_pos_if'		=> qr($T{_pos}$Spacef(!?)\s*(\d+)$Optr\]($Some)),
 	'_price'		=> qr!$T{_price}(?:\s+(\d+))?$Optx\]!,
 	'_quantity'		=> qr($T{_quantity}\]),
-	'_subtotal'		=> qr($T{_subtotal}$Optx\]),
+	'_subtotal'		=> qr($T{_subtotal}$Opt\]),
 	'condition'		=> qr($T{condition}$T($Some)$T{'/condition'}),
 	'condition_begin' => qr(^\s*$T{condition}\]($Some)$T{'/condition'}),
-	'_discount_price' => qr($T{_discount_price}(?:\s+(\d+))?$Optx\]),
-	'discount_price' => qr($T{discount_price}(?:\s+(\d+))?$Optx\]),
-	'_discount_subtotal' => qr($T{_discount_subtotal}$Optx\]),
+	'_discount_price' => qr($T{_discount_price}(?:\s+(\d+))?$Opt\]),
+	'discount_price' => qr($T{discount_price}(?:\s+(\d+))?$Opt\]),
+	'_discount_subtotal' => qr($T{_discount_subtotal}\]),
 	'else_end'		=> qr($T{else}\]($All)$T{'/else'}\s*$),
 	'elsif_end'		=> qr($T{elsif}\s+($All)$T{'/elsif'}\s*$),
 	'matches'		=> qr($T{matches}\]),
@@ -3334,19 +3334,17 @@ sub labeled_list {
 
 	if(defined $opt->{option}) {
 		$opt_value = $opt->{option};
-		my $optref = $opt->{cgi} ? (\%CGI::values) : $::Values;
-
 		if($opt_value =~ s/\s*($Codere)::($Codere)\s*//) {
             $opt_table = $1;
             $opt_field = $2;
-			$opt_value = lc($optref->{$opt_value}) || undef;
+			$opt_value = lc($::Values->{$opt_value}) || undef;
             $opt_select = sub {
                 return lc(tag_data($opt_table, $opt_field, shift)) eq $opt_value;
             }
 				if $opt_value;
         }
-		elsif(defined $optref->{$opt_value} and length $optref->{$opt_value} ) {
-			$opt_value = lc($optref->{$opt_value});
+		elsif(defined $::Values->{$opt_value} and length $::Values->{$opt_value} ) {
+			$opt_value = lc($::Values->{$opt_value});
 			$opt_select = ! $opt->{multiple} 
 						  ? sub { return "\L$_[0]" eq $opt_value }
 						  : sub { $opt_value =~ /^$_[0](?:\0|$)/i or  
@@ -3495,7 +3493,7 @@ my $once = 0;
 											?	pull_if($4)
 											:	pull_else($4)!ige;
 		$run =~ s#$B$QR{_calc}$E$QR{'/_calc'}#tag_calc($1)#ige;
-		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#init_calc() if ! $Calc_initialized;($Vend::Cfg->{Sub}{$1} || sub { 'ERROR' })->($2,$row)#ige;
+		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#($Vend::Cfg->{Sub}{$1} || sub { 'ERROR' })->($2,$row)#ige;
 		$run =~ s#$B$QR{_filter}$E$QR{'/_filter'}#filter_value($1,$2)#ige;
 		$run =~ s#$B$QR{_last}$E$QR{'/_last'}#
                     my $tmp = interpolate_html($1);
@@ -3604,7 +3602,7 @@ sub iterate_hash_list {
 											?	pull_if($4)
 											:	pull_else($4)!ige;
 		$run =~ s#$B$QR{_calc}$E$QR{'/_calc'}#tag_calc($1)#ige;
-		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#init_calc() if ! $Calc_initialized;($Vend::Cfg->{Sub}{$1} || sub { 'ERROR' })->($2,$item)#ige;
+		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#($Vend::Cfg->{Sub}{$1} || sub { 'ERROR' })->($2,$item)#ige;
 		$run =~ s#$B$QR{_filter}$E$QR{'/_filter'}#filter_value($1,$2)#ige;
 		$run =~ s#$B$QR{_last}$E$QR{'/item_last'}#
                     my $tmp = interpolate_html($1);
@@ -4380,48 +4378,38 @@ sub read_shipping {
 # Must match exactly, but NOT case-sensitive
 
 sub tag_selected {
-	my ($field,$value,$opt) = @_;
+	my ($field,$value,$multiple) = @_;
 	$value = '' unless defined $value;
-	my $ref = $opt->{cgi} ? $CGI::values{$field} : $::Values->{$field};
-	return ' SELECTED' if ! length($ref) and $opt->{default};
+	my $ref = lc $::Values->{$field};
+	$ref = lc $ref;
+	my $r;
 
-	if(! $opt->{case}) {
-		$ref = lc($ref);
-		$value = lc($value);
+	if( $ref eq "\L$value" ) {
+		$r = ' SELECTED';
 	}
-
-	my $r = '';
-
-	return ' SELECTED' if $ref eq $value;
-	if ($opt->{multiple}) {
-		my $regex = quotemeta $value;
-		return ' SELECTED' if $ref =~ /(?:^|\0)$regex(?:$|\0)/i;
+	elsif ($multiple) {
+		$r = ' SELECTED' if $ref =~ /\b$value\b/i;
 	}
-
-	return '';
+	else {$r = ''}
+	return $r;
 }
 
 sub tag_checked {
-	my ($field,$value,$opt) = @_;
+	my ($field,$value,$multiple,$default) = @_;
 
 	$value = 'on' unless defined $value;
+	my $ref = lc $::Values->{$field};
+	my $r;
 
-	my $ref = $opt->{cgi} ? $CGI::values{$field} : $::Values->{$field};
-	return 'CHECKED' if ! length($ref) and $opt->{default};
-
-	if(! $opt->{case}) {
-		$ref = lc($ref);
-		$value = lc($value);
+	if( $ref eq "\L$value" or ! length($ref) && $default) {
+		$r = 'CHECKED';
 	}
-
-	return 'CHECKED' if $ref eq $value;
-
-	if ($opt->{multiple}) {
+	elsif ($multiple) {
 		my $regex = quotemeta $value;
-		return 'CHECKED' if $ref =~ /(?:^|\0)$regex(?:$|\0)/i;
+		$r = 'CHECKED' if $ref =~ /(?:^|\0)$regex(?:$|\0)/i;
 	}
-
-	return '';
+	else {$r = ''}
+	return $r;
 }
 
 # Returns an href to place an order for the product PRODUCT_CODE.

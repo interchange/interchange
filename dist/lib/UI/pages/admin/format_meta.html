@@ -45,7 +45,7 @@
 			delete $Values->{$_};
 		}
 	}
-	if($table eq delete $Values->{mv_auto_export}) {
+	if($table eq delete $Values->{ui_auto_export}) {
 		return "[seti export_ok][tag export $table][/tag][/seti]";
 	}
 	else {
@@ -397,7 +397,7 @@ EOF
 		VALUE="[L]Submit change[/L]">&nbsp;&nbsp;&nbsp;
 	
 [if !value ui_too_large]
-<INPUT TYPE=checkbox NAME=mv_auto_export CHECKED VALUE="[value mv_data_table]">
+<INPUT TYPE=checkbox NAME=ui_auto_export CHECKED VALUE="[value mv_data_table]">
 	[L]Auto-export[/L]
 [/if]
 </FORM>

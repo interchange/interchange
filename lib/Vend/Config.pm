@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25 2000-11-03 23:38:30 heins Exp $
+# $Id: Config.pm,v 1.24 2000-10-19 11:59:43 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -103,7 +103,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.25 $, 10);
+$VERSION = substr(q$Revision: 1.24 $, 10);
 
 my %CDname;
 
@@ -2142,7 +2142,7 @@ sub parse_database {
 	my($database,$remain) = split /[\s,]+/, $value, 2;
 
 	if( ! defined $c->{$database} ) {
-		$c->{$database} = { 'name' => $database, included_from => $configfile };
+		$c->{$database} = { 'name' => $database };
 		$new = 1;
 	}
 

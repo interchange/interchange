@@ -1,4 +1,4 @@
-%define interchange_version		4.6.1
+%define interchange_version		4.6.0
 %define interchange_package		interchange
 %define interchange_user		interch
 %define build_cats				construct
@@ -8,14 +8,14 @@
 Name: interchange
 Summary: Interchange is a powerful database access and HTML templating daemon focused on e-commerce.
 Group: Applications/Internet
-Version: 4.6.1
+Version: 4.6.0
 Copyright: GNU General Public License
 Release: 1.rh6
 URL: http://developer.akopia.com/
 Packager: Akopia <info@akopia.com>
 Distribution: Red Hat Linux Applications CD
 Vendor: Akopia, Inc.
-Source: http://ftp.minivend.com/interchange/interchange-4.6.1.tar.gz
+Source: http://ftp.minivend.com/interchange/beta/interchange-4.6.0.tar.gz
 Provides: interchange
 Obsoletes: interchange
 
@@ -23,7 +23,7 @@ BuildRoot: /var/tmp/interchange
 
 %description
 Interchange is the most powerful free ecommerce system available today.
-Its features and power rival costly commercial systems.
+Its features and power rival the costliest commercial systems.
 
 %prep
 %setup
@@ -53,7 +53,6 @@ gzip $RBR/usr/man/man*/* 2>/dev/null
 cp extra/HTML/Entities.pm $RBR/usr/lib/interchange/build
 cp extra/IniConf.pm $RBR/usr/lib/interchange/build
 chown -R root.root $RBR
-cp -a eg extensions $RBR/usr/lib/interchange
 cd $RBR/usr/lib/interchange
 export PERL5LIB=$RBR/usr/lib/interchange/lib
 export MINIVEND_ROOT=$RBR/usr/lib/interchange
@@ -81,9 +80,9 @@ chmod +r $RBR/etc/interchange.cfg
 %pre
 if test -x /etc/rc.d/init.d/interchange
 then
-	/etc/rc.d/init.d/interchange stop > /dev/null 2>&1
-	#echo "Giving interchange a couple of seconds to exit nicely"
-	sleep 5
+  /etc/rc.d/init.d/interchange stop > /dev/null 2>&1
+  #echo "Giving interchange a couple of seconds to exit nicely"
+  sleep 5
 fi
 
 # Create an interch user. Do not report any problems if it already
@@ -92,12 +91,10 @@ useradd -M -r -d /var/lib/interchange -s /bin/bash -c "Interchange server" %{int
 
 %files
 %doc QuickStart
-%doc LICENSE
+%doc WHATSNEW
 %doc README
 %doc README.rpm
 %doc README.cvs
-%doc UPGRADE_FROM_MV3
-%doc WHATSNEW
 %doc pdf/icbackoffice.pdf
 %doc pdf/icconfig.pdf
 %doc pdf/icdatabase.pdf
@@ -120,7 +117,7 @@ useradd -M -r -d /var/lib/interchange -s /bin/bash -c "Interchange server" %{int
 /var/run/interchange
 
 %post
-# Make Interchange start/shutdown automatically with the operating system.
+# Make Interchange start/shutdown automatically when the machine does it.
 /sbin/chkconfig --add interchange
 
 # Change permissions so that the user that will run the Interchange daemon
@@ -165,30 +162,30 @@ fi
 missing=
 for i in MD5 MIME::Base64 URI::URL SQL::Statement Safe::Hole
 do
-	status=`perl -e "require $i and print 1;" 2>/dev/null`
-	if test "x$status" = x1
-	then
-		echo > /dev/null
-	else
+    status=`perl -e "require $i and print 1;" 2>/dev/null`
+    if test "x$status" = x1
+    then
+        echo > /dev/null
+    else
 		missing="$missing $i"
-	fi
+    fi
 done
 
 WARNDEST=/usr/doc/%{interchange_package}-%{version}/WARNING_YOU_ARE_MISSING_SOMETHING
 if test -n "$missing"
 then
-	echo "" >> $WARNDEST
-	echo "MISSING Perl modules:" >> $WARNDEST
-	echo "" >> $WARNDEST
-	echo "$missing" >> $WARNDEST
-	echo "" >> $WARNDEST
-	echo "Interchange catalogs will work without them, but the admin interface" >> $WARNDEST
-	echo "will not. You need to install them for the UI to work." >> $WARNDEST
-	echo "" >> $WARNDEST
-	echo "Try:" >> $WARNDEST
-	echo "" >> $WARNDEST
-	echo " perl -MCPAN -e \"install Bundle::Interchange\"" >> $WARNDEST
-	echo "" >> $WARNDEST
+        echo "" >> $WARNDEST
+        echo "MISSING Perl modules:"  >> $WARNDEST
+        echo ""  >> $WARNDEST
+	echo "$missing"  >> $WARNDEST
+        echo ""  >> $WARNDEST
+        echo "Interchange catalogs will work without them, but the admin interface"  >> $WARNDEST
+	echo "will not. You need to install them for the UI to work."  >> $WARNDEST
+	echo ""  >> $WARNDEST
+	echo "Try:"  >> $WARNDEST
+	echo ""  >> $WARNDEST
+	echo " perl -MCPAN -e \"install Bundle::Interchange\""  >> $WARNDEST
+	echo ""  >> $WARNDEST
 fi
 
 # Restart in the same way that interchange will be started normally.
@@ -205,12 +202,12 @@ fi
 %preun
 if test -x /etc/rc.d/init.d/interchange
 then
-	/etc/rc.d/init.d/interchange stop > /dev/null
+  /etc/rc.d/init.d/interchange stop > /dev/null
 fi
 # Remove autostart of interchange
 if test $1 = 0
 then
-	/sbin/chkconfig --del interchange
+   /sbin/chkconfig --del interchange
 fi
 
 rm -rf /var/run/interchange/*

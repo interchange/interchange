@@ -23,9 +23,9 @@ DOIT: {
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# Interchange version 4.6.1
+# Interchange version 4.6.0
 #
-# $Id: interchange.PL,v 1.15 2000-11-22 18:47:22 jon Exp $
+# $Id: interchange.PL,v 1.11 2000-10-26 22:36:55 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -136,7 +136,7 @@ use vars qw($VERSION);
 require Exporter;
 
 BEGIN {
-	$VERSION = '4.6.1';
+	$VERSION = '4.6.0';
 }
 
 use Fcntl;
@@ -672,7 +672,7 @@ sub do_click {
 sub do_deliver {
 	my $file = $CGI::values{mv_data_file};
 	my $mode = $CGI::values{mv_acl_mode} || '';
-	if($::Scratch->{mv_deliver} !~ m{(^|\s)$file(\s|$)}
+	if($::Scratch->{mv_deliver} ne $file
 		and 
 		! Vend::UserDB::userdb(
 							'check_file_acl',
@@ -918,7 +918,6 @@ sub do_process {
 	#Now determine the action on the todo
     if (defined $Vend::Cfg->{FormAction}{$todo}) {
 		$sub = $Vend::Cfg->{FormAction}{$todo};
-		new Vend::Parse;
 	}
     elsif (not $sub = $form_action{$todo} ) {
 		interaction_error("No action passed for processing\n");
@@ -1665,7 +1664,6 @@ EOF
 		Vend::Interpolate::init_calc();
 		$CGI::values{mv_nextpage} = $Vend::FinalPath
 			if ! defined $CGI::values{mv_nextpage};
-		new Vend::Parse;
 	}
 	elsif ( defined ($sub = $action{$Vend::Action}) )  {
 		Vend::Interpolate::init_calc();
@@ -2444,7 +2442,6 @@ Contributions to Interchange have been made by:
     Bob Jordan         
     Brian Bullen       
     Bruce Albrecht     
-	Cameron Prince
     Christian Mueller
     Christopher Thompson
     Dave Adams

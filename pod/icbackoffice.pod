@@ -2,7 +2,7 @@
 
 Interchange Back-Office
 
-=head1 AKOPIA INTERCHANGE(TM) BACK-OFFICE
+=head1 AKOPIA INTERCHANGE TM BACK-OFFICE
 
 Akopia Interchange is the industry's most widely distributed and
 implemented open source e-commerce platform. This document describes
@@ -33,8 +33,8 @@ entry of orders with an external program.
 =head2 Database Tracking
 
 Once the order report is processed, the order is complete. Therefore,
-it is the ideal place to put Interchange tags that make order entries
-in database tables.
+it is the ideal place to put Interchange TM tags that make order
+entries in database tables.
 
 A good model is to place a single record in a database summarizing the
 order and a series of lines that correspond to each line item in the
@@ -56,29 +56,29 @@ tracking number, address, customer number, or other information.
 The above is accomplished with Interchange's C<[import ....]> tag
 using the convenient C<NOTES> format:
 
-   [set import_status]
-   [import table=orders type=LINE continue=NOTES]
+   lbracketset import_status]
+   lbracketimport table=orders type=LINE continue=NOTES]
 
-   code: [value mv_order_number]
-   order_number: [value mv_order_number]
-   quantity: [nitems]
-   price: [subtotal noformat=1]
-   shipping: [shipping noformat=1]
-   tax: [salestax noformat=1]
+   code: lbracketvalue mv_order_number]
+   order_number: lbracketvalue mv_order_number]
+   quantity: lbracketnitems]
+   price: lbracketsubtotal noformat=1]
+   shipping: lbracketshipping noformat=1]
+   tax: lbracketsalestax noformat=1]
 
-   [/import]
+   lbracket/import]
 
-   [item-list]
-   [import table=orders type=LINE continue=NOTES]
+   lbracketitem-list]
+   lbracketimport table=orders type=LINE continue=NOTES]
 
-   code: [value mv_order_number]-[item-increment]
-   order_number: [value mv_order_number]
-   quantity: [item-quantity]
-   price: [item-price noformat=1]
-   shipping: [shipping-description]
-   tax: [if-item-field nontaxable]No[else]Yes[/else][/if]
+   code: lbracketvalue mv_order_number]-lbracketitem-increment]
+   order_number: lbracketvalue mv_order_number]
+   quantity: lbracketitem-quantity]
+   price: lbracketitem-price noformat=1]
+   shipping: lbracketshipping-description]
+   tax: lbracketif-item-field nontaxable]Nolbracketelse]Yeslbracket/else]lbracket/if]
 
-   [/import][/item-list]
+   lbracket/import]lbracket/item-list]
 
 =head2 Custom Order Routing
 
@@ -281,10 +281,10 @@ placed in the basket, or have a database field called C<goods_type>
 set to the appropriate value. The following example uses a Perl
 routine on the final order form:
 
- [perl arg=carts interpolate=1]
+ lbracketperl arg=carts interpolate=1]
    my $string = <<'EOF';
-[item-list][item-code]  [item-field goods_type]
-[/item-list]
+lbracketitem-list]lbracketitem-code]  lbracketitem-field goods_type]
+lbracket/item-list]
 EOF
    my @items;
    my %route;
@@ -299,7 +299,7 @@ EOF
        $item->{mv_order_route} = $route{$item->{'code'}} || undef;
    }
    return '';
-[/perl]
+lbracket/perl]
 
 Now the individual items are labeled with a C<mv_order_route> value
 which causes their inclusion in the appropriate order routing.
@@ -450,7 +450,7 @@ directory by default. The directory must exist. The source ASCII files
 should be present in that directory, and the DBM files are created
 there. Existing files will be overwritten.
 
-   offline -c catalog [-d offline_dir]
+   offline -c catalog lbracket-d offline_dir]
 
 Do a C<perldoc VENDROOT/bin/offline> for full documentation.
 
@@ -762,17 +762,17 @@ having the following files:
 
 The contents of C<.access_gate>:
 
-   foo.html: [if session username eq 'flycat']
+   foo.html: lbracketif session username eq 'flycat']
 
 =back
                Yes
-             [/if]
-   bar:      [if session username eq 'flycat']
-             [or scratch allow_bar]
+             lbracket/if]
+   bar:      lbracketif session username eq 'flycat']
+             lbracketor scratch allow_bar]
                Yes
-             [/if]
+             lbracket/if]
    baz:      yes
-   *:        [data session logged_in]
+   *:        lbracketdata session logged_in]
 
 =over 4
 
@@ -871,13 +871,13 @@ capability is not available.
    This tag takes a raw email message, *including headers*, and
    users the SendmailProgram with -t option. Example:
 
-   [email-raw]
+   lbracketemail-raw]
    From: foo@bar.com
    To: bar@foo.com
    Subject: baz
 
    The text of the message.
-   [/email-raw]
+   lbracket/email-raw]
 
    The headers must be at the beginning of the line, and the header
    must have a valid To: or it will not be delivered.
@@ -911,9 +911,9 @@ capability is not available.
 
 =head2 loc
 
-   # [loc locale*] message [/loc]
+   # lbracketloc locale*] message lbracket/loc]
    #
-   # This tag is the equivalent of [L] ... [/L] localization, except
+   # This tag is the equivalent of lbracketL] ... lbracket/L] localization, except
    # it works with contained tags
    #
    UserTag loc hasEndTag   1

@@ -64,15 +64,13 @@ function open_quicklinks() {
 
 [calc]
 	my $data = q{[version extended=1 modules=1 joiner="<P>"]};
-	$dbstatus = q{[version extended=1 modtest="GDBM_File"][version extended=1 modtest="DB_File"]};
-	return unless $data =~ /IMPORTANT/ or $dbstatus < 1;
+	return unless $data =~ /IMPORTANT/;
 	my @lines = grep /not\s+found/, split '<P>', $data;
 	my @important = grep /IMPORTANT/, @lines;
 	my @minor = grep $_ !~ /IMPORTANT/, @lines;
 	my $imp = join '<P>', @important;
 	my $minor = join '<P>', @minor;
-	my $out = '';
-	$out .= <<EOF if $data =~ /IMPORTANT/;
+	return <<EOF;
 <TR>
 <TD COLSPAN=3>
 <H1>Admin interface will not work properly.</H1>
@@ -93,18 +91,6 @@ perl -MCPAN -e 'install Bundle::Interchange'
 </TD>
 </TR>
 EOF
-
-	if($dbstatus < 1) {
-	$out .= <<EOF;
-<TR>
-<TD COLSPAN=3>
-<H1>You need either GDBM_File or DB_File for Interchange to work as documented.</H1>
-Contact your system administrator about rebuilding Perl with GDBM or Berkeley DB.
-</TD>
-</TR>
-EOF
-	}
-	return $out;
 [/calc]
 
 [if-mm advanced order]

@@ -13,19 +13,19 @@ for anything but fixing present bugs, and run the latest release.
 
 =head1 USING THE CVS DISTRIBUTION
 
-The basic steps are:
+THe basic steps are:
 
 =head2 Check out from CVS
 
-You need to have CVS installed on your system, to begin with. It comes
-as a default on most free Unix-like systems if you selected the
-development tools at install time.
+You need to have CVS installed on your system, to begin with. It comes as
+a default on most RedHat systems where you selected the development tools
+at install time.
 
 If you are already an experienced CVS user, the information is:
 
-	CVSROOT   :pserver:anon_cvs@cvs.akopia.com:/anon_cvs/repository
-	password  anon_cvs
-	module    interchange
+	spec          :pserver:anon_cvs@cvs.akopia.com:/anon_cvs/repository
+	password      anon_cvs
+	distribution  interchange
 
 If you are not experienced, it is still easy to get by following the
 few steps below.
@@ -43,7 +43,7 @@ If you use tcsh/csh, do:
 
 	% setenv CVSROOT :pserver:anon_cvs@cvs.akopia.com:/anon_cvs/repository
 
-=item Log in to CVS
+=item Log in to cvs
 
 Before you can check out from the server, log in:
 
@@ -60,7 +60,7 @@ Your home directory or more probably a src/ subdirectory:
 	$ cvs checkout -P interchange
 
 It will take a while -- if you are on a modem it may take quite a bit
-of time, as there are several megabytes of files to download.
+of time, as there are several megabytes of CVS files.
 
 =back
 
@@ -74,16 +74,23 @@ to make a distribution tar file:
 	Writing Makefile for Interchange
 	$ make tardist
 	/usr/local/bin/perl -I/YOUR/PERL/LIB -MExtUtils::Manifest=manicopy,maniread \
-	-e "manicopy(maniread(),'interchange-4.6.1', 'best');"
-	mkdir interchange-4.6.1
-	mkdir interchange-4.6.1/dist
+	-e "manicopy(maniread(),'interchange-4.6.0', 'best');"
+	mkdir interchange-4.6.0
+	mkdir interchange-4.6.0/dist
 	....
 	$ ls interch*
-	interchange-4.6.1.tar.gz
+	interchange-4.X.X.tar.gz
+
+If you want to experiment with ZIP, which doesn't work quite as well, try:
+
+	$ make zipdist
+	.... messages ....
+	$ ls inter*
+	interchange-4.X.X.tar.gz  interchange-4.X.X.zip
 
 =head2 Unpack and install
 
-Unpack the tar file and install as is normal. See the README and QuickStart
+Unpack the tar file and install as is normal. See the README and QuickStart.pod
 files for help.
 
 =head2 Checking for differences
@@ -131,20 +138,3 @@ files for changes. In particular, mv_metadata.asc is used to format
 and present quite a few things in the user interface. You may have
 to merge the databases manually. In most cases, you can import them
 into a spreadsheet or database.
-
-=head1 Troubleshooting
-
-Some problems can occur due to the CVS image being dynamic.
-
-=head2 MANIFEST out of sync -- file not found
-
-If you get a complaint that a "file is not found" when trying to do 
-a C<make tardist> or C<make dist>, just do:
-
-	rm MANIFEST
-	make manifest
-
-=head2 Trying to run from the CVS directory
-
-If you install in the directory where your CVS image lives, you will have
-problems.

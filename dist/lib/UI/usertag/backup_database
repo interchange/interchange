@@ -14,17 +14,7 @@ sub {
 		require Compress::Zlib;
 	} if $opt ->{compress};
 
-	eval {
-		require Spreadsheet::WriteExcel;
-		import Spreadsheet::WriteExcel;
-	} if $opt ->{xls};
-
-	undef $opt->{xls} if $@;
-
-	my $xls;
-	if($opt->{xls}) {
-		$xls = Spreadsheet::WriteExcel->new("$backup_dir/DBDOWNLOAD.xls");
-	}
+	undef $opt->{compress} if $@;
 
 	my $gz;
 
@@ -104,74 +94,6 @@ sub {
 			}
 			close RECENT;
 		}
-		if($xls) {
-			my $sheet = $xls->addworksheet($table);
-			open(RECENT, $file)
-				or do {
-					push @errors,
-						errmsg("Can't read written file %s: %s", $file, $!);
-					next;
-				};
-			my $fstring = <RECENT>;
-			chomp $fstring;
-			my @fields = split /\t/, $fstring;
-			my $maxcol = scalar @fields - 1;
-			my $j;
-			for($j = 0; $j <= $maxcol; $j++) {
-				$sheet->write_string(0, $j, $fields[$j]);
-			}
-			my $i = 1;
-			while(<RECENT>) {
-				chomp;
-				my @extra;
-				my @overflow;
-				@fields = split /\t/, $_;
-				for($j = 0; $j <= $maxcol; $j++) {
-					my $l = 0;
-					my $ptr;
-					if ( length($fields[$j]) > 255) {
-						$overflow[$j] = $fields[$j];
-						$extra[$j] = [];
-						while ( length($overflow[$j]) > 255) {
-							for( ' ', "\n", "&nbsp;" ) {
-								$ptr = rindex $overflow[$j], $_, 255;
-#::logDebug("char='$_' ptr=$ptr length=" . length($overflow[$j]) ) if $l < 10;
-								last if $ptr != -1;
-							}
-#::logDebug("char='$_' ptr=$ptr\nstring=$overflow[$j]") if $l++ < 10;
-
-							$ptr = 254 if $ptr < 0;
-
-							$ptr++;
-							my $string = substr $overflow[$j], 0, $ptr;
-							$overflow[$j] = substr $overflow[$j], $ptr;
-							push @{$extra[$j]}, $string;
-						}
-						push @{$extra[$j]}, $overflow[$j];
-						$fields[$j] = shift @{$extra[$j]};
-					}
-					$sheet->write_string($i, $j, $fields[$j]);
-				}
-				if(@extra) {
-					my $max = 0;
-					for(@extra) {
-						next unless $_;
-						my $current = scalar @$_;
-						$max = $current if $max < $current;
-					}
-					for (my $k = 0; $k < $max; $k++) {
-						$i++;
-						for( $j = 0; $j < scalar @extra; $j++) {
-							next unless $_;
-							$sheet->write_string($i, $j, $extra[$j][$k]);
-						}
-					}
-				}
-				$i++;
-			}
-			close RECENT;
-		}
-
 		unlink($file) if $unlink;
 		undef $unlink;
 		$done++;
