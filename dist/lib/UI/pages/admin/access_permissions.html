@@ -46,21 +46,8 @@
 [/set]
 
 @_UI_STD_HEAD_@
-[if scratch ui_message]
-<P>
-<BLOCKQUOTE>
-	[scratch ui_message][set ui_message][/set]
-</BLOCKQUOTE>
-<P>
-&nbsp;
-[/if]
-
 
 <!-- ----- BEGIN REAL STUFF ----- -->
-
-[if scratch ui_failure]
-	<FONT COLOR=RED>Failed: [scratch ui_failure][set ui_failure][/set]</FONT><BR>
-[/if]
 
 <FORM METHOD=POST ACTION="[area ui]">
 <INPUT TYPE=hidden NAME=mv_doit VALUE="set">
