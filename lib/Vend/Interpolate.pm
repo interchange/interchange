@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.1 2001-07-23 18:57:13 jon Exp $
+# $Id: Interpolate.pm,v 2.2 2001-07-23 19:58:24 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2 $, 10);
 
 @EXPORT = qw (
 
@@ -1094,7 +1094,6 @@ sub tag_data {
 				},
 	'textarea_get' => sub {
 					my $val = shift;
-::logDebug("textarea_get \$val: $val");
 					$val =~ s/\&amp;/\&/g;
 					return $val;
 				},
@@ -5628,19 +5627,22 @@ sub discount_price {
 		$item = { code => $code, quantity => ($quantity || 1) };
 	}
 
-	$Vend::Interpolate::item = $item;
 
 	($code, $extra) = ($item->{code}, $item->{mv_discount});
 
 	$Vend::Session->{discount} = {}
-		if $extra and !$Vend::Session->{discount};
+		if $extra and ! $Vend::Session->{discount};
 
-	return $price unless defined $Vend::Session->{discount};
+	return $price unless $Vend::Session->{discount};
 
 	$quantity = $item->{quantity};
 
+	$Vend::Interpolate::item = $item;
 	$Vend::Interpolate::q = $quantity || 1;
+	$Vend::Interpolate::s = $price;
+
 	my ($discount, $return);
+
 	for($code, 'ALL_ITEMS') {
 		next unless $discount = $Vend::Session->{discount}->{$_};
 		$Vend::Interpolate::s = $return = $price;
@@ -5651,16 +5653,13 @@ sub discount_price {
 		}
         $price = $return;
     }
-	$Vend::Interpolate::s = $price;
+
 	if($extra) {
-		$Vend::Interpolate::item = $item;
-        $return = $ready_safe->reval($extra);
-		if($@) {
-			$return = $price;
-			next;
+		EXTRA: {
+			$return = $ready_safe->reval($extra);
+			last EXTRA if $@;
+			$price = $return;
 		}
-		$price = $return;
-		undef $Vend::Interpolate::item;
 	}
 	return $price;
 }
@@ -5686,8 +5685,11 @@ sub apply_discount {
 	# Calculate any formalas found
 	foreach $formula (@formulae) {
 		next unless $formula;
-		$formula =~ s/\$q\b/$item->{quantity}/g; 
-		$formula =~ s/\$s\b/$subtotal/g; 
+		$Vend::Interpolate::q = $item->{quantity};
+		$Vend::Interpolate::s = $subtotal;
+		$Vend::Interpolate::item = $item;
+#		$formula =~ s/\$q\b/$item->{quantity}/g; 
+#		$formula =~ s/\$s\b/$subtotal/g; 
 		$cost = $ready_safe->reval($formula);
 		if($@) {
 			logError
