@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.17.2.18 2001-04-15 05:59:10 heins Exp $
+# $Id: Data.pm,v 1.17.2.19 2001-04-16 00:25:52 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -868,7 +868,7 @@ sub import_database {
 			$obj->{Read_only} = 0;
 		}
 		elsif($obj->{WRITE_CATALOG}) {
-			$obj->{Read_only} = $obj->{WRITE_CATALOG}{$Vend::Cfg->{CatalogName}}
+			$obj->{Read_only} = $obj->{WRITE_CATALOG}{$Vend::Cat}
 					? (! defined $Vend::WriteDatabase{$name}) 
 					: 1;
 		}
