@@ -1,51 +1,0 @@
-code	sku	o_enable	o_matrix	o_modular	o_group	o_value	o_label	o_widget	o_master	price	wholesale	differential	description	weight	volume	mv_shipmode	o_exclude	o_include	o_header	o_footer	o_height	o_width
-os28006		1																			0	0
-00027	os28005	1			bristle	synthetic=Synthetic,camel=Camel Hair	Bristle Type	select													0	0
-00028	os28005	1			color	BLK=Black,BEIGE=Beige*,WHITE=White	Handle color	radio													0	0
-os28080		1																			0	0
-00031	os28080				blade	P=Plastic,S=Steel*,T=Titanium	Blade material	select		P=-1.22, T=100											0	0
-os28005		1																			0	0
-00033	os28080				knob	W=Wood,E=Ebony	Knob	select		E=20											0	0
-00149					LUX002					2000			Gold trim								0	0
-00041	os28011				blade	P=Plastic blade,S=Steel blade*,T=Titanium blade	Blade material	select		P=-1.22, T=100											0	0
-00037	os28009				blade	P=Plastic,S=Steel*,T=Titanium	Blade material	select		P=-1.22, T=100											0	0
-00150					STD001					400			Air conditioning								0	0
-00039	os28009				screws	G=Galvanized,S=Steel	Screws	select		S=.50											0	0
-00040	os28009				size	M=medium,L=Large*	Size	select		L=10,M=-5			Size of the object								0	0
-00042	os28011				handle	W=Wood handle,E=Ebony handle	Handle	select		E=20											0	0
-os28011-S-W	os28011		1							10			Spackling Knife - Steel blade, Wood handle								0	0
-os28011		1																			0	0
-os28011-T-W	os28011		1					select		60			Spackling Knife - Titanium blade, Wood handle								0	0
-00140	os28004	1			bristle	=None,HUM=Human hair,CAM=Camel hair*,SYN=Synthetic	Bristle Type	select													0	0
-os28072		1																			0	0
-00058		1		1														LUX* STD*			0	0
-00148					LUX001					500			Leather seats								0	0
-os28108		1																			0	0
-os28011-P-W	os28011		1					select		2			Spackling Knife - Plastic blade, Wood handle								0	0
-00122	00058	1			bristle	SYN=Synthetic,CAM=Camel Hair	Bristle Type	select	os28004	camel=5.00											0	0
-00121	00058	1			color	BLK=Black,BEI=Beige*,WHT=White	Handle color	radio		12			White brush handles								0	0
-00120	00058		1							16			Ergo Roller -- Beige -- Camel Hair								0	0
-00153					STD001					0			No A/C								0	0
-00154					LUX001					0			Regular seats								0	0
-os28004-CAM-BLK	os28004		1					select		16			Ergo Roller - Camel hair, Black								0	0
-os28004-SYN-WHT	os28004		1					select		12.25			Ergo Roller - Synthetic, White								0	0
-00152					STD002					200			Automatic Transmission								0	0
-os28004		1	1																		0	0
-00146	os28004				color	WHT=White,BLK=Black	Handle color	select													0	0
-os28011-T-E	os28011		1					select		150			Spackling Knife - Titanium blade, Ebony handle								0	0
-00151					STD002					100			5-Speed Manual Transmission								0	0
-00155	os28005				logo	c=Construct Something,y=Your Logo*	logo	select													0	0
-00157	os28006	1			bristle	synthetic=Synthetic,camel=Camel Hair	Bristle Type	select													0	0
-00158	os28006	1			color	BLK=Black,BEIGE=Beige*,WHITE=White	Handle color	radio													0	0
-00159	os28006				logo	c=Construct Something,y=Your Logo*	logo	select													0	0
-os28006-synthetic-WHITE	os28006		1							30			Painters Brush Set - Synthetic, White								0	0
-os28006-camel-BLK	os28006		1							40			Painters Brush Set - Camel Hair, Black								0	0
-00066123		1	1																		0	0
-00160	00066123	1			bristle	synthetic=Synthetic,camel=Camel Hair	Bristle Type	select													0	0
-00161	00066123	1			color	BLK=Black,BEIGE=Beige*,WHITE=White	Handle color	radio													0	0
-00162	00066123				logo	c=Construct Something,y=Your Logo*	logo	select													0	0
-00163	00066123		1							30			Painters Brush Set - Synthetic, White								0	0
-00164	00066123		1							40			Painters Brush Set - Camel Hair, Black								0	0
-os28007			1																		0	0
-os28004-SYN-BLK	os28004		1							16			Ergo Roller - Synthetic, Black									
-os28004-HUM	os28004		1					select		16.50			Ergo Roller - Human hair									
