@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.39 2001-04-08 19:19:24 heins Exp $
+# $Id: Config.pm,v 1.25.2.40 2001-04-11 22:08:34 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -98,7 +98,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.39 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.40 $, 10);
 
 my %CDname;
 
@@ -1550,16 +1550,31 @@ sub parse_message {
 	return '' unless $val;
 
 	my $strip;
+	my $info_only;
 	## strip trailing whitespace if -n beins message
-	$val =~ s/^-n\s+// and $strip = 1 and $val =~ s/\s+$//;
+	while($val =~ s/^-([ni])\s+//) {
+		$1 eq 'n' and $val =~ s/^-n\s+// and $strip = 1 and $val =~ s/\s+$//;
+		$info_only = 1 if $1 eq 'i';
+	}
 
-	::logGlobal({level => 'info', strip => $strip },
+	my $msg = errmsg($val,
+						$name,
+						$.,
+						$configfile,
+				);
+
+	if($info_only and $Vend::Foreground) {
+		print $msg;
+	}
+	else {
+		::logGlobal({level => 'info', strip => $strip },
 				errmsg($val,
 						$name,
 						$.,
 						$configfile,
 				)
-	);
+		);
+	}
 }
 
 
