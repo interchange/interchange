@@ -19,6 +19,7 @@ IMAGE_DIR	__MVC_IMAGEURL__	Directories and Paths
 LOGGED_STATIC	1	Static pages
 LOGO	__MVC_LOGO__	Template
 MV_DEFAULT_SEARCH_DB	1	Database
+MV_DEMO_MODE	0	General
 MV_OPTION_TABLE	options	Item display
 MYSQL	__MVC_MYSQL__	Database
 ORACLE	__MVC_ORACLE__	Database
@@ -30,7 +31,7 @@ PO_ACCEPTED	__MVC_PAYPO__	Payment
 POSTAL_ACCEPTED	0	Payment
 SAMPLEHTML	__MVC_SAMPLEDIR__	Directories and Paths
 SAMPLEURL	__MVC_SAMPLEURL__	Directories and Paths
-SECURE_ENABLE	__MVC_ENABLESECURE__	Directories and Paths
+SECURE_ENABLE	__MVC_ENABLESECURE__	General
 SECURE_SERVER	__MVC_SECURESERVERNAME__	Directories and Paths
 SERVER_NAME	__MVC_SERVERNAME__	Directories and Paths
 STYLE	__MVC_STYLE__	Template
@@ -55,6 +56,7 @@ UI_HELP_HEIGHT	480	Admin layout
 UI_HELP_WIDTH	650	Admin layout
 UI_IMG	__MVC_SHAREURL__	Admin control
 UI_META_LINK	1	Admin control
+UI_SECURE	0	Admin control
 UI_TRAFFIC_STATS	__MVC_TRAFFICSTATS__	Directories and Paths
 UPS_COUNTRY_FIELD	country	Shipping
 UPS_ORIGIN	__MVC_UPSORIGIN__	Shipping
