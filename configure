@@ -2,9 +2,9 @@
 
 cat <<EOF
 
- Akopia Interchange Version 4.7.x Configuration
+ Interchange Version 4.7.x Configuration
 
- Copyright 1996-2000 Akopia, Inc, <support@akopia.com>
+ Copyright 1996-2001 Red Hat, Inc. <info@akopia.com>
 
  Interchange was originally based on Vend 0.2
  Copyright 1995 Andrew M. Wilcox <awilcox@maine.com>
@@ -12,8 +12,8 @@ cat <<EOF
  Portions from Vend 0.3
  Copyright 1995, 1996 Andrew M. Wilcox <awilcox@maine.com>
 
- Distributed under the GNU General Public License, see
- the file Copying for license information.
+ Distributed under the GNU General Public License.
+ See the file LICENSE for license information.
 
 EOF
 
@@ -73,10 +73,9 @@ do
 		fi
 	
 		echo
-		echo "I need to know where the Perl 5 interpreter resides."
-		echo "It was not 'perl' or 'perl5', or it was not in your"
-		echo "path.  Please enter a fully-qualified path name,"
-		echo "or just press ENTER to exit.. (what did I say?)"
+		echo "I need to know where the Perl 5 interpreter resides. It was not 'perl' or"
+		echo "'perl5', or it was not in your path. Please enter a full path name, or"
+		echo "just press <enter> to quit."
 		echo
 		echo $F "Where is your Perl 5, please? $E"
 		read PERL
@@ -95,8 +94,7 @@ done
 if test ! -f .cpan.tried
 then
 echo
-echo "If you get a CPAN error, rerun the configuration and it"
-echo "should go away."
+echo "If you get a CPAN error, rerun the configuration and it should go away."
 echo
 fi
 
