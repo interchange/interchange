@@ -38,6 +38,7 @@ USER=interchange
 if [ "$GPGHOME" ]; then
 	export GNUPGHOME=$GPGHOME
 fi
+export MINIVEND_FORCE_THREADS=1
 
 case "$1" in
   start)

@@ -3,7 +3,7 @@
 #
 # Interchange version 4.9.7
 #
-# $Id: interchange.PL,v 2.72 2003-05-13 19:05:18 mheins Exp $
+# $Id: interchange.PL,v 2.73 2003-06-18 14:21:02 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and others.
 # http://www.icdevgroup.org/
@@ -38,7 +38,8 @@ use strict;
 use Config;
 
 BEGIN {
-	if($Config{usethreads} || $Config{useithreads} || $Config{use5005threads}) {
+	if(! $ENV{MINIVEND_FORCE_THREADS}
+	   && ($Config{usethreads} || $Config{useithreads} || $Config{use5005threads})) {
 		die "Interchange will not work with a thread-enabled perl.\n";
 	}
 }

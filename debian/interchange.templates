@@ -109,3 +109,14 @@ Description: Whether to enable robots settings or not
  /etc/interchange/robots.cfg for the directives RobotUA, RobotIP
  and RobotHost. It is recommended to include these settings so
  Interchange can distinguish between robots and ordinary users.
+
+Template: interchange/threadenabledperl
+Type: note
+Description: Important Perl Incompatibility
+ The authors of Interchange strongly disencourage the use of their
+ software on top of a thread enabled Perl. It is likely to cause
+ serious problems, especially in high load situations, and has no
+ benefit at all for Interchange servers.
+ The development team asserts that the thread-safeness of Perl and the 
+ bunch of modules Interchange uses can hardly relied upon.
+ Please use this package only for testing and debugging purposes.
