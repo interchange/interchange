@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.6.0
 #
-# $Id: interchange.PL,v 1.13 2000-11-02 16:51:57 heins Exp $
+# $Id: interchange.PL,v 1.14 2000-11-03 01:00:21 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -2444,6 +2444,7 @@ Contributions to Interchange have been made by:
     Bob Jordan         
     Brian Bullen       
     Bruce Albrecht     
+	Cameron Prince
     Christian Mueller
     Christopher Thompson
     Dave Adams
