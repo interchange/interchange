@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.96 2001-07-12 14:00:22 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.97 2001-07-15 04:12:15 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.96 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.97 $, 10);
 
 @EXPORT = qw (
 
@@ -458,13 +458,9 @@ sub cache_html {
 	my ($name, @post);
 	my ($bit, %post);
 
-	# Comment facility
-
 	$CacheInvalid = 0;
 
 	vars_and_comments(\$html);
-
-	1 while $html =~ s/\[pragma\s+(\w+)(?:\s+(\w+))?\]/$Vend::Cfg->{Pragma}{$1} = (length($2) ? $2 : 1), ''/ige;
 
 	my $complete;
 	my $full = '';
@@ -524,18 +520,18 @@ sub dynamic_var {
 	return $::Variable->{$varname};
 }
 
-#
-# Substitutes in Variable values.
-# Makes [comment] [/comment] strips.
-# Translates legacy [/page] and [/order].
-#
-
 sub vars_and_comments {
 	my $html = shift;
 	local($^W) = 0;
-	# Remove Minivend 3 legacy stuff
+
+	# Remove Minivend 3 legacy [new] tags
 	$$html =~ s/\[new\]//g;
 
+	# Set whole-page pragmas from [pragma] tags
+	1 while $$html =~ s/\[pragma\s+(\w+)(?:\s+(\w+))?\]/
+		$Vend::Cfg->{Pragma}{$1} = (length($2) ? $2 : 1), ''/ige;
+
+	# Substitute in Variable values
 	$$html =~ s/$Gvar/$Global::Variable->{$1}/g;
 	if($Vend::Cfg->{Pragma}{dynamic_variables}) {
 		$$html =~ s/$Evar/dynamic_var($1) || $Global::Variable->{$1}/ge
@@ -545,15 +541,21 @@ sub vars_and_comments {
 	}
 	else {
 		$$html =~ s/$Evar/$::Variable->{$1} || $Global::Variable->{$1}/ge
-		and
+			and
 		$$html =~ s/$Evar/$::Variable->{$1} || $Global::Variable->{$1}/ge;
 		$$html =~ s/$Cvar/$::Variable->{$1}/g;
 	}
-	# Comment facility
+
+	# Strip out [comment] [/comment] blocks
 	1 while $$html =~ s%$QR{comment}%%go;
 
+	# Translate legacy atomic [/page] and [/order] tags
 	$$html =~ s,\[/page(?:target)?\],</A>,ig;
 	$$html =~ s,\[/order\],</A>,ig;
+
+	# Translate Interchange tags embedded in HTML comments like <!--[tag ...]-->
+	$$html =~ s/<!--+\[/[/g
+		and $$html =~ s/\]--+>/]/g;
 }
 
 sub interpolate_html {
@@ -565,12 +567,7 @@ sub interpolate_html {
 	defined $::Variable->{MV_AUTOLOAD}
 		and $html =~ s/^/$::Variable->{MV_AUTOLOAD}/;
 
-	1 while $html =~ s/\[pragma\s+(\w+)(?:\s+(\w+))?\]/$Vend::Cfg->{Pragma}{$1} = (length($2) ? $2 : 1), ''/ige;
-
 	vars_and_comments(\$html);
-
-	$html =~ s/<!--+\[/[/g
-		and $html =~ s/\]--+>/]/g;
 
     # Returns, could be recursive
 	my $parse = new Vend::Parse;
@@ -581,7 +578,6 @@ sub interpolate_html {
 	substitute_image(\$parse->{OUT});
 	return \$parse->{OUT} if defined $wantref;
 	return $parse->{OUT};
-
 }
 
 sub filter_value {
@@ -2505,7 +2501,7 @@ sub tag_perl {
 }
 
 sub ed {
-	return $_[0] if $Safe_data;
+	return $_[0] if $Safe_data or $Vend::Cfg->{Pragma}{safe_data};
 	$_[0] =~ s/\[/&#91;/g;
 	return $_[0];
 }
@@ -5521,6 +5517,8 @@ sub fly_page {
 
 	my $selector;
 
+	vars_and_comments(\$page) if $page;
+
 	return $page if (! $code and $Vend::Flypart eq $Vend::FinalPath);
 
 	$code = $Vend::FinalPath
@@ -5546,12 +5544,16 @@ sub fly_page {
 
 	$selector = find_special_page('flypage')
 		unless $selector;
-
-    $page = readin($selector) unless defined $page;
 #::logDebug("fly_page: selector=$selector");
-    if(! defined $page) {
-		logError("attempt to display code=$code with bad flypage '$selector'");
-		return undef;
+
+	unless (defined $page) {
+	    $page = readin($selector);
+		if (defined $page) {
+			vars_and_comments(\$page);
+		} else {
+			logError("attempt to display code=$code with bad flypage '$selector'");
+			return undef;
+		}
 	}
 
 # TRACK
