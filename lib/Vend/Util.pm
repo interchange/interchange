@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.30 2001-04-16 00:39:57 heins Exp $
+# $Id: Util.pm,v 1.14.2.31 2001-04-18 03:57:42 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -76,7 +76,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.30 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.31 $, 10);
 
 BEGIN {
 	eval {
@@ -1001,7 +1001,12 @@ sub readfile {
 		close(READIN);
 	}
 
-	if ($Vend::Cfg->{Locale} and ($loc or $Vend::Cfg->{Locale}->{readfile}) ) {
+	if (
+		$Vend::Cfg->{Locale}
+			and
+		(defined $loc ? $loc : $Vend::Cfg->{Locale}->{readfile} )
+		)
+	{
 		my $key;
 		$contents =~ s~\[L(\s+([^\]]+))?\]([\000-\377]*?)\[/L\]~
 						$key = $2 || $3;		
