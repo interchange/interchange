@@ -1,3 +1,4 @@
+:w
 LICENSE
 MANIFEST			This list of files
 MANIFEST.SKIP
@@ -176,6 +177,7 @@ code/UI_Tag/version.coretag
 code/UI_Tag/widget.coretag
 code/UI_Tag/write_relative_file.coretag
 code/UI_Tag/write_shipping.coretag
+code/UI_Tag/xfer_catalog.coretag
 code/UserTag/bar_button.tag
 code/UserTag/button.tag
 code/UserTag/component.tag
@@ -255,7 +257,6 @@ dist/catalog_after.cfg
 dist/catalog_before.cfg
 dist/error.log
 dist/etc/.empty
-dist/etc/jobs/i18n/update_locales
 dist/foundation/backup/.empty
 dist/foundation/catalog.cfg
 dist/foundation/config/additional_fields
@@ -293,8 +294,8 @@ dist/foundation/dbconf/default_db/userdb.dbm
 dist/foundation/dbconf/default_db/variable.dbm
 dist/foundation/dbconf/default_db/variants.dbm
 dist/foundation/dbconf/locales/de_DE.cfg
-dist/foundation/dbconf/locales/nl_NL.cfg
 dist/foundation/dbconf/locales/default.cfg
+dist/foundation/dbconf/locales/nl_NL.cfg
 dist/foundation/dbconf/mysql/2ndDayAir.dbm
 dist/foundation/dbconf/mysql/Ground.dbm
 dist/foundation/dbconf/mysql/NextDayAir.dbm
@@ -1066,6 +1067,7 @@ dist/lib/UI/pages/admin/tax.html
 dist/lib/UI/pages/admin/tax_simple.html
 dist/lib/UI/pages/admin/test_code.html
 dist/lib/UI/pages/admin/trafficstats.html
+dist/lib/UI/pages/admin/transfer_catalog.html
 dist/lib/UI/pages/admin/upload_config.html
 dist/lib/UI/pages/admin/upload_file.html
 dist/lib/UI/pages/admin/upload_image.html
