@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange payment processing routines
 #
-# $Id: Menu.pm,v 2.1 2002-08-05 04:05:40 mheins Exp $
+# $Id: Menu.pm,v 2.2 2002-08-05 06:17:49 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,10 +21,103 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2 $, 10);
 
 use Vend::Util;
 use strict;
+
+my %transform = (
+	ui_security => sub {
+		my ($row, $fields) = @_;
+		return 1 if ref($fields) ne 'ARRAY';
+		my $status = 1;
+		for(@$fields) {
+			$status = $status && Vend::Tags->if_mm('advanced', $row->{$_});
+		}
+		return $status;
+	},
+	full_interpolate => sub {
+		my ($row, $fields) = @_;
+		return 1 if ref($fields) ne 'ARRAY';
+		for(@$fields) {
+			next unless $row->{$_} =~ /\[|__[A-Z]\w+__/;
+			$row->{$_} = Vend::Interpolate::interpolate_html($row->{$_});
+		}
+		return 1;
+	},
+	menu_group => sub {
+		my ($row, $fields) = @_;
+		return 1 if ref($fields) ne 'ARRAY';
+		my $status = 1;
+		eval {
+			for(@$fields) {
+				my($f, $c) = split /[=~]+/, $_;
+				$c ||= $f;
+				$status = $status && (
+								!  $row->{$f}
+								or $row->{$f} =~ /$CGI::values{$c}/i
+								);
+			}
+		};
+		return $status;
+	},
+	superuser => sub {
+		my ($row, $fields) = @_;
+		return 1 if ref($fields) ne 'ARRAY';
+		my $status = 1;
+		for(@$fields) {
+			$status = $status && (! $row->{$_} or Vend::Tags->if_mm('super'));
+		}
+		return $status;
+	},
+	depends_on => sub {
+		my ($row, $fields) = @_;
+		return 1 if ref($fields) ne 'ARRAY';
+		my $status = 1;
+		for(@$fields) {
+			$status = $status && $CGI::values{$row->{$_}};
+		}
+		return $status;
+	},
+	exclude_on => sub {
+		my ($row, $fields) = @_;
+		return 1 if ref($fields) ne 'ARRAY';
+		my $status = 1;
+		for(@$fields) {
+			$status = $status && (! $CGI::values{$row->{$_}});
+		}
+		return $status;
+	},
+	indicator => sub {
+		my ($row, $fields) = @_;
+		return 1 if ref($fields) ne 'ARRAY';
+		for(@$fields) {
+			my $indicator;
+			next unless $indicator = $row->{$_};
+			my $rev = $indicator =~ s/^!\s*// ? 1 : 0;
+			my $status =  defined $CGI::values{$indicator}
+						  ? $CGI::values{$indicator}
+						  : $::Values->{$indicator};
+			($row->{indicated} = 1, next)
+				if $rev xor $status;
+			$status = $Global::Variable->{MV_PAGE} eq $indicator;
+			($row->{indicated} = 1, next)
+				if $rev xor $status;
+		}
+		return 1;
+	},
+	expand_values => sub {
+		my ($row, $fields) = @_;
+		return 1 if ref($fields) ne 'ARRAY';
+		for(@$fields) {
+			next unless $row->{$_} =~ /\[/;
+			$row->{$_} =~ s/\[cgi\s+([^\[]+)\]/$CGI::values{$1}/g;
+			$row->{$_} =~ s/\[var\s+([^\[]+)\]/$::Variable->{$1}/g;
+			$row->{$_} =~ s/\[value\s+([^\[]+)\]/$::Values->{$1}/g;
+		}
+		return 1;
+	},
+);
 
 sub old_tree {
 	my ($name, $opt, $template) = @_;
@@ -91,18 +184,15 @@ sub old_simple {
 		if $opt->{header_template};
 
 	my %defaults = (
-				lr			=> 1,
-				file        => $opt->{file},
 				iterator    => \&menu_link,
 				head_skip   => 1,
-				body   => $template,
 			);
 
 	while( my ($k, $v) = each %defaults) {
 		next if defined $opt->{$k};
 		$opt->{$k} = $v;
 	}
-	push @out, Vend::Tags->loop($opt);
+	push @out, Vend::Tags->loop(undef,$opt,$template);
 
 	push @out, Vend::Tags->uc_attr_list($opt, $opt->{footer_template})
 		if $opt->{footer_template};
@@ -334,6 +424,10 @@ sub dhtml_browser {
 sub tree_link {
 	my ($template, $row, $opt) = @_;
 
+	for(@{$opt->{_transform}}) {
+		return unless $transform{$_}->($row, $opt->{$_});
+	}
+
 	$template ||= qq[
 {MV_SPACER}{MV_CHILDREN?}<A href="{TOGGLE_URL}" class="{TOGGLE_CLASS}" style="{TOGGLE_STYLE}">{TOGGLE_ANCHOR}</A>{URL?}<A href="{URL}" class="{TOGGLE_CLASS}" style="{TOGGLE_STYLE}">{/URL?}{NAME}{URL?}</a>{/URL?}{/MV_CHILDREN?}{MV_CHILDREN:}{TOGGLE_ANCHOR}{URL?}<A href="{URL}" class="{LINK_CLASS}" style="{LINK_STYLE}">{/URL?}{NAME}{URL?}</a>{/URL?}{/MV_CHILDREN:}<br>
 ];
@@ -417,6 +511,11 @@ sub tree_line {
 	}
 
 	$fields = $opt->{loopfields};
+
+	for(@{$opt->{_transform}}) {
+		return unless $transform{$_}->($row, $opt->{$_});
+	}
+
 	if($row->{page}) {
 		my $form = $row->{form};
 		if($form) {
@@ -462,9 +561,10 @@ EOF
 		$row = \%line;
 	}
 
-	if($row->{mgroup} and $CGI::values{mgroup} !~ /\b$row->{mgroup}\b/) {
-		return;
+	for(@{$opt->{_transform}}) {
+		return unless $transform{$_}->($row, $opt->{$_});
 	}
+
 	return '<br>' unless $row->{name};
 	return $row->{name} if ! $row->{page} and $row->{name} =~ /^\s*</;
 	$row->{win}  = $::Scratch->{win};
@@ -479,6 +579,7 @@ sub menu {
 	
 	$opt->{dhtml_browser} = dhtml_browser()
 		unless defined $opt->{dhtml_browser};
+	$opt->{menu_type} ||= 'simple';
 
 	my $prefix = $opt->{prefix} || 'menu';
 	$opt->{link_class} ||= $::Variable->{MV_DEFAULT_LINK_CLASS};
@@ -489,6 +590,15 @@ sub menu {
 	if($template and $template =~ s:\[$prefix-footer\](.*?)\[/$prefix-footer\]::si) {
 		$opt->{footer_template} = $1;
 	}
+
+	my @transform;
+	for(keys %transform) {
+		next unless $opt->{$_};
+		my @fields = grep /\S/, split /[\s,\0]+/, $opt->{$_};
+		$opt->{$_} = \@fields;
+		push @transform, $_;
+	}
+	$opt->{_transform} = \@transform;
 
 	if($opt->{menu_type} eq 'tree') {
 		$opt->{link_class_open}   ||= $opt->{link_class};
@@ -527,7 +637,10 @@ sub menu {
 		return dhtml_tree(@_);
 	}
 	elsif($opt->{menu_type} eq 'simple') {
-		if(! $opt->{file}) {
+		if($opt->{search}) {
+			## Do nothing
+		}
+		elsif(! $opt->{file}) {
 			$opt->{file} = $::Variable->{MV_MENU_DIRECTORY} || 'include/menus';
 			if(! $opt->{name}) {
 				logError("No file or name specified for menu.");
