@@ -65,6 +65,9 @@ I18N
 --------
 * Hebrew locale from Chen Naor <chen@lilux.co.il> added.
 
+* Japanese locale from Murahashi <murahashi@ayayu.com> and
+  Hiroyuki Cozy Kojima <kojima@redhat.com> added.
+
 Interchange 4.8.2 released 2001-09-19.
 
 Core and usertags

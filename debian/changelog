@@ -1,4 +1,4 @@
-interchange (4.8.3-1) unstable; urgency=low
+interchange (4.8.3-0.1) unstable; urgency=low
 
   * change ownership on "documentroot" only if "documentroot" exists
     (Closes: #113357)
