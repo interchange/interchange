@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.39 2002-11-21 22:23:51 jon Exp $
+# $Id: Order.pm,v 2.40 2002-11-28 16:24:01 kwalsh Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.39 $, 10);
+$VERSION = substr(q$Revision: 2.40 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -767,7 +767,7 @@ sub mail_order {
 	$body = readin($::Values->{mv_order_report})
 		if $::Values->{mv_order_report};
 # END LEGACY
-	$body = readfile($Vend::Cfg->{OrderReport})
+	$body = readfile($Vend::Cfg->{OrderReport}, $Global::NoAbsolute)
 		if ! $body;
 	unless (defined $body) {
 		::logError(
@@ -1610,7 +1610,7 @@ sub route_order {
 		}
 		else {
 			$pagefile = $route->{'report'} || $main->{'report'};
-			$page = readfile($pagefile);
+			$page = readfile($pagefile, $Global::NoAbsolute);
 		}
 		die errmsg(
 			"No order report %s or %s found.",

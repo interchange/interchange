@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.134 2002-11-28 11:52:52 kwalsh Exp $
+# $Id: Interpolate.pm,v 2.135 2002-11-28 16:24:01 kwalsh Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.134 $, 10);
+$VERSION = substr(q$Revision: 2.135 $, 10);
 
 @EXPORT = qw (
 
@@ -2481,12 +2481,13 @@ sub log {
 	if($file =~ s/^\s*>\s*//) {
 		$opt->{create} = 1;
 	}
+
+	$file = Vend::Util::escape_chars($file);
 	if($Global::NoAbsolute and (file_name_is_absolute($file) or $file =~ m#\.\./.*\.\.#)) {
 		::logError("Can't use file '%s' with NoAbsolute set", $file);
 		::logGlobal({ level => 'auth'}, "Can't use file '%s' with NoAbsolute set", $file);
 		return '';
 	}
-	$file = Vend::Util::escape_chars($file);
 
 	$file = ">$file" if $opt->{create};
 
@@ -5213,7 +5214,7 @@ sub tag_loop_list {
 	}
 	elsif ($opt->{file}) {
 #::logDebug("loop resolve file");
-		$list = Vend::Util::readfile($opt->{file});
+		$list = Vend::Util::readfile($opt->{file}, $Global::NoAbsolute);
 		$opt->{lr} = 1 unless
 						defined $opt->{lr}
 						or $opt->{quoted};
@@ -5887,12 +5888,12 @@ sub timed_build {
 		$secs = Vend::Config::time_to_seconds($opt->{period});
 	}
 
+    $file = Vend::Util::escape_chars($file);
     if($Global::NoAbsolute and (file_name_is_absolute($file) or $file =~ m#\.\./.*\.\.#)) {
 	::logError("Can't use file '%s' with NoAbsolute set", $file);
 	::logGlobal({ level => 'auth'}, "Can't use file '%s' with NoAbsolute set", $file);
 	return '';
     }
-    $file = Vend::Util::escape_chars($file);
 
     if( ! -f $file or $secs && (stat(_))[9] < (time() - $secs) ) {
         my $out = Vend::Interpolate::interpolate_html(shift);
