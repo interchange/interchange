@@ -13,7 +13,7 @@ Type: boolean
 Default: false
 Description: Remove Interchange demo catalog after "purging" this package ?
  Should all files belonging to the Interchange demo catalog removed
- when you purge this package, e.g. with dpkg --purge 
+ when you purge this package, e.g. with dpkg --purge
  or apt-get remove --purge ?
 Description-de: Soll der Interchange-Demokatalog durch --purge gelöscht werden ?
  Sollen alle Dateien des Interchange-Demokatalogs gelöscht werden wenn
