@@ -5,47 +5,37 @@ ui_component_label: Small cart for left/right display
 
 [/comment]
 
-<tr><td align="center">
-
-  <table>
-
 <!-- BEGIN COMPONENT [control component cart_tiny] -->
-[if items]
- <tr> 
-   <td width="119" bgcolor="__BARBG__" valign="top"><br clear=all>
-	<table width="102" border="1" cellspacing="0" cellpadding="0" bordercolor="__BARCONTRAST__">
-	<tr><td>
-	<table width="100" border="0" cellspacing="0" cellpadding="0">
-	<tr class=sheader>
-	<td colspan=2 align=center class=sheader>Cart Contents</td>
-	</tr>
-	<tr VALIGN=TOP class=cartalt>
-		<td align=center width="67" class=cartalt> 
-			Description
-		</td>
-		<td align=center width="33" class=cartalt> 
-			Quantity
-		</td>
-	</tr>
-[item-list]
-<tr class=cartrow>
-	<td valign=top class=cartrow>
-		[page [item-code]][item-filter 20][item-description][/item-filter]</A>
-	</td>
-	<TD ALIGN=CENTER class=cartrow>[item-quantity]@[discount-price]</TD>
-</tr>
 
-<tr class=cartrow>
-	<TD ALIGN=CENTER COLSPAN=2>
-		<IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="4" BORDER="0">
+<tr><td align="center">
+  <table width="95%">
+
+  [if items]
+  <tr> 
+    <td class="categorybar" valign="top">
+      <table border="0" cellspacing="0" cellpadding="2">
+      <tr>
+        <td colspan="2" align="center" class="categorybar">
+	  <small>Cart Contents</small>
 	</td>
-</tr>
+      </tr>
+      <tr>
+	<td align="left" class="menubar">Description</td>
+	<td align="right" class="menubar">Quantity</td>
+      </tr>
+[item-list]
+      <tr>
+	<td valign="top" align="left" class="contentbar2">
+	  <a href="[area [item-code]]"><small>[item-filter 20][item-description][/item-filter]</small></A>
+	</td>
+	<TD ALIGN="right" valign="top" class="contentbar1">
+	  <small>[item-quantity]@[discount-price]</small>
+	</TD>
+      </tr>
 [/item-list]
-	</table>
-	</td></tr>
-	</table>
-</td>
-</tr>
+      </table>
+    </td>
+  </tr>
 [/if]
 
   </table>
