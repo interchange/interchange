@@ -12,7 +12,7 @@
 	@insert = split /\0/, ($CGI->{ui_content} || 'Page content.'); 
 	for(keys %{$CGI}) {
 		next unless /^ui_control_(.*)/;
-#Log("found $_ => $k");
+Log("found $_ => $k");
 		my $k = $1;
 		unshift @layout, "[set $k]" . $CGI->{$_} . '[/set]';
 	}
