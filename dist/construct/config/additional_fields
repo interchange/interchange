@@ -61,3 +61,39 @@ interchange	__MVC_CATUSER__
 CRYPTPW
 Administrative password
 pass	nevairbe
+
+!ADDRESS
+Your company address
+11480 Sunset Hills Rd.<BR>Suite 200 East
+
+!CITY
+Your company city/state/zip
+Reston, VA 20190
+
+!PHONE
+Your company phone
+(703) 456-2900
+
+!FAX
+Your company fax number
+(703) 555-5556
+
+!TOLLFREE
+Your company tollfree number (if any)
+(888) 555-5555
+
+!TAXAREA
+Area(s) to tax in
+VA UT OH
+
+!TAXRATE
+Percentage rate(s) for tax in different areas
+VA=7.5, UT=7.25, OH=6.75
+
+!UPSADDER
+Amount to add on to standard UPS costs
+3.00
+
+!UPSORIGIN
+Origin zip code for UPS lookups
+45056

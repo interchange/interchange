@@ -39,9 +39,7 @@ ui_template_name: leftright
 	my $item = $parms[0];
 	$item =~ /(\d+)/ or return;
 	my $idx = $1;
-	Log("idx = $idx");
 	$idx--;
-	Log("quantities=" . join ",", @q);
 	$CGI->{mv_order_item} = $CGI->{$item};
 	$CGI->{mv_order_quantity} = "$q[$idx]";
 	return;
