@@ -25,7 +25,7 @@ DOIT: {
 #
 # MiniVend version 4.0xxx
 #
-# $Id: minivend.PL,v 1.4 2000-06-05 05:42:22 heins Exp $
+# $Id: minivend.PL,v 1.5 2000-06-16 03:51:13 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -144,6 +144,9 @@ $Global::SendMailLocation = ($Global::Windows and $Global::SendMailLocation) ||
 
 BEGIN {
 	$Global::GDBM = $Global::DB_File =
+# LDAP
+	$Global::LDAP =
+# END LDAP
 # SQL
 	$Global::DBI =
 # END SQL
@@ -156,6 +159,12 @@ BEGIN {
 			require DBI and $Global::DBI = 1
 	};
 # END SQL
+# LDAP
+	eval {
+		die if $ENV{MINIVEND_NOLDAP};
+		require Net::LDAP and $Global::LDAP = 1
+	};
+# END LDAP
 
 	# Now can use any type of database
 	AUTO: {
