@@ -116,7 +116,7 @@ Log("_setref key=$key val=$val");
 	$ref->{ui_page_setting_text} = '';
 	while($comp_text =~ m{(\[(set|tmp|seti)\s+([^\]]+)\](.*?)\[/\2\])}isg ) {
 		$tref->{$3} = $4;
-		$ref->{ui_page_setting_current} .= $1;
+		$ref->{ui_page_setting_text} .= $1;
 	}
 
 	$ref->{ui_page_setting} = $tref;
