@@ -1,8 +1,8 @@
 # Vend::Payment::CCVS - Interchange CCVS support
 #
-# $Id: CCVS.pm,v 2.0 2001-07-18 02:23:16 jon Exp $
+# $Id: CCVS.pm,v 2.0.2.1 2002-01-24 05:07:03 jon Exp $
 #
-# Copyright (C) 1999-2001 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # Author: Mike Heins <mheins@redhat.com>
 
@@ -25,7 +25,7 @@ package Vend::Payment::CCVS;
 
 =head1 Interchange CCVS support
 
-Vend::Payment::CCVS $Revision: 2.0 $
+Vend::Payment::CCVS $Revision: 2.0.2.1 $
 
 =head1 SYNOPSIS
 

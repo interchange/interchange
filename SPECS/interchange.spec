@@ -1,4 +1,4 @@
-%define ic_version			4.8.3
+%define ic_version			4.8.4
 %define ic_rpm_release		1
 %define ic_package_basename	interchange
 %define ic_user				interch

@@ -2,9 +2,9 @@
 
                            I N T E R C H A N G E
 
-Interchange 4.8.3
+Interchange 4.8.4
 
-Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
+Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 
 Originally based on Vend 0.2 and 0.3, copyright 1995-96 by Andrew M. Wilcox.
 
@@ -106,7 +106,7 @@ Please note that some functionality (notably the reporting features)
 may not be available if you are not using an SQL database such as
 MySQL or PostgreSQL.
 
-Visit http://demo.akopia.com/ to see a live demo on our servers.
+Visit http://demo.interchange.redhat.com/ to see a live demo on our servers.
 
 -----------------------------------------------------------------------------
 

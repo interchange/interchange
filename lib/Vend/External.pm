@@ -1,8 +1,8 @@
 # Vend::External - Interchange routines for calling external programs
 # 
-# $Id: External.pm,v 2.0 2001-07-18 02:23:13 jon Exp $
+# $Id: External.pm,v 2.0.2.1 2002-01-24 05:07:01 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

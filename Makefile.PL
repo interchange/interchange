@@ -28,7 +28,7 @@ my @mods_to_get;
 my @remove_old;
 my $Lock_troubles;
 
-$VERSION = '4.8.3';
+$VERSION = '4.8.4';
 
 # See if we have the CPAN module
 
@@ -153,7 +153,7 @@ sub copyright_prompt {
 
  Interchange V$VERSION
  
-  Copyright (C) 1996-2001 Red Hat, Inc. <interchange\@redhat.com>
+  Copyright (C) 1996-2002 Red Hat, Inc. <interchange\@redhat.com>
 
  Interchange is free under the terms of the GNU General Public License.
 

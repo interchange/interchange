@@ -1,8 +1,8 @@
 # Vend::Control - Routines that alter the running Interchange daemon
 # 
-# $Id: Control.pm,v 2.0 2001-07-18 02:23:13 jon Exp $
+# $Id: Control.pm,v 2.0.2.1 2002-01-24 05:07:01 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>

@@ -1,8 +1,8 @@
 # Vend::Payment::AuthorizeNet - Interchange AuthorizeNet support
 #
-# $Id: AuthorizeNet.pm,v 2.1.2.2 2001-11-02 13:44:47 mheins Exp $
+# $Id: AuthorizeNet.pm,v 2.1.2.3 2002-01-24 05:07:03 jon Exp $
 #
-# Copyright (C) 1999-2001 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # by mark@summersault.com with code reused and inspired by
 #	Mike Heins <mheins@redhat.com>
@@ -38,7 +38,7 @@ package Vend::Payment::AuthorizeNet;
 
 =head1 Interchange AuthorizeNet Support
 
-Vend::Payment::AuthorizeNet $Revision: 2.1.2.2 $
+Vend::Payment::AuthorizeNet $Revision: 2.1.2.3 $
 
 =head1 SYNOPSIS
 

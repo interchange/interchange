@@ -1,8 +1,8 @@
 # Vend::Payment::BoA - Interchange BoA support
 #
-# $Id: BoA.pm,v 1.3.2.1 2001-11-14 01:22:24 mheins Exp $
+# $Id: BoA.pm,v 1.3.2.2 2002-01-24 05:07:03 jon Exp $
 #
-# Copyright (C) 1999-2001 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # by Mark Johnson <markj@redhat.com> based off of
 # AuthorizeNet.pm by
@@ -33,7 +33,7 @@ package Vend::Payment::BoA;
 
 =head1 Interchange BoA Support
 
-Vend::Payment::BoA $Revision: 1.3.2.1 $
+Vend::Payment::BoA $Revision: 1.3.2.2 $
 
 =head1 SYNOPSIS
 

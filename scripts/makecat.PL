@@ -50,9 +50,9 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.5.2.3 2001-10-04 20:50:06 jon Exp $
+# $Id: makecat.PL,v 2.5.2.4 2002-01-24 05:07:04 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -2325,7 +2325,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.5.2.3 2001-10-04 20:50:06 jon Exp $
+# $Id: makecat.PL,v 2.5.2.4 2002-01-24 05:07:04 jon Exp $
 
 =head1 INTRODUCTION
 
@@ -2712,7 +2712,7 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-Copyright 1995-2001, Red Hat, Inc. All rights reserved except as in the
+Copyright 1995-2002, Red Hat, Inc. All rights reserved except as in the
 license.
 
 =cut

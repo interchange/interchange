@@ -48,11 +48,11 @@ DOIT: {
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# Interchange version 4.8.3
+# Interchange version 4.8.4
 #
-# $Id: interchange.PL,v 2.7.2.6 2002-01-04 17:07:27 racke Exp $
+# $Id: interchange.PL,v 2.7.2.7 2002-01-24 05:07:04 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -166,7 +166,7 @@ use vars qw($VERSION);
 require Exporter;
 
 BEGIN {
-	$VERSION = '4.8.3';
+	$VERSION = '4.8.4';
 }
 
 use Fcntl;
@@ -2357,7 +2357,7 @@ sub dump_env {
 }
 
 sub version {
-	print "Interchange version $VERSION Copyright 1996-2001 Red Hat, Inc.\n";
+	print "Interchange version $VERSION Copyright 1996-2002 Red Hat, Inc.\n";
 }
 
 =head1 NAME
@@ -2370,7 +2370,7 @@ interchange [--options] [file]
 
 =head1 VERSION
 
-4.8.3
+4.8.4
 
 =head1 DESCRIPTION
 
@@ -2950,7 +2950,7 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-Copyright 1995-2001, Red Hat, Inc. All rights reserved except as in the
+Copyright 1995-2002, Red Hat, Inc. All rights reserved except as in the
 license.
 
 =cut

@@ -1,8 +1,8 @@
 # Vend::Payment::Signio - Interchange Signio support
 #
-# $Id: Signio.pm,v 2.0 2001-07-18 02:23:16 jon Exp $
+# $Id: Signio.pm,v 2.0.2.1 2002-01-24 05:07:03 jon Exp $
 #
-# Copyright (C) 1999-2001 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # Written by Cameron Prince <cprince@redhat.com> and
 # Mark Johnson <markj@redhat.com>,
@@ -27,7 +27,7 @@ package Vend::Payment::Signio;
 
 =head1 Interchange Signio Support
 
-Vend::Payment::Signio $Revision: 2.0 $
+Vend::Payment::Signio $Revision: 2.0.2.1 $
 
 =head1 SYNOPSIS
 
