@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.0.2.4 2002-01-24 05:07:01 jon Exp $
+# $Id: Parse.pm,v 2.0.2.5 2002-02-28 14:41:59 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.0.2.4 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.5 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -102,6 +102,7 @@ my %PosNumber =	( qw!
 				or               1
 				order            2
 				page             2
+				parse_locale     0
 				perl             1
 				price            1
 				profile          1
@@ -192,6 +193,7 @@ my %Order =	(
 				msg				=> [qw( key )],
 				mvasp			=> [qw( tables )],
 				options			=> [qw( code )],
+				parse_locale	=> [qw( )],			 
 				price			=> [qw( code )],
 				profile			=> [qw( name )],
 				process      	=> [qw( target secure )],
@@ -321,6 +323,7 @@ my %hasEndTag = (
 						msg				1
                         mvasp           1
                         perl            1
+                        parse_locale    1
                         query           1
                         region          1
                         restrict        1
@@ -540,6 +543,7 @@ my %Routine = (
 # MVASP
 				mvasp			=> \&Vend::Interpolate::mvasp,
 # END MVASP
+				parse_locale    => \&Vend::Util::parse_locale,
 				price        	=> \&Vend::Interpolate::tag_price,
 				process      	=> \&Vend::Interpolate::tag_process,
 				profile      	=> \&Vend::Interpolate::tag_profile,
