@@ -76,6 +76,7 @@
 <!-- ----- BEGIN REAL STUFF ----- -->
 
 <FORM METHOD=POST ACTION="[area ui]">
+<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 <INPUT TYPE=hidden NAME=mv_doit VALUE="set">
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_perm">
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="[either][cgi ui_return_to][or]__UI_BASE__/access[/either]">
@@ -198,15 +199,15 @@ EOF
 
 <tr>
 <td bgcolor=__UI_C_INTBLOCK__ valign=top>
-<b>Order manager:</b>
+<b>[L]Order manager[/L]:</b>
 <INPUT type=hidden value="order=" name="yes_functions">
-<li><INPUT type=checkbox value=l name="yes_functions"$ref->{l}> View list
-<li><input type=checkbox value=v name="yes_functions"$ref->{v}> View single
-<li><input type=checkbox value=d name="yes_functions"$ref->{d}> Delete
-<li><input type=checkbox value=e name="yes_functions"$ref->{e}> Edit
-<li><input type=checkbox value=c name="yes_functions"$ref->{c}> Input new
-<li><input type=checkbox value=a name="yes_functions"$ref->{a}> Archive
-<li><input type=checkbox value=u name="yes_functions"$ref->{u}> Un-archive
+<li><INPUT type=checkbox value=l name="yes_functions"$ref->{l}> [L]View list[/L]
+<li><input type=checkbox value=v name="yes_functions"$ref->{v}> [L]View single[/L]
+<li><input type=checkbox value=d name="yes_functions"$ref->{d}> [L]Delete[/L]
+<li><input type=checkbox value=e name="yes_functions"$ref->{e}> [L]Edit[/L]
+<li><input type=checkbox value=c name="yes_functions"$ref->{c}> [L]Input new[/L]
+<li><input type=checkbox value=a name="yes_functions"$ref->{a}> [L]Archive[/L]
+<li><input type=checkbox value=u name="yes_functions"$ref->{u}> [L]Un-archive[/L]
 <INPUT type=hidden value="," name="yes_functions">
 <p>
 </td>
@@ -231,7 +232,7 @@ EOF
 		files			=> 'Modify Files',
 	);
 	while($perm = shift @permissions ) {
-		$title = shift @permissions;
+		$title = errmsg(shift @permissions);
 		my $on = defined $permref->{$perm} ? ' CHECKED' : '';
 		$out .= <<EOF;
 <li><INPUT type=checkbox value="$perm," name="yes_functions"$on> <b>$title</b>
@@ -245,14 +246,14 @@ EOF
 
 <tr>
 <td bgcolor=__UI_C_INTBLOCK__ valign=top>
-<b>Customer Edit Permissions:</b>
+<b>[L]Customer Edit Permissions[/L]:</b>
 <INPUT type=hidden value="userdb=" name="yes_functions">
-<li><INPUT type=checkbox value=l name="yes_functions"$ref->{l}> View list
-<li><input type=checkbox value=v name="yes_functions"$ref->{v}> View single
-<li><input type=checkbox value=d name="yes_functions"$ref->{d}> Delete
-<li><input type=checkbox value=e name="yes_functions"$ref->{e}> Edit
-<li><input type=checkbox value=c name="yes_functions"$ref->{c}> Input new
-<li><input type=checkbox value=p name="yes_functions"$ref->{p}> Mail password
+<li><INPUT type=checkbox value=l name="yes_functions"$ref->{l}> [L]View list[/L]
+<li><input type=checkbox value=v name="yes_functions"$ref->{v}> [L]View single[/L]
+<li><input type=checkbox value=d name="yes_functions"$ref->{d}> [L]Delete[/L]
+<li><input type=checkbox value=e name="yes_functions"$ref->{e}> [L]Edit[/L]
+<li><input type=checkbox value=c name="yes_functions"$ref->{c}> [L]Input new[/L]
+<li><input type=checkbox value=p name="yes_functions"$ref->{p}> [L]Mail password[/L]
 <INPUT type=hidden value="," name="yes_functions">
 <p>
 </td>
@@ -276,7 +277,7 @@ EOF
 </tr>
 
 <tr>
-<td colspan=9 bgcolor=__UI_C_INTBLOCK__ ALIGN=center><B>Table Permissions</B></td>
+<td colspan=9 bgcolor=__UI_C_INTBLOCK__ ALIGN=center><B>[L]Table Permissions[/L]</B></td>
 </tr>
 
 <tr>
@@ -285,14 +286,14 @@ EOF
 
 <tr>
 <td bgcolor=__UI_C_INTBLOCK__ valign=top>&nbsp;</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>HIDE</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>View</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>Edit</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>Create</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>Delete</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>Import</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>Export</td>
-<td bgcolor=__UI_C_INTBLOCK__ valign=top>Owner field</td>
+<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]HIDE[/L]</td>
+<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]View[/L]</td>
+<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]Edit[/L]</td>
+<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]Create[/L]</td>
+<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]Delete[/L]</td>
+<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]Import[/L]</td>
+<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]Export[/L]</td>
+<td bgcolor=__UI_C_INTBLOCK__ valign=top>[L]Owner field[/L]</td>
 </tr>
 
 [perl]
@@ -391,8 +392,8 @@ EOF
 
 </table>
 
-<input type=submit value="Ok">
-<input type=submit name=mv_click value="Cancel">
+<input type=submit value="[L]Ok[/L]">
+<input type=submit name=mv_click value="[L]Cancel[/L]">
 
 <BR>
 
