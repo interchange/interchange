@@ -1,14 +1,19 @@
 %define ic_version			4.8.4
-%define ic_rpm_release		1
+%define ic_rpm_release		3
 %define ic_package_basename	interchange
 %define ic_user				interch
 %define ic_group			interch
+
 # Currently only one demo catalog name may be specified,
 # and it must also be the skeleton name.
 %define cat_name foundation
 
+%define filelist %{_tmppath}/%{name}-%{version}.filelist
+%define webdir /var/www
+%define autostart 0
 
-Summary: Interchange - a database access and HTML templating system focused on ecommerce
+
+Summary: Interchange - a complete web application platform
 Name: %ic_package_basename
 Version: %ic_version
 Release: %ic_rpm_release
@@ -19,15 +24,24 @@ Packager: Interchange Development Team <interchange@redhat.com>
 Source: http://interchange.redhat.com/interchange/interchange-%{ic_version}.tar.gz
 Group: Applications/Internet
 Requires: perl >= 5.005
+Requires: perl-Business-UPS
+Requires: perl-Digest-MD5
+Requires: perl-MIME-Base64
+Requires: perl-Safe-Hole
+Requires: perl-SQL-Statement
+Requires: perl-Storable
+Requires: perl-URI
+Requires: perl-libnet
+Requires: perl-libwww-perl
 BuildPrereq: perl >= 5.005
 Provides: %ic_package_basename
 Obsoletes: %ic_package_basename
 BuildArch: noarch i386
-
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
 
 %description
-Interchange is the most powerful free ecommerce system available today.
+Interchange is a complete web application platform focused on ecommerce, dynamic
+data presentation, and content management.
 
 
 %package %cat_name
@@ -38,7 +52,8 @@ Provides: %{ic_package_basename}-%cat_name
 Obsoletes: %{ic_package_basename}-%cat_name
 
 %description %cat_name
-The Foundation Store is a basic catalog you can adapt to build your own store.
+The Foundation Store is a full-featured ecommerce catalog you can adapt to
+build your own store.
 
 
 %package %{cat_name}-demo
@@ -51,24 +66,14 @@ Obsoletes: %{ic_package_basename}-%{cat_name}-demo
 
 %description %{cat_name}-demo
 This demo is a prebuilt installation of the Foundation Store that makes
-it easy to try out a number of Interchange's features.
+it easy to test drive Interchange's ecommerce features. First, start the
+Interchange daemon (as root):
 
+/sbin/service interchange start
 
-%define warning_file %{_docdir}/%{ic_package_basename}-%{version}/WARNING_YOU_ARE_MISSING_SOMETHING
-%define filelist_main %{_tmppath}/%{name}-%{version}.filelist
+Then open a web browser and go to:
 
-# if user su'd to root but didn't get /usr/sbin added to the PATH,
-# we need to get to it on our own
-%define useradd %( which useradd || echo /usr/sbin/useradd )
-
-# Find base directory for web files
-# Red Hat Linux 7: /var/www
-# Red Hat Linux 6: /home/httpd
-%define webdir %( if [ -d /var/www ]; then echo -n '/var/www' ; else echo -n '/home/httpd' ; fi )
-
-# This is obviously a terrible oversimplification of whether the build system
-# is Red Hat Linux 7 or not, but it has worked so far.
-#%define interchange_rpm_subrelease %( if [ "%webdir" = "/var/www" ]; then echo -n rh7 ; else echo -n rh6 ; fi )
+http://HOSTNAME/foundation/
 
 
 %prep
@@ -94,19 +99,8 @@ LIBBASE=/var/lib
 CACHEBASE=/var/cache
 ICBASE=%{_libdir}/interchange
 
-# Create an interch user if one doesn't already exist (on build machine).
-if [ -z "`grep '^%{ic_user}:' /etc/passwd`" ]
-then
-	if [ -n "`grep ^%{ic_group}: /etc/group`" ]
-	then
-		GROUPOPT='-g %{ic_group}'
-	else
-		GROUPOPT=
-	fi
-	%useradd -M -r -d $LIBBASE/interchange -s /bin/bash -c "Interchange server" $GROUPOPT %ic_user
-fi
-
 # Install Interchange
+export NOCPANINSTALL=1
 perl Makefile.PL \
 	rpmbuilddir=$RPM_BUILD_ROOT \
 	INTERCHANGE_USER=%ic_user \
@@ -134,7 +128,7 @@ cd $RPM_BUILD_ROOT$ICBASE
 perl -pi -e "s:^(\s+)LINK_FILE(\s+)=>.*:\$1LINK_FILE\$2=> \"$RUNBASE/interchange/socket\",:" bin/compile_link
 
 # Build link program
-#bin/compile_link -build src
+bin/compile_link -build src
 
 mkdir -p $RPM_BUILD_ROOT$LIBBASE/interchange
 mkdir -p $RPM_BUILD_ROOT$RUNBASE/interchange
@@ -285,6 +279,10 @@ do
 		logdir=$LOGDIR/$i
 done
 
+# Clean up empty placeholder files used to keep CVS from pruning away
+# otherwise empty directories
+find $RPM_BUILD_ROOT -type f -name .empty \( -size 0b -o -size 1b \) -exec rm -f \{\} \;
+
 # Put interchange.cfg in /etc instead of IC software directory
 mv interchange.cfg $RPM_BUILD_ROOT$ETCBASE/interchange.cfg
 ln -s $ETCBASE/interchange.cfg
@@ -294,7 +292,6 @@ RPMICLOG=$LOGBASE/interchange/error.log
 rm -f error.log
 ln -s $RPMICLOG
 touch $RPM_BUILD_ROOT$RPMICLOG
-chown %{ic_user}.%ic_group $RPM_BUILD_ROOT$RPMICLOG
 
 # Make a symlink from docroot area into /usr{/share}/doc/interchange-x.x.x.
 ln -s %{_docdir}/interchange-%ic_version $RPM_BUILD_ROOT$DOCROOT/interchange/doc
@@ -308,7 +305,11 @@ cd $RPM_BUILD_ROOT
 find . -path .$ICBASE/%cat_name -prune -mindepth $DIRDEPTH -maxdepth $DIRDEPTH \
 	-o -print | grep "^\.$ICBASE" | sed 's:^\.::' | \
 	sed 's:^\(/usr/lib/interchange/etc\):%attr(-, %{ic_user}, %{ic_group}) \1:' \
-	> %filelist_main
+	> %filelist
+
+MANSUBDIR=`echo %_mandir | sed 's:^/::'`
+find $MANSUBDIR/man1 -type f -print | sed 's:^:/:' >> %filelist
+find $MANSUBDIR/man8 -type f -print | sed 's:^:/:' >> %filelist
 
 
 %install
@@ -316,14 +317,9 @@ find . -path .$ICBASE/%cat_name -prune -mindepth $DIRDEPTH -maxdepth $DIRDEPTH \
 
 %pre
 
-if test -x /etc/rc.d/init.d/interchange
-then
-	/etc/rc.d/init.d/interchange stop > /dev/null 2>&1
-	#echo "Giving interchange a couple of seconds to exit nicely" >&2
-	sleep 5
-fi
+/sbin/service interchange stop > /dev/null 2>&1
 
-# Create an interch user if one doesn't already exist (on install machine).
+# Create an interch user if one doesn't already exist
 if [ -z "`grep '^%{ic_user}:' /etc/passwd`" ]
 then
 	if [ -n "`grep ^%{ic_group}: /etc/group`" ]
@@ -332,13 +328,23 @@ then
 	else
 		GROUPOPT=
 	fi
-	%useradd -M -r -d /var/lib/interchange -s /bin/bash -c "Interchange server" $GROUPOPT %ic_user 2> /dev/null || true 
+	/usr/sbin/useradd -M -r -d /var/lib/interchange -s /bin/bash \
+		-c "Interchange server" $GROUPOPT %ic_user 2> /dev/null || :
 fi
 
 
 %ifarch noarch
 
-%files -f %filelist_main
+%files %cat_name
+
+%defattr(-, root, root)
+%{_libdir}/interchange/%cat_name
+
+
+%else
+
+
+%files -f %filelist
 
 %defattr(-, %{ic_user}, %{ic_group})
 
@@ -348,7 +354,6 @@ fi
 %dir /var/lib/interchange
 /var/log/interchange/error.log
 %config(noreplace) /etc/interchange.cfg
-%{webdir}/html/interchange
 
 %defattr(-, root, root)
 
@@ -357,23 +362,12 @@ fi
 %doc README.rpm
 %doc README.cvs
 %doc WHATSNEW
-%{_mandir}/man1
-%{_mandir}/man8
-%config(noreplace) /etc/rc.d/init.d/interchange
 %config(noreplace) /etc/logrotate.d/interchange
-%config(noreplace) %{_sbindir}/interchange
+%config /etc/rc.d/init.d/interchange
+%{_sbindir}/interchange
 %dir %{_libdir}/interchange
+%{webdir}/html/interchange
 
-
-%files %cat_name
-
-%defattr(-, root, root)
-%{_libdir}/interchange/%cat_name
-
-%endif
-
-
-%ifarch i386
 
 %files %{cat_name}-demo
 
@@ -390,11 +384,12 @@ fi
 %post
 
 # Make Interchange start/stop automatically with the operating system.
-/sbin/chkconfig --add interchange
+[ "%{autostart}" != 0 ] && /sbin/chkconfig --add interchange
 
 # Get to a place where no random Perl libraries should be found
 cd /usr
 
+# Install private copies of key CPAN modules if necessary
 status=`perl -e "require HTML::Entities and print 1;" 2>/dev/null`
 if test "x$status" != x1
 then
@@ -408,42 +403,12 @@ then
 	cp -p %{_libdir}/interchange/build/IniConf.pm %{_libdir}/interchange/lib 2>/dev/null
 fi
 
+# Storable is technically optional; be careful in case user
+# installed with --nodeps
 status=`perl -e "require Storable and print 1;" 2>/dev/null`
 if test "x$status" != x1
 then
 	rm -f %{_libdir}/interchange/_*storable
-fi
-
-missing=
-for i in Digest::MD5 MIME::Base64 URI::URL SQL::Statement Safe::Hole
-do
-	status=`perl -e "require $i and print 1;" 2>/dev/null`
-	if test "x$status" != x1
-	then
-		missing="$missing $i"
-	fi
-done
-
-if test -n "$missing"
-then
-	{
-		echo ""
-		echo "Missing Perl modules:"
-		echo ""
-		echo "$missing"
-		echo ""
-		echo "Interchange catalogs will work without them, but the admin interface will not."
-		echo "You need to install these modules before you can use the admin interface."
-		echo ""
-		echo "You can find the appropriate RPM packages at:"
-		echo ""
-		echo "http://interchange.redhat.com/"
-		echo ""
-		echo "Or, as a last resort, you can build and install them from source. Try:"
-		echo ""
-		echo 'perl -MCPAN -e "install Bundle::Interchange"'
-		echo ""
-	} > %warning_file
 fi
 
 
@@ -460,8 +425,7 @@ perl -pi -e "s/RPM_CHANGE_HOST/$HOST/g" \
 for i in %cat_name
 do 
 	# Add the new catalog to the running Interchange daemon
-	if test -x /etc/rc.d/init.d/interchange && test -n \
-		"`/etc/rc.d/init.d/interchange status | grep 'interchange.*is running'`"
+	if [ -n "`/sbin/service interchange status | grep -i 'interchange.*is running' 2>/dev/null`" ]
 	then
 		catline="`grep \"^[ \t]*Catalog[ \t][ \t]*$i[ \t]\" /etc/interchange.cfg`"
 		if [ -n "$catline" ]
@@ -474,19 +438,16 @@ done
 
 %preun
 
-if test -x /etc/rc.d/init.d/interchange
-then
-	# Stop Interchange if running
-	/etc/rc.d/init.d/interchange stop > /dev/null
-	# Remove autostart of interchange
-	/sbin/chkconfig --del interchange
-fi
+# Stop Interchange if running
+/sbin/service interchange stop > /dev/null 2>&1
+
+# Remove autostart of interchange
+/sbin/chkconfig --del interchange
 
 # Remove non-user data
 rm -rf /var/run/interchange/*
 rm -rf /var/cache/interchange/*
 rm -rf %{_libdir}/interchange/lib/HTML
-rm -f %warning_file
 
 
 %preun %{cat_name}-demo
@@ -494,13 +455,9 @@ rm -f %warning_file
 for i in %cat_name
 do
 	# Remove catalog from running Interchange
-	if test -x /etc/rc.d/init.d/interchange && test -n \
-		"`/etc/rc.d/init.d/interchange status | grep 'interchange.*is running'`"
+	if [ -n "`/sbin/service interchange status | grep -i 'interchange.*is running' 2>/dev/null`" ]
 	then
-		if test -x %{_sbindir}/interchage
-		then
-			%{_sbindir}/interchange --remove=$i > /dev/null 2>&1
-		fi
+		%{_sbindir}/interchange --remove=$i > /dev/null 2>&1
 	fi
 
 	# Remove Catalog directive from interchange.cfg
@@ -529,17 +486,30 @@ done
 
 %clean
 
-rm -f %filelist_main
+rm -f %filelist
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
 
-* Wed Sep 19 2001 Jon Jensen <jon@redhat.com>
-- Add Prereq: interchange to interchange-foundation-demo because the demo
-  installs files owned by the interch user, which gets created when the base
-  package is installed. This way the order the RPMs are given on the command
-  line won't cause trouble.
+* Wed Jan 30 2002 Jon Jensen <jon@redhat.com>
+- Allow non-root RPM builds (required some changes to makecat as well).
+- Don't add interch user on build machine.
+- Allow easy en/disabling of daemon autostart with defined parameter
+  and default to off to prevent any surprises.
+- Start using Red Hat standard /sbin/service instead of directly running
+  /etc/rc.d/init.d/interchange.
+- Remove unneeded .empty files used in CVS to avoid pruning important but
+  empty directories.
+- Make admin UI images owned by root.
+- Don't include /usr/share/man/man[18] system directories in RPMs.
+- Start using RPM dependencies for Perl CPAN modules. Users who install
+  directly from CPAN will have to use --nodeps.
+- Make main interchange package architecture-dependent, because it includes
+  precompiled vlink and tlink CGIs, and we shouldn't require a C compiler
+  on the install machine if users run makecat later.
+- Stop checking for /home/httpd, but use a define for webdir that can
+  easily be changed if needed.
 
 * Fri Jul 27 2001 Jon Jensen <jon@redhat.com>
 - Make a symlink to /usr{/share}/doc/interchange-x.x.x in
