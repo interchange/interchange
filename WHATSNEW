@@ -11,6 +11,8 @@ Interchange 5.1.0 not yet released.
 Core
 ----
 
+* mime subroutine handles email attachments better now.
+
 * Disallow [ and < in page names when setting MV_PAGE and MV_PREV_PAGE
   variables.
 
