@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.23.4.8 2001-02-18 19:43:57 racke Exp $
+# $Id: Config.pm,v 1.23.4.9 2001-03-23 13:25:27 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ require Exporter;
 
 @EXPORT		= qw( config global_config );
 
-@EXPORT_OK	= qw( get_catalog_default get_global_default parse_time parse_database %global_ignore );
+@EXPORT_OK	= qw( get_catalog_default get_global_default parse_time parse_database);
 
 my $OldDirectives = q{
 	AdminDatabase
@@ -91,8 +91,7 @@ use vars qw(
 			@Locale_directives_ary @Locale_directives_scalar
 			@Locale_directives_code
 			@Locale_directives_currency @Locale_keys_currency
-            %global_ignore
-           );
+			);
 use Safe;
 use Fcntl;
 use Vend::Parse;
@@ -105,7 +104,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.23.4.8 $, 10);
+$VERSION = substr(q$Revision: 1.23.4.9 $, 10);
 
 my %CDname;
 
@@ -1005,7 +1004,7 @@ sub global_config {
 			config_error("Unknown directive '$var'");
 			return;
 		}
-        return if exists $global_ignore{$var};
+
 		$parse = $parse{$lvar};
 					# call the parsing function for this directive
 
