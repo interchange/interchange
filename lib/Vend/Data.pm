@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.0.2.6 2002-11-26 03:21:10 jon Exp $
+# $Id: Data.pm,v 2.0.2.7 2003-01-22 01:39:16 racke Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
@@ -919,7 +919,7 @@ sub import_database {
 		if($@) {
 #::logDebug("Dieing of $@");
 			die $@ unless $no_import;
-			die $@ unless $tried_import++;
+			die $@ if $tried_import++;
 			if(! -f $database_dbm) {
 				$Vend::ForceImport{$obj->{name}} = 1;
 				return import_database($obj);
