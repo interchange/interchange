@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.2 2001-07-23 19:58:24 heins Exp $
+# $Id: Interpolate.pm,v 2.3 2001-07-26 01:35:23 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 
 @EXPORT = qw (
 
@@ -2199,8 +2199,7 @@ sub tag_accessories {
 
 	return $data if "\L$type" eq 'show';
 
-	my $attrib_value = $item ? $item->{$attribute} : '';
-	HTML::Entities::encode($attrib_value);
+	my $attrib_value = $item ? HTML::Entities::encode($item->{$attribute}) : '';
 
 	if($ishash) {
 #::logDebug("tag_accessories: name=$name item=$item=" . ::uneval_it($item) . " opt_item=$opt->{item} attr=$attribute");
