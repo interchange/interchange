@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.56 2001-04-21 05:30:02 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.57 2001-04-21 05:34:08 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.56 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.57 $, 10);
 
 @EXPORT = qw (
 
@@ -4782,7 +4782,7 @@ sub tag_tree {
 				?  @{$opt->{sort}}	
 				: ( $opt->{sort} );
 		for(@sort) {
-			s/\s*=\s*([rnxf]).*//;
+			s/\s*[=:]\s*([rnxf]).*//;
 			$_ .= " DESC" if $1 eq 'r';
 		}
 		$sort .= join ", ", @sort;
@@ -5050,11 +5050,22 @@ sub tag_sql_list {
 	$opt->{prefix}      = 'sql' if ! defined $opt->{prefix};
 	$opt->{list_prefix} = 'sql[-_]list' if ! defined $opt->{prefix};
 
-	$opt->{object} = {
+	my $object = {
 					mv_results => $ary,
 					mv_field_hash => $nh,
 					matches => scalar @$ary,
 				};
+
+	# Scans the option hash for more search settings if mv_more_alpha
+	# is set in [query ...] tag....
+	if($opt->{ma}) {
+		# Find the sort field and alpha options....
+		Vend::Scan::parse_profile_ref($object, $opt);
+		# Delete this so it will meet conditions for creating a more
+		delete $object->{mv_matchlimit};
+	}
+
+	$opt->{object} = $object;
     return region($opt, $text);
 }
 # END SQL
@@ -5131,12 +5142,21 @@ sub region {
 
 #::logDebug("region: opt:\n" . ::uneval($opt) . "\npage:" . substr($page,0,100));
 
-	if($opt->{ml} and ! defined $obj->{mv_matchlimit}) {
+	if($opt->{ml} and ! defined $obj->{mv_matchlimit} ) {
 		$obj->{mv_matchlimit} = $opt->{ml};
 		$obj->{matches} = scalar @{$obj->{mv_results}};
 		$obj->{mv_cache_key} = generate_key(substr($page,0,100));
 		$obj->{mv_first_match} = $opt->{fm} if $opt->{fm};
 		$obj->{mv_search_page} = $opt->{sp} if $opt->{sp};
+
+		# We have an mv_more_alpha in a [query], need a numeric sort field that
+		# relates to the field. [search-region] and [loop] would have
+		# been caught elsewhere
+		if($opt->{ma} and $obj->{mv_sort_field} and $obj->{mv_field_hash}) {
+			my @ary = map { $obj->{mv_field_hash}{$_} } @{$obj->{mv_sort_field}};
+			$obj->{mv_sort_field} = \@ary;
+		}
+
 		$obj->{prefix} = $opt->{prefix} if $opt->{prefix};
 		my $out = delete $obj->{mv_results};
 		Vend::Search::save_more($obj, $out);

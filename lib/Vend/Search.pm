@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# $Id: Search.pm,v 1.8.2.6 2001-04-20 18:13:21 racke Exp $
+# $Id: Search.pm,v 1.8.2.7 2001-04-21 05:34:09 heins Exp $
 #
 # Vend::Search -- Base class for search engines
 #
@@ -26,7 +26,7 @@
 #
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 1.8.2.6 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.7 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -368,7 +368,7 @@ sub more_matches {
 sub more_alpha {
 	my ($s, $out) = @_;
 	
-	if (@{$s->{mv_sort_field}}) {
+	if ($s->{mv_sort_field} and @{$s->{mv_sort_field}}) {
 		my ($letter, $sortkey, $last, @alphaspecs, $i);
 		my $alphachars = $s->{mv_more_alpha_chars} || 3;
 		
