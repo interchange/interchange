@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.58 2001-04-26 12:39:58 racke Exp $
+# $Id: Interpolate.pm,v 1.40.2.59 2001-05-01 10:14:18 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.58 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.59 $, 10);
 
 @EXPORT = qw (
 
@@ -4912,6 +4912,7 @@ sub query {
 	}
 	my ($query, $opt, $text) = @_;
 	$opt = {} if ! $opt;
+	$opt->{prefix} = 'sql' unless $opt->{prefix};
 	if($opt->{more} and $Vend::More_in_progress) {
 		undef $Vend::More_in_progress;
 		return region($opt, $text);
