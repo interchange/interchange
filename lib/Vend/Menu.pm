@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.37 2003-12-06 13:49:42 mheins Exp $
+# $Id: Menu.pm,v 2.38 2004-01-09 17:20:31 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.37 $, 10);
+$VERSION = substr(q$Revision: 2.38 $, 10);
 
 use Vend::Util;
 use strict;
@@ -611,6 +611,8 @@ var ${vpf}link_class_closed = '$opt->{link_class_closed}';
 var ${vpf}link_style = '$opt->{link_style}';
 var ${vpf}link_style_open = '$opt->{link_style_open}';
 var ${vpf}link_style_closed = '$opt->{link_style_closed}';
+var ${vpf}submenu_image_right = '$opt->{submenu_image_right}';
+var ${vpf}submenu_image_left = '$opt->{submenu_image_left}';
 EOF
 	push @out, <<EOF unless $opt->{no_emit_code};
 
@@ -628,10 +630,29 @@ EOF
 			return;
 		}
 
-		var out = '<DIV';
+		var mouseo = '';
+
+		var out = '<tr><td id="' + l[0] + 'left"';
 		if(l[${vpf}MV_CHILDREN] > 0) {
-			out = out + ' id="' + l[0] + '"';
-			out = out + ' onMouseOver="${vpf}mousein(this,' + l[${vpf}MV_LEVEL] + ')"';
+			baseid = l[0];
+			mouseo_beg = ' onMouseOver="${vpf}mousein(this,';
+			mouseo_beg += l[${vpf}MV_LEVEL] + ',';
+			mouseo_end = ')"';
+			out += mouseo_beg + l[0] + mouseo_end;
+		}
+
+		out += '>';
+
+		if(${vpf}submenu_image_left && l[${vpf}MV_CHILDREN] > 0) {
+			if(${vpf}submenu_image_left.substr(0,1) == '<')
+				out += ${vpf}submenu_image_left;
+			else
+				out += '<img src="' + ${vpf}submenu_image_left + '" border=0>';
+		}
+		out += '</td><td><DIV';
+		
+		if(l[${vpf}MV_CHILDREN] > 0) {
+			out += ' id="' + l[0] + '"' + mouseo_beg + "''" + mouseo_end;
 		}
 		out += '>';
 		var tstyle = ${vpf}link_style;
@@ -651,28 +672,47 @@ EOF
 			out = out + l[ ${vpf}NAME ];
 		}
 	// alert("build idx=" + idx + " into: " + out);
-		out += '</div>';
+
+		out += '</div></td><td id="' + l[0] + 'right"';
+
+		if(l[${vpf}MV_CHILDREN] > 0) {
+			out += mouseo_beg + l[0] + mouseo_end;
+		}
+
+		out += '>';
+		if(${vpf}submenu_image_right && l[${vpf}MV_CHILDREN] > 0) {
+			if(${vpf}submenu_image_right.substr(0,1) == '<')
+				out += ${vpf}submenu_image_right;
+			else
+				out += '<img src="' + ${vpf}submenu_image_right + '" border=0>';
+		}
+		out += '</td></tr>';
 
 		return out;
 	}
 
-	function ${vpf}mousein (obj,level) {
+	function ${vpf}mousein (obj,level,otherid) {
 		if( ${vpf}browserType() == "other" )
 			return;
+
+		if(otherid != '' && otherid != undefined)
+			obj = document.getElementById(otherid);
 
 		if(level == undefined) 
 			level = 0;
 		level++;
 
 		var divname = ${vpf}mydiv + level;
+
 		var fod = document.getElementById( divname );
-		if(fod == undefined) 
+		if(fod == undefined) {
 			return;
+		}
 		fod.style.display = 'none';
 		clearTimeout( ${vpf}timeoutCode );
 		${vpf}timeoutCode = -1;
 
-		var html = "";
+		var html = "<table cellpadding=0 cellspacing=0 border=0>";
 
 		var idx = -1;
 		for(var j = 0; j < ${vpf}lines.length; j++) {
@@ -711,6 +751,7 @@ EOF
 			if(l[${vpf}MV_LEVEL] == level)
 				html += ${vpf}menu_link(i);
 		}
+		html += '</table>';
 		fod.innerHTML = html;
 	}
 
@@ -721,6 +762,8 @@ EOF
 		var pos = 0;
 		var n = 0;
 		var x = obj.offsetParent;
+		if(x == undefined) 
+			x = obj;
 		while(x.offsetParent != undefined) {
 			n += x.offsetLeft;
 			x = x.offsetParent;
