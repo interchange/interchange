@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.2
 #
-# $Id: interchange.PL,v 1.15.2.36 2001-04-15 05:59:13 heins Exp $
+# $Id: interchange.PL,v 1.15.2.37 2001-04-16 00:24:29 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -575,22 +575,26 @@ sub update_data {
 	}
 
 	my $count;
-	my $max = 0;
+	my $max = $CGI::values{$prikey} =~ tr/\0/\0/;
 	my $min = 9999;
+	my ($minname, $maxname);
 
-    while (($key, $value) = each %CGI::values) {
-        next unless defined $data{$key};
-		$count = (@{$data{$key}} = split /\0/, $value);
-		$max = $count if $count > $max;
-		$min = $count if $count < $min;
-	}
+	if($max) {
+		while (($key, $value) = each %CGI::values) {
+			next unless defined $data{$key};
+			$count = (@{$data{$key}} = split /\0/, $value);
+			$max = $count, $maxname = $key if $count > $max;
+			$min = $count, $minname = $key if $count < $min;
+		}
 
-	if( ($max - $min) > 1 and ! $CGI::values{mv_data_force}) {
-		::logError(
-			"probable bad form -- number of values min=%s max=%s",
-			$min, $max,
-			);
-		return;
+		if( ($max - $min) > 1 and ! $CGI::values{mv_data_force}) {
+			my $msg = errmsg(
+					"probable bad form -- number of values min=%s (%s) max=%s (%s)",
+					$min, $minname, $max, $maxname,
+					);
+			Vend::Interpolate::set_error($msg);
+			return;
+		}
 	}
 
 	my $autonumber;
@@ -1681,7 +1685,8 @@ EOF
 ##   UserTag
 ##   Variable
 
-	my $catref = $Global::Catalog{$Vend::Cfg->{CatalogName}};
+	$Vend::Cat = $Vend::Cfg->{CatalogName};
+	my $catref = $Global::Catalog{$Vend::Cat};
 	if(! $Global::Foreground and defined $catref->{directive}) {
 		no strict 'refs';
 		my ($key, $val);
@@ -1741,7 +1746,7 @@ EOF
 
 	if($Global::HitCount) {
 		my $ctr = new File::CounterFile
-					"$Global::ConfDir/hits.$Vend::Cfg->{CatalogName}";
+					"$Global::ConfDir/hits.$Vend::Cat";
         $ctr->inc();
 	}
 
