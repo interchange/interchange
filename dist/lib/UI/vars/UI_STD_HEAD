@@ -14,8 +14,20 @@ Variable UI_STD_HEAD <<EOV
 		$last = $_;
 		$last =~ s/ui_class_//;
 	} 
-	$ui_tag = delete $Scratch->{ui_class} || $last;
+	$ui_tag = (delete $Scratch->{ui_class} || $last || 'None');
+	my $sparams = <<EOF;
+		fi=@_UI_MENU_TABLE_@
+		st=text
+		rf=*
+		co=yes
+		tf=msort
+
+		sf=mgroup
+		se=$ui_tag
+		op=rm
+EOF
 	$Scratch->{"ui_class_$ui_tag"} = 1;
+	$Scratch->{ui_menu_sparams} = $sparams;
 	return $out;
 [/calc]
 [if scratch table_perm]
@@ -101,13 +113,8 @@ function MM_swapImage() { //v3.0
 //-->
 </script>
 <STYLE TYPE="text/css">
+__UI_STYLE__
 <!--
-body { font-family: Verdana, Arial, Helvetica, sans-serif }
-.margin { margin-top: 0px; margin-left: 0px}
-a:link { text-decoration: none; font-weight: normal; color: __UI_C_LINK__ }
-a:hover { text-decoration: underline; font-weight: normal; color: __UI_C_LINK__ }
-a:active { text-decoration: none; font-weight: normal; color: __UI_C_ALINK__ }
-a:visited { text-decoration: none; font-weight: normal; color: __UI_C_VLINK__ }
 -->
 </STYLE>
 [scratch meta_header][set meta_header][/set]
@@ -149,13 +156,13 @@ a:visited { text-decoration: none; font-weight: normal; color: __UI_C_VLINK__ }
 </table>
 
 [loop
-	lr=1
-	head_skip=1
 	prefix=sm
-	list=`$Variable->{"UI_SUBMENU_$ui_tag"};`
+	search="[scratch ui_menu_sparams]"
 ][sm-calc]
 	my $pre  = '';
 	my $post = '';
+	return if q{[sm-param inactive]};
+	return if q{[sm-param super]} and $Tag->if_mm('!super');
 	my $indicator = q{[sm-param indicator]};
 	my $exclude = q{[sm-param exclude_on]};
 #Log("indicator=$indicator");
@@ -163,6 +170,15 @@ a:visited { text-decoration: none; font-weight: normal; color: __UI_C_VLINK__ }
 	return '' if $exclude and $CGI->{$exclude};
 	return '' if $depend and ! $CGI->{$depend};
 	my $name = q{[sm-param name]};
+	my $page = q{[sm-param page]};
+	my $form = q{[sm-param form]};
+	for(\$name, \$page, \$form) {
+		$$_ =~ s/\[cgi\s+([^\[]+)\]/$CGI->{$1}/g;
+		$$_ =~ s/\[var\s+([^\[]+)\]/$Variable->{$1}/g;
+		$$_ =~ s/\[value\s+([^\[]+)\]/$Values->{$1}/g;
+	}
+#Log("Form is: $form");
+	$form =~ tr/&/\n/;
 	my $next = q{[sm-param next_line]};
 	if($name =~ s/^((&nbsp;)+)//i) {
 		$pre = $1;
@@ -171,10 +187,6 @@ a:visited { text-decoration: none; font-weight: normal; color: __UI_C_VLINK__ }
 		$post = $1;
 	}
 	$name =~ s/ /&nbsp;/g;
-	my $page = q{[sm-param page]};
-	my $form = q{[sm-param form]};
-#Log("Form is: $form");
-	$form =~ tr/&/\n/;
 #Log("Form is: $form");
 	my $out = '';
 	$out .= <<'EOF' if ! $sm_once++;
@@ -216,14 +228,17 @@ EOF
 		$fc = q{__UI_C_TITLEBARTXT__};
 	}
 
-	$out .= qq{<FONT face="Verdana, Arial, Helvetica, sans-serif" COLOR="$fc" SIZE="-1">$name</FONT>};
+	$out .= qq{<FONT COLOR="$fc" SIZE="-1">$name</FONT>};
 	$out .= '</A>' if $page;
 	$out .= $post;
-[/sm-calc]&nbsp;&nbsp;&nbsp; [/loop]
+	$out .= '&nbsp;&nbsp;&nbsp;';
+[/sm-calc] [/loop]
 	[calc]
 	return unless $sm_once;
-	return q!<tr bgcolor="#000000"><td colspan=2><IMG SRC="@_UI_IMG_@admin/bg.gif" WIDTH="1" HEIGHT="1" alt=x></td></tr>
-                 </td></tr></table>!;
+	$out = qq!</td></TR>!;
+	$out .= q!<tr bgcolor="#000000"><td colspan=2>!;
+	$out .= q!<IMG SRC="@_UI_IMG_@admin/bg.gif" WIDTH="1" HEIGHT="1" alt=x>!;
+	$out .= q!</td></tr></table>!;
 	[/calc]
 <!-- ----- END MENUBAR ----- -->
 [if !scratch ui_no_title]
