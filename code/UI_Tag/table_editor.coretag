@@ -427,11 +427,13 @@ EOF
 						$error_show_var = 0 if $v =~ /\S /;
 					}
 				}
-				$prof = '&calc delete \\$Values->{step_' . $name . "}\n" . $prof;
+				$prof = '&calc delete $Values->{step_' . $name . "}\n" . $prof;
 				$opt->{ui_profile_success} = "&set=step_$name 1";
 			}
 		}
 		my $success = $opt->{ui_profile_success};
+		# make sure profile so far ends with a newline so we can add more
+		$prof .= "\n" unless $prof =~ /\n\s*\z/;
 		if(ref $check) {
 			while ( my($k, $v) = each %$check ) {
 				$error->{$k} = 1;
@@ -457,12 +459,13 @@ EOF
 		$opt->{hidden} = {} if ! $opt->{hidden};
 		$opt->{hidden}{mv_form_profile} = 'ui_profile';
 		my $fail = $opt->{mv_failpage} || $Global::Variable->{MV_PAGE};
+
+		# watch out for early interpolation here!
 		$Scratch->{ui_profile} = <<EOF;
 [perl]
 #Debug("cancel='$opt->{orig_cancel_text}' back='$opt->{orig_back_text}' click=\$CGI->{mv_click}");
 	my \@clicks = split /\\0/, \$CGI->{mv_click};
 	
-	my \$fail = '$fail';
 	for( qq{$opt->{orig_cancel_text}}, qq{$opt->{orig_back_text}}) {
 #Debug("compare is '\$_'");
 		next unless \$_;
@@ -472,8 +475,9 @@ EOF
 			return if \$_ eq \$cancel; 
 		}
 	}
-	
-	return <<EOP;
+	# the following should already be interpolated by the table-editor tag
+	# before going into scratch ui_profile
+	return <<'EOP';
 $prof
 &fail=$fail
 &fatal=1
