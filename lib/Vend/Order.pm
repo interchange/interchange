@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18.2.12 2001-03-21 16:12:08 heins Exp $
+# $Id: Order.pm,v 1.18.2.13 2001-03-21 17:08:12 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.12 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.13 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -66,7 +66,6 @@ my $Profile;
 my $Fail_page;
 my $Success_page;
 my $No_error;
-my $Overwrite_error;
 
 sub _length {
 }
@@ -81,7 +80,6 @@ my %Parse = (
 	'&or'       	=>	\&_or_check,
 	'&format'		=> 	\&_format,
 	'&noerror'		=> 	sub { $No_error = $_[1] },
-	'&overwrite'	=> 	sub { $Overwrite_error = $_[1] },
 	'&success'		=> 	sub { $Success_page = $_[1] },
 	'&fail'         =>  sub { $Fail_page    = $_[1] },
 	'&final'		=>	\&_final,
@@ -102,7 +100,7 @@ my %Parse = (
 
 #::logDebug("length check: name=$name value=$value min=$min max=$max len=$len");
 							if($len < $min) {
-								$msg = ::errmsg(
+								$msg = errmsg(
 										"%s length %s less than minimum length %s.",
 										$name,
 										$len,
@@ -111,7 +109,7 @@ my %Parse = (
 								return(0, $name, $msg);
 							}
 							elsif($max and $len > $max) {
-								$msg = ::errmsg(
+								$msg = errmsg(
 										"%s length %s more than maximum length %s.",
 										$name,
 										$len,
@@ -142,8 +140,10 @@ my %Parse = (
 									$status = ($value =~ $regex);
 								}
 								if(! $status) {
-									$message = "failed pattern - '$value' $op $_"
-										if ! $message;
+									$message = errmsg(
+										"failed pattern - %s",
+										"'$value' $op $_"
+										) if ! $message;
 									return ( 0, $name, $message);
 								}
 							}
@@ -154,17 +154,17 @@ my %Parse = (
 
 							$code =~ s/(\w+)\s*//;
 							my $tab = $1
-								or return (0, $name, "no table specified");
+								or return (0, $name, errmsg("no table specified"));
 							my $db = database_exists_ref($tab)
 								or do {
-									my $msg = ::errmsg(
+									my $msg = errmsg(
 										"Table %s doesn't exist",
 										$tab,
 									);
 									return(0, $name, $msg);
 								};
 							if($db->record_exists($value)) {
-								my $msg = ::errmsg(
+								my $msg = errmsg(
 										"Key %s already exists in %s, try again.",
 										$value,
 										$tab,
@@ -182,7 +182,8 @@ my %Parse = (
 								my($ref,$params) = @_;
 								my ($var, $value) = split /\s+/, $params, 2;
 								$::Values->{$var} = $value;
-								return ($value, $var, "$var set failed.");
+								my $msg = errmsg("%s set failed.", $var);
+								return ($value, $var, $msg);
 							},
 );
 
@@ -217,7 +218,7 @@ sub _format {
 	}
 	else {
 #::logDebug("Parse routine=_$routine NOT defined");
-		return (undef, $var, "No format check routine for '$routine'");
+		return (undef, $var, errmsg("No format check routine for '%s'", $routine));
 	}
 
 #::logDebug("routine=$routine returning:" . ::uneval_it(\@return) );
@@ -286,10 +287,11 @@ sub _charge {
 	};
 	if($@) {
 		::logError("Fatal error on charge operation '%s': %s", $params, $@);
-		$message = "Error on charge operation.";
+		$message = errmsg("Error on charge operation.");
 	}
 	elsif(! $result) {
-		$message = "Charge operation '$ref->{mv_cyber_mode}' failed" if ! $message;
+		$message = errmsg("Charge operation '%s' failed.", $ref->{mv_cyber_mode})
+			if ! $message;
 	}
 #::logDebug("charge result: result=$result params=$params message=$message");
 	return ($result, $params, $message);
@@ -1060,7 +1062,7 @@ sub pgp_encrypt {
 	print PGP $body;
 	close PGP;
 	if($?) {
-		logError("PGP failed with status " . $? << 8 . ": $!");
+		logError("PGP failed with status %s: %s", $? << 8, $!);
 		return 0;
 	}
 	$body = readfile("$fpre.out");
@@ -1190,12 +1192,18 @@ sub check_order {
 			if( $No_error ) {
 				# do nothing
 			}
-			elsif( ! $Overwrite_error and $Vend::Session->{errors}{$var} ) {
-				$Vend::Session->{errors}{$var} .= " AND $message"
-					if $message;
+			elsif( $Vend::Session->{errors}{$var} ) {
+				if ($message and $Vend::Session->{errors}{$var} !~ /\Q$message/) {
+					$Vend::Session->{errors}{$var} = errmsg(
+						'%s and %s',
+						$Vend::Session->{errors}{$var},
+						$message
+					);
+				}
 			}
 			else {
-				$Vend::Session->{errors}{$var} = $message || "$var: failed check";
+				$Vend::Session->{errors}{$var} = $message ||
+					errmsg('%s: failed check', $var);
 			}
 			push @Errors, "$var: $message";
 		}
@@ -1248,7 +1256,9 @@ sub _state_province {
 		return (1, $var, '');
 	}
 	else {
-		return (undef, $var, "'$val' not a two-letter state or province code");
+		return (undef, $var,
+			errmsg( "'%s' not a two-letter state or province code", $val )
+		);
 	}
 }
 
@@ -1261,7 +1271,9 @@ sub _state {
 		return (1, $var, '');
 	}
 	else {
-		return (undef, $var, "'$val' not a two-letter state code");
+		return (undef, $var,
+			errmsg( "'%s' not a two-letter state code", $val )
+		);
 	}
 }
 
@@ -1273,7 +1285,9 @@ sub _province {
 		return (1, $var, '');
 	}
 	else {
-		return (undef, $var, "'$val' not a two-letter province code");
+		return (undef, $var,
+			errmsg( "'%s' not a two-letter province code", $val )
+		);
 	}
 }
 
@@ -1287,9 +1301,10 @@ sub _yes {
 }
 
 sub _postcode {
+	my($ref,$var,$val) = @_;
 	((_zip(@_))[0] or (_ca_postcode(@_))[0])
-		and return (1, $_[1], '');
-	return (undef, $_[1], 'not a US or Canada postal/zip code');
+		and return (1, $var, '');
+	return (undef, $var, errmsg("'%s' not a US or Canada postal/zip code", $val));
 }
 
 sub _ca_postcode {
@@ -1299,14 +1314,14 @@ sub _ca_postcode {
 		and
 	$val =~ /^[ABCEGHJKLMNPRSTVXYabceghjklmnprstvxy]\d[A-Za-z]\d[A-Za-z]\d$/
 		and return (1, $var, '');
-	return (undef, $var, 'not a Canadian postal code');
+	return (undef, $var, errmsg("'%s' not a Canadian postal code", $val));
 }
 
 sub _zip {
 	my($ref,$var,$val) = @_;
 	defined $val and $val =~ /^\s*\d{5}(?:[-]\d{4})?\s*$/
 		and return (1, $var, '');
-	return (undef, $var, 'not a US zip code');
+	return (undef, $var, errmsg("'%s' not a US zip code", $val));
 }
 
 *_us_postcode = \&_zip;
@@ -1315,7 +1330,7 @@ sub _phone {
 	my($ref,$var,$val) = @_;
 	defined $val and $val =~ /\d{3}.*\d{3}/
 		and return (1, $var, '');
-	return (undef, $var, 'not a phone number');
+	return (undef, $var, errmsg("'%s' not a phone number", $val));
 }
 
 sub _phone_us {
@@ -1324,7 +1339,7 @@ sub _phone_us {
 		return (1, $var, '');
 	}
 	else {
-		return (undef, $var, 'not a US phone number');
+		return (undef, $var, errmsg("'%s' not a US phone number", $val));
 	}
 }
 
@@ -1334,7 +1349,7 @@ sub _phone_us_with_area {
 		return (1, $var, '');
 	}
 	else {
-		return (undef, $var, 'not a US phone number with area code');
+		return (undef, $var, errmsg("'%s' not a US phone number with area code", $val));
 	}
 }
 
@@ -1344,7 +1359,9 @@ sub _phone_us_with_area_strict {
 		return (1, $var, '');
 	}
 	else {
-		return (undef, $var, 'not a US phone number with area code (strict formatting)');
+		return (undef, $var,
+			errmsg("'%s' not a US phone number with area code (strict formatting)", $val)
+		);
 	}
 }
 
@@ -1354,7 +1371,9 @@ sub _email {
 		return (1, $var, '');
 	}
 	else {
-		return (undef, $var, "$val not an email address");
+		return (undef, $var,
+			errmsg( "'%s' not an email address", $val )
+		);
 	}
 }
 
@@ -1383,7 +1402,7 @@ sub _isbn {
 	  return ( $sum%11 ? 0 : 1, $var, '' );
 	}
 	else {
-	  return (undef, $var, "not a valid isbn number");
+	  return (undef, $var, errmsg("'%s' not a valid isbn number", $val));
 	}
 }
 
@@ -1392,19 +1411,19 @@ sub _mandatory {
 	return (1, $var, '')
 		if (defined $ref->{$var} and $ref->{$var} =~ /\S/);
 #::logDebug("failed mandatory check with $var=$ref->{$var}");
-	return (undef, $var, "blank");
+	return (undef, $var, errmsg("blank"));
 }
 
 sub _true {
 	my($ref,$var,$val) = @_;
 	return (1, $var, '') if is_yes($val);
-	return (undef, $var, "false");
+	return (undef, $var, errmsg("false"));
 }
 
 sub _false {
 	my($ref,$var,$val) = @_;
 	return (1, $var, '') if is_no($val);
-	return (undef, $var, "true");
+	return (undef, $var, errmsg("true"));
 }
 
 sub _required {
@@ -1413,7 +1432,7 @@ sub _required {
 		if (defined $val and $val =~ /\S/);
 	return (1, $var, '')
 		if (defined $ref->{$var} and $ref->{$var} =~ /\S/);
-	return (undef, $var, "blank");
+	return (undef, $var, errmsg("blank"));
 }
 
 sub counter_number {
@@ -1564,7 +1583,7 @@ sub route_order {
 
 	# Careful! If you set it on one order and not on another,
 	# you must delete in between.
-	if(! $check_only) {+
+	if(! $check_only) {
 		$::Values->{mv_order_number} = counter_number($main->{counter})
 				unless $Vend::Session->{mv_order_number};
 	}
@@ -2057,10 +2076,11 @@ sub add_items {
 
 	if($Vend::Cfg->{OrderLineLimit} and $#$cart >= $Vend::Cfg->{OrderLineLimit}) {
 		@$cart = ();
-		my $msg = <<EOF;
-WARNING:
-Possible bad robot. Cart limit of $Vend::Cfg->{OrderLineLimit} exceeded.  Cart emptied.
-EOF
+		my $msg = errmsg(
+			"WARNING:\n" .
+			"Possible bad robot. Cart limit of %s exceeded. Cart emptied.\n",
+			$Vend::Cfg->{OrderLineLimit}
+		);
 		do_lockout($msg);
 	}
 	Vend::Cart::toss_cart($cart);
