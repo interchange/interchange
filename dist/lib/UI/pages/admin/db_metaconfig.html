@@ -8,6 +8,16 @@
 	[tmp tmp_dbcode][cgi ui_table][/tmp]
 	[/else]
 	[/if]
+	&nbsp;
+	&nbsp;
+	&nbsp;
+	&nbsp;
+	&nbsp;
+		[page href=admin/db_newview
+			  form="
+				ui_table=[cgi ui_table]
+			  "]Create new view</A>
+
 [/tmp]
 [set ui_class]Admin[/set]
 @_UI_STD_HEAD_@
@@ -28,7 +38,6 @@
 	[/calc]
 	[bounce href="[scratchd tmp_bpage]"]
 [/if]
-
 
 [table-editor
 	table=mv_metadata
@@ -57,11 +66,14 @@
 		name
 		extended.file_upload
 		extended.tabbed
+		extended.ui_meta_specific
 
 		=Select page display
 
 		height
 		extended.ui_sort_field
+		extended.ui_sort_option
+		extended.ui_sort_combined
 		extended.ui_show_fields
 		extended.ui_special_add
 
@@ -134,11 +146,14 @@
 		'extended.tab_vert_offset'		=> 'Tab Vertical Offset',
 		'extended.tab_width'			=> 'Tab Width',
 		'extended.tabbed'				=> 'Use tabbed display',
+		'extended.ui_meta_specific'		=> 'Present item-specific meta for this table',
 		'extended.table_width' => 'Width specification for editor table',
 		'extended.ui_data_fields'		=> 'Fields to edit',
 		'extended.ui_display_only'		=> 'Fields for display only',
 		'extended.ui_show_fields'		=> 'Show on select page',
 		'extended.ui_sort_field'		=> 'Sort by on select page',
+		'extended.ui_sort_option'		=> 'Sort modifier for select page',
+		'extended.ui_sort_combined'		=> 'Complex sort for select page',
 		'extended.ui_special_add'		=> 'Special Additions',
 		'extended.link_table'			=> 'Table to link in cell',
 		'extended.link_before'			=> 'Column to appear before',
@@ -174,6 +189,7 @@
 		'extended.ui_data_fields'		=> 'Breaks can be embedded in the fields by placing &quot;=Title String&quot; on a line by itself and surrounding with blank lines.',
 		'extended.ui_display_only'		=> 'Will not be set, only shown.',
 		'extended.ui_special_add'		=> 'Only applies to certain pages (Items uses this)',
+		'extended.ui_sort_combined'		=> 'WARNING: overrides sort field and sort option. Should contain a comma-separated list of sort fields, with possible colon-separated modifiers. Example: <blockquote>price:r, description:f</blockquote>',
 	}`
 
 	widget=`{
@@ -196,11 +212,14 @@
 		'extended.tab_vert_offset'		=> 'text_5',
 		'extended.tab_width'			=> 'text_5',
 		'extended.tabbed'				=> 'yesno',
+		'extended.ui_meta_specific'		=> 'yesno',
 		'extended.table_width'		    => 'text_8',
 		'extended.ui_data_fields'		=> 'move_combo_8',
 		'extended.ui_display_only'		=> 'text_40',
 		'extended.ui_show_fields'		=> 'move_combo_8',
 		'extended.ui_sort_field'		=> 'select',
+		'extended.ui_sort_option'		=> 'multiple',
+		'extended.ui_sort_combined'		=> 'text_50',
 		'extended.bottom_buttons'		=> 'yesno',
 		'extended.link_table'			=> 'select',
 		'extended.link_before'			=> 'text_12',
@@ -213,6 +232,7 @@
 
 	filter=`{
 		height							=> 'digits',
+		'extended.ui_sort_option'		=> 'null_to_space',
 		'extended.ui_special_add'		=> 'null_to_comma',
 		'extended.spread_meta' => 'null_to_space',
 	}`
@@ -247,6 +267,7 @@
 		'extended.spread_textarea'		=> 'columns',
 		'extended.link_table'			=> 'tables',
 		'extended.link_before'			=> '',
+		'extended.ui_sort_option'		=> q{=none,n=numeric,r=reverse,f=case-insensitive},
 		'extended.ui_special_add'		=> q{NONE,
 Qty price;pricing:q5:rn=Qty price,
 Options;options:o_enable:r=Options,

@@ -1,3 +1,4 @@
+
 <!-- [if cgi mv_more_ip]
 [calc]
 	for( qw/
@@ -353,9 +354,17 @@ EOF
 	else {
 		$CGI->{ui_text_qualification} = "ra=yes";
 	}
+
+	if($meta->{ui_sort_combined} =~ /\S/) {
+		$meta->{ui_sort_field} = $meta->{ui_sort_combined};
+		$meta->{ui_sort_option} = '';
+	}
+
 	$CGI->{ui_sort_field}	||= $meta->{ui_sort_field}
 							||  $meta->{lookup}
 							||  $Scratch->{keyname};
+	$CGI->{ui_sort_option}	||= $meta->{ui_sort_option};
+	$CGI->{ui_sort_option}	=~ s/[\0,\s]+//g;
 	$CGI->{ui_list_size} = $meta->{height}
 		if ! $CGI->{ui_list_size};
 
@@ -426,7 +435,8 @@ EOF
 	return $out_message;
 [/perl]
 </FORM>
-[set tmp_ncols][/set]
+
+[tmpn tmp_ncols][/tmpn]
 <!-- tq: [scratch sparams] -->
 <TABLE __UI_T_PROPERTIES__>
 	<FORM ACTION="[area href="[either][cgi ui_searchpage][or]@@MV_PAGE@@[/either]"]" METHOD=GET>
@@ -460,6 +470,7 @@ EOF
 		<A HREF="[area href='__UI_BASE__/flex_group'
 						form='
 							mv_data_table=[cgi mv_data_table]
+							ui_meta_view=[cgi ui_meta_view]
 							mv_arg=[loop-code]
 						'
 					]"><IMG ALT="select by [loop-code]" SRC="smindex.gif" BORDER=0></A></TH>
@@ -491,6 +502,7 @@ EOF
 	[tmp tmp_url]
 		mv_data_table=[cgi mv_data_table]
 		ui_page_title=[cgi ui_page_title]
+		ui_meta_view=[cgi ui_meta_view]
 		ui_page_banner=[cgi ui_page_banner]
 		ui_meta_specific=[cgi ui_meta_specific]
 		[if cgi ui_return_to]
@@ -609,4 +621,4 @@ mv_click=db_maintenance
 [update values]
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ -->
+<!-- page: @@MV_PAGE@@ Revision: $Id: flex_select.html,v 2.16 2002-10-11 18:42:47 mheins Exp $ -->

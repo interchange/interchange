@@ -14,6 +14,7 @@
 				form='
 						 ui_return_to=__UI_BASE__/index
 						 ui_table=[cgi mv_data_table]
+						 ui_view=item_select
 						 start_at=height
 				'][L]Item editor[/L]</A>
 [/tmp]
@@ -221,15 +222,23 @@ EOF
 		$CGI->{ui_text_qualification} = "ra=yes";
 	}
 
+	if($meta->{ui_sort_combined} =~ /\S/) {
+		$meta->{ui_sort_field} = $meta->{ui_sort_combined};
+		$meta->{ui_sort_option} = '';
+	}
+
 	if ($CGI->{ui_sort_field}) {
 		$CGI->{changed_qual} = 1;
 		delete $Scratch->{item_special_sort};
 	}
-	elsif(! $Scratch->{ui_special_sort}) {
+	elsif(! $Scratch->{item_special_sort}) {
 		$CGI->{ui_sort_field}	||= $meta->{ui_sort_field}
 								||  $meta->{lookup}
 								||  $Scratch->{keyname};
+		$CGI->{ui_sort_option} ||= $meta->{ui_sort_option};
+		$CGI->{ui_sort_option}	=~ s/[\0,\s]+//g;
 	}
+
 	$CGI->{ui_list_size} = $meta->{height}
 		if ! $CGI->{ui_list_size};
 	$CGI->{ui_show_fields} ||= $meta->{ui_show_fields} || $meta->{field};
@@ -561,4 +570,4 @@ mv_nextpage=@@MV_PAGE@@
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ -->
+<!-- page: @@MV_PAGE@@ Revision: $Id: item.html,v 2.12 2002-10-11 18:42:47 mheins Exp $ -->

@@ -58,6 +58,7 @@
 			$_ = '' if defined $check->{$test};
 		} while ($test =~ s:(.*)/.*:$1:);
 	}
+	@pages = grep length($_), @pages;
 	$Scratch->{pages} = join "\n", grep $_, @pages;
 
     # Generated selection of forced pages
