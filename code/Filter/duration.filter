@@ -1,7 +1,7 @@
 # Copyright 2002-2004 Interchange Development Group (http://www.icdevgroup.org/)
 # Copyright 1996-2002 Red Hat, Inc.
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: duration.filter,v 1.1 2005-02-14 06:59:52 mheins Exp $
+# $Id: duration.filter,v 1.2 2005-02-14 07:26:28 mheins Exp $
 
 CodeDef duration Filter
 CodeDef duration Routine <<EOR
@@ -28,6 +28,10 @@ sub {
 	while($durstring =~ s/(\d+\s*[hmwd]\w*)\s*//) {
 		$duration += Vend::Config::time_to_seconds($1);
 	}
+
+	## Want to allow setting the value directly
+	return $val unless $duration;
+
 	$start =~ s/\0+//g;
 	if($start =~ m:(\d+)[-/]+(\d+)[-/]+(\d+):) {
 		my ($yr, $mon, $day) = ($3, $1, $2);
