@@ -14,6 +14,13 @@ Core
   with the SOAP standard, but also makes it work with the more recent versions
   of SOAP::Lite, including the latest 0.55 with the security fix.
 
+Packaging
+---------
+
+* Minor RPM changes: Don't set Interchange to autostart on boot, since we're
+  not starting it after install anyway. Administrator should decide whether
+  to do those things.
+
 
 ------------------------------------------------------------------------------
 

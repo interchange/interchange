@@ -3,12 +3,11 @@
 
 %define filelist %{_tmppath}/%{name}-%{version}.filelist
 %define webdir /var/www
-%define autostart 1
 
 
 Summary: Interchange web application platform
 Name: interchange
-Version: 4.8.5
+Version: 4.8.6
 Release: 1
 Vendor: Red Hat, Inc.
 Group: System Environment/Daemons
@@ -67,8 +66,8 @@ then
 	echo "RPM_BUILD_ROOT has stupid value"
 	exit 1
 fi
-rm -rf $RPM_BUILD_ROOT
-mkdir -p $RPM_BUILD_ROOT
+%__rm -rf $RPM_BUILD_ROOT
+%__mkdir_p $RPM_BUILD_ROOT
 
 ETCBASE=%{_sysconfdir}
 RUNBASE=%{_localstatedir}/run
@@ -78,23 +77,22 @@ CACHEBASE=%{_localstatedir}/cache
 ICBASE=%{_libdir}/interchange
 
 # Install Interchange
-perl Makefile.PL \
+%__perl Makefile.PL \
 	rpmbuilddir=$RPM_BUILD_ROOT \
 	INTERCHANGE_USER=%ic_user \
 	PREFIX=$RPM_BUILD_ROOT$ICBASE \
 	INSTALLMAN1DIR=$RPM_BUILD_ROOT%{_mandir}/man1 \
 	INSTALLMAN3DIR=$RPM_BUILD_ROOT%{_mandir}/man8 \
 	force=1
-make
-make test
-make NOCPANINSTALL=1 install
-gzip $RPM_BUILD_ROOT%{_mandir}/man*/*
+%__make
+%__make test
+%__make NOCPANINSTALL=1 install
 
 # Copy over extra stuff that usually stays in source directory
-mkdir -p $RPM_BUILD_ROOT$ICBASE/build
-cp extra/HTML/Entities.pm $RPM_BUILD_ROOT$ICBASE/build
-cp extra/IniConf.pm $RPM_BUILD_ROOT$ICBASE/build
-cp -R -p eg extensions $RPM_BUILD_ROOT$ICBASE
+%__mkdir_p $RPM_BUILD_ROOT$ICBASE/build
+%__cp -p extra/HTML/Entities.pm $RPM_BUILD_ROOT$ICBASE/build
+%__cp -p extra/IniConf.pm $RPM_BUILD_ROOT$ICBASE/build
+%__cp -R -p eg extensions $RPM_BUILD_ROOT$ICBASE
 
 # Tell Perl where to find IC libraries during build time
 export PERL5LIB=$RPM_BUILD_ROOT$ICBASE/lib
@@ -102,27 +100,27 @@ export MINIVEND_ROOT=$RPM_BUILD_ROOT$ICBASE
 
 # Fix paths of link file in compile script
 cd $RPM_BUILD_ROOT$ICBASE
-perl -pi -e "s:^(\s+)LINK_FILE(\s+)=>.*:\$1LINK_FILE\$2=> \"$RUNBASE/interchange/socket\",:" bin/compile_link
+%__perl -pi -e "s:^(\s+)LINK_FILE(\s+)=>.*:\$1LINK_FILE\$2=> \"$RUNBASE/interchange/socket\",:" bin/compile_link
 
 # Build link program
 bin/compile_link -build src
 
-mkdir -p $RPM_BUILD_ROOT$LIBBASE/interchange
-mkdir -p $RPM_BUILD_ROOT$RUNBASE/interchange
-mkdir -p $RPM_BUILD_ROOT$LOGBASE/interchange
-mkdir -p $RPM_BUILD_ROOT$CACHEBASE/interchange
+%__mkdir_p $RPM_BUILD_ROOT$LIBBASE/interchange
+%__mkdir_p $RPM_BUILD_ROOT$RUNBASE/interchange
+%__mkdir_p $RPM_BUILD_ROOT$LOGBASE/interchange
+%__mkdir_p $RPM_BUILD_ROOT$CACHEBASE/interchange
 
 # Install wrapper script
-mkdir -p $RPM_BUILD_ROOT%{_sbindir}
-install -m755 %{SOURCE1} $RPM_BUILD_ROOT%{_sbindir}/interchange
+%__mkdir_p $RPM_BUILD_ROOT%{_sbindir}
+%__install -m755 %{SOURCE1} $RPM_BUILD_ROOT%{_sbindir}/interchange
 
 # Install SysV-style system startup/shutdown script
-mkdir -p $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d
-install -m755 %{SOURCE2} $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d/interchange
+%__mkdir_p $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d
+%__install -m755 %{SOURCE2} $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d/interchange
 
 # Install log rotation script
-mkdir -p $RPM_BUILD_ROOT$ETCBASE/logrotate.d
-install -m644 %{SOURCE3} $RPM_BUILD_ROOT$ETCBASE/logrotate.d/interchange
+%__mkdir_p $RPM_BUILD_ROOT$ETCBASE/logrotate.d
+%__install -m644 %{SOURCE3} $RPM_BUILD_ROOT$ETCBASE/logrotate.d/interchange
 
 # Build the demo catalog
 HOST=RPM_CHANGE_HOST
@@ -135,9 +133,9 @@ CGIBASE=/cgi-bin
 HTTPDCONF=%{_sysconfdir}/httpd/conf/httpd.conf
 for i in foundation
 do 
-	mkdir -p $RPM_BUILD_ROOT$CGIDIR
-	mkdir -p $RPM_BUILD_ROOT$DOCROOT/$i/images
-	mkdir -p $RPM_BUILD_ROOT$BASEDIR/$i
+	%__mkdir_p $RPM_BUILD_ROOT$CGIDIR
+	%__mkdir_p $RPM_BUILD_ROOT$DOCROOT/$i/images
+	%__mkdir_p $RPM_BUILD_ROOT$BASEDIR/$i
 	bin/makecat \
 		-F \
 		--relocate=$RPM_BUILD_ROOT \
@@ -173,20 +171,20 @@ done
 
 # Clean up empty placeholder files used to keep CVS from pruning away
 # otherwise empty directories
-find $RPM_BUILD_ROOT -type f -name .empty \( -size 0b -o -size 1b \) -exec rm -f \{\} \;
+find $RPM_BUILD_ROOT -type f -name .empty \( -size 0b -o -size 1b \) -exec %__rm -f \{\} \;
 
 # Put interchange.cfg in /etc instead of IC software directory
-mv interchange.cfg.dist $RPM_BUILD_ROOT$ETCBASE/interchange.cfg
-ln -s $ETCBASE/interchange.cfg
+%__mv interchange.cfg.dist $RPM_BUILD_ROOT$ETCBASE/interchange.cfg
+%__ln_s $ETCBASE/interchange.cfg
 
 # Put global error log in /var/log/interchange instead of IC software directory
 RPMICLOG=$LOGBASE/interchange/error.log
-rm -f error.log
-ln -s $RPMICLOG
+%__rm -f error.log
+%__ln_s $RPMICLOG
 touch $RPM_BUILD_ROOT$RPMICLOG
 
-# Make a symlink from docroot area into /usr{/share}/doc/interchange-x.x.x.
-ln -s %{_docdir}/interchange-%{version} $RPM_BUILD_ROOT$DOCROOT/interchange/doc
+# Make a symlink from docroot area into /usr/share/doc/interchange-x.x.x.
+%__ln_s %{_docdir}/interchange-%{version} $RPM_BUILD_ROOT$DOCROOT/interchange/doc
 
 # I don't know of a way to exclude a subdirectory from one of the directories
 # listed in the %files section, so I have to use this monstrosity to generate
@@ -195,8 +193,8 @@ ln -s %{_docdir}/interchange-%{version} $RPM_BUILD_ROOT$DOCROOT/interchange/doc
 DIRDEPTH=`echo $ICBASE | sed 's:[^/]::g' | awk '{print length + 1}'`
 cd $RPM_BUILD_ROOT
 find . -path .$ICBASE/foundation -prune -mindepth $DIRDEPTH -maxdepth $DIRDEPTH \
-	-o -print | grep "^\.$ICBASE" | sed 's:^\.::' | \
-	sed 's:^\(/usr/lib/interchange/etc\):%attr(-, %{ic_user}, %{ic_group}) \1:' \
+	-o -print | %__grep "^\.$ICBASE" | sed 's:^\.::' | \
+	%__sed 's:^\(/usr/lib/interchange/etc\):%attr(-, %{ic_user}, %{ic_group}) \1:' \
 	> %filelist
 
 
@@ -205,7 +203,7 @@ find . -path .$ICBASE/foundation -prune -mindepth $DIRDEPTH -maxdepth $DIRDEPTH 
 
 %pre
 
-/sbin/service interchange stop > /dev/null 2>&1 || :
+/sbin/service interchange stop 2>&1 || :
 
 # Create interch user/group if they don't already exist
 /usr/sbin/groupadd -g 52 %ic_group 2>/dev/null || :
@@ -219,7 +217,7 @@ find . -path .$ICBASE/foundation -prune -mindepth $DIRDEPTH -maxdepth $DIRDEPTH 
 %{_libdir}/interchange/foundation
 
 
-%files -f %filelist
+%files
 
 %defattr(-, %{ic_user}, %{ic_group})
 
@@ -227,7 +225,7 @@ find . -path .$ICBASE/foundation -prune -mindepth $DIRDEPTH -maxdepth $DIRDEPTH 
 %dir %{_localstatedir}/cache/interchange
 %dir %{_localstatedir}/log/interchange
 %dir %{_localstatedir}/lib/interchange
-%config(noreplace) %{_sysconfdir}/interchange.cfg
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/interchange.cfg
 
 %defattr(-, root, root)
 
@@ -259,35 +257,35 @@ find . -path .$ICBASE/foundation -prune -mindepth $DIRDEPTH -maxdepth $DIRDEPTH 
 # Create the error log if it doesn't exist
 if [ ! -f %{_localstatedir}/log/interchange/error.log ]; then
     touch %{_localstatedir}/log/interchange/error.log
-    chown %{ic_user}.%{ic_group} %{_localstatedir}/log/interchange/error.log
+    %__chown %{ic_user}.%{ic_group} %{_localstatedir}/log/interchange/error.log
 fi
 
-# Make Interchange start/stop automatically with the operating system.
-[ "%{autostart}" != 0 ] && /sbin/chkconfig --add interchange
+# Optionally set Interchange to start/stop with the operating system.
+#/sbin/chkconfig --add interchange
 
 # Get to a place where no random Perl libraries should be found
 cd /usr
 
 # Install private copies of key CPAN modules if necessary
-status=`perl -e "require HTML::Entities and print 1;" 2>/dev/null`
+status=`%__perl -e "require HTML::Entities and print 1;" 2>/dev/null`
 if test "x$status" != x1
 then
-	mkdir -p %{_libdir}/interchange/lib/HTML 2>/dev/null
-	cp -p %{_libdir}/interchange/build/Entities.pm %{_libdir}/interchange/lib/HTML 2>/dev/null
+	%__mkdir_p %{_libdir}/interchange/lib/HTML 2>/dev/null
+	%__cp -p %{_libdir}/interchange/build/Entities.pm %{_libdir}/interchange/lib/HTML 2>/dev/null
 fi
 
-status=`perl -e "require IniConf and print 1;" 2>/dev/null`
+status=`%__perl -e "require IniConf and print 1;" 2>/dev/null`
 if test "x$status" != x1
 then
-	cp -p %{_libdir}/interchange/build/IniConf.pm %{_libdir}/interchange/lib 2>/dev/null
+	%__cp -p %{_libdir}/interchange/build/IniConf.pm %{_libdir}/interchange/lib 2>/dev/null
 fi
 
 # Storable is technically optional; be careful in case user
 # installed with --nodeps
-status=`perl -e "require Storable and print 1;" 2>/dev/null`
+status=`%__perl -e "require Storable and print 1;" 2>/dev/null`
 if test "x$status" != x1
 then
-	rm -f %{_libdir}/interchange/_*storable
+	%__rm -f %{_libdir}/interchange/_*storable
 fi
 
 
@@ -296,7 +294,7 @@ fi
 HOST=`hostname`
 
 i=foundation
-perl -pi -e "s/RPM_CHANGE_HOST/$HOST/g" \
+%__perl -pi -e "s/RPM_CHANGE_HOST/$HOST/g" \
 	%{_localstatedir}/lib/interchange/$i/catalog.cfg \
 	%{_localstatedir}/lib/interchange/$i/products/*.txt \
 	%{_localstatedir}/lib/interchange/$i/products/*.asc \
@@ -305,14 +303,14 @@ perl -pi -e "s/RPM_CHANGE_HOST/$HOST/g" \
 
 # Add Catalog directive to interchange.cfg
 ICCFG=%{_sysconfdir}/interchange.cfg
-catline="`grep -i \"^#*[ \t]*Catalog[ \t][ \t]*$i[ \t]\" $ICCFG`"
+catline="`%__grep -i \"^#*[ \t]*Catalog[ \t][ \t]*$i[ \t]\" $ICCFG`"
 if [ -z "$catline" ]; then
 	catline="Catalog  $i  /var/lib/interchange/$i  /cgi-bin/$i"
-	perl -pi -e "next if ! /^\s*#\s*Catalog\s/i or \$done; s,\$,\n$catline,; ++\$done" $ICCFG
+	%__perl -pi -e "next if ! /^\s*#\s*Catalog\s/i or \$done; s,\$,\n$catline,; ++\$done" $ICCFG
 fi
 
 # Add the new catalog to the running Interchange daemon
-if [ -n "`/sbin/service interchange status 2>/dev/null | grep -i 'interchange.*is running'`" ]
+if [ -n "`/sbin/service interchange status 2>/dev/null | %__grep -i 'interchange.*is running'`" ]
 then
 	echo "$catline" | %{_sbindir}/interchange --add=$i > /dev/null 2>&1
 fi
@@ -322,15 +320,15 @@ fi
 
 if [ $1 = 0 ]; then
 	# Stop Interchange if running
-	/sbin/service interchange stop > /dev/null 2>&1
+	/sbin/service interchange stop 2>&1
 
 	# Remove autostart of interchange
 	/sbin/chkconfig --del interchange 2>/dev/null
 
 	# Remove non-user data
-	rm -rf %{_localstatedir}/run/interchange/*
-	rm -rf %{_localstatedir}/cache/interchange/*
-	rm -rf %{_libdir}/interchange/lib/HTML
+	%__rm -rf %{_localstatedir}/run/interchange/*
+	%__rm -rf %{_localstatedir}/cache/interchange/*
+	%__rm -rf %{_libdir}/interchange/lib/HTML
 fi
 
 
@@ -340,36 +338,43 @@ if [ $1 = 0 ]; then
 	i=foundation
 
 	# Remove catalog from running Interchange
-	if [ -n "`/sbin/service interchange status 2>/dev/null | grep -i 'interchange.*is running'`" ]
+	if [ -n "`/sbin/service interchange status 2>/dev/null | %__grep -i 'interchange.*is running'`" ]
 	then
 		%{_sbindir}/interchange --remove=$i > /dev/null 2>&1
 	fi
 
 	# Remove Catalog directive from interchange.cfg
 	if [ -e %{_sysconfdir}/interchange.cfg ]; then
-		perl -pi -e "s/^\s*Catalog\s+$i\s[^\n]+\n//i" %{_sysconfdir}/interchange.cfg
+		%__perl -pi -e "s/^\s*Catalog\s+$i\s[^\n]+\n//i" %{_sysconfdir}/interchange.cfg
 	fi
 
 	# Remove leftover machine-generated files
-	rm -rf %{_localstatedir}/cache/interchange/$i/tmp/*
-	rm -rf %{_localstatedir}/cache/interchange/$i/session/*
-	rm -rf %{_localstatedir}/log/interchange/$i/orders/*
-	rm -rf %{_localstatedir}/log/interchange/$i/logs/*
-	rm -rf %{_localstatedir}/lib/interchange/$i/products/*.db
-	rm -rf %{_localstatedir}/lib/interchange/$i/products/products.txt.*
-	rm -rf %{_localstatedir}/lib/interchange/$i/products/*.autonumber
-	rm -rf %{_localstatedir}/lib/interchange/$i/products/*.numeric
-	rm -rf %{_localstatedir}/lib/interchange/$i/etc/status.$i
+	%__rm -rf %{_localstatedir}/cache/interchange/$i/tmp/*
+	%__rm -rf %{_localstatedir}/cache/interchange/$i/session/*
+	%__rm -rf %{_localstatedir}/log/interchange/$i/orders/*
+	%__rm -rf %{_localstatedir}/log/interchange/$i/logs/*
+	%__rm -rf %{_localstatedir}/lib/interchange/$i/products/*.db
+	%__rm -rf %{_localstatedir}/lib/interchange/$i/products/products.txt.*
+	%__rm -rf %{_localstatedir}/lib/interchange/$i/products/*.autonumber
+	%__rm -rf %{_localstatedir}/lib/interchange/$i/products/*.numeric
+	%__rm -rf %{_localstatedir}/lib/interchange/$i/etc/status.$i
 fi
 
 
 %clean
 
-rm -f %filelist
-[ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
+%__rm -f %filelist
+[ "$RPM_BUILD_ROOT" != "/" ] && %__rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue May 07 2002 Jon Jensen <jon@redhat.com> 4.8.6-1
+- Turn off autostart
+- Pass on message if shutting down running Interchange daemon
+- Use macros for executables where possible
+- Stop gzipping manpages to allow default RPM compression
+  (bzip2 on recent Red Hat Linux)
+
 * Tue Apr 30 2002 Jon Jensen <jon@redhat.com> 4.8.4-9
 - Check package count in uninstall scripts.
 - Add Prereqs for system tools used
