@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.17 2000-11-03 23:38:30 heins Exp $
+# $Id: Data.pm,v 1.18 2000-12-19 10:08:38 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -1243,7 +1243,7 @@ CHAIN:
 		if ($price =~ s/^;//) {
 			next if $final;
 		}
-		$chain = $price =~ s/,$// ? 1 : 0 unless $chain;
+		$price =~ s/,$// and $chain = 1;
 		if ($price =~ /^ \(  \s*  (.*)  \s* \) \s* $/x) {
 			$price = $1;
 			$want_key = 1;
@@ -1328,7 +1328,8 @@ CHAIN:
 				my ($attribute, $table, $field, $key) = split /:/, $2;
 				$item->{$attribute} and
 					do {
-						$key = $field ? $item->{$attribute} : $item->{'code'};
+						$key = $field ? $item->{$attribute} : $item->{'code'}
+							unless $key;
 						$price = database_field( ( $table ||
 													$item->{mv_ib} ||
 													$Vend::Cfg->{ProductFiles}[0]),
