@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.24 2000-09-25 15:38:14 heins Exp $
+# $Id: Interpolate.pm,v 1.25 2000-09-27 18:10:15 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.24 $, 10);
+$VERSION = substr(q$Revision: 1.25 $, 10);
 
 @EXPORT = qw (
 
@@ -94,8 +94,6 @@ my @Share_routines;
 
 BEGIN {
 	@Share_vars = qw/
-							$mv_filter_value
-							$mv_filter_name
 							$s
 							$q
 							$item
@@ -914,8 +912,6 @@ sub input_filter_do {
 	$routine = $opt->{routine} || ''
 		if ! $routine;
 	if($routine =~ /\S/) {
-		$Vend::Interpolate::mv_filter_value = $CGI::values{$varname};
-		$Vend::Interpolate::mv_filter_name = $varname;
 		$routine = interpolate_html($routine);
 		$CGI::values{$varname} = tag_calc($routine);
 	}
