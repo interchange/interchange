@@ -3,7 +3,7 @@
 #
 # Interchange version 4.9.3
 #
-# $Id: interchange.PL,v 2.51 2002-08-15 20:18:48 mheins Exp $
+# $Id: interchange.PL,v 2.52 2002-08-27 16:52:06 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and others.
 # http://www.icdevgroup.org/
@@ -2228,11 +2228,14 @@ EOF
 	}
 
 	$Vend::Session->{'arg'} = $Vend::Argument = ($CGI::values{mv_arg} || undef);
-#::logDebug("arg is $Vend::Session->{arg}");
+
 	if ($CGI::values{mv_pc} =~ /\D/) {
-		$Vend::Session->{'source'} =	$CGI::values{mv_pc} eq 'RESET'
+		$Vend::Session->{source} =	$CGI::values{mv_pc} eq 'RESET'
 										? ''
 										: $CGI::values{mv_pc};
+	}
+	elsif($CGI::values{mv_source}) {
+		$Vend::Session->{source} =	$CGI::values{mv_source};
 	}
 
 	$Vend::Session->{'user'} = $CGI::user;

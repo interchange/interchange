@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.33 2002-08-15 16:30:34 mheins Exp $
+# $Id: Util.pm,v 2.34 2002-08-27 16:52:07 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -82,7 +82,7 @@ require HTML::Entities;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.33 $, 10);
+$VERSION = substr(q$Revision: 2.34 $, 10);
 
 BEGIN {
 	eval {
@@ -1245,6 +1245,12 @@ sub vendUrl {
 		if $path =~ $need_escape;
     $r .= '/' . $path;
 	$r .= '.html' if $::Scratch->{mv_add_dot_html} and $r !~ /\.html?$/;
+
+	if($::Scratch->{mv_add_source} and $Vend::Session->{source}) {
+		my $sn = hexify($Vend::Session->{source});
+		push @parms, "$::VN->{mv_source}=$sn";
+	}
+
 	push @parms, "$::VN->{mv_session_id}=$id"			 	if defined $id;
 	push @parms, "$::VN->{mv_arg}=" . hexify($arguments)	if defined $arguments;
 	push @parms, "$::VN->{mv_pc}=$ct"                 	if defined $ct;
