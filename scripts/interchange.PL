@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.0
 #
-# $Id: interchange.PL,v 1.15.2.7 2000-12-11 08:30:33 heins Exp $
+# $Id: interchange.PL,v 1.15.2.8 2000-12-17 21:07:19 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -577,14 +577,32 @@ sub update_data {
 		$data{$_} = [];
 	}
 
+	my $count;
+	my $max = 0;
+	my $min = 9999;
+
     while (($key, $value) = each %CGI::values) {
         next unless defined $data{$key};
-		@{$data{$key}} = split /\0/, $value;
+		$count = (@{$data{$key}} = split /\0/, $value);
+		$max = $count if $count > $max;
+		$min = $count if $count < $min;
+	}
+
+	if( ($max - $min) > 1 and ! $CGI::values{mv_data_force}) {
+		::logError(
+			"probable bad form -- number of values min=%s max=%s",
+			$min, $max,
+			);
+		return;
 	}
 
 	my $autonumber;
 	if ($CGI::values{mv_data_auto_number}) {
 		$autonumber = 1;
+		my $ref = $data{$prikey};
+		while (scalar @$ref < $max) {
+			push @$ref, '';
+		}
 		$base_db->config('AUTO_NUMBER', '000001')
 			if ! $base_db->config('AUTO_NUMBER');
 		$CGI::values{mv_data_return_key} = $prikey
@@ -634,9 +652,15 @@ sub update_data {
 				$outfile = join('/', $file_paths[$i], $data{$file_fields[$i]}->[0]);
 #::logDebug("file upload: field=$file_fields[$i] path=$file_paths[$i] outfile=$outfile");
 				my $ok;
-				eval {
-					$ok = $acl_func->($outfile);
-				};
+				if (-f $outfile) {
+					eval {
+						$ok = $acl_func->($outfile);
+					};
+				} else {
+					eval {
+						$ok = $acl_func->($file_paths[$i]);
+					};
+				}
 				if (! $ok) {
 					if($@) {
 						::logError ("ACL function failed on '%s': %s", $outfile, $@);
@@ -700,16 +724,25 @@ sub update_data {
 	my (@v);
 	my (@c);
 	my (@rows_set);
+	my (@email_rows);
 
 	my $safe;
 	my $blob_field;
 	my $blob_nick;
 	my $blob_ptr;
+
+	# Fields to set in database despite mv_blob_only
+	my %blob_exception;
+
 	if($CGI::values{mv_blob_field} and $CGI::values{mv_blob_nick}) {
 #::logDebug("update_data: blob processing enabled");
 		$blob_field = $CGI::values{mv_blob_field};
 		$blob_nick  = $CGI::values{mv_blob_nick};
 		$blob_ptr   = $CGI::values{mv_blob_pointer};
+
+		%blob_exception   =
+				map { ($_, 1) } split /[\s,\0]+/, $CGI::values{mv_blob_exception};
+
 		if( ! $base_db->column_exists($blob_field) ) {
 			undef $blob_field;
 			undef $blob_nick;
@@ -729,10 +762,14 @@ sub update_data {
 	}
 
 #::logDebug("update_data:db=$db key=$prikey VALUES=" . ::uneval(\%CGI::values));
+#::logDebug("update_data:db=$db key=$prikey data=" . ::uneval(\%data));
 	my $select_key;
 	for($i = 0; $i < @{$data{$prikey}}; $i++) {
+#::logDebug("iteration of update_data:db=$db key=$prikey data=" . ::uneval(\%data));
 		@k = (); @v = ();
 		for(keys %data) {
+#::logDebug("iteration of field $_");
+
 			next unless (length($value = $data{$_}->[$i]) || $CGI::values{mv_update_empty} );
 			push(@k, $_);
 # LEGACY
@@ -756,9 +793,19 @@ sub update_data {
 			my $field;
 			$key = $data{$prikey}->[$i];
 			if(! length($key) and $autonumber) {
+				## KEY IS possibly SET HERE 
 				$key = $base_db->set_row($key);
 			}
 			push(@rows_set, $key);
+
+			# allow form submissions to go to database and to mail
+			if ($CGI::values{mv_data_email}) {
+				push( @email_rows,
+					[ ::errmsg("### Form Submission from %s", $key), $blob_nick, ],
+					[ $prikey, $key, ],
+				);
+			}
+
 			my $blob;
 			my $brec;
 			if($blob_field) {
@@ -774,13 +821,29 @@ sub update_data {
 			while($field = shift @k) {
 				$value = shift @v;
 				next if $field eq $prikey;
-				my ($d, $f) = set_db($base_db, $field);
-				$d->set_field($key, $f, $value)
-					unless $CGI::values{mv_blob_only};
+				
+				## DATA IS SET HERE
+				# We are going to set the field unless it is only for
+				# storing in a blob (and possibly emailing)
+				my  ($d, $f);
+				if ($CGI::values{mv_blob_only} and ! $blob_exception{$field}) {
+#::logDebug("$field not storing, only blob");
+					$f = $field;
+				}
+				else {
+#::logDebug("storing d=$d $field blob_only=$CGI::values{mv_blob_only}");
+					($d, $f) = set_db($base_db, $field);
+#::logDebug("storing table=$table d=$d f=$f key=$key");
+					$d->set_field($key, $f, $value);
+				}
+
+				push(@email_rows, [$f, $value])
+					if $CGI::values{mv_data_email};
 #::logDebug("update_data:db=$d key=$key field=$f value=$value");
 				$brec->{$f} = $value if $brec;
 			}
 			if($blob) {
+				$brec->{mv_data_fields} = join " ", @fields;
 				my $string =  ::uneval_it($blob);
 #::logDebug("update_data: blob saving string=$string");
 				$base_db->set_field($key, $blob_field, $string);
@@ -788,6 +851,11 @@ sub update_data {
 					$base_db->set_field($key, $blob_ptr, $blob_nick);
 				}
 			}
+			push(
+					@email_rows,
+					[ ::errmsg("### END FORM SUBMISSION %s", $key), $blob_nick, ]
+				)
+				if $CGI::values{mv_data_email};
 		}
 	}
 
@@ -801,6 +869,16 @@ sub update_data {
 
 	if($CGI::values{mv_auto_export}) {
 		Vend::Data::export_database($table);
+	}
+
+	if($CGI::values{mv_data_email}) {
+		push @email_rows, [ 'mv_data_fields', \@fields ];
+		Vend::Interpolate::tag_mail('', { log_error => 1 }, \@email_rows);
+	}
+
+	# Allow setting in one then returning to another
+	if($CGI::values{mv_return_table}) {
+		$CGI::values{mv_data_table} = $CGI::values{mv_return_table};
 	}
 	return;
 }
@@ -1183,9 +1261,12 @@ sub do_process {
 		return 1 if defined $status and ! $status;
 	}
 
+#::logDebug("todo=$CGI::values{mv_todo} prior to mv_click=" . join ",", split /\0/, $CGI::values{mv_click});
 	do_click();
 
     my $todo = $CGI::values{mv_todo};
+
+#::logDebug("todo=$todo after mv_click");
 
 	# Maybe we have an imagemap input, if not, use $doit
     if ( ! defined $todo) {
@@ -1211,6 +1292,7 @@ sub do_process {
 			$todo = $CGI::values{mv_doit} if defined $CGI::values{mv_doit};
 		}
 	}
+#::logDebug("todo=$todo after mv_click");
 
 	my ($sub, $status);
 	#Now determine the action on the todo
@@ -1771,7 +1853,11 @@ RESOLVEID: {
 			}
 			else {
 				$Vend::Session->{accesses}++;
-				if($Vend::Session->{'accesses'} > $Vend::Cfg->{RobotLimit}) {
+#::logDebug("accesses=$Vend::Session->{accesses} admin=$Vend::admin");
+				if($Vend::Session->{accesses} > $Vend::Cfg->{RobotLimit}
+					and ! $Vend::admin
+					)
+				{
 					my $msg = errmsg(
 			"WARNING: POSSIBLE BAD ROBOT. %s accesses with no 30 second pause.",
 			$Vend::Session->{accesses},
