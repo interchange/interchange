@@ -1,6 +1,6 @@
 # Vend::Payment::BoA - Interchange BoA support
 #
-# $Id: BoA.pm,v 1.3 2001-11-14 01:18:33 mheins Exp $
+# $Id: BoA.pm,v 1.3.2.1 2001-11-14 01:22:24 mheins Exp $
 #
 # Copyright (C) 1999-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -33,7 +33,7 @@ package Vend::Payment::BoA;
 
 =head1 Interchange BoA Support
 
-Vend::Payment::BoA $Revision: 1.3 $
+Vend::Payment::BoA $Revision: 1.3.2.1 $
 
 =head1 SYNOPSIS
 
