@@ -64,7 +64,7 @@
 [/seti]
 
 [set profile_products]
-	products=defined
+	did_products=required
 [/set]
 
 [set profile_index]
