@@ -126,7 +126,7 @@ sub authorizenet {
                     x_Card_Num		=> $actual{mv_credit_card_number}, 
                     x_First_Name    => $actual{b_fname}, 
                     x_Last_Name     => $actual{b_lname},
-                    x_Address       => $actual{address}, 
+                    x_Address       => $actual{b_address}, 
                     x_City          => $actual{b_city}, 
                     x_State         => $actual{b_state}, 
                     x_Zip			=> $actual{b_zip},
