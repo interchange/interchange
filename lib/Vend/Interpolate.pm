@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.64 2002-05-17 03:15:19 jon Exp $
+# $Id: Interpolate.pm,v 2.65 2002-05-29 05:01:05 kwalsh Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.64 $, 10);
+$VERSION = substr(q$Revision: 2.65 $, 10);
 
 @EXPORT = qw (
 
@@ -5685,15 +5685,26 @@ sub shipping {
 	}
 	else {
 #::logDebug("standard field selection");
-		unless (column_exists $field) {
+	    my $use_modifier;
+	    if (defined $::Variable->{MV_SHIP_MODIFIERS} && $field =~ /^($::Variable->{MV_SHIP_MODIFIERS})$/){
+		$use_modifier = 1;
+	    }
+	    my $col_checked;
+	    foreach my $item (@$Vend::Items){
+		my $value;
+		if ($use_modifier && defined $item->{$field}){
+		    $value = $item->{$field};
+		}else{
+		    unless ($col_checked++ || column_exists $field){
 			logError("Custom shipping field '$field' doesn't exist. Returning 0");
+			$total = 0;
 			goto SHIPFORMAT;
+		    }
+		    my $base = $item->{mv_ib} || $Vend::Cfg->{ProductFiles}[0];
+		    $value = tag_data($base, $field, $item->{code});
 		}
-    	foreach my $item (@$Vend::Items) {
-			my $base = $item->{mv_ib} || $Vend::Cfg->{ProductFiles}[0];
-			my $value = tag_data($base, $field, $item->{code});
-			$total += $value * $item->{quantity};
-		}
+		$total += ($value * $item->{quantity});
+	    }
 	}
 
 	# We will LAST this loop and go to SHIPFORMAT if a match is found
