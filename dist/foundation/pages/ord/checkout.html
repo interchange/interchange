@@ -420,12 +420,11 @@ ui_template_name: noleft
 	      Country
 	    </td>
 	    <td colspan="3" class="contentbar1">
-	      [if value country =~ /(^$|US|CA)/]
 	      <SELECT NAME=country onChange="this.form.submit()">
+	      [if value country =~ /(^$|US|CA)/]
 	      <OPTION VALUE="US"> United States
 	      <OPTION [selected country CA] VALUE="CA"> Canada
 	      <OPTION VALUE="JP"> Other
-	      </SELECT>
 	      [else]
 	      <SELECT onChange="this.form.submit()" NAME=country>
 	      [loop option=country search="
@@ -438,9 +437,9 @@ ui_template_name: noleft
 	      "]
 	      <OPTION VALUE="[loop-code]"> [loop-data country name] 
 	      [/loop]
-	      </SELECT>
 	      [/else]
 	      [/if]
+	      </SELECT>
 	      <small>(will update display)</small>
 	    </td>
 	  </tr>
