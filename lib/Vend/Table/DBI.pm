@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.13 2001-03-07 17:57:51 heins Exp $
+# $Id: DBI.pm,v 1.25.2.14 2001-03-14 22:01:02 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.13 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.14 $, 10);
 
 use strict;
 
@@ -332,9 +332,15 @@ sub open_table {
     $dattr = pop @call;
 
     if (! $config->{Read_only} and ! defined $config->{AutoNumberCounter}) {
-		$config->{AutoNumberCounter} = new File::CounterFile
+	    eval {
+			$config->{AutoNumberCounter} = new File::CounterFile
 									"$config->{DIR}/$config->{name}.autonumber",
 									$config->{AUTO_NUMBER} || '00001';
+		};
+		if($@) {
+			::logError("Cannot create AutoNumberCounter: %s", $@);
+			$config->{AutoNumberCounter} = '';
+		}
     }
 
 	unless($config->{dsn_id}) {
@@ -735,10 +741,18 @@ sub set_row {
 		my $key_string;
 		my $val_string;
 		my $ary;
-		if($ary = $cfg->{_Default_ary}) {
-			my @flds = $s->[$KEY];
-			my @vals = $val;
-			for (my $i = 0; $i < @$ary; $i++) {
+		my @flds = $s->[$KEY];
+		my @vals = $val;
+		if($cfg->{_Default_ary} || $cfg->{_Default_session_ary}) {
+			my $ary = $cfg->{_Default_ary} || [];
+			my $sary = $cfg->{_Default_session_ary} || [];
+			my $max = $#$ary > $#$sary ? $#$ary : $#$sary;
+			for (my $i = 0; $i <= $max; $i++) {
+				if($sary->[$i]) {
+					push @flds, $s->[$NAME][$i];
+					push @vals, $sary->[$i]->($s);
+					next;
+				}
 				next unless defined $ary->[$i];
 				push @flds, $s->[$NAME][$i];
 				push @vals, $ary->[$i];
@@ -871,8 +885,9 @@ sub foreign {
 	return '' if $@;
 	my $data = ($sth->fetchrow_array())[0];
 	return '' unless $data =~ /\S/;
-	$data;
+	return $data;
 }
+
 sub field {
     my ($s, $key, $column) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
@@ -987,6 +1002,34 @@ sub fields_index {
 #::logDebug("DBI default: checking $k=$def_ary->[$idx[$k]]");
 		}
 		$config->{_Default_ary} = $def_ary;
+	}
+	if($config->{DEFAULT_SESSION}) {
+		my $def_session = $config->{DEFAULT_SESSION};
+		my $def_session_ary = [];
+		for(keys %$def_session) {
+			my $k = lc $_;
+			my $v = $def_session->{$_};
+			my $text_default;
+			$v =~ /\s*\|+\s*(.*)/
+				and $text_default = $1;
+#::logDebug("DBI session default: checking $k=$_, idx=$idx{$k}");
+			my $n = exists($config->{NUMERIC}{$k});
+			
+			my $sub = sub {
+				my $self = shift;
+				for(\%CGI::values, $::Values) {
+					next unless defined $_->{$v};
+					return $_->{$v} if $n;
+					return $self->quote($_->{$v});
+				}
+				return length($text_default) ? $text_default : 0
+					if $n;
+				return $self->quote($text_default);
+			};
+			$def_session_ary->[$idx{$k}] = $sub;
+#::logDebug("DBI  sessiondefault: checking $k=$def_session_ary->[$idx{$k}]");
+		}
+		$config->{_Default_session_ary} = $def_session_ary;
 	}
 	return \%idx;
 }

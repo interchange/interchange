@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.25 2001-03-11 02:31:15 jon Exp $
+# $Id: Config.pm,v 1.25.2.26 2001-03-14 22:00:59 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -99,7 +99,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.25 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.26 $, 10);
 
 my %CDname;
 
@@ -296,6 +296,7 @@ sub global_directives {
 	['TemplateDir',      'root_dir', 	     ''],
 	['DomainTail',		 'yesno',            'Yes'],
 	['AcrossLocks',		 'yesno',            'No'],
+	['TolerateGet',		 'yesno',            'No'],
 	['PIDcheck',		 'integer',          '0'],
 	['LockoutCommand',    undef,             ''],
 	['SafeUntrap',       'array',            'ftfile sort'],
@@ -2234,6 +2235,7 @@ my %Hash_ref = (  qw!
 							FILTER_TO     FILTER_TO 
 							COLUMN_DEF    COLUMN_DEF
 							DEFAULT       DEFAULT
+							DEFAULT_SESSION       DEFAULT_SESSION
 							FIELD_ALIAS   FIELD_ALIAS
 							NUMERIC       NUMERIC
 							WRITE_CATALOG WRITE_CATALOG

@@ -1,6 +1,6 @@
 # Table/SDBM.pm: access a table stored in Perl's internal SDBM
 #
-# $Id: SDBM.pm,v 1.1.2.2 2000-12-13 16:11:52 zarko Exp $
+# $Id: SDBM.pm,v 1.1.2.3 2001-03-14 22:01:02 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -26,7 +26,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::SDBM;
-$VERSION = substr(q$Revision: 1.1.2.2 $, 10);
+$VERSION = substr(q$Revision: 1.1.2.3 $, 10);
 use strict;
 use Fcntl;
 use SDBM_File;
@@ -34,7 +34,7 @@ use vars qw($VERSION @ISA);
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 1.1.2.2 $, 10);
+$VERSION = substr(q$Revision: 1.1.2.3 $, 10);
 
 sub create {
 	my ($class, $config, $columns, $filename) = @_;
@@ -95,9 +95,15 @@ sub open_table {
 	if (! $config->{Read_only}) {
 		$flags = O_RDWR;
 		if(! defined $config->{AutoNumberCounter}) {
-			$config->{AutoNumberCounter} = new File::CounterFile
-										"$config->{DIR}/$config->{name}.autonumber",
-										$config->{AUTO_NUMBER} || '00001';
+			eval {
+				$config->{AutoNumberCounter} = new File::CounterFile
+											"$config->{DIR}/$config->{name}.autonumber",
+											$config->{AUTO_NUMBER} || '00001';
+			};
+			if($@) {
+				::logError("Cannot create AutoNumberCounter: %s", $@);
+				$config->{AutoNumberCounter} = '';
+			}
 		}
 	}
 
