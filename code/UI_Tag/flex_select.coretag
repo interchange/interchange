@@ -681,6 +681,9 @@ EOF
 
 	### What the heck is going on here?
 	if($CGI->{ui_meta_view}) {
+		$output{TOP_OF_FORM} .= <<EOF;
+<INPUT TYPE=hidden NAME=ui_meta_view         VALUE="$CGI->{ui_meta_view}">
+EOF
 		$output{TOP_OF_FORM} .= $Tag->return_to();
 	}
 	else {
