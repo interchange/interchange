@@ -28,6 +28,9 @@ Unix-like operating system.
 
 More information is in the following files and directories:
 
+LICENSE          The text of the GNU General Public License (GPL) under which
+                 Interchange is supplied.
+
 README.rpm-dist  Notes on using Interchange when installed from RPM packages.
 
 README.debian    Notes on using Interchange when installed from Debian packages.
@@ -35,6 +38,9 @@ README.debian    Notes on using Interchange when installed from Debian packages.
 README.cvs       How to access the CVS repository to track ongoing development.
 
 WHATSNEW         Changes per version for this version family.
+
+UPGRADE          Instructions on how to upgrade from an earlier Interchange
+                 version.
 
 -----------------------------------------------------------------------------
 
