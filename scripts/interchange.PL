@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.8.6
 #
-# $Id: interchange.PL,v 2.7.2.12 2002-05-10 17:48:05 racke Exp $
+# $Id: interchange.PL,v 2.7.2.13 2002-05-19 13:55:32 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -1462,6 +1462,7 @@ EOF
 			;
 		$template = get_locale_message(500, $template, $err);
 		$template .= "($err)";
+		::logError($err);
 		::response($template);
 	}
 
