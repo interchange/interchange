@@ -14,7 +14,7 @@ sub {
     else {
         sleep 1;
         $::Scratch->{possible_timeout} = 1;
-        return 'please wait...<BR>';
+        return errmsg('please wait') . '...<BR>';
     }
 }
 EOR

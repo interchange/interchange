@@ -1,10 +1,10 @@
 @_UI_STD_INIT_@[if-mm !reconfig]
-[set ui_error]Not authorized to regenerate.[/set]
+[set ui_error][L]Not authorized to regenerate.[/L][/set]
 [bounce page="__UI_BASE__/error"]
 [/if-mm]
 [set help_name]reconfig[/set]
 [set ui_class]Admin[/set]
-[set page_title]Reconfiguring....[/set]
+[set page_title][L]Reconfiguring[/L]....[/set]
 [seti meta_header]
 [set name=its int][calc]
 					$hk = q{[global-value Global::HouseKeeping]};
