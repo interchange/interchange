@@ -1,6 +1,6 @@
 # Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 2.8 2002-10-30 23:40:29 kwalsh Exp $
+# $Id: Session.pm,v 2.9 2002-11-15 13:43:10 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -26,7 +26,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = substr(q$Revision: 2.9 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -460,8 +460,7 @@ sub init_session {
 		if $CGI::secure;
 	$::Values     = $Vend::Session->{'values'};
 	$::Scratch	  = $Vend::Session->{scratch};
-	$::Scratch->{mv_locale} = $Vend::Cfg->{DefaultLocale}
-		if ! $::Scratch->{mv_locale} and $Vend::Cfg->{DefaultLocale};
+	$::Scratch->{mv_locale} ||= $Vend::Cfg->{DefaultLocale};
 	$::Carts	  = $Vend::Session->{carts};
 	tie $Vend::Items, 'Vend::Cart';
 	$::Values->{mv_shipmode} = $Vend::Cfg->{DefaultShipping}

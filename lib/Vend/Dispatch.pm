@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.5 2002-11-08 17:22:04 mheins Exp $
+# $Id: Dispatch.pm,v 1.6 2002-11-15 13:43:10 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.5 $, 10);
+$VERSION = substr(q$Revision: 1.6 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -964,6 +964,7 @@ EOF
 
 	chdir $Vend::Cfg->{VendRoot} 
 		or die "Couldn't change to $Vend::Cfg->{VendRoot}: $!\n";
+	POSIX::setlocale('LC_ALL', $Vend::Cfg->{ExecutionLocale});
 	set_file_permissions();
 # STATICPAGE
 	tie_static_dbm() if $Vend::Cfg->{StaticDBM};

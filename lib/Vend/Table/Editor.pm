@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.17 2002-10-30 17:39:06 mheins Exp $
+# $Id: Editor.pm,v 1.18 2002-11-15 13:43:11 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.17 $, 10);
+$VERSION = substr(q$Revision: 1.18 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -2762,7 +2762,8 @@ $l_pkey</td>};
 		}
 		elsif (defined $default->{$c} and ! length($data->{$c}) ) {
 			$currval = $default->{$c};
-#::logDebug("hit preload for $col,currval=$currval");
+			$overridden = 1;
+#::logDebug("hit default setting for $col,currval=$currval");
 		}
 		else {
 #::logDebug("hit data->col for $col, t=$t, c=$c, k=$k, currval=$currval");

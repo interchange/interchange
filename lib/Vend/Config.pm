@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.80 2002-11-06 04:36:18 kwalsh Exp $
+# $Id: Config.pm,v 2.81 2002-11-15 13:43:10 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -45,7 +45,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.80 $, 10);
+$VERSION = substr(q$Revision: 2.81 $, 10);
 
 my %CDname;
 
@@ -396,9 +396,11 @@ sub catalog_directives {
 # END GLIMPSE
 	['Locale',           'locale',           ''],
 	['Route',            'locale',           ''],
-	['LocaleDatabase',    undef,             ''],
+	['LocaleDatabase',   'configdb',         ''],
+	['ExecutionLocale',   undef,             'C'],
+	['DefaultLocale',     undef,             ''],
 	['DbDatabase',        'dbdatabase',        ''],
-	['RouteDatabase',     'routeconfig',        ''],
+	['RouteDatabase',     'configdb',        ''],
 	['DirectiveDatabase', 'dbconfig',        ''],
 	['VariableDatabase',  'dbconfig',        ''],
 	['DirConfig',         'dirconfig',        ''],
@@ -1056,44 +1058,6 @@ sub config_named_catalog {
 		Vend::Data::read_shipping();
 		open_database(1);
 		my $db;
-
-		LREAD: {
-			last LREAD unless $db = $Vend::Cfg->{LocaleDatabase};
-			$db = database_exists_ref($db)
-				or last LREAD;
-			$db = $db->ref();
-			my ($k, @f);	# key and fields
-			my @l;			# refs to locale repository
-			my @n;			# names of locales
-
-			@n = $db->columns();
-			my $extra;
-			for(@n) {
-				$Vend::Cfg->{Locale_repository}{$_} = {}
-					unless $Vend::Cfg->{Locale_repository}{$_};
-				push @l, $Vend::Cfg->{Locale_repository}{$_};
-			}
-			my $i;
-			while( ($k , @f ) = $db->each_record) {
-				for ($i = 0; $i < @f; $i++) {
-					next unless length($f[$i]);
-					$l[$i]->{$k} = $f[$i];
-				}
-			}
-			unless ($Vend::Cfg->{Locale}) {
-				for(@n) {
-					next unless $Vend::Cfg->{Locale_repository}{$_}{'default'};
-					$Vend::Cfg->{DefaultLocale} = $_;
-					$Vend::Cfg->{Locale} = $Vend::Cfg->{Locale_repository}{$_};
-					last;
-				}
-				unless ($Vend::Cfg->{Locale}) {
-					$Vend::Cfg->{Locale} = $Vend::Cfg->{Locale_repository}{$n[0]};
-					$Vend::Cfg->{DefaultLocale} = $n[0];
-				}
-			}
-		}
-
 		close_database();
 	};
 
@@ -2069,14 +2033,7 @@ sub parse_locale {
 
 	my ($eval, $safe);
 	if ($name and $item eq 'Locale') {
-		$c = POSIX::localeconv();
-		$c->{mon_thousands_sep} = ','
-			unless $c->{mon_thousands_sep};
-		$c->{decimal_point} = '.'
-			unless $c->{decimal_point};
-		$c->{frac_digits} = 2
-			unless defined $c->{frac_digits};
-		$store->{$name} = $c;
+		$store->{$name} = POSIX::localeconv();
 	}
 	elsif ($settings =~ s/^\s*([-\w.@]+)\s+//) {
 		$name = $1;
@@ -2091,11 +2048,7 @@ sub parse_locale {
 				$store->{$name} = POSIX::localeconv();
 			}
 		}
-#		if(defined $store->{$name}) {
-#			for (sort keys %{$store->{$name}}) {
-#				printf "%-5s %-16s %s\n", $name, $_, $store->{$name}{$_};
-#			}
-#		}
+
 		my($sethash);
 		if ($eval) {
 			$sethash = $safe->reval($settings)
@@ -2113,21 +2066,12 @@ sub parse_locale {
 		for (keys %{$sethash}) {
 			$c->{$_} = $sethash->{$_};
 		}
-		if($item eq 'Locale') {
-			$Vend::Cfg->{DefaultLocale} = $name;
-			unless ($nodefaults) {
-				$c->{mon_thousands_sep} = ','
-					unless defined $c->{mon_thousands_sep};
-				$c->{decimal_point} = '.'
-					unless $c->{decimal_point};
-				$c->{frac_digits} = 2
-					unless defined $c->{frac_digits};
-			}
-		}
 	}
 	else {
 		config_error("Bad locale setting $settings.\n");
 	}
+
+	$C->{LastLocale} = $name if $C and $item eq 'Locale';
 
 	$store->{$name} = $c unless $store->{$name};
 
@@ -2333,6 +2277,27 @@ my %Default = (
 			}
 			return 1;
 		},
+		Locale => sub {
+						my $repos = $C->{Locale_repository}
+							or return 1;
+						if ($C->{DefaultLocale}) {
+							my $def = $C->{DefaultLocale};
+							$C->{Locale} = $repos->{$def};
+						}
+						else {
+							for(keys %$repos) {
+								if($repos->{$_}{default}) {
+									$C->{Locale} = $repos->{$_};
+									$C->{DefaultLocale} = $_;
+								}
+							}
+							if(! $C->{DefaultLocale} and $C->{LastLocale}) {
+								$C->{DefaultLocale} = $C->{LastLocale};
+								$C->{Locale} = $repos->{$C->{LastLocale}};
+							}
+						}
+						return 1;
+					},
 		ProductFiles => \&set_default_search,
 );
 
@@ -2387,7 +2352,6 @@ sub parse_url_sep_char {
 	}
 	return $val;
 }
-
 
 sub check_legal {
 	my ($directive, $value) = @_;
@@ -3169,13 +3133,14 @@ sub get_configdb {
 	return ($db, $table);
 }
 
-sub parse_routeconfig {
+my %Columnar = (Locale => 1);
+
+sub parse_configdb {
 	my ($var, $value) = @_;
 
 	my ($file, $type);
 	return '' if ! $value;
 	local($Vend::Cfg) = $C;
-
 	my ($db, $table) = get_configdb($var, $value);
 
 	return '' if ! $db;
@@ -3185,14 +3150,34 @@ sub parse_routeconfig {
 	my @n;			# names of locales
 	my @h;			# names of locales
 
+	my $base_direc = $var;
+	$base_direc =~ s/Database$//;
+	my $repos_name = $base_direc . '_repository';
+	my $repos = $C->{$repos_name} ||= {};
+
 	@n = $db->columns();
 	shift @n;
 	my $i;
-	while( ($k, undef, @f ) = $db->each_record) {
-#::logDebug("Got route key=$k f=@f");
-		for ($i = 0; $i < @f; $i++) {
-			next unless length($f[$i]);
-			$C->{Route_repository}{$k}{$n[$i]} = $f[$i];
+	if($Columnar{$base_direc}) {
+		my @l;
+		for(@n) {
+			$repos->{$_} ||= {};
+			push @l, $repos->{$_};
+		}
+		my $i;
+		while( ($k , undef, @f ) = $db->each_record) {
+			for ($i = 0; $i < @f; $i++) {
+				next unless length($f[$i]);
+				$l[$i]->{$k} = $f[$i];
+			}
+		}
+	}
+	else {
+		while( ($k, undef, @f ) = $db->each_record) {
+			for ($i = 0; $i < @f; $i++) {
+				next unless length($f[$i]);
+				$repos->{$k}{$n[$i]} = $f[$i];
+			}
 		}
 	}
 	$db->close_table();
