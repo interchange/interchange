@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.27 2002-01-31 02:46:00 mheins Exp $
+# $Id: Config.pm,v 2.28 2002-01-31 05:38:12 kwalsh Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.27 $, 10);
+$VERSION = substr(q$Revision: 2.28 $, 10);
 
 my %CDname;
 
@@ -1249,7 +1249,7 @@ GLOBLOOP:
 
 	# In case no user-supplied config has been given...returns
 	# with no effect if that has been done already.
-	get_system_code();
+	get_system_code() unless defined $SystemCodeDone;
 
 	# Do some cleanup
 	set_global_defaults();
