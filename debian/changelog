@@ -1,9 +1,11 @@
-interchange (4.7.0-0) unstable; urgency=low
+interchange (4.6.20010314.1) unstable; urgency=low
 
   * upstream changes 
   * foundation is now the demo catalog instead of construct
+  * interchange wrapper handles now PID and sockets directives
+    instead of putting it into the configuration file
   
- -- Stefan Hornburg <racke@linuxia.de>  Wed, 14 Mar 2001 11:39:42 -0500
+ -- Stefan Hornburg <racke@linuxia.de>  Wed, 14 Mar 2001 17:05:49 -0500
 
 interchange (4.6.3-2) unstable; urgency=low
 
