@@ -3,7 +3,7 @@
 #
 # Interchange localizer
 #
-# $Id: localize.PL,v 2.7 2003-06-18 17:34:47 jon Exp $
+# $Id: localize.PL,v 2.8 2003-12-07 00:11:46 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -312,8 +312,8 @@ print STDERR ".";
         while ($data =~ m:\[loc\](\s*[^\[].*?[^\]]\s*)\[/loc\]:gsi) {
 					write_structure(undef, $1);
 		}
-        while ($data =~ m:\[msg(\s+arg\.\d+=".*?")*\s*\](\s*[^\[].*?[^\]]\s*)\[/msg\]:gsi) {
-					write_structure(undef, $2);
+        while ($data =~ m:\[msg(\s+arg\.\d+=(["`]).*?\2)*\s*\](\s*[^\[].*?[^\]]\s*)\[/msg\]:gsi) {
+					write_structure(undef, $3);
 		}
 	}
 
@@ -383,7 +383,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-# $Id: localize.PL,v 2.7 2003-06-18 17:34:47 jon Exp $
+# $Id: localize.PL,v 2.8 2003-12-07 00:11:46 racke Exp $
 
 =head1 SYNOPSIS
 
