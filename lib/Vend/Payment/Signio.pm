@@ -1,6 +1,6 @@
 # Vend::Payment::Signio - Interchange Signio support
 #
-# $Id: Signio.pm,v 2.2 2002-08-27 22:06:16 jon Exp $
+# $Id: Signio.pm,v 2.3 2002-10-12 11:43:58 jon Exp $
 #
 # Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Payment::Signio;
 
 =head1 Interchange Signio Support
 
-Vend::Payment::Signio $Revision: 2.2 $
+Vend::Payment::Signio $Revision: 2.3 $
 
 =head1 SYNOPSIS
 
@@ -357,7 +357,7 @@ sub signio {
 			);
 	
 
-	my $orderID = $opt->{order_id} || gen_order_id($opt);
+	my $orderID = $opt->{order_id};
 	$amount = $opt->{total_cost} if ! $amount;
 
     if(! $amount) {
@@ -378,7 +378,6 @@ sub signio {
                     SHIPTOZIP   => $actual{zip},
                     EXPDATE     => $exp,
                     TENDER      => 'C',
-                    ORIGID      => $orderID,
                     PWD         => $secret,
                     USER        => $user,
 					TRXTYPE		=> $transtype,
@@ -386,6 +385,9 @@ sub signio {
 
 	$query{PARTNER} = $opt->{partner} || charge_param('partner');
 	$query{VENDOR}  = $opt->{vendor}  || charge_param('vendor');
+	$query{ORIGID} = $orderID if $orderID;
+
+	$orderID ||= gen_order_id($opt);
 
     for (keys %varmap) {
         $query{$_} = $actual{$varmap{$_}};
