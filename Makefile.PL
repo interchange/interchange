@@ -407,26 +407,29 @@ sub initialize {
 
 	my $realdir;
 
+	$origdir =~ s:[\\/]\s*$::;
+	$origdir =~ s:^\s*::;
+
 	if(! $MV::Default{final}) {
 		&copyright_prompt();
 
 		# don't suggest install target same as software source directory
 		$MV::Default{PREFIX} = '' if
-			$MV::Default{PREFIX} =~ /^\Q$origdir/;
+			$MV::Default{PREFIX} eq $origdir;
 
 		{
 			$realdir = my_prompt(
 								"Where is your Interchange to be installed? ",
 								$MV::Default{PREFIX},
 								);
-			if ($realdir =~ /^\s*\Q$origdir/) {
+			$realdir =~ s:[\\/]\s*$::;
+			$realdir =~ s:^\s*::;
+			if ($realdir eq $origdir) {
 				warn "Can't install in software source directory!\n";
 				redo;
 			}
 		}
 		print "\n";
-		$realdir =~ s:[\\/]\s*$::;
-		$realdir =~ s:^\s*::;
 	}
 	else {
 		$MV::Default{final} =~ s:[\\/]\s*$::;
@@ -435,7 +438,7 @@ sub initialize {
 	}
 
 	die "Can't install in software source directory!\n" if
-		! $MV::Default{force} && $realdir =~ /^\Q$origdir/;
+		! $MV::Default{force} && $realdir eq $origdir;
 
 #warn "Got past realdir prompt\n" ; #if $X{RPMBUILDDIR};
 
