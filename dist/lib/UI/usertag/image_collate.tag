@@ -22,7 +22,7 @@ sub {
 
 	my $Exec;
 	if($archive =~ /\.zip$/i) {
-		$Exec = 'unzip -q';
+		$Exec = 'unzip -q -j';
 	}
 	elsif ($archive =~ /gz$/) {
 		$Exec = 'tar -x -z -f';
