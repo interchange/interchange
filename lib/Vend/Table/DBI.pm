@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 1.25.2.39 2001-07-06 17:37:46 heins Exp $
+# $Id: DBI.pm,v 1.25.2.40 2001-07-09 14:59:51 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.39 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.40 $, 10);
 
 use strict;
 
@@ -935,7 +935,12 @@ sub set_slice {
 		or die ::errmsg("prepare %s: %s", $sql, $DBI::errstr);
 	my $rc = $sth->execute(@$vary)
 		or die ::errmsg("execute %s: %s", $sql, $DBI::errstr);
-	return $rc;
+
+	my $val	= $s->[$CONFIG]->{AUTO_SEQUENCE}
+			?  $s->last_sequence_value()
+			: $tkey;
+
+	return $val;
 }
 
 sub set_row {
