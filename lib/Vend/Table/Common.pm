@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 1.16.4.17 2001-07-13 03:15:28 jon Exp $
+# $Id: Common.pm,v 1.16.4.18 2001-07-17 17:45:42 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.16.4.17 $, 10);
+$VERSION = substr(q$Revision: 1.16.4.18 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -630,6 +630,7 @@ sub query {
 	my $update;
 	my %nh;
 	my @na;
+	my @update_fields;
 	my @out;
 
 	if($opt->{STATEMENT}) {
@@ -680,13 +681,33 @@ eval {
 	@na = @{$spec->{rf}}     if $spec->{rf};
 
 	$spec->{fn} = [$s->columns];
-	if(! @na) {
-		@na = ! $update || $update eq 'INSERT' ? '*' : $codename;
+
+	my $sub;
+
+	if($update eq 'INSERT') {
+		@update_fields = $spec->{rf} ? @{$spec->{rf}} : @{$spec->{fn}};
+		@na = $codename;
+		$sub = $s->row_settor(@update_fields);
 	}
-	@na = @{$spec->{fn}}       if $na[0] eq '*';
+	elsif($update eq 'UPDATE') {
+		@update_fields = @{$spec->{rf}};
+		@na = $codename;
+		$sub = sub {
+					my $key = shift;
+					set_slice($s, $key, \@update_fields, \@_);
+				};
+	}
+	elsif($update eq 'DELETE') {
+		@na = $codename;
+		$sub = sub { delete_record($s, @_) };
+	}
+	else {
+		@na = @{$spec->{fn}}   if ! scalar(@na) || $na[0] eq '*';
+	}
+
 	$spec->{rf} = [@na];
 
-#::logDebug("tabs='@tabs' columns='@na' vals='@vals' update=$update"); 
+#::logDebug("tabs='@tabs' columns='@na' vals='@vals' uf=@update_fields update=$update"); 
 
     my $search;
     if (! defined $opt->{st} or "\L$opt->{st}" eq 'db' ) {
@@ -717,20 +738,17 @@ eval {
 		$opt->{row_count} = 1;
 		die "Reached update query without object"
 			if ! $s;
-		my $sub = $update eq 'DELETE'
-					? sub { delete_record($s, @_) }
-					: $s->row_settor(@na);
 #::logDebug("Update operation is $update, sub=$sub");
 		die "Bad row settor for columns @na"
 			if ! $sub;
 		if($update eq 'INSERT') {
 			&$sub(@vals);
-			$ref = [$vals[0]];
+			$ref = [[ $vals[0] ]];
 		}
 		else {
 #::logDebug("Supposed to search..., spec=" . ::uneval($spec));
 			$ref = $search->array($spec);
-#::logDebug("Returning ref=" . ::uneval($ref));
+#::logDebug("Returning ref=" . ::uneval($ref) . "updating with vals=" . join ",", @vals);
 			for(@{$ref}) {
 				&$sub($_->[0], @vals);
 			}
