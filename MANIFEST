@@ -637,7 +637,6 @@ dist/foundation/pages/index.html
 dist/foundation/pages/login.html
 dist/foundation/pages/logout.html
 dist/foundation/pages/lost_password.html
-dist/foundation/pages/modular_modify.html
 dist/foundation/pages/new_account.html
 dist/foundation/pages/ord/basket.html
 dist/foundation/pages/ord/checkout.html
@@ -1137,7 +1136,6 @@ dist/lib/UI/pages/admin/wizard/step_tax.html
 dist/lib/UI/pages/include/Options/Matrix
 dist/lib/UI/pages/include/Options/Simple
 dist/lib/UI/pages/include/Options/old/item_option_matrix
-dist/lib/UI/pages/include/Options/old/item_option_modular
 dist/lib/UI/pages/include/Options/old/item_option_simple
 dist/lib/UI/pages/include/component_editor
 dist/lib/UI/pages/include/menus/Accounting.txt
