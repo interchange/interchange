@@ -69,6 +69,17 @@ sub {
 	my $oddspan = $span - 1;
 	$opt->{table_width} = '60%' if ! $opt->{table_width};
 	$opt->{left_width} = '30%' if ! $opt->{left_width};
+	if (! $opt->{inner_table_width}) {
+		if($opt->{table_width} =~ /%/) {
+			$opt->{inner_table_width} = '100%';
+		}
+		elsif ($opt->{table_width} =~ /^\d+$/) {
+			$opt->{inner_table_width} = $opt->{table_width} - 2;
+		}
+		else {
+			$opt->{inner_table_width} = $opt->{table_width};
+		}
+	}
 	my $check       = $opt->{check};
 	my $default     = $opt->{default};
 	my $error       = $opt->{error};
@@ -672,11 +683,11 @@ EOF
 	}
 
 	$out .= <<EOF;
-<table class=touter border="" cellspacing="0" cellpadding="0">
+<table class=touter border="" cellspacing="0" cellpadding="0" width="$opt->{table_width}">
 <tr>
   <td>
 
-<table class=tinner  width="$opt->{table_width}" cellspacing=0 cellmargin=0 width="100%" cellpadding="2" align="center" border="0">
+<table class=tinner  width="$opt->{inner_table_width}" cellspacing=0 cellmargin=0 width="100%" cellpadding="2" align="center" border="0">
 EOF
 	$out .= <<EOF unless $opt->{no_top};
 <tr class=rtitle> 
