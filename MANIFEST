@@ -17,6 +17,7 @@ code/Filter/convert_date.filter
 code/Filter/date2time.filter
 code/Filter/encrypt.filter
 code/Filter/lc.filter
+code/Filter/line.filter
 code/Filter/linkdecode.filter
 code/Filter/next_sequential.filter
 code/SystemTag/accessories.coretag
