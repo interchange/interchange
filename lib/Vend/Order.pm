@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.7 2000-08-06 19:47:38 heins Exp $
+# $Id: Order.pm,v 1.8 2000-08-19 04:13:31 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.7 $, 10);
+$VERSION = substr(q$Revision: 1.8 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -598,12 +598,12 @@ sub charge {
     my($orderID);
     my($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime(time());
 
-    # We'll make an order ID based on date, time, and Interchange session
+    # We'll make an order ID based on date, time, and PID
 
     # $mon is the month index where Jan=0 and Dec=11, so we use
     # $mon+1 to get the more familiar Jan=1 and Dec=12
-    $orderID = sprintf("%02d%02d%02d%02d%02d%05d%s",
-            $year + 1900,$mon + 1,$mday,$hour,$min,$Vend::SessionName);
+    $orderID = sprintf("%02d%02d%02d%02d%02d%05d",
+            $year + 1900,$mon + 1,$mday,$hour,$min,$$);
 
     # The following characters are illegal in an order ID:
     #    : < > = + @ " % = &
@@ -1585,12 +1585,13 @@ sub route_order {
 		if ($route->{track}) {
 			Vend::Util::writefile($route->{track}, $page)
 				or ::logError("route tracking error writing $route->{track}: $!");
-			if ($route->{track_mode} =~ /^0/) {
-				chmod($route->{track_mode}); 
-			}
-			elsif ($route->{track_mode}) {
-				chmod(oct $route->{track_mode}); 
-			}
+			my $mode = $route->{track_mode} || '';
+            if ($mode =~ s/^0+//) {
+                chmod oct($mode), $fn;
+            }
+            elsif ($mode) {
+                chmod $mode, $fn;
+            }
 		}
 		if ($route->{individual_track}) {
 			my $fn = Vend::Util::catfile(
@@ -1600,12 +1601,13 @@ sub route_order {
 						);
 			Vend::Util::writefile( $fn, $page,	)
 				or ::logError("route tracking error writing $fn: $!");
-			if ($route->{track_mode} =~ /^0/) {
-				chmod($route->{track_mode}); 
-			}
-			elsif ($route->{track_mode}) {
-				chmod(oct $route->{track_mode}); 
-			}
+			my $mode = $route->{track_mode} || '';
+            if ($mode =~ s/^0+//) {
+                chmod oct($mode), $fn;
+            }
+            elsif ($mode) {
+                chmod $mode, $fn;
+            }
 		}
 	};
 		if($@) {
