@@ -5,35 +5,75 @@ UserTag import_fields Routine <<EOR
 sub {
 	my($table, $opt) = @_;
 	use strict;
+	my $out;
 	local($SIG{__DIE__});
 	$SIG{"__DIE__"} = sub {
                             my $msg = shift;
                             ::response(<<EOF);
 <HTML><HEAD><TITLE>Fatal Administration Error</TITLE></HEAD><BODY>
 <H1>FATAL error</H1>
+<P>
 <PRE>$msg</PRE>
+Progress to date:
+<P>
+$out
 </BODY></HTML>
 EOF
                             exit 0;
                         };
 	my $file = $opt->{'file'} || $Vend::Cfg->{ProductDir} . "/$table.update";
-	my $db = Vend::Data::database_exists_ref($table);
-	die "Non-existent table '$table'\n" unless $db;
-	$db = $db->ref() unless $Vend::Interpolate::Db{$table};
-	my $out = '<PRE>';
+	my $currdb;
+	my $tmsg = '';
+	my $db;
+	if($opt->{multiple}) {
+		undef $table;
+		sub import_fields_change_db {
+			my $table = shift;
+			$db = Vend::Data::database_exists_ref($table);
+			die "Non-existent table '$table'\n" unless $db;
+			$db = $db->ref() unless $Vend::Interpolate::Db{$table};
+			$tmsg = "table $table: ";
+			return;
+		}
+	}
+	else {
+		$db = Vend::Data::database_exists_ref($table);
+		die "Non-existent table '$table'\n" unless $db;
+		$db = $db->ref() unless $Vend::Interpolate::Db{$table};
+	}
+	$out = '<PRE>';
 	my $delimiter = quotemeta $opt->{delimiter} || "\t";
 	open(UPDATE, $file)
 		or die "read $file: $!\n";
+
 	my $fields;
-	if($opt->{'fields'}) {
+
+	if($opt->{multiple}) {
+		# will get fields later
+		undef $opt->{fields};
+	}
+	elsif($opt->{'fields'}) {
 		$fields = $opt->{'fields'};
 		$out .= "Using fields from parameter: '$fields'\n";
 	}
-	else {
+
+	my $verbose;
+	my $quiet;
+
+	$verbose = 1 if ! $opt->{quiet};
+	$quiet = 1   if $opt->{quiet} > 1;
+
+  TABLE: {
+	if(! $table) {
+		$table = <UPDATE>;
+		chomp $table;
+		import_fields_change_db($table);
+	}
+	if(! $opt->{fields}) {
 		$fields = <UPDATE>;
 		chomp $fields;
 		$fields =~ s/$delimiter/ /g;
-		$out .= "Using fields from file: '$fields'\n";
+		$out .= "${tmsg}Using fields from file: '$fields'\n";
 	}
 	die "No field names." if ! $fields;
 	my @names;
@@ -56,25 +96,33 @@ EOF
 		chomp;
 		$totcount++;
 		($k, @f) = split /$delimiter/o, $_;
+		if(/^\f(\w+)$/) {
+			$out .= "${tmsg}$count records processed of $totcount input lines.\n";
+			$out .= "${tmsg}$delcount records deleted.\n" if $delcount;
+			$out .= "${tmsg}$addcount records added.\n" if $addcount;
+			$delcount = $totcount = $addcount = 0;
+			import_fields_change_db($1);
+			redo TABLE;
+		}
 		if(! $k and ! length($k)) {
 			next if ! $opt->{delete};
 			next if $f[0] ne 'DELETE';
-			$out .= "Deleting record '$f[1]'.\n";
+			$out .= "${tmsg}Deleting record '$f[1]'.\n" if $verbose;
 			$db->delete_record($f[1]);
 			$count++;
 			$delcount++;
 			next;
 		}
-		$out .= "Record '$k' had too many fields, ignored.\n"
+		$out .= "${tmsg}Record '$k' had too many fields, ignored.\n"
 			if @f > $idx;
 		if ( ! $db->record_exists($k)) {
 			if ($opt->{add}) {
-				$out .= "Adding record '$k'.\n";
+				$out .= "${tmsg}Adding record '$k'.\n" if $verbose;
 				$db->set_row($k);
 				$addcount++;
 			}
 			else {
-				$out .= "Non-existent record '$k', skipping.\n";
+				$out .= "${tmsg}Non-existent record '$k', skipping.\n";
 				next;
 			}
 		}
@@ -83,9 +131,10 @@ EOF
 		}
 		$count++;
 	}
-	$out .= "$count records processed of $totcount input lines.\n";
-	$out .= "$delcount records deleted.\n" if $delcount;
-	$out .= "$addcount records added.\n" if $addcount;
+	$out .= "${tmsg}$count records processed of $totcount input lines.\n";
+	$out .= "${tmsg}$delcount records deleted.\n" if $delcount;
+	$out .= "${tmsg}$addcount records added.\n" if $addcount;
+  }
 	$out .= "</PRE>";
 	close UPDATE;
 	if($opt->{'move'}) {
@@ -101,7 +150,8 @@ EOF
 				or die "move $file.$ext --> $opt->{dir}: $!\n";
 		}
 	}
-	return $out;
+	return $out unless $quiet;
+	return;
 }
 EOR
 
