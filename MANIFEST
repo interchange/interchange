@@ -1134,11 +1134,6 @@ dist/lib/UI/pages/admin/wizard/step_ship_ups.html
 dist/lib/UI/pages/admin/wizard/step_style.html
 dist/lib/UI/pages/admin/wizard/step_style_logo.html
 dist/lib/UI/pages/admin/wizard/step_tax.html
-dist/lib/UI/pages/include/Options/Matrix
-dist/lib/UI/pages/include/Options/Simple
-dist/lib/UI/pages/include/Options/old/item_option_matrix
-dist/lib/UI/pages/include/Options/old/item_option_modular
-dist/lib/UI/pages/include/Options/old/item_option_simple
 dist/lib/UI/pages/include/component_editor
 dist/lib/UI/pages/include/menus/Accounting.txt
 dist/lib/UI/pages/include/menus/Admin.txt
