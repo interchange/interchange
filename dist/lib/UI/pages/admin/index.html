@@ -2,15 +2,13 @@
 [if-mm !logged_in]
 	[bounce page="__UI_BASE__/login"]
 [/if-mm]
-[perl]
-if ($goto = delete $Scratch->{ui_goto}) {
-    $cgiref = $$goto[1];
-	$Scratch->{ui_location} = $cgiref->{mv_nextpage};
+[perl tables="__UI_ACCESS_TABLE__"]
+if ($startpage = $Tag->mm_value('startpage')) {
+	$Scratch->{ui_location} = $startpage;
 }
-''
 [/perl]
 [if scratch ui_location]
-[bounce page="[scratchd ui_location]"]
+[bounce page="__UI_BASE__/[scratchd ui_location]"]
 [/if]
 [set page_title]Interchange Administration[/set]
 [tmp ui_no_title]1[/tmp]

@@ -59,9 +59,8 @@ This file documents all changes of the LINUXIA branch of Interchange.
 [locale => parse [L] within report file
 sub => call this sub instead of send_mail, I used this for HTML emails
 see usertag email_html]
-- hack to display another start page besides index.html; a catalog 
-  configuration value for History greater than 1 is required for this; 
-  (login.html: 1.15.2.2, index.html: 1.22.4.8-11)
+- display another start page besides index.html (index.html: 1.22.4.12)
+[worth to be included within main]
 - database download from gentable improved (catalog_after.cfg: 1.4.4.1,
   gentable.html: 1.11.4.2)
 - file widget added (Interpolate.pm: 1.29.4.9)
