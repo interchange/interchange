@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.112 2003-05-05 20:21:49 racke Exp $
+# $Id: Config.pm,v 2.113 2003-05-05 21:06:46 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.112 $, 10);
+$VERSION = substr(q$Revision: 2.113 $, 10);
 
 my %CDname;
 my %CPname;
@@ -499,7 +499,6 @@ sub catalog_directives {
 	['CyberCash',	 	 'warn',     	     ''],
 	['CreditCardAuto',	 'yesno',     	     'No'],
 	['NoCache',	     	 'warn',    	     ''],
-	['ClearCache',	     'yesno',     	     'No'],
 	['FormIgnore',	     'boolean',    	     ''],
 	['EncryptProgram',	 undef,     	     $Global::EncryptProgram || ''],
 	['EncryptKey',		 undef,     	     ''],
