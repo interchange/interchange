@@ -1,5 +1,5 @@
-Database  orderline  UPPERCASE  1
 Database  orderline  orderline.txt __SQLDSN__
+Database  orderline  UPPERCASE  1
 #ifdef SQLUSER
 Database  orderline  USER         __SQLUSER__
 #endif

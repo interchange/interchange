@@ -1,5 +1,5 @@
-Database  country  UPPERCASE  1
 Database  country  country.txt __SQLDSN__
+Database  country  UPPERCASE  1
 #ifdef SQLUSER
 Database  country  USER         __SQLUSER__
 #endif

@@ -1,5 +1,5 @@
-Database  order_returns  UPPERCASE  1
 Database  order_returns  order_returns.txt __SQLDSN__
+Database  order_returns  UPPERCASE  1
 #ifdef SQLUSER
 Database  order_returns  USER         __SQLUSER__
 #endif

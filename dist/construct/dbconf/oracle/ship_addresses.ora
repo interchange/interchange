@@ -1,5 +1,5 @@
-Database  ship_addresses  UPPERCASE  1
 Database  ship_addresses  ship_addresses.txt __SQLDSN__
+Database  ship_addresses  UPPERCASE  1
 #ifdef SQLUSER
 Database  ship_addresses  USER         __SQLUSER__
 #endif

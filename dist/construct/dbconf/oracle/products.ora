@@ -1,5 +1,5 @@
-Database  products  UPPERCASE  1
 Database  products  products.txt __SQLDSN__
+Database  products  UPPERCASE  1
 #ifdef SQLUSER
 Database  products  USER         __SQLUSER__
 #endif

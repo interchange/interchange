@@ -1,5 +1,5 @@
-Database  pricing  UPPERCASE  1
 Database  pricing  pricing.txt __SQLDSN__
+Database  pricing  UPPERCASE  1
 #ifdef SQLUSER
 Database  pricing  USER         __SQLUSER__
 #endif

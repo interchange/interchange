@@ -1,5 +1,5 @@
-Database  inventory  UPPERCASE  1
 Database  inventory  inventory.txt __SQLDSN__
+Database  inventory  UPPERCASE  1
 #ifdef SQLUSER
 Database  inventory  USER         __SQLUSER__
 #endif
