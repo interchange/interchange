@@ -32,23 +32,25 @@
 	else {
 		$def_string = $CGI->{ui_short_definition};
 	}
-	unshift @layout, '[' . "comment]\n$def_string\n[" . "/comment]\n";
+	if (@layout) {
+		unshift @layout, '[' . "comment]\n$def_string\n[" . "/comment]\n";
 
-	foreach $one (@layout) {
-		if( $one eq 'UI_CONTENT') {
-			my $content = shift @insert;
-			$content =~ s/\r?\n/\n/g;
-			$content = "\n<!-- BEGIN CONTENT -->\n$content\n<!-- END CONTENT -->\n";
-			#Log("inserting $content");
-			push @out, $content;
-		}
-		elsif ($one =~ /^[A-Z]\w+$/) {
-			push @out, '@_' . $one . '_@';
-			#Log("inserted variable $one");
-		}
-		else {
-			push @out, $one;
-			#Log("inserted set $one");
+		foreach $one (@layout) {
+			if( $one eq 'UI_CONTENT') {
+				my $content = shift @insert;
+				$content =~ s/\r?\n/\n/g;
+				$content = "\n<!-- BEGIN CONTENT -->\n$content\n<!-- END CONTENT -->\n";
+				#Log("inserting $content");
+				push @out, $content;
+			}
+			elsif ($one =~ /^[A-Z]\w+$/) {
+				push @out, '@_' . $one . '_@';
+				#Log("inserted variable $one");
+			}
+			else {
+				push @out, $one;
+				#Log("inserted set $one");
+			}
 		}
 	}
 	my $page = $Tag->filter('filesafe', $CGI->{ui_page});
@@ -61,8 +63,16 @@
 	$page .= $Config->{HTMLsuffix}
 		unless $page =~ /$Config->{HTMLsuffix}$/;
 #Log("final page=$page");
-	push @out, '';
-	$Tag->write_relative_file($page, (join "\n", @out));
+	if (@out) {
+	    push @out, '';
+	    $contents = join ("\n", @out);
+    } else {
+	    $contents = $CGI->{ui_content};
+	}
+    $contents =~ s/^<!--\s+begin\s+content\s+-->\n?//i;
+    $contents =~ s/<!--\s+end\s+content\s+-->\n*$//i;
+    $contents =~ s/\r//g;
+	$Tag->write_relative_file($page, $contents);
 	$Scratch->{ui_output_page} = $page;
 	return;
 [/perl]
