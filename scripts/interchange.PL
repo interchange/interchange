@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.9.0
 #
-# $Id: interchange.PL,v 2.13 2001-10-19 00:32:37 mheins Exp $
+# $Id: interchange.PL,v 2.14 2001-10-19 02:55:57 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -1835,6 +1835,7 @@ EOF
 			unless $Vend::Cfg->{Static};
 	}
 	$::Variable = $Vend::Cfg->{Variable};
+	$::Pragma   = $Vend::Cfg->{Pragma};
 
 	if (defined $Global::SelectorAlias{$CGI::script_name}
 		and ! defined $Vend::InternalHTTP                 )
