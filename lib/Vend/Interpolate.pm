@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.22 2001-02-28 20:23:36 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.23 2001-03-01 17:51:51 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.22 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.23 $, 10);
 
 @EXPORT = qw (
 
@@ -2482,7 +2482,7 @@ sub http_header {
 	my ($opt, $text) = @_;
 	$text =~ s/^\s+//;
 	if($opt->{name}) {
-		my $name =~ lc $opt->{name};
+		my $name = lc $opt->{name};
 		$name =~ s/-/_/g;
 		$name =~ s/\W+//g;
 		$name =~ tr/_/-/s;
