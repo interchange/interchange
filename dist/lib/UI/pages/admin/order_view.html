@@ -321,7 +321,21 @@
 	return;
 [/calc]
                <td style="padding: 5px">[sql-param sku]</td>
-               <td style="padding: 5px">[sql-filter 30.][sql-param description][/sql-filter]</td>
+               <td style="padding: 5px">
+[sql-filter 30.][sql-param description][/sql-filter]
+[if-sql-param size]
+<br>[L]Size[/L]: [sql-param size]
+[/if-sql-param]
+[if-sql-param color]
+<BR>
+[L]Color[/L]: [sql-param color]
+[/if-sql-param]
+
+[if-sql-param options]
+<BR>
+[L]Options[/L]: [sql-param options]
+[/if-sql-param]
+			   </td>
                <td align=right style="padding: 5px">[sql-param quantity]</td>
                <td align=right style="padding: 5px">[sql-param price]</td>
                <td align=right style="padding: 5px">[sql-param subtotal]</td>
@@ -397,4 +411,4 @@ vieworder=
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: order_view.html,v 2.11 2003-04-12 01:05:24 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order_view.html,v 2.12 2003-04-14 19:42:46 racke Exp $ -->
