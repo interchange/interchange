@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.149 2003-02-27 10:12:15 ton Exp $
+# $Id: Interpolate.pm,v 2.150 2003-03-01 15:47:15 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.149 $, 10);
+$VERSION = substr(q$Revision: 2.150 $, 10);
 
 @EXPORT = qw (
 
@@ -6724,10 +6724,11 @@ sub levies {
 		my $cost = 0;
 		my $sort;
 		my $desc;
+		my $lab_field = $l->{label_value};
 		if($type eq 'salestax') {
 			my $save;
 			$sort = $l->{sort} || '010';
-			my $lab_field = $l->{label_value} || $Vend::Cfg->{SalesTax};
+			$lab_field ||= $Vend::Cfg->{SalesTax};
 			if($l->{tax_fields}) {
 				$save = $Vend::Cfg->{SalesTax};
 				$Vend::Cfg->{SalesTax} = $l->{tax_fields};
@@ -6737,10 +6738,7 @@ sub levies {
 				$Vend::Cfg->{SalesTax} = 'multi';
 			}
 			$cost = salestax(undef, { tax_type => $l->{tax_type} } );
-			$desc = errmsg(
-						$l->{description} || 'Sales Tax',
-						$::Values->{$lab_field},
-					);
+			$l->{description} ||= 'Sales Tax';
 			$Vend::Cfg->{SalesTax} = $save if defined $save;
 		}
 		elsif ($type eq 'shipping' or $type eq 'handling') {
@@ -6748,7 +6746,7 @@ sub levies {
 				$sort = $type eq 'handling' ? 100 : 500;
 			}
 			$cost = shipping($mode);
-			$desc = $l->{description} || tag_shipping_desc($mode);
+			$l->{description} ||= tag_shipping_desc($mode);
 		}
 		elsif($type eq 'custom') {
 			my $sub;
@@ -6771,16 +6769,18 @@ sub levies {
 			}
 		}
 
+		$desc = errmsg(
+					$l->{description},
+					$::Values->{$lab_field},
+				);
+
 		my $cost_format;
-		unless ($cost_format = $l->{cost_format}) {
-			my $digits = errmsg('frac_digits') || 2;
-			$cost_format = "%.${digits}f";
-		}
+
 		my $item = {
 							code			=> $name,
 							mode			=> $mode,
 							sort			=> $sort,
-							cost			=> sprintf($cost_format,$cost),
+							cost			=> round_to_frac_digits($cost),
 							currency		=> currency($cost),
 							group			=> $group,
 							label			=> $l->{label} || $desc,
@@ -6792,8 +6792,26 @@ sub levies {
 			$item->{free} = 1;
 			$item->{free_message} = $l->{free_message} || $cost;
 		}
-		push @$lcart, $item;
+
+		if(my $target = $l->{add_to}) {
+			my $found;
+			foreach my $lev (@$lcart) {
+				next unless $lev->{code} eq $target;
+				$lev->{cost} += $item->{cost};
+				$lev->{cost} = round_to_frac_digits($lev->{cost});
+				$lev->{currency} = currency($lev->{cost});
+				$found = 1;
+				last;
+			}
+			unless($found) {
+				push @$lcart, $item;
+			}
+        }
+        else {
+                push @$lcart, $item;
+        }
 	}
+
 	@$lcart = sort { $a->{sort} cmp $b->{sort} } @$lcart;
 
 	for(@$lcart) {
