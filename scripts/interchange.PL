@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.9.0
 #
-# $Id: interchange.PL,v 2.14 2001-10-19 02:55:57 mheins Exp $
+# $Id: interchange.PL,v 2.15 2001-11-15 00:53:04 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -1904,7 +1904,12 @@ EOF
 
 	$::Instance->{CookieName} = $Vend::Cfg->{CookieName};
 
-	if ($::Instance->{CookieName} and defined $CGI::cookie) {
+	if($CGI::values{mv_tmp_session}) {
+		$Vend::tmp_session = $Vend::new_session = 1;
+		$sessionid = 'nsession';
+		$Vend::Cookie = 1;
+	}
+	elsif ($::Instance->{CookieName} and defined $CGI::cookie) {
 		$CGI::cookie =~ m{$Vend::CookieName=($Vend::Cfg->{CookiePattern})};
 		$seed = $sessionid = $1;
 		$::Instance->{ExternalCookie} = $sessionid || 1;
@@ -1962,6 +1967,11 @@ RESOLVEID: {
     if ($sessionid) {
 		$Vend::SessionID = $sessionid;
     	$Vend::SessionName = session_name();
+		if($Vend::tmp_session) {
+			$Vend::Session = {};
+			init_session;
+			last RESOLVEID;
+		}
 		# get_session will return a value if a session is read,
 		# if not it will return false and a new session has been created.
 		# The IP address will be counted for robot_resolution

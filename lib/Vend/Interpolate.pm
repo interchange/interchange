@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.28 2001-11-09 23:34:52 mheins Exp $
+# $Id: Interpolate.pm,v 2.29 2001-11-15 00:53:04 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.28 $, 10);
+$VERSION = substr(q$Revision: 2.29 $, 10);
 
 @EXPORT = qw (
 
@@ -5802,6 +5802,8 @@ sub fly_page {
 		}
 	}
 
+	# This allows access from embedded Perl
+	$Tmp->{flycode} = $code;
 # TRACK
 	$Vend::Track->view_product($code);
 # END TRACK
@@ -6414,15 +6416,25 @@ sub timed_build {
 
 	$opt->{login} = 1 if $opt->{auto};
 
-	return Vend::Interpolate::interpolate_html($_[0])
-		if $abort
-		or ( ! $opt->{force}
-				and
-				(   ! $Vend::Cookie
-					or $Vend::BuildingPages
-					or ! $opt->{login} && $Vend::Session->{logged_in}
-				)
-			);
+	my $save_scratch;
+	if($opt->{new} and $Vend::new_session) {
+#::logDebug("we are new");
+		$save_scratch = $::Scratch;
+		$Vend::Cookie = 1;
+		$Vend::Session->{scratch} = { %{$Vend::Cfg->{ScratchDefault}}, mv_no_session_id => 1, mv_no_count => 1, mv_force_cache => 1 };
+		
+	}
+	else {
+		return Vend::Interpolate::interpolate_html($_[0])
+			if $abort
+			or ( ! $opt->{force}
+					and
+					(   ! $Vend::Cookie
+						or $Vend::BuildingPages
+						or ! $opt->{login} && $Vend::Session->{logged_in}
+					)
+				);
+	}
 	
 	if($opt->{auto}) {
 		$opt->{login} =    1 unless defined $opt->{login};
@@ -6496,9 +6508,11 @@ sub timed_build {
 			}
 		}
 # END STATICPAGE
+		$Vend::Session->{scratch} = $save_scratch if $save_scratch;
         return $out;
     }
-    else {        return Vend::Util::readfile($file);    }
+	$Vend::Session->{scratch} = $save_scratch if $save_scratch;
+	return Vend::Util::readfile($file);
 }
 
 sub update {

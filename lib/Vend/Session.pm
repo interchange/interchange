@@ -1,6 +1,6 @@
 # Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 2.0 2001-07-18 02:23:14 jon Exp $
+# $Id: Session.pm,v 2.1 2001-11-15 00:53:04 mheins Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -26,7 +26,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.0 $, 10);
+$VERSION = substr(q$Revision: 2.1 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -230,6 +230,7 @@ sub new_session {
 			last unless exists $Vend::SessionDBM{$name};
 		}
     }
+	$Vend::new_session = 1;
 	count_ip(1);
 	undef $Vend::Cookie;
     $Vend::SessionName = $name;
