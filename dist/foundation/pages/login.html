@@ -24,22 +24,21 @@ ui_template_name: leftonly
 
 <table width="95%">
 <tr>
-  <td>
+<td>
 
 [if session failure]
+	<br><br>
+	<B>[calc] delete $Session->{failure}[/calc]</b>
+	<br>
+[/if]
 
-      <br><br>
-      <B>[calc] delete $Session->{failure}[/calc]</b>
-      <br>
-    [/if]
+[set mv_no_cache]1[/set]
+[set New Account]
+mv_nextpage=new_account
+[set new]1[/set]
+[/set]
 
-    [set mv_no_cache]1[/set]
-    [set New Account]
-    mv_nextpage=new_account
-    [set new]1[/set]
-    [/set]
-
-    [if !session logged_in]
+[if !session logged_in]
 
     <FORM ACTION="[process secure=1]" METHOD=POST>
     <INPUT TYPE=hidden NAME=mv_todo  VALUE=return>
@@ -103,8 +102,7 @@ ui_template_name: leftonly
       <td class="contentbar1" align="center"> 
 	<table>
 	<tr class=contentbar2> 
-	  <td align=right class=contentbar2>&nbsp;</td>
-	  <td class=contentbar2>
+	  <td colspan=2 class=contentbar2>
 	    <b>You are already logged in.</b>
 	  </td>
 	</tr>
@@ -117,8 +115,7 @@ ui_template_name: leftonly
 	  </td>
 	</tr>
 	<tr class=contentbar2> 
-	  <td align=right>&nbsp;</td>
-	  <td>
+	  <td colspan=2>
 	    Or you can create a <A HREF="[area new_account]">new account</a>.
 	  </td>
 	</tr>
@@ -133,16 +130,16 @@ ui_template_name: leftonly
 [/else]
 [/if]
 
-    Log in to complete a transaction in this Foundation demo. 
-    Choose one of three ways to log in:
-    <ol>
-    <li>Log in as a new user. Click on the "New Account" button above and 
-        enter the requested information.
-    <li>Log in as a dealer by entering username "jdoe" and password "test" 
-        above. As a dealer you may be offered different pricing structures.
-    <li>Log in as an affiliate. Enter this demo store from our affilate site: 
-        <a href="http://demo.akopia.com/~hardhat">http://demo.akopia.com/~hardhat</a>
-    </ol>
+Try logging in to complete a transaction in this demo.
+Choose one of three ways to log in:
+<ol>
+	<li>Log in as a new user. Click on the "New Account" button above and 
+	enter the requested information.
+	<li>Log in as a dealer by entering username "jdoe" and password "test" 
+	above. As a dealer you may be offered different pricing structures.
+	<li>Log in as an affiliate. Enter this demo store from our affilate site: 
+	<a href="http://demo.akopia.com/~hardhat">http://demo.akopia.com/~hardhat</a>
+</ol>
 
   </td>
 </tr>
