@@ -3,3 +3,6 @@ Ardo van Rangelrooij <ardo@debian.org> for:
 
 Marcelo E. Magallon <mmagallo@debian.org> for:
 - reporting bug #109228 (package description interchange-cat-foundation)
+
+Michael Bilow <mike@bilow.com> for:
+- providing an 400mod_interchange.info
