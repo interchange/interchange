@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.16 2000-10-20 02:46:43 jon Exp $
+# $Id: Order.pm,v 1.17 2000-11-08 21:47:27 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.16 $, 10);
+$VERSION = substr(q$Revision: 1.17 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1532,7 +1532,11 @@ sub route_order {
 			$reply   = $route->{reply} || $main->{reply};
 			$reply   = $::Values->{$reply} if $reply =~ /^\w+$/;
 			$to		 = $route->{email};
-			push @out, [$to, $subject, $page, $reply, $use_mime];
+			my $ary = [$to, $subject, $page, $reply, $use_mime];
+			if($route->{from}) {
+				push @$ary, "From: $route->{from}";
+			}
+			push @out, $ary;
 		}
 		elsif ($route->{empty}) {
 			# Do nothing
