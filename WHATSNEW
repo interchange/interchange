@@ -12,6 +12,9 @@ Core
 * Fixed bug in [if-item-param field eq string] which would now work due
   to improper field pointer type.
 
+* Prevent converting exchange rates twice for shipping -- bug found
+  and patch supplied by Frederic Steinfels <fredo@dvdupgrades.ch>.
+
 * row_hash returns undef now for memory databases too instead of 
   throwing an error if no row is found
 
