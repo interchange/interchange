@@ -1,4 +1,4 @@
-[set page_title]Upload Products[/set]
+[set page_title][L]Upload Products[/L][/set]
 [set ui_checklist]1[/set]
 [set help_name]wizard.batchupload[/set]
 @_UI_STD_HEAD_@
@@ -18,14 +18,14 @@
 		unless $writestatus;
 	my $inst = join "<BR>", @inst;
 	my $out = <<EOF;
-<H2>XLS product upload will not work properly.</H2>
-Please install needed Perl modules:
+<H2>[L]XLS product upload will not work properly.[/L]</H2>
+[L]Please install needed Perl modules[/L]:
 <small>
 <blockquote>
 	<FONT COLOR="__UI_C_CONTRAST__">$miss</FONT>
 </blockquote>
 </small>
-The easiest way to do this is to use the CPAN module and do:
+[L]The easiest way to do this is to use the CPAN module and do[/L]:
 <blockquote>
 $inst
 </blockquote>
@@ -33,18 +33,17 @@ $inst
 EOF
 	return $out;
 [/calc]
-This section allows you to enter your products. To use the Interchange spreadsheet:<br>
+[L]This section allows you to enter your products. To use the Interchange spreadsheet[/L]:<br>
 <ol>
-<li>Download the Interchange Spreadsheet Template
+<li>[L]Download the Interchange Spreadsheet Template[/L]
 <a href="__IMAGE_DIR__/template.xls">template.xls</a>.
-<li>Or download one of our spreadsheets preloaded with sample products:
+<li>[L]Or download one of our spreadsheets preloaded with sample products[/L]:
 	<UL>
-	<LI><a href="__IMAGE_DIR__/construct.xls">Hardware & Construction Tools</A>
-	<LI><a href="__IMAGE_DIR__/reports.xls">Marketing Reports</A>
+	<LI><a href="__IMAGE_DIR__/construct.xls">[L]Hardware & Construction Tools[/L]</A>
+	<LI><a href="__IMAGE_DIR__/reports.xls">[L]Marketing Reports[/L]</A>
 	</UL>
-<li>Add your products to the spreadsheet and click <b>Save</b>.
-<li>Click <b>Browse</b>. Find the location where you saved products.xls and
-click <b>Next</b> to upload the populated spreadsheet.
+<li>[L]Add your products to the spreadsheet and click <b>Save</b>.[/L]
+<li>[L]Click <b>Browse</b>. Find the location where you saved products.xls and click <b>Next</b> to upload the populated spreadsheet.[/L]
 </ol>
 </td></tr></table>
 
@@ -68,8 +67,8 @@ click <b>Next</b> to upload the populated spreadsheet.
 
 	ui_wizard_fields="products"
 
-	label.products="Products"
-	help.products="Select the Excel-format file you entered your products list into (optional)."
+	label.products="[L]Products[/L]"
+	help.products="[L]Select the Excel-format file you entered your products list into (optional).[/L]"
 	widget.products=uploadhelper
 	outboard.products=upload
 ]

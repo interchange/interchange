@@ -1,11 +1,11 @@
-[set page_title]Security Preferences[/set]
+[set page_title][L]Security Preferences[/L][/set]
 [set ui_checklist]1[/set]
 [set help_name]wizard.security[/set]
 [set ui_override_next][/set]
 @_UI_STD_HEAD_@
 
 <table><tr><td width=500>
-Set up password protection for your e-commerce site. 
+[L]Set up password protection for your e-commerce site.[/L] 
 </td></tr></table>
 <p>
 [table-editor 
@@ -27,30 +27,30 @@ Set up password protection for your e-commerce site.
 
 	ui_wizard_fields="adminuser adminpass shopuser shoppass firstname enablesecure"
 
-	label.adminuser="Site Administrator Name"
-	help.adminuser="User name for superuser (technical administrator), which is probably you."
+	label.adminuser="[L]Site Administrator Name[/L]"
+	help.adminuser="[L]User name for superuser (technical administrator), which is probably you.[/L]"
 	widget.adminuser=text_15
 	default.adminuser=admin
 
-	label.adminpass="Site Administrator Password"
-	help.adminpass="Password for superuser. Do not use a system password here."
+	label.adminpass="[L]Site Administrator Password[/L]"
+	help.adminpass="[L]Password for superuser. Do not use a system password here.[/L]"
 	widget.adminpass=password_15
 
 	check.shopuser=mandatory
-	label.shopuser="Site User Name"
-	help.shopuser="User name for the first shop user, a person who will make changes to products, pages, etc."
+	label.shopuser="[L]Site User Name[/L]"
+	help.shopuser="[L]User name for the first shop user, a person who will make changes to products, pages, etc.[/L]"
 	widget.shopuser=text_15
 
-	label.shoppass="Site User Password"
-	help.shoppass="Password for shop user. Do not use a system password here."
+	label.shoppass="[L]Site User Password[/L]"
+	help.shoppass="[L]Password for shop user. Do not use a system password here.[/L]"
 	widget.shoppass=password_15
 
-	label.firstname="First Name"
-	help.firstname="Your first name, for use with your site user account."
+	label.firstname="[L]First Name[/L]"
+	help.firstname="[L]Your first name, for use with your site user account.[/L]"
 	widget.firstname=text_15
 
-	label.enablesecure="Use SSL Web Server"
-	help.enablesecure="Select Yes if your Stronghold or other SSL secure server is set up"
+	label.enablesecure="[L]Use SSL Web Server[/L]"
+	help.enablesecure="[L]Select Yes if your Stronghold or other SSL secure server is set up[/L]"
 	widget.enablesecure=yesno
 	passed.enablesecure="0=No, 1=Yes"
 ]
