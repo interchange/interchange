@@ -11,6 +11,8 @@
 \.old
 \.swp$
 \.zip$
+\.orig$
+\.rej$
 _$
 ~$
 ^MANIFEST\.bak
