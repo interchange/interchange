@@ -419,6 +419,7 @@ HREF="[area
 		 FROM  [cgi mv_data_table]
 		 WHERE o_matrix  =  '1'
 		 AND   o_enable  =  '1'
+		 AND   o_master  =  '1'
 		 AND   code      <> '[cgi item_id]'
 		"
 	more=1]<SELECT NAME=ui_clone_id>
