@@ -9,9 +9,11 @@
 	}
 
 	if(! $CGI->{ui_break_before}) {
-		if($CGI->{ui_data_fields} =~ /\n\n/) {
+		if($CGI->{ui_data_fields} =~ /\n[ \t]*\r?\n/) {
 			my @breaks;
 			my @break_labels;
+			$CGI->{ui_data_fields} =~ s/\r\n/\n/g;
+			$CGI->{ui_data_fields} =~ s/\r/\n/g;
 			while ($CGI->{ui_data_fields} =~ s/\n+(?:\n=(.*)\n)?\n+(\w+)/\n$2/) {
 				push @breaks, $2;
 				push @break_labels, "$2=$1" if $1;
