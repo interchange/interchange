@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.45 2001-04-12 08:14:40 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.46 2001-04-13 10:17:39 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.45 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.46 $, 10);
 
 @EXPORT = qw (
 
@@ -2327,9 +2327,23 @@ sub flag {
 		foreach $dbname (@args) {
 			# Handle table:column:key
 			$dbname =~ s/:.*//;
-#::logDebug("tag flag transactions $dbname=$value");
+#::logDebug("flag transactions $dbname=$value");
 			$Vend::TransactionDatabase{$dbname} = $value;
 			$Vend::WriteDatabase{$dbname} = $value;
+
+			# we can't do anything else if in Safe
+			next if $MVSAFE::Safe;
+
+			# Now we close and reopen
+			my $db = database_exists_ref($dbname)
+				or next;
+			if($db->isopen()) {
+				# need to reopen in transactions mode. 
+				$db->close_table();
+				$db->suicide();
+				$db = database_exists_ref($dbname);
+				$db = $db->ref();
+			}
 		}
 	}
 	elsif($flag eq 'commit' || $flag eq 'rollback') {
@@ -2343,12 +2357,14 @@ sub flag {
 			$dbname =~ s/:.*//;
 #::logDebug("tag commit $dbname=$value");
 			my $db = database_exists_ref($dbname);
+			next unless $db->isopen();
+			next unless $db->config('Transactions');
 			if( ! $db ) {
-				::logError("attempt to commit to unknown database: %s", $dbname);
+				::logError("attempt to $method on unknown database: %s", $dbname);
 				return undef;
 			}
 			if( ! $db->$method() ) {
-				::logError("problem committing for table: %s", $dbname);
+				::logError("problem doing $method for table: %s", $dbname);
 				return undef;
 			}
 		}
@@ -3717,6 +3733,7 @@ sub more_link {
 	my $form_arg = "mv_more_ip=1\nmv_nextpage=$page";
 	$form_arg .= "\npf=$prefix" if $prefix;
 	$form_arg .= "\nmi=$prefix" if $more_id;
+	$form_arg .= "\n$opt->{form}" if $opt->{form};
 	$next = ($inc-1) * $chunk;
 #::logDebug("more_link: inc=$inc current=$current");
 	$last = $next + $chunk - 1;
@@ -3766,6 +3783,7 @@ sub tag_more_list {
 	$prefix = $q->{prefix} || '';
 	my $form_arg = "mv_more_ip=1\nmv_nextpage=$page";
 	$form_arg .= "\npf=$q->{prefix}" if $q->{prefix};
+	$form_arg .= "\n$opt->{form}" if $opt->{form};
 	if($q->{mv_more_id}) {
 		$more_id = $q->{mv_more_id};
 		$form_arg .= "\nmi=$more_id";
