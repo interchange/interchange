@@ -269,6 +269,8 @@ Foundation
 
 * category_vert_toggle component reworked by Randy Moore.
 
+* new category_vertical_tree component by Rene Hertell.
+
 UserTags
 --------
 
