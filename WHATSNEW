@@ -42,6 +42,9 @@ Core and usertags
 
 * Make mv_more_alpha working in query tags.
 
+* New option -D for localize script (Don't put default locale in output.),
+  insert comments only if they are distinct from the key
+
 * Allow [dump] of portion of session, for example [dump scratch].
 
 UI
