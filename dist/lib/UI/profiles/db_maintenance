@@ -14,7 +14,7 @@ __NAME__ db_maintenance
 			last;
 		}
 
-Log("using idp=$idp, value=$CGI->{$idp}");
+#Log("using idp=$idp, value=$CGI->{$idp}");
 		$return unless $idp;
 
 		delete $Scratch->{ui_location};
