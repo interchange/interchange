@@ -196,11 +196,10 @@
 	}
 	elsif (! $mref) {
 		$Scratch->{keypos} = 0;
-		return;
 	}
 
 	my $meta;
-	if($mref->record_exists($CGI->{mv_data_table}) ) {
+	if($mref and $mref->record_exists($CGI->{mv_data_table}) ) {
 		$meta = $mref->row_hash($CGI->{mv_data_table});
 	}
 	else {
