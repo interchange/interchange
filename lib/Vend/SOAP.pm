@@ -1,6 +1,6 @@
 # SOAP.pm:  handle SOAP connections
 #
-# $Id: SOAP.pm,v 1.1.2.6 2001-03-07 17:57:49 heins Exp $
+# $Id: SOAP.pm,v 1.1.2.7 2001-04-09 06:25:50 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -29,11 +29,12 @@ use Vend::Order;
 use HTTP::Response;
 use HTTP::Headers;
 use Vend::SOAP::Transport;
-
+require SOAP::Transport::IO;
+require SOAP::Transport::HTTP;
 use strict;
 
 use vars qw($VERSION @ISA $AUTOLOAD);
-$VERSION = substr(q$Revision: 1.1.2.6 $, 10);
+$VERSION = substr(q$Revision: 1.1.2.7 $, 10);
 @ISA = qw/SOAP::Server/;
 
 my %Allowed_tags;
@@ -128,17 +129,33 @@ sub tag_soap {
 	my $result;
 #::logDebug("to method call, uri=$uri proxy=$proxy call=$method args=" . ::uneval(\@args));
 	eval {
-		$result = SOAP::Lite
+		if(! $method ) {
+			$result = SOAP::Lite
+					-> uri($uri)
+					-> proxy($proxy)
+					-> call ('init');
+		}
+		elsif(ref $opt->{object}) {
+			$result = $opt->{object}
 					-> uri($uri)
 					-> proxy($proxy)
 					-> call( $method => @args )
 					-> result;
+		}
+		else {
+			$result = SOAP::Lite
+					-> uri($uri)
+					-> proxy($proxy)
+					-> call( $method => @args )
+					-> result;
+		}
 	};
 	if($@) {
 		::logGlobal("error on SOAP call: %s", $@);
 	}
 #::logDebug("after method call, uri=$uri proxy=$proxy call=$method result=$result");
 
+	return '' if $opt->{init};
 	return $result;
 }
 
