@@ -60,11 +60,6 @@ neither of those is set, my favorite editor, B<vi>(1) is used.
 There is currently no way to add or delete entire columns from the
 file. I recommend using B<cut>(1) for this.
 
-B<te> won't work if your editor immediately returns control to the caller,
-as is common with some X editors, such as B<gvim>. Unless you can figure
-out how to get the editor to wait until the end of the editing session to
-return control to the caller, you can't use that editor with B<te>.
-
 =head1 AUTHOR
 
 Jon Jensen <jon@redhat.com>
@@ -83,6 +78,10 @@ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 at http://www.fsf.org/copyleft/gpl.html for more details.
 
+=head1 VERSION
+
+$Id $
+
 =head1 CHANGELOG
 
 2001-04-26. Initial release.
@@ -97,6 +96,8 @@ bug that caused fields with number "0" to be output as empty strings.
 options there or in EDITOR if given. Take advantage of Digest::MD5's
 native file reading instead of doing it ourselves.
 
+2001-10-03. Added gvim support by forcing foreground option -f.
+
 =cut
 
 use strict;
@@ -106,6 +107,10 @@ use File::Basename 'fileparse';
 die "Usage: $0 tablefile1 [tablefile2 ...]\n" unless @ARGV;
 
 my $editor = $ENV{VISUAL} || $ENV{EDITOR} || 'vi';
+
+# run gvim in foreground mode, since it otherwise immediately returns
+# control to us and we never get the user's changes
+$editor .= ' -f' if $editor =~ /\bgvim\b/ and $editor !~ /\s-f\b/;
 
 for my $filename (@ARGV) {
 	my (@fieldnames, $fieldcount, @fields);
