@@ -8,27 +8,13 @@ ui_template_name: leftonly
 
 [control reset=1]
 
+
+[control-set]
+[component]category_horizontal[/component]
+[/control-set]
+
 [control-set]
 [component]search_box_small[/component]
-[/control-set]
-
-[control-set]
-[component]cart_tiny[/component]
-[/control-set]
-
-[control-set]
-[component]category_vertical[/component]
-[/control-set]
-
-[control-set]
-[component][/component]
-[/control-set]
-
-[control-set]
-[component]upsell_horizontal[/component]
-[size]2[/size]
-[cols]2[/cols]
-[banner]You might also like[/banner]
 [/control-set]
 
 [control reset=1]
@@ -127,7 +113,18 @@ ui_template_name: leftonly
 	<table width="100%">
 	<tr>
 	  <td align="left">
-	    Price: <b>[item-price]<b>
+    [if-item-field sale_price]
+      [tmp enable_sale_price]__SALE_PRICE__[/tmp]
+    [/if-item-field]
+    
+    [if scratch enable_sale_price]
+      Their price: <STRIKE>[currency][item-field price][/currency]</STRIKE>
+      Our Price: <b>[item-price]<b>
+    [else]
+      Price: <b>[item-price]<b>
+    [/else]
+    [/if]
+
 	  </td>
 	  <td align="right">					
 	    <input type="submit" value="Buy it Now!">
