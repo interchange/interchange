@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25 2000-11-03 23:38:30 heins Exp $
+# $Id: Config.pm,v 1.26 2000-11-26 08:02:08 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -89,6 +89,7 @@ use strict;
 use vars qw(
 			$VERSION $C $CanTie
 			@Locale_directives_ary @Locale_directives_scalar
+			@Locale_directives_code
 			@Locale_directives_currency @Locale_keys_currency
 			);
 use Safe;
@@ -103,7 +104,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.25 $, 10);
+$VERSION = substr(q$Revision: 1.26 $, 10);
 
 my %CDname;
 
@@ -169,6 +170,18 @@ qw/
 	UseModifier
 	AutoModifier
 /   );
+
+# These are extra routines that are run if certain directives are
+# updated
+# Form:
+#
+# [ 'Directive', \&routine, [ @args ] ],
+# 
+# @args are optional.
+# 
+@Locale_directives_code = (
+	[ 'ProductFiles', \&Vend::Data::update_productbase ],
+);
 
 my %DumpSource = (qw(
 					SpecialPage			1
