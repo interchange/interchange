@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.10 2002-02-05 01:33:11 mheins Exp $
+# $Id: Form.pm,v 2.11 2002-02-05 08:33:08 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -36,7 +36,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.10 $, 10);
+$VERSION = substr(q$Revision: 2.11 $, 10);
 
 @EXPORT = qw (
 	display
@@ -898,7 +898,7 @@ if($opt->{debug}) {
 	}
 
 	if($opt->{override}) {
-		$opt->{value} = $opt->{default} || $opt->{override};
+		$opt->{value} = $opt->{default};
 	}
 
 	$opt->{default} = $opt->{value}    if defined $opt->{value};

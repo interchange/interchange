@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.12 2002-02-04 08:25:54 mheins Exp $
+# $Id: Common.pm,v 2.13 2002-02-05 08:33:08 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.12 $, 10);
+$VERSION = substr(q$Revision: 2.13 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -354,7 +354,10 @@ sub set_slice {
 		unshift @$fary, $keyname;
 		unshift @$vary, $key;
 	}
-	my @current = $s->row($key);
+	my @current;
+
+	@current = $s->row($key)
+		if $s->record_exists($key);
 
 	@current[ map { $s->column_index($_) } @$fary ] = @$vary;
 
