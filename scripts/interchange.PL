@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.6.1
 #
-# $Id: interchange.PL,v 1.8.4.12 2000-11-23 12:37:06 racke Exp $
+# $Id: interchange.PL,v 1.8.4.13 2000-11-27 02:44:21 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -735,7 +735,7 @@ sub do_click {
 sub do_deliver {
 	my $file = $CGI::values{mv_data_file};
 	my $mode = $CGI::values{mv_acl_mode} || '';
-	if($::Scratch->{mv_deliver} ne $file
+	if($::Scratch->{mv_deliver} !~ m{(^|\s)$file(\s|$)}
 		and 
 		! Vend::UserDB::userdb(
 							'check_file_acl',
