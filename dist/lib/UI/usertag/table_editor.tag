@@ -16,7 +16,7 @@ sub {
 	package Vend::Interpolate;
 	use vars qw/$Values $Scratch $Db $Tag $Config $CGI $Variable $safe_safe/;
 
-	init_calc();
+	init_calc() if ! $Vend::Calc_initialized;
 
 	my @messages;
 	my @errors;

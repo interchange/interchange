@@ -54,10 +54,8 @@ sub {
 	my @out;
 	foreach my $fn (@files) {
 		my $name = $fn;
-		# force substitution of [L..]-stuff off
-		my $savelocale = delete $Vend::Cfg->{Locale};
-		$data = Vend::Util::readfile($fn);
-		$Vend::Cfg->{Locale} = $savelocale;
+		# force substitution of [L..]-stuff off by defining third param
+		$data = Vend::Util::readfile($fn, $Global::NoAbsolute, 0);
 		next unless length($data);
 		$name =~ s:.*/::;
 		my $ref = {};
