@@ -10,6 +10,9 @@ Interchange 4.8.6 not yet released.
 Core
 ----
 
+* Global configuration directive LockType works now as advertised in the
+  documentation.
+
 * SOAP server returns proper headers now, which not only makes it compliant 
   with the SOAP standard, but also makes it work with the more recent versions
   of SOAP::Lite, including the latest 0.55 with the security fix.
