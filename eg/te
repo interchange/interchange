@@ -4,7 +4,8 @@
 
 =head1 NAME
 
-te - table editor front-end for tab-delimited ASCII databases
+te (table editor) - front-end for simplifying editing tab-delimited
+ASCII databases
 
 =head1 SYNOPSIS
 
@@ -51,13 +52,18 @@ anywhere in the temporary file and save it. The current file will be
 processed and saved, but the rest will be skipped.
 
 As is customary with many Unix applications, you can set the environment
-variable EDITOR to point to your favorite text editor. If EDITOR is not
-set, my favorite editor, B<vi>(1) is used.
+variables VISUAL or EDITOR to point to your favorite text editor. If
+neither of those is set, my favorite editor, B<vi>(1) is used.
 
 =head1 LIMITATIONS
 
 There is currently no way to add or delete entire columns from the
 file. I recommend using B<cut>(1) for this.
+
+B<te> won't work if your editor immediately returns control to the caller,
+as is common with some X editors, such as B<gvim>. Unless you can figure
+out how to get the editor to wait until the end of the editing session to
+return control to the caller, you can't use that editor with B<te>.
 
 =head1 AUTHOR
 
@@ -87,20 +93,19 @@ bug that caused fields with number "0" to be output as empty strings.
 
 2001-05-06. Fix problem with how temporary file names were generated.
 
+2001-07-31. Check for VISUAL environment variable, and handle editor
+options there or in EDITOR if given. Take advantage of Digest::MD5's
+native file reading instead of doing it ourselves.
+
 =cut
 
 use strict;
-use Digest::MD5 'md5';
+use Digest::MD5;
 use File::Basename 'fileparse';
 
 die "Usage: $0 tablefile1 [tablefile2 ...]\n" unless @ARGV;
 
-my $EDITOR = $ENV{EDITOR} || 'vi';
-
-# I tried keeping the whole file in memory instead of first writing to
-# disk, but doing it this way turned out to be about 5 times faster and
-# used 1/10th the memory on large files. (My benchmark was a 12 MB
-# products.txt database for Interchange.)
+my $editor = $ENV{VISUAL} || $ENV{EDITOR} || 'vi';
 
 for my $filename (@ARGV) {
 	my (@fieldnames, $fieldcount, @fields);
@@ -122,6 +127,12 @@ for my $filename (@ARGV) {
 	$fieldcount = tr/\t/\t/ + 1;
 	@fieldnames = split /\t/, $_, $fieldcount;
 	($name, $path) = fileparse($filename);
+
+	# I tried keeping the whole file in memory (for MD5's sake) instead of
+	# first writing to disk, but doing it this way turned out to be about 5
+	# times faster and used 1/10th the memory on large files. (My benchmark
+	# was a 12 MB products.txt database for Interchange.)
+
 	$tmpfile = "$path.$name.tmp.$$";
 	open OUT, ">$tmpfile" or die "Error opening '$tmpfile' for writing: $!\n";
 	print STDERR "Prettifying $filename\n";
@@ -166,25 +177,21 @@ EOF
 #
 EOF
 	close OUT or die "Error closing '$tmpfile' after writing: $!\n";
-	{
-		local $/;
-		open IN, "<$tmpfile" or die "Error opening '$tmpfile' for reading: $!\n";
-		my $file = <IN>;
-		close IN;
-		$digest1 = md5($file);
-		system ($EDITOR, $tmpfile) == 0
-			or die "Error calling editor '$EDITOR' with '$tmpfile': $!\n";
-		open IN, "<$tmpfile" or die "Error opening $tmpfile for reading: $!\n";
-		$file = <IN>;
-		close IN;
-		$digest2 = md5($file);
-	}
+	open IN, "<$tmpfile" or die "Error opening '$tmpfile' for reading: $!\n";
+	binmode IN;
+	$digest1 = Digest::MD5->new->addfile(*IN)->digest;
+	close IN;
+	system (split(/ /, $editor), $tmpfile) == 0
+		or die "Error calling editor '$editor' with '$tmpfile': $!\n";
+	open IN, "<$tmpfile" or die "Error opening '$tmpfile' for reading: $!\n";
+	binmode IN;
+	$digest2 = Digest::MD5->new->addfile(*IN)->digest;
 	if ($digest1 eq $digest2) {
 		print STDERR "No changes made; '$filename' untouched\n";
+		close IN;
 		unlink $tmpfile;
 		next;
 	}
-	open IN, "<$tmpfile" or die "Error opening '$tmpfile' for reading: $!\n";
 	print STDERR "Importing changes back into '$filename'\n";
 	$newfile = "$path.$name.new.$$";
 	open OUT, ">$newfile" or die "Error opening '$newfile' for writing: $!\n";
@@ -192,14 +199,15 @@ EOF
 	my $tabcounter = 0;
 	my $fieldpos = 0;
 	my $done;
+	seek IN, 0, 0 or die "Error rewinding file '$tmpfile': $!\n";
 	@fields = ();
 	while (<IN>) {
 		$done = 1 if /^#\s*DONE/;
 		next if /^\s*#/ || /^\s*$/;
 		/^([^:]+):(.*)$/ or
-			die "Error parsing '$tmpfile': line format unknown:\n$_";
+			die "Error parsing line $. of '$tmpfile': line format unknown:\n$_";
 		$1 eq $fieldnames[$fieldpos] or
-			die "Error parsing '$tmpfile': expected field name '$fieldnames[$fieldpos]', found '$1'\n";
+			die "Error parsing line $. of '$tmpfile': expected field name '$fieldnames[$fieldpos]', found '$1'\n";
 		$_ = $2;
 		$tabcounter += s/\t/ /g;
 		push @fields, $_;
