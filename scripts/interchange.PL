@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.8.3
 #
-# $Id: interchange.PL,v 2.7.2.5 2001-11-26 22:33:00 jon Exp $
+# $Id: interchange.PL,v 2.7.2.6 2002-01-04 17:07:27 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -1972,8 +1972,13 @@ RESOLVEID: {
 								: ($Vend::Session->{ohost});
 
 			if(! $compare_host) {
-				new_session($seed) unless $CGI::secure;
-				init_session();
+				# don't drop the session on the first time we switch
+				# over to the secure server
+				unless ($CGI::secure
+					&& $Vend::Session->{ohost} eq $CGI::remote_addr) {
+					new_session($seed) unless $CGI::secure;
+					init_session();
+			    }
 				$Vend::Session->{shost} = $CGI::remote_addr;
 			}
 			elsif ($compare_host ne $CGI::remote_addr) {
