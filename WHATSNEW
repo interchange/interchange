@@ -55,6 +55,9 @@ Core
   library. Thanks to Joachim Leidinger for reporting and pursuing
   this problem and Alexander Leidinger for debugging.
 
+* Set SQL database attribute _Auto_number in Vend::Table::DBI::create method
+  as we already did in Vend::Table::DBI::open_table.
+
 Usertags
 --------
 

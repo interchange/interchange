@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.0.2.8 2002-07-23 13:03:04 mheins Exp $
+# $Id: DBI.pm,v 2.0.2.9 2002-08-06 23:02:17 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.0.2.8 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.9 $, 10);
 
 use strict;
 
@@ -359,6 +359,9 @@ sub create {
 	if(! defined $config->{EXTENDED}) {
 		## side-effects here -- sets $config->{NUMERIC},
 		## $config->{_Numeric_ary}, reads GUESS_NUMERIC
+
+		$config->{_Auto_number} = $config->{AUTO_SEQUENCE} || $config->{AUTO_NUMBER};
+		
 		if(! $config->{NAME}) {
 			$config->{NAME} = list_fields($db, $tablename, $config);
 		}
