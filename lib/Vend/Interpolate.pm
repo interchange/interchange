@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.35 2000-10-17 19:59:23 jon Exp $
+# $Id: Interpolate.pm,v 1.36 2000-10-17 21:46:16 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.35 $, 10);
+$VERSION = substr(q$Revision: 1.36 $, 10);
 
 @EXPORT = qw (
 
@@ -3191,7 +3191,6 @@ sub sort_cart {
 # I   If
 my $LdD = qr{\s+([-\w:#/.]+)\]};
 my $LdI = qr{\s+([-\w:#/.]+)$Optr\]($Some)};
-my $LdC = qr{\s+([-\w:#/.]+)($Optr)\]};
 my $LdB;
 my $LdIB;
 my $LdIE;
@@ -3233,12 +3232,6 @@ sub tag_labeled_data_row {
     while($$text =~ $LdExpr) {
 		$table = $1;
 		$tabRE = qr/$table/;
-#::logDebug("In row: table=$table tabRE=$tabRE");
-		if($Vend::UPPERCASE{$table}) {
-			$$text =~ s#($LdB$tabRE)$LdD#$1 \U$2]#g;
-			$$text =~ s#($LdIB$tabRE)$LdD#$1 \U$3]#g;
-			$$text =~ s#($LdIB$tabRE)$LdC#$1 \U$3\E$4]#g;
-		}
 		$row = $Data_cache{"$table.$key"}
 				|| ( $Data_cache{"$table.$key"}
 						= Vend::Data::database_row($table, $key)

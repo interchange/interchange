@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.13 2000-09-30 14:56:33 heins Exp $
+# $Id: Data.pm,v 1.14 2000-10-17 21:46:15 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -557,8 +557,6 @@ sub tie_database {
 		copyref($Global::Database, $Vend::Cfg->{Database});
 	}
     while (($name,$data) = each %{$Vend::Cfg->{Database}}) {
-		$Vend::UPPERCASE{$name} = 1
-				if $data->{UPPERCASE};
 		if( $data->{type} > 6 or $data->{HOT} ) {
 #::logDebug("Importing $data->{name}...");
 			$Vend::Database{$name} = import_database($data);
@@ -575,8 +573,6 @@ sub tie_database {
 				}
 			}
 			my $class = $db_config{$data->{Class}}->{Class};
-			$Vend::UPPERCASE{$name} = 1
-				if $data->{UPPERCASE};
 			$Vend::Database{$name} = new $class ($data);
 		}
 	}
@@ -591,8 +587,6 @@ sub dummy_database {
 			next;
 		}
 		my $class = $db_config{$data->{Class}}->{Class};
-		$Vend::UPPERCASE{$name} = 1
-			if $data->{UPPERCASE};
 		$Vend::Database{$name} =
 				new $class ($data);
 	}
