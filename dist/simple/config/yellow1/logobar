@@ -117,12 +117,12 @@
 		<TD __HEADERBG__ VALIGN=MIDDLE ALIGN=left><FONT SIZE="-1" FACE="Tahoma, Arial, Helvetica">&nbsp;&nbsp;<A HREF="[area query/check_orders]">Order Status</A>
 		</TD>
 		</TR>
-	[if session mm_username]
+	[if type=data term="__UI_ACCESS_TABLE__::username::[data session username]"]
 		<TR>
 		<TD COLSPAN=2><HR></TD>
 		</TR>
 		<TR>
-		<TD WIDTH=68 __HEADERBG__ VALIGN=MIDDLE ALIGN=right><FONT SIZE="-1" FACE="Tahoma, Arial, Helvetica">[page config/menu]MiniMate</A>&nbsp;&nbsp;</TD>
+		<TD WIDTH=68 __HEADERBG__ VALIGN=MIDDLE ALIGN=right><FONT SIZE="-1" FACE="Tahoma, Arial, Helvetica">[page admin/index]MiniMate</A>&nbsp;&nbsp;</TD>
 		<TD __HEADERBG__ VALIGN=MIDDLE ALIGN=left><FONT SIZE="-1" FACE="Tahoma, Arial, Helvetica">&nbsp;&nbsp;<A HREF="[area config/dbedit products]">Products</A>
 		</TD>
 		</TR>
