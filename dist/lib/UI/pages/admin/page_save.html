@@ -8,9 +8,23 @@
 [/if]
 
 [if cgi ui_template_version]
-[include include/page_save]
+	[include include/page_save]
+	[if cgi ui_page_preview]
+		[calc]
+			if($Config->{ImageDirOriginal}) {
+				$Config->{ImageDir} = $Config->{ImageDirOriginal};
+				$Config->{ImageDirSecure} = $Config->{ImageDirSecureOriginal};
+			}
+			return;
+		[/calc]
+		[include file="[scratch ui_output_page]"]
+	[else]
+		[bounce page="__UI_BASE__/page"]
+	[/else]
+	[/if]
 [else]
-[include include/page_save_old]
+	[include include/page_save_old]
+	[bounce page="__UI_BASE__/page"]
 [/else]
 [/if]
-[bounce page="__UI_BASE__/page"]
+
