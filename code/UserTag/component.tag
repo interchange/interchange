@@ -64,7 +64,7 @@ sub {
 		my $dir = $opt->{comp_dir}
 				|| $::Variable->{MV_COMPONENT_DIR}
 				|| 'templates/components';
-		$body = readfile("$dir/$name");
+		$body = readfile("$dir/$name",undef,1);
 	}
 
 	# Increment control_index so empty component has no side effect
