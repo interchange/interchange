@@ -292,6 +292,7 @@ dist/foundation/dbconf/default_db/userdb.dbm
 dist/foundation/dbconf/default_db/variable.dbm
 dist/foundation/dbconf/default_db/variants.dbm
 dist/foundation/dbconf/locales/de_DE.cfg
+dist/foundation/dbconf/locales/nl_NL.cfg
 dist/foundation/dbconf/locales/default.cfg
 dist/foundation/dbconf/mysql/2ndDayAir.dbm
 dist/foundation/dbconf/mysql/Ground.dbm
