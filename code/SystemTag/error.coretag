@@ -1,9 +1,13 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: error.coretag,v 1.4 2005-02-09 13:39:42 docelic Exp $
+
 ### This is in package Vend::Interpolate, and may make reference
 ### to variables in that module
 UserTag error               Order        name
 UserTag error               addAttr
 UserTag error               PosNumber    1
-UserTag error               Version      $Revision: 1.3 $
+UserTag error               Version      $Revision: 1.4 $
 UserTag error               Routine      <<EOR
 sub set_error {
 	my ($error, $var, $opt) = @_;

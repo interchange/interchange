@@ -1,5 +1,10 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: strip.coretag,v 1.2 2005-02-09 13:39:42 docelic Exp $
+
 UserTag strip               hasEndTag
 UserTag strip               PosNumber    0
+UserTag strip               Version      $Revision: 1.2 $
 UserTag strip               Routine      <<EOR
 sub {
 	local($_) = shift;

@@ -1,5 +1,10 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: either.coretag,v 1.2 2005-02-09 13:39:42 docelic Exp $
+
 UserTag either              hasEndTag
 UserTag either              PosNumber    0
+UserTag either              Version      $Revision: 1.2 $
 UserTag either              Routine      <<EOR
 sub {
 	my @ary = split /\[or\]/, shift;

@@ -1,7 +1,12 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: attr_list.coretag,v 1.5 2005-02-09 13:39:41 docelic Exp $
+
 UserTag attr-list           addAttr
 UserTag attr-list           hasEndTag
-UserTag attr-list           PosNumber 0
+UserTag attr-list           PosNumber    0
 UserTag attr-list           noRearrange
+UserTag attr-list           Version      $Revision: 1.5 $
 UserTag attr-list           Routine      <<EOR
 sub {
 	my ($opt, $body) = @_;
@@ -14,8 +19,9 @@ EOR
 
 UserTag uc-attr-list           addAttr
 UserTag uc-attr-list           hasEndTag
-UserTag uc-attr-list           PosNumber 0
+UserTag uc-attr-list           PosNumber    0
 UserTag uc-attr-list           noRearrange
+UserTag uc-attr-list           Version      $Revision: 1.5 $
 UserTag uc-attr-list           Routine      <<EOR
 sub {
 	my ($opt, $body) = @_;

@@ -1,5 +1,10 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: fly_list.coretag,v 1.2 2005-02-09 13:39:42 docelic Exp $
+
 UserTag fly-list            Order        code
 UserTag fly-list            addAttr
 UserTag fly-list            hasEndTag
 UserTag fly-list            PosNumber    2
+UserTag fly-list            Version      $Revision: 1.2 $
 UserTag fly-list            MapRoutine   Vend::Interpolate::fly_page

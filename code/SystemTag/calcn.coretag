@@ -1,2 +1,7 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: calcn.coretag,v 1.2 2005-02-09 13:39:41 docelic Exp $
+
 UserTag calcn               hasEndTag
+UserTag calcn               Version      $Revision: 1.2 $
 UserTag calcn               MapRoutine   Vend::Interpolate::tag_calc

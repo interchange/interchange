@@ -1,4 +1,9 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: tmpn.coretag,v 1.3 2005-02-09 13:39:42 docelic Exp $
+
 UserTag tmpn                Order        name
 UserTag tmpn                hasEndTag
 UserTag tmpn                PosNumber    1
+UserTag tmpn                Version      $Revision: 1.3 $
 UserTag tmpn                MapRoutine   Vend::Interpolate::set_tmp

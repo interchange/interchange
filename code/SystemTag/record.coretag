@@ -1,8 +1,13 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: record.coretag,v 1.2 2005-02-09 13:39:42 docelic Exp $
+
 UserTag record              addAttr
 UserTag record              attrAlias    column col
 UserTag record              attrAlias    code key
 UserTag record              attrAlias    field col
 UserTag record              PosNumber    0
+UserTag record              Version      $Revision: 1.2 $
 UserTag record              Routine      <<EOR
 sub {
 	my ($opt) = @_;

@@ -1,12 +1,13 @@
 # Copyright 2002, 2004 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: image.tag,v 1.12 2004-12-03 22:14:05 mheins Exp $
+# $Id: image.tag,v 1.13 2005-02-09 13:39:42 docelic Exp $
 
-UserTag image Order src
+UserTag image Order     src
 UserTag image AttrAlias geometry makesize
 UserTag image AttrAlias resize makesize
 UserTag image AddAttr
-UserTag image Routine <<EOR
+UserTag image Version   $Revision: 1.13 $
+UserTag image Routine   <<EOR
 sub {
 	my ($src, $opt) = @_;
 	my ($image, $path, $secure, $sku);

@@ -1,24 +1,31 @@
-# The discount-space is rather equivalent to the values-space functionality.
-# Interchange keeps discount information in a single hash at $Vend::Session->{discount}.
-# This is fine except when you start using multiple shopping carts to represent different
-# portions of the store and fundamentally different transactions; any common item codes
-# will result in one cart's discounts leaking into that of the other cart...
-#
-# Consequently, we can use a discount space to give a different namespace to various discounts.
-# This can be used in parallel with mv_cartname for different shopping carts.
-# Set up a master hash of different discount namespaces in the session. Treat the default one
-# as 'main' (like Interchange does with the cart). When discount space is called and a name
-# is given, point the $Vend::Session->{discount} to the appropriate hashref held in this master
-# hash.
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: discount_space.coretag,v 1.2 2005-02-09 13:39:42 docelic Exp $
 
-# Some options:
-# clear - this will empty the discounts for the space specified, after switching to that space.
-# current - this will not change the namespace; it simply returns the current space name.
+UserTag discount_space  Documentation <<EOF
+The discount-space is rather equivalent to the values-space functionality.
+Interchange keeps discount information in a single hash at $Vend::Session->{discount}.
+This is fine except when you start using multiple shopping carts to represent different
+portions of the store and fundamentally different transactions; any common item codes
+will result in one cart's discounts leaking into that of the other cart...
 
-UserTag discount_space  order  name
+Consequently, we can use a discount space to give a different namespace to various discounts.
+This can be used in parallel with mv_cartname for different shopping carts.
+Set up a master hash of different discount namespaces in the session. Treat the default one
+as 'main' (like Interchange does with the cart). When discount space is called and a name
+is given, point the $Vend::Session->{discount} to the appropriate hashref held in this master
+hash.
+
+Some options:
+clear - this will empty the discounts for the space specified, after switching to that space.
+current - this will not change the namespace; it simply returns the current space name.
+EOF
+
+UserTag discount_space  order      name
 UserTag discount_space  AttrAlias  space   name
 UserTag discount_space  AddAttr
-UserTag discount_space  Routine <<EOF
+UserTag discount_space  Version    $Revision: 1.2 $
+UserTag discount_space  Routine    <<EOF
 sub {
 	my ($namespace, $opt) = @_;
 	$namespace ||= 'main';

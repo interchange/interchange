@@ -1,3 +1,7 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: data.coretag,v 1.2 2005-02-09 13:39:42 docelic Exp $
+
 UserTag data                Order        table field key
 UserTag data                addAttr
 UserTag data                attrAlias    column field
@@ -9,4 +13,5 @@ UserTag data                attrAlias    row key
 UserTag data                attrAlias    name field
 UserTag data                Implicit     increment increment
 UserTag data                PosNumber    3
+UserTag data                Version      $Revision: 1.2 $
 UserTag data                MapRoutine   Vend::Interpolate::tag_data

@@ -1,10 +1,15 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: msg.coretag,v 1.2 2005-02-09 13:39:42 docelic Exp $
+
 UserTag msg                 Order        key
 UserTag msg                 addAttr
 UserTag msg                 attrAlias    lc inline
 UserTag msg                 hasEndTag
 UserTag msg                 Interpolate
 UserTag msg                 PosNumber    1
-UserTag msg                 Routine   <<EOR
+UserTag msg                 Version      $Revision: 1.2 $
+UserTag msg                 Routine      <<EOR
 sub {
 	my ($key, $opt, $body) = @_;
 	my (@args, $message, $out, $startlocale);

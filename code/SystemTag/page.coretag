@@ -1,6 +1,11 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: page.coretag,v 1.2 2005-02-09 13:39:42 docelic Exp $
+
 UserTag page                Order        href arg
 UserTag page                addAttr
 UserTag page                attrAlias    base arg
 UserTag page                Implicit     secure secure
 UserTag page                PosNumber    2
+UserTag page                version      $Revision: 1.2 $
 UserTag page                MapRoutine   Vend::Interpolate::tag_page

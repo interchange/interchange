@@ -1,9 +1,14 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: subtotal.coretag,v 1.5 2005-02-09 13:39:42 docelic Exp $
+
 UserTag subtotal            Order        name noformat
 UserTag subtotal            attrAlias    cart name
-UserTag subtotal			attrAlias	 space discount_space
+UserTag subtotal            attrAlias    space discount_space
 UserTag subtotal            addAttr
 UserTag subtotal            PosNumber    2
-UserTag subtotal            Routine <<EOR
+UserTag subtotal            Version      $Revision: 1.5 $
+UserTag subtotal            Routine      <<EOR
 sub {
 	my($cart, $noformat, $opt) = @_;
 	return currency( subtotal($cart, $opt->{discount_space}),

@@ -1,8 +1,13 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: total_cost.coretag,v 1.5 2005-02-09 13:39:42 docelic Exp $
+
 UserTag total-cost          Order        name noformat
 UserTag total-cost          attrAlias    cart name
-UserTag total-cost			attrAlias	 space discount_space
+UserTag total-cost          attrAlias    space discount_space
 UserTag total-cost          PosNumber    2
 UserTag total-cost          addAttr
+UserTag total-cost          Version      $Revision: 1.5 $
 UserTag total-cost          Routine <<EOR
 sub {
 	my($cart, $noformat, $opt) = @_;

@@ -1,4 +1,9 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: options.coretag,v 1.3 2005-02-09 13:39:42 docelic Exp $
+
 UserTag options             Order        code
 UserTag options             addAttr
 UserTag options             PosNumber    1
+UserTag options             Version      $Revision: 1.3 $
 UserTag options             MapRoutine   Vend::Options::tag_options

@@ -1,11 +1,12 @@
 # Copyright 2004 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: cgi.coretag,v 1.3 2004-10-16 13:24:00 docelic Exp $
+# $Id: cgi.coretag,v 1.4 2005-02-09 13:39:41 docelic Exp $
 
 UserTag cgi                 Order        name
 UserTag cgi                 addAttr
 UserTag cgi                 PosNumber    1
-UserTag cgi                 Routine <<EOR
+UserTag cgi                 Version      $Revision: 1.4 $
+UserTag cgi                 Routine      <<EOR
 sub {
 	my($var, $opt) = @_;
 	my($value);

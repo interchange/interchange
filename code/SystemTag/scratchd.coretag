@@ -1,7 +1,12 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: scratchd.coretag,v 1.4 2005-02-09 13:39:42 docelic Exp $
+
 UserTag scratchd            Order        name
 UserTag scratchd            PosNumber    1
 UserTag scratchd            addAttr
-UserTag scratchd            Routine <<EOR
+UserTag scratchd            Version      $Revision: 1.4 $
+UserTag scratchd            Routine      <<EOR
 sub {
 	my ($var, $opt) = @_;
 	my $value = delete $::Scratch->{$var};

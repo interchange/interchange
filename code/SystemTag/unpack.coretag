@@ -1,8 +1,13 @@
-UserTag unpack PosNumber 0
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: unpack.coretag,v 1.2 2005-02-09 13:39:42 docelic Exp $
+
+UserTag unpack PosNumber     0
 UserTag unpack addAttr
 UserTag unpack hasEndTag
 UserTag unpack Interpolate
-UserTag unpack Routine <<EOR
+UserTag unpack Version       $Revision: 1.2 $
+UserTag unpack Routine       <<EOR
 sub {
 	my ($opt, $template) = @_;
 	Vend::Interpolate::substitute_image(\$template);

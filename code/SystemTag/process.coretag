@@ -1,5 +1,10 @@
-UserTag process             Order        target secure
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: process.coretag,v 1.6 2005-02-09 13:39:42 docelic Exp $
+
+UserTag process             Order     target secure
 UserTag process             addAttr
+UserTag process             Version   $Revision: 1.6 $
 UserTag process             Routine   <<EOR
 # Returns the href to process the completed order form or do the search.
 sub {

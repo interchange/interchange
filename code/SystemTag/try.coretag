@@ -1,5 +1,10 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: try.coretag,v 1.2 2005-02-09 13:39:42 docelic Exp $
+
 UserTag try                 Order        label
 UserTag try                 addAttr
 UserTag try                 hasEndTag
 UserTag try                 PosNumber    1
+UserTag try                 Version      $Revision: 1.2 $
 UserTag try                 MapRoutine   Vend::Interpolate::try

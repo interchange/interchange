@@ -1,6 +1,11 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: userdb.coretag,v 1.3 2005-02-09 13:39:42 docelic Exp $
+
 UserTag userdb              Order        function
 UserTag userdb              addAttr
 UserTag userdb              attrAlias    table db
 UserTag userdb              attrAlias    name nickname
 UserTag userdb              PosNumber    1
+UserTag userdb              Version      $Revision: 1.3 $
 UserTag userdb              MapRoutine   Vend::UserDB::userdb

@@ -1,4 +1,9 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: value_extended.coretag,v 1.3 2005-02-09 13:39:42 docelic Exp $
+
 UserTag value-extended      Order        name
 UserTag value-extended      addAttr
 UserTag value-extended      PosNumber    1
+UserTag value-extended      Version      $Revision: 1.3 $
 UserTag value-extended      MapRoutine   Vend::Interpolate::tag_value_extended

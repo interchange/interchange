@@ -1,4 +1,9 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: filter.coretag,v 1.2 2005-02-09 13:39:42 docelic Exp $
+
 UserTag filter              Order        op
 UserTag filter              hasEndTag
 UserTag filter              PosNumber    1
+UserTag filter              Version      $Revision: 1.2 $
 UserTag filter              MapRoutine   Vend::Interpolate::filter_value

@@ -1,3 +1,7 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: shipping.coretag,v 1.3 2005-02-09 13:39:42 docelic Exp $
+
 UserTag shipping            Order        mode
 UserTag shipping            addAttr
 UserTag shipping            attrAlias    tables table
@@ -5,4 +9,5 @@ UserTag shipping            attrAlias    carts cart
 UserTag shipping            attrAlias    modes mode
 UserTag shipping            attrAlias    name mode
 UserTag shipping            PosNumber    1
+UserTag shipping            Version      $Revision: 1.3 $
 UserTag shipping            MapRoutine   Vend::Interpolate::tag_shipping

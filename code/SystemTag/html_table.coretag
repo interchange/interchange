@@ -1,4 +1,9 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: html_table.coretag,v 1.2 2005-02-09 13:39:42 docelic Exp $
+
 UserTag html-table          addAttr
 UserTag html-table          hasEndTag
 UserTag html-table          PosNumber    0
+UserTag html-table          Version      $Revision: 1.2 $
 UserTag html-table          MapRoutine   Vend::Interpolate::html_table

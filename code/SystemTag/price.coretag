@@ -1,9 +1,14 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: price.coretag,v 1.6 2005-02-09 13:39:42 docelic Exp $
+
 UserTag price               Order        code
 UserTag price               addAttr
 UserTag price               attrAlias    base mv_ib
-UserTag price				attrAlias	 space discount_space
+UserTag price               attrAlias    space discount_space
 UserTag price               PosNumber    1
-UserTag price               Routine   <<EOR
+UserTag price               Version      $Revision: 1.6 $
+UserTag price               Routine      <<EOR
 sub {
 	my ($code, $ref) = @_;
 	$ref->{code} ||= $code;

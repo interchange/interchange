@@ -1,3 +1,7 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: handling.coretag,v 1.3 2005-02-09 13:39:42 docelic Exp $
+
 UserTag handling            Order        mode
 UserTag handling            addAttr
 UserTag handling            attrAlias    tables table
@@ -5,4 +9,5 @@ UserTag handling            attrAlias    carts cart
 UserTag handling            attrAlias    modes mode
 UserTag handling            attrAlias    name mode
 UserTag handling            PosNumber    1
+UserTag handling            Version      $Revision: 1.3 $
 UserTag handling            MapRoutine   Vend::Interpolate::tag_handling
