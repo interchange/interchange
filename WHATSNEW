@@ -1,8 +1,13 @@
-#####################################
-Interchange 4.7.2 released 2001-??-??
+------------------------------------------------------------------------------
+
+                  What's new in each version of Interchange
+
+------------------------------------------------------------------------------
+
+Interchange 4.7.2 released 2001-05-10
 
 Server
---------
+------
 * There is a pre-forked server mode enabled in interchange.cfg with:
 
 	PreFork       Yes
@@ -22,7 +27,7 @@ Server
   mode, can probably be ported to Windows if anyone cares.
 
 Database
--------------
+--------
 * Transactions now fully supported. Can open a transaction-capable
   database in transactions mode [flag type=transactions table="table"]
   and it will commit all changes not done in transaction mode and reopen
@@ -35,7 +40,7 @@ Database
 
   That does the roughly equivalent to:
 
-	 SELECT bar from foo where baz = 'buz' LIMIT 1
+    SELECT bar from foo where baz = 'buz' LIMIT 1
 
 * Improve autonumbering support to automatically use sequences or
   autonumber field types. So now you can do:
@@ -66,11 +71,10 @@ Database
 * Change all chained cost levels limit check to use new Limit directive
 
 Orders/Pricing/Shipping
-------------------------
-* Significant changes to Order.pm in the area of order routing,
-  while still maintaining backward compatibility. (Able to submit
-  and monitor order on old construct, simple, and basic with no
-  changes.)
+-----------------------
+* Significant changes to Order.pm in the area of order routing, while
+  still maintaining backward compatibility. (Able to submit and monitor
+  order on old construct, simple, and basic with no changes.)
 
 * Added "cascade" route capability, that allows you to specify
   one master order route that calls the rest of the routes.
@@ -93,9 +97,8 @@ Orders/Pricing/Shipping
   the demo now has "FormIgnore mv_order_route".
 
 * Extended field allows you to stringify a hash and set many, many
-  parameters. We were running out of column space, and payment
-  routes add many settings. This concept will soon be used in
-  mv_metadata.
+  parameters. We were running out of column space, and payment routes
+  add many settings. This concept will soon be used in mv_metadata.
 
 * Add new tag "assign". It allows you to assign to four things,
 
@@ -129,12 +132,16 @@ Orders/Pricing/Shipping
   It is persistent in the user's session and effects only that user,
   and should be used only when you know exactly what you are doing. Ha.
 
+* Add support for new CVV2 credit card security field in
+  mv_credit_card_cvv2, treated with same care as mv_credit_card_number.
+
+* Add recognition for a few more credit card types based on number.
+
 Parser
--------------
+------
 * Solve the great [if ] [othertag][else][/else][/othertag] [else]
   [/else] [/if] problem. The behavior should be much improved in [if ...]
-  tags. Will not now snarf the [else] from another tag that uses
-  that.
+  tags. Will not now snarf the [else] from another tag that uses that.
 
 * Make the default a secure submit if we are on a secure page and
   have the user set secure=0 to disable.
@@ -146,14 +153,13 @@ Parser
 * Fix the long-untouched tag_column routine to handle preformatted
   text with align=none.
 
-* Add "yesno" display filter so that you can [filter
-  yesno]1[/filter] and get "Yes" back -- also translates for
-  Locale.
+* Add "yesno" display filter so that you can [filter yesno]1[/filter]
+  and get "Yes" back -- also translates for Locale.
 
 Payment
----------
-* Extensively rework Payment routines. Decided to keep something like current
-  framework, but you now can do:
+-------
+* Extensively rework Payment routines. Decided to keep something like
+  current framework, but you now can do:
 
   &charge=route
 
@@ -202,24 +208,21 @@ Payment
 * Parameters can be completely Route resident, no MV_PAYMENT_*
   variables needed.
 
-* Changed mv_credit_card_info to delete all but
-  mv_credit_card_reference digits when not encrypted. This is
-  overdue....
+* Changed mv_credit_card_info to delete all but mv_credit_card_reference
+  digits when not encrypted. This is overdue....
 
-* All options are pulled from the option call first, the Route
-  matching the name second, then finally the global MV_PAYMENT_*
-  variables.
+* All options are pulled from the option call first, the Route matching
+  the name second, then finally the global MV_PAYMENT_* variables.
 
 * All routes should be transparent if the mode exists. For instance,
   you can define a route called "purchase_order" which will handle
   POs, "internet_check" which handles checks, etc.
 
-* Add CCVS support via globalsub. Will do auth, sale at this
-  point. Will soon add AVS support. Has extended information
-  support.
+* Add CCVS support via globalsub. Will do auth, sale at this point. Will
+  soon add AVS support. Has extended information support.
 
 Miscellaneous
---------------
+-------------
 * Message directive now accepts -n (no trailing newline or whitespace) and
   -i (screen info only, not logged) options before message.
 
@@ -240,14 +243,18 @@ Miscellaneous
   or UI_STD_HEAD to ensure this works 
   (supplied by Stefan Hornburg <racke@linuxia.de>).
 
+* Added catalog configuration wizard, to move non-essential config from
+  makecat and simplify it a bit.
+
 Bug fixes
-----------
+---------
 * Fix bug in IMPORT_ONCE reported by vasile_abo@wexim.com.
 * Fix no-zero-display bug in [cgi ...] tag, found by Mark Johnson.
 * Fix a couple of bugs with AlwaysSecure not working in an order link.
 * Fix rounding problem with Shipping.
 * Fix failure to test record_exists in tag_data($table,undef,$key,{hash=>1})
-* Quite a few unreachable code sections removed, largely thanks to Bill Dawkins.
+* Quite a few unreachable code sections removed, largely thanks to Bill
+  Dawkins.
 * Fix textarea build to call routine, remove unused call to
   build_accessory_textarea, add proper call in /^text/ branch.
 * Make sure tax is rounded to the proper number of frac_digits in
@@ -256,8 +263,11 @@ Bug fixes
   twice (could happen if update values called)
 * Remove for good unsightly extra attributes qw/true false undef/ in every
   tag option hash.
+* Fix some item options bugs.
+* Many other small things.
 
-#####################################
+------------------------------------------------------------------------------
+
 Interchange 4.7.1 released 2001-03-28.
 
 * Added ability to cascade mv_click statements, e.g.:
@@ -678,5 +688,10 @@ Interchange 4.7.1 released 2001-03-28.
 
 * Add ability to read files from a database instead of the filesystem.
 
+------------------------------------------------------------------------------
 
 Interchange 4.7.0 not publicly released.
+
+------------------------------------------------------------------------------
+
+(end)

@@ -1,0 +1,1420 @@
+=head1 NAME
+
+icfoundation - Foundation Store
+
+=head1 DESCRIPTION
+
+=head1 The Foundation Store
+
+The Foundation store demo is designed to be relatively easy to start
+with, yet it is still a full-featured demonstration of a number of
+Interchange capabilities. This means it will take some work to
+understand it.
+
+The following is a list of some popular features:
+
+=over 4
+
+=item Category Searches
+
+If a catalog contains a small number of products, hard coded pages are
+sufficient, though they can be more difficult to maintain compared to
+database definitions. Regardless of the number of products in a
+catalog, consider categorizing them so they can easily be found. Pick
+a field in the database, perhaps named category, and classify the
+products for search using Interchange.
+
+=item Images
+
+Place a thumbnail image (perhaps with a link to a blowup) for the
+items that have images. To do this, add an image field in the
+database. (See the 'image' field of the products database.)
+
+=item Related Items
+
+On a product's individual display page, embed searches of similar
+products with the [query ...] or [loop ...] tags. Or, if
+customer data is developed, search a past order database and display
+products that would be of interest to that customer.
+
+=item Reviews/Testimonials
+
+Key the placement on the existence of a file in a certain directory.
+This is reasonable to do when a user is viewing a single product.
+
+=back
+
+=head1 Tree design
+
+Determine how users will enter and exit the catalog. Complex and
+intelligent conditional schemes are possible, especially if the
+Cookies capability is used. However, it is recommended that simplicity
+be used. Consumers will not buy if they can't navigate their way
+around the catalog.
+
+It is important to remember that users will lose their session (and
+items in their shopping cart) if their browser does not accept cookies
+and they leave the site. Interchange addresses this problem by using
+of the area and page tags. If using frames, source all frame
+panes containing Interchange links from an initial page served by
+Interchange. If not, the user may have multiple session IDs depending
+on which frame generated the link.
+
+Note that Interchange does work properly even if the browser doesn't
+store cookies. In this situation Interchange inserts a session ID into
+each URL; if the ID is preserved as the user navigates from page to
+page then the session will remain intact.
+
+=head1 The Catalog Directory
+
+Interchange pages are NOT in normal HTML space. They are contained in
+the catalog directory. Each individual catalog must have its own base
+directory. The catalog directory has the following structure by
+default:
+
+=over 4
+
+=item catalog.cfg
+
+File containing configuration directives for this catalog.
+(Subcatalogs have differing information in a file named for the
+subcatalog.)
+
+=back
+
+What's in Foundation's catalog.cfg specifically that's of interest?
+
+=over 4
+
+=item config
+
+Directory that will be read when directives are set with the
+filename notation. For example, the file config/static.pages
+will be read when the following directive is encountered in the
+catalog.cfg file.
+
+  StaticPage  <static.pages
+
+This directory also contains template information used with the
+makecat program.
+
+=item error.log
+
+File which contains catalog-specific errors. It is also where any
+syntax errors in embedded Perl code will be shown.
+
+=item etc
+
+Directory normally used for tracking files, order profiles, and other
+configuration and log information.
+
+=item pages
+
+Directory that contains the pages of the catalog. This can be
+considered to be the "document root" of the catalog. Pages contained
+therein are called with the path information after the script name.
+For example:
+
+/cgi-bin/simple/products/gold will call the page in thpages/products/gold.html.
+
+ file
+
+=item products
+
+Directory containing database source files, including the special
+Interchange databases shipping.asc, pricing.asc (and other shipping
+database files).
+
+=item session
+
+Directory which contains session files.
+
+=item tmp
+
+The temporary or scratch directory for various uses like retired ID
+numbers, search paging files, sort tests, import temporary files, etc.
+This is the default set by ScratchDir. It can be redefined to be
+located on another partition.
+
+=back
+
+=head1 Page Templates
+
+The Simple Demo uses the Variable feature extensively to simplify
+hand page editing. Basically speaking, a Variable is a define that
+permits the substitution of text for a simple __VARIABLE__ string
+in a page.
+
+For example, in the simple demo, this is a complete page with the
+standard layout:
+
+   __LOGOBAR__
+   __MENUBAR__
+   __LEFTSIDE__
+
+       This is unique content.
+
+   __RIGHTSIDE__
+   __MENUBOTTOM__
+   __COPYRIGHT__
+
+The following illustration shows how this looks on the page.
+
+   +--------------------------------------------------------+
+   |   __LOGOBAR__                                          |
+   |--------------------------------------------------------+
+   |   __MENUBAR__                                          |
+   |--------------+-------------------------+---------------+
+   |              |                         |               |
+   | __LEFTSIDE__ |   This is your content  | __RIGHTSIDE__ |
+   |              |                         |               |
+   |              |                         |               |
+   +--------------+-------------------------+---------------+
+   |   __MENUBOTTOM__                                       |
+   |--------------------------------------------------------+
+   |   __COPYRIGHT__                                        |
+   +--------------------------------------------------------+
+
+In HTML, the __RIGHTSIDE__ is simply defined to be empty, closing
+the table row in most cases. The following illustration is actually
+how the page looks.
+
+   +--------------------------------------------------------+
+   |   __LOGOBAR__                                          |
+   |--------------------------------------------------------+
+   |   __MENUBAR__                                          |
+   |--------------+-----------------------------------------+
+   |              |                                         |
+   | __LEFTSIDE__ |   This is your content                  |
+   |              |                                         |
+   |              |                                         |
+   +--------------+-----------------------------------------+
+   |   __MENUBOTTOM__                                       |
+   |--------------------------------------------------------+
+   |   __COPYRIGHT__                                        |
+   +--------------------------------------------------------+
+
+The variables are defined in catalog.cfg, and come from files in
+the config directory. There are conditional templates with different
+color schemes.
+
+Once familiar with this method, it can be quite convenient. But other
+methods may be chosen, such as using an HTML editor. Interchange can
+coexist with editors that use the <NOTOUCH> </NOTOUCH> or <NOEDIT>
+</NOEDIT> pairs to delimit information that should not be altered or
+interpreted by the editor. Bear in mind that this templating method
+and the database layout of the simple catalog is only a suggestion on
+how a catalog might be organized. Many users decide to create their
+own database structure for product display.
+
+Yet, most users stick with the userdb and checkout strategies employed
+in this catalog. This is because these strategies have been developed
+and proven successful over a period of years. Still, they can be
+customized to operate like Amazon.com or another site.
+
+=head1 The Database Tables
+
+Interchange catalogs are all about the database. You can alter any of
+the standard databases to suit your needs, add new databases, or
+remove unneeded ones. But the following dictionary lists each table
+used in the Foundation demo and each of its fields, and explains its
+purpose.
+
+Explain:
+
+=over 4
+
+=item *
+
+Implied sub-databases
+
+=item *
+
+Relational DB map
+
+=item *
+
+Data assumptions
+
+=item *
+
+Default medium (DBM vs. files vs. SQL) for each table in demo
+
+=back
+
+=head2 2ndDayAir.csv
+
+Shipping table
+
+=head2 450.csv
+
+Shipping table
+
+=head2 Ground.csv
+
+Shipping table
+
+=head2 NextDayAir.csv
+
+Shipping table
+
+=head2 access.asc
+
+Administrative access table.  This table is used by the administrative
+interface.
+
+B<Fields>
+
+ Field                             Description
+ username                          Login name or group name (group names begin with ':')
+ password                          Hashed password
+ name                              Administrator's name
+ last_login                        Last login time
+ super                             Set to 1 if superuser
+ yes_tables                        Tables the user may edit
+ no_tables                         Tables the user may not edit
+ upload                            
+ acl                               
+ export                            
+ edit                              
+ pages                             
+ files                             
+ config                            
+ reconfig                          
+ groups                            
+ meta                              
+ no_functions                      
+ yes_functions                     
+ table_control                     
+ personal_css                      
+
+I<username>
+
+Example Data
+
+   :ausers
+   :busers
+   BigUser
+   goody
+   ic
+
+Either a login name for an administrator or a group name. Group names
+are prefixed with a colon (':').
+
+I<password>
+
+Example Data
+
+   Ksjs65bMNLjPQ
+
+Hashed password.
+
+I<name>
+
+Example Data
+
+   Administrative Users
+   Business Users
+   Goody Twoshoes
+   Mr. Bigger
+   Super User
+
+Descriptive name for the administrator or group.
+
+I<last_login>
+
+Example Data
+
+   989424489
+
+Last login time (in unix time() format).
+
+I<super>
+
+Boolean value.  If true (1), the administrator has superuser
+privilege.
+
+I<yes_tables>
+
+Example Data
+
+   affiliate=vcx component=v gift_certs=v inventory=vx ...
+   NONE
+
+Tables this administrator or group may access.  This will be a
+space-delimited list of 'table_name=permission_flags' entries.
+
+I<no_tables>
+
+Example Data
+
+   access mv_metadata variable
+
+Tables this administrator may not use.  This will be a space-delimited
+list of tables names.
+
+I<upload>
+
+No Description
+
+I<acl>
+
+No Description
+
+I<export>
+
+No Description
+
+I<edit>
+
+No Description
+
+I<pages>
+
+No Description
+
+I<files>
+
+No Description
+
+I<config>
+
+No Description
+
+Example Data
+
+Allowed Values
+
+I<reconfig>
+
+No Description
+
+I<groups>
+
+Example Data
+
+   ausers
+   busers
+
+Allowed Values
+
+Groups the administrator belongs to. You can set permissions for
+groups.
+
+I<meta>
+
+No Description
+
+I<no_functions>
+
+   orderstats trafficstats
+
+Space-delimited list of functions explicitly disallowed for the
+administrator.
+
+I<yes_functions>
+
+Example Data
+
+   item=lvecd itemtype=lvc order=lvca orderstats trafficstats ...
+   NONE
+
+Functions the administrator may perform. This will be a
+space-delimited list of functions, with permission flags if
+appropriate.
+
+Usage examples
+
+=over 4
+
+=item *
+
+dist/lib/UI/pages/admin/access_permissions.html
+
+=back
+
+I<table_control>
+
+No Description
+
+Usage examples
+
+=over 4
+
+=item *
+
+dist/lib/UI/Primitive.pm
+
+=item *
+
+dist/lib/UI/pages/admin/special/key_violation.html
+
+=item *
+
+dist/lib/UI/usertag/if_mm
+
+=back
+
+I<personal_css>
+
+Used in the admin screens to make personal changes to the admin
+presentation, by creating your own personal CSS.
+
+Usage examples
+
+=over 4
+
+=item *
+
+dist/lib/UI/pages/admin/preferences.html
+
+=back
+
+=head2 affiliate.txt
+
+This table contains data related to your affiliate programs.  See also
+the I<affiliate_receptor> component.
+
+B<Fields>
+
+ Field                             Description
+ affiliate                         Affiliate ID
+ name                              Name of affiliate organization
+ campaigns                         Campaigns this affiliate participates in
+ coupon_amount                     Discount for customers from affiliate participating in coupon campaign
+ join_date                         When the affiliate signed with you
+ url                               Your default URL to use for customers coming from the affiliate site (not the affiliate's home page)
+ timeout                           Timeout in seconds after which purchases are no longer credited to the affiliate
+ active                            Boolean, set to 1 for active affiliates
+ password                          Affiliate login password
+ image                             Affiliate's logo
+
+I<affiliate>
+
+Example Data
+
+   consolidated
+   hardhat
+
+This field contains the unique Affiliate ID.
+
+I<name>
+
+Example Data
+
+   Consolidated Diversified
+   Hardhat Construction
+
+This is the descriptive name of the affiliate.
+
+I<campaigns>
+
+Example Data
+
+   coupon
+
+This field lists the campaigns in which the affiliate participates and
+is used to enable campaign features and track traffic from advertising
+campaigns. The foundation catalog implements a coupon campaign in the
+affiliate_receptor component.  If you wish to add campaigns, you will
+also need to develop the appropriate logic within the
+affiliate_receptor component and pages that use it.
+
+I<coupon_amount>
+
+Example Data
+
+   5
+
+This is the discount offered customers from the affiliate
+participating in the coupon campaign.
+
+Note --  This is implemented in the affiliate_receptor component as a
+flat discount amount. If you wanted a percentage discount instead, you
+would modify the [discount] tag in
+catalog_root/templates/components/affiliate_receptor (see the
+[discount] tag for more detail).
+
+I<join_date>
+
+Example Data
+
+   20000827
+   20000910
+
+This is the date when the affiliate signed with you.
+
+I<url>
+
+Example Data
+
+   http://demo.akopia.com/~hardhat
+   http://www.minivend.com/consolidated/
+
+The value in this field is used to direct visitors coming from the
+Affiliate to your home page or a page you have designed specifically
+for visitors from that Affiliate's site. Note that this should I<not>
+be the URL of the Affiliate's home site.
+
+I<timeout>
+
+Example Data
+
+   0
+   3600
+
+The value in this field is used to specify the amount of time a
+customer has to place an order and still give the Affiliate credit for
+it. If the customer goes over this amount of time, the Affiliate
+doesn't get credit for the customer visit. The timeout delay is
+measured in seconds, with the value of 0 (zero) disabling it. It is
+recommended that you use a value in the thousands to be sure the
+customer has enough time to shop.
+
+I<active>
+
+This is a boolean value indicating whether the affiliate is active.
+
+I<password>
+
+Example Data
+
+   akopia
+
+Password for affiliate login (see
+catalog_root//pages/affiliate/login.html). Note that the password is
+stored in plaintext by default.
+
+I<image>
+
+Example Data
+
+   http://demo.akopia.com/~hardhat/images/logo.gif
+   http://www.minivend.com/consolidated/conslogo.gif
+
+Affiliate's logo image.
+
+=head2 area
+
+This table is used to implement dynamic navigation bars, for example
+in the category_horizontal and category_vertical components. It is
+also used for the administrative interface.
+
+When building a navigation bar, it is the  B<bar_link> subroutine in
+the /dist/catalog_before.cfg configuration file that actually reads
+and processes the values from the table.
+
+See also the following catalog and administrative templates:
+
+=over 4
+
+=item *
+
+cat_root/templates/components/category_horizontal
+
+=item *
+
+cat_root/templates/components/category_vertical
+
+=item *
+
+dist/lib/UI/pages/admin/layout.html
+
+=item *
+
+dist/lib/UI/pages/admin/layout_auto.html
+
+=item *
+
+dist/lib/UI/pages/admin/wizard/do_launch.html
+
+=item *
+
+dist/lib/UI/pages/admin/wizard/do_save.html
+
+=back
+
+B<Fields>
+
+ Field                             Description
+ code                              Unique key
+ sel                               Page area for the navigation bar entry
+ name                              A display label to replace code or selector
+ which_page                        Page class in which the navigation bar may appear
+ sort                              Sorting prefix for entry (preempts standard alphanumeric sort)
+ display_type                      How to label the navbar (for example, name, icon, url or image)
+ image                             Image (if appropriate)
+ image_prop                        HTML attributes for output <img> tag (if appropriate)
+ banner_image                      See below
+ banner_text                       See below
+ link_type                         See below
+ url                               Target for internal or external link_type
+ 	                                 Database table file to use with 'simple' link_type
+ page                              Results page to use with 'simple' link_type
+ search                            Search spec used with 'complex' link_type
+ selector                          See below
+ link_template                     Overrides template used for building navbar links.
+
+I<code>
+
+Example Data
+
+   1
+   2
+   3
+
+Unique key
+
+I<sel>
+
+Example Data
+
+   left
+
+Page area for the navigation bar entry.
+
+I<name>
+
+Example Data
+
+   Hand Tools
+   Hardware
+   Ladders
+   Measuring Tools
+   Painting Supplies
+   Safety Equipment
+   Specials
+   Tool Storage
+
+A display label to replace code or selector.
+
+I<which_page>
+
+Example Data
+
+   all
+
+Page class in which the navigation bar may appear.
+
+I<sort>
+
+Example Data
+
+   00
+   03
+   04
+   05
+   06
+
+Lexographic (alphanumeric) sorting prefix.  Note use of '03' rather
+than '3', which would sort after '13'. This controls the order of the
+categories in your navigation bar.
+
+If not set, your navbar entries will sort in alphabetical order.
+
+I<display_type>
+
+Example Data
+
+   name
+   icon
+   url
+   image
+
+What to use for the labels in the navigation bar (for example, name,
+icon, url or image). The navigation bars in the foundation catalog are
+set up with 'name' display_type.
+
+I<image>
+
+Image to display for image or icon B<display_type>.
+
+I<image_prop>
+
+For image or icon B<display_type>, this contains the HTML attributes
+for the HTML that will appear in the navbar, for S<example:>
+
+  <img src="image" alt="name" image_prop>name
+
+I<banner_image>
+
+Sets 'va=banner_image=B<banner_image>' in 'simple' and 'complex'
+B<link_type>. The foundation catalog navigation bars are not set up
+with link types that use the B<banner_image> field.
+
+I<banner_text>
+
+Sets 'va=banner_text=B<banner_text>' in 'simple' and 'complex'
+B<link_type>. The foundation catalog navigation bars are not set up
+with link types that use the B<banner_text> field.
+
+I<link_type>
+
+Example Data
+
+   none
+   external
+   internal
+   simple
+   complex
+
+Link type to create in the navigation bar. The navigation bars in
+foundation catalog are set up to use 'none' as the link_type.
+
+Link types
+
+=over 4
+
+=item *
+
+external
+
+=over 8
+
+=item *
+
+External link. The HTML specified in B<url> will go directly into the
+navigation bar.
+
+=back
+
+=item *
+
+internal
+
+=over 8
+
+=item *
+
+Internal link. This will be highlit if it is the current page. If you
+specify both a page and a form for the link, the B<url> field should
+contain "I<page> I<form>".  See the Search Engine documentation for
+more detail on search forms.
+
+=back
+
+=item *
+
+simple or complex
+
+=over 8
+
+=item *
+
+See the B<bar_link> subroutine in the /dist/catalog_before.cfg
+configuration file for more detail if you need to use these (for
+example, to implement banners in the bar).
+
+=back
+
+=back
+
+I<url>
+
+Target URL (external link or internal page/search specification). See
+B<link_types> above. The foundation catalog navigation bars are not
+set up with link types that use the B<url> field.
+
+I<tab>
+
+Database table file to use with 'simple' B<link_type> (searchspec
+fi=B<tab>). The foundation catalog navigation bars are not set up with
+link types that use the B<tab> field.
+
+I<page>
+
+Results page to use with 'simple' B<link_type> (searchspec
+sp=B<page>). The foundation catalog navigation bars are not set up
+with link types that use the B<page> field.
+
+I<search>
+
+Search spec used with 'complex' B<link_type>. See the Search Engine
+documentation for more detail on search forms. The foundation catalog
+navigation bars are not set up with link types that use the B<search>
+field.
+
+I<selector>
+
+The selector that is used to scan the products table for products
+in the category. Used with 'simple' B<link_type>. The foundation
+catalog navigation bars are not set up with link types that use the
+B<selector> field.
+
+I<link_template>
+
+Overrides the usual HTML link template for navbar entries. The
+foundation catalog navigation bars are not set up with link types that
+use the B<link_template> field.
+
+=head2 cat.txt
+
+Categories.
+
+    code
+    sel
+    name
+    which_page
+    sort
+    display_type
+            name = Name
+            url = URL only
+            icon = Icon and name
+            image = Image
+    image
+    image_prop
+    banner_image
+    banner_text
+    link_type
+        Type of link:
+            none = No link
+            external = External link (http://...)
+            internal = Interchange page
+            simple = Simple search
+            complex = Complex search
+    url
+    tab
+    page
+    search
+    selector
+    link_template
+
+=head2 component.txt
+
+    code
+    group
+    name
+    width
+    height
+    pieces
+    label
+    banner
+    help
+    help_url
+    filter
+    controls
+    Variable
+
+=head2 country
+
+=over 4
+
+=item
+
+A list of countries used to build select boxes and select shipping
+modes based on countries.
+
+    code
+
+=back
+    sorder
+    region
+    selector
+    shipmodes
+    name
+
+=head2 downloadable.txt
+
+    sku
+    dl_location
+    dl_type
+
+=head2 files.txt
+
+A database where files (pages, etc.) can be kept instead of in the
+Unix filesystem.
+
+=head2 gift_certs.txt
+
+    code
+    username
+    order_date
+    original_amount
+    redeemed_amount
+    available_amount
+    passcode
+    active
+    redeemed
+    update_date
+
+=head2 inventory.txt
+
+    sku
+        Quantity info
+    quantity
+                Gets decremented after each sale.
+    stock_message
+                The usual shipping time of the product.
+        Out of stock message:
+            In stock
+            Ships in 3-5 days
+            Ships in 4-6 weeks
+            Special order
+    account
+        Accounting info
+        Sales account
+    cogs_account
+
+=head2 locale.txt
+
+    code
+    en_US
+    de_DE
+    fr_FR
+
+=head2 merchandising.txt
+
+    sku
+    featured
+    banner_text
+    banner_image
+    blurb_begin
+    blurb_end
+        Closer (end text for feature display)
+    timed_promotion
+    start_date
+        Start date
+    finish_date
+    upsell_to
+        Cross-sell SKUs
+    cross_sell
+    cross_category
+    others_bought
+    times_ordered
+
+=head2 options.txt
+
+    code
+    o_master
+        Master item (Always included when the base SKU is equal to this.)
+    sku
+        Unique SKU (Associated item)
+    o_group
+        Option Group (scanned to see if it applies (or doesn't apply) to this
+        product)
+    o_sort
+    phantom
+        Phantom? (Whether a phantom for structuring)
+    o_enable
+        Follow? (Enable for next level) Sub-items
+    o_matrix
+        Matrix options (Matrix options allow you to maintain multiple option
+        sets with inventory on each combination)
+    o_modular
+        Modular Options (Modular options allow you to attach multiple SKUs to
+        the same item, possibly with attached options of their own.  Very
+        complex but you can do most anything.
+    o_default
+        Default? (Yes if the default selection for the group)
+    o_label
+        Short name for option display
+    o_value
+        Possible Values (In Interchange option format: VALUE1=Label 1,
+        VALUE2=Label 2 *=default selection)
+    o_widget
+    o_footer
+    o_header
+    o_height
+        Height of widget (if applicable)
+    o_width
+        Width of widget
+    description
+        Option/Variant description (for description in display)
+    price
+        Price (Price of this option/variant)
+    wholesale
+        Dealer price
+    differential
+    weight
+    volume
+        Volume (if different, mostly for matrix/modular)
+    mv_shipmode
+    o_exclude
+        Exclude (Only for modular options. Lists the option groups to exclude
+        once the include has been done.  Takes the form of a number of wildcard
+        atoms.
+    o_include
+        Include (Only for modular options. Lists the option groups to include
+        with your item. Takes the form of a number of wildcard atoms.)
+
+=head2 order_returns.txt
+
+    code
+    order_number
+    session
+    username
+    rma_number
+    nitems
+    total
+    return_date
+    update_date
+
+=head2 orderline.txt
+
+Every line item that is actually ordered is detailed in this table.
+The order as a whole is one record in the transactions table.
+
+See the page query/check_orders.html for how it might be used. See
+etc/report for how to add to it.
+
+    code
+    store_id
+    order_number
+    session
+    username
+    shipmode
+    sku
+    quantity
+    price
+    subtotal
+    shipping
+    taxable
+    mv_mi
+    mv_si
+    size
+    color
+    options
+    order_date
+    update_date
+    status
+            pending = Pending
+            shipped = Shipped
+            backorder = Back ordered
+            credit = Waiting for credit check
+            canceled = Cancelled
+    parent
+    affiliate
+    campaign
+    description
+    mv_mp
+
+=head2 pricing.txt
+
+A database that works in conjunction with the CommonAdjust
+directive to allow quantity pricing, either for one product or for a
+group of products (sometimes known as mix-and-match). The fields q2,
+q5, q10, etc. are for the quantity levels; the price_group field
+selects the mix-and-match category for the product.
+
+    sku
+    price_group
+    q2
+    q5
+    q10
+    q25
+    q100
+
+=head2 products.txt
+
+The main product table. This is where product information is stored.
+Add new fields or ignore existing ones as needed. Field by field:
+
+    sku
+                The unique identifier for the product. Though theoretically it can contain most any character, use only characters of the class A-Z a-z 0-9 _ - in order to be compatible with SQL databases, file systems, and URL encoding. Other characters can cause problems. A slash (/) can interfere with URLs and filenames. A colon (:) can interfere with database representations (or file names on some operating systems). There are other possible compatibility situations with other characters.
+    description
+                A short description for the product that is used for displaying in the shopping cart, receipt, and order report. Keep it short.
+    title
+                This is usually catalog-specific since it applies to art. However, it would also apply to books, CDs, or other items.
+    template_page
+    comment
+                A long description of the product. If using the Interchange internal database, the field size is unlimited; if using another type of database, the length will be dependent on the field type selected.
+    thumb
+        Thumb
+    image
+                The image filename for the product. Many users add a thumb field to contain the name of a small image for search list display. Another popular technique is to store images in files that are named for the product code (SKU), instead of using this field. You can then check if an image exists for a given SKU with this construct:
+                        [if type=file compare="[item-code]".jpg"]<img src="[item-code].jpg">[/if]
+    price
+                The quantity-one price of the product.
+    wholesale
+        Dealer Price
+    prod_group
+    category
+                The category used for selection in lists. It is possible to place a product in more than one category, although this will require decisions about display and banner headings. Embedded Perl or other methods can be used.
+    nontaxable
+                If set to 1, the product is not taxable and its price will not be used in a sales tax calculation.
+    weight
+                A numeric value of the weight used for determining shipping costs (with UPS, for example). Normally in pounds, it can be anything the shipping routines will handle.
+    size
+                A comma-separated list of options as used in Accessories. See the flypage.html and ord/basket.html pages for examples of how it is used. An example:
+                        Small, Medium, Large, XL
+                Other attribute information may be defined in a separate field.
+    color
+                A comma-separated list of options as used in Accessories. See the flypage.html and ord/basket.html pages for examples of how it is used.
+    gift_cert
+        Gift certificate handling? (Yes if price should appear to be quantity)
+    related
+                Used for displaying "upsells," opportunities to purchase an additional item when this one is purchased. Contains a comma-separated list of SKUs to be offered.
+    featured
+                As used in the demo, the only meaningful value is front. If this is contained in the field, this product may be featured on the front page via random selection. See the index.html page for how it integrates with [loop search=something random=3].
+    download
+    dl_type
+    dl_location
+    inactive
+    url
+
+=head2 route.txt
+
+    code
+    attach
+    continue
+    commit
+    commit_tables
+    counter
+    credit_card
+    cyber_mode
+    email
+    empty
+    encrypt
+    encrypt_program
+    errors_to
+    increment
+    inline_profile
+    individual_track
+    individual_track_ext
+    partial
+    pgp_cc_key
+    pgp_key
+    profile
+    receipt
+    reply
+    report
+    rollback
+    rollback_tables
+    supplant
+    track
+
+=head2 salestax.asc
+
+=head2 shipping.asc
+
+Shipping methods table
+
+=head2 state.txt
+
+State/territory/county information
+
+    code
+    sorder
+    country
+    state
+    name
+    tax
+    postcode
+    shipmodes
+    tax_name
+
+=head2 transactions.txt
+
+Each individual customer order has an entry in this table. Each line
+item is entered not here, but in the orderline table.
+
+See the page query/check_orders.html for how it might be used. See
+etc/report for how to add to it.
+
+    code
+    store_id
+    order_number
+    session
+    username
+    shipmode
+    nitems
+    subtotal
+    shipping
+    handling
+    salestax
+    total_cost
+    fname
+    lname
+        Last Name
+    company
+    address1
+    address2
+        Address line 2
+    city
+    state
+    zip
+    country
+    phone_day
+        Daytime Phone
+    phone_night
+        Home Phone
+    fax
+    email
+    b_fname
+    b_lname
+        Billing Last Name
+    b_company
+    b_address1
+    b_address2
+        Billing Address Line 2
+    b_city
+    b_state
+        Billing State
+    b_zip
+        Billing Postcode
+    b_country
+        Billing Country
+    b_phone
+    order_date
+    order_ymd
+    order_wday
+    payment_method
+    po_number
+    avs
+    order_id
+    update_date
+    status
+    affiliate
+    campaign
+    parent
+    archived
+    deleted
+    complete
+    comments
+
+=head2 userdb.txt
+
+The user database used for maintaining customer address information,
+account information, preferences, and more. See icdatabase for more
+information.
+
+    username
+    password
+    acl
+    mod_time
+    s_nickname
+    company
+    fname
+    lname
+    address1
+    address2
+    address3
+    city
+    state
+    zip
+        Postcode
+    country
+        Country
+    phone_day
+    mv_shipmode
+    b_nickname
+    b_fname
+    b_lname
+    b_address1
+    b_address2
+    b_address3
+    b_city
+    b_state
+    b_zip
+    b_country
+    b_phone
+        Billing Phone
+    mv_credit_card_type
+    mv_credit_card_exp_month
+    mv_credit_card_exp_year
+    p_nickname
+    email
+    fax
+    phone_night
+    fax_order
+        Payment method:
+            (none) = Credit Card
+            1 = Fax or Mail
+            2 = Purchase order
+            3 = COD
+    address_book
+    accounts
+    preferences
+    carts
+    owner
+    file_acl
+    db_acl
+    order_numbers
+    email_copy
+    mail_list
+        Mailing lists the customer has joined:
+            offer = Special offers
+            newsletter = Newsletter
+            alert = Alerts and Recalls
+            upgrade = Upgrades
+    project_id
+    account_id
+    order_dest
+    credit_limit
+    inactive
+    dealer
+        Dealer:
+            (none) = No
+            1 = Yes
+    b_company
+    feedback
+        ???
+
+=head2 variable.txt
+
+Configuration database
+
+    code
+        Variable name
+    Variable
+    pref_group
+        Preferences area
+
+=head1 HTML Hypertext links
+
+Normally, regular hypertext links are not used in Interchange pages.
+These kinds of links will not include the session ID. If the customer
+follows an external link back to the catalog, the list of products
+ordered so far will have been lost. The area tag is used to
+generate a hypertext link which includes a session ID.
+
+Instead of:
+
+   <A HREF="/cgi-bin/mv/shirts">Shirts</A>
+
+Use:
+
+   <A HREF="[area shirts]">Shirts</A>
+
+=head1 Images
+
+Inline images are placed in Interchange pages in the normal fashion
+with <IMG SRC="URL">. But since Interchange pages are served by a CGI
+program, do not use relative links. The Foundation store defines an
+image directory with the ImageDir and ImageDirSecure directives
+WHERE HOW WHAT that automatically adjusts the image path to a set base
+directory.
+
+=head1 Browser Cookies
+
+The Foundation store enables the Cookies directive so that users
+with cookie-capable browsers will retain session context. Then,
+standard HREF and Interchange page links can be intermixed without
+fear of losing the shopping basket. Cookie capability is also required
+to use search caching, page caching, and statically generated pages.
+If the user's browser does not support cookies, the cache will be
+ignored.
+
+If planning to use more than one host name within the same domain for
+naming purposes (perhaps a secure server and non-secure server), set
+the domain with the CookieDomain directive. This must contain at
+least two periods (.) as per the cookie specification, and must be
+located in the same server as the domain.
+
+=head1 Standard Variables
+
+mv_this mv_that
+
+=head1 Default order routes
+
+Emailed orders. Using PGP/GnuPG. Any default integration with payment
+processors?
+
+=head1 Dissect the flypage ?
+
+=head1 Dependencies in admin
+
+In general, it's a good idea to leave fields empty if you don't want
+to use them, instead of removing them from the database altogether.
+That way nothing in admin or demo will break.
+
