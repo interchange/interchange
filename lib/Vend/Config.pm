@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.98 2003-02-02 21:04:22 racke Exp $
+# $Id: Config.pm,v 2.99 2003-02-08 01:12:56 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -46,7 +46,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.98 $, 10);
+$VERSION = substr(q$Revision: 2.99 $, 10);
 
 my %CDname;
 
@@ -1567,7 +1567,7 @@ EOF
 		$c->{$name} = $c->{_mvsafe}->reval($sub);
 	}
 	if($@) {
-		config_warn("Action '%s' did not compile correctly.", $name);
+		config_warn("Action '%s' did not compile correctly (%s).", $name, $@);
 	}
 	return $c;
 	

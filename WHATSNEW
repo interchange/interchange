@@ -58,6 +58,8 @@ Core
 
 * Fixed the row_count (0E0) problem in Vend::Table::DBI.
 
+* Compile errors on ActionMap/FormAction are passed through now.
+
 Menu
 ----
 
