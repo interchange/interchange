@@ -46,9 +46,10 @@ ui_template_name: leftonly
     <table width="95%" border="0" cellspacing="0" cellpadding="3">
     <tr>
       <td valign="top" align="left"> 
-		[if-item-field thumb]
-          <img src="thumb/[data table=products column=thumb key='[scratch code]']">
-	    [/if-item-field]
+        [tmp thisthumb][data table=products column=thumb key='[scratch code]'][/tmp]
+		[if scratch thisthumb]
+          <img src="thumb/[scratch thisthumb]">
+	    [/if]
       </td>
       <td valign="top" align="center"> 
         <table>
