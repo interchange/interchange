@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange payment processing routines
 #
-# $Id: Menu.pm,v 2.11 2002-08-15 06:42:56 mheins Exp $
+# $Id: Menu.pm,v 2.12 2002-08-18 08:00:19 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.11 $, 10);
+$VERSION = substr(q$Revision: 2.12 $, 10);
 
 use Vend::Util;
 use strict;
@@ -108,7 +108,7 @@ my %transform = (
 				$c ||= $f;
 				$status = $status && (
 								!  $row->{$f}
-								or $row->{$f} =~ /$CGI::values{$c}/i
+								or $CGI::values{$c} =~ /$row->{$f}/i
 								);
 			}
 		};
@@ -339,6 +339,8 @@ EOF
 		padding: 2px;
 EOF
 
+	$opt->{anchor_down} = is_yes($opt->{anchor_down}) || 0;
+
 
 	push @out, <<EOF;
 <script language="JavaScript1.3">
@@ -373,6 +375,7 @@ EOF
 	shift @levels;
 
 	push @out, <<EOF;
+var anchor_down = $opt->{anchor_down};
 var last_level = $levels[$#levels];
 var link_class = '$opt->{link_class}';
 var link_class_open = '$opt->{link_class_open}';
@@ -479,8 +482,12 @@ EOF
 
 	function getRightX( obj )
 	{
+		var pos = 0;
 		if( browserType() == "ie" )
-			return obj.getBoundingClientRect().right - 2;
+			if(anchor_down == 1) 
+				pos = obj.getBoundingClientRect().right - 2;
+			else
+				pos = obj.getBoundingClientRect().left + 2;
 		else {
 			var n = 0;
 			var x = obj.offsetParent;
@@ -488,14 +495,21 @@ EOF
 				n += x.offsetLeft;
 				x = x.offsetParent;
 			}
-			return n + obj.offsetLeft + obj.offsetWidth;
+			pos = n + obj.offsetLeft;
+			if(anchor_down != 1)
+				pos += obj.offsetWidth;
 		}
+		return pos;
 	}
 
 	function getTopX( obj )
 	{
+		var pos = 0;
 		if( browserType() == "ie" )
-			return obj.getBoundingClientRect().top - 2;
+			if(anchor_down) 
+				pos = obj.getBoundingClientRect().bottom + 2;
+			else
+				pos = obj.getBoundingClientRect().top - 2;
 		else {
 			var n = 0;
 			var x = obj;
@@ -503,8 +517,11 @@ EOF
 				n += x.offsetParent.offsetTop;
 				x = x.offsetParent;
 			}
-			return n + obj.offsetTop;
+			pos = n + obj.offsetTop;
+			if(anchor_down)
+				pos += obj.offsetHeight;
 		}
+		return pos;
 	}
 	
 	function mouseout( obj, level )
@@ -937,8 +954,16 @@ sub tree_line {
 
 	$fields = $opt->{loopfields};
 
+	if(defined $opt->{next_level}) {
+		return if $row->{mv_level} > $opt->{next_level};
+		undef $opt->{next_level};
+	}
+
 	for(@{$opt->{_transform}}) {
-		return unless $transform{$_}->($row, $opt->{$_});
+		my $status = $transform{$_}->($row, $opt->{$_});
+		$opt->{next_level} = $row->{mv_level}
+			if ! $status;
+		return unless $status;
 	}
 
 	if($row->{page} and $row->{page} !~ /^\w+:/) {
