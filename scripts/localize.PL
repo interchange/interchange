@@ -21,12 +21,15 @@ DOIT: {
 	local ($/);
 	local($_) = <<'_EoP_';
 #!/usr/bin/perl
+##!~_~perlpath~_~
 #
 # Interchange localizer
 #
-# $Id: localize.PL,v 1.6 2000-09-23 18:49:30 heins Exp $
+# $Id: localize.PL,v 1.7 2000-09-25 16:38:49 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+#
+# See the file 'Changes' for information.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -48,13 +51,18 @@ use lib '/usr/local/interchange/lib';
 use lib '/usr/local/interchange';
 #use lib '~_~INSTALLARCHLIB~_~';
 
-BEGIN {
+use strict;
+use Vend::Util qw(readfile escape_chars);
+require Vend::Config;
+use Getopt::Std;
+use vars qw($opt_c $opt_d $opt_l $opt_M $opt_m $opt_o $opt_t);
 
+BEGIN {
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
 		if defined $ENV{MINIVEND_ROOT};
 
-$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
-#$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
+	$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
+#	$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
 	$Global::ErrorFile = "$Global::VendRoot/error.log";
 	$ENV{MINIVEND_STORABLE} = 1
 		if -f "$Global::VendRoot/_session_storable";
@@ -62,18 +70,9 @@ $Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
 		if -f "$Global::VendRoot/_db_storable";
 }
 
-$Global::ErrorFile = "$Global::VendRoot/error.log";
+### END CONFIGURATION VARIABLES
 
-### END CONFIGURABLE VARIABLES
-
-use Vend::Util qw(readfile escape_chars);
-require Vend::Config;
-use Getopt::Std;
-
-use vars qw($opt_c $opt_d $opt_l $opt_M $opt_m $opt_o $opt_t $USAGE);
-use strict;
-
-$USAGE = <<EOF;
+my $USAGE = <<EOF;
 $0 -- produce localization file from set of pages
 
 usage:    localize -l lg_CC [-d lg_CC] [-m file|-t] file [file2 file3 ...]
@@ -351,7 +350,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-$Id: localize.PL,v 1.6 2000-09-23 18:49:30 heins Exp $
+$Id: localize.PL,v 1.7 2000-09-25 16:38:49 zarko Exp $
 
 =head1 SYNOPSIS
 
