@@ -1,6 +1,6 @@
 # Vend::Payment::Ezic - Interchange Ezic support
 #
-# $Id: Ezic.pm,v 1.1 2004-11-18 20:28:32 mheins Exp $
+# $Id: Ezic.pm,v 1.2 2005-03-06 04:01:41 mheins Exp $
 #
 # Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@
 package Vend::Payment::Ezic;
 =head1 Interchange Ezic Support
 
-Vend::Payment::Ezic $Revision: 1.1 $
+Vend::Payment::Ezic $Revision: 1.2 $
 
 =head1 SYNOPSIS
 
@@ -296,7 +296,7 @@ sub ezic {
 		$actual = \%actual;
 	}
 
-::logDebug("actual map result: " . ::uneval($actual));
+#::logDebug("actual map result: " . ::uneval($actual));
 
 # Try and Get Cart Contents
 	my $cartdesc = "";
@@ -425,14 +425,14 @@ sub ezic {
     }
     my $string = join '&', @query;
 
-::logDebug("EziC query: " . ::uneval(\%query));
+#::logDebug("EziC query: " . ::uneval(\%query));
     $opt->{extra_headers} = { Referer => $referer };
 
     my $thing    = post_data($opt, \%query);
     my $page     = $thing->{result_page};
     my $response = $thing->{status_line};
 #::logDebug("EziC post_data response: " . ::uneval($thing) );
-#
+
     # Minivend names are on the  left, Authorize.Net on the right
     my %result_map = ( qw/
             pop.status            status_code
@@ -445,8 +445,8 @@ sub ezic {
     /
     );
 
-::logDebug(qq{\nezic page: $page \n\nresponse: $response\n});
-::logGlobal(qq{\nezic page: $page \n\nresponse: $response\n});
+#::logDebug(qq{\nezic page: $page \n\nresponse: $response\n});
+#::logGlobal(qq{\nezic page: $page \n\nresponse: $response\n});
 
     my %result= ();
     my @tmprslt = split('\&',$page);
