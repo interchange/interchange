@@ -576,6 +576,7 @@ EOF
 	tf=$CGI->{ui_sort_field}
 	to=$CGI->{ui_sort_option}
 	rf=$CGI->{ui_description_fields}
+	nh=1
 
 EOF
 	$::Scratch->{page_banner} .= $out_message;
