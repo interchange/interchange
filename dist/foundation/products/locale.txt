@@ -29,6 +29,7 @@ April		April	Avril	April
 August		August	Aout	Augustus
 Available credit	Available credit			Beschikbaar krediet
 BACK	BACK			TERUG
+Back to Order List		Zur Bestellübersicht
 Bad search specification	Bad search specification			Verkeerde zoekspecificatie
 Bank Phone	Bank Phone			Telefoon bank
 Be sure to list the RMA number issued below on your shipping label.	Be sure to list the RMA number issued below on your shipping label.			Vergeet niet het onderstaande RMA nummer te vermelden op uw verzendsticker.
@@ -59,7 +60,7 @@ Check Information	Check Information			Cheque-informatie
 Check Number	Check Number			Chequenummer
 Check Out	Check Out	Zur Kasse		Naar de kassa
 City	City	Stadt		Plaats
-City, State, Zip	City, State, Zip			Plaats, Provincie, Postcode
+City, State, Zip	City, State, Zip	Stadt, Provinz, Postleitzahl		Plaats, Provincie, Postcode
 Clear&nbsp;cart	Clear&nbsp;cart			Wis&nbsp;winkelwagen
 Clear&nbsp;name/address	Clear&nbsp;name/address			Wis&nbsp;naam/adres
 Click Here To Preorder	Click Here To Preorder			Klik hier om vooruit te bestellen
@@ -90,7 +91,7 @@ Custom configure and buy	Custom configure and buy
 Customer Satisfaction Survey	Customer Satisfaction Survey	Befragung zur Kundenzufriedenheit		Klantentevredenheidsonderzoek
 Customer Service	Customer Service	Kundenservice		Klantenservice
 Customers who bought this item also bought	Customers who bought this item also bought	Kunden, die dieses Produkt erworben haben, kauften zusätzlich		Liefhebbers van dit artikel bestelden ook
-DATE	DATE			DATUM
+Date	Date	Datum		Datum
 Date Issued	Date Issued			Datum uitgifte
 Day Phone	Day Phone	Telefon tagsüber		Telefoon overdag
 Daytime Phone	Daytime Phone	Telefon tagsüber		Telefoon overdag
@@ -113,10 +114,9 @@ First Name	First Name	Vorname		Voornaam
 Frequently Asked Questions	Frequently Asked Questions			Veel gestelde vragen
 GET_PASSWORD_MSG1	Hello! You requested that your ID and password be sent to your email address of record. The information is			Hallo! U verzocht ons uw gebruikersnaam en wachtwoord te sturen naar het emailadres dat wij in ons bestand hebben. Onderstaand treft U deze informatie aan.
 GET_PASSWORD_MSG2	Please contact us if we can be of service, and thank you for doing business with us.			Neem gerust contact met ons op als wij U op enigerlij wijze van dienst kunnen zijn. Hartelijk dank voor uw vertrouwen.
-HANDLING	HANDLING			BEHANDELING
 HTML Formatted	HTML Formatted			Opgemaakt met HTML
 HTML Formatted (no wiki)	HTML Formatted (no wiki)			
-Handling	Handling			
+Handling	Handling	Bearbeitungskosten		BEHANDELING
 Hello and thank you for your interest in %s products.	Hello and thank you for your interest in %s products.			Hallo en bedankt voor uw interesse in de producten van %s.
 Hello and thank you for your interest in __COMPANY__ products.	Hello and thank you for your interest in __COMPANY__ products.			Hallo en bedankt voor uw interesse in de producten van __COMPANY__.
 Help	Help	Hilfe		Help
@@ -186,7 +186,6 @@ Not Found	Not Found			Niet gevonden
 Note	Note			Opmerking
 November		November	Novembre	November
 Number Of Items	Number Of Items			Aantal producten
-ORDER ID	ORDER ID			ORDER NR
 ORDER NUMBER	ORDER NUMBER	BESTELLNUMMER		ORDERNUMMER
 ORDER TOTAL	ORDER TOTAL			ORDER TOTAAL
 ORDER_RETURN_PAR1	Please verify the information below and select the items you wish to return by checking the corresponding checkboxes and modifying the quantity as needed.			Controleert U alstublieft onderstaande informatie en selecteer de artikelen die U wenst te retourneren door het aanvinken van de corresponderende vakjes. Pas de aantallen zonodig aan.
@@ -202,6 +201,7 @@ Order Date	Order Date			Orderdatum
 Order Detail	Order Detail			Order Details
 Order Failed	Order Failed			
 Order History	Order History			Orderhistorie
+Order ID	ORDER ID	Bestellnummer		Ordernummer
 Order Number	Order Number			Ordernummer
 Order Processed -- Thank You!	Order Processed -- Thank You!			Order verwerkt -- Dank U!
 Order Returns	Order Returns			Retourzendingen
@@ -275,7 +275,6 @@ SHIPPING<BR>HANDLING	SHIPPING<BR>HANDLING			VERZENDING<BR>BEHANDELING
 SIZE	SIZE			MAAT
 Size		Größe
 SKU	SKU	Art.-Nr.		Art.Nr.
-STATUS	STATUS			STATUS
 STOCK_ALERT_PAR1	Please complete the form below and we will contact you once the item you have selected becomes available. This is a complementary feature         and you are not in any way obligated to purchase the item.			Als U onderstaand formulier invult zullen wij U berichten zodra het door U geselecteerde artikel weer voorradig is. Dit is een aanvullende dienst en U bent op geen enkele wijze verplicht om het artikel te kopen.
 STOCK_ALERT_PAR2	You may also pre-order the item. When the item becomes available, you will be        notified via email and the order will be shipped the same day.			U mag het product ook vooruit bestellen. Zodra het product op voorraad is sturen wij U een kennisgeving per email en het artikel zal dezelfde dag worden verzonden. 
 SUBTOTAL	SUBTOTAL			SUBTOTAAL
@@ -322,6 +321,7 @@ Sorry, the page (%s) was not found	Sorry, the page (%s) was not found			Sorry, d
 Specials	Specials	Angebote		Aanbiedingen
 State		Staat
 State/Province	State/Province	Staat/Provinz		Staat/Provincie
+Status
 Stock	Stock			Voorraad
 Stock Alert Request	Stock Alert Request			Op voorraadmelding
 Stock Alerting	Stock Alerting			Op voorraad melden
