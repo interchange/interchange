@@ -61,7 +61,6 @@ dist/foundation/dbconf/default_db/NextDayAir.dbm
 dist/foundation/dbconf/default_db/access.dbm
 dist/foundation/dbconf/default_db/affiliate.dbm
 dist/foundation/dbconf/default_db/area.dbm
-dist/foundation/dbconf/default_db/banner.dbm
 dist/foundation/dbconf/default_db/cat.dbm
 dist/foundation/dbconf/default_db/component.dbm
 dist/foundation/dbconf/default_db/country.dbm
@@ -86,7 +85,6 @@ dist/foundation/dbconf/mysql/NextDayAir.dbm
 dist/foundation/dbconf/mysql/access.dbm
 dist/foundation/dbconf/mysql/affiliate.mysql
 dist/foundation/dbconf/mysql/area.mysql
-dist/foundation/dbconf/mysql/banner.dbm
 dist/foundation/dbconf/mysql/cat.mysql
 dist/foundation/dbconf/mysql/component.dbm
 dist/foundation/dbconf/mysql/country.mysql
@@ -111,7 +109,6 @@ dist/foundation/dbconf/oracle/NextDayAir.dbm
 dist/foundation/dbconf/oracle/access.dbm
 dist/foundation/dbconf/oracle/affiliate.ora
 dist/foundation/dbconf/oracle/area.ora
-dist/foundation/dbconf/oracle/banner.dbm
 dist/foundation/dbconf/oracle/cat.ora
 dist/foundation/dbconf/oracle/component.dbm
 dist/foundation/dbconf/oracle/country.ora
@@ -136,7 +133,6 @@ dist/foundation/dbconf/pgsql/NextDayAir.dbm
 dist/foundation/dbconf/pgsql/access.dbm
 dist/foundation/dbconf/pgsql/affiliate.pgsql
 dist/foundation/dbconf/pgsql/area.pgsql
-dist/foundation/dbconf/pgsql/banner.dbm
 dist/foundation/dbconf/pgsql/cat.pgsql
 dist/foundation/dbconf/pgsql/component.dbm
 dist/foundation/dbconf/pgsql/country.pgsql
@@ -255,7 +251,6 @@ dist/foundation/products/NextDayAir.csv
 dist/foundation/products/access.asc
 dist/foundation/products/affiliate.txt
 dist/foundation/products/area.txt
-dist/foundation/products/banner.txt
 dist/foundation/products/cat.txt
 dist/foundation/products/component.txt
 dist/foundation/products/country.txt
@@ -476,6 +471,7 @@ dist/foundation/templates/sampledata/tools/images/thumb/os28111_b.gif
 dist/foundation/templates/sampledata/tools/images/thumb/os28112_b.gif
 dist/foundation/templates/sampledata/tools/images/thumb/os28113_b.gif
 dist/foundation/templates/sampledata/tools/images/thumb/os29000_b.gif
+dist/foundation/templates/sampledata/tools/products/affiliate.txt
 dist/foundation/templates/sampledata/tools/products/area.txt
 dist/foundation/templates/sampledata/tools/products/cat.txt
 dist/foundation/templates/sampledata/tools/products/inventory.txt
