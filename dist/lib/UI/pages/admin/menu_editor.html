@@ -273,32 +273,66 @@ __UI_META_TABLE__
 
 	if($CGI->{qmenu_html_create} and $CGI->{qmenu_create}) {
 		my $text = $CGI->{qmenu_html_create};
+		my $num_options;
+		my $num_links;
+		$num_options++ while $text =~ m{<option\s+}gi;
+		$num_links++   while $text =~ m{<a\s+}gi;
 		my $start = '0001';
 		my @out = join "\t", @menufields;
-		while($text =~ s{<a(\s+.*?)</a>}{}is) {
-			my $blob = $1;
-			my $desc = '';
-			$blob =~ m{^[^>]*\s+title=(['"]?)(.*?)\1}
-				and $desc = $2;
-			$blob =~ s{^.*?\shref\s*=\s*(["'])?(.*?)\1}{}is
-				or next;
-			my $link = $2;
-			$blob =~ s/.*?>//;
-			1 while $blob =~ s{<.*?>}{};
-			$anchor = $blob;
-			my $sort = $start;
-			$sort =~ s/./x/;
-			my($href, $parms) = split /\?/, $link, 2;
-			my %record = (
-				code => $start++,
-				msort => $sort,
-				page => $href,
-				form => $parms,
-				name => $anchor,
-				description => $desc,
-			);
 
-			push @out, join "\t", @record{@menufields};
+		if($num_options > $num_links) {
+			while( $text =~ m{
+					 <option\s+
+						[^>]*
+						value\s*=\s*"(.*?)"
+						[^>]*
+						>
+						([^<>]*)
+					}ixgs
+				)
+			{
+				my $url = $1;
+				my $anchor = $2;
+				my $sort = $start;
+				$sort =~ s/./x/;
+				my($href, $parms) = split /\?/, $url, 2;
+				my %record = (
+					code => $start++,
+					msort => $sort,
+					page => $href,
+					form => $parms,
+					name => $anchor,
+				);
+				push @out, join "\t", @record{@menufields};
+			}
+
+		}
+		else {
+			while($text =~ s{<a(\s+.*?)</a>}{}is) {
+				my $blob = $1;
+				my $desc = '';
+				$blob =~ m{^[^>]*\s+title=(['"]?)(.*?)\1}
+					and $desc = $2;
+				$blob =~ s{^.*?\shref\s*=\s*(["'])?(.*?)\1}{}is
+					or next;
+				my $link = $2;
+				$blob =~ s/.*?>//;
+				1 while $blob =~ s{<.*?>}{};
+				$anchor = $blob;
+				my $sort = $start;
+				$sort =~ s/./x/;
+				my($href, $parms) = split /\?/, $link, 2;
+				my %record = (
+					code => $start++,
+					msort => $sort,
+					page => $href,
+					form => $parms,
+					name => $anchor,
+					description => $desc,
+				);
+
+				push @out, join "\t", @record{@menufields};
+			}
 		}
 
 		$Scratch->{qmenu_data} = join "\n", @out, '';
