@@ -89,6 +89,8 @@ Payment
 Foundation
 ----------
 
+* Support for SQLite added.
+
 * Make metadata correspond to current UI version.
 
 Debian
