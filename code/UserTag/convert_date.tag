@@ -39,7 +39,7 @@ sub {
 	}
 
 	if ($adjust) {
-		$now ||= mktime(@t);
+		$now ||= POSIX::mktime(@t);
 		$adjust .= ' days' if $adjust =~ /^[-\s\d]+$/;
 
 		if ($adjust =~ s/^\s*-\s*//) {
