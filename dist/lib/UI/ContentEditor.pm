@@ -2,7 +2,7 @@
 #
 # UI::ContentEditor - Interchange page/component edit
 # 
-# $Id: ContentEditor.pm,v 2.12 2003-11-03 14:42:22 racke Exp $
+# $Id: ContentEditor.pm,v 2.13 2003-11-03 16:26:14 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -24,7 +24,7 @@
 
 package UI::ContentEditor;
 
-$VERSION = substr(q$Revision: 2.12 $, 10);
+$VERSION = substr(q$Revision: 2.13 $, 10);
 $DEBUG = 0;
 
 use POSIX qw/strftime/;
@@ -176,10 +176,15 @@ sub extract_template {
 	my $sref = shift;
 	my $opt = shift || {};
 	my $tname;
-	$sref =~ /\nui_page_template:\s*(\w+)/
-		or $sref =~ /\nui_template_name:\s*(\w+)/
-		or ( $sref =~ /\@_(\w+)_TOP_\@/ and $tname = lc $1);
-	$tname ||= $1;
+
+	if ($sref =~ /\nui_(page_template|template_name):\s*(\w+)/) {
+		$tname = $2;
+	} elsif ($sref =~ /\@_(\w+)_TOP_\@/) {
+		$tname = lc $1;
+	} else {
+		$tname = $opt->{ui_page_template};
+	}
+
 #::logDebug("extract_template read template name='$tname'");
 	my $tdef;
 	my $tref;

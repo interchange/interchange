@@ -26,6 +26,8 @@ UI
 * Force user to enter name of new page/template/component name to avoid server
   crashes.
 
+* Fix content editor to actually use the selected template for new pages.
+
 Usertags
 --------
 
