@@ -125,6 +125,9 @@ EOF
 			$db = Vend::Data::database_exists_ref($table);
 			die "Non-existent table '$table'\n" unless $db;
 			$db = $db->ref() unless $Vend::Interpolate::Db{$table};
+			if($opt->{autonumber} and ! $db->config('AUTO_NUMBER') ) {
+				 $db->config('AUTO_NUMBER', '1000');
+			}
 			$tmsg = "table $table: ";
 			return;
 		}
@@ -133,6 +136,9 @@ EOF
 		$db = Vend::Data::database_exists_ref($table);
 		die "Non-existent table '$table'\n" unless $db;
 		$db = $db->ref() unless $Vend::Interpolate::Db{$table};
+		if($opt->{autonumber} and ! $db->config('AUTO_NUMBER') ) {
+			 $db->config('AUTO_NUMBER', '1000');
+		}
 	}
 
 	$out = '<PRE>';
@@ -199,20 +205,25 @@ EOF
 			redo TABLE;
 		}
 		if(! $k and ! length($k)) {
-			next if ! $opt->{delete};
-			next if $f[0] ne 'DELETE';
-			$out .= "${tmsg}Deleting record '$f[1]'.\n" if $verbose;
-			$db->delete_record($f[1]);
-			$count++;
-			$delcount++;
-			next;
+			if ($f[0] eq 'DELETE') {
+				next if ! $opt->{delete};
+				$out .= "${tmsg}Deleting record '$f[1]'.\n" if $verbose;
+				$db->delete_record($f[1]);
+				$count++;
+				$delcount++;
+				next;
+			}
 		}
 		$out .= "${tmsg}Record '$k' had too many fields, ignored.\n"
 			if @f > $idx;
-		if ( ! $db->record_exists($k)) {
+		if ( ! length($k) or ! $db->record_exists($k)) {
 			if ($opt->{add}) {
+				if( ! length($k) and ! $opt->{autonumber}) {
+					$out .= "${tmsg}Blank key, no autonumber option, skipping.\n";
+					next;
+				}
+				$k = $db->set_row($k);
 				$out .= "${tmsg}Adding record '$k'.\n" if $verbose;
-				$db->set_row($k);
 				$addcount++;
 			}
 			else {
