@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.9.0
 #
-# $Id: interchange.PL,v 2.31 2002-05-29 09:52:21 kwalsh Exp $
+# $Id: interchange.PL,v 2.32 2002-06-05 14:07:27 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -2094,7 +2094,7 @@ EOF
 
 	$Vend::Session->{'arg'} = $Vend::Argument = ($CGI::values{mv_arg} || undef);
 #::logDebug("arg is $Vend::Session->{arg}");
-	if($CGI::values{mv_pc} and $CGI::values{mv_pc} =~ /[A-Za-z]/) {
+	if ($CGI::values{mv_pc} =~ /\D/) {
 		$Vend::Session->{'source'} =	$CGI::values{mv_pc} eq 'RESET'
 										? ''
 										: $CGI::values{mv_pc};
