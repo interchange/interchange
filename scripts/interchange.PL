@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.9.1
 #
-# $Id: interchange.PL,v 2.33 2002-06-17 21:40:40 jon Exp $
+# $Id: interchange.PL,v 2.34 2002-06-17 22:24:12 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -2427,7 +2427,7 @@ sub dump_env {
 }
 
 sub version {
-	print "Interchange version $VERSION Copyright 1996-2001 Red Hat, Inc.\n";
+	print "Interchange version $VERSION Copyright 1996-2002 Red Hat, Inc.\n";
 }
 
 =head1 NAME
@@ -3020,7 +3020,7 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-Copyright 1995-2001, Red Hat, Inc. All rights reserved except as in the
+Copyright 1995-2002, Red Hat, Inc. All rights reserved except as in the
 license.
 
 =cut

@@ -50,9 +50,9 @@ DOIT: {
 #
 # Interchange program configurator
 #
-# $Id: config_prog.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
+# $Id: config_prog.PL,v 2.1 2002-06-17 22:24:12 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -180,7 +180,7 @@ config_prog -- Configure Interchange programs with MakeMaker variables
 
 =head1 VERSION
 
-# $Id: config_prog.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
+# $Id: config_prog.PL,v 2.1 2002-06-17 22:24:12 jon Exp $
 
 =head1 DESCRIPTION
 

@@ -1,8 +1,8 @@
 # Vend::Table::SDBM - Access an Interchange table stored in Perl's internal SDBM
 #
-# $Id: SDBM.pm,v 2.1 2002-02-04 01:31:17 mheins Exp $
+# $Id: SDBM.pm,v 2.2 2002-06-17 22:24:12 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -23,7 +23,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::SDBM;
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2 $, 10);
 use strict;
 use Fcntl;
 use SDBM_File;
@@ -31,7 +31,7 @@ use vars qw($VERSION @ISA);
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2 $, 10);
 
 sub create {
 	my ($class, $config, $columns, $filename) = @_;

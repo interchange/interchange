@@ -1,8 +1,8 @@
 # Vend::Payment::WellsFargo - Interchange WellsFargo support
 #
-# $Id: WellsFargo.pm,v 1.1 2002-01-16 07:01:34 mheins Exp $
+# $Id: WellsFargo.pm,v 1.2 2002-06-17 22:24:11 jon Exp $
 #
-# Copyright (C) 1999-2001 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # by Mark Johnson <markj@redhat.com> based off of
 # AuthorizeNet.pm by
@@ -33,7 +33,7 @@ package Vend::Payment::WellsFargo;
 
 =head1 Interchange WellsFargo Support
 
-Vend::Payment::WellsFargo $Revision: 1.1 $
+Vend::Payment::WellsFargo $Revision: 1.2 $
 
 =head1 SYNOPSIS
 

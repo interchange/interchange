@@ -1,8 +1,8 @@
 # Vend::Payment - Interchange payment processing routines
 #
-# $Id: Payment.pm,v 2.2 2001-07-20 21:52:44 heins Exp $
+# $Id: Payment.pm,v 2.3 2002-06-17 22:24:08 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 
 @ISA = qw(Exporter);
 

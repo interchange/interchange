@@ -1,8 +1,8 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.22 2002-06-11 04:16:58 mheins Exp $
+# $Id: Order.pm,v 2.23 2002-06-17 22:24:07 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.22 $, 10);
+$VERSION = substr(q$Revision: 2.23 $, 10);
 
 @ISA = qw(Exporter);
 

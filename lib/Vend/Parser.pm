@@ -1,8 +1,8 @@
 # Vend::Parser - Interchange parser class
 #
-# $Id: Parser.pm,v 2.4 2002-02-18 01:00:21 mheins Exp $
+# $Id: Parser.pm,v 2.5 2002-06-17 22:24:08 jon Exp $
 #
-# Copyright (C) 1997-2001 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1997-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # Based on HTML::Parser
 # Copyright 1996 Gisle Aas. All rights reserved.
@@ -47,7 +47,7 @@ expanded.
 
 =head1 COPYRIGHT
 
-Copyright 1997-2001 Red Hat, Inc.  
+Copyright 1997-2002 Red Hat, Inc.  
 Original HTML::Parser module copyright 1996 Gisle Aas.
 
 This library is free software; you can redistribute it and/or
@@ -66,7 +66,7 @@ use strict;
 
 use HTML::Entities ();
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 
 
 sub new

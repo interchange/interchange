@@ -50,9 +50,9 @@ DOIT: {
 #
 # Interchange database builder and indexer
 #
-# $Id: offline.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
+# $Id: offline.PL,v 2.1 2002-06-17 22:24:12 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995-96 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -294,7 +294,7 @@ offline -- Interchange offline database builder
 
 =head1 VERSION
 
-# $Id: offline.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
+# $Id: offline.PL,v 2.1 2002-06-17 22:24:12 jon Exp $
 
 =head1 DESCRIPTION
 

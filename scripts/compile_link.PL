@@ -50,9 +50,9 @@ DOIT: {
 #
 # Interchange link program configurator
 #
-# $Id: compile_link.PL,v 2.1 2001-08-18 13:53:39 heins Exp $
+# $Id: compile_link.PL,v 2.2 2002-06-17 22:24:12 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

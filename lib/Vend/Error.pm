@@ -1,8 +1,8 @@
 # Vend::Error - Handle Interchange error pages and messages
 # 
-# $Id: Error.pm,v 2.2 2001-10-06 06:18:09 mheins Exp $
+# $Id: Error.pm,v 2.3 2002-06-17 22:24:07 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 
 sub get_locale_message {
 	my ($code, $message, @arg) = @_;
