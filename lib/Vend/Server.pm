@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.20 2001-03-06 15:12:11 heins Exp $
+# $Id: Server.pm,v 1.8.2.21 2001-03-07 17:54:45 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.20 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.21 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -2244,6 +2244,15 @@ sub run_server {
 	}
 
 	::logGlobal({ level => 'info' }, server_start_message());
+
+	if($Global::PreFork) {
+		eval {
+			require Tie::ShadowHash;
+		};
+		if($@) {
+			die ::errmsg("Running in PreFork mode requires Tie::ShadowHash module.") . "\n";
+		}
+	}
 
     if ($Global::Windows) {
         my $running = grab_pid($pidh);
