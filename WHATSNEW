@@ -16,13 +16,20 @@ Core
   and patch supplied by Frederic Steinfels <fredo@dvdupgrades.ch>.
 
 * row_hash returns undef now for memory databases too instead of 
-  throwing an error if no row is found
+  throwing an error if no row is found.
+
+* Give better error message when a required catalog directive 
+  is missing (Bug #337). Use main file (usually catalog.cfg) instead of 
+  empty string or catalog_after.cfg (etc.) as example of where directive 
+  should go. Thanks to Jeff Murphy (jcmurphy+rhic@jeffmurphy.org) 
+  for reporting.
 
 Admin UI
 --------
 
-* Fixed permission checks in several pages (problem found by
-  Massimiliano Ciancio <mciancio@tiscali.it>)
+* Fixed permission checks in several pages (thanks to Massimiliano Ciancio 
+  <mciancio@tiscali.it> for investigating to audit the permission checks)
+  and a typo in if-mm.
 
 * About links are working now in catalogs that are not based on foundation.
 
@@ -34,6 +41,12 @@ Payment
 
 * Mispelled month name fixed in iTransact module which caused failure.
   Found by Cameron Prince.
+
+Foundation
+----------
+
+* Removed trailing whitespace that caused browse page to contain
+  Perl code garbage. Found by Salvador Caballe.
 
 ------------------------------------------------------------------------------
 
