@@ -8,27 +8,21 @@ ui_component_label: Small saved cart list for left/right display
 <!-- BEGIN COMPONENT [control component saved_carts_list_small] -->
 [if session logged_in]
 
- [if cgi delete_cart]
-   [userdb function=delete_cart nickname="[cgi delete_cart]"]
- [/if]
-
- [if cgi retrieve_cart]
-   [userdb function=get_cart nickname="[cgi retrieve_cart]" merge=1 hide=1]
-   [if cgi retrieve_cart =~ /:c$/]
-     [userdb function=delete_cart nickname="[cgi retrieve_cart]"]
-   [/if]
- [/if]
+ [if cgi delete_cart][delete_cart nickname="[cgi delete_cart]"][/if]
+ [if cgi retrieve_cart][load_cart nickname="[cgi retrieve_cart]"][/if]
 
  [userdb function=get_cart_names hide=1]
 [if value carts]
- [perl]
+ [perl global=1]
+  push(@Vend::TmpScratch,qw/saved_carts_carts saved_carts_recurring/);
   $Scratch->{saved_carts_carts} = '';
   $Scratch->{saved_carts_recurring} = '';
-  push(@Vend::TmpScratch,qw/saved_carts_carts saved_carts_recurring/);
 
   foreach my $var (split("\n",$Tag->value('carts'))) {
     my($name,$last_update,$type) = split(':',$var);
 
+    my($day,$month,$year) = (localtime($last_update))[3,4,5];
+    $last_update = sprintf("%04d-%02d-%02d",$year+1900,$month+1,$day);
     my $delink = $Tag->page({
         href => "@@MV_PAGE@@",
         form => "
@@ -65,26 +59,24 @@ END
  [/perl]
 
  [loop list="saved_carts_carts saved_carts_recurring"]
-    [if explicit]
-      [condition]'[loop-code]' eq 'saved_carts_carts'[/condition]
-      [tmp this_label]Saved Carts[/tmp]
-    [/if]
-    [if explicit]
-      [condition]'[loop-code]' eq 'saved_carts_recurring'[/condition]
-        [tmp this_label]Recurring Orders[/tmp]
-    [/if]
  [if scratch [loop-code]]
  <tr> 
    <td>
    <p>&nbsp;</p>
    </td>
    <td width="119" bgcolor="__BARBG__" valign="top"><br clear=all>
-	<table width="102" border="1" cellspacing="0" cellpadding="0" bordercolor="__BARCONTRAST__">
+	<table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="__BARCONTRAST__">
 	<tr><td>
-	<table width="100" border="0" cellspacing="0" cellpadding="0">
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr class=sheader>
 	<td colspan=3 align=center class=sheader>
-        [scratch this_label]
+        [if explicit]
+          [condition]'[loop-code]' eq 'saved_carts_carts'[/condition]
+            Saved Carts
+          [else]
+            Recurring Orders
+          [/else]
+        [/if]
         </td>
 	</tr>
 	<tr VALIGN=TOP class=cartalt>

@@ -33,16 +33,9 @@ ui_template_name: leftonly
 
 <!-- BEGIN CONTENT -->
 
-[if cgi delete_cart]
-  [userdb function=delete_cart nickname="[cgi delete_cart]"]
-[/if]
+[if cgi delete_cart] [delete_cart nickname="[cgi delete_cart]"] [/if]
 
-[if cgi retrieve_cart]
-  [userdb function=get_cart nickname="[cgi retrieve_cart]" merge=1 hide=1]
-  [if cgi retrieve_cart =~ /:c$/]
-    [userdb function=delete_cart nickname="[cgi retrieve_cart]"]
-  [/if]
-[/if]
+[if cgi retrieve_cart] [load_cart nickname="[cgi retrieve_cart]"] [/if]
 
 [userdb function=get_cart_names hide=1]
 [if value carts]
@@ -63,7 +56,7 @@ ui_template_name: leftonly
         });
 
         my $golink = $Tag->page({
-            href => "@@MV_PAGE@@",
+            href => "ord/basket",
             form => "
                 retrieve_cart=$var
                 mv_action=return
