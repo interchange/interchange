@@ -249,8 +249,12 @@ Display type:
 						ui_page_title=[cgi ui_page_banner]
 						ui_class=Items
 						ui_meta_specific=[cgi ui_meta_specific]
+						[if type=data term="mv_metadata::code::variant::[cgi mv_variant_table]"]
 						ui_meta_view=variant
+						[else]
 						ui_data_fields=code sku description price wholesale inventory:quantity weight
+						[/else]
+						[/if]
 						ui_return_to=@@MV_PAGE@@
 						ui_return_to=item_id=[cgi item_id]
 						item_id=[variant-code]

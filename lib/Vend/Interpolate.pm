@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.209 2004-04-19 21:59:07 mheins Exp $
+# $Id: Interpolate.pm,v 2.210 2004-04-29 02:47:01 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.209 $, 10);
+$VERSION = substr(q$Revision: 2.210 $, 10);
 
 @EXPORT = qw (
 
@@ -1330,7 +1330,7 @@ sub conditional {
                 if defined $comp;
     }
 	elsif($base eq 'data') {
-		my($d,$f,$k) = split /::/, $term;
+		my($d,$f,$k) = split /::/, $term, 3;
 		$op = database_field($d,$k,$f);
 #::logDebug ("tag_if db=$d fld=$f key=$k\n");
 		$op = "q{$op}" unless defined $noop;
