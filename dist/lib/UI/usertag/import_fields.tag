@@ -193,13 +193,19 @@ EOF
 	my $k;
 	my @f;
 	@names = split /\s+/, $fields;
-	shift @names;
+	my $key = shift @names;
 	my @set;
 	my $i = 0;
 	my $idx = 0;
 	for(@names) {
 		$db->column_index($_);
 		$set[$idx++] = $db->field_settor($_);
+	}
+	my %keys;
+	if ($opt->{cleanse}) {
+		# record existing columns
+		my $recs = $db->query("select $key from $table");
+		$keys{$_->[0]} = 1 for @$recs;
 	}
 	my $count = 0;
 	my $totcount = 0;
@@ -246,8 +252,18 @@ EOF
 		}
 		for ($i = 0; $i < $idx; $i++) {
 			$set[$i]->($k, $f[$i]);
+			if ($opt->{cleanse}) {
+				delete $keys{$k};
+			}
 		}
 		$count++;
+	}
+	if ($opt->{cleanse}) {
+		# remove any record which hasn't updated
+		for (keys(%keys)) {
+			$db->delete_record($_);
+			$delcount++;
+		}
 	}
 	$out .= "${tmsg}$count records processed of $totcount input lines.\n";
 	$out .= "${tmsg}$delcount records deleted.\n" if $delcount;

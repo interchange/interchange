@@ -93,6 +93,20 @@
 					table="[cgi mv_data_table]"
 	]
 	[/elsif]
+	[elsif cgi ui_upload_ext eq cleanse]
+	[import-fields
+	                add=1
+					convert="[cgi ui_import_convert]"
+					cleanse=1
+					delete="[cgi ui_allow_delete]"
+					dir=backup
+					file="upload/[cgi ui_upload_filename]"
+					move=1
+					multiple="[cgi ui_allow_multiple]"
+					quiet="[cgi ui_import_quiet]"
+					table="[cgi mv_data_table]"
+	]
+	[/elsif]
 	[/if]
 [/if]
 
@@ -119,6 +133,7 @@
 <hr>
 <SELECT NAME=ui_upload_ext>
 	<OPTION VALUE=add> [L]Add new items if present[/L]
+	<OPTION VALUE=cleanse> [L]Replace existing items[/L]
 	<OPTION VALUE=update> [L]Ignore new items[/L]
 </SELECT>&nbsp;&nbsp;&nbsp;<SMALL><INPUT TYPE=checkbox NAME=ui_allow_delete VALUE=1> [L]Allow delete[/L]
 &nbsp;&nbsp;<INPUT TYPE=checkbox NAME=ui_autonumber VALUE=1 CHECKED> [L]Autonumber if no key[/L]</SMALL>
