@@ -1059,6 +1059,24 @@ EOF
 
 #::logDebug("keyname=$ts->{keyname}");
 			$out .= "<td" . $data_cell_style->($ts->{keyname}) . ">";
+			$ecode = '';
+			if ($calcs[0]) {
+				my %item;
+				@item{@cols} = ($code, @$line);
+				if(ref($calcs[0]) eq 'CODE') {
+					$ecode = $calcs[0]->(\%item);
+				}
+				else {
+					$Vend::Interpolate::item = \%item;
+					$ecode = tag_calc($calcs[0]);
+				}
+			}
+			if ($filter_show[0]) {
+				$ecode = $code unless $ecode;
+				$ecode = $Tag->filter($filter_show[0], $ecode, $cols[0]);
+				$ecode =~ s/\[/&#91;/g;
+			}
+			$ecode = encode_entities($code) unless $ecode;
 			$out .= "$code_pre$ecode$code_post</td>";
 			my $i = 1;
 			for my $v (@$line) {
