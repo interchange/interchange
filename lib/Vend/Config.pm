@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.116 2003-05-14 22:29:29 mheins Exp $
+# $Id: Config.pm,v 2.117 2003-05-15 14:24:05 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.116 $, 10);
+$VERSION = substr(q$Revision: 2.117 $, 10);
 
 my %CDname;
 my %CPname;
@@ -2106,8 +2106,6 @@ sub parse_boolean {
 	my(@setting) = split /[\s,]+/, $settings;
 	my $c;
 
-	my $val = $item eq "StaticPage" ? '' : 1;
-
 	if(defined $C) {
 		$c = $C->{$item} || {};
 	}
@@ -2117,7 +2115,7 @@ sub parse_boolean {
 	}
 
 	for (@setting) {
-		$c->{$_} = $val;
+		$c->{$_} = 1;
 	}
 	return $c;
 }

@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.18 2003-05-10 19:59:45 mheins Exp $
+# $Id: Dispatch.pm,v 1.19 2003-05-15 14:24:05 racke Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.18 $, 10);
+$VERSION = substr(q$Revision: 1.19 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -959,8 +959,6 @@ EOF
 			$Vend::Cfg->{Locale} = $Vend::Cfg->{Locale_repository}{$loc}
 					if defined $Vend::Cfg->{Locale_repository}{$loc};
 		}
-		$Vend::Cfg->{StaticPage} = {}
-			unless $Vend::Cfg->{Static};
 	}
 	$::Variable = $Vend::Cfg->{Variable};
 	$::Pragma   = { %{ $Vend::Cfg->{Pragma} } };
