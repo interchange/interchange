@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.7 2000-09-05 20:39:07 heins Exp $
+# $Id: Data.pm,v 1.8 2000-09-10 20:43:21 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -295,8 +295,8 @@ sub product_field {
 	return database_field($Vend::Cfg->{OnlyProducts}, $field_name, $code)
 		if $Vend::Cfg->{OnlyProducts};
 	my ($db);
-    $db = product_code_exists_ref($code, $base || undef);
-    return "" unless $db = product_code_exists_ref($code, $base || undef);
+    $db = product_code_exists_ref($code, $base || undef)
+		or return '';
     return "" unless defined $db->test_column($field_name);
     return $db->field($code, $field_name);
 }
@@ -1290,14 +1290,16 @@ CHAIN:
 
 sub item_price {
 	my($item, $quantity, $noformat) = @_;
-#::logDebug("item_price: " . ::uneval(\@_));
+#::logDebug("item_price: " . ::uneval_it(\@_));
 	return $item->{mv_cache_price}
 		if ! $quantity and defined $item->{mv_cache_price};
 	my ($price, $base, $adjusted);
 	$item = { 'code' => $item, 'quantity' => ($quantity || 1) } unless ref $item;
-	$base = product_code_exists_ref($item->{code}, $item->{mv_ib})
-		or $Vend::Cfg->{OnFly}
-		or return undef;
+	if(! $item->{mv_ib}) {
+		$base = product_code_exists_tag($item->{code}, $item->{mv_ib})
+			or $Vend::Cfg->{OnFly}
+			or return undef;
+	}
 	$price = database_field($base, $item->{code}, $Vend::Cfg->{PriceField})
 		if $Vend::Cfg->{PriceField};
 	$price = chain_cost($item,$price || $Vend::Cfg->{CommonAdjust});
