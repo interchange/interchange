@@ -1,6 +1,6 @@
 # Vend::SessionDB - Stores Interchange session information in files
 #
-# $Id: SessionDB.pm,v 2.5 2004-06-28 21:25:27 mheins Exp $
+# $Id: SessionDB.pm,v 2.6 2004-07-08 18:13:30 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ use strict;
 use Vend::Util;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.5 $, 10);
+$VERSION = substr(q$Revision: 2.6 $, 10);
 
 sub TIEHASH {
 	my($class, $db) = @_;
@@ -63,24 +63,46 @@ sub FETCH {
 
 		$self->{DOLOCK} ||=
 			$self->{DBH}->prepare(
-					"insert (code,sessionlock) into $self->{TABLE} values(?,?)",
+					"insert into $self->{TABLE} (code,sessionlock) values(?,?)",
 				);
 
 		eval {
 			$rc = $self->{DOLOCK}->execute($key, $val);
 		};
 		if($@ or $rc < 1) {
+			if($@) {
+				::logDebug("Error on session execute: $@");
+			}
+			else {
+				::logDebug("Session insert returned rc=$rc");
+			}
 			## Session exists
-			my $sth =
-				$self->{FETCHLOCK} ||=
-					$self->{DBH}->prepare(
+			my $sth;
+
+			eval {
+				$sth = $self->{DBH}->prepare(
 						"select code,sessionlock from $self->{TABLE} where code = ?",
 					);
-			$sth->execute($key)
-				or do {
-					logError("DBI query error when fetching session lock $key");
-					return undef;
-				};
+			};
+			if($@) {
+				my $msg = errmsg("Session lock fetch prepare failed: %s", $@);
+				::logDebug($msg);
+				::logGlobal($msg);
+			}
+
+			eval {
+				$sth->execute($key)
+					or do {
+						logError("DBI query error when fetching session lock $key");
+						return undef;
+					};
+			};
+			if($@) {
+				my $msg = errmsg("Session lock fetch execute failed: %s", $@);
+				::logDebug($msg);
+				::logGlobal($msg);
+			}
+
 			my $ary = $sth->fetchrow_arrayref
 				or return undef;
 			return $ary->[1];
@@ -104,6 +126,7 @@ sub FETCH {
 		if($@) {
 			## Session fetch error
 			logError("DBI error fetching session $key");
+			undef $@;
 			return undef;
 		}
 
