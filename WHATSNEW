@@ -11,7 +11,7 @@ Interchange 4.9.2 not yet released
 Core
 ----
 * New ability to run Interchange entirely inside Apache and mod_perl.
-  See POD documentation inside Vend::ModPerl.
+  See POD documentation inside scripts/ic_mod_perl.PL for details.
 
 * Add new cron facility:
 
