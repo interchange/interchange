@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.6
 #
-# $Id: interchange.PL,v 1.24 2001-02-27 11:07:22 heins Exp $
+# $Id: interchange.PL,v 1.25 2001-03-01 02:10:54 heins Exp $
 #
 # Copyright (C) 1996-2001 Akopia, Inc. <info@akopia.com>
 #
@@ -1160,7 +1160,7 @@ sub adjust_cgi {
 
 	# Fix Cobalt/CGIwrap problem
     if($Global::Variable->{CGIWRAP_WORKAROUND}) {
-        $CGI::path_info =~ s!^$CGI::script_name::;
+        $CGI::path_info =~ s!^$CGI::script_name!!;
     }
 
     $CGI::host = $host || $CGI::ip;
