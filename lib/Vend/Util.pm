@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.52 2003-03-01 17:51:37 mheins Exp $
+# $Id: Util.pm,v 2.53 2003-03-06 17:12:41 racke Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -85,7 +85,7 @@ require HTML::Entities;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.52 $, 10);
+$VERSION = substr(q$Revision: 2.53 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -692,7 +692,7 @@ sub writefile {
 
 				## Need to make this OS-independent, requires File::Spec support
 				$dir =~ s:[\r\n]::g;   # Just in case
-				$dir =~ s:(.*)/.*:: or $dir = '';
+				$dir =~ s:(.*)/.*:$1: or $dir = '';
 				if($dir and ! -d $dir) {
 					File::Path::mkpath($dir);
 				}
