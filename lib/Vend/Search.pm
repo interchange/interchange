@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# $Id: Search.pm,v 1.8.2.10 2001-04-26 12:16:49 racke Exp $
+# $Id: Search.pm,v 1.8.2.11 2001-05-28 18:47:10 jon Exp $
 #
 # Vend::Search -- Base class for search engines
 #
@@ -26,7 +26,7 @@
 #
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 1.8.2.10 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.11 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -531,6 +531,7 @@ sub create_field_hash {
 	my $fh = {};
 	my $idx = 0;
 	for(@$fn) {
+		$fh->{$idx} = $idx;
 		$fh->{$_} = $idx++;
 	}
 	return $fh;
