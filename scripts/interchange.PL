@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.5.8
 #
-# $Id: interchange.PL,v 1.8.4.3 2000-10-20 10:18:51 racke Exp $
+# $Id: interchange.PL,v 1.8.4.4 2000-10-20 15:26:47 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -470,6 +470,30 @@ sub update_data {
         next unless defined $data{$key};
 		@{$data{$key}} = split /\0/, $value;
 	}
+
+    if ($function eq 'insert' && $base_db->config('AUTO_INCREMENT')) {
+        # special insertion case => key not needed
+        my (@k, @v);
+        
+		for(keys %data) {
+            next if $_ eq $prikey && length($data{$_}->[0]) == 0;
+			next unless (length($value = $data{$_}->[0]) || $CGI::values{mv_update_empty});
+			push(@k, $_);
+# LEGACY
+			HTML::Entities::decode($value) if $decode;
+# END LEGACY
+			if(defined $CGI::values{"mv_data_filter_$_"}) {
+				$value = Vend::Interpolate::filter_value(
+							 $CGI::values{"mv_data_filter_$_"},
+							 $value,
+							 0
+							 );
+			}
+			push(@v, $value);
+		}
+        my $func = $base_db->row_settor(@k);
+        return &$func(@v);
+    }
 
 	if (not defined $data{$prikey}) {
 		logError("No key '%s' in field specifier %s", $prikey, 'mv_data_fields');
@@ -1634,7 +1658,7 @@ EOF
 	$Vend::FinalPath =~ s:^/+::;
 	$Vend::FinalPath =~ s/(\.html?)$//;
 	$Vend::Session->{extension} = $1 || '';
-#::logDebug("path=$Vend::FinalPath");
+::logDebug("path=$Vend::FinalPath");
 
   DOACTION: {
     @path = split('/', $Vend::FinalPath, 2);

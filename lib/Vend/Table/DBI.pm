@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.19.4.1 2000-10-20 10:18:45 racke Exp $
+# $Id: DBI.pm,v 1.19.4.2 2000-10-20 15:26:24 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.19.4.1 $, 10);
+$VERSION = substr(q$Revision: 1.19.4.2 $, 10);
 
 use strict;
 
@@ -515,6 +515,65 @@ sub row_hash {
 		$ref->{$v} = $ref->{$k};
 	}
 	return $ref;
+}
+
+# returns subroutine which updates/inserts a data record
+# on insertion we don't need a key if the AUTO_INCREMENT
+# configuration option for this database set
+
+sub row_settor {
+	my ($s, @columns) = @_;
+	my ($i, $haskey, @quote);
+	for ($i = 0; $i < @columns; $i++) {
+        $haskey = 1 if $columns[$i] eq $s->[$KEY];
+		push @quote, $i 
+			unless $s->[$CONFIG]{NUMERIC}{$columns[$i]};
+	}
+	return sub {
+		my(@values, @parts) = @_;
+		my $query;
+		my $update;
+
+        if ($haskey) {
+            # key is one of the columns check if record already exists
+            $update = $s->record_exists($values[0]) ? 1 : 0;
+        } elsif (! $s->[$CONFIG]{AUTO_INCREMENT}) {
+            ::logError('DBI insertion without key value and AUTO_INCREMENT set');
+            return undef;
+        }
+                
+		for(@quote) {
+			$values[$_] = $s->[$DBI]->quote($values[$_]);
+		}
+		my $key = $values[0];
+		if($update) {
+            for (@columns) {
+                push (@parts, " $_ = " . shift(@values));
+            }
+            $query = "update $s->[$TABLE] set "
+                . join (', ', @parts)
+                    . " where $s->[$KEY] = $key";            
+		}
+		else {
+			$query = "insert into $s->[$TABLE] ("	.
+					join (",\n", @columns)		.
+					") VALUES ("					.
+					join (",\n", @values)		.
+					")"
+					;
+		}
+		my $sth = $s->[$DBI]->prepare($query);
+		if(!$sth) {
+			::logError("DBI prepare row_settor for table=$s->[$TABLE]: $DBI::errstr");
+			return undef;
+		}
+		my $rc = $sth->execute();
+		if(! defined $rc) {
+			::logError("DBI execute row_settor for table=$s->[$TABLE]: $DBI::errstr (query: $query)");
+			return undef;
+		}
+		return $rc;
+	};
 }
 
 sub field_settor {
