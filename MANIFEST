@@ -357,7 +357,6 @@ dist/foundation/templates/components/cart
 dist/foundation/templates/components/cart_display
 dist/foundation/templates/components/cart_tiny
 dist/foundation/templates/components/category_horizontal
-dist/foundation/templates/components/category_vertical
 dist/foundation/templates/components/cross_horizontal
 dist/foundation/templates/components/cross_vertical
 dist/foundation/templates/components/modular_buy
@@ -834,6 +833,7 @@ extra/IniConf.pm
 extra/Tie/ShadowHash.pm
 extra/URI/URL.pm
 hints.pl
+lib/Tie/ShadowHash.pm
 lib/Vend/Cart.pm
 lib/Vend/Config.pm
 lib/Vend/Control.pm
