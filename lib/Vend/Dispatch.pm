@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.4 2002-11-05 09:35:56 kwalsh Exp $
+# $Id: Dispatch.pm,v 1.5 2002-11-08 17:22:04 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -537,22 +537,34 @@ $form_action{go} = $form_action{return};
 
 sub do_process {
 
-	if($CGI::values{mv_form_profile}) {
-#::logDebug("checking form profile $CGI::values{mv_form_profile} = $::Scratch->{$CGI::values{mv_form_profile}}");
-		my ($status) = check_order($CGI::values{mv_form_profile}, \%CGI::values);
-#::logDebug("checked form profile=" . (defined $status ? $status : 'undef') );
-		return 1 if defined $status and ! $status;
+    my @filters = grep /^[mu][vi]_filter:/, keys %CGI::values;
+	FILTERS: {
+		last FILTERS unless @filters;
+		foreach my $key (@filters) {
+			next unless $key =~ /^ui_|^mv_/;
+			my $val = delete $CGI::values{$key};
+			$key =~ s/^.._filter://;
+			next unless $val;
+			if($val =~ /checkbox/) {
+				$CGI::values{$key} = $Tag->filter($val, $CGI::values{$key}, $key);
+			}
+			else {
+				next unless defined $CGI::values{$key};
+				$CGI::values{$key} = $Tag->filter($val, $CGI::values{$key}, $key);
+			}
+		}
 	}
 
-#::logDebug("todo=$CGI::values{mv_todo} prior to mv_click=" . join ",", split /\0/, $CGI::values{mv_click});
+	if($CGI::values{mv_form_profile}) {
+		my ($status) = check_order($CGI::values{mv_form_profile}, \%CGI::values);
+		return 1 if defined $status and ! $status;
+	}
 
     my $orig_todo = $CGI::values{mv_todo};
 
 	do_click();
 
     my $todo = $CGI::values{mv_todo};
-
-#::logDebug("todo=$todo after mv_click");
 
 	# Maybe we have an imagemap input, if not, use $doit
 	if($orig_todo ne $todo) {
