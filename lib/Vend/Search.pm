@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# $Id: Search.pm,v 1.5 2000-08-07 05:38:15 heins Exp $
+# $Id: Search.pm,v 1.6 2000-09-14 08:25:52 heins Exp $
 #
 # Vend::Search -- Base class for search engines
 #
@@ -26,7 +26,7 @@
 #
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 1.5 $, 10);
+$VERSION = substr(q$Revision: 1.6 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -574,6 +574,8 @@ EOF
 		my @negates =  map { $_ ? 'not ' : ''} @{$s->{mv_negate}};
 		my @begin = 	@{$s->{mv_begin_string}};
 		my @group = 	@{$s->{mv_search_group}};
+#::logDebug("Group=" . join ",", @group);
+#::logDebug("Ors=" . join ",", @{$s->{mv_orsearch}});
 		my @code;
 		my $candidate = '';
 		my ($i, $start, $term, $like);
