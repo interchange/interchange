@@ -6,6 +6,7 @@ README
 README.cvs
 README.debian
 README.rpm-dist
+SPECS/interchange-cron
 SPECS/interchange-init
 SPECS/interchange-logrotate
 SPECS/interchange-wrapper
@@ -19,6 +20,7 @@ code/Filter/encrypt.filter
 code/Filter/lc.filter
 code/Filter/line.filter
 code/Filter/linkdecode.filter
+code/Filter/md5.filter
 code/Filter/next_sequential.filter
 code/Filter/qb_safe.filter
 code/SystemTag/accessories.coretag
@@ -421,8 +423,8 @@ dist/foundation/etc/log_transaction
 dist/foundation/etc/mail_receipt
 dist/foundation/etc/order.number
 dist/foundation/etc/profiles.login
-dist/foundation/etc/profiles.order
 dist/foundation/etc/profiles.misc
+dist/foundation/etc/profiles.order
 dist/foundation/etc/receipt.html
 dist/foundation/etc/report
 dist/foundation/etc/return.number
@@ -710,7 +712,6 @@ dist/foundation/special_pages/cc_not_valid.html
 dist/foundation/special_pages/confirmation.html
 dist/foundation/special_pages/failed.html
 dist/foundation/special_pages/interact.html
-dist/foundation/special_pages/send_contact_form.html
 dist/foundation/special_pages/missing.html
 dist/foundation/special_pages/needfield.html
 dist/foundation/special_pages/nomatch.html
@@ -720,6 +721,7 @@ dist/foundation/special_pages/order_security.html
 dist/foundation/special_pages/reconfig.html
 dist/foundation/special_pages/sec_faq.html
 dist/foundation/special_pages/security.html
+dist/foundation/special_pages/send_contact_form.html
 dist/foundation/special_pages/violation.html
 dist/foundation/templates/blueyellow/regions/LEFTONLY_BOTTOM
 dist/foundation/templates/blueyellow/regions/LEFTONLY_TOP
