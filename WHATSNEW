@@ -128,6 +128,13 @@ Installation
 * Debian packages support the selection of the GnuPG home directory 
   during installation now.
 
+mod_interchange
+---------------
+
+* Fixed a weird bug where empty HTTP variables were being passed
+  under certain circumstances.
+
+
 ------------------------------------------------------------------------------
 
 
