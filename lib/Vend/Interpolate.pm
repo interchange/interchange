@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.226 2004-10-29 13:20:18 racke Exp $
+# $Id: Interpolate.pm,v 2.227 2004-12-14 20:55:38 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.226 $, 10);
+$VERSION = substr(q$Revision: 2.227 $, 10);
 
 @EXPORT = qw (
 
@@ -102,7 +102,7 @@ use Vend::Scan;
 use Vend::Tags;
 use Vend::Document;
 use Vend::Parse;
-use POSIX qw(ceil strftime);
+use POSIX qw(ceil strftime LC_CTYPE);
 
 use vars qw(%Data_cache);
 
