@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.66 2004-06-07 03:35:27 mheins Exp $
+# $Id: Order.pm,v 2.67 2005-02-10 06:45:40 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.66 $, 10);
+$VERSION = substr(q$Revision: 2.67 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -2515,6 +2515,7 @@ sub add_items {
 			foreach $i (0 .. $#$cart) {
 				if ($cart->[$i]->{'code'} eq $code) {
 					next unless $base eq $cart->[$i]->{mv_ib};
+					next if $cart->[$i]->{mv_free_item};
 					$found = $i;
 					# Increment quantity. This is different than
 					# the standard handling because we are ordering
