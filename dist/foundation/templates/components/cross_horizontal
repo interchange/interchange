@@ -84,8 +84,7 @@ random:
 	<tr> 
           <td>
 	    <a href="[area [loop-code]]">
-	      <img border="0" src="thumb/[loop-field thumb]">
-	    </a>
+	      <img border="0" src="thumb/[loop-field thumb]"></a>
 	  </td>
           <td valign="middle">
             <table cellspacing="0">
@@ -101,8 +100,7 @@ random:
 				[else][order [loop-code]]
 				[/else]
 				[/if-loop-data]
-  		<img src="__THEME_IMG_DIR__buynow.gif" border="0" align="middle"></a>
-		&nbsp;
+  		<img src="__THEME_IMG_DIR__buynow.gif" border="0" align="top"></a>
 	        <a href="[area [loop-code]]">More Info</a>
               </td>
 	    </tr>

@@ -76,7 +76,7 @@ banner:
 			[order [loop-code]]
 		[/else]
 		[/if-loop-data]
-	    <img align="middle" src="__THEME_IMG_DIR__buynow.gif" border="0"></A>
+	    <img align="top" src="__THEME_IMG_DIR__buynow.gif" border="0"></A>
 	  </td>
 	</tr>
 	<tr> 
@@ -87,8 +87,7 @@ banner:
 	<tr> 
 	  <td align="center"> 
 	    <a href="[area [loop-code]]">
-	      <img border="0" src="thumb/[loop-field thumb]">
-	    </a>
+	      <img border="0" src="thumb/[loop-field thumb]"></a>
 	  </td>
 	</tr>
         <tr>

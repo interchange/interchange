@@ -15,7 +15,7 @@ upsell_in_cart:
 
 <!-- BEGIN COMPONENT [control component cart] -->
 
-<table width="95%">
+<table width="95%" cellspacing="0">
 <tr>
   <td align="centeR">
 
@@ -43,9 +43,8 @@ upsell_in_cart:
     <table>
     <tr>
       <td>
-
-        <table cellspacing="0" cellpadding="2">
-	<TR class="contentbar2">
+        <table cellspacing="0" cellpadding="4" border="0">
+	<TR>
           <td class="contentbar2"><b>&nbsp;Remove</b></td>
           <td class="contentbar2" align="center"><b>SKU</b></td>
           <td class="contentbar2"><b>Description</b></td>
@@ -378,7 +377,7 @@ EOF
 	    [/if]
 	  </td>
       	  <td align="Right">
-            <table cellspacing="0" cellpadding="4">
+            <table cellspacing="0" cellpadding="4" border="0">
             <tr> 
               <td align=right class="contentbar1">
                 Shipping Weight:

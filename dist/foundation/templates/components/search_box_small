@@ -28,7 +28,7 @@ matches:
 	  <INPUT TYPE=hidden NAME=mv_column_op VALUE=ne>
 	  <INPUT TYPE=hidden NAME=mv_column_op VALUE=rm>
 	  <INPUT TYPE=hidden NAME=mv_searchspec VALUE=1>
-	  <INPUT MAXLENGTH=30 NAME=mv_searchspec type=text size=10>
+	  <INPUT MAXLENGTH=30 NAME=mv_searchspec type=text size=8>
 	</td>
 	<td align="right" valign="middle" width="45">
 	  <input type="image" alt="Search Go" width="45" border="0" src="__THEME_IMG_DIR__go.gif">

@@ -169,7 +169,7 @@ mv_nextpage=@@MV_PAGE@@
     <tr>
       <td align="center">
         <br>
-            <table cellspacing="0">
+            <table cellspacing="0" border="0">
             <TR class="contentbar2">
               <td class="contentbar2">&nbsp;<b>Remove</b></td>
               <td class="contentbar2" align="center"><b>SKU</b></td>
@@ -233,7 +233,7 @@ mv_nextpage=@@MV_PAGE@@
 [else]
             <TR>
 	      <TD ALIGN=CENTER COLSPAN=6 class="contentbar2">
-                <big>No items at the moment.</big>
+                No items at the moment.
               </TD>
             </TR>
 [/else]
@@ -248,7 +248,7 @@ mv_nextpage=@@MV_PAGE@@
             <INPUT TYPE=SUBMIT VALUE="Refresh">
           </td>
           <td align="right">
-            <table align="center" cellspacing="0">
+            <table align="center" cellspacing="0" border="0">
             <tr>
               <TD ALIGN=left class="contentbar1">Subtotal: </TD>
               <TD ALIGN=RIGHT class="contentbar1">[subtotal]</TD>
@@ -283,7 +283,7 @@ mv_nextpage=@@MV_PAGE@@
 	    <tr><td colspan="4">&nbsp;</td></tr>
 	    <tr class="contentbar2">
 	      <td class="contentbar2">
-	        <b><big>&nbsp;Shipping Address</big><b>
+	        <b>&nbsp;Shipping Address<b>
 	      </td>
 	      <td class="contentbar2"><i>(primary)</i></td>
 	      <td class="contentbar2">&nbsp;</td>
@@ -494,7 +494,7 @@ tf=name
 		  <td>
 			<table border="0" cellspacing="0" cellpadding="0" align="center">
 			  <tr class="contentbar2">
-				<td colspan="2" class="contentbar2"><b><big>&nbsp;Billing Address</big></b> - <i>If different than above</i></td>
+				<td colspan="2" class="contentbar2"><b>&nbsp;Billing Address</b> - <i>If different than above</i></td>
 				<td class="contentbar2">&nbsp;</td>
 				<td class="contentbar2">&nbsp;</td>
 			  </tr>
@@ -614,16 +614,15 @@ tf=name
                       <p>&nbsp;</p>
 
 		<!--- credit card information --->
-		  <table cellspacing=0 cellpadding="0" width="100%">
+		  <table cellspacing=0 cellpadding="0">
 			<tr>
 			  <td>
-				<table border=0 cellspacing=0 cellpadding=0 align=center>
+				<table border=0 cellspacing=0 cellpadding=4 align=center>
 				  <tr>
-					<td class="contentbar2" colspan=2><b>[error std_label="Credit Card Information" name=mv_credit_card_valid]
-[if session username eq test]<BR>(test number <A HREF="javascript:void 0" onclick="checkout.mv_credit_card_number.value='4111 1111 1111 1111'; return false;">4111 1111 1111 1111</A>)[/if]
-								</b>
-					<td colspan=2 class="contentbar2">
-<div align=right>[calc]
+					<td colspan="2" class="contentbar2"><b>[error std_label="Credit Card Information" name=mv_credit_card_valid]
+				[if session username eq test]<BR>(test number <A HREF="javascript:void 0" onclick="checkout.mv_credit_card_number.value='4111 1111 1111 1111'; return false;">4111 1111 1111 1111</A>)[/if]</b>
+					<td class="contentbar2">
+[calc]
 	my $accepted = $Variable->{CREDIT_CARDS_ACCEPTED};
 	my (@out);
 	my (@cc);
@@ -636,22 +635,22 @@ tf=name
 		push @out, qq{<IMG SRC="small$_.png">};
 	}
 	return join '&nbsp;&nbsp;', @out;
-[/calc]</div>
+[/calc]
 								</td>
                               </tr>
                               <tr>
                                 <td align=right class="contentbar1">
-                                  <b>Card Number</b>
+                                  <b>Card Number: </b>
                                 </td>
-                                <td align=left colspan=3 class="contentbar1">
+                                <td align=right colspan=2 class="contentbar1">
                                   <b><INPUT TYPE=text NAME=mv_credit_card_number SIZE=22></b>
                                 </td>
 			      </tr>
 			      <tr>
                                 <td align=right class="contentbar1">
-				  <b>Expiration</b>
+				  <b>Expiration: </b>
 				</td>
-                                <td align="left" colspan=3 class="contentbar1">
+                                <td align="right" colspan=2 class="contentbar1">
 
 <SELECT NAME=mv_credit_card_exp_month>
 [loop
