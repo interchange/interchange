@@ -48,11 +48,11 @@ DOIT: {
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# Interchange version 4.9.0
+# Interchange version 4.9.1
 #
-# $Id: interchange.PL,v 2.32 2002-06-05 14:07:27 jon Exp $
+# $Id: interchange.PL,v 2.33 2002-06-17 21:40:40 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -166,7 +166,7 @@ use vars qw($VERSION);
 require Exporter;
 
 BEGIN {
-	$VERSION = '4.9.0';
+	$VERSION = '4.9.1';
 }
 
 use Fcntl;
@@ -2440,7 +2440,7 @@ interchange [--options] [file]
 
 =head1 VERSION
 
-4.9.0
+4.9.1
 
 =head1 DESCRIPTION
 
