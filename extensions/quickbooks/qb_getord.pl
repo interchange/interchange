@@ -1,45 +1,9 @@
-From johnkay@edge.net  Fri Dec 29 17:55:04 2000
-Received: from localhost (localhost [127.0.0.1])
-	by bill.minivend.com (8.9.3/8.9.3) with ESMTP id RAA29260
-	for <mike@localhost>; Fri, 29 Dec 2000 17:55:04 -0500
-Received: from mv
-	by localhost with POP3 (fetchmail-5.1.0)
-	for mike@localhost (single-drop); Fri, 29 Dec 2000 17:55:04 -0500 (EST)
-Received: from mail.edge.net (mail.edge.net [199.0.68.4])
-	by mail.minivend.com (8.9.3/8.9.3) with ESMTP id RAA28479
-	for <mike@minivend.com>; Fri, 29 Dec 2000 17:54:54 -0500
-Received: from Compaq400 ([208.21.81.203]) by mail.edge.net
-          (Post.Office MTA v3.1.2 release (PO203-101c)
-          ID# 0-58127U5600L300S0V35) with SMTP id AAA28044
-          for <mike@minivend.com>; Fri, 29 Dec 2000 16:52:18 -0600
-Message-Id: <3.0.32.20001229164023.0080abe0@mail.edge.net>
-X-Sender: johnkay@mail.edge.net (Unverified)
-X-Mailer: Windows Eudora Pro Version 3.0 (32)
-Date: Fri, 29 Dec 2000 16:40:25 -0600
-To: mike@minivend.com
-From: Michael Wilk <mwilk@steppenwolf.com>
-Subject: Qb script
-Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="=====================_978151225==_"
-X-Filter: mailagent [version 3.0 PL65] for mike@bill.minivend.com
-Status: RO
-Content-Length: 2404
-Lines: 113
-
---=====================_978151225==_
-Content-Type: text/plain; charset="us-ascii"
-
-Mike...Here's the QB script.
---=====================_978151225==_
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: attachment; filename="qb_getord.pl"
-
 #!/usr/bin/perl
 
 my $SERVER  = 'http://10.10.10.21';
-my $CGICALL = '/cgi-bin/wolf/admin/quickbooks/get_orders';
-my $USER    = 'mwilk';
-my $PASS    = 'moog';
+my $CGICALL = '/cgi-bin/YOURCAT/admin/quickbooks/get_orders';
+my $USER    = 'USERNAME';
+my $PASS    = 'something';
 my $LOCDIR  = 'c:\Program Files\Intuit\QuickBooks Pro';
 my $DEC_CMD  = 'gpg --passphrase-fd 0 --batch -d';
 
@@ -134,9 +98,3 @@ open(OUT, ">>$dest")
 
 print OUT $data;
 close OUT and print "OK\n";
-
-
-
-
---=====================_978151225==_--
-
