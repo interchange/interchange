@@ -1,12 +1,12 @@
 # Copyright 2002-2004 Interchange Development Group (http://www.icdevgroup.org/)
 # Copyright 1996-2002 Red Hat, Inc.
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: crypt.filter,v 1.1 2004-10-19 10:03:51 docelic Exp $
+# $Id: crypt.filter,v 1.2 2004-12-22 13:50:35 docelic Exp $
 
 CodeDef crypt Filter
 CodeDef crypt Routine <<EOR
 sub {
-	my $val = shift;
-	return crypt($val, random_string(2));
+	my ($val, $tag, $salt) = @_;
+	return crypt($val, $salt ? $salt : random_string(2));
 }
 EOR
