@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.3
 #
-# $Id: interchange.PL,v 1.15.2.41 2001-05-13 02:59:33 jon Exp $
+# $Id: interchange.PL,v 1.15.2.42 2001-05-16 03:37:43 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -2397,8 +2397,8 @@ GNU General Public License.
 
 Command line options (first letter will usually work):
 
-     --add=catalog         remove a catalog from operation, parms taken
-                           from the standard input
+     --add=catalog         add a catalog to operation; parms taken from the
+                           standard input as a "Catalog ..." directive
      -d dir, --dir=dir     directory for VendRoot (interchange.cfg, error.log, etc.)
      -e name,
         --exclude=name     exclude catalog
