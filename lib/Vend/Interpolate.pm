@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.118 2002-10-18 07:08:42 mheins Exp $
+# $Id: Interpolate.pm,v 2.119 2002-10-21 15:42:11 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.118 $, 10);
+$VERSION = substr(q$Revision: 2.119 $, 10);
 
 @EXPORT = qw (
 
@@ -3570,7 +3570,6 @@ sub find_sort {
 		$page,
 		$prefix,
 		$more_id,
-		$form_arg,
 		$session,
 		$link_template,
 		);
@@ -3653,6 +3652,9 @@ sub tag_more_list {
 		$more_id = $q->{mv_more_id};
 		$form_arg .= "\nmi=$more_id";
 	}
+	else {
+		$more_id = undef;
+	}
 
 	if($r =~ s:\[border\]($All)\[/border\]::i) {
 		$border = $1;
@@ -3663,9 +3665,12 @@ sub tag_more_list {
 		$border =~ s/\D//g;
 	}
 
-	$r =~ s:\[link[-_]template\]($All)\[/link[-_]template\]::i
-		and $link_template = $1;
-	$link_template ||= q{<A HREF="$URL$">$ANCHOR$</A>};
+	if ($r =~ s:\[link[-_]template\]($All)\[/link[-_]template\]::i) {
+		$link_template = $1;
+	}
+	else {
+		$link_template = q{<A HREF="$URL$">$ANCHOR$</A>};
+	}
 
 	if(! $chunk or $chunk >= $total) {
 		return '';
