@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.20 $, 10);
+$VERSION = substr(q$Revision: 1.21 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -553,7 +553,10 @@ my %Format_routine;
 sub rotate {
 	my($base, $options) = @_;
 
-	$base = 'catalog.cfg' unless $base;
+	unless ($base) {
+		::logError( errmsg("%s: called rotate without file.", caller() ) );
+		return undef;
+	}
 
 	if(! $options) {
 		$options = {};
@@ -701,7 +704,7 @@ sub meta_display {
 #::logDebug("metadisplay: t=$table c=$column k=$key v=$value md=$meta_db");
 	my $metakey;
 	$meta_db = $::Variable->{UI_META_TABLE} || 'mv_metadata' if ! $meta_db;
-	$o = {} if ! $o;
+	$o = {} if ! ref $o;
 #::logDebug("metadisplay: t=$table c=$column k=$key v=$value opt=" . ::uneval_it($o));
 	my $meta = Vend::Data::database_exists_ref($meta_db)
 		or return undef;
@@ -863,12 +866,14 @@ sub meta_display {
 			prepend		=> ($record->{'prepend'}	|| undef),
 			append		=> ($record->{'append'}		|| undef),
 		};
-#::logDebug("going to display");
+#::logDebug("going to display for $opt->{name}");
 		my $w = Vend::Interpolate::tag_accessories(
 				undef, undef, $opt, { $column => $value } );
-		if($record->{filter}) {
+		my $filter;
+#::logDebug("filters: o=$o->{filter} r=$record->{filter}");
+		if($filter = ($o->{filter} || $record->{filter})) {
 			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$column" VALUE="};
-			$w .= $record->{filter};
+			$w .= $filter;
 			$w .= '">';
 		}
 #::logDebug("template=$o->{template}");
