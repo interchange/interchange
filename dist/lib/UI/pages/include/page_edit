@@ -1,4 +1,12 @@
 <!-- page_edit new ----- -->
+[calc]
+	$Tag->tmp('have_backup_db');
+	if($Config->{Database}{backup}) {
+		$Scratch->{have_backup_db} = 1;
+	}
+	return;
+[/calc]
+[if scratch have_backup_db]
 [loop search="
         fi=backup
         co=yes
@@ -36,6 +44,7 @@
 </BLOCKQUOTE>
 [/on-match]
 [/loop]
+[/if]
 
 <form action="[area ui]" method=POST ENCTYPE="multipart/form-data">
 <input type=hidden name=mv_session_id value="[data session id]">
