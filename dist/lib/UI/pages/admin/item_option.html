@@ -65,7 +65,7 @@
 	
 	$CGI->{ui_data_fields} = 'code __ProductFiles_0__:__DescriptionField__ o_enable o_matrix o_modular';
 	if($db->record_exists($id) and $db->field($id, 'o_modular')) {
-		$CGI->{ui_data_fields} .= ' sku';
+		$CGI->{ui_data_fields} .= ' sku o_master';
 		$CGI->{ui_options_modular} = 1;
 	}
 	return;
@@ -93,7 +93,9 @@
 	ui_data_fields="[cgi ui_data_fields]"
 	ui_display_only="[cgi ui_display_only]"
 	widget.sku="hidden"
+	widget.o_master="hidden"
 	override.sku="[cgi item_id]"
+	override.o_master="NONE"
 ]
 <!---- MAJOR -----></td>
 <!---- MAJOR -----><td valign=top>
