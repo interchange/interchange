@@ -97,12 +97,14 @@ mv_nextpage=@@MV_PAGE@@
 [loop search="
 		fi=access
 		st=db
+		ml=1000
 		co=yes
 		sf=username
 		se=:
 		bs=yes
 		ne=1
-		tf=name
+		tf=name,username
+		to=f
 	"]
   <option value="[loop-code]">[loop-code] -- [loop-data access name][if-loop-data access super]*[/if-loop-data]
 [/loop]
