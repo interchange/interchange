@@ -49,6 +49,8 @@ Debian
   module out of the package (Closes: #224435, thanks to Henrik Holmboe
   <elements@hack.se> for the bug report)
 
+* Switch to gettext-based debconf templates (Closes: #235494, thanks to
+  Martin Quinson <Martin.Quinson@tuxfamily.org> for the patch)
 
 ------------------------------------------------------------------------------
 
