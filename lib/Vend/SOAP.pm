@@ -1,6 +1,6 @@
 # SOAP.pm:  handle SOAP connections
 #
-# $Id: SOAP.pm,v 1.1.2.3 2001-02-26 06:15:10 heins Exp $
+# $Id: SOAP.pm,v 1.1.2.4 2001-02-26 17:05:26 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -33,7 +33,7 @@ use Vend::SOAP::Transport;
 use strict;
 
 use vars qw($VERSION @ISA $AUTOLOAD);
-$VERSION = substr(q$Revision: 1.1.2.3 $, 10);
+$VERSION = substr(q$Revision: 1.1.2.4 $, 10);
 @ISA = qw/SOAP::Server/;
 
 my %Allowed_tags;
@@ -95,6 +95,7 @@ for (@Allowed_tags) {
 }
 
 sub hello {
+	my $self = shift;
 	my @args = @_;
 	return "hello from the Vend::SOAP server, pid $$, world!\nreceived args:\n"
 		. ::uneval(\@args);
