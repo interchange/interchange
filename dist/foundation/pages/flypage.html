@@ -44,113 +44,106 @@ ui_template_name: leftonly
 [set upsell][item-data merchandising upsell_to][/set]
 [set cross_codes][item-data merchandising cross_sell][/set]
 
-  <table width="50%" border="0" cellspacing="0" cellpadding="0">
+  <table width="70%" border="0" cellspacing="0" cellpadding="5">
   <tr valign="middle"> 
     <td align=center class="contentbar1">
-      <big>[item-field category]</big>
+      <big>[item-field category] : <b>[item-description]</b></big>
     </td>
   </tr>
   <tr valign="middle"> 
     <td align=center> 
       <table cellspacing=0 cellpadding=3 align=center>
       <tr> 
-	<td valign=top align=center> 
-	  <table width="25%" border=0 cellspacing=0 cellpadding=0>
-	  <tr> 
-	    <td>
-	      [if-item-field image]
-	        <IMG SRC="items/[item-field image]" ALT="[item-filter entities][item-description][/item-filter]" title="[item-filter entities][item-description][/item-filter]" BORDER=0>
- 	      [/if-item-field]
-	    </td>
-	  </tr>
-	  </table>
+	<td valign="center" align="left"> 
+	  [if-item-field image]
+	    <IMG SRC="items/[item-field image]" ALT="[item-filter entities][item-description][/item-filter]" title="[item-filter entities][item-description][/item-filter]" BORDER=0>
+ 	  [/if-item-field]
 	</td>
-	<td valign="top" align="center"> 
-	  <table border="0" cellpadding="3" cellspacing="0">
-	  <tr> 
-	    <td valign="top" class="contentbar2" align=center> 
-	      <big>[item-description]</big>
-	    </td>
-	  </tr>
-	  <tr> 
-	    <td align="center">[item-price]</td>
-	  </tr>
-	  <tr> 
-	    <td>&nbsp;</td>
-	  </tr>
-					
-	  [if-item-data inventory quantity < 1]
+	<td valign="center" align="center"> 
+	  <table width="100%" border="0" cellpadding="3" cellspacing="0">
 	  <tr>
-	    <td align="center">
-	      <b>Out Of Stock</b>
-	      <br><br>
-	      <a href="[area stock-alert [loop-code]]">In Stock Notification</a>
+	    <td colspan="2">
+	      [item-field comment]
 	    </td>
 	  </tr>
-	  [else]
 	  <tr> 
-	    <td align="center">
-	      <b>In Stock</b>
-            </td>
-	  </tr>						
-	  [/else]
-	  [/if-item-data]
-
-	  <tr> 
-	    <td>&nbsp;</td>
+	    <td colspan="2">&nbsp;</td>
 	  </tr>
 
 	  [if-item-data options o_modular]
 	  [else]
-	  <tr> 
-	    <td>&nbsp;</td>
-	  </tr>
 
 	  <FORM ACTION="[area order]" METHOD=POST>
 	  <INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="[item-code]">
-	  <tr> 
-	    <td align="center">
-	      Quantity: <input type="text" name="mv_order_quantity" size="4" value="1">
+
+	  <tr>
+	    <td colspan="2">
+	      [if ordered [item-code]]
+	        This item is currently in your [page ord/basket]shopping cart</a>.
+	        <br>
+	      [/if]
+	      [if-item-data options o_enable]
+	        [if-item-data !options o_modular]
+	          [table-organize cols=4 table=' ' font="size=1" pretty=1]
+	            [item-options td=1 label=1 bold=1 price=1]
+	          [/table-organize]
+	        [/if-item-data]
+	      [/if-item-data]
+
+   	      [if-item-data options o_modular]
+	        [set arg][item-code][/set]
+	        [include templates/components/modular_buy]
+	      [/if-item-data]
 	    </td>
 	  </tr>
-	  <tr> 
-	    <td align=center> 
-	      <input type="submit" value="Buy it Now!">
-	    </td>
-	  </tr>
+
 	  [/else]
 	  [/if-item-data]
 			 
-	  </table>
-	</td>
-      </tr>
-      <tr> 
-	<td colspan="2" class="contentbar1"> 
-	  <p>
-	  [if ordered [item-code]]
-	    This item is currently in your [page ord/basket]shopping cart</a>.
-	    <br>
-	  [/if]
-	  [if-item-data options o_enable]
-	    [if-item-data !options o_modular]
-	      [table-organize cols=4 table=' ' font="size=1" pretty=1]
-	        [item-options td=1 label=1 bold=1 price=1]
-	      [/table-organize]
+	  <tr> 
+  	    [if-item-data inventory quantity < 1]
+	    <td align="left">
+	      <b>Out Of Stock<b>
+	      <br>
+	      <a href="[area stock-alert [loop-code]]">In-Stock Notification</a>
+	    </td>
+	    [else]
+	    <td align="left">
+	      <b>In Stock<b>
+            </td>
+	    [/else]
 	    [/if-item-data]
-	  [/if-item-data]
-	  [item-field comment]
 
-	  [if-item-data options o_modular]
-	    [set arg][item-code][/set]
-	    [include templates/components/modular_buy]
-	  [/if-item-data]
-	  </p>
+	    <td align="right">
+	      Quantity: <input type="text" name="mv_order_quantity" size="2" value="1">
+	    </td>
+
+	  </tr>
+	  </table>
 	</td>
       </tr>
       </table>
     </td>
   </tr>
+  <tr>
+    <td class="contentbar1">
+
+	<table width="100%">
+	<tr>
+	  <td align="left">
+	    Price: <b>[item-price]<b>
+	  </td>
+	  <td align="right">					
+	    <input type="submit" value="Buy it Now!">
+	  </td>
+	</tr>
+	</table>
+
+    </td>
+  </tr>
   </table>
+
+</form>
 
 [/fly-list]
 

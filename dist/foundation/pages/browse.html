@@ -90,7 +90,7 @@ ui_template_name: leftright
 	      <INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="[loop-code]">
 	
 	    <tr> 
-	      <td valign="top"> 
+	      <td valign="top" colspan="2"> 
 	        <b>[loop-description]</b>
 	      </td>
 	    </tr>
@@ -98,46 +98,35 @@ ui_template_name: leftright
 	      <td align="center">
 		[loop-price]
 	      </td>
-	    </tr>
-	    <tr> 
-	      <td align="center">&nbsp</td>
-	    </tr>
 				
 	    [loop-calc]
 		my $q = q{[loop-data inventory quantity]};
 		if($q > 0) {
 return <<EOF;
-	    <tr> 
 	      <td align="center">
 	        <b>In Stock</b>
 	      </td>
-	    </tr>
-	
 EOF 
 		} else {
-
 return <<EOF;
-	    <tr> 
 	      <td align="center">
    	        <b>Out Of Stock</b></font>
-		<br><br>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
 		<a href="[area stock-alert [loop-code]]">In Stock Notification</a>
 	      </td>
-	    </tr>
 EOF
 		}
 	    [/loop-calc]									
 				
-	    <tr> 
-	      <td align="center">&nbsp;</td>
 	    </tr>
 	    <tr> 
 	      <td align="center">
  	        Quantity:
-		<input type="text" name="mv_order_quantity" size="4" value="1">
+		<input type="text" name="mv_order_quantity" size="2" value="1">
 	      </td>
-	    </tr>
-	    <tr> 
 	      <td align="center"> 
 		<input type="submit" value="Buy it Now!">
 	      </td>
