@@ -1242,7 +1242,7 @@ EOF
 										db => $database->{$c},
 										pre_filter => $pre_filter->{$c},
 										table => $t,
-										type => $widget->{$c} || $type || 'text_60',
+										type => $widget->{$c} || $type,
 										width => $width->{$c},
 										template => $template,
 									});
