@@ -910,7 +910,7 @@ Static Page Generation
   -- remove path_adjust Pragma which is only useful in conjunction with
      StaticPath configuration directive
   -- remove Vend::Interpolate::cache_html, Vend::Interpolate::resolve_static, 
-     Vend::Session::tie_static_dbm routines
+     Vend::Interpolate::static_url and Vend::Session::tie_static_dbm routines
   
   
 Miscellaneous
