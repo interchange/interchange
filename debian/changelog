@@ -1,4 +1,4 @@
-interchange (4.9.7-0.9) unstable; urgency=low
+interchange (4.9.7-0.10) unstable; urgency=low
 
   * new upstream release
   * new debconf option for traffic, use low traffic as default
@@ -15,8 +15,9 @@ interchange (4.9.7-0.9) unstable; urgency=low
     the problem)
   * remove configuration files handled by interchangeconfig on purge
   * protect against scripts ending up in /usr/lib/interchange
+  * get_url UserTag forces dependency on libwww-perl
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon,  5 May 2003 17:01:04 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri,  9 May 2003 17:05:20 +0200
 
 interchange (4.8.6.20021206-1) unstable; urgency=high
 

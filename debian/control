@@ -27,7 +27,7 @@ Description: Interchange administration interface (UI)
 
 Package: interchange
 Architecture: any
-Depends: ${perl:Depends}, debconf, libdigest-md5-perl, libhtml-parser-perl, libmime-base64-perl, libsafe-hole-perl (>=0.06), libsql-statement-perl (<<1.0), libstorable-perl, liburi-perl, logrotate
+Depends: ${perl:Depends}, debconf, libdigest-md5-perl, libhtml-parser-perl, libmime-base64-perl, libsafe-hole-perl (>=0.06), libsql-statement-perl (<<1.0), libstorable-perl, liburi-perl, logrotate, libwww-perl
 Recommends: interchange-ui
 Suggests: apache-ssl | libapache-mod-ssl
 Description: e-commerce and general HTTP database display system
