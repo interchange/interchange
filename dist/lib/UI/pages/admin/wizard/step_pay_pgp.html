@@ -14,16 +14,7 @@ to the keyring at time of preview.
 </td></tr>
 </table>
 
-[set do_gpg_key]
-	[if cgi pgpkeytext =~ /\S/]
-	[calc]
-		$CGI->{pgpkeyid} = q{[add-gpg-key name=pgpkeytext return_id=1]};
-		return;
-	[/calc]
-	[/if]
-[/set]
 [tmp tmp_pgpkeys][get-gpg-keys][/tmp]
-keys=[scratch tmp_pgpkeys]
 <p>
 [table-editor 
 	table=variable
@@ -47,7 +38,6 @@ keys=[scratch tmp_pgpkeys]
 	widget.code=text_10
 
 	ui_hide_key=1
-	hidden.mv_click="do_gpg_key"
 
 	label.pgp="Enable PGP/GPG mode"
 	widget.pgp=yesno

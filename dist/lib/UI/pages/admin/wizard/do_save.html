@@ -604,6 +604,23 @@ push @messages, "set shipmodes to '$na_string' in Canada";
 [/perl] -->
 
 <blockquote>
+[if value pgpkeytext =~ /BEGIN/]
+
+	[calc]
+		$Values->{pgpkeyid} = q{[add-gpg-key text="[value pgpkeytext]" return_id=1]};
+		return;
+	[/calc]
+
+	[if value pgpkeyid]
+	GPG key (id [value pgpkeyid]) imported.
+	[value name=pgpkeytext set=""]
+	[else]
+	GPG key import FAILED.
+	[/else]
+	[/if]
+
+[/if]
+
 [if value sampleproducts]
 [and value products =~ /\.xls$/i]
 	[import-fields
@@ -716,7 +733,7 @@ push @messages, "set shipmodes to '$na_string' in Canada";
 			$cat_defaults{selector} = "$ccol=$cat";
 			
 			for(keys %cat_defaults) {
-				Log("setting col=$_ key=$key = $cat_defaults{$_}");
+				#Log("setting col=$_ key=$key = $cat_defaults{$_}");
 				$cdb->set_field($key, $_, $cat_defaults{$_});
 			}
 		}
