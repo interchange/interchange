@@ -85,8 +85,9 @@ install: build
 # Add link sources
 	mkdir -p $(TMP)/usr/lib/interchange/src
 	for file in dist/src/*; do if test -f $$file; then cp $$file $(TMP)/usr/lib/interchange/src; fi; done
-# UI images (construct gets replaced by foundation in IC 4.7 and up)
+# UI images and stuff (construct gets replaced by foundation in IC 4.7 and up)
 	mkdir -p $(TMP)/var/www/ui/admin
+	cp share/akopia/ui/std.js $(TMP)/var/www/ui
 	if [ -f dist/construct ]; then \
 		cp dist/construct/images/poweredby.gif $(TMP)/var/www/ui; \
     fi
