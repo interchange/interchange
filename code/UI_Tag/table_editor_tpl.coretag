@@ -1779,7 +1779,9 @@ EOF
 	my $eregion = editor_region($opt, \%opt_out, \%hidden);
 	my $cregion = column_region($opt, \%opt_out, \@controls);
 
+	$template = '' unless $template =~ /\S/;
 	$template ||= $Default_template;
+
 show_times("end table editor format item_id=$key") if $Global::ShowTimes;
 	my $result = run_templates( $opt, [ @$eregion, @$cregion ], \$template);
 show_times("end table editor region display item_id=$key") if $Global::ShowTimes;
