@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.10 2003-02-02 21:04:22 racke Exp $
+# $Id: Dispatch.pm,v 1.11 2003-02-13 16:13:12 racke Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.10 $, 10);
+$VERSION = substr(q$Revision: 1.11 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -679,7 +679,7 @@ sub run_in_catalog {
 	if($job) {
 		my $ct = $jobscfg->{base_directory} || 'etc/jobs';
 		my $gt = '';
-		$gt = "$Global::ConfDir/$ct" if $jobscfg->{use_global};
+		$gt = "$Global::ConfDir/jobs" if $jobscfg->{use_global};
 
 		for my $d ($ct, $gt) {
 #::logGlobal("check directory=$d for $job");
