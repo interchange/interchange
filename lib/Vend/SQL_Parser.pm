@@ -1,6 +1,6 @@
 # Vend::SQL_Parser - Interchange SQL parser class
 #
-# $Id: SQL_Parser.pm,v 2.5 2003-07-30 04:00:45 mheins Exp $
+# $Id: SQL_Parser.pm,v 2.6 2003-09-01 16:20:13 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1997-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use strict;
 use Vend::Util;
 use Text::ParseWords;
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.5 $, 10);
+$VERSION = substr(q$Revision: 2.6 $, 10);
 
 sub new {
 	my $class = shift;
@@ -816,7 +816,7 @@ sub new {
 		}
 	}
 	elsif($raw =~ /\s/) {
-		$self->{distinct} = 1 if s/^distinct\s+//i;
+		$self->{distinct} = 1 if $raw =~ s/^distinct\s+//i;
 		my $title;
 		$title = $1 if $raw =~ s/\s+as\s+(.*)//;
 		if($title) {
