@@ -15,6 +15,7 @@
 	delete $CGI->{order};
 	$Scratch->{order_list} = $orders;
 [/calc]
+[flag type=write value=1 tables="orderline transactions"]
 [loop list="[scratch order_list]"]
 	[update-order-status
 			order_number="[loop-code]"
@@ -185,4 +186,4 @@
 </script>
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: order_status.html,v 2.13 2003-07-22 18:56:09 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order_status.html,v 2.14 2003-11-21 17:10:17 edl Exp $ -->
