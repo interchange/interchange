@@ -20,6 +20,7 @@
 [/if]
 
 [calc]
+	$cwd = $Session->{ui_cwd};
 	sub tmp_display_in_progress {
 		my ($type) = shift;
 		my $store;
@@ -136,6 +137,7 @@
 			edit_page=content_editor
 			edit_form="ui_name=~RN~&ui_type=component"
 			]
+	[calc] $Session->{ui_cwd} = $cwd; return; [/calc]
 	</td>
 </tr>
 

@@ -50,7 +50,8 @@ EOF
 	else {
 		$Scratch->{content_type} = $Tag->filter('mime_type', $_);
 		$Scratch->{content_type} = $CGI->{content_type} || "text/plain"
-			if $Scratch->{content_type} eq 'application/octet-stream';
+			if $Scratch->{content_type} eq 'application/octet-stream'
+			or $Scratch->{content_type} eq 'text/html';
 	}
 	return;
 [/perl][if scratch violation]

@@ -2,7 +2,7 @@
 #
 # UI::ContentEditor - Interchange page/component edit
 # 
-# $Id: ContentEditor.pm,v 2.3 2002-06-03 17:46:00 kwalsh Exp $
+# $Id: ContentEditor.pm,v 2.4 2002-06-27 20:18:36 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -23,7 +23,7 @@
 
 package UI::ContentEditor;
 
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 $DEBUG = 0;
 
 use POSIX qw/strftime/;
@@ -148,6 +148,7 @@ sub parse_template {
 	my ($tref, $opt) = @_;
 	$opt ||= {};
 
+	
 	my $type = $tref->{ui_type};
 
 	my $tdb = get_tdb();
@@ -349,14 +350,20 @@ sub parse_page {
 	}
 
 	if(! $tref) {
+#::logDebug("no tref first try...");
 		my $topt = { %$opt };
 		undef $topt->{dir};
+		undef $topt->{new};
 		$topt->{type} = 'template';
 		#$topt->{single} = 1;
 		$tref = read_template($tpl, $topt);
 	}
 
+	assert('template_reference', $tref, 'HASH')
+		or undef $tref;
+
 	if (! $tref) {
+#::logDebug("no tref second try...");
 		pain('read_template', '%s %s not found', 'template', $tpl);
 		$tref = read_template('', { new => 1, type => 'template'});
 	}
@@ -373,12 +380,12 @@ sub parse_page {
 	my $body = delete $pref->{ui_body};
 
 	unless(defined $body) {
-		### Already parsed, match slots and leave
+		### Already parsed, match slots and leave if not new page
 		match_slots($pref, $tref);
-		return;
+		return unless $opt->{new};
 	}
 
-	my @slots = @{ $tref->{ui_slots} || [] };
+	my @slots = @{ $pref->{ui_slots} || $tref->{ui_slots} || [] };
 
 	#$body =~ s/\r\n/\n/g;
 
@@ -485,7 +492,7 @@ sub parse_page {
     while($controls =~ s{
 						(?:
 							\[
-								(set|tmp(?:[-_]no)?|seti)
+								(seti?|tmpn?)
 							\s+
 								([^\]]+)
 							\]
@@ -724,6 +731,7 @@ sub read_template {
 	my $might_be_single;
 
 	if(! @data and $opt->{new}) {
+#::logDebug("no data, and new");
 		$opt->{type} ||= 'page';
 		my $prefix = "ui_$opt->{type}";
 		my $ref = {
@@ -752,6 +760,7 @@ sub read_template {
 
 	foreach my $dref (@data) {
 		my ($data, $source) = @{$dref || []};
+#::logDebug("data is $data");
 		my $type;
 		my $ref;
 
@@ -906,7 +915,6 @@ sub read_template {
 }
 sub page_component_editor {
 	my ($name, $pos, $comp, $pref, $opt) = @_;
-#::logDebug("called page_component_editor, comp=" . ::uneval($comp));
 
 	assert('page reference', $pref, 'HASH')
 		or return undef;
@@ -914,9 +922,13 @@ sub page_component_editor {
 	assert('component reference', $comp, 'HASH')
 		or return undef;
 
+	$name ||= $comp->{code};
+
+#::logDebug("called page_component_editor, name=$name comp=" . ::uneval($comp));
 	my $hidden = { 
 			ui_name   => $pref->{ui_name},
 			ui_source => $pref->{ui_source},
+			ui_page_template => $pref->{ui_page_template},
 			ui_type   => $pref->{ui_type},
 			ui_content_op => 'modify_component',
 			ui_content_pos => $pos,
@@ -928,6 +940,7 @@ sub page_component_editor {
 
 	my $topt = { %$opt };
 	delete $topt->{dir};
+	delete $topt->{new};
 	$topt->{type} = 'component';
 	my $cref = $store->{$name} || read_template($name, $topt);
 
@@ -1182,6 +1195,7 @@ sub page_region {
 	for my $c (@$slots) {
 		$pos++;
 		my $r = { %$c };
+		$r->{component} ||= $r->{code};
 #::logDebug("slot pos=$pos, slot=" . ::uneval($c));
 		delete $r->{_editor_table};
 		if($r->{where}) {
@@ -1447,7 +1461,7 @@ sub format_page {
 			push @bods, $body;
 			push @bods, "<!-- END CONTENT -->";
 		}
-		else {
+		elsif ($var =~ /^[A-Z]/) {
 			push @bods, '@_' . $var . '_@';
 		}
 	}
@@ -2147,8 +2161,11 @@ sub page_editor {
 
 	my $tmp;
 	if(! $pref) {
-		$opt->{new} = 1;
+#::logDebug("No page template");
+		$opt->{new_page} = 1;
+		$opt->{template} ||= $opt->{ui_page_template};
 		$pref = read_template($opt->{ui_name}, $opt);
+#::logDebug("page template=$pref");
 		$name = $opt->{ui_name} || $opt->{name} || 'new';
 		$pref->{ui_name} = $name;
 	}
@@ -2163,6 +2180,7 @@ sub page_editor {
 
 	$pstore->{$name} = $pref;
 	parse_page($pref, $opt);
+	publish_page($pref, $opt) if $opt->{new_page};
 #::logDebug("found a template name=$pref->{ui_name} store=$pstore: " . uneval($pref));
 
 	my ($overall, $comp) = page_region($pref, $opt);
@@ -2340,6 +2358,7 @@ sub editor {
 	my $template;
 
 	$opt->{type} ||= 'page';
+	$opt->{ui_page_template} ||= $CGI->{ui_page_template};
 
 	## If we get a ref, assume it is already parsed
 	if(ref $item) {

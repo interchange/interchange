@@ -1,4 +1,4 @@
-[content-editor name="[cgi ui_name]" type="[cgi ui_type]"]
+[content-editor name="[cgi ui_name]" type="page"]
 [pages]
 
 <script language=JavaScript>

@@ -29,12 +29,70 @@
 	They can be relocated to a catalog-specific place
 	by copying to CATROOT/include.
 [/comment]
-[if cgi ui_type eq component]
+[if cgi new]
+<form action="[area __UI_BASE__/content_editor]">
+<table width="60%">
+<tr>
+	<td style="font-weight: bolder; text-align: right">
+		[calc] return "\u$CGI->{ui_type}"; [/calc] name
+	</td>
+	<td>
+		[set page_name_click]
+			[calc]
+				$CGI->{ui_name} =~ s/^\s+//;
+				$CGI->{ui_name} =~ s/\s+$//;
+				$CGI->{ui_name} = $Tag->filter({
+													op => 'filesafe',
+													body => $CGI->{ui_name},
+												});
+				my $pat = quotemeta $Config->{HTMLsuffix};
+		#Debug("pat=$pat");
+				$pat = qr/$pat$/;
+		#Debug("pat=$pat");
+				$CGI->{ui_name} .= $Config->{HTMLsuffix}
+					unless $CGI->{ui_name} =~ $pat;
+		#Debug("page=$CGI->{ui_name}");
+				return;
+			[/calc]
+		[/set]
+		<input type=text   name="ui_name" size=30>
+		<input type=hidden name="mv_action" value="back">
+		<input type=hidden name="mv_click" value="page_name_click">
+		<input type=hidden name="ui_type" value="[cgi ui_type]">
+		<input type=hidden name="ui_return_to" value="[cgi ui_return_to]">
+	</td>
+</tr>
+	[if cgi ui_type eq page]
+<tr>
+	<td style="font-weight: bolder; text-align: right">
+		Template type:
+	</td>
+	<td>
+			 [display
+							name=ui_page_template
+							type=select
+							default="[page-param ui_page_template]"
+							passed="[content-info templates=1]"
+							]
+	</td>
+</tr>
+	[/if]
+<tr>
+	<td> &nbsp; </td>
+	<td>
+		<input type=submit value="[L]Create new page[/L]">
+	</td>
+</tr>
+</table>
+</form>
+[elsif cgi ui_type eq component]
 	[include include/component_editor]
+[/elsif]
 [elsif cgi ui_type eq template]
 	[include include/template_editor]
 [/elsif]
 [else]
+	[set page_name_click][/set]
 	[include include/page_editor]
 [/else]
 [/if]
