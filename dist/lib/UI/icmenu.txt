@@ -6,7 +6,8 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0005	Top	05		Design		layout	admin/layout		Design			Organize site navigation, manage site layout		B6.gif	B6_b.gif	B6_b.gif	icon_design.gif	
 0006	Top	06		Merchandising		item	admin/merchandising		Merchandising			Set up quantity pricing, up-sell, promotions, and affiliates		B7.gif	B7_b.gif	B7_b.gif	icon_merch.gif	
 0007	Top	07		Reporting		stats	admin/orderstats		Reporting			View statistics on orders and site traffic, create custom reports		B8.gif	B8_b.gif	B8_b.gif	icon_stats.gif	
-0008	Top	07		Admin		admin	admin/genconfig		Administration			Administrator and developer-oriented tools		B9.gif	B9_b.gif	B9_b.gif	icon_config.gif	
+0008	Top	08		Wizard		wizard	admin/wizard/index		Wizard			Catalog Configuration Wizard						
+0008b	Top	09		Admin		admin	admin/genconfig		Administration			Administrator and developer-oriented tools		B9.gif	B9_b.gif	B9_b.gif	icon_config.gif	
 0009	Admin	01					admin/genconfig		Info									
 0010	Admin	02					admin/tax		Tax									
 0011	Admin	03					admin/ship		Shipping									
@@ -64,3 +65,18 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0063	Reports	01					admin/orderstats		Orders									
 0064	Reports	02					admin/trafficstats		Traffic									
 0065	Reports	03					admin/tablereport		Custom									
+W002	Wizard	02		groupcomp			admin/wizard/index		About Your Company	1			groupcomp
+W003	Wizard	03	1	company			admin/wizard/step_company		Company Information	1			compinfo
+W004	Wizard	04	1	email			admin/wizard/step_email		Company E-mail Addresses	1			compemail
+W005	Wizard	05		grouppolicy			admin/wizard/step_grouppolicy		About Your Policies	1			grouppolicy
+W006	Wizard	06	1	tax			admin/wizard/step_tax		Tax Information	1			taxcalc
+W007	Wizard	07	1	ship			admin/wizard/step_ship		Shipping Preferences	1			shipinfo
+W008	Wizard	08	1	pay			admin/wizard/step_pay		Payment Preferences	1			payment
+W009	Wizard	09	1	security			admin/wizard/step_security		Security Preferences	1			general
+W011	Wizard	11		products			admin/wizard/step_products		About Your Products	1			sprdsht
+W012	Wizard	12		groupcontent			admin/wizard/step_content		About Your Site	1			groupcontent
+W013	Wizard	13	1	index			admin/wizard/step_index		Index page	1			content
+W014	Wizard	14	1	about			admin/wizard/step_about		About us	1			content
+W016	Wizard	16		finalize			admin/wizard/step_finalize		Content Inspection	1			finalck
+W017	Wizard	17		preview			admin/wizard/step_preview		Preview	1			general
+W018	Wizard	18		launch			admin/wizard/step_launch		Launch	1			general
