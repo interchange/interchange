@@ -77,7 +77,7 @@ install: build
 	rm -r $(TMP)/usr/lib/interchange/etc
 	ln -s /etc/interchange $(TMP)/usr/lib/interchange/etc
 # Setup wrapper and config script
- 	mkdir -p $(TMP)/usr/sbin
+	mkdir -p $(TMP)/usr/sbin
 	cp debian/interchange.wrapper $(TMP)/usr/sbin/interchange
 	cp debian/interchangeconfig $(TMP)/usr/sbin/interchangeconfig
 	mkdir -p $(TMP)/usr/bin
