@@ -1,4 +1,4 @@
-interchange (4.6.2-0.3) unstable; urgency=low
+interchange (4.6.2-0.4) unstable; urgency=low
 
   * new upstream release
   * interchange wrapper switches to the interchange user if invoked
@@ -16,8 +16,10 @@ interchange (4.6.2-0.3) unstable; urgency=low
   * infinite build loop fixed (in case of a missing user interchange)
   * hack to get another start page for the UI
   * improvement for database downloads from UI page gentable
-
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu, 11 Jan 2001 02:31:25 +0100
+  * create symbolic link for configuration file
+  * hints script removed from distribution
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sun, 14 Jan 2001 13:01:05 +0100
 
 interchange (4.6.1-1) unstable; urgency=low
 
