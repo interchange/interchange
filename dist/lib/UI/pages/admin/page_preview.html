@@ -1,5 +1,5 @@
 @_UI_STD_INIT_@
-[if-mm !advanced page][bounce page="__UI_BASE__/error"][/if][perl]
+[if-mm !advanced page][set ui_error]Need permission for page edit.[/set][bounce page="__UI_BASE__/error"][/if-mm][perl]
 	my @filters = grep /^ui_filter:/, keys %$CGI;
 	foreach my $key (@filters) {
 		my $val = delete $CGI->{$key};
