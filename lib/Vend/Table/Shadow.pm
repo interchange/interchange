@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.25 2003-04-01 12:55:00 racke Exp $
+# $Id: Shadow.pm,v 1.26 2003-04-03 15:43:38 racke Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.25 $, 10);
+$VERSION = substr(q$Revision: 1.26 $, 10);
 
 # TODO
 #
@@ -94,6 +94,12 @@ sub close_table {
 	my $s = shift;
 	return 1 unless defined $s->[$OBJ];
 	$s->[$OBJ]->close_table();
+}
+
+sub name {
+	my ($s) = shift;
+	$s = $s->import_db() unless defined $s->[$OBJ];
+	return $s->[$OBJ]->name();
 }
 
 sub columns {
@@ -249,6 +255,14 @@ sub each_nokey {
 sub query {
 	my($s, $opt, $text, @arg) = @_;
 
+	if (! CORE::ref($opt)) {
+		unshift @arg, $text if defined $text;
+		$text = $opt;
+		$opt = {};
+	}
+	$opt->{query} = $opt->{sql} || $text if ! $opt->{query};
+	$s = $s->import_db() unless defined $s->[$OBJ];
+	
 	if ($opt->{query}) {
 		# we try to analyse the query
 		my $qref = $s->_parse_sql($opt->{query});
