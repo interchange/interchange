@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.10 2002-01-26 16:48:01 mheins Exp $
+# $Id: DBI.pm,v 2.11 2002-02-02 18:52:54 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.10 $, 10);
+$VERSION = substr(q$Revision: 2.11 $, 10);
 
 use strict;
 
@@ -1762,12 +1762,17 @@ eval {
 	}
 } # MVSEARCH
 #::logDebug("finished query, rc=$rc ref=$ref arrayref=$opt->{arrayref} Tmp=$Vend::Interpolate::Tmp->{$opt->{arrayref}}");
-	if(CORE::ref($ref)) {
-		# make sure rc is set if we got a ref from MVSEARCH
-		$rc = scalar @{$ref};
+
+	if ($opt->{row_count}) {
+		if($rc < 1 and CORE::ref($ref) and scalar(@$ref) ) {
+			$rc = scalar(@$ref);
+		}
+		return $rc unless $opt->{list};
+		$ref = [ [ $rc ] ];
+		@na = [ 'row_count' ];
+		%nh = ( 'rc' => 0, 'count' => 0, 'row_count' => 0 );
 	}
-	return $rc
-		if $opt->{row_count};
+
 	return Vend::Interpolate::tag_sql_list($text, $ref, \%nh, $opt, \@na)
 		if $opt->{list};
 	return Vend::Interpolate::html_table($opt, $ref, \@na)

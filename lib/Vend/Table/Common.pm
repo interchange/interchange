@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.9 2002-01-08 04:45:37 mheins Exp $
+# $Id: Common.pm,v 2.10 2002-02-02 18:52:54 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = substr(q$Revision: 2.10 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -354,11 +354,13 @@ sub set_slice {
 		unshift @$fary, $keyname;
 		unshift @$vary, $key;
 	}
+	my @current = $s->row($key);
 
-	my $sub = $s->row_settor(@$fary)
+	@current[ map { $s->column_index($_) } @$fary ] = @$vary;
+
+	$s->set_row(@current)
 		or die "failed to create row slice routine.";
-
-	return $sub->(@$vary);
+	return $key;
 }
 
 sub field_settor {
@@ -724,10 +726,12 @@ eval {
 	}
 	elsif($update eq 'UPDATE') {
 		@update_fields = @{$spec->{rf}};
-		@na = $codename;
+#::logDebug("update fields: " . uneval(\@update_fields));
+		my $key = $s->config('KEY');
+		@na = ($codename);
 		$sub = sub {
 					my $key = shift;
-					set_slice($s, $key, \@update_fields, \@_);
+					$s->set_slice($key, [@update_fields], \@_);
 				};
 	}
 	elsif($update eq 'DELETE') {
@@ -775,15 +779,14 @@ eval {
 		die "Bad row settor for columns @na"
 			if ! $sub;
 		if($update eq 'INSERT') {
-			&$sub(@vals);
+			$sub->(@vals);
 			$ref = [[ $vals[0] ]];
 		}
 		else {
-#::logDebug("Supposed to search..., spec=" . ::uneval($spec));
 			$ref = $search->array($spec);
-#::logDebug("Returning ref=" . ::uneval($ref) . "updating with vals=" . join ",", @vals);
-			for(@{$ref}) {
-				&$sub($_->[0], @vals);
+			for(@$ref) {
+#::logDebug("returned =" . uneval($_) . ", update values: " . uneval(\@vals));
+				$sub->($_->[0], @vals);
 			}
 		}
 	}
@@ -806,9 +809,15 @@ eval {
 		$return = $opt->{failure} || undef;
 	}
 
-	return scalar @{$ref || []}
-		if $opt->{row_count};
-	return Vend::Interpolate::region($opt, $text)
+	if ($opt->{row_count}) {
+		my $rc = $ref ? scalar @$ref : 0;
+		return $rc unless $opt->{list};
+		$ref = [ [ $rc ] ];
+		@na = [ 'row_count' ];
+		%nh = ( 'rc' => 0, 'count' => 0, 'row_count' => 0 );
+	}
+
+	return Vend::Interpolate::tag_sql_list($text, $ref, \%nh, $opt, \@na)
 		if $opt->{list};
 	return Vend::Interpolate::html_table($opt, $ref, \@na)
 		if $opt->{html};
