@@ -10,7 +10,7 @@
 [/perl]
 
 <p>
-[L]Select the Federal Express shipping options you want to offer.[/L] 
+[L]Select the FedEx shipping options you want to offer.[/L] 
 <p>
 
 [seti fed_modes][available-www-shipping fed][/seti]
@@ -48,8 +48,8 @@
 	default.shipzip=`$defaultshipzip`
 
 	check.fedmodes=mandatory
-	label.fedmodes="[L]Federal Express Options[/L]"
-	help.fedmodes="[L]The Federal Express delivery options you will allow?[/L]"
+	label.fedmodes="[L]FedEx Options[/L]"
+	help.fedmodes="[L]The FedEx delivery options you will allow?[/L]"
 	widget.fedmodes=checkbox_left_2
 	passed.fedmodes=`$Scratch->{fed_modes}`
 	filter.fedmodes="checkbox null_to_space"
@@ -58,7 +58,7 @@
 	label.fedadder="[L]Handling charge[/L]"
 	filter.fedadder="digits_dot"
 	check.fedadder="regex ^\\d+(?:\\.\\d+)?\$"
-	help.fedadder="[L]Handling/packaging cost to be added to raw Fedex cost[/L]"
+	help.fedadder="[L]Handling/packaging cost to be added to raw FedEx cost[/L]"
 	widget.fedadder=text_8
 	default.fedadder="3.00"
 ]
