@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.10.4.3 2000-11-06 01:53:47 racke Exp $
+# $Id: Util.pm,v 1.10.4.4 2000-11-26 10:33:54 racke Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -77,7 +77,7 @@ use Config;
 use Fcntl;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.10.4.3 $, 10);
+$VERSION = substr(q$Revision: 1.10.4.4 $, 10);
 
 BEGIN {
 	eval {
@@ -302,6 +302,18 @@ sub setlocale {
             @{$Vend::Cfg->{$_}} = split (/\s+/, $loc->{$_})
                 if $loc->{$_};
         }
+
+        for(@Vend::Config::Locale_directives_code) {
+			next unless $loc->{$_->[0]};
+			my ($routine, $args) = @{$_}[1,2];
+			if($args) {
+				$routine->(@$args);
+			}
+			else {
+				$routine->();
+			}
+        }
+
 		no strict 'refs';
 		for(qw/LC_COLLATE LC_CTYPE LC_TIME/) {
 			next unless $loc->{$_};
@@ -873,7 +885,7 @@ EOF
 # / is not allowed unless $Global::NoAbsolute is set.
 #
 sub readfile {
-    my($file, $no) = @_;
+    my($file, $no, $loc) = @_;
     my($contents);
     local($/);
 
@@ -893,7 +905,7 @@ sub readfile {
 	$contents = <READIN>;
 	close(READIN);
 
-	if ($Vend::Cfg->{Locale} and $Vend::Cfg->{Locale}->{readfile}) {
+	if ($Vend::Cfg->{Locale} and ($loc or $Vend::Cfg->{Locale}->{readfile}) ) {
 		my $key;
 		$contents =~ s~\[L(\s+([^\]]+))?\]([\000-\377]*?)\[/L\]~
 						$key = $2 || $3;		
@@ -1016,6 +1028,47 @@ sub flock_unlock {
     flock($fh, $flock_LOCK_UN) or die "Could not unlock file: $!\n";
 }
 
+sub fcntl_lock {
+    my ($fh, $excl, $wait) = @_;
+    my $flag = $excl ? F_WRLCK : F_RDLCK;
+    my $op = $wait ? F_SETLKW : F_SETLK;
+
+	my $struct = pack('sslli', $flag, 0, 0, 0, $$);
+
+    if ($wait) {
+        fcntl($fh, $op, $struct) or die "Could not fcntl_lock file: $!\n";
+        return 1;
+    }
+    else {
+        if (fcntl($fh, $op, $struct) < 0) {
+            if ($! =~ m/^Try again/
+                or $! =~ m/^Resource temporarily unavailable/
+                or $! =~ m/^Operation would block/) {
+                return 0;
+            }
+            else {
+                die "Could not lock file: $!\n";
+            }
+        }
+        return 1;
+    }
+}
+
+sub fcntl_unlock {
+    my ($fh) = @_;
+	my $struct = pack('sslli', F_UNLCK, 0, 0, 0, $$);
+	if (fcntl($fh, F_SETLK, $struct) < 0) {
+		if ($! =~ m/^Try again/
+                or $! =~ m/^Resource temporarily unavailable/
+                or $! =~ m/^Operation would block/) {
+			return 0;
+		}
+		else {
+			die "Could not un-fcntl_lock file: $!\n";
+		}
+	}
+	return 1;
+}
 
 ### Select based on os, vestigial
 
