@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.4 2002-02-06 03:49:30 mheins Exp $
+# $Id: Search.pm,v 2.5 2002-02-09 05:21:42 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -567,6 +567,7 @@ sub get_limit {
 	else {
 		$code       = "sub {\nmy \$line = shift;\n";
 	}
+	$code .= "my \@fields = \@\$line;\n";
 	my $join_key;
 	$join_key = defined $s->{mv_return_fields} ? $s->{mv_return_fields}[0] : 0;
 	$join_key = 0 if $join_key eq '*';
@@ -607,7 +608,7 @@ EOF
 			if($table) {
 				$wild_card = 0;
 				$code .= <<EOF;
-push \@\$line, Vend::Data::database_field('$table', \$key, '$col');
+push \@fields, Vend::Data::database_field('$table', \$key, '$col');
 EOF
 			}
 			elsif ($col =~ tr/:/,/) {
@@ -619,15 +620,15 @@ EOF
 				$wild_card = 1;
 				$col =~ s/[^\d,.]//g;
 			$code .= <<EOF;
-my \$addl = join " ", \@\$line[$col];
-push \@\$line, \$addl;
+my \$addl = join " ", \@fields[$col];
+push \@fields, \$addl;
 EOF
 			}
 			else {
 				$wild_card = 1;
 				$code .= <<EOF;
-my \$addl = join " ", \@\$line;
-push \@\$line, \$addl;
+my \$addl = join " ", \@fields;
+push \@fields, \$addl;
 EOF
 			}
 		}
@@ -648,7 +649,6 @@ EOF
 		 }
 		 my $callchar = $fields =~ /,/ ? '@' : '$';
 		 $code .= <<EOF;
-	my \@fields = \@\$line;
 	\@fields = ${callchar}fields[$fields];
 EOF
 		$code .= <<EOF if $Global::DebugFile and $CGI::values{debug};
