@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.0.2.2 2001-10-18 05:30:04 mheins Exp $
+# $Id: Common.pm,v 2.0.2.3 2001-11-02 13:26:57 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.0.2.2 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.3 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -307,6 +307,21 @@ sub row_settor {
 #::logDebug("setting $key indices '@index' to '@vals'");
         $s->set_row(@row);
     };
+}
+
+sub get_slice {
+    my ($s, $key, $fary) = @_;
+	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
+
+	return undef unless $s->record_exists($key);
+
+	if(ref $fary ne 'ARRAY') {
+		shift; shift;
+		$fary = [ @_ ];
+	}
+
+	my @result = ($s->row($key))[ map { $s->column_index($_) } @$fary ];
+	return wantarray ? @result : \@result;
 }
 
 sub set_slice {
@@ -600,11 +615,19 @@ sub sprintf_substitute {
 	return sprintf $query, @$fields;
 }
 
+sub hash_query {
+	my ($s, $query, $opt) = @_;
+	$opt ||= {};
+	$opt->{query} = $query;
+	$opt->{hashref} = 1;
+	return scalar $s->query($opt);
+}
+
 sub query {
     my($s, $opt, $text, @arg) = @_;
 
     if(! CORE::ref($opt)) {
-        unshift @arg, $text;
+        unshift @arg, $text if defined $text;
         $text = $opt;
         $opt = {};
     }
