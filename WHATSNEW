@@ -367,6 +367,12 @@ UI
     3. Safe evals session string
     4. Retrieves session username/admin info
 
+	[su create_user=1 username=bobby password=howdy verify=howdy]
+
+	Allows combined creation of new user and switching to that user. 
+    Any options you would pass to userdb tag can be given to su usertag, 
+    to tweak account creation. If user already exists, it's silently switched to.
+
   MMsu profile is called on admin/customer.html to run the switch.
 
   When you "log out", you are reverting to the previous user, and you
