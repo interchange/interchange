@@ -4,6 +4,229 @@
 
 ------------------------------------------------------------------------------
 
+
+Interchange 4.7.3 released 2001-06-12
+
+Core
+----
+* Add Skipjack and iTransact to list of gateways supported.
+
+* Item options improvements and bugfixes.
+
+  - Fix a bug that ignores name= in the display tag when using option_format,
+    date, imagehelper, or uploadhelper types.
+
+  - Fix a bug that prevented changing your selection once you had selected one
+    (code was only updated if mv_sku was not already set).
+
+* Increase limit of possible keys returned for lookup in DBM.
+
+* Full pedantic HTML 4 compliance. (Ability to change URL data separator.)
+
+* Allow attaching a version number to usertags, for later use in Require and
+  Suggest directives.
+
+* Fixed bug that caused Interchange to silently fail to start if -q(uiet)
+  option was given on command line and a Suggest or Require directive was
+  used in one of the config files.
+
+* Improvements to [catch] and [try] tag pair.
+
+  - Added 'clean' option to [try] tag, which suppresses output in case of
+    error. The default tag output behavior is unchanged.
+
+  - Modified original behavior of
+
+    [catch]
+       [error message]
+          catch block
+       [/error message]
+    [/catch]
+
+    The original code requires an exact match, including the newline
+    and line numbers from the Interchange core (i.e., it includes the
+
+       " at (eval line nnn)...\n"
+
+    message). The new code strips the 'at (eval ...' to leave an
+    approximation of the original $@. Added 'exact' option to invoke
+    original behavior.
+
+  - Fixed [try] tag to watch $Session->{try}{$label} instead of $@ after
+    the eval because $@ as originally written does not trap most errors
+    (which occurred in earlier eval in the Interchange core).
+
+  - [catch] interpolates by default.
+
+* Fix bug where filter was not set to passed {name} parameter, always set to
+  $column (which may not exist in non-DB widget).
+
+* New [image] usertag, for getting the image directory (regular or secure),
+  and eventually doing other handy things like getting pixel sizes, checking
+  for image existence, etc.
+
+* Updated button usertag to provide alternatives to the image input when
+  using a JavaScript-challenged browser.
+
+* Make [var ...] usertag honor dynamic variables.
+
+* Fix a bug in the options tag that passed the wrong argument to
+  tag_accessories (weight instead of o_widget, oops).  Also allow
+  [item-options] to take a type argument, which is passed through so that
+  you can override the type should you need to.
+
+* Allow '*' suffix default mechanism to work for text-display accessories
+  like it does for select widgets. Fixes weird display bug in
+  admin/customer_view.html that caused an input textbox with '0' to appear
+  instead of the text 'Credit Card'.
+
+* With help of Dave Jenkins, isolated the problem that caused problems
+  entering non-ISO-8859 data in table editor. Now should work properly for
+  all locales.
+
+* Make control-set tags tolerate - as well as _ in component attributes.
+
+* Four new options to the [perl] tag that make it a bit easier to work
+  with when debugging:
+
+  number_errors
+  Add line numbers to the source code displayed in the error.log, amazingly
+  useful if some of the perl is being generated elsewhere and interpolated.
+
+  eval_label
+  Set to a string, will replace the (eval ###) in the error message with
+  this label, handy to quickly track down bugs when you have more than
+  one perl block in the page, especially if you are using short_errors.
+
+  short_errors
+  If set to a true value, syntax errors and the like in [perl] tags will
+  log just the error, not the whole source code of the block in question,
+  handy when you have the code open in an editor anyway and don't want
+  the error itself to get scrolled away when running 'tail -f error.log'.
+
+  trim_errors
+  Seemed to be the logical extension of short_errors, if set to a number,
+  and the error produced includes a line number, then only that number
+  of lines before and after the broken line itself will be displayed,
+  instead of the whole block.
+
+* Issue error message if filter is missing.
+
+* Add zerofix option to [time]. Strips leading zeroes from numbers just
+  like in [convert-date] usertag.
+
+* Make embedded Perl values equal per-route values.
+
+* Place $Tags_added in Vend:: package so it will be reset upon entry to
+  a page/catalog. This should make it thread-safe. Symptom was catalog
+  UserTag not being added at times.
+
+* Fix a problem detecting if SQL::Statement is available.
+
+* Fix bug introduced with new sf=:field1:field2 search syntax. Old method
+  of sf=:3:4 was broken by new fieldname hash.
+
+* Fix bad username error message found by Ed LaFrance.
+
+* Get rid of language-dependent error message scan.
+ 
+* Vend::Util::set_lock_type() allows setting global lock type at runtime.
+
+* Fix a bug that suppressed error messages that Vend::Scan::sql_statement
+  returned using 'die'.
+
+* Better error trapping on DB calls.
+
+Admin backend
+-------------
+* Page editor and template system rewritten.
+
+  - Retains the global settings for the page, things like page_title,
+    members_only, etc.
+
+  - Depends on ui_template_version being set in the template as to
+    whether new editor is used, if not set defaults to the old type.
+
+  - Add types to components, so we can determine which are to be presented for
+    selection.
+
+  - Page preview improvements.
+
+  - Allow control of which elements of a page get edited.
+    By setting the variable UI_CONTENT_EDIT to contain a string with tags, you
+    can disable/enable certain aspects of page edit:
+
+      template    Allows changing the page template
+      page        Allows changing page-wide settings (i.e. scratch)
+      components  Allows changing page components
+      content     Allows editing page content
+
+* Components overhauled.
+  - Add best and cross components that work both horizontally and vertically.
+  - Removed old 4.6 components.
+
+* Lots of internationalization work.
+
+* Wizard improvements, including guessing of info.
+
+* Admin images overhaul:
+  - Global admin images moved from /akopia/ui to /interchange/$LOCALE.
+  - Can now have images directory for each locale (for images with text).
+  - All images in one directory, no more admin/ and navigation/.
+  - Admin image paths rewritten by Interpolate.pm; no more @_UI_IMG_@ needed.
+
+* Disallow admin UI access by default when there is no 'access' database.
+  Thanks to Christopher VanOosterhout for finding this weakness.
+
+* Fix so that $Tag->area() is used to call all links.
+
+* Fix problem with GDBM database tables not being able to import
+  a single table (due to no write flag).
+
+* Enhance list-pages tag so that an array can be returned.
+
+* Patch table-edior option parsing, fixing bug #190.
+
+Foundation demo
+---------------
+* New Advanced Search page.
+
+* Lots of artwork, HTML, and other little-detail changes.
+
+* Do not set content-type and charset in doc META -- this may need to be
+  different based on locale.
+
+* Added a image_large to the products database for large image support.
+
+* Changed most PostgreSQL fields from CHAR to VARCHAR to prevent space
+  padding problems.
+
+* Left menu bar items take text from banner_text if available to allow name to
+  stay behind the scenes.
+
+* Fixed errors in receipt found by Angelica Olin, <angel@loadup.com>.
+
+Packaging
+---------
+* Add rundir setting (/var/cache/interchange) to keep important confdir things
+  in /var/run/interchange from getting erased at OS boot time.
+
+* Rotate catalog error.log files.
+
+* Various RPM and Debian package improvements.
+
+General
+-------
+* Remove a number of unused images.
+
+* Remove Red Hat's Reston office addresses so we stop getting returned
+  merchandise for companies who have work done by clueless developers who
+  never change the contact info on their catalogs. HINT, HINT.
+
+
+------------------------------------------------------------------------------
+
+
 Interchange 4.7.2 released 2001-05-10
 
 Server
@@ -277,7 +500,9 @@ Bug fixes
 * Fix some item options bugs.
 * Many other small things.
 
+
 ------------------------------------------------------------------------------
+
 
 Interchange 4.7.1 released 2001-03-28.
 
@@ -699,9 +924,12 @@ Interchange 4.7.1 released 2001-03-28.
 
 * Add ability to read files from a database instead of the filesystem.
 
+
 ------------------------------------------------------------------------------
 
+
 Interchange 4.7.0 not publicly released.
+
 
 ------------------------------------------------------------------------------
 
