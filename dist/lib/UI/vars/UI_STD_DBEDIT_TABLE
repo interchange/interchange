@@ -40,33 +40,41 @@ EOF
 [/else]
 [/if-key-exists]
 
-<table width="60%" border="" cellspacing="0" cellpadding="0" bordercolor="__UI_C_TITLEBARBG__">
-<tr>
-  <td>
+<table width="95%"><tr><td BGCOLOR="__UI_C_TOPBLOCKBAR__">
+<table width="100%"><tr><td BGCOLOR="__UI_C_TITLEBARBG__">
+<table CELLSPACING=0 CELLMARGIN=0 WIDTH="100%">
 
-<table cellspacing=0 cellmargin=0 width="100%" cellpadding="2" align="center" border="0">
-
-<tr bgcolor="__UI_C_TITLEBARBG__"> 
-<td align=right colspan=2><img src="admin/bg.gif" width=1 height=3></td>
-</tr>
-
-<TR BGCOLOR="__UI_T_ROW_EVEN__">
-<td>&nbsp;</td>
-<td align=left>
-<B>[button text=" Ok "]
+[comment]
+Display an extra Ok/Cancel button pair if there are more than
+4 rows of input, so user doesn't have to scroll to bottom of page.
+[/comment]
+[calc]
+	my $linecount = (split / /, $CGI->{ui_data_fields}) - 1;
+	my $out = '';
+	$out .= <<'EOF' if $linecount > 4;
+<TR BGCOLOR="__UI_T_ROW_ODD__">
+<TD BGCOLOR="__UI_C_TITLEBARBG__" ALIGN=right>
+	&nbsp;
+</TD>
+<TD VALIGN=TOP>
+<B>[button text="Ok"]
 [return-to click]
 [/button]</B>
 &nbsp;
-[button text=" Cancel "]
+&nbsp;
+[button text="Cancel"]
 mv_todo=return
 [return-to click]
 mv_data_table=[cgi mv_data_table]
 [/button]
 </TD>
 </TR>
+EOF
+	return $out;
+[/calc]
 
-<tr BGCOLOR="__UI_C_TITLEBARBG__">
-<td colspan=2><img src="admin/bg.gif" width=1 height=3></td>
+<tr>
+<td colspan=2 BGCOLOR="__UI_C_TOPBLOCKBAR__"><img src="admin/bg.gif" height=3></td>
 </tr>
 
 [seti extra_tables]
@@ -163,21 +171,14 @@ EOF
 										arbitrary => $CGI->{ui_meta_view},
 										fallback => 1,
 										template => q(
-<TR BGCOLOR="__UI_T_ROW_EVEN__">
-   <td align=left width=150> 
-     <font color="__UI_C_TEXT__" size="-1"><b>$LABEL$</b>~META~
-   </td>
-   <td valign=TOP> 
-     <table cellspacing=0 cellmargin=0>
-       <tr> 
-         <td> 
-           <FONT SIZE="-1">$WIDGET$</FONT>
-         </td>
-         <td><FONT SIZE="-1"><i>$HELP$</i>{HELPURL}<BR><A HREF="$HELP_URL$">help</A>{/HELPURL}</FONT></td>
-       </tr>
-     </table>
-   </td>
- </tr>
+<TR BGCOLOR="__UI_T_ROW_ODD__">
+<TD BGCOLOR="__UI_C_TITLEBARBG__" ALIGN=right>
+	<FONT COLOR="__UI_C_TITLEBARTXT__"><B>$LABEL$</B>~META~</FONT>
+</TD>
+<TD VALIGN=TOP>
+	<TABLE CELLSPACING=0 CELLMARGIN=0><TR><TD>$WIDGET$</TD><TD><I>$HELP$</I>{HELPURL}<BR><A HREF="$HELP_URL$">help</A>{/HELPURL}</TD></TR></TABLE>
+</TD>
+</TR>
 ),
 									});
 		if($super and ($Variable->{UI_META_LINK} || $Values->{ui_meta_force}) ) {
@@ -214,23 +215,24 @@ EOF
             #next;
         #}
 		$Document->write(<<EOF) if $break{$col};
-<TR BGCOLOR="__UI_T_ROW_ODD__">
-	<TD ALIGN=RIGHT COLSPAN=2><IMG SRC="admin/bg.gif" WIDTH=1 HEIGHT=1></TD>
-</TR>
+<tr>
+<td colspan=2 BGCOLOR="__UI_C_TOPBLOCKBAR__"><img src="admin/bg.gif" height=3></td>
+</tr>
 EOF
 		$display =~ s/\~META\~/$meta/g;
 		$Document->write($display);
 	}
 %>
 [/mvasp]
-
 <tr>
-<td colspan=2 BGCOLOR="__UI_C_TITLEBARBG__"><img src="admin/bg.gif" height=3></td>
+<td colspan=2 BGCOLOR="__UI_C_TOPBLOCKBAR__"><img src="admin/bg.gif" height=3></td>
 </tr>
 
-<TR BGCOLOR="__UI_T_ROW_EVEN__">
-<td>&nbsp;</td>
-<td align=left>
+<TR BGCOLOR="__UI_T_ROW_ODD__">
+<TD BGCOLOR="__UI_C_TITLEBARBG__" ALIGN=right>
+	&nbsp;
+</TD>
+<TD VALIGN=TOP>
 <B>[button text="Ok"]
 [return-to click]
 [/button]</B>
@@ -241,6 +243,7 @@ mv_todo=return
 [return-to click]
 mv_data_table=[cgi mv_data_table]
 [/button]
+
 [if-mm tables =x]
 <small>
 &nbsp;
@@ -259,14 +262,11 @@ mv_data_table=[cgi mv_data_table]
 	[/if]
 [/if-mm]
 </small>
-</td>
-</tr>
-
-<tr>
-<td colspan=2 BGCOLOR="__UI_C_TITLEBARBG__"><img src="admin/bg.gif" height=3></td>
-</tr>
+</TD>
+</TR>
 
 </table>
+</td></tr></table>
 </td></tr></table>
 
 </form>
