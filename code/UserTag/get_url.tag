@@ -48,19 +48,37 @@ sub {
 	}
 	else { $method = "GET"; }
 
-        if($opt->{useragent} ) {
-                $ua->agent($opt->{useragent});
-        }
+	$method = uc $method;
+
+    if($opt->{timeout}) {
+		my $to = Vend::Config::time_to_seconds($opt->{timeout});
+		$ua->timeout($to);
+	}
+
+	if($opt->{useragent} ) {
+			$ua->agent($opt->{useragent});
+	}
+
+	if($opt->{form}) {
+		$opt->{content} = Vend::Interpolate::escape_form($opt->{form});
+	}
+
+	my $do_content;
+
+	if(($opt->{content}) && ("PUT POST" =~ /$method/)) { 
+		$opt->{content_type} ||= 'application/x-www-form-urlencoded';
+		$do_content = 1;
+	}
+	elsif($opt->{content}) {
+		$url .= $opt->{url} =~ /\?/ ? '&' : '?';
+		$url .= $opt->{content};
+	}
 
 	my $req = HTTP::Request->new($method, $url);
 
-	$req->content_type('application/x-www-form-urlencoded');
-	if($opt->{content_type}) { 
-		$req->content_type($opt->{content_type}); 
-	}
-
-	if(($opt->{content}) && ("PUT POST" =~ /$method/)) { 
-		$req->content($opt->{content}); 
+	if($do_content) {
+		$req->content_type($opt->{content_type});
+		$req->content($opt->{content});
 	}
 
 	if($opt->{authuser} && $opt->{authpass}) {
