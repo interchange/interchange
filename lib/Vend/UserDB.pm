@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.18 2003-06-18 17:34:44 jon Exp $
+# $Id: UserDB.pm,v 2.19 2003-07-03 16:03:03 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.18 $, 10);
+$VERSION = substr(q$Revision: 2.19 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1074,9 +1074,16 @@ sub login {
 					logError("Refusing to use AdminUser variable with user '%s' and empty password", $adminuser);
 					last ADMINUSER;
 				}
-				my $test = $Global::Variable->{MV_NO_CRYPT}
-						 ? $self->{PASSWORD}
-						 : crypt($self->{PASSWORD}, $adminpass);
+				my $test;
+				if($Global::Variable->{MV_NO_CRYPT}) {
+					 $test = $self->{PASSWORD}
+				}
+				elsif ($self->{OPTIONS}{md5}) {
+					 $test = generate_key($self->{PASSWORD});
+				}
+				else {
+					 $test = crypt($self->{PASSWORD}, $adminpass);
+				}
 				if ($test eq $adminpass) {
 					$user_data = {};
 					$Vend::admin = $Vend::superuser = 1;
@@ -1132,7 +1139,14 @@ sub login {
 				die $stock_error, "\n";
 			}
 			$pw = $self->{PASSWORD};
-			$self->{PASSWORD} = crypt($pw, $db_pass) if $self->{CRYPT};
+			if($self->{CRYPT}) {
+				if($self->{OPTIONS}{md5}) {
+					$self->{PASSWORD} = generate_key($pw);
+				}
+				else {
+					$self->{PASSWORD} = crypt($pw, $db_pass);
+				}
+			}
 			unless ($self->{PASSWORD} eq $db_pass) {
 				logError("Denied attempted login by user '%s' with incorrect password",
 					$self->{USERNAME});
@@ -1267,8 +1281,14 @@ sub change_pass {
 
 		unless ($super and $self->{USERNAME} ne $Vend::username) {
 			my $db_pass = $self->{DB}->field($self->{USERNAME}, $self->{LOCATION}{PASSWORD});
-			$self->{OLDPASS} = crypt($self->{OLDPASS}, $db_pass)
-				if $self->{CRYPT};
+			if($self->{CRYPT}) {
+				if($self->{OPTIONS}{md5}) {
+					$self->{OLDPASS} = generate_key($self->{OLDPASS});
+				}
+				else {
+					$self->{OLDPASS} = crypt($self->{OLDPASS}, $db_pass);
+				}
+			}
 			die ::errmsg("Must have old password.") . "\n"
 				if $self->{OLDPASS} ne $db_pass;
 		}
@@ -1280,10 +1300,15 @@ sub change_pass {
 			unless $self->{PASSWORD} eq $self->{VERIFY};
 
 		if($self->{CRYPT}) {
-			$self->{PASSWORD} = crypt(
-									$self->{PASSWORD},
-									Vend::Util::random_string(2)
-								);
+				if($self->{OPTIONS}{md5}) {
+					$self->{PASSWORD} = generate_key($self->{PASSWORD});
+				}
+				else {
+					$self->{PASSWORD} = crypt(
+											$self->{PASSWORD},
+											Vend::Util::random_string(2)
+										);
+				}
 		}
 		
 		my $pass = $self->{DB}->set_field(
@@ -1388,10 +1413,12 @@ sub new_account {
 		my $pw = $self->{PASSWORD};
 		if($self->{CRYPT}) {
 			eval {
-				$pw = crypt(
-										$pw,
-										Vend::Util::random_string(2)
-									);
+				if($self->{OPTIONS}{md5}) {
+					$pw = generate_key($pw);
+				}
+				else {
+					$pw = crypt( $pw, Vend::Util::random_string(2));
+				}
 			};
 		}
 	
