@@ -1,6 +1,6 @@
 # Table/LDAP.pm: LDAP pseudo-table
 #
-# $Id: LDAP.pm,v 1.6.6.2 2001-01-18 19:42:05 heins Exp $
+# $Id: LDAP.pm,v 1.6.6.3 2001-04-10 20:23:53 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,7 +27,7 @@
 
 package Vend::Table::LDAP;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 1.6.6.2 $, 10);
+$VERSION = substr(q$Revision: 1.6.6.3 $, 10);
 use strict;
 
 use vars qw(
@@ -267,6 +267,24 @@ sub field_settor {
 		$code and die "Failed to set row $ki=$key: $code";
 		return undef;
 	};
+}
+
+sub set_slice {
+	my ($s, $key, $fary, $vary) = @_;
+	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
+	if($s->[$CONFIG]{Read_only}) {
+		::logError(
+			"Attempt to set %s in read-only table %s",
+			$key,
+			$s->[$CONFIG]{name},
+		);
+		return undef;
+	}
+
+	for( my $i = 0; $i < @$fary; $i++) {
+		$s->set_field($key, $fary->[$i], $vary->[$i]);
+	}
+	return 1;
 }
 
 sub set_field {

@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.21 2001-04-10 05:22:19 heins Exp $
+# $Id: DBI.pm,v 1.25.2.22 2001-04-10 20:23:53 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.21 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.22 $, 10);
 
 use strict;
 
@@ -761,6 +761,15 @@ sub set_slice {
     my ($s, $key, $fary, $vary) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
 
+    if($s->[$CONFIG]{Read_only}) {
+		::logError(
+			"Attempt to set slice of %s in read-only table %s",
+			$key,
+			$s->[$CONFIG]{name},
+		);
+		return undef;
+	}
+
 	unless($s->record_exists($key)) {
 		$key = $s->set_row($key);
 	}
@@ -770,6 +779,7 @@ sub set_slice {
 	my $fstring = join ",", map { "$_=?" } @$fary;
 	my $sql = "update $s->[$TABLE] SET $fstring WHERE $s->[$KEY] = $tkey";
 #::logDebug("set_slice query: $sql");
+#::logDebug("set_slice key/fields/values:\nkey=$key\n" . ::uneval($fary, $vary));
 	my $sth = $s->[$DBI]->prepare($sql)
 		or die ::errmsg("prepare %s: %s", $sql, $DBI::errstr);
 	my $rc = $sth->execute(@$vary)
