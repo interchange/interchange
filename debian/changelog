@@ -8,6 +8,7 @@ interchange (4.7.3-0.1) unstable; urgency=low
   * put poweredby.gif in place again
   * UI_SECURE added to interchange.cfg
   * interchange-doc package removed (PDF's no longer part of distribution)
+  * use new PreFork mode by default
   
  -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 14 May 2001 12:14:06 +0200
   
