@@ -3,7 +3,7 @@
 #
 # Interchange version 4.9.7
 #
-# $Id: interchange.PL,v 2.70 2003-04-18 00:51:53 mheins Exp $
+# $Id: interchange.PL,v 2.71 2003-04-26 15:00:51 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and others.
 # http://www.icdevgroup.org/
@@ -152,8 +152,8 @@ use Fcntl;
 $Global::SendMailLocation = '' if ! $Global::SendMailLocation;
 $Global::SendMailLocation = ($Global::Windows and $Global::SendMailLocation) ||
 	($Global::SendMailLocation and -x $Global::SendMailLocation and $Global::SendMailLocation) ||
-	(-x '/usr/lib/sendmail' and '/usr/lib/sendmail') ||
 	(-x '/usr/sbin/sendmail' and '/usr/sbin/sendmail') ||
+	(-x '/usr/lib/sendmail' and '/usr/lib/sendmail') ||
 	'';
 #	'~_~sendmail~_~';
 
