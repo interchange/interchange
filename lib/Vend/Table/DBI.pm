@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.17 2001-03-27 19:51:09 heins Exp $
+# $Id: DBI.pm,v 1.25.2.18 2001-04-04 18:54:17 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.17 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.18 $, 10);
 
 use strict;
 
@@ -1265,7 +1265,7 @@ sub query {
 		$sth = $db->prepare($query);
 #::logDebug("Query prepared OK. sth=$sth");
 		$rc = $sth->execute();
-#::logDebug("Query executed OK. rc=" . defined $rc ? $rc : 'undef');
+#::logDebug("Query executed OK. rc=" . (defined $rc ? $rc : 'undef'));
 		
 		if ($opt->{hashref}) {
 			my @ary;
