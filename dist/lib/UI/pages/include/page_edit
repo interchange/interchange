@@ -45,7 +45,7 @@ EOF
 
 	my $new;
 	if($CGI->{ui_template_new}) {
-Log("found new template");
+#Log("found new template");
 		$t_desc = $CGI->{ui_template_description} || $CGI->{ui_template_new};
 		$t_name = $CGI->{ui_template_new};
 		$t_name =~ s/^\W+//;
@@ -135,7 +135,7 @@ push @messages, "template from upload:\n$tref->{ui_definition}";
 	
    }
 
-Log("t_name=$t_name");
+#Log("t_name=$t_name");
 	$out .= <<EOF;
 <tr>
 	<td class=ralt><b>Template description</b></td>
@@ -352,7 +352,7 @@ EOF
 		my $deftext = $comp_default[$i];
 
 		my $r;
-Log("element=$ref->{element}(or $ref->{element})");
+#Log("element=$ref->{element}(or $ref->{element})");
 
 		if (ref $ref->{element}) {
 				my $widget;
