@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.42 2002-12-10 20:08:56 jon Exp $
+# $Id: Order.pm,v 2.43 2002-12-12 03:39:00 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.42 $, 10);
+$VERSION = substr(q$Revision: 2.43 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -89,7 +89,7 @@ sub reset_order_vars {
 	undef $No_error;
 
 	# copy global order check routines
-	$OrderCheck = { %$Global::OrderCheck };
+	$OrderCheck = { %{$Global::OrderCheck || {} }};
 
 	# overlay any catalog order check routines
 	my $r;
