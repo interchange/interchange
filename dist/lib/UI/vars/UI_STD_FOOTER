@@ -1,72 +1,46 @@
 Variable UI_STD_FOOTER  <<EOV
 [if scratch ui_checklist]
-	</td>
+		</td>
 	</tr>
-	</table>
-[/if]
-[if !scratch ui_no_title]
-      </td>
-    </tr>
-    </table>
-    [/if]
-  
-    <table cellpadding="0" cellspacing="0" border="0" width="100%">
-    <tr>
-      <td colspan="3">
-        <br>
-        <hr noshade size="1" width="90%">
-      </td>
-    </tr>
-    <tr>
-      <td valign="top" align="left" nowrap>
-        <table cellpadding="0" cellspacing="0">
-        <tr><td nowrap>
-  	  <font size="1">&nbsp; <a href="@_INTERCHANGE_URL_@"><font size="1"><b>Interchange</b></font></a><font size="1"><b> - &copy; 2000-2002 <a href="http://www.redhat.com/">Red Hat, Inc.</a></font></font>
-        </td></tr>
-        <tr><td nowrap>
-          <font size="1">&nbsp; [msg]Username[/msg]: [either][data session username][or](none)[/either] &nbsp;&nbsp;&nbsp; [msg]StoreID[/msg]: <A HREF="[scratch ui_catalog_url]">[calc]$Config->{CatalogName}[/calc] </b></a></font>
-        </td></tr>
-        <tr><td nowrap>
-          <font size="1">&nbsp; [tag time]%d %B %Y %H:%M:%S[/tag] ([var MV_PAGE 1])</font>
-        </td></tr>
-        </table>
-      </td>
-      <td nowrap valign="top" align="center">
-        [tmp window_name][tag time]%m%d%H%M%S[/tag][/tmp]
-        [if session logged_in]
-        <font size="1">
-[menu
-	name=Bottom
-	ui_security=depends_on
-	superuser=super
-	full_interpolate=page
-	localize="name,description"
-	]
-	{MV_IP?}- {/MV_IP?}<a href="{HREF}" title="{DESCRIPTION}" sytle="font-size: 9pt;">{NAME}</A>
-[menu-footer]
-[if-mm super]
-	[if scratch ui_meta_link]
-&nbsp;&nbsp;&nbsp;&nbsp;<a
-			href="[area href='admin/menu_editor' form='qmenu_name=Bottom']"
-			style="font-size: 7pt">edit</A>
-	[/if]
-[/if-mm]
-[/menu-footer]
-[/menu]
-      </td>
-      <td valign="top" align="right" nowrap>
-        <a href="@_INTERCHANGE_URL_@"><img border="0" src="poweredby.gif" align="top"></a> &nbsp;
-      </td>
-    </tr>
-    </table>
-
-  </td>
-</tr>
+</table>[set ui_checklist][/set][/if]
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+			<!-- end of main wrapper table -->
+		</td>
+	</tr>
+	<!-- start of bottom -->
+	<tr>
+		<td valign="bottom">
+			<table width="100%" border="0" cellpadding="0" cellspacing="0">
+				<tr>
+					<td height="1" class="hrmedium"><img src="bg.gif" height="1"></td>
+				</tr>
+				<tr>
+					<td height="24" class="tabdark">
+						<table border="0" cellspacing="0" cellpadding="0">
+							<tr>
+								<td width="6"><img src="bg.gif"></td>
+								<td><img src="icfooter.gif"></td>
+								<td nowrap class="footer">
+									&copy; 2002-2003 Interchange Development Group&nbsp;&nbsp;&nbsp;
+									<font class="footerb">[msg]Username[/msg]: </font>[data session username]&nbsp;&nbsp;&nbsp;
+									<font class="footerb">[msg]StoreID[/msg]: </font> <A HREF="[scratch ui_catalog_url]">[calc]$Config->{CatalogName}[/calc] </b></a>&nbsp;&nbsp;&nbsp;
+									  [tag time]%d %B %Y %H:%M:%S[/tag] &nbsp;([var MV_PAGE 1])
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<!-- end of bottom -->
 </table>
-
-<br>
-
+<!-- end of outer wrapper table -->
 </body>
 </html>
-[set ui_checklist][/set]
 EOV

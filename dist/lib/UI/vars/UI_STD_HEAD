@@ -98,6 +98,7 @@ Variable UI_STD_HEAD <<EOV
 <html[scratch ui_language_direction]>
 <head>
 <title>[scratch page_title]</title>
+[tmp window_name][tag time]%m%d%H%M%S[/tag][/tmp]
 <script language="JavaScript">
 <!--
 
@@ -185,30 +186,321 @@ function MM_swapImage() {
 </SCRIPT>
 <STYLE TYPE="text/css">
 <!--
-@_UI_STYLE_@
+/* background colour styles */
+.interfacemain {
+	background-color: #D4D0C8;
+}
+.tabdark {
+	background-color: #B4B0AA;
+}
+.hrdark {
+	background-color: #404040;
+}
+.hrmedium {
+	background-color: #E4E4E4;
+}
+.hrlight {
+	background-color: #FFFFFF;
+}
+.headerrow {
+	background-color: #CCCCCC;
+}
+.tabborder {
+	background-color: #404040;
+}
+.tablightborder {
+	background-color: #FFFFFF;
+}
+.vr {
+	background-color: #999999;
+}
+/* font styles */
+.heading {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	font-weight: normal;
+	color: #000000;
+}
+.maincontent {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	font-weight: normal;
+	color: #333333;
+	background: #ffffff;
+}
+.footerb {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	color: #333333;
+}
+.footer {
+
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	font-weight: normal;
+	color: #333333;
+}
+.shrink {
+	font-size: 2px;
+}
+/* link styles */
+A.btnfont:link, A.btnfont:visited, A.btnfont:active {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	font-weight: normal;
+	color: #333333;
+    text-decoration:none;
+}
+A.btnfont:hover {
+    color: #000000;
+	font-size: 10px;
+    text-decoration:underline;
+}
+
+A.menufont:link, A.menufont:visited, A.menufont:active {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #333333;
+    text-decoration:none;
+}
+A.menufont:hover {
+    color: #000000;
+	font-size: 11px;
+    text-decoration:underline;
+}
+
+
+BODY { 
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 11px;
+}
+
+TD { 
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 10px;
+}
+
+.margin { 
+  margin-top: 0px; 
+  margin-left: 0px;
+}
+
+A:link { 
+  text-decoration: none; 
+  font-weight: normal; 
+  color: __UI_C_LINK__;
+  font-size: 10px;
+}
+
+A:hover { 
+  text-decoration: underline; 
+  font-weight: normal; 
+  color: __UI_C_LINK__;
+  font-size: 11px;
+}
+
+A:active { 
+  text-decoration: none; 
+  font-weight: normal; 
+  color: __UI_C_ALINK__;
+  font-size: 11px;
+}
+
+A:visited {
+  text-decoration: none; 
+  font-weight: normal; 
+  color: __UI_C_VLINK__;
+  font-size: 11px;
+}
+
+.ctitle  { 
+  font-weight: bold; 
+  color: white;
+  font-size: 11px;
+}
+
+.cheader  { 
+  font-weight: bold; 
+  color: __UI_C_HEADERTXT__;
+  font-size: 11px;
+}
+
+A:link.ctitle  { 
+  text-decoration: none;
+  font-weight: bold; 
+  color: white;
+  font-size: 11px;
+}
+
+A:hover.ctitle { 
+  text-decoration: underline; 
+  font-weight: bold; 
+  color: yellow; 
+  font-size: 11px;
+}
+
+A:active.ctitle { 
+  text-decoration: underline; 
+  font-weight: bold; 
+  color: yellow; 
+  font-size: 11px;
+}
+
+A:visited.ctitle {  
+  text-decoration: none;
+  font-weight: bold; 
+  color: white;
+  font-size: 11px;
+}
+
+.cbreak { 
+  font-weight: bold; 
+  font-size: 11px;
+}
+
+.cdata { 
+  vertical-align: center;
+  font-size: 11px;
+}
+
+.cerror { 
+  color: red; 
+  font-size: 11px;
+}
+
+.cmessage { 
+  color: green; 
+  font-size: 11px;
+}
+
+.chelp { 
+  vertical-align: center; 
+  font-size: 11px; 
+}
+
+.clabel { 
+  text-align: left; 
+  font-weight: bold; 
+  font-size: 11px;
+}
+
+.cwidget { 
+  vertical-align: center; 
+  font-size: 11px; 
+}
+
+.ralt { 
+  background-color: __UI_T_ROW_ODD__; 
+} 
+
+.rbreak { 
+  background-color: __UI_T_ROW_ODD__; 
+}
+
+.rmarq { 
+  background-color: __UI_C_TITLEBARBG__; 
+}
+
+.rnorm { 
+  background-color: __UI_T_ROW_EVEN__; 
+}
+
+.rborder { 
+  background-color: __UI_C_TOPBLOCKBAR__; 
+}
+
+.rspacer { 
+  background-color: __UI_C_TITLEBARBG__; 
+}
+
+.rtitle { 
+  background-color: __UI_C_TITLEBARBG__; 
+}
+
+.rheader { 
+  background-color: __UI_C_TITLEBARBG__; 
+  color: __UI_C_HEADERTXT__; 
+}
+
+
 -->
 </STYLE>
 [scratchd meta_header]
 </head>
 
-<body [scratch ui_body_extra] bgcolor="__UI_C_BG__" onLoad="MM_preloadImages('B3_b.gif','B4_b.gif','B5_b.gif','B6_b.gif','B7_b.gif','B2_b.gif','B8_b.gif','B9_b.gif','A1_b.gif','A3_b.gif')" leftmargin=0 topmargin=0 marginheight=0 marginwidth=0>
-<!-- ----- BEGIN TITLEBAR ----- -->
-<table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="__UI_TOP_BG__">
-  <tr>
-    <td bgcolor="__UI_TOP_BG__"><A HREF="http://www.redhat.com/"><img src="redhat_logo.gif" width="189" height="53" border=0 alt="Interchange logo"></A></td><td align="right" valign="bottom" nowrap><a href="[if session logged_in]@_UI_ABOUT_NORMAL_URL_@[else]@_UI_ABOUT_LOGIN_URL_@[/else][/if]" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('About','','A1_b.gif',1)"><img name="About" border="0" src="A1.gif" width="102" height="38" alt=About></a><a href="[area __UI_BASE__/index]"><img name="Index" border="0" src="A2.gif" width="294" height="38" alt=Menu></a><a href="javascript:open_help('[area href="[either][var UI_HELP_URL 2][or][var UI_BASE]/help[/either]" form="topic=[scratch help_name]"]')" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Help','','A3_b.gif',1)"><img name="Help" border="0" src="A3.gif" width="125" height="38" alt=Help></a></td>
-  </tr>
-</table>
+<body [scratch ui_body_extra] bgcolor="__UI_C_BG__" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<!-- outer wrapper table to enable the interface to scale to full browser height -->
+<table width="100%" height="100%" border=0 cellpadding=0 cellspacing=0>
+	<tr>
+		<td height=115 valign=top>
+			<!-- start of main wrapper table -->
+			<table width="100%" border=0 cellpadding=0 cellspacing=0>
+				<!-- row 1: logo and generic menu options -->
+				<tr>
+					<td height=42 valign=middle class=interfacemain>
+						<table width="100%" border=0 cellspacing=0 cellpadding=0>
+							<tr>
+								<td width="30%" rowspan=2 valign=middle>
+									<table width=132 border=0 cellspacing=0 cellpadding=0>
+										<tr>
+											<td width=5 height=42>&nbsp;</td>
+											<td width=127><a href="http://www.icdevgroup.org/" target=icdevgroup><img src="iclogo.gif" border=0></a></td>
+											<td width="70%" height=31 align=right valign=bottom>
+										</tr>
+									</table>
+								</td>
+								<td width="70%" height=31 align=right valign=bottom>
+									<table border=0 cellspacing=0 cellpadding=0>
+										<tr>
+[if session logged_in]
+[menu
+	name=Bottom
+	ui_security=depends_on
+	superuser=super
+	full_interpolate=page
+	localize="name,description"
+	]
+	<td align=left valign=bottom>&nbsp;&nbsp;<a href="{HREF}" title="{DESCRIPTION}" class=menufont>{NAME}</a>&nbsp;&nbsp;</td>
+[menu-footer]
+[if-mm super]
+	[if scratch ui_meta_link]
+												<td align=left valign=bottom>
+													&nbsp;&nbsp;<a
+														href="[area href='admin/menu_editor' form='qmenu_name=Bottom']"
+														style="font-size: 7pt">edit</A>
+												&nbsp;&nbsp;</td>
+	[/if]
+[/if-mm]
+[/menu-footer]
+[/menu]
+[/if]
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td height=11><img src="bg.gif" height=1></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<!-- row 2: dark grey space above the tabs -->
+			<tr>
+				<td height=2 align=left valign=middle class=tabdark><img src="bg.gif"></td>
+			</tr>
+			<!-- row 3: tab row -->
+			<tr>
+				<td height=18 align=left valign=middle class=tabdark>
+					<table width="100%" border=0 cellspacing=0 cellpadding=0>
+						<tr>
+							<td>
+								<table border=0 cellspacing=0 cellpadding=0>
+									<tr>
+										<!-- tab: menu entry -->
 
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
-  <tr bgcolor="#000000"> 
-    <td colspan=2><img src="spacer1.gif" width="1" height="1" alt=line></td>
-  </tr>
-  <tr bgcolor="#FFFFFF"> 
-    <td colspan=2><img src="spacer2.gif" width="1" height="1" alt=line></td>
-  </tr>
-  <tr bgcolor="__UI_C_INTBLOCKBAR__"> 
-    <td nowrap> 
-      <div align="left"><img src="B1.gif" width="9" height="19" alt=line>[menu
+[menu
 	  name=Top
 	  inactive=inactive
 	  localize=name
@@ -216,29 +508,95 @@ function MM_swapImage() {
 	  ui_security=depends_on
 	  entities=description
 	  lr=1]
-	  {IMG_DN?}
-	  	<!-- class={NAME} -->
-	  <a href="{HREF}"
-	  		onMouseOut="MM_swapImgRestore()" title="{DESCRIPTION}"
-			onMouseOver="MM_swapImage('{NAME}','','{IMG_UP}',1)"><img name="{NAME}" alt="{NAME}" border="0" src="{INDICATED?IMG_UP:IMG_DN}"></a>
-	  {/IMG_DN?}
-	  {IMG_DN:}
-		  <a href="{HREF}" class=ctitle title="{DESCRIPTION}">{NAME}</a>
-	  {/IMG_DN:}
-	  [/menu]
-	  <img src="B10.gif" width="17" height="19" alt=line>&nbsp;&nbsp;&nbsp;
-	 </div>
-	 </td>
-	 <td align=right>
-	 [if-mm super]
-	 [if scratch ui_meta_link]
-	  <A HREF="[area href=__UI_BASE__/menu_editor form="qmenu_name=Top"]"
-	  	style="font-size: 7pt" class=ctitle>edit</A>
-	 [/if]
-	 [/if-mm]
-    </td>
-  </tr>
+{INDICATED:}
+	<!-- class={NAME} down -->
+											<td valign=bottom>
+												<table width="100%" border=0 cellspacing=0 cellpadding=0>
+													<tr>
+														<td width=14 rowspan=3 class=shrink><a href="{HREF}" title="{DESCRIPTION}"><img border=0 src="tab_dark_left.gif"></A></td>
+														<td height=1 width=69 class=tabborder><img src="bg.gif" height=1></td>
+														<td width=2 rowspan=3><img src="tab_dark_right.gif"></td>
+													</tr>
+													<tr>
+														<td height=2><img src="bg.gif" height=1></td>
+													</tr>
+													<tr>
+														<td height=13 align=left valign=top><a href="{HREF}" title="{DESCRIPTION}" class=btnfont style="font-size: larger">{NAME}</a>&nbsp;&nbsp;</td>
+													</tr>
+													<tr>
+														<td height=1 colspan=3 class=hrdark><img src="bg.gif" height=1></td>
+													</tr>
+													<tr>
+														<td height=1 colspan=3 class=hrlight><img src="bg.gif" height=1></td>
+													</tr>
+												</table>
+											</td>
+{/INDICATED:}
+{INDICATED?}
+<!-- tab: {NAME} (up) -->
+<td valign=bottom>
+<table width="100%" border=0 cellspacing=0 cellpadding=0 class=interfacemain>
+	<tr>
+		<td width=17 rowspan=4 class=shrink><img src="tab_light_left.gif"></td>
+		<td height=1 width=53 class=tabborder><img src="bg.gif" height=1></td>
+		<td width=2 rowspan=4><img src="tab_light_right.gif"></td>
+	</tr>
+	<tr>
+		<td height=1 class=hrlight><img src="bg.gif" height=1></td>
+	</tr>
+	<tr>
+		<td height=1><img src="bg.gif" height=1></td>
+	</tr>
+	<tr>
+		<td height=13 align=left valign=top><a href="{HREF}" title="{DESCRIPTION}" class=btnfont style="font-size: larger">{NAME}</a>&nbsp;&nbsp;&nbsp;</td>
+	</tr>
+	<tr>
+		<td height=1 colspan=3><img src="bg.gif" height=1></td>
+	</tr>
+	<tr>
+		<td height=1 colspan=3><img src="bg.gif" height=1></td>
+	</tr>
 </table>
+</td>
+{/INDICATED?}
+[/menu]
+										</tr>
+									</table>
+								</td>
+								<!-- black and white horizontal rules to stretch to width=100% -->
+								<td height=18 width="100%" valign=bottom class=shrink>
+									<table width="100%" border=0 cellpadding=0 cellspacing=0>
+										<tr>
+											<td width="100%" height=16 class=shrink align=right>
+[if-mm super]
+	[if scratch ui_meta_link]
+													<a
+														href="[area href='admin/menu_editor' form='qmenu_name=Top']"
+														style="font-size: 7pt">edit</A>
+												&nbsp;
+	[/if]
+[/if-mm]
+											&nbsp;
+											</td>
+										</tr>
+										<tr>
+											<td height=1 class=hrdark><img src="bg.gif" width=1></td>
+										</tr>
+										<tr>
+											<td height=1 class=hrlight><img src="bg.gif" width=1></td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<!-- row 4: sub-menu -->
+				<tr>
+					<td height=28 class=interfacemain>
+						<table border=0 cellpadding=0 cellspacing=0>
+							<tr>
+								<td width=16><img src="bg.gif" height=1></td>
 [menu
 	name="[scratch ui_class]"
 	superuser=super
@@ -249,70 +607,96 @@ function MM_swapImage() {
 	inactive=inactive
 	entities=description
 	nbsp=name
-][menu-header]
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
-  <tr> 
-    <td bgcolor="__UI_C_TOPBLOCKBAR__" colspan=2><img src="spacer3.gif" width=1 height=1 alt=line></td>
-  </tr>
-  <tr bgcolor="000000"> 
-    <td colspan=2><img src="spacer4.gif" width=1 height=1 alt=line></td>
-  </tr>
-  <tr bgcolor="__UI_C_TITLEBARBG__"> 
-    <td valign=center nowrap><font face="Verdana, Arial, Helvetica, sans-serif" size="-1"><img src="bg.gif" height=19 width=3 align=middle alt=x>&nbsp;&nbsp;&nbsp;&nbsp;[/menu-header]{NEXT_LINE?}</td><td></td></tr><tr bgcolor="__UI_C_INTBLOCKBAR__"><td nowrap valign=center><img src="bg.gif" height=19 width=3 align=middle alt=x>
-&nbsp;&nbsp;&nbsp;&nbsp;{/NEXT_LINE?}{PAGE?}<A
-	href="{HREF}" title="{DESCRIPTION}"
-	style="
-		{INDICATED?}color: __UI_C_TITLEBARTXT__; font-size: 10pt;{/INDICATED?}
-		{INDICATED:}color: __UI_C_TITLEBARCONT__; font-size: 10pt;{/INDICATED:}
-">{NAME}</A>{/PAGE?}{PAGE:}{NAME}{/PAGE:}&nbsp;&nbsp;&nbsp;&nbsp;[menu-footer]
-	</td><td align=right>
-	 [if-mm super]
-	 [if scratch ui_meta_link]
-	<A HREF="[area href=__UI_BASE__/menu_editor form="qmenu_name=[scratch ui_class]"]"
-	  	style="font-size: 7pt" class=ctitle>edit</A>
+]{NEXT_LINE?}
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<!-- row 5: dark horizontal rule -->
+				<tr>
+					<td height=1 class=hrdark><img src="bg.gif" height=1></td>
+				</tr>
+				<!-- row 6: light horizontal rule -->
+				<tr>
+					<td height=1 class=hrlight><img src="bg.gif" height=1></td>
+				</tr>
+				<!-- row 7: menu options for component type -->
+				<tr>
+					<td height=17 align=left valign=middle class=interfacemain>
+						<table border=0 cellspacing=0 cellpadding=0>
+							<tr>{/NEXT_LINE?}
+								<td align=center valign=middle>&nbsp;&nbsp;{PAGE?}<A href="{HREF}" title="{DESCRIPTION}"
+									style="{INDICATED?}font-weight: bolder;{/INDICATED?}" class=menufont>{NAME}</A>{/PAGE?}{PAGE:}{NAME}{/PAGE:}&nbsp;&nbsp;</td>
+								<td width=1 class=vr><img src="bg.gif" width=1></td>
+	[menu-footer]
+[if-mm super]
+	[if scratch ui_meta_link]
+												<td width="100%" align=right valign=middle>
+													&nbsp;&nbsp;<a
+														href="[area href='admin/menu_editor' form='qmenu_name=[scratch ui_class]']"
+														style="font-size: 7pt">edit</A>
+												&nbsp;&nbsp;</td>
 	[/if]
-	[/if-mm]</td></TR>
-<tr bgcolor="#000000"><td colspan=2><IMG SRC="bg.gif" WIDTH="1" HEIGHT="1" alt=x></td></tr></table>
+[/if-mm]
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<!-- row 8: dark horizontal rule -->
+				<tr>
+					<td height=1 class=hrdark><img src="bg.gif" height=1></td>
+				</tr>
 [/menu-footer][/menu]
-<!-- ----- END MENUBAR ----- -->
-[if scratch ui_checklist]
-	[include file=include/wizard_checklist locale="[scratch mv_locale]"]
-[/if]
-
 [if !scratch ui_no_title]
-<table width="100%">
-<TR>
-<TD WIDTH="20">&nbsp;</td><TD>
-          <br>
-		[if scratch icon_name]<img src="[scratch icon_name]" width=16 height=16 border=0 valign=top alt=icon> &nbsp; [/if]
-	   <font size="+1" face="Verdana,arial,helvetica,sans-serif" color="__UI_C_HEADERTXT__">[either][scratch page_banner][or][scratch page_title][/either]&nbsp;</font><p>
-
-    [if type=explicit compare="[error all=1 show_var=1 keep=1]"]
-	<P>
-	<B>Error:</B>
-	<BLOCKQUOTE class=cerror>
-		[error show_var=1 all=1 show_error=1 joiner="<br>"]
-	</BLOCKQUOTE>
-	</P>
-	[/if]
-	[if scratch ui_failure]
-	<P>
-	<BLOCKQUOTE>
-	<FONT COLOR="__CONTRAST__">[scratchd ui_failure]</FONT>
-	</BLOCKQUOTE>
-	</P>
-	[/if]
-	[if scratch ui_message]
-	<P>
-	<BLOCKQUOTE>
-	<FONT COLOR="__UI_C_SUCCESS__">[scratchd ui_message]</FONT>
-	</BLOCKQUOTE>
-	</P>
-	[/if]
-	[warnings auto=1]
+				<!-- row 9: heading row -->
+				<tr>
+					<td height=19 align=left valign=middle class=headerrow>
+						<table border=0 cellspacing=0 cellpadding=0>
+							<tr>
+								<td width=13><img src="bg.gif"></td>
+								<td nowrap class=heading>
+									[calc]
+										my $tit = $Scratch->{page_banner} || $Scratch->{page_title};
+										return $tit if $tit =~ /^\s*</s;
+										$tit =~ s{(.*?)(:|$)}{<span style="font-weight: bold">$1</span>$2};
+										return $tit;
+									[/calc]
+									[if type=explicit compare="[error all=1 show_var=1 keep=1]"]
+									<blockquote class=cerror>
+										[error show_var=1 all=1 show_error=1 joiner="<br>"]
+									</blockquote>
+									[/if]
+									[if scratch ui_failure]
+									<blockquote class=cerror>
+										[scratchd ui_failure]
+									</blockquote>
+									[/if]
+									[if scratch ui_message]
+									<blockquote class=cmessage>
+									[scratchd ui_message]
+									</blockquote>
+									[/if]
+									[warnings auto=1]
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
 [/if]
-[comment] Clear these puppies [/comment]
-[calc]
+<!-- END MENUBAR -->
+				<!-- row 10: main content -->
+				<tr>
+					<td align=left valign=top>
+						<table width="100%" border=0 cellspacing=0 cellpadding=10>
+							<tr>
+								<td class=maincontent valign=top>[if scratch ui_checklist]
+<table>
+	<tr>
+		<td width="20%">
+	[include file=include/wizard_checklist locale="[scratch mv_locale]"]
+		</td>
+		<td width="80%" valign=top>
+[/if][comment] Clear these puppies [/comment][calc]
 	for (qw/
 				page_title
 				page_banner
