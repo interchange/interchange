@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.41 2003-07-22 03:36:37 mheins Exp $
+# $Id: Editor.pm,v 1.42 2003-09-01 18:20:46 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.41 $, 10);
+$VERSION = substr(q$Revision: 1.42 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -750,12 +750,12 @@ function ${vpf}selectTab(n) {
 	width:$opt->{tab_width}px;
 	margin:0px;
 	height: ${int2}px;
-	position:absolute;
+	position:relative;
 	$opt->{tab_style}
 	}
 
 .${id}panel {
-	position:absolute;
+	position:relative;
 	width: $opt->{panel_width}px;
 	height: $opt->{panel_height}px;
 	left:0px;
