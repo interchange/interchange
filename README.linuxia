@@ -53,6 +53,9 @@ This file documents all changes of the LINUXIA branch of Interchange.
 - new route options locale and sub (Order.pm: 1.14.4.5)
 - fixes the infinite loop if run by root and INTERCHANGE_USER doesn't exist
   (Makefile.PL: 1.23.4.10)
+- hack to display another start page besides index.html; a catalog 
+  configuration value for History greater than 1 is required for this; 
+  (login.html: 1.15.2.2, 1.22.4.8)
 
 Changes that made into the main branch:
 

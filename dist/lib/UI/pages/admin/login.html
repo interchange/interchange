@@ -1,3 +1,17 @@
+[perl]
+return unless $Config->{History};
+if ($recs = @{$Session->{History}} > 1) {
+	@revhist = reverse(@{$Session->{History}});
+	$login = $revhist[0];
+
+	if ($$login[0] ne '/__UI_BASE__/login.html') {
+		Log ("Suspicious URL for login page: $$login[0]");
+		return;
+	}
+	$Scratch->{ui_goto} = $revhist[1];
+}
+''
+[/perl]
 [set mv_no_count][/set]
 [set no_login_required]1[/set]
 [set ui_class]None[/set]
