@@ -143,7 +143,7 @@ EOF
 	my $refkey = $key;
 
 	if($db->record_exists($key)) {
-Log("Should work. key=$key table=$table");
+#Log("Should work. key=$key table=$table");
 	}
 	elsif($db->config('AUTO_NUMBER')) {
 		$CGI->{$Values->{ui_data_key_name}} = '';
@@ -151,7 +151,6 @@ Log("Should work. key=$key table=$table");
 	}
 	else {
 		$CGI->{$Values->{ui_data_key_name}} = $key;
-Log("$Values->{ui_data_key_name} => $key");
 		undef $key;
 	}
 	foreach my $col (@cols) {
