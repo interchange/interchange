@@ -78,6 +78,7 @@ EOF
 								  $maxcol--;
 								  last;
 							   }
+							   $maxcol = $iC;
 					   }
 
 					   $mincol = $oWkS->{MinCol};
