@@ -48,10 +48,10 @@
 								ui_type => $type,
 								ui_content_op => 'cancel',
 							});
-			$out .= "cancel</a>)<br>";
+			$out .= "[L]cancel[/L]</a>)<br>";
 		}
 		return unless $out;
-		$out = '<b>In process</b><br>' . $out . '<br>';
+		$out = '<b>[L]In process[/L]</b><br>' . $out . '<br>';
 		return $out;
 	}
 	return;
@@ -66,12 +66,12 @@
 </blockquote>
 [/if]
 
-<div class=titlebox>Edit pages</div>
+<div class=titlebox>[L]Edit pages[/L]</div>
 
 [if session content_edit]
 	<A HREF="[area href=@@MV_PAGE@@ form='ui_content_op=purge']"
-				onClick="return confirm('Are you sure you want to purge all in-process edits?')"
-	>Purge all in-process (including page, template, component edits)</A> <br>
+				onClick="return confirm('[L]Are you sure you want to purge all in-process edits?[/L]')"
+	>[L]Purge all in-process (including page, template, component edits)[/L]</A> <br>
 [/if]
 
 	[calc] tmp_display_in_progress('page'); [/calc]
