@@ -1,4 +1,4 @@
-interchange (4.7.2-1) unstable; urgency=low
+interchange (4.7.3-0.1) unstable; urgency=low
 
   * new upstream release
   * foundation is now the demo catalog instead of construct
@@ -9,7 +9,7 @@ interchange (4.7.2-1) unstable; urgency=low
   * UI_SECURE added to interchange.cfg
   * interchange-doc package removed (PDF's no longer part of distribution)
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu, 10 May 2001 20:14:16 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 14 May 2001 12:14:06 +0200
   
 interchange (4.6.5-1) unstable; urgency=high
 
