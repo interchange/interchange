@@ -41,10 +41,15 @@
 			[calc]
 				$CGI->{ui_name} =~ s/^\s+//;
 				$CGI->{ui_name} =~ s/\s+$//;
-				$CGI->{ui_name} = $Tag->filter({
+				if($CGI->{ui_type} eq 'page') {
+					$CGI->{ui_name} = $Tag->filter({
 													op => 'filesafe',
 													body => $CGI->{ui_name},
 												});
+				}
+				else {
+					$CGI->{ui_name} =~ s/\W+/_/g;
+				}
 				return unless $CGI->{ui_type} eq 'page';
 				my $pat = quotemeta $Config->{HTMLsuffix};
 		#Debug("pat=$pat");
@@ -61,6 +66,12 @@
 		<input type=hidden name="mv_click" value="page_name_click">
 		<input type=hidden name="ui_type" value="[cgi ui_type]">
 		<input type=hidden name="ui_return_to" value="[cgi ui_return_to]">
+	</td>
+	<td>
+		&nbsp;
+		[if cgi ui_type ne page]
+		<span class=chelp>Names may not contain non-word characters</span>
+		[/if]
 	</td>
 </tr>
 	[if cgi ui_type eq page]
@@ -79,7 +90,7 @@
 	[/if]
 <tr>
 	<td> &nbsp; </td>
-	<td>
+	<td colspan=2>
 		<input type=submit value="[msg arg.0=`$CGI->{ui_type}`]Create new %s[/msg]">
 	</td>
 </tr>
