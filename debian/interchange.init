@@ -32,6 +32,11 @@ case "$1" in
         -f /etc/interchange/interchange.cfg
 	;;
   stop)
+	# skip stop during unfinished installation
+	if [ -f /var/run/interchange-install ]; then
+		exit 0
+	fi
+
 	echo -n "Stopping $DESC: "
 
 	start-stop-daemon --stop --oknodo --pidfile /var/run/interchange/$NAME.pid
