@@ -1,7 +1,8 @@
 interchange (4.8.2-0.1) unstable; urgency=low
 
   * new upstream release
-
+  * install README.debian into /usr/share/doc
+  
  -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 15 Aug 2001 13:58:25 +0200
 
 interchange (4.8.1-1) unstable; urgency=low

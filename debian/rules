@@ -128,7 +128,7 @@ binary-arch: build install
 	dh_testdir
 	dh_testroot
 	dh_installdebconf
-	dh_installdocs 
+	dh_installdocs -A README.debian
 # install init.d script
 	dh_installinit -- defaults 21 19
 # install cron script
