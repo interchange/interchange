@@ -103,6 +103,9 @@ Foundation
 * Fix orderline import deficiency in etc/log_entry found by Karen Gold
   (KarenG@LOADUP.com). 
 
+* Change [discount-price] to [item-discount-price] to make it compatible
+  with editor components.
+
 Debian
 ------
 
