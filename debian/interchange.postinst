@@ -32,7 +32,7 @@ GROUP=$RET
 # Creating interchange group if he isn't already there
 if ! grep -q ^$GROUP: /etc/group; then
         echo Adding system group: $GROUP.
-        addgroup $GROUP
+        addgroup --system $GROUP
 fi
 
 # Creating interchange user if he isn't already there
