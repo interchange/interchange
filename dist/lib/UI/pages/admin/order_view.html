@@ -92,6 +92,12 @@
 <font size=2><b> [L]Payment type[/L]: </b></font>
 </td><td><font size=2>[loop-data transactions payment_method]</a></font></tr>
 
+[if-loop-data transactions order_id]
+<tr><td align=right>
+<font size=2><b> [L]Payment ID[/L]: </b></font>
+</td><td><font size=2>[loop-data transactions order_id]</a></font></tr>
+[/if-loop-data]
+
 </table>
 
 </td><td valign=top colspan=4>
