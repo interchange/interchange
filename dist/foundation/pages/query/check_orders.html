@@ -26,9 +26,22 @@ ui_template_name: leftonly
 
 <!-- BEGIN CONTENT -->
 
-[query st=db arrayref=orders
+[tmp ugly_dbm][/tmp]
+
+[calc]
+        return if $Config->{Database}{transactions}{Class} =~ /DBI/;
+        $Scratch->{ugly_dbm} = 1;
+        return;
+[/calc]
+
+[if scratch ugly_dbm]
+    [index table=transactions export-only=1]
+    [index table=orderline export-only=1]
+[/if]
+
+[query arrayref=orders
 	sql="SELECT
-		code,status,nitems,subtotal,shipping,handling,total_cost,payment_method,order_date
+		code,status,tracking_number,nitems,subtotal,shipping,handling,total_cost,payment_method,order_date
 		FROM transactions
 		WHERE username = '[data base=session field=username filter=sql]'
 		ORDER by code
@@ -81,7 +94,7 @@ EOF
 
 	my %hash;
 
-	my @fields = qw/order_number status nitems subtotal shipping
+	my @fields = qw/order_number status tracking_number nitems subtotal shipping
 			handling total_cost payment_method order_date/;
 			
 	my $row;
@@ -97,20 +110,39 @@ EOF
 			href => 'query/order_detail',
 			arg => $hash{order_number},
 		});
-		if($hash{status} =~ /\d/) {
-			my @ids = grep /\S/, split /\s+/, $hash{status};
-			$hash{status} = '';
-			for(@ids) {
-				$hash{status} .= <<EOF;
-<A HREF="http://wwwapps.ups.com/etracking/tracking.cgi?InquiryNumber1=$_&TypeOfInquiryNumber=T">UPS $_</A>
-EOF
-			}
+
+		my $status = errmsg($hash{status});
+		my $tracking;
+
+		if($hash{tracking_number}) {
+			$tracking = $hash{tracking_number};
 		}
-		else {
+		elsif($hash{status} =~ /\d/) {
+			$status = errmsg('shipped');
+			$tracking = $hash{status};
+		}
+
+		if($status) {
 				$hash{status} = <<EOF;
 <A HREF="$hash{detail_url}">$hash{status}</A>
 EOF
 		}
+		
+		if($tracking) {
+Debug("found tracking $tracking");
+			my @ids = grep /\S/, split /\s+/, $tracking;
+			my $tpl = $Variable->{TRACKING_NUMBER_QUERY} || <<EOF;
+<A HREF="http://wwwapps.ups.com/etracking/tracking.cgi?InquiryNumber1={TRACKING_NUMBER}&TypeOfInquiryNumber=T">UPS {TRACKING_NUMBER}</A>
+EOF
+			
+			for(@ids) {
+Debug("found id $_");
+				my $val = $tpl;
+				$val =~ s/{TRACKING_NUMBER}/$_/g;
+				$hash{status} .= $val;
+			}
+		}
+
 		for(qw/subtotal shipping total_cost/) {
 			$hash{$_} = $Tag->currency ({ body=> $hash{$_} });
 		}
@@ -130,9 +162,6 @@ EOF
 [/mvasp]
 
 <BR CLEAR=ALL>
-
-[seti export][tag export transactions transactions.txt][/tag][/seti]
-[seti export][tag export orderline orderline.txt][/tag][/seti]
 
 <!-- END CONTENT -->
 
