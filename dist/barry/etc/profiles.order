@@ -55,17 +55,19 @@ credit_limit_ok=mandatory Credit limit exceeded.
 [elsif config CyberCash]
 &fail=../special_pages/failed
 &charge=[var CYBER_MODE]
+&set=mv_payment Real-time (CyberCash) Credit Card 
 [/elsif]
 [elsif config CreditCardAuto]
 mv_credit_card_valid=required Credit card fails tests.
-&set=mv_payment Credit Card ([default mv_credit_card_type unknown])
+&set=mv_payment Credit Card (%c)
 [/elsif]
 [else]
 &credit_card=standard __CREDIT_CARDS_ACCEPTED__
-&set=mv_payment Credit Card ([default mv_credit_card_type unknown])
+&set=mv_payment Credit Card (%c)
 [/else]
 [/if]
 
+&calc= $Values->{mv_payment_mode} =~ s/\%c/$Values->{mv_credit_card_type}/g; 1;
 &final = yes
 &setcheck=mv_email [value email]
 

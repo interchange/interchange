@@ -112,14 +112,14 @@ Do some security checking
 
 
 <P>&nbsp;<P>
-<TABLE CELLSPACING=0 CELLMARGIN=0 BORDER=1 WIDTH=600>
+<TABLE CELLSPACING=0 CELLMARGIN=0 BORDER=1 WIDTH="100%">
 <TR><TD COLSPAN=4 __HEADERBG__ ALIGN=CENTER>
     <FONT SIZE="+2" COLOR="__HEADERTEXT__">Order Detail: [scratch arg]</FONT>
     </TD>
 </TR></TABLE>
 
 [loop list="[scratch arg]"]
-<TABLE WIDTH=600 BORDER=1>
+<TABLE  WIDTH="100%" BORDER=1>
 [html-table fr='__TABLEFG__']
 <B>ORDER NUMBER	[loop-data transactions mv_order_number]
 <B>Name	[loop-data transactions fname] [loop-data transactions lname]
@@ -139,7 +139,7 @@ Do some security checking
 [/if-loop-data][if-loop-data transactions b_country]<B>Shipping Country	[loop-data transactions b_country][/if-loop-data]
 [/html-table]
 </TABLE>
-<TABLE WIDTH=600 BORDER=1 __TABLEBG__>
+<TABLE WIDTH="100%" BORDER=1 __TABLEBG__>
 
 [perl products userdb]
 	sub get_download {

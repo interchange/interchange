@@ -7,6 +7,7 @@
 					<td width="130" colspan="3" bgcolor="#ffffff"><img src="space.gif" width="130" height="1"></td>
 				</tr>
 [if session logged_in]
+[then]
 				<tr>
 					<td width="1" bgcolor="#ffffff"><img src="space.gif" width="1" height="1"></td>
 					<td width="128">
@@ -29,6 +30,7 @@
 				<tr>
 					<td width="130" colspan="3" bgcolor="#ffffff"><img src="space.gif" width="130" height="1"></td>
 				</tr>
+[/then]
 [else]
 				<tr>
 					<td width="1" bgcolor="#ffffff"><img src="space.gif" width="1" height="1"></td>
