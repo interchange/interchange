@@ -67,7 +67,6 @@
 	$CGI->{no_tables} =~ s/\0/ /g;
 	
 	$CGI->{mv_todo} = 'set';
-	$CGI->{mv_nextpage} = '@@MV_PAGE@@';# unless $CGI->{mv_nextpage};
 	return;
 [/perl]
 [/set]
@@ -79,7 +78,7 @@
 <FORM METHOD=POST ACTION="[area ui]">
 <INPUT TYPE=hidden NAME=mv_doit VALUE="set">
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_perm">
-<INPUT TYPE=hidden NAME=mv_nextpage VALUE="[cgi ui_return_to]">
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="[either][cgi ui_return_to][or]__UI_BASE__/access[/either]">
 <INPUT TYPE=hidden NAME=user_id VALUE="[cgi user_id]">
 <INPUT TYPE=hidden NAME=username VALUE="[cgi user_id]">
 <INPUT TYPE=hidden NAME=mv_data_table VALUE="[value mv_data_table]">
@@ -215,13 +214,13 @@ EOF
 EOF
 	@permissions = (
 		orderstats		=> 'Order statistics utility',
-		trafficstats		=> 'Traffic statistics utility',
+		trafficstats	=> 'Traffic statistics utility',
 		env_vars		=> 'Environment variables utility',
 		stats			=> 'Stats menu',
 		techadmin		=> 'Technical Admin menu',
 		sitedesign		=> 'Site Design menu',
 		config			=> 'Apply changes',
-		delete_files		=> 'Delete owned files',
+		delete_files	=> 'Delete owned files',
 		dbupload		=> 'Database importer',
 		dbdownload		=> 'Database exporter',
 		layupload		=> 'Layout importer',
