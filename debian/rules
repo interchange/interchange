@@ -77,7 +77,7 @@ install: build
 		--host=127.0.0.1 \
 		--source=dist/src \
 		--build=$(TMP)/usr/lib/cgi-bin
-	cd $(TMP)/usr/lib/cgi-bin; rm compile.pl config* mod_perl_tlink.pl mvctl.c syscfg* testcgi tlink.* vlink.*
+	cd $(TMP)/usr/lib/cgi-bin; rm compile.pl config* mod_perl_tlink.pl mvctl.c syscfg* testcgi tlink.* vlink.* cpan_local_install
 # Add link sources
 	mkdir -p $(TMP)/usr/lib/interchange/src
 	for file in dist/src/*; do if test -f $$file; then cp $$file $(TMP)/usr/lib/interchange/src; fi; done
@@ -88,10 +88,13 @@ install: build
 	for file in share/akopia/ui/admin/*.*; do cp $$file $(TMP)/var/www/ui/admin; done
 	mkdir $(TMP)/var/www/ui/navigation
 	for file in share/akopia/ui/navigation/*.*; do cp $$file $(TMP)/var/www/ui/navigation; done
+# remove unneeded stuff
+	rm $(TMP)/usr/lib/interchange/error.log
+	rm $(TMP)/usr/lib/interchange/_session_storable
+	rm $(TMP)/usr/lib/interchange/_uid
 # install logrotate configuration file
 	install -m 0755 -d $(TMP)/etc/logrotate.d/
 	install -m 0644 debian/interchange.logrotate $(TMP)/etc/logrotate.d/interchange
-
 	dh_movefiles
 	touch install-stamp
 
@@ -103,7 +106,7 @@ binary-arch: build install
 	dh_testdir
 	dh_testroot
 	dh_installdebconf
-	dh_installdocs README QuickStart WHATSNEW
+	dh_installdocs README QuickStart WHATSNEW pdf/*.pdf
 # install init.d script
 	dh_installinit -- defaults 21 19
 # install cron script
