@@ -6,7 +6,7 @@
 ------------------------------------------------------------------------------
 
 
-Interchange 4.9.9 not yet released.
+Interchange 4.9.9 released 2003-10-31.
 
 Core
 ----
@@ -288,6 +288,9 @@ Core
 * Fix problem with alphabetic sorting of more lists where search results
   appeared in the wrong group.
 
+* Add delimiter option to checked/selected tags. Patch provided by
+  Mat Jones <mat@thinkopensource.com>.
+
 Tables
 ------
 
@@ -350,6 +353,18 @@ Tables
 
 * Fix bug in DBI module that caused arbitrary column to get set 
   to primary key instead of to the intended new value.
+
+* Add internal Interchange locking routines and support for GDBM. (Should
+  work on others as well but is not tested.)
+
+  To set internal locking, just put in the config:
+
+  	Database access IC_LOCKING 1
+
+  On GDBM, employs the GDBM_NOLOCK parameter.
+
+  It should prevent the errors in access.gdbm when multiple admins are
+  logged in. It might also serve to make userdb in GDBM somewhat usable.
 
 Search
 ------
@@ -718,6 +733,8 @@ UI
 
 * Ensure that you don't leave secure server through metaconfig link.
 
+* Remove obsolete wizard pages.
+
 Form
 ----
 
@@ -818,6 +835,8 @@ Table Editor
   setting html-width and table-width in metadata moot.
 
 * Don't focus on meta links when tabbing through form.
+
+* Allow cancel_text to be set when in database edit mode.
 
 Foundation
 ----------
@@ -1044,6 +1063,9 @@ Miscellaneous
 
 * Convert nonstandard != to standard SQL <> (which also avoids a parse
   error in the new Vend::SQL_Parser) within options stuff.
+
+* Add option to RPM spec file for /usr/local/bin/perl to work around threaded 
+  vendor perls.
 
 Extensions
 ----------
@@ -2021,6 +2043,10 @@ Shadow Database
 * Add stub for delete_record method.
 
 * Non-select queries are passed to underlying database immediately.
+
+* Fix queries with list type.
+
+* Fix errmsg calls.
 
 Static Page Generation
 ----------------------
