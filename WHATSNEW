@@ -56,6 +56,13 @@ Interchange 4.6.1
 
 * Fixed bugs in or-ed searches in DbSearch, fixed mv_search_relate bugs.
 
+* Fixed problem with nu parameter getting out of sync in mv_sql_query.
+
+* Added 3 usertags: benchmark, sleep, and table_organize (in eg/).
+
+* Filled in some missing timestamp fields in construct demo store data,
+  which was causing PostgreSQL 7 data imports to fail.
+
 
 Interchange 4.6.0
 
