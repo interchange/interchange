@@ -1,6 +1,6 @@
 # Vend::Payment::WellsFargo - Interchange WellsFargo support
 #
-# $Id: WellsFargo.pm,v 1.6 2003-08-04 22:01:09 racke Exp $
+# $Id: WellsFargo.pm,v 1.7 2004-06-07 20:59:18 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -317,7 +317,7 @@ BEGIN {
 	}
 
 	::logGlobal("%s payment module initialized, using %s", __PACKAGE__, $selected)
-		unless $Vend::Quiet;
+		unless $Vend::Quiet or ! $Global::VendRoot;
 
 }
 

@@ -1,6 +1,6 @@
 # Vend::Payment::MCVE - Interchange MCVE support
 #
-# $Id: MCVE.pm,v 1.3 2003-08-04 22:01:08 racke Exp $
+# $Id: MCVE.pm,v 1.4 2004-06-07 20:59:18 mheins Exp $
 #
 # Author: Tom Friedel (tom@readyink.com) for Carlc Internet Services (http://www.carlc.com)
 #
@@ -22,7 +22,7 @@
 package Vend::Payment::MCVE;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 
 =head1 NAME
 
@@ -205,11 +205,11 @@ BEGIN {
 		package Vend::Payment;
         	require MVCE or die __PACKAGE__ . " requires MVCE";
 		::logGlobal({}, "MCVE module found version %s", $MCVE::VERSION)
-			unless $Vend::Quiet;
+			unless $Vend::Quiet or ! $Global::VendRoot;
 	};
 
 	::logGlobal("%s payment module %s initialized", __PACKAGE__, $VERSION)
-		unless $Vend::Quiet;
+		unless $Vend::Quiet or ! $Global::VendRoot;
 }
 
 package Vend::Payment;

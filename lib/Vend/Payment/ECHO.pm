@@ -1,6 +1,6 @@
 # Vend::Payment::ECHO - Interchange ECHO support
 #
-# $Id: ECHO.pm,v 1.4 2003-08-04 22:01:08 racke Exp $
+# $Id: ECHO.pm,v 1.5 2004-06-07 20:59:18 mheins Exp $
 #
 # Copyright (C) 2002 
 #      Electric Pulp. <info@electricpulp.com> 
@@ -264,7 +264,7 @@ BEGIN {
 	}
 
 ::logGlobal("%s payment module initialized, using %s", __PACKAGE__, $selected)
-		unless $Vend::Quiet;
+		unless $Vend::Quiet or ! $Global::VendRoot;
 
 }
 

@@ -3,7 +3,7 @@
 # Connection routine for AuthorizeNet version 3 using the 'ADC Direct Response'
 # method.
 #
-# $Id: AuthorizeNet.pm,v 2.14 2004-04-27 19:25:15 mheins Exp $
+# $Id: AuthorizeNet.pm,v 2.15 2004-06-07 20:59:18 mheins Exp $
 #
 # Copyright (C) 2003-2004 Interchange Development Group, http://www.icdevgroup.org/
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -264,7 +264,7 @@ BEGIN {
 	}
 
 	::logGlobal("%s payment module initialized, using %s", __PACKAGE__, $selected)
-		unless $Vend::Quiet;
+		unless $Vend::Quiet or ! $Global::VendRoot;
 
 }
 

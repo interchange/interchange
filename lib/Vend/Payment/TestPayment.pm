@@ -1,6 +1,6 @@
 # Vend::Payment::TestPayment - Interchange payment test module
 #
-# $Id: TestPayment.pm,v 1.4 2003-08-04 22:01:09 racke Exp $
+# $Id: TestPayment.pm,v 1.5 2004-06-07 20:59:18 mheins Exp $
 #
 # Copyright (C) 2002 Cursor Software Limited.
 # All Rights Reserved.
@@ -187,10 +187,10 @@ Based on original code by Mike Heins <mheins@perusion.com>
 
 BEGIN {
     ::logGlobal("%s payment module loaded",__PACKAGE__)
-	unless $Vend::Quiet;
+		unless $Vend::Quiet or ! $Global::VendRoot or ! $Global::VendRoot;
 }
 
-$VERSION = substr(q$Revision: 1.4 $,10);
+$VERSION = substr(q$Revision: 1.5 $,10);
 
 package Vend::Payment;
 

@@ -1,6 +1,6 @@
 # Vend::Payment::PSiGate - Interchange PSiGate support
 #
-# $Id: PSiGate.pm,v 1.3 2004-03-25 00:59:27 kwalsh Exp $
+# $Id: PSiGate.pm,v 1.4 2004-06-07 20:59:18 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group <interchange@icdevgroup.org>
 # Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
@@ -266,7 +266,7 @@ BEGIN {
 	}
 
 	::logGlobal("%s payment module initialized, using %s", __PACKAGE__, $selected)
-		unless $Vend::Quiet;
+		unless $Vend::Quiet or ! $Global::VendRoot;
 
 }
 

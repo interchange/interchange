@@ -1,6 +1,6 @@
 # Vend::Payment::Linkpoint - Interchange Linkpoint support
 #
-# $Id: Linkpoint.pm,v 1.1 2003-11-22 23:32:01 racke Exp $
+# $Id: Linkpoint.pm,v 1.2 2004-06-07 20:59:18 mheins Exp $
 #
 # Copyright (C) 2002 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -184,7 +184,7 @@ BEGIN {
 	}
 	
 	::logGlobal("%s payment module initialized", __PACKAGE__)
-		unless $Vend::Quiet;
+		unless $Vend::Quiet or ! $Global::VendRoot;
 }
 
 package Vend::Payment;

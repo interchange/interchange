@@ -1,6 +1,6 @@
 # Vend::Payment::EFSNet - Interchange EFSNet support
 #
-# $Id: EFSNet.pm,v 1.2 2004-04-18 01:57:58 kwalsh Exp $
+# $Id: EFSNet.pm,v 1.3 2004-06-07 20:59:18 mheins Exp $
 #
 # Connection routine for Concord EFSNet ( http://www.concordefsnet.com/ )
 #
@@ -273,7 +273,7 @@ BEGIN {
 	}
 
 	::logGlobal("%s payment module initialized, using %s", __PACKAGE__, $selected)
-		unless $Vend::Quiet;
+		unless $Vend::Quiet or ! $Global::VendRoot;
 
 }
 

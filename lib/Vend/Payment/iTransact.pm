@@ -1,6 +1,6 @@
 # Vend::Payment::iTransact - Interchange iTransact Support
 #
-# $Id: iTransact.pm,v 2.4 2003-08-04 22:01:09 racke Exp $
+# $Id: iTransact.pm,v 2.5 2004-06-07 20:59:18 mheins Exp $
 #
 # Copyright (C) 1999-2002 Red Hat, Inc.
 #
@@ -209,7 +209,7 @@ BEGIN {
 	}
 
 	::logGlobal("%s payment module initialized, using %s", __PACKAGE__, $selected)
-		unless $Vend::Quiet;
+		unless $Vend::Quiet or ! $Global::VendRoot;
 
 }
 

@@ -1,6 +1,6 @@
 # Vend::Payment::CyberCash - Interchange CyberCash support
 #
-# $Id: CyberCash.pm,v 2.3 2003-08-04 22:01:08 racke Exp $
+# $Id: CyberCash.pm,v 2.4 2004-06-07 20:59:18 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -25,7 +25,7 @@
 
 package Vend::Payment::CyberCash;
 
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 
 =head1 NAME
 
@@ -270,7 +270,7 @@ my $ver = $CCMckLib3_2::VERSION || '3.x';
 
 $Vend::CC3 = 1;
 ::logGlobal({}, "CyberCash module found (Version %s)", $ver )
-	unless $Vend::Quiet;
+	unless $Vend::Quiet or ! $Global::VendRoot;
 
 sub cybercash {
 		my ($opt) = @_;

@@ -1,6 +1,6 @@
 # Vend::Payment::TCLink - Interchange TrustCommerce TCLink support
 #
-# $Id: TCLink.pm,v 1.4 2003-08-04 22:01:09 racke Exp $
+# $Id: TCLink.pm,v 1.5 2004-06-07 20:59:18 mheins Exp $
 #
 # Copyright (C) 2002 TrustCommerce <developer@trustcommerce.com>
 #
@@ -226,7 +226,7 @@ BEGIN {
 	};
 
 	::logGlobal("%s payment module initialized", __PACKAGE__)
-		unless $Vend::Quiet;
+		unless $Vend::Quiet or ! $Global::VendRoot;
 }
 
 package Vend::Payment;
