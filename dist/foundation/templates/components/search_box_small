@@ -26,8 +26,8 @@ matches:
 	  <INPUT TYPE=hidden NAME=mv_searchtype VALUE=db>
 	  <INPUT TYPE=hidden NAME=mv_matchlimit VALUE=[control matches 10]>
 	  <INPUT TYPE=hidden NAME=mv_sort_field VALUE=category>
-	  <INPUT TYPE=hidden NAME=mv_search_field VALUE=inactive>
-	  <INPUT TYPE=hidden NAME=mv_search_field VALUE=":*">
+	  <INPUT TYPE=hidden NAME=mv_search_field VALUE="*">
+	  <input type=hidden name=mv_substring_match value=1>
 	  <INPUT TYPE=hidden NAME=mv_column_op VALUE=ne>
 	  <INPUT TYPE=hidden NAME=mv_column_op VALUE=rm>
 	  <INPUT TYPE=hidden NAME=mv_searchspec VALUE=1>
