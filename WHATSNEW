@@ -47,6 +47,15 @@ Interchange 4.6.1
 
 * Removed some duplicated image files, reducing package size by ~ 200 KB.
 
+* Fixed scoping problem with override from user image upload.
+
+* Allow internationalization of error messages in UserDB.
+
+* interchange.PL: Fixed bad call to Vend::Imagemap::action_map, must be
+  just the action_map since autouse is in force. Thanks to Jeff Carnahan.
+
+* Fixed bugs in or-ed searches in DbSearch, fixed mv_search_relate bugs.
+
 
 Interchange 4.6.0
 
