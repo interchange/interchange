@@ -4,6 +4,7 @@ This file documents all changes of the LINUXIA branch of Interchange.
 - Debian configuration file location added to interchange.PL (CVS 1.8.4.2)
 - new UI UserTag related, called from item_edit (CVS 1.12.4.3)
 - superfluous she-bang removed from MakeCat.pm (CVS 1.12.4.1)
+- new UserTag formel
 
 Changes that made into the main branch:
 
