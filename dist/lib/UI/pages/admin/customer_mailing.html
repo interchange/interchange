@@ -8,7 +8,7 @@
 [/if-mm]
 
 [set ui_class]Customers[/set]
-[set page_title]Customer mailing[/set]
+[set page_title][L]Customer mailing[/L][/set]
 [set help_name]customer.mailing[/set]
 [set page_perm]mailing[/set]
 
@@ -60,13 +60,13 @@
 		return "<blockquote class=cerror>$msg</blockquote>";
 	};
 	if($CGI->{mv_action} and ! $Values->{mail_to}) {
-		return $die->("Reset to default.");
+		return $die->("[L]Reset to default.[/L]");
 	}
 	if($Values->{mail_subject} !~ /\w/) {
-		return $die->("No subject, cannot send.");
+		return $die->("[L]No subject, cannot send.[/L]");
 	}
 	elsif ($Values->{mail_template} !~ /\w+.*\w+.*\n.*\w+/s) {
-		return $die->("No suitable message to send.");
+		return $die->("[L]No suitable message to send.[/L]");
 	}
 	return;
 [/calc]
@@ -112,7 +112,7 @@
 
 [if cgi hide_textarea]
 	[if cgi show_close]
-	<input type=button onClick="window.close()" Value="Close window">
+	<input type=button onClick="window.close()" Value="[L]Close window[/L]">
 	[/if]
 [else]
 	[calc]
@@ -145,7 +145,7 @@ Thanks for your business!
 <table>
 <tr>
 	<td>
-	From:
+	[L]From:[/L]
 	</td>
 	<td>
 		<input
@@ -159,7 +159,7 @@ Thanks for your business!
 </tr>
 <tr>
 	<td>
-	To:
+	[L]To:[/L]
 	</td>
 	<td>
 		<input
@@ -173,7 +173,7 @@ Thanks for your business!
 </tr>
 <tr>
 	<td>
-	Subject:
+	[L]Subject:[/L]
 	</td>
 	<td>
 		<input
@@ -187,7 +187,7 @@ Thanks for your business!
 </tr>
 <tr>
 	<td>
-	Reply-To:
+	[L]Reply-To:[/L]
 	</td>
 	<td>
 		<input
@@ -196,30 +196,30 @@ Thanks for your business!
 			size=40
 			maxlength="70"
 			value="[value name=mail_reply filter=entities keep=1]"
-			> <I>(blank is same as From)</i>
+			> <I>[L](blank is same as From)[/L]</i>
 	</td>
 </tr>
 <tr>
 <td colspan=2>
 <TEXTAREA name=mail_template cols=80 rows=15>[value name=mail_template filter=entities keep=1]</textarea>
 <br>
-		<b><u>Mailing List</u>:</b><br>
+		<b><u>[L]Mailing List[/L]</u>:</b><br>
 [display default="[cgi target_list]" name=target_list type=select options="[scratch mail_list_options]"]
 
 		<input
 			type=submit
 			onClick="checkAll(this.form, 'produce', 1); this.form.produce.value = ''; selfit(this.form)"
-			value="Select list"
+			value="[L]Select list[/L]"
 		>
 		&nbsp;&nbsp;&nbsp;
 		<input
 			type=button
-			onClick="confirm('Reset to defaults?') && clearform(this.form) && this.form.submit()"
-			value="Clear form"
+			onClick="confirm('[L]Reset to defaults?[/L]') && clearform(this.form) && this.form.submit()"
+			value="[L]Clear form[/L]"
 		>
 		<select name=show_members>
-			<option value=0> Don't show list
-			<option value=1 [selected show_members 1]> Show list members
+			<option value=0> [L]Don't show list[/L]
+			<option value=1 [selected show_members 1]> [L]Show list members[/L]
 		</select>
 	</td>
 </tr>
@@ -297,25 +297,25 @@ mail to this list again. And it be on your head...
 <div style="margin-left: 5%">
 	[if value show_members]
 	<P>
-	<A HREF="javascript:checkAll(document.mailform, 'produce', 0)"><img src="__UI_IMG__box_checked.gif" border=0>Check all</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<A HREF="javascript:checkAll(document.mailform, 'produce', 1)"><img src="__UI_IMG__box_empty.gif" border=0>Uncheck all</A>
+	<A HREF="javascript:checkAll(document.mailform, 'produce', 0)"><img src="__UI_IMG__box_checked.gif" border=0>[L]Check all[/L]</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<A HREF="javascript:checkAll(document.mailform, 'produce', 1)"><img src="__UI_IMG__box_empty.gif" border=0>[L]Uncheck all[/L]</A>
 	</p>
 	[else]
-		<b>[scratch tmp_seen] users selected.</b>
+		<b>[msg arg.0="[scratch tmp_seen]"]%s users selected.[/msg]</b>
 	[/else]
 	[/if]
 <p>
-<input type=submit name=show onClick="blanktarg(this.form)" value="Preview email">
-<input type=submit name=download_batch onClick="selfit(this.form, 1)" value="Download Mail Batch">
+<input type=submit name=show onClick="blanktarg(this.form)" value="[L]Preview email[/L]">
+<input type=submit name=download_batch onClick="selfit(this.form, 1)" value="[L]Download Mail Batch[/L]">
 
 [if
 	type=value
 	term=mv_search_match_count
 	op=">"
 	compare="[either]__MAILING_MAX_DIRECT__[or]50[/either]"
-](too many matches to send directly)
+][L](too many matches to send directly)[/L]
 [else]
-<input type=submit name="direct_send" onClick="selfit(this.form, 1)" value="Send now">
+<input type=submit name="direct_send" onClick="selfit(this.form, 1)" value="[L]Send now[/L]">
 [/else]
 [/if]
 </div>
