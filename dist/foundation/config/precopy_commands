@@ -1,4 +1,4 @@
-{MYSQL}mysqladmin -u __MVC_SQLUSER__ -p__MVC_SQLPASS__ create __MVC_SQLDB__
+{MYSQLCREATE}mysqladmin __MVC_MYSQLCREATEOPT__ create __MVC_SQLDB__
 Since you selected the MySQL option, you need to create a database named
 "__MVC_SQLDB__". In a default MySQL configuration, any user may create
 and drop and modify test_* databases, but some administrators disable this.
