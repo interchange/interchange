@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.32 2003-04-10 00:52:54 racke Exp $
+# $Id: Shadow.pm,v 1.33 2003-04-14 23:50:51 racke Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.32 $, 10);
+$VERSION = substr(q$Revision: 1.33 $, 10);
 
 # TODO
 #
@@ -291,15 +291,23 @@ sub query {
 			return $db->query($opt, $text, @arg);
 		} else {
 			# check if one of the queried fields is shadowed
-			my (@map_matches, @map_entries);
-			unless (@map_matches = $s->_map_entries($qref->{columns}, \@map_entries)) {
+			my (@map_matches, @map_entries, $colref);
+
+			# handle "select * ..." queries
+			$colref = $qref->{columns};
+			if (@$colref == 1 && $colref->[0] eq '*') {
+				$colref = [$s->columns()];
+			}
+
+			unless (@map_matches = $s->_map_entries($colref, \@map_entries)) {
 				return $s->[$OBJ]->query($opt, $text, @arg);				
 			}
+			
 			# scan columns for key field
 			my $keyname = $s->[$OBJ]->config('KEY');
 			my $keypos;
-			for (my $i = 0; $i < @{$qref->{columns}}; $i++) {
-				if ($keyname eq $qref->{columns}->[$i]) {
+			for (my $i = 0; $i < @$colref; $i++) {
+				if ($keyname eq $colref->[$i]) {
 					$keypos = $i;
 					last;
 				}
