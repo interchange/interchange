@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange program configurator
 #
-# $Id: config_prog.PL,v 1.6.2.1.2.1 2000-12-21 12:11:54 heins Exp $
+# $Id: config_prog.PL,v 1.6.2.1.2.2 2000-12-21 12:14:48 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -160,7 +160,7 @@ config_prog -- Configure Interchange programs with MakeMaker variables
 
 =head1 VERSION
 
-$Id: config_prog.PL,v 1.6.2.1.2.1 2000-12-21 12:11:54 heins Exp $
+# $Id: config_prog.PL,v 1.6.2.1.2.2 2000-12-21 12:14:48 heins Exp $
 
 =head1 DESCRIPTION
 

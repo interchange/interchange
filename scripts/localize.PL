@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange localizer
 #
-# $Id: localize.PL,v 1.7.2.1 2000-12-05 19:35:43 zarko Exp $
+# $Id: localize.PL,v 1.7.2.1.2.1 2000-12-21 12:14:48 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -353,7 +353,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-$Id: localize.PL,v 1.7.2.1 2000-12-05 19:35:43 zarko Exp $
+# $Id: localize.PL,v 1.7.2.1.2.1 2000-12-21 12:14:48 heins Exp $
 
 =head1 SYNOPSIS
 

@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange session dumper
 #
-# $Id: dump.PL,v 1.8.2.1 2000-12-05 19:35:43 zarko Exp $
+# $Id: dump.PL,v 1.8.2.1.2.1 2000-12-21 12:14:48 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -251,7 +251,7 @@ dump -- Interchange session dumper
 
 =head1 VERSION
 
-$Id: dump.PL,v 1.8.2.1 2000-12-05 19:35:43 zarko Exp $
+# $Id: dump.PL,v 1.8.2.1.2.1 2000-12-21 12:14:48 heins Exp $
 
 =head1 SEE ALSO
 

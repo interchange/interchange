@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.32.4.2 2000-12-12 18:21:52 zarko Exp $
+# $Id: makecat.PL,v 1.32.4.3 2000-12-21 12:14:48 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -2079,7 +2079,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.32.4.2 2000-12-12 18:21:52 zarko Exp $
+# $Id: makecat.PL,v 1.32.4.3 2000-12-21 12:14:48 heins Exp $
 
 =head1 INTRODUCTION
 

@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange session expiration for all catalogs
 #
-# $Id: expireall.PL,v 1.8.2.1 2000-12-05 19:35:43 zarko Exp $
+# $Id: expireall.PL,v 1.8.2.1.2.1 2000-12-21 12:14:48 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -147,7 +147,7 @@ expireall -- Run Interchange expire on all catalogs
 
 =head1 VERSION
 
-$Id: expireall.PL,v 1.8.2.1 2000-12-05 19:35:43 zarko Exp $
+# $Id: expireall.PL,v 1.8.2.1.2.1 2000-12-21 12:14:48 heins Exp $
 
 =head1 DESCRIPTION
 
