@@ -1,3 +1,9 @@
+interchange (5.0.1-1) unstable; urgency=low
+
+  * new upstream release
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sat, 20 Mar 2004 02:16:58 +0100
+
 interchange (5.0.0-2) unstable; urgency=low
 
   * added libhtml-parser-perl to Build-Depends to keep HTML::Entities
