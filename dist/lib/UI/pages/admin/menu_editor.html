@@ -1126,7 +1126,7 @@ sub {
 
 		if(INACTIVE != undefined) {
 			form.inactive.disabled = 0;
-			form.inactive.checked = l[INACTIVE] == 1 ? 1 : 0;
+			form.inactive.checked = l[INACTIVE] ? 1 : 0;
 		}
 		else {
 			form.inactive.disabled = 1;
@@ -1171,6 +1171,7 @@ sub {
 		if(EXTENDED != undefined)
 			form.extended.value = '';
 
+		form.inactive.checked = 0;
 		form.breakline.checked = 0;
 		form.label.checked = 0;
 		form.lineidx.value = 0;
@@ -1250,7 +1251,7 @@ sub {
 		}
 
 		if(INACTIVE != undefined) {
-			l[INACTIVE] = form.inactive.checked == 1 ? 1 : 0;
+			l[INACTIVE] = form.inactive.checked ? 1 : 0;
 		}
 
 		var j;

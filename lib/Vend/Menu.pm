@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange payment processing routines
 #
-# $Id: Menu.pm,v 2.3 2002-08-06 22:08:04 mheins Exp $
+# $Id: Menu.pm,v 2.4 2002-08-07 08:11:01 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,12 +21,56 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 
 use Vend::Util;
 use strict;
 
 my %transform = (
+	nbsp => sub {
+		my ($row, $fields) = @_;
+		return 1 if ref($fields) ne 'ARRAY';
+		for(@$fields) {
+			$row->{$_} =~ s/ /&nbsp;/g;
+		}
+		return 1;
+	},
+	localize => sub {
+		my ($row, $fields) = @_;
+		return 1 if ref($fields) ne 'ARRAY';
+		for(@$fields) {
+			$row->{$_} = errmsg($row->{$_});
+		}
+		return 1;
+	},
+	inactive => sub {
+		my ($row, $fields) = @_;
+		return 1 if ref($fields) ne 'ARRAY';
+		my $status = 1;
+		for(@$fields) {
+			if(s/^!\s*//) {
+				$status = $status && $row->{$_};
+			}
+			else {
+				$status = $status && ! $row->{$_};
+			}
+		}
+		return $status;
+	},
+	active => sub {
+		my ($row, $fields) = @_;
+		return 1 if ref($fields) ne 'ARRAY';
+		my $status = 1;
+		for(@$fields) {
+			if(s/^!\s*//) {
+				$status = $status && ! $row->{$_};
+			}
+			else {
+				$status = $status && $row->{$_};
+			}
+		}
+		return $status;
+	},
 	ui_security => sub {
 		my ($row, $fields) = @_;
 		return 1 if ref($fields) ne 'ARRAY';
@@ -75,6 +119,7 @@ my %transform = (
 		return 1 if ref($fields) ne 'ARRAY';
 		my $status = 1;
 		for(@$fields) {
+			next if ! $row->{$_};
 			$status = $status && $CGI::values{$row->{$_}};
 		}
 		return $status;
@@ -92,14 +137,29 @@ my %transform = (
 		my ($row, $fields) = @_;
 		return 1 if ref($fields) ne 'ARRAY';
 		for(@$fields) {
-			my $indicator;
+			my ($indicator,$rev, $last, $status);
 			next unless $indicator = $row->{$_};
-			my $rev = $indicator =~ s/^!\s*// ? 1 : 0;
-			my $status =  defined $CGI::values{$indicator}
-						  ? $CGI::values{$indicator}
-						  : $::Values->{$indicator};
-			($row->{indicated} = 1, next)
-				if $rev xor $status;
+			$rev = $indicator =~ s/^\s*!\s*// ? 1 : 0;
+			$last = $indicator =~ s/\s*!\s*$// ? 1 : 0;
+			if($indicator =~ /^\s*([-\w.:]+)\s*$/) {
+				$status =  $CGI::values{$1};
+#::logDebug("variable thing $indicator($1)") if  $row->{debug};
+			}
+			elsif ($indicator =~ /^\s*`(.*)`\s*$/s) {
+#::logDebug("calc thing $1") if  $row->{debug};
+				$status = Vend::Interpolate::tag_calc($1);
+			}
+			elsif ($indicator =~ /\[/s) {
+#::logDebug("ITL thing") if  $row->{debug};
+				$status = interpolate_html($indicator);
+				$status =~ s/\s+//g;
+			}
+#::logDebug("indicator status=$status rev=$rev last=$last") if  $row->{debug};
+			if($rev xor $status) {
+				$row->{indicated} = 1;
+				next unless $last;
+			}
+			last if $last;
 			$status = $Global::Variable->{MV_PAGE} eq $indicator;
 			($row->{indicated} = 1, next)
 				if $rev xor $status;
@@ -561,17 +621,22 @@ EOF
 		$row = \%line;
 	}
 
-	for(@{$opt->{_transform}}) {
-		return unless $transform{$_}->($row, $opt->{$_});
-	}
+#::logDebug("here's a row: " . ::uneval($row)) if $row->{debug};
 
-	return '<br>' unless $row->{name};
-	return $row->{name} if ! $row->{page} and $row->{name} =~ /^\s*</;
-	$row->{win}  = $::Scratch->{win};
-	$row->{form} =~ tr/&/\n/;
-	$row->{href} = Vend::Tags->area( { href => $row->{page}, form => $row->{form} });
-	$row->{name} = errmsg($row->{name});
-	$row->{description} =~ s/"/&quot;/g;
+	for(@{$opt->{_transform}}) {
+#::logDebug("doing $_ tranform") if  $row->{debug};
+		return unless $transform{$_}->($row, $opt->{$_});
+#::logDebug("passed $_ tranform") if  $row->{debug};
+	}
+#::logDebug("passed transforms, row now: " . ::uneval($row)) if  $row->{debug};
+
+	#return $row->{name} if ! $row->{page} and $row->{name} =~ /^\s*</;
+	if($row->{page}) {
+		$row->{form} =~ tr/&/\n/;
+		$row->{href} = Vend::Tags->area( { href => $row->{page}, form => $row->{form} });
+	}
+		$row->{name} = errmsg($row->{name});
+		$row->{description} =~ s/"/&quot;/g;
 	return Vend::Tags->uc_attr_list($row, $template);
 }
 
@@ -648,8 +713,8 @@ sub menu {
 			}
 			$opt->{file} .= "/$opt->{name}.txt";
 		}
-		return old_simple(@_) unless $opt->{dhtml_browser};
-		return dhtml_simple(@_);
+		return old_simple($name, $opt, $template) unless $opt->{dhtml_browser};
+		return dhtml_simple($name, $opt, $template);
 	}
 	else {
 		logError("unknown menu_type %s", $opt->{menu_type});

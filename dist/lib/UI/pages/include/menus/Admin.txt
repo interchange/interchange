@@ -1,0 +1,22 @@
+code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url	debug
+002	Admin	x002					admin/tax		Tax		0								
+011	Admin	x011					admin/reconfig		&nbsp;&nbsp;&nbsp;Apply Changes		0								
+016	Admin	x016			no_dbmenu	mv_data_table	admin/search_replace	mv_data_table=[cgi mv_data_table]	Search/Replace		0								
+004	Admin	x004					admin/payment		Payment		0								
+005	Admin	x005					admin/access		Access		0								
+013	Admin	x013			no_dbmenu	mv_data_table	admin/import_table	mv_data_table=[cgi mv_data_table]	Import Data		0								
+008	Admin	x008					admin/gentable		Tables		0								
+003	Admin	x003					admin/ship		Shipping		0								
+006	Admin	x006					admin/preferences		Preferences		0								
+007	Admin	x007		`$CGI->{mv_data_table} eq 'variable' or $CGI->{mv_data_table} && return -1`			admin/flex_select	mv_data_table=variable&page_title=Knar%20editor&ui_meta_specific=1&doing_knar=1&help_name=knar.main&ui_description_fields=code&ui_return_to=admin/flex_select&ui_return_to=mv_data_table=variable&ui_return_to=page_title=Knar%20Editor	Knar	1	0								1
+019	Admin	x019			no_dbmenu	mv_data_table	admin/gentable		&nbsp;&nbsp;&nbsp;&nbsp;Re-select Table		0								
+018	Admin	x018			no_dbmenu	mv_data_table	admin/flex_editor	mv_data_table=[cgi mv_data_table]&ui_new_item=1	New Entry		0								
+012	Admin	x012	1		no_dbmenu	mv_data_table	admin/flex_select	mv_data_table=[cgi mv_data_table]	Edit		0								
+021	Admin	x021				access_menu	admin/group		Groups		0								
+010	Admin	x010					admin/test_code		Test code		0								
+017	Admin	x017			no_dbmenu	mv_data_table	admin/direct_sql	mv_data_table=[cgi mv_data_table]	Direct SQL		0								
+009	Admin	x009					admin/auto_wizard		Wizard		0								
+014	Admin	x014			no_dbmenu	mv_data_table	admin/export_table	mv_data_table=[cgi mv_data_table]	Export Data		0								
+015	Admin	x015			no_dbmenu	mv_data_table	admin/spread	mv_data_table=[cgi mv_data_table]	Spreadsheet		0								
+001	Admin	x001					admin/genconfig YES!		Info		0								
+020	Admin	x020	1			access_menu	admin/access		Users		0								

@@ -11,7 +11,7 @@ code	mgroup	msort	inactive	page	form	name	description	extended
 010		x010	0			<hr noshade size=1>		
 011		x011	0			Site Design		
 012		x012	0	admin/layout		Site Layout		
-013		x013	0	admin/page		Page Edit		
+013		x013	0	admin/page		Page Edit		[var COMPANY] [cgi foo] [time]%c[/time]
 014		x014	0	admin/regenerate		Generate static		
 015		x015	0	admin/build_related		Build related		
 016		x016	0	admin/search_wizard		Search Builder		
@@ -41,3 +41,4 @@ code	mgroup	msort	inactive	page	form	name	description	extended
 040		x040	0	index		<b>Go to catalog</b>		
 041		x041	0	admin/login		<b>Logout</b>		
 042		x042	0	admin/reconfig		<b>Apply Changes</b>		
+043		x043	0	search	fi=products&st=db&co=1&sf=title&se=brush&op=rm&nu=0&su=1&ml=3&tf=title&to=x	Testing search build		

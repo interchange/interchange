@@ -61,6 +61,7 @@ Variable UI_STD_HEAD <<EOV
 		se=$ui_tag
 		op=rm
 EOF
+	$Scratch->{ui_class} = $ui_tag;
 	$Scratch->{"ui_class_$ui_tag"} = 1;
 	$Scratch->{ui_menu_sparams} = $sparams;
 	return;
@@ -198,131 +199,70 @@ function MM_swapImage() {
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr bgcolor="#000000"> 
-    <td><img src="spacer1.gif" width="1" height="1" alt=line></td>
+    <td colspan=2><img src="spacer1.gif" width="1" height="1" alt=line></td>
   </tr>
   <tr bgcolor="#FFFFFF"> 
-    <td><img src="spacer2.gif" width="1" height="1" alt=line></td>
+    <td colspan=2><img src="spacer2.gif" width="1" height="1" alt=line></td>
   </tr>
   <tr bgcolor="__UI_C_INTBLOCKBAR__"> 
     <td nowrap> 
-      <div align="left"><img src="B1.gif" width="9" height="19" alt=line>[loop
-	  prefix=am
-	  search="
-	  	fi=@_UI_MENU_TABLE_@
-		st=db
-		co=yes
-
-		sf=mgroup
-		se=Top
-		op=eq
-
-		tf=msort
-		rf=*
-	  "
+      <div align="left"><img src="B1.gif" width="9" height="19" alt=line>[menu
+	  name=Top
+	  inactive=inactive
+	  localize=name
+	  indicator=indicator
+	  ui_security=depends_on
 	  lr=1]
-	  [if-am-param !inactive]
-	  [if-mm advanced [am-param depends_on]]
-	  [if-am-param img_dn]
-	  	<!-- class=[am-param name]=[scratch ui_class_[am-param name]] -->
-	  <a href="[area href='[am-param page]' form='[am-param form]']" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('[am-param name]','','[am-param img_up]',1)"><img name="[am-param name]" alt="[am-param name]" border="0" src="[if scratch ui_class_[am-param name]][am-param img_up][else][am-param img_dn][/else][/if]"></a>
-	  [/if-am-param]
-	  [if-am-param !img_dn]
-		  <a href="[area href='[am-param page]' form='[am-param form]']" class=ctitle>[msg][am-param name][/msg]</a>
-	  [/if-am-param]
-	  [/if-mm]
-	  [/if-am-param]
-	  [/loop]
-	  <img src="B10.gif" width="17" height="19" alt=line></div>
+	  {IMG_DN?}
+	  	<!-- class={NAME} -->
+	  <a href="{HREF}"
+	  		onMouseOut="MM_swapImgRestore()"
+			onMouseOver="MM_swapImage('{NAME}','','{IMG_UP}',1)"><img name="{NAME}" alt="{NAME}" border="0" src="{INDICATED?IMG_UP:IMG_DN}"></a>
+	  {/IMG_DN?}
+	  {IMG_DN:}
+		  <a href="{HREF}" class=ctitle>{NAME}</a>
+	  {/IMG_DN:}
+	  [/menu]
+	  <img src="B10.gif" width="17" height="19" alt=line>&nbsp;&nbsp;&nbsp;
+	 </div>
+	 </td>
+	 <td align=right>
+	  <A HREF="[area href=__UI_BASE__/menu_editor form="qmenu_name=Top"]"
+	  	style="font-size: 7pt" class=ctitle>edit</A>
     </td>
   </tr>
 </table>
-
-[loop
-	prefix=sm
-	search="[scratch ui_menu_sparams]"
-	safe_data=1
-][sm-calc]
-	my $pre  = '';
-	my $post = '';
-	my $out  = '';
-	$out .= <<'EOF' if ! $sm_once++;
+[menu
+	name="[scratch ui_class]"
+	superuser=super
+	depends_on=depends_on
+	expand_values=name,page,form
+	localize=name
+	indicator=indicator,page
+	inactive=inactive
+	reparse=1
+	nbsp=name
+][menu-header]
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr> 
-    <td bgcolor="__UI_C_TOPBLOCKBAR__"><img src="spacer3.gif" width=1 height=1 alt=line></td>
+    <td bgcolor="__UI_C_TOPBLOCKBAR__" colspan=2><img src="spacer3.gif" width=1 height=1 alt=line></td>
   </tr>
   <tr bgcolor="000000"> 
-    <td><img src="spacer4.gif" width=1 height=1 alt=line></td>
+    <td colspan=2><img src="spacer4.gif" width=1 height=1 alt=line></td>
   </tr>
   <tr bgcolor="__UI_C_TITLEBARBG__"> 
-    <td valign=center nowrap><font face="Verdana, Arial, Helvetica, sans-serif" size="-1"><img src="bg.gif" height=19 width=3 align=middle alt=x>&nbsp;&nbsp;&nbsp;&nbsp;
-EOF
-	return if q{[sm-param inactive]};
-	return if q{[sm-param super]} and $Tag->if_mm('!super');
-	my $indicator = q{[sm-param indicator]};
-	my $exclude = q{[sm-param exclude_on]};
-#Log("indicator=$indicator");
-	my $depend = q{[sm-param depends_on]};
-	return '' if $exclude and $CGI->{$exclude};
-	return '' if $depend and ! $CGI->{$depend};
-	my $name = errmsg(q{[sm-param name]});
-	my $page = q{[sm-param page]};
-	my $form = q{[sm-param form]};
-	for(\$name, \$page, \$form) {
-		$$_ =~ s/\[cgi\s+([^\[]+)\]/$CGI->{$1}/g;
-		$$_ =~ s/\[var\s+([^\[]+)\]/$Variable->{$1}/g;
-		$$_ =~ s/\[value\s+([^\[]+)\]/$Values->{$1}/g;
-	}
-#Log("Form is: $form");
-	$form =~ tr/&/\n/;
-	my $next = q{[sm-param next_line]};
-	if($name =~ s/^((&nbsp;)+)//i) {
-		$pre = $1;
-	}
-	if($name =~ s/((&nbsp;)+)$//i) {
-		$post = $1;
-	}
-	$name =~ s/ /&nbsp;/g;
-#Log("Form is: $form");
-	$out .= $pre;
-	$out .= q{</td></tr><tr bgcolor="__UI_C_INTBLOCKBAR__"><td nowrap valign=center><img src="bg.gif" height=19 width=3 align=middle alt=x>&nbsp;&nbsp;&nbsp;&nbsp;
-}
-		if $next;
-	$out .= qq{<A HREF="} if $page;
-	$out .= $Tag->area( { href => $page, form => $form } )
-		if $page;
-	$out .= qq{">} if $page;
-	my $fc = q{__UI_C_TITLEBARCONT__};
-	my $rev = $indicator =~ s/^!//;
-
-#Log("indicator=$indicator rev=$rev CGI=$CGI->{$indicator} VALUES=$Values->{$indicator}");
-
-	if($indicator) {
-		if($rev) {
-			$fc = q{__UI_C_TITLEBARTXT__}
-				if !  (defined $CGI->{$indicator} ? $CGI->{$indicator} : $Values->{$indicator});
-		}
-		else {
-			$fc = q{__UI_C_TITLEBARTXT__}
-				if (defined $CGI->{$indicator} ? $CGI->{$indicator} : $Values->{$indicator});
-		}
-	}
-	elsif($Tag->var('MV_PAGE', 1) eq $page) {
-#Log("page presence select");
-		$fc = q{__UI_C_TITLEBARTXT__};
-	}
-
-	$out .= qq{<FONT COLOR="$fc" SIZE="-1">$name</FONT>};
-	$out .= '</A>' if $page;
-	$out .= $post;
-	$out .= '&nbsp;&nbsp;&nbsp;';
-[/sm-calc] [/loop]
-	[calc]
-	return unless $sm_once;
-	$out = qq!</td></TR>!;
-	$out .= q!<tr bgcolor="#000000"><td>!;
-	$out .= q!<IMG SRC="bg.gif" WIDTH="1" HEIGHT="1" alt=x>!;
-	$out .= q!</td></tr></table>!;
-	[/calc]
+    <td valign=center nowrap><font face="Verdana, Arial, Helvetica, sans-serif" size="-1"><img src="bg.gif" height=19 width=3 align=middle alt=x>&nbsp;&nbsp;&nbsp;&nbsp;[/menu-header]{NEXT_LINE?}</td><td></td></tr><tr bgcolor="__UI_C_INTBLOCKBAR__"><td nowrap valign=center><img src="bg.gif" height=19 width=3 align=middle alt=x>
+&nbsp;&nbsp;&nbsp;&nbsp;{/NEXT_LINE?}{PAGE?}<A
+	HREF="{HREF}"
+	style="
+		{INDICATED?}color: __UI_C_TITLEBARTXT__; font-size: 10pt;{/INDICATED?}
+		{INDICATED:}color: __UI_C_TITLEBARCONT__; font-size: 10pt;{/INDICATED:}
+">{NAME}</A>{/PAGE?}{PAGE:}{NAME}{/PAGE:}&nbsp;&nbsp;&nbsp;&nbsp;[menu-footer]
+	</td>
+	<td align=right><A HREF="[area href=__UI_BASE__/menu_editor form="qmenu_name=[scratch ui_class]"]"
+	  	style="font-size: 7pt" class=ctitle>edit</A></td></TR>
+<tr bgcolor="#000000"><td colspan=2><IMG SRC="bg.gif" WIDTH="1" HEIGHT="1" alt=x></td></tr></table>
+[/menu-footer][/menu]
 <!-- ----- END MENUBAR ----- -->
 [if scratch ui_checklist]
 	[include file=include/wizard_checklist locale="[scratch mv_locale]"]

@@ -1,0 +1,4 @@
+code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url
+001	Reports	x001					admin/orderstats		Orders		0							
+002	Reports	x002					admin/trafficstats		Traffic		0							
+003	Reports	x003					admin/tablereport		Custom		0							

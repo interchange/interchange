@@ -1,0 +1,10 @@
+code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url
+001	Top	x001		Orders		order	admin/order		Orders		0	View and manage incoming orders, archive and access past orders		B2.gif	B2_b.gif	B2_b.gif	icon_orders.gif	
+002	Top	x002		Customers		userdb	admin/customer		Customers		0	View and manage customer information and order history		B3.gif	B3_b.gif	B3_b.gif	icon_people.gif	
+003	Top	x003		Items		item	admin/item		Items		0	Add and edit items displayed for sale on the site		B4.gif	B4_b.gif	B4_b.gif	icon_item.gif	
+004	Top	x004		Content		content	admin/content		Content		0	Create, edit, upload and download pages		B5.gif	B5_b.gif	B5_b.gif	icon_pages.gif	
+005	Top	x005		Design		layout	admin/layout		Design		0	Organize site navigation, manage site layout		B6.gif	B6_b.gif	B6_b.gif	icon_design.gif	
+006	Top	x006		Merchandising		item	admin/merchandising		Merchandising		0	Set up quantity pricing, up-sell, promotions, and affiliates		B7.gif	B7_b.gif	B7_b.gif	icon_merch.gif	
+007	Top	x007		Reports		stats	admin/orderstats		Reports		0	View statistics on orders and site traffic, create custom reports		B8.gif	B8_b.gif	B8_b.gif	icon_stats.gif	
+008	Top	x008		Admin		admin	admin/genconfig		Administration		0	Administrator and developer-oriented tools		B9.gif	B9_b.gif	B9_b.gif	icon_config.gif	
+009	Top	x009		Accounting			admin/accounting/index		Accounting		1	SQL-Ledger accounting interface		BA.gif	BA_b.gif	BA_b.gif	icon_account.png	
