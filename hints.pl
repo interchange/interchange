@@ -10,7 +10,7 @@ sub get_hints {
 
 	$condition = sub { $^O =~ /bsd/i };
 	$routine = sub {
-		my $fn = 'minivend.cfg.dist';
+		my $fn = 'interchange.cfg.dist';
 		rename $fn, "$fn.bak";
 		open HINTIN, "$fn.bak"
 			or die "cannot open $fn.bak: $!\n";
