@@ -182,9 +182,10 @@
 </TD>
 <TD ALIGN=right>[page href=__UI_BASE__/item_inventory form="
 	item_id=[item-code]
-"][if-item-data inventory quantity][item-data inventory quantity][else]N/A[/else][/if-item-data]</a>
+"][if-item-data inventory quantity ne ''][item-data inventory quantity][else]N/A[/else][/if-item-data]</a>
 </TD>
 </tr>
+
 [/search-list]
 [no-match]
 <tr>
