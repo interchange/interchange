@@ -1,7 +1,6 @@
 LICENSE
 MANIFEST
 MANIFEST.SKIP
-META.yml			Module meta-data (added by MakeMaker)
 Makefile.PL
 README
 README.cvs
