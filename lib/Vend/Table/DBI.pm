@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.18 2001-04-04 18:54:17 racke Exp $
+# $Id: DBI.pm,v 1.25.2.19 2001-04-05 02:21:44 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.18 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.19 $, 10);
 
 use strict;
 
@@ -890,9 +890,9 @@ sub field_settor {
 	$s = $s->import_db() if ! defined $s->[$DBI];
     return sub {
         my ($key, $value) = @_;
-		$value = $s->[$DBI]->quote($value)
-			unless exists $s->[$CONFIG]->{NUMERIC}->{$column};
-		$key = $s->[$DBI]->quote($key)
+		$value = $s->quote($value)
+			unless exists $s->[$CONFIG]{NUMERIC}{$column};
+		$key = $s->quote($key)
 			unless exists $s->[$CONFIG]{NUMERIC}{$s->[$KEY]};
         $s->[$DBI]->do("update $s->[$TABLE] SET $column=$value where $s->[$KEY] = $key");
     };
