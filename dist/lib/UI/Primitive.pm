@@ -1,6 +1,6 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 2.1 2001-08-10 17:54:53 heins Exp $
+# $Id: Primitive.pm,v 2.2 2001-08-29 15:38:40 mheins Exp $
 
 # Copyright (C) 1998-2001 Red Hat, Inc. <interchange@redhat.com>
 
@@ -25,7 +25,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -470,9 +470,11 @@ sub list_tables {
 }
 
 sub list_images {
-	my ($base) = @_;
+	my ($base, $suf) = @_;
 	return undef unless -d $base;
-	my $suf = '\.(GIF|gif|JPG|JPEG|jpg|jpeg|png|PNG)';
+#::logDebug("passed suf=$suf");
+	$suf = '\.(GIF|gif|JPG|JPEG|jpg|jpeg|png|PNG)'
+		unless $suf;
 	my @names;
 	my $wanted = sub {
 					return undef unless -f $_;
@@ -952,7 +954,15 @@ sub meta_display {
 		}
 		elsif ($record->{type} eq 'imagedir') {
 			my $dir = $record->{'outboard'} || $column;
-			my @files = list_images($dir);
+			my $suf;
+			if($record->{options}) {
+				$suf = $record->{options};;
+				if($suf !~ /[\.|]/) {
+					my @types = grep /\S/, split /[,\s\0]+/, $suf;
+					$suf = '\.(' . join("|", @types) . ')';
+				}
+			}
+			my @files = list_images($dir, $suf);
 			$record->{type} = 'combo';
 			$record->{passed} = join ",",
 									map { s/,/&#44;/g; $_} @files;
