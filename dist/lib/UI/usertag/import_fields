@@ -49,13 +49,21 @@ EOF
 		$set[$idx++] = $db->field_settor($_);
 	}
 	my $count = 0;
+	my $totcount = 0;
+	my $delcount = 0;
+	my $addcount = 0;
 	while(<UPDATE>) {
 		chomp;
+		$totcount++;
 		($k, @f) = split /$delimiter/o, $_;
 		if(! $k and ! length($k)) {
 			next if ! $opt->{delete};
-			next if $f[1] ne 'DELETE';
-			$db->delete_record($f[2]);
+			next if $f[0] ne 'DELETE';
+			$out .= "Deleting record '$f[1]'.\n";
+			$db->delete_record($f[1]);
+			$count++;
+			$delcount++;
+			next;
 		}
 		$out .= "Record '$k' had too many fields, ignored.\n"
 			if @f > $idx;
@@ -63,6 +71,7 @@ EOF
 			if ($opt->{add}) {
 				$out .= "Adding record '$k'.\n";
 				$db->set_row($k);
+				$addcount++;
 			}
 			else {
 				$out .= "Non-existent record '$k', skipping.\n";
@@ -74,7 +83,10 @@ EOF
 		}
 		$count++;
 	}
-	$out .= "$count records updated.</PRE>";
+	$out .= "$count records processed of $totcount input lines.\n";
+	$out .= "$delcount records deleted.\n" if $delcount;
+	$out .= "$addcount records added.\n" if $addcount;
+	$out .= "</PRE>";
 	close UPDATE;
 	if($opt->{'move'}) {
 		my $ext = POSIX::strftime("%Y%m%d%H%M%S", localtime());
