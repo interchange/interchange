@@ -1,0 +1,14 @@
+Database  recurring_items  recurring_items.txt __SQLDSN__
+#ifdef SQLUSER
+Database  recurring_items  USER         __SQLUSER__
+#endif
+#ifdef SQLPASS
+Database  recurring_items  PASS         __SQLPASS__
+#endif
+Database  recurring_items  DEFAULT_TYPE VARCHAR2(128)
+Database  recurring_items  COLUMN_DEF   "code=VARCHAR2(14) CONSTRAINT pk_recurring_items PRIMARY KEY"
+Database  recurring_items  COLUMN_DEF   "username=VARCHAR2(20) DEFAULT '' NOT NULL"
+Database  recurring_items  COLUMN_DEF   "sku=VARCHAR2(14) NOT NULL"
+Database  recurring_items  COLUMN_DEF   "quantity=VARCHAR2(9) NOT NULL"
+Database  recurring_items  COLUMN_DEF   "ship_to=VARCHAR2(2000)"
+Database  recurring_items  COLUMN_DEF   "ship_method=VARCHAR2(2000)"

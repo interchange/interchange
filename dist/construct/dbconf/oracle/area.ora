@@ -1,0 +1,13 @@
+Database  area  area.txt __SQLDSN__
+#ifdef SQLUSER
+Database  area  USER         __SQLUSER__
+#endif
+#ifdef SQLPASS
+Database  area  PASS         __SQLPASS__
+#endif
+Database  area  DEFAULT_TYPE VARCHAR2(2000)
+Database  area  COLUMN_DEF   "code=INTEGER CONSTRAINT pk_area PRIMARY KEY"
+Database  area  COLUMN_DEF   "name=VARCHAR2(128) DEFAULT '' NOT NULL"
+Database  area  POSTCREATE   "CREATE INDEX area_name ON area (name)"
+Database  area  COLUMN_DEF   "sort=VARCHAR2(3) DEFAULT '00' NOT NULL"
+Database  area  POSTCREATE   "CREATE INDEX area_sort ON area (sort)"
