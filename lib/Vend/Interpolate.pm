@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.178 2003-07-07 04:11:34 mheins Exp $
+# $Id: Interpolate.pm,v 2.179 2003-07-07 05:26:58 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.178 $, 10);
+$VERSION = substr(q$Revision: 2.179 $, 10);
 
 @EXPORT = qw (
 
@@ -4110,7 +4110,7 @@ sub map_list_routines {
 
 sub iterate_array_list {
 	my ($i, $end, $count, $text, $ary, $opt_select, $fh, $opt) = @_;
-::logDebug("passed opt=" . ::uneval($opt));
+#::logDebug("passed opt=" . ::uneval($opt));
 	my $r = '';
 	$opt ||= {};
 
