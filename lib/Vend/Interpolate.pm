@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.38 2000-11-05 17:55:19 heins Exp $
+# $Id: Interpolate.pm,v 1.39 2000-11-08 21:46:45 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.38 $, 10);
+$VERSION = substr(q$Revision: 1.39 $, 10);
 
 @EXPORT = qw (
 
@@ -3495,7 +3495,7 @@ my $once = 0;
 											?	pull_if($4)
 											:	pull_else($4)!ige;
 		$run =~ s#$B$QR{_calc}$E$QR{'/_calc'}#tag_calc($1)#ige;
-		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#($Vend::Cfg->{Sub}{$1} || sub { 'ERROR' })->($2,$row)#ige;
+		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#init_calc() if ! $Calc_initialized;($Vend::Cfg->{Sub}{$1} || sub { 'ERROR' })->($2,$row)#ige;
 		$run =~ s#$B$QR{_filter}$E$QR{'/_filter'}#filter_value($1,$2)#ige;
 		$run =~ s#$B$QR{_last}$E$QR{'/_last'}#
                     my $tmp = interpolate_html($1);
@@ -3604,7 +3604,7 @@ sub iterate_hash_list {
 											?	pull_if($4)
 											:	pull_else($4)!ige;
 		$run =~ s#$B$QR{_calc}$E$QR{'/_calc'}#tag_calc($1)#ige;
-		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#($Vend::Cfg->{Sub}{$1} || sub { 'ERROR' })->($2,$item)#ige;
+		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#init_calc() if ! $Calc_initialized;($Vend::Cfg->{Sub}{$1} || sub { 'ERROR' })->($2,$item)#ige;
 		$run =~ s#$B$QR{_filter}$E$QR{'/_filter'}#filter_value($1,$2)#ige;
 		$run =~ s#$B$QR{_last}$E$QR{'/item_last'}#
                     my $tmp = interpolate_html($1);
