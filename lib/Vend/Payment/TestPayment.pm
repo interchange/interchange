@@ -1,6 +1,6 @@
 # Vend::Payment::TestPayment - Interchange payment test module
 #
-# $Id: TestPayment.pm,v 1.6 2005-01-16 16:31:31 mheins Exp $
+# $Id: TestPayment.pm,v 1.7 2005-01-16 21:29:27 mheins Exp $
 #
 # Copyright (C) 2002 Cursor Software Limited.
 # All Rights Reserved.
@@ -190,7 +190,7 @@ BEGIN {
 		unless $Vend::Quiet or ! $Global::VendRoot or ! $Global::VendRoot;
 }
 
-$VERSION = substr(q$Revision: 1.6 $,10);
+$VERSION = substr(q$Revision: 1.7 $,10);
 
 package Vend::Payment;
 
@@ -343,8 +343,9 @@ sub testpayment {
 			errmsg('TestPayment %s id=%s: function=%s status=%s amount=%s error=%s',
 					$user, 
 					$opt->{order_id},
-					$amount,
+					$opt->{transaction},
 					$result{'pop.status'},
+					$amount,
 					$result{'pop.error-message'},
 			),
 			{ file => $logfile },
