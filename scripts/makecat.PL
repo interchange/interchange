@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.27 2000-10-14 19:02:40 heins Exp $
+# $Id: makecat.PL,v 1.28 2000-10-15 17:58:21 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -1439,6 +1439,7 @@ ADDITIONAL: {
 	}
 	my $said = 0;
 	while(<ADDL>) {
+		my $noprompt = '';
 		s/\s+$//;
 		s/__MVC_([A-Z0-9]+)(__)?/substitute($1,$2)/eg;
 		my ($var, $prompt, $default) = split /\n/, $_, 3;
@@ -1454,8 +1455,8 @@ ADDITIONAL: {
 			next unless $true;
 		}
 		$var =~ s/\s+//g;
-		$var =~ s:^(!)::;
-		my $noprompt = $1;
+		$var =~ s:^(!)::
+			and $noprompt = 1;
 		$var = lc $var;
 		my $ucvar = uc $var;
 		if($default =~ /\t/) {
@@ -2071,7 +2072,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.27 2000-10-14 19:02:40 heins Exp $
+$Id: makecat.PL,v 1.28 2000-10-15 17:58:21 heins Exp $
 
 =head1 INTRODUCTION
 
