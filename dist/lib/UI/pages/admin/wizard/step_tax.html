@@ -1,4 +1,4 @@
-[set page_title]Tax Information[/set]
+[set page_title][L]Tax Information[/L][/set]
 [set ui_checklist]1[/set]
 [set help_name]wizard.tax[/set]
 [set ui_override_next][/set]
@@ -8,7 +8,8 @@
 
 <p>
 
-Enter your tax calculation information.  This information is used to determine the amount of tax to be charged.
+[L WIZARD_STEP_TAX_PAR_1]Enter your tax calculation information.  This information is 
+used to determine the amount of tax to be charged.[/L]
 
 <p> 
 
@@ -31,17 +32,17 @@ Enter your tax calculation information.  This information is used to determine t
 
 	ui_wizard_fields="taxlocation taxrate taxship" 
 
-	label.taxlocation="Tax location" 
-	help.taxlocation="The location this tax applies to (often a state, possibly a country)" 
+	label.taxlocation="[L]Tax location[/L]" 
+	help.taxlocation="[L]The location this tax applies to (often a state, possibly a country)[/L]" 
 	widget.taxlocation=text_15 
 	default.taxlocation=`$Values->{country} eq 'US' and return $Values->{state}; return;`
 
-	label.taxrate="Tax rate" 
-	help.taxrate="Percentage of order assessed for tax" 
+	label.taxrate="[L]Tax rate[/L]" 
+	help.taxrate="[L]Percentage of order assessed for tax[/L]" 
 	widget.taxrate=text_25
 
-	label.taxship="Tax shipping?" 
-	help.taxship="Check this box if tax should be applied to shipping costs" 
+	label.taxship="[L]Tax shipping?[/L]" 
+	help.taxship="[L]Check this box if tax should be applied to shipping costs[/L]" 
 	widget.taxship=checkbox 
 	filter.taxship=checkbox 
 	passed.taxship="1=&nbsp;&nbsp;&nbsp;&nbsp;"

@@ -1,25 +1,24 @@
-[set page_title]Shipping Preferences[/set] 
+[set page_title][L]Shipping Preferences[/L][/set] 
 [set ui_checklist]1[/set]
 [set help_name]wizard.ship_flat[/set]
 @_UI_STD_HEAD_@
 
 <table><tr><td width=500>
-Flat rate shipping can be selected on a cost per item or flat rate per
-order basis.
+[L]Flat rate shipping can be selected on a cost per item or flat rate per order basis.[/L]
 <P>
 
 </td></tr></table>
 <p>
 [calc]
 
-	push @dom, "=none";
-	push @dom, "FLATD=Flat rate per order";
-	push @dom, "PERD=Per item cost*";
-	push @int, "=none";
-	push @int, "FLATI=Flat rate per order (int'l)";
-	push @int, "PERI=Per item cost (int'l)*";
-	push @dom, "FREE=Free shipping";
-	push @int, "FREE=Free shipping";
+	push @dom, errmsg("=none");
+	push @dom, "FLATD=" . errmsg("Flat rate per order");
+	push @dom, "PERD=" . errmsg("Per item cost*");
+	push @int, errmsg("=none");
+	push @int, "FLATI=" . errmsg("Flat rate per order (int'l)");
+	push @int, "PERI=" . errmsg("Per item cost (int'l)*");
+	push @dom, "FREE=" . errmsg("Free shipping");
+	push @int, "FREE=" . errmsg("Free shipping");
 
 	$Scratch->{dom_ship_modes} = join ",\n", @dom;
 	$Scratch->{int_ship_modes} = join ",\n", @int;
@@ -43,19 +42,19 @@ order basis.
 
 	ui_wizard_fields="defaultshipd defaultshipi flatd flati"
 
-	label.defaultshipd="Flat-rate domestic ship mode"
+	label.defaultshipd="[L]Flat-rate domestic ship mode[/L]"
 	widget.defaultshipd=select
 	passed.defaultshipd=`$Scratch->{dom_ship_modes}`
 
-	label.defaultshipi="Flat-rate int'l ship mode"
+	label.defaultshipi="[L]Flat-rate int'l ship mode[/L]"
 	widget.defaultshipi=select
 	passed.defaultshipi=`$Scratch->{int_ship_modes}`
 
-	label.flatd="Domestic Flat/Per item rate"
+	label.flatd="[L]Domestic Flat/Per item rate[/L]"
 	widget.flatd=text_10
 	default.flatd="0.00"
 
-	label.flati="Int'l Flat/Per item rate"
+	label.flati="[L]Int'l Flat/Per item rate[/L]"
 	widget.flati=text_10
 	default.flati="0.00"
 ]

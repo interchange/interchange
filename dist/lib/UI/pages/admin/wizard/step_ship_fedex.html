@@ -1,4 +1,4 @@
-[set page_title]Shipping Preferences - Fed Ex[/set]
+[set page_title][L]Shipping Preferences - Fed Ex[/L][/set]
 [set ui_checklist]1[/set]
 [set help_name]wizard.fedex[/set]
 @_UI_STD_HEAD_@
@@ -10,7 +10,7 @@
 [/perl]
 
 <p>
-Select the Federal Express shipping options you want to offer. 
+[L]Select the Federal Express shipping options you want to offer.[/L] 
 <p>
 
 [seti fed_modes][available-www-shipping fed][/seti]
@@ -41,24 +41,24 @@ Select the Federal Express shipping options you want to offer.
 
 	ui_wizard_fields="shipzip fedmodes fedadder"
 
-	label.shipzip="Warehouse ZIP code"
+	label.shipzip="[L]Warehouse ZIP code[/L]"
 	check.shipzip=zip
-	help.shipzip="From what ZIP code will your shipments be sent? (Leave blank if not in U.S.)"
+	help.shipzip="[L]From what ZIP code will your shipments be sent? (Leave blank if not in U.S.)[/L]"
 	widget.shipzip=text_5
 	default.shipzip=`$defaultshipzip`
 
 	check.fedmodes=mandatory
-	label.fedmodes="Federal Express Options"
-	help.fedmodes="The Federal Express delivery options you will allow?"
+	label.fedmodes="[L]Federal Express Options[/L]"
+	help.fedmodes="[L]The Federal Express delivery options you will allow?[/L]"
 	widget.fedmodes=checkbox_left_2
 	passed.fedmodes=`$Scratch->{fed_modes}`
 	filter.fedmodes="checkbox null_to_space"
 	default.fedmodes="FEG F2D FSO FIE FIP"
 
-	label.fedadder="Handling charge"
+	label.fedadder="[L]Handling charge[/L]"
 	filter.fedadder="digits_dot"
 	check.fedadder="regex ^\\d+(?:\\.\\d+)?\$"
-	help.fedadder="Handling/packaging cost to be added to raw Fedex cost"
+	help.fedadder="[L]Handling/packaging cost to be added to raw Fedex cost[/L]"
 	widget.fedadder=text_8
 	default.fedadder="3.00"
 ]

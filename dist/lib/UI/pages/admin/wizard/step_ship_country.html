@@ -1,24 +1,24 @@
-[set page_title]Shipping Preferences -- set default country and rate[/set] 
+[set page_title][L]Shipping Preferences -- set default country and rate[/L][/set] 
 [set ui_checklist]1[/set]
 [set help_name]wizard.ship_country[/set]
 @_UI_STD_HEAD_@
 
 <table><tr><td width=500>
-You can select which country is the default country for customers.
-The default is the country you selected in the company information section.
+[L WIZARD_STEP_SHIP_COUNTRY_PAR_1]You can select which country is the default country for customers.
+The default is the country you selected in the company information section.[/L]
 <P>
-You can select which shipping rate the customer defaults to. This should be
+[L WIZARD_STEP_SHIP_COUNTRY_PAR_2]You can select which shipping rate the customer defaults to. This should be
 a domestic rate, i.e. one which is offered for the country you selected as
-default.
+default.[/L]
 <P>
-If your default ship mode requires a postal code in order to calculate a price,
+[L WIZARD_STEP_SHIP_COUNTRY_PAR_3]If your default ship mode requires a postal code in order to calculate a price,
 you will need to select one as the target for defaults. If you want to show
 the customer the least it will be, select your origin zip/postal code. If you want to
-show the most it will be, select something at the opposite end of the country.
+show the most it will be, select something at the opposite end of the country.[/L]
 <P>
-If you wish to refine your shipping methods further you may use the
+[L WIZARD_STEP_SHIP_COUNTRY_PAR_4]If you wish to refine your shipping methods further you may use the
 Administration section of the Interchange admin menus after you have finished
-the CommerceLauncher.
+the CommerceLauncher.[/L]
 </td></tr></table>
 <p>
 [calc]
@@ -45,12 +45,12 @@ the CommerceLauncher.
 		push @out, "$_=$mode_hash{$_}";
 	}
 
-	push @out, "FLATD=Flat rate per order";
-	push @out, "PERD=Per item cost";
-	push @intout, "FLATI=Flat rate per order (int'l)";
-	push @intout, "PERI=Per item cost (int'l)";
-	push @out, "FREE=Free shipping";
-	push @intout, "FREE=Free shipping";
+	push @out, "FLATD=" . errmsg("Flat rate per order");
+	push @out, "PERD=" . errmsg("Per item cost");
+	push @intout, "FLATI=" . errmsg("Flat rate per order (int'l)");
+	push @intout, "PERI=" . errmsg("Per item cost (int'l)");
+	push @out, "FREE=" . errmsg("Free shipping");
+	push @intout, "FREE=" . errmsg("Free shipping");
 
 	if(! @active) {
 			$Scratch->{no_ups_fed} = 1;
@@ -97,18 +97,18 @@ the CommerceLauncher.
 	ui_wizard_fields="defaultcountry defaultshipmode defaultshipzip"
 
 	check.defaultcountry=mandatory
-	label.defaultcountry="Default country"
+	label.defaultcountry="[L]Default country[/L]"
 	widget.defaultcountry=select
 	passed.defaultcountry=`$Scratch->{country_options}`
 
 	check.defaultshipmode=mandatory
-	label.defaultshipmode="Default domestic ship mode"
-	help.defaultshipmode="You must select something, even if it is Free Shipping"
+	label.defaultshipmode="[L]Default domestic ship mode[/L]"
+	help.defaultshipmode="[L]You must select something, even if it is Free Shipping[/L]"
 	widget.defaultshipmode=select
 	passed.defaultshipmode=`$Scratch->{all_ship_modes}`
 	default.defaultshipmode=`$Scratch->{tmp_defaultship}`
 
-	label.defaultshipzip="Default domestic ship postal code"
+	label.defaultshipzip="[L]Default domestic ship postal code[/L]"
 	widget.defaultshipzip=text_5
 	default.defaultshipzip=61821
 

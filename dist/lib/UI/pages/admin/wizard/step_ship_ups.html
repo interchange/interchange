@@ -1,4 +1,4 @@
-[set page_title]Shipping Preferences - UPS[/set]
+[set page_title][L]Shipping Preferences - UPS[/L][/set]
 [set ui_checklist]1[/set]
 [set help_name]wizard.ups[/set]
 @_UI_STD_HEAD_@
@@ -10,7 +10,7 @@
 [/perl]
 
 <p>
-Select the UPS shipping options you want to offer. 
+[L]Select the UPS shipping options you want to offer.[/L] 
 <p>
 
 [seti ups_modes][available-www-shipping ups][/seti]
@@ -41,24 +41,24 @@ Select the UPS shipping options you want to offer.
 
 	ui_wizard_fields="shipzip upsmodes upsadder"
 
-	label.shipzip="Warehouse ZIP code"
+	label.shipzip="[L]Warehouse ZIP code[/L]"
 	check.shipzip=zip
-	help.shipzip="From what ZIP code will your shipments be sent? (Leave blank if not in U.S.)"
+	help.shipzip="[L]From what ZIP code will your shipments be sent? (Leave blank if not in U.S.)[/L]"
 	widget.shipzip=text_5
 	default.shipzip=`$defaultshipzip`
 
-	label.upsmodes="UPS Options"
+	label.upsmodes="[L]UPS Options[/L]"
 	check.upsmodes=mandatory
-	help.upsmodes="The UPS delivery options you will allow?"
+	help.upsmodes="[L]The UPS delivery options you will allow?[/L]"
 	widget.upsmodes=checkbox_left_2
 	default.upsmodes="GNDCOM 2DA 1DA XPD XPR"
 	passed.upsmodes=`$Scratch->{ups_modes}`
 	filter.upsmodes="checkbox null_to_space"
 
-	label.upsadder="Handling charge"
+	label.upsadder="[L]Handling charge[/L]"
 	filter.upsadder="digits_dot"
 	check.upsadder="regex ^\\d+(?:\\.\\d+)?\$"
-	help.upsadder="Handling/packaging cost to be added to raw UPS cost"
+	help.upsadder="[L]Handling/packaging cost to be added to raw UPS cost[/L]"
 	widget.upsadder=text_8
 	default.upsadder="3.00"
 ]
