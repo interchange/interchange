@@ -1,59 +1,40 @@
 [comment]
 ui_template: Yes
 ui_template_name: leftonly
-ui_template_layout: LEFTONLY_TOP, UI_CONTENT, LEFTONLY_BOTTOM
-ui_template_description: Page with top/left areas.
-
-page_title: 
-	description: Page title
-
-page_banner: 
-	description: Page banner
-	help: Defaults to page title
-
-members_only:
-	options: 1=Yes,0=No*
-	widget: radio
-	description: Members only
-
-component_before:
-	options: =none, specials=Specials, random=Random items
-	widget: select
-	description: Component before content
-
-component_after:
-	options: =none, specials=Specials, random=Random items
-	widget: select
-	description: Component after content
-
-bgcolor:
-	options: #FFFFFF=White,pink=Pink
-	widget: select
-	description: Background color
 [/comment]
-[set page_title]__COMPANY__ -- Privacy Policy[/set]
-[set page_banner]Privacy Policy[/set]
 
-__LEFTONLY_TOP__
+[set component_after][/set]
+[set members_only]0[/set]
+[set page_banner]Privacy Policy[/set]
+[set component_hsize]2[/set]
+[set hbanner][/set]
+[set component_before][/set]
+[set hpromo_type]specials[/set]
+[set page_title]__COMPANY__ -- Privacy Policy[/set]
+@_LEFTONLY_TOP_@
 
 <!-- BEGIN CONTENT -->
-
-                    <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FF9900">(This 
+                    <p><font __FFACE__ size="2" color="#FF9900">(This 
                       is a Demonstration Store) </font></p>
-                    <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#669999">We 
-                      don't give out your information</font><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#669999">!</font></p>
-                    <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#669999">We 
+                    <p><font __FFACE__ size="2" color="#669999">We 
+                      don't give out your information</font><font __FFACE__ size="2" color="#669999">!</font></p>
+                    <p><font __FFACE__ size="2" color="#669999">We 
                       can be contacted at:</font></p>
-                    <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#999999">Construct 
-                      Something<br>
-                      11480 Sunset Hills Road<br>
-                      Suite 200 East<br>
-                      Reston, VA 20190<br>
-                      Phone: 703.456.2931<br>
-                      Fax: 703.456.2901</font><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FF9900"><br>
+                    <p><font __FFACE__ size="2" color="#999999">__COMPANY__<br>
+			__ADDRESS__<br>
+			__CITY__
+			[if variable PHONE]
+			<br>Phone: __PHONE__
+			[/if]
+			[if variable FAX]
+			<br>Fax: __FAX__
+			[/if]
+			[if variable TOLLFREE]
+			<br>Toll free: __TOLLFREE__
+			[/if]
+                      </font><font __FFACE__ size="2" color="#FF9900"><br>
                       <a href="info@akopia.com">info@akopia.com</a></font></p>
                     <p>&nbsp; </p>
-
 <!-- END CONTENT -->
 
-__LEFTONLY_BOTTOM__
+@_LEFTONLY_BOTTOM_@

@@ -49,7 +49,7 @@ Quan  Item No.    Description                            Price       Extension
 [column width=12            gutter=1]  [item-code] [/column]
 [column width=32 align=left gutter=1 wrap=1]
 [item-description]
-[if-modifier size]SIZE-->[item-modifier size][/if-modifier][if-modifier color] COLOR-->[item-modifier color][/if-modifier]
+[if-modifier size__MVC_FIELDMUNGE__]SIZE-->[item-modifier size__MVC_FIELDMUNGE__][/if-modifier][if-modifier color] COLOR-->[item-modifier color][/if-modifier]
 [/column]
 
 [column width=14 align=right gutter=1][item-price][/column]   

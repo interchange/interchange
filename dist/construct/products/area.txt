@@ -7,3 +7,4 @@ code	sel	name	which_page	sort	display_type	image	image_prop	banner_image	banner_
 6	left	Painting Supplies	all	05		6										
 7	left	Hardware	all	06		7										
 8	left	Miscellaneous	all	06		8										
+9	left	Specials	all 	00	name					none						

@@ -1,45 +1,19 @@
 [comment]
 ui_template: Yes
 ui_template_name: leftonly
-ui_template_layout: LEFTONLY_TOP, UI_CONTENT, LEFTONLY_BOTTOM
-ui_template_description: Page with top/left areas.
-
-page_title: 
-	description: Page title
-
-page_banner: 
-	description: Page banner
-	help: Defaults to page title
-
-members_only:
-	options: 1=Yes,0=No*
-	widget: radio
-	description: Members only
-
-component_before:
-	options: =none, specials=Specials, random=Random items
-	widget: select
-	description: Component before content
-
-component_after:
-	options: =none, specials=Specials, random=Random items
-	widget: select
-	description: Component after content
-
-bgcolor:
-	options: #FFFFFF=White,pink=Pink
-	widget: select
-	description: Background color
 [/comment]
 
-[set page_title]__COMPANY__ -- Order Detail[/set]
+[set component_after]random_horizontal[/set]
+[set members_only]0[/set]
 [set page_banner]Order Detail[/set]
-
-
-__LEFTONLY_TOP__
+[set component_hsize]2[/set]
+[set hbanner]Some of our fine products[/set]
+[set component_before][/set]
+[set hpromo_type]specials[/set]
+[set page_title]__COMPANY__ -- Order Detail[/set]
+@_LEFTONLY_TOP_@
 
 <!-- BEGIN CONTENT -->
-
 [if session arg]
 	[seti arg][data session arg][/seti]
 [else]
@@ -74,22 +48,22 @@ __LEFTONLY_TOP__
 [loop list="[scratch arg]"]
 <TABLE WIDTH=450 BORDER=1>
 [html-table fr='bgcolor="#FEEDD2"']
-<B><font face="Verdana, Arial, Helvetica, sans-serif" size="2">ORDER NUMBER</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[scratch arg]</font>
-<B><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Name</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[loop-data transactions fname] [loop-data transactions lname]</font>
-[if-loop-data transactions company]<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Company</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[loop-data transactions company]</font>
-[/if-loop-data]<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><B>Address</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[loop-data transactions address1]</font>[if-loop-data transactions address2]
-	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[loop-data transactions address2]</font>[/if-loop-data]
-<B><font face="Verdana, Arial, Helvetica, sans-serif" size="2">City, State, Zip</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[loop-data transactions city], [loop-data transactions state]  [loop-data transactions zip]</font>
-<B><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Country</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[loop-data transactions country]</font>
-<B><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Payment Method</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[loop-data transactions payment_method]</font>
-<B><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Shipping Method</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[loop-data transactions shipmode]</font>
-<B><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Daytime Phone</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[loop-data transactions phone_day]</font>
-<B><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Evening Phone</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[loop-data transactions phone_night]</font>
-[if-loop-data transactions b_fname]<B><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Billing Name</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[loop-data transactions b_fname] [loop-data transactions b_lname]</font>
-[/if-loop-data][if-loop-data transactions b_address1]<B><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Billing Address</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[loop-data transactions b_address1]</font>
-	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[loop-data transactions b_address2]</font>
-<B><font face="Verdana, Arial, Helvetica, sans-serif" size="2">City, State, Zip</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[loop-data transactions b_city], [loop-data transactions b_state]  [loop-data transactions b_zip]</font>
-[/if-loop-data][if-loop-data transactions b_country]<B><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Shipping Country</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[loop-data transactions b_country]</font>[/if-loop-data]
+<B><font __FFACE__ size="2">ORDER NUMBER</font>	<font __FFACE__ size="2">[scratch arg]</font>
+<B><font __FFACE__ size="2">Name</font>	<font __FFACE__ size="2">[loop-data transactions fname] [loop-data transactions lname]</font>
+[if-loop-data transactions company]<font __FFACE__ size="2">Company</font>	<font __FFACE__ size="2">[loop-data transactions company]</font>
+[/if-loop-data]<font __FFACE__ size="2"><B>Address</font>	<font __FFACE__ size="2">[loop-data transactions address1]</font>[if-loop-data transactions address2]
+	<font __FFACE__ size="2">[loop-data transactions address2]</font>[/if-loop-data]
+<B><font __FFACE__ size="2">City, State, Zip</font>	<font __FFACE__ size="2">[loop-data transactions city], [loop-data transactions state]  [loop-data transactions zip]</font>
+<B><font __FFACE__ size="2">Country</font>	<font __FFACE__ size="2">[loop-data transactions country]</font>
+<B><font __FFACE__ size="2">Payment Method</font>	<font __FFACE__ size="2">[loop-data transactions payment_method]</font>
+<B><font __FFACE__ size="2">Shipping Method</font>	<font __FFACE__ size="2">[loop-data transactions shipmode]</font>
+<B><font __FFACE__ size="2">Daytime Phone</font>	<font __FFACE__ size="2">[loop-data transactions phone_day]</font>
+<B><font __FFACE__ size="2">Evening Phone</font>	<font __FFACE__ size="2">[loop-data transactions phone_night]</font>
+[if-loop-data transactions b_fname]<B><font __FFACE__ size="2">Billing Name</font>	<font __FFACE__ size="2">[loop-data transactions b_fname] [loop-data transactions b_lname]</font>
+[/if-loop-data][if-loop-data transactions b_address1]<B><font __FFACE__ size="2">Billing Address</font>	<font __FFACE__ size="2">[loop-data transactions b_address1]</font>
+	<font __FFACE__ size="2">[loop-data transactions b_address2]</font>
+<B><font __FFACE__ size="2">City, State, Zip</font>	<font __FFACE__ size="2">[loop-data transactions b_city], [loop-data transactions b_state]  [loop-data transactions b_zip]</font>
+[/if-loop-data][if-loop-data transactions b_country]<B><font __FFACE__ size="2">Shipping Country</font>	<font __FFACE__ size="2">[loop-data transactions b_country]</font>[/if-loop-data]
 [/html-table]
 </TABLE>
 
@@ -110,7 +84,7 @@ __LEFTONLY_TOP__
 	return;
 [/perl]
 [html-table interpolate=1 td="VALIGN=TOP"]
-<B><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Quan</font>	<B><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Item No.</font>	<B><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Description</font>	<B><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><DIV ALIGN=RIGHT>Price</font>	<B><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><DIV ALIGN=RIGHT>Extension</font>
+<B><font __FFACE__ size="2">Quan</font>	<B><font __FFACE__ size="2">Item No.</font>	<B><font __FFACE__ size="2">Description</font>	<B><font __FFACE__ size="2"><DIV ALIGN=RIGHT>Price</font>	<B><font __FFACE__ size="2"><DIV ALIGN=RIGHT>Extension</font>
 [query
 	list=1
 	st=db
@@ -119,24 +93,23 @@ __LEFTONLY_TOP__
 		WHERE order_number = '[scratch arg]'
 		ORDER BY code
 	|
-]<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[sql-param quantity]</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[sql-param sku]</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[description [sql-param sku]]<BR>[if-sql-data orderline size]SIZE-->[sql-param size][/if-sql-data][if-sql-data orderline color] COLOR-->[sql-param color][/if-sql-data]</font>[calc]
+]<font __FFACE__ size="2">[sql-param quantity]</font>	<font __FFACE__ size="2">[sql-param sku]</font>	<font __FFACE__ size="2">[description [sql-param sku]]<BR>[if-sql-data orderline size__MVC_FIELDMUNGE__]SIZE-->[sql-param size__MVC_FIELDMUNGE__][/if-sql-data][if-sql-data orderline color] COLOR-->[sql-param color][/if-sql-data]</font>[calc]
 return unless
 	q{[userdb function=check_file_acl mode=expire location="[sql-param sku]"]};
 	return get_download(q{[sql-param sku]});
-[/calc]	<DIV ALIGN=RIGHT><font face="Verdana, Arial, Helvetica, sans-serif" size="2">[currency][sql-param price][/currency]</font>	<DIV ALIGN=RIGHT><font face="Verdana, Arial, Helvetica, sans-serif" size="2">[currency][sql-param subtotal][/currency]</font>
+[/calc]	<DIV ALIGN=RIGHT><font __FFACE__ size="2">[currency][sql-param price][/currency]</font>	<DIV ALIGN=RIGHT><font __FFACE__ size="2">[currency][sql-param subtotal][/currency]</font>
 [/query]
-			<font face="Verdana, Arial, Helvetica, sans-serif" size="2">SUBTOTAL</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><DIV ALIGN=RIGHT>[currency][loop-data transactions subtotal][/currency]</font>
-			<font face="Verdana, Arial, Helvetica, sans-serif" size="2">SALES TAX</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><DIV ALIGN=RIGHT>[currency][loop-data transactions salestax][/currency]</font>
-			<font face="Verdana, Arial, Helvetica, sans-serif" size="2">SHIPPING</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><DIV ALIGN=RIGHT>[currency][loop-data transactions shipping][/currency][if-loop-data transactions handling]</font>
-			<font face="Verdana, Arial, Helvetica, sans-serif" size="2">HANDLING</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><DIV ALIGN=RIGHT>[currency][loop-data transactions handling][/currency][/if-loop-data]</font>
-			<font face="Verdana, Arial, Helvetica, sans-serif" size="2">ORDER TOTAL</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><DIV ALIGN=RIGHT>[currency][loop-data transactions total_cost][/currency]</font>
+			<font __FFACE__ size="2">SUBTOTAL</font>	<font __FFACE__ size="2"><DIV ALIGN=RIGHT>[currency][loop-data transactions subtotal][/currency]</font>
+			<font __FFACE__ size="2">SALES TAX</font>	<font __FFACE__ size="2"><DIV ALIGN=RIGHT>[currency][loop-data transactions salestax][/currency]</font>
+			<font __FFACE__ size="2">SHIPPING</font>	<font __FFACE__ size="2"><DIV ALIGN=RIGHT>[currency][loop-data transactions shipping][/currency][if-loop-data transactions handling]</font>
+			<font __FFACE__ size="2">HANDLING</font>	<font __FFACE__ size="2"><DIV ALIGN=RIGHT>[currency][loop-data transactions handling][/currency][/if-loop-data]</font>
+			<font __FFACE__ size="2">ORDER TOTAL</font>	<font __FFACE__ size="2"><DIV ALIGN=RIGHT>[currency][loop-data transactions total_cost][/currency]</font>
 [/html-table]
 </TABLE>
 [/loop]
 
 <BR CLEAR=ALL>
 
-
 <!-- END CONTENT -->
 
-__LEFTONLY_BOTTOM__
+@_LEFTONLY_BOTTOM_@

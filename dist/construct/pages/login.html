@@ -1,48 +1,24 @@
 [comment]
 ui_template: Yes
 ui_template_name: leftonly
-ui_template_layout: LEFTONLY_TOP, UI_CONTENT, LEFTONLY_BOTTOM
-ui_template_description: Page with top/left areas.
-
-page_title: 
-	description: Page title
-
-page_banner: 
-	description: Page banner
-	help: Defaults to page title
-
-members_only:
-	options: 1=Yes,0=No*
-	widget: radio
-	description: Members only
-
-component_before:
-	options: =none, specials=Specials, random=Random items
-	widget: select
-	description: Component before content
-
-component_after:
-	options: =none, specials=Specials, random=Random items
-	widget: select
-	description: Component after content
-
-bgcolor:
-	options: #FFFFFF=White,pink=Pink
-	widget: select
-	description: Background color
 [/comment]
-[set page_title]__COMPANY__ -- Log In[/set]
-[set page_banner]Log In[/set]
 
-__LEFTONLY_TOP__
+[set component_after][/set]
+[set members_only]0[/set]
+[set page_banner]Log In[/set]
+[set component_hsize]2[/set]
+[set hbanner][/set]
+[set component_before][/set]
+[set hpromo_type]specials[/set]
+[set page_title]__COMPANY__ -- Log In[/set]
+@_LEFTONLY_TOP_@
 
 <!-- BEGIN CONTENT -->
-
                       <div align="left">
 
 [if session failure]
 <P>
-<font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b><font color="#FF0000">[data session failure]</font></b></font>
+<font size="2" __FFACE__><b><font color="#FF0000">[data session failure]</font></b></font>
 <P>
 [else]
                         <p>&nbsp;</p>
@@ -73,14 +49,14 @@ mv_nextpage=new_account
                             <td> 
                               <table width="300" border="0" cellspacing="0" cellpadding="2">
                                 <tr bgcolor="#0099FF"> 
-                                  <td width="81" align="right" bgcolor="#0099FF"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b><font color="#FFFFFF">Username</font></b></font></td>
+                                  <td width="81" align="right" bgcolor="#0099FF"><font size="2" __FFACE__><b><font color="#FFFFFF">Username</font></b></font></td>
                                   <td width="204" bgcolor="#FF9900" align="left"> 
                                     <INPUT NAME=mv_username VALUE="[read-cookie MV_USERNAME]">
                                   </td>
                                 </tr>
                                 <tr bgcolor="#0099FF"> 
                                   <td width="81" align="right" bgcolor="#0099FF"> 
-                                    <font color="#FFFFFF" size="2" face="Verdana, Arial, Helvetica, sans-serif"><font color="#000000"><b><font color="#FFFFFF">Password</font></b></font></font></td>
+                                    <font color="#FFFFFF" size="2" __FFACE__><font color="#000000"><b><font color="#FFFFFF">Password</font></b></font></font></td>
                                   <td width="204" bgcolor="#FF9900" align="left"> 
                                     <INPUT TYPE=password NAME=mv_password VALUE="">
                                   </td>
@@ -88,12 +64,12 @@ mv_nextpage=new_account
 								[comment]
                                 <tr bgcolor="#669999"> 
                                   <td width="81" align="right" bgcolor="#669999"> 
-                                    <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><font color="#FFFFFF" size="1">Merchant 
+                                    <p><font __FFACE__ size="2"><b><font color="#FFFFFF" size="1">Merchant 
                                       Number</font></b> </font></p>
                                   </td>
                                   <td width="204" align="left"> 
                                     <input type="text" name="merchantnumber2" size="10" maxlength="10">
-                                    <font size="1" face="Verdana, Arial, Helvetica, sans-serif"> 
+                                    <font size="1" __FFACE__> 
                                     <font color="#FFFFFF">(Optional)</font></font> 
                                   </td>
                                 </tr>
@@ -109,7 +85,7 @@ mv_nextpage=new_account
                                   <td width="81" align="right"> 
                                    <INPUT TYPE=hidden NAME=mv_cookie_password VALUE=0><INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1>
                                   </td>
-                                  <td width="204"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF">Log 
+                                  <td width="204"><font __FFACE__ size="1" color="#FFFFFF">Log 
                                     me in automatically<br>(sets cookie)</font></td>
                                 </tr>
                               </table>
@@ -124,7 +100,6 @@ mv_nextpage=new_account
                     <div align="center"> </div>
                     <p>&nbsp;</p>
                     <p>&nbsp;</p>
-
 <!-- END CONTENT -->
 
-__LEFTONLY_BOTTOM__
+@_LEFTONLY_BOTTOM_@

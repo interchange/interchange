@@ -7,11 +7,11 @@
 		$CGI->{mv_data_table} = 'merchandising';
 	}
 	if(! $CGI->{ui_data_fields}) {
-		$CGI->{ui_data_fields} = 'sku products:description featured blurb_begin blurb_end start finish';
-		$CGI->{ui_display_only} = 'products:description';
+		$CGI->{ui_data_fields} = 'sku __UI_PRODUCT_TABLE__:description featured blurb_begin blurb_end timed_promotion start_date finish_date';
+		$CGI->{ui_display_only} = '__UI_PRODUCT_TABLE__:description';
 	}
 	if(! $CGI->{ui_break_before}) {
-		$CGI->{ui_break_before} = 'blurb_begin start';
+		$CGI->{ui_break_before} = 'blurb_begin timed_promotion';
 	}
 	my @args = (
 		 '__UI_BASE__/item_edit',
@@ -22,12 +22,21 @@
 	$CGI->{ui_return_to} = join "\0", @args;
 	return;
 [/calc]
+[perl tables="merchandising"]
+	my $db = $Db{merchandising};
+	my $date = $Tag->convert_date({ raw => 1 });
+	my $code = $CGI->{item_id} or return;
+	return unless $db->field($code, 'timed_promotion');
+	return if $date le $db->field($code, 'finish_date');
+	$db->set_field($code, 'featured', 'expired');
+	return;
+[/perl]
+
 @_UI_STD_DBEDIT_HEAD_@
 
-[set ui_class]Items[/set]
-[seti page_title]Feature: [cgi item_id][/seti]
-[seti page_banner]Feature: edit item <B>[page href="__UI_BASE__/item_edit" form="item_id=[cgi item_id]"][cgi item_id]</A></B>[/seti]
-[set help_name]item.edit[/set]
+[seti page_title]Promotion: [cgi item_id][/seti]
+[seti page_banner]Promotion: edit item <B>[page href="__UI_BASE__/item_edit" form="item_id=[cgi item_id]"][cgi item_id]</A></B>[/seti]
+[set help_name]promotion[/set]
 [set icon_name]admin/icon_item.gif[/set]
 
 @_UI_STD_HEAD_@
@@ -38,7 +47,7 @@
 <A HREF="[area href=admin/flex_editor
 				form='
 					item_id=[cgi item_id]
-					mv_data_table=products
+					mv_data_table=__UI_PRODUCT_TABLE__
 					page_title=Edit items: [cgi item_id]
 					help_name=inventory.edit
 					ui_no_meta_display=1
