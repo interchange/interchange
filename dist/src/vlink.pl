@@ -1,19 +1,19 @@
 #!/usr/bin/perl -wT
 # vlink.pl: runs as a cgi program and passes request to Vend server
 #           via TCP UNIX-domain socket
-# $Id: vlink.pl,v 1.2.2.1 2000-12-08 15:48:22 zarko Exp $
+#   $Id: vlink.pl,v 1.2.2.1.2.1 2000-12-17 06:51:07 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of the
-# License, or (at your option) any later version.
+#    This program is free software; you can redistribute it and/or
+#    modify it under the terms of the GNU General Public License as
+#    published by the Free Software Foundation; either version 2 of the
+#    License, or (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#    General Public License for more details.
 #
 # You should have received a copy of the GNU General Public
 # License along with this program; if not, write to the Free
@@ -28,7 +28,6 @@ my $LINK_FILE    = '~@~INSTALLARCHLIB~@~/etc/socket';
 my $LINK_TIMEOUT = 30;
 #my $LINK_TIMEOUT = ~_~LINK_TIMEOUT~_~;
 my $ERROR_ACTION = "-notify";
-
 $ENV{PATH} = "/bin:/usr/bin";
 $ENV{IFS} = " ";
 
@@ -72,11 +71,13 @@ sub die_page {
   exit(1);
 }
 
+
 my $Entity = '';
 
 # Read the entity from stdin if present.
 
 sub get_entity {
+
   return '' unless defined $ENV{CONTENT_LENGTH};
   my $len = $ENV{CONTENT_LENGTH} || 0;
   return '' unless $len;
@@ -86,9 +87,22 @@ sub get_entity {
   $check = read(STDIN, $Entity, $len);
 
   die_page("Entity wrong length")
-      unless $check == $len;
+	  unless $check == $len;
 
   $Entity;
+
+}
+
+
+sub send_arguments {
+
+	my $count = @ARGV;
+	my $val = "arg $count\n";
+	for(@ARGV) {
+		$val .= length($_);
+		$val .= " $_\n";
+	}
+	return $val;
 }
 
 sub send_environment () {
@@ -118,7 +132,7 @@ sub send_entity {
 $SIG{PIPE} = sub { die_page("signal"); };
 $SIG{ALRM} = sub { server_not_running(); exit 1; };
 
-eval { alarm $LINK_TIMEOUT; };
+alarm $LINK_TIMEOUT;
 
 socket(SOCK, PF_UNIX, SOCK_STREAM, 0)	or die "socket: $!\n";
 
@@ -128,8 +142,8 @@ do {
    $ok = connect(SOCK, sockaddr_un($LINK_FILE));
 } while ( ! defined $ok and $! =~ /interrupt|such file or dir/i);
 
-my $def = defined $ok;
-die "ok=$ok def: $def connect: $!\n" if ! $ok;
+my $undef = ! defined $ok;
+die "ok=$ok def: $undef connect: $!\n" if ! $ok;
 
 get_entity();
 
@@ -137,10 +151,11 @@ select SOCK;
 $| = 1;
 select STDOUT;
 
-warn "Command line arguments deprecated.  Ignoring!\n" if(@ARGV);
+print SOCK send_arguments();
 print SOCK send_environment();
 print SOCK send_entity();
 print SOCK "end\n";
+
 
 while(<SOCK>) {
 	print;
@@ -148,3 +163,4 @@ while(<SOCK>) {
 
 close (SOCK)								or die "close: $!\n";
 exit;
+
