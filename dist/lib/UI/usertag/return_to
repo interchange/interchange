@@ -9,16 +9,18 @@ sub {
 	}
 	my $out = '';
 	if ($opt->{page}) {
-		push @args, "ui_return_to=mv_nextpage=$page";
 		$page = $opt->{page};
 	}
 
 	if($type eq 'click') {
 		$out .= qq{mv_nextpage=$page\n} if $page;
 		for(@args) {
+#::logDebug("return-to click arg='$_'");
 			my ($k, $v) = split /\s*=\s*/, $_, 2;
+#::logDebug("return-to click k='$k' v='$v'");
 			next if $k =~ /$opt->{exclude}/;
-			$out .= qq{$k=$v\n}
+			$out .= qq{$k=$v\n};
+#::logDebug("return-to out now '$out'");
 		}
 	}
 	elsif($type eq 'url') {
