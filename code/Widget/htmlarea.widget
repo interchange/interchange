@@ -42,10 +42,10 @@ equivalent of the following in the header of any page to use this widget:
 
     [tmp tmp_hpath][either]__HTMLAREA_PATH__[or]/htmlarea/[/either][/tmp]
 	<script type="text/javascript">
-	   _editor_url = "[scratch hpath]";
+	   _editor_url = "[scratch tmp_hpath]";
 	   _editor_lang = "en";
 	</script>
-	<script type="text/javascript" src="[scratch hpath]htmlarea.js"></script>
+	<script type="text/javascript" src="[scratch tmp_hpath]htmlarea.js"></script>
 
 The "en" is the language locale to use. If you use the output-style
 layout, this is automatically determined from the Interchange locale.
