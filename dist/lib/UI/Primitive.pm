@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.25.4.16 $, 10);
+$VERSION = substr(q$Revision: 1.25.4.17 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -60,35 +60,27 @@ my $ui_safe = new Safe;
 $ui_safe->untrap(@{$Global::SafeUntrap});
 
 sub is_super {
-#::logDebug("called is_super");
 	return 1
 		if  $Vend::Cfg->{RemoteUser}
 		and $Vend::Cfg->{RemoteUser} eq $CGI::remote_user;
 	return 0 if ! $Vend::Session->{logged_in};
-#::logDebug("is_super: logged in");
 	return 0 if ! $Vend::username;
 	return 0 if $Vend::Cfg->{AdminUserDB} and ! $Vend::admin;
-#::logDebug("is_super: have username");
 	my $db = Vend::Data::database_exists_ref(
 						$Vend::Cfg->{Variable}{UI_ACCESS_TABLE} || 'access'
 						);
 	return 0 if ! $db;
-#::logDebug("is_super: access db exists");
 	$db = $db->ref();
 	my $result = $db->field($Vend::username, 'super');
-#::logDebug("is_super: result=$result");
 	return $result;
 }
 
 sub is_logged {
-#::logDebug("is_logged check");
 	return 1
 		if  $Vend::Cfg->{RemoteUser}
 		and $Vend::Cfg->{RemoteUser} eq $CGI::remote_user;
 	return 0 if ! $Vend::Session->{logged_in};
-#::logDebug("is_logged logged_in=ok");
 	return 0 unless $Vend::admin or ! $Vend::Cfg->{AdminUserDB};
-#::logDebug("is_logged admin=ok");
 	return 1;
 }
 
@@ -172,20 +164,20 @@ sub ui_acl_enabled {
 	my $default = defined $Global::Variable->{UI_SECURITY_OVERRIDE}
 				? $Global::Variable->{UI_SECURITY_OVERRIDE}
 				: 0;
+	if ($Vend::superuser) {
+		return $Vend::UI_entry = { super => 1 };
+	}
 	$table = $::Variable->{UI_ACCESS_TABLE} || 'access';
 	$Vend::WriteDatabase{$table} = 1;
 	my $db = Vend::Data::database_exists_ref($table);
 	return $default unless $db;
 	$db = $db->ref() unless $Vend::Interpolate::Db{$table};
 	my $uid = $try || $Vend::username || $CGI::remote_user;
-#::logDebug("ACL enabled try uid=$uid");
 	if(! $uid or ! $db->record_exists($uid) ) {
 		return 0;
 	}
-#::logDebug("ACL enabled record exists uid=$uid");
 	my $ref = $db->row_hash($uid)
 		or die "Bad database record for $uid.";
-#::logDebug("ACL enabled, table_control=$ref->{table_control}");
 	if($ref->{table_control}) {
 		$ref->{table_control_ref} = $ui_safe->reval($ref->{table_control});
 	}
@@ -196,7 +188,6 @@ sub ui_acl_enabled {
 sub get_ui_table_acl {
 	my ($table, $user, $keys) = @_;
 	$table = $::Values->{mv_data_table} unless $table;
-#::logDebug("Call get_ui_table_acl: " . Vend::Util::uneval_it(\@_));
 	my $acl_top;
 	if($user and $user ne $Vend::username) {
 		if ($Vend::UI_acl{$user}) {
@@ -215,7 +206,6 @@ sub get_ui_table_acl {
 	}
 	else {
 		unless ($acl_top = $Vend::UI_entry) {
-#::logDebug("Call get_ui_table_acl: acl_top=" . ::uneval($acl_top));
 			return undef unless ref($acl_top = ui_acl_enabled());
 		}
 	}
@@ -225,7 +215,6 @@ sub get_ui_table_acl {
 
 sub ui_acl_grep {
 	my ($acl, $name, @entries) = @_;
-#::logDebug("Call ui_acl_grep: " . ::uneval(\@_));
 	my $val;
 	my %ok;
 	@ok{@entries} = @entries;
@@ -239,7 +228,6 @@ sub ui_acl_grep {
 			for(@entries) {
 
 				my $v = ::tag_data($t, $val, $_);
-#::logDebug("ui_acl_grep owner: t=$t f=$val k=$_ v=$v u=$u");
 				$ok{$_} = $v eq $u;
 			}
 	}
@@ -274,30 +262,19 @@ sub ui_acl_atom {
 sub ui_extended_acl {
 	my ($item, $string) = @_;
 	$string = " $string ";
-#::logDebug("extended acl string='$string'");
 	my ($name, $sub) = split /=/, $item, 2;
-#::logDebug("extended acl: name=$name sub=$sub");
-#::logDebug("extended acl trying /[\s,]!${name}\[,\s]/");
 	return 0 if $string =~ /[\s,]!$name(?:[,\s])/;
-#::logDebug("extended acl passed /[\s,]!${name}\[,\s]/");
-#::logDebug("extended acl trying /[\s,]${name}\[,\s]/");
 	return 1 if $string =~ /[\s,]$name(?:[,\s])/;
-#::logDebug("extended acl passed /[\s,]${name}\[,\s]/");
 	my (@subs) = split //, $sub;
 	for(@subs) {
-#::logDebug("extended acl trying /[\s,]!$name=[^,\s]*$sub/");
 		return 0 if $string =~ /[\s,]!$name=[^,\s]*$sub/;
-#::logDebug("extended acl passed /[\s,]!$name=[^,\s]*$sub/");
-#::logDebug("extended acl trying /[\s,]$name=[^,\s]*$sub/");
 		return 0 unless $string =~ /[\s,]$name=[^,\s]*$sub/;
-#::logDebug("extended acl passed /[\s,]$name=[^,\s]*$sub/");
 	}
 	return 1;
 }
 
 sub ui_check_acl {
 	my ($item, $string) = @_;
-#::logDebug("checking item=$item");
 	return ui_extended_acl(@_) if $item =~ /=/;
 	$string = " $string ";
 	return 0 if $string =~ /[\s,]!$item[=,\s]/;
@@ -309,7 +286,6 @@ sub ui_acl_global {
 	my $record = ui_acl_enabled();
 	# First we see if we have ACL enforcement enabled
 	# If you don't, then people can do anything!
-#::logDebug("ui_acl_global: record=$record");
 	unless (ref $record) {
 		$::Scratch->{mv_data_enable} = $record;
 		return;
@@ -319,13 +295,10 @@ sub ui_acl_global {
 	my $Tag = new Vend::Tags;
 	$CGI->{mv_todo} = $CGI->{mv_doit}
 		if ! $CGI->{mv_todo};
-#::logDebug("ui_acl_global: enable prior to ui=$enable todo=$CGI->{mv_todo}");
 	if( $Tag->if_mm('super')) {
 		$::Scratch->{mv_data_enable} = $enable;
-#::logDebug("ui_acl_global: found super-user, enable=$enable todo=$CGI->{mv_todo}");
 		return;
 	}
-#::logDebug("ui_acl_global: past superuser");
 
     if( $CGI->{mv_todo} eq 'set' ) {
 		undef $::Scratch->{mv_data_enable};
@@ -399,10 +372,8 @@ sub ui_acl_global {
 sub list_keys {
 	my $table = shift;
 	my $opt = shift;
-#::logDebug("list-keys $table");
 	$table = $::Values->{mv_data_table}
 		unless $table;
-#::logDebug("list-keys $table");
 	my @keys;
 	my $record;
 	if(! ($record = $Vend::UI_entry) ) {
@@ -412,11 +383,8 @@ sub list_keys {
 	my $acl;
 	my $keys;
 	if($record) {
-#::logDebug("list_keys: record=$record");
 		$acl = get_ui_table_acl($table);
-#::logDebug("list_keys table=$table: acl=$acl");
 		if($acl and $acl->{yes_keys}) {
-#::logDebug("list_keys table=$table: yes.keys enabled");
 			@keys = grep /\S/, split /\s+/, $acl->{yes_keys};
 		}
 	}
@@ -429,7 +397,6 @@ sub list_keys {
 			return ::errmsg('--not listed, too large--');
 		}
 		my $query = "select $keyname from $table order by $keyname";
-#::logDebug("list_keys: query=$query");
 		$keys = $db->query(
 						{
 							query => $query,
@@ -452,10 +419,8 @@ sub list_keys {
 				@keys = sort @keys;
 			}
 		}
-#::logDebug("list_keys: query=returned " . ::uneval(\@keys));
 	}
 	if($acl) {
-#::logDebug("list_keys acl: ". ::uneval($acl));
 		@keys = UI::Primitive::ui_acl_grep( $acl, 'keys', @keys);
 	}
 	my $joiner = $opt->{joiner} || "\n";
@@ -587,7 +552,6 @@ sub rotate {
 
 	my $motion = $options->{Motion} || 'save';
 
-#::logDebug( "rotate $base with options dir=$dir motion=$motion from >> " . ::uneval($options));
 
 	$dir =~ s:/+$::;
 
@@ -620,7 +584,6 @@ sub rotate {
 
 	$base = "$dir/$base";
 
-#::logDebug( "rotate $base with options dir=$dir motion=$motion from >> " . ::uneval($options));
 
 	my $base_exists = -f $base;
 	push @forward, $base if $base_exists;
@@ -899,7 +862,6 @@ sub meta_display {
 					my $total = $1;
 					my $tname = $2 || $record->{db} || $table;
 					$tname = $base_entry_value if $total eq '::';
-#::logDebug("tname='$tname' total=$total");
 					my $db = $Vend::Database{$tname};
 					$record->{passed} = join (',', "=--none--", $db->columns())
 						if $db;
@@ -1064,19 +1026,15 @@ sub meta_display {
 			append		=> ($record->{'append'}		|| undef),
 			extra		=> ($o->{'extra'} || $record->{extra} || undef),
 		};
-#::logDebug("going to display for $opt->{name} type=$opt->{type} passed=$opt->{passed}");
 		my $w = Vend::Interpolate::tag_accessories(
 				undef, undef, $opt, { $column => $value } );
 		my $filter;
-#::logDebug("filters: o=$o->{filter} r=$record->{filter}");
 		if($filter = ($o->{filter} || $record->{filter})) {
 			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$opt->{name}" VALUE="};
 			$w .= $filter;
 			$w .= '">';
 		}
-#::logDebug("template=$o->{template}");
 		return $w unless $o->{template};
-#::logDebug("supposed to return template: widget=$w record=" . ::uneval_it($record));
 		return ($w, $record->{label}, $record->{help}, $record->{help_url});
 	}
 	return undef;
