@@ -1,6 +1,6 @@
 # Error.pm - Handle Interchange error pages and messages
 # 
-# $Id: Error.pm,v 1.3 2000-07-12 03:08:10 heins Exp $
+# $Id: Error.pm,v 1.3.2.1 2000-10-06 19:49:23 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -37,7 +37,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.3.2.1 $ =~ /(\d+)\.(\d+)/);
 
 my $wantref = 1;
 
@@ -52,7 +52,7 @@ sub get_locale_message {
 	if($message !~ /\s/) {
 		if($message =~ /^http:/) {
 			$Vend::StatusLine =~ s/([^\r\n])$/$1\r\n/;
-			$Vend::StatusLine .= "Status: 302 Moved\r\nLocation: $message\r\n";
+			$Vend::StatusLine .= "Status: 302 Moved\r\nLocation: $message\r\nContent-type: text/html\r\n";
 			$message = "Redirected to $message.";
 		}
 		else {
@@ -77,11 +77,11 @@ sub interaction_error {
     $page = readin(find_special_page('interact'));
     if (defined $page) {
 		$page =~ s#\[message\]#$msg#ig;
-		::response(::interpolate_html($page, 1));
+		Vend::Server::response(::interpolate_html($page, 1));
     }
 	else {
 		logError( "Missing special page: interact" , '');
-		::response("$msg\n");
+		Vend::Server::response("$msg\n");
     }
 }
 
@@ -107,7 +107,7 @@ sub full_dump {
 	my $out = minidump();
 	local($Data::Dumper::Indent) = 2;
 	$out .= "###### ENVIRONMENT     #####\n";
-	$out .= ::uneval(::http()->{env});
+	$out .= ::uneval(Vend::Server::http()->{env});
 	$out .= "\n###### END ENVIRONMENT #####\n";
 	$out .= "###### CGI VALUES      #####\n";
 	$out .= ::uneval(\%CGI::values);
