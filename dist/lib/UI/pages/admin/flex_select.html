@@ -135,26 +135,27 @@
 [update values]
 <!-- ----- BEGIN REAL STUFF ----- -->
 
-[if !scratch tmp_large]
-	[tmp extra_title]
-		[loop list="[cgi mv_data_table]"]
-		 	[if-loop-data __UI_META_TABLE__ name]
-		 	<B>[loop-data __UI_META_TABLE__ name]</B>
-			[/if-loop-data]
-		 	[if-loop-data __UI_META_TABLE__ help_url]
-		 	&nbsp;&nbsp;&nbsp;<small><A HREF="[loop-data __UI_META_TABLE__ help_url]">help</A></small>
-			[/if-loop-data]
-		 	[if-loop-data __UI_META_TABLE__ help]
-		 	<i>[loop-data __UI_META_TABLE__ name]</i>
-			[/if-loop-data]
-		[/loop]
-	[/tmp]
-	[calc]
-		$Scratch->{page_title} .= $Scratch->{extra_title};
-		return;
-	[/calc]
+[tmp extra_title]
+	[loop list="[cgi mv_data_table]"]
+		[if-loop-data __UI_META_TABLE__ name]
+		<B>[loop-data __UI_META_TABLE__ name]</B>
+		[/if-loop-data]
+		[if-loop-data __UI_META_TABLE__ help_url]
+		&nbsp;&nbsp;&nbsp;<small><A HREF="[loop-data __UI_META_TABLE__ help_url]">help</A></small>
+		[/if-loop-data]
+		[if-loop-data __UI_META_TABLE__ help]
+		<i>[loop-data __UI_META_TABLE__ name]</i>
+		[/if-loop-data]
+	[/loop]
+[/tmp]
+[calc]
+	$Scratch->{page_banner} ||= $Scratch->{page_title};
+	$Scratch->{page_banner} .= $Scratch->{extra_title};
+	return;
+[/calc]
 
 [output name=search_box]
+[if compare=`! $Config->{Database}{$CGI->{mv_data_table}}{HUGE}`]
 <FORM ACTION="[area href="[either][cgi ui_searchpage][or]@@MV_PAGE@@[/either]"]" METHOD=GET>
 <INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 <INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
@@ -162,8 +163,16 @@
 <INPUT TYPE=hidden NAME=ui_show_fields VALUE="[cgi ui_show_fields]">
 <span class=s3>[L]Limit with search[/L]:</span> <input NAME=ui_text_qualification size=16 class=s2> 
 </FORM>
-[output]
+[else]
+<FORM ACTION="[area href="admin/flex_editor"]" METHOD=GET>
+<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+<INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
+<INPUT TYPE=hidden NAME=mv_action        VALUE=back>
+<span class=s3>[L]Edit record[/L]:</span> <input NAME=item_id size=16 class=s2> 
+</FORM>
+[/else]
 [/if]
+[output]
 
 [if scratch ui_failure]
 <blockquote class=cerror>
@@ -213,6 +222,23 @@
 		$Scratch->{keypos} = $ref->config('KEY_INDEX');
 	}
 	$Scratch->{keyname} = $ref->config('KEY');
+
+	if($CGI->{ui_exact_record}) {
+		undef $CGI->{mv_like_field};
+		my $id = $CGI->{mv_like_spec};
+		$id =~ s/\0.*//s;
+		my $url = $Tag->area({
+								href => 'admin/flex_editor',
+								form => qq{
+									mv_data_table=$CGI->{mv_data_table}
+									item_id=$id
+									ui_meta_view=$CGI->{ui_meta_view}
+								},
+							});
+
+		$Tag->deliver({ location => $url });
+		return;
+	}
 
 	$CGI->{ui_show_fields} ||= $meta->{ui_show_fields} || $meta->{field};
 	for(qw/ui_more_alpha ui_more_decade ui_meta_specific/) {
@@ -324,15 +350,6 @@ EOF
 							column => $Scratch->{keyname},
 							template => 1,
 						});
-		my $url = $Tag->area( { href => '__UI_BASE__/flex_editor' } );
-		$Scratch->{'[L]Edit[/L]'} = <<EOF;
-	mv_nextpage=__UI_BASE__/flex_editor
-	mv_todo=return
-	item_id=[cgi goto_id]
-EOF
-		$Scratch->{tmp_nomatch_message} = <<EOF;
-Record to edit: <INPUT TYPE=text NAME=goto_id> <INPUT NAME=mv_click TYPE=submit VALUE="[L]Edit[/L]">
-EOF
 		$Scratch->{tmp_like_spec} = 1;
 		$CGI->{ui_text_qualification} = "";
 	}
@@ -478,6 +495,7 @@ EOF
 			}
 			$o .= 'n' if $numeric{$f};
 			$Scratch->{tmp_sort_msg} = errmsg($msg, $f, $rmsg);
+			$Scratch->{tmp_ncols}++;
 			$Scratch->{tmp_url} = $Tag->area( {
 											href => '@@MV_PAGE@@',
 											form => qq(
@@ -561,19 +579,33 @@ sub {
 </tr>
 [if scratch tmp_like_spec]
 	<tr>
+	<td>&nbsp;</td>
 	<td colspan="[scratch tmp_ncols]" align=left>
+	[L]Check the box for exact record and enter the record id/key.[/L]
 	[L]Or enter a query by example to select a set of records.[/L]
 	[L]Each input will match on the <i>beginning</i> text in the field.[/L]
+	<p>
+	<small><input type=checkbox name=ui_exact_record value=1 class=s3> Edit exact record in key column</small>
+	<br>
+	&nbsp;
 	</td>
 	</tr>
+	<tr>
+	<td>&nbsp;</td>
 	[loop list="[cgi ui_description_fields]"]
 	<TD>
 		<input type=hidden name=mv_like_field value="[loop-code]">
 		<input type=text name=mv_like_spec size=10>
 	</td>
 	[/loop]
+	</tr>
 	<tr>
+	<td>&nbsp;</td>
 	<td colspan="[scratch tmp_ncols]" align=left>
+	&nbsp;
+	<br>
+	&nbsp;
+	<br>
 	<input type=submit value="[L]Find[/L]">
 	</td>
 	</tr>
@@ -641,4 +673,4 @@ mv_click=db_maintenance
 [update values]
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ Revision: $Id: flex_select.html,v 2.19 2003-02-08 05:00:56 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ Revision: $Id: flex_select.html,v 2.20 2003-04-14 16:24:14 mheins Exp $ -->
