@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Tags.pm - Interpret Interchange tags for Safe
 # 
-# $Id: Tags.pm,v 1.2 2000-07-12 03:08:12 heins Exp $
+# $Id: Tags.pm,v 1.2.2.1 2000-10-20 16:52:40 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -22,11 +22,9 @@
 
 package Vend::Tags;
 
-require Exporter;
 require AutoLoader;
 
 use vars qw($AUTOLOAD @ISA);
-@ISA = qw(Exporter);
 
 sub new {
 	return bless {}, shift;
