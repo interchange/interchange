@@ -11,14 +11,14 @@ sub {
 		}
 
 		if(!$file and $type) {
-			::logError("exporting as default type, no file specified");
+			#::logError("exporting as default type, no file specified");
 			undef $type;
 		}
 
 		$Vend::WriteDatabase{$table} = 1;
 
 		if(! $opt->{field}) {
-			::logError("exporting:\ntable=$table\nfile=$file\ntype=$type\nsort=$opt->{sort}");
+			#::logError("exporting:\ntable=$table\nfile=$file\ntype=$type\nsort=$opt->{sort}");
 		}
 		elsif($opt->{field} and $opt->{delete}) {
 			::logError("delete field:\ntable=$table\nfield=$opt->{field}\nsort=$opt->{sort}\n");
