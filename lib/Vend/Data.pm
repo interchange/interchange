@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.16 2000-11-03 04:41:08 heins Exp $
+# $Id: Data.pm,v 1.17 2000-11-03 23:38:30 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -504,8 +504,82 @@ sub find_delimiter {
 	$type = $type || 1;
 	return @{$Delimiter{$type}}
 		if defined $Delimiter{$type}; 
-	return ("\t", "\n");
+	return;
 }
+
+=head1 auto_delimiter
+
+This routine finds the delimiter type automatically, given the text file
+name. Below is a test of it -- run the code from the definition of %Delimiter to
+end of the =cut below the routine.
+
+=cut
+
+sub auto_delimiter {
+	my ($fn) = @_;
+	my $fdelim = "\t";
+	my $rdelim = "\n";
+	my $tried_plain;
+	my $type;
+	open(AUTODELIM, $fn) 
+		or die errmsg("Cannot open database text source file %s: %s\n", $fn, $!);
+	local ($/);
+	$/ = "\n";
+	while(<AUTODELIM>) {
+		my $line = $_;
+		chomp;
+		if(! $tried_plain and $_) {
+			s/[^\t|,]//g;
+			s/[ (=)]+//g;
+			m/(.)/;
+			my $char = $1;
+			if (/^\Q$char\E+$/) {
+				($fdelim, $rdelim) = ($char, "\n");
+				last;
+			}
+		}
+		$tried_plain++ or next;
+		if($_ eq '%%') {
+			$type = '%%';
+			last;
+		}
+		elsif ($_ eq '') {
+			$type = 'LINE';
+			last;
+		}
+	}
+	close AUTODELIM;
+	$type = 'CSV' if $fdelim eq ',';
+	if($type and defined $Delimiter{$type}) {
+		($fdelim, $rdelim) =  @{$Delimiter{$type}};
+	}
+	return ($fdelim, $rdelim);
+}
+
+=head2 Test code 
+
+	my @test = qw(
+					/cc/products/products.txt
+					/cc/products/NextDayAir.csv
+					/tmp/products.pipe
+					/tmp/products.line
+					/tmp/products.pct
+				);	
+	my %map = (
+		"\t" => '\t',
+		"\n" => '\n',
+		"\n\n" => '\n\n',
+	);
+
+	for(@test) {
+		my $file = $_;
+		my ($f, $r) = auto_delimiter($file);
+		my $fs = $map{$f} || $f;
+		my $rs = $map{$r} || $r;
+		print "$file: f=$fs r=$rs\n";
+	}
+
+=cut
 
 my %db_config = (
 # SQL
@@ -733,13 +807,22 @@ sub import_database {
 
 		$type = 1 unless $type;
 		($delimiter, $record_delim) = find_delimiter($change_delimiter || $type);
-		$obj->{'delimiter'} = $delimiter;
+
+		if(! $delimiter) {
+			($delimiter, $record_delim) = auto_delimiter($database_txt);
+		}
+
+		$obj->{'delimiter'} = $obj->{'DELIMITER'} = $delimiter;
 
 		my $save = $/;
+
 		local($/) = $record_delim if defined $record_delim;
-        $db = $delimiter ne 'CSV'
-			? Vend::Table::Common::import_ascii_delimited($database_txt, $obj, $new_table_name)
-        	: Vend::Table::Common::import_csv($database_txt, $obj, $new_table_name);
+
+        $db = Vend::Table::Common::import_ascii_delimited(
+							$database_txt,
+							$obj,
+							$new_table_name,
+				);
 
 		$/ = $save;
 		if(defined $database_dbm) {
