@@ -65,7 +65,10 @@ Core
   and $obj->{delimiter} match.
 
 * Avoid infinite loops in catalog configuration caused by includes.
- 
+
+* Compile warnings in catalog usertags now show up in the logs instead
+  of "UserTag 'ugly_hack' code is not a subroutine reference".
+
 Filters
 -------
 
