@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.13 2003-04-01 04:12:32 mheins Exp $
+# $Id: Dispatch.pm,v 1.14 2003-04-15 22:15:07 racke Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.13 $, 10);
+$VERSION = substr(q$Revision: 1.14 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -673,24 +673,38 @@ sub run_in_catalog {
 	my $dir;
 	my @itl;
 	if($job) {
-		my $ct = $jobscfg->{base_directory} || 'etc/jobs';
-		my $gt = '';
-		$gt = "$Global::ConfDir/jobs" if $jobscfg->{use_global};
+		my ($d, $global_dir, $tmp);
+		my @jobdirs = ([$jobscfg->{base_directory} || 'etc/jobs', 0]);
 
-		for my $d ($ct, $gt) {
+		if ($jobscfg->{use_global}) {
+			push (@jobdirs, ["$Global::ConfDir/jobs", 1]);
+		}
+
+		for my $r (@jobdirs) {
 #::logGlobal("check directory=$d for $job");
+			($d, $global_dir) = @$r;
 			next unless $d;
 			next unless -d "$d/$job";
 			$dir = "$d/$job";
 			last;
 		}
+
 		if($dir) {
+			if ($global_dir) {
+				$tmp = $Vend::Cfg->{AllowedFileRegex};
+				$Vend::Cfg->{AllowedFileRegex} = qr{^$dir};
+			}
+			
 			my @f = glob("$dir/*");
 			@f = grep ! -d $_, @f;
 			@f = grep $_ !~ /$Vend::Cfg->{HTMLsuffix}$/, @f;
 			for(@f) {
 #::logGlobal("found jobs piece file=$_");
 				push @itl, [$_, readfile($_)];
+			}
+
+			if ($global_dir) {
+				$Vend::Cfg->{AllowedFileRegex} = $tmp;
 			}
 		}
 	}
