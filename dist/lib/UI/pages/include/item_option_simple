@@ -138,7 +138,17 @@ EOF
 	[tmp sparams]
 			fi=[cgi mv_data_table]
 			st=db
-			[cgi ui_text_qualification]
+
+			co=yes
+			sf=sku
+			se=[cgi item_id]
+			op=eq
+			ac=0
+
+			sf=o_master
+			se=.
+			op=rn
+
 			su=1
 			md=1
 			ml=[cgi ui_list_size]
@@ -150,7 +160,17 @@ EOF
 	[tmp sparams]
 		fi=[cgi mv_data_table]
 		st=db
-		[cgi ui_text_qualification]
+
+		co=yes
+        sf=sku
+        se=[cgi item_id]
+        op=eq
+        ac=0
+
+        sf=o_master
+        se=.
+        op=rn
+
 		md=1
 		tf=[scratch keypos]
 		rf=[scratch keypos]
