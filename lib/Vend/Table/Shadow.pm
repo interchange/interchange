@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.9 2002-09-26 11:51:06 racke Exp $
+# $Id: Shadow.pm,v 1.10 2002-09-26 13:13:16 racke Exp $
 #
 # Copyright (C) 2002 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.9 $, 10);
+$VERSION = substr(q$Revision: 1.10 $, 10);
 
 # TODO
 #
@@ -177,7 +177,7 @@ sub row {
 
 sub row_hash {
 	my ($s, $key) = @_;
-	my ($ref, $column, $locale);
+	my ($ref, $map, $column, $locale, $db, $value);
 	
 	$s = $s->import_db() unless defined $s->[$OBJ];
 	$locale = $::Scratch->{mv_locale} || 'default';
@@ -187,7 +187,19 @@ sub row_hash {
 		for (my $i = 0; $i < @cols; $i++) {
 			$column = $cols[$i];
 			if (exists $s->[$CONFIG]->{MAP}->{$column}->{$locale}) {
-				$ref->{$cols[$i]} = $s->field($key, $column);
+				$map = $s->[$CONFIG]->{MAP}->{$column}->{$locale};
+				if (exists $map->{table}) {
+					$db = Vend::Data::database_exists_ref($map->{table})
+						or die "unknown table $map->{table} in mapping for column $column of $s->[$TABLE] for locale $locale";
+					if ($db->record_exists($key)) {
+					    $value = $db->field($key, $map->{column});
+					} else {
+						$value = '';
+					}
+				} else {
+					$value = $s->field($key, $map->{column});
+				}
+				$ref->{$cols[$i]} = $value;
 			}
 		}
 	}
