@@ -1,7 +1,7 @@
 [set page_title]Preferences[/set]
 [set ui_class]Admin[/set]
 [set page_perm]knar[/set]
-[set help_name]knar[/set]
+[set help_name]knar.main[/set]
 [set icon_name]admin/icon_config.gif[/set]
 @_UI_STD_HEAD_@
 
@@ -43,11 +43,11 @@
 
 [/loop]
 
+[if !variable UI_META_LINK]
 <tr>
 <td bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
-[if !variable UI_META_LINK]
 <tr>
 <td bgcolor=__UI_C_INTBLOCK__>
 	[if value ui_meta_force]
@@ -64,6 +64,14 @@
 	[/if]
 </tr>
 [/if]
+
+<tr>
+<td bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+<tr><td bgcolor=__UI_C_INTBLOCK__>
+<a href="http://developer.akopia.com/cgi-bin/ic/register">Register</a>
+</td></tr>
 
 <tr>
 <td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>

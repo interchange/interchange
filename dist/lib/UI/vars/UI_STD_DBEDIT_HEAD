@@ -8,8 +8,21 @@ Variable UI_STD_DBEDIT_HEAD <<EndOfVariable
 [/if]
 
 [if-mm !tables]
-[seti ui_error]Not authorized for table [value mv_data_table].[/seti]
-[bounce page="__UI_BASE__/error"]
+	[calc]
+		delete $Scratch->{no_bounce};
+		my $tmp = delete $Scratch->{ui_override_table};
+		if($tmp eq $Values->{mv_data_table}) {
+			$Scratch->{no_bounce} = 1;
+		}
+		return;
+	[/calc]
+	[if scratch no_bounce]
+		[set no_bounce][/set]
+	[else]
+		[seti ui_error]Not authorized for table [value mv_data_table].[/seti]
+		[bounce page="__UI_BASE__/error"]
+	[/else]
+	[/if]
 [/if-mm]
 
 [calc]
@@ -24,9 +37,10 @@ Variable UI_STD_DBEDIT_HEAD <<EndOfVariable
 [else][bounce href="[area admin/special/key_violation]"][/else]
 [/if-mm]
 
-[perl tables="[value mv_data_table]"]
+[perl tables="[value mv_data_table] __UI_META_TABLE__"]
 my $table = $Values->{mv_data_table};
 my $db = $Db{$table};
+my $mdb = $Db{__UI_META_TABLE__};
 if(! $db) {
 	$Scratch->{ui_error} = "Bad table '$table'.";
 	$Tag->bounce( { page => '__UI_BASE__/error' } );
@@ -34,14 +48,19 @@ if(! $db) {
 
 $Values->{ui_data_key_name} = $db->config('KEY');
 
+if( $mdb and ! $CGI->{ui_data_fields} and ! $CGI->{ui_data_fields_all} and $mdb->record_exists($table) ) {
+	$CGI->{ui_data_fields} = $mdb->field($table, 'options');
+	$CGI->{ui_data_fields} =~ s/^\s+//;
+	$CGI->{ui_data_fields} =~ s/\s+$//;
+}
+
 $Values->{ui_data_fields} =
 	$CGI->{ui_data_fields} ||
 	$CGI->{mv_data_fields} ||
 	$Values->{"$table:ui_data_fields"} || 
-	join " ", $db->columns();
-
+	(join " ", $db->columns());
+#Log("data fields: '$Values->{ui_data_fields}' cgi='$CGI->{ui_data_fields}'");
 $Values->{ui_data_fields} =~ s/[,\0\s]+/ /g;
-
 
 my @cols = split /[,\0\s]/, $Values->{ui_data_fields};
 @cols = grep /:/ || $db->column_exists($_), @cols;

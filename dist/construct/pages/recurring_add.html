@@ -1,40 +1,11 @@
 [comment]
 ui_template: Yes
 ui_template_name: leftonly
-ui_template_layout: LEFTONLY_TOP, UI_CONTENT, LEFTONLY_BOTTOM
-ui_template_description: Page with top/left areas.
-
-page_title: 
-	description: Page title
-
-page_banner: 
-	description: Page banner
-	help: Defaults to page title
-
-members_only:
-	options: 1=Yes,0=No*
-	widget: radio
-	description: Members only
-
-component_before:
-	options: =none, specials=Specials, random=Random items
-	widget: select
-	description: Component before content
-
-component_after:
-	options: =none, specials=Specials, random=Random items
-	widget: select
-	description: Component after content
-
-bgcolor:
-	options: #FFFFFF=White,pink=Pink
-	widget: select
-	description: Background color
 [/comment]
 [set page_title]__COMPANY__ -- Recurring Orders[/set]
 [set page_banner]Recurring Orders[/set]
 
-__LEFTONLY_TOP__
+@_LEFTONLY_TOP_@
 
 <!-- BEGIN CONTENT -->
 
@@ -67,12 +38,12 @@ return;
 			   onClick="this.form.action='[process-target]',
 			   			this.form.submit()"
 			   VALUE=0></FONT></TD>
-	<TD WIDTH="2"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[item-code]</font></TD>
-	<TD><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[page [item-code]][item-description]</A></font>
+	<TD WIDTH="2"><font __FFACE__ size="1">[item-code]</font></TD>
+	<TD><font __FFACE__ size="1">[page [item-code]][item-description]</A></font>
 	[if scratch dealer]
 	[if-item-data pricing sku]
 		<BR>[page quantity [item-code]]
-			<font face="Verdana, Arial, Helvetica, sans-serif" size="1" COLOR=__CONTRAST__>QUANTITY PRICING</FONT>
+			<font __FFACE__ size="1" COLOR=__CONTRAST__>QUANTITY PRICING</FONT>
 			</A>
 	[/if-item-data]
 	[/if]
@@ -103,19 +74,19 @@ return;
 <br>
 [seti count][data table=inventory column=quantity key='[item-code]'][/seti]
 [if scratch count eq 0]
-	<a href="[area stock-alert [item-code]]"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FF0000">Back Ordered</FONT>
+	<a href="[area stock-alert [item-code]]"><font __FFACE__ size="1" color="#FF0000">Back Ordered</FONT>
 [else]
-	<font face="Verdana, Arial, Helvetica, sans-serif" size="1">Sizes:</font> <FONT SIZE=1>[item-accessories size][item-accessories color]</FONT>
+	<font __FFACE__ size="1">Sizes:</font> <FONT SIZE=1>[item-accessories size__MVC_FIELDMUNGE__][item-accessories color]</FONT>
 [/else]
 [/if]
 	</TD>
 	<TD ALIGN=CENTER><INPUT TYPE=text NAME="[quantity-name]" VALUE="[item-quantity]" SIZE=3></TD>
-	<TD ALIGN=right><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[discount-price]</font>[if discount [item-code]]<BR><font face="Verdana, Arial, Helvetica, sans-serif" size="1" COLOR=__CONTRAST__>Item is discounted [item-discount]</FONT>[/if]</TD>
-	<TD ALIGN=right><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[item-subtotal]</font></TD>
+	<TD ALIGN=right><font __FFACE__ size="1">[discount-price]</font>[if discount [item-code]]<BR><font __FFACE__ size="1" COLOR=__CONTRAST__>Item is discounted [item-discount]</FONT>[/if]</TD>
+	<TD ALIGN=right><font __FFACE__ size="1">[item-subtotal]</font></TD>
 </TR>
 <TR bgcolor="[scratch color]"><TD ALIGN=CENTER COLSPAN=6><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="2" BORDER="0"></td></TR>
 <TR bgcolor="[scratch color]">
-<TD COLSPAN=2 align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" ><b>Address To<br>Ship To:</b></font></td>
+<TD COLSPAN=2 align="right"><font __FFACE__ size="1" ><b>Address To<br>Ship To:</b></font></td>
 <TD COLSPAN=4 align="left">&nbsp;
 [if !value shipto_[item-increment]][value name=shipto_[item-increment] set="primary" hide=1][/if]
 		<SELECT NAME=shipto_[item-increment]>
@@ -138,7 +109,7 @@ return;
 [/then]
 [else]
 	<TR><TD ALIGN=CENTER COLSPAN=6>
-		<H3><font face="Verdana, Arial, Helvetica, sans-serif">No items at the moment.</font></H3>
+		<H3><font __FFACE__>No items at the moment.</font></H3>
 	</TD></TR>
 [/else]
 [/if]
@@ -151,7 +122,7 @@ return;
 <p>
 &nbsp;
 <br>
-<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>No recurring orders have been defined.</b>
+<font __FFACE__ size="2"><b>No recurring orders have been defined.</b>
 <br><br>
 Please use the form below to add items to your recurring order.
 <P>
@@ -169,10 +140,10 @@ Please use the form below to add items to your recurring order.
 
 <table cellpadding="2" cellspacing="2" border="0">
 <tr>
-<td><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Quatity:</font></td>
+<td><font __FFACE__ size="1">Quatity:</font></td>
 <td><input name="mv_order_quantity" value="1" size="2"></td>
 </tr><tr>
-<td><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Product:</font></td>
+<td><font __FFACE__ size="1">Product:</font></td>
 <td>
  [search-region more=1 search="
 		ra=yes
@@ -208,4 +179,4 @@ Please use the form below to add items to your recurring order.
 
 <!-- END CONTENT -->
 
-__LEFTONLY_BOTTOM__
+@_LEFTONLY_BOTTOM_@
