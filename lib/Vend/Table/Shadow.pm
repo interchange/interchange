@@ -1,8 +1,8 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.15 2002-11-12 11:05:33 racke Exp $
+# $Id: Shadow.pm,v 1.16 2003-01-01 14:16:48 racke Exp $
 #
-# Copyright (C) 2002 Stefan Hornburg (Racke) <racke@linuxia.de>
+# Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.15 $, 10);
+$VERSION = substr(q$Revision: 1.16 $, 10);
 
 # TODO
 #
@@ -180,24 +180,18 @@ sub row_hash {
 	return $ref;
 }
 
+sub foreign {
+	my ($s, $key, $foreign) = @_;
+
+	$s = $s->import_db() unless defined $s->[$OBJ];	
+	$s->[$OBJ]->foreign($key, $foreign);
+}
+
 sub field {
 	my ($s, $key, $column) = @_;
 	my ($map, $locale, $db);
 	
-	$s = $s->import_db() unless defined $s->[$OBJ];
-	$locale = $::Scratch->{mv_locale} || 'default';
-	if (exists $s->[$CONFIG]->{MAP}->{$column}->{$locale}) {
-		$map = $s->[$CONFIG]->{MAP}->{$column}->{$locale};
-		if (exists $map->{table}) {
-			$db = Vend::Data::database_exists_ref($map->{table})
-				or die "unknown table $map->{table} in mapping for column $column of $s->[$TABLE] for locale $locale";
-			return unless $db->record_exists($key);
-			return $db->field($key, $map->{column});
-		} else {
-			$column = $map->{column};
-		}
-	}
-	$s->[$OBJ]->field($key, $column);
+	$s->_map_column($key, $column);
 }
 
 sub ref {
@@ -271,6 +265,29 @@ sub _map_column {
 	if (exists $s->[$CONFIG]->{MAP}->{$column}->{$locale}) {
 		$mapentry = $s->[$CONFIG]->{MAP}->{$column};
 		$map = $mapentry->{$locale};
+		if (exists $map->{lookup_table}) {
+			my ($db_lookup, $lookup_key);
+			::logDebug ("Lookup $column with key $key in $map->{lookup_table}");
+			$db_lookup = Vend::Data::database_exists_ref($map->{lookup_table})
+				or die "unknown lookup table $map->{lookup_table} in mapping for column $column of $s->[$TABLE] for locale $locale";
+			$db = Vend::Data::database_exists_ref($map->{table})
+				or die "unknown table $map->{table} in mapping for column $column of $s->[$TABLE] for locale $locale";
+
+			# retrieve original value
+			$value = $s->[$OBJ]->field($key,$column);
+
+			# now map original value to lookup table
+			if ($lookup_key = $db_lookup->foreign($value,$map->{lookup_column})) {
+				my $final = $db->field($lookup_key,$map->{column});
+				return $final if $final;
+			}
+			
+			if ($mapentry->{fallback}) {
+				return $value;
+			}
+
+			return '';
+		}
 		if (exists $map->{table}) {
 			$db = Vend::Data::database_exists_ref($map->{table})
 					   or die "unknown table $map->{table} in mapping for column $column of $s->[$TABLE] for locale $locale";
@@ -280,21 +297,21 @@ sub _map_column {
 				$value = '';
 			}
 		} else {
-			$value = $s->field($key, $map->{column});
+			$value = $s->[$OBJ]->field($key, $map->{column});
 		}
 		if (! $value && $mapentry->{fallback}) {
 			# nothing found, so we fallback to the original entry
 			if ($done) {
 				$value = $orig;
 			} else {
-				$value = $s->field($key, $column);
+				$value = $s->[$OBJ]->field($key, $column);
 			}
 		}
 	} elsif ($done) {
 		# column lookup already took place
 		$value = $orig;
 	} else {
-		$value = $s->field($key, $column);
+		$value = $s->[$OBJ]->field($key, $column);
 	}
 
 	return $value;
