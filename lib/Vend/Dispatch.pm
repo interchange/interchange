@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.11 2003-02-13 16:13:12 racke Exp $
+# $Id: Dispatch.pm,v 1.12 2003-03-14 16:25:13 racke Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.11 $, 10);
+$VERSION = substr(q$Revision: 1.12 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -705,6 +705,9 @@ sub run_in_catalog {
 
 	my @out;
 
+	# remove bogus session created by logError
+	undef $Vend::Session;
+	
 	if(@itl) {
 		# Run once at beginning
 		run_macro($jobscfg->{initialize});
