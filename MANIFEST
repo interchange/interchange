@@ -390,7 +390,6 @@ dist/foundation/templates/sampledata/computers/products/area.txt
 dist/foundation/templates/sampledata/computers/products/cat.txt
 dist/foundation/templates/sampledata/computers/products/inventory.txt
 dist/foundation/templates/sampledata/computers/products/merchandising.txt
-dist/foundation/templates/sampledata/computers/products/mv_metadata.asc
 dist/foundation/templates/sampledata/computers/products/options.txt
 dist/foundation/templates/sampledata/computers/products/pricing.txt
 dist/foundation/templates/sampledata/computers/products/products.txt
@@ -405,12 +404,10 @@ dist/foundation/templates/sampledata/reports/download/66548ch.pdf
 dist/foundation/templates/sampledata/reports/download/73358ee.pdf
 dist/foundation/templates/sampledata/reports/download/83491vp.pdf
 dist/foundation/templates/sampledata/reports/download/90773sh.pdf
-dist/foundation/templates/sampledata/reports/products/affiliate.txt
 dist/foundation/templates/sampledata/reports/products/area.txt
 dist/foundation/templates/sampledata/reports/products/cat.txt
 dist/foundation/templates/sampledata/reports/products/inventory.txt
 dist/foundation/templates/sampledata/reports/products/merchandising.txt
-dist/foundation/templates/sampledata/reports/products/mv_metadata.asc
 dist/foundation/templates/sampledata/reports/products/options.txt
 dist/foundation/templates/sampledata/reports/products/orderline.txt
 dist/foundation/templates/sampledata/reports/products/pricing.txt
@@ -501,12 +498,10 @@ dist/foundation/templates/sampledata/tools/images/thumb/os28111_b.gif
 dist/foundation/templates/sampledata/tools/images/thumb/os28112_b.gif
 dist/foundation/templates/sampledata/tools/images/thumb/os28113_b.gif
 dist/foundation/templates/sampledata/tools/images/thumb/os29000_b.gif
-dist/foundation/templates/sampledata/tools/products/affiliate.txt
 dist/foundation/templates/sampledata/tools/products/area.txt
 dist/foundation/templates/sampledata/tools/products/cat.txt
 dist/foundation/templates/sampledata/tools/products/inventory.txt
 dist/foundation/templates/sampledata/tools/products/merchandising.txt
-dist/foundation/templates/sampledata/tools/products/mv_metadata.asc
 dist/foundation/templates/sampledata/tools/products/options.txt
 dist/foundation/templates/sampledata/tools/products/orderline.txt
 dist/foundation/templates/sampledata/tools/products/pricing.txt
@@ -582,7 +577,6 @@ dist/lib/UI/pages/admin/item_up.html
 dist/lib/UI/pages/admin/layout.html
 dist/lib/UI/pages/admin/layout_auto.html
 dist/lib/UI/pages/admin/login.html
-dist/lib/UI/pages/admin/logout.html
 dist/lib/UI/pages/admin/merchandising.html
 dist/lib/UI/pages/admin/meta_editor.html
 dist/lib/UI/pages/admin/order.html
