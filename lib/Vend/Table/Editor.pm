@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.10 2002-09-28 17:48:32 mheins Exp $
+# $Id: Editor.pm,v 1.11 2002-10-03 17:26:29 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.10 $, 10);
+$VERSION = substr(q$Revision: 1.11 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -559,6 +559,7 @@ sub tabbed_display {
 									};
 
 	my $id = $opt->{panel_id};
+	my $vpf = $id . '_';
 	my $num_panels = scalar(@$cont);
 	my $tabs_per_row = int( $opt->{panel_width} / $opt->{tab_width}) || 1;
 	my $num_rows = POSIX::ceil( $num_panels / $opt->{tab_width});
@@ -575,103 +576,103 @@ sub tabbed_display {
 		$c =~ s/x/$chars[$i] || 'e'/eg;
 		$colors[$i] = $c;
 	}
-	my $cArray = qq{var colors = ['} . join("','", @colors) . qq{'];};
+	my $cArray = qq{var ${vpf}colors = ['} . join("','", @colors) . qq{'];};
 #::logDebug("num rows=$num_rows");
 	my $out = <<EOF;
 <SCRIPT language="JavaScript">
 <!--
-var panelID = "$id"
-var numDiv = $num_panels;
-var numRows = $num_rows;
-var tabsPerRow = $tabs_per_row;
-var numLocations = numRows * tabsPerRow
-var tabWidth = $opt->{tab_width}
-var tabHeight = $opt->{tab_height}
-var vOffset = $opt->{tab_vert_offset};
-var hOffset = $opt->{tab_horiz_offset};
+var ${vpf}panelID = "$id"
+var ${vpf}numDiv = $num_panels;
+var ${vpf}numRows = $num_rows;
+var ${vpf}tabsPerRow = $tabs_per_row;
+var ${vpf}numLocations = ${vpf}numRows * ${vpf}tabsPerRow
+var ${vpf}tabWidth = $opt->{tab_width}
+var ${vpf}tabHeight = $opt->{tab_height}
+var ${vpf}vOffset = $opt->{tab_vert_offset};
+var ${vpf}hOffset = $opt->{tab_horiz_offset};
 $cArray
 
-var divLocation = new Array(numLocations)
-var newLocation = new Array(numLocations)
-for(var i=0; i<numLocations; ++i) {
-	divLocation[i] = i
-	newLocation[i] = i
+var ${vpf}divLocation = new Array(${vpf}numLocations)
+var ${vpf}newLocation = new Array(${vpf}numLocations)
+for(var i=0; i<${vpf}numLocations; ++i) {
+	${vpf}divLocation[i] = i
+	${vpf}newLocation[i] = i
 }
 
-function getDiv(s,i) {
+function ${vpf}getDiv(s,i) {
 	var div
 	if (document.layers) {
-		div = document.layers[panelID].layers[panelID+s+i]
+		div = document.layers[${vpf}panelID].layers[panelID+s+i]
 	} else if (document.all && !document.getElementById) {
-		div = document.all[panelID+s+i]
+		div = document.all[${vpf}panelID+s+i]
 	} else {
-		div = document.getElementById(panelID+s+i)
+		div = document.getElementById(${vpf}panelID+s+i)
 	}
 	return div
 }
 
-function setZIndex(div, zIndex) {
+function ${vpf}setZIndex(div, zIndex) {
 	if (document.layers) div.style = div;
 	div.style.zIndex = zIndex
 }
 
-function updatePosition(div, newPos) {
-	newClip=tabHeight*(Math.floor(newPos/tabsPerRow)+1)
+function ${vpf}updatePosition(div, newPos) {
+	${vpf}newClip=${vpf}tabHeight*(Math.floor(newPos/${vpf}tabsPerRow)+1)
 	if (document.layers) {
 		div.style=div;
-		div.clip.bottom=newClip; // clip off bottom
+		div.clip.bottom=${vpf}newClip; // clip off bottom
 	} else {
-		div.style.clip="rect(0 auto "+newClip+" 0)"
+		div.style.clip="rect(0 auto "+${vpf}newClip+" 0)"
 	}
-	div.style.top = (numRows-(Math.floor(newPos/tabsPerRow) + 1)) * (tabHeight-vOffset)
-	div.style.left = (newPos % tabsPerRow) * tabWidth +	(hOffset * (Math.floor(newPos / tabsPerRow)))
+	div.style.top = (${vpf}numRows-(Math.floor(newPos/${vpf}tabsPerRow) + 1)) * (${vpf}tabHeight-${vpf}vOffset)
+	div.style.left = (newPos % ${vpf}tabsPerRow) * ${vpf}tabWidth +	(${vpf}hOffset * (Math.floor(newPos / ${vpf}tabsPerRow)))
 }
 
-function selectTab(n) {
+function ${vpf}selectTab(n) {
 	// n is the ID of the division that was clicked
 	// firstTab is the location of the first tab in the selected row
-	var firstTab = Math.floor(divLocation[n] / tabsPerRow) * tabsPerRow
+	var firstTab = Math.floor(${vpf}divLocation[n] / ${vpf}tabsPerRow) * ${vpf}tabsPerRow
 	// newLoc is its new location
-	for(var i=0; i<numDiv; ++i) {
+	for(var i=0; i<${vpf}numDiv; ++i) {
 		// loc is the current location of the tab
-		var loc = divLocation[i]
+		var loc = ${vpf}divLocation[i]
 		// If in the selected row
-		if(loc >= firstTab && loc < (firstTab + tabsPerRow)) newLocation[i] = (loc - firstTab)
+		if(loc >= firstTab && loc < (firstTab + ${vpf}tabsPerRow)) ${vpf}newLocation[i] = (loc - firstTab)
 		else if(loc < tabsPerRow) newLocation[i] = firstTab+(loc % tabsPerRow)
 		else newLocation[i] = loc
 	}
 	// Set tab positions & zIndex
 	// Update location
 	var j = 1;
-	for(var i=0; i<numDiv; ++i) {
-		var loc = newLocation[i]
-		var div = getDiv("panel",i)
-		var tdiv = getDiv("tab",i)
+	for(var i=0; i<${vpf}numDiv; ++i) {
+		var loc = ${vpf}newLocation[i]
+		var div = ${vpf}getDiv("panel",i)
+		var tdiv = ${vpf}getDiv("tab",i)
 		if(i == n) {
-			setZIndex(div, numLocations +1);
+			${vpf}setZIndex(div, ${vpf}numLocations +1);
 			div.style.display = 'block';
-			tdiv.style.backgroundColor = colors[0];
-			div.style.backgroundColor = colors[0];
+			tdiv.style.backgroundColor = ${vpf}colors[0];
+			div.style.backgroundColor = ${vpf}colors[0];
 		}
 		else {
-			setZIndex(div, numLocations - loc)
+			${vpf}setZIndex(div, ${vpf}numLocations - loc)
 			div.style.display = 'none';
-			tdiv.style.backgroundColor = colors[j];
-			div.style.backgroundColor = colors[j++];
+			tdiv.style.backgroundColor = ${vpf}colors[j];
+			div.style.backgroundColor = ${vpf}colors[j++];
 		}
-		divLocation[i] = loc
-		updatePosition(tdiv, loc)
-		if(i == n) setZIndex(tdiv, numLocations +1)
-		else setZIndex(tdiv,numLocations - loc)
+		${vpf}divLocation[i] = loc
+		${vpf}updatePosition(tdiv, loc)
+		if(i == n) ${vpf}setZIndex(tdiv, ${vpf}numLocations +1)
+		else ${vpf}setZIndex(tdiv,${vpf}numLocations - loc)
 	}
 }
 
 // Nav4: position component into a table
-function positionPanel() {
+function ${vpf}positionPanel() {
 	document.$id.top=document.panelLocator.pageY;
 	document.$id.left=document.panelLocator.pageX;
 }
-if (document.layers) window.onload=positionPanel;
+if (document.layers) window.onload=${vpf}positionPanel;
 
 //-->
 </SCRIPT>
@@ -723,7 +724,7 @@ $cont->[$i]
 $opt->{panel_append}
 </DIV>
 <DIV
-	onclick="selectTab($i)"
+	onclick="${vpf}selectTab($i)"
 	id="${id}tab$i"
 	class="${id}tab"
 	style="
@@ -750,7 +751,7 @@ EOF
 	top="$top"
 	z-index="$zi"
 	id="${id}tab$i"
-	onfocus="selectTab($i)"
+	onfocus="${vpf}selectTab($i)"
 	>
 <table width="100%" cellpadding=2 cellspacing=0>
 $tit->[$i]
@@ -780,7 +781,7 @@ $out
 	">
 $s1
 <script>
-	selectTab($start_index);
+	${vpf}selectTab($start_index);
 </script>
 </div>
 EOF

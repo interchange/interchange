@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange payment processing routines
 #
-# $Id: Menu.pm,v 2.15 2002-09-12 05:19:35 mheins Exp $
+# $Id: Menu.pm,v 2.16 2002-10-03 17:26:28 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.15 $, 10);
+$VERSION = substr(q$Revision: 2.16 $, 10);
 
 use Vend::Util;
 use strict;
@@ -1252,7 +1252,7 @@ sub menu {
 	}
 
 	my @transform;
-	my @ordered_transform = qw/page_class indicator_class localize entities nbsp/;
+	my @ordered_transform = qw/full_interpolate page_class indicator_class localize entities nbsp/;
 	my %ordered;
 	@ordered{@ordered_transform} = @ordered_transform;
 
