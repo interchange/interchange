@@ -1,6 +1,6 @@
 # Table/LDAP.pm: LDAP pseudo-table
 #
-# $Id: LDAP.pm,v 1.6.6.7 2001-04-17 16:28:46 jason Exp $
+# $Id: LDAP.pm,v 1.6.6.8 2001-04-17 16:53:26 jason Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,7 +27,7 @@
 
 package Vend::Table::LDAP;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 1.6.6.7 $, 10);
+$VERSION = substr(q$Revision: 1.6.6.8 $, 10);
 use strict;
 
 use vars qw(
@@ -97,7 +97,7 @@ sub open_table {
 	unless( $ldap = Net::LDAP->new($host, port => $port) ) {
 		if($config->{ALTERNATE_LDAP_HOST}[$alt_index]) {
 			for(qw/LDAP_HOST BASE_DN BIND_DN BIND_PW/) {
-				$config->{$_} = $config->{"ALTERNATE_$_"}[$alt_index];
+				$config->{$_} = $config->{"ALTERNATE_$_"}[$alt_index] || $config->{$_};
 			}
 			$alt_index++;
 			redo DOCONNECT;
