@@ -1,6 +1,6 @@
 # Config.pm - Configure Minivend
 #
-# $Id: Config.pm,v 1.1 2000-05-26 18:50:37 heins Exp $
+# $Id: Config.pm,v 1.2 2000-06-05 05:31:07 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -101,7 +101,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 
 for( qw(search refresh cancel return secure unsecure submit control checkout) ) {
 	$Global::LegalAction{$_} = 1;
@@ -234,6 +234,8 @@ sub global_directives {
 
 	['ConfigDir',		  undef,	         'etc/lib'],
 	['ConfigDatabase',	 'config_db',	     ''],
+	['ConfigAllBefore',	 'array',	         "$Global::VendRoot/catalog_before.cfg"],
+	['ConfigAllAfter',	 'array',	         "$Global::VendRoot/catalog_after.cfg"],
     ['Message',          'message',           ''],
     ['VarName',          'varname',           ''],
     ['DumpStructure',	 'yesno',     	     'No'],
@@ -343,9 +345,9 @@ sub catalog_directives {
  	['Locale',           'locale',           ''],
     ['Route',            'locale',           ''],
 	['LocaleDatabase',    undef,             ''],
-	['DbDatabase',        undef,             ''],
-	['DirectiveDatabase', undef,             ''],
-	['VariableDatabase',  undef,         	 ''],
+	['DbDatabase',        'dbdatabase',        ''],
+	['DirectiveDatabase', 'dbconfig',        ''],
+	['VariableDatabase',  'dbconfig',        ''],
     ['RequiredFields',   undef,              ''],
     ['NoSearch',         'wildcard',         'userdb'],
     ['OrderCounter',	 undef,     	     ''],
@@ -586,14 +588,25 @@ sub config {
 	my ($before, $after);
 	my $recno = 'C0001';
 
+	my @hidden_config;
+	@hidden_config = grep -f $_, 
+							 "$C->{CatalogName}.site",
+							 "$Global::ConfDir/$C->{CatalogName}.before",
+							 @{$Global::ConfigAllBefore},
+						 ;
+
 	# Backwards because of unshift;
-	for ("$C->{CatalogName}.site", "$Global::ConfDir/$C->{CatalogName}.before") {
-		next unless -f $_;
+	for (@hidden_config) {
 		unshift @include, $_;
 	}
 
-	if(-f "$Global::ConfDir/$C->{CatalogName}.after") {
-		push @include, "$Global::ConfDir/$C->{CatalogName}.after";
+	@hidden_config = grep -f $_, 
+							 "$Global::ConfDir/$C->{CatalogName}.after",
+							 @{$Global::ConfigAllAfter},
+						 ;
+
+	for (@hidden_config) {
+		push @include, $_;
 	}
 
 	if(defined $MV::Default{$catalog}) {
@@ -2148,6 +2161,126 @@ sub parse_database {
 	}
 
 	return $c;
+}
+
+sub get_configdb {
+	my ($var, $value) = @_;
+	my ($table, $file, $type);
+	unless ($C->{Database}{$value}) {
+		($table, $file, $type) = split /\s+/, $value, 3;
+		$file = "$table.txt" unless $file;
+		$type = 'TAB' unless $type;
+		parse_database('Database',"$table $file $type");
+		unless ($C->{Database}{$table}) {
+			config_warn(
+				errmsg(	"Bad $var value '%s': %s\n%s",
+						"Database $table $file $type",
+						::uneval($C->{Database}),
+						)
+			);
+			return '';
+		}
+	}
+	else {
+		$table = $value;
+	}
+
+	my $db;
+	unless ($db = $C->{Database}{$table}) {
+		my $err = $@;
+		config_warn(
+			errmsg("Bad $var '%s': %s", $table, $err)
+		);
+		return '';
+	}
+	$db = Vend::Data::import_database($db);
+	if(! $db) {
+		my $err = $@;
+		config_warn(
+			errmsg("Bad $var '%s': %s", $table, $err)
+		);
+		return '';
+	}
+	return ($db, $table);
+}
+
+sub parse_dbconfig {
+	my ($var, $value) = @_;
+
+	my ($table, $file, $type);
+	return '' if ! $value;
+	local($Vend::Cfg) = $C;
+
+	my ($db, $table) = get_configdb($var, $value);
+
+
+	my ($k, @f);	# key and fields
+	my @l;			# refs to locale repository
+	my @n;			# names of locales
+	my @h;			# names of locales
+
+	@n = $db->columns();
+	shift @n;
+	my $extra;
+	for(@n) {
+		if (! ref $Vend::Cfg->{$_} or $Vend::Cfg->{$_} !~ /HASH/) {
+			# ignore non-existent directive, but put in hash
+			my $ref = {};
+			push @l, $ref;
+			push @h, [$_, $ref];
+			next;
+		}
+		push @l, $Vend::Cfg->{$_};
+	}
+	my $i;
+	while( ($k, undef, @f ) = $db->each_record) {
+		for ($i = 0; $i < @f; $i++) {
+			next unless length($f[$i]);
+			$l[$i]->{$k} = $f[$i];
+		}
+	}
+	for(@h) {
+		$Vend::Cfg->{Hash}{$_->[0]} = $_->[1];
+	}
+	$db->close_table();
+	return $table;
+}
+sub parse_dbdatabase {
+	my ($var, $value) = @_;
+
+	return '' if ! $value;
+	local($Vend::Cfg) = $C;
+	my ($db, $table) = get_configdb($var, $value);
+	$db = $db->ref();
+	my $kindex = $db->config('KEY_INDEX');
+#::logGlobal("kindex=$kindex");
+	local($^W) = 0;
+	my ($k, @f);	# key and fields
+	my @l;			# refs to locale repository
+	my @n;			# names of locales
+
+	@n = $db->columns();
+	my $name;
+	my $k = 0;
+	foreach $name (@n) {
+		next if $k++ == $kindex;
+		my $file = $db->field('_file', $name);
+		my $type = $db->field('_type', $name);
+		next unless $file and $type;
+		parse_database('', "$name $file $type");
+	}
+	while( ($k , @f ) = $db->each_record) {
+		next if $k =~ /^_/;
+		my $i;
+		for ($i = 0; $i < @f; $i++) {
+			next if $i == $kindex;
+			next unless length $f[$i];
+#::logGlobal("f-i=$f[$i] i=$i kindex=$kindex");
+			Vend::Config::parse_database('', "$n[$i] $k $f[$i]");
+		}
+	}
+	$db->close_table();
+	return $table;
 }
 
 sub parse_profile {
