@@ -40,6 +40,12 @@ Core and usertags
 
   which prevents the <SCRIPT> from executing.
 
+* Fixed crash of page servers in PreFork mode due to phantom
+  database entries created by unwanted auto-vivification in
+  $Vend::Cfg->{Database}. Much thanks to Chris Ochs who researched 
+  this problem which was plaguing a lot of people and wouldn't have 
+  found without his fine help.
+
 * Fixed Vend::Util::round_to_frac_digits() to work if frac_digits are
   zero. Thanks to Shozo Murahashi <murahashi@ayayu.com> who
   investigated and detailed this problem.
