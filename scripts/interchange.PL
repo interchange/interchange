@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.0
 #
-# $Id: interchange.PL,v 1.8.2.8 2000-12-04 17:31:27 zarko Exp $
+# $Id: interchange.PL,v 1.8.2.9 2000-12-05 19:35:43 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -60,6 +60,9 @@ use lib '/usr/local/interchange';
 use strict;
 
 BEGIN {
+	use Config;
+	&::logError( "Threaded perl not supported" ) if ($Config{ usethreads } || $Config{ useithreads } );
+
 	$Vend::Foreground = 1;
 	
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
