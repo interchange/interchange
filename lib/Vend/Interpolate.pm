@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.67 2001-06-06 20:49:12 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.68 2001-06-08 05:41:56 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.67 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.68 $, 10);
 
 @EXPORT = qw (
 
@@ -1421,13 +1421,15 @@ sub tag_if {
 
 sub show_current_accessory_label {
 	my($val, $choices) = @_;
+	my $default = '';
 	my @choices;
 	@choices = split /\s*,\s*/, $choices;
 	for(@choices) {
 		my ($setting, $label) = split /=/, $_, 2;
+		$default = $label if $label =~ s/\*$//;
 		return ($label || $setting) if $val eq $setting;
 	}
-	return '';
+	return $default;
 }
 
 sub build_accessory_links {
