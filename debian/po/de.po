@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: interchange (5.0.1-1)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2004-02-28 20:38-0800\n"
-"PO-Revision-Date: 2004-03-26 16:39+0100\n"
+"PO-Revision-Date: 2004-04-21 14:05+0200\n"
 "Last-Translator: Stefan Hornburg <racke@linuxia.de>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -307,7 +307,7 @@ msgstr "niedrig, hoch, rpc"
 #. Description
 #: ../interchange.templates:82
 msgid "Set of server parameters:"
-msgstr ""
+msgstr "Serverparametergruppe:"
 
 #. Type: select
 #. Description
@@ -317,6 +317,10 @@ msgid ""
 "foundation demo will change its behaviour too. If rpc is selected, the "
 "Interchange server will run in PreFork mode."
 msgstr ""
+"Es können verschiedene Gruppen von Serverparametern ausgewählt werden.\n"
+"Jeder Laden, der auf dem Foundation-Demo beruht, ist ebenso betroffen.\n"
+"Bei Auswahl von rpc wird der Interchangeserver im PreFork-Modus\n"
+"gestartet."
 
 #. Type: boolean
 #. Description
@@ -331,6 +335,8 @@ msgid ""
 "This setting determines if the whole URL is considered while checking for "
 "the corresponding catalog."
 msgstr ""
+"Diese Einstellung legt fest, ob die komplette URL für die Auswahl des Katalogs\n"
+"herangezogen wird."
 
 #. Type: note
 #. Description
@@ -374,6 +380,10 @@ msgid ""
 "is recommended to include these settings so that Interchange can distinguish "
 "between robots and ordinary users."
 msgstr ""
+"Das Interchange Debianpaket benutzt eine zusätzliche Konfigurationsdatei\n"
+"/etc/interchange/robots.cfg für die Direktiven RobotUA, RobotIP und RobotHost.\n"
+"Das Laden dieser Einstellungen wird empfohlen, damit Interchange zwischen\n"
+"normalen Benutzern und Robots unterscheiden kann."
 
 #. Type: note
 #. Description
