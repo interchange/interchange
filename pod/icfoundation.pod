@@ -996,7 +996,6 @@ S</home/ic/catalogs/ft/pages/:>
     process_return.html
     quantity.html
     results_big.html
-    results_either.html
     results.html
     returns.html
     saved_carts.html
