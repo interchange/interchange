@@ -625,12 +625,20 @@ EOF
 		if $opt->{href} !~ m{^(https?:|)/};
 #Debug("href=$opt->{href}");
 
-	$opt->{method} = $opt->{get} ? 'GET' : 'POST';
+	my $sidstr;
+	if ($opt->{get}) {
+		$opt->{method} = 'GET';
+		$sidstr = '';
+	} else {
+		$opt->{method} = 'POST';
+		$sidstr = qq{<INPUT TYPE=hidden NAME=mv_session_id VALUE="$Session->{id}">
+};
+	}
 	$opt->{enctype} = $opt->{file_upload} ? ' ENCTYPE="multipart/form-data"' : '';
 
 	my $out = <<EOF;
 <FORM METHOD=$opt->{method} ACTION="$opt->{href}"$opt->{form_name}$opt->{enctype}>
-<INPUT TYPE=hidden NAME=mv_todo VALUE="set">
+$sidstr<INPUT TYPE=hidden NAME=mv_todo VALUE="set">
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_filter">
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="$opt->{mv_nextpage}">
 <INPUT TYPE=hidden NAME=mv_data_table VALUE="$table">
