@@ -20,7 +20,7 @@
 
 UserTag formel Order label name type size
 # may be should place version information on user-defined tags
-# UserTag formel Version 0.02
+# UserTag formel Version 0.03
 UserTag formel addAttr
 UserTag formel Routine <<EOF
 sub {
@@ -62,7 +62,7 @@ sub {
 
     if ($opt->{'size'}) {
 		if ($type eq 'textarea') {
-			my ($rows, $cols) = split (/\s*[,x\s]\s*/, $opt->{'size'});
+			my ($cols, $rows) = split (/\s*[,x\s]\s*/, $opt->{'size'});
 			$sizestr = " rows=$rows cols=$cols";
 		} else {
 	        $sizestr = " size=$opt->{size}";
@@ -142,9 +142,15 @@ The user-visible description of the form element's purpose.
 The name of the form element which appears in the C<NAME>
 attribute of the HTML tag.
 
+=item type
+
+The type of the form element (supported are text, textarea
+and radio).
+
 =item size
 
-The width of the form element.
+The width of the form element. For textarea elements you can
+specify width and height (e.g. 70x10 or 20,4).
 
 =back
 
