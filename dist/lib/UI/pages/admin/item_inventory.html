@@ -22,7 +22,6 @@
 	$CGI->{ui_return_to} = join "\0", @args;
 	return;
 [/calc]
-@_UI_STD_DBEDIT_HEAD_@
 
 [seti page_title]Inventory: [cgi item_id][/seti]
 [seti page_banner]Inventory: edit item <B>[page href="__UI_BASE__/item_edit" form="item_id=[cgi item_id]"][cgi item_id]</A></B>[/seti]
@@ -32,7 +31,7 @@
 
 @_UI_STD_HEAD_@
 <P>
-@_UI_STD_DBEDIT_TABLE_@
+[table-editor cgi=1]
 
 [if-mm super]
 <A HREF="[area href=admin/flex_editor

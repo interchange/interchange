@@ -37,9 +37,6 @@
 [if !cgi item_id]
 	[bounce page="__UI_BASE__/customer"]
 [/if]
-[comment]
-@_UI_STD_DBEDIT_HEAD_@
-[/comment]
 
 [set ui_class]Customers[/set]
 [seti page_title]Customer shipping information -- [cgi customer][/seti]
@@ -50,9 +47,6 @@
 @_UI_STD_HEAD_@
 <P>
 [table-editor cgi=1]
-[comment]
-@_UI_STD_DBEDIT_TABLE_@
-[/comment]
 
 @_UI_STD_FOOTER_@
 <!-- page: @@MV_PAGE@@ -->
