@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.5
 #
-# $Id: interchange.PL,v 1.15.2.50 2001-06-23 00:46:20 heins Exp $
+# $Id: interchange.PL,v 1.15.2.51 2001-06-27 21:32:28 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -80,7 +80,7 @@ BEGIN {
 
 	$Global::InitialErrorFile = $Global::ErrorFile = "$Global::VendRoot/error.log";
 
-	if($^O =~ /win32/i) {
+	if($^O =~ /cygwin|win32/i) {
 		$Global::Windows = 1;
 	}
 

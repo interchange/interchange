@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.36 2001-06-25 22:12:50 heins Exp $
+# $Id: Util.pm,v 1.14.2.37 2001-06-27 21:32:29 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -77,7 +77,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.36 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.37 $, 10);
 
 BEGIN {
 	eval {
@@ -1206,6 +1206,9 @@ sub lockfile {
 sub unlockfile {
     &$unlock_function(@_);
 }
+
+### Still necessary, sad to say.....
+set_lock_type('none') if $Global::Windows;
 
 # Returns the total number of items ordered.
 # Uses the current cart if none specified.
