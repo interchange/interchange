@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.34 2002-02-03 23:11:57 mheins Exp $
+# $Id: Config.pm,v 2.35 2002-02-04 04:36:45 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.34 $, 10);
+$VERSION = substr(q$Revision: 2.35 $, 10);
 
 my %CDname;
 
@@ -265,7 +265,7 @@ sub global_directives {
 	['HouseKeeping',     'integer',          60],
 	['Mall',	          'yesno',           'No'],
 	['TagGroup',		 'tag_group',		 $StdTags],
-	['TagInclude',		 'tag_include',		 ':core'],
+	['TagInclude',		 'tag_include',		 'ALL'],
 	['ActionMap',		 'action',			 ''],
 	['FormAction',		 'action',			 ''],
 	['MaxServers',       'integer',          10],
@@ -1493,6 +1493,12 @@ sub parse_tag_include {
 	$setting =~ s/^\s+//;
 	$setting =~ s/\s+$//;
 	$setting =~ s/[,\s]+/ /g;
+
+	if($setting eq 'ALL') {
+		return { ALL => 1 };
+	}
+
+	delete $c->{ALL};
 
 	my @incs = Text::ParseWords::shellwords($setting);
 
@@ -3252,7 +3258,7 @@ sub parse_tag {
 	}
 
 	if($CodeDest and $CodeDest eq 'CoreTag') {
-		return $c unless $Global::TagInclude->{$tag};
+		return $c unless $Global::TagInclude->{$tag} || $Global::TagInclude->{ALL};
 	}
 
 	if($p eq 'Routine' or $p eq 'PosRoutine') {
