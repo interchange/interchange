@@ -1,6 +1,10 @@
-[tmp total_junk][perl tables="__UI_ACCESS_TABLE__ __UI_META_TABLE__"]
+[tmp total_junk][set violation]Failed to run security checks.[/set][perl tables="__UI_ACCESS_TABLE__ __UI_META_TABLE__"]
 	delete $Scratch->{violation};
 	$_ = delete $Session->{arg};
+	$Scratch->{violation} = errmsg('Must be logged in.')
+		unless $Session->{logged_in};
+	$Scratch->{violation} = errmsg('Must be logged in as admin.')
+		unless $Session->{admin};
 	$Scratch->{violation} = errmsg('No .. allowed in file name.')
 		if m{\.\./};
 	$Scratch->{violation} = errmsg('No | allowed.')
@@ -21,6 +25,7 @@ by:
 	$Session->{username}
 	$Session->{host}
 EOF
+		return;
 	}
 	else {
 		$Scratch->{file_to_view} = $_;
