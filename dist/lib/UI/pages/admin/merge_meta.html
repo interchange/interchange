@@ -24,11 +24,13 @@
 	my $compnew = $newver;
 	$compnew =~ s/\D+//g;
 
-	my $curver = $db->field("ui-version", 'label');
+	my $curver = '4.8.7';
+	if ($db->record_exists('ui-version')) {
+        $curver = $db->field("ui-version", 'label');
+	}
 	$Scratch->{curver} = $curver;
 	my $compcur = $curver;
 	$compcur =~ s/\D+//g;
-
 	if ($curver eq $newver) {
 		$Scratch->{merge_complete}
 				= errmsg("Already merged to current version %s.", $curver);
