@@ -86,7 +86,7 @@ Password for Oracle (if any)
 Timestamp for Oracle (if any)
 01-JAN-2000
 
-{ORACLE}!FIELDMUNGE
+{ORACLE}FIELDMUNGE
 Field name suffix for Oracle
 _field
 

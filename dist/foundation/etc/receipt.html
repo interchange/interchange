@@ -222,7 +222,7 @@ ui_template_name: noleft
 	</td>
 	<td>
 	[item-data products description]
-	[if-modifier size]<BR>SIZE-->[item-modifier size][/if-modifier][if-modifier color] COLOR-->[item-modifier color][/if-modifier]
+	[if-modifier size__MVC_FIELDMUNGE__]<BR>SIZE-->[item-modifier size__MVC_FIELDMUNGE__][/if-modifier][if-modifier color] COLOR-->[item-modifier color][/if-modifier]
 	[if-item-data options o_enable]
 		[if-item-data !options o_modular]
 			[table-organize cols=4 table=' ' font="size=1" pretty=1]
