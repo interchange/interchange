@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.133 2004-02-20 01:09:11 jon Exp $
+# $Id: Config.pm,v 2.134 2004-03-07 03:14:41 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.133 $, 10);
+$VERSION = substr(q$Revision: 2.134 $, 10);
 
 my %CDname;
 my %CPname;
@@ -410,6 +410,9 @@ sub catalog_directives {
 	['Sub',				 'subroutine',       ''],
 	['VendURL',          'url',              undef],
 	['SecureURL',        'url',              undef],
+	['PostURL',          'url',              ''],
+	['SecurePostURL',    'url',              ''],
+	['ProcessPage',      undef,              'process'],
 	['History',          'integer',          0],
 	['OrderReport',      undef,       		 'etc/report'],
 	['ScratchDir',       'relative_dir',     'tmp'],

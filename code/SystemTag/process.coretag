@@ -5,16 +5,34 @@ UserTag process             Routine   <<EOR
 sub {
 	my($target,$secure,$opt) = @_;
 
-	my $save;
 	$secure = defined $secure ? $secure : $CGI::secure;
 
-	my $page = $opt->{href} || 'process';
+	my $page = $opt->{href} || $Vend::Cfg->{ProcessPage};
 	if($opt->{download_name}) {
-		$save = delete $::Scratch->{mv_add_dot_html};
 		$page .= "/$opt->{download_name}";
 	}
-	my $url = $secure ? secure_vendUrl($page) : vendUrl($page);
-	$::Scratch->{mv_add_dot_html} = $save if $save;
+	my $url;
+	if($secure) {
+		$url = $Vend::Cfg->{SecurePostURL} || $Vend::Cfg->{SecureURL};
+	}
+	else {
+		$url = $Vend::Cfg->{PostURL} || $Vend::Cfg->{VendURL};
+	}
+	$url =~ s,/*$,/,;
+	$url .= $page;
+	if($Global::TolerateGet and ! $opt->{no_session}) {
+		my @args;
+		push @args, "?$::VN->{mv_session_id}=$Vend::SessionID"
+			unless  $::Scratch->{no_session_id};
+		push @args, "?$::VN->{mv_pc}=" . ++$Vend::Session->{pageCount}
+			unless  $::Scratch->{no_count};
+		push @args, "?$::VN->{mv_cat}=" . ++$Vend::Cat
+			if  $Vend::VirtualCat;
+		if(@args) {
+			$url .= '?';
+			$url .= join($Global::UrlJoiner, @args);
+		}
+	}
 	return $url unless $target;
 	return qq{$url" TARGET="$target};
 }

@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.206 2004-03-03 16:07:30 jon Exp $
+# $Id: Interpolate.pm,v 2.207 2004-03-07 03:14:41 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.206 $, 10);
+$VERSION = substr(q$Revision: 2.207 $, 10);
 
 @EXPORT = qw (
 
@@ -2868,12 +2868,35 @@ sub tag_area {
 		$Vend::Session->{$aloc}{$page} = $opt->{alias};
 	}
 
+	my $r;
+
 	if ($opt->{search}) {
 		$page = escape_scan($opt->{search});
 	}
 	elsif ($page =~ /^[a-z][a-z]+:/) {
 		### Javascript or absolute link
-		return $page;
+		return $page unless $opt->{form};
+		$page =~ s{(\w+://[^/]+)/}{}
+			or return $page;
+		my $intro = $1;
+		my @pieces = split m{/}, $page, 9999;
+		$page = pop(@pieces);
+		if(! length($page)) {
+			$page = pop(@pieces);
+			if(! length($page)) {
+				$r = $intro;
+				$r =~ s{/([^/]+)}{};
+				$page = "$1/";
+			}
+			else {
+				$page .= "/";
+			}
+		}
+		$r = join "/", $intro, @pieces unless $r;
+		$opt->{add_dot_html} = 0;
+		$opt->{no_session} = 1;
+		$opt->{secure} = 0;
+		$opt->{no_count} = 1;
 	}
 	elsif ($page eq 'scan') {
 		$page = escape_scan($arg);

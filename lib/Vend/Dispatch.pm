@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.35 2004-03-06 22:11:53 mheins Exp $
+# $Id: Dispatch.pm,v 1.36 2004-03-07 03:14:41 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.35 $, 10);
+$VERSION = substr(q$Revision: 1.36 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1383,11 +1383,11 @@ EOF
 	new Vend::Tags;
 # LEGACY
 	ROUTINES: {
-		last ROUTINES unless index($Vend::FinalPath, '/process/') == 0;
-		while ($Vend::FinalPath =~ s:/process/(locale|language|currency)/([^/]*)/:/process/:) {
+		last ROUTINES unless index($Vend::FinalPath, "/$Vend::Cfg->{ProcessPage}/") == 0;
+		while ($Vend::FinalPath =~ s{/$Vend::Cfg->{ProcessPage}/(locale|language|currency)/([^/]*)/}{/$Vend::Cfg->{ProcessPage}/}) {
 			$::Scratch->{"mv_$1"} = $2;
 		}
-		$Vend::FinalPath =~ s:/process/page/:/:;
+		$Vend::FinalPath =~ s{/$Vend::Cfg->{ProcessPage}/page/}{/};
 	}
 	my $locale;
 	if($locale = $::Scratch->{mv_language}) {
