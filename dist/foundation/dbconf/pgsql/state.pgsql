@@ -1,10 +1,10 @@
-Database  state  state.txt __SQLDSN__
-#ifdef SQLUSER
+Database  state  state.txt    __SQLDSN__
+ifdef SQLUSER
 Database  state  USER         __SQLUSER__
-#endif
-#ifdef SQLPASS
+endif
+ifdef SQLPASS
 Database  state  PASS         __SQLPASS__
-#endif
+endif
 Database  state  AUTO_NUMBER  00001
 Database  state  COLUMN_DEF   "code=CHAR(8) NOT NULL PRIMARY KEY"
 Database  state  COLUMN_DEF   "country=CHAR(20) DEFAULT '' NOT NULL"

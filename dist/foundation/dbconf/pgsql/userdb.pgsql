@@ -1,10 +1,10 @@
-Database  userdb  userdb.txt __SQLDSN__
-#ifdef SQLUSER
+Database  userdb  userdb.txt   __SQLDSN__
+ifdef SQLUSER
 Database  userdb  USER         __SQLUSER__
-#endif
-#ifdef SQLPASS
+endif
+ifdef SQLPASS
 Database  userdb  PASS         __SQLPASS__
-#endif
+endif
 Database  userdb  COLUMN_DEF   "code=VARCHAR(20) NOT NULL PRIMARY KEY"
 Database  userdb  COLUMN_DEF   "password=VARCHAR(20)"
 Database  userdb  COLUMN_DEF   "acl=text"

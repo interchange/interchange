@@ -1,11 +1,11 @@
-Database  area  area.txt __SQLDSN__
-Database  area  UPPERCASE  1
-#ifdef SQLUSER
+Database  area  area.txt     __SQLDSN__
+Database  area  UPPERCASE    1
+ifdef SQLUSER
 Database  area  USER         __SQLUSER__
-#endif
-#ifdef SQLPASS
+endif
+ifdef SQLPASS
 Database  area  PASS         __SQLPASS__
-#endif
+endif
 Database  area  DEFAULT_TYPE VARCHAR2(2000)
 Database  area  COLUMN_DEF   "code=INTEGER PRIMARY KEY"
 Database  area  COLUMN_DEF   "name=VARCHAR2(128)"

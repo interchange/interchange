@@ -1,11 +1,11 @@
 Database  inventory  inventory.txt __SQLDSN__
-Database  inventory  UPPERCASE  1
-#ifdef SQLUSER
+Database  inventory  UPPERCASE    1
+ifdef SQLUSER
 Database  inventory  USER         __SQLUSER__
-#endif
-#ifdef SQLPASS
+endif
+ifdef SQLPASS
 Database  inventory  PASS         __SQLPASS__
-#endif
+endif
 Database  inventory  DEFAULT_TYPE VARCHAR2(128)
 Database  inventory  COLUMN_DEF   "sku=VARCHAR2(64) PRIMARY KEY"
 Database  inventory  COLUMN_DEF   "quantity=INTEGER"

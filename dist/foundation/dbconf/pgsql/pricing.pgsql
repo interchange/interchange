@@ -1,11 +1,10 @@
-# Interchange database definition
-Database  pricing  pricing.txt __SQLDSN__
-#ifdef SQLUSER
+Database  pricing  pricing.txt  __SQLDSN__
+ifdef SQLUSER
 Database  pricing  USER         __SQLUSER__
-#endif
-#ifdef SQLPASS
+endif
+ifdef SQLPASS
 Database  pricing  PASS         __SQLPASS__
-#endif
+endif
 Database  pricing  KEY          sku
 Database  pricing  ChopBlanks   1
 

@@ -1,11 +1,10 @@
-
 Database  orderline  orderline.txt __SQLDSN__
-#ifdef SQLUSER
+ifdef SQLUSER
 Database  orderline  USER         __SQLUSER__
-#endif
-#ifdef SQLPASS
+endif
+ifdef SQLPASS
 Database  orderline  PASS         __SQLPASS__
-#endif
+endif
 Database  orderline  COLUMN_DEF   "code=VARCHAR(14) NOT NULL PRIMARY KEY"
 Database  orderline  COLUMN_DEF   "store_id=VARCHAR(9)"
 Database  orderline  COLUMN_DEF   "order_number=VARCHAR(14) NOT NULL"

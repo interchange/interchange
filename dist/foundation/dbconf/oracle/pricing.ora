@@ -1,11 +1,11 @@
-Database  pricing  pricing.txt __SQLDSN__
-Database  pricing  UPPERCASE  1
-#ifdef SQLUSER
+Database  pricing  pricing.txt  __SQLDSN__
+Database  pricing  UPPERCASE    1
+ifdef SQLUSER
 Database  pricing  USER         __SQLUSER__
-#endif
-#ifdef SQLPASS
+endif
+ifdef SQLPASS
 Database  pricing  PASS         __SQLPASS__
-#endif
+endif
 Database  pricing  DEFAULT_TYPE VARCHAR2(128)
 Database  pricing  KEY          sku
 Database  pricing  POSTCREATE   "CREATE INDEX pricing_price_group ON pricing (price_group)"

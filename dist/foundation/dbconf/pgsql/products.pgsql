@@ -1,11 +1,10 @@
-# Interchange database definition
 Database  products  products.txt __SQLDSN__
-#ifdef SQLUSER
+ifdef SQLUSER
 Database  products  USER         __SQLUSER__
-#endif
-#ifdef SQLPASS
+endif
+ifdef SQLPASS
 Database  products  PASS         __SQLPASS__
-#endif
+endif
 Database  products  KEY          sku
 Database  products  COLUMN_DEF   "sku=VARCHAR(64) NOT NULL PRIMARY KEY"
 Database  products  COLUMN_DEF   "description=VARCHAR(128)"
