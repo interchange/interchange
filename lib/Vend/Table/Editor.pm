@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.43 2003-09-25 03:07:48 mheins Exp $
+# $Id: Editor.pm,v 1.44 2003-10-19 16:54:53 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.43 $, 10);
+$VERSION = substr(q$Revision: 1.44 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -1797,11 +1797,13 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	my $ntext;
 	my $btext;
 	my $ctext;
+
 	if($pass_return_to) {
 		delete $::Scratch->{$opt->{next_text}};
 	}
 	elsif (! $opt->{wizard} and ! $opt->{nosave}) {
-		$::Scratch->{$opt->{next_text}} = $Tag->return_to('click', 1);
+		$ntext = $Tag->return_to('click', 1);
+		$ctext = $ntext . "\nmv_todo=back";
 	}
 	else {
 		if($opt->{action_click}) {
@@ -1851,7 +1853,7 @@ EOF
 
 	$opt->{next_text} = HTML::Entities::encode($opt->{next_text}, $ESCAPE_CHARS::std);
 	$opt->{back_text} = HTML::Entities::encode($opt->{back_text}, $ESCAPE_CHARS::std);
-	$opt->{cancel_text} = HTML::Entities::encode($opt->{cancel_text});
+	$opt->{cancel_text} = HTML::Entities::encode($opt->{cancel_text}, $ESCAPE_CHARS::std);
 
 	$::Scratch->{$opt->{next_text}}   = $ntext if $ntext;
 	$::Scratch->{$opt->{cancel_text}} = $ctext if $ctext;
