@@ -142,7 +142,13 @@ style               => 'STYLE',
 creditcards         => 'CREDIT_CARDS_ACCEPTED',
 state               => 'STATE',
 taxlocation         => 'TAXAREA',
-taxrate             => 'TAXRATE',
+taxrate             => sub {
+				$vdb->set_field(
+					'TAXRATE',
+					'Variable',
+					$Values->{taxlocation} . '=' . $Values->{taxrate},
+				);
+			},
 taxship             => 'TAXSHIPPING',
 tollfree            => 'TOLLFREE',
 upsadder            => sub {
