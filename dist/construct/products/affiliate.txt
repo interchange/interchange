@@ -1,4 +1,0 @@
-affiliate	name	campaigns	coupon_amount	join_date	url	timeout	active	password	image
-hardhat	Hardhat Construction	coupon	5	20000827095746	http://demo.minivend.com/~hardhat		1	akopia
-bill	Bill's Remodeling	coupon	10	20000909114244	http://demo.minivend.com/~bills		1	akopia
-consolidated	Consolidated Diversified	coupon	5	20000910080055	http://www.minivend.com/consolidated/		1	akopia	http://www.minivend.com/consolidated/img0.gif
