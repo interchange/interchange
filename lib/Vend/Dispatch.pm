@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.28.2.1 2004-01-30 17:36:52 mheins Exp $
+# $Id: Dispatch.pm,v 1.28.2.2 2004-02-24 19:21:09 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.28.2.1 $, 10);
+$VERSION = substr(q$Revision: 1.28.2.2 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -564,6 +564,11 @@ my %form_action = (
 	cancel	=> sub {
 					put_session();
 					get_session();
+					undef $Vend::username;
+					undef $Vend::admin;
+					undef $Vend::groups;
+					undef $Vend::superuser;
+					undef $Vend::login_table;
 					init_session();
 					$CGI::values{mv_nextpage} = find_special_page('canceled')
 						if ! $CGI::values{mv_nextpage};
