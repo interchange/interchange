@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.1 2001-10-18 04:16:16 mheins Exp $
+# $Id: DBI.pm,v 2.2 2001-10-18 05:27:41 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2 $, 10);
 
 use strict;
 
@@ -886,6 +886,45 @@ sub clone_set {
 #::logDebug("cloned, key=$k");
 	}
 	return $new;
+}
+
+sub get_slice {
+    my ($s, $key, $fary) = @_;
+	$s = $s->import_db() if ! defined $s->[$DBI];
+
+	my $tkey;
+	my $sql;
+	return undef unless $s->record_exists($key);
+
+	$tkey = $s->quote($key, $s->[$KEY]);
+#::logDebug("tkey now $tkey");
+
+	# Better than failing on a bad ref...
+	if(ref $fary ne 'ARRAY') {
+		shift; shift;
+		$fary = [ @_ ];
+	}
+
+	my $fstring = join ",", @$fary;
+	$sql = "SELECT $fstring from $s->[$TABLE] WHERE $s->[$KEY] = $tkey";
+
+#::logDebug("get_slice query: $sql");
+#::logDebug("get_slice key/fields:\nkey=$key\n" . ::uneval($fary));
+	my $sth;
+	my $ary;
+	eval {
+		$sth = $s->[$DBI]->prepare($sql)
+			or die ::errmsg("prepare %s: %s", $sql, $DBI::errstr);
+		$sth->execute();
+	};
+
+	if($@) {
+		my $msg = $@;
+		::logError("failed %s::%s routine: %s", __PACKAGE__, 'get_slice', $msg);
+		return undef;
+	}
+
+	return wantarray ? $sth->fetchrow_array() : $sth->fetchrow_arrayref();
 }
 
 sub set_slice {
