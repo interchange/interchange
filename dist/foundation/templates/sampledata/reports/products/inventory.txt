@@ -1,0 +1,1 @@
+sku	quantity	stock_message	account	cogs_account
