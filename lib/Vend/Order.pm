@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.6.2.13 2003-01-24 03:26:55 jon Exp $
+# $Id: Order.pm,v 2.6.2.14 2003-01-24 05:05:00 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.6.2.13 $, 10);
+$VERSION = substr(q$Revision: 2.6.2.14 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1078,7 +1078,7 @@ sub _ca_postcode {
 
 sub _zip {
 	my($ref,$var,$val) = @_;
-	defined $val and $val =~ /^\s*\d{5}(?:[-]\d{4})?\s*$/
+	defined $val and $val =~ /^\s*\d{5}(?:-?\d{4})?\s*$/
 		and return (1, $var, '');
 	return (undef, $var, errmsg("'%s' not a US zip code", $val));
 }
