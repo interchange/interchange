@@ -32,13 +32,17 @@ GROUP=$RET
 db_get interchange-cat-foundation/install
 
 if [ "$RET" = "true" ]; then
-	if [ -d /var/lib/interchange/catalogs/foundation ]; then
-		db_get interchange-cat-foundation/overwrite
+	CATALOG=foundation
+	if [ -d /var/lib/interchange/catalogs/$CATALOG ]; then
+		db_get interchange-cat-foundation/replace
 		if [ "$RET" = "always" ]; then
 			GOAHEAD=true
 		elif [ "$RET" = "ask" ]; then
 			db_get interchange-cat-foundation/confirm
 			GOAHEAD=$RET
+		fi
+		if [ "$GOAHEAD" = "true" ]; then
+			rm -rf /var/lib/interchange/catalogs/$CATALOG
 		fi
 	else
 		GOAHEAD=true
@@ -47,16 +51,26 @@ fi
 
 if [ "$GOAHEAD" = "true" ]; then
 	db_get interchange/docroot
+
 	# document root for static HTML
 	BASEDIR=/var/lib/interchange/catalogs
-	CGIBASE=/usr/lib/cgi-bin/ic
+	CGIBASE=/cgi-bin/ic
 	DOCROOT="$RET"
 	CATALOG=foundation
-	mkdir /var/lib/interchange/catalogs/$CATALOG
+
+	# replace document root
+	rm -rf $DOCROOT/$CATALOG
 	mkdir -p $DOCROOT/$CATALOG/images
+	chown -R $USER.$GROUP $DOCROOT/$CATALOG
+
+	# replace catalog directory
+	mkdir /var/lib/interchange/catalogs/$CATALOG
+	chown $USER.$GROUP /var/lib/interchange/catalogs/$CATALOG
+
 #	mkdir -p $RPM_BUILD_ROOT$BASEDIR/$i
 	/usr/bin/makecat \
 		-F \
+		-l /var/log/interchange/makecat.log \
 		--demotype=$CATALOG \
 		--catalogname=$CATALOG \
 		--basedir=$BASEDIR \
@@ -67,11 +81,11 @@ if [ "$GOAHEAD" = "true" ]; then
 		--imagedir=$DOCROOT/$CATALOG/images \
 		--imageurl=/shops/$CATALOG/images \
 		--servername=`hostname`.`dnsdomainname` \
-		--sharedir=$DOCROOT \
-		--shareurl= \
+		--sharedir=NONE \
+		--shareurl=/interchange \
 		--cgidir=/usr/lib/cgi-bin/ic \
 		--cgibase=$CGIBASE \
-		--cgiurl=$CGIBASE/$i \
+		--cgiurl=$CGIBASE/$CATALOG \
 		--interchangeuser=$USER \
 		--interchangegroup=$GROUP \
 		--permtype=user \
@@ -80,8 +94,7 @@ if [ "$GOAHEAD" = "true" ]; then
 		--linkmode=UNIX \
 		--catuser=$USER \
 		--mailorderto=$USER \
-		cachedir=$CACHEDIR/$i \
-		logdir=$LOGDIR/$i
+		--nocfg
 fi
 
 

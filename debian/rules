@@ -74,9 +74,10 @@ install: build
 # Create symbolic link for the configuration files. Makes
 # more sense than script hacking.
 	ln -s /etc/interchange/interchange.cfg $(TMP)/usr/lib/interchange
-	ln -s /etc/interchange/makecat.cfg $(TMP)/usr/lib/interchange/etc
+	rm -r $(TMP)/usr/lib/interchange/etc
+	ln -s /etc/interchange $(TMP)/usr/lib/interchange/etc
 # Setup wrapper and config script
-	mkdir -p $(TMP)/usr/sbin
+ 	mkdir -p $(TMP)/usr/sbin
 	cp debian/interchange.wrapper $(TMP)/usr/sbin/interchange
 	cp debian/interchangeconfig $(TMP)/usr/sbin/interchangeconfig
 	mkdir -p $(TMP)/usr/bin
