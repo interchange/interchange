@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.4 2000-12-02 20:14:00 heins Exp $
+# $Id: Config.pm,v 1.25.2.5 2000-12-11 00:41:58 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -104,7 +104,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.25.2.4 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.5 $, 10);
 
 my %CDname;
 
@@ -329,6 +329,7 @@ sub catalog_directives {
 	['TemplateDir',      'dir_array', 		 ''],
 	['ConfigDatabase',	 'config_db',	     ''],
 	['Require',			 'require',			 ''],
+	['Suggest',			 'suggest',			 ''],
     ['Message',          'message',           ''],
 	['Variable',	  	 'variable',     	 ''],
 	['ScratchDefault',	 'hash',     	 	 ''],
@@ -1313,14 +1314,38 @@ sub parse_autovar {
 }
 
 
-# Checks to see if a globalsub, sub, or usertag is present
+# Checks to see if a globalsub, sub, usertag, or Perl module is present
+# If called with a third parameter, is just "suggestion"
+
+sub parse_suggest {
+	return parse_require(@_, 1);
+}
 
 sub parse_require {
-	my($var, $val) = @_;
+	my($var, $val, $warn) = @_;
 
 	return if $Vend::ExternalProgram;
 
+	my $carptype;
+	my $error_message;
+
+	if($val =~ s/\s+"(.*)"//s) {
+		$error_message = "\a\n\n$1\n";
+	}
+
+	if($warn) {
+		$carptype = sub { return parse_message('', @_) };
+		$error_message = "\a\n\nSuggest %s %s for proper catalog operation. Not all functions will work!\n"
+			unless $error_message;
+	}
+	else {
+		$carptype = \&config_error;
+		$error_message = 'Required %s %s not present. Aborting catalog.'
+			unless $error_message;
+	}
+
 	my $require;
+	my $testsub = sub { 0 };
 	my $name;
 	if($val =~ s/^globalsub\s+//i) {
 		$require = $Global::GlobalSub;
@@ -1334,11 +1359,26 @@ sub parse_require {
 		$require = $Global::UserTag->{Routine};
 		$name = 'UserTag';
 	}
+	elsif($val =~ s/^(?:perl)?module\s+//i) {
+		$require = {};
+		$name = 'Perl module';
+		$testsub = sub {
+			my $module = shift;
+			my $oldtype;
+			if($module =~ s/\.pl$//) {
+				$oldtype = '.pl';
+			}
+			$module =~ /[^\w:]/ and return undef;
+			eval "require $module$oldtype;";
+			return ! $@;
+		};
+	}
 	my @requires = grep /\S/, split /\s+/, $val;
 
 	for(@requires) {
 		next if defined $require->{$_};
-		config_error("Required $name $_ not present. Aborting catalog.");
+		next if $testsub->($_);
+		$carptype->( ::errmsg($error_message, $name, $_) );
 	}
 	return '';	
 }
