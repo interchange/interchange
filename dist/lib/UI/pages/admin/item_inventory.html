@@ -1,0 +1,45 @@
+[if !cgi item_id]
+	[bounce page="__UI_BASE__/item"]
+[/if]
+[calc]
+	if(! $CGI->{mv_data_table}) {
+		$CGI->{ui_hide_key} = 1;
+		$CGI->{mv_data_table} = 'inventory';
+	}
+	if(! $CGI->{ui_data_fields}) {
+		$CGI->{ui_data_fields} = '[db-columns name=inventory]';
+	}
+	if(! $CGI->{ui_break_before}) {
+		$CGI->{ui_break_before} = 'account';
+	}
+	return;
+[/calc]
+@_UI_STD_DBEDIT_HEAD_@
+
+[set ui_class]Items[/set]
+[seti page_title]Inventory: [cgi item_id][/seti]
+[seti page_banner]Inventory: edit item <B>[page href="__UI_BASE__/item_edit" form="item_id=[cgi item_id]"][cgi item_id]</A></B>[/seti]
+[set help_name]item.edit[/set]
+[set table_perm]inventory[/set]
+[set icon_name]admin/icon_item.gif[/set]
+
+@_UI_STD_HEAD_@
+<P>
+@_UI_STD_DBEDIT_TABLE_@
+
+[if-mm super]
+<A HREF="[area href=admin/flex_editor
+				form='
+					item_id=[cgi item_id]
+					mv_data_table=products
+					page_title=Edit items: [cgi item_id]
+					help_name=inventory.edit
+					ui_no_meta_display=1
+					ui_hide_key=1
+					ui_return_to=admin/item
+					icon_name=admin/icon_item.gif
+					']">No meta display</A>
+[/if-mm]
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ -->
