@@ -1,6 +1,6 @@
 # Tagref.pm - Document Interchange tags
 # 
-# $Id: Tagref.pm,v 1.7 2000-10-12 21:55:03 zarko Exp $
+# $Id: Tagref.pm,v 1.8 2000-10-14 13:36:16 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -23,11 +23,11 @@ package Vend::Tagref;
 use lib "$Global::VendRoot/lib";
 use lib '../lib';
 
-# $Id: Tagref.pm,v 1.7 2000-10-12 21:55:03 zarko Exp $
+# $Id: Tagref.pm,v 1.8 2000-10-14 13:36:16 heins Exp $
 
 use Vend::Parse;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.7 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.8 $ =~ /(\d+)\.(\d+)/);
 
 use vars '%myRefs';
 
@@ -2105,11 +2105,8 @@ The two-letter abbreviations are mapped with these letters:
   sq  mv_sql_query
   st  mv_searchtype
   su  mv_substring_match
-  td  mv_table_cell
   tf  mv_sort_field
-  th  mv_table_header
   to  mv_sort_option
-  tr  mv_table_row
   un  mv_unique
   va  mv_value
 
