@@ -5,6 +5,8 @@
 
 [include include/wizard_profiles]
 
+[tmpn wiz_img][/tmpn]
+[tmpn wiz_bg][/tmpn]
 <table border=0 cellspacing=0 cellpadding=7>
 <tr>
 <td width="215" valign=top>
@@ -12,65 +14,49 @@
 	<tr>
 	<td bgcolor="#000000" valign=top>
 		<table border=0 cellspacing=0 cellpadding=1 bgcolor=white>
-[loop search="
-	fi=@_UI_MENU_TABLE_@
-	se=Wizard
-	sf=mgroup
-	co=yes
-	op=eq
-	tf=msort
-	rf=page,name,indicator,next_line,help_name,form
-"]
-[loop-sub fig_box]
-	shift;
-	my ($page, $name, $indicator, $next_line, $help_name, $form) = @{shift || []};
-	my $current = q{@@MV_PAGE@@};
-	
-	my $complete = $Tag->run_profile($indicator);
-
-	my $bgcolor;
-	my $img = 'box_empty.gif';
-	if($current =~ /^$page/) {
-		$bgcolor = '#99CCFF';
-	}
-	if ($complete) {
-		$bgcolor = '#CCCCCC' unless $bgcolor;
-		$img = 'box_checked.gif';
-	}
-	else {
-		$bgcolor = '#FFFFFF' unless $bgcolor;
-	}
-
-	$form =~ s/\&/\n/g;
-	$name = errmsg($name);
-	my $url = $Tag->area({
-						href => $page,
-						form => qq{
-					  		page_title=$name
-					  		help_name=$help_name
-							$form
-						},
-					});
-	if($next_line) {
-		return <<EOF;
-<tr>
-	<td bgcolor="$bgcolor" width="1%">&nbsp;</td>
-	<td bgcolor="$bgcolor"><img src="$img" width="15" height="15" alt="" border="0"></td>
-	<td bgcolor="$bgcolor" width="98%"><a href="$url" class="flowchart"><font size=-1>$name</a></td>
+[menu
+	name=Wizard
+	localize=name
+	reparse=1
+	indicator_profile=indicator
+	]
+{INDICATED?}
+	[set wiz_img]box_checked.gif[/set]
+	[set wiz_bg]#CCCCCC[/set]
+{/INDICATED?}
+{INDICATED:}
+	[set wiz_img]box_empty.gif[/set]
+	[set wiz_bg]#FFFFFF[/set]
+{/INDICATED:}
+{NEXT_LINE?}
+<tr bgcolor="[scratch wiz_bg]">
+	<td width="1%">&nbsp;</td>
+	<td><img src="[scratch wiz_img]" width="15" height="15" alt="" border="0"></td>
+	<td width="98%"><a href="[area
+								href="{PAGE}"
+								form="
+									page_title={NAME}
+									help_name={HELP_NAME}
+									{FORM}
+								"
+							]" class="flowchart"><font size=-1>{NAME}</a></td>
 </tr>
-EOF
-	}
-	else {
-		return <<EOF;
-<tr>
-	<td bgcolor="$bgcolor"><img src="$img" width="15" height="15" alt="" border="0"></td>
-	<td bgcolor="$bgcolor" width="98%" colspan=2><a href="$url" class="flowchart"><font size=-1>$name</a></td>
+{/NEXT_LINE?}
+{NEXT_LINE:}
+<tr bgcolor="[scratch wiz_bg]">
+	<td><img src="[scratch wiz_img]" width="15" height="15" alt="" border="0"></td>
+	<td width="98%" colspan=2><a href="[area
+											href="{PAGE}"
+											form="
+												page_title={NAME}
+												help_name={HELP_NAME}
+												{FORM}
+											"
+										]"
+								class="flowchart"><font size=-1>{NAME}</a></td>
 </tr>
-EOF
-	}
-[/loop-sub]
-[loop-exec fig_box][/loop-exec]
-[/loop]
+{/NEXT_LINE:}
+[/menu]
 	</table>
 	</td>
 	</tr>

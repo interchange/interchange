@@ -70,44 +70,22 @@
 <hr noshade size=1>
 
 <A href="[area __UI_BASE__/index]" target="_top"><b>Interchange Menu</b></A>
-<p>
 <font size=2 face="Verdana,Arial,Helvetica,sans-serif">
-
-[loop
-	  prefix=am
-	  search="
-	  	fi=icmenu
-		st=db
-		co=yes
-
-		sf=mgroup
-		se=acc_Other
-		op=eq
-
-		tf=msort
-		rf=*
-	  "
-	  lr=1]
-	[if-am-param !inactive]
-	[if-mm advanced [am-param depends_on]]
-	  [if-am-param page]
-&nbsp;&nbsp;&nbsp;<a href="[area href='[am-param page]' form='[am-param form]']">[loc][am-param name][/loc]</a><br>
-	  [/if-am-param]
-	  [if-am-param !page]
-<b>[am-param name]</b><br>
-	  [/if-am-param]
-	[/if-mm]
-	[/if-am-param]
-[/loop]
+<br>
+[menu
+	  name=Top
+	  inactive=inactive
+	  ui_security=depends_on
+	  localize=name,description
+	  ][/menu]
 </font>
-
                 </TD>
         </TR>
 </TABLE>
 </td></tr></table>
 </center>
 </div>
-<div align="center"><a href="javascript:self.window.close()">&#91;[L]close[/L]]</a></div>
+<div align="center"><a target="_top" href="[area __UI_BASE__/index]">&#91;[L]close[/L]]</a></div>
 </BODY>
 </HTML>
 

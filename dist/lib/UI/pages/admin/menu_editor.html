@@ -1616,7 +1616,7 @@ Save to new menu <input name=qmenu_new type=text size=20 value="[cgi qmenu_new]"
 						overflow: auto;
 						border: 1pt gray shaded;
 						">
-[loop head-skip=1 lr=1 list="[scratch qmenu_data]"][list]<div id=box[loop-increment] style="font-size: 11pt; width=300px;"></div>
+[loop head-skip=1 lr=1 list="[scratch qmenu_data]"][list]<div id=box[loop-increment] style="font-size: 11pt; width=300px; [loop-alternate 2]Background: #EEEEEE;[/loop-alternate]"></div>
 [/list][no-match][set empty]1[/set][/no-match]
 [/loop]
 [loop ranges=1 list="[scratch lastfull]..[scratch loopinc]"]<div id=box[loop-code] style="font-size: 11pt; width=300px;">[loop-change 1]

@@ -219,15 +219,16 @@ function MM_swapImage() {
 	  localize=name
 	  indicator=indicator
 	  ui_security=depends_on
+	  entities=description
 	  lr=1]
 	  {IMG_DN?}
 	  	<!-- class={NAME} -->
 	  <a href="{HREF}"
-	  		onMouseOut="MM_swapImgRestore()"
+	  		onMouseOut="MM_swapImgRestore()" title="{DESCRIPTION}"
 			onMouseOver="MM_swapImage('{NAME}','','{IMG_UP}',1)"><img name="{NAME}" alt="{NAME}" border="0" src="{INDICATED?IMG_UP:IMG_DN}"></a>
 	  {/IMG_DN?}
 	  {IMG_DN:}
-		  <a href="{HREF}" class=ctitle>{NAME}</a>
+		  <a href="{HREF}" class=ctitle title="{DESCRIPTION}">{NAME}</a>
 	  {/IMG_DN:}
 	  [/menu]
 	  <img src="B10.gif" width="17" height="19" alt=line>&nbsp;&nbsp;&nbsp;
@@ -251,6 +252,7 @@ function MM_swapImage() {
 	localize=name
 	indicator=indicator,page
 	inactive=inactive
+	entities=description
 	nbsp=name
 ][menu-header]
 <table width="100%" border="0" cellspacing="0" cellpadding="0">

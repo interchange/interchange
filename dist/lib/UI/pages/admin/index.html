@@ -1,5 +1,4 @@
 [if !global Windows]
-[index table=icmenu export_only=1]
 [index table=ichelp export_only=1]
 [/if]
 [strip interpolate=1]
@@ -111,46 +110,32 @@ EOF
 	return $out;
 [/calc]
 
-[loop
-	  prefix=am
-	  ignore-undefined=1
-	  search="
-	  	fi=icmenu
-		st=db
-		co=yes
-
-		sf=mgroup
-		se=Top
-		op=eq
-
-		tf=msort
-		rf=*
-	  "
+[menu
+	  name=Top
+	  inactive=inactive
+	  localize=name,description
+	  ui_security=depends_on
 	  lr=1]
-	  [if-am-param !inactive]
-	  [if-mm advanced [am-param depends_on]]
 <tr>
 <td valign="top">
-	  [if-am-param img_icon]
-<img src="[am-param img_icon]">
-	  [/if-am-param]
+	  {IMG_ICON?}
+<img src="{IMG_ICON}">
+	  {/IMG_ICON?}
 </td>
 <td valign="top">
 <b>
 <font face="Arial, Helvetica, sans-serif">
-&nbsp;<a href="[area href='[am-param page]' form='[am-param form]']">[loc][am-param name][/loc]</a></font>
+&nbsp;<a href="{HREF}">{NAME}</a></font>
 </b>
 </font>
 </td>
 <td valign="top">
 <font face="Arial, Helvetica, sans-serif">
-[loc][am-param special][am-param description][/loc]
+{DESCRIPTION}
 </font>
 </td>
 </tr>
-	[/if-mm]
-	[/if-am-param]
-[/loop]
+[/menu]
 
 </table>
 </div>
