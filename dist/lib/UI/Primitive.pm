@@ -1,6 +1,6 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 2.1.2.1 2001-08-29 15:49:41 mheins Exp $
+# $Id: Primitive.pm,v 2.1.2.2 2001-11-29 21:19:27 jon Exp $
 
 # Copyright (C) 1998-2001 Red Hat, Inc. <interchange@redhat.com>
 
@@ -25,7 +25,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 2.1.2.1 $, 10);
+$VERSION = substr(q$Revision: 2.1.2.2 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -619,15 +619,24 @@ sub rotate {
 my @t = localtime();
 
 my (@years) = ( $t[5] + 1899 .. $t[5] + 1910 );
-my (@months);
-my (@days);
 
+# Avoid hilarious bug on the 29th through 31st days of the month that
+# causes February to disappear and March to show up twice, because
+# "Feb. 30th" ends up getting calculated as March 1st or 2nd. It would
+# also affect all the 30-day months ...
+$t[3] = 1;
+
+# set year to 1901 ... why? maybe this was a typo and should've been
+# array element 3 for the reason above
+$t[5] = 1;
+
+my @months;
 for(1 .. 12) {
 	$t[4] = $_ - 1;
-	$t[5] = 1;
 	push @months, [sprintf("%02d", $_), POSIX::strftime("%B", @t)];
 }
 
+my @days;
 for(1 .. 31) {
 	push @days, [sprintf("%02d", $_), $_];
 }
