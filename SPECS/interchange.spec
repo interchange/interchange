@@ -7,7 +7,7 @@
 
 Summary: Interchange web application platform
 Name: interchange
-Version: 4.8.6
+Version: 4.8.7
 Release: 1
 Vendor: Red Hat, Inc.
 Group: System Environment/Daemons
