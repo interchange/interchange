@@ -2,7 +2,7 @@
 ui_template: Yes
 ui_template_name: standard
 ui_template_layout: LOGOBAR, MENUBAR, LEFTSIDE, UI_CONTENT, NO_RIGHT, MENUBOTTOM, COPYRIGHT
-ui_template_description: Standard page with top and left areas. Menu bar and copyright at bottom.
+ui_template_description: Standard page with top/left areas.
 ui_control_element: page_title : 
 ui_control_element: members_only : 0=No,1=Yes
 ui_control_description: page_title : Page title
