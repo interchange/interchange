@@ -5,7 +5,7 @@
 ------------------------------------------------------------------------------
 
 
-Interchange 4.8.1 released 2001-08-06.
+Interchange 4.8.1 released 2001-08-13.
 
 Foundation
 ----------
@@ -15,6 +15,23 @@ Foundation
 
 * Changed from and reply-to email address to __EMAIL_SERVICE__
   This brings it line with the name in the variable table.
+
+* Fix to catalog.cfg that closes longstanding history-scan "expired" problem.
+
+* Fix problem with PostgreSQL userdb table definition found by Brian Kosick
+  <briank@nacs.net>.
+
+* Add counties of Ireland to state.txt, correct two minor UK/EI mistakes.
+  Thanks to Donal H. <donalh@online.ie> for submitting this update.
+
+* Add DECREMENT_INVENTORY to the default variable.txt, fixing bug #292.
+
+* Rename some images to get around long path problems when not using
+  a reasonable tar program, e.g.:
+
+  dist/foundation/templates/sampledata/tools/images/items/gift_certificate_large.gif
+
+* Remove GNUisms from Foundation configuration scripts.
 
 Admin UI
 --------
@@ -75,6 +92,14 @@ Admin UI
 
 * Don't die if ImageMagick not there. Give error saying bad thumbs.
 
+* Fix Primitive.pm reference integrity problem
+  ($Vend::UI_Entry->{table_control_ref}).
+
+* Make secret not mandatory for AuthorizeNet setup in Wizard.
+
+* Add missing file pages/include/order_delete_archive preventing order
+  deletion/archiving.
+
 Tags
 ----
 * In display tag, add option for cases where we don't want a translation
@@ -132,6 +157,20 @@ Core
   - Removed requirement for secret
   - added country and email to variables sent
 
+Install/makecat
+---------------
+* Makefile.PL --nocpaninstall option added, needed to fix the longstanding
+  Debian bug #93669.
+
+* Overhaul permission setting when making catalogs as root. Now makes image
+  files group writable (never needed before UI image upload), as well as
+  making files the correct group depending on M/G/U permission modes.
+
+* Add automatic determination of MVC_CATGROUP based on permission
+  mode and supplied UIDs.
+
+* Only offer setting of default linkmode if one is root.
+
 Miscellaneous
 -------------
 * Added script for use in cronjobs, reset_order_number. Provides
@@ -141,8 +180,17 @@ Miscellaneous
 * Added new component 'news' to eg directory. Enables the shop owner to
   easily add news items to the foundation catalog. By Ton Verhagen.
 
+Packaging
+---------
+* Much reworking of Debian packages. Stefan no longer considers them to be
+  experimental status.
+
+* Update RPM documentation to cover interchange-foundation-demo and
+  interchange-doc, and some other missing things.
+
 
 ------------------------------------------------------------------------------
+
 
 Interchange 4.8.0 released 2001-07-27.
 
