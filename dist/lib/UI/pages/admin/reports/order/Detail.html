@@ -10,8 +10,8 @@
 @_UI_STD_HEAD_@
 
 [calc]
-	if ('__UI_COMMISSION_FIELD__') {
-		$Scratch->{comm_select} = ", __UI_COMMISSION_FIELD__";
+	if ($comm_field = $Tag->var('UI_COMMISSION_FIELD')) {
+		$Scratch->{comm_select} = ", $comm_field";
         $Scratch->{comm_states} = [split (/\s+/, '__UI_COMMISSION_STATES__')];
 		if (@{$Scratch->{comm_states}}) {
 		    $Scratch->{comm_select} .= ', status';
@@ -97,10 +97,21 @@ EOF
 		$Scratch->{date_limit} = "AND order_date like '$Scratch->{today}%'";
 	}
 	$Scratch->{synd_limit} = '';
+	$Scratch->{campaign_field} = 'campaign';
+	$Scratch->{parent_field} = '';
 	return unless $CGI->{affiliate};
-	$Scratch->{synd_limit} = "AND affiliate = '$CGI->{affiliate}'";
-	$Scratch->{synd_limit} .= " AND campaign = '$CGI->{campaign}'"
-		if $CGI->{campaign};
+
+	if ($parent_field = $Tag->var('UI_AFFILIATE_PARENT_FIELD')) {
+	    $Scratch->{synd_limit} = "AND (affiliate = '$CGI->{affiliate}' OR $parent_field = '$CGI->{affiliate}')";
+		$Scratch->{campaign_field} = $parent_field;
+		$Scratch->{comm_select} .= ', parent_comm';
+		$Scratch->{parent_field} = $parent_field;
+	} else {
+		$Scratch->{synd_limit} = "AND affiliate = '$CGI->{affiliate}'";
+	    $Scratch->{synd_limit} .= "AND campaign = '$CGI->{campaign}'"
+		    if $CGI->{campaign};
+	}
+
 	return;
 [/calc]
 
@@ -108,7 +119,7 @@ EOF
 	st=db
 	table=transactions
 	sql="
-	select order_number, affiliate, campaign, total_cost, payment_method, state, city, status, order_date[scratch comm_select]
+	select order_number, affiliate, [scratch campaign_field], total_cost, payment_method, state, city, status, order_date[scratch comm_select]
 		from  transactions
 		WHERE deleted != '1'
 		[scratch date_limit] [scratch synd_limit]
@@ -129,11 +140,17 @@ EOF
 		if ($Scratch->{comm_select}) {
 			if (! @{$Scratch->{comm_states}} 
 				|| grep {$_ eq $line->{status}} @{$Scratch->{comm_states}}) {
-				$commission = sprintf '%.2f', $line->{commission};
+				if ($Scratch->{parent_field} 
+					&& $line->{$Scratch->{parent_field}} eq $CGI->{affiliate}) {
+					$commission = $line->{parent_comm};
+				} else {
+					$commission = sprintf '%.2f', $line->{commission};
+				}
 			} else {
 				$commission = '0.00';
 			}
-			$commcell = "<TD ALIGN=right VALIGN=top>\n$commission\n</TD>\n";
+			$commcell = "<TD ALIGN=right VALIGN=top>\n" 
+				. $Tag->currency({}, $commission) . "\n</TD>\n";
 		} else {
 			$commcell = '';
 		}
@@ -146,7 +163,7 @@ EOF
 	$line->{affiliate}&nbsp;
 	</TD>
 	<TD VALIGN=top>
-	$line->{campaign}&nbsp;
+	$line->{$Scratch->{campaign_field}}&nbsp;
 	</TD>
 	<TD VALIGN=top>
 	$line->{city}, $line->{state}
@@ -166,8 +183,8 @@ EOF
 	}
 		$total_sales  = sprintf '$%.2f', $total_sales;
 		$out .= <<EOF;
-<tr bgcolor="#FFFFFF" height=2><td colspan=7></td></tr>
-<tr bgcolor="#000000" height=1><td colspan=7></td></tr>
+<tr bgcolor="#FFFFFF" height=2><td colspan=[scratch cols]></td></tr>
+<tr bgcolor="#000000" height=1><td colspan=[scratch cols]></td></tr>
 	<TR BGCOLOR="__UI_C_INTBLOCK__">
 	<TD VALIGN="top">
 	GRAND TOTAL
