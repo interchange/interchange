@@ -74,7 +74,7 @@ Install Walkthrough
                 You will be asked to enter the path for the install
                 directory for the Interchange distribution.
 				If you have the Storable module installed, you may be asked
-				how you would like to use it.  Choose the defualt.
+				how you would like to use it.  Choose the default.
 
 Demo Store Install Walkthrough
 
@@ -257,8 +257,8 @@ Demo Store Install Walkthrough
 <--#                   ^
 <--#
 
-<--ShareUrl? /akopia/ui/
--->/akopia/ui
+<--ShareUrl? /
+-->/
 
 <--# The directory where the Interchange software is installed.
 <--#
@@ -320,7 +320,7 @@ Demo Store Install Walkthrough
 <--DemoType? [construct]
 -->construct
 
-    There are currently two types of demo's.  Simple is a not so
+    There are currently two types of demos.  Simple is a not so
     very simple implementation of "The Art Store".  Construct something
     newest demo.  This is the most feature rich demo, and a good 
 	platform for constructing your own store.
@@ -335,7 +335,7 @@ Demo Store Install Walkthrough
 <--MailOrderTo? ic_user
 -->orders@construct.net
 
-    The contruct catalog is designed to email the orders once they are
+    The construct catalog is designed to email the orders once they are
     made to the person responsible for handling orders.
 
 <--# Where the Interchange files for this catalog will go, pages,
@@ -362,7 +362,7 @@ Demo Store Install Walkthrough
 
 <--CgiDir? /home/ic_user/public_html/cgi-bin
 
-	A file with you store's name will go into the cgi-bin dir.  This
+	A file with your store's name will go into the cgi-bin dir.  This
   	program (vlink or tlink) will provide the bridge between the web
  	server and the Interchange server.
 
@@ -395,7 +395,7 @@ Demo Store Install Walkthrough
 <--#                         ^^^^^^^^^^^^^^^^
 <--#
 <--# We set it to the name of the catalog by default to enable the
-<--# internal HTTTP server.
+<--# internal HTTP server.
 <--#
 
 
@@ -465,7 +465,7 @@ Demo Store Install Walkthrough
 <--INET or UNIX mode? [UNIX]
 -->UNIX
 
-    Again, this is outside fo this document's scope.  UNIX sockets
+    Again, this is outside of this document's scope.  UNIX sockets
     will work just fine.
 
 <--Do you use CGIWRAP or SUEXEC? [n]
@@ -523,7 +523,7 @@ Demo Store Install Walkthrough
 
 <--Add catalog to interchange.cfg? y
 
-	This will make your catalog avaliable to the interchange server.
+	This will make your catalog available to the interchange server.
 	Now your done with the catalog configuration.
 
 
@@ -547,15 +547,15 @@ Interchange server started in INET and UNIX mode(s) (process id 22200)
 Show off demo store
     Some day we will expand this section.
 
-The adminstrative side
+The administrative side
     The administrative site has built-in context sensitive help.  If
-    you want more detailed informaiton on how a particular section
+    you want more detailed information on how a particular section
     works, click on the "help" link in the upper right hand corner of
     the screen.  A help window will pop up and explain what's going on
     in that particular area.
 
     How to get there
-        Go to http://localhost/cgi-bin/construct/admin/logout.html
+        Go to http://localhost/cgi-bin/construct/admin/login.html
         changing whatever is necessary for your setup.  If you see an
         akopia interchange login prompt, that's a very good sign it
         worked.  If not, that is a good sign that it didn't work.
@@ -597,7 +597,7 @@ The adminstrative side
 
         Items
             From this page, you can manipulate your product data, as well
-			as mechandising and inventory.
+			as merchandising and inventory.
 
 			Item List
 				List items in product database.
@@ -622,7 +622,7 @@ The adminstrative side
 
 	        Site Layout
 				This is the layout editor which allows you some control over the
-				layout of the site, allowing you to organize logical catagories
+				layout of the site, allowing you to organize logical categories
 				for pages and items.
 
 		 	Search Builder
@@ -633,7 +633,7 @@ The adminstrative side
 
 	        Button Builder
     	        This interface is for generating buttons and links to
-        	    Interchange componenets.
+        	    Interchange components.
 	
 			Generate Static
 				Interchange can be configured to generate any of your catalog
@@ -663,7 +663,7 @@ The adminstrative side
 				Generate links for "Others who bought this product" products.
 
         Reporting
-            Interchange keeps statsistcs on both order information and
+            Interchange keeps statistics on both order information and
             web site traffic.
 
 			Orders
@@ -679,7 +679,7 @@ The adminstrative side
 			Various site/catalog administration tools.
 
 			Info
-				Interchang system information
+				Interchange system information
 			
 	        Tax
     	        Tax definitions can be set up here.
@@ -689,7 +689,7 @@ The adminstrative side
 				from this interface.			
 
 	        Payment
-    	        From this interfacce, you set which payment methods you
+    	        From this interface, you set which payment methods you
         	    accept or don't accept.
 
 			Access
@@ -707,7 +707,7 @@ The adminstrative side
 				interface to control the environment.
 			
 				Edit
-					Modify knar variables.
+					Modify Knar variables.
 
 				Import Data
 					Import data into the interchange tables.
@@ -716,7 +716,7 @@ The adminstrative side
 					Export data from the interchange tables.
 
 				Spreadsheet
-					A spreadsheet format editor for knar variables.
+					A spreadsheet format editor for Knar variables.
 
 				New Entry
 					Create a new variable.
@@ -725,7 +725,7 @@ The adminstrative side
 					Link to the table configurator.
 
 		    Table
-	            Tables can be imported into or experted from the interchange
+	            Tables can be imported into or exported from the interchange
     	        database, as well as viewed and edited.  Some of the tables 
 				you might want to import or export:  inventory, pricing, 
 				shipping info.
