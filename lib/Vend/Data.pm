@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.0.2.1 2001-09-26 14:07:03 racke Exp $
+# $Id: Data.pm,v 2.0.2.2 2001-10-18 11:31:40 racke Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -671,6 +671,9 @@ sub dummy_database {
 			next;
 		}
 		my $class = $db_config{$data->{Class}}->{Class};
+		unless ($class) {
+			die errmsg("no class found for database %s", $name);
+		}
 		$Vend::Database{$name} =
 				new $class ($data);
 	}
