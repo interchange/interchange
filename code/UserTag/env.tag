@@ -18,25 +18,6 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 #
-#
-# SUMMARY:	Provides read only access to the http evironment
-#		variables; individually by name, or the full
-#		list.
-#
-# USEAGE:	to see a the full list as a table:
-#		[env]
-#
-#		to return one the value of one variable:
-#		[env VARNAME]
-#		[env arg="VARNAME"]
-#		[env name="VARNAME"]
-#
-# NOTES:	Works when configured in either catalog.cfg
-#		or interchange.cfg. Thanks to Mike Heins and 
-#		the programming team at RH/Akopia for the
-#		numerous examples in the demos and UI - I
-#		don't think I could come up with stuff like
-#		this without it.
 
 Usertag env Order arg
 Usertag env PosNumber 1
