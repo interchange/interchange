@@ -255,6 +255,7 @@ mv_nextpage=@@MV_PAGE@@
 	form_name=variant
 	ui_data_fields="code sku products:description:sku description price wholesale inventory:quantity weight o_matrix"
 	default.o_matrix=1
+	default.quantity=1
 	widget.o_matrix=hidden
 	ui_meta_view="variant"
 	widget.sku="hidden_text"
