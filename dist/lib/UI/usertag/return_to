@@ -13,6 +13,7 @@ sub {
 		$out .= qq{mv_nextpage=$page\n} if $page;
 		for(@args) {
 			my ($k, $v) = split /\s*=\s*/, $_, 2;
+			next if $k =~ /$opt->{exclude}/;
 			$out .= qq{$k=$v\n}
 		}
 	}
@@ -36,6 +37,7 @@ sub {
                                     form => join "\n", @args,
                                 })
 		if $opt->{scratch};
+::logDebug("return-to returns:\n$out\n");
     return $out;
 }
 EOR
