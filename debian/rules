@@ -121,6 +121,8 @@ install: build
 	rm $(TMP)/usr/lib/interchange/_session_storable
 	rm $(TMP)/usr/lib/interchange/_uid
 	rm -r $(TMP)/usr/lib/interchange/auto/Interchange
+# remove incomplete manual pages
+	rm $(TMP)/usr/share/man/man3/Vend::Data.3pm
 # install logrotate configuration file
 	install -m 0755 -d $(TMP)/etc/logrotate.d/
 	install -m 0644 debian/interchange.logrotate $(TMP)/etc/logrotate.d/interchange
