@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.1 2001-08-06 16:16:57 heins Exp $
+# $Id: Util.pm,v 2.2 2001-08-20 21:02:21 heins Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,6 +44,7 @@ require Exporter;
 	get_option_hash
 	is_no
 	is_yes
+	l
 	lockfile
 	logData
 	logDebug
@@ -72,9 +73,11 @@ use strict;
 use Config;
 use Fcntl;
 use Errno;
+use Text::ParseWords;
+use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2 $, 10);
 
 BEGIN {
 	eval {
@@ -758,9 +761,10 @@ sub string_to_ref {
 		return eval $string;
 	}
 	elsif ($MVSAFE::Safe) {
-		die ::errmsg("not allowed to eval in Safe mode.");
+		die errmsg("not allowed to eval in Safe mode.");
 	}
-	return $Vend::Interpolate::safe_safe->reval($string);
+	my $safe = $Vend::Interpolate::safe_safe || new Safe;
+	return $safe->reval($string);
 }
 
 sub get_option_hash {
@@ -1519,6 +1523,8 @@ sub errmsg {
 	return sprintf $fmt, @strings;
 }
 
+*l = \&errmsg;
+
 sub show_times {
 	my $message = shift || 'time mark';
 	my @times = times();
@@ -1529,6 +1535,7 @@ sub show_times {
 }
 
 sub logGlobal {
+	return 1 if $Vend::ExternalProgram;
     my($msg) = shift;
 	my $opt;
 	if(ref $msg) {

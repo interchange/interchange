@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.3 2001-08-15 11:55:59 racke Exp $
+# $Id: Config.pm,v 2.4 2001-08-20 21:02:21 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 
 my %CDname;
 
@@ -253,6 +253,7 @@ sub global_directives {
 
 #   Directive name      Parsing function    Default value
 
+	['RunDir',			 'root_dir',     	 $Global::RunDir || 'etc'],
 	['DebugFile',		  undef,     	     ''],
 	['ConfigDir',		  undef,	         'etc/lib'],
 	['ConfigDatabase',	 'config_db',	     ''],
