@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.13.6.22 2001-06-19 17:43:23 jon Exp $
+# $Id: UserDB.pm,v 1.13.6.23 2001-06-28 22:06:05 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,13 +16,13 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.13.6.22 $, 10);
+$VERSION = substr(q$Revision: 1.13.6.23 $, 10);
 
 use vars qw!
 	$VERSION
 	@S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS
 	%S_to_B %B_to_S
-	$USERNAME_GOOD_CHARS $USERNAME_MIN_LENGTH $PASSWORD_MIN_LENGTH
+	$USERNAME_GOOD_CHARS $USERNAME_MIN_LENGTH
 !;
 
 use Vend::Data;
@@ -230,7 +230,6 @@ the preference set.
 # user name and password restrictions
 $USERNAME_GOOD_CHARS = '[-A-Za-z0-9_@.]';
 $USERNAME_MIN_LENGTH = 2;
-$PASSWORD_MIN_LENGTH = 4;
 
 @P_FIELDS = qw ( p_nickname email fax email_copy phone_night mail_list fax_order );
 
@@ -290,9 +289,10 @@ sub new {
 		@I_FIELDS = split /[\s,]+/, $options{ignore};
 	}
 	my $self = {
-			USERNAME  	=>	$options{username}	||
-							$Vend::Session->{username} ||
-							$CGI::values{mv_username} || '',
+			USERNAME  	=> $options{username}	||
+						   $Vend::username		||
+						   $CGI::values{mv_username} ||
+						   '',
 			OLDPASS  	=> $options{oldpass}	|| $CGI::values{mv_password_old} || '',
 			PASSWORD  	=> $options{password}	|| $CGI::values{mv_password} || '',
 			VERIFY  	=> $options{verify}		|| $CGI::values{mv_verify}	 || '',
@@ -319,6 +319,7 @@ sub new {
 						PASSWORD	=> $options{pass_field} || 'password',
 						LAST		=> $options{time_field} || 'mod_time',
 						EXPIRATION	=> $options{expire_field} || 'expiration',
+						SUPER		=> $options{super_field}|| 'super',
 						ACL			=> $options{acl}		|| 'acl',
 						FILE_ACL	=> $options{file_acl}	|| 'file_acl',
 						DB_ACL		=> $options{db_acl}		|| 'db_acl',
@@ -1024,9 +1025,9 @@ sub login {
 		}
 
 		# Fail if password is too short
-		if (length($self->{PASSWORD}) < $PASSWORD_MIN_LENGTH) {
+		if (length($self->{PASSWORD}) < $Vend::Cfg->{UserDBPasswordMinLength}) {
 			logError("Denied attempted login with user name '%s' and password less than %s characters",
-				$self->{USERNAME}, $PASSWORD_MIN_LENGTH);
+				$self->{USERNAME}, $Vend::Cfg->{UserDBPasswordMinLength});
 			die $stock_error, "\n";
 		}
 
@@ -1166,24 +1167,48 @@ sub change_pass {
 	my(%options) = @_;
 	
 	eval {
+		my $super = $Vend::superuser || (
+			$Vend::admin and
+			$self->{DB}->field($Vend::username, $self->{LOCATION}{SUPER})
+		);
+
+		if ($self->{USERNAME} ne $Vend::username or
+			defined $CGI::values{mv_username} and
+			$self->{USERNAME} ne $CGI::values{mv_username}
+		) {
+			if ($super) {
+				if ($CGI::values{mv_username} and
+					$CGI::values{mv_username} ne $self->{USERNAME}) {
+					$options{username} = $CGI::values{mv_username};
+					undef $self;
+				}
+			} else {
+				::logError("Unprivileged user '%s' attempted to change password of user '%s'",
+					$Vend::username, $self->{USERNAME});
+				die ::errmsg("You are not allowed to change another user's password.") . "\n";
+			}
+		}
+
 		unless($self) {
 			$self = new Vend::UserDB %options;
 		}
 
 		die ::errmsg("Bad object.") unless defined $self;
 
-		die ::errmsg("%s not a user", $self->{USERNAME}) . "\n"
+		die ::errmsg("'%s' not a user.", $self->{USERNAME}) . "\n"
 			unless $self->{DB}->record_exists($self->{USERNAME});
-		my $db_pass = $self->{DB}->field($self->{USERNAME}, $self->{LOCATION}{PASSWORD});
 
-		if($self->{CRYPT}) {
-			$self->{OLDPASS} = crypt($self->{OLDPASS},$db_pass);
+		unless ($super and $self->{USERNAME} ne $Vend::username) {
+			my $db_pass = $self->{DB}->field($self->{USERNAME}, $self->{LOCATION}{PASSWORD});
+			$self->{OLDPASS} = crypt($self->{OLDPASS}, $db_pass)
+				if $self->{CRYPT};
+			die ::errmsg("Must have old password.") . "\n"
+				if $self->{OLDPASS} ne $db_pass;
 		}
 
-		die ::errmsg("Must have old password") . "\n"
-			if	$self->{OLDPASS} ne $db_pass;
-		die ::errmsg("Must enter at least %s characters for password.", $PASSWORD_MIN_LENGTH) . "\n"
-			if length($self->{PASSWORD}) < $PASSWORD_MIN_LENGTH;
+		die ::errmsg("Must enter at least %s characters for password.",
+			$Vend::Cfg->{UserDBPasswordMinLength}) . "\n"
+			if length($self->{PASSWORD}) < $Vend::Cfg->{UserDBPasswordMinLength};
 		die ::errmsg("Password and check value don't match.") . "\n"
 			unless $self->{PASSWORD} eq $self->{VERIFY};
 
@@ -1248,8 +1273,9 @@ sub new_account {
 		die ::errmsg("Sorry, reserved user name.") . "\n"
 			if $self->{OPTIONS}{username_mask} 
 				and $self->{USERNAME} =~ m!$self->{OPTIONS}{username_mask}!;
-		die ::errmsg("Must enter at least %s characters for password.", $PASSWORD_MIN_LENGTH) . "\n"
-			if length($self->{PASSWORD}) < $PASSWORD_MIN_LENGTH;
+		die ::errmsg("Must enter at least %s characters for password.",
+			$Vend::Cfg->{UserDBPasswordMinLength}) . "\n"
+			if length($self->{PASSWORD}) < $Vend::Cfg->{UserDBPasswordMinLength};
 		die ::errmsg("Password and check value don't match.") . "\n"
 			unless $self->{PASSWORD} eq $self->{VERIFY};
 
@@ -1273,9 +1299,11 @@ sub new_account {
 			$self->{USERNAME} = lc $self->{USERNAME}
 				if $self->{OPTIONS}{ignore_case};
 		}
-		die ::errmsg("Can't have '%s' as username; it contains illegal characters.", $self->{USERNAME}) . "\n"
+		die ::errmsg("Can't have '%s' as username; it contains illegal characters.",
+			$self->{USERNAME}) . "\n"
 			if $self->{USERNAME} !~ m{^$USERNAME_GOOD_CHARS+$};
-		die ::errmsg("Must have at least %s characters in username.", $USERNAME_MIN_LENGTH) . "\n"
+		die ::errmsg("Must have at least %s characters in username.",
+			$USERNAME_MIN_LENGTH) . "\n"
 			if length($self->{USERNAME}) < $USERNAME_MIN_LENGTH;
 		if ($self->{DB}->record_exists($self->{USERNAME})) {
 			die ::errmsg("Username already exists.") . "\n"
