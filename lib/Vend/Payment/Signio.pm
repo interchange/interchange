@@ -1,8 +1,9 @@
 # Vend::Payment::Signio - Interchange support for Signio/Verisign Payflow Pro
 #
-# $Id: Signio.pm,v 2.8 2003-04-07 12:11:01 mheins Exp $
+# $Id: Signio.pm,v 2.9 2003-06-07 00:47:52 jon Exp $
 #
-# Copyright (C) 1999-2003 Red Hat, Inc. and Interchange Development Group
+# Copyright (C) 2003 Interchange Development Group
+# Copyright (C) 1999-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,7 +24,7 @@ package Vend::Payment::Signio;
 
 =head1 Interchange support for Signio/Verisign Payflow Pro
 
-Vend::Payment::Signio $Revision: 2.8 $
+Vend::Payment::Signio $Revision: 2.9 $
 
 =head1 SYNOPSIS
 
@@ -187,6 +188,51 @@ the C<Payment Settings> heading in the Interchange documentation for use.
 
 The payment gateway host to use. Default is C<payflow.verisign.com>, and
 C<test-payflow.verisign.com> when in test mode.
+
+=back
+
+=item check_sub
+
+Name of a Sub or GlobalSub to be called after the result hash has been
+received from Verisign. A reference to the modifiable result hash is
+passed into the subroutine, and it should return true (in the Perl truth
+sense) if its checks were successful, or false if not.
+
+This can come in handy since, strangely, Verisign has no option to decline
+a charge when AVS or CSC data come back negative. See Verisign knowledge
+base articles vs2365, vs7779, vs12717, and vs22810 for more details.
+
+If you want to fail based on a bad AVS check, make sure you're only
+doing an auth -- B<not a sale>, or your customers would get charged on
+orders that fail the AVS check and never get logged in your system!
+
+Add the parameters like this:
+
+	Route  signio  check_sub  avs_check
+
+This is a matching sample subroutine you could put in interchange.cfg:
+
+	GlobalSub <<EOR
+	sub avs_check {
+		my ($result) = @_;
+		my ($addr, $zip) = @{$result}{qw( AVSADDR AVSZIP )};
+		return 1 if $addr eq 'Y' or $zip eq 'Y';
+		return 1 if $addr eq 'X' and $zip eq 'X';
+		return 1 if $addr !~ /\S/ and $zip !~ /\S/;
+		$result->{RESULT} = 112;
+		$result->{RESPMSG} = "The billing address you entered does not match the cardholder's billing address";
+		return 0;
+	}
+	EOR
+
+That would work equally well as a Sub in catalog.cfg. It will succeed if
+either the address or zip is 'Y', or if both are unknown. If it fails,
+it sets the result code and error message in the result hash using
+Verisign's own (otherwise unused) 112 result code, meaning "Failed AVS
+check".
+
+Of course you can use this sub to do any other post-processing you
+want as well.
 
 =back
 
@@ -533,6 +579,21 @@ sub signio {
     	%$result = split /[&=]/, $resultstr;
 	}
 #::logDebug(qq{signio decline=$decline result: $resultstr});
+
+	if (
+		! $decline and 
+		my $check_sub_name = $opt->{check_sub} || charge_param('check_sub')
+	) {
+		my $check_sub = $Vend::Cfg->{Sub}{$check_sub_name}
+			|| $Global::GlobalSub->{$check_sub_name};
+		if (ref $check_sub eq 'CODE') {
+			$decline = ! $check_sub->($result);
+#::logDebug(qq{signio called check_sub sub=$check_sub_name decline=$decline});
+		}
+		else {
+			logError("signio: non-existent check_sub routine %s.", $check_sub_name);
+		}
+	}
 
     my %result_map = ( qw/
             MStatus               ICSTATUS
