@@ -1,10 +1,10 @@
-interchange (4.9.6-1) unstable; urgency=low
+interchange (4.9.7-1) unstable; urgency=low
 
   * new upstream release
   * UPGRADE and README.cvs added to interchange.docs
   * new debconf option for GnuPG home directory
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 30 Dec 2002 01:39:19 +0100
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 14 Jan 2003 12:02:43 +0100
 
 interchange (4.8.6.20021206-1) unstable; urgency=high
 
