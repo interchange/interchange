@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.13.2.1 2000-10-20 16:36:24 zarko Exp $
+# $Id: Data.pm,v 1.13.2.2 2000-11-07 22:41:45 zarko Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -95,28 +95,28 @@ sub database_exists_ref {
 }
 
 sub database_key_exists {
-    my ($db,$key) = @_;
-    return $db->record_exists($key);
+	my ($db,$key) = @_;
+	return $db->record_exists($key);
 }
 
 sub product_code_exists_ref {
-    my ($code, $base) = @_;
+	my ($code, $base) = @_;
 
-    my($ref);
-    if($base) {
-        return undef unless $ref = $Vend::Productbase{$base};
-        return $ref->ref() if $ref->record_exists($code);
-    }
+	my($ref);
+	if($base) {
+		return undef unless $ref = $Vend::Productbase{$base};
+		return $ref->ref() if $ref->record_exists($code);
+	}
 
-    my $return;
-    foreach $ref (@Vend::Productbase) {
-        return $ref if $ref->record_exists($code);
-    }
-    return undef;
+	my $return;
+	foreach $ref (@Vend::Productbase) {
+		return $ref if $ref->record_exists($code);
+	}
+	return undef;
 }
 
 sub product_code_exists_tag {
-    my ($code, $base) = @_;
+	my ($code, $base) = @_;
 	if($base) {
 		return undef unless $Vend::Productbase{$base};
 		return $base if $Vend::Productbase{$base}->record_exists($code);
@@ -154,7 +154,7 @@ sub update_productbase {
 }
 
 sub product_price {
-    my ($code, $q, $base) = @_;
+	my ($code, $q, $base) = @_;
 
 	$base = $Vend::Basefinder{$base}
 		if ref $base;
@@ -170,34 +170,34 @@ sub product_price {
 }
 
 sub product_description {
-    my ($code, $base) = @_;
-    return "" unless $base = product_code_exists_ref($code, $base || undef);
-    return database_field($base, $code, $Vend::Cfg->{DescriptionField});
+	my ($code, $base) = @_;
+	return "" unless $base = product_code_exists_ref($code, $base || undef);
+	return database_field($base, $code, $Vend::Cfg->{DescriptionField});
 }
 
 sub database_field {
-    my ($db, $key, $field_name) = @_;
-    $db = database_exists_ref($db) or return undef;
-    return '' unless $db->test_record($key);
-    return '' unless defined $db->test_column($field_name);
-    return $db->field($key, $field_name);
+	my ($db, $key, $field_name) = @_;
+	$db = database_exists_ref($db) or return undef;
+	return '' unless $db->test_record($key);
+	return '' unless defined $db->test_column($field_name);
+	return $db->field($key, $field_name);
 }
 
 sub database_row {
-    my ($db, $key, $field_name) = @_;
-    $db = database_exists_ref($db) or return undef;
+	my ($db, $key, $field_name) = @_;
+	$db = database_exists_ref($db) or return undef;
 return undef unless defined $db;
-    return '' unless $db->test_record($key);
-    return $db->row_hash($key);
+	return '' unless $db->test_record($key);
+	return $db->row_hash($key);
 }
 
 sub increment_field {
-    my ($db, $key, $field_name, $adder) = @_;
+	my ($db, $key, $field_name, $adder) = @_;
 	$db = $db->ref();
-    return undef unless $db->test_record($key);
-    return undef unless defined $db->test_column($field_name);
+	return undef unless $db->test_record($key);
+	return undef unless defined $db->test_column($field_name);
 #::logDebug(__PACKAGE__ . "increment_field: " . ::uneval(\@_));
-    return $db->inc_field($key, $field_name, $adder);
+	return $db->inc_field($key, $field_name, $adder);
 }
 
 sub call_method {
@@ -238,8 +238,7 @@ sub import_text {
 		$add .= join '","', @columns;
 		$add .= '"';
 		$text = "$add\n$text";
-	}
-	else {
+	} else {
 		$options->{field_names} = \@columns;
 		$options->{'delimiter'} = $delimiter;
 	}
@@ -250,8 +249,7 @@ sub import_text {
 			die "No absolute file names like '$fn' allowed.\n"
 				if Vend::Util::file_name_is_absolute($fn);
 		}
-	}
-	else {
+	} else {
 		Vend::Util::writefile($fn, $text)
 			or die ("Cannot write temporary import file $fn: $!\n");
 	}
@@ -270,30 +268,29 @@ sub import_text {
 }
 
 sub set_field {
-    my ($db, $key, $field_name, $value, $append) = @_;
+	my ($db, $key, $field_name, $value, $append) = @_;
 
 	$db = database_exists_ref($db);
-    return undef unless defined $db->test_column($field_name);
+	return undef unless defined $db->test_column($field_name);
 
 	# Create it if it doesn't exist
 	unless ($db->record_exists($key)) {
 		$db->set_row($key);
-	}
-	elsif ($append) {
+	} elsif($append) {
 		$value = $db->field($key, $field_name) . $value;
 	}
-    return $db->set_field($key, $field_name, $value);
+	return $db->set_field($key, $field_name, $value);
 }
 
 sub product_field {
-    my ($field_name, $code, $base) = @_;
+	my ($field_name, $code, $base) = @_;
 	return database_field($Vend::Cfg->{OnlyProducts}, $field_name, $code)
 		if $Vend::Cfg->{OnlyProducts};
 	my ($db);
-    $db = product_code_exists_ref($code, $base || undef)
+	$db = product_code_exists_ref($code, $base || undef)
 		or return '';
-    return "" unless defined $db->test_column($field_name);
-    return $db->field($code, $field_name);
+	return "" unless defined $db->test_column($field_name);
+	return $db->field($code, $field_name);
 }
 
 my %T;
@@ -333,7 +330,7 @@ sub sql_query {
 
 	$type = lc $type;
 
-	if ($list and $type ne 'list') {
+	if($list and $type ne 'list') {
 		$query = '' if ! defined $query;
 		$query .= $list;
 	}
@@ -350,12 +347,10 @@ sub sql_query {
 		if($key =~ /PERL/i) {
 			$perlquery = 1;
 			$opt->{textref} = 0;
-		}
-		elsif ($key =~ /BOTH/i){
+		} elsif($key =~ /BOTH/i){
 			$perlquery = 1;
 			$opt->{textref} = 1;
-		}
-		else {
+		} else {
 			$opt->{"\L$key"} = $val;
 		}
 	}
@@ -364,20 +359,16 @@ sub sql_query {
 		$opt->{list} = 1;
 		push(@arg, $1) while $query =~ s:\[arg\](.*?)\[/arg\]::o;
 		$list =~ s:\[query\]([\000-\377]+)\[/query\]::i and $query = $1;
-	}
-	elsif ($type eq 'hash') {
+	} elsif($type eq 'hash') {
 		$opt->{textref} = 1;
 		$opt->{hashref} = 1;
-	}
-	elsif ($type eq 'array') {
+	} elsif($type eq 'array') {
 		$opt->{textref} = 1;
-	}
-	elsif ($type eq 'param') {
+	} elsif($type eq 'param') {
 		warn "sql query type=param deprecated";
 		$opt->{list} = 1;
 		$list = '"[sql-code]" ';
-	}
-	elsif ($type eq 'html') {
+	} elsif($type eq 'html') {
 		$opt->{html} = 1;
 	}
 	$opt->{query} = $query if $query;
@@ -386,27 +377,27 @@ sub sql_query {
 # END SQL
 
 sub column_index {
-    my ($field_name) = @_;
+	my ($field_name) = @_;
 	$Products = $Products->ref();
-    return undef unless defined $Products->test_column($field_name);
-    return $Products->column_index($field_name);
+	return undef unless defined $Products->test_column($field_name);
+	return $Products->column_index($field_name);
 }
 
 sub column_exists {
-    my ($field_name) = @_;
-    return defined $Products->test_column($field_name);
+	my ($field_name) = @_;
+	return defined $Products->test_column($field_name);
 }
 
 sub db_column_exists {
-    my ($db,$field_name) = @_;
-    return defined $db->test_column($field_name);
+	my ($db,$field_name) = @_;
+	return defined $db->test_column($field_name);
 }
 
 sub close_database {
 	my($db, $name);
 	undef $Products;
 	while( ($name)	= each %Vend::Database ) {
-    	$Vend::Database{$name}->close_table()
+	$Vend::Database{$name}->close_table()
 			unless defined $Vend::Cfg->{SaveDatabase}{$name};
 		delete $Vend::Database{$name};
 	}
@@ -429,29 +420,29 @@ sub database_ref {
 # Read in the accessories file.
 
 sub read_accessories {
-    my($code, $accessories);
+	my($code, $accessories);
 
 	my $file = $Vend::Cfg->{Special}{'accessories.asc'}
 				|| Vend::Util::catfile($Vend::Cfg->{ProductDir}, 'accessories.asc');
 	return undef unless -f $file;
-    open(Vend::ACCESSORIES, "< $file") or return undef;
-    while(<Vend::ACCESSORIES>) {
+	open(Vend::ACCESSORIES, "< $file") or return undef;
+	while(<Vend::ACCESSORIES>) {
 		chomp;
 		tr/\r//d;
-		if (s/\\\s*$//) { # handle continues
+		if(s/\\\s*$//) { # handle continues
 	        $_ .= <Vend::ACCESSORIES>;
 			redo;
 		}
 		($code, $accessories) = split(/\t/, $_, 2);
 		$Vend::Cfg->{Accessories}->{$code} = $accessories;
-    }
-    close Vend::ACCESSORIES;
+	}
+	close Vend::ACCESSORIES;
 	1;
 }
 
 # Read in the sales tax file.
 sub read_salestax {
-    my($code, $percent);
+	my($code, $percent);
 
 	return unless $Vend::Cfg->{SalesTax};
 	my $file = $Vend::Cfg->{Special}{'salestax.asc'};
@@ -459,7 +450,7 @@ sub read_salestax {
 		unless $file;
 
 	$Vend::Cfg->{SalesTaxTable} = {};
-    -f $file and open(Vend::SALESTAX, "< $file") or do {
+	-f $file and open(Vend::SALESTAX, "< $file") or do {
 					logError( "Could not open salestax file %s: %s" ,
 								$file,
 								$!
@@ -467,13 +458,13 @@ sub read_salestax {
 						if ! $Vend::Cfg->{SalesTaxFunction};
 					return undef;
 				};
-    while(<Vend::SALESTAX>) {
+	while(<Vend::SALESTAX>) {
 		chomp;
 		tr/\r//d;
 		($code, $percent) = split(/\s+/, $_, 2);
 		$Vend::Cfg->{SalesTaxTable}->{"\U$code"} = $percent;
-    }
-    close Vend::SALESTAX;
+	}
+	close Vend::SALESTAX;
 
 	if(not defined $Vend::Cfg->{SalesTaxTable}->{DEFAULT}) {
 		$Vend::Cfg->{SalesTaxTable}->{DEFAULT} = 0;
@@ -556,12 +547,11 @@ sub tie_database {
 	if($Global::Database) {
 		copyref($Global::Database, $Vend::Cfg->{Database});
 	}
-    while (($name,$data) = each %{$Vend::Cfg->{Database}}) {
+	while (($name,$data) = each %{$Vend::Cfg->{Database}}) {
 		if( $data->{type} > 6 or $data->{HOT} ) {
 #::logDebug("Importing $data->{name}...");
 			$Vend::Database{$name} = import_database($data);
-		}
-		else {
+		} else {
 			if($data->{GUESS_NUMERIC}) {
 				my $dir = $data->{dir} || $Vend::Cfg->{ProductDir};
 				my $fn = Vend::Util::catfile( $dir, $data->{file} );
@@ -581,8 +571,8 @@ sub tie_database {
 
 sub dummy_database {
 	my ($name, $data);
-    while (($name,$data) = each %{$Vend::Cfg->{Database}}) {
-		if (defined $Vend::Cfg->{SaveDatabase}{$name}) {
+	while (($name,$data) = each %{$Vend::Cfg->{Database}}) {
+		if(defined $Vend::Cfg->{SaveDatabase}{$name}) {
 			$Vend::Database{$name} = $Vend::Cfg->{SaveDatabase}{$name};
 			next;
 		}
@@ -596,7 +586,7 @@ sub dummy_database {
 my $tried_import;
 
 sub import_database {
-    my ($obj, $dummy) = @_;
+	my ($obj, $dummy) = @_;
 
 
 	my $database = $obj->{'file'};
@@ -630,7 +620,7 @@ sub import_database {
 
 	my $no_import = defined $Vend::Cfg->{NoImport}->{$name};
 
-	if (defined $Vend::ForceImport{$name}) {
+	if(defined $Vend::ForceImport{$name}) {
 		undef $no_import;
 		delete $Vend::ForceImport{$name};
 	}
@@ -644,144 +634,134 @@ sub import_database {
 	$table_name     = $name;
 	my $export;
 
-  IMPORT: {
-	last IMPORT if $no_import and $obj->{'dir'};
-	last IMPORT if defined $obj->{IMPORT_ONCE} and $obj->{'dir'};
+	IMPORT: {
+		last IMPORT if $no_import and $obj->{'dir'};
+		last IMPORT if defined $obj->{IMPORT_ONCE} and $obj->{'dir'};
 #::logDebug ("first no_import_check: passed") if $type == 9;
 
-    $database_txt = $database;
+		$database_txt = $database;
 
-	($base,$path,$tail) = fileparse $database_txt, '\.[^/.]+$';
+		($base,$path,$tail) = fileparse $database_txt, '\.[^/.]+$';
 
-	if(Vend::Util::file_name_is_absolute($database_txt)) {
-		if ($Global::NoAbsolute) {
-			my $msg = errmsg(
+		if(Vend::Util::file_name_is_absolute($database_txt)) {
+			if($Global::NoAbsolute) {
+				my $msg = errmsg(
 							"Security violation for NoAbsolute, trying to import %s",
 							$database_txt);
-			logError( $msg );
-			die "Security violation.\n";
+				logError( $msg );
+				die "Security violation.\n";
+			}
+			$dir = $path;
+		} else {
+			$dir = $Vend::Cfg->{ProductDir} || $Global::ConfigDir;
+			$database_txt = Vend::Util::catfile($dir,$database_txt);
 		}
-		$dir = $path;
-	}
-	else {
-		$dir = $Vend::Cfg->{ProductDir} || $Global::ConfigDir;
-		$database_txt = Vend::Util::catfile($dir,$database_txt);
-	}
 
-	$obj->{'dir'} = $dir;
+		$obj->{'dir'} = $dir;
 
-	$obj->{ObjectType} = $class_config->{Class};
+		$obj->{ObjectType} = $class_config->{Class};
 
-	if($class_config->{Extension}) {
-		$database_dbm = Vend::Util::catfile(
-												$dir,
-												"$base."     .
-												$class_config->{Extension}
-											);
-		$new_database_dbm =  Vend::Util::catfile(
-												$dir,
-												"new_$base."     .
-												$class_config->{Extension}
-											);
-	}
-
-	if($class_config->{TableExtension}) {
-		$table_name     = $database_dbm;
-		$new_table_name = $new_database_dbm;
-	}
-	else {
-		$table_name = $new_table_name = $base;
-	}
-
-	$cacheable = $class_config->{Cacheable} || undef;
-
-	if ($class_config->{RestrictedImport}) {
-		$obj->{db_file_extended} = $database_dbm;
-		if (
-			$Vend::Cfg->{NoImportExternal}
-			or -f $database_dbm
-			or ! -f $database_txt
-			)
-		{
-			$no_import = 1;
+		if($class_config->{Extension}) {
+			$database_dbm = Vend::Util::catfile(
+													$dir,
+													"$base."     .
+													$class_config->{Extension}
+												);
+			$new_database_dbm =  Vend::Util::catfile(
+													$dir,
+													"new_$base."     .
+													$class_config->{Extension}
+												);
 		}
-		else {
-			open(Vend::Data::TMP, ">$new_database_dbm");
-			print Vend::Data::TMP "\n";
-			close(Vend::Data::TMP);
-		}
-	}
 
-	last IMPORT if $no_import;
+		if($class_config->{TableExtension}) {
+			$table_name     = $database_dbm;
+			$new_table_name = $new_database_dbm;
+		} else {
+			$table_name = $new_table_name = $base;
+		}
+
+		$cacheable = $class_config->{Cacheable} || undef;
+
+		if($class_config->{RestrictedImport}) {
+			$obj->{db_file_extended} = $database_dbm;
+			if(
+				$Vend::Cfg->{NoImportExternal}
+				or -f $database_dbm
+				or ! -f $database_txt
+				)
+			{
+				$no_import = 1;
+			} else {
+				open(Vend::Data::TMP, ">$new_database_dbm");
+				print Vend::Data::TMP "\n";
+				close(Vend::Data::TMP);
+			}
+		}
+
+		last IMPORT if $no_import;
 #::logDebug ("moving to import") if $type == 9;
 
-	$change_delimiter = $obj->{DELIMITER} if defined $obj->{DELIMITER};
+		$change_delimiter = $obj->{DELIMITER} if defined $obj->{DELIMITER};
 
-	my $txt_time;
-	my $dbm_time;
-    if (
-		! defined $database_dbm
-		or ! -e $database_dbm
-        or ($txt_time = file_modification_time($database_txt))
-				>
-           ($dbm_time = file_modification_time($database_dbm))
-		)
-	{
-		
-        warn "Importing $obj->{'name'} table from $database_txt\n"
-			unless $Vend::Quiet;
+		my $txt_time;
+		my $dbm_time;
+		if(
+			! defined $database_dbm
+			or ! -e $database_dbm
+	        or ($txt_time = file_modification_time($database_txt))
+					>
+	           ($dbm_time = file_modification_time($database_dbm))
+			)
+		{
 
-		$type = 1 unless $type;
-		($delimiter, $record_delim) = find_delimiter($change_delimiter || $type);
-		$obj->{'delimiter'} = $delimiter;
+			warn "Importing $obj->{'name'} table from $database_txt\n"
+					unless $Vend::Quiet;
 
-		my $save = $/;
-		local($/) = $record_delim if defined $record_delim;
-        $db = $delimiter ne 'CSV'
-			? Vend::Table::Common::import_ascii_delimited($database_txt, $obj, $new_table_name)
-        	: Vend::Table::Common::import_csv($database_txt, $obj, $new_table_name);
+			$type = 1 unless $type;
+			($delimiter, $record_delim) = find_delimiter($change_delimiter || $type);
+			$obj->{'delimiter'} = $delimiter;
 
-		$/ = $save;
-		if(defined $database_dbm) {
-			$db->close_table() if defined $db;
-			undef $db;
-			unlink $database_dbm if $Global::Windows;
-        	rename($new_database_dbm, $database_dbm)
-            	or die "Couldn't move '$new_database_dbm' to '$database_dbm': $!\n";
+			my $save = $/;
+			local($/) = $record_delim if defined $record_delim;
+			$db = $delimiter ne 'CSV'
+				? Vend::Table::Common::import_ascii_delimited($database_txt, $obj, $new_table_name)
+	        	: Vend::Table::Common::import_csv($database_txt, $obj, $new_table_name);
+
+			$/ = $save;
+			if(defined $database_dbm) {
+				$db->close_table() if defined $db;
+				undef $db;
+				unlink $database_dbm if $Global::Windows;
+	        	rename($new_database_dbm, $database_dbm)
+				or die "Couldn't move '$new_database_dbm' to '$database_dbm': $!\n";
+			}
+		} elsif($obj->{AUTO_EXPORT} and $dbm_time > $txt_time) {
+			$obj->{export_now} = 1;
 		}
-    }
-	elsif ($obj->{AUTO_EXPORT} and $dbm_time > $txt_time) {
-		$obj->{export_now} = 1;
 	}
-
-  }
 
 	my $read_only;
 
 	if($obj->{WRITE_CONTROL}) {
 		if($obj->{READ_ONLY}) {
 			$obj->{Read_only} = 1;
-		}
-		elsif($obj->{WRITE_ALWAYS}) {
+		} elsif($obj->{WRITE_ALWAYS}) {
 			$obj->{Read_only} = 0;
-		}
-		elsif($obj->{WRITE_CATALOG}) {
+		} elsif($obj->{WRITE_CATALOG}) {
 			$obj->{Read_only} = $obj->{WRITE_CATALOG}{$Vend::Cfg->{CatalogName}}
 					? (! defined $Vend::WriteDatabase{$name}) 
 					: 1;
-		}
-		elsif($obj->{WRITE_TAGGED}) {
+		} elsif($obj->{WRITE_TAGGED}) {
 			$obj->{Read_only} = ! defined $Vend::WriteDatabase{$name};
 		}
-	}
-	else {
+	} else {
 		$obj->{Read_only} = ! defined $Vend::WriteDatabase{$name}
 			if $class_config->{Tagged_write};
 	}
 
 		
-    if($class_config->{Extension}) {
-
+	if($class_config->{Extension}) {
 		$obj->{db_file} = $table_name unless $obj->{db_file};
 		$obj->{db_text} = $database_txt unless $obj->{db_text};
 		no strict 'refs';
@@ -789,8 +769,7 @@ sub import_database {
 			if($MVSAFE::Safe) {
 #::logDebug("Opening under Safe: $obj->{name}: table=$table_name") if $type == 9;
 				$db = $Vend::Interpolate::Db{$class_config->{Class}}->open_table( $obj, $table_name );
-			}
-			else {
+			} else {
 #::logDebug("Opening $obj->{name}: table=$table_name") if $type == 9;
 				$db = $class_config->{Class}->open_table( $obj, $table_name );
 #::logDebug("Opened $obj->{name}") if $type == 9;
@@ -851,7 +830,7 @@ sub index_database {
 				or 
 			file_modification_time($db_fn)
 				>
-            file_modification_time($bx_fn)		)
+			file_modification_time($bx_fn)		)
 	{
 		export_database($dbname, $bx_fn, $type);
 	}
@@ -862,7 +841,7 @@ sub index_database {
 				and 
 			file_modification_time($ix_fn)
 				>=
-            file_modification_time($bx_fn)		)
+			file_modification_time($bx_fn)		)
 	{
 		# We didn't need to index if got here
 		return;
@@ -968,7 +947,7 @@ sub export_database {
 	my @cols = $db->columns();
 
 	my ($notouch, $nuke);
-	if ($field and ! $delete) {
+	if($field and ! $delete) {
 #::logDebug("Trying for delete field=$field delete=$delete");
 		if($db->column_exists($field)) {
 			logError(
@@ -981,8 +960,7 @@ sub export_database {
 		logError("Adding column %s to table %s" , $field, $table_name);
 		push @cols, $field;
 		$notouch = 1;
-	}
-	elsif ($field) {
+	} elsif($field) {
 #::logDebug("Trying for add field=$field delete=$delete");
 		if(! $db->column_exists($field)) {
 			logError(
@@ -999,8 +977,7 @@ sub export_database {
 		for(@new) {
 			unless ($_ eq $field) {
 				push @cols, $_;
-			}
-			else {
+			} else {
 				$nuke = $i;
 				$notouch = 1;
 				logError("Deleting field %s" , $_ );
@@ -1039,8 +1016,7 @@ sub export_database {
 			print EXPORT $tempdata;
 			print EXPORT qq%"\n%;
 		}
-	}
-	elsif ($delim eq "\n" and $notes || $db->config('CONTINUE') eq 'NOTES') {
+	} elsif($delim eq "\n" and $notes || $db->config('CONTINUE') eq 'NOTES') {
 		my $sep;
 		my $nf_col;
 		my $nf;
@@ -1048,8 +1024,7 @@ sub export_database {
 			$sep	= $db->config('NOTES_SEPARATOR');
 			$nf_col	= $#cols;
 			$nf		= pop @cols;
-		}
-		else {
+		} else {
 			$sep = $opt->{notes_separator} || "\f";
 			$nf = $opt->{notes_field} || 'notes_field';
 			for( my $i = 0; $i < @cols; $i++ ) {
@@ -1075,8 +1050,7 @@ sub export_database {
 			}
 			print EXPORT "\n$nd\n$sep\n";
 		}
-	}
-	elsif($record_delim eq "\n") {
+	} elsif($record_delim eq "\n") {
 		print EXPORT join $delim, @cols;
 		print EXPORT $record_delim;
 		if(defined $nuke) {
@@ -1086,16 +1060,14 @@ sub export_database {
 				$tempdata =~ s/\r?\n/\r/g;
 				print EXPORT $tempdata, $record_delim;
 			}
-		}
-		else {
+		} else {
 			while( (undef, @data) = $db->each_record() ) {
 				$tempdata = join $delim, @data;
 				$tempdata =~ s/\r?\n/\r/g;
 				print EXPORT $tempdata, $record_delim;
 			}
 		}
-	}
-	else {
+	} else {
 		print EXPORT join $delim, @cols;
 		print EXPORT $record_delim;
 		while( (undef, @data) = $db->each_record() ) {
@@ -1111,8 +1083,7 @@ sub export_database {
 	if(defined $notouch) {
 		my $f = $db->config('db_file_extended');
 		unlink $f if $f;
-	}
-	else {
+	} else {
 		$db->touch() unless defined $notouch;
 	}
 	1;
@@ -1130,8 +1101,7 @@ sub chain_cost {
 	if($raw =~ /^\[\B/ and $raw =~ /\]$/) {
 		my $ref = Vend::Interpolate::tag_calc($raw);
 		@p = @{$ref} if ref $ref;
-	}
-	else {
+	} else {
 		@p = Text::ParseWords::shellwords($raw);
 	}
 	if(scalar @p > 16) {
@@ -1151,26 +1121,25 @@ CHAIN:
 		}
 		$price =~ s/^\s+//;
 		$price =~ s/\s+$//;
-		if ($want_key) {
+		if($want_key) {
 			$passed_key = $price;
 			undef $want_key;
 			next CHAIN;
 		}
-		if ($price =~ s/^;//) {
+		if($price =~ s/^;//) {
 			next if $final;
 		}
 		$chain = $price =~ s/,$// ? 1 : 0 unless $chain;
-		if ($price =~ /^ \(  \s*  (.*)  \s* \) \s* $/x) {
+		if($price =~ /^ \(  \s*  (.*)  \s* \) \s* $/x) {
 			$price = $1;
 			$want_key = 1;
 		}
-		if ($price =~ s/^([^-+\d.].*)//s) {
+		if($price =~ s/^([^-+\d.].*)//s) {
 			my $mod = $1;
 			if($mod =~ s/^\$(\d|$)/$1/) {
 				$price = $item->{mv_price} || $mod;
 				redo CHAIN;
-			}
-			elsif($mod =~ /^(\w*):([^:]*)(:(\S*))?$/) {
+			} elsif($mod =~ /^(\w*):([^:]*)(:(\S*))?$/) {
 				my ($table,$field,$key) = ($1, $2, $4);
 				$field = $Vend::Cfg->{PriceDefault} if ! $field;
 				if($passed_key) {
@@ -1185,10 +1154,9 @@ CHAIN:
 				if($field =~ /,/ || $field =~ /\.\./) {
 					my (@tmp) = split /,/, $field;
 					for(@tmp) {
-						if (/(.+)\.\.+(.+)/) {
+						if(/(.+)\.\.+(.+)/) {
 							push @breaks, $1 .. $2;
-						}
-						else {
+						} else {
 							push @breaks, $_;
 						}
 					}
@@ -1197,10 +1165,9 @@ CHAIN:
 					my $quantity;
 					my $attribute;
 					$attribute = shift @breaks  if $breaks[0] !~ /\d/;
-					if (! $attribute || ! $item->{$attribute}) {
+					if(! $attribute || ! $item->{$attribute}) {
 						$quantity = $item->{quantity};
-					}
-					else {
+					} else {
 						my $regex;
 						$regex = $item->{$attribute}
 							unless $item->{$attribute} =~ /^[\d.]+$/;
@@ -1230,16 +1197,14 @@ CHAIN:
 											$field
 										);
 				redo CHAIN;
-			}
-			elsif ($mod =~ s/^[&]//) {
+			} elsif($mod =~ s/^[&]//) {
 				$Vend::Interpolate::item = $item;
 				$Vend::Interpolate::s = $final;
 				$Vend::Interpolate::q = $item->{quantity};
 				$price = Vend::Interpolate::tag_calc($mod);
 				undef $Vend::Interpolate::item;
 				redo CHAIN;
-			}
-			elsif ($mod =~ s/^=([\d.]*)=([^=]+)//) {
+			} elsif($mod =~ s/^=([\d.]*)=([^=]+)//) {
 				$final += $1 if $1;
 				my ($attribute, $table, $field, $key) = split /:/, $2;
 				$item->{$attribute} and
@@ -1253,8 +1218,7 @@ CHAIN:
 										);
 						redo CHAIN;
 					};
-			}
-			elsif($mod =~ /^\s*[[_]+/) {
+			} elsif($mod =~ /^\s*[[_]+/) {
 				$::Scratch->{mv_item_object} = $Vend::Interpolate::item = $item;
 				$Vend::Interpolate::s = $final;
 				$Vend::Interpolate::q = $item->{quantity};
@@ -1262,27 +1226,23 @@ CHAIN:
 				undef $::Scratch->{mv_item_object};
 				undef $Vend::Interpolate::item;
 				redo CHAIN;
-			}
-			elsif($mod =~ s/^>>+//) {
+			} elsif($mod =~ s/^>>+//) {
 				# This can point to a new mode for shipping
 				# or taxing
 				$final = $mod;
 				last CHAIN;
-			}
-			else {
+			} else {
 				$passed_key = $mod;
 				next CHAIN;
 			}
-		}
-		elsif($price =~ s/%$//) {
+		} elsif($price =~ s/%$//) {
 			$price = $final * ($price / 100); 
-		}
-		elsif($price =~ s/\s*\*$//) {
+		} elsif($price =~ s/\s*\*$//) {
 			$final *= $price;
 			undef $price;
 		}
 		$final += $price if $price;
-		last if ($final and !$chain);
+		last if($final and !$chain);
 		undef $chain;
 		undef $passed_key;
 #::logDebug("chain_cost intermediate '$final'");

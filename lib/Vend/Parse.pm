@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.9.2.2 2000-10-20 16:42:23 zarko Exp $
+# $Id: Parse.pm,v 1.9.2.3 2000-11-07 22:41:46 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,12 +27,12 @@
 
 package Vend::Parse;
 
-# $Id: Parse.pm,v 1.9.2.2 2000-10-20 16:42:23 zarko Exp $
+# $Id: Parse.pm,v 1.9.2.3 2000-11-07 22:41:46 zarko Exp $
 
 require Vend::Parser;
 
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.9.2.2 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.9.2.3 $ =~ /(\d+)\.(\d+)/);
 
 use Safe;
 use Vend::Util;
@@ -44,7 +44,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.9.2.2 $, 10);
+$VERSION = substr(q$Revision: 1.9.2.3 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -56,78 +56,77 @@ my($CurrentSearch, $CurrentCode, $CurrentDB, $CurrentWith, $CurrentItem);
 my(@SavedSearch, @SavedCode, @SavedDB, @SavedWith, @SavedItem);
 
 my %PosNumber =	( qw!
-                    
 				and              1
-                accessories      2
-                area             2
+				accessories      2
+				area             2
 				banner           1
-                bounce           2
-                cart             1
-                cgi              1
-                checked          4
-                counter          1
-                currency         2
-                data             3
+				bounce           2
+				cart             1
+				cgi              1
+				checked          4
+				counter          1
+				currency         2
+				data             3
 				dump			 0
-                default          2
-                discount         1
-                description      2
+				default          2
+				discount         1
+				description      2
 				ecml			 2
 				either			 0
-                error            1
-                export           1
-                field            2
-                file             2
-                filter           1
+				error            1
+				export           1
+				field            2
+				file             2
+				filter           1
 				flag			 1
-                fly_tax          1
-                fly_list         2
-                goto             2
+				fly_tax          1
+				fly_list         2
+				goto             2
 				harness          0
-                html_table       0
-                if               1
-                import           2
-                include          1
-                input_filter     1
-                index            1
-                label            1
-                loop             1
-                log              1
-                mvasp            1
-                nitems           1
-                onfly            2
-                order            2
+				html_table       0
+				if               1
+				import           2
+				include          1
+				input_filter     1
+				index            1
+				label            1
+				loop             1
+				log              1
+				mvasp            1
+				nitems           1
+				onfly            2
+				order            2
 				or				 1
-                page             2
-                perl             1
-                price            1
+				page             2
+				perl             1
+				price            1
 				query			 1
-                row              1
-                salestax         2
-                scratch          1
-                scratchd         1
+				row              1
+				salestax         2
+				scratch          1
+				scratchd         1
 				record			 0
-                region		     0
-                selected         3
-                set              1
-                seti             1
-                setlocale        2
-                search_region    0
-                handling         1
-                shipping         1
-                shipping_desc    1
-                sql              2
-                strip            0
-                subtotal         2
-                tag              2
+				region		     0
+				selected         3
+				set              1
+				seti             1
+				setlocale        2
+				search_region    0
+				handling         1
+				shipping         1
+				shipping_desc    1
+				sql              2
+				strip            0
+				subtotal         2
+				tag              2
 				time			 1
 				timed_build      1
 				tmp				 1
 				try				 1
-                total_cost       2
-                userdb           1
-                value            2
-                value_extended   1
+				total_cost       2
+				userdb           1
+				value            2
+				value_extended   1
 
 			! );
 
@@ -151,7 +150,7 @@ my %Order =	(
 				discount		=> [qw( code  )],
 				ecml			=> [qw( name function )],
 				either		    => [qw( )],
-                error           => [qw( name )],
+				error           => [qw( name )],
 				export			=> [qw( table )],
 				field			=> [qw( name code )],
 				file			=> [qw( name type )],
@@ -239,23 +238,23 @@ my %addAttr = (
 					onfly			1
 					page            1
 					mvasp           1
-				    nitems			1
+					nitems			1
 					perl            1
 					price			1
 					process         1
 					query			1
-                    sql             1
+					sql             1
 					setlocale       1
-                    record          1
-                    region          1
-                    search_region   1
+					record          1
+					region          1
+					search_region   1
 					shipping        1
 					handling        1
-                    tag             1
-                    log             1
+					tag             1
+					log             1
 					time			1
 					timed_build     1
-                    try             1
+					try             1
 					update          1
 					userdb          1
 					value           1
@@ -266,37 +265,37 @@ my %addAttr = (
 my %hasEndTag = (
 
 				qw(
-                        calc            1
+						calc            1
 						catch           1
-                        currency        1
-                        discount        1
-                        filter	        1
-                        fly_list        1
+						currency        1
+						discount        1
+						filter	        1
+						fly_list        1
 						either          1
 						harness         1
-                        html_table      1
-                        if              1
-                        import          1
-                        input_filter    1
-                        item_list       1
-                        loop            1
-                        mvasp           1
-                        perl            1
-                        query           1
-                        row             1
-                        region          1
-                        search_region   1
-                        set             1
-                        set             1
-                        seti            1
-                        sql             1
-                        strip           1
-                        tag             1
-                        log             1
-                        try             1
-                        tmp             1
-                        time			1
-                        timed_build     1
+						html_table      1
+						if              1
+						import          1
+						input_filter    1
+						item_list       1
+						loop            1
+						mvasp           1
+						perl            1
+						query           1
+						row             1
+						region          1
+						search_region   1
+						set             1
+						set             1
+						seti            1
+						sql             1
+						strip           1
+						tag             1
+						log             1
+						try             1
+						tmp             1
+						time			1
+						timed_build     1
 
 				)
 			);
@@ -764,8 +763,8 @@ sub global_init {
 }
 
 sub new {
-    my $class = shift;
-    my $self = new Vend::Parser;
+	my $class = shift;
+	my $self = new Vend::Parser;
 	$self->{INVALID} = 0;
 
 	add_tags($Vend::Cfg->{UserTag})
@@ -774,7 +773,7 @@ sub new {
 	$self->{TOPLEVEL} = 1 if ! $Initialized;
 
 	$self->{OUT} = '';
-    bless $self, $class;
+	bless $self, $class;
 	$Initialized = $self;
 }
 
@@ -782,9 +781,9 @@ my %Documentation;
 use vars '%myRefs';
 
 %myRefs = (
-     Alias           => \%Alias,
-     addAttr         => \%addAttr,
-     attrAlias       => \%attrAlias,
+	Alias           => \%Alias,
+	addAttr         => \%addAttr,
+	attrAlias       => \%attrAlias,
 	 Documentation   => \%Documentation,
 	 endHTML         => \%endHTML,
 	 hasEndTag       => \%hasEndTag,
@@ -808,12 +807,12 @@ sub do_tag {
 	die errmsg("Unauthorized for admin tag %s", $tag)
 		if defined $Vend::Cfg->{AdminSub}{$tag} and ! $Vend::admin;
 	
-	if (! defined $Routine{$tag}) {
-        if (! $Alias{$tag}) {
-            ::logError("Tag '$tag' not defined.");
-            return undef;
-        }
-        $tag = $Alias{$tag};
+	if(! defined $Routine{$tag}) {
+		if(! $Alias{$tag}) {
+			::logError("Tag '$tag' not defined.");
+			return undef;
+		}
+		$tag = $Alias{$tag};
 	};
 	if(ref($_[-1]) =~ /HASH/ && scalar @{$Order{$tag}} > scalar @_) {
 		my $text;
@@ -822,8 +821,7 @@ sub do_tag {
 		my @args = @$ref{ @{$Order{$tag}} };
 		push @args, $ref if $addAttr{$tag};
 		return &{$Routine{$tag}}(@args, $text || undef);
-	}
-	else {
+	} else {
 		return &{$Routine{$tag}}(@_);
 	}
 }
@@ -858,16 +856,14 @@ sub add_tags {
 				$myRefs{$area}->{$_} = $ref->{$area}->{$_};
 			}
 			next;
-		}
-		elsif ($area =~ /HTML$/) {
+		} elsif($area =~ /HTML$/) {
 			for (keys %{$ref->{$area}}) {
 				$myRefs{$area}->{$_} =
 					defined $myRefs{$area}->{$_}
 					? $ref->{$area}->{$_} .'|'. $myRefs{$area}->{$_}
 					: $ref->{$area}->{$_};
 			}
-		}
-		else {
+		} else {
 			Vend::Util::copyref $ref->{$area}, $myRefs{$area};
 		}
 	}
@@ -879,11 +875,11 @@ sub add_tags {
 }
 
 sub eof {
-    shift->parse(undef);
+	shift->parse(undef);
 }
 
 sub text {
-    my($self, $text) = @_;
+	my($self, $text) = @_;
 	$self->{OUT} .= $text;
 }
 
@@ -918,8 +914,7 @@ sub resolve_if_unless {
 		return '' if $attr->{'unless'} =~ /^\s*0?\s*$/;
 		return '' if ! $attr->{'unless'};
 		return 1;
-	}
-	elsif (defined $attr->{'if'}) {
+	} elsif(defined $attr->{'if'}) {
 		return '' if
 			($attr->{'if'} and $attr->{'if'} !~ /^\s*0?\s*$/);
 		return 1;
@@ -956,11 +951,11 @@ sub goto_buf {
 }
 
 sub html_start {
-    my($self, $tag, $attr, $attrseq, $origtext, $end_tag) = @_;
+	my($self, $tag, $attr, $attrseq, $origtext, $end_tag) = @_;
 #::logDebug("HTML tag=$tag Interp='$Interpolate{$tag}' origtext=$origtext attributes:\n" . ::uneval($attr));
 	$tag =~ tr/-/_/;   # canonical
 
-	if (defined $Vend::Cfg->{AdminSub}{$tag} and ! $Vend::admin) {
+	if(defined $Vend::Cfg->{AdminSub}{$tag} and ! $Vend::admin) {
 		$Vend::StatusLine = "Status: 403\nContent-Type: text/html";
 		Vend::Server::response( errmsg("Unauthorized for admin tag %s", $tag) );
 		return ($self->{ABORT} = 1);
@@ -971,7 +966,7 @@ sub html_start {
 #::logDebug("tag=$tag end_tag=$end_tag buf length " . length($$buf)) if $Monitor{$tag};
 #::logDebug("attributes: ", %{$attr}) if $Monitor{$tag};
 	my($tmpbuf);
-    # $attr is reference to a HASH, $attrseq is reference to an ARRAY
+	# $attr is reference to a HASH, $attrseq is reference to an ARRAY
 	my($return_html);
 
 	unless (defined $Routine{$tag}) {
@@ -983,13 +978,11 @@ sub html_start {
 				or return 0;
 			$$buf = $origtext . $$buf;
 			return 1;
-		}
-		elsif ($tag eq 'urldecode') {
+		} elsif($tag eq 'urldecode') {
 			$attr->{urldecode} = 1;
 			$return_html = $origtext;
 			$return_html =~ s/\s+.*//s;
-		}
-		else {
+		} else {
 			$self->{OUT} .= $origtext;
 			return 1;
 		}
@@ -1006,8 +999,7 @@ sub html_start {
 			my $new = $attrAlias{$tag}{$trib} ;
 			$attr->{$new} = delete $attr->{$trib};
 			$trib = $new;
-		}
-		elsif (0 and defined $Alias{$trib}) {
+		} elsif(0 and defined $Alias{$trib}) {
 			my $new = $Alias{$trib} ;
 			$attr->{$new} = delete $attr->{$trib};
 			$trib = $new;
@@ -1037,22 +1029,20 @@ sub html_start {
 
 	my ($routine,@args);
 
-	if ($attr->{OLD}) {
+	if($attr->{OLD}) {
 	# HTML old-style tag
 		$attr->{interpolate} = 1 if defined $Interpolate{$tag};
 		if(defined $PosNumber{$tag}) {
 			if($PosNumber{$tag} > 1) {
 				@args = split /\s+/, $attr->{OLD}, $PosNumber{$tag};
 				push(@args, undef) while @args < $PosNumber{$tag};
-			}
-			elsif ($PosNumber{$tag}) {
+			} elsif($PosNumber{$tag}) {
 				@args = $attr->{OLD};
 			}
 		}
 		@{$attr}{ @{ $Order{$tag} } } = @args;
 		$routine =  $PosRoutine{$tag} || $Routine{$tag};
-	}
-	else {
+	} else {
 	# New style tag, HTML or otherwise
 		$routine = $Routine{$tag};
 		$attr->{interpolate} = 1
@@ -1074,8 +1064,7 @@ sub html_start {
 			goto_buf($args[0], \$Initialized->{_buf});
 			$self->{ABORT} = 1;
 			return 1;
-		}
-		elsif($tag eq 'bounce') {
+		} elsif($tag eq 'bounce') {
 			return 1 if resolve_if_unless($attr);
 			if(! $attr->{href} and $attr->{page}) {
 				$attr->{href} = Vend::Interpolate::tag_area($attr->{page});
@@ -1107,7 +1096,7 @@ EOF
 		shift @out;
 		@out = grep $_ !~ /^[Mm][Vv][=.]/, @out
 			unless $attr->{showmv};
-		if (defined $replaceAttr{$tag}
+		if(defined $replaceAttr{$tag}
 			and $replaceAttr{$tag}->{$end_tag}
 			and	! $attr->{noreplace})
 		{
@@ -1116,17 +1105,16 @@ EOF
 			unless(defined $implicitHTML{$t}) {
 				$out[0] .= qq{ \U$t="};
 				$out[1] = defined $out[1] ? qq{" } . $out[1] : '"';
+			} else {
+				$midfix = ' ';
 			}
-			else { $midfix = ' ' }
-		}
-		else {
+		} else {
 			$out[0] = " " . $out[0] . " "
 				if $out[0];
 		}
-		if (@out) {
+		if(@out) {
 			$out[$#out] .= '>';
-		}
-		else {
+		} else {
 			@out = '>';
 		}
 #::logDebug("inserted " . join "|", @out);
@@ -1136,7 +1124,7 @@ EOF
 		my $rowfix;
 		# Handle embedded tags, but only if interpolate is 
 		# defined (always if using old tags)
-		if (defined $replaceHTML{$end_tag}
+		if(defined $replaceHTML{$end_tag}
 			and $tag =~ /^($replaceHTML{$end_tag})$/
 			and ! $attr->{noreplace} )
 		{
@@ -1145,8 +1133,7 @@ EOF
 			$tmpbuf =~ s:</$end_tag\s*>::;
 			HTML::Entities::decode($tmpbuf) if $attr->{decode};
 			$tmpbuf =~ tr/\240/ /;
-		}
-		else {
+		} else {
 			@out = Text::ParseWords::shellwords($origtext);
 			($attr->{showmv} and
 					@out = map {s/^[Mm][Vv]\./mv-/} @out)
@@ -1154,7 +1141,7 @@ EOF
 			$out[$#out] =~ s/([^>\s])\s*$/$1>/;
 			$origtext = join " ", @out;
 
-			if (defined $lookaheadHTML{$tag} and ! $attr->{nolook}) {
+			if(defined $lookaheadHTML{$tag} and ! $attr->{nolook}) {
 				$tmpbuf = $origtext . find_html_end($end_tag, $buf);
 				while($$buf =~ s~^\s*(<([A-Za-z][-A-Z.a-z0-9]*)[^>]*)\s+
 								[Mm][Vv]\s*=\s*
@@ -1170,18 +1157,15 @@ EOF
 								find_html_end($end, $buf)	.
 								"[/$enclose]";
 				}
-			}
-			# Syntax color '" 
-			# GACK!!! No table row attributes in some editors????
-			elsif (defined $rowfixHTML{$end_tag}
+			} elsif(defined $rowfixHTML{$end_tag}
 				and $tag =~ /^($rowfixHTML{$end_tag})$/
 				and $attr->{rowfix} )
 			{
+				# GACK!!! No table row attributes in some editors????
 				$rowfix = 1;
 				$tmpbuf = '<tr>' . $origtext . find_html_end('tr', $buf);
 #::logDebug("Tmpbuf: $tmpbuf");
-			}
-			elsif (defined $insideHTML{$end_tag}
+			} elsif(defined $insideHTML{$end_tag}
 					and ! $attr->{noinside}
 					and $tag =~ /^($insideHTML{$end_tag})$/i) {
 				$prefix = $origtext;
@@ -1190,15 +1174,14 @@ EOF
 				$postfix = "</$end_tag>";
 				HTML::Entities::decode($tmpbuf) if $attr->{'decode'};
 				$tmpbuf =~ tr/\240/ / if $attr->{'decode'};
-			}
-			else {
+			} else {
 				$tmpbuf = $origtext . find_html_end($end_tag, $buf);
 			}
 		}
 
 		$tmpbuf =~ s/%([A-Fa-f0-9]{2})/chr(hex($1))/eg if $attr->{urldecode};
 
-		if ($attr->{interpolate}) {
+		if($attr->{interpolate}) {
 			my $p = new Vend::Parse;
 			$p->parse($tmpbuf);
 			$tmpbuf =  $p->{OUT};
@@ -1207,21 +1190,18 @@ EOF
 		$tmpbuf =  $attr->{prepend} . $tmpbuf if defined $attr->{prepend};
 		$tmpbuf .= $attr->{append}            if defined $attr->{append};
 
-		if (! $attr->{reparse}) {
+		if(! $attr->{reparse}) {
 			$self->{OUT} .= $prefix . &{$routine}(@args,$tmpbuf) . $postfix;
-		}
-		elsif (! defined $rowfix) {
+		} elsif(! defined $rowfix) {
 			$$buf = $prefix . &{$routine}(@args,$tmpbuf) . $postfix . $$buf
-		}
-		else {
+		} else {
 			$tmpbuf = &{$routine}(@args,$tmpbuf);
 			$tmpbuf =~ s|<tr>||i;
 			$$buf = $prefix . $tmpbuf . $postfix . $$buf;
 		}
 
 
-	}
-	else {
+	} else {
 		if(! @out and $attr->{prepend} or $attr->{append}) {
 			my @tmp;
 			@tmp = Text::ParseWords::shellwords($origtext);
@@ -1234,22 +1214,21 @@ EOF
 		if(! $attr->{interpolate}) {
 			if(@out) {
 				$self->{OUT} .= "<\U$end_tag ";
-				if 		($out[0] =~ / > \s*$ /x ) { }   # End of tag, do nothing
-				elsif	($out[0] =~ / ^[^"]*"$/x ) {     # End of tag
+				if($out[0] =~ / > \s*$ /x) {
+					# End of tag, do nothing
+				} elsif($out[0] =~ / ^[^"]*"$/x) {
+					# End of tag
 					$self->{OUT} .= shift(@out);
-				}
-				else {
+				} else {
 					unshift(@out, '');
 				}
 			}
 			$self->{OUT} .= $prefix . &$routine( @args ) . $midfix;
 			$self->{OUT} .= join(" ", @out) . $postfix;
-		}
-		else {
+		} else {
 			if(@out) {
 				$$buf = "<\U$end_tag " . &$routine( @args ) . $midfix . join(" ", @out) . $$buf;
-			}
-			else {
+			} else {
 				$$buf = $prefix . &$routine( @args ) . $postfix . $$buf;
 			}
 		}
@@ -1265,20 +1244,20 @@ EOF
 
 sub start {
 	return html_start(@_) if $_[0]->{HTML};
-    my($self, $tag, $attr, $attrseq, $origtext) = @_;
+	my($self, $tag, $attr, $attrseq, $origtext) = @_;
 	$tag =~ tr/-/_/;   # canonical
 	$tag = lc $tag;
 	my $buf = \$self->{_buf};
 #::logDebug("tag=$tag buf length " . length($$buf));
 #::logDebug("tag=$tag Interp='$Interpolate{$tag}' origtext=$origtext attributes:\n" . ::uneval($attr));
 	my($tmpbuf);
-	if (defined $Vend::Cfg->{AdminSub}{$tag} and ! $Vend::admin) {
+	if(defined $Vend::Cfg->{AdminSub}{$tag} and ! $Vend::admin) {
 		$Vend::StatusLine = "Status: 403\nContent-Type: text/html";
 		Vend::Server::response( errmsg("Unauthorized for admin tag %s", $tag) );
 		return ($self->{ABORT} = 1);
 	}
 
-    # $attr is reference to a HASH, $attrseq is reference to an ARRAY
+	# $attr is reference to a HASH, $attrseq is reference to an ARRAY
 	unless (defined $Routine{$tag}) {
 		if(defined $Alias{$tag}) {
 			my $alias = $Alias{$tag};
@@ -1288,8 +1267,7 @@ sub start {
 				or return 0;
 			$$buf = $origtext . $$buf;
 			return 1;
-		}
-		else {
+		} else {
 			$self->{OUT} .= $origtext;
 			return 1;
 		}
@@ -1333,15 +1311,13 @@ sub start {
 				if($PosNumber{$tag} > 1) {
 					@args = split /\s+/, $origtext, $PosNumber{$tag};
 					push(@args, undef) while @args < $PosNumber{$tag};
-				}
-				elsif ($PosNumber{$tag}) {
+				} elsif($PosNumber{$tag}) {
 					@args = $origtext;
 				}
 			}
 			@{$attr}{ @{ $Order{$tag} } } = @args;
 			$routine =  $PosRoutine{$tag} || $Routine{$tag};
-	}
-	else {
+	} else {
 		$routine = $Routine{$tag};
 		$attr->{interpolate} = 1
 			if  defined $Interpolate{$tag} && ! defined $attr->{interpolate};
@@ -1374,8 +1350,7 @@ sub start {
 			$self->{ABORT} = 1;
 			$self->{SEND} = 1 if ! $Initialized->{_buf};
 			return 1;
-		}
-		elsif($tag eq 'bounce') {
+		} elsif($tag eq 'bounce') {
 			return 1 if resolve_if_unless($attr);
 			if(! $attr->{href} and $attr->{page}) {
 				$attr->{href} = Vend::Interpolate::tag_area($attr->{page});
@@ -1400,22 +1375,19 @@ EOF
 #::logDebug("look end for $tag, buf=" . length($$buf) );
 		$tmpbuf = find_matching_end($tag, $buf);
 #::logDebug("FOUND end for $tag\nBuf " . length($$buf) . ":\n" . $$buf . "\nTmpbuf:\n$tmpbuf\n");
-		if ($attr->{interpolate}) {
+		if($attr->{interpolate}) {
 			my $p = new Vend::Parse;
 			$p->parse($tmpbuf);
 			$tmpbuf = $p->{ABORT} ? '' : $p->{OUT};
 		}
 		if($attr->{reparse} ) {
 			$$buf = ($routine->(@args,$tmpbuf) || '') . $$buf;
-		}
-		else {
+		} else {
 			$self->{OUT} .= &{$routine}(@args,$tmpbuf);
 		}
-	}
-	elsif(! $attr->{interpolate}) {
+	} elsif(! $attr->{interpolate}) {
 		$self->{OUT} .= &$routine( @args );
-	}
-	else {
+	} else {
 		$$buf = &$routine( @args ) . $$buf;
 	}
 
@@ -1425,57 +1397,57 @@ EOF
 }
 
 sub end {
-    my($self, $tag) = @_;
+	my($self, $tag) = @_;
 	my $save = $tag;
 	$tag =~ tr/-/_/;   # canonical
 	$self->{OUT} .= "[/$save]";
 }
 
 sub find_html_end {
-    my($tag, $buf) = @_;
-    my $out;
+	my($tag, $buf) = @_;
+	my $out;
 	my $canon;
 
-    my $open  = "<$tag ";
-    my $close = "</$tag>";
+	my $open  = "<$tag ";
+	my $close = "</$tag>";
 	($canon = $tag) =~ s/_/[-_]/g;
 
-    $$buf =~ s!<$canon\s!<$tag !ig;
-    $$buf =~ s!</$canon\s*>!</$tag>!ig;
-    my $first = index($$buf, $close);
-    return undef if $first < 0;
-    my $int = index($$buf, $open);
-    my $pos = 0;
+	$$buf =~ s!<$canon\s!<$tag !ig;
+	$$buf =~ s!</$canon\s*>!</$tag>!ig;
+	my $first = index($$buf, $close);
+	return undef if $first < 0;
+	my $int = index($$buf, $open);
+	my $pos = 0;
 #::logDebug("find_html_end: tag=$tag open=$open close=$close $first=$first pos=$pos int=$int");
-    while( $int > -1 and $int < $first) {
-        $pos   = $int + 1;
-        $first = index($$buf, $close, $first + 1);
-        $int   = index($$buf, $open, $pos);
+	while( $int > -1 and $int < $first) {
+		$pos   = $int + 1;
+		$first = index($$buf, $close, $first + 1);
+		$int   = index($$buf, $open, $pos);
 #::logDebug("find_html_end: tag=$tag open=$open close=$close $first=$first pos=$pos int=$int");
-    }
+	}
 #::logDebug("find_html_end: tag=$tag open=$open close=$close $first=$first pos=$pos int=$int");
 	return undef if $first < 0;
-    $first += length($close);
+	$first += length($close);
 #::logDebug("find_html_end (add close): tag=$tag open=$open close=$close $first=$first pos=$pos int=$int");
-    $out = substr($$buf, 0, $first);
-    substr($$buf, 0, $first) = '';
-    return $out;
+	$out = substr($$buf, 0, $first);
+	substr($$buf, 0, $first) = '';
+	return $out;
 }
 
 sub find_matching_end {
-    my($tag, $buf) = @_;
-    my $out;
+	my($tag, $buf) = @_;
+	my $out;
 	my $canon;
 
-    my $open  = "[$tag ";
-    my $close = "[/$tag]";
+	my $open  = "[$tag ";
+	my $close = "[/$tag]";
 	($canon = $tag) =~ s/_/[-_]/g;
 
-    $$buf =~ s!\[$canon\s![$tag !ig;
+	$$buf =~ s!\[$canon\s![$tag !ig;
 	# Syntax color ]
-    $$buf =~ s!\[/$canon\]![/$tag]!ig;
-    my $first = index($$buf, $close);
-    if ($first < 0) {
+	$$buf =~ s!\[/$canon\]![/$tag]!ig;
+	my $first = index($$buf, $close);
+	if($first < 0) {
 		if($Gobble{$tag}) {
 			$out = $$buf;
 			$$buf = '';
@@ -1483,17 +1455,17 @@ sub find_matching_end {
 		}
 		return undef;
 	}
-    my $int = index($$buf, $open);
-    my $pos = 0;
-    while( $int > -1 and $int < $first) {
-        $pos   = $int + 1;
-        $first = index($$buf, $close, $first + 1);
-        $int   = index($$buf, $open, $pos);
-    }
-    $out = substr($$buf, 0, $first);
-    $first = $first < 0 ? $first : $first + length($close);
-    substr($$buf, 0, $first) = '';
-    return $out;
+	my $int = index($$buf, $open);
+	my $pos = 0;
+	while( $int > -1 and $int < $first) {
+		$pos   = $int + 1;
+		$first = index($$buf, $close, $first + 1);
+		$int   = index($$buf, $open, $pos);
+	}
+	$out = substr($$buf, 0, $first);
+	$first = $first < 0 ? $first : $first + length($close);
+	substr($$buf, 0, $first) = '';
+	return $out;
 }
 
 # Passed some string that might be HTML-style attributes
@@ -1512,17 +1484,17 @@ sub _find_tag {
 		$old = 0;
 		# The attribute might take an optional value (first we
 		# check for an unquoted value)
-		if ($$buf =~ s|(^=\s*([^\"\'\]\s][^\]\s]*)\s*)||) {
+		if($$buf =~ s|(^=\s*([^\"\'\]\s][^\]\s]*)\s*)||) {
 			$eaten .= $1;
 			$val = $2;
 			HTML::Entities::decode($val);
 		# or quoted by " or ' 
-		} elsif ($$buf =~ s|(^=\s*([\"\'])(.*?)\2\s*)||s) {
+		} elsif($$buf =~ s|(^=\s*([\"\'])(.*?)\2\s*)||s) {
 			$eaten .= $1;
 			$val = $3;
 			HTML::Entities::decode($val);
 		# truncated just after the '=' or inside the attribute
-		} elsif ($$buf =~ m|^(=\s*)$| or
+		} elsif($$buf =~ m|^(=\s*)$| or
 				 $$buf =~ m|^(=\s*[\"\'].*)|s) {
 			$eaten = "$eaten$1";
 			last;

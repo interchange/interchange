@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.7.2.2 2000-11-06 18:12:33 zarko Exp $
+# $Id: Server.pm,v 1.7.2.3 2000-11-07 22:41:47 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.7.2.2 $, 10);
+$VERSION = substr(q$Revision: 1.7.2.3 $, 10);
 
 use strict;
 use POSIX qw(setsid strftime);
@@ -45,7 +45,7 @@ use Socket;
 use File::CounterFile;
 
 sub new {
-    my ($class, $fh, $env, $entity) = @_;
+	my ($class, $fh, $env, $entity) = @_;
 	if(@Global::argv > 1) {
 		(
 			$CGI::script_name,
@@ -56,42 +56,41 @@ sub new {
 		$Global::FastMode = 1;
 		return bless { fh => $fh }, $class;
 	}
-    populate($env);
-    my $http = {
+	populate($env);
+	my $http = {
 					fh => $fh,
 					entity => $entity,
 					env => $env,
 				};
 	map_cgi($http);
-    bless $http, $class;
+	bless $http, $class;
 }
 
-my @Map =
-    (
-     'authorization' => 'AUTHORIZATION',
-     'content_length' => 'CONTENT_LENGTH',
-     'content_type' => 'CONTENT_TYPE',
-     'content_encoding' => 'HTTP_CONTENT_ENCODING',
-     'cookie' => 'HTTP_COOKIE',
-     'http_host' => 'HTTP_HOST',
-     'path_info' => 'PATH_INFO',
-     'path_translated' => 'PATH_TRANSLATED',
-     'pragma' => 'HTTP_PRAGMA',
-     'query_string' => 'QUERY_STRING',
-     'referer' => 'HTTP_REFERER',
-     'remote_addr' => 'REMOTE_ADDR',
-     'remote_host' => 'REMOTE_HOST',
-     'remote_user' => 'REMOTE_USER',
-     'request_method', => 'REQUEST_METHOD',
-     'script_name' => 'SCRIPT_NAME',
-     'secure' => 'HTTPS',
-     'server_name' => 'SERVER_NAME',
-     'server_port' => 'SERVER_PORT',
-     'useragent' => 'HTTP_USER_AGENT',
+my @Map = (
+	'authorization' => 'AUTHORIZATION',
+	'content_length' => 'CONTENT_LENGTH',
+	'content_type' => 'CONTENT_TYPE',
+	'content_encoding' => 'HTTP_CONTENT_ENCODING',
+	'cookie' => 'HTTP_COOKIE',
+	'http_host' => 'HTTP_HOST',
+	'path_info' => 'PATH_INFO',
+	'path_translated' => 'PATH_TRANSLATED',
+	'pragma' => 'HTTP_PRAGMA',
+	'query_string' => 'QUERY_STRING',
+	'referer' => 'HTTP_REFERER',
+	'remote_addr' => 'REMOTE_ADDR',
+	'remote_host' => 'REMOTE_HOST',
+	'remote_user' => 'REMOTE_USER',
+	'request_method', => 'REQUEST_METHOD',
+	'script_name' => 'SCRIPT_NAME',
+	'secure' => 'HTTPS',
+	'server_name' => 'SERVER_NAME',
+	'server_port' => 'SERVER_PORT',
+	'useragent' => 'HTTP_USER_AGENT',
 );
 
 sub populate {
-    my ($cgivar) = @_;
+	my ($cgivar) = @_;
 
 	if($Global::Environment) {
 		for(@{$Global::Environment}) {
@@ -99,18 +98,18 @@ sub populate {
 		}
 	}   
 
-    my @map = @Map;
-    my ($field, $cgi);
+	my @map = @Map;
+	my ($field, $cgi);
 	no strict 'refs';
-    while (($field, $cgi) = splice(@map, 0, 2)) {
-        ${"CGI::$field"} = $cgivar->{$cgi} if defined $cgivar->{$cgi};
+	while (($field, $cgi) = splice(@map, 0, 2)) {
+		${"CGI::$field"} = $cgivar->{$cgi} if defined $cgivar->{$cgi};
 #::logDebug("CGI::$field=" . ${"CGI::$field"});
-    }
+	}
 }
 
 sub map_cgi {
 	my $h = shift;
-    die "REQUEST_METHOD is not defined" unless defined $CGI::request_method
+	die "REQUEST_METHOD is not defined" unless defined $CGI::request_method
 		or @Global::argv;
 
 	if($h) {
@@ -120,10 +119,9 @@ sub map_cgi {
 		$CGI::script_path = $CGI::script_name;
 		$CGI::script_name = $CGI::server_host . $CGI::script_path
 			if $Global::FullUrl;
-		if ("\U$CGI::request_method" eq 'POST') {
+		if("\U$CGI::request_method" eq 'POST') {
 			$CGI::post_input = $h->{'entity'};
-		}
-		else {
+		} else {
 			$CGI::post_input = $CGI::query_string;
 		}
 	}
@@ -144,8 +142,7 @@ sub store_cgi_kv {
 	if(defined $CGI::values{$key} and ! defined $::SV{$key}) {
 		$CGI::values{$key} = "$CGI::values{$key}\0$value";
 		push ( @{$CGI::values_array{$key}}, $value)
-	}
-	else {
+	} else {
 		$CGI::values{$key} = $value;
 		$CGI::values_array{$key} = [$value];
 	}
@@ -155,7 +152,7 @@ sub parse_post {
 	my(@pairs, $pair, $key, $value);
 	undef %CGI::values;
 	return unless defined $CGI::post_input;
-	if ($CGI::content_type =~ /^multipart/i) {
+	if($CGI::content_type =~ /^multipart/i) {
 		return parse_multipart() if  $CGI::useragent !~ /MSIE\s+5/i;
 		# try and work around an apparent IE5 bug that sends the content type
 		# of the next POST after a multipart/form POST as multipart also -
@@ -173,44 +170,43 @@ sub parse_post {
 		shift @pairs;
 	}
 	my $redo;
-  CGIVAL: {
-  	# This loop semi-duplicated in store_cgi_kv
-	foreach $pair (@pairs) {
-		($key, $value) = ($pair =~ m/([^=]+)=(.*)/)
-			or die "Syntax error in post input:\n$pair\n";
+	CGIVAL: {
+	  	# This loop semi-duplicated in store_cgi_kv
+		foreach $pair (@pairs) {
+			($key, $value) = ($pair =~ m/([^=]+)=(.*)/)
+				or die "Syntax error in post input:\n$pair\n";
 
 #::logDebug("incoming --> $key");
-		$key = $::IV->{$key} if defined $::IV->{$key};
-		$key =~ s/%([0-9a-fA-F][0-9a-fA-F])/chr(hex $1)/ge;
+			$key = $::IV->{$key} if defined $::IV->{$key};
+			$key =~ s/%([0-9a-fA-F][0-9a-fA-F])/chr(hex $1)/ge;
 #::logDebug("mapping  --> $key");
-		$value =~ tr/+/ /;
-		$value =~ s/%([0-9a-fA-F][0-9a-fA-F])/chr(hex $1)/ge;
-		# Handle multiple keys
-		if(defined $CGI::values{$key} and ! defined $::SV{$key}) {
-			$CGI::values{$key} = "$CGI::values{$key}\0$value";
-			push ( @{$CGI::values_array{$key}}, $value)
+			$value =~ tr/+/ /;
+			$value =~ s/%([0-9a-fA-F][0-9a-fA-F])/chr(hex $1)/ge;
+			# Handle multiple keys
+			if(defined $CGI::values{$key} and ! defined $::SV{$key}) {
+				$CGI::values{$key} = "$CGI::values{$key}\0$value";
+				push ( @{$CGI::values_array{$key}}, $value)
+			} else {
+				$CGI::values{$key} = $value;
+				$CGI::values_array{$key} = [$value];
+			}
 		}
-		else {
-			$CGI::values{$key} = $value;
-			$CGI::values_array{$key} = [$value];
-		}
-	}
-	if (! $redo and "\U$CGI::request_method" eq 'POST') {
-		@pairs = split(/&/, $CGI::query_string);
-		if( defined $pairs[0] and $pairs[0] =~ /^	(\w{8,32}) ; /x)  {
-			my (@old) = split /;/, $pairs[0], 3;
-			$CGI::values{mv_session_id} = $old[0]
-				if ! defined $CGI::values{mv_session_id};
-			$CGI::values{mv_arg} = $old[1]
-				if ! defined $CGI::values{mv_arg};
-			$CGI::values{mv_pc} = $old[3]
-				if ! defined $CGI::values{mv_pc};
+		if(! $redo and "\U$CGI::request_method" eq 'POST') {
+			@pairs = split(/&/, $CGI::query_string);
+			if( defined $pairs[0] and $pairs[0] =~ /^	(\w{8,32}) ; /x)  {
+				my (@old) = split /;/, $pairs[0], 3;
+				$CGI::values{mv_session_id} = $old[0]
+					if ! defined $CGI::values{mv_session_id};
+				$CGI::values{mv_arg} = $old[1]
+					if ! defined $CGI::values{mv_arg};
+				$CGI::values{mv_pc} = $old[3]
+					if ! defined $CGI::values{mv_pc};
 #::logDebug("found session stuff: $CGI::values{mv_session_id} --> $CGI::values{mv_arg}  --> $CGI::values{mv_pc} ");
-			shift @pairs;
+				shift @pairs;
+			}
+			$redo = 1;
 		}
-		$redo = 1;
-	}
-  } # End CGIVAL
+	} # End CGIVAL
 }
 
 sub parse_multipart {
@@ -256,8 +252,7 @@ sub parse_multipart {
 			if($filename) {
 				$CGI::file{$param} = $data;
 				$data = $filename;
-			}
-			else {
+			} else {
 				$data =~ s/\r?\n$//;
 			}
 			store_cgi_kv($param, $data);
@@ -283,7 +278,7 @@ sub create_cookie {
 		$out .= "Set-Cookie: $name=$value;";
 		$out .= " path=$path;";
 		$out .= " domain=" . $domain . ";" if $domain;
-		if (defined $expire or $Vend::Expire) {
+		if(defined $expire or $Vend::Expire) {
 			$expire = $Vend::Expire unless defined $expire;
 			$out .= " expires=" .
 						strftime "%a, %d-%b-%y %H:%M:%S GMT ", gmtime($expire);
@@ -345,7 +340,7 @@ sub respond {
 		return 1;
 	}
 
-	if (defined $Vend::InternalHTTP or defined $ENV{MOD_PERL} or $CGI::script_name =~ m:/nph-[^/]+$:) {
+	if(defined $Vend::InternalHTTP or defined $ENV{MOD_PERL} or $CGI::script_name =~ m:/nph-[^/]+$:) {
 # TRACK
 		my $save = select $fh;
 		$| = 1;
@@ -361,13 +356,12 @@ sub respond {
 			print $fh canon_status($Vend::StatusLine);
 			$Vend::ResponseMade = 1;
 			undef $Vend::StatusLine;
-		}
-		else {
+		} else {
 			print $fh "HTTP/1.0 $status\r\n";
 		}
 	}
 
-	if ( (	! $CGI::cookie && ! $::Instance->{CookiesSet}
+	if( (	! $CGI::cookie && ! $::Instance->{CookiesSet}
 			or defined $Vend::Expire
 			or defined $::Instance->{Cookies}
 		  )
@@ -376,7 +370,7 @@ sub respond {
 	{
 		my @domains;
 		@domains = ('');
-		if ($Vend::Cfg->{CookieDomain}) {
+		if($Vend::Cfg->{CookieDomain}) {
 			@domains = split /\s+/, $Vend::Cfg->{CookieDomain};
 		}
 
@@ -386,7 +380,7 @@ sub respond {
 			my $ref = $Global::Catalog{$Vend::Cfg->{CatalogName}};
 			@paths = ($ref->{'script'});
 			push (@paths, @{$ref->{'alias'}}) if defined $ref->{'alias'};
-			if ($Global::FullUrl) {
+			if($Global::FullUrl) {
 				# remove domain from script
 				for (@paths) { s:^[^/]+/:/: ; }
 			}
@@ -401,10 +395,9 @@ sub respond {
 		$::Instance->{CookiesSet} = delete $::Instance->{Cookies};
 	}
 
-	if (defined $Vend::StatusLine) {
+	if(defined $Vend::StatusLine) {
 		print $fh canon_status($Vend::StatusLine);
-	}
-	elsif(! $Vend::ResponseMade) {        
+	} elsif(! $Vend::ResponseMade) {        
 		print $fh canon_status("Content-Type: text/html");
 # TRACK        
 		print $fh canon_status("X-Track: " . $Vend::Track->header() . "\r\n");
@@ -417,38 +410,38 @@ sub respond {
 }
 
 sub read_entity_body {
-    my ($s) = @_;
-    $s->{entity};
+	my ($s) = @_;
+	$s->{entity};
 }
 
 sub _read {
-    my ($in) = @_;
-    my ($r);
-    
-    do {
-        $r = sysread(Vend::Server::MESSAGE, $$in, 512, length($$in));
-    } while (!defined $r and $! =~ m/^Interrupted/);
-    die "read: $!" unless defined $r;
-    die "read: closed" unless $r > 0;
+	my ($in) = @_;
+	my ($r);
+
+	do {
+		$r = sysread(Vend::Server::MESSAGE, $$in, 512, length($$in));
+	} while (!defined $r and $! =~ m/^Interrupted/);
+	die "read: $!" unless defined $r;
+	die "read: closed" unless $r > 0;
 }
 
 sub _find {
-    my ($in, $char) = @_;
-    my ($x);
+	my ($in, $char) = @_;
+	my ($x);
 
-    _read($in) while (($x = index($$in, $char)) == -1);
-    my $before = substr($$in, 0, $x);
-    substr($$in, 0, $x + 1) = '';
-    $before;
+	_read($in) while (($x = index($$in, $char)) == -1);
+	my $before = substr($$in, 0, $x);
+	substr($$in, 0, $x + 1) = '';
+	$before;
 }
 
 sub _string {
-    my ($in) = @_;
-    my $len = _find($in, " ");
-    _read($in) while (length($$in) < $len + 1);
-    my $str = substr($$in, 0, $len);
-    substr($$in, 0, $len + 1) = '';
-    $str;
+	my ($in) = @_;
+	my $len = _find($in, " ");
+	_read($in) while (length($$in) < $len + 1);
+	my $str = substr($$in, 0, $len);
+	substr($$in, 0, $len + 1) = '';
+	$str;
 }
 
 my $HTTP_enabled;
@@ -466,32 +459,32 @@ BEGIN {
 		%CGImap = ( qw/
 				content-length       CONTENT_LENGTH
 				content-type         CONTENT_TYPE
-                authorization-type   AUTH_TYPE
-                authorization        AUTHORIZATION
+				authorization-type   AUTH_TYPE
+				authorization        AUTHORIZATION
 				cookie               HTTP_COOKIE
-                client-hostname      REMOTE_HOST
-                client-ip-address    REMOTE_ADDR
-                client-ident         REMOTE_IDENT
-                content-length       CONTENT_LENGTH
-                content-type         CONTENT_TYPE
-                cookie               HTTP_COOKIE
-                from                 HTTP_FROM
-                host                 HTTP_HOST
-                https-on             HTTPS
-                method               REQUEST_METHOD
-                path-info            PATH_INFO
-                path-translated      PATH_TRANSLATED
-                pragma               HTTP_PRAGMA
-                query                QUERY_STRING
-                reconfigure          RECONFIGURE_MINIVEND
-                referer              HTTP_REFERER
-                script               SCRIPT_NAME
-                server-host          SERVER_NAME
-                server-port          SERVER_PORT
-                user-agent           HTTP_USER_AGENT
-                content-encoding     HTTP_CONTENT_ENCODING
-                content-language     HTTP_CONTENT_LANGUAGE
-                content-transfer-encoding HTTP_CONTENT_TRANSFER_ENCODING
+				client-hostname      REMOTE_HOST
+				client-ip-address    REMOTE_ADDR
+				client-ident         REMOTE_IDENT
+				content-length       CONTENT_LENGTH
+				content-type         CONTENT_TYPE
+				cookie               HTTP_COOKIE
+				from                 HTTP_FROM
+				host                 HTTP_HOST
+				https-on             HTTPS
+				method               REQUEST_METHOD
+				path-info            PATH_INFO
+				path-translated      PATH_TRANSLATED
+				pragma               HTTP_PRAGMA
+				query                QUERY_STRING
+				reconfigure          RECONFIGURE_MINIVEND
+				referer              HTTP_REFERER
+				script               SCRIPT_NAME
+				server-host          SERVER_NAME
+				server-port          SERVER_PORT
+				user-agent           HTTP_USER_AGENT
+				content-encoding     HTTP_CONTENT_ENCODING
+				content-language     HTTP_CONTENT_LANGUAGE
+				content-transfer-encoding HTTP_CONTENT_TRANSFER_ENCODING
 
 					/
 		);
@@ -517,7 +510,7 @@ sub http_log_msg {
 	my(@params);
 
 	# IP, Session, REMOTE_USER (if any) and time
-    push @params, ($$env{REMOTE_HOST} || $$env{REMOTE_ADDR});
+	push @params, ($$env{REMOTE_HOST} || $$env{REMOTE_ADDR});
 	push @params, ($$env{SERVER_PORT} || '-');
 	push @params, ($$env{REMOTE_USER} || '-');
 	push @params, logtime();
@@ -542,30 +535,29 @@ sub http_server {
 	my $waiting = 0;
 	($$env{REQUEST_METHOD},$request) = split /\s+/, $status_line;
 	for(;;) {
-        $block = _find(\$in, "\n");
+		$block = _find(\$in, "\n");
 #::logDebug("read: $block");
 		$block =~ s/\s+$//;
 		if($block eq '') {
 			last;
 		}
-		if ( $block =~ s/^([^:]+):\s*//) {
+		if( $block =~ s/^([^:]+):\s*//) {
 			$header = lc $1;
 			if(defined $CGImap{$header}) {
 				$$env{$CGImap{$header}} = $block;
-			}
-			elsif(defined $CGIspecial{$header}) {
+			} elsif(defined $CGIspecial{$header}) {
 				&{$CGIspecial{$header}}($env, $block);
+#			} else {
+#				throw_away();
 			}
-			# else { throw_away() }
 			next;
-		}
-		else {
+		} else {
 			die "HTTP protocol error on '$block':\n$in";
 		}
 		last;
 	}
 
-	if ($$env{CONTENT_LENGTH}) {
+	if($$env{CONTENT_LENGTH}) {
 		_read(\$in) while length($in) < $$env{CONTENT_LENGTH};
 	}
 	$in =~ s/\s+$//;
@@ -591,18 +583,18 @@ sub http_server {
 	shift(@path);
 	my $cat = "/" . shift(@path);
 
-	if ($Global::TcpMap->{$Global::TcpPort} =~ /^\w+/) {
+	if($Global::TcpMap->{$Global::TcpPort} =~ /^\w+/) {
 		$cat = $Global::TcpMap->{$Global::TcpPort};
 		$cat = "/$cat" unless index($cat, '/') == 0;
 	}
 
 	if($cat eq '/mv_admin') {
 #::logDebug("found mv_admin");
-		if ($$env{AUTHORIZATION}) {
+		if($$env{AUTHORIZATION}) {
 			$$env{REMOTE_USER} =
 					Vend::Util::check_authorization( delete $$env{AUTHORIZATION} );
 		}
-		if (! $$env{REMOTE_USER}) {
+		if(! $$env{REMOTE_USER}) {
 			$Vend::StatusLine = <<EOF;
 HTTP/1.0 401 Unauthorized
 WWW-Authenticate: Basic realm="Interchange Admin"
@@ -616,13 +608,11 @@ EOF
 #::logDebug("found direct catalog $cat");
 		$$env{SCRIPT_NAME} = $cat;
 		$$env{PATH_INFO} = join "/", '', @path;
-	}
-	elsif(-f "$Global::VendRoot/doc$path") {
+	} elsif(-f "$Global::VendRoot/doc$path") {
 #::logDebug("found doc file");
 		$Vend::StatusLine = "HTTP/1.0 200 OK";
 		$doc = readfile("$Global::VendRoot/doc$path");
-	}
-	else {
+	} else {
 #::logDebug("not found");
 		$status = 404;
 		$Vend::StatusLine = "HTTP/1.0 404 Not found";
@@ -643,7 +633,7 @@ EOF
 						)
 		);
 
-	if (defined $doc) {
+	if(defined $doc) {
 		$path =~ /\.([^.]+)$/;
 		$Vend::StatusLine = '' unless defined $Vend::StatusLine;
 		$Vend::StatusLine .= "\r\nContent-type: " . ($MIME_type{$1} || "text/plain");
@@ -657,38 +647,36 @@ EOF
 }
 
 sub read_cgi_data {
-    my ($argv, $env, $entity) = @_;
-    my ($in, $block, $n, $i, $e, $key, $value);
-    $in = '';
+	my($argv, $env, $entity) = @_;
+	my($in, $block, $n, $i, $e, $key, $value);
+	$in = '';
 
-    for (;;) {
-        $block = _find(\$in, "\n");
-        if ($block =~ m/^[GPH]/) {
-           	return http_server($block, $in, @_);
-		}
-		elsif ($block =~ s/^ipc ([-\w]+)$//) {
+	for (;;) {
+		$block = _find(\$in, "\n");
+		if($block =~ m/^[GPH]/) {
+			return http_server($block, $in, @_);
+		} elsif($block =~ s/^ipc ([-\w]+)$//) {
 			my $cat = $1;
-		}
-		elsif (($n) = ($block =~ m/^arg (\d+)$/)) {
-            $#$argv = $n - 1;
-            foreach $i (0 .. $n - 1) {
-                $$argv[$i] = _string(\$in);
-            }
-        } elsif (($n) = ($block =~ m/^env (\d+)$/)) {
-            foreach $i (0 .. $n - 1) {
-                $e = _string(\$in);
-                if (($key, $value) = ($e =~ m/^([^=]+)=(.*)$/s)) {
-                    $$env{$key} = $value;
-                }
-            }
-        } elsif ($block =~ m/^entity$/) {
-            $$entity = _string(\$in);
-        } elsif ($block =~ m/^end$/) {
-            last;
-        } else {
+		} elsif(($n) = ($block =~ m/^arg (\d+)$/)) {
+			$#$argv = $n - 1;
+			foreach $i (0 .. $n - 1) {
+				$$argv[$i] = _string(\$in);
+			}
+		} elsif(($n) = ($block =~ m/^env (\d+)$/)) {
+			foreach $i (0 .. $n - 1) {
+				$e = _string(\$in);
+				if(($key, $value) = ($e =~ m/^([^=]+)=(.*)$/s)) {
+					$$env{$key} = $value;
+				}
+			}
+		} elsif($block =~ m/^entity$/) {
+			$$entity = _string(\$in);
+		} elsif($block =~ m/^end$/) {
+			last;
+		} else {
 			die "Unrecognized block: $block\n";
-        }
-    }
+		}
+	}
 	if($Vend::OnlyInternalHTTP) {
 		my $msg = errmsg(
 						"attempt to connect from unauthorized host '%s'",
@@ -701,14 +689,14 @@ sub read_cgi_data {
 }
 
 sub connection {
-    my (%env, $entity);
-    my $http;
+	my (%env, $entity);
+	my $http;
 #::logDebug ("begin connection: " . (join " ", times()) . "\n");
-    read_cgi_data(\@Global::argv, \%env, \$entity)
-    	or return 0;
+	read_cgi_data(\@Global::argv, \%env, \$entity)
+		or return 0;
 	$http = new Vend::Server \*Vend::Server::MESSAGE, \%env, $entity;
 #::logGlobal ("begin dispatch: " . (join " ", times()) . "\n");
-    dispatch($http);
+	dispatch($http);
 #::logDebug ("end connection: " . (join " ", times()) . "\n");
 	undef $Vend::ResponseMade;
 	undef $Vend::InternalHTTP;
@@ -739,16 +727,15 @@ $Routine_TERM = sub { $SIG{TERM} = $Routine_TERM; $Signal_Terminate = 1 };
 $Routine_INT  = sub { $SIG{INT} = $Routine_INT; $Signal_Terminate = 1 };
 
 sub setup_signals {
-    @orig_signal{@trapped_signals} =
-        map(defined $_ ? $_ : 'DEFAULT', @SIG{@trapped_signals});
-    $Signal_Terminate = $Signal_Debug = '';
-    $SIG{PIPE} = 'IGNORE';
+	@orig_signal{@trapped_signals} =
+		map(defined $_ ? $_ : 'DEFAULT', @SIG{@trapped_signals});
+	$Signal_Terminate = $Signal_Debug = '';
+	$SIG{PIPE} = 'IGNORE';
 
-	if ($Global::Windows) {
+	if($Global::Windows) {
 		$SIG{INT}  = sub { $Signal_Terminate = 1; };
 		$SIG{TERM} = sub { $Signal_Terminate = 1; };
-	}
-	else  {
+	} else  {
 		$SIG{INT}  = sub { $Signal_Terminate = 1; };
 		$SIG{TERM} = sub { $Signal_Terminate = 1; };
 		$SIG{HUP}  = sub { $Signal_Restart = 1; };
@@ -757,17 +744,16 @@ sub setup_signals {
 	}
 
 	if(! $Global::MaxServers) {
-        $Sig_inc = sub { 1 };
-        $Sig_dec = sub { 1 };
+		$Sig_inc = sub { 1 };
+		$Sig_dec = sub { 1 };
+	} else {
+		$Sig_inc = sub { kill "USR1", $Vend::MasterProcess; };
+		$Sig_dec = sub { kill "USR2", $Vend::MasterProcess; };
 	}
-    else {
-        $Sig_inc = sub { kill "USR1", $Vend::MasterProcess; };
-        $Sig_dec = sub { kill "USR2", $Vend::MasterProcess; };
-    }
 }
 
 sub restore_signals {
-    @SIG{@trapped_signals} = @orig_signal{@trapped_signals};
+	@SIG{@trapped_signals} = @orig_signal{@trapped_signals};
 }
 
 my $Last_housekeeping = 0;
@@ -786,150 +772,143 @@ sub housekeeping {
 	my ($c, $num,$reconfig, $restart, @files);
 	my @pids;
 
-		opendir(Vend::Server::CHECKRUN, $Global::ConfDir)
-			or die "opendir $Global::ConfDir: $!\n";
-		@files = readdir Vend::Server::CHECKRUN;
-		closedir(Vend::Server::CHECKRUN)
-			or die "closedir $Global::ConfDir: $!\n";
-		($reconfig) = grep $_ eq 'reconfig', @files;
-		($restart) = grep $_ eq 'restart', @files
-			if $Signal_Restart || $Global::Windows;
-		if($Global::PIDcheck) {
-			$Vend::Server::Num_servers = 0;
-			@pids = grep /^pid\.\d+$/, @files;
-		}
-		#scalar grep($_ eq 'stop_the_server', @files) and exit;
-		if (defined $restart) {
-			$Signal_Restart = 0;
-			open(Vend::Server::RESTART, "+<$Global::ConfDir/restart")
-				or die "open $Global::ConfDir/restart: $!\n";
-			lockfile(\*Vend::Server::RESTART, 1, 1)
-				or die "lock $Global::ConfDir/restart: $!\n";
-			while(<Vend::Server::RESTART>) {
-				chomp;
-				my ($directive,$value) = split /\s+/, $_, 2;
-				if($value =~ /<<(.*)/) {
-					my $mark = $1;
-					$value = Vend::Config::read_here(\*Vend::Server::RESTART, $mark);
-					unless (defined $value) {
-						::logGlobal({}, <<EOF, $mark);
+	opendir(Vend::Server::CHECKRUN, $Global::ConfDir)
+		or die "opendir $Global::ConfDir: $!\n";
+	@files = readdir Vend::Server::CHECKRUN;
+	closedir(Vend::Server::CHECKRUN)
+		or die "closedir $Global::ConfDir: $!\n";
+	($reconfig) = grep $_ eq 'reconfig', @files;
+	($restart) = grep $_ eq 'restart', @files
+		if $Signal_Restart || $Global::Windows;
+	if($Global::PIDcheck) {
+		$Vend::Server::Num_servers = 0;
+		@pids = grep /^pid\.\d+$/, @files;
+	}
+	#scalar grep($_ eq 'stop_the_server', @files) and exit;
+	if(defined $restart) {
+		$Signal_Restart = 0;
+		open(Vend::Server::RESTART, "+<$Global::ConfDir/restart")
+			or die "open $Global::ConfDir/restart: $!\n";
+		lockfile(\*Vend::Server::RESTART, 1, 1)
+			or die "lock $Global::ConfDir/restart: $!\n";
+		while(<Vend::Server::RESTART>) {
+			chomp;
+			my ($directive,$value) = split /\s+/, $_, 2;
+			if($value =~ /<<(.*)/) {
+				my $mark = $1;
+				$value = Vend::Config::read_here(\*Vend::Server::RESTART, $mark);
+				unless (defined $value) {
+					::logGlobal({}, <<EOF, $mark);
 Global reconfig ERROR
 Can't find string terminator "%s" anywhere before EOF.
 EOF
-						last;
-					}
-					chomp $value;
-				}
-				eval {
-					if($directive =~ /^\s*(sub)?catalog$/i) {
-						::add_catalog("$directive $value");
-					}
-					elsif(
-							$directive =~ /^remove$/i 		and
-							$value =~ /catalog\s+(\S+)/i
-						)
-					{
-						::remove_catalog($1);
-					}
-					else {
-						::change_global_directive($directive, $value);
-					}
-				};
-				if($@) {
-					::logGlobal({}, $@);
 					last;
 				}
+				chomp $value;
 			}
-			unlockfile(\*Vend::Server::RESTART)
-				or die "unlock $Global::ConfDir/restart: $!\n";
-			close(Vend::Server::RESTART)
-				or die "close $Global::ConfDir/restart: $!\n";
-			unlink "$Global::ConfDir/restart"
-				or die "unlink $Global::ConfDir/restart: $!\n";
-		}
-		if (defined $reconfig) {
-			open(Vend::Server::RECONFIG, "+<$Global::ConfDir/reconfig")
-				or die "open $Global::ConfDir/reconfig: $!\n";
-			lockfile(\*Vend::Server::RECONFIG, 1, 1)
-				or die "lock $Global::ConfDir/reconfig: $!\n";
-			while(<Vend::Server::RECONFIG>) {
-				chomp;
-				my ($script_name,$build) = split /\s+/, $_;
-				my $select = $Global::SelectorAlias{$script_name} || $script_name;
-                my $cat = $Global::Selector{$select};
-                unless (defined $cat) {
-                    ::logGlobal({}, "Bad script name '%s' for reconfig." , $script_name );
-                    next;
-                }
-				$c = ::config_named_catalog($cat->{CatalogName},
-                                    "from running server ($$)", $build);
-				if (defined $c) {
-					$Global::Selector{$select} = $c;
-					for(sort keys %Global::SelectorAlias) {
-						next unless $Global::SelectorAlias{$_} eq $select;
-						$Global::Selector{$_} = $c;
-					}
-					::logGlobal({}, "Reconfig of %s successful.", $c->{CatalogName});
+			eval {
+				if($directive =~ /^\s*(sub)?catalog$/i) {
+					::add_catalog("$directive $value");
+				} elsif(
+						$directive =~ /^remove$/i 		and
+						$value =~ /catalog\s+(\S+)/i
+					)
+				{
+					::remove_catalog($1);
+				} else {
+					::change_global_directive($directive, $value);
 				}
-				else {
-					::logGlobal({},
-						 "Error reconfiguring catalog %s from running server (%s)\n%s",
-						 $script_name,
-						 $$,
-						 $@,
-						 );
-				}
+			};
+			if($@) {
+				::logGlobal({}, $@);
+				last;
 			}
-			unlockfile(\*Vend::Server::RECONFIG)
-				or die "unlock $Global::ConfDir/reconfig: $!\n";
-			close(Vend::Server::RECONFIG)
-				or die "close $Global::ConfDir/reconfig: $!\n";
-			unlink "$Global::ConfDir/reconfig"
-				or die "unlink $Global::ConfDir/reconfig: $!\n";
 		}
-        for (@pids) {
-            $Vend::Server::Num_servers++;
-            my $fn = "$Global::ConfDir/$_";
-            ($Vend::Server::Num_servers--, next) if ! -f $fn;
-            my $runtime = $now - (stat(_))[9];
-            next if $runtime < $Global::PIDcheck;
-            s/^pid\.//;
-            if(kill 9, $_) {
-                unlink $fn and $Vend::Server::Num_servers--;
-                ::logGlobal({}, "hammered PID %s running %s seconds", $_, $runtime);
-            }
-            elsif (! kill 0, $_) {
-				unlink $fn and $Vend::Server::Num_servers--;
-                ::logGlobal({},
-					"Spurious PID file for process %s supposedly running %s seconds",
-						$_,
-						$runtime,
-				);
+		unlockfile(\*Vend::Server::RESTART)
+			or die "unlock $Global::ConfDir/restart: $!\n";
+		close(Vend::Server::RESTART)
+			or die "close $Global::ConfDir/restart: $!\n";
+		unlink "$Global::ConfDir/restart"
+			or die "unlink $Global::ConfDir/restart: $!\n";
+	}
+	if(defined $reconfig) {
+		open(Vend::Server::RECONFIG, "+<$Global::ConfDir/reconfig")
+			or die "open $Global::ConfDir/reconfig: $!\n";
+		lockfile(\*Vend::Server::RECONFIG, 1, 1)
+			or die "lock $Global::ConfDir/reconfig: $!\n";
+		while(<Vend::Server::RECONFIG>) {
+			chomp;
+			my ($script_name,$build) = split /\s+/, $_;
+			my $select = $Global::SelectorAlias{$script_name} || $script_name;
+			my $cat = $Global::Selector{$select};
+			unless (defined $cat) {
+				::logGlobal({}, "Bad script name '%s' for reconfig." , $script_name );
+				next;
 			}
-            else {
-				unlink $fn and $Vend::Server::Num_servers--;
-                ::logGlobal({},
-					"PID %s running %s seconds would not die!",
-						$_,
-						$runtime,
-				);
-            }
-        }
-
-
+			$c = ::config_named_catalog($cat->{CatalogName},
+				"from running server ($$)", $build);
+			if(defined $c) {
+				$Global::Selector{$select} = $c;
+				for(sort keys %Global::SelectorAlias) {
+					next unless $Global::SelectorAlias{$_} eq $select;
+					$Global::Selector{$_} = $c;
+				}
+				::logGlobal({}, "Reconfig of %s successful.", $c->{CatalogName});
+			} else {
+				::logGlobal({},
+					 "Error reconfiguring catalog %s from running server (%s)\n%s",
+					 $script_name,
+					 $$,
+					 $@,
+					 );
+			}
+		}
+		unlockfile(\*Vend::Server::RECONFIG)
+			or die "unlock $Global::ConfDir/reconfig: $!\n";
+		close(Vend::Server::RECONFIG)
+			or die "close $Global::ConfDir/reconfig: $!\n";
+		unlink "$Global::ConfDir/reconfig"
+			or die "unlink $Global::ConfDir/reconfig: $!\n";
+	}
+	for (@pids) {
+		$Vend::Server::Num_servers++;
+		my $fn = "$Global::ConfDir/$_";
+		($Vend::Server::Num_servers--, next) if ! -f $fn;
+		my $runtime = $now - (stat(_))[9];
+		next if $runtime < $Global::PIDcheck;
+		s/^pid\.//;
+		if(kill 9, $_) {
+			unlink $fn and $Vend::Server::Num_servers--;
+			::logGlobal({}, "hammered PID %s running %s seconds", $_, $runtime);
+		} elsif(! kill 0, $_) {
+			unlink $fn and $Vend::Server::Num_servers--;
+			::logGlobal({},
+				"Spurious PID file for process %s supposedly running %s seconds",
+					$_,
+					$runtime,
+			);
+		} else {
+			unlink $fn and $Vend::Server::Num_servers--;
+			::logGlobal({},
+				"PID %s running %s seconds would not die!",
+					$_,
+					$runtime,
+			);
+		}
+	}
 }
 
 # The servers for both are now combined
 # Can have both INET and UNIX on same system
 sub server_both {
-    my ($socket_filename) = @_;
-    my ($n, $rin, $rout, $pid, $tick);
+	my ($socket_filename) = @_;
+	my ($n, $rin, $rout, $pid, $tick);
 
 	$Vend::MasterProcess = $$;
 
 	$tick        = $Global::HouseKeeping || 60;
 
-    setup_signals();
+	setup_signals();
 
 	my ($host, $port);
 	if($Global::Inet_Mode) {
@@ -953,8 +932,7 @@ sub server_both {
 	my $so_max;
 	if(defined &SOMAXCONN) {
 		$so_max = SOMAXCONN;
-	}
-	else {
+	} else {
 		$so_max = 128;
 	}
 
@@ -1004,11 +982,10 @@ sub server_both {
 		my $bind_addr;
 		my $bind_ip;
 #::logDebug("starting to parse port $port, fh created: $fh");
-		if ($port =~ s/^([-\w.]+):(\d+)$/$2/) {
+		if($port =~ s/^([-\w.]+):(\d+)$/$2/) {
 			$bind_ip  = $1;
 			$bind_addr = inet_aton($bind_ip);
-		}
-		else {
+		} else {
 			$bind_ip  = '0.0.0.0';
 			$bind_addr = INADDR_ANY;
 		}
@@ -1035,14 +1012,13 @@ sub server_both {
 		};
 
 
-		if (! $@) {
+		if(! $@) {
 			$rin = '';
 			vec($rin, fileno($fh), 1) = 1;
 			$vector |= $rin;
 			$vec_map{"$bind_ip:$port"} = fileno($fh);
 			$fh_map{"$bind_ip:$port"} = $fh;
-		}
-		else {
+		} else {
 		  ::logGlobal({},
 					"INET mode server failed to start on port %s: %s",
 					$port,
@@ -1056,14 +1032,13 @@ sub server_both {
 	  }
 	}
 
-	if (! $made_at_least_one and $Global::Inet_Mode) {
+	if(! $made_at_least_one and $Global::Inet_Mode) {
 		my $msg;
-		if ($Global::Unix_Mode) {
+		if($Global::Unix_Mode) {
 			$msg = errmsg("Continuing in UNIX MODE ONLY" );
 			::logGlobal($msg);
 			print "$msg\n";
-		}
-		else {
+		} else {
 			$msg = errmsg( "No sockets -- INTERCHANGE SERVER TERMINATING\a" );
 			::logGlobal( {level => 'alert'}, $msg );
 			print "$msg\n";
@@ -1076,19 +1051,17 @@ sub server_both {
 		$no_fork = 1;
 		$Vend::Foreground = 1;
 		::logGlobal("Running in foreground, OS=$^O, debug=$Global::DEBUG\n");
-	}
-	else {
+	} else {
 		close(STDIN);
 		close(STDOUT);
 		close(STDERR);
 
-		if ($Global::DebugFile) {
+		if($Global::DebugFile) {
 			open(Vend::DEBUG, ">>$Global::DebugFile");
 			select Vend::DEBUG;
 			$| =1;
 			print "Start DEBUG at " . localtime() . "\n";
-		}
-		elsif (!$Global::DEBUG) {
+		} elsif(!$Global::DEBUG) {
 			# May as well turn warnings off, not going anywhere
 			$^W = 0;
 			open (Vend::DEBUG, ">/dev/null") unless $Global::Windows;
@@ -1103,121 +1076,111 @@ sub server_both {
 	}
 
 
-    for (;;) {
-
-	  eval {
-        $rin = $vector;
-		undef $spawn;
-        $n = select($rout = $rin, undef, undef, $tick);
-
-		undef $Vend::Cfg;
-
-        if ($n == -1) {
-            if ($! =~ m/^Interrupted/) {
-                if ($Signal_Terminate) {
-                    last;
-                }
-            }
-            else {
-				my $msg = $!;
-				$msg = errmsg("error '%s' from select." , $msg );
-				::logGlobal({}, $msg );
-                die "$msg\n";
-            }
-        }
-
-        elsif (	$Global::Unix_Mode && vec($rout, fileno(Vend::Server::USOCKET), 1) ) {
-			undef $Vend::OnlyInternalHTTP;
-            my $ok = accept(Vend::Server::MESSAGE, Vend::Server::USOCKET);
-            die "accept: $!" unless defined $ok;
-			$spawn = 1;
-		}
-		elsif($n == 0) {
+	for (;;) {
+		eval {
+			$rin = $vector;
 			undef $spawn;
-			housekeeping();
-		}
-        elsif (	$Global::Inet_Mode ) {
-            my ($ok, $p, $v);
-			while (($p, $v) = each %vec_map) {
-        		next unless vec($rout, $v, 1);
-				$Global::TcpPort = $p;
-				$ok = accept(Vend::Server::MESSAGE, $fh_map{$p});
-			}
+			$n = select($rout = $rin, undef, undef, $tick);
+
+			undef $Vend::Cfg;
+
+			if($n == -1) {
+				if($! =~ m/^Interrupted/) {
+					if($Signal_Terminate) {
+						last;
+					}
+				} else {
+					my $msg = $!;
+					$msg = errmsg("error '%s' from select." , $msg );
+					::logGlobal({}, $msg );
+					die "$msg\n";
+				}
+			} elsif($Global::Unix_Mode && vec($rout, fileno(Vend::Server::USOCKET), 1)) {
+				undef $Vend::OnlyInternalHTTP;
+				my $ok = accept(Vend::Server::MESSAGE, Vend::Server::USOCKET);
+				die "accept: $!" unless defined $ok;
+				$spawn = 1;
+			} elsif($n == 0) {
+				undef $spawn;
+				housekeeping();
+			} elsif($Global::Inet_Mode) {
+				my ($ok, $p, $v);
+				while (($p, $v) = each %vec_map) {
+					next unless vec($rout, $v, 1);
+					$Global::TcpPort = $p;
+					$ok = accept(Vend::Server::MESSAGE, $fh_map{$p});
+				}
 #::logDebug("port $Global::TcpPort");
-            die "accept: $!" unless defined $ok;
-			my $connector;
-			(undef, $ok) = sockaddr_in($ok);
-		CHECKHOST: {
-			undef $Vend::OnlyInternalHTTP;
-			$connector = inet_ntoa($ok);
-			last CHECKHOST if $connector =~ /$Global::TcpHost/;
-			my $dns_name;
-			(undef, $dns_name) = gethostbyaddr($ok, AF_INET);
-			$dns_name = "UNRESOLVED_NAME" if ! $dns_name;
-			last CHECKHOST if $dns_name =~ /$Global::TcpHost/;
-			$Vend::OnlyInternalHTTP = "$dns_name/$connector";
-		}
-			$spawn = 1;
-		}
-        else {
-            die "Why did select return with $n? Can we even get here?";
-        }
-	  };
-	  ::logGlobal({}, "Died in select, retrying: %s", $@) if $@;
+				die "accept: $!" unless defined $ok;
+				my $connector;
+				(undef, $ok) = sockaddr_in($ok);
+				CHECKHOST: {
+					undef $Vend::OnlyInternalHTTP;
+					$connector = inet_ntoa($ok);
+					last CHECKHOST if $connector =~ /$Global::TcpHost/;
+					my $dns_name;
+					(undef, $dns_name) = gethostbyaddr($ok, AF_INET);
+					$dns_name = "UNRESOLVED_NAME" if ! $dns_name;
+					last CHECKHOST if $dns_name =~ /$Global::TcpHost/;
+					$Vend::OnlyInternalHTTP = "$dns_name/$connector";
+				}
+				$spawn = 1;
+			} else {
+				die "Why did select return with $n? Can we even get here?";
+			}
+		};
+		::logGlobal({}, "Died in select, retrying: %s", $@) if $@;
 
-	  eval {
-		SPAWN: {
-			last SPAWN unless defined $spawn;
+		eval {
+			SPAWN: {
+				last SPAWN unless defined $spawn;
 #::logDebug #("Spawning connection, " .  ($no_fork ? 'no fork, ' : 'forked, ') .  scalar localtime() . "\n");
-			if(defined $no_fork) {
-				$Vend::NoFork = {};
-				$::Instance = {};
-				connection();
-				undef $Vend::NoFork;
-				undef $::Instance;
-			}
-			elsif(! defined ($pid = fork) ) {
-				my $msg = errmsg("Can't fork: %s", $!);
-				::logGlobal({}, $msg );
-				die ("$msg\n");
-			}
-			elsif (! $pid) {
-				#fork again
-				unless ($pid = fork) {
-
+				if(defined $no_fork) {
+					$Vend::NoFork = {};
 					$::Instance = {};
-					eval { 
-						touch_pid() if $Global::PIDcheck;
-						&$Sig_inc;
-						connection();
-					};
-					if ($@) {
-						my $msg = $@;
-						::logGlobal({}, "Runtime error: %s" , $msg);
-						logError("Runtime error: %s", $msg)
-							if defined $Vend::Cfg->{ErrorFile};
-					}
-
+					connection();
+					undef $Vend::NoFork;
 					undef $::Instance;
-					select(undef,undef,undef,0.050) until getppid == 1;
-					if ($Global::PIDcheck) {
-						unlink_pid() and &$Sig_dec;
-					}
-					else {
-						&$Sig_dec;
+				} elsif(! defined ($pid = fork) ) {
+					my $msg = errmsg("Can't fork: %s", $!);
+					::logGlobal({}, $msg );
+					die ("$msg\n");
+				} elsif(! $pid) {
+					#fork again
+					unless ($pid = fork) {
+
+						$::Instance = {};
+						eval { 
+							touch_pid() if $Global::PIDcheck;
+							&$Sig_inc;
+							connection();
+						};
+						if($@) {
+							my $msg = $@;
+							::logGlobal({}, "Runtime error: %s" , $msg);
+							logError("Runtime error: %s", $msg)
+								if defined $Vend::Cfg->{ErrorFile};
+						}
+
+						undef $::Instance;
+						select(undef,undef,undef,0.050) until getppid == 1;
+						if($Global::PIDcheck) {
+							unlink_pid() and &$Sig_dec;
+						} else {
+							&$Sig_dec;
+						}
+						exit(0);
 					}
 					exit(0);
 				}
-				exit(0);
+				close Vend::Server::MESSAGE;
+				last SPAWN if $no_fork;
+				wait;
 			}
-			close Vend::Server::MESSAGE;
-			last SPAWN if $no_fork;
-			wait;
-		}
-	  };
+		};
 
 		# clean up dies during spawn
-		if ($@) {
+		if($@) {
 			::logGlobal({}, "Died in server spawn: %s", $@ ) if $@;
 
 			# Below only happens with Windows or foreground debugs.
@@ -1232,26 +1195,25 @@ sub server_both {
 
 		last if $Signal_Terminate || $Signal_Debug;
 
-	  eval {
-        for(;;) {
-		   housekeeping($tick);
-           last if ! $Global::MaxServers or $Vend::Server::Num_servers < $Global::MaxServers;
-           select(undef,undef,undef,0.100);
-           last if $Signal_Terminate || $Signal_Debug;
-        }
-	  };
-	  ::logGlobal({}, "Died in housekeeping, retry: %s", $@ ) if $@;
+		eval {
+			for(;;) {
+				housekeeping($tick);
+				last if ! $Global::MaxServers or $Vend::Server::Num_servers < $Global::MaxServers;
+				select(undef,undef,undef,0.100);
+				last if $Signal_Terminate || $Signal_Debug;
+			}
+		};
+		::logGlobal({}, "Died in housekeeping, retry: %s", $@ ) if $@;
+	}
 
-    }
+	restore_signals();
 
-    restore_signals();
+	if($Signal_Terminate) {
+	       	::logGlobal({}, "STOP server (%s) on signal TERM", $$ );
+	       	return 'terminate';
+	}
 
-   	if ($Signal_Terminate) {
-       	::logGlobal({}, "STOP server (%s) on signal TERM", $$ );
-       	return 'terminate';
-   	}
-
-    return '';
+	return '';
 }
 
 sub touch_pid {
@@ -1268,44 +1230,42 @@ sub unlink_pid {
 }
 
 sub grab_pid {
-    my $ok = lockfile(\*Vend::Server::Pid, 1, 0);
-    if (not $ok) {
-        chomp(my $pid = <Vend::Server::Pid>);
-        return $pid;
-    }
-    {
-        no strict 'subs';
-        truncate(Vend::Server::Pid, 0) or die "Couldn't truncate pid file: $!\n";
-    }
-    print Vend::Server::Pid $$, "\n";
-    return 0;
+	my $ok = lockfile(\*Vend::Server::Pid, 1, 0);
+	if(not $ok) {
+		chomp(my $pid = <Vend::Server::Pid>);
+		return $pid;
+	}
+	{
+		no strict 'subs';
+		truncate(Vend::Server::Pid, 0) or die "Couldn't truncate pid file: $!\n";
+	}
+	print Vend::Server::Pid $$, "\n";
+	return 0;
 }
 
 
 
 sub open_pid {
-
-    open(Vend::Server::Pid, "+>>$Global::PIDfile")
-        or die "Couldn't open '$Global::PIDfile': $!\n";
-    seek(Vend::Server::Pid, 0, 0);
-    my $o = select(Vend::Server::Pid);
-    $| = 1;
-    {
-        no strict 'refs';
-        select($o);
-    }
+	open(Vend::Server::Pid, "+>>$Global::PIDfile")
+		or die "Couldn't open '$Global::PIDfile': $!\n";
+	seek(Vend::Server::Pid, 0, 0);
+	my $o = select(Vend::Server::Pid);
+	$| = 1;
+	{
+		no strict 'refs';
+		select($o);
+	}
 }
 
 sub run_server {
-    my $next;
-    my $pid;
+	my $next;
+	my $pid;
 	
-    open_pid();
+	open_pid();
 
 	unless($Global::Inet_Mode || $Global::Unix_Mode || $Global::Windows) {
 		$Global::Inet_Mode = $Global::Unix_Mode = 1;
-	}
-	elsif ( $Global::Windows ) {
+	} elsif( $Global::Windows ) {
 		$Global::Inet_Mode = 1;
 	}
 
@@ -1315,67 +1275,61 @@ sub run_server {
 	my $server_type = join(" and ", @types);
 	::logGlobal({}, "START server (%s) (%s)" , $$, $server_type );
 
-    if ($Global::Windows) {
-        $pid = grab_pid();
-        if ($pid) {
+	if($Global::Windows) {
+		$pid = grab_pid();
+		if($pid) {
 			print errmsg(
 				"The Interchange server is already running (process id %s)\n",
 				$pid,
 				);
 			exit 1;
-        }
+		}
 
-        print errmsg("Interchange server started (%s) (%s)\n", $$, $server_type);
+		print errmsg("Interchange server started (%s) (%s)\n", $$, $server_type);
 		$next = server_both($Global::SocketFile);
-    }
-    else {
-
-        fcntl(Vend::Server::Pid, F_SETFD, 0)
-            or die "Can't fcntl close-on-exec flag for '$Global::PIDfile': $!\n";
-        my ($pid1, $pid2);
-        if ($pid1 = fork) {
-            # parent
-            wait;
+	} else {
+		fcntl(Vend::Server::Pid, F_SETFD, 0)
+			or die "Can't fcntl close-on-exec flag for '$Global::PIDfile': $!\n";
+		my ($pid1, $pid2);
+		if($pid1 = fork) {
+			# parent
+			wait;
 			sleep 2;
-            exit 0;
-        }
-        elsif (not defined $pid1) {
-            # fork error
-            print "Can't fork: $!\n";
-            exit 1;
-        }
-        else {
-            # child 1
-            if ($pid2 = fork) {
-                # still child 1
-                exit 0;
-            }
-            elsif (not defined $pid2) {
-                print "child 1 can't fork: $!\n";
-                exit 1;
-            }
-            else {
-                # child 2
-                sleep 1 until getppid == 1;
+			exit 0;
+		} elsif(not defined $pid1) {
+			# fork error
+			print "Can't fork: $!\n";
+			exit 1;
+		} else {
+			# child 1
+			if($pid2 = fork) {
+				# still child 1
+				exit 0;
+			} elsif(not defined $pid2) {
+				print "child 1 can't fork: $!\n";
+				exit 1;
+			} else {
+				# child 2
+				sleep 1 until getppid == 1;
 
-                $pid = grab_pid();
-                if ($pid) {
-                    print errmsg(
+				$pid = grab_pid();
+				if($pid) {
+					print errmsg(
 						"The Interchange server is already running (process id %s)\n",
 						$pid,
 						);
-                    exit 1;
-                }
-                print errmsg(
+					exit 1;
+				}
+				print errmsg(
 						"Interchange server started in %s mode(s) (process id %s)\n",
 						$server_type,
 						$$,
 					 ) unless $Vend::Quiet;
 
-                setsid();
+				setsid();
 
-                fcntl(Vend::Server::Pid, F_SETFD, 1)
-                    or die "Can't fcntl close-on-exec flag for '$Global::PIDfile': $!\n";
+				fcntl(Vend::Server::Pid, F_SETFD, 1)
+					or die "Can't fcntl close-on-exec flag for '$Global::PIDfile': $!\n";
 
 				$next = server_both($Global::SocketFile);
 
@@ -1388,10 +1342,10 @@ sub run_server {
 						"Couldn't unlink status file $Global::ConfDir/$_: $!\n";
 				}
 				unlink $Global::PIDfile;
-                exit 0;
-            }
-        }
-    }                
+				exit 0;
+			}
+		}
+	}                
 }
 
 ## FILE PERMISSIONS
@@ -1400,16 +1354,26 @@ sub set_file_permissions {
 	my($r, $w, $p, $u);
 
 	$r = $Vend::Cfg->{'ReadPermission'};
-	if    ($r eq 'user')  { $p = 0400;   $u = 0277; }
-	elsif ($r eq 'group') { $p = 0440;   $u = 0227; }
-	elsif ($r eq 'world') { $p = 0444;   $u = 0222; }
-	else                  { die "Invalid value for ReadPermission\n"; }
+	if($r eq 'user') {
+		$p = 0400;   $u = 0277;
+	} elsif($r eq 'group') {
+		$p = 0440;   $u = 0227;
+	} elsif($r eq 'world') {
+		$p = 0444;   $u = 0222;
+	} else {
+		die "Invalid value for ReadPermission\n";
+	}
 
 	$w = $Vend::Cfg->{'WritePermission'};
-	if    ($w eq 'user')  { $p += 0200;  $u &= 0577; }
-	elsif ($w eq 'group') { $p += 0220;  $u &= 0557; }
-	elsif ($w eq 'world') { $p += 0222;  $u &= 0555; }
-	else                  { die "Invalid value for WritePermission\n"; }
+	if($w eq 'user') {
+		$p += 0200;  $u &= 0577;
+	} elsif($w eq 'group') {
+		$p += 0220;  $u &= 0557;
+	} elsif($w eq 'world') {
+		$p += 0222;  $u &= 0555;
+	} else {
+		die "Invalid value for WritePermission\n";
+	}
 
 	$Vend::Cfg->{'FileCreationMask'} = $p;
 	$Vend::Cfg->{'Umask'} = $u;
@@ -1430,8 +1394,7 @@ sub adjust_cgi {
 
 	if($Global::DomainTail and $host) {
 		$host =~ s/.*?([-A-Za-z0-9]+\.[A-Za-z]+)$/$1/;
-	}
-	elsif($Global::IpHead) {
+	} elsif($Global::IpHead) {
 		$host = $Global::IpQuad == 0 ? 'nobody' : '';
 		my @ip;
 		@ip = split /\./, $CGI::ip;
@@ -1451,8 +1414,7 @@ sub adjust_cgi {
 
 	unless ($Global::FullUrl) {
 		$CGI::script_name = $CGI::script_path;
-	}
-	else {
+	} else {
 		if($CGI::server_port eq '80') {
 			$CGI::server_port = '';
 		} else {
@@ -1575,7 +1537,7 @@ EOF
 	}
 
 	# See if it is a subcatalog
-	if (defined $Vend::Cfg->{BaseCatalog}) {
+	if(defined $Vend::Cfg->{BaseCatalog}) {
 		my $name = $Vend::Cfg->{BaseCatalog};
 		my $ref = $Global::Catalog{$name};
 		my $c = $Vend::Cfg;
@@ -1595,7 +1557,7 @@ EOF
 	$::Variable = $Vend::Cfg->{Variable};
 
 
-	if (defined $Global::SelectorAlias{$CGI::script_name}
+	if(defined $Global::SelectorAlias{$CGI::script_name}
 		and ! defined $Vend::InternalHTTP                 )
 	{
 		my $real = $Global::SelectorAlias{$CGI::script_name};
@@ -1612,8 +1574,7 @@ EOF
 			$Vend::Cfg->{VendURL}   =~ s!$real!$CGI::script_name!;
 			$Vend::Cfg->{SecureURL} =~ s!$real!$CGI::script_name!;
 		}
-	}
-	elsif ($Vend::InternalHTTP) {
+	} elsif($Vend::InternalHTTP) {
 		$Vend::Cfg->{VendURL} = "http://" .
 					$CGI::http_host .
 					$CGI::script_path;
@@ -1627,11 +1588,11 @@ EOF
 		$ctr->inc();
 	}
 
-	if ($Vend::Cfg->{SetGroup}) {
+	if($Vend::Cfg->{SetGroup}) {
 		eval {
 			$) = "$Vend::Cfg->{SetGroup} $Vend::Cfg->{SetGroup}";
 		};
-		if ($@) {
+		if($@) {
 			my $msg = $@;
 			logGlobal( "Can't set group to GID %s: %s",
 					$Vend::Cfg->{SetGroup}, $msg
@@ -1660,18 +1621,18 @@ EOF
 					  ? undef
 					  : $Vend::Cfg->{ProductFiles}->[0];
 
-	if (defined $CGI::cookie and
+	if(defined $CGI::cookie and
 		 $CGI::cookie =~ /\bMV_SESSION_ID=(\w{8,32})
-                                  [:_] (
-                                   # An IP ADDRESS
-                                   (\d{1,3}\.
-                                    \d{1,3}\.
-                                    \d{1,3}\.
-                                    \d{1,3})
-                                   |
-                                   # A user name or domain
-                                   ([A-Za-z0-9][-\@A-Za-z.0-9]+)
-                                  )?\b/x)
+								[:_] (
+								 # An IP ADDRESS
+								 (\d{1,3}\.
+								  \d{1,3}\.
+								  \d{1,3}\.
+								  \d{1,3})
+								|
+								 # A user name or domain
+								 ([A-Za-z0-9][-\@A-Za-z.0-9]+)
+								)?\b/x)
 	{
 		$sessionid = $1
 			unless defined $CGI::values{mv_pc} and $CGI::values{mv_pc} eq 'RESET';
@@ -1685,11 +1646,10 @@ EOF
 	if(! $sessionid) {
 		my $id = $::Variable->{MV_SESSION_ID};
 		$sessionid = $CGI::values{$id} if $CGI::values{$id};
-		if (! $sessionid and $Vend::Cfg->{FallbackIP}) {
+		if(! $sessionid and $Vend::Cfg->{FallbackIP}) {
 			$sessionid = ::generate_key($CGI::remote_addr . $CGI::useragent);
 		}
-	}
-	elsif ($sessionid !~ /^\w+$/) {
+	} elsif($sessionid !~ /^\w+$/) {
 		my $msg = ::get_locale_message(
 						403,
 						"Unauthorized for that session %s. Logged.",
@@ -1708,79 +1668,75 @@ EOF
 #::logDebug ("session='$sessionid' cookie='$CGI::cookie' chost='$CGI::cookiehost'");
 # END DEBUG
 
-RESOLVEID: {
-	if ($sessionid) {
-		$Vend::SessionID = $sessionid;
-		$Vend::SessionName = ::session_name();
-		# if not it will return false and a new session has been created.
-		# The IP address will be counted for robot_resolution
-		if(! ::get_session()) {
-			::retire_id($sessionid);
-			last RESOLVEID;
-		}
-		my $now = time;
-		if(! $from_cookie) {
-			if( ::is_retired($sessionid) ) {
-				::new_session();
+	RESOLVEID: {
+		if($sessionid) {
+			$Vend::SessionID = $sessionid;
+			$Vend::SessionName = ::session_name();
+			# if not it will return false and a new session has been created.
+			# The IP address will be counted for robot_resolution
+			if(! ::get_session()) {
+				::retire_id($sessionid);
 				last RESOLVEID;
 			}
-			my $compare_host = $CGI::secure
-						? ($Vend::Session->{shost})
-						: ($Vend::Session->{ohost});
+			my $now = time;
+			if(! $from_cookie) {
+				if( ::is_retired($sessionid) ) {
+					::new_session();
+					last RESOLVEID;
+				}
+				my $compare_host = $CGI::secure
+							? ($Vend::Session->{shost})
+							: ($Vend::Session->{ohost});
 
-			if(! $compare_host) {
-				::new_session() unless $CGI::secure;
-				$Vend::Session->{shost} = $CGI::secure;
-			}
-			elsif ($compare_host ne $CGI::remote_addr) {
-				::new_session();
-			}
-		}
-		if ($now - $Vend::Session->{'time'} > $Vend::Cfg->{SessionExpire}) {
-			::retire_id($sessionid);
-			::new_session();
-			last RESOLVEID;
-		}
-		elsif($Vend::Cfg->{RobotLimit}) {
-			if ($now - $Vend::Session->{'time'} > 30) {
-				$Vend::Session->{accesses} = 0;
-			}
-			else {
-				$Vend::Session->{accesses}++;
-				if($Vend::Session->{'accesses'} > $Vend::Cfg->{RobotLimit}) {
-					my $msg = ::errmsg(
-						"WARNING: POSSIBLE BAD ROBOT. %s accesses with no 30 second pause.",
-						$Vend::Session->{accesses},
-					);
-					::do_lockout($msg);
+				if(! $compare_host) {
+					::new_session() unless $CGI::secure;
+					$Vend::Session->{shost} = $CGI::secure;
+				} elsif($compare_host ne $CGI::remote_addr) {
+					::new_session();
 				}
 			}
-		}
-	}
-	else {
-		if($Vend::Cfg->{RobotLimit}) {
-			if (Vend::Session::count_ip() > $Vend::Cfg->{RobotLimit}) {
-				my $msg;
-				# Here they can get it back if they pass expiration time
-				my $wait = $Global::Variable->{MV_ROBOT_EXPIRE} || 86400;
-				$wait /= 3600;
-				$msg = ::errmsg(<<EOF, $wait); 
+			if($now - $Vend::Session->{'time'} > $Vend::Cfg->{SessionExpire}) {
+				::retire_id($sessionid);
+				::new_session();
+				last RESOLVEID;
+			} elsif($Vend::Cfg->{RobotLimit}) {
+				if($now - $Vend::Session->{'time'} > 30) {
+					$Vend::Session->{accesses} = 0;
+				} else {
+					$Vend::Session->{accesses}++;
+					if($Vend::Session->{'accesses'} > $Vend::Cfg->{RobotLimit}) {
+						my $msg = ::errmsg(
+							"WARNING: POSSIBLE BAD ROBOT. %s accesses with no 30 second pause.",
+							$Vend::Session->{accesses},
+						);
+						::do_lockout($msg);
+					}
+				}
+			}
+		} else {
+			if($Vend::Cfg->{RobotLimit}) {
+				if(Vend::Session::count_ip() > $Vend::Cfg->{RobotLimit}) {
+					my $msg;
+					# Here they can get it back if they pass expiration time
+					my $wait = $Global::Variable->{MV_ROBOT_EXPIRE} || 86400;
+					$wait /= 3600;
+					$msg = ::errmsg(<<EOF, $wait); 
 Too many new ID assignments for this IP address. Please wait at least %d hours
 before trying again. Only waiting that period will allow access. Terminating.
 EOF
-				$msg = ::get_locale_message(403, $msg);
-				::do_lockout($msg);
-				$Vend::StatusLine = <<EOF;
+					$msg = ::get_locale_message(403, $msg);
+					::do_lockout($msg);
+					$Vend::StatusLine = <<EOF;
 Status: 403 Forbidden
 Content-Type: text/plain
 EOF
-					response($msg);
-					return;
+						response($msg);
+						return;
+				}
 			}
+			::new_session();
 		}
-		::new_session();
 	}
-}
 
 #::logDebug("session name='$Vend::SessionName'\n");
 ::logError("session id='$Vend::SessionID'");
@@ -1832,8 +1788,7 @@ EOF
 		$CGI::path_info =
 		$Vend::FinalPath =
 		delete $Vend::Session->{one_time_path_alias}{$Vend::FinalPath};
-	} 
-	elsif( defined $Vend::Session->{path_alias}{$Vend::FinalPath}	) {
+	} elsif( defined $Vend::Session->{path_alias}{$Vend::FinalPath}	) {
 		$CGI::path_info =
 		$Vend::FinalPath =
 		$Vend::Session->{path_alias}{$Vend::FinalPath};
@@ -1871,7 +1826,7 @@ EOF
 			= $::Variable->{LANG} = $locale;
 	}
 
-	if ($Vend::Cfg->{Locale}								and
+	if($Vend::Cfg->{Locale}								and
 		$locale = $::Scratch->{mv_locale}	and
 		defined $Vend::Cfg->{Locale_repository}->{$locale}
 		)
@@ -1889,23 +1844,22 @@ EOF
 # END LEGACY
 
 	my $macro;
-	if ($macro = $Vend::Cfg->{Autoload}) {
+	if($macro = $Vend::Cfg->{Autoload}) {
 		if($macro =~ /\[\w+/) {
 			::interpolate_html($macro);
-		}
-		elsif ($macro =~ /^\w+$/) {
+		} elsif($macro =~ /^\w+$/) {
 			my $sub = $Vend::Cfg->{Sub}{$macro} || $Global::GlobalSub->{$macro};
 			$sub->();
 		}
 	}
 
-	if ($macro = $Vend::Cfg->{Filter}) {
+	if($macro = $Vend::Cfg->{Filter}) {
 		for(keys %$macro) {
 			Vend::Interpolate::input_filter_do($_, { 'op' => $macro->{$_} } );
 		}
 	}
 
-	if (
+	if(
 		defined $Vend::Session->{Filter} and
 		$macro = $Vend::Session->{Filter}
 		)
@@ -1915,7 +1869,7 @@ EOF
 		}
 	}
 
-	if (
+	if(
 		defined $Vend::Session->{Autoload} and
 		$macro = $Vend::Session->{Autoload}
 		)
@@ -1924,15 +1878,14 @@ EOF
 			for (@$macro) {
 				::interpolate_html($_);
 			}
-		}
-		else {
+		} else {
 			::interpolate_html($macro);
 		}
 	}
 
 	# If the cgi-bin program was invoked with no extra path info,
 	# just display the catalog page.
-	if (! $Vend::FinalPath || $Vend::FinalPath =~ m:^/+$:) {
+	if(! $Vend::FinalPath || $Vend::FinalPath =~ m:^/+$:) {
 		$Vend::FinalPath = ::find_special_page('catalog');
 	}
 
@@ -1941,89 +1894,84 @@ EOF
 	$Vend::Session->{extension} = $1 || '';
 #::logDebug("path=$Vend::FinalPath");
 
-DOACTION: {
-	@path = split('/', $Vend::FinalPath, 2);
-	if (defined $CGI::values{mv_action}) {
-		$CGI::values{mv_todo} = $CGI::values{mv_action}
-			if ! defined $CGI::values{mv_todo}
-			and ! defined $CGI::values{mv_doit};
-		if($path[0] eq 'ui_wrap') {
-			$Vend::Action = 'ui_wrap';
-			delete $CGI::values{mv_action};
-			shift(@path);
-			$CGI::values{mv_nextpage} = $path[0]
-				if ! defined $CGI::values{mv_nextpage};
-			$path[0] = "process/$path[0]";
+	DOACTION: {
+		@path = split('/', $Vend::FinalPath, 2);
+		if(defined $CGI::values{mv_action}) {
+			$CGI::values{mv_todo} = $CGI::values{mv_action}
+				if ! defined $CGI::values{mv_todo}
+				and ! defined $CGI::values{mv_doit};
+			if($path[0] eq 'ui_wrap') {
+				$Vend::Action = 'ui_wrap';
+				delete $CGI::values{mv_action};
+				shift(@path);
+				$CGI::values{mv_nextpage} = $path[0]
+					if ! defined $CGI::values{mv_nextpage};
+				$path[0] = "process/$path[0]";
+			} else {
+				$Vend::Action = 'process';
+				$CGI::values{mv_nextpage} = $Vend::FinalPath
+					if ! defined $CGI::values{mv_nextpage};
+			}
+		} else {
+			$Vend::Action = shift @path;
 		}
-		else {
-			$Vend::Action = 'process';
-			$CGI::values{mv_nextpage} = $Vend::FinalPath
-				if ! defined $CGI::values{mv_nextpage};
-		}
-	}
-	else {
-		$Vend::Action = shift @path;
-	}
 
 #::logGlobal("action=$Vend::Action path=$Vend::FinalPath");
 ::logError ("action=$Vend::Action path=$Vend::FinalPath");
-	my ($sub, $status);
-	Vend::Interpolate::reset_calc();
-	if(defined $Vend::Cfg->{ActionMap}{$Vend::Action}) {
-		$sub = $Vend::Cfg->{ActionMap}{$Vend::Action};
-		Vend::Interpolate::init_calc();
-		$CGI::values{mv_nextpage} = $Vend::FinalPath
-			if ! defined $CGI::values{mv_nextpage};
-		new Vend::Parse;
-	}
-	elsif ( defined ($sub = $action{$Vend::Action}) )  {
-		Vend::Interpolate::init_calc();
-		$Vend::FinalPath = join "", @path;
-	}
+		my ($sub, $status);
+		Vend::Interpolate::reset_calc();
+		if(defined $Vend::Cfg->{ActionMap}{$Vend::Action}) {
+			$sub = $Vend::Cfg->{ActionMap}{$Vend::Action};
+			Vend::Interpolate::init_calc();
+			$CGI::values{mv_nextpage} = $Vend::FinalPath
+				if ! defined $CGI::values{mv_nextpage};
+			new Vend::Parse;
+		} elsif( defined ($sub = $action{$Vend::Action}) )  {
+			Vend::Interpolate::init_calc();
+			$Vend::FinalPath = join "", @path;
+		}
 
-	eval {
-		if(defined $sub) {
+		eval {
+			if(defined $sub) {
 #::logDebug("found sub");
 				$status = $sub->($Vend::FinalPath);
-		}
-		else {
-			$status = 1;
-		}
-	};
-	(undef $Vend::RedoAction, redo DOACTION) if $Vend::RedoAction;
+			} else {
+				$status = 1;
+			}
+		};
+		(undef $Vend::RedoAction, redo DOACTION) if $Vend::RedoAction;
 
-	if($@) {
-		undef $status;
-		my $err = $@;
-		my $template = <<EOF;
+		if($@) {
+			undef $status;
+			my $err = $@;
+			my $template = <<EOF;
 Sorry, there was an error in processing this form action. Please 
 report the error or try again later.
 EOF
-		$template .= "\n\nError: %s\n"
+			$template .= "\n\nError: %s\n"
 				if $Global::DisplayErrors && $Vend::Cfg->{DisplayErrors}
-			;
-		$template = ::get_locale_message(500, $template, $err);
-		$template .= "($err)";
-		response($template);
-	}
+				;
+			$template = ::get_locale_message(500, $template, $err);
+			$template .= "($err)";
+			response($template);
+		}
 
-	$CGI::values{mv_nextpage} = $Vend::FinalPath
-		if ! defined $CGI::values{mv_nextpage};
+		$CGI::values{mv_nextpage} = $Vend::FinalPath
+			if ! defined $CGI::values{mv_nextpage};
 
-	::do_page() if $status;
+		::do_page() if $status;
 
 #::logDebug ("end dispatch: " . (join " ", times()) . "\n");
 
-	if(my $macro = $Vend::Cfg->{AutoEnd}) {
-		if($macro =~ /\[\w+/) {
-			::interpolate_html($macro);
-		}
-		elsif ($macro =~ /^\w+$/) {
-			$sub = $Vend::Cfg->{Sub}{$macro} || $Global::GlobalSub->{$macro};
-			$sub->();
+		if(my $macro = $Vend::Cfg->{AutoEnd}) {
+			if($macro =~ /\[\w+/) {
+				::interpolate_html($macro);
+			} elsif($macro =~ /^\w+$/) {
+				$sub = $Vend::Cfg->{Sub}{$macro} || $Global::GlobalSub->{$macro};
+				$sub->();
+			}
 		}
 	}
-  }
 
 # TRACK
 	$Vend::Track->filetrack();

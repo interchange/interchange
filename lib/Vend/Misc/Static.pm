@@ -1,6 +1,6 @@
 # Static.pm - Interchange static page routines
 # 
-# $Id: Static.pm,v 1.4.2.1 2000-10-06 19:49:31 zarko Exp $
+# $Id: Static.pm,v 1.4.2.2 2000-11-07 22:41:50 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -37,13 +37,13 @@ require File::Path;
 
 # does message for page build
 sub do_msg {
-    my ($msg, $size) = @_;
-    $size = 60 unless defined $size;
-    my $len = length $msg;
+	my ($msg, $size) = @_;
+	$size = 60 unless defined $size;
+	my $len = length $msg;
 
-    return "$msg.." if ($len + 2) >= $size;
-    $msg .= '.' x ($size - $len);
-    return $msg;
+	return "$msg.." if(($len + 2) >= $size);
+	$msg .= '.' x ($size - $len);
+	return $msg;
 }
 
 sub fake_scan {
@@ -59,112 +59,106 @@ sub fake_scan {
 
 # STATICPAGE
 sub build_page {
-    my($name,$dir,$check,$scan) = @_;
-    my($base,$page);
+	my($name,$dir,$check,$scan) = @_;
+	my($base,$page);
 	my $status = 1;
 
 	Vend::Interpolate::reset_calc();
-  eval {
-	unless($scan) {
-		$page = readin($name);
-		# Try for on-the-fly if not there
-		if(! defined $page) {
-			$page = Vend::Interpolate::fly_page($name);
-		}
-	}
-	else {
-		$name =~ s!^$Vend::Cfg->{StaticPath}/!!;
-		$page = readfile("$dir/$name", 0);
-		my $string = $Vend::Cfg->{VendURL} . "/scan/" ;
-		return 0 unless $page =~ m!$string!;
-		$name =~ s!$Vend::Cfg->{StaticSuffix}$!!;
-		$Vend::ForceBuild = 1;
-	}
-
-    if (defined $page) {
-
-		unless($check) {
-		  open(BUILDPAGE, ">$dir/$name$Vend::Cfg->{StaticSuffix}")
-			or die "Couldn't create file $dir/$name" .
-					$Vend::Cfg->{StaticSuffix} . ": $!\n";
+	eval {
+		unless($scan) {
+			$page = readin($name);
+			# Try for on-the-fly if not there
+			if(! defined $page) {
+				$page = Vend::Interpolate::fly_page($name);
+			}
+		} else {
+			$name =~ s!^$Vend::Cfg->{StaticPath}/!!;
+			$page = readfile("$dir/$name", 0);
+			my $string = $Vend::Cfg->{VendURL} . "/scan/" ;
+			return 0 unless $page =~ m!$string!;
+			$name =~ s!$Vend::Cfg->{StaticSuffix}$!!;
+			$Vend::ForceBuild = 1;
 		}
 
-		$page = cache_html($page) unless defined $scan;
-		unless (defined $Vend::CachePage or defined $Vend::ForceBuild) {
-			print "\cH" x 22 . "skipping, dynamic elements.\n";
+		if(defined $page) {
+
+			unless($check) {
+			  open(BUILDPAGE, ">$dir/$name$Vend::Cfg->{StaticSuffix}")
+				or die "Couldn't create file $dir/$name" .
+						$Vend::Cfg->{StaticSuffix} . ": $!\n";
+			}
+
+			$page = cache_html($page) unless defined $scan;
+			unless (defined $Vend::CachePage or defined $Vend::ForceBuild) {
+				print "\cH" x 22 . "skipping, dynamic elements.\n";
+				$status = 0;
+			} elsif(! $check) {
+				my @post = ();
+				my $count = 0;
+				my($search, $file, $newpage);
+				my $string = $Vend::Cfg->{VendURL} . "/scan/" ;
+				while($page =~ s!$string([^?"]+)[^"]*"!"__POST_" . $count++ . "__" . '"'!e) {
+					undef $Vend::CachePage;
+					undef $Vend::ForceBuild;
+					$search = $1;
+					print do_msg "\n>> found search $search", 61;
+					push @post, $string . $search;
+					if(defined $Vend::Found_scan{$search}) {
+						pop @post;
+						push @post, $Vend::Found_scan{$search};
+						print "cached.";
+					} elsif($newpage = fake_scan($search) ) {
+						$file = "scan" . ++$Vend::ScanCount .
+										$Vend::Cfg->{StaticSuffix};
+						pop @post;
+						$Vend::Found_scan{$search}			=
+										"$Vend::Cfg->{StaticPath}/$file";
+						$Vend::Cfg->{StaticPage}{"scan/$search"} = $file;
+						$Vend::Cfg->{StaticPage}{"scan/$search"}
+							=~ s/$Vend::Cfg->{StaticSuffix}$//o;
+						push @post, $Vend::Found_scan{$search};
+						Vend::Util::writefile(">$dir/$file", $$newpage)
+							or die "Couldn't write $dir/$file: $!\n";
+						if($Vend::ScanName) {
+							eval {
+									$Vend::ScanName = "$dir/$Vend::ScanName" .
+											$Vend::Cfg->{StaticSuffix}
+										unless index($Vend::ScanName, '/') == 0;
+									die "Not a symlink"
+										unless ! -e $Vend::ScanName
+											or -l $Vend::ScanName;
+									unlink $Vend::ScanName;
+									symlink "$dir/$file", "$Vend::ScanName";
+							};
+							if($@) {
+								::logError ("Symlink problem $dir/$file --> $Vend::ScanName: $@");
+							} else {
+								print "\b\b\b\b\b\b\b\b\b\blinked....";
+							}
+							undef $Vend::ScanName;
+						}
+						print "save.";
+					} else {
+						print "skip.";
+					}
+
+				}
+				if(@post) {
+					$page =~ s/__POST_(\d+)__/$post[$1]/g;
+					print "\n";
+				}
+			}
+			undef $Vend::CachePage;
+			undef $Vend::ForceBuild;
+
+			return $status if $check;
+			print BUILDPAGE $page;
+			close BUILDPAGE;
+		} else {
+			print "\cH" x 20 . "skipping, page not found.\n";
 			$status = 0;
 		}
-		elsif(! $check) {
-			my @post = ();
-			my $count = 0;
-			my($search, $file, $newpage);
-			my $string = $Vend::Cfg->{VendURL} . "/scan/" ;
-			while($page =~ s!$string([^?"]+)[^"]*"!"__POST_" . $count++ . "__" . '"'!e) {
-				undef $Vend::CachePage;
-				undef $Vend::ForceBuild;
-				$search = $1;
-				print do_msg "\n>> found search $search", 61;
-				push @post, $string . $search;
-				if(defined $Vend::Found_scan{$search}) {
-					pop @post;
-					push @post, $Vend::Found_scan{$search};
-					print "cached.";
-				}
-				elsif ($newpage = fake_scan($search) ) {
-					$file = "scan" . ++$Vend::ScanCount .
-									$Vend::Cfg->{StaticSuffix};
-					pop @post;
-					$Vend::Found_scan{$search}			=
-									"$Vend::Cfg->{StaticPath}/$file";
-					$Vend::Cfg->{StaticPage}{"scan/$search"} = $file;
-					$Vend::Cfg->{StaticPage}{"scan/$search"}
-						=~ s/$Vend::Cfg->{StaticSuffix}$//o;
-					push @post, $Vend::Found_scan{$search};
-					Vend::Util::writefile(">$dir/$file", $$newpage)
-						or die "Couldn't write $dir/$file: $!\n";
-					if($Vend::ScanName) {
-						eval {
-								$Vend::ScanName = "$dir/$Vend::ScanName" .
-										$Vend::Cfg->{StaticSuffix}
-									unless index($Vend::ScanName, '/') == 0;
-								die "Not a symlink"
-									unless ! -e $Vend::ScanName
-										or -l $Vend::ScanName;
-								unlink $Vend::ScanName;
-								symlink "$dir/$file", "$Vend::ScanName";
-						};
-						if($@) {
-							::logError ("Symlink problem $dir/$file --> $Vend::ScanName: $@");
-						}
-						else {
-							print "\b\b\b\b\b\b\b\b\b\blinked....";
-						}
-						undef $Vend::ScanName;
-					}
-					print "save.";
-				}
-				else {
-					print "skip.";
-				}
-					
-			}
-			if(@post) {
-				$page =~ s/__POST_(\d+)__/$post[$1]/g;
-				print "\n";
-			}
-		}
-		undef $Vend::CachePage;
-		undef $Vend::ForceBuild;
-				
-		return $status if $check;
-    	print BUILDPAGE $page;
-		close BUILDPAGE;
-    }
-	else {
-		print "\cH" x 20 . "skipping, page not found.\n";
-		$status = 0;
-	}
-  };
+	};
 	if($@) {
 		$status = 0;
 		::logError("build_page died: $@");
@@ -186,7 +180,7 @@ sub build_all {
 
 	$Vend::BuildingPages = 1;
 
-	if ($@) {
+	if($@) {
 		my $msg = $@;
 		print "\n$msg\n\a$g->{'name'}: error building pages. Skipping.\n";
 		::logGlobal(<<EOF);
@@ -262,8 +256,7 @@ EOF
 			print "...accepted.\n";
 		}
 		close BUILD;
-	}
-	elsif ( -f "$basedir/.build_spec" and -s _) {
+	} elsif( -f "$basedir/.build_spec" and -s _) {
 		require File::Copy;
 		File::Copy::copy("$basedir/.build_spec","$basedir/.build");
 		redo BUILDFILE;
@@ -273,7 +266,7 @@ EOF
 	return unless ($all or $build_list or scalar keys %{$Vend::Cfg->{StaticPage}});
 
 	# do some basic checks to make sure we don't clobber
-    # anything with a value of '/', and have an
+	# anything with a value of '/', and have an
 	# absolute file path
 	$outdir = $outdir || $Vend::Cfg->{StaticDir} || 'static';
 
@@ -308,18 +301,18 @@ EOF
 		}
 	}
 	unlink "$basedir/.static" if $Vend::Cfg->{StaticDBM};
-    $CGI::cookie = $Vend::Cookie = "MV_SESSION_ID=building:local.host";
+	$CGI::cookie = $Vend::Cookie = "MV_SESSION_ID=building:local.host";
 	require File::Find or die "No standard Perl library File::Find!\n";
 	$sub = sub {
 					my $name = $File::Find::name;
 					die "Bad file name $name\n"
 						unless $name =~ s:^$basedir/?::;
 
-					if ($spec) {
+					if($spec) {
 						return unless $name =~ m!^$spec!o;
 					}
 
-					if (-d $File::Find::name) {
+					if(-d $File::Find::name) {
 						die "$outdir/$name is a file, not a dir.\n"
 							if -f "$outdir/$name";
 						($File::Find::prune = 1, return)
@@ -332,7 +325,7 @@ EOF
 					return unless $name =~ s/$Vend::Cfg->{StaticSuffix}$//o;
 					return if defined $Vend::Cfg->{NoCache}->{$name};
 
-					if ($build_list) {
+					if($build_list) {
 						return unless defined $build{$name};
 					}
 
@@ -344,8 +337,7 @@ EOF
 		print do_msg("Finding files...");
 		File::Find::find($sub, $Vend::Cfg->{PageDir});
 		print "done.\n";
-	}
-	else {
+	} else {
 		@files = @build_file;
 		$all = 1;
 	}

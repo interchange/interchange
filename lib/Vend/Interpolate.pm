@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.29.2.3 2000-10-20 17:00:08 zarko Exp $
+# $Id: Interpolate.pm,v 1.29.2.4 2000-11-07 22:41:45 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.29.2.3 $, 10);
+$VERSION = substr(q$Revision: 1.29.2.4 $, 10);
 
 @EXPORT = qw (
 
@@ -138,8 +138,7 @@ sub reset_calc {
 	if(defined $Vend::Cfg->{ActionMap}{_mvsafe}) {
 #::logGlobal("already made");
 		$ready_safe = $Vend::Cfg->{ActionMap}{_mvsafe};
-	}
-	else {
+	} else {
 #::logGlobal("new one made");
 		$ready_safe = new Safe 'MVSAFE';
 		$ready_safe->untrap(@{$Global::SafeUntrap});
@@ -396,18 +395,18 @@ sub substitute_image {
 		($Vend::Cfg->{ImageDirSecure} || $Vend::Cfg->{ImageDir})	:
 		$Vend::Cfg->{ImageDir};
 
-    if ($dir) {
-        $$text =~ s#(<i\w+\s+[^>]*?src=")(?!https?:)([^/][^"]+)#
-                         $1 . $dir . $2#ige;
-        $$text =~ s#(<body\s+[^>]*?background=")(?!https?:)([^/][^"]+)#
-                         $1 . $dir . $2#ige;
-    }
-    if($Vend::Cfg->{ImageAlias}) {
+	if($dir) {
+		$$text =~ s#(<i\w+\s+[^>]*?src=")(?!https?:)([^/][^"]+)#
+			$1 . $dir . $2#ige;
+		$$text =~ s#(<body\s+[^>]*?background=")(?!https?:)([^/][^"]+)#
+			$1 . $dir . $2#ige;
+	}
+	if($Vend::Cfg->{ImageAlias}) {
 		for (keys %{$Vend::Cfg->{ImageAlias}} ) {
-        	$$text =~ s#(<i\w+\s+[^>]*?src=")($_)#
-                         $1 . ($Vend::Cfg->{ImageAlias}->{$2} || $2)#ige;
+			$$text =~ s#(<i\w+\s+[^>]*?src=")($_)#
+				$1 . ($Vend::Cfg->{ImageAlias}->{$2} || $2)#ige;
 		}
-    }
+	}
 }
 
 #
@@ -448,7 +447,7 @@ sub cache_html {
 	$CacheInvalid++ if $parse->{INVALID};
 	$Vend::CachePage = $CacheInvalid ? undef : 1;
 	$complete = \$full if $full;
-	if (defined $Vend::BuildingPages) {
+	if(defined $Vend::BuildingPages) {
 		return $full if $full;
 		return $parse->{OUT};
 	}
@@ -528,7 +527,7 @@ sub interpolate_html {
 	$html =~ s/<!--+\[/[/g
 		and $html =~ s/\]--+>/]/g;
 
-    # Returns, could be recursive
+	# Returns, could be recursive
 	my $parse = new Vend::Parse;
 	$parse->parse($html);
 	while($parse->{_buf}) {
@@ -537,7 +536,6 @@ sub interpolate_html {
 	substitute_image(\$parse->{OUT});
 	return \$parse->{OUT} if defined $wantref;
 	return $parse->{OUT};
-
 }
 
 sub filter_value {
@@ -599,8 +597,7 @@ sub tag_record {
 
 	if($opt->{new}) {
 		$db->set_row($key, '');
-	}
-	elsif($opt->{create}) {
+	} elsif($opt->{create}) {
 		$db->set_row($key, '') unless $db->record_exists($key);
 	}
 	my $settor = $db->row_settor('code', @cols);
@@ -621,10 +618,9 @@ sub try {
 	};
 	$SIG{__DIE__} = $save if defined $save;
 	$Vend::Session->{try}{$label} = $@ if $@;
-	if ($opt->{status}) {
+	if($opt->{status}) {
 		return $@ ? 0 : 1;
-	}
-	elsif ($opt->{hide}) {
+	} elsif($opt->{hide}) {
 		return '';
 	}
 	return $out;
@@ -648,31 +644,27 @@ sub tag_data {
 	my($selector,$field,$key,$opt,$flag) = @_;
 	$CacheInvalid = 1 if defined $Vend::Cfg->{DynamicData}->{$selector};
 
-	if ( not defined $Vend::Database{$selector}) {
+	if( not defined $Vend::Database{$selector}) {
 		if($selector eq 'session') {
 			$CacheInvalid = 1;
 			if(defined $opt->{value}) {
 				$opt->{value} = filter_value($opt->{filter}, $opt->{value}, $field)
 					if $opt->{filter};
-				if ($opt->{increment}) {
+				if($opt->{increment}) {
 					$Vend::Session->{$field} += (+ $opt->{value} || 1);
-				}
-				elsif ($opt->{append}) {
+				} elsif($opt->{append}) {
 					$Vend::Session->{$field} .= $opt->{value};
-				}
-				else  {
+				} else  {
 					$Vend::Session->{$field} = $opt->{value};
 				}
 				return '';
-			}
-			else {
+			} else {
 				my $value = $Vend::Session->{$field} || '';
 				$value = filter_value($opt->{filter}, $value, $field)
 					if $opt->{filter};
 				return $value;
 			}
-		}
-		else {
+		} else {
 			logError( "Bad data selector='%s' field='%s' key='%s'",
 						$selector,
 						$field,
@@ -680,21 +672,18 @@ sub tag_data {
 			);
 			return '';
 		}
-	}
-	elsif($opt->{increment}) {
+	} elsif($opt->{increment}) {
 		$CacheInvalid = 1;
 #::logDebug("increment_field: key=$key field=$field value=$opt->{value}");
 		return Vend::Data::increment_field($Vend::Database{$selector},$key,$field,$opt->{value} || 1);
-	}
-	elsif (defined $opt->{value}) {
+	} elsif(defined $opt->{value}) {
 #::logDebug("set_field: table=$selector key=$key field=$field value=$opt->{value}");
 		$CacheInvalid = 1;
 		if($opt->{filter}) {
 			$opt->{value} = filter_value($opt->{filter}, $opt->{value}, $field);
 		}
 		return Vend::Data::set_field($selector,$key,$field,$opt->{value},$opt->{append});
-	}
-	elsif ($opt->{hash}) {
+	} elsif($opt->{hash}) {
 		my $db = Vend::Data::database_exists_ref($selector);
 		return $db->row_hash($key);
 	}
@@ -947,7 +936,7 @@ sub input_filter_do {
 		$routine = interpolate_html($routine);
 		$CGI::values{$varname} = tag_calc($routine);
 	}
-	if ($opt->{op}) {
+	if($opt->{op}) {
 		$CGI::values{$varname} = filter_value($opt->{op}, $CGI::values{$varname}, $varname);
 	}
 #::logDebug("after filter=$CGI::values{$varname}");
@@ -999,54 +988,46 @@ sub conditional {
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
 				if defined $comp;
-	}
-	elsif($base eq 'scratch') {
+	} elsif($base eq 'scratch') {
 		$CacheInvalid = 1;
 		$op =	qq%$::Scratch->{$term}%;
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
 				if defined $comp;
-	}
-	elsif($base eq 'variable') {
+	} elsif($base eq 'variable') {
 		$CacheInvalid = 1;
 		$op =	qq%$::Variable->{$term}%;
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
 				if defined $comp;
-	}
-	elsif($base =~ /^value/) {
+	} elsif($base =~ /^value/) {
 		$CacheInvalid = 1;
 		$op =	qq%$::Values->{$term}%;
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
 				if defined $comp;
-	}
-	elsif($base eq 'explicit') {
+	} elsif($base eq 'explicit') {
 		undef $noop;
 		$status = $ready_safe->reval($comp);
-	}
-    elsif($base eq 'items') {
-        $CacheInvalid = 1;
+	} elsif($base eq 'items') {
+		$CacheInvalid = 1;
 		my $cart;
-        if($term) {
-        	$cart = $::Carts->{$term} || undef;
-		}
-		else {
+		if($term) {
+			$cart = $::Carts->{$term} || undef;
+		} else {
 			$cart = $Vend::Items;
 		}
 		$op =   defined $cart ? scalar @{$cart} : 0;
 
-        $op .=  qq% $operator $comp%
-                if defined $comp;
-    }
-	elsif($base eq 'cgi') {
+		$op .=  qq% $operator $comp%
+			if defined $comp;
+	} elsif($base eq 'cgi') {
 		$CacheInvalid = 1;
 		$op =	qq%$CGI::values{$term}%;
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
 				if defined $comp;
-	}
-	elsif($base eq 'data') {
+	} elsif($base eq 'data') {
 		my($d,$f,$k) = split /::/, $term;
 		$CacheInvalid = 1
 			if defined $Vend::Cfg->{DynamicData}->{$d};
@@ -1055,31 +1036,27 @@ sub conditional {
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
 				if defined $comp;
-	}
-	elsif($base eq 'field') {
+	} elsif($base eq 'field') {
 		my($f,$k) = split /::/, $term;
 		$op = Vend::Data::product_field($f,$k);
 #::logDebug("tag_if field fld=$f key=$k\n");
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
 				if defined $comp;
-	}
-	elsif($base eq 'discount') {
+	} elsif($base eq 'discount') {
 		$CacheInvalid = 1;
 		$op =	qq%$Vend::Session->{discount}->{$term}%;
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
 				if defined $comp;
-	}
-	elsif($base eq 'ordered') {
+	} elsif($base eq 'ordered') {
 		$CacheInvalid = 1;
 		$operator = 'main' unless $operator;
 		my ($attrib, $i);
 		$op = '';
 		unless ($comp) {
 			$attrib = 'quantity';
-		}
-		else {
+		} else {
 			($attrib,$comp) = split /\s+/, $comp;
 		}
 		foreach $i (@{$::Carts->{$operator}}) {
@@ -1090,46 +1067,39 @@ sub conditional {
 		}
 		$op = "q{$op}" unless defined $noop;
 		$op .=  qq% $comp% if $comp;
-	}
-	elsif($base eq 'file') {
+	} elsif($base eq 'file') {
 		#$op =~ s/[^rwxezfdTsB]//g;
 		#$op = substr($op,0,1) || 'f';
 		undef $noop;
 		$CacheInvalid = 1;
 		$op = 'f';
 		$op = qq|-$op "$term"|;
-	}
-	elsif($base =~ /^errors?$/) {
+	} elsif($base =~ /^errors?$/) {
 		my $err_ref = $Vend::Session->{errors}
 			or return '';
 		return scalar (keys %$err_ref);
-	}
-	elsif($base eq 'validcc') {
+	} elsif($base eq 'validcc') {
 		$CacheInvalid = 1;
 		no strict 'refs';
 		$status = ::validate_whole_cc($term, $operator, $comp);
-	}
-    elsif($base eq 'config') {
+	} elsif($base eq 'config') {
 		$op = qq%$Vend::Cfg->{$term}%;
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
 				if defined $comp;
-    }
-	elsif($base =~ /^accessor/) {
-        if ($comp) {
-            $op = qq%$Vend::Cfg->{Accessories}->{$term}%;
+	} elsif($base =~ /^accessor/) {
+		if($comp) {
+			$op = qq%$Vend::Cfg->{Accessories}->{$term}%;
 			$op = "q{$op}" unless defined $noop;
-            $op .=  qq% $operator $comp%;
-        }
-        else {
-            for(@{$Vend::Cfg->{UseModifier}}) {
-                next unless Vend::Data::product_field($_,$term);
-                $status = 1;
-                last;
-            }
-        }
-	}
-	else {
+			$op .=  qq% $operator $comp%;
+		} else {
+			for(@{$Vend::Cfg->{UseModifier}}) {
+				next unless Vend::Data::product_field($_,$term);
+				$status = 1;
+				last;
+			}
+		}
+	} else {
 		$op =	qq%$term%;
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
@@ -1144,7 +1114,7 @@ sub conditional {
 		$ready_safe->untrap(@{$Global::SafeUntrap});
 		$status = $ready_safe->reval($op)
 			unless ($@ or $status);
-		if ($@) {
+		if($@) {
 			logError qq%Bad if '@_': $@%;
 			$status = 0;
 		}
@@ -1154,7 +1124,7 @@ sub conditional {
 
 	for(@addl) {
 		my $chain = /^\[[Aa]/;
-		last if ($chain ^ $status);
+		last if($chain ^ $status);
 		$status = (new Vend::Parse)->parse($_)->{OUT};
 	}
 #::logDebug("if status=$status");
@@ -1163,17 +1133,17 @@ sub conditional {
 }
 
 sub find_close_square {
-    my $chunk = shift;
-    my $first = index($chunk, ']');
-    return undef if $first < 0;
-    my $int = index($chunk, '[');
-    my $pos = 0;
-    while( $int > -1 and $int < $first) {
-        $pos   = $int + 1;
-        $first = index($chunk, ']', $first + 1);
-        $int   = index($chunk, '[', $pos);
-    }
-    return substr($chunk, 0, $first);
+	my $chunk = shift;
+	my $first = index($chunk, ']');
+	return undef if $first < 0;
+	my $int = index($chunk, '[');
+	my $pos = 0;
+	while( $int > -1 and $int < $first) {
+		$pos   = $int + 1;
+		$first = index($chunk, ']', $first + 1);
+		$int   = index($chunk, '[', $pos);
+	}
+	return substr($chunk, 0, $first);
 }
 
 sub find_andor {
@@ -1218,7 +1188,7 @@ sub tag_if {
 	my ($else, $elsif, $else_present, @addl);
 
 	($base, $term, $operator, $comp) = split /\s+/, $cond, 4;
-	if ($base eq 'explicit') {
+	if($base eq 'explicit') {
 		$body =~ s#$QR{condition_begin}##o
 			and ($comp = $1, $operator = '');
 	}
@@ -1244,13 +1214,11 @@ sub tag_if {
 	my $out;
 	if($status) {
 		$out = $body;
-	}
-	elsif ($elsif) {
+	} elsif($elsif) {
 		$else = '[else]' . $else . '[/else]' if $else;
 		$elsif =~ s#(.*?)$QR{'/elsif'}(.*)#$1${2}[/elsif]#s;
 		$out = '[if ' . $elsif . $else . '[/if]';
-	}
-	elsif ($else) {
+	} elsif($else) {
 		$out = $else;
 	}
 	return $out;
@@ -1276,7 +1244,7 @@ sub build_accessory_textarea {
 	while($type =~ m/\b(row|col)(?:umn)s?[=\s'"]*(\d+)/gi) {
 		$run .= " \U$1\ES=$2";
 	}
-	if ($type =~ m/\bwrap[=\s'"]*(hard|soft|none)/i) {
+	if($type =~ m/\bwrap[=\s'"]*(hard|soft|none)/i) {
 		$run .= qq{WRAP="$1"};
 	}
 	$run .= '>';
@@ -1299,14 +1267,12 @@ sub build_accessory_select {
 		$multi = 1;
 		$re_b = '(?:[\0,\s]|^)';
 		$re_e = '(?:[\0,\s]|$)';
-	}
-	elsif ($type  =~ /^multi/i ) {
+	} elsif($type  =~ /^multi/i ) {
 		$run .= ' MULTIPLE';
 		$multi = 1;
 		$re_b = '(?:\0|^)';
 		$re_e = '(?:\0|$)';
-	}
-	else {
+	} else {
 		$re_b = '(?:\0|^)';
 		$re_e = '(?:\0|$)';
 	}
@@ -1318,8 +1284,7 @@ sub build_accessory_select {
 			return $_[0] if length($_[0]) <= $cols;
 			return substr($_[0], 0, $cols - 2) . '..';
 		};
-	}
-	else {
+	} else {
 		$limit = sub { return $_[0] };
 	}
 
@@ -1329,14 +1294,14 @@ sub build_accessory_select {
 		$run .= '<OPTION';
 		$select = '';
 		s/\*$// and $select = 1;
-		if ($default) {
+		if($default) {
 			$select = '';
 		}
 		my ($value,$label) = split /=/, $_, 2;
 		my $vvalue = $value;
 		$vvalue =~ s/"/&quot;/;
 		$run .= qq| VALUE="$vvalue"|;
-		if ($default) {
+		if($default) {
 			$regex	= qr/$re_b\Q$value\E$re_e/;
 			$default =~ $regex and $select = 1;
 		}
@@ -1344,8 +1309,7 @@ sub build_accessory_select {
 		$run .= '>';
 		if($label) {
 			$run .= $limit->($label);
-		}
-		else {
+		} else {
 			$run .= $limit->($value);
 		}
 	}
@@ -1361,15 +1325,14 @@ sub build_accessory_box {
 
 	my $font;
 	my $variant = ($type =~ /check/i) ? 'checkbox' : 'radio';
-	if ($type  =~ /font(?:size)?[\s_]*(-?\d)/i ) {
+	if($type  =~ /font(?:size)?[\s_]*(-?\d)/i ) {
 		$font = qq{<FONT SIZE="$1">};
 	}
 
 	if($type =~ /nbsp/i) {
 		$xlt = 1;
 		$template = qq{<INPUT TYPE="$variant" NAME="$name" VALUE="__VALUE__"__SEL__>&nbsp;__LABEL__&nbsp;&nbsp;};
-	}
-	elsif ($type  =~ /left[\s_]*(\d?)/i ) {
+	} elsif($type  =~ /left[\s_]*(\d?)/i ) {
 		$inc = $1 || undef;
 		$header = '<TABLE>';
 		$footer = '</TABLE>';
@@ -1378,8 +1341,7 @@ sub build_accessory_box {
 <TD>$font<INPUT TYPE="$variant" NAME="$name" VALUE="__VALUE__"__SEL__></TD><TD>__LABEL__</TD>
 EOF
 		$template .= '</TR>' unless $inc;
-	}
-	elsif ($type  =~ /right[\s_]*(\d?)/i ) {
+	} elsif($type  =~ /right[\s_]*(\d?)/i ) {
 		$inc = $1 || undef;
 		$header = '<TABLE>';
 		$footer = '</TABLE>';
@@ -1388,8 +1350,7 @@ EOF
 <TD>${font}__LABEL__</TD><TD><INPUT TYPE="$variant" NAME="$name" VALUE="__VALUE__"__SEL__></TD>
 EOF
 		$template .= '</TR>' unless $inc;
-	}
-	else {
+	} else {
 		$template = <<EOF;
 <INPUT TYPE="$variant" NAME="$name" VALUE="__VALUE__"__SEL__>&nbsp;__LABEL__
 EOF
@@ -1472,8 +1433,7 @@ sub tag_accessories {
 	my $data;
 	if($passed) {
 		$data = $passed;
-	}
-	else {
+	} else {
 		$data = $db ? tag_data($db, $field, $code) : Vend::Data::product_field($field,$code);
 	}
 
@@ -1512,22 +1472,20 @@ sub tag_accessories {
 
 	if($item) {
 		$default = $item->{$attribute};
-	}
-	elsif ($name) {
+	} elsif($name) {
 		$default = $::Values->{$name};
 	}
 
-	# returns just list of options, no labels
 	if($type eq 'options') {
+		# returns just list of options, no labels
 		return join "\n", (map { s/\s*=.*//; $_ } @opts);
-	}
-	# returns just list of labels, no options
-	elsif ($type eq 'labels') {
+	} elsif($type eq 'labels') {
+		# returns just list of labels, no options
 		return join "\n", (map { s/.*?=//; $_ } @opts);
 	}
 
 	# Ranging type, for price breaks based on quantity
-	if ($type =~ s/^range:?(.*)//) {
+	if($type =~ s/^range:?(.*)//) {
 		$select = $1 || 'quantity';
 		$default = ($item && defined $item->{$select}) ? $item->{$select} : undef;
 		my $min;
@@ -1551,13 +1509,11 @@ sub tag_accessories {
 
 	# Building select, textarea, or radio/check box if got here
 
-	if ($type =~ /^(radio|check)/i) {
+	if($type =~ /^(radio|check)/i) {
 		return $p . build_accessory_box($name, $type, $default, $opt, @opts) . $a;
-	}
-	elsif($type =~ /^textarea/i) {
+	} elsif($type =~ /^textarea/i) {
 		return $p . build_accessory_textarea($name, $type, $default, $opt, @opts) . $a;
-	}
-	elsif($type =~ /^combo[ _]*(?:(\d+)(?:[ _]+(\d+))?)?/i) {
+	} elsif($type =~ /^combo[ _]*(?:(\d+)(?:[ _]+(\d+))?)?/i) {
 		$opt->{rows} = $opt->{rows} || $1 || 1;
 		$opt->{cols} = $opt->{cols} || $2 || 16;
 		unless($opts[0] =~ /^=/) {
@@ -1566,8 +1522,7 @@ sub tag_accessories {
 		my $out = qq|<INPUT TYPE=text NAME="$name" SIZE=$opt->{cols} VALUE="">|;
 		$out .= build_accessory_select($name, $type, $default, $opt, @opts);
 		return "$p$out$a";
-	}
-	elsif($type =~ /^reverse_combo[ _]*(?:(\d+)(?:[ _]+(\d+))?)?/i) {
+	} elsif($type =~ /^reverse_combo[ _]*(?:(\d+)(?:[ _]+(\d+))?)?/i) {
 		$opt->{rows} = $opt->{rows} || $1 || 1;
 		$opt->{cols} = $opt->{cols} || $2 || 16;
 		unless($opts[0] =~ /^=/) {
@@ -1577,8 +1532,7 @@ sub tag_accessories {
 		my $out = build_accessory_select($name, $type, $default, $opt, @opts);
 		$out .= qq|<INPUT TYPE=text NAME="$name" SIZE=$opt->{cols} VALUE="$default">|;
 		return "$p$out$a";
-	}
-	elsif($type =~ /^move_combo[ _]*(?:(\d+)(?:[ _]+(\d+))?)?/i) {
+	} elsif($type =~ /^move_combo[ _]*(?:(\d+)(?:[ _]+(\d+))?)?/i) {
 		$opt->{rows} = $opt->{rows} || $1 || 1;
 		$opt->{cols} = $opt->{cols} || $2 || 16;
 		my $ejs = ",1" if $opt->{rows} > 1;
@@ -1587,13 +1541,11 @@ sub tag_accessories {
 		my $out = build_accessory_select("X$name", $type, '', $opt, @opts);
 		if($opt->{rows} > 1) {
 			$out .= qq|<TEXTAREA ROWS="$opt->{rows}" WRAP=virtual COLS="$opt->{cols}" NAME="$name">$default</TEXTAREA>|;
-		}
-		else {
+		} else {
 			$out .= qq|<INPUT SIZE="$opt->{cols}" NAME="$name" VALUE="$default">|;
 		}
 		return "$p$out$a";
-	}
-	else {
+	} else {
 		return $p . build_accessory_select($name, $type, $default, $opt, @opts) . $a;
 	}
 
@@ -1617,11 +1569,10 @@ EOF
 		$text =~ s/(.*?)%>//s
 			or last;;
 		my $bit = $1;
-		if ($bit =~ s/^\s*=\s*//) {
+		if($bit =~ s/^\s*=\s*//) {
 			$bit =~ s/;\s*$//;
 			push @code, "; HTML( $bit );"
-		}
-		else {
+		} else {
 			push @code, $bit, ";\n";
 		}
 	}
@@ -1680,8 +1631,7 @@ sub tag_perl {
 				$Sql{$_} = $hole->wrap($db->[$Vend::Table::LDAP::TIE_HASH])
 					if $db =~ /::LDAP/;
 				$Db{$_} = $hole->wrap($db);
-			}
-			else {
+			} else {
 				$Sql{$_} = $db->[$Vend::Table::DBI::DBI]
 					if $db =~ /::DBI/;
 				$Db{$_} = $db;
@@ -1693,7 +1643,7 @@ sub tag_perl {
 	$ready_safe->share(@share) if @share;
 
 	$MVSAFE::Safe = 1;
-	if (
+	if(
 		$opt->{global}
 			and
 		$Global::AllowGlobal->{$Vend::Cfg->{CatalogName}}
@@ -1709,11 +1659,10 @@ sub tag_perl {
 
 	if(! $MVSAFE::Safe) {
 		$result = eval($body);
-	}
-	else {
+	} else {
 		$result = $ready_safe->reval($body);
 	}
-	if ($@) {
+	if($@) {
 #::logDebug("tag_perl failed $@");
 		my $msg = $@;
 		logError( "Safe: %s\n%s\n" , $msg, $body );
@@ -1723,7 +1672,7 @@ sub tag_perl {
 #::logDebug("tag_perl initialized=$Calc_initialized: carts=" . ::uneval($::Carts));
 
 	undef $MVSAFE::Safe;
-	if ($opt->{no_return}) {
+	if($opt->{no_return}) {
 		$Vend::Session->{mv_perl_result} = $result;
 		$result = join "", @Vend::Document::Out;
 		@Vend::Document::Out = ();
@@ -1738,7 +1687,7 @@ sub show_tags {
 	$type = 'html interchange' unless $type;
 	$type =~ s/minivend/interchange/g;
 
-	if ($type =~ /interchange/i) {
+	if($type =~ /interchange/i) {
 		$text =~ s/\[/&#91;/g;
 	}
 	if($type =~ /html/i) {
@@ -1789,20 +1738,17 @@ sub flag {
 			$Vend::WriteDatabase{$dbname} = $value;
 			$Vend::Cfg->{DynamicData}->{$dbname} = $value;
 		}
-	}
-	elsif($flag eq 'build') {
+	} elsif($flag eq 'build') {
 		$Vend::ForceBuild = $value;
 		$text = $opt->{name} if $opt->{name};
 		if($text) {
 			$Vend::ScanName = Vend::Util::escape_chars(interpolate_html($text));
 		}
 		@status = ("Set build flag: %s name=%s", $value, $Vend::ScanName);
-	}
-	elsif($flag eq 'checkhtml') {
+	} elsif($flag eq 'checkhtml') {
 		$Vend::CheckHTML = $value;
 		@status = ("Set CheckHTML flag: %s", $value);
-	}
-	else {
+	} else {
 		@status = ("Unknown flag operation '%s', ignored.", $flag);
 		$status[0] = $opt->{status} if $opt->{status};
 		logError( @status );
@@ -1865,26 +1811,21 @@ sub mime {
 		undef $::Instance->{MIME_TIMESTAMP};
 		undef $::Instance->{MIME_BOUNDARY};
 		$out = '';
-	}
-	elsif($option eq 'boundary') {
+	} elsif($option eq 'boundary') {
 		$out = "--$::Instance->{MIME_BOUNDARY}";
-	}
-	elsif($option eq 'id') {
+	} elsif($option eq 'id') {
 		$::Instance->{MIME} = 1;
 		$out =	_mime_id();
-	}
-	elsif($option eq 'header') {
+	} elsif($option eq 'header') {
 		$id = _mime_id();
 		$out = <<EndOFmiMe;
 MIME-Version: 1.0
 Content-Type: $msg_type; BOUNDARY="$::Instance->{MIME_BOUNDARY}"
 Content-ID: $id
 EndOFmiMe
-	}
-	elsif ( $text !~ /\S/) {
+	} elsif( $text !~ /\S/) {
 		$out = '';
-	}
-	else {
+	} else {
 		$id = _mime_id();
 		$::Instance->{MIME} = 1;
 		my $desc = $opt->{description} || $option;
@@ -1931,8 +1872,7 @@ sub log {
 	}
 	if($opt->{type} =~ /^text/) {
 		$status = Vend::Util::writefile($file, $data, $opt);
-	}
-	elsif($opt->{type} =~ /^\s*quot/) {
+	} elsif($opt->{type} =~ /^\s*quot/) {
 		$record_delim = $opt->{record_delim} || "\n";
 		@lines = split /$record_delim/, $data;
 		for(@lines) {
@@ -1940,17 +1880,14 @@ sub log {
 			$status = logData($file, @fields)
 				or last;
 		}
-	}
-	elsif($opt->{type} =~ /^error/) {
+	} elsif($opt->{type} =~ /^error/) {
 		if($opt->{file}) {
 			$data = format_log_msg($data) unless $data =~ s/^\\//;;
 			$status = Vend::Util::writefile($file, $data, $opt);
-		}
-		else {
+		} else {
 			$status = Vend::Util::logError($data);
 		}
-	}
-	else {
+	} else {
 		$record_delim = $opt->{record_delim} || "\n";
 		$delim = $opt->{delimiter} || "\t";
 		@lines = split /$record_delim/, $data;
@@ -1979,8 +1916,7 @@ sub http_header {
 	if($Vend::StatusLine and ! $opt->{replace}) {
 		$Vend::StatusLine =~ s/\s+$/\r\n/;
 		$Vend::StatusLine .= $text;
-	}
-	else {
+	} else {
 		$Vend::StatusLine = $text;
 	}
 	return $text if $opt->{show};
@@ -2001,11 +1937,11 @@ sub mvtime {
 
 	if($opt->{adjust}) {
 		$opt->{adjust} =~ s/00$//;
-        $opt->{adjust} =~ s/^(-)?[0+]/$1/;
-        $now += (60 * 60) * $opt->{adjust};
+		$opt->{adjust} =~ s/^(-)?[0+]/$1/;
+		$now += (60 * 60) * $opt->{adjust};
 	}
-    my $out = $opt->{gmt} ? ( POSIX::strftime($fmt, gmtime($now)    ))
-                          : ( POSIX::strftime($fmt, localtime($now) ));
+	my $out = $opt->{gmt} ? ( POSIX::strftime($fmt, gmtime($now)    ))
+		: ( POSIX::strftime($fmt, localtime($now) ));
 	POSIX::setlocale(&POSIX::LC_TIME, $current) if defined $current;
 	return $out;
 }
@@ -2040,41 +1976,41 @@ sub do_tag {
 }
 
 sub tag_counter {
-    my $file = shift || 'etc/counter';
+	my $file = shift || 'etc/counter';
 	my $opt = shift;
 #::logDebug("counter: file=$file start=$opt->{start}");
-    $file = $Vend::Cfg->{VendRoot} . "/$file"
-        unless Vend::Util::file_name_is_absolute($file);
-    my $ctr = new File::CounterFile $file, $opt->{start} || undef;
-    return $ctr->value() if $opt->{value};
-    return $ctr->dec() if $opt->{decrement};
-    return $ctr->inc();
+	$file = $Vend::Cfg->{VendRoot} . "/$file"
+		unless Vend::Util::file_name_is_absolute($file);
+	my $ctr = new File::CounterFile $file, $opt->{start} || undef;
+	return $ctr->value() if $opt->{value};
+	return $ctr->dec() if $opt->{decrement};
+	return $ctr->inc();
 }
 
 # Returns the text of a user entered field named VAR.
 sub tag_cgi {
-    my($var, $opt) = @_;
-    my($value);
+	my($var, $opt) = @_;
+	my($value);
 
 	local($^W) = 0;
 	$CGI::values->{$var} = $opt->{set} if defined $opt->{set};
 	$value = $CGI::values{$var} || '';
-    if ($value) {
+	if($value) {
 		# Eliminate any Interchange tags
 		$value =~ s~<([A-Za-z]*[^>]*\s+[Mm][Vv]\s*=\s*)~&lt;$1~g;
 		$value =~ s/\[/&#91;/g;
-    }
+	}
 	if($opt->{filter}) {
 		$value = filter_value($opt->{filter}, $value, $var);
 		$CGI::values{$var} = $value unless $opt->{keep};
 	}
-    return $value unless $opt->{hide};
-    return '';
+	return $value unless $opt->{hide};
+	return '';
 }
 
 # Returns the text of a user entered field named VAR.
 sub tag_value_extended {
-    my($var, $opt) = @_;
+	my($var, $opt) = @_;
 
 	my $yes = $opt->{yes} || 1;
 	my $no = $opt->{'no'} || '';
@@ -2111,12 +2047,10 @@ sub tag_value_extended {
 			if($CGI::file{$var} !~ /\n/) {
 				# Must be a mac file.
 				$CGI::file{$var} =~ s/\r/$replace/g;
-			}
-			elsif ( $CGI::file{$var} =~ /\r\n/) {
+			} elsif( $CGI::file{$var} =~ /\r\n/) {
 				# Probably a PC file
 				$CGI::file{$var} =~ s/\r\n/$replace/g;
-			}
-			else {
+			} else {
 				$CGI::file{$var} =~ s/\n/$replace/g;
 			}
 		}
@@ -2127,16 +2061,14 @@ sub tag_value_extended {
 	}
 
 	my $joiner;
-	if (defined $opt->{joiner}) {
+	if(defined $opt->{joiner}) {
 		$joiner = $opt->{joiner};
 		if($joiner eq '\n') {
 			$joiner = "\n";
-		}
-		elsif($joiner =~ m{\\}) {
+		} elsif($joiner =~ m{\\}) {
 			$joiner = $ready_safe->reval("qq{$joiner}");
 		}
-	}
-	else {
+	} else {
 		$joiner = ' ';
 	}
 
@@ -2145,13 +2077,11 @@ sub tag_value_extended {
 	$index = '*' if $index =~ /^\s*\*?\s*$/;
 
 	my @ary;
-	if (!ref $val) {
+	if(!ref $val) {
 		@ary = split /\0/, $val;
-	}
-	elsif($val =~ /ARRAY/) {
+	} elsif($val =~ /ARRAY/) {
 		@ary = @$val;
-	}
-	else {
+	} else {
 		::logError( "value-extended %s: passed non-scalar, non-array object", $var);
 	}
 
@@ -2227,18 +2157,16 @@ sub tag_weighted_banner {
 	my $start_time;
 	if($opt->{once}) {
 		$start_time = 0;
-	}
-	elsif(! -f $statfile) {
+	} elsif(! -f $statfile) {
 		Vend::Util::writefile( $statfile, "banners initialized " . time() . "\n");
 		$start_time = time();
-	}
-	else {
+	} else {
 		$start_time = (stat(_))[9];
 	}
 	my $weight_file = "$dir/total_weight";
 #::logDebug("banner category=$category dir=$dir statfile=$statfile wfile=$weight_file");
 	initialize_banner_directory($dir, $category, $opt)
-		if  (	
+		if(	
 				! -f $weight_file
 					or
 				(stat(_))[9] < $start_time
@@ -2249,7 +2177,7 @@ sub tag_weighted_banner {
 }
 
 sub tag_banner {
-    my ($place, $opt) = @_;
+	my ($place, $opt) = @_;
 
 	return tag_weighted_banner($place, $opt) if $opt->{weighted};
 
@@ -2260,72 +2188,67 @@ sub tag_banner {
 	my $sep		= $opt->{separator} || ':';
 	my $delim	= $opt->{delimiter} || "{or}";
 	$place = 'default' if ! $place;
-    my $totrot;
-    do {
+	my $totrot;
+	do {
 		my $banner_data;
-        $totrot = tag_data($table, $r_field, $place);
-        if(! length $totrot) {
+		$totrot = tag_data($table, $r_field, $place);
+		if(! length $totrot) {
 			# No banner present
-            unless ($place =~ /$sep/ or $place eq 'default') {
+			unless ($place =~ /$sep/ or $place eq 'default') {
 				$place = 'default';
 				redo;
 			}
-        }
-        elsif ($totrot) {
-            my $current = $::Scratch->{"rotate_$place"}++ || 0;
-            my $data = tag_data($table, $b_field, $place);
-            my(@banners) = split /\Q$delim/, $data;
-            return '' unless @banners;
-            return $banners[$current % scalar(@banners)];
-        }
-        else {
-            return tag_data($table, $b_field, $place);
-        }
-    } while $place =~ s/(.*)$sep.*/$1/;
+		} elsif($totrot) {
+			my $current = $::Scratch->{"rotate_$place"}++ || 0;
+			my $data = tag_data($table, $b_field, $place);
+			my(@banners) = split /\Q$delim/, $data;
+			return '' unless @banners;
+			return $banners[$current % scalar(@banners)];
+		} else {
+			return tag_data($table, $b_field, $place);
+		}
+	} while $place =~ s/(.*)$sep.*/$1/;
 	return;
 }
 
 # Returns the text of a user entered field named VAR.
 sub tag_value {
-    my($var,$opt) = @_;
-    my($value);
+	my($var,$opt) = @_;
+	my($value);
 
 	local($^W) = 0;
 	$::Values->{$var} = $opt->{set} if defined $opt->{set};
 	$value = defined $::Values->{$var} ? ($::Values->{$var}) : '';
-    if ($value) {
+	if($value) {
 		# Eliminate any Interchange tags
 		$value =~ s~<([A-Za-z]*[^>]*\s+[Mm][Vv]\s*=\s*)~&lt;$1~g;
 		$value =~ s/\[/&#91;/g;
-    }
+	}
 	if($opt->{filter}) {
 		$value = filter_value($opt->{filter}, $value, $var);
 		$::Values->{$var} = $value unless $opt->{keep};
 	}
 	$::Scratch->{$var} = $value if $opt->{scratch};
 	return '' if $opt->{hide};
-    return $opt->{default} if ! $value and defined $opt->{default};
-    return $value;
+	return $opt->{default} if ! $value and defined $opt->{default};
+	return $value;
 }
 
 # Returns the contents of a file.  Won't allow any arbitrary file unless
 # NoAbsolute is not set.
 sub tag_file {
 	my ($file, $type) = @_;
-    return readfile($file, $Global::NoAbsolute)
+	return readfile($file, $Global::NoAbsolute)
 		unless $type;
 	my $text = readfile($file, $Global::NoAbsolute);
 	if($type =~ /mac/i) {
 		$text =~ tr/\n/\r/;
-	}
-	elsif($type =~ /dos|window/i) {
+	} elsif($type =~ /dos|window/i) {
 		$text =~ s/\n/\r\n/g;
-	}
-	elsif($type =~ /unix/i) {
+	} elsif($type =~ /unix/i) {
 		if($text=~ /\n/) {
 			$text =~ tr/\r/\n/;
-		}
-		else {
+		} else {
 			$text =~ s/\r\n/\n/g;
 		}
 	}
@@ -2335,9 +2258,9 @@ sub tag_file {
 # Returns the text of a user entered field named VAR.
 # Same as tag value except returns 'default' if not present
 sub tag_default {
-    my($var, $default, $opt) = @_;
+	my($var, $default, $opt) = @_;
 	$opt->{default} = !(length $default) ? 'default' : $default;
-    return tag_value($var, $opt);
+	return tag_value($var, $opt);
 }
 
 sub esc {
@@ -2350,7 +2273,7 @@ sub esc {
 sub escape_scan {
 	my ($scan, $ref) = @_;
 #::logDebug("escape_scan: scan=$scan");
-	if (ref $scan) {
+	if(ref $scan) {
 		for(@$scan) {
 			my $add = '';
 			$_ = "se=$_" unless /[=\n]/;
@@ -2385,11 +2308,9 @@ sub escape_mv {
 		$scan =~ s/^\s+//mg;
 		$scan =~ s/\s+$//mg;
 		@args = split /\n+/, $scan;
-	}
-	elsif($scan =~ /&\w\w=/) {
+	} elsif($scan =~ /&\w\w=/) {
 		@args = split /&/, $scan;
-	}
-	else {
+	} else {
 		$scan =~ s!::!__ESLASH__!g;
 		@args  = split m:/:, $scan;
 	}
@@ -2432,87 +2353,81 @@ EOF
 
 PAGELINK: {
 
-my ($urlroutine, $page, $arg, $opt);
+	my ($urlroutine, $page, $arg, $opt);
 
-sub static_url {
-	return $Vend::Cfg->{StaticPath} . "/" . shift;
-}
-
-sub resolve_static {
-#::logDebug("entering resolve_static...");
-	return if ! $Vend::Cookie;
-#::logDebug("have cookie...");
-	return if ! $Vend::Cfg->{Static};
-#::logDebug("are static...");
-	my $key = $page;
-	if($arg) {
-		my $tmp = $arg;
-		$tmp =~ s:([^\w/]): sprintf '%%%02x', ord($1) :eg;
-		$key .= "/$arg";
+	sub static_url {
+		return $Vend::Cfg->{StaticPath} . "/" . shift;
 	}
+
+	sub resolve_static {
+#::logDebug("entering resolve_static...");
+		return if ! $Vend::Cookie;
+#::logDebug("have cookie...");
+		return if ! $Vend::Cfg->{Static};
+#::logDebug("are static...");
+		my $key = $page;
+		if($arg) {
+			my $tmp = $arg;
+			$tmp =~ s:([^\w/]): sprintf '%%%02x', ord($1) :eg;
+			$key .= "/$arg";
+		}
 #::logDebug("checking $key...");
 
-	if(defined $Vend::StaticDBM{$key}) {
+		if(defined $Vend::StaticDBM{$key}) {
 #::logDebug("found DBM $key...");
-		$page = $Vend::StaticDBM{$key} || "$key$Vend::Cfg->{StaticSuffix}";
-	}
-	elsif(defined $Vend::Cfg->{StaticPage}{$key}) {
+			$page = $Vend::StaticDBM{$key} || "$key$Vend::Cfg->{StaticSuffix}";
+		} elsif(defined $Vend::Cfg->{StaticPage}{$key}) {
 #::logDebug("found StaticPage $key...");
-		$page = $Vend::Cfg->{StaticPage}{$key} || "$key$Vend::Cfg->{StaticSuffix}";
-	}
-	else {
+			$page = $Vend::Cfg->{StaticPage}{$key} || "$key$Vend::Cfg->{StaticSuffix}";
+		} else {
 #::logDebug("not found $key...");
+			return;
+		}
+		$urlroutine = \&static_url;
 		return;
 	}
-	$urlroutine = \&static_url;
-	return;
-}
 
-sub tag_page {
-    ($page, $arg, $opt) = @_;
+	sub tag_page {
+		($page, $arg, $opt) = @_;
 
 #::logDebug("tag_page opt=" . ::uneval($opt));
-	return '<A HREF="' . form_link(@_) . '">' if defined $opt and $opt->{form};
+		return '<A HREF="' . form_link(@_) . '">' if defined $opt and $opt->{form};
 
-	if ($opt->{search}) {
-		$page = escape_scan($opt->{search});
-	}
-	elsif ($page eq 'scan') {
-		$page = escape_scan($arg);
-		undef $arg;
-	}
+		if($opt->{search}) {
+			$page = escape_scan($opt->{search});
+		} elsif($page eq 'scan') {
+			$page = escape_scan($arg);
+			undef $arg;
+		}
 
-	$urlroutine = $opt->{secure} ? \&secure_vendUrl : \&vendUrl;
+		$urlroutine = $opt->{secure} ? \&secure_vendUrl : \&vendUrl;
 
-	resolve_static();
+		resolve_static();
 
-    return '<a href="' . $urlroutine->($page,$arg || undef) . '">';
-}
-
-# Returns an href which will call up the specified PAGE.
-
-sub tag_area {
-    ($page, $arg, $opt) = @_;
-
-	return form_link(@_) if defined $opt and $opt->{form};
-
-	$page = '' if ! defined $page;
-
-	if ($opt->{search}) {
-		$page = escape_scan($opt->{search});
-	}
-	elsif ($page eq 'scan') {
-		$page = escape_scan($arg);
-		undef $arg;
+		return '<a href="' . $urlroutine->($page,$arg || undef) . '">';
 	}
 
-	$urlroutine = $opt->{secure} ? \&secure_vendUrl : \&vendUrl;
+	# Returns an href which will call up the specified PAGE.
+	sub tag_area {
+		($page, $arg, $opt) = @_;
 
-	resolve_static();
+		return form_link(@_) if defined $opt and $opt->{form};
 
-	return $urlroutine->($page, $arg);
-}
+		$page = '' if ! defined $page;
 
+		if($opt->{search}) {
+			$page = escape_scan($opt->{search});
+		} elsif($page eq 'scan') {
+			$page = escape_scan($arg);
+			undef $arg;
+		}
+
+		$urlroutine = $opt->{secure} ? \&secure_vendUrl : \&vendUrl;
+
+		resolve_static();
+
+		return $urlroutine->($page, $arg);
+	}
 }
 
 # Sets the default shopping cart for display
@@ -2550,7 +2465,7 @@ sub tag_calc {
 	init_calc() if ! $Calc_initialized;
 
 	$result = $ready_safe->reval($body);
-	if ($@) {
+	if($@) {
 		my $msg;
 		$msg .= $@;
 		logGlobal({}, "Safe: %s\n%s\n" , $msg, $body);
@@ -2567,12 +2482,12 @@ sub tag_self_contained_if {
 	
 	local($^W) = 0;
 #::logDebug("self_if: base=$base term=$term op=$operator comp=$comp");
-	if ($body =~ s#$QR{condition_begin}##) {
+	if($body =~ s#$QR{condition_begin}##) {
 		$comp = $1;
 	}
 #::logDebug("self_if: base=$base term=$term op=$operator comp=$comp");
 
-	if ( $body =~ /\[[EeTtAaOo][hHLlNnRr][SsEeDd\s]/ ) {
+	if( $body =~ /\[[EeTtAaOo][hHLlNnRr][SsEeDd\s]/ ) {
 		($body, $elsif, $else, @addl) = split_if($body);
 	}
 
@@ -2589,16 +2504,13 @@ sub tag_self_contained_if {
 	my $out;
 	if($status) {
 		$out = $body;
-	}
-	elsif ($elsif) {
+	} elsif($elsif) {
 		$else = '[else]' . $else . '[/else]' if $else;
 		$elsif =~ s#(.*?)$QR{'/elsif'}(.*)#$1${2}[/elsif]#s;
 		$out = '[if ' . $elsif . $else . '[/if]';
-	}
-	elsif ($else) {
+	} elsif($else) {
 		$out = $else;
-	}
-	else {
+	} else {
 		return '';
 	}
 
@@ -2612,26 +2524,26 @@ my %cond_op = (
 	ge  => sub { $_[0] ge $_[1] },
 	le  => sub { $_[0] le $_[1] },
 	lt  => sub { $_[0] lt $_[1] },
-   '>'  => sub { $_[0]  > $_[1] },
-   '<'  => sub { $_[0]  < $_[1] },
-   '>=' => sub { $_[0] >= $_[1] },
-   '<=' => sub { $_[0] <= $_[1] },
-   '==' => sub { $_[0] == $_[1] },
-   '!=' => sub { $_[0] != $_[1] },
-   '=~' => sub { 
-   				 my $re;
+	'>'  => sub { $_[0]  > $_[1] },
+	'<'  => sub { $_[0]  < $_[1] },
+	'>=' => sub { $_[0] >= $_[1] },
+	'<=' => sub { $_[0] <= $_[1] },
+	'==' => sub { $_[0] == $_[1] },
+	'!=' => sub { $_[0] != $_[1] },
+	'=~' => sub { 
+				 my $re;
 				 $_[1] =~ s:^/(.*)/$:$1:;
-   				 eval { $re = qr/$_[1]/ };
+				 eval { $re = qr/$_[1]/ };
 				 if($@) {
 					::logError("bad regex %s in if-PREFIX-data", $_[1]);
 					return undef;
 				 }
 				 return $_[0] =~ $re;
 				},
-   '!~' => sub { 
-   				 my $re;
+	'!~' => sub { 
+				 my $re;
 				 $_[1] =~ s:^/(.*)/$:$1:;
-   				 eval { $re = qr/$_[1]/ };
+				 eval { $re = qr/$_[1]/ };
 				 if($@) {
 					::logError("bad regex %s in if-PREFIX-data", $_[1]);
 					return undef;
@@ -2675,21 +2587,20 @@ sub pull_else {
 my (@Opts);
 my (@Flds);
 my %Sort = (
-
 	''	=> sub { $_[0] cmp $_[1]				},
 	none	=> sub { $_[0] cmp $_[1]				},
 	f	=> sub { (lc $_[0]) cmp (lc $_[1])	},
 	fr	=> sub { (lc $_[1]) cmp (lc $_[0])	},
-    l  => sub {
-            my ($a1,$a2) = split /[,.]/, $_[0], 2;
-            my ($b1,$b2) = split /[,.]/, $_[1], 2;
-            return $a1 <=> $b1 || $a2 <=> $b2;
-    },  
-    lr  => sub {
-            my ($a1,$a2) = split /[,.]/, $_[0], 2;
-            my ($b1,$b2) = split /[,.]/, $_[1], 2;
-            return $b1 <=> $a1 || $b2 <=> $a2;
-    },      
+	l  => sub {
+			my ($a1,$a2) = split /[,.]/, $_[0], 2;
+			my ($b1,$b2) = split /[,.]/, $_[1], 2;
+			return $a1 <=> $b1 || $a2 <=> $b2;
+	},  
+	lr  => sub {
+			my ($a1,$a2) = split /[,.]/, $_[0], 2;
+			my ($b1,$b2) = split /[,.]/, $_[1], 2;
+			return $b1 <=> $a1 || $b2 <=> $a2;
+	},      
 	n	=> sub { $_[0] <=> $_[1]				},
 	nr	=> sub { $_[1] <=> $_[0]				},
 	r	=> sub { $_[1] cmp $_[0]				},
@@ -2701,9 +2612,9 @@ use vars qw/%Sort_field/;
 %Sort_field = %Sort;
 
 sub tag_sort_ary {
-    my($opts, $list) = (@_); 
-    $opts =~ s/^\s+//; 
-    $opts =~ s/\s+$//; 
+	my($opts, $list) = (@_); 
+	$opts =~ s/^\s+//; 
+	$opts =~ s/\s+$//; 
 #::logDebug("tag_sort_ary: opts=$opts list=" . ::uneval($list));
 	my @codes;
 	my $key = 0;
@@ -2711,11 +2622,11 @@ sub tag_sort_ary {
 	my ($start, $end, $num);
 	my $glob_opt = 'none';
 
-    my @opts =  split /\s+/, $opts;
-    my @option; my @bases; my @fields;
+	my @opts =  split /\s+/, $opts;
+	my @option; my @bases; my @fields;
 
-    for(@opts) {
-        my ($base, $fld, $opt) = split /:/, $_;
+	for(@opts) {
+		my ($base, $fld, $opt) = split /:/, $_;
 
 		if($base =~ /^(\d+)$/) {
 			$key = $1;
@@ -2724,27 +2635,29 @@ sub tag_sort_ary {
 		}
 		if($base =~ /^([-=+])(\d+)-?(\d*)/) {
 			my $op = $1;
-			if    ($op eq '-') { $start = $2 }
-			elsif ($op eq '+') { $num   = $2 }
-			elsif ($op eq '=') {
+			if($op eq '-') {
+				$start = $2;
+			} elsif($op eq '+') {
+			    $num   = $2;
+			} elsif($op eq '=') {
 				$start = $2;
 				$end = ($3 || undef);
 			}
 			next;
 		}
 		
-        push @bases, $base;
-        push @fields, $fld;
-        push @option, (defined $Vend::Interpolate::Sort_field{$opt} ? $opt : 'none');
-    }
+		push @bases, $base;
+		push @fields, $fld;
+		push @option, (defined $Vend::Interpolate::Sort_field{$opt} ? $opt : 'none');
+	}
 
 	if(defined $end) {
 		$num = 1 + $end - $start;
 		$num = undef if $num < 1;
- 	}
+	}
 
-    my $i;
-    my $routine = 'sub { ';
+	my $i;
+	my $routine = 'sub { ';
 	for( $i = 0; $i < @bases; $i++) {
 			$routine .= '&{$Vend::Interpolate::Sort_field{"' .
 						$option[$i] .
@@ -2756,8 +2669,8 @@ sub tag_sort_ary {
 	$routine .= '($_[0]->[$key],$_[1]->[$key]); }';
 #::logDebug("tag_sort_ary routine: $routine\n");
 
-    my $code = eval $routine;  
-    die "Bad sort routine\n" if $@;
+	my $code = eval $routine;  
+	die "Bad sort routine\n" if $@;
 
 	#Prime the sort? Prevent variable suicide??
 	#&{$Vend::Interpolate::Sort_field{'n'}}('31', '30');
@@ -2782,9 +2695,9 @@ sub tag_sort_ary {
 }
 
 sub tag_sort_hash {
-    my($opts, $list) = (@_); 
-    $opts =~ s/^\s+//; 
-    $opts =~ s/\s+$//; 
+	my($opts, $list) = (@_); 
+	$opts =~ s/^\s+//; 
+	$opts =~ s/\s+$//; 
 #::logDebug("tag_sort_hash: opts=$opts list=" . ::uneval($list));
 	my @codes;
 	my $key = 'code';
@@ -2792,11 +2705,10 @@ sub tag_sort_hash {
 	my ($start, $end, $num);
 	my $glob_opt = 'none';
 
-    my @opts =  split /\s+/, $opts;
-    my @option; my @bases; my @fields;
+	my @opts =  split /\s+/, $opts;
+	my @option; my @bases; my @fields;
 
-    for(@opts) {
-
+	for(@opts) {
 		if(/^(\w+)(:([flnr]+))?$/) {
 			$key = $1;
 			$glob_opt = $3 || 'none';
@@ -2804,33 +2716,35 @@ sub tag_sort_hash {
 		}
 		if(/^([-=+])(\d+)-?(\d*)/) {
 			my $op = $1;
-			if    ($op eq '-') { $start = $2 }
-			elsif ($op eq '+') { $num   = $2 }
-			elsif ($op eq '=') {
+			if($op eq '-') {
+				$start = $2;
+			} elsif($op eq '+') {
+				$num   = $2;
+			} elsif($op eq '=') {
 				$start = $2;
 				$end = ($3 || undef);
 			}
 			next;
 		}
-        my ($base, $fld, $opt) = split /:/, $_;
+		my ($base, $fld, $opt) = split /:/, $_;
 		
-        push @bases, $base;
-        push @fields, $fld;
-        push @option, (defined $Vend::Interpolate::Sort_field{$opt} ? $opt : 'none');
-    }
+		push @bases, $base;
+		push @fields, $fld;
+		push @option, (defined $Vend::Interpolate::Sort_field{$opt} ? $opt : 'none');
+	}
 
 	if(defined $end) {
 		$num = 1 + $end - $start;
 		$num = undef if $num < 1;
- 	}
+	}
 
-	if (! defined $list->[0]->{$key}) {
+	if(! defined $list->[0]->{$key}) {
 		::logError("sort key '$key' not defined in list. Skipping sort.");
 		return $list;
 	}
 
-    my $i;
-    my $routine = 'sub { ';
+	my $i;
+	my $routine = 'sub { ';
 	for( $i = 0; $i < @bases; $i++) {
 			$routine .= '&{$Vend::Interpolate::Sort_field{"' .
 						$option[$i] .
@@ -2842,8 +2756,8 @@ sub tag_sort_hash {
 	$routine .= '($a->{$key},$_[1]->{$key}); }';
 
 #::logDebug("tag_sort_hash routine: $routine\n");
-    my $code = eval $routine;  
-    die "Bad sort routine\n" if $@;
+	my $code = eval $routine;  
+	die "Bad sort routine\n" if $@;
 
 	#Prime the sort? Prevent variable suicide??
 	#&{$Vend::Interpolate::Sort_field{'n'}}('31', '30');
@@ -2928,7 +2842,7 @@ sub find_sort {
 }
 
 sub tag_search_list {
-    my($opt, $text) = @_;
+	my($opt, $text) = @_;
 	$opt->{prefix} = 'item';
 	my $obj;
 
@@ -2940,7 +2854,7 @@ sub tag_search_list {
 		and $text =~ s:\[/if${D}(field|data)\]:[/if-item-$1]:gi;
 	$text =~ s:\[on${D}change\b:[item-change:gi
 		and $text =~ s:\[/on${D}change\b:[/item-change:gi;
-   	return labeled_list($opt, $text, $obj);
+	return labeled_list($opt, $text, $obj);
 }
 
 # Artificial for better variable passing
@@ -2962,212 +2876,198 @@ sub tag_search_list {
 		$session,
 		);
 
-sub more_link {
-	my($inc, $pa) = @_;
-	my ($next, $last, $arg);
-	my $list = '';
-	$pa =~ s/__PAGE__/$inc/g;
-	my $form_arg = "mv_more_ip=1\nmv_nextpage=$page";
-	$form_arg .= "\npf=$prefix" if $prefix;
-	$form_arg .= "\nmi=$prefix" if $more_id;
-	$next = ($inc-1) * $chunk;
+	sub more_link {
+		my($inc, $pa) = @_;
+		my ($next, $last, $arg);
+		my $list = '';
+		$pa =~ s/__PAGE__/$inc/g;
+		my $form_arg = "mv_more_ip=1\nmv_nextpage=$page";
+		$form_arg .= "\npf=$prefix" if $prefix;
+		$form_arg .= "\nmi=$prefix" if $more_id;
+		$next = ($inc-1) * $chunk;
 #::logDebug("more_link: inc=$inc current=$current");
-	$last = $next + $chunk - 1;
-	$last = ($last+1) < $total ? $last : ($total - 1);
-	if($inc == $current) {
-		$pa =~ s/__BORDER__/$border_selected || $border || ''/e;
-		$list .= qq|<STRONG>$pa</STRONG> | ;
-	}
-	else {
-		$pa =~ s/__BORDER__/$border/e;
-		$arg = "$session:$next:$last:$chunk";
-		$list .= '<A HREF="';
-		$list .= tag_area( "scan/MM=$arg", '', { form => $form_arg });
-		$list .= '">';
-		$list .= $pa;
-		$list .= '</A> ';
-	}
-	return $list;
-}
-
-sub tag_more_list {
-	(
-		$next_anchor,
-		$prev_anchor,
-		$page_anchor,
-		$border,
-		$border_selected,
-		$opt,
-		$r,
-	) = @_;
-#::logDebug("more_list: opt=$opt label=$opt->{label}");
-	return undef if ! $opt;
-	$q = $opt->{object} || $Vend::SearchObject{$opt->{label}};
-	return '' unless $q->{matches} > $q->{mv_matchlimit};
-	my($arg,$inc,$last,$m);
-	my($adder,$pages);
-	my $next_tag = '';
-	my $list = '';
-	$session = $q->{mv_cache_key};
-	my $first = $q->{mv_first_match} || 0;
-	$chunk = $q->{mv_matchlimit};
-	$total = $q->{matches};
-	my $next = defined $q->{mv_next_pointer}
-				? $q->{mv_next_pointer}
-				: $first + $chunk;
-	$page = $q->{mv_search_page} || $Global::Variable->{MV_PAGE};
-	$prefix = $q->{prefix} || '';
-	my $form_arg = "mv_more_ip=1\nmv_nextpage=$page";
-	$form_arg .= "\npf=$q->{prefix}" if $q->{prefix};
-	$form_arg .= "\nmi=$q->{mv_more_id}" if $q->{mv_more_id};
-
-	if($r =~ s:\[border\]($All)\[/border\]::i) {
-		$border = $1;
-		$border =~ s/\D//g;
-	}
-	if($r =~ s:\[border[-_]selected\]($All)\[/border[-_]selected\]::i) {
-		$border = $1;
-		$border =~ s/\D//g;
-	}
-
-	if(! $chunk or $chunk >= $total) {
-		return '';
-	}
-
-	$border = qq{ BORDER="$border"} if defined $border;
-	$border_selected = qq{ BORDER="$border_selected"}
-		if defined $border_selected;
-
-	$adder = ($total % $chunk) ? 1 : 0;
-	$pages = int($total / $chunk) + $adder;
-	$current = int($next / $chunk) || $pages;
-
-	if($first) {
-		$first = 0 if $first < 0;
-		unless ($prev_anchor) {
-			if($r =~ s:\[prev[-_]anchor\]($All)\[/prev[-_]anchor\]::i) {
-				$prev_anchor = $1;
-			}
-			else {
-				$prev_anchor = 'Previous';
-			}
-		}
-		elsif ($prev_anchor ne 'none') {
-			$prev_anchor = qq%<IMG SRC="$prev_anchor"$border>%;
-		}
-		unless ($prev_anchor eq 'none') {
-			$arg = $session;
-			$arg .= ':';
-			$arg .= $first - $chunk;
-			$arg .= ':';
-			$arg .= $first - 1;
-			$arg .= ":$chunk";
+		$last = $next + $chunk - 1;
+		$last = ($last+1) < $total ? $last : ($total - 1);
+		if($inc == $current) {
+			$pa =~ s/__BORDER__/$border_selected || $border || ''/e;
+			$list .= qq|<STRONG>$pa</STRONG> | ;
+		} else {
+			$pa =~ s/__BORDER__/$border/e;
+			$arg = "$session:$next:$last:$chunk";
 			$list .= '<A HREF="';
 			$list .= tag_area( "scan/MM=$arg", '', { form => $form_arg });
 			$list .= '">';
-			$list .= $prev_anchor;
+			$list .= $pa;
 			$list .= '</A> ';
 		}
-	}
-	else {
-		$r =~ s:\[prev[-_]anchor\]($All)\[/prev[-_]anchor\]::i;
-	}
-	
-	if($next) {
-		unless ($next_anchor) {
-			if($r =~ s:\[next[-_]anchor\]($All)\[/next[-_]anchor\]::i) {
-				$next_anchor = $1;
-			}
-			else {
-				$next_anchor = 'Next';
-			}
-		}
-		else {
-			$next_anchor = qq%<IMG SRC="$next_anchor"$border>%;
-		}
-		$last = $next + $chunk - 1;
-		$last = $last > ($total - 1) ? $total - 1 : $last;
-		$arg = "$session:$next:$last:$chunk";
-		$next_tag .= '<A HREF="';
-		$next_tag .= tag_area( "scan/MM=$arg", '', { form => $form_arg });
-		$next_tag .= '">';
-		$next_tag .= $next_anchor;
-		$next_tag .= '</A>';
-	}
-	else {
-		$r =~ s:\[next[-_]anchor\]($All)\[/next[-_]anchor\]::i;
-	}
-	
-	unless ($page_anchor) {
-		if($r =~ s:\[page[-_]anchor\]($All)\[/page[-_]anchor\]::i) {
-			$page_anchor = $1;
-			$page_anchor =~ s/\$PAGE\$/__PAGE__/i;
-		}
-		else {
-			$page_anchor = '__PAGE__';
-		}
-	}
-	elsif ($page_anchor ne 'none') {
-		$page_anchor = qq%<IMG SRC="$page_anchor?__PAGE__"__BORDER__>%;
+		return $list;
 	}
 
-	my ($decade_next, $decade_prev, $decade_div);
-	if( $q->{mv_more_decade} or $r =~ m:\[decade[-_]next\]:) {
-		$r =~ s:\[decade[-_]next\]($All)\[/decade[-_]next\]::i
-			and $decade_next = $1;
-		$decade_next = '<SMALL>&#91;more&gt;&gt;&#93;</SMALL>' if ! $decade_next;
-		$r =~ s:\[decade[-_]prev\]($All)\[/decade[-_]prev\]::i
-			and $decade_prev = $1;
-		$decade_prev = '<SMALL>&#91;&lt;&lt;more&#93;</SMALL>' if ! $decade_prev;
-		$decade_div = $q->{mv_more_decade} > 1 ? $q->{mv_more_decade} : 10;
-	}
+	sub tag_more_list {
+		(
+			$next_anchor,
+			$prev_anchor,
+			$page_anchor,
+			$border,
+			$border_selected,
+			$opt,
+			$r,
+		) = @_;
+#::logDebug("more_list: opt=$opt label=$opt->{label}");
+		return undef if ! $opt;
+		$q = $opt->{object} || $Vend::SearchObject{$opt->{label}};
+		return '' unless $q->{matches} > $q->{mv_matchlimit};
+		my($arg,$inc,$last,$m);
+		my($adder,$pages);
+		my $next_tag = '';
+		my $list = '';
+		$session = $q->{mv_cache_key};
+		my $first = $q->{mv_first_match} || 0;
+		$chunk = $q->{mv_matchlimit};
+		$total = $q->{matches};
+		my $next = defined $q->{mv_next_pointer}
+					? $q->{mv_next_pointer}
+					: $first + $chunk;
+		$page = $q->{mv_search_page} || $Global::Variable->{MV_PAGE};
+		$prefix = $q->{prefix} || '';
+		my $form_arg = "mv_more_ip=1\nmv_nextpage=$page";
+		$form_arg .= "\npf=$q->{prefix}" if $q->{prefix};
+		$form_arg .= "\nmi=$q->{mv_more_id}" if $q->{mv_more_id};
 
-	my ($b, $e, @b, @e);
-	if(defined $decade_div and $pages > $decade_div) {
-		if($current > $decade_div) {
-			$b = ( int ($current / $decade_div) * $decade_div ) + 1;
-			$list .= " ";
-			$list .= more_link($b - $decade_div, $decade_prev);
+		if($r =~ s:\[border\]($All)\[/border\]::i) {
+			$border = $1;
+			$border =~ s/\D//g;
 		}
-		else {
-			$b = 1;
+		if($r =~ s:\[border[-_]selected\]($All)\[/border[-_]selected\]::i) {
+			$border = $1;
+			$border =~ s/\D//g;
 		}
-		if($b + $decade_div <= $pages) {
-			$e = $b + $decade_div;
-			$decade_next = more_link($e, $decade_next);
-			$e--;
+
+		if(! $chunk or $chunk >= $total) {
+			return '';
 		}
-		else {
-			$e = $pages;
+
+		$border = qq{ BORDER="$border"} if defined $border;
+		$border_selected = qq{ BORDER="$border_selected"}
+			if defined $border_selected;
+
+		$adder = ($total % $chunk) ? 1 : 0;
+		$pages = int($total / $chunk) + $adder;
+		$current = int($next / $chunk) || $pages;
+
+		if($first) {
+			$first = 0 if $first < 0;
+			unless ($prev_anchor) {
+				if($r =~ s:\[prev[-_]anchor\]($All)\[/prev[-_]anchor\]::i) {
+					$prev_anchor = $1;
+				} else {
+					$prev_anchor = 'Previous';
+				}
+			} elsif($prev_anchor ne 'none') {
+				$prev_anchor = qq%<IMG SRC="$prev_anchor"$border>%;
+			}
+			unless ($prev_anchor eq 'none') {
+				$arg = $session;
+				$arg .= ':';
+				$arg .= $first - $chunk;
+				$arg .= ':';
+				$arg .= $first - 1;
+				$arg .= ":$chunk";
+				$list .= '<A HREF="';
+				$list .= tag_area( "scan/MM=$arg", '', { form => $form_arg });
+				$list .= '">';
+				$list .= $prev_anchor;
+				$list .= '</A> ';
+			}
+		} else {
+			$r =~ s:\[prev[-_]anchor\]($All)\[/prev[-_]anchor\]::i;
+		}
+	
+		if($next) {
+			unless ($next_anchor) {
+				if($r =~ s:\[next[-_]anchor\]($All)\[/next[-_]anchor\]::i) {
+					$next_anchor = $1;
+				} else {
+					$next_anchor = 'Next';
+				}
+			} else {
+				$next_anchor = qq%<IMG SRC="$next_anchor"$border>%;
+			}
+			$last = $next + $chunk - 1;
+			$last = $last > ($total - 1) ? $total - 1 : $last;
+			$arg = "$session:$next:$last:$chunk";
+			$next_tag .= '<A HREF="';
+			$next_tag .= tag_area( "scan/MM=$arg", '', { form => $form_arg });
+			$next_tag .= '">';
+			$next_tag .= $next_anchor;
+			$next_tag .= '</A>';
+		} else {
+			$r =~ s:\[next[-_]anchor\]($All)\[/next[-_]anchor\]::i;
+		}
+	
+		unless ($page_anchor) {
+			if($r =~ s:\[page[-_]anchor\]($All)\[/page[-_]anchor\]::i) {
+				$page_anchor = $1;
+				$page_anchor =~ s/\$PAGE\$/__PAGE__/i;
+			} else {
+				$page_anchor = '__PAGE__';
+			}
+		} elsif($page_anchor ne 'none') {
+			$page_anchor = qq%<IMG SRC="$page_anchor?__PAGE__"__BORDER__>%;
+		}
+
+		my ($decade_next, $decade_prev, $decade_div);
+		if( $q->{mv_more_decade} or $r =~ m:\[decade[-_]next\]:) {
+			$r =~ s:\[decade[-_]next\]($All)\[/decade[-_]next\]::i
+				and $decade_next = $1;
+			$decade_next = '<SMALL>&#91;more&gt;&gt;&#93;</SMALL>' if ! $decade_next;
+			$r =~ s:\[decade[-_]prev\]($All)\[/decade[-_]prev\]::i
+				and $decade_prev = $1;
+			$decade_prev = '<SMALL>&#91;&lt;&lt;more&#93;</SMALL>' if ! $decade_prev;
+			$decade_div = $q->{mv_more_decade} > 1 ? $q->{mv_more_decade} : 10;
+		}
+
+		my ($b, $e, @b, @e);
+		if(defined $decade_div and $pages > $decade_div) {
+			if($current > $decade_div) {
+				$b = ( int ($current / $decade_div) * $decade_div ) + 1;
+				$list .= " ";
+				$list .= more_link($b - $decade_div, $decade_prev);
+			} else {
+				$b = 1;
+			}
+			if($b + $decade_div <= $pages) {
+				$e = $b + $decade_div;
+				$decade_next = more_link($e, $decade_next);
+				$e--;
+			} else {
+				$e = $pages;
+				undef $decade_next;
+			}
+#::logDebug("more_list: decade found pages=$pages current=$current b=$b e=$e next=$next last=$last decade_div=$decade_div");
+		} else {
+			($b, $e) = (1, $pages);
 			undef $decade_next;
 		}
-#::logDebug("more_list: decade found pages=$pages current=$current b=$b e=$e next=$next last=$last decade_div=$decade_div");
-	}
-	else {
-		($b, $e) = (1, $pages);
-		undef $decade_next;
-	}
 #::logDebug("more_list: pages=$pages current=$current b=$b e=$e next=$next last=$last decade_div=$decade_div");
 
-	foreach $inc ($b .. $e) {
-		last if $page_anchor eq 'none';
-		$list .= more_link($inc, $page_anchor);
+		foreach $inc ($b .. $e) {
+			last if $page_anchor eq 'none';
+			$list .= more_link($inc, $page_anchor);
+		}
+
+		$list .= " $decade_next " if defined $decade_next;
+		$list .= $next_tag;
+		$first = $first + 1;
+		$last = $first + $chunk - 1;
+		$last = $last > $total ? $total : $last;
+		$m = $first . '-' . $last;
+		$r =~ s,$QR{more},$list,g;
+		$r =~ s,$QR{matches},$m,g;
+		$r =~ s,$QR{match_count},$q->{matches},g;
+
+		$r;
 	}
-
-	$list .= " $decade_next " if defined $decade_next;
-	$list .= $next_tag;
-	$first = $first + 1;
-	$last = $first + $chunk - 1;
-	$last = $last > $total ? $total : $last;
-	$m = $first . '-' . $last;
-	$r =~ s,$QR{more},$list,g;
-	$r =~ s,$QR{matches},$m,g;
-	$r =~ s,$QR{match_count},$q->{matches},g;
-
-	$r;
-
-}
-
 }
 
 sub sort_cart {
@@ -3236,7 +3136,7 @@ sub tag_labeled_data_row {
 #	LdExpr=$LdExpr
 #EOF
 
-    while($$text =~ $LdExpr) {
+	while($$text =~ $LdExpr) {
 		$table = $1;
 		$tabRE = qr/$table/;
 		$row = $Data_cache{"$table.$key"}
@@ -3280,13 +3180,13 @@ my $opt_field;
 my $opt_value;
 
 sub labeled_list {
-    my($opt, $text, $obj) = @_;
+	my($opt, $text, $obj) = @_;
 	my($count);
 	$obj = $opt->{object} if ! $obj;
 	return '' if ! $obj;
 
 	my $ary = $obj->{mv_results};
-	return if (! $ary or ! ref $ary or ! $text or ! defined $ary->[0]);
+	return if(! $ary or ! ref $ary or ! $text or ! defined $ary->[0]);
 	
 	my $save_unsafe = $MVSAFE::Unsafe || '';
 	$MVSAFE::Unsafe = 1;
@@ -3303,7 +3203,7 @@ sub labeled_list {
 
 	my $end;
 	# List more
-	if (	defined $CGI::values{mv_more_matches}
+	if(	defined $CGI::values{mv_more_matches}
 			and     $CGI::values{mv_more_matches} eq 'loop'  )
 	{
 		undef $CGI::values{mv_more_matches};
@@ -3315,15 +3215,13 @@ sub labeled_list {
 	}
 	# get the number to start the increment from
 	my $i = 0;
-	if (defined $obj->{more_in_progress} and $obj->{mv_first_match}) {
+	if(defined $obj->{more_in_progress} and $obj->{mv_first_match}) {
 		$i = $obj->{mv_first_match};
-	}
-	elsif (defined $opt->{random}) {
+	} elsif(defined $opt->{random}) {
 		@$ary = @$ary[random_elements($ary, $opt->{random})];
 		$i = 0; $end = $#$ary;
 		undef $obj->{mv_matchlimit};
-	}
-	elsif (defined $opt->{fm}) {
+	} elsif(defined $opt->{fm}) {
 		$i = $opt->{fm} - 1;
 	}
 
@@ -3335,15 +3233,14 @@ sub labeled_list {
 	if(defined $opt->{option}) {
 		$opt_value = $opt->{option};
 		if($opt_value =~ s/\s*($Codere)::($Codere)\s*//) {
-            $opt_table = $1;
-            $opt_field = $2;
+			$opt_table = $1;
+			$opt_field = $2;
 			$opt_value = lc($::Values->{$opt_value}) || undef;
-            $opt_select = sub {
-                return lc(tag_data($opt_table, $opt_field, shift)) eq $opt_value;
-            }
+			$opt_select = sub {
+				return lc(tag_data($opt_table, $opt_field, shift)) eq $opt_value;
+			}
 				if $opt_value;
-        }
-		elsif(defined $::Values->{$opt_value} and length $::Values->{$opt_value} ) {
+		} elsif(defined $::Values->{$opt_value} and length $::Values->{$opt_value} ) {
 			$opt_value = lc($::Values->{$opt_value});
 			$opt_select = ! $opt->{multiple} 
 						  ? sub { return "\L$_[0]" eq $opt_value }
@@ -3351,8 +3248,7 @@ sub labeled_list {
 						  		  $opt_value =~ /\0$_[0](?:\0|$)/i
 								  };
 		}
-	}
-	else {
+	} else {
 		undef $opt_select;
 	}
 
@@ -3381,8 +3277,7 @@ sub labeled_list {
 		}
 		$ary = tag_sort_hash($opt->{sort}, $ary) if $opt->{sort};
 		$r = iterate_hash_list($i, $end, $count, $text, $ary, $opt_select);
-	}
-	else {
+	} else {
 		my $fa = $obj->{mv_return_fields} || undef;
 		my $fh = $obj->{mv_field_hash}    || undef;
 		my $fn = $obj->{mv_field_names}   || undef;
@@ -3397,8 +3292,7 @@ sub labeled_list {
 			for(@$fa) {
 				$fh->{$fn->[$_]} = $idx++;
 			}
-		}
-		elsif (! $fh and $fn) {
+		} elsif(! $fh and $fn) {
 #::logDebug("Not fh, fn: " . ::uneval($fn));
 			my $idx = 0;
 			$fh = {};
@@ -3406,8 +3300,7 @@ sub labeled_list {
 				$fh->{$_} = $idx++;
 			}
 #::logDebug("Not fh, fn: " . ::uneval($fh));
-		}
-		else {
+		} else {
 #::logDebug("fh is there." . ::uneval($fh));
 		}
 		$r = iterate_array_list($i, $end, $count, $text, $ary, $opt_select, $fh);
@@ -3457,7 +3350,7 @@ my $once = 0;
 #::logDebug("Doing $code substitution, count $count++");
 #::logDebug("Doing '" . substr($code, 0, index($code, "\n") + 1) . "' substitution, count $count++");
 
-	    $run = $text;
+		$run = $text;
 		$run =~ s#$B$QR{_alternate}$E$QR{'/_alternate'}#
 				  $count % ($1 || $::Values->{mv_item_alternate} || 2)
 				  							?	pull_else($2)
@@ -3466,19 +3359,19 @@ my $once = 0;
 				  (defined $fh->{$2} ? $row->[$fh->{$2}] : '')
 				  					?	pull_if($4,$1,$3,$row->[$2])
 									:	pull_else($4,$1,$3,$row->[$2])#ige;
-	    $run =~ s#$B$QR{_param}#defined $fh->{$1} ? $row->[$fh->{$1}] : ''#ige;
+		$run =~ s#$B$QR{_param}#defined $fh->{$1} ? $row->[$fh->{$1}] : ''#ige;
 		$run =~ s#$IB$QR{_pos_if}$IE$QR{'/_pos'}#
 				  $row->[$2] 
 						?	pull_if($4,$1,$3,$row->[$2])
 						:	pull_else($4,$1,$3,$row->[$2])#ige;
-	    $run =~ s#$B$QR{_pos}#$row->[$1]#ig;
+		$run =~ s#$B$QR{_pos}#$row->[$1]#ig;
 #::logDebug("fh: " . ::uneval($fh) . ::uneval($row)) unless $once++;
 		$run =~ s#$IB$QR{_field_if}$IE$QR{'/_field'}#
 				  my $tmp = Vend::Data::product_field($2, $code);
 				  $tmp	?	pull_if($4,$1,$3,$tmp)
 						:	pull_else($4,$1,$3,$tmp)#ge;
 		$run =~ s:$B$QR{_line}:join "\t", @{$row}[ ($1 || 0) .. $#$row]:ige;
-	    $run =~ s:$B$QR{_increment}:$count:ig;
+		$run =~ s:$B$QR{_increment}:$count:ig;
 		$run =~ s:$B$QR{_accessories}:
 						tag_accessories($code,$1,{}):ige;
 		$run =~ s:$B$QR{_code}:$code:ig;
@@ -3496,22 +3389,22 @@ my $once = 0;
 		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#($Vend::Cfg->{Sub}{$1} || sub { 'ERROR' })->($2,$row)#ige;
 		$run =~ s#$B$QR{_filter}$E$QR{'/_filter'}#filter_value($1,$2)#ige;
 		$run =~ s#$B$QR{_last}$E$QR{'/_last'}#
-                    my $tmp = interpolate_html($1);
-                    if($tmp && $tmp < 0) {
-                        last;
-                    }
-                    elsif($tmp) {
-                        $return = 1;
-                    }
-                    '' #ixge;
+					my $tmp = interpolate_html($1);
+					if($tmp && $tmp < 0) {
+						last;
+					} elsif($tmp) {
+						$return = 1;
+					}
+					'' #ixge;
 		$run =~ s#$B$QR{_next}$E$QR{'/_next'}#
-                    interpolate_html($1) != 0 ? next : '' #ixge;
+					interpolate_html($1) != 0 ? next : ''
+					#ixge;
 		$run =~ s/<option\s*/<OPTION SELECTED /i
 			if $opt_select and $opt_select->($code);	
 
 		$r .= $run;
 		last if $return;
-    }
+	}
 	return $r;
 }
 
@@ -3603,16 +3496,15 @@ sub iterate_hash_list {
 		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#($Vend::Cfg->{Sub}{$1} || sub { 'ERROR' })->($2,$item)#ige;
 		$run =~ s#$B$QR{_filter}$E$QR{'/_filter'}#filter_value($1,$2)#ige;
 		$run =~ s#$B$QR{_last}$E$QR{'/item_last'}#
-                    my $tmp = interpolate_html($1);
-                    if($tmp && $tmp < 0) {
-                        last;
-                    }
-                    elsif($tmp) {
-                        $return = 1;
-                    }
-                    '' #xoge;
+					my $tmp = interpolate_html($1);
+					if($tmp && $tmp < 0) {
+						last;
+					} elsif($tmp) {
+						$return = 1;
+					}
+					'' #xoge;
 		$run =~ s#$B$QR{_next}$E$QR{'/_next'}#
-                    interpolate_html($1) != 0 ? next : '' #oge;
+					interpolate_html($1) != 0 ? next : '' #oge;
 		$run =~ s/<option\s*/<OPTION SELECTED /i
 			if $opt_select and $opt_select->($code);	
 
@@ -3642,7 +3534,7 @@ sub query {
 	$opt->{query} = $query
 		if $query;
 
-	if (! $opt->{wantarray} and ! defined $MVSAFE::Safe) {
+	if(! $opt->{wantarray} and ! defined $MVSAFE::Safe) {
 		my $result = $db->query($opt, $text);
 		return (ref $result) ? '' : $result;
 	}
@@ -3667,9 +3559,9 @@ sub tag_item_list {
 }
 
 sub html_table {
-    my($opt, $ary, $na) = @_;
+	my($opt, $ary, $na) = @_;
 
-	if (!$na) {
+	if(!$na) {
 		$na = [ split /\s+/, $opt->{columns} ];
 	}
 	if(! ref $ary) {
@@ -3762,7 +3654,7 @@ sub html_table {
 
 # SQL
 sub tag_sql_list {
-    my($text,$ary,$nh,$opt) = @_;
+	my($text,$ary,$nh,$opt) = @_;
 	$opt = {} unless defined $opt;
 	$opt->{prefix}      = 'sql' if ! defined $opt->{prefix};
 	$opt->{list_prefix} = 'sql[-_]list' if ! defined $opt->{prefix};
@@ -3772,21 +3664,19 @@ sub tag_sql_list {
 					mv_field_hash => $nh,
 					matches => scalar @$ary,
 				};
-    return region($opt, $text);
+	return region($opt, $text);
 }
 # END SQL
 
 # Displays a search page with the special [search-list] tag evaluated.
 
 sub region {
-
 	my($opt,$page) = @_;
 
 	my $obj;
 	if($opt->{object}) {
 		$obj = $opt->{object};
-	}
-	else {
+	} else {
 #::logDebug("no object.");
 		my $c;
 		if($CGI::values{mv_more_matches} || $CGI::values{MM}) {
@@ -3794,13 +3684,11 @@ sub region {
 			find_search_params();
 			delete $CGI::values{mv_more_matches};
 #::logDebug("more object = " . ::uneval($c));
-		}
-		elsif ($opt->{search}) {
+		} elsif($opt->{search}) {
 #::logDebug("opt->search object label=$opt->{label}.");
 			if($opt->{more} and $Vend::SearchObject{''}) {
 				$obj = $Vend::SearchObject{''};
-			}
-			else {
+			} else {
 				$c = {	mv_search_immediate => 1,
 							mv_search_label => $opt->{label} || 'current',
 						};
@@ -3808,8 +3696,7 @@ sub region {
 				Vend::Scan::find_search_params($c, $params);
 				$obj = perform_search($c);
 			}
-		}
-		else {
+		} else {
 #::logDebug("try labeled object label=$opt->{label}.");
 			$obj = $Vend::SearchObject{$opt->{label}};
 		}
@@ -3854,7 +3741,7 @@ sub region {
 		or $page = labeled_list($opt,$page,$obj) ;
 #::logDebug("past labeled_list");
 
-    return $page;
+	return $page;
 }
 
 my $List_it = 1;
@@ -3871,78 +3758,71 @@ sub tag_loop_list {
 						unless defined $opt->{label};
 	my $delim;
 
-  RESOLVELOOP: {
-	if($opt->{search}) {
+	RESOLVELOOP: {
+		if($opt->{search}) {
 #::logDebug("loop resolve search");
-		if($opt->{more} and $Vend::More_in_progress) {
-			undef $Vend::More_in_progress;
-			return region($opt, $text);
-		}
-		else {
-			return region($opt, $text);
-		}
-	}
-	elsif ($opt->{file}) {
-#::logDebug("loop resolve file");
-		$list = Vend::Util::readfile($opt->{file});
-		$opt->{lr} = 1 unless
-						defined $opt->{lr}
-						or $opt->{quoted};
-		redo RESOLVELOOP;
-	}
-	elsif ($opt->{lr}) {
-#::logDebug("loop resolve line");
-		$list =~ s/^\s+//;
-		$list =~ s/\s+$//;
-		last RESOLVELOOP unless $list;
-		$delim	 = $opt->{delimiter} || "\t";
-		my $splittor = $opt->{record_delim} || "\n";
-		if ($splittor eq "\n") {
-			$list =~ s/\r\n/\n/g;
-		}
-
-		eval {
-			@rows = map { [ split /\Q$delim/o, $_ ] } split /\Q$splittor/, $list;
-		};
-	}
-	elsif($opt->{acclist}) {
-#::logDebug("loop resolve acclist");
-		if($fn = $opt->{fn} || $opt->{mv_field_names}) {
-			$fn = [ grep /\S/, split /[\s,]+/, $fn ];
-		}
-		else {
-			$fn = [ qw/option label/ ];
-		}
-		eval {
-			my @items = split /\s*,\s*/, $list;
-			for(@items) {
-				my ($o, $l) = split /=/, $_;
-				$l = $o unless $l;
-				push @rows, [ $o, $l ];
+			if($opt->{more} and $Vend::More_in_progress) {
+				undef $Vend::More_in_progress;
+				return region($opt, $text);
+			} else {
+				return region($opt, $text);
 			}
-		};
+		} elsif($opt->{file}) {
+#::logDebug("loop resolve file");
+			$list = Vend::Util::readfile($opt->{file});
+			$opt->{lr} = 1 unless
+							defined $opt->{lr}
+							or $opt->{quoted};
+			redo RESOLVELOOP;
+		} elsif($opt->{lr}) {
+#::logDebug("loop resolve line");
+			$list =~ s/^\s+//;
+			$list =~ s/\s+$//;
+			last RESOLVELOOP unless $list;
+			$delim	 = $opt->{delimiter} || "\t";
+			my $splittor = $opt->{record_delim} || "\n";
+			if($splittor eq "\n") {
+				$list =~ s/\r\n/\n/g;
+			}
+
+			eval {
+				@rows = map { [ split /\Q$delim/o, $_ ] } split /\Q$splittor/, $list;
+			};
+		} elsif($opt->{acclist}) {
+#::logDebug("loop resolve acclist");
+			if($fn = $opt->{fn} || $opt->{mv_field_names}) {
+				$fn = [ grep /\S/, split /[\s,]+/, $fn ];
+			} else {
+				$fn = [ qw/option label/ ];
+			}
+			eval {
+				my @items = split /\s*,\s*/, $list;
+				for(@items) {
+					my ($o, $l) = split /=/, $_;
+					$l = $o unless $l;
+					push @rows, [ $o, $l ];
+				}
+			};
 #::logDebug("rows:" . ::uneval(\@rows));
-	}
-	elsif($opt->{quoted}) {
+		} elsif($opt->{quoted}) {
 #::logDebug("loop resolve quoted");
-		eval {
-			@rows = map { [$_] } Text::ParseWords::shellwords($list);
-		};
-	}
-	else {
+			eval {
+				@rows = map { [$_] } Text::ParseWords::shellwords($list);
+			};
+		} else {
 #::logDebug("loop resolve default");
-		$delim = $opt->{delimiter} || '[,\s]+';
-		eval {
-			@rows = map { [$_] } split /$delim/, $list;
-		};
+			$delim = $opt->{delimiter} || '[,\s]+';
+			eval {
+				@rows = map { [$_] } split /$delim/, $list;
+			};
+		}
 	}
-  }
 	if($@) {
 		::logError("bad split delimiter in loop list: $@");
 #::logDebug("loop resolve error $@");
 	}
 	$opt->{object} = { } if ! $opt->{object};
-	if ($opt->{head_skip}) {
+	if($opt->{head_skip}) {
 		my $i = 0;
 		$fn = shift(@rows) while $i++ < $opt->{head_skip};
 	}
@@ -3959,7 +3839,7 @@ sub fly_page {
 
 	my $selector;
 
-	return $page if (! $code and $Vend::Flypart eq $Vend::FinalPath);
+	return $page if(! $code and $Vend::Flypart eq $Vend::FinalPath);
 
 	$code = $Vend::FinalPath
 		unless $code;
@@ -3972,10 +3852,9 @@ sub fly_page {
 
 	$base = $Vend::Cfg->{ProductFiles}[0] unless $base;
 
-    if($page) {
+	if($page) {
 		$selector = 'passed in tag';
-	}
-	elsif(	$selector = $Vend::Cfg->{PageSelectField}
+	} elsif(	$selector = $Vend::Cfg->{PageSelectField}
 			and Vend::Data::db_column_exists($base,$selector)
 		)
 	{
@@ -3985,9 +3864,9 @@ sub fly_page {
 	$selector = find_special_page('flypage')
 		unless $selector;
 
-    $page = readin($selector) unless defined $page;
+	$page = readin($selector) unless defined $page;
 #::logDebug("fly_page: selector=$selector");
-    if(! defined $page) {
+	if(! defined $page) {
 		logError("attempt to display code=$code with bad flypage '$selector'");
 		return undef;
 	}
@@ -4039,17 +3918,17 @@ sub discount_price {
 	for($code, 'ALL_ITEMS') {
 		next unless $discount = $Vend::Session->{discount}->{$_};
 		$Vend::Interpolate::s = $return = $price;
-        $return = $ready_safe->reval($discount);
+		$return = $ready_safe->reval($discount);
 		if($@) {
 			$return = $price;
 			next;
 		}
-        $price = $return;
-    }
+		$price = $return;
+	}
 	$Vend::Interpolate::s = $price;
 	if($extra) {
 		$Vend::Interpolate::item = $item;
-        $return = $ready_safe->reval($extra);
+		$return = $ready_safe->reval($extra);
 		if($@) {
 			$return = $price;
 			next;
@@ -4134,55 +4013,52 @@ sub make_three {
 sub read_shipping {
 	my ($file, $opt) = @_;
 	$opt = {} unless $opt;
-    my($code, $desc, $min, $criterion, $max, $cost, $mode);
+	my($code, $desc, $min, $criterion, $max, $cost, $mode);
 
-	if ($file) {
+	if($file) {
 		#nada
-	}
-	elsif($opt->{add} or $Vend::Cfg->{Variable}{MV_SHIPPING}) {
+	} elsif($opt->{add} or $Vend::Cfg->{Variable}{MV_SHIPPING}) {
 		$file = "$Vend::Cfg->{ScratchDir}/shipping.asc";
 		Vend::Util::writefile(">$file", $opt->{add} || $Vend::Cfg->{Variable}{MV_SHIPPING});
-	}
-	else {
+	} else {
 		$file = $Vend::Cfg->{Special}{'shipping.asc'}
 				|| Vend::Util::catfile($Vend::Cfg->{ProductDir},'shipping.asc');
 	}
 
-    open(SHIPPING, "< $file") or do {
-			if ($Vend::Cfg->{CustomShipping} =~ /^select\s+/i) {
-				($Vend::Cfg->{SQL_shipping} = 1, return)
-					if $Vend::Foreground;
-				$file = "$Vend::Cfg->{ScratchDir}/shipping.asc";
-				my $ary;
-				my $query = interpolate_html($Vend::Cfg->{CustomShipping});
-				eval {
-					$ary = query($query, { wantarray => 1} );
-				};
-				if(! ref $ary) {
-					logError("Could not make shipping query %s: %s" ,
-								$Vend::Cfg->{CustomShipping},
-								$@);
-					return undef;
-				}
-				my $out;
-				for(@$ary) {
-					$out .= join "\t", @$_;
-					$out .= "\n";
-					Vend::Util::writefile(">$file", $out);
-				}
-				open(SHIPPING, "< $file") or do {
-					logError("Could not make shipping query %s: %s" ,
-								$Vend::Cfg->{CustomShipping},
-								$!);
-					return undef;
-				};
-			}
-			else {
-				logError("Could not open shipping file %s: %s" , $file, $!)
-					if $Vend::Cfg->{CustomShipping};
+	open(SHIPPING, "< $file") or do {
+		if($Vend::Cfg->{CustomShipping} =~ /^select\s+/i) {
+			($Vend::Cfg->{SQL_shipping} = 1, return)
+				if $Vend::Foreground;
+			$file = "$Vend::Cfg->{ScratchDir}/shipping.asc";
+			my $ary;
+			my $query = interpolate_html($Vend::Cfg->{CustomShipping});
+			eval {
+				$ary = query($query, { wantarray => 1} );
+			};
+			if(! ref $ary) {
+				logError("Could not make shipping query %s: %s" ,
+							$Vend::Cfg->{CustomShipping},
+							$@);
 				return undef;
 			}
-		};
+			my $out;
+			for(@$ary) {
+				$out .= join "\t", @$_;
+				$out .= "\n";
+				Vend::Util::writefile(">$file", $out);
+			}
+			open(SHIPPING, "< $file") or do {
+				logError("Could not make shipping query %s: %s" ,
+							$Vend::Cfg->{CustomShipping},
+							$!);
+				return undef;
+			};
+		} else {
+			logError("Could not open shipping file %s: %s" , $file, $!)
+				if $Vend::Cfg->{CustomShipping};
+			return undef;
+		}
+	};
 	$Vend::Cfg->{Shipping_desc} = {}
 		if ! $Vend::Cfg->{Shipping_desc};
 	my %seen;
@@ -4190,13 +4066,12 @@ sub read_shipping {
 	my @line;
 	my @shipping;
 	my $first;
-    while(<SHIPPING>) {
+	while(<SHIPPING>) {
 		chomp;
 		if(s/\\$//) {
 			$_ .= <SHIPPING>;
 			redo;
-		}
-		elsif (s/<<(\w+)$//) {
+		} elsif(s/<<(\w+)$//) {
 			my $mark = $1;
 			my $line = $_;
 			$line .= Vend::Config::read_here(\*SHIPPING, $mark);
@@ -4212,22 +4087,19 @@ sub read_shipping {
 				unless $seen{$line[0]}++;
 			push @shipping, [@line];
 			@line = ();
-		}
-		elsif(/^(\w+)\s*:\s*(.*)/s) {
+		} elsif(/^(\w+)\s*:\s*(.*)/s) {
 			push (@shipping, [@line]) if @line;
 			@line = ($1, $2, 'quantity', 0, 999999999, 0);
 			$first = 1;
 			$Vend::Cfg->{Shipping_desc}->{$line[0]} = $line[1]
 				unless $seen{$line[0]}++;
 			next;
-		}
-		elsif(/^\s+min(?:imum)?\s+(\S+)/i) {
+		} elsif(/^\s+min(?:imum)?\s+(\S+)/i) {
 			my $min = $1;
-			if ($first) {
+			if($first) {
 				undef $first;
 				$line[MIN] = $min;
-			}
-			else {
+			} else {
 				push @shipping, [ @line ];
 				$line[MIN] = $min;
 				if(ref $line[OPT]) {
@@ -4236,8 +4108,7 @@ sub read_shipping {
 				}
 
 			}
-		}
-		else {
+		} else {
 			no strict 'refs';
 			s/^\s+//;
 			my($k, $v) = split /\s+/, $_, 2;
@@ -4250,8 +4121,7 @@ sub read_shipping {
 			eval {
 				if(defined &{"$k"}) {
 						$line[&{"$k"}] = $v;
-				}
-				else {
+				} else {
 					$line[OPT] = {} unless $line[OPT];
 					$k = lc $k;
 					$line[OPT]->{$k} = $v;
@@ -4264,7 +4134,7 @@ sub read_shipping {
 				) if $@;
 		}
 	}
-    close SHIPPING;
+	close SHIPPING;
 
 	push @shipping, [ @line ]
 		if @line;
@@ -4276,11 +4146,11 @@ sub read_shipping {
 		my $o = get_option_hash($row->[OPT]);
 		$row->[OPT] = $o;
 		my $zone;
-		if ($zone = $o->{zone} or $cost =~ s/^\s*c\s+(\w+)\s*//) {
+		if($zone = $o->{zone} or $cost =~ s/^\s*c\s+(\w+)\s*//) {
 			$zone = $1 if ! $zone;
 			next if defined $zones{$zone};
 			my $ref;
-			if ($o->{zone}) {
+			if($o->{zone}) {
 				$ref = {};
 				my @common = qw/
 							mult_factor				
@@ -4292,11 +4162,9 @@ sub read_shipping {
 				@{$ref}{@common} = @{$o}{@common};
 				$ref->{zone_name} = $zone
 					if ! $ref->{zone_name};
-			}
-			elsif ($cost =~ /^{[\000-\377]+}$/ ) {
+			} elsif($cost =~ /^{[\000-\377]+}$/ ) {
 				eval { $ref = eval $cost };
-			}
-			else {
+			} else {
 				$ref = {};
 				my($name, $file, $length, $multiplier) = split /\s+/, $cost;
 				$ref->{zone_name} = $name || undef;
@@ -4304,7 +4172,7 @@ sub read_shipping {
 				$ref->{mult_factor} = $multiplier if defined $multiplier;
 				$ref->{str_length} = $length if defined $length;
 			}
-			if ($@
+			if($@
 				or ref($ref) !~ /HASH/
 				or ! $ref->{zone_name}) {
 				logError(
@@ -4318,7 +4186,7 @@ sub read_shipping {
 			$ref->{str_length} = 3 unless defined $ref->{str_length};
 			$zones{$zone} = $ref;
 		}
-    }
+	}
 
 	if($Vend::Cfg->{UpsZoneFile} and ! defined $Vend::Cfg->{Shipping_zone}{'u'} ) {
 			 $zones{'u'} = {
@@ -4330,7 +4198,7 @@ sub read_shipping {
 	UPSZONE: {
 		for (keys %zones) {
 			my $ref = $zones{$_};
-			if (! $ref->{zone_data}) {
+			if(! $ref->{zone_data}) {
 				$ref->{zone_file} = Vend::Util::catfile(
 											$Vend::Cfg->{ProductDir},
 											"$ref->{zone_name}.csv",
@@ -4384,11 +4252,11 @@ sub tag_selected {
 
 	if( $ref eq "\L$value" ) {
 		$r = ' SELECTED';
-	}
-	elsif ($multiple) {
+	} elsif($multiple) {
 		$r = ' SELECTED' if $ref =~ /\b$value\b/i;
+	} else {
+		$r = '';
 	}
-	else {$r = ''}
 	return $r;
 }
 
@@ -4401,12 +4269,12 @@ sub tag_checked {
 
 	if( $ref eq "\L$value" or ! length($ref) && $default) {
 		$r = 'CHECKED';
-	}
-	elsif ($multiple) {
+	} elsif($multiple) {
 		my $regex = quotemeta $value;
 		$r = 'CHECKED' if $ref =~ /(?:^|\0)$regex(?:$|\0)/i;
+	} else {
+		$r = '';
 	}
-	else {$r = ''}
 	return $r;
 }
 
@@ -4414,11 +4282,11 @@ sub tag_checked {
 # If AlwaysSecure is set, goes by the page accessed, otherwise 
 # if a secure order has been started (with a call to at least
 # one secure_vendUrl), then it will be given the secure URL
- 
+
 sub tag_order {
-    my($code,$quantity,$opt) = @_;
+	my($code,$quantity,$opt) = @_;
 	$opt = {} unless $opt;
-    my($r);
+	my($r);
 	my @parms = (
 					"mv_action=refresh",
 				  );
@@ -4456,15 +4324,14 @@ my \$tmp = \$s - $opt->{subtract};
 \$tmp = 0 if \$tmp < 0;
 return \$tmp;
 EOF
-	}
-	elsif ($opt->{level}) {
+	} elsif($opt->{level}) {
 		$value = <<EOF;
 return (\$s * \$q) if \$q < $opt->{level};
 my \$tmp = \$s / \$q;
 return \$s - \$tmp;
 EOF
 	}
-    $Vend::Session->{discount}{$code} = $value;
+	$Vend::Session->{discount}{$code} = $value;
 	delete $Vend::Session->{discount}->{$code}
 		unless (defined $value and $value);
 	return '';
@@ -4473,7 +4340,7 @@ EOF
 # Sets the value of a scratchpad field
 sub set_scratch {
 	my($var,$val) = @_;
-    $::Scratch->{$var} = $val;
+	$::Scratch->{$var} = $val;
 	return '';
 }
 
@@ -4481,7 +4348,7 @@ sub set_scratch {
 sub set_tmp {
 	my($var,$val) = @_;
 	push @Vend::TmpScratch, $var;
-    $::Scratch->{$var} = $val;
+	$::Scratch->{$var} = $val;
 	return '';
 }
 
@@ -4494,21 +4361,21 @@ sub tag_scratchd {
 # Returns the value of a scratchpad field named VAR.
 sub tag_scratch {
 	my $var = shift;
-    return $::Scratch->{$var};
+	return $::Scratch->{$var};
 }
 
 sub tag_lookup {
 	my($selector,$field,$key,$rest) = @_;
-	return $rest if (defined $rest and $rest);
+	return $rest if(defined $rest and $rest);
 	return tag_data($selector,$field,$key);
 }
 
 sub timed_build {
-    my $file = shift;
-    my $opt = shift;
+	my $file = shift;
+	my $opt = shift;
 	my $abort;
 
-	if (defined $opt->{if}) {
+	if(defined $opt->{if}) {
 		$abort = 1 if ! $opt->{if}; 
 	}
 
@@ -4524,9 +4391,9 @@ sub timed_build {
 		or $Vend::BuildingPages
 		or ! $opt->{login} && $Vend::Session->{logged_in};
 
-    if($opt->{noframes} and $Vend::Session->{frames}) {
-        return '';
-    }
+	if($opt->{noframes} and $Vend::Session->{frames}) {
+		return '';
+	}
 
 	my $secs;
 	my $static;
@@ -4543,8 +4410,7 @@ sub timed_build {
 			$file =~ s:^scan/::;
 			$file = ::generate_key($file);
 			$file = "scan/$file";
-		}
-		else {
+		} else {
 		 	$saved_file = $file = ($Vend::Flypart || $Global::Variable->{MV_PAGE});
 		}
 		$file .= $Vend::Cfg->{StaticSuffix};
@@ -4561,57 +4427,51 @@ sub timed_build {
 #::logDebug("saved=$saved_file");
 #::logDebug("file=$file exists=" . -f $file);
 	if($opt->{minutes}) {
-        $secs = int($opt->{minutes} * 60);
-    }
-	elsif ($opt->{period}) {
+		$secs = int($opt->{minutes} * 60);
+	} elsif($opt->{period}) {
 		$secs = Vend::Config::time_to_seconds($opt->{period});
 	}
 
-    if( ! -f $file or $secs && (stat(_))[9] < (time() - $secs) ) {
-        my $out = Vend::Interpolate::interpolate_html(shift);
+	if( ! -f $file or $secs && (stat(_))[9] < (time() - $secs) ) {
+		my $out = Vend::Interpolate::interpolate_html(shift);
 		$opt->{umask} = '22' unless defined $opt->{umask};
-        Vend::Util::writefile(">$file", $out, $opt );
+		Vend::Util::writefile(">$file", $out, $opt );
 # STATICPAGE
-		if ($Vend::Cfg->{StaticDBM} and ::tie_static_dbm(1) ) {
-			if ($opt->{scan}) {
+		if($Vend::Cfg->{StaticDBM} and ::tie_static_dbm(1) ) {
+			if($opt->{scan}) {
 				$saved_file =~ s!=([^/]+)=!=$1%3d!g;
 				$saved_file =~ s!=([^/]+)-!=$1%2d!g;
 #::logDebug("saved_file=$saved_file");
 				$Vend::StaticDBM{$saved_file} = $fullfile;
-			}
-			else {
+			} else {
 				$Vend::StaticDBM{$saved_file} = '';
 			}
 		}
 # END STATICPAGE
-        return $out;
-    }
-    else {        return Vend::Util::readfile($file);    }
+		return $out;
+	} else {
+		return Vend::Util::readfile($file);
+	}
 }
 
 sub update {
 	my ($func, $opt) = @_;
 	if($func eq 'quantity') {
 		::update_quantity();
-	}
-	elsif($func eq 'cart') {
+	} elsif($func eq 'cart') {
 		my $cart;
 		if($opt->{name}) {
 			$cart = $::Carts->{$opt->{name}};
-		}
-		else {
+		} else {
 			$cart = $Vend::Items;
 		}
 		return if ! ref $cart;
 		Vend::Cart::toss_cart($cart);
-	}
-	elsif ($func eq 'process') {
+	} elsif($func eq 'process') {
 		::do_process();
-	}
-	elsif ($func eq 'values') {
+	} elsif($func eq 'values') {
 		::update_user();
-	}
-	elsif ($func eq 'data') {
+	} elsif($func eq 'data') {
 		::update_data();
 	}
 	return;
@@ -4657,8 +4517,7 @@ sub tag_error {
 	if($opt->{std_label}) {
 		if(defined $::Variable->{MV_ERROR_STD_LABEL}) {
 			$text = $::Variable->{MV_ERROR_STD_LABEL};
-		}
-		else {
+		} else {
 			$text = <<EOF;
 <FONT COLOR=RED>{LABEL} <SMALL><I>(%s)</I></SMALL></FONT>
 [else]{REQUIRED <B>}{LABEL}{REQUIRED </B>}[/else]
@@ -4710,7 +4569,7 @@ sub tag_column {
 
 	my $len = sub {
 		my($txt) = @_;
-		if (1 or $spec{html}) {
+		if(1 or $spec{html}) {
 			$txt =~
 			s{ <
 				   (
@@ -4735,20 +4594,17 @@ sub tag_column {
 					' ' x ($usable - $len->($_[0])) .
 					' ' x $spec{'gutter'};
 					};
-	}
-	elsif($spec{'align'} =~ /^r/) {
+	} elsif($spec{'align'} =~ /^r/) {
 		$f = sub {
 					' ' x ($usable - $len->($_[0])) .
 					$_[0] .
 					' ' x $spec{'gutter'};
 					};
-	}
-	elsif($spec{'align'} =~ /^i/) {
+	} elsif($spec{'align'} =~ /^i/) {
 		$spec{'wrap'} = 0;
 		$usable = 9999;
 		$f = sub { @_ };
-	}
-	else {
+	} else {
 		return "BAD JUSTIFICATION SPECIFICATION: $spec{'align'}";
 	}
 
@@ -4759,12 +4615,10 @@ sub tag_column {
 
 	if(is_yes($spec{'wrap'}) and length($text) > $usable) {
 		@lines = wrap($text,$usable);
-	}
-	elsif($spec{'align'} =~ /^i/) {
+	} elsif($spec{'align'} =~ /^i/) {
 		$lines[0] = ' ' x $spec{'width'};
 		$lines[1] = $text . ' ' x $spec{'gutter'};
-	}
-	elsif (! $spec{'html'}) {
+	} elsif(! $spec{'html'}) {
 		$lines[0] = substr($text,0,$usable);
 	}
 
@@ -4778,33 +4632,32 @@ sub tag_column {
 }
 
 sub wrap {
-    my ($str, $width) = @_;
-    my @a = ();
-    my ($l, $b);
+	my ($str, $width) = @_;
+	my @a = ();
+	my ($l, $b);
 
-    for (;;) {
-        $str =~ s/^ +//;
-        $l = length($str);
-        last if $l == 0;
-        if ($l <= $width) {
-            push @a, $str;
-            last;
-        }
-        $b = rindex($str, " ", $width - 1);
-        if ($b == -1) {
-            push @a, substr($str, 0, $width);
-            $str = substr($str, $width);
-        }
-        else {
-            push @a, substr($str, 0, $b);
-            $str = substr($str, $b + 1);
-        }
-    }
-    return @a;
+	for (;;) {
+		$str =~ s/^ +//;
+		$l = length($str);
+		last if $l == 0;
+		if($l <= $width) {
+			push @a, $str;
+			last;
+		}
+		$b = rindex($str, " ", $width - 1);
+		if($b == -1) {
+			push @a, substr($str, 0, $width);
+			$str = substr($str, $width);
+		} else {
+			push @a, substr($str, 0, $b);
+			$str = substr($str, $b + 1);
+		}
+	}
+	return @a;
 }
 
 sub tag_row {
-    my($width,$text) = @_;
+	my($width,$text) = @_;
 	my($col,$spec);
 	my(@lines);
 	my(@len);
@@ -4832,7 +4685,7 @@ sub tag_row {
 	}
 	my $totlen = 0;
 	for(@len) { $totlen += $_ }
-	if ($totlen > $width) {
+	if($totlen > $width) {
 		return " B A D   R O W  S P E C I F I C A T I O N - columns too wide.\n"
 	}
 
@@ -4848,12 +4701,10 @@ sub tag_row {
 			if(defined ${$lines[$x]}[$y]) {
 				$line .= ${$lines[$x]}[$y];
 				$line =~ s/\s+$//
-					if ($i - $x) == 1;
-			}
-			elsif (($i - $x) > 1) {
+					if(($i - $x) == 1);
+			} elsif(($i - $x) > 1) {
 			  	$line  .= ' ' x $len[$x];
-			}
-			else {
+			} else {
 				$line =~ s/\s+$//;
 			}
 		}
@@ -4865,7 +4716,7 @@ sub tag_row {
 sub shipping {
 	my($mode, $opt) = @_;
 	return undef unless $mode;
-    my $save = $Vend::Items;
+	my $save = $Vend::Items;
 	my $qual;
 	my $final;
 
@@ -4875,14 +4726,13 @@ sub shipping {
 	my @bin;
 
 #::logDebug("Check BEGIN, must get to FINAL. Vend::Items=$Vend::Items main=$::Carts->{main}");
-	if ($opt->{cart}) {
+	if($opt->{cart}) {
 		my @carts = grep /\S/, split /[\s,]+/, $opt->{cart};
 		for(@carts) {
 			next unless $::Carts->{$_};
 			push @bin, @{$::Carts->{$_}};
 		}
-	}
-	else {
+	} else {
 		@bin = @$Vend::Items;
 	}
 #::logDebug("doing shipping, mode=$mode bin=" . ::uneval(\@bin));
@@ -4895,8 +4745,7 @@ sub shipping {
 #
 #	if(defined $Vend::Cfg->{Shipping_criterion}->{$mode}) {
 #		$ref = $Vend::Cfg;
-#	}
-#	elsif($Vend::Cfg->{Shipping}) {
+#	} elsif($Vend::Cfg->{Shipping}) {
 #		my $locale = 	$::Scratch->{mv_currency}
 #						|| $::Scratch->{mv_locale}
 #						|| $::Vend::Cfg->{DefaultLocale}
@@ -4916,7 +4765,7 @@ sub shipping {
 	$mode !~ /[\s,;{}]/ and 
 		eval {'what' =~ /$mode/};
 
-	if ($@) {
+	if($@) {
 #::logDebug("Check ERROR, must get to FINAL. Vend::Items=$Vend::Items main=$::Carts->{main}");
 		logError("Bad character(s) in shipping mode '$mode', returning 0");
 		goto SHIPFORMAT;
@@ -4936,8 +4785,7 @@ sub shipping {
 		if(ref $ary) {
 			@lines = @$ary;
 #::logDebug("shipping lines reselected with SQL: " . ::uneval(\@lines));
-		}
-		else {
+		} else {
 #::logDebug("shipping lines failed reselect with SQL query '$q'");
 		}
 	}
@@ -4965,21 +4813,18 @@ sub shipping {
 			if $field =~ /[^\w:]/;
 		$qual  = tag_perl($opt->{tables}, $opt, $o->{qual})
 					if $o->{qual};
-	}
-	elsif ($o->{mml}) {
+	} elsif($o->{mml}) {
 		$Vend::Interpolate::Shipping   = $lines[0];
 		$field = tag_perl($opt->{tables}, $opt, $lines[0][CRIT]);
 		$qual =  tag_perl($opt->{tables}, $opt, $o->{qual})
 					if $o->{qual};
-	}
-	elsif($lines[0][CRIT] =~ /[[\s]|__/) {
+	} elsif($lines[0][CRIT] =~ /[[\s]|__/) {
 		($field, $qual) = split /\s+/, interpolate_html($lines[0][CRIT]), 2;
 		if($qual =~ /{}/) {
 			logError("Bad qualification code '%s', returning 0", $qual);
 			goto SHIPFORMAT;
 		}
-	}
-	else {
+	} else {
 		$field = $lines[0][CRIT];
 	}
 
@@ -4992,19 +4837,17 @@ sub shipping {
 	
 	# Uses the quantity on the order form if the field is 'quantity',
 	# otherwise goes to the database.
-    $total = 0;
+	$total = 0;
 
 	if($field =~ /^[\d.]+$/) {
 #::logDebug("Is a number selection");
 		$total = $field;
-	}
-	elsif($field eq 'quantity') {
+	} elsif($field eq 'quantity') {
 #::logDebug("quantity selection");
-    	foreach $i (0 .. $#$Vend::Items) {
+		foreach $i (0 .. $#$Vend::Items) {
 			$total = $total + $Vend::Items->[$i]->{$field};
-    	}
-	}
-	elsif ( index($field, ':') != -1) {
+		}
+	} elsif( index($field, ':') != -1) {
 #::logDebug("outboard field selection");
 		my ($base, $field) = split /:+/, $field;
 		my $db = Vend::Data::database_exists_ref($base);
@@ -5012,19 +4855,18 @@ sub shipping {
 			logError("Bad shipping field '$field' or table '$base'. Returning 0");
 			goto SHIPFORMAT;
 		}
-    	foreach $i (0 .. $#$Vend::Items) {
+		foreach $i (0 .. $#$Vend::Items) {
 			my $item = $Vend::Items->[$i];
 			$total += (Vend::Data::database_field($base, $item->{code}, $field) || 0) *
 						$item->{quantity};
 		}
-	}
-	else {
+	} else {
 #::logDebug("standard field selection");
 		unless (Vend::Data::column_exists $field) {
 			logError("Custom shipping field '$field' doesn't exist. Returning 0");
 			goto SHIPFORMAT;
 		}
-    	foreach my $item (@$Vend::Items) {
+		foreach my $item (@$Vend::Items) {
 			my $base = $item->{mv_ib} || $Vend::Cfg->{ProductFiles}[0];
 			my $value = tag_data($base, $field, $item->{code});
 			$total += $value * $item->{quantity};
@@ -5057,8 +4899,7 @@ sub shipping {
 		if($what =~ /^(-?(?:\d+(?:\.\d*)?|\.\d+))$/) {
 			$final += $1;
 			last SHIPIT unless $o->{continue};
-		}
-		elsif ($what =~ /^f\s*(.*)/i) {
+		} elsif($what =~ /^f\s*(.*)/i) {
 			$formula = $o->{formula} || $1;
 			$formula =~ s/\@\@TOTAL\@\\?\@/$total/ig;
 			$formula = interpolate_html($formula)
@@ -5074,16 +4915,13 @@ sub shipping {
 			}
 			$final += $cost;
 			last SHIPIT unless $o->{continue};
-		}
-		elsif ($what eq 'x') {
+		} elsif($what eq 'x') {
 			$final += ($o->{multiplier} * $total);
 			last SHIPIT unless $o->{continue};
-		}
-		elsif ($what =~ s/^x\s*(-?[\d.]+)\s*$/$1/) {
+		} elsif($what =~ s/^x\s*(-?[\d.]+)\s*$/$1/) {
 			$final += ($what * $total);
 			last SHIPIT unless $o->{continue};
-		}
-		elsif ($what =~ s/^([uA-Z])\s*//) {
+		} elsif($what =~ s/^([uA-Z])\s*//) {
 			my $zselect = $o->{zone} || $1;
 			my ($type, $geo, $adder, $mod, $sub);
 			($type, $geo, $adder) = @{$o}{qw/table geo adder/};
@@ -5093,11 +4931,9 @@ sub shipping {
 				$o->{adder}    = $adder;
 				$o->{round}    = 1  if $mod =~ /round/;
 				$o->{at_least} = $1 if $mod =~ /min\s*([\d.]+)/;
-			}
-			elsif (! $o->{geo}) {
+			} elsif(! $o->{geo}) {
 				$geo = interpolate_html($what);
-			}
-			else {
+			} else {
 				$geo = $::Values->{$o->{geo}} || $o->{default_geo};
 			}
 
@@ -5107,22 +4943,20 @@ sub shipping {
 			}
 			$final += $cost;
 			last SHIPIT unless $o->{continue};
-		}
-		elsif ($what =~ s/^([im])\s*//) {
+		} elsif($what =~ s/^([im])\s*//) {
 			my $select = $1;
 			$what =~ s/\@\@TOTAL\@\@/$total/g;
 			my ($item, $field, $sum);
 			my (@items) = @{$Vend::Items};
 			my @fields = split /\s+/, $qual;
-			if ($select eq 'm') {
+			if($select eq 'm') {
 				$sum = { code => $mode, quantity => $total };
 			}
 			foreach $item (@items) {
 				for(@fields) {
 					if(s/(.*):+//) {
 						$item->{$_} = tag_data($1, $_, $item->{code});
-					}
-					else {
+					} else {
 						$item->{$_} = Vend::Data::product_field($_, $item->{code});
 					}
 					$sum->{$_} += $item->{$_} if defined $sum;
@@ -5137,24 +4971,21 @@ sub shipping {
 				$final += $cost;
 			}
 			last SHIPIT unless $o->{continue};
-		}
-		elsif ($what =~ s/^e\s*//) {
+		} elsif($what =~ s/^e\s*//) {
 			$error_message = $what;
 			$error_message =~ s/\@\@TOTAL\@\@/$total/ig;
 			$final = 0 unless $final;
 			last SHIPIT unless $o->{continue};
-		}
-		else {
+		} else {
 			$error_message = errmsg( "Unknown shipping call '%s'", $what);
 			undef $final;
 			last SHIPIT;
 		}
 	}
 
-	if ($final == 0 and $o->{'next'}) {
+	if($final == 0 and $o->{'next'}) {
 		return shipping($o->{'next'}, $opt);
-	}
-	elsif(defined $o->{additional}) {
+	} elsif(defined $o->{additional}) {
 		my @extra = grep /\S/, split /[\s\0,]+/, $row->[OPT]->{additional};
 		for(@extra) {
 			$final += shipping($_, {});
@@ -5162,7 +4993,6 @@ sub shipping {
 	}
 
 #::logDebug("Check 3, must get to FINAL. Vend::Items=$Vend::Items main=$::Carts->{main}");
-
 
 	SHIPFORMAT: {
 		$Vend::Session->{ship_message} .= $error_message
@@ -5185,8 +5015,7 @@ sub shipping {
 		if($opt->{default}) {
 			if(! $opt->{handling}) {
 				$::Values->{mv_shipmode} = $mode;
-			}
-			else {
+			} else {
 				$::Values->{mv_handling} = $mode;
 			}
 			undef $opt->{default};
@@ -5196,8 +5025,7 @@ sub shipping {
 		if($o->{free}) {
 			$number = $opt->{free}
 				if $final == 0;
-		}
-		else {
+		} else {
 			return $final unless $opt->{label};
 			$number = Vend::Util::currency( 
 											$final,
@@ -5243,31 +5071,30 @@ sub shipping {
 
 sub taxable_amount {
 	my($cart) = @_;
-    my($taxable, $i, $code, $item, $tmp, $quantity);
+	my($taxable, $i, $code, $item, $tmp, $quantity);
 
 	return subtotal($cart || undef) unless $Vend::Cfg->{NonTaxableField};
 
 	my($save);
 
-    if ($cart) {
-        $save = $Vend::Items;
-        tag_cart($cart);
-    }
+	if($cart) {
+		$save = $Vend::Items;
+		tag_cart($cart);
+	}
 
-    $taxable = 0;
+	$taxable = 0;
 
-    foreach $i (0 .. $#$Vend::Items) {
+	foreach $i (0 .. $#$Vend::Items) {
 		$item =	$Vend::Items->[$i];
 		next if is_yes( $item->{mv_nontaxable} );
 		next if is_yes( Vend::Data::item_field($item, $Vend::Cfg->{NonTaxableField}) );
 		$tmp = Vend::Data::item_subtotal($item);
 		unless (defined $Vend::Session->{discount}) {
 			$taxable += $tmp;
-		}
-		else {
+		} else {
 			$taxable += apply_discount($item);
 		}
-    }
+	}
 
 	$Vend::Items = $save if defined $save;
 
@@ -5316,8 +5143,7 @@ sub tag_shipping {
 		for(@modes) {
 			$out .= shipping($_, $opt);
 		}
-	}
-	else {
+	} else {
 		$out = 0;
 		for(@modes) {
 			$out += shipping($_, $opt);
@@ -5327,7 +5153,6 @@ sub tag_shipping {
 	return $out unless $opt->{hide};
 	return;
 }
-
 
 sub fly_tax {
 	my ($area) = @_;
@@ -5372,10 +5197,10 @@ sub salestax {
 	my($cart) = @_;
 	my($save);
 
-    if ($cart) {
-        $save = $Vend::Items;
-        tag_cart($cart);
-    }
+	if($cart) {
+		$save = $Vend::Items;
+		tag_cart($cart);
+	}
 
 	my $amount = taxable_amount();
 	my($r, $code);
@@ -5389,8 +5214,7 @@ sub salestax {
 	if($Vend::Cfg->{SalesTaxFunction}) {
 		$tax_hash = tag_calc($Vend::Cfg->{SalesTaxFunction});
 #::logDebug("found custom tax function: " . ::uneval($tax_hash));
-	}
-	else {
+	} else {
 		$tax_hash = $Vend::Cfg->{SalesTaxTable};
 #::logDebug("looking for tax function: " . ::uneval($tax_hash));
 	}
@@ -5428,8 +5252,7 @@ sub salestax {
 #::logDebug("salestax: found tax='$tax' for code='$code'");
 		if($tax =~ /^-?(?:\d+(?:\.\d*)?|\.\d+)$/) {
 			$r = $amount * $tax;
-		}
-		else {
+		} else {
 			$r = Vend::Data::chain_cost(
 					{	mv_price	=> $amount, 
 						code		=> $code,
@@ -5449,26 +5272,26 @@ sub salestax {
 sub subtotal {
 	my($cart) = @_;
 
-    my($save,$subtotal, $i, $item, $tmp, $cost, $formula);
-	if ($cart) {
+	my($save,$subtotal, $i, $item, $tmp, $cost, $formula);
+	if($cart) {
 		$save = $Vend::Items;
 		tag_cart($cart);
 	}
 	my $discount = defined $Vend::Session->{discount};
-    $subtotal = 0;
+	$subtotal = 0;
 	$tmp = 0;
 
-    foreach $i (0 .. $#$Vend::Items) {
-        $item = $Vend::Items->[$i];
-        $tmp = Vend::Data::item_subtotal($item);
-        if($discount) {
-            $subtotal +=
-                apply_discount($item, $tmp);
-        }
-        else { $subtotal += $tmp }
+	foreach $i (0 .. $#$Vend::Items) {
+		$item = $Vend::Items->[$i];
+		$tmp = Vend::Data::item_subtotal($item);
+		if($discount) {
+			$subtotal += apply_discount($item, $tmp);
+		} else {
+			$subtotal += $tmp;
+		}
 	}
 
-	if (defined $Vend::Session->{discount}->{ENTIRE_ORDER}) {
+	if(defined $Vend::Session->{discount}->{ENTIRE_ORDER}) {
 		$formula = $Vend::Session->{discount}->{ENTIRE_ORDER};
 		$formula =~ s/\$q\b/tag_nitems()/eg; 
 		$formula =~ s/\$s\b/$subtotal/g; 
@@ -5482,7 +5305,7 @@ sub subtotal {
 	}
 	$Vend::Items = $save if defined $save;
 	$Vend::Session->{latest_subtotal} = $subtotal;
-    return $subtotal;
+	return $subtotal;
 }
 
 sub tag_subtotal {
@@ -5499,9 +5322,9 @@ sub tag_salestax {
 
 sub total_cost {
 	my($cart) = @_;
-    my($total, $i, $save);
+	my($total, $i, $save);
 
-	if ($cart) {
+	if($cart) {
 		$save = $Vend::Items;
 		tag_cart($cart);
 	}
@@ -5513,13 +5336,13 @@ sub total_cost {
 		if $::Values->{mv_shipmode};
 	$shipping += tag_handling()
 		if $::Values->{mv_shipmode};
-    $total += subtotal();
-    $total += $shipping;
-    $total += salestax();
+	$total += subtotal();
+	$total += $shipping;
+	$total += salestax();
 
 	$Vend::Items = $save if defined $save;
 	$Vend::Session->{latest_total} = $total;
-    return $total;
+	return $total;
 }
 
 sub tag_total_cost {
@@ -5555,7 +5378,7 @@ sub tag_ups {
 	# UPS doesn't like fractional pounds, rounds up
 
 	# here we can adapt for pounds/kg
-	if ($zref->{mult_factor}) {
+	if($zref->{mult_factor}) {
 		$weight = $weight * $zref->{mult_factor};
 	}
 	$weight = POSIX::ceil($weight);
@@ -5593,12 +5416,11 @@ sub tag_ups {
 		last;
 	}
 
-	if (! defined $zone) {
+	if(! defined $zone) {
 		$Vend::Session->{ship_message} .=
 			"No zone found for geo code $zip, type $type. ";
 		return undef;
-	}
-	elsif (!$zone or $zone eq '-') {
+	} elsif(!$zone or $zone eq '-') {
 		$Vend::Session->{ship_message} .=
 			"No $type shipping allowed for geo code $zip.";
 		return undef;
