@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.12 2000-07-20 07:15:47 heins Exp $
+# $Id: Config.pm,v 1.13 2000-08-06 19:38:57 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -101,7 +101,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.12 $, 10);
+$VERSION = substr(q$Revision: 1.13 $, 10);
 
 my %CDname;
 
@@ -2785,6 +2785,7 @@ mv_max_matches           mv_max_matches
 mv_mi                    mv_mi
 mv_min_string            mv_min_string
 mv_more_matches          mv_more_matches
+mv_more_id               mv_more_id
 mv_negate                mv_negate
 mv_nextpage              mv_nextpage
 mv_no_cache              mv_no_cache
@@ -2888,6 +2889,7 @@ mv_list_only             lo
 mv_matchlimit            ml
 mv_max_matches           mm
 mv_more_matches          MM
+mv_more_id               mi
 mv_profile               mp
 mv_min_string            ms
 mv_negate                ne
