@@ -14,6 +14,7 @@ Options:
 
 	default=      Page to return if nothing else matches
 	exclude=      A RegEx of page names to skip
+	form=         Additional form parameters
 	pageonly=1    Return just the name of a page, not a link to it.
 	count=#N      Skip the #N most recently visited pages
 	var_exclude   A list of parameters that should NOT be included in the
@@ -102,6 +103,7 @@ sub {
 		$form .= "\n$_=";
 		$form .= join("\n$_=", split /\0/, $cgi->{$_});
 	}
+	$form .= "\n$opt->{form}" if $opt->{form};
 	return $Tag->area( { href => $href, form => $form} );
 }
 EOR
