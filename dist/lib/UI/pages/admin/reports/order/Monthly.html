@@ -9,6 +9,21 @@
 [set help_name]orderstats.view[/set]
 @_UI_STD_HEAD_@
 
+[calc]
+	if ('__UI_COMMISSION_FIELD__')) {
+		$Scratch->{comm_select} = ", __UI_COMMISSION_FIELD__";
+        $Scratch->{comm_states} = [split (/\s+/, '__UI_COMMISSION_STATES__')];
+		if (@{$Scratch->{comm_states}}) {
+		    $Scratch->{comm_select} .= ', status';
+		}
+		$Scratch->{cols} = 5;
+	} else {
+		$Scratch->{comm_select} = '';
+		$Scratch->{cols} = 4;
+	}
+	return;
+[/calc]
+
 <TABLE width="90%" border=0 callpadding=0 cellspacing=0>
 <tr bgcolor="#000000" height=1><td colspan=4></td></tr>
 <TR BGCOLOR="#__UI_C_TOPBLOCKBAR__">
@@ -32,9 +47,16 @@
 <B>Revenue</B>
 </FONT>
 </TD>
+[if scratch comm_select]
+<TD ALIGN=right VALIGN="top">
+<FONT COLOR="__UI_C_TITLEBARTXT__">
+<B>Commission Owed</B>
+</FONT>
+</TD>
+[/if]
 </TR>
-<tr bgcolor="#000000" height=1><td colspan=4></td></tr>
-<tr bgcolor="#FFFFFF" height=2><td colspan=4></td></tr>
+<tr bgcolor="#000000" height=1><td colspan=[scratch cols]></td></tr>
+<tr bgcolor="#FFFFFF" height=2><td colspan=[scratch cols]></td></tr>
 
 <!-- will default to current if not set:
 		[seti today][tag time]%Y%m[/tag][/seti]
@@ -73,7 +95,7 @@ EOF
 	table=transactions
 	nu=0,0,0,0
 	sql="
-	select affiliate, campaign, total_cost, order_date
+	select affiliate, campaign, total_cost, order_date[scratch comm_select]
 		FROM  transactions
 		WHERE deleted != '1' [scratch date_limit] [scratch synd_limit]
 	"][/query]
@@ -96,6 +118,12 @@ EOF
 		$master->{$month}{$id} = { } if ! $master->{$month}{$id};
 		my $ref = $master->{$month}{$id};
 		$ref->{sales}  += $line->{total_cost};
+		if ($Scratch->{comm_select}) {
+			if (! @{$Scratch->{comm_states}} 
+				|| grep {$_ eq $line->{status}} @{$Scratch->{comm_states}}) {
+	            $ref->{commission} += $line->{commission};
+            }
+        }
 		$ref->{orders}++;
 	}
 	%names = qw/
@@ -121,10 +149,15 @@ EOF
 		$day =~ s/^0+//;
 		my $subtotal_sales  = 0;
 		my $subtotal_quantity  = 0;
+		my $subtotal_commission = 0;
 		my $ref = $master->{$month};
 		foreach $id (sort keys %$ref) {
 			my $record = $ref->{$id};
 			$sales = $Tag->currency({}, $record->{sales});
+			if ($Scratch->{comm_select}) {
+	            $commission = $Tag->currency({}, $record->{commission});
+				$subtotal_commission += $record->{commission};
+			}
 			$subtotal_sales  += $record->{sales};
 			$subtotal_quantity += $record->{orders};
 			($syn, $camp) = split /-/, $id, 2;
@@ -151,11 +184,23 @@ EOF
 	</FONT>
 	</TD>
 EOF
+            if ($Scratch->{comm_select}) {$out .= <<EOF;
+	<TD ALIGN=right VALIGN=top>
+	$commission
+	</TD>
+EOF
+            }
 			$mname = $year = $day = '';
 		}
 		$total_sales        += $subtotal_sales;
 		$total_quantity     += $subtotal_quantity;
-		$subtotal_sales  = $Tag->currency({}, $subtotal_sales);
+		my $subcommstr;
+		if ($Scratch->{comm_select})  {
+			$total_commission   += $subtotal_commission;
+			$subcommstr = '<TD ALIGN="right" VALIGN="top">'
+				. $Tag->currency({}, $subtotal_commission) . ' </TD>';
+		}
+		$subtotal_sales  = $Tag->currency({}, $subtotal_sales);		
 		$out .= <<EOF;
 	<TR BGCOLOR=__UI_C_INTBLOCK__>
 	<TD VALIGN=top>
@@ -174,10 +219,16 @@ EOF
 	$subtotal_sales
 	</FONT>
 	</TD>
+	$subcommstr
 	</TR>
 EOF
 	}
-		$total_sales  = $Tag->currency({}, $total_sales);
+		$total_sales  = $Tag->currency({}, $total_sales);		
+		my $commstr;
+		if ($Scratch->{comm_select})  {
+			$commstr = '<TD ALIGN="right" VALIGN="top">'
+				. $Tag->currency({}, $total_commission) . '</TD>';
+		}
 		$out .= <<EOF;
 	<TR BGCOLOR=__UI_C_INTBLOCK__>
 	<TD VALIGN="top">
@@ -196,8 +247,9 @@ EOF
 	$total_sales
 	</FONT>
 	</TD>
+	$commstr
 	</TR>
-	<tr bgcolor="#000000" height=1><td colspan=4></td></tr>
+	<tr bgcolor="#000000" height=1><td colspan=$Scratch->{cols}></td></tr>
 EOF
 [/perl]
 </TABLE>
