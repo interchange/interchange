@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.43 2003-04-16 21:09:14 mheins Exp $
+# $Id: DBI.pm,v 2.44 2003-04-21 13:35:31 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.43 $, 10);
+$VERSION = substr(q$Revision: 2.44 $, 10);
 
 use strict;
 
@@ -691,6 +691,16 @@ sub open_table {
 			my $stype   = $ores[1];
 			my $slen    = $ores[2];
 			my $slenvar = $ores[3];
+			my $len;
+			if ($slen > 0) {
+				$len = $slen;
+			}
+			elsif ($slenvar > 0) {
+				$len = ($slenvar-4);
+			}
+			else {
+				next;
+			}
 			my $scfg = $config->{FIELD_LENGTH_DATA}{$ores[4]} = {};
 	    
 			$scfg->{TYPE} = $stype;
@@ -699,15 +709,7 @@ sub open_table {
 				$scfg->{LENGTH} = $slenvar;
 			}
 			else {
-				if ($slen > 0) {
-					$scfg->{LENGTH} = $slen;
-				}
-				elsif ($slenvar>0) {
-					$scfg->{LENGTH} = ($slenvar-4);
-				}
-				else {
-					$scfg->{LENGTH} = 'var';
-				}
+				$scfg->{LENGTH} = $len;
 			}
 	    }
 
