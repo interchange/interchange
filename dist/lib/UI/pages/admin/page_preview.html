@@ -1,3 +1,4 @@
+@_UI_STD_INIT_@
 [if-mm !advanced page][bounce page="__UI_BASE__/error"][/if][perl]
 	my @filters = grep /^ui_filter:/, keys %$CGI;
 	foreach my $key (@filters) {

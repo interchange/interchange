@@ -1,5 +1,4 @@
-Variable UI_STD_HEAD <<EOV
-[tag pragma strip_white][/tag]
+Variable UI_STD_INIT <<EOV
 [perl]
 	# determine catalog URL before mangling config URLs
 	$Scratch->{ui_catalog_url} = $Tag->area('index');
@@ -9,6 +8,11 @@ Variable UI_STD_HEAD <<EOV
 	}
 	''
 [/perl]
+EOV
+
+Variable UI_STD_HEAD <<EOV
+[tag pragma strip_white][/tag]
+@_UI_STD_INIT_@
 [if-mm !logged_in]
 	[set ui_checklist][/set]
 	[if !scratch no_login_required]
