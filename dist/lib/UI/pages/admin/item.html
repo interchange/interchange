@@ -8,17 +8,14 @@
 [set ui_class]Items[/set]
 [tmp page_title][L]Item editor[/L][/tmp]
 [if-mm super]
-[tmp page_banner][page href="__UI_BASE__/flex_editor"
-				 form='
-				 mv_data_table=__UI_META_TABLE__
-				 ui_meta_view=dbconfig
-				 ui_data_fields=code name height extended.ui_show_fields extended.ui_sort_field extended.ui_select_add extended.ui_data_fields help help_url extended.ui_backup_select
-				 ui_break_before=height help extended.ui_backup_select
-				 page_title=[L]Change display information[/L]: [cgi mv_data_table]
-				 ui_return_to=__UI_BASE__/item
-				 ui_return_to=ui_scrub_table=1
-				 item_id=[cgi mv_data_table]
-		 '][L]Item editor[/L]</A>
+[tmp page_banner]
+		[page href="__UI_BASE__/db_metaconfig_select"
+				secure="[scratch page_secure]"
+				form='
+						 ui_return_to=__UI_BASE__/index
+						 ui_view=item_select
+						 ui_table=[cgi mv_data_table]
+				'][L]Item editor[/L]</A>
 [/tmp]
 [/if-mm]
 [set table_perm]__ProductFiles_0__=v[/set]
@@ -117,7 +114,7 @@
 
 [perl tables="[cgi mv_data_table] __UI_META_TABLE__"]
 	my $tab = $CGI->{mv_data_table};
-	my $view = $CGI->{ui_meta_view};
+	my $view = $CGI->{ui_meta_view} || 'item_select';
 	my $ref = $Db{$tab};
 	my $meta = $Tag->meta_record($tab, $view);
 #Debug("Meta record: " . uneval($meta));
@@ -246,6 +243,8 @@ EOF
 		$CGI->{ui_show_fields} =~
 			s/(\w+)(?:\((.*?)\))?/ ($filter_show[$i++] = $2), $1/eg;
 #Debug("filter_show: " . $Tag->uneval( { ref => \@filter_show } ));
+		$CGI->{ui_show_fields} =~ s/[\0,\s]+$//g;
+		$CGI->{ui_show_fields} =~ s/^[\0,\s]+//g;
 		$CGI->{ui_show_fields} =~ s/[\0,\s]+/,/g;
 		$CGI->{ui_description_fields} = $CGI->{ui_show_fields};
 	}
@@ -266,7 +265,7 @@ EOF
 	@special = grep $_ !~ /^none$/i, @special;
 
 	$Scratch->{ui_show_special} = join ("\n", '', @special, '');
-	@cols = split /[\s,\0]+/, $CGI->{ui_description_fields};
+	@cols = grep /\S/, split /[\s,\0]+/, $CGI->{ui_description_fields};
 	for(@cols) {
 		$numeric{$_} = 1 if $ref->numeric($_);
 	}
@@ -349,7 +348,7 @@ EOF
 			return $extra || ' ALIGN=LEFT';
 		[/loop-calc]>
 
-    <table align="center">
+    <table align="left">
     <tr>
       <td align="right" valign="center">
 	<A HREF="[area
@@ -377,7 +376,7 @@ EOF
 							ui_sort_option=$o
 						);
 					`
-				]" class=ctitle>[either][data table="__UI_META_TABLE__" column=label key="[cgi mv_data_table]::[loop-code]"][or][loop-code][/either]
+				]" class=ctitle>[either][data table="__UI_META_TABLE__" column=label key="[cgi mv_data_table]::[loop-code]"][or][loop-code][/either]</A>
       </td>
     </tr>
     </table>	

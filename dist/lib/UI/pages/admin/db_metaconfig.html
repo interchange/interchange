@@ -63,6 +63,7 @@
 		height
 		extended.ui_sort_field
 		extended.ui_show_fields
+		extended.ui_special_add
 
 		=Edit page display
 
@@ -87,6 +88,7 @@
 		height							=> 'Rows on select page',
 		'extended.ui_sort_field'		=> 'Sort by on select page',
 		'extended.ui_show_fields'		=> 'Show on select page',
+		'extended.ui_special_add'		=> 'Special Additions',
 		'extended.ui_data_fields'		=> 'Fields to edit',
 		'extended.spread_fields'		=> 'Fields to edit',
 		'extended.spread_height'		=> 'Number of rows',
@@ -94,6 +96,10 @@
 		'extended.spread_textarea_rows' => 'Rows in a textarea',
 		'extended.left_width' => 'Width specification for label column',
 		'extended.table_width' => 'Width specification for editor table',
+	}`
+
+	help=`{
+		'extended.ui_special_add'		=> 'Only applies to certain pages (Items uses this)',
 	}`
 
 	widget=`{
@@ -107,6 +113,11 @@
 		'extended.spread_height'		=> 'text_5',
 		'extended.spread_width'			=> 'text_5',
 		'extended.spread_textarea_rows' => 'text_5',
+	}`
+
+	filter=`{
+		height							=> 'digits',
+		'extended.ui_special_add'		=> 'null_to_comma',
 	}`
 
 	database=`{
@@ -123,11 +134,22 @@
 		'extended.spread_fields'		=> 8,
 	}`
 
+	width=`{
+		'extended.ui_show_fields'		=> 30,
+	}`
+
 	options=`{
 		'extended.ui_sort_field'		=> 'columns',
 		'extended.ui_show_fields'		=> 'columns',
 		'extended.ui_data_fields'		=> 'columns',
 		'extended.spread_fields'		=> 'columns',
+		'extended.ui_special_add'		=> q{NONE,
+Qty price;pricing:q5:rn=Qty price,
+Options;options:o_enable:r=Options,
+Up-sell;merchandising:upsell_to:r=Up-sell,
+Cross-sell;merchandising:cross_sell:r=Cross-sell,
+Promo;merchandising:featured:r=Promo,
+Inventory;inventory:quantity:rn=Inventory},
 	}`
 
 ]
