@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.28 2003-06-23 16:44:40 mheins Exp $
+# $Id: Parse.pm,v 2.29 2004-02-11 14:34:33 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -36,7 +36,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.28 $, 10);
+$VERSION = substr(q$Revision: 2.29 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -245,6 +245,8 @@ my %attrAlias = (
 						},
 );
 
+my %attrDefault;
+
 my %Alias = (
 
 				qw(
@@ -383,6 +385,7 @@ use vars '%myRefs';
      Alias           => \%Alias,
      addAttr         => \%addAttr,
      attrAlias       => \%attrAlias,
+     attrDefault     => \%attrDefault,
 	 Documentation   => \%Documentation,
 	 hasEndTag       => \%hasEndTag,
 	 NoReparse       => \%NoReparse,
@@ -463,6 +466,14 @@ sub resolve_args {
 #::logDebug("checking alias $k -> $v");
 			next unless defined $ref->{$k};
 			$ref->{$v} = $ref->{$k};
+		}
+	}
+	if (defined $attrDefault{$tag}) {
+		my ($k, $v);
+		while (($k, $v) = each %{$attrDefault{$tag}}) {
+			next if defined $ref->{$k};
+#::logDebug("using default $k = $v");
+			$ref->{$k} = $v;
 		}
 	}
 	@list = @{$ref}{@{$Order{$tag}}};
@@ -655,6 +666,15 @@ sub start {
 		my $p = new Vend::Parse;
 		$p->parse($attr->{$trib});
 		$attr->{$trib} = ${$p->{OUT}};
+	}
+
+	if (defined $attrDefault{$tag}) {
+		my ($k, $v);
+		while (($k, $v) = each %{$attrDefault{$tag}}) {
+			next if defined $attr->{$k};
+#::logDebug("using default $k = $v");
+			$attr->{$k} = $v;
+		}
 	}
 
 	$attr->{enable_html} = 1 if $Vend::Cfg->{Promiscuous};

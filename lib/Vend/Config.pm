@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.131 2004-01-26 09:18:46 racke Exp $
+# $Id: Config.pm,v 2.132 2004-02-11 14:34:33 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.131 $, 10);
+$VERSION = substr(q$Revision: 2.132 $, 10);
 
 my %CDname;
 my %CPname;
@@ -3637,6 +3637,7 @@ my %tagCanon = ( qw(
 	alias			Alias
 	addattr  		addAttr
 	attralias		attrAlias
+	attrdefault		attrDefault
 	cannest			canNest
 	description  	Description
 	documentation	Documentation
@@ -3662,6 +3663,7 @@ my %tagAry 	= ( qw! Order 1 Required 1 Version 1 ! );
 my %tagHash	= ( qw!
                 attrAlias   1
                 Implicit    1
+				attrDefault	1
 				! );
 my %tagBool = ( qw!
                 ActionMap   1
