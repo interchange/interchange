@@ -112,7 +112,7 @@ EOF
 	foreach $line (@{$Tmp->{main}}) {
 		my ($month) = substr($line->{order_date}, 0, 8);
 		my $id = $line->{affiliate};
-		$id .= "-$line->{campaign}";
+		$id .= "\0$line->{campaign}";
 		$month{$month}++;
 		$master->{$month} = { } if ! $master->{$month};
 		$master->{$month}{$id} = { } if ! $master->{$month}{$id};
@@ -160,7 +160,7 @@ EOF
 			}
 			$subtotal_sales  += $record->{sales};
 			$subtotal_quantity += $record->{orders};
-			($syn, $camp) = split /-/, $id, 2;
+			($syn, $camp) = split /\0/, $id, 2;
 			my $synlabel = $syn || '(none)';
 			my $burl = $Tag->area('__UI_BASE__/reports/order/Detail', $month);
 			my $url = qq{<A HREF="$burl$syndstring">$mname&nbsp;$day,&nbsp;$year</A>}
