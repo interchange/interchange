@@ -127,7 +127,7 @@
 
 <TABLE BORDER=0><TR><TD VALIGN=TOP>
 
-[query list=1 sql="select * from [scratch option_table] where sku='[filter op=sql interpolate=1][cgi sku][/filter]' and o_group is not null and o_group != ''"]
+[query list=1 sql="select * from [scratch option_table] where sku='[filter op=sql interpolate=1][cgi sku][/filter]' and o_group is not null and o_group <> ''"]
 [list]
 
 <div style="border: 1px solid black; margin-bottom: 3px">
@@ -249,7 +249,7 @@ document.write('<br><INPUT TYPE=checkbox\n' +
 [query
 	list=1
 	prefix=clone
-	sql="select DISTINCT sku from [scratch option_table] where o_group is not null and o_group != ''"
+	sql="select DISTINCT sku from [scratch option_table] where o_group is not null and o_group <> ''"
 	more=1]
 <SELECT NAME=ui_clone_id>
 <OPTION VALUE=""> --

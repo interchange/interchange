@@ -1,6 +1,6 @@
 # Vend::Options::Old48 - Interchange 4.8 compatible product options
 #
-# $Id: Old48.pm,v 1.2 2003-08-05 21:46:19 racke Exp $
+# $Id: Old48.pm,v 1.3 2003-09-08 12:25:18 jon Exp $
 #
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
 # Copyright (C) 2002-2003 Interchange Development Group <interchange@icdevgroup.org>
@@ -23,7 +23,7 @@
 
 package Vend::Options::Old48;
 
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.3 $, 10);
 
 =head1 NAME
 
@@ -287,7 +287,7 @@ sub price_options {
 		push @rf, ($map->{$_} || $_);
 	}
 
-	my $q = "SELECT " . join (",", @rf) . " FROM $table where $fsel = $rsel and $rf[1] != ''";
+	my $q = "SELECT " . join (",", @rf) . " FROM $table where $fsel = $rsel and $rf[1] <> ''";
 #::logDebug("option_cost query=$q");
 	my $ary = $db->query($q); 
 	return if ! $ary->[0];

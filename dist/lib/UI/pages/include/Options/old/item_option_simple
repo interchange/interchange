@@ -182,7 +182,7 @@ document.write('<br><INPUT TYPE=checkbox\n' +
 [query
 	list=1
 	prefix=clone
-	sql="select DISTINCT sku from [cgi mv_data_table] where o_group != ''"
+	sql="select DISTINCT sku from [cgi mv_data_table] where o_group <> ''"
 	more=1]
 <SELECT NAME=ui_clone_id>
 <OPTION VALUE=""> --
