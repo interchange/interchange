@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.25.4.9 $, 10);
+$VERSION = substr(q$Revision: 1.25.4.10 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -656,6 +656,7 @@ my (@days);
 
 for(1 .. 12) {
 	$t[4] = $_ - 1;
+	$t[5] = 1;
 	push @months, [sprintf("%02d", $_), POSIX::strftime("%B", @t)];
 }
 
