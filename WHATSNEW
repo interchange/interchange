@@ -58,6 +58,8 @@ Foundation
 * Use standard description display in cart to make sure onfly item 
   descriptions work correctly. 
 
+* SQLDSN variable added.
+
 * Fix postal abbreviation for Nunavut. Thanks to Kari Suomela for reporting.
 
 Packaging
