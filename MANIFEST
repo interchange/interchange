@@ -6,8 +6,8 @@ QuickStart
 README
 README.cvs
 README.rpm
-SPECS/interchange-4.5.8-rh6.spec
-SPECS/interchange-4.5.8-rh7.spec
+SPECS/interchange-4.6.0-rh6.spec
+SPECS/interchange-4.6.0-rh7.spec
 UPGRADE_FROM_MV3
 WHATSNEW
 configure
@@ -780,6 +780,7 @@ share/akopia/ui/help/src/affiliate.manager.html
 share/akopia/ui/help/src/affiliates.main.html
 share/akopia/ui/help/src/button.builder.html
 share/akopia/ui/help/src/change.password.html
+share/akopia/ui/help/src/create.new.affiliate.html
 share/akopia/ui/help/src/create.new.customer.html
 share/akopia/ui/help/src/crosssell.html
 share/akopia/ui/help/src/customer.edit.html

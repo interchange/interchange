@@ -3835,8 +3835,7 @@ settings. This can be used to query a database for the tax for a
 particular vendor:
 
    SalesTaxFunction  <<EOR
-   sub {
-       my $vendor_id = $Session->{source};
+         my $vendor_id = $Session->{source};
        my $tax = $TextSearch->hash( {
                            se => $vendor_id,
                            fi => 'salestax.asc',
@@ -3846,20 +3845,17 @@ particular vendor:
        $tax = {} if ! $tax;
        $tax->{DEFAULT} = 0.0;
        return $tax;
-   }
    EOR
 
 or simply produce a table:
 
    SalesTaxFunction  <<EOR
-   sub {
-       return {
-           DEFAULT => 0.0,
-           IL => 0.075,
-           OH => 0.065,
-       };
-   }
-   EOR
+    return {
+        DEFAULT => 0.0,
+        IL => 0.075,
+        OH => 0.065,
+    };
+EOR
 
 A C<DEFAULT> value must always be returned or the function will be
 ignored.

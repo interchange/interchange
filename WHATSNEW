@@ -1,8 +1,15 @@
+Interchange 4.6.0
+
+* Minor final changes
+
+
 Interchange 4.5.8 beta release
 
 * Documentation overhaul
 * Various bugfixes
+* Oracle support improved
 * 'Construct' catalog improvements
+* Authorize.net support
 
 
 Interchange 4.5.7 beta release
