@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.5 2001-08-01 16:24:11 heins Exp $
+# $Id: Interpolate.pm,v 2.6 2001-08-02 13:28:04 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.5 $, 10);
+$VERSION = substr(q$Revision: 2.6 $, 10);
 
 @EXPORT = qw (
 
@@ -2326,7 +2326,7 @@ sub tag_accessories {
 		$opt->{rows} = $opt->{rows} || $1 || 1;
 		$opt->{cols} = $opt->{cols} || $2 || 16;
 		unless($opts[0] =~ /^=/) {
-			unshift @opts, ($opt->{new} || "=&lt;-- New");
+			unshift @opts, ($opt->{new} || "=&lt;-- " . errmsg('New'));
 		}
 		my $out = qq|<INPUT TYPE=text NAME="$name" SIZE=$opt->{cols} VALUE="">|;
 		$out .= build_accessory_select($name, $type, $default, $opt, @opts);
