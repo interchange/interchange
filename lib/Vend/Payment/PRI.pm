@@ -1,8 +1,8 @@
 # Vend::Payment::PRI - Interchange PRI support
 #
-# $Id: PRI.pm,v 1.3 2004-06-07 20:59:18 mheins Exp $
+# $Id: PRI.pm,v 1.4 2005-02-22 16:42:47 kwalsh Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc.
 #
 # Written by Marty Tennison, Based on code by Cameron Prince and Mark Johnson,
@@ -124,10 +124,10 @@ The PRI interface allows (requires) a field called REFID.  This field is stored 
 
 	1.  A "1" in the pri_refid_mode instructs interchange to read the current
 	order number in $Variable->{MV_ORDER_COUNTER_FILE} or "etc/order.number",
-	increment it by one and use that.  This is the recommended mode.
+	increment it by one and use that. Do not use this mode if you have a busy catalog.  PRI might reject orders as duplicates if two people try to checkout at the same time.
 	
 	2. A "2" in the pri_refid_mode instructs interchange to use the users
-	session_id as the value.
+	session_id as the value.  This is the recommended mode.
 	
 	3. Anything other than a 1 or 2 instructs interchange to generate a unique
 	number from the unix date command and use that.  The number format is Day of
@@ -139,7 +139,18 @@ At this time the PRI payment module only processes transactions of type SALE.
 
 =item test
 
-Testing with PRI is straight forward.  At this time (2004-05-15), PRI uses the same server for both development and production.  The only difference is the account used.  Some accounts are flagged as TEST accounts and others are live.  When you first sign up with PRI they will supply you a test account and test Registration Key to use.  Enter those numbers in the PRI_ID, PRI_REGKEY (production) and PRI_TEST_ID, PRI_TEST_REGKEY (test) variables.  Set the PRI_TEST_MORE to a value of 1 then do your testing.  Once everything is working correctly, simply set PRI_TEST_MODE to 0 and restart interchange.  Your now live.
+Testing with PRI is straight forward.  At this time (2004-05-15), PRI uses the same server for both development and production.  The only difference is the account used.  Some accounts are flagged as TEST accounts and others are live.  When you first sign up with PRI they will supply you a test account and test Registration Key to use.  Enter those numbers in the PRI_ID, PRI_REGKEY (production) and PRI_TEST_ID, PRI_TEST_REGKEY (test) variables.  Set the PRI_TEST_MODE to a value of 1,2 or 3 then do your testing.  Once everything is working correctly, simply set PRI_TEST_MODE to 0 and restart interchange.  Your now live.
+
+Testing has 3 modes. (1,2,3) (live mode is 0) You set the mode with the PRI_TEST_MODE variable in variable.txt or directly in your catalog.cfg file.  The modes are as follows.
+
+1) Use PRI_TEST_ID and PRI_TEST_REGKEY values.  Send information to PRI and receive result from PRI.  To generate errors in this mode, simply enter invalid data and PRI should reject it with an error.  
+
+2) Generate a declined order internally.  Does not send data to PRI.  This mode is convenient if you want to do some testing and do not want to send any data to PRI.  It's also a good way to track down errors.
+
+3) Generate a successful sale internally.  Does not send data to PRI. This mode is convenient if you want to see if everything works before sending test data to PRI.
+
+A good way to test this module is to set PRI_TEST_MODE to 3, then 2, then 1, then 0 and make sure your catalog handles all situations correctly.
+
 
 =item generate_error
 
@@ -149,7 +160,7 @@ To generate errors in test mode (while using your test ID and regkey) simply ent
 
 =item submit_url
 
-PRI uses different URL's depending on what type of transaction you are requesting, Sale, Reccuring, Void etc..  The default URL for single sale transactions is
+PRI uses different URLs depending on what type of transaction you are requesting, Sale, Recurring, Void etc..  The default URL for single sale transactions is
 
 	 https://webservices.primerchants.com/billing/TransactionCentral/processCC.asp?
 
@@ -232,6 +243,16 @@ Interchange implementation by Mike Heins.
 
 PRI modification by Marty Tennison
 
+=head1 VERSION HISTORY
+
+05-24-2004 - Version 1.0
+
+09-06-2004 -.Version 1.1
+  Added testing mode support.
+	Changed default refid to mode 2.
+	Fixed bug where PRI.pm would not recognize a successful transaction with a mix of digits and letters.  Now checks for "Declined", <space> or <null> to determine declined transaction, all others succeed.
+	Cleaned up some code.
+
 =cut
 
 BEGIN {
@@ -266,7 +287,7 @@ BEGIN {
 	}
 
 	::logGlobal("%s payment module initialized, using %s", __PACKAGE__, $selected)
-		unless $Vend::Quiet or ! $Global::VendRoot;
+		unless $Vend::Quiet;
 
 }
 
@@ -358,11 +379,20 @@ sub PRI {
 		$refid = `date +%j%k%M%S`;
 		chomp $refid;
 	}
-			
-	# See if we are in test mode
-	if ( $opt->{test_mode} || charge_param('test') ) {
+
+	my %result;
+	my $result_page;
+
+	# See if we are in test mode, and if so, what mode
+	if ( $opt->{test_mode} >= 1 ) {
 		$merchantid = $opt->{test_id};
 		$regkey = $opt->{test_regkey};
+		if ( $opt->{test_mode} == 2 ) {
+			$result_page = "TransID=&REFNO=12345&Auth=Declined&AVSCode=&CVV2ResponseMsg=&Notes=M4 / Please Try Again (Default message)&User1=&User2=&User3=&User4=";
+		}
+		elsif ( $opt->{test_mode} == 3 ) {
+			$result_page = " TransID=12T4567&REFNO=12T45&Auth=12T45&AVSCode=Y&CVV2ResponseMsg=M&Notes=Notes here&User1=&User2=&User3=&User4=";
+		}
 	} 
 	else {
 		$merchantid = $opt->{id};
@@ -391,12 +421,23 @@ sub PRI {
 
 	$opt->{submit_url} ||= 	 'https://webservices.primerchants.com/billing/TransactionCentral/processCC.asp?';
 
-	my %result;
-
 #::logDebug("sending query: " . ::uneval(\%values));
 
-	my $thing         = post_data($opt, \%values);
-	my $result_page   = $thing->{result_page};
+	# Interchange names are on the  left, PRI on the right
+	my %result_map = ( qw/
+		pop.ref-code          TransID
+		pop.auth-code         Auth
+		pop.avs_code          AVSCode
+		pop.txn-id            RefNo
+		pop.error-message     Notes
+		pop.cvv2_code         CVV2ResponseMessage
+	/
+	);
+
+	if ( $opt->{test_mode} <= 1 ) {
+		my $thing      = post_data($opt, \%values);
+		$result_page   = $thing->{result_page};
+	}
 
 	## check for errors
 	my $error;
@@ -413,43 +454,39 @@ sub PRI {
 
 	%$result = split /[&=]/, $result_page;
 	
-	# if the Auth code contains anytihng but digits, or if it is
+	# if the Auth code contains Declined, or if it is
 	# null or a space, we failed.
-	if ( $result->{Auth} =~ /[\D\s]/ || ! $result->{Auth} ) {
-#::logDebug("Transaction declined: $result->{Auth} $result->{Notes}");
-		$result{MStatus} = 'failed';
+	if ( ! $result->{Auth} || $result->{Auth} =~ /Declined/ || $result->{Auth} eq " "  ) {
+#::logDebug("Transaction declined: $result->{Auth}: $result->{Notes}");
+		$result->{MStatus} = 'failed';
 		if ( $result->{Notes} ) {
-			$result{MErrMsg} = "$result->{Auth} $result->{Notes}";
+			$result->{MErrMsg} = "$result->{Auth} $result->{Notes}";
 		}
 		else {
-			$result{MErrMsg} = "Unknown error";
+			$result->{MErrMsg} = "Unknown error";
 		}
 	}
 	else {
-#::logDebug("Transaction approved: $result->{Auth}");
-		$result{MStatus} = $result{'pop.status'} = 'success';
-		$result{'order-id'} = $opt->{order_id};
+#::logDebug("Transaction approved: $result->{Auth}: $result->{Notes}");
+		$result->{MStatus} = $result->{'pop.status'} = 'success';
+		$result{MStatus} = $result->{'pop.status'} = 'success';
+		$result->{'pop.order-id'} = $result->{TransID};
+		$result->{'order-id'} = $result->{TransID};
 		$::Values->{avs} = $result->{AVSCode};
 		$::Values->{cvv2} = $result->{CVV2ResponseMsg};
+		$::Values->{auth} = $result->{Auth};
+		$result->{AUTHCODE} = $result->{Auth};
+		$result->{ICSTATUS} = 'success';
 	}
-
-	# Interchange names are on the  left, PRI on the right
-	my %result_map = ( qw/
-		pop.ref-code          TransID
-		pop.auth-code         Auth
-		pop.avs_code          AVSCode
-		pop.txn-id            RefNo
-		pop.error-message     Notes
-		pop.cvv2_code         CVV2ResponseMessage
-	/
-	);
 
     for (keys %result_map) {
         $result->{$_} = $result->{$result_map{$_}}
             if defined $result->{$result_map{$_}};
     }
+		
+#::logDebug(qq{PRI query result: } . ::uneval($result));
 
-	return %result;
+	return %$result;
 
 }
 
