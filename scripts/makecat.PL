@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.32.4.12 2001-05-23 03:47:38 jon Exp $
+# $Id: makecat.PL,v 1.32.4.13 2001-06-09 22:50:11 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -439,7 +439,11 @@ my %Prefix = (
 	interchangeuser =>  sub {  return 'everybody' if $Windows;
 							get_id(); },
 	interchangegroup=>  '',
-    servername	 =>  $Config{myhostname},
+    servername => sub {
+						my $host = `hostname`;
+						chomp $host;
+						return $host || $Config{myhostname};
+					},
     documentroot =>  $ENV{MVC_DOCUMENTROOT} || $DocrootDefault,
 	cgidir       =>  $ENV{MVC_CGIDIR} || $CgiDefault,
 	cgibase      =>  $ENV{MVC_CGIBASE} || $CgiUrlDefault,
@@ -2176,7 +2180,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 1.32.4.12 2001-05-23 03:47:38 jon Exp $
+# $Id: makecat.PL,v 1.32.4.13 2001-06-09 22:50:11 heins Exp $
 
 =head1 INTRODUCTION
 
