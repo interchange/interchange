@@ -8,11 +8,6 @@
 
 Interchange 5.2.0 not yet released.
 
-Debian
-------
-  
-* Now creating system group for Interchange user instead of a regular one
-  (Closes: #246323)
 
 Link
 ----
@@ -21,6 +16,17 @@ Link
   optionally can replace vlink and tlink. It includes many features found in
   mod_interchange and also a mechanism to deliver static files outside of
   Interchange.
+
+Debian
+------
+  
+* Now creating system group for Interchange user instead of a regular one
+  (Closes: #246323)
+
+RPM
+---
+
+* Install te editor for tab-delimited files into /usr/bin.
 
 
 ------------------------------------------------------------------------------
