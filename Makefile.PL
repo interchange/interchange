@@ -655,7 +655,7 @@ EOF
 	my @msgs;
 	for(@mods_to_get) {
 		eval {
-			require $_
+			eval "require $_"
 				or die "No $_ module available.";
 		};
 		if($@) {
