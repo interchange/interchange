@@ -1,16 +1,19 @@
 =head1 NAME
 
-Interchange Templates
+ictemplates - Template Guide
 
-=head1 Interchange Templates
+=head1 DESCRIPTION
 
-Interchange is the industry's most widely distributed and implemented
-open source e-commerce platform. Interchange is designed to build
-pages based on templates from a database. This document discusses, in
-detail, how to build forms and report templates with Interchange's tag
-language, ITL (Interchange Tag Language).
+=head1 Introduction
+
+Interchange is designed to build its pages based on templates from a
+database. This document describes how to build templates using the
+Interchange Tag Language (ITL) and explains the different options you
+can use in a template.
 
 =head2 Overview
+
+MOVE THIS SECTION BELOW NEXT
 
 The search builder can be used to generate very complex reports on the
 database, or to help in the construction of ITL templates. Select a
@@ -36,7 +39,7 @@ an unlimited number of database tables, multiple shopping carts, user
 name/address information, discount, tax, and shipping information,
 search of files and databases, and much more.
 
-There is some limited conditional capability with the C<[if ...]> tag,
+There is some limited conditional capability with the [if ...] tag,
 but when doing complex operations, use of embedded Perl/ASP should be
 strongly considered. Most of the tests use Perl code, but Interchange
 uses the Safe.pm module with its default restrictions to help ensure
@@ -46,162 +49,40 @@ Perl can also be embedded within the page, and if given the proper
 permission by the system administrator, can call upon resources from
 other computers and networks.
 
-=head1 Variable Replacement
+=head1 About Variable Replacement
 
-Variable substitution is a simple and oft-used feature of Interchange
-templates. Before anything else is done on a template, all variable
-tokens are replaced by variable values. There are three types of
-variable tokens:
+Variable substitution is a simple and often used feature of
+Interchange templates. It allows you to set a variable to a particular
+value in the F<catalog.cfg> directory. Then, by placing that variable
+name on a page, envoke that value to be used. Before anything else is
+done on a template, all variable tokens are replaced by variable
+values. There are three types of variable tokens:
 
-C<__VARIABLENAME__> is replaced by the catalog variable called
+__VARIABLENAME__ is replaced by the catalog variable called
 VARIABLENAME.
 
-C<@@VARIABLENAME@@> is replaced by the global variable called
+@@VARIABLENAME@@ is replaced by the global variable called
 VARIABLENAME.
 
-C<@_VARIABLENAME_@> is replaced by the catalog variable VARIABLENAME
+@_VARIABLENAME_@ is replaced by the catalog variable VARIABLENAME
 if it exists; otherwise, it is replaced by the global variable
 VARIABLENAME.
 
-See the C<icconfig> documentation for information on how to use the
-C<Variable> configuration file directive to set global variables in
-C<interchange.cfg> and catalog variables in C<catalog.cfg>.
+For more information on how to use the Variable configuration file
+directive to set global variables in interchange.cfg and catalog
+variables in catalog.cfg, see the I<Red Hat Interchange 4.8:
+Development Configuration Guide>.
 
-=head1 Interchange Tags
+=head1 Using Interchange Template Tags
 
- [accessories]        Access product accessory functions
-[area]               Insert a re-written Interchange URL
-[banner]             Insert a random or rotating ad banner
-[bounce]             Insert header to redirect to a different URL
-[calc]               Perform Perl calculations (low overhead)
-  [/calc]
-[cart]               Set the current shopping cart name
-[cgi]                Insert a CGI form value
-[checked]            Conditionally check an HTML check/radio box
-[comment]            Insert comments in Interchange pages
-  [/comment]
-[col]                Used with [row] -- rudimentary text tables for order
-  [/col]             reports
-[condition]          Sets a condition inside [if explicit] and others
-  [/condition]
-[counter]            Increment, decrement, or read a file-based counter
-[currency]           Formats a number like currency for current locale
-  [/currency]
-[data]               Access a database or user session element
-[default]            Insert a variable but with a default response if blank
-[description]        Output a product description
-[discount]           Set a product discount coupon
-  [/discount]
-[discount-price]     Show the discounted price (only in [item-list])
-[dump]               Dump the session information (for errors and debugging)
-[ecml]               Translate to-from Electronic Commerce Modeling Language
-                     field
-[else]               Defines else region for [if ...], [if-PREFIX-field ..]
-  [/else]            and others
-[elsif]              Defines elsif region for [if ...] (not available for
-  [/elsif]           [if-PREFIX-field]
-[error]              Check/display form processing errors
-[field]              Access a product database field
-[file]               Insert the contents of a file
-[flag]               Set a minivend flag
-[fly-list]           Show an item "on-the-fly" in an arbitrary page
-  [/fly-list]
-[goto]               goto an arbitrary page location, skipping the rest
-[html_table]         create an HTML table from a query or list
-[if]                 Perform any of many conditional tests
-  [/if]
-[if-PREFIX-data]     Display region only if database element non-empty
-  [/if-PREFIX-data]
-[if-PREFIX-field]    Display region only if field non-empty
-  [/if-PREFIX-field]
-[if-PREFIX-param]    Display only if item passed parameter set
-  [/if-PREFIX-param]
-[include]            Include a file with complete Interchange interpretation
-[import]             Import ASCII text into a database
-[index]              Create a searchable ASCII index
-[input_filter]       Create an input filter
-[PREFIX-accessories] Product accessory functions (set select box)
-[PREFIX-alternate]   Alternation for table/line build
-[/PREFIX-alternate
-[PREFIX-change]      Grouping of items in list display
-  [/PREFIX-change]
-[PREFIX-code]        Insert current item SKU/code/row identifier
-[PREFIX-data]        Insert data entry corresponding to current SKU
-[PREFIX-description] Insert description corresponding to current SKU
-[PREFIX-discount]    Show amount of discount for current SKU
-[PREFIX-field]       Insert product database entry corresponding to current SKU
-[PREFIX-increment]   Count for list
-[PREFIX-last]        Stop displaying if condition is met
-  [/PREFIX-last]
-[PREFIX-next]        Skip item if condition is met
-  [/PREFIX-next]
-[PREFIX-list]        Iterate over a shopping cart
-  [/PREFIX-list]
-[PREFIX-param]       Show element from list.
-[PREFIX-pos]         Show positional element from list.
-[PREFIX-price]       Display price of item with any discounts/price breaks/
-                     adjustments
-[PREFIX-quantity]    Show quantity ordered on shopping cart line
+This section describes the different template specific tags and
+functions that are used when building a your templates.
 
-[PREFIX-subtotal]    Subtotal for the item (item-quantity * item-price)
-[label]              Set a label for goto
-[loop]               Iterate over an arbitrary list
-  [/loop]
-[matches]            Show number of matches from search
-[modifier-name]      Place a variable name that corresponds to an attribute
-                     (in item-list)
-[more]               Show region of search list only if more matches
-[more-list]          Display more matches list with links to next series
-  [/more-list]
-[mvasp]              ASP-style Perl programming area
-[no-match]           Define area of region results displayed when no match
-  [/no-match]
-[nitems]             Show number of items for a shopping cart
-[order]              Create HTML link to order an item
-[page]               Create A HREF with re-written URL to call Interchange page
-[perl]               Embed output of arbitrary Perl in the page
-  [/perl]
-[price]              Show price of an item
-[process]            Create URL for Interchange form processing
-[quantity-name]      Place a variable name that corresponds to item quantity
-[query]              Perform any of several types of SQL query
-  [/query]
-[read_cookie]        Read a cookie sent by the user
-[record]             Set a database record
-[row]                Used with [col] -- rudimentary text tables for order
-  [/row]             reports
-[salestax]           Show amount of salestax for shopping cart
-[scratch]            Access a scratch variable
-[search-region]      Define an area of the page as a search list/query
-  [/search-region]
-[selected]           Conditional selection of drop-down <SELECT ...>
-[set]                Set a scratch variable
-  [/set]
-[set_cookie]         Send a cookie to the user
-[setlocale]          Set the locale
-[shipping]           Calculate shipping
-[shipping-desc]      Show shipping description
-[sort]               Set sort order for iterating lists
-  [/sort]
-[strip]              Strip leading/trailing whitespace
-  [/strip]
-[subtotal]           Calculate subtotal without tax or shipping
-[tag]                Miscellaneous functions
-  [/tag]
-[then]               Define THEN region for [if ...]
-  [/then]
-[timed_build]        Build region of page on timed basis
-[total-cost]         Calculate order total with tax, handling, and shipping
-[userdb]             Access user database functions
-[update]             Perform Interchange actions
-[value]              Display form value
-[value_extended]     Display form array values or do file upload functions
-
-=head2 Tag Syntax
+=head2 Understanding Tag Syntax
 
 Interchange uses a style similar to HTML, but with [square brackets]
-replacing <chevrons>. The parameters that can be passed are much the
-same, where a parameter="parameter value" can be passed.
+replacing <chevrons>. The parameters that can be passed are similar,
+where a parameter="parameter value" can be passed.
 
 Summary:
 
@@ -216,33 +97,33 @@ Summary:
        Container text.         Container tag.
    [/tag]
 
-Most tags can accept some positional parameters. This speeds up
-parsing and is simpler to write in many cases.
+Most tags can accept some positional parameters. This makes parsing
+faster and is, in most cases, simpler to write.
 
-Here is an example tag:
+The follwoing is an example tag:
 
    [value name=city]
 
-This will cause Interchange to look in the user form value array and
-return the value of the form parameter C<city>, which might have been
+This tag causes Interchange to look in the user form value array and
+return the value of the form parameter city, which might have been
 set with:
 
    City: <INPUT TYPE=text NAME=city VALUE="[value city]">
 
-Note that the value was pre-set with the previous value of C<city> (if
-any). It uses the positional style -- C<name> is the first positional
-parameter for the [value ...] tag. Positional parameters cannot be
-derived from other Interchange tags; for instance [value [value
-formfield]] will not work. But if the named parameter syntax is used,
-the parameters can contain other tags, such as:
+B<Note: >Keep in mind that the value was pre-set with the value of
+city (if any). It uses the positional style, meaning name is the
+first positional parameter for the [value ...] tag. Positional
+parameters cannot be derived from other Interchange tags. For example,
+[value [value formfield]] will not work. But, if the named parameter
+syntax is used, parameters can contain other tags. For example:
 
    [value name="[value formfield]"]
 
-There is one exception to the above rule when using the [item-list],
-[loop ...], [sql ...], and other list tags. These will be examined in
-following sections.
+There are exceptions to the above rule when using list tags such as
+[item-list], [loop ...], [sql ...], and more. These tags, and their
+exceptions, are explained in their corresponding sections.
 
-Many Interchange tags are container tags:
+Many Interchange tags are container tags. For example:
 
    [set Checkout]
        mv_nextpage=ord/checkout
@@ -250,18 +131,19 @@ Many Interchange tags are container tags:
    [/set]
 
 Tags and parameter names are not case sensitive, so [VALUE
-NAME=something] would work just as well. Interchange convention is to
-place HTML tags in upper case and Interchange tags in lower case so
-pages are easier to read, but this sense can easily be reversed.
+NAME=something] and [value name=something] work the same. The
+Interchange development convention is to type HTML tags in upper case
+and Interchange tags in lower case. This makes pages and tags easier
+to read.
 
-Single quotes work just as well as double quotes, and can prevent
-ambiguity.
+Single quotes work the same as double quotes, and can prevent
+confusion. For example:
 
    [value name=b_city set='[value city]']
 
-Backticks, the other single quote, cause the parameter contents to be
-evaluated as Perl code via the C<[calc]> tag. (This is in MV3.15 and
-above.) For example:
+Backticks should be used with extreme caution since they cause the
+parameter contents to be evaluated as Perl code using the [calc]
+tag. For example:
 
    [value name=row_value set=`$row_value += 1`]
 
@@ -269,8 +151,8 @@ is the same as
 
    [value name=row_value set="[calc]$row_value += 1[/calc]"]
 
-Pipes are also quoting characters, but have the special behavior of
-stripping leading and trailing whitespace. For example:
+Pipes can also be used as quoting characters, but have the unique
+behavior of stripping leading and trailing whitespace. For example:
 
        [loop list="code        field    field2  field3
        k1    A1    A2    A3
@@ -278,7 +160,7 @@ stripping leading and trailing whitespace. For example:
        [loop-increment][loop-code]
        [/loop]
 
-might be more elegantly expressed as:
+could be better expressed as:
 
     [loop list=|
             k1    A1    A2    A3
@@ -287,35 +169,35 @@ might be more elegantly expressed as:
         [loop-increment][loop-code]
     [/loop]
 
-What is done with the results of the tag depends on whether it is a
-container or standalone tag. A container tag is one which has an end
-tag, i.e., C<[tag] stuff [/tag]>. A standalone tag has no end tag, as
-in C<[area href=somepage]>.  (Note that C<[page ...]> and C<[order
-..]> are B<not> container tags.)
+How the result of the tag is displayed depends on if it is a container
+or a standalone tag. A container tag has a closing tag (for example,
+[tag] stuff [/tag]). A standalone tag has no end tag (for example,
+[area href=somepage]). [page ...] and [order ..] are B<not>
+container tags.
 
 A container tag will have its output re-parsed for more Interchange
-tags by default. To inhibit this behavior, explicitly set the
-attribute reparse to 0.  Note that the default action is almost always
-desirable. With some exceptions (C<[include file]> among them), the
-output of a standalone tag will not be re-interpreted for Interchange
-tag constructs.
+tags by default. To inhibit this behavior, set the attribute reparse
+to 0.  However, it has been found that the default re-parsing is
+almost always desirable. On the other hand, the output of a standalone
+tag will not be re-interpreted for Interchange tag constructs (with
+some exceptions, like ([include file]).
 
 Most container tags will not have their contents interpreted before
-being passed the container text. Exceptions include C<[calc]> ..
-C<[/calc]> and C<[currency]> ... C<[/currency]>. All tags accept the
+being passed the container text. Exceptions include [calc] ..
+[/calc] and [currency] ... [/currency]. All tags accept the
 INTERPOLATE=1 tag modifier, which causes the interpretation to take
-place. It is not necessary to interpret the contents of a C<[set
-variable]> TAGS C<[/set]> pair, as they might contain tags which
+place. It is not necessary to interpret the contents of a [set
+variable] TAGS [/set] pair, as they might contain tags which
 should only be upon evaluating an order profile, search profile, or
-C<mv_click> operation. If the evaluation is performed at the time a
-variable is set, use C<[set name=variable interpolate=1] TAGS [/set]>.
+mv_click operation. If the evaluation is performed at the time a
+variable is set, use [set name=variable interpolate=1] TAGS [/set].
 
-=head2 DATA and FIELD
+=head2 The DATA and FIELD Tags
 
-The C<[data ...]> and C<[field ...]> tags access elements of
+The [data ...] and [field ...] tags access elements of
 Interchange databases. They are the form used outside of the iterating
-lists, and can be effectively used to do lookups when the table,
-column/field or key/row is conditional based on a previous operation.
+lists, and are used to do lookups when the table, column/field, or
+key/row is conditional based on a previous operation.
 
 The following are equivalent for attribute names:
 
@@ -323,31 +205,31 @@ The following are equivalent for attribute names:
    col   ---> field --> column
    key   ---> code  --> row
 
-The [field ...] tag is special in that it looks in any of the tables
-defined as C<ProductFiles>, in that order, for the data, returning the
-first non-empty value. In most catalogs, where C<ProductFiles> is not
-defined, i.e., the demo, C<[field title 00-0011]> is equivalent to
-C<[data products title 00-0011]>. For example, [field col=foo key=bar]
-will not display something from the table "category" because
-"category" is not in the directive ProductFiles or there are multiple
-ProductFiles and an earlier one has an entry for that key.
+The [field ...] tag looks in any tables defined as ProductFiles, in
+that order, for the data and returns the first non-empty value. In
+most catalogs, where ProductFiles is not defined, i.e., the demo,
+[field title 00-0011] is equivalent to [data products title
+00-0011]. For example, [field col=foo key=bar] will not display
+something from the table "category" because "category" is not in the
+directive ProductFiles or there are multiple ProductFiles and an
+earlier one has an entry for that key.
 
 =over 4
 
 =item [data table column key]
 
-named attributes: C<[data base="database" field="field" key="key">
-C<value="value" op="increment]>
+named attributes: [data base="database" field="field" key="key"
+value="value" op="increment]
 
 Returns the value of the field in any of the arbitrary databases, or
-from the variable namespaces. If the option C<increment=1> is present,
+from the variable namespaces. If the option increment=1 is present,
 the field will be automatically incremented with the value in value.
 
 If a DBM-based database is to be modified, it must be flagged writable
-on the page calling the write tag. For example, use C<[tag flag
-write]products[/tag]> to mark the C<products> database writable.
+on the page calling the write tag. For example, use [tag flag
+write]products[/tag] to mark the products database writable.
 
-In addition, the C<[data ...]> tag can access a number of elements in
+In addition, the [data ...] tag can access a number of elements in
 the Interchange session database:
 
     accesses      Accesses within the last 30 s    arg           The argument passed in a [page ...] or [area ...] tag
@@ -368,50 +250,50 @@ the Interchange session database:
 conds
 
 Databases will hide variables, so if a database is named "session,"
-"scratch," or any of the other reserved names, it won't be able to use
-the C<[data ...]> tag to read them. Case is sensitive, so in a pinch
-the database could be called "Session," but this is not good practice.
+"scratch," or any of the other reserved names it won't be able to use
+the [data ...] tag to read them. Case is sensitive, so the database
+could be called "Session," but this is not recommended practice.
 
 =item [field name code]
 
-named attributes: C<[field code="code" name="fieldname"]>
+named attributes: [field code="code" name="fieldname"]
 
-Expands into the value of the field name for the product identified by
-code as found by searching the products database. It will return the
+Expands into the value of the field name for the product as identified
+by code found by searching the products database. It will return the
 first entry found in the series of Product Files in the products
 database. If this needs to constrained to a particular table, use a
-C<[data table col key]> call.
+[data table col key] call.
 
 =back
 
 =head2 set, seti, scratch and scratchd
 
-Scratch variables are maintained in the user session separate from the
-form variable values set on HTML forms. Many things can be controlled
-with scratch variables, particularly search and order processing, the
-C<mv_click> multiple variable setting facility, and key Interchange
-conditions session URL display.
+Scratch variables are maintained in the user session, which is
+separate from the form variable values set on HTML forms. Many things
+can be controlled with scratch variables, particularly search and
+order processing, the mv_click multiple variable setting facility,
+and key Interchange conditions session URL display.
 
-There are three tags which are used to set the space, C<[set
-name]value[/set]>, [seti name]value[/seti], [tmp name]value[/tmp], and
+There are three tags that are used to set the space, [set
+name]value[/set], [seti name]value[/seti], [tmp name]value[/tmp], and
 two variations (or shortcuts).
 
 =over 4
 
 =item [set variable]value[/set]
 
-named attributes: C<[set name="variable"] value [/set]>
+named attributes: [set name="variable"] value [/set]
 
-Sets a scratchpad variable to value.
+Sets a scratchpad variable to a value.
 
 Most of the mv_* variables that are used for search and order
-conditionals are in another namespace. They can be set by means of
-hidden fields in a form.
+conditionals are in another namespace. They can be set through hidden
+fields in a form.
 
 An order profile would be set with:
 
-  [set che  name=required You must give us your name.
-  address=required Oops! No address.
+  [set che  name=required Please enter your name.
+  address=required No address entered.
   [/set]
   <INPUT TYPE=hidden NAME=mv_order_profile VALUE="checkout">
 
@@ -426,36 +308,36 @@ A search profile would be set with:
 
 case]
 
-To do the same as C<[set foo]bar[/set]> in embedded Perl:
+To do the same as [set foo]bar[/set] in embedded Perl:
 
     [calc]$Scratch->{foo} = 'bar'; return;[/calc]
 
 =item [seti variable][value something][/seti]
 
-Same as C<[set] [/set]>, except it interpolates the container text.
-The above is the same as:
+The same as [set] [/set], except it interpolates the container
+text. The above is the same as:
 
     [set name=variable interpolate=1][value something][/set]
 
 =item [tmp name]value[/tmp]
 
-Same as [seti] but does not persist.
+The same as [seti] but it does not persist.
 
 =item [scratch name]
 
-Returns the contents of a scratch variable to the page. C<[scratch
-foo]> is the same as, but faster than:
+Returns the contents of a scratch variable to the page. [scratch
+foo] is the same as, but faster than:
 
     [perl]$Scratch->{foo}[/perl]
 
 =item [scratchd]
 
-Same as [scratch name], except deletes the value. Same as [scratch
-foo][set foo][/set].
+The same as [scratch name], except it deletes the value. Same as
+[scratch foo][set foo][/set].
 
 =item [if scratch name op* compare*] yes [else] no [/else] [/if]
 
-Tests a scratch variable. See IF.
+Tests a scratch variable. See the IF tag for more information.
 
 =back
 
@@ -463,33 +345,32 @@ Tests a scratch variable. See IF.
 
 Loop lists can be used to construct arbitrary lists based on the
 contents of a database field, a search, or other value (like a fixed
-list). Loop accepts a C<search> parameter which will do one-click
+list). Loop accepts a search parameter that will do one-click
 searches on a database table (or file).
 
-To iterate over all keys in a table, use the idiom (C<[loop
-search="ra=yes/ml=9999"] [/loop]>. C<ra=yes> sets C<mv_return_all>,
-which means "match everything". The C<ml=9999> limits matches to that
-many records. Normally this many matches will not be necessary, but it
-is a reasonable default maximum. If the text file for searching an
-Interchange DBM database is not used, set C<st=db> (mv_searchtype).
+To iterate over all keys in a table, use the idiom ([loop
+search="ra=yes/ml=9999"] [/loop]. ra=yes sets mv_return_all,
+which means "match everything". ml=9999 limits matches to that many
+records. If the text file for searching an Interchange DBM database is
+not used, set st=db (mv_searchtype).
 
-When using C<st=db>, returned keys may be affected by
-C<TableRestrict>. See C<catalog.cfg>. Both can be sorted with C<[sort
-table:field:mod -start +number]> modifiers. See C<Sorting>.
+When using st=db, returned keys may be affected by
+TableRestrict. See catalog.cfg. Both can be sorted with [sort
+table:field:mod -start +number] modifiers. See Sorting.
 
 =over 4
 
 =item [loop item item item] LIST [/loop]
 
-named attributes: C<[loop prefix=label* list="item item item"*
-search="se=whatever"*]>
+named attributes: [loop prefix=label* list="item item item"*
+search="se=whatever"*]
 
 Returns a string consisting of the LIST, repeated for every item in a
-comma-separated or space-separated list. Operates in the same fashion
-as the C<[item-list]> tag, except for order-item-specific values.
-Intended to pull multiple attributes from an item modifier, but can be
-useful for other things, like building a pre-ordained product list on
-a page.
+comma-separated or space-separated list. This tag works the same way
+as the [item-list] tag, except for order-item-specific values. It
+is intended to pull multiple attributes from an item modifier, but can
+be useful for other things, like building a pre-ordained product list
+on a page.
 
 Loop lists can be nested by using different prefixes:
 
@@ -529,23 +410,23 @@ world "Americana."
 
 =item [if-loop-data table field] IF [else] ELSE [/else][/if-loop-field]
 
-Outputs the IF if the C<field> in C<table> is non-empty, and the ELSE
-(if any) otherwise.
+Outputs the IF if the field in the table is not empty, and the
+ELSE (if any) otherwise.
 
 =back
 
-B<Note: >This tag does not nest with other C<[if-loop-data ...]> tags.
+B<Note: >This tag does not nest with other [if-loop-data ...] tags.
 
 =over 4
 
 =item [if-loop-field field] IF [else] ELSE [/else][/if-loop-field]
 
-Outputs the IF if the C<field> in the C<products> table is non-empty,
+Outputs the IF if the field in the products table is not empty,
 and the ELSE (if any) otherwise.
 
 =back
 
-B<Note: >This tag does not nest with other C<[if-loop-field ...]>
+B<Note: >This tag does not nest with other [if-loop-field ...]
 tags.
 
 =over 4
@@ -553,8 +434,8 @@ tags.
 =item [loop-alternate N] DIVISIBLE [else] NOT DIVISIBLE [/else][/loop-alternate]
 
 Set up an alternation sequence. If the loop-increment is divisible by
-C<N>, the text will be displayed. If an C<[else]NOT DIVISIBLE TEXT
-[/else]> is present, then the NOT DIVISIBLE TEXT will be displayed.
+N, the text will be displayed. If [else]NOT DIVISIBLE TEXT
+[/else] is present, then the NOT DIVISIBLE TEXT will be displayed.
 For example:
 
     [loop-alternate 2]EVEN[else]ODD[/else][/loop-alte    [loop-alternate 3]BY 3[else]NOT by 3[/else][/loop-alternate]
@@ -567,7 +448,7 @@ Terminates the alternation area.
 
 =item [loop-change marker]
 
-Same as C<[item-change]>, but within loop lists.
+Same as [item-change], but within loop lists.
 
 =item [loop-code]
 
@@ -588,10 +469,10 @@ exists.
 =item [loop-field fieldname]
 
 The [loop-field ...] tag is special in that it looks in any of the
-tables defined as C<ProductFiles>, in that order, for the data,
-returning the value only if that key is defined. In most catalogs,
-where C<ProductFiles> is not defined (i.e., the demo), C<[loop-field
-title]> is equivalent to C<[loop-data products title]>.
+tables defined as ProductFiles, in that order, for the data, and
+returns the value only if that key is defined. In most catalogs, where
+ProductFiles is not defined [loop-field title] is equivalent to
+[loop-data products title].
 
 Evaluates to the field name fieldname in the database for the current
 item.
@@ -603,11 +484,11 @@ items in the list. Starts from one (1).
 
 =item [loop-last]tags[/loop-last]
 
-Evaluates the output of the ITL tags encased inside. If it evaluates
-to a numerical non-zero number (i.e., 1, 23, or -1), the loop
-iteration will terminate. If the evaluated number is negative, the
-item itself will be skipped. If the evaluated number is positive, the
-item itself will be shown, but will be last on the list.
+Evaluates the output of the ITL tags encased in the [loop-last] tags.
+If it evaluates to a numerical non-zero number (for example, 1, 23, or
+-1), the loop iteration will terminate. If the evaluated number is
+negative, the item itself will be skipped. If the evaluated number is
+positive, the item itself will be shown, but will be last on the list.
 
       [loop-last]        return -1 if '[loop-field weight]' eq '';
         return 1 if '[loop-field weight]' < 1;
@@ -616,27 +497,27 @@ item itself will be shown, but will be last on the list.
 
 calc]
 
-If this is contained in your C<[loop list]> and the weight field is
-empty, a numerical C<-1> will be output from the C<[calc][/calc]>
+If this is contained in your [loop list] and the weight field is
+empty, a numerical -1 will be output from the [calc][/calc]
 tags; the list will end and the item will B<not> be shown. If the
 product's weight field is less than 1, a numerical 1 is output. The
-item will be shown, but it will be the last item shown.
+item will be shown, but it will be the last item on the list.
 
 =item [loop-next]tags[/loop-next]
 
-Evaluates the output of the ITL tags encased inside. If it evaluates
-to a numerical non-zero number (i.e., 1, 23, or -1), the loop will be
-skipped with no output. Example:
+Evaluates the output of the ITL tags encased in the [loop-next] tags.
+If it evaluates to a numerical non-zero number (for example, 1, 23, or
+-1), the loop will be skipped with no output. Example:
 
       [loop-next][calc][loop-field weight] < 1[/calc][/loop-next]
 
-If this is contained in your C<[loop list]> and the product's weight
-field is less than 1, a numerical C<1> will be output from the
-C<[calc][/calc]> operation. The item will not be shown.
+If this is contained in your [loop list] and the product's weight
+field is less than 1, a numerical 1 will be output from the
+[calc][/calc] operation. The item will not be shown.
 
 =item [loop-price n* noformat*]
 
-Evaluates to the price for optional quantity n (from the products
+Evaluates to the price for the optional quantity n (from the products
 file) of the current item, with currency formatting. If the optional
 "noformat" is set, then currency formatting will not be applied.
 
@@ -675,37 +556,37 @@ Defines a subroutine that is available to the current (and subsequent)
 
 =item [if type field op* compare*]
 
-named attributes: C<[if type="type" term="field" op="op"
-compare="compare"]>
+named attributes: [if type="type" term="field" op="op"
+compare="compare"]
 
 =item [if !type field op* compare*]
 
-named attributes: C<[if type="!type" term="field" op="op"
-compare="compare"]>
+named attributes: [if type="!type" term="field" op="op"
+compare="compare"]
 
 =back
 
-Allows conditional building of HTML based on the setting of various
-Interchange session and database values. The general form is:
+Allows the conditional building of HTML based on the setting of
+various Interchange session and database values. The general form is:
 
     [if type term op co    [then]
-                                If true, this is printed on the document.
+                                If true, this text is printed on the document.
                                 The [then] [/then] is optional in most
                                 cases. If ! is prepended to the type
                                 setting, the sense is reversed and
-                                this will be output for a false condition.
+                                this textwill be output for a false condition.
     [/then]
     [elsif type term op compare]
                                 Optional, tested when if fails.
     [/elsif]
     [else]
-                                Optional, printed when all above fail.
+                                Optional, printed on the document when all above fail.
     [/else]
     [/if]
 
 pare]
 
-The C<[if]> tag can also have some variants:
+The [if] tag can also have some variants:
 
     [if explicit][condition] CODE [/cond                Displayed if valid Perl CODE returns a true value.
     [/if]
@@ -733,10 +614,10 @@ conditions:
 
 ke/i]
 
-While the named parameter tag syntax works for C<[if ...]>, it is more
+While the named parameter tag syntax works for [if ...], it is more
 convenient to use the positional syntax in most cases. The only
-exception is when planning on doing a test on the results of another
-tag sequence:
+exception is when you are planning to do a test on the results of
+another tag sequence:
 
 This will not work:
 
@@ -744,7 +625,7 @@ This will not work:
        Shipping name matches billing name.
    [/if]
 
-This will not work. Do this instead:
+Do this instead:
 
    [if type=value term=name op="=~" compare="/[value b_name]/"]
        Shipping name matches billing name.
@@ -753,17 +634,18 @@ This will not work. Do this instead:
 As an alternative:
 
    [if type=value term=high_water op="<" compare="[shipping noformat=1]"]
-       Shipping cost is too high, charter a truck.
+       The shipping cost is too high, charter a truck.
    [/if]
 
-There are many test targets available:
+There are many test targets available. The following is a list of some
+of the available test targets.
 
 =over 4
 
 =item config Directive
 
 The Interchange configuration variables. These are set by the
-directives in the Interchange configuration file (or the defaults).
+directives in the Interchange configuration file.
 
     [if config CreditCar    Auto credit card validation is enabled.
     [/if]
@@ -806,7 +688,7 @@ tag construct, named parameters must be used:
 
 Checks to see if a discount is present for an item.
 
-    [if discount 9    Item is discounted.
+    [if discount 9    This item is discounted.
     [/if]
 
 -102]
@@ -814,9 +696,9 @@ Checks to see if a discount is present for an item.
 =item explicit
 
 A test for an explicit value. If Perl code is placed between a
-C<[condition]> C<[/condition]> tag pair, it will be used to make the
+[condition] [/condition] tag pair, it will be used to make the
 comparison. Arguments can be passed to import data from user space,
-just as with the C<[perl]> tag.
+just as with the [perl] tag.
 
     [if exp    [condition]
         $country = $ values =~{country};
@@ -831,14 +713,14 @@ just as with the C<[perl]> tag.
 
 icit]
 
-This example is a bit contrived, as the same thing could be
-accomplished with C<[if value country =~ /u\.?s\.?a?/i]>, but there
-are many situations where it is useful.
+The same thing could be accomplished with [if value country =~
+/u\.?s\.?a?/i], but there are many situations where this example
+could be useful.
 
 =item file
 
-Tests for existence of a file. Useful for placing image tags only if
-the image is present.
+Tests for the existence of a file. This is useful for placing image
+tags only if the image is present.
 
     [if file /home/user/www/images/[item-code    <IMG SRC="[item-code].gif">
     [/if]
@@ -851,13 +733,13 @@ the image is present.
 
 .gif]
 
-The C<file> test requires that the SafeUntrap directive contains
-C<ftfile> (which is the default).
+The file test requires that the SafeUntrap directive contain
+ftfile (which is the default).
 
 =item items
 
 The Interchange shopping carts. If not specified, the cart used is the
-main cart. Usually used as a litmus test to see if anything is in the
+main cart. This is usually used to test to see if anything is in the
 cart. For example:
 
   [if items]You have items in your shopping cart
@@ -867,9 +749,9 @@ cart. For example:
 
 =item ordered
 
-Order status of individual items in the Interchange shopping carts. If
-not specified, the cart used is the main cart. The following items
-refer to a part number of 99-102.
+Order status of individual items in the Interchange shopping carts.
+Unless otherwise specified, the cart used is the main cart. The
+following items refer to a part number of 99-102.
 
   [if ordered 99-102] ...    Checks the status of an item on order, true if item
     99-102 is in the main cart.
@@ -890,7 +772,7 @@ refer to a part number of 99-102.
 
     [if type=ordered term="99-102" compare="size =~ /large/i"]
 
-    To make sure it is exactly large, you could use:
+    To make sure it is the size that is large, and not another attribute, you could use:
 
     [if ordered 99-102 main size eq 'large'] ... [/if]
 
@@ -903,8 +785,8 @@ refer to a part number of 99-102.
 
 =item scratch
 
-The Interchange scratchpad variables, which can be set with the C<[set
-name]value[/set]> element.
+The Interchange scratchpad variables, which can be set with the [set
+name]value[/set] element.
 
     [if scratch mv_separate_    Ordered items will be placed on a separate line.
     [else]
@@ -921,16 +803,16 @@ logged_in, source, browser, and username.
 
 =item validcc
 
-A special case, takes the form C<[if validcc no type exp_date]>.
+A special case, it takes the form [if validcc no type exp_date].
 Evaluates to true if the supplied credit card number, type of card,
-and expiration date pass a validity test. Does a LUHN-10 calculation
-to weed out typos or phony card numbers.
+and expiration date pass a validity test. It performs a LUHN-10
+calculation to weed out typos or phony card numbers.
 
 =item value
 
 The Interchange user variables, typically set in search, control, or
-order forms. Variables beginning with C<mv_> are Interchange special
-values, and should be tested/used with caution.
+order forms. Variables beginning with mv_ are Interchange special
+values, and should be tested and used with caution.
 
 =item variable
 
@@ -938,12 +820,12 @@ See Interchange I<Variable> values.
 
 =back
 
-The field term is the specifier for that area. For example, C<[if
-session frames]> would return true if the C<frames> session parameter
+The field term is the specifier for that area. For example, [if
+session frames] would return true if the frames session parameter
 was set.
 
-As an example, consider buttonbars for frame-based setups. It would be
-nice to display a different buttonbar (with no frame targets) for
+As an example, consider buttonbars for frame-based setups. You might
+decide to display a different buttonbar with no frame targets for
 sessions that are not using frames:
 
    [if session frames]
@@ -954,8 +836,8 @@ sessions that are not using frames:
    [/if]
 
 Another example might be the when search matches are displayed. If
-using the string C<[value mv_match_count] titles found>, it will
-display a plural for only one match. Use:
+using the string [value mv_match_count] titles found, it will
+display a plural result even if there is only one match. Use:
 
    [if value mv_match_count != 1]
        [value mv_match_count] matches found.
@@ -965,7 +847,7 @@ display a plural for only one match. Use:
    [/if]
 
 The op term is the compare operation to be used. Compare operations
-are as in Perl:
+are the same as they are in Perl:
 
    ==  numeric equivalence
    eq  string equivalence
@@ -977,23 +859,23 @@ are as in Perl:
    ne  string equivalence
 
 Any simple Perl test can be used, including some limited regex
-matching. More complex tests are best done with C<[if explicit]>.
+matching. More complex tests should be done with [if explicit].
 
 =over 4
 
 =item [then] text [/then]
 
-This is optional if not nesting if conditions. The text immediately
-following the C<[if ..]> tag is used as the conditionally substituted
-text. If nesting C<[if ...]> tags, use a C<[then][/then]> on any
-outside conditions to ensure proper interpolation.
+This is optional if not nesting "if" conditions. The text immediately
+following the [if ..] tag is used as the conditionally substituted
+text. If nesting [if ...] tags, use [then][/then] on any outside
+conditions to ensure proper interpolation.
 
 =item [elsif type field op* compare*]
 
-named attributes: C<[elsif type="type" term="field" op="op"
-compare="compare"]>
+named attributes: [elsif type="type" term="field" op="op"
+compare="compare"]
 
-Additional conditions for test, applied if the initial C<[if ..]> test
+Additional conditions for test, applied if the initial [if ..] test
 fails.
 
 =item [else] text [/else]
@@ -1002,11 +884,11 @@ The optional else-text for an if or if-item-field conditional.
 
 =item [condition] text [/condition]
 
-Only used with the C<[if explicit]> tag. Allows an arbitrary
+Only used with the [if explicit] tag. Allows an arbitrary
 expression B<in Perl> to be placed inside, with its return value
-interpreted as the result of the test. If arguments are added to C<[if
-explicit args]>, those will be passed as arguments are in the
-C<[perl]> construct.
+interpreted as the result of the test. If arguments are added to [if
+explicit args], those will be passed as arguments in the [perl]
+construct.
 
 =item [/if]
 
@@ -1017,65 +899,759 @@ Terminates an if conditional.
 =head1 Programming
 
 Interchange has a powerful paradigm for extending and enhancing its
-functionality.  It uses two mechanisms, C<user-defined tags> and
-C<user subroutines> on two different security levels, global and
-catalog. In addition, C<Embedded Perl Code> may be used to build
-functionality into a site's page.
+functionality. It uses two mechanisms, user-defined tags and user
+subroutines on two different security levels, global and catalog. In
+addition, embedded Perl code can be used to build functionality into
+pages.
 
-C<User-defined tags> are defined with the UserTag directive in either
-C<minivend.cfg> or C<catalog.cfg>. The ones in C<minivend.cfg> are
-global, i.e., they are not constrained by the C<Safe> Perl module as
-to which opcodes and  routines they may use. Normally, the
-user-defined tags in  C<catalog.cfg> are constrained by C<Safe>, but
-if the C<AllowGlobal> global directive is set for the particular
-catalog in use, its C<UserTag> and C<Sub> definitions will have global
-capability.
+User-defined tags are defined with the UserTag directive in either
+interchange.cfg or catalog.cfg. The tags in interchange.cfg
+are global and they are not constrained by the Safe Perl module as
+to which opcodes and routines they may use. The user-defined tags in
+catalog.cfg are constrained by Safe. However, if the
+AllowGlobal global directive is set for the particular catalog in
+use, its UserTag and Sub definitions will have global capability.
 
-Many of the internal Interchange routines can be accessed by the savvy
-programmer who reads the source and finds the entry points. Also, many
+=head2 Overriding Interchange Routines
+
+Many of the internal Interchange routines can be accessed by
+programmers who can read the source and find entry points. Also, many
 internal Interchange routines can be overridden:
 
-    GlobalSub <<EOS
-    sub just_for_overriding {
-        package Vend::Module;
-        use MyModule;
-        sub to_override {
-            &MyModule::do_something_funky($Values->{my_variable});
-        }
-    }
-    EOS
+   GlobalSub <<EOS
+   sub just_for_overriding {
+       package Vend::Module;
+       use MyModule;
+       sub to_override {
+           &MyModule::do_something_funky($Values->{my_variable});
+       }
+   }
+   EOS
 
-The effect of the above is to override the C<to_override> routine in
-the module C<Vend::Module>. This is preferable to hacking on the code
-if the functionality change is expected to last long. Then, the
-Interchange code can be updated, in most cases, while still keeping
-your hack.
+The effect of the above code is to override the to_override routine
+in the module Vend::Module. This is preferable to hacking the code
+for functionality changes that are not expected to change frequently.
+In most cases, updating the Interchange code will not affect the
+overridden code.
 
-=head2 Embedded Perl Code
+B<Note: >Internal entry points are not guaranteed to exist in future
+versions of Interchange.
+
+=head2 Embedding Perl Code
 
 Perl code can be directly embedded in Interchange pages. The code is
 specified as:
 
-    [perl]
-        $name    = $Values->{name};
-        $browser = $Session->{browser};
-        return "Hi, $name! How do you like your $browser?";
-    [/perl]
+   [perl]
+       $name    = $Values->{name};
+       $browser = $Session->{browser};
+       return "Hi, $name! How do you like your $browser?";
+   [/perl]
 
 ASP syntax can be used with:
 
-    [mvasp]
-        <%
-        $name    = $Values->{name};
-        $browser = $Session->{browser};
-        %>
-        Hi, <%= $name %>!
-        <%
-            HTML "How do you like your $browser?";
-        %>
-    [/mvasp]
+   [mvasp]
+       <%
+       $name    = $Values->{name};
+       $browser = $Session->{browser};
+       %>
+       Hi, <%= $name %>!
+       <%
+           HTML "How do you like your $browser?";
+       %>
+   [/mvasp]
 
-The two snippets above are essentially equivalent.
+The two examples above are essentially equivalent.  See the perl
+and  mvasp tags for usage details.
+
+The [I<perl>] tag enforces I<Safe.pm> checking, so many standard
+Perl operators are not available. This prevents user access to all
+files and programs on the system without the Interchange daemon's
+permissions. See GlobalSub and User-defined Tags for ways to
+make external files and programs available to Interchange.
+
+=over 4
+
+=item
+
+Named parameters:
+
+See the perl tag for a description of the tag parameters and
+attributes.  These S<include:>
+
+       [perl tables="tables-to-open"*
+
+=back
+               subs=1*
+             global=1*
+          no_return=1*
+            failure="Return value in case of compile or runtime error"*
+               file="include_file"*]
+
+=over 4
+
+=item
+
+Required parameters: none
+
+=back
+
+Any Interchange tag (except ones using SQL) can be accessed using the
+$Tag object. If using SQL queries inside a Perl element,
+AllowGlobal permissions are required and and the global=1
+parameter must be set. Installing the module Safe::Hole along with
+sharing the database table with <tables=tablename> will enable SQL
+use.
+
+=over 4
+
+=item
+
+For example:
+
+   # If the item might contain a single   [perl]
+   $comments = $Values->{comments};
+   [/perl]
+
+quote
+
+=back
+
+B<Important Note: >Global subroutines are not subject to the stringent
+security check from the Safe module. This means that the subroutine
+will be able to modify any variable in Interchange, and will be able
+to write to read and write any file that the Interchange daemon has
+permission to write. Because of this, the subroutines should be used
+with caution. They are defined in the main interchange.cfg file,
+and can't be reached by from individual users in a multi-catalog
+system.
+
+Global subroutines are defined in interchange.cfg with the
+GlobalSub directive, or in user catalogs which have been enabled
+through AllowGlobal. Catalog subroutines are defined in
+catalog.cfg, with the Sub directive and are subject to the
+stringent Safe.pm security restrictions that are controlled by the
+global directive SafeUntrap.
+
+The code can be as complex as you want them to be, but cannot be used
+by operators that modify the file system or use unsafe operations like
+"system," "exec," or backticks. These constraints are enforced with
+the default permissions of the standard Perl module B<Safe>.
+Operations may be untrapped on a system-wide basis with the
+SafeUntrap directive.
+
+The result of this tag will be the result of the last expression
+evaluated, just as in a subroutine. If there is a syntax error or
+other problem with the code, there will be no output.
+
+Here is a simple one which does the equivalent of the classic hello.pl
+program:
+
+   [perl] my $tmp = "Hello, world!"; $tmp; [/perl]
+
+There is no need to set the variable. It is there only to show the
+capability.
+
+To echo the user's browser, but within some HTML tags:
+
+   [perl]
+   my $html = '<H5>';
+   $html .= $Session->{browser};
+   $html .= '</H5>';
+   $html;
+   [/perl]
+
+To show the user their name and the current time:
+
+   [perl arg=values]
+
+   my $string = "Hi, " . $Values->{name} ". The time is now ";
+   $string .= $Tag->time();
+   $string;
+
+   [/perl]
+
+=head2 ASP-Like Perl
+
+Interchange supports an ASP-like syntax using the [mvasp] tag.
+
+   [mvasp]
+   <HTML><BODY>
+       This is HTML.<BR>
+
+   <% HTML "This is code<BR>"; %>
+       More HTML.<BR>
+   <% $Document->write("Code again.<BR>") %>
+   [/mvasp]
+
+If no closing [/mvasp] tag is present, the remainder of the page
+will also be seen as ASP.
+
+ASP is simple. Anything between <% and %> is code, and the string %>
+can not occur anywhere inside. Anything not between those anchors is
+plain HTML that is placed unchanged on the page. Interchange
+variables, [L][/L], and [LC][/LC] areas will still be inserted, but
+any Interchange tags will not.
+
+There is a shorthand <% = $foo %>, which is equivalent to <%
+$Document->write($foo); %> or <% HTML $foo; %>
+
+   [mvasp]
+   <HTML><BODY>
+       This is HTML.<BR>
+       [value name] will show up as &#91;value name].<BR>
+
+       &#95_VARIABLE__ value is equal to: __VARIABLE__
+
+   <% = "This is code<BR>" %>
+
+The __VARIABLE__ will be replaced by the value of Variable
+VARIABLE, but [value name] will be shown unchanged.
+
+B<Important Note: >If using the SQL::Statement module, the catalog
+must be set to AllowGlobal in interchange.cfg. It will not work
+in "Safe" mode due to the limitations of object creation in Safe.
+Also, the Safe::Hole module must be installed to have SQL databases
+work in Safe mode.
+
+
+
+=head2 Error Reporting
+
+If your Perl code fails with a compile or runtime error, Interchange
+writes the error message from the Perl interpreter into the catalog's
+error log. This is usually 'I<catalog_root>/error.log'. Error messages
+do not appear on your web page as the return value of the Perl tag or
+routine.
+
+You will not have direct access to the 'strict' and 'warnings'
+pragmas where Interchange runs your perl code under Safe (for
+example, within a [perl] or [mvasp] tag).
+
+=head1 Interchange Perl Objects
+
+You can access all objects associated with the catalog and the user
+settings with opcode restrictions based on the standard Perl module
+Safe.pm. There are some unique things to know about programming
+with Interchange.
+
+Under Safe, certain things cannot be used. For instance, the
+following can not be used when running Safe:
+
+   $variable = `cat file/contents`;
+
+The backtick operator violates a number of the default Safe opcode
+restrictions. Also, direct file opens can not be used. For example:
+
+   open(SOMETHING, "something.txt")
+       or die;
+
+This will also cause a trap, and the code will fail to compile.
+However, equivalent Interchange routines can be used:
+
+   # This will work if your administrator doesn't have NoAbsolute set
+   $users = $Tag->file('/home/you/list');
+
+   # This will always work, file names are based in the catalog directory
+   $users = $Tag->file('userlist');
+
+The following is a list of Interchange Perl standard objects are:
+
+=over 4
+
+=item $CGI
+
+This is a hash reference to %CGI::values, the value of user
+variables as submitted in the current page/form. To get the value of a
+variable submitted as
+
+    <INPUT TYPE=hidden NAME=foo VALUE=bar>
+
+use
+
+    <% $Document->write("Value of foo is $CGI->{foo}"); %>
+
+Remember, multiple settings of the same variable are separated by a
+NULL character. To get the array value, use $CGI_array.
+
+=item $CGI_array
+
+This is a hash reference to %CGI::values_array, arrays containing
+the value or values of user variables as submitted in the current
+page/form. To get the value of a variable submitted as
+
+    <INPUT TYPE=hidden NAME=foo VALUE=    <INPUT TYPE=hidden NAME=foo VALUE='baz'>
+
+bar'>
+
+use
+
+    <% = "The values of foo are", join (' and ', @{$CGI_array->{'foo'}}) %>
+
+Remember, multiple settings of the same variable are separated by a
+NULL character. To get the array value, use $CGI_array.
+
+=item $Carts
+
+A reference to the shopping cart hash $Vend::Session->{carts}. The
+normal default cart is "main". A typical alias is $Items.
+
+Shopping carts are an array of hash references. Here is an example of
+a session cart array containing a main and a layaway cart.
+        'main' => [
+                    {
+                        'code' => '00-0011',
+                        'mv_ib' => 'products',
+                        'quantity' => 1,
+                        'size' => undef,
+                        'color' => undef
+                    },
+                    {
+                        'code' => '99-102',
+                        'mv_ib' => 'products',
+                        'quantity' => 2,
+                        'size' => 'L',
+                        'color' => 'BLUE'
+                    }
+                ],
+        'layaway' => [
+                    {
+                        'code' => '00-341',
+                        'mv_ib' => 'products',
+                        'quantity' => 1,
+                        'size' => undef,
+                        'color' => undef
+                    }
+                ]
+    }
+
+    {
+
+In this cart array, $Carts->{main}[1]{code} is equal to 99-102.
+Normally, it would be equivalent to $Items->[1]{code}.
+
+=item $Config
+
+A reference to the $Vend::Cfg array. This is normally used with a
+large amount of the Interchange source code, but for simple things use
+something like:
+
+    # Turn off CyberCash for thi    $Config->{CyberCash} = 0;
+
+ user
+
+Changes are not persistent except when running in the foreground
+(Debug mode).
+
+=item %Db
+
+A hash of databases shared with the [mvasp tables="foo"] parameter
+to the tag call. Once the database is shared, it is open and can be
+accessed by any of its methods. This will not work with SQL unless
+AllowGlobal is set for the catalog.
+
+To get a reference to a particular table, specify its hash element:
+
+    $ref = $Db{products};
+
+The available methods are:
+
+    # access an element of the    $field = $ref->field($key, $column);
+
+    # set an element of the table
+    $ref->set_field($key, $column_name, $value);
+
+    # atomic increment of an element of the table
+    $ref->inc_field($key, $column_name, 1);
+
+    # see if element of the table is numeric
+    $is_numeric = $ref->numeric($column_name);
+
+    # Quote for SQL query purposes
+    $quoted = $ref->quote($value, $column_name);
+
+    # Check configuration of the database
+    $delimiter = $ref->config('DELIMITER');
+
+    # Find the names of the columns (not including the key)
+    @columns = $ref->columns();
+    # Insert the key column name
+    unshift @columns, $ref->config('KEY');
+
+    # See if a column is in the table
+    $is_a_column = defined $ref->test_column($column_name);
+
+    # See if a row is in the table
+    $is_present = $ref->record_exists($key);
+
+    # Create a subroutine to return a single column from the table
+    $sub = $ref->field_accessor($column);
+    for (@keys) {
+        push @values, $sub->($key);
+    }
+
+    # Create a subroutine to set a single column in the database
+    $sub = $ref->field_settor($column);
+    for (@keys) {
+        $sub->($key, $value);
+    }
+
+    # Create a subroutine to set a slice of the database
+    $sub = $ref->row_settor(@columns);
+    for (@keys) {
+        $sub->($key, @values);
+    }
+
+    # Retrurn a complete array of the database (minus the key)
+    @values = $ref->row($key);
+
+    # Retrurn a complete hash of the database row (minus the key)
+    $hashref = $ref->row_hash($key);
+
+    # Delete a record/row from the table
+    $ref->delete_record($key);
+
+table
+
+=item %Sql
+
+A hash of SQL databases that you shared with the [mvasp
+tables="foo"] parameter to the tag call. It returns the DBI database
+handle, so operations like the following can be performed:    my $dbh = $Sql{products}
+        or return HTML "Database not shared.";
+    my $sth = $dbh->prepare('select * from products')
+        or return HTML "Couldn't open database.";
+    $sth->execute();
+    my @record;
+    while(@record = $sth->fetchrow()) {
+        foo();
+    }
+    $sth = $dbh->prepare('select * from othertable')
+        or return HTML "Couldn't open database.";
+    $sth->execute();
+    while(@record = $sth->fetchrow()) {
+        bar();
+    }
+  %>
+
+
+  <%
+
+This will not work with unless AllowGlobal is set for your catalog.
+
+=item $DbSearch
+
+A search object that will search a database without using the text
+file. It is the same as Interchange's db searchtype. Options are
+specified in a hash and passed to the object. All multiple-field
+options should be passed as array references. Before using the
+$DbSearch object, it must be told which table to search. For example,
+to use the table foo, it must have been shared with [mvasp foo].
+
+There are three search methods: array, hash, and list.
+
+    array    Returns a reference to an array of arrays     hash     Returns a reference to an array of hashes (slower)
+    list     Returns a reference to an array of tab-delimited lines
+
+best)
+
+\Example:
+
+    $DbSearch->{table} = $Db
+    $search = {
+
+            mv_searchspec => 'Mona Lisa',
+            mv_search_field => [ 'title', 'artist', 'price' ],
+            mv_return_fields    => [ 'title' ]
+
+        };
+
+    my $ary = $DbSearch->array($search);
+
+    if(! scalar @$ary) {
+        return HTML "No match.\n";
+    }
+
+    for(@$ary) {
+
+foo};
+
+=item $Document
+
+This is an object that has several routines associated with it.
+
+ HTML $foo;                     # Append $foo to the write buffer $Document->write($foo);        # object call to append $foo to the write
+                                # buffer array
+ $Document->insert($foo);       # Insert $foo to front of write buffer array
+ $Document->header($foo, $opt); # Append $foo to page header
+ $Document->send();             # Send write buffer array to output, done
+                                # automatically upon end of ASP, clears buffer
+                                # and invalidates $Document->header()
+ $Document->hot(1);             # Cause writes to send immediately
+ $Document->hot(0);             # Stop immediate send
+ @ary = $Document->review();    # Place contents of write buffer in @ary
+ $Document->replace(@ary)       # Replace contents of write buffer with @ary
+ $ary_ref = $Document->ref();   # Return ref to output buffer
+
+array
+
+=item $Document->write($foo)
+
+Write $foo to the page in a buffered fashion. The buffer is an array
+containing the results of all previous $Document->write()
+operations. If $Document->hot(1) has been set, the output immediately
+goes to the user.
+
+=item $Document->insert($foo)
+
+Insert $foo to the page buffer. The following example will output
+"123"
+
+    $Document->write(    $Document->insert("1");
+    $Document->send();
+
+23");
+
+while this example will output "231"
+
+    $Document->write(    $Document->write("1");
+    $Document->send();
+
+23");
+
+will output "231".
+
+=item $Document->header($foo, $opt)
+
+Add the header line $foo to the HTTP header. This is used to change
+the page content type, cache options, or other attributes. The code
+below changes the content type (MIME type) to text/plain:
+
+    $Document->header("Content-type: text/plain");
+
+There is an optional hash that can be sent with the only valid value
+being "replace." The code below scrubs all previous header lines:
+
+    $Document->header("Content-type: text/plain", { replace => 1 } );
+
+Once output has been sent with $Document->send(), this can no longer
+be done.
+
+=item $Document->hot($foo)
+
+If the value of $foo is true (in a Perl sense), then all
+$Document->write() operations will be immediately sent until a
+$Document->hot(0) is executed.
+
+=item $Document->send()
+
+Causes the document write buffer to be sent to the browser and empties
+the buffer. Any further $Document->header() calls will be ignored. Can
+be used to implement non-parsed-header operation.
+
+=item $Document->review()
+
+Returns the value of the write buffer.
+
+    @ary = $Document->review();
+
+=item $Document->replace(@new)
+
+Completely replaces the write buffer with the arguments.
+
+=item $Document->ref()
+
+Returns a reference to the write buffer.
+
+    # Remove the first item in the write     my $ary_ref = $Document->ref();
+    shift @$ary_ref;
+
+uffer
+
+=item HTML
+
+Writes a string (or list of strings) to the write buffer array. The
+call
+
+    HTML $foo, $bar;
+
+is exactly equivalent to
+
+    $Document->write($foo, $bar);
+
+Honors the $Document->hot() setting.
+
+=item $Items
+
+A reference to the current shopping cart. Unless an Interchange
+[cart ...] tag is used, it is normally the same as $Carts->{main}.
+
+=item $Scratch
+
+A reference to the scratch values ala [scratch foo].
+
+   <% $Scratch->{foo} = 'bar'; %>
+
+is equivalent to:
+
+    [set foo]bar[/set]
+
+=item $Session
+
+A reference to the session values ala [data session username].
+
+        my $out = $Session->{browser};
+        $Document->write($out);
+    %>
+
+   <%
+
+is equivalent to:
+
+    [data session browser]
+
+Values can also be set. If the value of [data session source]
+needed to be changed, for example, set:
+
+        $Session->{source} = 'New_partner';
+    %>
+
+   <%
+
+=item $Tag
+
+Using the $Tag object, any Interchange tag including user-defined tags
+can be accessed.
+
+=back
+
+B<IMPORTANT NOTE: >If the tag will access a database that has not been
+previously opened, the table name must be passed in the ASP call. For
+example:
+
+=over 4
+
+=item
+
+HTML style:
+
+    <HTML MV="mvasp" MV.TABLES="products pricing">
+
+or
+
+Named parameters:
+
+    [mvasp tables="products pricing"]
+
+or
+
+Positional parameters:
+
+    [mvasp products pricing]
+
+Any tag can be called.
+
+        my $user = $Session->{username};
+        my $name_from_db = $Tag->data('userdb', 'name', $user );
+        $Document->write($name_from_db);
+    %>
+
+   <%
+
+is the same as:
+
+    [data table=userdb column=name key="[data session username]"]
+
+If the tag has a dash (-) in it, use an underscore instead:
+
+    # WR    $Tag->shipping-desc('upsg');
+    # Right
+    $Tag->shipping_desc('upsg');
+
+NG!!!
+
+There are two ways of specifying parameters. Either use the positional
+parameters as documented (for an authoritative look at the parameters,
+see the %Routine value in Vend::Parse), or specify it all with an
+option hash parameter names as in any named parameters as specified in
+an Interchange tag. The calls
+
+    $Tag->data('products', 'title', '00-0011');
+
+and
+
+    my $o                    table   => 'products',
+                    column  => 'title',
+                    key     => '00-0011',
+                };
+
+    $Tag->data( $opt );
+
+t = {
+
+are equivalent for the data tag.
+
+If using the option hash method, and the tag has container text,
+either specify it in the hash parameter body or add it as the next
+argument. The two calls:
+
+    $Tag->item_l                        'body' => "[item-code] [item-field title]",
+                    });
+
+st( {
+
+and
+
+    $Tag->item_list( { }, "[item-code] [item-field title]")
+
+are equivalent.
+
+Parameter names are ALWAYS lower case.
+
+=back
+
+=over 4
+
+=item $Values
+
+A reference to the user form values ala [value foo].
+
+    <% $Document->write($Values->{foo}); %>
+
+is equivalent to:
+
+    [value foo]
+
+=item &Log
+
+Send a message to the error log (same as ::logError in GlobalSub or
+global UserTag).
+
+        Log("error log entry");
+    %>
+
+   <%
+
+It prepends the normal timestamp with user and page information. To
+supress that information, begin the message with a backslash (\).
+
+        Log("\\error log entry without timestamp");
+        Log('\another error log entry without timestamp');
+        Log("error log entry with timestamp");
+    %>
+
+   <%
+
+=back
+
+=head1 Debugging
+
+No debug output is provided by default. The source files contain
+commented-out '::logDebug(SOMETHING)' statements which can be edited
+to activate them. Set the value of DebugFile to a file that will be
+written to:
+
+   DebugFile /tmp/mvdebug
 
 =head2 Export
 
@@ -1283,25 +1859,25 @@ Attribute aliases:
 
 =item [price code quantity* database* noformat*]
 
-named attributes: C<[price code="code" quantity="N" base="database"
-noformat=1* optionX="value"]>
+named attributes: [price code="code" quantity="N" base="database"
+noformat=1* optionX="value"]
 
 Expands into the price of the product identified by code as found in
 the products database. If there is more than one products file
 defined, they will be searched in order unless constrained by the
 optional argument base. The optional argument quantity selects an
 entry from the quantity price list. To receive a raw number, with no
-currency formatting, use the option C<noformat=1>.
+currency formatting, use the option noformat=1.
 
 If an named attribute corresponding to a product option is passed, and
 that option would cause a change in the price, the appropriate price
 will be displayed.
 
 Demo example: The T-Shirt (product code 99-102), with a base price of
-$10.00, can vary in price depending on size and color. C<S>, the small
-size, is 50 cents less; C<XL>, the extra large size, is $1.00 more,
-and the color C<RED> is 0.75 extra. There are also quantity pricing
-breaks (see the demo C<pricing> database. So the following will be
+$10.00, can vary in price depending on size and color. S, the small
+size, is 50 cents less; XL, the extra large size, is $1.00 more,
+and the color RED is 0.75 extra. There are also quantity pricing
+breaks (see the demo pricing database. So the following will be
 true:
 
     [price  code=            size=L]              is $10.00
@@ -1322,12 +1898,12 @@ true:
 
 9-102
 
-An illustration of this is on the simple C<flypage> template when
+An illustration of this is on the simple flypage template when
 passed that item code.
 
 =item [description code table*]
 
-named attributes: C<[description code="code" base="database"]>
+named attributes: [description code="code" base="database"]
 
 Expands into the description of the product identified by code as
 found in the products database. If there is more than one products
@@ -1336,8 +1912,8 @@ optional argument table.
 
 =item [accessories code attribute*, type*, field*, database*, name*, outboard*]
 
-named attributes: C<[accessories code="code"> C<arg="attribute*,
-type*, field*, database*, name*, outboard*"]>
+named attributes: [accessories code="code" arg="attribute*,
+type*, field*, database*, name*, outboard*"]
 
 Initiates special processing of item attributes based on entries in
 the product database. See Item Attributes for a complete description
@@ -1369,7 +1945,7 @@ found, a select box like this will be built:
 
 lor">
 
-In combination with the C<mv_order_item> and C<mv_order_quantity>
+In combination with the mv_order_item and mv_order_quantity
 variables, this can be used to allow entry of an attribute at time of
 order.
 
@@ -1378,7 +1954,7 @@ order.
 =head2 FILE and INCLUDE
 
 These elements read a file from the disk and insert the contents in
-the location of the tag. C<[include ...]> will allow insertion of
+the location of the tag. [include ...] will allow insertion of
 Interchange variables and ITL tags.
 
 =over 4
@@ -1392,14 +1968,14 @@ positional: [file name]
 Inserts the contents of the named file. The file should normally be
 relative to the catalog directory. File names beginning with / or ..
 are only allowed if the Interchange server administrator has disabled
-NoAbsolute. The optional C<type> parameter will do an appropriate
+NoAbsolute. The optional type parameter will do an appropriate
 ASCII translation on the file before it is sent.
 
 =item [include file]
 
-named attributes: C<[include file="name"]>
+named attributes: [include file="name"]
 
-Same as C<[file name]> except interpolates for all Interchange tags
+Same as [file name] except interpolates for all Interchange tags
 and variables.
 
 =back
@@ -1409,22 +1985,22 @@ and variables.
 Interchange has a built-in banner rotation system designed to show ads
 or other messages according to category and an optional weighting.
 
-The C<[banner ...]> ITL tag is used to implement it.
+The [banner ...] ITL tag is used to implement it.
 
 The weighting system pre-builds banners in the directory 'Banners,'
 under the temporary directory. It will build one copy of the banner
-for every one weight. If one banner is weighted C<7>, one C<2>, and
-one C<1>, then a total of 10 pre-built banners will be made. The first
+for every one weight. If one banner is weighted 7, one 2, and
+one 1, then a total of 10 pre-built banners will be made. The first
 will be displayed 70 percent of the time, the second 20 percent, and
 the third 10 percent, in random fashion. If all banners need to be
 equal, give each a weight of 1.
 
 Each category may have separate weighting. If the above is placed in
-category C<tech>, then it will behave as above when placed in
-C<[banner category=tech]> in the page. A separate category, say
-C<art>, would have its own rotation and weighting.
+category tech, then it will behave as above when placed in
+[banner category=tech] in the page. A separate category, say
+art, would have its own rotation and weighting.
 
-The C<[banner ...]> tag is based on a database table, named C<banners>
+The [banner ...] tag is based on a database table, named banners
 by default. It expects a total of five (5) fields in the table:
 
 =over 4
@@ -1450,10 +2026,10 @@ built.
 
 If the weighted banners are not used, this must contain some value. If
 the field is empty, the banner will not be displayed. If the value is
-specifically C<0> (zero), then the entire contents of the C<banner>
+specifically 0 (zero), then the entire contents of the banner
 field will be displayed when this category is used. If it is non-zero,
-then the contents of the C<banner> field will be split into segments
-(by the separator C<{or}>). For each segment, the banners will rotate
+then the contents of the banner field will be split into segments
+(by the separator {or}). For each segment, the banners will rotate
 in sequence for that user only. Obviously, the first banner in the
 sequence is more likely to be displayed than the last.
 
@@ -1467,14 +2043,14 @@ g ads
 =item banner
 
 This contains the banner text. If more than one banner is in the
-field, they should be separated by the text C<{or}> (which will not be
+field, they should be separated by the text {or} (which will not be
 displayed).
 
 =back
 
-Interchange expects the C<banner> field to contains the banner text.
+Interchange expects the banner field to contains the banner text.
 It can contain more than one banner, separated by the string '{or}.'
-To activate the ad, place any string in the field C<rotate>.
+To activate the ad, place any string in the field rotate.
 
 The special key "default" is the banner that is displayed if no
 banners are found. (Doesn't apply to weighted banners.)
@@ -1484,11 +2060,11 @@ catalog reconfiguration. They will not be rebuilt until the catalog is
 reconfigured, or the file tmp/Banners/total_weight and
 tmp/Banners/<category>/total_weight is removed.
 
-If the option C<once> is passed (i.e., [banner once=1 weighted=1],
-then the banners will not be rebuilt until the C<total_weight> file is
+If the option once is passed (i.e., [banner once=1 weighted=1],
+then the banners will not be rebuilt until the total_weight file is
 removed.
 
-The database specification should make the C<weight> field numeric so
+The database specification should make the weight field numeric so
 that the proper query can be made. Here is the example from
 Interchange's demo:
 
@@ -1503,7 +2079,7 @@ Examples:
 
 To select categorized and weighted banners:
 
-The C<banner> table would look like this:
+The banner table would look like this:
 
     code    category   weight   rotate       t1      tech       1                 Click here for a 10% banner
     t2      tech       2                 Click here for a 20% banner
@@ -1518,9 +2094,9 @@ Tag would be:
 
     [banner weighted=1 category="tech"]
 
-This will find *all* banners with a weight >= 1 where the C<category>
-field is equal to C<tech>. The files will be made into the director
-C<tmp/Banners/tech>.
+This will find *all* banners with a weight >= 1 where the category
+field is equal to tech. The files will be made into the director
+tmp/Banners/tech.
 
 =item weighted
 
@@ -1529,7 +2105,7 @@ To select weighted banners:
     [banner weighted=1]
 
 This will find *all* banners with a weight >= 1. (Remember, integers
-only.) The files will be made into the director C<tmp/Banners>.
+only.) The files will be made into the director tmp/Banners.
 
     code    category   weight   rotate       t1      tech       1                 Tech banner 1
     t2      tech       2                 Tech banner 2
@@ -1554,7 +2130,7 @@ This is equivalent to:
 The differences are that it is not selected if "rotate" field is
 blank; if not selected, the default banner is displayed.
 
-The C<banner> table would look like this:
+The banner table would look like this:
 
     code    category   weight   rotate       tech               0        0        Tech banner
 
@@ -1571,7 +2147,7 @@ desired:
 
 The difference between this and above is the database.
 
-The C<banner> table would look like this:
+The banner table would look like this:
 
     code    category   weight   rotate       tech               0        1        Tech banner 1{or}Tech banner 2
     art                0        1        Art banner 1{or}Art banner 2
@@ -1579,8 +2155,8 @@ The C<banner> table would look like this:
 anner
 
 This would rotate between banner 1 and 2 for the category tech for
-each user. Banner 1 is always displayed first. The C<art> banner would
-never be displayed unless the tag C<[banner category=art]> was used,
+each user. Banner 1 is always displayed first. The art banner would
+never be displayed unless the tag [banner category=art] was used,
 of course.
 
 Interchange tags can be inserted in the category parameter, if
@@ -1593,7 +2169,7 @@ desired:
     [banner category="tech:hw"] or [banner category="tech:sw"]
 
 If have a colon-separated category, Interchange will select the most
-specific ad available. If the C<banner> table looks like this:
+specific ad available. If the banner table looks like this:
 
     code    category   weight   rotate       tech               0        1        Tech banner 1{or}Tech banner 2
     tech:hw            0        1        Hardware banner 1{or}HW banner 2
@@ -1611,7 +2187,7 @@ rotate field is blank. Each category rotates on its own.
 =item Advanced
 
 All parameters are optional since they are marked with an asterisk
-C<(*)>.
+(*).
 
 Tag syntax:
 
@@ -1651,14 +2227,14 @@ B<* marks an optional parameter>
 
 =item [item-list cart*]
 
-named attributes: C<[item-list name="cart"]>
+named attributes: [item-list name="cart"]
 
 Places an iterative list of the items in the specified shopping cart,
 the main cart by default. See Item Lists for a description.
 
 =item [/item-list]
 
-Terminates the C<[item-list]> tag.
+Terminates the [item-list] tag.
 
 =item [nitems cart*]
 
@@ -1678,17 +2254,17 @@ state or zip code, it is set to 0. See SALES TAX for more information.
 
 =item [shipping-description mode*]
 
-named attributes: C<[shipping-description name="mode"]>
+named attributes: [shipping-description name="mode"]
 
 The text description of mode. The default is the shipping mode
 currently selected.
 
 =item [shipping mode*]
 
-named attributes: C<[shipping name="mode"]>
+named attributes: [shipping name="mode"]
 
-The shipping cost of the items in the basket via C<mode>. The default
-mode is the shipping mode currently selected in the C<mv_shipmode>
+The shipping cost of the items in the basket via mode. The default
+mode is the shipping mode currently selected in the mv_shipmode
 variable. See SHIPPING.
 
 =item [total-cost cart*]
@@ -1698,7 +2274,7 @@ cart, including sales tax, if any.
 
 =item [currency convert*]
 
-named attributes: C<[currency convert=1*]>
+named attributes: [currency convert=1*]
 
 When passed a value of a single number, formats it according to the
 currency specification. For instance:
@@ -1710,9 +2286,9 @@ will display:
     4.00
 
 Uses the Locale and PriceCommas settings as appropriate, and can
-contain a C<[calc]> region. If the optional "convert" parameter is
+contain a [calc] region. If the optional "convert" parameter is
 set, it will convert according to PriceDivide> for the current locale.
-If Locale is set to C<fr_FR>, and F<PriceDivide> for C<fr_FR> is
+If Locale is set to fr_FR, and F<PriceDivide> for fr_FR is
 0.167, using the following sequence:
 
     [currency convert=1] [calc] 500.00 + 1000.00 [/calc] [/currency]
@@ -1725,31 +2301,31 @@ Terminates the currency region.
 
 =item [cart name]
 
-named attributes: C<[cart name="name"]>
+named attributes: [cart name="name"]
 
 Sets the name of the current shopping cart for display of shipping,
 price, total, subtotal, and nitems tags. If a different price is used
-for the cart, all of the above except C<[shipping]> will reflect the
+for the cart, all of the above except [shipping] will reflect the
 normal price field. Those operations must be emulated with embedded
-Perl or the C<[item-list]>, C<[calc]>, and C<[currency]> tags, or use
+Perl or the [item-list], [calc], and [currency] tags, or use
 the PriceAdjustment feature to set it.
 
 =item [row nn]
 
-named attributes: C<[row width="nn"]>
+named attributes: [row width="nn"]
 
 Formats text in tables. Intended for use in emailed reports or
 <PRE></PRE> HTML areas. The parameter nn gives the number of columns
-to use. Inside the row tag, C<[col param=value ...]> tags may be used.
+to use. Inside the row tag, [col param=value ...] tags may be used.
 
 =item [/row]
 
-Terminates a C<[row nn]> element.
+Terminates a [row nn] element.
 
 =item [col width=nn wrap=yes|no gutter=n align=left|right|input spacing=n]
 
-Sets up a column for use in a C<[row]>. This parameter can only be
-contained inside a C<[row nn] [/row]> tag pair. Any number of columns
+Sets up a column for use in a [row]. This parameter can only be
+contained inside a [row nn] [/row] tag pair. Any number of columns
 (that fit within the size of the row) can be defined.
 
 The parameters are:
@@ -1782,9 +2358,9 @@ Terminates the column field.
 
 =head2 Item Lists
 
-Within any page, the C<[item-list cart*]> element shows a list of all
+Within any page, the [item-list cart*] element shows a list of all
 the items ordered by the customer so far. It works by repeating the
-source between C<[item-list]> and C<[/item-list]> once for each item
+source between [item-list] and [/item-list] once for each item
 ordered.
 
 B<Note: >The special tags that reference item within the list are not
@@ -1802,50 +2378,50 @@ information for the current item:
 
 =item [if-item-data table column]
 
-If the database field C<column> in table I<table> is non-blank, the
-following text up to the C<[/if-item-data]> tag is substituted. This
+If the database field column in table I<table> is non-blank, the
+following text up to the [/if-item-data] tag is substituted. This
 can be used to substitute IMG or other tags only if the corresponding
-source item is present. Also accepts a C<[else]else text[/else]> pair
+source item is present. Also accepts a [else]else text[/else] pair
 for the opposite condition.
 
 =back
 
-B<Note: >This tag does not nest with other C<[if-item-data ...]> tags.
+B<Note: >This tag does not nest with other [if-item-data ...] tags.
 
 =over 4
 
 =item [if-item-data table column]
 
-Reverses sense for C<[if-item-data]>.
+Reverses sense for [if-item-data].
 
 =item [/if-item-data]
 
-Terminates an C<[if-item-data table column]> element.
+Terminates an [if-item-data table column] element.
 
 =item [if-item-field fieldname]
 
 If the products database field fieldname is non-blank, the following
-text up to the C<[/if-item-field]> tag is substituted. If there are
+text up to the [/if-item-field] tag is substituted. If there are
 more than one products database table (see ProductFiles), it will
 check them in order until a matching key is found. This can be used to
 substitute IMG or other tags only if the corresponding source item is
-present. Also accepts a C<[else]else text[/else]> pair for the
+present. Also accepts a [else]else text[/else] pair for the
 opposite condition.
 
 =back
 
-B<Note: >This tag does not nest with other C<[if-item-field ...]>
+B<Note: >This tag does not nest with other [if-item-field ...]
 tags.
 
 =over 4
 
 =item [if-item-field fieldname]
 
-Reverses sense for C<[if-item-field]>.
+Reverses sense for [if-item-field].
 
 =item [/if-item-field]
 
-Terminates an C<[if-item-field fieldname]> element.
+Terminates an [if-item-field fieldname] element.
 
 =item [item-accessories attribute*, type*, field*, database*, name*]
 
@@ -1856,8 +2432,8 @@ of item attributes based on entries in the product database.
 =item [item-alternate N] DIVISIBLE [else] NOT DIVISIBLE [/else][/item-alternate]
 
 Sets up an alternation sequence. If the item-increment is divisible by
-C<N>, the text will be displayed. If an C<[else]NOT DIVISIBLE
-TEXT[/else]> is present, the NOT DIVISIBLE TEXT will be displayed.
+N, the text will be displayed. If an [else]NOT DIVISIBLE
+TEXT[/else] is present, the NOT DIVISIBLE TEXT will be displayed.
 
 For example:
 
@@ -1886,10 +2462,10 @@ current item.
 =item [item-field fieldname]
 
 The [item-field ...] tag is special in that it looks in any of the
-tables defined as C<ProductFiles>, in that order, for the data,
+tables defined as ProductFiles, in that order, for the data,
 returning the value only if that key is defined. In most catalogs,
-where C<ProductFiles> is not defined (i.e., the demo), C<[item-field
-title]> is equivalent to C<[item-data products title]>.
+where ProductFiles is not defined (i.e., the demo), [item-field
+title] is equivalent to [item-data products title].
 
 Evaluates to the field name fieldname in the products database for the
 current item. If the item is not found in the first of the
@@ -1915,18 +2491,18 @@ positive, the item itself will be shown but will be last on the list.
 
 calc]
 
-If this is contained in the C<[item-list]> (or C<[search-list]> or
-flypage) and the weight field is empty, a numerical C<-1> will be
-output from the C<[calc][/calc]> tags; the list will end and the item
+If this is contained in the [item-list] (or [search-list] or
+flypage) and the weight field is empty, a numerical -1 will be
+output from the [calc][/calc] tags; the list will end and the item
 will B<not> be shown. If the product's weight field is less than 1, a
 numerical 1 is output. The item will be shown, but will be the last
-item shown. (If it is an C<[item-list]>, any price for the item will
+item shown. (If it is an [item-list], any price for the item will
 still be added to the subtotal.) NOTE: there is no equivalent HTML
 style.
 
 =item [item-modifier attribute]
 
-Evaluates to the modifier value of C<attribute> for the current item.
+Evaluates to the modifier value of attribute for the current item.
 
 =item [item-next]tags[/item_next]
 
@@ -1936,21 +2512,21 @@ item will be skipped with no output. Example:
 
       [item-next][calc][item-field weight] < 1[/calc][/item-next]
 
-If this is contained in the C<[item-list]> (or C<[search-list]> or
+If this is contained in the [item-list] (or [search-list] or
 flypage) and the product's weight field is less than 1, a numerical
-C<1> will be output from the [calc][/calc] operation. The item will
-not be shown. (If it is an C<[item-list]>, any price for the item will
+1 will be output from the [calc][/calc] operation. The item will
+not be shown. (If it is an [item-list], any price for the item will
 still be added to the subtotal.)
 
 =item [item-price n* noformat*]
 
-Evaluates to the price for quantity C<n> (from the products file) of
+Evaluates to the price for quantity n (from the products file) of
 the current item, with currency formatting. If the optional "noformat"
 is set, currency formatting will not be applied.
 
 =item [discount-price n* noformat*]
 
-Evaluates to the discount price for quantity C<n> (from the products
+Evaluates to the discount price for quantity n (from the products
 file) of the current item, with currency formatting. If the optional
 "noformat" is set, currency formatting will not be applied. Returns
 regular price if not discounted.
@@ -1991,22 +2567,22 @@ Interchange has several methods for displaying pages:
 
 Display page by name
 
-If a page with C<[page some_page]> or C<<>C<A HREF="[area
-some_page]">C<>> is called and that C<some_page.html> exists in the
-pages directory (C<PageDir>), it will be displayed.
+If a page with [page some_page] or <>C<A HREF="[area
+some_page]">C<> is called and that some_page.html exists in the
+pages directory (PageDir), it will be displayed.
 
 =item *
 
 On-the-fly page
 
-If a page with C<[page 00-0011]> or C<<>C<A HREF="[area 00-0011]">C<>>
-is called and C<00-0011> exists as a product in one of the products
-databases (C<ProductFiles>), Interchange will use the special page
-descriptor C<flypage> as a template and build based on that part
+If a page with [page 00-0011] or <>C<A HREF="[area 00-0011]">C<>
+is called and 00-0011 exists as a product in one of the products
+databases (ProductFiles), Interchange will use the special page
+descriptor flypage as a template and build based on that part
 number. This is partly for convenience; the same thing can be
-accomplished by calling C<[page your_template 00-0011]> and using the
-C<[data session arg]> to perform the templating. But there is special
-logic associated with the C<PageSelectField> configuration attribute
+accomplished by calling [page your_template 00-0011] and using the
+[data session arg] to perform the templating. But there is special
+logic associated with the PageSelectField configuration attribute
 to allow pages to be built with varying templates.
 
 =item *
@@ -2014,7 +2590,7 @@ to allow pages to be built with varying templates.
 Determine page via form action and variables
 
 If a form action, in almost all cases the page to display will be
-determined by the C<mv_nextpage> form value. Example:
+determined by the mv_nextpage form value. Example:
 
     <FORM ACTION="[proc    <INPUT TYPE=hidden NAME=mv_todo VALUE=return>
     <SELECT NAME=mv_nextpage>
@@ -2027,7 +2603,7 @@ determined by the C<mv_nextpage> form value. Example:
 
 ss]">
 
-The C<mv_nextpage> dropdown will determine the page the user goes to.
+The mv_nextpage dropdown will determine the page the user goes to.
 
 =back
 
@@ -2037,14 +2613,14 @@ If an item is displayed on the search list (or order list) and there
 is a link to a special page keyed on the item, Interchange will
 attempt to build the page "on the fly." It will look for the special
 page flypage.html, which is used as a template for building the page.
-If C<[item-field fieldname]>, C<[item-price]>, and similar elements
+If [item-field fieldname], [item-price], and similar elements
 are used on the page, complex and information-packed pages can be
-built. The C<[if-item-field fieldname]> HTML C<[/if-item-field]> pair
+built. The [if-item-field fieldname] HTML [/if-item-field] pair
 can be used to insert HTML only if there is a non-blank value in a
 particular field.
 
 B<Important note:> Because the tags are substituted globally on the
-page, C<[item-*]> tags cannot be used on the default on-the-fly page.
+page, [item-*] tags cannot be used on the default on-the-fly page.
 To use a [search-region] or [item-list] tag, change the default with
 the prefix parameter. Example:
 
@@ -2053,7 +2629,7 @@ the prefix parameter. Example:
    [/item-list]
 
 To have an on-the-fly page mixed in reliably, use the idiom
-C<[fly-list prefix=fly code="[data session arg]"]> C<[/flylist]> pair.
+[fly-list prefix=fly code="[data session arg]"] [/flylist] pair.
 
 =over 4
 
@@ -2126,7 +2702,7 @@ order, the failed.html page is displayed.
 
 =item flypage (special_pages/flypage.html)
 
-If the catalog page for an item was not found when its C<[item-link]>
+If the catalog page for an item was not found when its [item-link]
 is clicked, this page is used as a template to build an on-the-fly
 page. See On-the-fly Catalog Pages.
 
@@ -2166,14 +2742,14 @@ used as a status display (or "shopping basket").
 Contains the default output page for the search engine results. Also
 required is an input page, which can be the same as search.html or an
 additional page. By convention Interchange defines this as the page
-C<results>.
+results.
 
     SpecialPage   search   results
 
 =item violation (special pages/violation.html)
 
 Displayed if a security violation is noted, such as an attempt to
-access a page denied by an C<access_gate>. See UserDB.
+access a page denied by an access_gate. See UserDB.
 
 =back
 
@@ -2195,7 +2771,7 @@ full path to the program should be used. If having trouble, check it
 from the command line (as with all external programs called by
 Interchange).
 
-Insert C<[flag type=checkhtml][/tag]> at the top or bottom of pages to
+Insert [flag type=checkhtml][/tag] at the top or bottom of pages to
 check, and the output of the checker should be appended to the browser
 output as a comment, visible if the page or frame source are viewed.
 To do this occasionally, use a Variable setting:
@@ -2214,22 +2790,36 @@ selecting item size or other attributes, and reading user information
 for payment and shipment. Search operations may also be triggered by a
 form.
 
-Interchange supports file upload with the C<multipart/form-data> type.
+Interchange supports file upload with the multipart/form-data type.
 The file is placed in memory and discarded if not accessed with the
-C<[value-extended name=filevar file_contents=1]> tag or written with
-C<[value-extended name=filevar outfile=your_file_name]>. See Extended
+[value-extended name=filevar file_contents=1] tag or written with
+[value-extended name=filevar outfile=your_file_name]. See Extended
 Value Access and File Upload.
+
+Interchange passes variables from page to page automatically. Every
+user session that is started by Interchange automatically creates a
+variable set for the user. As long as the user session is maintained,
+and does not expire, any variables you set on a form will be
+"remembered" in future sessions.
+
+Don't use the prefix mv_ for your own variables. Interchange treats
+these specially and they may not behave as you wish. Use the mv_
+variables only as they are documented.
+
+Interchange does not unset variables it does not find on the current
+form. That means you can't expect a checkbox to become unchecked
+unless you explicitly reset it.
 
 =head2 Special Form Fields
 
 Interchange treats some form fields specially, to link to the search
 engine and provide more control over user presentation. It has a
 number of predefined variables, most of whose names are prefixed with
-C<mv_> to prevent name clashes with your variables. It also uses a few
+mv_ to prevent name clashes with your variables. It also uses a few
 variables which are post-fixed with integer digits; those are used to
 provide control in its iterating lists.
 
-Most of these special fields begin with C<mv_>, and include:
+Most of these special fields begin with mv_, and include:
 
 (O = order, S = search, C = control, A = all, X in scratch space)
 
@@ -2321,7 +2911,7 @@ mv_value             va  S   Sets value on one-click search (va=var=value)
 
 =head2 Form Actions
 
-Interchange form processing is based on an C<action> and a C<todo>.
+Interchange form processing is based on an action and a todo.
 The predefined actions at the first level are:
 
    process       process a todo
@@ -2330,11 +2920,11 @@ The predefined actions at the first level are:
    order         order an item
    minimate      get access to a database via MiniMate
 
-Any action can be defined with C<ActionMap>.
+Any action can be defined with ActionMap.
 
-The C<process> action has a second C<todo> level called with
-C<mv_todo> or C<mv_doit>. The C<mv_todo> takes preference over
-C<mv_doit>, which can be used to set a default if no C<mv_todo> is
+The process action has a second todo level called with
+mv_todo or mv_doit. The mv_todo takes preference over
+mv_doit, which can be used to set a default if no mv_todo is
 set.
 
 The action can be specified with any of:
@@ -2343,7 +2933,7 @@ The action can be specified with any of:
 
 =item page name
 
-Calling the page "search" will cause the search action. C<process>
+Calling the page "search" will cause the search action. process
 will cause a form process action, etc. Examples:
 
     <FORM ACTION="/cgi-bin/simple/search" METHOD    <INPUT NAME=mv_searchspec>
@@ -2361,7 +2951,7 @@ portability:
 
 POST>
 
-The tag C<[process]> is often seen in Interchange forms. The above can
+The tag [process] is often seen in Interchange forms. The above can
 be called equivalently with:
 
     <FORM ACTION="[process]" METHOD    <INPUT TYPE=hidden NAME=mv_todo VALUE=search>
@@ -2372,7 +2962,7 @@ POST>
 
 =item mv_action
 
-Setting the special variable C<mv_action> causes the page name to be
+Setting the special variable mv_action causes the page name to be
 ignored as the action source. The above forms can use this as a
 synonym:
 
@@ -2382,13 +2972,13 @@ synonym:
 
 post>
 
-The page name will be used to set C<mv_nextpage>, if it is not
-otherwise defined. If C<mv_nextpage> is present in the form, it will
+The page name will be used to set mv_nextpage, if it is not
+otherwise defined. If mv_nextpage is present in the form, it will
 be ignored.
 
 =back
 
-The second level C<todo> for the C<process> action has these defined
+The second level todo for the process action has these defined
 by default:
 
    back         Go to mv_nextpage, don't update variables
@@ -2401,16 +2991,16 @@ by default:
             ordered items
    cancel   Erase the user session
 
-If a page name is defined as an action with C<ActionMap> or use of
-Interchange's predefined action C<process>, it will cause form
-processing. First level is setting the special page name C<process>,
-or mv_action set to do a form C<process>, the Interchange form can be
+If a page name is defined as an action with ActionMap or use of
+Interchange's predefined action process, it will cause form
+processing. First level is setting the special page name process,
+or mv_action set to do a form process, the Interchange form can be
 used for any number of actions. The actions are mapped by the
 ActionMap directive in the catalog configuration file, and are
 selected on the form with either the mv_todo or mv_doit variables.
 
-To set a default action for a C<process> form, set the variable
-C<mv_doit> as a hidden variable:
+To set a default action for a process form, set the variable
+mv_doit as a hidden variable:
 
    <INPUT TYPE=hidden NAME=mv_doit VALUE=refresh>
 
@@ -2432,7 +3022,7 @@ user is then sent to mv_nextpage.
 
 =item refresh
 
-Checks for newly-ordered items in C<mv_order_item>, looking for
+Checks for newly-ordered items in mv_order_item, looking for
 on-the-fly items if that is defined, then updates the shopping cart
 with any changed quantities or options. Finally updates the user
 variables and returns to the page defined in mv_orderpage or
@@ -2454,7 +3044,7 @@ directives).
 =item submit
 
 Submits the form for order processing. If no order profile is defined
-with the C<mv_order_profile> variable, the order is checked to see if
+with the mv_order_profile variable, the order is checked to see if
 the current cart contains any items and the order is submitted.
 
 If there is an order profile defined, the form will be checked against
@@ -2478,7 +3068,7 @@ order profiles) inside a scratch variable:
  mv_todo=search
  [/set]
 
-The special variable C<mv_click> sets variables just as if they were
+The special variable mv_click sets variables just as if they were
 put in on the form. It is controlled by a single button, as in:
 
    <INPUT TYPE=submit NAME=mv_click VALUE="Search by Category">
@@ -2486,13 +3076,13 @@ put in on the form. It is controlled by a single button, as in:
 When the user clicks the submit button, all three variables will take
 on the values defined in the "Search by Category" scratch variable.
 Set the scratch variable on the same form as the button is on. This is
-recommended for clarity. The C<mv_click> variable will not be carried
+recommended for clarity. The mv_click variable will not be carried
 from form to form, it must be set on the form being submitted.
 
-The special variable C<mv_check> sets variables for the form actions
+The special variable mv_check sets variables for the form actions
 <checkout, control, refresh, return, search,> and <submit>. This
 function operates after the values are set from the form, including
-the ones set by C<mv_click>, and can be used to condition input to
+the ones set by mv_click, and can be used to condition input to
 search routines or orders.
 
 The variable sets can contain and be generated by most Interchange
@@ -2517,7 +3107,7 @@ variable. To build sets of fields (as in mv_search_field and
 mv_return_fields), comma separation if that is supported for the field
 must be used.
 
-It is very convenient to use C<mv_click> as a trigger for embedded
+It is very convenient to use mv_click as a trigger for embedded
 Perl:
 
    <FORM ...
@@ -2541,38 +3131,38 @@ Perl:
 =head2 Checks and Selections
 
 A "memory" for drop-down menus, radio buttons, and checkboxes can be
-provided with the C<[checked]> and C<[selected]> tags.
+provided with the [checked] and [selected] tags.
 
 =over 4
 
 =item [checked var_name value]
 
-named attributes: C<[checked name="var_name" value="value" cgi=0|1
-multiple=0|1 default=0|1 case=0|1]>
+named attributes: [checked name="var_name" value="value" cgi=0|1
+multiple=0|1 default=0|1 case=0|1]
 
-This will output CHECKED if the variable C<var_name> is equal to
-C<value>. Set the C<cgi> attribute to use cgi instead of values data.
-Not case sensitive unless C<case> is set.
+This will output CHECKED if the variable var_name is equal to
+value. Set the cgi attribute to use cgi instead of values data.
+Not case sensitive unless case is set.
 
-If the C<multiple> attribute is defined and set to a non-zero value (1
+If the multiple attribute is defined and set to a non-zero value (1
 is implicit) and if the value matches on a word/non-word boundary, it
-will be CHECKED. If the C<default> attribute is set to a non-zero
-value, the box will be checked if the variable C<var_name> is empty or
+will be CHECKED. If the default attribute is set to a non-zero
+value, the box will be checked if the variable var_name is empty or
 zero.
 
 =item [selected var_name value]
 
-named attributes: C<[selected name="var_name" value="value" cgi=0|1
-multiple=0|1 default=0|1 case=0|1]>
+named attributes: [selected name="var_name" value="value" cgi=0|1
+multiple=0|1 default=0|1 case=0|1]
 
-This will output SELECTED if the variable C<var_name> is equal to
-C<value>. Set the C<cgi> attribute to use cgi instead of values data.
-Not case sensitive unless C<case> is set.
+This will output SELECTED if the variable var_name is equal to
+value. Set the cgi attribute to use cgi instead of values data.
+Not case sensitive unless case is set.
 
-If the C<multiple> argument is present, it will look for any of a
-variety of values. If the C<default> attribute is set, SELECT will be
+If the multiple argument is present, it will look for any of a
+variety of values. If the default attribute is set, SELECT will be
 output if the variable is empty or zero. Not case sensitive unless
-C<case> is set.
+case is set.
 
 Here is a drop-down menu that remembers an item-modifier color
 selection:
@@ -2585,7 +3175,7 @@ selection:
 lor">
 
 For databases or large lists of items, sometimes it is easier to use
-C<[loop list="foo bar"]> and its C<option> parameter. The above can be
+[loop list="foo bar"] and its option parameter. The above can be
 achieved with:
 
     <SELECT NAME=    [loop list="Blue Green Red" option=color]
@@ -2600,7 +3190,7 @@ olor>
 =head2 Integrated Image Maps
 
 Imagemaps can also be defined on forms, with the special form variable
-C<mv_todo.map>. A series of map actions can be defined. The action
+mv_todo.map. A series of map actions can be defined. The action
 specified in the I<default> entry will be applied if none of the other
 coordinates match. The image is specified with a standard HTML 2.0
 form field of type IMAGE. Here is an example:
@@ -2622,7 +3212,7 @@ SecureURL directive, that is) by specifying your form input to be
 ACTION="[process secure=1]".
 
 To submit a form to the regular non-secure server, just omit the
-C<secure> modifier.
+secure modifier.
 
 =head2 Stacking Variables on the Form
 
@@ -2639,7 +3229,7 @@ this:
 <input type=submit name="mv_junk" value="Order Checked Items">
 </FORM>
 
-The stackable C<mv_order_item> variable with be decoded with multiple
+The stackable mv_order_item variable with be decoded with multiple
 values, causing the order of any items that are checked.
 
 To place a "delete" checkbox on the shopping basket display:
@@ -2656,7 +3246,7 @@ To place a "delete" checkbox on the shopping basket display:
 </FORM>
 
 In this case, first instance of the variable name set by
-C<[quantity-name]> will be used as the order quantity, deleting the
+[quantity-name] will be used as the order quantity, deleting the
 item from the form.
 
 Of course, not all variables are stackable. Check the documentation
@@ -2665,7 +3255,7 @@ for which ones can be stacked or experiment.
 =head2 Extended Value Access and File Upload
 
 Interchange has a facility for greater control over the display of
-form variables; it also can parse C<multipart/form-data> forms for
+form variables; it also can parse multipart/form-data forms for
 file upload.
 
 File upload is simple. Define a form like:
@@ -2678,8 +3268,8 @@ File upload is simple. Define a form like:
    </FORM>
 
 The [value-extended ...] tag performs the fetch and storage of the
-file. If the following is on the C<test.html> page (as specified with
-C<mv_nextpage> and used with the above form, it will write the file
+file. If the following is on the test.html page (as specified with
+mv_nextpage and used with the above form, it will write the file
 specified:
 
    <PRE>
@@ -2726,7 +3316,7 @@ and page:
 
 to observe this in action.
 
-The syntax for C<[value-extended ...]> is:
+The syntax for [value-extended ...] is:
 
  named: [value-extended
            name=formfield
@@ -2744,12 +3334,12 @@ positional: [value-extended name]
 
 Expands into the current value of the customer/form input field named
 by field. If there are multiple elements of that variable, it will
-return the value at C<index>; by default all joined together with a
+return the value at index; by default all joined together with a
 space.
 
 If the variable is a file variable coming from a multipart/form-data
 file upload, then the contents of that upload can be returned to the
-page or optionally written to the C<outfile>.
+page or optionally written to the outfile.
 
 =over 4
 
@@ -2757,7 +3347,7 @@ page or optionally written to the C<outfile>.
 
 The form variable NAME. If no other parameters are present, the value
 of the variable will be returned. If there are multiple elements, by
-default they will all be returned joined by a space. If C<joiner> is
+default they will all be returned joined by a space. If joiner is
 present, they will be joined by its value.
 
 In the special case of a file upload, the value returned is the name
@@ -2770,16 +3360,16 @@ will accept string literals such as "\n" or "\r".
 
 =item test
 
-There are three tests. C<isfile> returns true if the variable is a
-file upload. C<length> returns the length. C<defined> returns whether
+There are three tests. isfile returns true if the variable is a
+file upload. length returns the length. defined returns whether
 the value has ever been set at all on a form.
 
 =item index
 
 The index of the element to return if not all are wanted. This is
 useful especially for pre-setting multiple search variables. If set to
-C<*>, it will return all (joined by C<joiner>). If a range, such as
-C<0 .. 2>, it will return multiple elements.
+*, it will return all (joined by joiner). If a range, such as
+0 .. 2, it will return multiple elements.
 
 =item file_contents
 
@@ -2791,19 +3381,19 @@ value. If the variable is not a file, it returns nothing.
 Names a file to write the contents of a file upload to. It will not
 accept an absolute file name; the name must be relative to the catalog
 directory. If images or other files are to be written to go to HTML
-space, use the HTTP server's C<Alias> facilities or make a symbolic
+space, use the HTTP server's Alias facilities or make a symbolic
 link.
 
 =item ascii
 
-To do an auto-ASCII translation before writing the C<outfile>, set the
-C<ascii> parameter to a non-blank, non-zero value. The default is no
+To do an auto-ASCII translation before writing the outfile, set the
+ascii parameter to a non-blank, non-zero value. The default is no
 translation.
 
 =item yes
 
 The value that will be returned if a test is true or a file is written
-successfully. It defaults to C<1> for tests and the empty string for
+successfully. It defaults to 1 for tests and the empty string for
 uploads.
 
 =item no
@@ -2858,7 +3448,7 @@ existing database definition.
 
 =item mv_data_function
 
-UPDATE, INSERT or DELETE. The variable C<mv_data_verify> must be set
+UPDATE, INSERT or DELETE. The variable mv_data_verify must be set
 true on the form for a DELETE to occur.
 
 =item mv_data_verify
@@ -2873,23 +3463,23 @@ existing columns in the table in question.
 =item mv_update_empty
 
 Normally a variable that is blank will not replace the field. If
-C<mv_update_empty> is set to true, a blank value will erase the field
+mv_update_empty is set to true, a blank value will erase the field
 in the database.
 
 =item mv_data_filter_(field)
 
-Instantiates a filter for C<(field)>, using any of the defined
-Interchange filters. For example, if C<mv_data_filter_foo> is set to
-C<digits>, only digits will be passed into the database field during
+Instantiates a filter for (field), using any of the defined
+Interchange filters. For example, if mv_data_filter_foo is set to
+digits, only digits will be passed into the database field during
 the set operation. A common value might be "entities", which protects
-any HTML by translating C<<> into C<&lt;>, C<"> into C<&quot;>, etc.
+any HTML by translating C<<> into &lt;, " into &quot;, etc.
 
 =back
 
 The Interchange action set causes the update. Here are a pair of
 example forms. One is used to set the key to access the record
 (careful with the name, this one goes into the user session values).
-The second actually performs the update. It uses the C<[loop]> tag
+The second actually performs the update. It uses the [loop] tag
 with only one value to place default/existing values in the form based
 on the input from the first form:
 
@@ -2929,58 +3519,6 @@ The variables in the form do not update the user's session values, so
 they can correspond to database field names without fear of corrupting
 the user session.
 
-Frequently Asked Questions
-
-How do you pass variables from page to page?
-
-No effort needed. Interchange does this automatically. Every user
-session that is started by Interchange automatically creates a
-variable set for the user. As long as the user session is maintained,
-and does not expire, any variables you set on a form will be
-"remembered" in future sessions.
-
-Don't use the prefix mv_ for your own variables. Interchange treats
-these specially and they may not behave as you wish. Use the mv_
-variables only as they are documented.
-
-Also, because you can set so many variables, Interchange does not
-unset variables it does not find on the current form. That means you
-can't expect a checkbox to become unchecked unless you explicitly
-reset it.
-
-How can I tell when I need to quote a tag inside a tag?
-
-In general, you don't need to quote the following tags which are
-interpreted first within a list:
-
-   [item-code] [item-data ...] [item-field ...] etc.
-   [loop-code] [loop-data ...] [loop-field ...] etc.
-   [foo-code]  [foo-data ...]   [foo-field ...] etc.
-
-This is because they are interpreted as a part of the surrounding
-C<[loop]>, C<[item-list]>, C<[search-list]>, C<[sql list]>, or C<[tag
-each table]> constructs.
-
-So this will work:
-
-   [item-list]
-   [page [item-field url]]detailed info[/page] on [item-description]
-   [/item-list]
-
-This will I<not> work:
-
-   [page [value mypage]]
-
-The [value ...] tag is not interpolated before page, and the parser
-will not know to do so. It needs to be instead:
-
-   [page href="[value mypage]"]
-
-You might wonder why unquoted tags are even allowed. The answer is
-performance. If you have large lists of tags you can achieve
-significant speedups by using positional parameters. It requires CPU
-power to parse and disassemble the named parameters.
-
 Can I use Interchange with my existing static catalog pages?
 
 Yes, but you probably won't want to in the long run. Interchange is
@@ -2994,167 +3532,463 @@ a page is:
 
    <A HREF="/cgi-bin/construct/order?mv_order_item=SKU_OF_ITEM">Order!</A>
 
-Replace C</cgi-bin/construct> with the path to your Interchange link.
+Replace /cgi-bin/construct with the path to your Interchange link.
 
-Template Parsing Order
+=head1 Internationalization
 
-Under normal circumstances, the template page containing tags and HTML
-is parsed in the following order:
+Interchange has a rich set of internationalization (I18N) features
+that allow conditional message display, differing price formats,
+different currency definitions, price factoring, sorting, and other
+settings. The definitions are maintained in the catalog.cfg file
+through the use of built-in POSIX support and Interchange's Locale
+directive. All settings are independent for each catalog and each user
+visiting that catalog, since customers can access the same catalog in
+an unlimited number of languages and currencies.
+
+=head2 Setting the Locale
+
+The locale could be set to fr_FR (French for France) in one of two
+ways:
 
 =over 4
 
-=item 1.
+=item [setlocale locale=locale* currency=locale* persist=1*]
 
-Any content in MV_AUTOLOAD is prepended to the template page.
+This tag is for new-style tags only and will not work for [old].
 
-=over 8
+Immediately sets the locale to locale, and will cause it to persist
+in future user pages if the persist is set to a non-zero, non-blank
+value. If the currency attribute is set, the pricing and
+currency-specific locale keys and Interchange configuration directives
+are modified to that locale. If there are no arguments, it sets it
+back to the user's default locale as defined in the scratch variables
+mv_locale and mv_currency.
+
+This allows:
+
+    Dollar Pr
+    [setlocale en_US]
+    [item-list]
+    [item-code]: [item-price]<BR>
+    [/item-list]
+
+    Franc Pricing:
+
+    [setlocale fr_FR]
+    [item-list]
+    [item-code]: [item-price]<BR>
+    [/item-list]
+
+    [comment] Return to the user's default locale [/comment]
+    [setlocale]
+
+cing:
+
+=item [page process/locale/fr_FR/page/catalog]
+
+This is the same as [page catalog], except when the link is
+followed it will set the locale to fr_FR before displaying the
+page. This is persistent.
+
+=item [page process/locale/fr_FR/currency/en_US/page/catalog]
+
+This is the same as [page catalog], except when the link is
+followed it will set the locale to fr_FR and the pricing/number
+display to the locale en_US before displaying the page. This is
+persistent.
+
+=back
+
+Once the locale is persistently set for a user, it is in effect for
+the duration of their session.
+
+=head2 Interchange Locale Settings
+
+The Locale directive has many possible settings that allow complete
+internationalization of page sets and currencies. The Locale
+directive is defined in a series of key/value pairs with a key that
+contains word characters only being followed by a value. The value
+must be enclosed in double quotes if it contains whitespace. In this
+example, the key is Value setting.
+
+   Locale fr_FR "Value setting" "Configuration de valeur"
+   Locale de_DE "Value setting" Werteinstellung
+
+When accessed using the special tag [L]Value setting[/L], the value
+Configuration de valeur will be displayed B<only> if the locale is
+set to fr_FR. If the locale is set to de_DE, the string
+Werteinstellung will be displayed. If it is neither, the default
+value of Value setting will be displayed.
+
+The [L] and [/L] must be capitalized. This is done for speed of
+processing as well as easy differentiation in text.
+
+Another, way to do this is right in the page. The [LC] ... [/LC]
+pragma pair permits specification of locale-dependent text.
+
+ [LC]
+           This is the default text.
+   [fr_FR] Text for the fr_FR locale. [/fr_FR]
+   [de_DE] Text for the de_DE locale. [/de_DE]
+ [/LC]
+
+You can also place an entirely new page in place of the default one if
+the locale key is defined. When a locale is in force, and a key named
+HTMLsuffix is set to that locale, Interchange first looks for a
+page with a suffix corresponding to the locale. For example:
+
+<A HREF="[area index]">Catalog home page</A>
+
+If a page index.html exists, it will be the default. If the current
+locale is fr_FR, a page "index.fr_FR" exists, and Locale looks
+like this:
+
+   Locale fr_FR HTMLsuffix  fr_FR
+
+Then, the .fr_FR page will be used instead of the .html page.
+For a longer series of strings, the configuration file recognizes:
+
+   Locale fr_FR <<EOF
+   {
+       "Value setting",
+       "Configuration de valeur",
+
+       "Search",
+       "Recherche"
+   }
+   EOF
+
+This example sets two string substitutions. As long as this is a valid
+Perl syntax describing a series of settings, the text will be matched.
+It can contain any arbitrary set of characters that don't contain
+[L] and [/L]. If using double quotes, string literals like \n
+and \t are recognized.
+
+A database can also be used to set locale information. Locale
+information can be added to any database in the catalog.cfg file,
+and the values in it will overwrite previous settings. For more
+information, see LocaleDatabase. The [L]default text[/L] is set
+before any other page processing takes place. It is equivalent to the
+characters "default text" or the appropriate Locale translation for
+all intents and purposes. Interchange tags and Variable values can be
+embedded.
+
+Because the [L] message [/L] substitution is done before any tag
+processing, the command [L][item-data table field][/L] will fail.
+There is an additional [loc] message [/loc] I<UserTag> supplied
+with the distribution. It does the same thing as [L] [/L] except it
+is programmed after all tag substitution is done. See the
+interchange.cfg.dist file for the definition.
+
+B<Note: >Be careful when editing pages containing localization
+information. Even changing one character of the message can  change
+the key value and invalidate the message for other languages. To
+prevent this, use:
+
+   [L key]The default.[/L]
+
+The key msg_key will then be used to index the message. This may be
+preferable for many applications.
+
+A localize script is included with Interchange. It will parse files
+included on the command line and produce output that can be easily
+edited to produce localized information. Given an existing file, it
+will merge new information where appropriate.
+
+=head2 Special Locale Keys for Price Representation
+
+Interchange honors the standard POSIX keys:
+
+   mon_decimal_point    or      decimal_point
+   mon_thousands_sep    or      thousands_sep
+   currency_symbol      or      int_currency_symbol
+   frac_digits  or      p_cs_precedes
+
+See the POSIX setlocale(3) man page for more information. These keys
+will be used for formatting prices and approximates the number format
+used in most countries. To set a custom price format, use these
+special keys:
+
+=over 4
+
+=item price_picture
+
+Interchange will format a currency number based on a "picture" given
+to it. The basic form is:
+
+    Locale en_US price_picture "$ ###,###,###.##"
+
+The en_US locale, for the United States, would display 4452.3 as
+$ 4,452.30. The same display can be achieved with:
+
+     Locale en_US mon_thousands     Locale en_US mon_decimal_point .
+     Locale en_US p_cs_precedes     1
+     Locale en_US currency_symbol   $
+
+sep ,
+
+A common price_picture for European countries would be
+###.###.###,##, which would display that same number as
+4.452,30. To add a franc notation at the end for the locale
+fr_FR, use the setting:
+
+    Locale fr_FR price_picture "##.###,## fr"
+
+=back
+
+B<IMPORTANT NOTE: >The decimal point in use, set by
+mon_decimal_point, and the thousands separator, set by
+mon_thousands_sep must match the settings in the price_picture. The
+frac_digits setting is not used in this case. It is derived from
+the location of the decimal (if any).
+
+=over 4
 
 =item
 
-I<>
+The same setting for fr_FR above can be achieved with:
+
+     Locale fr_FR mon_thousands     Locale fr_FR mon_decimal_point ,
+     Locale fr_FR p_cs_precedes     0
+     Locale fr_FR currency_symbol   fr
+
+sep .
+
+If the number of digits is greater than the # locations in the
+price_picture, the digits will be changed to asterisks. An overflow
+number above would show as **.***,** fr.
 
 =back
 
-I<>
+=over 4
 
-=item 2.
+=item picture
 
-Any [C<pragma>] tags anywhere in the text are processed, and the
-specified pragmas are set.
+Same as price_picture, but sets the value returned if the
+[currency] tag is not used. If the number of digits is greater than
+the # locations in the picture, the digits will be changed to
+asterisks, displaying something like **,***.**.
 
-=over 8
+=back
+
+=head2 Dynamic Locale Directive Changes
+
+If a Locale key is set to correspond to an Interchange catalog.cfg
+directive, that value will be set when the locale is set.
+
+=over 4
+
+=item PageDir
+
+To use a different page directory for different locales, set the
+PageDir key. For example, to have two separate language page sets,
+French and English, set:
+
+    # Establish the default at s    PageDir   english
+    Locale fr_FR  PageDir  francais
+    Locale en_US  PageDir  english
+
+artup
+
+=item ImageDir
+
+To use a different image directory for different locales, set the
+ImageDir key. To have two separate language button sets, French and
+English, set:
+
+    # Establish the default at s    ImageDir   /images/english/
+    Locale fr_FR  ImageDir   /images/francais/
+    Locale en_US  ImageDir   /images/english/
+
+artup
+
+=item ImageDirSecure
+
+See ImageDir.
+
+=item PriceField
+
+To use a different field in the products database for pricing based on
+locale, set the PriceField locale setting. For example:
+
+    # Establish the default at s    PriceField    price
+    Locale fr_FR  PriceField  prix
+
+artup
+
+The default will always be price, but if the locale fr_FR is
+set, the PriceField directive will change to prix to give prices
+in francs instead of dollars.
+
+If PriceBreaks is enabled, the prix field from the pricing
+database will be used to develop the quantity pricing.
+
+=back
+
+B<Note: >If no Locale settings are present, the display will always
+be price, regardless of what was set in PriceField. Otherwise,
+it will match PriceField.
+
+=over 4
+
+=item PriceDivide
+
+Normally used to enable penny pricing with a setting of 100,
+PriceField can be used to do an automatic conversion calculation
+factor based on locale.
+
+    # Default at startup is 1 if n    # Franc is strong these days!
+    Locale fr_FR  PriceDivide  .20
+
+t set
+
+The price will now be divided by .20, making the franc price five
+times higher than the dollar.
+
+=item PriceCommas
+
+This controls whether the mon_thousands_sep will be used for
+standard currency formatting. This setting will be ignored if you are
+using price_picture. Set the value to 1 or 0, to enable or disable
+it. Do not use yes or no.
+
+    # Default at startup is Yes if n    PriceCommas  Yes
+    Locale fr_FR  PriceCommas  0
+    Locale en_US  PriceCommas  1
+
+t set
+
+=item UseModifier
+
+Changes the fields from the set shopping cart options.
+
+    # Default at startup is 1 if n    # Franc is strong these days!
+    UseModifier format
+    Locale fr_FR  UseModifier formats
+
+t set
+
+If a previous setting was made for an item based on another locale, it
+will be maintained.
+
+=item PriceAdjustment
+
+Changes the fields set by UseModifier that will be used to adjust
+pricing for an automatic conversion factor based on locale. For
+example:
+
+    # Default at s    PriceAdjustment  format
+    Locale fr_FR  PriceAdjustment  formats
+
+artup
+
+=item TaxShipping,SalesTax
+
+Same as the standard directives.
+
+=item DescriptionField
+
+This changes the field accessed by default with the
+[item-description] and [description code] tags. For example
+
+    # Establish the default at s    DescriptionField    description
+    Locale fr_FR  DescriptionField desc_fr
+
+artup
+
+=item The [locale] tag
+
+Standard error messages can be set based on Locale settings. Make sure
+not to use any of the predefined keys. It is safest to begin a key
+with msg_ . The default message is set between the [locale key] and
+[/locale] tags. See the example above.
+
+=back
+
+=head2 Sorting Based on Locale
+
+The Interchange [sort database:field] keys will use the LC_COLLATE
+setting for a locale provided that:
+
+=over 4
 
 =item *
 
-Since [C<pragma>] tags are preprocessed before any other content,
-C<reparse> will not catch them, nor will they work if included in
-variables. Also, the specified pragma will apply to the entire
-template (not just the section after the tag).
+The operating system and C compiler support locales for POSIX, and
+have the locale definitions set.
 
 =item *
 
-If you want to apply a pragma with a variable or only to part of a
-document, you must use [C<tag> pragma="..."] instead.
+The locale setting matches any configured locales.
 
 =back
 
-I<>
+If this arbitrary database named letters:
 
-=item 3.
+   code        letter
+   00-0011     f
+   99-102      é
+   19-202      a
 
-Variables (macros) are processed in the following order:
+and this loop:
 
-=over 8
+   [loop 19-202 00-0011 99-102]
+   [sort letters:letter]
+   [loop-data letters letter]   [loop-code]
+   [/loop]
 
-=item 4.
+used the default C setting for LC_COLLATE, the following would be
+displayed:
 
-@@VARNAME@@ global variables
+   a  19-202
+   f  00-0011
+   é  99-102
 
-=item 5.
+If the proper LC_COLLATE settings for locale fr_FR were in effect,
+then the above would become:
 
-@_VARNAME_@ local or global variables
+   a  19-202
+   é  99-102
+   f  00-0011
 
-=item 6.
+=head2 Placing Locale Information in a Database
 
-__VARNAME__ local variables
+Interchange has the capability to read its locale information from a
+database, named with the LocaleDatabase directive. The database can
+be of any valid Interchange type. The locales are in columns, and the
+keys are in rows. For example, to set up price information:
 
-=back
+   key                 en_US   fr_FR   de_DE
+   PriceDivide         1       .1590   .58
+   mon_decimal_point   .       ,       ,
+   mon_thousands_sep   ,       .
+   currency_symbol     $        frs    DM
+   ps_cs_precedes      1       0       0
 
-I<>
+This would translate to the following:
 
-=item 7.
+   Locale en_US PriceDivide         1
+   Locale en_US mon_decimal_point   .
+   Locale en_US mon_thousands_sep   ,
+   Locale en_US currency_symbol     $
+   Locale en_US ps_cs_precedes      1
 
-Interchange comments are stripped.
+   Locale fr_FR PriceDivide         .1590
+   Locale fr_FR mon_decimal_point   ,
+   Locale fr_FR mon_thousands_sep   .
+   Locale fr_FR currency_symbol     " frs"
+   Locale fr_FR ps_cs_precedes      0
 
-=over 8
+   Locale de_DE PriceDivide         .58
+   Locale de_DE mon_decimal_point   ,
+   Locale de_DE mon_thousands_sep   " "
+   Locale de_DE currency_symbol     "DM "
+   Locale de_DE ps_cs_precedes      1
 
-=item
+These settings append and overwrite any that are set in the catalog
+configuration files, including any include files.
 
-I<>
-
-=back
-
-I<>
-
-=item 8.
-
-False-endtag macros are expanded (e.g., [C</page>] and [C</order>]).
-
-=over 8
-
-=item
-
-I<>
-
-=back
-
-I<>
-
-=item 9.
-
-'<!--[tagname]-->' escapes are converted to [tagname]
-
-=over 8
-
-=item *
-
-This can be a convenience for your HTML editor if it has trouble with
-tags using the standard [tagname] syntax.
-
-=item *
-
-However, if you want to HTML-comment out an interchange tag in content
-that will be fed raw to a browser, you must include whitespace, like
-this, '<!-- [tagname] -->'.
-
-=back
-
-I<>
-
-=item 10.
-
-The main tag parser is called.
-
-=over 8
-
-=item *
-
-Some tags parse recursively (depending on C<reparse> and
-C<interpolate> settings, of course).
-
-=item *
-
-Some tags (e.g., [C<loop>]) process prefix-tags in their contained
-body text.  The prefix-tags are not handled recursively.
-
-=back
-
-I<>
-
-=item 11.
-
-Image paths substitution on the HTML output occurs.
-
-=over 8
-
-=item
-
-I<>
-
-=back
-
-I<>
-
-=back
-
-B<Nonstandard parsing within the admin interface>
-
-Parsing of content via the specialized C<regenerate> usertag included
-with the administrative interface does not obey the above order.  The
-MV_AUTOLOAD and '<!--[tagname]-->' escapes are skipped.  There are
-some other more subtle differences as well; in the very unlikely event
-that you need to check this in the source code, compare the
-'interpolate_html' and 'cache_html' routines in Interpolate.pm.
-
-
+Important note: This information is only read during catalog
+configuration. It is not reasonable to access a database for
+translation or currency conversion in the normal course of events.
 

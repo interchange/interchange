@@ -1,11 +1,13 @@
 =head1 NAME
 
-Interchange Upgrade Guide
+icupgrade - Interchange Upgrade Guide
+
+=head1 DESCRIPTION
 
 =head1 Introduction
 
 This document contains, in rough form, notes on upgrading from
-MiniVend 3 to MiniVend 4, and MiniVend 4 to Interchange.
+Minivend 3 to Minivend 4, and Minivend 4 to Interchange.
 
 =head1 Interchange 4.8 Deprecated Features
 
@@ -132,7 +134,7 @@ routine.
 
 =back
 
-=head1 Upgrading from MiniVend 4.0 to Interchange 4.6
+=head1 Upgrading from Minivend 4.0 to Interchange 4.6
 
 =over 4
 
@@ -178,13 +180,13 @@ password
 
 Remove these catalog.cfg lines:
 
-                Variable            MINIMATE_META   mv_metadata
-                Variable            MINIMATE_TABLE  minimate
-                Database            minimate        minimate.asc      TAB
+        Variable            MINIMATE_META   mv_metadata
+        Variable            MINIMATE_TABLE  minimate
+        Database            minimate        minimate.asc      TAB
 
 Add this one:
 
-                Database            affiliate    affiliate.txt     TAB
+        Database            affiliate    affiliate.txt     TAB
 
 Authentication for admin users is now done from a separate table than
 customers, and passwords are encrypted.
@@ -217,22 +219,22 @@ Some things that are needed for the order manager:
 
 Add these fields to transactions:
 
-        affiliate  approx. char(32)
-        archived   char(1)
-        campaign   approx. char(32)
-        comments   blob/text
-        complete   char(1)
-        deleted    char(1)
-        order_wday char(10)
-        order_ymd  char(8)
-        po_number  approx. char(32)
+    affiliate  approx. char(32)
+    archived   char(1)
+    campaign   approx. char(32)
+    comments   blob/text
+    complete   char(1)
+    deleted    char(1)
+    order_wday char(10)
+    order_ymd  char(8)
+    po_number  approx. char(32)
 
 =item *
 
 Add these fields to transactions:
 
-        affiliate  approx. char(32)
-        campaign   approx. char(32)
+    affiliate  approx. char(32)
+    campaign   approx. char(32)
 
 =item *
 
@@ -274,8 +276,8 @@ Add the etc/log_entry file.
 
 Add this to catalog.cfg:
 
-        ## Don't want people setting their credit_limit directly
-        UserDB default scratch "credit_limit dealer"
+    ## Don't want people setting their credit_limit directly
+    UserDB default scratch "credit_limit dealer"
 
 =back
 
@@ -285,9 +287,9 @@ Add this to catalog.cfg:
 
 =item
 
-Add an affiliate table:
+Add a tab-delimited affiliate table:
 
-affiliate       name    campaigns       join_date       url     timeout active  password
+affiliate name    campaigns   join_date   url timeout active  password
 
 You can find a recommended database configuration in
 foundation/dbconf/*/affiliate.*.
@@ -342,9 +344,9 @@ database configuration in foundation/dbconf/*/merchandising.*
 
 =item
 
-Create the file variable.txt with these fields:
+Create the tab-delimited file variable.txt with these fields:
 
-code    Variable  pref_group
+code  Variable  pref_group
 
 Add this as the *first* line of catalog.cfg:
 
@@ -360,26 +362,26 @@ VariableDatabase variable
 
 Create the file route.txt with these fields:
 
-                code
-                report
-                receipt
-                encrypt_program
-                encrypt
-                pgp_key
-                pgp_cc_key
-                cyber_mode
-                credit_card
-                profile
-                inline_profile
-                email
-                attach
-                counter
-                increment
-                continue
-                partial
-                supplant
-                track
-                errors_to
+        code
+        report
+        receipt
+        encrypt_program
+        encrypt
+        pgp_key
+        pgp_cc_key
+        cyber_mode
+        credit_card
+        profile
+        inline_profile
+        email
+        attach
+        counter
+        increment
+        continue
+        partial
+        supplant
+        track
+        errors_to
 
 Add this line in catalog.cfg:
 
@@ -402,17 +404,39 @@ Add a new field to transaction.txt called 'archived'.
 
 =back
 
-=head1 Upgrading from MiniVend 3 to MiniVend 4
+=head1 Upgrading from Minivend 3 to Minivend 4
 
 =over 4
 
 =item
 
-There were big changes from MiniVend 3 to MiniVend 4, some of which
+There were big changes from Minivend 3 to Minivend 4, some of which
 were incompatible.
 
 Many things were removed as redundant, deprecated, or just plain
 crufty:
+
+=back
+
+=head2 Nested [loop]s
+
+=over 4
+
+=item
+
+MV3 used a different scheme for creating nested loop lists:
+
+[loop with="-a"* arg="item item item" search="se=whatever"]
+
+allowed you to refer to the nested values with a [loop-code-a]
+construct. In Minivend 4, the form is:
+
+        [loop prefix=size list="Small Medium Large"]
+                [loop prefix=color list="Red White Blue"]
+                        [color-code]-[size-code]<BR>
+                [/loop]
+                <P>
+        [/loop]
 
 =back
 
@@ -491,7 +515,7 @@ help
 
 =item
 
-No replacement, use data functions or variables.
+No replacement. Use data functions or variables.
 
 =back
 
@@ -579,8 +603,8 @@ Compatibility routines
 
 Compatibility routines for many popular tags like [random], [rotate],
 etc. are provided in the appendix of this document. To use one, copy
-it to a file and put it in your usertag directory (assuming that is
-included by your your interchange.cfg).
+it to a file and put it in your usertag directory. (Tags in the
+usertag directory are read in by interchange.cfg by default).
 
 =back
 
@@ -687,17 +711,17 @@ find pages -type f | xargs grep -l '\[search.list'
 That will yield a set of files that need to be updated. You should
 surround all parts of the search area, i.e.:
 
-        [search-region]
+    [search-region]
 
-        [search-list]
-                your search iteration stuff, [item-code], etc.
-        [/search-list]
+    [search-list]
+        your search iteration stuff, [item-code], etc.
+    [/search-list]
 
-        [more-list]
-                [more]
-        [/more-list]
+    [more-list]
+        [more]
+    [/more-list]
 
-        [/search-region]
+    [/search-region]
 
 =back
 
@@ -726,22 +750,22 @@ was possible to update a SQL database willy-nilly.
 
 A quick fix like this will allow the update on a single page:
 
-        [set update_database]
-        [set mv_data_enable]1[/set]
-        [/set]
-        <INPUT TYPE=hidden NAME=mv_click VALUE=update_database>
+    [set update_database]
+    [set mv_data_enable]1[/set]
+    [/set]
+    <INPUT TYPE=hidden NAME=mv_click VALUE=update_database>
 
 It will ensure at least that the user loads one form from you for each
 update. For best security, gate with a userdb entry like this:
 
-        [set update_database]
-        [if type=data term="userdb::trusted::[data session username]"]
-                [set mv_data_enable]1[/set]
-        [else]
-                [set mv_data_enable]0[/set]
-        [/else]
-        [/if]
-        [/set]
+    [set update_database]
+    [if type=data term="userdb::trusted::[data session username]"]
+        [set mv_data_enable]1[/set]
+    [else]
+        [set mv_data_enable]0[/set]
+    [/else]
+    [/if]
+    [/set]
 
 =back
 
@@ -751,7 +775,7 @@ update. For best security, gate with a userdb entry like this:
 
 =item
 
-MiniVend 4 uses in-page error-flagging on the checkout page. Simplest
+Minivend 4 uses in-page error-flagging on the checkout page. Simplest
 way to convert is probably to use the checkout.html from the simple
 demo as a start, and move in any customization from the existing
 site's catalog.html (headers, footers, logos, etc.) A line-by-line
@@ -775,10 +799,10 @@ The least-compatible things in the tag area are [if-field] (needs to
 be [if-PREFIX-field], where prefix might be item|loop by default
 depending on the tag. Likewise:
 
-        [if-data table col]  --> [if-PREFIX-data table col]
-        [on-change mark]     --> [PREFIX-change mark]
-        [if-param param]     --> [if-PREFIX-param param]
-        [PREFIX-param N]     --> [PREFIX-pos N] (where N is a digit)
+    [if-data table col]  --> [if-PREFIX-data table col]
+    [on-change mark]     --> [PREFIX-change mark]
+    [if-param param]     --> [if-PREFIX-param param]
+    [PREFIX-param N]     --> [PREFIX-pos N] (where N is a digit)
 
 =back
 
@@ -795,12 +819,12 @@ Embedded Perl changes quite a bit. While there are the $Safe{values}
 and other variable settings, they are automatically shared (no
 arg="values") and move to:
 
-        $Safe{values}   -->  $Values
-        $Safe{cgi}      -->  $CGI
-        $Safe{carts}    -->  $Carts
-        $Safe{items}    -->  $Items
-        $Safe{config}   -->  $Config
-        $Safe{scratch}  -->  $Scratch
+    $Safe{values}   -->  $Values
+    $Safe{cgi}      -->  $CGI
+    $Safe{carts}    -->  $Carts
+    $Safe{items}    -->  $Items
+    $Safe{config}   -->  $Config
+    $Safe{scratch}  -->  $Scratch
 
 There are a number of other objects, see the docs.
 
@@ -819,13 +843,13 @@ issues discussed above.
 
 Accessing globalsubs from [perl] tags is done slightly differently.
 
-MiniVend 3 method:
+Minivend 3 method:
 
 [perl sub]
 myfunsub();
 [/perl]
 
-MiniVend 4/IC method:
+Minivend 4/IC method:
 
 [perl subs=1]
 myfunsub();
@@ -837,15 +861,15 @@ If you do this wrong, you'll get an error that looks like this:
 
 =back
 
-MiniVend 3 compatibility usertags and globalsubs
+Minivend 3 compatibility usertags and globalsubs
 
 =over 4
 
 =item
 
-These files were originally distributed with MiniVend 4 in the compat/
-directory. They replace MiniVend 3 functionality that was removed or
-greatly altered in MiniVend 4.
+These files were originally distributed with Minivend 4 in the compat/
+directory. They replace Minivend 3 functionality that was removed or
+greatly altered in Minivend 4.
 
 =back
 
@@ -871,7 +895,7 @@ sub {
 
     my %color = qw( mv_bgcolor BGCOLOR mv_textcolor TEXT
                     mv_linkcolor LINK mv_vlinkcolor VLINK
-                     mv_alinkcolor ALINK mv_background BACKGROUND );
+                    mv_alinkcolor ALINK mv_background BACKGROUND );
     if (defined $::Values->{mv_resetcolors}
             and $::Values->{mv_resetcolors}) {
         delete $::Values->{mv_customcolors};
@@ -911,41 +935,40 @@ buttonbar
 UserTag buttonbar PosNumber 1
 UserTag buttonbar Interpolate 1
 UserTag buttonbar Routine <<EOR
-
 sub get_files {
-        my($dir, @files) = @_;
-        my(@out);
-        my($file, $contents);
-        foreach $file (@files) {
-                config_error(
-                  "No leading ../.. allowed if NoAbsolute set. Contact administrator.\n")
-                if $file =~ m#^\.\./.*\.\.# and $Global::NoAbsolute;
-                push(@out,"\n") unless
-                        push(@out,readfile("$dir/$file.html"));
-        }
+    my($dir, @files) = @_;
+    my(@out);
+    my($file, $contents);
+    foreach $file (@files) {
+        config_error(
+          "No leading ../.. allowed if NoAbsolute set. Contact administrator.\n")
+        if $file =~ m#^\.\./.*\.\.# and $Global::NoAbsolute;
+        push(@out,"\n") unless
+            push(@out,readfile("$dir/$file.html"));
+    }
 
-        @out;
+    @out;
 }
 
 sub parse_buttonbar {
-        my ($var, $value) = @_;
-        return [] unless $value;
-        my @c;
-        my @vals = grep /\S/, split /\s+/, $value;
-        for(@vals) {
-                push @c, Vend::Util::readfile("pages/$_.html");
-        }
-        return \@c;
+    my ($var, $value) = @_;
+    return [] unless $value;
+    my @c;
+    my @vals = grep /\S/, split /\s+/, $value;
+    for(@vals) {
+        push @c, Vend::Util::readfile("pages/$_.html");
+    }
+    return \@c;
 }
 
 sub {
-        my($buttonbar) = @_;
+    my($buttonbar) = @_;
     if (defined $Vend::Cfg->{'ButtonBars'}->[$buttonbar]) {
-                return $Vend::Cfg->{'ButtonBars'}->[$buttonbar];
-        }
-        else {
-                return '';
-        }
+        return $Vend::Cfg->{'ButtonBars'}->[$buttonbar];
+    }
+    else {
+        return '';
+    }
 }
 EOR
 
@@ -968,11 +991,11 @@ form_mail.cfg
     SEND: {
         open(Vend::MAIL,"|$Vend::Cfg->{'SendMailProgram'} -t") or last SEND;
         print Vend::MAIL
-                        "To: $to\n",
-                        $reply,
-                        "Subject: $subject\n",
-                        "Errors-To: $Vend::Cfg->{MailOrderTo}\n\n",
-                        $body
+            "To: $to\n",
+            $reply,
+            "Subject: $subject\n",
+            "Errors-To: $Vend::Cfg->{MailOrderTo}\n\n",
+            $body
             or last SEND;
         close Vend::MAIL or last SEND;
         $ok = ($? == 0);
@@ -996,50 +1019,49 @@ help
  UserTag help PosNuUserTag help Order name
 UserTag help Routine <<EOR
 sub parse_help {
-        my ($var, $value) = @_;
-        my (@files);
-        my (@items);
-        my ($c, $chunk, $item, $help, $key);
-        unless (defined $value && $value) {
-                $c = {};
-                return $c;
-        }
-        $c = $C->{'Help'};
-        $var = lc $var;
-        $C->{'Source'}->{'Help'} = $value;
-        @files = get_files($C->{'PageDir'}, split /\s+/, $value);
-        foreach $chunk (@files) {
-                @items = split /\r?\n\r?\n/, $chunk;
-                foreach $item (@items) {
-                        ($key,$help) = split /\s*\n/, $item, 2;
-                        if(defined $c->{$key}) {
-                                $c->{$key} .= $help;
-                        }
-                        else {
-                                $c->{$key} = $help;
-                        }
-
-                }
-        }
+    my ($var, $value) = @_;
+    my (@files);
+    my (@items);
+    my ($c, $chunk, $item, $help, $key);
+    unless (defined $value && $value) {
+        $c = {};
         return $c;
+    }
+    $c = $C->{'Help'};
+    $var = lc $var;
+    $C->{'Source'}->{'Help'} = $value;
+    @files = get_files($C->{'PageDir'}, split /\s+/, $value);
+    foreach $chunk (@files) {
+        @items = split /\r?\n\r?\n/, $chunk;
+        foreach $item (@items) {
+            ($key,$help) = split /\s*\n/, $item, 2;
+            if(defined $c->{$key}) {
+                $c->{$key} .= $help;
+            }
+            else {
+                $c->{$key} = $help;
+            }
+
+        }
+    }
+    return $c;
 }
 
 sub {
-        my($help) = shift;
-        # Move this to control section?
-        if ($::Values->{mv_helpon}) {
-                delete $::Values->{mv_helpoff};
-                undef $::Values->{mv_helpon};
-        }
-        return '' if defined $::Values->{'mv_helpoff'};
+    my($help) = shift;
+    # Move this to control section?
+    if ($::Values->{mv_helpon}) {
+        delete $::Values->{mv_helpoff};
+        undef $::Values->{mv_helpon};
+    }
+    return '' if defined $::Values->{'mv_helpoff'};
     if (defined $Vend::Cfg->{'Help'}{$help}) {
-                return $Vend::Cfg->{'Help'}{$help};
-        }
-        else {
-                return '';
-        }
+        return $Vend::Cfg->{'Help'}{$help};
+    }
+    else {
+        return '';
+    }
 }
-
 EOR
 
 AddDirective Help help
@@ -1056,21 +1078,21 @@ sub parse_random {
     return '' unless (defined $value && $value);
     my $c = [];
     $var = lc $var;
-        my @files = grep /\S/, split /\s+/, $value;
-        local ($Vend::Cfg) = $C;
-        for (@files) { push @$c, Vend::Util::readin($_) }
-        return $c;
+    my @files = grep /\S/, split /\s+/, $value;
+    local ($Vend::Cfg) = $C;
+    for (@files) { push @$c, Vend::Util::readin($_) }
+    return $c;
 }
 
 package Vend::Interpolate;
 sub {
-        my $random = int rand(scalar(@{$Vend::Cfg->{'Random'}}));
+    my $random = int rand(scalar(@{$Vend::Cfg->{'Random'}}));
     if (defined $Vend::Cfg->{'Random'}->[$random]) {
-                return $Vend::Cfg->{'Random'}->[$random];
-        }
-        else {
-                return '';
-        }
+        return $Vend::Cfg->{'Random'}->[$random];
+    }
+    else {
+        return '';
+    }
 }
 EOR
 
@@ -1079,30 +1101,30 @@ UserTag rotate Order ceiling floor
 UserTag rotate Interpolate 1
 UserTag rotate Routine <<EOR
 sub {
-        return '' unless $Vend::Cfg->{Rotate};
-        my $ceiling = $_[0] || @{$Vend::Cfg->{'Rotate'}} || return '';
-        my $floor   = $_[1] || 1;
+    return '' unless $Vend::Cfg->{Rotate};
+    my $ceiling = $_[0] || @{$Vend::Cfg->{'Rotate'}} || return '';
+    my $floor   = $_[1] || 1;
 
-        $ceiling--;
-        $floor--;
+    $ceiling--;
+    $floor--;
 
-        my $marker = "rotate$floor$ceiling";
+    my $marker = "rotate$floor$ceiling";
 
-        if($ceiling < 0 or $floor < 0) {
-                $floor = 0;
-                $ceiling = scalar  @{$Vend::Cfg->{'Rotate'}} - 1;
-                logError "Bad ceiling or floor for rotate";
-        }
+    if($ceiling < 0 or $floor < 0) {
+        $floor = 0;
+        $ceiling = scalar  @{$Vend::Cfg->{'Rotate'}} - 1;
+        logError "Bad ceiling or floor for rotate";
+    }
 
     my $rotate;
-        $rotate = $Vend::Session->{$marker} || $floor;
+    $rotate = $Vend::Session->{$marker} || $floor;
 
-        if($rotate > $ceiling or $rotate < $floor ) {
-                $rotate = $floor;
-        }
+    if($rotate > $ceiling or $rotate < $floor ) {
+        $rotate = $floor;
+    }
 
-        $Vend::Session->{$marker} = $rotate + 1;
-        return $Vend::Cfg->{'Rotate'}->[$rotate];
+    $Vend::Session->{$marker} = $rotate + 1;
+    return $Vend::Cfg->{'Rotate'}->[$rotate];
 }
 EOR
 
@@ -1114,35 +1136,35 @@ ber 0
 AsciiBackend
 
  GlobalSubsub AsciiBackend {
-        package Vend::Order;
-        $Vend::Order::override_track_order = \&track_order;
-        sub track_order_backend {
-                my ($order_no,$order_report) = @_;
-                my ($c,$i);
-                my (@backend);
+    package Vend::Order;
+    $Vend::Order::override_track_order = \&track_order;
+    sub track_order_backend {
+        my ($order_no,$order_report) = @_;
+        my ($c,$i);
+        my (@backend);
 
-                @backend = split /\s*,\s*/, $Vend::Cfg->{BackendOrder};
+        @backend = split /\s*,\s*/, $Vend::Cfg->{BackendOrder};
 
-                if(@backend and $Vend::Cfg->{AsciiBackend}) {
-                        my(@ary);
-                        push @ary, $order_no;
-                        for(@backend) {
-                                push @ary, $::Values->{$_};
-                        }
-                        foreach $i (0 .. $#$Vend::Items) {
-                                push @ary, $Vend::Items->[$i]{'code'};
-                                push @ary, $Vend::Items->[$i]{'quantity'};
-                                if ($Vend::Cfg->{UseModifier}) {
-                                        foreach $j (@{$Vend::Cfg->{UseModifier}}) {
-                                                push @ary, $Vend::Items->[$i]->{$j}
-                                        }
-                                }
-                        }
-                        logData ($Vend::Cfg->{AsciiBackend}, @ary);
+        if(@backend and $Vend::Cfg->{AsciiBackend}) {
+            my(@ary);
+            push @ary, $order_no;
+            for(@backend) {
+                push @ary, $::Values->{$_};
+            }
+            foreach $i (0 .. $#$Vend::Items) {
+                push @ary, $Vend::Items->[$i]{'code'};
+                push @ary, $Vend::Items->[$i]{'quantity'};
+                if ($Vend::Cfg->{UseModifier}) {
+                    foreach $j (@{$Vend::Cfg->{UseModifier}}) {
+                        push @ary, $Vend::Items->[$i]->{$j}
+                    }
                 }
-                $Vend::Order::override_track_order->($order_no, $order_report);
+            }
+            logData ($Vend::Cfg->{AsciiBackend}, @ary);
         }
-        *track_order = \&Vend::Order::override_track_order;
+        $Vend::Order::override_track_order->($order_no, $order_report);
+    }
+    *track_order = \&Vend::Order::override_track_order;
 }
 EOS
 
@@ -1150,4 +1172,39 @@ AddDirective BackendOrder
 AddDirective AsciiBackend
 
 <<EOS
+
+=head1 History of Interchange
+
+=over 4
+
+=item
+
+Interchange is a descendent of Vend, an e-commerce solution originally
+developed by Andrew Wilcox in early 1995. Mike Heins took the first
+publicly-released version, Vend 0.2, and added searching and DBM
+catalog storage to create MiniVend. Mike released MiniVend 0.2m7 on
+December 28, 1995. Subsequent versions of MiniVend took parts from
+Vend 0.3, especially the vlink and Server.pm modules, which were
+adapted to run with MiniVend. In the four years that followed, Mike
+Heins expanded and enhanced MiniVend, creating a powerful and
+versatile e-commerce development platform. MiniVend grew to support
+thousands of businesses and their e-commerce sites.
+
+Separately, an experienced e-commerce development team founded Akopia.
+Their goal was to create a sophisticated open source e-commerce
+platform that was both feature-rich and easy to use. Their product,
+Tallyman, was intuitive, and had great content-management features,
+but lacked many of MiniVend's capabilities.
+
+Akopia acquired MiniVend in June 2000. Mike Heins and the Tallyman
+developers combined MiniVend with Tallyman's features to create
+Interchange. Interchange replaces both MiniVend and Tallyman. In order
+to preserve compatibility, the name "minivend" and prefixes like "mv_"
+and "MVC_" will still appear in source code and configuration files.
+
+In January 2001, Red Hat acquired Akopia and created its new
+E-Business Solutions Division. Interchange development is going
+forward and the user community continues to grow.
+
+=back
 
