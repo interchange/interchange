@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.13.6.16 2001-04-01 04:15:46 heins Exp $
+# $Id: UserDB.pm,v 1.13.6.17 2001-04-02 17:17:49 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.13.6.16 $, 10);
+$VERSION = substr(q$Revision: 1.13.6.17 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -1014,7 +1014,7 @@ sub login {
 			if $self->{LOCATION}{LAST} ne 'none';
 		$self->log('login') if $options{'log'};
 		
-		$self->get_values();
+		$self->get_values() unless $self->{OPTIONS}{no_get};
 	};
 
 	if($@) {
