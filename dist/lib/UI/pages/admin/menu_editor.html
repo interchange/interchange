@@ -13,6 +13,26 @@ Hit action for no-content
 [set help_name]layout.edit[/set]
 [set icon_name]icon_pages.gif[/set]
 [seti ui_body_extra][/seti]
+[tmp meta_header]
+        [include include/table_populator]
+        <SCRIPT LANGUAGE=JavaScript>
+	  function toggle_comb (toggle) {
+                var el_comb = document.getElementById('combfield');
+                var el_nocomb = document.getElementById('nocombfield');
+                if(el_comb == undefined || el_nocomb == undefined)
+                        return; 
+		if (toggle == true) {
+			el_comb.style.visibility = "Visible";			
+			el_nocomb.style.visibility = "Hidden";			
+		}
+		else {
+			el_comb.style.visibility = "Hidden";			
+			el_nocomb.style.visibility = "Visible";			
+		}
+		return;
+	  }
+        </SCRIPT>
+[/tmp]
 
 @_UI_STD_HEAD_@
 <!-- ----- BEGIN REAL STUFF ----- -->
@@ -46,6 +66,55 @@ __UI_META_TABLE__
 				inactive => 0,
 				msort => "'x'",
 				);
+
+	if ($CGI->{qmenu_products} && $CGI->{qmenu_use_comb_field}) {
+		# Build menu from a comb_category field ('Level 1:Level 2:Level 3...Level n')
+
+		$CGI->{qmenu_comb_field} ||= 'comb_category';
+		
+		my %opt = (
+			table => $CGI->{qmenu_products},
+			comb_field => $CGI->{qmenu_comb_field},
+			type => 'comb_category',
+		);
+
+		$CGI->{qmenu_text} = $Tag->menu_load(\%opt);
+		$CGI->{qmenu_name} = '';
+		$CGI->{qmenu_new} = 'Untitled';
+	}
+	elsif ($CGI->{qmenu_products}) {
+		# Build menu from prod_group and category fields
+
+		$CGI->{qmenu_toplevel_field} ||= 'prod_group';
+		$CGI->{qmenu_sublevel_field} ||= 'category';
+
+		my %opt = (
+			table => $CGI->{qmenu_products},
+			first_field => $CGI->{qmenu_toplevel_field},
+			second_field => $CGI->{qmenu_sublevel_field},
+			type => 'tree',
+		);
+
+		$CGI->{qmenu_text} = $Tag->menu_load(\%opt);
+		$CGI->{qmenu_name} = '';
+		$CGI->{qmenu_new} = 'Untitled';
+	}
+	elsif ($CGI->{qmenu_cat}) {
+		# Build menu from top&sub level tables
+
+		$CGI->{qmenu_toplevel} ||= 'area';
+		$CGI->{qmenu_sublevel} ||= 'cat';
+		my %opt = (
+			table => $CGI->{qmenu_toplevel},
+			cat_table => $CGI->{qmenu_sublevel},
+			type => 'cat_menu',
+		);
+
+		$CGI->{qmenu_text} = $Tag->menu_load(\%opt);
+		$CGI->{qmenu_name} = '';
+		$CGI->{qmenu_new} = 'Untitled';
+
+	}
 
 	if($CGI->{qmenu_text}) {
 		my $menufile;
@@ -169,251 +238,6 @@ __UI_META_TABLE__
 			$Tag->error({	name => 'qmenu_name/qmenu_new',
 							set => "No menu name to write.",
 						});
-		}
-	}
-	elsif ($CGI->{qmenu_products}) {
-		PRODBUILD: {
-			my $tab = $CGI->{qmenu_products};
-			my $db = $Db{$tab}
-				or do {
-					$Tag->error({ set => errmsg(
-										"Failed to open %s table %s.",
-										'products',
-										$tab,
-										),
-									});
-					last PRODBUILD;
-				};
-#Debug("LARGE=" . $db->config('LARGE'));
-			if(! $CGI->{qmenu_even_large} and $db->config('LARGE')) {
-				$Tag->error({ set => errmsg(
-										"%s database %s for tree write: %s",
-										'check',
-										$tab,
-										'too large, must override',
-									),
-								});
-				last PRODBUILD;
-			}
-			my @somefields = qw/mgroup page name description/;
-			my $q = qq{
-						SELECT sku,prod_group,category,description
-						FROM $tab
-						ORDER BY prod_group,category,description
-						};
-			my $ary = $db->query($q)
-							or do {
-								$Tag->error({
-										set => errmsg(
-											"No results from %s table %s.",
-											'products',
-											$tab,
-										),
-									});
-					last PRODBUILD;
-				};
-			my $prev_area = '';
-			my $prev_cat = '';
-			my @out = join "\t", @menufields;
-			my @rows;
-			my $base_search = "scan/co=yes/fi=$tab";
-				
-
-			for(@$ary) {
-				my($sku, $area, $cat, $desc) = @$_;
-				for( \$sku, \$area, \$cat, \$desc) {
-					$$_ =~ s/\s+$//;
-				}
-				if($area ne $prev_area) {
-					$prev_area = $area;
-					$prev_cat = '';
-					my $url = join '/',
-								$base_search,
-								"sf=prod_group",
-								"se=$area",
-								"op=eq",
-								"tf=category,description",
-								;
-					push @rows, {
-							%menuinit,
-							msort => 0,
-							page	=> $url,
-							inactive => 0,
-							name => $area,
-							};
-				}
-				if($cat ne $prev_cat) {
-					$prev_cat = $cat;
-					my $url = join '/',
-								$base_search,
-								"sf=prod_group",
-								"se=$area",
-								"op=eq",
-								"sf=category",
-								"se=$cat",
-								"op=eq",
-								"tf=description",
-								;
-
-					push @rows, {
-							%menuinit,
-							msort => 1,
-							page	=> $url,
-							inactive => 0,
-							name => $cat,
-							};
-				}
-				push @rows, {
-					%menuinit,
-					msort => 2,
-					name => $desc,
-					inactive => 0,
-					page => $sku,
-				};
-			}
-
-			for(@rows) {
-#Debug("pushing out --> " . $_->{name});
-				push @out, join "\t", @{$_}{@menufields};
-			}
-			$Scratch->{qmenu_data} = join "\n", @out, '';
-			$CGI->{qmenu_name} = '';
-			$CGI->{qmenu_new} ||= 'Untitled';
-#Debug("qmenu_data=$Scratch->{qmenu_data}");
-		}
-	}
-	elsif ($CGI->{qmenu_cat}) {
-		AREABUILD: {
-			my $tab = $CGI->{qmenu_area} || 'area';
-			my $ctab = $CGI->{qmenu_cat} || 'cat';
-			my $db = $Db{$tab}
-				or do {
-					$Tag->error({ set => errmsg(
-										"Failed to open %s table %s.",
-										'area',
-										$tab,
-										),
-									});
-					last AREABUILD;
-				};
-#Debug("LARGE=" . $db->config('LARGE'));
-			my $q = qq{ SELECT * FROM $tab ORDER BY sort };
-			my $ary = $db->query({ sql => $q, hashref => 1 } )
-							or do {
-								$Tag->error({
-										set => errmsg(
-											"No results from %s table %s.",
-											'area',
-											$tab,
-										),
-									});
-					last AREABUILD;
-				};
-
-sub old_link {
-  my ($row, $nrow) = @_;
-#Debug("row link_type='$row->{link_type}'");
-  if($row->{link_type} eq 'external') {
-	  $first = $row->{url};
-	  $first =~ s/\s+$//;
-	  $first =~ s/^\s+//;
-	  $nrow->{page} = $first;
-  }
-  elsif	($row->{link_type} eq 'internal') {
-	  my ($page, $form) = split /\s+/, $row->{url}, 2;
-	  $nrow->{page} = $page;
-	  $nrow->{form} = $form;
-  }
-  elsif	($row->{link_type} eq 'simple') {
-	  my (@items) = split /\s*[\n,]\s*/, $row->{selector};
-	  my @out;
-	  my $fi = $row->{tab};
-	  my $sp = $row->{page};
-	  my $arg = '';
-	  $nrow->{page} = 'search';
-	  push @out, "fi=$fi" if $fi;
-	  push @out, "sp=$sp" if $sp;
-	  push @out, "st=db";
-
-	  if(! @items) {
-		  push @out, "ra=yes";
-		  $nrow->{form} = join "\n", @out;
-	  }
-	  else {
-		push @out, "co=yes";
-		for(@items) {
-			my ($col, $string) = split /\s*=\s*/;
-			push @out, "sf=$col";
-			push @out, "se=$string";
-		}
-		push @out, $row->{search}
-			if $row->{search} =~ /^\s*\w\w=/;
-
-		push @out, qq{va=banner_image=$row->{banner_image}};
-		push @out, qq{va=banner_text=$row->{banner_text}};
-		$arg = join "\n", @out;
-		$nrow->{form} = $arg;
-	  }
-  }
-  elsif	($row->{link_type} eq 'complex') {
-	  $row->{search} =~ s/[\r\n+]/\n/g;
-	  $row->{search} .= qq{\nva=banner_text=$row->{banner_text}};
-	  $row->{search} .= qq{\nva=banner_image=$row->{banner_image}};
-	  $nrow->{form} = $row->{search};
-  }
-  else {
-	  $url = "";
-  }
-  return $nrow;
-}
-
-			my @rows;
-			my $nc = '0000';
-			my $cdb = $Db{$ctab};
-			foreach my $row (@$ary) {
-				my $code = $row->{code};
-				my $nrow = {
-					code => $nc++,
-					name => $row->{name},
-					img_icon => $row->{image},
-					msort => 0,
-					mgroup => $row->{set_selector},
-				};
-				old_link($row, $nrow);
-				my $sq = qq{
-						SELECT * FROM $ctab
-						WHERE sel = '$code'
-						OR    sel like '$code %'
-						OR    sel like '% $code'
-						OR    sel like '% $code %'
-						ORDER BY sort
-						};
-#Debug("subquery=$sq");
-				push @rows, $nrow;
-				my $sary = $cdb->query({ sql => $sq, hashref => 1 });
-#Debug("subquery returned: " . uneval($sary));
-				for my $crow (@$sary) {
-				  my $nsub = {
-					  code => $nc++,
-					  name => $crow->{name},
-					  img_icon => $crow->{image},
-					  msort => 1,
-					  mgroup => $crow->{sel},
-				  };
-				  old_link($crow, $nsub);
-				  push @rows, $nsub;
-				}
-			}
-			for(@rows) {
-#Debug("pushing out --> " . $_->{name});
-				push @out, join "\t", @{$_}{@menufields};
-#Debug("pushing out --> row=" . uneval($_));
-			}
-			push @out, join
-			$Scratch->{qmenu_data} = join "\n", @out, '';
-			$CGI->{qmenu_name} = '';
-			$CGI->{qmenu_new} ||= 'Untitled';
-#Debug("qmenu_data=$Scratch->{qmenu_data}");
 		}
 	}
 
@@ -572,17 +396,107 @@ sub old_link {
 	[error all=1 text="<ul class=cerror><li>%s</ul>" joiner="<li>"]
 	</td>
 	<td width="30%">
-		<form action="[process href=@@MV_PAGE@@]">
-		<input type=hidden name=mv_session_id value="[data session id]">
-		<input type=hidden name=mv_action value="back">
-		Build menu tree from database table:<br>
-		<select name=qmenu_products>
-		[loop list="__ProductFiles_0__ [list-databases]" option=qmenu_products cgi=1]
-		<option> [loop-code][/loop]
-		</select> <input type=submit value=Go>
-		<br><br>
-		<input type=checkbox name="qmenu_even_large" value=1> Override, build even if large
-		</form>
+
+Build menu tree from database table(s):<br>
+[tabbed-display panel-width=300 panel-height=100
+		panel_style="
+			font-family: sans-serif;
+			font-size: 10px;
+			border: 2px;
+			border-color:#999999;
+			border-style:outset;" 
+
+				tab-width=150 
+				tab-height=20
+				panel_id=mvspan2
+				tab_style="
+    font-size:10px;
+    text-align:center;
+    font-family: sans-serif;
+    line-height:150%;
+    border:2px;
+    border-color:#999999;
+    border-style:outset;
+    border-bottom-style:none;"]
+[tabbed-panel Comb_category field]
+                <form action="[process href=@@MV_PAGE@@]" style="margin-bottom:0px;">
+                <input type=hidden name=mv_session_id value="[data session id]">
+                <input type=hidden name=mv_action value="back">
+
+[if !value qmenu_products]
+        [value name=qmenu_products set=products hide=1]
+        [value name=qmenu_comb_field set=comb_category hide=1]
+        [value name=qmenu_toplevel_field set=prod_group hide=1]
+        [value name=qmenu_sublevel_field set=category hide=1]
+[/if]
+		<select name="qmenu_products"
+        		onChange="
+                		populateTable(
+            				this.form.qmenu_products.options,
+            				this.form.qmenu_comb_field.options,
+            				this.form.qmenu_products.options[this.form.qmenu_products.selectedIndex].value
+            				);
+                		populateTable(
+            				this.form.qmenu_products.options,
+            				this.form.qmenu_toplevel_field.options,
+            				this.form.qmenu_products.options[this.form.qmenu_products.selectedIndex].value
+            				);
+                		populateTable(
+            				this.form.qmenu_products.options,
+            				this.form.qmenu_sublevel_field.options,
+            				this.form.qmenu_products.options[this.form.qmenu_products.selectedIndex].value
+            				);
+        			"
+		size=1 style="width:130px;">
+			[loop list="[list-databases]" option=qmenu_products]
+			<OPTION VALUE="[loop-code]">[loop-code]</OPTION>
+			[/loop]
+		</select> <input type=submit value=Go><br>
+<div id=combfield style="visibility:Visible;">
+		<select name="qmenu_comb_field" style="width:130px;">
+			<option value=""> -- none --
+			[loop list="[db-columns table='[value qmenu_products]']" option=qmenu_comb_field]
+			<option>[loop-code]
+			[/loop]
+		</select> Comb_Field containing category info (Default: comb_category)
+</div>
+<div id=nocombfield style="visibility:Hidden;">
+		<select name="qmenu_toplevel_field" style="width:130px;">
+			<option value=""> -- none --
+			[loop list="[db-columns table='[value qmenu_products]']" option=qmenu_toplevel_field]
+			<option>[loop-code]
+			[/loop]
+		</select> Top Level Field<br>
+		<select name="qmenu_sublevel_field" style="width:130px;">
+			<option value=""> -- none --
+			[loop list="[db-columns table='[value qmenu_products]']" option=qmenu_sublevel_field]
+			<option>[loop-code]
+			[/loop]
+		</select> Sub Level Field
+</div>
+                <input type=checkbox name="qmenu_use_comb_field" value=1 CHECKED onClick="toggle_comb(this.form.qmenu_use_comb_field.checked);"> Use comb_field&nbsp;&nbsp;
+                <input type=checkbox name="qmenu_even_large" value=1> Override, build even if large &nbsp;
+                </form>
+[/tabbed-panel]
+[tabbed-panel Top&Sub Level Tables]
+                <form action="[process href=@@MV_PAGE@@]" style="margin-bottom:0px;">
+                <input type=hidden name=mv_session_id value="[data session id]">
+                <input type=hidden name=mv_action value="back">
+                <input type=hidden name=qmenu_cat value=1>
+
+                <select name=qmenu_toplevel>
+                [loop list="area [list-databases]" option=qmenu_toplevel cgi=1]
+                <option> [loop-code][/loop]
+                </select> Top Level table (Default: area)<br>
+                <select name=qmenu_sublevel>
+                [loop list="cat [list-databases]" option=qmenu_sublevel cgi=1]
+                <option> [loop-code][/loop]
+                </select> Sub Level table (Default: cat)<br>
+                <input type=checkbox name="qmenu_even_large" value=1> Override, build even if large &nbsp;
+                <input type=submit value=Go>
+                </form>
+[/tabbed-panel]
+[/tabbed-display]
 	</td>
 </tr>
 </table>
@@ -1748,10 +1662,10 @@ Save to new menu <input name=qmenu_new type=text size=20 value="[cgi qmenu_new]"
 				onClick="set_mode('toggle')"
 				name=treebutton
 				value="Set tree mode">
+		<div id=treebox>
 		<input type=checkbox
 				name=show_info
 				value=1> Show item info in flyout
-		<div id=treebox>
 		<input type=checkbox name=qmenu_tree value=1> Tree mode
 		<input type=checkbox name=qmenu_write_tree value=1> Write tree to DB
 		<input type=checkbox name=showlevel value=1 onClick="toggleShowlevel()" CHECKED=1> Show numerical level
@@ -2028,3 +1942,4 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 </form>
 <!-- ----- END REAL STUFF ----- -->
 @_UI_STD_FOOTER_@
+
