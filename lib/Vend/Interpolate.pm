@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.9.2.14 2002-03-01 20:10:53 racke Exp $
+# $Id: Interpolate.pm,v 2.9.2.15 2002-03-18 20:18:59 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.9.2.14 $, 10);
+$VERSION = substr(q$Revision: 2.9.2.15 $, 10);
 
 @EXPORT = qw (
 
@@ -1491,11 +1491,11 @@ sub tag_if {
 		$out = $body;
 	}
 	elsif ($elsif) {
-		$else = '[else]' . $else . '[/else]' if $else;
+		$else = '[else]' . $else . '[/else]' if length $else;
 		$elsif =~ s#(.*?)$QR{'/elsif'}(.*)#$1${2}[/elsif]#s;
 		$out = '[if ' . $elsif . $else . '[/if]';
 	}
-	elsif ($else) {
+	elsif (length $else) {
 		$out = $else;
 	}
 	return $out;
@@ -3717,11 +3717,11 @@ sub tag_self_contained_if {
 		$out = $body;
 	}
 	elsif ($elsif) {
-		$else = '[else]' . $else . '[/else]' if $else;
+		$else = '[else]' . $else . '[/else]' if length $else;
 		$elsif =~ s#(.*?)$QR{'/elsif'}(.*)#$1${2}[/elsif]#s;
 		$out = '[if ' . $elsif . $else . '[/if]';
 	}
-	elsif ($else) {
+	elsif (length $else) {
 		$out = $else;
 	}
 	else {
