@@ -132,11 +132,13 @@ mv_nextpage=@@MV_PAGE@@
     <INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 
 [if type=explicit compare="[error all=1 show_var=1 keep=1]"]
-    <P>
-    <b>There were errors in your last submission.</b>
-    <br>
-    They are shown in <FONT class="menubar">this color</FONT> below.
-    <P>
+    <P><b>
+	There were errors in your last submission:<br>
+	[error all=1 keep=1 show_error=1 joiner="<br>"]
+	</b></p>
+	<p>
+    The field names you need to correct are shown in <FONT class="menubar">this color</FONT> below.
+    </p>
 [/if]
 
     <INPUT TYPE=hidden NAME=mv_doit VALUE=refresh>
@@ -151,9 +153,11 @@ mv_nextpage=@@MV_PAGE@@
     <INPUT TYPE=hidden NAME=mv_order_route   VALUE="[either]__ORDER_ROUTES__[or]log main copy_user[/either]">
     <INPUT TYPE=HIDDEN NAME=mv_check    VALUE="Save_database">
 
+[if session logged_in]
 [set Save_database]
 [userdb save]
 [/set]
+[/if]
 	
     Please verify the information below and click the "Place
     Order" button to process your order.
@@ -412,7 +416,7 @@ tf=name
 			<td>
 			  <INPUT TYPE=text NAME=phone_day VALUE="[value phone_day]" size="12" maxlength="20">
 			  </td>
-			<td align="right" class=cdata>Evening Phone
+			<td align="right" class=cdata>[error name=phone_night std_label="Evening Phone"]
 			</td>
 			<td align="left">
 			  <INPUT TYPE=text NAME=phone_night VALUE="[value phone_night]" size="12" maxlength="20">
