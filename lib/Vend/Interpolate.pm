@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.20 2000-09-23 17:29:30 heins Exp $
+# $Id: Interpolate.pm,v 1.21 2000-09-24 20:07:41 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.20 $, 10);
+$VERSION = substr(q$Revision: 1.21 $, 10);
 
 @EXPORT = qw (
 
@@ -1262,12 +1262,23 @@ sub build_accessory_select {
 
 	my $select;
 	my $run = qq|<SELECT NAME="$name"|;
-
+	my ($multi, $re_b, $re_e, $regex);
+	
 	if($type =~ /multiple/i) {
 		$run .= " $type ";
+		$multi = 1;
+		$re_b = '(?:[\0,\s]|^)';
+		$re_e = '(?:[\0,\s]|$)';
 	}
 	elsif ($type  =~ /^multi/i ) {
-			$run .= ' MULTIPLE';
+		$run .= ' MULTIPLE';
+		$multi = 1;
+		$re_b = '(?:\0|^)';
+		$re_e = '(?:\0|$)';
+	}
+	else {
+		$re_b = '(?:\0|^)';
+		$re_e = '(?:\0|$)';
 	}
 
 	$run .= '>';
@@ -1285,8 +1296,8 @@ sub build_accessory_select {
 			$run .= qq| VALUE="$value"|;
 		}
 		if ($default) {
-			my $regex = quotemeta $value;
-			$default =~ /(?:\0|^)$regex(?:\0|$)/ and $select = 1;
+			$regex	= qr/$re_b\Q$value\E$re_e/;
+			$default =~ $regex and $select = 1;
 		}
 		$run .= ' SELECTED' if $select;
 		$run .= '>';
