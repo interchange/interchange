@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.12 2001-10-19 00:32:37 mheins Exp $
+# $Id: Config.pm,v 2.13 2001-10-30 06:10:16 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.12 $, 10);
+$VERSION = substr(q$Revision: 2.13 $, 10);
 
 my %CDname;
 
@@ -1056,7 +1056,7 @@ sub global_config {
 	$Global::Structure = {} unless $Global::Structure;
 
 	# Default to old #ifdef, #endif, #include syntax for backward compatibility
-	$Global::ConfigParseComments = 1 unless $Global::ConfigParseComments;
+	$Global::ConfigParseComments = 1;
 
 	# Prevent parsers from thinking it is a catalog
 	undef $C;
@@ -2063,7 +2063,10 @@ sub parse_wildcard {
 
 	$value =~ s/\./\\./g;
 	$value =~ s/\*/.*/g;
-	$value =~ s/\*/.*/g;
+	$value =~ s/\?/./g;
+	$value =~
+		s[({(?:.+?,)+.+?})]
+		 [ local $_ = $1; tr/{,}/(|)/; $_ ]eg;
 	$value =~ s/\s+/|/g;
 	eval {  
 		my $never = 'NeVAirBE';
