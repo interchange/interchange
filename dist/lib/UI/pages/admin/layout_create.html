@@ -6,10 +6,10 @@
 <tr>
 <td bgcolor="__UI_C_INTBLOCK__">
 
-<form>
+<form name="createnew" action="layout">
 New category name:
 <input size=20 name="newcategory">
-<input type="submit" value="Create!">
+<input type="submit" value="Create!" onclick="document.createnew.submit(); window.opener.location.reload(); window.close()">
 </form>
 
 </td>
