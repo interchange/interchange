@@ -1,6 +1,6 @@
 # Vend::Parser - Interchange parser class
 #
-# $Id: Parser.pm,v 2.2 2002-02-07 21:33:21 mheins Exp $
+# $Id: Parser.pm,v 2.3 2002-02-08 05:22:40 mheins Exp $
 #
 # Copyright (C) 1997-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -66,7 +66,7 @@ use strict;
 
 use HTML::Entities ();
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 
 
 sub new
@@ -244,9 +244,9 @@ sub parse
 				# At the end there should be a closing "\] or >"
 				if ($$buf =~ s|^\]|| ) {
 					$self->start($tag, \%attr, \@attrseq, "$eaten]");
-				} elsif ($$buf =~ s|^/\s*]||) {
+				} elsif ($$buf =~ s|^/\s*\]||) {
 					## Empty container tag
-					$self->start($tag, {}, [], $eaten, 1);
+					$self->start($tag, \%attr, \@attrseq, "$eaten]", 1);
 				} elsif ($$buf =~ s|^([^\]\n]+\])||) {
 					$eaten .= $1;
 					$self->start($tag, {}, [], $eaten);
