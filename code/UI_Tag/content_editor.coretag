@@ -1,0 +1,10 @@
+UserTag content-editor Order item
+UserTag content-editor addAttr
+UserTag content-editor hasEndTag
+UserTag content-editor noReparse 1
+UserTag content-editor Routine <<EOR
+use UI::ComponentEditor;
+sub {
+	return UI::ComponentEditor::editor(@_);
+}
+EOR
