@@ -1,0 +1,74 @@
+__NAME__ db_maintenance
+[if cgi deleterecords]
+	[if-mm !tables =d]
+		[seti ui_error]Not allowed to delete from table [cgi mv_data_table].[/seti]
+		[bounce page="__UI_BASE__/error"]
+	[else]
+	[flag type=write tables="[cgi mv_data_table] [cgi ui_delete_tables]"]
+	[perl tables="[cgi mv_data_table] [cgi ui_delete_tables]"]
+		my $idp;
+		return unless delete $CGI->{deleterecords};
+		for(qw/ui_delete_id item_id/) {
+			next if ! $CGI->{$_};
+			$idp = $_;
+			last;
+		}
+
+Log("using idp=$idp, value=$CGI->{$idp}");
+		$return unless $idp;
+
+		delete $Scratch->{ui_location};
+		$Config->{NoSearch} = '';
+		
+		my $out = '';
+		my @deltables = split /[\s0,]/, $CGI->{ui_delete_tables};
+		unshift @deltables, $CGI->{mv_data_table};
+		for(@{$CGI_array->{$idp}}) {
+			my $key = $_;
+			my $db;
+			for(@deltables) {
+				my ($t, $col) = split /:/, $_;
+				next unless $t;
+				if ( $Tag->if_mm('!tables', "$t=d") ) {
+					push @errors, "Not authorized to delete from table $t";
+					next;
+				}
+				unless ($db = $Db{$t}) {
+					push @errors, "Table $t not available.";
+					next;
+				}
+				if($col) {
+					next unless length ($key);
+					$key = $db->quote($key, $col);
+					my $num = $db->query("delete from $t where $col = $key");
+					if($num > 0) {
+						$out .= "deleted $num records from $t where $col = $key</BR>";
+					}
+					else {
+						$out .= "No records in $t where $col = $key</BR>";
+					}
+				}
+				else {
+					next unless $db->record_exists($key);
+					$db->delete_record($key)
+						or do {
+							push @errors, $@;
+							next;
+						};
+					$out .= "deleted $key from $t<br>";
+				}
+			}
+		}
+
+		if(@errors) {
+			my $plural = @errors > 1 ? 's' : '';
+			$out .= "<FONT CLASS=error>Error$plural:<UL><LI>" .
+					join ("<LI>", @errors)                    .
+					"</UL></FONT><BR>";
+		}
+		$Scratch->{ui_message} = $out;
+		return;
+	[/perl]
+	[/else]
+	[/if-mm]
+[/if]
