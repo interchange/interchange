@@ -1,8 +1,8 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.23 2002-06-17 22:24:07 jon Exp $
+# $Id: Order.pm,v 2.24 2002-06-25 03:18:09 mheins Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.23 $, 10);
+$VERSION = substr(q$Revision: 2.24 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -58,6 +58,7 @@ use strict;
 use autouse 'Vend::Error' => qw/do_lockout/;
 
 my @Errors = ();
+my $Update = 0;
 my $Fatal = 0;
 my $And;
 my $Final = 0;
@@ -74,6 +75,7 @@ my %Parse = (
 	'&charge'       =>	\&_charge,
 	'&credit_card'  =>	\&_credit_card,
 	'&return'       =>	\&_return,
+	'&update'      	=>	\&_update,
 	'&fatal'       	=>	\&_fatal,
 	'&and'       	=>	\&_and_check,
 	'&or'       	=>	\&_or_check,
@@ -210,6 +212,11 @@ my %Parse = (
 							},
 );
 
+
+sub _update {
+	$Update = is_yes($_[1]);
+	return 1;
+}
 
 sub _fatal {
 	$Fatal = ( defined($_[1]) && ($_[1] =~ /^[yYtT1]/) ) ? 1 : 0;
@@ -820,6 +827,7 @@ sub do_check {
 		my $ref = \%CGI::values;
 		my $vref = shift || $::Values;
 
+		my $conditional_update;
 		my $parameter = $_;
 		my($var, $val, $m, $message);
 		if (/^&/) {
@@ -828,6 +836,7 @@ sub do_check {
 		elsif ($parameter =~ /(\w+)[\s=]+(.*)/) {
 			my $k = $1;
 			my $v = $2;
+			$conditional_update = $Update;
 			$m = $v =~ s/\s+(.*)// ? $1 : undef;
 			($var,$val) =
 				('&format',
@@ -852,6 +861,9 @@ sub do_check {
 			return undef;
 		}
 #::logDebug("&Vend::Order::do_check returning val=$val, var=$var, message=$message");
+		if($conditional_update and $val) {
+			::update_values($var);
+		}
 		return ($val, $var, $message);
 }
 
