@@ -1,4 +1,4 @@
-Interchange V4.5.6
+Interchange V4.5.6 (BETA)
 
 Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 
@@ -134,6 +134,12 @@ and run:
 
 Follow the prompts and after restarting the Interchange server you
 should be able to access the demo catalog.
+
+Please note that some functionality (notably the reporting features)
+may not be available if you are not using an SQL database such as
+MySQL or PostgreSQL.
+
+Visit http://demo.akopia.com/ to see a live demo on our servers.
 
 -------------------------------------------------------------------
 
