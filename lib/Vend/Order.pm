@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.18 2002-04-25 17:56:23 jon Exp $
+# $Id: Order.pm,v 2.19 2002-05-14 11:28:19 kwalsh Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.18 $, 10);
+$VERSION = substr(q$Revision: 2.19 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -695,7 +695,7 @@ sub onfly {
 	my @parms;
 	my @fields;
 	$joiner = quotemeta $joiner;
-	@parms = split /$joiner/, $item_text;
+	@parms = split /$joiner|\0/, $item_text;
 	my ($k, $v);
 	my $item = {};
 	if(defined $split_fields) {
