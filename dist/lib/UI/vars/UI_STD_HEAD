@@ -5,6 +5,8 @@ Variable UI_STD_INIT <<EOV
 
 	# replace ImageDir variables with UI equivalents to take advantage
 	# of Interchange's automatic image path rewriting
+	$Config->{ImageDirOriginal} = $Config->{ImageDir};
+	$Config->{ImageDirSecureOriginal} = $Config->{ImageDirSecure};
 	$Config->{ImageDir} = $Variable->{IMAGE_DIR} =
 		$Tag->image( { ui => 1, secure => 0, dir_only => 1 } );
 	$Config->{ImageDirSecure} =
