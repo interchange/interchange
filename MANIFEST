@@ -5,7 +5,7 @@ Makefile.PL
 README
 README.cvs
 README.debian
-README.rpm
+README.rpm-dist
 SPECS/interchange.spec
 UPGRADE
 WHATSNEW
