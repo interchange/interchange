@@ -5,6 +5,267 @@
 ------------------------------------------------------------------------------
 
 
+Interchange 4.7.6 released 2001-07-18.
+
+Core
+----
+* Instituted VAT and extended taxing, including UI support.
+
+  If the SalesTax directive is set to "multi", the type of tax is read from:
+
+  [data table=country col=tax key="[value country]"].
+
+  NOTE: Most everything is configurable for variable name and
+        field name via Variable MV_*, but defaults are shown below.
+
+  1. If no string is found, tax returns 0.
+
+  2. If string "simple:(\w+)" is found, uses fly_tax() as with
+     recent standard demos.
+
+  3. If string "state" is found, does a re-lookoup with
+
+        select tax from state where country = country and state = state
+
+     and value is applied below.
+
+  4. If just digits are found, rate applied directly -- i.e. "0.05"
+
+  5. If N.NN% is found, applied as percentage.
+
+  6. If category = N.NN%, default = N.NN% is found, the tax_category
+     field in the products database is used to determine tax basis.
+     If no tax_category, "default" rate is used.
+
+  This product data
+
+    sku      price     tax_category
+    os28003  10.00     tools
+    os28004  20.00     food
+
+  with this country and state data:
+
+    code     name     tax
+    US       U.S.A.   state
+    JP       Japan    tools=10%, default=15%
+
+    code   country   state   name      tax
+    0001   US        IL      Illinois  6.5%
+    0002   US        OH      Ohio      default = 5.5%, food = 1%
+    0003   US        AZ      Arizona
+
+  Will yield tax for one each of os28003 and os28004 of:
+
+    Japan   $4.00
+    US/IL   $1.95
+    US/OH   $0.75
+    US/AZ   $0.00
+
+* Add PRELOAD_EMPTY_ONLY option for preloading files once at the beginning
+  of time, which is what we really want for icmenu.txt and ichelp.txt.
+
+* tlink.c: Implement patch from Tamas to make tlink.c compile with no
+  complaint on all compilers. Resolves bugzilla #22.
+
+* Add INDEX capability for SQL databases -- uses CREATE INDEX template.
+
+* Change INDEX Database parameter to array type, adjusting routines
+  in Vend::Table::Common to handle for ASCII indexing.
+
+* Add report=1 option to [item-options ...] tag. This returns a comma-
+  separated list of options, i.e.:
+
+	blade: Steel, knob: Ebony
+
+  Separator and joiner are ": " and ", " by default, but can be changed
+  with [item-options report=1 joiner=";" separator="="] or somesuch.
+
+* Add pragma safe_data, with same function as safe_data option available on
+  some tags.
+
+* Parse [pragma] tags on flypages before interpolating fly-list.
+
+* Change fly-page and fly-list so variables don't get parsed twice, but
+  still get parsed before flypage substitutions. Add opt variable to call
+  for control; could be used in future for other purposes.
+
+* Fix [fly-list] tag so that the options work; previously they never
+  would have.
+
+* Add pragma dynamic_variables_file_only to avoid opening databases
+  when GDBM -- if needed.
+
+* Order single-widget matrix options by o_sort, as suggested by Ton V.
+
+* Fix new defined check type to actually work -- checks to see if
+  $Values->{$var} is defined.
+
+* Set default lock type to 'fcntl' for HP/UX, possibly resolving bug #267.
+
+* Make UPDATE and INSERT work properly with DBM.
+
+* Make mv_successpage set in a form work right when a profile check succeeds.
+
+* Added first general-purpose functionality to [image] tag:
+
+  Given sku os29000 in the Foundation demo, and assuming the products
+  database specifies os29000.gif in the image field for os29000,
+  the tag [image os29000] returns HTML code something like this:
+
+  	<img src="/foundation/images/os29000.gif" width=120 height=150
+  	alt="3' Step Ladder" title="3' Step Ladder">
+
+  If file os29000.gif hadn't existed, or the products database image
+  field were empty, the tag would check for files called "(sku).jpg",
+  "(sku).gif", etc. and use the first one it found.
+
+  Full documentation is in POD format in the usertag itself.
+
+* Require catalog IDs be of pattern ^[-\w]+$, which makes sure that
+  expireall and other utilities will find all catalogs. This was
+  documented but not enforced by makecat. Resolves Bugzilla #209.
+
+Admin UI
+--------
+* Add da_DK (Danish) locale by Kim Lauritz Christensen <kim@hambrosalle.dk>.
+
+* Add nl_NL (Dutch) locale by Ton Verhagen.
+
+* Allow localization of month names, and other localization tune-ups.
+
+* Allow Variable in imagehelper directory and path
+
+* Fix Knar editor entry so returns to flex_select?mv_data_table=variable
+  with appropriate page title.
+
+* The affiliates submenu ("create new affiliates") in the UI, was set to
+  exclude_on:affiliates, instead of depend_on:affiliates.
+
+* Error message from flex_select added.
+
+* Fix double-escaping of left brackets in flex_editor.
+
+* Fix save profile so that it uses $Values (and automatically picks
+  up new additions).
+
+* Fix entry order problem found by Bob Jordan.
+
+* Hide more customer delete buttons if user doesn't have permission, and
+  prevent surreptitious passing in of delete command.
+
+* Fixed problem where we leave secure mode at various places.
+
+* Changed the font sizes on the Admin UI admin menu so that the different
+  section names matched in size to their description.
+
+* UI_STD_HEAD and UI_STD_INIT cleaned up.
+
+* Display country in order view if not the same as SHIP_DEFAULT_COUNTRY.
+  Resolves Bugzilla #212.
+
+* ByAffiliate.html report: Add the bd (mv_base_directory) attribute to the
+  search for non-absolute TrackFile values.
+
+* Add warning if Spreadsheet::*Excel modules not installed, as that will
+  cause a fatal error attempting to import XLS spreadsheets. Resoves
+  Bugzilla #239 -- thanks to Tal Hart for reporting.
+
+* Several item options patches by Mark Johnson:
+  - Fix wholesale price overwriting regular price in variant edit.
+  - Stop including "none, " in description of an empty option.
+  - pages/include/item_option_simple:
+    * Added separate 'opt_label_*' form var
+    * Added js to set label to name (and reset to previous value)
+    * Replaced '[sql-*]' with q{[sql-*]} for strings
+    * Added sql/entities filter where appropriate
+
+* Change setting of sku in table-editor to override as opposed to "default",
+  preventing previous setting of "sku" to cause corruption of display.
+
+* Wizard: Make "images" piece run after everything else, so that products
+  uploaded will be in database. Other miscellaneous changes to the wizard.
+
+* New usertags: [cp], [image-collate].
+
+* Prevent Interchange tags in database fields from being parsed when
+  displaying with [table-editor] tag.
+
+Foundation
+----------
+* Fix Foundation indexing for PostgreSQL.
+
+* Minor database table changes to support VAT and new multi taxing.
+  - Add tax_category field to products.txt (including sampledata/tools)
+  - Add tax field to country database
+  - Set default type in pgsql/country.pgsql to varchar(255)
+  - Set default type in oracle/country.ora to varchar2(128)
+
+* Use new [item-options report=1] in mailed reports and log_transaction.
+
+* Use [scratch mv_autocreate] to supply mv_username/mv_password for order
+  status link, similar to what we do for anonymous downloadable products.
+  Resolves Bugzilla #226.
+
+* Added sale_price and image_large to the batch product upload template.xls.
+
+* Changed the mv_nextpage from customerservice.html to @@MV_PAGE@@. If you
+  selected a new country or shipping method for yourself, it'd kick you back
+  to the customer service page and that was kind of annoying.
+
+* Changed the "Buy it Now!" text button on the flypage to a graphic button.
+
+* Fixed the Checkout page to use [button] tags for the bottom Place Order
+  and Recalculate image buttons.
+
+* Added some default admin Groups to the access database -- Content Manager,
+  Merchandiser, Sales/Orders.
+
+* Fix modular_create view so that o_master is tied to the SKU of what we are
+  creating.
+
+* Adjust default widgets in metadata for modular_create view.
+
+* Fix typo in SAMPLEHTML setting.
+
+* Rename fullwidth template to noleft to match region.
+
+* Make label for retrieving address be the nickname, not the city, as
+  suggested by barryf-newprod@online.ie.
+
+* Fix promo component to use [table-organize] for settable number of columns.
+  Resolves Bugzilla #240.
+
+* Add tax_category field to products database for tools type.
+
+* Remove banner database that is not used and is just cluttering things up.
+
+* Fix installsample so that it tolerates no images/ directory in sample
+  data set.
+
+* Do downloadable product authorization during log_transaction so that
+  auto-created users are handled.
+
+* Change deliver action so that auto-created users can log in and download.
+
+* Remove EncryptProgram directive, no longer needed (found globally
+  and by default).
+
+* Add EncryptKey directive -- PGP now works out of the box with the wizard.
+
+* Change catalog.cfg to use PGP_KEY instead of GPG_KEY Variable for pgp_key
+  in routes.
+
+* Add PGP_KEY to Preferences, and put it and ENCRYPTOR in "Encryption" area.
+
+Packaging
+---------
+* Debian packages can produce a demo.
+* Minor Foundation hostname problem in RPM install fixed.
+
+
+------------------------------------------------------------------------------
+
+
 Interchange 4.7.5 released 2001-07-03.
 
 Core
