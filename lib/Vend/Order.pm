@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18.2.23 2001-05-23 03:06:42 jon Exp $
+# $Id: Order.pm,v 1.18.2.24 2001-05-28 13:40:41 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.23 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.24 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1266,7 +1266,7 @@ sub route_profile_check {
 	local(%SIG);
 	undef $SIG{__DIE__};
 	foreach my $c (@routes) {
-		$::Values = { %$value_save };
+		$Vend::Interpolate::Values = $::Values = { %$value_save };
 #::logDebug("profile: $c");
 		eval {
 			my $route = $Vend::Cfg->{Route_repository}{$c}
@@ -1295,7 +1295,7 @@ sub route_profile_check {
 		}
 	}
 #::logDebug("profile=$c status=$status final=$final failed=$failed errors=$errors missing=$missing");
-	$::Values = $value_save;
+	$Vend::Interpolate::Values = $::Values = { %$value_save };
 	return (! $failed, $final, $errors);
 }
 
@@ -1424,7 +1424,7 @@ sub route_order {
 		}
 
 #::logDebug($Data::Dumper::Indent = 3 and "Route $c:\n" . Data::Dumper::Dumper($route) .	"values:\n" .  Data::Dumper::Dumper($::Values));
-		$::Values = { %$value_save };
+		$Vend::Interpolate::Values = $::Values = { %$value_save };
 		$::Values->{mv_current_route} = $c;
 		my $pre_encrypted;
 		my $credit_card_info;
@@ -1626,7 +1626,7 @@ sub route_order {
 	my $msg;
 
 	if($check_only) {
-		$::Values = $value_save;
+		$Vend::Interpolate::Values = $::Values = $value_save;
 		$Vend::Items = $save_cart;
 		if(@route_failed) {
 			return (0, 0, $errors);
@@ -1660,7 +1660,7 @@ sub route_order {
 	}
 
 	$::Instance->{MIME} = $save_mime  || undef;
-	$::Values = $value_save;
+	$Vend::Interpolate::Values = $::Values = $value_save;
 	$Vend::Items = $save_cart;
 
 	for(@route_failed) {
