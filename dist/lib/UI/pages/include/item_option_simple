@@ -1,61 +1,3 @@
-[if cgi sku]
-    [tag flag write]options[/tag]
-    [perl tables="options"]
-        my $db = $Db{options};
-
-        foreach(sort keys %{$CGI}) {
-            next unless /^opt_group_(.*)/;
-            my $key = $1;
-
-            my $name = $CGI->{"opt_group_$key"};
-            my $value = $CGI->{"opt_value_$key"};
-
-            my @value = split("\r\n",$value);
-
-            my %seen = ();
-            my $hasdefault = 0;
-
-            my($left,$right);
-            map {
-                my $default = 0;
-                s/[,\r\n]//g;
-                if(s/\*//g) { $default = 1; $hasdefault = 1}
-
-                next unless $v;
-
-                if(/=/) {
-                    ($left,$right) = split('=',$_);
-                } else {
-                    $right = $_;
-                    $left = substr($right,0,3);
-                }
-
-                while($seen{$left}++) { $left++; }
-
-                $_ = join('=',$left,$right);
-                if($default) { $_ .= "*"; }
-            } @value;
-
-            my $value = join(",\n",@value);
-
-            $Tag->data({
-                table => 'options',
-                field => 'o_group',
-                key => $CGI->{sku},
-                value => $_,
-            });
-            $Tag->data({
-                table => 'options',
-                field => 'o_value',
-                key => $CGI->{sku},
-                value => $value,
-            });
-        }
-
-        return '';
-    [/perl]
-[/if]
-
 [update values]
 [if cgi ui_clone_options]
 [and cgi ui_clone_id]
@@ -68,6 +10,66 @@
 	return;
 [/perl]
 [/if]
+
+[if cgi sku]
+    [tag flag write]options[/tag]
+    [perl tables="options __UI_ITEM_TABLES__"]
+        my $otab = 'options';
+        my $odb = $Db{$otab};
+
+        foreach(sort keys %{$CGI}) {
+            next unless /^opt_group_(.*)/;
+            my $key = $1;
+
+            my $name = $CGI->{"opt_group_$key"};
+            my $value = $CGI->{"opt_value_$key"};
+
+            next unless $name && $value;
+
+            unless($key) { $key = $CGI->{sku}."-$name"; }
+
+            my @value = split("\r\n",$value);
+
+            my %seen = ();
+            my $hasdefault = 0;
+
+            my($left,$right);
+            map {
+                my $default = 0;
+                s/[,\r\n]//g;
+                if(s/\*//g) { $default = 1; $hasdefault = 1; }
+
+                if($v) {
+                    if(/=/) {
+                        ($left,$right) = split('=',$_);
+                    } else {
+                        $right = $_;
+                        $left = substr($right,0,3);
+                    }
+
+                    while($seen{$left}++) { $left++; }
+
+                    $_ = join('=',$left,$right);
+                    if($default) { $_ .= "*"; }
+                }
+            } @value;
+
+            my $value = join(",\n",@value);
+
+            my $label = $name;
+            $label =~ s/\W/_/g;
+
+            $odb->set_field($key,'o_label',$label);
+            $odb->set_field($key,'sku',$CGI->{sku});
+            $odb->set_field($key,'o_group',$name);
+            $odb->set_field($key,'o_value',$value);
+            $odb->set_field($key,'o_widget','select');
+        }
+
+        return '';
+    [/perl]
+[/if]
+
 
 <FORM ACTION="[area @@MV_PAGE@@]" METHOD="post">
 [if scratch ui_failure]
@@ -94,10 +96,11 @@
 
 <TABLE BORDER=0><TR><TD VALIGN=TOP>
 
-[query list=1 sql="select * from options where sku='[cgi item_id]'"]
+[query list=1 sql="select * from options where sku='[cgi item_id]' and o_group is not null"]
 [list]
 [if-sql-data options o_group]
-<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3 BGCOLOR="[sql-alternate 2]__UI_T_ROW_EVEN__[else]__UI_T_ROW_ODD__[/else][/sql-alternate]">
+[if scratch count][tmp count]0[/tmp][else][tmp count]1[/tmp][/else][/if]
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3 BGCOLOR="[if scratch count]__UI_T_ROW_EVEN__[else]__UI_T_ROW_ODD__[/else][/if]">
 <TR><TD VALIGN=CENTER>Name: <INPUT TYPE=text SIZE=20 NAME="opt_group_[sql-code]" VALUE="[sql-param o_group]">
 
 <A HREF="[area href='@@MV_PAGE@@'
@@ -147,7 +150,8 @@ Name: <INPUT TYPE=text SIZE=20 NAME="opt_group_" VALUE=""><BR>
 	list=1
 	prefix=clone
 	sql="select DISTINCT sku from [cgi mv_data_table]"
-	more=1]<SELECT NAME=ui_clone_id>
+	more=1]
+<SELECT NAME=ui_clone_id>
 <OPTION VALUE=""> --
 [list]
 [if-clone-data options o_enable]
