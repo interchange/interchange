@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.82 2002-11-20 14:45:47 jon Exp $
+# $Id: Config.pm,v 2.83 2002-11-20 15:24:56 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -45,7 +45,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.82 $, 10);
+$VERSION = substr(q$Revision: 2.83 $, 10);
 
 my %CDname;
 
@@ -3784,7 +3784,7 @@ sub parse_subroutine {
 	}
 
 #::logDebug("Parsing subroutine/variable (C=$C) $var=$name");
-	config_error("Bad $var '$name'") if $@;
+	config_error("Bad $var '$name': $@") if $@;
 #::logDebug("Parsed subroutine/variable $var=$name code=$c->{$name}") unless $C;
 	return $c;
 }
