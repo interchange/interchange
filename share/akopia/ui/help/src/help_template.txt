@@ -5,14 +5,15 @@
 </head>
 <body bgcolor="#ffffff" link="#7079aa" alink="#000000" vlink="#999999">
 
-<form>
+<div align=center>
+
 <table width="100%" border=0 cellspacing=0 cellpadding=0>
 <tr>
 <td height=23 bgcolor="#e8a317" background="images/help.background.gif" valign=middle>
 <table width="100%" cols=3 border=0 cellpadding=0 cellspacing=0>
 <tr>
 <td height=1 width=12 align=left valign=middle><img src="images/curve.left.help.gif" width=12 height=22></td>
-<td valign=middle width=550>
+<td valign=middle width=530>
 <img src="images/cleardot.gif" height=1 width=12>
 __MENU_START_HOME__
 <a href="index.html"><font face="Verdana, Arial, Helvetica, sans-serif" size=2>Home</font></a>
@@ -32,14 +33,14 @@ __MENU_END_FAQ__
 </td>
 </tr>
 </table>
-</form>
 
-<div align=center>
-<table border=0 cellspacing=0 cellpadding=2 width="450">
+<table border=0 cellspacing=0 cellpadding=2 width=450>
 <tr>
 <td>
 
-<p><font face="Verdana,Arial,Helvetica,sans-serif"><b>__HELP_TITLE__</b></font></p>
+<p>&nbsp;<br><font face="Verdana,Arial,Helvetica,sans-serif"><b>
+__HELP_TITLE__
+</b></font></p>
 
 <hr noshade size=2 width="100%">
 
@@ -49,14 +50,16 @@ __HELP_CONTENT__
 
 <hr noshade size=2 width="100%">
 
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
-<b><a href="http://www.akopia.com/product.html">Interchange</a> -
-<a href="http://www.akopia.com/">&copy; 2000 Akopia, Inc.</a></b>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size=1>
+<b><a href="http://www.akopia.com/product.html" target="_new">Interchange</a> -
+<a href="http://www.akopia.com/" target="_new">&copy; 2000 Akopia, Inc.</a></b>
+<a href="http://www.akopia.com/gpl.html" target="_new">(GPL)</a>
 </font></p>
 
 </td>
 </tr>
 </table>
+
 </div>
 
 </body>

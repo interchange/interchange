@@ -2,6 +2,7 @@
 
 #
 # help_make.pl
+# Copyright (C) 2000 Akopia, Inc. <info@akopia.com>
 #
 # Processes macros __LIKE_THIS__ in src/*.html using a template
 # src/help_template.txt and saves the results in the current directory.
@@ -75,9 +76,6 @@ foreach $filename (<*.html>) {
 		$finalhelp =~ s/__MENU_END_${_}__//;
 	}
 
-	# substitute in main content
-	$finalhelp =~ s/__HELP_CONTENT__/$file/g;
-
 	# extract and cache page title
 	my $title;
 	if ($file =~ s|<\s*title\s*>\s*(.+)\s*<\s*/\s*title\s*>||i) {
@@ -86,6 +84,9 @@ foreach $filename (<*.html>) {
 		$topictitletofile{$title} = $filename unless $ignoretopicfiles{$filename};
 		$finalhelp =~ s/__HELP_TITLE__/$title/g;
 	}
+
+	# substitute in main content
+	$finalhelp =~ s/__HELP_CONTENT__/$file/g;
 
 	# is postprocessing necessary?
 	# (for topic list that isn't complete yet)
