@@ -3,6 +3,34 @@ ui_template: Yes
 ui_template_name: noleft
 [/comment]
 
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]category_vertical[/component]
+[/control-set]
+
+[control-set]
+[component][/component]
+[/control-set]
+
+[control-set]
+[component][/component]
+[/control-set]
+
+[control-set]
+[component]promo[/component]
+[matches]3[/matches]
+[cols]3[/cols]
+[banner]Specials[/banner]
+[/control-set]
+
+[control reset=1]
+
 <style type="text/css">
 .cerror {
 	color: red
@@ -16,11 +44,6 @@ ui_template_name: noleft
 	[/calc]
 	[tmp survey_id]survey::[cgi survey_start][/tmp]
 [/if]
-
-
-[control reset=1]
-
-[control reset=1]
 
 [auto-wizard
 	compile=auto

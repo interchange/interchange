@@ -14,28 +14,53 @@
 
 <blockquote>
 
-<form action="[area __UI_BASE__/survey/overall]">
-<input type=hidden name=mv_action value=back>
-<input type=hidden name=mv_session_id value="[data session_id]">
-<input type=hidden name="mv_filter:item_id" value=word>
-New survey name: <input type=text size=16 name=item_id>
-<br>
-<input type=submit value="[L]Create[/L]">
-</form>
-
-Edit an existing survey:
-<ul>
+[tmp survey_keys]code	label
 [loop search="
 		ml=1000
 		fi=survey
 		st=db
 		co=yes
-		se=master
-		sf=type
-		op=eq
+		se=:
+		sf=code
+		op=rn
 		rf=code,label
-	  "]
-<li>[page href="__UI_BASE__/survey/overall" form="item_id=[loop-code]"][loop-code] -- [loop-param label]</A></li>
+	  "][loop-code]	[loop-param label]
+[/loop][/tmp]
+
+<form action="[area __UI_BASE__/survey/overall]">
+<input type=hidden name=mv_action value=back>
+<input type=hidden name=mv_session_id value="[data session_id]">
+<input type=hidden name="mv_filter:item_id" value=word>
+<table>
+<tr>
+	<td>New survey name</td>
+	<td>Clone from</td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td>
+	 <input type=text size=16 name=item_id> 
+	</td>
+	<td>
+		<select name="survey_clone">
+		<option value=""> -- none --
+		[loop list="[scratch survey_keys]" lr=1 head-skip=1]<option value="[loop-code]"> [loop-code]</option>[/loop]
+		</select>
+	</td>
+	<td>
+		<input type=submit value="[L]Create[/L]">
+	</td>
+</tr>
+</table>
+
+</form>
+
+Edit an existing survey:
+<ul>
+[loop list="[scratch survey_keys]" lr=1 head-skip=1]
+<li>[page href="__UI_BASE__/survey/overall" form="item_id=[loop-code]"][loop-code] -- [loop-param label]</A>
+	([page href=survey/standard form="survey_start=[loop-code]"]run</a>)
+	 </li>
 [/loop]
 </ul>
 </blockquote>
@@ -49,4 +74,4 @@ Edit an existing survey:
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: index.html,v 1.1 2002-11-20 18:52:17 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: index.html,v 1.2 2002-11-23 03:54:12 mheins Exp $ -->
