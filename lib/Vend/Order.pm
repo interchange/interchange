@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.6.2.10 2002-06-27 22:38:24 jon Exp $
+# $Id: Order.pm,v 2.6.2.11 2002-08-11 14:18:41 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.6.2.10 $, 10);
+$VERSION = substr(q$Revision: 2.6.2.11 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -795,7 +795,7 @@ sub pgp_encrypt {
 	print PGP $body;
 	close PGP;
 	if($?) {
-		logError("PGP failed with status %s: %s", $? << 8, $!);
+		logError("PGP failed with status %s: %s", $? >> 8, $!);
 		return 0;
 	}
 	$body = readfile("$fpre.out");
