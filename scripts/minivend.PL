@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.5.x
 #
-# $Id: minivend.PL,v 1.13 2000-08-06 20:05:39 heins Exp $
+# $Id: minivend.PL,v 1.14 2000-08-19 04:17:02 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -123,7 +123,7 @@ use vars qw($VERSION);
 require Exporter;
 
 BEGIN {
-	$VERSION = '4.5.5';
+	$VERSION = '4.5.6';
 }
 
 
@@ -1170,6 +1170,7 @@ sub url_history {
 
 my %action = (
     process	=> \&do_process,
+	ui_wrap => \&UI::Primitive::ui_wrap,
     ui=> sub { 
 					&UI::Primitive::ui_acl_global();
 					\&do_process(@_);
