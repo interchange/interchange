@@ -25,11 +25,9 @@ DOIT: {
 #
 # Interchange configuration dumper
 #
-# $Id: configdump.PL,v 1.8.2.1 2000-12-05 19:35:43 zarko Exp $
+# $Id: configdump.PL,v 1.8.2.1.2.1 2001-05-23 03:11:08 jon Exp $
 #
 # Copyright 1999, 2000 by Stefan Hornburg <racke@linuxia.de>
-#
-# See the file 'Changes' for information.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -56,9 +54,6 @@ use Vend::Config;
 use Vend::Util;
 
 BEGIN {
-	use Config;
-	&::logError( "Threaded perl not supported" ) if ($Config{ usethreads } || $Config{ useithreads } );
-
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
 		if defined $ENV{MINIVEND_ROOT};
 
@@ -97,7 +92,7 @@ unless ($#ARGV == 0) {
     exit 1;
 }
     
-my ($catalog, $name);
+my $catalog;
 
 $Vend::Cfg = {};
 
@@ -186,7 +181,7 @@ to standard output. This includes the default settings too.
 
 =head1 SEE ALSO
 
-mvdocs(8), dump(1), makecat(1), interchange(1)
+dump(1), makecat(1), interchange(1)
 
 =head1 LICENSE
 
