@@ -60,7 +60,9 @@ random:
 
 <table width="95%" align="center">
 <tr> 
-  <td class="categorybar">&nbsp;[control banner Best sellers...]</td>
+  <td class="categorybar">
+    &nbsp;<b>[control banner Best sellers...]</b>
+  </td>
 </tr>
 <tr>
   <td> 
