@@ -5,6 +5,11 @@ Maintainer: Stefan Hornburg <racke@linuxia.de>
 Standards-Version: 3.1.1.1
 Build-Depends: debhelper
 
+Package: interchange-doc
+Architecture: all
+Description: Interchange documentation
+ Additional Interchange documentation
+
 Package: interchange-cat-construct
 Architecture: all
 Depends: interchange
@@ -16,11 +21,6 @@ Architecture: all
 Depends: ${perl:Depends}, interchange
 Description: Interchange administration interface
  Interchange administration interface
-
-Package: interchange-doc
-Architecture: all
-Description: Interchange documentation
- Additional Interchange documentation
 
 Package: interchange
 Architecture: i386
