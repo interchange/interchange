@@ -32,7 +32,13 @@
 		next if ! $_;
 		$page = $_;
 		$page .= $Config->{HTMLsuffix} if $page !~ /$Config->{HTMLsuffix}$/;
-		$page = "pages/$page" if $page !~ m(^pages/);
+		if ($page !~ m(^pages/)) {
+			if ($Session->{ui_cwd} =~ m(^pages/)) {
+				$page = "$Session->{ui_cwd}/$page";
+			} else {
+				$page = "pages/$page";
+			}
+		}
 		last;
 	}
 
