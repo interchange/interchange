@@ -93,18 +93,24 @@
                                  <td width="70%" class="maincontent"><a href="[area href='admin/customer_view' form='customer=[loop-data transactions username]']">[customer-data userdb fname] [customer-data userdb lname]</a> 
                                  </td>
                               </tr>
+							  [if-customer-data userdb company]
                               <tr> 
                                  <td class="block4bold"> [L]Company[/L]:</td>
                                  <td class="maincontent">[customer-data userdb company]</td>
                               </tr>
+							  [/if-customer-data]
+							  [if-customer-data userdb phone_night]
                               <tr> 
                                  <td nowrap class="block4bold">[L]Home phone[/L]:</td>
                                  <td class="maincontent">[customer-data userdb phone_night]</td>
                               </tr>
+							  [/if-customer-data]
+							  [if-customer-data userdb phone_day]
                               <tr> 
                                  <td nowrap class="block4bold"> [L]Work phone[/L]:</td>
-                                 <td class="maincontent">[customer-data userdb phone_night]</td>
+                                 <td class="maincontent">[customer-data userdb phone_day]</td>
                               </tr>
+							  [/if-customer-data]
                               <tr> 
                                  <td class="block4bold">[L]Email[/L]:</td>
                                  <td class="maincontent"><a href="mailto:[customer-data userdb email]">[loop-data transactions email]</a></td>
@@ -113,6 +119,12 @@
                                  <td nowrap class="block4bold">[L]Payment type[/L]:</td>
                                  <td class="maincontent">[loop-data transactions payment_method]</td>
                               </tr>
+							  [if-loop-data transactions shipmode]
+                              <tr> 
+                                 <td nowrap class="block4bold">[L]Ship method[/L]:</td>
+                                 <td class="maincontent">[loop-data transactions shipmode]</td>
+                              </tr>
+							  [/if-loop-data]
                               <tr> 
                                  <td height="15" colspan="2" class="block4bold"><img src="bg.gif" width="1" height="1"></td>
                               </tr>
@@ -411,4 +423,4 @@ vieworder=
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: order_view.html,v 2.13 2003-04-22 12:10:30 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order_view.html,v 2.14 2003-05-12 19:30:12 mheins Exp $ -->
