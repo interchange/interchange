@@ -94,12 +94,16 @@ __UI_META_TABLE__
 				my @fields = split /\t/, shift(@lines);
 				my $pfield = $Variable->{MV_TREE_PARENT_FIELD} || 'parent_fld';
 				my $gfield = $Variable->{MV_TREE_GROUP_FIELD} || 'mgroup';
+				my $sfield = $Variable->{MV_TREE_SORT_FIELD} || 'msort';
 
 				my $gptr;
+				my $sptr;
 				for(my $i = 1; $i < @fields; $i++) {
 					if($fields[$i] eq $gfield) {
 						$gptr = $i;
-						last;
+					}
+					elsif($fields[$i] eq $sfield) {
+						$sptr = $i;
 					}
 				}
 
@@ -110,7 +114,7 @@ __UI_META_TABLE__
 				push @fields, $pfield;
 				shift(@fields);
 
-				my @parent = ($menuname);;
+				my @parent = ($menuname);
 				my $plev = 0;
 
 				my $query = qq{delete from $tab where $gfield = '$menuname'};
@@ -120,7 +124,7 @@ __UI_META_TABLE__
 					my @row = split /\t/, $_, $num;
 					my @f = @fields;
 					$#row = $last;
-					my $lev = $row[$gptr];
+					my $lev = $row[$sptr];
 #Debug("menu level=$lev");
 					$row[$gptr] = $menuname;
 					$row[$pptr] = $parent[$lev];
@@ -438,7 +442,7 @@ __UI_META_TABLE__
 			my $mrecord = $Tag->meta_record($metaname)
 				or last DOMETA;
 			if(my $lab = $mrecord->{label}) {
-				push @out, "    label[$i] = " . $Tag->jsquote($lab) . ';';
+				push @out, "    label[$i] = " . $Tag->jsq($lab) . ';';
 			}
 			if(my $type = $mrecord->{type}) {
 				$mrecord->{name} = "ext_$_";
@@ -448,7 +452,7 @@ __UI_META_TABLE__
 										override => 1,
 										default => '',
 										} );
-				push @out, "    widget[$i] = " . $Tag->jsquote($wid) . ';';
+				push @out, "    widget[$i] = " . $Tag->jsq($wid) . ';';
 			}
 		}
 		$i++;
@@ -1631,10 +1635,10 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 			if(! fn.match(reserved) ) {
 				var nn = 'ext_' + fn;
 				var un = fn.toUpperCase();
-// alert([jsquote]fn=$fn nn=$nn un=$un[/jsquote]);
+// alert([jsq]fn=$fn nn=$nn un=$un[/jsq]);
 				var eidx;
 				eval('eidx = ' + un);
-// alert([jsquote]fn=$fn un=$un nn=$nn eidx=$eidx[/jsquote]);
+// alert([jsq]fn=$fn un=$un nn=$nn eidx=$eidx[/jsq]);
 				var nidx = extra.length;
 				extra.length += 1;
 				extra[nidx] = fn;
@@ -1647,9 +1651,9 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 					wid = widget[eidx];
 				}
 				else {
-					wid = [jsquote]<input type=text name="$nn" onChange="form_changed(1);">[/jsquote];
+					wid = [jsq]<input type=text name="$nn" onChange="form_changed(1);">[/jsq];
 				}
-				document.write([jsquote]
+				document.write([jsq]
 		<tr>
 			<td class=clabel>
 				$lab
@@ -1658,14 +1662,14 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 				$wid
 			</td>
 		</tr>
-			[/jsquote]);
+			[/jsq]);
 
 			}
 
 		}
 		
 		if(EXTENDED != undefined) {
-			document.write([jsquote]
+			document.write([jsq]
 		<tr>
 			<td class=clabel>
 				Extended Parameters (advanced)
@@ -1674,7 +1678,7 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 				<textarea cols=50 rows=4 name=extended onChange="form_changed(1);"></textarea>
 			</td>
 		</tr>
-			[/jsquote]);
+			[/jsq]);
 		}
 
 </script>
