@@ -638,7 +638,7 @@ lib/Vend/Track.pm
 lib/Vend/UserDB.pm
 lib/Vend/Util.pm
 perl/Interchange.pm
-pod/deprecated.pod
+pod/deprecated.sdf
 pod/mvdocs.pod
 pod/mvfaq.pod
 scripts/compile_link.PL
