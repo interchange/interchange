@@ -13,7 +13,7 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0013	Admin	04					admin/payment		Payment									
 0014	Admin	05					admin/access		Access									
 0015	Admin	06					admin/preferences		Preferences									
-0016	Admin	07					admin/flex_select	mv_data_table=variable&page_title=Knar editor&ui_meta_specific=1&help_name=knar.main&ui_description_fields=code&ui_return_to=admin/preferences	Knar									
+0016	Admin	07					admin/flex_select	mv_data_table=variable&page_title=Knar editor&ui_meta_specific=1&help_name=knar.main&ui_description_fields=code&ui_return_to=admin/flex_select&ui_return_to=mv_data_table=variable&ui_return_to=page_title=Knar Editor	Knar		1							
 0017	Admin	08					admin/gentable		Tables									
 0017b	Admin	08b					admin/wizard/index		Wizard									
 0018	Admin	09					admin/reconfig	ui_changes_made	&nbsp;&nbsp;&nbsp;Apply Changes									
@@ -58,7 +58,7 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0057	Merchandising	01					admin/merchandising		Product Merchandising									
 0058	Merchandising	02					admin/affiliates		Affiliates									
 0059	Merchandising	03					admin/build_related		Generate "others who ..."									
-0060	Merchandising	04	1			affiliates	admin/flex_editor	page_title=Create new affiliate&mv_data_table=affiliate&help_name=create.new.affiliate&ui_new_item=1&ui_return_to=admin/affiliates&icon_name=icon_people.gif	Create new affiliate									
+0060	Merchandising	04	1		affiliates		admin/flex_editor	page_title=Create new affiliate&mv_data_table=affiliate&help_name=create.new.affiliate&ui_new_item=1&ui_return_to=admin/affiliates&icon_name=icon_people.gif	Create new affiliate									
 0061	None	1		!nevairbe					<font size="-1"><b>Welcome to Interchange</b></font>									
 0062	Orders	01		!showarchive			admin/order	showpending=1	Pending Orders									
 0063	Orders	02		showarchive			admin/order	showarchive=1	Archived Orders									
