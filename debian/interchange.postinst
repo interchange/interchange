@@ -77,7 +77,11 @@ echo DOCROOT=$RET >> $INITCFG
 # and make senses to be configured by debconf
 
 db_get interchange/debug
-DEBUG=$RET
+if [ "$RET" = true ]; then
+	DEBUG=1
+else
+	DEBUG=0
+fi
 /usr/sbin/interchangeconfig DEBUG=$DEBUG
 
 # Make configuration files owned by the interchange user
