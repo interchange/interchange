@@ -20,7 +20,7 @@
 
 UserTag formel Order label name type size
 # may be should place version information on user-defined tags
-# UserTag formel Version 0.03
+# UserTag formel Version 0.04
 UserTag formel addAttr
 UserTag formel Routine <<EOF
 sub {
@@ -68,6 +68,10 @@ sub {
 	        $sizestr = " size=$opt->{size}";
 		}
     }
+
+    if ($opt->{'maxlength'}) {
+		$sizestr .= " maxlength=$opt->{maxlength}";
+	}
 
 	if ($type eq 'radio') {		
 		my ($rlabel, $rvalue, $select);
@@ -165,6 +169,10 @@ is the name of the form element.
 
 The container format string for the label and the form element.
 The default is C<%s %s>. 
+
+=item maxlength
+
+Add attribute C<maxlength> to the input tag.
 
 =item order
 
