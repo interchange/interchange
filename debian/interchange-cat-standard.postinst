@@ -125,6 +125,7 @@ db_get interchange-cat-standard/install
 if [ "$RET" = "true" ]; then
 	cat <<EOF >/var/lib/interchange/catalog.d/interchange-cat-standard.cfg
 include usertag/standard/*
+require module Vend::Payment::TestPayment
 Catalog standard /var/lib/interchange/catalogs/standard /cgi-bin/ic/standard
 EOF
 	if [ ! -f /var/run/interchange-install ]; then
