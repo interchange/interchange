@@ -1,6 +1,6 @@
 # Vend::Options - Interchange item options base module
 #
-# $Id: Options.pm,v 2.1 2003-02-12 03:59:12 mheins Exp $
+# $Id: Options.pm,v 2.2 2003-03-26 14:23:08 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 package Vend::Options;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -193,6 +193,7 @@ sub tag_options {
 	}
 	$item ||= { code => $sku };
 	$opt = get_option_hash($opt);
+	find_joiner($opt);
 
 	my $module = find_options_type($item, $opt)
 		or return '';
