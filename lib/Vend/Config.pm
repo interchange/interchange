@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.150 2004-11-01 19:10:49 docelic Exp $
+# $Id: Config.pm,v 2.151 2004-11-04 11:23:56 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.150 $, 10);
+$VERSION = substr(q$Revision: 2.151 $, 10);
 
 my %CDname;
 my %CPname;
@@ -308,7 +308,7 @@ sub global_directives {
 	['SOAP_Control',     'action',           ''],
 	['Jobs',		 	 'hash',     	 	 'MaxLifetime 600 MaxServers 1'],
 	['IPCsocket',		 undef,	     	 	 "$Global::VendRoot/etc/socket.ipc"],
-	['HouseKeeping',     'time_to_seconds',          60],
+	['HouseKeeping',     'time',          60],
 	['Mall',	          'yesno',           'No'],
 	['TagGroup',		 'tag_group',		 $StdTags],
 	['TagInclude',		 'tag_include',		 'ALL'],
@@ -335,7 +335,7 @@ sub global_directives {
 	['RobotHost',		 'list_wildcard_full', ''],
 	['HostnameLookups',	 'yesno',            'No'],
 	['TolerateGet',		 'yesno',            'No'],
-	['PIDcheck',		 'time_to_seconds',          '0'],
+	['PIDcheck',		 'time',          '0'],
 	['LockoutCommand',    undef,             ''],
 	['SafeUntrap',       'array',            'ftfile sort'],
 	['SafeTrap',         'array',            ':base_io'],
@@ -347,7 +347,7 @@ sub global_directives {
 	['HotDBI',			 'boolean',			 ''],
 	['AdminUser',		  undef,			 ''],
 	['AdminHost',		  undef,			 ''],
-	['HammerLock',		 'time_to_seconds',     	 30],
+	['HammerLock',		 'time',     	 30],
 	['DataTrace',		 'integer',     	 0],
 	['ShowTimes',		 'yesno',	     	 0],
 	['ErrorFile',		  undef,     	     undef],
