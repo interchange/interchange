@@ -1,3 +1,9 @@
+interchange (4.8.6-1) unstable; urgency=low
+
+  * new upstream release
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu,  9 May 2002 11:41:05 +0200
+
 interchange (4.8.5-1) unstable; urgency=high
 
   * new upstream release (fixes stupid order email problem)
