@@ -201,7 +201,7 @@ EOF
 					: '';
 		my $desc = $row->{description};
 		$desc .= " ($price)" if $price;
-		$out .= qq{<OPTION VALUE="$row->{code}"$sel>$desc</OPTION>};
+		$out .= qq{<OPTION VALUE="$row->{sku}"$sel>$desc</OPTION>};
 	}
 	return $out;
 [/tree-sub][tree-exec do_level][/tree-exec]
