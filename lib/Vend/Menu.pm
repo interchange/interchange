@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange payment processing routines
 #
-# $Id: Menu.pm,v 2.19 2002-12-08 05:20:24 mheins Exp $
+# $Id: Menu.pm,v 2.20 2002-12-08 06:12:59 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,12 +21,16 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.19 $, 10);
+$VERSION = substr(q$Revision: 2.20 $, 10);
 
 use Vend::Util;
 use strict;
 
 my $indicated;
+my $last_line;
+my $first_line;
+my $logical_field;
+
 my %transform = (
 	nbsp => sub {
 		my ($row, $fields) = @_;
@@ -51,6 +55,57 @@ my %transform = (
 			$row->{$_} = errmsg($row->{$_});
 		}
 		return 1;
+	},
+	first_line => sub {
+		my ($row, $fields) = @_;
+		return undef if ref($fields) ne 'ARRAY';
+		return 1 if $first_line;
+		my $status;
+		for(@$fields) {
+			if(s/^!\s*//) {
+				$status = $status && ! $row->{$_};
+			}
+			else {
+				$status = $status && $row->{$_};
+			}
+		}
+		return $first_line = $status;
+	},
+	last_line => sub {
+		my ($row, $fields) = @_;
+#::logDebug("last_line transform, last_line=$last_line");
+		return 1 if ref($fields) ne 'ARRAY';
+		return 0 if $last_line;
+		my $status;
+		for(@$fields) {
+#::logDebug("last_line transform checking field $_=$row->{$_}");
+			if(s/^!\s*//) {
+				$status = ! $row->{$_};
+			}
+			else {
+				$status = $row->{$_};
+			}
+#::logDebug("last_line transform checked field $_=$row->{$_}, status=$status");
+			last if $status;
+		}
+#::logDebug("last_line transform returning last_line=$status");
+		$last_line = $status;
+#::logDebug("last_line transform returning status=" . ! $status);
+		return ! $status;
+	},
+	first_line => sub {
+		my ($row, $fields) = @_;
+		return 1 if ref($fields) ne 'ARRAY';
+		my $status = 1;
+		for(@$fields) {
+			if(s/^!\s*//) {
+				$status = $status && ! $row->{$_};
+			}
+			else {
+				$status = $status && $row->{$_};
+			}
+		}
+		return $status;
 	},
 	inactive => sub {
 		my ($row, $fields) = @_;
@@ -209,8 +264,22 @@ my %transform = (
 		my ($row, $fields) = @_;
 		return 1 if ref($fields) ne 'ARRAY';
 		for(@$fields) {
+			if ($::Scratch->{mv_logical_page} eq $row->{$_}) {
+				unless(
+						$::Scratch->{mv_logical_page_used}
+						and $::Scratch->{mv_logical_page_used}
+							  ne
+							$row->{$logical_field}
+						)
+				{
+					$row->{indicated} = 1;
+					$::Scratch->{mv_logical_page_used} = $row->{$logical_field};
+					last;
+				}
+			}
 			($row->{indicated} = 1, last)
-				if $Global::Variable->{MV_PAGE} eq $row->{$_};
+				if  $Global::Variable->{MV_PAGE} eq $row->{$_}
+				and ! defined $row->{indicated};
 		}
 		return 1;
 	},
@@ -235,7 +304,29 @@ my %transform = (
 			if($rev xor $status) {
 				$row->{indicated} = 1;
 			}
+			else {
+				$row->{indicated} = '';
+			}
 			last if $last;
+		}
+		return 1;
+	},
+	expand_values_form => sub {
+		my ($row, $fields) = @_;
+		return 1 if ref($fields) ne 'ARRAY';
+		for(@$fields) {
+			next unless $row->{$_} =~ /\%5b|\[/i;
+			my @parms = split $Global::UrlSplittor, $row->{$_};
+			my @out;
+			for my $p (@parms) {
+				my ($parm, $val) = split /=/, $p;
+				$val = unhexify($val);
+				$val =~ s/\[cgi\s+([^\[]+)\]/$CGI::values{$1}/g;
+				$val =~ s/\[var\s+([^\[]+)\]/$::Variable->{$1}/g;
+				$val =~ s/\[value\s+([^\[]+)\]/$::Values->{$1}/g;
+				push @out, join('=', $parm, hexify($val));
+			}
+			$row->{$_} = join $Global::UrlJoiner, @out;
 		}
 		return 1;
 	},
@@ -251,6 +342,17 @@ my %transform = (
 		return 1;
 	},
 );
+
+sub reset_transforms {
+#::logDebug("resetting transforms");
+	my $opt = shift;
+	if($opt) {
+		$logical_field = $opt->{logical_page_field} || 'name';
+	}
+	undef $last_line;
+	undef $first_line;
+	undef $indicated;
+}
 
 sub old_tree {
 	my ($name, $opt, $template) = @_;
@@ -342,6 +444,7 @@ sub old_simple {
 		$opt->{iterator} = \&transforms_only;
 		delete $opt->{_transforms};
 		Vend::Tags->loop(undef,$opt,'');
+		reset_transforms();
 		my $list = $opt->{object}{mv_results};
 		$main = '';
 		for(@$list) {
@@ -350,7 +453,7 @@ sub old_simple {
 	}
 
 	# Prevent possibility of memory leak
-	undef $indicated;
+	reset_transforms();
 
 	my $header;
 	$header = ::interpolate_html($opt->{header_template})
@@ -422,6 +525,7 @@ EOF
 			js_prefix	=> $vpf,
 			sort        => $opt->{sort} || 'code',
 			full        => '1',
+			timed		=> $opt->{timed},
 			spacing     => '4',
 			_transform   => $opt->{_transform},
 		);
@@ -440,6 +544,7 @@ EOF
 	else {
 		$o{iterator} = \&transforms_only;
 		Vend::Tags->tree(\%o);
+		reset_transforms();
 		delete $o{_transform};
 		my @o;
 		for(@{$o{object}{mv_results}}) {
@@ -450,8 +555,8 @@ EOF
 		$rows = \@o;
 	}
 
-	# Prevent possibility of memory leak
-	undef $indicated;
+	# Prevent possibility of memory leak, reset last_line/first_line
+	reset_transforms();
 
 	push @out, $main;
 
@@ -769,6 +874,7 @@ EOF
 			sort        => $opt->{sort} || 'code',
 			js_prefix	=> $vpf,
 			full        => '1',
+			timed		=> $opt->{timed},
 			spacing     => '4',
 			_transform   => $opt->{_transform},
 		);
@@ -787,6 +893,7 @@ EOF
 	else {
 		$o{iterator} = \&transforms_only;
 		Vend::Tags->tree(\%o);
+		reset_transforms();
 		delete $o{_transform};
 		my @o;
 		for(@{$o{object}{mv_results}}) {
@@ -1122,7 +1229,13 @@ sub tree_line {
 			$form = join "\n", split $Global::UrlSplittor, $form;
 		}
 
-		$row->{page} = Vend::Tags->area( { href => $row->{page}, form => $form });
+		$row->{page} = Vend::Tags->area({
+								href => $row->{page},
+								form => $form,
+								no_count => $opt->{timed},
+								no_session_id => $opt->{timed}
+							});
+
 		if($row->{page} =~ m{\?.+=}) {
 			$row->{page} .= $Global::UrlJoiner . 'open=';
 		}
@@ -1205,6 +1318,9 @@ EOF
 sub menu {
 	my ($name, $opt, $template) = @_;
 	
+	Vend::Tags->tmp('mv_logical_page_used', $::Scratch->{mv_logical_page_used});
+	reset_transforms($opt);
+
 	if(! $name and ! $opt->{list}) {
 		# Auto menu for pages
 		if($::Scratch->{mv_menu}) {
@@ -1278,7 +1394,7 @@ sub menu {
 	}
 
 	my @transform;
-	my @ordered_transform = qw/full_interpolate page_class indicator_class localize entities nbsp/;
+	my @ordered_transform = qw/full_interpolate page_class indicator_class indicator_page localize entities nbsp/;
 	my %ordered;
 	@ordered{@ordered_transform} = @ordered_transform;
 
