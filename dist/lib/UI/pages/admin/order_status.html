@@ -30,7 +30,7 @@
 	[if scratch no_bounce]
 		[set no_bounce][/set]
 	[else]
-		[seti ui_error]Not authorized for table [value mv_data_table].[/seti]
+		[seti ui_error][msg arg.0="[value mv_data_table]"]Not authorized for table %s.[/msg][/seti]
 		[bounce page="__UI_BASE__/error"]
 	[/else]
 	[/if]
