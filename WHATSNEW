@@ -291,6 +291,13 @@ Core
 * Add delimiter option to checked/selected tags. Patch provided by
   Mat Jones <mat@thinkopensource.com>.
 
+* Implement Paul Vinciguerra's suggestion to not save mv_password in
+  the History hash.
+
+  You can also set up a different NoHistory set via
+
+  	@Vend::Dispatch::NoHistory = qw/ foo bar mv_credit_card_number /;
+
 Tables
 ------
 
