@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.117 2002-10-11 18:33:17 mheins Exp $
+# $Id: Interpolate.pm,v 2.118 2002-10-18 07:08:42 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.117 $, 10);
+$VERSION = substr(q$Revision: 2.118 $, 10);
 
 @EXPORT = qw (
 
@@ -4410,6 +4410,15 @@ sub iterate_array_list {
 
 	my $r = '';
 	$opt ||= {};
+
+	my $lim;
+	if($lim = $Vend::Cfg->{Limit}{list_text_size} and length($text) > $lim) {
+		my $len = length($text);
+		my $caller = join "|", caller();
+		my $msg = "Large list text encountered,  length=$len, caller=$caller";
+		logError($msg);
+		return undef if $Vend::Cfg->{Limit}{list_text_overflow} eq 'abort';
+	}
 
 	# Optimize for no-match, on-match, etc
 	if(! $opt->{iterator} and $text !~ /\[(?:if-)?$Prefix-/) {
