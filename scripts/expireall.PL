@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange session expiration for all catalogs
 #
-# $Id: expireall.PL,v 1.8.2.1.2.1 2000-12-21 12:14:48 heins Exp $
+# $Id: expireall.PL,v 1.8.2.1.2.2 2001-04-25 15:28:43 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -88,26 +88,41 @@ $prog =~ s:.*/::;
 my $USAGE = <<EOF;
 usage: $prog [-r] [-f file]
 
-	-f    Alternate interchange.cfg file
-	-r    Use reorganize parameter in command
+    -f    Alternate interchange.cfg file
+    -n    Do not unlink files
+    -r    Use reorganize parameter in command
 
 Expire all listed Interchange catalogs. Will read information from
 either the file passed with -f or:
 
-	$Global::VendRoot/interchange.cfg
+    $Global::VendRoot/interchange.cfg
 
 EOF
 
+use Vend::Config;
+
+$Vend::Quiet = 1;
+
 getopts('e:f:rn') or die "$@\n$USAGE\n";
 
-($Global::ConfigFile = $opt_f)
-	if defined $opt_f;
+sub logGlobal { shift(@_) if ref $_[0]; printf @_; print "\n" }
+sub logError { }
+sub logDebug { }
 
 my $flag = '';
+
+if($opt_f) {
+	$Global::ConfigFile = $opt_f;
+	$flag .= qq{ -f "$opt_f"};
+}
+else {
+	$Global::ConfigFile = "$Global::VendRoot/$Global::ConfigFile";
+}
+
 my @cats;
 
 if ($opt_r) {
-	$flag .= '-r';
+	$flag .= ' -r';
 }
 
 if($opt_e) {
@@ -119,22 +134,11 @@ unless ($opt_n) {
 }
 
 # Parse the interchange.cfg file to look for script/catalog info
-PARSECFG: {
-	my(@cfglines,%seen);
+global_config();
 
-	open(GLOBAL, "< $Global::ConfigFile") or die "Couldn't read $Global::ConfigFile: $!\n";
-	while(<GLOBAL>) {
-		push(@cfglines, $_) if /^\s*catalog\s+/i;
-	}
-	close GLOBAL;
-
-	@cfglines = grep !$seen{$_}++, @cfglines;
-
-	for(@cfglines) {
-		next unless /^\s*(?:sub)?catalog\s+([-\w_]+)/i;
-		push(@cats, $1);
-	}
-
+while( my($name, $cat) = each %Global::Catalog ) {
+	next if $cat->{base};
+	push @cats, $name;
 }
 
 for(@cats) {
@@ -147,7 +151,7 @@ expireall -- Run Interchange expire on all catalogs
 
 =head1 VERSION
 
-# $Id: expireall.PL,v 1.8.2.1.2.1 2000-12-21 12:14:48 heins Exp $
+# $Id: expireall.PL,v 1.8.2.1.2.2 2001-04-25 15:28:43 heins Exp $
 
 =head1 DESCRIPTION
 

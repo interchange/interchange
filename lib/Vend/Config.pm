@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.44 2001-04-24 15:30:33 racke Exp $
+# $Id: Config.pm,v 1.25.2.45 2001-04-25 15:28:41 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -98,7 +98,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.44 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.45 $, 10);
 
 my %CDname;
 
@@ -200,6 +200,10 @@ my %UseExtended = (qw(
 				));
 
 my $configfile;
+
+### This is unset when interchange script is run, so that the default
+### when used by an external program is not to compile subroutines
+$Vend::ExternalProgram = 1;
 
 # Report a fatal error in the configuration file.
 sub config_error {
@@ -1225,7 +1229,7 @@ GLOBLOOP:
 	}
 
 	dump_structure($Global::Structure, "$Global::ConfDir/$Global::ExeName")
-		if $Global::DumpStructure;
+		if $Global::DumpStructure and ! $Vend::ExternalProgram;
 	return 1;
 }
 
@@ -1274,6 +1278,9 @@ sub watch {
 sub parse_action {
 	my ($var, $value) = @_;
 	return {} if ! $value;
+
+	return if $Vend::ExternalProgram;
+
 	my $c;
 	if(defined $C) {
 		$c = $C->{$var};
@@ -1486,6 +1493,9 @@ INITVARS: {
 
 sub parse_varname {
 	my($item,$settings) = @_;
+
+	return if $Vend::ExternalProgram;
+
 	my($iv,$vn,$k,$v,@set);
 #logDebug("parse_varname: $settings");
 	if(defined $C) {
@@ -1552,6 +1562,8 @@ sub parse_message {
 	my($name, $val) = @_;
 
 	return '' unless $val;
+
+	return if $Vend::Quiet;
 
 	my $strip;
 	my $info_only;
@@ -2856,6 +2868,8 @@ sub parse_tag {
 	my ($var, $value) = @_;
 	my ($c, $new);
 
+	return if $Vend::ExternalProgram;
+
 	unless (defined $value && $value) { 
 		return {};
 	}
@@ -2956,6 +2970,7 @@ sub parse_tag {
 sub parse_eval {
 	my($var,$value) = @_;
 	return '' unless $value =~ /\S/;
+	return if $Vend::ExternalProgram;
 	return eval $value;
 }
 
@@ -2994,6 +3009,9 @@ sub parse_variable {
 sub parse_subroutine {
 	my ($var, $value) = @_;
 	my ($c, $name);
+
+	return if $Vend::ExternalProgram;
+
 #::logDebug("parsing subroutine $var, " . substr($value, 0, 20) ) unless $C;
 	unless (defined $value and $value) { 
 		$c = {};

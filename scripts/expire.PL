@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange session expiration
 #
-# $Id: expire.PL,v 1.8.2.1 2000-12-05 19:35:43 zarko Exp $
+# $Id: expire.PL,v 1.8.2.1.2.1 2001-04-25 15:28:43 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -63,7 +63,7 @@ use Vend::Session;
 use Vend::Config qw(get_catalog_default parse_time);
 use Vend::Util qw/errmsg/;
 use Getopt::Std;
-use vars qw/$opt_c $opt_r $opt_e $opt_u $opt_v $opt_x/;
+use vars qw/$opt_c $opt_r $opt_e $opt_f $opt_u $opt_v $opt_x/;
 
 BEGIN {
 	use Config;
@@ -128,10 +128,9 @@ BEGIN {
 	}
 }
 
-sub logGlobal {
-	ref $_[0] and shift(@_);
-	warn(errmsg(@_)) unless $Vend::Quiet;
-}
+sub logGlobal {  }
+sub logError  {  }
+sub logDebug  {  }
 
 sub is_retired {}
 
@@ -161,11 +160,18 @@ my $reorg;
 
 $Vend::Cfg = { FileCreationMask => 0600 };
 
-getopts('c:e:ruvx') or die "$@\n$USAGE\n";
+getopts('c:e:f:ruvx') or die "$@\n$USAGE\n";
 
 $catalog    = $opt_c || undef;
 $expiretime = $opt_e || undef;
 $reorg      = $opt_r;
+
+if($opt_f) {
+	$Global::ConfigFile = $opt_f;
+}
+else {
+	$Global::ConfigFile = "$Global::VendRoot/$Global::ConfigFile";
+}
 
 GETOPT: {
 
@@ -202,15 +208,7 @@ my $g;
 if(defined $catalog) {
 	my($name,$dir,$param);
 	chdir $Global::VendRoot;
-	open(GLOBAL, "< $Global::ConfigFile") or
-		die "No global configuration file? Aborting.\n";
-	while(<GLOBAL>) {
-		next unless /^\s*((?:sub)?catalog)\s+($catalog\s+.*)/i;
-		Vend::Config::parse_catalog($1, $2);
-	}
-	close GLOBAL;
-	die "Catalog $catalog not found in $Global::ConfigFile.\n"
-		unless $Global::Catalog{$catalog};
+	global_config();
 	$g = $Global::Catalog{$catalog};
 	chdir $g->{dir} or die "chdir to $g->{dir}: $!\n";
 	$Vend::Cfg = Vend::Config::config(
@@ -322,8 +320,7 @@ mvdocs(8), expireall(1), http://www.akopia.com/
 
 =head1 AUTHOR
 
-Mike Heins, <heins@akopia.com>
-
+Mike Heins, <mheins@redhat.com>
 
 _EoP_
 	s{.*\n(#(.*)~_~(\w+)~_~(.*))}{$2 . doit($3) . "$4\n$1"}eg;
