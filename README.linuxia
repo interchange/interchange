@@ -30,6 +30,8 @@ This file documents all changes of the LINUXIA branch of Interchange.
   UI_STD_EDIT_TABLE: 1.18.4.5)
 - safeguards for missing track files 
   (reports/traffic/ByAffiliate.html: 1.6.4.2)
+- Pragma substitute_table_image added (Interpolate.pm: 1.29.4.3)
+- emit error message on undefined filters (Interpolate.pm: 1.29.4.3)
 
 Changes that made into the main branch:
 

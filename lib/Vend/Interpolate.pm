@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.29.4.3 2000-10-20 10:18:42 racke Exp $
+# $Id: Interpolate.pm,v 1.29.4.4 2000-10-27 19:05:23 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.29.4.3 $, 10);
+$VERSION = substr(q$Revision: 1.29.4.4 $, 10);
 
 @EXPORT = qw (
 
@@ -401,6 +401,9 @@ sub substitute_image {
                          $1 . $dir . $2#ige;
         $$text =~ s#(<body\s+[^>]*?background=")(?!https?:)([^/][^"]+)#
                          $1 . $dir . $2#ige;
+        $$text =~ s#(<t[dhr]\s+[^>]*?background=")(?!https?:)([^/][^"]+)#
+                         $1 . $dir . $2#ige
+            if $Vend::Cfg->{Pragma}{substitute_table_image};
     }
     if($Vend::Cfg->{ImageAlias}) {
 		for (keys %{$Vend::Cfg->{ImageAlias}} ) {
@@ -558,7 +561,10 @@ sub filter_value {
 				if length($value) > $_;
 			next;
 		}
-		next unless defined $Filter{$_};
+		unless (defined $Filter{$_}) {
+            ::logError ("Unknown filter $_");
+            next;
+        }
 		unshift @args, $value, $tag;
 		$value = $Filter{$_}->(@args);
 	}
