@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.3 2002-02-01 03:20:10 mheins Exp $
+# $Id: Search.pm,v 2.4 2002-02-06 03:49:30 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -255,9 +255,9 @@ EOF
 				if(	$s->{mv_column_op}[$i] =~ /([=][~]|rm|em)/ ) {
 					$specs[$i] = quotemeta $specs[$i]
 						if $s->{mv_all_chars}[$i];
-					$s->{regex_specs} = []
-						unless $s->{regex_specs};
 					last COLOP if $s->{mv_begin_string}[$i];
+					last COLOP if $s->{mv_column_op}[$i] eq 'em';
+					$s->{regex_specs} ||= [];
 					$specs[$i] =~ /(.*)/;
 					push @{$s->{regex_specs}}, $1
 				}
@@ -740,6 +740,7 @@ EOF
 #::logDebug("coderef=" . ::uneval_it(\@code));
 
 		undef $f if $s->{mv_search_relate} =~ s/\bor\b/or/ig;
+		undef $f unless $s->{regex_specs} or $s->{eq_specs};
 		DOLIMIT: {
 #::logDebug(::uneval_it({%$s}));
 #::logDebug("do_limit.");
