@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.41 2003-10-08 11:24:07 racke Exp $
+# $Id: Shadow.pm,v 1.42 2003-10-15 22:03:20 racke Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.41 $, 10);
+$VERSION = substr(q$Revision: 1.42 $, 10);
 
 # CREDITS
 #
@@ -288,7 +288,7 @@ sub query {
 		my $qref = $s->_parse_sql($opt->{query});
 
 		if (@{$qref->{tables}} > 1) {
-			die errmsg("Vend::Table::Shadow::query can handle only one table");
+			die ::errmsg("Vend::Table::Shadow::query can handle only one table");
 		}
 
 		my $table = $qref->{tables}->[0];
@@ -298,7 +298,7 @@ sub query {
 			# pass query to other table, but preserve the query info
 			$opt->{queryinfo} = $qref;
 			unless ($db = Vend::Data::database_exists_ref($table)) {
-				die errmsg("Table %s not found", $table);
+				die ::errmsg("Table %s not found", $table);
 			}
 			return $db->query($opt, $text, @arg);
 		} elsif ($qref->{command} ne 'SELECT') {
@@ -437,7 +437,7 @@ sub _parse_sql {
 	};
 	
 	if ($@) {
-		die errmsg("Bad SQL statement: %s\nQuery was: %s", $@, $query);
+		die ::errmsg("Bad SQL statement: %s\nQuery was: %s", $@, $query);
 	}
 
 	$sqlinfo{command} = $stmt->command();
