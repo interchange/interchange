@@ -16,6 +16,9 @@ Foundation
 * Make proper patches to history-scan and barlink() to work with Randy
   Moore's cateegory_vert_toggle component.
 
+* Minor updates to category_vert_toggle component for HTML cleanup and 
+  performance improvement.
+
 Core
 ----
 
