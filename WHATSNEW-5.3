@@ -83,6 +83,21 @@ UserTag
 * Make secure image directory be set to something even if no
   separate secure image directory within [image] UserTag.
 
+* [jsq]/[jsqn] returns now the string '' if an empty string is the argument
+  in order to avoid JavaScript errors (found by John Rennie)
+
+* Changes related to the makesize= parameter of [image] UserTag:
+
+  - Added resize= and geometry= aliases
+
+  - Expanded a regex, which only accepted an AxB size specification,
+    to permit complete format that mogrify supports:
+
+    AxB, A or xB, followed by up to two +-number offsets, followed by
+    none or one of @!%><.
+
+    URLs have the "%" character encoded: % = %25
+
 Foundation
 ----------
 
