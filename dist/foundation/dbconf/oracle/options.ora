@@ -1,5 +1,6 @@
 Database options options.txt  SQL
 Database options DSN          __SQLDSN__
+Database options UPPERCASE    1
 ifdef SQLUSER
 Database options USER         __SQLUSER__
 endif

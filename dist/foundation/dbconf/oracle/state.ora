@@ -1,4 +1,5 @@
 Database  state  state.txt    __SQLDSN__
+Database  state  UPPERCASE    1
 ifdef SQLUSER
 Database  state  USER         __SQLUSER__
 endif
