@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.2 2000-11-26 08:17:33 heins Exp $
+# $Id: Config.pm,v 1.25.2.3 2000-11-30 01:25:10 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -104,7 +104,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.25.2.2 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.3 $, 10);
 
 my %CDname;
 
@@ -299,6 +299,7 @@ sub global_directives {
     ['ErrorFile',		  undef,     	     undef],
     ['SysLog',			 'hash',     	     undef],
     ['CheckHTML',		  undef,     	     ''],
+    ['TolerateGet',		 'yesno',     	     'No'],
 	['Variable',	  	 'variable',     	 ''],
 	['Profiles',	  	 'profile',     	 ''],
     ['Catalog',			 'catalog',     	 ''],
@@ -331,7 +332,7 @@ sub catalog_directives {
     ['Message',          'message',           ''],
 	['Variable',	  	 'variable',     	 ''],
 	['ScratchDefault',	 'hash',     	 	 ''],
-	['Profile',			 'hash',     	 	 ''],
+	['Profile',			 'locale',     	 	 ''],
 	['ValuesDefault',	 'hash',     	 	 ''],
     ['ProductFiles',	 'array_complete',  'products'],
     ['DisplayErrors',    'yesno',            'No'],
@@ -569,7 +570,7 @@ sub config {
     my($d, $parse, $var, $value, $lvar);
 
 	if(ref $existing) {
-::logDebug("existing=$existing");
+#::logDebug("existing=$existing");
 		$C = $existing;
 	}
 	else {
@@ -1169,7 +1170,7 @@ GLOBLOOP:
 sub watch {
 	my($name, $value) = @_;
 	my ($ref, $orig);
-#::logDebug("Contents of $name: " . ::uneval($C->{$name}));
+#::logDebug("Contents of $name: " . ::uneval_it($C->{$name}));
 	if(ref($C->{$name}) =~ /ARRAY/) {
 #::logDebug("watch ref=array");
 		$ref = $C->{$name};
@@ -2078,7 +2079,7 @@ sub parse_catalog {
 		$cat->{$key} = $value;
 	}
 
-#::logDebug ("parsing catalog $name = " . ::uneval($cat));
+#::logDebug ("parsing catalog $name = " . ::uneval_it($cat));
 
 	$Global::Catalog{$name} = $cat;
 
@@ -2194,7 +2195,7 @@ sub parse_config_db {
 		}
 	}
 
-#::logDebug("d object: " . ::uneval($d));
+#::logDebug("d object: " . ::uneval_it($d));
 	if($d->{ACTIVE} and ! $d->{OBJECT}) {
 		my $name = $d->{'name'};
 		$d->{OBJECT} = Vend::Data::import_database($d)
@@ -2303,7 +2304,7 @@ sub parse_database {
 			$d->{$p} = [] unless defined $d->{$p};
 			push @{$d->{$p}}, @v;
 		}
-		elsif ($p =~ /^(MEMORY|GDBM|DB_FILE|LDAP)$/i) {
+		elsif ($p =~ /^(MEMORY|SDBM|GDBM|DB_FILE|LDAP)$/i) {
 			$d->{Class} = uc $p;
 		}
 		elsif ($p eq 'ALIAS') {
