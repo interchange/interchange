@@ -22,15 +22,11 @@ matches:
       <table border="0" width="95%">
       <tr> 
   	    <td align="left">
-	      <INPUT TYPE=hidden NAME=mv_coordinate VALUE=1>
 	      <INPUT TYPE=hidden NAME=mv_searchtype VALUE=db>
 	      <INPUT TYPE=hidden NAME=mv_matchlimit VALUE=[control matches 10]>
 	      <INPUT TYPE=hidden NAME=mv_sort_field VALUE=category>
 	      <INPUT TYPE=hidden NAME=mv_search_field VALUE="*">
 	      <input type=hidden name=mv_substring_match value=1>
-	      <INPUT TYPE=hidden NAME=mv_column_op VALUE=ne>
-	      <INPUT TYPE=hidden NAME=mv_column_op VALUE=rm>
-	      <INPUT TYPE=hidden NAME=mv_searchspec VALUE=1>
 	      <INPUT MAXLENGTH=30 NAME=mv_searchspec type=text size=8>
 	    </td>
 	    <td align="right" valign="middle" width="45">
