@@ -93,6 +93,9 @@ Usertags
 
 * removed unfinished [find] usertag 
 
+* Allow customization of [warnings auto=1] with class, style, extra as in many
+  IC tags.
+
 Foundation
 ----------
 
