@@ -1,7 +1,7 @@
 [set help_name]shipping.edit[/set]
 [set ui_class]Admin[/set]
-[seti page_title]Shipping options: edit method [cgi ui_shipmode][/seti]
-[seti page_banner]Shipping options: edit method <I>[cgi ui_shipmode]</I>[/seti]
+[seti page_title][L]Shipping options[/L]: [msg arg.0="[cgi ui_shipmode]"]edit method %s[/msg][/seti]
+[seti page_banner][L]Shipping options[/L]: [msg arg.0="<I>[cgi ui_shipmode]</I>"]edit method %s[/msg][/seti]
 [set icon_name]icon_config.gif[/set]
 [set meta_header]
 <SCRIPT LANGUAGE=JavaScript>
@@ -182,7 +182,7 @@
 
 <tr>
 <td bgcolor=__UI_C_INTBLOCK__ align=right WIDTH="__UI_LEFT_WIDTH">
-<small>Name of this method</small><BR><small><i>(letters/digits only)</i></small>
+<small>[L]Name of this method[/L]</small><BR><small><i>[L](letters/digits only)[/L]</i></small>
 </td>
 <td bgcolor=__UI_C_INTBLOCK__>
 <input type=text size=40 name="ui_shipmode" value="[value ui_shipmode]">
