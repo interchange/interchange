@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.6.2.5 2002-01-24 05:07:01 jon Exp $
+# $Id: Order.pm,v 2.6.2.6 2002-03-27 16:50:03 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.6.2.5 $, 10);
+$VERSION = substr(q$Revision: 2.6.2.6 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -868,6 +868,7 @@ sub check_order {
 	@Errors = ();
 	$And = 1;
 	$Fatal = $Final = 0;
+	$Fail_page = $Success_page = '';
 
 	my($var,$val,$message);
 	my $status = 1;
