@@ -61,12 +61,12 @@ banner:
 		return;
 	[/perl]
       <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-      <tr align="center"> 
+    [table-organize embed=1 pretty=1 cols="[control cols 2]"]
 [loop
 	random="[control matches 3]"
 	list="[scratch promo_codes]"
 	 ] 
-        <td> 
+     <TD> 
 	  <table border="0" cellspacing="0" cellpadding="0">
 	  <tr> 
 		<td align="center" colspan="2" class="contentbar1">
@@ -118,9 +118,9 @@ banner:
 		<td align="center">&nbsp;</td>
 	  </tr>
 	  </table>
-  	</td>
+  	</TD>
 [/loop]
-      </tr>
+[/table-organize]
       </table>
 
       <p>&nbsp;</p>
