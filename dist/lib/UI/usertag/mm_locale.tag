@@ -9,6 +9,7 @@ sub {
 		$Vend::Cfg->{Locale_repository}{"$locale"} 
 			= $Global::Locale_repository->{$locale};
 		$Tag->setlocale("$locale");
+		$Tag->tmp({name => 'mv_locale'}, $locale);
 	}	
 	1;
 }
