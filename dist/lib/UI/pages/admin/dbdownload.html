@@ -21,6 +21,7 @@
 		compress="[cgi ui_compress]"
 		gnumeric="[cgi ui_gnumeric]"
 		xls="[cgi ui_export_xls]"
+		max_xls_string="[cgi ui_export_max_xls_string]"
 		tables="[scratch exported_tables]"
 	] tables backed up.
 </BLOCKQUOTE>
@@ -102,7 +103,17 @@ What data would you like to export?
 	<INPUT TYPE=radio NAME=ui_gnumeric VALUE=compressed [checked ui_gnumeric compressed]>
 		Gnumeric simple text format, compressed
 	[if type=explicit compare="[version extended=1 modtest='Spreadsheet::WriteExcel']"]
-	<BR><INPUT TYPE=checkbox VALUE=1 NAME=ui_export_xls> Create XLS spreadsheet
+	<BR><INPUT TYPE=checkbox VALUE=1 NAME=ui_export_xls [checked name=ui_export_xls value=1]> Create XLS spreadsheet
+	<SELECT NAME=ui_export_max_xls_string>
+[loop lr=1 option=ui_export_max_xls_string cgi=1 list="
+0	Max string length 255
+1024	1024 (compatible with some)
+4096	4096 (compatible with some)
+16384	16384 (compatible with some)
+"]
+<OPTION VALUE="[loop-code]"> [loop-pos 1]
+[/loop]
+	</SELECT>
 	[/if]
 	</BLOCKQUOTE>
 	<p>
