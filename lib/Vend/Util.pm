@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.42 2002-11-28 17:12:22 kwalsh Exp $
+# $Id: Util.pm,v 2.43 2002-12-02 22:12:57 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -83,7 +83,7 @@ require HTML::Entities;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.42 $, 10);
+$VERSION = substr(q$Revision: 2.43 $, 10);
 
 BEGIN {
 	eval {
@@ -841,7 +841,7 @@ sub is_hash {
 }
 
 sub dotted_hash {
-	my($hash, $key, $value) = @_;
+	my($hash, $key, $value, $delete_empty) = @_;
 	$hash = get_option_hash($hash) unless is_hash($hash);
 	unless (is_hash($hash)) {
 		return undef unless defined $value;
@@ -870,7 +870,13 @@ sub dotted_hash {
 		$ref = $ref->{$_};
 	}
 
-	$ref->{$final} = $value;
+	if($delete_empty and ! length($value)) {
+		delete $ref->{$final};
+	}
+	else {
+		$ref->{$final} = $value;
+	}
+
 	$hash = uneval_it($hash);
 	return $hash;
 }
