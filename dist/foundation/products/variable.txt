@@ -45,6 +45,9 @@ LINKDECO	underline	Catalog Colors and Style
 LINKHOVERDECO	underline	Catalog Colors and Style
 LOGGED_STATIC	1	Static pages
 LOGO	__MVC_LOGO__	Template
+MAILING_MAX_DIRECT	50	Mailings
+MAILING_FROM	__MVC_COMPANY__ <__MVC_EMAILSERVICE__>	Mailings
+MAILING_TO	{FNAME} {LNAME} <{EMAIL}>	Mailings
 MAINCONTENT_TEXT	#000000	Catalog Colors and Style
 MAINCONTENT_BG	#FFFFFF	Catalog Colors and Style
 MAINCONTENT_FONT	Helvetica	Catalog Colors and Style

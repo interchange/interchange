@@ -443,6 +443,7 @@ dist/foundation/pages/query/check_orders.html
 dist/foundation/pages/query/get_password.html
 dist/foundation/pages/query/order_detail.html
 dist/foundation/pages/query/order_return.html
+dist/foundation/pages/query/unsub.html
 dist/foundation/pages/results.html
 dist/foundation/pages/results_big.html
 dist/foundation/pages/returns.html
@@ -687,6 +688,7 @@ dist/lib/UI/pages/admin/customer_all.html
 dist/lib/UI/pages/admin/customer_bill.html
 dist/lib/UI/pages/admin/customer_change_pass.html
 dist/lib/UI/pages/admin/customer_comments.html
+dist/lib/UI/pages/admin/customer_mailing.html
 dist/lib/UI/pages/admin/customer_pref.html
 dist/lib/UI/pages/admin/customer_select.html
 dist/lib/UI/pages/admin/customer_ship.html
@@ -828,6 +830,7 @@ dist/lib/UI/pages/include/item_option_modular
 dist/lib/UI/pages/include/item_option_simple
 dist/lib/UI/pages/include/menus/Accounting.txt
 dist/lib/UI/pages/include/menus/Admin.txt
+dist/lib/UI/pages/include/menus/Bottom.txt
 dist/lib/UI/pages/include/menus/Content.txt
 dist/lib/UI/pages/include/menus/Customers.txt
 dist/lib/UI/pages/include/menus/Design.txt
@@ -985,6 +988,7 @@ scripts/configdump.PL
 scripts/dump.PL
 scripts/expire.PL
 scripts/expireall.PL
+scripts/findtags.PL
 scripts/ic_mod_perl.PL
 scripts/interchange.PL
 scripts/localize.PL
