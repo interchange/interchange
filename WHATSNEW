@@ -6,10 +6,20 @@
 ------------------------------------------------------------------------------
 
 
-Interchange 5.0.1 released 2004-03-26.
+Interchange 5.0.1 released 2004-03-29.
 
-Core
-----
+Security
+--------
+
+* Plug a security hole which allows an attacker to expose arbitrary variable 
+  contents by using an URL like 
+  http://shop.example.com/cgi-bin/store/__SQLUSER__. 
+
+  All Interchange applications using the standard "missing" special page
+  from the demo catalog or a similar one are vulnerable to this attack.
+  The attacker may learn the SQL access information for your Interchange
+  application and use this information to read and manipulate sensitive
+  data.
 
 * Disallow [ and < in page names when setting MV_PAGE and MV_PREV_PAGE
   variables.
@@ -22,6 +32,9 @@ Core
 * Don't show sensitive (i.e. @Global::HideCGI) CGI variables in a dump.
   This allows saving a session to disk for diagnositic purposes in case
   of order failure.
+
+Core
+----
 
 * Allow [dump no-cgi=1 no-session=1 no-env=1] to finetune dump.
 
