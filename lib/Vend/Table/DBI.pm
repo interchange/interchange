@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.15 2002-03-05 00:45:00 jon Exp $
+# $Id: DBI.pm,v 2.16 2002-04-17 21:38:30 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.15 $, 10);
+$VERSION = substr(q$Revision: 2.16 $, 10);
 
 use strict;
 
@@ -989,14 +989,6 @@ sub set_slice {
 
 	my $tkey;
 	my $sql;
-	unless($s->record_exists($key)) {
-#::logDebug("record $key doesn't exist");
-		$key = $s->set_row($key);
-#::logDebug("key now '$key'");
-	}
-
-	$tkey = $s->quote($key, $s->[$KEY]) if defined $key;
-#::logDebug("tkey now $tkey");
 
 	if(ref $fary ne 'ARRAY') {
 		my $href = $fary;
@@ -1007,7 +999,11 @@ sub set_slice {
 		$fary = [ keys   %$href ];
 	}
 
-	if(defined $tkey) {
+	$tkey = $s->quote($key, $s->[$KEY]) if defined $key;
+#::logDebug("tkey now $tkey");
+
+
+	if ( defined $tkey and $s->record_exists($key) ) {
 		my $fstring = join ",", map { "$_=?" } @$fary;
 		$sql = "update $s->[$TABLE] SET $fstring WHERE $s->[$KEY] = $tkey";
 	}
@@ -1019,6 +1015,8 @@ sub set_slice {
 			splice @$vary, $i;
 			last;
 		}
+		unshift @$fary, $s->[$KEY];
+		unshift @$vary, $key;
 		my $fstring = join ",", @$fary;
 		my $vstring	= join ",", map {"?"} @$vary;
 		$sql = "insert into $s->[$TABLE] ($fstring) VALUES ($vstring)";
