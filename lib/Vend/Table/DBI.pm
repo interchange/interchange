@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.28 2002-07-24 21:41:07 mheins Exp $
+# $Id: DBI.pm,v 2.29 2002-08-01 16:40:14 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.28 $, 10);
+$VERSION = substr(q$Revision: 2.29 $, 10);
 
 use strict;
 
@@ -1203,7 +1203,7 @@ sub set_row {
 		or die "$DBI::errstr\n";
 
 	$val	= $cfg->{AUTO_SEQUENCE}
-			?  $s->last_sequence_value($val)
+			?  $s->last_sequence_value($fields[$ki])
 			: $fields[$ki];
 
 #::logDebug("set_row rc=$rc key=$val");
