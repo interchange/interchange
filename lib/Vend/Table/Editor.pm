@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.36 2003-07-02 04:05:51 mheins Exp $
+# $Id: Editor.pm,v 1.37 2003-07-02 15:15:31 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.36 $, 10);
+$VERSION = substr(q$Revision: 1.37 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -1569,14 +1569,18 @@ sub resolve_options {
 		my @breaks;
 		my @break_labels;
 		my $fstring = "\n\n$opt->{ui_data_fields}";
-		while ($fstring =~ s/\n+(?:\n[ \t]*=(.*))?\n+[ \t]*(\w[:.\w]+)/\n$2/) {
-			push @breaks, $2;
-			push @break_labels, "$2=$1" if $1;
+		while ($fstring =~ s/\n+(?:\n[ \t]*=(.*?)(\*?))?\n+[ \t]*(\w[:.\w]+)/\n$3/) {
+			push @breaks, $3;
+			$opt->{start_at} ||= $3 if $2;
+			push @break_labels, "$3=$1" if $1;
 		}
 		$opt->{ui_break_before} = join(" ", @breaks)
 			if ! $opt->{ui_break_before};
 		$opt->{ui_break_before_label} = join(",", @break_labels)
 			if ! $opt->{ui_break_before_label};
+		while($fstring =~ s/\n(.*)[ \t]*\*/\n$1/) {
+			$opt->{focus_at} = $1;
+		}
 		$opt->{ui_data_fields} = $fstring;
 	}
 
@@ -3592,16 +3596,17 @@ EOF
 EOF
 
 	my $end_script = '';
-	if( $opt->{start_at}
+	if( $opt->{start_at} || $opt->{focus_at}
 			and
 		$opt->{form_name}
 			and
 		$widget->{$opt->{start_at}} !~ /radio|check/i
 		)
 	{
+		my $foc = $opt->{focus_at} || $opt->{start_at};
 		$end_script = <<EOF;
 <script>
-	document.$opt->{form_name}.$opt->{start_at}.focus();
+	document.$opt->{form_name}.$foc.focus();
 </script>
 EOF
 	}
