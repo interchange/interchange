@@ -35,7 +35,7 @@ random:
 <table width="[control table_width 95%]" align=center>
 <tr class="categorybar">
   <td style="categorybar"> 
-	[control banner Other items you may like]
+	[control name=banner default="[L]Other items you may like[/L]"]
   </td>
 </tr>
 <tr>
@@ -65,12 +65,12 @@ random:
 
 		  <tr> 
 			<td colspan="2">
-				Our Price: <b>[loop-price]</b>
+				[L]Our Price[/L]: <b>[loop-price]</b>
 			</td>
 		  </tr>
 		  <tr> 
 			<td>
-				<a href="[area [loop-code]]">More Info</a>&nbsp;
+				<a href="[area [loop-code]]">[L]More Info[/L]</a>&nbsp;
 			</td>
 			<td align="center">
 				[if-loop-data options o_modular]
@@ -79,7 +79,7 @@ random:
 					[order [loop-code]]
 				[/else]
 				[/if-loop-data]
-				  <img src="__THEME_IMG_DIR__buynow.gif" border="0" alt="buy now">
+				  <img src="__THEME_IMG_DIR__buynow.gif" border="0" alt="[L]buy now[/L]">
 				</A>
 			</td>
 		  </tr>

@@ -9,6 +9,7 @@ Add address	Add address			Adres toevoegen
 Additional Shipping Addresses	Additional Shipping Addresses			Additionele verzendadressen
 Address	Address			Adres
 Admin interface	Admin interface			Administratie interface
+Advanced	Advanced			Verfijnd zoeken
 Advanced Search	Advanced Search			Uitgebreid zoeken
 Affiliate code	Affiliate code			
 Affiliate headquarters	Affiliate headquarters			
@@ -26,6 +27,8 @@ Best sellers...	Best sellers...			Best verkopende...
 Billing Address	Billing Address			Faktuuradres
 Billing Name	Billing Name			Faktuurnaam
 Business name	Business name			Bedrijfsnaam
+Buy	Buy			Kopen
+Buy List	Buy List			Bestellijst
 Buy it Now!	Buy it Now!			Koop nu!
 Buy now	Buy now			Koop nu
 CANCEL_PAR1	Please confirm your request to stop shopping by clicking the button below. Allitems will be cleared from your shopping cart, your name and address informationwill be expunged, and all saved settings from your visit will disappear.			Bevestig alstublieft uw verzoek om met winkelen te stoppen door op onderstaande knop te klikken. Als U dat doet worden alle producten uit uw winkelwagen verwijderd, uw naam en adresinformatie worden gewist en alle bewaarde instellingen tijdens uw bezoek zullen verdwijnen.
@@ -52,6 +55,7 @@ Country	Country			Land
 Create Account	Create Account			Aanmaken rekening
 Credit Amount	Credit Amount			Credit bedrag
 Current Price	Current Price			Huidige prijs
+Custom configure and buy	Custom configure and buy			
 Customer Satisfaction Survey	Customer Satisfaction Survey			Klantentevredenheidsonderzoek
 Customer Service	Customer Service			Klantenservice
 Customers who bought this item also bought	Customers who bought this item also bought			Liefhebbers van dit artikel bestelden ook
@@ -93,6 +97,7 @@ Item Quantity	Item Quantity			Productaantal
 January		Januar	Janvier	Januari
 July		Juli	Juillet	Juli
 June		Juni	Juin	Juni
+Just a thought...	Just a thought...			Zomaar een gedachte...
 Just complete enough to ensure one match.	Just complete enough to ensure one match.			Vul juist voldoende informatie in om verzekerd te zijn van slechts een zoekreslutaat.
 Last	Last			Laatste
 Last Name	Last Name			Achternaam
@@ -213,6 +218,7 @@ Save and Checkout	Save and Checkout			Opslaan en naar kassa
 Saved Carts	Saved Carts			Opgeslagen winkelwagen
 Saved Carts / Recurring Orders	Saved Carts / Recurring Orders			Opgeslagen winkelwagens / herhalingsorders
 Search	Search			Zoeken
+Search Go	Search Go			Zoek nu
 Search by Category	Search by Category			Zoek op categorie
 Search by Field	Search by Field			Zoek op veld
 Search for	Search for			Zoek voor
@@ -238,8 +244,10 @@ Show All Subcategories	Show All Subcategories			Toon alle sub-categorieen
 Something went wrong when mailing, perhaps a typo in your email address?	Something went wrong when mailing, perhaps a typo in your email address?			Er is iets fout gegaan bij het versturen van de email. Misschien een typefout in uw emailadres?
 Sorry, no match for that. Try again?	Sorry, no match for that. Try again?			Sorry, daarvoor zijn geen resultaten gevonden. Opnieuw proberen?
 Sorry, no matches for	Sorry, no matches for			Sorry, geen resultaten voor
+Sorry, no matches for <B>%s</B>.	Sorry, no matches for <B>%s</B>.			
 Specials	Specials			Aanbiedingen
 State/Province	State/Province			Staat/Provincie
+Stock	Stock			Voorraad
 Stock Alert Request	Stock Alert Request			Op voorraadmelding
 Stock Alerting	Stock Alerting			Op voorraad melden
 Stop Shopping	Stop Shopping			Stoppen met winkelen
