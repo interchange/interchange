@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.27 2001-11-09 23:29:58 mheins Exp $
+# $Id: Interpolate.pm,v 2.28 2001-11-09 23:34:52 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.27 $, 10);
+$VERSION = substr(q$Revision: 2.28 $, 10);
 
 @EXPORT = qw (
 
@@ -2975,7 +2975,7 @@ sub mvtime {
 		my $neg = $opt->{adjust} =~ s/^\s*-\s*//;
 		my $diff;
 		$opt->{adjust} =~ s/^\s*\+\s*//;
-		if($opt->{adjust} !~ /[a-z]/) {
+		if($opt->{adjust} !~ /[A-Za-z]/) {
 			$opt->{adjust} =~ s/00$//;
 			$diff = (60 * 60) * $opt->{adjust};
 		}
@@ -5260,6 +5260,7 @@ sub tag_tree {
 			$row->{mv_increment} = $increment++;
 			push(@rows, $row);
 			my $code = $row->{$keyfield};
+			$row->{mv_toggled} = 1 if $memo->{$code};
 #::logDebug("next row sub=$sub=$row->{$sub}");
 			my $next = $row->{$sub}
 				or next ROW;
