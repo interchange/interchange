@@ -167,11 +167,11 @@
 	}
 
 	if($Dref->{USER_default}) {
-		$string .= "#ifdef SQLPASS\n";
+		$string .= "ifdef SQLPASS\n";
 		for (qw/USER PASS/) {
 			$string .= tout($_,  "__SQL" . $_ . "__");
 		}
-		$string .= "#endif\n";
+		$string .= "endif\n";
 	}
 	else {
 		for (qw/USER PASS/) {
