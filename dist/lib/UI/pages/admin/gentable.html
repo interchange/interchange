@@ -60,14 +60,6 @@ sub {
 										)
 								. '&ui_return_to=@@MV_PAGE@@',
 					},
-		view => { 
-						img => '@_UI_IMG_@admin/index.gif',
-						url => "$url/do_view?mv_arg=" .
-								$froot->(join "/",
-											($Config->{Database}{$tab}{dir} || $Config->{ProductDir}),
-											$Config->{Database}{$tab}{file}
-										),
-					},
 		download => { 
 						img => '@_UI_IMG_@admin/down.gif',
 						url => "$Config->{VendURL}/ui_download/" .
@@ -92,16 +84,16 @@ sub {
 	my $out = '';
 	if(! $dblist_done_one++) {
 		$out .= '<tr>';
-		for(qw/edit import export view upload download /, "Table name (description)") {  # Add "report"
+		for(qw/edit import export upload download /, "Table name (description)") {  # Add "report"
 			$out .= qq{<td bgcolor="__UI_C_TITLEBARBG__" align=center><font size="-1" color="__UI_C_TITLEBARTXT__">$_</td>};
 		}
 		$out .= "</tr>";
 	}
 	$out .= '<tr>';
-	for(qw/edit import export view upload download /) {  # Add "report"
+	for(qw/edit import export upload download /) {  # Add "report"
 		my $line = $ref->{$_};
 		$out .= <<EOF;
-<td ALIGN=center><A HREF="$line->{url}"><img src="$line->{img}" border=0 alt="$_ $tab" align=top></A></td>
+<td ALIGN=center><A HREF="$line->{url}"><img src="$line->{img}" border=0 alt="$_ $tab" title="$_ $tab" align=top></A></td>
 EOF
 	}
 	$out .= qq{<td>&nbsp;<FONT SIZE="+1">$name</FONT>};
