@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.22 2002-11-22 21:34:19 mheins Exp $
+# $Id: Server.pm,v 2.23 2002-11-24 05:36:07 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.22 $, 10);
+$VERSION = substr(q$Revision: 2.23 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -171,7 +171,7 @@ sub map_cgi {
 			my $content_type = $msg =~ /<html/i ? 'text/html' : 'text/plain';
 			my $len = length($msg);
 			$Vend::StatusLine = <<EOF;
-Status: 404
+Status: 404 Not found
 Content-Type: $content_type
 Content-Length: $len
 EOF
