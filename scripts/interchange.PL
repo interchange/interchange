@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.0
 #
-# $Id: interchange.PL,v 1.15.2.11 2001-02-04 04:30:05 heins Exp $
+# $Id: interchange.PL,v 1.15.2.12 2001-02-07 12:15:24 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -951,6 +951,8 @@ my %Ignore = qw(
 	mv_check  1
 	mv_click  1
 	mv_nextpage  1
+	mv_failpage  1
+	mv_successpage  1
 	mv_more_ip  1
 	mv_credit_card_number  1
 	);
@@ -1325,7 +1327,7 @@ EOF
 
 sub config_named_catalog {
 	my ($cat_name, $source, $db_only, $dbconfig) = @_;
-	my ($g,$c,$conf);
+	my ($g,$c);
 
 	$g = $Global::Catalog{$cat_name};
 	unless (defined $g) {
@@ -1342,7 +1344,6 @@ sub config_named_catalog {
 
     chdir $g->{'dir'}
             or die "Couldn't change to $g->{'dir'}: $!\n";
-    $conf = $g->{'dir'} . '/etc';
 
 	if($db_only) {
 		logGlobal(
@@ -1358,7 +1359,7 @@ sub config_named_catalog {
 		$Vend::Cfg = config(
 				$g->{name},
 				$g->{dir},
-				$conf,
+				undef,
 				undef,
 				$cfg,
 				$dbconfig,
@@ -1376,7 +1377,7 @@ sub config_named_catalog {
     eval {
         $c = config($g->{'name'},
 					$g->{'dir'},
-					$conf,
+					undef,
 					$g->{'base'} || undef,
 # OPTION_EXTENSION
 #					$Vend::CommandLine->{$g->{'name'}} || undef
@@ -1478,7 +1479,7 @@ EOF
 	}
 	dump_structure($c, $g->{name}) if $Global::DumpStructure;
 
-	undef $c->{Source};
+	delete $c->{Source} unless $Global::KeepSource;
 	my $stime = scalar localtime();
 	Vend::Util::writefile(">$Global::ConfDir/status.$g->{name}", "$stime\n");
 	Vend::Util::writefile(">$c->{ConfDir}/status.$g->{name}", "$stime\n");
@@ -1908,10 +1909,11 @@ EOF
 			last COOKIELOGIN unless
 				$password = Vend::Util::read_cookie('MV_PASSWORD');
 			$CGI::values{mv_password} = $password;
+			my $profile = Vend::Util::read_cookie('MV_USERPROFILE');
 			local(%SIG);
 			undef $SIG{__DIE__};
 			eval {
-				Vend::UserDB::userdb('login');
+				Vend::UserDB::userdb('login', profile => $profile );
 			};
 			if($@) {
 				$Vend::Session->{failure} .= $@;
@@ -1956,25 +1958,13 @@ EOF
 		$SIG{"__DIE__"} = sub {
 							my $msg = shift;
 							put_session() if $Vend::HaveSession;
-							get_locale_message(500, <<EOF, $msg);
+							my $content = get_locale_message(500, <<EOF, $msg);
 <HTML><HEAD><TITLE>Fatal Interchange Error</TITLE></HEAD><BODY>
 <H1>FATAL error</H1>
 <PRE>%s</PRE>
 </BODY></HTML>
 EOF
-							exit 0;
-		};
-	}
-	else {
-		$SIG{"__DIE__"} = sub {
-							my $msg = shift;
-							put_session() if $Vend::HaveSession;
-							get_locale_message(500, <<EOF, $msg);
-<HTML><HEAD><TITLE>Fatal Error</TITLE></HEAD><BODY>
-<H1>FATAL error</H1>
-Please contact us.
-</BODY></HTML>
-EOF
+							::response(\$content);
 							exit 0;
 		};
 	}
@@ -2837,22 +2827,22 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-Copyright 1995-2000, Mike Heins. All rights reserved except as in the
+Copyright 1995-2001, Red Hat, Inc. All rights reserved except as in the
 license.
 
 =cut
 
 =head1 AUTHOR
 
-Mike Heins, <heins@akopia.com>. Please do not contact the author for
-direct help with the system. Use the Interchange mail lists:
+Mike Heins, <mheins@redhat.com>. Please do not contact the author for
+direct help with the system. Use the Interchange mail list:
 
-	interchange-users	(English, subscribe at http://developer.akopia.com/)
+    interchange-users   (English, subscribe at http://developer.akopia.com/)
 
 General information and documentation for Interchange is at:
 
-	http://www.akopia.com/
-	http://developer.akopia.com/
+    http://www.akopia.com/
+    http://developer.akopia.com/
 
 =head1 SPECIAL ACKNOWLEDGEMENTS
 
@@ -2910,6 +2900,7 @@ Contributions to Interchange have been made by:
     Sonny Cook
     Tim Baverstock
     Ton Verhagen
+    Victor Nolton
     William Dan Terry
     and many others
 
@@ -2918,7 +2909,6 @@ and, of course, the entire Perl team without whom Interchange could not exist.
 =cut
 
 __END__
-
 _EoP_
 	s{.*\n(#(.*)~_~(\w+)~_~(.*))}{$2 . doit($3) . "$4\n$1"}eg;
 	my $file = $0;
