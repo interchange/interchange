@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.26 2002-07-18 19:47:08 mheins Exp $
+# $Id: DBI.pm,v 2.27 2002-07-23 13:17:24 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.26 $, 10);
+$VERSION = substr(q$Revision: 2.27 $, 10);
 
 use strict;
 
@@ -119,8 +119,6 @@ sub import_db {
 	Vend::Data::update_productbase($s->[0]{name});
 	return $db;
 }
-
-my $Info;
 
 my %known_capability = (
 	AUTO_INDEX_PRIMARY_KEY => {
@@ -587,10 +585,6 @@ sub open_table {
 	}
 
 	check_capability($config, $db->{Driver}{Name});
-
-	if(! $Info and ($db->can('table_info') and $Info = $db->table_info()) ) {
-#::logDebug("$tablename table_info: " . ::uneval($Info->fetchall_arrayref()));
-	}
 
     unless ($config->{hot_dbi}) {
 		$DBI_connect_count{$config->{dsn_id}}++;
