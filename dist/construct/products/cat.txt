@@ -1,0 +1,26 @@
+code	area	selector	name	banner_text	subs	sort	url	related_cat
+Paintbrushes	Painting Supplies	Paintbrushes	Paintbrushes	Paintbrushes				
+Shovels	Hand Tools	Shovels	Shovels	Shovels				
+Picks_&_Hatchets	Hand Tools	Picks_&_Hatchets	Picks_&_Hatchets	Picks & Hatchets				
+Sandpaper	Painting Supplies	Sandpaper	Sandpaper	Sandpaper				
+Eye_Protection	Safety Equipment	Eye_Protection	Eye_Protection	Eye Protection				
+Pliers	Hand Tools	Pliers	Pliers	Pliers				
+Breathing_Protection	Safety Equipment	Breathing_Protection	Breathing_Protection	Breathing Protection				
+Toolboxes	Tool Storage	Toolboxes	Toolboxes	Toolboxes				
+Hammers	Hand Tools	Hammers	Hammers	Hammers				Nails
+Hand_Planes	Hand Tools	Hand_Planes	Hand_Planes	Hand Planes				
+Squares	Measuring Tools	Squares	Squares	Squares				
+Ladders	Ladders	Ladders	Ladders	Ladders				
+Shears	Hand Tools	Shears	Shears	Shears				
+Wrenches	Hand Tools	Wrenches	Wrenches	Wrenches				
+Brushes	Hand Tools	Brushes	Brushes	Brushes				
+Tape_Measures	Measuring Tools	Tape_Measures	Tape_Measures	Tape Measures				
+Tool_Belts	Tool Storage	Tool_Belts	Tool_Belts	Tool Belts				
+Putty_Knives	Painting Supplies	Putty_Knives	Putty_Knives	Putty Knives				
+Rulers	Measuring Tools	Rulers	Rulers	Rulers				
+Rollers	Painting Supplies	Rollers	Rollers	Rollers				
+Hand_Saws	Hand Tools	Hand_Saws	Hand_Saws	Hand Saws				
+Levels	Measuring Tools	Levels	Levels	Levels				
+Step_Stools	Ladders	Step_Stools	Step_Stools	Step Stools				
+Nails	Hardware	Nails	Nails	Nails				
+Gift_Certificate	Miscellaneous	Gift_Certificate	Gift_Certificate	Gift Certificate				

@@ -1,0 +1,91 @@
+COMPANY
+Your company name
+Barry's Books, Bikes, and Birkenstocks
+
+ADDRESS
+Your company address
+123 Any St.
+
+CITY
+Your company city/state/zip
+Anytown, USA 00000
+
+PHONE
+Your company phone
+(555) 555-5555
+
+FAX
+Your company fax number
+(555) 555-5556
+
+TOLLFREE
+Your company tollfree number (if any)
+(888) 555-5555
+
+MULTIORDER
+Set to 1 to enable multi-page order screens
+0	1
+
+TAXAREA
+Area(s) to tax in
+VA UT
+
+TAXRATE
+Percentage rate(s) for tax in different areas
+VA=7.5, UT=7.25
+
+UPSADDER
+Amount to add on to standard UPS costs
+3.00
+
+UPSORIGIN
+Origin zip code for UPS lookups
+00000	45056
+
+SOMESQL
+Set to 1 if you want to use MySQL or Postgres
+0	1
+
+{SOMESQL}MYSQL
+Set to 1 if you want to use MySQL
+1	0
+
+{MYSQL}SQLDB
+Database to use (will be created)
+test_construct	minivend
+
+{MYSQL}SQLDSN
+DBI DSN to use
+dbi:mysql:test_construct
+
+{MYSQL}SQLUSER
+Username for MySQL (if any)
+	minivend
+
+{MYSQL}SQLPASS
+Password for MySQL (if any)
+	pass
+
+{SOMESQL and ! '1'}PGSQL
+Set to 1 if you want to use PostGres
+1	0
+
+{PGSQL}SQLDB
+Database to use (will be created)
+test_construct	minivend
+
+{PGSQL}SQLDSN
+DBI DSN to use
+dbi:Pg:dbname=test_construct
+
+{PGSQL}SQLUSER
+Username for Postgres (if any)
+	minivend
+
+{PGSQL}SQLPASS
+Password for Postgres (if any)
+	pass
+
+SUPERUSER
+Account name that will control this catalog
+construct	minivend

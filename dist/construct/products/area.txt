@@ -1,0 +1,9 @@
+code	selector	name	banner_img	subs	sort
+A3	Ladders	Ladders			3
+A4	Safety Equipment	Safety Equipment			4
+A1	Hand Tools	Hand Tools			1
+A5	Tool Storage	Tool Storage			5
+A6	Painting Supplies	Painting Supplies			6
+A2	Measuring Tools	Measuring Tools			2
+A7	Hardware	Hardware			7
+A8	Miscellaneous	Miscellaneous			8
