@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.64 2001-06-04 17:13:18 racke Exp $
+# $Id: Interpolate.pm,v 1.40.2.65 2001-06-05 19:50:07 jason Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.64 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.65 $, 10);
 
 @EXPORT = qw (
 
@@ -2318,8 +2318,32 @@ sub tag_perl {
 				if $Vend::Session->{try}{$Vend::Try};
 			$Vend::Session->{try}{$Vend::Try} .= $@;
 		}
-		logError( "Safe: %s\n%s\n" , $msg, $body );
-		logGlobal({ level => 'debug' }, "Safe: %s\n%s\n" , $msg, $body );
+        if($opt->{number_errors}) {
+            my @lines = split("\n",$body);
+            my $counter = 1;
+            map { $_ = sprintf("% 4d %s",$counter++,$_); } @lines;
+            $body = join("\n",@lines);
+        }
+        if($opt->{trim_errors}) {
+            if($msg =~ /line (\d+)\.$/) {
+                my @lines = split("\n",$body);
+                my $start = $1 - $opt->{trim_errors} - 1;
+                my $length = (2 * $opt->{trim_errors}) + 1;
+                @lines = splice(@lines,$start,$length);
+                $body = join("\n",@lines);
+            }
+        }
+        if($opt->{eval_label}) {
+            $msg =~ s/\(eval \d+\)/($opt->{eval_label})/g;
+        }
+        if($opt->{short_errors}) {
+            chomp($msg);
+            logError( "Safe: %s" , $msg );
+            logGlobal({ level => 'debug' }, "Safe: %s" , $msg );
+        } else {
+            logError( "Safe: %s\n%s\n" , $msg, $body );
+            logGlobal({ level => 'debug' }, "Safe: %s\n%s\n" , $msg, $body );
+        }
 		return $opt->{failure};
 	}
 #::logDebug("tag_perl initialized=$Vend::Calc_initialized: carts=" . ::uneval($::Carts));
