@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.19 2003-07-06 17:06:10 mheins Exp $
+# $Id: Search.pm,v 2.20 2003-07-07 05:49:33 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -22,7 +22,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.19 $, 10);
+$VERSION = substr(q$Revision: 2.20 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -478,6 +478,67 @@ sub get_return {
 	return $return_sub;
 }
 
+my $TextQuery;
+
+BEGIN {
+	eval {
+		require Text::Query;
+		import Text::Query;
+		$TextQuery = 1;
+	};
+}
+
+sub create_text_query {
+	my ($s, $i, $string, $op) = @_;
+
+	if(! $TextQuery) {
+		die ::errmsg("No Text::Query module installed, cannot use op=%s", $op);
+	}
+
+	$s ||= {};
+	$op ||= 'sq';
+	my $q;
+#::logDebug("query creation called, op=$op");
+
+	my $cs	= ref ($s->{mv_case})
+			? $s->{mv_case}[$i]
+			: $s->{mv_case};
+	my $ac	= ref ($s->{mv_all_chars})
+			? $s->{mv_all_chars}[$i]
+			: $s->{mv_all_chars};
+	my $su	= ref ($s->{mv_substring_match})
+			? $s->{mv_substring_match}[$i]
+			: $s->{mv_substring_match};
+
+#::logDebug("query creation called, op=$op cs=$cs ac=$ac");
+	if($op eq 'aq') {
+		$q = new Text::Query($string,
+								-parse => 'Text::Query::ParseAdvanced',
+                               -solve => 'Text::Query::SolveAdvancedString',
+                               -build => 'Text::Query::BuildAdvancedString',
+				);
+	}
+	else {
+		$q = new Text::Query($string,
+								-parse => 'Text::Query::ParseSimple',
+                               -solve => 'Text::Query::SolveSimpleString',
+                               -build => 'Text::Query::BuildSimpleString',
+				);
+	}
+	$q->prepare($string,
+					-litspace => $s->{mv_exact_match},
+					-case => $cs,
+					-regexp => ! $ac,
+					-whole => ! $su,
+				);
+#::logDebug("query object called, is: " . ::uneval($q));
+	return sub {
+		my $str = shift;
+#::logDebug("query routine called string=$str");
+		$q->matchscalar($str);
+    };
+}
+
 my %numopmap  = (
 				'!=' => [' != '],
 				'!~' => [' !~ m{', '}'],
@@ -523,6 +584,8 @@ my %stropmap  = (
 				'em' => [' =~ m{^', '$}i'],
 				'rm' => [' =~ m{', '}i'],
 				'rn' => [' !~ m{', '}i'],
+				'aq' => [\&create_text_query, 'aq'],
+				'tq' => [\&create_text_query, 'tq'],
 				'like' => [' =~ m{LIKE', '}i'],
 				'LIKE' => [' =~ m{LIKE', '}i'],
 );
@@ -535,10 +598,17 @@ sub map_ops {
 	my $op;
 	for($i = 0; $i < $count; $i++) {
 		next unless $c->[$i];
-		$c->[$i] =~ tr/ 	//;
+		$c->[$i] =~ tr/ \t//;
+		my $o = $c->[$i];
 		$c->[$i] = $s->{mv_numeric}[$i]
-				? $numopmap{$c->[$i]}
-				: $stropmap{$c->[$i]};
+				? $numopmap{$o}
+				: $stropmap{$o};
+		if(! $c->[$i]) {
+			my $r;
+			$c->[$i] = [$r, $o], next
+				if  $r = $Global::CodeDef->{SearchOp}
+				and $r = $r->{Routine}{$o};
+		}
 	}
 	@{$s->{mv_column_op}};
 }
@@ -691,7 +761,28 @@ EOF
 		for($i = 0; $i < $field_count; $i++) {
 			undef $candidate, undef $f 
 				if $begin[$i] or $s->{mv_orsearch}[$i];
-			if($ops[$i]) {
+			my $subfrag;
+			if(! $ops[$i]) {
+				$start = '=~ m{';
+				$start .=  '^' if $begin[$i];
+				if($bounds[$i]) {
+					$term = '}';
+				}
+				else {
+					$term = '\b}';
+					$start .= '\b' unless $begin[$i];
+				}
+				$term .= 'i' unless $cases[$i];
+				$candidate = 1 if defined $candidate and ! $begin[$i];
+			}
+			elsif(ref($ops[$i][0]) eq 'CODE') {
+					undef $f; undef $candidate;
+					my $o = shift(@{$ops[$i]});
+					$s->{search_routines} ||= [];
+					$s->{search_routines}[$i] = $o->($s, $i, $specs[$i], @{$ops[$i]});
+					$subfrag = qq{ \$s->{search_routines}[$i]->(\$fields[$i])};
+			}
+			else {
 				$ops[$i][0] =~ s/m\{$/m{^/ if $begin[$i];
 				! $bounds[$i] 
 					and $ops[$i][0] =~ s/=~\s+m\{$/=~ m{\\b/
@@ -705,19 +796,7 @@ EOF
 					and $candidate = 1;
 #::logDebug("Candidate now=$candidate");
 			}
-			else {
-				$start = '=~ m{';
-				$start .=  '^' if $begin[$i];
-				if($bounds[$i]) {
-					$term = '}';
-				}
-				else {
-					$term = '\b}';
-					$start .= '\b' unless $begin[$i];
-				}
-				$term .= 'i' unless $cases[$i];
-				$candidate = 1 if defined $candidate and ! $begin[$i];
-			}
+			
 			if ($start =~ s/LIKE$//) {
 				$specs[$i] =~ s/^(%)?([^%]*)(%)?$/$2/;
 				# Substitute if only one present
@@ -729,20 +808,26 @@ EOF
 								: '^' . $specs[$i];
 					$like = 1;
 				}
-			 }
-			 if ($i >= $k + $field_count) {
-				 undef $candidate if ! $wild_card;
-#::logDebug("triggered wild_card: $wild_card");
-				 $wild_card = 0;
-			 }
-			 if(defined $candidate and ! $like) {
-				undef $f if $candidate;
-			 	$f = "sub { return 1 if $negates[$i]\$_ $start$specs[$i]$term ; return 0}"
-					if ! defined $f and $start =~ m'=~';
-				undef $candidate if $candidate;
-			 }
-			 my $grp = $group[$i] || 0;
-			 my $frag = qq{$negates[$i]\$fields[$i] $start$specs[$i]$term};
+			}
+			if ($i >= $k + $field_count) {
+			    undef $candidate if ! $wild_card;
+#::logDebug(triggered wild_card: $wild_card");
+			    $wild_card = 0;
+			}
+			if(defined $candidate and ! $like) {
+			   undef $f if $candidate;
+				$f = "sub { return 1 if $negates[$i]\$_ $start$specs[$i]$term ; return 0}"
+			   	if ! defined $f and $start =~ m'=~';
+			   undef $candidate if $candidate;
+			}
+			my $grp = $group[$i] || 0;
+			my $frag;
+			if($subfrag) {
+			   $frag = $subfrag;
+			}
+			else {
+			    $frag = qq{$negates[$i]\$fields[$i] $start$specs[$i]$term};
+			}
 #::logDebug("Code fragment is q!$frag!");
 			 unless ($code[$grp]) {
 				 $code[$grp] = [ $frag ];

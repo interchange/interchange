@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.119 2003-06-25 16:38:17 mheins Exp $
+# $Id: Config.pm,v 2.120 2003-07-07 05:49:33 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.119 $, 10);
+$VERSION = substr(q$Revision: 2.120 $, 10);
 
 my %CDname;
 my %CPname;
@@ -1187,6 +1187,7 @@ my %extmap = qw/
 	oc	OrderCheck
 	ut	UserTag
 	fi	Filter
+	so	SearchOp
 	fw	Widget
 	lc	LocaleChange
 	tag	UserTag
@@ -3612,6 +3613,7 @@ my %tagCanon = ( qw(
 	arraycode		ArrayCode
 	hashcode		HashCode
 	coretag  		CoreTag
+	searchop 		SearchOp
 	filter			Filter
 	formaction		FormAction
 	ordercheck		OrderCheck
@@ -3676,6 +3678,7 @@ my %valid_dest = qw/
 					usertag          UserTag
 					hashcode         HashCode
 					arraycode        ArrayCode
+					searchop 		 SearchOp
 					widget           Widget
 				/;
 
