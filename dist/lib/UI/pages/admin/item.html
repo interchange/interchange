@@ -266,11 +266,11 @@ EOF
 	@special = grep /\S/, split /[,\0]+/, $meta->{outboard};
 	unless (@special) {
 		@special = (
-			'Qty price=pricing:q5:r',
-			'Up-sell=merchandising:upsell_to:r',
-			'Cross-sell=merchandising:cross_sell:r',
-			'Promo=merchandising:featured:r',
-			'Inventory=inventory:quantity:r',
+			'Qty price;pricing:q5:r',
+			'Up-sell;merchandising:upsell_to:r',
+			'Cross-sell;merchandising:cross_sell:r',
+			'Promo;merchandising:featured:r',
+			'Inventory;inventory:quantity:r',
 			);
 	}
 	@special = grep $_ !~ /^none$/i, @special;
