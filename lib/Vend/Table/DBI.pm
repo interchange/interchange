@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.0.2.1 2001-10-18 05:30:04 mheins Exp $
+# $Id: DBI.pm,v 2.0.2.2 2001-11-02 08:29:54 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.0.2.1 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.2 $, 10);
 
 use strict;
 
@@ -1504,7 +1504,7 @@ sub query {
     my($s, $opt, $text, @arg) = @_;
 
     if(! CORE::ref($opt)) {
-        unshift @arg, $text;
+        unshift @arg, $text if defined $text;
         $text = $opt;
         $opt = {};
     }
