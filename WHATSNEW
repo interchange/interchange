@@ -69,6 +69,17 @@ Core
 
   		Limit  override_tag   tag1 tag2 tag3
 
+* Define a set of CGI keys that we don't want to save to disk, as
+  @Global::HideCGI.
+
+* Allow [dump no-cgi=1 no-session=1 no-env=1] to finetune dump.
+
+* Don't show sensitive (i.e. @Global::HideCGI) CGI variables in a dump.
+  This allows saving a session to disk for diagnositic purposes in case
+  of order failure.
+
+* Fix problem with invalid cookie if FullUrl is enabled and there is no path.
+
 UserTag
 -------
 
@@ -83,6 +94,9 @@ UI
 
 * let [row_edit] honor spread_width meta setting
 
+* display an error message if for whatever reason the regions directory is
+  empty+
+
 Foundation
 ----------
 
@@ -90,11 +104,16 @@ Foundation
   This allows the addition of mv_metadata to MySQL, as otherwise the
   column name "default" prevents the creation of the table.
 
+* Add missing [timed-build] to category_vertical_tree component.
+
 TableEditor
 -----------
 
 * Apply Paul Vinciguerra's patch to number of rows thing, which gets multiple row
   tabs working on the tabbed display if not in ui_style mode.
+
+* Make containing form name (i.e. <form name=foo ...>) available
+  to the widget.
 
 Menu
 ----
@@ -116,6 +135,12 @@ Menu
 	submenu_image_right=|
 			<span style="font-size: smaller !important"> &nbsp; (more)</span>
 						|
+
+Widgets
+-------
+
+* Allow date_widget to display/store empty value if called as date_blank
+  or datetime_blank.
 
 Options
 -------
