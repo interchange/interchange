@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.9.0
 #
-# $Id: interchange.PL,v 2.17 2001-11-28 03:35:45 jon Exp $
+# $Id: interchange.PL,v 2.18 2001-12-28 17:16:26 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -2099,16 +2099,15 @@ EOF
 #show_times("end session get") if $Global::ShowTimes;
 
 	$Vend::FinalPath = $Vend::Session->{last_url} = $CGI::path_info;
-	if(	defined $Vend::Session->{one_time_path_alias}{$Vend::FinalPath} ) {
-		$CGI::path_info
-					= $Vend::FinalPath
-					= delete $Vend::Session->{one_time_path_alias}{$Vend::FinalPath};
-	} 
-	elsif( defined $Vend::Session->{path_alias}{$Vend::FinalPath}	) {
+
+	if( defined $Vend::Session->{path_alias}{$Vend::FinalPath}	) {
 		$CGI::path_info
 					= $Vend::FinalPath
 					= $Vend::Session->{path_alias}{$Vend::FinalPath};
+		delete $Vend::Session->{path_alias}{$Vend::FinalPath}
+			if delete $Vend::Session->{one_time_path_alias}{$Vend::FinalPath};
 	}
+
     url_history($Vend::FinalPath) if $Vend::Cfg->{History};
 
 # TRACK
@@ -2229,6 +2228,40 @@ EOF
 
 	$Vend::FinalPath =~ s:^/+::;
 	$Vend::FinalPath =~ s/(\.html?)$//;
+
+	if(
+		$Vend::Cfg->{AliasTable}
+			and
+		my $record = database_exists_ref($Vend::Cfg->{AliasTable})
+						->row_hash($Vend::FinalPath)
+	 )
+	{
+		$Vend::FinalPath = $record->{real_page};
+
+		# This prevents filesystem access when we never want it
+		# If base page is not passed we allow normal resolution
+		$record->{base_page}
+			and $Vend::ForceFlypage = $record->{base_page};
+
+		my $ref;
+
+		## Here we populate CGI variables if desired
+		## Explicitly passed variables override this
+		if(
+			$record->{base_control}
+				and
+			$ref = get_option_hash($record->{base_control})
+		  )
+		{
+			for(keys %$ref) {
+				next if defined $CGI::values{$_};
+				$CGI::values{$_} = $ref->{$_};
+			}
+		}
+
+	}
+
+
 	$Vend::Session->{extension} = $1 || '';
 #::logDebug("path=$Vend::FinalPath");
 

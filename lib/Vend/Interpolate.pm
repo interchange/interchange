@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.32 2001-11-21 19:33:10 mheins Exp $
+# $Id: Interpolate.pm,v 2.33 2001-12-28 17:16:26 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.32 $, 10);
+$VERSION = substr(q$Revision: 2.33 $, 10);
 
 @EXPORT = qw (
 
@@ -5798,6 +5798,10 @@ sub fly_page {
 
     if($page) {
 		$selector = 'passed in tag';
+	}
+	elsif(	$Vend::ForceFlypage ) {
+		$selector = $Vend::ForceFlypage;
+		undef $Vend::ForceFlypage;
 	}
 	elsif(	$selector = $Vend::Cfg->{PageSelectField}
 			and db_column_exists($base,$selector)

@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.16 2001-12-06 01:25:19 jon Exp $
+# $Id: Config.pm,v 2.17 2001-12-28 17:16:26 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.16 $, 10);
+$VERSION = substr(q$Revision: 2.17 $, 10);
 
 my %CDname;
 
@@ -424,6 +424,7 @@ sub catalog_directives {
 	['NoSearch',         'wildcard',         'userdb'],
 	['OrderCounter',	 undef,     	     ''],
 	['MimeType',         'hash',             ''],
+	['AliasTable',	 	 undef,     	     ''],
 	['ImageAlias',	 	 'hash',     	     ''],
 	['TableRestrict',	 'hash',     	     ''],
 	['Filter',		 	 'hash',     	     ''],
