@@ -47,6 +47,10 @@ Interchange 4.6.1
 
 * Removed some duplicated image files, reducing package size by ~ 200 KB.
 
+* Fixed scoping problem with override from user image upload.
+
+* Allow internationalization of error messages in UserDB.
+
 
 Interchange 4.6.0
 
