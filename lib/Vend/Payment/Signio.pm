@@ -1,6 +1,6 @@
 # Vend::Payment::Signio - Interchange support for Signio/Verisign Payflow Pro
 #
-# $Id: Signio.pm,v 2.6 2003-02-14 21:41:18 jon Exp $
+# $Id: Signio.pm,v 2.7 2003-02-19 04:16:48 mheins Exp $
 #
 # Copyright (C) 1999-2003 Red Hat, Inc. and Interchange Development Group
 #
@@ -23,7 +23,7 @@ package Vend::Payment::Signio;
 
 =head1 Interchange support for Signio/Verisign Payflow Pro
 
-Vend::Payment::Signio $Revision: 2.6 $
+Vend::Payment::Signio $Revision: 2.7 $
 
 =head1 SYNOPSIS
 
@@ -413,6 +413,7 @@ sub signio {
                         authorize     A
                         void          V
                         settle        D
+                        settle_prior  D
                         credit        C
                         mauthcapture  S
                         mauthonly     A
