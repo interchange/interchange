@@ -124,6 +124,7 @@ binary-arch: build install
 	dh_installcron
 #	dh_installmanpages -v -pinterchange-doc
 	dh_installchangelogs 
+	dh_strip
 	dh_compress
 	dh_fixperms
 	# You may want to make some executables suid here.
