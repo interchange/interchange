@@ -450,6 +450,14 @@ UI
 
 * Many, many, minor bug fixes and improvements.
 
+mod_interchange
+---------------
+
+* Implemented a proper (automatic) URILevels mechanism and removed
+  the URILevels configuration directive.  This also fixes a bug,
+  reported by Philip Hempel in the interchange-users mail list,
+  where [PT] redirects were not being handled correctly.
+
 Forum
 -----
 
