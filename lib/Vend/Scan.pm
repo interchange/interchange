@@ -1,6 +1,6 @@
 # Vend/Scan.pm:  Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 1.5 2000-08-06 19:49:44 heins Exp $
+# $Id: Scan.pm,v 1.6 2000-10-13 19:31:59 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -29,7 +29,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 1.5 $, 10);
+$VERSION = substr(q$Revision: 1.6 $, 10);
 
 use strict;
 use Vend::Util;
@@ -161,11 +161,8 @@ my %Scan = ( qw(
                     sr  mv_search_relate
                     st  mv_searchtype
                     su  mv_substring_match
-                    td  mv_table_cell
                     tf  mv_sort_field
-                    th  mv_table_header
                     to  mv_sort_option
-                    tr  mv_table_row
                     un  mv_unique
                     va  mv_value
 
@@ -481,12 +478,15 @@ sub perform_search {
 			$q = $pre_made;
 			@{$q}{keys %options} = (values %options);
 		}
-		elsif (! defined $options{mv_searchtype} or $options{mv_searchtype} eq 'text') {
-			$q = new Vend::TextSearch %options;
-		}
-		elsif ( $options{mv_searchtype} =~ /db|sql/i){
+		elsif (
+				! $options{mv_searchtype} && $::Variable->{MV_DEFAULT_SEARCH_DB}
+				or $options{mv_searchtype} =~ /db|sql/i
+			)
+		{
 			$q = new Vend::DbSearch %options;
-#::logDebug("Glimpsesearch object: " . ::uneval($q));
+		}
+		elsif (! $options{mv_searchtype} or $options{mv_searchtype} eq 'text') {
+			$q = new Vend::TextSearch %options;
 		}
 # GLIMPSE
 		elsif ( $options{mv_searchtype} eq 'glimpse'){
