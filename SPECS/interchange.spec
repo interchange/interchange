@@ -180,6 +180,12 @@ cat > $RPM_BUILD_ROOT$ETCBASE/logrotate.d/interchange <<EOF
 	weekly
 	compress
 }
+
+/var/log/interchange/*/logs/usertrack {
+	rotate 12
+	monthly
+	compress
+}
 EOF
 
 # Make special Interchange start/stop script with RPM-specific paths
@@ -197,7 +203,8 @@ RUNSTRING="%{_libdir}/interchange/bin/interchange \\
 	-logfile $LOGBASE/interchange/error.log \\
 	ErrorFile=$LOGBASE/interchange/error.log \\
 	PIDfile=$RUNBASE/interchange/interchange.pid \\
-	-confdir $RUNBASE/interchange \\
+	-confdir $ICBASE/etc \\
+	-rundir $RUNBASE/interchange \\
 	SocketFile=$RUNBASE/interchange/socket \\
 	IPCsocket=$RUNBASE/interchange/socket.ipc"
 
@@ -522,6 +529,11 @@ rm -f %main_filelist
 
 
 %changelog
+
+* Fri May 25 2001 Jon Jensen <jon@redhat.com>
+- Use new split confdir/rundir option to keep important things in
+  /var/run/interchange from getting erased at OS boot time.
+- Add usertrack and catalog error.log to log rotation.
 
 * Tue May 15 2001 Jon Jensen <jon@redhat.com>
 - Quiet restart notice when removing foundation RPM.
