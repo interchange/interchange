@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.8 2000-09-19 18:58:39 zarko Exp $
+# $Id: Util.pm,v 1.9 2000-09-27 22:06:47 zarko Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,6 @@ require Exporter;
 @ISA = qw(Exporter);
 
 @EXPORT = qw(
-
 	catfile
 	check_security
 	copyref
@@ -58,7 +57,6 @@ require Exporter;
 	readfile
 	readin
 	secure_vendUrl
-	send_mail
 	setup_escape_chars
 	tag_nitems
 	uneval
@@ -66,15 +64,20 @@ require Exporter;
 	uneval_fast
 	unlockfile
 	vendUrl
-
 );
+
+# LEGACY4
+push @EXPORT qw(
+	send_mail
+);
+# END LEGACY4
 
 use strict;
 use Config;
 use Fcntl;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.8 $, 10);
+$VERSION = substr(q$Revision: 1.9 $, 10);
 
 BEGIN {
 	eval {
@@ -1610,7 +1613,9 @@ sub canonpath {
 	return &{$canonpath_routine}(@_);
 }
 
+# LEGACY4
 *send_mail = \&Vend::Order::send_mail;
+# END LEGACY4
 
 #print "catfile a b c --> " . catfile('a', 'b', 'c') . "\n";
 #print "catdir a b c --> " . catdir('a', 'b', 'c') . "\n";
