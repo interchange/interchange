@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.0.2.2 2002-05-07 16:45:35 jon Exp $
+# $Id: Server.pm,v 2.0.2.3 2002-05-14 15:25:26 kwalsh Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.0.2.2 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.3 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -226,7 +226,7 @@ sub parse_post {
 		# even though it's sent as non-multipart data
 		# Contributed by Bill Randle
 		my ($boundary) = $CGI::content_type =~ /boundary=\"?([^\";]+)\"?/;
-		$boundary = "--$boundary";
+		$boundary = '--' . quotemeta $boundary;
 		return parse_multipart($sref) if $$sref =~ /^\s*$boundary\s+/;
 	}
 	@pairs = split($Global::UrlSplittor, $$sref);
@@ -296,6 +296,7 @@ sub parse_post {
 sub parse_multipart {
 	my $sref = shift;
 	my ($boundary) = $CGI::content_type =~ /boundary=\"?([^\";]+)\"?/;
+	$boundary = quotemeta $boundary;
 #::logDebug("got to multipart");
 	# Stolen from CGI.pm, thanks Lincoln
 	$boundary = "--$boundary"

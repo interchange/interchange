@@ -19,6 +19,10 @@ Core
 
 * Fixed missing usertags in catalog subs called from Autoload.
 
+* Fixed a bug in Server.pm that caused Opera users, and possibly users
+  of other browsers, to get intermittent "CGI mapping error" failures
+  when POSTing forms.
+
 Packaging
 ---------
 
