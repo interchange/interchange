@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.17 2001-03-22 17:02:05 jon Exp $
+# $Id: Util.pm,v 1.14.2.18 2001-03-31 15:34:44 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -79,7 +79,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.17 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.18 $, 10);
 
 BEGIN {
 	eval {
@@ -1167,12 +1167,12 @@ my $lock_function;
 my $unlock_function;
 
 if ($Global::LockType eq 'none') {
-    print "using NO locking\n";
+    print errmsg("using NO locking") . "\n";
     $lock_function = sub {1};
     $unlock_function = sub {1};
 }
 elsif ($Global::LockType =~ /fcntl/i) {
-    print "using fcntl(2) locking\n";
+    ::logDebug("using fcntl(2) locking");
     $lock_function = \&flock_lock;
     $unlock_function = \&flock_unlock;
 }
