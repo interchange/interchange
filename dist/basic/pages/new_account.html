@@ -1,0 +1,256 @@
+<HTML>
+<HEAD>
+<TITLE>__COMPANY__ -- Create a new account</TITLE>
+</HEAD>
+<BODY __BODY__>
+
+<H1><B>Create an account at __COMPANY__</B></H1>
+[set NewAccount]
+[if type=explicit compare="[userdb new_account]"]
+mv_nextpage=account
+[else]
+mv_nextpage=new_account
+[/else]
+[/if]
+[/set]
+
+<P>
+[if session failure]
+[data session failure]
+[data base=session field=failure value=""]
+[/if]
+<P>
+	<FORM ACTION="[process-target]" METHOD=POST>
+	<INPUT TYPE=hidden NAME=mv_click VALUE=NewAccount>
+	<INPUT TYPE=hidden NAME=mv_doit  VALUE=return>
+	<INPUT TYPE=hidden NAME=function  VALUE=new_account>
+	<INPUT TYPE=hidden NAME=mv_nextpage VALUE=basket>
+
+	<TABLE>
+	<TR><TD ALIGN=RIGHT><B>Username</TD>
+		<TD><INPUT NAME=mv_username VALUE="" SIZE=10>
+		</TD></TR>
+
+	<TR><TD ALIGN=RIGHT><B>Password</TD>
+		<TD><INPUT TYPE=password NAME=mv_password VALUE="" SIZE=10>
+		</TD></TR>
+
+	<TR><TD ALIGN=RIGHT><B>Verify</TD>
+		<TD><INPUT TYPE=password NAME=mv_verify VALUE="" SIZE=10>
+		</TD></TR>
+
+	<TR><TD></TD>
+		<TD><INPUT TYPE=submit VALUE="Create Account" SIZE=10><BR>
+		<INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1>
+		<B>Log me in automatically&nbsp;(sets&nbsp;cookie)</B>
+		</TD></TR>
+	</TABLE>
+
+[title-bar 500 2]
+<BLOCKQUOTE><BLOCKQUOTE><B>You are not required to give us the below information yet, but it will
+be retained for your checkout. We have a <A HREF="[area privacy]">privacy policy</A>
+that protects you.</B></BLOCKQUOTE></BLOCKQUOTE>
+[/title-bar]
+
+[title-bar 500 4]<B>Shipping Address</B>[/title-bar]
+
+<TABLE WIDTH=90%>
+
+<TR>
+	<TD ALIGN=RIGHT>
+	[error name=fname std_label="First Name" required=1]</TD>
+	<TD>
+		<INPUT TYPE=text NAME=fname VALUE="[value fname]" size=20>
+	[error name=lname std_label=Last required=1]&nbsp;<INPUT TYPE=text NAME=lname VALUE="[value lname]" size=20>
+	</TD>
+</TR>
+
+<TR>
+	<TD ALIGN=RIGHT>[error name=address1 std_label=Address required=1]</TD>
+	<TD ALIGN=LEFT>
+		<INPUT TYPE=text NAME=address1 VALUE="[value address1]" size=40>
+	</TD>
+</TR>
+
+<TR>
+	<TD ALIGN=RIGHT>&nbsp;</TD>
+	<TD ALIGN=LEFT>
+		<INPUT TYPE=text NAME=address2 VALUE="[value address2]" size=40>
+	</TD>
+</TR>
+
+<TR>
+	<TD ALIGN=RIGHT>
+		[error name=city std_label="City" required=1]
+	</TD>
+	<TD>
+	<TABLE>
+	<TR>
+		<TD>
+			<INPUT TYPE=text NAME=city VALUE="[value city]" size=20>
+		</TD>
+		<TD>
+			[error name=state std_label="State/Province" required=1]
+		</TD>
+		<TD>
+			<INPUT TYPE=text NAME=state VALUE="[value name=state filter=uc]" size=3>
+		</TD>
+		<TD>
+			[error name=zip std_label="Zip/Postal Code" required=1]
+		</TD>
+		<TD>
+			<INPUT TYPE=text NAME=zip VALUE="[value name=zip filter=word]" size=10>
+		</TD> 
+	</TR>
+	</TABLE>
+	</TD>
+</TR>
+
+<TR>
+	<TD ALIGN=RIGHT><B>[error name=email std_label="Email Address" required=1]</B></TD>
+	<TD ALIGN=LEFT>
+		<INPUT TYPE=text NAME=email VALUE="[value email]" size=42>
+	</TD>
+</TR>
+
+
+<TR>
+		<TD ALIGN=RIGHT>
+		<B>Country</B>
+		</TD>
+		<TD>
+		[if value country =~ /(^$|US|CA)/]
+		<SELECT NAME=country onChange="this.form.submit()">
+			<OPTION VALUE="US"> United States
+			<OPTION [selected country CA] VALUE="CA"> Canada
+			<OPTION VALUE="JP"> Other (select to change)
+		</SELECT>
+		[else]
+		<SELECT onChange="this.form.submit()" NAME=country>
+		[loop search="ra=yes/fi=country.txt/ml=1000/tf=name/rf=0,name" option="country"]
+			<OPTION VALUE="[loop-code]"> [loop-param name] 
+		[/loop]
+		</SELECT>
+		[/else]
+		[/if] <FONT SIZE="1"><B>(will update display)</B></FONT>
+		</TD>
+</TR>
+
+<TR>	
+	<TD ALIGN=RIGHT>[error name=phone_day std_label="Daytime Phone" required=1]</TD>
+	<TD>
+	<TABLE>
+	<TR>
+		<TD>
+		<INPUT TYPE=text NAME=phone_day VALUE="[value phone_day]" size=16>
+		</TD>
+		<TD ALIGN=RIGHT>
+		Evening
+		</TD>
+		<TD>
+		<INPUT TYPE=text NAME=phone_night VALUE="[value phone_night]" size=16>
+		</TD>
+	</TR>
+	</TABLE>
+</TR>
+<TR>
+	<TD ALIGN=RIGHT>
+	Shipping method
+	</TD>
+	<TD>
+		<SELECT NAME=mv_shipmode>
+		[loop option=mv_shipmode
+			list=|[data table=country key='[default country US]' col=shipmodes]|
+			]
+		<OPTION VALUE="[loop-code]"> [shipping-desc [loop-code]]
+		[/loop]
+		</SELECT>
+	</TD>
+</TR>
+<TR>
+	<TD COLSPAN=2>
+		<I>We need the <B>bold</B> fields to process your order</I>
+	</TD>
+</TR>
+</TABLE>
+
+[title-bar 500 3]
+	<B>
+		<INPUT TYPE=SUBMIT VALUE="Create Account">
+	</B>
+[/title-bar]
+
+<A NAME="mail_list"></A>
+[title-bar 500 4]Mailing status<BR>
+<FONT SIZE="-1">
+<SELECT NAME=email_copy>
+	<OPTION VALUE="1">Yes
+	<OPTION [selected name=email_copy value=0] VALUE="0">No
+</SELECT>
+	Send an email copy of my receipt<BR>
+
+<SELECT NAME=mail_list>
+<OPTION VALUE="0">No
+<OPTION [selected mail_list 1] VALUE="1">Yes
+</SELECT>
+	Put me on your email list of infrequent offers
+<P>[/title-bar]
+
+[title-bar 500 4]Billing Address (if different)[/title-bar]
+<TABLE>
+<TR>
+	<TD ALIGN=RIGHT><B>Name</B></TD>
+	<TD>
+		<INPUT TYPE=text NAME=b_fname VALUE="[value b_fname]" size=20>
+		<INPUT TYPE=text NAME=b_lname VALUE="[value b_lname]" size=30>
+	</TD>
+</TR>
+
+<TR>
+	<TD ALIGN=RIGHT><B>Address</B></TD>
+	<TD ALIGN=LEFT>
+		<INPUT TYPE=text NAME=b_address1 VALUE="[value b_address1]" size=20>
+		<INPUT TYPE=text NAME=b_address2 VALUE="[value b_address2]" size=30>
+	</TD>
+</TR>
+<TR>
+	<TD ALIGN=RIGHT><B>City, State, Postal Code</B></TD>
+	<TD>
+		<INPUT TYPE=text NAME=b_city VALUE="[value b_city]" size=20>
+		<INPUT TYPE=text NAME=b_state VALUE="[value b_state]" size=3>
+		<INPUT TYPE=text NAME=b_zip VALUE="[value b_zip]" size=10>
+	</TD>
+</TR>
+<TR>
+	<TD ALIGN=RIGHT><B>Country</B></TD>
+	<TD>
+		<INPUT TYPE=text NAME=b_country VALUE="[value b_country]" size=2>
+	</TD>
+</TR>
+<TR>
+	<TD VALIGN=TOP>
+		<B>Payment method</B>
+	</TD>
+	<TD VALIGN=TOP>
+		<INPUT TYPE=radio NAME=fax_order VALUE=0
+			[if !value fax_order]CHECKED[/if]>
+		<I>Pay by credit card</I><BR>
+		<INPUT TYPE=radio NAME=fax_order VALUE=1 [checked fax_order 1]>
+		<I>I will call with payment information</I><BR>
+	</TD>
+</TR>
+</TABLE>
+
+[title-bar 500 3]
+	<B>
+		<INPUT TYPE=SUBMIT VALUE="Create Account">
+	</B>
+[/title-bar]
+
+</FORM>
+
+[include pages/menubar]
+</BODY> </HTML>
+<!-- current page: @@MV_PAGE@@ -->
+[seti nada]Prime the user database [data userdb junk junk][/seti]
+[set nada][/set]

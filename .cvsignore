@@ -1,0 +1,9 @@
+_uid
+blib
+build
+Makefile
+pm_to_blib
+build-stamp
+.cpan.tried
+install-stamp
+*.tar.gz

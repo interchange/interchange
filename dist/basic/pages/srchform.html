@@ -1,0 +1,254 @@
+<HTML>
+<HEAD>
+<TITLE>Search __COMPANY__</TITLE>
+</HEAD>
+<BODY __BODY__>
+
+[seti option_list]
+<TABLE>
+	<TR>
+	<TD ALIGN=CENTER><B>Compare</B></TD>
+	<TD ALIGN=CENTER><B>Numeric</B></TD>
+	<TD ALIGN=CENTER><B>Case</B></TD>
+	<TD ALIGN=CENTER><B>Negation</B></TD>
+	</TR>
+	
+	<TD ALIGN=CENTER>
+	<SELECT NAME=mv_column_op>
+			[loop acclist=yes
+				list=|
+					rm=Contains,
+					em=Exact,
+					rn=Does not contain,
+					gt=Greater than,
+					lt=Less than,
+					ge=Greater than or equal,
+					le=Less than than or equal,
+				|]<OPTION VALUE="[loop-code]"> [loop-pos 1][/loop]
+	</SELECT></TD>
+	<TD ALIGN=CENTER><SELECT NAME=nu>
+			[loop acclist=yes
+				list=|
+					0=No,
+					1=Yes,
+				|]<OPTION VALUE="[loop-code]"> [loop-pos 1][/loop]
+			</SELECT>
+	</TD>
+	<TD ALIGN=CENTER><SELECT NAME=cs>
+			[loop acclist=yes
+				list=|
+					0=Not sensitive,
+					1=Sensitive,
+				|]<OPTION VALUE="[loop-code]"> [loop-pos 1][/loop]
+			</SELECT>
+	</TD>
+	<TD ALIGN=CENTER><SELECT NAME=ne>
+			[loop acclist=yes
+				list=|
+					0=No,
+					1=Yes,
+				|]<OPTION VALUE="[loop-code]"> [loop-pos 1][/loop]
+			</SELECT>
+	</TD>
+	<TD ALIGN=CENTER>
+		<INPUT TYPE=SUBMIT VALUE=Search>
+	</TD>
+	</TR>
+</TABLE>
+[/seti]
+
+<FORM ACTION="[area search]" METHOD=POST>
+<TABLE BORDER=0>
+	<TR>
+		<TD COLSPAN=2 __HEADERBG__ VALIGN=CENTER ALIGN=CENTER>
+			<FONT COLOR="__HEADERTEXT__" SIZE="+2"><B>Full-text Search</B>
+		</TD>
+	<TR>
+		<TD VALIGN=TOP>
+			<B>Keywords:</B> <INPUT TYPE=text NAME="se" SIZE=20>
+		</TD>
+		<TD VALIGN=CENTER>
+			<B><INPUT TYPE=submit VALUE=Search></B>
+		</TD>
+	</TR>
+	<TR>
+		<TD VALIGN=TOP>
+			<FONT SIZE=-2>
+			<INPUT TYPE=radio NAME="os" VALUE=0 CHECKED> Match All<BR>
+			<INPUT TYPE=radio NAME="os" VALUE=1> Match Any
+			<BR><BR>
+			<INPUT TYPE=radio NAME="su" VALUE=0 CHECKED> Match whole words only<BR>
+			<INPUT TYPE=radio NAME="su" VALUE=1> Match partial words
+			<BR><BR>
+			<INPUT TYPE=radio NAME="cs" VALUE=0 CHECKED> Ignore Case<BR>
+			<INPUT TYPE=radio NAME="cs" VALUE=1> Do not ignore case
+			<BR><BR>
+		</TD>
+		<TD VALIGN=TOP>
+			<SMALL>
+			<B>Match specific fields:</B><BR><BR>
+			<TABLE>
+				<TR>
+				<TD><FONT SIZE=-2><INPUT TYPE=checkbox NAME=sf VALUE=artist> Artist</TD>
+				<TD><FONT SIZE=-2><INPUT TYPE=checkbox NAME=sf VALUE=title> Title</TD>
+				</TR>
+				<TR>
+				<TD><FONT SIZE=-2><INPUT TYPE=checkbox NAME=sf VALUE=display> Museum</TD>
+				<TD><FONT SIZE=-2><INPUT TYPE=checkbox NAME=sf VALUE=comment> Description</TD>
+				</TR>
+			</TABLE>
+			<BR><B>Matches per page:</B><BR>
+			<TABLE>
+				<TR>
+				<TD>
+			<SMALL>
+					<SELECT NAME="ml">
+					<OPTION>1
+					<OPTION SELECTED>2
+					<OPTION>3
+					<OPTION>4
+					<OPTION>5
+					<OPTION>10
+					<OPTION>25
+					<OPTION>50
+					<OPTION>100
+					</SELECT>
+				</TD>
+				</TR>
+			</TABLE>
+		</TD>
+	</TR>
+</TABLE>
+<HR SIZE=4>
+</FORM>
+
+<FORM ACTION="[area search]" METHOD=POST>
+<INPUT TYPE=hidden NAME=mv_coordinate VALUE=1>
+<TABLE>
+	<TR>
+		<TD COLSPAN=2 __HEADERBG__ VALIGN=CENTER ALIGN=CENTER>
+			<FONT COLOR="__HEADERTEXT__" SIZE="+2"><B>Specialized Search</B></FONT>
+			<SMALL>Page size
+					<SELECT NAME="ml">
+					<OPTION>1
+					<OPTION SELECTED>2
+					<OPTION>3
+					<OPTION>4
+					<OPTION>5
+					<OPTION>10
+					<OPTION>25
+					<OPTION>50
+					<OPTION>100
+					</SELECT>
+					</SMALL>
+		</TD>
+	<TR>
+		<TD VALIGN=TOP>
+			Field <SELECT NAME=sf>
+			[loop acclist=yes
+				list=|
+					artist=Artist,
+					title=Title,
+					display=Where displayed,
+					price=Price
+				|]<OPTION VALUE="[loop-code]"> [loop-pos 1][/loop]
+			</SELECT>
+		</TD>
+		<TD VALIGN=CENTER>
+			Search for: <INPUT TYPE=text NAME="se" SIZE=20><BR>
+		</TD>
+	</TR>
+	<TR>
+		<TD COLSPAN=2>
+					[scratch option_list]
+		</TD>
+	</TR>
+	<TR><TD __HEADERBG__ COLSPAN=2>&nbsp;</TD></TR>
+	<TR>
+		<TD VALIGN=CENTER>
+			Field <SELECT NAME=sf>
+			[loop acclist=yes
+				list=|
+					title=Title,
+					display=Where displayed,
+					price=Price,
+					artist=Artist
+				|]<OPTION VALUE="[loop-code]"> [loop-pos 1][/loop]
+			</SELECT>
+		</TD>
+		<TD VALIGN=CENTER>
+			Search for: <INPUT TYPE=text NAME="se" SIZE=20><BR>
+		</TD>
+	</TR>
+	<TR>
+		<TD COLSPAN=2>
+					[scratch option_list]
+		</TD>
+	</TR>
+	<TR><TD __HEADERBG__ COLSPAN=2>&nbsp;</TD></TR>
+	<TR>
+		<TD VALIGN=CENTER>
+			Field <SELECT NAME=sf>
+			[loop acclist=yes
+				list=|
+					display=Where displayed,
+					price=Price,
+					artist=Artist,
+					title=Title
+				|]<OPTION VALUE="[loop-code]"> [loop-pos 1][/loop]
+			</SELECT>
+		</TD>
+		<TD VALIGN=CENTER>
+			Search for: <INPUT TYPE=text NAME="se" SIZE=20><BR>
+		</TD>
+	</TR>
+	<TR>
+		<TD COLSPAN=2>
+					[scratch option_list]
+		</TD>
+	</TR>
+	<TR><TD __HEADERBG__ COLSPAN=2>&nbsp;</TD></TR>
+	<TR>
+		<TD VALIGN=CENTER>
+			Field <SELECT NAME=sf>
+			[loop acclist=yes
+				list=|
+					price=Price,
+					artist=Artist,
+					title=Title,
+					display=Where displayed
+				|]<OPTION VALUE="[loop-code]"> [loop-pos 1][/loop]
+			</SELECT>
+		</TD>
+		<TD VALIGN=CENTER>
+			Search for: <INPUT TYPE=text NAME="se" SIZE=20><BR>
+		</TD>
+	</TR>
+	<TR>
+		<TD COLSPAN=2>
+					[scratch option_list]
+		</TD>
+	</TR>
+	<TR><TD __HEADERBG__ COLSPAN=2>&nbsp;</TD></TR>
+	<TR>
+		<TD VALIGN=CENTER>
+			Category <INPUT TYPE=hidden NAME=sf VALUE=category>
+		</TD>
+		<TD VALIGN=CENTER>
+			<SELECT NAME=se>
+			<OPTION VALUE=""> -- any --
+			[loop search=|
+					rf=category
+					tf=category
+					ra=yes
+					un=yes
+				|]<OPTION> [loop-code][/loop]
+			</SELECT>
+		</TD>
+	</TR>
+</TABLE>
+</FORM>
+
+[include pages/menubar]
+</BODY> </HTML>
+<!-- current page: @@MV_PAGE@@ -->

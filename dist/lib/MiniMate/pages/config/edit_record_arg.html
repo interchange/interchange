@@ -1,0 +1,75 @@
+<!--[new]-->
+<HTML>
+<HEAD><TITLE>[L]Database Edit[/L]</TITLE></HEAD>
+<BODY BGCOLOR="#FFFFFF">
+[set interpolate=1 name="arg"][data session arg][/set]
+
+<H2>[L]Table[/L] <B>[value mv_data_table]</B></H2>
+<H2>[L]Edit key[/L] <B>[value code]</B></H2>
+
+<FORM METHOD=POST ACTION="[process-target _self]">
+
+<INPUT TYPE=hidden NAME="mv_doit" VALUE="set">
+<INPUT TYPE=hidden NAME="mv_data_table" VALUE="[value mv_data_table]">
+<INPUT TYPE=hidden NAME="mv_data_key" VALUE="code">
+<INPUT TYPE=hidden NAME="mv_data_fields"
+	VALUE="[db-columns]">
+
+[if-key-exists table="[value mv_data_table]" key="[value code]"]
+<INPUT TYPE=radio NAME="mv_data_function" VALUE="update" CHECKED> [L]Update[/L]
+<INPUT TYPE=radio NAME="mv_data_function" VALUE="insert"> [L]Insert[/L]
+[else]
+<INPUT TYPE=radio NAME="mv_data_function" VALUE="update"> [L]Update[/L]
+<INPUT TYPE=radio NAME="mv_data_function" VALUE="insert" CHECKED> [L]Insert[/L]
+[/else]
+[/if-key-exists]
+
+<INPUT TYPE=hidden NAME="code" VALUE="[value code]">
+
+<TABLE BORDER=1>
+<TR> <TH ALIGN=RIGHT>[L]Column[/L]</TH><TH ALIGN=LEFT>[L]Value[/L]</TH></TR>
+
+[if-key-exists table="[value mv_data_table]" key="[value code]"]
+
+[substitute name="DBNAME" value="[value mv_data_table]"]
+[substitute name="KEYNAME" value="[default code]"]
+	[loop arg="[db-columns ~~DBNAME~~]"]
+<TR>
+	<TD ALIGN=right VALIGN=top>
+		<B>[loop-code]</B>
+	</TD>
+	<TD VALIGN=top>
+		[display table="~~DBNAME~~" column="[loop-code]" key="~~KEYNAME~~"]
+	</TD>
+</TR>
+	[/loop]
+[/substitute]
+[/substitute]
+
+[else]
+	[substitute name="DBNAME" value="[value mv_data_table]"]
+		[loop arg="[db-columns ~~DBNAME~~]"]
+<TR>
+	<TD ALIGN=right VALIGN=top>
+		<B>[loop-code]</B>
+	</TD>
+	<TD VALIGN=top>
+		<INPUT NAME="[loop-code]" SIZE=60>
+	</TD>
+</TR>
+		[/loop]
+	[/substitute]
+[/else]
+[/if-key-exists]
+
+</TABLE>
+<BR CLEAR=LEFT>
+
+<INPUT TYPE=submit VALUE="[L]Submit change[/L]">
+</FORM>
+
+<P>
+[scratch menu]
+<!-- page: @@MV_PAGE@@ -->
+</BODY></HTML>
+<!--[new]-->

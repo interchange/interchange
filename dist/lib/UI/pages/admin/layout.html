@@ -1,0 +1,180 @@
+[set page_title]Site Layout Manager[/set]
+[set help_name]layout.main[/set]
+@@UI_STD_HEADER@@
+
+<img src="admin/icon_config.gif" width=16 height="16" border="0" valign="top" align="top">
+
+&nbsp;
+<font size="+1" face="Verdana,arial,helvetica,sans-serif" color="#000000">
+Site Layout Manager
+<p>
+&nbsp;
+</font>
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+<form action="layout" method="post" name="main_form">
+<table cellpadding=3 cellspacing=0 width="100%">
+
+<tr>
+<td bgcolor=#7079aa><img src="admin/cleardot.gif" width="100%" height=1></td>
+</tr>
+
+<tr>
+
+<td bgcolor=#94a0e0 align=left valign=top>
+
+<!--
+These things exist in Tallyman.  Select a type to see what things
+have that type.<br>
+-->
+
+<select name="ttype" onChange="update_things();">
+<option value="1">Item: Bike Parts 
+
+  <option value="1">Item: Books 
+
+  <option value="1">Item: Shoes/Sandals <option value="2">Page: Content 
+
+  <option value="2">Page: Product <option value="3">Group: Quicklinks 
+
+  <option value="3">Group: Custom HTML 
+
+  <option value="3">Group: Grouping Group 
+
+  <option value="3">Group: Regen Group </select>
+
+<select name="thing">
+ <option value="argh!">----------------------------------------------
+</select>
+
+<input type="submit" name="do_add_cmd" value="Add to layout">
+<input type="submit" name="do_edit_cmd" value="Edit">
+<script language="Javascript">
+<!--
+    function makeary() {
+        var arylen = makeary.arguments.length;
+	for(i=0; i<arylen; i++) {
+	    this.length = makeary.arguments.length;
+	    this[i] = makeary.arguments[i];
+	}
+    }
+
+    function do_up() {
+        var ary = do_up.arguments[0];
+	document.main_form.thing.length=(ary.length / 2);
+	for(i=0; i<(ary.length / 2); i++) {
+	    document.main_form.thing.options[i].value = ary[i*2];
+	    document.main_form.thing.options[i].text = ary[i*2+1];
+        }
+    }
+
+    var things = new Object;
+things[0] = new makeary('1000', 'LP Braids Bar Ends', '1001', 'Competition Chain', '1002', 'RST 381 TL', '1003', 'Manitou SX Ti', '1004', 'Terry Ti-Race Liberator Mens Saddle', '1005', 'WTB SSK Cromo Saddle', '1006', 'Panaracer Mach SS/SK Kevlar', '1007', 'Continental Baja Pro Kevlar', '1008', 'KHS Soft Tail', '1009', 'Avid Arch Rival 50 Brakes', '1010', 'Sram ESP 9.0 V-brakes', '1011', 'Shimano XT 8 Speed cassette', '1012', 'Shimano XTR 12-32 Cassette', '1013', 'Shimano 545 pedal', '1014', 'Flat ATB Pedals', '1015', 'Shimano 434 Pedal', '1016', 'Spinergy SPOX Wheelset', '1017', 'Cane Creek Crono Deep-V w/ Ti Spokes', '1018', 'Race Face Turbine LP Cranks w/pinned Rings', '1019', 'Shimano XTR Crankset', '1020', 'Kore Elite Stem', '1021', 'Race Face SYStem Stem');
+    
+    things[1] = new makeary('1022', 'Women', '1023', 'River, Cross My Heart', '1024', 'The Mystery of the Stolen Bike', '1025', 'Curious George Rides a Bike', '1026', 'Zinn and the Art of Mountain Bike Maintenance', '1027', 'The Racing Bike Book', '1028', 'The Shoe Box: A Christmas Story', '1029', 'Shoe Leather', '1030', 'Jurassic Park');
+    
+    things[2] = new makeary('1031', 'Betula House in Birko-Felt', '1032', 'Tatami Oklahoma Felts', '1033', 'Footprints Manhattan', '1034', 'Footprints Aspen', '1035', 'Birkikids Trinidad & Barbados', '1036', 'Professional Charleston & Foxtrot');
+    
+    things[3] = new makeary('1000', 'Home Page', '1001', 'About Barry\'s', '1002', 'Contact Us', '1003', 'Customer Service');
+    
+    things[4] = new makeary('1004', 'Saddles', '1005', 'Tires', '1006', 'Bikes', '1007', 'Forks', '1008', 'Shoes', '1009', 'Sandals', '1010', 'Misc. Bike Parts', '1011', 'Misc. Books', '1012', 'Kids\' Books', '1013', 'Non-fiction', '1014', 'Fiction', '1015', 'Brakes', '1016', 'Stems', '1017', 'Cassettes', '1018', 'Cranks', '1019', 'Wheelsets', '1020', 'Pedals');
+    
+    things[5] = new makeary('1000', '\"See Also\" Quicklinks', '1001', 'Top Bar Quicklinks', '1002', 'Bottom bar Quicklinks', '1003', 'Categories Quicklinks', '1004', 'Books Quicklinks', '1005', 'Bike Parts Quicklinks');
+    
+    things[6] = new makeary('1006', 'Footer HTML');
+    
+    things[7] = new makeary('1007', 'Sidebar', '1008', 'Top Bar', '1009', 'Bottom Bar');
+    
+    things[8] = new makeary('1010', 'Quicklinks', '1011', 'Pages', '1012', 'Items with More Info pages', '1013', 'Book Pages', '1014', 'Bike Pages', '1015', 'Site Info Pages', '1016', 'Bike Items', '1017', 'Book Items');
+    function update_things() {
+        do_up(things[document.main_form.ttype.selectedIndex]);
+    }
+//-->
+</script>
+<noscript>
+<font color="red">
+You'll need a different version of the layout editor if you don't
+have Javascript support.
+</font>
+</noscript>
+</td>
+</tr>
+<tr>
+
+<td bgcolor=#94a0e0 valign=top>
+<br>
+<br>
+
+<input type="radio" name="cid" value="0"> TallyMan
+
+<ul>
+<input type="radio" name="cid" value="1000">
+  <img height=6 width=6 valign=center src="admin/reddot.gif" alt="G: Regen Group"> <a href="layout?toggle=1000"><u>
+    Quicklinks</u></a>
+  <br>
+ 
+ <input type="radio" name="cid" value="1030">
+  <img height=6 width=6 valign=center src="admin/reddot.gif" alt="G: Regen Group"> <a href="layout?toggle=1030"><u>
+    Pages</u></a>
+  <br>
+ 
+ <input type="radio" name="cid" value="1112">
+  <img height=6 width=6 valign=center src="admin/reddot.gif" alt="G: Regen Group"> <a href="layout?toggle=1112"><u>
+    Items with More Info pages</u></a>
+  <br>
+ </ul>
+<br>
+<br>
+
+</td>
+
+</tr>
+
+<tr>
+<td bgcolor=#94a0e0 valign=top>
+Key: 
+<img src="admin/greendot.gif" height=8 width=8>: Item
+&nbsp;&nbsp;&nbsp;
+<img src="admin/bluedot.gif" height=8 width=8>: Page
+&nbsp;&nbsp;&nbsp;
+<img src="admin/reddot.gif" height=8 width=8>: Group
+<br>
+</td>
+</tr>
+
+<tr>
+<td bgcolor=#94a0e0 valign=top>
+
+<input type="submit" name="show_rearrange_cmd" value="Rearrange children">
+<input type="submit" name="show_movenode_cmd" value="Move node">
+<input type="submit" name="show_movesome_cmd" value="Move some children">
+<br>
+<input type="submit" name="do_hideall_cmd" value="Hide all branches">
+<input type="submit" name="do_regen_cmd" value="Regen just this branch">
+<br>
+<input type="submit" name="do_delete_cmd" value="Delete this branch"
+onClick="return confirm('Are you sure you want to delete this branch?')">
+
+</td>
+
+</tr>
+
+<tr>
+<td bgcolor=#7079aa><img src="admin/cleardot.gif" width="100%" height=1></td>
+</tr>
+
+</table>
+
+</form>
+
+
+<!-- ----- END REAL STUFF ----- -->
+
+@@UI_STD_FOOTER@@
+<!-- page: @@MM_PAGE@@ -->

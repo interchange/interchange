@@ -1,0 +1,79 @@
+<!--[new]-->
+[if session arg]
+[set interpolate=1 name="arg"][data session arg][/set]
+[elsif value mvc_directive]
+[set interpolate=1 name="arg"][value mvc_directive][/set]
+[/elsif]
+[/if]
+<HTML>
+<HEAD><TITLE>[L]Set[/L] [scratch arg]</TITLE></HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+
+[if value mvc_write]
+[title-bar]<B>[scratch arg]</B>
+[set name=result int][write-config
+	interpolate=1
+	name="[value mvc_directive]"
+	complex="[value mvc_complex]"][value name="mvc_value"][/write-config][/set]
+
+	[if scratch result]
+	-- [L]successfully set[/L]
+	[else]
+	[L]ERROR WRITING DIRECTIVE[/L]
+	[/else]
+	[/if]
+
+	[value name=mvc_write set=""]
+[/title-bar]
+[/if]
+
+[if session arg]
+[title-bar]<B>[scratch arg]</B>[/title-bar]
+<FORM METHOD=POST ACTION="[process-target _self]">
+
+<INPUT TYPE=hidden NAME="mv_nextpage" VALUE="@@MM_BASE@@/directive">
+<INPUT TYPE=hidden NAME="mvc_write" VALUE="1">
+[display-directive name="[scratch arg]"]
+<INPUT TYPE=hidden NAME="mv_doit" VALUE="return">
+<INPUT TYPE=hidden NAME="mvc_changes_made" VALUE="1">
+<INPUT TYPE=hidden NAME="mvc_directive" VALUE="[scratch arg]">
+
+<INPUT TYPE=submit VALUE="[L]Submit change[/L]">
+
+	[if type=file term="@@MM_BASE@@/extra/[scratch arg]"]
+	[include file="@@MM_BASE@@/extra/[scratch arg]"]
+	[/if]
+
+</FORM>
+
+[/if]
+<P>
+[title-bar][L]Directives[/L][/title-bar]
+<UL>
+[loop arg="[file @@MM_BASE@@/maxivend/directives]"]
+<LI> [page @@MM_BASE@@/directive [loop-code]][loop-code][/page]
+[/loop]
+</UL>
+<P>
+<UL>
+		<LI><A HREF="[area @@MM_BASE@@/reconfig]"><B>[L]Do reconfigure now[/L]</B></A>
+		<BR>
+	<UL>
+		<LI><A HREF="[area @@MM_BASE@@/seefile catalog.cfg]">[L]View current catalog.cfg file[/L]</A>
+		[if value mvc_changes_made]
+		<LI><FONT COLOR=RED>
+		[L]The catalog configuration has been changed, you will need to 
+		reconfigure to make them active.[/L]
+		</FONT>
+		<LI><A HREF="[area @@MM_BASE@@/seefile catalog.cfg+]">[L]View new catalog.cfg file[/L]</A> (after changes, before reconfiguration)
+		[/if]
+		<LI> [L]Current time[/L]: [tag time][/tag]<BR>
+		<LI> [L]Last reconfig[/L]: [reconfig-time]<BR>
+	</UL>
+</UL>
+<P>
+[scratch menu]
+</FONT>
+</BODY></HTML>
+<!--[new]-->

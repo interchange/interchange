@@ -1,0 +1,76 @@
+[set page_title]Thanks for the feedback![/set]
+__LOGOBAR__
+__MENUBAR__
+__LEFTSIDE__
+
+[if !scratch feedback_active]
+Hey! This needs to come from a feedback form.
+[else]
+[set feedback_active][/set]
+[set name=feedback_sent interpolate=1]
+[perl arg=sub interpolate=1]
+	form_mail
+		(
+			q{__ORDERS_TO__},
+			q{[value feedback_subject]},
+			q{[value feedback_email]},
+			<<'EOMail' )
+Subject: [value feedback_subject]
+   From: [value feedback_name]
+  Email: [value feedback_email]
+Message
+--------
+[value feedback_message]
+EOMail
+[/perl]
+[/set]
+
+[if scratch feedback_sent]
+<H2>Thank you for your feedback!</H2>
+
+<TABLE>
+<TR>
+	<TD>
+		<B>From</B>
+	</TD>
+	<TD>
+		[value feedback_name]
+	</TD>
+</TR>
+<TR>
+	<TD>
+		<B>Subject</B>
+	</TD>
+	<TD>
+		[value feedback_subject]
+	</TD>
+</TR>
+<TR>
+	<TD>
+		<B>Email</B>
+	</TD>
+	<TD>
+	   [value feedback_email]
+	</TD>
+</TR>
+<TR>
+	<TD VALIGN=TOP>
+		<B>Message</B>
+	</TD>
+	<TD>
+	<PRE>
+		[value feedback_message]
+	</PRE>
+	</TD>
+</TR>
+</TABLE>
+[else] Error sending feedback.[/else]
+[/if]
+
+[/else]
+[/if]
+
+__RIGHTSIDE__
+__MENUBOTTOM__
+__COPYRIGHT__
+<!-- current page: @@MV_PAGE@@ -->

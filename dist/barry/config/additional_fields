@@ -1,0 +1,63 @@
+COMPANY
+Your company name
+Barry's Books
+
+ADDRESS
+Your company address
+123 Any St.
+
+CITY
+Your company city/state/zip
+Anytown, USA 00000
+
+PHONE
+Your company phone
+(555) 555-5555
+
+FAX
+Your company fax number
+(555) 555-5556
+
+TOLLFREE
+Your company tollfree number (if any)
+(888) 555-5555
+
+MULTIORDER
+Set to 1 to enable multi-page order screens
+0	1
+
+TEMPLATE
+Select color scheme
+green1	blue1	yellow1
+
+TAXAREA
+Area(s) to tax in
+VA
+
+TAXRATE
+Percentage rate(s) for tax in different areas
+VA=7.5
+
+UPSADDER
+Amount to add on to standard UPS costs
+3.00
+
+MYSQL
+Set to 1 if you want to use MySQL
+0	1
+
+PGSQL
+Set to 1 if you want to use PostGres
+0	1
+
+SUPERUSER
+Account name that will control this catalog
+__MVC_CATUSER__	minivend
+
+CRYPTPW
+Set to 1 to encrypt passwords, leave at 0 to NOT encrypt:
+0	1
+
+SUPASSWD
+Password for superuser account to reconfig catalog:
+pass	ceJq5Qwc3ApHQ

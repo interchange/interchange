@@ -1,0 +1,55 @@
+__TIMED_CATLIST__
+<TABLE WIDTH=620 VALIGN=TOP ALIGN=center CELLSPACING=0 BORDER=0 CELLPADDING=0>
+<TR VALIGN=top ALIGN=left>
+<TD WIDTH=620 BGCOLOR=__BARTEXT__ HEIGHT=8 VALIGN=top ALIGN=left><IMG SRC="clear.gif" WIDTH=1 ALT="" HEIGHT=1 BORDER=0></TD>
+</TR>
+<TR VALIGN=top ALIGN=left>
+<TD WIDTH=150 VALIGN=top ALIGN=left>
+<TABLE WIDTH=150 VALIGN=TOP ALIGN=LEFT CELLSPACING=0 BORDER=0 CELLPADDING=0>
+[loop search="
+	fi=area.txt
+	tf=sort
+	ra=yes
+	rf=selector,name
+	un=yes
+" prefix=box]
+<TR>
+	<TD WIDTH=150 BGCOLOR=__LINECOLOR__ HEIGHT=1><IMG SRC="clear.gif" WIDTH=1 HEIGHT=1 ALT="" BORDER=0></TD>
+</TR>
+<TR>
+	<TD WIDTH=150 BGCOLOR=__TITLEBG__ HEIGHT=10 VALIGN=TOP ALIGN=middle><FONT SIZE=2 FACE="Tahoma, Arial, Helvetica" COLOR=__TITLETEXT__><B>[box-param name]</B></FONT></TD>
+</TR>
+<TR>
+	<TD WIDTH=150 BGCOLOR=__LINECOLOR__ HEIGHT=1><IMG SRC="clear.gif" WIDTH=1 HEIGHT=1 ALT="" BORDER=0></TD>
+</TR>
+[loop prefix=cat
+	search="
+		fi=cat.txt
+		un=yes
+		tf=name
+		sf=area
+		se=[box-code]
+	"
+	]
+<TR>
+<TD WIDTH=150 __HEADERBG__ VALIGN=top ALIGN=left><FONT SIZE=1 FACE="Tahoma, Arial, Helvetica"><BR>
+&nbsp;&nbsp;<A HREF="[if-cat-data cat url][cat-data cat url][else][area href=scan
+		arg=|
+		se=[cat-data cat selector]
+		sf=category
+		ml=3
+		|][/else][/if-cat-data]" ALT="[cat-data cat name]"><B>[cat-data cat name]</B></A><BR>
+</FONT></TD>
+</TR>
+[/loop]
+<TR>
+<TD WIDTH=150 BGCOLOR=__LINECOLOR__ HEIGHT=1 VALIGN=top ALIGN=left><IMG SRC="clear.gif" WIDTH=1 ALT="" HEIGHT=1 BORDER=0></TD>
+</TR>
+<TR>
+<TD WIDTH=150 BGCOLOR=__BARTEXT__ HEIGHT=8 VALIGN=top ALIGN=left><IMG SRC="clear.gif" WIDTH=1 ALT="" HEIGHT=1 BORDER=0></TD>
+</TR>
+[/loop]
+</TABLE>
+</TD>
+<TD WIDTH=470 VALIGN=top ALIGN=left>
+__END_TIMED__

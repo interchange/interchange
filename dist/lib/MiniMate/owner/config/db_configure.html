@@ -1,0 +1,199 @@
+[if session arg]
+	[value scratch=1 name=mvc_data_table set="[data session arg]" hide=1]
+[/if]
+[if-mm !tables]
+[bounce href="[area @@MM_BASE@@/violation]"]
+[/if-mm]
+
+<HTML>
+<HEAD><TITLE>[L]Table[/L] [value mv_data_table]: [L]Upload/Download/Export[/L]</TITLE></HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+[loop list="[value mv_data_table]"]
+<TABLE>
+<TR><TD VALIGN=TOP WIDTH=250>
+[title-bar 200 2]<B>[L]Database Configuration[/L]</B>[/title-bar]
+<FONT SIZE="-1" FACE="arial, helvetica">
+<UL>
+[if-mm upload]
+<LI><A HREF="[area @@MM_BASE@@/db_upload [loop-code]]">[L]Upload new ASCII source[/L]</A><BR>
+[/if-mm]
+[if-mm journal_update]
+<LI><A HREF="[area @@MM_BASE@@/db_journal [loop-code]]">[L]Upload partial update file[/L]</A><BR>
+[/if-mm]
+[if-mm export]
+<LI><A HREF="[area @@MM_BASE@@/db_export [loop-code]]">[L]Export to ASCII file[/L]</A><BR>
+[/if-mm]
+[if-mm advanced add_delete]
+<LI><A HREF="[area @@MM_BASE@@/db_column [loop-code]]">[L]Add or delete column[/L]</A><BR>
+[/if-mm]
+<LI><A HREF="[area @@MM_BASE@@/dbedit [loop-code]]">[L]Edit menu[/L]</A><BR>
+</UL>
+</TD><TD VALIGN=TOP WIDTH=250>
+[if-mm advanced search]
+[title-bar 200 2][L]Search by keyword for records[/L][/title-bar]
+<FORM METHOD=POST ACTION="[process-target]">
+<INPUT TYPE=hidden NAME="mv_todo" VALUE="search">
+<INPUT TYPE=hidden NAME="mv_substring_match" VALUE="yes">
+[if type=explicit compare="[calc]
+		q{[dbinfo table='[value mv_data_table]' attribute=type]}
+			eq
+		'8';
+		[/calc]"]
+<INPUT TYPE=hidden NAME="mv_searchtype" VALUE="sql">
+<INPUT TYPE=hidden NAME="mv_search_file" VALUE="[value mv_data_table]">
+[elsif type=file term="products/[value mv_data_table].ks"]
+<INPUT TYPE=hidden NAME="mv_search_file" VALUE="[value mv_data_table].ks">
+[/elsif]
+[else]
+<INPUT TYPE=hidden NAME="mv_search_file" VALUE="[value mv_data_table]">
+[/else]
+[/if]
+<INPUT SIZE=20 NAME=mv_searchspec>
+<INPUT TYPE=hidden NAME="mv_search_page" VALUE="@@MM_BASE@@/spread_results">
+<INPUT TYPE=submit VALUE="[L]Search for records[/L]">
+</FORM>
+[/if-mm]
+<TR><TD COLSPAN=2>
+[scratch menu]
+</TD>
+</TD></TR></TABLE>
+
+[title-bar][L]Table[/L] <B>[value mv_data_table]</B>: [L]Upload/Download/Export[/L][/title-bar]
+<P>
+<A HREF="[area @@MM_BASE@@/dbedit]">[L]Edit Menu for table[/L] [value mv_data_table]</A><BR>
+[scratch menu]
+<P>
+[rotate-database]
+<FORM METHOD=POST ACTION="[process-target]">
+<INPUT TYPE=hidden NAME="mv_nextpage" VALUE="@@MV_PAGE@@">
+<INPUT TYPE=hidden NAME="mv_todo" VALUE="return">
+
+[set Export]
+mvc_export_database=1
+mv_nextpage=@@MM_BASE@@/export
+mvc_data_field=
+[/set]
+[title-bar][L]Export[/L][/title-bar]
+[L]Export as[/L] <SELECT NAME="mv_data_export_type">
+			<OPTION VALUE=""> [L]Current type[/L]
+			<OPTION VALUE="DEFAULT"> [L]System default[/L]
+			<OPTION VALUE="TAB"> [L]TAB delimited[/L]
+			<OPTION VALUE="CSV"> CSV
+			<OPTION VALUE="PIPE"> [L]PIPE separated[/L]
+			<OPTION VALUE="%%"> %%/%%%
+			<OPTION VALUE="LINE"> [L]Line mode[/L]
+			</SELECT><BR>
+[L]Export to file[/L] <INPUT NAME=mv_data_file SIZE=40><BR>
+<I>([L]leave empty for default file[/L])</I><BR>
+<INPUT TYPE=submit NAME=mv_click VALUE="[L]Export[/L]"><BR><BR>
+
+[if-mm advanced add_field]
+[set Export and add field]
+mvc_export_database=1
+mv_nextpage=@@MM_BASE@@/add_field
+[/set]
+[set Export and delete field]
+mv_data_function=delete
+mv_nextpage=@@MM_BASE@@/delete_field
+[/set]
+[title-bar][L]Add or delete field[/L][/title-bar]
+<INPUT TYPE=submit NAME=mv_click
+	onClick="document.forms[0].target='main'"
+	VALUE="[L]Export and add field[/L]"> [L]Field name[/L]: <INPUT NAME=mvc_data_field VALUE=""><BR>
+<INPUT TYPE=submit NAME=mv_click
+	onClick="document.forms[0].target='main'"
+	VALUE="[L]Export and delete field[/L]"> <BR><BR>
+[/if-mm]
+
+[set name=mvc_data_file interpolate=1][dbinfo table="[value mv_data_table]" attribute=file][/set]
+
+[if type=explicit compare="[value-extended
+							name=upload_file
+							test=isfile]"]
+[title-bar][L]Uploaded file[/L] [value mvc_data_file]:
+[value-extended
+	name=upload_file
+	outfile="upload/[value mvc_data_file]"
+	yes=Succeeded
+	no=FAILED
+	][/title-bar]
+<P>
+[/if]
+
+[title-bar][L]Restore or use new database text source file[/L][/title-bar]
+[check-upload file="[scratch mvc_data_file]"]
+[if type=file term="products/[scratch mvc_data_file]+"]
+[set name="Rotate in new database" int]
+mvc_rotate_database=[cgi mvc_data_file]
+[/set]
+<BR>
+<INPUT TYPE=submit
+		onClick="this.form.target='_self'"
+		NAME=mv_click VALUE="[L]Rotate in new database[/L]">
+[else][L]No new files available[/L][/else]
+[/if]
+[if type=file term="products/[scratch mvc_data_file]-"]
+
+[set name="Return to saved database" int]
+mvc_rotate_database=[scratch mvc_data_file]
+mvc_rotate_direction=unsave
+[/set]
+<INPUT TYPE=submit onClick="this.form.target='_self'"
+		NAME=mv_click VALUE="[L]Return to saved database[/L]">
+[else]<BR>[L]No saved files available[/L][/else]
+[/if]
+
+</FORM>
+<P>
+
+[if scratch mvc_data_file]
+[title-bar][L]Upload new database text source file[/L][/title-bar]
+
+<FORM ACTION="[process-target]" METHOD=POST ENCTYPE="multipart/form-data">
+<INPUT TYPE=file NAME=upload_file SIZE=40><BR>
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
+<INPUT TYPE=hidden NAME=mv_todo VALUE=return>
+<INPUT TYPE=hidden NAME=mvc_data_file VALUE="[scratch mvc_data_file]">
+<INPUT TYPE=submit VALUE="[L]Upload new[/L] [scratch mvc_data_file]">&nbsp;&nbsp;&nbsp;<INPUT TYPE=radio NAME=ascii_mode VALUE="1" CHECKED>ASCII&nbsp;<INPUT TYPE=radio NAME=ascii_mode VALUE="0">Binary
+
+</FORM>
+[/if]
+
+[if-mm advanced journal_update]
+[title-bar 400 5][L]Upload updates text file[/L][/title-bar]
+
+<FORM ACTION="[process-target]" METHOD=POST ENCTYPE="multipart/form-data">
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
+<INPUT TYPE=hidden NAME=mv_todo VALUE=return>
+<INPUT TYPE=file NAME=upload_file SIZE=40><BR>
+<INPUT TYPE=radio NAME=mvc_data_file VALUE="[value mv_data_table].update" CHECKED>Update&nbsp;only&nbsp;&nbsp;&nbsp;<INPUT TYPE=radio NAME=mvc_data_file VALUE="[value mv_data_table].add">Add&nbsp;records<BR>
+<INPUT TYPE=radio NAME=ascii_mode VALUE="1" CHECKED>ASCII&nbsp;<INPUT TYPE=radio NAME=ascii_mode VALUE="0">Binary
+<BR>
+<INPUT TYPE=submit VALUE="[L]Upload new[/L] [value mv_data_table].update [L]and perform update[/L]">
+</FORM>
+[if type=file term="upload/[value mv_data_table].update"]
+[check-upload file="[value mv_data_table].update" same=1]
+[/if]
+[if type=file term="upload/[value mv_data_table].add"]
+[check-upload file="[value mv_data_table].add" same=1]
+[/if]
+
+[if type=file term="products/[value mv_data_table].update"]
+[tag op="flag write" interpolate=1][value mv_data_table][/tag]
+[import-fields table="[value mv_data_table]" move=1]
+[/if]
+
+[if type=file term="products/[value mv_data_table].add"]
+[tag op="flag write" interpolate=1][value mv_data_table][/tag]
+[import-fields	table="[value mv_data_table]"
+				file="products/[value mv_data_table].add"
+				move=1 add=1]
+[/if]
+[/if-mm]
+
+<P>
+<A HREF="[area @@MM_BASE@@/dbedit]">[L]Edit Menu for table[/L] [value mv_data_table]</A><BR>
+[scratch menu]
+<!-- page: @@MV_PAGE@@ -->
+</BODY></HTML>

@@ -1,0 +1,4 @@
+code	selector	name	banner_img	subs	sort
+A3	Links	Links			3
+A1	Galleries	Galleries			1
+A2	Other	Other Stuff			2

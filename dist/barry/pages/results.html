@@ -1,0 +1,74 @@
+[set page_title]__COMPANY__: Home page[/set]
+__LOGOBAR__
+__MENUBAR__
+__NO_LEFT__
+<!--Product Listings ---------------------------------->
+
+[search-region]
+[search-list]
+<!--Product Listing -------------->
+<hr>
+<table width="650"
+       cellspacing="0" cellpadding="0" border="0" valign="top">
+<tr>
+
+<td valign="top" align="center" width="250">
+
+<img src="[item-field image]" border="0">
+
+<br>
+<a href="[area order [item-code]]">
+<img src="standard_images/order.gif" border=0 valign=middle alt="add to cart"></a>
+</td>
+
+<td valign="top"
+  width="400">
+<b>[page [item-code]][item-field name][/page]</b><br>
+
+<font face="HELVETICA, ARIAL" size="-1" color="#ff0000">
+<b>Price: </b>
+[item-price]
+</font>
+<br clear="left">
+
+<hr>
+
+<!-- description -->
+[item-field comment]
+</td>
+</tr>
+</TABLE>
+[/search-list]
+[no-match]
+<hr>
+<table width="650"
+       cellspacing="0" cellpadding="0" border="0" valign="top">
+<TR><TD COLSPAN=2>
+	<B> No match for [value-extended mv_searchspec]</B>
+	</TD>
+</TR>
+</TABLE>
+[/no-match]
+[more-list]
+<hr>
+<table width="650"
+       cellspacing="0" cellpadding="0" border="0" valign="top">
+<TR><TD COLSPAN=2>
+<BLOCKQUOTE>
+<FONT SIZE="-1" FACE="arial,helvetica">Matches [matches] of
+[if value mv_search_match_count > 1]
+    [value mv_search_match_count] found.
+[/if]
+<BR>[more]<BR>
+</BLOCKQUOTE>
+</TD></TR></TABLE>
+[/more-list]
+</table>
+[/search-region]
+
+<!-- End product listings -->
+
+__NO_RIGHT__
+__MENUBOTTOM__
+__COPYRIGHT__
+<!-- page: @@MV_PAGE@@ -->

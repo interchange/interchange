@@ -1,0 +1,4 @@
+code	Variable
+MM_BASE	tally
+MM_ITEM_FIELDS	description name image comment size color sku price weight category
+MM_ITEM_BREAK	description image sku

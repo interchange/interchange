@@ -1,0 +1,64 @@
+<HTML>
+<HEAD>
+<TITLE>Browse the Art Store</TITLE>
+</HEAD>
+<BODY __BODY__>
+
+<H1>Browse the Art Store</H1>
+
+[comment]
+
+	This page just uses an in page search (the [loop search=...])
+	to return all products from the database. The parameter
+	"ra=yes" sets the MiniVend search variable mv_return_all to "yes",
+	meaning just start returning records from the file.
+	
+	If there are more than 50 then it will be truncated because of
+	the mv_matchlimit default of 100.  If you wanted to return up
+	to 100 then you would set the search setting to "ra=yes/ml=100".
+
+	See the browse1.html page for a page that returns 1 or more
+	at a time with paging.
+
+[/comment]
+
+<UL>
+[search-region
+			prefix=browse
+			more=1
+			search="
+				ra=yes
+				tf=category
+				tf=title
+				ml=5
+			"
+			]
+[search-list]
+[comment]
+	[*-change] is a way of setting up headers. You place a possibly
+	changing value in the [condition] container, and when the value
+	changes the contents of the [loop-change] container are output.
+	There can also be an [else] [/else] area.
+[/comment]
+[browse-change 1][condition][browse-data products category][/condition]
+</UL>
+<B>[browse-data products category]</B><BR>
+<UL>
+[/browse-change 1]
+<LI>[browse-data products title]: [browse-field artist]<BR>
+Price [browse-price]<BR>
+<A HREF="[area href='order' arg='[browse-code]']">Buy Now</A><BR>
+<A HREF="[area href='[browse-code]']">More info</A><BR><BR></LI>
+[/search-list]
+</UL>
+[more-list]
+<B>More pages:</B>
+<BLOCKQUOTE>
+<BR>[more]<BR>
+</BLOCKQUOTE>
+[/more-list]
+[/search-region]
+
+[include pages/menubar]
+</BODY> </HTML>
+<!-- current page: @@MV_PAGE@@ -->

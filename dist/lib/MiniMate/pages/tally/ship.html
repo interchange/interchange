@@ -1,0 +1,122 @@
+[set help_name]shipping.create[/set]
+[set page_title]Shipping options: create method[/set]
+@@MM_TALLY_HEADER@@
+
+<img src="admin/icon_config.gif" width=16 height="16" border="0" valign="top" align="top">
+
+&nbsp;
+<font size="+1" face="Verdana,arial,helvetica,sans-serif" color="#000000">
+Create method
+<p>
+&nbsp;
+</font>
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+<form action="[area tally/shipping_create]" method=POST>
+
+<table cellpadding=3 cellspacing=0>
+
+<tr>
+<td colspan=2 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+</tr>
+
+<tr>
+<td bgcolor=#94a0e0 align=right>
+<small>Name of this method</small>
+</td>
+<td bgcolor=#94a0e0>
+<input type=text size=40 name="label" value="">
+</td>
+</tr>
+
+<tr>
+<td bgcolor=#94a0e0 align=right>
+<small>Enable this method</small>
+</td>
+<td bgcolor=#94a0e0>
+<INPUT type=checkbox name=available value=on CHECKED>
+</td>
+</tr>
+
+<tr>
+<td bgcolor=#94a0e0 align=right>
+<small>Display "Call for quote" only?</small>
+</td>
+<td bgcolor=#94a0e0>
+<INPUT type=checkbox name=calculated value=on CHECKED>
+</td>
+</tr>
+
+<tr>
+<td bgcolor=#94a0e0 align=right>
+<small>Calculate based on this algorithm</small>
+</td>
+<td bgcolor=#94a0e0>
+
+<select name=mt_shipping_algorithm>
+<option value="1001"> Standard shipping by price</option>
+
+<option value="weight"> Standard shipping by weight</option>
+
+<option value="volume"> Standard shipping by volume</option>
+
+<option value="quantity"> Standard shipping by quantity</option>
+
+<option value="1004"> UPS Ground</option>
+
+<option value="1005"> UPS Next Day Air</option>
+
+<option value="1006"> UPS Next Day Air Saver</option>
+
+<option value="1007"> UPS Second Day Air</option>
+
+<option value="1008"> UPS Second Day Air A.M.</option>
+
+<option value="1009"> UPS Three day select</option>
+</select>
+
+</td>
+</tr>
+
+<tr>
+<td bgcolor=#94a0e0 align=right>
+<small>Minimum shipping charge</small>
+</td>
+<td bgcolor=#94a0e0>
+<input type=text size=10 name="mt_ship_minimum" value="0">
+</td>
+</tr>
+
+<tr>
+<td bgcolor=#94a0e0 align=right>
+<small>Additional shipping calculation</small>
+</td>
+<td bgcolor=#94a0e0>
+<input type=text size=50 name="mt_ship_extra_alg" value="">
+</td>
+</tr>
+
+<tr>
+<td colspan=2 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+</tr>
+
+</table>
+
+<p>
+
+<input type=submit name="do_create_cmd" value="Ok">
+<input type=submit name="do_cancel" value="Cancel">
+
+</form>
+
+
+<!-- ----- END REAL STUFF ----- -->
+
+@@MM_TALLY_FOOTER@@
+<!-- page: @@MM_PAGE@@ -->

@@ -1,0 +1,8 @@
+code	category	weight	rotate	banner
+Renaissance	Renaissance	1	0	Renaissance banner 1
+Renaissance2	Renaissance	2	0	Renaissance banner 2
+Renaissance3	Renaissance	7	0	Renaissance banner 3
+Americana	Americana	1	0	Americana banner 1
+Americana2	Americana	2	0	Americana banner 2
+Americana3	Americana	7	0	Americana banner 3
+default			1	Default banner 1{or}Default banner 2{or}Default banner 3

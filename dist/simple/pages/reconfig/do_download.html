@@ -1,0 +1,63 @@
+[set name=total_junk interpolate=1]
+[if type=explicit compare="[perl arg=values]
+				my $v = $Safe{'values'};
+				for ( qw/	page_to_upload
+							db_to_upload
+							arbitrary_to_upload /
+					)
+				{
+					return 1 if $v->{$_} =~ m{\.\./};
+					return 1 if $v->{$_} =~ m{^\s*[a-zA-Z]:/};
+					$v->{$_} =~ s{^/}{};
+				}
+				return '';[/perl]"]
+[tag op=log file=">tmp/naughty"]
+That was very naughty!
+[/tag]
+[tag op=log file="tmp/naughty"]
+Hmm, were you reported? Time will tell.
+[/tag]
+[tag op=log file="tmp/naughty"]
+[data session id] - [calc]localtime[/calc] SECURITY VIOLATION
+-- attempt to download one of:
+	[value arbitrary_to_upload]
+	[value page_to_upload]
+	[value db_to_upload]
+by:
+	[data session username]
+	[data session host]
+[/tag]
+[loop arg="arbitrary_to_upload page_to_upload db_to_upload "]
+[value name="[loop-code]" set=""]
+[/loop]
+[value name="arbitrary_to_upload" set="tmp/naughty"]
+
+[/if]
+
+[if value page_to_upload]
+	[value name=file_to_download set="pages/[value page_to_upload]"]
+
+[elsif value db_to_upload]
+	[perl arg="config values"]
+		my $db = $Safe{'values'}{db_to_upload};
+		$db =~ s/[\0\s].*//s;
+		$fn = $Safe{config}{Database}{$db}{'file'};
+		$Safe{'values'}{file_to_download} = "products/$fn";
+	[/perl]
+[/elsif]
+
+[elsif value arbitrary_to_upload]
+	[value name=file_to_download set="[value arbitrary_to_upload]"]
+[/elsif]
+
+[else]
+	[bounce special/missing]
+[/else]
+
+[/if]
+
+[loop arg="arbitrary_to_upload page_to_upload db_to_upload "]
+[value name="[loop-code] set=""]
+[/loop]
+[/set][tag op=header]Content-Type: application/octet-stream[/tag][file name="[value file_to_download]" type="[value download_conversion]"
+][value name=file_to_download set=""][goto end=1 abort=1]

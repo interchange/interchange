@@ -1,0 +1,23 @@
+<HTML>
+<HEAD>
+<TITLE>Order Failed</TITLE>
+</HEAD>
+<BODY>
+<H1>Order Failed</H1>
+
+
+[if type=explicit compare="q{[subject]}"]
+<PRE>
+[subject]
+</PRE>
+[else]
+We're sorry, but your order could not be processed at this time due to
+technical problems.  Please print the order page and give us a call.
+We will follow up as soon as possible.
+[/else]
+[/if]
+<P>
+
+[include pages/menubar]
+</BODY></HTML>
+<!-- current page: @@MV_PAGE@@ -->

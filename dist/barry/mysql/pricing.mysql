@@ -1,0 +1,19 @@
+# MiniVend database definition
+Database  pricing  pricing.txt __SQLDSN__
+#ifdef SQLUSER
+Database  pricing  USER         __SQLUSER__
+#endif
+#ifdef SQLPASS
+Database  pricing  PASS         __SQLPASS__
+#endif
+Database  pricing  KEY          sku
+Database  pricing  COLUMN_DEF   "q2=char(12)"
+Database  pricing  COLUMN_DEF   "price_group=CHAR(2) DEFAULT '' NOT NULL, index(price_group)"
+Database  pricing  COLUMN_DEF   "sku=CHAR(9) NOT NULL PRIMARY KEY"
+Database  pricing  COLUMN_DEF   "q5=CHAR(12)"
+Database  pricing  COLUMN_DEF   "q10=CHAR(12)"
+Database  pricing  COLUMN_DEF   "q25=CHAR(12)"
+Database  pricing  COLUMN_DEF   "q100=CHAR(12)"
+Database  pricing  COLUMN_DEF   "XL=CHAR(12)"
+Database  pricing  COLUMN_DEF   "S=CHAR(12)"
+Database  pricing  COLUMN_DEF   "red=CHAR(12)"

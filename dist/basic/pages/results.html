@@ -1,0 +1,45 @@
+<HTML>
+<HEAD>
+<TITLE> Search results: [value-extended mv_searchspec joiner=" | "] </TITLE>
+</HEAD>
+<BODY __BODY__>
+<H1>Search results -- [value-extended name=mv_searchspec joiner=" | "]</H1>
+
+[comment]
+	This is the default search results page. You can have
+	as many as you like as long as you set the mv_search_page
+	variable to match the page you wish to use to build
+	search results.
+[/comment]
+
+[search-region]
+
+[search-list]
+[item-increment]. [page href="[item-code]"][item-description][/page]: [order code="[item-code]"][item-price][/order]<BR>
+[/search-list]
+[no-match]
+<BR><BR><BLOCKQUOTE>
+Sorry, no matches for <B>[value-extended name=mv_searchspec joiner=" | "]</B>.
+[if value mv_search_error]
+<P><B>Errors:
+<BR> [value-extended name=mv_search_error joiner="<BR>"]
+</B>
+[/if]
+<BR><BR></BLOCKQUOTE>
+[/no-match]
+<BR CLEAR=LEFT>
+[more-list]
+<BLOCKQUOTE>
+Matches [matches] of
+[if value mv_search_match_count > 1]
+    [value mv_search_match_count] found.
+[/if]
+<BR>[more]<BR>
+</BLOCKQUOTE>
+[/more-list]
+
+[/search-region]
+
+[include pages/menubar]
+</BODY> </HTML>
+<!-- current page: @@MV_PAGE@@ -->

@@ -1,0 +1,39 @@
+<HTML>
+<HEAD>
+<TITLE>__COMPANY__ Catalog</TITLE>
+</HEAD>
+<BODY __BODY__>
+
+[comment]
+This is the default page of the catalog.
+[/comment]
+<IMG SRC="__LOGO__"><BR>
+<H1>Welcome to __COMPANY__</H1>
+[if session logged_in]
+<H2>Hi [value fname] [value lname], username "[data session username]"!</H2>
+[/if]
+We have products in the following categories:
+<P>
+<UL>
+[loop	search="
+			ra=yes
+			un=yes
+			tf=category
+			rf=category
+			ml=10000
+		"
+]
+<LI> <A HREF="[area href=scan
+				    arg='
+						sf=category
+						se=[loop-code]
+						tf=category,title
+						ml=2
+					'
+				]">[loop-code]</A></LI>
+[/loop]
+</UL>
+
+[include pages/menubar]
+</BODY> </HTML>
+<!-- current page: @@MV_PAGE@@ -->

@@ -1,0 +1,106 @@
+=head1 NAME
+
+mvrpm - Minivend RPM for Redhat Systems
+
+=head2 VERSION
+
+4.04
+
+=head1 SYNOPSIS
+
+rpm -Uvh minivend-4.XX-X.rpm
+
+=head1 DESCRIPTION
+
+The Minivend 4 RPM is designed to integrate Minivend with a stock Redhat
+installation. It places logs and run files in fairly standard locations,
+i.e.:
+
+=over 4
+
+=item Configuration
+
+Configuration file is /etc/minivend.cfg. It is only writable by root.
+
+=item Data
+
+Catalog directories, at least the demos, are located in /var/lib/minivend.
+
+=item Invocation
+
+Invocation is the normal /etc/rc.d startup method. Minivend installs to
+be active in run levels 3, 4, and 5; to be killed in all. 
+
+IMPORTANT NOTE: Do not expect /usr/local/minivend/bin/restart to work!
+
+Minivend uses a special invocation script, located at /usr/local/bin/minivend,
+to start the Minivend server.  This is called by /etc/rc.d/init.d/minivend.
+
+=item Run
+
+Run files go in /var/run/minivend/*. The subdirectory is needed to allow
+the Minivend user ID to write/create files.
+
+=item Logs
+
+Logs go in /var/log/minivend/*. The subdirectory is needed to allow
+the Minivend user ID to write/create files.
+
+=back
+
+=head1 ASSUMPTIONS
+
+The Minivend RPM makes several assumptions:
+
+=over 4
+
+=item Stock Apache
+
+Minivend relies upon the following things in the Apache installation:
+
+ -- Server root in /home/httpd
+ -- ScriptAlias /cgi-bin/ /home/httpd/cgi-bin/
+ -- Hostname as revealed by `hostname` is the ServerName
+ -- SuExec not enabled
+
+If you have SuExec enabled, you are responsible for changing permissions
+and running parameters appropriately. You can typically disable SuEXEC
+by running C<chmod u-s /usr/bin/suexec>.
+
+If you want to continue to user suexec, you will have to compile the appropriate
+INET mode link program and use it instead of VLINK.
+
+=item Logs
+
+Logs are located in /var/log/minivend.  Minivend drops a file in
+/etc/logrotate.d to do log rotation.
+
+=item Run files
+
+To place the logs, configuration, and run files in standard Redhat/LSB 
+locations, Minivend relies on a special invocation from /usr/local/bin/minivend.
+In other words, don't expect /usr/local/minivend/bin/restart to work.
+
+Minivend will be started by this command:
+
+    /etc/rc.d/init.d/minivend start
+
+and will be re-started by this command:
+
+    /etc/rc.d/init.d/minivend restart
+
+or possibly:
+
+    /usr/local/bin/minivend -r
+
+The run files, i.e. UNIX-domain socket, catalog status files, will be
+placed in /var/run/minivend. That directory must be owned/writable by
+the minivend user ID.
+
+=back
+
+=head1 AUTHOR
+
+Mike Heins, <mikeh@minivend.com>. Questions should be directed to the
+Minivend user list, <minivend-users@minivend.com>.
+

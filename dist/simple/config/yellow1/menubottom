@@ -1,0 +1,26 @@
+<TABLE WIDTH=620 CELLSPACING=0 CELLPADDING=0>
+<TR ALIGN=LEFT>
+<TD WIDTH=620 COLSPAN=2 BGCOLOR=__BARTEXT__ HEIGHT=10 VALIGN=TOP ALIGN=LEFT><IMG SRC="clear.gif" WIDTH=1 HEIGHT=1 ALT="" BORDER=0></TD>
+</TR>
+<TR ALIGN=LEFT>
+<TD WIDTH=620 COLSPAN=2 BGCOLOR=__LINECOLOR__ HEIGHT=1 VALIGN=TOP ALIGN=LEFT><IMG SRC="clear.gif" WIDTH=1 HEIGHT=1 ALT="" BORDER=0></TD>
+</TR>
+<TR ALIGN=LEFT>
+<TD WIDTH=620 COLSPAN=2 BGCOLOR=__BARBG__ HEIGHT=13 VALIGN=TOP ALIGN=CENTER>
+<FONT SIZE=1 FACE="Tahoma, Arial, Helvetica" COLOR=__BARTEXT__><A HREF="[area index]"><B><FONT SIZE=1 FACE="Tahoma, Arial, Helvetica" COLOR=__BARTEXT__>Home</FONT></B></A>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="[area account]"><B><FONT SIZE=1 FACE="Tahoma, Arial, Helvetica" COLOR=__BARTEXT__>Profile</FONT></B></A>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="[area browse1]"><B><FONT SIZE=1 FACE="Tahoma, Arial, Helvetica" COLOR=__BARTEXT__>Products</FONT></B></A>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="[area feedback]"><B><FONT SIZE=1 FACE="Tahoma, Arial, Helvetica" COLOR=__BARTEXT__>Contact</FONT></B></A>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="[area new_account]"><B><FONT SIZE=1 FACE="Tahoma, Arial, Helvetica" COLOR=__BARTEXT__>Registration</FONT></B></A>
+</FONT></TD>
+</TR>
+<TR ALIGN=LEFT>
+<TD WIDTH=620 COLSPAN=2 BGCOLOR=__LINECOLOR__ HEIGHT=1 VALIGN=TOP ALIGN=LEFT><IMG SRC="clear.gif" WIDTH=1 HEIGHT=1 ALT="" BORDER=0></TD>
+</TR>
+</TABLE>
+
+</CENTER>
+</BODY>
+</HTML>
+
+

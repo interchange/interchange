@@ -1,0 +1,11 @@
+[new]
+[if !session arg]
+	No argument given.
+[elsif session arg =~ /^\/|\.\./]
+<H1>Why would you do something <FONT COLOR=__CONTRAST__>naughty</FONT>like putting 
+a leading slash or a .. in your URL? HMM???? I will use a new feature: Log("Attack from " . $Session->{remote_addr}). [mvasp] <% Log($Session->{remote_addr}) %>[/mvasp]
+[/elsif]
+[else]
+<XMP>[file name="pages/[data session arg]"]</XMP>
+[/else]
+[/if]

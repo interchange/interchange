@@ -1,0 +1,89 @@
+#!/usr/bin/perl -i
+# Delete this line and above if you don't trust this script 8-)
+#!/usr/bin/perl -i.bak
+#
+# Small script to configure code based on comments
+
+use Getopt::Std;
+
+getopts('nyt:');
+
+$no = $opt_n;
+$yes = $opt_y;
+
+my $found;
+
+$USAGE = <<EOF;
+usage: $0  -(y|n) [-t STRING] filespec
+EOF
+
+if($opt_n and $opt_y) {
+	die "$USAGE\nCan't both set and unset at same time!\n";
+}
+
+if(!$opt_n and !$opt_y) {
+	die "$USAGE\nNeed to specify either -y or -n.\n";
+}
+
+$string = $opt_t || 'DEBUG';
+
+unless($opt_t) {
+	require 5.003_93;
+}
+
+if(! @ARGV) {
+	my @args;
+	@args = glob 'bin/*';
+	push (@args, glob 'lib/Vend/*.pm');
+	push (@args, glob 'lib/Vend/Table/*.pm');
+	@ARGV = grep $_ !~ /\.bak$/, @args;
+}
+
+if($no) {
+
+	while(<>) {
+		(print, next) unless /^# (NO)?$string$/o;
+		$found = 1;
+		print;
+		if($1) {
+			while(<>) {
+				(print, last) if /^#\s*END NO$string$/o;
+				s/^#//;
+				print;
+			}
+		}
+		else {
+			while(<>) {
+				(print, last) if /^# END $string$/o;
+				s/^/#/;
+				print;
+			}
+		}
+	}
+
+}
+else {
+
+	while(<>) {
+		(print, next) unless /^# (NO)?$string$/o;
+		$found = 1;
+		print;
+		if($1) {
+			while(<>) {
+				(print, last) if /^# END NO$string$/o;
+				s/^/#/;
+				print;
+			}
+		}
+		else {
+			while(<>) {
+				(print, last) if /^# END $string$/o;
+				s/^#//;
+				print;
+			}
+		}
+	}
+
+}
+
+warn "Warning: no '$string' includes found.\n" unless defined $found;

@@ -1,0 +1,61 @@
+
+UserTag random PosNumber 0
+UserTag random Interpolate 1
+UserTag random Routine <<EOR
+package Vend::Config;
+sub parse_random {
+    my ($var, $value) = @_;
+    return '' unless (defined $value && $value); 
+    my $c = [];
+    $var = lc $var;
+	my @files = grep /\S/, split /\s+/, $value;
+	for (@files) { push @$c, Vend::Util::readin($_) }
+	return $c;
+}
+
+package Vend::Interpolate;
+sub {
+	my $random = int rand(scalar(@{$Vend::Cfg->{'Random'}}));
+    if (defined $Vend::Cfg->{'Random'}->[$random]) {
+		return $Vend::Cfg->{'Random'}->[$random];
+	}
+	else {
+		return '';
+	}
+}
+EOR
+
+UserTag rotate PosNumber 2
+UserTag rotate Order ceiling floor
+UserTag rotate Interpolate 1
+UserTag rotate Routine <<EOR
+sub {
+	return '' unless $Vend::Cfg->{Rotate};
+	my $ceiling = $_[0] || @{$Vend::Cfg->{'Rotate'}} || return '';
+	my $floor   = $_[1] || 1;
+
+	$ceiling--;
+	$floor--;
+
+	my $marker = "rotate$floor$ceiling";
+
+	if($ceiling < 0 or $floor < 0) {
+		$floor = 0;
+		$ceiling = scalar  @{$Vend::Cfg->{'Rotate'}} - 1;
+		logError "Bad ceiling or floor for rotate";
+	}
+
+    my $rotate;
+	$rotate = $Vend::Session->{$marker} || $floor;
+
+	if($rotate > $ceiling or $rotate < $floor ) {
+		$rotate = $floor;
+	}
+
+	$Vend::Session->{$marker} = $rotate + 1;
+	return $Vend::Cfg->{'Rotate'}->[$rotate];
+}
+EOR
+
+AddDirective Random random
+AddDirective Rotate random

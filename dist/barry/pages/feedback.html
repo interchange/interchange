@@ -1,0 +1,86 @@
+[set page_title]Send us feedback[/set]
+__LOGOBAR__
+__MENUBAR__
+__LEFTSIDE__
+
+
+[comment]
+    The check_form area is a MiniVend scratch variable.
+    It simply sets an area in the user session to a particular
+    value.
+
+    If this is referenced in an mv_click or mv_check variable,
+    though, the MiniVend tags inside will be interpreted
+    and other variables may be set.
+
+        mv_click   sets variable values BEFORE they are put
+                   in the user's session. It is a way of setting
+		   multiple variables in one click; or of running
+		   a "subroutine". 
+
+	mv_check   sets variable values AFTER they are put
+                   in the user's session. It is a way of checking
+		   for out of bounds conditions, or running
+		   subroutines that should occur after values
+		   are set.
+	
+    The below checks for a value in the variable "feedback"
+    to make sure an empty message is not submitted. It also
+    checks for a subject. If both are present, then it
+    sets a tracking number with the [counter] UserTag
+    (probably defined in flycat.cfg) and sets mv_nextpage to 
+    a place that will submit the form contents with a 
+    subroutine called "form_mail".
+
+[/comment]
+[set check_form]
+	[if !value feedback_message]
+		form_errors=An empty message won't do us much good!
+		mv_nextpage=@@MV_PAGE@@
+	[elsif !value feedback_subject]
+		form_errors=Please give us a subject so we can track the message
+		mv_nextpage=@@MV_PAGE@@
+	[/elsif]
+	[else]
+		tracking_number=[counter etc/feedback.counter]
+		mv_nextpage=special/feedback
+	[/else]
+	[/if]
+[/set]
+
+
+[comment]
+	[quick-table] is a UserTag that just makes
+	a little two-column table.
+[/comment]
+
+<TABLE CELLPADDING=0 CELLSPACING=0 WIDTH="80%" ALIGN=RIGHT>
+<TR><TD BGCOLOR="__TITLEBG__"><IMG SRC="clear.gif" WIDTH=1 ALT="" HEIGHT=1 BORDER=0></TD></TR>
+<TR>
+<TD __TABLEFG__>
+
+[set feedback_active]1[/set]
+<FORM ACTION="[process-target]" METHOD=POST>
+<INPUT TYPE=hidden NAME=mv_todo VALUE=return>
+<INPUT TYPE=hidden NAME=mv_check VALUE=check_form>
+[quick-table]
+:[title-bar 400 4]Feedback[/title-bar]
+[if value form_errors] : <B><FONT COLOR=__CONTRAST__ FACE="arial, helvetica">[value form_errors]</FONT>[value name=form_errors set=""]</B>[/if]
+Subject: <INPUT NAME=feedback_subject SIZE=50 VALUE="[value feedback_subject]">
+Name:    <INPUT NAME=feedback_name    SIZE=50 VALUE="[value name]"> (optional)
+Email:   <INPUT NAME=feedback_email   SIZE=50 VALUE="[value email]"> (optional)
+Message: <TEXTAREA NAME=feedback_message COLS=50 ROWS=15></TEXTAREA>
+: <INPUT TYPE=submit VALUE=Send>
+[/quick-table]
+</FORM>
+
+</TD>
+</TR>
+<TR><TD BGCOLOR="__TITLEBG__"><IMG SRC="clear.gif" WIDTH=1 ALT="" HEIGHT=1 BORDER=0></TD></TR>
+</TR>
+</TABLE>
+
+__NO_RIGHT__
+__MENUBOTTOM__
+__COPYRIGHT__
+<!-- current page: @@MV_PAGE@@ -->

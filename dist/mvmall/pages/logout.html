@@ -1,0 +1,21 @@
+[set page_title]Nuke the cookies[/set]
+[set name=done int][userdb function=logout clear=1][/set]
+__LOGOBAR__
+__MENUBAR__
+__LEFTSIDE__
+
+[if scratch done]
+
+<BLOCKQUOTE><H2>Bye Bye!</H2></BLOCKQUOTE>
+Thanks for stopping in!
+
+[else]
+<BLOCKQUOTE><H2>OOPS!</H2></BLOCKQUOTE>
+You refuse to be logged out.
+[/else]
+[/if]
+__NO_RIGHT__
+__MENUBOTTOM__
+__COPYRIGHT__
+
+<!-- current page: @@MV_PAGE@@ -->

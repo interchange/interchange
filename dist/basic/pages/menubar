@@ -1,0 +1,23 @@
+<BR CLEAR=ALL>
+<P ALIGN=CENTER>
+<TABLE WIDTH=80%>
+<TR>
+<TD>
+<A HREF="[area index]">Home</A> | 
+<A HREF="[area browse]">Products</A> | 
+[if session logged_in]
+<A HREF="[area logout]">Log&nbsp;out</A> | 
+<A HREF="[area account]">Account</A> | 
+[else]
+<A HREF="[area login]">Log&nbsp;in</A> | 
+<A HREF="[area new_account]">New&nbsp;Account</A> | 
+[/else]
+[/if]
+[if items]
+<A HREF="[area basket]">View&nbsp;Cart&nbsp;([nitems]&nbsp;items)</A> | 
+[/if]
+<A HREF="mailto:__ORDERS_TO__">Contact us</A>
+</TD>
+</TR>
+</TABLE>
+</P>

@@ -1,0 +1,9 @@
+code	area	selector	name	banner_text	subs	sort	url	page
+C1	Categories	bikes	Build-to-order Bikes	Bikes				
+C2	Categories	sandals	Sandals	Sandals				
+C3	Categories	shoes	Shoes	Shoes				
+C4	Categories	books	Books:	Bikes				subcat
+C5	Categories	parts	Bike Parts:	Bike Parts				subcat
+S1	See_also		About Barry's	About Barry's Bikes and Sandals				about
+S2	See_also		Customer Service	Customer Service				account
+S3	See_also		Contact	Contact Us				feedback

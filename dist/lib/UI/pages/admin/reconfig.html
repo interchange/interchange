@@ -1,0 +1,36 @@
+[if-mm !reconfig]
+[bounce href="[area @@MM_BASE@@/violation]"]
+[/if-mm]
+[set page_title]Reconfiguring....[/set]
+[seti meta_header]
+[set name=its int][calc]
+					$hk = q{[global-value Global::HouseKeeping]};
+					$hk += 2;
+					return join " ", 1 .. $hk;
+				[/calc][/set]
+[/seti]
+@@UI_STD_HEADER@@
+
+
+[set name=arg int][data session arg][/set]
+[L]Reconfiguring catalog[/L]: ...<BR>[set name=reconfig_status int][reconfigure][/set]
+
+[loop arg="[scratch its]"]
+[reconfig-wait send=1]
+[/loop]
+
+[if scratch possible_timeout]
+ [L]WARNING: Reconfiguration may have timed out[/L].<BR>
+[L]Last config[/L]: [reconfig-time]
+[else]
+[L]SUCCESS[/L]
+[value name=ui_changes_made set=""]
+[/else]
+[/if]
+(<A HREF="[area @@MM_BASE@@/menu]">[L]return[/L]</A>)<BR>
+</HTML>
+
+<!-- ----- END REAL STUFF ----- -->
+
+@@UI_STD_FOOTER@@
+<!-- page: @@MM_PAGE@@ -->

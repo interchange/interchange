@@ -1,0 +1,168 @@
+<HTML>
+<HEAD>
+<TITLE> __COMPANY__ -- Order Detail </TITLE>
+</HEAD>
+<BODY __BODY__>
+<CENTER>
+
+[comment]
+
++----------------+---------------+------+-----+---------+-------+
+| Field          | Type          | Null | Key | Default | Extra |
++----------------+---------------+------+-----+---------+-------+
+| code           | varchar(14)   |      | PRI |         |       |
+| store_id       | varchar(9)    |      | MUL |         |       |
+| order_number   | varchar(14)   |      | MUL |         |       |
+| session        | varchar(32)   |      |     |         |       |
+| username       | varchar(20)   |      |     |         |       |
+| shipmode       | varchar(32)   |      |     |         |       |
+| nitems         | varchar(9)    |      |     |         |       |
+| subtotal       | varchar(12)   |      |     |         |       |
+| shipping       | varchar(12)   |      |     |         |       |
+| handling       | varchar(12)   | YES  |     | NULL    |       |
+| salestax       | varchar(12)   | YES  |     | NULL    |       |
+| total_cost     | varchar(16)   |      |     |         |       |
+| fname          | varchar(30)   | YES  |     | NULL    |       |
+| lname          | varchar(30)   | YES  |     | NULL    |       |
+| company        | varchar(30)   | YES  |     | NULL    |       |
+| address1       | varchar(30)   | YES  |     | NULL    |       |
+| address2       | varchar(30)   | YES  |     | NULL    |       |
+| city           | varchar(30)   |      |     |         |       |
+| state          | varchar(10)   | YES  |     | NULL    |       |
+| zip            | varchar(10)   |      |     | 00000   |       |
+| country        | varchar(10)   |      |     |         |       |
+| phone_day      | varchar(20)   | YES  |     | NULL    |       |
+| phone_night    | varchar(20)   | YES  |     | NULL    |       |
+| fax            | varchar(20)   | YES  |     | NULL    |       |
+| email          | varchar(42)   | YES  |     | NULL    |       |
+| b_fname        | varchar(30)   | YES  |     | NULL    |       |
+| b_lname        | varchar(30)   | YES  |     | NULL    |       |
+| b_company      | varchar(30)   | YES  |     | NULL    |       |
+| b_address1     | varchar(30)   | YES  |     | NULL    |       |
+| b_address2     | varchar(30)   | YES  |     | NULL    |       |
+| b_city         | varchar(30)   | YES  |     | NULL    |       |
+| b_state        | varchar(10)   | YES  |     | NULL    |       |
+| b_zip          | varchar(10)   |      |     | 00000   |       |
+| b_country      | varchar(10)   |      |     |         |       |
+| b_phone        | varchar(20)   | YES  |     | NULL    |       |
+| order_date     | varchar(32)   |      |     |         |       |
+| payment_method | varchar(32)   | YES  |     | NULL    |       |
+| avs            | varchar(32)   | YES  |     | NULL    |       |
+| order_id       | varchar(32)   | YES  |     | NULL    |       |
+| update_date    | timestamp(14) | YES  |     | NULL    |       |
+| status         | varchar(32)   | YES  |     | NULL    |       |
+| parent         | varchar(9)    | YES  |     | NULL    |       |
++----------------+---------------+------+-----+---------+-------+
+
++--------------+---------------+------+-----+---------+-------+
+| Field        | Type          | Null | Key | Default | Extra |
++--------------+---------------+------+-----+---------+-------+
+| code         | varchar(14)   |      | PRI |         |       |
+| store_id     | varchar(9)    |      | MUL |         |       |
+| order_number | varchar(14)   |      | MUL |         |       |
+| session      | varchar(32)   |      |     |         |       |
+| username     | varchar(20)   |      |     |         |       |
+| shipmode     | varchar(32)   |      |     |         |       |
+| sku          | varchar(14)   |      |     |         |       |
+| quantity     | varchar(9)    |      |     |         |       |
+| price        | varchar(12)   |      |     |         |       |
+| subtotal     | varchar(12)   |      |     |         |       |
+| shipping     | varchar(12)   | YES  |     | NULL    |       |
+| taxable      | char(3)       | YES  |     | NULL    |       |
+| size         | varchar(30)   | YES  |     | NULL    |       |
+| color        | varchar(30)   | YES  |     | NULL    |       |
+| options      | varchar(255)  | YES  |     | NULL    |       |
+| order_date   | varchar(32)   |      |     |         |       |
+| update_date  | timestamp(14) | YES  |     | NULL    |       |
+| status       | varchar(32)   | YES  |     | NULL    |       |
+| parent       | varchar(9)    | YES  |     | NULL    |       |
++--------------+---------------+------+-----+---------+-------+
+
+[/comment]
+
+[comment]
+Do some security checking
+[/comment]
+[if session arg]
+	[seti arg][data session arg][/seti]
+[else]
+	[bounce href="[area special/violation arg_missing]"]
+[/else]
+
+[/if]
+
+[value name=test_user
+	   set="[data
+	   			table=transactions
+				col=username
+				key='[scratch arg]'
+	   		]"
+	   hide=1]
+
+[if value test_user]
+[else]
+	[bounce href="[area special/violation user_missing]&user=[value test_user]&arg=[scratch arg]"]
+[/else]
+[/if]
+[if type=explicit compare=`
+					return 1 if ! $Session->{username};
+					return 0 if $Session->{username} eq $Values->{test_user};
+					return 1;
+					`]
+[bounce href="[area special/user_violation username_no_match]&s=[data session username]&v=[value test_user]"]
+[/if]
+
+
+<P>&nbsp;<P>
+<TABLE CELLSPACING=0 CELLMARGIN=0 BORDER=1 WIDTH=600>
+<TR><TD COLSPAN=4 __HEADERBG__ ALIGN=CENTER>
+    <FONT SIZE="+2" COLOR="__HEADERTEXT__">Order Detail: [scratch arg]</FONT>
+    </TD>
+</TR></TABLE>
+
+[loop list="[scratch arg]"]
+<TABLE WIDTH=600 BORDER=1>
+[html-table fr='__TABLEFG__']
+<B>ORDER NUMBER	[loop-data transactions mv_order_number]
+<B>Name	[loop-data transactions fname] [loop-data transactions lname]
+[if-loop-data transactions company]Company	[loop-data transactions company]
+[/if-loop-data]<B>Address	[loop-data transactions address1][if-loop-data transactions address2]
+	[loop-data transactions address2][/if-loop-data]
+<B>City, State, Zip	[loop-data transactions city], [loop-data transactions state]  [loop-data transactions zip]
+<B>Country	[loop-data transactions country]
+<B>Payment Method	[loop-data transactions payment_method]
+<B>Shipping Method	[loop-data transactions shipmode]
+<B>Daytime Phone	[loop-data transactions phone_day]
+<B>Evening Phone	[loop-data transactions phone_night]
+[if-loop-data transactions b_fname]<B>Billing Name	[loop-data transactions b_fname] [loop-data transactions b_lname]
+[/if-loop-data][if-loop-data transactions b_address1]<B>Billing Address	[loop-data transactions b_address1]
+	[loop-data transactions b_address2]
+<B>City, State, Zip	[loop-data transactions b_city], [loop-data transactions b_state]  [loop-data transactions b_zip]
+[/if-loop-data][if-loop-data transactions b_country]<B>Shipping Country	[loop-data transactions b_country][/if-loop-data]
+[/html-table]
+</TABLE>
+<TABLE WIDTH=600 BORDER=1 __TABLEBG__>
+[html-table interpolate=1 td="VALIGN=TOP"]
+<B>Quan	<B>Item No.	<B>Description	<B><DIV ALIGN=RIGHT>Price	<B><DIV ALIGN=RIGHT>Extension
+[query
+	list=1
+	st=db
+	sql=|
+		SELECT * FROM orderline
+		WHERE order_number = '[scratch arg]'
+		ORDER BY code
+	|
+][sql-param quantity]	[sql-param sku]	[description [sql-param sku]]<BR>[if-sql-data orderline size]SIZE-->[sql-param size][/if-sql-data][if-sql-data orderline color] COLOR-->[sql-param color][/if-sql-data]	<DIV ALIGN=RIGHT>[currency][sql-param price][/currency]	<DIV ALIGN=RIGHT>[currency][sql-param subtotal][/currency]
+[/query]
+			SUBTOTAL	<DIV ALIGN=RIGHT>[currency][loop-data transactions subtotal][/currency]
+			SALES TAX	<DIV ALIGN=RIGHT>[currency][loop-data transactions salestax][/currency]
+			SHIPPING	<DIV ALIGN=RIGHT>[currency][loop-data transactions shipping][/currency][if-loop-data transactions handling]
+			HANDLING	<DIV ALIGN=RIGHT>[currency][loop-data transactions handling][/currency][/if-loop-data]
+			ORDER TOTAL	<DIV ALIGN=RIGHT>[currency][loop-data transactions total_cost][/currency]
+[/html-table]
+</TABLE>
+[/loop]
+
+[include pages/menubar]
+</BODY> </HTML>
+<!-- current page: @@MV_PAGE@@ -->

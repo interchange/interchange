@@ -1,0 +1,406 @@
+[tag flag write]__MINIMATE_META__[/tag]
+
+<HTML>
+<HEAD><TITLE>[L]ACL Edit[/L]</TITLE></HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+[if-mm !super]
+[bounce href="[area @@MM_BASE@@/violation]"]
+[/if-mm]
+
+[if session arg]
+[seti arg][data session arg][/seti]
+[elsif value mm_edit_meta]
+[seti arg][value mm_edit_meta][/seti]
+[/elsif]
+[else]
+[set arg][/set]
+[/else]
+[/if]
+
+[perl tables="__MINIMATE_META__"]
+	my $table = $Variable->{MINIMATE_META} || 'mv_metadata';
+	my $key   = $Scratch->{arg};
+	if($key =~ /(\w+)::(.+)/) {
+
+		$Scratch->{meta_table} = $1;
+		$Scratch->{meta_column} = $2;
+	}
+	my $db = $Db{$table}
+		or do{
+			Log("meta database $table not present.");
+			return;
+		};
+	if ($table ne $Values->{mv_data_table}) {
+		$Values->{mvc_data_table} = $Values->{mv_data_table} = $table;
+	}
+	$Values->{mvc_data_key_name} = $db->config('KEY');
+	my @fields = $db->columns();
+	$Values->{mvc_data_fields} = join " ", @fields;
+	if( $db->record_exists($key) ) {
+		for(@fields) {
+			$Values->{$_} = $db->field($key, $_);
+		}
+	}
+	else {
+		for(@fields) {
+			delete $Values->{$_};
+		}
+	}
+	if($table eq delete $Values->{mvc_auto_export}) {
+		return "[seti export_ok][tag export $table][/tag][/seti]";
+	}
+	else {
+		return '[set export_ok][/set]';
+	}
+[/perl]
+
+
+[title-bar 500 6][L]Table[/L] <B>[value mv_data_table]</B>[if scratch export_ok](exported)[/if][/title-bar]
+<TABLE>
+<TR><TD VALIGN=TOP WIDTH=250>
+[title-bar 200 2]<B>[L]Links[/L]</B>[/title-bar]
+<FONT SIZE="-1" FACE="arial, helvetica">
+<UL>
+<LI>[scratch menu]
+<LI><A HREF="[area href=@@MM_BASE@@/dbedit arg='[scratch meta_table]']">Back to table</A>
+</UL>
+</TD><TD VALIGN=TOP WIDTH=250>
+</TD></TR></TABLE>
+
+[set process_meta]
+[tag flag write]__MINIMATE_META__[/tag]
+[perl tables="__MINIMATE_META__"]
+	my $table	= $Values->{mv_data_table};
+	my $db		= $Db{$table};
+	my $key     = $CGI->{$CGI->{mv_data_key}};
+	$Scratch->{mv_data_enable} = 0;
+	$CGI->{mv_todo} = 'return';
+	if(! $key) {
+		Log('Tried to write empty meta field');
+		return;
+	}
+	for($db->columns()) {
+		next unless defined $CGI->{$_};
+		$CGI->{$_} =~ s/^[\s\0]+//;
+		$CGI->{$_} =~ s/[\s\0]+$//;
+		$CGI->{$_} =~ s/\0+/_/g;
+		$CGI->{$_} =~ s/__+/_/g;
+		$CGI->{$_} =~ s/_ / /g;
+		#$db->set_field($key, $_, $CGI->{$_});
+	}
+	if($CGI->{lookup} and $CGI->{type} =~ /combo/) {
+		$CGI->{filter} = 'nullselect';
+	}
+	$CGI->{mv_todo} = 'set';
+	$CGI->{mv_nextpage} = '@@MM_BASE@@/format_meta';
+	$Session->{arg} = $table;
+	$Scratch->{mv_data_enable} = 1;
+	return;
+[/perl]
+[/set]
+
+[title-bar size=3]<B>[L]Table[/L]: [scratch meta_table] [L]Column[/L]: [scratch meta_column]</B>[/title-bar]
+<FORM METHOD=POST ACTION="[process]">
+
+<INPUT TYPE=hidden NAME="mv_todo" VALUE="return">
+<INPUT TYPE=hidden NAME="mv_nextpage" VALUE="@@MV_PAGE@@">
+<INPUT TYPE=hidden NAME="mv_data_table" VALUE="[value mv_data_table]">
+<INPUT TYPE=hidden NAME="mv_data_key" VALUE="[value mvc_data_key_name]">
+<INPUT TYPE=hidden NAME="[value mvc_data_key_name]" VALUE="[scratch arg]">
+<INPUT TYPE=hidden NAME="mv_data_decode" VALUE="[value mv_data_decode]">
+<INPUT TYPE=hidden NAME="mv_update_empty" VALUE="1">
+<INPUT TYPE=hidden NAME="mv_click" VALUE="process_meta">
+<INPUT TYPE=hidden NAME="mv_data_fields" VALUE="[db-columns]">
+
+[if-key-exists table="[value mv_data_table]" key="[scratch arg]"]
+<INPUT TYPE=radio NAME="mv_data_function" VALUE="update" CHECKED> [L]Update[/L]
+<INPUT TYPE=radio NAME="mv_data_function" VALUE="insert"> [L]Insert[/L]
+<INPUT TYPE=radio NAME="mv_data_function" VALUE="delete"> [L]Delete[/L]
+<INPUT TYPE=checkbox NAME="mv_data_verify" VALUE="Yes"> [L]Yes, delete[/L]
+[else]
+<INPUT TYPE=radio NAME="mv_data_function" VALUE="update"> [L]Update[/L]
+<INPUT TYPE=radio NAME="mv_data_function" VALUE="insert" CHECKED> [L]Insert[/L]
+[/else]
+[/if-key-exists]
+
+<TABLE CELLPADDING-1 CELLSPACING=0 BORDER=1>
+<TR>
+	<TD VALIGN=top COLSPAN=2>
+		<TABLE>
+		<TR>
+			<TD VALIGN=TOP>
+				[title-bar 200 2]<B>Widget</B>
+				<HR>
+				<FONT SIZE=1><I>Default is text box,<BR>60 columns[/title-bar]
+			</TD>
+			<TD VALIGN=TOP>
+				[title-bar 100 2]<B>Window size</B>
+				<HR>
+				<FONT SIZE=1><I>multiple select<BR><B>only</B>[/title-bar]
+			</TD>
+			<TD VALIGN=TOP>
+				[title-bar 150 2]<B>Box Height</B>
+				<HR>
+				<FONT SIZE=1><I>Text area or<BR>radio/check table[/title-bar]
+			</TD>
+			<TD VALIGN=TOP>
+				[title-bar 150 2]<B>Box Width</B>
+				<HR>
+				<FONT SIZE=1><I>Text box, Text area,<BR>or radio/check area[/title-bar]
+			</TD>
+		</TR>
+		<TR>
+		<TD VALIGN=TOP>
+		<SELECT NAME=type>
+		[perl]
+			my $val = $Values->{'type'};
+			$c = ' SELECTED';
+			$out = "<OPTION VALUE=text_60> Default\n";
+			$out .= "<OPTION VALUE=select"			.
+					($val =~ /select/ ? $c : '') 	.
+					">Select box (dropdown)\n";
+			$out .= "<OPTION VALUE=textarea"			.
+					($val =~ /textarea/ ? $c : '') 	.
+					">Text Area (multi-row)\n";
+			$out .= "<OPTION VALUE=text_"			.
+					($val =~ /text(?!area)/ ? $c : '') 	.
+					">Text box\n";
+			$out .= "<OPTION VALUE=multiple"			.
+					($val =~ /multi/ ? $c : '') 	.
+					">Multiple select\n";
+			$out .= "<OPTION VALUE=combo"			.
+					($val =~ /combo/ ? $c : '') 	.
+					">Combo select\n";
+			$out .= "<OPTION VALUE=hidden_label"                    .
+					($val =~ /hidden/ ? $c : '')    .
+					">Hidden (show text)\n";
+			$out .= "<OPTION VALUE=radio"			.
+					($val =~ /radio(?!_nbsp)/ ? $c : '') 	.
+					">Radio Box\n";
+			$out .= "<OPTION VALUE=radio_nbsp"			.
+					($val =~ /radio_nbsp/ ? $c : '') 	.
+					">Radio Box -- no breaks\n";
+			$out .= "<OPTION VALUE=check"			.
+					($val =~ /check(?!_nbsp)/ ? $c : '') 	.
+					">Check Box\n";
+			$out .= "<OPTION VALUE=check_nbsp"			.
+					($val =~ /check_nbsp/ ? $c : '') 	.
+					">Check Box -- no breaks\n";
+			return $out;
+		[/perl]
+		</SELECT>
+		</TD>
+		<TD VALIGN=TOP>
+		<SELECT NAME="type">
+		<OPTION VALUE=""> --
+		<OPTION VALUE=" SIZE=3 "> 3
+		<OPTION VALUE=" SIZE=5 "> 5
+		<OPTION VALUE=" SIZE=10 "> 10
+		</SELECT></FONT>
+		</TD>
+		<TD VALIGN=TOP>
+		[perl]
+		delete $Scratch->{mm_type_height};
+		delete $Scratch->{mm_type_width};
+		$Values->{type} =~ m{(\d+)(?:_+(\d+))?}
+			or return;
+		$Scratch->{mm_type_height}	= $1 || '';
+		$Scratch->{mm_type_width}	= $2 || '';
+		$Scratch->{mm_type_width} = delete $Scratch->{mm_type_height} 
+			if ! $Scratch->{mm_type_width};
+		return;
+		[/perl]
+		<SELECT NAME="type">
+			<OPTION VALUE=""> -- 
+			<OPTION>1
+			<OPTION>2
+			<OPTION>3
+			<OPTION>4
+			<OPTION>5
+			<OPTION>6
+			<OPTION>7
+			<OPTION>8
+			<OPTION>9
+			<OPTION>10
+			<OPTION>11
+			<OPTION>12
+			<OPTION>13
+			<OPTION>14
+			<OPTION>15
+			<OPTION>16
+			<OPTION>17
+			<OPTION>18
+			<OPTION>19
+			<OPTION>20
+			<OPTION VALUE=""> custom
+		</SELECT>or <INPUT NAME=type VALUE="[scratch mm_type_height]" SIZE=4></FONT>
+		</TD>
+		<TD VALIGN=TOP>
+		<SELECT NAME="type">
+			<OPTION VALUE=""> -- 
+			<OPTION>2
+			<OPTION>3
+			<OPTION>4
+			<OPTION>5
+			<OPTION>6
+			<OPTION>7
+			<OPTION>8
+			<OPTION>9
+			<OPTION>10
+			<OPTION>20
+			<OPTION>30
+			<OPTION>40
+			<OPTION>50
+			<OPTION>60
+			<OPTION>70
+			<OPTION>80
+			<OPTION VALUE=""> custom
+		</SELECT>or <INPUT NAME=type VALUE="[scratch mm_type_width]" SIZE=4></FONT>
+		</TD>
+		</TR>
+		</TABLE>
+	</TD>
+</TR>
+
+<TR>
+	<TD VALIGN=top>
+		<B>Field label</B>
+		<BR><FONT SIZE="-1"><I>What should display as field title.</I></FONT>
+	</TD>
+	<TD VALIGN=top>
+		<INPUT NAME=label SIZE=60 VALUE="[value name=label filter=entities]">
+		
+	</TD>
+</TR>
+
+<TR>
+	<TD VALIGN=top>
+		<B>Fixed list</B><BR>
+		<FONT SIZE=-1>
+		<I>This is a comma-separated list of values to present. It takes the form
+		<BLOCKQUOTE>VALUE=Label text*</BLOCKQUOTE>
+	</TD>
+	<TD VALIGN=top>
+		<TEXTAREA name=options ROWS=2 COLS=70>[value options]</TEXTAREA><BR>
+		<I>where VALUE is the value to go in the cell, <B>Label text</B> is the
+		label for the selection, and the optional * selects this as a default.</I>
+	</TD>
+</TR>
+
+<TR>
+	<TD VALIGN=top>
+		<B>List Lookup</B>
+		<SELECT NAME=lookup>
+		<OPTION VALUE=""> No
+		<OPTION VALUE="[scratch meta_column]" [if value lookup]SELECTED[/if]> Yes
+		</SELECT>
+		<BR>
+		<FONT SIZE=-1>
+		<I>Looks up unique values and places in select box.</I>
+	</TD>
+	<TD VALIGN=top>
+		<BR>
+		Table <SELECT NAME=db>
+					<OPTION VALUE=""> -- 
+					[loop option=db list="[list-databases]"]
+					<OPTION>[loop-code]
+					[/loop]
+				</SELECT> 
+		Column <FONT SIZE="-1">(if not <B>[scratch meta_column]</B>)</FONT> 
+		<INPUT TYPE=text NAME=field VALUE="[value field]">
+
+	</TD>
+</TR>
+
+<TR>
+	<TD VALIGN=top>
+		<B>Filter</B>
+		<BR>
+		<FONT SIZE=-1>
+		<I>Allows you to filter against common errors. Select as many as wanted.</I>
+	</TD>
+	<TD VALIGN=top>
+		<BR>
+		<SELECT NAME=filter MULTIPLE SIZE=5>
+[perl]
+	@ary = (
+	[filesafe	=> 'Safe for file name'],
+	[uc			=> 'Upper case'],
+	[nullselect	=> 'First non-null (combo box)'],
+	[lc 		=> 'Lower case'],
+	[digits_dot	=> 'Decimal number (not negative)'],
+	[backslash	=> 'Remove backslashes'],
+	[namecase	=> 'Name case'],
+	[name		=> 'Turn LAST,FIRST into FIRST LAST'],
+	[digits		=> 'Digits only'],
+	[word		=> 'Word chars only (A-z0-9_)'],
+	[unix		=> 'DOS to UNIX'],
+	[dos		=> 'UNIX to DOS'],
+	[mac		=> 'UNIX to MAC'],
+	[gate		=> 'Only allow if scratch set'],
+	[no_white	=> 'No whitespace'],
+	[strip		=> 'Strip leading/trailing whitespace'],
+	[sql		=> 'Escape single quotes (SQL)'],
+	[text2html	=> 'Simple text to HTML'],
+	[urlencode	=> 'URL encode (%20, etc)'],
+	[pagefile	=> 'Safe for Minivend page name'],
+	[entities	=> 'HTML entities (&amp; -> &amp;amp;)'],
+);
+	my $out = '';
+	my $val = $Values->{filter};
+	foreach my $one (@ary) {
+		$out .= '<OPTION VALUE="';
+		$out .= $one->[0];
+		$out .= '"';
+		$out .= ' SELECTED' if $val =~ /\b$one->[0]\b/;
+		$out .= ">$one->[1]";
+	}
+	print $out;
+	return $out;
+[/perl]
+		</SELECT> 
+
+	</TD>
+</TR>
+
+<TR>
+	<TD VALIGN=top>
+		<B>Help text</B><BR>
+		<FONT SIZE=-1>
+		<I>Displayed just like this.</I>
+	</TD>
+	<TD VALIGN=top>
+		<TEXTAREA NAME=help ROWS=2 COLS=70>[value help]</TEXTAREA><BR>
+	</TD>
+</TR>
+
+
+</TABLE>
+
+[calc]
+	my $check = $Values->{mvc_data_fields} || $Tag->db_columns();
+	return if $check =~ /\b$Values->{mvc_data_key_name}\b/;
+	my $name = $Values->{mvc_data_key_name};
+	my $val = $Scratch->{arg};
+	$val =~ s/"/&quot;/g;
+[/calc]
+
+<BR CLEAR=LEFT>
+<INPUT TYPE=submit
+		VALUE="[L]Submit change[/L]">&nbsp;&nbsp;&nbsp;
+	
+[if !value mvc_too_large]
+<INPUT TYPE=checkbox NAME=mvc_auto_export CHECKED VALUE="[value mv_data_table]">
+	[L]Auto-export[/L]
+[/if]
+</FORM>
+
+[value name=mvc_data_fields set=""]
+<!-- page: @@MV_PAGE@@ -->
+<P>
+<A HREF="[area @@MM_BASE@@/dbedit]">[L]Edit menu for table[/L] [value mv_data_table]</A><BR>
+<A HREF="[area @@MM_BASE@@/db_configure]">[L]Upload/download/export menu for table[/L] [value mv_data_table]</A><BR>
+[scratch menu]
+<!-- page: @@MV_PAGE@@ -->
+</BODY></HTML>

@@ -1,0 +1,95 @@
+__NAME__                            invalid
+&fatal     = yes
+mv_failpage= interact
+&set       = mv_junk 0
+__END__
+
+__NAME__                            checkout_profile
+fname=required
+lname=required
+address1=required
+city=required
+country=required
+[if value country =~ /^(US|CA)$/i]
+	state=state_province "[value state]" is not a valid US/Canada state or province.
+	zip=postcode "[value zip]" is not a valid US/Canada postal code.
+	&or phone_day=phone, phone_night=phone Must have evening or day phone_number
+[else]
+	&or phone_day=phone, phone_night=phone Must have evening or day phone_number
+[/else]
+[/if]
+
+&fatal = yes
+email=required
+email=email
+
+&set = mv_payment Incomplete
+
+[if value fax_order]
+&set = mv_payment Call Us
+[elsif variable MV_PAYMENT_MODE]
+&credit_card=standard keep
+&charge=[var MV_PAYMENT_MODE][cgi mv_payment_test]
+&set=mv_payment Real-time ([var MV_PAYMENT_MODE]) Credit Card 
+[/elsif]
+[elsif config CyberCash]
+&fail=../special_pages/failed
+&charge=[var CYBER_MODE]
+[/elsif]
+[elsif config CreditCardAuto]
+mv_credit_card_valid=required Credit card fails tests.
+&set=mv_payment Credit Card ([default mv_credit_card_type unknown])
+[/elsif]
+[else]
+&credit_card=standard
+&set=mv_payment Credit Card ([default mv_credit_card_type unknown])
+[/else]
+[/if]
+
+&final = yes
+&setcheck=mv_email [value email]
+
+__END__
+
+__NAME__                            shipping_address
+fname=required
+lname=required
+address1=required
+city=required
+country=required
+[if value country =~ /^(US|CA)$/i]
+	state=state_province "[value state]" is not a valid US/Canada state or province.
+	zip=postcode "[value zip]" is not a valid US/Canada postal code.
+	&or phone_day=phone, phone_night=phone Must have evening or day phone_number
+[else]
+	&or phone_day=phone, phone_night=phone Must have evening or day phone_number
+[/else]
+[/if]
+email=required
+
+&fatal = yes
+
+email=email
+
+__END__
+
+
+__NAME__                            account_change
+fname=required
+lname=required
+address1=required
+city=required
+country=required
+[if value country =~ /^(US|CA)$/i]
+	state=state_province "[value state]" is not a valid US/Canada state or province.
+	zip=postcode "[value zip]" is not a valid US/Canada postal code.
+	&or phone_day=phone, phone_night=phone Must have evening or day phone_number
+[else]
+	&or phone_day=phone, phone_night=phone Must have evening or day phone_number
+[/else]
+[/if]
+email=required
+&fatal = yes
+email=email
+
+__END__

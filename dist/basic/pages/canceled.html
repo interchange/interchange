@@ -1,0 +1,43 @@
+<HTML>
+<HEAD>
+<TITLE>Stop shopping</TITLE>
+</HEAD>
+<BODY __BODY__>
+
+<CENTER>
+<H1>Stop shopping</H1>
+</CENTER>
+
+<FORM ACTION="[process-target]" METHOD="POST">
+<input type="hidden" name="mv_doit" value="refresh">
+<input type="hidden" name="mv_orderpage" value="index">
+<input type="hidden" name="mv_nextpage" value="index">
+
+<BLOCKQUOTE>If you click <STRONG>Remove Contents</STRONG>,
+only the items you have placed in your basket will be removed.
+
+<P>
+If you click <STRONG>Erase All Information</STRONG>,
+your name, address, and credit card information will be removed from our system. You will have to enter it again to buy anything.
+
+<P>
+If you wish to do neither, just use the buttonbar or your browser's <STRONG>Back</STRONG> function to return to shopping.
+[item-list]
+<input type=hidden name="[quantity-name]" value=0>
+[/item-list]
+
+<CENTER>
+<FONT FACE="arial,helvetica">
+<input type="submit" value="Remove Contents Only">
+<input type="submit" name="mv_todo" value="Erase All Information">
+</FONT>
+</CENTER>
+</BLOCKQUOTE>
+</form>
+[set Erase All Information]
+mv_todo=cancel
+[/set]
+
+[include pages/menubar]
+</BODY> </HTML>
+<!-- current page: @@MV_PAGE@@ -->

@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+<TITLE>Log in to __COMPANY__</TITLE>
+</HEAD>
+<BODY __BODY__>
+<TABLE WIDTH=80%>
+<TR><TD __HEADERBG__>
+    <FONT SIZE="+2" COLOR="__HEADERTEXT__">Log in</FONT>
+    </TD>
+</TR></TABLE>
+    
+<BLOCKQUOTE>
+[if session failure]
+<P>
+[data session failure]
+<P>
+[/if]
+If you have an account with us, please enter your user name and password. (test/test for testing)
+<P>
+</BLOCKQUOTE>
+    <FORM ACTION="[process secure=1]" METHOD=POST>
+    <INPUT TYPE=hidden NAME=mv_click    VALUE=Login>
+    <INPUT TYPE=hidden NAME=mv_todo     VALUE=return>
+	<INPUT TYPE=hidden NAME=mv_nextpage VALUE=index>
+
+    <TABLE CELLSPACING=0 CELLPADDING=0 WIDTH=80%>
+    <TR><TD ALIGN=RIGHT>Username</TD>
+        <TD><INPUT NAME=mv_username VALUE="[value mv_username]" SIZE=10>
+        </TD>
+	</TR>
+
+    <TR><TD ALIGN=RIGHT>Password</TD>
+        <TD><INPUT
+                onChange="this.form.submit()"
+              TYPE=password NAME=mv_password VALUE="" SIZE=10>
+        <INPUT TYPE=submit VALUE="Log in"> &nbsp;&nbsp;
+        </TD>
+	</TR>
+    </TABLE>
+
+    </FORM>
+
+[include pages/menubar]
+</BODY> </HTML>
+<!-- current page: @@MV_PAGE@@ -->
+[seti nada]Prime the user database [data userdb junk junk][/seti]
+[set nada][/set]

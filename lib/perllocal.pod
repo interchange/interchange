@@ -1,0 +1,22 @@
+=head2 Mon Feb 15 05:39:03 1999: C<Module> L<MiniVend>
+
+=over 4
+
+=item *
+
+C<installed into: /home/minivend/lib>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 3.12beta5>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+

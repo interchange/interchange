@@ -1,0 +1,48 @@
+<HTML>
+<HEAD>
+<TITLE>We need some more information!</TITLE>
+</HEAD>
+<BODY>
+<H1>We need some more information!</H1>
+
+
+We need to have some fields entered to be able
+to process your order.  Please [page __ORDER_STYLE__/checkout]go back</A> and fill out 
+the information.
+<P>
+Problem: 
+<P>
+[perl]
+	my $msg = q{[subject]};
+	sub redo_message {
+		my($param,$word) = @_;
+		if($param =~ /mv_credit/) {
+			"<LI>You need to validate your credit card information.\n";
+		}
+		elsif ($word =~ /not_a_state/i) {
+			return "<LI>We need a valid two-letter state code like CA.\n";
+		}
+		elsif ($word =~ /phone_day=/i) {
+			return "<LI>Is that really a phone number?\n";
+		}
+		elsif ($word =~ /not_a_zip_code/i) {
+			return "<LI>We need a zip code for UPS lookup.\n";
+		}
+		elsif ($word =~ /mv_contingent/) {
+			return "<LI>You need to select your method of payment.\n";
+		}
+		else { return "<LI>$param: $word\n" }
+	}
+	@msg = split /\n/, $msg;
+	$msg = '<UL>';
+	for(@msg) {
+		($var, $val) = split /:\s*/, $_;
+		$msg .= redo_message($var, $val);
+	}
+	$msg .= '</UL>';
+	$msg;
+[/perl]
+
+[include pages/menubar]
+</BODY></HTML>
+<!-- current page: @@MV_PAGE@@ -->

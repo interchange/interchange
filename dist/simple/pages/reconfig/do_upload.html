@@ -1,0 +1,95 @@
+[set page_title] __COMPANY__ -- Database Upload Results [/set]
+__LOGOBAR__
+__MENUBAR__
+__LEFTSIDE__
+
+<BLOCKQUOTE>
+<TABLE>
+<CAPTION> <H2> Upload </H2></CAPTION>
+[if value page_to_upload]
+<TR>
+<TD>
+Page upload of <B>[value page_to_upload]</B> -->
+</TD>
+<TD>
+[if type=explicit compare="[value-extended
+							name='page_upload'
+							test=isfile
+							]"]
+[value-extended
+						Yes=Success
+						No=FAILED
+						ascii="[value page_ascii]"
+						name="page_upload"
+						outfile="pages/[value page_to_upload]"
+						]
+[else]
+[value page_to_upload]: No file was uploaded.
+[/else][/if]
+</TD>
+</TR>
+[/if]
+[loop arg="[value-extended db_to_upload]"]
+[if type=explicit compare="[value-extended
+							name='upload_[loop-code]'
+							test=isfile
+							]"]
+	
+<TD>
+Database upload of <B>[loop-code]</B> -->
+</TD>
+<TD>
+[value-extended
+						Yes=Success
+						No=FAILED
+						ascii="1"
+						name="upload_[loop-code]"
+						outfile="products/[scratch outfile_[loop-code]]"
+						]
+</TD>
+[else]
+<TD COLSPAN=2>
+[loop-code]: No file was uploaded.
+</TD>
+[/else][/if]
+[set upload_[loop-code]][/set]
+</TR>
+[/loop]
+[if value arbitrary_to_upload]
+<TR>
+<TD>
+Arbitrary upload of <B>[value arbitrary_to_upload]</B> -->
+</TD>
+<TD>
+[if type=explicit compare="[value-extended
+							name='arbitrary_upload'
+							test=isfile
+							]"]
+[value-extended
+						Yes=Success
+						No=FAILED
+						ascii="[value arbitrary_ascii]"
+						name="arbitrary_upload"
+						outfile="[value arbitrary_to_upload]"
+						]
+[else]
+[value arbitrary_to_upload]: No file was uploaded.
+[/else][/if]
+</TD>
+</TR>
+[/if]
+</TABLE>
+</BLOCKQUOTE>
+
+[value name=db_to_upload set=""]
+[value name=page_to_upload set=""]
+[value name=arbirtrary_to_upload set=""]
+<CENTER>
+[page reconfig/upload]Upload Menu[/page]<BR>
+[page reconfig/reconfig]Reconfigure catalog[/page]
+</CENTER>
+
+__NO_RIGHT__
+__MENUBOTTOM__
+__COPYRIGHT__
+<!-- current page: @@MV_PAGE@@ -->

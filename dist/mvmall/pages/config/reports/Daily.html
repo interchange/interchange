@@ -1,0 +1,189 @@
+[set page_title]Daily orders[/set]
+[include pages/config/header]
+[include pages/config/mid_header]
+
+<TR BGCOLOR="#f5f5fb">
+<TD BGCOLOR="#528ebc" VALIGN="top">
+<FONT FACE="arial" COLOR="#ffffff" SIZE="-1">
+<B>Date</B>
+</FONT>
+</TD>
+<TD BGCOLOR="#528ebc" VALIGN="top">
+<FONT FACE="arial" COLOR="#ffffff" SIZE="-1">
+<B>Syndicate/Campaign</B>
+</FONT>
+</TD>
+<TD ALIGN=right BGCOLOR="#528ebc" VALIGN="top">
+<FONT FACE="arial" COLOR="#ffffff" SIZE="-1">
+<B>Number of Orders</B>
+</FONT>
+</TD>
+<TD ALIGN=right BGCOLOR="#528ebc" VALIGN="top">
+<FONT FACE="arial" COLOR="#ffffff" SIZE="-1">
+<B>Revenue</B>
+</FONT>
+</TD>
+</TR>
+
+[if !session arg]
+<!-- default to current: [data base=session field=arg value="[tag time]%Y%m%d[/tag]"]-->
+[/if]
+
+[calc]
+	$Scratch->{synd_limit} = '';
+	return unless $CGI->{syndicate};
+	$Scratch->{synd_limit} = "AND syndicate = '$CGI->{syndicate}'";
+	$Scratch->{synd_limit} .= " AND campaign = '$CGI->{campaign}'"
+		if $CGI->{campaign};
+	return;
+[/calc]
+
+[query	hashref=main
+	sql="
+	select store_id, syndicate, campaign, total_cost, order_date
+		from  transactions
+		where order_date like '[data session arg]%' [scratch synd_limit]
+	"][/query]
+
+[perl tables="store"]
+	my %sales;
+	$master = {};
+	foreach $line (@{$Tmp->{main}}) {
+		my ($month) = substr($line->{order_date}, 0, 8);
+		my $id = $line->{syndicate};
+		$id .= "-$line->{campaign}";
+		$month{$month}++;
+		$master->{$month} = { } if ! $master->{$month};
+		$master->{$month}{$id} = { } if ! $master->{$month}{$id};
+		my $ref = $master->{$month}{$id};
+		$ref->{sales}  += $line->{total_cost};
+		$ref->{orders}++;
+	}
+	%names = qw/
+		 01 January
+		 02 February
+		 03 March
+		 04 April
+		 05 May
+		 06 June
+		 07 July
+		 08 August
+		 09 September
+		 10 October
+		 11 November
+		 12 December
+	/;
+	my $out = '';
+	foreach $month (sort { $a <=> $b } keys %$master) {
+		my $year = $month;
+		$year =~ s/(\d\d\d\d)(\d\d)(\d\d)/$1/;
+		my $mname = $names{$2};
+		my $day = $3;
+		$day =~ s/^0+//;
+		my $subtotal_sales  = 0;
+		my $subtotal_quantity  = 0;
+		my $ref = $master->{$month};
+		foreach $id (sort keys %$ref) {
+			my $record = $ref->{$id};
+			$sales = $Tag->currency({}, $record->{sales});
+			$subtotal_sales  += $record->{sales};
+			$subtotal_quantity += $record->{orders};
+			($syn, $camp) = split /-/, $id, 2;
+			my $burl = $Tag->area('config/reports/Detail', $month);
+			my $url = qq{<A HREF="$burl">$mname&nbsp;$day,&nbsp;$year</A>}
+				if $mname;
+			$out .= <<EOF;
+	<TR BGCOLOR=#f5f5fb>
+	<TD VALIGN=top>
+	<FONT FACE=arial SIZE=-1>
+	$url&nbsp;
+	</FONT>
+	</TD>
+	<TD VALIGN=top>
+	<FONT FACE=arial SIZE=-1>
+	<A HREF="$burl&syndicate=$syn">$syn</A>&nbsp;<A HREF="$burl&syndicate=$syn&campaign=$camp">$camp</A>
+	</FONT>
+	</TD>
+	<TD ALIGN=right VALIGN=top>
+	<FONT FACE="arial" SIZE="-1">
+	$record->{orders}
+	</FONT>
+	</TD>
+	<TD ALIGN=right VALIGN=top>
+	<FONT FACE=arial SIZE=-1>
+	$sales
+	</FONT>
+	</TD>
+EOF
+			$mname = $year = $day = '';
+		}
+		$total_sales        += $subtotal_sales;
+		$total_quantity     += $subtotal_quantity;
+		$subtotal_sales  = $Tag->currency({}, $subtotal_sales);
+		$out .= <<EOF;
+	<TR BGCOLOR="#f5f5fb">
+	<TD VALIGN=top>
+	<FONT FACE=arial SIZE=-1>
+	&nbsp;
+	</FONT>
+	</TD>
+	<TD VALIGN=top>
+	<FONT FACE=arial SIZE=-1>
+	ALL<BR><HR>
+	</FONT>
+	</TD>
+	<TD ALIGN=right VALIGN=top>
+	<FONT FACE=arial SIZE=-1>
+	$subtotal_quantity
+	</FONT>
+	</TD>
+	<TD ALIGN=right VALIGN=top>
+	<FONT FACE=arial SIZE=-1>
+	$subtotal_sales
+	</FONT>
+	</TD>
+	</TR>
+EOF
+	}
+		$total_sales  = $Tag->currency({}, $total_sales);
+		$out .= <<EOF;
+	<TR BGCOLOR="#f5f5fb">
+	<TD VALIGN="top">
+	<FONT FACE="arial" SIZE="-1">
+	GRAND TOTAL
+	</FONT>
+	</TD>
+	<TD VALIGN="top">
+	<FONT FACE="arial" SIZE="-1">
+	ALL
+	</FONT>
+	</TD>
+	<TD VALIGN="top">
+	<FONT FACE="arial" SIZE="-1">
+	$total_quantity
+	</FONT>
+	</TD>
+	<TD ALIGN="right" VALIGN="top">
+	<FONT FACE="arial" SIZE="-1">
+	$total_sales
+	</FONT>
+	</TD>
+	</TR>
+EOF
+[/perl]
+
+
+[include pages/config/mid_footer]
+[include pages/config/footer]
+<!--
+[perl global=1]
+	$Tag->uneval({ ref => $master });
+[/perl]
+-->
+[include pages/config/mid_footer]
+[include pages/config/footer]
+<!--
+[perl global=1]
+	$Tag->uneval({ ref => $master });
+[/perl]
+-->

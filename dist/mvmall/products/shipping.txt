@@ -1,0 +1,17 @@
+code	mode	description	criteria	min	max	formula	opt
+1	air	Int'l Air A	weight	0	0	e Nothing to ship!	
+2	air	Int'l Air A	weight	0	100	f 8 + @@TOTAL@@ * 2.50	CA
+3	air	Int'l Air A	weight	100	999999	e @@TOTAL@@ lbs too heavy. Charter a boat.	
+4	air	Int'l Air B	weight	0	100	f 10 + @@TOTAL@@ * 3.50	MX
+5	air	Int'l Air C	weight	0	100	f 12 + @@TOTAL@@ * 4.5	AG AI AN AW BM BS BZ CR DM DO GD GP GT HT JM KY MQ MS PA PM TC XC XP XQ XR
+6	air	Int'l Air D	weight	0	100	f 14 + @@TOTAL@@ * 5.5	AD AT BB BO CH CO DE FJ GM GN GW GY HN KI LI LU NI PL SR SV TO TT TV UY VE VU XM XO XY
+7	air	Int'l Air E	weight	0	100	f 16 + @@TOTAL@@ * 6.5	AL BJ CY CZ DK EC EI ES FO GF GI GR HK HU IL IS IT JO KR LB MA MK ML MT NG NL NR PT SH SI SK Sb TN TR TW UK XA XB XG XL XS XT XV
+8	air	Int'l Air F	weight	0	100	f 18 + @@TOTAL@@ * 7.5	AE AF AM AO AR AU AZ BD BE BF BG BH BI BN BR BT BW BY CF CG CL CM CN CV DJ DZ EE EG ER ET FI FR GA GE GH GL GQ ID IN IR JP KE KM KW KZ LA LK LS LT LY MG MR MU MV MW MZ NA NC NE NO NP NZ OM PG PH PK PY RE RW SA SC SD SE SG SL SN ST SZ TD TG TH TZ UA UG XD XE XF XI XU XW XX YE ZA ZM ZR ZW
+9	surf	Int'l Surface A	weight	0	0	e Nothing to ship!	
+10	surf	Int'l Surface A	weight	0	100	f 6 + @@TOTAL@@ * 2	CA
+11	surf	Int'l Surface A	weight	100	999999	e @@TOTAL@@ lbs too heavy. Charter a boat.	
+12	surf	Int'l Surface B	weight	0	100	f 8 + @@TOTAL@@ * 3	MX
+13	surf	Int'l Surface C	weight	0	100	f 10 + @@TOTAL@@ * 4	AD AT BB BO CH CO DE FJ GM GN GW GY HN KI LI LU NI PL SR SV TO TT TV UY VE VU XM XO XY
+14	surf	Int'l Surface D	weight	0	100	f 12 + @@TOTAL@@ * 5	AG AI AN AW BM BS BZ CR DM DO GD GP GT HT JM KY MQ MS PA PM TC XC XP XQ XR
+15	surf	Int'l Surface E	weight	0	100	f 14 + @@TOTAL@@ * 6	AL BJ CY CZ DK EC EI ES FO GF GI GR HK HU IL IS IT JO KR LB MA MK ML MT NG NL NR PT SH SI SK Sb TN TR TW UK XA XB XG XL XS XT XV
+16	surf	Int'l Surface F	weight	0	100	f 16 + @@TOTAL@@ * 7	AE AF AM AO AR AU AZ BD BE BF BG BH BI BN BR BT BW BY CF CG CL CM CN CV DJ DZ EE EG ER ET FI FR GA GE GH GL GQ ID IN IR JP KE KM KW KZ LA LK LS LT LY MG MR MU MV MW MZ NA NC NE NO NP NZ OM PG PH PK PY RE RW SA SC SD SE SG SL SN ST SZ TD TG TH TZ UA UG XD XE XF XI XU XW XX YE ZA ZM ZR ZW

@@ -1,0 +1,13 @@
+{MYSQL}mysqladmin create test_minivend
+Since you selected the MySQL option, you need to create
+a database named "minivend_test". In a default MySQL
+configuration, any user may create and drop and modify
+test_* databases, but some administrators disable this.
+  
+
+{PGSQL}createdb test_minivend
+Since you selected the PostgreSQL option, you need to create
+a database named "minivend_test". This will only work if
+your administrator allowed it.
+  
+

@@ -1,0 +1,51 @@
+UserTag help PosNumber 1 
+UserTag help Order name
+UserTag help Routine <<EOR
+sub parse_help {
+	my ($var, $value) = @_;
+	my (@files);
+	my (@items);
+	my ($c, $chunk, $item, $help, $key);
+	unless (defined $value && $value) { 
+		$c = {};
+		return $c;
+	}
+	$c = $C->{'Help'};
+	$var = lc $var;
+	$C->{'Source'}->{'Help'} = $value;
+	@files = get_files($C->{'PageDir'}, split /\s+/, $value);
+	foreach $chunk (@files) {
+		@items = split /\r?\n\r?\n/, $chunk;
+		foreach $item (@items) {
+			($key,$help) = split /\s*\n/, $item, 2;
+			if(defined $c->{$key}) {
+				$c->{$key} .= $help;
+			}
+			else {
+				$c->{$key} = $help;
+			}
+				
+		}
+	}
+	return $c;
+}
+
+sub {
+	my($help) = shift;
+	# Move this to control section?
+	if ($::Values->{mv_helpon}) {
+		delete $::Values->{mv_helpoff};
+		undef $::Values->{mv_helpon};
+	}
+	return '' if defined $::Values->{'mv_helpoff'};
+    if (defined $Vend::Cfg->{'Help'}{$help}) {
+		return $Vend::Cfg->{'Help'}{$help};
+	}
+	else {
+		return '';
+	}
+}
+
+EOR
+
+AddDirective Help help

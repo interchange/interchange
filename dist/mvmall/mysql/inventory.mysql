@@ -1,0 +1,11 @@
+Database  inventory  inventory.txt __SQLDSN__
+#ifdef SQLUSER
+Database  inventory  USER         __SQLUSER__
+#endif
+#ifdef SQLPASS
+Database  inventory  PASS         __SQLPASS__
+#endif
+Database  inventory  KEY          sku
+Database  inventory  COLUMN_DEF   "sku=char(14) NOT NULL PRIMARY KEY"
+Database  inventory  COLUMN_DEF   "quantity=DECIMAL(8,2) NOT NULL"
+Database  inventory  NUMERIC      quantity

@@ -1,0 +1,51 @@
+[comment]
+	The __VALUES__ below are MiniVend Variable settings.
+	In this case, they come from these settings in catalog.cfg:
+
+	## Set some menubars and headers
+	ConfigDir pages
+	Variable      LEFTSIDE   <leftside
+	Variable      RIGHTSIDE  <rightside
+	Variable      NO_RIGHT   <no_right
+	Variable      MENUBAR    <menubar
+	Variable      MENUBOTTOM <menubottom
+	Variable      LOGOBAR    <logobar
+	Variable      COPYRIGHT  <copyright
+	ConfigDir config
+
+	Each one comes from a file in this directory which
+	corresponds to the variable.
+
+	They have the effect of predefining a page layout without
+	having to maintain different pages.
+
+[/comment]
+
+__LOGOBAR__
+__MENUBAR__
+__LEFTSIDE__
+
+[comment]
+	More MiniVend variables used to roll the setting of the
+	company name, address, etc.
+[/comment]
+
+<BLOCKQUOTE>
+	<B>__COMPANY__</B><BR>
+	__ADDRESS__<BR>
+	__CITY__<BR>
+	<P>
+	Phone: __PHONE__<BR>
+	Fax: __FAX__<BR>
+	[if variable TOLLFREE]
+	Tollfree: __TOLLFREE__<BR>
+	[/if]
+	<P>
+</BLOCKQUOTE>
+
+[comment] And the footer as above. [/comment]
+__RIGHTSIDE__
+__MENUBOTTOM__
+__COPYRIGHT__
+
+<!-- current page: @@MV_PAGE@@ -->

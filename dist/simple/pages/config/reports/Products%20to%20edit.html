@@ -1,0 +1,51 @@
+<HTML>
+<HEAD>
+<TITLE>Products to edit</TITLE>
+</HEAD>
+<BODY>
+<H1>Products to edit</H1>
+<TABLE>
+[set first_done][/set]
+[search-region more=1 search="
+		ra=yes
+		st=db
+		fi=products
+		ml=10
+		sp=config/reports/Products to edit
+		tf=title
+		to=x
+		"]
+<TR>
+	<TH ALIGN=LEFT>sku</TH>
+	<TH ALIGN=LEFT>title</TH>
+	<TH ALIGN=LEFT>artist</TH>
+	<TH ALIGN=RIGHT>price</TH>
+</TR>
+[search-list]
+<TR>
+	<TD ALIGN=LEFT>[page href="config/edit_record"
+								form="
+									mv_action=return
+									mv_data_table=products
+									mv_arg=[item-data products sku]
+									"][item-data products sku]</A></TD>
+	<TD ALIGN=LEFT>[filter op=|'20'| interpolate=1][item-data products title][/filter]</TD>
+	<TD ALIGN=LEFT>[item-data products artist]</TD>
+	<TD ALIGN=RIGHT>[page href="config/edit_record"
+								form="
+									mv_action=return
+									mv_data_table=pricing
+									mv_arg=[item-data products sku]
+									"][filter op=|'commify.0'| interpolate=1][item-data products price][/filter]</A></TD>
+</TR>
+
+[/search-list]
+<TR><TD COLSPAN=4><HR></TD></TR>[more-list]
+<TR>
+	<TD>More</TD>
+	<TD COLSPAN=3>[more]</TD>
+	</TR>
+[/more-list]
+
+[/search-region]
+</TABLE>

@@ -1,0 +1,183 @@
+[set name=page_title interpolate=1]Check out with [nitems] items in basket[/set]
+
+__LOGOBAR__
+__MENUBAR__
+
+<CENTER>
+<FORM ACTION="[process secure=1]" METHOD="POST">
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="multi/final">
+<INPUT TYPE=hidden NAME=mv_failpage VALUE="multi/final">
+<INPUT TYPE=hidden NAME=mv_todo     VALUE=submit>
+<INPUT TYPE=hidden NAME=mv_order_route VALUE="log main copy_user">
+<INPUT TYPE=hidden NAME=mv_order_profile VALUE="checkout_profile">
+[if items]
+[then]
+<TABLE WIDTH=600>
+<TR><TD COLSPAN=4 __HEADERBG__>
+	<FONT SIZE="+2" COLOR="__HEADERTEXT__">Review order details</FONT>
+	</TD>
+</TR>
+[item-list]
+<TR>
+	<TD VALIGN=TOP MARGINWIDTH=12 MARGINHEIGHT=12>
+	<FONT SIZE="-2"><INPUT TYPE=checkbox NAME="[quantity-name]"
+                        VALUE=0 onClick="this.form.submit()"> remove</FONT>
+	<INPUT TYPE=hidden NAME="[quantity-name]" value="[item-quantity]">
+	</TD>
+	<TD VALIGN=TOP MARGINWIDTH=12 MARGINHEIGHT=12>
+	[item-description]</A>
+	</TD>
+	<TD VALIGN=TOP>[item-quantity] @ [item-price]</TD>
+	<TD VALIGN=TOP ALIGN=RIGHT>[item-subtotal]</TD>
+</TR>
+[/item-list]
+<TR>
+	<TD COLSPAN=2><A HREF="[area multi/basket]">Back to cart</A><BR></TD>
+	<TD>Subtotal</TD>
+	<TD ALIGN=RIGHT>[subtotal]</TD>
+</TR>
+<TR>
+	<TD COLSPAN=2></TD>
+	<TD>Sales Tax</TD>
+	<TD ALIGN=RIGHT>[salestax]</TD>
+</TR>
+<TR>
+	<TD COLSPAN=2></TD>
+	<TD>Shipping</TD>
+	<TD ALIGN=RIGHT>[shipping]</TD>
+</TR>
+<TR>
+	<TD COLSPAN=2></TD>
+	<TD>TOTAL</TD>
+	<TD ALIGN=RIGHT>[total-cost]</TD>
+</TR>
+</TABLE>
+[/then]
+[else]
+
+<H2>No items in your basket.</H2>
+<P>
+<I>You can enter information, and it will be saved, but no checkout will happen until you order something!</I>
+
+[/else]
+[/if]
+<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+
+[if type=explicit compare="[error all=1 show_var=1 keep=1]"]
+<P>
+<FONT COLOR=__CONTRAST__>There were errors in your last submission.</FONT>
+They are shown in <FONT COLOR=__CONTRAST__>__CONTRAST__</FONT> below.</FONT>
+<P>
+[/if]
+
+<TABLE WIDTH=600><TR><TD __HEADERBG__>
+<FONT SIZE="+2" COLOR=__HEADERTEXT__>[error std_label="Credit Card Information" name=mv_credit_card_valid]</FONT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<IMG SRC="smallvisa.png">&nbsp;&nbsp;<IMG SRC="smallmc.png">
+</TD></TR></TABLE>
+
+<TABLE><TR><TD VALIGN=TOP>
+Card Number <FONT SIZE=1>(test number 4111 1111 1111 1111)</FONT><BR>
+<INPUT TYPE=text NAME=mv_credit_card_number SIZE=19>
+[if variable MV_PAYMENT_MODE =~ /minivend_test/]
+	<BR>MiniVend test should yield:
+		<INPUT TYPE=radio NAME=mv_payment_test VALUE=success CHECKED>Success
+		<INPUT TYPE=radio NAME=mv_payment_test VALUE=success>Failure
+[/if]
+
+</TD>
+<TD VALIGN=TOP>
+ Expires 
+<BR>
+  	<SELECT NAME=mv_credit_card_exp_month>
+		<OPTION VALUE=1 [selected mv_credit_card_exp_month 1]> 01 - January
+		<OPTION VALUE=2 [selected mv_credit_card_exp_month 2]> 02 - February
+		<OPTION VALUE=3 [selected mv_credit_card_exp_month 3]> 03 - March
+		<OPTION VALUE=4 [selected mv_credit_card_exp_month 4]> 04 - April
+		<OPTION VALUE=5 [selected mv_credit_card_exp_month 5]> 05 - May
+		<OPTION VALUE=6 [selected mv_credit_card_exp_month 6]> 06 - June
+		<OPTION VALUE=7 [selected mv_credit_card_exp_month 7]> 07 - July
+		<OPTION VALUE=8 [selected mv_credit_card_exp_month 8]> 08 - August
+		<OPTION VALUE=9 [selected mv_credit_card_exp_month 9]> 09 - September
+		<OPTION VALUE=10 [selected mv_credit_card_exp_month 10]> 10 - October
+		<OPTION VALUE=11 [selected mv_credit_card_exp_month 11]> 11 - November
+		<OPTION VALUE=12 [selected mv_credit_card_exp_month 12]> 12 - December
+	</SELECT>
+	<SELECT NAME=mv_credit_card_exp_year>
+		<OPTION VALUE=00 [selected mv_credit_card_exp_year 00]> 2000
+		<OPTION VALUE=01 [selected mv_credit_card_exp_year 01]> 2001
+		<OPTION VALUE=02 [selected mv_credit_card_exp_year 02]> 2002
+		<OPTION VALUE=03 [selected mv_credit_card_exp_year 03]> 2003
+		<OPTION VALUE=04 [selected mv_credit_card_exp_year 04]> 2004
+		<OPTION VALUE=05 [selected mv_credit_card_exp_year 05]> 2005
+		<OPTION VALUE=06 [selected mv_credit_card_exp_year 06]> 2006
+		<OPTION VALUE=07 [selected mv_credit_card_exp_year 07]> 2007
+		<OPTION VALUE=08 [selected mv_credit_card_exp_year 08]> 2008
+		<OPTION VALUE=09 [selected mv_credit_card_exp_year 09]> 2009
+		<OPTION VALUE=10 [selected mv_credit_card_exp_year 10]> 2010
+	</SELECT>
+</TD></TR>
+<TR><TD COLSPAN=2>
+<BLOCKQUOTE>
+[if scratch some_downloadable]
+	<I><B>To download items, you must pay by credit card</B></I><BR>
+	<INPUT TYPE=radio NAME=fax_order VALUE=0 CHECKED>
+	<I>Pay by credit card</I><BR>
+	<INPUT TYPE=radio NAME=fax_order VALUE=1>
+	<I>I will call with payment information (can't download now)</I><BR>
+[else]
+	<INPUT TYPE=radio NAME=fax_order VALUE=0
+		[if !value fax_order]CHECKED[/if]>
+	<I>Pay by credit card</I><BR>
+	<INPUT TYPE=radio NAME=fax_order VALUE=1 [checked fax_order 1]>
+	<I>I will call with payment information</I><BR>
+	[if value tried_credit_card]
+	<INPUT TYPE=checkbox NAME=mv_credit_card_force VALUE=1>
+	<I>Force this card number to be taken</I><BR>
+	[/if]
+[/else]
+[/if]
+</BLOCKQUOTE>
+</TD></TR></TABLE>
+
+<TABLE WIDTH=600><TR><TD __HEADERBG__>
+<FONT SIZE="+2" COLOR="__HEADERTEXT__">Email preferences</FONT>
+</TD></TR></TABLE>
+
+<TABLE>
+<TR>
+	<TD>
+		<INPUT TYPE=radio NAME=email_copy [checked name=email_copy value=1 default=1] VALUE="1">Yes
+		<INPUT TYPE=radio NAME=email_copy [checked name=email_copy value=0] VALUE="0">No
+	</TD>
+	<TD>
+		<I>Send an email copy of my receipt</I>
+	</TD>
+</TR>
+<TR>
+	<TD>
+		<INPUT TYPE=radio NAME=mail_list [checked mail_list 1] VALUE="1">Yes
+		<INPUT TYPE=radio NAME=mail_list [checked name=mail_list value=0 default=1] VALUE="0">No
+	</TD>
+	<TD>
+		<I>Put me on your email list of infrequent offers</I>
+	</TD>
+</TR>
+</TABLE>
+
+<CENTER>
+<FONT SIZE="+1"><B><INPUT TYPE=submit VALUE="Place Order!"></B></FONT><BR>
+</CENTER>
+
+
+<TABLE WIDTH=600><TR><TD __HEADERBG__>
+<FONT SIZE="+2" COLOR="__HEADERTEXT__"><B>Gift note or Special Instructions<BR>
+</TD></TR>
+<TR><TD>
+<TEXTAREA NAME=gift_note ROWS=5 COLS=72>[value gift_note]</TEXTAREA>
+</TD></TR></TABLE>
+</FORM>
+</CENTER>
+
+__MENUBOTTOM__
+__COPYRIGHT__
+
+<!-- page: @@MV_PAGE@@ -->

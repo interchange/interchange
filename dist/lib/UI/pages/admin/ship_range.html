@@ -1,0 +1,99 @@
+[set page_title]Shipping options: Shipping method tables[/set]
+[set help_name]shipping.methodtables[/set]
+@@UI_STD_HEADER@@
+
+<img src="admin/icon_config.gif" width=16 height="16" border="0" valign="top" align="top">
+
+&nbsp;
+<font size="+1" face="Verdana,arial,helvetica,sans-serif" color="#000000">
+Shipping method tables
+<p>
+&nbsp;
+</font>
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+<form action=shipping method=post>
+<input type=hidden name=sid value="1005">
+
+<table cellpadding=3 cellspacing=0 width=600>
+
+<tr>
+<td colspan=5 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+</tr>
+
+<tr>
+<td colspan=5 align=left bgcolor=#94a0e0>
+&nbsp;
+<p>
+<b> -- Standard shipping by weight</b>
+<p>
+Borderline values are rounded up the next bracket.
+<p>
+&nbsp;
+</td>
+</tr>
+
+<tr>
+<td align=left colspan=5 bgcolor=#7079aa><img src="admin/cleardot.gif" width=1 height=1></td>
+</tr>
+
+<tr>
+<td bgcolor=#94a0e0><b>Start range</b></td>
+<td bgcolor=#94a0e0><b>End range</b></td>
+<td bgcolor=#94a0e0><b>Charge type</b></td>
+<td bgcolor=#94a0e0><b>Charge amount</b></td>
+<td bgcolor=#94a0e0> &nbsp; </td>
+</tr>
+
+<tr>
+
+<td bgcolor=#7079aa align=center> 0 </td>
+<td align=center bgcolor=#7079aa> (infinity) </td>
+<td bgcolor=#94a0e0>
+
+<select name="1005_type">
+<option value=0> Flat rate </option>
+<option value=1 SELECTED> Percentage </option>
+</select>
+</td>
+
+<td bgcolor=#94a0e0>
+<input size=7 name="1005_val" value="0">
+</td>
+
+<td bgcolor=#94a0e0>
+<a href="shipping?sid=1005&deleteprice=1005"><img src="admin/delete.gif" alt="Delete this range" width=20 height=20 border=0></a>
+</td>
+
+</tr>
+
+<tr>
+<td colspan=5 bgcolor=#94a0e0>
+<a href="shipping?addnewprice=ok&sid=1005"><img src="admin/plus.gif" alt="Add a new range" width=20 height=20 border=0></a>
+</td>
+</tr>
+
+<tr>
+<td colspan=5 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+</tr>
+
+</table>
+
+<p>
+
+<input type=submit name="price_ok" value="Ok">
+<input type=submit name="price_cancel" value="Back">
+
+</form>
+
+
+<!-- ----- END REAL STUFF ----- -->
+
+@@UI_STD_FOOTER@@
+<!-- page: @@MM_PAGE@@ -->

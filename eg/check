@@ -1,0 +1,373 @@
+#!/usr/bin/perl
+#
+# check - MiniVend support program
+#
+# $Id: check,v 1.1 2000-05-26 18:50:31 heins Exp $
+#
+# Copyright 1996-1999 by Michael J. Heins <mikeh@minivend.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+# Set the MiniVend root directory
+BEGIN {
+	$VendRoot = '/home/minivend';
+	($VendRoot = $ENV{MINIVEND_ROOT})
+		if defined $ENV{MINIVEND_ROOT};
+}
+
+# This should be the same as the minivend.cfg script name
+# for one of the catalogs
+$ENV{SCRIPT_NAME}= '/cgi-bin/simple';
+
+$ENV{REQUEST_METHOD}= 'GET';
+
+# The link program, can be set with -p
+$LINK_PROG = "$VendRoot/bin/vlink";
+
+# error address
+$ERRORS_TO = 'webmaster';
+
+# mail program to send errors
+$MAIL_PROG = '/usr/lib/sendmail -t';
+
+# what do we do when restarting
+$RESTART = "$VendRoot/bin/restart";
+$RESTART_HARD = "kill -9 `cat $VendRoot/etc/minivend.pid`; rm -f $VendRoot/etc/socket $VendRoot/etc/minivend.pid ; $VendRoot/bin/start";
+
+## END CONFIGURABLE VARIABLES
+
+=head1 NAME
+
+check -- URL checker for MiniVend
+
+=head1 SYNOPSIS
+
+ $prog [-doz] [-a page] [-e error\@address] [-g n] [-p /path/to/script] \\
+       [-r restart_script] [-s SCRIPT_NAME] [-t period] [-m mailprog]
+
+=head1 DESCRIPTION
+
+This URL checker will test the health of MiniVend and restart it
+if appropriate.  In its simplest form, you can just run it and it will
+stay in the background, executing the link program every 60 seconds
+to see if it gets a page back from MiniVend.  It relies on the default
+page (normally I<catalog.html>) being of greater than a certain watermark
+(default is 500 bytes).
+
+It could be extended to check most any program, and can check the
+actual web server itself with the LWP libraries and a Perl script like:
+
+	use LWP::Simple;
+	getprint "http://localhost/cgi-bin/simple";
+
+If MiniVend is not responding, its link program will time out and
+respond with a short error message that should be less than the watermark.
+At that time, the restart script will be run once.  If the restart fails,
+then the RESTART_HARD setting will be run. If you define a custom restart
+script passed with the C<-r> option, then a C<-f> will be appended to
+it as a parameter to indicate a hard restart.
+
+Counts of good and bad runs are kept in the MiniVend root directory
+in the files F<.bad.count> and F<.ok.count> -- PID is in F<.check.pid>, and
+is locked to prevent two programs running at the same time.
+
+=head1 OPTIONS
+
+  -a  Alternate page to check
+  -d  Display parameters
+  -e  Error address
+  -g  Size of output considered good (default 500)
+  -m  Mail program
+  -o  Run once
+  -p  Script path to use
+  -r  Script to run on restart
+  -s  Script alias to use
+  -t  Check period in seconds (approximate), default 60
+  -z  zero counts
+
+=head1 EXAMPLES
+
+For constant checking, you can just run it from the command line:
+
+	check &
+
+To zero the counts:
+
+	check -z &
+
+You can zero the counts while it is running by sending
+the process a hangup signal:
+
+	kill -HUP `cat /home/minivend/.check.pid`
+
+To run once in a crontab to check periodically:
+
+ 11,41 * * * * /path/to/minivend/bin/check -o
+
+To change the script to run:
+
+	check -r /home/me/my_restart_script
+
+To check every 10 minutes instead of every minute:
+
+	check -t 600
+
+If you have a very small default (F<catalog.html>) page:
+
+	check -g 300
+
+(The F<vlink> and F<tlink> default error message returns about 250 bytes).
+
+If your catalog.html page is less than 250 bytes (or whatever you have
+hacked the error message to) then you can specify a different page
+in the MiniVend PageDir:
+
+	check -a prettybig.html
+
+=head1 BUGS
+
+Can't check for health of web server. A good indication just indicates
+that the link program can communicate through the TCP or UNIX-domain socket.
+
+Must be run as the same user ID which runs MiniVend unless a custom
+restart script is provided.
+
+Link timeout must be waited for.  To correct this, you can compile 
+a custom link with LINK_TIMEOUT set to a small value.
+
+=head1 AUTHOR
+
+Mike Heins, <mikeh@minivend.com>.
+
+=cut
+
+sub close_down {
+	exit unless $pid_open;
+	print "closing down (@_).\n" if $opt_d;
+	flock(PID, LOCK_UN);
+	close(PID);
+	unlink $PIDFILE;
+	undef $pid_open;
+	exit $_[0];
+}
+
+$okfile = "$VendRoot/.ok.count";
+$badfile= "$VendRoot/.bad.count";
+
+sub set_counter {
+	unlink($okfile, $badfile) if $_[0];
+	undef $ok;
+	undef $bad;
+	$ok  = new File::CounterFile $okfile;
+	$bad = new File::CounterFile $badfile;
+}
+
+use lib "$VendRoot/lib";
+use File::CounterFile;
+
+$SIG{TERM} = $SIG{INT} = \&close_down;
+$SIG{HUP} = \&set_counter;
+
+# Try to find a good SCRIPT_NAME
+if ( open(CONFIG, "$VendRoot/minivend.cfg") ) {
+	my $found = 0;
+	while(<CONFIG>) {
+		next unless /^\s*(catalog|MailErrorTo)\s+/i;
+		chomp;
+		my @arg = split;
+		if($arg[0] =~ /catalog/i) {
+			next if $found;
+			$ENV{SCRIPT_NAME} = $arg[3];
+		}
+		else {
+			$ERRORS_TO = $arg[1];
+		}
+	}
+	close CONFIG;
+}
+else {
+	warn "Couldn't open minivend.cfg???\n";
+}
+
+my $RESTARTING = "$VendRoot/restart.in.progress";
+
+# a minivend server
+($prog = $0) =~ s:.*/::;
+
+$USAGE = <<EOF ;
+$prog - Simple URL checker
+
+ $prog [-doz] [-a page] [-e error\@address] [-g n] [-p /path/to/script] \\
+       [-r restart_script] [-s SCRIPT_NAME] [-t period] [-m mailprog]
+
+    OPTIONS
+
+        -a  Alternate page
+        -d  Display parameters
+        -e  Error address
+        -g  Size of output considered good (default 500)
+        -m  Mail program
+        -o  Run once
+        -p  Script path to use
+        -r  Script to run on restart
+        -s  Script alias to use
+        -t  Check period in seconds (approximate), default 60
+        -z  zero counts
+
+
+EOF
+use Getopt::Std;
+
+getopts('a:de:g:m:op:r:s:t:z') or
+    die "Couldn't get options: $@\n$USAGE\n";
+
+$period =    $opt_t || $opt_t || 60;
+
+$ENV{SCRIPT_NAME} = $opt_s if $opt_s;
+$LINK_PROG        = $opt_p if $opt_p;
+$MAIL_PROG        = $opt_m if $opt_m;
+$ERRORS_TO        = $opt_e if $opt_e;
+$ALTERNATE        = $opt_a || $opt_a || '';
+$GOOD_SIZE        = $opt_g || $opt_g || 500;
+
+if($opt_r) {
+	$RESTART      = $opt_r;
+	$RESTART_HARD = $RESTART . " -f";
+}
+
+$ENV{PATH_INFO} = "/$ALTERNATE" if $ALTERNATE;
+
+my $count = 0;
+
+my $once = $opt_o || $opt_o;
+
+$PIDFILE = "$VendRoot/.check.pid";
+
+use Fcntl ':flock';
+
+LOCK: {
+	$flags = LOCK_EX | LOCK_NB;
+	if (-f $PIDFILE) {
+		open(PID, "+<$PIDFILE") or die "open $PIDFILE: $!\n";
+		unless(flock (PID, $flags) ) {
+			my $pid = <PID>;
+			chomp $pid;
+			die "Another check program running (process $pid).\n";
+		}
+		seek(PID, 0, 0);
+		truncate(PID, 0);
+		select PID; $| = 1; select STDOUT;
+		print PID "$$\n";
+	}
+	else {
+		open(PID, ">$PIDFILE") or die "create $PIDFILE: $!\n";
+		unless(flock (PID, $flags) ) {
+			die "Can't lock pid file.\n";
+		}
+		select PID; $| = 1; select STDOUT;
+		print PID "$$\n";
+	}
+	$pid_open = 1;
+}
+
+my $restarted;
+
+sub mail_message {
+	my($msg) = @_;
+	open(MAIL, "|$MAIL_PROG $ERRORS_TO") or die "Can't fork: $!\n";
+	print MAIL $msg;
+	close MAIL;
+	warn "Mail not sent properly: $msg\n" if $?;
+}
+
+if($opt_d || $opt_d) {
+	print <<EOF;
+MiniVend check program $0 parameters:
+
+ERRORS_TO   =$ERRORS_TO
+GOOD_SIZE   =$GOOD_SIZE
+LINK_PROG   =$LINK_PROG
+MAIL_PROG   =$MAIL_PROG
+ONCE        =$opt_o
+PERIOD      =$period
+RESTART     =$RESTART
+RESTART_HARD=$RESTART_HARD
+SCRIPT_NAME =$ENV{SCRIPT_NAME}
+ZERO        =$opt_z
+ALTERNATE   =$opt_a
+
+EOF
+}
+
+set_counter($opt_z);
+
+for (;;) {
+    $string = `$LINK_PROG`;
+        CHECK: {
+                last CHECK if -f $RESTARTING;
+                unless (defined $string and length($string) > $GOOD_SIZE) {
+                        (sleep 3, next) if $count++ < 2;
+                        $bad->inc;
+                        my $status = length($string || '');
+                        if (! defined $restarted) {
+                            system $RESTART;
+                            $restarted = 1;
+                        }
+                        elsif ($restarted == 1) {
+                            system $RESTART_HARD;
+                            $restarted = 2;
+                        }
+            
+                        sleep $period;
+                        my $good = $ok->value;
+                        my $not = $bad->value;
+                    if($restarted > 1) {
+                        mail_message <<EOF;
+To: $ERRORS_TO
+Subject: MiniVend down HARD
+X-From: MiniVend Check Program ($0)
+
+MiniVend would not restart. PROBABLY MUST DO MANUAL RESTART.
+We tried:
+
+ $RESTART_HARD
+
+Script: $LINK_PROG
+Restart: $RESTART
+
+EOF
+                        exit;
+                    }
+                    else {
+                        mail_message <<EOF;
+To: $ERRORS_TO
+Subject: MiniVend restarted
+X-From: MiniVend Check Program ($0)
+                        
+MiniVend not responding, restarted. OK: $good BAD: $not
+
+Script: $LINK_PROG
+Restart: $RESTART
+EOF
+                    }
+                }
+                else {
+                    undef $restarted;
+                    $count = 0;
+                    $ok->inc;
+					exit if $once;
+                }
+        }
+    sleep $period;
+}
+
+END { close_down };

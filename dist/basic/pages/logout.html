@@ -1,0 +1,21 @@
+<HTML>
+<HEAD>
+<TITLE> Log out of __COMPANY__</TITLE>
+</HEAD>
+<BODY __BODY__>
+[set name=done int][userdb function=logout clear=1][/set]
+
+[if scratch done]
+
+<BLOCKQUOTE><H2>Bye Bye!</H2></BLOCKQUOTE>
+Thanks for stopping in!
+
+[else]
+<BLOCKQUOTE><H2>OOPS!</H2></BLOCKQUOTE>
+You refuse to be logged out.
+[/else]
+[/if]
+
+[include pages/menubar]
+</BODY> </HTML>
+<!-- current page: @@MV_PAGE@@ -->

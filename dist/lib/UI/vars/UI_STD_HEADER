@@ -1,0 +1,136 @@
+Variable UI_STD_HEADER  <<EOV
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html;charset=iso-8859-1">
+<title>
+[scratch page_title]
+</title>
+[scratch meta_header][set meta_header][/set]
+<style type="text/css">
+<!--
+ a:active { text-decoration: none }
+ a:link { text-decoration: none }
+ a:visited { text-decoration: none }
+  -->
+</style>
+
+[seti window_name][tag time]%s[/tag][/seti]
+
+<script language="JavaScript1.2">
+<!--
+function open_help(url) {
+  opts="top=0,left=0,scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=630,height=480";
+  window.open(url, 'Help', opts);
+}
+
+function open_quicklinks() {
+  window.name = "mainwindow[scratch window_name]";
+  opts="top=0,left=0,scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=120,height=470";
+  window.open('[area href="admin/quicklinks" arg="[scratch window_name]"]', 'Quicklinks[scratch window_name]', opts);
+}
+
+// -->
+</script>
+
+</head>
+<body bgcolor="#ffffff" link="#0000ee" alink="#0000ee" vlink="#551a8b">
+<!-- ----- BEGIN TITLEBAR ----- -->
+
+<table width="100%" height="22" 
+ bgcolor="#7079aa" border="0" cellpadding="0" 
+ cellspacing="0">
+
+<tr height="22">
+<td width="12" align="left" valign="top" height="22"><img src="admin/curve_left.gif" width="12" height="22"></td>
+
+<td valign="middle" height="22">
+
+<img src="admin/cleardot.gif" width="12">
+
+<a href="[area admin/order]">
+<img src="admin/icon_orders.gif" height="16" width="16" border="0" 
+ align="top">
+<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
+ color="#ffffff">
+ &nbsp;Orders
+</font></a>
+
+<img src="admin/cleardot.gif" width="12">
+
+<a href="[area admin/page]">
+<img src="admin/icon_pages.gif" height="16" width="16" border="0" align="top">
+<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
+ color="#ffffff">
+&nbsp;Pages
+</font></a>
+
+<img src="admin/cleardot.gif" width="12">
+
+<a href="[area admin/item]">
+<img src="admin/icon_item.gif" height="16" width="16" border="0" align="top">
+<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
+ color="#ffffff">
+&nbsp;Items
+</font></a>
+
+<img src="admin/cleardot.gif" width="12">
+
+<a href="[area admin/genconfig]">
+<img src="admin/icon_config.gif" height="16" width="16" border="0" 
+ align="top">
+<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
+ color="#ffffff">
+&nbsp;Configure
+</font></a>
+
+<img src="admin/cleardot.gif" width="12">
+
+<a href="[area admin/genstats]">
+<img src="admin/icon_stats.gif" height="16" width="16" border="0" align="top">
+<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
+ color="#ffffff">
+&nbsp;Statistics
+</font></a>
+
+<img src="admin/cleardot.gif" width="12">
+
+<a href="[area admin/reconfig]">
+<img src="admin/icon_regen.gif" height="16" width="16" border="0" align="top">
+<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
+ color="#ffffff">
+&nbsp;Regenerate
+</font></a>
+
+<img src="admin/cleardot.gif" width="12">
+</td>
+
+<td align="right" valign="middle" height="22">
+<a href="javascript:open_quicklinks()">
+<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
+ color="#ffffff">
+Quicklinks
+</font>
+</a>
+
+<a href="javascript:open_help('http://www.tallyman.com/help/2.0.6/[scratch help_name].html')">
+<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
+ color="#ffffff">
+Help
+</font></a>
+</td>
+
+<td width="12" align="right" valign="top" height="22"><img src="admin/curve_right.gif" border="0" width="12" height="22"></td>
+
+</tr>
+</table>
+
+<!-- ----- END TITLEBAR ----- -->
+
+<p>
+
+<center>
+<table cellpadding="0" cellspacing="0">
+<tr>
+<td colspan=2><br>
+
+EOV

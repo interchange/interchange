@@ -1,0 +1,117 @@
+<HTML>
+<HEAD>
+<TITLE>__COMPANY__ -- Shopping Cart</TITLE>
+</HEAD>
+<BODY __BODY__>
+
+[if type=explicit compare="q{[read-cookie MV_SESSION_ID]}"]
+[elsif scratch tried]
+You must have cookies set to leave the basket. Check out now or forever
+lose your shopping cart.
+[/elsif]
+[else]
+[set tried]1[/set]
+[bounce href="[area basket]"]
+[goto END]
+[/else]
+[/if]
+<CENTER>
+<FORM ACTION="[process secure=1]" METHOD=POST>
+<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+<INPUT TYPE=hidden NAME=mv_doit       VALUE=refresh>
+<INPUT TYPE=hidden NAME=mv_nextpage   VALUE=basket>
+
+<TABLE WIDTH="450" BORDER=1 CELLPADDING=0 CELLSPACING=0>
+	<COL WIDTH="10%">
+	<COL WIDTH="1%">
+	<COL WIDTH="40%">
+	<COL WIDTH="13%">
+	<COL WIDTH="17%">
+	<COL WIDTH="1%">
+	<COL WIDTH="18%">
+	<THEAD>
+<TR><TD COLSPAN=7 ALIGN=CENTER><FONT SIZE="+2">Shopping Cart Contents</FONT><BR></TD></TR>
+		<TR __HEADERBG__ VALIGN=TOP>
+			<TH WIDTH="10%"> SKU </TH>
+			<TH WIDTH="1%"> &nbsp;</TH>
+			<TH WIDTH="40%"> Description </TH>
+			<TH WIDTH="13%"> Quantity </TH>
+			<TH WIDTH="17%"> Price </TH>
+			<TH WIDTH="1%">&nbsp;</TH>
+			<TH WIDTH="18%"> Extension </TH>
+		</TR>
+	</THEAD>
+	<TBODY>
+[if items]
+[then]
+[item-list]
+<TR>
+	<TD VALIGN=TOP align=center> [item-code] </TD>
+	<TH WIDTH="2">&nbsp;</TH>
+	<TD VALIGN=TOP MARGINWIDTH=12 MARGINHEIGHT=12>
+	[item-description]<BR>
+	[if-item-data products size][item-accessories size][/if-item-data]
+	[if-item-data products color][item-accessories color][/if-item-data]
+	</TD>
+	<TD VALIGN=TOP ALIGN=CENTER>
+	<INPUT TYPE=text NAME="[quantity-name]" VALUE="[item-quantity]" SIZE=3>
+	</TD>
+	<TD VALIGN=TOP ALIGN=RIGHT> [item-price] </TD>
+	<TD WIDTH="2">&nbsp;</TD>
+	<TD VALIGN=TOP ALIGN=RIGHT> [item-subtotal] </TD>
+</TR>
+[/item-list]
+[/then]
+[else]
+	<TR><TD ALIGN=CENTER COLSPAN=7 __TABLEFG__>
+		<H3>No items at the moment.</H3>
+	</TD></TR>
+[/else]
+[/if]
+<TR>
+	<TD COLSPAN=5 ALIGN=RIGHT VALIGN=TOP>
+	<INPUT TYPE=submit onClick="this.form.action='[process]'" value="Recalculate">&nbsp;&nbsp;&nbsp;<B>Subtotal</B> <BR>
+	<SMALL>(Set item quantity to zero to remove.)</SMALL></TD>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=RIGHT VALIGN=CENTER>[subtotal]</TD>
+</TR>
+<TR>
+<TD COLSPAN=7 ALIGN=CENTER>
+
+	[set Check out]
+	mv_todo=return
+	mv_nextpage=checkout
+	[/set]
+	<INPUT
+			TYPE="submit"
+			onClick="this.form.target='_top'"
+			NAME="mv_click"
+			VALUE="Check out">
+
+	[set Continue shopping]
+	mv_todo=return
+	mv_nextpage=index
+	[/set]
+	<INPUT TYPE=submit
+			onClick="this.form.action='[process-target]'"
+			NAME=mv_click
+			VALUE="Continue shopping">
+
+	[set Stop shopping]
+	mv_todo=return
+	mv_nextpage=canceled
+	[/set]
+	<INPUT TYPE=submit
+		onClick="this.form.action='[process-target]'"
+		NAME=mv_click VALUE="Stop shopping">
+
+</TD>
+</TR>
+</TBODY>
+</TABLE>
+</FORM>
+</CENTER>
+
+[include pages/menubar]
+</BODY> </HTML>
+<!-- current page: @@MV_PAGE@@ -->

@@ -1,0 +1,41 @@
+
+</td>
+</tr>
+</table>
+
+</td>
+
+<td bgcolor="__BARBG__" height="100%" valign="top">
+<center>
+<br><br><br>
+
+<!-- ---------------------- Right Side --------->
+
+[loop random=2
+			search="
+				sf=featured
+				se=front
+				ml=25
+				"]
+	
+<br>
+	<br>
+	<a href="[area [loop-code]]">
+		[if-loop-field image]
+          <img height="75" border=0 
+                  width="75" src="[loop-field image]">[/if-loop-field]<br>	<b>
+	<font size="-1">[loop-field title]</font>
+	</b>
+	</a>
+      <br>
+[/loop]
+
+</center>
+
+</td>
+</tr>
+</table>
+
+</tr>
+</table>
+

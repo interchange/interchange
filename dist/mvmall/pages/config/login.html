@@ -1,0 +1,153 @@
+<HTML>	
+  <HEAD>	
+    <SCRIPT LANGUAGE="JavaScript">
+      <!-- Hide
+        var popupwin = null;
+        function popup(loc,ww,hh) {
+          var mywidth = (ww + 0);
+          var myheight = (hh + 0);
+          var myspecs = "'menubar=1,status=1,resizable=1,location=1,titlebar=1,toolbar=1,scrollbars=1,width=" + mywidth + ",height=" + myheight + "'";
+          if (popupwin == null || popupwin.closed) {
+            popupwin = window.open (loc, 'popupwin', myspecs);
+          } else {
+            popupwin.focus();
+            popupwin.location.href = loc;
+          }
+        }
+
+        function help(msg) {
+            alert(msg);
+        }
+      // -->
+    </SCRIPT>
+
+    <TITLE>
+      [scratch page_title]
+    </TITLE>
+  </HEAD>
+
+  <BODY BGCOLOR="#000000" TEXT="#001d55" LINK="#001d55" ALINK="#ff0000" VLINK="#001d55">
+    <MAP NAME="ls_account_map"> 
+      <AREA SHAPE="rect" COORDS="2,0,219,49" HREF="http://www.minivend.com/">
+      <AREA SHAPE="rect" COORDS="250,0,362,15" HREF="[area config/menu]" ALT="Account Summary">
+      <AREA SHAPE="rect" COORDS="362,0,471,15" HREF="mailto:help@minivend.com" ALT="Contact Support">
+      <AREA SHAPE="rect" COORDS="471,0,524,15" HREF="javascript://" onClick="popup('http://www.minivend.com/minivend/faq/', 640, 480); return false" ALT="Frequently Asked Questions">
+      <AREA SHAPE="rect" COORDS="524,0,576,15" HREF="[area logout]" ALT="Log Out">
+    </MAP>
+
+    <FORM ACTION="[process]" METHOD=POST>
+    <INPUT TYPE=hidden NAME=mv_click VALUE=MMLogin>
+    <INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
+    <INPUT TYPE=hidden NAME=mv_doit  VALUE=return>
+
+    <CENTER>
+      <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="0">
+        <TR>
+          <TD VALIGN="top">
+            <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="0" WIDTH="582">
+              <TR><TD VALIGN="bottom"><IMG SRC="ls_menu.png" ALT="Home" WIDTH="582" HEIGHT="53" HSPACE="0" VSPACE="0" BORDER="0" USEMAP="#ls_account_map"></TD></TR>
+              <TR>
+                <TD>
+<!-- end html header -->
+<!-- start report header -->
+                  <FORM METHOD="post" ACTION="/foo">
+                    <TABLE CELLPADDING="0" CELLSPACING="0" BORDER="1" BORDERCOLOR="#000000" WIDTH="100%">
+                      <TR>
+                        <TD>
+                          
+                          <TABLE CELLPADDING="4" CELLSPACING="0" BORDER="0" WIDTH="100%">
+                            <TR>
+                              <TD ALIGN="center" BGCOLOR="#528ebc">
+                                <FONT FACE="arial" COLOR="#ffffff" SIZE="+1">Log in</FONT>
+                              </TD>
+                            </TR>
+                          </TABLE>
+		        	      <TABLE CELLPADDING="4" CELLSPACING="0" BORDER="0" WIDTH="100%">
+<!-- end report header -->
+
+[if value turnoff_cookies]
+[set-cookie name=MV_USERNAME value=""]
+[set-cookie name=MV_PASSWORD value=""]
+[value name=turnoff_cookies set=""]
+[/if]
+<!-- logout: [if session logged_in]
+[userdb logout]
+[/if] -->
+
+[set MMLogin] 
+mv_todo=return
+[if type=explicit compare="[userdb login]"]
+mv_nextpage=config/menu
+mv_username=[perl]$Session->{mm_username} = $Session->{username};[/perl]
+[else]
+mv_username=[perl]$Session->{mm_username} = $Session->{username} = '';[/perl]
+[/else]
+[/if]
+[/set]
+
+[if session failure]
+<TR BGCOLOR="#f5f5fb">
+<TD BGCOLOR="#001d55" ALIGN="center" VALIGN="middle" COLSPAN=2>
+<FONT FACE="arial" COLOR="RED" SIZE="+1">
+<BLOCKQUOTE>
+<P>
+[L]Login failure:[/L]</FONT> [data session failure][data base=session field=failure value=""]
+<P>
+</BLOCKQUOTE>
+</TD>
+[/if]
+
+<TD BGCOLOR="#001d55" ALIGN="right" VALIGN="middle">
+<FONT FACE="arial" COLOR="#ffff00" SIZE="-1">
+Username
+</FONT>
+</TD>
+<TD VALIGN="top" BGCOLOR="#ffffff" ALIGN=left>
+<FONT FACE="arial" SIZE="-1" COLOR="#000000">
+<INPUT NAME=mv_username VALUE="" SIZE=20></FONT></TD></TR>
+<TD BGCOLOR="#001d55" ALIGN="right" VALIGN="middle">
+<FONT FACE="arial" COLOR="#ffff00" SIZE="-1">
+Password
+</FONT>
+</TD>
+<TD VALIGN="top" BGCOLOR="#ffffff" ALIGN=left>
+<FONT FACE="arial" SIZE="-1" COLOR="#000000">
+<INPUT TYPE=password NAME=mv_password VALUE="" SIZE=20></FONT></TD></TR>
+<TR BGCOLOR="#f5f5fb">
+<TD BGCOLOR="#001d55" ALIGN=right VALIGN="middle">
+<FONT FACE="arial" COLOR="#ffff00" SIZE="-1">
+<B>Actions</B>
+</FONT>
+</TD>
+<TD VALIGN="top" BGCOLOR="#ffffff">
+<FONT FACE="arial" SIZE="-1" COLOR="#000000">
+<INPUT TYPE='submit' VALUE='Login'><BR></FONT></TD></TR>
+<TR BGCOLOR="#f5f5fb">
+<TD BGCOLOR="#001d55" VALIGN="middle">
+<FONT FACE="arial" COLOR="#ffff00" SIZE="-1">
+&nbsp;
+</FONT>
+</TD>
+<TD VALIGN="top" BGCOLOR="#ffffff">
+<FONT FACE="arial" SIZE="-1" COLOR="#000000">
+	[page href=config/violation form="turnoff_cookies=1"][L]Turn off cookie-based login[/L][/page]<BR></FONT></TD></TR>
+
+<!--Page: @@MV_PAGE@@-->
+<!-- start report footer -->
+                          </TABLE>
+                        </TD>
+                      </TR>
+                    </TABLE>
+					
+    </FORM>
+<!-- end report footer -->
+<!-- start html footer -->
+                </TD>
+              </TR>
+            </TABLE>
+          </TD>
+        </TR>
+      </TABLE>
+    </CENTER>
+  </BODY>
+</HTML>

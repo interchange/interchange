@@ -1,0 +1,69 @@
+[if !session logged_in]
+[bounce href="[base-url]/config/login"]
+[/if]
+[if-mm !tables]
+[set error_message]Sorry, you don't appear to have a store that can be edited.[/set]
+[bounce href="[base-url]/config/violation"]
+[/if-mm]
+
+<HTML>	
+  <HEAD>	
+    <SCRIPT LANGUAGE="JavaScript">
+      <!-- Hide
+        var popupwin = null;
+        function popup(loc,ww,hh) {
+          var mywidth = (ww + 0);
+          var myheight = (hh + 0);
+          var myspecs = "'menubar=1,status=1,resizable=1,location=1,titlebar=1,toolbar=1,scrollbars=1,width=" + mywidth + ",height=" + myheight + "'";
+          if (popupwin == null || popupwin.closed) {
+            popupwin = window.open (loc, 'popupwin', myspecs);
+          } else {
+            popupwin.focus();
+            popupwin.location.href = loc;
+          }
+        }
+
+        function help(msg) {
+            alert(msg);
+        }
+      // -->
+    </SCRIPT>
+
+    <TITLE>
+      [scratch page_title]
+    </TITLE>
+  </HEAD>
+
+  <BODY BGCOLOR="#000000" TEXT="#001d55" LINK="#001d55" ALINK="#ff0000" VLINK="#001d55">
+    <MAP NAME="mm_menu_map"> 
+      <AREA SHAPE="rect" COORDS="0,0,115,99" HREF="[area @@MM_BASE@@/menu]">
+      <AREA SHAPE="rect" COORDS="116,0,205,19" HREF="[area @@MM_BASE@@/products]" ALT="Account Summary">
+      <AREA SHAPE="rect" COORDS="206,0,280,19" HREF="[area @MM_BASE@@/images]" ALT="Image upload">
+      <AREA SHAPE="rect" COORDS="281,0,355,19" HREF="[area @MM_BASE@@/report]" ALT="Reports">
+      <AREA SHAPE="rect" COORDS="356,0,418,19" HREF="javascript://" onClick="popup('http://www.minivend.com/minivend/faq/', 640, 480); return false" ALT="Support">
+      <AREA SHAPE="rect" COORDS="419,0,500,19" HREF="mailto:__EMAIL_SERVICE__" ALT="Support">
+      <AREA SHAPE="rect" COORDS="501,0,525,19" HREF="[area @@MM_BASE@@/help]" ALT="Help">
+    </MAP>
+
+    <CENTER>
+      <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="0">
+        <TR>
+          <TD VALIGN="top">
+            <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="0" WIDTH="582">
+              <TR><TD VALIGN="bottom"><IMG SRC="mm_menubar.png" ALT="Home" WIDTH="582" HEIGHT="53" HSPACE="0" VSPACE="0" BORDER="0" USEMAP="#mm_menu_map"></TD></TR>
+              <TR>
+                <TD>
+                    <TABLE CELLPADDING="0" CELLSPACING="0" BORDER="1" BORDERCOLOR="#000000" WIDTH="100%">
+                      <TR>
+                        <TD>
+                          
+                          <TABLE CELLPADDING="4" CELLSPACING="0" BORDER="0" WIDTH="100%">
+                            <TR>
+                              <TD ALIGN="center" BGCOLOR="#528ebc">
+                                <FONT FACE="arial" COLOR="#ffffff" SIZE="+1">
+                                  [page reset/__STORE_ID__]Store __STORE_ID__[/page]<BR>
+                                </FONT>
+                              </TD>
+                            </TR>
+                          </TABLE>
+		        	      <TABLE CELLPADDING="4" CELLSPACING="0" BORDER="0" WIDTH="100%">

@@ -1,0 +1,505 @@
+MiniMate - Ein Verwaltungswerkzeug für MiniVend
+***********************************************
+
+MiniMate, vormals MaxiVend genannt, ist ein WWW-Frontend für MiniVend.
+Programmiert wurde MaxiVend von Mike Heins, dem Autor von MiniVend. MiniMate
+erlaubt es, die folgenden Aufgaben auf einfache Art und Weise durchzufü
+hren: 
+     
+   * MiniVend-Datenbanken editieren (z.B. Spalten löschen und hinzufügen 
+     [nur für Version 4.0 gültig])
+   * Seiten und andere Dateien (z.B. Bilder) holen und ablegen
+   * eigene Benutzerverwaltung und Zugriffskontrolle [nur für Version 4.0 gü
+     ltig]
+   * ...
+
+Lizenz
+******
+
+Für MiniMate gelten die Bedingungen der GPL (URL:
+http://www.gnu.org/copyleft/gpl.html).
+
+Startseite, Version und Download
+********************************
+
+Die neuesten Informationen über MiniMate werden auf 
+http://www.linuxia.de/minimate/ zur Verfügung gestellt. Wenn Sie über
+aktuelle Entwicklungen informiert werden möchten, schreiben Sie bitte eine
+Email an <racke@linuxia.de>.
+
+Die Version von MiniMate ist z.Z. `4.0.0.1'. Ein Archiv mit dieser Version
+kann von dieser Website (URL: minimate.tar.gz) und von ftp.minivend.com (URL:
+ftp://ftp.minivend.com/pub/minimate/minimate.tar.gz) (täglich aktualisiert)
+heruntergeladen werden und ist für alle Betriebssysteme geeignet.
+
+MiniVend 4.00 oder aktueller wird für den Betrieb von MiniMate benötigt. Für
+den reibungslosen Betrieb von MiniMate sind zumindestens die folgenden
+Module erforderlich:
+     
+   * `Digest::MD5'
+   * `MIME::Base64'
+   * `SQL::Statement'
+   * `Safe::Hole'
+
+Zusätzlich wird eine ältere Version von MiniMate für die 3.x-Serie von
+MiniVend zur Verfügung gestellt. Diese kann als MiniMate-3.14.0.3.tar.gz
+heruntergeladen werden und erfordert mindestens MiniVend Version 3.12.
+
+Demonstration
+*************
+
+MiniMate kann getestet werden unter den folgenden Adressen: 
+
+http://www.linuxia.de/mmdemo/simple/config/menu (URL: http://www.linuxia.de/mmdemo/simple/config/menu)
+
+Installation
+************
+
+Zunächst packen Sie das Archiv in einem beliebigen Verzeichnis (nicht im
+Installationsverzeichnis von MiniVend) aus: 
+
+racke@linuxia.de:/tmp > gzip -cd minimate.tar.gz | tar -xf -
+Läuft der Rechner unter Linux oder wird GNU tar verwendet, genügt:
+
+racke@linuxia.de:/tmp > tar -xzf minimate.tar.gz
+Nach dem Auspacken des Archivs wechseln Sie in das Verzeichnis `
+MiniMate-4.0.0.1'. Dann starten Sie das `install'-Skript mit dem
+Installationsverzeichnis von MiniVend als Parameter:
+
+racke@linuxia.de:/tmp/MiniMate-4.0.0.1 > perl install ~/mvend
+Das Skript überprüft das Verzeichnis auf das Vorhandensein der `
+minivend.cfg', erzeugt ein Unterverzeichnis `lib/MiniMate' im
+Installationsverzeichnis und kopiert die benötigten Dateien in dieses
+Verzeichnis.
+
+Nun editieren Sie `minivend.cfg' und fügen die folgende Zeile hinzu: 
+
+
+#include lib/MiniMate/minimate.cfg
+
+Nach einem Neustart von MiniVend steht nun das Verwaltungswerkzeug zur Verfü
+gung. Es kann von jedem Katalog darauf zugegriffen werden, und zwar über die
+Seiten `admin/menu.html' (mit Frames) bzw. `config/menu.html' (ohne Frames).
+Lautet die URL für den Zugriff auf den Katalog beispielsweise `
+http://linuxia.de/cgi-bin/simple', ist die einfachere Variante von MiniMate
+unter `http://linuxia.de/cgi-bin/simple/config/menu' zu erreichen.
+
+Bitte beachten Sie, daß zur Zeit die Schutz des Verwaltungswerkzeug vor
+unerlaubten Zugriff Ihnen liegt.
+
+Probleme bei der Installation
+=============================
+
+`Term::ReadKey' vermisst `resize'
+---------------------------------
+
+
+Can't exec "resize": No such file or directory at /usr/lib/perl5/site_perl/Term/ReadKey.pm line 305.
+Unable to get Terminal Size. The TIOCGWINSZ ioctl didn't work.
+The COLUMNS and LINES environment variables didn't work.
+The resize program didn't work. at /usr/lib/perl5/site_perl/Term/ReadKey.pm line 323.
+make: *** No targets.  Stop.
+
+Das ist ein bekanntes Problem mit Perl und MakeMaker unter Solaris. Weitere
+Berichte gibt es über Linux-Installationen unter X (Slackware und SuSE). 
+Mike Heins hat den folgenden Ausweg vorgeschlagen:
+
+
+    export LINES=24 COLUMNS=80
+
+oder (für Korn und ähnliche Shells)
+
+
+    setenv LINES=24
+    setenv COLUMNS=80
+
+Eine Alternative ist die Deinstallation von `Term::ReadKey'.
+
+Sicherheit
+**********
+
+Das Verwaltungswerkzeug sollte nur dem jeweiligen Shopbesitzer zugänglich
+sein.
+
+Zugriffsschutz mittels Apache
+=============================
+
+Um den Zugriff auf die MiniMate-Seiten ohne Passwort zu unterbinden, wird
+zunächst Apache entsprechend konfiguriert: 
+
+
+<LocationMatch /cgi-bin/simple/+(admin|config)>
+AuthType Basic
+AuthUserFile /home/minivend/users
+AuthName "MiniVend Administration"
+require valid-user
+</LocationMatch>
+
+Das Pluszeichen ist wichtig, da sonst der Zugriff über `
+/cgi-bin/simple//config/menu.html' nicht passwortgeschützt ist. Der
+Benutzername des Shopbesitzers wird in die Katalogkonfigurationsdatei `
+catalog.cfg' eingetragen:
+
+RemoteUser minivend
+Damit MiniVend dem Shopbesitzer den Zugriff auf die MiniMate-Seiten
+gestattet, legen wir in den Verzeichnissen `config' und `admin' zunächst
+eine leere Datei `.access' an:
+
+racke@linuxia.de:~ > rm -f /home/minivend/lib/MiniMate/pages/config/.access
+racke@linuxia.de:~ > touch /home/minivend/lib/MiniMate/pages/config/.access
+racke@linuxia.de:~ > rm -f /home/minivend/lib/MiniMate/pages/admin/.access    
+racke@linuxia.de:~ > touch /home/minivend/lib/MiniMate/pages/admin/.access
+
+In den gleichen Verzeichnissen legen wir eine Datei `.access_gate' an, die
+dem durch Apache authentifizierten Benutzer den Zugriff gestattet:
+
+*: [perl arg="config" interpolate=1]
+        return 1 if $Safe{config}{RemoteUser} eq q{[data session user]};
+        return 0;
+    [/perl]
+
+
+Zugriff über den internen Webserver
+===================================
+
+Eine nichtleere Datei mit dem Namen `.access' wird in allen Verzeichnissen,
+die MiniMate-Seiten enthalten, angelegt und signalisiert MiniVend Seiten in
+diesen Verzeichnissen nur dem jeweiligen Shopbesitzer anzuzeigen.Der
+Shopbesitzer wird durch die Direktiven `RemoteUser' und `Password' in der
+Katalogkonfiguration festgelegt:
+
+Variable    MV_NO_CRYPT 1
+RemoteUser  demo
+Password    Gu3109n
+
+Der Shopbesitzer greift auf die MiniMate-Seiten über den internen Webserver
+von MiniVend zu: 
+
+http://www.linuxia.de:7786/simple/config/menu
+
+Benutzung von MiniMate
+**********************
+
+Bilder hochladen
+================
+
+Hochgeladene Dateien können nur unterhalb des Katalogverzeichnisses abgelegt
+werden. Aus Sicherheits- und Datenschutzgründen verweigert man normalerweise
+dem Webserver den Zugriff auf Dateien im Katalogverzeichnis. Um das
+Hochladen von Bildern mit MiniMate zu ermöglichen, muß man diese goldene
+Regel jedoch durchbrechen. Es sollte jedoch nur das Unterverzeichnis mit den
+Bildern freigegeben werden.
+
+Zum Hochladen von Bildern wählen Sie auf der Seite `config/menu' "Andere
+Dateien holen/ablegen".
+
+Probleme
+********
+
+Schnelle binäre Suche
+=====================
+
+Benutzt man die schnelle binäre Suche (vgl. die MiniVend-Dokumentation, Fast
+Binary Searching) und editiert man Datenbanktabellen mit MiniMate, wird der
+Index für die binäre Suche nicht aktualisiert. Dies ist der Fall für das `
+simple'-Demo. Dort gibt es einen Index `category' für die `products'
+-Datenbank. Als Abhilfe greift man nach dem Bearbeiten mit MiniMate einfach
+auf eine MiniVend-Seite, die der folgenden entspricht, zu: 
+
+
+<HTML><HEAD><TITLE>Index Update</TITLE></HEAD>
+<BODY>
+[index table=products
+        extension=category
+        spec="rf=category,0
+              ra=yes
+              tf=category"
+]
+</BODY>
+
+
+Eingabe von Daten mit ' schlägt fehl
+====================================
+
+Dieser Fehler tritt bei der Verwendung von MiniVend 3.11 auf. Bitte eine
+aktuellere Version von MiniVend installieren.
+
+Editieren der Datenbanken löst einen Laufzeitfehler aus
+=======================================================
+
+Pumin Wuvanich berichtete über dieses Problem. Ich konnte es leider nicht
+reproduzieren. Vielleicht ist es mit Unterkatalogen verknüpft.
+
+206.111.118.118 4pedfCqg:206.111.118.118 - [30/June/1999:12:30:14 -0700] 
+test01 /cgi-bin/simple/config/dbedit Runtime error: Can't use string 
+("2ndDayAir") as a HASH ref while "strict refs" in use at (eval 68) line 22.
+>
+206.111.118.118 4pedfCqg:206.111.118.118 - [30/June/1999:12:30:31 -0700] 
+test01 /cgi-bin/simple/config/dbedit Runtime error: Can't use string 
+("Ground") as a HASH ref while "strict refs" in use at (eval 68) line 22.
+>
+206.111.118.118 4pedfCqg:206.111.118.118 - [30/June/1999:12:31:00 -0700] 
+test01 /cgi-bin/simple/config/dbedit Runtime error: Can't use string 
+("locale") as a HASH ref while "strict refs" in use at (eval 68) line 22.
+>
+
+
+Benutzerverwaltung und Zugriffskontrolle [nur für Version 4.0 gültig]
+*********************************************************************
+
+Zunächst wird eine Benutzerdatenbank (`userdb') für den Katalog benötigt,
+der mit MiniMate verwaltet werden soll. Dort müssen alle MiniMate-Benutzer
+mit Benutzernamen und Passwort registriert sein.
+
+Konfiguration
+=============
+
+Die Datenbank, in der die Informationen für Benutzerverwaltung und
+Zugriffskontrolle gespeichert werden, ist in die Katalogkonfiguration
+aufzunehmen: 
+
+Database minimate minimate.asc TAB
+Die Datenbank kann auch einen anderen Namen haben, wenn die Variable 
+`MINIMATE_TABLE' in der Katalogkonfiguration entsprechend gesetzt ist:
+
+Variable MINIMATE_TABLE mmcontrol
+Database mmcontrol mmcontrol.asc TAB
+
+Datenbankbeschreibung
+=====================
+
+MiniMate speichert alle Daten für Benutzerverwaltung und Zugriffskontrolle
+in der Datenbank `minimate'.
+
+Internationalisierung
+*********************
+
+Die Internationalisierung von MiniMate ist in Arbeit. Zusätzliche
+Freiwillige werden jedoch noch benötigt.
+
+Eine russische, eine deutsche und eine französische Übersetzung liegt
+bereits vor.
+
+Verzeichnis der MiniMate-Seiten
+*******************************
+
+
+`config/db_column' [nur für Version 4.0 gültig]
+     
+        Add or delete columns of MiniVend databases.
+
+`config/menu'
+     
+     Startseite der Version ohne Frames
+
+`config/upload_other'
+     
+       Upload/Download von beliebigen Dateien
+
+
+MiniMate für Entwickler
+***********************
+
+MiniMate-Erweiterungen zur MML
+==============================
+
+
+`directive_value' NAME [PARSEVARS]
+     
+     Ergibt den Wert der Konfigurationsdirektive NAME. Hat PARSEVARS einen
+     wahren Wert, werden Variablen innerhalb des Wertes durch den Wert der
+     Variablen ersetzt.
+
+
+Undokumentierte Tags
+--------------------
+
+   * base-url
+   * check-upload
+   * counter
+   * db_columns
+   * dbinfo
+   * display
+   * display_directive
+   * e
+   * export-database
+   * field_label [nur für Version 4.0 gültig]
+   * global-value
+   * grep-mm [nur für Version 4.0 gültig]
+   * if-key-exists
+   * if-mm [nur für Version 4.0 gültig]
+   * if-sql
+   * ifdef [nur für Version 4.0 gültig]
+   * ifndef [nur für Version 4.0 gültig]
+   * import_fields
+   * list-databases [nur für Version 4.0 gültig]
+   * list_directives
+   * list_glob [nur für Version 4.0 gültig]
+   * list-keys [nur für Version 4.0 gültig]
+   * list_pages
+   * mm-value [nur für Version 4.0 gültig]
+   * newer
+   * quick_table
+   * read_serial
+   * reconfigure
+   * rotate-database
+   * rotate-table
+   * rotate_file
+   * row-edit
+   * send-help
+   * set-alias
+   * set-click
+   * substitute
+   * title-bar
+   * unconfigure
+   * uneval [nur für Version 4.0 gültig]
+   * version
+   * widget
+   * with [nur für Version 4.0 gültig]
+   * write_config
+   * write_relative_file [nur für Version 4.0 gültig]
+
+`MiniMate::CfgMgr'
+==================
+
+
+`mm_acl_enabled'
+     
+     Liefert einen Wahrheitswert zurück, wenn die Zugriffskontrolle von
+     MiniMate aktiviert ist.
+
+
+Makefile
+========
+
+
+`localefiles'
+     
+      Bringt die Lokalisierungsdateien im `locales' Unterverzeichnis auf den
+     neuesten Stand.
+
+
+TODO-Liste
+**********
+
+Bug Fixes
+=========
+
+   * Index für binäre Suchen aktualisieren
+   * Editieren der Datenbanken löst einen Laufzeitfehler aus
+
+Diverses
+========
+
+   * Sichere Installation von Anfang an
+   * Unterstützung für MiniMate komplett vom `https:'-Server
+   * Ersetzen des externen `mv_upload'-Programms durch Benutzung von
+     MiniVend-Tags beim Hochladen von Dateien via `admin/menu'
+   * Durchsehen von vorhandenen Dateien (andere Dateien hochladen)
+   * Berücksichtigung von Versionskontrollsysteme beim Hochladen von Seiten
+   * Vergleich mit ShopAdmin
+
+Internationalisierung
+=====================
+
+   * nur gewünschte Sprachen verwenden
+   * Benutzung eines neuen Tag, daß mit dem globalen Locale-Feld arbeitet,
+     damit Speicher gespart mit.
+
+Saubere HTML-Ausgabe
+====================
+
+   * Ersetzen von Font-Tags durch <H?>
+   * Benutzung von Stylesheets anstatt von <FONT>-Tags und Farbattributen.
+   * HTML-Ausgabe überprüfen
+
+Änderungen
+**********
+
+
+12. December 99
+     
+     Neues Makefile-Target `localefiles'.
+
+8. August 99
+     
+     Deutsche Übersetzung von Birgitt Funk hinzugefügt.
+
+5. August 99
+     
+     Russische Übersetzung von Alexei Yakimovich hinzugefügt.
+
+28.Juli 99
+     
+     MiniMate-Seiten für Lokalisierung vorbereitet.
+
+26.Juli 99
+     
+     Fehler beim Suchen nach Datensätzen behoben (`config/dbedit').
+
+13.Juli 99
+     
+     Hilfe für Konfigurationsdirektiven wird nun angezeigt.
+
+6.Juli 99
+     
+     `Makefile.PL' an Win32-Systeme angepaßt und das `install'-Skript neu
+     geschrieben.
+
+29.Juni 99
+     
+     Überflüssigen Import von `Data::Dumper' entfernt.
+
+16.Juni 99
+     
+     Unterstützung für Internationalisierung hinzugefügt.
+
+
+Danksagungen
+************
+
+Bedanken möchte ich mich bei Mike Heins als Originalautor von MaxiVend und
+als unerschöpfliche Quelle für Hinweise und Bugfixes.
+
+Betty Chung für die Vorbereitung der Lokalisierung der MiniMate-Seiten.
+
+Alexei Yakimovich für die russische Übersetzung.
+
+Birgitt Funk für die deutsche Übersetzung.
+
+Stephen M. LaBar, Jr. für seine Hilfe bei der Anpassung von `Makefile.PL'
+an Win32-Systeme.
+
+Kaare Rasmussen und Robert Hutchinson für den Bericht über das `resize'
+-Problem und Mike Heins für einen Ausweg.
+
+Bob Jordan für den Bericht über das `Data::Dumper'-Problem.
+
+Marc Infield für den Bericht über einen Fehler in der Dokumentation
+(20000103).
+
+Waldemar Gerr für seinen Vorschlag zur Dokumentation der Installation.
+
+Marci Beedle für seine Berichte über die Schwierigkeiten, die passende URL für
+MiniMate der Dokumentation zu entnehmen.
+
+Historisches
+************
+
+
+28. February 2000
+     
+     Version 4.0.0.1 freigegeben
+
+12. Juli 99
+     
+     Version 3.14.0.3 freigegeben
+
+30. Juni 99
+     
+     Version 3.14.0.2 freigegeben
+
+29. Juni 99
+     
+     Version 3.14.0.1 freigegeben
+

@@ -1,0 +1,59 @@
+<HTML>
+<HEAD>
+<TITLE>Thank you!</TITLE>
+</HEAD>
+<BODY __BODY__>
+<CENTER>
+<H2>Receipt</H2>
+<H2>SOLD TO:</H2>
+</CENTER>
+
+<TABLE BORDER=1 WIDTH=600>
+[html-table fr='__TABLEFG__ WIDTH="20%"']
+<B>ORDER NUMBER	[value mv_order_number]
+<B>Name	[value fname] [value lname]
+[if value company]Company	[value company]
+[/if]<B>Email address	[value email]
+<B>Address	[value address1][if value address2]
+	[value address2][/if]
+<B>City, State, Zip	[value city], [value state]  [value zip]
+<B>Country	[value country]
+<B>Payment Method	[value mv_payment] [if value mv_credit_card_reference]([value mv_credit_card_reference])[/if]
+<B>Shipping Method	[shipping_desc]
+<B>Daytime Phone	[value phone_day]&nbsp;
+<B>Evening Phone	[value phone_night]&nbsp;
+[if value b_fname]<B>Billing Name	[value b_fname] [value b_lname]
+[/if]
+[if value b_address1]<B>Billing Address	[value b_address1][if value b_address2]
+	[value b_address2][/if]
+<B>City, State, Zip	[value b_city], [value b_state]  [value b_zip]
+[/if][if value b_country]
+<B>Billing Country	[value b_country][/if]
+[/html-table]
+</TABLE>
+<TABLE BORDER=1 __TABLEBG__ WIDTH=600>
+[html-table]
+<B>Quan	<B>Item No.	<B>Description	<B><DIV ALIGN=RIGHT>Price	<B><DIV ALIGN=RIGHT>Extension
+[item-list][item-quantity]	[item-code]	[item-description]<BR>[if-modifier size]SIZE-->[item-modifier size][/if-modifier][if-modifier color] COLOR-->[item-modifier color][/if-modifier]	<DIV ALIGN=RIGHT>[item-price]	<DIV ALIGN=RIGHT>[item-subtotal]
+[/item-list]
+			SUBTOTAL	<DIV ALIGN=RIGHT>[subtotal]
+			SALES TAX	<DIV ALIGN=RIGHT>[salestax]
+			SHIPPING	<DIV ALIGN=RIGHT>[shipping]
+			ORDER TOTAL	<DIV ALIGN=RIGHT>[total-cost]
+[/html-table]
+</TABLE>
+[if value gift_note]
+<B>Note for Gift:</B><BR>
+<PRE>
+[value gift_note]
+</PRE>
+[/if]
+<P>
+
+<CENTER>
+<I>(Please print this receipt for your records. Thank you for your order!)</I>
+<P>
+
+[include pages/menubar]
+</BODY> </HTML>
+<!-- current page: @@MV_PAGE@@ -->

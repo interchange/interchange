@@ -1,0 +1,390 @@
+[if !session logged_in][bounce href="[area new_account]"][/if]
+<HTML>
+<HEAD>
+<TITLE>__COMPANY__ -- Account Maintenance</TITLE>
+</HEAD>
+<BODY __BODY__>
+
+<H1>Account Maintenance</H1>
+
+<A NAME=shipping></A>
+<FONT SIZE="-1"><B><A HREF="#change_password">Change password</A>&nbsp;&nbsp;<A HREF="#mail_list">Mail preferences</A>&nbsp;&nbsp;<A HREF="#shipping">Shipping preferences</A>&nbsp;&nbsp;<A HREF="#billing">Billing preferences</A></B></FONT><BR>
+
+[userdb function=get_billing_names]
+[userdb function=get_shipping_names]
+<TABLE WIDTH=620 ALIGN=CENTER>
+<TR><TD>
+
+<FORM ACTION="[process secure=1]" METHOD="POST">
+<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+
+[if type=explicit compare="[error all=1 show_var=1 keep=1]"]
+<P>
+<FONT COLOR=RED>There were errors in your last submission.</FONT>
+They are shown in <FONT COLOR=RED>RED</FONT> below.</FONT>
+<P>
+[/if]
+
+[comment]
+<!-- Account change profile in etc/order.profiles -->
+[/comment]
+<INPUT TYPE=hidden NAME=mv_order_profile VALUE=account_change>
+<INPUT TYPE=hidden NAME=mv_todo     VALUE=return>
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE=account>
+<INPUT TYPE=HIDDEN NAME=mv_check    VALUE="Save_database">
+
+[set Save_database]
+[userdb save]
+[/set]
+[title-bar 500 4]Shipping Address Book[/title-bar]
+<FONT SIZE="-1">
+		<SELECT NAME=s_nickname>
+		<OPTION VALUE=""> New--&gt;
+		[loop list="[value address_book]" option=s_nickname]
+		<OPTION VALUE="[loop-code]">[loop-code]
+		[/loop]
+		</SELECT>
+		<INPUT TYPE=text   NAME=s_nickname SIZE=10><BR>
+	<INPUT TYPE=submit NAME=mv_check VALUE="Recall shipping">
+	<INPUT TYPE=submit NAME=mv_check VALUE="Save shipping">
+	<INPUT TYPE=submit NAME=mv_check VALUE="DELETE shipping">
+	<INPUT TYPE=checkbox NAME=verify> Yes, delete
+</FONT>
+
+
+[title-bar 500 4]Shipping Address[/title-bar]
+
+<TABLE WIDTH=90%>
+
+<TR>
+	<TD ALIGN=RIGHT>
+	[error name=fname std_label="First Name" required=1]</TD>
+	<TD>
+		<INPUT TYPE=text NAME=fname VALUE="[value fname]" size=20>
+	[error name=lname std_label=Last required=1]&nbsp;<INPUT TYPE=text NAME=lname VALUE="[value lname]" size=20>
+	</TD>
+</TR>
+
+<TR>
+	<TD ALIGN=RIGHT>[error name=address1 std_label=Address required=1]</TD>
+	<TD ALIGN=LEFT>
+		<INPUT TYPE=text NAME=address1 VALUE="[value address1]" size=40>
+	</TD>
+</TR>
+
+<TR>
+	<TD ALIGN=RIGHT>&nbsp;</TD>
+	<TD ALIGN=LEFT>
+		<INPUT TYPE=text NAME=address2 VALUE="[value address2]" size=40>
+	</TD>
+</TR>
+
+<TR>
+	<TD ALIGN=RIGHT>
+		[error name=city std_label="City" required=1]
+	</TD>
+	<TD>
+	<TABLE>
+	<TR>
+		<TD>
+			<INPUT TYPE=text NAME=city VALUE="[value city]" size=20>
+		</TD>
+		<TD>
+			[error name=state std_label="State/Province" required=1]
+		</TD>
+		<TD>
+			<INPUT onChange="check_tax(this.form)"
+				TYPE=text NAME=state VALUE="[value name=state filter=uc]" size=3>
+		</TD>
+		<TD>
+			[error name=zip std_label="Zip/Postal Code" required=1]
+		</TD>
+		<TD>
+			<INPUT TYPE=text NAME=zip VALUE="[value name=zip filter=word]" size=10>
+		</TD> 
+	</TR>
+	</TABLE>
+	</TD>
+</TR>
+
+<TR>
+	<TD ALIGN=RIGHT><B>[error name=email std_label="Email Address" required=1]</B></TD>
+	<TD ALIGN=LEFT>
+		<INPUT TYPE=text NAME=email VALUE="[value email]" size=42>
+	</TD>
+</TR>
+
+
+<TR>
+		<TD ALIGN=RIGHT>
+		<B>Country</B>
+		</TD>
+		<TD>
+		[if value country =~ /(^$|US|CA)/]
+		<SELECT NAME=country onChange="this.form.submit()">
+			<OPTION VALUE="US"> United States
+			<OPTION [selected country CA] VALUE="CA"> Canada
+			<OPTION VALUE="JP"> Other (select to change)
+		</SELECT>
+		[else]
+		<SELECT onChange="this.form.submit()" NAME=country>
+		[loop SEARCH="ra=yes/fi=country.txt/ml=1000/tf=name"
+				OPTION="country"
+			<OPTION VALUE="[loop-code]"> [loop-data country name] 
+		[/loop]
+		</SELECT>
+		[/else]
+		[/if] <FONT SIZE="1"><B>(will update display)</B></FONT>
+		</TD>
+</TR>
+
+<TR>	
+	<TD ALIGN=RIGHT>[error name=phone_day std_label="Daytime Phone" required=1]</TD>
+	<TD>
+	<TABLE>
+	<TR>
+		<TD>
+		<INPUT TYPE=text NAME=phone_day VALUE="[value phone_day]" size=16>
+		</TD>
+		<TD ALIGN=RIGHT>
+		Evening
+		</TD>
+		<TD>
+		<INPUT TYPE=text NAME=phone_night VALUE="[value phone_night]" size=16>
+		</TD>
+	</TR>
+	</TABLE>
+</TR>
+<TR>
+	<TD ALIGN=RIGHT>
+	Shipping method
+	</TD>
+	<TD>
+		<SELECT NAME=mv_shipmode>
+		[loop option=mv_shipmode
+			list=|[data table=country key='[default country US]' col=shipmodes]|
+			]
+		<OPTION VALUE="[loop-code]"> [shipping-desc [loop-code]]
+		[/loop]
+		</SELECT>
+	</TD>
+</TR>
+<TR>
+	<TD COLSPAN=2>
+		<I>We need the <B>bold</B> fields to process your order</I>
+	</TD>
+</TR>
+</TABLE>
+
+[title-bar 500 3]
+	<B>
+		<INPUT TYPE=SUBMIT VALUE="Save">
+		[if items]
+		[set Save, go to checkout]
+		mv_nextpage=checkout
+		[/set]
+		<INPUT TYPE=SUBMIT VALUE="Save, go to checkout" NAME=mv_click>
+		<FONT SIZE="-1"><A HREF="[area checkout]">No change, go to checkout</A></FONT>
+		[/if]
+	</B>
+[/title-bar]
+
+<A NAME="mail_list"></A>
+<FONT SIZE="-1"><B><A HREF="#change_password">Change password</A>&nbsp;&nbsp;<A HREF="#mail_list">Mail preferences</A>&nbsp;&nbsp;<A HREF="#shipping">Shipping preferences</A>&nbsp;&nbsp;<A HREF="#billing">Billing preferences</A></B></FONT><BR>
+[title-bar 500 4]Mailing status[/title-bar]
+<SELECT onChange="this.form.submit()" NAME=email_copy>
+	<OPTION VALUE="1">Yes
+	<OPTION [selected name=email_copy value=0] VALUE="0">No
+</SELECT>
+	Send an email copy of my receipt<BR>
+
+<SELECT onChange="this.form.submit()" NAME=mail_list>
+<OPTION VALUE="0">No
+<OPTION [selected mail_list 1] VALUE="1">Yes
+</SELECT>
+	Put me on your email list of infrequent offers
+<P>
+
+<A NAME="billing">
+<FONT SIZE="-1"><B><A HREF="#change_password">Change password</A>&nbsp;&nbsp;<A HREF="#mail_list">Mail preferences</A>&nbsp;&nbsp;<A HREF="#shipping">Shipping preferences</A>&nbsp;&nbsp;<A HREF="#billing">Billing preferences</A></B></FONT><BR>
+[title-bar 500 4]Billing Address Book[/title-bar]
+</A>
+<FONT SIZE="-1">
+		<SELECT NAME=b_nickname>
+		<OPTION VALUE=""> New--&gt;
+		[loop list="[value accounts]" option=s_nickname]
+		<OPTION VALUE="[loop-code]">[loop-code]
+		[/loop]
+		</SELECT>
+		<INPUT TYPE=text   NAME=b_nickname SIZE=10><BR>
+	<INPUT TYPE=submit NAME=mv_check VALUE="Recall billing">
+	<INPUT TYPE=submit NAME=mv_check VALUE="Save billing">
+	<INPUT TYPE=submit NAME=mv_check VALUE="DELETE billing">
+	<INPUT TYPE=checkbox NAME=verify> Yes, delete
+</FONT>
+[title-bar 500 4]Billing Address (if different)[/title-bar]
+<TABLE>
+<TR>
+	<TD ALIGN=RIGHT><B>Name</B></TD>
+	<TD>
+		<INPUT TYPE=text NAME=b_fname VALUE="[value b_fname]" size=20>
+		<INPUT TYPE=text NAME=b_lname VALUE="[value b_lname]" size=30>
+	</TD>
+</TR>
+
+<TR>
+	<TD ALIGN=RIGHT><B>Address</B></TD>
+	<TD ALIGN=LEFT>
+		<INPUT TYPE=text NAME=b_address1 VALUE="[value b_address1]" size=20>
+		<INPUT TYPE=text NAME=b_address2 VALUE="[value b_address2]" size=30>
+	</TD>
+</TR>
+<TR>
+	<TD ALIGN=RIGHT><B>City, State, Postal Code</B></TD>
+	<TD>
+		<INPUT TYPE=text NAME=b_city VALUE="[value b_city]" size=20>
+		<INPUT TYPE=text NAME=b_state VALUE="[value b_state]" size=3>
+		<INPUT TYPE=text NAME=b_zip VALUE="[value b_zip]" size=10>
+	</TD>
+</TR>
+<TR>
+	<TD ALIGN=RIGHT><B>Country</B></TD>
+	<TD>
+		<INPUT TYPE=text NAME=b_country VALUE="[value b_country]" size=2>
+	</TD>
+</TR>
+<TR>
+	<TD VALIGN=TOP>
+		<B>Payment method</B>
+	</TD>
+	<TD VALIGN=TOP>
+		<INPUT TYPE=radio NAME=fax_order VALUE=0
+			[if !value fax_order]CHECKED[/if]>
+		<I>Pay by credit card</I><BR>
+		<INPUT TYPE=radio NAME=fax_order VALUE=1 [checked fax_order 1]>
+		<I>I will call with payment information</I><BR>
+	</TD>
+</TR>
+</TABLE>
+
+[title-bar 500 3]
+	<B>
+		<INPUT TYPE=SUBMIT VALUE="Save">
+		[if items]
+		[set Save, go to checkout]
+		mv_nextpage=checkout
+		[/set]
+		<INPUT TYPE=SUBMIT VALUE="Save, go to checkout" NAME=mv_click>
+		<FONT SIZE="-1"><A HREF="[area checkout]">No change, go to checkout</A></FONT>
+		[/if]
+	</B>
+[/title-bar]
+
+</FORM>
+<HR SIZE=4>
+<A NAME="change_password"></A>
+<TABLE>
+<TR>
+	<TD WIDTH=250 VALIGN=TOP>
+		[title-bar 200 2]Change your password[/title-bar]
+	</TD>
+	<TD WIDTH=250 VALIGN=TOP>
+		[title-bar 200 2]Order Tracking[/title-bar]
+	</TD>
+</TR>
+<TR>
+<TD VALIGN=TOP>
+<FORM ACTION="[process-target]" METHOD=POST>
+	<INPUT TYPE=hidden NAME=mv_click  VALUE=Change>
+	<INPUT TYPE=hidden NAME=mv_doit  VALUE=return>
+	<INPUT TYPE=hidden NAME=mv_nextpage VALUE=basket>
+	<INPUT TYPE=hidden NAME=mv_username VALUE="[value mv_username]">
+
+	<TABLE>
+	<TR><TD ALIGN=RIGHT>Old password</TD>
+		<TD><INPUT TYPE=password NAME=mv_password_old VALUE="" SIZE=10>
+		</TD></TR>
+
+	<TR><TD ALIGN=RIGHT>New password</TD>
+		<TD><INPUT TYPE=password NAME=mv_password VALUE="" SIZE=10>
+		</TD></TR>
+
+	<TR><TD ALIGN=RIGHT>Verify</TD>
+		<TD><INPUT TYPE=password NAME=mv_verify VALUE="" SIZE=10>
+		</TD></TR>
+	
+	<TR><TD></TD>
+		<TD><INPUT TYPE=submit VALUE="Change" SIZE=10><BR>
+	<TR><TD COLSPAN=2>
+		<FONT SIZE="-1">
+		<INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1>
+		Save username/password (sets&nbsp;cookie)
+		</TD>
+	</TR>
+	<TR><TD COLSPAN=2>
+		[page no_cookie]Stop logging me in automatically[/page]
+		</TD>
+	</TR>
+	</TABLE>
+<BR CLEAR=LEFT>
+</FORM>
+</TD>
+<TD VALIGN=TOP>
+		<A HREF="[area basket]">Check cart</A> ([nitems] items)<BR>
+	[if items]
+		<A HREF="[area checkout]">Check out</A><BR>
+	[/if]
+		<A HREF="[area query/check_orders]">Check status of placed orders</A><BR>
+		<UL>
+			[loop list="[data table=userdb col=order_numbers key='[data session username]']"]
+			[if-loop-data transactions order_number]
+			<LI> <A HREF="[area query/order_detail [loop-code]]">#[loop-code]</A>
+			[/if-loop-data]
+			[/loop]
+		</UL>
+	<BR>
+</TD>
+</TR>
+</TABLE>
+
+<FONT SIZE="-1"><B><A HREF="#change_password">Change password</A>&nbsp;&nbsp;<A HREF="#mail_list">Mail preferences</A>&nbsp;&nbsp;<A HREF="#shipping">Shipping preferences</A>&nbsp;&nbsp;<A HREF="#billing">Billing preferences</A></B></FONT><BR>
+
+</TD></TR></TABLE>
+
+[set Save shipping]
+[value name=s_nickname set="[cgi s_nickname]" filter="nullselect no_white" hide=1]
+[userdb function=set_shipping]
+[/set]
+
+[set Recall shipping]
+[value name=s_nickname set="[cgi s_nickname]" filter="nullselect no_white" hide=1]
+[userdb function=get_shipping]
+[/set]
+
+[set DELETE shipping]
+[if cgi verify]
+[value name=s_nickname set="[cgi s_nickname]" filter="nullselect no_white" hide=1]
+[userdb function=delete_shipping]
+[/if]
+[/set]
+
+[set Save billing]
+[value name=b_nickname set="[cgi b_nickname]" filter="nullselect no_white" hide=1]
+[userdb function=set_billing]
+[/set]
+
+[set Recall billing]
+[value name=b_nickname set="[cgi b_nickname]" filter="nullselect no_white" hide=1]
+[userdb function=get_billing]
+[/set]
+
+[set DELETE billing]
+[if cgi verify]
+[value name=b_nickname set="[cgi b_nickname]" filter="nullselect no_white" hide=1]
+[userdb function=delete_billing]
+[/if]
+[/set]
+
+[include pages/menubar]
+</BODY> </HTML>
+<!-- current page: @@MV_PAGE@@ -->

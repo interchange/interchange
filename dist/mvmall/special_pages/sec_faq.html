@@ -1,0 +1,138 @@
+<HTML>
+<HEAD>
+	<TITLE>
+		MiniVend Security FAQ
+	</TITLE>
+</HEAD>
+<BODY>
+<H2>MiniVend Security FAQ</H2>
+
+<STRONG>
+(with thanks to Lincoln Stein, and the WWW Security FAQ)
+</STRONG>
+<P ALIGN=CENTER>
+<I>Press BACK to return to the form</I>
+<P>
+
+<B>Q:</B> <I>My Netscape browser is displaying a form for ordering merchandise
+from a department store that I trust. The little key at the lower
+left-hand corner of the Netscape window is solid and
+has two teeth. This means I can safely submit my
+credit card number, right?</I>
+<P>
+Not quite. A solid key with two teeth appears indicates that SSL is
+being used with a 128-bit secret key and that the remote host owns a
+valid server certificate that was certified by some authority that
+Netscape recognizes. At this point, however, you don't know who that
+certificate belongs to. It's possible that someone has bought or stolen
+a server certificate and then diverted network traffic destined for the
+department store by subverting a router somewhere between you and the
+store. The only way to make sure that you're talking to the company you
+think you're talking to is to open up the "Document Information" window
+(from the File menu) and examine the server certificate. If the host and
+organization names that appear there match the company you expect, then
+you're probably safe to submit the form. If something unexpected appears
+there (like "Embezzlers R Us") you might want to call the department
+store's 800 number.
+<HR>
+
+<B>Q:</B> <I>How secure is the encryption used by SSL?</I>
+
+<P>
+
+SSL uses public-key encryption to exchange a session key between the
+client and server; this session key is used to encrypt the http
+transaction (both request and response). Each transaction uses a
+different session key so that if someone manages to decrypt a
+transaction, that does not mean that they've found the server's secret
+key; if they want to decrypt another transaction, they'll need to spend
+as much time and effort on the second transaction as they did on the
+first.
+<P>
+Netscape servers and browsers do encryption using either a 40-bit secret
+key or a 128-bit secret key. Many people feel that using a 40-bit key is
+insecure because it's vulnerable to a "brute force" attack (trying each
+of the 2^40 possible keys until you find the one that decrypts the
+message). Using a 128-bit key eleiminates this problem because there are
+2^128 instead of 2^40 possible keys. Unfortunately, most Netscape users
+have browsers that support only 40-bit secret keys. This is because of
+legal restrictions on the encryption software that can be exported from
+the United States (The Federal Government has recently modified this
+policy on following the well-publicized cracking of a Netscape message
+encrypted using a 40-bit key.  Expect this situation to change). <P>
+In Netscape you can tell what kind of encryption is in use for a particular
+document by looking at the "document" information" screen accessible
+from the file menu. The little key in the lower left-hand corner of the
+Netscape window also indicates this information. A solid key with two
+teeth means 128-bit encryption, a solid key with one tooth means 40-bit
+encryption, and a broken key means no encryption. Even if your browser
+supports 128-bit encryption, it mayse use 40-bit encryption when talking
+to older Netscape servers or Netscape servers outside the U.S. and
+Canada.
+<P>
+<HR>
+<B>Q:</B> <I>My friend says that none of this stuff is safe. What
+should I believe?</I>
+<P>
+When credit cards first came out in the late 1960s, the cardholder was 
+liable for <B>all</B> losses occurring as a result of a stolen card. The
+credit card companies soon discovered that fear of large losses prevented
+people from using or keeping the cards. For a long time now, you have
+been liable (in most states) for at most $50 of loss as a result of
+credit card fraud.
+<P>
+Using your credit card on the Internet is no different than giving it to
+a restaurant. The presence of a warning-free SSL security system
+ensures that the company you are dealing with has passed background
+checks -- just like the presence of a Verifone credit-card checking device
+gives a good indication that the restaurant can actually accept credit
+cards. Look for a server certified by Verisign, Thawte, or another
+well-known certifying agency.  If a server's SSL certificate is so signed,
+you have done your job to verify authenticity.
+<P>
+We don't recommend that you send your credit card number un-encrypted
+over the Internet. Just like you know not to give your card number to
+anyone who calls you -- you make sure you know who you are talking to
+first -- you shouldn't send your card number over the Internet until
+you are certain that the company you are dealing with has made the effort
+to ensure security. Presence of a warning-free SSL security system
+indicates that rather considerable effort has been made. Look for the
+lock, key, or blue line, and you should be safe.
+<HR>
+<B>Q:</B> <I>Yes, all that is fine, but what about your software? Won't
+the number stick around on the disk forever?</I>
+<P>
+The SSL encryption will take care of network transmission. But we
+don't want to make it easy for just anybody, even those with access
+to our system, to view your number. When MiniVend is properly set
+up, the number is encrypted with PGP encryption before ever being
+written to a file.
+<P>
+First of all, after you enter your number, it is kept in memory only until
+until it is encrypted. At that time, it is scrubbed from the program's
+memory. The now-encrypted card number (with the password only known
+to our order entry personnel) is then written to a file with
+permissions set so only the program can get at it.
+<P>
+This behavior will be followed by the MiniVend program as long as
+the number is placed in a field named <B>mv_credit_card_number</B>
+-- you can view the source of the order form to ensure that.
+<P>
+If you have entered your credit card number and decide <I>not</I> to
+submit your order, the <I>encrypted</I> number will remain on disk for
+no more than one day. At that time, the sessions on the system that are
+older than one day will be expired, after any encrypted
+<B>credit_card_no</B> fields are overwritten with meaningless data, and
+removed from the session database.
+<P>
+If you wish, you can press the button on the order form which is labeled
+<B>CANCEL</B>, and the encrypted information will be wiped immediately.
+<P>
+If you would like more details, please send mail to the
+<A HREF="mailto:webmaster">webmaster</A>.
+<P ALIGN=CENTER>
+__MENUBOTTOM__
+__COPYRIGHT__
+<!-- current page: @@MV_PAGE@@ -->
+</BODY>
+</HTML>

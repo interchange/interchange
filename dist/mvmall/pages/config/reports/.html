@@ -1,0 +1,117 @@
+<TABLE>
+[search-region
+		search="ra=yes
+st=db
+fi=products
+tf=category
+to=r
+tf=artist
+to=x
+tf=title
+to=fr"
+		]
+[search-list][item-change 0][condition][item-data products category][/condition]<TR><TD ALIGN=LEFT>[if scratch first_done]SUBTOTAL: [value prev_data][/if]</TD>
+<TD ALIGN=LEFT></TD>
+<TD ALIGN=RIGHT>[if scratch first_done][filter op=|'currency'|][summary name=subtotal.products.price total=1][summary name=subtotal.products.price reset=1][/filter][/if]</TD>
+</TR><TR><TD COLSPAN=3><HR></TD><TR><TH ALIGN=LEFT>category</TH>
+<TH ALIGN=LEFT>artist</TH>
+<TH ALIGN=RIGHT>price</TH>
+</TR>
+
+[/item-change 0][set first_done]1[/set]<TR><TD ALIGN=LEFT>[item-data products category]</TD>
+<TD ALIGN=LEFT>[item-data products artist]</TD>
+<TD ALIGN=RIGHT>[filter op=|'currency'|][item-data products price][/filter][summary name=total.products.price hide=1 amount="[item-data products price]"][summary name=subtotal.products.price hide=1 amount="[item-data products price]"]</TD>
+</TR>
+[value name=prev_data hide=1 set=|[item-data products category]|][/search-list]<TR><TD>
+<B>TOTAL</B></TD>
+<TD>
+</TD>
+<TD>
+[summary
+								name=total.products.price
+								currency=1
+								total=1
+								]
+</TD>
+</TR>
+
+[/search-region
+</TABLE>
+<TABLE>
+[search-region
+		search="ra=yes
+st=db
+fi=products
+tf=category
+to=r
+tf=artist
+to=x
+tf=title
+to=fr"
+		]
+[search-list][item-change 0][condition][item-data products category][/condition]<TR><TD ALIGN=LEFT>[if scratch first_done]SUBTOTAL: [value prev_data][/if]</TD>
+<TD ALIGN=LEFT></TD>
+<TD ALIGN=RIGHT>[if scratch first_done][filter op=|'currency'|][summary name=subtotal.products.price total=1][summary name=subtotal.products.price reset=1][/filter][/if]</TD>
+</TR><TR><TD COLSPAN=3><HR></TD><TR><TH ALIGN=LEFT>category</TH>
+<TH ALIGN=LEFT>artist</TH>
+<TH ALIGN=RIGHT>price</TH>
+</TR>
+
+[/item-change 0][set first_done]1[/set]<TR><TD ALIGN=LEFT>[item-data products category]</TD>
+<TD ALIGN=LEFT>[item-data products artist]</TD>
+<TD ALIGN=RIGHT>[filter op=|'currency'|][item-data products price][/filter][summary name=total.products.price hide=1 amount="[item-data products price]"][summary name=subtotal.products.price hide=1 amount="[item-data products price]"]</TD>
+</TR>
+[value name=prev_data hide=1 set=|[item-data products category]|][/search-list]<TR><TD>
+<B>TOTAL</B></TD>
+<TD>
+</TD>
+<TD>
+[summary
+								name=total.products.price
+								currency=1
+								total=1
+								]
+</TD>
+</TR>
+
+[/search-region
+</TABLE>
+<TABLE>
+[search-region
+		search="ra=yes
+st=db
+fi=products
+tf=category
+to=r
+tf=artist
+to=x
+tf=title
+to=fr"
+		]
+[search-list][item-change 0][condition][item-data products category][/condition]<TR><TD ALIGN=LEFT>[if scratch first_done]SUBTOTAL: [value prev_data][/if]</TD>
+<TD ALIGN=LEFT></TD>
+<TD ALIGN=RIGHT>[if scratch first_done][filter op=|'currency'|][summary name=subtotal.products.price total=1][summary name=subtotal.products.price reset=1][/filter][/if]</TD>
+</TR><TR><TD COLSPAN=3><HR></TD><TR><TH ALIGN=LEFT>category</TH>
+<TH ALIGN=LEFT>artist</TH>
+<TH ALIGN=RIGHT>price</TH>
+</TR>
+
+[/item-change 0][set first_done]1[/set]<TR><TD ALIGN=LEFT>[item-data products category]</TD>
+<TD ALIGN=LEFT>[item-data products artist]</TD>
+<TD ALIGN=RIGHT>[filter op=|'currency'|][item-data products price][/filter][summary name=total.products.price hide=1 amount="[item-data products price]"][summary name=subtotal.products.price hide=1 amount="[item-data products price]"]</TD>
+</TR>
+[value name=prev_data hide=1 set=|[item-data products category]|][/search-list]<TR><TD>
+<B>TOTAL</B></TD>
+<TD>
+</TD>
+<TD>
+[summary
+								name=total.products.price
+								currency=1
+								total=1
+								]
+</TD>
+</TR>
+
+[/search-region
+</TABLE>

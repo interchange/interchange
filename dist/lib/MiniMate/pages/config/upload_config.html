@@ -1,0 +1,66 @@
+[if-mm !config]
+[bounce href="[area @@MM_BASE@@/violation]"]
+[/if-mm]
+<HTML>
+<HEAD>
+	<TITLE> [L]MiniVend Administration[/L] -- [L]Configuration Upload[/L] </TITLE>
+</HEAD>
+<BODY BGCOLOR=WHITE>
+
+<P>
+[title-bar]<B>[L]Upload/Download Configuration[/L]</B>[/title-bar]
+<P>
+[L]To upload, select a file on your local computer via[/L] <B>[L]Browse[/L]</B>.
+<P>
+<A HREF="[area @@MM_BASE@@/seefile catalog.cfg]">[L]View current catalog.cfg file[/L]</A><BR>
+[scratch menu]
+<P>
+<FORM ACTION="[area process/catalog.cfg]" METHOD=POST ENCTYPE="multipart/form-data">
+<INPUT TYPE=hidden NAME=mv_todo VALUE="return">
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MM_BASE@@/do_upload">
+<INPUT NAME=page_to_upload TYPE=hidden VALUE="">
+<INPUT NAME=db_to_upload TYPE=hidden VALUE="">
+<INPUT NAME=arbitrary_to_upload TYPE=hidden VALUE="catalog.cfg">
+<TABLE BORDER=1 WIDTH=60%>
+<TR>
+<TH WIDTH=50%>[L]ASCII mode for upload[/L]</TH>
+<TH WIDTH=50%>[L]Local file for upload[/L]</TH>
+</TR>
+<TR>
+<TD>
+<INPUT NAME=arbitrary_ascii TYPE=radio VALUE=1 CHECKED>&nbsp;[L]Yes<[/L]BR>
+<INPUT NAME=arbitrary_ascii TYPE=radio VALUE=0>&nbsp;[L]No[/L]
+</TD>
+<TD> 
+	<INPUT TYPE=file NAME="arbitrary_upload">
+</TD>
+</TR>
+<TR>
+	<TD ALIGN=CENTER VALIGN=TOP>
+	[set Download]
+	mv_nextpage=@@MM_BASE@@/do_download
+	[/set]
+	<INPUT TYPE=submit NAME=mv_click VALUE="[L]Download[/L]">
+	[set View]
+	mv_nextpage=@@MM_BASE@@/do_view
+	[/set]
+	<INPUT TYPE=submit NAME=mv_click VALUE="[L]View[/L]">
+	</TD>
+	<TD ALIGN=CENTER VALIGN=TOP>
+	<INPUT TYPE=submit VALUE="[L]Upload[/L]">
+	</TD>
+</TR>
+<TR>
+	<TD COLSPAN=2 ALIGN=CENTER><B>Download Mode: </B>
+	<INPUT TYPE=radio NAME=download_conversion VALUE="" CHECKED>&nbsp;no&nbsp;[L]convert[/L]
+	<INPUT TYPE=radio NAME=download_conversion VALUE="dos">&nbsp;DOS/Win
+	<INPUT TYPE=radio NAME=download_conversion VALUE="mac">&nbsp;Mac
+	<INPUT TYPE=radio NAME=download_conversion VALUE="unix">&nbsp;Unix
+	</TD>
+</TR>
+</TABLE>
+</FORM>
+<P>
+<A HREF="[area @@MM_BASE@@/seefile catalog.cfg]">[L]View current catalog.cfg file[/L]</A><BR>
+[scratch menu]
+</BODY></HTML>

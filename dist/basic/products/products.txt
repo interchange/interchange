@@ -1,0 +1,27 @@
+sku	description	title	artist	comment	display	image	price	category	nontaxable	weight	size	color	related	featured
+00-0010	The Last Supper, LEONARDO da Vinci	The Last Supper	LEONARDO da Vinci	1498, Tempera on plaster, 460 x 880 cm (15 x 29 ft.)	Convent of Santa Maria delle Grazie (Refectory), Milan	lastsupp.jpg	30000000	Renaissance		8.00			00-0011a	Front
+00-0011	MONA LISA, Da Vinci	Mona Lisa	LEONARDO da Vinci	What was she smiling about?	The Louvre	00-0011.jpg	50000000	Renaissance	no	8.00			00-0011a	
+00-0011a	Gilded Frame signed by Da Vinci	Frame	Gilded			00-0011a.png	1000.00	Accessory	1	20.00				
+00-2001	The Madonna of the Magnificat, BOTTICELLI	The Madonna of the Magnificat	BOTTICELLI, Sandro	c. 1485, Tempera on panel, diameter 118 cm	Uffizi, Florence	magnificat.jpg	8000000	Renaissance		7.00				
+00-2002	Portrait of a Young Man, BOTTICELLI	Portrait of a Young Man	BOTTICELLI, Sandro	c. 1480-85, Wood, 37.5 x 28.2 cm	National Gallery, London	young_man.jpg	10000000	Renaissance		5.00				
+00-340	Irises, VAN GOGH	Irises	VAN GOGH, Vincent	1889, Oil on canvas, 28 x 36 3/4 in. (71 x 93 cm)	Getty Museum, Malibu, California	irises.jpg	40000000	Impressionists		5.00			00-341 00-342	Front
+00-341	SUNFLOWERS, by Van Gogh	Sunflowers	VAN GOGH, Vincent	An exquisite painting showing Van Gogh at the height of his pointillist powers.	The Louvre	00-341.jpg	40000000	Impressionists	no	40.00				
+00-342	THE STARRY NIGHT, Van Gogh	The Starry Night	VAN GOGH, Vincent	Breathtaking example of Van Gogh's work.	MOMA	00-342.jpg	30000000	Impressionists	no	10.00				
+00-343	PERSISTENCE OF MEMORY, Dali	Persistence of Memory	DALI, Salvador	How does he do that?	MOMA	00-343.jpg	20000000	Surrealists	no	10.00				
+00-344	Illumined Pleasures, DALI	Illumined Pleasures	DALI, Salvador	1929, Oil and collage on composition board, 9 3/8 x 13 3/4 in.	 The Museum of Modern Art, New York	illumined_pleasures.jpg	5000000	Surrealists		5.00			00-343	
+00-402	Golconde, MAGRITTE	Golconde	MAGRITTE, Rene	1953, Oil on canvas, 31 1/2 x 39 1/2 in.	 The Menil Collection, Houston, Texas	golconde.jpg	7000000	Surrealists		5.00				
+00-403	Self-Portrait with Loose Hair, KAHLO	Self-Portrait with Loose Hair	KAHLO, Frida	1947, Oil on masonite, 24 x 17 3/4 in. (61 x 45 cm)	Private collection	loose_hair.jpg	2000000	Surrealists		5.00			00-404	Front
+00-404	The Two Fridas, KAHLO	The Two Fridas	KAHLO, Frida	1939, Oil on canvas, 68 x 68 in. (173 x 173 cm)	Museo de Arte Moderno, Mexico City	two_fridas.jpg	3000000	Surrealists		5.00			00-403	
+19-203	PANORAMIC PROCESSION, Keiko	Panoramic Procession	KEIKO	You are in a series of twisty passages....	South Beach Gallery	19-203.jpg	200000	Surrealists	no	5.00				
+19-204	ERA'S END, Keiko	Era's End	KEIKO	Stranger and stranger...	South Beach Gallery	19-204.jpg	300000	Surrealists	no	5.00				
+21-221	AMERICAN GOTHIC, by Wood	American Gothic	WOOD, Grant	The quintessential piece of Americana.	Art Institute	21-221.jpg	10000000	Americana	no	10.00			99-102	Front
+22-002	Paul as Harlequin, PICASSO	Paul as Harlequin	PICASSO, Pablo	1924, Paris, Oil on canvas, 130 x 97.5 cm	Musee Picasso, Paris	paul_harlequin.jpg	12000000	Abstract		5.00				
+22-003	Woman with a Fan, PICASSO	Woman with a Fan	PICASSO, Pablo	Paris, [late spring] 1908, Oil on canvas, 59 7/8 x 39 3/4 in. (152 x 101 cm.)	The Hermitage Museum, St. Petersburg	womanfan.jpg	10000000	Abstract		5.00				
+22-200	Number 1A, 1948, POLLOCK	Number 1A, 1948	POLLOCK, Jackson	1948, Oil on canvas, 68" x 8'8"	The Museum of Modern Art, New York	pol2.jpg	4000000	Abstract		10.00			22-201	
+22-201	The Key, POLLOCK	The Key	POLLOCK, Jackson	1946, Oil on canvas, 59 x 84 in.	 The Art Institute of Chicago	pol1.jpg	5000000	Abstract		12.00			22-200	
+34-101	FAMILY PORTRAIT, by Langan	Family Portrait	LANGAN, Jean	Haunting view of Grandma's Parlor	Krannert	34-101.png	1000000	Americana	no	10.00				
+98-101	Black Cross, New Mexico, O'KEEFFE	Black Cross, New Mexico	O'KEEFFE, Georgia	1929, Oil on canvas, 99.2 x 76.3 cm	The Art Institute of Chicago	okeefe1.jpg	8000000	Expressionists		3.00			98-102	Front
+98-102	Red Canna, O'KEEFFE	Red Canna	O'KEEFFE, Georgia	c. 1919, Oil on board, 12 x 9 in. (30.5 x 22.9 cm)	Private collection	okeeffe6.jpg	5000000	Expressionists		5.00			98-101	
+99-102	THE ART STORE T-SHIRT	The Art Store T-Shirt	The Art Store	Guaranteed to be of the finest cheap T-shirt material	A Store Near You	tshirt.jpg	10.00	Shirts	no	1.00	S=Small, M=Medium, L=Large*, XL=Extra Large	red=Ruby Red, blue=Sky Blue*, green=Sea Green, Black, White		
+99-301	Chair Car, HOPPER	Chair Car	HOPPER, Edward	1965, Oil on canvas, 40 x 50 inches	Private collection	chair_car.jpg	900000	Americana		5.00				Front
+99-322	My Gems, HARNETT	My Gems	HARNETT, William	1888, Oil on wood, 18 x 14 in. (45.7 x 35.5 cm)	National Gallery of Art, Washington	my_gems.jpg	1000000	Americana		5.00				

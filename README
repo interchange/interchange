@@ -1,0 +1,211 @@
+# Minivend V4.x
+# 
+# Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
+#
+# Originally based on Vend 0.2
+# Copyright 1995 by Andrew M. Wilcox
+#
+# Portions from Vend 0.3
+# Copyright 1995,1996 by Andrew M. Wilcox
+#
+# This program is free software; you can redistribute it
+# and/or modify it under the terms of the GNU General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later
+# version. 
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public
+# License along with this program; if not, write to the Free
+# Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+# MA  02111-1307  USA.
+
+Welcome to Minivend! This program is completely unsupported, without
+warranty of any kind. The author is interested in problems, suggestions,
+or comments, but does not have time to offer free individual support
+in most cases. See the Minivend website at http://www.minivend.com/
+for more information.
+
+--------------------------------------------------------------
+
+                        M I N I V E N D
+                                       
+   Minivend is a full-featured electronic catalog system (commonly known
+   as a shopping cart) with online ordering capability. It is a high-end
+   database access and retrieval system with SQL support via the Perl DBI.
+
+   A full list of its features is available at:
+
+        http://www.minivend.com/
+ 
+IMPORTANT NOTE:  Minivend 4.0 requires, repeat REQUIRES, Perl 5.005 or Perl 5.6.
+
+The information you need is in the following files:
+
+    README     Copyright info, roadmap to installation
+               and pointers to support system
+    
+    Copying    Your Minivend license -- please read.
+
+    WHATSNEW   Change information for all versions in this
+               version family.
+
+    MANIFEST   List of all core distribution files.
+    
+Major files/directories in the distribution:
+
+    Makefile.PL The installation scripts
+
+    dist/       The distribution files, exclusive of executable
+                files and modules. Includes:
+
+                minivend.cfg.dist   Distribution minivend.cfg
+                basic/              The basic MV catalog demo application.
+                simple/             The not so aptly named "simple" demo
+                                    application.
+                src/                C and Perl code for CGI links
+                compat/             Some Minivend-3 compatibility tags
+                lib/                Minimate
+                usertag/            Some fairly-standard usertags
+
+    extra/      Some not-always-needed Perl libraries.
+
+    lib/        The library modules needed to run Minivend.
+                 
+    scripts/    The executable files, relocated to bin in the run
+                directory.
+
+    test.pl     The installation test script.
+
+    win/        Windows-specific files
+
+UNIX INSTALLATION
+------------------
+Here is the short version:
+
+    gzip -dc minivend-4.xx.tar.gz | tar xvf -
+    cd minivend-4*
+    perl Makefile.PL
+    make
+    make test && make install
+
+-- WHEN IN DOUBT, RE-START THE SERVER.  It won't take but a few
+   seconds, and changes in configurable options don't take effect
+   until it is done. You may even change a page and not see the
+   effect until the server is restarted.
+
+WINDOWS INSTALLATION
+--------------------
+Not yet. When is not yet determined, but it will not be soon.
+If you are very experienced, you might try installing the ZIP
+file with "perl Makefile.PL". But *at least* the following problems will
+be present:
+
+    1. You need to put "SessionType  DB_File" in catalog.cfg.
+    2. Minimate will not work (unless you can build Safe::Hole).
+    3. You probably need to use Apache since we no longer support
+       cygwin.dll and tlink.exe. If you can get tlink.pl running
+       on other web servers, patches are welcome.
+
+Do not use it in a production system.
+
+-------------------------------------------------------------------
+
+                      A V A I L A B I L I T Y
+                              A N D
+                     C O M P A T I B I L I T Y
+
+Minivend 4 has been tested on Solaris 2, Linux, FreeBSD, and Digital
+UNIX/Tru64. Its predecessor Minivend 3 also reportedly runs on SCO, AIX,
+and other Unix ports.  It should work on any UNIX or Win32 OS with Perl
+5.005 or higher.
+
+IMPORTANT NOTE FOR BSD USERS: Minivend has been known to segfault when
+reading sockets on Perl. This occurs more frequently on a busy system.
+The workaround is to set in minivend.cfg:
+
+    MaxServers   0
+    Housekeeping 1
+
+Windows does not support fork(), so the server runs in the foreground. There
+are other differences; the canonical installation is UNIX.
+
+-------------------------------------------------------------------
+
+                         D E M O
+
+There are two demo applications included; one is not so aptly named "simple",
+the other is "basic". For the best instructional experience, start
+with "basic" and then try "simple".
+
+To install the demo, go to the directory where you installed 
+Minivend (default is "mvend" in your home directory or /usr/local/minivend
+for root installations) and run:
+
+    bin/makecat basic
+
+     or 
+
+    bin/makecat simple
+
+Follow the prompts and after restarting the Minivend server you
+should be able to access the demo catalog.
+
+-------------------------------------------------------------
+
+                     D O C U M E N T A T I O N
+
+The documentation is in several man pages and HTML files in the doc/
+subdirectory of the main Minivend directory.
+
+There is an extended documentation package available
+at www.minivend.com.
+
+-------------------------------------------------------------
+
+                    K N O W N   P R O B L E M S
+
+BSDI, FreeBSD, Net BSD:
+    You will need to make sure the following are in effect
+    in minivend.cfg:
+
+        MaxServers 0
+        Housekeeping 1
+
+    Expect lots of crashes if you don't do this.
+
+Apache with SUEXEC:
+    VLINK/UNIX socket mode will not work well unless you do the
+    install as a normal user. If you are going to support multiple
+    users, you must use TLINK/INET mode.
+
+Windows:
+    Many things won't work the same as UNIX. See the
+    README-win.txt file for more information.
+
+---------------------------------------------------------------------
+
+I, the author, am very interested in learning your problems with
+Minivend, and am interested in clarifying the documentation for
+future improvements.  I am not much interested in BEING your
+documentation, though, unless you pay well and promptly. Please
+send kudos, comments, questions, and complaints to:
+
+       mikeh@minivend.com
+
+Note that I receive thousands of emailed questions per year and cannot
+answer them all. The more research you do on your own the more likely
+I am to respond. Helpful suggestions and real bug reports are almost
+always acknowledged.
+
+There is an active user support mail list, minivend-users@minivend.com,
+which has traffic of about 600-900 messages per month. To subscribe,
+send "subscribe minivend-users" in the *body* of a message to
+majordomo@minivend.com, or visit the mail list page at www.minivend.com.
+
+Good luck with Minivend!
+

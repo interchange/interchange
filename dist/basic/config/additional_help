@@ -1,0 +1,38 @@
+LOGO
+ 
+This can be an absolute image URL, or can be just a file
+name that will go in your image directory. That directory
+should be __MVC_IMAGEDIR__.
+
+TAXAREA
+ 
+For the US, this is usually the state(s) your business is
+located in. Non-US users will probably have to set this
+differently depending on their tax laws.
+
+TAXRATE
+  
+For US users, this looks like STATE=RATE, where the rate
+is in percent. The default below taxes Ohio at 6% and 
+Illinois at 7.25 percent. More states can be added or
+you can have only one. Should correspond to TAXAREA.
+
+TAXSHIPPING
+  
+If your state charges salestax on shipping, then enter
+the state code. (Again, Non-US users will have this vary
+based on their locale.)
+
+UPSADDER
+  
+For the UPS lookup, the standard UPS tables are normally
+used. If you want to add a handling charge, do it here.
+
+SUPERUSER
+  
+You can use MiniMate, MiniVend's companion configuration
+interface, to do upload/download of files, manipulation of
+the database, reconfiguration of the catalog, and much more.
+   
+To enable MiniMate, you will need a "super-user" account
+name that has full access.

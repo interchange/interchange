@@ -1,0 +1,110 @@
+[set page_title] __COMPANY__ -- Upload [/set]
+__LOGOBAR__
+__MENUBAR__
+__LEFTSIDE__
+&nbsp;
+<P>
+To upload, check the box and select a file on your local
+computer.
+<P>
+</BLOCKQUOTE>
+<FORM ACTION="[process-target]" METHOD=POST ENCTYPE="multipart/form-data">
+<INPUT TYPE=hidden NAME=mv_todo VALUE="return">
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="reconfig/do_upload">
+<TABLE BORDER=1>
+<TR>
+<TH COLSPAN=2> Page to upload (relative to pages, include .html)</TH>
+<TH>ASCII</TH>
+<TH> File </TH>
+</TR>
+<TR>
+<TD COLSPAN=2> 
+<INPUT NAME=page_to_upload SIZE=40>
+</TD>
+<TD>
+<INPUT NAME=page_ascii TYPE=radio VALUE=1 CHECKED>&nbsp;Yes<BR>
+<INPUT NAME=page_ascii TYPE=radio VALUE=0>&nbsp;No
+</TD>
+<TD> 
+	<INPUT TYPE=file NAME="page_upload">
+</TD>
+</TR>
+<TR>
+<TH> Database </TH>
+<TH> File name </TH>
+<TH> Type </TH>
+<TH> File to upload </TH>
+</TR>
+[loop arg="[perl arg='scratch config']
+				my @out;
+				my %type = ( qw/
+								1 DEFAULT
+								2 LINE
+								3 %%
+								4 CSV
+								5 PIPE
+								6 TAB
+								/);
+				my $ref = $Safe{config}{Database};
+				for(sort keys %$ref) {
+					next if /^(transactions|userdb)$/;
+					push @out, $_;
+					$filename{$_} = $ref->{$_}{'file'};
+					$Safe{scratch}{qq|filetype_$_|} = $type{$ref->{$_}{'type'}};
+					$Safe{scratch}{qq|outfile_$_|} = $ref->{$_}{'file'};
+				}
+				$filetype{products} = 'whatever';
+				return join ' ', @out;
+		  [/perl]"]
+<TR>
+<TD VALIGN=BOTTOM>
+	<INPUT TYPE=checkbox NAME=db_to_upload VALUE="[loop-code]"> [loop-code]
+</TD>
+<TD VALIGN=BOTTOM>
+	[scratch outfile_[loop-code]]
+</TD>
+<TD VALIGN=BOTTOM>
+	[scratch filetype_[loop-code]]
+</TD>
+<TD>
+	<INPUT TYPE=file NAME="upload_[loop-code]">
+</TD>
+</TR>
+[/loop]
+<TR>
+<TH COLSPAN=2> Arbitrary file to upload (like catalog.cfg)</TH>
+<TH>ASCII</TH>
+<TH>File</TH>
+</TR>
+<TR>
+<TD COLSPAN=2> 
+<INPUT NAME=arbitrary_to_upload SIZE=40>
+</TD>
+<TD>
+<INPUT NAME=arbitrary_ascii TYPE=radio VALUE=1 CHECKED>&nbsp;Yes<BR>
+<INPUT NAME=arbitrary_ascii TYPE=radio VALUE=0>&nbsp;No
+</TD>
+<TD> 
+	<INPUT TYPE=file NAME="arbitrary_upload">
+</TD>
+</TR>
+<TR>
+<TD COLSPAN=2 ALIGN=CENTER VALIGN=TOP>
+	<INPUT TYPE=submit VALUE="Upload file(s)">
+	</TD>
+	<TD COLSPAN=2 ALIGN=CENTER VALIGN=TOP>
+	[set Download first selected file]
+	mv_nextpage=reconfig/do_download
+	[/set]
+	<INPUT TYPE=submit NAME=mv_click VALUE="Download first selected file"><BR>
+	<INPUT TYPE=radio NAME=download_conversion VALUE="" CHECKED>&nbsp;no&nbsp;convert
+	<INPUT TYPE=radio NAME=download_conversion VALUE="dos">&nbsp;DOS/Win
+	<INPUT TYPE=radio NAME=download_conversion VALUE="mac">&nbsp;Mac
+	<INPUT TYPE=radio NAME=download_conversion VALUE="unix">&nbsp;Unix
+	</TD></TR>
+</TABLE>
+</FORM>
+__NO_RIGHT__
+__MENUBOTTOM__
+__COPYRIGHT__
+<!-- current page: @@MV_PAGE@@ -->

@@ -1,0 +1,73 @@
+<HTML>
+<HEAD>
+<TITLE>Access denied</TITLE>
+</HEAD>
+<BODY>
+<H1>Access denied</H1>
+
+
+<h2>You have accessed a page that requires authorization.</h2>
+
+[if session logged_in]
+[then]
+
+[set [L]Log out[/L]]
+mv_todo=return
+mv_nextpage=@@MV_PREV_PAGE@@
+[userdb function=logout options="clear=yes"]
+[/set]
+
+    <TABLE CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+    <TR><TD ALIGN=CENTER>
+    <FORM ACTION="[process-target]" METHOD=POST>
+    [L]Hi[/L] [value name]! [L]You are logged in as user[/L] <B>[value mv_username]</B>.
+	&nbsp;&nbsp;<INPUT TYPE=submit NAME="mv_click" VALUE="[L]Log out[/L]">
+	</FORM>
+	</TD></TR></TABLE>
+
+    <TABLE CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+    <TR><TD ALIGN=CENTER>
+    <FORM ACTION="[process-target]" METHOD=POST>
+	</FORM>
+	</TD></TR></TABLE>
+
+
+[/then]
+[else]
+
+[set Login]
+mv_todo=return
+mv_nextpage=@@MV_PREV_PAGE@@
+[userdb login]
+[/set]
+<P>
+[if session failure]
+[data session failure]
+[/if]
+<P>
+    <FORM ACTION="[process-target]" METHOD=POST>
+    <INPUT TYPE=hidden NAME=mv_click VALUE=Login>
+    <INPUT TYPE=hidden NAME=mv_doit  VALUE=return>
+
+    <TABLE CELLSPACING=0 CELLPADDING=0>
+	<TR><TD ALIGN=RIGHT>[L]Username[/L]</TD>
+        <TD><INPUT NAME=mv_username VALUE="[value mv_username]" SIZE=10>
+		[page new_account][L]Create a new account[/L]</A>
+        </TD></TR>
+
+    <TR><TD ALIGN=RIGHT>[L]Password[/L]</TD>
+        <TD><INPUT
+				onChange="this.form.submit()"
+			  TYPE=password NAME=mv_password VALUE="" SIZE=10>
+        <INPUT TYPE=submit VALUE="Log in"> &nbsp;&nbsp;
+        </TD></TR>
+    </TABLE>
+
+    </FORM>
+
+[/else][/if]	
+
+
+[include pages/menubar]
+</BODY></HTML>
+<!-- current page: @@MV_PAGE@@ -->

@@ -1,0 +1,12 @@
+code	area	selector	name	banner_text	subs	sort	url
+Abstract	Galleries	Abstract	Abstract	Abstract Gallery			
+Shirts	Other	Shirts	T-Shirts	Wearables			
+Docs	Other	Docs	Documentation	The Fine Documentation			
+Americana	Galleries	Americana	Americana	Americana Gallery			
+Expressionists	Galleries	Expressionists	Expressionists	Expressionist Gallery			
+Impressionists	Galleries	Impressionists	Impressionists	Impressionist Gallery			
+Renaissance	Galleries	Renaissance	Renaissance	Renaissance Gallery			
+Surrealists	Galleries	Surrealists	Surrealists	Surrealist Gallery			
+1	Links		Artchive	Links			http://www.artchive.com
+2	Links		MOMA	Links			http://www.moma.org
+3	Links		Museum of Bad Art	Links			http://glyphs.com/moba/

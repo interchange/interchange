@@ -1,0 +1,75 @@
+[if-mm !tables]
+[bounce href="[area @@MM_BASE@@/violation]"]
+[/if-mm]
+<HTML>
+<HEAD><TITLE>[L]Key Select[/L]</TITLE></HEAD>
+<BODY [either]__MM_BODY__[or]BGCOLOR=white[/either]>
+
+[calc]
+$Config->{NoSearch} = '';
+return if $Values->{mvc_data_table};
+$Values->{mvc_data_table} = $Values->{mv_data_table} || $Config->{ProductFiles}[0];
+return;
+[/calc]
+<FONT SIZE="-1">
+[search-region
+			more=1
+			arg=|
+				ra=yes
+				ml=[value mm_fr_list_size]
+				[if cgi mm_rf]
+				rf=[value mvc_data_key_name],[cgi mm_rf]
+				tf=[cgi mm_rf]
+				[else]
+				rf=[value mvc_data_key_name]
+				tf=[value mvc_data_key_name]
+				[/else]
+				[/if]
+				st=db
+				fi=[value mvc_data_table]
+	|]
+	[search-list]
+	<A HREF="[area @@MM_BASE@@/edit_record [item-code]]" TARGET=fr_edit>
+	[if-item-pos 1]
+	[item-pos 1]
+	[else]
+	[item-code]
+	[/else]
+	[/if-item-pos]<BR>
+	[/search-list]
+	<BR>
+	<A HREF="[area @@MM_BASE@@/edit_record]" TARGET=fr_edit>New Key</A><BR>
+	[more-list]
+	More: [more]
+	[/more-list]
+[/search-region]
+<P>
+[loop list="[value mvc_data_table]"]
+<TABLE>
+<TR><TD VALIGN=TOP WIDTH=250>
+[title-bar 150 1]<B>[L]Database Configuration[/L]</B>[/title-bar]
+<FONT SIZE="-1" FACE="arial, helvetica">
+<UL>
+[if-mm upload]
+<LI><A HREF="[area @@MM_BASE@@/db_upload [loop-code]]" TARGET=fr_edit>[L]Upload new ASCII source[/L]</A><BR>
+[/if-mm]
+[if-mm advanced report]
+<LI><A HREF="[area @@MM_BASE@@/report [loop-code]]" TARGET=fr_edit>[L]Report Generator[/L]</A><BR>
+[/if-mm]
+[if-mm journal_update]
+<LI><A HREF="[area @@MM_BASE@@/db_journal [loop-code]]" TARGET=fr_edit>[L]Upload partial update file[/L]</A><BR>
+[/if-mm]
+[if-mm export]
+<LI><A HREF="[area @@MM_BASE@@/db_export [loop-code]]" TARGET=fr_edit>[L]Export to ASCII file[/L]</A><BR>
+[/if-mm]
+[if-mm advanced add_delete]
+<LI><A HREF="[area @@MM_BASE@@/db_column [loop-code]]" TARGET=fr_edit>[L]Add or delete column[/L]</A><BR>
+[/if-mm]
+<LI><A HREF="[area @@MM_BASE@@/dbedit [loop-code]]" TARGET=fr_edit>[L]Edit menu[/L]</A><BR>
+</UL>
+</TD>
+</TR></TABLE>
+[/loop]
+</BODY></HTML>
+</BODY>
+</HTML>

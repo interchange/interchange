@@ -1,0 +1,154 @@
+#!/bin/sh
+
+if test -n "$RPM_RUN_BASE"
+then
+	RUNBASE=$RPM_RUN_BASE
+else
+	RUNBASE=/var/run
+fi
+
+if test -n "$RPM_LOG_BASE"
+then
+	LOGBASE=$RPM_LOG_BASE
+else
+	LOGBASE=/var/log
+fi
+
+if test -n "$RPM_LIB_BASE"
+then
+	LIBBASE=$RPM_LIB_BASE
+else
+	LIBBASE=/var/lib
+fi
+
+if test -n "$RPM_ETC_BASE"
+then
+	ETCBASE=$RPM_ETC_BASE
+else
+	ETCBASE=/etc
+fi
+
+HASMVUSER=`grep '^minivend:' /etc/passwd`
+if test -n "$RPM_BUILD_ROOT"
+then
+	echo
+elif test -z "$HASMVUSER"
+then
+	adduser -d $LIBBASE/minivend -c "Minivend daemon" -r minivend
+fi
+
+ETCDIRS="rc.d/init.d logrotate.d"
+LIBDIRS="minivend"
+MVDIRS="$RPM_BUILD_ROOT$RUNBASE/minivend $RPM_BUILD_ROOT$LOGBASE/minivend"
+
+for i in $ETCDIRS
+do
+	mkdir -p $RPM_BUILD_ROOT$ETCBASE/$i
+done
+
+for i in $LIBDIRS
+do
+	mkdir -p $RPM_BUILD_ROOT$LIBBASE/$i
+done
+
+for i in $MVDIRS
+do
+	mkdir -p $i
+	if test -z "$RPM_BUILD_DIR"
+	then
+		chown minivend.minivend $i
+		chmod 751 $i
+	fi
+done
+
+if test -n "$RPM_BUILD_ROOT"
+then
+	mkdir -p $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d
+	mkdir -p $RPM_BUILD_ROOT/usr/local/bin
+fi
+
+cat > $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d/minivend <<EOF
+#!/bin/sh
+#
+# Startup script for Minivend
+#
+# chkconfig: 345 96 4
+# description: Minivend is a database access and HTML templating system \
+#	       focused on ecommerce
+# processname: minivend
+# pidfile: $RUNBASE/minivend/minivend.pid
+# config: $ETCBASE/minivend.cfg
+# config: $LIBBASE/minivend/*/catalog.cfg
+
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Handle /usr/local
+PATH=\$PATH:/usr/local/bin
+
+# See how we were called.
+case "\$1" in
+  start)
+	echo -n "Starting minivend: "
+	daemon minivend
+	echo
+	touch /var/lock/subsys/minivend
+	;;
+  stop)
+	echo -n "Shutting down minivend: "
+	killproc minivend
+	echo
+	rm -f /var/lock/subsys/minivend
+	rm -f $RUNBASE/minivend/minivend.pid
+	;;
+  status)
+	status minivend
+	;;
+  restart)
+	\$0 stop
+	\$0 start
+	;;
+  *)
+	echo "Usage: \$0 {start|stop|restart|status}"
+	exit 1
+esac
+
+exit 0
+EOF
+
+cat > $RPM_BUILD_ROOT/etc/logrotate.d/minivend <<EOF
+/var/log/minivend/* {
+        rotate 4
+        weekly
+        compress
+}
+EOF
+
+cat > $RPM_BUILD_ROOT/usr/local/bin/minivend <<EOF
+#!/bin/sh
+
+RUNSTRING="/usr/local/minivend/bin/minivend -q \\
+	-configfile $ETCBASE/minivend.cfg \\
+	-pidfile $RUNBASE/minivend/minivend.pid \\
+	-logfile $LOGBASE/minivend/error.log \\
+	ErrorFile=$LOGBASE/minivend/error.log \\
+	PIDfile=$RUNBASE/minivend/minivend.pid \\
+	-confdir $RUNBASE/minivend \\
+	SocketFile=$RUNBASE/minivend/socket"
+
+USER=\`whoami\`
+if test \$USER = "root"
+then 
+	exec su minivend -c "\$RUNSTRING \$*"
+else
+	exec \$RUNSTRING \$*
+fi
+EOF
+
+chmod +x $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d/minivend $RPM_BUILD_ROOT/usr/local/bin/minivend
+
+if test -z "$RPM_BUILD_ROOT"
+then
+	/sbin/chkconfig minivend reset
+fi

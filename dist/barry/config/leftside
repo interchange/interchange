@@ -1,0 +1,126 @@
+__TIMED_CATLIST__
+<td width="30%" valign="top" __HEADERBG__> 
+<table align="center" 
+  width="90%" border="0" cellpadding=0 cellspacing=0>
+<tr>
+<td>
+<br>
+<br>
+
+<!-- sidebar -->
+
+[loop search="
+	fi=area.txt
+	tf=sort
+	ra=yes
+	rf=selector,name
+	un=yes
+" prefix=box]
+<font color="__HEADERTEXT__" face="Helvetica, Arial">
+<b>
+
+[box-param name]<br>
+
+</b>
+
+<table width="100%" border=0 cellpadding=0 cellspacing=0>
+[set end_done]1[/set]
+[set found_cat][/set]
+[loop prefix=cat
+	search="
+		fi=cat.txt
+		tf=name
+		sf=area
+		se=[box-param selector]
+		rf=selector,page,name
+	"
+	][set found_cat]1[/set]
+[cat-alternate 2]
+[else]
+<tr>
+[/else]
+[/cat-alternate]
+<td align="left">
+	<font size=-1> 
+	[if-cat-param page]
+    <a href="[area [cat-param page] [cat-param selector]]">[cat-param name]</a>
+	[else]
+    <a href="[area scan
+					sf=category
+					se=[cat-param selector]
+					va=category=[cat-code]
+					]">[cat-param name]</a>
+	[/else]
+	[/if-cat-param] 
+      </font> </td>
+[cat-alternate 2]
+	[set end_done]1[/set]
+	</TR>
+[else]
+	[set end_done][/set]
+[/else]
+[/cat-alternate]
+[/loop]
+
+[if !scratch found_cat]
+[loop prefix=cat
+	search="
+		un=yes
+		sf=category
+		se=[box-param selector]
+		rf=subcategory
+	"
+	]
+[cat-alternate 2]
+[else]
+<tr>
+[/else]
+[/cat-alternate]
+<td align="left">
+	<font size=-1> 
+    <a href="[area scan
+					co=yes
+					sf=category
+					se=[box-param selector]
+					sg=0
+					os=0
+					op=rm
+					sf=subcategory
+					se=[cat-code]
+					sg=1
+					os=1
+					sf=addl_category
+					se=[cat-code]
+					sg=1
+					os=1
+					op=em
+					]">[cat-code]</a>
+      </font> </td>
+[cat-alternate 2]
+	[set end_done]1[/set]
+	</TR>
+[else]
+	[set end_done][/set]
+[/else]
+[/cat-alternate]
+[/loop]
+[/if]
+[if !scratch end_done]</TR>[/if]
+</table>
+</font>
+<P>
+[/loop]
+
+
+</td>
+</tr>
+</table>
+
+</td>              
+<td width="70%" valign="top">
+
+<table valign="top" cellpadding=0 cellspacing=0 border=0>
+
+<tr>
+<td valign="top">
+__END_TIMED__

@@ -1,0 +1,460 @@
+<HTML>
+<HEAD>
+<TITLE>Check out -- __COMPANY__</TITLE>
+</HEAD>
+<BODY __BODY__>
+<!--
+[if !value country]
+	Set country to: [value name=country set="US"]
+	Set save_country to: [value name=save_country set="US"]
+[elsif type=explicit
+		compare="[calc]
+					q{[value country]} ne q{[value save_country]}
+				[/calc]"]
+	Set saved country to: [value name=save_country set="[value country]"]
+	Set shipmode to:
+		[value name=mv_shipmode
+			   set="[calc]
+						$mode = q{[data
+										table=country
+										col=shipmodes
+										key='[value country]'
+										]};
+						$mode =~ s/\s.*//;
+						return $mode;
+					[/calc]"
+				]
+[/elsif]
+[/if]
+-->
+
+[if !items]
+<TABLE WIDTH=600>
+<TR><TD COLSPAN=4 __HEADERBG__>
+    <FONT SIZE="+2">No Items?</FONT>
+    </TD>
+</TR></TABLE>
+<B>You have no items in your shopping cart.</B>
+<P>This usually means that one of several things has occurred:
+<UL>
+<LI> You have cookies turned off. This is not fatal unless you travel through
+a proxy server to get to the net (don't worry if you don't know what that means).
+You can confirm this by [page form="
+								mv_nextpage=checkout
+								mv_todo=return
+"]going to the checkout page in non-secure mode.</A>
+<LI> Our server is misconfigured.
+</UL>
+Try calling us at __PHONE__ [if variable TOLLFREE]or __TOLLFREE__[/if]
+to place the order. 
+<P>
+Or if you already have an account, you can <A HREF="[area login]">log in</A>.
+[/if]
+
+<SCRIPT>    // JavaScript Form Validation Demo    // by Paul Colton
+    function check_tax(form) {
+        // Make sure the email field is not blank
+        var foundState = false;
+        var ch = form.state.value;
+        ch = ch.toUpperCase();
+		[loop list="__TAXAREA__"]
+        if(ch == "[loop-code]") {
+            alert("You will be charged [currency][fly-tax [loop-code]][/currency] sales tax\nsince you are shipping to [loop-code]. Click UPDATE to see the amount in your total.");
+            foundState = true;
+        }
+		[/loop]
+        return foundState;
+    }
+</SCRIPT>
+
+<FORM ACTION="[process secure=1]" METHOD="POST">
+<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+
+[if type=explicit compare="[error all=1 show_var=1 keep=1]"]
+<P>
+<FONT COLOR=RED>There were errors in your last submission.</FONT>
+They are shown in <FONT COLOR=RED>this color</FONT> below.</FONT>
+<P>
+[/if]
+<INPUT TYPE=hidden NAME=mv_doit          VALUE=refresh>
+<INPUT TYPE=hidden NAME=mv_nextpage      VALUE=checkout>
+[comment] The below line controls field checking -- see etc/profiles.order [/comment]
+<INPUT TYPE=hidden NAME=mv_order_profile VALUE=checkout_profile>
+
+<TABLE WIDTH=600><TR><TD>
+<FONT SIZE="+2">Shipping Address</FONT>
+</TD></TR></TABLE>
+
+<TABLE WIDTH=90%>
+
+<TR>
+	<TD ALIGN=RIGHT>
+	[error name=fname std_label="First Name" required=1]</TD>
+	<TD>
+		<INPUT TYPE=text NAME=fname VALUE="[value fname]" size=20>
+	[error name=lname std_label=Last required=1]&nbsp;<INPUT TYPE=text NAME=lname VALUE="[value lname]" size=20>
+	</TD>
+</TR>
+
+<TR>
+	<TD ALIGN=RIGHT>[error name=address1 std_label=Address required=1]</TD>
+	<TD ALIGN=LEFT>
+		<INPUT TYPE=text NAME=address1 VALUE="[value address1]" size=40>
+	</TD>
+</TR>
+
+<TR>
+	<TD ALIGN=RIGHT>&nbsp;</TD>
+	<TD ALIGN=LEFT>
+		<INPUT TYPE=text NAME=address2 VALUE="[value address2]" size=40>
+	</TD>
+</TR>
+
+<TR>
+	<TD ALIGN=RIGHT>
+		[error name=city std_label="City" required=1]
+	</TD>
+	<TD>
+	<TABLE>
+	<TR>
+		<TD>
+			<INPUT TYPE=text NAME=city VALUE="[value city]" size=20>
+		</TD>
+		<TD>
+			[error name=state std_label="State/Province" required=1]
+		</TD>
+		<TD>
+			<INPUT onChange="check_tax(this.form)"
+				TYPE=text NAME=state VALUE="[value name=state filter=uc]" size=3>
+		</TD>
+		<TD>
+			[error name=zip std_label="Zip/Postal Code" required=1]
+		</TD>
+		<TD>
+			<INPUT TYPE=text NAME=zip VALUE="[value name=zip filter=word]" size=10>
+		</TD> 
+	</TR>
+	</TABLE>
+	</TD>
+</TR>
+
+<TR>
+	<TD ALIGN=RIGHT><B>[error name=email std_label="Email Address" required=1]</B></TD>
+	<TD ALIGN=LEFT>
+		<INPUT TYPE=text NAME=email VALUE="[value email]" size=42>
+	</TD>
+</TR>
+
+
+<TR>
+		<TD ALIGN=RIGHT>
+		<B>Country</B>
+		</TD>
+		<TD>
+		[if value country =~ /(^$|US|CA)/]
+		<SELECT NAME=country onChange="this.form.submit()">
+			<OPTION VALUE="US"> United States
+			<OPTION [selected country CA] VALUE="CA"> Canada
+			<OPTION VALUE="JP"> Other (select to change)
+		</SELECT>
+		[else]
+		<SELECT onChange="this.form.submit()" NAME=country>
+		[loop search="ra=yes/fi=country.txt/ml=1000/tf=name" option=country]
+			<OPTION VALUE="[loop-code]"> [loop-data country name] 
+		[/loop]
+		</SELECT>
+		[/else]
+		[/if] <FONT SIZE="1"><B>(will update display)</B></FONT>
+		</TD>
+</TR>
+
+<TR>	
+	<TD ALIGN=RIGHT>[error name=phone_day std_label="Daytime Phone" required=1]</TD>
+	<TD>
+	<TABLE>
+	<TR>
+		<TD>
+		<INPUT TYPE=text NAME=phone_day VALUE="[value phone_day]" size=16>
+		</TD>
+		<TD ALIGN=RIGHT>
+		[error name=phone_night std_label="Evening Phone" required=0]
+		</TD>
+		<TD>
+		<INPUT TYPE=text NAME=phone_night VALUE="[value phone_night]" size=16>
+		</TD>
+	</TR>
+	</TABLE>
+</TR>
+
+<TR>
+	<TD>&nbsp;</TD>
+	<TD>
+		<I>We need the <B>bold</B> fields to process your order</I>
+	</TD>
+</TR>
+
+[if session logged_in]
+<TR>
+	<TD>&nbsp;
+		[set Go to address book]
+		mv_todo=refresh
+		mv_nextpage=account
+		[/set]
+		<INPUT TYPE=hidden NAME=mv_check VALUE="Save_database">
+		[set Save_database]
+		[userdb save]
+		[/set]
+	</TD>
+	<TD>
+	<FONT SIZE="-1">
+	<I>If you want to save this address in your address book,
+	[if value address_book]or recall a saved address,[/if]
+	click the button below.<BR></I>
+
+	<B><INPUT TYPE=submit NAME=mv_click VALUE="Go to address book"></B>
+	</FONT>
+	</TD>
+</TR>
+[/if]
+
+</TABLE>
+
+<P>
+<TABLE WIDTH=600><TR><TD>
+<FONT SIZE="+2">Choose your shipping method</FONT>
+</TD></TR></TABLE>
+
+<P>
+<TABLE WIDTH=600>
+<TR><TD>
+    <SELECT onChange="this.form.submit()" NAME=mv_shipmode>
+    [shipping
+		label=1
+		mode=|[data
+				table=country
+				key='[default country US]'
+				col=shipmodes
+				]
+			|
+	]
+    </SELECT>
+</TD>
+<TD ALIGN=RIGHT><INPUT TYPE=submit VALUE="Update"></TD>
+</TR>
+
+<TR>
+<TD COLSPAN=2 ALIGN=CENTER>
+[if session ship_message]
+<BR><B>Note:</B> [data session ship_message]<BR>
+[/if]
+</TD>
+</TR></TABLE>
+
+<TABLE WIDTH=600><TR><TD>
+<FONT SIZE="+2">[error std_label="Credit Card Information" name=mv_credit_card_valid]</FONT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<IMG SRC="smallvisa.png">&nbsp;&nbsp;<IMG SRC="smallmc.png">
+</TD></TR></TABLE>
+
+<P>  
+<TABLE><TR><TD VALIGN=TOP>
+Card Number <FONT SIZE=1>(test number 4111 1111 1111 1111)</FONT><BR>
+<INPUT TYPE=text NAME=mv_credit_card_number SIZE=19>
+[if variable MV_PAYMENT_MODE =~ /minivend_test/]
+	<BR>MiniVend test should yield:
+		<INPUT TYPE=radio NAME=mv_payment_test VALUE=success CHECKED>Success
+		<INPUT TYPE=radio NAME=mv_payment_test VALUE=success>Failure
+[/if]
+</TD>
+<TD VALIGN=TOP>
+ Expires 
+<BR>
+  	<SELECT NAME=mv_credit_card_exp_month>
+		<OPTION VALUE=1 [selected mv_credit_card_exp_month 1]> 01 - January
+		<OPTION VALUE=2 [selected mv_credit_card_exp_month 2]> 02 - February
+		<OPTION VALUE=3 [selected mv_credit_card_exp_month 3]> 03 - March
+		<OPTION VALUE=4 [selected mv_credit_card_exp_month 4]> 04 - April
+		<OPTION VALUE=5 [selected mv_credit_card_exp_month 5]> 05 - May
+		<OPTION VALUE=6 [selected mv_credit_card_exp_month 6]> 06 - June
+		<OPTION VALUE=7 [selected mv_credit_card_exp_month 7]> 07 - July
+		<OPTION VALUE=8 [selected mv_credit_card_exp_month 8]> 08 - August
+		<OPTION VALUE=9 [selected mv_credit_card_exp_month 9]> 09 - September
+		<OPTION VALUE=10 [selected mv_credit_card_exp_month 10]> 10 - October
+		<OPTION VALUE=11 [selected mv_credit_card_exp_month 11]> 11 - November
+		<OPTION VALUE=12 [selected mv_credit_card_exp_month 12]> 12 - December
+	</SELECT>
+	<SELECT NAME=mv_credit_card_exp_year>
+		<OPTION VALUE=00 [selected mv_credit_card_exp_year 00]> 2000
+		<OPTION VALUE=01 [selected mv_credit_card_exp_year 01]> 2001
+		<OPTION VALUE=02 [selected mv_credit_card_exp_year 02]> 2002
+		<OPTION VALUE=03 [selected mv_credit_card_exp_year 03]> 2003
+		<OPTION VALUE=04 [selected mv_credit_card_exp_year 04]> 2004
+		<OPTION VALUE=05 [selected mv_credit_card_exp_year 05]> 2005
+		<OPTION VALUE=06 [selected mv_credit_card_exp_year 06]> 2006
+		<OPTION VALUE=07 [selected mv_credit_card_exp_year 07]> 2007
+		<OPTION VALUE=08 [selected mv_credit_card_exp_year 08]> 2008
+		<OPTION VALUE=09 [selected mv_credit_card_exp_year 09]> 2009
+		<OPTION VALUE=10 [selected mv_credit_card_exp_year 10]> 2010
+	</SELECT>
+</TD></TR></TABLE>
+<INPUT TYPE=radio NAME=fax_order VALUE=0
+	[if !value fax_order]CHECKED[/if]>
+<I>Pay by credit card</I><BR>
+<INPUT TYPE=radio NAME=fax_order VALUE=1 [checked fax_order 1]>
+<I>I will call with payment information</I><BR>
+[if value tried_credit_card]
+<INPUT TYPE=checkbox NAME=mv_credit_card_force VALUE=1>
+<I>Force this card number to be taken</I><BR>
+[/if]
+
+<TABLE WIDTH=600><TR><TD>
+<FONT SIZE="+2">Billing Address (if different)</FONT>
+</TD></TR></TABLE>
+
+<TABLE>
+<TR>
+	<TD ALIGN=RIGHT><B>Name</B></TD>
+	<TD>
+		<INPUT TYPE=text NAME=b_fname VALUE="[value b_fname]" size=20>
+		<INPUT TYPE=text NAME=b_lname VALUE="[value b_lname]" size=30>
+	</TD>
+</TR>
+
+<TR>
+	<TD ALIGN=RIGHT><B>Address</B></TD>
+	<TD ALIGN=LEFT>
+		<INPUT TYPE=text NAME=b_address1 VALUE="[value b_address1]" size=20>
+		<INPUT TYPE=text NAME=b_address2 VALUE="[value b_address2]" size=30>
+	</TD>
+</TR>
+<TR>
+	<TD ALIGN=RIGHT><B>City, State, Postal Code</B></TD>
+	<TD>
+		<INPUT TYPE=text NAME=b_city VALUE="[value b_city]" size=20>
+		<INPUT TYPE=text NAME=b_state VALUE="[value b_state]" size=3>
+		<INPUT TYPE=text NAME=b_zip VALUE="[value b_zip]" size=10>
+	</TD>
+</TR>
+<TR>
+	<TD ALIGN=RIGHT><B>Country</B></TD>
+	<TD>
+		<INPUT TYPE=text NAME=b_country VALUE="[value b_country]" size=2>
+	</TD>
+</TR>
+
+[if session logged_in]
+<TR>
+	<TD>&nbsp;</TD>
+	<TD>
+	<FONT SIZE="-1">
+	<I>If you want to save this address in your address book,
+	[if value address_book]or recall a saved address,[/if]
+	click the button below.<BR></I>
+
+	<B><INPUT TYPE=submit NAME=mv_click VALUE="Go to address book"></B>
+	</FONT>
+	</TD>
+</TR>
+[/if]
+
+</TABLE>
+
+[set Place Order!]
+mv_todo=submit
+[/set]
+
+<TABLE WIDTH=600><TR><TD>
+<FONT SIZE="+2">Email preferences</FONT>
+</TD></TR></TABLE>
+
+<TABLE>
+<TR>
+	<TD>
+		<INPUT TYPE=radio NAME=email_copy [checked name=email_copy value=1 default=1] VALUE="1">Yes
+		<INPUT TYPE=radio NAME=email_copy [checked name=email_copy value=0] VALUE="0">No
+	</TD>
+	<TD>
+		<I>Send an email copy of my receipt</I>
+	</TD>
+</TR>
+<TR>
+	<TD>
+		<INPUT TYPE=radio NAME=mail_list [checked mail_list 1] VALUE="1">Yes
+		<INPUT TYPE=radio NAME=mail_list [checked name=mail_list value=0 default=1] VALUE="0">No
+	</TD>
+	<TD>
+		<I>Put me on your email list of infrequent offers</I>
+	</TD>
+</TR>
+</TABLE>
+
+[if items]
+[then]
+<TABLE WIDTH=600>
+<TR><TD COLSPAN=4>
+	<FONT SIZE="+2">Review order details</FONT>
+	</TD>
+</TR>
+[item-list]
+<TR>
+	<TD VALIGN=TOP MARGINWIDTH=12 MARGINHEIGHT=12>
+	<FONT SIZE="-2"><INPUT TYPE=checkbox NAME="[quantity-name]"
+                        VALUE=0 onClick="this.form.submit()"> remove</FONT>
+	<INPUT TYPE=hidden NAME="[quantity-name]" value="[item-quantity]">
+	</TD>
+	<TD VALIGN=TOP MARGINWIDTH=12 MARGINHEIGHT=12>
+	[item-description]</A>
+	</TD>
+	<TD VALIGN=TOP>[item-quantity] @ [item-price]</TD>
+	<TD VALIGN=TOP ALIGN=RIGHT>[item-subtotal]</TD>
+</TR>
+[/item-list]
+<TR>
+	<TD COLSPAN=2><A HREF="[area basket]">Back to cart</A><BR></TD>
+	<TD>Subtotal</TD>
+	<TD ALIGN=RIGHT>[subtotal]</TD>
+</TR>
+<TR>
+	<TD COLSPAN=2></TD>
+	<TD>Sales Tax</TD>
+	<TD ALIGN=RIGHT>[salestax]</TD>
+</TR>
+<TR>
+	<TD COLSPAN=2></TD>
+	<TD>Shipping</TD>
+	<TD ALIGN=RIGHT>[shipping]</TD>
+</TR>
+<TR>
+	<TD COLSPAN=2></TD>
+	<TD>TOTAL</TD>
+	<TD ALIGN=RIGHT>[total-cost]</TD>
+</TR>
+</TABLE>
+<P>
+<CENTER>
+<FONT SIZE="+1"><B><INPUT TYPE=submit NAME=mv_click VALUE="Place Order!"></B></FONT><BR>
+</CENTER>
+[/then]
+[else]
+
+<H2>No items in your basket.</H2>
+<P>
+<I>You can enter information, and it will be saved, but no checkout will happen until you order something!</I>
+
+[/else]
+[/if]
+<CENTER>
+<FONT SIZE="-1"><INPUT TYPE=submit VALUE="Update info, don't place order"></FONT>
+</CENTER>
+
+<P>
+<B>Gift note or Special Instructions<BR>
+<TEXTAREA NAME=png ROWS=5 COLS=72>[value gift_note]</TEXTAREA>
+</FORM>
+[error all=1 hide=1 comment="Clear errors"]
+<P>
+<FONT SIZE="-1" COLOR=RED><B>NOTE:</B> If you access something below, it will not save anything you have entered.
+
+</TD></TR></TABLE>
+
+[include pages/menubar]
+</BODY> </HTML>
+<!-- current page: @@MV_PAGE@@ -->

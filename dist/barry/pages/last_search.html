@@ -1,0 +1,14 @@
+[if session last_search]
+    [set name=arg interpolate=1][data session last_search][/set]
+[else] 
+    [set name=arg]/[/set]
+[/else]
+[/if]
+[tag op=header interpolate=1]
+Status: 302 moved
+Location: [area href="[scratch arg]"]
+[/tag][comment]
+		This page redirects the user to the last search
+		that was saved. If no search is present, then
+		they will go to the index page.
+[/comment]

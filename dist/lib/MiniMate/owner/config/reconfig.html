@@ -1,0 +1,33 @@
+[if-mm !reconfig]
+[bounce href="[area @@MM_BASE@@/violation]"]
+[/if-mm]
+<HTML>
+<HEAD>
+	<TITLE>[L]Reconfiguring[/L]....</TITLE>
+[set name=its int][calc]
+					$hk = q{[global-value Global::HouseKeeping]};
+					$hk += 2;
+					return join " ", 1 .. $hk;
+				[/calc][/set]
+<META HTTP-EQUIV=REFRESH CONTENT="[calc]$hk[/calc]; URL=[area @@MM_BASE@@/menu]">
+</HEAD>
+<BODY BGCOLOR=WHITE>
+<FONT FACE="arial, helvetica" SIZE="-1">
+
+[set name=arg int][data session arg][/set]
+[L]Reconfiguring catalog[/L]: ...<BR>[set name=reconfig_status int][reconfigure][/set]
+
+[loop arg="[scratch its]"]
+[reconfig-wait send=1]
+[/loop]
+
+[if scratch possible_timeout]
+ [L]WARNING: Reconfiguration may have timed out[/L].<BR>
+[L]Last config[/L]: [reconfig-time]
+[else]
+[L]SUCCESS[/L]
+[value name=mvc_changes_made set=""]
+[/else]
+[/if]
+(<A HREF="[area @@MM_BASE@@/menu]">[L]return[/L]</A>)<BR>
+</HTML>

@@ -1,0 +1,16 @@
+[set page_title]Catalog reconfiguration...[/set]
+<IMG SRC="mvlogo.png" ALT="MV Logo" ALIGN=CENTER>
+
+[if type=explicit compare="[reconfig]"]
+<h1>Catalog Reconfigured!</h1>
+[reconfig-wait]
+The catalog <B>[calc]$Config->{CatalogName}[/calc]</B> should be successfully reconfigured.
+[else]
+RECONFIGURATION FAILED.
+[/else]
+[/if]
+<P>
+
+__MENUBOTTOM__
+__COPYRIGHT__
+<!-- current page: @@MV_PAGE@@ -->

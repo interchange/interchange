@@ -1,0 +1,27 @@
+
+Database  orderline  orderline.txt __SQLDSN__
+#ifdef SQLUSER
+Database  orderline  USER         __SQLUSER__
+#endif
+#ifdef SQLPASS
+Database  orderline  PASS         __SQLPASS__
+#endif
+Database  orderline  COLUMN_DEF   "code=char(14) NOT NULL PRIMARY KEY"
+Database  orderline  COLUMN_DEF   "store_id=CHAR(9) DEFAULT '' NOT NULL, index(store_id)"
+Database  orderline  COLUMN_DEF   "order_number=CHAR(14) NOT NULL, index(order_number)"
+Database  orderline  COLUMN_DEF   "session=CHAR(32) NOT NULL"
+Database  orderline  COLUMN_DEF   "username=CHAR(20) default '' NOT NULL"
+Database  orderline  COLUMN_DEF   "shipmode=CHAR(32) default '' NOT NULL"
+Database  orderline  COLUMN_DEF   "sku=CHAR(14) NOT NULL"
+Database  orderline  COLUMN_DEF   "quantity=CHAR(9) NOT NULL"
+Database  orderline  COLUMN_DEF   "price=CHAR(12) NOT NULL"
+Database  orderline  COLUMN_DEF   "subtotal=CHAR(12) NOT NULL"
+Database  orderline  COLUMN_DEF   "shipping=CHAR(12)"
+Database  orderline  COLUMN_DEF   "taxable=CHAR(3)"
+Database  orderline  COLUMN_DEF   "size=VARCHAR(30)"
+Database  orderline  COLUMN_DEF   "color=VARCHAR(30)"
+Database  orderline  COLUMN_DEF   "options=VARCHAR(255)"
+Database  orderline  COLUMN_DEF   "order_date=varchar(32) NOT NULL"
+Database  orderline  COLUMN_DEF   "update_date=timestamp"
+Database  orderline  COLUMN_DEF   "status=VARCHAR(32)"
+Database  orderline  COLUMN_DEF   "parent=CHAR(9)"

@@ -1,0 +1,194 @@
+[set page_title]__COMPANY__ -- Order Status[/set]
+__LOGOBAR__
+__MENUBAR__
+
+[comment]
++----------------+---------------+------+-----+---------+-------+
+| Field          | Type          | Null | Key | Default | Extra |
++----------------+---------------+------+-----+---------+-------+
+| code           | varchar(14)   |      | PRI |         |       |
+| store_id       | varchar(9)    |      | MUL |         |       |
+| order_number   | varchar(14)   |      | MUL |         |       |
+| session        | varchar(32)   |      |     |         |       |
+| username       | varchar(20)   |      |     |         |       |
+| shipmode       | varchar(32)   |      |     |         |       |
+| nitems         | varchar(9)    |      |     |         |       |
+| subtotal       | varchar(12)   |      |     |         |       |
+| shipping       | varchar(12)   |      |     |         |       |
+| handling       | varchar(12)   | YES  |     | NULL    |       |
+| total_cost     | varchar(16)   |      |     |         |       |
+| fname          | varchar(30)   | YES  |     | NULL    |       |
+| lname          | varchar(30)   | YES  |     | NULL    |       |
+| company        | varchar(30)   | YES  |     | NULL    |       |
+| address1       | varchar(30)   | YES  |     | NULL    |       |
+| address2       | varchar(30)   | YES  |     | NULL    |       |
+| city           | varchar(30)   |      |     |         |       |
+| state          | varchar(10)   | YES  |     | NULL    |       |
+| zip            | varchar(10)   |      |     | 00000   |       |
+| country        | varchar(10)   |      |     |         |       |
+| phone_day      | varchar(20)   | YES  |     | NULL    |       |
+| phone_night    | varchar(20)   | YES  |     | NULL    |       |
+| fax            | varchar(20)   | YES  |     | NULL    |       |
+| email          | varchar(42)   | YES  |     | NULL    |       |
+| b_fname        | varchar(30)   | YES  |     | NULL    |       |
+| b_lname        | varchar(30)   | YES  |     | NULL    |       |
+| b_company      | varchar(30)   | YES  |     | NULL    |       |
+| b_address1     | varchar(30)   | YES  |     | NULL    |       |
+| b_address2     | varchar(30)   | YES  |     | NULL    |       |
+| b_city         | varchar(30)   | YES  |     | NULL    |       |
+| b_state        | varchar(10)   | YES  |     | NULL    |       |
+| b_zip          | varchar(10)   |      |     | 00000   |       |
+| b_country      | varchar(10)   |      |     |         |       |
+| b_phone        | varchar(20)   | YES  |     | NULL    |       |
+| order_date     | varchar(32)   |      |     |         |       |
+| payment_method | varchar(32)   | YES  |     | NULL    |       |
+| avs            | varchar(32)   | YES  |     | NULL    |       |
+| order_id       | varchar(32)   | YES  |     | NULL    |       |
+| update_date    | timestamp(14) | YES  |     | NULL    |       |
+| status         | varchar(32)   | YES  |     | NULL    |       |
+| parent         | varchar(9)    | YES  |     | NULL    |       |
++----------------+---------------+------+-----+---------+-------+
+[/comment]
+<P>&nbsp;<P>
+<TABLE CELLSPACING=0 CELLMARGIN=0 BORDER=1 WIDTH=600>
+<TR><TD COLSPAN=4 __HEADERBG__ ALIGN=CENTER>
+    <FONT SIZE="+2" COLOR="__HEADERTEXT__">Order Status</FONT>
+    </TD>
+</TR></TABLE>
+[query st=db arrayref=orders
+		sql="SELECT
+			code,status,nitems,subtotal,shipping,handling,total_cost,payment_method,order_date
+			FROM transactions
+			WHERE username = '[data base=session field=username filter=sql]'
+			ORDER by code
+		"][/query]
+[mvasp tables=transactions]
+<%
+	my $uid = $Session->{username};
+
+	if (! $uid) {
+		$Document->write ("<H2>You are not logged in.</H2>");
+		return;
+	}
+
+	my $orders = $Tmp->{orders};
+	
+	if(! $orders or scalar @$orders == 0) {
+		$Document->write( "No pending orders for $uid.");
+		return;
+	}
+
+	HTML "<TABLE CELLSPACING=0 CELLMARGIN=0 BORDER=1 WIDTH=600>";
+
+	my $header_template = <<'EOF';
+<TR>
+	<TD __HEADERBG__ VALIGN=bottom>
+		<FONT COLOR="__HEADERTEXT__" SIZE="-1">DATE</FONT>
+	</TD>
+	<TD __HEADERBG__ VALIGN=bottom>
+		<FONT COLOR="__HEADERTEXT__" SIZE="-1">ORDER ID</FONT>
+	</TD>
+	<TD __HEADERBG__ VALIGN=bottom>
+		<FONT COLOR="__HEADERTEXT__" SIZE="-1">QTY<BR>TOTAL</FONT>
+	</TD>
+	<TD __HEADERBG__ VALIGN=bottom>
+		<FONT COLOR="__HEADERTEXT__" SIZE="-1">PAYMENT<BR>METHOD</FONT>
+	</TD>
+	<TD __HEADERBG__ VALIGN=bottom>
+		<FONT COLOR="__HEADERTEXT__" SIZE="-1">SUBTOTAL</FONT>
+	</TD>
+	<TD __HEADERBG__ VALIGN=bottom>
+		<FONT COLOR="__HEADERTEXT__" SIZE="-1">SHIPPING<BR>HANDLING</FONT>
+	</TD>
+	<TD __HEADERBG__ VALIGN=bottom>
+		<FONT COLOR="__HEADERTEXT__" SIZE="-1">SUBTOTAL</FONT>
+	</TD>
+	<TD __HEADERBG__ VALIGN=bottom>
+		<FONT COLOR="__HEADERTEXT__" SIZE="-1">STATUS</FONT>
+	</TD>
+</TR>
+EOF
+
+		my $line_template = <<'EOF';
+<TR>
+	<TD __TABLEFG__ VALIGN=TOP>
+		<FONT SIZE="-1">$order_date</FONT>
+	</TD>
+	<TD __TABLEFG__ VALIGN=TOP>
+		<FONT SIZE="-1"><A HREF="$detail_url">$order_number</A></FONT>
+	</TD>
+	<TD __TABLEFG__ ALIGN=RIGHT VALIGN=TOP>
+		<FONT SIZE="-1">$nitems</FONT>
+	</TD>
+	<TD __TABLEFG__ VALIGN=TOP>
+		<FONT SIZE="-1">$payment_method</FONT>&nbsp;
+	</TD>
+	<TD __TABLEFG__ ALIGN=RIGHT VALIGN=TOP>
+		<FONT SIZE="-1">$subtotal</FONT>
+	</TD>
+	<TD __TABLEFG__ ALIGN=RIGHT VALIGN=TOP>
+		<FONT SIZE="-1">$shipping$handling</FONT>
+	</TD>
+	<TD __TABLEFG__ ALIGN=RIGHT VALIGN=TOP>
+		<FONT SIZE="-1">$total_cost</FONT>
+	</TD>
+	<TD __TABLEFG__ VALIGN=TOP>
+		<FONT SIZE="-1">$status</FONT>
+	</TD>
+</TR>
+EOF
+
+	my %hash;
+
+	my @fields = qw/order_number status nitems subtotal shipping
+					handling total_cost payment_method order_date/;
+			
+	my $row;
+
+	my %summary;
+	my $first;
+	my $record;
+	HTML $header_template;
+	foreach $record (@$orders) {
+		my $line = $line_template;
+		@hash{@fields} = @$record;
+		$hash{detail_url} = $Tag->area( {
+									href => 'query/order_detail',
+									arg => $hash{order_number},
+								});
+		if($hash{status} =~ /\d/) {
+			my @ids = grep /\S/, split /\s+/, $hash{status};
+			$hash{status} = '';
+			for(@ids) {
+				$hash{status} .= <<EOF;
+<A HREF="http://wwwapps.ups.com/etracking/tracking.cgi?InquiryNumber1=$_&TypeOfInquiryNumber=T">UPS $_</A>
+EOF
+			}
+		}
+		else {
+				$hash{status} = <<EOF;
+<A HREF="$hash{detail_url}">$hash{status}</A>
+EOF
+		}
+		for(qw/subtotal shipping total_cost/) {
+			$hash{$_} = $Tag->currency ({ body=> $hash{$_} });
+		}
+		if($hash{handling}) {
+			$hash{handling} = "<BR>(handling "								.
+							  $Tag->currency ({ body=> $hash{handling} })	.
+							  ")";
+		}
+		else {
+			$hash{handling} = '';
+		}
+		$line =~ s/\$(\w+)/$hash{$1}/g;
+		HTML $line;
+	}
+
+	HTML "</TABLE>";
+%>
+[/mvasp]
+
+<BR CLEAR=ALL>
+__MENUBOTTOM__
+__COPYRIGHT__

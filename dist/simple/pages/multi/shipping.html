@@ -1,0 +1,84 @@
+[set page_title]Select Shipping mode[/set]
+[set only_downloadable]1[/set]
+[set some_downloadable][/set]
+[item-list]
+	[if-item-field weight][set only_downloadable][/set][/if-item-field]
+	[if-item-field download][set some_downloadable]1[/set][/if-item-field]
+[/item-list]
+[if scratch only_downloadable]
+	[bounce href="[area href=multi/final secure=1]"]
+[/if]
+__LOGOBAR__
+__MENUBAR__
+<!--
+[if !value country]
+	Set country to: [value name=country set="US"]
+	Set save_country to: [value name=save_country set="US"]
+	Set mv_shipmode to: [value name=mv_shipmode set="upsg"]
+[elsif type=explicit
+		compare="[calc]
+					q{[value country]} ne q{[value save_country]}
+				[/calc]"]
+	Set saved country to: [value name=save_country set="[value country]"]
+	Set shipmode to:
+		[value name=mv_shipmode
+			   set="[calc]
+						$mode = q{[data
+										table=country
+										col=shipmodes
+										key='[value country]'
+										]};
+						$mode =~ s/\s.*//;
+						return $mode;
+					[/calc]"
+				]
+[/elsif]
+[/if]
+-->
+
+<FORM ACTION="[area href=multi/final secure=1]" METHOD="POST">
+<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+<INPUT TYPE=hidden NAME=mv_action VALUE="return">
+[if !scratch only_downloadable]
+<P>
+<TABLE WIDTH=600><TR><TD __HEADERBG__>
+<FONT SIZE="+2" COLOR=__HEADERTEXT__>Choose your shipping method</FONT>
+</TD></TR></TABLE>
+
+<P>
+<TABLE WIDTH=600>
+<TR><TD ALIGN=CENTER>
+    <SELECT NAME=mv_shipmode>
+    [shipping
+		label=1
+		mode=|[data table=country key='[default country US]' col=shipmodes]|
+		]
+    </SELECT>
+</TD>
+</TR>
+
+<TR>
+<TD COLSPAN=2 ALIGN=CENTER>
+[if session ship_message]
+<BR><B>Note:</B> [data session ship_message]<BR>
+[/if]
+</TD>
+</TR></TABLE>
+
+[else]
+<BLOCKQUOTE>
+	<B>You only have downloadable products. There is no shipping cost; you will
+	be able to download after purchase.</B>
+</BLOCKQUOTE>
+[/else]
+[/if]
+
+
+<P>
+<INPUT TYPE=submit VALUE="Finish --&gt;">
+</FORM>
+
+__MENUBOTTOM__
+__COPYRIGHT__
+
+<!-- page: @@MV_PAGE@@ -->

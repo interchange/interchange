@@ -1,0 +1,60 @@
+<HTML>
+<HEAD>
+<TITLE>Orders by SKU - Short</TITLE>
+</HEAD>
+<BODY>
+<H1>Orders by SKU - Short</H1>
+<TABLE>
+[set first_done][/set]
+[search-region more=1 search="
+		ra=yes
+		st=db
+		fi=orderline
+		ml=999999
+		tf=sku
+		to=x
+		"]
+[set first_done_sku][/set]
+[search-list]
+
+[item-change 0][condition][item-data orderline sku][/condition]
+<TR>
+	<TD ALIGN=LEFT>[if scratch first_done_sku]<HR>[value prev_data_sku]<HR>[/if]</TD>
+	<TD ALIGN=LEFT></TD>
+	<TD ALIGN=RIGHT>[if scratch first_done_sku]<HR>[filter op=|'currency'| interpolate=1][summary name=subtotal.orderline.subtotal.sku total=1][summary name=subtotal.orderline.subtotal.sku reset=1][/filter]<HR>[/if]</TD>
+</TR>
+<TR>
+	<TH ALIGN=LEFT>sku</TH>
+	<TH ALIGN=LEFT>title</TH>
+	<TH ALIGN=RIGHT>subtotal</TH>
+</TR>
+
+[/item-change 0]
+
+
+[set first_done_sku]1[/set]
+<TR>
+	<TD ALIGN=LEFT>[page href="config/edit_record"
+								form="
+									mv_action=return
+									mv_data_table=products
+									mv_arg=[item-data orderline sku]
+									"][item-data orderline sku]</A></TD>
+	<TD ALIGN=LEFT>[data table=products column=title key='[item-data orderline sku]']</TD>
+	<TD ALIGN=RIGHT>[filter op=|'currency'| interpolate=1][item-data orderline subtotal][/filter][summary name=total.orderline.subtotal hide=1 amount="[item-data orderline subtotal]"][summary name=subtotal.orderline.subtotal.sku hide=1 amount="[item-data orderline subtotal]"]</TD>
+</TR>
+[value name=prev_data_sku hide=1 set=|[item-data orderline sku]|]
+[/search-list]
+<TR>
+	<TD ALIGN=LEFT>[if scratch first_done_sku]<HR>[value prev_data_sku]<HR>[/if]</TD>
+	<TD ALIGN=LEFT></TD>
+	<TD ALIGN=RIGHT>[if scratch first_done_sku]<HR>[filter op=|'currency'| interpolate=1][summary name=subtotal.orderline.subtotal.sku total=1][summary name=subtotal.orderline.subtotal.sku reset=1][/filter]<HR>[/if]</TD>
+</TR><TR>
+	<TD ALIGN=LEFT><B>TOTAL</B></TD>
+	<TD ALIGN=LEFT></TD>
+	<TD ALIGN=RIGHT><B>[filter op=|'currency'| interpolate=1][summary name=total.orderline.subtotal total=1]
+[/filter]</B></TD>
+</TR>
+
+[/search-region]
+</TABLE>

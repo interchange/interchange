@@ -1,0 +1,33 @@
+
+<FORM METHOD=POST ACTION="[process-target]">
+[title-bar][L]Limit fields to display[/L][/title-bar]
+[set name=mvc_data_fields_name int][value mv_data_table]:mvc_data_fields[/set]
+<FONT SIZE="-1">
+<INPUT TYPE=submit VALUE="[L]Limit[/L]">
+<INPUT TYPE=submit name=mv_click VALUE="[L]All[/L]">
+[set All][scratch mvc_data_fields_name]=
+[/set]
+<INPUT TYPE=hidden NAME="mv_todo" VALUE="return">
+<INPUT TYPE=hidden NAME="mv_nextpage" VALUE="@@MV_PAGE@@">
+[widget name="[scratch mvc_data_fields_name]"
+		type="checkbox left 2"
+		data="=ALL,[db-columns joiner=',']" ]
+[/widget]
+</FONT>
+</FORM>
+
+<FORM METHOD=POST ACTION="[process-target]">
+<INPUT TYPE=hidden NAME="mv_todo" VALUE="return">
+<INPUT TYPE=hidden NAME="mv_nextpage" VALUE="@@MV_PAGE@@">
+[title-bar][L]Decode HTML entitie[/L][/title-bar]
+<FONT SIZE="-1">
+<INPUT TYPE=radio
+	onClick="this.form.submit()"
+	NAME=mv_data_decode
+	[checked mv_data_decode 1]
+	VALUE="1">[L]Yes[/L]
+&nbsp; <INPUT TYPE=radio
+	onClick="this.form.submit()"
+	NAME=mv_data_decode
+	[checked mv_data_decode 0] VALUE="0">[L]No[/L]</FONT>
+</FORM>

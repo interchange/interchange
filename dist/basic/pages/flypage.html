@@ -1,0 +1,63 @@
+<HTML>
+<HEAD>
+<TITLE>[item-description]</TITLE>
+</HEAD>
+<BODY __BODY__>
+
+[comment]
+	This the special "flypage". When a page is called that
+	corresponds to a part number in the database, and that
+	page doesn't exist, this page is used to display it.
+
+	Everywhere you see [item-code] the part number will
+	be displayed.
+
+	[item-field title] displays the title field in the 
+	products database. [item-data products title] is the
+	same in this case, but if the products database contained
+	more than one table (with ProductFiles) then [item-field title]
+	could come from another table.
+[/comment]
+
+<H1>[item-field title]</H1>
+By <A HREF="[area scan
+	st=glimpse
+	sf=artist
+	se=[item-field artist]
+]"><B><FONT COLOR="#0000CC">[item-field artist]</FONT></B></A>
+<P>
+<IMG SRC="[item-field image]" ALT="[item-field title]" BORDER=0>
+<P>
+<BLOCKQUOTE>[item-field comment]</BLOCKQUOTE>
+<P>
+Category: [item-field category]<BR>
+Catalog Number: [item-code]<BR>
+Our Price:<B> [price code="[item-code]"]
+[if ordered [item-code]]
+	<P>
+	<FONT COLOR=RED>
+	This item is currently in your shopping cart.
+	</FONT>
+[/if]
+<P>
+[if-item-field size]
+			[calc]
+				$qty = q{[cgi prospective_price]} || 1;
+				return '';
+			[/calc]
+<FORM NAME=orderform ACTION="[process-target]" METHOD=POST>
+<INPUT TYPE=hidden NAME=mv_todo VALUE=refresh>
+<INPUT TYPE=hidden NAME=mv_order_item VALUE="[item-code]">
+<INPUT TYPE=hidden NAME=mv_separate_items VALUE="1">
+<INPUT SIZE=3 NAME=mv_order_quantity VALUE="[calc]$qty[/calc]">
+		[item-accessories size][item-accessories color]
+<INPUT TYPE=SUBMIT VALUE="Order">
+</FORM>
+[else]
+<BR><B>[order [item-code]]Order Now</A></B></NOBR><BR><BR>
+[/else]
+[/if-item-field]
+
+[include pages/menubar]
+</BODY> </HTML>
+<!-- current page: @@MV_PAGE@@ -->

@@ -1,0 +1,5 @@
+upload: [if session username eq 'minivend']Yes[else]No[/else][/if]
+do_upload: [if session username eq 'minivend']Yes[else]No[/else][/if]
+do_download: [if session username eq 'minivend']Yes[else]No[/else][/if]
+reconfig: [if session username eq 'minivend']Yes[else]No[/else][/if]
+*: 0

@@ -1,0 +1,15 @@
+Database  cat  cat.txt __SQLDSN__
+#ifdef SQLUSER
+Database  cat  USER         __SQLUSER__
+#endif
+#ifdef SQLPASS
+Database  cat  PASS         __SQLPASS__
+#endif
+Database  cat  COLUMN_DEF   "code=char(20) NOT NULL PRIMARY KEY"
+Database  cat  COLUMN_DEF   "area=CHAR(20) NOT NULL"
+Database  cat  COLUMN_DEF   "selector=CHAR(20)"
+Database  cat  COLUMN_DEF   "name=CHAR(64) NOT NULL"
+Database  cat  COLUMN_DEF   "banner_text=CHAR(64) NOT NULL"
+Database  cat  COLUMN_DEF   "subs=CHAR(128)"
+Database  cat  COLUMN_DEF   "sort=CHAR(4) DEFAULT 'ZZ' NOT NULL, index(sort)"
+Database  cat  COLUMN_DEF   "url=CHAR(128)"

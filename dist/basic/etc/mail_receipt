@@ -1,0 +1,101 @@
+[if value email_copy]
+Sending email copy of order [value mv_order_number] to [value email]: [email	to="[value email]"
+		subject="Thank you for your order [value mv_order_number]!"
+        from=|__COMPANY__ Customer Service <__ORDERS_TO__>| ]
+Dear __COMPANY__ customer,
+
+Thank you for your order #[value mv_order_number], it is being electronically
+processed.
+
+            Name: [value fname] [value lname]
+[if value company]         Company: [value company][/if]
+   Email address: [value email]
+
+         Address: [value address1][if value address2]
+                  [value address2][/if]
+City, State, Zip: [value city], [value state]  [value zip]
+         Country: [value country]
+
+  Payment Method: [value mv_payment]
+ Shipping Method: [shipping_desc]
+
+   Daytime Phone: [value phone_day]
+   Evening Phone: [value phone_night]
+
+[if value b_address1]
+    Billing Name: [value b_fname] [value b_lname]
+ Billing Address: [value b_address1] [value b_address2]
+City, State, Zip: [value b_city][if value b_state], [value b_state]  [value b_zip][/if]
+[if value b_country] Billing Country: [value b_country][/if]
+[/if]
+
+Quan  Item No.    Description                            Price       Extension
+---- ----------- ------------------------------- -------------- ---------------- 
+[item-list][row 82]
+[column width=5 gutter=1 align=right]  [item-quantity] [/column]
+[column width=12 gutter=1]  [item-code] [/column]
+[column width=32 gutter=1 align=left wrap=1]
+[item-description]
+[if-modifier size]SIZE-->[item-modifier size][/if-modifier][if-modifier color] COLOR-->[item-modifier color][/if-modifier]
+[/column]
+[column width=15 gutter=1 align=r]  [item-price] [/column]
+[column width=16 gutter=0 align=r] [item-subtotal] [/column]
+[/row]
+
+[/item-list]
+[row 82]
+[column width=5 align=right][/column]
+[column width=12 gutter=1][/column]
+[column width=32 align=R wrap=1 gutter=1][/column]
+[column width=15 gutter=1]SUBTOTAL[/column]
+[column width=16 gutter=0 align=r][subtotal][/column]
+[/row]
+[row 82]
+[column width=5 align=right][/column]
+[column width=12 gutter=1][/column]
+[column width=32 align=R wrap=1 gutter=1][/column]
+[column width=15 gutter=1]SALES TAX[/column]
+[column width=16 align=right gutter=0][salestax][/column]
+[/row]
+[row 82]
+	[column width=5 align=right][/column]
+	[column width=12 gutter=1][/column]
+	[column width=32 align=R wrap=1 gutter=1][/column]
+	[column width=15 gutter=1]SHIPPING[/column]
+	[column width=16 align=right gutter=0][shipping][/column]
+[/row]
+
+[row 82]
+[column width=5 align=right][/column]
+[column width=12 gutter=1][/column]
+[column width=32 align=R wrap=1 gutter=1][/column]
+[column width=15 gutter=1]ORDER TOTAL[/column]
+[column width=16 align = right gutter=0][total-cost][/column]
+[/row]
+
+[if value gift_note]
+Note for Gift
+--------------
+[value gift_note]
+[/if]
+  
+Should you have a question about your order, or about other __COMPANY__
+products, please reply to this message and let us help.
+
+Always reference your Order Number when calling for a status.
+
+Remember, you can always visit our site at:
+
+	__SERVER_NAME__
+
+Regards and thanks for your business!
+
+__COMPANY__
+__ADDRESS__
+__CITY__
+__PHONE__
+__TOLLFREE__
+FAX: __FAX__
+[/email]
+[else]Email copy of order [value mv_order_number] NOT REQUESTED for [value email].[/else]
+[/if]

@@ -1,0 +1,98 @@
+<HTML>
+<HEAD>
+<TITLE>Products by category</TITLE>
+</HEAD>
+<BODY>
+<H1>Products by category</H1>
+<TABLE>
+[set first_done][/set]
+[search-region more=1 search="
+		ra=yes
+		st=db
+		fi=products
+		ml=999999
+		tf=category
+		to=x
+		tf=artist
+		to=x
+		"]
+[set first_done_category][/set]
+[set first_done_artist][/set]
+[search-list]
+
+[item-change 1][condition][item-data products artist][/condition]
+<TR>
+	<TD ALIGN=LEFT></TD>
+	<TD ALIGN=LEFT></TD>
+	<TD ALIGN=LEFT>[if scratch first_done_artist]<HR>[value prev_data_artist]<HR>[/if]</TD>
+	<TD ALIGN=LEFT></TD>
+	<TD ALIGN=RIGHT>[if scratch first_done_artist]<HR>[filter op=|'currency'| interpolate=1][summary name=subtotal.products.price.artist total=1][summary name=subtotal.products.price.artist reset=1][/filter]<HR>[/if]</TD>
+</TR>
+
+[/item-change 1]
+
+
+[set first_done_artist]1[/set]
+
+[item-change 0][condition][item-data products category][/condition]
+<TR>
+	<TD ALIGN=LEFT></TD>
+	<TD ALIGN=LEFT>[if scratch first_done_category]<HR>[value prev_data_category]<HR>[/if]</TD>
+	<TD ALIGN=LEFT></TD>
+	<TD ALIGN=LEFT></TD>
+	<TD ALIGN=RIGHT>[if scratch first_done_category]<HR>[filter op=|'currency'| interpolate=1][summary name=subtotal.products.price.category total=1][summary name=subtotal.products.price.category reset=1][/filter]<HR>[/if]</TD>
+</TR>
+<TR>
+	<TH ALIGN=LEFT>sku</TH>
+	<TH ALIGN=LEFT>category</TH>
+	<TH ALIGN=LEFT>artist</TH>
+	<TH ALIGN=LEFT>title</TH>
+	<TH ALIGN=RIGHT>price</TH>
+</TR>
+
+[/item-change 0]
+
+
+[set first_done_category]1[/set]
+<TR>
+	<TD ALIGN=LEFT>[page href="config/edit_record"
+								form="
+									mv_action=return
+									mv_data_table=products
+									mv_arg=[item-data products sku]
+									"][item-data products sku]</A></TD>
+	<TD ALIGN=LEFT>[page href="config/edit_record"
+								form="
+									mv_action=return
+									mv_data_table=cat
+									mv_arg=[item-data products category]
+									"][item-data products category]</A></TD>
+	<TD ALIGN=LEFT>[filter op=|'name'| interpolate=1][item-data products artist][/filter]</TD>
+	<TD ALIGN=LEFT>[item-data products title]</TD>
+	<TD ALIGN=RIGHT>[filter op=|'currency'| interpolate=1][item-data products price][/filter][summary name=total.products.price hide=1 amount="[item-data products price]"][summary name=subtotal.products.price.artist hide=1 amount="[item-data products price]"][summary name=subtotal.products.price.category hide=1 amount="[item-data products price]"]</TD>
+</TR>
+[value name=prev_data_artist hide=1 set=|[item-data products artist]|][value name=prev_data_category hide=1 set=|[item-data products category]|]
+[/search-list]
+<TR>
+	<TD ALIGN=LEFT></TD>
+	<TD ALIGN=LEFT></TD>
+	<TD ALIGN=LEFT>[if scratch first_done_artist]<HR>[value prev_data_artist]<HR>[/if]</TD>
+	<TD ALIGN=LEFT></TD>
+	<TD ALIGN=RIGHT>[if scratch first_done_artist]<HR>[filter op=|'currency'| interpolate=1][summary name=subtotal.products.price.artist total=1][summary name=subtotal.products.price.artist reset=1][/filter]<HR>[/if]</TD>
+</TR><TR>
+	<TD ALIGN=LEFT></TD>
+	<TD ALIGN=LEFT>[if scratch first_done_category]<HR>[value prev_data_category]<HR>[/if]</TD>
+	<TD ALIGN=LEFT></TD>
+	<TD ALIGN=LEFT></TD>
+	<TD ALIGN=RIGHT>[if scratch first_done_category]<HR>[filter op=|'currency'| interpolate=1][summary name=subtotal.products.price.category total=1][summary name=subtotal.products.price.category reset=1][/filter]<HR>[/if]</TD>
+</TR><TR>
+	<TD ALIGN=LEFT><B>TOTAL</B></TD>
+	<TD ALIGN=LEFT></TD>
+	<TD ALIGN=LEFT></TD>
+	<TD ALIGN=LEFT></TD>
+	<TD ALIGN=RIGHT>[filter op=|'currency'| interpolate=1][summary name=total.products.price total=1]
+[/filter]</TD>
+</TR>
+
+[/search-region]
+</TABLE>

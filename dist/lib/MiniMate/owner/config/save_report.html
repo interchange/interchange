@@ -1,0 +1,49 @@
+[if value success][bounce href="[area @@MM_BASE@@/report]"][/if]
+<HTML>
+<HEAD>
+	<TITLE>[L]MiniVend Administration[/L] -- [L]Report save Results[/L] </TITLE>
+</HEAD>
+<BODY BGCOLOR=white>
+
+<TABLE>
+<CAPTION> <H2> [L]Report save[/L] </H2></CAPTION>
+<TR>
+<TD>
+[L]Report save of[/L] <B>[value report_name]</B> -->
+</TD>
+<TD>
+FAILED.
+</TD>
+</TR>
+</TABLE>
+[value name=page set=""]
+[value name=report_name set=""]
+<P>
+<!-- page: @@MV_PAGE@@ -->
+[loop list="[value mv_data_table]"]
+<TABLE>
+<TR><TD VALIGN=TOP WIDTH=250>
+[title-bar 200 2][L]Table[/L] <B>[page href="@@MM_BASE@@/dbedit" arg="[value mv_data_table]"][value mv_data_table]</A></B>&nbsp;[/title-bar]
+<FONT SIZE="-1" FACE="arial, helvetica">
+<UL>
+[if-mm upload]
+<LI><A HREF="[area @@MM_BASE@@/db_upload [loop-code]]">[L]Upload new ASCII source[/L]</A><BR>
+[/if-mm]
+[if-mm journal_update]
+<LI><A HREF="[area @@MM_BASE@@/db_journal [loop-code]]">[L]Upload partial update file[/L]</A><BR>
+[/if-mm]
+[if-mm export]
+<LI><A HREF="[area @@MM_BASE@@/db_export [loop-code]]">[L]Export to ASCII file[/L]</A><BR>
+[/if-mm]
+[if-mm advanced report]
+<LI><A HREF="[area @@MM_BASE@@/report [loop-code]]">[L]Report Generator[/L]</A><BR>
+[/if-mm]
+[if-mm advanced add_delete]
+<LI><A HREF="[area @@MM_BASE@@/db_column [loop-code]]">[L]Add or delete column[/L]</A><BR>
+[/if-mm]
+<LI><A HREF="[area @@MM_BASE@@/menu]">[L]Main menu[/L]</A><BR>
+</UL>
+</TD>
+</TABLE>
+[/loop]
+</BODY></HTML>

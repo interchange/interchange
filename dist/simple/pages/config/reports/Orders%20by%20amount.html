@@ -1,0 +1,57 @@
+<HTML>
+<HEAD>
+<TITLE>Orders by amount</TITLE>
+</HEAD>
+<BODY>
+<H1>Orders by amount</H1>
+<TABLE>
+[set first_done][/set]
+[search-region more=1 search="
+		ra=yes
+		st=db
+		fi=transactions
+		ml=999999
+		tf=total_cost
+		to=nr
+		"]
+<TR>
+	<TH ALIGN=LEFT>username</TH>
+	<TH ALIGN=RIGHT>total_cost</TH>
+	<TH ALIGN=LEFT>lname</TH>
+	<TH ALIGN=LEFT>city</TH>
+	<TH ALIGN=MIDDLE>state</TH>
+	<TH ALIGN=LEFT>email</TH>
+</TR>
+[search-list]
+<TR>
+	<TD ALIGN=LEFT>[page href="config/edit_record"
+								form="
+									mv_action=return
+									mv_data_table=userdb
+									mv_arg=[item-data transactions username]
+									"][item-data transactions username]</A></TD>
+	<TD ALIGN=RIGHT>[page href="config/edit_record"
+								form="
+									mv_action=return
+									mv_data_table=transactions
+									mv_arg=[item-data transactions code]
+									"][filter op=|'commify'| interpolate=1][item-data transactions total_cost][/filter]</A>[summary name=total.transactions.total_cost hide=1 amount="[item-data transactions total_cost]"]</TD>
+	<TD ALIGN=LEFT>[data table=userdb column=lname key='[item-data transactions username]']</TD>
+	<TD ALIGN=LEFT>[data table=userdb column=city key='[item-data transactions username]']</TD>
+	<TD ALIGN=MIDDLE>[data table=userdb column=state key='[item-data transactions username]']</TD>
+	<TD ALIGN=LEFT>[filter op=|'mailto'| interpolate=1][data table=userdb column=email key='[item-data transactions username]'][/filter]</TD>
+</TR>
+
+[/search-list]
+<TR>
+	<TD ALIGN=LEFT><B>TOTAL</B></TD>
+	<TD ALIGN=RIGHT><B>[filter op=|'commify'| interpolate=1][summary name=total.transactions.total_cost total=1]
+[/filter]</B></TD>
+	<TD ALIGN=LEFT></TD>
+	<TD ALIGN=LEFT></TD>
+	<TD ALIGN=MIDDLE></TD>
+	<TD ALIGN=LEFT></TD>
+</TR>
+
+[/search-region]
+</TABLE>

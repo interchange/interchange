@@ -1,0 +1,89 @@
+#!/bin/sh
+
+HOST=`hostname`
+
+if test -n "$RPM_BUILD_ROOT"
+then 
+	VENDROOT=/usr/local/minivend
+	BASEDIR=/var/lib/minivend
+	RELOCATE="relocate=$RPM_BUILD_ROOT"
+	HOST=RPM_CHANGE_HOST
+elif test -d /usr/local/minivend -a -w /usr/local/minivend
+then 
+	VENDROOT=/usr/local/minivend
+	BASEDIR=/var/lib/minivend
+elif test -d /usr/local/minivend -a -w /usr/local/minivend
+then
+	VENDROOT=$HOME/mvend
+else
+	echo "Can't find minivend directory."
+	exit 1
+fi
+
+if test -d /home/httpd/html -a -w /home/httpd/html
+then
+	DOCROOT=/home/httpd/html
+	CGIDIR=/home/httpd/cgi-bin
+	SERVERCONF=/etc/httpd/conf/httpd.conf
+	CGIBASE=/cgi-bin
+elif test -d /usr/local/apache/htdocs -a -w /usr/local/apache/htdocs
+then
+	DOCROOT=/usr/local/apache/htdocs
+	CGIDIR=/usr/local/apache/cgi-bin
+	SERVERCONF=/usr/local/apache/conf/httpd.conf
+	CGIBASE=/cgi-bin
+else
+	echo "Can't find HTTP root."
+	exit 1
+fi
+
+FOUND=1
+
+for i in /usr/sbin/sendmail /usr/lib/sendmail
+do
+	if test -x $i
+	then
+		FOUND=0
+		break
+	fi
+done
+
+if test $FOUND = 1
+then
+	echo "No sendmail program found. Cannot continue."
+	exit 1
+fi
+
+if test -z "$1"
+then
+	set simple basic
+fi
+
+for i in $*
+do 
+	mkdir -p $RPM_BUILD_ROOT$CGIDIR 2>/dev/null
+	mkdir -p $RPM_BUILD_ROOT$BASEDIR/$i 2>/dev/null
+	bin/makecat \
+			-F \
+		   --cgibase=$CGIBASE \
+		   --basedir=$BASEDIR \
+		   --documentroot=$DOCROOT \
+		   --minivenduser=minivend \
+		   --minivendgroup=minivend \
+		   --serverconf=$SERVERCONF \
+		   --vendroot=$VENDROOT \
+		   --catroot=$BASEDIR/$i \
+		   --cgidir=$CGIDIR \
+		   $RELOCATE \
+		   --servername=$HOST \
+		   --cgiurl=$CGIBASE/$i \
+		   --demotype=$i \
+		   --mailorderto=minivend@$HOST \
+		   --catuser=minivend \
+		   --permtype=user \
+		   --samplehtml=$DOCROOT/$i \
+		   --imagedir=$DOCROOT/$i/images \
+		   --imageurl=/$i/images \
+		   --linkmode=UNIX \
+		   --sampleurl=http://$HOST/$i --catalogname=$i
+done

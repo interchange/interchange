@@ -1,0 +1,121 @@
+[if-mm function="!tables" table="products"]
+[bounce page="@@MM_BASE@@/error"]
+[/if-mm]
+
+[set page_title]Item editor[/set]
+[set help_name]item.main[/set]
+@@UI_STD_HEADER@@
+
+
+<img src="admin/icon_item.gif" width=16 height="16" border="0" valign="top" align="top">
+
+&nbsp;
+<font size="+1" face="Verdana,arial,helvetica,sans-serif" color="#000000">
+Item editor
+<p>
+&nbsp;
+</font>
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+<form action="[area @@MM_BASE@@/item_edit]" method="post">
+<INPUT TYPE=hidden NAME=mv_todo     VALUE=return>
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MM_BASE@@/item_edit">
+<INPUT TYPE=hidden NAME=mv_data_table VALUE="[calc]$Config->{ProductFiles}[0][/calc]">
+<INPUT TYPE=hidden NAME=ui_data_fields VALUE="[either]__UI_ITEM_FIELDS__[or]description image comment size color sku price weight category[/either]">
+<INPUT TYPE=hidden NAME=ui_break_before VALUE="[either]__UI_ITEM_BREAK__[or]description image sku category[/either]">
+<table cellpadding=3 cellspacing=0>
+<tr>
+<td colspan=2 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+</tr>
+
+<tr>
+<td bgcolor="#94a0e0" width=150>
+<input type="submit" name="show_create_cmd" value="Create new item">
+</td>
+
+<td bgcolor="#94a0e0" width=450>
+
+<select name="category" size=1>
+<option value=""> Please select a type
+[loop search="
+	fi=cat
+	st=db
+	ra=yes
+	rf=selector,name
+	ml=1000
+"]<option value="[loop-param selector]"> [loop-param name]
+[/loop]
+</select>
+<br>
+
+<select name="matrix_id" size=1>
+<option value=0> Please select a matrix
+<option value=0> (none)
+[loop search="
+	fi=area
+	st=db
+	ra=yes
+	rf=selector,name
+	ml=1000
+"]<option value="[loop-param selector]"> [loop-param name]
+[/loop]
+</select>
+
+&nbsp; <!-- make sure theres always *something* in the cell -->
+
+</td></tr>
+
+<tr>
+<td colspan=2 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+</tr>
+
+<tr>
+<td bgcolor="#94a0e0">
+
+<input type="submit" name="show_edit_cmd" value="Edit item">
+<br>
+
+<input type="submit" name="show_changematrix_cmd" value="Change matrix">
+<br>
+<input type="submit" name="show_editallvariants_cmd" value="Edit all 
+ variations">
+<br>
+<input type="submit" name="do_delete_cmd" value="Delete item" 
+ onClick="return confirm('Are you sure you want to delete this item?')">
+
+</td>
+<td bgcolor="#94a0e0">
+
+<select name="item_id" size=10>
+[loop search="
+	fi=products
+	st=db
+	ra=yes
+	ml=1000
+	tf=description
+	rf=sku,description
+"]<option value="[loop-code]"> [loop-param description]
+[/loop]
+</select>
+</td>
+</tr>
+
+<tr>
+<td colspan=2 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+</tr>
+
+</table>
+
+</form>
+
+
+<!-- ----- END REAL STUFF ----- -->
+
+@@UI_STD_FOOTER@@
+<!-- page: @@MV_PAGE@@ -->

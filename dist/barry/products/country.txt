@@ -1,0 +1,197 @@
+code	selector	shipmodes	name
+AD	AD	air_D surf_D	Andorra
+AE	AE	air_F surf_F	United Arab Emirates
+AF	AF	air_F surf_F	Afghanistan
+AG	AG	air_C surf_C	Antigua and Barbuda
+AI	AI	air_C surf_C	Anguilla
+AL	AL	air_E surf_E	Albania
+AM	AM	air_F surf_F	Armenia
+AN	AN	air_C surf_C	Netherlands Antilles
+AO	AO	air_F surf_F	Angola
+AR	AR	air_F surf_F	Argentina
+AT	AT	air_D surf_D	Austria
+AU	AU	air_F surf_F	Australia
+AW	AW	air_C surf_C	Aruba
+AZ	AZ	air_F surf_F	Azerbaijan
+BB	BB	air_D surf_D	Barbados
+BD	BD	air_F surf_F	Bangladesh
+BE	BE	air_F surf_F	Belgium
+BF	BF	air_F surf_F	Burkina Faso
+BG	BG	air_F surf_F	Bulgaria
+BH	BH	air_F surf_F	Bahrain
+BI	BI	air_F surf_F	Burundi
+BJ	BJ	air_E surf_E	Benin
+BM	BM	air_C surf_C	Bermuda
+BN	BN	air_F surf_F	Brunei Darussalam
+BO	BO	air_D surf_D	Bolivia
+BR	BR	air_F surf_F	Brazil
+BS	BS	air_C surf_C	Bahamas
+BT	BT	air_F surf_F	Bhutan
+BW	BW	air_F surf_F	Botswana
+BY	BY	air_F surf_F	Belarus
+BZ	BZ	air_C surf_C	Belize
+CA	CA	air_A surf_A	Canada
+CF	CF	air_F surf_F	Central African Republic
+CG	CG	air_F surf_F	Congo
+CH	CH	air_D surf_D	Switzerland
+CL	CL	air_F surf_F	Chile
+CM	CM	air_F surf_F	Cameroon
+CN	CN	air_F surf_F	China
+CO	CO	air_D surf_D	Colombia
+CR	CR	air_C surf_C	Costa Rica
+CV	CV	air_F surf_F	Cape Verde
+CY	CY	air_E surf_E	Cyprus
+CZ	CZ	air_E surf_E	Czech Republic
+DE	DE	air_D surf_D	Germany
+DJ	DJ	air_F surf_F	Djibouti
+DK	DK	air_E surf_E	Denmark
+DM	DM	air_C surf_C	Dominica
+DO	DO	air_C surf_C	Dominican Republic
+DZ	DZ	air_F surf_F	Algeria
+EC	EC	air_E surf_E	Ecuador
+EE	EE	air_F surf_F	Estonia
+EG	EG	air_F surf_F	Egypt
+EI	EI	air_E surf_E	Ireland (Eire)
+ER	ER	air_F surf_F	Eritrea
+ES	ES	air_E surf_E	Spain
+ET	ET	air_F surf_F	Ethiopia
+FI	FI	air_F surf_F	Finland
+FJ	FJ	air_D surf_D	Fiji
+FO	FO	air_E surf_E	Faroe Islands
+FR	FR	air_F surf_F	France (Includes Monaco)
+GA	GA	air_F surf_F	Gabon
+GD	GD	air_C surf_C	Grenada
+GE	GE	air_F surf_F	Georgia
+GF	GF	air_E surf_E	French Guiana
+GH	GH	air_F surf_F	Ghana
+GI	GI	air_E surf_E	Gibraltar
+GL	GL	air_F surf_F	Greenland
+GM	GM	air_D surf_D	Gambia
+GN	GN	air_D surf_D	Guinea
+GP	GP	air_C surf_C	Guadeloupe
+GQ	GQ	air_F surf_F	Equatorial Guinea
+GR	GR	air_E surf_E	Greece
+GT	GT	air_C surf_C	Guatemala
+GW	GW	air_D surf_D	Guinea-Bissau
+GY	GY	air_D surf_D	Guyana
+HK	HK	air_E surf_E	Hong Kong
+HN	HN	air_D surf_D	Honduras
+HT	HT	air_C surf_C	Haiti
+HU	HU	air_E surf_E	Hungary
+ID	ID	air_F surf_F	Indonesia
+IL	IL	air_E surf_E	Israel
+IN	IN	air_F surf_F	India
+IR	IR	air_F surf_F	Iran
+IS	IS	air_E surf_E	Iceland
+IT	IT	air_E surf_E	Italy
+JM	JM	air_C surf_C	Jamaica
+JO	JO	air_E surf_E	Jordan
+JP	JP	air_F surf_F	Japan
+KE	KE	air_F surf_F	Kenya
+KI	KI	air_D surf_D	Kiribati
+KM	KM	air_F surf_F	Comoros
+KR	KR	air_E surf_E	South Korea
+KW	KW	air_F surf_F	Kuwait
+KY	KY	air_C surf_C	Cayman Islands
+KZ	KZ	air_F surf_F	Kazakhstan
+LA	LA	air_F surf_F	Laos
+LB	LB	air_E surf_E	Lebanon
+LI	LI	air_D surf_D	Liechtenstein
+LK	LK	air_F surf_F	Sri Lanka
+LS	LS	air_F surf_F	Lesotho
+LT	LT	air_F surf_F	Lithuania
+LU	LU	air_D surf_D	Luxembourg
+LY	LY	air_F surf_F	Libya
+MA	MA	air_E surf_E	Morocco
+MG	MG	air_F surf_F	Madagascar
+MK	MK	air_E surf_E	Macedonia
+ML	ML	air_E surf_E	Mali
+MQ	MQ	air_C surf_C	Martinique
+MR	MR	air_F surf_F	Mauritania
+MS	MS	air_C surf_C	Montserrat
+MT	MT	air_E surf_E	Malta
+MU	MU	air_F surf_F	Mauritius
+MV	MV	air_F surf_F	Maldives
+MW	MW	air_F surf_F	Malawi
+MX	MX	air_B surf_B	Mexico
+MZ	MZ	air_F surf_F	Mozambique
+NA	NA	air_F surf_F	Namibia
+NC	NC	air_F surf_F	New Caledonia
+NE	NE	air_F surf_F	Niger
+NG	NG	air_E surf_E	Nigeria
+NI	NI	air_D surf_D	Nicaragua
+NL	NL	air_E surf_E	Netherlands
+NO	NO	air_F surf_F	Norway
+NP	NP	air_F surf_F	Nepal
+NR	NR	air_E surf_E	Nauru
+NZ	NZ	air_F surf_F	New Zealand
+OM	OM	air_F surf_F	Oman
+PA	PA	air_C surf_C	Panama
+PG	PG	air_F surf_F	Papua New Guinea
+PH	PH	air_F surf_F	Philippines
+PK	PK	air_F surf_F	Pakistan
+PL	PL	air_D surf_D	Poland
+PM	PM	air_C surf_C	St. Pierre and Miquelon
+PT	PT	air_E surf_E	Portugal
+PY	PY	air_F surf_F	Paraguay
+RE	RE	air_F surf_F	Reunion
+RW	RW	air_F surf_F	Rwanda
+SA	SA	air_F surf_F	Saudi Arabia
+SC	SC	air_F surf_F	Seychelles
+SD	SD	air_F surf_F	Sudan
+SE	SE	air_F surf_F	Sweden
+SG	SG	air_F surf_F	Singapore
+SH	SH	air_E surf_E	St. Helena
+SI	SI	air_E surf_E	Slovenia
+SK	SK	air_E surf_E	Slovak Republic
+SL	SL	air_F surf_F	Sierra Leone
+SN	SN	air_F surf_F	Senegal
+SR	SR	air_D surf_D	Suriname
+ST	ST	air_F surf_F	Sao Tome and Principe
+SV	SV	air_D surf_D	El Salvador
+SZ	SZ	air_F surf_F	Swaziland
+Sb	Sb	air_E surf_E	Solomon Islands
+TC	TC	air_C surf_C	Turks and Caicos Islands
+TD	TD	air_F surf_F	Chad
+TG	TG	air_F surf_F	Togo
+TH	TH	air_F surf_F	Thailand
+TN	TN	air_E surf_E	Tunisia
+TO	TO	air_D surf_D	Tonga
+TR	TR	air_E surf_E	Turkey
+TT	TT	air_D surf_D	Trinidad and Tobago
+TV	TV	air_D surf_D	Tuvalu
+TW	TW	air_E surf_E	Taiwan
+TZ	TZ	air_F surf_F	Tanzania
+UA	UA	air_F surf_F	Ukraine
+UG	UG	air_F surf_F	Uganda
+UK	UK	air_E surf_E	United Kingdom
+US	US	upsg upsb upsr	United States
+UY	UY	air_D surf_D	Uruguay
+VE	VE	air_D surf_D	Venezuela
+VU	VU	air_D surf_D	Vanuatu
+XA	XA	air_E surf_E	Azores
+XB	XB	air_E surf_E	Bosnia-Herzegovina
+XC	XC	air_C surf_C	British Virgin Islands
+XD	XD	air_F surf_F	Burma
+XE	XE	air_F surf_F	Corsica
+XF	XF	air_F surf_F	Cote d` Ivoire (Ivory Coast)
+XG	XG	air_E surf_E	Croatia
+XI	XI	air_F surf_F	French Polynesia (Tahiti)
+XL	XL	air_E surf_E	Macao
+XM	XM	air_D surf_D	Madeira Islands
+XO	XO	air_D surf_D	Pitcairn Island
+XP	XP	air_C surf_C	St. Christopher and Nevis
+XQ	XQ	air_C surf_C	St. Lucia
+XR	XR	air_C surf_C	St. Vincent and the Grenadines
+XS	XS	air_E surf_E	Serbia-Montenegro
+XT	XT	air_E surf_E	Syrian Arab Republic
+XU	XU	air_F surf_F	Tristan da Cunha
+XV	XV	air_E surf_E	Vatican City
+XW	XW	air_F surf_F	Vietnam
+XX	XX	air_F surf_F	Wallis and Furuna Islands
+XY	XY	air_D surf_D	Western Samoa
+YE	YE	air_F surf_F	Yemen
+ZA	ZA	air_F surf_F	South Africa
+ZM	ZM	air_F surf_F	Zambia
+ZR	ZR	air_F surf_F	Zaire
+ZW	ZW	air_F surf_F	Zimbabwe
