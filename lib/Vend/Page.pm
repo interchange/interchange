@@ -1,11 +1,11 @@
 # Vend::Page - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 2.0.2.3 2002-01-24 05:07:01 jon Exp $
+# $Id: Page.pm,v 2.0.2.4 2002-06-27 22:38:24 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program was originally based on Vend 0.2 and 0.3
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
+# Copyright 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.0.2.3 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.4 $, 10);
 
 my $wantref = 1;
 

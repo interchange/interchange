@@ -50,12 +50,12 @@ DOIT: {
 #
 # Interchange version 4.8.6
 #
-# $Id: interchange.PL,v 2.7.2.13 2002-05-19 13:55:32 racke Exp $
+# $Id: interchange.PL,v 2.7.2.14 2002-06-27 22:38:25 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program was originally based on Vend 0.2 and 0.3
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
+# Copyright 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
 #
 # See the files 'README' and 'WHATSNEW' for information.
 #

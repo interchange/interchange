@@ -1,9 +1,9 @@
 /*
  * vlink.c: runs as a cgi program and passes request to Interchange server
  *
- * $Id: vlink.c,v 2.0.2.1 2002-04-29 19:59:12 jon Exp $
+ * $Id: vlink.c,v 2.0.2.2 2002-06-27 22:38:24 jon Exp $
  *
- * Copyright (C) 1995 by Andrew M. Wilcox <awilcox@world.std.com>
+ * Copyright (C) 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
  *
  * Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
  *

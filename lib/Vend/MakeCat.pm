@@ -1,11 +1,11 @@
 # Vend::MakeCat - Routines for Interchange catalog configurator
 #
-# $Id: MakeCat.pm,v 2.4.2.1 2002-01-24 05:07:01 jon Exp $
+# $Id: MakeCat.pm,v 2.4.2.2 2002-06-27 22:38:24 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program was originally based on Vend 0.2 and 0.3
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
+# Copyright 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ sethistory
 use strict;
 
 use vars qw($Force $Error $History $VERSION);
-$VERSION = substr(q$Revision: 2.4.2.1 $, 10);
+$VERSION = substr(q$Revision: 2.4.2.2 $, 10);
 
 $Force = 0;
 $History = 0;
