@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.220 2004-08-21 23:02:48 jon Exp $
+# $Id: Interpolate.pm,v 2.221 2004-09-18 12:44:41 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.220 $, 10);
+$VERSION = substr(q$Revision: 2.221 $, 10);
 
 @EXPORT = qw (
 
@@ -625,10 +625,6 @@ sub vars_and_comments {
 	# Translate legacy atomic [/page] and [/order] tags
 	$$html =~ s,\[/page(?:target)?\],</A>,ig;
 	$$html =~ s,\[/order\],</A>,ig;
-
-	# Translate Interchange tags embedded in HTML comments like <!--[tag ...]-->
-	$$html =~ s/<!--+\[/[/g
-		and $$html =~ s/\]--+>/]/g;
 }
 
 sub interpolate_html {

@@ -63,6 +63,12 @@ That's it. Verify your catalog's operation, and you are live.
 
                 K N O W N   I S S U E S
 
+KNOWN ISSUES UPGRADING FROM 5.2.x
+
+A rather arcane feature has been removed from Interchange. HTML
+comments surrounding ITL like in <!--[data session browser]-->
+are no longer eliminated.
+
 KNOWN ISSUES UPGRADING FROM 5.0.x
 
     None.
