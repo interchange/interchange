@@ -1,6 +1,6 @@
 # Vend::DbSearch - Search indexes with Interchange
 #
-# $Id: DbSearch.pm,v 2.0.2.8 2002-01-24 05:07:01 jon Exp $
+# $Id: DbSearch.pm,v 2.0.2.9 2002-06-22 15:11:40 edl Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
@@ -26,7 +26,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.0.2.8 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.9 $, 10);
 
 use Search::Dict;
 use strict;
@@ -303,8 +303,13 @@ sub search {
 	if($s->{mv_unique}) {
 		my %seen;
 		@out = grep ! $seen{$_->[0]}++, @out;
-		$s->{matches} = scalar(@out);
 	}
+
+	if($s->{mv_max_matches} > 0) {
+		splice @out, $s->{mv_max_matches};
+	}
+
+	$s->{matches} = scalar(@out);
 
 	if ($s->{matches} > $s->{mv_matchlimit}) {
 		$s->save_more(\@out)
