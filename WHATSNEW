@@ -9,7 +9,7 @@ Interchange 4.8.4 not yet released.
 Admin UI
 --------
 
-* About links are working yet in catalogs not based on foundation too.
+* About links are working now in catalogs that are not based on foundation.
 
 * Edit button which appears on flex_select page if database attribute
   LARGE is set works now as expected.
