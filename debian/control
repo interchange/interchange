@@ -24,7 +24,7 @@ Description: Interchange documentation
 
 Package: interchange
 Architecture: i386
-Depends: ${perl:Depends}, debconf, libdigest-md5-perl, libhtml-parser-perl, libmime-base64-perl, libsafe-hole-perl (>=0.06), libsql-statement-perl, liburi-perl, logrotate
+Depends: ${perl:Depends}, debconf, libdigest-md5-perl, libhtml-parser-perl, libmime-base64-perl, libsafe-hole-perl (>=0.06), libsql-statement-perl, libstorable-perl, liburi-perl, logrotate
 Description: e-commerce and general HTTP database display system
  Interchange is a database access and retrieval system focused on e-commerce.
  It allows customers to select items to buy from catalog pages. The program
