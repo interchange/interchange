@@ -129,6 +129,15 @@ fi
 # Make configuration files owned by the interchange user
 chown -R $USER.$GROUP /etc/interchange
 
+# Create directory for static HTML files and grant it to the
+# interchange user
+db_get interchange/docroot
+DOCROOT="$RET"
+if [ "$DOCROOT" ]; then
+	mkdir -p 755 $DOCROOT
+	chown $USER.$GROUP $DOCROOT
+fi
+
 # Check if we delay the startup
 if [ -f /var/run/interchange-install ]; then
 	PACKAGES=""
