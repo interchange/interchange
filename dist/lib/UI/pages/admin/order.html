@@ -1,4 +1,3 @@
-
 [calc]
 	if ( $CGI->{showarchive} ) {
 		delete $Values->{showpending};
@@ -273,17 +272,25 @@
 </tr>
 [/more-list]
 </table>
+
 [if scratch can_delete]
 [button form=batch text="[L]Delete checked orders[/L]"
+ src="__UI_IMG__delete.gif"
+ link-text-too=1
  confirm='[L]Are you sure you want to delete the checked orders?[/L]']deleteorder=1
 [/button]
 [/if]
 &nbsp;&nbsp;&nbsp;[button form=batch src="[scratch archive_img]"
+			 link-text-too=1
 			text=`
 			my $tmp = "$Scratch->{archive_nm} checked orders";
 			return errmsg("\u$tmp");
 			`]
 [scratch archive_nm]order=1[/button]
+
+<p>
+<A HREF="javascript:checkAll(document.batch, 'order', 0)"><img src="__UI_IMG__box_checked.gif" border=0>Check all</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<A HREF="javascript:checkAll(document.batch, 'order', 1)"><img src="__UI_IMG__box_empty.gif" border=0>Uncheck all</A>
 </FORM>
 [/search-region]
 <!-- ----- END REAL STUFF ----- -->

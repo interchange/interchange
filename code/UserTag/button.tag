@@ -185,10 +185,17 @@ sub {
 		$anchor = "<b>$anchor</b>";
 	}
 
+	my $a_before = '</a>';
+	my $a_after  = '';
+	if($opt->{link_text_too}) {
+		$a_before = '';
+		$a_after = '</a>';
+	}
+
 	$out .= <<EOF;
 <A HREF="javascript:void 0"$opt->{extra} onMouseOver="window.status='$wstatus'"
 	onClick="$confirm ($opt->{form}.$clickname.value='$text') && $opt->{form}.submit(); return(false);"
-	ALT="$wstatus"><IMG ALT="$wstatus" SRC="$src" border=$opt->{border}$position></A>$anchor
+	ALT="$wstatus"><IMG ALT="$wstatus" SRC="$src" border=$opt->{border}$position>$a_before$anchor$a_after
 EOF
 
 	# Must escape backslashes and single quotes for JavaScript write function.
