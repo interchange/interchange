@@ -1,9 +1,9 @@
 [seti total_junk][perl]
 	delete $Scratch->{violation};
 	$_ = delete $Session->{arg};
-	$Scratch->{violation} = errmsg('Must be logged in.')
+	$Scratch->{violation} = 'Must be logged in.'
 		unless $Session->{logged_in};
-	$Scratch->{violation} = errmsg('Must be logged in as admin.')
+	$Scratch->{violation} = 'Must be logged in as admin.'
 		unless $Session->{admin};
 	$Scratch->{violation} = 'No .. allowed in file name.'
 		if m{\.\./};
