@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.69 2004-02-29 20:18:39 mheins Exp $
+# $Id: Util.pm,v 2.70 2004-03-06 22:11:53 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -87,7 +87,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.69 $, 10);
+$VERSION = substr(q$Revision: 2.70 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1098,10 +1098,6 @@ sub readin {
 
 		if( defined $level and ! check_security($file, $level, $gate) ){
 			my $realm = $::Variable->{COMPANY} || $Vend::Cat;
-			$Vend::StatusLine = <<EOF if $Vend::InternalHTTP;
-HTTP/1.0 401 Unauthorized
-WWW-Authenticate: Basic realm="$realm"
-EOF
 			if(-f "$try/violation$suffix") {
 				$fn = "$try/violation$suffix";
 			}

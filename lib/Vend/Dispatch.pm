@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.34 2004-02-29 20:41:40 mheins Exp $
+# $Id: Dispatch.pm,v 1.35 2004-03-06 22:11:53 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.34 $, 10);
+$VERSION = substr(q$Revision: 1.35 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1018,9 +1018,7 @@ EOF
 		return;
 	}
 
-	if (defined $Global::SelectorAlias{$CGI::script_name}
-		and ! defined $Vend::InternalHTTP                 )
-	{
+	if (defined $Global::SelectorAlias{$CGI::script_name}) {
 		my $real = $Global::SelectorAlias{$CGI::script_name};
 		unless (	$CGI::secure                                        or
 					$Vend::Cfg->{SecureURL} =~ m{$CGI::script_name$}     and
@@ -1030,13 +1028,6 @@ EOF
 			$Vend::Cfg->{VendURL}   =~ s!$real!$CGI::script_name!;
 			$Vend::Cfg->{SecureURL} =~ s!$real!$CGI::script_name!;
 		}
-	}
-	elsif ($Vend::InternalHTTP) {
-		$Vend::Cfg->{VendURL} = "http://" .
-								$CGI::http_host .
-								$CGI::script_path;
-		$Vend::Cfg->{ImageDir} = $Vend::Cfg->{ImageDirInternal}
-			if  $Vend::Cfg->{ImageDirInternal};
 	}
 
 	if($Global::HitCount and ! $cat) {

@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.48 2004-02-29 20:41:40 mheins Exp $
+# $Id: Server.pm,v 2.49 2004-03-06 22:11:53 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.48 $, 10);
+$VERSION = substr(q$Revision: 2.49 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -492,13 +492,15 @@ sub respond {
 				: "200 OK";
 	}
 
+	if($CGI::redirect_status and ! $Vend::StatusLine) {
+		$status = "200 OK";
+		$Vend::StatusLine = "Status: 200 OK\nContent-Type: text/html";
+	}
+
 	$$body =~ s/^\s+//
 		if ! $Vend::ResponseMade and $::Pragma->{strip_white};
 
 	if(! $s and $Vend::StatusLine) {
-		$Vend::StatusLine = "HTTP/1.0 $status\r\n$Vend::StatusLine"
-			if defined $Vend::InternalHTTP
-				and $Vend::StatusLine !~ m{^HTTP/};
 		$Vend::StatusLine .= ($Vend::StatusLine =~ /^Content-Type:/im)
 							? '' : "\r\nContent-Type: text/html\r\n";
 # TRACK
@@ -547,7 +549,7 @@ sub respond {
 		return 1;
 	}
 
-	if (defined $Vend::InternalHTTP or defined $ENV{MOD_PERL} or $CGI::script_name =~ m:/nph-[^/]+$:) {
+	if (defined $ENV{MOD_PERL} or $CGI::script_name =~ m:/nph-[^/]+$:) {
 # TRACK
 		my $save = select $fh;
 		$| = 1;
@@ -843,14 +845,6 @@ sub read_cgi_data {
 			die "Unrecognized block: $block\n";
         }
     }
-	if($Vend::OnlyInternalHTTP) {
-		my $msg = ::errmsg(
-						"attempt to connect from unauthorized host '%s'",
-						$Vend::OnlyInternalHTTP,
-					);
-		::logGlobal({ level => 'alert' }, $msg);
-		die "$msg\n";
-	}
 	return 1;
 }
 
@@ -1670,7 +1664,6 @@ my $pretty_vector = unpack('b*', $rin);
 			}
 
 			CHECKHOST: {
-				undef $Global::OnlyInternalHTTP;
 				last CHECKHOST if $unix_socket{$p};
 				my $connector;
 				(undef, $ok) = sockaddr_in($ok);
@@ -1680,7 +1673,6 @@ my $pretty_vector = unpack('b*', $rin);
 				(undef, $dns_name) = gethostbyaddr($ok, AF_INET);
 				$dns_name = "UNRESOLVED_NAME" if ! $dns_name;
 				last CHECKHOST if $dns_name =~ /$Global::TcpHost/;
-				$Global::OnlyInternalHTTP = "$dns_name/$connector";
 			}
 			$spawn = 1;
 		}
@@ -1841,7 +1833,6 @@ my $pretty_vector = unpack('b*', $s_vector);
 				(undef, $dns_name) = gethostbyaddr($ok, AF_INET);
 				$dns_name = $connector if ! $dns_name;
 				last CHECKHOST if $dns_name =~ /$Global::TcpHost/;
-				$Global::OnlyInternalHTTP = "$dns_name/$connector";
 			}
 
 			$handled++;
@@ -1849,8 +1840,6 @@ my $pretty_vector = unpack('b*', $s_vector);
 			my $entity;
 			
 			reset_vars();
-
-			$Vend::OnlyInternalHTTP = $Global::OnlyInternalHTTP;
 
 			if ($Vend::Cfg = http_soap(\*MESSAGE, \%env, \$entity)) {
 				$Vend::Cat = $Vend::Cfg->{CatalogName};
@@ -2240,7 +2229,6 @@ my $pretty_vector = unpack('b*', $rin);
 			}
 
 			CHECKHOST: {
-				undef $Vend::OnlyInternalHTTP;
 				last CHECKHOST if $unix_socket{$p};
 				my $connector;
 				(undef, $ok) = sockaddr_in($ok);
@@ -2250,7 +2238,6 @@ my $pretty_vector = unpack('b*', $rin);
 				(undef, $dns_name) = gethostbyaddr($ok, AF_INET);
 				$dns_name = "UNRESOLVED_NAME" if ! $dns_name;
 				last CHECKHOST if $dns_name =~ /$Global::TcpHost/;
-				$Vend::OnlyInternalHTTP = "$dns_name/$connector";
 			}
 			$spawn = 1 unless $only_ipc;
 		}
