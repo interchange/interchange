@@ -21,6 +21,9 @@ sub {
 				type		=> $opt->{type} || 'select',
 				};
 	my $item = { $ref->{attribute} => $value };
+	if($ref->{type} =~ /date/i) {
+		return UI::Primitive::date_widget($name, $value);
+	}
 
 	Vend::Interpolate::tag_accessories('', '', $ref, $item);
 }

@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.7 $, 10);
+$VERSION = substr(q$Revision: 1.8 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -232,6 +232,17 @@ sub ui_acl_global {
  			return;
   		}
  		$::Scratch->{mv_data_enable} = 1;
+	}
+	elsif ($CGI->{mv_todo} eq 'deliver') {
+		if($Tag->if_mm('files', $CGI->{mv_data_file}, {}, 1 ) ) {
+			$::Scratch->{mv_deliver} = $CGI->{mv_data_file};
+		}
+		else {
+			$::Scratch->{ui_failure} = errmsg(
+										"Unauthorized for file %s",
+										$CGI->{mv_data_file},
+										);
+		}
 	}
     return;
 
@@ -473,6 +484,62 @@ sub rotate {
 	return 1;
 }
 
+my @t = localtime();
+
+my (@years) = ( $t[5] + 1899 .. $t[5] + 1910 );
+my (@months);
+my (@days);
+
+for(1 .. 12) {
+	$t[4] = $_ - 1;
+	push @months, [sprintf("%02d", $_), POSIX::strftime("%B", @t)];
+}
+
+for(1 .. 31) {
+	push @days, [sprintf("%02d", $_), $_];
+}
+
+sub date_widget {
+	my($name, $val) = @_;
+	if($val =~ /\D/) {
+		$val = Vend::Interpolate::filter_value('date_change', $val);
+	}
+	@t = localtime();
+	my $sel = 0;
+	my $out = qq{<SELECT NAME="$name">};
+	my $o;
+	for(@months) {
+		$o = qq{<OPTION VALUE="$_->[0]">$_->[1]};
+		($out .= $o, next) unless ! $sel and $val;
+		$o =~ s/>/ SELECTED>/ && $sel++
+			if substr($val, 4, 2) eq $_->[0];
+		$out .= $o;
+	}
+	$sel = 0;
+	$out .= qq{</SELECT>};
+	$out .= qq{<INPUT TYPE=hidden NAME="$name" VALUE="/">};
+	$out .= qq{<SELECT NAME="$name">};
+	for(@days) {
+		$o = qq{<OPTION VALUE="$_->[0]">$_->[1]};
+		($out .= $o, next) unless ! $sel and $val;
+		$o =~ s/>/ SELECTED>/ && $sel++
+			if substr($val, 6, 2) eq $_->[0];
+		$out .= $o;
+	}
+	$sel = 0;
+	$out .= qq{</SELECT>};
+	$out .= qq{<INPUT TYPE=hidden NAME="$name" VALUE="/">};
+	$out .= qq{<SELECT NAME="$name">};
+	for(@years) {
+		$o = qq{<OPTION>$_};
+		($out .= $o, next) unless ! $sel and $val;
+		$o =~ s/>/ SELECTED>/ && $sel++
+			if substr($val, 0, 4) eq $_;
+		$out .= $o;
+	}
+	$out .= qq{</SELECT>};
+}
+
 sub meta_display {
 	my ($table,$column,$key,$value,$meta_db) = @_;
 
@@ -536,6 +603,11 @@ sub meta_display {
 					if ! $record->{passed};
 #::logDebug("metadisplay lookup, passed=$record->{passed}");
 			}
+		}
+		elsif ($record->{type} eq 'date') {
+			my $o = date_widget($column, $value);
+			$o .= qq{<INPUT TYPE=hidden NAME="ui_filter:$column" VALUE="date_change">};
+			return $o;
 		}
 		elsif ($record->{type} eq 'imagedir') {
 			my $dir = $record->{'outboard'} || $column;

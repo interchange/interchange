@@ -3,6 +3,16 @@
 [set help_name]order.view[/set]
 [set icon_name]admin/icon_orders.gif[/set]
 @@UI_STD_HEAD@@
+[calc]
+	delete $Scratch->{ui_bounce};
+	return if $CGI->{order};
+	$CGI->{order} = $CGI->{mv_arg} 
+		or $Scratch->{ui_bounce} = '__UI_BASE__/order';
+	return;
+[/calc]
+[if scratch ui_bounce]
+	[bounce page="[scratch ui_bounce]"]
+[/if]
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 [update values]

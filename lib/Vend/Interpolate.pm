@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret MiniVend tags
 # 
-# $Id: Interpolate.pm,v 1.4 2000-06-16 03:49:59 heins Exp $
+# $Id: Interpolate.pm,v 1.5 2000-06-18 08:42:46 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 
 @EXPORT = qw (
 
@@ -220,11 +220,14 @@ my @th = (qw!
 		/_alternate
 		/_calc
 		/_change
+		/_exec
+		/_filter
 		/_last
 		/_modifier
 		/_next
 		/_param
 		/_pos
+		/_sub
 		/col
 		/comment
 		/condition
@@ -242,7 +245,9 @@ my @th = (qw!
 		_data
 		_description
 		_discount
+		_exec
 		_field
+		_filter
 		_increment
 		_last
 		_line
@@ -254,6 +259,7 @@ my @th = (qw!
 		_price
 		_quantity
 		_subtotal
+		_sub
 		col
 		comment
 		condition
@@ -287,20 +293,27 @@ my @th = (qw!
 
 %QR = (
 	'/_alternate'	=> qr($T{_alternate}\]),
+	'/_calc'		=> qr($T{_calc}\]),
 	'/_change'		=> qr([-_]change\s+)i,
 	'/_data'		=> qr($T{_data}\]),
+	'/_exec'		=> qr($T{_exec}\]),
 	'/_field'		=> qr($T{_field}\]),
+	'/_filter'		=> qr($T{_filter}\]),
 	'/_last'		=> qr($T{_last}\]),
 	'/_modifier'	=> qr($T{_modifier}\]),
 	'/_next'		=> qr($T{_next}\]),
 	'/_param'		=> qr($T{_param}\]),
 	'/_pos'			=> qr($T{_pos}\]),
+	'/_sub'			=> qr($T{_sub}\]),
 	'/order'		=> qr(\[/order\])i,
 	'/page'			=> qr(\[/page(?:target)?\])i,
 	'_accessories'  => qr($T{_accessories}($Spacef[^\]]+)?\]),
 	'_alternate'	=> qr($T{_alternate}$Opt\]($Some)),
 	'_calc' 		=> qr($T{_calc}\]($Some)),
-	'_change'		=> qr($T{_change}\s+($Codere)\] \s*
+	'_exec' 		=> qr($T{_exec}$Mand\]($Some)),
+	'_filter' 		=> qr($T{_filter}\s+($Some)\]($Some)),
+	'_sub'	 		=> qr($T{_sub}$Mand\]($Some)),
+	'_change'		=> qr($T{_change}$Mand$Opt\] \s*
 						$T{condition}\]
 						($Some)
 						$T{'/condition'}
@@ -737,6 +750,21 @@ sub tag_data {
 	'uc' =>		sub {
 					use locale;
 					return uc(shift);
+				},
+	'date_change' =>		sub {
+					my $val = shift;
+					$val =~ s/\0+//g;
+					return $val 
+						unless $val =~ m:(\d+)[-/]+(\d+)[-/]+(\d+):;
+					my ($yr, $mon, $day) = ($3, $1, $2);
+					if(length($yr) < 4) {
+						$yr =~ s/^0//;
+						$yr = $yr < 50 ? $yr + 2000 : $yr + 1900;
+					}
+					$mon =~ s/^0//;
+					$day =~ s/^0//;
+					$val = sprintf("%d%02d%02d", $yr, $mon, $day);
+					return $val;
 				},
 	'null_to_space' =>		sub {
 					my $val = shift;
@@ -2645,14 +2673,22 @@ sub tag_sort_hash {
 }
 
 my %Prev;
+my %Sub;
+
+sub compile_sub {
+}
+
+sub check_sub {
+}
 
 sub check_change {
-	my($name, $value, $text) = @_;
+	my($name, $value, $text, $substr) = @_;
 	# $value is case-sensitive flag if passed text;
 	if(defined $text) {
 		$text =~ s:$QR{condition}::;
 		$value = $value ? lc $1 : $1;
 	}
+	$value = substr($value, 0, $substr) if $substr;
 	my $prev = $Prev{$name} || undef;
 	$Prev{$name} = $value || '';
 	if(defined $text) {
@@ -3109,6 +3145,7 @@ sub labeled_list {
 	$count++;
 	# Zero the on-change hash
 	undef %Prev;
+	undef %Sub;
 
 	if(defined $opt->{option}) {
 		$opt_value = $opt->{option};
@@ -3199,6 +3236,23 @@ my $once = 0;
 		$r .= join "\t", @ary[$i .. $count];
 		$r .= "\n";
 	}
+	while($text =~ s#$B$QR{_sub}$E$QR{'/_sub'}##i) {
+		my $name = $1;
+		my $routine = $2;
+		$Sub{''} = sub { ::errmsg('undefined sub') }
+			unless defined $Sub{''};
+		$routine = 'sub { ' . $routine . ' }' unless $routine =~ /^\s*sub\s*{/;
+		my $sub;
+		eval {
+			$sub = $ready_safe->reval($routine);
+		};
+		if($@) {
+			::logError( ::errmsg("syntax error on %s-sub %s]: $@", $B, $name) );
+			$sub = sub { ::errmsg('ERROR') };
+		}
+#::logDebug("sub $name: $sub --> $routine");
+		$Sub{$name} = $sub;
+	}
 	for( ; $i <= $end ; $i++, $count++ ) {
 		$row = $ary->[$i];
 		last unless defined $row;
@@ -3236,12 +3290,14 @@ my $once = 0;
 		tag_labeled_data_row($code, \$run);
 		$run =~ s!$B$QR{_price}!
 					currency(product_price($code,$1), $2)!ige;
-		$run =~ s#$B$QR{_calc}$E$QR{'/_calc'}#tag_calc($1)#ige;
 
 		1 while $run =~ s!$B$QR{_change}$E$QR{'/_change'}\1\]!
-							check_change($1,$2)
-											?	pull_if($3)
-											:	pull_else($3)!ige;
+							check_change($1,$3,undef,$2)
+											?	pull_if($4)
+											:	pull_else($4)!ige;
+		$run =~ s#$B$QR{_calc}$E$QR{'/_calc'}#tag_calc($1)#ige;
+		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#($Sub{$1} || sub { 'ERROR' })->($2,$row)#ige;
+		$run =~ s#$B$QR{_filter}$E$QR{'/_filter'}#filter_value($1,$2)#ige;
 		$run =~ s#$B$QR{_last}$E$QR{'/_last'}#
                     my $tmp = interpolate_html($1);
                     if($tmp && $tmp < 0) {
@@ -3324,9 +3380,9 @@ sub iterate_hash_list {
 											item_price($item, $1),
 											$item->{quantity}), $2)!ge;
 		1 while $run =~ s!$B$QR{_change}$E$QR{'/_change'}\1\]!
-							check_change($1,$2)
-											?	pull_if($3)
-											:	pull_else($3)!ige;
+							check_change($1,$3,undef,$2)
+											?	pull_if($4)
+											:	pull_else($4)!ige;
 		$run =~ s#$B$QR{_last}$E$QR{'/item_last'}#
                     my $tmp = interpolate_html($1);
                     if($tmp && $tmp < 0) {
@@ -4754,9 +4810,9 @@ sub shipping {
 			if(! $type) {
 				$what = interpolate_html($what);
 				($type, $geo, $adder, $mod, $sub) = split /\s+/, $what, 5;
-				$o->{adder}    = $adder  if $mod =~ /round/;
+				$o->{adder}    = $adder;
 				$o->{round}    = 1  if $mod =~ /round/;
-				$o->{at_least} = $1 if $mod =~ /min([\d.]+)/;
+				$o->{at_least} = $1 if $mod =~ /min\s*([\d.]+)/;
 			}
 			elsif (! $o->{geo}) {
 				$geo = interpolate_html($what);

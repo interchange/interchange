@@ -1,0 +1,1 @@
+affiliate	name	campaigns	join_date	url	timeout	active	password

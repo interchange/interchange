@@ -25,7 +25,7 @@ DOIT: {
 #
 # MiniVend version 4.0xxx
 #
-# $Id: minivend.PL,v 1.5 2000-06-16 03:51:13 heins Exp $
+# $Id: minivend.PL,v 1.6 2000-06-18 08:42:46 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -137,7 +137,7 @@ $Global::SendMailLocation = ($Global::Windows and $Global::SendMailLocation) ||
 	(-x $Global::SendMailLocation and $Global::SendMailLocation) ||
 	(-x '/usr/lib/sendmail' and '/usr/lib/sendmail') ||
 	(-x '/usr/sbin/sendmail' and '/usr/sbin/sendmail') ||
-	'sendmail';
+	'';
 #	'~_~sendmail~_~';
 
 #select a DBM
@@ -631,9 +631,55 @@ sub do_click {
 	return 1;
 }
 
+sub do_deliver {
+	my $file = $CGI::values{mv_data_file};
+	my $mode = $CGI::values{mv_acl_mode} || '';
+	if($::Scratch->{mv_deliver} ne $file
+		and 
+		! Vend::UserDB::userdb(
+							'check_file_acl',
+							location => $file,
+							mode => $mode,
+							)
+		)
+	{
+		$Vend::StatusLine = "Status: 403\nContent-Type: text/html";
+		my $msg = get_locale_message(403, <<EOF);
+<B>Authorization Required<B>
+<P>
+This server could not verify that you are authorized to access the document
+requested. 
+EOF
+		::response($msg);
+		return 0;
+	}
+
+	if (! -f $file) {
+		$Vend::StatusLine = "Status: 404\nContent-Type: text/html";
+		my $msg = get_locale_message(404, <<EOF, $file);
+<B>Not Found<B>
+<P>
+The requested file %s was not found on this server.
+
+EOF
+		::response($msg);
+		return 0;
+	}
+
+	$Vend::StatusLine = "Content-Type: " .
+						($CGI::values{mv_content_type} || 'application/octet-stream');
+	::response(	Vend::Util::readfile (
+					$CGI::values{mv_data_file},
+					$Global::NoAbsolute,
+				)
+			);
+	return 0;
+}
+
 my %form_action = (
 
 	search	=> \&do_search,
+	deliver	=> \&do_deliver,
 	submit	=>
 				sub {
 					update_user();

@@ -159,6 +159,7 @@ EOF
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 [if cgi ui_export_database]
+[update values]
 [seti result][export-database
         table="[value mv_data_table]"
         file="[value mv_data_file]"

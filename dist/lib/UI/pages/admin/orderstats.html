@@ -1,0 +1,41 @@
+[if !advanced report]
+[bounce page="__UI_BASE__/error"]
+[value name=saved_report set=""]
+[/if]
+[set page_title]Order Statistics[/set]
+[set icon_name]admin/icon_stats.gif[/set]
+[set help_name]stats.order[/set]
+@@UI_STD_HEAD@@
+
+<table cellpadding=3 cellspacing=0>
+<tr>
+<td colspan=2 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+</tr>
+<tr>
+<td bgcolor="#94a0e0" colspan=2>
+
+
+[calc] $Config->{NoSearch} = ''; [/calc]
+
+	[loop list="[list-glob spec='pages/__UI_BASE__/reports/* pages/__UI_BASE__/user/[data session mm_username]/reports/*']"]
+	[calc]
+		$lab = q{[loop-code]}; 
+		$lab =~ s:\.html.*::;
+		$opt = $lab;
+		$opt =~ s:^pages/::;
+		$lab =~ s:.*/::;
+		$lab =~ s/%([0-9a-fA-F]{2})/chr(hex($1))/ge;
+		my $out = $Tag->page($opt);
+		$out .= $lab;
+		$out .= '</A><BR>'
+	[/calc]
+	[/loop]
+</td>
+</tr>
+
+<tr>
+<td colspan=2 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+</tr>
+</table>
+
+@@UI_STD_FOOTER@@

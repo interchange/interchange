@@ -1,25 +1,52 @@
 [set page_title]Database export[/set]
 [set help_name]dbdownload.main[/set]
-__UI_BASE__
+[set icon_name]admin/icon_config.gif[/set]
+[set exported_tables][/set]
+[if cgi ui_do_export]
+	<!-- exporting
+	[calc]
+		$Values->{ui_gnumeric} = $CGI->{ui_gnumeric};
+		$Values->{ui_compress} = $CGI->{ui_compress};
+		$Scratch->{exported_tables} = join "\n",
+			 grep /\S/, split /[,\s\0]+/, $CGI->{ui_do_export};
+	[/calc] -->
+[/if]
+@@UI_STD_HEAD@@
 
-<img src="admin/icon_config.gif" width=16 height="16" border="0" valign="top" align="top">
+[if scratch exported_tables]
+<BLOCKQUOTE>
+	[backup-database
+		compress="[cgi ui_compress]"
+		gnumeric="[cgi ui_gnumeric]"
+		tables="[scratch exported_tables]"
+	] tables backed up.
+</BLOCKQUOTE>
+[/if]
 
-&nbsp;
-<font size="+1" face="Verdana,arial,helvetica,sans-serif" color="#000000">
-Database export
-<p>
-&nbsp;
-</font>
-</td>
-</tr>
+[if file backup/DBDOWNLOAD.all.gz]
+<BLOCKQUOTE>
+	[page href="ui/backup/DBDOWNLOAD.all.gz"
+			form="
+				mv_data_file=backup/DBDOWNLOAD.all.gz
+				mv_todo=deliver
+			"]Download compressed gnumeric file</A><BR>
+</BLOCKQUOTE>
+[/if]
 
-<tr>
-<td colspan="2">
+[if file backup/DBDOWNLOAD.all]
+	[page href="ui/backup/DBDOWNLOAD.all"
+			form="
+				mv_data_file=backup/DBDOWNLOAD.all
+				mv_todo=deliver
+			"]Download gnumeric file</A><BR>
+[/if]
 
-<!-- ----- BEGIN REAL STUFF ----- -->
+[if scratch ui_error]
+	<B>Errors on last operation:</B>
+	[scratch ui_error][set ui_error][/set]
+[/if]
 
-<form action="dbdownload" method="post">
-
+<form ACTION="[area @@MV_PAGE@@]" method="post">
 <table cellpadding=3 cellspacing=0>
 
 <tr>
@@ -34,19 +61,34 @@ Database export
 What data would you like to export?
 
 <blockquote>
-<INPUT type=checkbox value=on name="do_pages" CHECKED> Pages <br>
-<INPUT type=checkbox value=on name="do_items" CHECKED> Items <br>
-<INPUT type=checkbox value=on name="do_groups" CHECKED> Groups <br>
-<INPUT type=checkbox value=on name="do_stock" CHECKED> Stock <br>
-<INPUT type=checkbox value=on name="do_page_types" CHECKED> Page types <br>
-<INPUT type=checkbox value=on name="do_item_types" CHECKED> Item types <br>
-<INPUT type=checkbox value=on name="do_group_types" CHECKED> Group types  <br>
-<INPUT type=checkbox value=on name="do_m_d_r" CHECKED> Matrices / dimensions / ranges <br>
-<INPUT type=checkbox value=on name="do_knar" CHECKED> Knar data <br>
+[loop list="[list-databases]"]
+[sort mv_metadata:label]
+<INPUT type=checkbox value="[loop-code]" name="ui_do_export" CHECKED>
+	[if-loop-data mv_metadata label]
+		[loop-data mv_metadata label]
+	[else]
+		[loop-code]
+	[/else]
+	[/if-loop-data]
+	<BR>
+[/loop]
 </blockquote>
 
 <p>
-
+<B>Options:</B><BR><BR>
+<BLOCKQUOTE>
+<INPUT TYPE=checkbox NAME=ui_compress VALUE=on [checked ui_compress on]> Compress (if available)<BR>
+<INPUT TYPE=radio VALUE=0 NAME=ui_gnumeric  [if !value ui_gnumeric]
+											CHECKED
+											[/if]
+											>
+	No Gnumeric output<BR>
+<INPUT TYPE=radio NAME=ui_gnumeric VALUE=on [checked ui_gnumeric on]>
+	Gnumeric simple text format<BR>
+<INPUT TYPE=radio NAME=ui_gnumeric VALUE=compressed [checked ui_gnumeric compressed]>
+	Gnumeric simple text format, compressed
+</BLOCKQUOTE>
+<p>
 <input type=submit name="do_download" value="Perform export">
 
 <p>

@@ -10,6 +10,14 @@ Variable UI_STD_HEAD <<EOV
 	[bounce page="__UI_BASE__/error"]
 	[/if-mm]
 [/if]
+[if scratch page_perm]
+	[if-mm function="!advanced" name="[scratch page_perm]"]
+	[seti ui_error]Sorry, no permission for page [scratch page_perm][/seti]
+	[set table_perm][/set]
+	[bounce page="__UI_BASE__/error"]
+	[/if-mm]
+[/if]
+	
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html;charset=iso-8859-1">
@@ -161,6 +169,7 @@ Help
 [set icon_name][/set]
 [set help_name][/set]
 [set table_perm][/set]
+[set page_perm][/set]
 [set no_login_reqired][/set]
 
 EOV

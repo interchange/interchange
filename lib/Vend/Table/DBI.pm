@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.5 2000-06-16 03:49:59 heins Exp $
+# $Id: DBI.pm,v 1.6 2000-06-18 08:42:46 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.5 $, 10);
+$VERSION = substr(q$Revision: 1.6 $, 10);
 
 use strict;
 
@@ -110,7 +110,7 @@ my $Info;
 
 sub create {
     my ($class, $config, $columns, $tablename) = @_;
-
+#::logDebug("trying create table");
 	my @call = find_dsn($config);
 	my $dattr = pop @call;
 	my $db = DBI->connect( @call )
@@ -182,9 +182,12 @@ sub create {
 		$db->do("drop table mv_test_create")
 	}
 
-	$db->do("drop table $tablename")
-		or warn "$DBI::errstr\n";
-	
+	eval {
+		$db->do("drop table $tablename")
+			and $config->{Clean_start} = 1
+			or warn "$DBI::errstr\n";
+	};
+#::logDebug("Trying to create with:$query");
 	$db->do($query)
 		or warn "DBI: Create table '$tablename' failed: $DBI::errstr\n";
 	::logError("table %s created: %s" , $tablename, $query );
@@ -426,10 +429,13 @@ sub set_row {
 		die "$DBI::errstr\n" if ! defined $cfg->{_Insert_h};
 	}
 
-	eval {
-		my $val = $s->quote($fields[$cfg->{_Key_column}], $s->[$KEY]);
-		$s->[$DBI]->do("delete from $s->[$TABLE] where $s->[$KEY] = $val");
-	};
+	unless ($s->[$CONFIG]{Clean_start}) {
+		eval {
+			my $val = $s->quote($fields[$cfg->{_Key_column}], $s->[$KEY]);
+			$s->[$DBI]->do("delete from $s->[$TABLE] where $s->[$KEY] = $val")
+				unless $s->[$CONFIG]{Clean_start};
+		};
+	}
     $s->bind_entire_row($cfg->{_Insert_h}, undef, @fields);
 	$cfg->{_Insert_h}->execute()
 		or die "$DBI::errstr\n";
@@ -492,7 +498,7 @@ sub set_field {
 	$value = $s->quote($value, $column);
 	my $query;
 	if(! $s->record_exists($rawkey)) {
-		$s->set_row($rawkey, $rawkey);
+		$s->set_row($rawkey);
 	}
 	$query = <<EOF;
 update $s->[$TABLE] SET $column = $value where $s->[$KEY] = $key

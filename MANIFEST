@@ -153,6 +153,7 @@ dist/barry/images/wtb.ssk.gif
 dist/barry/images/xtr.cassette.jpg
 dist/barry/images/xtrcrank.jpg
 dist/barry/images/zinn.gif
+dist/barry/mysql/affiliate.mysql
 dist/barry/mysql/area.mysql
 dist/barry/mysql/cat.mysql
 dist/barry/mysql/country.mysql
@@ -230,6 +231,7 @@ dist/barry/products/GroundComm.csv
 dist/barry/products/GroundRes.csv
 dist/barry/products/NextDayAir.csv
 dist/barry/products/NextDayAirSaver.csv
+dist/barry/products/affiliate.txt
 dist/barry/products/area.txt
 dist/barry/products/banner.txt
 dist/barry/products/cat.txt
@@ -388,15 +390,18 @@ dist/lib/UI/locales/ru_RU.cfg
 dist/lib/UI/pages/admin/advanced.html
 dist/lib/UI/pages/admin/affiliates.html
 dist/lib/UI/pages/admin/button_builder.html
+dist/lib/UI/pages/admin/config.html
 dist/lib/UI/pages/admin/dbdownload.html
 dist/lib/UI/pages/admin/env_vars.html
 dist/lib/UI/pages/admin/error.html
 dist/lib/UI/pages/admin/error_item.html
+dist/lib/UI/pages/admin/export_table.html
 dist/lib/UI/pages/admin/flex_editor.html
 dist/lib/UI/pages/admin/flex_select.html
 dist/lib/UI/pages/admin/footer
 dist/lib/UI/pages/admin/format_meta.html
 dist/lib/UI/pages/admin/genconfig.html
+dist/lib/UI/pages/admin/genreport.html
 dist/lib/UI/pages/admin/genstats.html
 dist/lib/UI/pages/admin/gentable.html
 dist/lib/UI/pages/admin/genxport.html
@@ -410,15 +415,23 @@ dist/lib/UI/pages/admin/layout.html
 dist/lib/UI/pages/admin/layoutdownload.html
 dist/lib/UI/pages/admin/layoutupload.html
 dist/lib/UI/pages/admin/login.html
+dist/lib/UI/pages/admin/logout.html
 dist/lib/UI/pages/admin/matrix_create.html
 dist/lib/UI/pages/admin/matrix_edit.html
 dist/lib/UI/pages/admin/order.html
 dist/lib/UI/pages/admin/order_view.html
+dist/lib/UI/pages/admin/orderstats.html
 dist/lib/UI/pages/admin/page.html
 dist/lib/UI/pages/admin/payment.html
 dist/lib/UI/pages/admin/quicklinks.html
 dist/lib/UI/pages/admin/reconfig.html
 dist/lib/UI/pages/admin/regen.html
+dist/lib/UI/pages/admin/report.html
+dist/lib/UI/pages/admin/report_results.html
+dist/lib/UI/pages/admin/report_save.html
+dist/lib/UI/pages/admin/reports/order/ByAffiliate.html
+dist/lib/UI/pages/admin/reports/order/Detail.html
+dist/lib/UI/pages/admin/reports/order/Monthly.html
 dist/lib/UI/pages/admin/search_builder.html
 dist/lib/UI/pages/admin/ship.html
 dist/lib/UI/pages/admin/ship_edit.html
@@ -429,6 +442,7 @@ dist/lib/UI/pages/admin/table_editor.html
 dist/lib/UI/pages/admin/tax.html
 dist/lib/UI/ui.cfg
 dist/lib/UI/usertag/available_www_shipping
+dist/lib/UI/usertag/backup-database
 dist/lib/UI/usertag/base_url
 dist/lib/UI/usertag/check_upload
 dist/lib/UI/usertag/db_columns
@@ -473,6 +487,7 @@ dist/lib/UI/usertag/version
 dist/lib/UI/usertag/widget
 dist/lib/UI/usertag/with
 dist/lib/UI/usertag/write_relative_file
+dist/lib/UI/usertag/write_shipping
 dist/lib/UI/vars/UI_STD_DBEDIT_HEAD
 dist/lib/UI/vars/UI_STD_DBEDIT_TABLE
 dist/lib/UI/vars/UI_STD_FOOTER
@@ -598,6 +613,7 @@ dist/simple/images/yellow1/go.png
 dist/simple/images/yellow1/logo.png
 dist/simple/images/yellow1/menu.png
 dist/simple/images/yellow1/submit.png
+dist/simple/mysql/affiliate.mysql
 dist/simple/mysql/area.mysql
 dist/simple/mysql/cat.mysql
 dist/simple/mysql/country.mysql
@@ -683,6 +699,7 @@ dist/simple/products/GroundComm.csv
 dist/simple/products/GroundRes.csv
 dist/simple/products/NextDayAir.csv
 dist/simple/products/NextDayAirSaver.csv
+dist/simple/products/affiliate.txt
 dist/simple/products/area.txt
 dist/simple/products/banner.txt
 dist/simple/products/cat.txt
@@ -750,6 +767,7 @@ eg/checkstat.sh
 eg/compact
 eg/globalsub/signio
 eg/ifdef
+eg/make_gnumeric.sh
 extra/Business/UPS.pm
 extra/File/CounterFile.pm
 extra/File/Spec.pm
@@ -790,6 +808,7 @@ lib/Vend/Table/DBI.pm
 lib/Vend/Table/DB_File.pm
 lib/Vend/Table/GDBM.pm
 lib/Vend/Table/InMemory.pm
+lib/Vend/Table/LDAP.pm
 lib/Vend/Tagref.pm
 lib/Vend/Tags.pm
 lib/Vend/TextSearch.pm

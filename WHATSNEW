@@ -1,4 +1,24 @@
-Minivend-4.05 changes:
+Minivend-4.5.0 changes -- the start of the Tallyman merge.
+* Many, many, changes and improvments to the user interface. So
+  much that Minimate is broken out again and made separate.
+  See the UI online help for changes.
+* LDAP support. You can now keep data in LDAP servers, with 
+  normal Minivend Database connectivity. Searchable, too!
+  Put in catalog.cfg:
+
+	Database  variable variable.txt LDAP:some.servername.com
+	Database  variable BIND_DN      cn=fragermk, o=catalogs, c=minivend
+	Database  variable BASE_DN      o=catalogs, c=minivend
+	Database  variable BIND_PW      secret
+
+  Programmed by Mike Frager with a bit of help from Mike Heins.
+
+* VariableDatabase now takes effect at the time of the call in catalog.cfg.
+  This means you can edit your Variable settings in a database, reconfigure,
+  and then use the values farther down in the configuration file.
+
+* 
+
 * Order.pm: fixed multiple problems in precedence for order profiles.
   Thanks to Ton Verhagen. Also added "isbn" profile check written
   by Ton Verhagen.

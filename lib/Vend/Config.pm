@@ -1,6 +1,6 @@
 # Config.pm - Configure Minivend
 #
-# $Id: Config.pm,v 1.4 2000-06-16 03:49:59 heins Exp $
+# $Id: Config.pm,v 1.5 2000-06-18 08:42:46 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -101,7 +101,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 
 my %CDname;
 
@@ -2051,7 +2051,7 @@ sub parse_config_db {
 		}
 	}
 
-::logDebug("d object: " . ::uneval($d));
+#::logDebug("d object: " . ::uneval($d));
 	if($d->{ACTIVE} and ! $d->{OBJECT}) {
 		my $name = $d->{'name'};
 		$d->{OBJECT} = Vend::Data::import_database($d)
@@ -2259,7 +2259,7 @@ sub parse_dbconfig {
 	}
 	my $i;
 	while( ($k, undef, @f ) = $db->each_record) {
-::logDebug("Got key=$k f=@f");
+#::logDebug("Got key=$k f=@f");
 		for ($i = 0; $i < @f; $i++) {
 			next unless length($f[$i]);
 			$l[$i]->{$k} = $f[$i];

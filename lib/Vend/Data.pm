@@ -1,6 +1,6 @@
 # Data.pm - Minivend databases
 #
-# $Id: Data.pm,v 1.2 2000-06-16 03:49:59 heins Exp $
+# $Id: Data.pm,v 1.3 2000-06-18 08:42:46 heins Exp $
 # 
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -590,6 +590,8 @@ sub dummy_database {
 	update_productbase();
 }
 
+my $tried_import;
+
 sub import_database {
     my ($obj, $dummy) = @_;
 
@@ -792,11 +794,13 @@ sub import_database {
 		if($@) {
 #::logDebug("Dieing of $@");
 			die $@ unless $no_import;
+			die $@ unless $tried_import++;
 			if(! -f $database_dbm) {
 				$Vend::ForceImport{$obj->{name}} = 1;
 				return import_database($obj);
 			}
 		}
+		undef $tried_import;
 #::logDebug("Opening $obj->{name}: RO=$obj->{Read_only} WC=$obj->{WRITE_CONTROL} WA=$obj->{WRITE_ALWAYS}");
 	}
 

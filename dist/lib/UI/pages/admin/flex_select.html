@@ -23,7 +23,7 @@
 	[either]
 		[cgi page_title]
 	[or]
-		Select for table Edit: [cgi mv_data_table]
+		Select for table edit: [cgi mv_data_table]
 	[/either]
 [/seti]
 [seti page_banner]
@@ -32,7 +32,7 @@
 	[or]
 		[cgi page_title]
 	[or]
-		Select for table Edit: [cgi mv_data_table]
+		Select for table edit: [cgi mv_data_table]
 	[/either]
 [/seti]
 [seti help_name][either][cgi help_name][or]gensql.main[/either][/seti]
@@ -45,7 +45,7 @@
 @@UI_STD_HEAD@@
 [update values]
 <!-- ----- BEGIN REAL STUFF ----- -->
-<form action="[area __UI_BASE__/flex_editor]" method="post">
+<form action="[area __UI_BASE__/flex_editor]" method="GET">
 <INPUT TYPE=hidden NAME=mv_action     VALUE=return>
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/flex_editor">
 <INPUT TYPE=hidden NAME=mv_data_table VALUE="[cgi mv_data_table]">
@@ -64,7 +64,8 @@
 
 <tr>
 <td bgcolor="#94a0e0" width=150 colspan=2>
-<input type="submit" name="show_create_cmd" value="New item">
+<input type="submit" name="mv_click" value="New item">
+[set New item]item_id=new[/set]
 </td>
 
 </td></tr>
@@ -129,8 +130,15 @@ mv_nextpage=__UI_BASE__/spread
 [/else]
 [/if]
 
+
 [calc]
 	$Config->{NoSearch} = '';
+	if ($CGI->{ui_text_qualification}) {
+		$CGI->{ui_text_qualification} = "se=$CGI->{ui_text_qualification}";
+	}
+	else {
+		$CGI->{ui_text_qualification} = "ra=yes";
+	}
 	$CGI->{ui_description_field} =
 		q{[data table=__UI_META_TABLE__
 				col=field
@@ -143,7 +151,8 @@ mv_nextpage=__UI_BASE__/spread
 		search="
 			fi=[cgi mv_data_table]
 			st=db
-			ra=yes
+			[cgi ui_text_qualification]
+			su=1
 			md=1
 			tf=[cgi ui_description_field]
 			rf=[scratch keypos],[cgi ui_description_field]

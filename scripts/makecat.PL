@@ -1221,7 +1221,8 @@ EOF
 	}
 	else {
 		$lm = 'u';
-		$ask = prompt("Do you use CGIWRAP or SUEXEC? ", 'n');
+		my $def = -u '/usr/bin/suexec' ? 'y' : 'n';
+		$ask = prompt("Do you use CGIWRAP or SUEXEC? ", $def);
 		$CGIwrap = $ask =~ /^\s*y/i;
 	}
 
@@ -1945,7 +1946,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.2 2000-06-13 02:12:33 heins Exp $
+$Id: makecat.PL,v 1.3 2000-06-18 08:42:46 heins Exp $
 
 =head1 INTRODUCTION
 

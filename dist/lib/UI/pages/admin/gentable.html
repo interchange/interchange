@@ -7,7 +7,7 @@
 <!-- ----- BEGIN REAL STUFF ----- -->
 
 <form action="[area __UI_BASE__/item_edit]" method="post">
-<INPUT TYPE=hidden NAME=mv_todo     VALUE=return>
+<INPUT TYPE=hidden NAME=mv_action     VALUE=return>
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/flex_select">
 <table cellpadding=3 cellspacing=0>
 <tr>
@@ -31,6 +31,13 @@ mv_nextpage=__UI_BASE__/import_table
 <br>
 <input type="submit" value="Search for text">
 <br>
+
+[if-mm advanced report]
+[set Report on]
+mv_nextpage=__UI_BASE__/report
+[/set]
+<input type="submit" name="mv_click" value="Report on">
+[/if-mm]
 
 </td>
 <td bgcolor="#94a0e0">

@@ -37,7 +37,11 @@
 	[/if]
 [/if]
 
-
+[calc]
+	return if ! $CGI->{mv_data_table};
+	$Values->{mv_data_table} = $CGI->{mv_data_table};
+	return;
+[/calc]
 <form action="[area @@MV_PAGE@@]" method="POST" ENCTYPE="multipart/form-data">
 <INPUT TYPE=hidden NAME=mv_action     VALUE=return>
 <INPUT TYPE=hidden NAME=ui_return_to VALUE="__UI_BASE__/genxport">
@@ -61,7 +65,7 @@
 <td bgcolor="#94a0e0">
 
 <select name="mv_data_table" size=10>
-[loop list="[list-databases]"]<option value="[loop-code]"> [loop-code]
+[loop list="[list-databases]" option=mv_data_table]<option value="[loop-code]"> [loop-code]
 [/loop]
 </select>
 </td>
