@@ -10,6 +10,7 @@ SPECS/interchange.spec
 UPGRADE
 WHATSNEW
 configure
+debian/CREDITS.debian
 debian/TODO
 debian/catalogs.cfg
 debian/changelog
