@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.23.2.3 2000-11-08 19:57:04 zarko Exp $
+# $Id: Config.pm,v 1.23.2.4 2000-11-15 21:46:24 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -103,7 +103,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.23.2.3 $, 10);
+$VERSION = substr(q$Revision: 1.23.2.4 $, 10);
 
 my %CDname;
 
@@ -1181,7 +1181,7 @@ EOF
 		$::Variable = $Vend::Cfg->{Variable};
 		Vend::Data::read_salestax();
 		Vend::Data::read_shipping();
-		open_database(1);
+		Vend::Data::open_database(1);
 		my $db;
 
 		LREAD: {
