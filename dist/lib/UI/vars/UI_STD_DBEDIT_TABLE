@@ -181,7 +181,11 @@ EOF
 			$type = 'value';
 #Log("hit display_only for $col, t=$t, c=$c, k=$k, currval=$currval");
 		}
-		elsif($CGI->{$col} and !defined($key) || !tag_data($t, $c, $key) ) {
+		elsif( 
+				defined $CGI->{$col}
+				and ( !defined($key) || !length(tag_data($t, $c, $key)) )
+				)
+		{
 			$currval = $CGI->{$col};
 		}
 		else {
