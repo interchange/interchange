@@ -1,107 +1,11 @@
+# Copyright 2002,2004 Interchange Development Group (http://www.icdevgroup.org)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: button.tag,v 1.13 2004-09-24 12:20:55 docelic Exp $
+
 UserTag button Order name src text
 UserTag button addAttr
 UserTag button attrAlias value text
 UserTag button hasEndTag
-UserTag button Version $Revision: 1.12 $
-UserTag button Documentation <<EOD
-
-=pod
-
-This tag creates an mv_click button either as a C<< <INPUT TYPE=submit ...> >>
-or a JavaScript-linked C<< <A HREF=....><img src=...> >> combination.
-
-    [button text="Delete item" confirm="Are you sure?" src="delete.gif"]
-	    [comment]
-		    This is the action, same as [set Delete item] action [/set]
-	    [/comment]
-	    [mvtag] Use any Interchange tag here, i.e. ....[/mvtag]
-	    [perl] # code to delete item [/perl]
-    [/button]
-
-You can include arbitrary custom JavaScript like this:
-
-	[button text="Click me"]
-		[javascript]onClick="myOwnOnClickFunction(this);"[/javascript]
-	[/button]
-
-Parameters for this tag are:
-
-=over 4
-
-=item name
-
-Name of the variable, by default mv_click.
-
-=item src
-             
-Image source file. If it is a relative image, the existence
-of the file is checked for.
-
-If your images stop showing up on pages that use SSL, use an absolute
-link to the image file.
-
-Instead of,
-	src="__THEME__/placeorder.gif"
-try:
-	src="/yourstore/images/blueyellow/placeorder.gif"
-
-WARNING: Do not use if JavaScript not required for catalog.
-
-=item text             
-
-The text of the button, also the name of the scratch action
-(VALUE is an alias for TEXT.) 
-
-=item wait-text             
-
-The text of the button after a click -- also the name of the scratch action
-instead of "text" when this is set.
-
-WARNING: Do not use if JavaScript not required for catalog.
-
-=item border, height, width, vspace, hspace, align
-
-The image alignment parameters. Border defaults to 0.
-
-=item form      
-
-The name of the form, defaults to document.forms[0] -- be careful!
-
-=item confirm             
-
-The text to use for a JavaScript confirm, if any.
-             
-=item getsize
-
-If true, tries to use Image::Size to add height=Y width=X.
-             
-=item alt       
-
-The alt text to be displayed in window.status and balloons.
-Defaults to the same as TEXT.
-             
-=item anchor 
-
-Set to the anchor text value, defaults to TEXT.
-             
-=item hidetext
-
-Set true if you don't want the anchor displayed.
-
-=item extra
-
-Extra HTML you want placed inside the link or button. You can
-use class,id, or style for those attributes.
-
-=item id,class,style
-
-The normal HTML attributes.
-
-=back
-
-=cut
-EOD
-
 UserTag button Routine <<EOR
 sub {
 	my ($name, $src, $text, $opt, $action) = @_;
@@ -187,7 +91,7 @@ sub {
 	if(! $onclick and $confirm) {
 		$onclick = qq{ onclick="return $confirm"};
 	}
-	$out = qq{<INPUT TYPE="submit" NAME="$name" VALUE="$text"$onclick>};
+	$out = qq{<input type="submit" name="$name" value="$text"$onclick>};
 	if (@js) {
 		$out =~ s/ /join "\n", '', @js, ''/e;
 	}
@@ -215,7 +119,7 @@ sub {
 		}
 
 		my $out = $opt->{bold} ? "<B>" : '';
-		$out .= qq{<INPUT$opt->{extra} TYPE="submit" NAME="$name" VALUE="$text"$onclick>};
+		$out .= qq{<input$opt->{extra} type="submit" name="$name" value="$text"$onclick>};
 		$out .= "</B>" if $opt->{bold};
 		if(@js) {
 			$out =~ s/ /join "\n", '', @js, ''/e;
@@ -232,16 +136,16 @@ sub {
 	$wstatus =~ s/'/\\'/g;
 
 	my $clickname = $name;
-	$out .= "</B>" if $opt->{bold};
+	$out .= "</b>" if $opt->{bold};
 	my $clickvar = $name;
 	if($image and $name eq 'mv_click') {
 		$clickvar = $text;
 		$clickvar =~ s/\W/_/g;
 		$clickname = "mv_click_$clickvar";
-		$out = qq{<INPUT TYPE=hidden NAME="mv_click_map" VALUE="$clickvar">};
+		$out = qq{<input type='hidden' name='mv_click_map' value='$clickvar'>};
 	}
 	
-	$out .= qq{<INPUT TYPE=hidden NAME="$clickname" VALUE="">} if $image; 
+	$out .= qq{<input type='hidden' name='$clickname' value=''>} if $image; 
 
 	my $formname;
 	$opt->{form} = 'forms[0]'
@@ -261,6 +165,7 @@ sub {
 
 	my $position = '';
 	for(qw/height width vspace hspace align/) {
+		# QUOTING (needs fix?)
 		$position .= " $_=$opt->{$_}" if $opt->{$_};
 	}
 
@@ -279,10 +184,11 @@ sub {
 	}
 
 	$opt->{link_href} ||= 'javascript: void 0';
+	# QUOTING (fix here too?)
 	$out .= <<EOF;
-<A HREF="$opt->{link_href}"$opt->{extra} onMouseOver="window.status='$wstatus'"
+<a href="$opt->{link_href}"$opt->{extra} onMouseOver="window.status='$wstatus'"
 	onClick="$confirm mv_click_map_unique(document.$opt->{form}, '$clickname', '$text') && $opt->{form}.submit(); return(false);"
-	ALT="$wstatus"><IMG ALT="$wstatus" SRC="$src" border=$opt->{border}$position>$a_before$anchor$a_after
+	alt="$wstatus"><img alt="$wstatus" src="$src" border=$opt->{border}$position>$a_before$anchor$a_after
 EOF
 
 	my $function = '';
@@ -320,3 +226,4 @@ EOV
 }
 
 EOR
+
