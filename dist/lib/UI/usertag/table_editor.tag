@@ -143,6 +143,7 @@ sub {
 					label       
 					override    
 					passed      
+					options      
 					outboard
 					append
 					prepend
@@ -201,6 +202,7 @@ sub {
 	my $override    = $opt->{override};
 	my $pre_filter  = $opt->{pre_filter};
 	my $passed      = $opt->{passed};
+	my $options     = $opt->{options};
 	my $outboard    = $opt->{outboard};
 	my $prepend     = $opt->{prepend};
 	my $append      = $opt->{append};
@@ -293,33 +295,59 @@ EOF
 	$Scratch->{$opt->{cancel_text}} = $ctext if $ctext;
 	$Scratch->{$opt->{back_text}}   = $btext if $btext;
 
+	if($opt->{wizard} and ! $table) {
+		$table = 'mv_null';
+		$Vend::Database{mv_null} = 
+			bless [
+					{},
+					undef,
+					[ 'code', 'value' ],
+					[ 'code' => 0, 'value' => 1 ],
+					0,
+					{ },
+					], 'Vend::Table::InMemory';
+	}
+
+	my @mapdirect = qw/
+		mv_data_decode
+		mv_data_table
+		mv_blob_field
+		mv_blob_nick
+		mv_blob_pointer
+		mv_blob_label
+		mv_blob_title
+		left_width
+		table_width
+		ui_break_before
+		ui_break_before_label
+		ui_data_fields
+		ui_data_fields_all
+		ui_data_key_name
+		ui_display_only
+		ui_hide_key
+		ui_meta_specific
+		ui_meta_view
+		ui_nextpage
+		ui_new_item
+		ui_delete_box
+		mv_update_empty
+	/;
+
+	$table = $CGI->{mv_data_table} if  $CGI->{mv_data_table} and ! $table;
+
+	my $tmeta = UI::Primitive::meta_record($table, $opt->{ui_meta_view}) || {};
+
+	for(grep defined $tmeta->{$_}, @mapdirect) {
+		$opt->{$_} = $tmeta->{$_};
+	}
+
 	if($opt->{cgi}) {
-		my @mapdirect = qw/
-			item_id
-			item_id_left
-			mv_data_decode
-			mv_data_table
-			mv_blob_field
-			mv_blob_nick
-			mv_blob_pointer
-			mv_blob_label
-			mv_blob_title
-			ui_break_before
-			ui_break_before_label
-			ui_data_fields
-			ui_data_fields_all
-			ui_data_key_name
-			ui_display_only
-			ui_hide_key
-			ui_meta_specific
-			ui_meta_view
-			ui_nextpage
-			ui_new_item
-			ui_sequence_edit
-			ui_clone_id
-			ui_clone_tables
-			ui_delete_box
-			mv_update_empty
+		unshift @mapdirect, qw/
+				item_id
+				item_id_left
+				ui_clone_id
+				ui_clone_tables
+				ui_sequence_edit
 		/;
 		for(@mapdirect) {
 			next if ! defined $CGI->{$_};
@@ -331,6 +359,7 @@ EOF
 			[ qr/^ui_te_extra:/, $extra ],
 			[ qr/^ui_te_widget:/, $widget ],
 			[ qr/^ui_te_passed:/, $passed ],
+			[ qr/^ui_te_options:/, $options ],
 			[ qr/^ui_te_outboard:/, $outboard ],
 			[ qr/^ui_te_prepend:/, $prepend ],
 			[ qr/^ui_te_append:/, $append ],
@@ -471,19 +500,6 @@ EOF
 		return undef;
 	};
 
-	if($opt->{wizard} and ! $table) {
-		$table = 'mv_null';
-		$Vend::Database{mv_null} = 
-			bless [
-					{},
-					undef,
-					[ 'code', 'value' ],
-					[ 'code' => 0, 'value' => 1 ],
-					0,
-					{ },
-					], 'Vend::Table::InMemory';
-	}
-
 	my $db = Vend::Data::database_exists_ref($table)
 		or return $die->('table-editor: bad table %s', $table);
 
@@ -491,21 +507,7 @@ EOF
 		$opt->{ui_data_fields} = $opt->{ui_display_only} = $opt->{ui_wizard_fields};
 	}
 
-	$Variable->{UI_META_TABLE} = 'mv_metadata' if ! $Variable->{UI_META_TABLE};
-
-	my $mdb = Vend::Data::database_exists_ref($Variable->{UI_META_TABLE})
-		or return $die->('table-editor: bad meta table %s', $table);
-
 	my $keycol = $db->config('KEY');
-
-	my $view_table = $opt->{ui_meta_view};
-
-	if (! $view_table) {
-		$view_table = $table;
-	}
-	elsif ("\L$view_table" ne 'none') {
-		$view_table = "$view_table::$table";
-	}
 
 	$opt->{form_name} = qq{ NAME="$opt->{form_name}"}
 		if $opt->{form_name};
@@ -513,15 +515,8 @@ EOF
 	###############################################################
 	# Get the field display information including breaks and labels
 	###############################################################
-	if( $mdb
-		and ! $opt->{ui_data_fields}
-		and ! $opt->{ui_data_fields_all}
-		and $view_table
-		and $mdb->record_exists($view_table)
-		)
-	{
-#::logDebug("meta info for table: view_table=$view_table table=$table");
-		$opt->{ui_data_fields} = $mdb->field($view_table || $table, 'options');
+	if( ! $opt->{ui_data_fields} and ! $opt->{ui_data_fields_all}) {
+		$opt->{ui_data_fields} = $tmeta->{ui_data_fields} || $tmeta->{options};
 	}
 
 	$opt->{ui_data_fields} =~ s/\r\n/\n/g;
@@ -531,7 +526,7 @@ EOF
 #::logDebug("Found break fields");
 		my @breaks;
 		my @break_labels;
-		while ($opt->{ui_data_fields} =~ s/\n+(?:\n[ \t]*=(.*))?\n+[ \t]*(\w+)/\n$2/) {
+		while ($opt->{ui_data_fields} =~ s/\n+(?:\n[ \t]*=(.*))?\n+[ \t]*(\w[:.\w]+)/\n$2/) {
 			push @breaks, $2;
 			push @break_labels, "$2=$1" if $1;
 		}
@@ -1155,7 +1150,7 @@ EOF
          <td class=cwidget> 
            \$WIDGET\$
          </td>
-         <td class=chelp>~TKEY~<i>\$HELP\$</i>{HELPURL}<BR><A HREF="\$HELP_URL\$">help</A>{/HELPURL}</FONT></td>
+         <td class=chelp>~TKEY~<i>\$HELP\$</i>{HELP_URL}<BR><A HREF="\$HELP_URL\$">help</A>{/HELP_URL}</FONT></td>
        </tr>
      </table>
    </td>
@@ -1323,6 +1318,7 @@ EOF
 										override => $overridden,
 										field => $field->{$c},
 										passed => $passed->{$c},
+										options => $options->{$c},
 										outboard => $outboard->{$c},
 										append => $append->{$c},
 										prepend => $prepend->{$c},

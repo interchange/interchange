@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.5 2001-10-06 07:03:37 mheins Exp $
+# $Id: Util.pm,v 2.6 2001-10-09 22:32:52 mheins Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -79,7 +79,7 @@ use Text::ParseWords;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.5 $, 10);
+$VERSION = substr(q$Revision: 2.6 $, 10);
 
 BEGIN {
 	eval {
@@ -775,9 +775,9 @@ sub is_hash {
 
 sub dotted_hash {
 	my($hash, $key, $value) = @_;
-::logDebug("dotted_hash hash=$hash key=$key");
+#::logDebug("dotted_hash hash=$hash key=$key");
 	$hash = get_option_hash($hash) unless is_hash($hash);
-::logDebug("dotted_hash hash=$hash key=$key after get_option_hash");
+#::logDebug("dotted_hash hash=$hash key=$key after get_option_hash");
 	unless (is_hash($hash)) {
 		return undef unless defined $value;
 		$hash = {};
@@ -788,19 +788,19 @@ sub dotted_hash {
 
 	if(! defined $value) {
 		# Retrieving
-::logDebug("dotted_hash retrieving key=$key");
+#::logDebug("dotted_hash retrieving key=$key");
 		$ref = $hash->{shift @keys};
 		for(@keys) {
 			return undef unless is_hash($ref);
 			$ref = $ref->{$_};
 		}
-::logDebug("dotted_hash returning value=$ref");
+#::logDebug("dotted_hash returning value=$ref");
 		return $ref;
 	}
 
 	# Storing
 	$final = pop @keys;
-::logDebug("dotted_hash storing key=$key final=$final value=$value");
+#::logDebug("dotted_hash storing key=$key final=$final value=$value");
 	$ref = $hash;
 
 	for(@keys) {
@@ -810,7 +810,7 @@ sub dotted_hash {
 
 	$ref->{$final} = $value;
 	$hash = uneval_it($hash);
-::logDebug("dotted_hash returning=$hash");
+#::logDebug("dotted_hash returning=$hash");
 	return $hash;
 }
 

@@ -1,6 +1,6 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 2.5 2001-10-06 07:03:36 mheins Exp $
+# $Id: Primitive.pm,v 2.6 2001-10-09 22:32:52 mheins Exp $
 
 # Copyright (C) 1998-2001 Red Hat, Inc. <interchange@redhat.com>
 
@@ -25,7 +25,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 2.5 $, 10);
+$VERSION = substr(q$Revision: 2.6 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -42,7 +42,7 @@ use strict;
 use Vend::Util qw/errmsg/;
 $DECODE_CHARS = qq{&[<"\000-\037\177-\377};
 
-@EXPORT = qw( ui_check_acl ui_acl_enabled ) ;
+@EXPORT = qw( ui_check_acl ui_acl_enabled meta_record) ;
 
 =head1 NAME
 
@@ -787,6 +787,43 @@ sub imagehelper_widget {
     }
 }
 
+sub meta_record {
+	my ($item, $view, $mtable) = @_;
+	return undef unless $item;
+	$mtable ||= $::Variable->{UI_META_TABLE} || 'mv_metadata',
+	my $mdb = Vend::Data::database_exists_ref($mtable)
+		or return undef;
+	my $record;
+	if($view) {
+		$record = $mdb->row_hash("${view}::$item");
+	}
+	$record = $mdb->row_hash($item) if ! $record;
+
+	return undef if ! $record;
+
+	# Get additional settings from extended field, which is a serialized
+	# hash
+	my $hash;
+	if($record->{extended}) {
+		$hash = Vend::Util::get_option_hash($record->{extended});
+		if(ref $hash eq 'HASH') {
+			@$record{keys %$hash} = values %$hash;
+		}
+		else {
+			undef $hash;
+		}
+	}
+
+	# Allow view settings to be placed in the extended area
+	if($view and $hash and $hash->{view}) {
+		my $view_hash = $record->{view}{$view};
+		ref $view_hash
+			and @$record{keys %$view_hash} = values %$view_hash;
+	}
+::logDebug("return meta_record=" . ::uneval($record) );
+	return $record;
+}
+
 my $base_entry_value;
 
 sub meta_display {
@@ -893,6 +930,7 @@ sub meta_display {
 		$record->{name} ||= $column;
 
 		if($record->{options} and $record->{options} =~ /^[\w:]+$/) {
+#::logDebug("checking options");
 			PASS: {
 				my $passed = $record->{options};
 
@@ -905,6 +943,7 @@ sub meta_display {
 				elsif($passed =~ /^columns(::(\w*))?\s*$/) {
 					my $total = $1;
 					my $tname = $2 || $record->{db} || $table;
+#::logDebug("columns options, total=$total tname=$tname");
 					$tname = $base_entry_value if $total eq '::';
 					my $db = $Vend::Database{$tname};
 					$record->{passed} = join (',', "=--none--", $db->columns())

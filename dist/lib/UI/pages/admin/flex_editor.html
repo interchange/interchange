@@ -21,29 +21,17 @@
 		[L]Select for table edit[/L]:
 		 [cgi mv_data_table]
 		[if cgi ui_meta_view]
-		 (<b>[page href="__UI_BASE__/flex_editor"
+		 (<b>[page href="__UI_BASE__/db_metaconfig_edit"
 				 form='
-				 mv_data_table=__UI_META_TABLE__
-				 ui_meta_view=dbconfig
-				 ui_data_fields=code name height field options attribute width type display_filter help help_url
-				 ui_break_before=height display_filter
-				 page_title=[L]Change display information[/L]: [cgi mv_data_table]
-				 ui_return_to=__UI_BASE__/gentable
-				 ui_return_stack=1
-				 item_id=[cgi ui_meta_view]::[cgi mv_data_table]
+				 ui_table=[cgi mv_data_table]
+				 ui_view=[cgi ui_meta_view]
 		 '][cgi ui_meta_view]</b> [L]view[/L]</A>)
 		 [/if]
-		([page href="__UI_BASE__/flex_editor"
+		 (<b>[page href="__UI_BASE__/db_metaconfig_edit"
 				 form='
-				 mv_data_table=__UI_META_TABLE__
-				 ui_meta_view=dbconfig
-				 ui_data_fields=code name height field options attribute width type display_filter help help_url
-				 ui_break_before=height display_filter
-				 page_title=Change display information: [cgi mv_data_table]
-				 ui_return_to=__UI_BASE__/gentable
-				 ui_return_stack=1
-				 item_id=[cgi mv_data_table]
-		 '][L]standard view[/L]</A>)
+				 ui_table=[cgi mv_data_table]
+				 ui_view=[cgi ui_meta_view]
+				 '][L]standard view[/L]</A>)
 		[/if-mm]
 		 [/if]
 	[or]

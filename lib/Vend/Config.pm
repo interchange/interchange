@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.9 2001-10-08 14:38:42 racke Exp $
+# $Id: Config.pm,v 2.10 2001-10-09 22:32:52 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = substr(q$Revision: 2.10 $, 10);
 
 my %CDname;
 
@@ -2951,6 +2951,7 @@ my %tagCanon = ( qw(
 	order			Order
 	posnumber		PosNumber
 	posroutine		PosRoutine
+	maproutine		MapRoutine
 	replaceattr		replaceAttr
 	replacehtml		replaceHTML
 	required		Required
@@ -3050,6 +3051,14 @@ sub parse_tag {
 			) unless ref($sub) =~ /CODE/;
 		}
 		$c->{$p}{$tag} = $sub;
+		$c->{Order}{$tag} = []
+			unless defined $c->{Order}{$tag};
+	}
+	elsif (! $C and $p eq 'MapRoutine') {
+		$val =~ s/^\s+//;
+		$val =~ s/\s+$//;
+		no strict 'refs';
+		$c->{Routine}{$tag} = \&{"$val"};
 		$c->{Order}{$tag} = []
 			unless defined $c->{Order}{$tag};
 	}

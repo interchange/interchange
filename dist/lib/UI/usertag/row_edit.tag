@@ -11,17 +11,14 @@ sub {
 	my $db = $Db{$table} || Vend::Data::database_exists_ref($table);
 	my $mtab = $Variable->{UI_META_TABLE} || 'mvmetadata';
 	my $mdb = $Db{$mtab} || Vend::Data::database_exists_ref($mtab);
-	my $view;
-	if($mdb and $mdb->record_exists("$CGI->{ui_meta_view}::$table")) {
-		$view = $mdb->row_hash("$CGI->{ui_meta_view}::$table");
-	}
-	elsif($mdb and $mdb->record_exists($table)) {
-		$view = $mdb->row_hash($table);
-	}
-	$view = {} if ! ref $view;
+	$opt->{view} ||= $CGI->{ui_meta_view};
+
+	my $view = UI::Primitive::meta_record($table, $opt->{view}) || {};
 	
-	return "NON-EXISTENT DATABASE '$table' for row-edit" unless defined $db;
-	#$db = $db->ref() unless $Vend::Interpolate::Db{$table};
+	return errmsg("non-existent table '%s' for row-edit", $table)
+		unless $db;
+	$db = $db->ref();
+
 	my $acl = UI::Primitive::get_ui_table_acl();
 
 	my $bad;
@@ -39,7 +36,7 @@ sub {
 
 	my @cols;
 
-	if($columns ||= $view->{attribute}) {
+	if($columns ||= $view->{spread_cols} || $view->{attribute}) {
 		@cols = split /[\s,\0]+/, $columns;
 		my %col;
 		for(@cols) {
