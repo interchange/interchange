@@ -44,8 +44,14 @@ Variable UI_STD_FILE_NAV <<EONav
 			&nbsp;&nbsp;&nbsp;
 			[if type=explicit
 				compare=`
-					return $CGI->{details} if defined $CGI->{details};
-					return $Session->{ui_file_details};
+					my $status;
+					if(defined $CGI->{details}) {
+						$status = $CGI->{details};
+					}
+					else {
+						$status = $Session->{ui_file_details};
+					}
+					$Scratch->{details_coming} = $status;
 			`]
 			[page href="@_MV_PAGE_@" form="details=0"][msg]Hide file details[/msg]</A>
 			[else]
@@ -67,6 +73,7 @@ Variable UI_STD_FILE_NAV <<EONav
 <tr>
 <td class=rnorm>
 
+[if scratch details_coming]
 	[file-navigator
 		mask="[scratch dir_mask]"
 		include_mask="[scratch include_mask]"
@@ -75,6 +82,22 @@ Variable UI_STD_FILE_NAV <<EONav
 		start_open="[scratch start_open]"
 		initial_dir="[cgi initial_dir]"
 	]
+[else]
+<table width="100%">
+[table-organize columns=3 columnize=1 interpolate=1]
+	[file-navigator
+		mask="[scratch dir_mask]"
+		include_mask="[scratch include_mask]"
+		exclude_mask="[scratch exclude_mask]"
+		template=|<TD width="33%">%s</TD>|
+		view_link="[scratch view_link]"
+		start_open="[scratch start_open]"
+		initial_dir="[cgi initial_dir]"
+	]
+[/table-organize]
+</table>
+[/else]
+[/if]
 
 </td>
 </tr>

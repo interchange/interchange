@@ -309,13 +309,21 @@ EOF
 	for(@messages) {
 		$out .= "<span class=cmessage>$_</span><br>";
 	}
+	my $template = $opt->{template} || '';
 	for (@dir, @plain) {
 		$$pc++;
 		$_->[2] = sprintf($_->[2], $_->[3], $_->[1]);
 		$_->[2] =~ s/~FN~/$_->[0]/g;
 		$_->[2] =~ s/~RN~/$_->[4]/g;
 		$_->[2] =~ s/~ID~/mv_session_id=$Session->{id}&mv_pc=$$pc/g;
-		$out .= $_->[2];
+		if($template) {
+			my $t = $template;
+			$t =~ s/%s/$_->[2]/;
+			$out .= $t;
+		}
+		else {
+			$out .= $_->[2];
+		}
 	}
 
 	return $out;
