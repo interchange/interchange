@@ -1,7 +1,7 @@
 #
 # UserTag formel - see POD documentation for more information
 #
-# Copyright 2000 by Stefan Hornburg <racke@linuxia.de>
+# Copyright 2000,2001 by Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 UserTag formel Order label name type size
 # may be should place version information on user-defined tags
-# UserTag formel Version 0.04
+# UserTag formel Version 0.05
 UserTag formel addAttr
 UserTag formel Routine <<EOF
 sub {
@@ -100,6 +100,31 @@ sub {
 
 	$labelhtml = &$labelproc($label);
 
+	if ($type eq 'select') {
+		my ($rlabel, $rvalue, $select);
+
+		for my $option (split (/\s*,\s*/, $opt->{choices})) {
+			$select = '';
+			if ($option =~ /^(.*?)=(.*)$/) {
+				$rvalue = $1;
+				$rlabel = $2;
+			} else {
+				$rvalue = $rlabel = $option;
+			}
+
+			if ($::Values->{$name} eq $rvalue) {
+				$select = ' selected';
+			}
+			if ($rvalue eq $rlabel) {	
+				$elhtml .= qq{<option $select>$rlabel};
+			} else {
+				$elhtml .= qq{<option value="$rvalue"$select>$rlabel};
+			}
+		}
+		return sprintf ($fmt, $labelhtml, 
+			qq{<select name=$name>$elhtml</select>});
+	}
+
     if ($opt->{reset}) {
 		if ($type eq 'textarea') {
 	        $elhtml = qq{<textarea name="${name}"$sizestr></textarea>};
@@ -148,8 +173,8 @@ attribute of the HTML tag.
 
 =item type
 
-The type of the form element (supported are text, textarea
-and radio).
+The type of the form element (supported are text, textarea,
+radio and select).
 
 =item size
 
@@ -164,6 +189,12 @@ Other options are:
 
 The name which get passed to the Error tag. The default
 is the name of the form element.
+
+=item choices
+
+Comma-separated list of choices for radio and select types.
+To display labels different from the values, use the
+C<value1=label1,value2=label2,...> notation.
 
 =item format
 
