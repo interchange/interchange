@@ -1,6 +1,6 @@
 # Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 2.14 2002-07-15 14:08:14 mheins Exp $
+# $Id: Scan.pm,v 2.15 2002-08-07 08:02:59 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -29,7 +29,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 2.14 $, 10);
+$VERSION = substr(q$Revision: 2.15 $, 10);
 
 use strict;
 use Vend::Util;
@@ -625,7 +625,7 @@ sub sql_statement {
 		if($db) {
 			$codename = $db->config('KEY') || 'code';
 			$nuhash = $db->config('NUMERIC') || undef;
-			push_spec( 'fi', $Vend::Cfg->{Database}{$t}{file}, $ary, $hash);
+			push_spec( 'fi', $db->config('file'), $ary, $hash);
 		}
 # GLIMPSE
 		elsif ("\L$t" eq 'glimpse') {

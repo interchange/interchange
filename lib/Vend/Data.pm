@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.13 2002-08-02 11:44:55 racke Exp $
+# $Id: Data.pm,v 2.14 2002-08-07 08:02:59 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -90,12 +90,50 @@ BEGIN {
 
 my ($Products, $Item_price);
 
+sub instant_database {
+	my($file) = @_;
+	return undef unless $file =~ /\.(txt|asc)$/;
+	my $dir   = File::Basename::dirname($file);
+	my $fname = File::Basename::basename($file);
+	my $dbname = $fname;
+	$dbname =~ s:\W:_:g;
+	
+	$Vend::Database{$dbname}
+		and return $Vend::Database{$dbname}->ref();
+	if( file_name_is_absolute($_[0]) ) {
+		my $msg = errmsg(
+						"Instant database (%s): no absolute file names.",
+						$_[0],
+					);
+		logError($msg);
+		logGloba($msg);
+		return undef;
+	}
+	elsif (! -f $_[0]) {
+		my $msg = errmsg(
+						"Instant database (%s): no file found.",
+						$_[0],
+					);
+		logError($msg);
+		return undef;
+	}
+	return $Vend::Database{$dbname} = import_database({
+													name => $dbname,
+													DIR => $dir,
+													type => 'AUTO',
+													file => $fname,
+													Class => 'TRANSIENT',
+													EXPORT_ON_CLOSE => 1,
+												});
+}
+
 sub database_exists_ref {
 	return $_[0]->ref() if ref $_[0];
 	return $Vend::Interpolate::Db{$_[0]}
 			if $Vend::Interpolate::Db{$_[0]};
-	return undef unless defined $Vend::Database{$_[0]};
-	return $Vend::Database{$_[0]}->ref() || undef;
+	$Vend::Database{$_[0]}
+		and return $Vend::Database{$_[0]}->ref();
+	return instant_database(@_);
 }
 
 sub database_key_exists {
@@ -517,6 +555,9 @@ my %Delimiter = (
 	CSV => ["CSV","\n"],
 	PIPE => ['|', "\n"],
 	TAB => ["\t", "\n"],
+	"\t" => ["\t", "\n"],
+	'|'  => ['|', "\n"],
+	"\n%%\n" => ["\n%%\n", "\n%%%\n"],
 
 	);
 
@@ -617,6 +658,14 @@ use vars '%db_config';
 		'SHADOW' => {
 				qw/
 					Class                Vend::Table::Shadow
+				/
+				},
+		'TRANSIENT' => {
+				qw/
+					Cacheable			 0
+					Tagged_write		 1
+					Class                Vend::Table::InMemory
+					Export_on_close		 1
 				/
 				},
 		'MEMORY' => {
@@ -1161,6 +1210,7 @@ sub export_database {
 	}
 
 	my ($delim, $record_delim) = find_delimiter($type || $db->config('type'));
+	$delim or ($delim, $record_delim) = find_delimiter($db->config('delimiter'));
 
 	$file = $file || $db->config('file');
 	my $dir = $db->config('DIR');

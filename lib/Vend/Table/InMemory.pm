@@ -1,6 +1,6 @@
 # Vend::Table::InMemory - Store an Interchange table in memory
 #
-# $Id: InMemory.pm,v 2.7 2002-06-27 22:24:10 jon Exp $
+# $Id: InMemory.pm,v 2.8 2002-08-07 08:03:02 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,7 @@
 package Vend::Table::InMemory;
 use Vend::Table::Common qw(!config !columns);
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 use strict;
 
 # 0: column names
@@ -96,7 +96,10 @@ sub new {
 }
 
 sub close_table {
-	1;
+	my $s = shift;
+	return 1 unless $s->[$CONFIG]{_Dirty};
+	Vend::Data::export_database($s->[$CONFIG]{name});
+	delete $s->[$CONFIG]{_Dirty};
 }
 
 sub row {
@@ -132,6 +135,7 @@ sub field_settor {
 		my $a = $s->[$TIE_HASH]{$key};
 		$a = $s->[$TIE_HASH]{$key} = [] unless defined $a;
 		$a->[$index] = $value;
+		$s->[$CONFIG]{_Dirty} = 1;
 		return undef;
 	};
 }
@@ -139,6 +143,7 @@ sub field_settor {
 sub set_row {
 	my ($s, @fields) = @_;
 	my $key = $fields[$s->[$KEY_INDEX]];
+	$s->[$CONFIG]{_Dirty} = 1;
 	$s->[$TIE_HASH]{$key} = [@fields];
 }
 

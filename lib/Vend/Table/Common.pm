@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.18 2002-07-18 19:27:57 mheins Exp $
+# $Id: Common.pm,v 2.19 2002-08-07 08:03:02 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.18 $, 10);
+$VERSION = substr(q$Revision: 2.19 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -717,7 +717,19 @@ sub query {
 	for (@tabs) {
 		s/\..*//;
 	}
-	if (! defined $s || $tabs[0] ne $s->[$CONFIG]{name}) {
+
+	my $reroute;
+	my $tname = $s->[$CONFIG]{name};
+	if ($tabs[0] ne $tname) {
+		if("$tabs[0]_txt" eq $tname or "$tabs[0]_asc" eq $tname) {
+			$tabs[0] = $spec->{fi}[0] = $tname;
+		}
+		else {
+			$reroute = 1;
+		}
+	}
+
+	if($reroute) {
 		unless ($s = $Vend::Database{$tabs[0]}) {
 			::logError("Table %s not found in databases", $tabs[0]);
 			return $opt->{failure} || undef;
@@ -1302,6 +1314,7 @@ EndOfRoutine
 		}
 	}
 	delete $out->[$CONFIG]{Clean_start};
+	delete $out->[$CONFIG]{_Dirty};
 	unlockfile(\*IN) or die "unlock\n";
     close(IN);
 	if($numeric_guess) {

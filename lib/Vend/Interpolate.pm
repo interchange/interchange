@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.101 2002-08-06 22:08:04 mheins Exp $
+# $Id: Interpolate.pm,v 2.102 2002-08-07 08:02:59 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.101 $, 10);
+$VERSION = substr(q$Revision: 2.102 $, 10);
 
 @EXPORT = qw (
 
@@ -711,8 +711,10 @@ sub tag_data {
 
 	local($Safe_data);
 	$Safe_data = 1 if $opt->{safe_data};
+	
+	my $db;
 
-	if ( not defined $Vend::Database{$selector}) {
+	if ( not $db = database_exists_ref($selector) ) {
 		if($selector eq 'session') {
 			$CacheInvalid = 1;
 			if(defined $opt->{value}) {
@@ -751,7 +753,6 @@ sub tag_data {
 	}
 	elsif (defined $opt->{value}) {
 #::logDebug("alter table: table=$selector alter=$opt->{alter} field=$field value=$opt->{value}");
-		my $db = $Vend::Database{$selector};
 		$CacheInvalid = 1;
 		if ($opt->{alter}) {
 			$opt->{alter} =~ s/\W+//g;
@@ -804,7 +805,6 @@ sub tag_data {
 				);
 	}
 	elsif ($opt->{hash}) {
-		my $db = ::database_exists_ref($selector);
 		return undef unless $db->record_exists($key);
 		return $db->row_hash($key);
 	}
@@ -1638,7 +1638,7 @@ sub tag_options {
 		$opt->{joiner} = '<BR>' if ! $opt->{joiner};
 	}
 
-	my $db = $Db{$table} || Vend::Data::database_exists_ref($table);
+	my $db = $Db{$table} || database_exists_ref($table);
 	$db->record_exists($sku)
 		or return;
 	my $record = $db->row_hash($sku)
@@ -2053,7 +2053,7 @@ sub tag_perl {
 		my (@tab) = grep /\S/, split /\s+/, $tables;
 		foreach my $tab (@tab) {
 			next if $Db{$tab};
-			my $db = Vend::Data::database_exists_ref($tab);
+			my $db = database_exists_ref($tab);
 			next unless $db;
 			$db = $db->ref();
 			if($hole) {
@@ -2963,6 +2963,9 @@ sub escape_form {
 		$val =~ s/^\s+//mg;
 		$val =~ s/\s+$//mg;
 		@args = split /\n+/, $val;
+		for(@args) {
+			s/^(.*?=)(.+)/$1 . Vend::Util::unhexify($2)/ge;
+		}
 	}
 
 	for(@args) {
