@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.0
 #
-# $Id: interchange.PL,v 1.15.2.1 2000-11-23 18:08:09 jon Exp $
+# $Id: interchange.PL,v 1.15.2.2 2000-11-30 03:09:21 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -90,12 +90,20 @@ BEGIN {
 # Uncomment next line if you want to guarantee use of DB_File
 #$ENV{MINIVEND_DBFILE} = 1;
 
+# Uncomment next line in the unlikely event you want to ignore
+# GDBM and DB_File and force use of SDBM.
+#$ENV{MINIVEND_SDBM} = 1;
+
 # Uncomment next line if you want to guarantee use of GDBM and not DB_File
 #$ENV{MINIVEND_GDBM} = 1;
 
 # Uncomment next line if you want to use no DBM, sessions
 # stored in files and databases in memory (or SQL)
 #$ENV{MINIVEND_NODBM} = 1;
+
+# Uncomment next line if you want the ability to use ALL DBM.
+# Otherwise we use only the first choice to save memory.
+#$ENV{MINIVEND_ALLDBM} = 1;
 
 # Uncomment next line if you DON'T want to use DBI, can
 # save a bit on code size
@@ -154,7 +162,7 @@ $Global::SendMailLocation = ($Global::Windows and $Global::SendMailLocation) ||
 #select a DBM
 
 BEGIN {
-	$Global::GDBM = $Global::DB_File =
+	$Global::GDBM = $Global::DB_File = $Global::SDBM =
 # LDAP
 	$Global::LDAP =
 # END LDAP
@@ -182,11 +190,20 @@ BEGIN {
 		last AUTO if 
 			(defined $ENV{MINIVEND_DBFILE} and $Global::DB_File = 1);
 		last AUTO if 
+			(defined $ENV{MINIVEND_SDBM} and $Global::SDBM = 1);
+		last AUTO if 
 			(defined $ENV{MINIVEND_NODBM});
 		eval {require GDBM_File and $Global::GDBM = 1};
 		last AUTO if 
 			(defined $ENV{MINIVEND_GDBM} and $Global::GDBM = 1);
+		last AUTO if
+				!   $ENV{MINIVEND_ALLDBM}
+				and $Global::GDBM;
 		eval {require DB_File and $Global::DB_File = 1};
+		last AUTO if
+				!   $ENV{MINIVEND_ALLDBM}
+				and $Global::GDBM || $Global::DB_File;
+		eval {require SDBM_File and $Global::SDBM = 1};
 	}
 
 	if($Global::GDBM) {
@@ -201,6 +218,13 @@ BEGIN {
 		import DB_File;
 		$Global::DB_File = 1;
 		$Global::Default_database = 'DB_FILE'
+			unless defined $Global::Default_database;
+	}
+	if($Global::SDBM) {
+		require Vend::Table::SDBM;
+		import SDBM_File;
+		$Global::SDBM = 1;
+		$Global::Default_database = 'SDBM'
 			unless defined $Global::Default_database;
 	}
 	$Global::Default_database = 'MEMORY'
@@ -333,12 +357,24 @@ sub update_quantity {
 
 	$cart = Vend::Cart::get_cart($CGI::values{mv_cartname});
 
+	if(defined $CGI::values{mv_item_option}) {
+#::logDebug("adding modifiers");
+		$Vend::Cfg->{UseModifier} = [] if ! $Vend::Cfg->{UseModifier};
+		my %seen;
+		my @mods = (grep $_ !~ /^mv_/, split /\0/, $CGI::values{mv_item_option});
+		@mods = grep ! $seen{$_}++, @mods,@{$Vend::Cfg->{UseModifier}};
+		$Vend::Cfg->{UseModifier} = \@mods;
+	}
+
 	if(ref $Vend::Cfg->{UseModifier}) {
 		foreach $h (@{$Vend::Cfg->{UseModifier}}) {
 			delete @{$::Values}{grep /^$h\d+$/, keys %$::Values};
 			foreach $i (0 .. $#$cart) {
 #::logDebug("updating line $i modifiers: " . ::uneval($cart->[$i]));
-				$modifier = $CGI::values{"$h$i"} || undef;
+#::logDebug(qq{CGI value=$CGI::values{"$h$i"}});
+				$modifier = $CGI::values{"$h$i"}
+						  || (defined $cart->[$i]{$h} ? '' : undef);
+#::logDebug("modifier now $modifier");
 				if (defined($modifier)) {
 					$modifier =~ s/\0+/\0/g;
 					$modifier =~ s/\0$//;
@@ -353,19 +389,26 @@ sub update_quantity {
 	}
 
 	foreach $i (0 .. $#$cart) {
-#::logDebug("updating line $i quantity: " . ::uneval($cart->[$i]));
+::logDebug("updating line $i quantity: " . ::uneval($cart->[$i]));
+		my $line = $cart->[$i];
     	$quantity = $CGI::values{"quantity$i"};
     	if (! defined $quantity) {
         	interaction_error("Variable '$quantity' not passed from form\n");
         	return undef;
 		}
     	elsif ($quantity =~ m/^\d*$/) {
-        	$cart->[$i]->{'quantity'} = $quantity || 0;
+        	$line->{'quantity'} = $quantity || 0;
     	}
     	elsif ($quantity =~ m/^[\d.]+$/
 				and $Vend::Cfg->{FractionalItems} ) {
-        	$cart->[$i]->{'quantity'} = $quantity;
+        	$line->{'quantity'} = $quantity;
     	}
+		# This allows a last-positioned input of item quantity to
+		# remove the item
+		elsif ($quantity =~ s/.*\00$/0/) {
+			$CGI::values{"quantity$i"} = $quantity;
+			redo;
+		}
 		# This allows a multiple input of item quantity to
 		# pass -- FIRST ONE CONTROLS
 		elsif ($quantity =~ s/\0.*//) {
@@ -373,16 +416,23 @@ sub update_quantity {
 			redo;
 		}
 		else {
-			my $item = $cart->[$i]->{'code'};
+			my $item = $line->{'code'};
         	interaction_error("'$quantity' for item $item is not numeric\n");
         	return undef;
     	}
     	$::Values->{"quantity$i"} = delete $CGI::values{"quantity$i"};
+		my $sku;
+		next unless $sku = delete $CGI::values{"mv_sku$i"};
+		if($sku ne $line->{code}) {
+			$line->{mv_sku} = $line->{code} unless $line->{mv_sku};
+			$line->{code} 	= $sku;
+			$line->{mv_ib} 	= ::product_code_exists_tag($sku);
+		}
     }
-#::logDebug("after update, cart is: " . ::uneval($cart));
+::logDebug("after update, cart is: " . ::uneval($cart));
 
 	# If the user has put in "0" for any quantity, delete that item
-    # from the order list.
+    # from the order list. Handles sub-items.
     Vend::Cart::toss_cart($cart);
 
 #::logDebug("after toss, cart is: " . ::uneval($cart));
@@ -467,21 +517,40 @@ sub update_data {
 		@{$data{$key}} = split /\0/, $value;
 	}
 
+	my $autonumber;
+	if ($CGI::values{mv_data_auto_number}) {
+		$autonumber = 1;
+		$base_db->config('AUTO_NUMBER', '000001')
+			if ! $base_db->config('AUTO_NUMBER');
+		$CGI::values{mv_data_return_key} = $prikey
+			unless $CGI::values{mv_data_return_key};
+	}
+	elsif($function eq 'insert' and $base_db->config('AUTO_NUMBER')) {
+		$autonumber = 1;
+	}
+
 	if (not defined $data{$prikey}) {
 		logError("No key '%s' in field specifier %s", $prikey, 'mv_data_fields');
 		return undef;
 	}
 	elsif ( ! @{$data{$prikey}}) {
-		logError("No key '%s' found for function='%s' table='%s'",
-					$prikey, $function, $CGI::values{mv_data_table},
-					);
-		return undef;
+		if($autonumber) {
+			@{$data{$prikey}} = map { '' } @{ $data{$fields[1]} };
+		}
+		else {
+			logError("No key '%s' found for function='%s' table='%s'",
+						$prikey, $function, $CGI::values{mv_data_table},
+						);
+			return undef;
+		}
 	}
 
 	my ($query,$i);
 	my (@k);
 	my (@v);
 	my (@c);
+	my (@rows_set);
+
 #::logDebug("update_data:db=$db key=$prikey VALUES=" . ::uneval(\%CGI::values));
 	my $select_key;
 	for($i = 0; $i < @{$data{$prikey}}; $i++) {
@@ -509,13 +578,25 @@ sub update_data {
 		else {
 			my $field;
 			$key = $data{$prikey}->[$i];
+			if(! length($key) and $autonumber) {
+				$key = $base_db->set_row($key);
+			}
+			push(@rows_set, $key);
 			while($field = shift @k) {
 				$value = shift @v;
 				next if $field eq $prikey;
 				my ($d, $f) = set_db($base_db, $field);
-#::logDebug("update_data:db=$d key=$key field=$f value=$value");
+::logDebug("update_data:db=$d key=$key field=$f value=$value");
 				$d->set_field($key, $f, $value);
 			}
+		}
+	}
+
+	if($CGI::values{mv_data_return_key}) {
+		my @keys = split /\0/, $CGI::values{mv_data_return_key};
+		for(@keys) {
+::logDebug("return_key, setting $_");
+			$CGI::values{$_} = join("\0", @rows_set);
 		}
 	}
 
@@ -649,23 +730,25 @@ sub update_user {
 
 sub do_click {
 	my($click, @clicks);
-	if(defined $CGI::values{mv_click}) {
-		@clicks = split /\s*[\0]+\s*/, $CGI::values{mv_click};
-	}
-
-	if(defined $CGI::values{mv_click_map}) {
-		my(@map) = split /\s*[\0]+\s*/, $CGI::values{mv_click_map};
-		foreach $click (@map) {
-			push (@clicks, $click)
-				if defined $CGI::values{"mv_click.$click.x"}
-				or defined $CGI::values{"$click.x"}
-				or $click = $CGI::values{"mv_click_$click"};
+	do {
+		if($CGI::values{mv_click}) {
+			@clicks = split /\s*[\0]+\s*/, delete $CGI::values{mv_click};
 		}
-	}
 
-	foreach $click (@clicks) {
-		parse_click \%CGI::values, $click;
-	}
+		if(defined $CGI::values{mv_click_map}) {
+			my(@map) = split /\s*[\0]+\s*/, delete $CGI::values{mv_click_map};
+			foreach $click (@map) {
+				push (@clicks, $click)
+					if defined $CGI::values{"mv_click.$click.x"}
+					or defined $CGI::values{"$click.x"}
+					or $click = $CGI::values{"mv_click_$click"};
+			}
+		}
+
+		foreach $click (@clicks) {
+			parse_click \%CGI::values, $click;
+		}
+	} while $CGI::values{mv_click};
 	return 1;
 }
 
@@ -861,8 +944,14 @@ my %form_action = (
 					return 1;
 				},
 	set		=> sub {
-					update_user();
+					update_user() unless $CGI::values{mv_data_auto_number};
 					update_data();
+					update_user() if $CGI::values{mv_data_auto_number};
+					return 1;
+				},
+	autoset	=> sub {
+					update_data();
+					update_user();
 					return 1;
 				},
 	back    => sub { return 1 },
@@ -918,7 +1007,6 @@ sub do_process {
 	#Now determine the action on the todo
     if (defined $Vend::Cfg->{FormAction}{$todo}) {
 		$sub = $Vend::Cfg->{FormAction}{$todo};
-		new Vend::Parse;
 	}
     elsif (not $sub = $form_action{$todo} ) {
 		interaction_error("No action passed for processing\n");
@@ -946,7 +1034,7 @@ EOF
 }
 
 sub config_named_catalog {
-	my ($cat_name, $source, $build) = @_;
+	my ($cat_name, $source, $db_only, $dbconfig) = @_;
 	my ($g,$c,$conf);
 
 	$g = $Global::Catalog{$cat_name};
@@ -956,13 +1044,45 @@ sub config_named_catalog {
 	}
 
 	$Vend::Log_suppress = 1;
-    logGlobal( "Config '%s' %s", $g->{'name'}, $source )
-		unless $Vend::Quiet;
+
+	unless ($db_only or $Vend::Quiet) {
+		logGlobal( "Config '%s' %s%s", $g->{'name'}, $source );
+	}
 	undef $Vend::Log_suppress;
 
     chdir $g->{'dir'}
             or die "Couldn't change to $g->{'dir'}: $!\n";
     $conf = $g->{'dir'} . '/etc';
+
+	if($db_only) {
+		logGlobal(
+			"Config table '%s' (file %s) for catalog %s from %s",
+			$db_only,
+			$dbconfig,
+			$g->{'name'},
+			$source,
+			);
+		my $cfg = $Global::Selector{$g->{script}}
+			or die errmsg("'%s' not a catalog (%s).", $g->{name}, $g->{script});
+		undef $cfg->{Database}{$db_only};
+		$Vend::Cfg = config(
+				$g->{name},
+				$g->{dir},
+				$conf,
+				undef,
+				$cfg,
+				$dbconfig,
+				)
+			or die errmsg("error configuring catalog %s table %s: %s",
+							$g->{name},
+							$db_only,
+							$@,
+					);
+		open_database();
+		close_database();
+		return $Vend::Cfg;
+	}
+
     eval {
         $c = config($g->{'name'},
 					$g->{'dir'},
