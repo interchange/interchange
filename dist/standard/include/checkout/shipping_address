@@ -149,9 +149,7 @@
 		  <b>[L]Shipping method[/L]</b>
 		</td>
 		<td colspan="3" class="contentbar1">
-		  <select name=mv_shipmode>
 		  [shipping widget=select]
-		  </select>
 		</td>
 	  </tr>
 	  <tr>
