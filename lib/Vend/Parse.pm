@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12.2.14 2001-04-01 03:58:10 heins Exp $
+# $Id: Parse.pm,v 1.12.2.15 2001-04-05 02:24:03 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -38,7 +38,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12.2.14 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.15 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -1072,8 +1072,6 @@ sub html_start {
 	$attr->{'decode'} = 1 unless defined $attr->{'decode'};
 	$attr->{'reparse'} = 1 unless	defined $NoReparse{$tag}
 								||	defined $attr->{'reparse'};
-	$attr->{'true'} = 1;
-	$attr->{'false'} = 0;
 	$attr->{'undef'} = undef;
 
 	my ($routine,@args);
@@ -1359,9 +1357,6 @@ sub start {
 
 	$attr->{'reparse'} = 1
 		unless (defined $NoReparse{$tag} || defined $attr->{'reparse'});
-	$attr->{'true'} = 1;
-	$attr->{'false'} = 0;
-	$attr->{'undef'} = undef;
 
 	my ($routine,@args);
 
