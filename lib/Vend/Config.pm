@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.30 2002-02-01 01:39:52 kwalsh Exp $
+# $Id: Config.pm,v 2.31 2002-02-01 17:01:52 kwalsh Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.30 $, 10);
+$VERSION = substr(q$Revision: 2.31 $, 10);
 
 my %CDname;
 
@@ -3248,7 +3248,7 @@ sub parse_tag {
 		return $c unless $Global::TagInclude->{$tag};
 	}
 
-	if($p eq 'Routine' or $p eq 'posRoutine') {
+	if($p eq 'Routine' or $p eq 'PosRoutine') {
 
 		my $sub;
 		$c->{Source}->{$tag}->{$p} = $val;
