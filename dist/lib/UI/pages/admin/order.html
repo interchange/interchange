@@ -331,8 +331,8 @@ Orders [matches] of [value mv_search_match_count] [scratch archive_label] displa
 [/if-mm]
 &nbsp;&nbsp;&nbsp;[button form=batch src="[scratch archive_img]"
 			text=`
-			my $tmp = $Tag->loc("$Scratch->{archive_nm} checked orders");
-			return "\u$tmp";
+			my $tmp = "$Scratch->{archive_nm} checked orders";
+			return $Tag->loc('', "\u$tmp");
 			`]
 [scratch archive_nm]order=1[/button]
 </FORM>
