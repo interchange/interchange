@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.51 2003-07-14 02:35:55 mheins Exp $
+# $Id: DBI.pm,v 2.52 2003-07-15 21:59:30 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.51 $, 10);
+$VERSION = substr(q$Revision: 2.52 $, 10);
 
 use strict;
 
@@ -1959,6 +1959,9 @@ sub query {
 		if(! $sth or ! defined $rc) {
 			# query failed, probably because no table
 
+			## Save the original message
+			my $origmsg = $@;
+
 			# Allow failed query by design, maybe to use multiple key inserts
 			return undef if $opt->{no_requery};
 
@@ -1968,10 +1971,13 @@ sub query {
 			eval {
 				$trytab = Vend::Scan::sql_statement($query, { table_only => 1 } );
 				$newdb = Vend::Data::database_exists_ref($trytab);
+				if($newdb->config('name') eq $s->config('name')) {
+					die $origmsg;
+				}
 			};
 			if($@) {
 				my $msg = ::errmsg(
-						qq{Query rerouted from table %s failed: %s\nQuery was: %s},
+						qq{Query on table %s failed: %s\nQuery was: %s},
 						$trytab,
 						$@,
 						$query,
