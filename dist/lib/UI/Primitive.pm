@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.25.4.11 $, 10);
+$VERSION = substr(q$Revision: 1.25.4.12 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -848,6 +848,14 @@ sub meta_display {
 		}
 		my $opt;
 
+		if($record->{extended}) {
+			my $hash = Vend::Util::get_option_hash($record->{extended});
+			if(ref $hash) {
+				for (keys %$hash) {
+					$record->{$_} = $hash->{$_};
+				}
+			}
+		}
 		## Here we allow override with the display tag...
 		my @override = grep defined $o->{$_},
 						qw/
@@ -1015,7 +1023,7 @@ sub meta_display {
 			}
 			elsif ($record->{type} =~ /textarea/i) {
 				my $width = $record->{width} || 80;
-				$record->{type} = "textarea_" . $record->{height} . '_' . $width;
+				$record->{type} =~ s/textarea/textarea_$record->{height}_$width/;
 			}
 		}
 		elsif ($record->{width}) {
@@ -1045,7 +1053,7 @@ sub meta_display {
 			type		=> ($o->{type} || $record->{'type'}		|| undef),
 			prepend		=> ($record->{'prepend'}	|| undef),
 			append		=> ($record->{'append'}		|| undef),
-			extra		=> ($o->{'extra'}		|| undef),
+			extra		=> ($o->{'extra'} || $record->{extra} || undef),
 		};
 #::logDebug("going to display for $opt->{name} type=$opt->{type} passed=$opt->{passed}");
 		my $w = Vend::Interpolate::tag_accessories(
