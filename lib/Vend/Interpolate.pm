@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.10 2001-08-15 12:27:26 racke Exp $
+# $Id: Interpolate.pm,v 2.11 2001-09-04 20:21:46 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.10 $, 10);
+$VERSION = substr(q$Revision: 2.11 $, 10);
 
 @EXPORT = qw (
 
@@ -456,11 +456,11 @@ sub substitute_image {
 			$Vend::Cfg->{ImageDir};
 
 		if ($dir) {
-			$$text =~ s#(<i\w+\s+[^>]*?src=")(?!https?:)([^/][^"]+)#
+			$$text =~ s#(<i\w+\s+[^>]*?src=")(?!\w+:)([^/][^"]+)#
 						$1 . $dir . $2#ige;
-	        $$text =~ s#(<body\s+[^>]*?background=")(?!https?:)([^/][^"]+)#
+	        $$text =~ s#(<body\s+[^>]*?background=")(?!\w+:)([^/][^"]+)#
 						$1 . $dir . $2#ige;
-	        $$text =~ s#(<t(?:[dhr]|able)\s+[^>]*?background=")(?!https?:)([^/][^"]+)#
+	        $$text =~ s#(<t(?:[dhr]|able)\s+[^>]*?background=")(?!\w+:)([^/][^"]+)#
 						$1 . $dir . $2#ige;
 		}
 	}
