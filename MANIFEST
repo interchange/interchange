@@ -1235,6 +1235,7 @@ lib/Vend/Payment/AuthorizeNet.pm
 lib/Vend/Payment/BoA.pm
 lib/Vend/Payment/CyberCash.pm
 lib/Vend/Payment/ECHO.pm
+lib/Vend/Payment/EFSNet.pm
 lib/Vend/Payment/iTransact.pm
 lib/Vend/Payment/Linkpoint.pm
 lib/Vend/Payment/MCVE.pm
