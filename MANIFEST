@@ -164,6 +164,7 @@ code/UI_Tag/row_edit.coretag
 code/UI_Tag/run_profile.coretag
 code/UI_Tag/su.coretag
 code/UI_Tag/substitute_file.coretag
+code/UI_Tag/tabbed_display.coretag
 code/UI_Tag/table_editor.coretag
 code/UI_Tag/table_editor_tpl.coretag
 code/UI_Tag/uneval.coretag
@@ -1209,6 +1210,7 @@ lib/Vend/SessionFile.pm
 lib/Vend/Table/Common.pm
 lib/Vend/Table/DBI.pm
 lib/Vend/Table/DB_File.pm
+lib/Vend/Table/Editor.pm
 lib/Vend/Table/GDBM.pm
 lib/Vend/Table/InMemory.pm
 lib/Vend/Table/LDAP.pm

@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.1 2002-09-19 03:25:47 mheins Exp $
+# $Id: Editor.pm,v 1.2 2002-09-19 17:52:34 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -513,16 +513,32 @@ sub tabbed_display {
 	
 	$opt ||= {};
 
-	$opt->{tab_bgcolor_template} ||= 'eeeeee';
+	my @chars = reverse(0 .. 9, 'a' .. 'e');
+	my @colors;
+	$opt->{tab_bgcolor_template} ||= '#xxxxxx';
 	$opt->{tab_height} ||= '30';
 	$opt->{tab_width} ||= '120';
-	$opt->{tab_cellspacing} ||= 0;
-	$opt->{tab_cellpadding} ||= 2;
 	$opt->{panel_height} ||= '600';
 	$opt->{panel_width} ||= '800';
 	$opt->{panel_id} ||= 'mvpan';
 	$opt->{tab_horiz_offset} ||= '10';
 	$opt->{tab_vert_offset} ||= '8';
+	$opt->{tab_style} ||= q{
+								text-align:center;
+								font-family: sans-serif;
+								line-height:150%;
+								border:2px;
+								border-color:#999999;
+								border-style:outset;
+								border-bottom-style:none;
+							};
+	$opt->{panel_style} ||= q{ 
+									font-family: sans-serif;
+									font-size: smaller;
+									border: 2px;
+									border-color:#999999;
+									border-style:outset;
+								};
 	$opt->{layer_tab_style} ||= q{
 									font-weight:bold;
 									text-align:center;
@@ -545,7 +561,13 @@ sub tabbed_display {
 		+ $opt->{tab_vert_offset};
 	my $int1 = $panel_y - 2;
 	my $int2 = $opt->{tab_height} * $num_rows;
-::logDebug("num rows=$num_rows");
+	for(my $i = 0; $i < $num_panels; $i++) {
+		my $c = $opt->{tab_bgcolor_template} || '#xxxxxx';
+		$c =~ s/x/$chars[$i] || 'e'/eg;
+		$colors[$i] = $c;
+	}
+	my $cArray = qq{var colors = ['} . join("','", @colors) . qq{'];};
+#::logDebug("num rows=$num_rows");
 	my $out = <<EOF;
 <SCRIPT language="JavaScript">
 <!--
@@ -558,6 +580,7 @@ var tabWidth = $opt->{tab_width}
 var tabHeight = $opt->{tab_height}
 var vOffset = $opt->{tab_vert_offset};
 var hOffset = $opt->{tab_horiz_offset};
+$cArray
 
 var divLocation = new Array(numLocations)
 var newLocation = new Array(numLocations)
@@ -588,9 +611,9 @@ function updatePosition(div, newPos) {
 	if (document.layers) {
 		div.style=div;
 		div.clip.bottom=newClip; // clip off bottom
-		} else {
+	} else {
 		div.style.clip="rect(0 auto "+newClip+" 0)"
-		}
+	}
 	div.style.top = (numRows-(Math.floor(newPos/tabsPerRow) + 1)) * (tabHeight-vOffset)
 	div.style.left = (newPos % tabsPerRow) * tabWidth +	(hOffset * (Math.floor(newPos / tabsPerRow)))
 }
@@ -610,16 +633,27 @@ function selectTab(n) {
 	}
 	// Set tab positions & zIndex
 	// Update location
+	var j = 1;
 	for(var i=0; i<numDiv; ++i) {
 		var loc = newLocation[i]
 		var div = getDiv("panel",i)
-		if(i == n) setZIndex(div, numLocations +1)
-		else setZIndex(div, numLocations - loc)
+		var tdiv = getDiv("tab",i)
+		if(i == n) {
+			setZIndex(div, numLocations +1);
+			div.style.display = 'block';
+			tdiv.style.backgroundColor = colors[0];
+			div.style.backgroundColor = colors[0];
+		}
+		else {
+			setZIndex(div, numLocations - loc)
+			div.style.display = 'none';
+			tdiv.style.backgroundColor = colors[j];
+			div.style.backgroundColor = colors[j++];
+		}
 		divLocation[i] = loc
-		div = getDiv("tab",i)
-		updatePosition(div, loc)
-		if(i == n) setZIndex(div, numLocations +1)
-		else setZIndex(div,numLocations - loc)
+		updatePosition(tdiv, loc)
+		if(i == n) setZIndex(tdiv, numLocations +1)
+		else setZIndex(tdiv,numLocations - loc)
 	}
 }
 
@@ -634,31 +668,31 @@ if (document.layers) window.onload=positionPanel;
 </SCRIPT>
 <STYLE type="text/css">
 <!--
-.tab {
-	font-family: sans-serif; line-height:150%; font-weight: bold; position:absolute; text-align:center; border:2px; border-color:#999999; border-style:outset; border-bottom-style:none; width:$opt->{tab_width}px; margin:0px; height: ${int2}px;
-}
-
-.panel {
-	font-family: sans-serif;
-	font-size: smaller;
+.${id}tab {
+	font-weight: bold;
+	width:$opt->{tab_width}px;
+	margin:0px;
+	height: ${int2}px;
 	position:absolute;
-	border: 2px;
-	border-color:#999999;
-	border-style:outset;
+	$opt->{tab_style}
+	}
+
+.${id}panel {
+	position:absolute;
 	width: $opt->{panel_width}px;
 	height: $opt->{panel_height}px;
 	left:0px;
 	top:${int1}px;
 	margin:0px;
 	padding:6px;
-}
+	$opt->{panel_style}
+	}
 -->
 </STYLE>
 EOF
 	my $s1 = '';
 	my $s2 = '';
 	for(my $i = 0; $i < $num_panels; $i++) {
-		my $c = '#eeeeee';
 		my $zi = $num_panels - $i;
 		my $pnum = $i + 1;
 		my $left = (($i % $tabs_per_row)
@@ -669,18 +703,23 @@ EOF
 					- ($opt->{tab_height} - $opt->{tab_vert_offset});
 		my $cliprect = $opt->{tab_height} * (int($i / $tabs_per_row) + 1);
 		$s1 .= <<EOF;
-<DIV id="${id}panel$i" class="panel" style="background-color: $c; 
- z-index:$zi">
-<table>
+<DIV id="${id}panel$i"
+		class="${id}panel"
+		style="
+			background-color: $c; 
+			z-index:$zi
+		">
+$opt->{panel_prepend}
 $cont->[$i]
-</table>
+$opt->{panel_append}
 </DIV>
 <DIV
 	onclick="selectTab($i)"
 	id="${id}tab$i"
-	class="tab"
+	class="${id}tab"
 	style="
-		background-color:$c; 
+		background-color: $c; 
+		cursor: pointer;
 		left: ${left}px;
 		top: ${top}px;
 		z-index:$zi;
@@ -813,7 +852,7 @@ sub chunk {
 sub resolve_exclude {
 	my $exc = shift;
 	while(my ($k, $v) = each %exclude) {
-::logDebug("examining $k for $v");
+#::logDebug("examining $k for $v");
 		while ($v =~ m{(\S+)}g) {
 			my $thing = $1;
 			if($thing =~ s/^[^A-Z]//) {
@@ -2248,9 +2287,16 @@ EOF
 		}
 	}
 
-	if($opt->{tabbed}) {
-		chunk ttag(), qq{<tr><td colspan=$span>\n};
-	}
+    if($opt->{tabbed}) {
+        my $ph = $opt->{panel_height} || '600';
+        my $pw = $opt->{panel_width} || '800';
+        my $th = $opt->{tab_height} || '30';
+        my $oh = $ph + $th;
+        my $extra = $Vend::Session->{browser} =~ /Gecko/
+                  ? ''
+                  : " width=$pw height=$oh";
+        chunk ttag(), qq{<tr><td colspan=$span$extra>\n};
+    }
 
 	foreach my $col (@cols) {
 		if($link_before{$col}) {
@@ -2758,11 +2804,13 @@ show_times("end table editor call item_id=$key") if $Global::ShowTimes;
 	}
 
 	if($opt->{tabbed}) {
-::logDebug("In tabbed display...controls=" . scalar(@controls) . ", titles=" . scalar(@titles));
+#::logDebug("In tabbed display...controls=" . scalar(@controls) . ", titles=" . scalar(@titles));
 		my @tabcont;
 		for(@controls) {
 			push @tabcont, join "", map { $outhash{$_} } @$_;
 		}
+		$opt->{panel_prepend} ||= '<table>';
+		$opt->{panel_append} ||= '</table>';
 		push @put, tabbed_display(\@titles,\@tabcont,$opt);
 	}
 	else {
