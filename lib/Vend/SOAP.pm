@@ -1,6 +1,6 @@
 # Vend::SOAP - Handle SOAP connections for Interchange
 #
-# $Id: SOAP.pm,v 2.6 2003-03-11 00:59:32 racke Exp $
+# $Id: SOAP.pm,v 2.7 2003-03-11 18:56:01 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -34,7 +34,7 @@ require SOAP::Transport::HTTP;
 use strict;
 
 use vars qw($VERSION @ISA $AUTOLOAD);
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.7 $, 10);
 @ISA = qw/SOAP::Server/;
 
 my %Allowed_tags;
@@ -129,6 +129,8 @@ sub tag_soap {
 	if($opt->{trace_transport}) {
 		if (exists $Vend::Cfg->{Sub}->{$opt->{trace_transport}}) {
 			SOAP::Trace->import('transport' => $Vend::Cfg->{Sub}->{$opt->{trace_transport}});
+		} else {
+			::logError (qq{no such subroutine "$opt->{trace_transport}" for SOAP transport tracing});
 		}
 	}
 
@@ -161,6 +163,7 @@ sub tag_soap {
 	}
 #::logDebug("after method call, uri=$uri proxy=$proxy call=$method result=$result");
 
+	$::Scratch->{$opt->{result}} = $result if $opt->{result};
 	return '' if $opt->{init};
 	return $result;
 }
