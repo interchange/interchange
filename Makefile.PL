@@ -61,8 +61,11 @@ unless($@) {
 
 my $term;
 if($TermRead) {
-	$term = new Term::ReadLine 'MakeFile';
-	$Prompt_sub = sub {
+	eval {
+		$term = new Term::ReadLine 'MakeFile';
+	};
+
+	! $@ and $Prompt_sub = sub {
 		my($prompt, $default) = @_;
 		$prompt .= "[$default] "
 			if defined $default && !$ENV{PERL_RL};
