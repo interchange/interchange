@@ -413,7 +413,7 @@ EOF
 
 	my $key_message;
 	if($opt->{ui_new_item}) {
-		if( ! $db->config('AUTO_NUMBER') ) {
+		if( ! $db->config('_Auto_number') ) {
 			$db->config('AUTO_NUMBER', '000001');
 			$key = $db->autonumber($key);
 		}

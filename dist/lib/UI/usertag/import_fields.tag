@@ -134,7 +134,7 @@ EOF
 			die "Non-existent table '$table'\n" unless $db;
 			$db = $db->ref();
 #::logDebug("db now=$db");
-			if($opt->{autonumber} and ! $db->config('AUTO_NUMBER') ) {
+			if($opt->{autonumber} and ! $db->config('_Auto_number') ) {
 				 $db->config('AUTO_NUMBER', '1000');
 			}
 #::logDebug("db now=$db");
@@ -146,7 +146,7 @@ EOF
 		$db = Vend::Data::database_exists_ref($table);
 		die "Non-existent table '$table'\n" unless $db;
 		$db = $db->ref() unless $Vend::Interpolate::Db{$table};
-		if($opt->{autonumber} and ! $db->config('AUTO_NUMBER') ) {
+		if($opt->{autonumber} and ! $db->config('_Auto_number') ) {
 			 $db->config('AUTO_NUMBER', '1000');
 		}
 	}

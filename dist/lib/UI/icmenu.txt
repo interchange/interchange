@@ -21,7 +21,7 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0019	Admin	11			no_dbmenu	mv_data_table	admin/import_table	mv_data_table=[cgi mv_data_table]	Import Data									
 0020	Admin	12			no_dbmenu	mv_data_table	admin/export_table	mv_data_table=[cgi mv_data_table]	Export Data									
 0021	Admin	13			no_dbmenu	mv_data_table	admin/spread	mv_data_table=[cgi mv_data_table]	Spreadsheet									
-0022	Admin	14			no_dbmenu	mv_data_table	admin/flex_editor	mv_data_table=[cgi mv_data_table]&item_id=new	New Entry									
+0022	Admin	14			no_dbmenu	mv_data_table	admin/flex_editor	mv_data_table=[cgi mv_data_table]&ui_new_item=1	New Entry									
 0023	Admin	15			no_dbmenu	mv_data_table	admin/gentable		&nbsp;&nbsp;&nbsp;&nbsp;Re-select Table									
 0024	Admin	16	1			access_menu	admin/access		Users									
 0025	Admin	17				access_menu	admin/group		Groups									
@@ -29,7 +29,7 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0027	Content	02					admin/file_transfer		File Transfer									
 0028	Customers	01		showactive			admin/customer	showactive=1	Active Customers									
 0029	Customers	02		showinactive			admin/customer	showinactive=1	Inactive Customers									
-0030	Customers	03					admin/flex_editor	page_title=Create new customer&mv_data_table=userdb&help_name=create.new.customer&item_id=new&ui_return_to=admin/customer	Create new customer									
+0030	Customers	03					admin/flex_editor	page_title=Create new customer&mv_data_table=userdb&help_name=create.new.customer&ui_new_item=1&ui_return_to=admin/customer	Create new customer									
 0031	Customers	04	1		deletecustomer	customer	admin/customer_view	customer=[cgi customer]	View									
 0032	Customers	05			deletecustomer	customer	admin/customer_ship	customer=[cgi customer]	Shipping									
 0033	Customers	06			deletecustomer	customer	admin/customer_bill	customer=[cgi customer]	Billing									
@@ -44,8 +44,8 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0042	Design	05					admin/file_transfer		File Transfer									
 0043	Design	06					admin/page		Page Edit									
 0044	Items	01					admin/item		Item list									
-0045	Items	02					admin/item_edit	item_id=new&ui_new_item=1	&nbsp;&nbsp;&nbsp;&nbsp;Create new item									
-0046	Items	03				item_id	admin/item_edit	item_id=new&ui_new_item=1&ui_clone_id=[cgi item_id]&ui_clone_tables=[var UI_ITEM_TABLES]	&nbsp;&nbsp;&nbsp;&nbsp;Clone item									
+0045	Items	02					admin/item_edit	ui_new_item=1	&nbsp;&nbsp;&nbsp;&nbsp;Create new item									
+0046	Items	03				item_id	admin/item_edit	ui_new_item=1&ui_clone_id=[cgi item_id]&ui_clone_tables=[var UI_ITEM_TABLES]	&nbsp;&nbsp;&nbsp;&nbsp;Clone item									
 0047	Items	04				item_id			&nbsp;&nbsp;&nbsp;sku: [cgi item_id]									
 0048	Items	13	1			item_id	admin/item_edit	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Edit									
 0049	Items	14				item_id	admin/item_price	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Pricing									
@@ -57,7 +57,7 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0055	Merchandising	01					admin/merchandising		Product Merchandising									
 0056	Merchandising	02					admin/affiliates		Affiliates									
 0057	Merchandising	03					admin/build_related		Generate ""others who ...""									
-0058	Merchandising	04	1		affiliates		admin/flex_editor	page_title=Create new affiliate&mv_data_table=affiliate&help_name=create.new.affiliate&ui_new_item=1&item_id=new&ui_return_to=admin/affiliates&icon_name=admin/icon_people.gif	Create new affiliate									
+0058	Merchandising	04	1		affiliates		admin/flex_editor	page_title=Create new affiliate&mv_data_table=affiliate&help_name=create.new.affiliate&ui_new_item=1&ui_return_to=admin/affiliates&icon_name=admin/icon_people.gif	Create new affiliate									
 0059	None	1		!nevairbe					<font size=""-1""><b>Welcome to Interchange</b></font>									
 0060	Orders	01		!showarchive			admin/order	showpending=1	Pending Orders									
 0061	Orders	02		showarchive			admin/order	showarchive=1	Archived Orders									
