@@ -1,6 +1,6 @@
 # Vend::Cart - Interchange shopping cart management routines
 #
-# $Id: Cart.pm,v 2.3 2002-06-27 22:24:10 jon Exp $
+# $Id: Cart.pm,v 2.4 2002-06-28 05:00:25 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -24,7 +24,7 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 
 use strict;
 
@@ -142,26 +142,70 @@ sub toss_cart {
 	my (@cascade);
 	DELETE: for (;;) {
 		foreach $i (0 .. $#$s) {
+			my $item = $s->[$i];
 			if ($sub = $Vend::Cfg->{ItemAction}{$s->[$i]{code}}) {
-				$sub->($s->[$i]);
+				$sub->($item);
 			}
-			if ($s->[$i]->{quantity} <= 0) {
-				next if defined $s->[$i]->{mv_control} and
-								$s->[$i]->{mv_control} =~ /\bnotoss\b/;
-				if ($s->[$i]->{mv_mi} && ! $s->[$i]->{mv_si}) {
-					push (@master, $s->[$i]->{mv_mi});
+			if ($item->{quantity} <= 0) {
+				next if defined $item->{mv_control} and
+								$item->{mv_control} =~ /\bnotoss\b/;
+				if ($item->{mv_mi} && ! $item->{mv_si}) {
+					push (@master, $item->{mv_mi});
 				}
-				elsif ( $s->[$i]->{mv_ci} ) {
-					push (@master, $s->[$i]->{mv_ci});
+				elsif ( $item->{mv_ci} ) {
+					push (@master, $item->{mv_ci});
 				}
 				splice(@$s, $i, 1);
 				next DELETE;
 			}
+
+			if($Vend::Cfg->{MinQuantityField}) {
+				if(! defined $item->{mv_min_quantity}) {
+					my ($tab, $col) = split /:+/, $Vend::Cfg->{MinQuantityField};
+					if(! length $col) {
+						$col = $tab;
+						$tab = $item->{mv_ib} || $Vend::Cfg->{ProductFiles}[0];
+					}
+					$item->{mv_min_quantity} = ::tag_data($tab, $col, $item->{code})
+											 || '';
+				}
+
+				if(
+					length $item->{mv_min_quantity}
+					and 
+					$item->{quantity} < $item->{mv_min_quantity}
+					)
+				{
+					$item->{quantity} = $item->{mv_min_quantity};
+					$item->{mv_min_under} = 1;
+				}
+			}
+
+			if($Vend::Cfg->{MaxQuantityField}) {
+				my ($tab, $col) = split /:+/, $Vend::Cfg->{MaxQuantityField};
+				if(! length $col) {
+					$col = $tab;
+					$tab = $item->{mv_ib} || $Vend::Cfg->{ProductFiles}[0];
+				}
+				$item->{mv_max_quantity} = ::tag_data($tab, $col, $item->{code})
+											 || '';
+
+				if(
+					length $item->{mv_max_quantity}
+					and 
+					$item->{quantity} > $item->{mv_max_quantity}
+					)
+				{
+					$item->{quantity} = $item->{mv_max_quantity};
+					$item->{mv_max_over} = 1;
+				}
+			}
+
 			next unless $Vend::Cfg->{Limit}{cart_quantity_per_line};
 			
-			$s->[$i]->{quantity} = $Vend::Cfg->{Limit}{cart_quantity_per_line}
+			$item->{quantity} = $Vend::Cfg->{Limit}{cart_quantity_per_line}
 				if
-					$s->[$i]->{quantity}
+					$item->{quantity}
 						>
 					$Vend::Cfg->{Limit}{cart_quantity_per_line};
 		}

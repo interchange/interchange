@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.49 2002-06-27 22:24:10 jon Exp $
+# $Id: Config.pm,v 2.50 2002-06-28 05:00:25 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.49 $, 10);
+$VERSION = substr(q$Revision: 2.50 $, 10);
 
 my %CDname;
 
@@ -407,6 +407,8 @@ sub catalog_directives {
 	['SetGroup',		 'valid_group',      ''],
 	['UseModifier',		 'array',     	     ''],
 	['AutoModifier',	 'array',     	     ''],
+	['MaxQuantityField', undef,     	     ''],
+	['MinQuantityField', undef,     	     ''],
 	['LogFile', 		  undef,     	     'etc/log'],
 	['Pragma',		 	 'boolean',     	 ''],
 	['DynamicData', 	 'boolean',     	 ''],

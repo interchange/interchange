@@ -118,6 +118,18 @@ upsell_in_cart:
 	[if-item-field weight]
 	[seti weight][summary amount=`[item-quantity] * [item-field weight]`][/seti]
 	[/if-item-field]
+	[if-item-param mv_min_under]
+		<br>
+		<span style="color: __CONTRAST__; font-size: 8pt">
+		Minimum order quantity of [item-param mv_min_quantity] enforced.
+		</span>
+	[/if-item-param]
+	[if-item-param mv_max_over]
+		<br>
+		<span style="color: __CONTRAST__; font-size: 8pt">
+		Maximum order quantity of [item-param mv_max_quantity] enforced.
+		</span>
+	[/if-item-param]
 
 [if type=explicit compare="[control others_bought]"]
 	[if-item-data merchandising others_bought]
