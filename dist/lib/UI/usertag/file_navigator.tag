@@ -178,31 +178,31 @@ sub {
 	my $del_string = '';
 	$Tag->if_mm('advanced', 'delete_files')
 		and do {
-			$del_string = qq{<A onClick="return confirm('Are you sure you want to delete the file ~FN~?')" HREF="$Vend::Cfg->{VendURL}/$this_page?mv_click=file_maintenance&ui_delete_file=~FN~&mv_action=back">$del_img</A>};
+			$del_string = qq{<A onClick="return confirm('Are you sure you want to delete the file ~FN~?')" HREF="$Vend::Cfg->{VendURL}/$this_page?~ID~&mv_click=file_maintenance&ui_delete_file=~FN~&mv_action=back">$del_img</A>};
 		};
 
 	my $ftmpl = <<EOF;
-<A HREF="$Vend::Cfg->{VendURL}/ui_download/~FN~">$dn_img</A>$del_string<A HREF="$base_url/upload_file?mv_arg=~FN~&ui_return_to=$this_page">$up_img</A><A HREF="$base_url/do_view?mv_arg=~FN~">$vw_img</A>&nbsp;%s&nbsp;<A HREF="$base_url/do_view?mv_arg=~FN~">%s</A><BR>
+<A HREF="$Vend::Cfg->{VendURL}/ui_download/~FN~?~ID~">$dn_img</A>$del_string<A HREF="$base_url/upload_file?~ID~&mv_arg=~FN~&ui_return_to=$this_page">$up_img</A><A HREF="$base_url/do_view?~ID~&mv_arg=~FN~">$vw_img</A>&nbsp;%s&nbsp;<A HREF="$base_url/do_view?~ID~&mv_arg=~FN~">%s</A><BR>
 EOF
 
 	my $utmpl = <<EOF;
-<A HREF="$base_url/upload_file?mv_arg=~FN~&ui_return_to=$this_page">$up_img</A>&nbsp;%s&nbsp;<A HREF="$base_url/upload_file?mv_arg=~FN~&ui_return_to=$this_page">%s</A><BR>
+<A HREF="$base_url/upload_file?~ID~&mv_arg=~FN~&ui_return_to=$this_page">$up_img</A>&nbsp;%s&nbsp;<A HREF="$base_url/upload_file?~ID~&mv_arg=~FN~&ui_return_to=$this_page">%s</A><BR>
 EOF
 
 	my $ftmpl_ed;
 	if(! $do_perms and $opt->{edit_only}) {
 		$ftmpl_ed = <<EOF;
-<A HREF="$base_url/$edit_page?$edit_var=~FN~&ui_return_to=$this_page">$ed_img</A>&nbsp;%s&nbsp;<A HREF="$base_url/$edit_page?$edit_var=~FN~&ui_return_to=$this_page">%s</A><BR>
+<A HREF="$base_url/$edit_page?~ID~&$edit_var=~FN~&ui_return_to=$this_page">$ed_img</A>&nbsp;%s&nbsp;<A HREF="$base_url/$edit_page?~ID~&$edit_var=~FN~&ui_return_to=$this_page">%s</A><BR>
 EOF
 	}
 	else {
 		$ftmpl_ed = <<EOF;
-<A HREF="$Vend::Cfg->{VendURL}/ui_download/~FN~">$dn_img</A>$del_string<A HREF="$base_url/upload_file?mv_arg=~FN~&ui_return_to=$this_page">$up_img</A><A HREF="$base_url/$edit_page?$edit_var=~FN~&ui_return_to=$this_page">$ed_img</A>&nbsp;%s&nbsp;<A HREF="$base_url/$edit_page?$edit_var=~FN~&ui_return_to=$this_page">%s</A><BR>
+<A HREF="$Vend::Cfg->{VendURL}/ui_download/~FN~?~ID~">$dn_img</A>$del_string<A HREF="$base_url/upload_file?~ID~&mv_arg=~FN~&ui_return_to=$this_page">$up_img</A><A HREF="$base_url/$edit_page?~ID~&$edit_var=~FN~&ui_return_to=$this_page">$ed_img</A>&nbsp;%s&nbsp;<A HREF="$base_url/$edit_page?~ID~&$edit_var=~FN~&ui_return_to=$this_page">%s</A><BR>
 EOF
 	}
 
 	my $dtmpl = <<EOF;
-<A HREF="$Vend::Cfg->{VendURL}/$this_page?action=chdir&dir=~FN~">$dir_img</A>&nbsp;%s&nbsp;<A HREF="$Vend::Cfg->{VendURL}/$this_page?action=chdir&dir=~FN~">%s</A><BR>
+<A HREF="$Vend::Cfg->{VendURL}/$this_page?~ID~&action=chdir&dir=~FN~">$dir_img</A>&nbsp;%s&nbsp;<A HREF="$Vend::Cfg->{VendURL}/$this_page?~ID~&action=chdir&dir=~FN~">%s</A><BR>
 EOF
 
 	$dtmpl = "$sp_img$sp_img$sp_img$dtmpl" if $do_perms;
@@ -303,6 +303,7 @@ EOF
 	for (@dir, @plain) {
 		$_->[2] = sprintf($_->[2], $_->[3], $_->[1]);
 		$_->[2] =~ s/~FN~/$_->[0]/g;
+		$_->[2] =~ s/~ID~/mv_session_id=$Session->{id}/g;
 		$out .= $_->[2];
 	}
 
