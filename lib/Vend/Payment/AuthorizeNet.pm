@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 #
-# $Id: Authorize.pm,v 1.1.2.1 2001-04-09 06:39:22 heins Exp $
+# $Id: AuthorizeNet.pm,v 1.1.2.1 2001-04-09 17:35:56 heins Exp $
 #
-# Copyright (C) 1996-2000 Red Hat, Inc., http://www.redhat.com
+# Copyright (C) 1999-2001 Red Hat, Inc., http://www.redhat.com
 #
 # by mark@summersault.com with code reused and inspired by
 #	Mike Heins <mike@minivend.com>
@@ -33,23 +33,19 @@
 
 # Reworked extensively to support new Interchange payment stuff by Mike Heins
 
-package Vend::Payment::Authorize;
+package Vend::Payment::AuthorizeNet;
 
-=head1 Vend::Payment::Authorize: Interchange Authorize.net Support
+=head1 Interchange AuthorizeNet Support
 
-Vend::Payment::Authorize $Revision: 1.1.2.1 $
+Vend::Payment::AuthorizeNet $Revision: 1.1.2.1 $
 
 =head1 SYNOPSIS
 
-authorizenet($mode, $opt);
-
-	or
-
-&charge=authorizenet
-
-	or
-
-[charge mode=authorizenet param1=value1 param2=value2]
+    &charge=authorizenet
+ 
+        or
+ 
+    [charge mode=authorizenet param1=value1 param2=value2]
 
 =head1 PREREQUISITES
 
@@ -57,7 +53,7 @@ Net::SSLeay
 
 =head1 DESCRIPTION
 
-The Vend::Payment::Authorize module implements the authorizenet() routine
+The Vend::Payment::AuthorizeNet module implements the authorizenet() routine
 for use with Interchange. It is compatible on a call level with the other
 Interchange payment modules -- in theory (and even usually in practice) you
 could switch from CyberCash to Authorize.net with a few configuration 
@@ -65,7 +61,7 @@ file changes.
 
 To enable this module, place this directive in C<interchange.cfg>:
 
-	Require module Vend::Payment::Authorize
+    Require module Vend::Payment::AuthorizeNet
 
 This I<must> be in interchange.cfg or a file included from it.
 
@@ -75,7 +71,7 @@ The mode can be named anything, but the C<gateway> parameter must be set
 to C<authorizenet>. To make it the default payment gateway for all credit
 card transactions in a specific catalog, you can set in C<catalog.cfg>:
 
-	Variable   MV_PAYMENT_MODE  authorizenet
+    Variable   MV_PAYMENT_MODE  authorizenet
 
 It uses several of the standard settings from Interchange payment. Any time
 we speak of a setting, it is obtained either first from the tag/call options,
@@ -83,15 +79,15 @@ then from an Interchange order Route named for the mode, then finally a
 default global payment variable, For example, the C<id> parameter would
 be specified by:
 
-	[charge mode=authorizenet id=YourAuthorizeNetID]
+    [charge mode=authorizenet id=YourAuthorizeNetID]
 
 or
 
-	Route authorizenet id YourAuthorizeNetID
+    Route authorizenet id YourAuthorizeNetID
 
 or 
 
-	Variable MV_PAYMENT_ID      YourAuthorizeNetID
+    Variable MV_PAYMENT_ID      YourAuthorizeNetID
 
 The active settings are:
 
@@ -116,12 +112,13 @@ Global parameter is MV_PAYMENT_REFERER.
 
 The type of transaction to be run. Valid values are:
 
-	Interchange mode    AuthorizeNet mode
-	----------------    -----------------
+    Interchange mode    AuthorizeNet mode
+    ----------------    -----------------
 
 =item remap 
 
-This remaps the form variable names to the ones needed by Authorize.net.
+This remaps the form variable names to the ones needed by Authorize.net. See
+the C<Payment Settings> heading in the Interchange documentation for use.
 
 =item test
 
@@ -130,11 +127,11 @@ C<x_Test_Request> query paramter to TRUE.i
 
 Examples: 
 
-	Route    authorizenet  test  TRUE
-		or
- 	Variable   MV_PAYMENT_TEST   TRUE
-	    or 
-	[charge mode=authorizenet test=TRUE]
+    Route    authorizenet  test  TRUE
+        or
+    Variable   MV_PAYMENT_TEST   TRUE
+        or 
+    [charge mode=authorizenet test=TRUE]
 
 =back
 
@@ -151,40 +148,63 @@ be in [data session payment_error].
 
 If nothing works:
 
+=over 4
+
+=item *
+
 Make sure you "Require"d the module in interchange.cfg:
 
-	Require module Vend::Payment::Authorize
+    Require module Vend::Payment::AuthorizeNet
 
-Make sure Net::SSLeay is installed and working.
+=item *
+
+Make sure Net::SSLeay is installed and working. You can test to see whether
+your Perl thinks it is:
+
+    perl -MNet::SSLeay -e 'print "It works\n"'
+
+=item *
 
 Check the error logs, both catalog and global.
 
+=item *
+
 Make sure you set your payment parameters properly.  
+
+=item *
 
 Try an order, then put this code in a page:
 
-	[calc]
-		$Tag->uneval( { ref => $Session->{payment_result} );
-	[/calc]
+    [calc]
+        $Tag->uneval( { ref => $Session->{payment_result} );
+    [/calc]
 
 That should show what happened.
 
+=item *
+
+If all else fails, Red Hat and other consultants are available to help
+with integration for a fee.
+
+=back
+
 =head1 BUGS
 
-There is actually nothing *in* Vend::Payment::Authorize. It changes packages
+There is actually nothing *in* Vend::Payment::AuthorizeNet. It changes packages
 to Vend::Payment and places things there.
 
 =head1 AUTHORS
 
-Mark Stosberg <mark@summersault.com> and Mike Heins <mheins@redhat.com>.
+Mark Stosberg <mark@summersault.com>, based on original code by Mike Heins
+<mheins@redhat.com>.
 
 =head1 CREDITS
 
-	Jeff Nappi <brage@cyberhighway.net>
-	Paul Delys <paul@gi.alaska.edu>
-	webmaster@nameastar.net
-	Ray Desjardins <ray@dfwmicrotech.com>
-	Nelson H. Ferrari <nferrari@ccsc.com>
+    Jeff Nappi <brage@cyberhighway.net>
+    Paul Delys <paul@gi.alaska.edu>
+    webmaster@nameastar.net
+    Ray Desjardins <ray@dfwmicrotech.com>
+    Nelson H. Ferrari <nferrari@ccsc.com>
 
 =cut
 
@@ -398,6 +418,6 @@ sub authorizenet {
     return (%result);
 }
 
-package Vend::Payment::Authorize;
+package Vend::Payment::AuthorizeNet;
 
 1;
