@@ -39,7 +39,7 @@ _$
 ^dist/books(/|$)
 ^dist/construct(/|$)
 ^dist/test(/|$)
-^dist/etc/[^.]
+^dist/etc/[^.j]
 ^dist/lib/MiniMate(/|$)
 ^dist/mvmall(/|$)
 ^dist/simple(/|$)
