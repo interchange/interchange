@@ -629,6 +629,7 @@ dist/usertag/usertrack
 dist/usertag/var
 dist/usertag/xml_generator
 eg/compact
+eg/globalsub/authorizenet
 eg/globalsub/signio
 eg/grant.sql
 eg/ifdef
@@ -761,9 +762,12 @@ share/akopia/ui/help/images/help.background.gif
 share/akopia/ui/help/src/404.html
 share/akopia/ui/help/src/access.main.html
 share/akopia/ui/help/src/access.permissions.html
+share/akopia/ui/help/src/admin.edit.user.html
 share/akopia/ui/help/src/affiliate.edit.html
+share/akopia/ui/help/src/affiliate.manager.html
 share/akopia/ui/help/src/affiliates.main.html
 share/akopia/ui/help/src/button.builder.html
+share/akopia/ui/help/src/change.password.html
 share/akopia/ui/help/src/create.new.customer.html
 share/akopia/ui/help/src/crosssell.html
 share/akopia/ui/help/src/customer.edit.html
@@ -800,6 +804,7 @@ share/akopia/ui/help/src/license.html
 share/akopia/ui/help/src/logout.main.html
 share/akopia/ui/help/src/matrix.main.html
 share/akopia/ui/help/src/merch.build_related.html
+share/akopia/ui/help/src/merchandising.html
 share/akopia/ui/help/src/order.main.archived.html
 share/akopia/ui/help/src/order.main.pending.html
 share/akopia/ui/help/src/order.view.html
