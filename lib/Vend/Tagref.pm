@@ -1,6 +1,6 @@
 # Tagref.pm - Document Interchange tags
 # 
-# $Id: Tagref.pm,v 1.9.2.3 2001-01-01 18:53:25 heins Exp $
+# $Id: Tagref.pm,v 1.9.2.4 2001-02-14 05:03:55 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -25,7 +25,7 @@ use lib '../lib';
 
 use Vend::Parse;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.9.2.3 $ =~ /(\d+)\.(\d+)/);
+$VERSION = substr(q$Revision: 1.9.2.4 $, 10);
 
 use vars '%myRefs';
 

@@ -1,6 +1,6 @@
 # Page.pm - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 1.5.6.1 2000-12-13 16:11:15 zarko Exp $
+# $Id: Page.pm,v 1.5.6.2 2001-02-14 05:03:55 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -48,7 +48,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.5.6.1 $ =~ /(\d+)\.(\d+)/);
+$VERSION = substr(q$Revision: 1.5.6.2 $, 10);
 
 my $wantref = 1;
 

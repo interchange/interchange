@@ -1,6 +1,6 @@
 # Error.pm - Handle Interchange error pages and messages
 # 
-# $Id: Error.pm,v 1.3.6.4 2001-02-05 13:22:57 heins Exp $
+# $Id: Error.pm,v 1.3.6.5 2001-02-14 05:03:55 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -37,7 +37,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.3.6.4 $ =~ /(\d+)\.(\d+)/);
+$VERSION = substr(q$Revision: 1.3.6.5 $, 10);
 
 my $wantref = 1;
 
