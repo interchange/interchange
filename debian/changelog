@@ -1,8 +1,11 @@
-interchange (4.6.4-1.2) unstable; urgency=low
+interchange (4.6.4-1.4) unstable; urgency=low
 
   * Build-Depends fixed (Closes: #92570)
-
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue,  3 Apr 2001 08:57:22 +0200
+  * Added upstream fix to InMemory.pm
+  * Added mod_interchange
+  * Suggest secure http daemon
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri,  6 Apr 2001 13:22:22 +0200
 
 interchange (4.6.4-1) unstable; urgency=low
 
