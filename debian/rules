@@ -84,7 +84,6 @@ install: build
 # UI images
 	mkdir -p $(TMP)/var/www/ui/admin
 	cp dist/construct/images/poweredby.gif $(TMP)/var/www/ui
-	cp dist/construct/images/admin/bg.gif $(TMP)/var/www/ui/admin
 	for file in share/akopia/ui/admin/*.*; do cp $$file $(TMP)/var/www/ui/admin; done
 	mkdir $(TMP)/var/www/ui/navigation
 	for file in share/akopia/ui/navigation/*.*; do cp $$file $(TMP)/var/www/ui/navigation; done
