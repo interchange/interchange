@@ -3,6 +3,11 @@
 	$CGI->{access_menu} = 1;
 	return;
 [/calc]
+@_UI_STD_INIT_@
+[if !cgi user_id]
+[error set="[L]Please select an user.[/L]" name=username]
+[bounce page="__UI_BASE__/access"]
+[/if]
 [seti page_title][L]Administrator Edit[/L]: [cgi user_id][/seti]
 [seti page_banner][L]Administrator Edit[/L]: <b>[cgi user_id]</b>[/seti]
 [set ui_class]Admin[/set]
