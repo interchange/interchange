@@ -732,15 +732,16 @@ EOF
 sub MY::postamble {
 	return <<'EOF';
 UIDIR=dist/lib/UI
-UILANGS=da_DK de_DE nl_NL sv_SE
+UILCDIR=$(UIDIR)/locales
 
 localefiles:
-	@for lang in $(UILANGS); do \
-        mv $(UIDIR)/locales/$$lang.cfg $(UIDIR)/locales/$$lang.cfg.old; \
-        cat $(UIDIR)/locales/default.cfg >> $(UIDIR)/locales/$$lang.cfg.old; \
-		if ! $(INSTALLBIN)/localize -n -m $(UIDIR)/locales/$$lang.cfg.old -u $(UIDIR) -l $$lang `find $(UIDIR) -type f -not -empty` > $(UIDIR)/locales/$$lang.cfg; then \
-		echo "Failed to generate locale file $(UIDIR)/locales/$$lang.cfg"; \
-		mv $(UIDIR)/locales/$$lang.cfg.old $(UIDIR)/locales/$$lang.cfg; \
+	@for langfile in $(UILCDIR)/*_*.cfg; do \
+		lang=`basename $$langfile .cfg`; \
+		mv $$langfile $$langfile.old; \
+		cat $(UILCDIR)/default.cfg >> $$langfile.old; \
+		if ! $(INSTALLBIN)/localize -n -m $$langfile.old -u $(UIDIR) -l $$lang `find $(UIDIR) -type f -not -empty` > $$langfile; then \
+		echo "Failed to generate locale file $$langfile"; \
+		mv $$langfile.old $$langfile; \
 		fi; \
 	done
 EOF
