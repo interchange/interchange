@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.73 2004-06-28 21:25:27 mheins Exp $
+# $Id: Util.pm,v 2.74 2004-06-28 21:37:50 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -87,7 +87,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.73 $, 10);
+$VERSION = substr(q$Revision: 2.74 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -530,7 +530,7 @@ sub random_string {
 
     $r = '';
     for ($i = 0;  $i < $len;  ++$i) {
-		$r .= substr($random_chars, int(rand(length($random_chars))), 1);
+	$r .= substr($random_chars, int(rand(length($random_chars))), 1);
     }
     $r;
 }
@@ -707,7 +707,7 @@ sub logData {
 		close(MVLOGDATA) or die "close\n";
     };
     if ($@) {
-		logError ("Could not %s log file '%s': %s\nto log this data:\n%s",
+		::logError ("Could not %s log file '%s': %s\nto log this data:\n%s",
 				$@,
 				$file,
 				$!,
@@ -1041,7 +1041,7 @@ sub readin {
 	$file =~ s#\s+$##;
 	$file =~ s#\.html?$##;
 	if($file =~ m{\.\.} and $file =~ /\.\..*\.\./) {
-		logError( "Too many .. in file path '%s' for security.", $file );
+		::logError( "Too many .. in file path '%s' for security.", $file );
 		$file = find_special_page('violation');
 	}
 	$file =~ s#//+#/#g;
@@ -1420,7 +1420,7 @@ sub check_security {
 		}
 		if($Vend::Cfg->{UserDB} and $Vend::Cfg->{UserDB}{log_failed}) {
 			my $besthost = $CGI::remote_host || $CGI::remote_addr;
-			logError("auth error host=%s ip=%s script=%s page=%s",
+			::logError("auth error host=%s ip=%s script=%s page=%s",
 							$besthost,
 							$CGI::remote_addr,
 							$CGI::script_name,
@@ -1683,18 +1683,7 @@ sub logGlobal {
 
 sub logError {
     my $msg = shift;
-	return unless $Vend::Cfg;
-
-	my $opt;
-	if(ref $_[0]) {
-		$opt = shift(@_);
-	}
-	else {
-		$opt = {};
-	}
-
-	$opt->{file} ||= $Vend::Cfg->{ErrorFile};
-
+	return unless defined $Vend::Cfg;
 	if(@_) {
 		$msg = errmsg($msg, @_);
 	}
@@ -1705,11 +1694,11 @@ sub logError {
 
     $msg = format_log_msg($msg) unless $msg =~ s/^\\//;
 
-	$Vend::Errors .= $msg
-		if $Vend::Cfg->{DisplayErrors} || $Global::DisplayErrors;
+	$Vend::Errors .= $msg if ($Vend::Cfg->{DisplayErrors} ||
+							  $Global::DisplayErrors);
 
     eval {
-		open(MVERROR, ">> $opt->{file}")
+		open(MVERROR, ">>$Vend::Cfg->{ErrorFile}")
 											or die "open\n";
 		lockfile(\*MVERROR, 1, 1)		or die "lock\n";
 		seek(MVERROR, 0, 2)				or die "seek\n";
@@ -1722,7 +1711,7 @@ sub logError {
 		logGlobal ({ level => 'info' },
 					"Could not %s error file %s: %s\nto report this error: %s",
 					$@,
-					$opt->{file},
+					$Vend::Cfg->{ErrorFile},
 					$!,
 					$msg,
 				);
@@ -1742,12 +1731,9 @@ my %log_sub_map = (
 # First argument should be log type (see above map).
 # Rest of arguments are same as if calling log routine directly.
 sub logOnce {
-	my $tag = join "", @_;
-	return if exists $logOnce_cache{$tag};
+	return if exists $logOnce_cache{"@_"};
 	my $log_sub = $log_sub_map{ lc(shift) } || $log_sub_map{error};
-	my $status = $log_sub->(@_);
-	$logOnce_cache{$tag} = 1;
-	return $status;
+	$log_sub->(@_) and ++$logOnce_cache{"@_"};
 }
 
 

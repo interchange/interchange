@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.211 2004-06-28 21:25:26 mheins Exp $
+# $Id: Interpolate.pm,v 2.212 2004-06-28 21:37:50 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.211 $, 10);
+$VERSION = substr(q$Revision: 2.212 $, 10);
 
 @EXPORT = qw (
 
@@ -3067,23 +3067,7 @@ my %cond_op = (
 				 }
 				 return $_[0] !~ $re;
 				},
-   'length' => sub { 
-   				 my ($string, $lenspec) = @_;
-				 my ($min,$max) = split /-/, $lenspec;
-				 if($min and length($string) < $min) {
-				 	return 0;
-				 }
-				 elsif($max and length($string) > $max) {
-				 	return 0;
-				 }
-				 else {
-				 	return 0 unless length($string) > 0;
-				 }
-				 return 1;
-				},
 );
-
-$cond_op{len} = $cond_op{length};
 
 sub pull_cond {
 	my($string, $reverse, $cond, $lhs) = @_;
@@ -4972,16 +4956,10 @@ sub tag_loop_list {
 			return;
 		}
 		my ($ary, $fh, $fa) = @$list;
-		my $obj = $opt->{object} ||= {};
-		$obj->{mv_results} = $ary;
-		$obj->{matches} = scalar @$ary;
-		$obj->{mv_field_names} = $fa if $fa;
-		$obj->{mv_field_hash} = $fh if $fh;
-		if($opt->{ml}) {
-			$obj->{mv_matchlimit} = $opt->{ml};
-			$obj->{mv_first_match} = $opt->{mv_first_match} || 0;
-			$obj->{mv_next_pointer} = $opt->{mv_first_match} + $opt->{ml};
-		}
+		$opt->{object}{mv_results} = $ary;
+		$opt->{object}{matches} = scalar @$ary;
+		$opt->{object}{mv_field_names} = $fa if $fa;
+		$opt->{object}{mv_field_hash} = $fh if $fh;
 		return region($opt, $text);
 	}
 
