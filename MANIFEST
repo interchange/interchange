@@ -834,6 +834,8 @@ dist/usertag/xml_generator.tag
 eg/compact
 eg/globalsub/authorizenet
 eg/globalsub/signio
+eg/globalsub/skipjack
+eg/globalsub/skipjack.HOWTO
 eg/globalsub/test_card
 eg/grant.sql
 eg/ifdef

@@ -1,6 +1,6 @@
 # Vend/Scan.pm:  Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 1.7.2.2 2000-12-13 16:19:08 zarko Exp $
+# $Id: Scan.pm,v 1.7.2.3 2001-03-06 15:16:13 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -29,7 +29,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 1.7.2.2 $, 10);
+$VERSION = substr(q$Revision: 1.7.2.3 $, 10);
 
 use strict;
 use Vend::Util;
@@ -658,7 +658,9 @@ sub sql_statement {
 	my @where;
 	my $numeric;
 	@where = $stmt->where();
-	if(defined $where[0]) {
+# Account for undocumented behavior in SQL::Statement
+# Fix by Kestutis Lasys
+	if(CORE::ref $where[0]) {
 	  my $or;
 	  push_spec('co', 'yes', $ary, $hash);
 	  do {

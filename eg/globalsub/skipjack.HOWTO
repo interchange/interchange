@@ -1,0 +1,39 @@
+Procedure to install the SkipJack GlobalSub:
+
+1.	Copy the skipjack file to your 'globalsub' directory (typically
+    /usr/local/interchange/globalsub).
+
+2.	Modify interchange.cfg to use the file:
+	#include globalsub/skipjack
+
+3.	Modify catalog.cfg to set the server and your Skipjack account info as follows:
+	Variable MV_PAYMENT_SERIAL  YourSkipJackSerialNumber
+	Variable MV_PAYMENT_MODE    custom skipjack
+
+4.	Make sure CreditCardAuto is off (default in Interchange demos)
+
+5. 	You must have the following perl modules installed (available from CPAN)
+	LWP::UserAgent
+        HTTP::Request
+        HTTP::Request::Common
+        Crypt::SSLeay
+
+6.	Set the variable MV_PAYMENT_REMAP in catalog.cfg to add the 'email' and
+    'phone_day' mappings:
+
+	Variable MV_PAYMENT_REMAP 	email=email phone_day=phone_day
+
+7.	The posting URL is set in the Variable MV_PAYMENT_SERVER. For testing, use:
+
+	Variable MV_PAYMENT_SERVER https://developer.skipjackic.com/scripts/evolvcc.dll?Authorize
+
+	To go live, use:
+
+	Variable MV_PAYMENT_SERVER https://www.skipjackic.com/scripts/evolvcc.dll?Authorize
+
+8.	Restart Interchange.
+
+9.	Enjoy!
+
+Matthew Schick
+mschick@brightredproductions.com
