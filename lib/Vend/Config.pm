@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.7 2000-12-17 04:06:17 jon Exp $
+# $Id: Config.pm,v 1.25.2.8 2000-12-21 11:24:21 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -104,7 +104,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.25.2.7 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.8 $, 10);
 
 my %CDname;
 
@@ -1733,70 +1733,103 @@ my %IllegalValue = (
 
 # Set up defaults for certain directives
 my $Have_set_global_defaults;
+
+# Set the default search files based on ProductFiles setting
+# Honor a NO_SEARCH parameter in the Database structure
+# Set MV_DEFAULT_SEARCH_FILES to the {file} entry,
+# and set MV_DEFAULT_SEARCH_TABLE to the table name.
+#
+# Error out if not SubCatalog and can't find a setting.
+#
+sub set_default_search {
+	shift;
+	my $setting = $C->{ProductFiles};
+
+	if(! $setting) {
+		return 1 if $C->{BaseCatalog};
+		return (undef, errmsg("No ProductFiles setting!") );
+	}
+	if( scalar @$setting > 1 ) {
+		undef $Vend::Cfg->{OnlyProducts};
+	}
+	else {
+		$Vend::Cfg->{OnlyProducts} = $setting->[0];
+	}
+	
+	my @fout;
+	my @tout;
+	my $nofile;
+
+	if ($C->{Variable}{MV_DEFAULT_SEARCH_FILE}) {
+		@fout =
+			grep /\S/,
+			split /[\s,]+/,
+			$C->{Variable}{MV_DEFAULT_SEARCH_FILE};
+		$nofile = 1;
+		for(@fout) {
+			next if /\./;
+			$_ = $C->{Database}{$_}{file};
+		}
+	}
+	if ($C->{Variable}{MV_DEFAULT_SEARCH_TABLE}) {
+		$setting = [
+			grep defined $C->{Database}{$_},
+				split /[\s,]+/,
+				$C->{Variable}{MV_DEFAULT_SEARCH_FILE}
+		];
+	}
+	for(@$setting) {
+		next if $C->{Database}{$_}{NO_SEARCH};
+		push @tout, $_;
+		next unless defined $C->{Database}{$_}{file};
+		push @fout, $C->{Database}{$_}{file}
+			unless $nofile;
+	}
+	unless (scalar @tout) {
+		return 1 if $C->{BaseCatalog};
+		return (undef, errmsg("No default search file!") );
+	}
+	$C->{Variable}{MV_DEFAULT_SEARCH_FILE}  = \@fout;
+	$C->{Variable}{MV_DEFAULT_SEARCH_TABLE} = \@tout;
+	return 1;
+}
+
 my %Default = (
 		UserDB => sub {
-							shift;
-							my $set = $C->{UserDB_repository};
-							for(keys %$set) {
-								next unless defined $set->{$_}{admin};
-								$C->{AdminUserDB} = {} unless $C->{AdminUserDB};
-								$C->{AdminUserDB}{$_} = $set->{$_}{admin};
-							}
-							return 1;
-						},
+					shift;
+					my $set = $C->{UserDB_repository};
+					for(keys %$set) {
+						next unless defined $set->{$_}{admin};
+						$C->{AdminUserDB} = {} unless $C->{AdminUserDB};
+						$C->{AdminUserDB}{$_} = $set->{$_}{admin};
+					}
+					return 1;
+				},
 		# Turn the array of IPC keys into a hash value so that we can
 		# grep for enables
 		IPC => sub {
-							my $ref = shift;
-							return 1 unless ref $ref;
-							my $hash = {};
-							for(@$ref) {
-								$hash->{$_} = 1;
-							}
-							$C->{IPCkeys} = $hash;
-							return 1;
-						},
+					my $ref = shift;
+					return 1 unless ref $ref;
+					my $hash = {};
+					for(@$ref) {
+						$hash->{$_} = 1;
+					}
+					$C->{IPCkeys} = $hash;
+					return 1;
+				},
 		TcpMap => sub {
-							shift;
-							return 1 if defined $Have_set_global_defaults;
-							$Have_set_global_defaults = 1;
-							my (@sets) = keys %{$Global::TcpMap};
-							if(scalar @sets == 1 and $sets[0] eq '-') {
-								$Global::TcpMap = {};
-							}
-							return 1 if @sets;
-							$Global::TcpMap->{7786} = '-';
-							return 1;
-						},
-
-		ProductFiles => sub {
-							shift;
-							my $setting = $C->{ProductFiles};
-							if (defined $C->{Variable}{MV_DEFAULT_SEARCH_FILE}
-								and  ! ref $C->{Variable}{MV_DEFAULT_SEARCH_FILE})
-							{
-								$C->{Variable}{MV_DEFAULT_SEARCH_FILE} =
-									[ $C->{Variable}{MV_DEFAULT_SEARCH_FILE} ];
-								return 1;
-							}
-							my @out;
-							for(@$setting) {
-								next unless defined $C->{Database}{$_}{'file'};
-								push @out, $C->{Database}{$_}{'file'};
-								if( defined $Vend::Cfg->{OnlyProducts} ) {
-									undef $Vend::Cfg->{OnlyProducts};
-									next;
-								}
-								else {
-									$Vend::Cfg->{OnlyProducts} = 
-										$C->{Database}{$_}{'name'};
-								}
-							}
-							return (undef, "No default search file!") 
-								unless scalar @out;
-							$C->{Variable}{MV_DEFAULT_SEARCH_FILE} = \@out;
-							return 1;
-						},
+					shift;
+					return 1 if defined $Have_set_global_defaults;
+					$Have_set_global_defaults = 1;
+					my (@sets) = keys %{$Global::TcpMap};
+					if(scalar @sets == 1 and $sets[0] eq '-') {
+						$Global::TcpMap = {};
+					}
+					return 1 if @sets;
+					$Global::TcpMap->{7786} = '-';
+					return 1;
+				},
+		ProductFiles => \&set_default_search,
 );
 
 sub set_defaults {
@@ -1933,6 +1966,8 @@ sub parse_relative_dir {
 	  "No leading ../.. allowed if NoAbsolute set. Contact administrator.\n"
 	  )
 	  if $value =~ m#^\.\./.*\.\.# and $Global::NoAbsolute;
+
+	$C->{Source}{$var} = $value;
 
 	$value = "$C->{VendRoot}/$value"
 		unless Vend::Util::file_name_is_absolute($value);
