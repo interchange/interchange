@@ -6,6 +6,15 @@
 
 Interchange 4.8.4 not yet released.
 
+Core
+----
+
+* Fixed bug in [if-item-param field eq string] which would now work due
+  to improper field pointer type.
+
+* row_hash returns undef now for memory databases too instead of 
+  throwing an error if no row is found
+
 Admin UI
 --------
 
@@ -14,6 +23,11 @@ Admin UI
 * Edit button which appears on flex_select page if database attribute
   LARGE is set works now as expected.
 
+Payment
+-------
+
+* Mispelled month name fixed in iTransact module which caused failure.
+  Found by Cameron Prince.
 
 ------------------------------------------------------------------------------
 
