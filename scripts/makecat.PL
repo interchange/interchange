@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.29 2000-10-17 07:55:46 jon Exp $
+# $Id: makecat.PL,v 1.30 2000-10-18 12:52:25 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -114,7 +114,7 @@ usage: $0 [options] [catalogname]
 options:
 
     -F    Force make of catalog with defaults
-    -f    Configuration file (default is $0.cfg)
+    -c    Configuration file (default is etc/makecat.cfg)
     -l    File to log to (default makecat.log)
     -r    Reconfigure defaults
 
@@ -170,7 +170,7 @@ if (scalar @ARGV > 1) {
 	    'cgiurl'            => \$Conf{cgiurl},
 	    'demotype'          => \$Conf{demotype},
 	    'documentroot'      => \$Conf{documentroot},
-	    'f'                 => \$Configfile,
+	    'c'                 => \$Configfile,
 	    'homedir'           => \$Conf{homedir},
 	    'imagedir'          => \$Conf{imagedir},
 	    'imageurl'          => \$Conf{imageurl},
@@ -219,8 +219,7 @@ if (scalar @ARGV > 1) {
 	    cgiurl|script=s
 	    demotype|template=s
 	    documentroot=s
-	    f
-	    i
+	    c=s
 	    homedir=s
 	    imagedir=s
 	    imageurl=s
@@ -2072,7 +2071,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.29 2000-10-17 07:55:46 jon Exp $
+$Id: makecat.PL,v 1.30 2000-10-18 12:52:25 heins Exp $
 
 =head1 INTRODUCTION
 
