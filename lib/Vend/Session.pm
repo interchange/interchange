@@ -1,6 +1,6 @@
 # Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 2.18 2004-07-05 22:04:34 mheins Exp $
+# $Id: Session.pm,v 2.19 2004-07-06 06:19:41 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -27,7 +27,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.18 $, 10);
+$VERSION = substr(q$Revision: 2.19 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -203,9 +203,10 @@ sub count_ip {
 	my $fn = Vend::Util::get_filename($ip, 2, 1, $dir);
 	if(-f $fn) {
 		my $grace = $Vend::Cfg->{Limit}{robot_expire} || 1;
-		my $mtime = -M _;
+		my @st = stat(_);
+		my $mtime = (time() - $st[9]) / 86400;
 		if($mtime > $grace) {
-			::logDebug("ip $ip allowed back in due to '$mtime' < '$grace'");
+			::logDebug("ip $ip allowed back in due to '$mtime' < '$grace' days");
 			unlink $fn;
 		}
 	}
