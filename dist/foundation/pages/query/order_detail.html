@@ -107,7 +107,7 @@ hide=1]
 return unless
 	q{[userdb function=check_file_acl mode=expire location="[sql-param sku]"]};
 	return get_download(q{[sql-param sku]});
-[/calc]	<DIV ALIGN=RIGHT>[currency][sql-param price][/currency]	<DIV ALIGN=RIGHT>[currency][sql-param subtotal][/currency]
+[/calc][if-sql-data orderline separate_address]<b>Ship To:</b><br>[filter text2html][sql-data orderline separate_address][/filter][/if-sql-data]	<DIV ALIGN=RIGHT>[currency][sql-param price][/currency]	<DIV ALIGN=RIGHT>[currency][sql-param subtotal][/currency]
 [/query]
 			[L]SUBTOTAL[/L]	<DIV ALIGN=RIGHT>[currency][loop-data transactions subtotal][/currency]
 			[L]SALES TAX[/L]	<DIV ALIGN=RIGHT>[currency][loop-data transactions salestax][/currency]
@@ -119,7 +119,9 @@ return unless
 [/loop]
 
 <BR CLEAR=ALL>
+<div align=center>[page query/check_orders]&#171;[L]Back To Order List[/L]</a>
 
+<p>&nbsp;<p>
 <!-- END CONTENT -->
 
 @_LEFTONLY_BOTTOM_@
