@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.7 2001-12-06 20:43:00 jon Exp $
+# $Id: DBI.pm,v 2.8 2001-12-07 00:20:28 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 
 use strict;
 
@@ -1496,7 +1496,7 @@ sub each_nokey {
 	if(! defined $return->[0]) {
 		pop @$s;
 		delete $s->[$CONFIG]{Export_order};
-		return [];
+		return ();
 	}
     return $return;
 }

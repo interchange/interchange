@@ -1,6 +1,6 @@
 # Vend::Table::InMemory - Store an Interchange table in memory
 #
-# $Id: InMemory.pm,v 2.2 2001-12-06 21:14:07 jon Exp $
+# $Id: InMemory.pm,v 2.3 2001-12-07 00:20:28 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,7 @@
 package Vend::Table::InMemory;
 use Vend::Table::Common;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 use strict;
 
 # 0: column names
@@ -170,7 +170,7 @@ sub each_nokey {
 
 	for (;;) {
 		$key = each %{$s->[$TIE_HASH]};
-		return [] unless defined $key;
+		return () unless defined $key;
 		return [ $s->row($key) ];
 	}
 }
