@@ -5,20 +5,115 @@
 ------------------------------------------------------------------------------
 
 
-Interchange 4.8.7 not yet released.
+Interchange 4.8.7 released 2003-01-24.
+
+Core
+----
+
+* UserDB.pm: [userdb function=logout clear=1] will now restore the appropriate
+  ScratchDefault and ValuesDefault values instead of simply deleting the
+  scratches and values under its control.
+
+* Fix persistence problems in PreFork mode:
+  - [more-list] settings
+  - profile state
+
+* Table/DBI.pm: Simplify field_settor subroutines with prepared query and
+  placeholder. Prevents infamous DBD::Pg::do errors.
+
+* Server.pm:
+  - Output proper header so missing script will be seen as 404.
+  - Fix whitespace transform, tolerate leading whitespace on header lines.
+  - Apache 2.0.x compatibility fix for problem described here:
+    http://www.icdevgroup.org/pipermail/interchange-users/2002-August/024212.html
+
+* Fix bug where bad [nitems compare=...] could cause server error.
+
+* Tolerate following previously unallowed constructs:
+
+  [if-loop-param fieldname =~ /abc/i]
+  (and/or options s, m, x)
+
+  [if-loop-param fieldname =~ /abc/ ]
+  [if-loop-param fieldname =~ /a b c/]
+  (space in or after regex caused regex compilation to fail before)
+
+* Fixed a problem that prevented the following from working:
+  [input-filter name="[quantity-name]" op="nullselect digits_dot"]
+  [/input-filter]
+
+* Config.pm:
+  - Tolerate missing configdb database, issue warning only.
+  - pass Perl error message if Sub fails to compile
+
+* Allow the 'md' (mv_more_decade) parameter to be specified with tags
+  such as [query].
+
+* Don't reject ZIP+4 without hyphen in 'zip' profile check.
+
+* Search.pm: Change stupid behavior where last sort_option is forwarded
+  to all future unset options; always default to 'none' if not set.
+
+* Interpolate.pm: Ensure the $Tag object is not wrapped more than once.
 
 Usertags
 --------
 
-* [formel] - pass value to display tag
+* [button]
+  - Allow tag to work with an unnamed form.
+  - Make sure that the current button being pressed is the only one whose
+    mv_click_map_* variable gets set. This works around the problem of a
+    user clicking one button, using the browser's Back button, then
+    clicking on a different button, and both mv_clicks execute instead of
+    just the most recent one.
+
+* [formel] - Pass value to display tag.
+* [summary] - Avoid persistent storage to make tag safe in PreFork mode.
+
+Payment
+-------
+
+* Signio.pm: Fixed several bad function mappings. Unlink temp file when
+  done. Prefer pfpro over pfpro-file. Accept bin_path and library_path
+  route settings. Handle ORIGID properly on delayed capture.
+
+* AuthorizeNet.pm: Fixed a typo that kept 'auth' type from working.
+
+* Payment.pm: Display errors from payment modules in credit card header on
+  checkout page.
+
+Foundation
+----------
+
+* Change catalog.cfg default for MaxServers in "rpc" profile to zero. This
+  is probably best for the vast majority of servers running in PreFork mode.
+
+* Reconfig seems to be always timing out on faster processors, made more
+  reliable....
+
+* Be more tolerant with zip/postal codes -- don't remove hyphen from
+  ZIP+4 (99686-2933) or space from Canadian postal code (T0L 0R0).
 
 Miscellaneous
 -------------
 
+* Included latest mod_interchange code with several bugfixes and improvements.
+
+* Fix makecat bug that prevented the cgi-bin link program from being
+  associated with the chosen owner and group. Patch by Carl Bailey.
+
+* Make outdated bin/update command work better.
+
 * Update copyright notices, Interchange URLs, and email addresses.
 
-Packaging
----------
+Build/Packaging
+---------------
+
+* Prevent test from failing during upgrade -- remove the installation
+  library directories from @INC if MINIVEND_ROOT =~ blib.
+
+* When it is an update, don't send out "you are now ready to run makecat"
+  message which confuses people.
 
 * Debian package build process didn't install scripts properly
   into usr/lib/interchange/bin when running with Perl 5.8.x.
@@ -28,7 +123,7 @@ Packaging
 * No need to restart Interchange for log rotation.
 
 * Separate package creation process into architecture dependent
-  and architecture independent run (fixes Debian bug #172940)
+  and architecture independent run (fixes Debian bug #172940).
 
 
 ------------------------------------------------------------------------------
