@@ -25,8 +25,6 @@ if(! $MV::Self ) {
 
 eval 'exec $Config{perlpath} -S \$0 \${1+"\$@"}'
     if 0; # not running under some shell
-    [catalogname] must contain alphanumerics and hyphens only.
-
 EOF
 	$Special{perlpath} =~ s/\s+$//;
 }
@@ -52,7 +50,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.5.2.2 2001-09-02 16:10:58 racke Exp $
+# $Id: makecat.PL,v 2.5.2.3 2001-10-04 20:50:06 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -2327,7 +2325,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.5.2.2 2001-09-02 16:10:58 racke Exp $
+# $Id: makecat.PL,v 2.5.2.3 2001-10-04 20:50:06 jon Exp $
 
 =head1 INTRODUCTION
 
