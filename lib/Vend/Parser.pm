@@ -1,6 +1,6 @@
 # Vend::Parser - Interchange parser class
 #
-# $Id: Parser.pm,v 2.5 2002-06-17 22:24:08 jon Exp $
+# $Id: Parser.pm,v 2.6 2002-07-14 03:35:03 jon Exp $
 #
 # Copyright (C) 1997-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -66,7 +66,7 @@ use strict;
 
 use HTML::Entities ();
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.5 $, 10);
+$VERSION = substr(q$Revision: 2.6 $, 10);
 
 
 sub new
@@ -99,7 +99,7 @@ sub parse
 	# tokens from the beginning of $$buf until we can't deside whether
 	# it is a token or not, or the $$buf is empty.
 	while (1) {  # the loop will end by returning when text is parsed
-		# First we try to pull off any plain text (anything before a "<" char)
+		# First we try to pull off any plain text (anything before a '[')
 		if ($$buf =~ s/^([^[]+)// ) {
 #my $eat = $1;
 #::logDebug("plain eat='$eat'");
@@ -121,13 +121,9 @@ sub parse
 			$self->{HTML} = 0 if ! defined $self->{HTML};
 #::logDebug("do [ tag");
 
-			# This first thing we must find is a tag name.  RFC1866 says:
-			#   A name consists of a letter followed by letters,
-			#   digits, periods, or hyphens. The length of a name is
-			#   limited to 72 characters by the `NAMELEN' parameter in
-			#   the SGML declaration for HTML, 9.5, "SGML Declaration
-			#   for HTML".  In a start-tag, the element name must
-			#   immediately follow the tag open delimiter `<'.
+			# First find a tag name. It must immediately follow the
+			# opening '[', then start with a letter, and be followed by
+			# letters, numbers, dot, or underscore.
 			if ($$buf =~ s|^(([a-zA-Z][-a-zA-Z0-9._]*)\s*)||) {
 				$eaten .= $1;
 
@@ -141,10 +137,6 @@ sub parse
 #::logDebug("tag='$tag' eat='$eaten'");
 
 				# Then we would like to find some attributes
-				#
-				# Arrgh!! Since stupid Netscape violates RCF1866 by
-				# using "_" in attribute names (like "ADD_DATE") of
-				# their bookmarks.html, we allow this too.
 				while (	$$buf =~ s|^(([a-zA-Z][-a-zA-Z0-9._]*)\s*)|| or
 					 	$$buf =~ s|^(([=!<>][=~]?)\s+)||                 )
 				{
@@ -157,25 +149,26 @@ sub parse
 						
 					my $val;
 					
-					# The attribute might take an optional value (first we
-					# check for an unquoted value)
+					# The attribute might take an optional value.
+					# First we check for an unquoted value
 					if ($$buf =~ s~(^=\s*([^\|\"\'\`\]\s][^\]>\s]*)\s*)~~) {
 						$eaten .= $1;
 						next unless defined $attr;
 						$val = $2;
-					# or quoted by " or ' or # or $ or |
+					# or quoted by " or '
 					} elsif ($$buf =~ s~(^=\s*(["\'])(.*?)\2\s*)~~s) {
 						$eaten .= $1;
 						next unless defined $attr;
 						$val = $3;
 						HTML::Entities::decode($val) if $attr{entities};
-					# or quoted by `` to send to [calc]
 					} elsif ($$buf =~ s~(^=\s*([\`\|])(.*?)\2\s*)~~s) {
 						$eaten .= $1;
+						# or quoted by ` to send to [calc]
 						if    ($2 eq '`') {
 							$val = Vend::Interpolate::tag_calc($3)
 								unless defined $Vend::Cfg->{AdminSub}{calc};
 						}
+						# or quoted by | to strip leading & trailing whitespace
 						elsif ($2 eq '|') {
 								$val = $3;
 								$val =~ s/^\s+//;
@@ -190,9 +183,8 @@ sub parse
 						$$buf = "$eaten$1";
 						return $self;
 					} elsif (!$old) {
-						# assume attribute with implicit value, but
-						# if not,no value is set and the
-						# eaten value is grown
+						# assume attribute with implicit value, but if not,
+						# no value is set and the eaten value is grown
 						undef $nopush;
 						($attr,$val,$nopush) = $self->implicit($tag,$attr);
 						$old = 1 unless $val;
@@ -233,11 +225,11 @@ sub parse
 					push(@attrseq, $attr) unless $nopush;
 				}
 
-				# At the end there should be a closing "\] or >"
+				# At the end there should be a closing ']'
 				if ($$buf =~ s|^\]|| ) {
 					$self->start($tag, \%attr, \@attrseq, "$eaten]");
 				} elsif ($$buf =~ s|^/\s*\]||) {
-					## Empty container tag
+					# XML-style empty container tag like [this /]
 					$self->start($tag, \%attr, \@attrseq, "$eaten]", 1);
 				} elsif ($$buf =~ s|^([^\]\n]+\])||) {
 					$eaten .= $1;
