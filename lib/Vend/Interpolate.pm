@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.94 2002-08-01 16:45:02 mheins Exp $
+# $Id: Interpolate.pm,v 2.95 2002-08-02 01:20:53 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.94 $, 10);
+$VERSION = substr(q$Revision: 2.95 $, 10);
 
 @EXPORT = qw (
 
@@ -4363,6 +4363,8 @@ my $once = 0;
 	$run =~ s#$IB$QR{_param_if}# defined $fh->{$3} ||
 		::logOnce(@field_msg, $3, "if-$Orig_prefix-param") #ige;
 
+	my $oexec = { %$opt };
+
 	for( ; $i <= $end ; $i++, $count++ ) {
 		$row = $ary->[$i];
 		last unless defined $row;
@@ -4414,7 +4416,7 @@ my $once = 0;
 		$run =~ s#$B$QR{_calc}$E$QR{'/_calc'}#tag_calc($1)#ige;
 		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#
 					init_calc() if ! $Vend::Calc_initialized;
-					($Vend::Cfg->{Sub}{$1} || sub { 'ERROR' })->($2,$row)
+					($Vend::Cfg->{Sub}{$1} || sub { 'ERROR' })->($2,$row,$oexec)
 				#ige;
 		$run =~ s#$B$QR{_filter}$E$QR{'/_filter'}#filter_value($1,$2)#ige;
 		$run =~ s#$B$QR{_last}$E$QR{'/_last'}#
@@ -4482,6 +4484,8 @@ sub iterate_hash_list {
 					  {
 					  	resolve_nested_if($1, $2)
 					  }se;
+
+	my $oexec = { %$opt };
 
 	for ( ; $i <= $end; $i++, $count++) {
 		$item = $hash->[$i];
@@ -4585,7 +4589,7 @@ sub iterate_hash_list {
 		$run =~ s#$B$QR{_tag}($All$E[-_]tag[-_]\1\])#
 						tag_dispatch($1,$count, $item, $hash, $2)#ige;
 		$run =~ s#$B$QR{_calc}$E$QR{'/_calc'}#tag_calc($1)#ige;
-		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#init_calc() if ! $Vend::Calc_initialized;($Vend::Cfg->{Sub}{$1} || sub { 'ERROR' })->($2,$item)#ige;
+		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#init_calc() if ! $Vend::Calc_initialized;($Vend::Cfg->{Sub}{$1} || sub { 'ERROR' })->($2,$item,$oexec)#ige;
 		$run =~ s#$B$QR{_filter}$E$QR{'/_filter'}#filter_value($1,$2)#ige;
 		$run =~ s#$B$QR{_last}$E$QR{'/_last'}#
                     my $tmp = interpolate_html($1);
