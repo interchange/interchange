@@ -42,7 +42,7 @@ To upgrade from another 4.x version, it is recommended that you:
         with
         
             Variable MV_PAYMENT_MODE        cybercash
-            Variable MV_PAYMENT__CONFIGFILE /path/to/your/merchant_conf
+            Variable MV_PAYMENT_CONFIGFILE  /path/to/your/merchant_conf
 
      5. Restart Interchange.
 
