@@ -29,7 +29,7 @@ sub {
 					push(@names, $n);
 				};
 	find($wanted, $dir);
-	$opt->{passed} = [ sort @names ];
+	$opt->{passed} = [ '=None', sort @names ];
 	$opt->{type} = delete $opt->{variant} || 'combo';
 	return Vend::Form::display($opt);
 }
