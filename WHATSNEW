@@ -11,6 +11,25 @@ Interchange 4.9.6 not yet released.
 Core
 ----
 
+* Add new global directive TrustProxy, which allows the administrator to
+  designate certain IP addresses or hostnames as trusted proxies, whose
+  claims (via the HTTP_X_FORWARDED_FOR environment variable) about the
+  original requesting host will be believed.
+
+  When using a front-end proxy for Interchange, all requests appear to come
+  from that proxy, say 127.0.0.1 if on the same machine, which is effectively
+  the same as running WideOpen because sessions can be easily hijacked. This
+  offers a way to bring back a little discernment about what host we're
+  really dealing with.
+
+  Usage is identical to the RobotIP directive's, for example:
+
+  TrustProxy 127.0.0.1, 10.0.0.*
+
+  I'm not sure why anyone would want to do this, but it could also be used
+  with external HTTP proxies in general (which hopefully aren't lying), with
+  a simple 'TrustProxy *'.
+
 * Fix whitespace transform and tolerate leading whitespace on HTTP
   header lines.
 
@@ -21,11 +40,24 @@ Content Management
   to be expanded in the image preview path. Should probably look at this
   concept on a per-field basis, and set the default to "".
 
+Payment
+-------
+
+* Patch to display errors from payment modules in credit card header
+  on checkout page.
+
+Foundation
+----------
+
+* New PayflowPro control variables MV_PAYMENT_PARTNER and MV_PAYMENT_VENDOR.
+
+* Payment routes use now generic MV_PAYMENT_* variables.
+
 
 ------------------------------------------------------------------------------
 
 
-Interchange 4.9.5 released 2002-12-02 (minor bugfix release).
+Interchange 4.9.5 released 2002-12-13 (minor bugfix release).
 
 
 Foundation
