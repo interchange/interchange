@@ -70,7 +70,7 @@ install: build
 	dh_installdirs
 
 # Add here commands to install the package into debian/tmp.
-	env MINIVEND_FORCE_THREADS=1 $(MAKE) install PREFIX=$(TMP)/usr INSTALLARCHLIB=$(TMP)/usr/lib/interchange INSTALLPRIVLIB=$(TMP)/usr/lib/interchange INSTALLMAN1DIR=$(TMP)/usr/share/man/man1 INSTALLMAN3DIR=$(TMP)/usr/share/man/man8 INSTALLSCRIPT=$(TMP)/usr/lib/interchange/bin NOCPANINSTALL=1
+	env MINIVEND_FORCE_THREADS=1 $(MAKE) install PREFIX=$(TMP)/usr INSTALLARCHLIB=$(TMP)/usr/lib/interchange INSTALLPRIVLIB=$(TMP)/usr/lib/interchange INSTALLMAN1DIR=$(TMP)/usr/share/man/man1 INSTALLMAN3DIR=$(TMP)/usr/share/man/man8 INSTALLSCRIPT=$(TMP)/usr/lib/interchange/bin NOCPANINSTALL=1 INTERCHANGE_USER=interchange
 
 # Sample configuration file not needed (code in interchange.PL
 # to determine configuration file location will stop to work too)

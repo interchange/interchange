@@ -756,7 +756,7 @@ sub MY::install {
 			'force',
 			'nocpaninstall=$(NOCPANINSTALL)',
 		);
-	my @extra_args = ( qw/LSB RPM UNLINK/ );
+	my @extra_args = ( qw/INTERCHANGE_USER LSB RPM UNLINK/ );
 	for(@extra_args) {
 		next unless $MV::Default{$_};
 		push @args, "$_=$MV::Default{$_}";
