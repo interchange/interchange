@@ -1,6 +1,6 @@
   <center>
-    <p><a href="http://www.redhat.com/ecommerce"><img src="__THEME_IMG_DIR__poweredby.gif" border="0"></a></p>
-    [if type=explicit compare="__MV_DEMO_MODE__"]
+    <p><a href="@_INTERCHANGE_URL_@"><img src="__THEME_IMG_DIR__poweredby.gif" border="0" alt="Powered by Interchange"></a></p>
+    [if variable MV_DEMO_MODE]
       <p>[page admin/index]Admin</a></p>
     [/if]
   </center>

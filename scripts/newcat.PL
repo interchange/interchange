@@ -52,9 +52,9 @@ DOIT: {
 #
 # Interchange catalog configurator with curses
 #
-# $Id: newcat.PL,v 2.3 2002-01-11 09:45:12 jon Exp $
+# $Id: newcat.PL,v 2.4 2002-04-17 17:55:48 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -3062,7 +3062,7 @@ sub tty_close_display {
 
 init_display();
 help_message(1);
-root_message('Red Hat Interchange Catalog Configurator');
+root_message('Interchange Catalog Configurator');
 
 #
 # go through screens

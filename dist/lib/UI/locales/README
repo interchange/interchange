@@ -1,17 +1,19 @@
 Contact
 =======
 
-If you have any questions concerning i18n and translations
-issues in respect to the interchange, please send them
-to the Interchange i18n mailing list (interchange-i18n@lists.akopia.com).
+If you have any questions concerning i18n and translations issues in
+respect to the interchange, please send them to the Interchange i18n
+mailing list:
+
+interchange-i18n@interchange.redhat.com
+
 More information about this mailing list can be found at:
    
-http://lists.akopia.com/mailman/listinfo/interchange-i18n
+http://interchange.redhat.com/mailman/listinfo/interchange-i18n
 
-UI internationalization is mainly a project of
-Stefan Hornburg (Racke) <racke@linuxia.de>. Please keep this
-in mind before file a complaint about it to the
-Redhat's ecommerce division.
+UI internationalization is mainly a project of Stefan Hornburg (Racke)
+<racke@linuxia.de>. Please keep this in mind before filing a complaint
+about it to the Red Hat's ecommerce division.
 
 Existing translations
 =====================

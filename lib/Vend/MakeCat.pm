@@ -1,8 +1,8 @@
 # Vend::MakeCat - Routines for Interchange catalog configurator
 #
-# $Id: MakeCat.pm,v 2.8 2002-01-11 09:45:12 jon Exp $
+# $Id: MakeCat.pm,v 2.9 2002-04-17 17:55:48 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -110,7 +110,7 @@ use vars qw/
 	%Window
 /;
 
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = substr(q$Revision: 2.9 $, 10);
 
 $Force = 0;
 $History = 0;
@@ -460,7 +460,7 @@ EOF
 EOF
 
 	win_greeting		=> <<EOF,
-# Welcome to Red Hat Interchange!
+# Welcome to Interchange!
 #
 # You can now configure a working catalog.
 #

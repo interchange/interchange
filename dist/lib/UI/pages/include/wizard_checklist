@@ -91,7 +91,7 @@ EOF
 	"][L]Retrieve saved values[/L]</A>
 [/if]
 </p>
-[if type=explicit compare="__MV_DEMO_MODE__"]
+[if variable MV_DEMO_MODE]
 <p>(For testing convenience:)<br>
 [page __UI_BASE__/wizard/demo_init][L]Set some starting values[/L]</A><br>
 [page __UI_BASE__/wizard/demo_zero][L]Zero the values[/L]</A></p>
