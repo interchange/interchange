@@ -4,7 +4,8 @@
 
 ------------------------------------------------------------------------------
 
-Interchange 4.8.4 not yet released.
+
+Interchange 4.8.4 released 2002-04-30.
 
 Core
 ----
@@ -149,7 +150,9 @@ Miscellaneous
 * stop expire script if catalog configuration fails and add catalog name
   to error message
 
+
 ------------------------------------------------------------------------------
+
 
 Interchange 4.8.3 released 2001-11-27.
 
