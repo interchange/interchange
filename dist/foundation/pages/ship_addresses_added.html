@@ -3,7 +3,7 @@ ui_template: Yes
 ui_template_name: leftonly
 [/comment]
 
-[tmp page_title]__COMPANY__ -- Shipping Address Added[/tmp]
+[tmp page_title]__COMPANY__ -- [L]Shipping Address Added[/L][/tmp]
 
 @_LEFTONLY_TOP_@
 
@@ -44,16 +44,15 @@ zip: [value sa_zip]
 country: [value sa_country]
 [/import]
 [/try]
-[catch] There was an error adding the new address entry. [/catch]
+[catch] [L]There was an error adding the new address entry.[/L] [/catch]
 [/seti]
 
 <br>
 
-You may now use the added shipping address by selecting it on the 
-shopping cart or recurring orders page.
+[L]You may now use the added shipping address by selecting it on the shopping cart or recurring orders page.[/L]
 <P>			
 
-<a href="[area ship_addresses]"><b>BACK</b></a>
+<a href="[area ship_addresses]"><b>[L]BACK[/L]</b></a>
 
 <!-- END CONTENT -->
 

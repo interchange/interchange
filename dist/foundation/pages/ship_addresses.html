@@ -4,7 +4,7 @@ ui_template_name: leftonly
 [/comment]
 
 [tmp members_only]1[/tmp]
-[tmp page_title]__COMPANY__ -- Shipping Addresses[/tmp]
+[tmp page_title]__COMPANY__ -- [L]Shipping Addresses[/L][/tmp]
 
 [control reset=1]
 
@@ -150,15 +150,15 @@ A:visited.ctitle {
 			regex ^[-\w\0]+$ 'Nickname must be of characters [-A-Za-z0-9]'
 	    " 
 	    check.username="
-			regex ^\w+$ 'Username must be of characters [A-Za-z0-9]'
+			regex ^\w+$ '[L]Username must be of characters [A-Za-z0-9][/L]'
 			length 4-10
 	    " 
-	    check.lname="required We need a last name...."
-	    check.fname="required We need a first name...."
-	    check.address1="required We need an address...."
-	    check.city="required We need a city...."
-	    check.state="required We need a state...."
-	    check.zip="required We need a postal code...."
+	    check.lname="required [L]We need a last name....[/L]"
+	    check.fname="required [L]We need a first name....[/L]"
+	    check.address1="required [L]We need an address....[/L]"
+	    check.city="required [L]We need a city....[/L]"
+	    check.state="required [L]We need a state....[/L]"
+	    check.zip="required [L]We need a postal code....[/L]"
 	    get=1
 	    ui_data_fields="username company fname lname address1 address2 city state zip country phone_day"
 	    key="[data session username]"]

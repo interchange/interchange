@@ -3,7 +3,7 @@ ui_template: Yes
 ui_template_name: leftonly
 [/comment]
 
-[tmp page_title]__COMPANY__ -- Quantity Discounts[/tmp]
+[tmp page_title]__COMPANY__ -- [L]Quantity Discounts[/L][/tmp]
 
 [control reset=1]
 
@@ -63,8 +63,8 @@ ui_template_name: leftonly
 [if scratch count eq 0]
         <tr> 
           <td>
-	    <b>Out Of Stock</b>
-	    <a href="[area stock-alert [item-code]]">In Stock Notification</a>
+	    <b>[L]Out Of Stock[/L]</b>
+	    <a href="[area stock-alert [item-code]]">[L]In Stock Notification[/L]</a>
           </td>
         </tr>
 [else]
@@ -107,7 +107,7 @@ ui_template_name: leftonly
 			cols="[scratch qp_columns]"
 			]
   <TD>
-    Part No.
+    [L]Part No.[/L]
   </TD>
   <TD VALIGN=TOP>[part-code]</TD>
   [loop list="[scratch quantities]"]

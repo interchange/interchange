@@ -3,7 +3,7 @@ ui_template: Yes
 ui_template_name: leftonly
 [/comment]
 
-[tmp page_title]__COMPANY__ -- Welcome[/tmp]
+[tmp page_title]__COMPANY__ -- [L]Welcome[/L][/tmp]
 
 [control reset=1]
 
@@ -23,8 +23,8 @@ ui_template_name: leftonly
 
 
 [set members_only]1[/set]
-[set page_banner]Saved Carts / Recurring Orders[/set]
-[set page_title]__COMPANY__ -- Saved Carts / Recurring Orders[/set]
+[set page_banner][L]Saved Carts[/L] / [L]Recurring Orders[/L][/set]
+[set page_title]__COMPANY__ -- [L]Saved Carts[/L] / [L]Recurring Orders[/L][/set]
 
 @_LEFTONLY_TOP_@
 
@@ -84,11 +84,11 @@ END
 [loop list="saved_carts_carts saved_carts_recurring"]
   [if explicit]
     [condition]'[loop-code]' eq 'saved_carts_carts'[/condition]
-    [tmp this_label]Saved Carts[/tmp]
+    [tmp this_label][L]Saved Carts[/L][/tmp]
   [/if]
   [if explicit]
     [condition]'[loop-code]' eq 'saved_carts_recurring'[/condition]
-    [tmp this_label]Recurring Orders[/tmp]
+    [tmp this_label][L]Recurring Orders[/L][/tmp]
   [/if]
   [if scratch [loop-code]]
     <table border=1><tr><td>
@@ -101,17 +101,17 @@ END
     <tr valign=top>
             <td>&nbsp;</td>
             <td align=center>
-                    Name
+                    [L]Name[/L]
             </td>
             <td align=center>
-                    Modified
+                    [L]Modified[/L]
             </td>
     </tr>
     [scratch [loop-code]]
     </table>
     </td></tr></table>
   [else]
-    No [scratch this_label] entered.<BR><BR>
+    [msg arg.0="[scratch this_label]"]No %s entered.[/msg]<BR><BR>
   [/else]
   [/if]
 [/loop]
