@@ -130,10 +130,10 @@
 [set icon_name]admin/icon_orders.gif[/set]
 [seti page_title]
 	[if value showarchive]
-	Orders: Archived Orders
+	[L]Orders[/L]: [L]Archived Orders[/L]
 	[set help_name]order.main.archived[/set]
 	[else]
-	Orders: Pending Orders
+	[L]Orders[/L]: [L]Pending Orders[/L]
 	[set help_name]order.main.pending[/set]
 	[/else]
 	[/if]
@@ -166,23 +166,23 @@
 <small>
     <FORM ACTION="[area @@MV_PAGE@@]">
     <INPUT NAME=order VALUE="[cgi order]">
-    <INPUT TYPE=submit VALUE="Start at order number">
+    <INPUT TYPE=submit VALUE="[L]Start at order number[/L]">
     </FORM>
 </small>
 </td>
-<td valign=top><B> or </B></td>
+<td valign=top><B> [L]or[/L] </B></td>
 <td>
 <small>
     <FORM ACTION="[area @@MV_PAGE@@]">
     <INPUT NAME=ui_text_qualification VALUE="">
-    <INPUT TYPE=submit VALUE="Limit with search">
+    <INPUT TYPE=submit VALUE="[L]Limit with search[/L]">
     </FORM>
 </small>
 </td>
 </tr>
 </table>
 [if cgi ui_text_qualification]
-<H4>Entries containing "[cgi ui_text_qualification]"</H3>
+<H4>[L]Entries containing[/L] "[cgi ui_text_qualification]"</H3>
 [/if]
 [search-region more=1 arg="
 		fi=transactions
@@ -236,37 +236,37 @@
 <TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
 [page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=code\n" . sortrev('code');
-	`]Order</A>
+	`][L]Order[/L]</A>
 </TH>
 <TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
 [page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=lname,fname\n" . sortrev('lname');
-	`]User</A>
+	`][L]User[/L]</A>
 </TH>
 <TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
 [page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=country,state,city\n" . sortrev('country');
-	`]Location</A>
+	`][L]Location[/L]</A>
 </TH>
 <TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
 [page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=order_date\n" . sortrev('order_date');
-	`]Date/Time</A>
+	`][L]Date[/L]/[L]Time[/L]</A>
 </TH>
 <TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
 [page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=nitems\n" . sortrev('nitems', 1);
-`]Items</A>
+`][L]Items[/L]</A>
 </TH>
 <TH ALIGN=CENTER><FONT SIZE=-1 COLOR="__UI_C_TITLEBARTXT__">
 [page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=total_cost\n" . sortrev('total_cost', 1);
-`]Total</A>
+`][L]Total[/L]</A>
 </TH>
 <TH ALIGN=RIGHT><FONT SIZE=-1 COLOR="__UI_C_TITLEBARTXT__">
 [page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=status\n" . sortrev('status');
-`]Status</A>
+`][L]Status[/L]</A>
 </TH>
 </tr>
 <tr bgcolor=000000 height=1><td colspan=8></td></tr>
@@ -309,7 +309,7 @@
 <tr>
 <td colspan=6>
 <br>
-<B>No orders</B>
+<B>[L]No orders[/L]</B>
 <br><br>
 </td>
 </tr>
@@ -325,8 +325,8 @@ Orders [matches] of [value mv_search_match_count] [scratch archive_label] displa
 [/more-list]
 </table>
 [if-mm advanced order=d]
-[button form=batch text="Delete checked orders"
- confirm='Are you sure you want to delete the checked orders?']deleteorder=1
+[button form=batch text="[L]Delete checked orders[/L]"
+ confirm='[L]Are you sure you want to delete the checked orders?[/L]']deleteorder=1
 [/button]
 [/if-mm]
 &nbsp;&nbsp;&nbsp;[button form=batch src="@_UI_IMG_@admin/[scratch archive_img]"
