@@ -15,6 +15,10 @@
 [set table_perm]1[/set]
 [set help_name]affiliate.manager[/set]
 [set icon_name]admin/icon_people.gif[/set]
+[calc]
+        $CGI->{affiliates} = 1;
+        return;
+[/calc]
 @_UI_STD_HEAD_@
 
 
