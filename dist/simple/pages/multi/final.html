@@ -5,7 +5,7 @@ __MENUBAR__
 __NO_LEFT__
 
 <CENTER>
-<FORM ACTION="[process secure=1]" METHOD="POST">
+<FORM ACTION="[process secure=1]" METHOD="POST" NAME="checkout">
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="multi/final">
 <INPUT TYPE=hidden NAME=mv_failpage VALUE="multi/final">
 <INPUT TYPE=hidden NAME=mv_todo     VALUE=submit>
@@ -90,7 +90,7 @@ They are shown in <FONT COLOR=__CONTRAST__>__CONTRAST__</FONT> below.</FONT>
 </TD></TR></TABLE>
 
 <TABLE><TR><TD VALIGN=TOP>
-Card Number <FONT SIZE=1>(test number 4111 1111 1111 1111)</FONT><BR>
+Card Number <FONT SIZE=1>(test number <A HREF="javascript:void 0" onclick="checkout.mv_credit_card_number.value='4111 1111 1111 1111'; return false;">4111 1111 1111 1111</A>)</FONT><BR>
 <INPUT TYPE=text NAME=mv_credit_card_number SIZE=19>
 [if variable MV_PAYMENT_MODE =~ /minivend_test/]
 	<BR>Interchange test should yield:

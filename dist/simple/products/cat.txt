@@ -1,4 +1,4 @@
-code	sel	name	which_page	sort	display_type	image	image_prop	banner_image	banner_text	link_type	url	tab	page	search	selector
+code	sel	name	which_page	sort	display_type	image	image_prop	banner_image	banner_text	link_type	url	tab	page	search	selector	link_template
 1	1	Abstract		00					Abstract Gallery	simple		products			category=Abstract
 2	1	Expressionists		00					Expressionist Gallery	simple		products			category=Expressionists
 3	1	Impressionists		00						simple		products			category=Impressionists

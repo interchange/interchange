@@ -27,6 +27,7 @@ email=email
 
 [if value fax_order == 1]
 &set = mv_payment Check or Money Order (will call)
+
 [elsif value fax_order == 2]
 &set = mv_payment Purchase order [value po_number]
 [value name=tmp_total set="[total-cost noformat=1]" hide=1]
@@ -43,6 +44,7 @@ email=email
 [/perl]
 credit_limit_ok=mandatory Credit limit exceeded.
 [/elsif]
+
 [elsif value fax_order == 3]
 &set = mv_payment COD
 [value name=mv_handling set=cod hide=1]
@@ -52,20 +54,24 @@ credit_limit_ok=mandatory Credit limit exceeded.
 &charge=[var MV_PAYMENT_MODE][cgi mv_payment_test]
 &set=mv_payment Real-time ([var MV_PAYMENT_MODE]) Credit Card 
 [/elsif]
+
 [elsif config CyberCash]
 &fail=../special_pages/failed
 &charge=[var CYBER_MODE]
 [/elsif]
+
 [elsif config CreditCardAuto]
 mv_credit_card_valid=required Credit card fails tests.
-&set=mv_payment Credit Card ([default mv_credit_card_type unknown])
+&set=mv_payment Credit Card (%c)
 [/elsif]
+
 [else]
 &credit_card=standard __CREDIT_CARDS_ACCEPTED__
-&set=mv_payment Credit Card ([default mv_credit_card_type unknown])
+&set=mv_payment Credit Card (%c)
 [/else]
 [/if]
 
+&calc = $Values->{mv_payment} =~ s/\%c/$Values->{mv_credit_card_type}/g; 1;
 &final = yes
 &setcheck=mv_email [value email]
 
