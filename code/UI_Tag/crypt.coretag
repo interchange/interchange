@@ -1,3 +1,7 @@
+# Copyright 2003 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: crypt.coretag,v 1.2 2004-09-25 22:53:01 docelic Exp $
+
 UserTag crypt Order value
 UserTag crypt Routine <<EOR
 sub {
