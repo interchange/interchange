@@ -24,6 +24,7 @@ _$
 ^lib/HTML
 ^lib/IniConf.pm
 ^lib/URI
+^lib/Tie
 ^test(/|$)
 ^bin(/|$)
 ^blib(/|$)
