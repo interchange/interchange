@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.13.6.19 2001-04-11 02:36:59 heins Exp $
+# $Id: UserDB.pm,v 1.13.6.20 2001-04-12 08:14:41 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.13.6.19 $, 10);
+$VERSION = substr(q$Revision: 1.13.6.20 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -1053,6 +1053,8 @@ sub login {
 		$self->get_values() unless $self->{OPTIONS}{no_get};
 	};
 
+	scrub();
+
 	if($@) {
 		if(defined $self) {
 			$self->{ERROR} = $@;
@@ -1084,6 +1086,13 @@ sub login {
 	$Vend::Session->{logged_in} = 1;
 	
 	1;
+}
+
+sub scrub {
+	for(qw/ mv_password mv_verify mv_password_old /) {
+		delete $CGI::values{$_};
+		delete $::Values->{$_};
+	}
 }
 
 sub change_pass {
@@ -1132,6 +1141,8 @@ sub change_pass {
 		die ::errmsg("Database access error.") . "\n" unless defined $pass;
 		$self->log(::errmsg('change password')) if $options{'log'};
 	};
+
+	scrub();
 
 	if($@) {
 		if(defined $self) {
@@ -1225,6 +1236,8 @@ sub new_account {
 		$self->login()
 			or die ::errmsg("Cannot log in after new account creation: %s", $self->{ERROR});
 	};
+
+	scrub();
 
 	if($@) {
 		if(defined $self) {
@@ -1418,6 +1431,7 @@ sub userdb {
 	}
 	elsif($function eq 'logout') {
 		$user = new Vend::UserDB %options;
+		scrub();
 		unless (defined $user) {
 			$Vend::Session->{failure} = ::errmsg("Unable to access user database.");
 			return undef;
@@ -1472,7 +1486,10 @@ sub userdb {
 			$Vend::Session->{failure} = ::errmsg("Unable to access user database.");
 			return undef;
 		}
-		$status = $user->$function(%options);
+		eval {
+			$status = $user->$function(%options);
+		};
+		$user->{ERROR} = $@ if $@;
 	}
 	
 	if(defined $status) {

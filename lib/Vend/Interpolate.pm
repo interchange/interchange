@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.44 2001-04-12 04:56:46 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.45 2001-04-12 08:14:40 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.44 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.45 $, 10);
 
 @EXPORT = qw (
 
@@ -3272,9 +3272,9 @@ sub tag_shipping_desc {
 
 sub tag_process {
 	my($target,$secure,$opt) = @_;
-	if($opt->{order}) {
-		$secure = $Vend::Session->{secure} ? 1 : 0; 
-	}
+
+	$secure = defined $secure ? $secure : $CGI::secure;
+
 	my $url = $secure ? secure_vendUrl('process') : vendUrl('process');
 	return $url unless $target;
 	return qq{$url" TARGET="$target};
