@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.53 2002-07-15 14:24:02 mheins Exp $
+# $Id: Config.pm,v 2.54 2002-07-19 19:52:06 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.53 $, 10);
+$VERSION = substr(q$Revision: 2.54 $, 10);
 
 my %CDname;
 
@@ -1665,7 +1665,7 @@ sub parse_varname {
 	return if $Vend::ExternalProgram;
 
 	my($iv,$vn,$k,$v,@set);
-#logDebug("parse_varname: $settings");
+logDebug("parse_varname: $settings");
 	if(defined $C) {
 		return '' if ! $settings;
 		$C->{IV} = { %{$Global::IV} } if ! $C->{IV};
@@ -3765,9 +3765,11 @@ EOF
 
 __DATA__
 mv_all_chars             ac
+mv_arg                   mv_arg
 mv_base_directory        bd
 mv_begin_string          bs
 mv_case                  cs
+mv_cat                   mv_cat
 mv_column_op             op
 mv_coordinate            co
 mv_delay_page            dp
@@ -3790,6 +3792,7 @@ mv_more_matches          MM
 mv_negate                ne
 mv_numeric               nu
 mv_orsearch              os
+mv_pc                    mv_pc
 mv_profile               mp
 mv_range_alpha           rg
 mv_range_look            rl
