@@ -17,6 +17,42 @@ sub {
 
 	my $field = $opt->{field} || 'weight';
 	my $table = $opt->{table};
+	my $osub;
+
+	if($opt->{options}) {
+	   BUILDO: {
+		 my $oattr = $Vend::Cfg->{OptionsAttribute}
+		 	or last BUILDO;
+		 my $odb = dbref($opt->{options_table} || 'options')
+		 	or last BUILDO;
+		 my $otab = $odb->name();
+		 my $q = qq{
+		 			SELECT o_group, weight FROM $otab
+					WHERE  sku = ?
+					AND    weight is not null
+					AND    weight != ''
+					};
+		 my $sth = $odb->dbh()->prepare($q)
+		 	or last BUILDO;
+		 if($oattr and $odb) {
+			 $osub = sub {
+				my $it = shift;
+				my $oweight = 0;
+				if($it->{$oattr} eq 'Simple') {
+					$sth->execute($it->{code});
+					while(my $ref = $sth->fetchrow_arrayref) {
+						my ($opt, $wtext) = @$ref;
+						next unless length($it->{$opt});
+						my $whash = get_option_hash($wtext);
+						next unless $whash;
+						$oweight += $whash->{$it->{$opt}};
+					}
+				}
+				return $oweight;
+			};
+		};
+	  }
+	}
 
 	if($attr) {
 		$attr = $opt->{field} || 'weight';
@@ -45,6 +81,8 @@ sub {
 	my $total = 0;
 	for(@$cart) {
 		$total += $_->{quantity} * $wsub->($_);
+		next unless $osub;
+		$total += $_->{quantity} * $osub->($_);
 	}
 	
 	unless($opt->{no_set}) {
@@ -116,6 +154,21 @@ use hide=1 and no-set=1.
 =item no-set
 
 Don't set the weight in scratch.
+
+=item options
+
+Scan the options table for applicable options and adjust weight
+accordingly. Only works for "Simple" type options set in the
+OptionsEnable attribute, and the o_group and weight fields must
+represent the option attribute and the weight text. The weight text is a
+normal Interchange option hash string type, i.e. 
+
+	titanium=-1.2, iron=1.5
+
+where "titanium" and "iron" are the values of an option
+setting like "blade".
+
+Will only work if your options table is SQL/DBI.
 
 =item table
 
