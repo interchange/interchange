@@ -22,6 +22,8 @@ Packaging
 
 * Cleanse mod_interchange directory in Debian's clean target.
 
+* No need to restart Interchange for log rotation.
+
 ------------------------------------------------------------------------------
 
 
