@@ -1,7 +1,0 @@
-code	description
-os28004-CAM-BLK	Ergorolle, Kamelhaar, Schwarz
-os28004-CAM-WHT	Ergorolle, Kamelhaar, Weiﬂ
-os28004-HUM-BLK	Ergorolle, Menschenhaar, Schwarz
-os28004-HUM-WHT	Ergorolle, Menschenhaar, Weiﬂ
-os28004-SYN-BLK	Ergorolle, Synthethik, Schwarz
-os28004-SYN-WHT	Ergorolle, Synthethik, Weiﬂ
