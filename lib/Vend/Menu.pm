@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange payment processing routines
 #
-# $Id: Menu.pm,v 2.12 2002-08-18 08:00:19 mheins Exp $
+# $Id: Menu.pm,v 2.13 2002-08-19 02:26:01 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.12 $, 10);
+$VERSION = substr(q$Revision: 2.13 $, 10);
 
 use Vend::Util;
 use strict;
@@ -98,6 +98,19 @@ my %transform = (
 		}
 		return 1;
 	},
+	page_class => sub {
+		my ($row, $fields) = @_;
+		return 1 unless $row->{indicated};
+		return 1 if ref($fields) ne 'ARRAY';
+		my $status = 1;
+		for(@$fields) {
+			my($f, $c) = split /[=~]+/, $_;
+			$c ||= $f;
+#::logDebug("setting scratch $f to row=$c=$row->{$c}");
+			$::Scratch->{$f} = $row->{$c};
+		}
+		return 1;
+	},
 	menu_group => sub {
 		my ($row, $fields) = @_;
 		return 1 if ref($fields) ne 'ARRAY';
@@ -142,6 +155,23 @@ my %transform = (
 		}
 		return $status;
 	},
+	indicator_class => sub {
+		my ($row, $fields) = @_;
+		return 1 if ref($fields) ne 'ARRAY';
+		for(@$fields) {
+			my ($indicator,$rev, $last, $status);
+			my($s,$r) = split /=/, $_;
+			$rev = $indicator =~ s/^\s*!\s*// ? 1 : 0;
+			$last = $indicator =~ s/\s*!\s*$// ? 1 : 0;
+::logDebug("checking scratch $s=$::Scratch->{$s} eq row=$r=$row->{$r}");
+			$status = $::Scratch->{$s} eq $row->{$r};
+			if($rev xor $status) {
+				$row->{indicated} = 1;
+			}
+			last if $last;
+		}
+		return 1;
+	},
 	indicator_profile => sub {
 		my ($row, $fields) = @_;
 		return 1 if ref($fields) ne 'ARRAY';
@@ -156,9 +186,15 @@ my %transform = (
 				next unless $last;
 			}
 			last if $last;
-			$status = $Global::Variable->{MV_PAGE} eq $indicator;
-			($row->{indicated} = 1, next)
-				if $rev xor $status;
+		}
+		return 1;
+	},
+	indicator_page => sub {
+		my ($row, $fields) = @_;
+		return 1 if ref($fields) ne 'ARRAY';
+		for(@$fields) {
+			($row->{indicated} = 1, last)
+				if $Global::Variable->{MV_PAGE} eq $row->{$_};
 		}
 		return 1;
 	},
@@ -170,28 +206,20 @@ my %transform = (
 			next unless $indicator = $row->{$_};
 			$rev = $indicator =~ s/^\s*!\s*// ? 1 : 0;
 			$last = $indicator =~ s/\s*!\s*$// ? 1 : 0;
-			if($indicator =~ /^\s*([-\w.:]+)\s*$/) {
+			if($indicator =~ /^\s*([-\w.:][-\w.:]+)\s*$/) {
 				$status =  $CGI::values{$1};
-#::logDebug("variable thing $indicator($1)") if  $row->{debug};
 			}
 			elsif ($indicator =~ /^\s*`(.*)`\s*$/s) {
-#::logDebug("calc thing $1") if  $row->{debug};
 				$status = Vend::Interpolate::tag_calc($1);
 			}
 			elsif ($indicator =~ /\[/s) {
-#::logDebug("ITL thing") if  $row->{debug};
 				$status = interpolate_html($indicator);
 				$status =~ s/\s+//g;
 			}
-#::logDebug("indicator status=$status rev=$rev last=$last") if  $row->{debug};
 			if($rev xor $status) {
 				$row->{indicated} = 1;
-				next unless $last;
 			}
 			last if $last;
-			$status = $Global::Variable->{MV_PAGE} eq $indicator;
-			($row->{indicated} = 1, next)
-				if $rev xor $status;
 		}
 		return 1;
 	},
@@ -279,16 +307,7 @@ sub old_simple {
 	my @out;
 	my $u;
 
-	my $header;
-	$header = ::interpolate_html($opt->{header_template})
-		if $opt->{header_template};
-	if($header =~ /\S/) {
-		$header = Vend::Tags->uc_attr_list($opt, $header);
-		push @out, $header;
-	}
-
 	my %defaults = (
-				iterator    => \&menu_link,
 				head_skip   => 1,
 			);
 
@@ -296,14 +315,40 @@ sub old_simple {
 		next if defined $opt->{$k};
 		$opt->{$k} = $v;
 	}
-	push @out, Vend::Tags->loop(undef,$opt,$template);
+
+	my $iterator;
+
+	my $main;
+	if($opt->{iterator}) {
+		$main = Vend::Tags->loop(undef,$opt,$template);
+	}
+	else {
+		$opt->{iterator} = \&transforms_only;
+		delete $opt->{_transforms};
+		Vend::Tags->loop(undef,$opt,'');
+		my $list = $opt->{object}{mv_results};
+		$main = '';
+		for(@$list) {
+::logDebug("here's a row: " . ::uneval($_));
+			$main .= menu_link($template, $_, $opt);
+		}
+	}
+
+	my $header;
+	$header = ::interpolate_html($opt->{header_template})
+		if $opt->{header_template};
+	if($header =~ /\S/) {
+		push @out, Vend::Tags->uc_attr_list($opt, $header);
+	}
+
+	push @out, $main;
 
 	my $footer;
+
 	$footer = ::interpolate_html($opt->{footer_template})
 		if $opt->{footer_template};
 	if($footer =~ /\S/) {
-		$footer = Vend::Tags->uc_attr_list($opt, $footer);
-		push @out, $footer;
+		push @out, Vend::Tags->uc_attr_list($opt, $footer);
 	}
 
 	return join "\n", @out;
@@ -993,6 +1038,23 @@ sub tree_line {
 	return join "\n", @out, '';
 }
 
+sub transforms_only {
+	my ($template, $row, $opt) = @_;
+
+	my %line;
+	if(ref($row) eq 'ARRAY') {
+		$opt->{_fa} ||= $opt->{object}{mv_field_names};
+		@line{@{$opt->{_fa}}} = @$row;
+		$row = \%line;
+	}
+
+	for(@{$opt->{_transform}}) {
+		return unless $transform{$_}->($row, $opt->{$_});
+	}
+	return;
+}
+
+
 sub menu_link {
 	my ($template, $row, $opt) = @_;
 
@@ -1065,7 +1127,7 @@ sub menu {
 	}
 
 	my @transform;
-	my @ordered_transform = qw/localize entities nbsp/;
+	my @ordered_transform = qw/page_class indicator_class localize entities nbsp/;
 	my %ordered;
 	@ordered{@ordered_transform} = @ordered_transform;
 
