@@ -80,6 +80,8 @@ EOF
 [/calc]
 
 [query	hashref=main
+	st=db
+	table=transactions
 	sql="
 	select order_number, affiliate, campaign, total_cost, payment_method, state, city, status, order_date
 		from  transactions

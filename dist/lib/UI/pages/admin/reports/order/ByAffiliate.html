@@ -62,6 +62,8 @@ EOF
 [/calc]
 
 [query
+	st=db
+	table=transactions
 	hashref=main
 	sql="
 		select affiliate, campaign, total_cost, order_date
