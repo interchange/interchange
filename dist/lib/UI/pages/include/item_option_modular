@@ -225,14 +225,14 @@
 [perl tables=options]
 	my $item_id = $Tag->cgi({name => 'item_id', filter => 'sql'});
 	my $sql = "SELECT * FROM options WHERE o_master='$item_id' ORDER BY o_group, o_sort";
-	Log("sql=$sql");
+#Log("sql=$sql");
 	my $hash_results = $Tag->query({ sql => $sql, hashref => 'my_results'});
 
 	my %above;
 	my @rows;
 	foreach my $row (@{$hash_results}) {
 		my $master = $row->{code};
-Log("master=$master");
+#Log("master=$master");
 		$above{$CGI->{item_id}} = 1;
 		$above{$master} = 1;
 		my @stack = ( [ $row ] );
