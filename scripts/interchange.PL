@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.2
 #
-# $Id: interchange.PL,v 1.15.2.29 2001-04-07 05:41:54 jon Exp $
+# $Id: interchange.PL,v 1.15.2.30 2001-04-08 16:56:58 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -2816,8 +2816,10 @@ license.
 
 =head1 AUTHOR
 
-Mike Heins, <mheins@redhat.com>. Please do not contact the author for
-direct help with the system. Use the Interchange mail list:
+Mike Heins, <mheins@redhat.com>. along with Dave Adams, Jon Jensen,
+Brev Patterson, Jason Kohles, and others of the Red Hat E-Business
+Solutions Group. Please do not contact the author for direct help with
+the system. Use the Interchange mail list:
 
     interchange-users   (English, subscribe at http://developer.akopia.com/)
 
@@ -2843,49 +2845,31 @@ Original author of Vend, ancestor to Minivend and Interchange, was Andrew
 Wilcox. Interchange was based on Vend 0.2, with portions from Vend 0.3;
 both were produced in 1995.
 
+# columnize with "pr -t -2 | expand -8"
+
 Contributions to Interchange have been made by:
 
-    Andreas Koenig
-    Bill Randle
-    Birgitt Funk
-    Bob Jordan
-    Brian Bullen
-    Bruce Albrecht
-    Cameron Prince
-    Christian Mueller
-    Christopher Thompson
-    Dave Adams
-    Dan Browning
-    Dan Busarow
-    Dave Wingate
-    Dennis Cronin
-    Don Grodecki
-    Ed LaFrance
-    Frank Bonita
-    Gunnar Hellekson
-    Hans-Joachim Leidinger
-    Heinz Wittenbecher
+    Andreas Koenig                      Jeff Carnahan
+    Bill Randle                         Jeff Nappi
+    Birgitt Funk                        Jochen Wiedmann
+    Bob Jordan                          Jon Jensen
+    Brian Bullen                        Keiko
+    Bruce Albrecht                      Keith Oberlin
+    Cameron Prince                      Larry Leszczynski
+    Christian Mueller                   Marc Austin
+    Christopher Thompson                Mark Stosberg
+    Dave Adams                          Michael McCune
+    Dan Browning                        Michael Wilk
+    Dan Busarow                         Mike Frager
+    Dave Wingate                        Neil Evans
+    Dennis Cronin                       Raj Goel
+    Don Grodecki                        Ray Desjardins
+    Ed LaFrance                         Sonny Cook
+    Frank Bonita                        Tim Baverstock
+    Gunnar Hellekson                    Ton Verhagen
+    Hans-Joachim Leidinger              Victor Nolton
+    Heinz Wittenbecher                  William Dan Terry
     Jason Holt
-    Jeff Carnahan
-    Jeff Nappi
-    Jochen Wiedmann
-    Jon Jensen
-    Keiko
-    Keith Oberlin
-    Larry Leszczynski
-    Marc Austin
-    Mark Stosberg
-    Michael McCune
-    Michael Wilk
-    Mike Frager
-    Neil Evans
-    Raj Goel
-    Ray Desjardins
-    Sonny Cook
-    Tim Baverstock
-    Ton Verhagen
-    Victor Nolton
-    William Dan Terry
     and many others
 
 and, of course, the entire Perl team without whom Interchange could not exist.
