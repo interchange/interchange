@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.21 2001-02-26 06:15:10 heins Exp $
+# $Id: Config.pm,v 1.25.2.22 2001-02-28 20:23:36 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -97,7 +97,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.21 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.22 $, 10);
 
 my %CDname;
 
@@ -271,8 +271,11 @@ sub global_directives {
 	['SocketFile',     	 'array',            "$Global::VendRoot/etc/socket"],
 	['SocketPerms',      'integer',          0600],
 	['SOAP',     	     'yesno',            'No'],
-	['SOAP_Socket',     	 'array',            "$Global::VendRoot/etc/socket.soap"],
+	['SOAP_Socket',       'array',            ''],
 	['SOAP_Perms',        'integer',          0600],
+	['MaxRequests', 	  'integer',           50],
+	['StartServers',      'integer',          1],
+	['NoFork',		      'yesno',            0],
 	['SOAP_MaxRequests', 'integer',           50],
 	['SOAP_StartServers', 'integer',          1],
 	['SOAP_Host',         undef,              'localhost 127.0.0.1'],
@@ -1852,10 +1855,16 @@ my %Default = (
 #					$C->{IPCkeys} = $hash;
 #					return 1;
 #				},
+		SOAP_Socket => sub {
+					shift;
+					return 1 if $Have_set_global_defaults;
+					$Global::SOAP_Socket = ['7780']
+						if $Global::SOAP and ! $Global::SOAP_Socket;
+					return 1;
+				},
 		TcpMap => sub {
 					shift;
 					return 1 if defined $Have_set_global_defaults;
-					$Have_set_global_defaults = 1;
 					my (@sets) = keys %{$Global::TcpMap};
 					if(scalar @sets == 1 and $sets[0] eq '-') {
 						$Global::TcpMap = {};
@@ -1879,6 +1888,7 @@ sub set_defaults {
 				)
 		);
 	}
+	$Have_set_global_defaults = 1;
 	return;
 }
 

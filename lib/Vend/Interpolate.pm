@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.21 2001-02-26 01:01:00 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.22 2001-02-28 20:23:36 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.21 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.22 $, 10);
 
 @EXPORT = qw (
 
@@ -3707,7 +3707,10 @@ sub tag_more_list {
 	$prefix = $q->{prefix} || '';
 	my $form_arg = "mv_more_ip=1\nmv_nextpage=$page";
 	$form_arg .= "\npf=$q->{prefix}" if $q->{prefix};
-	$form_arg .= "\nmi=$q->{mv_more_id}" if $q->{mv_more_id};
+	if($q->{mv_more_id}) {
+		$more_id = $q->{mv_more_id};
+		$form_arg .= "\nmi=$more_id";
+	}
 
 	if($r =~ s:\[border\]($All)\[/border\]::i) {
 		$border = $1;

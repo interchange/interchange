@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.11 2001-02-25 18:19:21 heins Exp $
+# $Id: Util.pm,v 1.14.2.12 2001-02-28 20:23:38 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -79,7 +79,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.11 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.12 $, 10);
 
 BEGIN {
 	eval {
@@ -1175,11 +1175,16 @@ unless (defined $use) {
         $use = 'none';
 	}
 }
-        
+ 
 if ($use eq 'none') {
     print "using NO locking\n";
     $lock_function = sub {1};
     $unlock_function = sub {1};
+}
+elsif ($use eq 'fcntl') {
+    print "using fcntl(2) locking\n";
+    $lock_function = \&flock_lock;
+    $unlock_function = \&flock_unlock;
 }
 else {
     $lock_function = \&flock_lock;

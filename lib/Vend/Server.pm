@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.16 2001-02-26 06:15:10 heins Exp $
+# $Id: Server.pm,v 1.8.2.17 2001-02-28 20:23:38 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.16 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.17 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -884,11 +884,30 @@ my $Signal_Restart;
 my %orig_signal;
 my @trapped_signals = qw(INT TERM);
 
+
+my $ipc;
+my $tick;
+
+my %fh_map;
+my %vec_map;
+
 my %s_vec_map;
 my %s_fh_map;
+
+my %ipc_socket;
 my %unix_socket;
 
-use vars qw($Num_servers $SOAP_servers %SOAP_pids $s_vector);
+use vars qw(
+			$Num_servers
+			$Page_servers
+			%Page_pids
+			$SOAP_servers
+			%SOAP_pids
+			$vector
+			$p_vector
+			$s_vector
+			$ipc_vector
+			);
 BEGIN {
 	$s_vector = '';
 }
@@ -948,13 +967,13 @@ my $Last_housekeeping = 0;
 # Reconfigure any catalogs that have requested it, and 
 # check to make sure we haven't too many running servers
 sub housekeeping {
-	my ($tick) = @_;
+	my ($interval) = @_;
 	my $now = time;
 
 #::logDebug("called housekeeping");
-	return if defined $tick and ($now - $Last_housekeeping < $tick);
+	return if defined $interval and ($now - $Last_housekeeping < $interval);
 
-#::logDebug("actually doing housekeeping tick=$tick now=$now last=$Last_housekeeping");
+#::logDebug("actually doing housekeeping interval=$interval now=$now last=$Last_housekeeping");
 	rand();
 	$Last_housekeeping = $now;
 
@@ -1264,6 +1283,64 @@ sub unlink_sockets {
 	}
 }
 
+sub start_page {
+
+	my ($do_message, $no_fork, $number) = @_;
+#::logDebug("starting soap");
+
+	$number = $Global::StartServers if ! $number; 
+	if ($number > 50) {
+		  die ::errmsg(
+		   "Ridiculously large number of StartServers: %s",
+		   $number,
+		   );
+	}
+	for (1 .. $number) {
+		my $pid;
+		if(! defined ($pid = fork) ) {
+			my $msg = ::errmsg("Can't fork: %s", $!);
+			::logGlobal({ level => 'crit' },  $msg );
+			die ("$msg\n");
+		}
+		elsif (! $pid) {
+			unless( $pid = fork ) {
+				$Vend::Foreground = 1 if $no_fork;
+
+				if($do_message) {
+					::logGlobal(
+						{ level => 'info'},
+						server_start_message(
+							"Interchange page server started (process id %s)",
+						 ),
+					 ) unless $Vend::Quiet;
+				}
+
+				send_ipc("register page $$");
+
+				my $next;
+				$::Instance = {};
+				eval { 
+					$next = server_page($no_fork);
+				};
+				if ($@) {
+					my $msg = ::errmsg("Server spawn error: %s", $@);
+					::logGlobal({ level => 'error' }, $msg);
+					logError($msg)
+						if defined $Vend::Cfg->{ErrorFile};
+				}
+
+				send_ipc("respawn page $$")		if $next;
+				
+				undef $::Instance;
+				exit(0);
+			}
+			exit(0);
+		}
+		wait;
+	}
+	return 1;
+}
+
 sub start_soap {
 
 	my $do_message = shift;
@@ -1344,11 +1421,182 @@ sub start_soap {
 	return 1;
 }
 
+sub server_page {
+
+	my ($no_fork) = @_;
+
+	my $c = 0;
+	my $cycle;
+	my $rin;
+	my $rout;
+	my $pid;
+	my $spawn;
+	my $handled = 0;
+	
+    for (;;) {
+
+	  my $n;
+	  $c++;
+	  my ($ok, $p, $v);
+	  my $i = 0;
+	  $c++;
+	  eval {
+		$rin = $p_vector;
+		
+my $pretty_vector = unpack('b*', $rin);
+
+		undef $spawn;
+		do {
+			$n = select($rout = $rin, undef, undef, $tick);
+		} while $n == -1 && $!{EINTR} && ! $Signal_Terminate;
+
+		undef $Vend::Cfg;
+
+::logDebug("pid=$$ cycle=$c tick=$tick vector=$pretty_vector n=$n num_servers=$Num_servers");
+        if ($n == -1) {
+			last if $Signal_Terminate;
+			my $msg = $!;
+			$msg = ::errmsg("error '%s' from select, n=$n." , $msg );
+			die "$msg";
+        }
+		elsif($n == 0) {
+			undef $spawn;
+			#indiv_housekeeping();
+			next;
+		}
+        else {
+
+            my ($ok, $p, $v);
+			while (($p, $v) = each %vec_map) {
+::logDebug("PAGE trying p=$p v=$v vec=" . vec($rout,$v,1) . " pid=$$ c=$c i=" . $i++ );
+        		next unless vec($rout, $v, 1);
+::logDebug("PAGE accepting p=$p v=$v pid=$$ c=$c i=" . $i++);
+				$Global::TcpPort = $p;
+				$ok = accept(MESSAGE, $fh_map{$p});
+				last;
+			}
+
+::logDebug("PAGE port $Global::TcpPort n=$n v=$v error=$! p=$p unix=$unix_socket{$p} ipc=$ipc_socket{$p} pid=$$ c=$c i=" . $i++);
+
+			unless (defined $ok) {
+::logDebug("PAGE redo accept on error=$! n=$n v=$v p=$p unix=$unix_socket{$p} pid=$$ c=$c i=" . $i++);
+				redo;
+				#die ("accept: $! ok=$ok pid=$$ n=$n c=$c i=" . $i++);
+			}
+
+			CHECKHOST: {
+				undef $Vend::OnlyInternalHTTP;
+				last CHECKHOST if $unix_socket{$p};
+				my $connector;
+				(undef, $ok) = sockaddr_in($ok);
+				$connector = inet_ntoa($ok);
+				last CHECKHOST if $connector =~ /$Global::TcpHost/;
+				my $dns_name;
+				(undef, $dns_name) = gethostbyaddr($ok, AF_INET);
+				$dns_name = "UNRESOLVED_NAME" if ! $dns_name;
+				last CHECKHOST if $dns_name =~ /$Global::TcpHost/;
+				$Vend::OnlyInternalHTTP = "$dns_name/$connector";
+			}
+			$spawn = 1;
+		}
+	  };
+
+	  if($@) {
+	  	my $msg = $@;
+		$msg =~ s/\s+$//;
+::logDebug("Died in select, retrying: $msg");
+	    ::logGlobal({ level => 'error' },  "Died in select, retrying: %s", $msg);
+	  }
+
+	  eval {
+		SPAWN: {
+			last SPAWN unless defined $spawn;
+::logDebug ("Spawning connection, " .  ($no_fork ? 'no fork, ' : 'forked, ') .  scalar localtime() . "\n");
+			if($no_fork) {
+				### Careful, returns after MaxRequests or terminate signal
+				$Vend::NoFork = {};
+				$::Instance = {};
+				connection();
+				undef $Vend::NoFork;
+				undef $::Instance;
+			}
+			elsif(! defined ($pid = fork) ) {
+				my $msg = ::errmsg("Can't fork: %s", $!);
+				::logGlobal({ level => 'crit' },  $msg );
+				die ("$msg\n");
+			}
+			elsif (! $pid) {
+				#fork again
+				unless ($pid = fork) {
+
+					$::Instance = {};
+					eval { 
+						touch_pid() if $Global::PIDcheck;
+						&$Sig_inc;
+						connection();
+					};
+					if ($@) {
+						my $msg = $@;
+						::logGlobal({ level => 'error' }, "Runtime error: %s" , $msg);
+						logError("Runtime error: %s", $msg)
+							if defined $Vend::Cfg->{ErrorFile};
+					}
+
+					undef $::Instance;
+					select(undef,undef,undef,0.050) until getppid == 1;
+					&$Sig_dec and unlink_pid();
+					exit(0);
+				}
+				exit(0);
+			}
+			close MESSAGE;
+			last SPAWN if $no_fork;
+			wait;
+		}
+	  };
+
+		# clean up dies during spawn
+		if ($@) {
+			my $msg = $@;
+			::logGlobal({ level => 'error' }, "Died in server spawn: %s", $msg );
+
+			$Vend::Cfg = { } if ! $Vend::Cfg;
+
+			my $content;
+			if($content = get_locale_message(500, '', $msg)) {
+				print MESSAGE canon_status("Content-type: text/html");
+				print MESSAGE $content;
+			}
+
+			close MESSAGE;
+
+			# Below only happens with Windows or foreground debugs.
+			# Prevent corruption of changed $Vend::Cfg entries
+			# (only VendURL/SecureURL at this point).
+			if($Vend::Save and $Vend::Cfg) {
+				Vend::Util::copyref($Vend::Save, $Vend::Cfg);
+				undef $Vend::Save;
+			}
+			undef $Vend::Cfg;
+		}
+
+		if($no_fork) {
+			if ($Global::MaxRequests and $handled > $Global::MaxRequests) {
+				return 1;
+			}
+		}
+
+		return if $Signal_Terminate || $Signal_Debug;
+		send_ipc("$$");
+
+    }
+}
+
 sub server_soap {
 #::logDebug("Entering soap server program");
 	my $rin;
 	my $rout;
-	my $tick = $Global::HouseKeeping || 60;
+
 	my $c = 0;
 	my $handled = 0;
 my $pretty_vector = unpack('b*', $s_vector);
@@ -1469,7 +1717,7 @@ my $pretty_vector = unpack('b*', $s_vector);
 		close MESSAGE;
 	  }
 
-	  last if $Signal_Terminate;
+	  return if $Signal_Terminate;
 	  return 1 if $handled > ($Global::SOAP_MaxRequests || 10);
 	  undef $Vend::Session;
 	  ::put_session() if $Vend::HaveSession;
@@ -1498,6 +1746,21 @@ sub process_ipc {
 		$SOAP_servers--;
 		start_soap(undef, 1);
 	}
+	elsif ($thing =~ /^register page (\d+)/) {
+		$Page_pids{$1} = 1;
+#::logDebug("registered Page pid $1");
+		$Page_servers++;
+	}
+	elsif ($thing =~ /^respawn page (\d+)/) {
+		delete $Page_pids{$1};
+#::logDebug("deleted Page pid $1");
+		$Page_servers--;
+		start_page(undef,$Global::NoFork,1);
+	}
+	elsif($thing =~ /^+\d+$/) {
+		close $fh;
+		$Num_servers++;
+	}
 	return;
 }
 
@@ -1520,7 +1783,7 @@ sub send_ipc {
 # Can have both INET and UNIX on same system
 sub server_both {
     my ($socket_filename) = @_;
-    my ($n, $rin, $rout, $pid, $tick);
+    my ($n, $rin, $rout, $pid);
 
 	$Vend::MasterProcess = $$;
 
@@ -1529,15 +1792,6 @@ sub server_both {
     setup_signals();
 
 #::logDebug("Starting server socket file='$socket_filename' hosts='$host'\n");
-
-	my $ipc;
-	my $ipc_vector = '';
-
-	my $vector = '';
-	my %fh_map;
-	my %vec_map;
-
-	my %ipc_socket;
 
 	my $spawn;
 
@@ -1712,9 +1966,16 @@ sub server_both {
 		}
 	}
 
+	my $master_ipc = 0;
+	if($Global::StartServers) {
+		$master_ipc = 1;
+		$p_vector = $vector ^ $ipc_vector;
+		start_page(1,$Global::NoFork);
+	}
+	
 
 	my $c = 0;
-	my $only_ipc;
+	my $only_ipc = $master_ipc;
 	my $checked_soap;
 	my $cycle;
     for (;;) {
@@ -1880,7 +2141,7 @@ my $pretty_vector = unpack('b*', $rin);
 		}
 
 		last if $Signal_Terminate || $Signal_Debug;
-	  	undef $only_ipc;
+	  	$only_ipc = $master_ipc;
 
 	  eval {
 		    housekeeping($tick);
@@ -1906,6 +2167,15 @@ my $pretty_vector = unpack('b*', $rin);
 				{ level => 'info' },
 				"STOP SOAP servers (%s) on signal TERM",
 				join ",", keys %SOAP_pids,
+			);
+			kill 'TERM', @pids;
+		}
+		@pids = keys %Page_pids;
+		if(@pids) {
+			::logGlobal(
+				{ level => 'info' },
+				"STOP page servers (%s) on signal TERM",
+				join ",", keys %Page_pids,
 			);
 			kill 'TERM', @pids;
 		}
