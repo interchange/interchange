@@ -974,6 +974,9 @@ sub {
 	}
 
 	function show_title (idx, msg) {
+	    if(document.qmenuform.show_info == undefined ||
+			document.qmenuform.show_info.checked != true)
+			return;
 		var el = document.getElementById('titlebox');
 		if(el == undefined) 
 			return;
@@ -981,10 +984,12 @@ sub {
 			msg = ltitle[idx];
 		if(idx == 0 || msg.length == 0) {
 			el.style.visibility = 'Hidden';
+			el.style.display = 'none';
 		}
 		else {
 			el.innerHTML = msg;
 			el.style.visibility = 'Visible';
+			el.style.display = 'block';
 		}
 	}
 
@@ -1131,6 +1136,11 @@ sub {
 					'"><img src="__UI_IMG__down.gif" border=0 align=absbottom></A>' + "\n" +
 					'<a href="javascript:loadForm(' + idx + ");void(0)" +
 					'"><img src="__UI_IMG__transfer.gif" border=0 align=absbottom></A>' + "\n";
+
+			var nme = l[NAME];
+			if(nme.length > 30) {
+				nme=nme.substr(0,27) + '...';
+			}
 			if(l[PAGE]) {
 				out = out + '&nbsp;&nbsp;&nbsp;<a href="javascript:loadForm(' +
 						idx + ');void(0)"' +
@@ -1140,13 +1150,13 @@ sub {
 						' title="' + l[PAGE];
 				if(l[FORM])
 					out = out + '?' + l[FORM];
-				out = out + '">' + l[NAME] + '</a>';
+				out = out + '">' + nme + '</a>';
 			}
 			else {
 				out = out + '<span style="font-weight: bold"' +
 						' onMouseOver="show_title(' + idx + ')"' +
-						' onMouseOut="show_title(0)"' + '>'
-						l[NAME] + '</span>';
+						' onMouseOut="show_title(0)"' + '>' +
+						nme + '</span>';
 			}
 
 			if(l[MSG]) {
@@ -1381,6 +1391,7 @@ sub {
 		l[MSG] = msg;
 		rewrite(idx);
 		form_changed(0);
+		mvpan_selectTab(0);
 		return;
 	}
 
@@ -1417,6 +1428,7 @@ sub {
 
 
 		form_changed(0);
+		mvpan_selectTab(0);
 		return;
 	}
 
@@ -1736,6 +1748,9 @@ Save to new menu <input name=qmenu_new type=text size=20 value="[cgi qmenu_new]"
 				onClick="set_mode('toggle')"
 				name=treebutton
 				value="Set tree mode">
+		<input type=checkbox
+				name=show_info
+				value=1> Show item info in flyout
 		<div id=treebox>
 		<input type=checkbox name=qmenu_tree value=1> Tree mode
 		<input type=checkbox name=qmenu_write_tree value=1> Write tree to DB
@@ -1804,6 +1819,36 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 	</div>
 	</td>
 	<td valign=top>
+
+	<table width="100%">
+	<tr>
+		<td>
+
+		<input type=hidden name=lineidx value="0">
+		<input type=button onClick="saveForm()" name=savebutton value="Save menu item">
+		<input type=button onClick="loadForm()" name=loadbutton
+					style="visibility: Hidden;"
+					value="Load menu item">
+		<input type=button onClick="saveForm(checkcur)" name=copybutton
+					style="visibility: Hidden;"
+					value="Copy to checked entry">
+		<br><br>
+		<input type=submit style="font-weight: bold" name=doit value="Publish" onClick="check_change(1) && setOutput()">
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<input type=submit
+				onClick="
+					this.form.qmenu_text.value='';
+					this.form.qmenu_new.value='';
+					this.form.qmenu_name.value='';
+					"
+				value="Cancel">
+		</td>
+	</tr>
+	<tr>
+	  <td>
+[tabbed-display panel-width=500 panel-height=800
+				tab-width=150]
+[tabbed-panel General]
 		<table>
 		<tr>
 			<td class=clabel>
@@ -1821,6 +1866,43 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 				<input name=page type=text size=50 onChange="form_changed(1);toggleName(this.form,form.page.value)">
 			</td>
 		</tr>
+		<tr>
+			<td class=clabel>
+				Detailed Description
+			</td>
+			<td class=cdata>
+				<textarea cols=50 rows=4 name=description onChange="form_changed(1);"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td class=clabel>
+				Inactive
+			</td class=cdata>
+			<td class=cdata>
+			<input name=inactive  type=checkbox value=1 onChange="form_changed(1);">
+			</td>
+		</tr>
+		<tr>
+			<td class=clabel>
+				Menu Group
+			</td>
+			<td class=cdata>
+			 <input name=mgroup  type=text onChange="form_changed(1);">
+			</td>
+		</tr>
+		<tr>
+			<td class=clabel>
+				Options
+			</td>
+			<td class=cdata>
+				<input name=label type=checkbox value=1 onChange="form_changed(1);toggleName(this.form)">Label only<br>
+				<input name=breakline type=checkbox value=1 onChange="form_changed(1);toggleBreak(this.form)">Break line
+			</td>
+		</tr>
+		</table>
+[/tabbed-panel]
+[tabbed-panel Form Parameters]
+		<table>
 		<tr>
 			<td class=clabel>
 				Form values<br>
@@ -1843,48 +1925,11 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 				<textarea cols=50 rows=4 name=params onChange="form_changed(1);"></textarea>
 			</td>
 		</tr>
-		<tr>
-			<td class=clabel>
-				Options
-			</td>
-			<td class=cdata>
-				Menu Group <input name=mgroup  type=text onChange="form_changed(1);">
-				&nbsp;&nbsp;
-				<input name=inactive  type=checkbox value=1 onChange="form_changed(1);">Inactive entry<br>
-				<input name=label type=checkbox value=1 onChange="form_changed(1);toggleName(this.form)">Label only<br>
-				<input name=breakline type=checkbox value=1 onChange="form_changed(1);toggleBreak(this.form)">Break line
-			</td>
-		</tr>
-		<tr>
-			<td class=clabel>
-				Detailed Description
-			</td>
-			<td class=cdata>
-				<textarea cols=50 rows=4 name=description onChange="form_changed(1);"></textarea>
-			</td>
-		</tr>
-		<tr>
-			<td colspan=2>
-		<input type=hidden name=lineidx value="0">
-		<input type=button onClick="saveForm()" name=savebutton value="Save menu item">
-		<input type=button onClick="loadForm()" name=loadbutton
-					style="visibility: Hidden;"
-					value="Load menu item">
-		<input type=button onClick="saveForm(checkcur)" name=copybutton
-					style="visibility: Hidden;"
-					value="Copy to checked entry">
-		<br><br>
-		<input type=submit style="font-weight: bold" name=doit value="Publish" onClick="check_change(1) && setOutput()">
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		<input type=submit
-				onClick="
-					this.form.qmenu_text.value='';
-					this.form.qmenu_new.value='';
-					this.form.qmenu_name.value='';
-					"
-				value="Cancel">
-			</td>
-		</tr>
+		</table>
+[/tabbed-panel]
+
+[tabbed-panel Advanced]
+		<table>
 <script>
 		form = document.qmenuform;
 		var i ;
@@ -1969,7 +2014,12 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 		}
 
 </script>
-		</table>
+			</table>
+[/tabbed-panel]
+[/tabbed-display]
+		</td>
+	</tr>
+	</table>
 	</td>
 </tr>
 </table>
