@@ -3,7 +3,7 @@
 #
 # Interchange localizer
 #
-# $Id: localize.PL,v 2.3 2002-06-27 18:55:50 jon Exp $
+# $Id: localize.PL,v 2.4 2003-04-01 22:07:07 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -149,22 +149,10 @@ my $one;
 my $two;
 
 if($opt_u) {
-	my $icmenu = "$opt_u/icmenu.txt";
-	my ($headline, @cols);
-	
-	open (ICMENU, $icmenu)
-		|| die  "Couldn't read UI menu file $icmenu: $!\n";
-	$headline = <ICMENU>;
-	@cols = split (/\t/, $headline);
-	unless ($cols[9] eq 'name' && $cols[12] eq 'special') {
-		die "Malformed UI menu file $icmenu\n";
+	# parse menu files like Commerce.txt
+    for (glob ("$opt_u/*.txt")) {
+		parse_menufile ($_);
 	}
-	while (<ICMENU>) {
-		@cols = split (/\t/);
-		write_structure (undef, $cols[9]);
-		write_structure (undef, $cols[12]) if $cols[12];
-	}
-	close (ICMENU);
 }
 		
 if($opt_t) {
@@ -216,6 +204,37 @@ my $Key = 'msg0001';
 sub getkey {
 	$Key++ until ! defined $Locale->{$def}->{$Key};
 	return $Key;
+}
+
+sub parse_menufile {
+	my ($file) = @_;
+	my ($headline, @cols, $namecol, $dsccol);
+	
+	open (ICMENU, $file)
+		|| die  "Couldn't read UI menu file $file: $!\n";
+	$headline = <ICMENU>;
+	@cols = split (/\t/, $headline);
+
+	for (my $i = 0; $i < @cols; $i++) {
+		if ($cols[$i] eq 'name') {
+			$namecol = $i;
+		} elsif ($cols[$i] eq 'description') {
+			$dsccol = $i;
+		}
+	}
+	
+	unless ($namecol) {
+		die "Malformed UI menu file $file: name column not found\n";
+	}
+	unless ($dsccol) {
+		die "Malformed UI menu file $file: description column not found\n";
+	}
+	while (<ICMENU>) {
+		@cols = split (/\t/);
+		write_structure (undef, $cols[$namecol]);
+		write_structure (undef, $cols[$dsccol]) if $cols[$dsccol];
+	}
+	close (ICMENU);
 }
 
 sub write_structure {
@@ -355,7 +374,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-# $Id: localize.PL,v 2.3 2002-06-27 18:55:50 jon Exp $
+# $Id: localize.PL,v 2.4 2003-04-01 22:07:07 racke Exp $
 
 =head1 SYNOPSIS
 
@@ -407,7 +426,8 @@ Two page mode, mutually exclusive with C<-m.>
 
 =item C<-u dir>
 
-UI directory, e.g. /usr/lib/interchange/lib/UI. This can
+Directory with (UI) menu database files, e.g.
+C</usr/lib/interchange/lib/UI/pages/includes/menus>. This can
 be used to include the menu titles in the output.
 
 =back
@@ -429,7 +449,7 @@ one level. Subsequent .bak files will be overwritten.
 
 =head1 SEE ALSO
 
-http://interchange.redhat.com/
+http://www.icdevgroup.org/
 
 =head1 AUTHOR
 
