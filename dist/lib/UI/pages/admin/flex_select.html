@@ -151,6 +151,7 @@
 <INPUT TYPE=hidden NAME=mv_action        VALUE=back>
 <INPUT TYPE=hidden NAME=ui_show_fields VALUE="[cgi ui_show_fields]">
 
+[if !scratch tmp_large]
 <table>
 <tr>
 <td>
@@ -172,6 +173,8 @@
 </tr>
 </table>
 </FORM>
+[/if]
+
 [if scratch ui_failure]
 <P>
 <BLOCKQUOTE>
