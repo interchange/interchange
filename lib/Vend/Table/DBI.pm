@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.55 2003-08-04 05:11:20 mheins Exp $
+# $Id: DBI.pm,v 2.56 2003-08-12 00:49:18 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.55 $, 10);
+$VERSION = substr(q$Revision: 2.56 $, 10);
 
 use strict;
 
@@ -1427,7 +1427,7 @@ sub row {
     $sth->execute($key)
 		or $s->log_error("%s execute error for %s: %s", 'row', $q, $DBI::errstr)
 		and return undef;
-	return @{$sth->fetchrow_arrayref()};
+	return @{ $sth->fetchrow_arrayref() || [] };
 }
 
 sub row_hash {
