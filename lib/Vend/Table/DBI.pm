@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.28 2001-04-15 04:29:27 heins Exp $
+# $Id: DBI.pm,v 1.25.2.29 2001-04-16 00:36:48 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.28 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.29 $, 10);
 
 use strict;
 
@@ -41,7 +41,6 @@ use vars qw/
 			$DBI
 			$EACH
 			$TIE_HASH
-			$Set_handle
             %DBI_connect_cache
             %DBI_connect_count
             %DBI_connect_bad
@@ -377,14 +376,9 @@ sub open_table {
 		}
     }
 
-
-	unless($config->{dsn_id}) {
+	unless ($config->{dsn_id}) {
 		$config->{dsn_id} = join "_", grep ! ref($_), @call;
 		$config->{dsn_id} .= "_transact" if $config->{Transactions};
-    	if($Global::HotDBI->{$Vend::Cfg->{CatalogName}}) {
-			$config->{hot_dbi} = 1;
-			$DBI_connect_count{$config->{dsn_id}}++;
-		}
 	}
 
 	$db = $DBI_connect_cache{ $config->{dsn_id} };
@@ -408,7 +402,7 @@ sub open_table {
 	my $alt_index = 0;
 
 	if (! $db or $bad ) {
-#::logDebug("bad=$bad connecting to " . ::uneval(\@call));
+#::logDebug("bad=$bad connecting to $call[0]");
 		eval {
 			$db = DBI->connect( @call ) unless $bad;
 			$db->trace($Global::DataTrace, $Global::DebugFile)
@@ -538,15 +532,16 @@ sub suicide {
 sub close_table {
 	my $s = shift;
 	return 1 if ! defined $s->[$DBI];
-	undef $DBI_connect_bad{$s->[$CONFIG]->{dsn_id}};
-	undef $s->[$CONFIG]{_Insert_h};
-	undef $s->[$CONFIG]{Update_handle};
-    undef $s->[$CONFIG]{Exists_handle};
-    return 1 if $s->[$CONFIG]{hot_dbi};
-    my $id = delete $s->[$CONFIG]{dsn_id};
-#::logDebug("connect count close: " . ($DBI_connect_count{$id} - 1));
-	return 1 if --$DBI_connect_count{$id} > 0;
-	undef $DBI_connect_cache{$id};
+	my $cfg = $s->[$CONFIG];
+	undef $DBI_connect_bad{$cfg->{dsn_id}};
+	undef $cfg->{_Insert_h};
+	undef $cfg->{Update_handle};
+    undef $cfg->{Exists_handle};
+    undef $s->[$EACH];
+#::logDebug("connect count close: " . ($DBI_connect_count{$cfg->{dsn_id}} - 1));
+	return 1 if --$DBI_connect_count{$cfg->{dsn_id}} > 0;
+	return 1 if $Global::HotDBI->{$Vend::Cat};
+	undef $DBI_connect_cache{$cfg->{dsn_id}};
 	$s->[$DBI]->disconnect();
 }
 
