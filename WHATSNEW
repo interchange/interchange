@@ -1,630 +1,352 @@
+Interchange 4.7.1 released 2001-03-27.
 
-Interchange 4.7.0
-
-  * Added ability to cascade mv_click statements, i.e.
+* Added ability to cascade mv_click statements, e.g.:
 
-    [set delete]
-        deleterecords=1
-        item_id=[item-code]
-        mv_click=db_maintenance
-    [/set]
-    
-    [page   href="@@MV_PAGE@@"
-            form="
-                mv_action=back
-                mv_click=delete
-            "]Delete this</A>
-
-  * Added "clone item" to item pages. Allows you to clone an
-    existing item for purposes of adding new ones.
-
-  * Re-instituted multiple-table deletes for deleting an item. It
-    will look in __UI_ITEM_TABLES__ and delete records
-
-  * Added clone_set and clone_row primitives in Data modules.
-    Allows you to copy a record except for certain fields.
-
-  * Added [item-options] tag which automatically finds and
-    presents options based on the options table. The table
-    name is settable based on Variable MV_OPTION_TABLE. Fields
-    can be remapped with MV_OPTION_TABLE_MAP.
-
-  * Now can use "variant" items which are based on a base
-    SKU but set in an options table (same as the one for
-    [item-options]). Changed behavior of [item-field ...]
-    to look in the code first, then the base SKU, for the
-    relevant product databases. [item-data ...] always works
-    off of the relevant base SKU.
-
-  * Price looks at variant code first, then the base SKU if
-    that is zero; or it can be made to do so with CommonAdjust.
-
-  * Fully modular options with cascade.
-
-    A UI module allows editing and definition of the modular
-    options, including "phantom" options that act to group
-    additional items.
-
-    When an item is defined as modular upon order, it can have
-    accompanying it a series of other items in the same order
-    group. The price of the options is not shown, but is added to
-    the price of the master item.
-
-  * Added [item-sku] tag to get base SKU for a variant
-
-  * added fall-through for sku to [item-field]
-
-  * rerouted [item-data ...] to always point to sku, not the code
-    for the variant. (This will mean inventory has to be checked
-    via a [data ...] tag when variants are in use.)
-
-  * Added new [control] and [control-set] tags to set series of
-    Scratch-like option areas. Used for components in UI content
-    editing.
-
-  * Added [mail ...]MESSAGE[/mail] tag to the core. Works with
-    update_data routine to send emailed notifications of database
-    changes. Otherwise works like combination of [email ...] and
-    [email-raw] ... usertags.
-
-  * added [PREFIX-options] to get and parse options of all types.
-
-  * New [profile ...] tag allows you to set directives normally
-    set in catalog.cfg with a tag in the session Autoload. This
-    is really the same as the current Autoload, except it is
-    automatic on login/logout, faster, and leaves Autoload
-    for user user.
-
-      [profile name=profile_name tag=tag set=1 run=1 restore=1]
-
-      name      name of profile. Needed unless restore=1.
-      tag       normally not set, defaults to "default". Matches
-                what is the UserDB profile.
-      run       run profile code only, don't save.
-      set       set profile for future only, don't run.
-      restore   remove the current profile
-
-     [profile name] will run and set by default.
-
-  * UserDB now can set a price_level via the [profile ...]
-    tag routine. Set this in catalog.cfg for dealer pricing:
-
-
-        Profile dealer CommonAdjust <<EOR
-        "
-            pricing:w5,w10:,
-            ;:wholesale,
-            ;:wholesale:mv_sku,
-            ;$,
-            ==:options
-        "
-        EOR
-        Profile dealer NonTaxableField nontaxable
-
-    Quotes are needed (as in all locale-style directives) unless
-    you want to do a full hash set like
-
-        Profile dealer <<EOR
-        { 
-            CommonAdjust => q(
-            pricing:w5,w10:,
-            ;:wholesale,
-            ;:wholesale:mv_sku,
-            ;$,
-            ==:options
-            ),
-
-            NonTaxableField => 'nontaxable',
-        }
-        EOR
-    
-    which is also supported.
-
-  * Added SDBM database option for those poor Solaris folks.
-  
-  * Added MINIVEND_ALLDBM environment check to prevent using
-    unneeded modules (takes more memory).
-
-  * Added [table-editor ...] tag which easily produces 
-    editable tables. Capabilities:
-
-        * Can edit the hash address books in userdb
-        * Safe to place in user page with auto_secure=1. Generates
-          a [scratch mv_data_enable] matching the table:col1,col2,col3:key
-          you passed it.
-        * Reads from CGI array or from parameters
-        * Automatically reads table info from mv_metadata if
-          available
-        * The following can be overridden compared to 
-          mv_metadata:
-            
-                widget
-                width
-                height
-                help
-                extra (javascript)
-                filter
-                pre_filter
-
-        * Can auto-check with order_profile definitions.
-        * Can append or prepend your additional form 
-          information.
-        * Can generate an email copy of the data submission
-          for review. (TBA)
-    
-    Ready for a form widget? 8-)
-
-  * Added new mv_form_profile variable that sets profiles with any
-    action. Designed for easy checking of variables in submits.
-
-  * Speeded import of DBI databases by placing numeric pointers
-    in an array at initial config time.
-
-  * Added ability to set defaults for empty fields at import and
-    record creation time, regardless of the underlying DB, with
-
-        Database  userdb  DEFAULT  password=please_change
-
-    Operates exactly like COLUMN_DEF.
-
-  * Added database attributes
-
-        ALTERNATE_DSN       ALTERNATE_PASS    ALTERNATE_USER
-        ALTERNATE_LDAP_HOST ALTERNATE_BIND_DN ALTERNATE_BIND_PW
-
-    and logic to allow fallback to a second database server.
-    
-    If you have ALTERNATE_DSN (and possibly ALTERNATE_USER and
-    ALTERNATE_PASS) defined for a table, and Interchange is unable
-    to get a database connection to the primary DSN, it will attempt
-    to connect to and use the ALTERNATE_DSN.
-
-    These are array values, so you can define any number of
-    fallbacks.  The same approach works for LDAP databases except
-    ALTERNATE_LDAP_HOST and other appropriate parameters are set.
-
-  * Added interchange.cfg directive HotDBI, which takes a catalog
-    name which should use persistant database connections. When
-    a connection is persistent, it will be maintained and cached
-    without reconnecting every page request.
-
-  * Added Inet_mode and Unix_mode directives to interchange.cfg,
-    which allows you to guarantee the mode in which the server
-    comes up.
-
-  * New filters:
-
-        mime_type: returns mime type based on file extension
-        compress_space: strip trailing/leading, s/\s+/ /g
-        checkbox: set value to "" if not defined in CGI space
-
-  * Added <optgroup> support to tag_accessories select build.
-    Allows grouping of options. When an option value is
-    ^\s*~~something~~\*$, it is read as an <OPTGROUP
-    LABEL="something">, and options can be grouped per HTML/4.0.
-
-  * Added "tz" option to time/tag time, allowing display of time
-    for a particular time zone. Specified in the usual EST5EDT
-    form.
-
-  * FileDatabase catalog.cfg directive now specifies a table:field
-    which can be used to store pages and other files. Will allow
-    a catalog without any system files stored on disk.
-
-  * Require directive now can require Perl modules, as in:
-
-        Require module SQL::Statement
-
-  * New Suggest directive is a non-fatal form of Require, which 
-    generates a warning message but allows catalog to run.
-
-      Suggest module Business::UPS WWW-based UPS routines will not work!
-
-  * Bugfix: chaining character in CommonAdjust wrongly appended to atom
-    in some situations.
-
-  * ProductFiles was not resetting Vend::OnlyProducts when a locale change
-    was done. Caused [PREFIX-field ...] to fail.
-
-  * Variable MV_DEFAULT_SEARCH_TABLE now works for st=db searches like
-    Variable MV_DEFAULT_SEARCH_FILE works for text searches.
-
-  * [loop list=`$Scratch->{ary}`] now accepts a prebuilt array reference to
-    loop over. Must be in the form returned by $db->query(), i.e.
-    the list array (of arrays), an optional field hash ref giving the field name
-    to index pointers, and an optional array ref giving the field names
-    in order.
-  
-  * Added [tree] tag to walk tree-based lists. It produces
-    hash-based rows which are iterated ala item-list (the
-    hash-based list iterator). Sets some information in the row.
-    See the tag reference for behavior.
-
-  * Made tag_calc routine indirectly callable from within embedded
-    Perl code by doing straight eval when already in Safe compartment.
-  
-  * Made [if-PREFIX-(data|field|modifier|param|pos) ...] nestable
-    by checking for nesting conditions in the run list and then
-    generating integer additions to the tags.
-
-  * There is a "links" type for the [accessories ...] tag. Builds
-    a series of clickable links based on an option list. Accepts the
-    "form" and "href" parameters to allow setting of the initial form,
-    otherwise just generates a link to the current page with the attribute
-    passed as a CGI argument.
-
-  * Added "password" widget to [accessories ...].
-  
-  * Added new [PREFIX-tag ...] which allows extending the tags
-    that are interpreted as a part of a PREFIX-list. Example in
-    tag_address, called with [PREFIX-tag-address]. Full attribute
-    support and nesting.
-
-  * Added attr_list tag which allows tagging of attribute lists in
-    hash-based templates. Allows you to generate complex templating
-    without needing to have a complete search. Example of use is in
-    tag_address_list.
-
-  * Added support for modular items, sets mv_mp parameter to
-    *parent* item of the item ordered, and mv_mi to the item group
-    of the main item.
-
-  * Made failure to pass all quantities to quantity update (refresh)
-    non-fatal. Will update them if mv_update_quantity=1.
-
-  * Form profiles: added new format check routines, largely
-    intended to work with new mv_form_profile capability:
+  [set delete]
+      deleterecords=1
+      item_id=[item-code]
+      mv_click=db_maintenance
+  [/set]
+
+  [page  href="@@MV_PAGE@@"
+         form="
+             mv_action=back
+             mv_click=delete
+         "]Delete this</A>
 
-    variable=regex "EXPR" "Error message"
-        Checks for compliance with regex EXPR. If you wanted
-        to ensure two word-only characters were put in a "name"
-        variable, it would be:
+* Added "clone item" to item pages. Allows you to clone an existing item
+  for purposes of adding new ones.
 
-            variable=regex "^\w+\s+\w+$" "We need first/last name"
+* Re-instituted multiple-table deletes for deleting an item. It will look
+  in __UI_ITEM_TABLES__ and delete records.
 
-    variable=length MIN-MAX "Error message"
-        Checks for length between required MIN and optional MAX characters.
-        Example:
+* Added clone_set and clone_row primitives in Data modules. Allows you to
+  copy a record except for certain fields.
 
-            username=length 4-10 "Username must be between 4 and 10 characters"
+* Added [item-options] tag which automatically finds and presents options
+  based on the options table. The table name is settable based on Variable
+  MV_OPTION_TABLE. Fields can be remapped with MV_OPTION_TABLE_MAP.
 
-    variable=unique TABLE
-        Checks to see that a key in a table (presumably to be inserted)
-        is unique. Errors out if key exists.
+* Now can use "variant" items which are based on a base SKU but set in an
+  options table (same as the one for [item-options]). Changed behavior of
+  [item-field ...] to look in the code first, then the base SKU, for the
+  relevant product databases. [item-data ...] always works off of the
+  relevant base SKU.
+
+* Price looks at variant code first, then the base SKU if that is zero;
+  or it can be made to do so with CommonAdjust.
+
+* Fully modular options with cascade.
+
+  A UI module allows editing and definition of the modular options,
+  including "phantom" options that act to group additional items.
+
+  When an item is defined as modular upon order, it can have accompanying
+  it a series of other items in the same order group. The price of the
+  options is not shown, but is added to the price of the master item.
 
-  * Form profiles: Added new profile chaining capabiility. Can
-    place &or or &and on a line between different check parameters
-    and create simple dependencies.
+* Added [item-sku] tag to get base SKU for a variant.
 
-  * Form profiles: Reference to check can now be passed to the routine, so you can
-    check CGI stuff only for mv_form_profile.
+* Added fall-through for sku to [item-field].
 
-  * Form profiles: Fixed problem with second passing check on a variable
-    overwriting the error message from a first failing routine.
+* Rerouted [item-data ...] to always point to sku, not the code for the
+  variant. (This will mean inventory has to be checked via a [data ...]
+  tag when variants are in use.)
 
-  * Can now use - and _ interchangeably in parameter names, i.e. 
+* Added new [control] and [control-set] tags to set series of Scratch-
+  like option areas. Used for components in UI content editing.
 
-		[value-extended name=foo file-contents=1] 
+* Added [mail ...]MESSAGE[/mail] tag to the core. Works with update_data
+  routine to send emailed notifications of database changes. Otherwise
+  works like combination of [email ...] and [email-raw] ... usertags.
 
-	is the same as
+* added [PREFIX-options] to get and parse options of all types.
 
-		[value-extended name=foo file_contents=1] 
+* New [profile ...] tag allows you to set directives normally set in
+  catalog.cfg with a tag in the session Autoload. This is really the
+  same as the current Autoload, except it is automatic on login/logout,
+  faster, and leaves Autoload for user user.
 
-	where it would have caused an error before.
+  [profile name=profile_name tag=tag set=1 run=1 restore=1]
 
-  * Bug fixes to make mv_sql_query work properly. There was a
-    push_spec('nu' ...) call which was in the wrong place, making
-    numeric hash all out of sync.
+  name      name of profile. Needed unless restore=1.
+  tag       normally not set, defaults to "default". Matches what is
+            the UserDB profile.
+  run       run profile code only, don't save.
+  set       set profile for future only, don't run.
+  restore   remove the current profile
 
-  * Bug fix in search: Fixed problem where coordinated search of op=rm
-    would not match on words only.
+  [profile name] will run and set by default.
 
-  * Remove last dependencies on $! =~ /Some English error/ and move
-    to Errno settings ($!{EAGAIN}, etc.
+* UserDB now can set a price_level via the [profile ...]
+  tag routine. Set this in catalog.cfg for dealer pricing:
 
-  * Add pragma to strip leading white space from HTML output. If
-    you put [pragma strip_html] to page, there will be no leading
-    white space.
+  Profile dealer CommonAdjust <<EOR
+  "
+      pricing:w5,w10:,
+      ;:wholesale,
+      ;:wholesale:mv_sku,
+      ;$,
+      ==:options
+  "
+  EOR
+  Profile dealer NonTaxableField nontaxable
 
-  * Added ability to have a PRELOAD file for database imports,
-    where a table is parsed for field names and data before the
-    normal file in ProductDir. This allows adding fields without
-    user intervention when the database type is internal. Mostly
-    useful for mv_metadata.
+  Quotes are needed (as in all locale-style directives) unless you want
+  to do a full hash set like:
 
-  * Support for clone_row and clone_set, which clone a single row
-    from an existing one or clone a set of rows based on a common
-    key.
+  Profile dealer <<EOR
+  {
+      CommonAdjust => q(
+      pricing:w5,w10:,
+      ;:wholesale,
+      ;:wholesale:mv_sku,
+      ;$,
+      ==:options
+      ),
 
-  * Added support for autonumbering. For SQL, the ability will be
-    given to override the autonumber routine with one set up by the
-    capabilities. Figured out solution to nagging File::CounterFile
-    problem by always initializing a counter object when database
-    is opened in writable mode.
+      NonTaxableField => 'nontaxable',
+  }
+  EOR
 
-  * Allow tables to have the same underlying name in their own database
-	with $config->{REAL_NAME}. For example, if you have two Mysql dbs
-	each with a "products" table, you can set them up:
+  which is also supported.
 
-		Database  products  products.txt  dbi:mysql:construct1
+* Added SDBM database option for those poor Solaris folks.
 
-		Database  prodstoo  prodstoo.txt  dbi:mysql:construct2
-		Database  prodstoo  REAL_NAME     products
+* Added MINIVEND_ALLDBM environment check to prevent using unneeded
+  modules (takes more memory).
 
-	This should work fine in almost all cases.
+* Added [table-editor ...] tag which easily produces editable tables.
+  Capabilities:
 
-  * Added DEFAULT parameter to allow database-independent setting
-    of defaults. Particularly useful in avoiding NOT NULL errors
-    from DBs that don't have a DEFAULT setting in create().
-	This also works when doing [data table=tab col=col key=key value=val]
-	on a non-existent row.
+  * Can edit the hash address books in userdb.
+  * Safe to place in user page with auto_secure=1. Generates a
+    [scratch mv_data_enable] matching the table:col1,col2,col3:key
+    you passed it.
+  * Reads from CGI array or from parameters.
+  * Automatically reads table info from mv_metadata if available.
+  * The following can be overridden compared to mv_metadata:
 
-  * Improved speed of table open by reducing number of tests.
+    widget
+    width
+    height
+    help
+    extra (JavaScript)
+    filter
+    pre_filter
 
-  * Improved speed of import by pre-setting numeric array and no
-    longer requiring tests for each field on each row.
+  * Can auto-check with order_profile definitions.
+  * Can append or prepend your additional form information.
+  * Can generate an email copy of the data submission for review. (TBA)
 
-  * Debian packaging files added (supplied by Stefan Hornburg 
-    <racke@linuxia.de>).
+  Ready for a form widget? 8-)
 
-  * Usertag formel added which composes form elements and
-    signals errors (supplied by Stefan Hornburg 
-    <racke@linuxia.de>).
+* Added new mv_form_profile variable that sets profiles with any action.
+  Designed for easy checking of variables in submits.
 
-Interchange 4.6.1
+* Speeded import of DBI databases by placing numeric pointers in an
+  array at initial config time.
 
-* Added MS Excel import/export capability.
+* Added ability to set defaults for empty fields at import and record
+  creation time, regardless of the underlying DB, with:
 
-* Added new SessionType "NFS", which forces fcntl_lock/fcntl_unlock in
-  SessionFile.pm (bug #76).
+  Database  userdb  DEFAULT  password=please_change
 
-* Report missing DBDs at startup time by working around DBI bug that causes
-  $@ to be eaten (bug #75).
+  Operates exactly like COLUMN_DEF.
 
-* Miscellaneous bugfixes, thanks to Jean-Philippe Bouchard:
-  - Fixed Data.pm bug that caused flypage problems (bug #60).
-  - Fixed spreadsheet edit auto export bug (bug #59).
+* Added database attributes
 
-* Link program fixes, thanks to minivend@delionsweb.net:
-  - Fixed tlink.pl LINK_PORT problem (bug #61).
-  - Fixed compile_link 'nosuid' option failure (bug #66).
+  ALTERNATE_DSN        ALTERNATE_PASS     ALTERNATE_USER
+  ALTERNATE_LDAP_HOST  ALTERNATE_BIND_DN  ALTERNATE_BIND_PW
 
-* Construct Something changes:
-  - Fixed stock alert price problem (bug #57).
-  - Fixed 'title' vs. 'description' field issues. Thanks to Steve Gertz.
+  and logic to allow fallback to a second database server.
 
-* Fixed [selected] and [checked] tags to be more uniform and to support
-  case-sensitive and $CGI comparisons. Documented in Tagref.pm. Also,
-  "multiple" and "default" args can no longer be positional -- no big loss.
+  If you have ALTERNATE_DSN (and possibly ALTERNATE_USER and
+  ALTERNATE_PASS) defined for a table, and Interchange is unable to get
+  a database connection to the primary DSN, it will attempt to connect to
+  and use the ALTERNATE_DSN.
 
-* Fixed bug that kept [item-subtotal noformat=1] from being recognized.
+  These are array values, so you can define any number of fallbacks. The
+  same approach works for LDAP databases except ALTERNATE_LDAP_HOST and
+  other appropriate parameters are set.
 
-* [item-exec routine] now picks up $Values, etc. before a [calc] is run.
+* Added interchange.cfg directive HotDBI, which takes a catalog name which
+  should use persistant database connections. When a connection is
+  persistent, it will be maintained and cached without reconnecting every
+  page request.
 
-* Order.pm: routes now use a "from" parameter which sets the email From: 
-  header.
+* Added Inet_mode and Unix_mode directives to interchange.cfg, which allows
+  you to guarantee the mode in which the server comes up.
 
-* Fixes to Util.pm:
-  - Prevent sprintf() from screwing up numbers in certain locales.
-  - [include] now can interpret [L] if locale=1 parameter is added.
+* New filters:
 
-* Server.pm -- we can now accept ISINDEX queries (for what it is worth).
+  mime_type: returns mime type based on file extension
+  compress_space: strip trailing/leading and s/\s+/ /g
+  checkbox: set value to "" if not defined in CGI space
 
-* Scan.pm -- fix non-interpolated tags in search profiles.
+* Added <optgroup> support to tag_accessories select build. Allows grouping
+  of options. When an option value is ^\s*~~something~~\*$, it is read as
+  an <OPTGROUP LABEL="something">, and options can be grouped per HTML 4.0.
 
-* Database tables can now reside in different directories with the 
-  DIR option to the Database config parameter.
+* Added "tz" option to time/tag time, allowing display of time for a
+  particular time zone. Specified in the usual EST5EDT form.
 
-* Fixed typo ('error' vs. 'errors') in Order.pm preventing no-items
-  error from being seen at checkout (bug #82). Thanks to Bas Bezemer.
+* FileDatabase catalog.cfg directive now specifies a table:field which can
+  be used to store pages and other files. Will allow a catalog without any
+  system files stored on disk.
 
-* Removed some duplicated image files, reducing package size by ~ 200 KB.
+* Require directive now can require Perl modules, as in:
 
+  Require module SQL::Statement
 
-Interchange 4.6.0
+* New Suggest directive is a non-fatal form of Require, which generates a
+  warning message but allows catalog to run.
 
-* Minor final changes
+  Suggest module Business::UPS WWW-based UPS routines will not work!
 
+* Bugfix: chaining character in CommonAdjust wrongly appended to atom
+  in some situations.
 
-Interchange 4.5.8 beta release
+* ProductFiles was not resetting Vend::OnlyProducts when a locale change
+  was done. Caused [PREFIX-field ...] to fail.
 
-* Documentation overhaul -- PDFs now available
-* Various bugfixes
-* Oracle support improved
-* 'Construct' catalog improvements
-* Authorize.net support
+* Variable MV_DEFAULT_SEARCH_TABLE now works for st=db searches like
+  Variable MV_DEFAULT_SEARCH_FILE works for text searches.
 
+* Added [tree] tag to walk tree-based lists. It produces hash-based rows
+  which are iterated ala item-list (the hash-based list iterator). Sets
+  some information in the row. See the tag reference for behavior.
 
-Interchange 4.5.7 beta release
+* Made tag_calc routine indirectly callable from within embedded Perl code
+  by doing straight eval when already in Safe compartment.
 
+* Made [if-PREFIX-(data|field|modifier|param|pos) ...] nestable by checking
+  for nesting conditions in the run list and then generating integer
+  additions to the tags.
 
-Interchange 4.5.6 changes -- complete overhaul of UI
+* There is a "links" type for the [accessories ...] tag. Builds a series
+  of clickable links based on an option list. Accepts the "form" and "href"
+  parameters to allow setting of the initial form, otherwise just generates
+  a link to the current page with the attribute passed as a CGI argument.
 
-* Everything renamed to "interchange". interchange.cfg, interchange.pid,
-  etc. If you keep minivend.cfg as the configuration file, the PID file
-  will be minivend.pid. There should be a good level of backward
-  compatibility.
+* Added "password" widget to [accessories ...].
 
-* "construct" is now the default demo -- a "foundation" demo will be
-  added later.
+* Added new [PREFIX-tag ...] which allows extending the tags that are
+  interpreted as a part of a PREFIX-list. Example in tag_address, called
+  with [PREFIX-tag-address]. Full attribute support and nesting.
 
-    -- Improved graphics and layout over older demos.
-    -- Split ship addresses for items
-    -- Shipping notices integrated
-    -- Recurring order facility (doesn't yet work).
-    -- PO with credit limit
-    -- Merchandising cross-sells by category or item.
-    -- "Others who bought this"
+* Added attr_list tag which allows tagging of attribute lists in hash-based
+  templates. Allows you to generate complex templating without needing to
+  have a complete search. Example of use is in tag_address_list.
 
-  The HTML rendering is kind of slow on Netscape, any help with that
-  would be appreciated.
+* Added support for modular items, sets mv_mp parameter to *parent* item
+  of the item ordered, and mv_mi to the item group of the main item.
 
-* The user interface (UI) was reorganized to make it easier to understand
-  and use.
+* Made failure to pass all quantities to quantity update (refresh)
+  non-fatal. Will update them if mv_update_quantity=1.
 
-  -- All functions should now be available via menu, quicklinks should
-     not be necessary.
-  -- Most database table lists are HTML lists with links instead of
-     the button approach.
-  -- Administration console with information helpful for debug.
+* Form profiles: added new format check routines, largely intended to
+  work with new mv_form_profile capability:
 
-UI:
+  * variable=regex "EXPR" "Error message"
 
-* Orders 
-  -- list-based
-  -- shipping status notices
-  -- automatic check of archive box when status=shipped
-  -- list-based delete and archive operations
-  -- lists are sortable on multiple fields
-  -- status display for individual line items
-  -- change size of list with Knar UI_SZ_LIST_ORDER
+    Checks for compliance with regex EXPR. If you wanted
+    to ensure two word-only characters were put in a "name"
+    variable, it would be:
 
-* Customers
-  -- list-based
-  -- list-based delete and deactivate operations
-  -- lists are sortable on multiple fields
-  -- status display for individual line items
-  -- change size of list with Knar UI_SZ_LIST_CUSTOMER
+    variable=regex "^\w+\s+\w+$" "We need first/last name"
 
-* Item editor
-  -- Select list of items to delete or edit in sequence
-  -- Now have different "views" for merchandising, pricing, inventory, etc.
-  -- checkbox-based deletes
-  -- item fields to display set with UI_ITEM_FIELDS
-  -- separator fields set with UI_ITEM_BREAK
-  -- cross_category field added to merchandising table
+  * variable=length MIN-MAX "Error message"
 
-* Content
-  -- Templates easier to create
-  -- Editor allows change of template
+    Checks for length between required MIN and optional MAX characters.
+    Example:
 
-* Layout
-  -- button builder does on-the-fly items
-  -- fixed bugs in search builder
+    username=length 4-10 "Username must be between 4 and 10 characters"
 
-* Merchandising
-  -- new menu, includes affiliate stuff
+  * variable=unique TABLE
 
-* Reporting
-  -- Fixed cast problem with PostGres reports
-  -- More consistent look/feel for reports
+    Checks to see that a key in a table (presumably to be inserted) is
+    unique. Errors out if key exists.
 
-* Administration
-  -- New information screen that should help with diagnosing trouble
-  -- Table select/edit now consistent with other editors
-  -- Selector rows can be sorted via column, forward and reverse
-  -- Table display properties can be easily edited
+* Form profiles: Added new profile chaining capabiility. Can place &or or
+  &and on a line between different check parameters and create simple
+  dependencies.
 
-Core:
+* Form profiles: Reference to check can now be passed to the routine, so
+  you can check CGI stuff only for mv_form_profile.
 
-* Database update forms (mv_todo=set) now can set fields in multiple
-  tables when there is a common key.
+* Form profiles: Fixed problem with second passing check on a variable
+  overwriting the error message from a first failing routine.
 
-* Changed SpecialPage defaults for "search", "order", and "checkout"
-  to reflect longstanding defaults in demo catalogs.
+* Can now use - and _ interchangeably in parameter names, i.e.
 
-* Fixed bug in fixed-field (PriceField) pricing, introduced sometime
-  in Minivend 4.
+  [value-extended name=foo file-contents=1]
 
-* Added GUESS_NUMERIC parameter to databases, which operates by checking
-  field types in SQL and by looking at the import data on DBM. You can
-  see this in operation in the UPS tables "Ground", etc.
+  is the same as
 
-* Removed auto-index of key field if POSTCREATE statement exists.
+  [value-extended name=foo file_contents=1]
 
-* Added some more better auto-numbering support. Still not ready
-  for the UI.
+  where it would have caused an error before.
 
-* Found bug in Vend::Table::DBI->inc_field that caused a quoted value
-  when really was a number.
+* Bug fixes to make mv_sql_query work properly. There was a
+  push_spec('nu' ...) call which was in the wrong place, making numeric
+  hash all out of sync.
 
-* CSV imports now are fully as functional as others, can do indexing, numeric
-  guess, etc.
+* Remove last dependencies on $! =~ /Some English error/ and move
+  to Errno settings, as in $!{EAGAIN}, etc.
 
-* Added "value" widget type for [accessories ...].
+* Add pragma to strip leading white space from HTML output. If you put
+  [pragma strip_white] to page, there will be no leading white space.
 
-* Added [tmp var]scratch setting[/tmp] and [scratchd var] tags to
-  purge Scratch when setting/accessing variables. This can improve
-  session write speed if setting a large value which will only be
-  used in the current page.
+* Added ability to have a PRELOAD file for database imports, where a
+  table is parsed for field names and data before the normal file in
+  ProductDir. This allows adding fields without user intervention when
+  the database type is internal. Mostly useful for mv_metadata.
 
-* Added "tabbed" filter, and some other Filters. Now you can add
-  your own filters persistently with:
+* Support for clone_row and clone_set, which clone a single row from an
+  existing one or clone a set of rows based on a common key.
 
-    Sub <<EOS
-    sub somesub { 
-        $Filter{foo_to_bar} = sub {
-            my $value = shift;
-            $value =~ s/foo/bar/g;
-            return $value;
-        };
-    }
-    EOS
-    
-    or just in the current page
+* Added support for autonumbering. For SQL, the ability will be given to
+  override the autonumber routine with one set up by the capabilities.
+  Figured out solution to nagging File::CounterFile problem by always
+  initializing a counter object when database is opened in writable mode.
 
-    [perl]
-        $Filter{foo_to_bar_tmp} = sub {
-            my $value = shift;
-            $value =~ s/foo/bar/g;
-            return $value;
-        };
-        return;
-    [/perl]
+* Allow tables to have the same underlying name in their own database
+  with $config->{REAL_NAME}. For example, if you have two MySQL databases
+  each with a "products" table, you can set them up:
 
-  Thanks to Stefan Hornburg for suggestion.
+  Database  products  products.txt  dbi:mysql:construct1
 
-* Fixed SpecialPage handling of salestax.asc, thanks to Jeff Carnahan.
+  Database  prodstoo  prodstoo.txt  dbi:mysql:construct2
+  Database  prodstoo  REAL_NAME     products
 
-* Fixed _postcode() routine in Order.pm, thanks to Brett Harrison.
+  This should work fine in almost all cases.
 
-* Fixed longstanding problem with demo catalog whereby the UserDB
-  defined the username field as "user" but it was actually named
-  "username" in the database. Changed UserDB default to "username", because
-  "user" is a reserved word in some SQL databases (i.e. Postgres).
+* Added DEFAULT parameter to allow database-independent setting of
+  defaults. Particularly useful in avoiding NOT NULL errors from DBs that
+  don't have a DEFAULT setting in create(). This also works when doing
+  [data table=tab col=col key=key value=val] on a non-existent row.
 
-* UserDB: Removed mv_credit_card_info from B_FIELDS so that it would not
-  be saved in UserDB.
+* Improved speed of table open by reducing number of tests.
 
-* Added [counter ...] tag, with some additional capabilities over
-  the old [fcounter ...] tag. Kept fcounter around in UserTag for
-  compatibility with older catalogs.
+* Improved speed of import by pre-setting numeric array and no longer
+  requiring tests for each field on each row.
 
-* Added image copying for shared image directories (the admin).
+* Debian packaging files added (supplied by Stefan Hornburg
+  <racke@linuxia.de>).
 
+* Usertag formel added which composes form elements and signals errors
+  (supplied by Stefan Hornburg <racke@linuxia.de>).
 
-Interchange 4.5.5 beta release
+* Rewrite image background paths in <table>, <tr>, <td>, and <th> tags
+  according to ImageDir/ImageSecureDir by default. (Removed pragma
+  substitute_table_image that was just added in 4.6.2.) Set pragma
+  no_image_rewrite to disable all image path rewriting.
 
+* Split RPM into two packages: base Interchange and foundation demo
+  catalog skeleton. Should make RPM upgrading safer.
 
-Interchange 4.5.3 beta release
+* Removed Tagref.pm. There's now a normal ictags document instead.
 
 
-Interchange 4.5.0 changes -- the start of the Tallyman merge.
-
-* Many, many, changes and improvments to the user interface.
-  Minimate is broken out again and made separate; the UI should
-  have all of its functionality. See the UI online help for changes.
-* LDAP support. You can now keep data in LDAP servers, with 
-  normal Minivend Database connectivity. Searchable, too!
-  Put in catalog.cfg:
-
-    Database  variable variable.txt LDAP:some.servername.com
-    Database  variable BIND_DN      cn=fragermk, o=catalogs, c=minivend
-    Database  variable BASE_DN      o=catalogs, c=minivend
-    Database  variable BIND_PW      secret
-
-  Programmed by Mike Frager with a bit of help from Mike Heins.
-
-* VariableDatabase now takes effect at the time of the call in catalog.cfg.
-  This means you can edit your Variable settings in a database, reconfigure,
-  and then use the values farther down in the configuration file.
-
-* Order.pm: fixed multiple problems in precedence for order profiles.
-  Thanks to Ton Verhagen. Also added "isbn" profile check written
-  by Ton Verhagen.
-* Interpolate.pm: Fixed bug in error message generation -- thanks to Dan
-  Busarow.
-* Config.pm: Fixed default declaration of "HOT" for memory databases,
-  now should work properly as default database.
-* Other changes much too numerous to mention. This will be the last
-  version of this changes document; there are too many.
+Interchange 4.7.0 not publicly released.
