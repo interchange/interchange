@@ -106,16 +106,6 @@ ui_ship_action=delete
  onClick="return confirm('Are you sure you want to delete this method?')">
 <p>
 
-[set Back]
-[if scratch ui_return_menu]
-mv_nextpage=[scratch ui_return_menu]
-[else]
-mv_nextpage=admin/configure
-[/else]
-[/if]
-[/set]
-
-<input type=submit name="mv_click" value="Back">
 </td>
 
 <!-- Read the current shipping def, success=[read-shipping] -->
