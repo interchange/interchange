@@ -64,7 +64,7 @@
 	}
 	my $page = $Tag->filter('filesafe', $CGI->{ui_page});
 	if( ! $page) {
-		$Scratch->{ui_error} = errmsg("No page name given.");
+		$Scratch->{ui_error} = 'No page name given.';
 		$Tag->bounce('__UI_BASE__/error');
 		return;
 	}
@@ -81,7 +81,9 @@
     $contents =~ s/^<!--\s+begin\s+content\s+-->\n?//i;
     $contents =~ s/<!--\s+end\s+content\s+-->\n*$//i;
     $contents =~ s/\r//g;
-	$Tag->write_relative_file($page, $contents);
+	unless ($Tag->write_relative_file($page, $contents)) {
+		$Scratch->{ui_error} = "Couldn't save page $page.";
+	}
 	$Scratch->{ui_output_page} = $page;
 	return;
 [/perl]
