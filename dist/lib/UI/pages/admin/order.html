@@ -277,7 +277,7 @@ th a:visited { text-decoration: none }
 <INPUT TYPE=checkbox NAME=order VALUE="[item-code]"
 		[item-calc]
 			return if $Scratch->{archive_nm} eq 'unarchive';
-			return 'CHECKED' if q{[item-data transactions status]} eq 'shipped';
+			return 'CHECKED' if q{[item-data transactions status]} eq '__UI_SHIPPED_STATUS__';
 			return;
 		[/item-calc]
 		>
