@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.14.4.4 2000-11-28 22:58:58 racke Exp $
+# $Id: Order.pm,v 1.14.4.5 2000-12-10 18:54:30 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.14.4.4 $, 10);
+$VERSION = substr(q$Revision: 1.14.4.5 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1359,6 +1359,8 @@ sub route_order {
 			supplant	=> 0,
 			track   	=> '',
 			errors_to	=> $Vend::Cfg->{MailOrderTo},
+		    locale      => 0,
+			sub         => '',
 		};
 	}
 
@@ -1505,7 +1507,8 @@ sub route_order {
 			$page = '';
 		}
 		else {
-			$page = readfile($route->{'report'} || $main->{'report'});
+			$page = readfile($route->{'report'} || $main->{'report'},
+							$Global::NoAbsolute, $route->{'locale'});
 		}
 		die errmsg(
 			"No order report %s or %s found.",
@@ -1539,7 +1542,7 @@ sub route_order {
 			$reply   = $route->{reply} || $main->{reply};
 			$reply   = $::Values->{$reply} if $reply =~ /^\w+$/;
 			$to		 = $route->{email};
-			my $ary = [$to, $subject, $page, $reply, $use_mime];
+			my $ary = [$route->{sub}, $to, $subject, $page, $reply, $use_mime];
 			if($route->{from}) {
 				push @$ary, "From: $route->{from}";
 			}
@@ -1601,9 +1604,18 @@ sub route_order {
 	my $msg;
 
 	foreach $msg (@out) {
+	    my $func = shift (@$msg);
+		my $sub;
+		
+		if ($func =~ /^\w+$/) {
+			$sub = $Vend::Cfg->{Sub}{$func} || $Global::GlobalSub->{$func};
+		} else {
+			$sub = sub {send_mail (@_)};
+		}
+		
 		eval {
-#### change this to use Vend::Mail::send
-			send_mail(@$msg);
+#### change this to use Vend::Mail::send		  
+			$sub->(@$msg);
 		};
 		if($@) {
 			my $err = $@;
