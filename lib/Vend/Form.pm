@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.6 2002-02-03 01:16:11 kwalsh Exp $
+# $Id: Form.pm,v 2.7 2002-02-03 06:37:55 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -36,7 +36,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.7 $, 10);
 
 @EXPORT = qw (
 	display
@@ -530,7 +530,7 @@ sub movecombo {
 	if(! $template) {
 		if($opt->{rows} > 1) {
 			$template .= q(<textarea rows="{ROWS|4}" wrap="{WRAP|virtual}");
-			$template .= q( cols="{COLS|20} name="{NAME}">{ENCODED}</textarea>);
+			$template .= q( cols="{COLS|20}" name="{NAME}">{ENCODED}</textarea>);
 		}
 		else {
 			$template .= qq(<input TYPE="text" size="{COLS||40}");
