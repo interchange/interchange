@@ -73,6 +73,7 @@ Variable UI_STD_FILE_NAV <<EONav
 		exclude_mask="[scratch exclude_mask]"
 		view_link="[scratch view_link]"
 		start_open="[scratch start_open]"
+		initial_dir="[cgi initial_dir]"
 	]
 
 </td>
