@@ -125,20 +125,6 @@
 		}
 	}
 	$out .= <<EOF;
-function addItem(selector, receptor) {
-	if(receptor.value != '') {
-		receptor.value = receptor.value + " ";
-	}
-	if(selector[selector.selectedIndex].value != null) {
-		receptor.value = receptor.value + selector[selector.selectedIndex].value;
-	}
-	else {
-		if(selector[selector.selectedIndex].text != null) {
-		receptor.value = receptor.value + selector[selector.selectedIndex].text;
-		}
-	}
-	return true;
-}
 function populateTable(table_options,column_options,key_options,selected) {
 	var selectedArray = eval ( "ary_" + selected );
 	var currentTable = "$Values->{mv_data_table}";
