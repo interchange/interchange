@@ -18,8 +18,8 @@
 	return;
 [/calc]
 
-[seti page_title]Inventory: [cgi item_id][/seti]
-[seti page_banner]Inventory: edit item <B>[page href="__UI_BASE__/item_edit" form="item_id=[cgi item_id]"][cgi item_id]</A></B>[/seti]
+[seti page_title][L]Inventory[/L]: [cgi item_id][/seti]
+[seti page_banner][L]Inventory[/L]: [msg arg.0='<B>[page href="__UI_BASE__/item_edit" form="item_id=[cgi item_id]"][cgi item_id]</A></B>']edit item %s[/msg][/seti]
 [set help_name]item.editor[/set]
 [set table_perm]inventory[/set]
 [set icon_name]icon_item.gif[/set]
@@ -33,7 +33,7 @@
 				form='
 					item_id=[cgi item_id]
 					mv_data_table=__ProductFiles_0__
-					page_title=Edit items: [cgi item_id]
+					page_title=[L]Edit items[/L]: [cgi item_id]
 					help_name=inventory.edit
 					ui_no_meta_display=1
 					ui_hide_key=1
