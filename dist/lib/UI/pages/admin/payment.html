@@ -1,5 +1,5 @@
 [flag type=write table=variable]
-[set page_title]Payment Options[/set]
+[set page_title][L]Payment Options[/L][/set]
 [set ui_class]Admin[/set]
 [set help_name]payment.main[/set]
 [set icon_name]icon_config.gif[/set]
@@ -42,7 +42,7 @@
 				]
 			|]
 [value name=ui_changes_made set=1 hide=1]
-<span class=cerror>You need to [page __UI_BASE__/reconfig @@MV_PAGE@@]apply changes</a> for changes to take effect.</span>
+<span class=cerror>[msg arg.0="[page __UI_BASE__/reconfig @@MV_PAGE@@]" arg.1="</a>"]You need to %sapply changes%s for changes to take effect.[/msg]</span>
 [/if]
 
 [calc]
@@ -73,8 +73,8 @@ EOF
 </tr>
 
 <tr>
-<td class=rmarq>Name</td>
-<td class=rmarq>Accepted</td>
+<td class=rmarq>[L]Name[/L]</td>
+<td class=rmarq>[L]Accepted[/L]</td>
 </tr>
 
 <tr>
@@ -91,8 +91,8 @@ EOF
 <td class=rnorm>
 
 <select name="cc_accepted[loop-increment]">
-<option value=""> Not Accepted
-<option value="[loop-code]" [if-loop-pos 2]SELECTED[/if-loop-pos]> Accepted
+<option value=""> [L]Not Accepted[/L]
+<option value="[loop-code]" [if-loop-pos 2]SELECTED[/if-loop-pos]> [L]Accepted[/L]
 </select>
 
 </td>
@@ -102,14 +102,14 @@ EOF
 <tr>
 
 <td class=rnorm>
-Online Check
+[L]Online Check[/L]
 </td>
 
 <td class=rnorm>
 
 <select name="check">
-<option value="0"> Not Accepted
-<option value="1" [if scratch CHECK_ACCEPTED]SELECTED[/if]> Accepted
+<option value="0"> [L]Not Accepted[/L]
+<option value="1" [if scratch CHECK_ACCEPTED]SELECTED[/if]> [L]Accepted[/L]
 </select>
 
 </td>
@@ -119,14 +119,14 @@ Online Check
 <tr>
 
 <td class=rnorm>
-COD
+[L]COD[/L]
 </td>
 
 <td class=rnorm>
 
 <select name="cod">
-<option value="0"> Not Accepted
-<option value="1" [if scratch COD_ACCEPTED]SELECTED[/if]> Accepted
+<option value="0"> [L]Not Accepted[/L]
+<option value="1" [if scratch COD_ACCEPTED]SELECTED[/if]> [L]Accepted[/L]
 </select>
 
 </td>
@@ -137,14 +137,14 @@ COD
 <tr>
 
 <td class=rnorm>
-Postal billing
+[L]Postal billing[/L]
 </td>
 
 <td class=rnorm>
 
 <select name="postal">
-<option value="0"> Not Accepted
-<option value="1" [if scratch POSTAL_ACCEPTED]SELECTED[/if]> Accepted
+<option value="0"> [L]Not Accepted[/L]
+<option value="1" [if scratch POSTAL_ACCEPTED]SELECTED[/if]> [L]Accepted[/L]
 </select>
 
 </td>
@@ -154,14 +154,14 @@ Postal billing
 <tr>
 
 <td class=rnorm>
-Purchase Order
+[L]Purchase Order[/L]
 </td>
 
 <td class=rnorm>
 
 <select name="po">
-<option value="0"> Not Accepted
-<option value="1" [if scratch PO_ACCEPTED]SELECTED[/if]> Accepted
+<option value="0"> [L]Not Accepted[/L]
+<option value="1" [if scratch PO_ACCEPTED]SELECTED[/if]> [L]Accepted[/L]
 </select>
 
 </td>
@@ -175,7 +175,7 @@ Purchase Order
 <tr class=rnorm>
 	<td>&nbsp;</td>
 	<td>
-		<input type=submit name="update" value="Update">
+		<input type=submit name="update" value="[L]Update[/L]">
 	</td>
 </tr>
 
