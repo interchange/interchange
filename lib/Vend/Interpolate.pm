@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.198 2003-11-17 21:35:22 edl Exp $
+# $Id: Interpolate.pm,v 2.199 2003-12-03 17:05:44 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.198 $, 10);
+$VERSION = substr(q$Revision: 2.199 $, 10);
 
 @EXPORT = qw (
 
@@ -4208,7 +4208,6 @@ my $once = 0;
 	if($text =~ m/^$B$QR{_line}\s*$/is) {
 		my $i = $1 || 0;
 		my $fa = $opt->{mv_return_fields};
-		my $end = 
 		$r .= join "\t", @$fa[$i .. $#$fa];
 		$r .= "\n";
 	}
