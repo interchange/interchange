@@ -50,6 +50,7 @@ _$
 ^pm_to_blib$
 ^pod/mvtags.pod$
 ^pod/QuickStart.pod$
+^pod/mvrpm.pod$
 ^run(/|$)
 ^scripts/.*[a-z]$
 ^scripts/initp.PL$
