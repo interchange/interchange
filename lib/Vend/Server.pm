@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.47 2004-02-02 09:23:37 racke Exp $
+# $Id: Server.pm,v 2.48 2004-02-29 20:41:40 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.47 $, 10);
+$VERSION = substr(q$Revision: 2.48 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -73,6 +73,7 @@ my @Map = qw/
     remote_host        REMOTE_HOST
     remote_user        REMOTE_USER
     request_method     REQUEST_METHOD
+    request_uri        REQUEST_URI
     script_name        SCRIPT_NAME
     secure             HTTPS
     server_name        SERVER_NAME

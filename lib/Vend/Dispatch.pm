@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.33 2004-02-24 20:53:58 mheins Exp $
+# $Id: Dispatch.pm,v 1.34 2004-02-29 20:41:40 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.33 $, 10);
+$VERSION = substr(q$Revision: 1.34 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1440,7 +1440,14 @@ EOF
     # If the cgi-bin program was invoked with no extra path info,
     # just display the catalog page.
     if (! $Vend::FinalPath || $Vend::FinalPath =~ m:^/+$:) {
-		$Vend::FinalPath = find_special_page('catalog');
+#::logDebug("request_uri=$CGI::request_uri script_path=$CGI::script_path");
+        if($CGI::request_uri !~ /^$CGI::script_path/) {
+            $Vend::FinalPath = $CGI::request_uri;
+#::logDebug("FinalPath now $CGI::request_uri");
+        }
+        else {
+            $Vend::FinalPath = find_special_page('catalog');
+        }
     }
 
 	if($CGI::put_ref and my $act = $Vend::Cfg->{Special}{put_handler} ) {
