@@ -54,6 +54,20 @@ sub {
 		}
     }
 
+	if ($type eq 'radio') {		
+		my ($rlabel, $rvalue);
+		for my $button (split (/\s*,\s*/, $opt->{choices})) {
+			if ($button =~ /^(.*?)=(.*)$/) {
+				$rvalue = $1;
+				$rlabel = $2;
+			} else {
+				$rvalue = $rlabel = $button;
+			}
+			$elhtml .= qq{<input type=radio name=$name value=$rvalue> $rlabel};
+		}
+		return sprintf ($fmt, $labelhtml, $elhtml);
+	}
+
     if ($Tag->error($name)) {
 		if ($opt->{signal}) {
 			$labelhtml = sprintf($opt->{signal}, $label);
