@@ -66,6 +66,9 @@
 [perl tables=affiliate]
 
 	my $file = $Config->{TrackFile};
+	unless (-r $file) {
+		return '<tr><td>No traffic statistics found</td></tr>';
+	}
 	$Scratch->{$file} = 1;
 
 	%opts = (
