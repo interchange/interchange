@@ -16,6 +16,16 @@ die "No tests defined for Windows\n" if $^O =~ /win32/i;
 $ENV{MINIVEND_ROOT} = "$cur_dir/blib";
 $ENV{MINIVEND_PORT} = 8786 unless defined $ENV{MINIVEND_PORT};
 
+my $extra_cfg = '';
+
+if(-f '_allow_threads') {
+	open(THR, ">$ENV{MINIVEND_ROOT}/_allow_threads")
+		or die "Can't write allow threads file: $!\n";
+	print THR "I agree not to hold anyone but myself responsible for the results of running an experimental system.\n";
+	close THR;
+	$^O =~ /linux/i and $extra_cfg = 'Variable MV_GETPPID_BROKEN 1';
+}
+
 open(CONFIG, ">$ENV{MINIVEND_ROOT}/interchange.cfg")
 	or die "open: $!\n";
 
@@ -24,6 +34,7 @@ Catalog  test $ENV{MINIVEND_ROOT} /test
 TcpMap $ENV{MINIVEND_PORT} -
 TagDir 0
 TagDir etc
+$extra_cfg
 EOF
 
 open(CONFIG, ">$ENV{MINIVEND_ROOT}/catalog.cfg")

@@ -3,7 +3,7 @@
 #
 # Interchange version 5.3.1
 #
-# $Id: interchange.PL,v 2.82 2005-01-24 22:08:14 jon Exp $
+# $Id: interchange.PL,v 2.83 2005-02-27 08:29:17 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,13 +38,6 @@ use strict;
 
 use Config;
 
-BEGIN {
-	if(! $ENV{MINIVEND_FORCE_THREADS}
-	   && ($Config{usethreads} || $Config{useithreads} || $Config{use5005threads})) {
-		die "Interchange will not work with a thread-enabled perl.\n";
-	}
-}
-
 ## Comment this back in when we remove support for Perl 5.6.0
 #no Config;
 
@@ -63,6 +56,16 @@ BEGIN {
 	
 	$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
 #	$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
+
+	-f "$Global::VendRoot/_allow_threads" and $ENV{MINIVEND_FORCE_THREADS} = 1;
+
+	if( ($Config{usethreads} || $Config{useithreads} || $Config{use5005threads}) ) {
+		$Global::TryingThreads = 1;
+	}
+
+	if( $Global::TryingThreads and ! $ENV{MINIVEND_FORCE_THREADS} ) {
+		die "Interchange will not work with a thread-enabled perl.\n";
+	}
 
 	if(-f "$Global::VendRoot/interchange.cfg") {
 		$Global::ExeName = 'interchange';
@@ -847,6 +850,39 @@ EOF
 			chomp $msg;
 			logGlobal($msg);
 		}
+	}
+
+	THREADCHECK: {
+		last THREADCHECK unless $Global::TryingThreads;
+		my $high_enough;
+		eval {
+			require 5.8.5;
+			$high_enough = 1;
+		};
+
+		unless($high_enough) {
+			die "Your Perl version is not high enough to run threads, needs 5.8.5.\n";
+		}
+
+		my $msg = <<EOF;
+***************************************************************
+***************************************************************
+****                                                       ****
+****  You are running a Perl with threads enabled -- this  ****
+****  is not recommended for a production environment.     ****
+****                                                       ****
+****  If the Interchange daemon does not start, add this   ****
+****  line to interchange.cfg:                             ****
+****                                                       ****
+****    Variable MV_GETPPID_BROKEN  1                      ****
+****                                                       ****
+****  Then restart the server.                             ****
+****                                                       ****
+***************************************************************
+***************************************************************
+EOF
+			chomp $msg;
+			logGlobal($msg);
 	}
 
 	# The global configuration set up which catalogs exist.

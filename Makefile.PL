@@ -59,10 +59,6 @@ unless($@) {
 	$ENV{PERL_RL} = 'Perl';
 }
 
-if(! $ENV{MINIVEND_FORCE_THREADS} and $Config{usethreads} || $Config{useithreads} || $Config{use5005threads}) {
-	die "Interchange will not work with a thread-enabled perl.\n";
-}
-
 my $term;
 if($TermRead) {
 	eval {
@@ -360,6 +356,29 @@ sub initialize {
         close UID;
     }
 
+	$Global::TryingThreads	=  $Config{usethreads}
+							|| $Config{useithreads}
+							|| $Config{use5005threads};
+
+	if($Global::TryingThreads and ! -f '_allow_threads') {
+		print <<EOF;
+It is not recommended that you run Interchange with a thread-enabled perl,
+which you have called this installer with. Either rerun with 
+
+	/path/to/non-threaded/perl Makefile.PL
+
+or accept the possible problems that come with running on an experimental
+software system.
+EOF
+
+		my $ans = my_prompt("Do you want to try running with threads? ", 'n');
+		exit if $ans !~ /^\s*y/i;
+        open(THR, ">_allow_threads")
+            or die "Can't write allow threads file: $!\n";
+        print THR "I agree not to hold anyone but myself responsible for the results of running an experimental system.\n";
+        close THR;
+	}
+
 #warn "Got past open UID file , uid=$uid user=$>\n";
 
 	GETUID: {
@@ -583,12 +602,23 @@ EOF
 						"$realdir/$_";
 			}
 		}
+
+		ALLOWTHREADS: {
+			unlink "$realdir/_allow_threads";
+			last ALLOWTHREADS unless $Global::TryingThreads;
+			open(THR, ">$realdir/_allow_threads")
+				or die "Can't write allow threads file: $!\n";
+			print THR "I agree not to hold anyone but myself responsible for the results of running an experimental system.\n";
+			close THR;
+		}
+
 		if($MV::Default{LSB}) {
 			my $d = cwd();
 			print "Doing LSB install...\n";
 			do './install_lsb.pl';
 			print "Done with LSB install.\n";
 		}
+
 		if(@remove_old) {
 			if($MV::Default{UNLINK}) {
 				print "Removing old files....";
@@ -860,7 +890,7 @@ WriteMakefile(
 	NAME     => "Interchange",
 	DISTNAME => "interchange",
 	clean    => {
-				FILES => "lib/IniConf.pm _uid _db_storable _session_storable lib/File/CounterFile.pm scripts/initp.pl scripts/compile_link scripts/config_prog scripts/configdump scripts/dump scripts/expire scripts/localize scripts/expireall scripts/makecat scripts/ic_mod_perl scripts/interchange scripts/offline scripts/restart scripts/update",
+				FILES => "lib/IniConf.pm _uid _db_storable _allow_threads _session_storable lib/File/CounterFile.pm scripts/initp.pl scripts/compile_link scripts/config_prog scripts/configdump scripts/dump scripts/expire scripts/localize scripts/expireall scripts/makecat scripts/ic_mod_perl scripts/interchange scripts/offline scripts/restart scripts/update",
 			   },
 
 	dist     => {
