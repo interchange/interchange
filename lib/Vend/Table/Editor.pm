@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.26 2003-02-12 03:59:13 mheins Exp $
+# $Id: Editor.pm,v 1.27 2003-03-26 21:05:58 racke Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.26 $, 10);
+$VERSION = substr(q$Revision: 1.27 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -1409,13 +1409,12 @@ sub resolve_options {
 	if($opt->{wizard}) {
 		$opt->{noexport} = 1;
 		$opt->{next_text} = 'Next -->' unless $opt->{next_text};
-		$opt->{cancel_text} = 'Cancel' unless $opt->{cancel_text};
 		$opt->{back_text} = '<-- Back' unless $opt->{back_text};
 	}
 	else {
-		$opt->{cancel_text} = 'Cancel' unless $opt->{cancel_text};
 		$opt->{next_text} = "Ok" unless $opt->{next_text};
 	}
+	$opt->{cancel_text} = 'Cancel' unless $opt->{cancel_text};
 
 	for(qw/ next_text cancel_text back_text/ ) {
 		$opt->{$_} = errmsg($opt->{$_});
