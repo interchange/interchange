@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.5 2002-02-09 05:21:42 mheins Exp $
+# $Id: Search.pm,v 2.6 2002-02-28 17:32:15 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.5 $, 10);
+$VERSION = substr(q$Revision: 2.6 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -367,7 +367,7 @@ sub more_alpha {
 
 	# determine position of sort field within results
 	for ($i = 0; $i < @{$s->{mv_return_fields}}; $i++) {
-		last if $s->{mv_return_fields}->[$i] == $s->{mv_sort_field}->[0];
+		last if $s->{mv_return_fields}->[$i] eq $s->{mv_sort_field}->[0];
 	}
 	$sfpos = $i;
 	
