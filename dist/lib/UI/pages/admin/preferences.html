@@ -25,17 +25,30 @@
 "]
 <tr><td align=left bgcolor=__UI_C_INTBLOCK__>
 <font size="+1" face="arial,helvetica,sans-serif">
+[comment]
 <a href="[area href="__UI_BASE__/spread" form=|
+                mv_data_table=variable
+                page_title=Preferences -- [loop-code]
+                ui_meta_specific=1 
+                ui_hide_key=1
+                ui_data_fields=Variable pref_group
+                ui_text_qualification=pref_group=[loop-code]
+                ui_spreadsheet_rows=20
+                ui_spread_size:variable=50
+                ui_spread_meta:variable=1
+                ui_return_to=__UI_BASE__/preferences
+                help_name=knar.main
+|]"> [loop-code] </a>
+[/comment]
+<a href="[area href="__UI_BASE__/flex_select" form=|
 				mv_data_table=variable
-				page_title=Preferences -- [loop-code]
 				ui_meta_specific=1
 				ui_hide_key=1
-				ui_data_fields=Variable pref_group
 				ui_text_qualification=pref_group=[loop-code]
-				ui_spreadsheet_rows=20
-				ui_spread_size:variable=50
-				ui_spread_meta:variable=1
 				ui_return_to=__UI_BASE__/preferences
+				ui_return_to=page_title=Preferences -- [loop-code]
+				ui_return_to=ui_text_qualification=pref_group=[loop-code]
+				ui_return_to=ui_hide_key=1
 				help_name=knar.main
 |]"> [loop-code] </a>
 </font>
