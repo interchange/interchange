@@ -28,7 +28,7 @@ my @mods_to_get;
 my @remove_old;
 my $Lock_troubles;
 
-$VERSION = '4.5.5';
+$VERSION = '4.5.6';
 
 # See if we have the CPAN module
 my $Cpan = 0;
@@ -387,29 +387,41 @@ sub initialize {
 
 	return %X if $MV::Default{nocopy};
 
-	my $uid;
-	if($> == 0 and ! $MV::Default{MINIVEND_USER} and ! $Windows) {
-		$uid = my_prompt(
-			qq{Interchange cannot be run as root. Which user should run Interchange? },
-			'minivend',
-		);
-		open(UID, ">_uid")
-			or die "Can't write uid file: $!\n";
-		print UID "$uid";
-		close UID;
-	}
-	elsif (! $Windows) {
-		eval {
-			$uid = scalar getpwuid($>);
-		};
+    my $uid;
+    if(-f "_uid") {
+        open UID, '_uid'
+            or die "Cannot read _uid file: $!\n";
+        chomp($uid = <UID>);
+        close UID;
+    }
+
+	GETUID: {
+		if($> == 0 and ! $MV::Default{MINIVEND_USER} and ! $Windows) {
+			$uid = my_prompt(
+				qq{Interchange cannot be run as root. Which user should run Interchange? },
+				($uid || 'interch'),
+			);
+			my $name = getpwnam($uid);
+			if(! $name) {
+				my $ans = my_prompt("User name $uid doesn't exist. Use anyway? ", 'n');
+				last GETUID if $ans =~ /^\s*y/i;
+				redo GETUID;
+			}
+		}
+		elsif (! $Windows) {
+			eval {
+				$uid = scalar getpwuid($>);
+			};
+		}
 	}
 
-	if($uid) {
-		open(UID, ">_uid")
-			or die "Can't write uid file: $!\n";
-		print UID "$uid";
-		close UID;
-	}
+    if($uid) {
+        open(UID, ">_uid")
+            or die "Can't write uid file: $!\n";
+        print UID "$uid";
+        close UID;
+    }
+
 	for(@Config{
 				  qw/
 					  archlib
