@@ -1,8 +1,9 @@
 #! /bin/sh -e
 
 . /etc/interchange/init.cfg
+OPTS="--log /var/log/interchange/error.log --confdir /var/run/interchange"
 if [ "$UID" -eq 0 ]; then
-	su -s /bin/sh -c "/usr/lib/interchange/bin/interchange --confdir /var/run/interchange $@" $USER
+	su -s /bin/sh -c "/usr/lib/interchange/bin/interchange $OPTS $@" $USER
 else
-	/usr/lib/interchange/bin/interchange --confdir /var/run/interchange $@
+	/usr/lib/interchange/bin/interchange $OPTS $@
 fi
