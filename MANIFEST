@@ -17,8 +17,10 @@ debian/control
 debian/copyright
 debian/docs
 debian/interchange-cat-foundation.files
+debian/interchange-ui.config
 debian/interchange-ui.files
 debian/interchange-ui.postinst
+debian/interchange-ui.templates
 debian/interchange.cfg
 debian/interchange.conffiles
 debian/interchange.config
@@ -31,6 +33,7 @@ debian/interchange.logrotate
 debian/interchange.postinst
 debian/interchange.templates
 debian/interchange.wrapper
+debian/interchangeconfig
 debian/libapache-mod-interchange.docs
 debian/libapache-mod-interchange.files
 debian/makecat.cfg
