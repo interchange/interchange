@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.137 2004-04-11 05:05:49 mheins Exp $
+# $Id: Config.pm,v 2.138 2004-04-11 16:34:50 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.137 $, 10);
+$VERSION = substr(q$Revision: 2.138 $, 10);
 
 my %CDname;
 my %CPname;
@@ -3299,7 +3299,7 @@ sub parse_database {
 			$d->{$p} = [] unless defined $d->{$p};
 			push @{$d->{$p}}, @v;
 		}
-		elsif ($p eq 'MULTIPLE_KEYS') {
+		elsif ($p eq 'COMPOSITE_KEY') {
 		    ## Magic hardcode
 			if($d->{type} == 8) {
 				$d->{Class} = 'DBI_CompositeKey';

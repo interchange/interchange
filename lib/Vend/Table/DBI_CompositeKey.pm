@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI_CompositeKey.pm,v 1.3 2004-04-11 16:11:45 mheins Exp $
+# $Id: DBI_CompositeKey.pm,v 1.4 2004-04-11 16:34:50 mheins Exp $
 #
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI_CompositeKey;
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 
 use strict;
 
@@ -55,15 +55,15 @@ sub create {
     my ($class, $config, $columns, $tablename) = @_;
 #::logDebug("DBI_CompositeKey trying create table $tablename");
 
-	if(! $config->{MULTIPLE_KEYS}) {
+	if(! $config->{COMPOSITE_KEY}) {
 		die ::errmsg(
-			"Class %s: requires MULTIPLE_KEYS setting\n",
+			"Class %s: requires COMPOSITE_KEY setting\n",
 			$class,
 		  );
 	}
 
 	if(! $config->{_Key_columns}) {
-		my @keycols = grep length($_), split /[\s,\0]+/, $config->{MULTIPLE_KEYS};
+		my @keycols = grep length($_), split /[\s,\0]+/, $config->{COMPOSITE_KEY};
 		$config->{_Key_columns} = \@keycols;
 		$config->{_Key_where} = 'WHERE ';
 		my $hash = {};
@@ -92,15 +92,15 @@ sub open_table {
     my ($class, $config, $tablename) = @_;
 #::logDebug("DBI_CompositeKey trying to open table $tablename");
 
-	if(! $config->{MULTIPLE_KEYS}) {
+	if(! $config->{COMPOSITE_KEY}) {
 		die ::errmsg(
-			"Class %s: requires MULTIPLE_KEYS setting\n",
+			"Class %s: requires COMPOSITE_KEY setting\n",
 			$class,
 		  );
 	}
 
 	if(! $config->{_Key_columns}) {
-		my @keycols = grep length($_), split /[\s,\0]+/, $config->{MULTIPLE_KEYS};
+		my @keycols = grep length($_), split /[\s,\0]+/, $config->{COMPOSITE_KEY};
 		$config->{_Key_columns} = \@keycols;
 		$config->{_Key_where} = 'WHERE ';
 		my $hash = {};

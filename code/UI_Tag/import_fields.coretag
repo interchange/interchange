@@ -1,6 +1,6 @@
 UserTag import_fields Order table
 UserTag import_fields addAttr
-UserTag import_fields Version $Revision: 1.9 $
+UserTag import_fields Version $Revision: 1.10 $
 UserTag import_fields Routine <<EOR
 sub {
 	my($table, $opt) = @_;
@@ -236,7 +236,7 @@ EOF
 		die "Invalid key '$key' for table $table (wrong file format ?)\n";
 	}
 
-	my $multikey = $db->config('MULTIPLE_KEYS') ? 1 : 0;
+	my $multikey = $db->config('COMPOSITE_KEY') ? 1 : 0;
 
 	
 	if ($opt->{ignore_fields}) {

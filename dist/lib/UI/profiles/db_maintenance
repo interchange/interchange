@@ -133,7 +133,7 @@ __NAME__ db_maintenance
 				}
 
 				my $db = $Db{$t};
-				if($db->config('MULTIPLE_KEYS')) {
+				if($db->config('COMPOSITE_KEY')) {
 					$CGI->{$idp} =~ s/-_NULL_-/\0/g;
 					my $key = $CGI->{$idp};
 					$key =~ s/\0/,/g;

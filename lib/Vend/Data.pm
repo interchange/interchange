@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.37 2004-04-11 05:05:49 mheins Exp $
+# $Id: Data.pm,v 2.38 2004-04-11 16:34:50 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -1956,7 +1956,7 @@ sub update_data {
 	}
 #::logDebug("autonumber=$autonumber");
 
-	my $multikey = $base_db->config('MULTIPLE_KEYS');
+	my $multikey = $base_db->config('COMPOSITE_KEY');
 
  	if(@file_fields) {
 		my $Tag = new Vend::Tags;

@@ -82,7 +82,7 @@ sub flex_select_init {
 		$ts->{large} = 1;
 	}
 
-	if( $db->config('MULTIPLE_KEYS') ) {
+	if( $db->config('COMPOSITE_KEY') ) {
 		$ts->{multikey} = 1;
 		$ts->{key_columns} = $db->config('_Key_columns');
 	}
@@ -799,7 +799,6 @@ EOF
 		my $m = $cc->{$mcol};
 
 		if($mkey{$col}) {
-::logDebug("col=$col index=$idx");
 			push @mcol, $idx - 1;
 		}
 
