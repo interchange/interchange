@@ -7,11 +7,21 @@
 [/seti]
 [seti help_name][either][cgi help_name][or]gensql.main[/either][/seti]
 [seti icon_name][either][cgi icon_name][or]admin/icon_config.gif[/either][/seti]
+[flag type=write table="[cgi mv_data_table]"]
 
 @@UI_STD_DBEDIT_HEAD@@
 @@UI_STD_HEAD@@
 @@UI_STD_DBEDIT_TABLE@@
 
+[page href=@@MV_PAGE@@
+		form="
+			mv_data_table=[cgi mv_data_table]
+			item_id=[cgi item_id]
+			ui_no_meta_display=1
+			help_name=[cgi help_name]
+			icon_name=[cgi icon_name]
+			page_title=[cgi page_title]
+		"]No meta display[/page]
 <!-- ----- END REAL STUFF ----- -->
 
 @@UI_STD_FOOTER@@

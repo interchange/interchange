@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.3 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -505,13 +505,18 @@ sub meta_display {
 				my $query = "select DISTINCT $fld FROM $dbname ORDER BY $fld";
 ::logDebug("metadisplay lookup, query=$query");
 				my $ary = $db->query($query);
-				last LOOK unless ref($ary) && @{$ary};
-::logDebug("metadisplay lookup, query succeeded");
+				last LOOK unless ref($ary);
+				if(! scalar @$ary) {
+					push @$ary, ["=--no current values--"];
+				}
+::logDebug("metadisplay lookup, query succeeded, " . ::uneval_it($ary));
 				undef $record->{type} unless $record->{type} =~ /multi|combo/;
-				$record->{passed} = join ",",
+				$record->{passed} = join ",", grep length($_),
 									map
 										{ $_->[0] =~ s/,/&#44;/g; $_->[0]}
 									@$ary;
+				$record->{passed} = "=--no current values--"
+					if ! $record->{passed};
 ::logDebug("metadisplay lookup, passed=$record->{passed}");
 			}
 		}

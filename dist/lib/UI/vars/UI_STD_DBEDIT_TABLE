@@ -54,14 +54,14 @@ Variable UI_STD_DBEDIT_TABLE <<EndOfVar
 										passed_order => 1,
 									});
 	my $super = $Tag->if_mm('super');
-	#my $super = $Scratch->{is_super};
+
 	if($db->record_exists($key)) {
 		#Log("Should work. key=$key table=$table");
 	}
 	else {
 		$CGI->{$Values->{ui_data_key_name}} = $key;
 		undef $key;
-		Log("key is undeffed.");
+		#Log("key is undeffed.");
 	}
 	foreach my $col (@cols) {
 		if($CGI->{ui_hide_key} and $col eq $keycol) {
@@ -82,7 +82,7 @@ EOF
 			my $base = $Tag->var('UI_BASE', 1);
 			my $page = $Tag->var('MV_PAGE', 1);
 			$meta .= $Tag->page(
-							{	href => "$base/gen_edit",
+							{	href => "$base/flex_editor",
 								form => qq{
 										item_id=${table}::$col
 										mv_data_table=mv_metadata

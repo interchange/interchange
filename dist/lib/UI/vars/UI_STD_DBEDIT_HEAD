@@ -1,11 +1,9 @@
 Variable UI_STD_DBEDIT_HEAD <<EndOfVariable
 
 [if cgi mv_data_table]
-[value name=ui_data_table set="[cgi mv_data_table]" hide=1]
 [value name=mv_data_table set="[cgi mv_data_table]" hide=1]
 [else]
 [value name=mv_data_table set="[calc]$Config->{ProductFiles}[0][/calc]" hide=1]
-[value name=ui_data_table set="[values mv_data_table]" hide=1]
 [/else]
 [/if]
 
