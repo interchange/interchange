@@ -3,7 +3,7 @@ ui_template: Yes
 ui_template_name: noleft
 [/comment]
 
-[tmp page_title]__COMPANY__ -- Receipt[/tmp]
+[tmp page_title]__COMPANY__ -- [L]Receipt[/L][/tmp]
 
 @_NOLEFT_TOP_@
 
@@ -14,7 +14,7 @@ ui_template_name: noleft
 <TABLE>
 <tr>
 	<th align=right>
-	ORDER NUMBER
+	[L]ORDER NUMBER[/L]
 	</th>
 	<td>
 	[value mv_order_number]
@@ -22,7 +22,7 @@ ui_template_name: noleft
 </tr>
 <tr>
 	<th align=right>
-		Name
+		[L]Name[/L]
 	</th>
 	<td>
 	[value fname] [value lname]
@@ -31,7 +31,7 @@ ui_template_name: noleft
 [if value company]
 <tr>
 	<th align=right>
-		Company
+		[L]Company[/L]
 	</th>
 	<td>
 	[value company]
@@ -40,7 +40,7 @@ ui_template_name: noleft
 [/if]
 <tr>
 	<th align=right>
-		Email Address
+		[L]Email Address[/L]
 	</th>
 	<td>
 	[value email]
@@ -48,7 +48,7 @@ ui_template_name: noleft
 </tr>
 <tr>
 	<th align=right>
-		Address
+		[L]Address[/L]
 	</th>
 	<td>
 	[value address1]
@@ -66,7 +66,7 @@ ui_template_name: noleft
 [/if]
 <tr>
 	<th align=right>
-		City, State, Zip
+		[L]City[/L], [L]State[/L], [L]Zip[/L]
 	</th>
 	<td>
 	[value city], [value state]  [value zip]
@@ -74,7 +74,7 @@ ui_template_name: noleft
 </tr>
 <tr>
 	<th align=right>
-		Country
+		[L]Country[/L]
 	</th>
 	<td>
 	[value country]
@@ -82,7 +82,7 @@ ui_template_name: noleft
 </tr>
 <tr>
 	<th align=right>
-		Payment Method
+		[L]Payment Method[/L]
 	</th>
 	<td>
 	[value mv_payment]
@@ -90,7 +90,7 @@ ui_template_name: noleft
 </tr>
 <tr>
 	<th align=right>
-		Shipping Method
+		[L]Shipping Method[/L]
 	</th>
 	<td>
 	[shipping_desc]
@@ -99,7 +99,7 @@ ui_template_name: noleft
 [if value mv_handling]
 <tr>
 	<th align=right>
-		Handling Charge
+		[L]Handling Charge[/L]
 	</th>
 	<td>
 	[loop list="[value mv_handling]"]
@@ -107,7 +107,7 @@ ui_template_name: noleft
 		[condition]1[/condition]
 		[else]<BR>[/else]
 	[/loop-change 1]
-	[either][shipping_desc mode="[loop-code]"][or]CHARGED[/either]
+	[either][shipping_desc mode="[loop-code]"][or][L]CHARGED[/L][/either]
 	[/loop]
 	</td>
 </tr>
@@ -115,7 +115,7 @@ ui_template_name: noleft
 [if value phone_day]
 <tr>
 	<th align=right>
-		Daytime Phone
+		[L]Daytime Phone[/L]
 	</th>
 	<td>
 	[value phone_day]
@@ -125,7 +125,7 @@ ui_template_name: noleft
 [if value phone_night]
 <tr>
 	<th align=right>
-		Evening Phone
+		[L]Evening Phone[/L]
 	</th>
 	<td>
 	[value phone_night]
@@ -135,7 +135,7 @@ ui_template_name: noleft
 [if value b_fname]
 <tr>
 	<th align=right>
-		Billing Name
+		[L]Billing Name[/L]
 	</th>
 	<td>
 	[value b_fname] [value b_lname]
@@ -145,7 +145,7 @@ ui_template_name: noleft
 [if value b_address1]
 <tr>
 	<th align=right>
-		Billing Address
+		[L]Billing Address[/L]
 	</th>
 	<td>
 	[value b_address1]
@@ -163,7 +163,7 @@ ui_template_name: noleft
 [/if]
 <tr>
 	<th align=right>
-		City, State, Zip
+		[L]City[/L], [L]State[/L], [L]Zip[/L]
 	</th>
 	<td>
 	[value b_city], [value b_state]  [value b_zip]
@@ -173,7 +173,7 @@ ui_template_name: noleft
 [if value b_country]
 <tr>
 	<th align=right>
-		Billing Country
+		[L]Billing Country[/L]
 	</th>
 	<td>
 	[value b_country]
@@ -222,7 +222,7 @@ ui_template_name: noleft
 	</td>
 	<td>
 	[item-data products description]
-	[if-modifier size__MVC_FIELDMUNGE__]<BR>SIZE-->[item-modifier size__MVC_FIELDMUNGE__][/if-modifier][if-modifier color] COLOR-->[item-modifier color][/if-modifier]
+	[if-modifier size__MVC_FIELDMUNGE__]<BR>[L]SIZE[/L]-->[item-modifier size__MVC_FIELDMUNGE__][/if-modifier][if-modifier color] [L]COLOR[/L]-->[item-modifier color][/if-modifier]
 	[table-organize cols=4 table=' ' font="size=1" pretty=1]
 		[item-options td=1 label=1 bold=1 price=1 type=display]
 	[/table-organize]
@@ -232,7 +232,7 @@ ui_template_name: noleft
 	[/if-item-field]
 	[if-item-modifier mv_ad]
 	<BR>
-	<tt><b>SHIP TO:</B></tt>
+	<tt><b>[L]SHIP TO:[/L]</B></tt>
 	<PRE>[item-modifier mv_ad]</pre>
 	[/if-item-modifier]
 	</td>
@@ -248,7 +248,7 @@ ui_template_name: noleft
 		&nbsp;
 	</td>
 	<td>
-		SUBTOTAL
+		[L]SUBTOTAL[/L]
 	</td>
 	<td align=right>
 		[subtotal]
@@ -259,7 +259,7 @@ ui_template_name: noleft
 		&nbsp;
 	</td>
 	<td>
-		SALES TAX
+		[L]SALES TAX[/L]
 	</td>
 	<td align=right>
 		[salestax]
@@ -271,7 +271,7 @@ ui_template_name: noleft
 		&nbsp;
 	</td>
 	<td>
-		SHIPPING
+		[L]SHIPPING[/L]
 	</td>
 	<td align=right>
 		[shipping]
@@ -284,7 +284,7 @@ ui_template_name: noleft
 		&nbsp;
 	</td>
 	<td>
-		HANDLING
+		[L]HANDLING[/L]
 	</td>
 	<td align=right>
 		[handling]
@@ -296,7 +296,7 @@ ui_template_name: noleft
 		&nbsp;
 	</td>
 	<td>
-		ORDER TOTAL
+		[L]ORDER TOTAL[/L]
 	</td>
 	<td align=right>
 		[total-cost]
@@ -305,7 +305,7 @@ ui_template_name: noleft
 [if value gift_note]
 <tr>
 	<td colspan=2>
-	<B>Comments/Note for Gift:</B>
+	<B>[L]Comments/Note for Gift:[/L]</B>
 	</td>
 	<td colspan=3>
 	<PRE>
@@ -317,7 +317,7 @@ ui_template_name: noleft
 </table>
 <P>
 <font face="Verdana, Arial, Helvetica, sans-serif" size="1">
-<I>(Please print this receipt for your records. Thank you for your order!)</I>
+<I>[L](Please print this receipt for your records. Thank you for your order!)[/L]</I>
 </font>
 <P>
 
