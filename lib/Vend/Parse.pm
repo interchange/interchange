@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12.2.3 2000-12-13 13:50:59 heins Exp $
+# $Id: Parse.pm,v 1.12.2.4 2000-12-13 15:45:58 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -26,13 +26,9 @@
 # MA  02111-1307  USA.
 
 package Vend::Parse;
-
-# $Id: Parse.pm,v 1.12.2.3 2000-12-13 13:50:59 heins Exp $
-
 require Vend::Parser;
 
-
-$VERSION = sprintf("%d.%02d", q$Revision: 1.12.2.3 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.12.2.4 $ =~ /(\d+)\.(\d+)/);
 
 use Safe;
 use Vend::Util;
@@ -44,7 +40,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12.2.3 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.4 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -56,526 +52,513 @@ my($CurrentSearch, $CurrentCode, $CurrentDB, $CurrentWith, $CurrentItem);
 my(@SavedSearch, @SavedCode, @SavedDB, @SavedWith, @SavedItem);
 
 my %PosNumber =	( qw!
-                    
-				and              1
-				attr_list        1
-                accessories      2
-                area             2
-				banner           1
-                bounce           2
-                cart             1
-                cgi              1
-                checked          2
-                counter          1
-                currency         2
-                data             3
-				dump			 0
-                default          2
-                discount         1
-                description      2
-				ecml			 2
-				either			 0
-                error            1
-                export           1
-                field            2
-                file             2
-                filter           1
-				flag			 1
-                fly_tax          1
-                fly_list         2
-                goto             2
-				harness          0
-                html_table       0
-                if               1
-                import           2
-                include          2
-                input_filter     1
-                index            1
-                label            1
-                loop             1
-                log              1
-                mail             1
-                mvasp            1
-                nitems           1
-                onfly            2
-                options          1
-                order            2
-				or				 1
-                page             2
-                perl             1
-                price            1
-                profile          1
-				query			 1
-                row              1
-                salestax         2
-                scratch          1
-                scratchd         1
-				record			 0
-                region		     0
-                selected         2
-                set              1
-                seti             1
-                setlocale        2
-                search_region    0
-                handling         1
-                shipping         1
-                shipping_desc    1
-                sql              2
-                strip            0
-                subtotal         2
-                tag              2
-				time			 1
-				timed_build      1
-				tmp				 1
-				try				 1
-                total_cost       2
-                userdb           1
-                value            2
-                value_extended   1
-
-			! );
+	and              1
+	attr_list        1
+	accessories      2
+	area             2
+	banner           1
+	bounce           2
+	cart             1
+	cgi              1
+	checked          2
+	counter          1
+	currency         2
+	data             3
+	dump			 0
+	default          2
+	discount         1
+	description      2
+	ecml			 2
+	either			 0
+	error            1
+	export           1
+	field            2
+	file             2
+	filter           1
+	flag			 1
+	fly_tax          1
+	fly_list         2
+	goto             2
+	harness          0
+	html_table       0
+	if               1
+	import           2
+	include          2
+	input_filter     1
+	index            1
+	label            1
+	loop             1
+	log              1
+	mail             1
+	mvasp            1
+	nitems           1
+	onfly            2
+	options          1
+	order            2
+	or				 1
+	page             2
+	perl             1
+	price            1
+	profile          1
+	query			 1
+	row              1
+	salestax         2
+	scratch          1
+	scratchd         1
+	record			 0
+	region		     0
+	selected         2
+	set              1
+	seti             1
+	setlocale        2
+	search_region    0
+	handling         1
+	shipping         1
+	shipping_desc    1
+	sql              2
+	strip            0
+	subtotal         2
+	tag              2
+	time			 1
+	timed_build      1
+	tmp				 1
+	try				 1
+	total_cost       2
+	userdb           1
+	value            2
+	value_extended   1
+! );
 
 my %Order =	(
-
-				accessories		=> [qw( code arg )],
-				attr_list		=> [qw( hash )],
-				area			=> [qw( href arg )],
-				banner          => [qw( category )],
-				bounce			=> [qw( href if )],
-				calc			=> [],
-				cart			=> [qw( name  )],
-				catch			=> [qw( label )],
-				cgi				=> [qw( name  )],
-				'currency'		=> [qw( convert noformat )],
-				checked			=> [qw( name value )],
-				counter			=> [qw( file )],
-				data			=> [qw( table field key )],
-				default			=> [qw( name default )],
-				dump			=> [qw( )],
-				description		=> [qw( code base )],
-				discount		=> [qw( code  )],
-				ecml			=> [qw( name function )],
-				either		    => [qw( )],
-                error           => [qw( name )],
-				export			=> [qw( table )],
-				field			=> [qw( name code )],
-				file			=> [qw( name type )],
-				filter			=> [qw( op )],
-				flag			=> [qw( type )],
-				time			=> [qw( locale )],
-				fly_tax			=> [qw( area )],
-				fly_list		=> [qw( code base )],
-				'goto'			=> [qw( name if)],
-				harness		    => [qw( )],
-				html_table	    => [qw( )],
-				'if'			=> [qw( type term op compare )],
-				'or'			=> [qw( type term op compare )],
-				'and'			=> [qw( type term op compare )],
-				'index'			=> [qw( table )],
-				import 			=> [qw( table type )],
-				input_filter 	=> [qw( name )],
-				include			=> [qw( file locale )],
-				item_list		=> [qw( name )],
-				label			=> [qw( name )],
-				log				=> [qw( file )],
-				loop			=> [qw( list )],
-				nitems			=> [qw( name  )],
-				onfly			=> [qw( code quantity )],
-				order			=> [qw( code quantity )],
-				page			=> [qw( href arg )],
-				perl			=> [qw( tables )],
-				mail			=> [qw( to )],
-				mvasp			=> [qw( tables )],
-				options			=> [qw( code )],
-				price			=> [qw( code )],
-				profile			=> [qw( name )],
-				process      	=> [qw( target secure )],
-				query			=> [qw( sql )],
-				read_cookie		=> [qw( name )],
-				row				=> [qw( width )],
-				'salestax'		=> [qw( name noformat)],
-				scratch			=> [qw( name  )],
-				scratchd		=> [qw( name  )],
-				search_region	=> [qw( arg   )],
-				region			=> [qw( )],
-				record			=> [qw( )],
-				selected		=> [qw( name value )],
-				set_cookie		=> [qw( name value expire )],
-				setlocale		=> [qw( locale currency )],
-				set				=> [qw( name )],
-				seti			=> [qw( name )],
-				tree			=> [qw( table master subordinate start )],
-				tmp 			=> [qw( name )],
-				'shipping'		=> [qw( mode )],
-				'handling'		=> [qw( mode )],
-				shipping_desc	=> [qw( mode )],
+	accessories		=> [qw( code arg )],
+	attr_list		=> [qw( hash )],
+	area			=> [qw( href arg )],
+	banner          => [qw( category )],
+	bounce			=> [qw( href if )],
+	calc			=> [],
+	cart			=> [qw( name  )],
+	catch			=> [qw( label )],
+	cgi				=> [qw( name  )],
+	'currency'		=> [qw( convert noformat )],
+	checked			=> [qw( name value )],
+	counter			=> [qw( file )],
+	data			=> [qw( table field key )],
+	default			=> [qw( name default )],
+	dump			=> [qw( )],
+	description		=> [qw( code base )],
+	discount		=> [qw( code  )],
+	ecml			=> [qw( name function )],
+	either		    => [qw( )],
+	error           => [qw( name )],
+	export			=> [qw( table )],
+	field			=> [qw( name code )],
+	file			=> [qw( name type )],
+	filter			=> [qw( op )],
+	flag			=> [qw( type )],
+	time			=> [qw( locale )],
+	fly_tax			=> [qw( area )],
+	fly_list		=> [qw( code base )],
+	'goto'			=> [qw( name if)],
+	harness		    => [qw( )],
+	html_table	    => [qw( )],
+	'if'			=> [qw( type term op compare )],
+	'or'			=> [qw( type term op compare )],
+	'and'			=> [qw( type term op compare )],
+	'index'			=> [qw( table )],
+	import 			=> [qw( table type )],
+	input_filter 	=> [qw( name )],
+	include			=> [qw( file locale )],
+	item_list		=> [qw( name )],
+	label			=> [qw( name )],
+	log				=> [qw( file )],
+	loop			=> [qw( list )],
+	nitems			=> [qw( name  )],
+	onfly			=> [qw( code quantity )],
+	order			=> [qw( code quantity )],
+	page			=> [qw( href arg )],
+	perl			=> [qw( tables )],
+	mail			=> [qw( to )],
+	mvasp			=> [qw( tables )],
+	options			=> [qw( code )],
+	price			=> [qw( code )],
+	profile			=> [qw( name )],
+	process      	=> [qw( target secure )],
+	query			=> [qw( sql )],
+	read_cookie		=> [qw( name )],
+	row				=> [qw( width )],
+	'salestax'		=> [qw( name noformat)],
+	scratch			=> [qw( name  )],
+	scratchd		=> [qw( name  )],
+	search_region	=> [qw( arg   )],
+	region			=> [qw( )],
+	record			=> [qw( )],
+	selected		=> [qw( name value )],
+	set_cookie		=> [qw( name value expire )],
+	setlocale		=> [qw( locale currency )],
+	set				=> [qw( name )],
+	seti			=> [qw( name )],
+	tree			=> [qw( table master subordinate start )],
+	tmp 			=> [qw( name )],
+	'shipping'		=> [qw( mode )],
+	'handling'		=> [qw( mode )],
+	shipping_desc	=> [qw( mode )],
 # SQL
-				sql				=> [qw( type query)],
+	sql				=> [qw( type query)],
 # END SQL
-				strip			=> [],
-				'subtotal'		=> [qw( name noformat )],
-				tag				=> [qw( op arg )],
-				timed_build		=> [qw( file )],
-				total_cost		=> [qw( name noformat )],
-				try				=> [qw( label )],
-				userdb          => [qw( function ) ],
-				update          => [qw( function ) ],
-				value			=> [qw( name )],
-				value_extended  => [qw( name )],
-
-			);
+	strip			=> [],
+	'subtotal'		=> [qw( name noformat )],
+	tag				=> [qw( op arg )],
+	timed_build		=> [qw( file )],
+	total_cost		=> [qw( name noformat )],
+	try				=> [qw( label )],
+	userdb          => [qw( function ) ],
+	update          => [qw( function ) ],
+	value			=> [qw( name )],
+	value_extended  => [qw( name )],
+);
 
 my %addAttr = (
-				qw(
-					accessories     1
-					area            1
-					banner          1
-					catch           1
-					checked         1
-					counter         1
-					data			1
-					default			1
-					ecml            1
-					error           1
-					export          1
-					flag            1
-					harness         1
-					html_table      1
-					import          1
-					index           1
-					input_filter    1
-					item_list       1
-					loop			1
-					onfly			1
-					page            1
-					mail            1
-					mvasp           1
-				    nitems			1
-				    options			1
-					perl            1
-					price			1
-					profile			1
-					process         1
-					query			1
-                    sql             1
-					selected        1
-					setlocale       1
-                    record          1
-                    region          1
-                    search_region   1
-					shipping        1
-					handling        1
-                    tag             1
-                    log             1
-					time			1
-					timed_build     1
-                    tree            1
-                    try             1
-					update          1
-					userdb          1
-					value           1
-					value_extended  1
-				)
-			);
+	qw(
+		accessories     1
+		area            1
+		banner          1
+		catch           1
+		checked         1
+		counter         1
+		data			1
+		default			1
+		ecml            1
+		error           1
+		export          1
+		flag            1
+		harness         1
+		html_table      1
+		import          1
+		index           1
+		input_filter    1
+		item_list       1
+		loop			1
+		onfly			1
+		page            1
+		mail            1
+		mvasp           1
+		nitems			1
+		options			1
+		perl            1
+		price			1
+		profile			1
+		process         1
+		query			1
+		sql             1
+		selected        1
+		setlocale       1
+		record          1
+		region          1
+		search_region   1
+		shipping        1
+		handling        1
+		tag             1
+		log             1
+		time			1
+		timed_build     1
+		tree            1
+		try             1
+		update          1
+		userdb          1
+		value           1
+		value_extended  1
+	)
+);
 
 my %hasEndTag = (
-
-				qw(
-                        attr_list       1
-                        calc            1
-						catch           1
-                        currency        1
-                        discount        1
-                        filter	        1
-                        fly_list        1
-						either          1
-						harness         1
-                        html_table      1
-                        if              1
-                        import          1
-                        input_filter    1
-                        item_list       1
-                        loop            1
-                        mail            1
-                        mvasp           1
-                        perl            1
-                        query           1
-                        row             1
-                        region          1
-                        search_region   1
-                        set             1
-                        set             1
-                        seti            1
-                        sql             1
-                        strip           1
-                        tag             1
-                        log             1
-                        tree            1
-                        try             1
-                        tmp             1
-                        time			1
-                        timed_build     1
-
-				)
-			);
-
+	qw(
+		attr_list       1
+		calc            1
+		catch           1
+		currency        1
+		discount        1
+		filter	        1
+		fly_list        1
+		either          1
+		harness         1
+		html_table      1
+		if              1
+		import          1
+		input_filter    1
+		item_list       1
+		loop            1
+		mail            1
+		mvasp           1
+		perl            1
+		query           1
+		row             1
+		region          1
+		search_region   1
+		set             1
+		seti            1
+		sql             1
+		strip           1
+		tag             1
+		log             1
+		tree            1
+		try             1
+		tmp             1
+		time			1
+		timed_build     1
+	)
+);
 
 my %InvalidateCache = (
-
-			qw(
-				cgi			1
-				cart		1
-				checked		1
-				counter		1
-				default		1
-				discount	1
-				export  	1
-				flag        1
-				item_list	1
-				import		1
-				index		1
-				input_filter		1
-				if          1
-				mail		1
-				mvasp		1
-				nitems		1
-				perl		1
-				profile		1
-				'salestax'	1
-				scratch		1
-				scratchd	1
-				selected	1
-				read_cookie 1
-				set_cookie  1
-				set			1
-				tmp			1
-				seti		1
-				'shipping'	1
-				'handling'	1
-				sql			1
-				subtotal	1
-				total_cost	1
-				userdb		1
-				update	    1
-				value		1
-				value_extended 1
-
-			   )
-			);
+	qw(
+		cgi			1
+		cart		1
+		checked		1
+		counter		1
+		default		1
+		discount	1
+		export  	1
+		flag        1
+		item_list	1
+		import		1
+		index		1
+		input_filter		1
+		if          1
+		mail		1
+		mvasp		1
+		nitems		1
+		perl		1
+		profile		1
+		'salestax'	1
+		scratch		1
+		scratchd	1
+		selected	1
+		read_cookie 1
+		set_cookie  1
+		set			1
+		tmp			1
+		seti		1
+		'shipping'	1
+		'handling'	1
+		sql			1
+		subtotal	1
+		total_cost	1
+		userdb		1
+		update	    1
+		value		1
+		value_extended 1
+	)
+);
 
 my %Implicit = (
+	'data' =>		{ qw( increment increment ) },
+	'checked' =>	{ qw( multiple	multiple default	default ) },
+	'page'    =>	{ qw( secure	secure ) },
+	'area'    =>	{ qw( secure	secure ) },
 
-			'data' =>		{ qw( increment increment ) },
-			'checked' =>	{ qw( multiple	multiple default	default ) },
-			'page'    =>	{ qw( secure	secure ) },
-			'area'    =>	{ qw( secure	secure ) },
+	'if' =>		{ qw(
+						!=		op
+						!~		op
+						<=		op
+						==		op
+						=~		op
+						>=		op
+						eq		op
+						gt		op
+						lt		op
+						ne		op
+			   )},
 
-			'if' =>		{ qw(
-								!=		op
-								!~		op
-								<=		op
-								==		op
-								=~		op
-								>=		op
-								eq		op
-								gt		op
-								lt		op
-								ne		op
-					   )},
+	'and' =>		{ qw(
+						!=		op
+						!~		op
+						<=		op
+						==		op
+						=~		op
+						>=		op
+						eq		op
+						gt		op
+						lt		op
+						ne		op
+			   )},
 
-			'and' =>		{ qw(
-								!=		op
-								!~		op
-								<=		op
-								==		op
-								=~		op
-								>=		op
-								eq		op
-								gt		op
-								lt		op
-								ne		op
-					   )},
+	'or' =>		{ qw(
+						!=		op
+						!~		op
+						<=		op
+						==		op
+						=~		op
+						>=		op
+						eq		op
+						gt		op
+						lt		op
+						ne		op
+			   )},
 
-			'or' =>		{ qw(
-								!=		op
-								!~		op
-								<=		op
-								==		op
-								=~		op
-								>=		op
-								eq		op
-								gt		op
-								lt		op
-								ne		op
-					   )},
-
-			);
+);
 
 my %PosRoutine = (
-				'or'			=> sub { return &Vend::Interpolate::tag_if(@_, 1) },
-				'and'			=> sub { return &Vend::Interpolate::tag_if(@_, 1) },
-				'if'			=> \&Vend::Interpolate::tag_if,
-			);
+	'or'			=> sub { return &Vend::Interpolate::tag_if(@_, 1) },
+	'and'			=> sub { return &Vend::Interpolate::tag_if(@_, 1) },
+	'if'			=> \&Vend::Interpolate::tag_if,
+);
 
 my %Routine = (
-
-				accessories		=> \&Vend::Interpolate::tag_accessories,
-				attr_list		=> \&Vend::Interpolate::tag_attr_list,
-				area			=> \&Vend::Interpolate::tag_area,
-				banner			=> \&Vend::Interpolate::tag_banner,
-				bounce          => sub { return '' },
-				calc			=> \&Vend::Interpolate::tag_calc,
-				cart			=> \&Vend::Interpolate::tag_cart,
-				catch			=> \&Vend::Interpolate::catch,
-				cgi				=> \&Vend::Interpolate::tag_cgi,
-				checked			=> \&Vend::Interpolate::tag_checked,
-				counter			=> \&Vend::Interpolate::tag_counter,
-				'currency'		=> sub {
-										my($convert,$noformat,$amount) = @_;
-										return &Vend::Util::currency(
-														$amount,
-														$noformat,
-														$convert);
-									},
-				data			=> \&Vend::Interpolate::tag_data,
-				default			=> \&Vend::Interpolate::tag_default,
-				dump			=> \&::full_dump,
-				description		=> \&Vend::Data::product_description,
-				discount		=> \&Vend::Interpolate::tag_discount,
-				ecml			=> sub {
-											require Vend::ECML;
-											return Vend::ECML::ecml(@_);
-										},
-				either			=> sub {
-											my @ary = split /\[or\]/, shift;
-											my $result;
-											while(@ary) {
-												$result = interpolate_html(shift @ary);
-												$result =~ s/^\s+//;
-												$result =~ s/\s+$//;
-												return $result if $result;
-											}
-											return;
-										},
-				error			=> \&Vend::Interpolate::tag_error,
-				export			=> \&Vend::Interpolate::export,
-				field			=> \&Vend::Data::product_field,
-				file			=> \&Vend::Interpolate::tag_file,
-				filter			=> \&Vend::Interpolate::filter_value,
-				flag			=> \&Vend::Interpolate::flag,
-				fly_tax			=> \&Vend::Interpolate::fly_tax,
-				fly_list		=> \&Vend::Interpolate::fly_page,
-				harness			=> \&harness,
-				html_table		=> \&Vend::Interpolate::html_table,
-				'index'			=> \&Vend::Data::index_database,
-				import 			=> \&Vend::Data::import_text,
-				include			=> sub {
-									&Vend::Interpolate::interpolate_html(
-										&Vend::Util::readfile
-											($_[0], $Global::NoAbsolute, $_[1])
-										  );
-									},
-				input_filter	=> \&Vend::Interpolate::input_filter,
-				item_list		=> \&Vend::Interpolate::tag_item_list,
-				'if'			=> \&Vend::Interpolate::tag_self_contained_if,
-				'or'			=> sub { return &Vend::Interpolate::tag_self_contained_if(@_, 1) },
-				'and'			=> sub { return &Vend::Interpolate::tag_self_contained_if(@_, 1) },
-				'goto'			=> sub { return '' },
-				label			=> sub { return '' },
-				log				=> \&Vend::Interpolate::log,
-				loop			=> \&Vend::Interpolate::tag_loop_list,
-				nitems			=> \&Vend::Util::tag_nitems,
-				onfly			=> \&Vend::Order::onfly,
-				options			=> \&Vend::Interpolate::tag_options,
-				order			=> \&Vend::Interpolate::tag_order,
-				page			=> \&Vend::Interpolate::tag_page,
-				perl			=> \&Vend::Interpolate::tag_perl,
-				mail			=> \&Vend::Interpolate::tag_mail,
+	accessories		=> \&Vend::Interpolate::tag_accessories,
+	attr_list		=> \&Vend::Interpolate::tag_attr_list,
+	area			=> \&Vend::Interpolate::tag_area,
+	banner			=> \&Vend::Interpolate::tag_banner,
+	bounce          => sub { return '' },
+	calc			=> \&Vend::Interpolate::tag_calc,
+	cart			=> \&Vend::Interpolate::tag_cart,
+	catch			=> \&Vend::Interpolate::catch,
+	cgi				=> \&Vend::Interpolate::tag_cgi,
+	checked			=> \&Vend::Interpolate::tag_checked,
+	counter			=> \&Vend::Interpolate::tag_counter,
+	'currency'		=> sub {
+							my($convert,$noformat,$amount) = @_;
+							return &Vend::Util::currency(
+											$amount,
+											$noformat,
+											$convert);
+						},
+	data			=> \&Vend::Interpolate::tag_data,
+	default			=> \&Vend::Interpolate::tag_default,
+	dump			=> \&::full_dump,
+	description		=> \&Vend::Data::product_description,
+	discount		=> \&Vend::Interpolate::tag_discount,
+	ecml			=> sub {
+							require Vend::ECML;
+							return Vend::ECML::ecml(@_);
+						},
+	either			=> sub {
+							my @ary = split /\[or\]/, shift;
+							my $result;
+							while(@ary) {
+								$result = interpolate_html(shift @ary);
+								$result =~ s/^\s+//;
+								$result =~ s/\s+$//;
+								return $result if $result;
+							}
+							return;
+						},
+	error			=> \&Vend::Interpolate::tag_error,
+	export			=> \&Vend::Interpolate::export,
+	field			=> \&Vend::Data::product_field,
+	file			=> \&Vend::Interpolate::tag_file,
+	filter			=> \&Vend::Interpolate::filter_value,
+	flag			=> \&Vend::Interpolate::flag,
+	fly_tax			=> \&Vend::Interpolate::fly_tax,
+	fly_list		=> \&Vend::Interpolate::fly_page,
+	harness			=> \&harness,
+	html_table		=> \&Vend::Interpolate::html_table,
+	'index'			=> \&Vend::Data::index_database,
+	import 			=> \&Vend::Data::import_text,
+	include			=> sub {
+							&Vend::Interpolate::interpolate_html(
+								&Vend::Util::readfile
+									($_[0], $Global::NoAbsolute, $_[1])
+							);
+						},
+	input_filter	=> \&Vend::Interpolate::input_filter,
+	item_list		=> \&Vend::Interpolate::tag_item_list,
+	'if'			=> \&Vend::Interpolate::tag_self_contained_if,
+	'or'			=> sub { return &Vend::Interpolate::tag_self_contained_if(@_, 1) },
+	'and'			=> sub { return &Vend::Interpolate::tag_self_contained_if(@_, 1) },
+	'goto'			=> sub { return '' },
+	label			=> sub { return '' },
+	log				=> \&Vend::Interpolate::log,
+	loop			=> \&Vend::Interpolate::tag_loop_list,
+	nitems			=> \&Vend::Util::tag_nitems,
+	onfly			=> \&Vend::Order::onfly,
+	options			=> \&Vend::Interpolate::tag_options,
+	order			=> \&Vend::Interpolate::tag_order,
+	page			=> \&Vend::Interpolate::tag_page,
+	perl			=> \&Vend::Interpolate::tag_perl,
+	mail			=> \&Vend::Interpolate::tag_mail,
 # MVASP
-				mvasp			=> \&Vend::Interpolate::mvasp,
+	mvasp			=> \&Vend::Interpolate::mvasp,
 # END MVASP
-				price        	=> \&Vend::Interpolate::tag_price,
-				process      	=> \&Vend::Interpolate::tag_process,
-				profile      	=> \&Vend::Interpolate::tag_profile,
-				query			=> \&Vend::Interpolate::query,
-				read_cookie     => \&Vend::Util::read_cookie,
-				row				=> \&Vend::Interpolate::tag_row,
-				'salestax'		=> \&Vend::Interpolate::tag_salestax,
-				scratch			=> \&Vend::Interpolate::tag_scratch,
-				scratchd		=> \&Vend::Interpolate::tag_scratchd,
-				record			=> \&Vend::Interpolate::tag_record,
-				region			=> \&Vend::Interpolate::region,
-				search_region	=> \&Vend::Interpolate::tag_search_region,
-				selected		=> \&Vend::Interpolate::tag_selected,
-				setlocale		=> \&Vend::Util::setlocale,
-				set_cookie		=> \&Vend::Util::set_cookie,
-				set				=> \&Vend::Interpolate::set_scratch,
-				seti			=> \&Vend::Interpolate::set_scratch,
-				'shipping'		=> \&Vend::Interpolate::tag_shipping,
-				'handling'		=> \&Vend::Interpolate::tag_handling,
-				shipping_desc	=> \&Vend::Interpolate::tag_shipping_desc,
-				sql				=> \&Vend::Data::sql_query,
-				'subtotal'		=> \&Vend::Interpolate::tag_subtotal,
-				strip			=> sub {
-										local($_) = shift;
-										s/^\s+//;
-										s/\s+$//;
-										return $_;
-									},
-				tag				=> \&Vend::Interpolate::do_tag,
-				tmp				=> \&Vend::Interpolate::set_tmp,
-				tree			=> \&Vend::Interpolate::tag_tree,
-				try				=> \&Vend::Interpolate::try,
-				'time'			=> \&Vend::Interpolate::mvtime,
-				timed_build		=> \&Vend::Interpolate::timed_build,
-				total_cost		=> \&Vend::Interpolate::tag_total_cost,
-				userdb			=> \&Vend::UserDB::userdb,
-				update			=> \&Vend::Interpolate::update,
-				value			=> \&Vend::Interpolate::tag_value,
-				value_extended	=> \&Vend::Interpolate::tag_value_extended,
-
-			);
+	price        	=> \&Vend::Interpolate::tag_price,
+	process      	=> \&Vend::Interpolate::tag_process,
+	profile      	=> \&Vend::Interpolate::tag_profile,
+	query			=> \&Vend::Interpolate::query,
+	read_cookie     => \&Vend::Util::read_cookie,
+	row				=> \&Vend::Interpolate::tag_row,
+	'salestax'		=> \&Vend::Interpolate::tag_salestax,
+	scratch			=> \&Vend::Interpolate::tag_scratch,
+	scratchd		=> \&Vend::Interpolate::tag_scratchd,
+	record			=> \&Vend::Interpolate::tag_record,
+	region			=> \&Vend::Interpolate::region,
+	search_region	=> \&Vend::Interpolate::tag_search_region,
+	selected		=> \&Vend::Interpolate::tag_selected,
+	setlocale		=> \&Vend::Util::setlocale,
+	set_cookie		=> \&Vend::Util::set_cookie,
+	set				=> \&Vend::Interpolate::set_scratch,
+	seti			=> \&Vend::Interpolate::set_scratch,
+	'shipping'		=> \&Vend::Interpolate::tag_shipping,
+	'handling'		=> \&Vend::Interpolate::tag_handling,
+	shipping_desc	=> \&Vend::Interpolate::tag_shipping_desc,
+	sql				=> \&Vend::Data::sql_query,
+	'subtotal'		=> \&Vend::Interpolate::tag_subtotal,
+	strip			=> sub {
+							local($_) = shift;
+							s/^\s+//;
+							s/\s+$//;
+							return $_;
+						},
+	tag				=> \&Vend::Interpolate::do_tag,
+	tmp				=> \&Vend::Interpolate::set_tmp,
+	tree			=> \&Vend::Interpolate::tag_tree,
+	try				=> \&Vend::Interpolate::try,
+	'time'			=> \&Vend::Interpolate::mvtime,
+	timed_build		=> \&Vend::Interpolate::timed_build,
+	total_cost		=> \&Vend::Interpolate::tag_total_cost,
+	userdb			=> \&Vend::UserDB::userdb,
+	update			=> \&Vend::Interpolate::update,
+	value			=> \&Vend::Interpolate::tag_value,
+	value_extended	=> \&Vend::Interpolate::tag_value_extended,
+);
 
 my %attrAlias = (
-	 counter        => { 'name' => 'file' },
-	 query          => { 'query' => 'sql' },
-	 tree          	=> { 'sub' => 'subordinate' },
-	 perl          	=> { 'table' => 'tables' },
-	 mvasp         	=> { 'table' => 'tables' },
-	 price         	=> { 'base' => 'mv_ib' },
-	 page          	=> {
+	counter        => { 'name' => 'file' },
+	query          => { 'query' => 'sql' },
+	tree          	=> { 'sub' => 'subordinate' },
+	perl          	=> { 'table' => 'tables' },
+	mvasp         	=> { 'table' => 'tables' },
+	price         	=> { 'base' => 'mv_ib' },
+	page          	=> {
 	 						'base' => 'arg',
 						},
-	 record          	=> { 
+	record          	=> { 
 	 						'column' => 'col',
 	 						'code' => 'key',
 	 						'field' => 'col',
 						},
-	 flag          	=> { 
+	flag          	=> { 
 	 						'flag' => 'type',
 	 						'name' => 'type',
 						},
-	 field          	=> { 
+	field          	=> { 
 	 						'field' => 'name',
 	 						'column' => 'name',
 	 						'col' => 'name',
 	 						'key' => 'code',
 	 						'row' => 'code',
 						},
-	 'index'          	=> { 
+	'index'          	=> { 
 	 						'database' => 'table',
 	 						'base' => 'table',
 						},
-	 import          	=> { 
+	import          	=> { 
 	 						'database' => 'table',
 	 						'base' => 'table',
 						},
-	 input_filter          	=> { 
+	input_filter          	=> { 
 	 						'ops' => 'op',
 	 						'var' => 'name',
 	 						'variable' => 'name',
 						},
-	 accessories    => { 
+	accessories    => { 
 	 						'database' => 'table',
 	 						'db' => 'table',
 	 						'base' => 'table',
@@ -584,11 +567,11 @@ my %attrAlias = (
 	 						'key' => 'code',
 	 						'row' => 'code',
 						},
-	 export          	=> { 
+	export          	=> { 
 	 						'database' => 'table',
 	 						'base' => 'table',
 						},
-	 data          	=> { 
+	data          	=> { 
 	 						'database' => 'table',
 	 						'base' => 'table',
 	 						'name' => 'field',
@@ -597,52 +580,52 @@ my %attrAlias = (
 	 						'code' => 'key',
 	 						'row' => 'key',
 						},
-	 'or'			=> { 
+	'or'			=> { 
 	 						'comp' => 'compare',
 	 						'operator' => 'op',
 	 						'base' => 'type',
 						},
-	 'and'			=> { 
+	'and'			=> { 
 	 						'comp' => 'compare',
 	 						'operator' => 'op',
 	 						'base' => 'type',
 						},
-	 'userdb'		=> {
+	'userdb'		=> {
 	 						'table' => 'db',
 	 						'name' => 'nickname',
 						},
-	 'shipping'			=> {
+	'shipping'			=> {
 	 							'name' => 'mode',
 	 							'tables' => 'table',
 	 							'modes' => 'mode',
 	 							'carts' => 'cart',
 							},
-	 'handling'			=> {	
+	'handling'			=> {	
 	 							'name' => 'mode',
 	 							'tables' => 'table',
 	 							'modes' => 'mode',
 	 							'carts' => 'cart',
 							},
-	 'salestax'			=> { 'cart' => 'name', },
-	 'subtotal'			=> { 'cart' => 'name', },
-	 'total_cost'		=> { 'cart' => 'name', },
-	 'if'			=> { 
+	'salestax'			=> { 'cart' => 'name', },
+	'subtotal'			=> { 'cart' => 'name', },
+	'total_cost'		=> { 'cart' => 'name', },
+	'if'			=> { 
 	 						'comp' => 'compare',
 	 						'condition' => 'compare',
 	 						'operator' => 'op',
 	 						'base' => 'type',
 						},
-	 search_region		=> { search => 'arg',
+	search_region		=> { search => 'arg',
 	 						 params => 'arg',
 	 						 args => 'arg', },
-	 region			   	=> { search => 'arg',
+	region			   	=> { search => 'arg',
 	 						 params => 'arg',
 	 						 args => 'arg', },
-	 loop	          	=> { args => 'list',
+	loop	          	=> { args => 'list',
 	 						 arg => 'list', },
-	 item_list	       	=> { cart => 'name', },
-	 tag		       	=> { description => 'arg', },
-	 log		       	=> { arg => 'file', },
+	item_list	       	=> { cart => 'name', },
+	tag		       	=> { description => 'arg', },
+	log		       	=> { arg => 'file', },
 );
 
 my %Alias = (
@@ -790,8 +773,8 @@ sub global_init {
 }
 
 sub new {
-    my $class = shift;
-    my $self = new Vend::Parser;
+	my $class = shift;
+	my $self = new Vend::Parser;
 	$self->{INVALID} = 0;
 
 	add_tags($Vend::Cfg->{UserTag})
@@ -800,7 +783,7 @@ sub new {
 	$self->{TOPLEVEL} = 1 if ! $Initialized;
 
 	$self->{OUT} = '';
-    bless $self, $class;
+	bless $self, $class;
 	$Initialized = $self;
 }
 
@@ -808,24 +791,24 @@ my %Documentation;
 use vars '%myRefs';
 
 %myRefs = (
-     Alias           => \%Alias,
-     addAttr         => \%addAttr,
-     attrAlias       => \%attrAlias,
-	 Documentation   => \%Documentation,
-	 endHTML         => \%endHTML,
-	 hasEndTag       => \%hasEndTag,
-	 Implicit        => \%Implicit,
-	 insertHTML	     => \%insertHTML,
-	 insideHTML	     => \%insideHTML,
-	 Interpolate     => \%Interpolate,
-	 InvalidateCache => \%InvalidateCache,
-	 lookaheadHTML   => \%lookaheadHTML,
-	 Order           => \%Order,
-	 PosNumber       => \%PosNumber,
-	 PosRoutine      => \%PosRoutine,
-	 replaceAttr     => \%replaceAttr,
-	 replaceHTML     => \%replaceHTML,
-	 Routine         => \%Routine,
+	Alias           => \%Alias,
+	addAttr         => \%addAttr,
+	attrAlias       => \%attrAlias,
+	Documentation   => \%Documentation,
+	endHTML         => \%endHTML,
+	hasEndTag       => \%hasEndTag,
+	Implicit        => \%Implicit,
+	insertHTML	     => \%insertHTML,
+	insideHTML	     => \%insideHTML,
+	Interpolate     => \%Interpolate,
+	InvalidateCache => \%InvalidateCache,
+	lookaheadHTML   => \%lookaheadHTML,
+	Order           => \%Order,
+	PosNumber       => \%PosNumber,
+	PosRoutine      => \%PosRoutine,
+	replaceAttr     => \%replaceAttr,
+	replaceHTML     => \%replaceHTML,
+	Routine         => \%Routine,
 );
 
 sub do_tag {
@@ -835,11 +818,11 @@ sub do_tag {
 		if defined $Vend::Cfg->{AdminSub}{$tag} and ! $Vend::admin;
 	
 	if (! defined $Routine{$tag}) {
-        if (! $Alias{$tag}) {
-            ::logError("Tag '$tag' not defined.");
-            return undef;
-        }
-        $tag = $Alias{$tag};
+		if (! $Alias{$tag}) {
+			::logError("Tag '$tag' not defined.");
+			return undef;
+		}
+		$tag = $Alias{$tag};
 	};
 	if(ref($_[-1]) =~ /HASH/ && scalar @{$Order{$tag}} > scalar @_) {
 		my $text;
@@ -905,11 +888,11 @@ sub add_tags {
 }
 
 sub eof {
-    shift->parse(undef);
+	shift->parse(undef);
 }
 
 sub text {
-    my($self, $text) = @_;
+	my($self, $text) = @_;
 	$self->{OUT} .= $text;
 }
 
@@ -982,7 +965,7 @@ sub goto_buf {
 }
 
 sub html_start {
-    my($self, $tag, $attr, $attrseq, $origtext, $end_tag) = @_;
+	my($self, $tag, $attr, $attrseq, $origtext, $end_tag) = @_;
 #::logDebug("HTML tag=$tag Interp='$Interpolate{$tag}' origtext=$origtext attributes:\n" . ::uneval($attr));
 	$tag =~ tr/-/_/;   # canonical
 
@@ -997,7 +980,7 @@ sub html_start {
 #::logDebug("tag=$tag end_tag=$end_tag buf length " . length($$buf)) if $Monitor{$tag};
 #::logDebug("attributes: ", %{$attr}) if $Monitor{$tag};
 	my($tmpbuf);
-    # $attr is reference to a HASH, $attrseq is reference to an ARRAY
+	# $attr is reference to a HASH, $attrseq is reference to an ARRAY
 	my($return_html);
 
 	unless (defined $Routine{$tag}) {
@@ -1290,7 +1273,7 @@ EOF
 
 sub start {
 	return html_start(@_) if $_[0]->{HTML};
-    my($self, $tag, $attr, $attrseq, $origtext) = @_;
+	my($self, $tag, $attr, $attrseq, $origtext) = @_;
 	$tag =~ tr/-/_/;   # canonical
 	$tag = lc $tag;
 	my $buf = \$self->{_buf};
@@ -1303,7 +1286,7 @@ sub start {
 		return ($self->{ABORT} = 1);
 	}
 
-    # $attr is reference to a HASH, $attrseq is reference to an ARRAY
+	# $attr is reference to a HASH, $attrseq is reference to an ARRAY
 	unless (defined $Routine{$tag}) {
 		if(defined $Alias{$tag}) {
 			my $alias = $Alias{$tag};
@@ -1449,57 +1432,57 @@ EOF
 }
 
 sub end {
-    my($self, $tag) = @_;
+	my($self, $tag) = @_;
 	my $save = $tag;
 	$tag =~ tr/-/_/;   # canonical
 	$self->{OUT} .= "[/$save]";
 }
 
 sub find_html_end {
-    my($tag, $buf) = @_;
-    my $out;
+	my($tag, $buf) = @_;
+	my $out;
 	my $canon;
 
-    my $open  = "<$tag ";
-    my $close = "</$tag>";
+	my $open  = "<$tag ";
+	my $close = "</$tag>";
 	($canon = $tag) =~ s/_/[-_]/g;
 
-    $$buf =~ s!<$canon\s!<$tag !ig;
-    $$buf =~ s!</$canon\s*>!</$tag>!ig;
-    my $first = index($$buf, $close);
-    return undef if $first < 0;
-    my $int = index($$buf, $open);
-    my $pos = 0;
+	$$buf =~ s!<$canon\s!<$tag !ig;
+	$$buf =~ s!</$canon\s*>!</$tag>!ig;
+	my $first = index($$buf, $close);
+	return undef if $first < 0;
+	my $int = index($$buf, $open);
+	my $pos = 0;
 #::logDebug("find_html_end: tag=$tag open=$open close=$close $first=$first pos=$pos int=$int");
-    while( $int > -1 and $int < $first) {
-        $pos   = $int + 1;
-        $first = index($$buf, $close, $first + 1);
-        $int   = index($$buf, $open, $pos);
+	while( $int > -1 and $int < $first) {
+		$pos   = $int + 1;
+		$first = index($$buf, $close, $first + 1);
+		$int   = index($$buf, $open, $pos);
 #::logDebug("find_html_end: tag=$tag open=$open close=$close $first=$first pos=$pos int=$int");
-    }
+	}
 #::logDebug("find_html_end: tag=$tag open=$open close=$close $first=$first pos=$pos int=$int");
 	return undef if $first < 0;
-    $first += length($close);
+	$first += length($close);
 #::logDebug("find_html_end (add close): tag=$tag open=$open close=$close $first=$first pos=$pos int=$int");
-    $out = substr($$buf, 0, $first);
-    substr($$buf, 0, $first) = '';
-    return $out;
+	$out = substr($$buf, 0, $first);
+	substr($$buf, 0, $first) = '';
+	return $out;
 }
 
 sub find_matching_end {
-    my($tag, $buf) = @_;
-    my $out;
+	my($tag, $buf) = @_;
+	my $out;
 	my $canon;
 
-    my $open  = "[$tag ";
-    my $close = "[/$tag]";
+	my $open  = "[$tag ";
+	my $close = "[/$tag]";
 	($canon = $tag) =~ s/_/[-_]/g;
 
-    $$buf =~ s!\[$canon\s![$tag !ig;
+	$$buf =~ s!\[$canon\s![$tag !ig;
 	# Syntax color ]
-    $$buf =~ s!\[/$canon\]![/$tag]!ig;
-    my $first = index($$buf, $close);
-    if ($first < 0) {
+	$$buf =~ s!\[/$canon\]![/$tag]!ig;
+	my $first = index($$buf, $close);
+	if ($first < 0) {
 		if($Gobble{$tag}) {
 			$out = $$buf;
 			$$buf = '';
@@ -1507,17 +1490,17 @@ sub find_matching_end {
 		}
 		return undef;
 	}
-    my $int = index($$buf, $open);
-    my $pos = 0;
-    while( $int > -1 and $int < $first) {
-        $pos   = $int + 1;
-        $first = index($$buf, $close, $first + 1);
-        $int   = index($$buf, $open, $pos);
-    }
-    $out = substr($$buf, 0, $first);
-    $first = $first < 0 ? $first : $first + length($close);
-    substr($$buf, 0, $first) = '';
-    return $out;
+	my $int = index($$buf, $open);
+	my $pos = 0;
+	while( $int > -1 and $int < $first) {
+		$pos   = $int + 1;
+		$first = index($$buf, $close, $first + 1);
+		$int   = index($$buf, $open, $pos);
+	}
+	$out = substr($$buf, 0, $first);
+	$first = $first < 0 ? $first : $first + length($close);
+	substr($$buf, 0, $first) = '';
+	return $out;
 }
 
 # Passed some string that might be HTML-style attributes
@@ -1542,7 +1525,8 @@ sub _find_tag {
 			$val = $2;
 			HTML::Entities::decode($val);
 		# or quoted by " or ' 
-		} elsif ($$buf =~ s~(^=\s*([\"\'\`\|])(.*?)\2\s*)~~s) {
+		}
+		elsif ($$buf =~ s~(^=\s*([\"\'\`\|])(.*?)\2\s*)~~s) {
 			$eaten .= $1;
 			my $q = $2;
 			$val = $3;
@@ -1552,7 +1536,7 @@ sub _find_tag {
 			}
 			else {
 				$q eq '|'
-			    	and do {
+					and do {
 						$val =~ s/^\s+//;
 						$val =~ s/\s+$//;
 					};
@@ -1564,11 +1548,13 @@ sub _find_tag {
 					};
 			}
 		# truncated just after the '=' or inside the attribute
-		} elsif ($$buf =~ m|^(=\s*)$| or
+		}
+		elsif ($$buf =~ m|^(=\s*)$| or
 				 $$buf =~ m|^(=\s*[\"\'].*)|s) {
 			$eaten = "$eaten$1";
 			last;
-		} else {
+		}
+		else {
 			# assume attribute with implicit value, which 
 			# means in Interchange no value is set and the
 			# eaten value is grown. Note that you should
