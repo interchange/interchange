@@ -3,7 +3,7 @@
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.22 2003-08-01 15:05:54 jon Exp $
+# $Id: makecat.PL,v 2.23 2003-12-07 17:47:20 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -526,6 +526,7 @@ sub directory_process {
 my %Postprocess = (
 
 	cgibase			=> \&strip_trailing_slash,
+	cgidir			=> \&strip_trailing_slash,
 	basedir			=> \&strip_trailing_slash,
 	documentroot	=> \&directory_process,
 	imagedir		=> \&directory_process,
@@ -2299,7 +2300,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.22 2003-08-01 15:05:54 jon Exp $
+# $Id: makecat.PL,v 2.23 2003-12-07 17:47:20 mheins Exp $
 
 =head1 INTRODUCTION
 
