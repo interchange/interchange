@@ -70,7 +70,11 @@ my %var_exclude = ( qw/
 sub {
 	my ($find, $exclude, $default, $opt) = @_;
 	$default ||= $Config->{SpecialPage}{catalog};
-	my $ref = $Vend::Session->{History} or return $Tag->area($default);
+	my $ref = $Vend::Session->{History};
+	unless ($ref) {
+		return $default if $opt->{pageonly};
+		return $Tag->area($default);
+	}
 	my ($hist, $href, $cgi);
 	$exclude = qr/$exclude/ if $exclude;
 	for (my $i = $#$ref - abs($opt->{count}); $i >= 0; $i--) {
