@@ -1,4 +1,4 @@
-q2	price_group	sku	q5	q10	q25	q100	XL	S	red
+q2	price_group	sku	q5	q10	q25	q100
 	1	os28108	2.5	2					
 	1	os28009	5	4.25					
 	1	os28044	11	10					

@@ -26,7 +26,6 @@ SAMPLEURL	__MVC_SAMPLEURL__	Directories and Paths
 SECURE_SERVER	http://__MVC_SERVERNAME__	Directories and Paths
 SERVER_NAME	__MVC_SERVERNAME__	Directories and Paths
 SMLOGO		Template
-SOMESQL	__MVC_MYSQL____MVC_PGSQL__	Database
 SQLPASS	__MVC_SQLPASS__	Database
 SQLUSER	__MVC_SQLUSER__	Database
 TAXAREA	OH	Tax
@@ -37,26 +36,22 @@ TOLLFREE	(888) 555-5555	Company
 UI_ABOUT_LOGIN_URL	http://help.akopia.com/4.5.6/about/	Admin control
 UI_ABOUT_NORMAL_URL	http://help.akopia.com/4.5.6/about/	Admin control
 UI_BOTTOMIMG	poweredby.gif	Admin layout
-UI_C_ALINK	#000000	Admin colors
 UI_C_BG	#FFFFFF	Admin colors
 UI_C_HEADERTXT	#333333	Admin colors
-UI_C_INTBLOCK	#EEEEEE	Admin colors
 UI_C_INTBLOCKBAR	#CCCCCC	Admin colors
-UI_C_LINK	#000000	Admin colors
+UI_C_INTBLOCK	#EEEEEE	Admin colors
 UI_C_TITLEBARBG	#6699FF	Admin colors
 UI_C_TITLEBARTXT	#FFFFFF	Admin colors
 UI_C_TOPBLOCKBAR	#6699FF	Admin colors
-UI_C_VLINK	#000000	Admin colors
 UI_HELP_BASE_URL	http://help.akopia.com/4.5.6/	Admin control
-UI_ITEM_FIELDS	description image thumb comment size color sku price weight category	Item display
-UI_LEFT_WIDTH	150	Admin layout
+UI_ITEM_FIELDS	description image comment size color sku price weight category	Item display
+UI_META_LINK	0	Admin control
+UI_SZ_LIST_CUSTOMER	25	Customer display
+UI_SZ_LIST_ORDER	50	Order display
 UI_META_LINK	1	Admin control
-UI_OVERALL_WIDTH	750	Admin layout
-UI_RIGHT_WIDTH	450	Admin layout
 UI_SZ_LIST_CUSTOMER	25	Customer display
 UI_SZ_LIST_ORDER	50	Order display
 UI_TRAFFIC_STATS	__MVC_CATROOT__/logs/usertrack	Directories and Paths
-UI_T_BG	beige	Admin colors
 UPS_COUNTRY_FIELD	country	Shipping
 UPS_ORIGIN	45056	Shipping
 UPS_POSTCODE_FIELD	zip	Shipping
