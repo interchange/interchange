@@ -115,6 +115,11 @@ UI
 
 * fix item_price.html in order to keep secure mode
 
+* add names to templates/components list page
+
+* fix menu loader bug with combined category field type reported by Michael Streubel
+  <Michael.Streubel@palmwaregroup.com>
+
 Foundation
 ----------
 
@@ -126,6 +131,12 @@ Foundation
 
 * Improve layout of order tracking page, use [convert-date] for date
   display.
+
+* Supply framework for making use of the modulo feature
+  for UPS shipments. Two new catalog variables enable/disable the feature
+  and set the modulus, respectively. We still maintain the 'one big box'
+  assumption that has been there all along, but now alternatives are somewhat
+  easier to implement.
 
 TableEditor
 -----------
@@ -143,6 +154,8 @@ TableEditor
 
 * Pass the form and form_name parameters to Vend::Form for use in
   widgets.
+
+* Display top buttoms if option notable is set.
 
 Menu
 ----
