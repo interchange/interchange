@@ -23,7 +23,10 @@ sub {
 	}
 
 	if($opt->{env}) {
-		push @out, join " ", @{$Global::Environment};
+		push @out,
+			ref $Global::Environment eq 'ARRAY' ?
+			join ' ', @{$Global::Environment} :
+			'(none)';
 		$done_something = 1;
 	}
 
