@@ -1,8 +1,8 @@
 #! /bin/sh
 #
-# cron script to expire sessions
+# cron script to expire sessions and temporary files
 #
-# Copyright 2000,2001 by Stefan Hornburg (Racke) <racke@linuxia.de>
+# Copyright 2000,2001,2002 by Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,6 +18,10 @@
 # License along with this program; if not, write to the Free
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
+
+if [ ! -x /usr/lib/interchange/bin/expireall ]; then
+	exit 0
+fi
 
 # only accept value from /etc/interchange/init.cfg
 USER=

@@ -1,11 +1,9 @@
-interchange (4.8.4-1) unstable; urgency=high
+interchange (4.8.4-1) unstable; urgency=medium
 
   * new upstream release
-  * the reasoning for the high urgency is that almost nothing changed 
-    since the release from the CVS code and I prefer a sane version number
-    in woody
+  * added check for expireall to cron job
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 19 Mar 2002 17:23:20 +0100
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 16 Apr 2002 11:15:51 +0200
 
 interchange (4.8.3.20020306-1) unstable; urgency=low
 
