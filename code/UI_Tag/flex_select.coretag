@@ -31,7 +31,10 @@ sub flex_select_init {
 	}
 
 	if($CGI->{mv_return_table}) {
-		$CGI->{mv_data_table} = delete $CGI->{mv_return_table};
+		my $rt = delete $CGI->{mv_return_table};
+		$rt =~ s/^\0+//;
+		$rt =~ s/\0.*//;
+		$CGI->{mv_data_table} = $rt if $rt;
 	}
 
 	my $bounce_url;
