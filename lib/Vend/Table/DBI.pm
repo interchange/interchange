@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.24 2002-07-18 19:27:57 mheins Exp $
+# $Id: DBI.pm,v 2.25 2002-07-18 19:31:32 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.24 $, 10);
+$VERSION = substr(q$Revision: 2.25 $, 10);
 
 use strict;
 
@@ -211,6 +211,9 @@ my %known_capability = (
 sub check_capability {
 	my ($config, $driver_name) = @_;
 	return if $config->{_Checked_capability}++;
+
+	$driver_name = $config->{BASE_CAPABILITY}
+		if $config->{BASE_CAPABILITY};
 
 	my ($k, $known);
 	while ( ($k, $known) = each %known_capability ) {
