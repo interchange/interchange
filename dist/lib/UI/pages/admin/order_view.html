@@ -165,12 +165,19 @@
 </font>
 
 <P>
-<B>Status:<B> [page href=__UI_BASE__/order_status form="order=[loop-code]"]
-                [display    table=transactions
+<B>Status:<B>[seti state][display    table=transactions
                             column=status
                             key="[loop-code]"
                             arbitrary=order_view
-                ]</A>
+                ][/seti]
+[page href=__UI_BASE__/order_status form="order=[loop-code]"]
+[if scratch statestr !~ /^<.*>$/]
+[scratchd statestr]
+[else]
+[loop-data transactions status]
+[/else]
+[/if]
+</A>
 [set bill_address][/set]
 [set ship_address][/set]
 </td></tr>
