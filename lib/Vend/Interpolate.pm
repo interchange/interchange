@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.23 2000-09-25 15:24:48 heins Exp $
+# $Id: Interpolate.pm,v 1.24 2000-09-25 15:38:14 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.23 $, 10);
+$VERSION = substr(q$Revision: 1.24 $, 10);
 
 @EXPORT = qw (
 
@@ -3284,7 +3284,6 @@ sub labeled_list {
 		$r = iterate_hash_list($i, $end, $count, $text, $ary, $opt_select);
 	}
 	else {
-		my $fa;
 		my $fa = $obj->{mv_return_fields} || undef;
 		my $fh = $obj->{mv_field_hash}    || undef;
 		my $fn = $obj->{mv_field_names}   || undef;
@@ -4562,7 +4561,7 @@ sub tag_column {
 	my(@out)	= ();
 	my(@lines)	= ();
 	
-	$spec =~ s/\n/\s/g;
+	$spec =~ s/\n/ /g;
 	$spec =~ s/^\s+//;
 	$spec =~ s/\s+$//;
 	$spec = lc $spec;
