@@ -129,7 +129,7 @@ http://www.icdevgroup.org/
 
 Interchange is regularly tested on Linux, FreeBSD, and Solaris. It
 has also been used on OpenBSD, Digital UNIX/Tru64, SCO, AIX, and other
-Unix variants. It should work on any Unix with Perl 5.005 or higher and
+Unix variants. It should work on any Unix with Perl 5.6.0 or higher and
 the necessary Perl modules.
 
 -----------------------------------------------------------------------------
