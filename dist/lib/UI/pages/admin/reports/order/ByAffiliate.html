@@ -34,14 +34,17 @@ EOF
 	$Scratch->{synd_limit} = "AND affiliate = '$CGI->{affiliate}'";
 	$Scratch->{synd_limit} .= " AND campaign = '$CGI->{campaign}'"
 		if $CGI->{campaign};
-	if ($Tag->var('UI_AFFILIATE_COMMISSION')) {
-		$Scratch->{comm_select} = ", __UI_AFFILIATE_COMMISSION__";
+	if ($Tag->var('UI_COMMISSION_FIELD')) {
+		$Scratch->{comm_select} = ", __UI_COMMISSION_FIELD__";
+        $Scratch->{comm_states} = [split ($Tag->var('UI_COMMISSION_STATES'))];
+		if (@{$Scratch->{comm_states}}) {
+		    $Scratch->{comm_select} .= ', status';
+		}
 		$Scratch->{cols} = 5;
 	} else {
 		$Scratch->{comm_select} = '';
 		$Scratch->{cols} = 4;
 	}
-	Log ("CS: $Scratch->{comm_select}:SC");
 	return;
 [/calc]
 <TABLE width="90%" border=0 callpadding=0 cellspacing=0>
@@ -108,7 +111,12 @@ EOF
 		$master->{$month}{$id} = { } if ! $master->{$month}{$id};
 		my $ref = $master->{$month}{$id};
 		$ref->{sales}  += $line->{total_cost};
-        $ref->{commission} += $line->{commission};
+		if ($Scratch->{comm_select}) {
+			if (! @{$Scratch->{comm_states}} 
+				|| grep {$_ eq $line->{status}} @{$Scratch->{comm_states}}) {
+	            $ref->{commission} += $line->{commission};
+            }
+        }
 		$ref->{orders}++;
 	}
 	%names = qw/
