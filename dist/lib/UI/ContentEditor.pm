@@ -2,7 +2,7 @@
 #
 # UI::ContentEditor - Interchange page/component edit
 # 
-# $Id: ContentEditor.pm,v 2.1 2002-02-16 09:39:10 mheins Exp $
+# $Id: ContentEditor.pm,v 2.2 2002-02-16 19:24:45 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -23,7 +23,7 @@
 
 package UI::ContentEditor;
 
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2 $, 10);
 $DEBUG = 0;
 
 use POSIX qw/strftime/;
@@ -224,10 +224,13 @@ sub parse_template {
 				 	(.*?)
 					\]  \s*  \[control\]
 				 |
-				 	\[ component \s+  (.*?) comp(?:[-_]name|onent) \s*=\s*["']\s*
+				 	\[ component \s+ 
+					(?:
+						(.*?) comp(?:[-_]name|onent) \s*=\s*["']\s*
 						(?:\[control \s+ component \s+ )?
 							(\w+)
 						\]? \s* ['"]
+					)?
 					(.*?)
 					\]
 				 )
