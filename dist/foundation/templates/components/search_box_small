@@ -13,7 +13,7 @@ matches:
 <tr><td align="center">
   <table>
   <tr> 
-    <td> 
+    <td class="categorybar"> 
       <br>     
       <form action="[area search]">
       <table border="0" width="95%">
