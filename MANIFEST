@@ -296,7 +296,6 @@ dist/foundation/special_pages/reconfig.html
 dist/foundation/special_pages/sec_faq.html
 dist/foundation/special_pages/security.html
 dist/foundation/special_pages/violation.html
-dist/foundation/templates/cart
 dist/foundation/templates/components/affiliate_receptor
 dist/foundation/templates/components/best
 dist/foundation/templates/components/cart
@@ -313,9 +312,6 @@ dist/foundation/templates/components/saved_carts_list_small
 dist/foundation/templates/components/search_box_small
 dist/foundation/templates/components/upsell
 dist/foundation/templates/foundation/cart
-dist/foundation/templates/foundation/fullwidth
-dist/foundation/templates/foundation/leftonly
-dist/foundation/templates/foundation/leftright
 dist/foundation/templates/foundation/regions/LEFTONLY_BOTTOM
 dist/foundation/templates/foundation/regions/LEFTONLY_TOP
 dist/foundation/templates/foundation/regions/LEFTRIGHT_BOTTOM
@@ -613,6 +609,8 @@ dist/lib/UI/pages/include/item_option_modular
 dist/lib/UI/pages/include/item_option_simple
 dist/lib/UI/pages/include/page_edit
 dist/lib/UI/pages/include/page_edit_old
+dist/lib/UI/pages/include/page_save
+dist/lib/UI/pages/include/page_save_old
 dist/lib/UI/pages/include/table_populator
 dist/lib/UI/pages/include/wizard_checklist
 dist/lib/UI/pages/include/wizard_profiles
@@ -659,6 +657,7 @@ dist/lib/UI/usertag/mm_value.tag
 dist/lib/UI/usertag/newer.tag
 dist/lib/UI/usertag/quick_table.tag
 dist/lib/UI/usertag/read_shipping.tag
+dist/lib/UI/usertag/read_ui_page.tag
 dist/lib/UI/usertag/read_ui_template.tag
 dist/lib/UI/usertag/regenerate.tag
 dist/lib/UI/usertag/return_to.tag
