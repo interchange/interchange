@@ -14,8 +14,8 @@ problems with the Interchange Debian packages.
 APT Sources
 ===========
 
-Interchange Debian packages for unstable (sid) are part of the Debian
-distribution.
+Interchange Debian packages for testing (woody) and unstable (sid) 
+are part of the official Debian distribution.
 
 Interchange Debian packages for stable (potato) are available from:
 
