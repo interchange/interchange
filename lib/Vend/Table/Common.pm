@@ -1,6 +1,6 @@
 # Table/Common.pm: Common access methods for MiniVend Databases
 #
-# $Id: Common.pm,v 1.1 2000-05-26 18:50:41 heins Exp $
+# $Id: Common.pm,v 1.2 2000-06-12 22:50:52 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -25,7 +25,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -433,21 +433,51 @@ sub each_record {
     }
 }
 
+my $sup;
+my $restrict;
+my $rfield;
+my $rsession;
+
 sub each_nokey {
     my ($s) = @_;
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
-    my $key;
+    my ($key);
+
+	if (
+		! defined $restrict
+		and 
+		$restrict = ($Vend::Cfg->{TableRestrict}{$s->config('name')} || 0)
+		)
+	{
+		$sup =  ! defined $Global::SuperUserFunction
+					||
+				$Global::SuperUserFunction->();
+		if($sup) {
+			$restrict = 0;
+		}
+		else {
+			($rfield, $rsession) = split /\s*=\s*/, $restrict;
+			$s->test_column($rfield) and $rfield = $s->column_index($rfield)
+				or $restrict = 0;
+			$rsession = $Vend::Session->{$rsession};
+		}
+	}
 
     for (;;) {
         $key = each %{$s->[$TIE_HASH]};
-        if (defined $key) {
-            if ($key =~ s/^k//) {
-                return ($s->row($key));
-            }
-        }
-        else {
-            return ();
-        }
+#::logDebug("each_nokey: $key field=$rfield sup=$sup");
+		if(! defined $key) {
+			undef $restrict;
+			return ();
+		}
+		$key =~ s/^k// or next;
+		if($restrict) {
+			my (@row) = $s->row($key);
+##::logDebug("each_nokey: '$row[$rfield]' eq '$rsession' ??");
+			next if $row[$rfield] ne $rsession;
+			return @row;
+		}
+		return $s->row($key);
     }
 }
 

@@ -1,6 +1,6 @@
 # Vend/DbSearch.pm:  Search indexes with Perl
 #
-# $Id: DbSearch.pm,v 1.1 2000-05-26 18:50:37 heins Exp $
+# $Id: DbSearch.pm,v 1.2 2000-06-12 22:50:52 heins Exp $
 #
 # ADAPTED FOR USE WITH MINIVEND from Search::TextSearch
 #
@@ -26,7 +26,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 
 use Search::Dict;
 use strict;
@@ -220,11 +220,8 @@ sub search {
 		elsif(defined $limit_sub) {
 #::logDebug("f and limit, dbref=$dbref");
 			while($_ = join "\t", $dbref->each_nokey($qual || undef) ) {
-#::logDebug("cand: $_");
 				next unless &$f();
-#::logDebug("cand: $_ survived");
 				next unless &$limit_sub($_);
-#::logDebug("cand: $_ survived again");
 				push @out, &$return_sub($_);
 			}
 		}

@@ -2,7 +2,7 @@
 #
 # MiniVend version 4.0
 #
-# $Id: Order.pm,v 1.2 2000-06-05 05:35:59 heins Exp $
+# $Id: Order.pm,v 1.3 2000-06-12 22:50:52 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -33,7 +33,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.3 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -77,8 +77,6 @@ sub _final {
 sub _return {
 	$Success = ( defined($_[1]) && ($_[1] =~ /^[yYtT1]/) ) ? 1 : 0;
 }
-
-
 
 sub _format {
 	my($ref, $params, $message) = @_;
@@ -157,9 +155,15 @@ sub _charge {
 sub _credit_card {
 	my($ref, $params) = @_;
 	my $sub;
-	if($params =~ s/\s+keep//i) {
+	$params =~ s/^\s+//;
+	$params =~ s/\s+$//;
+	if($params =~ s/\s+keep$//i) {
 		my (%cgi) = %$ref;
 		$ref = \%cgi;
+	}
+	my $accepted;
+	if($params =~ s/\s+(.*)//) {
+		$accepted = $1;
 	}
 	if(! $params || $params =~ /^standard$/i ) {
 		$sub = \&encrypt_standard_cc;
@@ -179,7 +183,7 @@ sub _credit_card {
 					mv_credit_card_reference
 					mv_credit_card_error
 					/}
-				= $sub->($ref);
+				= $sub->($ref, undef, { accepted => $accepted } );
 	};
 	if($@) {
 		::logError("credit card check GlobalSub %s error: %s", $params, $@);
@@ -360,8 +364,10 @@ sub encrypt_cc {
 #                               then develop expiration from the above
 
 sub encrypt_standard_cc {
-	my($ref, $nodelete) = @_;
+	my($ref, $nodelete, $opt) = @_;
 	my($valid, $info);
+
+	$opt = {} unless ref $opt;
 
 	my $month	= $ref->{mv_credit_card_exp_month}	|| '';
 	my $type	= $ref->{mv_credit_card_type}		|| '';
@@ -441,7 +447,13 @@ sub encrypt_standard_cc {
 		$type = 'other' if $num !~ /^37/;
 	}
 
-	if ($type) {
+	if ($type and $opt->{accepted} and $opt->{accepted} !~ /\b$type\b/i) {
+		my $msg = errmsg("Sorry, we don't accept credit card type '%s'.", $type);
+		$Vend::Session->{errors}{mv_credit_card_valid} = $msg;
+		push @return, $msg;
+		return @return;
+	}
+	elsif ($type) {
 		$return[5] = $type;
 	}
 	else {

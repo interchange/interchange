@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.3 2000-06-05 05:36:34 heins Exp $
+# $Id: DBI.pm,v 1.4 2000-06-12 22:50:52 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 
 use strict;
 
@@ -585,8 +585,9 @@ sub each_record {
     my ($s, $qual) = @_;
 #::logDebug("qual=$qual");
 	$s = $s->import_db() if ! defined $s->[$DBI];
-    my ($table, $db, $each) = @{$s}[$TABLE,$DBI,$EACH];
-    unless(defined $each) {
+    my ($table, $db, $each);
+    unless(defined $s->[$EACH]) {
+		($table, $db, $each) = @{$s}[$TABLE,$DBI,$EACH];
 		my $query = $db->prepare("select * from $table " . ($qual || '') )
             or die $DBI::errstr;
 		$query->execute();
@@ -598,7 +599,7 @@ sub each_record {
 		};
         push @$s, $each;
     }
-	my ($key, $return) = $each->();
+	my ($key, $return) = $s->[$EACH]->();
 	if(! defined $key) {
 		pop @$s;
 		return ();
@@ -611,8 +612,22 @@ sub each_nokey {
     my ($s, $qual) = @_;
 #::logDebug("qual=$qual");
 	$s = $s->import_db() if ! defined $s->[$DBI];
-    my ($table, $db, $each) = @{$s}[$TABLE,$DBI,$EACH];
-    unless(defined $each) {
+    my ($table, $db, $each);
+    unless(defined $s->[$EACH]) {
+		($table, $db, $each) = @{$s}[$TABLE,$DBI,$EACH];
+		my $restrict;
+		if($restrict = $Vend::Cfg->{TableRestrict}{$table}
+			and (
+				! defined $Global::SuperUserFunction
+					or
+				! $Global::SuperUserFunction->()
+				)
+			) {
+			$qual = $qual ? "$qual AND " : 'WHERE ';
+			my ($rfield, $rsession) = split /\s*=\s*/, $restrict;
+#::logDebug("qual=$qual");
+			$qual .= "$rfield = '$Vend::Session->{$rsession}'";
+		}
 		my $query = $db->prepare("select * from $table " . ($qual || '') )
             or die $DBI::errstr;
 		$query->execute();
@@ -624,7 +639,7 @@ sub each_nokey {
 		};
         push @$s, $each;
     }
-	my ($return) = $each->();
+	my ($return) = $s->[$EACH]->();
 	if(! defined $return->[0]) {
 		pop @$s;
 		return ();
