@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.194 2003-10-24 15:01:40 jon Exp $
+# $Id: Interpolate.pm,v 2.195 2003-10-31 23:53:41 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.194 $, 10);
+$VERSION = substr(q$Revision: 2.195 $, 10);
 
 @EXPORT = qw (
 
@@ -2346,7 +2346,7 @@ sub do_tag {
 sub tag_counter {
     my $file = shift || 'etc/counter';
 	my $opt = shift;
-::logDebug("counter: file=$file start=$opt->{start} sql=$opt->{sql} routine=$opt->{inc_routine} caller=" . scalar(caller()) );
+#::logDebug("counter: file=$file start=$opt->{start} sql=$opt->{sql} routine=$opt->{inc_routine} caller=" . scalar(caller()) );
 	if($opt->{sql}) {
 		my ($tab, $seq) = split /:+/, $opt->{sql}, 2;
 		my $db = database_exists_ref($tab);
