@@ -17,12 +17,12 @@ members_only:
 	description: Members only
 
 component_before:
-	options: =none, specials=Specials, random=Random items
+	options: =none, specials=Specials, random=Random items, upsell_horiz_2=Two upsell items, upsell_horiz_3=Three upsell items
 	widget: select
 	description: Component before content
 
 component_after:
-	options: =none, specials=Specials, random=Random items
+	options: =none, specials=Specials, random=Random items, upsell_horiz_2=Two upsell items, upsell_horiz_3=Three upsell items
 	widget: select
 	description: Component after content
 
@@ -35,17 +35,19 @@ bgcolor:
 [set page_banner][item-description][/set]
 [set bgcolor]#FFFFFF[/set]
 [set component_before][/set]
-[set component_after]random[/set]
+[set component_after]upsell_horiz_2[/set]
 [set members_only]0[/set]
 [set page_title]__COMPANY__ -- [item-description][/set]
 __LEFTRIGHT_TOP__
 
 <!-- BEGIN CONTENT -->
+[set cross_sale][item-field category][/set]
+[set upsell][item-data merchandising upsell_to][/set]
 
                     <table width="250" border="0" cellspacing="0" cellpadding="0" bgcolor="0099ff">
                       <tr> 
                         <td width="10"><img src="navigation/minime1.gif" width="10" height="20" align="top"></td>
-                        <td width="227"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b><i><font color="ffffff" size="2">[item-data products category]</font></i></b></font></td>
+                        <td width="227"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b><i><font color="ffffff" size="2">[item-field category]</font></i></b></font></td>
                         <td width="10"><img src="navigation/minime2.gif" width="10" height="20" align="top"></td>
                       </tr>
                     </table>
@@ -114,6 +116,33 @@ __LEFTRIGHT_TOP__
                                 <td colspan="2"> 
                                   <p><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
 								  [item-field comment]
+	[if-item-data merchandising others_bought]
+	[perl tables=products]
+		my $hash = [item-data merchandising others_bought];
+		my @ary = sort { $hash->{$b} <=> $hash->{$a} } keys %$hash;
+		return '' unless @ary;
+		my %in_basket;
+		splice(@ary, 3);
+		for(@{$Carts->{main}}) {
+			$in_basket{$_->{code}} = 1;
+		}
+		@ary = grep ! $in_basket{$_}, @ary;
+		return '' unless @ary;
+		my $out = <<'EOF';
+	<BR><TABLE CELLPADDING=0 CELLSPACING=0 WIDTH="100%">
+		<TR><TD __TITLEBG__><FONT SIZE="1" COLOR="__TITLETEXT__">Customers who bought this item also bought:</TD>
+		</TR><TR>
+		<TD><FONT SIZE="1">
+EOF
+		for(@ary) {
+ 			my $desc = tag_data( 'products', 'description', $_);
+			$out .= <<EOF;
+		<A HREF="[area $_]">$desc</A><BR>
+EOF
+		}
+		return $out . '</TD></TR></TABLE>';
+	[/perl]
+	[/if-item-data]
 								  </font></p>
                                 </td>
                               </tr>
