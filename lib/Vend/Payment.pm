@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Payment.pm,v 1.1.2.2 2001-04-09 16:18:34 heins Exp $
+# $Id: Payment.pm,v 1.1.2.3 2001-04-09 21:03:17 heins Exp $
 #
 # Copyright (C) 1996-2000 Red Hat, Inc., http://www.redhat.com
 #
@@ -22,7 +22,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.1.2.2 $, 10);
+$VERSION = substr(q$Revision: 1.1.2.3 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -110,6 +110,8 @@ sub map_actual {
 		mv_credit_card_exp_month    mv_credit_card_exp_month
 		mv_credit_card_exp_year     mv_credit_card_exp_year
 		cyber_mode                  mv_cyber_mode
+		phone_day					phone_day
+		email						email
 		amount                      amount
 	);
 
