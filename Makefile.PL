@@ -395,11 +395,9 @@ sub initialize {
 		$MV::Default{RPMBUILDDIR} = $X{RPMBUILDDIR};
 	}
 
-#warn "Got past set RPMBUILDDIR = $X{RPMBUILDDIR} \n";
-
 	return %X if $MV::Default{nocopy};
 
-    my $uid;
+    my $uid = $MV::Default{INTERCHANGE_USER};
     if(-f "_uid") {
         open UID, '_uid'
             or die "Cannot read _uid file: $!\n";
@@ -407,7 +405,7 @@ sub initialize {
         close UID;
     }
 
-#warn "Got past open UID file \n";
+#warn "Got past open UID file , uid=$uid user=$> Windows=$Windows\n";
 
 	GETUID: {
 		if($> == 0 and ! $MV::Default{INTERCHANGE_USER} and ! $Windows) {
@@ -421,6 +419,9 @@ sub initialize {
 				last GETUID if $ans =~ /^\s*y/i;
 				redo GETUID;
 			}
+		}
+		elsif ($uid = $MV::Default{INTERCHANGE_USER}) {
+			# do nothing
 		}
 		elsif (! $Windows) {
 			eval {
@@ -821,10 +822,12 @@ EOF
 	Getopt::Long::config(qw/permute/);
 	GetOptions(\%optctl, @options)
 		or die "Bad option get\n";
-	use Data::Dumper;
-	$Data::Dumper::Terse = $Data::Dumper::Indent = 2;
-	print "ARGV: " . Dumper(\@ARGV);
-	print "OPT: " . Dumper(\%MV::Default);
+
+#	use Data::Dumper;
+#	$Data::Dumper::Terse = $Data::Dumper::Indent = 2;
+#	print "ARGV: " . Dumper(\@ARGV);
+#	print "OPT: " . Dumper(\%MV::Default);
+
 	@ARGV = grep ! $delete{$_}, @saveargs;
 
 if($Windows) {
