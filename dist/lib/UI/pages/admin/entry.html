@@ -143,7 +143,7 @@
 			hiddens=customer
 			caller=entry
 			customer=[either][cgi customer][or][value customer_id][/either]
-		"]Select items from list</A>
+		"][L]Select items from list[/L]</A>
 [comment] Get previous order numbers for possible repeat [/comment]
 [if value customer_id]
 	[query
@@ -476,7 +476,7 @@ mv_nextpage=@@MV_PAGE@@
 	<TD>
 		<SMALL><I>[msg arg.0="<B>" arg.1="</B>"]%sBold%s fields needed to process the order[/msg]</I></SMALL>
 		<br>
-		<span class=cmessage><input type=checkbox name=no_save value=1 [checked no_save_shipping 1]> Don't save address in user record</span>
+		<span class=cmessage><input type=checkbox name=no_save value=1 [checked no_save_shipping 1]> [L]Don't save address in user record[/L]</span>
 	</TD>
 </TR>
 
@@ -518,27 +518,27 @@ mv_nextpage=@@MV_PAGE@@
 
 <br>
 <TABLE WIDTH=__UI_MAIN_WIDTH__><TR><TD class=rmarq>
-Billing Address (if different)
+[L]Billing Address (if different)[/L]
 </TD></TR></TABLE>
 
 <TABLE border=0>
 <TR>
-	<TD ALIGN=RIGHT><B>Name: First </B></TD>
+	<TD ALIGN=RIGHT><B>[L]First Name[/L] </B></TD>
 	<TD>
 		<INPUT TYPE=text NAME=b_fname VALUE="[value name=b_fname default="[loop-data userdb b_fname]"]" size=20>
-		<B>Last </B><INPUT TYPE=text NAME=b_lname VALUE="[value name=b_lname default="[loop-data userdb b_lname]"]" size=30>
+		<B>[L]Last Name[/L]</B><INPUT TYPE=text NAME=b_lname VALUE="[value name=b_lname default="[loop-data userdb b_lname]"]" size=30>
 	</TD>
 </TR>
 
 <TR>
-	<TD ALIGN=RIGHT>Company</TD>
+	<TD ALIGN=RIGHT>[L]Company[/L]</TD>
 	<TD ALIGN=LEFT>
 		<INPUT TYPE=text NAME=b_company VALUE="[value name=b_company default="[loop-data userdb b_company]"]" size=50>
 	</TD>
 </TR>
 
 <TR>
-	<TD ALIGN=RIGHT><B>Address</B></TD>
+	<TD ALIGN=RIGHT><B>[L]Address[/L]</B></TD>
 	<TD ALIGN=LEFT>
 		<INPUT TYPE=text NAME=b_address1 VALUE="[value name=b_address1 default="[loop-data userdb b_address1]"]" size=50>
 	</TD>
@@ -554,21 +554,21 @@ Billing Address (if different)
 
 
 <TR>
-	<TD ALIGN=RIGHT><B>City</B></TD>
+	<TD ALIGN=RIGHT><B>[L]City[/L]</B></TD>
 	<TD>
 		<INPUT TYPE=text NAME=b_city VALUE="[value name=b_city default="[loop-data userdb b_city]"]" size=20>
-		<B>State</B> <INPUT TYPE=text NAME=b_state VALUE="[value name=b_state default="[loop-data userdb b_state]"]" size=3>
-		<B>Postal Code</B> <INPUT TYPE=text NAME=b_zip VALUE="[value name=b_zip default="[loop-data userdb b_zip]"]" size=10>
+		<B>[L]State[/L]</B> <INPUT TYPE=text NAME=b_state VALUE="[value name=b_state default="[loop-data userdb b_state]"]" size=3>
+		<B>[L]Zip/Postal Code[/L]</B> <INPUT TYPE=text NAME=b_zip VALUE="[value name=b_zip default="[loop-data userdb b_zip]"]" size=10>
 	</TD>
 </TR>
 <TR>
-	<TD ALIGN=RIGHT><B>Country</B></TD>
+	<TD ALIGN=RIGHT><B>[L]Country[/L]</B></TD>
 	<TD>
 		<INPUT TYPE=text NAME=b_country VALUE="[value name=b_country default="[loop-data userdb b_country]"]" size=20>
 	</TD>
 </TR>
 <TR>
-	<TD ALIGN=RIGHT><B>Phone</B></TD>
+	<TD ALIGN=RIGHT><B>[L]Phone[/L]</B></TD>
 	<TD>
 		<INPUT TYPE=text NAME=b_phone VALUE="[value name=b_phone default="[loop-data userdb b_phone]"]" size=20>
 	</TD>
@@ -577,22 +577,22 @@ Billing Address (if different)
 </TABLE><br>
 
 <TABLE WIDTH=600><TR><TD class=rmarq>
-Email preferences
+[L]Email preferences[/L]
 </TD></TR></TABLE>
 
 <TABLE>
 <TR>
 	<TD valign=top>
-		<b>Send receipt</b><br>
-		<INPUT TYPE=radio NAME=email_copy [checked name=email_copy value=1 default=1] VALUE="1">Yes
-		<INPUT TYPE=radio NAME=email_copy [checked name=email_copy value=0] VALUE="0">No
+		<b>[L]Send receipt[/L]</b><br>
+		<INPUT TYPE=radio NAME=email_copy [checked name=email_copy value=1 default=1] VALUE="1">[L]Yes[/L]
+		<INPUT TYPE=radio NAME=email_copy [checked name=email_copy value=0] VALUE="0">[L]No[/L]
 	</TD>
 	<td>
 		&nbsp;
 		&nbsp;
 	</td>
 	<TD valign=top>
-		<b>Put on email lists</b><br>
+		<b>[L]Put on email lists[/L]</b><br>
 		[display table=userdb col=mail_list type=checkbox_left_2]
 	</TD>
 </TR>
@@ -678,7 +678,7 @@ function visible (selnam) {
             </td>
             <td colspan="2" class="contentbar1"> 
 			  [if scratch old_browser]
-              ([L]will update display[/L])
+              [L](will update display)[/L]
 			  [/if]
             </td>                              
           </tr>
@@ -1102,11 +1102,11 @@ function visible (selnam) {
 </CENTER>
 
 <P>
-<B>Gift note or Special Instructions<BR>
+<B>[L]Gift note or Special Instructions[/L]<BR>
 <TEXTAREA NAME=gift_note ROWS=5 COLS=72>[value name=gift_note default="[loop-data userdb gift_note]"]</TEXTAREA>
 </FORM>
 [/loop]
-[error all=1 hide=1 comment="Clear errors"]
+[error all=1 hide=1 comment="[L]Clear errors[/L]"]
 
 <!-- ----- END REAL STUFF ----- -->
 
