@@ -67,7 +67,6 @@ if [ "$GOAHEAD" = "true" ]; then
 	mkdir /var/lib/interchange/catalogs/$CATALOG
 	chown $USER.$GROUP /var/lib/interchange/catalogs/$CATALOG
 
-#	mkdir -p $RPM_BUILD_ROOT$BASEDIR/$i
 	/usr/bin/makecat \
 		-F \
 		-l /var/log/interchange/makecat.log \
