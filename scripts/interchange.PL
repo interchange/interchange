@@ -3,7 +3,7 @@
 #
 # Interchange version 4.9.7
 #
-# $Id: interchange.PL,v 2.69 2003-04-08 22:47:07 mheins Exp $
+# $Id: interchange.PL,v 2.70 2003-04-18 00:51:53 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and others.
 # http://www.icdevgroup.org/
@@ -43,7 +43,8 @@ BEGIN {
 	}
 }
 
-no Config;
+## Comment this back in when we remove support for Perl 5.6.0
+#no Config;
 
 BEGIN {
 	$Global::Foreground = 1;
