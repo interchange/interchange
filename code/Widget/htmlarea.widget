@@ -30,7 +30,7 @@ To install, get HTMLArea-3.0-RC1 or later and install in the C<htmlarea>
 directory of your DocumentRoot. (That means that routines can be accessed
 with a base HREF of C</htmlarea/>.
 
-Alternatively, you can set the Interchnage Variable HTMLAREA_PATH to
+Alternatively, you can set the Interchange Variable HTMLAREA_PATH to
 the appropriate path.
 
 This widget requires Interchange 5.0 and higher.
