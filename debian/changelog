@@ -9,8 +9,12 @@ interchange (4.9.7-1) unstable; urgency=low
     executable in interchange-ui maintainer scripts
   * UPGRADE and README.cvs added to interchange.docs
   * new debconf option for GnuPG home directory
+  * avoid installation error by checking installation state before
+    invoking interchange --add/--remove from interchange-cat-foundation
+    postinst script (thanks to Doug Alcorn <doug@lathi.net> for reporting
+    the problem)
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 14 Jan 2003 14:09:24 +0100
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon,  7 Apr 2003 13:13:13 +0200
 
 interchange (4.8.6.20021206-1) unstable; urgency=high
 
