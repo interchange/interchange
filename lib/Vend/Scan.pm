@@ -1,6 +1,6 @@
 # Vend/Scan.pm:  Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 1.9 2001-06-07 16:30:52 jason Exp $
+# $Id: Scan.pm,v 1.8 2000-12-02 19:49:10 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -29,7 +29,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 1.9 $, 10);
+$VERSION = substr(q$Revision: 1.8 $, 10);
 
 use strict;
 use Vend::Util;
@@ -569,7 +569,7 @@ sub sql_statement {
 	}
 
 	die "SQL is not enabled for Interchange. Get the SQL::Statement module.\n"
-		unless defined &SQL::Statement::new;
+		unless $INC{'SQL/Statement.pm'};
 
 	my $parser = SQL::Parser->new('Ansi');
 

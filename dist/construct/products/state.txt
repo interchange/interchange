@@ -80,7 +80,7 @@ code	country	state	name
 	UK	GLOUS	Gloucestershire
 	UK	GRAMP	Grampian
 	UK	GWYNED	Gwynedd
-	UK	HANTS	Hampshire
+	UK	HANTS	Hampshire 
 	UK	HERWOR	Herefordshire & Worcestershire
 	UK	HERTS	Hertfordshire
 	UK	HIGHL	Highland
@@ -120,36 +120,36 @@ code	country	state	name
 	EI	CO FERMANAgh	County Fermanagh
 	EI	CO DERRY	County Londonderry
 	EI	CO TYRONE	County Tyrone
-	US	AA	Military Americas
+	US	AA	Military Americas        
 	US	AE	Military Europe/ME/Canada
-	US	AP	Military Pacific
-	US	AK	Alaska
-	US	AL	Alabama
-	US	AR	Arkansas
-	US	AS	American Samoa
-	US	AZ	Arizona
-	US	CA	California
-	US	CO	Colorado
-	US	CT	Connecticut
+	US	AP	Military Pacific                          
+	US	AK	Alaska  
+	US	AL	Alabama  
+	US	AR	Arkansas     
+	US	AS	American Samoa     
+	US	AZ	Arizona  
+	US	CA	California         
+	US	CO	Colorado     
+	US	CT	Connecticut           
 	US	DC	D.C.
-	US	DE	Delaware
-	US	FL	Florida
-	US	FM	Micronesia
-	US	GA	Georgia
-	US	GU	Guam
-	US	HI	Hawaii
-	US	IA	Iowa
-	US	ID	Idaho
-	US	IL	Illinois
-	US	IN	Indiana
-	US	KS	Kansas
-	US	KY	Kentucky
-	US	LA	Louisiana
-	US	MA	Massachusetts
-	US	MD	Maryland
-	US	ME	Maine
-	US	MH	Marshall Islands
-	US	MI	Michigan
+	US	DE	Delaware     
+	US	FL	Florida  
+	US	FM	Micronesia  
+	US	GA	Georgia  
+	US	GU	Guam  
+	US	HI	Hawaii  
+	US	IA	Iowa  
+	US	ID	Idaho              
+	US	IL	Illinois          
+	US	IN	Indiana        
+	US	KS	Kansas         
+	US	KY	Kentucky     
+	US	LA	Louisiana                       
+	US	MA	Massachusetts                   
+	US	MD	Maryland     
+	US	ME	Maine     
+	US	MH	Marshall Islands                
+	US	MI	Michigan                           
 	US	MN	Minnesota
 	US	MO	Missouri
 	US	MP	Marianas
@@ -180,5 +180,4 @@ code	country	state	name
 	US	VT	Vermont
 	US	WA	Washington
 	US	WI	Wisconsin
-	US	WV	West Virginia
 	US	WY	Wyoming

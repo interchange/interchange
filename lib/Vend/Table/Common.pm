@@ -1,6 +1,6 @@
 # Table/Common.pm: Common access methods for Interchange Databases
 #
-# $Id: Common.pm,v 1.17 2001-06-07 16:31:39 jason Exp $
+# $Id: Common.pm,v 1.16 2000-11-03 04:41:10 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -25,7 +25,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.17 $, 10);
+$VERSION = substr(q$Revision: 1.16 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -566,11 +566,7 @@ sub query {
 			($spec, $stmt) = Vend::Scan::sql_statement($query, $ref);
 		};
 		if(! CORE::ref $spec) {
-			if($@) {
-				::logError("Bad SQL, error was: $@, query was: $query");
-			} else {
-				::logError("Bad SQL, query was: $query");
-			}
+			::logError("Bad SQL, query was: $query");
 			return ($opt->{failure} || undef);
 		}
 		my @additions = grep length($_) == 2, keys %$opt;
