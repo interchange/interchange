@@ -9,7 +9,7 @@ Variable UI_STD_DBEDIT_HEAD <<EndOfVariable
 
 [if-mm !tables]
 [seti ui_error]Not authorized for table [value mv_data_table].[/seti]
-[bounce href="[area __UI_BASE__/error]"]
+[bounce page="__UI_BASE__/error"]
 [/if-mm]
 
 [calc]
