@@ -82,3 +82,10 @@ Description: Select additional locales for the storefront of the demo catalog
  of the Interchange server processes, so it is recommended to choose only 
  locales which are really needed.
 
+Template: interchange-cat-foundation/defaultlocale
+Type: select
+Choices: ${LOCALES}
+Default: en_US
+Description: Select default locale for the storefront of the demo catalog
+ Please select the default locale for the Interchange demo catalog.
+
