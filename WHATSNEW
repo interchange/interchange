@@ -23,6 +23,9 @@ Core
   of other browsers, to get intermittent "CGI mapping error" failures
   when POSTing forms.
 
+* Fixed a bug in Server.pm that would cause loss of query string info in
+  'POST' URLs (only applicable when using TolerateGet).
+
 * Skip host checking if configuration directive WideOpen is set.
 
 * Fix addAttr setting for [order] tag, restoring ability to use 'base' and
