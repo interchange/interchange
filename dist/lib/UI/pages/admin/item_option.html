@@ -57,18 +57,6 @@
 [bounce page="__UI_BASE__/error"]
 [/if-mm]
 
-[if cgi ui_clone_options]
-[and cgi ui_clone_id]
-[perl interpolate=1 tables="[cgi mv_data_table]"]
-	my $db = $Db{[cgi mv_data_table]}
-		or return;
-	my ($k,$v);
-	$db->clone_row($CGI->{ui_clone_id}, $CGI->{sku});
-	$db->clone_set('sku', $CGI->{ui_clone_id}, $CGI->{sku});
-	return;
-[/perl]
-[/if]
-
 [perl tables="[cgi mv_data_table]"]
 	$id = $CGI->{item_id};
 
@@ -77,9 +65,8 @@
 	
 	$CGI->{ui_data_fields} = 'code __ProductFiles_0__:__DescriptionField__ o_enable o_matrix o_modular';
 	if($db->record_exists($id) and $db->field($id, 'o_modular')) {
-		$CGI->{ui_data_fields} .= ' o_include o_exclude';
+		$CGI->{ui_data_fields} .= ' sku';
 		$CGI->{ui_options_modular} = 1;
-		$CGI->{ui_text_qualification} = "o_group=" . $db->field($id, 'o_include');
 	}
 	return;
 [/perl]
@@ -105,6 +92,8 @@
 	ui_meta_view="[cgi ui_meta_view]"
 	ui_data_fields="[cgi ui_data_fields]"
 	ui_display_only="[cgi ui_display_only]"
+	widget.sku="hidden"
+	override.sku="[cgi item_id]"
 ]
 <!---- MAJOR -----></td>
 <!---- MAJOR -----><td valign=top>
