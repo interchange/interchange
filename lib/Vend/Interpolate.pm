@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.163 2003-05-06 21:59:40 racke Exp $
+# $Id: Interpolate.pm,v 2.164 2003-05-10 20:53:07 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.163 $, 10);
+$VERSION = substr(q$Revision: 2.164 $, 10);
 
 @EXPORT = qw (
 
@@ -5448,6 +5448,13 @@ sub read_shipping {
 				next;
 			}
 			my (@zone) = grep /\S/, split /[\r\n]+/, $ref->{zone_data};
+			shift @zone while @zone and $zone[0] !~ /^(Postal|Dest.*Z)/;
+			if($zone[0] =~ /^Postal/) {
+				$zone[0] =~ s/,,/,/;
+				for(@zone[1 .. $#zone]) {
+					s/,/-/;
+				}
+			}
 			if($zone[0] !~ /\t/) {
 				my $len = $ref->{str_length} || 3;
 				@zone = grep /\S/, @zone;
@@ -5456,6 +5463,7 @@ sub read_shipping {
 				$zone[0] =~ s/^\w+/low,high/;
 				@zone = grep /,/, @zone;
 				$zone[0] =~	s/\s*,\s*/\t/g;
+my $i = 1;
 				for(@zone[1 .. $#zone]) {
 					s/^\s*(\w+)\s*,/make_three($1, $len) . ',' . make_three($1, $len) . ','/e;
 					s/^\s*(\w+)\s*-\s*(\w+),/make_three($1, $len) . ',' . make_three($2, $len) . ','/e;
@@ -6561,7 +6569,23 @@ sub tag_ups {
 	my($i,$point,$zone);
 
 #::logDebug("tag_ups: type=$type zip=$zip weight=$weight code=$code opt=" . uneval($opt));
+
+	if(my $modulo = $opt->{aggregate}) {
+		$modulo = 150 if $modulo < 10;
+		if($weight > $modulo) {
+			my $cost = 0;
+			my $w = $weight;
+			while($w > $modulo) {
+				$w -= $modulo;
+				$cost += tag_ups($type, $zip, $modulo, $code, $opt);
+			}
+			$cost += tag_ups($type, $zip, $w, $code, $opt);
+			return $cost;
+		}
+	}
+
 	$code = 'u' unless $code;
+
 
 	unless (defined $Vend::Database{$type}) {
 		logError("Shipping lookup called, no database table named '%s'", $type);
@@ -6587,6 +6611,13 @@ sub tag_ups {
 	}
 	$weight = POSIX::ceil($weight);
 
+	unless($opt->{no_zip_process}) {
+		$zip =~ s/\W+//g;
+		$zip = uc $zip;
+	}
+
+	my $rawzip = $zip;
+
 	$zip = substr($zip, 0, ($zref->{str_length} || 3));
 
 	@fieldnames = split /\t/, $zdata->[0];
@@ -6611,6 +6642,7 @@ sub tag_ups {
 		}
 	}
 
+#::logDebug("tag_ups looking in zone data.");
 	for(@{$zdata}[1..$#{$zdata}]) {
 		@data = split /\t/, $_;
 		next unless ($zip ge $data[0] and $zip le $data[1]);
@@ -6623,11 +6655,13 @@ sub tag_ups {
 	if (! defined $zone) {
 		$Vend::Session->{ship_message} .=
 			"No zone found for geo code $zip, type $type. ";
+#::logDebug("tag_ups no zone $zone.");
 		return undef;
 	}
 	elsif (!$zone or $zone eq '-') {
 		$Vend::Session->{ship_message} .=
 			"No $type shipping allowed for geo code $zip.";
+#::logDebug("tag_ups empty zone $zone.");
 		return undef;
 	}
 
@@ -6642,6 +6676,28 @@ sub tag_ups {
 								)
 		unless $cost;
 #::logDebug("tag_ups cost: $cost");
+	if($cost > 0) {
+		if($opt->{surcharge_table}) {
+			$opt->{surcharge_field} ||= 'surcharge';
+			my $xarea = tag_data(
+							$opt->{surcharge_table},
+							$opt->{surcharge_field},
+							$rawzip);
+			$cost += $xarea if $xarea;
+		}
+		if($opt->{residential}) {
+			my $v =	length($opt->{residential}) > 2
+					? $opt->{residential}
+					: 'mv_ship_residential';
+			my $f = $opt->{residential_field} || 'res';
+#::logDebug("residential check, f=$f v=$v");
+			if( $Values->{$v} ) {
+				my $rescharge = tag_data($type,$f,$weight);
+#::logDebug("residential check type=$type weight=$weight, rescharge: $rescharge");
+				$cost += $rescharge if $rescharge;
+			}
+		}
+	}
 	return $cost;
 }
 
