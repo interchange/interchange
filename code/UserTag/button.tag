@@ -2,6 +2,7 @@ UserTag button Order name src text
 UserTag button addAttr
 UserTag button attrAlias value text
 UserTag button hasEndTag
+UserTag button Version $Id: button.tag,v 1.4 2002-10-27 04:54:29 mheins Exp $
 UserTag button Documentation <<EOD
 This tag creates an mv_click button either as a <INPUT TYPE=submit ...>
 or a JavaScript-linked <A HREF=....><img src=...> combination.
@@ -91,7 +92,8 @@ sub {
 	if(! $name or $name eq 'mv_click') {
 		$action =~ s/^\s+//;
 		$action =~ s/\s+$//;
-		$::Scratch->{$text} = $action;
+		my $set_text = HTML::Entities::decode($text);
+		$::Scratch->{$set_text} = $action;
 		$name = 'mv_click' if ! $name;
 	}
 	
