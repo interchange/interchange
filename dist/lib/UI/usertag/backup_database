@@ -10,6 +10,8 @@ sub {
 	my $gnum   = $opt->{gnumeric};
 	my $agg = "$backup_dir/DBDOWNLOAD.all";
 
+	my $Max_xls_string = 255;
+
 	eval {
 		require Compress::Zlib;
 	} if $opt ->{compress};
@@ -24,6 +26,10 @@ sub {
 	my $xls;
 	if($opt->{xls}) {
 		$xls = Spreadsheet::WriteExcel->new("$backup_dir/DBDOWNLOAD.xls");
+		if($opt->{max_xls_string}) {
+			$Max_xls_string = int($opt->{max_xls_string}) || 255;
+			$xls->{_xls_strmax} = $Max_xls_string;
+		}
 	}
 
 	my $gz;
@@ -106,6 +112,9 @@ sub {
 		}
 		if($xls) {
 			my $sheet = $xls->addworksheet($table);
+			$sheet->{_xls_strmax} = $Max_xls_string
+				if defined $opt->{max_xls_string};
+			$sheet->activate($table) if $table eq $Vend::Cfg->{ProductFiles}[0];
 			open(RECENT, $file)
 				or do {
 					push @errors,
@@ -129,12 +138,12 @@ sub {
 				for($j = 0; $j <= $maxcol; $j++) {
 					my $l = 0;
 					my $ptr;
-					if ( length($fields[$j]) > 255) {
+					if ( length($fields[$j]) > $Max_xls_string) {
 						$overflow[$j] = $fields[$j];
 						$extra[$j] = [];
-						while ( length($overflow[$j]) > 255) {
+						while ( length($overflow[$j]) > $Max_xls_string) {
 							for( ' ', "\n", "&nbsp;" ) {
-								$ptr = rindex $overflow[$j], $_, 255;
+								$ptr = rindex $overflow[$j], $_, $Max_xls_string;
 #::logDebug("char='$_' ptr=$ptr length=" . length($overflow[$j]) ) if $l < 10;
 								last if $ptr != -1;
 							}
