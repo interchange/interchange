@@ -39,7 +39,7 @@ banner:
 <table width="[control table_width 90%]" align="center">
 <tr> 
   <td class="categorybar">
-    <b>[control banner See also...]</b>
+    <b>&nbsp;[control banner See also]</b>
   </td>
 </tr>
 <tr>
