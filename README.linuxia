@@ -58,6 +58,7 @@ see usertag email_html]
 - database download from gentable improved (catalog_after.cfg: 1.4.4.1,
   gentable.html: 1.11.4.2)
 - file widget added (Interpolate.pm: 1.29.4.9)
+- backport of error message display within UI pages (UI_STD_HEAD: 1.25.4.4)
 
 Changes that made into the main branch:
 

@@ -1,3 +1,9 @@
+interchange (4.6.5-1.1) unstable; urgency=low
+
+  * backport of error message display within UI pages
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sun, 13 May 2001 10:19:47 +0200
+
 interchange (4.6.5-1) unstable; urgency=high
 
   * new upstream release (fixes for serious security holes in interchange-ui)
