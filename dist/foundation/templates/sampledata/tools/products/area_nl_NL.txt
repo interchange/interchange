@@ -1,0 +1,17 @@
+code	name
+2	Handgereedschappen
+3	Ijzerwaren
+4	Ladders
+5	Meetinstrumenten
+6	Diversen
+7	Schildermaterialen
+8	Veiligheidsuitrusting
+9	Tool Storage
+10	Handgereedschappen
+11	Ijzerwaren
+12	Ladders
+13	Meetinstrumenten
+14	Diversen
+15	Schildermaterialen
+16	Veiligheidsuitrusting
+17	Tool Storage
