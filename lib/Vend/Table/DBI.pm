@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.23 2002-07-15 20:18:46 jon Exp $
+# $Id: DBI.pm,v 2.24 2002-07-18 19:27:57 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.23 $, 10);
+$VERSION = substr(q$Revision: 2.24 $, 10);
 
 use strict;
 
@@ -176,23 +176,31 @@ my %known_capability = (
 		Pg => 'CREATE _UNIQUE_ INDEX $TABLE$_$COLUMN$ ON _TABLE_ (_COLUMN_)',
 		default => 'CREATE _UNIQUE_ INDEX $TABLE$_$COLUMN$ ON _TABLE_ (_COLUMN_)',
 	},
-	SEQUENCE_NO_EXPLICIT => { 
-		Pg => 1,
+	SEQUENCE_CREATE	 => { 
+		Oracle => "CREATE SEQUENCE _SEQUENCE_NAME_",
+		Pg => "CREATE SEQUENCE _SEQUENCE_NAME_",
 	},
-	SEQUENCE_GET	 => { 
-		Oracle => 1,
+	SEQUENCE_QUERY	 => { 
+		Oracle => "SELECT _SEQUENCE_NAME_.nextval FROM dual",
+		Pg => "SELECT nextval('_SEQUENCE_NAME_')",
 	},
 	SEQUENCE_VAL	 => { 
 		mysql => undef,
-		Pg => undef,
 	},
 	SEQUENCE_KEY	 => { 
 		mysql	=> 'INT PRIMARY KEY AUTO_INCREMENT',
-		Pg		=> 'SERIAL PRIMARY KEY',
+		Pg	=> 'INT NOT NULL PRIMARY KEY',
+		Oracle	=> 'INT NOT NULL PRIMARY KEY',
+	},
+	SEQUENCE_VALUE_FUNCTION	 => { 
+		Pg => "SELECT currval('_SEQUENCE_NAME_')",
+		Oracle => "SELECT _SEQUENCE_NAME_.currval FROM dual",
 	},
 	SEQUENCE_LAST_FUNCTION	 => { 
 		mysql => 'select last_insert_id()',
-		Pg => 'select last_value from _TABLE___COLUMN__seq',
+		## These use explicit
+		Pg => undef,
+		Oracle => undef,
 	},
 	UPPER_COMPARE	 => { 
 		Oracle => 1,
@@ -258,8 +266,14 @@ sub create_sql {
 	$config->{KEY_INDEX} ||= $keycol;
 	$config->{KEY} ||= $key;
 
-	$cols[$keycol] =~ s/\s+.*/ char(16) NOT NULL/
-			unless defined $config->{COLUMN_DEF}->{$key};
+	if ( not defined $config->{COLUMN_DEF}->{$key} ) {
+		if($config->{AUTO_SEQUENCE} and $config->{SEQUENCE_KEY}) {
+			$cols[$keycol] =~ s/\s+.*/ $config->{SEQUENCE_KEY}/;
+		}
+		else {
+			$cols[$keycol] =~ s/\s+.*/ char(16) NOT NULL/;
+		}
+	}
 
 	my $query = "create table $tablename ( \n";
 	$query .= join ",\n", @cols;
@@ -365,6 +379,21 @@ sub create {
 			::logError("table %s created: %s" , $tablename, $query );
 		}
 
+
+	}
+
+#::logDebug("seq: $config->{AUTO_SEQUENCE} create: $config->{SEQUENCE_CREATE}");
+	if($config->{AUTO_SEQUENCE} and my $q = $config->{SEQUENCE_CREATE}) {
+		$q =~ s/_SEQUENCE_NAME_/$config->{AUTO_SEQUENCE}/g;
+		$q =~ s/_SEQUENCE_START_/$config->{AUTO_SEQUENCE_START} || 1/eg;
+		$q =~ s/_SEQUENCE_CACHE_/$config->{AUTO_SEQUENCE_CACHE} || 1/eg;
+		$q =~ s/_SEQUENCE_MINVAL_/$config->{AUTO_SEQUENCE_MINVAL} || 1/eg;
+		$q =~ s/_SEQUENCE_MAXVAL_/$config->{AUTO_SEQUENCE_MAXVAL} || 2147483647/eg;
+#::logDebug("create query: $q");
+		eval {
+			$db->do($q)
+				or warn("create sequence failed: $q");
+		};
 	}
 
 	my @index;
@@ -784,7 +813,7 @@ sub field_accessor {
 }
 
 sub bind_entire_row {
-	my($s, $sth, $key, @fields) = @_;
+	my($s, $sth, @fields) = @_;
 #::logDebug("bind_entire_row=" . ::uneval(\@_));
 #::logDebug("bind_entire_row=" . ::uneval(\@fields));
 	my $i;
@@ -794,12 +823,6 @@ sub bind_entire_row {
 	my $j = 1;
 
 	my $ki;
-	if($key and ! $fields[$ki = $s->[$CONFIG]{KEY_INDEX}] ) {
-		$name = [@$name];
-		splice @fields, $ki, 1;
-		splice @$name, $ki, 1;
-		undef $key;
-	}
 
 	for($i = 0; $i < scalar @$name; $i++, $j++) {
 #::logDebug("bind $j=$fields[$i]");
@@ -809,14 +832,26 @@ sub bind_entire_row {
 			$numeric->[$i],
 			);
 	}
-	$sth->bind_param(
-			$j,
-			$key,
-			$numeric->[ $s->[$CONFIG]{KEY_INDEX} ],
-			)
-		if $key;
 #::logDebug("last bind $j=$fields[$i]");
 	return;
+}
+
+sub autosequence {
+	my $s = shift;
+
+	my $cfg = $s->[$CONFIG];
+	# Like MySQL, get sequence number *after* insert
+	return $cfg->{SEQUENCE_VAL} if $cfg->{SEQUENCE_LAST_FUNCTION};
+
+	# Like Oracle or Pg, get it now then return passed value later
+	my $q = $cfg->{SEQUENCE_QUERY} || "select nextval('_SEQUENCE_NAME_')";
+	$q =~ s/_SEQUENCE_NAME_/$cfg->{AUTO_SEQUENCE}/g;
+	my $sth = $s->[$DBI]->prepare($q)
+		or die ::errmsg('prepare %s: %s', $q, $DBI::errstr);
+	$sth->execute()
+		or die ::errmsg('execute %s: %s', $q, $DBI::errstr);
+	my $k = $sth->fetchrow_arrayref->[0];
+	return $k;
 }
 
 sub add_column {
@@ -1019,16 +1054,24 @@ sub set_slice {
 	$tkey = $s->quote($key, $s->[$KEY]) if defined $key;
 #::logDebug("tkey now $tkey");
 
+
 	if ( defined $tkey and $s->record_exists($key) ) {
 		my $fstring = join ",", map { "$_=?" } @$fary;
 		$sql = "update $s->[$TABLE] SET $fstring WHERE $s->[$KEY] = $tkey";
 	}
 	else {
-		my ($found_key) = grep $_ eq $s->[$KEY], @$fary;
-		unless ($found_key) {
+		my $found;
+		if(! length($key)) {
+			$key = $s->autonumber();
+		}
+		for(my $i = 0; $i < @$fary; $i++) {
+			next unless $fary->[$i] eq $s->[$KEY];
+			splice @$fary, $i;
+			splice @$vary, $i;
+			last;
+		}
 			unshift @$fary, $s->[$KEY];
 			unshift @$vary, $key;
-		}
 		my $fstring = join ",", @$fary;
 		my $vstring = join ",", map {"?"} @$vary;
 		$sql = "insert into $s->[$TABLE] ($fstring) VALUES ($vstring)";
@@ -1045,7 +1088,7 @@ sub set_slice {
 			or die ::errmsg("execute %s: %s", $sql, $DBI::errstr);
 
 		$val	= $s->[$CONFIG]->{AUTO_SEQUENCE}
-				?  $s->last_sequence_value()
+				? $s->last_sequence_value($key)
 				: $key;
 	};
 
@@ -1070,8 +1113,6 @@ sub set_row {
 	$s = $s->import_db() if ! defined $s->[$DBI];
 	my $cfg = $s->[$CONFIG];
 	my $ki = $cfg->{KEY_INDEX};
-
-	my $popkey;
 
 	$s->filter(\@fields, $s->[$CONFIG]{COLUMN_INDEX}, $s->[$CONFIG]{FILTER_TO})
 		if $cfg->{FILTER_TO};
@@ -1120,7 +1161,6 @@ sub set_row {
 
 	if(! length($fields[$ki]) ) {
 		$fields[$ki] = $s->autonumber();
-		$popkey = 1 if $cfg->{SEQUENCE_NO_EXPLICIT} and $cfg->{AUTO_SEQUENCE};
 	}
 	elsif (	! $s->[$CONFIG]{Clean_start}
 			and defined $fields[$ki]
@@ -1142,28 +1182,22 @@ sub set_row {
 			$i++;
 		}
 		my $fstring = '';
-		if ($popkey) {
-			pop @ins_mark;
-			$fstring = ' (';
-			$fstring .= join ",", grep $_ ne $s->[$KEY], @{$s->[$NAME]};
-			$fstring .= ')';
-		}
+
 		my $ins_string = join ", ",  @ins_mark;
 		my $query = "INSERT INTO $s->[$TABLE]$fstring VALUES ($ins_string)";
-#::logDebug("set_row popkey=$popkey query=$query");
+#::logDebug("set_row query=$query");
 		$cfg->{_Insert_h} = $s->[$DBI]->prepare($query);
 		die "$DBI::errstr\n" if ! defined $cfg->{_Insert_h};
 	}
 
-	splice (@fields, $cfg->{KEY_INDEX}, 1) if $popkey;
 #::logDebug("set_row fields='" . join(',', @fields) . "'" );
-    $s->bind_entire_row($cfg->{_Insert_h}, $popkey, @fields);
+    $s->bind_entire_row($cfg->{_Insert_h}, @fields);
 
 	my $rc = $cfg->{_Insert_h}->execute()
 		or die "$DBI::errstr\n";
 
 	$val	= $cfg->{AUTO_SEQUENCE}
-			?  $s->last_sequence_value()
+			?  $s->last_sequence_value($val)
 			: $fields[$ki];
 
 #::logDebug("set_row rc=$rc key=$val");
@@ -1172,9 +1206,16 @@ sub set_row {
 
 sub last_sequence_value {
 	my $s = shift;
+	my $passed = shift;
 	my $cfg = $s->[$CONFIG];
-	my $q = $cfg->{SEQUENCE_LAST_FUNCTION}
-		or return undef; 
+	my $q = $cfg->{SEQUENCE_LAST_FUNCTION};
+
+	if (! $q) {
+		return $passed if $passed;
+		$q = $cfg->{SEQUENCE_VALUE_FUNCTION};
+	}
+
+	$q =~ s/_SEQUENCE_NAME_/$s->[$CONFIG]{AUTO_SEQUENCE}/g;
 	$q =~ s/_TABLE_/$s->[$TABLE]/g;
 	$q =~ s/_COLUMN_/$s->[$KEY]/g;
 	my $sth = $s->[$DBI]->prepare($q)
@@ -1182,14 +1223,14 @@ sub last_sequence_value {
 	my $rc = $sth->execute()
 		or die ::errmsg("execute %s: %s", $q, $DBI::errstr);
 	my $aref = $sth->fetchrow_arrayref();
-	if ($aref) {
-		if ($aref->[0] !~ /^\d+$/) {
-			die ::errmsg("bogus return value from %s: %s", $q, $aref->[0]);
-		}
-		$aref->[0];
-	} else {
+
+	if (! $aref) {
 		die ::errmsg("missing return value from %s: %s", $q, $sth->err());
 	}
+	elsif ($aref->[0] !~ /^\d+$/) {
+		die ::errmsg("bogus return value from %s: %s", $q, $aref->[0]);
+	}
+	return $aref->[0];
 }
 
 sub row {
@@ -1304,14 +1345,23 @@ sub set_field {
 					);
 		return undef;
 	}
+
+	$key = $s->autonumber()  if ! length($key);
+
 	my $rawkey = $key;
 	my $rawval = $value;
+
 	$key   = $s->quote($key, $s->[$KEY]);
 	$value = $s->quote($value, $column);
 	my $query;
 	if(! $s->record_exists($rawkey)) {
 		if( $s->[$CONFIG]{AUTO_SEQUENCE} ) {
-			$query = qq{INSERT INTO $s->[$TABLE] ($column) VALUES ($value)};
+			$key = 0 if ! $key;
+			$query = qq{
+				INSERT INTO $s->[$TABLE]
+				($s->[$KEY], $column)
+				VALUES ($key, $value)
+				};
 		}
 		else {
 #::logDebug("creating key '$rawkey' in table $s->[$TABLE]");
