@@ -1,6 +1,6 @@
 # Vend/DbSearch.pm:  Search indexes with Perl
 #
-# $Id: DbSearch.pm,v 1.7.6.2 2000-12-02 20:09:23 heins Exp $
+# $Id: DbSearch.pm,v 1.7.6.3 2000-12-13 16:17:41 zarko Exp $
 #
 # ADAPTED FOR USE WITH INTERCHANGE from Search::TextSearch
 #
@@ -26,7 +26,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.7.6.2 $, 10);
+$VERSION = substr(q$Revision: 1.7.6.3 $, 10);
 
 use Search::Dict;
 use strict;
@@ -55,35 +55,35 @@ sub list {
 }
 
 my %Default = (
-        matches                 => 0,
-        mv_head_skip            => 0,
-        mv_index_delim          => "\t",
-        mv_matchlimit           => 50,
-        mv_min_string           => 1,
-        verbatim_columns        => 1,
-	);
+	matches                 => 0,
+	mv_head_skip            => 0,
+	mv_index_delim          => "\t",
+	mv_matchlimit           => 50,
+	mv_min_string           => 1,
+	verbatim_columns        => 1,
+);
 
 sub init {
 	my ($s, $options) = @_;
 
 	@{$s}{keys %Default} = (values %Default);
-    $s->{mv_all_chars}	        = [1];
-    $s->{mv_base_directory}     = $Vend::Cfg->{ProductFiles}[0];
-    $s->{mv_begin_string}       = [];
-    $s->{mv_case}               = [];
-    $s->{mv_column_op}          = [];
-    $s->{mv_negate}             = [];
-    $s->{mv_numeric}            = [];
-    $s->{mv_orsearch}           = [];
-    $s->{mv_search_field}       = [];
-    $s->{mv_search_file}        =	[ @{
+	$s->{mv_all_chars}	        = [1];
+	$s->{mv_base_directory}     = $Vend::Cfg->{ProductFiles}[0];
+	$s->{mv_begin_string}       = [];
+	$s->{mv_case}               = [];
+	$s->{mv_column_op}          = [];
+	$s->{mv_negate}             = [];
+	$s->{mv_numeric}            = [];
+	$s->{mv_orsearch}           = [];
+	$s->{mv_search_field}       = [];
+	$s->{mv_search_file}        =	[ @{
 										$::Variable->{MV_DEFAULT_SEARCH_FILE}
 										||	$Vend::Cfg->{ProductFiles}
 										} ];
-    $s->{mv_search_group}       = [];
-    $s->{mv_searchspec}         = [];
-    $s->{mv_sort_option}        = [];
-    $s->{mv_substring_match}    = [];
+	$s->{mv_search_group}       = [];
+	$s->{mv_searchspec}         = [];
+	$s->{mv_sort_option}        = [];
+	$s->{mv_substring_match}    = [];
 
 	for(keys %$options) {
 		$s->{$_} = $options->{$_};
@@ -93,7 +93,7 @@ sub init {
 }
 
 sub new {
-    my ($class, %options) = @_;
+	my ($class, %options) = @_;
 	my $s = new Vend::Search;
 	bless $s, $class;
 	$s->init(\%options);
@@ -101,7 +101,6 @@ sub new {
 }
 
 sub search {
-
 	my($s,%options) = @_;
 
 	my(@out);
@@ -142,9 +141,9 @@ sub search {
 
 	@specs = @{$s->{mv_searchspec}};
 
-    if(ref $s->{mv_range_look}) {
-        unless( scalar(@{$s->{mv_range_look}}) == scalar(@{$s->{mv_range_min}}) and
-                scalar(@{$s->{mv_range_look}}) == scalar(@{$s->{mv_range_max}}) ) {
+	if(ref $s->{mv_range_look}) {
+		unless( scalar(@{$s->{mv_range_look}}) == scalar(@{$s->{mv_range_min}}) and
+				scalar(@{$s->{mv_range_look}}) == scalar(@{$s->{mv_range_max}}) ) {
 			$s->{mv_search_warning}
 				= "Must have min and max values for range -- aborting range look.";
 			undef $s->{mv_range_look};
@@ -261,9 +260,9 @@ sub search {
 		$s->{matches} = scalar(@out);
 	}
 
-    if ($s->{matches} > $s->{mv_matchlimit}) {
-        $s->save_more(\@out)
-            or ::logError("Error saving matches: $!");
+	if ($s->{matches} > $s->{mv_matchlimit}) {
+		$s->save_more(\@out)
+			or ::logError("Error saving matches: $!");
 		if ($s->{mv_first_match}) {
 			splice(@out,0,$s->{mv_first_match}) if $s->{mv_first_match};
 			$s->{mv_next_pointer} = $s->{mv_first_match} + $s->{mv_matchlimit};
@@ -304,8 +303,8 @@ sub search {
 					if $s->{mv_next_pointer} > $s->{matches};
 			}
 		}
-        $#out = $s->{mv_matchlimit} - 1;
-    }
+		$#out = $s->{mv_matchlimit} - 1;
+	}
 #::logDebug("after hash fields: self=" . ::Vend::Util::uneval_it({%$s}));
 #::logDebug("after delayed return: self=" . ::Vend::Util::uneval_it({%$s}));
 
