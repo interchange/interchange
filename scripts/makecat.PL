@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.5.2.4 2002-01-24 05:07:04 jon Exp $
+# $Id: makecat.PL,v 2.5.2.5 2002-02-04 15:51:08 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -453,7 +453,7 @@ FINDCGIDIR: {
 
 my $isroot = 0;
 if ($< == 0) {
-	$isroot = 1 unless $Windows;
+	$isroot = 1 unless $Windows or $Conf{relocate};
 }
 
 $Conf{catalogname} = $catalog_name;
@@ -1287,39 +1287,36 @@ EOF
 
 }
 
-$mvuid = $Windows ? 'everybody' : (getpwnam($Conf{interchangeuser}))[2];
-unless (defined $mvuid) {
-	die "$Conf{interchangeuser} is not a valid user name on this machine.\n";
+if ($Windows) {
+	$mvuid = $catuid = 'everybody';
+	$mvgid = $catgid = 'nogroup';
+}
+elsif ($Conf{relocate}) {
+	$mvuid = $catuid = $mvgid = $catgid = 'nobody';
+}
+else {
+	$mvuid = (getpwnam($Conf{interchangeuser}))[2];
+	die "$Conf{interchangeuser} is not a valid user name on this machine.\n"
+		unless defined $mvuid;
+
+	if ($Conf{interchangegroup}) {
+		$mvgid = getgrnam($Conf{interchangegroup});
+		die "$Conf{interchangegroup} is not a valid group name on this machine.\n"
+			unless defined $mvgid;
+	}
+	else {
+		$mvgid = (getpwnam($Conf{interchangeuser}))[3];
+		$Conf{interchangegroup} = getgrgid($mvgid)
+	}
+
+	($catuid, $catgid) = (getpwnam($Conf{catuser}))[2,3];
+	die "$Conf{catuser} is not a valid user name on this machine.\n"
+		unless defined $catuid;
 }
 
-# Fix supplied by Paul V. Shevtsov
 if($isroot) {
 	chown ($mvuid, $mvgid, $Configfile)
 		or warn "\nCouldn't set ownership of $Configfile: $!\n";
-}
-
-if ($Conf{interchangegroup}) {
-	$mvgid = $Windows ? 'nogroup' : getgrnam($Conf{interchangegroup});
-	unless (defined $mvgid) {
-		die "$Conf{interchangegroup} is not a valid group name on this machine.\n";
-	}
-}
-else {
-	$mvgid = $Windows ? 'nogroup' : (getpwnam($Conf{interchangeuser}))[3];
-	$Conf{interchangegroup} = $Windows ? 'nogroup' : getgrgid($mvgid)
-}
-
-if($Windows) {
-	($catuid,$catgid) = ('everybody', 'nogroup');
-}
-else {
-	($catuid,$catgid) = (getpwnam($Conf{catuser}))[2,3];
-	unless (defined $catuid) {
-		die "$Conf{catuser} is not a valid user name on this machine.\n";
-	}
-}
-
-if($isroot) {
 	if(! $Conf{permtype} or $Conf{permtype} =~ /^[MUmu]/) {
 		$Conf{catgroup} = getgrgid($catgid);
 	}
@@ -2325,7 +2322,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.5.2.4 2002-01-24 05:07:04 jon Exp $
+# $Id: makecat.PL,v 2.5.2.5 2002-02-04 15:51:08 jon Exp $
 
 =head1 INTRODUCTION
 
