@@ -20,6 +20,7 @@ LOGGED_STATIC	1	Static pages
 LOGO		Template
 MV_DEFAULT_SEARCHTYPE_DB	__MVC_MYSQL____MVC_PGSQL__	Database
 MYSQL	__MVC_MYSQL__	Database
+ORACLE	__MVC_ORACLE__	Database
 ORDER_ROUTES	log main copy_user	Order
 ORDERS_TO	__MVC_MAILORDERTO__	Order
 PGSQL	__MVC_PGSQL__	Database
@@ -50,8 +51,8 @@ UI_C_TITLEBARTXT	#FFFFFF	Admin colors
 UI_C_TOPBLOCKBAR	#6699FF	Admin colors
 UI_HELP_BASE_URL	http://help.akopia.com/4.5.8	Admin control
 UI_IMG	__MVC_SHAREURL__/akopia/ui/	Admin control
-UI_ITEM_FIELDS	sku description category price image display comment size color weight	Item display
-UI_ITEM_BREAK	image size	Item display
+UI_ITEM_FIELDS	sku description category price image display comment__MVC_FIELDMUNGE__ size__MVC_FIELDMUNGE__ color weight	Item display
+UI_ITEM_BREAK	image size__MVC_FIELDMUNGE__	Item display
 UI_META_LINK	1	Admin control
 UI_SZ_LIST_CUSTOMER	25	Customer display
 UI_SZ_LIST_ORDER	50	Order display
