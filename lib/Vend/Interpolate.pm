@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.12 2001-09-04 22:23:25 jon Exp $
+# $Id: Interpolate.pm,v 2.13 2001-09-29 09:29:17 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.12 $, 10);
+$VERSION = substr(q$Revision: 2.13 $, 10);
 
 @EXPORT = qw (
 
@@ -618,6 +618,7 @@ sub filter_value {
 	my @filters = Text::ParseWords::shellwords($filter); 
 	my @args;
 	for (@filters) {
+		next unless $_;
 		@args = ();
 		if(/%/) {
 			$value = sprintf($_, $value);
