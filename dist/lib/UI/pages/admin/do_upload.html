@@ -1,6 +1,6 @@
 @_UI_STD_INIT_@
 [if-mm function="!files" name="[value ui_upload_fn]"]
-[seti ui_error] Not allowed to upload [value ui_upload_fn].[/seti]
+[seti ui_error] [msg arg.0="[value ui_upload_fn]"]Not allowed to upload %s.[/msg][/seti]
 [bounce page=__UI_BASE__/error]
 [/if-mm]
 

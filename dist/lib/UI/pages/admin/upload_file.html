@@ -1,11 +1,11 @@
-[set page_title]Upload File[/set]
-[set page_banner]Upload File[/set]
+@_UI_STD_INIT_@[set page_title][L]Upload File[/L][/set]
+[set page_banner][L]Upload File[/L][/set]
 [set ui_class]Content[/set]
 [set page_perm]files[/set]
 [set icon_name]icon_config.gif[/set]
 
 [if-mm function="!files" name="[data session arg]"]
-[seti ui_error]Not authorized to upload file [data session arg].[/seti]
+[seti ui_error][msg arg.0="[data session arg]"]Not authorized to upload file %s.[/msg][/seti]
 [bounce page="__UI_BASE__/error"]
 [/if-mm]
 
@@ -90,7 +90,7 @@ Preview: <BR>
 [/if]
 	</BLOCKQUOTE>
 <P>
-<B>Backup mode</B>
+<B>[L]Backup mode[/L]</B>
 	<BLOCKQUOTE>
 	[if cgi ui_backup]
 	<INPUT NAME=ui_backup TYPE=radio VALUE=1 CHECKED>&nbsp;Back up<BR>
@@ -102,7 +102,7 @@ Preview: <BR>
 	[/if]
 	</BLOCKQUOTE>
 <P>
-[button text="Upload" src="upload.gif"]
+[button text="[L]Upload[/L]" src="upload.gif"]
 	[calc]
 		if( $CGI->{ui_upload_newfn} or $CGI->{ui_upload_fn} =~ m:/$:) {
 			my $image = $CGI->{ui_upload_file};
