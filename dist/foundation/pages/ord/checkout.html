@@ -654,7 +654,7 @@ ui_template_name: noleft
 	    <td colspan="2" class="contentbar2">
 	      <b>
               [error std_label="Credit Card Information" name=mv_credit_card_valid]
-	      [if session username eq test]
+	      [if type=explicit compare="__MV_DEMO_MODE__"]
 	      <BR>
 	      (test number <A HREF="javascript:void 0" onclick="checkout.mv_credit_card_number.value='4111 1111 1111 1111'; return false;">4111 1111 1111 1111</A>)[/if]
 	      </b>
