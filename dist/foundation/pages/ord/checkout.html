@@ -1,12 +1,22 @@
 [comment]
-ui_template: Yes
+ui_template: yes
 ui_template_name: noleft
 [/comment]
 
 [tmp page_title]__COMPANY__ -- Check Out[/tmp]
+[tmp members_only][/tmp]
+
+[control reset=1]
+
+  [control-set]
+    [component]none[/component]
+  [/control-set]
+
+[control reset=1]
 
 @_NOLEFT_TOP_@
 
+<!-- BEGIN CONTENT -->
 [perl tables="country products"]
     my $db = $Db{country} or return;
  
@@ -39,8 +49,6 @@ ui_template_name: noleft
     }
     return;
 [/perl]
-
-<!-- BEGIN CONTENT -->
 
 <table width="95%">
 <tr>
