@@ -15,8 +15,7 @@
 [set icon_name]admin/icon_regen.gif[/set]
 @_UI_STD_HEAD_@
 
-[set name=arg int][data session arg][/set]
-[L]Reconfiguring catalog[/L]: ...<BR>[set name=reconfig_status int][reconfigure][/set]
+[L]Reconfiguring catalog[/L]: ...<BR>[seti reconfig_status][reconfigure][/seti]
 
 [loop arg="[scratch its]"]
 [reconfig-wait send=1]
@@ -30,7 +29,7 @@
 [value name=ui_changes_made set=""]
 [/else]
 [/if]
-(<A HREF="[area __UI_BASE__/index]">[L]return[/L]</A>)<BR>
+(<A HREF="[area href="[either][data session arg][or]__UI_BASE__/index[/either]"]">[L]return[/L]</A>)<BR>
 </HTML>
 
 <!-- ----- END REAL STUFF ----- -->
