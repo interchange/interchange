@@ -1,12 +1,149 @@
 [if cgi ui_clone_options]
 [and cgi ui_clone_id]
-[perl interpolate=1 tables="[cgi mv_data_table]"]
-	my $db = $Db{[cgi mv_data_table]}
+[perl tables="[cgi mv_data_table]"]
+	my $db = $Db{$CGI->{mv_data_table}}
 		or return;
 	my ($k,$v);
 	$db->clone_row($CGI->{ui_clone_id}, $CGI->{sku});
 	$db->clone_set('sku', $CGI->{ui_clone_id}, $CGI->{sku});
 	return;
+[/perl]
+[/if]
+<!--
+				fi=[cgi mv_data_table]
+				st=db
+				co=yes
+
+				se=[cgi item_id]
+				sf=sku
+				op=eq
+				ac=0
+
+				sf=o_matrix
+				se=1
+				op=ne
+				ac=0
+
+				sf=o_master
+				se=.
+				op=rn
+				ac=0
+
+				rf=*
+
+-->
+[if cgi explode]
+[tmp all_opts][loop
+	search="
+					fi=[cgi mv_data_table]
+					st=db
+					co=yes
+
+					se=[cgi item_id]
+					sf=sku
+					op=eq
+					ac=0
+
+					sf=o_matrix
+					se=1
+					op=ne
+					ac=0
+
+					rf=o_group,o_value
+		"][loop-param o_group]	[loop-param o_value]
+[/loop][/tmp]
+
+[tmp tmp_price][price noformat=1 code="[cgi item_id]"][/tmp]
+[tmp tmp_desc][description code="[cgi item_id]"][/tmp]
+[perl tables="[cgi mv_data_table] __UI_ITEM_TABLES__"]
+#Debug("opts: $Scratch->{all_opts}");
+	my $otab = $CGI->{mv_data_table};
+	my $odb = $Db{$otab};
+	unless ($odb) {
+		::logError("can't open option table '%s'.", $otab);
+		return undef;
+	}
+	my $id = $CGI->{item_id};
+	my $desc = $Scratch->{tmp_desc};
+	my $price = $Scratch->{tmp_price};
+#Debug("opts: $Scratch->{all_opts}");
+	my @opts = grep /\S/, split /\n/, $Scratch->{all_opts};
+#Debug( "options raw: " . $Tag->uneval( { ref => \@opts } ) );
+	return unless @opts;
+
+	my @dimensions;
+	for(@opts) {
+		my($g, $o) = split /\t/, $_;
+		push @optnames, $g;
+		my @ary;
+		my (@o) = grep /\S/, split /\s*,\s*/, $o;
+		for(@o) {
+			my ($k, $v) = split /\s*=\s*/, $_;
+			$v =~ s/\*$//;
+			push @ary, [ $k, $v ];
+		}
+		push @dimensions, \@ary;
+	}
+
+#Debug( "dimensions: " . $Tag->uneval( { ref => \@dimensions } ) );
+
+	my @pointers;
+	my @options;
+	my @descriptions;
+	my @hashes;
+
+	sub recurse_dim {
+			my $dim = $_[0] || 0;
+			return if $dim > $#dimensions;
+			for (0 .. @{$dimensions[$dim]}-1) {
+				$pointers[$dim] = $_;
+				if ($dim == $#dimensions) {
+
+					push @descriptions,
+					join( ', ',
+	map { $dimensions[$_]->[$pointers[$_]]->[1] } (0..$#dimensions)
+						)
+					;
+					push @options,
+					join( '-',
+	map { $dimensions[$_]->[$pointers[$_]]->[0] } (0..$#dimensions)
+						)
+					;
+
+					my %opthash;
+					for (my $i = 0; $i < @optnames; $i++) {
+						$opthash{$optnames[$i]} =
+							$dimensions[$i]->[$pointers[$i]]->[0];
+					}
+					push @hashes, \%opthash;
+
+				} else {
+					recurse_dim($dim + 1);
+				}
+			}
+	}
+
+	recurse_dim();
+
+#Debug( "options: "  . $Tag->uneval( { ref => \@options } ) );
+#Debug( "hashes: "  . $Tag->uneval( { ref => \@hashes } ) );
+	$odb->set_field($id, 'o_matrix', 0);
+	for( my $i = 0; $i < @options; $i++) {
+		my $key = "$id-$options[$i]";
+		die ::errmsg("No key for create!") unless $key;
+		$odb->set_field($key, 'description', "$desc, $descriptions[$i]");
+		$hashes[$i]->{code} = $id;
+		$hashes[$i]->{noformat} = 1;
+		$hashes[$i]->{quantity} = 1;
+		$price = $Tag->price( $id, $hashes[$i] );
+		$odb->set_field($key, 'price', $price);
+		$odb->set_field($key, 'sku', $id);
+		$odb->set_field($key, 'o_matrix', 1);
+	}
+	$odb->set_field($id, 'o_matrix', 1);
+
+	return;
+
 [/perl]
 [/if]
 
@@ -94,6 +231,17 @@ HREF="[area
 </td>
 </tr>
 [/no-match]
+<tr>
+<td colspan=3>
+	<form action="[area @@MV_PAGE@@]">
+	<INPUT TYPE=hidden NAME=debug VALUE=0>
+	<INPUT TYPE=hidden NAME=mv_data_table VALUE="[cgi mv_data_table]">
+	<INPUT TYPE=hidden NAME=item_id VALUE="[cgi item_id]">
+	<INPUT TYPE=hidden NAME=explode VALUE="1">
+	<INPUT TYPE=submit VALUE="Create all possible combinations">
+	</form>
+</td>
+</tr>
 </table>
 [/loop]
 
@@ -280,7 +428,7 @@ mv_nextpage=@@MV_PAGE@@
 [/button]
 
 </FORM>
-
+item_tables: __UI_ITEM_TABLES__
 
 [table-editor
 	table_width=400

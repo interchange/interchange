@@ -35,6 +35,8 @@
 	my $ref = $Db{$CGI->{mv_data_table}};
 	my $mref = $Db{__UI_META_TABLE__};
 	
+	$CGI->{ui_description_fields} = 'code sku o_group o_label price o_value'
+		if ! $CGI->{ui_description_fields};
 	if (! $ref) {
 		$Scratch->{keypos} = 0;
 		return;
