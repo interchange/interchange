@@ -106,6 +106,7 @@
 
 [perl tables="[cgi mv_data_table] __UI_META_TABLE__"]
 	my $tab = $CGI->{mv_data_table};
+	$CGI->{showinactive} = $Values->{mv_no_hide} = 1;
 	my $view = $CGI->{ui_meta_view} || 'item_select';
 	my $ref = $Db{$tab};
 	my $meta = $Tag->meta_record($tab, $view);
@@ -582,4 +583,4 @@ mv_nextpage=@@MV_PAGE@@
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ Revision: $Id: item.html,v 2.20 2003-11-14 11:57:44 racke Exp $ -->
+<!-- page: @@MV_PAGE@@ Revision: $Id: item.html,v 2.21 2003-11-17 23:44:59 edl Exp $ -->
