@@ -38,7 +38,7 @@ my @wanted_opts = qw/
 /;
 
 my %overall_opt;
-#@overall_opt{@wanted_opts} = @wanted_opts;
+@overall_opt{@wanted_opts} = @wanted_opts;
 
 sub thanks_title {
 	my ($opt, $already, $default) = @_;
@@ -445,6 +445,7 @@ sub compile_wizard {
 			my $met = $Tag->meta_record($k, undef, $t)
 				or last BUILDWIZ;
 			my($structure) = delete $met->{ui_data_fields};
+			delete $met->{extended};
 			%opts = %$met;
 #Debug("display type=$opts{display_type} met=" . ::uneval($met) );
 			$met->{row_template} = $opt->{row_template}
@@ -734,10 +735,6 @@ sub {
 		delete $opts{$_};
 	}
 
-	for ( @wanted_opts ) {
-		$opts{$_} ||= $opt->{$_};
-	}
-
 	if($CGI->{ui_wizard_action} eq 'Back') {
 		$current_page = $lastpage - 1;
 	}
@@ -934,6 +931,9 @@ EOF
 	}
 
 	delete $opts{type};
+	# Prevent ui_data_fields from parent corrupting wizard
+	delete $opts{ui_data_fields};
+	delete $opts{extended};
 #::logDebug("calling table_editor opts=" . ::uneval(\%opts));
 	$$dest = $Tag->table_editor( {all_opts => \%opts });
 	if($$dest !~ /<form\s+/i) {
