@@ -1,10 +1,13 @@
 use ExtUtils::MakeMaker;
 require ExtUtils::Install;
 
+my $changed_dir_initially;
+
 BEGIN {
 	eval {
 		require FindBin;
-		chdir $FindBin::RealBin;
+		chdir $FindBin::RealBin
+			and $changed_dir_initially = 1;
 	};
 }
 
@@ -48,7 +51,27 @@ my @chown_files = qw/
 use lib './lib';
 
 
-my $origdir = cwd();
+my $origdir;
+if ($changed_dir_initially) {
+	$origdir = cwd();
+}
+elsif($ENV{PWD}) {
+	## We will try
+	$origdir = $ENV{PWD};
+}
+else {
+	print <<EOF;
+We know this sounds dumb, but we need to know the current directory. Your
+system administratory appears to have set up your system so that you cannot
+search the directory path above you. Were you to ever change directory
+to /tmp or something, you couldn't even walk the tree back to your own
+directory.
+
+EOF
+
+	$origdir = my_prompt(qq{What is the directory you are in currently? });
+
+}
 
 # See if we have Term::ReadLine::Perl
 eval {
@@ -57,6 +80,7 @@ eval {
 		require Term::ReadKey;
 		$TermRead = 1;
 };
+
 unless($@) {
 	$ENV{PERL_RL} = 'Perl';
 }
@@ -769,6 +793,10 @@ EOF
 	Getopt::Long::config(qw/permute/);
 	GetOptions(\%optctl, @options)
 		or die "Bad option get\n";
+
+	if($MV::Default{PREFIX} and ! $changed_dir_initially) {
+		$origdir = cwd();
+	}
 
 #	use Data::Dumper;
 #	$Data::Dumper::Terse = $Data::Dumper::Indent = 2;
