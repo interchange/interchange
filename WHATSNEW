@@ -91,6 +91,119 @@ Core
 * Prevent NOT NULL errors for data that is actually supposed to be defined
   during a data update.
 
+* Add container values for config files.
+
+	<Variable FOOBAR>
+		Something in the FOOBAR variable.
+	</Variable>
+
+  This is exactly equivalent to:
+
+  	Variable FOOBAR <<EOV
+		Something in the FOOBAR variable.
+	EOV
+
+   except that the end marker can have leading/trailing whitespace
+   and capitalization is not important.
+
+* Allows trigger response to end container; currently only "yesno"
+  directives are defined. The "yesno" behavior allows:
+
+  <ParseVariables Yes>
+  	Static __CATALOG_STATIC__
+  	StaticLogged __LOGGED_STATIC__
+  </ParseVariables>
+
+  This will set ParseVariables to Yes
+
+* Directives of the same type cannot be nested (though I might do that
+  shortly). Directives of different types can be nested, so you can
+  do:
+
+  	<ParseVariables Yes>
+		<Route log>
+			foo   __BAR__
+		</route>
+	</Parsevariables>
+
+  (Note that capitalization doesn't matter.)
+
+* You can add triggers for directives by setting the ContainerSpecial
+  variable in package Vend::Config. This would allow:
+
+  	 <DirectiveUniverse foo>
+	 	Foobar   yes
+	 </DirectiveUnivers>
+
+  	 <DirectiveUniverse bar>
+	 	Foobar   yes
+	 </DirectiveUnivers>
+
+  Perhaps more importantly, it might allow:
+
+  <Catalog found /var/lib/interchange/found /c/found>
+  	  Variable  INITTED   This catalog has an initted value already.
+  </catalog>
+
+  Note that this is not yet implemented!
+
+File
+----
+
+* Add new Vend::File module with minimal functions.
+
+* Relocate following routines (and their subsidiaries) from Vend::Util:
+
+	canonpath
+	catdir
+	catfile
+	exists_filename
+	file_modification_time
+	file_name_is_absolute
+	get_filename
+	lockfile
+	path
+	readfile
+	readfile_db
+	set_lock_type
+	unlockfile
+	writefile
+
+  Added stubs so that package-based calls to those routines will not
+  break software.
+
+* Added CatalogUser directive that allows setting in interchange.cfg
+  of allowed username that is used for access to absolute-path names.
+
+  	CatalogUser  foundation  joe
+  	CatalogUser  reports     jane
+
+  This sets the user for allowed_file() for further read/write checks
+  based on username.
+
+* Created allowed_file() routine and replaced all current inline checks
+  for NoAbsolute with call to that routine. It behaves as:
+
+  NoAbsolute is No: all files are accessible, always
+
+  Allowed for read/write:
+  	Path name is relative with no ..
+  	Path name is absolute but in the catalog directory
+  	Path name is absolute but in a TemplateDir
+
+  Allowed for read:
+	CatalogUser set to a valid username and file is readable by that user
+	CatalogUser set to a valid username and file is readable by a group
+	 containing that user
+
+  Allowed for write:
+	CatalogUser set to a valid username and file is writable by that user
+	CatalogUser set to a valid username and file is writable by a group
+	 containing that user
+
+* Changed display_special_page so that special page entries with ../
+  will not break things.
+
 Options
 -------
 
@@ -271,6 +384,9 @@ Form
 
 * Remove extra closing HTML tag '>' character from password widget.
 
+* Allow table conglomerations of checkboxes and radio boxes with more
+  than 9 columns (i.e. radio_right_10). Thanks to Bill Carr for finding.
+
 * Allow multiple semi-colon-separated queries to populate options via
   lookup_query.
 
@@ -324,6 +440,10 @@ UI
   UI_ORDER_VIEWNEXT_MAX_SKIP, now in Foundation "Admin control" section.
 
 * Add option to replace all occurences to Search & Replace page.
+
+* Make spreadsheet search not word-boundary dependent.
+
+* Allow exclusion of fields for database imports.
 
 Payment
 -------
@@ -385,6 +505,8 @@ i18n
 
 * Add alias [L] => [loc] in order to resolve [L] tags in variables
   independent of the configuration.
+
+* Localize script now groks new menu database files.
 
 Foundation
 ----------
