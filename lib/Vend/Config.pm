@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.94 2003-01-13 22:57:51 mheins Exp $
+# $Id: Config.pm,v 2.95 2003-01-23 19:18:47 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -46,7 +46,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.94 $, 10);
+$VERSION = substr(q$Revision: 2.95 $, 10);
 
 my %CDname;
 
@@ -2046,15 +2046,8 @@ sub parse_locale {
 		$store = ${"Global::$item" . "_repository"};
 	}
 
-	# Try POSIX first if Locale.
-	$name = POSIX::setlocale(POSIX::LC_ALL, $settings)
-		if $item eq 'Locale' and $settings !~ /\s/;
-
 	my ($eval, $safe);
-	if ($name and $item eq 'Locale') {
-		$store->{$name} = POSIX::localeconv();
-	}
-	elsif ($settings =~ s/^\s*([-\w.@]+)\s+//) {
+	if ($settings =~ s/^\s*([-\w.@]+)(?:\s+)?//) {
 		$name = $1;
 
 		undef $eval;
@@ -2063,9 +2056,11 @@ sub parse_locale {
 				and $eval = 1;
 		$eval and ! $safe and $safe = new Safe;
 		if(! defined $store->{$name} and $item eq 'Locale') {
+		    my $past = POSIX::setlocale(POSIX::LC_ALL);
 			if(POSIX::setlocale(POSIX::LC_ALL, $name) ) {
 				$store->{$name} = POSIX::localeconv();
 			}
+			POSIX::setlocale($past);
 		}
 
 		my($sethash);

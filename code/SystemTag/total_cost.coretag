@@ -2,9 +2,10 @@ UserTag total-cost          Order        name noformat
 UserTag total-cost          attrAlias    cart name
 UserTag total-cost          InvalidateCache
 UserTag total-cost          PosNumber    2
+UserTag total-cost          addAttr
 UserTag total-cost          Routine <<EOR
 sub {
-	my($cart, $noformat) = @_;
-	return currency( total_cost($cart), $noformat);
+	my($cart, $noformat, $opt) = @_;
+	return currency( total_cost($cart), $noformat, undef, $opt);
 }
 EOR

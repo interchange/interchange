@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.143 2003-01-20 18:59:17 jon Exp $
+# $Id: Interpolate.pm,v 2.144 2003-01-23 19:18:47 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.143 $, 10);
+$VERSION = substr(q$Revision: 2.144 $, 10);
 
 @EXPORT = qw (
 
@@ -6448,7 +6448,7 @@ sub tag_shipping {
 		$out = Vend::Util::round_to_frac_digits($out);
 		## Conversion would have been done above, force to 0, as
 		## found by Frederic Steinfels
-		$out = currency($out, $opt->{noformat}, 0);
+		$out = currency($out, $opt->{noformat}, 0, $opt);
 	}
 	return $out unless $opt->{hide};
 	return;

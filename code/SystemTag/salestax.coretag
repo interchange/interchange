@@ -6,6 +6,6 @@ UserTag salestax            PosNumber    2
 UserTag salestax            Routine <<EOR
 sub {
 	my($cart, $noformat, $opt) = @_;
-	return currency( salestax($cart, $opt), $noformat);
+	return currency( salestax($cart, $opt), $noformat, undef, $opt);
 }
 EOR
