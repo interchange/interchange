@@ -2,11 +2,11 @@
 
 Interchange Installation
 
-=head1 INSTALLATION OF AKOPIA INTERCHANGE TM
+=head1 INSTALLATION OF AKOPIA INTERCHANGE(TM)
 
 Akopia Interchange is the industry's most widely distributed and
 implemented open source e-commerce platform. This document provides
-detailed installation instructions for Interchange TM and the
+detailed installation instructions for Interchange and the
 demonstration store included with the program.
 
 =head1 GETTING READY -- BEFORE INSTALLING INTERCHANGE
@@ -315,7 +315,7 @@ The default value of PARAM
 
 This would cause a question during makecat:
 
- The prompt. Set PARAM to?.....lbracketThe default value of PARAM]
+ The prompt. Set PARAM to?.....[The default value of PARAM]
 
 If the additional_help file is present, additional instructions for
 PARAM may be provided.
@@ -330,7 +330,7 @@ The prompt would now be:
  These are additional instructions for PARAM, and they
 may span multiple lines up to the first blank line.
 
-The prompt. Set PARAM to?.....lbracketThe default value of PARAM]
+The prompt. Set PARAM to?.....[The default value of PARAM]
 
 If the file config/precopy_commands exists, it will be read as a
 command followed by the prompt/help value.
@@ -516,7 +516,7 @@ name?
 <--#                                  www.company.com:8000
 <--#                                  www.company.com/~yourname
 <--#
-<--Server name? lbracketlocalhost]
+<--Server name? [localhost]
 
 -->localhost
 
@@ -538,7 +538,7 @@ Interchange will also be running on this server.
 <--#
 <--# If you are new to Interchange and not a sophisticated web designer,
 <--# use "barry" to start with.
-<--DemoType? lbracketbasic]
+<--DemoType? [basic]
 
 -->barry
 
@@ -556,7 +556,7 @@ this walkthrough.
 <--# The email address where orders for this catalog shou<--# To have a secure catalog, either this should be a local user name and
 <--# not go over the Internet -- or use the PGP option.
 <--#
-<--MailOrderTo? lbracketorders@barry.com]
+<--MailOrderTo? [orders@barry.com]
 
 -->user@localhost.com
 
@@ -572,7 +572,7 @@ completed, to the person responsible for handling orders.
 <--# works well. Remember, you will want a test catalog and an online
 <--# catalog.
 <--#
-<--CatRoot? lbracket/home/user/catalogs/example]
+<--CatRoot? [/home/user/catalogs/example]
 
 -->/home/user/catalogs/example
 
@@ -588,7 +588,7 @@ default location is a good place for this.
 <--# If all of your CGI programs must end in .cgi, this is
 <--# should be the same as your HTML directory.
 <--#
-<--CgiDir? lbracket/usr/local/httpd/cgi-bin]
+<--CgiDir? [/usr/local/httpd/cgi-bin]
 
 -->/usr/local/httpd/cgi-bin
 
@@ -608,7 +608,7 @@ server and the Interchange server.
 <--#
 <--#                  ^^^^^^^^^^^^
 <--#
-<--CgiUrl? lbracket/cgi-bin/example]
+<--CgiUrl? [/cgi-bin/example]
 
 -->/cgi-bin/example
 
@@ -629,7 +629,7 @@ your cgi-bin.
 <--# We set it to the name of the catalog by default to enable the
 <--# internal HTTTP server.
 <--#
-<--Aliases? lbracket/example]
+<--Aliases? [/example]
 
 -->/example
 
@@ -646,7 +646,7 @@ for minivend.cfg.
 <--# The base directory for HTML for this (possibly virtual) d<--# This is a directory path name, not a URL -- it is your HTML
 <--# directory.
 <--#
-<--DocumentRoot? lbracket/usr/local/httpd/htdocs]
+<--DocumentRoot? [/usr/local/httpd/htdocs]
 
 -->/usr/local/httpd/htdocs
 
@@ -660,7 +660,7 @@ static elements of the catalog will be stored here.
 <--# Where the sample HTML files (not Interchange pages) sho<--# installed. There is a difference.  Usually a subdirectory of
 <--# your HTML directory.
 <--#
-<--SampleHtml? lbracket/usr/local/httpd/htdocs/example]
+<--SampleHtml? [/usr/local/httpd/htdocs/example]
 
 -->/usr/local/httpd/htdocs/example
 
@@ -673,7 +673,7 @@ order to store the static HTML pages for the demo catalog.
 
 <--# Where the image files should be copied. A director<--# name, not a URL.
 <--#
-<--ImageDir? lbracket/home/sonny/public_html/example/images]
+<--ImageDir? [/home/sonny/public_html/example/images]
 
 -->/home/sonny/public_html/example/images
 
@@ -689,7 +689,7 @@ Additionally, a place for the images.
 <--#
 <--#                   ^^^^^^^^^^^^^^
 <--#
-<--ImageUrl? lbracket/example/images]
+<--ImageUrl? [/example/images]
 
 geDir
 
@@ -703,7 +703,7 @@ dynamic pages.
 <--If you already have a program there, or use a common program
 <--and the FullURL directive, select NONE. You will then need
 <--to copy the program by hand or otherwise ensure its presence.
-<--INET or UNIX mode? lbracketUNIX]
+<--INET or UNIX mode? [UNIX]
 
 -->UNIX
 
@@ -714,10 +714,10 @@ just fine.
 
 =item 16.
 
-<--Do you use CGIWRAP or SUEXEC? lbra
+<--Do you use CGIWRAP or SUEXE
 -->n
 
-ketn]
+? [n]
 
 If the answer is unknown, "no" should be the right answer.
 
@@ -734,11 +734,11 @@ Processing.
 
 =item 18.
 
-<--Your company name: .....................lbracketBarry's <--Your company address: ..................lbracket123 Any St.]
-<--Your company city/state/zip: ...........lbracketAnytown, USA 00000]
-<--Your company phone: ....................lbracket(555) 555-5555]
-<--Your company fax number: ...............lbracket(555) 555-5556]
-<--Your company tollfree number (if any):..lbracket(888) 555-5555]
+<--Your company name: .....................[Barry's <--Your company address: ..................[123 Any St.]
+<--Your company city/state/zip: ...........[Anytown, USA 00000]
+<--Your company phone: ....................[(555) 555-5555]
+<--Your company fax number: ...............[(555) 555-5556]
+<--Your company tollfree number (if any):..[(888) 555-5555]
 
 ooks]
 
@@ -766,7 +766,7 @@ this together on a single page.
 <--
 <--  brown1  blue1  yellow1
 <--
-<--Select color scheme: ...................lbracketgreen1]
+<--Select color scheme: ...................[green1]
 
 -->blue1
 
@@ -779,7 +779,7 @@ designed around the demo catalog.
 
 <--For the US, this is usually the state(s) your busin<--located in. Non-US users will probably have to set this
 <--differently depending on their tax laws.
-<--Area(s) to tax in: .....................lbracketVA UT]
+<--Area(s) to tax in: .....................[VA UT]
 
 -->VA UT
 
@@ -792,7 +792,7 @@ List the states for which to calculate sales tax.
 <--For US users, this looks like STATE=RATE, where th<--is in percent. The default below taxes Ohio at 6% and
 <--Illinois at 7.25 percent. More states can be added or
 <--you can have only one. Should correspond to TAXAREA.
-<--Percentage rate(s) for tax in different areas: ..lbracketVA=7.5, UT=7.25]
+<--Percentage rate(s) for tax in different areas: ..[VA=7.5, UT=7.25]
 
 -->VA=4.5 UT=6.35
 
@@ -803,7 +803,7 @@ The percentage of tax to calculate for each state.
 =item 23.
 
 <--For the UPS lookup, the standard UPS tables are no<--used. If you want to add a handling charge, do it here.
-<--Amount to add on to standard UPS costs: ..lbracket3.00]
+<--Amount to add on to standard UPS costs: ..[3.00]
 
 -->3.00
 
@@ -814,7 +814,7 @@ UPS shipping methods.
 
 =item 24.
 
-<--Origin zip code for UPS lookups: .......lbracket
+<--Origin zip code for UPS lookups: .......[
 -->83617
 
 0000]
@@ -843,7 +843,7 @@ SQL database of choice.
 <--the database, reconfiguration of the catalog, and much more.
 <--To enable MiniMate, you will need a "super-user" account
 <--name that has full access.
-<--Account name that will control this catalog: ..lbracketsonny]
+<--Account name that will control this catalog: ..[sonny]
 
 -->user
 
@@ -883,10 +883,10 @@ Processing.
 
 =item 29.
 
-<--Add catalog to minivend.cfg? lbra
+<--Add catalog to minivend.cf
 -->y
 
-kety]
+? [y]
 
 This will add the catalog to the list that Interchange will use when
 it starts up.
