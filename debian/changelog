@@ -1,3 +1,10 @@
+interchange (4.8.2-1.1) unstable; urgency=low
+
+  * change ownership on "documentroot" only if "documentroot" exists
+    (Closes: #113357)
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 24 Sep 2001 16:49:51 +0200
+
 interchange (4.8.2-1) unstable; urgency=low
 
   * upstream fixes and enhancements from CVS
