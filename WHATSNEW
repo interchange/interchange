@@ -13,26 +13,121 @@ Core
 
 * Fix locking of NFS sessions.
 
+* Make [bounce ...] more reliable with respect to terminating output
+  and future parsing.
+
+* Send Content-Size header with downloads.
+
 Payment
 -------
 
 * CCVS payment module removed.
+
+* Add support for Canadian PSiGate gateway. Thanks to Gary Benson for his
+  work and testing.
 
 Shipping
 --------
 
 * Don't cache zero UPS shipping cost.
 
+* UPS no longer accepts UK as a country code for shipments to
+  Great Britain.
+
+   -- did an exception remap for UK --> GB
+
+   -- Added UPS_COUNTRY_REMAP code so that this type of thing
+      can be done elsewhere.
+
+        # Remap Monaco to France for UPS
+        Variable  UPS_COUNTRY_REMAP   MC=FR
+
+UI
+--
+
+* Add missing user and password to SQL DUMP COMMAND in xfer_catalog
+  UserTag.
+
+* Remove the Term modules from checks -- they have nothing to do with
+  IC operation and Term::ReadKey can cause core dumps.
+
+* Remove extra <html> from templates.
+
+* Force name to text variable, so numerical-only names will not cause
+  crash when a string function is done.
+
+* Minor improvements in backup setup.
+
+	-- Let backup tables be explicitly specified in
+       UI_BACKUP_TABLES.
+
+    -- If no UI_BACKUP_TABLES, honor first "backup" then
+       "!display_filter" in table metadata.
+
+    -- Display size of downloadable file.
+
+	-- Prevent spurious .html extension on download link.
+
 Table Editor
 ------------
 
 * Fix sequential edit.
+
+Foundation
+----------
+
+* Add missing table variable in db lookup for pref_group to metadata.
+
+* Remove test data from inventory::stock_message metadata.
+
+* Update Oracle configuration files for new options.
+  Supplied by Jason <ic@santabarbara.org>.
+
+Usertags
+--------
+
+* New Usertag [debug].
+
+* Add new makesize=NNxNN parameter to image Usertag which uses ImageMagick 
+  mogrify command to build custom thumbnails on the fly.
+
+  Used mogrify executable because of constant difficulty building and
+  installing Image::Magick perl modules.
+
+  Example on the foundation demo:
+
+     [image src="items/os28004.gif" makesize=50x50]
+
+  This will create __IMAGE_DIR__/items/50x50/os28004.gif and return:
+
+     <img src="items/50x50/os28004.gif" height=50 width=50>
+
+  The size is still determined by Image::Size.
+
+i18n
+----
+
+* Update Italian UI translation.
+
+SOAP
+----
+
+* Fix tree option in soap_entity tag.
+
+* Enable calling of catalog usertags in SOAP actions.
 
 Debian
 ------
 
 * Drop Build-Depends on libdb2-dev to allow builds on woody and sid,
   apache-dev already has the proper dependency (Closes: #198136)
+
+Miscellaneous
+-------------
+
+* Allow wildchar(*) in Swish search.
+
+* Various minor cleanup, prevents warnings on startup.
 
 
 ------------------------------------------------------------------------------
