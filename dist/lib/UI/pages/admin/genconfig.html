@@ -21,7 +21,7 @@
 	Catalog URL
 	</TH>
 	<TD>&nbsp; &nbsp;</TD>
-	<TD>[calc]return qq{<A HREF="$Config->{VendURL}">$Config->{VendURL}}[/calc]</A></TD>
+	<TD>[calc]$url=$Scratch->{ui_catalog_url};$url=~s%/index\?.*%%;return qq{<A HREF="$url">$url}[/calc]</A></TD>
 </TR>
 
 <TR>
