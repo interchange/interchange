@@ -12,7 +12,8 @@ my $settingsconf = '/etc/interchange/settings.cfg';
 
 # Interchange variables
 my %setvars = (DEBUG => 0, UI_LOCALE => 'en_US');
-
+my %skipvars;
+	
 # other variables
 my (@tokens);
 
@@ -30,6 +31,8 @@ for (@ARGV) {
 	} else {
 		$setvars{$tokens[0]} = '';
 	}
+	# don't override these settings
+	$skipvars{$tokens[0]} = 1;
 }
 
 # modify settings configuration
@@ -46,6 +49,7 @@ while (<SCONF>) {
 	# check for "Variable"'s
 	@tokens = split (/\s+/, $_, 3);
 	next if $tokens[0] ne 'Variable';
+	next if exists $skipvars{$tokens[1]};
 	# record values found
 	if (exists $setvars{$tokens[1]}) {
 		if (defined $tokens[2]) {
