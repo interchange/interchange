@@ -155,6 +155,12 @@ Core
   both on the file location and the parent directory location without
   affecting true/false status.
 
+* Fix LENGTH_EXCEPTION_DEFAULT logging, which did not work and clean up
+  the code a bit in DBI module.
+
+* Remove attempt to unimport Config (to save a small amount of memory)
+  because it causes Perl 5.6.0 to die.
+
 File
 ----
 
@@ -656,6 +662,13 @@ Foundation
   it will generate affiliate codes that are valid. Thanks to
   Kevin Old for reporting.
 
+* Use LENGTH_EXCEPTION_DEFAULT for Postgres userdb, transactions,
+  orderline tables in foundation.
+
+* Remove unused large gift certificate image.
+
+* Use the common placeholder for the email address in survey database.
+
 Debian
 ------
 
@@ -739,6 +752,8 @@ Shadow Database
 * Moved configuration code to the module itself.
 
 * Add name method.
+
+* Map autonumber method to Vend::Table::Common.
 
 Miscellaneous
 -------------
