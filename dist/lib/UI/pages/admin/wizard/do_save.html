@@ -531,7 +531,16 @@ zip                 => 'ZIP',
 
 );
 
-	for (keys %doit) {
+	my @relocate = qw/
+				images
+			/;
+	my %relocate;
+	@relocate{@relocate} = @relocate;
+
+	my @things = grep !$relocate{$_}, keys %doit;
+	push @things, @relocate;
+
+	for (@things) {
 		my $val;
 		next unless $val = $doit{$_};
 		if( ref($val) =~ /CODE/) {

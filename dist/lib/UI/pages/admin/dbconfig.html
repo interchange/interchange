@@ -79,6 +79,7 @@
 							FILTER_FROM   FILTER_FROM
 							FILTER_TO     FILTER_TO 
 							COLUMN_DEF    COLUMN_DEF
+							DEFAULT       DEFAULT
 							FIELD_ALIAS   FIELD_ALIAS
 							NUMERIC       NUMERIC
 							WRITE_CATALOG WRITE_CATALOG
@@ -88,6 +89,7 @@
 							NAME         NAME
 							BINARY       BINARY 
 							POSTCREATE   POSTCREATE 
+                            INDEX        INDEX
 					! );
 
 	%Misc_set = (
@@ -117,6 +119,9 @@
 							ALTER_ADD
 							ALTER_CHANGE
 							ALTER_DELETE
+							ALTER_INDEX
+							ALTER_RENAME
+							ALTER_BACKUP
 						);
 
 	LOCAL1: {
@@ -291,6 +296,30 @@
 		$base_sql = $pfile;
 	}
 
+	my $multi_index = {};
+	my $uniq_index  = {};
+	my $indexed     = {};
+
+	if($ref->{INDEX}) {
+		for(@{$ref->{INDEX}}) {
+			s/^\s+//;
+			s/\s+$//;
+			my $uniq = s/^unique[:\s]+//i;
+			s/:\w+//g;
+			if(/,/) {
+				my @ones = split /\s*,\s*/, $_;
+				for ( @ones ) {
+					$multi_index->{$_};
+				}
+			}
+			elsif ($uniq) {
+				$uniq_index->{$_} = 1;
+			}
+			else {
+				$indexed->{$_} = 1;
+			}
+		}
+	}
 
 	if(! $new) {
 
@@ -544,7 +573,10 @@ EOF
 		if(!$rname) {
 			$rname = "(add)<BR><INPUT SIZE=16 NAME=mv_dbconf_COLUMN_DEF_name>";
 		}
-		my $pkey = $ref->{KEY_INDEX} == $i ? 'SELECTED' : '';
+		my $pkey	= $ref->{KEY_INDEX} == $i		? ' SELECTED' : '';
+		my $idx		= $indexed->{$names[$i]}		? ' SELECTED' : '';
+		my $midx	= $multi_index->{$names[$i]}	? ' SELECTED' : '';
+		my $uidx	= $uniq_index->{$names[$i]}		? ' SELECTED' : '';
 		my $notnull;
 		my $fdefault;
 		my $tinfo = {};
@@ -601,9 +633,15 @@ EOF
 	<OPTION VALUE=""> NULL is OK
 	<OPTION VALUE="1" $notnull> NOT NULL
 </SELECT></td>
-				<td colspan=2><small><SELECT NAME=mv_dbconf_COLUMN_DEF_key>
+				<td><small><SELECT NAME=mv_dbconf_COLUMN_DEF_key>
 	<OPTION VALUE=""> not primary key
-	<OPTION VALUE="1" $pkey> PRIMARY KEY
+	<OPTION VALUE="1"$pkey> PRIMARY KEY
+</SELECT></td>
+				<td><small><SELECT NAME=mv_dbconf_CREATE_INDEX>
+	<OPTION VALUE=""> no index
+	<OPTION VALUE="$names[$i]"$idx> index
+	<OPTION VALUE="UNIQUE:$names[$i]"$uidx> unique index
+	<OPTION VALUE=""$midx> multi-index
 </SELECT></td>
 			</tr>
 			</table>

@@ -100,6 +100,15 @@ sub {
 									}
 									),
 					},
+		config => { 
+						img => 'icon_config.gif',
+						url => $Tag->area(
+									{
+										href => '__UI_BASE__/dbconfig',
+										form => "mv_data_table=$tab",
+									}
+									),
+					},
 		edit => { 
 						img => 'layout.gif',
 						url => $Tag->area(
@@ -113,13 +122,19 @@ sub {
 	my $out = '';
 	if(! $dblist_done_one++) {
 		$out .= '<tr>';
+		#### Uncomment this "for" and comment out the one below to experiment
+		#### with dbconfig (which is not working yet)
+		#for('[L]edit[/L]', '[L]import[/L]', '[L]export[/L]', '[L]upload[/L]', '[L]download[/L]', '[L]config[/L]', '[L]Table name[/L] ([L]description[/L])') {  # Add "report"
 		for('[L]edit[/L]', '[L]import[/L]', '[L]export[/L]', '[L]upload[/L]', '[L]download[/L]', '[L]Table name[/L] ([L]description[/L])') {  # Add "report"
 			$out .= qq{<td bgcolor="__UI_C_TITLEBARBG__" align=center><font size="-1" color="__UI_C_TITLEBARTXT__">$_</td>};
 		}
 		$out .= "</tr>";
 	}
 	$out .= '<tr>';
-	for(qw/edit import export upload download /) {  # Add "report"
+	#### Uncomment this "for" and comment out the one below to experiment
+	#### with dbconfig (which is not working yet)
+	#for(qw/edit import export upload download config/) {  # Add "report"
+	for(qw/edit import export upload download/) {  # Add "report"
 		my $line = $ref->{$_};
 		$out .= <<EOF;
 <td ALIGN=center><A HREF="$line->{url}"><img src="$line->{img}" border=0 alt="$_ $tab" title="$_ $tab" align=top></A></td>
