@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.89 2003-01-02 21:35:07 racke Exp $
+# $Id: Config.pm,v 2.90 2003-01-02 22:47:38 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -46,7 +46,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.89 $, 10);
+$VERSION = substr(q$Revision: 2.90 $, 10);
 
 my %CDname;
 
@@ -519,16 +519,22 @@ sub get_parse_routine {
 	my $parse = shift
 		or return undef;
 	my $routine;
+	my $rname = $parse;
 	if(ref $parse eq 'CODE') {
 		$routine = $parse;
 	}
-	else {
+	elsif( $parse =~ /^\w+$/) {
 		no strict 'refs';
 		$routine = \&{'parse_' . $parse};
+		$rname = "parse_$rname";
+	}
+	else {
+		no strict 'refs';
+		$routine = \&{"$parse"};
 	}
 
 	if(ref($routine) ne 'CODE') {
-		config_error('Unknown parse routine %s', "parse_$parse");
+		config_error('Unknown parse routine %s', $rname);
 	}
 
 	return $routine;
@@ -555,7 +561,6 @@ sub set_directive {
 	return [$dir, $value] if defined $dir;
 	return undef;
 }
-
 
 sub get_catalog_default {
 	my ($directive) = @_;
@@ -1882,7 +1887,9 @@ sub parse_directive {
 
 	return '' unless $val;
 	my($dir, $parser, $default) = split /\s+/, $val, 3 ;
-	$parser = undef unless defined &{"parse_$parser"};
+	if(! defined &{"parse_$parser"} and ! defined &{"$parser"}) {
+		$parser = undef;
+	}
 	$default = '' if ! $default or $default eq 'undef';
 	$Global::AddDirective = [] unless $Global::AddDirective;
 	push @$Global::AddDirective, [ $dir, $parser, $default ];
