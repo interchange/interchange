@@ -1,3 +1,7 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: rand.tag,v 1.2 2004-10-14 20:07:36 docelic Exp $
+
 UserTag rand Order file
 UserTag rand posNumber 1
 UserTag rand addAttr
@@ -12,3 +16,4 @@ sub {
 	return $pieces[int(rand(scalar @pieces))] ;
 }
 EOR
+

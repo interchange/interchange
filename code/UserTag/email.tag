@@ -1,3 +1,7 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: email.tag,v 1.4 2004-10-14 20:07:36 docelic Exp $
+
 UserTag email Order to subject reply from extra
 UserTag email hasEndTag
 UserTag email addAttr
@@ -37,3 +41,4 @@ sub {
 	return $opt->{hide} ? '' : $ok;
 }
 EOR
+
