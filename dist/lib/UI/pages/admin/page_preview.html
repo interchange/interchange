@@ -1,5 +1,18 @@
 @_UI_STD_INIT_@
-[if-mm !advanced page][set ui_error]Need permission for page edit.[/set][bounce page="__UI_BASE__/error"][/if-mm][perl]
+[pragma strip_white]
+[if-mm !advanced page]
+	[set ui_error]Need permission for page edit.[/set]
+	[bounce page="__UI_BASE__/error"]
+[/if-mm]
+[perl]
+	if($Config->{ImageDirOriginal}) {
+		$Config->{ImageDir} = $Config->{ImageDirOriginal};
+		$Config->{ImageDirSecure} = $Config->{ImageDirSecureOriginal};
+	}
+	if ($CGI->{ui_template_version}) {
+		$CGI->{ui_page_preview} = 1;
+		return;
+	}
 	my @filters = grep /^ui_filter:/, keys %$CGI;
 	foreach my $key (@filters) {
 		my $val = delete $CGI->{$key};
@@ -39,7 +52,11 @@
 			push @out, $one;
 		}
 	}
-	$Tag->write_relative_file("tmp/$Session->{id}.preview", (join "\n", @out));
+	$Scratch->{ui_output_page} = "tmp/$Session->{id}.preview";
+	$Tag->write_relative_file($Scratch->{ui_output_page}, (join "\n", @out));
 	return;
 [/perl]
-[include file="tmp/[data session id].preview"]
+[if cgi ui_page_preview]
+[include include/page_save]
+[/if]
+[include file="[scratch ui_output_page]"]
