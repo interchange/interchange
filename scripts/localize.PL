@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange localizer
 #
-# $Id: localize.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
+# $Id: localize.PL,v 2.0.2.1 2001-08-30 13:56:05 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -338,6 +338,9 @@ print STDERR ".";
         while ($data =~ m:\[loc\](\s*[^\[].*?[^\]]\s*)\[/loc\]:gsi) {
 					write_structure(undef, $1);
 		}
+        while ($data =~ m:\[msg(\s+arg\.\d+=".*?")*\s*\](\s*[^\[].*?[^\]]\s*)\[/msg\]:gsi) {
+					write_structure(undef, $2);
+		}
 	}
 
 	if($opt_c || $opt_o) {
@@ -399,7 +402,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-# $Id: localize.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
+# $Id: localize.PL,v 2.0.2.1 2001-08-30 13:56:05 racke Exp $
 
 =head1 SYNOPSIS
 
