@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.26 2001-03-14 22:00:59 heins Exp $
+# $Id: Config.pm,v 1.25.2.27 2001-03-14 23:20:37 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -82,7 +82,6 @@ my $OldDirectives = q{
 	SpecialFile
 	SubArgs
 	TcpPort
-	TolerateGet
 	TransparentItem
 	Tracking
 };
@@ -99,7 +98,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.26 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.27 $, 10);
 
 my %CDname;
 
