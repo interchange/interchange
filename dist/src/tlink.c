@@ -2,7 +2,7 @@
  * tlink.c: runs as a CGI program and passes request to Interchange
  *          server via TCP/IP
  *
- * $Id: tlink.c,v 1.2.2.1.2.3 2001-06-29 04:20:32 jon Exp $
+ * $Id: tlink.c,v 1.2.2.1.2.4 2001-07-16 17:09:27 heins Exp $
  *
  * Copyright (C) 1995 by Andrew M. Wilcox <awilcox@world.std.com>
  *
@@ -174,13 +174,14 @@ static void open_socket()
   char* lpstring;
   int lport;
   unsigned int p; /* port */
+  char *machine = LINK_HOST;  //static and global string;
   uid_t euid;
   gid_t egid;
 
 
   lhost = getenv("MINIVEND_HOST");
   if(lhost == NULL) {
-  	lhost = LINK_HOST;
+  	lhost = machine;
   }
 
   lpstring = getenv("MINIVEND_PORT");
