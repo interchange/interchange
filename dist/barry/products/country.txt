@@ -8,6 +8,7 @@ AL	AL	air_E surf_E	Albania
 AM	AM	air_F surf_F	Armenia
 AN	AN	air_C surf_C	Netherlands Antilles
 AO	AO	air_F surf_F	Angola
+AP	AP	air_E surf_E	Azores
 AR	AR	air_F surf_F	Argentina
 AT	AT	air_D surf_D	Austria
 AU	AU	air_F surf_F	Australia
@@ -34,6 +35,7 @@ CA	CA	air_A surf_A	Canada
 CF	CF	air_F surf_F	Central African Republic
 CG	CG	air_F surf_F	Congo
 CH	CH	air_D surf_D	Switzerland
+CI	CI	air_F surf_F	Cote d` Ivoire (Ivory Coast)
 CL	CL	air_F surf_F	Chile
 CM	CM	air_F surf_F	Cameroon
 CN	CN	air_F surf_F	China
@@ -76,6 +78,7 @@ GW	GW	air_D surf_D	Guinea-Bissau
 GY	GY	air_D surf_D	Guyana
 HK	HK	air_E surf_E	Hong Kong
 HN	HN	air_D surf_D	Honduras
+HR	HR	air_E surf_E	Croatia
 HT	HT	air_C surf_C	Haiti
 HU	HU	air_E surf_E	Hungary
 ID	ID	air_F surf_F	Indonesia
@@ -96,6 +99,7 @@ KY	KY	air_C surf_C	Cayman Islands
 KZ	KZ	air_F surf_F	Kazakhstan
 LA	LA	air_F surf_F	Laos
 LB	LB	air_E surf_E	Lebanon
+LC	LC	air_C surf_C	St. Lucia
 LI	LI	air_D surf_D	Liechtenstein
 LK	LK	air_F surf_F	Sri Lanka
 LS	LS	air_F surf_F	Lesotho
@@ -103,9 +107,11 @@ LT	LT	air_F surf_F	Lithuania
 LU	LU	air_D surf_D	Luxembourg
 LY	LY	air_F surf_F	Libya
 MA	MA	air_E surf_E	Morocco
+ME	ME	air_D surf_D	Madeira Islands
 MG	MG	air_F surf_F	Madagascar
 MK	MK	air_E surf_E	Macedonia
 ML	ML	air_E surf_E	Mali
+MO	MO	air_E surf_E	Macao
 MQ	MQ	air_C surf_C	Martinique
 MR	MR	air_F surf_F	Mauritania
 MS	MS	air_C surf_C	Montserrat
@@ -124,9 +130,11 @@ NL	NL	air_E surf_E	Netherlands
 NO	NO	air_F surf_F	Norway
 NP	NP	air_F surf_F	Nepal
 NR	NR	air_E surf_E	Nauru
+NV	NV	air_C surf_C	St. Christopher and Nevis
 NZ	NZ	air_F surf_F	New Zealand
 OM	OM	air_F surf_F	Oman
 PA	PA	air_C surf_C	Panama
+PE	PE	air_F surf_F	Peru
 PG	PG	air_F surf_F	Papua New Guinea
 PH	PH	air_F surf_F	Philippines
 PK	PK	air_F surf_F	Pakistan
@@ -137,6 +145,7 @@ PY	PY	air_F surf_F	Paraguay
 RE	RE	air_F surf_F	Reunion
 RW	RW	air_F surf_F	Rwanda
 SA	SA	air_F surf_F	Saudi Arabia
+Sb	Sb	air_E surf_E	Solomon Islands
 SC	SC	air_F surf_F	Seychelles
 SD	SD	air_F surf_F	Sudan
 SE	SE	air_F surf_F	Sweden
@@ -149,8 +158,9 @@ SN	SN	air_F surf_F	Senegal
 SR	SR	air_D surf_D	Suriname
 ST	ST	air_F surf_F	Sao Tome and Principe
 SV	SV	air_D surf_D	El Salvador
+SY	SY	air_E surf_E	Syrian Arab Republic
 SZ	SZ	air_F surf_F	Swaziland
-Sb	Sb	air_E surf_E	Solomon Islands
+TA	TA	air_F surf_F	French Polynesia (Tahiti)
 TC	TC	air_C surf_C	Turks and Caicos Islands
 TD	TD	air_F surf_F	Chad
 TG	TG	air_F surf_F	Togo
@@ -167,29 +177,20 @@ UG	UG	air_F surf_F	Uganda
 UK	UK	air_E surf_E	United Kingdom
 US	US	upsg upsb upsr	United States
 UY	UY	air_D surf_D	Uruguay
+VC	VC	air_C surf_C	St. Vincent and the Grenadines
 VE	VE	air_D surf_D	Venezuela
+VG	VG	air_C surf_C	British Virgin Islands
+VN	VN	air_F surf_F	Vietnam
 VU	VU	air_D surf_D	Vanuatu
-XA	XA	air_E surf_E	Azores
+WF	WF	air_F surf_F	Wallis and Furuna Islands
+WS	WS	air_D surf_D	Western Samoa
 XB	XB	air_E surf_E	Bosnia-Herzegovina
-XC	XC	air_C surf_C	British Virgin Islands
 XD	XD	air_F surf_F	Burma
 XE	XE	air_F surf_F	Corsica
-XF	XF	air_F surf_F	Cote d` Ivoire (Ivory Coast)
-XG	XG	air_E surf_E	Croatia
-XI	XI	air_F surf_F	French Polynesia (Tahiti)
-XL	XL	air_E surf_E	Macao
-XM	XM	air_D surf_D	Madeira Islands
 XO	XO	air_D surf_D	Pitcairn Island
-XP	XP	air_C surf_C	St. Christopher and Nevis
-XQ	XQ	air_C surf_C	St. Lucia
-XR	XR	air_C surf_C	St. Vincent and the Grenadines
 XS	XS	air_E surf_E	Serbia-Montenegro
-XT	XT	air_E surf_E	Syrian Arab Republic
 XU	XU	air_F surf_F	Tristan da Cunha
 XV	XV	air_E surf_E	Vatican City
-XW	XW	air_F surf_F	Vietnam
-XX	XX	air_F surf_F	Wallis and Furuna Islands
-XY	XY	air_D surf_D	Western Samoa
 YE	YE	air_F surf_F	Yemen
 ZA	ZA	air_F surf_F	South Africa
 ZM	ZM	air_F surf_F	Zambia
