@@ -4,9 +4,14 @@
 @@UI_STD_HEAD@@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
-<PRE>
-[dump]
-</PRE>
+<XMP>
+[seti env][dump][seti]
+[calc reparse=0]
+	$Scratch->{env} =~ s/</&lt;/g;
+	$Scratch->{env} =~ s/\[/&#91;/g;
+	delete $Scratch->{env};
+[/calc]
+</XMP>
 <!-- ----- END REAL STUFF ----- -->
 
 @@UI_STD_FOOTER@@
