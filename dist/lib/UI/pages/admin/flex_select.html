@@ -128,22 +128,6 @@
 	return;
 [/perl]
 
-[comment]
-[calc]
-	### Why was I doing this?
-	my $out = '';
-	my $page;
-	delete $Scratch->{ui_location};
-	return unless $CGI->{ui_return_to};
-	($page, @env) = split /\0/, $CGI->{ui_return_to};
-	$Scratch->{ui_location} = $Tag->area({
-									href => $page,
-									form => join "\n", @env,
-								});
-	return;
-[/calc]
-[/comment]
-
 <!-- ui_location: [scratch ui_location] -->
 [if scratch ui_location]
 [bounce href=`delete $Scratch->{ui_location}`]
@@ -155,7 +139,7 @@
 @_UI_STD_HEAD_@
 [update values]
 <!-- ----- BEGIN REAL STUFF ----- -->
-<FORM ACTION="[area @@MV_PAGE@@]" METHOD=post>
+<FORM ACTION="[area @@MV_PAGE@@]" METHOD=GET>
 <table>
 <tr>
 <td>
@@ -173,6 +157,7 @@
 </td>
 <td>
 <input NAME=ui_text_qualification size=16> <INPUT TYPE=submit VALUE="Limit with search"> 
+ <INPUT TYPE=submit VALUE="Temporarily remove checked fields"> 
 </td>
 </tr>
 </table>
@@ -216,9 +201,9 @@
 		$Scratch->{keypos} = $CGI->{ui_flex_key};
 	}
 	else {
-		$Scratch->{keyname} = $ref->config('KEY');
 		$Scratch->{keypos} = $ref->config('KEY_INDEX');
 	}
+	$Scratch->{keyname} = $ref->config('KEY');
 
 	$Config->{NoSearch} = '';
 	$ui_text_qualification = $CGI->{ui_text_qualification};
@@ -277,56 +262,75 @@ EOF
 		if ! $CGI->{ui_sort_field};
 	$CGI->{ui_list_size} = $meta->{height}
 		if ! $CGI->{ui_list_size};
-	if(! ($CGI->{ui_show_fields} = $meta->{field}) ) {
-		$CGI->{ui_show_fields} = '*';
-		$CGI->{ui_description_fields} = join ",", $ref->columns();
+
+	if(! ($CGI->{ui_show_fields} ||= $meta->{field}) ) {
+		$CGI->{ui_show_fields} = 
+			$CGI->{ui_description_fields}
+				= join ",", $ref->columns();
 	}
 	else {
 		my $i = 0;
-		$CGI->{ui_show_fields} =~
-			s/(\w+)(?:\((.*?)\))?/ ($filter_show[$i++] = $2), $1/eg;
+		my $show = $CGI->{ui_show_fields};
+		$show =~ s/(\w+)(?:\((.*?)\))?/ ($filter_show[$i++] = $2), $1/eg;
 #Log("filter_show: " . $Tag->uneval( { ref => \@filter_show } ));
-		$CGI->{ui_show_fields} =~ s/[\0,\s]+/,/g;
-		$CGI->{ui_description_fields} = $CGI->{ui_show_fields};
+		$show =~ s/[\0,\s]+/,/g;
+		$CGI->{ui_description_fields} = $show;
 	}
-	@cols = split /[\s,\0]+/, $CGI->{ui_description_fields};
+
+	@cols = grep $ref->column_exists($_), 
+				split /,/, $CGI->{ui_description_fields};
+
+	my %limit_field;
+
+	$CGI->{ui_limit_fields} =~ s/[\0,\s]+/ /g;
+	$CGI->{ui_limit_fields} =~ s/^\s+//;
+	$CGI->{ui_limit_fields} =~ s/\s+$//;
+
+	my (@limit_field) = split " ", $CGI->{ui_limit_fields};
+
+Log("show_field: " . $Tag->uneval( { ref => \@cols } ));
+Log("cols ary:   " . $Tag->uneval( { ref => \@cols } ));
+	if(@limit_field) {
+Log("limit_fields ary: " . $Tag->uneval( { ref => \@limit_field } ));
+		@limit_field{@limit_field} = ();
+Log("limit_fields: " . $Tag->uneval( { ref => \%limit_field } ));
+		@cols = grep ! exists($limit_field{$_}), @cols;
+Log("cols ary:   " . $Tag->uneval( { ref => \@cols } ));
+	}
+
+	unshift(@cols, $Scratch->{keyname})
+		if $cols[0] ne $Scratch->{keyname};
+
 	for(@cols) {
 		$numeric{$_} = 1 if $ref->numeric($_);
 	}
 
+	$CGI->{ui_description_fields} = join ",", @cols;
+
+	$Scratch->{sparams} = <<EOF;
+
+	fi=$CGI->{mv_data_table}
+	st=db
+	$CGI->{ui_text_qualification}
+	su=1
+	md=1
+	ml=$CGI->{ui_list_size}
+	tf=$CGI->{ui_sort_field}
+	to=$CGI->{ui_sort_option}
+	rf=$CGI->{ui_description_fields}
+
+EOF
 	return $out_message;
 [/perl]
 
-<!-- tq: [cgi ui_text_qualification] -->
-
-[if cgi ui_show_fields]
-	[tmp sparams]
-			fi=[cgi mv_data_table]
-			st=db
-			[cgi ui_text_qualification]
-			su=1
-			md=1
-			ml=[cgi ui_list_size]
-			tf=[cgi ui_sort_field]
-			to=[cgi ui_sort_option]
-			rf=[cgi ui_show_fields]
-	[/tmp]
-[else]
-	[tmp sparams]
-		fi=[cgi mv_data_table]
-		st=db
-		[cgi ui_text_qualification]
-		md=1
-		tf=[scratch keypos]
-		rf=[scratch keypos]
-	[/tmp]
-[/else]
-[/if]
+<!-- tq: [scratch sparams] -->
+ [scratch sparams]
 
 <INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
 <INPUT TYPE=hidden NAME=ui_page_title    VALUE="[cgi ui_page_title]">
 <INPUT TYPE=hidden NAME=ui_page_title    VALUE="[cgi ui_page_banner]">
 <INPUT TYPE=hidden NAME=ui_meta_specific VALUE="[cgi ui_meta_specific]">
+<INPUT TYPE=hidden NAME=ui_limit_fields VALUE="[cgi ui_limit_fields]">
 <INPUT TYPE=hidden NAME=ui_return_to     VALUE="@@MV_PAGE@@">
 <INPUT TYPE=hidden NAME=ui_return_to     VALUE="mv_data_table=[cgi mv_data_table]">
 <INPUT TYPE=hidden NAME=ui_return_to     VALUE="ui_sequence_edit=1">
@@ -346,8 +350,10 @@ EOF
 					form='
 						mv_data_table=[cgi mv_data_table]
 						mv_arg=[loop-code]
+						ui_limit_fields=[cgi ui_limit_fields]
+						ui_show_fields=[cgi ui_show_fields]
 					'
-				]"><IMG ALT="select by [loop-code]" SRC="@_UI_IMG_@admin/layout.gif" BORDER=0></TH>
+				]"><IMG ALT="select by [loop-code]" SRC="@_UI_IMG_@admin/layout.gif" BORDER=0></A>&nbsp;<INPUT TYPE=checkbox NAME=ui_limit_fields VALUE="[loop-code]"></TH>
 [/loop]
 </tr>
 <TR BGCOLOR="__UI_C_TITLEBARBG__">
@@ -367,12 +373,16 @@ EOF
 							ui_text_qualification=$ui_text_qualification
 							mv_data_table=$CGI->{mv_data_table}
 							ui_sort_field=$f
+							ui_show_fields=$CGI->{ui_show_fields}
+							ui_limit_fields=$CGI->{ui_limit_fields}
 							ui_sort_option=$o
 						);
 					`
 				]">[loop-code]</TH>
 [/loop]
 </tr>
+</FORM>
+<FORM ACTION="[area @@MV_PAGE@@]" METHOD=POST>
 [search-region more=1 arg="[scratch sparams]"]
 [search-list]
 <TR [item-alternate 2]BGCOLOR="__UI_T_ROW_EVEN__"[else]BGCOLOR="__UI_T_ROW_ODD__"[/else][/item-alternate]>
@@ -384,6 +394,7 @@ EOF
 									ui_meta_specific=[cgi ui_meta_specific]
 									ui_return_to=@@MV_PAGE@@
 									ui_return_to=mv_data_table=[cgi mv_data_table]
+									ui_return_to=ui_limit_fields=[cgi ui_limit_fields]
 									item_id=[item-code]
 						|][item-code]</A></TD>
 [item-sub show_line]
