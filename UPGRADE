@@ -9,7 +9,13 @@ be compatible with 4.7.
 Full information on upgrades is available in the document icupgrade(8)
 (in the distribution in pod/icupgrade.pod).
 
-To upgrade from 4.8, it is recommended that you:
+BACKUP EVERYTHING BEFORE YOU START!
+
+
+TO UPGRADE FROM 4.8.x
+---------------------
+
+It is recommended that you:
 
     1. Make a tar backup of your Interchange software directory, i.e.
        
@@ -39,9 +45,13 @@ To upgrade from 4.8, it is recommended that you:
 
     5. Restart Interchange.
 
+    6. See the "problems with UserTags" section, below.
+
 That should be it. Test the catalog to make sure it works. 
 
+
 IF YOU UPGRADED FROM 4.6.x
+--------------------------
 
 If you have this line in interchange.cfg:
 
@@ -58,6 +68,8 @@ If you have this line in interchange.cfg:
        them explicitly like:
 
           include usertag/my_tag
+
+       See the "problems with UserTags" section, below.
   
 If you use CyberCash, you should replace these lines in catalog.cfg
         
@@ -84,4 +96,36 @@ There is one security change that can break constructs that ran under 4.6.x.
         unknowingly, it could cause anomalous or insecure behavior. 
         (There were no known exploits in the demo, but they could
         easily be constructed.
+
+
+PROBLEMS WITH USERTAGS
+----------------------
+
+You may see the following error/warning messages when you (re)start
+Interchange:
+
+1. Duplicate usertag xxxx found.
+
+    This message is most likely to mean that you have a global "usertags"
+    directory included from your interchange.cfg file.  Interchange 4.9 has a
+    new location (code/UserTag) for global UserTags.  Your old globals may
+    "clash" with the new ones.  Delete the old usertags that are named in the
+    error messages.  As always, it is recommended that you back up everything
+    before you start.
+
+    This message will also be raised if Interchange notices two local UserTags
+    with the same name.  If this is detected then rename or delete one of the
+    two UserTags.
+
+2. Local usertag xxxx overrides global definition.
+
+    This message is most likely to refer to your local history_scan UserTag.
+    If you have this tag definition in your catalog.cfg file then you may
+    safely delete it;  Interchange 4.9 includes this as a global UserTag.
+
+    This message will also be raised if you have created a local UserTag
+    and have given it a name identical to one of the global tags (SystemTag,
+    UserTags, UI_Tag etc.)  The message is only a warning as your local UserTag
+    will override the global one.  If you didn't mean to override the global
+    tag of the same name then simply rename your tag and restart Interchange.
 
