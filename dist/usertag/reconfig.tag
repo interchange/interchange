@@ -15,7 +15,7 @@ sub {
 	}
 #::logGlobal("Passed name check on reconfig $name");
 
-	logData("$Global::ConfDir/reconfig", $Global::Catalog{$name}->{'script'});
+	logData("$Global::RunDir/reconfig", $Global::Catalog{$name}->{'script'});
 	return 1;
 }
 EOR
