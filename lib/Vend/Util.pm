@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.57 2003-05-05 21:28:23 racke Exp $
+# $Id: Util.pm,v 2.58 2003-05-19 22:18:38 racke Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -87,7 +87,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.57 $, 10);
+$VERSION = substr(q$Revision: 2.58 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1229,18 +1229,6 @@ sub vendUrl {
 	push @parms, "$::VN->{mv_arg}=" . hexify($arguments) if defined $arguments;
 	push @parms, "$::VN->{mv_pc}=$ct"                 	 if $ct;
 	push @parms, "$::VN->{mv_cat}=$Vend::Cat"            if $Vend::VirtualCat;
-
-	if($Vend::AccumulatingLinks) {
-		my $key = $path;
-		$key =~ s/\.html?$//;
-		my $value = '';
-		if($arguments) {
-			$value = [ $key, $arguments ];
-			$key .= "/$arguments";
-		}
-		push(@Vend::Links, [$key, $value]) unless $Vend::LinkFound{$key}++;
-
-	}
 
     $r .= '?' . join($Global::UrlJoiner, @parms) if @parms;
 	if($opt->{anchor}) {
