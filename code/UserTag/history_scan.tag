@@ -14,7 +14,6 @@ sub {
 	$exclude = qr/$exclude/ if $exclude;
 	for (my $i = $#$ref - abs($opt->{count}); $i >= 0; $i--) {
 		next if $ref->[$i][0] eq 'expired';
-		#Log("checking $ref->[$i][0] for $exclude");
 		if ($exclude and $ref->[$i][0] =~ $exclude) {
 			next;
 		}
@@ -35,6 +34,7 @@ sub {
 		$form .= "\n$_=";
 		$form .= join("\n$_=", split /\0/, $cgi->{$_});
 	}
+	$href = Vend::Util::escape_chars_url($href);
 	return $Tag->area( { href => $href, form => $form} );
 }
 EOR
