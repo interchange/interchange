@@ -38,7 +38,7 @@ width="700"> <font size="3"><b><font face="Verdana, Arial, Helvetica, sans-serif
 [set ui_error][/set]
 [/if]
 
-<FORM ACTION="[process]" METHOD=POST>
+<FORM ACTION="[process]" METHOD=POST name=login>
 <INPUT TYPE=hidden NAME=mv_click VALUE=MMLogin>
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="[either][cgi destination][or]__UI_BASE__/index[/either]">
 <INPUT TYPE=hidden NAME=destination VALUE="[cgi destination]">
@@ -105,6 +105,11 @@ EOF
 </td>
 <td> 
 <INPUT NAME=mv_username VALUE="" SIZE=15>
+<script language="JavaScript">
+<!--
+	document.login.mv_username.focus();
+-->
+</script>
 </td>
 </tr>
 <tr> 
