@@ -63,49 +63,46 @@
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
-[set Create new method]
-mv_nextpage=__UI_BASE__/ship_edit
-ui_shipmode=new
-ui_header=Create method
-[/set]
 
 <tr>
 <td colspan=2 bgcolor="__UI_C_INTBLOCK__" width=__UI_LEFT_WIDTH__>
-<input type=submit name="mv_click" value="Create new method">
+[button text="Create new method"]
+mv_nextpage=__UI_BASE__/ship_edit
+ui_shipmode=new
+ui_header=Create method
+[/button]
 </td>
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
 <td bgcolor="__UI_C_INTBLOCK__" width=__UI_LEFT_WIDTH__>
 
-[set Edit method]
+[button text="Edit method"]
 mv_nextpage=__UI_BASE__/ship_edit
 ui_header=Edit <I>[cgi ui_shipmode]</I> method
-[/set]
+[/button]
 
-<input type=submit name="mv_click" value="Edit method">
 <br>
-[set Edit data table]
+[button text="Edit data table"]
 mv_nextpage=__UI_BASE__/ship_data
 ui_header=Edit <I>[cgi ui_shipmode]</I> data table
-[/set]
-<input type=submit name="mv_click" value="Edit data table">
+[/button]
 <br>
 
-[set Delete method]
+[button text="Delete method"
+ confirm='Are you sure you want to delete this method?'
+]
 mv_nextpage=@@MV_PAGE@@
 ui_ship_action=delete
-[/set]
+[/button]
 
-<input type=submit name="mv_click" value="Delete method"
- onClick="return confirm('Are you sure you want to delete this method?')">
 <p>
 
 </td>
@@ -131,7 +128,7 @@ ui_ship_action=delete
 </td></tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>
