@@ -25,7 +25,7 @@ sub {
 		$tm_extra .= " $opt->{meta_extra}";
 	}
 	if($opt->{textarea_extra}) {
-		$tm_extra .= " $opt->{meta_extra}";
+		$tm_extra .= " $opt->{textarea_extra}";
 	}
 
 	$ta_extra ||= $tf_extra;
