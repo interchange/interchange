@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.47 2002-01-31 17:32:31 mheins Exp $
+# $Id: Interpolate.pm,v 2.48 2002-01-31 20:26:18 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.47 $, 10);
+$VERSION = substr(q$Revision: 2.48 $, 10);
 
 @EXPORT = qw (
 
@@ -2202,6 +2202,14 @@ sub tag_accessories {
 		$extra =~ s/\s+$//;
 		@{$opt}{qw/attribute type column table name outboard passed/} =
 			split /\s*,\s*/, $extra;
+		if($code) {
+			$opt->{type} ||= 'select';
+			if(! $opt->{table}) {
+				my $col =  $opt->{column} || $opt->{attribute};
+				$opt->{passed} ||= product_field($col, $code)
+					if $col;
+			}
+		}
 	}
 	($attribute, $type, $field, $db, $name, $outboard, $passed) = 
 		@{$opt}{qw/attribute type column table name outboard passed/};
