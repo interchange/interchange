@@ -1,4 +1,3 @@
-@_UI_STD_INIT_@
 [if !cgi mv_data_table]
 [or cgi ui_scrub_table]
 [calc]
@@ -50,43 +49,6 @@
 	`][if-mm tables [loop-code]=d][loop-code] [flag type=write table="[loop-code]"][/if-mm][/loop][/tmp]
 [/else]
 [/if-mm]
-[/if]
-
-[perl tables="[cgi mv_data_table] [scratch extra_tables] __UI_META_TABLE__"]
-	delete $Scratch->{ui_location};
-	my $dest = $CGI->{ui_sequence_destination} || '__UI_BASE__/item_edit';
-	if($CGI->{ui_sequence_edit}) {
-		my $doit;
-		if($CGI->{item_id_left} =~ s/^(.*?),//) {
-			$CGI->{item_id} = $1;
-			$doit = 1;
-		}
-		elsif ($CGI->{item_id_left}) {
-			$CGI->{item_id} = delete $CGI->{item_id_left};
-			delete $CGI->{ui_sequence_edit};
-			$doit = 1;
-		}
-		else {
-			delete $CGI->{item_id};
-			delete $CGI->{ui_sequence_edit};
-		}
-		return unless $doit;
-		$Scratch->{ui_location}
-				= $Tag->area( {
-						href => $dest,
-						form => qq{
-							item_id=$CGI->{item_id}
-							item_id_left=$CGI->{item_id_left}
-							ui_sequence_edit=$CGI->{ui_sequence_edit}
-						},
-					});
-		return;
-	}
-
-[/perl]
-
-[if scratch ui_location]
-	[bounce href=`delete $Scratch->{ui_location}`]
 [/if]
 
 <!-- ----- BEGIN REAL STUFF ----- -->
@@ -345,7 +307,6 @@ EOF
 [/calc]
 
 <FORM ACTION="[area __UI_BASE__/item_edit]" METHOD=POST>
-<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 <INPUT TYPE=hidden NAME=mv_action VALUE=back>
 <table width="100%" border=0 cellpadding=0 cellspacing=1 class=rseparator>
 
@@ -583,4 +544,4 @@ mv_nextpage=@@MV_PAGE@@
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ Revision: $Id: item.html,v 2.21 2003-11-17 23:44:59 edl Exp $ -->
+<!-- page: @@MV_PAGE@@ Revision: $Id: item.html,v 2.22 2003-12-06 18:25:24 mheins Exp $ -->

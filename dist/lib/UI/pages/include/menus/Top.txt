@@ -6,6 +6,6 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 005	Top	x005		`$Scratch->{ui_class} eq 'Design'`		layout	admin/menu_editor		Design		0	Organize site navigation, manage site layout		B6.gif	B6_b.gif	B6_b.gif	icon_design.gif	
 006	Top	x006		`$Scratch->{ui_class} eq 'Merchandising'`		item	admin/merchandising		Merchandising		0	Set up quantity pricing, up-sell, promotions, and affiliates		B7.gif	B7_b.gif	B7_b.gif	icon_merch.gif	
 007		x007		`$Scratch->{ui_class} eq 'Misc'`		misc	admin/genfunction		Miscellaneous		0	Legacy and other functions					icon_regen.gif	
-008	Top	x008		`$Scratch->{ui_class} eq 'Tables'`		gentable	admin/gentable		Tables		0	Table Manager: Edit, view, import, export, upload, and download your tables.		B8.gif	B8_b.gif	B8_b.gif	icon_stats.gif	
-009	Top	x009		`$Scratch->{ui_class} eq 'Admin'`		admin	admin/preferences		Administration		0	Administrator and developer-oriented tools		B9.gif	B9_b.gif	B9_b.gif	icon_config.gif	
-010	Top	x010		`$Scratch->{ui_class} eq 'Accounting'`			admin/accounting/index		Accounting		1	SQL-Ledger accounting interface		BA.gif	BA_b.gif	BA_b.gif	icon_account.png	
+008	Top	x008		`$Scratch->{ui_class} eq 'Tables'`		gentable	admin/gentable		Tables		0	Table Manager: Edit, view, import, export, upload, and download your tables.		B8.gif	B8_b.gif	B8_b.gif	icon_tab.png	
+009	Top	x009		`$Scratch->{ui_class} eq 'Reports'`		orderstats	admin/orderstats		Reports		1	View statistics on orders and site traffic, create custom reports		B8.gif	B8_b.gif	B8_b.gif	icon_stats.gif	
+010	Top	x010		`$Scratch->{ui_class} eq 'Admin'`		admin	admin/preferences		Administration		0	Administrator and developer-oriented tools		B9.gif	B9_b.gif	B9_b.gif	icon_config.gif	
