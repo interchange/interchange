@@ -10,8 +10,10 @@ matches:
 
 [/comment]
 
+<tr><td align="center">
+  <table>
+
  <tr valign=top> 
-   <td>&nbsp;</td>
    <td width="119"> 
    <br>     
 
@@ -31,7 +33,7 @@ matches:
 			<INPUT TYPE=hidden NAME=mv_searchspec VALUE=1>
 			<INPUT MAXLENGTH=30 NAME=mv_searchspec type=text size=10>
 		 </td>
-		 <td width="119" valign=middle><input type=image alt="Search Go" border="0" src="__THEME_IMG_DIR__go.gif"></td>
+		 <td width="119" valign=middle>&nbsp;&nbsp;<input type=image alt="Search Go" border="0" src="__THEME_IMG_DIR__go.gif"></td>
 	   </tr>
 	 </table>
 	</form>
@@ -39,3 +41,6 @@ matches:
  </tr>
 
 <!-- END COMPONENT [control component search_box_small] -->
+
+  </table>
+</td></tr>
