@@ -1,5 +1,5 @@
 [calc] $CGI->{no_dbmenu} = 1; $CGI->{access_menu} = 1; return [/calc]
-[set page_title]Administrator Accounts[/set]
+[set page_title]Administration Accounts[/set]
 [set ui_class]Admin[/set]
 [set page_perm]access=l[/set]
 [set help_name]access.main[/set]
@@ -28,7 +28,7 @@
 <tr>
 <td colspan=2 bgcolor="__UI_C_INTBLOCK__">
 
-[button text="Create new administrator"]
+[button text="Create new user"]
 mv_nextpage=__UI_BASE__/user_edit
 user_id=NEW
 ui_hide_key=0
@@ -46,7 +46,7 @@ ui_hide_key=0
 <td bgcolor="__UI_C_INTBLOCK__" width=__UI_LEFT_WIDTH__>
 
 [if-mm advanced access=e]
-	[button name=mv_junk value="Edit administrator"][/button]<p>
+	[button name=mv_junk value="Edit user"][/button]<p>
 [/if-mm]
 
 [if-mm advanced perm=v]
@@ -64,7 +64,7 @@ ui_hide_key=0
 <p>[/if-mm]
 
 [if-mm advanced access=d]
-[button text="Delete administrator"
+[button text="Delete user"
 		form=accessform
 		confirm="Are you sure you want to delete this administrator?"
 		]
@@ -105,7 +105,7 @@ mv_nextpage=@@MV_PAGE@@
 	"]
   <option value="[loop-code]">[loop-code] -- [loop-data access name][if-loop-data access super]*[/if-loop-data]
 [/loop]
-</select>&nbsp;<B>* superuser</B>
+</select>&nbsp;<B>* Site Administrator</B>
 </td>
 </tr>
 
@@ -116,11 +116,6 @@ mv_nextpage=@@MV_PAGE@@
 </table>
 
 <p>
-
-[button text="Back"]
-mv_todo=back
-mv_nextpage=index
-[/button]
 
 </form>
 

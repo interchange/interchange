@@ -1,15 +1,15 @@
-[set page_title]Shipping Configuration[/set]
+[set page_title]Shipping Preferences[/set] 
 [set ui_checklist]1[/set]
 @_UI_STD_HEAD_@
 
 <table><tr><td width=500>
-You can select which rate will be offered first to your customers
-both international and domestic.
+Select which rate will be offered to your customers first, for both international and domestic shipping.
 <P>
-If you did select Federal Express or UPS modes, and want to <i>add</i> a flat
-rate charge to the list of options you offer, select it.
-</td></tr></table>
 
+If you selected FedEx or UPS and you also want to add a flat
+rate charge to the options you offer, please select it.
+</td></tr></table>
+<p>
 [calc]
 	delete $Scratch->{no_ups_fed};
 	$Scratch->{ups_modes} =~ s/^\s+//;
@@ -75,7 +75,7 @@ rate charge to the list of options you offer, select it.
 	passed.defaultshipd=`$Scratch->{all_ship_modes}`
 
 	check.defaultshipi=mandatory
-	label.defaultshipi="Default Int'l ship mode"
+	label.defaultshipi="Default int'l ship mode"
 	help.defaultshipi="You must select something, even if it is Free Shipping"
 	widget.defaultshipi=select
 	passed.defaultshipi=`$Scratch->{all_ship_modes}`

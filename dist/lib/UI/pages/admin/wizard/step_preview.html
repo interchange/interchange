@@ -1,7 +1,26 @@
-[set page_title]Preview Your Site[/set]
+[set page_title]Preview[/set]
 [set ui_checklist]1[/set]
 [set help_name]wizard.preview[/set]
 @_UI_STD_HEAD_@
+
+<p>
+
+To preview your site, click <u>Finish</u>.  The following will occur:
+<UL>
+<LI>Your settings will be placed in the catalog.
+<LI>Your products will be put in the database.
+<LI>Your content pages will be created.
+<LI>The secure web server will be enabled (if selected, optional until launch.)
+<LI>The sample customers and order data will be put in the database (if selected.)
+</UL>
+
+When you are satisfied with your catalog, click <u>Launch</u> to begin taking orders.
+
+<p>
+
+In order to launch, you must have a secure (SSL) connection and a payment gateway enabled.
+
+<p>
 
 [perl tables="transactions products"]
 	my $pdb = $Db{products};
@@ -81,27 +100,5 @@
 	widget.enablesecure=select
 	passed.enablesecure="0=No, 1=Yes"
 ]
-
-<table><tr><td width=500>
-<P>
-When you press <B>Finish</B>, the following will occur:
-</P>
-<UL>
-<LI>Your settings will be placed in the catalog
-<LI>Your products will be put in the database
-<LI>Your content pages will be created
-<LI>The secure web server will be enabled (optional until launch)
-<LI>Sample customers and order data will be put in the database (optional)
-</UL>
-
-<P>
-At that point you may begin testing by following the Preview link, and
-changing the configuration with Interchange's administration tool.
-</P>
-<P>
-After you are satisfied with your catalog, you can launch and begin taking
-orders.
-</P>
-</td></tr></table>
 
 @_UI_STD_FOOTER_@
