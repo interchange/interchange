@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+# $Id: ECML.pm,v 1.2.6.1 2000-12-13 15:42:24 zarko Exp $
 
 =head1 NAME
 
