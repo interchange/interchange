@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18.2.13 2001-03-21 17:08:12 jon Exp $
+# $Id: Order.pm,v 1.18.2.14 2001-03-31 14:09:26 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.13 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.14 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1596,6 +1596,7 @@ sub route_order {
 
 #::logDebug($Data::Dumper::Indent = 3 and "Route $c:\n" . Data::Dumper::Dumper($route) .	"values:\n" .  Data::Dumper::Dumper($::Values));
 		$::Values = { %$value_save };
+		$::Values->{mv_current_route} = $c;
 		my $pre_encrypted;
 		my $credit_card_info;
 
