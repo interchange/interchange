@@ -1,10 +1,12 @@
 UserTag subtotal            Order        name noformat
 UserTag subtotal            attrAlias    cart name
+UserTag subtotal			attrAlias	 space discount_space
 UserTag subtotal            addAttr
 UserTag subtotal            PosNumber    2
 UserTag subtotal            Routine <<EOR
 sub {
 	my($cart, $noformat, $opt) = @_;
-	return currency( subtotal($cart), $noformat, undef, $opt);
+	return currency( subtotal($cart, $opt->{discount_space}),
+		$noformat, undef, $opt);
 }
 EOR

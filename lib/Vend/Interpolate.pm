@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.228 2004-12-29 20:06:46 ton Exp $
+# $Id: Interpolate.pm,v 2.229 2005-01-25 01:02:59 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.228 $, 10);
+$VERSION = substr(q$Revision: 2.229 $, 10);
 
 @EXPORT = qw (
 
@@ -120,6 +120,7 @@ BEGIN {
 							$item
 							$CGI_array
 							$CGI
+							$Discounts
 							$Document
 							%Db
 							$DbSearch
@@ -1034,7 +1035,7 @@ sub conditional {
 				if defined $comp;
 	}
 	elsif($base eq 'discount') {
-		$op =	qq%$Vend::Session->{discount}->{$term}%;
+		$op =	qq%$::Discounts->{$term}%;
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
 				if defined $comp;
@@ -2647,6 +2648,23 @@ sub tag_area {
 sub tag_cart {
 	$Vend::CurrentCart = shift;
 	return '';
+}
+
+# Sets the discount namespace.
+sub switch_discount_space {
+	my $dspace = shift || 'main';
+	my $oldspace;
+#::logDebug("switch_discount_space: called for space '$dspace'; current space is $Vend::DiscountSpace.");
+	unless ($Vend::Session->{discount} and $Vend::Session->{discount_space}) {
+		$::Discounts = $Vend::Session->{discount_space}{main} = $Vend::Session->{discount} ||= {};
+		$Vend::DiscountSpace = 'main';
+#::logDebug('switch_discount_space: initialized discount space hash.');
+	}
+	if ($dspace ne ($oldspace = $Vend::DiscountSpace)) {
+		$::Discounts = $Vend::Session->{discount_space}{$Vend::DiscountSpace = $dspace};
+#::logDebug("switch_discount_space: changed discount space from '$oldspace' to $Vend::DiscountSpace");
+	}
+	return $oldspace;
 }
 
 sub tag_calc {
@@ -4864,10 +4882,13 @@ sub discount_price {
 
 	($code, $extra) = ($item->{code}, $item->{mv_discount});
 
-	$Vend::Session->{discount} = {}
-		if $extra and ! $Vend::Session->{discount};
+	if ($extra and ! $::Discounts) {
+		my $dspace = $Vend::DiscountSpace ||= 'main';
+		$Vend::Session->{discount_space}{main} = $Vend::Session->{discount} ||= {};
+		$::Discounts = $Vend::Session->{discount_space}{$dspace} ||= {};
+	}
 
-	return $price unless $Vend::Session->{discount};
+	return $price unless $::Discounts;
 
 	$quantity = $item->{quantity};
 
@@ -4882,7 +4903,7 @@ sub discount_price {
 	my ($discount, $return);
 
 	for($code, 'ALL_ITEMS') {
-		next unless $discount = $Vend::Session->{discount}->{$_};
+		next unless $discount = $::Discounts->{$_};
 		$Vend::Interpolate::s = $return ||= $subtotal;
         $return = $ready_safe->reval($discount);
 		if($@) {
@@ -4910,11 +4931,11 @@ sub apply_discount {
 	my(@formulae);
 
 	# Check for individual item discount
-	push(@formulae, $Vend::Session->{discount}->{$item->{code}})
-		if defined $Vend::Session->{discount}->{$item->{code}};
+	push(@formulae, $::Discounts->{$item->{code}})
+		if defined $::Discounts->{$item->{code}};
 	# Check for all item discount
-	push(@formulae, $Vend::Session->{discount}->{ALL_ITEMS})
-		if defined $Vend::Session->{discount}->{ALL_ITEMS};
+	push(@formulae, $::Discounts->{ALL_ITEMS})
+		if defined $::Discounts->{ALL_ITEMS};
 	push(@formulae, $item->{mv_discount})
 		if defined $item->{mv_discount};
 
@@ -5124,17 +5145,21 @@ sub push_warning {
 
 
 sub taxable_amount {
-	my($cart) = @_;
+	my($cart, $dspace) = @_;
     my($taxable, $i, $code, $item, $tmp, $quantity);
 
-	return subtotal($cart || undef) unless $Vend::Cfg->{NonTaxableField};
+	return subtotal($cart || undef, $dspace || undef) unless $Vend::Cfg->{NonTaxableField};
 
-	my($save);
+	my($save, $oldspace);
 
     if ($cart) {
         $save = $Vend::Items;
         tag_cart($cart);
     }
+
+	if (defined $dspace and $dspace ne $Vend::DiscountSpace) {
+		$oldspace = switch_discount_space($dspace);
+	}
 
     $taxable = 0;
 
@@ -5143,7 +5168,7 @@ sub taxable_amount {
 		next if is_yes( $item->{mv_nontaxable} );
 		next if is_yes( item_field($item, $Vend::Cfg->{NonTaxableField}) );
 		$tmp = item_subtotal($item);
-		unless (defined $Vend::Session->{discount}) {
+		unless ($::Discounts) {
 			$taxable += $tmp;
 		}
 		else {
@@ -5151,11 +5176,11 @@ sub taxable_amount {
 		}
     }
 
-	if (defined $Vend::Session->{discount}->{ENTIRE_ORDER}) {
+	if (defined $::Discounts->{ENTIRE_ORDER}) {
 		$Vend::Interpolate::q = tag_nitems();
 		$Vend::Interpolate::s = $taxable;
 		my $cost = $Vend::Interpolate::ready_safe->reval(
-							 $Vend::Session->{discount}{ENTIRE_ORDER},
+							 $::Discounts->{ENTIRE_ORDER},
 						);
 		if($@) {
 			logError
@@ -5167,13 +5192,17 @@ sub taxable_amount {
 
 	$Vend::Items = $save if defined $save;
 
+	# Restore initial discount namespace if appropriate.
+	switch_discount_space($oldspace)
+		if $dspace and $oldspace ne $Vend::DiscountSpace;
+
 	return $taxable;
 }
 
 
 
 sub fly_tax {
-	my ($area) = @_;
+	my ($area, $opt) = @_;
 
 	if(my $country_check = $::Variable->{TAXCOUNTRY}) {
 		$country_check =~ /\b$::Values->{country}\b/
@@ -5206,12 +5235,26 @@ sub fly_tax {
 	}
 #::logDebug("flytax rate=$rate");
 	return 0 unless $rate;
+
+	my ($oldcart, $oldspace);
+	if ($opt->{cart}) {
+		$oldcart = $Vend::Items;
+		tag_cart($opt->{cart});
+	}
+	if ($opt->{discount_space}) {
+		$oldspace = switch_discount_space($opt->{discount_space});
+	}
+
 	my $amount = taxable_amount();
 #::logDebug("flytax before shipping amount=$amount");
 	$amount   += tag_shipping()
 		if $taxable_shipping =~ m{(^|[\s,])$area([\s,]|$)}i;
 	$amount   += tag_handling()
 		if $taxable_handling =~ m{(^|[\s,])$area([\s,]|$)}i;
+
+	$Vend::Items = $oldcart if defined $oldcart;
+	switch_discount_space($oldspace) if defined $oldspace;
+
 #::logDebug("flytax amount=$amount return=" . $amount*$rate);
 	return $amount * $rate;
 }
@@ -5361,7 +5404,7 @@ sub salestax {
 
 	$opt ||= {};
 
-	my($save);
+	my($save, $oldspace);
 	### If the user has assigned to salestax,
 	### we use their value come what may, no rounding
 	if($Vend::Session->{assigned}) {
@@ -5374,6 +5417,10 @@ sub salestax {
         $save = $Vend::Items;
         tag_cart($cart);
     }
+
+	if (defined $opt->{discount_space} and $opt->{discount_space} ne $Vend::DiscountSpace) {
+		$oldspace = switch_discount_space( $opt->{discount_space} );
+	}
 
 #::logDebug("salestax entered, cart=$cart");
 	my $tax_hash;
@@ -5396,6 +5443,7 @@ sub salestax {
 # if we have a cost from previous routines, return it
 	if(defined $cost) {
 		$Vend::Items = $save if $save;
+		switch_discount_space($oldspace) if $opt->{discount_space} and $oldspace ne $Vend::DiscountSpace;
 		return Vend::Util::round_to_frac_digits($cost);
 	}
 
@@ -5405,6 +5453,9 @@ sub salestax {
 
 #::logDebug("got to tax function: " . uneval($tax_hash));
 	my $amount = taxable_amount();
+	# Restore the original discount namespace if appropriate; no other routines need the discount info.
+	switch_discount_space($oldspace) if $opt->{discount_space} and $oldspace ne $Vend::DiscountSpace;
+
 	my($r, $code);
 	# Make it upper case for state and overseas postal
 	# codes, zips don't matter
@@ -5457,8 +5508,8 @@ sub salestax {
 # Returns just subtotal of items ordered, with discounts
 # applied
 sub subtotal {
-	my($cart) = @_;
-
+	my($cart, $dspace) = @_;
+	
 	### If the user has assigned to salestax,
 	### we use their value come what may, no rounding
 	if($Vend::Session->{assigned}) {
@@ -5474,8 +5525,11 @@ sub subtotal {
 	}
 
 	levies() unless $Vend::Levying;
+	
+	my $oldspace = switch_discount_space($dspace) if $dspace;
+	
+	my $discount = defined $::Discounts;
 
-	my $discount = defined $Vend::Session->{discount};
     $subtotal = 0;
 	$tmp = 0;
 
@@ -5489,8 +5543,8 @@ sub subtotal {
         else { $subtotal += $tmp }
 	}
 
-	if (defined $Vend::Session->{discount}->{ENTIRE_ORDER}) {
-		$formula = $Vend::Session->{discount}->{ENTIRE_ORDER};
+	if (defined $::Discounts->{ENTIRE_ORDER}) {
+		$formula = $::Discounts->{ENTIRE_ORDER};
 		$formula =~ s/\$q\b/tag_nitems()/eg; 
 		$formula =~ s/\$s\b/$subtotal/g; 
 		$cost = $Vend::Interpolate::ready_safe->reval($formula);
@@ -5503,6 +5557,10 @@ sub subtotal {
 	}
 	$Vend::Items = $save if defined $save;
 	$Vend::Session->{latest_subtotal} = $subtotal;
+
+	# Switch to original discount space if one exists.
+	switch_discount_space($oldspace) if $dspace and $oldspace ne $Vend::DiscountSpace;
+
     return $subtotal;
 }
 
@@ -5511,8 +5569,11 @@ sub subtotal {
 # Returns the total cost of items ordered.
 
 sub total_cost {
-	my($cart) = @_;
-    my($total, $i, $save);
+	my ($cart, $dspace) = @_;
+	my ($total, $i, $save, $oldspace);
+
+	$oldspace = switch_discount_space($dspace)
+		if defined $dspace and $dspace ne $Vend::DiscountSpace;
 
 	if ($cart) {
 		$save = $Vend::Items;
@@ -5538,6 +5599,7 @@ sub total_cost {
 	}
 	$Vend::Items = $save if defined $save;
 	$Vend::Session->{latest_total} = $total;
+	switch_discount_space($oldspace) if defined $oldspace;
     return $total;
 }
 

@@ -1,15 +1,21 @@
 UserTag price               Order        code
 UserTag price               addAttr
 UserTag price               attrAlias    base mv_ib
+UserTag price				attrAlias	 space discount_space
 UserTag price               PosNumber    1
 UserTag price               Routine   <<EOR
 sub {
 	my ($code, $ref) = @_;
 	$ref->{code} ||= $code;
 
+	my $oldspace;
+	$oldspace = Vend::Interpolate::switch_discount_space($ref->{discount_space})
+		if defined $ref->{discount_space};
+
 	my $amount = Vend::Data::item_price($ref);
 	$amount = discount_price($code, $amount, $ref->{quantity})
 			if $ref->{discount};
+	Vend::Interpolate::switch_discount_space($oldspace) if defined $oldspace;
 	return currency( $amount, $ref->{noformat} );
 }
 EOR

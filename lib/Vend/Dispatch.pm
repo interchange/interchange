@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.46 2005-01-19 15:55:13 ton Exp $
+# $Id: Dispatch.pm,v 1.47 2005-01-25 01:02:59 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.46 $, 10);
+$VERSION = substr(q$Revision: 1.47 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1309,6 +1309,32 @@ EOF
 	if(my $vspace = $CGI::values{mv_values_space}) {
 		$::Values = $Vend::Session->{values_repository}{$vspace} ||= {};
 		$Vend::ValuesSpace = $vspace;
+	}
+
+	if (
+		my $dspace = defined $::Variable->{MV_DISCOUNT_SPACE}
+			? $CGI::values{$::Variable->{MV_DISCOUNT_SPACE}} || $CGI::values{mv_discount_space}
+			: $CGI::values{mv_discount_space}
+	) {
+		# The 'main' is the default space; this allows us to easily tie the discount space
+		# to the cart namespace.
+#::logDebug("Dispatch: discount space is '$dspace'");
+		if ($dspace eq 'main') {
+			$::Discounts = $Vend::Session->{discount_space}{$dspace} = $Vend::Session->{discount} ||= {};
+		}
+		else {
+			$::Discounts = $Vend::Session->{discount_space}{$dspace} ||= {};
+		}
+		$Vend::DiscountSpace = $dspace;
+	}
+	else {
+		$Vend::DiscountSpace = 'main';
+		if (defined $Vend::Session->{discount}) {
+			$::Discounts = $Vend::Session->{discount_space}{main} = $Vend::Session->{discount};
+		}
+		else {
+			$::Discounts = undef;
+		}
 	}
 
 	if($Vend::Cfg->{CookieLogin} and ! $Vend::Session->{logged_in}) {
