@@ -24,13 +24,14 @@ sub {
 	}
 	my $ref = {
 				attribute	=> $opt->{attribute} || 'attribute',
-				db			=> $opt->{table} || undef,
-				field		=> $opt->{field} || undef,
-				extra		=> $opt->{extra} || $opt->{js} || undef,
-				cols		=> $opt->{cols} || undef,
+				db			=> $opt->{table},
+				field		=> $opt->{field},
+				extra		=> $opt->{extra} || $opt->{js},
+				cols		=> $opt->{cols},
+				delimiter	=> $opt->{delimiter},
 				rows		=> $opt->{rows} || undef,
 				name		=> $name,
-				outboard	=> $opt->{key} || undef,
+				outboard	=> $opt->{key},
 				passed		=> $opt->{data} || $opt->{passed} || $string,
 				type		=> $opt->{type} || 'select',
 				};
