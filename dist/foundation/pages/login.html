@@ -74,6 +74,7 @@ mv_nextpage=new_account
 	    <input type="submit" NAME="mv_click" value="New Account">
 	  </td>
 	</tr>
+	[if config CookieLogin]
 	<tr>
 	  <td align=right class="contentbar1"> 
 	    <INPUT TYPE=hidden NAME=mv_cookie_password VALUE=0>
@@ -83,6 +84,7 @@ mv_nextpage=new_account
 	    Log me in automatically (sets cookie)
 	  </td>
 	</tr>
+	[/if]
         </table>
       </td>
     </tr>
