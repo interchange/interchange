@@ -15,7 +15,7 @@ Description: Remove Interchange demo catalog after "purging" this package ?
  Should all files belonging to the Interchange demo catalog removed
  when you purge this package, e.g. with dpkg --purge 
  or apt-get remove --purge ?
-Description-de: Interchange-Demokatalog löschen ?
+Description-de: Soll der Interchange-Demokatalog durch --purge gelöscht werden ?
  Sollen alle Dateien des Interchange-Demokatalogs gelöscht werden wenn
  dieses Paket mit dpkg --purge oder apt-get remove --purge entfernt
  wird ?
