@@ -21,12 +21,6 @@ ui_component_label: Small saved cart list for left/right display
 
  [userdb function=get_cart_names hide=1]
 [if value carts]
-  [set Recall Cart]
-  mv_todo=return
-  mv_nextpage=ord/basket
-  [userdb function=get_cart nickname="[value c_nickname]"]
-  [/set]
-
  [perl]
   $Scratch->{saved_carts_carts} = '';
   $Scratch->{saved_carts_recurring} = '';
@@ -50,12 +44,15 @@ ui_component_label: Small saved cart list for left/right display
         ",
     });
   
-    my $row =
-        "<tr class=cartrow>".
-        "<td valign=top class=cartrow>$delink<img src=\"@_UI_IMG_@admin/delsm.gif\" border=0></a></td>".
-        "<td valign=top class=cartrow>$golink$name</A></td>".
-        "<td valign=top class=cartrow>$last_update</td>".
-        "</tr>";
+my $row = <<"END";
+<tr class=cartrow>
+<td valign=top class=cartrow>
+  $delink<img src="@_UI_IMG_@admin/delsm.gif" border=0></a>&nbsp;&nbsp;
+</td>
+<td valign=top class=cartrow>$golink$name</A></td>
+<td valign=top class=cartrow>$last_update</td>
+</tr>
+END
 
     if($type eq 'c') {
         $Scratch->{saved_carts_carts} .= $row;
