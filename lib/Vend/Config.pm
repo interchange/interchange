@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.19 2002-01-02 23:36:48 jon Exp $
+# $Id: Config.pm,v 2.20 2002-01-16 02:28:25 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.19 $, 10);
+$VERSION = substr(q$Revision: 2.20 $, 10);
 
 my %CDname;
 
@@ -3336,7 +3336,6 @@ mv_range_look            mv_range_look
 mv_range_max             mv_range_max
 mv_range_min             mv_range_min
 mv_raw_dict_look         mv_raw_dict_look
-mv_raw_searchspec        mv_raw_searchspec
 mv_record_delim          mv_record_delim
 mv_return_all            mv_return_all
 mv_return_delim          mv_return_delim

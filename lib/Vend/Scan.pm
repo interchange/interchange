@@ -1,6 +1,6 @@
 # Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 2.3 2001-11-21 18:21:34 jon Exp $
+# $Id: Scan.pm,v 2.4 2002-01-16 02:28:25 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -29,7 +29,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 
 use strict;
 use Vend::Util;
@@ -156,7 +156,6 @@ my %Scan = ( qw(
 	rr  mv_return_reference
 	rs  mv_return_spec
 	rx  mv_range_max
-	SE  mv_raw_searchspec
 	se  mv_searchspec
 	sf  mv_search_field
 	sg  mv_search_group
@@ -382,7 +381,6 @@ sub finish_search {
 	$::Values->{mv_first_match}    = $q->{mv_first_match}
 			if defined $q->{mv_first_match};
 	$::Values->{mv_searchspec} 	   = $q->{mv_searchspec};
-	$::Values->{mv_raw_searchspec} = $q->{mv_raw_searchspec} || undef;
 	$::Values->{mv_raw_dict_look}  = $q->{mv_raw_dict_look}  || undef;
 	$::Values->{mv_dict_look}      = $q->{mv_dict_look} || undef;
 }
