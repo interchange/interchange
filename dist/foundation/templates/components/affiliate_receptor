@@ -50,8 +50,11 @@ Welcome Affiliate Program Visitor:
 	[set order_discounted]1[/set]
 [/if]
 	
-[if scratch order_discounted]
-[and type=explicit control="[control coupon_allowed 1]"]
+[if type=explicit compare=`
+					return 1 if q{[control coupon_allowed 1]} 
+						 and $Scratch->{order_discounted};
+					return 0;
+					`]
 [currency][scratch coupon_amount][/currency]
 Off Coupon Active
 [/if]
