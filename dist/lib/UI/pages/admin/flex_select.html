@@ -394,6 +394,11 @@ EOF
 
 	$CGI->{ui_description_fields} = join ",", @cols;
 
+	unless ($CGI->{ui_sort_option}) { 
+		 $CGI->{ui_sort_option} = 'n'
+				if $ref->numeric($CGI->{ui_sort_field}); 
+	} 
+
 	$Scratch->{sparams} = $Scratch->{tmp_like_spec} ? '' : <<EOF;
 
 	fi=$CGI->{mv_data_table}
