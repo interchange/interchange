@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.5 2001-11-26 18:34:02 mheins Exp $
+# $Id: Common.pm,v 2.6 2001-12-06 21:14:07 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.5 $, 10);
+$VERSION = substr(q$Revision: 2.6 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -578,7 +578,7 @@ sub each_nokey {
 #::logDebug("each_nokey: $key field=$rfield sup=$sup");
 		if(! defined $key) {
 			undef $restrict;
-			return ();
+			return [];
 		}
 		$key =~ s/^k// or next;
 		if($restrict) {
