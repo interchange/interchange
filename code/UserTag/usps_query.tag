@@ -319,10 +319,14 @@ The USPS-defined mail type for the shipment. Valid choices are:
 Default is $Variable->{USPS_MAILTYPE} or 'package'. See the USPS international 
 service guides for more information on this topic.
 
-=item country
+=item country (required for international services)
 
 Destination country. No default. You must pass the name of the country, not the ISO
-code or abbreviation (i.e. 'Canada', not 'CA').
+code or abbreviation (i.e. 'Canada', not 'CA'). Note that USPS maintains a table of
+valid country names which does not necessarily match all entries in the country
+table which is distributed with the foundation demo, so modifications may be needed
+if you intend to use USPS international services. Consult the USPS International
+Services guide for more information.
 
 =back 4
 
