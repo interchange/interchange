@@ -387,6 +387,7 @@ EOF
 <FORM ACTION="[area __UI_BASE__/item_edit]" METHOD=POST>
 <INPUT TYPE=hidden NAME=mv_action VALUE=back>
 <TABLE border=0 CELLSPACING=0 width="90%">
+
 <TR class=rtitle><TD>&nbsp;</TD>
 [loop list="[cgi ui_description_fields]"]
 <TH[loop-calc]
@@ -395,33 +396,20 @@ EOF
 				$extra .= " $1";
 			}
 			return $extra || ' ALIGN=LEFT';
-		[/loop-calc] class=ctitle>
-				<A HREF="[area
-							href='__UI_BASE__/item_group'
-							form='
-								mv_arg=[loop-code]
-								mv_data_table=[cgi mv_data_table]
-							']"><IMG ALT="select by [loop-code]" SRC="@_UI_IMG_@admin/smindex.gif" BORDER=0></A></TH>
-[/loop]
-[calc]
-	my $out = '';
-	for(@special) {
-		$out .= <<EOF;
-<TH class=ctitle>&nbsp;</TH>
-EOF
-	}
-	return $out;
-[/calc]
-</tr>
-<TR class=rtitle><TD>&nbsp;</TD>
-[loop list="[cgi ui_description_fields]"]
-<TH[loop-calc]
-			my $extra = '';
-			while ($filter_show[ [loop-increment] - 1] =~ m/\b(v?align\s*=\w+)/gi) {
-				$extra .= " $1";
-			}
-			return $extra || ' ALIGN=LEFT';
-		[/loop-calc]><FONT COLOR="__UI_C_TITLEBARTXT__">
+		[/loop-calc]>
+
+    <table align="center">
+    <tr>
+      <td align="right" valign="center">
+	<A HREF="[area
+		href='__UI_BASE__/item_group'
+		form='mv_arg=[loop-code]
+		mv_data_table=[cgi mv_data_table]
+		']"><IMG ALT="select by [loop-code]" SRC="@_UI_IMG_@admin/smindex.gif" BORDER=0></A>
+
+      </td>
+      <td align="left" valign="center">
+	<FONT COLOR="__UI_C_TITLEBARTXT__">
 	<A HREF="[area href='@@MV_PAGE@@'
 					form=`
 						my $f = '[loop-code]';
@@ -438,7 +426,11 @@ EOF
 							ui_sort_option=$o
 						);
 					`
-				]" class=ctitle>[either][data table="__UI_META_TABLE__" column=label key="[cgi mv_data_table]::[loop-code]"][or][loop-code][/either]</TH>
+				]" class=ctitle>[either][data table="__UI_META_TABLE__" column=label key="[cgi mv_data_table]::[loop-code]"][or][loop-code][/either]
+      </td>
+    </tr>
+    </table>	
+  </TH>
 [/loop]
 [calc]
 	my $out = '';
@@ -555,7 +547,7 @@ Promo
 %%
 Inventory
 %%
-<TD ALIGN=right>[page href=__UI_BASE__/item_inventory form="
+<TD ALIGN=center>[page href=__UI_BASE__/item_inventory form="
 	item_id=[item-code]
 "][if-item-data inventory quantity ne ''][item-data inventory quantity][else]N/A[/else][/if-item-data]</a>
 </TD>
