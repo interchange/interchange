@@ -3,9 +3,16 @@
 [set help_name]wizard.pgp[/set]
 @_UI_STD_HEAD_@
 
-<table width=500><tr><td align=left>
+<table width=500>
+<tr><td align=left>
 Enter the values used to enable payment processing through PGP or GnuPG.
-</td></tr></table>
+</td></tr>
+<tr><td align=left>
+If you already have a GPG keyring, possible keys to encrypt against should
+be displayed. You may select one, or you may input a new PGP/GPG public key to add
+to the keyring at time of preview.
+</td></tr>
+</table>
 
 [set do_gpg_key]
 	[if cgi pgpkeytext =~ /\S/]
@@ -33,8 +40,8 @@ keys=[scratch tmp_pgpkeys]
 	mv_prevpage="[either][cgi ui_prevpage][or]__UI_BASE__/wizard/step_pay[/either]"
 	hidden.ui_return_to="__UI_BASE__/wizard/index"
 
-	ui_data_fields="code pgp pgpkeyid pgpkeytext"
-	ui_display_only="pgp pgpkeyid pgpkeytext"
+	ui_data_fields="code pgpkeyid pgpkeytext"
+	ui_display_only="pgpkeyid pgpkeytext"
 
 	ui_data_key=code
 	widget.code=text_10
