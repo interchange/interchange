@@ -1,7 +1,7 @@
 #
 # logrotate configuration file for Interchange debian package
 #
-# Copyright 2000,2001 by Stefan Hornburg <racke@linuxia.de>
+# Copyright 2000,2001,2002 by Stefan Hornburg (Racke) <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,9 +23,6 @@
 	size=100k
 	compress
 	delaycompress
-	postrotate
-		/etc/init.d/interchange restart >/dev/null
-	endscript
 }
 
 /var/log/interchange/debug.log /var/log/interchange/makecat.log {
