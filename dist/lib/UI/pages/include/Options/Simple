@@ -39,7 +39,7 @@
         foreach(sort keys %{$CGI}) {
             next unless /^opt_group_(.*)/;
             my $key = $1 || '';
-Debug("looking at opt_group_$key");
+#Debug("looking at opt_group_$key");
 
             my $rec_key;
             my $name;
@@ -85,7 +85,7 @@ Debug("looking at opt_group_$key");
 				next;
 			}
 
-Debug("doing set_slice for key=$rec_key, ref=" . uneval($ref));
+#::logDebug("doing set_slice for key=$rec_key, ref=" . uneval($ref));
             $odb->set_slice($rec_key,$ref);
         }
 
@@ -175,6 +175,7 @@ Debug("doing set_slice for key=$rec_key, ref=" . uneval($ref));
 			ui_return_to=item_id=[cgi sku]
 			item_id=[sql-code]
 			ui_data_fields=code sku o_widget o_width o_height
+			no_meta=1
 			ui_te_widget:sku=hidden
 		"][L]edit[/L]</A>
 [L]Widget[/L]: [sql-param o_widget]
@@ -186,14 +187,19 @@ Debug("doing set_slice for key=$rec_key, ref=" . uneval($ref));
 			item_id=[sql-code]
 			ui_return_to=@@MV_PAGE@@
 			ui_return_to=item_id=[cgi sku]
-			ui_data_fields=code sku o_value price
+			ui_data_fields=code sku o_value price weight
 			ui_te_widget:sku=hidden
 			ui_meta_view=simple_price
+			no_meta=1
 			ui_te_widget:price=textarea_8_20
+			ui_te_widget:weight=textarea_8_20
 			ui_te_widget:o_value=hidden_text
 			ui_te_filter:price=line2options
+			ui_te_filter:weight=line2options
 			ui_te_pre_filter:price=options2line
+			ui_te_pre_filter:weight=options2line
 			ui_te_help:price=Standard VALUE=N.NN, VALUE2=N.NN format
+			ui_te_help:weight=Standard VALUE=N.NN, VALUE2=N.NN format
 			ui_te_help:o_value=Values in this option
 		"][L]edit[/L]</A>
 [L]Price differential:[/L] [sql-param price]
