@@ -7,8 +7,9 @@ sub {
 	my ($user, $opt) = @_;
 	use vars qw/$Session $Tag $ready_safe $Scratch/;
 
-	my $super  = $Tag->if_mm('super');
-	my $former = $Vend::username;
+	# Note: If adding any new %$opt keys, make sure to also add them to
+	# the list of options to be stripped before passing the remainder
+	# to tag userdb; search below for $new_user.
 
 	$opt->{profile} = 'ui'     if $opt->{admin} and ! $opt->{profile};
 
@@ -22,12 +23,22 @@ sub {
 
 	if(! $u) {
 		my $place = $opt->{profile} || 'default';
-		::logError("Can't find UserDB repository, profile '%'", $place);
+		::logError("Can't find UserDB repository, profile '%s'", $place);
 		return undef;
 	}
-	my $table  = $u->{database};
-	my $ufield = $u->{user_field};
+	my $table  = $u->{database} || 'userdb';
+	my $ufield = $u->{user_field} || 'username';
 	my $going_to_admin = $u->{admin} || $opt->{admin};
+#::logDebug("user table=$table ufield=$ufield");
+
+	if ($opt->{create_user}) {
+		# these settings must be done before any access to the table
+		$Vend::WriteDatabase{$table} = 1;
+		$Vend::Cfg->{DynamicData}{$table} = 1;
+	}
+
+	my $super  = $Tag->if_mm('super');
+	my $former = $Vend::username;
 
 	if($user and $going_to_admin and ! $super) {
 		::logError("attempt to su to admin user %s by non-super user %s",
@@ -43,7 +54,6 @@ sub {
 					);
 		return undef;
 	}
-
 
 	my $dir = "$Global::ConfDir/tmp";
 	if (! -d $dir) {
@@ -97,16 +107,17 @@ sub {
 		return;
 	}
 	elsif ($user) {
-		if( $u->{admin} and ! $super) {
-		}
-#::logDebug("user table=$table ufield=$ufield");
-		$table  ||= 'userdb';
-		$ufield ||= 'username';
-#::logDebug("user table=$table ufield=$ufield");
+		my $new_user;
 		if(! $Tag->data($table, $ufield, $user) ) {
-			$Scratch->{ui_error} = errmsg("attempt to su to non-existent user %s", $user);
-			return undef;
+			if ($opt->{create_user}) {
+				$new_user = 1;
+			}
+			else {
+				$Scratch->{ui_error} = errmsg("attempt to su to non-existent user %s", $user);
+				return undef;
+			}
 		}
+
 		my $rand	= random_string();
 		my $sess	= uneval_it($Session);
 #::logDebug("sess is $sess");
@@ -126,13 +137,28 @@ sub {
 		Vend::Session::init_session();
 		$Session = $Vend::Session;
 
-		$Vend::username = $Session->{username} = $user;
-		$Vend::admin    = $Session->{admin}    = $going_to_admin;
+		if ($new_user) {
+			# pass on any non-su options to userdb tag
+			my $newopt = { %$opt };
+			delete @{$newopt}{qw( admin exit create_user )};
+			$newopt->{username} = $user;
+			my $result = $Tag->userdb('new_account', $newopt);
+			unless ($result) {
+				my $error = errmsg("Failed to create new user '%s' in su tag", $user);
+				logError($error);
+				$Scratch->{ui_error} = $error;
+				return undef;
+			}
+			$Session->{su} = $sess;
+		}
+		else {
+			$Vend::username = $Session->{username} = $user;
+			$Vend::admin    = $Session->{admin}    = $going_to_admin;
+			$Session->{logged_in} = 1;
+			$Session->{su} = $sess;
+			$Tag->userdb('load');
+		}
 
-		$Session->{su} = $sess;
-		$Session->{logged_in} = 1;
-
-		$Tag->userdb('load');
 		my $dest = $Tag->if_mm('logged_in') ? 'admin user' : 'regular user';
 		logError(
 			"superuser %s switched user to %s %s",
