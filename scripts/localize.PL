@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange localizer
 #
-# $Id: localize.PL,v 1.7.2.1.2.8 2001-06-29 03:58:37 heins Exp $
+# $Id: localize.PL,v 1.7.2.1.2.9 2001-07-01 08:06:38 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -78,7 +78,7 @@ use strict;
 use Vend::Util qw(readfile escape_chars);
 require Vend::Config;
 use Getopt::Std;
-use vars qw($opt_c $opt_d $opt_l $opt_M $opt_m $opt_o $opt_t $opt_u);
+use vars qw($opt_c $opt_d $opt_l $opt_M $opt_m $opt_n $opt_o $opt_t $opt_u);
 
 BEGIN {
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
@@ -107,6 +107,7 @@ OPTIONS
     -d lg_CC   Create default domain file with Locale lg_CC as prefix
     -l lg_CC   Create file with Locale lg_CC as prefix
     -m <file>  Read existing information to merge from <file>
+    -n         Don't write comments
     -M         When in -c mode, prefix MM_ to make minimate_compatible; 
                when in regular mode, strip MM_ from [LC] defs
     -o         Rewrite [L] sections with [L msgNNNN], adjust file and data
@@ -132,7 +133,7 @@ one level. Subsequent .bak files will be overwritten.
 
 EOF
 
-getopts('cd:l:Mm:otu:') or die "$USAGE\n";
+getopts('cd:l:Mm:notu:') or die "$USAGE\n";
 
 die "$USAGE\n" if $@;
 die "$USAGE\n" unless $opt_l;
@@ -266,6 +267,7 @@ sub getkey {
 
 sub write_structure {
 	my($key, $default) = @_;
+
 	if($key) {
 		$Locale->{$def}->{$key} = $default;
 		$Comment{$key} = $default;
@@ -357,14 +359,16 @@ foreach $key (sort keys %$d) {
 
 		$def_text .= "# $dat\n" if $dat;
 
-		if ($dat) {
-			$cmt = $dat;
-		}
-		else {
-			$cmt = $key;
-			$cmt =~ s/\n/\n# /g;
-		}
-		$loc_text .= "# $cmt\n";
+        unless ($opt_n) {
+		    if ($dat) {
+			    $cmt = $dat;
+		    }
+		    else {
+			    $cmt = $key;
+			    $cmt =~ s/\n/\n# /g;
+		    }
+		    $loc_text .= "# $cmt\n";
+        }
 
 		$text = &$Uneval($key);
 		$loc_text .= "$text,\n";
@@ -395,7 +399,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-# $Id: localize.PL,v 1.7.2.1.2.8 2001-06-29 03:58:37 heins Exp $
+# $Id: localize.PL,v 1.7.2.1.2.9 2001-07-01 08:06:38 racke Exp $
 
 =head1 SYNOPSIS
 
@@ -431,6 +435,10 @@ Read existing information to merge from <file>. Can contain multiple locales.
 
 When in C<-c> mode, prefix MM_ to make minimate_compatible; 
 when in regular mode, strip MM_ from [LC] defs
+
+=item C<-n>
+
+Don't write comments in the output.
 
 =item C<-o>
 
