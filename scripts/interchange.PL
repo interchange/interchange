@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.5.8
 #
-# $Id: interchange.PL,v 1.9 2000-10-13 05:33:17 jon Exp $
+# $Id: interchange.PL,v 1.10 2000-10-18 17:38:17 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -2417,10 +2417,22 @@ General information and documentation for Interchange is at:
 	http://www.akopia.com/
 	http://developer.akopia.com/
 
+=head1 SPECIAL ACKNOWLEDGEMENTS
+
+Original author of the Vend was Andrew Wilcox. Interchange could never
+have come into being without him.
+
+Stefan Hornburg has had his hand in many parts of Interchange, and is by
+far the most prolific bug-finder. He also was primarily responsible for
+bringing MiniMate, precursor to the Interchange UI database editor,
+to being as a supported facility. He continues to make valuable
+contributions.
+
 =head1 ACKNOWLEDGEMENTS
 
-Original author of the Vend was Andrew Wilcox. Interchange was based
-on Vend 0.2, with portions from Vend 0.3; both were produced in 1995.
+Original author of Vend, ancestor to Minivend and Interchange, was Andrew
+Wilcox. Interchange was based on Vend 0.2, with portions from Vend 0.3;
+both were produced in 1995.
 
 Contributions to Interchange have been made by:
 
@@ -2432,30 +2444,35 @@ Contributions to Interchange have been made by:
     Bruce Albrecht     
     Christian Mueller
     Christopher Thompson
+    Dave Adams
     Dan Busarow
     Dave Wingate
-    Dennis Cronin
+	Dennis Cronin
     Don Grodecki       
     Frank Bonita       
     Gunnar Hellekson   
     Heinz Wittenbecher
     Jason Holt
     Jeff Carnahan
+    Jeff Nappi
     Jochen Wiedmann
     Jon Jensen
     Keiko
     Keith Oberlin
     Larry Leszczynski
     Marc Austin
+    Mark Stosberg
     Michael McCune
+    Michael Wilk
     Mike Frager
+    Neil Evans
     Raj Goel
+    Ray Desjardins
     Sonny Cook
-    Stefan Hornburg   
     Tim Baverstock
     Ton Verhagen
     William Dan Terry
-    many others
+    and many others
 
 and, of course, the entire Perl team without whom Interchange could not exist.
 
