@@ -29,7 +29,6 @@ debian/interchange.files
 debian/interchange.init
 debian/interchange.logrotate
 debian/interchange.postinst
-debian/interchange.preinst
 debian/interchange.templates
 debian/interchange.wrapper
 debian/makecat.cfg
