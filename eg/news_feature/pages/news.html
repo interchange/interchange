@@ -1,0 +1,111 @@
+[comment]
+ui_template: yes
+ui_template_name: leftright
+[/comment]
+
+[tmp page_title]__COMPANY__ -- News[/tmp]
+[tmp members_only][/tmp]
+
+[control reset=1]
+
+  [control-set]
+    [component]search_box_small[/component]
+[matches]10[/matches]
+  [/control-set]
+
+
+  [control-set]
+    [component]category_vertical[/component]
+[set_selector]left[/set_selector]
+[page_class]all[/page_class]
+[timed]0[/timed]
+  [/control-set]
+
+
+  [control-set]
+    [component]cart_tiny[/component]
+  [/control-set]
+
+
+  [control-set]
+    [component]none[/component]
+  [/control-set]
+
+
+  [control-set]
+    [component]cross[/component]
+[banner]Specials[/banner]
+[cross_codes][/cross_codes]
+[size]2[/size]
+[cols]2[/cols]
+[random][/random]
+  [/control-set]
+
+
+[control-set]
+[component]news[/component]
+[cols]1[/cols]
+[news_type]general[/news_type]
+[banner]News...[/banner]
+[matches]3[/matches]
+[timed]60[/timed]
+[/control-set]
+
+[control reset=1]
+
+@_LEFTRIGHT_TOP_@
+
+<!-- BEGIN CONTENT -->
+<div align=left>
+<table width="70%" border="0">
+<tr> 
+  <td>
+  <h2>__COMPANY__ News</h2>
+
+[loop prefix=news more=1 search=|
+	fi=news
+	st=db
+	tf=posted_on
+	to=r
+	ml=10
+
+	[if session arg]
+	sf=code
+	op=eq
+	se=[data session arg]
+	[else]
+	ra=yes
+	[/else]
+	[/if]
+
+	rf=*
+|]
+
+[list]<div>
+<b>[news-param title]</b><br>
+<small>Posted on [convert-date][news-param posted_on][/convert-date] by [if-news-param posted_email]<a href="mailto:[news-param posted_email]">[news-param posted_by]</a>[else][news-param posted_by][/else][/if-news-param]</small><br>
+<br>
+[if session arg]
+[or value mv_search_match_count == 1]
+  [news-param body]
+[else]
+  [filter 200][news-param body][/filter]<br>
+  <a href="[area href="news" arg="[news-param code]"]">Read more...</a>
+[/else]
+[/if]
+</div><br><br>
+[/list]
+[more-list]
+  [more]
+[/more-list]
+[/loop]
+
+
+  </td>
+</tr>
+</table>
+</div>
+<br><br><br>
+<!-- END CONTENT -->
+
+@_LEFTRIGHT_BOTTOM_@
