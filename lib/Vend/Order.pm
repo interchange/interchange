@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18 2000-11-23 04:59:43 heins Exp $
+# $Id: Order.pm,v 1.19 2001-01-31 13:14:13 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18 $, 10);
+$VERSION = substr(q$Revision: 1.19 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1392,13 +1392,16 @@ sub route_order {
 	my @route_complete;
 	my @route_failed;
 
+	### This used to be the check_only
 	# Here we return if it is only a check
-	return route_profile_check(@routes) if $check_only;
+	#return route_profile_check(@routes) if $check_only;
 
 	# Careful! If you set it on one order and not on another,
 	# you must delete in between.
-	$::Values->{mv_order_number} = counter_number($main->{counter})
-			unless $Vend::Session->{mv_order_number};
+	if(! $check_only) {+
+		$::Values->{mv_order_number} = counter_number($main->{counter})
+				unless $Vend::Session->{mv_order_number};
+	}
 
 	my $value_save = { %{$::Values} };
 
@@ -1411,13 +1414,14 @@ sub route_order {
 		my $pre_encrypted;
 		my $credit_card_info;
 
-		if($route->{inline_profile}) {
+		if(! $check_only and $route->{inline_profile}) {
 			my $status;
 			eval {
 				($status, undef, $errors) = check_order($route->{inline_profile});
 				die "$errors\n" unless $status;
 			};
 		}
+
 		if ($CGI::values{mv_credit_card_number}) {
 			if(! $CGI::values{mv_credit_card_type} and
 				 $CGI::values{mv_credit_card_number} )
@@ -1449,6 +1453,20 @@ sub route_order {
 		}
 	eval {
 
+		if ($check_only and $route->{profile}) {
+			my ($status, $final, $missing) = check_order($route->{profile});
+			if(! $status) {
+				die errmsg(
+				"Route %s failed order profile %s. Final=%s. Errors:\n\n%s\n\n",
+				$c,
+				$route->{profile},
+				$final,
+				$missing,
+				)
+			}
+		}
+
+#::logError("route = $c, cyber_mode=$route->{cyber_mode}, check_only=1") if $check_only;
 		if($route->{cyber_mode}) {
 			my $save = $CGI::values{mv_cyber_mode};
 			$CGI::values{mv_cyber_mode} = $route->{cyber_mode};
@@ -1461,9 +1479,15 @@ sub route_order {
 				$::Variable->{$_} = $route->{$_};
 			}
 			my $ok;
+			my $parms;
+			my $msg;
 			eval {
-				$ok = _charge(\%CGI::values, $route->{cyber_mode});
+				($ok, $parms, $msg) = _charge(\%CGI::values, $route->{cyber_mode});
 			};
+#::logError("route = $c, cyber_mode=$route->{cyber_mode}, ok=$ok");
+			if(! $ok) {
+				$Vend::Session->{errors}{mv_credit_card_valid} = $msg;
+			}
 			for(@vars) {
 				next unless exists $glob->{$_};
 				$::Variable->{$_} = $glob->{_};
@@ -1476,7 +1500,11 @@ sub route_order {
 							);
 			}
 		}
-		elsif($route->{credit_card} and ! $pre_encrypted) {
+		elsif(  $route->{credit_card}
+				and ! $pre_encrypted
+			    and $::Values->{mv_credit_card_info}
+				)
+		{
 			$::Values->{mv_credit_card_info} = pgp_encrypt(
 								$::Values->{mv_credit_card_info},
 								($route->{pgp_cc_key} || $route->{pgp_key}),
@@ -1484,6 +1512,8 @@ sub route_order {
 							);
 		}
 
+	  PROCESS: {
+	  	last PROCESS if $check_only;
 		if($Vend::Session->{mv_order_number}) {
 			$::Values->{mv_order_number} = $Vend::Session->{mv_order_number};
 		}
@@ -1551,12 +1581,12 @@ sub route_order {
 			Vend::Util::writefile($route->{track}, $page)
 				or ::logError("route tracking error writing $route->{track}: $!");
 			my $mode = $route->{track_mode} || '';
-            if ($mode =~ s/^0+//) {
-                chmod oct($mode), $fn;
-            }
-            elsif ($mode) {
-                chmod $mode, $fn;
-            }
+			if ($mode =~ s/^0+//) {
+				chmod oct($mode), $fn;
+			}
+			elsif ($mode) {
+				chmod $mode, $fn;
+			}
 		}
 		if ($route->{individual_track}) {
 			my $fn = Vend::Util::catfile(
@@ -1567,15 +1597,17 @@ sub route_order {
 			Vend::Util::writefile( $fn, $page,	)
 				or ::logError("route tracking error writing $fn: $!");
 			my $mode = $route->{track_mode} || '';
-            if ($mode =~ s/^0+//) {
-                chmod oct($mode), $fn;
-            }
-            elsif ($mode) {
-                chmod $mode, $fn;
-            }
+			if ($mode =~ s/^0+//) {
+				chmod oct($mode), $fn;
+			}
+			elsif ($mode) {
+				chmod $mode, $fn;
+			}
 		}
+	  } # end PROCESS
 	};
 		if($@) {
+#::logError("DIED, route = $c, cyber_mode=$route->{cyber_mode}, check_only=1") if $check_only;
 			my $err = $@;
 			$errors .=  errmsg(
 							"Error during creation of order routing %s:\n%s",
@@ -1592,6 +1624,20 @@ sub route_order {
 
 	} #BUILD
 	my $msg;
+
+	if($check_only) {
+		$Vend::Items = $save_cart;
+		$::Values = $value_save;
+
+		if(@route_failed) {
+#::logError("DIED, route_failed=" . join ",", @route_failed) if $check_only;
+			return (0, 0, $errors);
+		}
+		else {
+#::logError("route checks all succeeded") if $check_only;
+			return (1, 1, '');	
+		}
+	}
 
 	foreach $msg (@out) {
 		eval {
@@ -1660,6 +1706,7 @@ sub route_order {
 	}
 	return (undef, $::Values->{mv_order_number});
 }
+
 
 sub add_items {
 
@@ -1913,4 +1960,4 @@ sub send_mail {
 # END LEGACY4
 
 1;
-__END__
+
