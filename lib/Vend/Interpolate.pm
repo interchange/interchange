@@ -1,8 +1,8 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.229 2005-01-25 01:02:59 jon Exp $
+# $Id: Interpolate.pm,v 2.230 2005-01-25 03:54:19 jon Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.229 $, 10);
+$VERSION = substr(q$Revision: 2.230 $, 10);
 
 @EXPORT = qw (
 
@@ -130,6 +130,7 @@ BEGIN {
 							$Config
 							%Sql
 							$Items
+							$Row
 							$Scratch
 							$Shipping
 							$Session
@@ -3547,10 +3548,13 @@ sub labeled_list {
 		my $fa = $obj->{mv_return_fields} || undef;
 		my $fh = $obj->{mv_field_hash}    || undef;
 		my $fn = $obj->{mv_field_names}   || undef;
+		my $row_fields = $fa;
 		$ary = tag_sort_ary($opt->{sort}, $ary) if $opt->{sort};
 		if ($fa and $fn) {
 			my $idx = 0;
 			$fh = {};
+			$row_fields = [];
+			@$row_fields = @{$fn}[@$fa];
 			for(@$fa) {
 				$fh->{$fn->[$_]} = $idx++;
 			}
@@ -3558,13 +3562,15 @@ sub labeled_list {
 		elsif (! $fh and $fn) {
 			my $idx = 0;
 			$fh = {};
+			$row_fields = $fn;
 			for(@$fn) {
 				$fh->{$_} = $idx++;
 			}
 		}
 		$opt->{mv_return_fields} = $fa;
 #::logDebug("Missing mv_field_hash and/or mv_field_names in Vend::Interpolate::labeled_list") unless ref $fh eq 'HASH';
-		$r = iterate_array_list($i, $end, $count, $text, $ary, $opt_select, $fh, $opt);
+		# Pass the field arrayref ($row_fields) for support in iterate_array_list of new $Row object...
+		$r = iterate_array_list($i, $end, $count, $text, $ary, $opt_select, $fh, $opt, $row_fields);
 	}
 	$MVSAFE::Unsafe = $save_unsafe;
 	return $r;
@@ -3917,10 +3923,14 @@ sub alternate {
 }
 
 sub iterate_array_list {
-	my ($i, $end, $count, $text, $ary, $opt_select, $fh, $opt) = @_;
+	my ($i, $end, $count, $text, $ary, $opt_select, $fh, $opt, $fa) = @_;
 #::logDebug("passed opt=" . ::uneval($opt));
 	my $r = '';
 	$opt ||= {};
+
+	# The $Row object needs to be built per-row, so undef it initially.
+	$fa ||= [];
+	undef $Row;
 
 	my $lim;
 	if($lim = $Vend::Cfg->{Limit}{list_text_size} and length($text) > $lim) {
@@ -4061,7 +4071,13 @@ my $once = 0;
 											:	pull_else($4)!ige;
 		$run =~ s#$B$QR{_tag}($Some$E[-_]tag[-_]\1\])#
 						tag_dispatch($1,$count, $row, $ary, $2)#ige;
-		$run =~ s#$B$QR{_calc}$E$QR{'/_calc'}#tag_calc($1)#ige;
+		$run =~ s#$B$QR{_calc}$E$QR{'/_calc'}#
+			unless ($Row) {
+				$Row = {};
+				@{$Row}{@$fa} = @$row;
+			}
+			tag_calc($1)
+			#ige;
 		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#
 					init_calc() if ! $Vend::Calc_initialized;
 					(
@@ -4086,7 +4102,7 @@ my $once = 0;
                     $Ary_code{next}->($1) != 0 ? next : '' #ixge;
 		$run =~ s/<option\s*/<OPTION SELECTED /i
 			if $opt_select and $opt_select->($code);
-
+		undef $Row;
 		$r .= $run;
 		last if $return;
     }
@@ -4165,6 +4181,8 @@ sub iterate_hash_list {
 					  	resolve_nested_if($1, $2)
 					  }se;
 
+	# undef the $Row object, as it should only be set as needed by [PREFIX-calc]
+	undef $Row;
 
 	for ( ; $i <= $end; $i++, $count++) {
 		$item = $hash->[$i];
@@ -4264,6 +4282,7 @@ sub iterate_hash_list {
 											:	pull_else($4)!ige;
 		$run =~ s#$B$QR{_tag}($All$E[-_]tag[-_]\1\])#
 						tag_dispatch($1,$count, $item, $hash, $2)#ige;
+		$Row = $item;
 		$run =~ s#$B$QR{_calc}$E$QR{'/_calc'}#tag_calc($1)#ige;
 		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#
 					init_calc() if ! $Vend::Calc_initialized;
@@ -4289,6 +4308,7 @@ sub iterate_hash_list {
 			if $opt_select and $opt_select->($code);	
 
 		$r .= $run;
+		undef $Row;
 #::logDebug("item $code mv_cache_price: $item->{mv_cache_price}");
 		delete $item->{mv_cache_price};
 		last if $return;
