@@ -1,6 +1,6 @@
 # Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 2.7 2002-09-16 23:06:31 mheins Exp $
+# $Id: Session.pm,v 2.8 2002-10-30 23:40:29 kwalsh Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -26,7 +26,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -450,6 +450,7 @@ sub init_session {
 		'arg'		=> $Vend::Argument,
 		'browser'	=> $CGI::useragent,
 		'referer'	=> $CGI::referer,
+		'spider'	=> $CGI::values{mv_tmp_session},
 		'scratch'	=> { %{$Vend::Cfg->{ScratchDefault}} },
 		'values'	=> { %{$Vend::Cfg->{ValuesDefault}} },
 		'carts'		=> {main => []},

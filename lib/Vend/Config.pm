@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.75 2002-10-27 03:53:59 mheins Exp $
+# $Id: Config.pm,v 2.76 2002-10-30 23:40:29 kwalsh Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -45,7 +45,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.75 $, 10);
+$VERSION = substr(q$Revision: 2.76 $, 10);
 
 my %CDname;
 
@@ -289,8 +289,9 @@ sub global_directives {
 	['TemplateDir',      'root_dir_array', 	 ''],
 	['DomainTail',		 'yesno',            'Yes'],
 	['AcrossLocks',		 'yesno',            'No'],
-	['RobotIP',			 'list_wildcard',    ''],
 	['RobotUA',			 'list_wildcard',    ''],
+	['RobotIP',			 'list_wildcard_full',    ''],
+	['RobotHost',			 'list_wildcard_full',    ''],
 	['TolerateGet',		 'yesno',            'No'],
 	['PIDcheck',		 'integer',          '0'],
 	['LockoutCommand',    undef,             ''],
@@ -1507,6 +1508,26 @@ sub watch {
 					);
 }
 
+sub get_wildcard_list {
+	my($var, $value) = @_;
+
+	$value =~ s/^\s+//;
+	$value =~ s/\s+$//;
+	return '' if ! $value;
+
+	if($value !~ /\|/) {
+		$value =~ s/([\\\+\|\[\]\(\){}])/\\$1/g;
+		$value =~ s/\./\\./g;
+		$value =~ s/\*/.*/g;
+		$value =~ s/\?/./g;
+		my @items = grep /\S/, split /\s*,\s*/, $value;
+		s/\s+/\\s+/g for (@items);
+		$value = join '|', @items;
+	}
+	$value = parse_regex($var, $value);
+	return $value;
+}
+
 # Set up an ActionMap or FormAction
 sub parse_action {
 	my ($var, $value, $mapped) = @_;
@@ -2406,27 +2427,13 @@ sub parse_array_complete {
 }
 
 sub parse_list_wildcard {
-	my($var, $value) = @_;
+	my $value = get_wildcard_list(@_);
+	return qr/$value/i;
+}
 
-	$value =~ s/^\s+//;
-	$value =~ s/\s+$//;
-	return '' if ! $value;
-
-	if($value !~ /\|/) {
-		my @items = split /\s*,\s*/, $value;
-		my $iplist = $value =~ /^[\d.,\s]+$/;
-		for(@items) {
-			next unless $_;
-			s/\./\\./g;
-			s/\*/.*/g;
-			s/\?/./g;
-			s/\s+/\\s+/g;
-			s/^/^/ if $iplist;
-		}
-		$value = join '|', @items;
-	}
-	$value = parse_regex($var, $value);
-	return qr/$value/;
+sub parse_list_wildcard_full {
+	my $value = '^(' . get_wildcard_list(@_) . ')$';
+	return qr/$value/i;
 }
 
 # Make a dos-ish regex into a Perl regex, check for errors
