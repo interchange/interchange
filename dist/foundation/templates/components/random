@@ -63,7 +63,7 @@ banner:
       <TD width="[scratch width_percent]" valign="top" align="center"> 
 	<table border="0" cellspacing="0" cellpadding="0" width="75%">
 	<tr> 
-	  <td width="75%" id=rv class="contentbar1" nowrap align="center">
+	  <td width="75%" id=rv class="contentbar1" align="center">
 	    &nbsp;[loop-description]
 	  </td>
 	</tr>
