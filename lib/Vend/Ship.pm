@@ -1,6 +1,6 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.3 2003-06-18 17:34:44 jon Exp $
+# $Id: Ship.pm,v 2.4 2003-08-19 15:24:47 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -989,7 +989,7 @@ sub tag_shipping {
 		}
 		@out = grep /=.+/, @out;
 
-		if(! @out) {
+		if(! @out and ! $opt->{hide_error}) {
 			my $message = $loc->{no_modes_message} || 'Not enough information';
 			@out = "=" . errmsg($message);
 		}
