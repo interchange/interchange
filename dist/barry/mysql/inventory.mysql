@@ -9,6 +9,6 @@ Database  inventory  KEY          sku
 Database  inventory  COLUMN_DEF   "sku=char(14) NOT NULL PRIMARY KEY"
 Database  inventory  COLUMN_DEF   "quantity=INT"
 Database  inventory  COLUMN_DEF   "stock_msg=char(64)"
-Database  inventory  COLUMN_DEF   "account=char(20)"
-Database  inventory  COLUMN_DEF   "cogs_account=char(20)"
+Database  inventory  COLUMN_DEF   "account=char(128)"
+Database  inventory  COLUMN_DEF   "cogs_account=char(128)"
 Database  inventory  NUMERIC      quantity
