@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.55 2001-04-20 18:13:20 racke Exp $
+# $Id: Interpolate.pm,v 1.40.2.56 2001-04-21 05:30:02 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.55 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.56 $, 10);
 
 @EXPORT = qw (
 
@@ -5150,7 +5150,7 @@ sub region {
 					$obj->{matches} > 0 ? '' : $1
 					!ge;
 	$page =~ s!$QR{on_match}!
-					$obj->{matches} == 0 ? '' : $1
+					$obj->{matches} <= 0 ? '' : $1
 					!ge;
 	$page =~ s:\[$prefix\]($Some)\[/$prefix\]:labeled_list($opt,$1,$obj):ige
 		or $page = labeled_list($opt,$page,$obj) ;
