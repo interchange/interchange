@@ -5,9 +5,9 @@ interchange (4.6.3-2) unstable; urgency=low
     Chris Burgess <chris@ibex.co.nz>)
   * new option maxlength for usertag formel (suggested by
     Dan Browning <danb@cyclonecomputers.com>)
-  * code added to support 4.7.x builds
+  * interchange-cat-construct.files added
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 12 Mar 2001 17:18:11 -0500
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 14 Mar 2001 13:04:04 -0500
 
 interchange (4.6.3-1) unstable; urgency=low
 
