@@ -26,6 +26,14 @@ Username for MySQL (if any)
 Password for MySQL (if any)
 	pass
 
+{MYSQL}SQLCREATE
+Set to 1 to create '__MVC_SQLDB__' with mysqladmin
+1	0
+
+{SQLCREATE}SQLCREATEOPT
+Extra options for creation
+	-p	-u root -p
+
 {SOMESQL and ! '__MVC_MYSQL__'}PGSQL
 Set to 1 if you want to use PostGres
 1	0

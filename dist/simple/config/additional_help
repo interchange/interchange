@@ -30,6 +30,22 @@ This requires the ability to create a database named "test_simple",
 and is highly dependent on your Perl and MySQL configuration. Don't
 be too surprised if this doesn't work.
 
+SQLCREATE
+.
+We can try and use mysqladmin to create the database in
+MySQL. In many default Mysql distributions, any user can create
+a database beginning with "test". 
+.
+Use the next option to add parameters. If your Mysql is password-protected
+(and you know the password) you may want to add "-u root -p".
+
+SQLCREATEOPT
+.
+To create the database you may need to supply a password and
+username. To do that, add the option "-u USERNAME -p", where
+USERNAME is a Mysql user with permission to create databases.
+This is often the user "root".
+
 PGSQL
 .
 You can select this to use PostGres in your test catalog.
