@@ -74,9 +74,9 @@ sub {
 	};
 	my $out = '';
 	if(! $dblist_done_one++) {
-		$out .= '<tr>';
+		$out .= '<tr bgcolor="__UI_C_TITLEBARBG__">';
 		for(qw/edit import export view upload download /, "Table name (description)") {  # Add "report"
-			$out .= qq{<td bgcolor="__UI_C_TITLEBARBG__" align=center><font size="-1" color="__UI_C_TITLEBARTXT__">$_</td>};
+			$out .= qq{<td align=center><font size="-1" color="__UI_C_TITLEBARTXT__"><B>&nbsp;$_&nbsp;</B></td>};
 		}
 		$out .= "</tr>";
 	}
@@ -87,7 +87,7 @@ sub {
 <td ALIGN=center><A HREF="$line->{url}"><img src="$line->{img}" border=0 alt="$_ $tab" align=top></A></td>
 EOF
 	}
-	return $out . qq{<td>&nbsp;<FONT SIZE="+1">$name</FONT></td></tr>};
+	return $out . qq{<td>&nbsp;<FONT><B>$name</B></FONT></td></tr>};
 }
 [/loop-sub]
 [loop-exec db_action][loop-data __UI_META_TABLE__ label][/loop-exec]
