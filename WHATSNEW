@@ -127,6 +127,24 @@ Core
 
   Normal DBI quoting is always done, so you don't include quotes.
 
+* Allow (sensible) relative paths for DebugFile directive and
+  change default debug file to $VENDROOT/debug.log.
+
+* Remove obsolete and unused DifferentSecure directive.
+
+* Fix rare but nasty bug that causes chained ITL conditional tests to fail
+  in no-op mode:
+
+	[if scratch something][or value something]...[/if]
+	[if scratch something][and value something]...[/if]
+
+  The problem happens when the first [if] contains a string that doesn't
+  convert nicely to a number, and gets passed to an XOR test directly instead
+  of being converted to a 1 or 0 first. That causes a string XOR to be done,
+  which gives the wrong answer.
+
+* Optimize no-op [if] checks when test is false.
+
 UserTag
 -------
 
@@ -172,6 +190,9 @@ UI
 
 * fix menu loader bug with combined category field type reported by Michael Streubel
   <Michael.Streubel@palmwaregroup.com>
+
+* give focus to username box on login page load to allow immediate 
+  username typing
 
 Foundation
 ----------
