@@ -120,53 +120,96 @@ __NAME__ db_maintenance
 		my @deltables = split /[\s0,]/, $CGI->{ui_delete_tables};
 		unshift @deltables, $CGI->{mv_data_table};
 		my @out;
-		for(@{$CGI_array->{$idp}}) {
-			my $key = $_;
-			my $db;
-			for(@deltables) {
-				my ($t, $col) = split /:/, $_;
-				next unless $t;
+		if(@deltables == 1 and $deltables[0] !~ /:/) {
+#Debug("In simple case");
+			## Simple case
+			DELREC: {
+				my $t = $deltables[0];
+#Debug("simple case table=$t");
 				if ( $Tag->if_mm('!tables', "$t=d") ) {
 					push @errors,
 						errmsg("Not authorized to delete from table %s", $t);
-					next;
+					last DELREC;
 				}
-				unless ($db = $Db{$t}) {
-					push @errors, errmsg("Table %s not available.", $t);
-					next;
-				}
-				if($col) {
-					next unless length ($key);
-					my $k = $db->quote($key, $col);
-					my $num = $db->query("delete from $t where $col = $k");
-					if($num > 0) {
-						push @out, errmsg(
-									"deleted %s records from %s where %s = %s",
-									$num,
-									$t,
-									$col,
-									$k,
-									);
+
+				my $db = $Db{$t};
+				if($db->config('MULTIPLE_KEYS')) {
+					$CGI->{$idp} =~ s/-_NULL_-/\0/g;
+					my $key = $CGI->{$idp};
+					$key =~ s/\0/,/g;
+#Debug("simple case multiple key=$key");
+					my $rc = $db->delete_record($CGI->{$idp});
+					if($rc) {
+						push @out, errmsg("Deleted %s from %s", $key, $t);
 					}
 					else {
-						push @errors, errmsg(
-										"No records in %s where %s = %s",
+						push @errors, errmsg("Unable to delete %s: %s", $key, $@);
+					}
+				}
+				else {
+					for(@{$CGI_array->{$idp}}) {
+#Debug("simple case regular key=$_");
+						my $rc = $db->delete_record($_);
+						if($rc) {
+						  push @out, errmsg("Deleted %s from %s", $_, $t);
+						}
+						else {
+							push @errors, errmsg("Unable to delete %s from %s: %s", $_, $t, $@);
+						}
+					}
+				}
+			}
+		}
+		else {
+			for(@{$CGI_array->{$idp}}) {
+				my $key = $_;
+				my $db;
+				for(@deltables) {
+					my ($t, $col) = split /:/, $_;
+					next unless $t;
+					if ( $Tag->if_mm('!tables', "$t=d") ) {
+						push @errors,
+							errmsg("Not authorized to delete from table %s", $t);
+						next;
+					}
+					unless ($db = $Db{$t}) {
+						push @errors, errmsg("Table %s not available.", $t);
+						next;
+					}
+					if($col) {
+						next unless length ($key);
+						my $k = $db->quote($key, $col);
+						my $num = $db->query("delete from $t where $col = $k");
+						if($num > 0) {
+							push @out, errmsg(
+										"deleted %s records from %s where %s = %s",
+										$num,
 										$t,
 										$col,
 										$k,
 										);
+						}
+						else {
+							push @errors, errmsg(
+											"No records in %s where %s = %s",
+											$t,
+											$col,
+											$k,
+											);
+						}
+					}
+					else {
+						next unless $db->record_exists($key);
+						$db->delete_record($key)
+							or do {
+								push @errors, $@;
+								next;
+							};
+						push @out, errmsg("Deleted %s from %s", $key, $t);
 					}
 				}
-				else {
-					next unless $db->record_exists($key);
-					$db->delete_record($key)
-						or do {
-							push @errors, $@;
-							next;
-						};
-					push @out, errmsg("Deleted %s from %s", $key, $t);
-				}
 			}
+
 		}
 		if(@errors) {
 			my $str = '<ul><li>';

@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.53 2004-03-08 21:06:50 racke Exp $
+# $Id: Editor.pm,v 1.54 2004-04-11 05:05:49 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.53 $, 10);
+$VERSION = substr(q$Revision: 1.54 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -1682,11 +1682,13 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 
 	if($opt->{cgi}) {
 		$key ||= $CGI->{item_id};
-		$opt->{item_id_left} ||= $CGI::values{item_id_left};
-		$opt->{ui_sequence_edit} ||= $CGI::values{ui_sequence_edit};
+		unless($opt->{ui_multi_key} = $CGI->{ui_multi_key}) {
+			$opt->{item_id_left} ||= $CGI::values{item_id_left};
+			$opt->{ui_sequence_edit} ||= $CGI::values{ui_sequence_edit};
+		}
 	}
 
-	if($opt->{ui_sequence_edit}) {
+	if($opt->{ui_sequence_edit} and ! $opt->{ui_multi_key}) {
 		delete $opt->{ui_sequence_edit};
 		my $left = delete $opt->{item_id_left}; 
 

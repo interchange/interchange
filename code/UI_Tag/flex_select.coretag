@@ -82,6 +82,11 @@ sub flex_select_init {
 		$ts->{large} = 1;
 	}
 
+	if( $db->config('MULTIPLE_KEYS') ) {
+		$ts->{multikey} = 1;
+		$ts->{key_columns} = $db->config('_Key_columns');
+	}
+
 	DELETE: {
 		last DELETE unless $CGI->{item_id};
 		last DELETE unless delete $CGI->{deleterecords};
@@ -638,6 +643,7 @@ EOF
 	}
 
 	$opt->{ui_style} = 1 unless defined $opt->{ui_style};
+	$opt->{no_checkbox} = 1 if $ts->{multikey};
 
 	my $show_meta;
 	my $meta_anchor;
@@ -772,6 +778,15 @@ ui_return_stack=$CGI->{ui_return_stack}
 start_at=extended.ui_more_alpha
 EOF
 
+	my %mkey;
+	if($ts->{multikey}) {
+		for(@{$ts->{key_columns}}) {
+			$mkey{$_} = 1;
+		}
+	}
+
+	my @mcol;
+
 	my $idx = 0;
 	foreach my $col (@cols) {
 		my $mcol = $col;
@@ -782,6 +797,11 @@ EOF
 
 		## $cc is set in header_cell_class 
 		my $m = $cc->{$mcol};
+
+		if($mkey{$col}) {
+::logDebug("col=$col index=$idx");
+			push @mcol, $idx - 1;
+		}
 
 		push @head, <<EOF;
 <td$td_extra>
@@ -938,6 +958,8 @@ EOF
 	}
 	push @head, "</tr>";
 
+	shift @mcol;
+
 	my $ncols = $idx;
 	$ncols++ if $opt->{explicit_edit};
 	$ncols++ if $opt->{number_list};
@@ -1052,12 +1074,21 @@ EOF
 				$code_pre = $code_post = '';
 			}
 			else {
+				my @what;
+				push @what, "$edit_parm=$code";
+				if($ts->{multikey}) {
+					unshift @what, 'ui_multi_key=1';
+					for(@mcol) {
+						push @what, "$edit_parm=$line->[$_]";
+					}
+
+				}
+
+				my $ep_string = join "\n", @what, $edit_extra;
+
 				my $edit_url = $Tag->area({
 									href => $edit_page,
-									form => qq{
-												$edit_parm=$code
-												$edit_extra
-									}
+									form => $ep_string,
 								});
 				my $msg = errmsg('edit %s', $ecode);
 				$code_pre = qq{<a href="$edit_url" title="$msg">};
