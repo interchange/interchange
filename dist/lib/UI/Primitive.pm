@@ -1,6 +1,6 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 2.2 2001-08-29 15:38:40 mheins Exp $
+# $Id: Primitive.pm,v 2.3 2001-09-04 22:20:15 mheins Exp $
 
 # Copyright (C) 1998-2001 Red Hat, Inc. <interchange@redhat.com>
 
@@ -25,7 +25,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -746,17 +746,32 @@ sub imagehelper_widget {
 		$imagebase =~ s/^\s+//;
 		$imagebase =~ s:[\s/]*$:/:;
 	}
+
+	my $of_widget;
+	if($path =~ s!/\*(?:\.([^/]+))?$!!) {
+		my $spec = $1;
+		my @files = list_images($path, $spec);
+		unshift(@files, "=(none)");
+		my $passed = join ",", map { s/,/&#44;/g; $_} @files;
+		my $opt = {
+			type => 'select',
+			default => $val,
+			attribute => 'mv_data_file_oldfile',
+			passed => $passed,
+		};
+		$of_widget = Vend::Interpolate::tag_accessories(
+				undef, undef, $opt, { 'mv_data_file_oldfile' => $val } );
+	}
+	else {
+		$of_widget = qq{<INPUT TYPE=hidden NAME=mv_data_file_oldfile VALUE="$val">};
+	}
 	$size = qq{ SIZE="$size"} if $size > 0;
     if ($val) {
         qq{<A HREF="$imagebase$path/$val">$val</A>&nbsp;<INPUT TYPE=hidden NAME=mv_data_file_field VALUE="$name">
-<INPUT TYPE=hidden NAME=mv_data_file_path VALUE="$path">
-<INPUT TYPE=hidden NAME=mv_data_file_oldfile VALUE="$val">
-<INPUT TYPE=file NAME="$name" VALUE="$val">};      
+<INPUT TYPE=hidden NAME=mv_data_file_path VALUE="$path">$of_widget<INPUT TYPE=file NAME="$name" VALUE="$val">};      
     } else {
         qq{<INPUT TYPE=hidden NAME=mv_data_file_field VALUE="$name">
-<INPUT TYPE=hidden NAME=mv_data_file_path VALUE="$path">
-<INPUT TYPE=hidden NAME=mv_data_file_oldfile VALUE="">
-<INPUT TYPE=file NAME="$name"$size>};
+<INPUT TYPE=hidden NAME=mv_data_file_path VALUE="$path">$of_widget<INPUT TYPE=file NAME="$name"$size>};
     }
 }
 
