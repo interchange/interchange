@@ -58,8 +58,14 @@ sub {
 	}
 	unlink $afile
 		or return tmp_die("cannot unlink archive %s: %s", $afile, $!);
+	sleep 1;
 	
-	my @ifiles = glob('*');
+	opendir(IMGDIR, '.')
+		or return tmp_die("couldn't open image directory?");
+	my @ifiles = grep -f $_, readdir(IMGDIR);
+	closedir(IMGDIR)
+		or return tmp_die("couldn't close image directory?");
+#Debug("image files: " . join ", ", @ifiles);
 	my @unfound;
 	my @did;
 	my @do;
@@ -183,7 +189,7 @@ sub {
 	}
 
 	if(@unfound) {
-		$out .= "No item found for:<br><blockquote>";
+		$out .= "No item found for image file:<br><blockquote>";
 		$out .= join("<BR>", @unfound);
 		$out .= "</blockquote>Not copied.\n";
 	}

@@ -246,6 +246,8 @@ EOF
 				for (grep /\S/, split /\n/, $prof) {
 					if (/^\s*(\w+)\s*=(.+)$/) {
 						my $k = $1; my $v = $2;
+						$v =~ s/\s+$//;
+						$v =~ s/^\s+//;
 						$error->{$k} = 1;
 						$error_show_var = 0 if $v =~ /\S /;
 					}
@@ -1130,6 +1132,7 @@ EOF
 			$meta .= '</FONT>';
 		}
 		$display =~ s/\~META\~/$meta/g;
+		$display =~ s/\~ERROR\~/$Tag->error({ name => $c, keep => 1 })/eg;
         
 		if ($break{$col}) {
 			while($rowcount % $rowdiv) {

@@ -24,7 +24,6 @@
 
 [/if]
 
-[if !cgi showactions]<!--[/if]
 [perl tables="access variable products country mv_metadata userdb"]
 	my $vdb = $Db{variable};
 	my $adb = $Db{access};
@@ -208,7 +207,7 @@ images              => sub {
 						$arch =~ s:.*/::;
 						$arch =~ s:.*\\::;
 						$arch = $Tag->filter('filesafe', $arch);
-						$Tag->image_collate($arch, { thumb => $Values->{thumbs}, verbose => 1 });
+						$Values->{images} = $arch;
 					},
 products              => sub {
 						my $arch = $Values->{products}
@@ -615,13 +614,15 @@ push @messages, "set shipmodes to '$na_string' in US";
 push @messages, "set shipmodes to '$na_string' in Canada";
 	}
 
-	$out = "Messages: <BR>";
-	$out .= join "<BR>", @messages;
+	my $out = '';
+	if($Values->{showactions}) {
+		$out .= "Messages: <BR>";
+		$out .= join "<BR>", @messages;
+	}
 	return $out unless @errors;
 	$out .= "<P>Errors: <BR>";
 	$out .= join "<BR>", @errors;
 [/perl]
-[if !cgi showactions] -->[/if]
 
 [if value sampleproducts]
 [and value products =~ /\.xls$/i]
@@ -635,6 +636,9 @@ push @messages, "set shipmodes to '$na_string' in Canada";
 					quiet="2"
 					table="products"
 	]
+[/if]
+[if value images]
+	[image-collate archive="[value images]" thumb="[value thumbs]" verbose="[value showactions]"]
 [/if]
 [if value sampleorders]
 [flag type=write table=transactions]
