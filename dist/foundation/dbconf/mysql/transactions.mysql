@@ -1,5 +1,11 @@
 Database  transactions  transactions.txt __SQLDSN__
 Database  transactions  DEFAULT_TYPE varchar(128)
+
+ifdef MYSQL_TRANSACTIONS
+Database  transactions  HAS_TRANSACTIONS  1
+Database  transactions  TABLE_TYPE   InnoDB
+endif
+
 Database  transactions  COLUMN_DEF   "code=char(14) NOT NULL PRIMARY KEY"
 Database  transactions  COLUMN_DEF   "store_id=varchar(9) DEFAULT '' NOT NULL"
 Database  transactions  INDEX         store_id

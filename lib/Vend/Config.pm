@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.115 2003-05-13 20:11:58 mheins Exp $
+# $Id: Config.pm,v 2.116 2003-05-14 22:29:29 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.115 $, 10);
+$VERSION = substr(q$Revision: 2.116 $, 10);
 
 my %CDname;
 my %CPname;
@@ -2437,7 +2437,10 @@ my %Default = (
 			my %seen;
 			my @types = grep !$seen{$_}++, keys %$o, @base;
 
+			my %module_ignore = qw/resolution 1 default 1/;
+
 			for(@types) {
+				next if $module_ignore{$_};
 				my $loc = $o->{$_} ||= {};
 				eval "require Vend::Ship::$_;";
 				if($@) {

@@ -1,4 +1,10 @@
 Database  userdb  userdb.txt   __SQLDSN__
+
+ifdef MYSQL_TRANSACTIONS
+Database  userdb  HAS_TRANSACTIONS  1
+Database  userdb  TABLE_TYPE   InnoDB
+endif
+
 Database  userdb  COLUMN_DEF   "code=char(20) NOT NULL PRIMARY KEY"
 Database  userdb  COLUMN_DEF   "password=CHAR(20) NOT NULL"
 Database  userdb  COLUMN_DEF   "acl=text"

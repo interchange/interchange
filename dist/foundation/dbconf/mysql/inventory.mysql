@@ -1,4 +1,10 @@
 Database  inventory  inventory.txt __SQLDSN__
+
+ifdef MYSQL_TRANSACTIONS
+Database  inventory  HAS_TRANSACTIONS  1
+Database  inventory  TABLE_TYPE   InnoDB
+endif
+
 Database  inventory  COLUMN_DEF   "sku=char(64) NOT NULL PRIMARY KEY"
 Database  inventory  COLUMN_DEF   "quantity=INT"
 Database  inventory  COLUMN_DEF   "stock_msg=char(64)"

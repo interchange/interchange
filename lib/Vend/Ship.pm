@@ -1,6 +1,6 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.1 2003-05-13 19:05:18 mheins Exp $
+# $Id: Ship.pm,v 2.2 2003-05-14 22:29:29 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -98,19 +98,51 @@ sub read_shipping {
 	$opt = {} unless $opt;
     my($code, $desc, $min, $criterion, $max, $cost, $mode);
 
+	my $loc;
+	$loc = $Vend::Cfg->{Shipping_repository}{default}
+			if $Vend::Cfg->{Shipping_repository};
+
+	$loc ||= {};
+
+	my $base_dir = $loc->{directory} || $loc->{dir} || $Vend::Cfg->{ProductDir};
+
+	my @files;
 	if ($file) {
-		#nada
+		push @files, $file;
 	}
 	elsif($opt->{add} or $Vend::Cfg->{Variable}{MV_SHIPPING}) {
 		$file = "$Vend::Cfg->{ScratchDir}/shipping.asc";
 		Vend::Util::writefile(">$file", $opt->{add} || $Vend::Cfg->{Variable}{MV_SHIPPING});
+		push @files, $file;
 	}
 	else {
+		my %found;
+		if($Vend::Cfg->{Shipping}) {
+			my $repos = $Vend::Cfg->{Shipping_repository};
+			for(keys %$repos) {
+				next unless $file = $repos->{$_}{config_file};
+				$file = Vend::Util::catfile($base_dir, $file)
+					unless $file =~ m{/};
+#::logDebug("found shipping file=$file");
+				$found{$file} = 1;
+				push @files, $file;
+			}
+		}
 		$file = $Vend::Cfg->{Special}{'shipping.asc'}
-				|| Vend::Util::catfile($Vend::Cfg->{ProductDir},'shipping.asc');
+				|| Vend::Util::catfile($base_dir, 'shipping.asc');
+
+		if(-f $file and !$found{$file}) {
+			push @files, $file;
+		}
 	}
 
-	my @flines = split /\n/, readfile($file);
+#::logDebug("shipping files=" . ::uneval(\@files));
+	my @flines;
+	for(@files) {
+		push @flines, split /\n/, readfile($_);
+#::logDebug("shipping lines=" . scalar(@flines));
+	}
+
 	if ($Vend::Cfg->{CustomShipping} =~ /^select\s+/i) {
 		($Vend::Cfg->{SQL_shipping} = 1, return)
 			if $Global::Foreground;
@@ -315,11 +347,12 @@ sub read_shipping {
 				};
 	}
 	UPSZONE: {
+
 		for (keys %zones) {
 			my $ref = $zones{$_};
 			if (! $ref->{zone_data}) {
 				$ref->{zone_file} = Vend::Util::catfile(
-											$Vend::Cfg->{ProductDir},
+											$base_dir,
 											"$ref->{zone_name}.csv",
 										) if ! $ref->{zone_file};
 				$ref->{zone_data} =  readfile($ref->{zone_file});
@@ -346,7 +379,6 @@ sub read_shipping {
 				$zone[0] =~ s/^\w+/low,high/;
 				@zone = grep /,/, @zone;
 				$zone[0] =~	s/\s*,\s*/\t/g;
-my $i = 1;
 				for(@zone[1 .. $#zone]) {
 					s/^\s*(\w+)\s*,/make_three($1, $len) . ',' . make_three($1, $len) . ','/e;
 					s/^\s*(\w+)\s*-\s*(\w+),/make_three($1, $len) . ',' . make_three($2, $len) . ','/e;
@@ -725,8 +757,10 @@ sub shipping {
 			$extra = $1;
 			my $loc = $Vend::Cfg->{Shipping_repository}{$what}
 				or return do_error("Unknown custom shipping type '%s'", $what);
-			my $routine = $loc->{cost_routine};
-			$routine ||= "Vend::Ship::${what}::calculate";
+			for(keys %$loc) {
+				$o->{$_} = $loc->{$_} unless defined $o->{$_};
+			}
+			my $routine = $o->{cost_routine} || "Vend::Ship::${what}::calculate";
 			my $sub = \&{"$routine"};
 			if(! defined $sub) {
 				::logOnce(
@@ -739,7 +773,7 @@ sub shipping {
 				return undef;
 			}
 #::logDebug("ready to calculate custom Ship type=$what total=$total options=$o");
-			$cost = $sub->($mode, $total, $row, $o, $loc, $extra);
+			$cost = $sub->($mode, $total, $row, $o, $opt, $extra);
 			$final += $cost;
 			last SHIPIT unless $o->{continue};
 		}

@@ -205,6 +205,7 @@ code/UserTag/title_bar.tag
 code/UserTag/ups_query.tag
 code/UserTag/usertrack.tag
 code/UserTag/var.tag
+code/UserTag/weight.tag
 code/Widget/gpg_keys.widget
 code/Widget/imagedir.widget
 code/Widget/imagehelper.widget
@@ -258,7 +259,6 @@ dist/catalog_after.cfg
 dist/catalog_before.cfg
 dist/error.log
 dist/etc/.empty
-dist/etc/jobs/i18n/update_locales
 dist/foundation/backup/.empty
 dist/foundation/catalog.cfg
 dist/foundation/config/additional_fields
@@ -1197,6 +1197,9 @@ eg/survey_graph.tag
 eg/te
 eg/usertag/benchmark
 eg/usertag/sleep
+eg/usps/html2tab
+eg/usps/join123local
+eg/usps/makezone
 extensions/ECML/Vend/ECML.pm
 extensions/ECML/ecml.coretag
 extensions/Interchange.pm
@@ -1278,6 +1281,9 @@ lib/Vend/Server.pm
 lib/Vend/Session.pm
 lib/Vend/SessionDB.pm
 lib/Vend/SessionFile.pm
+lib/Vend/Ship.pm
+lib/Vend/Ship/Postal.pm
+lib/Vend/Ship/QueryUPS.pm
 lib/Vend/Swish.pm
 lib/Vend/Table/Common.pm
 lib/Vend/Table/DBI.pm

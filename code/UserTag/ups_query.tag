@@ -77,9 +77,8 @@ sub {
 					undef $shipping;
 					$updated = $now;
 				}
-				if($shipping <= 0) {
+				elsif($shipping <= 0) {
 					$error = $shipping;
-					$updated = $now;
 					$shipping = 0;
 				}
 			}

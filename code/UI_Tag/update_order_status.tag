@@ -1,6 +1,6 @@
 UserTag update-order-status Order order_number
 UserTag update-order-status addAttr
-UserTag update-order-status Version $Id: update_order_status.tag,v 1.6 2003-01-14 00:20:17 mheins Exp $
+UserTag update-order-status Version $Id: update_order_status.tag,v 1.7 2003-05-14 22:29:29 mheins Exp $
 UserTag update-order-status Routine <<EOR
 sub {
 	my ($on, $opt) = @_;
@@ -307,6 +307,21 @@ sub {
 		$::Scratch->{ship_notice_username} = $user;
 		$::Scratch->{ship_notice_email} = $trec->{email}
 			or delete $::Scratch->{ship_notice_username};
+		if($opt->{send_email}) {
+			my $filename = $opt->{ship_notice_template} || 'etc/ship_notice';
+			my $contents = $Tag->file($filename);
+			if($contents) {
+				$contents = interpolate_html($contents);
+				$contents =~ s/^\s+//;
+				$contents =~ s/\s*$/\n/;
+				$Tag->email_raw({}, $contents);
+			}
+			else {
+				$Tag->warnings(
+						errmsg("No ship_notice_template '%s' found", $filename),
+					);
+			}
+		}
 	}
 	return;
 }

@@ -40,6 +40,16 @@ a database beginning with "test".
 Use the next option to add parameters. If your MySQL is password-protected
 (and you know the password) you may want to add "-u root -p".
 
+MYSQLTRANSACT
+.
+We can use the InnoDB table type in MySQL 3.23 and higher to
+allow transactions for orders. This prevents insertion of
+and updates to the order entry logs when there is an error.
+.
+If you have MySQL 4.0 you should certainly use this -- if you
+are using MySQL 3.23 or higher you might want to use it if the
+InnoDB table type is configured in.
+
 MYSQLCREATEOPT
 .
 To create the database you may need to supply a password and
