@@ -111,7 +111,7 @@ binary-arch: build install
 	dh_testdir
 	dh_testroot
 	dh_installdebconf
-	dh_installdocs README QuickStart WHATSNEW pdf/*.pdf
+	dh_installdocs 
 # install init.d script
 	dh_installinit -- defaults 21 19
 # install cron script
