@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange payment processing routines
 #
-# $Id: Menu.pm,v 2.14 2002-08-20 02:43:56 mheins Exp $
+# $Id: Menu.pm,v 2.15 2002-09-12 05:19:35 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.14 $, 10);
+$VERSION = substr(q$Revision: 2.15 $, 10);
 
 use Vend::Util;
 use strict;
@@ -136,6 +136,16 @@ my %transform = (
 		my $status = 1;
 		for(@$fields) {
 			$status = $status && (! $row->{$_} or Vend::Tags->if_mm('super'));
+		}
+		return $status;
+	},
+	logged_in => sub {
+		my ($row, $fields) = @_;
+		return 1 if ref($fields) ne 'ARRAY';
+		my $status = 1;
+		for(@$fields) {
+			next if ! length($row->{$_});
+			$status = $status && (! $::Vend::Session->{logged_in} ^ $row->{$_});
 		}
 		return $status;
 	},
@@ -378,8 +388,10 @@ sub dhtml_flyout {
 	my @out;
 	my $fdiv = $name . "_flyout";
 
+	my $vpf = $opt->{js_prefix} ||= 'mv_';
+
 	$template = <<EOF if $template !~ /\S/;
-{MV_LEVEL:}<div>{PAGE?}{MV_SPACER}<a id="{CODE}" href="{PAGE}" onMouseOver="mousein(this)" onMouseOut="mouseout(this)" TITLE="{DESCRIPTION}" class="$opt->{link_class}">{NAME}</A>{/PAGE?}{PAGE:}{MV_SPACER}{NAME}{/MV_SPACER}{/PAGE:}</div>{/MV_LEVEL:}
+{MV_LEVEL:}<div>{PAGE?}{MV_SPACER}<a id="{CODE}" href="{PAGE}" onMouseOver="${vpf}mousein(this)" onMouseOut="${vpf}mouseout(this)" TITLE="{DESCRIPTION}" class="$opt->{link_class}">{NAME}</A>{/PAGE?}{PAGE:}{MV_SPACER}{NAME}{/MV_SPACER}{/PAGE:}</div>{/MV_LEVEL:}
 EOF
 
 	$opt->{cursor_type} ||= 'hand';
@@ -395,11 +407,11 @@ EOF
 
 	$opt->{anchor_down} = is_yes($opt->{anchor_down}) || 0;
 
-
 	push @out, <<EOF;
 <script language="JavaScript1.3">
-var timeoutCode = -1;
-var lines = new Array;
+var ${vpf}timeoutCode = -1;
+var ${vpf}mydiv = '$fdiv';
+var ${vpf}lines = new Array;
 EOF
 
 	my %o = (
@@ -408,6 +420,7 @@ EOF
 			master      => 'parent_fld',
 			subordinate => 'code',
 			autodetect  => '1',
+			js_prefix	=> $vpf,
 			sort        => $opt->{sort} || 'code',
 			full        => '1',
 			spacing     => '4',
@@ -445,23 +458,26 @@ EOF
 	my %seen;
 	my @levels = grep !$seen{$_}++, map { $_->{mv_level} } @$rows;
 	@levels = sort { $a <=> $b } @levels;
+	my $last = $#levels || 0;
 	shift @levels;
 
 	push @out, <<EOF;
-var anchor_down = $opt->{anchor_down};
-var last_level = $levels[$#levels];
-var link_class = '$opt->{link_class}';
-var link_class_open = '$opt->{link_class_open}';
-var link_class_closed = '$opt->{link_class_closed}';
-var link_style = '$opt->{link_style}';
-var link_style_open = '$opt->{link_style_open}';
-var link_style_closed = '$opt->{link_style_closed}';
+var ${vpf}anchor_down = $opt->{anchor_down};
+var ${vpf}last_level = $last;
+var ${vpf}link_class = '$opt->{link_class}';
+var ${vpf}link_class_open = '$opt->{link_class_open}';
+var ${vpf}link_class_closed = '$opt->{link_class_closed}';
+var ${vpf}link_style = '$opt->{link_style}';
+var ${vpf}link_style_open = '$opt->{link_style_open}';
+var ${vpf}link_style_closed = '$opt->{link_style_closed}';
 EOF
-	push @out, <<EOF;
+	push @out, <<EOF unless $opt->{no_emit_code};
 
-	function menu_link (idx) {
+// CLIP HERE
+// If you want to move these functions to the HEAD
+	function ${vpf}menu_link (idx) {
 
-		var l = lines[ idx ];
+		var l = ${vpf}lines[ idx ];
 
 		if(l == undefined) {
 			alert("Bad idx=" + idx + ", no line there.");
@@ -469,26 +485,26 @@ EOF
 		}
 
 		var out = '<DIV';
-		if(l[MV_CHILDREN] > 0) {
+		if(l[${vpf}MV_CHILDREN] > 0) {
 			out = out + ' id="' + l[0] + '"';
-			out = out + ' onMouseOver="mousein(this,' + l[MV_LEVEL] + ')"';
+			out = out + ' onMouseOver="${vpf}mousein(this,' + l[${vpf}MV_LEVEL] + ')"';
 		}
 		out += '>';
-		var tstyle = link_style;
-		var tclass = link_class;
-		if(l[PAGE]) {
-			out = out + '<a href="' + l[ PAGE ] + '"';
+		var tstyle = ${vpf}link_style;
+		var tclass = ${vpf}link_class;
+		if(l[${vpf}PAGE]) {
+			out = out + '<a href="' + l[ ${vpf}PAGE ] + '"';
 			if(tclass)
 				out = out + ' class="' + tclass + '"';
 			if(tstyle)
 				out = out + ' style="' + tstyle + '"';
-			if(l[DESCRIPTION])
-				out = out + ' title="' + l[ DESCRIPTION ] + '"';
+			if(l[${vpf}DESCRIPTION])
+				out = out + ' title="' + l[ ${vpf}DESCRIPTION ] + '"';
 			out = out + '>';
-			out = out + l[ NAME ] + '</a>';
+			out = out + l[ ${vpf}NAME ] + '</a>';
 		}
 		else {
-			out = out + l[ NAME ];
+			out = out + l[ ${vpf}NAME ];
 		}
 	// alert("build idx=" + idx + " into: " + out);
 		out += '</div>';
@@ -496,29 +512,27 @@ EOF
 		return out;
 	}
 
-	var mydiv = '$fdiv';
-
-	function mousein (obj,level) {
-		if( browserType() == "other" )
+	function ${vpf}mousein (obj,level) {
+		if( ${vpf}browserType() == "other" )
 			return;
 
 		if(level == undefined) 
 			level = 0;
 		level++;
 
-		var divname = mydiv + level;
+		var divname = ${vpf}mydiv + level;
 		var fod = document.getElementById( divname );
 		if(fod == undefined) 
 			return;
 		fod.style.display = 'none';
-		clearTimeout( timeoutCode );
-		timeoutCode = -1;
+		clearTimeout( ${vpf}timeoutCode );
+		${vpf}timeoutCode = -1;
 
 		var html = "";
 
 		var idx = -1;
-		for(var j = 0; j < lines.length; j++) {
-			if(lines[j][0] == obj.id) {
+		for(var j = 0; j < ${vpf}lines.length; j++) {
+			if(${vpf}lines[j][0] == obj.id) {
 				idx = j;
 				break;
 			}
@@ -527,14 +541,17 @@ EOF
 		if(idx < 0) 
 			return;
 	
-		var currentlevel = lines[idx][MV_LEVEL];
+		var l = ${vpf}lines[idx];
+		var currentlevel = l[${vpf}MV_LEVEL];
 		if(currentlevel == undefined)
 			currentlevel = 0;
 
-		menuClear(currentlevel);
+		${vpf}menuClear(currentlevel);
+		if(l[${vpf}MV_CHILDREN] < 1) 
+			return;
 
-		var x = getRightX( obj ) + 1;
-		var y = getTopX( obj );
+		var x = ${vpf}getRightX( obj ) + 1;
+		var y = ${vpf}getTopX( obj );
 		var menu = fod.style;
 		menu.left = x + "px";
 		menu.top = y + "px";
@@ -543,21 +560,21 @@ EOF
 		var i;
 		for( i = idx + 1; ; i++ )
 		{
-			var l = lines[i];
-// alert("running link for level=" + l[MV_LEVEL] + ", line=" + l);
-			if(l == undefined || l[MV_LEVEL] < level)
+			var l = ${vpf}lines[i];
+// alert("running link for level=" + l[${vpf}MV_LEVEL] + ", line=" + l);
+			if(l == undefined || l[${vpf}MV_LEVEL] < level)
 				break;
-			if(l[MV_LEVEL] == level)
-				html += menu_link(i);
+			if(l[${vpf}MV_LEVEL] == level)
+				html += ${vpf}menu_link(i);
 		}
 		fod.innerHTML = html;
 	}
 
-	function getRightX( obj )
+	function ${vpf}getRightX( obj )
 	{
 		var pos = 0;
-		if( browserType() == "ie" )
-			if(anchor_down == 1) 
+		if( ${vpf}browserType() == "ie" )
+			if(${vpf}anchor_down == 1) 
 				pos = obj.getBoundingClientRect().left + 2;
 			else
 				pos = obj.getBoundingClientRect().right - 2;
@@ -569,17 +586,17 @@ EOF
 				x = x.offsetParent;
 			}
 			pos = n + obj.offsetLeft;
-			if(anchor_down != 1)
+			if(${vpf}anchor_down != 1)
 				pos += obj.offsetWidth;
 		}
 		return pos;
 	}
 
-	function getTopX( obj )
+	function ${vpf}getTopX( obj )
 	{
 		var pos = 0;
-		if( browserType() == "ie" )
-			if(anchor_down) 
+		if( ${vpf}browserType() == "ie" )
+			if(${vpf}anchor_down) 
 				pos = obj.getBoundingClientRect().bottom + 2;
 			else
 				pos = obj.getBoundingClientRect().top - 2;
@@ -591,68 +608,72 @@ EOF
 				x = x.offsetParent;
 			}
 			pos = n + obj.offsetTop;
-			if(anchor_down)
+			if(${vpf}anchor_down)
 				pos += obj.offsetHeight;
 		}
 		return pos;
 	}
 	
-	function mouseout( obj, level )
+	function ${vpf}mouseout( obj, level )
 	{
-		if( browserType() == "other" )
+		if( ${vpf}browserType() == "other" )
 			return;
 
 		if(level == undefined) 
 			level = 0;
 		level++;
-		timeoutCode = setTimeout( "menuClear();", 1000 );
+		${vpf}timeoutCode = setTimeout( "${vpf}menuClear();", 1000 );
 	}
 
-	function menuClear(level)
+	function ${vpf}menuClear(level)
 	{
 		if (level == undefined)
 			level = 0;
 		level++;
-		for( var i = level; i <= last_level; i++) {
-			var thisdiv = mydiv + i;
+		for( var i = level; i <= ${vpf}last_level; i++) {
+			var thisdiv = ${vpf}mydiv + i;
 			var fod = document.getElementById( thisdiv );
 			if(fod != undefined)
 				fod.style.display = 'none';
 		}
-		clearTimeout( timeoutCode );
-		timeoutCode = -1;
+		clearTimeout( ${vpf}timeoutCode );
+		${vpf}timeoutCode = -1;
 	}
 
-	function menuBusy()
+	function ${vpf}menuBusy()
 	{
-		clearTimeout( timeoutCode );
-		timeoutCode = -1;
+		clearTimeout( ${vpf}timeoutCode );
+		${vpf}timeoutCode = -1;
 	}
 
-	var clientType = "unknown";
+	var ${vpf}clientType = "unknown";
 
-	function browserType()
+	function ${vpf}browserType()
 	{
-		if( clientType != "unknown"  )
-			return clientType;
+		if( ${vpf}clientType != "unknown"  )
+			return ${vpf}clientType;
 	
-		clientType = "other";
+		${vpf}clientType = "other";
 		if (document.all) {
 			if( document.getElementById )
-		  		clientType = "ie";
+		  		${vpf}clientType = "ie";
 		}
 		else if (document.layers) {
 		}
 		else if (document.getElementById) {
-			clientType = "ns6";
+			${vpf}clientType = "ns6";
 		}
 		else
 		{
 		}
 
-		return clientType;
+		return ${vpf}clientType;
 	}
 
+// END CLIP
+EOF
+
+	push @out, <<EOF;
 </script>
 EOF
 
@@ -663,7 +684,7 @@ EOF
 						display:none;
 						$opt->{flyout_style}
 					"
-		 OnMouseOver="menuBusy();" OnMouseOut="mouseout();"></DIV>
+		 OnMouseOver="${vpf}menuBusy();" OnMouseOut="${vpf}mouseout();"></DIV>
 EOF
 	}
 
@@ -697,13 +718,14 @@ sub dhtml_tree {
 	my @out;
 	# out 0
 
+	my $vpf = $opt->{js_prefix} ||= 'mv_';
 	$opt->{toggle_class} ||= '';
-	$opt->{explode_url} ||= "javascript:do_explode(); void(0)";
-	$opt->{collapse_url} ||= "javascript:do_collapse(); void(0)";
+	$opt->{explode_url} ||= "javascript:${vpf}do_explode(); void(0)";
+	$opt->{collapse_url} ||= "javascript:${vpf}do_collapse(); void(0)";
 	$opt->{header_template} ||= <<EOF;
 <P>
 <a href="{EXPLODE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}>Explode tree</A><br>
-<a href="{COLLAPSE_URL} {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}">Collapse tree</A>
+<a href="{COLLAPSE_URL}" {LINK_STYLE?} style="{LINK_STYLE}"{/LINK_STYLE?} {LINK_CLASS?} class="{LINK_CLASS}"{/LINK_CLASS?}">Collapse tree</A>
 </P>
 EOF
 
@@ -718,11 +740,11 @@ EOF
 	$opt->{div_style} ||= '';
 	push @out, <<EOF;
 
-<div id=treebox style="visibility: Visible">
+<div id=${vpf}treebox style="visibility: Visible">
 Test.
 </div>
 <script language="JavaScript1.3">
-var lines = new Array;
+var ${vpf}lines = new Array;
 EOF
 
 	my %o = (
@@ -733,6 +755,7 @@ EOF
 			autodetect  => '1',
 			sort        => $opt->{sort} || 'code',
 			iterator    => \&tree_line,
+			js_prefix	=> $vpf,
 			full        => '1',
 			spacing     => '4',
 			_transform   => $opt->{_transform},
@@ -750,72 +773,79 @@ EOF
 	else {
 		$CGI::values{open} = $::Scratch->{dhtml_tree_open};
 	}
-	my $out = '  var openstatus = [';
-	$out .=  join ",", split //, $CGI::values{open};
+	my $out = "  var ${vpf}openstatus = [";
+	my @open =  split /,/, $CGI::values{open};
+	my @o;
+
+	my %hsh = (map { ($_, 1) } @open);
+
+	for(0 .. $open[$#open]) {
+		push @o, ($hsh{$_} ? 1 : 0);
+	}
+	$out .= join ",", @o;
 	$out .= "];\n";
-	$out .= " var explode = ";
+	$out .= " var ${vpf}explode = ";
 	$out .= $CGI::values{explode} ? 1 : 0;
 	$out .= ";\n";
-	$out .= " var collapse = ";
+	$out .= " var ${vpf}collapse = ";
 	$out .= $CGI::values{collapse} ? 1 : 0;
 	$out .= ";\n";
 
 	push @out, $out;
 
 	push @out, <<EOF;
-var next_level = 0;
-var openstring = '';
-var link_class = '$opt->{link_class}';
-var link_class_open = '$opt->{link_class_open}';
-var link_class_closed = '$opt->{link_class_closed}';
-var link_style = '$opt->{link_style}';
-var link_style_open = '$opt->{link_style_open}';
-var link_style_closed = '$opt->{link_style_closed}';
-var toggle_class = '$opt->{toggle_class}';
-toggle_anchor_clear = '$opt->{toggle_anchor_clear}';
-toggle_anchor_closed = '$opt->{toggle_anchor_closed}';
-toggle_anchor_open = '$opt->{toggle_anchor_open}';
-var treebox = document.getElementById('treebox');
+var ${vpf}next_level = 0;
+var ${vpf}openstring = '';
+var ${vpf}link_class = '$opt->{link_class}';
+var ${vpf}link_class_open = '$opt->{link_class_open}';
+var ${vpf}link_class_closed = '$opt->{link_class_closed}';
+var ${vpf}link_style = '$opt->{link_style}';
+var ${vpf}link_style_open = '$opt->{link_style_open}';
+var ${vpf}link_style_closed = '$opt->{link_style_closed}';
+var ${vpf}toggle_class = '$opt->{toggle_class}';
+var ${vpf}toggle_anchor_clear = '$opt->{toggle_anchor_clear}';
+var ${vpf}toggle_anchor_closed = '$opt->{toggle_anchor_closed}';
+var ${vpf}toggle_anchor_open = '$opt->{toggle_anchor_open}';
+var ${vpf}treebox = document.getElementById('${vpf}treebox');
 EOF
 
-	push @out, <<'EOF';
-function tree_link (idx) {
+	push @out, <<EOF unless $opt->{no_emit_code};
+function ${vpf}tree_link (idx) {
 
 	var out = '';
 
-	var l = lines[idx];
+	var l = ${vpf}lines[idx];
 
 	if(l == undefined) {
 		alert("Bad idx=" + idx + ", no line there.");
 		return;
 	}
 
-	if(l[MV_LEVEL] > next_level)
+	if(l[${vpf}MV_LEVEL] > ${vpf}next_level)
 		return '';
-		// return 'next_level=' + next_level + ', mv_level=' + l[MV_LEVEL] + '<br>';
-// alert("line is " + l);
+
 	var i;
-	var needed = l[MV_LEVEL];
+	var needed = l[${vpf}MV_LEVEL];
 	for(i = 1; i <= needed; i++)
 		out = out + '&nbsp;&nbsp;&nbsp;&nbsp;';
 
-	var tstyle = link_style;
-	var tclass = link_class;
-	if(l[MV_CHILDREN] > 0) {
-		if(openstatus[idx] == 1) {
-			tclass = link_class_open;
-			tstyle = link_style_open;
-			tanchor = toggle_anchor_open;
-			next_level = l[MV_LEVEL] + 1;
+	var tstyle = ${vpf}link_style;
+	var tclass = ${vpf}link_class;
+	if(l[${vpf}MV_CHILDREN] > 0) {
+		if(${vpf}openstatus[idx] == 1) {
+			tclass = ${vpf}link_class_open;
+			tstyle = ${vpf}link_style_open;
+			tanchor = ${vpf}toggle_anchor_open;
+			${vpf}next_level = l[${vpf}MV_LEVEL] + 1;
 		}
 		else {
-			tclass = link_class_closed;
-			tstyle = link_style_closed;
-			tanchor = toggle_anchor_closed;
-			next_level = l[MV_LEVEL];
+			tclass = ${vpf}link_class_closed;
+			tstyle = ${vpf}link_style_closed;
+			tanchor = ${vpf}toggle_anchor_closed;
+			${vpf}next_level = l[${vpf}MV_LEVEL];
 		}
 
-		out = out + '<a href="javascript:toggit(' + idx + ');void(0)"';
+		out = out + '<a href="javascript:${vpf}toggit(' + idx + ');void(0)"';
 		if(tclass)
 			out = out + ' class="' + tclass + '"';
 		if(tstyle)
@@ -825,77 +855,93 @@ function tree_link (idx) {
 		out = out + '</a>';
 	}
 	else {
-		out = out + toggle_anchor_clear;
-		next_level = l[MV_LEVEL];
+		out = out + ${vpf}toggle_anchor_clear;
+		next_level = l[${vpf}MV_LEVEL];
 	}
 
-	if(l[PAGE]) {
-		out = out + '<a href="' + l[PAGE] + openstring + '"';
+	if(l[${vpf}PAGE]) {
+		out = out + '<a href="' + l[${vpf}PAGE] + ${vpf}openstring + '"';
 		if(tclass)
 			out = out + ' class="' + tclass + '"';
 		if(tstyle)
 			out = out + ' style="' + tstyle + '"';
-		if(l[DESCRIPTION])
-			out = out + ' title="' + l[DESCRIPTION] + '"';
+		if(l[${vpf}DESCRIPTION])
+			out = out + ' title="' + l[${vpf}DESCRIPTION] + '"';
 		out = out + '>';
-		out = out + l[NAME] + '</a>';
+		out = out + l[${vpf}NAME] + '</a>';
 	}
 	else {
-		out = out + l[NAME];
+		out = out + l[${vpf}NAME];
 	}
-	// out = out + ' level=' + l[MV_LEVEL] + ' children=' + l[MV_CHILDREN];
-	// out = out + ' needed=' + needed + ", next_level=" + next_level;
 	out = out + '<br>';
 
 	return out;
 }
-function toggit (idx) {
 
-	var l = lines[idx];
+function ${vpf}toggit (idx) {
+
+	var l = ${vpf}lines[idx];
 	if(l == undefined) {
 		alert("bad index " + idx);
 		return;
 	}
-	if(l[MV_CHILDREN] < 1) {
+	if(l[${vpf}MV_CHILDREN] < 1) {
 		alert("nothing to toggle at index " + idx);
 		return;
 	}
 
-	openstatus[idx] = openstatus[idx] == 1 ? 0 : 1;
-	openstring = openstatus.join('');
-	openstring = openstring.replace(/0+$/, '');
-	rewrite_tree();
+	${vpf}openstatus[idx] = ${vpf}openstatus[idx] == 1 ? 0 : 1;
+	${vpf}gen_openstring();
+	${vpf}rewrite_tree();
 }
-function do_explode () {
-	for(var i = 0; i < lines.length; i++)
-		openstatus[i] = 1;
-	rewrite_tree();
-}
-function do_collapse () {
-	for(var i = 0; i < lines.length; i++)
-		openstatus[i] = 0;
-	rewrite_tree();
-}
-function rewrite_tree () {
-	var thing = '';
-	for(i = 0; i < lines.length; i++) {
-		thing = thing + tree_link(i);
+function ${vpf}gen_openstring () {
+	${vpf}openstring = '';
+	for(var p = 0; p < ${vpf}openstatus.length; p++) {
+		if(${vpf}openstatus[p])
+			${vpf}openstring += p + ',';
 	}
-	treebox.innerHTML = thing;
-	next_level = 0;
+	${vpf}openstring = ${vpf}openstring.replace(/,+\$/, '');
+	return;
 }
-if(collapse == 1 || explode == 1) {
-	openstatus.length = 0;
+function ${vpf}do_explode () {
+	for(var i = 0; i < ${vpf}lines.length; i++)
+		${vpf}openstatus[i] = 1;
+	${vpf}gen_openstring();
+	${vpf}rewrite_tree();
 }
-for( var i = 0; i < lines.length; i++) {
-	if(openstatus[i] == undefined)
-		openstatus[i] = explode;
+function ${vpf}do_collapse () {
+	for(var i = 0; i < ${vpf}lines.length; i++)
+		${vpf}openstatus[i] = 0;
+	${vpf}gen_openstring();
+	${vpf}rewrite_tree();
 }
-collapse = 0;
-explode = 0;
-openstring = openstatus.join('');
-openstring = openstring.replace(/0+$/, '');
-rewrite_tree();
+function ${vpf}rewrite_tree () {
+	var thing = '';
+	for(i = 0; i < ${vpf}lines.length; i++) {
+		thing = thing + ${vpf}tree_link(i);
+	}
+	${vpf}treebox.innerHTML = thing;
+	${vpf}next_level = 0;
+}
+
+// END CLIP
+
+EOF
+
+	push @out, <<EOF;
+
+if(${vpf}collapse == 1 || ${vpf}explode == 1) {
+	${vpf}openstatus.length = 0;
+}
+for( var i = 0; i < ${vpf}lines.length; i++) {
+	if(${vpf}openstatus[i] == undefined)
+		${vpf}openstatus[i] = ${vpf}explode;
+}
+
+${vpf}collapse = 0;
+${vpf}explode = 0;
+${vpf}gen_openstring();
+${vpf}rewrite_tree();
 </script>
 EOF
 
@@ -989,8 +1035,9 @@ sub tree_line {
 	my $fields;
 
 	if (! defined $opt->{loopinc}) {
+		my $vpf = $opt->{js_prefix} || 'mv_';
 		$opt->{loopinc} = 0;
-		$opt->{loopname} ||= 'lines';
+		$opt->{loopname} ||= $vpf . 'lines';
 		$fields = [qw/	code
 							parent_fld
 							mv_level
@@ -1019,7 +1066,7 @@ sub tree_line {
 		}
 		push @$fields, 'open';
 		for(my $i = 1; $i < @$fields; $i++) {
-			push @out, "var \U$fields->[$i]\E = $i;";
+			push @out, "var $vpf\U$fields->[$i]\E = $i;";
 		}
 		pop @$fields;
 		$opt->{loopfields} = $fields;
@@ -1132,6 +1179,59 @@ EOF
 sub menu {
 	my ($name, $opt, $template) = @_;
 	
+	if(! $name and ! $opt->{list}) {
+		# Auto menu for pages
+		if($::Scratch->{mv_menu}) {
+			my @names= qw/code page form anchor description/;
+			my $i = 0;
+			my %hash = map { ( $_, $i++) } @names;
+			my $code = '000';
+			my @rows;
+			my @items = split m{(?:</li\s*>)\s*<li>\s*}i, $::Scratch->{mv_menu};
+			for(@items) {
+				my ($page, $anchor, $form, $desc);
+				m{
+					<a \s+
+						(?:[^>]+\s+)?
+						title \s*=\s*
+						(["']) # mandatory quote
+							([^"'>\s]+)
+						\1      # end quote
+					}isx and $desc = $2;
+				m{
+					<a \s+
+						(?:[^>]+\s+)?
+						href \s*=\s*
+						(["']?) # possible quote
+							([^"'>\s]+)
+						\1      # end quote}isx
+					and $page = $2;
+				($page, $form) = split /\?/, $page, 2
+					if $page;
+				s{<a\s+.*?>}{}is;
+				s{</a>}{}i;
+				push @rows, [ $code++, $page, $form, $anchor, $desc ];
+			}
+			$opt->{list} = [ \@rows, \%hash, \@names ];
+
+		}
+		else {
+			my $page_name = $Global::Variable->{MV_PAGE};
+			my $dir = Vend::Tags->var('MV_MENU_DIRECTORY', 2) || 'include/menus';
+			while($page_name =~ s:/[^/]+$::) {
+				my $fn = "$dir/$page_name.txt";
+#::logDebug("page name=$page_name, testing for $fn");
+				if(-f $fn) {
+					$opt->{file} = $fn;
+					last;
+				}
+			}
+			if(! $opt->{file} and -f "$dir/default.txt") {
+				$opt->{file} = "$dir/default.txt";
+			}
+		}
+	}
+
 	$opt->{dhtml_browser} = dhtml_browser()
 		unless defined $opt->{dhtml_browser};
 	$opt->{menu_type} ||= 'simple';
@@ -1245,7 +1345,7 @@ sub menu {
 		return dhtml_flyout($name,$opt,$template);
 	}
 	elsif($opt->{menu_type} eq 'simple') {
-		if($opt->{search}) {
+		if($opt->{search} || $opt->{list}) {
 			## Do nothing
 		}
 		elsif(! $opt->{file}) {
