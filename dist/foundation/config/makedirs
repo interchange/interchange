@@ -42,9 +42,9 @@ then
 	ln    -s     $LOGDIR/orders    __MVC_RELOCATE____MVC_CATROOT__
 	chmod $DMODE __MVC_RELOCATE__$LOGDIR/logs
 	chmod $DMODE __MVC_RELOCATE__$LOGDIR/orders
+	touch        __MVC_RELOCATE__$LOGDIR/error.log
 	if test -n "$CATUSER"
 	then
-		touch           __MVC_RELOCATE__$LOGDIR/error.log
 		chown $CATUSER  __MVC_RELOCATE__$LOGDIR/error.log
 		chgrp $CATGROUP __MVC_RELOCATE__$LOGDIR/error.log
 	fi
@@ -54,9 +54,9 @@ else
 	mkdir -p     __MVC_RELOCATE__$LOGDIR/logs
 	chmod $DMODE __MVC_RELOCATE__$LOGDIR/logs
 	chmod $DMODE __MVC_RELOCATE__$LOGDIR/orders
+	touch        __MVC_RELOCATE__$LOGDIR/error.log
 	if test -n "$CATUSER"
 	then
-		touch           __MVC_RELOCATE__$LOGDIR/error.log
 		chown $CATUSER  __MVC_RELOCATE__$LOGDIR/error.log
 		chgrp $CATGROUP __MVC_RELOCATE__$LOGDIR/error.log
 	fi
