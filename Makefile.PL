@@ -737,11 +737,17 @@ sub MY::install {
 		\*install;
 	}
 
-	my $new = <<'EOF';
+	my $uidparm;
+
+	if ($MV::Default{INTERCHANGE_USER}) {
+		$uidparm = "INTERCHANGE_USER=$MV::Default{INTERCHANGE_USER}";
+	}
+	
+	my $new = <<EOF;
 VERBINST=0
 
 mv_install ::
-			$(PERL) Makefile.PL force final=$(INSTALLARCHLIB)
+			\$(PERL) Makefile.PL force $uidparm final=\$(INSTALLARCHLIB)
 
 install :: all pure_install doc_install mv_install
 
