@@ -868,7 +868,7 @@ EOF
 	}
 
 	$out .= <<EOF;
-<table class=touter border="" cellspacing="0" cellpadding="0" width="$opt->{table_width}">
+<table class=touter border="0" cellspacing="0" cellpadding="0" width="$opt->{table_width}">
 <tr>
   <td>
 
@@ -1325,7 +1325,7 @@ EOF
 EOF
 			$rowcount = 0;
 		}
-		$out .= "<tr class=rnorm>" unless $rowcount++ % $rowdiv;
+		$out .= "<tr class=rnorm>\n" unless $rowcount++ % $rowdiv;
 		$out .= $display;
 		$out .= "</TR>\n" unless $rowcount % $rowdiv;
 	}
