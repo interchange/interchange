@@ -3,7 +3,7 @@
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.17 2002-10-17 04:46:24 mheins Exp $
+# $Id: makecat.PL,v 2.18 2003-01-10 12:07:50 kwalsh Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -1886,7 +1886,7 @@ proper value and ensure that the SUID bit is turned off on the link
 program ($cginame).
 
 EOF
-			chown($catuid, $catgid, $_) or die "\nchown $_: $!\n";
+			chown($catuid, $catgid, $cginame) or die "\nchown $cginame: $!\n";
 			prompt("Press <ENTER> to continue....");
 		}
 	}
@@ -2277,7 +2277,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.17 2002-10-17 04:46:24 mheins Exp $
+# $Id: makecat.PL,v 2.18 2003-01-10 12:07:50 kwalsh Exp $
 
 =head1 INTRODUCTION
 
