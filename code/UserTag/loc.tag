@@ -11,6 +11,8 @@ UserTag loc Routine <<EOF
 sub {
     my ($locale, $message) = @_;
     if($::Pragma->{no_locale_parse}) {
+		## Need to do this but might have side-effects in PreFork mode
+		undef $Vend::Parse::myRefs{Alias}{l};
 		my $begin = '[L';
 		$begin .= " $locale" if $locale;
 		$begin .= ']';
