@@ -1,6 +1,6 @@
 # Vend::Table::InMemory - Store an Interchange table in memory
 #
-# $Id: InMemory.pm,v 2.10 2003-06-18 17:34:46 jon Exp $
+# $Id: InMemory.pm,v 2.11 2003-07-12 04:47:10 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Table::InMemory;
 use Vend::Table::Common qw(!config !columns);
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 2.10 $, 10);
+$VERSION = substr(q$Revision: 2.11 $, 10);
 use strict;
 
 # 0: column names
@@ -71,7 +71,7 @@ sub create {
 
 	undef $config->{Transactions};
 
-	die "columns argument $columns is not an array ref\n"
+	die ::errmsg("columns argument %s is not an array ref", $columns)
 		unless CORE::ref($columns) eq 'ARRAY';
 
 	my $column_index = Vend::Table::Common::create_columns($columns, $config);
@@ -106,7 +106,11 @@ sub close_table {
 sub row {
 	my ($s, $key) = @_;
 	my $a = $s->[$TIE_HASH]{$key};
-	die "There is no row with index '$key'" unless defined $a;
+    die $s->log_error(
+					"There is no row with index '%s' in database %s",
+					$key,
+					$s->[$FILENAME],
+			) unless defined $a;
 	return @$a;
 }
 

@@ -1,6 +1,6 @@
 # Vend::Table::SDBM - Access an Interchange table stored in Perl's internal SDBM
 #
-# $Id: SDBM.pm,v 2.7 2003-07-06 17:06:10 mheins Exp $
+# $Id: SDBM.pm,v 2.8 2003-07-12 04:47:10 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -24,7 +24,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::SDBM;
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 use strict;
 use Fcntl;
 use SDBM_File;
@@ -32,7 +32,7 @@ use vars qw($VERSION @ISA);
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 
 sub create {
 	my ($class, $config, $columns, $filename) = @_;
@@ -41,15 +41,8 @@ sub create {
 #::logDebug("called create, config=" . ::uneval_it($config));
 	my $File_permission_mode = $config->{File_permission_mode} || 0666;
 
-	die "columns argument $columns is not an array ref\n"
+	die ::errmsg("columns argument %s is not an array ref", $columns)
 		unless CORE::ref($columns) eq 'ARRAY';
-
-	# my $column_file = "$filename.columns";
-	# my @columns = @$columns;
-	# open(COLUMNS, ">$column_file")
-	#    or die "Couldn't create '$column_file': $!";
-	# print COLUMNS join("\t", @columns), "\n";
-	# close(COLUMNS);
 
 	my $column_index = Vend::Table::Common::create_columns($columns, $config);
 
@@ -120,7 +113,7 @@ sub open_table {
 	}
 
 	my $dbm = tie(%$tie, 'SDBM_File', $filename, $flags, 0600)
-		or die "Could not open '$filename': $!";
+		or die errmsg("%s %s: %s\n", errmsg("open"), $filename, $!);
 
 	my $columns = [split(/\t/, $tie->{'c'})];
 

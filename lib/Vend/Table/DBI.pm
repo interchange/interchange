@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.49 2003-07-06 04:38:28 mheins Exp $
+# $Id: DBI.pm,v 2.50 2003-07-12 04:47:10 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.49 $, 10);
+$VERSION = substr(q$Revision: 2.50 $, 10);
 
 use strict;
 
@@ -323,7 +323,7 @@ sub create {
 					|| $DBI::errstr
 					|| "unknown error. Driver '$dname' installed?";
 		}
-		die "connect failed (create) -- $msg\n";
+		die ::errstr("connect failed (create) -- %s\n",$msg);
 	}
 
 	# Allow multiple tables in different DBs to have same local name
@@ -337,8 +337,11 @@ sub create {
 
 	check_capability($config, $db->{Driver}{Name});
 
-    die "columns argument $columns is not an array ref\n"
-        unless CORE::ref($columns) eq 'ARRAY';
+    die ::errmsg(
+			"table %s: columns argument %s is not an array ref\n",
+			$config->{name},
+			$columns,
+		  ) unless CORE::ref($columns) eq 'ARRAY';
 
 	if(defined $dattr) {
 		for(keys %$dattr) {
@@ -593,7 +596,7 @@ sub open_table {
 					};
 					$msg = $@ || $DBI::errstr || "unknown error. Driver '$dname' installed?";
 				}
-				die "connect failed -- $msg\n";
+				die ::errmsg("table %s connect failed -- %s\n", $tablename, $msg);
 			}
 		}
 		$DBI_connect_bad{$config->{dsn_id}} = 0;
@@ -604,6 +607,8 @@ sub open_table {
 #::logDebug("$config->{name} using cached connection $config->{dsn_id}");
 	}
   }
+
+	die ::errmsg("%s: %s", $tablename, $DBI::errstr) unless $db;
 
 	# Allow multiple tables in different DBs to have same local name
 	$tablename = $config->{REAL_NAME}
@@ -620,8 +625,6 @@ sub open_table {
 		$DBI_connect_count{$config->{dsn_id}}++;
 	}
 #::logDebug("connect count open: " . $DBI_connect_count{$config->{dsn_id}});
-
-	die "$tablename: $DBI::errstr" unless $db;
 
 	if($config->{HANDLE_ONLY}) {
 		return bless [$config, $tablename, undef, undef, undef, $db], $class;
@@ -661,7 +664,7 @@ sub open_table {
 
 
 
-	die "DBI: no column names returned for $tablename\n"
+	die ::errmsg("DBI: no column names returned for %s\n", $tablename)
 			unless defined $config->{NAME}[0];
 
 	# Check if we have a non-first-column key
@@ -806,15 +809,21 @@ sub inc_field {
     my ($s, $key, $column, $value) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
 	$column = $s->[$NAME][ $s->column_index($column) ]; 
-	$key = $s->[$DBI]->quote($key)
-		unless exists $s->[$CONFIG]{NUMERIC}{$s->[$KEY]};
-    my $sth = $s->[$DBI]->prepare(
-		"select $column from $s->[$TABLE] where $s->[$KEY] = $key");
-    die "inc_field: $DBI::errstr\n" unless defined $sth;
-    $sth->execute();
-    $value += ($sth->fetchrow_array)[0];
-	#$value = $s->[$DBI]->quote($value, $column);
-    $sth = $s->[$DBI]->do("update $s->[$TABLE] SET $column=$value where $s->[$KEY] = $key");
+	my $q1 = "select $column from $s->[$TABLE] where $s->[$KEY] = ?";
+	my $q2 = "update $s->[$TABLE] set $column = ? where $s->[$KEY] = ?";
+    my $sth1 = $s->[$DBI]->prepare($q1)
+		or $s->log_error("%s query (%s) failed: %s", 'inc_field', $q1, $DBI::errstr)
+		and return undef;
+    my $sth2 = $s->[$DBI]->prepare($q2)
+		or $s->log_error("%s query (%s) failed: %s", 'inc_field', $q2, $DBI::errstr)
+		and return undef;
+    $sth1->execute($key)
+		or $s->log_error("%s query (%s) failed: %s", 'inc_field', $q1, $DBI::errstr)
+		and return undef;
+    $value += ($sth1->fetchrow_array)[0];
+    $sth2->execute($value, $key)
+		or $s->log_error("%s query (%s) failed: %s", 'inc_field', $q2, $DBI::errstr)
+		and return undef;
     $value;
 }
 
@@ -825,26 +834,19 @@ sub commit {
 	# This is pretty harmless, no?
 	return undef if ! defined $s->[$DBI];
 	unless ($s->[$CONFIG]{HAS_TRANSACTIONS}) {
-		::logError(
-			"commit attempted on non-transaction database, returning success"
+		$s->log_error(
+			"commit attempted on non-transaction database %s, returning success",
+			$s->[$TABLE],
 		);
 		return 1;
 	}
-
-#	if (! defined $s->[$DBI]) {
-#		::logError(
-#			"commit attempted on non-open database handle for table: %s",
-#			$s->[$TABLE],
-#			);
-#		return undef;
-#	}
 
 	my $status;
 	eval {
 		$status = $s->[$DBI]->commit();
 	};
 	if($@) {
-		::logError("%s commit failed: %s", $s->[$TABLE], $@);
+		$s->log_error("%s commit failed: %s", $s->[$TABLE], $@);
 	}
 	return $status;
 }
@@ -856,13 +858,13 @@ sub rollback {
 	# This is pretty harmless, no?
 	return undef if ! defined $s->[$DBI];
 
-#	if (! defined $s->[$DBI]) {
-#		::logError(
-#			"rollback attempted on non-open database handle for table: %s",
-#			$s->[$TABLE],
-#		);
-#		return undef;
-#	}
+	unless ($s->[$CONFIG]{HAS_TRANSACTIONS}) {
+		$s->log_error(
+			"rollback attempted on non-transaction database %s, returning failure",
+			$s->[$TABLE],
+		);
+		return undef;
+	}
 
 	return $s->[$DBI]->rollback();
 }
@@ -889,7 +891,8 @@ sub field_accessor {
 	$column = $s->[$NAME][ $s->column_index($column) ]; 
 	my $q = "select $column from $s->[$TABLE] where $s->[$KEY] = ?";
 	my $sth = $s->[$DBI]->prepare($q)
-		or die "field_accessor statement ($q) -- bad result.\n";
+		or $s->log_error("field_accessor statement (%s) -- bad result.", $q)
+		and return undef;
 #::logDebug("binding sub to $q");
     return sub {
         my ($key) = @_;
@@ -978,29 +981,19 @@ sub alter_column {
 	$function = 'ALTER_CHANGE' unless $function;
 	my $template = $s->config($function);
 	if(! $template) {
-		::logError(
-			$s->config(
-				'last_error',
-				::errmsg(
+		$s->log_error(
 					"No %s template defined for table %s. Skipping.",
 					$function,
 					$s->[$TABLE],
-				),
-			),
 		);
 		return undef;
 	}
 
 	if($function =~ /^(ALTER_CHANGE)$/ and ! $s->column_exists($column) ) {
-		::logError(
-			$s->config(
-				'last_error',
-				::errmsg(
+		$s->log_error(
 					"Column '%s' doesn't exist in table %s. Skipping.",
 					$column,
 					$s->[$TABLE],
-				),
-			),
 		);
 		return undef;
 	}
@@ -1020,15 +1013,7 @@ sub alter_column {
 	};
 
 	if($@) {
-		::logError(
-			$s->config(
-				'last_error',
-				::errmsg(
-					"'%s' failed. Error: %s",
-					$template,
-				),
-			),
-		);
+		$s->log_error( "'%s' failed. Error: %s", $template,);
 		return undef;
 	}
 
@@ -1087,8 +1072,8 @@ sub length_exception {
 	my $olen;
 
 	my $errout;
-	if( $action =~ /^truncate(?:_(\w+))$/i) {
-		$errout = lc $1;
+	if( $action =~ /^truncate(?:_(\w+))?$/i) {
+		$errout = lc $1 || 'log';
 		$olen = length($data);
 		$data = substr($data,0,$slen);			      
 	}
@@ -1129,6 +1114,8 @@ sub length_exception {
 			::logError($msg1);
 			::logError($msg2);
 		}
+		Vend::Interpolate::push_warning($msg1);
+		Vend::Interpolate::push_warning($msg2);
 	}
 	return $data;
 }
@@ -1165,7 +1152,7 @@ sub get_slice {
 
 	if($@) {
 		my $msg = $@;
-		::logError("failed %s::%s routine: %s", __PACKAGE__, 'get_slice', $msg);
+		$s->log_error("failed %s::%s routine: %s", __PACKAGE__, 'get_slice', $msg);
 		return undef;
 	}
 
@@ -1177,7 +1164,7 @@ sub set_slice {
 	$s = $s->import_db() if ! defined $s->[$DBI];
 
     if($s->[$CONFIG]{Read_only}) {
-		::logError(
+		$s->log_error(
 			"Attempt to set slice of %s in read-only table %s",
 			$key,
 			$s->[$CONFIG]{name},
@@ -1210,7 +1197,8 @@ sub set_slice {
     if($s->[$CONFIG]->{LENGTH_EXCEPTION_DEFAULT}) {
 
 		my $lcfg   = $s->[$CONFIG]{FIELD_LENGTH_DATA}
-			or die "No field length data!";
+			or $s->log_error("No field length data with LENGTH_EXCEPTION defined!")
+			and return undef;
 
 		for (my $i=0; $i < @$fary; $i++){
 			next unless defined $lcfg->{$fary->[$i]};
@@ -1266,14 +1254,14 @@ sub set_slice {
 
 	if($@) {
 		my $caller = caller();
-		::logGlobal(
+		$s->log_error(
 			"%s error as called by %s: %s\nquery was:%s\nvalues were:'%s'",
 			'set_slice',
 			$caller,
 			$@,
 			$sql,
 			join("','", @$vary),
-			);
+		);
 		return undef;
 	}
 
@@ -1335,7 +1323,18 @@ sub set_row {
 				if $s->record_exists();
 			$s->[$DBI]->do("insert into $s->[$TABLE] ($key_string) VALUES ($val_string)");
 		};
-		die "$DBI::errstr\n" if $@;
+		if($@) {
+			my $caller = caller();
+			$s->log_error(
+				"%s error as called by %s: %s\nfields=%s\nvalues=%s",
+				'set_row',
+				$caller,
+				$@,
+				$key_string,
+				$val_string,
+			);
+			return undef;
+		}
 		return $fields[0];
 	}
 
@@ -1366,15 +1365,20 @@ sub set_row {
 		my $ins_string = join ", ",  @ins_mark;
 		my $query = "INSERT INTO $s->[$TABLE]$fstring VALUES ($ins_string)";
 #::logDebug("set_row query=$query");
-		$cfg->{_Insert_h} = $s->[$DBI]->prepare($query);
-		die "$DBI::errstr\n" if ! defined $cfg->{_Insert_h};
+		$cfg->{_Insert_h} = $s->[$DBI]->prepare($query)
+			or die $s->log_error(
+							"%s error on %s: $DBI::errstr",
+							'set_row',
+							$query,
+							$DBI::errstr,
+							);
 	}
 
 #::logDebug("set_row fields='" . join(',', @fields) . "'" );
     $s->bind_entire_row($cfg->{_Insert_h}, @fields);
 
 	my $rc = $cfg->{_Insert_h}->execute()
-		or die "$DBI::errstr\n";
+		or die $s->log_error("%s error: $DBI::errstr", 'set_row', $DBI::errstr);
 
 	$val	= $cfg->{AUTO_SEQUENCE}
 			?  $s->last_sequence_value($fields[$ki])
@@ -1416,25 +1420,26 @@ sub last_sequence_value {
 sub row {
     my ($s, $key) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
-	$key = $s->[$DBI]->quote($key)
-		unless exists $s->[$CONFIG]{NUMERIC}{$s->[$KEY]};
-    my $sth = $s->[$DBI]->prepare(
-		"select * from $s->[$TABLE] where $s->[$KEY] = $key");
-    $sth->execute()
-		or die("execute error: $DBI::errstr");
-
+	my $q = "select * from $s->[$TABLE] where $s->[$KEY] = ?";
+    my $sth = $s->[$DBI]->prepare($q)
+		or $s->log_error("%s prepare error for %s: %s", 'row', $q, $DBI::errstr)
+		and return undef;
+    $sth->execute($key)
+		or $s->log_error("%s execute error for %s: %s", 'row', $q, $DBI::errstr)
+		and return undef;
 	return @{$sth->fetchrow_arrayref()};
 }
 
 sub row_hash {
     my ($s, $key) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
-	$key = $s->[$DBI]->quote($key)
-		unless exists $s->[$CONFIG]{NUMERIC}{$s->[$KEY]};
-    my $sth = $s->[$DBI]->prepare(
-		"select * from $s->[$TABLE] where $s->[$KEY] = $key");
-    $sth->execute()
-		or die("execute error: $DBI::errstr");
+	my $q = "select * from $s->[$TABLE] where $s->[$KEY] = ?";
+    my $sth = $s->[$DBI]->prepare($q)
+		or $s->log_error("%s prepare error for %s: %s", 'row_hash', $q, $DBI::errstr)
+		and return undef;
+    $sth->execute($key)
+		or $s->log_error("%s execute error for %s: %s", 'row_hash', $q, $DBI::errstr)
+		and return undef;
 
 	return $sth->fetchrow_hashref()
 		unless $s->[$TYPE];
@@ -1464,7 +1469,8 @@ sub field_settor {
 	$s = $s->import_db() if ! defined $s->[$DBI];
 	my $q = "update $s->[$TABLE] SET $column = ? where $s->[$KEY] = ?";
 	my $sth = $s->[$DBI]->prepare($q)
-		or Carp::croak errmsg("Unable to prepare query for field_settor: %s", $q);
+		or $s->log_error("Unable to prepare query for field_settor: %s", $q)
+		and return undef;
     return sub {
         my ($key, $value) = @_;
         $sth->execute($value, $key);
@@ -1519,7 +1525,7 @@ sub single {
 		}
 	}
 	else {
-		::logError("Bad single data query parameter type: %s", ref($qhash));
+		$s->log_error("Bad single data query parameter type: %s", ref($qhash));
 		return undef;
 	}
 	
@@ -1562,7 +1568,7 @@ sub set_field {
     my ($s, $key, $column, $value) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
     if($s->[$CONFIG]{Read_only}) {
-		::logError("Attempt to set %s in read-only table",
+		$s->log_error("Attempt to set %s in read-only table",
 					"$s->[$CONFIG]{name}::${column}::$key",
 					);
 		return undef;
@@ -1588,29 +1594,32 @@ sub set_field {
 	my $rawkey = $key;
 	my $rawval = $value;
 
-	$key   = $s->quote($key, $s->[$KEY]);
-	$value = $s->quote($value, $column);
-
-	my $query;
+	my $q;
 	if(! $s->record_exists($rawkey)) {
 		if( $s->[$CONFIG]{AUTO_SEQUENCE} ) {
 			$key = 0 if ! $key;
-			$query = qq{
-				INSERT INTO $s->[$TABLE]
-				($s->[$KEY], $column)
-				VALUES ($key, $value)
-				};
+			$q = qq{INSERT INTO $s->[$TABLE] ($s->[$KEY], $column) VALUES (?,?)};
 		}
 		else {
 #::logDebug("creating key '$rawkey' in table $s->[$TABLE]");
-			$s->set_row($rawkey);
+			$s->set_row($$key);
 		}
+		}
+
+	my @args;
+	if(!$q) {
+		$q = qq{update $s->[$TABLE] SET $column = ? where $s->[$KEY] = ?};
+		@args = ($value, $key);
 	}
-	$query = <<EOF unless $query;
-update $s->[$TABLE] SET $column = $value where $s->[$KEY] = $key
-EOF
-	$s->[$DBI]->do($query)
-		or die "$DBI::errstr\n";
+	else {
+		@args = ($key, $key);
+	}
+	my $sth = $s->[$DBI]->prepare($q)
+		or $s->log_error("%s prepare error for %s: %s", 'set_field', $q, $DBI::errstr)
+		and return undef;
+    $sth->execute(@args)
+		or $s->log_error("%s execute error for %s: %s", 'set_field', $q, $DBI::errstr)
+		and return undef;
 	return $rawval;
 }
 
@@ -1651,7 +1660,7 @@ sub delete_record {
 	$s = $s->import_db() if ! defined $s->[$DBI];
 
     if($s->[$CONFIG]{Read_only}) {
-		::logError("Attempt to delete record '%s' from read-only database %s",
+		$s->log_error("Attempt to delete record '%s' from read-only database %s",
 						$key,
 						$s->[$CONFIG]{name},
 						);
@@ -1724,10 +1733,11 @@ sub list_fields {
 	my $q = "select * from $name";
 	$q .= " limit 1" if $config->{HAS_LIMIT};
 	my $sth = $db->prepare($q)
-		or die $DBI::errstr;
+		or die ::errmsg("%s prepare on %s: %s", 'list_fields', $name, $DBI::errstr);
 
 	# Wish we didn't have to do this, but we cache the columns
-	$sth->execute()		or die "$DBI::errstr\n";
+	$sth->execute()
+		or die ::errmsg("%s execute on %s: %s", 'list_fields', $name, $DBI::errstr);
 
 	if($config and $config->{NAME_REQUIRES_FETCH}) {
 		$sth->fetch();
@@ -1779,8 +1789,9 @@ sub each_record {
 			if $s->[$CONFIG]{Export_order};
 		($table, $db, $each) = @{$s}[$TABLE,$DBI,$EACH];
 		my $query = $db->prepare("select * from $table $qual")
-            or die $DBI::errstr;
-		$query->execute();
+            or die $s->log_error('prepare');
+		$query->execute()
+            or die $s->log_error('execute');
 		my $idx = $s->[$CONFIG]{KEY_INDEX};
 		$each = sub {
 			my $ref = $query->fetchrow_arrayref()
@@ -1821,8 +1832,9 @@ sub each_nokey {
 			$qual .= "$rfield = '$Vend::Session->{$rsession}'";
 		}
 		my $query = $db->prepare("select * from $table " . ($qual || '') )
-            or die $DBI::errstr;
-		$query->execute();
+            or die $s->log_error('prepare');
+		$query->execute()
+            or die $s->log_error('execute');
 		my $idx = $s->[$CONFIG]{KEY_INDEX};
 		$each = sub {
 			my $ref = $query->fetchrow_arrayref()
@@ -1907,17 +1919,16 @@ sub query {
 
 	eval {
 		if($update and $s->[$CONFIG]{Read_only}) {
-			my $msg = ::errmsg(
+			$s->log_error(
 						"Attempt to do update on read-only table.\nquery: %s",
 						$query,
 					  );
-			::logError($msg);
-			die "$msg\n";
+			return undef;
 		}
 		$opt->{row_count} = 1 if $update;
-		$sth = $db->prepare($query) or die $DBI::errstr;
+		$sth = $db->prepare($query) or die $s->log_error('prepare', $query);
 #::logDebug("Query prepared OK. sth=$sth");
-		$rc = $sth->execute() or die $DBI::errstr;
+		$rc = $sth->execute() or die $s->log_error('execute', $query);
 #::logDebug("Query executed OK. rc=" . (defined $rc ? $rc : 'undef'));
 		
 		if ($update) {
@@ -1932,7 +1943,7 @@ sub query {
 				}
 				push @ary, $rowhashref;
 			}
-			die $DBI::errstr if $sth->err();
+			die $s->log_error($DBI::errstr) if $sth->err();
 			$ref = $Vend::Interpolate::Tmp->{$opt->{hashref}} = \@ary;
 		}
 		else {
@@ -1941,7 +1952,7 @@ sub query {
 			%nh = map { (lc $_, $i++) } @na;
 			$ref = $Vend::Interpolate::Tmp->{$opt->{arrayref}}
 				= $sth->fetchall_arrayref()
-				 or die $DBI::errstr;
+				 or die $s->log_error($DBI::errstr);
 		}
 	};
 	if($@) {
@@ -1965,8 +1976,8 @@ sub query {
 						$@,
 						$query,
 					);
+				$s->log_error($msg);
 				Carp::croak($msg) if $Vend::Try;
-				::logError($msg);
 				return undef;
 			}
 			if($newdb) {
@@ -1977,15 +1988,15 @@ sub query {
 						qq{Unable to find base table in query: %s},
 						$query,
 					);
+				$s->log_error($msg);
 				Carp::croak($msg) if $Vend::Try;
-				::logError($msg);
 				return undef;
 			}
 		}
 		else {
 			my $msg = ::errmsg("SQL query failed: %s\nquery was: %s", $@, $query);
+			$s->log_error($msg);
 			Carp::croak($msg) if $Vend::Try;
-			::logError($msg);
 			return undef;
 		}
 	}
@@ -1999,7 +2010,7 @@ MVSEARCH: {
 	}
 	if (! defined $s || $tabs[0] ne $s->[$CONFIG]{name}) {
 		unless ($s = $Vend::Database{$tabs[0]}) {
-			::logError("Table %s not found in databases", $tabs[0]);
+			$s->log_error("Table %s not found in databases", $tabs[0]);
 			return $opt->{failure} || undef;
 		}
 #::logDebug("rerouting to $tabs[0]");
@@ -2012,7 +2023,8 @@ eval {
 
 	if($stmt->command() ne 'SELECT') {
 		if(defined $s and $s->[$CONFIG]{Read_only}) {
-			die ("Attempt to write read-only database $s->[$CONFIG]{name}");
+			$s->log_error("Attempt to write read-only database $s->[$CONFIG]{name}");
+			return undef;
 		}
 		$update = $stmt->command();
 	}
@@ -2057,7 +2069,7 @@ eval {
 #::logDebug("ref returned: " . Vend::Util::uneval($ref));
 #::logDebug("opt is: " . Vend::Util::uneval($opt));
 	if($@) {
-		::logError("SQL query failed for %s: %s\nQuery was: %s",
+		$s->log_error("SQL query failed for %s: %s\nQuery was: %s",
 					$s->[$TABLE],
 					$@,
 					$query,
@@ -2134,6 +2146,8 @@ sub auto_config {
 
 *reset = \&Vend::Table::Common::reset;
 *autonumber = \&Vend::Table::Common::autonumber;
+*log_error = \&Vend::Table::Common::log_error;
+*errstr = \&Vend::Table::Common::errstr;
 
 1;
 

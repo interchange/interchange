@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.29 2003-07-06 04:38:28 mheins Exp $
+# $Id: Common.pm,v 2.30 2003-07-12 04:47:10 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -23,7 +23,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.29 $, 10);
+$VERSION = substr(q$Revision: 2.30 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -100,8 +100,13 @@ sub create_columns {
 #::logDebug("set KEY_INDEX to $i: " . ::uneval($config));
     }
 
-    die("Cannot find key column $config->{KEY} in $config->{name} ($config->{file}): $!")
-        unless defined $config->{KEY_INDEX};
+    die errmsg(
+			"Cannot find key column %s in %s (%s): %s",
+			$config->{KEY},
+			$config->{name},
+			$config->{file},
+			$!,
+	    ) unless defined $config->{KEY_INDEX};
 
 	return $column_index;
 }
@@ -195,7 +200,7 @@ sub close_table {
 #::logDebug("closing table $s->[$FILENAME]");
 	undef $s->[$DBM];
     untie %{$s->[$TIE_HASH]}
-		or die "Could not close DBM table $s->[$FILENAME]: $!\n";
+		or $s->log_error("%s %s: %s", errmsg("untie"), $s->[$FILENAME], $!);
 	undef $s->[$TIE_HASH];
 #::logDebug("closed table $s->[$FILENAME], self=" . ::uneval($s));
 }
@@ -233,7 +238,11 @@ sub column_index {
     my ($s, $column) = @_;
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
     my $i = $s->[$COLUMN_INDEX]{$column};
-    die "There is no column named '$column' in $s->[$FILENAME]" unless defined $i;
+    die $s->log_error(
+				"There is no column named '%s' in %s",
+				$column,
+				$s->[$FILENAME],
+			) unless defined $i;
     return $i;
 }
 
@@ -242,8 +251,6 @@ sub column_index {
 sub record_exists {
     my ($s, $key) = @_;
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
-    # guess what?  The GDBM "exists" function got renamed to "EXISTS" 
-    # in 5.002.
     my $r = $s->[$DBM]->EXISTS("k$key");
     return $r;
 }
@@ -266,8 +273,11 @@ sub row_hash {
 sub unstuff_row {
     my ($s, $key) = @_;
     my $line = $s->[$TIE_HASH]{"k$key"};
-    die "There is no row with index '$key' in database $s->[$FILENAME]"
-		unless defined $line;
+    die $s->log_error(
+					"There is no row with index '%s' in database %s",
+					$key,
+					$s->[$FILENAME],
+			) unless defined $line;
     return map(unstuff($_), split(/\t/, $line, 9999))
 		unless $s->[$CONFIG]{FILTER_FROM};
 	my @f = map(unstuff($_), split(/\t/, $line, 9999));
@@ -278,7 +288,8 @@ sub unstuff_row {
 sub thaw_row {
     my ($s, $key) = @_;
     my $line = $s->[$TIE_HASH]{"k$key"};
-    die "There is no row with index '$key'" unless defined $line;
+    die $s->log_error( "There is no row with index '%s'", $key,)
+		unless defined $line;
     return (@{ Storable::thaw($line) })
 		unless $s->[$CONFIG]{FILTER_FROM};
 #::logDebug("filtering.");
@@ -340,7 +351,7 @@ sub set_slice {
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
 
     if($s->[$CONFIG]{Read_only}) {
-		::logError(
+		$s->log_error(
 			"Attempt to set slice of %s in read-only table %s",
 			$key,
 			$s->[$CONFIG]{name},
@@ -375,7 +386,7 @@ sub set_slice {
 
 	$key = $s->set_row(@current);
 	length($key) or
-		::logError(
+		$s->log_error(
 			"Did set_slice with empty key on table %s",
 			$s->[$CONFIG]{name},
 		);
@@ -476,7 +487,10 @@ sub set_field {
     my ($s, $key, $column, $value) = @_;
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
     if($s->[$CONFIG]{Read_only}) {
-		::logError("Attempt to set $s->[$CONFIG]{name}::${column}::$key in read-only table");
+		$s->log_error(
+			"Attempt to write %s in read-only table",
+			"$s->[$CONFIG]{name}::${column}::$key",
+		);
 		return undef;
 	}
     my @row;
@@ -497,7 +511,10 @@ sub inc_field {
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
     my($value);
     if($s->[$CONFIG]{Read_only}) {
-		::logError("Attempt to set $s->[$CONFIG]{name}::${column}::$key in read-only table");
+		$s->log_error(
+			"Attempt to write %s in read-only table",
+			"$s->[$CONFIG]{name}::${column}::$key",
+		);
 		return undef;
 	}
     my @row = $s->row($key);
@@ -640,7 +657,11 @@ sub delete_record {
     my ($s, $key) = @_;
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
     if($s->[$CONFIG]{Read_only}) {
-		::logError("Attempt to delete row '$key' in read-only table $s->[$CONFIG]{name}");
+		$s->log_error(
+			"Attempt to delete row '$key' in read-only table %s",
+			$key,
+			$s->[$CONFIG]{name},
+		);
 		return undef;
 	}
 
@@ -715,20 +736,18 @@ sub query {
 			($spec, $stmt) = Vend::Scan::sql_statement($query, $opt);
 		};
 		if($@) {
-			my $msg = ::errmsg("SQL query failed: %s\nquery was: %s", $@, $query);
+			my $msg = errmsg("SQL query failed: %s\nquery was: %s", $@, $query);
+			$s->log_error($msg);
 			Carp::croak($msg) if $Vend::Try;
-			::logError($msg);
 			return ($opt->{failure} || undef);
 		}
 		my @additions = grep length($_) == 2, keys %$opt;
-		if(@additions) {
-			@{$spec}{@additions} = @{$opt}{@additions};
+		for(@additions) {
+			next unless length $opt->{$_};
+			$spec->{$_} = $opt->{$_};
 		}
 	}
-	my @tabs = @{$spec->{fi}};
-	for (@tabs) {
-		s/\..*//;
-	}
+	my @tabs = @{$spec->{rt} || $spec->{fi}};
 
 	my $reroute;
 	my $tname = $s->[$CONFIG]{name};
@@ -742,10 +761,11 @@ sub query {
 	}
 
 	if($reroute) {
-		unless ($s = $Vend::Database{$tabs[0]}) {
-			::logError("Table %s not found in databases", $tabs[0]);
+		unless ($reroute = $Vend::Database{$tabs[0]}) {
+			$s->log_error("Table %s not found in databases", $tabs[0]);
 			return $opt->{failure} || undef;
 		}
+		$s = $reroute;
 #::logDebug("rerouting to $tabs[0]");
 		$opt->{STATEMENT} = $stmt;
 		$opt->{SPEC} = $spec;
@@ -757,7 +777,11 @@ eval {
 	my @vals;
 	if($stmt->command() ne 'SELECT') {
 		if(defined $s and $s->[$CONFIG]{Read_only}) {
-			die ("Attempt to write read-only database $s->[$CONFIG]{name}");
+			$s->log_error(
+					"Attempt to write read-only table %s",
+					$s->[$CONFIG]{name},
+			);
+			return undef;
 		}
 		$update = $stmt->command();
 		@vals = $stmt->row_values();
@@ -767,6 +791,7 @@ eval {
 
 	@na = @{$spec->{rf}}     if $spec->{rf};
 
+#::logDebug("spec->{ml}=$spec->{ml} opt->{ml}=$opt->{ml}");
 	$spec->{ml} = $opt->{ml} if $opt->{ml};
 	$spec->{ml} ||= '1000';
 	$spec->{fn} = [$s->columns];
@@ -865,7 +890,12 @@ eval {
 #::logDebug("ref returned: " . substr(Vend::Util::uneval($ref), 0, 100));
 #::logDebug("opt is: " . Vend::Util::uneval($opt));
 	if($@) {
-		::logError("MVSQL query failed for $opt->{table}: $@\nquery was: $query");
+		$s->log_error(
+				"MVSQL query failed for %s: %s\nquery was: %s",
+				$opt->{table},
+				$@,
+				$query,
+			);
 		$return = $opt->{failure} || undef;
 	}
 
@@ -939,13 +969,13 @@ sub import_ascii_delimited {
 
 	if(! defined $realfile) {
 		open(IN, "+<$infile")
-			or die ::errmsg("Couldn't open '%s' read/write: %s", $infile, $!);
+			or die errmsg("%s %s: %s\n", errmsg("open read/write"), $infile, $!);
 		lockfile(\*IN, 1, 1)
-			or die ::errmsg("lock '%s': %s", $infile, $!);
+			or die errmsg("%s %s: %s\n", errmsg("lock"), $infile, $!);
 	}
 	else {
 		open(IN, "<$infile")
-			or die ::errmsg("Couldn't open '%s' for read: %s", $infile, $!);
+			or die errmsg("%s %s: %s\n", errmsg("open"), $infile, $!);
 	}
 
 	my $field_hash;
@@ -1113,8 +1143,8 @@ EndOfExcel
 			for($i = 0; $i < @i; $i++) {
 				my $fnum = $i[$i];
 				$fh = new IO::File "> $infile.$i[$i]";
-				die "Couldn't create $infile.$i[$i]: $!\n"
-					unless defined $fh;
+				die errmsg("%s %s: %s\n", errmsg("create"), "$infile.$i[$i]",
+				$!) unless defined $fh;
 				eval {
 					unlink "$infile.$n[$i]" if -l "$infile.$n[$i]";
 					symlink "$infile.$i[$i]", "$infile.$n[$i]";
@@ -1273,26 +1303,22 @@ EndOfRoutine
 );
 
     eval $format{$format};
-	die ::errmsg("$options->{name} import failed: %s", $@) if $@;
+	die errmsg("%s import failed: %s", $options->{name}, $@) if $@;
     if($realfile) {
 		close IN
-			or die ::errmsg("close preload file %s: %s", $infile, $!) . "\n";
+			or die errmsg("%s %s: %s\n", errmsg("close"), $infile, $!);
 		if(-f $realfile) {
 			open(IN, "+<$realfile")
-				or die ::errmsg(
-					"Couldn't open user file %s read/write: %s",
-					$realfile,
-					$!) . "\n";
-			lockfile(\*IN, 1, 1) or die "lock\n";
+				or die
+					errmsg("%s %s: %s\n", errmsg("open read/write"), $realfile, $!);
+			lockfile(\*IN, 1, 1)
+				or die errmsg("%s %s: %s\n", errmsg("lock"), $realfile, $!);
 			<IN>;
 			eval $format{$format};
-			die ::errmsg("%s import failed: %s", $options->{name}, $@) if $@;
+			die errmsg("%s %s: %s\n", errmsg("import"), $options->{name}, $!) if $@;
 		}
 		elsif (! open(IN, ">$realfile") ) {
-				warn ::errmsg(
-					"can't create %s import failed: %s",
-									$options->{file}, $@
-								);
+				die errmsg("%s %s: %s\n", errmsg("create"), $realfile, $!);
 		} 
 		else {
 			print IN join($options->{DELIMITER}, @field_names);
@@ -1402,7 +1428,7 @@ sub import_from_ic_db {
 	};
 
 	if($@) {
-		die ::errmsg(
+		die errmsg(
 				"Problem with mirror import from source %s to target %s\n",
 				$tname,
 				$table_name,
@@ -1463,6 +1489,42 @@ sub parse {
 
 sub reset {
 	undef $restrict;
+}
+
+sub errstr {
+	return shift(@_)->[$CONFIG]{last_error};
+}
+
+sub log_error {
+	my ($s, $tpl, @args) = @_;
+	if($tpl =~ /^(prepare|execute)$/) {
+		if(!@args) {
+			$tpl = "Statement $tpl failed: %s";
+		}
+		elsif (@args == 1) {
+			$tpl = "Statement $tpl failed: %s\nQuery was: %s";
+		}
+		else {
+			$tpl = "Statement $tpl failed: %s\nQuery was: %s";
+			$tpl .= "\nAdditional: %s" for (2 .. scalar(@args));
+		}
+		unshift @args, $DBI::errstr;
+	}
+	my $msg = errmsg($tpl, @args);
+	my $ekey = 'table ' . $s->[$CONFIG]{name};
+	my $cfg = $s->[$CONFIG];
+	unless(defined $cfg->{LOG_CATALOG} and ! $cfg->{LOG_CATALOG}) {
+		logError($msg);
+	}
+	if($cfg->{LOG_GLOBAL}) {
+		logGlobal($msg);
+	}
+	if($Vend::admin or ! defined($cfg->{LOG_SESSION}) or $cfg->{LOG_SESSION}) {
+		$Vend::Session->{errors} = {} unless ref($Vend::Session->{errors}) eq 'HASH';
+		$Vend::Session->{errors}{$ekey} = $msg;
+	}
+	die $msg if $cfg->{DIE_ERROR};
+	return $cfg->{last_error} = $msg;
 }
 
 1;

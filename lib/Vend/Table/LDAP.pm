@@ -1,6 +1,6 @@
 # Vend::Table::LDAP - Interchange LDAP pseudo-table access
 #
-# $Id: LDAP.pm,v 2.7 2003-06-18 17:34:46 jon Exp $
+# $Id: LDAP.pm,v 2.8 2003-07-12 04:47:10 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -25,7 +25,7 @@
 
 package Vend::Table::LDAP;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 use strict;
 
 use vars qw(
@@ -100,7 +100,7 @@ sub open_table {
 			$alt_index++;
 			redo DOCONNECT;
 		}
-		die "Unable to connect to LDAP server $host:$port\n";
+		die ::errmsg("Unable to connect to LDAP server %s", $host:$port);
 	}
 	$ldap->bind(
 		dn => $config->{BIND_DN},
@@ -114,7 +114,7 @@ sub open_table {
 	my $c = $m->count;
 	my $co = $m->code;
 #::logDebug("count=$c code=$co");
-#	die "Unable to find database $tablename count=$c code=$co)" unless ($m->count > 0);
+
 	my $e = $m->entry(0);
 #::logDebug('after entry e=' . ::uneval($e));
 	$columns = $e->get('columns');
@@ -140,14 +140,16 @@ sub create {
 
 	$config = {} unless defined $config;
 
-	die "columns argument $columns is not an array ref\n"
+	die ::errmsg("columns argument %s is not an array ref", $columns)
 		unless CORE::ref($columns) eq 'ARRAY';
+
 	my $base = $config->{BASE_DN};
 	my $host = $config->{LDAP_HOST};
 	my $port = 389;
 	($host, $port) = split /:/, $host if ($host =~ /:/);
 	my $column_index = Vend::Table::Common::create_columns($columns, $config);
-	my $ldap = Net::LDAP->new($host, port => $port) or die "Unable to connect to LDAP server $host:$port\n";
+	my $ldap = Net::LDAP->new($host, port => $port)
+		or die ::errmsg("Unable to connect to LDAP server %s", $host:$port);
 #::logDebug("created object " . ::uneval($ldap));
 	$ldap->bind(
 		dn => $config->{BIND_DN},
@@ -195,7 +197,11 @@ sub field {
 		base => "db=$n, $b",
 		filter => "(&(objectclass=mv_data)($ki=$key))",
 	);
-	die "There is no row with index '$key'" unless ($m->count > 0);
+    die $s->log_error(
+					"There is no row with index '%s' in database %s",
+					$key,
+					$s->[$FILENAME],
+			) unless ($m->count > 0);
 	my $e = $m->entry(0);
 	my $d = $e->get($column);
 	return (pop @$d);
@@ -221,7 +227,11 @@ sub row_hash {
 		base => "db=$n, $b",
 		filter => "(&(objectclass=mv_data)($ki=$key))",
 	);
-	die "There is no row with index '$key'" unless ($m->count > 0);
+    die $s->log_error(
+					"There is no row with index '%s' in database %s",
+					$key,
+					$s->[$FILENAME],
+			) unless ($m->count > 0);
 	my $e = $m->entry(0);
 	my %row;
 	my $c;
@@ -268,8 +278,13 @@ sub field_settor {
 			);
 			$code = $m->code;
 		}
-		$code and die "Failed to set row $ki=$key: $code";
+		if($code) {
+			$s->log_error(
+				"Failed to set row %s=%s: %s",
+				$ki, $key, $s->[$FILENAME], $code,
+			);
 		return undef;
+		}
 	};
 }
 
@@ -277,7 +292,7 @@ sub set_slice {
 	my ($s, $key, $fary, $vary) = @_;
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
 	if($s->[$CONFIG]{Read_only}) {
-		::logError(
+		$s->log_error(
 			"Attempt to set %s in read-only table %s",
 			$key,
 			$s->[$CONFIG]{name},
@@ -295,7 +310,10 @@ sub set_field {
 	my ($s, $key, $column, $value) = @_;
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
 	if($s->[$CONFIG]{Read_only}) {
-		::logError("Attempt to set $s->[$CONFIG]{name}::${column}::$key in read-only table");
+		$s->log_error(
+			"Attempt to write %s in read-only table",
+			"$s->[$CONFIG]{name}::${column}::$key",
+		);
 		return undef;
 	}
 	my %row;
@@ -324,7 +342,13 @@ sub set_field {
 		);
 		$code = $m->code;
 	}
-	$code and die "Failed to set row $ki=$key: $value errnum=$code errstr=" . $m->error() . "\n";;
+	if($code) {
+		$s->log_error(
+					"Failed to set row %s=%s: %s errnum=%s errstr=%s",
+					$ki, $key, $value, $code, $m->error(),
+				);
+		return undef;
+	}
 	$value;
 }
 
@@ -367,8 +391,14 @@ sub set_row {
 		);
 		$code = $m->code;
 	}
-	$code and die "Failed to set row $ki=$key code=$code op=$op";
-	$ki;
+	if($code) {
+		$s->log_error(
+			"Failed to set row %s=%s in %s, op=%s: %s",
+			$ki, $key, $s->[$FILENAME], $op, $code,
+		);
+		return undef;
+	}
+	return $ki;
 }
 
 sub inc_field {
@@ -522,8 +552,8 @@ sub query {
 		};
 		if($@) {
 			my $msg = ::errmsg("SQL query failed: %s\nquery was: %s", $@, $query);
+			$s->log_error($msg);
 			Carp::croak($msg) if $Vend::Try;
-			::logError($msg);
 			return ($opt->{failure} || undef);
 		}
 		my @additions = grep length($_) == 2, keys %$opt;
@@ -531,26 +561,29 @@ sub query {
 			@{$spec}{@additions} = @{$opt}{@additions};
 		}
 	}
-	my @tabs = @{$spec->{fi}};
-	for (@tabs) {
-		s/\..*//;
-	}
+	my @tabs = @{$spec->{rt} || $spec->{fi}};
+
 	if (! defined $s || $tabs[0] ne $s->[$CONFIG]{name}) {
-		unless ($s = $Vend::Database{$tabs[0]}) {
-			::logError("Table %s not found in databases", $tabs[0]);
+		my $newdb = Vend::Data::database_exists_ref($tabs[0])
+			or do {
+				$s->log_error("Table %s not found in databases", $tabs[0]);
 			return $opt->{failure} || undef;
-		}
+			};
 #::logDebug("rerouting to $tabs[0]");
 		$opt->{STATEMENT} = $stmt;
 		$opt->{SPEC} = $spec;
-		return $s->query($opt, $text);
+		return $newdb->query($opt, $text);
 	}
 
 eval {
 
 	if($stmt->command() ne 'SELECT') {
 		if(defined $s and $s->[$CONFIG]{Read_only}) {
-			die ("Attempt to write read-only database $s->[$CONFIG]{name}");
+			$s->log_error(
+					"Attempt to write read-only table %s",
+					$s->[$CONFIG]{name},
+			);
+			return undef;
 		}
 		$update = $stmt->command();
 	}
@@ -569,9 +602,6 @@ eval {
 
 	my $search;
 	if ("\L$opt->{st}" eq 'db' ) {
-		for(@tabs) {
-			s/\..*//;
-		}
 		$search = new Vend::DbSearch;
 #::logDebug("created DbSearch object: " . ::uneval($search));
 	}
@@ -631,7 +661,12 @@ eval {
 #::logDebug("ref returned: " . substr(Vend::Util::uneval($ref), 0, 100));
 #:logDebug("opt is: " . Vend::Util::uneval($opt));
 	if($@) {
-		::logError("MVSQL query failed for $opt->{table}: $@\nquery was: $query");
+		$s->log_error(
+				"MVSQL query failed for %s: %s\nquery was: %s",
+				$opt->{table},
+				$@,
+				$query,
+			);
 		$return = $opt->{failure} || undef;
 	}
 

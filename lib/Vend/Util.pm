@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.61 2003-07-07 22:24:04 ramoore Exp $
+# $Id: Util.pm,v 2.62 2003-07-12 04:47:10 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -87,7 +87,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.61 $, 10);
+$VERSION = substr(q$Revision: 2.62 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -113,11 +113,13 @@ $ESCAPE_CHARS::ok_in_url =
 		'-_./~='
 	;
 
-## This is an alias for a commonly-used function
-*dbref = \&Vend::Data::database_exists_ref;
-
 ## This is a character class for HTML::Entities
 $ESCAPE_CHARS::std = "^\n\t !\#\$%\'-;=?-Z\\\]-~";
+
+## Some standard error templates
+
+## This is an alias for a commonly-used function
+*dbref = \&Vend::Data::database_exists_ref;
 
 my $need_escape;
 

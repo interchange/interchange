@@ -1,6 +1,6 @@
 # Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 2.23 2003-07-07 05:49:33 mheins Exp $
+# $Id: Scan.pm,v 2.24 2003-07-12 04:47:10 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -30,7 +30,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 2.23 $, 10);
+$VERSION = substr(q$Revision: 2.24 $, 10);
 
 use strict;
 use Vend::Util;
@@ -112,6 +112,9 @@ my @Order = ( qw(
 	prefix
 ));
 
+## Place marker, not used in search specs but is reserved
+##  rt  mv_real_table
+##
 my %Scan = ( qw(
 	ac  mv_all_chars
 	bd  mv_base_directory
@@ -580,7 +583,7 @@ sub sql_statement {
 	}
 
 	if ($table) {
-		push_spec('fi', $table, $ary, $hash)
+		push_spec('fi', $table, $ary, $hash), push_spec('rt', $table, $ary, $hash)
 # GLIMPSE
 			unless "\L$table" eq 'glimpse';
 # END GLIMPSE
@@ -626,8 +629,10 @@ sub sql_statement {
 		my $db = Vend::Data::database_exists_ref($t);
 		if($db) {
 			$codename = $db->config('KEY') || 'code';
-			$nuhash = $db->config('NUMERIC') || undef;
+			# Only for first table, what else can we do?
+			$nuhash ||= $db->config('NUMERIC') || undef;
 			push_spec( 'fi', $db->config('file'), $ary, $hash);
+			push_spec( 'rt', $t, $ary, $hash);
 			$stmt->verbatim_fields(1)
 				if $db->config('VERBATIM_FIELDS');
 		}
@@ -640,6 +645,7 @@ sub sql_statement {
 # END GLIMPSE
 		else {
 			push_spec('fi', $t, $ary, $hash);
+			push_spec('rt', $t, $ary, $hash);
 		}
 #::logDebug("t=$t obj=$_ db=$db nuhash=" . ::uneval($nuhash));
 	}
@@ -679,6 +685,7 @@ sub sql_statement {
 #::logDebug("found order column=$c");
 		push_spec('tf', $c, $ary, $hash);
 		my $d = $_->desc() ? 'fr' : 'f';
+		$d =~ s/f/n/ if exists $nuhash->{$c};
 #::logDebug("found order sense=$d");
 		push_spec('to', $d, $ary, $hash);
 	}
