@@ -48,7 +48,7 @@ chmod u+s /usr/lib/cgi-bin/ic/*
 # Ensure correct permissions for catalog base directory
 chown $USER.$GROUP /var/lib/interchange/catalogs
 
-# Record debconf configuration in two files
+# Record debconf configuration in multiple files
 # 1. Stuff needed for the init script
 
 INITCFG=/etc/interchange/init.cfg
