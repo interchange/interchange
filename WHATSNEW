@@ -204,6 +204,49 @@ Core
 
 * Move handling of anchor option from tag_area to vendURL.
 
+* Add new facility for storing address books in outboard address table,
+  instead of an in-record hash, and start framework for adding different
+  personalities to UserDB.
+
+* Move UserDB's "logout" function to a subroutine so that it can be inherited.
+
+* Add RedirectCache directive which allows redirected page requests to
+  be set to mv_tmp_session then written to the target from which it was
+  redirected. This allows a complete web site to be mirrored to static
+  HTML as it is requested, accompanied with the proper setting of
+  AcceptRedirect in Interchange and ErrorDocument in the Apache server.
+
+  To use:
+
+  	   * Set ErrorDocument 404 to the Interchange URL in Apache.
+
+	   * Set "AcceptRedirect Yes" in interchange.cfg.
+
+	   * Set "RedirectCache /var/www/html" in interchange.cfg (use
+	     your document root in place of /var/www/html).
+
+  When a page http://yourdomain.tld/subdir/page.html is not found,
+  Interchange gets a redirect which causes it to set mv_tmp_session=1.
+  If Interchange doesn't find the page, then it returns "missing" and
+  no writing is done. If IC does find the page, it is written to
+  /var/www/html/subdir/page.html and the page will be found on next
+  access.
+
+  Exclude on HTTP server side can be done with permissions -- don't set
+  it writable by IC daemon if you don't want it written.
+
+* Fix problem where defining blank GlobalSub would kill *all* globalsubs.
+
+* Never issue a session ID on timed-build URL.
+
+* Remove conditional for caching history on Pragma: no-cache -- this is
+  all wrong. The directive is to this page transaction of Interchange,
+  i.e. timed-build and such. It should not be used to prevent building
+  of history, partly because browsers may send it for their own reason.
+
+* Prevent autovivification of $CGI::values{mv_username}, and make CookieLogin
+  slightly more efficient when already logged in.
+
 Tables
 ------
 
@@ -354,6 +397,8 @@ Payment
 
 * Add support for Canadian PSiGate gateway. Thanks to Gary Benson for his
   work and testing.
+
+* Fix potential PreFork problems in AuthorizeNet module.
 
 Shipping
 --------
@@ -799,6 +844,12 @@ Usertags
 
 * Add [css VARNAME] tag that automatically generates a varname.css file
   for use by <link rel=stylesheet href="/foundation/images/theme_css.css">.
+
+* [history-scan] -- there should never be a leading / on page names sent
+  to $Tag->area(), and they are removed all the time now.
+
+* Add src_only option to [image] tag  to return just the image location 
+  that normally goes in the src="..." attribute of the <img> tag.
 
 Filters
 -------
