@@ -35,13 +35,13 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0021	Admin	12			no_dbmenu	mv_data_table	admin/export_table	mv_data_table=[cgi mv_data_table]	Export Data									
 0010	Admin	01					admin/genconfig		Info									
 0019	Admin	10	1		no_dbmenu	mv_data_table	admin/flex_select	mv_data_table=[cgi mv_data_table]	Edit									
-0008	Top	08		Wizard		wizard	admin/wizard/index		Wizard			Catalog Configuration Wizard		B11.gif	B11_b.gif	B11_b.gif	icon_wizard.gif				
 0024	Admin	15			no_dbmenu	mv_data_table	admin/gentable		&nbsp;&nbsp;&nbsp;&nbsp;Re-select Table									
 0075	Wizard	09	1	security			admin/wizard/step_security		Security Preferences	1			general					
 0013	Admin	04					admin/payment		Payment									
 0064	Orders	03					admin/entry		Enter Order									
 0002	Top	02		Customers		userdb	admin/customer		Customers			View and manage customer information and order history		B3.gif	B3_b.gif	B3_b.gif	icon_people.gif	
 0053	Items	16				item_id	admin/item_cross	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Cross-sell									
+0080	Wizard	16		finalize			admin/wizard/step_finalize		Final Confirmation	1			finalize					
 0078	Wizard	13	1	about			admin/wizard/step_about		About us	1			content					
 0067	Reports	03					admin/tablereport		Custom									
 0056	Items	19				item_id	admin/item_option	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Options									
@@ -67,6 +67,7 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0069	Wizard	03	1	company			admin/wizard/step_company		Company Information	1			compinfo					
 0007	Top	07		Reporting		stats	admin/orderstats		Reporting			View statistics on orders and site traffic, create custom reports		B8.gif	B8_b.gif	B8_b.gif	icon_stats.gif	
 0058	Merchandising	02					admin/affiliates		Affiliates									
+0017b	Admin	08b					admin/wizard/index		Wizard									
 0074	Wizard	08	1	pay			admin/wizard/step_pay		Payment Preferences	1			payment					
 0012	Admin	03					admin/ship		Shipping									
 0063	Orders	02		showarchive			admin/order	showarchive=1	Archived Orders									

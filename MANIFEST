@@ -638,6 +638,7 @@ dist/lib/UI/pages/admin/tax.html
 dist/lib/UI/pages/admin/template.html
 dist/lib/UI/pages/admin/template_edit.html
 dist/lib/UI/pages/admin/template_new.html
+dist/lib/UI/pages/admin/template_preview.html
 dist/lib/UI/pages/admin/template_save.html
 dist/lib/UI/pages/admin/trafficstats.html
 dist/lib/UI/pages/admin/upload_config.html
@@ -832,6 +833,7 @@ extra/IniConf.pm
 extra/Tie/ShadowHash.pm
 extra/URI/URL.pm
 hints.pl
+lib/Tie/ShadowHash.pm
 lib/Vend/Cart.pm
 lib/Vend/Config.pm
 lib/Vend/Control.pm
