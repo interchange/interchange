@@ -4,6 +4,7 @@ mv_todo=return
 mv_nextpage=[either][cgi mv_nextpage][or]__UI_BASE__/index[/either]
 [else]
 mv_username=[perl]$Session->{ui_username} = $Session->{username} = '';[/perl]
+mv_nextpage=[either][cgi mv_failpage][or]__UI_BASE__/error[/either]
 [/else]
 [/if]
 __END__
