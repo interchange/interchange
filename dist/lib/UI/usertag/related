@@ -60,6 +60,7 @@ sub {
             rf => [$db->config('KEY')]
         });
         if (@$ary > 1) {
+            # compose URL for spreadsheet view
             my $rows = join(' ', map{$_->[0]} @$ary);
             $url = $Tag->area({href=>"$ui_base/spread",
                                form=>qq{
@@ -69,15 +70,18 @@ sub {
                                   ui_text_qualification=$relmap{$base}=$CGI->{item_id}
             }});    
             $out .= qq{<BR>\n<A HREF="$url">Related entries from $base</A>};
-        } elsif (@$ary) {
-            $url = $Tag->area({href=>"$ui_base/flex_editor",
-                               form=>qq{
-                                  item_id=$$ary[0][0];
-                                  mv_data_table=$base
-                                  ui_return_to=$return_to
-            }});
-            $out .= qq{<BR>\n<A HREF="$url">Related entry from $base</A>};
         } else {
+            if (@$ary) {
+                # compose URL to view related entry
+                $url = $Tag->area({href=>"$ui_base/flex_editor",
+                                   form=>qq{
+                                      item_id=$$ary[0][0];
+                                      mv_data_table=$base
+                                      ui_return_to=$return_to
+                }});
+                $out .= qq{<BR>\n<A HREF="$url">Related entry from $base</A>};
+            }
+            # compose URL for adding entry
             $url = $Tag->area({href=>"$ui_base/flex_editor",
                                form=>qq{
                                   mv_data_table=$base
