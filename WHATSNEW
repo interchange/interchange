@@ -151,6 +151,18 @@ Usertags
 
   The size is still determined by Image::Size.
 
+* New Usertag [capture-page] bringing back some of the static page
+  capabilities, designed to called from Interchange jobs. The tag
+  is able to reproduce standard as well as search results pages:
+
+  [capture-page page=index file=static/index.html umask=022]
+
+  [loop list="Levels,Rulers,Squares"]
+  [capture-page page="[loop-code]" file="static/cats/[loop-code].html"
+    scan="fi=products/st=db/co=yes/sf=category/se=[loop-code]" 
+    auto_create_dir=1]
+  [/loop]
+
 i18n
 ----
 

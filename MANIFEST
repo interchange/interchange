@@ -180,6 +180,7 @@ code/UI_Tag/write_shipping.coretag
 code/UI_Tag/xfer_catalog.coretag
 code/UserTag/bar_button.tag
 code/UserTag/button.tag
+code/UserTag/capture_page.tag
 code/UserTag/component.tag
 code/UserTag/convert_date.tag
 code/UserTag/db_date.tag
