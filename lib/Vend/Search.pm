@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.0.2.4 2002-11-26 03:21:10 jon Exp $
+# $Id: Search.pm,v 2.0.2.5 2003-01-24 05:07:41 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
@@ -22,7 +22,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.0.2.4 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.5 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -1047,18 +1047,13 @@ my %Sorter = (
 	rn	=> sub { $_[1] <=> $_[0]			},
 );
 
-	my $last = 'none';
 	my $i;
 	my $max = 0;
 	for($i = 0; $i < @Flds; $i++) {
 		$max = $Flds[$i] if $Flds[$i] > $max;
-		if (! $Opts[$i]) {
-			$Opts[$i] = $last;
-			next;
-		}
+		$Opts[$i] = 'none', next unless $Opts[$i];
 		$Opts[$i] = lc $Opts[$i];
 		$Opts[$i] = 'none' unless defined $Sort_field{$Opts[$i]};
-		$last = $Opts[$i];
 	}
 #::logDebug("sort_search_return: flds='@Flds' opts='@Opts'");
 
