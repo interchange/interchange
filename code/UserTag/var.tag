@@ -9,11 +9,10 @@
 # [var VARIABLE 2] is equivalent to @_VARIABLE_@
 #
 UserTag var Interpolate 1
-UserTag var Order name global include
-UserTag var addAttr
+UserTag var Order name global filter
 UserTag var Routine <<EOR
 sub {
-    my ($key, $global, $include, $opt) = @_;
+    my ($key, $global, $filter) = @_;
 	my $value;
 	if ($global and $global != 2) {
 		$value = $Global::Variable->{$key};
@@ -29,7 +28,7 @@ sub {
 		);
 		$value ||= $Global::Variable->{$key} if $global;
 	}
-	$value = filter_value($opt->{filter}, $value, $key) if $opt->{filter};
+	$value = filter_value($filter, $value, $key) if $filter;
 	return $value;
 }
 EOR
