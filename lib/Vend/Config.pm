@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.140 2004-04-30 20:09:38 mheins Exp $
+# $Id: Config.pm,v 2.141 2004-06-05 18:21:06 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.140 $, 10);
+$VERSION = substr(q$Revision: 2.141 $, 10);
 
 my %CDname;
 my %CPname;
@@ -392,7 +392,7 @@ sub catalog_directives {
 	['Message',          'message',           ''],
 	['Variable',	  	 'variable',     	 ''],
 	['VarName',          'varname',           ''],
-	['Limit',			 'hash',    'option_list 5000 chained_cost_levels 32'],
+	['Limit',			 'hash',    'option_list 5000 chained_cost_levels 32 robot_expire 1'],
 	['ScratchDefault',	 'hash',     	 	 ''],
 	['Profile',			 'locale',     	 	 ''],
 	['ValuesDefault',	 'hash',     	 	 ''],
@@ -424,6 +424,7 @@ sub catalog_directives {
 	['SessionLockFile',  undef,     		 'etc/session.lock'],
 	['DatabaseDefault',  'hash',	     	 ''],
 	['DatabaseAuto',	 'dbauto',	     	 ''],
+	['DatabaseAutoIgnore',	 'regex',	     	 ''],
 	['Database',  		 'database',     	 ''],
 	['Autoload',		 undef,		     	 ''],
 	['AutoEnd',			 undef,		     	 ''],

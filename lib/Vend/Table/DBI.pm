@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.59 2004-04-11 18:18:43 mheins Exp $
+# $Id: DBI.pm,v 2.60 2004-06-05 18:21:06 mheins Exp $
 #
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.59 $, 10);
+$VERSION = substr(q$Revision: 2.60 $, 10);
 
 use strict;
 
@@ -2140,9 +2140,20 @@ sub auto_config {
 		}
 	};
 
+	my $re;
+	if(exists $Vend::Cfg->{DatabaseAutoIgnore}) {
+		$re = $Vend::Cfg->{DatabaseAutoIgnore};
+	}
+	elsif(exists $Vend::Config::C->{DatabaseAutoIgnore}) {
+		 $re = $Vend::Config::C->{DatabaseAutoIgnore};
+	}
+	$re and $re = qr/$re/;
+#::logDebug("ignore re=$re");
+
 	my %found;
 	return undef unless @tabs;
 	for my $t (@tabs) {
+		next if $re and $t =~ $re;
 		$found{$t} = 1;
 		push @out, [$t, "$t.txt $dsn"];
 		push @out, [$t, "USER $user"] if $user;
