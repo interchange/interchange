@@ -1,6 +1,6 @@
 # Vend::Page - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 2.19 2004-04-08 19:49:51 jon Exp $
+# $Id: Page.pm,v 2.20 2004-04-09 03:16:22 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -46,7 +46,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.19 $, 10);
+$VERSION = substr(q$Revision: 2.20 $, 10);
 
 my $wantref = 1;
 
@@ -240,6 +240,7 @@ sub output_cat {
 		$out .= ${$Vend::Output[$_]};
 		undef $Vend::Output[$_];
 	}
+	$out =~ s/^\s+// if $::Pragma->{strip_white};
 	return $out;
 }
 
