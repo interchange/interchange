@@ -169,6 +169,12 @@ UserTag
 * Add locale option to [convert-date] following a suggestion from 
   Rene Hertell <rene@hertell.com>.
 
+* The [convert-date] global UserTag now has an "adjust" parameter which
+  allows date adjustments such as "2 hours" or "3 weeks" etc. to be made.
+  Valid qualifiers are seconds, hours, days, minutes and weeks.  If no
+  qualifier is specified the the numeric value is assumed to be a number
+  of days.  The old "days" parameter still works, but has been depreciated.
+
 * Add filter attribute to var tag, similar to value, cgi, and scratch,
   except that filtered value will never be saved back into the variable.
 
