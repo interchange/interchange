@@ -486,6 +486,7 @@ tf=name
 [perl tables="__UI_META_TABLE__ mv_metadata"]
 	return;
 [/perl]
+[input-filter name=mail_list op=null_to_space][/input-filter]
 [display table=userdb type=multiple column=mail_list key="[data session username]"]
 </span>
 				</td>
