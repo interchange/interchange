@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# $Id: Search.pm,v 1.6.2.4 2000-11-10 17:31:21 zarko Exp $
+# $Id: Search.pm,v 1.6.2.5 2000-12-04 17:50:42 zarko Exp $
 #
 # Vend::Search -- Base class for search engines
 #
@@ -26,7 +26,7 @@
 #
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 1.6.2.4 $, 10);
+$VERSION = substr(q$Revision: 1.6.2.5 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -75,7 +75,8 @@ my %maytag = (
 			{
 				splice(@{$s->{mv_sort_field}}, $i, 1);
 				splice(@{$s->{mv_sort_option}}, $i, 1);
-			} else {
+			}
+			else {
 				$s->{mv_sort_field}[$i] =
 					$s->{field_hash}{$s->{mv_sort_field}[$i]};
 			}
@@ -240,7 +241,8 @@ sub spec_check {
 				        splice(@{$s->{mv_negate}}, $i, 1);
 				}
 			    splice(@specs, $i, 1);
-			} else {
+			}
+			else {
 				if(length($specs[$i]) < $s->{mv_min_string}) {
 					my $msg = <<EOF;
 Search strings must be at least $s->{mv_min_string} characters.
@@ -251,16 +253,20 @@ EOF
 				}
 				COLOP: {
 					last COLOP unless $s->{mv_coordinate};
+#::logDebug("i=$i, begin_string=$s->{mv_begin_string}[$i]");
 					$s->{mv_all_chars}[$i] = $all_chars
 						if ! defined $s->{mv_all_chars}[$i];
+					last COLOP if $s->{mv_search_relate} =~ s/\bor\b/or/ig;
 					if(	$s->{mv_column_op}[$i] =~ /([=][~]|rm|em)/ ) {
 						$specs[$i] = quotemeta $specs[$i]
 							if $s->{mv_all_chars}[$i];
 						$s->{regex_specs} = []
 							unless $s->{regex_specs};
+						last COLOP if $s->{mv_begin_string}[$i];
 						$specs[$i] =~ /(.*)/;
 						push @{$s->{regex_specs}}, $1;
-					} elsif(	$s->{mv_column_op}[$i] =~ /^(==?|eq)$/ ) {
+					}
+					elsif(	$s->{mv_column_op}[$i] =~ /^(==?|eq)$/ ) {
 						$s->{eq_specs} = []
 							unless $s->{eq_specs};
 						$specs[$i] =~ /(.*)/;
@@ -275,6 +281,8 @@ EOF
 				$i++;
 			}
 		}
+
+#::logDebug("regex_specs=" . ::uneval($s->{regex_specs}));
 
 		if( ! $s->{mv_exact_match} and ! $s->{mv_coordinate}) {
 			my $string = join ' ', @specs;
@@ -346,7 +354,8 @@ sub more_matches {
 	}
 	if($obj->{matches} > ($s->{mv_last_pointer} + 1) ) {
 		$obj->{mv_next_pointer} = $s->{mv_last_pointer} + 1;
-	} else {
+	}
+	else {
 		$obj->{mv_next_pointer} = 0;
 	}
 	$obj->{mv_first_match} = $s->{mv_next_pointer};
@@ -376,7 +385,8 @@ sub get_return {
 #::logDebug("ary is:" . ::uneval($ary));
 				return $ary;
 				};
-	} else {
+	}
+	else {
 		my $delim = $s->{mv_index_delim};
 #::logDebug("rf[0]='$s->{mv_return_fields}[0]'");
 		my @fields = @{$s->{mv_return_fields}};
@@ -484,7 +494,8 @@ sub get_limit {
 	if($s->{mv_orsearch}[0]) {
 		$joiner = '1 if';
 		$ender = 'return undef;';
-	} else {
+	}
+	else {
 		$joiner = 'undef unless';
 		$ender = 'return 1;';
 	}
@@ -513,7 +524,8 @@ EOF
 \$line .= qq{$s->{mv_index_delim}} .
 		  Vend::Data::database_field('$table', \$key, '$col');
 EOF
-			} elsif($col =~ tr/:/,/) {
+			}
+			elsif($col =~ tr/:/,/) {
 				$col =~ tr/ \t//d;
 				$wild_card = 1;
 				$col =~ s/[^\d,.]//g;
@@ -521,7 +533,8 @@ EOF
 my \$addl = join " ", (split m{\Q$s->{mv_index_delim}\E}, \$line)[$col];
 \$line .= qq{$s->{mv_index_delim}} . \$addl;
 EOF
-			} else {
+			}
+			else {
 				$wild_card = 1;
 				$code .= <<EOF;
 my \$addl = \$line;
@@ -563,6 +576,8 @@ EOF
 		my @negates =  map { $_ ? 'not ' : ''} @{$s->{mv_negate}};
 		my @begin = 	@{$s->{mv_begin_string}};
 		my @group = 	@{$s->{mv_search_group}};
+#::logDebug("Ops=" .  ::uneval(\@ops));
+#::logDebug("Begin=" . join ",", @begin);
 #::logDebug("Group=" . join ",", @group);
 #::logDebug("Ors=" . join ",", @{$s->{mv_orsearch}});
 		my @code;
@@ -570,25 +585,30 @@ EOF
 		my ($i, $start, $term, $like);
 		for($i = 0; $i < $field_count; $i++) {
 			undef $candidate, undef $f 
-				if $s->{mv_orsearch}[$i];
+				if $begin[$i] or $s->{mv_orsearch}[$i];
 			if($ops[$i]) {
+				$ops[$i][0] =~ s/m\{$/m{^/ if $begin[$i];
 				$start = $ops[$i][0];
+#::logDebug("Op now=" .  ::uneval($ops[$i]));
 				($term  = $ops[$i][1] || '')
 					and $cases[$i]
 					and $term =~ s/i$//
 					and defined $candidate
 					and $candidate = 1;
-			} else {
+#::logDebug("Candidate now=$candidate");
+			}
+			else {
 				$start = '=~ m{';
 				$start .=  '^' if $begin[$i];
 				if($bounds[$i]) {
 					$term = '}';
-				} else {
+				}
+				else {
 					$term = '\b}';
 					$start .= '\b' unless $begin[$i];
 				}
 				$term .= 'i' unless $cases[$i];
-				$candidate = 1 if defined $candidate;
+				$candidate = 1 if defined $candidate and ! $begin[$i];
 			}
 			if($start =~ s/LIKE$//) {
 				$specs[$i] =~ s/^(%)?([^%]*)(%)?$/$2/;
@@ -614,23 +634,29 @@ EOF
 				undef $candidate if $candidate;
 			 }
 			 my $grp = $group[$i] || 0;
-			 my $frag = qq{($negates[$i]\$fields[$i] $start$specs[$i]$term )};
+			 my $frag = qq{$negates[$i]\$fields[$i] $start$specs[$i]$term};
 			 unless ($code[$grp]) {
 				 $code[$grp] = [ $frag ];
-			 } else {
+			 }
+			 else {
 			 	 my $join = $s->{mv_orsearch}[$i] ? ' or ' : ' and ';
 				 push @{$code[$grp]}, "$join$frag";
 			 }
 		}
 #::logDebug("coderef=" . ::uneval_it(\@code));
 
+		undef $f if $s->{mv_search_relate} =~ s/\bor\b/or/ig;
 		DOLIMIT: {
 #::logDebug(::uneval_it({%$s}));
+#::logDebug("do_limit.");
 			last DOLIMIT if $f;
+#::logDebug("do_limit past f.");
 			last DOLIMIT if $s->{mv_small_data};
+			last DOLIMIT if (grep $_, @{$s->{mv_orsearch}});
 			last DOLIMIT if defined $s->{mv_search_relate}
-							&& $s->{mv_search_relate} =~ /\bor\b/;
+							&& $s->{mv_search_relate} =~ s/\bor\b/or/i;
 			my @pats;
+#::logDebug("regex_specs=" . ::uneval($s->{regex_specs}));
 			for(@{$s->{regex_specs}}) {
 				push @pats, $_;
 			}
@@ -639,15 +665,13 @@ EOF
 			}
 			if(defined $pats[1]) {
 				@pats = sort { length($b) <=> length($a) } @pats;
-			} elsif(! defined $pats[0]) {
+			}
+			elsif(! defined $pats[0]) {
 				last DOLIMIT;
 			}
 			eval {
-				if(grep $_, @{$s->{mv_orsearch}}) {
-					$f = $s->create_search_or( 0, 1, 0, @pats);
-				} else {
-					$f = $s->create_search_and( 0, 1, 0, @pats);
-				}
+#::logDebug("filter function going and...");
+				$f = $s->create_search_and( 0, 1, 0, @pats);
 			};
 			undef $f if $@;
 		}
@@ -661,34 +685,43 @@ EOF
 			if($s->{mv_search_relate}) {
 				$relate .= $s->{mv_search_relate};
 				$relate =~ s/([0-9]+)/code_join(\@code,$1)/eg;
-			} else {
+			}
+			else {
 				$relate .= '(';
 				$relate .= join ') and (', (map { join "", @$_ } @code);
 				$relate .= ')';
 			}
 			$relate .= ' );';
-		} elsif(! ref $code[0] ) {
+		}
+		elsif(! ref $code[0] ) {
 			die("bad limit creation code in coordinated search, probably search group without search specification.");
-		} else {
+		}
+		else {
 			$relate = "return ( " . join("", @{$code[0]}) . " );";
 		}
 		$code .= $relate;
 		$code .= "\n}\n";
 #::logDebug("coordinate search code is:\n$code");
-	} elsif( @{$s->{mv_search_field}} )  {
+	}
+	elsif( @{$s->{mv_search_field}} )  {
 		if(! $s->{mv_begin_string}[0]) {
+#::logDebug("Not begin, sub=f");
 			$sub = $f;
-		} elsif(! $s->{mv_orsearch}[0] ) {
+		}
+		elsif(! $s->{mv_orsearch}[0] ) {
+#::logDebug("Begin, sub creating and");
 			$sub = create_search_and(
 						$s->{mv_index_delim},		# Passing non-reference first
 						$s->{mv_case}[0],	# means beginning of string search
 						$s->{mv_substring_match}[0],
 						$s->{mv_negate}[0],
 						@{$s->{mv_searchspec}});
-		} else {
+		}
+		else {
+#::logDebug("Begin, sub creating or");
 			$sub = create_search_or(
-						$s->{mv_index_delim},
-						$s->{mv_case}[0],
+						$s->{mv_index_delim},		# Passing non-reference first
+						$s->{mv_case}[0],	# means beginning of string search
 						$s->{mv_substring_match}[0],
 						$s->{mv_negate}[0],
 						@{$s->{mv_searchspec}});
@@ -702,14 +735,16 @@ EOF
 	return undef;
 }
 EOF
-	} elsif($s->{mv_range_look})  {
+	}
+	elsif($s->{mv_range_look})  {
 		# In case range_look only
 		$code .= <<EOF;
 	$range_code
 	$ender
 }
 EOF
-	} else {
+	}
+	else {
 		# If there is to be no limit_sub
 		die("no limit and no search") unless defined $f;
 		return;
@@ -733,10 +768,12 @@ sub range_check {
 			return 0 unless $_ >= $s->{mv_range_min}->[$i];
 			return 0 unless
 				(! $s->{mv_range_max}->[$i] or $_ <= $s->{mv_range_max}->[$i]);
-		} elsif(! $s->{mv_case}) {
+		}
+		elsif(! $s->{mv_case}) {
 			return 0 unless "\L$_" ge (lc $s->{mv_range_min}->[$i]);
 			return 0 unless "\L$_" le (lc $s->{mv_range_max}->[$i]);
-		} else {
+		}
+		else {
 			return 0 unless $_ ge $s->{mv_range_min}->[$i];
 			return 0 unless $_ le $s->{mv_range_max}->[$i];
 		}
@@ -967,7 +1004,8 @@ EOF
 	\$r = &{\$Sorter{'$Opts[$i]'}}(\$a[$i], \$b[$i]) and return \$r;
 EOF
 		}
-	} else {
+	}
+	else {
 		for($i = 0; $i < @Flds; $i++) {
 			$code .= <<EOF;
 	\$r = &{\$Vend::Search::Sort_field{'$Opts[$i]'}}(\$a[$i], \$b[$i]) and return \$r;
