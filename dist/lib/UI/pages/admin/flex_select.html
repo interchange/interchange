@@ -229,6 +229,7 @@
 	$Scratch->{keyname} = $ref->config('KEY');
 
 	$CGI->{ui_show_fields} ||= $meta->{ui_show_fields} || $meta->{field};
+	$CGI->{ui_meta_specific} ||= $meta->{ui_meta_specific};
 	$Config->{NoSearch} = '';
 	$ui_text_qualification = $CGI->{ui_text_qualification};
 	if ($ui_text_qualification and $CGI->{ui_text_qualification} =~ /[<!=>\^]/ ) {

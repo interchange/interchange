@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.12 2002-10-04 13:40:17 mheins Exp $
+# $Id: Editor.pm,v 1.13 2002-10-09 14:23:32 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.12 $, 10);
+$VERSION = substr(q$Revision: 1.13 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -274,8 +274,7 @@ sub display {
 
 		my (@tries) = "${table}::$column";
 		unshift @tries, "${table}::${column}::$key"
-			if length($key)
-				and $CGI::values{ui_meta_specific} || $opt->{specific};
+			if length($key) and $opt->{specific};
 
 		my $sess = $Vend::Session->{mv_metadata} || {};
 
@@ -2759,39 +2758,40 @@ EOF
 
 #::logDebug("col=$c currval=$currval widget=$widget->{$c} label=$label->{$c} (type=$type)");
 		my $display = display($t, $c, $key, {
-										applylocale => 1,
-										arbitrary => $opt->{ui_meta_view},
-										column => $c,
-										default => $currval,
-										extra => $extra->{$c},
-										fallback => 1,
-										field => $field->{$c},
-										filter => $filter->{$c},
-										height => $height->{$c},
-										help => $help->{$c},
-										help_url => $help_url->{$c},
-										label => $label->{$c},
-										key => $key,
-										meta => $meta->{$c},
-										meta_url => $meta_url,
-										meta_url_specific => $meta_url_specific,
-										name => $namecol,
-										override => $overridden,
-										passed => $passed->{$c},
-										options => $options->{$c},
-										outboard => $outboard->{$c},
-										append => $append->{$c},
-										prepend => $prepend->{$c},
-										lookup => $lookup->{$c},
-										lookup_query => $lookup_query->{$c},
-										db => $database->{$c},
-										pre_filter => $pre_filter->{$c},
-										table => $t,
-										type => $widget->{$c} || $type,
-										width => $width->{$c},
-										return_hash => 1,
-										ui_no_meta_display => $opt->{ui_no_meta_display},
-									});
+							append				=> $append->{$c},
+							applylocale			=> 1,
+							arbitrary			=> $opt->{ui_meta_view},
+							column				=> $c,
+							db					=> $database->{$c},
+							default				=> $currval,
+							extra				=> $extra->{$c},
+							fallback			=> 1,
+							field				=> $field->{$c},
+							filter				=> $filter->{$c},
+							height				=> $height->{$c},
+							help				=> $help->{$c},
+							help_url			=> $help_url->{$c},
+							key					=> $key,
+							label				=> $label->{$c},
+							lookup				=> $lookup->{$c},
+							lookup_query		=> $lookup_query->{$c},
+							meta				=> $meta->{$c},
+							meta_url			=> $meta_url,
+							meta_url_specific	=> $meta_url_specific,
+							name				=> $namecol,
+							options				=> $options->{$c},
+							outboard			=> $outboard->{$c},
+							override			=> $overridden,
+							passed				=> $passed->{$c},
+							pre_filter			=> $pre_filter->{$c},
+							prepend				=> $prepend->{$c},
+							return_hash			=> 1,
+							specific			=> $opt->{ui_meta_specific},
+							table				=> $t,
+							type				=> $widget->{$c} || $type,
+							ui_no_meta_display	=> $opt->{ui_no_meta_display},
+							width				=> $width->{$c},
+						});
 #::logDebug("finished display of col=$c");
 		my $update_ctl;
 
