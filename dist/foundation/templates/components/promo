@@ -79,11 +79,15 @@ banner:
 		  [/if-loop-data]</b>
 		</td>
 	  </tr>
+   
+      [if-loop-field image]
 	  <tr> 
 		<td align="center" colspan="2"> 
 		  <img src="thumb/[loop-field thumb]" height="80">
 		</td>
 	  </tr>
+      [/if-loop-field]
+
 	  <tr> 
 		<td align="center" colspan="2">
 		  Our Price: <b>[loop-price]</b>

@@ -54,11 +54,15 @@ random:
 		  <tr> 
 			<td align="center" colspan="2" class="contentbar1">[loop-description]</td>
 		  </tr>
+
+		  [if-loop-field image]
 		  <tr> 
 			<td align="center" colspan="2"> 
 				  <td><img src="thumb/[loop-field thumb]"></td>
 			</td>
 		  </tr>
+		  [/if-loop-field]
+
 		  <tr> 
 			<td colspan="2">
 				Our Price: <b>[loop-price]</b>

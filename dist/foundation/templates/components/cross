@@ -87,11 +87,19 @@ random:
     [loop random="[scratch random]" list="[strip interpolate=1][scratch cross_codes][/strip]"]
       <TD width="[scratch width_percent]"> 
 	<table border="0">
-	<tr> 
-          <td>
+	<tr>
+    	  
+    [if-loop-field image]
+      <td>
 	    <a href="[area [loop-code]]">
 	      <img border="0" src="thumb/[loop-field thumb]"></a>
 	  </td>
+    [else]
+      <td>&nbsp;
+      </td>
+    [/else]
+    [/if-loop-field]
+
           <td valign="middle">
             <table cellspacing="0">
      	    <tr>

@@ -86,12 +86,16 @@ banner:
 	    Our Price: <b>[loop-price]</b>
 	  </td>
 	</tr>
+
+	[if-loop-field image]
 	<tr> 
 	  <td align="center"> 
-	    <a href="[area [loop-code]]">
+	      <a href="[area [loop-code]]">
 	      <img border="0" src="thumb/[loop-field thumb]"></a>
 	  </td>
 	</tr>
+    [/if-loop-field]
+
         <tr>
           <td><p>&nbsp;<br><br></p></td>
         </tr>
