@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.22 2003-01-20 16:50:28 mheins Exp $
+# $Id: Menu.pm,v 2.23 2003-02-12 15:35:54 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.22 $, 10);
+$VERSION = substr(q$Revision: 2.23 $, 10);
 
 use Vend::Util;
 use strict;
@@ -1230,7 +1230,7 @@ sub tree_link {
 
 	if(! $row->{page}) {
 	}
-	elsif ($row->{page} =~ /^\w+:/) {
+	elsif ($row->{page} =~ /^\w+:/ or $row->{page} =~ m{^/}) {
 		$row->{href} = $row->{page};
 	}
 	else {
