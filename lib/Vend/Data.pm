@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.13.4.1 2000-10-20 10:18:42 racke Exp $
+# $Id: Data.pm,v 1.13.4.2 2000-11-02 00:06:39 racke Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -110,7 +110,7 @@ sub product_code_exists_ref {
 
     my $return;
     foreach $ref (@Vend::Productbase) {
-        return $ref if $ref->record_exists($code);
+        return ($return = $ref) if $ref->record_exists($code);
     }
     return undef;
 }
