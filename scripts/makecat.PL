@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.12 2002-02-01 16:00:55 jon Exp $
+# $Id: makecat.PL,v 2.13 2002-02-05 08:41:32 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -2087,6 +2087,7 @@ POSTCMD: {
 	close ADDL;
 }
 	my $add;
+	my $add_tcp;
 
 	umask(07) unless $Conf{noumask};
 
@@ -2098,6 +2099,11 @@ POSTCMD: {
 	}
 	$add = prefix('norunning') ? 'n' : 'y';
 
+	if($yes and $Inetmode) {
+		$add_tcp = prompt "Add port $lp to TcpMap in interchange.cfg if necessary? ", $add;
+		$add_tcp = is_yes($add_tcp);
+	}
+
 	if($pid) {
 		$add_to_running = prompt "Add catalog to server running on PID $pid? ", $add;
 		$add_to_running = is_yes($add_to_running);
@@ -2105,6 +2111,7 @@ POSTCMD: {
 
 	my $full = '';
 	my $newcfgline;
+	my $tcpmark;
 
 	$newcfgline = sprintf "%-10s %s %s %s %s\n", 'Catalog',
 				$catalog_name, $Conf{catroot}, $full . $Conf{cgiurl}, $Conf{aliases};
@@ -2137,6 +2144,10 @@ POSTCMD: {
 				if s/^(catalog\s+$catalog_name\s+)/#$1/io;
 			$full = is_yes($1)
 				if /^\s*fullurl\s+(.*)/i;
+			if (/^tcpmap\s+/i and $_ !~ /\b$lp\b/) {
+				$tcpmark = /^tcpmap\s+[^<]+$/i ? $. : $. + 1;
+				$tcpmark-- if $mark;
+			}
 			push @out, $_;
 		}
 		close CFG;
@@ -2155,6 +2166,10 @@ POSTCMD: {
 
 		$newcfgline = sprintf "%-13s %s %s %s %s\n", 'Catalog',
 				$catalog_name, $Conf{catroot}, $full . $Conf{cgiurl}, $Conf{aliases};
+
+		if($tcpmark) {
+			$out[$tcpmark] =~ s/\s*$/ $lp -\n/;
+		}
 		if (defined $mark) {
 			print NEWCFG @out[0..$mark-1];
 			print NEWCFG $newcfgline;
@@ -2166,6 +2181,7 @@ POSTCMD: {
 			print NEWCFG $newcfgline;
 			print NEWCFG @out;
 		}
+
 		close NEWCFG || die "close: $!\n";
 		unlink $tmpfile;
 		if($isroot) {
@@ -2285,7 +2301,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.12 2002-02-01 16:00:55 jon Exp $
+# $Id: makecat.PL,v 2.13 2002-02-05 08:41:32 mheins Exp $
 
 =head1 INTRODUCTION
 
