@@ -26,7 +26,7 @@
 [value name=mv_data_table set=userdb hide=1]
 [if-mm !tables]
 [set ui_error]
-	Not authorized for customer administration. Contact administrator?
+	[L]Not authorized for customer administration. Contact administrator?[/L]
 [/set]
 [bounce page="__UI_BASE__/error"]
 [/if-mm]
@@ -137,9 +137,9 @@
 [set icon_name]icon_people.gif[/set]
 [seti page_title]
 	[if value showinactive]
-	Customers: Inactive Customers
+	[L]Customers[/L]: [L]Inactive Customers[/L]
 	[else]
-	Customers: Active Customers
+	[L]Customers[/L]: [L]Active Customers[/L]
 	[/else]
 	[/if]
 [/seti]
@@ -163,7 +163,7 @@
 
 <FORM ACTION="[area @@MV_PAGE@@]">
 <SMALL><INPUT TYPE=text NAME=ui_text_qualification VALUE="">
-[button text="Search for customer"]
+[button text="[L]Search for customer[/L]"]
 mv_nextpage=@@MV_PAGE@@
 [/button]
 </form>
@@ -223,16 +223,16 @@ mv_nextpage=@@MV_PAGE@@
 		$qual .= "ui_text_qualification=$CGI->{ui_text_qualification}";
 	}
     return "ui_sort_field=username\n" . sortrev('username');
-    `]ID</a></TH>
+    `][L]ID[/L]</a></TH>
 	<TH ALIGN=left><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
     return "$qual\nui_sort_field=lname,fname\n" . sortrev('lname');
-    `]Name</A></TH>
+    `][L]Name[/L]</A></TH>
 	<TH ALIGN=left><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
     return "$qual\nui_sort_field=company,lname\n" . sortrev('company');
-    `]Company</A></TH>
+    `][L]Company[/L]</A></TH>
 	<TH ALIGN=left><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
     return "$qual\nui_sort_field=country,state,city\n" . sortrev('country');
-    `]Location</A></TH>
+    `][L]Location[/L]</A></TH>
 </TR>
 <tr bgcolor="#000000" height=1><td colspan=8></td></tr>
 <tr bgcolor="#FFFFFF" height=2><td colspan=8></td></tr>
@@ -290,8 +290,8 @@ so there's a full line across the page even if table cells are blank.
 
 </table>
 [if scratch can_delete]
-[button form=batch text="Delete checked customers"
- confirm='Are you sure you want to delete the checked customers?']deletecustomer=1
+[button form=batch text="[L]Delete checked customers[/L]"
+ confirm='[L]Are you sure you want to delete the checked customers?[/L]']deletecustomer=1
 [/button]
 [/if]
 &nbsp;&nbsp;&nbsp;[button form=batch text=`
