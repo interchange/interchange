@@ -83,7 +83,7 @@ EOF
 [calc]
 	$ui_img = q{@_UI_IMG_@};
 	unless ($CGI->{ui_return_to}) {
-		$CGI->{ui_return_to} = "[var MV_PAGE global]\0item_id=$Scratch->{arg}";
+		$CGI->{ui_return_to} = "[var MV_PAGE global]\0item_id=$CGI->{item_id}";
 	}
 	@inst = split /\0/, $CGI->{ui_return_to};
 	my $out;
@@ -97,7 +97,7 @@ EOF
 [/calc]
 <INPUT TYPE=hidden NAME=mv_update_empty VALUE="1">
 
-[if-key-exists table="[value mv_data_table]" key="[scratch arg]"]
+[if-key-exists table="[value mv_data_table]" key="[cgi item_id]"]
 <INPUT TYPE=hidden NAME="mv_data_function" VALUE="update">
 [else]
 <INPUT TYPE=hidden NAME="mv_data_function" VALUE="insert">
@@ -142,6 +142,7 @@ EOF
 [mvasp tables="[list-databases] __UI_META_TABLE__ __UI_ACCESS_TABLE__"]
 <%
 	my $table	= $Values->{mv_data_table};
+	my $mtable	= qq{__UI_META_TABLE__} || 'mv_metadata';
 	my $db		= $Db{$table};
 	my $mdb		= $Db{__UI_META_TABLE__};
 	my %break;
@@ -213,10 +214,12 @@ EOF
 		$CGI->{$Values->{ui_data_key_name}} = $key;
 		undef $key;
 	}
+
 	foreach my $col (@cols) {
 		if($CGI->{ui_hide_key} and $col eq $keycol) {
+			my $k = defined $key && length($key) ? $key : $refkey;
 			$Document->write(<<EOF);
-<INPUT TYPE=hidden NAME="$col" VALUE="$Scratch->{arg}">
+<INPUT TYPE=hidden NAME="$col" VALUE="$key">
 EOF
 			next;
 		}
@@ -287,7 +290,7 @@ EOF
 								form => qq{
 										item_id=${t}::$c
 										ui_return_to=$page
-										ui_return_to=item_id=$Scratch->{arg}
+										ui_return_to=item_id=$CGI->{item_id}
 										ui_return_to=ui_return_table=$t
 										}
 							});
@@ -296,11 +299,11 @@ EOF
 							{	href => "$base/meta_editor",
 								form => qq{
 										item_id=${t}::${c}::$key
-										mv_data_table=mv_metadata
+										mv_data_table=$mtable
 										ui_hide_key=1
 										ui_meta_view=metaconfig
 										ui_return_to=$page
-										ui_return_to=item_id=$Scratch->{arg}
+										ui_return_to=item_id=$CGI->{item_id}
 										ui_return_to=ui_return_table=$t
 										}
 							}) . 'item-specific meta</A></FONT>'
