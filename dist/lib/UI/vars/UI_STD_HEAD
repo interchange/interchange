@@ -199,7 +199,7 @@ EOF
 [/sm-calc]&nbsp;&nbsp;&nbsp; [/loop]
 	[calc]
 	return unless $sm_once;
-	return q!<tr bgcolor="#000000"><td colspan=2><IMG SRC="/akopia/ui/navigation/cleardot.gif" WIDTH="1" HEIGHT="1"></td></tr>
+	return q!<tr bgcolor="#000000"><td colspan=2><IMG SRC="@_UI_IMG_@admin/cleardot.gif" WIDTH="1" HEIGHT="1"></td></tr>
                  </td></tr></table>!;
 	[/calc]
 <!-- ----- END MENUBAR ----- -->
