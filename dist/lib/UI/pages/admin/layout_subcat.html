@@ -6,14 +6,13 @@
 <tr>
 <td bgcolor="__UI_C_INTBLOCK__">
 
-<form>
+<form name="createnew">
 New subcategory name:<br>
 
-<!-- "Bikes:Parts:" should be passed in and displayed via a document.write()
-     or somesuch thing... -->
+[data table="cat" field="name" key="[cgi cur_cat]"]:
+<input size=12 name="newcategory" value="">
 
-Bikes:Parts:<input size=12 name="newcategory" value="">
-<input type="submit" value="Create!">
+<input type="submit" value="Create!" onclick="document.createnew.submit(); window.opener.location.reload(); window.close()">
 </form>
 
 </td>
