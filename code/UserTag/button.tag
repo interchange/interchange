@@ -2,7 +2,7 @@ UserTag button Order name src text
 UserTag button addAttr
 UserTag button attrAlias value text
 UserTag button hasEndTag
-UserTag button Version $Id: button.tag,v 1.9 2003-04-29 20:03:09 mheins Exp $
+UserTag button Version $Id: button.tag,v 1.10 2003-04-29 20:08:26 mheins Exp $
 UserTag button Documentation <<EOD
 
 =pod
@@ -39,6 +39,8 @@ Instead of,
 try:
 	src="/yourstore/images/blueyellow/placeorder.gif"
 
+WARNING: Do not use if JavaScript not required for catalog.
+
 =item text             
 
 The text of the button, also the name of the scratch action
@@ -48,6 +50,8 @@ The text of the button, also the name of the scratch action
 
 The text of the button after a click -- also the name of the scratch action
 instead of "text" when this is set.
+
+WARNING: Do not use if JavaScript not required for catalog.
 
 =item border, height, width, vspace, hspace, align
 
