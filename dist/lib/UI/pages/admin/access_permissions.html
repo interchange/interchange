@@ -128,7 +128,7 @@
 	my $current = tag_data('__UI_ACCESS_TABLE__', 'yes_functions', $CGI->{user_id});
 	my $out = '';
 	my @ary = grep /\S/, split /[\s,\0]+/, $current;
-	my @some = qw/l v e c d/;
+	my @some = qw/l v c e d/;
 	my @more = qw/a u p/;
 	my @all = (@some, @more);
 	my %all;
