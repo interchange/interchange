@@ -22,9 +22,18 @@
 	$CGI->{ui_return_to} = join "\0", @args;
 	return;
 [/calc]
+[perl tables="merchandising"]
+	my $db = $Db{merchandising};
+	my $date = $Tag->convert_date({ raw => 1 });
+	my $code = $CGI->{item_id} or return;
+	return unless $db->field($code, 'timed_promotion');
+	return if $date le $db->field($code, 'finish');
+	$db->set_field($code, 'featured', 'expired');
+	return;
+[/perl]
+
 @_UI_STD_DBEDIT_HEAD_@
 
-[set ui_class]Items[/set]
 [seti page_title]Promotion: [cgi item_id][/seti]
 [seti page_banner]Promotion: edit item <B>[page href="__UI_BASE__/item_edit" form="item_id=[cgi item_id]"][cgi item_id]</A></B>[/seti]
 [set help_name]promotion[/set]
