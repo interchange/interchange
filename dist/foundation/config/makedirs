@@ -1,5 +1,10 @@
 #!/bin/sh
 
+if [ "x`whoami`" = xroot ]
+then
+	ICUSER=`cat __MVC_VENDROOT__/_uid`
+fi
+
 if test "x__MVC_PERMTYPE__" = x -o "x__MVC_PERMTYPE__" = xM -o "x__MVC_PERMTYPE__" = xG
 then
 	DMODE=2770
@@ -13,32 +18,42 @@ ln -s __MVC_IMAGEDIR__ __MVC_CATROOT__
 # Make log directories to store logs.
 if test -n "__MVC_LOGDIR__"
 then 
-	mkdir -p __MVC_LOGDIR__/logs
-	mkdir -p __MVC_LOGDIR__/orders
-	ln    -s __MVC_LOGDIR__/error.log __MVC_CATROOT__
-	ln    -s __MVC_LOGDIR__/logs      __MVC_CATROOT__
-	ln    -s __MVC_LOGDIR__/orders    __MVC_CATROOT__
-	chmod $DMODE __MVC_LOGDIR__/logs
-	chmod $DMODE __MVC_LOGDIR__/orders
+	LOGDIR='__MVC_LOGDIR__'
+	mkdir -p     $LOGDIR/logs
+	mkdir -p     $LOGDIR/orders
+	ln    -s     $LOGDIR/error.log __MVC_CATROOT__
+	ln    -s     $LOGDIR/logs      __MVC_CATROOT__
+	ln    -s     $LOGDIR/orders    __MVC_CATROOT__
+	chmod $DMODE $LOGDIR/logs
+	chmod $DMODE $LOGDIR/orders
 else
-	mkdir -p __MVC_CATROOT__/orders
-	mkdir -p __MVC_CATROOT__/logs
-	chmod $DMODE __MVC_CATROOT__/logs
-	chmod $DMODE __MVC_CATROOT__/orders
+	LOGDIR='__MVC_CATROOT__'
+	mkdir -p     $LOGDIR/orders
+	mkdir -p     $LOGDIR/logs
+	chmod $DMODE $LOGDIR/logs
+	chmod $DMODE $LOGDIR/orders
 fi
- 
+
 # Make cache directories to store tmps.
 if test -n "__MVC_CACHEDIR__" 
 then 
-	mkdir -p __MVC_CACHEDIR__/session
-	ln    -s __MVC_CACHEDIR__/session    __MVC_CATROOT__
-	mkdir -p __MVC_CACHEDIR__/tmp
-	ln    -s __MVC_CACHEDIR__/tmp        __MVC_CATROOT__
+	CACHEDIR='__MVC_CACHEDIR__'
+	mkdir -p $CACHEDIR/session
+	ln    -s $CACHEDIR/session __MVC_CATROOT__
+	mkdir -p $CACHEDIR/tmp
+	ln    -s $CACHEDIR/tmp     __MVC_CATROOT__
 else
-	mkdir -p __MVC_CATROOT__/session
-	mkdir -p __MVC_CATROOT__/tmp
-	chmod $DMODE __MVC_CATROOT__/session
-	chmod $DMODE __MVC_CATROOT__/tmp
+	CACHEDIR='__MVC_CATROOT__'
+	mkdir -p     $CACHEDIR/session
+	mkdir -p     $CACHEDIR/tmp
+	chmod $DMODE $CACHEDIR/session
+	chmod $DMODE $CACHEDIR/tmp
+fi
+
+# Fix directory ownership if running as root
+if test -n "$ICUSER"
+then
+	chown $ICUSER.$ICUSER $LOGDIR/logs $LOGDIR/orders $CACHEDIR/session $CACHEDIR/tmp
 fi
 
 # Link in a default style
@@ -46,4 +61,4 @@ if test -n "__MVC_STYLE__"
 then
 	ln -s __MVC_STYLE__ __MVC_CATROOT__/templates/default
 fi
-	
+
