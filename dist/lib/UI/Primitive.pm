@@ -1,6 +1,6 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 2.20 2002-09-12 15:56:32 mheins Exp $
+# $Id: Primitive.pm,v 2.21 2003-05-19 22:11:54 racke Exp $
 
 # Copyright (C) 1998-2002 Red Hat, Inc. <interchange@redhat.com>
 
@@ -25,7 +25,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 2.20 $, 10);
+$VERSION = substr(q$Revision: 2.21 $, 10);
 
 $DEBUG = 0;
 
@@ -446,7 +446,7 @@ sub list_glob {
 
 sub list_pages {
 	my ($keep, $suf, $base) = @_;
-	$suf = $Vend::Cfg->{StaticSuffix} if ! $suf;
+	$suf = $Vend::Cfg->{HTMLsuffix} if ! $suf;
 	$base = Vend::Util::catfile($Vend::Cfg->{VendRoot}, $base) if $base;
 	$base ||= $Vend::Cfg->{PageDir};
 	my @names;
