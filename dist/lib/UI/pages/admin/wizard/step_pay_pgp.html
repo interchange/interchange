@@ -15,6 +15,8 @@ Enter the values used to enable payment processing through PGP or GnuPG.
 	[/calc]
 	[/if]
 [/set]
+[tmp tmp_pgpkeys][get-gpg-keys][/tmp]
+keys=[scratch tmp_pgpkeys]
 <p>
 [table-editor 
 	table=variable
@@ -46,7 +48,8 @@ Enter the values used to enable payment processing through PGP or GnuPG.
 
 	label.pgpkeyid="PGP/GPG key selection"
 	help.pgpkeyid="This is either the key ID or the email address associated with the PGP/GPG key"
-	widget.pgpkeyid=text_40
+	passed.pgpkeyid=`$Scratch->{tmp_pgpkeys}`
+	widget.pgpkeyid=select
 
 	label.pgpkeytext="PGP/GPG Public Key"
 	help.pgpkeytext="Export an ASCII-armored version of your key, and paste it in."

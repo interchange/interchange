@@ -75,9 +75,9 @@ it. Until then, MySQL and DBM only.
 [/comment]
 
 [if variable PGSQL]
-	[tmp the_fields]sampleproducts enablesecure[/tmp]
+	[tmp the_fields]sampleproducts buildcat enablesecure[/tmp]
 [else]
-	[tmp the_fields]sampleproducts sampleorders enablesecure[/tmp]
+	[tmp the_fields]sampleproducts buildcat sampleorders enablesecure[/tmp]
 [/else]
 [/if]
 
@@ -111,6 +111,10 @@ it. Until then, MySQL and DBM only.
 	label.sampleorders="Insert sample order data"
 	help.sampleorders=`$Scratch->{tmessage}`
 	widget.sampleorders=yesno
+
+	label.buildcat="Rebuild category lists"
+	widget.buildcat=select
+	passed.buildcat="Yes, No"
 
 	label.sampleproducts="Insert products data"
 	help.sampleproducts=`$Scratch->{pmessage}`

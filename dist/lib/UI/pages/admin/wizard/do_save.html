@@ -621,7 +621,7 @@ push @messages, "set shipmodes to '$na_string' in Canada";
 	]
 [/if]
 <!-- export variables: [export variable] -->
-[if value sampleproducts]
+[if value buildcat !~ /^\s*(0|n)/i]
 [perl tables="area cat products"]
 	my $go_page = 'index';
 	$CGI->{mv_nextpage} = '@@MV_PAGE@@';
