@@ -1,6 +1,7 @@
 Template: interchange-ui/defaultlocale
 Type: select
 Choices: en_US, da_DK, de_DE, it_IT, nl_NL, sv_SE 
+Choices-de: en_US, da_DK, de_DE, it_IT, nl_NL, sv_SE 
 Default: en_US
 Description: Select default language for UI
  The administration interface for Interchange catalogs, called UI,
