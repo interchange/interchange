@@ -422,7 +422,7 @@ buy now	buy now			koop nu
 by	by			door
 contact us	contact us			neem contact met ons op
 create a new account	create a new account			nieuwe rekening aanmaken
-currency_symbol	$	DM	FF	Euro
+currency_symbol	$	EUR	FF	Euro
 decimal_point	.	.	.	.
 default	1	0	0	1
 e-mail	e-mail			
