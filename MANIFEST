@@ -451,6 +451,7 @@ dist/foundation/templates/sampledata/tools/products/options.txt
 dist/foundation/templates/sampledata/tools/products/orderline.txt
 dist/foundation/templates/sampledata/tools/products/pricing.txt
 dist/foundation/templates/sampledata/tools/products/products.txt
+dist/foundation/templates/sampledata/tools/products/specs.txt
 dist/foundation/templates/sampledata/tools/products/transactions.txt
 dist/foundation/templates/sampledata/tools/products/userdb.txt
 dist/foundation/upload/.empty
@@ -636,6 +637,7 @@ dist/lib/UI/usertag/crypt.tag
 dist/lib/UI/usertag/db_columns.tag
 dist/lib/UI/usertag/db_hash.tag
 dist/lib/UI/usertag/dbinfo.tag
+dist/lib/UI/usertag/diff.tag
 dist/lib/UI/usertag/directive_value.tag
 dist/lib/UI/usertag/display.tag
 dist/lib/UI/usertag/dump_session.tag
