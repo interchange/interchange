@@ -1,23 +1,24 @@
-<!-- $Id: mod_interchange.html,v 2.1 2002-06-24 11:51:35 kwalsh Exp $ -->
+<!-- $Id: mod_interchange.html,v 2.2 2002-08-05 19:22:53 kwalsh Exp $ -->
 <html>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <title>Apache module: mod_interchange (version 1.21)</title>
+   <title>Apache module: mod_interchange (version 1.22)</title>
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
-    <h1>Apache module: mod_interchange (version 1.21)</h1>
+    <h1>Apache module: mod_interchange (version 1.22)</h1>
     <h2>Apache link module for Interchange</h2>
     <p>
 	This module replaces the <i>tlink</i> and <i>vlink</i> programs
 	that come with <a href="http://www.icdevgroup.org/">Interchange</a>.&nbsp;
 	It has been tested with all Interchange versions up to and
-	including 4.9.0.&nbsp;
+	including 4.9.2.&nbsp;
 	Although this module is known to have worked with MiniVend versions 3
 	and 4, its current compatibility has not been tested.
     </p>
     <p>
 	This module has been tested with Apache versions 1.3.6
-	through 1.3.20.
+	through 1.3.26.&nbsp;
+	Note that this module is not compatible with Apache 2.
     </p>
 
     <h2>Contents</h2>
@@ -222,6 +223,19 @@
     <h2><a name="changelog">Change Log</a></h2>
     <ul>
 	<li>
+	    1.22
+	    (Mon 05 Aug 2002)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Fixed a bug reported by John Young.&nbsp;
+		    Mod_interchange was not decoding entities in the
+		    REQUEST_URI, which caused Interchange searches (scan)
+		    with encoded spaces to fail.
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
 	    1.21
 	    (Mon 01 Apr 2002)
 	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>

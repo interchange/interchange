@@ -1,10 +1,10 @@
 /*
- *	$Id: mod_interchange.c,v 2.1 2002-06-24 11:51:35 kwalsh Exp $
+ *	$Id: mod_interchange.c,v 2.2 2002-08-05 19:22:53 kwalsh Exp $
  *
  *	Apache Module implementation of the Interchange application server
  *	link programs.
  *
- *	Version: 1.21
+ *	Version: 1.22
  *
  *	Author: Kevin Walsh <kevin@cursor.biz>
  *	Based on original code by Francis J. Lacoste <francis.lacoste@iNsu.COM>
@@ -524,6 +524,12 @@ static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 			*rurip = '\0';
 			break;
 		}
+	}
+	switch (ap_unescape_url(request_uri)){
+	case BAD_REQUEST:
+	case NOT_FOUND:
+		ap_log_reason("Bad URI entities found",r->uri,r);
+		return HTTP_INTERNAL_SERVER_ERROR;
 	}
 
 	/*
