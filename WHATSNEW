@@ -58,6 +58,10 @@ Foundation
 * Removed trailing whitespace that caused browse page to contain
   Perl code garbage. Found by Salvador Caballe.
 
+* Added missing Database UPPERCASE 1 settings in the Oracle database
+  configuration. Thanks to Jonathan Lee <jonalee740304@yahoo.com>
+  for reporting.
+
 ------------------------------------------------------------------------------
 
 
