@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.14 2001-02-20 02:07:30 heins Exp $
+# $Id: Server.pm,v 1.8.2.15 2001-02-22 19:59:54 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,14 +28,15 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.14 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.15 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
 use Fcntl;
-use Errno;
+use Errno qw/:POSIX/;
 use Config;
 use Socket;
+use Symbol;
 use strict;
 
 sub new {
@@ -89,6 +90,20 @@ my @Map =
      'server_port' => 'SERVER_PORT',
      'useragent' => 'HTTP_USER_AGENT',
 );
+
+### This is to account for some bad Socket.pm implementations
+### which don't set SOMAXCONN, I think SCO is the big one
+
+my $SOMAXCONN;
+if(defined &SOMAXCONN) {
+	$SOMAXCONN = SOMAXCONN;
+}
+else {
+	$SOMAXCONN = 128;
+}
+
+###
+###
 
 sub populate {
     my ($cgivar) = @_;
@@ -474,7 +489,8 @@ sub respond {
 	elsif(! $Vend::ResponseMade) {        
 		print $fh canon_status("Content-Type: text/html");
 # TRACK        
-        print $fh canon_status("X-Track: " . $Vend::Track->header());
+        print $fh canon_status("X-Track: " . $Vend::Track->header())
+			if $Vend::Track;
 # END TRACK
 	}
 	print $fh canon_status("Pragma: no-cache")
@@ -486,12 +502,13 @@ sub respond {
 }
 
 sub _read {
-    my ($in) = @_;
+    my ($in, $fh) = @_;
+	$fh = \*MESSAGE if ! $fh;
     my ($r);
     
     do {
-        $r = sysread(MESSAGE, $$in, 512, length($$in));
-    } while (!defined $r and $!{EINTR});
+        $r = sysread($fh, $$in, 512, length($$in));
+    } while (!defined $r and $!{eintr});
     die "read: $!" unless defined $r;
     die "read: closed" unless $r > 0;
 }
@@ -580,6 +597,91 @@ sub http_log_msg {
 
 	push @params, '-';
 	return join " ", @params;
+}
+
+sub http_soap {
+	my($fh, $env, $entity) = @_;
+
+	my $in = '';
+	die "Need URI::URL for this functionality.\n"
+		unless defined $HTTP_enabled;
+
+	my ($real_header, $header, $request, $block);
+	my $waiting = 0;
+	my $status_line = _find(\$in, "\n");
+#::logDebug("status_line: $status_line");
+	($$env{REQUEST_METHOD},$request) = split /\s+/, $status_line;
+	for(;;) {
+        $block = _find(\$in, "\n");
+#::logDebug("read: $block");
+		$block =~ s/\s+$//;
+		if($block eq '') {
+			last;
+		}
+		if ( $block =~ s/^([^:]+):\s*//) {
+			$real_header = $1;
+			$header = lc $1;
+			
+			if(defined $CGImap{$header}) {
+#::logDebug("setting env{$CGImap{$header}} to: $block");
+				$$env{$CGImap{$header}} = $block;
+			}
+			$$env{$real_header} = $block;
+			next;
+		}
+		else {
+			die "HTTP protocol error on '$block':\n$in";
+		}
+		last;
+	}
+
+	if ($$env{CONTENT_LENGTH}) {
+		_read(\$in) while length($in) < $$env{CONTENT_LENGTH};
+#::logDebug("read entity: $in");
+	}
+	$in =~ s/\s+$//;
+	$$entity = $in;
+
+#::logDebug("exiting loop");
+	my $url = new URI::URL $request;
+
+	(undef, $Remote_addr) =
+				sockaddr_in(getpeername($fh));
+	$$env{REMOTE_HOST} = gethostbyaddr($Remote_addr, AF_INET);
+	$Remote_addr = inet_ntoa($Remote_addr);
+
+	$$env{REMOTE_ADDR} = $Remote_addr;
+
+	my (@path) = $url->path_components();
+	my $doc;
+	my $status = 200;
+
+	shift(@path);
+	my $catname = shift(@path);
+#::logDebug("catname is $catname");
+
+	if($Global::Selector{$catname} and $Global::AllowGlobal->{$catname}) {
+		if ($$env{AUTHORIZATION}) {
+			$$env{REMOTE_USER} =
+					Vend::Util::check_authorization( delete $$env{AUTHORIZATION} );
+		}
+		return undef if ! $$env{REMOTE_USER};
+	}
+
+	my $ref;
+	if($ref = $Global::Selector{$catname} || $Global::SelectorAlias{$catname}) {
+#::logDebug("found catalog $catname");
+		$$env{SCRIPT_NAME} = $catname;
+	}
+
+	logData("$Global::VendRoot/etc/access_log",
+			http_log_msg(
+						"SOAP$status",
+						$env,
+						($$env{REQUEST_METHOD} .  " " .  $request),
+						)
+		);
+	return $ref;
 }
 
 sub http_server {
@@ -773,7 +875,17 @@ my $Signal_Debug;
 my $Signal_Restart;
 my %orig_signal;
 my @trapped_signals = qw(INT TERM);
-$Vend::Server::Num_servers = 0;
+
+my %s_vec_map;
+my %s_fh_map;
+my %unix_socket;
+
+use vars qw($Num_servers $SOAP_servers %SOAP_pids $s_vector);
+BEGIN {
+	$s_vector = '';
+}
+$Num_servers = 0;
+$SOAP_servers = 0;
 
 # might also trap: QUIT
 
@@ -782,8 +894,8 @@ my ($Sig_inc, $Sig_dec, $Counter);
 
 unless ($Global::Windows) {
 	push @trapped_signals, qw(HUP USR1 USR2);
-	$Routine_USR1 = sub { $SIG{USR1} = $Routine_USR1; $Vend::Server::Num_servers++};
-	$Routine_USR2 = sub { $SIG{USR2} = $Routine_USR2; $Vend::Server::Num_servers--};
+	$Routine_USR1 = sub { $SIG{USR1} = $Routine_USR1; $Num_servers++};
+	$Routine_USR2 = sub { $SIG{USR2} = $Routine_USR2; $Num_servers--};
 	$Routine_HUP  = sub { $SIG{HUP} = $Routine_HUP; $Signal_Restart = 1};
 }
 
@@ -804,8 +916,8 @@ sub setup_signals {
 		$SIG{INT}  = sub { $Signal_Terminate = 1; };
 		$SIG{TERM} = sub { $Signal_Terminate = 1; };
 		$SIG{HUP}  = sub { $Signal_Restart = 1; };
-		$SIG{USR1} = sub { $Vend::Server::Num_servers++; };
-		$SIG{USR2} = sub { $Vend::Server::Num_servers--; };
+		$SIG{USR1} = sub { $Num_servers++; };
+		$SIG{USR2} = sub { $Num_servers--; };
 	}
 
 	if(! $Global::MaxServers) {
@@ -814,7 +926,8 @@ sub setup_signals {
 	}
     else {
         $Sig_inc = sub { kill "USR1", $Vend::MasterProcess; };
-        $Sig_dec = sub { kill "USR2", $Vend::MasterProcess; };
+        #$Sig_dec = sub { kill "USR2", $Vend::MasterProcess; };
+        $Sig_dec = sub { send_ipc($$); };
     }
 }
 
@@ -829,10 +942,12 @@ my $Last_housekeeping = 0;
 sub housekeeping {
 	my ($tick) = @_;
 	my $now = time;
-	rand();
 
+#::logDebug("called housekeeping");
 	return if defined $tick and ($now - $Last_housekeeping < $tick);
 
+#::logDebug("actually doing housekeeping tick=$tick now=$now last=$Last_housekeeping");
+	rand();
 	$Last_housekeeping = $now;
 
 	my ($c, $num,$reconfig, $restart, @files);
@@ -847,7 +962,7 @@ sub housekeeping {
 		($restart) = grep $_ eq 'restart', @files
 			if $Signal_Restart || $Global::Windows;
 		if($Global::PIDcheck) {
-			$Vend::Server::Num_servers = 0;
+			$Num_servers = 0;
 			@pids = grep /^pid\.\d+$/, @files;
 		}
 		#scalar grep($_ eq 'stop_the_server', @files) and exit;
@@ -944,18 +1059,18 @@ EOF
 				or die "unlink $Global::ConfDir/reconfig: $!\n";
 		}
         for (@pids) {
-            $Vend::Server::Num_servers++;
+            $Num_servers++;
             my $fn = "$Global::ConfDir/$_";
-            ($Vend::Server::Num_servers--, next) if ! -f $fn;
+            ($Num_servers--, next) if ! -f $fn;
             my $runtime = $now - (stat(_))[9];
             next if $runtime < $Global::PIDcheck;
             s/^pid\.//;
             if(kill 9, $_) {
-                unlink $fn and $Vend::Server::Num_servers--;
+                unlink $fn and $Num_servers--;
                 ::logGlobal({ level => 'error' }, "hammered PID %s running %s seconds", $_, $runtime);
             }
             elsif (! kill 0, $_) {
-				unlink $fn and $Vend::Server::Num_servers--;
+				unlink $fn and $Num_servers--;
                 ::logGlobal({ level => 'error' },
 					"Spurious PID file for process %s supposedly running %s seconds",
 						$_,
@@ -963,7 +1078,7 @@ EOF
 				);
 			}
             else {
-				unlink $fn and $Vend::Server::Num_servers--;
+				unlink $fn and $Num_servers--;
                 ::logGlobal({ level => 'crit' },
 					"PID %s running %s seconds would not die!",
 						$_,
@@ -973,6 +1088,384 @@ EOF
         }
 
 
+}
+
+sub server_start_message {
+	my ($fmt, $reverse) = @_;
+	$fmt = 'START server (%s) (%s)' unless $fmt; 
+	my @types;
+	push (@types, 'INET') if $Global::Inet_Mode;
+	push (@types, 'UNIX') if $Global::Unix_Mode;
+	push (@types, 'SOAP') if $Global::SOAP;
+	my $server_type = join(" and ", @types);
+	my @args = $reverse ? ($server_type, $$) : ($$, $server_type);
+	return ::errmsg ($fmt , @args );
+}
+
+sub map_unix_socket {
+	my ($vec, $vec_map, $fh_map, @files) = @_;
+
+	my @made;
+
+	foreach my $sockfn (@files) {
+		my $fh = gensym();
+
+#::logDebug("starting to parse file socket $sockfn, fh created: $fh");
+
+		eval {
+			socket($fh, AF_UNIX, SOCK_STREAM, 0) || die "socket: $!";
+
+			setsockopt($fh, SOL_SOCKET, SO_REUSEADDR, pack("l", 1));
+
+			bind($fh, pack("S", AF_UNIX) . $sockfn . chr(0))
+				or die "Could not bind (open as a socket) '$sockfn':\n$!\n";
+			listen($fh,$SOMAXCONN) or die "listen: $!";
+		};
+
+		if($@) {
+			::logGlobal({ level => 'error' }, 
+					"Could not bind to UNIX socket file %s: %s",
+					$sockfn,
+					$!,
+				  );
+			next;
+		}
+
+#::logDebug("made socket $sockfn");
+		my $rin = '';
+		vec($rin, fileno($fh), 1) = 1;
+		$$vec |= $rin;
+		$vec_map->{$sockfn} = fileno($fh);
+		$fh_map->{$sockfn} = $fh;
+		push @made, $sockfn;
+	}
+	return @made;
+}
+
+sub map_inet_socket {
+	my ($vec, $vec_map, $fh_map, @ports) = @_;
+
+	my $proto = getprotobyname('tcp');
+	my @made;
+
+	for(@ports) {
+		my $fh = gensym();
+		my $bind_addr;
+		my $bind_port;
+		my $bind_ip;
+#::logDebug("starting to parse port $_, fh created: $fh");
+		if (/^([-\w.]+):(\d+)$/) {
+			$bind_ip  = $1;
+			$bind_port = $2;
+			$bind_addr = inet_aton($bind_ip);
+		}
+		elsif (/^\d+$/) {
+			$bind_ip  = '0.0.0.0';
+			$bind_addr = INADDR_ANY;
+			$bind_port = $_;
+		}
+		else {
+			::logGlobal({ level => 'error' }, 
+					"Unrecognized port type '%s'",
+					$bind_port,
+					$!,
+				  );
+		}
+#::logDebug("Trying to run server on ip=$bind_ip port=$bind_port");
+		if(! $bind_addr) {
+			::logGlobal({ level => 'error' }, 
+					"Could not bind to IP address %s on port %s: %s",
+					$bind_ip,
+					$bind_port,
+					$!,
+				  );
+			return undef;
+		}
+		eval {
+			socket($fh, PF_INET, SOCK_STREAM, $proto)
+					|| die "socket: $!";
+			setsockopt($fh, SOL_SOCKET, SO_REUSEADDR, pack("l", 1))
+					|| die "setsockopt: $!";
+			bind($fh, sockaddr_in($bind_port, $bind_addr))
+					|| die "bind: $!";
+			listen($fh,$SOMAXCONN)
+					|| die "listen: $!";
+		};
+
+		if ($@) {
+		  ::logGlobal({ level => 'error' },
+					"INET mode server failed to start on port %s: %s",
+					$bind_port,
+					$@,
+				  );
+		  next;
+		}
+
+		my $rin = '';
+		vec($rin, fileno($fh), 1) = 1;
+		$$vec |= $rin;
+		my $port_ptr = "$bind_ip:$bind_port"; 
+		$vec_map->{$port_ptr} = fileno($fh);
+		$fh_map->{$port_ptr} = $fh;
+		push @made, $port_ptr;
+#::logDebug( "Made port $bind_ip:$bind_port\n");
+	}
+	return @made;
+}
+
+sub create_host_pattern {
+		my $host = shift;
+		my @hosts = grep /\S/, split /[,\s\|]+/, $host;
+		for (@hosts) {
+			s/\./\\./g;
+			s/\*/[-\\w.]+/g;
+		}
+		return join "|", @hosts;
+}
+
+sub unlink_sockets {
+	my @to_unlink;
+	for (@_) {
+		if(ref($_)) {
+			push @to_unlink, @$_;
+		}
+		else {
+			push @to_unlink, $_;
+		}
+	}
+	
+	for(@to_unlink) {
+		unlink $_ if -S $_;
+		if(-S $_) {
+			unlink $_ 
+				or 
+				::logGlobal(
+					{level => 'error'},
+					"Socket file %s cannot be unlinked: %s",
+					$_,
+					$!,
+				);
+		}
+		elsif(-e _) {
+			::logGlobal(
+				{level => 'error'},
+				"Socket file %s exists and is not a socket, possible error",
+				$_,
+			);
+		}
+	}
+}
+
+sub start_soap {
+
+	my $do_message = shift;
+	my $number = shift;
+#::logDebug("starting soap");
+
+	$number = $Global::SOAP_StartServers if ! $number; 
+	if ($number > 50) {
+		  die ::errmsg(
+		   "Ridiculously large number of SOAP_StartServers: %s",
+		   $number,
+		   );
+	}
+	for (1 .. $number) {
+		my $pid;
+		if(! defined ($pid = fork) ) {
+			my $msg = ::errmsg("Can't fork: %s", $!);
+			::logGlobal({ level => 'crit' },  $msg );
+			die ("$msg\n");
+		}
+		elsif (! $pid) {
+			unless( $pid = fork ) {
+				close(STDOUT);
+				close(STDERR);
+				close(STDIN);
+				if ($Global::DebugFile) {
+					open(Vend::DEBUG, ">>$Global::DebugFile.soap");
+					select Vend::DEBUG;
+					$| =1;
+					print "Start DEBUG at " . localtime() . "\n";
+				}
+				elsif (!$Global::DEBUG) {
+					# May as well turn warnings off, not going anywhere
+					$^W = 0;
+					open (Vend::DEBUG, ">/dev/null") unless $Global::Windows;
+				}
+
+				open(STDOUT, ">&Vend::DEBUG");
+				select(STDOUT);
+				$| = 1;
+				open(STDERR, ">&Vend::DEBUG");
+				select(STDERR); $| = 1; select(STDOUT);
+
+				$Vend::Foreground = 1;
+
+				if($do_message) {
+					::logGlobal(
+						{ level => 'info'},
+						server_start_message(
+							"Interchange SOAP server started (process id %s)",
+						 ),
+					 ) unless $Vend::Quiet;
+				}
+
+				send_ipc("register soap $$");
+
+				my $next;
+				$::Instance = {};
+				eval { 
+					$next = server_soap(@_);
+				};
+				if ($@) {
+					my $msg = $@;
+					::logGlobal({ level => 'error' }, "Runtime error: %s" , $msg);
+					logError("Runtime error: %s", $msg)
+						if defined $Vend::Cfg->{ErrorFile};
+				}
+
+				send_ipc("respawn soap $$")		if $next;
+				
+				undef $::Instance;
+				exit(0);
+			}
+			exit(0);
+		}
+		wait;
+	}
+	return 1;
+}
+
+sub server_soap {
+#::logDebug("Entering soap server program");
+	my $rin;
+	my $rout;
+	my $tick = $Global::HouseKeeping || 60;
+	my $c = 0;
+	my $handled = 0;
+my $pretty_vector = unpack('b*', $s_vector);
+#::logDebug("SOAP server $$ begun, vector=$pretty_vector servers=$SOAP_servers");
+    for (;;) {
+
+	  my $n;
+	  $c++;
+	  eval {
+		$rin = $s_vector;
+
+		do {
+			$n = select($rout = $rin, undef, undef, $tick);
+		} while $n == -1 && $!{EINTR} && ! $Signal_Terminate;
+
+		undef $Vend::Cfg;
+
+        if ($n == -1) {
+			last if $!{EINTR} and $Signal_Terminate;
+			my $msg = $!;
+			$msg = ::errmsg("error '%s' from select, n=$n." , $msg );
+			die "$msg";
+        }
+		elsif($n == 0) {
+			#soap_housekeeping();
+			next;
+		}
+        else {
+::logDebug("SOAP n=$n pid=$$ c=$c time=" . join '|', times());
+            my ($ok, $p, $v);
+			while (($p, $v) = each %s_vec_map) {
+#::logDebug("SOAP trying p=$p v=$v vec=$pretty_vector pid=$$ c=$c");
+        		next unless vec($rout, $v, 1);
+#::logDebug("SOAP accepting p=$p v=$v pid=$$ c=$c");
+				$Global::TcpPort = $p;
+				$ok = accept(MESSAGE, $s_fh_map{$p});
+				last;
+			}
+
+
+			unless (defined $ok) {
+#::logDebug("redo accept on error=$! n=$n p=$p unix=$unix_socket{$p} pid=$$ c=$c");
+				last if $Signal_Terminate;
+				redo;
+			}
+
+			my $connector;
+			my $dns_name;
+
+			CHECKHOST: {
+				last CHECKHOST if $unix_socket{$p};
+				(undef, $ok) = sockaddr_in($ok);
+				$connector = inet_ntoa($ok);
+				last CHECKHOST if $connector =~ /$Global::TcpHost/;
+				(undef, $dns_name) = gethostbyaddr($ok, AF_INET);
+				$dns_name = $connector if ! $dns_name;
+				last CHECKHOST if $dns_name =~ /$Global::TcpHost/;
+				$Vend::OnlyInternalHTTP = "$dns_name/$connector";
+			}
+
+			$handled++;
+			my %env; my $entity;
+			$Vend::Cfg = http_soap(\*MESSAGE, \%env, \$entity);
+			my $http = new Vend::Server \*MESSAGE, \%env, \$entity;
+			my $result = Vend::SOAP::Transport::Server->new(
+						in => $entity,
+					)
+					->dispatch_to('', 'Vend::SOAP')
+					->handle;
+			
+			print MESSAGE $result;
+			close MESSAGE;
+::logDebug("SOAP port=$p n=$n unix=$unix_socket{$p} pid=$$ c=$c time=" . join '|', times);
+		}
+	  };
+
+	  if($@) {
+	  	my $msg = $@;
+		$msg =~ s/\s+$//;
+::logDebug("SOAP died in select, retrying: $msg");
+	    ::logGlobal({ level => 'error' },  "SOAP died in select, retrying: %s", $msg);
+	  }
+
+	  return 1 if $handled > ($Global::SOAP_MaxRequests || 10);
+
+    }
+
+}
+
+sub process_ipc {
+	my $fh = shift;
+#::logDebug("pid $$: processing ipc response $fh");
+	my $thing = <$fh>;
+#::logDebug("pid $$: thing is $thing");
+	if($thing =~ /^\d+$/) {
+		close $fh;
+		$Num_servers--;
+	}
+	elsif ($thing =~ /^register soap (\d+)/) {
+		$SOAP_pids{$1} = 1;
+#::logDebug("registered SOAP pid $1");
+		$SOAP_servers++;
+	}
+	elsif ($thing =~ /^respawn soap (\d+)/) {
+		delete $SOAP_pids{$1};
+#::logDebug("deleted SOAP pid $1");
+		$SOAP_servers--;
+		start_soap(undef, 1);
+	}
+	return;
+}
+
+sub send_ipc {
+	my $msg = shift;
+	socket(SOCK, PF_UNIX, SOCK_STREAM, 0)	or die "socket: $!\n";
+
+	my $ok;
+
+	do {
+	   $ok = connect(SOCK, sockaddr_un($Global::IPCsocket));
+	} while ( ! defined $ok and ! $!{EINTR});
+
+	print SOCK $msg;
+#::logDebug("pid $$: sent ipc $msg");
+	close SOCK;
 }
 
 # The servers for both are now combined
@@ -987,166 +1480,59 @@ sub server_both {
 
     setup_signals();
 
-	my ($host, $port);
-	if($Global::Inet_Mode) {
-		$host = $Global::TcpHost || '127.0.0.1';
-		my @hosts;
-		$Global::TcpHost =~ s/\./\\./g;
-		$Global::TcpHost =~ s/\*/\\S+/g;
-		@hosts = grep /\S/, split /\s+/, $Global::TcpHost;
-		$Global::TcpHost = join "|", @hosts;
-		::logGlobal({ level => 'info' }, "Accepting connections from %s", $Global::TcpHost);
-	}
+#::logDebug("Starting server socket file='$socket_filename' hosts='$host'\n");
 
-	my $proto = getprotobyname('tcp');
-
-#::logDebug("Starting server socket file='$socket_filename' tcpport=$port hosts='$host'\n");
-	unlink $socket_filename;
+	my $ipc;
+	my $ipc_vector = '';
 
 	my $vector = '';
-	my $spawn;
-
-	my $so_max;
-	if(defined &SOMAXCONN) {
-		$so_max = SOMAXCONN;
-	}
-	else {
-		$so_max = 128;
-	}
-
-	unlink "$Global::ConfDir/mode.inet", "$Global::ConfDir/mode.unix";
-
-	if($Global::Unix_Mode) {
-		socket(USOCKET, AF_UNIX, SOCK_STREAM, 0) || die "socket: $!";
-
-		setsockopt(USOCKET, SOL_SOCKET, SO_REUSEADDR, pack("l", 1));
-
-		bind(USOCKET, pack("S", AF_UNIX) . $socket_filename . chr(0))
-			or die "Could not bind (open as a socket) '$socket_filename':\n$!\n";
-		listen(USOCKET,$so_max) or die "listen: $!";
-
-		$rin = '';
-		vec($rin, fileno(USOCKET), 1) = 1;
-		$vector |= $rin;
-		open(INET_MODE_INDICATOR, ">$Global::ConfDir/mode.unix")
-			or die "creat $Global::ConfDir/mode.unix: $!";
-		close(INET_MODE_INDICATOR);
-
-		chmod $Global::SocketPerms, $socket_filename;
-		if($Global::SocketPerms & 077) {
-			::logGlobal({ level => 'warn' },
-							"ALERT: %s socket permissions are insecure; are you sure you want permssions %o?",
-							$Global::SocketFile,
-							$Global::SocketPerms,
-						);
-		}
-	}
-
-	my $soapin;
-	my $soapout;
-	if($Global::SOAP) {
-		my $fn = "$socket_filename.soap";
-		socket(SSOCKET, AF_UNIX, SOCK_STREAM, 0) || die "socket: $!";
-
-		setsockopt(SSOCKET, SOL_SOCKET, SO_REUSEADDR, pack("l", 1));
-
-		bind(SSOCKET, pack("S", AF_UNIX) . $fn . chr(0))
-			or die "Could not bind (open as a socket) '$fn':\n$!\n";
-		listen(SSOCKET,$so_max) or die "listen: $!";
-
-		$rin = '';
-		vec($rin, fileno(USOCKET), 1) = 1;
-		$vector |= $rin;
-		open(SOAP_MODE_INDICATOR, ">$Global::ConfDir/mode.soap")
-			or die "creat $Global::ConfDir/mode.unix: $!";
-		close(SOAP_MODE_INDICATOR);
-
-		chmod $Global::SocketPerms, $socket_filename;
-		if($Global::SocketPerms & 077) {
-			::logGlobal({ level => 'warn' },
-							"ALERT: %s socket permissions are insecure; are you sure you want permssions %o?",
-							$Global::SocketFile,
-							$Global::SocketPerms,
-						);
-		}
-	}
-
-	use Symbol;
 	my %fh_map;
 	my %vec_map;
-	my $made_at_least_one;
-	my @active_tcp;
 
-	my @types;
-	push (@types, 'INET') if $Global::Inet_Mode;
-	push (@types, 'UNIX') if $Global::Unix_Mode;
-	my $server_type = join(" and ", @types);
-	::logGlobal({ level => 'info' }, "START server (%s) (%s)" , $$, $server_type );
+	my %ipc_socket;
 
-	if($Global::Inet_Mode) {
+	my $spawn;
 
-	  foreach $port (keys %{$Global::TcpMap}) {
-		my $fh = gensym();
-		my $bind_addr;
-		my $bind_ip;
-#::logDebug("starting to parse port $port, fh created: $fh");
-		if ($port =~ s/^([-\w.]+):(\d+)$/$2/) {
-			$bind_ip  = $1;
-			$bind_addr = inet_aton($bind_ip);
-		}
-		else {
-			$bind_ip  = '0.0.0.0';
-			$bind_addr = INADDR_ANY;
-		}
-#::logDebug("Trying to run server on ip=$bind_ip port=$port");
-	    if(! $bind_addr) {
-			::logGlobal({ level => 'error' }, 
-					"Could not bind to IP address %s on port %s: %s",
-					$bind_ip,
-					$port,
-					$!,
-				  );
-			next;
-		}
-		eval {
-			socket($fh, PF_INET, SOCK_STREAM, $proto)
-					|| die "socket: $!";
-			setsockopt($fh, SOL_SOCKET, SO_REUSEADDR, pack("l", 1))
-					|| die "setsockopt: $!";
-			bind($fh, sockaddr_in($port, $bind_addr))
-					|| die "bind: $!";
-			listen($fh,$so_max)
-					|| die "listen: $!";
-			$made_at_least_one = 1;
-		};
-
-
-		if (! $@) {
-			$rin = '';
-			vec($rin, fileno($fh), 1) = 1;
-			$vector |= $rin;
-			$vec_map{"$bind_ip:$port"} = fileno($fh);
-			$fh_map{"$bind_ip:$port"} = $fh;
-		}
-		else {
-		  ::logGlobal({ level => 'error' },
-					"INET mode server failed to start on port %s: %s",
-					$port,
-					$@,
-				  );
-		}
-		push @active_tcp, "$bind_ip:$port";
-#::logDebug( "Made port $bind_ip:$port\n");
-	  }
+	for (qw/mode.inet mode.unix mode.soap/) {
+		unlink "$Global::ConfDir/$_";
 	}
 
-	if ($Global::Inet_Mode) {
-		if (! $made_at_least_one) {
+	# We always unlink our file-based sockets
+	unlink_sockets($Global::SocketFile);
+	if($Global::IPCsocket) {
+#::logDebug("Creating IPC socket $Global::IPCsocket");
+		unlink_sockets($Global::IPCsocket);
+		## This is a scalar, not an array like Global::SocketFile
+		($ipc) = map_unix_socket(\$vector, \%vec_map, \%fh_map, $Global::IPCsocket );
+		$ipc_socket{$ipc} = $ipc;
+		$unix_socket{$ipc} = $ipc;
+		$ipc_vector = $vector;
+		
+	}
+
+	# Make UNIX-domain sockets if applicable. The sockets are mapped into the
+	# vector map and file handle map, socket permissions are set, etc.  The
+	# socket labels are marked with %unix_socket so that INET-specific
+	# processing like determining IP address are not done.
+	if($Global::Unix_Mode) {
+		my @made =
+			map_unix_socket(\$vector, \%vec_map, \%fh_map, @$Global::SocketFile);
+		if (scalar @made) {
+			@unix_socket{@made} = @made;
+			open(UNIX_MODE_INDICATOR, ">$Global::ConfDir/mode.unix")
+				or die "creat $Global::ConfDir/mode.unix: $!";
+			print UNIX_MODE_INDICATOR join " ", @made;
+			close(UNIX_MODE_INDICATOR);
+			# So that other apps can read if appropriate
+			chmod $Global::SocketPerms, "$Global::ConfDir/mode.unix";
+		}
+		else { # The error condition
 			my $msg;
-			if ($Global::Unix_Mode) {
-				$msg = errmsg("Continuing in UNIX MODE ONLY" );
+			if ($Global::Inet_Mode) {
+				$msg = errmsg("Failed to make any UNIX sockets, continuing in INET MODE ONLY" );
 				::logGlobal({ level => 'warn' }, $msg);
 				print "$msg\n";
+				undef $Global::Unix_Mode;
 			}
 			else {
 				$msg = errmsg( "No sockets -- INTERCHANGE SERVER TERMINATING\a" );
@@ -1155,14 +1541,93 @@ sub server_both {
 				exit 1;
 			}
 		}
-#::logDebug( "writing port indicator: " .  join " ", @active_tcp);
-		open(INET_MODE_INDICATOR, ">$Global::ConfDir/mode.inet")
-			or die "creat $Global::ConfDir/mode.inet: $!";
-		print INET_MODE_INDICATOR join " ", @active_tcp;
-		close(INET_MODE_INDICATOR);
-		# So that other apps can read if appropriate
-		chmod $Global::SocketPerms, "$Global::ConfDir/mode.inet";
+		
+		for(@made) {
+			chmod $Global::SocketPerms, $_;
+			if($Global::SocketPerms & 033) {
+				::logGlobal( {
+					level => 'warn' },
+					"ALERT: %s socket permissions are insecure; are you sure you want permssions %o?",
+					$_,
+					$Global::SocketPerms,
+				);
+			}
+		}
 	}
+
+	# Make SOAP-IPC sockets if applicable. The sockets are mapped into a
+	# separate vector map and file handle map. The require of the SOAP
+	# module is done here so that memory footprint will not be greater
+	# if SOAP is not used.
+
+	if($Global::SOAP) {
+		eval {
+			require Vend::SOAP;
+			require SOAP::Transport::IO;
+		};
+		if($@) {
+			::logGlobal( {
+				level => 'warn' },
+				"SOAP enabled, but Vend::SOAP will not load: %s",
+				$@,
+			);
+		}
+		else {
+			my @made;
+			my @unix_soap = grep m{/}, @{$Global::SOAP_Socket};
+			my @inet_soap = grep $_ !~ m{/}, @{$Global::SOAP_Socket};
+			if(@unix_soap) {
+				unlink_sockets(@unix_soap);
+				push @made,
+					map_unix_socket(\$s_vector, \%s_vec_map, \%s_fh_map, @unix_soap);
+				chmod $Global::SOAP_Perms, @made;
+				@unix_socket{@made} = @made;
+			}
+			if(@inet_soap) {
+				push @made,
+					map_inet_socket(\$s_vector, \%s_vec_map, \%s_fh_map, @inet_soap);
+			}
+		}
+	}
+
+	# Make INET-domain sockets if applicable. The sockets are added into
+	# $vector for select(,,,) monitoring, and mapped into the vector map and
+	# file handle map.
+	if($Global::Inet_Mode) {
+		$Global::TcpHost = create_host_pattern($Global::TcpHost);
+		::logGlobal(
+				{ level => 'info' },
+				"Accepting connections from %s",
+				$Global::TcpHost,
+				);
+		my @made =
+			map_inet_socket(\$vector, \%vec_map, \%fh_map, keys %{$Global::TcpMap});
+		if (! scalar @made) {
+			my $msg;
+			if ($Global::Unix_Mode) {
+				$msg = errmsg("Continuing in UNIX MODE ONLY" );
+				::logGlobal({ level => 'warn' }, $msg);
+				print "$msg\n";
+				undef $Global::Inet_Mode;
+			}
+			else {
+				$msg = errmsg( "No sockets -- INTERCHANGE SERVER TERMINATING\a" );
+				::logGlobal( {level => 'alert'}, $msg );
+				print "$msg\n";
+				exit 1;
+			}
+		}
+		else {
+			open(INET_MODE_INDICATOR, ">$Global::ConfDir/mode.inet")
+				or die "creat $Global::ConfDir/mode.inet: $!";
+			print INET_MODE_INDICATOR join " ", @made;
+			close(INET_MODE_INDICATOR);
+			# So that other apps can read if appropriate
+			chmod $Global::SocketPerms, "$Global::ConfDir/mode.inet";
+		}
+	}
+
+	::logGlobal({ level => 'info' }, server_start_message() );
 
 	my $no_fork;
 	if($Global::Windows or $Global::DEBUG ) {
@@ -1193,68 +1658,103 @@ sub server_both {
 		open(STDERR, ">&Vend::DEBUG");
 		select(STDERR); $| = 1; select(STDOUT);
 		$Vend::Foreground = 0;
+#::logDebug("s_vector=" . unpack('b*', $s_vector));
+		if($s_vector) {
+			start_soap(1);
+		}
 	}
 
 
+	my $c = 0;
+	my $only_ipc;
+	my $checked_soap;
+	my $cycle;
     for (;;) {
 
+	  my $i = 0;
+	  $c++;
 	  eval {
-        $rin = $vector;
+        if($only_ipc) {
+			$rin = $ipc_vector;
+			$cycle = 0.100;
+		}
+		else {
+			$rin = $vector;
+			$cycle = $tick;
+		}
+my $pretty_vector = unpack('b*', $rin);
 		undef $spawn;
-        $n = select($rout = $rin, undef, undef, $tick);
+		undef $checked_soap;
+		do {
+			$n = select($rout = $rin, undef, undef, $cycle);
+		} while $n == -1 && $!{EINTR} && ! $Signal_Terminate;
 
 		undef $Vend::Cfg;
 
+#::logDebug("cycle=$c tick=$cycle vector=$pretty_vector n=$n num_servers=$Num_servers");
         if ($n == -1) {
-            if ($!{EINTR}) {
-                last if $Signal_Terminate;
-            }
-            else {
-				my $msg = $!;
-				$msg = ::errmsg("error '%s' from select." , $msg );
-				::logGlobal({ level => 'error' },  $msg );
-                die "$msg\n";
-            }
+			last if $!{EINTR} and $Signal_Terminate;
+			my $msg = $!;
+			$msg = ::errmsg("error '%s' from select, n=$n." , $msg );
+			die "$msg";
         }
-
-        elsif (	$Global::Unix_Mode && vec($rout, fileno(USOCKET), 1) ) {
-			undef $Vend::OnlyInternalHTTP;
-            my $ok = accept(MESSAGE, USOCKET);
-            die "accept: $!" unless defined $ok;
-			$spawn = 1;
-		}
 		elsif($n == 0) {
 			undef $spawn;
+#			if( $rin = $s_vector and select($rin, undef, undef, 0) == 1 ) {
+#				start_soap()
+#					unless $SOAP_servers > $Global::MaxServers;
+#			}
 			housekeeping();
-		}
-        elsif (	$Global::Inet_Mode ) {
-            my ($ok, $p, $v);
-			while (($p, $v) = each %vec_map) {
-        		next unless vec($rout, $v, 1);
-				$Global::TcpPort = $p;
-				$ok = accept(MESSAGE, $fh_map{$p});
-			}
-#::logDebug("port $Global::TcpPort");
-            die "accept: $!" unless defined $ok;
-			my $connector;
-			(undef, $ok) = sockaddr_in($ok);
-		CHECKHOST: {
-			undef $Vend::OnlyInternalHTTP;
-			$connector = inet_ntoa($ok);
-			last CHECKHOST if $connector =~ /$Global::TcpHost/;
-			my $dns_name;
-			(undef, $dns_name) = gethostbyaddr($ok, AF_INET);
-			$dns_name = "UNRESOLVED_NAME" if ! $dns_name;
-			last CHECKHOST if $dns_name =~ /$Global::TcpHost/;
-			$Vend::OnlyInternalHTTP = "$dns_name/$connector";
-		}
-			$spawn = 1;
+			next;
 		}
         else {
-            die "Why did select return with $n? Can we even get here?";
-        }
+
+            my ($ok, $p, $v);
+			while (($p, $v) = each %vec_map) {
+#::logDebug("trying p=$p v=$v vec=" . vec($rout,$v,1) . " pid=$$ c=$c i=" . $i++ );
+        		next unless vec($rout, $v, 1);
+#::logDebug("accepting p=$p v=$v pid=$$ c=$c i=" . $i++);
+				$Global::TcpPort = $p;
+				$ok = accept(MESSAGE, $fh_map{$p});
+				last;
+			}
+
+#::logDebug("port $Global::TcpPort n=$n v=$v error=$! p=$p unix=$unix_socket{$p} ipc=$ipc_socket{$p} pid=$$ c=$c i=" . $i++);
+
+			unless (defined $ok) {
+#::logDebug("redo accept on error=$! n=$n v=$v p=$p unix=$unix_socket{$p} pid=$$ c=$c i=" . $i++);
+				redo;
+				#die ("accept: $! ok=$ok pid=$$ n=$n c=$c i=" . $i++);
+			}
+
+			if ($ipc_socket{$p}) {
+				process_ipc(\*MESSAGE);
+				$only_ipc = 1;
+			}
+
+			CHECKHOST: {
+				undef $Vend::OnlyInternalHTTP;
+				last CHECKHOST if $unix_socket{$p};
+				my $connector;
+				(undef, $ok) = sockaddr_in($ok);
+				$connector = inet_ntoa($ok);
+				last CHECKHOST if $connector =~ /$Global::TcpHost/;
+				my $dns_name;
+				(undef, $dns_name) = gethostbyaddr($ok, AF_INET);
+				$dns_name = "UNRESOLVED_NAME" if ! $dns_name;
+				last CHECKHOST if $dns_name =~ /$Global::TcpHost/;
+				$Vend::OnlyInternalHTTP = "$dns_name/$connector";
+			}
+			$spawn = 1 unless $only_ipc;
+		}
 	  };
-	  ::logGlobal({ level => 'error' },  "Died in select, retrying: %s", $@) if $@;
+
+	  if($@) {
+	  	my $msg = $@;
+		$msg =~ s/\s+$//;
+::logDebug("Died in select, retrying: $msg");
+	    ::logGlobal({ level => 'error' },  "Died in select, retrying: %s", $msg);
+	  }
 
 	  eval {
 		SPAWN: {
@@ -1291,7 +1791,10 @@ sub server_both {
 
 					undef $::Instance;
 					select(undef,undef,undef,0.050) until getppid == 1;
-					if ($Global::PIDcheck) {
+					if ($Global::IPCsocket) {
+						&$Sig_dec and unlink_pid();
+					}
+					elsif ($Global::PIDcheck) {
 						unlink_pid() and &$Sig_dec;
 					}
 					else {
@@ -1333,24 +1836,35 @@ sub server_both {
 		}
 
 		last if $Signal_Terminate || $Signal_Debug;
+	  	undef $only_ipc;
 
 	  eval {
-        for(;;) {
-		   housekeeping($tick);
-           last if ! $Global::MaxServers or $Vend::Server::Num_servers < $Global::MaxServers;
-           select(undef,undef,undef,0.100);
-           last if $Signal_Terminate || $Signal_Debug;
-        }
+		    housekeeping($tick);
+		    if ($Global::MaxServers and $Num_servers > $Global::MaxServers) {
+			   $only_ipc = $ipc;
+			}
+			if( $rin = $s_vector and select($rin, undef, undef, 0) >= 1 ) {
+				start_soap(undef,1)
+					unless $SOAP_servers > $Global::SOAP_MaxServers;
+			}
 	  };
 	  ::logGlobal({ level => 'crit' }, "Died in housekeeping, retry: %s", $@ ) if $@;
-
     }
 
     restore_signals();
 
    	if ($Signal_Terminate) {
        	::logGlobal({ level => 'info' }, "STOP server (%s) on signal TERM", $$ );
-       	return 'terminate';
+#::logDebug("SOAP pids: " . ::uneval(\%SOAP_pids));
+		my @pids = keys %SOAP_pids;
+		if(@pids) {
+			::logGlobal(
+				{ level => 'info' },
+				"STOP SOAP servers (%s) on signal TERM",
+				join ",", keys %SOAP_pids,
+			);
+			kill 'TERM', @pids;
+		}
    	}
 
     return '';
@@ -1370,39 +1884,39 @@ sub unlink_pid {
 }
 
 sub grab_pid {
-    my $ok = lockfile(\*Vend::Server::Pid, 1, 0);
+	my $fh = shift
+		or return;
+    my $ok = lockfile($fh, 1, 0);
     if (not $ok) {
-        chomp(my $pid = <Pid>);
+        chomp(my $pid = <$fh>);
         return $pid;
     }
     {
         no strict 'subs';
-        truncate(Pid, 0) or die "Couldn't truncate pid file: $!\n";
+        truncate($fh, 0) or die "Couldn't truncate pid file: $!\n";
     }
-    print Pid $$, "\n";
+    print $fh $$, "\n";
     return 0;
 }
 
 
 
 sub open_pid {
-
-    open(Pid, "+>>$Global::PIDfile")
-        or die "Couldn't open '$Global::PIDfile': $!\n";
-    seek(Pid, 0, 0);
-    my $o = select(Pid);
+	my $fn = shift || $Global::PIDfile;
+	my $fh = gensym();
+    open($fh, "+>>$fn")
+        or die ::errmsg("Couldn't open '%s': %s\n", $fn, $!);
+    seek($fh, 0, 0);
+    my $o = select($fh);
     $| = 1;
-    {
-        no strict 'refs';
-        select($o);
-    }
+	select($o);
+	return $fh;
 }
 
 sub run_server {
     my $next;
-    my $pid;
 	
-    open_pid();
+    my $pidh = open_pid($Global::PIDfile);
 
 	unless($Global::Inet_Mode || $Global::Unix_Mode || $Global::Windows) {
 		$Global::Inet_Mode = $Global::Unix_Mode = 1;
@@ -1411,28 +1925,24 @@ sub run_server {
 		$Global::Inet_Mode = 1;
 	}
 
-	my @types;
-	push (@types, 'INET') if $Global::Inet_Mode;
-	push (@types, 'UNIX') if $Global::Unix_Mode;
-	my $server_type = join(" and ", @types);
-	::logGlobal({ level => 'info' }, "START server (%s) (%s)" , $$, $server_type );
+	::logGlobal({ level => 'info' }, server_start_message());
 
     if ($Global::Windows) {
-        $pid = grab_pid();
-        if ($pid) {
+        my $running = grab_pid($pidh);
+        if ($running) {
 			print errmsg(
 				"The Interchange server is already running (process id %s)\n",
-				$pid,
+				$running,
 				);
 			exit 1;
         }
 
-        print errmsg("Interchange server started (%s) (%s)\n", $$, $server_type);
-		$next = server_both($Global::SocketFile);
+        print server_start_message("Interchange server started (%s) (%s)\n");
+		$next = server_both();
     }
     else {
 
-        fcntl(Pid, F_SETFD, 0)
+        fcntl($pidh, F_SETFD, 0)
             or die "Can't fcntl close-on-exec flag for '$Global::PIDfile': $!\n";
         my ($pid1, $pid2);
         if ($pid1 = fork) {
@@ -1460,40 +1970,34 @@ sub run_server {
                 # child 2
                 sleep 1 until getppid == 1;
 
-                $pid = grab_pid();
-                if ($pid) {
+                my $running = grab_pid($pidh);
+                if ($running) {
                     print errmsg(
 						"The Interchange server is already running (process id %s)\n",
-						$pid,
+						$running,
 						);
                     exit 1;
                 }
-                print errmsg(
+                print server_start_message(
 						"Interchange server started in %s mode(s) (process id %s)\n",
-						$server_type,
-						$$,
+						1,
 					 ) unless $Vend::Quiet;
 
                 setsid();
 
-                fcntl(Pid, F_SETFD, 1)
+                fcntl($pidh, F_SETFD, 1)
                     or die "Can't fcntl close-on-exec flag for '$Global::PIDfile': $!\n";
 
-				$next = server_both($Global::SocketFile);
+				$next = server_both();
 
-				unlockfile(\*Pid);
+				unlockfile($pidh);
 				opendir(CONFDIR, $Global::ConfDir) 
 					or die "Couldn't open directory $Global::ConfDir: $!\n";
-				my @running = grep /^mvrunning/, readdir CONFDIR;
-				for(@running) {
-					unlink "$Global::ConfDir/$_" or die
-						"Couldn't unlink status file $Global::ConfDir/$_: $!\n";
-				}
 				unlink $Global::PIDfile;
                 exit 0;
             }
         }
-    }                
+    }
 }
 
 1;

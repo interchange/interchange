@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12.2.9 2001-02-13 14:33:07 heins Exp $
+# $Id: Parse.pm,v 1.12.2.10 2001-02-22 19:59:54 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -38,7 +38,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12.2.9 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.10 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -116,6 +116,7 @@ my %PosNumber =	( qw!
 				setlocale        2
 				shipping         1
 				shipping_desc    1
+				soap			 3
 				sql              2
 				strip            0
 				subtotal         2
@@ -207,6 +208,7 @@ my %Order =	(
 				shipping		=> [qw( mode )],
 				handling		=> [qw( mode )],
 				shipping_desc	=> [qw( mode )],
+				soap			=> [qw( call uri proxy )],
 # SQL
 				sql				=> [qw( type query)],
 # END SQL
@@ -257,6 +259,7 @@ my %addAttr = (
 					profile			1
 					process         1
 					query			1
+                    soap            1
                     sql             1
 					selected        1
 					setlocale       1
@@ -349,6 +352,7 @@ my %InvalidateCache = (
 				read_cookie 1
 				set_cookie  1
 				set			1
+				soap		1
 				tmp			1
 				seti		1
 				shipping	1
@@ -518,6 +522,7 @@ my %Routine = (
 				handling		=> \&Vend::Interpolate::tag_handling,
 				shipping_desc	=> \&Vend::Interpolate::tag_shipping_desc,
 				sql				=> \&Vend::Data::sql_query,
+				soap			=> \&Vend::SOAP::tag_soap,
 				subtotal		=> \&Vend::Interpolate::tag_subtotal,
 				strip			=> sub {
 										local($_) = shift;
@@ -832,7 +837,7 @@ use vars '%myRefs';
 
 sub do_tag {
 	my $tag = shift;
-#::logDebug("Parse-do_tag: tag=$tag caller=" . caller());
+::logDebug("Parse-do_tag: tag=$tag caller=" . caller() . " args=" . ::uneval(\@_) );
 	die errmsg("Unauthorized for admin tag %s", $tag)
 		if defined $Vend::Cfg->{AdminSub}{$tag} and ! $Vend::admin;
 	

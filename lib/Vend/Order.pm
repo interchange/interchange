@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18.2.9 2001-02-07 11:50:08 heins Exp $
+# $Id: Order.pm,v 1.18.2.10 2001-02-22 19:59:53 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.9 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.10 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -310,14 +310,12 @@ sub _credit_card {
 	# New or Compatibility to get options
 
 	if($params =~ /=/) {		# New
-::logDebug("New options");
 		$params =~ s/^\s*(\w+)(\s+|$)//
 			and $subname = $1;
 		$subname = 'standard' if ! $subname;
 		$opt = get_option_hash($params);
 	}
 	else {      				# Compat
-::logDebug("Old options");
 		$opt = {};
 		$opt->{keep} = 1 if $params =~ s/\s+keep//i;
 	
@@ -2048,7 +2046,7 @@ sub add_items {
 			else {
 #::logDebug("adding to line");
 # TRACK
-				$Vend::Track->add_item($cart,$item);
+				$Vend::Track->add_item($cart,$item) if $Vend::Track;
 # END TRACK
 				push @$cart, $item;
 			}

@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.19 2001-02-18 17:41:40 heins Exp $
+# $Id: Config.pm,v 1.25.2.20 2001-02-22 19:59:53 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -97,7 +97,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.19 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.20 $, 10);
 
 my %CDname;
 
@@ -263,8 +263,15 @@ sub global_directives {
 	['SendMailProgram',  'executable',		$Global::SendMailLocation
 												|| '/usr/lib/sendmail'],
 	['PIDfile',     	  undef,             "$Global::VendRoot/etc/$Global::ExeName.pid"],
-	['SocketFile',     	  undef,             "$Global::VendRoot/etc/socket"],
+	['SocketFile',     	 'array',            "$Global::VendRoot/etc/socket"],
 	['SocketPerms',      'integer',          0600],
+	['SOAP',     	     'yesno',            'No'],
+	['SOAP_Socket',     	 'array',            "$Global::VendRoot/etc/socket.soap"],
+	['SOAP_Perms',        'integer',          0600],
+	['SOAP_MaxRequests', 'integer',           50],
+	['SOAP_StartServers', 'integer',          1],
+	['SOAP_Host',         undef,              'localhost 127.0.0.1'],
+	['IPCsocket',		 undef,	     	 	 "$Global::VendRoot/etc/socket.ipc"],
 	['HouseKeeping',     'integer',          60],
 	['Mall',	          'yesno',           'No'],
 	['ActionMap',		 'action',			 ''],
@@ -345,7 +352,7 @@ sub catalog_directives {
 	['VendURL',          'url',              undef],
 	['SecureURL',        'url',              undef],
 	['History',          'integer',          0],
-	['OrderReport',      undef,       'etc/report'],
+	['OrderReport',      undef,       		 'etc/report'],
 	['ScratchDir',       'relative_dir',     'tmp'],
 	['SessionDB',  		 undef,     		 ''],
 	['SessionType', 	 undef,     		 'File'],
@@ -454,9 +461,6 @@ sub catalog_directives {
 	['PriceDefault',	 undef,              'price'],
 	['PriceField',		 undef,              'price'],
 	['Shipping',         'locale',           ''],
-	['IPC',		 		 'array',     	 	 ''],
-	['IPCmode',		 	 'integer',    	 	 '0777'],
-	['IPCdir',		 	 undef,    	 	     ''],
 	['AutoVariable',	 'autovar',     	 ''],
 
 	];
@@ -1824,18 +1828,19 @@ my %Default = (
 					}
 					return 1;
 				},
-		# Turn the array of IPC keys into a hash value so that we can
-		# grep for enables
-		IPC => sub {
-					my $ref = shift;
-					return 1 unless ref $ref;
-					my $hash = {};
-					for(@$ref) {
-						$hash->{$_} = 1;
-					}
-					$C->{IPCkeys} = $hash;
-					return 1;
-				},
+### Getting ready to nix this
+#		# Turn the array of IPC keys into a hash value so that we can
+#		# grep for enables
+#		IPC => sub {
+#					my $ref = shift;
+#					return 1 unless ref $ref;
+#					my $hash = {};
+#					for(@$ref) {
+#						$hash->{$_} = 1;
+#					}
+#					$C->{IPCkeys} = $hash;
+#					return 1;
+#				},
 		TcpMap => sub {
 					shift;
 					return 1 if defined $Have_set_global_defaults;

@@ -1,6 +1,6 @@
 # Control.pm - Interchange routines rarely used or not requiring much performance
 # 
-# $Id: Control.pm,v 1.6.2.2 2001-01-20 20:02:27 heins Exp $
+# $Id: Control.pm,v 1.6.2.3 2001-02-22 19:59:53 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -77,14 +77,13 @@ sub control_interchange {
 		exit 1 unless $restart;
 		return;
 	}
-	Vend::Server::open_pid()
+	my $pidh = Vend::Server::open_pid()
 		or die errmsg(
 				"Couldn't open PID file %s: %s\n",
 				$Global::PIDfile,
 				$!,
 				);
-	my $pid = Vend::Server::grab_pid();
-	Vend::Server::unlink_pid();
+	my $pid = Vend::Server::grab_pid($pidh);
 	if(! $pid) {
 		warn errmsg(<<EOF);
 The previous Interchange server was not running and probably
