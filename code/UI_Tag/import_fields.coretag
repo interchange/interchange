@@ -1,6 +1,6 @@
 UserTag import_fields Order table
 UserTag import_fields addAttr
-UserTag import_fields Version $Revision: 1.8 $
+UserTag import_fields Version $Revision: 1.10 $
 UserTag import_fields Routine <<EOR
 sub {
 	my($table, $opt) = @_;
@@ -236,6 +236,9 @@ EOF
 		die "Invalid key '$key' for table $table (wrong file format ?)\n";
 	}
 
+	my $multikey = $db->config('COMPOSITE_KEY') ? 1 : 0;
+
+	
 	if ($opt->{ignore_fields}) {
 		my %fmap;
 		for (my $ct = 0; $ct < @names; $ct++) {
@@ -248,6 +251,27 @@ EOF
 		$ignore_sub = eval $code;
 		die "Routine to ignore fields bad: $@" if $@;
 		@names = grep {exists $fmap{$_}} @names;
+	}
+
+	# We skip the whole table if bad field is found
+	my $skipping;
+
+	if($multikey) {
+		my %fmap;
+		@fmap{$key,@names} = ($key,@names);
+		my $not_all_there;
+		for(@{$db->config('_Key_columns')}) {
+			next if $fmap{$_};	
+			$not_all_there = 1;
+		}
+		if($not_all_there) {
+			$out .= errmsg(
+						"Table %s: not all key columns present. Skipping table.",
+						$table,
+					);
+
+			$skipping = 1;
+		}
 	}
 
 	######### Filters
@@ -264,8 +288,6 @@ EOF
 	##
 	######### Filters
 
-	# We skip the whole table if bad field is found
-	my $skipping;
 	for(@names) {
 		my $test = $db->column_index($_);
 #::logDebug("checking name=$_");
@@ -327,6 +349,7 @@ EOF
 		if(! $k and ! length($k)) {
 			if ($f[0] eq 'DELETE') {
 				next if ! $opt->{delete};
+				next if $multikey;
 				$out .= "${tmsg}Deleting record '$f[1]'.\n" if $verbose;
 				$db->delete_record($f[1]);
 				$count++;
@@ -337,7 +360,31 @@ EOF
 		$ignore_sub->(\@f) if $ignore_sub;
 		$out .= "${tmsg}Record '$k' had too many fields, ignored.\n"
 			if @f > $idx;
-		if ( ! length($k) or ! $db->record_exists($k)) {
+
+		my %hash;
+		@hash{@names} = @f;
+		if($found_filter) {
+			for(@filters) {
+				$change{$_}->(\$hash{$_});
+			}
+		}
+
+		if($multikey) {
+			$hash{$key} = $k;
+			if(! $db->record_exists(\%hash)) {
+				if($opt->{add}) {
+					$out .= "${tmsg}Adding multiple-key record.\n" if $verbose;
+				}
+				else {
+					$out .= "${tmsg}Non-existent record '$k', skipping.\n";
+					next;
+				}
+			}
+			$db->set_slice(undef, \%hash);
+			$count++;
+			next;
+		}
+		elsif ( ! length($k) or ! $db->record_exists($k)) {
 			if ($opt->{add}) {
 				if( ! length($k) and ! $opt->{autonumber}) {
 					$out .= "${tmsg}Blank key, no autonumber option, skipping.\n";
@@ -352,21 +399,13 @@ EOF
 				next;
 			}
 		}
-		for ($i = 0; $i < $idx; $i++) {
-			if ($opt->{cleanse}) {
-				delete $keys{$k};
-			}
+
+		if ($opt->{cleanse}) {
+			delete $keys{$k};
 		}
-		if(@names) {
-			my %hash;
-			@hash{@names} = @f;
-			if($found_filter) {
-				for(@filters) {
-					$change{$_}->(\$hash{$_});
-				}
-			}
-			$db->set_slice($k, \%hash);
-		}
+
+		$db->set_slice($k, \%hash) if @names;
+
 		if($@) {
    			my $msg = ::errmsg("error on update: %s", $@);
 			::logError($msg);

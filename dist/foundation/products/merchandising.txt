@@ -1,1 +1,0 @@
-sku	featured	banner_text	banner_image	blurb_begin	blurb_end	timed_promotion	start_date	finish_date	upsell_to	cross_sell	cross_category	others_bought	times_ordered

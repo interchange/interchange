@@ -1,9 +1,0 @@
-UserTag ecml                Order        name function
-UserTag ecml                addAttr
-UserTag ecml                PosNumber    2
-UserTag ecml                Routine      <<EOR
-sub {
-											require Vend::ECML;
-											return Vend::ECML::ecml(@_);
-										}
-EOR

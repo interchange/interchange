@@ -1,20 +1,17 @@
 [loop list="[scratch ship_notice_order_number]"]
 To: [scratch ship_notice_email]
-Subject: Your order number [loop-code] has [if scratch ship_now_complete]completely shipped![elsif !scratch ship_notice_complete]partially shipped[/elsif][else]shipped![/else][/if]
+Subject: Your order number [loop-code] has [if cgi ship_all eq 2]been CANCELED.[elsif scratch ship_now_complete]completely shipped![/elsif][elsif !scratch ship_notice_complete]partially shipped[/elsif][else]shipped![/else][/if]
 From: __COMPANY__ Customer Service <[either]__EMAIL_INFO__[or]__ORDERS_TO__[/either]>
 Reply-to: [either]__EMAIL_SERVICE__[or]__EMAIL_INFO__[or]__ORDERS_TO__[/either]
 
 Dear [loop-data transactions fname] [loop-data transactions lname],
 
-[if scratch ship_now_complete]
-We have made the last shipment of your order #[loop-code], it is now complete!
-[elsif scratch ship_notice_complete]
-Your order #[loop-code] has been shipped!
-[/elsif]
-[else]
-We have made a partial shipment of your order #[loop-code].
-[/else]
-[/if]
+[if cgi ship_all eq 2]Your order has been canceled.
+[elsif scratch ship_now_complete]We have made the last shipment of your order #[loop-code],
+it is now complete!
+[/elsif][elsif scratch ship_notice_complete]Your order #[loop-code] has been shipped!
+[/elsif][else]We have made a partial shipment of your order #[loop-code].
+[/else][/if]
 
             Name: [loop-data transactions fname] [loop-data transactions lname]
 [if-loop-data transactions company]         Company: [loop-data transactions company][/if-loop-data]

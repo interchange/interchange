@@ -197,6 +197,7 @@ code/UserTag/title_bar.tag
 code/UserTag/ups_query.tag
 code/UserTag/usertrack.tag
 code/UserTag/usps_query.tag
+code/UserTag/values_space.tag
 code/UserTag/var.tag
 code/UserTag/weight.tag
 code/Widget/gpg_keys.widget
@@ -211,7 +212,6 @@ debian/changelog
 debian/control
 debian/copyright
 debian/CREDITS.debian
-debian/docs
 debian/interchange-cat-foundation.config
 debian/interchange-cat-foundation.files
 debian/interchange-cat-foundation.postinst
@@ -1053,7 +1053,6 @@ dist/lib/UI/pages/admin/special/.access
 dist/lib/UI/pages/admin/special/.autoload
 dist/lib/UI/pages/admin/special/key_violation.html
 dist/lib/UI/pages/admin/spread.html
-dist/lib/UI/pages/admin/spread_control.html
 dist/lib/UI/pages/admin/survey/.access
 dist/lib/UI/pages/admin/survey/.autoload
 dist/lib/UI/pages/admin/survey/index.html
@@ -1262,6 +1261,7 @@ lib/Vend/Swish.pm
 lib/Vend/Table/Common.pm
 lib/Vend/Table/DB_File.pm
 lib/Vend/Table/DBI.pm
+lib/Vend/Table/DBI_CompositeKey.pm
 lib/Vend/Table/Editor.pm
 lib/Vend/Table/GDBM.pm
 lib/Vend/Table/InMemory.pm
@@ -1278,7 +1278,6 @@ LICENSE
 Makefile.PL
 MANIFEST
 MANIFEST.SKIP
-META.yml			Module meta-data (added by MakeMaker)
 README
 README.cvs
 README.debian
@@ -1373,6 +1372,7 @@ SPECS/interchange-cron
 SPECS/interchange-init
 SPECS/interchange-logrotate
 SPECS/interchange-wrapper
+SPECS/interchange.cfg.patch
 SPECS/interchange.spec
 test.pl
 UPGRADE
