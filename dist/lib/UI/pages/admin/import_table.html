@@ -75,6 +75,7 @@
 					delete="[cgi ui_allow_delete]"
 					filter_field="[cgi ui_filter_field]"
 					dir=backup
+					ignore_fields="[cgi ui_ignore_fields]"
 					file="upload/[cgi ui_upload_filename]"
 					move=1
 					multiple="[cgi ui_allow_multiple]"
@@ -143,13 +144,26 @@
 	</td>
 </tr>
 <tr class=rnorm>
+    <td class=clabel>Fields to be <i>ignored</i></td>
+	<td class=cdata>
+[calc]
+my $chklist;
+my @cols = $Tag->db_columns($CGI->{mv_data_table});
+for (my $i = 1; $i < @cols; $i++) {
+    $chklist .= sprintf(q{<input type=checkbox name=ui_ignore_fields value="%s"%s>&nbsp;%s}, $cols[$i], $Tag->checked({name=>'ui_ignore_fields', value=>$cols[$i], multiple=>1}), $cols[$i]);
+}
+delete $Values->{ui_ignore_fields};
+$chklist;
+[/calc]
+    </td>
+</tr>
+<tr class=rnorm>
 	<td class=clabel>Import from File</td>
 	<td class=cdata>
 	<input type=file name=upload_file>
 	<BR>
 	<input type="submit" value="[L]Import[/L]">
 </tr>
-
 <tr>
 	<td colspan=3 class=rspacer><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
