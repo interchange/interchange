@@ -19,7 +19,8 @@ ui_template_name: noleft
 	[loop list="fname lname company address1 address2 city state zip country phone"][value name="b_[loop-code]" set=""][/loop]
 [/if]
 
-[bounce page=ord/shipmode if="[value mv_same_billing]"]
+[tmp bounce_url][area href=ord/shipmode secure=1][/tmp]
+[bounce href="[scratch bounce_url]" if="[value mv_same_billing]"]
 
 [if !value b_address1]
 	[if session logged_in]
