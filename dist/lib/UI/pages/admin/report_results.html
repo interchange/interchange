@@ -11,8 +11,26 @@
 [set icon_name]admin/icon_stats.gif[/set]
 [set help_name]report[/set]
 [calc]
-	$Scratch->{head_put} = '@' . '_UI_STD_HEAD_@';
-	$Scratch->{foot_put} = '@' . '_UI_STD_FOOTER_@';
+	$lb = '[';
+	$Scratch->{head_put} = <<EOF;
+${lb}if cgi printable]
+<HTML><HEAD>
+  <TITLE>${lb}scratch page_title]</TITLE>
+</HEAD><BODY BGCOLOR="#ffffff" ONLOAD="print();close();">
+${lb}else]
+\@_UI_STD_HEAD_\@
+<A HREF="javascript:var w = window.open('${lb}area href=\@\@REPORT\@\@ form="printable=1"]','print','width=500,height=600,resizable=false');">print</A>
+${lb}/else]
+${lb}/if]
+EOF
+	$Scratch->{foot_put} = <<EOF;
+${lb}if cgi printable]
+</BODY></HTML>
+${lb}else]
+\@_UI_STD_FOOTER_\@
+${lb}/else]
+${lb}/if]
+EOF
 	$Scratch->{page_put} = '@' . '@MV_PAGE@@';
 	$Config->{NoSearch} = '';
 [/calc]
@@ -393,12 +411,16 @@ EOF
 	$def .= '/perl]';
 	$def .= "[bounce href='[area __UI_BASE__/report]']\n";
 	$page =~ s/([^-\w.])/sprintf '%%%02x', ord($1)/ge;
+	my $save_dir;
 	if($Tag->if_mm('super')) {
 		$save_dir = '';
 	}
 	else {
 		$save_dir = "/user/$Session->{username}";
 	}
+
+	$data =~ s:\@\@REPORT\@\@:__UI_BASE__$save_dir/reports/$page.html:g;
+
 	$status = $Tag->write_relative_file("pages/__UI_BASE__$save_dir/report_def/$page.html", $def);
 	$status &&= $Tag->write_relative_file("pages/__UI_BASE__$save_dir/reports/$page.html", $data);
 	delete $CGI->{page};
