@@ -6,7 +6,7 @@ Database  recurring_orders  USER         __SQLUSER__
 Database  recurring_orders  PASS         __SQLPASS__
 #endif
 Database  recurring_orders  COLUMN_DEF   "code=char(9) NOT NULL PRIMARY KEY"
-Database  recurring_orders  COLUMN_DEF   "user=CHAR(24) NOT NULL"
+Database  recurring_orders  COLUMN_DEF   "username=CHAR(24) NOT NULL"
 Database  recurring_orders  COLUMN_DEF   "nitems=CHAR(9) NOT NULL"
 Database  recurring_orders  COLUMN_DEF   "subtotal=FLOAT(8)"
 Database  recurring_orders  COLUMN_DEF   "shipping=FLOAT(8)"
