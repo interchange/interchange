@@ -1,6 +1,6 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 2.13 2002-02-02 17:25:47 mheins Exp $
+# $Id: Primitive.pm,v 2.14 2002-02-03 22:01:57 mheins Exp $
 
 # Copyright (C) 1998-2001 Red Hat, Inc. <interchange@redhat.com>
 
@@ -25,7 +25,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 2.13 $, 10);
+$VERSION = substr(q$Revision: 2.14 $, 10);
 
 $DEBUG = 0;
 
@@ -622,70 +622,6 @@ sub rotate {
 	return 1;
 }
 
-sub uploadhelper_widget {
-	# $column, $value, $record->{outboard}, $record->{width}
-    my ($name, $val, $path, $size) = @_;
-	
-	$path =~ s:^/+::;
-	my $view_url;
-	$size = qq{ SIZE="$size"} if $size > 0;
-	my $out = '';
-    if ($val) {
-		if($path) {
-			my $base = $::Variable->{UI_BASE} || 'admin';
-			my $view_url = Vend::Interpolate::tag_area("$base/do_view", "$path/$val");
-			$out .= qq{<A HREF="$view_url">};
-		}
-		$out .= $val;
-		$out .= "</A>" if $path;
-		$out .= qq{&nbsp;<INPUT TYPE=file NAME="$name" VALUE="$val">
-<INPUT TYPE=hidden NAME="ui_upload_file_path:$name" VALUE="$path">
-<INPUT TYPE=hidden NAME="$name" VALUE="$val">};      
-    }
-	else {
-        $out = qq{<INPUT TYPE=hidden NAME="ui_upload_file_path:$name" VALUE="$path">
-<INPUT TYPE=file NAME="$name"$size>};
-    }
-	return $out;
-}
-
-sub imagehelper_widget {
-    my ($name, $val, $path, $imagebase, $size) = @_;
-	
-	Vend::Interpolate::vars_and_comments(\$path);
-	Vend::Interpolate::vars_and_comments(\$imagebase);
-	if ($imagebase ||= '') {
-		$imagebase =~ s/^\s+//;
-		$imagebase =~ s:[\s/]*$:/:;
-	}
-
-	my $of_widget;
-	if($path =~ s!/\*(?:\.([^/]+))?$!!) {
-		my $spec = $1;
-		my @files = list_images($path, $spec);
-		unshift(@files, "=(none)");
-		my $passed = join ",", map { s/,/&#44;/g; $_} @files;
-		my $opt = {
-			type => 'select',
-			default => $val,
-			attribute => 'mv_data_file_oldfile',
-			passed => $passed,
-		};
-		$of_widget = Vend::Interpolate::tag_accessories(
-				undef, undef, $opt, { 'mv_data_file_oldfile' => $val } );
-	}
-	else {
-		$of_widget = qq{<INPUT TYPE=hidden NAME=mv_data_file_oldfile VALUE="$val">};
-	}
-	$size = qq{ SIZE="$size"} if $size > 0;
-    if ($val) {
-        qq{<A HREF="$imagebase$path/$val">$val</A>&nbsp;<INPUT TYPE=hidden NAME=mv_data_file_field VALUE="$name">
-<INPUT TYPE=hidden NAME=mv_data_file_path VALUE="$path">$of_widget<INPUT TYPE=file NAME="$name" VALUE="$val">};      
-    } else {
-        qq{<INPUT TYPE=hidden NAME=mv_data_file_field VALUE="$name">
-<INPUT TYPE=hidden NAME=mv_data_file_path VALUE="$path">$of_widget<INPUT TYPE=file NAME="$name"$size>};
-    }
-}
 
 sub meta_record {
 	my ($item, $view, $mtable) = @_;
@@ -882,42 +818,6 @@ sub meta_display {
 			return $w unless $o->{template};
 			return ($w, $record->{label}, $record->{help}, $record->{help_url});
 		}
-		elsif ($record->{type} eq 'imagedir') {
-			my $dir = $record->{'outboard'} || $column;
-			my $suf;
-			if($record->{options}) {
-				$suf = $record->{options};;
-				if($suf !~ /[\.|]/) {
-					my @types = grep /\S/, split /[,\s\0]+/, $suf;
-					$suf = '\.(' . join("|", @types) . ')';
-				}
-			}
-			my @files = list_images($dir, $suf);
-			$record->{type} = 'combo';
-			$record->{passed} = join ",",
-									map { s/,/&#44;/g; $_} @files;
-		}
-		elsif ($record->{type} eq 'imagehelper') {
-            my $w = imagehelper_widget(	
-							$record->{name},
-							$value,
-							$record->{outboard},
-							$record->{prepend},
-							$record->{width},
-							);
-			return $w unless $o->{template};
-			return ($w, $record->{label}, $record->{help}, $record->{help_url});
-        }
-		elsif ($record->{type} eq 'uploadhelper') {
-            my $w = uploadhelper_widget(	
-							$record->{name},
-							$value,
-							$record->{outboard},
-							$record->{width},
-							);
-			return $w unless $o->{template};
-			return ($w, $record->{label}, $record->{help}, $record->{help_url});
-        }
 
 		for(qw/append prepend/) {
 			next unless $record->{$_};
