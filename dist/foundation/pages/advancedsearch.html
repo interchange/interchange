@@ -93,20 +93,13 @@ size__MVC_FIELDMUNGE__	Size
 <input type=hidden name=mv_session_id value="[data session id]">
 <input type=hidden name=mv_matchlimit value=[scratch matchlimit]>
 <input type=hidden name=mv_substring_match value="Yes">
-<input type=hidden name=mv_search_map value="
-	mv_searchspec=search_cat
-	mv_searchspec=search_text
-">
-<input type=hidden name=mv_search_field value="category">
-<input type=hidden name=mv_search_field value="*">
 
 <b>Search by Category:</b><br>
 Search for
-<input type=text name=search_text size=20 maxlength=30>
+<input type=text name=mv_searchspec size=20 maxlength=30>
 in the category
-<select name=search_cat>
+<select name=mv_searchspec>
 [loop
-	option=search_cat
 	search="
 		fi=cat
 		st=db
