@@ -71,7 +71,7 @@ size=1>
 4. Select the page class:
 </td>
 <td>
-<INPUT TYPE=which_page VALUE=all>
+<INPUT NAME=which_page VALUE=all>
 </td>
 </tr>
 <tr bgcolor="__UI_C_INTBLOCK__">
@@ -79,7 +79,15 @@ size=1>
 5. Select the page area:
 </td>
 <td>
-<INPUT TYPE=sel VALUE=left>
+<INPUT NAME=sel VALUE=left>
+</td>
+</tr>
+<tr bgcolor="__UI_C_INTBLOCK__">
+<td>
+6. Decide whether to remove previous settings:
+</td>
+<td>
+<SELECT NAME=nuke><OPTION VALUE=0>No <OPTION VALUE=1>Yes</SELECT>
 </td>
 </tr>
 <tr>
@@ -124,6 +132,10 @@ size=1>
 		sort	=> '05',
 		display_type => 'name'
 	);
+	if($CGI->{nuke}) {
+		$adb->query('delete from area');
+		$cdb->query('delete from cat');
+	}
 	if($acol) {
 		$adb->config('AUTO_NUMBER', '1000') if ! $adb->config('AUTO_NUMBER');
 		return "area column $acol doesn't exist"
