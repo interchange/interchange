@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.29 2001-04-16 00:36:48 heins Exp $
+# $Id: DBI.pm,v 1.25.2.30 2001-04-16 07:31:53 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.29 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.30 $, 10);
 
 use strict;
 
@@ -79,7 +79,7 @@ sub find_dsn {
 		$out[$i++] = $config->{ $param } || undef;
 	}
 
-	if ($config->{Transactions}) {
+	if ($config->{Transactions} and $config->{HAS_TRANSACTIONS}) {
 #::logDebug("table $config->{name} should be opened in transaction mode");
 		$config->{AUTOCOMMIT} = 0;
 		undef $config->{dsn_id};
@@ -605,6 +605,12 @@ sub commit {
 
 	# This is pretty harmless, no?
 	return undef if ! defined $s->[$DBI];
+	unless ($s->[$CONFIG]{HAS_TRANSACTIONS}) {
+		::logError(
+			"commit attempted on non-transaction database, returning success"
+		);
+		return 1;
+	}
 
 #	if (! defined $s->[$DBI]) {
 #		::logError(
@@ -614,7 +620,14 @@ sub commit {
 #		return undef;
 #	}
 
-	return $s->[$DBI]->commit();
+	my $status;
+	eval {
+		$status = $s->[$DBI]->commit();
+	};
+	if($@) {
+		::logError("%s commit failed: %s", $s->[$TABLE], $@);
+	}
+	return $status;
 }
 
 sub rollback {
