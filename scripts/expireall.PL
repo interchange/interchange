@@ -23,25 +23,45 @@ DOIT: {
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# expireall - Expire all interchange catalogs
+# Interchange session expiration for all catalogs
 #
+# $Id: expireall.PL,v 1.8 2000-09-25 16:57:54 zarko Exp $
+#
+# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+#
+# See the file 'Changes' for information.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public
+# License along with this program; if not, write to the Free
+# Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+# MA  02111-1307  USA.
 
 use lib '/usr/local/interchange/lib';
 #use lib '~_~INSTALLPRIVLIB~_~';
 use lib '/usr/local/interchange';
 #use lib '~_~INSTALLARCHLIB~_~';
 
+use strict;
 use Getopt::Std;
+use vars qw/$opt_e $opt_f $opt_n $opt_r/; 
 
-## END CONFIGURABLE VARIABLES
 
 BEGIN {
+	($Global::VendRoot = $ENV{MINIVEND_ROOT})
+		if defined $ENV{MINIVEND_ROOT};
 
-$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
-#$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
-
-    ($Global::VendRoot = $ENV{MINIVEND_ROOT})
-        if defined $ENV{MINIVEND_ROOT};
+	$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
+#	$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
 
 	if(-f "$Global::VendRoot/interchange.cfg") {
 		$Global::ExeName = 'interchange';
@@ -57,27 +77,31 @@ $Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
 	}
 }
 
-my $query;
+### END CONFIGURATION VARIABLES
 
-$USAGE = <<EOF;
+my $prog = $0;
+$prog =~ s:.*/::;
+
+my $USAGE = <<EOF;
+usage: $prog [-r] [-f file]
+
+	-f    Alternate interchange.cfg file
+	-r    Use reorganize parameter in command
+
 Expire all listed Interchange catalogs. Will read information from
 either the file passed with -f or:
 
 	$Global::VendRoot/interchange.cfg
 
-usage: expireall [-r] [-f file]
-
-	-f    Alternate interchange.cfg file
-	-r    Use reorganize parameter in command
-
 EOF
 
-use vars qw/$opt_e $opt_f $opt_n $opt_r/; 
 getopts('e:f:rn') or die "$@\n$USAGE\n";
 
-my $Configfile = $opt_f || $Global::ConfigFile;
+($Global::ConfigFile = $opt_f)
+	if defined $opt_f;
 
 my $flag = '';
+my @cats;
 
 if ($opt_r) {
 	$flag .= '-r';
@@ -93,19 +117,19 @@ unless ($opt_n) {
 
 # Parse the interchange.cfg file to look for script/catalog info
 PARSECFG: {
-	my $file;
-	my @cfglines;
+	my(@cfglines,%seen);
 
-	open(MVCFG, "< $Configfile") or die "Couldn't read $Configfile: $!\n";
-	while(<MVCFG>) { push(@cfglines, $_) if /^\s*catalog\s+/i }
-	close MVCFG;
+	open(GLOBAL, "< $Global::ConfigFile") or die "Couldn't read $Global::ConfigFile: $!\n";
+	while(<GLOBAL>) {
+		push(@cfglines, $_) if /^\s*catalog\s+/i;
+	}
+	close GLOBAL;
 
-	my %seen;
 	@cfglines = grep !$seen{$_}++, @cfglines;
 
 	for(@cfglines) {
 		next unless /^\s*(?:sub)?catalog\s+([-\w_]+)/i;
-		push @cats, $1;
+		push(@cats, $1);
 	}
 
 }
@@ -120,7 +144,7 @@ expireall -- Run Interchange expire on all catalogs
 
 =head1 VERSION
 
-$Id: expireall.PL,v 1.7 2000-09-25 15:47:45 heins Exp $
+$Id: expireall.PL,v 1.8 2000-09-25 16:57:54 zarko Exp $
 
 =head1 DESCRIPTION
 
