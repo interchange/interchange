@@ -1,6 +1,6 @@
 # Table/InMemory.pm: store a table in memory
 #
-# $Id: InMemory.pm,v 1.3 2000-09-25 15:51:58 heins Exp $
+# $Id: InMemory.pm,v 1.3.4.1 2001-04-03 07:55:33 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Table::InMemory;
 use Vend::Table::Common;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.3.4.1 $, 10);
 use strict;
 
 # 0: column names
@@ -214,6 +214,7 @@ sub ref {
 }
 
 # Unfortunate hack need for Safe searches
+*test_column	= \&Vend::Table::Common::test_column;
 *column_index	= \&Vend::Table::Common::column_index;
 *field			= \&Vend::Table::Common::field;
 *numeric		= \&Vend::Table::Common::numeric;
