@@ -106,11 +106,11 @@ function MM_swapImage() { //v3.0
                   <td width="10" valign="top"> 
                     <div align="left"><img src="navigation/d2.gif" width="10" height="20"></div>
                   </td>
-                  <td width="313"> 
+                  <td width="455"> 
                     <div align="left"><font face="Verdana, Arial, Helvetica, sans-serif"><font color="#0099FF" size="2"><b><font size="1"><i>[either][scratch page_banner][or][scratch page_title][/either]</i></font></b></font></font><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif"><font color="#0099FF"> 
                       </font></font></font><font size="1"><font face="Verdana, Arial, Helvetica, sans-serif"><font color="#0099FF" size="2"></font></font></font></div>
                   </td>
-                  <td width="146"><img src="navigation/d3.gif" width="146" height="20"></td>
+                  <td width="4"><img src="navigation/d3.gif" width="12" height="20"></td>
                 </tr>
 <tr> 
   <td bgcolor="#999999" valign="top" width=131>

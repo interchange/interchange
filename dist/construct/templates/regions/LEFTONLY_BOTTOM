@@ -4,11 +4,7 @@
 [set component_after][/set]
 [/if]
                   </td>
-                </tr>
-                <tr> 
-                  <td bgcolor="#999999" width="131"><img src="navigation/poweredby.gif" width="131" height="61"></td>
-                  <td width="12">&nbsp;</td>
-                  <td valign="top" width="457">&nbsp;</td>
+				  <td width=4>&nbsp;</td>
                 </tr>
               </table>
             </td>
