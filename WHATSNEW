@@ -4,11 +4,11 @@
 
 ------------------------------------------------------------------------------
 
-Interchange 4.8.3 not yet released.
+
+Interchange 4.8.3 released 2001-11-27.
 
 Core and usertags
 -----------------
-
 * Some fairly major changes to limit exposure to the cross-site
   JavaScript vulnerabilities described in:
 
@@ -17,8 +17,7 @@ Core and usertags
   The vulnerability is only serious if you have "CookieLogin Yes"
   in your catalog.cfg definition (as unfortunately was in foundation).
 
-  It is recommended that you either set CookieLogin to No, or at least
-  do
+  It is recommended that you either set CookieLogin to No, or at least do
 
   		SaveExpire  8 hours
 
@@ -72,17 +71,19 @@ Core and usertags
 
 * Allow [dump] of portion of session, for example [dump scratch].
 
-* New methods hash_query and get_slice added to the Table
-  modules.
+* New methods hash_query and get_slice added to the Table modules.
+
+* Added workaround for a bug in FreeBSD stock Perl build that sometimes
+  caused a segmentation fault when starting the Interchange daemon. If
+  you're upgrading from an earlier verson of Interchange, be sure to grab
+  the appropriate setting in interchange.cfg.
 
 Payment
 -------
-
 * Bank of America payment module added.
 
-UI
+Admin UI
 --------
-
 * Check for delete permissions before giving option and/or allowing delete
   of orders. Resolves bug #333. Thanks to Donal Harrington and Mark Johnson
   for pointing this out.
@@ -98,8 +99,7 @@ UI
 * New usertag diffmerge, improved usertag diff.
 
 I18N
---------
-
+----
 * localization support added to UI usertag file_info.
 
 * Hebrew locale from Chen Naor <chen@lilux.co.il> added.
@@ -107,8 +107,11 @@ I18N
 * Japanese locale from Murahashi <murahashi@ayayu.com> and
   Hiroyuki Cozy Kojima <kojima@redhat.com> added.
 
-* Brazilian Portuguese locale from Jack Tsai <jack@3light.com.br>
-  added.
+* Brazilian Portuguese locale from Jack Tsai <jack@3light.com.br> added.
+
+
+------------------------------------------------------------------------------
+
 
 Interchange 4.8.2 released 2001-09-19.
 
@@ -216,6 +219,9 @@ Packaging
   - change owner/group of the base directory for static HTML files
     to the Interchange owner/group
   - let makecat write into /etc/interchange/catalogs.cfg
+
+
+------------------------------------------------------------------------------
 
 
 Interchange 4.8.1 released 2001-08-13.
