@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.85 2002-07-13 15:20:05 jon Exp $
+# $Id: Interpolate.pm,v 2.86 2002-07-19 05:07:17 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.85 $, 10);
+$VERSION = substr(q$Revision: 2.86 $, 10);
 
 @EXPORT = qw (
 
@@ -1126,6 +1126,7 @@ sub tag_data {
 $Filter{upper} = $Filter{uc};
 $Filter{lower} = $Filter{lc};
 $Filter{entities} = $Filter{encode_entities};
+$Filter{e} = $Filter{encode_entities};
 
 sub input_filter_do {
 	my($varname, $opt, $routine) = @_;
@@ -4185,7 +4186,7 @@ sub tag_object {
 
 my %Dispatch_hash = (
 	address => \&tag_address,
-	address => \&tag_object,
+	object  => \&tag_object,
 );
 
 sub find_matching_else {
