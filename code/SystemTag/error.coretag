@@ -3,7 +3,7 @@
 UserTag error               Order        name
 UserTag error               addAttr
 UserTag error               PosNumber    1
-UserTag error               Version      $Revision: 1.2 $
+UserTag error               Version      $Revision: 1.3 $
 UserTag error               Routine      <<EOR
 sub set_error {
 	my ($error, $var, $opt) = @_;
@@ -94,6 +94,8 @@ sub tag_error {
 		$text = pull_else($text, $found_error);
 
 		return '' unless @errors;
+		@errors = map { filter_value($opt->{filter}, $_) } @errors
+			if $opt->{filter};
 		my $etext = sprintf $text, join($opt->{joiner}, @errors);
 		return join "", $opt->{header}, $etext, $opt->{footer};
 	}
@@ -103,11 +105,14 @@ sub tag_error {
 #::logDebug("error found=$found_error contents='$err'");
 	return !(not $found_error)
 		unless $opt->{std_label} || $text || $opt->{show_error};
+	$err = filter_value($opt->{filter}, $err)
+		if $opt->{filter};
 	if($opt->{std_label}) {
 		# store the error label in user's session for later
 		# possible use in [error show_label=1] calls
 		$Vend::Session->{errorlabels}{$var} = $opt->{std_label};
 		if($text) {
+			# do nothing
 		}
 		elsif(defined $::Variable->{MV_ERROR_STD_LABEL}) {
 			$text = $::Variable->{MV_ERROR_STD_LABEL};
