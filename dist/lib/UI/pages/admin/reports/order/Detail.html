@@ -89,9 +89,10 @@ EOF
 	$out = '';
 	foreach $line (@{$Tmp->{main}}) {
 		$total_sales    += $line->{total_cost};
-		$amount = sprintf '%.2f', $line->{total_cost};
+		$amount = $Tag->currency({}, $line->{total_cost});
 	    $line->{status} = $Tag->loc('', $line->{status});
-		$url = $Tag->area('__UI_BASE__/order_view', $line->{order_number});
+		$url = $Tag->area({     href => '__UI_BASE__/order_view',
+								form => "order=$line->{order_number}", });
 		$out .= <<EOF;
 	<TR class=rnorm>
 	<TD VALIGN=top>
@@ -118,7 +119,7 @@ EOF
 	</TR>
 EOF
 	}
-		$total_sales  = sprintf '$%.2f', $total_sales;
+		$total_sales  = $Tag->currency({}, $total_sales);
 		$out .= <<EOF;
 <tr class=rborder height=1><td colspan=7></td></tr>
 	<TR class=rnorm>
