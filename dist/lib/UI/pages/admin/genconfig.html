@@ -8,6 +8,257 @@
 <!-- ----- BEGIN REAL STUFF ----- -->
 
 <div style="margin-left: 5%">
+
+[if !scratch ui_old_browser]
+[tabbed-display
+	panel-prepend="<table>"
+	panel-append="</table>"
+	start-at-index="[cgi start_at_index]"
+	panel-width="[either][cgi panel_width][or]800[/either]"
+	panel-height="[either][cgi panel_height][or]500[/either]"
+	tab-width=160]
+[tabbed-panel [L]Catalog Information[/L]]
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	[L]Catalog URL[/L]
+	</TH>
+	<TD>&nbsp; &nbsp;</TD>
+	<TD>[calc]$url=$Scratch->{ui_catalog_url};$url=~s%/index[^/]*%%;return qq{<A HREF="$url">$url}[/calc]</A></TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	[L]Secure URL[/L]
+	</TH>
+	<TD>&nbsp; &nbsp;</TD>
+	<TD>[calc]return qq{<A HREF="$Config->{SecureURL}">$Config->{SecureURL}}[/calc]</A></TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	[L]Location of Error Logs[/L]
+	</TH>
+	<TD>&nbsp; &nbsp;</TD>
+	<TD>
+		[L]Global[/L]: [version extended=1 global_error=1]<br>
+		[L]Local[/L]: [version extended=1 local_error=1]
+	</TD>
+</TR>
+
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	[L]Active sessions[/L]
+	[if cgi list_sessions]<br><i>
+	([L]last[/L]
+	[calc] int (
+					$::Variable->{ACTIVE_SESSION_MINUTES}
+					|| ( ($Config->{SessionExpire} || 60) / 60)
+				)
+				 [/calc] [L]minutes[/L])</I>
+	[/if]
+	</TH>
+	<TD>&nbsp; &nbsp;</TD>
+	<TD>
+	[if cgi list_sessions]
+		[loop list="[dump-session find=1]"]
+				<A HREF="[area
+								href='__UI_BASE__/show_session'
+								form='show_session=[loop-code]'
+					]"
+					>[loop-code]</A> &nbsp;
+				(<A HREF="[area
+								href='__UI_BASE__/show_session'
+								form='show_session=[loop-code]'
+					]"
+					TARGET="_blank"
+					>in new window</A>)<BR>
+			[/loop]
+		 
+	[else]
+		[page href="@@MV_PAGE@@" form="list_sessions=1"][L]Show active sessions[/L]</A>
+		<br>
+		<i>([L]last[/L]
+		[calc] int (
+					$::Variable->{ACTIVE_SESSION_MINUTES}
+					|| ( ($Config->{SessionExpire} || 60) / 60)
+				)
+				 [/calc] [L]minutes[/L])</I>
+
+	[/else]
+	[/if]
+	[if cgi show_session]
+		<P><B>[L]Showing session[/L]: [cgi show_session]</B>
+<XMP style="font-size: small">
+[dump-session name="[cgi show_session]"]
+</XMP>
+	[/if]
+	</TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	[L]Last order number[/L]
+	</TH>
+	<TD>&nbsp; &nbsp;</TD>
+	<TD>
+		[calc]
+			my $cfn = $Variable->{MV_ORDER_COUNTER_FILE} || 'etc/order.number';
+			$Values->{new_order_number} = $Tag->file($cfn);
+			$Values->{new_order_number} =~ s/.*\n([A-Za-z0-9]+).*$/$1/s;
+			return;
+		[/calc]
+		[page __UI_BASE__/misc_order_number][value new_order_number]</A>
+	</TD>
+</TR>
+
+[/tabbed-panel]
+[tabbed-panel[L]Interchange Server Information[/L]]
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	[L]Interchange version[/L]
+	</TH>
+	<TD>&nbsp; &nbsp;</TD>
+	<TD>[version]</TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	[L]Server hostname[/L]
+	</TH>
+	<TD>&nbsp; &nbsp;</TD>
+	<TD>[version extended=1 hostname=1]</TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	[L]Interchange PID[/L]
+	</TH>
+	<TD>&nbsp; &nbsp;</TD>
+	<TD>[version extended=1 pid=1]</TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	[L]Interchange SUID User[/L]
+	</TH>
+	<TD>&nbsp; &nbsp;</TD>
+	<TD>[version extended=1 uid=1]</TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	[L]Server mode[/L]
+	</TH>
+	<TD>&nbsp; &nbsp;</TD>
+	<TD>[version extended=1 mode=1]</TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	[L]Last time server restarted[/L]
+	</TH>
+	<TD>&nbsp; &nbsp;</TD>
+	<TD>[calc] scalar localtime([file-info conf=1 name="interchange.pid" time=1])[/calc]</TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	[L]Last time changes applied[/L]
+	</TH>
+	<TD>&nbsp; &nbsp;</TD>
+	<TD>[file name=`"etc/status.$Config->{CatalogName}"`] ([page __UI_BASE__/reconfig @@MV_PAGE@@][L]apply now[/L]</A>)</TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	[msg arg.0='<A HREF="[area __UI_BASE__/env_vars]">' arg.1="</A>"]%sEnvironment%s variables passed[/msg]
+	</TH>
+	<TD>&nbsp; &nbsp;</TD>
+	<TD>[version extended=1 env=1]</TD>
+</TR>
+
+[/tabbed-panel]
+[tabbed-panel [L]Perl Information[/L]]
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	<A HREF="[area href="@@MV_PAGE@@"
+		form="
+			more_perl=1
+			start_at_index=2
+			panel_width=1000
+			panel_height=800
+		"]">[L]Perl Version[/L]</A>
+	</TH>
+	<TD>&nbsp; &nbsp;</TD>
+	<TD>Perl [version extended=1 perl=1 perl_config="[cgi more_perl]"]</TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	[L]Optional Module Information[/L]
+	</TH>
+	<TD>&nbsp; &nbsp;</TD>
+	<TD>
+		<table>
+		[table-organize columns=2 columnize=1 td='width="50%"']
+		<td>[version extended=1 modules=1 joiner="</td><td>"]</TD>
+		[/table-organize]
+		</table>
+	</TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	[L]Safe operations untrapped[/L]
+	</TH>
+	<TD>&nbsp; &nbsp;</TD>
+	<TD>[version extended=1 safe=1]</TD>
+</TR>
+
+<TR>
+  <TD COLSPAN=3>&nbsp;</TD>
+</TR>
+
+[/tabbed-panel]
+[tabbed-panel [L]Database Information[/L]]
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	[L]Database Interfaces[/L]
+	</TH>
+	<TD>&nbsp; &nbsp;</TD>
+	<TD VALIGN=top>
+		[version extended=1 db=1]
+	</TD>
+</TR>
+
+<TR>
+	<TH VALIGN=TOP ALIGN=RIGHT>
+	[L]Database Tables[/L]
+	</TH>
+	<TD>&nbsp; &nbsp;</TD>
+	<TD VALIGN=top>	
+		<table width="400">
+		[table-organize cols=3 columnize=1]
+			[loop list="[list-databases]"]
+		<TD>
+				<A HREF="[area __UI_BASE__/dbinfo [loop-code]]">[loop-code]</A><br>
+		</TD>
+			[/loop]
+		[/table-organize]
+		</table>
+	</TD>
+</TR>
+[/tabbed-panel]
+[/tabbed-display]
+
+[/if]
+
+[if scratch ui_old_browser]
 <table>
 <tr><td align=left class=rnorm>
 <TABLE __UI_T_PROPERTIES__>
@@ -243,6 +494,7 @@
 
 </table>
 </div>
+[/if]
 
 <!-- ----- END REAL STUFF ----- -->
 
