@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.51 2001-04-16 07:40:37 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.52 2001-04-18 03:56:31 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.51 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.52 $, 10);
 
 @EXPORT = qw (
 
@@ -3084,6 +3084,8 @@ sub tag_file {
 	my ($file, $type) = @_;
     return readfile($file, $Global::NoAbsolute)
 		unless $type;
+	return readfile($file, $Global::NoAbsolute, 0)
+		if $type eq 'raw';
 	my $text = readfile($file, $Global::NoAbsolute);
 	if($type =~ /mac/i) {
 		$text =~ tr/\n/\r/;
