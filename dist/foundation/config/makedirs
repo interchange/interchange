@@ -28,7 +28,7 @@ else
 fi
 
 # Link the image directory always
-ln -s __MVC_IMAGEDIR__ __MVC_RELOCATE____MVC_CATROOT__
+ln -s __MVC_IMAGEDIR__ __MVC_RELOCATE____MVC_CATROOT__/
 
 # Make log directories to store logs.
 if test -n '__MVC_LOGDIR__'
