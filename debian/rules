@@ -103,10 +103,6 @@ install: build
 	for file in share/akopia/ui/admin/*.*; do cp $$file $(TMP)/var/www/ui/admin; done
 	mkdir $(TMP)/var/www/ui/navigation
 	for file in share/akopia/ui/navigation/*.*; do cp $$file $(TMP)/var/www/ui/navigation; done
-# UI help
-	mv $(TMP)/usr/lib/interchange/share/akopia/ui/help $(TMP)/var/www/ui/help
-	rm $(TMP)/var/www/ui/help/*.pl
-	rm -r $(TMP)/var/www/ui/help/src
 	rm -r $(TMP)/usr/lib/interchange/share/akopia/
 # mod_interchange
 	mkdir -p $(TMP)/usr/lib/apache/1.3
