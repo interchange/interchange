@@ -1,6 +1,6 @@
 # Vend::Options::Matrix - Interchange Matrix product options
 #
-# $Id: Matrix.pm,v 1.2 2003-02-12 13:55:18 racke Exp $
+# $Id: Matrix.pm,v 1.3 2003-04-09 23:08:29 racke Exp $
 #
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
 # Copyright (C) 2002-2003 Interchange Development Group <interchange@icdevgroup.org>
@@ -23,11 +23,11 @@
 
 package Vend::Options::Matrix;
 
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.3 $, 10);
 
 =head1 Interchange Matrix Options Support
 
-Vend::Options::Matrix $Revision: 1.2 $
+Vend::Options::Matrix $Revision: 1.3 $
 
 =head1 SYNOPSIS
 
@@ -76,7 +76,6 @@ use vars qw/%Default/;
 				item_add_routine => 'Vend::Options::Matrix::testit',
 				table => 'options',
 				variant_table => 'variants',
-				sort => 'o_sort,o_group',
 			);
 
 my $Admin_page;
