@@ -1,7 +1,6 @@
 [comment]
 ui_name: noleft
 ui_type: template
-ui_template_version: 4.9.3
 ui_template_layout: NOLEFT_TOP, UI_CONTENT, NOLEFT_BOTTOM
 ui_label: Page with top/bottom areas only, content in middle.
 

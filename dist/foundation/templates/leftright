@@ -1,7 +1,6 @@
 [comment]
 ui_name: leftright
 ui_type: template
-ui_version: 4.9.3
 ui_label: Page with top/left/right areas.
 ui_template_layout: LEFTRIGHT_TOP, UI_CONTENT, LEFTRIGHT_BOTTOM
 

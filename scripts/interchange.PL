@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# Interchange version 4.9.3
+# Interchange version 4.9.4
 #
-# $Id: interchange.PL,v 2.61 2002-11-20 18:52:17 mheins Exp $
+# $Id: interchange.PL,v 2.62 2002-12-01 17:51:15 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and others.
 # http://www.icdevgroup.org/
@@ -126,7 +126,7 @@ use vars qw($VERSION);
 require Exporter;
 
 BEGIN {
-	$VERSION = '4.9.3';
+	$VERSION = '4.9.4';
 }
 
 use Fcntl;
@@ -351,7 +351,7 @@ interchange [--options] [file]
 
 =head1 VERSION
 
-4.9.3
+4.9.4
 
 =head1 DESCRIPTION
 
