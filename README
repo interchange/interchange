@@ -2,7 +2,7 @@
 
                            I N T E R C H A N G E
 
-Interchange 4.8.1
+Interchange 4.9.0
 
 Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 
@@ -79,8 +79,8 @@ as an unprivileged user who will be the only one modifying Interchange files.
 
 Here is the quick installation summary:
 
-gzip -dc interchange-4.8.?.tar.gz | tar xvf -
-cd interchange-4.8.?
+gzip -dc interchange-4.9.?.tar.gz | tar xvf -
+cd interchange-4.9.?
 ./configure
 
 Then you will need to make your first Interchange catalog, as described in
