@@ -18,6 +18,27 @@ Interchange 4.6.1
   - Fixed stock alert price problem (bug #57).
   - Fixed 'title' vs. 'description' field issues. Thanks to Steve Gertz.
 
+* Fixed [selected] and [checked] tags to be more uniform and to support
+  case-sensitive and $CGI comparisons. Documented in Tagref.pm. Also,
+  "multiple" and "default" args can no longer be positional -- no big loss.
+
+* Bug meaning [item-subtotal noformat=1] not recognized fixed.
+
+* [item-exec routine] now picks up $Values, etc. before a [calc] is run.
+
+* Order.pm: routes now use a "from" parameter which sets the email From: 
+  header.
+
+* Fixes to Util.pm:
+  - Prevent sprintf() screwing up numbers in certain locales.
+  - [include] now can interpret [L] if locale=1 parameter is added.
+
+* Server.pm -- we can now accept ISINDEX queries (for what it is worth).
+
+* Scan.pm -- fix non-interpolated tags in search profiles.
+
+* Database tables can now reside in different directories with the 
+  DIR option to the Database config parameter.
 
 Interchange 4.6.0
 
