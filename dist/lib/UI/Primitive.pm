@@ -1,6 +1,6 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 2.6 2001-10-09 22:32:52 mheins Exp $
+# $Id: Primitive.pm,v 2.7 2001-11-02 14:09:53 mheins Exp $
 
 # Copyright (C) 1998-2001 Red Hat, Inc. <interchange@redhat.com>
 
@@ -25,7 +25,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.7 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -476,9 +476,14 @@ sub list_images {
 	$suf = '\.(GIF|gif|JPG|JPEG|jpg|jpeg|png|PNG)'
 		unless $suf;
 	my @names;
+	my $regex;
+	eval {
+		$regex = qr{$suf$}o;
+	};
+	return undef if $@;
 	my $wanted = sub {
 					return undef unless -f $_;
-					return undef unless /$suf$/o;
+					return undef unless $_ =~ $regex;
 					my $n = $File::Find::name;
 					$n =~ s:^$base/?::;
 					push(@names, $n);
@@ -820,7 +825,7 @@ sub meta_record {
 		ref $view_hash
 			and @$record{keys %$view_hash} = values %$view_hash;
 	}
-::logDebug("return meta_record=" . ::uneval($record) );
+#::logDebug("return meta_record=" . ::uneval($record) );
 	return $record;
 }
 
