@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.9 2002-07-19 05:13:16 mheins Exp $
+# $Id: Server.pm,v 2.10 2002-08-11 15:44:10 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = substr(q$Revision: 2.10 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -600,8 +600,8 @@ BEGIN {
 					/
 		);
 	};
-										 
-}                                    
+
+}
 
 sub http_log_msg {
 	my($status, $env, $request) = @_;
@@ -712,123 +712,6 @@ sub http_soap {
 	return $ref;
 }
 
-sub http_server {
-	my($status_line, $in, $argv, $env, $entity) = @_;
-
-	die "Need URI::URL for this functionality.\n"
-		unless defined $HTTP_enabled;
-
-	$Vend::InternalHTTP = 1;
-	my ($header, $request, $block);
-	my $waiting = 0;
-	($$env{REQUEST_METHOD},$request) = split /\s+/, $status_line;
-	for(;;) {
-        $block = _find(\$in, "\n");
-#::logDebug("read: $block");
-		$block =~ s/\s+$//;
-		if($block eq '') {
-			last;
-		}
-		if ( $block =~ s/^([^:]+):\s*//) {
-			$header = lc $1;
-			if(defined $CGImap{$header}) {
-				$$env{$CGImap{$header}} = $block;
-			}
-			next;
-		}
-		else {
-			die "HTTP protocol error on '$block':\n$in";
-		}
-		last;
-	}
-
-	if ($$env{CONTENT_LENGTH}) {
-		_read(\$in) while length($in) < $$env{CONTENT_LENGTH};
-	}
-	$in =~ s/\s+$//;
-	$$entity = $in;
-
-#::logDebug("exiting loop");
-	my $url = new URI::URL $request;
-	@{$argv} = $url->keywords();
-
-	(undef, $Remote_addr) =
-				sockaddr_in(getpeername(MESSAGE));
-	$$env{REMOTE_HOST} = gethostbyaddr($Remote_addr, AF_INET);
-	$Remote_addr = inet_ntoa($Remote_addr);
-
-	$$env{QUERY_STRING} = $url->equery();
-	$$env{REMOTE_ADDR} = $Remote_addr;
-
-	my (@path) = $url->path_components();
-	my $path = $url->path();
-	my $doc;
-	my $status = 200;
-
-	shift(@path);
-	my $catname = shift(@path);
-
-	if ($Global::TcpMap->{$Global::TcpPort} =~ /^\w+/) {
-		$catname = $Global::TcpMap->{$Global::TcpPort};
-	}
-	my $cat = "/$catname";
-
-	if($Global::Selector{$cat} and $Global::AllowGlobal->{$cat}) {
-		if ($$env{AUTHORIZATION}) {
-			$$env{REMOTE_USER} =
-					Vend::Util::check_authorization( delete $$env{AUTHORIZATION} );
-		}
-		if (! $$env{REMOTE_USER}) {
-			$Vend::StatusLine = <<EOF;
-HTTP/1.0 401 Unauthorized
-WWW-Authenticate: Basic realm="Interchange Admin"
-EOF
-			$doc = "Requires correct username and password.\n";
-			$path = '';
-		}
-	}
-
-	if($Global::Selector{$cat} || $Global::SelectorAlias{$cat}) {
-		$$env{SCRIPT_NAME} = $cat;
-		$$env{PATH_INFO} = join "/", '', @path;
-	}
-	elsif(-f "$Global::VendRoot/doc$path") {
-		$Vend::StatusLine = "HTTP/1.0 200 OK";
-		$doc = readfile("$Global::VendRoot/doc$path");
-	}
-	else {
-		$status = 404;
-		$Vend::StatusLine = "HTTP/1.0 404 Not found";
-		$doc = "$path not a Interchange catalog or help file.\n";
-	}
-
-	if($$env{REQUEST_METHOD} eq 'HEAD') {
-		$Vend::StatusLine = "HTTP/1.0 200 OK\nLast-modified: "
-			. Vend::Util::logtime;
-		$doc = '';
-	}
-
-	logData("$Global::VendRoot/etc/access_log",
-			http_log_msg(
-						$status,
-						$env,
-						($$env{REQUEST_METHOD} .  " " .  $request),
-						)
-		);
-
-	if (defined $doc) {
-		my $type = Vend::Util::mime_type($path);
-		$Vend::StatusLine = '' unless defined $Vend::StatusLine;
-		$Vend::StatusLine .= "\r\nContent-type: $type";
-		respond(
-					'',
-					\$doc,
-				);
-		return;
-	}
-	return 1;
-}
-
 sub read_cgi_data {
     my ($argv, $env, $entity) = @_;
     my ($in, $block, $n, $i, $e, $key, $value);
@@ -850,9 +733,6 @@ sub read_cgi_data {
 		elsif ($block =~ m/^entity$/) {
             $$entity = _string(\$in);
 		}
-        elsif ($block =~ m/^[GPH]/) {
-           	return http_server($block, $in, @_);
-        }
 		elsif (($n) = ($block =~ m/^arg (\d+)$/)) {
             $#$argv = $n - 1;
             foreach $i (0 .. $n - 1) {
