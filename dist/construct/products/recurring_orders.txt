@@ -1,1 +1,0 @@
-code	username	nitems	subtotal	shipping	pay_method	freq	day	day_date
