@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.9 2000-09-15 09:49:31 heins Exp $
+# $Id: Data.pm,v 1.10 2000-09-16 01:13:26 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -572,7 +572,7 @@ sub tie_database {
 				my $dir = $data->{dir} || $Vend::Cfg->{ProductDir};
 				my $fn = Vend::Util::catfile( $dir, $data->{file} );
 				my @fields = grep /\S/, split /\s+/, ::readfile("$fn.numeric");
-#::logGlobal("fields=@fields");
+#::logDebug("fields=@fields");
 				$data->{NUMERIC} = {};
 				for(@fields) {
 					$data->{NUMERIC}{$_} = 1;
@@ -1304,14 +1304,14 @@ sub item_price {
 		if ! $quantity and defined $item->{mv_cache_price};
 	my ($price, $base, $adjusted);
 	$item = { 'code' => $item, 'quantity' => ($quantity || 1) } unless ref $item;
-	if(! $item->{mv_ib}) {
+	if(not $base = $item->{mv_ib}) {
 		$base = product_code_exists_tag($item->{code}, $item->{mv_ib})
 			or $Vend::Cfg->{OnFly}
 			or return undef;
 	}
 	$price = database_field($base, $item->{code}, $Vend::Cfg->{PriceField})
 		if $Vend::Cfg->{PriceField};
-#::logDebug("item_price before chain cost: $price");
+#::logDebug("item_price before chain cost: $price PriceField=$Vend::Cfg->{PriceField} base=$base");
 	$price = chain_cost($item,$price || $Vend::Cfg->{CommonAdjust});
 	$price = $price / $Vend::Cfg->{PriceDivide};
 #::logDebug("item_price before cache: $price");
