@@ -68,12 +68,60 @@
 			border: 2px solid black;
 			padding: 8px;
 		">
-	<select name=ship_all>
-		<option value=1> Ship all lines
+
+	[tmp tmp_orderid][data table=transactions col=order_id key="[cgi order]"][/tmp]
+<script>
+	var have_orderid = '[scratch tmp_orderid]';
+	function copasetic (el,form) {
+		if(have_orderid == '')
+			return;
+		if(el.name == 'ship_all') {
+			if(el.options[el.selectedIndex].value == 0) {
+				if(form.void_transaction != undefined)
+					form.void_transaction.checked = false;
+				if(form.settle_transaction != undefined)
+					form.settle_transaction.checked = false;
+				form.do_archive.checked = false;
+			}
+			if(el.options[el.selectedIndex].value == 1) {
+				if(form.void_transaction != undefined)
+					form.void_transaction.checked = false;
+				if(form.settle_transaction != undefined)
+					form.settle_transaction.checked = true;
+				form.do_archive.checked = true;
+			}
+			if(el.options[el.selectedIndex].value == 2) {
+				if(form.void_transaction != undefined)
+					form.void_transaction.checked = true;
+				if(form.settle_transaction != undefined)
+					form.settle_transaction.checked = false;
+				form.do_archive.checked = true;
+			}
+		}
+		else {
+			if (el.name == 'settle_transaction') {
+				if(el.checked == true) {
+					form.ship_all.selectedIndex = 1;
+					form.void_transaction.checked = false;
+				}
+			}
+			if(el.name == 'void_transaction') {
+				if(el.checked == true) {
+					form.ship_all.selectedIndex = 2;
+					form.settle_transaction.checked = false;
+				}
+			}
+		}
+	}
+</script>
+
+	<select name=ship_all onChange="copasetic(this, this.form)">
 		<option value=0> Ship per status above
+		<option value=1 SELECTED> Ship all lines
+		<option value=2> Cancel order
 	</select>
 
-	[button form=tform bold=1 text="[L]Ship the order[/L]"]
+	[button form=tform bold=1 text="[L]Update the order[/L]"]
 	mv_todo=back
 	order=[cgi code]
 	[tag flag write]orderline transactions[/tag]
@@ -90,13 +138,22 @@
 		<option value="0">[L]No[/L]</option>
 		<option value="1">[L]Yes[/L]</option>
 	</select>
-
 	[if variable SETTLE_TRANSACTION]
 	<br>
-		[if type=data term="transactions::order_id::[cgi order]"]
-	<input type=checkbox name=settle_transaction value=1 CHECKED> <b>Settle transaction </b>
+		[if scratch tmp_orderid]
+			<input type=checkbox name=settle_transaction value=1
+				onChange="copasetic(this, this.form)"
+				[if scratch tmp_orderid !~ /\*$/] CHECKED [/if]>
+					<b>Settle transaction</b>
+			&nbsp;
+			&nbsp;
+			<input type=checkbox name=void_transaction onChange="copasetic(this, this.form)" value=1> <b>Void transaction </b>
+
 		[/if]
 	[/if]
+			&nbsp;
+			&nbsp;
+			<input type=checkbox name=do_archive value=1 CHECKED> <b>Archive transaction at end</b>
 	</div>
 </td>
 </tr>
@@ -112,7 +169,7 @@
 	ui_data_fields="code status tracking_number order_id auth_code archived deleted"
 	include-form="[scratch form_include]"
 	include-before="order_id"
-	help.order_id="* = settled"
+	help.order_id='<span style="font-size: larger;font-weight: bold">* = settled, - = voided</span>'
 	link-table=orderline
 	link-key=order_number
 	link-before=order_id
@@ -134,4 +191,4 @@
 </script>
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: order_status.html,v 2.6 2002-10-17 04:46:23 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order_status.html,v 2.7 2002-10-18 03:05:51 mheins Exp $ -->

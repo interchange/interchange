@@ -213,6 +213,9 @@ Foundation
   job of order checking. If your database has transactions (i.e. Postgres),
   a failure in the log_transaction can cause a failure of the order.
 
+* Added auth_code and tracking_number to transactions table to support
+  charge settlement and shipping_tracking in the UI.
+
 UserTags
 --------
 
@@ -245,6 +248,9 @@ UserTags
 
 * Many minor changes in metadata and preferences. Changed default
   in some tables to tabbed display.
+
+* [update-order-status] tag added for shipping products. Also does
+  charge settlement if needed.
 
 UI
 ----

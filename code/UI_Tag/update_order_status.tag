@@ -1,6 +1,6 @@
 UserTag update-order-status Order order_number
 UserTag update-order-status addAttr
-UserTag update-order-status Version $Id: update_order_status.tag,v 1.1 2002-10-17 04:46:23 mheins Exp $
+UserTag update-order-status Version $Id: update_order_status.tag,v 1.2 2002-10-18 03:05:51 mheins Exp $
 UserTag update-order-status Routine <<EOR
 sub {
 	my ($on, $opt) = @_;
@@ -26,7 +26,9 @@ sub {
 
 	for(qw/
 			settle_transaction
+			void_transaction
 			status
+			do_archive
 			archive
 			lines_shipped
 			send_email
@@ -35,6 +37,8 @@ sub {
 	{
 		$opt->{$_} = $CGI::values{$_} if ! defined $opt->{$_};
 	}
+
+	$opt->{archive} ||= $opt->{do_archive};
 
 	$wants_copy = $opt->{send_email} if length $opt->{send_email};
 #Log("Order number=$on username=$user wants=$wants_copy");
@@ -98,6 +102,59 @@ sub {
 			}
 		}
 	}
+	elsif($opt->{void_transaction}) {
+		$opt->{ship_all} = 1;
+		my $oid = $trec->{order_id};
+		$oid =~ s/\*$//;
+		my $amount = $trec->{total_cost};
+		SETTLE: {
+			if(! $oid) {
+				Vend::Tags->error( {
+								name => 'void_transaction',
+								set => "No order ID to void!",
+							});
+				return undef;
+			}
+			elsif($oid =~ /-$/) {
+				Vend::Tags->error( {
+								name => 'void_transaction',
+								set => "Order ID $oid already settled!",
+							});
+				return undef;
+			}
+			else {
+#::logDebug("auth-code: $trec->{auth_code} oid=$oid");
+				my $voided  = Vend::Tags->charge( {
+									route => $::Variable->{MV_PAYMENT_MODE},
+									order_id => $oid,
+									amount => $amount,
+									auth_code => $trec->{auth_code},
+									transaction => 'void',
+								});
+				if($voided) {
+					$tdb->set_field($on, 'order_id', $oid . "-");
+					Vend::Tags->warning(
+								 errmsg(
+								 	"Order ID %s voided.",
+									$oid,
+								 ),
+							);
+				}
+				else {
+					Vend::Tags->error( {
+						name => 'settle_transaction',
+						set => errmsg(
+								"Order ID %s void operation failed. Reason: %s",
+								$oid,
+								$Vend::Session->{payment_result}{MErrMsg},
+								),
+							});
+						return undef;
+				}
+
+			}
+		}
+	}
 
 	if($opt->{status} =~ /\d\d\d\d/) {
 		$tdb->set_field($on, 'status', $opt->{status});
@@ -141,13 +198,15 @@ sub {
 	my %shipping;
 	my %already;
 
+	my $target_status = $opt->{void_transaction} ? 'canceled' : 'shipped';
+
 	for(@$lines_ary) {
 		my $code = $_->[$odb_keypos];
 		my $status = $odb->field($code, 'status');
 		my $line = $code;
 		$line =~ s/.*\D//;
 		$line =~ s/^0+//;
-		if($status eq 'shipped') {
+		if($status eq $target_status and ! $opt->{void_transaction}) {
 			$already{$line} = 1;
 		}
 		elsif($opt->{ship_all}) {
@@ -164,7 +223,7 @@ sub {
 	if($total_lines == $to_ship) {
 		$ship_mesg = "Order $on complete, $total_lines lines set shipped.";
 		$::Scratch->{ship_notice_complete} = $ship_mesg;
-		$g_status = 'shipped';
+		$g_status = $target_status;
 	}
 	else {
 		$ship_mesg = "Order $on partially shipped ($to_ship of $total_lines lines).";
@@ -184,7 +243,7 @@ sub {
 		my $line = $code;
 		$line =~ s/.*\D//;
 		next if $already{$line};
-		my $status = $shipping{$line} ? 'shipped' : 'backorder';
+		my $status = $shipping{$line} ? $target_status : 'backorder';
 		$odb->set_field($code, 'status', $status)
 			or do {
 				$::Scratch->{ui_message} = "Orderline $code ship status update failed.";
@@ -200,7 +259,12 @@ sub {
 	my $total_shipped_now = scalar keys %shipping; 
 
 	delete $::Scratch->{ship_now_complete};
-	if (
+	
+	if($opt->{void_transaction}) {
+		$g_status = 'canceled';
+		$ship_mesg = "Order $on canceled.";
+	}
+	elsif (
 		$total_lines != scalar @shiplines
 			and
 		$total_shipped_now == $total_lines 
@@ -214,7 +278,7 @@ sub {
 
 	$tdb->set_field($on, 'status', $g_status);
 	$tdb->set_field($on, 'archived', 1)
-		if $opt->{archive} and $g_status = 'shipped';
+		if $opt->{archive} and $g_status eq $target_status;
 
 	Vend::Tags->warning("$ship_mesg $email_mesg");
 	delete $::Scratch->{ship_notice_username};
