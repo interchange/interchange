@@ -56,7 +56,7 @@ sub {
 		$record = $db->row_hash($name);
 	}
 
-	$record ||= {};
+	$record ||= $opt;
 
 	my $body = $record->{comptext};
 
@@ -117,6 +117,12 @@ sub {
 		$cdb->set_slice($cache_it, $thing);
 	}
 
+	if($record->{output}) {
+		Vend::Interpolate::substitute_image(\$result)
+			unless $opt->{no_image_substitute};
+		$Tag->output_to($record->{output}, undef, $result);
+		return;
+	}
 	return $result;
 }
 EOR
