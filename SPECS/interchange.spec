@@ -14,7 +14,7 @@
 
 Summary: Interchange web application platform
 Name: interchange
-Version: 5.1.1
+Version: 5.2.0
 Release: 1
 Vendor: Interchange Development Group
 Group: System Environment/Daemons
@@ -387,6 +387,9 @@ fi
 
 
 %changelog
+* Wed May 05 2004 Jon Jensen <jon@icdevgroup.org>
+- rebuild for Interchange 5.2.0
+
 * Tue Apr 20 2004 Jon Jensen <jon@icdevgroup.org>
 - fix little bugs in installing te and interchange.cfg patch
 - rebuild for Interchange 5.1.1
