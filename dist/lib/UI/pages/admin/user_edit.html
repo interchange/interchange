@@ -86,12 +86,16 @@
 <small>Groups</small>
 </td>
 <td bgcolor=__UI_C_INTBLOCK__>
-[value name=groups set="[loop-data __UI_ACCESS_TABLE__ groups]" filter=space_to_null hide=1]
+[calc]
+	$Values->{groups} = q{[loop-data __UI_ACCESS_TABLE__ groups]};
+	$Values->{groups} =~ s/(\w+)/:$1/g;
+	$Values->{groups} =~ s/\s+/\0/g;
+	return;
+[/calc]
 <INPUT TYPE=hidden NAME=ui_filter:groups VALUE=null_to_space>
 <select name=groups size=5 multiple>
 [loop
 	prefix=group
-	option=groups
 	multiple=1
 	search="
 		fi=__UI_ACCESS_TABLE__
@@ -103,7 +107,7 @@
 		bs=yes
 		ml=1000
 	"
-]<OPTION VALUE="[group-code]">[group-data __UI_ACCESS_TABLE__ name]
+]<OPTION VALUE="[group-code]" [selected groups [group-code]]>[group-data __UI_ACCESS_TABLE__ name]
 [/loop]
 </select>
 </td>
@@ -119,6 +123,7 @@
 
 [if-mm advanced access=e]
 	[button text=Ok]
+		[calc]$CGI->{groups} =~ s/://g; return[/calc]
 		mv_todo=set
 	[/button]
 	[button text=Permissions]
