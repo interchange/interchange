@@ -14,6 +14,67 @@ Core
 * Disallow [ and < in page names when setting MV_PAGE and MV_PREV_PAGE
   variables.
 
+* Move mv_nextpage fallback before security check.
+
+* Add the ability to create a transaction ID and later assign the order number.
+  To use, you need to set in the main route:
+
+	  counter_tid    etc/transaction.number
+
+  At that point, in the current foundation, you would add this code to
+  assign an order number *after* payment is taken.
+
+	Set order number in values: [value
+                        name=mv_order_number
+                        set="[counter
+                                name=`$Session->{current_route}{counter_name}
+										|| 'etc/order.number'
+									 `
+                                sql=`$Session->{current_route}{sql_counter}`
+                                start=`$Session->{current_route}{first_order_number}`
+                                date=`$Session->{current_route}{date_counter}`
+                            ]"
+                    ]
+	Set order number in session: [calc]
+                        $Session->{mv_order_number} = $Values->{mv_order_number};
+                    [/calc]
+
+  This allows the order numbers to increment only after payment has been
+  received, while still allowing the all-in-one transaction logging
+  file located in a report file.
+
+  If you use counter_tid, you *must* set set the order number in your
+  logging file if you want it to be available.
+
+  You will want to call [charge ... order_id="[value mv_transaction_id]"]
+  to get full traceability of declined and failed charges.
+
+* Add ability to use date-based order numbers with
+
+		date_counter   1
+
+  in the appropriate route.
+
+* Allow setting a counter name without incrementing the counter itself, if
+
+		increment   0
+
+  is in the route. This is really how it should have been done in the
+  first place.
+
+Foundation
+----------
+
+* Remove "default" column from mv_metadata.asc, as it is not used anywhere.
+  This allows the addition of mv_metadata to MySQL, as otherwise the
+  column name "default" prevents the creation of the table.
+
+TableEditor
+-----------
+
+* Apply Paul Vinciguerra's patch to number of rows thing, which gets multiple row
+  tabs working on the tabbed display if not in ui_style mode.
+
 Debian
 ------
 
