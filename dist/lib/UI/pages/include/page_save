@@ -1,4 +1,5 @@
-[perl]
+[tmp now][time]%Y%m%d%H%M%S[/time][/tmp]
+[flag type=write table=backup][perl tables=backup]
 Log("In page save");
 	unless($CGI->{ui_page}) {
 		# Probably a re-get after the original post, mozilla bug?
@@ -170,10 +171,37 @@ EOF
 	$page = "pages/$page" if $page !~ m{^pages/|^tmp/};
 Log("final page=$page");
 	push @out, '';
-	unless ($Tag->write_relative_file($page, (join "\n", @out))) {
+
+	my $out = join "\n", @out;
+	unless ($Tag->write_relative_file($page, $out)) {
 Log("failed to write page=$page");
 		$Scratch->{ui_error} = errmsg("Couldn't save page %s.", $page);
 	}
-	$Scratch->{ui_output_page} = $page;
+	$Scratch->{ui_output_page} = $page; 
+	my $bdb = $Db{backup};
+	return if $CGI->{ui_page_preview};
+	return unless $bdb;
+	my  $now = $Scratch->{now};
+	my $code = $page;
+	$code = substr($code, 0, 240)  if length ($code) > 240;
+	$code .= ".$now";
+	$bdb->set_slice($code, 
+				[
+					qw/
+					logname
+					hostname
+					mod_time
+					page_name
+					page_text
+					/
+				],
+				[
+					$Session->{username},
+					$Session->{host},
+					$now,
+					$page,
+					$out,
+				],
+			);
 	return;
 [/perl]

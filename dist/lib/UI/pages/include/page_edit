@@ -1,4 +1,41 @@
 <!-- page_edit new ----- -->
+[loop search="
+        fi=backup
+        co=yes
+        sf=sku
+        se=[data session arg]
+        st=db
+        tf=mod_time
+        to=nr
+        rf=code,page_name,mod_time
+        "]
+[on-match]
+<P>
+<b>[loc]Backup copies[/loc]</b>
+<BLOCKQUOTE>
+[/on-match]
+[list]
+[page href="__UI_BASE__/page_edit"
+	  form="
+		ui_page=[cgi ui_page]
+		ui_page_backup=[loop-code]
+	  "][loop-param page_name]</A> (save time [convert-date][loop-param mod_time][/convert-date](
+            [page href=__UI_BASE__/page_edit_diff
+					form="
+						ui_page=[cgi ui_page]
+						ui_page_backup=[loop-code]
+					"]diff</A>,
+            [page href=__UI_BASE__/page_edit_diff
+					form="
+						ui_page=[cgi ui_page]
+						ui_page_backup=[loop-code]
+						context=1
+					"]context diff</A> from [cgi ui_page])<BR>
+[/list]
+[on-match]
+</BLOCKQUOTE>
+[/on-match]
+[/loop]
 
 <form action="[area ui]" method=POST ENCTYPE="multipart/form-data">
 <input type=hidden name=mv_todo value=back>
@@ -17,13 +54,6 @@
 	my $template_dir = $Variable->{UI_TEMPLATE_DIR} || 'templates';
 	my $out = '';
 	my $ver = $Tag->version();
-	my $current = $Scratch->{ui_current_content};
-	my %hidden;
-	my $control_display =  $CGI->{ui_content_edit}
-						|| $Values->{ui_content_edit}
-						|| $Variable->{UI_CONTENT_EDIT}
-						|| 'template page components content';
-#Log("current begins: " . substr($current, 0, 1000) );
 
 	sub tmp_error {
 		my $msg = errmsg(@_);
@@ -33,6 +63,29 @@
 <TR class=rerror><td colspan=2 class=cerror><XMP>$messages</XMP></td></tr>
 EOF
 	}
+
+	my $current;
+	if (! $CGI->{ui_page_backup}) {
+		$current = $Scratch->{ui_current_content};
+	}
+	else {
+		$current = tag_data('backup', 'page_text', $CGI->{ui_page_backup});
+		$current = $Tag->filter('decode_entities', $current);
+		if(! length($current)) {
+			return tmp_error(
+					"Backup retrieval (%s) failed.",
+					$CGI->{ui_page_backup},
+					);
+		}
+	}
+
+	my %hidden;
+	my $control_display =  $CGI->{ui_content_edit}
+						|| $Values->{ui_content_edit}
+						|| $Variable->{UI_CONTENT_EDIT}
+						|| 'template page components content';
+#Log("current begins: " . substr($current, 0, 1000) );
+
 
 	# Probably should offload this to mv_click=process_filter
 	my @filters = grep /^ui_filter:/, keys %$CGI;
