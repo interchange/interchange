@@ -1,6 +1,6 @@
 # Table/Common.pm: Common access methods for Interchange Databases
 #
-# $Id: Common.pm,v 1.10 2000-09-14 11:01:34 heins Exp $
+# $Id: Common.pm,v 1.11 2000-09-15 09:49:31 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -25,7 +25,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.10 $, 10);
+$VERSION = substr(q$Revision: 1.11 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -697,51 +697,7 @@ eval {
 	return wantarray ? ($ref, \%nh, \@na) : $ref;
 }
 
-sub import_csv {
-    my ($source, $options, $table_name) = @_;
-
-    die "The source file '$source' does not exist\n" unless -e $source;
-
-    open(IN, "+<$source")
-		or die "Can't open '$source' read/write: $!\n";
-	lockfile(\*IN, 1, 1) or die "lock\n";
-    my @field_names = read_quoted_fields(\*IN);
-    die "$source is empty\n" unless @field_names;
-
-	# This pulls COLUMN_DEF out of a field name
-	# remains in ASCII file, though
-	separate_definitions($options,\@field_names);
-#::logDebug("field names: @field_names");
-
-	no strict 'refs';
-	my $out;
-	if($options->{ObjectType}) {
-#::logDebug("object type: $options->{ObjectType}");
-		$out = &{"$options->{ObjectType}::create"}(
-									$options->{ObjectType},
-									$options,
-									\@field_names,
-									$table_name,
-								);
-	}
-	else {
-#::logDebug("pre-existing object: $options->{Object}");
-		$out = $options->{Object};
-	}
-    my (@fields,$key);
-    while (@fields = read_quoted_fields(\*IN)) {
-#::logDebug("fields: @fields");
-        $out->set_row(@fields);
-    }
-	delete $out->[$CONFIG]{Clean_start};
-	unlockfile(\*IN) or die "unlock\n";
-    close(IN);
-	return $out;
-}
-
-sub import_quoted {
-	return import_csv(@_)
-}
+*import_quoted = *import_csv = \&import_ascii_delimited;
 
 my %Sort = (
 
@@ -764,10 +720,20 @@ sub file_access {
 
 sub import_ascii_delimited {
     my ($infile, $options, $table_name) = @_;
-	my ($format);
+	my ($format, $csv);
 
 	my $delimiter = quotemeta($options->{'delimiter'});
-	$format = uc ($options->{CONTINUE} || 'NONE');
+
+	if  ($delimiter eq 'CSV') {
+		$csv = 1;
+		$format = 'CSV';
+	}
+	elsif ($options->{CONTINUE}) {
+		$format = uc $options->{CONTINUE};
+	}
+	else {
+		$format = 'NONE';
+	}
 
     open(IN, "+<$infile")
 		or die "Couldn't open '$infile' read/write: $!\n";
@@ -801,10 +767,16 @@ sub import_ascii_delimited {
 		}
 	}
 	else {
-		my $field_names = <IN>;
-		chomp $field_names;
-		$field_names =~ s/\s+$// unless $format eq 'NOTES';
-		@field_names = split(/$delimiter/, $field_names);
+		my $field_names;
+		if ($csv) {
+			@field_names = read_quoted_fields(\*IN);
+		}
+		else {
+			$field_names = <IN>;
+			chomp $field_names;
+			$field_names =~ s/\s+$// unless $format eq 'NOTES';
+			@field_names = split(/$delimiter/, $field_names);
+		}
 
 		# This pulls COLUMN_DEF out of a field name
 		# remains in ASCII file, though
@@ -955,6 +927,34 @@ EndOfIndex
 		}
 	}
 
+	my $numeric_guess = '';
+	my $numeric_clean = '';
+	my %non_numeric;
+	my @empty;
+	my @possible;
+	my $clean;
+
+	if($options->{GUESS_NUMERIC} and $options->{type} ne '8') {
+		@possible = (0 .. $#field_names);
+		@empty = map { 1 } (0 .. $#field_names);
+		
+		$numeric_guess = <<'EOF';
+			for (@possible) {
+				($empty[$_] = 0, next) if $fields[$_] =~ /^-?\d+\.?\d*$/;
+				next if $empty[$_] && ! length($fields[$_]);
+				$empty[$_] = undef;
+				$clean = 1;
+				$non_numeric{$_} = 1;
+			}
+EOF
+		$numeric_clean = <<'EOF';
+			next unless $clean;
+			undef $clean;
+			@possible = grep ! $non_numeric{$_}, @possible;
+			%non_numeric = ();
+EOF
+	}
+
 my %format = (
 
 	NOTES => <<EndOfRoutine,
@@ -969,7 +969,9 @@ my %format = (
 				\$fields[\$field_hash->{\$1}] = \$2;
 			}
 			$index
+			$numeric_guess
             \$out->set_row(\@fields);
+			$numeric_clean
         }
 EndOfRoutine
 
@@ -979,7 +981,20 @@ EndOfRoutine
 			\$fields = \@fields = split(/$delimiter/, \$_, $field_count);
 			$index
 			push (\@fields, '') until \$fields++ >= $field_count;
+			$numeric_guess
             \$out->set_row(\@fields);
+			$numeric_clean
+        }
+EndOfRoutine
+
+	CSV => <<EndOfRoutine,
+		while (\@fields = read_quoted_fields(\\*IN)) {
+            \$fields = scalar \@fields;
+			$index
+            push (\@fields, '') until \$fields++ >= $field_count;
+			$numeric_guess
+            \$out->set_row(\@fields);
+			$numeric_clean
         }
 EndOfRoutine
 
@@ -990,7 +1005,9 @@ EndOfRoutine
 			$excel
 			$index
             push (\@fields, '') until \$fields++ >= $field_count;
+			$numeric_guess
             \$out->set_row(\@fields);
+			$numeric_clean
         }
 EndOfRoutine
 
@@ -1013,7 +1030,9 @@ EndOfRoutine
 			$excel
 			$index
             push (\@fields, '') until \$fields++ >= $field_count;
+			$numeric_guess
             \$out->set_row(\@fields);
+			$numeric_clean
         }
 EndOfRoutine
 
@@ -1036,7 +1055,9 @@ EndOfRoutine
 				$index
 				push (\@fields, '') until \$fields++ >= $field_count;
 			}
+			$numeric_guess
             \$out->set_row(\@fields);
+			$numeric_clean
         }
 EndOfRoutine
 
@@ -1082,6 +1103,13 @@ EndOfRoutine
 	delete $out->[$CONFIG]{Clean_start};
 	unlockfile(\*IN) or die "unlock\n";
     close(IN);
+	if($numeric_guess) {
+		my $fn = Vend::Util::catfile($out->[$CONFIG]{dir}, $out->[$CONFIG]{file});
+		Vend::Util::writefile(
+					">$fn.numeric",
+					join " ", map { $field_names[$_] } @possible,
+		);
+	}
     return $out;
 }
 

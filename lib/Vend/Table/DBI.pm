@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.14 2000-09-05 20:36:20 heins Exp $
+# $Id: DBI.pm,v 1.15 2000-09-15 09:49:31 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.14 $, 10);
+$VERSION = substr(q$Revision: 1.15 $, 10);
 
 use strict;
 
@@ -202,9 +202,14 @@ sub create {
 					);
 		}
 	}
+	else {
+		$db->do("create index ${tablename}_${key} on $tablename ($key)")
+			or ::logError("table %s index failed: %s" , $tablename, $DBI::errstr);
+	}
 
-	$db->do("create index ${tablename}_${key} on $tablename ($key)")
-		or ::logError("table %s index failed: %s" , $tablename, $DBI::errstr);
+	if($config->{GUESS_NUMERIC}) {
+		list_fields($db, $tablename, $config);
+	}
 
 	$config->{NAME} = $columns;
 
@@ -271,6 +276,10 @@ sub open_table {
 							||	defined $config->{FILTER_FROM}
 							||	defined $config->{FILTER_TO}
 							||	'';
+	}
+
+	if($config->{GUESS_NUMERIC} and ! $config->{NUMERIC}) {
+		list_fields($db, $tablename, $config);
 	}
 
 	$config->{NUMERIC} = {} unless $config->{NUMERIC};
@@ -613,7 +622,9 @@ sub list_fields {
 	my($db, $name, $config) = @_;
 	my @fld;
 
-	my $sth = $db->prepare("select * from $name")
+	my $q = "select * from $name";
+	$q .= " limit 1" if $config->{HAS_LIMIT};
+	my $sth = $db->prepare($q)
 		or die $DBI::errstr;
 
 	# Wish we didn't have to do this, but we cache the columns
@@ -623,6 +634,19 @@ sub list_fields {
 		$sth->fetch();
 	}
 	@fld = @{$sth->{NAME}};
+	if($config->{GUESS_NUMERIC}) {
+		$config->{NUMERIC} = {} if ! $config->{NUMERIC};
+		eval {
+			for (my $i = 0; $i < @fld; $i++) {
+				my $info =
+					(defined $db->type_info($sth->{TYPE}[$i])->{NUM_PREC_RADIX})
+					|| 
+					($db->type_info($sth->{TYPE}[$i])->{TYPE_NAME} =~ /\bint(?:eger)?/i);
+				next unless $info;
+				$config->{NUMERIC}{$fld[$i]} = 1;
+			}
+		};
+	}
 	return \@fld;
 }
 
