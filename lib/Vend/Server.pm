@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8 2000-11-20 01:23:38 heins Exp $
+# $Id: Server.pm,v 1.8.2.1 2000-11-25 00:22:34 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.1 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -851,15 +851,19 @@ EOF
 				or die "lock $Global::ConfDir/reconfig: $!\n";
 			while(<Vend::Server::RECONFIG>) {
 				chomp;
-				my ($script_name,$build) = split /\s+/, $_;
+				my ($script_name,$table,$cfile) = split /\s+/, $_, 3;
 				my $select = $Global::SelectorAlias{$script_name} || $script_name;
                 my $cat = $Global::Selector{$select};
                 unless (defined $cat) {
                     ::logGlobal({}, "Bad script name '%s' for reconfig." , $script_name );
                     next;
                 }
-				$c = ::config_named_catalog($cat->{CatalogName},
-                                    "from running server ($$)", $build);
+
+				eval {
+					$c = ::config_named_catalog($cat->{CatalogName},
+                                    "from running server ($$)", $table, $cfile);
+				};
+
 				if (defined $c) {
 					$Global::Selector{$select} = $c;
 					for(sort keys %Global::SelectorAlias) {
