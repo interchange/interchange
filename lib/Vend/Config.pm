@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.12 2001-01-20 18:08:07 heins Exp $
+# $Id: Config.pm,v 1.25.2.13 2001-01-20 20:02:27 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -104,7 +104,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.25.2.12 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.13 $, 10);
 
 my %CDname;
 
@@ -2564,7 +2564,7 @@ sub parse_dbdatabase {
 	my ($db, $table) = get_configdb($var, $value);
 	$db = $db->ref();
 	my $kindex = $db->config('KEY_INDEX');
-#::logGlobal("kindex=$kindex");
+#::logDebug("kindex=$kindex");
 	local($^W) = 0;
 	my ($k, @f);	# key and fields
 	my @l;			# refs to locale repository
@@ -2586,7 +2586,7 @@ sub parse_dbdatabase {
 		for ($i = 0; $i < @f; $i++) {
 			next if $i == $kindex;
 			next unless length $f[$i];
-#::logGlobal("f-i=$f[$i] i=$i kindex=$kindex");
+#::logDebug("f-i=$f[$i] i=$i kindex=$kindex");
 			Vend::Config::parse_database('', "$n[$i] $k $f[$i]");
 		}
 	}

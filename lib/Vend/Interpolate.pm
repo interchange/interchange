@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.13 2001-01-19 17:24:21 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.14 2001-01-20 20:02:27 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.13 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.14 $, 10);
 
 @EXPORT = qw (
 
@@ -136,13 +136,13 @@ $ready_safe = new Safe;
 $ready_safe->untrap(qw/sort ftfile/);
 
 sub reset_calc {
-#::logGlobal("resetting calc");
+#::logDebug("resetting calc");
 	if(defined $Vend::Cfg->{ActionMap}{_mvsafe}) {
-#::logGlobal("already made");
+#::logDebug("already made");
 		$ready_safe = $Vend::Cfg->{ActionMap}{_mvsafe};
 	}
 	else {
-#::logGlobal("new one made");
+#::logDebug("new one made");
 		$ready_safe = new Safe 'MVSAFE';
 		$ready_safe->untrap(@{$Global::SafeUntrap});
 		no strict 'refs';
@@ -163,7 +163,7 @@ sub reset_calc {
 }
 
 sub init_calc {
-#::logGlobal("initting calc");
+#::logDebug("initting calc");
 	reset_calc() unless $Calc_reset;
 	$CGI_array                   = \%CGI::values_array;
 	$CGI        = $Safe{cgi}     = \%CGI::values;
@@ -2180,7 +2180,7 @@ sub tag_perl {
 #::logDebug("tag_perl failed $@");
 		my $msg = $@;
 		logError( "Safe: %s\n%s\n" , $msg, $body );
-		logGlobal({}, "Safe: %s\n%s\n" , $msg, $body );
+		logGlobal({ level => 'debug' }, "Safe: %s\n%s\n" , $msg, $body );
 		return $opt->{failure};
 	}
 #::logDebug("tag_perl initialized=$Calc_initialized: carts=" . ::uneval($::Carts));
@@ -3182,7 +3182,7 @@ sub tag_calc {
 	if ($@) {
 		my $msg;
 		$msg .= $@;
-		logGlobal({}, "Safe: %s\n%s\n" , $msg, $body);
+		logGlobal({ level => 'debug' }, "Safe: %s\n%s\n" , $msg, $body);
 		logError("Safe: %s\n%s\n" , $msg, $body);
 		return $MVSAFE::Safe ? '' : 0;
 	}

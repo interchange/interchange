@@ -1,6 +1,6 @@
 # Static.pm - Interchange static page routines
 # 
-# $Id: Static.pm,v 1.4.6.1 2000-12-13 16:11:26 zarko Exp $
+# $Id: Static.pm,v 1.4.6.2 2001-01-20 20:02:30 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -189,7 +189,7 @@ sub build_all {
 	if ($@) {
 		my $msg = $@;
 		print "\n$msg\n\a$g->{'name'}: error building pages. Skipping.\n";
-		::logGlobal(<<EOF);
+		::logGlobal( { level => 'debug' }, <<EOF);
 $g->{'name'}: Page build error. Skipping.
 $msg
 EOF

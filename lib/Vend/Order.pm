@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18.2.4 2001-01-19 17:28:04 heins Exp $
+# $Id: Order.pm,v 1.18.2.5 2001-01-20 20:02:28 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.4 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.5 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -454,7 +454,7 @@ sub encrypt_cc {
 
 	# This means encryption failed
 	if( $status != 0 ) {
-		::logGlobal({}, "Encryption error: %s", $!);
+		::logGlobal({ level => 'alert' }, "Encryption error: %s", $!);
 		return undef;
 	}
 

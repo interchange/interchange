@@ -1,6 +1,6 @@
 # Error.pm - Handle Interchange error pages and messages
 # 
-# $Id: Error.pm,v 1.3.6.2 2000-12-17 07:13:50 heins Exp $
+# $Id: Error.pm,v 1.3.6.3 2001-01-20 20:02:27 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -37,7 +37,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.3.6.2 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.3.6.3 $ =~ /(\d+)\.(\d+)/);
 
 my $wantref = 1;
 
@@ -130,7 +130,7 @@ sub do_lockout {
 		system $cmd;
 		$msg .= errmsg("\nBad status %s from '%s': %s\n", $?, $cmd, $!)
 			if $?;
-		logGlobal( $msg);
+		logGlobal({level => 'notice'}, $msg);
 	}
 	$Vend::Cfg->{VendURL} = $Vend::Cfg->{SecureURL} = 'http://127.0.0.1';
 	logError($msg);

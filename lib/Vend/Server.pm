@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.6 2001-01-19 17:30:05 heins Exp $
+# $Id: Server.pm,v 1.8.2.7 2001-01-20 20:02:28 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.6 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.7 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -60,7 +60,8 @@ sub new {
 		map_cgi($http);
 	};
 	if($@) {
-		::logGlobal($@);
+		my $msg = errmsg("CGI mapping error: %s", $@);
+		::logGlobal({ level => 'error' }, $msg);
 		return undef;
 	}
     bless $http, $class;
@@ -106,6 +107,33 @@ sub populate {
         ${"CGI::$field"} = $cgivar->{$cgi} if defined $cgivar->{$cgi};
 #::logDebug("CGI::$field=" . ${"CGI::$field"});
     }
+}
+
+sub log_http_data {
+	return unless $Global::Logging > 4;
+	my $ref = shift;
+	my @parms = split /\s+/,
+	 ($Global::Syslog->{http_items} ||
+		q{
+			REQUEST_URI
+			HTTP_COOKIE
+			SERVER_NAME
+			REMOTE_ADDR
+			HTTP_HOST
+			HTTP_USER_AGENT
+			REMOTE_USER
+		});
+	my $string = 'access: ';
+	for(@parms) {
+		next unless $ref->{env}{$_};
+		$string .= " $_=$ref->{env}{$_}";
+	}
+	::logGlobal( { level => 'info' }, $string);
+	return unless $Global::Logging > 5;
+	my $ent = $ref->{entity};
+	return unless $$ent;
+	::logGlobal( { level => 'debug' }, "POST=" . $$ent);
+	return;
 }
 
 sub map_cgi {
@@ -285,7 +313,7 @@ sub parse_multipart {
 			my($filename) = $header{'Content-Disposition'}=~/ filename="?([^\";]*)"?/;
 #::logDebug("param='$param' filename='$filename'" );
 			if(! $param) {
-				::logGlobal({}, "unsupported multipart header: \n%s\n", $header);
+				::logGlobal({ level => 'debug' }, "unsupported multipart header: \n%s\n", $header);
 				next;
 			}
 
@@ -730,7 +758,11 @@ sub connection {
     read_cgi_data(\@Global::argv, \%env, \$entity)
     	or return 0;
 	$http = new Vend::Server \*Vend::Server::MESSAGE, \%env, \$entity;
-#::logGlobal ("begin dispatch: " . (join " ", times()) . "\n");
+#::logDebug("begin dispatch: " . (join " ", times()) . "\n");
+
+	# Can log all CGI inputs
+	log_http_data($http) if $Global::Logging;
+
     ::dispatch($http) if $http;
 #::logDebug ("end connection: " . (join " ", times()) . "\n");
 	undef $Vend::ResponseMade;
@@ -835,7 +867,7 @@ sub housekeeping {
 					my $mark = $1;
 					$value = Vend::Config::read_here(\*Vend::Server::RESTART, $mark);
 					unless (defined $value) {
-						::logGlobal({}, <<EOF, $mark);
+						::logGlobal({ level => 'notice'}, <<EOF, $mark);
 Global reconfig ERROR
 Can't find string terminator "%s" anywhere before EOF.
 EOF
@@ -859,7 +891,7 @@ EOF
 					}
 				};
 				if($@) {
-					::logGlobal({}, $@);
+					::logGlobal({ level => 'notice' }, $@);
 					last;
 				}
 			}
@@ -881,7 +913,7 @@ EOF
 				my $select = $Global::SelectorAlias{$script_name} || $script_name;
                 my $cat = $Global::Selector{$select};
                 unless (defined $cat) {
-                    ::logGlobal({}, "Bad script name '%s' for reconfig." , $script_name );
+                    ::logGlobal({ level => 'notice' }, "Bad script name '%s' for reconfig." , $script_name );
                     next;
                 }
 
@@ -896,10 +928,10 @@ EOF
 						next unless $Global::SelectorAlias{$_} eq $select;
 						$Global::Selector{$_} = $c;
 					}
-					::logGlobal({}, "Reconfig of %s successful.", $c->{CatalogName});
+					::logGlobal({ level => 'notice' }, "Reconfig of %s successful.", $c->{CatalogName});
 				}
 				else {
-					::logGlobal({},
+					::logGlobal({ level => 'warn' },
 						 "Error reconfiguring catalog %s from running server (%s)\n%s",
 						 $script_name,
 						 $$,
@@ -923,11 +955,11 @@ EOF
             s/^pid\.//;
             if(kill 9, $_) {
                 unlink $fn and $Vend::Server::Num_servers--;
-                ::logGlobal({}, "hammered PID %s running %s seconds", $_, $runtime);
+                ::logGlobal({ level => 'error' }, "hammered PID %s running %s seconds", $_, $runtime);
             }
             elsif (! kill 0, $_) {
 				unlink $fn and $Vend::Server::Num_servers--;
-                ::logGlobal({},
+                ::logGlobal({ level => 'error' },
 					"Spurious PID file for process %s supposedly running %s seconds",
 						$_,
 						$runtime,
@@ -935,7 +967,7 @@ EOF
 			}
             else {
 				unlink $fn and $Vend::Server::Num_servers--;
-                ::logGlobal({},
+                ::logGlobal({ level => 'crit' },
 					"PID %s running %s seconds would not die!",
 						$_,
 						$runtime,
@@ -966,7 +998,7 @@ sub server_both {
 		$Global::TcpHost =~ s/\*/\\S+/g;
 		@hosts = grep /\S/, split /\s+/, $Global::TcpHost;
 		$Global::TcpHost = join "|", @hosts;
-		::logGlobal({}, "Accepting connections from %s", $Global::TcpHost);
+		::logGlobal({ level => 'info' }, "Accepting connections from %s", $Global::TcpHost);
 	}
 
 	my $proto = getprotobyname('tcp');
@@ -1005,7 +1037,7 @@ sub server_both {
 
 		chmod $Global::SocketPerms, $socket_filename;
 		if($Global::SocketPerms & 077) {
-			::logGlobal({},
+			::logGlobal({ level => 'warn' },
 							"ALERT: %s socket permissions are insecure; are you sure you want permssions %o?",
 							$Global::SocketFile,
 							$Global::SocketPerms,
@@ -1022,7 +1054,7 @@ sub server_both {
 	push (@types, 'INET') if $Global::Inet_Mode;
 	push (@types, 'UNIX') if $Global::Unix_Mode;
 	my $server_type = join(" and ", @types);
-	::logGlobal({}, "START server (%s) (%s)" , $$, $server_type );
+	::logGlobal({ level => 'info' }, "START server (%s) (%s)" , $$, $server_type );
 
 	if($Global::Inet_Mode) {
 
@@ -1041,7 +1073,7 @@ sub server_both {
 		}
 #::logDebug("Trying to run server on ip=$bind_ip port=$port");
 	    if(! $bind_addr) {
-			::logGlobal({},
+			::logGlobal({ level => 'error' }, 
 					"Could not bind to IP address %s on port %s: %s",
 					$bind_ip,
 					$port,
@@ -1070,7 +1102,7 @@ sub server_both {
 			$fh_map{"$bind_ip:$port"} = $fh;
 		}
 		else {
-		  ::logGlobal({},
+		  ::logGlobal({ level => 'error' },
 					"INET mode server failed to start on port %s: %s",
 					$port,
 					$@,
@@ -1087,7 +1119,7 @@ sub server_both {
 		my $msg;
 		if ($Global::Unix_Mode) {
 			$msg = errmsg("Continuing in UNIX MODE ONLY" );
-			::logGlobal($msg);
+			::logGlobal({ level => 'warn' }, $msg);
 			print "$msg\n";
 		}
 		else {
@@ -1102,7 +1134,7 @@ sub server_both {
 	if($Global::Windows or $Global::DEBUG ) {
 		$no_fork = 1;
 		$Vend::Foreground = 1;
-		::logGlobal("Running in foreground, OS=$^O, debug=$Global::DEBUG\n");
+		::logGlobal({ level => 'info' }, "Running in foreground, OS=$^O, debug=$Global::DEBUG\n");
 	}
 	else {
 		close(STDIN);
@@ -1146,7 +1178,7 @@ sub server_both {
             else {
 				my $msg = $!;
 				$msg = ::errmsg("error '%s' from select." , $msg );
-				::logGlobal({}, $msg );
+				::logGlobal({ level => 'error' },  $msg );
                 die "$msg\n";
             }
         }
@@ -1188,7 +1220,7 @@ sub server_both {
             die "Why did select return with $n? Can we even get here?";
         }
 	  };
-	  ::logGlobal({}, "Died in select, retrying: %s", $@) if $@;
+	  ::logGlobal({ level => 'error' },  "Died in select, retrying: %s", $@) if $@;
 
 	  eval {
 		SPAWN: {
@@ -1203,7 +1235,7 @@ sub server_both {
 			}
 			elsif(! defined ($pid = fork) ) {
 				my $msg = ::errmsg("Can't fork: %s", $!);
-				::logGlobal({}, $msg );
+				::logGlobal({ level => 'crit' },  $msg );
 				die ("$msg\n");
 			}
 			elsif (! $pid) {
@@ -1218,7 +1250,7 @@ sub server_both {
 					};
 					if ($@) {
 						my $msg = $@;
-						::logGlobal({}, "Runtime error: %s" , $msg);
+						::logGlobal({ level => 'error' }, "Runtime error: %s" , $msg);
 						logError("Runtime error: %s", $msg)
 							if defined $Vend::Cfg->{ErrorFile};
 					}
@@ -1243,7 +1275,7 @@ sub server_both {
 
 		# clean up dies during spawn
 		if ($@) {
-			::logGlobal({}, "Died in server spawn: %s", $@ ) if $@;
+			::logGlobal({ level => 'error' }, "Died in server spawn: %s", $@ ) if $@;
 
 			# Below only happens with Windows or foreground debugs.
 			# Prevent corruption of changed $Vend::Cfg entries
@@ -1265,14 +1297,14 @@ sub server_both {
            last if $Signal_Terminate || $Signal_Debug;
         }
 	  };
-	  ::logGlobal({}, "Died in housekeeping, retry: %s", $@ ) if $@;
+	  ::logGlobal({ level => 'crit' }, "Died in housekeeping, retry: %s", $@ ) if $@;
 
     }
 
     restore_signals();
 
    	if ($Signal_Terminate) {
-       	::logGlobal({}, "STOP server (%s) on signal TERM", $$ );
+       	::logGlobal({ level => 'info' }, "STOP server (%s) on signal TERM", $$ );
        	return 'terminate';
    	}
 
@@ -1338,7 +1370,7 @@ sub run_server {
 	push (@types, 'INET') if $Global::Inet_Mode;
 	push (@types, 'UNIX') if $Global::Unix_Mode;
 	my $server_type = join(" and ", @types);
-	::logGlobal({}, "START server (%s) (%s)" , $$, $server_type );
+	::logGlobal({ level => 'info' }, "START server (%s) (%s)" , $$, $server_type );
 
     if ($Global::Windows) {
         $pid = grab_pid();

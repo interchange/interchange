@@ -1,6 +1,6 @@
 # Control.pm - Interchange routines rarely used or not requiring much performance
 # 
-# $Id: Control.pm,v 1.6.2.1 2000-12-13 16:11:15 zarko Exp $
+# $Id: Control.pm,v 1.6.2.2 2001-01-20 20:02:27 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -108,7 +108,7 @@ sub remove_catalog {
 	my @aliases;
 
 	unless(defined $g) {
-		::logGlobal( "Attempt to remove non-existant catalog %s." , $name );
+		::logGlobal( {level => 'error'}, "Attempt to remove non-existant catalog %s." , $name );
 		return undef;
 	}
 
@@ -151,7 +151,7 @@ sub add_catalog {
 			if (exists $Global::Selector{$_}
 				and $Global::SelectorAlias{$_} ne $g->{'script'})
 			{
-				logGlobal("Alias %s used a second time, skipping.", $_);
+				logGlobal({level => 'notice'}, "Catalog ScriptAlias %s used a second time, skipping.", $_);
 				next;
 			}
 			elsif (m![^-\w_\~:#/.]!) {
@@ -170,7 +170,7 @@ Added/changed catalog %s:
  Script:    %s
 EOF
 	
-	logGlobal( $msg, $name, $dir, $script);
+	logGlobal({level => 'notice'},  $msg, $name, $dir, $script);
 
 	$Global::Selector{$g->{script}} = $c;
 }

@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.7 2000-12-31 14:47:38 heins Exp $
+# $Id: Util.pm,v 1.14.2.8 2001-01-20 20:02:28 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -79,7 +79,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.7 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.8 $, 10);
 
 BEGIN {
 	eval {
@@ -224,6 +224,38 @@ sub round_to_frac_digits {
 		$frac = 0 x $digits;
 	}
 	return "$int.$frac";
+}
+
+use vars qw/%MIME_type/;
+%MIME_type = (qw|
+			jpg		image/jpeg
+			gif		image/gif
+			jpeg	image/jpeg
+			png		image/png
+			xpm		image/xpm
+			htm		text/html
+			html	text/html
+			txt		text/plain
+			asc		text/plain
+			csv		text/plain
+			xls		application/vnd.ms-excel
+			default application/octet-stream
+		|
+		);
+# Return a mime type based on either catalog configuration or some defaults
+sub mime_type {
+	my ($val) = @_;
+	$val =~ s:.*\.::s;
+	$val = lc $val;
+	if(! length($val)) {
+		return $Vend::Cfg->{MimeType}{default} || 'text/plain';
+	}
+	else {
+		return $Vend::Cfg->{MimeType}{$val}
+				|| $MIME_type{$val}
+				|| $Vend::Cfg->{MimeType}{default}
+				|| $MIME_type{default};
+	}
 }
 
 # Return AMOUNT formatted as currency.
@@ -935,7 +967,7 @@ sub readfile {
 
 	if($no and (::file_name_is_absolute($ifile) or $ifile =~ m#\.\./.*\.\.#)) {
 		::logError("Can't read file '%s' with NoAbsolute set" , $ifile);
-		::logGlobal({}, "Can't read file '%s' with NoAbsolute set" , $ifile );
+		::logGlobal({ level => 'auth'}, "Can't read file '%s' with NoAbsolute set" , $ifile );
 		return undef;
 	}
 
@@ -1326,7 +1358,7 @@ ALERT: Attempt to %s at %s from:
 	SCRIPT_NAME  %s
 	PATH_INFO    %s
 EOF
-		logGlobal ({}, $fmt,
+		logGlobal ({level => 'auth'}, $fmt,
 						$msg,
 						$CGI::script_name,
 						$CGI::host,
@@ -1347,7 +1379,7 @@ EOF
 		ne  $Vend::Cfg->{Password})
 	{
 		::logGlobal(
-				{},
+				{level => 'auth'},
 				"ALERT: Password mismatch, attempt to %s at %s from %s",
 				$msg,
 				$CGI::script_name,
@@ -1371,7 +1403,9 @@ ALERT: Attempt to %s %s per user name:
 	PATH_INFO    %s
 EOF
 
-		::logGlobal($fmt,
+		::logGlobal(
+			{level => 'auth'},
+			$fmt,
 			$CGI::script_name,
 			$msg,
 			$CGI::remote_host,
@@ -1398,7 +1432,9 @@ Attempt to %s on %s, secure operations disabled.
 	SCRIPT_NAME  %s
 	PATH_INFO    %s
 EOF
-		::logGlobal ($fmt,
+		::logGlobal (
+				{level => 'auth'},
+				$fmt,
 				$msg,
 				$CGI::script_name,
 				$CGI::host,
@@ -1481,23 +1517,26 @@ sub logGlobal {
 	if($opt and $Global::SysLog) {
 		$fn = "|" . ($Global::SysLog->{command} || 'logger');
 
-		my $leveled;
+		my $prioritized;
+		my $tagged;
+		my $facility = 'local3';
 		if($opt->{level} and defined $Global::SysLog->{$opt->{level}}) {
-			$fn .= " -p $Global::SysLog->{$opt->{level}}";
-			$leveled = 1;
+			my $stuff =  $Global::SysLog->{$opt->{level}};
+			if($stuff =~ /\./) {
+				$facility = $stuff;
+			}
+			else {
+				$facility .= ".$stuff";
+			}
+			$prioritized = 1;
 		}
 
-		my $tag = '';
-		if($Global::SysLog->{tag}) {
-			$tag = " -t $Global::SysLog->{tag}"
-				unless "\L$Global::Syslog->{tag}" eq 'none';
-		}
-		else {
-			$tag = " -t interchange";
-		}
-		$tag .= ".$opt->{level}" if $tag and ! $leveled;
+		my $tag = $Global::SysLog->{tag} || 'interchange';
 
-		$fn .= $tag;
+		$facility .= ".info" unless $prioritized;
+
+		$fn .= " -p $facility";
+		$fn .= " -t $tag" unless "\L$tag" eq 'none';
 
 		if($opt->{socket}) {
 			$fn .= " -u $opt->{socket}";
@@ -1565,7 +1604,8 @@ sub logError {
     };
     if ($@) {
 		chomp $@;
-		logGlobal ("Could not %s error file %s: %s\nto report this error: %s",
+		logGlobal ({ level => 'info' },
+					"Could not %s error file %s: %s\nto report this error: %s",
 					$@,
 					$Vend::Cfg->{ErrorFile},
 					$!,
