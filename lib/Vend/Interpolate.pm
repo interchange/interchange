@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.46 2001-03-07 15:07:05 heins Exp $
+# $Id: Interpolate.pm,v 1.47 2001-04-13 21:08:50 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.46 $, 10);
+$VERSION = substr(q$Revision: 1.47 $, 10);
 
 @EXPORT = qw (
 
@@ -2425,6 +2425,8 @@ sub form_link {
 
 	$href = 'process' unless $href;
 	$href =~ s:^/+::;
+	$opt->{secure} = 1 if exists $Vend::Cfg->{AlwaysSecure}{$href};
+	my $base = ! $opt->{secure} ? ($Vend::Cfg->{VendURL}) : $Vend::Cfg->{SecureURL};
 	$href = "$base/$href"     unless $href =~ /^\w+:/;
 
 	my $extra = <<EOF;
@@ -5368,6 +5370,7 @@ sub tag_shipping {
 		for(@modes) {
 			$out += shipping($_, $opt);
 		}
+		$out = Vend::Util::round_to_frac_digits($out);
 		$out = currency($out, $opt->{noformat}, $opt->{convert});
 	}
 	return $out unless $opt->{hide};

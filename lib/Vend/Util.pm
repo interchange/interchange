@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.15 2000-11-26 08:02:08 heins Exp $
+# $Id: Util.pm,v 1.16 2001-04-13 21:08:50 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -77,7 +77,7 @@ use Config;
 use Fcntl;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.15 $, 10);
+$VERSION = substr(q$Revision: 1.16 $, 10);
 
 BEGIN {
 	eval {
@@ -937,7 +937,7 @@ sub vendUrl {
 
 	my @parms;
 
-	if(defined $Vend::Cfg->{AlwaysSecure}{$path}) {
+	if(exists $Vend::Cfg->{AlwaysSecure}{$path}) {
 		$r = $Vend::Cfg->{SecureURL};
 	}
 
