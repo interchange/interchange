@@ -1026,8 +1026,6 @@ dist/lib/UI/pages/admin/preferences.html
 dist/lib/UI/pages/admin/quick_question.html
 dist/lib/UI/pages/admin/quicklinks.html
 dist/lib/UI/pages/admin/reconfig.html
-dist/lib/UI/pages/admin/regen.html
-dist/lib/UI/pages/admin/regenerate.html
 dist/lib/UI/pages/admin/report.html
 dist/lib/UI/pages/admin/report_results.html
 dist/lib/UI/pages/admin/report_save.html
