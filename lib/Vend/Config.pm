@@ -1,8 +1,9 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.87 2002-12-30 00:22:01 racke Exp $
+# $Id: Config.pm,v 2.88 2003-01-01 14:13:05 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
@@ -45,7 +46,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.87 $, 10);
+$VERSION = substr(q$Revision: 2.88 $, 10);
 
 my %CDname;
 
@@ -3076,10 +3077,16 @@ sub parse_database {
 					$d->{MAP}->{$field}->{$map_key} = $map_value;
 				} else {
 					# mapping direction
-					if ($map_value =~ /::/) {
-						($map_table, $map_value) = split (/::/, $map_value);
-						$d->{MAP}->{$field}->{$map_key} = {table => $map_table,
-														  column => $map_value};
+					if ($map_value =~ m%^((.*?)::(.*?)/)?(.*?)::(.*)%) {
+						if ($1) {
+							$d->{MAP}->{$field}->{$map_key} = {lookup_table => $2,
+															   lookup_column => $3,
+															   table => $4,
+															   column => $5}
+						} else {
+							$d->{MAP}->{$field}->{$map_key} = {table => $4,
+															   column => $5};
+						}
 					} else {
 						$d->{MAP}->{$field}->{$map_key} = {column => $map_value};
 					}
