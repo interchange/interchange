@@ -557,7 +557,7 @@ sub compile_wizard {
 		if($qip) {
 			if(/^(itl|perl)(?:_condition)?:\s*(.*)$/s) {
 				if(! $ref->{_condition}) {
-					$ref->{_conditional_type} = $1;
+					$ref->{_condition_type} = $1;
 					$ref->{_condition} = $2;
 				}
 				else {
