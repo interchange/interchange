@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.33 2001-03-21 22:48:59 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.34 2001-03-22 14:34:06 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.33 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.34 $, 10);
 
 @EXPORT = qw (
 
@@ -2324,7 +2324,7 @@ sub flag {
 				::logError("attempt to commit to unknown database: %s", $dbname);
 				return undef;
 			}
-			if( ! $db->$method ) {
+			if( ! $db->$method() ) {
 				::logError("problem committing for table: %s", $dbname);
 				return undef;
 			}
