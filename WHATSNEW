@@ -56,6 +56,8 @@ Interchange 4.6.2
 * Various minor HTML corrections. Thanks to Paul <porl@namee.com.au> and
   Mediabang.
 
+* Fixed in-stock notification problem on flypage.html and stock-alert.html.
+
 * RPM only: Fixed logrotate.d file to prevent cascading log rotation like
   error.log.1.gz.1.gz etc. Thanks to Murray Gibbins for diagnosis & fix.
 
