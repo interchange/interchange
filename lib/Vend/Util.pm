@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.13 2001-03-08 13:53:18 heins Exp $
+# $Id: Util.pm,v 1.14.2.14 2001-03-09 06:53:50 jon Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -79,7 +79,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.13 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.14 $, 10);
 
 BEGIN {
 	eval {
@@ -834,6 +834,8 @@ sub readin {
 		::logError( "Too many .. in file path '%s' for security.", $file );
 		$file = find_special_page('violation');
 	}
+	$file =~ s#//+#/#g;
+	$file =~ s#/+$##g;
 	($pathdir = $file) =~ s#/[^/]*$##;
 	$pathdir =~ s:^/+::;
 	my $try;
