@@ -68,6 +68,17 @@
 		extended.ui_data_fields
 		extended.table_width
 		extended.left_width
+
+		=Tabbed display
+
+		extended.tabbed
+		extended.tab_width
+		extended.tab_height
+		extended.panel_width
+		extended.panel_height
+		extended.tab_horiz_offset
+		extended.tab_vert_offset
+
 	"
 
 	label=`{
@@ -78,6 +89,25 @@
 		'extended.ui_display_only'		=> 'Fields for display only',
 		'extended.left_width' => 'Width specification for label column',
 		'extended.table_width' => 'Width specification for editor table',
+		'extended.tabbed'				=> 'Use tabbed display',
+		'extended.tab_height'			=> 'Tab Height',
+		'extended.tab_width'			=> 'Tab Width',
+		'extended.panel_height'			=> 'Panel Height',
+		'extended.panel_width'			=> 'Panel Width',
+		'extended.tab_horiz_offset'		=> 'Tab Horizontal Offset',
+		'extended.tab_vert_offset'		=> 'Tab Vertical Offset',
+	}`
+
+	help=`{
+		'extended.ui_data_fields'		=> 'Breaks can be embedded in the fields by placing "=Title String" on a line by itself and surrounding with blank lines.',
+		'extended.ui_display_only'		=> 'Will not be set, only shown.',
+		'extended.tabbed'				=> 'Use the tabbed display, broken into tabs as you label sections.',
+		'extended.tab_width'			=> 'Default 100 pixels.',
+		'extended.tab_height'			=> 'Default 30 pixels.',
+		'extended.panel_width'			=> 'Default 800 pixels.',
+		'extended.panel_height'			=> 'Default 600 pixels.',
+		'extended.tab_horiz_offset'		=> 'Tab Horizontal Offset',
+		'extended.tab_vert_offset'		=> 'Tab Vertical Offset',
 	}`
 
 	widget=`{
@@ -88,6 +118,13 @@
 		'extended.ui_display_only'		=> 'text_40',
 		'extended.table_width'		    => 'text_8',
 		'extended.left_width'			=> 'text_8',
+		'extended.tabbed'				=> 'yesno',
+		'extended.tab_height'			=> 'text_5',
+		'extended.tab_width'			=> 'text_5',
+		'extended.panel_height'			=> 'text_5',
+		'extended.panel_width'			=> 'text_5',
+		'extended.tab_horiz_offset'		=> 'text_5',
+		'extended.tab_vert_offset'		=> 'text_5',
 	}`
 
 	database=`{
