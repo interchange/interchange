@@ -1,6 +1,6 @@
 # Vend::Payment::TestPayment - Interchange payment test module
 #
-# $Id: TestPayment.pm,v 1.2 2002-10-17 04:46:24 mheins Exp $
+# $Id: TestPayment.pm,v 1.3 2002-10-18 06:56:24 mheins Exp $
 #
 # Copyright (C) 2002 Cursor Software Limited.
 # All Rights Reserved.
@@ -27,7 +27,7 @@ package Vend::Payment::TestPayment;
 
 =head1 Interchange payment test module
 
-Vend::Payment::TestPayment $Revision: 1.2 $
+Vend::Payment::TestPayment $Revision: 1.3 $
 
 =head1 SYNOPSIS
 
@@ -190,7 +190,7 @@ BEGIN {
 	unless $Vend::Quiet;
 }
 
-$VERSION = substr(q$Revision: 1.2 $,10);
+$VERSION = substr(q$Revision: 1.3 $,10);
 
 package Vend::Payment;
 
@@ -282,11 +282,11 @@ sub testpayment {
 	}
 	elsif($opt->{transaction} eq 'void' ) {
 		$msg ||= 'Void failure: %s';
-		if(! $opt->{order_id}) {
+		if(! $actual->{order_id}) {
 			$result{'pop.status'} = 'failure';
 			$result{'pop.error-message'} = errmsg($msg,'Need order-id');
 		}
-		elsif($opt->{auth_code}) {
+		elsif(! $actual->{auth_code}) {
 			$result{'pop.status'} = 'failure';
 			$result{'pop.error-message'} = errmsg($msg,'Need auth-code');
 		}
