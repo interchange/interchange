@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.30 2000-10-08 19:07:10 heins Exp $
+# $Id: Interpolate.pm,v 1.31 2000-10-09 15:26:42 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.30 $, 10);
+$VERSION = substr(q$Revision: 1.31 $, 10);
 
 @EXPORT = qw (
 
@@ -916,8 +916,8 @@ sub tag_data {
 					return HTML::Entities::encode(shift);
 				},
 	'option_format' => sub {
-					my $val = shift;
-					s/[,\s]*[\r\n]+/,\r/g;
+					$_[0] =~ s/[,\s]*[\r\n]+/,\r/g;
+					return $_[0];
 				},
 	);
 
@@ -1569,7 +1569,6 @@ sub tag_accessories {
 		my $ejs = ",1" if $opt->{rows} > 1;
 		$opt->{js} = qq{onChange="addItem(this.form.X$name,this.form.$name$ejs)"}
 			unless $opt->{js};
-warn("building move combo");
 		my $out = build_accessory_select("X$name", $type, '', $opt, @opts);
 		if($opt->{rows} > 1) {
 			$out .= qq|<TEXTAREA ROWS="$opt->{rows}" WRAP=virtual COLS="$opt->{cols}" NAME="$name">$default</TEXTAREA>|;
