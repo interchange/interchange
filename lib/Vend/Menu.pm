@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange payment processing routines
 #
-# $Id: Menu.pm,v 2.13 2002-08-19 02:26:01 mheins Exp $
+# $Id: Menu.pm,v 2.14 2002-08-20 02:43:56 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,11 +21,12 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.13 $, 10);
+$VERSION = substr(q$Revision: 2.14 $, 10);
 
 use Vend::Util;
 use strict;
 
+my $indicated;
 my %transform = (
 	nbsp => sub {
 		my ($row, $fields) = @_;
@@ -101,6 +102,7 @@ my %transform = (
 	page_class => sub {
 		my ($row, $fields) = @_;
 		return 1 unless $row->{indicated};
+		return 1 if $row->{mv_level};
 		return 1 if ref($fields) ne 'ARRAY';
 		my $status = 1;
 		for(@$fields) {
@@ -109,6 +111,7 @@ my %transform = (
 #::logDebug("setting scratch $f to row=$c=$row->{$c}");
 			$::Scratch->{$f} = $row->{$c};
 		}
+		$$indicated = 0;
 		return 1;
 	},
 	menu_group => sub {
@@ -163,12 +166,15 @@ my %transform = (
 			my($s,$r) = split /=/, $_;
 			$rev = $indicator =~ s/^\s*!\s*// ? 1 : 0;
 			$last = $indicator =~ s/\s*!\s*$// ? 1 : 0;
-::logDebug("checking scratch $s=$::Scratch->{$s} eq row=$r=$row->{$r}");
+#::logDebug("checking scratch $s=$::Scratch->{$s} eq row=$r=$row->{$r}");
 			$status = $::Scratch->{$s} eq $row->{$r};
 			if($rev xor $status) {
 				$row->{indicated} = 1;
 			}
 			last if $last;
+		}
+		if($row->{indicated}) {
+			$indicated = \$row->{indicated};
 		}
 		return 1;
 	},
@@ -329,10 +335,13 @@ sub old_simple {
 		my $list = $opt->{object}{mv_results};
 		$main = '';
 		for(@$list) {
-::logDebug("here's a row: " . ::uneval($_));
+#::logDebug("here's a row: " . ::uneval($_));
 			$main .= menu_link($template, $_, $opt);
 		}
 	}
+
+	# Prevent possibility of memory leak
+	undef $indicated;
 
 	my $header;
 	$header = ::interpolate_html($opt->{header_template})
@@ -400,20 +409,39 @@ EOF
 			subordinate => 'code',
 			autodetect  => '1',
 			sort        => $opt->{sort} || 'code',
-			iterator    => \&tree_line,
-			row_repository => [],
 			full        => '1',
 			spacing     => '4',
 			_transform   => $opt->{_transform},
 		);
-	
+
 	for(@{$opt->{_transform} || []}) {
 		$o{$_} = $opt->{$_};
 	}
 
-	push @out, Vend::Tags->tree(\%o);
+	my $main;
+	my $rows;
+	if($opt->{iterator}) {
+		$o{iterator} = $opt->{iterator};
+		$main =  Vend::Tags->tree(\%o);
+		$rows = $o{object}{mv_results};
+	}
+	else {
+		$o{iterator} = \&transforms_only;
+		Vend::Tags->tree(\%o);
+		delete $o{_transform};
+		$rows = $o{object}{mv_results};
+		$main = '';
+		for(@$rows) {
+#::logDebug("here's a row: " . ::uneval($_));
+			$main .= tree_line(undef, $_, \%o);
+		}
+	}
 
-	my $rows = $o{row_repository} || [];
+	# Prevent possibility of memory leak
+	undef $indicated;
+
+	push @out, $main;
+
 	my %seen;
 	my @levels = grep !$seen{$_}++, map { $_->{mv_level} } @$rows;
 	@levels = sort { $a <=> $b } @levels;
@@ -530,9 +558,9 @@ EOF
 		var pos = 0;
 		if( browserType() == "ie" )
 			if(anchor_down == 1) 
-				pos = obj.getBoundingClientRect().right - 2;
-			else
 				pos = obj.getBoundingClientRect().left + 2;
+			else
+				pos = obj.getBoundingClientRect().right - 2;
 		else {
 			var n = 0;
 			var x = obj.offsetParent;
@@ -1026,9 +1054,6 @@ sub tree_line {
 		$row->{page} = Vend::Tags->area( { href => $row->{page}, form => $form });
 	}
 
-	if($opt->{row_repository}) {
-		push @{$opt->{row_repository}}, $row;
-	}
 	my @values = @{$row}{@$fields};
 
 	for(@values) {
@@ -1228,7 +1253,8 @@ sub menu {
 			if(! $opt->{name}) {
 				logError("No file or name specified for menu.");
 			}
-			$opt->{file} .= "/$opt->{name}.txt";
+			my $nm = escape_chars($opt->{name});
+			$opt->{file} .= "/$nm.txt";
 		}
 		return old_simple($name, $opt, $template) unless $opt->{dhtml_browser};
 		return dhtml_simple($name, $opt, $template);
