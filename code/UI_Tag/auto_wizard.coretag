@@ -796,7 +796,7 @@ sub {
 	my %modsub = (
 			i		=> sub {
 							my $val = shift;
-							::logDebug("running interpolate of $val");
+#							::logDebug("running interpolate of $val");
 							return interpolate_html($val);
 						},
 			default => sub {
@@ -867,7 +867,7 @@ sub {
 	$opts{no_meta} = 1;
 	$opts{defaults} = 1;
 	$opts{mv_cancelpage} ||= 'admin/index';
-	$opts{row_template} ||= <<'EOF' unless $opts{display_type};
+	$opts{row_template} ||= $opt->{row_template} || <<'EOF' unless $opts{display_type};
 {HELP?}<td>&nbsp;</td><td>
      <span style="color: blue">{HELP}</span>
 	 {HELP_URL?}<BR><A HREF="{HELP_URL}">more help</A>{/HELP_URL?}
