@@ -13,6 +13,9 @@ Core and usertags
 * Allow [dump] of portion of session, for example [dump scratch].
   !!UNDOCUMENTED!!
 
+* New filter restrict_html.
+  !!UNDOCUMENTED!!
+
 I18N
 --------
 * Hebrew locale from Chen Naor <chen@lilux.co.il> added.
