@@ -4,11 +4,11 @@ Construct Something
 
 SOMESQL
 Set to 1 if you want to use MySQL, PostgreSQL, or Oracle
-0	1
+	1	0
 
 {SOMESQL}MYSQL
 Set to 1 if you want to use MySQL
-1	0
+	1	0
 
 {MYSQL}SQLDB
 Database to use (will be created)
@@ -36,7 +36,7 @@ Extra options for creation
 
 {SOMESQL and ! '__MVC_MYSQL__'}PGSQL
 Set to 1 if you want to use PostgreSQL
-1	0
+	1	0
 
 {PGSQL}SQLDB
 Database to use (will be created)
