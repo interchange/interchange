@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.6.2.2 2001-09-28 14:20:31 racke Exp $
+# $Id: Order.pm,v 2.6.2.3 2001-11-08 18:07:03 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.6.2.2 $, 10);
+$VERSION = substr(q$Revision: 2.6.2.3 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -112,6 +112,28 @@ my %Parse = (
 										$len,
 										$max) if ! $msg;
 								return(0, $name, $msg);
+							}
+							return (1, $name, '');
+						},
+	'filter'			=> sub {		
+							my($name, $value, $code) = @_;
+							my $message;
+							my $filter;
+
+							$code =~ s/\\/\\\\/g;
+							if($code =~ /(["']).+?\1$/) {
+								my @code = Text::ParseWords::shellwords($code);
+								$message = pop(@code);
+								$filter = join " ", @code;
+							}
+							else {
+								($filter, $message) = split /\s+/, $code, 2;
+							}
+
+							my $test = Vend::Interpolate::filter_value($filter, $value, $name);
+							if($test ne $value) {
+								$message ||= errmsg("%s caught by filter %s", $name, $filter);
+								return ( 0, $name, $message);
 							}
 							return (1, $name, '');
 						},
@@ -834,7 +856,10 @@ sub check_order {
 	elsif(defined $::Scratch->{$profile}) {
 		$params = $::Scratch->{$profile};
 	}
-	else { return undef }
+	else {
+		::logError("Order profile %s not found", $profile);
+		return undef;
+	}
 	return undef unless $params;
 
 	my $ref = \%CGI::values;
@@ -1396,7 +1421,7 @@ sub route_order {
 			$::Values->{mv_credit_card_info} = build_cc_info(\%attrlist);
 		}
 		elsif ($::Values->{mv_credit_card_info}) {
-			$::Values->{mv_credit_card_info} =~ /BEGIN\s+PGP\s+MESSAGE/
+			$::Values->{mv_credit_card_info} =~ /BEGIN\s+[PG]+\s+MESSAGE/
 				and $pre_encrypted = 1;
 		}
 
