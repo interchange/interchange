@@ -111,19 +111,19 @@
 	[bounce page="[either][cgi ui_bounce_url][or]__UI_BASE__/ship[/either]"]
 [/if]
 
-[if cgi ui_shipmode]
 	[perl]
 		my $inmode = $CGI->{ui_shipmode};
 		#Log("inmode=$inmode");
 		my $lines = $Config->{Shipping_line};
 		#Log("shipping: " . $Tag->uneval( { ref => $lines }) );
 		my $ref;
-		for(@$lines) {
-			next unless $_->[0] eq $inmode;
-			$ref = $_;
-			last;
+		if($inmode) {
+			for(@$lines) {
+				next unless $_->[0] eq $inmode;
+				$ref = $_;
+				last;
+			}
 		}
-		return if ! $ref;
 		$ref = [] if ! $ref;
 		my ($mode, $desc, $crit, $min, $max, $cost, $query, $opt) = @{$ref};
 		#Log("gave: " . join("|", @$ref) );
@@ -170,7 +170,7 @@
 		}
 		return;
 	[/perl]
-[/if]
+
 <form action="[area @@MV_PAGE@@]" method=POST>
 <input type=hidden NAME=ui_ship_ups VALUE="[value ui_ship_ups]">
 <input type=hidden NAME=mv_action VALUE="return">
@@ -226,7 +226,7 @@ custom	Custom -->
 </td>
 <td class=rnorm>
 <select name=ui_ship_type onChange="check_for_ups(this.form,
-			this.form.ui_ship_type.options[this.form.ui_ship_type.selectedIndex].value) && this.form.submit()">
+			this.options[this.selectedIndex].value) && this.form.submit()">
 [loop lr=1 option=ui_ship_type
 		list="_subtotal	Standard shipping by price
 weight	Standard shipping by weight
