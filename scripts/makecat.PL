@@ -339,7 +339,7 @@ $ENV{MVC_ENCRYPTOR} = prefix('ENCRYPTOR') || 'none';
 
 FINDDOCROOT: {
 	last FINDDOCROOT if defined $DocrootDefault;
-	for(qw/www html web web-public public_html public-html/) {
+	for(qw/www html web web-public public_html public-html htdocs/) {
 		-d "$ENV{HOME}/$_" and -w _
 			and $DocrootDefault = "$ENV{HOME}/$_"
 		and last FINDDOCROOT;
@@ -356,6 +356,8 @@ FINDDOCROOT: {
 	}
 
 	for(
+		 '/home/httpd/html',
+		 '/var/www/html',
 		 '/usr/local/etc/httpd/htdocs',
 		 '/usr/local/apache/htdocs',
 		 '/home/httpd/htdocs',
@@ -392,9 +394,10 @@ FINDCGIDIR: {
 	}
 
 	for(
+			 '/home/httpd/cgi-bin',
+			 '/var/www/cgi-bin',
 			 '/usr/local/etc/httpd/cgi-bin',
 			 '/usr/local/apache/cgi-bin',
-			 '/home/httpd/cgi-bin',
 			 glob("/*web*/cgi*"),
 			 glob("/*/ns-home/cgi*"),
 			 glob("/export/*/ns-home/http*/cgi*"),
@@ -1979,7 +1982,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.13 2000-09-23 18:45:39 heins Exp $
+$Id: makecat.PL,v 1.14 2000-09-23 21:57:21 jon Exp $
 
 =head1 INTRODUCTION
 
