@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.8 2000-08-19 04:13:31 heins Exp $
+# $Id: Order.pm,v 1.9 2000-09-14 08:08:27 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.8 $, 10);
+$VERSION = substr(q$Revision: 1.9 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -667,34 +667,25 @@ sub charge {
 		$Vend::Session->{payment_result} =
 			$Vend::Session->{cybercash_result} = \%result;
     }
-	else {
+	elsif ($Vend::CC3) {
 		# Live interface operations follow
-		unless	(defined	$::Variable->{CYBER_VERSION}
-				and			$::Variable->{CYBER_VERSION} >= 3 )
-		{
-			undef $Vend::CC3;
-			undef $Vend::CC3server;
-		}
-		elsif ( $::Variable->{CYBER_VERSION} >= 3.2 ) {
-			$Vend::CC3server = 1;
+		$Vend::CC3server = 1;
+
+		# Cybercash 3.x libraries to be used.
+		# Initialize the merchant configuration file
+		my $status = InitConfig($::Variable->{CYBER_CONFIGFILE});
+		if ($status != 0) {
+			$Vend::Session->{cybercash_error} = MCKGetErrorMessage($status);
+			::logError(
+				"Failed to initialize CyberCash from file %s: %s",
+				$Variable->{CYBER_CONFIGFILE},
+				$Vend::Session->{cybercash_error},
+				);
+			return undef;
 		}
 
-		if($Vend::CC3){
-			# Cybercash 3.x libraries to be used.
-			# Initialize the merchant configuration file
-			my $status = InitConfig($::Variable->{CYBER_CONFIGFILE});
-			if ($status != 0) {
-				$Vend::Session->{cybercash_error} = MCKGetErrorMessage($status);
-				::logError(
-					"Failed to initialize CyberCash from file %s: %s",
-					$Variable->{CYBER_CONFIGFILE},
-					$Vend::Session->{cybercash_error},
-					);
-				return undef;
-			}
-			unless($::Variable->{CYBER_HOST}) {
-				$::Variable->{CYBER_HOST} = $Config{CCPS_HOST};
-			}
+		unless($::Variable->{CYBER_HOST}) {
+			$::Variable->{CYBER_HOST} = $Config{CCPS_HOST};
 		}
 		if($Vend::CC3server) {
 			# Cybercash 3.x server and libraries to be used.
@@ -740,39 +731,6 @@ sub charge {
 			#		$POP{'pop.sign'};
 			#		$POP{'pop.avs_code'};
 			#		$POP{'pop.price'};
-		}
-		else {
-			# Cybercash 2.x server interface follows
-			if ($Vend::CC3){
-				# Use Cybercash 3.x libraries
-				*sendmserver = \&CCMckDirectLib3_2::SendCC2_1Server;
-			}
-			else {
-				# Constants to find the merchant payment server
-				#
-				my %payment = (
-					'host' => $::Variable->{CYBER_HOST} || 'localhost',
-					'port' => $::Variable->{CYBER_PORT} || 8000,
-					'secret' => $::Variable->{CYBER_SECRET} || '',
-				);
-				*sendmserver = \&CCLib::sendmserver;
-				# Use Cybercash 2.x libraries
-				CCLib::SetServer(%payment);
-			}
-			%result = sendmserver(
-				$actual{cyber_mode},
-				'Order-ID'     => $orderID,
-				'Amount'       => $amount,
-				'Card-Number'  => $actual{mv_credit_card_number},
-				'Card-Name'    => $actual{b_name},
-				'Card-Address' => $actual{b_address},
-				'Card-City'    => $actual{b_city},
-				'Card-State'   => $actual{b_state},
-				'Card-Zip'     => $actual{b_zip},
-				'Card-Country' => $actual{b_country},
-				'Card-Exp'     => $exp,
-			);
-			$Vend::Session->{cybercash_result} = \%result;
 		}
     }
 
