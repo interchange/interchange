@@ -348,6 +348,12 @@ sub wizard_url {
 	}
 
 	$form->{href} = $opt->{output_href} || $ref->{href} || $ref->{page};
+	if($opt->{output_parm}) {
+		my $ref = Vend::Util::scalar_to_hash($opt->{output_parm}) || {};
+		for (keys %$ref) {
+			$form->{$_} = $ref->{$_};
+		}
+	}
 	$form->{form} = 'auto';
 	for(@$fields) {
 		$form->{$_} = $Values->{$_};
@@ -735,6 +741,7 @@ sub {
 	my $finished;
 	my $condition_done;
 	my $optref;
+#::logDebug("Getting screens");
 	GETSCREEN: {
 		$optref = $wiz->[$current_page];
 		if(! $condition_done and $optref->{_condition}) {
@@ -836,10 +843,15 @@ sub {
 #Debug("we have a wiz=$wizname! current_page = $current_page");
 
 #Debug("optref=" . $Tag->uneval(undef, $optref));
+
+#::logDebug("prepping to walk optref");
+
+### TODO: Find bad reference when no section title...
+
 	my $name = $optref->{_name} || die;
 	$Scratch->{page_title} = $optref->{_page_title};
 
-	if($optref->{_breaks}) {
+	if($optref->{_breaks} and ref($optref->{_breaks}) eq 'ARRAY') {
 		$opts{ui_break_before} = join " ", @{$optref->{_breaks}};
 		$opts{ui_break_before_label} = join ",", @{$optref->{_break_labels}};
 	}
@@ -879,6 +891,7 @@ EOF
 	$opts{mv_prevpage} = $Global::Variable->{MV_PAGE} if $current_page != 1;
 	$opts{bottom_buttons} = 1;
 
+#::logDebug("walking optref");
 	my $mod = $optref->{_modifier} || '';
 	for(keys %$optref) {
 		next if /^_/;
