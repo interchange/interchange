@@ -46,28 +46,28 @@ orderstart 	    => sub {
 		next unless $val = $doit{$_};
 		if( ref($val) =~ /CODE/) {
 			my $status = $val->();
-			push @messages, "$_ subroutine returned $status.";
+			push @messages, errmsg("%s subroutine returned %s.", $_, $status);
 		}
 		elsif($val =~ /\w+/) {
 			$vdb->set_field($val, 'Variable', $Values->{$_});
-			push @messages, "$_ set $val to '$Values->{$_}' in variable.";
+			push @messages, errmsg("%s set %s to '%s' in variable.", $_, $val, $Values->{$_});
 		}
 		else {
-			@errors, "Don't know what to do with $_=$val";
+			@errors, errmsg("Don't know what to do with %s=%s", $_, $val);
 		}
 	}
 
-	$out = "Messages: <BR>";
+	$out = errmsg("Messages") . ": <BR>";
 	$out .= join "<BR>", @messages;
-	$out .= "<P>Errors: <BR>";
+	$out .= "<P>" . errmsg("Errors") . ": <BR>";
 	$out .= join "<BR>", @errors;
 [/perl]
 -->
 <P>
-Congratulations!  Your site has been activated!
+[L]Congratulations!  Your site has been activated![/L]
 </P>
 <blockquote>
-<LARGE><A HREF="[area index]">Go to catalog home page</P></LARGE>
+<LARGE><A HREF="[area index]">[L]Go to catalog home page[/L]</P></LARGE>
 </blockquote>
 
 @_UI_STD_FOOTER_@
