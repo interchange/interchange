@@ -329,7 +329,7 @@ EOF
 	[/calc]
 <!-- ----- END MENUBAR ----- -->
 [if scratch ui_checklist]
-	[include include/wizard_checklist]
+	[include file=include/wizard_checklist locale="[scratch mv_locale]"]
 [/if]
 
 [if !scratch ui_no_title]
