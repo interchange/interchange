@@ -44,6 +44,12 @@ Core and usertags
 
 * Allow [dump] of portion of session, for example [dump scratch].
 
+UI
+--------
+* Static page building uses the original catalog settings instead
+  of the UI ones for images and URLs. Fixed another bug that
+  renders selection of "never build" pages useless.
+
 I18N
 --------
 * Hebrew locale from Chen Naor <chen@lilux.co.il> added.
