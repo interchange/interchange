@@ -71,6 +71,7 @@ code/Filter/upload.filter
 code/Filter/urldecode.filter
 code/Filter/urlencode.filter
 code/Filter/value.filter
+code/Filter/vars_and_comments.filter
 code/Filter/word.filter
 code/Filter/yesno.filter
 code/Filter/zerofix.filter
