@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.49 2001-06-08 15:45:37 heins Exp $
+# $Id: Config.pm,v 1.25.2.50 2001-06-18 01:57:03 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -98,7 +98,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.49 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.50 $, 10);
 
 my %CDname;
 
@@ -180,6 +180,7 @@ qw/
 
 my %HashDefaultBlank = (qw(
 					SOAP			1
+					Mail			1
 					DatabaseDefault	1
 				));
 
@@ -255,6 +256,7 @@ sub global_directives {
 
 #   Directive name      Parsing function    Default value
 
+	['DebugFile',		  undef,     	     ''],
 	['ConfigDir',		  undef,	         'etc/lib'],
 	['ConfigDatabase',	 'config_db',	     ''],
 	['ConfigParseComments',	'yesno',		'Yes'],
@@ -274,8 +276,13 @@ sub global_directives {
 	['TcpMap',           'hash',             ''],
 	['Environment',      'array',            ''],
 	['TcpHost',           undef,             'localhost 127.0.0.1'],
-	['SendMailProgram',  'executable',		$Global::SendMailLocation
-												|| '/usr/lib/sendmail'],
+	['SendMailProgram',  'executable',		 [
+												$Global::SendMailLocation,
+											   '/usr/sbin/sendmail',
+											   '/usr/lib/sendmail',
+											   'Net::SMTP',
+											  ]
+										  ],
 	['PIDfile',     	  undef,             "$Global::VendRoot/etc/$Global::ExeName.pid"],
 	['SocketFile',     	 'array',            "$Global::VendRoot/etc/socket"],
 	['SocketPerms',      'integer',          0600],
@@ -316,7 +323,6 @@ sub global_directives {
 	['AdminUser',		  undef,			 ''],
 	['AdminHost',		  undef,			 ''],
 	['HammerLock',		 'integer',     	 30],
-	['DebugFile',		  undef,     	     ''],
 	['DataTrace',		 'integer',     	 0],
 	['ShowTimes',		 'yesno',	     	 0],
 	['ErrorFile',		  undef,     	     undef],
@@ -2192,32 +2198,61 @@ sub parse_valid_group {
 }
 
 sub parse_executable {
-	my($var, $value) = @_;
+	my($var, $initial) = @_;
 	my($x);
-	my $root = $value;
-	$root =~ s/\s.*//;
-
-	return $value if $Global::Windows;
-	if( ! defined $value or $value eq '') {
-		$x = '';
-	}
-	elsif( $value eq 'none') {
-		$x = 'none';
-	}
-	elsif ($root =~ m#^/# and -x $root) {
-		$x = $value;
+	my(@tries);
+	
+	if(ref $initial) {
+		@tries = @$initial;
 	}
 	else {
-		my @path = split /:/, $ENV{PATH};
-		for (@path) {
-			next unless -x "$_/$root";
-			$x = $value;
-		}
+		@tries = $initial;
 	}
 
-	config_error("Can't find executable ('$value') for the $var directive\n")
-		unless defined $x;
-	$x;
+	TRYEXE:
+	foreach my $value (@tries) {
+#::logDebug("trying $value for $var");
+		my $root = $value;
+		$root =~ s/\s.*//;
+
+		return $value if $Global::Windows;
+		if( ! defined $value or $value eq '') {
+			$x = '';
+		}
+		elsif( $value eq 'none') {
+			$x = 'none';
+			last;
+		}
+		elsif( $value =~ /^\w+::[:\w]+\w$/) {
+			## Perl module like Net::SMTP
+			eval {
+				eval "require $value";
+				die if $@;
+				$x = $value;
+			};
+			last if $x;
+		}
+		elsif ($root =~ m#^/# and -x $root) {
+			$x = $value;
+			last;
+		}
+		else {
+			my @path = split /:/, $ENV{PATH};
+			for (@path) {
+				next unless -x "$_/$root";
+				$x = $value;
+				last TRYEXE;
+			}
+		}
+	}
+	config_error( errmsg(
+					"Can't find executable (%s) for the %s directive\n",
+					join('|', @tries),
+					$var,
+					)
+		) unless defined $x;
+#::logDebug("$var=$x");
+	return $x;
 }
 
 sub parse_time {

@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.77 2001-06-16 13:22:11 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.78 2001-06-18 01:57:03 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.77 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.78 $, 10);
 
 @EXPORT = qw (
 
@@ -3059,11 +3059,7 @@ sub tag_mail {
 	}
 
     SEND: {
-        open(MAIL,"|$Vend::Cfg->{SendMailProgram} -t") or last SEND;
-        print MAIL join("\n", @headers, $body)
-            or last SEND;
-        close MAIL or last SEND;
-        $ok = ($? == 0);
+		$ok = send_mail(\@headers, $body);
     }
 
     if (!$ok) {

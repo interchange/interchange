@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.34 2001-06-15 00:37:35 heins Exp $
+# $Id: Util.pm,v 1.14.2.35 2001-06-18 01:57:03 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -77,7 +77,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.34 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.35 $, 10);
 
 BEGIN {
 	eval {
@@ -1876,15 +1876,28 @@ sub canonpath {
 sub send_mail {
 	my($to, $subject, $body, $reply, $use_mime, @extra_headers) = @_;
 
-#	if($MIME::Lite::VERSION and ! ($use_mime || $::Instance->{MIME}) ) {
-#		mime_lite_send( {
-#							to => $to,
-#							extra => $to,
-#							subject => $subject,
-#							extra => join "\n", @extra_headers,
-#							reply => $reply,
-#						}, $body);
-#	}
+	my @headers;
+	if(ref $to) {
+		my $head = $to;
+		$body = $subject;
+		undef $subject;
+		for(@$head) {
+#::logDebug("processing head=$_");
+			if( /^To:\s*(.+)/ ) {
+				$to = $1;
+			}
+			elsif (/Reply-to:\s*(.+)/) {
+				$reply = $_;
+			}
+			elsif (/^subj(?:ect)?:\s*(.+)/i) {
+				$subject = $1;
+			}
+			elsif($_) {
+				push @extra_headers, $_;
+			}
+		}
+	}
+
 
 	my($ok);
 #::logDebug("send_mail: to=$to subj=$subject r=$reply mime=$use_mime\n");
@@ -1906,14 +1919,17 @@ sub send_mail {
 
 	$ok = 0;
 	my $none;
+	my $using = $Vend::Cfg->{SendMailProgram};
 
-	if("\L$Vend::Cfg->{SendMailProgram}" eq 'none') {
+	if($using =~ /^(none|Net::SMTP)$/i) {
 		$none = 1;
 		$ok = 1;
 	}
 
 	SEND: {
+#::logDebug("testing sendmail send none=$none");
 		last SEND if $none;
+#::logDebug("in Sendmail send $using");
 		open(MVMAIL,"|$Vend::Cfg->{SendMailProgram} $to") or last SEND;
 		my $mime = '';
 		$mime = Vend::Interpolate::mime('header', {}, '') if $use_mime;
@@ -1936,9 +1952,94 @@ sub send_mail {
 		$ok = ($? == 0);
 	}
 
+	SMTP: {
+		my $mhost = $::Variable->{MV_SMTPHOST} || $Global::Variable->{MV_SMTPHOST};
+		my $helo =  $Global::Variable->{MV_HELO};
+		last SMTP unless $none and $mhost;
+		eval {
+			require Net::SMTP;
+		};
+		last SMTP if $@;
+		$ok = 0;
+		$using = "Net::SMTP (mail server $mhost)";
+#::logDebug("using $using");
+		undef $none;
+
+		my $smtp = new Net::SMTP $mhost;
+		$smtp->hello($helo) if $helo;
+#::logDebug("smtp object $smtp");
+
+		my $from = $::Variable->{MV_MAILFROM}
+				|| $Global::Variable->{MV_MAILFROM}
+				|| $Vend::Cfg->{MailOrderTo};
+		
+		for(@extra_headers) {
+			s/\s*$/\n/;
+			next unless /^From:\s*(\S.+)$/mi;
+			$from = $1;
+		}
+		my $mime = '';
+		$mime = Vend::Interpolate::mime('header', {}, '') if $use_mime;
+		$smtp->mail($from)
+			or last SMTP;
+#::logDebug("smtp accepted from=$from");
+
+		my @to;
+		my @addr = split /\s*,\s*/, $to;
+		for (@addr) {
+			if(/\s/) {
+				## Uh-oh. Try to handle
+				if ( m{( <.+?> | [^\s,]+\@[^\s,]+ ) }x ) {
+					push @to, $1
+				}
+				else {
+					logError("Net::SMTP sender skipping unparsable address %s", $_);
+				}
+			}
+			else {
+				push @to, $_;
+			}
+		}
+		
+		@addr = $smtp->recipient(@to, { SkipBad => 1 });
+		if(scalar(@addr) != scalar(@to)) {
+			logError(
+				"Net::SMTP not able to send to all addresses of %s",
+				join(", ", @to),
+			);
+		}
+
+#::logDebug("smtp accepted to=" . join(",", @addr));
+
+		$smtp->data();
+
+		push @extra_headers, $reply if $reply;
+		for ("To: $to", "Subject: $subject", @extra_headers) {
+			next unless $_;
+			s/\s*$/\n/;
+#::logDebug(do { my $it = $_; $it =~ s/\s+$//; "datasend=$it" });
+			$smtp->datasend($_)
+				or last SMTP;
+		}
+
+		if($use_mime) {
+			$mime =~ s/\s*$/\n/;
+			$smtp->datasend($mime)
+				or last SMTP;
+		}
+		$smtp->datasend("\n");
+		$smtp->datasend($body)
+			or last SMTP;
+		$smtp->datasend(Vend::Interpolate::do_tag('mime boundary') . '--')
+			if $use_mime;
+		$smtp->dataend()
+			or last SMTP;
+		$ok = $smtp->quit();
+	}
+
 	if ($none or !$ok) {
 		logError("Unable to send mail using %s\nTo: %s\nSubject: %s\n%s\n\n%s",
-				$Vend::Cfg->{SendMailProgram},
+				$using,
 				$to,
 				$subject,
 				$reply,
