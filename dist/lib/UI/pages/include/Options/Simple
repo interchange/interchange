@@ -26,6 +26,7 @@
 [/if]
 
 [if cgi opt_groups]
+[or cgi opt_group_]
     [perl tables="[scratch option_table]"]
         my $otab = $Scratch->{option_table};
         my $odb = $Db{$otab};
