@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange restarter
 #
-# $Id: restart.PL,v 1.8.2.1 2000-12-05 19:35:43 zarko Exp $
+# $Id: restart.PL,v 1.8.2.1.2.1 2001-02-02 07:48:49 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -110,8 +110,8 @@ my($name,$Trysu);
 if ($< == 0) {
 	$name = get_id() || 'YOUR_INTERCHANGE_USER_NAME';
 	die "Interchange user ID not set in $Global::VendRoot/_uid.\n" if $name eq 'YOUR_INTERCHANGE_USER_NAME';
-	if(-t) {
-		print <<EOM unless $force;
+	if(! $force and -t) {
+		print <<EOM;
 
 The Interchange server should not be run as root. It should run
 as a the user name you configured in when you set up the catalogs.
