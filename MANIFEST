@@ -6,6 +6,9 @@ README
 README.cvs
 README.debian
 README.rpm
+SPECS/interchange-init
+SPECS/interchange-logrotate
+SPECS/interchange-wrapper
 SPECS/interchange.spec
 UPGRADE
 WHATSNEW

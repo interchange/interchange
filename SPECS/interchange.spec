@@ -14,10 +14,10 @@ Vendor: Red Hat, Inc.
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
 URL: http://interchange.redhat.com/
-Source: http://interchange.redhat.com/interchange/interchange-%{version}.tar.gz
-Source0: interchange-wrapper
-Source1: interchange-init
-Source2: interchange-logrotate
+Source0: http://interchange.redhat.com/interchange/interchange-%{version}.tar.gz
+Source1: interchange-wrapper
+Source2: interchange-init
+Source3: interchange-logrotate
 License: GPL
 Requires: perl >= 5.005
 Requires: perl-Business-UPS
@@ -113,15 +113,15 @@ mkdir -p $RPM_BUILD_ROOT$CACHEBASE/interchange
 
 # Install wrapper script
 mkdir -p $RPM_BUILD_ROOT%{_sbindir}
-install -m755 %{SOURCE0} $RPM_BUILD_ROOT%{_sbindir}/interchange
+install -m755 %{SOURCE1} $RPM_BUILD_ROOT%{_sbindir}/interchange
 
 # Install SysV-style system startup/shutdown script
 mkdir -p $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d
-install -m755 %{SOURCE1} $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d/interchange
+install -m755 %{SOURCE2} $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d/interchange
 
 # Install log rotation script
 mkdir -p $RPM_BUILD_ROOT$ETCBASE/logrotate.d
-install -m644 %{SOURCE2} $RPM_BUILD_ROOT$ETCBASE/logrotate.d/interchange
+install -m644 %{SOURCE3} $RPM_BUILD_ROOT$ETCBASE/logrotate.d/interchange
 
 # Build the demo catalog
 HOST=RPM_CHANGE_HOST
