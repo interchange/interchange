@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.9 2002-06-23 01:20:10 jon Exp $
+# $Id: Search.pm,v 2.10 2002-08-11 15:52:30 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = substr(q$Revision: 2.10 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -1156,6 +1156,7 @@ eval {
 
 	# Prime sort routine
 	use locale;
+	local($^W);
 	sort { $routine } ('30','31') or 1;
 
 	@$target = sort { &$routine } @$target;
