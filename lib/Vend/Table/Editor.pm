@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.37 2003-07-02 15:15:31 mheins Exp $
+# $Id: Editor.pm,v 1.38 2003-07-15 02:06:05 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.37 $, 10);
+$VERSION = substr(q$Revision: 1.38 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -400,8 +400,8 @@ sub display {
 			last METAMAKE;
 		}
 
-#::logDebug("formatting prepend/append");
-		for(qw/append prepend/) {
+#::logDebug("formatting prepend/append/lookup_query");
+		for(qw/append prepend lookup_query/) {
 			next unless $record->{$_};
 			if($opt->{restrict_allow}) {
 				$record->{$_} = $Tag->restrict({
