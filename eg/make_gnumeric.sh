@@ -1,3 +1,11 @@
+#!/bin/sh
+
+if test -z "$1"
+then
+	echo usage: $0 file1.txt file2.txt ...
+	exit 2
+fi
+
 for i in $*
 do
 	if test -n "$done_one"
