@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.15 2000-08-07 05:38:15 heins Exp $
+# $Id: Interpolate.pm,v 1.16 2000-08-19 04:14:42 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.15 $, 10);
+$VERSION = substr(q$Revision: 1.16 $, 10);
 
 @EXPORT = qw (
 
@@ -420,28 +420,11 @@ sub cache_html {
 	reset_calc() unless $Calc_reset;
 
 	$CacheInvalid = 0;
-#
-#	# Substitute defines from configuration file
-#	$html =~ s#\@\@([A-Za-z0-9]\w+[A-Za-z0-9])\@\@#$Global::Variable->{$1}#ge;
-#	if ($Vend::Session->{logged_in}) {
-#		$html =~ s#__([A-Za-z0-9]\w*?[A-Za-z0-9])__#
-#			$Vend::Cfg->{Member}->{$1} || $::Variable->{$1}#ge;
-#	}
-#	else {
-#		$html =~ s#__([A-Za-z0-9]\w*?[A-Za-z0-9])__#$::Variable->{$1}#g;
-#	}
-#	1 while $html =~ s%$QR{comment}%%go;
-#	$html =~ s,$QR{'/page'},</A>,g;
-#	$html =~ s,$QR{'/order'},</A>,g;
-#	$html =~ s/\[new\]//g;
-#	$html =~ s/\[old\]//g;
-#
 
 	vars_and_comments(\$html);
 
 	1 while $html =~ s/\[pragma\s+(\w+)(?:\s+(\w+))?\]/$Vend::Cfg->{Pragma}{$1} = $2, ''/ige;
 
-#::logDebug("Vend::Cfg->{Pragma} -> " . ::uneval(\%$Vend::Cfg->{Pragma}));
 	my $complete;
 	my $full = '';
 	my $parse = new Vend::Parse;
@@ -468,8 +451,9 @@ sub cache_html {
 }
 
 #
-# This is one entry point for page display.
-# Evaluates all of the Interchange tags.
+# Substitutes in Variable values.
+# Makes [comment] [/comment] strips.
+# Translates legacy [/page] and [/order].
 #
 
 sub vars_and_comments {
@@ -478,7 +462,7 @@ sub vars_and_comments {
 	local($^W) = 0;
 	$$html =~ s/\[new\]//g;
 
-	if(shift) {
+	if(shift || $UI::Editing) {
 		$$html =~ s#
 				^\s*
 					\@\@
@@ -488,6 +472,16 @@ sub vars_and_comments {
 				#	"<!-- BEGIN GLOBAL template substitution: $1 -->\n"	.
 					$Global::Variable->{$1}								.
 					"\n<!-- END GLOBAL template substitution: $1 -->"
+					#gemx; 
+		$$html =~ s#
+				^\s*
+					@_
+						([A-Za-z0-9]\w*?[A-Za-z0-9])
+					_@
+				\s*$
+				#	"<!-- BEGIN FALLBACK template substitution: $1 -->\n"	.
+					($Global::Variable->{$1} || $::Variable->{$1})  .
+					"\n<!-- END template substitution: $1 -->"
 					#gemx; 
 		$$html =~ s#
 				^\s*
@@ -501,6 +495,7 @@ sub vars_and_comments {
 					#gemx; 
 
 	}
+
 	$$html =~ s#\@\@([A-Za-z0-9]\w+[A-Za-z0-9])\@\@#$Global::Variable->{$1}#g;
 	$$html =~ s#\@_([A-Za-z0-9]\w+[A-Za-z0-9])_\@#$::Variable->{$1} || $Global::Variable->{$1}#ge
 		and
@@ -520,17 +515,17 @@ sub interpolate_html {
 
 	reset_calc() unless $Calc_reset;
 
+	defined $::Variable->{MV_AUTOLOAD}
+		and $html =~ s/^/$::Variable->{MV_AUTOLOAD}/;
+
 	1 while $html =~ s/\[pragma\s+(\w+)(?:\s+(\w+))?\]/$Vend::Cfg->{Pragma}{$1} = $2, ''/ige;
 
 #::logDebug("Vend::Cfg->{Pragma} -> " . ::uneval(\%Vend::Cfg->{Pragma}));
 
-	vars_and_comments(\$html);
+	vars_and_comments(\$html, $Vend::Cfg->{Pragma}{edit});
 
 	$html =~ s/<!--+\[/[/g
 		and $html =~ s/\]--+>/]/g;
-
-	defined $::Variable->{MV_AUTOLOAD}
-		and $html =~ s/^/$::Variable->{MV_AUTOLOAD}/;
 
     # Returns, could be recursive
 	my $parse = new Vend::Parse;
@@ -4771,8 +4766,13 @@ sub shipping {
 		$q =~ s/=\s+?\s*/= '$mode' /g;
 		$q =~ s/\s+like\s+?\s*/ LIKE '%$mode%' /ig;
 		my $ary = query($q);
-		@lines = @$ary;
+		if(ref $ary) {
+			@lines = @$ary;
 #::logDebug("shipping lines reselected with SQL: " . ::uneval(\@lines));
+		}
+		else {
+#::logDebug("shipping lines failed reselect with SQL query '$q'");
+		}
 	}
 
 	my $o = get_option_hash($lines[0][OPT]) || {};
