@@ -27,16 +27,7 @@ EOF
 	}
 
 	delete $Scratch->{alternate_view};
-	if(/\.gif$/i) {
-		$Scratch->{content_type} = 'image/gif';
-	}
-	elsif(/\.jpe?g$/i) {
-		$Scratch->{content_type} = 'image/jpeg';
-	}
-	elsif(/\.png$/i) {
-		$Scratch->{content_type} = 'image/png';
-	}
-	elsif(
+	if(
 		/:/
 		and $Tag->if_mm('super')
 		and $Config->{SessionType} eq 'File'
@@ -52,13 +43,16 @@ EOF
 		delete $Scratch->{file_to_view};
 	}
 	else {
-		$Scratch->{content_type} = 'text/plain';
+		$Scratch->{content_type} = $Tag->filter('mime_type', $_);
+		$Scratch->{content_type} = $CGI->{content_type} || "text/plain"
+			if $Scratch->{content_type} eq 'application/octet-stream';
 	}
 	return;
 [/perl][if scratch violation]
 [seti ui_error][scratch violation] -- logged.[/seti]
 [bounce page="__UI_BASE__/error"]
 [else]
+[comment][calc]Debug("Setting content-type to $Scratch->{content_type}"); return; [/calc][/comment]
 [tag op=header interpolate=1]Content-Type: [scratchd content_type][/tag]
 [/else]
 [/if]
