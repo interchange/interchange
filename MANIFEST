@@ -32,7 +32,6 @@ code/SystemTag/default.coretag
 code/SystemTag/description.coretag
 code/SystemTag/discount.coretag
 code/SystemTag/dump.coretag
-code/SystemTag/ecml.coretag
 code/SystemTag/either.coretag
 code/SystemTag/error.coretag
 code/SystemTag/export.coretag
@@ -883,6 +882,8 @@ eg/reset_order_number
 eg/te
 eg/usertag/benchmark
 eg/usertag/sleep
+extensions/ECML/Vend/ECML.pm
+extensions/ECML/ecml.coretag
 extensions/quickbooks/README
 extensions/quickbooks/etc/trans_quickbooks
 extensions/quickbooks/ic_qb.pod
@@ -916,7 +917,6 @@ lib/Vend/CounterFile.pm
 lib/Vend/Data.pm
 lib/Vend/DbSearch.pm
 lib/Vend/Document.pm
-lib/Vend/ECML.pm
 lib/Vend/Error.pm
 lib/Vend/External.pm
 lib/Vend/Form.pm
