@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.2
 #
-# $Id: interchange.PL,v 1.15.2.32 2001-04-09 06:58:11 heins Exp $
+# $Id: interchange.PL,v 1.15.2.33 2001-04-10 20:31:41 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -803,6 +803,10 @@ sub update_data {
 				);
 			}
 
+			my $qd = {};
+			my $qf = {};
+			my $qv = {};
+
 			my $blob;
 			my $brec;
 			if($blob_field) {
@@ -831,13 +835,26 @@ sub update_data {
 #::logDebug("storing d=$d $field blob_only=$CGI::values{mv_blob_only}");
 					($d, $f) = set_db($base_db, $field);
 #::logDebug("storing table=$table d=$d f=$f key=$key");
-					$d->set_field($key, $f, $value);
+					if(! defined $qd->{$d}) {
+						$qd->{$d} = $d;
+						$qf->{$d} = [$f];
+						$qv->{$d} = [$value];
+					}
+					else {
+						push @{$qf->{$d}}, $f;
+						push @{$qv->{$d}}, $value;
+					}
+					#$d->set_field($key, $f, $value);
 				}
 
 				push(@email_rows, [$f, $value])
 					if $CGI::values{mv_data_email};
 #::logDebug("update_data:db=$d key=$key field=$f value=$value");
 				$brec->{$f} = $value if $brec;
+			}
+
+			for(keys %$qd) {
+				$qd->{$_}->set_slice($key, $qf->{$_}, $qv->{$_});
 			}
 			if($blob) {
 				$brec->{mv_data_fields} = join " ", @fields;
@@ -1833,7 +1850,7 @@ RESOLVEID: {
 		# get_session will return a value if a session is read,
 		# if not it will return false and a new session has been created.
 		# The IP address will be counted for robot_resolution
-		if(! get_session($seed)) {
+		if(! get_session($seed) and ! $::Instance->{ExternalCookie}) {
 			retire_id($sessionid);
 			last RESOLVEID;
 		}
@@ -1858,8 +1875,13 @@ RESOLVEID: {
 			}
 		}
 		if ($now - $Vend::Session->{'time'} > $Vend::Cfg->{SessionExpire}) {
-			retire_id($sessionid);
-			new_session();
+			if($::Instance->{ExternalCookie}) {
+				init_session();
+			}
+			else {
+				retire_id($sessionid);
+				new_session();
+			}
 			last RESOLVEID;
 		}
 		elsif($Vend::Cfg->{RobotLimit}) {
@@ -2623,22 +2645,9 @@ sub main_loop {
 			unless $ENV{MINIVEND_ROOT} =~ m{/blib$};
 	}
 
-	## Bring in the CyberCash libraries if present
-	## Moved here to prevent unwanted messages
-	## May be going to Vend::Payment::CyberCash
-
+	# Kept here for compatibility
 	eval {
-		package Vend::Payment;
-		require CCMckLib3_2 ;
-		import CCMckLib3_2 qw/InitConfig %Config $MCKversion/;
-		require CCMckDirectLib3_2;
-		import CCMckDirectLib3_2 qw/SendCC2_1Server doDirectPayment/;
-		require CCMckErrno3_2;
-		import CCMckErrno3_2 qw/MCKGetErrorMessage/;
-		$Vend::CC3 = 1;
-		my $ver = $CCMckLib3_2::VERSION || '3.x';
-		::logGlobal({}, "CyberCash module found (Version %s)", $ver )
-			unless $Vend::Quiet;
+		require Vend::Payment::CyberCash;
 	};
 
 	$Vend::CyberCash = ! $@;
