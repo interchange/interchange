@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# $Id: Search.pm,v 1.8.2.2 2000-11-30 02:44:58 heins Exp $
+# $Id: Search.pm,v 1.8.2.3 2000-12-11 01:52:31 heins Exp $
 #
 # Vend::Search -- Base class for search engines
 #
@@ -26,7 +26,7 @@
 #
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 1.8.2.2 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.3 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -565,8 +565,11 @@ EOF
 		 $code .= <<EOF;
 	my \@fields = split /\\Q$s->{mv_index_delim}/, \$line;
 	\@fields = ${callchar}fields[$fields];
-#::logDebug("fields=" . join "|", \@fields);
 EOF
+		$code .= <<EOF if $Global::DebugFile and $CGI::values{debug};
+   ::logDebug("fields=" . join "|", \@fields);
+EOF
+
 		my @specs;
 		# For a limiting function, can't if orsearch
 
@@ -591,6 +594,9 @@ EOF
 				if $begin[$i] or $s->{mv_orsearch}[$i];
 			if($ops[$i]) {
 				$ops[$i][0] =~ s/m\{$/m{^/ if $begin[$i];
+				! $bounds[$i] 
+					and $ops[$i][0] =~ s/=~\s+m\{$/=~ m{\\b/
+					and $ops[$i][1] = '\b' . $ops[$i][1];
 				$start = $ops[$i][0];
 #::logDebug("Op now=" .  ::uneval($ops[$i]));
 				($term  = $ops[$i][1] || '')
@@ -678,7 +684,8 @@ EOF
 			};
 			undef $f if $@;
 		}
-#::logDebug("filter function code is: $f");
+		::logDebug("filter function code is: $f")
+			if $Global::DebugFile and $CGI::values{debug};
 		use locale;
 		$f = eval $f if $f and ! ref $f;
 		die($@) if $@;
@@ -704,7 +711,8 @@ EOF
 		}
 		$code .= $relate;
 		$code .= "\n}\n";
-#::logDebug("coordinate search code is:\n$code");
+		::logDebug("coordinate search code is:\n$code")
+			if $Global::DebugFile and $CGI::values{debug};
 	}
 	elsif ( @{$s->{mv_search_field}} )  {
 		if(! $s->{mv_begin_string}[0]) {
