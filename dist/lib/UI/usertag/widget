@@ -1,0 +1,39 @@
+UserTag widget Order name
+UserTag widget PosNumber 1
+UserTag widget attrAlias table db
+UserTag widget attrAlias field column
+UserTag widget attrAlias outboard key
+UserTag widget addAttr
+UserTag widget HasEndTag 1
+UserTag widget Interpolate 1
+UserTag widget Routine <<EOR
+sub {
+	my($name, $opt, $string) = @_;
+	#my($name, $type, $value, $table, $column, $key, $data, $string) = @_;
+	my $value = $::Values->{$name} || $opt->{default};
+	my $ref = {
+				attribute	=> $opt->{attribute} || 'attribute',
+				db			=> $opt->{table} || undef,
+				field		=> $opt->{field} || undef,
+				name		=> $name,
+				outboard	=> $opt->{key} || undef,
+				passed		=> $opt->{data} || $opt->{passed} || $string,
+				type		=> $opt->{type} || 'select',
+				};
+	my $item = { $ref->{attribute} => $value };
+
+	Vend::Interpolate::tag_accessories('', '', $ref, $item);
+}
+EOR
+
+UserTag counter Order file
+UserTag counter Routine <<EOF
+sub {
+    my $file = shift || 'etc/counter';
+    $file = $Vend::Cfg->{VendRoot} . "/$file"
+        unless index($file, '/') == 0;
+    my $ctr = new File::CounterFile $file;
+    return $ctr->inc();
+}
+EOF
+

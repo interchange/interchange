@@ -1,0 +1,91 @@
+UserTag row-edit HasEndTag
+UserTag row-edit Order key table size columns
+UserTag row-edit Interpolate 1
+UserTag row-edit Routine <<EOR
+sub {
+	my ($key,$table,$size, @columns) = @_;
+	$table = $table || $::Scratch->{ui_data_table} || return "BLANK DB";
+	my $db = Vend::Data::database_exists_ref($table);
+	return "NON-EXISTENT DATABASE '$table' for row-edit" unless defined $db;
+	$db = $db->ref() unless $Vend::Interpolate::Db{$table};
+	my $acl = UI::Primitive::get_ui_table_acl();
+
+	my $bad;
+	if ($key) {
+		eval {
+			$bad = ! $db->record_exists($key);
+			$bad = 'DELETED' if $bad;
+		};
+		$bad = 'ERROR' if $@;
+		if(! $bad and $acl) {
+			$bad = 'Not available'
+				if ! UI::Primitive::ui_acl_atom($acl, 'keys', $key);
+		}
+	}
+
+	@columns = grep /\S/, @columns;
+
+	my @cols;
+	if(@columns) {
+		for(@columns) {
+			push(@cols, split /[\s,\0]+/, $_);
+		}
+		my %col;
+		for(@cols) {
+			$col{$_} = 1;
+		}
+
+		@cols = grep defined $col{$_}, $db->columns();
+	}
+	else {
+		@cols = $db->columns();
+	}
+
+	if($acl) {
+		@cols = UI::Primitive::ui_acl_grep( $acl, 'fields', @cols);
+	}
+
+	my $out = '';
+
+	my $meta = $::Values->{ui_meta_display};
+	my $tmp;
+
+	$size = $size || 12;
+	if($bad) {
+		for(@cols) {
+			$out .= "<TD>$bad</TD>";
+		}
+	}
+	elsif($key) {
+		my $text;
+		for(@cols) {
+			eval {
+				$text = $db->field($key,$_);
+			};
+			$text = 'DELETED' if $@;
+			if($meta and
+				$tmp = UI::Primitive::meta_display($table,$_,$key,$text) 
+				)
+			{
+#::logDebug("meta call: table=$table col=$_ key=$key text=$text");
+				$out .= "<TD>$tmp</TD>";
+				next;
+			}
+			my $DECODE_CHARS = qq{[<"\000-\037\177-\377};
+			HTML::Entities::encode($text, '&');
+			HTML::Entities::encode($text, $DECODE_CHARS);
+			$out .= <<EOF;
+<TD><INPUT NAME="$_" SIZE=$size VALUE="$text"></TD>
+EOF
+		}
+	}
+	else {
+		for(@cols) {
+			$out .= qq{<TH ALIGN=LEFT>$_</TH>};
+		}
+	}
+	return $out;
+
+}
+EOR
+

@@ -1,0 +1,42 @@
+
+UserTag list-databases Order nohide
+UserTag list-databases routine <<EOR
+sub {
+	my $nohide = shift;
+	my @dbs;
+	my $d = $Vend::Cfg->{Database};
+	@dbs = sort keys %$d;
+	my @outdb;
+	my $record =  ui_acl_enabled();
+	undef $record
+		unless ref($record)
+			   and $record->{yes_tables} || $record->{no_tables};
+
+	for(@dbs) {
+		next if $::Values->{ui_tables_to_hide} =~ /\b$_\b/;
+		if($record) {
+			next if $record->{no_tables}
+				and ui_check_acl($_, $record->{no_tables});
+			next if $record->{yes_tables}
+				and ! ui_check_acl($_, $record->{yes_tables});
+		}
+		push @outdb, $_;
+	}
+
+	@dbs = $nohide ? (@dbs) : (@outdb);
+	
+	my $string = join " ", grep /\S/, @dbs;
+	if(defined $::Values->{mv_data_table}) {
+		return $string unless $d->{$::Values->{mv_data_table}};
+		my $size = -s $Vend::Cfg->{ProductDir} .
+						"/" .  $d->{$::Values->{mv_data_table}}{'file'};
+		$size = 3_000_000 if $size < 1;
+		$::Values->{ui_too_large} = $size > 100_000 ? 1 : '';
+		$::Values->{ui_way_too_large} = $size > 2_000_000 ? 1 : '';
+		local($_) = $::Values->{mv_data_table};
+		$::Values->{ui_rotate_spread} = $::Values->{ui_tables_to_rotate} =~ /\b$_\b/;
+	}
+	return $string;
+}
+EOR
+

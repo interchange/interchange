@@ -1,0 +1,9 @@
+UserTag rotate_file Routine <<EOR
+sub {
+	my($file, $rollback) = @_;
+	UI::Primitive::rotate(undef, 'unsave')
+		and return "SUCCESS";
+	return "ERROR";
+}
+EOR
+

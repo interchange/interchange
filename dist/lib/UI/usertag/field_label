@@ -1,0 +1,25 @@
+UserTag field_label Order table column meta
+UserTag field_label PosNumber 3
+UserTag field_label attrAlias db table
+UserTag field_label attrAlias field column
+UserTag field_label Routine <<EOR
+sub {
+	my ($table, $column, $meta) = @_;
+	$meta = $::Variable->{MINIMATE_META} || 'ui_metadata' if ! $meta;
+	return "<B>$column</B>" if ! ::tag_data($meta, 'type', "${table}::$column");
+	my $label = Vend::Interpolate::tag_data($meta, 'label', "${table}::$column")
+			  || $column;
+	my $out;
+	my $help = Vend::Interpolate::tag_data($meta, 'help', "${table}::$column");
+	my $url = Vend::Interpolate::tag_data($meta, 'help_url', "${table}::$column");
+	$out = "<B>$label</B>";
+	$out .= qq{<BR><FONT SIZE="-1"><I>$help</I></FONT>} if $help;
+	if ($url) {
+		$out .= qq{<BR><FONT SIZE="-1"><I><A HREF="$url">};
+		$out .= ::errmsg('more help');
+		$out .= q{</I></FONT>};
+	}
+	return $out;
+}
+EOR
+
