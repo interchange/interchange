@@ -1,6 +1,6 @@
 # Vend::Payment::AuthorizeNet - Interchange AuthorizeNet support
 #
-# $Id: AuthorizeNet.pm,v 2.6 2002-10-17 04:46:24 mheins Exp $
+# $Id: AuthorizeNet.pm,v 2.7 2002-12-17 02:39:04 kwalsh Exp $
 #
 # Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -38,7 +38,7 @@ package Vend::Payment::AuthorizeNet;
 
 =head1 Interchange AuthorizeNet Support
 
-Vend::Payment::AuthorizeNet $Revision: 2.6 $
+Vend::Payment::AuthorizeNet $Revision: 2.7 $
 
 =head1 SYNOPSIS
 
@@ -351,7 +351,7 @@ sub authorizenet {
 		CREDIT					=>	'CREDIT',
 		PRIOR_AUTH_CAPTURE		=>	'PRIOR_AUTH_CAPTURE',
 		VOID					=>	'VOID',
-		auth		 			=>	'ONLY',
+		auth		 			=>	'AUTH_ONLY',
 		authorize		 		=>	'AUTH_ONLY',
 		mauthcapture 			=>	'AUTH_CAPTURE',
 		mauthonly				=>	'AUTH_ONLY',
