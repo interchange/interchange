@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.17.2.19 2001-04-16 00:25:52 heins Exp $
+# $Id: Data.pm,v 1.17.2.20 2001-04-18 06:40:06 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -426,6 +426,7 @@ sub close_database {
 	undef %Vend::TransactionDatabase;
 	undef %Vend::WriteDatabase;
 	undef %Vend::Basefinder;
+	undef $Vend::VarDatabase;
 }
 
 sub database_ref {

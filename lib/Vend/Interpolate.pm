@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.52 2001-04-18 03:56:31 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.53 2001-04-18 06:40:07 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.52 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.53 $, 10);
 
 @EXPORT = qw (
 
@@ -224,6 +224,9 @@ my $XOptx = qr{(?:\s+)?([-\w:#=/.%]+)?};
 my $XMand = qr{\s+([-\w#/.]+)};
 my $XOpt = qr{(?:\s+)?([-\w#/.]+)?};
 my $XD    = qr{[-_]};
+my $Gvar  = qr{\@\@([A-Za-z0-9]\w+[A-Za-z0-9])\@\@};
+my $Evar  = qr{\@_([A-Za-z0-9]\w+[A-Za-z0-9])_\@};
+my $Cvar  = qr{__([A-Za-z0-9]\w*?[A-Za-z0-9])__};
 
 my %Comment_out = ( '<' => '&lt;', '[' => '&#91;', '_' => '&#95;', );
 
@@ -502,6 +505,27 @@ sub var_ui_sub {
 	}
 }
 
+sub dynamic_var {
+	my $varname = shift;
+	VARDB: {
+		last VARDB unless $Vend::Cfg->{VariableDatabase};
+		if($Vend::VarDatabase) {
+			last VARDB unless $Vend::VarDatabase->record_exists($varname);
+			return $Vend::VarDatabase->field($varname, 'Variable');
+		}
+		else {
+			$Vend::VarDatabase = database_exists_ref($Vend::Cfg->{VariableDatabase})
+				or undef $Vend::Cfg->{VariableDatabase};
+			redo VARDB;
+		}
+	}
+	VARFILE: {
+		return readfile($Vend::Cfg->{DirConfig}{Variable}{$varname})
+			if defined $Vend::Cfg->{DirConfig}{Variable}{$varname};
+	}
+	return $::Variable->{$varname};
+}
+
 #
 # Substitutes in Variable values.
 # Makes [comment] [/comment] strips.
@@ -514,11 +538,19 @@ sub vars_and_comments {
 	# Remove Minivend 3 legacy stuff
 	$$html =~ s/\[new\]//g;
 
-	$$html =~ s#\@\@([A-Za-z0-9]\w+[A-Za-z0-9])\@\@#$Global::Variable->{$1}#g;
-	$$html =~ s#\@_([A-Za-z0-9]\w+[A-Za-z0-9])_\@#$::Variable->{$1} || $Global::Variable->{$1}#ge
+	$$html =~ s/$Gvar/$Global::Variable->{$1}/g;
+	if($Vend::Cfg->{Pragma}{dynamic_variables}) {
+		$$html =~ s/$Evar/dynamic_var($1) || $Global::Variable->{$1}/ge
+			and
+		$$html =~ s/$Evar/dynamic_var($1) || $Global::Variable->{$1}/ge;
+		$$html =~ s/$Cvar/dynamic_var($1)/ge;
+	}
+	else {
+		$$html =~ s/$Evar/$::Variable->{$1} || $Global::Variable->{$1}/ge
 		and
-	$$html =~ s#\@_([A-Za-z0-9]\w+[A-Za-z0-9])_\@#$::Variable->{$1} || $Global::Variable->{$1}#ge;
-	$$html =~ s#__([A-Za-z0-9]\w*?[A-Za-z0-9])__#$::Variable->{$1}#g;
+		$$html =~ s/$Evar/$::Variable->{$1} || $Global::Variable->{$1}/ge;
+		$$html =~ s/$Cvar/$::Variable->{$1}/g;
+	}
 	# Comment facility
 	1 while $$html =~ s%$QR{comment}%%go;
 
