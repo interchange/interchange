@@ -1,6 +1,6 @@
 UserTag update-order-status Order order_number
 UserTag update-order-status addAttr
-UserTag update-order-status Version $Id: update_order_status.tag,v 1.4 2002-10-18 06:47:54 mheins Exp $
+UserTag update-order-status Version $Id: update_order_status.tag,v 1.5 2002-11-04 16:16:30 mheins Exp $
 UserTag update-order-status Routine <<EOR
 sub {
 	my ($on, $opt) = @_;
@@ -289,7 +289,9 @@ sub {
 	Vend::Tags->warning("$ship_mesg $email_mesg");
 	delete $::Scratch->{ship_notice_username};
 	delete $::Scratch->{ship_notice_email};
+	delete $::Scratch->{ship_notice_order_number};
 	if($wants_copy) {
+		$::Scratch->{ship_notice_order_number} = $on;
 		$::Scratch->{ship_notice_username} = $user;
 		$::Scratch->{ship_notice_email} = $trec->{email}
 			or delete $::Scratch->{ship_notice_username};
