@@ -1,6 +1,6 @@
 # Table/LDAP.pm: LDAP pseudo-table
 #
-# $Id: LDAP.pm,v 1.6.6.6 2001-04-17 16:20:26 jason Exp $
+# $Id: LDAP.pm,v 1.6.6.7 2001-04-17 16:28:46 jason Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,7 +27,7 @@
 
 package Vend::Table::LDAP;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 1.6.6.6 $, 10);
+$VERSION = substr(q$Revision: 1.6.6.7 $, 10);
 use strict;
 
 use vars qw(
@@ -449,8 +449,11 @@ sub record_exists {
 
 sub delete_record {
 	my ($s, $key) = @_;
-#    delete($s->[$TIE_HASH]{$key});
-#::logDebug("delete $key not impl.");
+        $s = $s->import_db() if ! defined $s->[$TIE_HASH];
+        my $ki = $s->[$CONFIG]->{KEY};
+        my $n = $s->[$CONFIG]{name};
+        my $b = $s->[$CONFIG]->{BASE_DN};
+        my $m = $s->[$TIE_HASH]->delete("$ki=$key,db=$n,$b");
 }
 
 sub clear_table {
