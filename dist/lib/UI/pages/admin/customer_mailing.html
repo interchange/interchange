@@ -248,8 +248,10 @@ Thanks for your business!
 		co=yes
 		op=rm
 		ml=1000
+		tf=email
+		sf=email
+		se=@
 		sf=mail_list
-		tf=lname
 		se=[cgi target_list]
 		rf=username,fname,lname,company,email,mail_list
 	"] 
@@ -263,6 +265,14 @@ Thanks for your business!
 	my $row = shift;
 	my $list = $CGI->{target_list};
 	my $user = $row->[0];
+	my $email = $row->[4];
+	$email = lc $email;
+	$email =~ s/^\s+//;
+	$email =~ s/\s+$//;
+	if($user_done{$email}++) {
+		Log("Weeded duplicate $email, user $user.");
+		return;
+	}
 	if (my $s = $tmp_struct->{$user}) {
 		 return if $s =~ /\s$list\s/;
 	}
@@ -329,6 +339,8 @@ mail to this list again. And it be on your head...
 		my @out;
 		my $list = $CGI->{target_list};
 
+		my %done;
+
 		my $opt = { table => 'userdb', hash => 1};
 		my $body = $Values->{mail_template};
 		$body =~ s/\r\n/\n/g;
@@ -344,6 +356,8 @@ mail to this list again. And it be on your head...
 			$opt->{key} = $user;
 			my $record = $Tag->data($opt);
 			next unless $record;
+			next unless $record->{email} =~ /\S/;
+			next if $done{$record->{email}}++;
 			$record->{mv_base_url} = $burl;
 			$record->{mv_email}    = $Tag->filter('urlencode', $record->{email});
 			$record->{mv_list}     = $list;
@@ -396,8 +410,8 @@ mail to this list again. And it be on your head...
 		}
 		elsif($CGI->{download_batch}) {
 			@out = map { $_->[1] } @messages;
-			$out = "#!/bin/sh\n\ncat <<EOF | sendmail -t\n";
-			$out .= join "EOF\n\ncat <<EOF | sendmail -t\n", @out;
+			$out = "#!/bin/sh\n\ncat <<EOF | $Config->{SendMailProgram} -t\n";
+			$out .= join "EOF\n\ncat <<EOF | $Config->{SendMailProgram} -t\n", @out;
 			$out .= "EOF\n\n";
 			$Tag->deliver( { body => \$out } );
 			$Tag->tmpn('delivered_mail_batch');
@@ -427,4 +441,4 @@ mail to this list again. And it be on your head...
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ -->
+<!-- page: @@MV_PAGE@@ version: $Id: customer_mailing.html,v 1.9 2004-01-08 17:53:45 mheins Exp $ -->
