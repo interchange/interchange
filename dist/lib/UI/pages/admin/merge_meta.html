@@ -199,12 +199,21 @@
 		my $mtab = q{__UI_META_TABLE__} || 'mv_metadata';
 		my $mdb = $Db{$mtab};
 		if(! $bdb) {
-			return errmsg("Cannot merge metadata -- table %s is missing.",
-				'mv_metadata_asc');
+		    $Scratch->{merge_error} 
+				= errmsg("Cannot merge metadata -- table %s is missing.",
+					'mv_metadata_asc');
+			return;
 		}
 		if(! $mdb) {
-			return errmsg("Cannot merge metadata -- table %s is missing.",
-				$mtab);
+			$Scratch->{merge_error}
+				= errmsg("Cannot merge metadata -- table %s is missing.",
+					$mtab);
+			return;
+		}
+		if(! $mdb->column_exists('extended')) {
+			$Scratch->{merge_error}
+				= errmsg("Cannot merge metadata -- column 'extended' is missing in table %s.", $mtab);
+			return;
 		}
 		my @base;
 		while( my ($k) = $bdb->each_record()) {
@@ -258,11 +267,16 @@
 		}
 		return;
 	[/perl]
+	[if scratch merge_error]
+	<blockquote class=cerror>[scratchd merge_error]</blockquote>
+	[else]
 	<UL>
 		<LI>Entries merged: [scratch merge_updated]
 		<LI>No merge needed: [scratch merge_complete]
 		<LI>Merge still needed: [scratch merge_needed]
 	</UL>
+	[/else]
+	[/if]
 	</dd>
 
 	<dt class=titlebox>Items to merge </dt>
