@@ -39,7 +39,7 @@ EOF
 #::logDebug("data call failed: $@") if $@;
 
 	if(! $CGI::values{ui_no_meta_display}) {
-::logDebug("meta call: table=$table col=$column key='$key' text=$text");
+#::logDebug("meta call: table=$table col=$column key='$key' text=$text");
 		($widget, $label, $help, $help_url) = UI::Primitive::meta_display($table,$column,$key,$text,undef,undef,$opt);
 #::logDebug("past meta_display, help=$help url=$help_url label=$label");
 		$widget =~ s/<(input|select)\s+/<$1 $opt->{js} /i
