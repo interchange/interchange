@@ -69,6 +69,7 @@
 	unless (-f $file) {
 		return '<tr><td>No traffic statistics found</td></tr>';
 	}
+
 	$Scratch->{$file} = 1;
 
 	%opts = (
@@ -77,6 +78,11 @@
 				fi => $file,
 				ml => 999999,
 	);
+
+	unless($file =~ m{^/}) {
+		$opts{bd} = '.';
+	}
+
 	%names = qw/
 		 01 January
 		 02 February
