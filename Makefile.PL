@@ -472,26 +472,6 @@ sub initialize {
 
 #warn "Got past install SHAREFILES\n" ; #if $X{RPMBUILDDIR};
 
-		# build context-sensitive admin help files
-		my $sourcedir = cwd();
-		BUILD_HELP_HTML: {
-			chdir "$realdir/share/akopia/ui/help" or last BUILD_HELP_HTML;
-			local $/;
-			open HELP_MAKE, "help_make.pl" or
-				warn("Unimportant: Unable to open help_make.pl\n"), last BUILD_HELP_HTML;
-			my $help_make = <HELP_MAKE>;
-			close HELP_MAKE;
-			print "Generating admin help HTML\n";
-			# keep help generator quiet, since install is already too verbose
-			local *STDOUT;
-			open STDOUT, ">/dev/null";
-			eval $help_make;
-			warn("Unimportant: Error generating admin help HTML\n") if $@;
-		}
-		chdir $sourcedir;
-
-#warn "Got past install Helpfiles\n" ; #if $X{RPMBUILDDIR};
-
 		# install dist/ files from MANIFEST
 		print "Installing dist/ files\n";
 		@files = grep m:^dist/:, @files;
