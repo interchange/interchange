@@ -19,7 +19,7 @@
 # MA  02111-1307  USA.
 
 UserTag formel Order label name type size
-UserTag formel Version 0.092
+UserTag formel Version 0.093
 UserTag formel addAttr
 UserTag formel Routine <<EOF
 sub {
@@ -108,7 +108,7 @@ sub {
 		return sprintf ($fmt, $labelhtml, $elhtml);
 	}
 
-	$labelhtml = &$labelproc($label);
+	$labelhtml = &$labelproc($label) if $label || $type ne 'display';
 
 	if ($type eq 'select') {
 		my ($rlabel, $rvalue, $select);
@@ -136,9 +136,18 @@ sub {
 	}
 
 	if ($type eq 'display') {
-		# try to handle widget with UI tag display
-		$elhtml = $Tag->display($opt->{table} || 'products', $name, '', 
-			{value => $Values->{$name}});
+		if ($label) {
+			# use provided label
+			$elhtml = $Tag->display($opt->{table} || 'products', $name, '', 
+									{value => $Values->{$name}});
+		} else {
+			# use dummy template to retrieve label from metadata
+			$elhtml = $Tag->display($opt->{table} || 'products', $name, '', 
+									{value => $Values->{$name}, 
+									 template => join(" \0", '$LABEL$', '$WIDGET$')});
+			($label, $elhtml) = split(/\s\0/, $elhtml);
+			$labelhtml = &$labelproc($label);
+		}
 	} elsif ($opt->{reset}) {
 		if ($type eq 'textarea') {
 	        $elhtml = qq{<textarea name="${name}"$sizestr></textarea>};
