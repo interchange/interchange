@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret MiniVend tags
 # 
-# $Id: Interpolate.pm,v 1.5 2000-06-18 08:42:46 heins Exp $
+# $Id: Interpolate.pm,v 1.6 2000-06-23 01:45:48 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.5 $, 10);
+$VERSION = substr(q$Revision: 1.6 $, 10);
 
 @EXPORT = qw (
 
@@ -774,6 +774,16 @@ sub tag_data {
 	'null_to_comma' =>		sub {
 					my $val = shift;
 					$val =~ s/\0+/,/g;
+					return $val;
+				},
+	'null_to_colons' =>		sub {
+					my $val = shift;
+					$val =~ s/\0+/::/g;
+					return $val;
+				},
+	'colons_to_null' =>		sub {
+					my $val = shift;
+					$val =~ s/::/\0/g;
 					return $val;
 				},
 	'last_non_null' =>		sub {
