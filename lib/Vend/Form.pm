@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.28 2003-03-26 17:08:19 mheins Exp $
+# $Id: Form.pm,v 2.29 2003-03-30 22:05:20 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -37,7 +37,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.28 $, 10);
+$VERSION = substr(q$Revision: 2.29 $, 10);
 
 @EXPORT = qw (
 	display
@@ -1020,9 +1020,19 @@ if($opt->{debug}) {
 	if($look = $opt->{lookup_query}) {
 		my $tab = $opt->{table} || $Vend::Cfg->{ProductFiles}[0];
 		my $db = Vend::Data::database_exists_ref($tab);
-		$data = $db->query($look)
-			if $db;
-		$data ||= [];
+		my @looks = split /\s*;\s*/, $look;
+		$data = [];
+		for my $l (@looks) {
+			next unless $db;
+			next unless $l =~ /^select\s+/i;
+			push @$data, @{$db->query($l)};
+		}
+		if($data->[0] and @{$data->[0]} > 2) {
+			my $j = $opt->{label_joiner} || '-';
+			for(@$data) {
+				$_->[1] = join $j, splice @$_, 1;
+			}
+		}
 	}
 	elsif($look = $opt->{lookup}) {
 #::logDebug("lookup called, opt=" . uneval($opt));
