@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange localizer
 #
-# $Id: localize.PL,v 1.7.2.1.2.2 2001-05-10 18:32:19 racke Exp $
+# $Id: localize.PL,v 1.7.2.1.2.3 2001-05-18 18:40:55 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -55,7 +55,7 @@ use strict;
 use Vend::Util qw(readfile escape_chars);
 require Vend::Config;
 use Getopt::Std;
-use vars qw($opt_c $opt_d $opt_l $opt_M $opt_m $opt_o $opt_t);
+use vars qw($opt_c $opt_d $opt_l $opt_M $opt_m $opt_o $opt_t $opt_u);
 
 BEGIN {
 	use Config;
@@ -78,7 +78,7 @@ BEGIN {
 my $USAGE = <<EOF;
 $0 -- produce localization file from set of pages
 
-usage:    localize -l lg_CC [-d lg_CC] [-m file|-t] file [file2 file3 ...]
+usage:    localize -l lg_CC [-d lg_CC] [-m file|-t] [-u dir] file [file2 file3 ...]
 
 OPTIONS
 
@@ -91,8 +91,10 @@ OPTIONS
                when in regular mode, strip MM_ from [LC] defs
     -o         Rewrite [L] sections with [L msgNNNN], adjust file and data
                -- mutually exclusive with -c
-    -t         Two page mode, mutually exclusive with -m
-
+    -t         Two page mode, mutually exclusive with -m 
+    -u <dir>   UI directory, e.g. /usr/lib/interchange/lib/UI. This can
+	           be used to include the menu titles in the output.
+	  
 lg_CC refers to the POSIX norm of specifying two-letter
 language and country codes to refer to a locale.
     
@@ -110,7 +112,7 @@ one level. Subsequent .bak files will be overwritten.
 
 EOF
 
-getopts('cd:l:Mm:ot') or die "$USAGE\n";
+getopts('cd:l:Mm:otu:') or die "$USAGE\n";
 
 die "$USAGE\n" if $@;
 die "$USAGE\n" unless $opt_l;
@@ -163,16 +165,31 @@ elsif ( open(CONFIG, "< $opt_m") ) {
 else {
 	warn "Couldn't read merge file $opt_m, continuing without.\n";
 }
-
+		
 $C->{Locale_repository} = {} unless $C->{Locale_repository};
 
 my $Locale = $C->{Locale_repository};
-
 my $one_text;
 my $two_text;
 my $one;
 my $two;
 
+if($opt_u) {
+	my $icmenu = "$opt_u/icmenu.txt";
+	my $headline;
+	
+	open (ICMENU, $icmenu)
+		|| die  "Couldn't read UI menu file $icmenu: $!\n";
+	$headline = <ICMENU>;
+	unless ((split /\t/, $headline)[9] eq 'name') {
+		die "Malformed UI menu file $icmenu\n";
+	}
+	while (<ICMENU>) {
+		write_structure (undef, (split /\t/)[9]);
+	}
+	close (ICMENU);
+}
+		
 if($opt_t) {
 	$one = shift;
 	$two = shift || die "$USAGE\n";
@@ -309,7 +326,6 @@ my $l = $Locale->{$opt_l};
 my($text, $dat, $cmt);
 
 foreach $key (sort keys %$d) {
-
 		$dat = ($Comment{$key} || '') and
 			$dat =~ s/\n/\n# /g;
 
@@ -353,7 +369,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-# $Id: localize.PL,v 1.7.2.1.2.2 2001-05-10 18:32:19 racke Exp $
+# $Id: localize.PL,v 1.7.2.1.2.3 2001-05-18 18:40:55 racke Exp $
 
 =head1 SYNOPSIS
 
@@ -398,6 +414,11 @@ Mutually exclusive with C<-c>.
 =item C<-t>
 
 Two page mode, mutually exclusive with C<-m.>
+
+=item C<-u dir>
+
+UI directory, e.g. /usr/lib/interchange/lib/UI. This can
+be used to include the menu titles in the output.
 
 =back
 
