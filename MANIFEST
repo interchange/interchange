@@ -249,6 +249,7 @@ debian/libapache-mod-interchange.docs
 debian/libapache-mod-interchange.files
 debian/makecat.cfg
 debian/makecat.wrapper
+debian/robots.cfg
 debian/rules
 dist/catalog_after.cfg
 dist/catalog_before.cfg
@@ -904,6 +905,7 @@ dist/foundation/templates/sampledata/tools/products/cat_nl_NL.txt
 dist/foundation/templates/sampledata/tools/products/inventory.txt
 dist/foundation/templates/sampledata/tools/products/merchandising.txt
 dist/foundation/templates/sampledata/tools/products/options.txt
+dist/foundation/templates/sampledata/tools/products/options_de_DE.txt
 dist/foundation/templates/sampledata/tools/products/orderline.txt
 dist/foundation/templates/sampledata/tools/products/pricing.txt
 dist/foundation/templates/sampledata/tools/products/products.txt
@@ -913,6 +915,7 @@ dist/foundation/templates/sampledata/tools/products/specs.txt
 dist/foundation/templates/sampledata/tools/products/transactions.txt
 dist/foundation/templates/sampledata/tools/products/userdb.txt
 dist/foundation/templates/sampledata/tools/products/variants.txt
+dist/foundation/templates/sampledata/tools/products/variants_de_DE.txt
 dist/foundation/upload/.empty
 dist/interchange.cfg.dist
 dist/lib/UI/ContentEditor.pm
