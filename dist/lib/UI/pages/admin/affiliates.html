@@ -33,7 +33,7 @@
 [bounce page="__UI_BASE__/error"]
 [/if-mm]
 
-@@UI_STD_HEAD@@
+@_UI_STD_HEAD_@
 [update values]
 <!-- ----- BEGIN REAL STUFF ----- -->
 <form action="[area __UI_BASE__/flex_editor]" method="GET">
@@ -53,8 +53,9 @@
 
 <tr>
 <td bgcolor="__UI_C_INTBLOCK__" width=__UI_MAIN_WIDTH__ colspan=2>
-<input type="submit" name="mv_click" value="New affiliate">
-[set New affiliate]item_id=new[/set]
+[button text="New affiliate"]
+	item_id=new
+[/button]
 </td>
 
 </td></tr>
@@ -69,7 +70,25 @@
 <input type="submit" name="show_edit_cmd" value="Edit affiliate">
 <br>
 
-[set Delete affiliate]
+[button text="Show Orders"]
+mv_todo=return
+affiliate=[cgi item_id]
+mv_nextpage=__UI_BASE__/reports/order/ByAffiliate
+[/button]<br>
+
+[button text="Show Traffic"]
+mv_todo=return
+affiliate=[cgi item_id]
+[tag time]
+ui_begin_date=%Y%m
+ui_end_date=%Y%mz
+ui_by_day=1
+[/tag]
+mv_nextpage=__UI_BASE__/reports/traffic/ByAffiliate
+[/button]<br>
+
+[button text="Delete affiliate"
+		confirm="Are you sure you want to delete this affiliate?"]
 	[flag type=write table="[cgi mv_data_table]"]
 	[set ui_error][/set]
 
@@ -95,29 +114,10 @@
 			mv_nextpage=@@MV_PAGE@@
 		[/else]
 	[/if]
-[/set]
+[/button]
 
-[set Show Orders]
-mv_todo=return
-affiliate=[cgi item_id]
-mv_nextpage=__UI_BASE__/reports/order/ByAffiliate
-[/set]
 
-[set Show Traffic]
-mv_todo=return
-affiliate=[cgi item_id]
-[tag time]
-ui_begin_date=%Y%m
-ui_end_date=%Y%mz
-ui_by_day=1
-[/tag]
-mv_nextpage=__UI_BASE__/reports/traffic/ByAffiliate
-[/set]
-<input type=submit name="mv_click" value="Show Orders"><br>
-<input type=submit name="mv_click" value="Show Traffic"><br>
 
-<input type="submit" name="mv_click" value="Delete affiliate" 
- onClick="return confirm('Are you sure you want to delete this item?')">
 
 </td>
 <td bgcolor="__UI_C_INTBLOCK__" width="__UI_RIGHT_WIDTH__">
@@ -205,5 +205,5 @@ EOString
 
 <!-- ----- END REAL STUFF ----- -->
 
-@@UI_STD_FOOTER@@
+@_UI_STD_FOOTER_@
 <!-- page: @@MV_PAGE@@ -->

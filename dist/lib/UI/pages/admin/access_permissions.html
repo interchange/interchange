@@ -44,7 +44,7 @@
 [/perl]
 [/set]
 
-@@UI_STD_HEAD@@
+@_UI_STD_HEAD_@
 [if scratch ui_message]
 <P>
 <BLOCKQUOTE>
@@ -362,16 +362,15 @@ EOF
 
 <input type=submit value="Ok">
 
-[set Cancel]
+[button text="Cancel"]
 mv_todo=back
 mv_nextpage=[either][value-extended name=ui_return_to index=0][or]__UI_BASE__/access[/either]
 mv_data_table=[cgi mv_data_table]
-[/set]
+[/button]
 
-<input type=submit name="mv_click" value="Cancel">
 <BR>
 
 </form>
-@@UI_STD_FOOTER@@
+@_UI_STD_FOOTER_@
 
 <!-- page: @@MV_PAGE@@ -->

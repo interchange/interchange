@@ -58,7 +58,7 @@
 [bounce href=`delete $Scratch->{ui_location}`]
 [/if]
 
-@@UI_STD_HEAD@@
+@_UI_STD_HEAD_@
 [update values]
 <!-- ----- BEGIN REAL STUFF ----- -->
 
@@ -70,11 +70,20 @@
 <P>
 &nbsp;
 [/if]
+[if scratch ui_message]
+<P>
+<BLOCKQUOTE>
+<FONT COLOR="__CONTRAST__">[scratch ui_message][set ui_message][/set]</FONT>
+</BLOCKQUOTE>
+<P>
+&nbsp;
+[/if]
 <form action="[area __UI_BASE__/flex_editor]" method="GET">
 <INPUT TYPE=hidden NAME=mv_action     VALUE=return>
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/flex_editor">
 <INPUT TYPE=hidden NAME=mv_data_table VALUE="[cgi mv_data_table]">
 <INPUT TYPE=hidden NAME=page_title VALUE="[cgi page_title]">
+<INPUT TYPE=hidden NAME=ui_meta_specific VALUE="[cgi ui_meta_specific]">
 <INPUT TYPE=hidden NAME=ui_return_to VALUE="@@MV_PAGE@@">
 <INPUT TYPE=hidden NAME=ui_return_to VALUE="mv_data_table=[cgi mv_data_table]">
 <INPUT TYPE=hidden NAME=icon_name VALUE="[cgi icon_name]">
@@ -163,12 +172,22 @@ mv_nextpage=__UI_BASE__/spread
 
 [calc]
 	$Config->{NoSearch} = '';
-	if ($CGI->{ui_text_qualification}) {
+	if ($CGI->{ui_text_qualification} and $CGI->{ui_text_qualification} =~ /=/ ) {
+		my ($f, $s) = split /\s*=\s*/, $CGI->{ui_text_qualification} , 2;
+		$CGI->{ui_text_qualification} = "co=1\nop=eq\nse=$s\nsf=$f";
+	}
+	elsif ($CGI->{ui_text_qualification}) {
 		$CGI->{ui_text_qualification} = "se=$CGI->{ui_text_qualification}";
 	}
 	else {
 		$CGI->{ui_text_qualification} = "ra=yes";
 	}
+	$CGI->{ui_list_size} =
+		q{[data table=__UI_META_TABLE__
+				col=height
+				key="[cgi mv_data_table]"
+			]}
+		if ! $CGI->{ui_list_size};
 	$CGI->{ui_description_field} =
 		q{[data table=__UI_META_TABLE__
 				col=field
@@ -185,6 +204,7 @@ mv_nextpage=__UI_BASE__/spread
 			[cgi ui_text_qualification]
 			su=1
 			md=1
+			ml=[cgi ui_list_size]
 			tf=[cgi ui_description_field]
 			rf=[scratch keypos],[cgi ui_description_field]
 		"]
@@ -207,7 +227,7 @@ EOString
 		search="
 			fi=[cgi mv_data_table]
 			st=db
-			ra=yes
+			[cgi ui_text_qualification]
 			md=1
 			tf=[scratch keypos]
 			rf=[scratch keypos]
@@ -233,5 +253,5 @@ EOString
 
 <!-- ----- END REAL STUFF ----- -->
 
-@@UI_STD_FOOTER@@
+@_UI_STD_FOOTER_@
 <!-- page: @@MV_PAGE@@ -->

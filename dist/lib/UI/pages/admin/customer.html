@@ -23,7 +23,7 @@
 		return;
 	}
 
-	my ($value, $action_col);
+	my ($value, $action_col, $delete);
 	if($CGI->{activate}) {
 		$value = 0;
 		$action_col = 'inactive';
@@ -33,8 +33,7 @@
 		$action_col = 'inactive';
 	}
 	elsif($CGI->{deletecustomer}) {
-		$value = 1;
-		$action_col = 'deleted';
+		$delete = 1;
 	}
 	elsif($CGI->{viewcustomer} and ! $CGI->{viewnext}) {
 		#Log("viewcustomer and !viewnext");
@@ -54,6 +53,11 @@
 	if($action_col) {
 		for(grep $_, @{$CGI_array->{customer}}) {
 			$db->set_field($_, $action_col, $value);
+		}
+	}
+	elsif ($delete) {
+		for(grep $_, @{$CGI_array->{customer}}) {
+			$db->delete_record($_);
 		}
 	}
 	if(@errors) {
@@ -120,7 +124,7 @@
 [set help_name]customer[/set]
 [update values]
 
-@@UI_STD_HEAD@@
+@_UI_STD_HEAD_@
 
 
 [if scratch message]
@@ -148,8 +152,8 @@
 [if value showinactive]
 <tr>
 <td bgcolor="__UI_C_INTBLOCK__" width=__UI_MAIN_WIDTH__ colspan=2>
-<input type=submit name="showactive" value="Show active customers">
-[set active_sense]=[/set]
+[button name="showactive" text="Show active customers"][/button]
+[set active_sense]eq[/set]
 </td>
 </tr>
 [else]
@@ -157,7 +161,7 @@
 <tr>
 <td bgcolor="__UI_C_INTBLOCK__" width=__UI_MAIN_WIDTH__ colspan=2>
 <input type=submit name="showinactive" value="Show inactive customers">
-[set active_sense]!=[/set]
+[set active_sense]ne[/set]
 </td>
 </tr>
 [/else]
@@ -172,39 +176,39 @@
 <tr>
 <td bgcolor="__UI_C_INTBLOCK__" width=__UI_LEFT_WIDTH__>
 
-<input type=submit name="viewcustomer" value="View customer"><br>
+[button name="viewcustomer" text="View customer"][/button]<br>
 
 [if value showinactive]
 	[if-mm advanced userdb=u]
-		<input type=submit name="activate" value="Activate customer"><br>
+		[button name="activate" value="Activate customer"][/button]<br>
 	[/if-mm]
 [else]
 	[if-mm advanced userdb=a]
-		<input type=submit name="deactivate" value="Deactivate customer"><br>
+		[button name="deactivate" text="Deactivate customer"][/button]<br>
 	[/if-mm]
 [/else]
 [/if]
 
 [if-mm advanced userdb=i]
 
-	[set Enter new order]
-	[calc]
-		$CGI->{customer} =~ s/^[\0\s]+//s;
-		$CGI->{customer} =~ s/\0.*//s;
-		return;
-	[/calc]
-	mv_nextpage=__UI_BASE__/entry
-	mv_todo=return
-	[/set]
+[button text="Enter new order"]
+[calc]
+	$CGI->{customer} =~ s/^[\0\s]+//s;
+	$CGI->{customer} =~ s/\0.*//s;
+	return;
+[/calc]
+mv_nextpage=__UI_BASE__/entry
+mv_todo=return
+[/button]<br>
 
-	<input type=submit name=mv_click value="Enter new order"><br>
 [/if-mm]
 
 <br>
 
 [if-mm advanced userdb=d]
-<input type=submit name="deletecustomer" value="Delete customer" 
- onClick="return confirm('Are you sure you want to delete this customer?')">
+[button name="deletecustomer" text="Delete customer"
+		confirm='Are you sure you want to delete this customer?'
+][/button]
 [/if-mm]
 
 <br>
@@ -212,7 +216,10 @@
 [comment]
 <input type=submit name="xload" value="Export customers">
 [/comment]
-[set Start list here]
+</td>
+<td bgcolor="__UI_C_INTBLOCK__" width=__UI_RIGHT_WIDTH__>
+<SMALL>Specific customer <INPUT TYPE=text NAME=customer VALUE="">
+[button text="Start list here"]
 [calc]
 	$CGI->{customer} =~ s/^\0+//s;
 	$CGI->{customer} =~ s/\0.*//s;
@@ -220,10 +227,8 @@
 	return;
 [/calc]
 mv_nextpage=@@MV_PAGE@@
-[/set]
-</td>
-<td bgcolor="__UI_C_INTBLOCK__" width=__UI_RIGHT_WIDTH__>
-<SMALL>Specific customer <INPUT TYPE=text NAME=customer VALUE=""> <INPUT TYPE=submit NAME=mv_click VALUE="Start list here"></SMALL>
+[/button]
+</SMALL>
 <!-- ----- Show the customer list box ----- -->
 
 [loop more=1 search="
@@ -261,5 +266,5 @@ mv_nextpage=@@MV_PAGE@@
 
 <!-- ----- END REAL STUFF ----- -->
 
-@@UI_STD_FOOTER@@
+@_UI_STD_FOOTER_@
 <!-- page: @@MV_PAGE@@ -->

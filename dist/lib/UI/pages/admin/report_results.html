@@ -10,8 +10,8 @@
 [set icon_name]admin/icon_stats.gif[/set]
 [set help_name]report[/set]
 [calc]
-	$Scratch->{head_put} = '@' . '@UI_STD_HEAD@@';
-	$Scratch->{foot_put} = '@' . '@UI_STD_FOOTER@@';
+	$Scratch->{head_put} = '@' . '_UI_STD_HEAD_@';
+	$Scratch->{foot_put} = '@' . '_UI_STD_FOOTER_@';
 	$Scratch->{page_put} = '@' . '@MV_PAGE@@';
 	$Config->{NoSearch} = '';
 [/calc]
@@ -92,7 +92,7 @@
 	[bounce href="[area href=`$Scratch->{relocate}`]"]
 [/if]
 
-@@UI_STD_HEAD@@
+@_UI_STD_HEAD_@
 
 [seti name=tables][list-databases][/seti]
 [perl table="[scratch tables]"]
@@ -433,5 +433,5 @@ return $val;
 [/if]
 [set search_page][/set]
 [set search_string][/set]
-@@UI_STD_FOOTER@@
+@_UI_STD_FOOTER_@
 

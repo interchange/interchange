@@ -1,12 +1,15 @@
 [set help_name]upload.main[/set]
 [set icon_name]admin/icon_config.gif[/set]
-[set page_title]Upload/Download Pages[/set]
+[set page_title]Image check Upload[/set]
 [set page_perm]pages[/set]
-
-[set dir_mask]pages[/set]
-[set include_mask]html[/set]
+[if cgi ui_start_dir]
+[seti dir_mask]images/[cgi ui_start_dir][/seti]
+[else]
+[set dir_mask]images[/set]
+[/else]
+[/if]
+[set include_mask]jpg gif GIF JPG jpeg JPEG png PNG[/set]
 [set exclude_mask][/set]
-[set start_open]pages[/set]
 
 @_UI_STD_HEAD_@
 

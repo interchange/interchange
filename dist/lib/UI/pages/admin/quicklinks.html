@@ -37,22 +37,28 @@ Quicklinks
 Orders</a><br>
 [/if-mm]
 
-[if-mm advanced orderstats]
-&nbsp;&nbsp;&nbsp;
-<a target="mainwindow[scratch win]" href="[area __UI_BASE__/orderstats]">
-Order stats</a><br>
-[/if-mm]
-
 [if-mm advanced userdb]
 &nbsp;&nbsp;&nbsp;
 <a target="mainwindow[scratch win]" href="[area __UI_BASE__/customer]">
 Customers</a><br>
 [/if-mm]
 
-[if-mm advanced item]
+[if-mm advanced userdb]
 &nbsp;&nbsp;&nbsp;
-<a target="mainwindow[scratch win]" href="[area __UI_BASE__/item]">
-Items</a><br>
+<a target="mainwindow[scratch win]" href="[area __UI_BASE__/entry]">
+Order entry</a><br>
+[/if-mm]
+<P>
+[if-mm advanced orderstats]
+&nbsp;&nbsp;&nbsp;
+<a target="mainwindow[scratch win]" href="[area __UI_BASE__/orderstats]">
+Order stats</a><br>
+[/if-mm]
+
+[if-mm advanced trafficstats]
+&nbsp;&nbsp;&nbsp;
+<a target="mainwindow[scratch win]" href="[area __UI_BASE__/trafficstats]">
+Traffic stats</a><br>
 [/if-mm]
 
 [if-mm advanced affilate]
@@ -60,11 +66,11 @@ Items</a><br>
 <a target="mainwindow[scratch win]" href="[area __UI_BASE__/affiliates]">
 Affiliates</a><br>
 [/if-mm]
-
-[if-mm advanced userdb]
+<P>
+[if-mm advanced item]
 &nbsp;&nbsp;&nbsp;
-<a target="mainwindow[scratch win]" href="[area __UI_BASE__/entry]">
-Order entry</a><br>
+<a target="mainwindow[scratch win]" href="[area __UI_BASE__/item]">
+Items</a><br>
 [/if-mm]
 
 
@@ -77,7 +83,7 @@ Order entry</a><br>
 
 [if-mm advanced layout]
 &nbsp;&nbsp;&nbsp;
-<a href="javascript:return(false)" onClick="window.open('[area __UI_BASE__/layout]', 'ui_layout', 'resizable=1,scrollbars=1,height=600,width=800')">Site Layout</a><br>
+<a target="mainwindow[scratch win]" href="[area __UI_BASE__/layout]">Site Layout</a><br>
 [/if-mm]
 
 
@@ -89,7 +95,13 @@ Page Edit</a><br>
 
 [if-mm advanced searchbuilder]
 &nbsp;&nbsp;&nbsp;
-<a target="mainwindow[scratch win]" href="[area __UI_BASE__/search_builder]">
+<a target="mainwindow[scratch win]" href="[area __UI_BASE__/regenerate]">
+Generate static</a><br>
+[/if-mm]
+
+[if-mm advanced searchbuilder]
+&nbsp;&nbsp;&nbsp;
+<a target="mainwindow[scratch win]" href="[area __UI_BASE__/search_wizard]">
 Search Builder</a><br>
 [/if-mm]
 
@@ -110,12 +122,6 @@ Button Builder</a><br>
 <br>
 <br>
 
-[if-mm advanced trafficstats]
-&nbsp;&nbsp;&nbsp;
-<a target="mainwindow[scratch win]" href="[area __UI_BASE__/trafficstats]">
-Traffic stats</a><br>
-[/if-mm]
-
 
 [if-mm advanced tax]
 &nbsp;&nbsp;&nbsp;
@@ -124,7 +130,6 @@ Tax</a><br>
 [/if-mm]
 
 [if-mm advanced shipping]
-<P>
 &nbsp;&nbsp;&nbsp;
 <a target="mainwindow[scratch win]" href="[area __UI_BASE__/ship]">
 Shipping</a><br>
@@ -144,6 +149,12 @@ Payment</a><br>
 <a target="mainwindow[scratch win]" href="[area __UI_BASE__/genupload]">
 File transfer</a><br>
 <p>
+[/if-mm]
+
+[if-mm advanced table_edit]
+&nbsp;&nbsp;&nbsp;
+<a target="mainwindow[scratch win]" href="[area __UI_BASE__/gentable]">
+Direct Table Edit</a><br>
 [/if-mm]
 
 &nbsp;&nbsp;&nbsp;
@@ -183,19 +194,17 @@ Permissions</a><br>
 Environment</a><br>
 [/if-mm]
 
-[if-mm advanced table_edit]
-&nbsp;&nbsp;&nbsp;
-<a target="mainwindow[scratch win]" href="[area __UI_BASE__/gentable]">
-Direct Table Edit</a><br>
-[/if-mm]
-
 
 [if-mm advanced knar]
+&nbsp;&nbsp;&nbsp;
+<a target="mainwindow[scratch win]" href="[area href=__UI_BASE__/preferences]">
+Preferences</a><br>
 &nbsp;&nbsp;&nbsp;
 <a target="mainwindow[scratch win]" href="[area href=__UI_BASE__/flex_select
 				form='
 					mv_data_table=variable
 					page_title=Knar editor
+					ui_meta_specific=1
 					help_name=knar.main
 				']">
 Knar editor</a><br>

@@ -14,7 +14,7 @@
 		}
 </SCRIPT>
 [/set]
-@@UI_STD_HEAD@@
+@_UI_STD_HEAD_@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 <!-- read shipping:
@@ -101,6 +101,7 @@
 [if scratch ui_update_shipping]
 [set ui_update_shipping][/set]
 <!-- update shipping: [write-shipping] -->
+[bounce page="__UI_BASE__/ship"]
 [/if]
 
 [if cgi ui_shipmode]
@@ -392,12 +393,13 @@ EOF
 
 <p>
 
-<input type=submit name="do_update_cmd" value="Ok">
-[set [L]Cancel[/L]]
-mv_nextpage=__UI_BASE__/ship
-mv_todo=return
-[/set]
-<input type=submit name=mv_click value="Cancel">
+[button text="Ok"]
+	do_update_cmd=Ok
+[/button]
+[button text="[L]Cancel[/L]"]
+	mv_nextpage=__UI_BASE__/ship
+	mv_todo=back
+[/button]
 
 </form>
 
@@ -406,5 +408,5 @@ mv_todo=return
 
 
 
-@@UI_STD_FOOTER@@
+@_UI_STD_FOOTER_@
 <!-- page: @@MV_PAGE@@ -->

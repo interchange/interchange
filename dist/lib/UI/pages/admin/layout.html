@@ -82,7 +82,7 @@
 		my $db = $Db{area} || return;
 		my $curr = $db->field($CGI->{area}, 'sort');
 		$curr =~ s/^0+//;
-		$curr = 0 if ! $curr || $curr < 0;
+		$curr = 1 if ! $curr || $curr < 0;
 		$curr--;
 		$db->set_field($CGI->{area}, 'sort', sprintf("%02d", $curr));
 		return;
@@ -178,7 +178,7 @@
 		my $db = $Db{cat} || return;
 		my $curr = $db->field($CGI->{cat}, 'sort');
 		$curr =~ s/^0+//;
-		$curr = 0 if ! $curr || $curr < 0;
+		$curr = 1 if ! $curr || $curr < 0;
 		$curr--;
 		$db->set_field($CGI->{cat}, 'sort', sprintf("%02d", $curr));
 		return;
@@ -314,9 +314,9 @@
 
 			sf=sel
 			op=rn
-			se=[data table=area col=selector key='[value area]']
+			se=[value area]
 
-			rf=code,name,sort
+			rf=code,name
 			"]
 <OPTION VALUE="[loop-code]">[loop-param name]
 [/loop]
@@ -377,7 +377,7 @@ setarea=[cgi selector]
 <INPUT TYPE=hidden NAME=mv_data_table VALUE="[value mv_data_table]">
 <INPUT TYPE=hidden NAME=mv_data_key VALUE="[value ui_data_key_name]">
 <INPUT TYPE=hidden NAME=mv_update_empty VALUE="1">
-<INPUT TYPE=hidden name=mv_data_fields value="code sel which_page link_type name">
+<INPUT TYPE=hidden name=mv_data_fields value="code sel which_page link_type name display_type">
 <INPUT TYPE=hidden NAME=code VALUE="[table-code]">
 
 <table __UI_T_PROPERTIES__>
@@ -410,7 +410,7 @@ setarea=[cgi selector]
 			my (%seen);
 			my (@current) = split /\s+/, q{[table-data area which_page]};
 			@current{@current} = @current;
-			my @passed = grep !$seen{$_}, split /[\s,\0]+/,
+			my @passed = split /[\s,\0]+/,
 							q{[loop search='
 										fi=area
 										st=db
@@ -418,6 +418,7 @@ setarea=[cgi selector]
 										un=yes
 										rf=which_page
 									'][loop-code] [/loop]};
+			my @passed = grep !$seen{$_}++, @passed;
 			my $out = '';
 			for (@passed) {
 				$out .= qq{<OPTION};
@@ -465,69 +466,165 @@ setarea=[cgi selector]
 	</SELECT>
 	</td></tr></table>
 	</td>
-	[set ui_area_type][table-data area link_type][/set]
 </tr>
+
+<tr>
+<td colspan=2 bgcolor=__UI_C_INTBLOCK__><HR></td>
+</tr>
+
+[set ui_area_type][table-data area link_type][/set]
 
 <tr>
 	<td bgcolor=__UI_C_INTBLOCK__>
 	<small><B>Link type</b>
 	</td>
 	<td bgcolor=__UI_C_INTBLOCK__>
-	<select name=link_type onChange="this.form.submit()">
-		[loop lr=1 option=link_type
-		list="
-none	No link
-external	External link (http://....)
-internal	Interchange page
-search	Interchange search
-"]<OPTION VALUE="[loop-code]">[loop-pos 1]
-		[/loop]
-	</SELECT>
+		[display table=area column=link_type key="[value area]" js=|onChange="this.form.submit()"|]
 	</td>
-	[set ui_area_type][table-data area link_type][/set]
 </tr>
+
 [if scratch ui_area_type eq external]
-
+<INPUT TYPE=hidden NAME=mv_data_fields value="url">
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__ colspan=2>
-	<INPUT TYPE=hidden name=mv_data_fields value="page">
-	<small><B>URL for link</B>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<B>External</B>
 	</td>
-</tr>
-<tr>
-	<td bgcolor=__UI_C_INTBLOCK__ colspan=2>
+	<td bgcolor=__UI_C_INTBLOCK__>
 	<small>
-	<input type=hidden name="ui_filter:page" value="nullselect">
-	<INPUT SIZE=50 NAME=page>
+	<INPUT SIZE=30 NAME=url value="[table-data area url]">
 	</td>
 </tr>
-
 [elsif scratch ui_area_type eq internal]
-
+<INPUT TYPE=hidden NAME=mv_data_fields value="url">
 <tr>
 	<td bgcolor=__UI_C_INTBLOCK__>
-	<small><B>Internal</B>
+	<small><B>Interchange page</B></small>
 	</td>
 	<td bgcolor=__UI_C_INTBLOCK__>
 	<small>
-	<INPUT TYPE=hidden name=mv_data_fields value="page">
-	<input type=hidden name="ui_filter:page" value="null_to_space">
-	<select name=page>
+	<input type=hidden name="ui_filter:url" value="null_to_space">
+	<select name=url>
 	[calc]
 		my (%current);
 		my (%seen);
-		my $page;
-		($page, $ui_arg) = split /\s+/, q{[table-data area page]}, 2;
+		my $url;
+		($url, $ui_arg) = split /\s+/, q{[table-data area url]}, 2;
 		my @passed = split /\s+/, $Tag->list_pages();
 		my $out = '<OPTION VALUE="">--none--';
 		for (@passed) {
 			$out .= qq{<OPTION};
-			$out .= ' SELECTED' if $page eq $_;
+			$out .= ' SELECTED' if $url eq $_;
 			$out .= qq{>$_};
 		}
 		return $out;
 	[/calc]
-	</SELECT><INPUT NAME=page SIZE=16 VALUE="[calc]$ui_arg[/calc]">
+	</SELECT>
+	</td>
+</tr>
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small><B>Parameters</B></small>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small>
+	<INPUT NAME=url SIZE=16 VALUE="[calc]$ui_arg[/calc]">
+	</td>
+</tr>
+[/elsif]
+[elsif scratch ui_area_type eq simple]
+<INPUT TYPE=hidden NAME=mv_data_fields value="tab selector page">
+[calc]
+	$Values->{tab} = q{[table-data area tab]} || $Config->{ProductFiles}[0];
+	return;
+[/calc]
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+		<small><b>Table
+	</td>
+	<td>
+		<small>
+			<SELECT NAME=tab>
+			[loop list="[list-databases]" option=tab]<OPTION>[loop-code][/loop]
+			</SELECT>
+	</td>
+</tr>
+
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+		<small><b>field=column pairs
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+		<small>
+		<TEXTAREA NAME=selector COLS=30 ROWS=3>[table-data area selector]</TEXTAREA>
+	</td>
+</tr>
+
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+		<small><b>Results page
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+		<small>
+		<select name=page>
+		[calc]
+			my (%current);
+			my (%seen);
+			my $page = q{[table-data area page]};
+			my @passed = split /\s+/, $Tag->list_pages();
+			my $out = '<OPTION VALUE="">--default--';
+			for (@passed) {
+				$out .= qq{<OPTION};
+				$out .= ' SELECTED' if $page eq $_;
+				$out .= qq{>$_};
+			}
+			return $out;
+		[/calc]
+		</SELECT>
+	</td>
+</tr>
+
+[/elsif]
+[elsif scratch ui_area_type eq complex]
+
+<INPUT TYPE=hidden NAME=mv_data_fields value="search">
+<INPUT TYPE=hidden NAME=ui_target value="mainwindow[scratch win]">
+<INPUT TYPE=hidden NAME=ui_searchblob value="">
+<INPUT TYPE=hidden NAME=ui_return_to value="@@MV_PAGE@@">
+<INPUT TYPE=hidden NAME=ui_return_to value="area=[table-code]">
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	[set Create]
+	mv_todo=back
+	mv_nextpage=__UI_BASE__/search_wizard
+	[/set]
+	<B>Complex search link</B><br><small><INPUT TYPE=submit
+						name=mv_click
+						value="Create"
+						onClick="
+							this.form.ui_target.value=window.name;
+							this.form.ui_searchblob.value=this.form.search.value;
+							this.form.target='search_prop';
+						">&nbsp;<small><INPUT TYPE=button onClick="this.form.search.value=''" VALUE="clear search">
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small>
+		[calc]
+		my $n = 4;
+		if($Scratch->{search_page}) {
+			$stuff = delete $Scratch->{search_page};
+			$stuff =~ s/.*?(['\|])(.*)\1.*/$2/s;
+			$stuff =~ s/^\s+//mg;
+			$stuff =~ s/\s+$//mg;
+		}
+		else {
+			$stuff = q{[table-data area search]};
+		}
+		if($stuff =~ /\S/) {
+			$n = 2 + ($stuff =~ s/[\r\n]+/\n/g);
+		}
+		else { $stuff = '' };
+		return "<TEXTAREA name=search COLS=30 ROWS=$n>$stuff</TEXTAREA>";
+		[/calc]
 	</td>
 </tr>
 
@@ -535,20 +632,50 @@ search	Interchange search
 [/if]
 
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__ colspan=2>
-	<SMALL><B>Banner&nbsp;image/icon</B></SMALL>
+<td colspan=2 bgcolor=__UI_C_INTBLOCK__><HR></td>
+</tr>
+
+[set ui_area_display][table-data area display_type][/set]
+
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small><B>Display type</b>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small>
+		[display table=area column=display_type key="[value area]" js=|onChange="this.form.submit()"|]
+	</td>
+</tr>
+
+[if scratch ui_area_display =~ /icon|image/]
+<INPUT TYPE=hidden NAME=mv_data_fields value="image">
+<INPUT TYPE=hidden NAME=mv_data_fields value="image_prop">
+<input type=hidden name="ui_filter:image" value="nullselect">
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<B>Image</B>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small>
+	<small>
+	[display table=area column=image key="[value area]" js=|onChange="this.form.submit()"|]
 	</td>
 </tr>
 <tr>
-	<td bgcolor=__UI_C_INTBLOCK__ colspan=2>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<B>Image properties</B>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
 	<small>
-	<INPUT SIZE=50 NAME=banner_img value="[table-data area banner_image]">
+		<input name="image_prop" size=30 VALUE="[calc]
+		$image_prop = q{[table-data area image_prop]};
+		$image_prop =~ s/"/&quot;/g;
+		return $image_prop || 'border=0';
+	[/calc]">
 	</td>
 </tr>
-
+[/if]
 </table>
-
-<p>
 
 [button text="Change area"][/button]
 
@@ -589,7 +716,7 @@ setcat=[cgi selector]
 		next unless defined $CGI->{$key};
 		$CGI->{$key} = $Tag->filter($val, $CGI->{$key}, $key);
 	}
-	return;
+return;
 [/perl]
 [/set]
 
@@ -602,7 +729,7 @@ setcat=[cgi selector]
 <INPUT TYPE=hidden NAME=mv_data_table VALUE="[value mv_data_table]">
 <INPUT TYPE=hidden NAME=mv_data_key VALUE="[value ui_data_key_name]">
 <INPUT TYPE=hidden NAME=mv_update_empty VALUE="1">
-<INPUT TYPE=hidden NAME=mv_data_fields VALUE="code link_type name image icon banner_text banner_image">
+<INPUT TYPE=hidden NAME=mv_data_fields VALUE="code link_type name display_type">
 <INPUT TYPE=hidden NAME=code VALUE="[table-code]">
 
 <table __UI_T_PROPERTIES__>
@@ -630,6 +757,7 @@ setcat=[cgi selector]
 		[display table=cat column=link_type key="[value cat]" js=|onChange="this.form.submit()"|]
 	</td>
 </tr>
+[set needs_banner_info][/set]
 
 [if scratch ui_cat_type eq external]
 <INPUT TYPE=hidden NAME=mv_data_fields value="url">
@@ -705,6 +833,7 @@ setcat=[cgi selector]
 </tr>
 [/elsif]
 [elsif scratch ui_cat_type eq simple]
+[set needs_banner_info]1[/set]
 <INPUT TYPE=hidden NAME=mv_data_fields value="tab selector page">
 [calc]
 	$Values->{tab} = q{[table-data cat tab]} || $Config->{ProductFiles}[0];
@@ -758,7 +887,7 @@ setcat=[cgi selector]
 
 [/elsif]
 [elsif scratch ui_cat_type eq complex]
-
+[set needs_banner_info]1[/set]
 <INPUT TYPE=hidden NAME=mv_data_fields value="search">
 <INPUT TYPE=hidden NAME=ui_target value="mainwindow[scratch win]">
 <INPUT TYPE=hidden NAME=ui_searchblob value="">
@@ -786,6 +915,7 @@ setcat=[cgi selector]
 		if($Scratch->{search_page}) {
 			$stuff = delete $Scratch->{search_page};
 			$stuff =~ s/.*?(['\|])(.*)\1.*/$2/s;
+			$stuff =~ s/^[\s=0]+$//mg;
 			$stuff =~ s/^\s+//mg;
 			$stuff =~ s/\s+$//mg;
 		}
@@ -804,9 +934,11 @@ setcat=[cgi selector]
 [/elsif]
 [/if]
 
-
+[if scratch needs_banner_info]
 <tr>
 	<td bgcolor=__UI_C_INTBLOCK__>
+	<INPUT TYPE=hidden NAME=mv_data_fields value="banner_text">
+	<INPUT TYPE=hidden NAME=mv_data_fields value="banner_image">
 	<small><b>Banner Text
 	</td>
 	<td bgcolor=__UI_C_INTBLOCK__>
@@ -823,6 +955,52 @@ setcat=[cgi selector]
 		<INPUT SIZE=30 NAME=banner_img value="[table-data cat banner_img]">
 	</td>
 </tr>
+[/if]
+
+<tr>
+<td colspan=2 bgcolor=__UI_C_INTBLOCK__><HR></td>
+</tr>
+
+[set ui_cat_display][table-data cat display_type][/set]
+
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small><B>Display type</b>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small>
+		[display table=cat column=display_type key="[value cat]" js=|onChange="this.form.submit()"|]
+	</td>
+</tr>
+
+[if scratch ui_cat_display =~ /icon|image/]
+<INPUT TYPE=hidden NAME=mv_data_fields value="image">
+<INPUT TYPE=hidden NAME=mv_data_fields value="image_prop">
+<input type=hidden name="ui_filter:image" value="nullselect">
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<B>Image</B>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small>
+	<small>
+	[display table=cat column=image key="[value cat]" js=|onChange="this.form.submit()"|]
+	</td>
+</tr>
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<B>Image properties</B>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small>
+		<input name="image_prop" size=30 VALUE="[calc]
+		$image_prop = q{[table-data cat image_prop]};
+		$image_prop =~ s/"/&quot;/g;
+		return $image_prop || 'border=0';
+	[/calc]">
+	</td>
+</tr>
+[/if]
 
 </table>
 

@@ -1,11 +1,11 @@
-@@UI_STD_DBEDIT_HEAD@@
+@_UI_STD_DBEDIT_HEAD_@
 
 [seti page_title]Item editor: [cgi item_id][/seti]
 [seti page_banner]Item editor: edit item <B>[cgi item_id]</B>[/seti]
 [set help_name]item.edit[/set]
 [set icon_name]admin/icon_item.gif[/set]
 
-@@UI_STD_HEAD@@
+@_UI_STD_HEAD_@
 
 <A HREF="[area href=admin/flex_editor
 				form='
@@ -40,25 +40,26 @@
 	my $db = $Db{$Scratch->{prod_tables}}
 		or return;
 	my $fields = join " ", '', $db->columns(), '';
-	return unless $fields =~ /\sblurb_begin\s/;
+	#return unless $fields =~ /\sblurb_begin\s/;
 	$url = $Tag->area( { href => '__UI_BASE__/flex_editor',
 						 form => qq{
 							item_id=$CGI->{item_id}
-							mv_data_table=products
+							ui_return_to=__UI_BASE__/item
+							mv_data_table=merchandising
 							page_title=Merchandising: $CGI->{item_id}
 							help_name=merchandising
 							ui_hide_key=1
 							ui_return_to=admin/item
 							icon_name=admin/icon_item.gif
-							ui_break_before=featured blurb_begin
-							ui_data_fields=sku featured blurb_begin blurb_end
+							ui_break_before=featured blurb_begin banner_text start
+							ui_data_fields=sku featured blurb_begin blurb_end banner_text banner_image start finish
 							},
 						});
 	return qq{<A HREF="$url">Merchandising</A>};
 [/perl]
 
 <P>
-@@UI_STD_DBEDIT_TABLE@@
+@_UI_STD_DBEDIT_TABLE_@
 
 <A HREF="[area href=admin/flex_editor
 				form='
@@ -72,5 +73,5 @@
 					icon_name=admin/icon_item.gif
 					']">No meta display</A>
 
-@@UI_STD_FOOTER@@
+@_UI_STD_FOOTER_@
 <!-- page: @@MV_PAGE@@ -->

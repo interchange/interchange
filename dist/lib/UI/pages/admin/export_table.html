@@ -8,7 +8,7 @@
 [set table_perm]1[/set]
 [set help_name]export.main[/set]
 [set icon_name]admin/icon_config.gif[/set]
-@@UI_STD_HEAD@@
+@_UI_STD_HEAD_@
 [seti user_tables][loop list="[list-databases]"][if-mm function=export table="[loop-code]"][loop-code]
 [/if-mm][/loop][/seti]
 [seti tables][scratch user_tables]
@@ -297,4 +297,4 @@ ui_export_database=1
 
 <!-- ----- END REAL STUFF ----- -->
 
-@@UI_STD_FOOTER@@
+@_UI_STD_FOOTER_@

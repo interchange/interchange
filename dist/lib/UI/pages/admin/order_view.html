@@ -2,7 +2,7 @@
 [set page_banner]View order[/set]
 [set help_name]order.view[/set]
 [set icon_name]admin/icon_orders.gif[/set]
-@@UI_STD_HEAD@@
+@_UI_STD_HEAD_@
 [calc]
 	delete $Scratch->{ui_bounce};
 	return if $CGI->{order};
@@ -377,5 +377,5 @@ vieworder=
 [/loop]
 <!-- ----- END REAL STUFF ----- -->
 
-@@UI_STD_FOOTER@@
+@_UI_STD_FOOTER_@
 <!-- page: @@MV_PAGE@@ -->

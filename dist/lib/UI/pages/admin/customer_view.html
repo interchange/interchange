@@ -2,7 +2,7 @@
 [set page_banner]View customer[/set]
 [set help_name]customer.view[/set]
 [set icon_name]admin/icon_people.gif[/set]
-@@UI_STD_HEAD@@
+@_UI_STD_HEAD_@
 [calc]
 	delete $Scratch->{ui_bounce};
 	#Log("got here, customer=$CGI->{customer}, arg=$CGI->{mv_arg}");
@@ -37,6 +37,7 @@
 				href=__UI_BASE__/flex_editor
 				form=|
 					ui_return_to=__UI_BASE__/customer_view
+					ui_hide_key=1
 					ui_return_to=mv_arg=[cgi customer]
 					ui_data_fields=username company fname lname address1 address2 city state zip country email phone_day phone_night
 					page_title=Customer: [loop-data userdb fname] [loop-data userdb lname]
@@ -236,32 +237,30 @@
 <input type=hidden name=mv_action value=back>
 <input type=hidden name=customer value="[loop-data userdb username]">
 <input type=hidden name=viewnext value=1>
-[set Change password]
-user_id=[loop-code]
-mv_nextpage=__UI_BASE__/customer_change_pass
-[/set]
-[set Return]
+
+[button text="Back"]
 viewnext=
 viewcustomer=
-[/set]
-<input type=submit name=mv_click value="Return">
+[/button]
 
-[set Enter order]
+[button text="Enter order"]
 mv_nextpage=__UI_BASE__/entry
 mv_todo=return
-[/set] 
-
-<input type=submit name="mv_click" value="Enter order">
+[/button] 
 
 [if-mm advanced userdb=e]
 [if-loop-data userdb inactive]
-<input type=submit name="activate" value="Activate customer">
+[button name="activate" text="Activate customer"][/button]
 [else]
-<input type=submit name="deactivate" value="Deactivate customer"
-	onClick="return confirm('Are you sure you want to deactivate this customer?')">
+[button name="deactivate" text="Deactivate customer"
+	confirm="Are you sure you want to deactivate this customer?"][/button]
 [/else]
 [/if-loop-data]
-<input type=submit name="mv_click" value="Change password">
+
+[button text="Change password"]
+user_id=[loop-code]
+mv_nextpage=__UI_BASE__/customer_change_pass
+[/button]
 [/if-mm]
 
 [if-mm advanced userdb=d]
@@ -275,5 +274,5 @@ mv_todo=return
 [/loop]
 <!-- ----- END REAL STUFF ----- -->
 
-@@UI_STD_FOOTER@@
+@_UI_STD_FOOTER_@
 <!-- page: @@MV_PAGE@@ -->

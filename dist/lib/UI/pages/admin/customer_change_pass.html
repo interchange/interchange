@@ -4,7 +4,7 @@
 [set help_name]access.main[/set]
 [set icon_name]admin/icon_people.gif[/set]
 [set no_old_needed][/set]
-@@UI_STD_HEAD@@
+@_UI_STD_HEAD_@
 
 [if session failure]
 <P>
@@ -91,26 +91,21 @@
 
 <p>
 
-[set Ok]
-[/if-mm]
-[/set]
 [if-mm advanced userdb=e]
-	[set Ok]
-	mv_todo=set
-	[/set]
-	<input type=submit name="mv_click" value="Ok">
-	<input type=submit value="Cancel">
+[button text="Ok"]
+mv_todo=set
+[/button]
+<input type=submit value="Cancel">
 [else]
-	[set Back]
-	mv_todo=back
-	[/set]
-	<input type=submit value="Back">
+[button text="Back"]
+mv_todo=back
+[/button]
 [/else]
 [/if-mm]
 
 </form>
 [/loop]
 
-@@UI_STD_FOOTER@@
+@_UI_STD_FOOTER_@
 
 <!-- page: @@MV_PAGE@@ -->
