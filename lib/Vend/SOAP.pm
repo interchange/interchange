@@ -1,6 +1,6 @@
 # Vend::SOAP - Handle SOAP connections for Interchange
 #
-# $Id: SOAP.pm,v 2.9 2003-05-03 16:41:02 racke Exp $
+# $Id: SOAP.pm,v 2.10 2003-05-07 17:23:21 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -34,7 +34,7 @@ require SOAP::Transport::HTTP;
 use strict;
 
 use vars qw($VERSION @ISA $AUTOLOAD);
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = substr(q$Revision: 2.10 $, 10);
 @ISA = qw/SOAP::Server/;
 
 my %Allowed_tags;
@@ -353,6 +353,9 @@ sub AUTOLOAD {
 	if($Tmp::Autoloaded++ > 100) {
 		die "must be in endless loop, autoloaded $Tmp::Autoloaded times";
 	}
+
+	chdir $Vend::Cfg->{VendRoot} 
+		or die "Couldn't change to $Vend::Cfg->{VendRoot}: $!\n";
 
 	::open_database();
 	open_soap_session();
