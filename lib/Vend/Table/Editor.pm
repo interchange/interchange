@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.58 2004-06-07 03:01:45 mheins Exp $
+# $Id: Editor.pm,v 1.59 2004-06-07 03:05:30 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.58 $, 10);
+$VERSION = substr(q$Revision: 1.59 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -3965,11 +3965,5 @@ sub create_rows {
 	}
 	return join "\n", @out;
 }
-
-#			push @out, <<EOF if $break;
-#<tr$opt->{break_row_extra}>
-#	<td COLSPAN=$span$opt->{td_extra}{break}>$break_label{$namecol}</td>
-#</tr>
-#EOF
 
 1;
