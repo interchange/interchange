@@ -60,6 +60,9 @@ Interchange 4.6.1
 
 * Added 3 usertags: benchmark, sleep, and table_organize (in eg/).
 
+* Filled in some missing timestamp fields in construct demo store data,
+  which was causing PostgreSQL 7 data imports to fail.
+
 
 Interchange 4.6.0
 
