@@ -1,6 +1,6 @@
 %define interchange_version		4.5.6
 %define interchange_package		interchange
-%define interchange_user		interchange
+%define interchange_user		interch
 %define build_cats				construct
 
 %define see_base For a description of Interchange see http://www.akopia.com/
@@ -33,7 +33,7 @@ and power rival the costliest commercial systems.
 mkdir -p $RPM_BUILD_ROOT
 perl Makefile.PL \
 	rpmbuilddir=$RPM_BUILD_ROOT \
-	MINIVEND_USER=interchange \
+	INTERCHANGE_USER=%{interchange_user} \
 	PREFIX=$RPM_BUILD_ROOT/usr/lib/interchange \
 	INSTALLMAN1DIR=$RPM_BUILD_ROOT/usr/man/man1 \
 	INSTALLMAN3DIR=$RPM_BUILD_ROOT/usr/man/man8 \

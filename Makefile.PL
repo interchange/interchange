@@ -259,7 +259,6 @@ sub extra_libs {
 		push @extra_lib_files, 'IniConf.pm';
 	}
 
-
 	eval {
 		require HTML::Entities;
 	};
@@ -352,6 +351,7 @@ sub mk_initp {
 
 sub initialize {
     my %X;
+#warn "Got to initialize\n";
     $X{INSTALLDIRS}     = "perl";
 	$X{EXE_FILES}  = [qw(
 							scripts/compile_link
@@ -395,6 +395,8 @@ sub initialize {
 		$MV::Default{RPMBUILDDIR} = $X{RPMBUILDDIR};
 	}
 
+#warn "Got past set RPMBUILDDIR = $X{RPMBUILDDIR} \n";
+
 	return %X if $MV::Default{nocopy};
 
     my $uid;
@@ -405,8 +407,10 @@ sub initialize {
         close UID;
     }
 
+#warn "Got past open UID file \n";
+
 	GETUID: {
-		if($> == 0 and ! $MV::Default{MINIVEND_USER} and ! $Windows) {
+		if($> == 0 and ! $MV::Default{INTERCHANGE_USER} and ! $Windows) {
 			$uid = my_prompt(
 				qq{Interchange cannot be run as root. Which user should run Interchange? },
 				($uid || 'interch'),
@@ -424,7 +428,7 @@ sub initialize {
 			};
 		}
 	}
-
+#warn "Got past GETUID\n" ; #if $X{RPMBUILDDIR};
     if($uid) {
         open(UID, ">_uid")
             or die "Can't write uid file: $!\n";
@@ -465,6 +469,8 @@ sub initialize {
 		$realdir = $MV::Default{final};
 	}
 
+#warn "Got past realdir prompt\n" ; #if $X{RPMBUILDDIR};
+
 	$X{INSTALLSCRIPT}	= "$realdir/bin";
 	$X{INSTALLBIN}		= "$realdir/bin";
 	$X{INSTALLARCHLIB}	= "$realdir";
@@ -490,6 +496,8 @@ sub initialize {
 						../pod/mvdocs.pod simple/download/mvdocs.pod
 						../pod/mvfaq.pod simple/download/mvfaq.pod
 						);
+
+#warn "Got past mvtags build\n" ; #if $X{RPMBUILDDIR};
 
 	if($Windows) {
 		mk_initp(\%X);
@@ -528,6 +536,7 @@ sub initialize {
 			install_file('.', $realdir, $_);
 		}
 	}
+#warn "Got past Windows stuff\n" ; #if $X{RPMBUILDDIR};
 	if($MV::Default{final}) {
 		$ = 0;
 		for(glob "_*") {
@@ -538,9 +547,13 @@ sub initialize {
 		my (@files) = <MANI>;
 		close MANI;
 
+#warn "Got past open MANIFEST\n" ; #if $X{RPMBUILDDIR};
+
 		# install share/ files from MANIFEST
 		chomp(my @sharefiles = grep m:^share/:, @files);
 		install_file('.', $realdir, $_) for @sharefiles;
+
+#warn "Got past install SHAREFILES\n" ; #if $X{RPMBUILDDIR};
 
 		# build context-sensitive admin help files
 		my $sourcedir = cwd();
@@ -556,6 +569,8 @@ sub initialize {
 			warn("Unimportant: Error generating admin help HTML\n") if $@;
 		}
 		chdir $sourcedir;
+
+#warn "Got past install Helpfiles\n" ; #if $X{RPMBUILDDIR};
 
 		# install dist/ files from MANIFEST
 		@files = grep m:^dist/:, @files;
@@ -578,6 +593,8 @@ sub initialize {
 			install_file('.', $realdir, $_);
 		}
 		chdir '..';
+
+#warn "Got past install all files\n" ; #if $X{RPMBUILDDIR};
 
 		for(@os_hints) {
 			my ($condition, $routine) = @$_;
@@ -616,11 +633,11 @@ EOF
 				or die "Can't open uid file: $!\n";
 			my $uid = <UID>;
 			close UID;
-			$MV::Default{MINIVEND_UID} = getpwnam($uid);
-			$MV::Default{MINIVEND_GID} = getgrnam($uid);
+			$MV::Default{INTERCHANGE_UID} = getpwnam($uid);
+			$MV::Default{INTERCHANGE_GID} = getgrnam($uid);
 			for(@chown_files) {
-				chown	$MV::Default{MINIVEND_UID},
-						$MV::Default{MINIVEND_GID},
+				chown	$MV::Default{INTERCHANGE_UID},
+						$MV::Default{INTERCHANGE_GID},
 						"$realdir/$_";
 			}
 		}
@@ -770,7 +787,7 @@ EOF
 }
 
 	my %mv_specific = qw/
-							PREFIX 1 FORCE 1 FINAL 1 RPMBUILDDIR 1 MINIVEND_USER 1
+						PREFIX 1 FORCE 1 FINAL 1 RPMBUILDDIR 1 INTERCHANGE_USER 1
 					  /;
 	my %delete;
 	use Getopt::Long;
@@ -804,10 +821,10 @@ EOF
 	Getopt::Long::config(qw/permute/);
 	GetOptions(\%optctl, @options)
 		or die "Bad option get\n";
-#	use Data::Dumper;
-#	$Data::Dumper::Terse = $Data::Dumper::Indent = 2;
-#	print "ARGV: " . Dumper(\@ARGV);
-#	print "OPT: " . Dumper(\%MV::Default);
+	use Data::Dumper;
+	$Data::Dumper::Terse = $Data::Dumper::Indent = 2;
+	print "ARGV: " . Dumper(\@ARGV);
+	print "OPT: " . Dumper(\%MV::Default);
 	@ARGV = grep ! $delete{$_}, @saveargs;
 
 if($Windows) {
