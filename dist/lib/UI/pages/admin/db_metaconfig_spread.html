@@ -51,6 +51,7 @@
 [table-editor
 	table=mv_metadata
 	view=dbconfig
+	table-width="90%"
 
 	key="[scratch tmp_dbcode]"
 
@@ -62,8 +63,10 @@
 		=Spreadsheet page display
 
 		extended.spread_fields
+		extended.spread_meta
 		extended.spread_height
 		extended.spread_width
+		extended.spread_textarea
 		extended.spread_textarea_rows
 	"
 
@@ -71,16 +74,23 @@
 		code							=> 'View::Table',
 		name							=> 'Description',
 		'extended.spread_fields'		=> 'Fields to edit',
+		'extended.spread_meta'			=> 'Fields to meta display',
+		'extended.spread_textarea'		=> 'Fields for textarea display',
 		'extended.spread_height'		=> 'Number of rows',
 		'extended.spread_width'			=> 'Column width',
 		'extended.spread_textarea_rows' => 'Rows in a textarea',
 	}`
 
+	filter=`{
+		'extended.spread_meta' => 'null_to_space',
+	}`
 	widget=`{
 		code							=> 'hidden_text',
 		name							=> 'value',
 		height							=> 'text_5',
 		'extended.spread_fields'		=> 'move_combo_8',
+		'extended.spread_meta'			=> 'checkbox_left_4',
+		'extended.spread_textarea'		=> 'checkbox_left_4',
 		'extended.spread_height'		=> 'text_5',
 		'extended.spread_width'			=> 'text_5',
 		'extended.spread_textarea_rows' => 'text_5',
@@ -88,6 +98,8 @@
 
 	database=`{
 		'extended.spread_fields'		=> $CGI->{ui_table},
+		'extended.spread_meta'			=> $CGI->{ui_table},
+		'extended.spread_textarea'		=> $CGI->{ui_table},
 	}`
 
 	height=`{
@@ -96,6 +108,8 @@
 
 	options=`{
 		'extended.spread_fields'		=> 'columns',
+		'extended.spread_meta'			=> 'columns',
+		'extended.spread_textarea'		=> 'columns',
 	}`
 
 ]

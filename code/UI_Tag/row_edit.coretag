@@ -5,16 +5,39 @@ UserTag row-edit Interpolate 1
 UserTag row-edit Routine <<EOR
 sub {
 	my ($key,$table,$size,$columns,$opt) = @_;
-	use vars qw/$CGI %Db $Values $Variable/;
+	use vars qw/$CGI $Values $Variable/;
 #::logDebug("row_edit options=" . ::uneval($opt));
 	$table = $table || $CGI::values{mv_data_table} || return "BLANK DB";
-	my $db = $Db{$table} || Vend::Data::database_exists_ref($table);
-	my $mtab = $Variable->{UI_META_TABLE} || 'mvmetadata';
-	my $mdb = $Db{$mtab} || Vend::Data::database_exists_ref($mtab);
+	my $db = ::database_exists_ref($table);
+	my $mtab = $::Variable->{UI_META_TABLE} || 'mv_metadata';
+	my $mdb = ::database_exists_ref($mtab);
 	$opt->{view} ||= $CGI->{ui_meta_view};
 
 	my $view = UI::Primitive::meta_record($table, $opt->{view}) || {};
 	
+	my $tm_extra = '';
+	my $ta_extra = '';
+	my $tf_extra = '';
+	if($opt->{extra}) {
+		$tf_extra = " $opt->{extra}";
+	}
+	if($opt->{meta_extra}) {
+		$tm_extra .= " $opt->{meta_extra}";
+	}
+	if($opt->{textarea_extra}) {
+		$tm_extra .= " $opt->{meta_extra}";
+	}
+
+	$ta_extra ||= $tf_extra;
+	$tm_extra ||= $tf_extra;
+
+	my $prependor = '';
+	if($opt->{pointer}) {
+		$prependor = $opt->{pointer};
+		$prependor =~ s/\D+//;
+		$prependor = $prependor ? $prependor . '_' : '';
+#::logDebug("setting prependor to $prependor");
+	}
 	return errmsg("non-existent table '%s' for row-edit", $table)
 		unless $db;
 	$db = $db->ref();
@@ -25,11 +48,11 @@ sub {
 	if ($key) {
 		eval {
 			$bad = ! $db->record_exists($key);
-			$bad = 'DELETED' if $bad;
+			$bad = errmsg('DELETED') if $bad;
 		};
-		$bad = 'ERROR' if $@;
+		$bad = errmsg('ERROR') if $@;
 		if(! $bad and $acl) {
-			$bad = 'Not available'
+			$bad = errmsg('Not available')
 				if ! UI::Primitive::ui_acl_atom($acl, 'keys', $key);
 		}
 	}
@@ -63,54 +86,54 @@ sub {
 
 	my $out = '';
 
-	my $meta = $CGI->{ui_no_meta_display} ? '' : $view->{type};
+	my $meta   = $CGI->{ui_no_meta_display} ? '' : $view->{spread_meta};
+	my %do_ta;
+	my %do_meta;
+	if($meta) {
+		my @metas = grep /\S/, split /[\0,\s]+/, $meta;
+		@do_meta{@metas} = @metas;
+	}
+
+	if($view->{spread_textarea}) {
+		my @tas = grep /\S/, split /[\0,\s]+/, $view->{spread_textarea};
+		@do_ta{@tas} = @tas;
+	}
 	my $tmp;
 
 	$size = $size || $view->{width} || 12;
 	if($bad) {
 		for(@cols) {
-			$out .= "<TD>$bad</TD>";
+			$out .= "<TD$tf_extra>$bad</TD>";
 		}
 	}
-	elsif($key) {
-		my $text;
+	elsif($key or $opt->{blank}) {
 		for(@cols) {
-			eval {
-				$text = $db->field($key,$_);
-			};
-			$text = 'DELETED' if $@;
+			my $text = $opt->{blank} ? '' : $db->field($key, $_);
 			my $msg = '';
-			if($meta) {
-				if	( $view->{type} =~ /combo|checkbox|multi|date|image|option_format/) {
-					$msg = '<br><small><small>unable to display with field info</small></small>';
-				}
-				else {
-					my $tmp = UI::Primitive::meta_display($table,$_,$key,$text);
-					$out .= "<TD>$tmp</TD>";
-					next;
-				}
+			if($do_meta{$_}) {
+				my $tmp = Vend::Tags->display( {
+											table => $table,
+											column => $_,
+											name => "$prependor$_",
+											value => $text,
+											template => ' $WIDGET$ ',
+										});
+				$out .= "<TD$tm_extra>$tmp</TD>";
+				next;
 			}
-			
-			if($ta{$_} || $text =~ /\n/) {
+			elsif($do_ta{$_}) {
 				my $rows = $opt->{height} || 4;
 				HTML::Entities::encode($text, $ESCAPE_CHARS::std);
 				$out .= <<EOF;
-<TD><TEXTAREA NAME="$_" COLS="$size" ROWS="$rows">$text</TEXTAREA>$msg</TD>
+<TD$ta_extra><TEXTAREA NAME="$prependor$_" COLS="$size" ROWS="$rows">$text</TEXTAREA>$msg</TD>
 EOF
 			}
 			else {
 				$text =~ s/"/&quot;/g;
 				$out .= <<EOF;
-<TD><INPUT NAME="$_" SIZE=$size VALUE="$text">$msg</TD>
+<TD$tf_extra><INPUT NAME="$prependor$_" SIZE=$size VALUE="$text">$msg</TD>
 EOF
 			}
-		}
-	}
-	elsif($opt->{blank}) {
-		for(@cols) {
-				$out .= <<EOF;
-<TD><INPUT NAME="$_" SIZE=$size VALUE=""></TD>
-EOF
 		}
 	}
 	else {
