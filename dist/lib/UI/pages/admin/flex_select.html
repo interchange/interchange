@@ -42,9 +42,34 @@
 [bounce page="__UI_BASE__/error"]
 [/if-mm]
 
+[calc]
+	my $out = '';
+	my $page;
+	delete $Scratch->{ui_location};
+	return unless $CGI->{ui_return_to};
+	($page, @env) = split /\0/, $CGI->{ui_return_to};
+	$Scratch->{ui_location} = $Tag->area({
+									href => $page,
+									form => join "\n", @env,
+								});
+	return;
+[/calc]
+[if scratch ui_location]
+[bounce href=`delete $Scratch->{ui_location}`]
+[/if]
+
 @@UI_STD_HEAD@@
 [update values]
 <!-- ----- BEGIN REAL STUFF ----- -->
+
+[if scratch ui_failure]
+<P>
+<BLOCKQUOTE>
+<FONT COLOR="__CONTRAST__">[scratch ui_failure][set ui_failure][/set]</FONT>
+</BLOCKQUOTE>
+<P>
+&nbsp;
+[/if]
 <form action="[area __UI_BASE__/flex_editor]" method="GET">
 <INPUT TYPE=hidden NAME=mv_action     VALUE=return>
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/flex_editor">
@@ -55,7 +80,7 @@
 <INPUT TYPE=hidden NAME=icon_name VALUE="[cgi icon_name]">
 <INPUT TYPE=hidden NAME=help_name VALUE="[cgi help_name]">
 <INPUT TYPE=hidden NAME=page_banner VALUE="[cgi page_banner]">
-<INPUT TYPE=hidden NAME=ui_data_fields VALUE="[either][cgi mv_data_fields][or][db-columns table="[cgi mv_data_table]"][/either]">
+<INPUT TYPE=hidden NAME=ui_data_fields VALUE="[either][cgi ui_data_fields][or][db-columns table="[cgi mv_data_table]"][/either]">
 <INPUT TYPE=hidden NAME=ui_break_before VALUE="[cgi ui_break_before]">
 
 <p>
@@ -87,8 +112,8 @@
 	[flag type=write table="[cgi mv_data_table]"]
 	[set ui_error][/set]
 
-	[if-mm function="!tables" table="[cgi mv_data_table]"]
-		[seti ui_error]Not authorized for table '[cgi mv_data_table]'.[/seti]
+	[if-mm function="!tables" table="[cgi mv_data_table]=d"]
+		[seti ui_error]Not authorized to delete from table '[cgi mv_data_table]'.[/seti]
 	[/if-mm]
 
 	[if !scratch ui_error]
@@ -96,7 +121,6 @@
 			unless ($db = $Db{$CGI->{mv_data_table}}) {
 				$Scratch->{ui_error} = "bad data table $CGI->{mv_data_table}";
 			}
-			Log("trying to delete $CGI->{item_id}");
 			$db->delete_record($CGI->{item_id})
 				or $Scratch->{ui_error} = "Failed to delete $CGI->{item_id}";
 			return;

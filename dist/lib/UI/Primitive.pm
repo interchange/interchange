@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.10 $, 10);
+$VERSION = substr(q$Revision: 1.11 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -63,40 +63,54 @@ sub is_super {
 #::logDebug("called is_super");
 	return 0 if ! $Vend::Session->{logged_in};
 #::logDebug("is_super: logged in");
-	return 0 if ! $Vend::Session->{username};
+	return 0 if ! $Vend::username;
+	return 0 if $Vend::Cfg->{AdminUserDB} and ! $Vend::admin;
 #::logDebug("is_super: have username");
-	my $db = Vend::Data::database_exists_ref($Vend::Cfg->{Variable}{UI_ACCESS_TABLE} || 'access');
+	my $db = Vend::Data::database_exists_ref(
+						$Vend::Cfg->{Variable}{UI_ACCESS_TABLE} || 'access'
+						);
 	return 0 if ! $db;
 #::logDebug("is_super: access db exists");
 	$db = $db->ref();
-	my $result = $db->field($Vend::Session->{username}, 'super');
+	my $result = $db->field($Vend::username, 'super');
 #::logDebug("is_super: result=$result");
 	return $result;
 }
 
+sub is_logged {
+#::logDebug("is_logged check");
+	return 0 if ! $Vend::Session->{logged_in};
+#::logDebug("is_logged logged_in=ok");
+	return 0 unless $Vend::admin or ! $Vend::Cfg->{AdminUserDB};
+#::logDebug("is_logged admin=ok");
+	return 1;
+}
 
 sub ui_acl_enabled {
+	my $try = shift;
 	my $table;
 	$Global::SuperUserFunction = \&is_super;
 	my $default = defined $Global::Variable->{UI_ACL}
 				 ? (! $Global::Variable->{UI_ACL})
 				 : 1;
-	$table = $::Variable->{UI_ACCESS_TABLE} || 'minimate';
+	$table = $::Variable->{UI_ACCESS_TABLE} || 'access';
 	$Vend::WriteDatabase{$table} = 1;
 	my $db = Vend::Data::database_exists_ref($table);
 	return $default unless $db;
 	$db = $db->ref() unless $Vend::Interpolate::Db{$table};
-	my $uid = $Vend::Session->{username} || $CGI::remote_user;
+	my $uid = $try || $Vend::username || $CGI::remote_user;
+#::logDebug("ACL enabled try uid=$uid");
 	if(! $uid or ! $db->record_exists($uid) ) {
 		return 0;
 	}
-	$Vend::Session->{ui_username} = $uid;
+#::logDebug("ACL enabled record exists uid=$uid");
 	my $ref = $db->row_hash($uid)
 		or die "Bad database record for $uid.";
 #::logDebug("ACL enabled, table_control=$ref->{table_control}");
 	if($ref->{table_control}) {
 		$ref->{table_control_ref} = $ui_safe->reval($ref->{table_control});
 	}
+	return $ref if $try;
 	$Vend::UI_entry = $ref;
 }
 
@@ -105,12 +119,12 @@ sub get_ui_table_acl {
 	$table = $::Values->{mv_data_table} unless $table;
 #::logDebug("Call get_ui_table_acl: " . Vend::Util::uneval_it(\@_));
 	my $acl_top;
-	if($user and $user ne $Vend::Session->{ui_username}) {
+	if($user and $user ne $Vend::username) {
 		if ($Vend::UI_acl{$user}) {
 			$acl_top = $Vend::UI_acl{$user};
 		}
 		else {
-			my $ui_table = $::Variable->{UI_ACCESS_TABLE} || 'minimate';
+			my $ui_table = $::Variable->{UI_ACCESS_TABLE} || 'access';
 			my $acl_txt = Vend::Interpolate::tag_data($ui_table, 'table_control', $user);
 			return undef unless $acl_txt;
 			$acl_top = $ui_safe->reval($acl_txt);
@@ -137,7 +151,7 @@ sub ui_acl_grep {
 	my %ok;
 	@ok{@entries} = @entries;
 	if($val = $acl->{owner_field} and $name eq 'keys') {
-		my $u = $Vend::Session->{ui_username};
+		my $u = $Vend::username;
 		my $t = $acl->{table}
 			or do{
 				::logError("no table name with owner_field.");
@@ -178,16 +192,42 @@ sub ui_acl_atom {
 	return $status;
 }
 
-sub ui_check_acl {
+sub ui_extended_acl {
 	my ($item, $string) = @_;
 	$string = " $string ";
-	return 0 if $string =~ /[\s,]!$item[,\s]/;
-	return 1 if $string =~ /[\s,]$item[,\s]/;
+#::logDebug("extended acl string='$string'");
+	my ($name, $sub) = split /=/, $item, 2;
+#::logDebug("extended acl: name=$name sub=$sub");
+#::logDebug("extended acl trying /[\s,]!${name}\[,\s]/");
+	return 0 if $string =~ /[\s,]!$name(?:[,\s])/;
+#::logDebug("extended acl passed /[\s,]!${name}\[,\s]/");
+#::logDebug("extended acl trying /[\s,]${name}\[,\s]/");
+	return 1 if $string =~ /[\s,]$name(?:[,\s])/;
+#::logDebug("extended acl passed /[\s,]${name}\[,\s]/");
+	my (@subs) = split //, $sub;
+	for(@subs) {
+#::logDebug("extended acl trying /[\s,]!$name=[^,\s]*$sub/");
+		return 0 if $string =~ /[\s,]!$name=[^,\s]*$sub/;
+#::logDebug("extended acl passed /[\s,]!$name=[^,\s]*$sub/");
+#::logDebug("extended acl trying /[\s,]$name=[^,\s]*$sub/");
+		return 0 unless $string =~ /[\s,]$name=[^,\s]*$sub/;
+#::logDebug("extended acl passed /[\s,]$name=[^,\s]*$sub/");
+	}
+	return 1;
+}
+
+sub ui_check_acl {
+	my ($item, $string) = @_;
+#::logDebug("checking item=$item");
+	return ui_extended_acl(@_) if $item =~ /=/;
+	$string = " $string ";
+	return 0 if $string =~ /[\s,]!$item[=,\s]/;
+	return 1 if $string =~ /[\s,]$item[=,\s]/;
 	return '';
 }
 
 sub ui_acl_global {
-	my $record = ui_acl_enabled('write');
+	my $record = ui_acl_enabled();
 	# First we see if we have ACL enforcement enabled
 	# If you don't, then people can do anything!
 	unless (ref $record) {
@@ -198,31 +238,51 @@ sub ui_acl_global {
 	my $Tag = new Vend::Tags;
 	$CGI->{mv_todo} = $CGI->{mv_doit}
 		if ! $CGI->{mv_todo};
+	if( $Tag->if_mm('super')) {
+		$::Scratch->{mv_data_enable} = 1;
+		return;
+	}
+
     if( $CGI->{mv_todo} eq 'set' ) {
 		undef $::Scratch->{mv_data_enable};
 		my $mml_enable = $Tag->if_mm('functions', 'mml');
 		my $html_enable = ! $Tag->if_mm('functions', 'no_html');
 		my $target = $CGI->{mv_data_table};
 		$Vend::WriteDatabase{$target} = 1;
+		my $db = Vend::Data::database_exists_ref($target);
+		if(! $db) {
+			$::Scratch->{ui_failure} = "Table $target doesn't exist";
+			return;
+		}
+
 		my $keyname = $CGI->{mv_data_key};
-		my @codes = grep /\S/, split /\0/, $CGI->{$keyname};
-		my @fields = grep /\S/, split /[,\s\0]+/, $CGI->{mv_data_fields};
-		if ($CGI->{mv_auto_export} and $Tag->if_mm('!export', undef, { table => $target }, 1) ) {
+		if ($CGI->{mv_auto_export}
+			and $Tag->if_mm('!tables', undef, { table => "$target=x" }, 1) ) {
 			$::Scratch->{ui_failure} = "Unauthorized to export table $target";
 			$CGI->{mv_todo} = 'return';
 			return;
 		}
-		if ($Tag->if_mm('!edit', undef, { table => $target }, 1) ) {
+		if ($Tag->if_mm('!tables', undef, { table => "$target=e" }, 1) ) {
 			$::Scratch->{ui_failure} = "Unauthorized to edit table $target";
 			$CGI->{mv_todo} = 'return';
 			return;
 		}
+
+		my @codes = grep /\S/, split /\0/, $CGI->{$keyname};
 		for(@codes) {
+			unless( $db->record_exists($_) ) {
+				next if $Tag->if_mm('tables', undef, { table => "$target=c" }, 1);
+				$::Scratch->{ui_failure} = "Unauthorized to insert to table $target";
+				$CGI->{mv_todo} = 'return';
+				return;
+			}
 			next if $Tag->if_mm('keys', $_, { table => $target }, 1);
 			$CGI->{mv_todo} = 'return';
 			$::Scratch->{ui_failure} = errmsg("Unauthorized for key %s", $_);
  			return;
   		}
+
+		my @fields = grep /\S/, split /[,\s\0]+/, $CGI->{mv_data_fields};
 		for(@fields) {
 			$CGI->{$_} =~ s/\[/&#91;/g unless $mml_enable;
 			$CGI->{$_} =~ s/\</&lt;/g unless $html_enable;
@@ -231,6 +291,7 @@ sub ui_acl_global {
 			$::Scratch->{ui_failure} = errmsg("Unauthorized for key %s", $_);
  			return;
   		}
+
  		$::Scratch->{mv_data_enable} = 1;
 	}
 	elsif ($CGI->{mv_todo} eq 'deliver') {
@@ -613,7 +674,7 @@ sub meta_display {
 						$sub = \&CORE::length;
 					}
 				}
-				$sub = \&CORE::length if ! $sub;
+				$sub = sub { length(@_) } if ! $sub;
 				$record->{passed} = join ",", grep $sub->($_),
 									map
 										{ $_->[0] =~ s/,/&#44;/g; $_->[0]}

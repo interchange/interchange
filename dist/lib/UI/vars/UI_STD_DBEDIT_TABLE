@@ -13,11 +13,22 @@ Variable UI_STD_DBEDIT_TABLE <<EndOfVar
 <INPUT TYPE=hidden NAME=mv_data_table VALUE="[value mv_data_table]">
 <INPUT TYPE=hidden NAME=mv_data_key VALUE="[value ui_data_key_name]">
 <INPUT TYPE=hidden NAME=mv_data_decode VALUE="[value mv_data_decode]">
-<INPUT TYPE=hidden NAME=ui_return_to   VALUE="[var MV_PAGE global]">
-<INPUT TYPE=hidden NAME=ui_return_to   VALUE="item_id=[scratch arg]">
+[calc]
+	unless ($CGI->{ui_return_to}) {
+		$CGI->{ui_return_to} = "[var MV_PAGE global]\0item_id=$Scratch->{arg}";
+	}
+	@inst = split /\0/, $CGI->{ui_return_to};
+	my $out;
+	for(@inst) {
+		s/"/&quot;/g;
+		$out .= <<EOF;
+<INPUT TYPE=hidden NAME=ui_return_to   VALUE="$_">
+EOF
+	}
+	return $out;
+[/calc]
 <INPUT TYPE=hidden NAME=mv_update_empty VALUE="1">
-<INPUT TYPE=hidden NAME=mv_data_fields
-	VALUE="[db-columns columns='[cgi mv_data_fields]' ]">
+<INPUT TYPE=hidden NAME=mv_data_fields VALUE="[either][cgi ui_data_fields][or][db-columns table="[cgi mv_data_table]"][/either]">
 
 [if-key-exists table="[value mv_data_table]" key="[scratch arg]"]
 <INPUT TYPE=hidden NAME="mv_data_function" VALUE="update">
@@ -110,10 +121,10 @@ EOF
 EOF
 		$Document->write(<<EOF);
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<td bgcolor=__UI_C_INTBLOCK__ align=right width=__UI_LEFT_WIDTH__>
 $label$meta
 </td>
-<td bgcolor=__UI_C_INTBLOCK__>
+<td bgcolor=__UI_C_INTBLOCK__ width=__UI_RIGHT_WIDTH__>
 $display
 </td>
 </tr>
@@ -140,7 +151,7 @@ mv_data_table=[cgi mv_data_table]
 
 <input type=submit name="mv_click" value="Cancel">
 <BR>
-[if-mm export]
+[if-mm tables =x]
 	[if !value ui_too_large]
 	<INPUT TYPE=checkbox NAME=mv_auto_export CHECKED VALUE="[value mv_data_table]">
 		Auto-export

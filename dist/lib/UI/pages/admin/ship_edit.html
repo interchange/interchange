@@ -27,7 +27,7 @@
 	[perl tables=country]
 		my $inmode = $CGI->{ui_shipmode};
 		$inmode =~ s/\W+//g;
-		Log("write inmode=$inmode");
+		#Log("write inmode=$inmode");
 		my $lines = $Config->{Shipping_line};
 		my $ref;
 		my $idx = -1;
@@ -78,14 +78,14 @@
 			$here{$k} = ($here{$k} ? 0 : 1) if $CGI->{ui_ship_country_invert};
 			if( $f[$ptr] =~ /\b$inmode\b/o ) {
 				next unless ! $here{$k};
-				Log("changing $k from $f[$ptr], remove");
+				#Log("changing $k from $f[$ptr], remove");
 				$f[$ptr] =~ s/\b$inmode\b//;
 				$f[$ptr] =~ s/\s+/ /g;
 				$change{$k} = $f[$ptr];
 			}
 			else {
 				next unless $here{$k};
-				Log("changing $k from $f[$ptr], add");
+				#Log("changing $k from $f[$ptr], add");
 				$f[$ptr] .= " $inmode";
 				$f[$ptr] =~ s/\s+/ /g;
 				$change{$k} = $f[$ptr];
@@ -106,9 +106,9 @@
 [if cgi ui_shipmode]
 	[perl]
 		my $inmode = $CGI->{ui_shipmode};
-		Log("inmode=$inmode");
+		#Log("inmode=$inmode");
 		my $lines = $Config->{Shipping_line};
-		Log("shipping: " . $Tag->uneval( { ref => $lines }) );
+		#Log("shipping: " . $Tag->uneval( { ref => $lines }) );
 		my $ref;
 		for(@$lines) {
 			next unless $_->[0] eq $inmode;
@@ -118,10 +118,10 @@
 		return if ! $ref;
 		$ref = [] if ! $ref;
 		my ($mode, $desc, $crit, $min, $max, $cost, $query, $opt) = @{$ref};
-		Log("gave: " . join("|", @$ref) );
+		#Log("gave: " . join("|", @$ref) );
 		$opt = {} if ! ref $opt;
 		if ($opt->{ui_ship_type}) {
-				Log("ui_ship_type: $opt->{ui_ship_type}");
+				#Log("ui_ship_type: $opt->{ui_ship_type}");
 				$Values->{ui_ship_type} = $opt->{ui_ship_type};
 		}
 		elsif ( not $Values->{ui_ship_type} = $CGI->{ui_ship_type} ) {

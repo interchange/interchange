@@ -16,9 +16,41 @@
 [set icon_name]admin/icon_item.gif[/set]
 @@UI_STD_HEAD@@
 
-<!-- ----- BEGIN REAL STUFF ----- -->
+[set Delete item]
+[tag flag write]inventory pricing products[/tag]
+mv_nextpage=__UI_BASE__/item
+[if-mm advanced item=d]
+	[perl tables="inventory pricing products"]
+		my ($item) = $CGI->{item_id};
+		my $out;
+		for(qw/products pricing inventory/) {
+			next unless $Db{$_};
+			if ($Db{$_}->delete_record($item)) {
+				$out .= "Deleted $item from $_ table<BR>";
+			}
+			else {
+				$out .= "Item $item not in $_ table (or delete failed)<BR>";
+			}
+		}
+		$Scratch->{ui_message} = $out;
+		return;
+	[/perl]
+[else]
+	[set ui_message]Not authorized to delete items.[/set]
+[/else]
+[/if-mm]
+[/set]
 
-<form action="[area __UI_BASE__/item_edit]" method="post">
+<!-- ----- BEGIN REAL STUFF ----- -->
+[if scratch ui_message]
+<BLOCKQUOTE>
+	[scratch ui_message]
+	[set ui_message][/set]
+</BLOCKQUOTE>
+<p>
+&nbsp;
+[/if]
+<form action="[area process]" method="post">
 <INPUT TYPE=hidden NAME=mv_todo     VALUE=return>
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/item_edit">
 <INPUT TYPE=hidden NAME=mv_data_table VALUE="[calc]$Config->{ProductFiles}[0][/calc]">
@@ -32,38 +64,18 @@
 <td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_OVERALL_WIDTH__ height=1></td>
 </tr>
 
+[set Create new item]
+ui_hide_key=0
+item_id=new
+sku=new
+[/set]
+
 <tr>
 <td bgcolor="__UI_C_INTBLOCK__" width=__UI_LEFT_WIDTH__>
-<input type="submit" name="show_create_cmd" value="Create new item">
+<input type="submit" name="mv_click" value="Create new item">
 </td>
 
 <td bgcolor="__UI_C_INTBLOCK__" width=__UI_RIGHT_WIDTH__>
-
-<select name="category" size=1>
-<option value=""> Please select a type
-[loop search="
-	fi=cat
-	st=db
-	ra=yes
-	rf=selector,name
-	ml=1000
-"]<option value="[loop-param selector]"> [loop-param name]
-[/loop]
-</select>
-<br>
-
-<select name="matrix_id" size=1>
-<option value=0> Please select a matrix
-<option value=0> (none)
-[loop search="
-	fi=area
-	st=db
-	ra=yes
-	rf=selector,name
-	ml=1000
-"]<option value="[loop-param selector]"> [loop-param name]
-[/loop]
-</select>
 
 &nbsp; <!-- make sure theres always *something* in the cell -->
 
@@ -84,7 +96,7 @@
 <input type="submit" name="show_editallvariants_cmd" value="Edit all 
  variations">
 <br>
-<input type="submit" name="do_delete_cmd" value="Delete item" 
+<input type="submit" name="mv_click" value="Delete item" 
  onClick="return confirm('Are you sure you want to delete this item?')">
 
 </td>

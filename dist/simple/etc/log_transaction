@@ -1,6 +1,6 @@
 #### begin [value mv_order_number] #####
 [seti transaction_record]
-[tag flag write]transactions orderline userdb[/tag]
+[tag flag write]transactions orderline userdb inventory[/tag]
 [if !session logged_in]
 	[set auto_create]1[/set]
 	[if type=explicit compare=|
@@ -88,6 +88,7 @@ affiliate: [data session source]
 campaign: [value campaign]
 status: pending
 [/import]
+Inventory now: [data table=inventory col=quantity key="[item-code]" increment=1 value="-[item-quantity]"]
 [/item-list][/try]
 [catch] There was an error adding to the transaction log. [/catch]
 [if scratch auto_create]

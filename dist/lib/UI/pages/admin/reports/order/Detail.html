@@ -1,4 +1,4 @@
-[if-mm !super]
+[if-mm !advanced orderstats]
 	[calc]
 			$CGI->{affiliate} = $Session->{username};
 			return;
@@ -54,7 +54,7 @@
 
 [calc]
 	if($Session->{arg}) {
-		$Scratch->{date_limit} = "WHERE order_date like '$Session->{arg}%'";
+		$Scratch->{date_limit} = "AND order_date like '$Session->{arg}%'";
 	}
 	elsif ($CGI->{ui_begin_date}) {
 		for (qw/ ui_begin_date ui_end_date /) {
@@ -64,12 +64,12 @@
 								});
 		}
 		$Scratch->{date_limit} = <<EOF
-WHERE order_date > '$CGI->{ui_begin_date}'
+AND   order_date > '$CGI->{ui_begin_date}'
 AND   order_date < '$CGI->{ui_end_date}Z'
 EOF
 	}
 	else {
-		$Scratch->{date_limit} = "WHERE order_date like '$Scratch->{today}%'";
+		$Scratch->{date_limit} = "AND order_date like '$Scratch->{today}%'";
 	}
 	$Scratch->{synd_limit} = '';
 	return unless $CGI->{affiliate};
@@ -83,6 +83,7 @@ EOF
 	sql="
 	select order_number, affiliate, campaign, total_cost, payment_method, state, city, status, order_date
 		from  transactions
+		WHERE deleted != 1
 		[scratch date_limit] [scratch synd_limit]
 		order by order_number
 	"][/query]

@@ -43,7 +43,7 @@
 <INPUT TYPE=hidden NAME=page_title VALUE="Edit Affiliate">
 <INPUT TYPE=hidden NAME=ui_return_to VALUE="@@MV_PAGE@@">
 <INPUT TYPE=hidden NAME=help_name VALUE="affiliate.edit">
-<INPUT TYPE=hidden NAME=ui_data_fields VALUE="[either][cgi mv_data_fields][or][db-columns table="[cgi mv_data_table]"][/either]">
+<INPUT TYPE=hidden NAME=mv_data_fields VALUE="[either][cgi ui_data_fields][or][db-columns table="[cgi mv_data_table]"][/either]">
 <INPUT TYPE=hidden NAME=ui_break_before VALUE="[cgi ui_break_before]">
 
 <p>
@@ -84,7 +84,7 @@
 			unless ($db = $Db{$CGI->{mv_data_table}}) {
 				$Scratch->{ui_error} = "bad data table $CGI->{mv_data_table}";
 			}
-			Log("trying to delete $CGI->{item_id}");
+			#Log("trying to delete $CGI->{item_id}");
 			$db->delete_record($CGI->{item_id})
 				or $Scratch->{ui_error} = "Failed to delete $CGI->{item_id}";
 			return;
@@ -99,12 +99,24 @@
 	[/if]
 [/set]
 
-[set Show Statistics]
+[set Show Orders]
 mv_todo=return
 affiliate=[cgi item_id]
 mv_nextpage=__UI_BASE__/reports/order/ByAffiliate
 [/set]
-<input type=submit name="mv_click" value="Show Statistics"><br>
+
+[set Show Traffic]
+mv_todo=return
+affiliate=[cgi item_id]
+[tag time]
+ui_begin_date=%Y%m
+ui_end_date=%Y%mz
+ui_by_day=1
+[/tag]
+mv_nextpage=__UI_BASE__/reports/traffic/ByAffiliate
+[/set]
+<input type=submit name="mv_click" value="Show Orders"><br>
+<input type=submit name="mv_click" value="Show Traffic"><br>
 
 <input type="submit" name="mv_click" value="Delete affiliate" 
  onClick="return confirm('Are you sure you want to delete this item?')">

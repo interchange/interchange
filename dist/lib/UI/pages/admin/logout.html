@@ -23,16 +23,6 @@
 <INPUT TYPE=hidden NAME=mv_doit  VALUE=return>
 
 
-[set MMLogin] 
-mv_todo=return
-[if type=explicit compare="[userdb login]"]
-mv_nextpage=__UI_BASE__/index
-mv_username=[perl]$Session->{ui_username} = $Session->{username};[/perl]
-[else]
-mv_username=[perl]$Session->{ui_username} = $Session->{username} = '';[/perl]
-[/else]
-[/if]
-[/set]
 [if session failure]
 <TR>
 <TD COLSPAN=2>

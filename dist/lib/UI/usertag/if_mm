@@ -10,25 +10,37 @@ sub {
 #::logDebug("if-mm: " . ::uneval(\@_));
 	my $record;
 	my $status;
+
 	my $reverse;
+	$reverse = $func =~ s/^\s*!\s*//;
+
+	my $extended = '';
+	$extended = $1 if $field =~ s/(=.*)//;
+
+	my ($group, @groups);
 	$text = 1 if ! $text;
   CHECKIT: {
-	$reverse = $func =~ s/^\s*!\s*//;
-	unless ($record = $Vend::UI_entry) {
-		$status = $record, last CHECKIT unless ref($record = ui_acl_enabled());
+#::logDebug("if-mm check func=$func field=$field extended=$extended");
+#::logDebug("if-mm group=$group") if $group;
+	if ($group or ! ($record = $Vend::UI_entry) ) {
+		$record = ui_acl_enabled($group);
+		if ( ! ref $record) {
+			$status = $record;
+			last CHECKIT;
+		}
 	}
 #::logDebug("if-mm record: " . Vend::Util::uneval_it($record));
+	($status = 0, last CHECKIT) if ! UI::Primitive::is_logged();
 	($status = 1, last CHECKIT) if $record->{super};
 	$func = lc $func;
-	$opt->{table} = $field if $func eq 'advanced';
-	my $table = $opt->{table} ||
-				$::Values->{mv_data_table};
+	($status = 1, last CHECKIT) if $func eq 'logged_in';
 
 	my %acl_func = qw/
 						fields	fields
 						field	fields
 						columns	fields
 						column	fields
+						col   	fields
 						row		keys
 						rows	keys
 						key		keys
@@ -58,10 +70,23 @@ sub {
 						journal_update  1
 					/;
 	my %yesno_func = qw/
+						functions  functions
 						advanced  functions
 						tables  tables
 						table   tables
 					/;
+
+	my $table = $CGI::values{mv_data_table} || $::Values->{mv_data_table};
+	
+	if($yesno_func{$func} eq 'tables') {
+		$opt->{table} = $field if ! $opt->{table};
+		$opt->{table} =~ s/^=/$table/;
+	}
+	elsif($yesno_func{$func} eq 'functions') {
+		$opt->{table} = $field;
+	}
+
+	$table = $opt->{table} || $table;
 
 	my $acl;
 	my $check;
@@ -75,7 +100,7 @@ sub {
 			$status = '';
 			last CHECKIT;
 		}
-		$status = ui_check_acl($file, join(" ", @files));
+		$status = ui_check_acl("$file$extended", join(" ", @files));
 		last CHECKIT;
 	}
 	if($bool_func{$func} ) {
@@ -85,22 +110,17 @@ sub {
 	if($check = $yesno_func{$func} ) {
 #::logDebug("if-mm yesno check: table=$table func=$func");
 		my $v;
-		if($paranoid{$table}) {
-			if($v = $record->{"yes_$check"}) {
-				$status = ui_check_acl($table, $v);
-			}
-			else {
-				$status = 1;
-			}
-			if($v = $record->{"no_$check"}) {
-				$status &&= ! ui_check_acl($table, $v);
-			}
+		if($v = $record->{"yes_$check"}) {
+			$status = ui_check_acl("$table$extended", $v);
+#::logDebug("yes check: status=$status");
 		}
 		else {
+#::logDebug("yes check defaulted to 1");
 			$status = 1;
-			if($v = $record->{"no_$check"}) {
-				$status = ! ui_check_acl($table, $v);
-			}
+		}
+		if($v = $record->{"no_$check"}) {
+			$status &&= ! ui_check_acl("$table$extended", $v);
+#::logDebug("no check: status=$status");
 		}
 		last CHECKIT;
 	}
@@ -108,7 +128,7 @@ sub {
 #::logDebug("if-mm straight check: table=$table func=$func");
 		my $default = $func =~ /^no_/ ? 0 : 1;
 		$status = $default, last CHECKIT unless $record->{$func};
-		$status = ui_check_acl($table, $record->{$func});
+		$status = ui_check_acl("$table$extended", $record->{$func});
 #::logDebug("if-mm straight check: table=$table func=$func status=$status reverse=$reverse");
 		last CHECKIT;
 	}
@@ -124,7 +144,7 @@ sub {
 	if($acl->{owner_field} and $check eq 'keys') {
 #::logDebug("if-mm ACL check owner_field: table=$table field=$field check=$check ofield=$acl->{owner_field}");
 		$status = ::tag_data($table, $acl->{owner_field}, $field)
-					eq $Vend::Session->{ui_username};
+					eq $Vend::username;
 		last CHECKIT;
 	}
 	elsif ($check eq 'owner_field') {
@@ -133,6 +153,13 @@ sub {
 	}
 	$status = UI::Primitive::ui_acl_atom($acl, $check, $field);
   }
+#::logDebug("if-mm prior to group: func=$func field=$field status=$status reverse=$reverse") if ! $group;
+	if(! $status and $record and (@groups or $record->{groups}) ) {
+		goto CHECKIT if $group = shift @groups;
+		(@groups) = grep /\S/, split /\0,\s]+/, delete $record->{groups};
+		($group, @groups) = map { s/^/:/; $_ } @groups;
+		goto CHECKIT;
+	}
 #::logDebug("if-mm: func=$func field=$field status=$status reverse=$reverse");
 	return $status
 		? (

@@ -14,9 +14,9 @@
 		return if ! $CGI->{price_ok};
 		my $inmode = $CGI->{ui_shipmode};
 		$inmode =~ s/\W+//g;
-		Log("write inmode=$inmode");
+		#Log("write inmode=$inmode");
 		my $lines = $Config->{Shipping_line};
-		Log("write inmode=$inmode, starting with lines=" . scalar @$lines );
+		#Log("write inmode=$inmode, starting with lines=" . scalar @$lines );
 		my $ref;
 		my $idx = -1;
 		my $ptr;
@@ -34,7 +34,7 @@
 		my $master = $lines->[$idx] || {};
 		my $opt = $master->[7] || '';
 		$opt = {} if ! ref $opt;
-		Log("write inmode=$inmode, ptr=$ptr, len=$len ship_type=$opt->{ui_ship_type}" );
+		#Log("write inmode=$inmode, ptr=$ptr, len=$len ship_type=$opt->{ui_ship_type}" );
 		if($len) {
 			(@old) = splice (@$lines, $ptr, $len);
 		}
@@ -77,7 +77,7 @@
 		}
 		elsif(defined $CGI->{"ui_add_line.x"}) {
 			# append one;
-			Log("appending at $i");
+			#Log("appending at $i");
 			$modes[$i] = [
 					$inmode, 
 					$Config->{Shipping_desc}{$inmode},
@@ -88,9 +88,9 @@
 					];
 		}
 		$i++;
-		Log("splicing at $ptr, len $i");
+		#Log("splicing at $ptr, len $i");
 		splice(@$lines, $ptr, 0, @modes);
-		Log("write inmode=$inmode, ending with lines=" . scalar @$lines );
+		#Log("write inmode=$inmode, ending with lines=" . scalar @$lines );
 		$Config->{Shipping_line} = $lines;
 		$Scratch->{ui_update_shipping} = 1;
 		return 1;
@@ -118,7 +118,7 @@
 
 [perl]
 		my $inmode = $CGI->{ui_shipmode};
-		Log("ship_data inmode=$inmode");
+		#Log("ship_data inmode=$inmode");
 		my $lines = $Config->{Shipping_line};
 		my $ref;
 		my (@modes);
@@ -128,11 +128,11 @@
 		}
 		
 		my ($master) = shift @modes;
-		Log("gave: " . join("|", @$master) );
+		#Log("gave: " . join("|", @$master) );
 		my $opt = $master->[7];
 		$opt = {} if ! ref $opt;
 		if ($opt->{ui_ship_type}) {
-				Log("ui_ship_type: $opt->{ui_ship_type}");
+				#Log("ui_ship_type: $opt->{ui_ship_type}");
 		}
 		my $algomessage = $master->[2];
 		if ($algomessage =~ /\[subtotal\snoformat=1\]/) {
@@ -143,7 +143,7 @@
 		}
 		if($algomessage) {
 			$algomessage = <<EOF;
-Calculaton is done based on <B>$algomessage</B> of items in cart.
+Calculation is done based on <B>$algomessage</B> of items in cart.
 EOF
 		}
 		my @out;

@@ -1,0 +1,279 @@
+[set page_title]Customer manager: View customer[/set]
+[set page_banner]View customer[/set]
+[set help_name]customer.view[/set]
+[set icon_name]admin/icon_orders.gif[/set]
+@@UI_STD_HEAD@@
+[calc]
+	delete $Scratch->{ui_bounce};
+	#Log("got here, customer=$CGI->{customer}, arg=$CGI->{mv_arg}");
+	return if $CGI->{customer};
+	$CGI->{customer} = $CGI->{mv_arg} 
+		or $Scratch->{ui_bounce} = '__UI_BASE__/customer';
+	return;
+[/calc]
+[if scratch ui_bounce]
+	[bounce page="[scratch ui_bounce]"]
+[/if]
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+[update values]
+[loop list="[value-extended customer]"]
+
+<p>
+&nbsp;
+<table width=100% cellpadding=3 cellspacing=0>
+<tr>
+<td colspan=6 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" height=1></td>
+</tr>
+
+<tr>
+<td colspan=6 align=left bgcolor=__UI_C_INTBLOCK__>
+<b>Customer Username: [loop-code]</b>
+</td>
+</tr>
+
+<tr>
+<td colspan=6 align=left bgcolor=__UI_C_INTBLOCK__>
+<b>Customer: 
+<A HREF="[area
+				href=__UI_BASE__/flex_editor
+				form=|
+					ui_return_to=__UI_BASE__/customer_view
+					ui_return_to=mv_arg=[cgi customer]
+					ui_data_fields=username company fname lname address1 address2 city state zip country email phone_day phone_night
+					page_title=Customer: [loop-data userdb fname] [loop-data userdb lname]
+					item_id=[loop-data userdb username]
+					mv_data_table=userdb
+				|
+		]"><u>[loop-data userdb fname] [loop-data userdb lname]</u></A>
+		</b>
+</td>
+</tr>
+
+<tr>
+<td colspan=2 valign=top>
+
+<!-- ----- Customer information ----- -->
+
+<table>
+<tr><td align=right>
+<font size=2><b> Company: </b></font>
+</td><td><font size=2>[loop-data userdb company]</font></td></tr>
+
+<tr><td align=right>
+<font size=2><b> Home phone: </b></font>
+</td><td><font size=2>[loop-data userdb phone_night]</font></td></tr>
+
+<tr><td align=right>
+<font size=2><b> Work phone: </b></font>
+</td><td><font size=2>[loop-data userdb phone_day]</font></td></tr>
+
+<tr><td align=right>
+<font size=2><b> Email: </b></font>
+</td><td><font size=2> <a href="mailto:[loop-data userdb email]"><U>[loop-data userdb email]</U></a></font></td></tr>
+
+<tr><td align=right>
+<font size=2><b> Payment type: </b></font>
+</td><td><font size=2>[loop-data userdb payment_method]</a></font></tr>
+
+<tr><td align=right>
+<font size=2><b> Field 1: </b></font>
+</td><td><font size=2> </font></td></tr>
+
+<tr><td align=right>
+<font size=2><b> Field 2: </b></font>
+</td><td><font size=2> </font></td></tr>
+
+<tr><td align=right>
+<font size=2><b> Field 3: </b></font>
+</td><td><font size=2>  </font></td></tr>
+
+<tr><td align=right>
+<font size=2><b> Field 4: </b></font>
+</td><td><font size=2> </font></td></tr>
+
+</table>
+
+</td><td valign=top colspan=4>
+[set bill_address]
+[loop-data userdb b_fname] [loop-data userdb b_lname]<br>
+[loop-data userdb b_address1]<br>
+[if-loop-data userdb b_address2]
+[loop-data userdb b_address2]<br>
+[/if-loop-data]
+[loop-data userdb b_city], [loop-data userdb b_state] [loop-data userdb b_zip]<br>
+[/set]
+
+[set ship_address]
+[loop-data userdb fname] [loop-data userdb lname]<br>
+[loop-data userdb address1]<br>
+[if-loop-data userdb address2]
+[loop-data userdb address2]<br>
+[/if-loop-data]
+[loop-data userdb city], [loop-data userdb state] [loop-data userdb zip]<br>
+[/set]
+
+<font size=2>
+<p>
+[if-loop-data userdb username]
+<A HREF="[area
+				href=__UI_BASE__/flex_editor
+				form=|
+					ui_return_to=__UI_BASE__/customer_view
+					ui_return_to=customer=[cgi customer]
+					ui_hide_key=1
+					ui_data_fields=username company b_fname b_lname b_address1 b_address2 b_city b_state b_zip b_country b_email b_phone_day b_phone_night
+					page_title=Customer: [loop-data userdb fname] [loop-data userdb lname]
+					item_id=[loop-data userdb username]
+					mv_data_table=userdb
+				|
+		]"><b><u>Bill To</u>:</b></A>
+[else]
+		<b>Bill To:</b>
+[/else]
+[/if-loop-data]
+<blockquote>
+[if-loop-data userdb b_address1]
+[scratch bill_address]
+[else]
+[scratch ship_address]
+[/else]
+[/if-loop-data]
+</blockquote>
+
+<A HREF="[area
+				href=__UI_BASE__/flex_editor
+				form=|
+					ui_return_to=__UI_BASE__/customer_view
+					ui_return_to=mv_arg=[cgi customer]
+					ui_hide_key=1
+					ui_data_fields=username company fname lname address1 address2 city state zip country email phone_day phone_night
+					page_title=Customer: [loop-data userdb fname] [loop-data userdb lname]
+					item_id=[loop-data userdb username]
+					mv_data_table=userdb
+				|
+		]"><b><u>Ship To</u>:</b></A>
+<br>
+<blockquote>
+[scratch ship_address]
+</blockquote>
+</font>
+
+[set bill_address][/set]
+[set ship_address][/set]
+</td></tr>
+
+<tr>
+<td colspan=6 align=left bgcolor=__UI_C_INTBLOCK__>
+<pre> </pre>
+</td>
+</tr>
+
+<tr>
+<td>
+	Order number
+</td>
+<td>
+	Order date
+</td>
+<td>
+	Tax
+</td>
+<td>
+	Shipping
+</td>
+<td>
+	Total cost
+</td>
+<td>
+	Status
+</td>
+</tr>
+[query  list=1
+		table=transactions 
+		sql="select
+			  order_number, order_date, salestax, shipping, total_cost, status
+			  FROM transactions 
+			  WHERE username = '[loop-code]'
+			  ORDER BY order_date
+			  "
+			  ]
+<tr>
+<td>
+	<A HREF="[area __UI_BASE__/order_view [sql-code]]"><U>[sql-code]</U></A>
+</td>
+<td align=right>
+	[sql-pos 1]
+</td>
+<td align=right>
+	[sql-pos 2]
+</td>
+<td align=right>
+	[sql-pos 3]
+</td>
+<td align=right>
+	[sql-pos 4]
+</td>
+<td>
+<A HREF="[area
+			href=__UI_BASE__/flex_editor
+			form="
+				item_id=[sql-code]
+				mv_data_table=transactions
+				page_title=Change status of order [sql-code]
+				ui_return_to=__UI_BASE__/customer_view
+				ui_return_to=mv_arg=[loop-code]
+				ui_data_fields=code order_date status
+				ui_hide_key=1
+			"]"><U>[sql-pos 5]</U></A>
+</td>
+</tr>
+[more-list]<TR><TD COLSPAN=6 ALIGN=CENTER>[more]</TD></TR> [/more-list]
+[/query]
+<tr>
+<td>
+<tr>
+<td colspan=6 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" height=1></td>
+</tr>
+
+</table>
+<SMALL>
+<form action="[area __UI_BASE__/customer]" method=post>
+<input type=hidden name=mv_action value=back>
+<input type=hidden name=customer value="[loop-data userdb username]">
+<input type=hidden name=viewnext value=1>
+[set Change password]
+user_id=[loop-code]
+mv_nextpage=__UI_BASE__/customer_change_pass
+[/set]
+[set Return]
+viewnext=
+viewcustomer=
+[/set]
+<input type=submit name=mv_click value="Return">
+<input type=submit name="viewcustomer" value="View next customer">
+
+[if-mm advanced userdb=e]
+[if-loop-data userdb inactive]
+<input type=submit name="activate" value="Activate customer">
+[else]
+<input type=submit name="deactivate" value="Deactivate customer"
+	onClick="return confirm('Are you sure you want to deactivate this customer?')">
+[/else]
+[/if-loop-data]
+<input type=submit name="mv_click" value="Change password">
+[/if-mm]
+
+[if-mm advanced userdb=d]
+<input type=submit name="deletecustomer" value="Delete customer" 
+ onClick="return confirm('Are you sure you want to delete this customer?')">
+[/if-mm]
+
+</form>
+</SMALL>
+
+[/loop]
+<!-- ----- END REAL STUFF ----- -->
+
+@@UI_STD_FOOTER@@
+<!-- page: @@MV_PAGE@@ -->

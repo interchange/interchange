@@ -5,7 +5,7 @@
 		Table Edit: [cgi mv_data_table]
 	[/either]
 [/seti]
-[set table_perm]1[/set]
+[seti table_perm][cgi mv_data_table]=v[/seti]
 [seti help_name][either][cgi help_name][or]gensql.main[/either][/seti]
 [seti icon_name][either][cgi icon_name][or]admin/icon_config.gif[/either][/seti]
 [flag type=write table="[cgi mv_data_table]"]

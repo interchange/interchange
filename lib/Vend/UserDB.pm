@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.2 2000-06-23 07:40:30 heins Exp $
+# $Id: UserDB.pm,v 1.3 2000-06-28 07:15:54 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.3 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -238,9 +238,13 @@ sub new {
 
 	my $loc;
 	if(	$Vend::Cfg->{UserDB} ) {
-		$loc =	$options{profile}
-				? ($Vend::Cfg->{UserDB_repository}{$options{profile}})
-				: $Vend::Cfg->{UserDB};
+		if( $options{profile} ) {
+			$loc =	$Vend::Cfg->{UserDB_repository}{$options{profile}};
+		}
+		else {
+			$options{profile} = 'default';
+			$loc =	$Vend::Cfg->{UserDB};
+		}
 		$loc = {} unless $loc;
 		my ($k, $v);
 		while ( ($k,$v) = each %$loc) {
@@ -276,6 +280,7 @@ sub new {
 			PASSWORD  	=> $options{password}	|| $CGI::values{mv_password} || '',
 			VERIFY  	=> $options{verify}		|| $CGI::values{mv_verify}	 || '',
 			NICKNAME   	=> $options{nickname}	|| '',
+			PROFILE   	=> $options{profile}	|| '',
 			LAST   		=> '',
 			CRYPT  		=> defined $options{'crypt'}
 							? $options{'crypt'}
@@ -934,6 +939,7 @@ sub login {
 	if($@) {
 		if(defined $self) {
 			$self->{ERROR} = $@;
+::logDebug( "Vend::UserDB error: %s\n", $@ );
 		}
 		else {
 			::logError( "Vend::UserDB error: %s\n", $@ );
@@ -1231,6 +1237,8 @@ sub userdb {
 	if($function eq 'login') {
 		$Vend::Session->{logged_in} = 0;
 		delete $Vend::Session->{username};
+		undef $Vend::username;
+		undef $Vend::admin;
 		::put_session;
 		$user = new Vend::UserDB %options;
 		unless (defined $user) {
@@ -1239,7 +1247,16 @@ sub userdb {
 		}
 		if ($status = $user->login(%options) ) {
 			$Vend::Session->{logged_in} = 1;
-			$Vend::Session->{username} = $user->{USERNAME};
+			$Vend::username = $Vend::Session->{username} = $user->{USERNAME};
+			if(
+				! $Vend::Cfg->{AdminUserDB} or
+				$Vend::Cfg->{AdminUserDB}{$user->{PROFILE}}
+				)
+			{
+::logDebug("logged in $Vend::username via $user->{DB_ID} -- ADMIN");
+				$Vend::admin = 1;
+			}
+::logDebug("logged in $Vend::username via $user->{DB_ID}");
 			undef $Vend::Cookie
 				unless $Vend::Cfg->{StaticLogged};
 			::update_user();
@@ -1269,6 +1286,7 @@ sub userdb {
 		}
 		delete $Vend::Session->{logged_in};
 		delete $Vend::Session->{'username'};
+		undef $Vend::username;
 		delete $::Values->{mv_username};
 		$user->log('logout') if $options{'log'};
 		$user->{MESSAGE} = 'Logged out.';

@@ -1,8 +1,10 @@
 
-UserTag list-databases Order nohide
+UserTag list-databases Order nohide extended
 UserTag list-databases routine <<EOR
 sub {
 	my $nohide = shift;
+	my $extended = shift || '';
+	$extended = "=$extended" if $extended;
 	my @dbs;
 	my $d = $Vend::Cfg->{Database};
 	@dbs = sort keys %$d;
@@ -17,8 +19,9 @@ sub {
 		if($record) {
 			next if $record->{no_tables}
 				and ui_check_acl($_, $record->{no_tables});
+			my $check = "$_$extended";
 			next if $record->{yes_tables}
-				and ! ui_check_acl($_, $record->{yes_tables});
+				and ! ui_check_acl($check, $record->{yes_tables});
 		}
 		push @outdb, $_;
 	}

@@ -1,5 +1,5 @@
 [set page_title]Individual Table Import[/set]
-[set table_perm]1[/set]
+[set table_perm]=i[/set]
 [set help_name]import.main[/set]
 [set icon_name]admin/icon_config.gif[/set]
 @@UI_STD_HEAD@@
@@ -65,7 +65,7 @@
 <td bgcolor="__UI_C_INTBLOCK__">
 
 <select name="mv_data_table" size=10>
-[loop list="[list-databases]" option=mv_data_table]<option value="[loop-code]"> [loop-code]
+[loop list="[list-databases extended=i]" option=mv_data_table]<option value="[loop-code]"> [loop-code]
 [/loop]
 </select>
 </td>

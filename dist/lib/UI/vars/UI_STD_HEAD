@@ -1,12 +1,27 @@
 Variable UI_STD_HEAD <<EOV
-[if !session logged_in]
+[if-mm !logged_in]
 	[if !scratch no_login_required]
 		[bounce page="__UI_BASE__/login"]
 	[/if]
-[/if]
+[/if-mm]
+[set no_login_required][/set]
+
 [if scratch table_perm]
-	[if-mm !tables]
-	[seti ui_error]Sorry, no permission for table [cgi mv_data_table][/seti]
+	[calc]
+		my $table = $CGI->{mv_data_table} || $Value->{mv_data_table};
+		if($Scratch->{table_perm} =~ /^\s*=(\w+)/) {
+			$Scratch->{table_perm} = "$CGI->{mv_data_table}=$1";
+		}
+		elsif ( $Scratch->{table_perm} =~ /\w+=/) {
+			# do nothing
+		}
+		else {
+			$Scratch->{table_perm} = $CGI->{mv_data_table};
+		}
+		return;
+	[/calc]
+	[if-mm function="!tables" table="[scratch table_perm]"]
+	[seti ui_error]Sorry, no permission [scratch table_perm] for table [cgi mv_data_table][/seti]
 	[set table_perm][/set]
 	[bounce page="__UI_BASE__/error"]
 	[/if-mm]
@@ -14,7 +29,7 @@ Variable UI_STD_HEAD <<EOV
 [if scratch page_perm]
 	[if-mm function="!advanced" name="[scratch page_perm]"]
 	[seti ui_error]Sorry, no permission for page [scratch page_perm][/seti]
-	[set table_perm][/set]
+	[set page_perm][/set]
 	[bounce page="__UI_BASE__/error"]
 	[/if-mm]
 [/if]
@@ -69,39 +84,48 @@ function open_quicklinks() {
 
 <img src="admin/cleardot.gif" width="12">
 
+[if-mm advanced order]
 <a href="[area admin/order]">
 <img src="admin/icon_orders.gif" height="16" width="16" border="0">
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
  color="__UI_C_TITLEBARTXT__">
  &nbsp;Orders
 </font></a>
+[/if-mm]
 
 <img src="admin/cleardot.gif" width="22">
 
+[if-mm advanced item]
 <a href="[area admin/item]">
 <img src="admin/icon_item.gif" height="16" width="16" border="0" >
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
  color="__UI_C_TITLEBARTXT__">
 &nbsp;Items
 </font></a>
+[/if-mm]
 
 <img src="admin/cleardot.gif" width="22">
 
+[if-mm advanced stats]
 <a href="[area admin/genstats]">
 <img src="admin/icon_stats.gif" height="16" width="16" border="0" >
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
  color="__UI_C_TITLEBARTXT__">
 &nbsp;Statistics
 </font></a>
+[/if-mm]
+
 
 <img src="admin/cleardot.gif" width="22">
 
+[if-mm advanced reconfig]
 <a href="[area admin/reconfig]">
 <img src="admin/icon_regen.gif" height="16" width="16" border="0" >
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
  color="__UI_C_TITLEBARTXT__">
 &nbsp;Apply Changes
 </font></a>
+[/if-mm]
 </td>
 
 <td align="right" valign="middle" height="22">
@@ -152,9 +176,6 @@ Help
 [set page_banner][/set]
 [set icon_name][/set]
 [set help_name][/set]
-[set table_perm][/set]
-[set page_perm][/set]
-[set no_login_reqired][/set]
 
 [comment]
 

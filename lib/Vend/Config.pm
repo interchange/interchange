@@ -1,6 +1,6 @@
 # Config.pm - Configure Minivend
 #
-# $Id: Config.pm,v 1.7 2000-06-26 08:53:57 heins Exp $
+# $Id: Config.pm,v 1.8 2000-06-28 07:15:54 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -101,7 +101,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.7 $, 10);
+$VERSION = substr(q$Revision: 1.8 $, 10);
 
 my %CDname;
 
@@ -1561,6 +1561,16 @@ my %IllegalValue = (
 
 my $Have_set_global_defaults;
 my %Default = (
+		UserDB => sub {
+							shift;
+							my $set = $C->{UserDB_repository};
+							for(keys %$set) {
+								next unless defined $set->{$_}{admin};
+								$C->{AdminUserDB} = {} unless $C->{AdminUserDB};
+								$C->{AdminUserDB}{$_} = $set->{$_}{admin};
+							}
+							return 1;
+						},
 		TcpMap => sub {
 							shift;
 							return 1 if defined $Have_set_global_defaults;

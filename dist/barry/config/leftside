@@ -148,7 +148,7 @@ Customer Services
     </font>
 	</td>
 </tr>
-[if type=data term="minimate::username::[data session username]"]
+[if type=data term="access::username::[data session username]"]
 <tr>
 	<td align="left" COLSPAN=2>
 	<font size=-1> 

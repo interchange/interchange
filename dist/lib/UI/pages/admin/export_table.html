@@ -19,7 +19,7 @@ __UI_META_TABLE__[/seti]
 	my @tables = grep /\S/, split /\s+/, $Scratch->{tables};
 	my $out;
 	for(@tables) {
-		Log("table $_");
+		#Log("table $_");
 		unless (ref $Db{$_}) {
 			Log("bad table $_");
 			next;
