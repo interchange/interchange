@@ -4,6 +4,15 @@
 
 ------------------------------------------------------------------------------
 
+Interchange 4.8.3 not yet released.
+
+Core and usertags
+-----------------
+* Make mv_more_alpha working in query tags.
+
+I18N
+--------
+* Hebrew locale from Chen Naor <chen@lilux.co.il> added.
 
 Interchange 4.8.2 released 2001-09-19.
 
