@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.30 2000-10-18 12:52:25 heins Exp $
+# $Id: makecat.PL,v 1.31 2000-10-18 14:52:57 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -2071,7 +2071,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.30 2000-10-18 12:52:25 heins Exp $
+$Id: makecat.PL,v 1.31 2000-10-18 14:52:57 racke Exp $
 
 =head1 INTRODUCTION
 
@@ -2121,7 +2121,7 @@ There are just a few flag-based options:
 
 Force make of catalog with defaults supplied on command line.
 
-=item C<-f>
+=item C<-c>
 
 Configuration file -- default is makecat.cfg in Interchange Confdir (etc) directory.
 
