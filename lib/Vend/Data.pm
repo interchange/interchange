@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.44 2004-10-07 00:10:01 jon Exp $
+# $Id: Data.pm,v 2.45 2004-12-24 18:00:34 jon Exp $
 # 
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -1730,16 +1730,17 @@ sub item_price {
 
 	my $final = 0;
 	do {
-		my $base;
-		if(not $base = $item->{mv_ib}) {
-			$base = product_code_exists_tag($item->{code})
-				or ($Vend::Cfg->{OnFly} && 'mv_fly')
-				or return undef;
-		}
-
 		my $price;
-		$price = database_field($base, $item->{code}, $Vend::Cfg->{PriceField})
-			if $Vend::Cfg->{PriceField};
+
+		if ($Vend::Cfg->{PriceField}) {
+			my $base;
+			if (not $base = $item->{mv_ib}) {
+				$base = product_code_exists_tag($item->{code})
+					or ($Vend::Cfg->{OnFly} && 'mv_fly')
+					or return undef;
+			}
+			$price = database_field($base, $item->{code}, $Vend::Cfg->{PriceField})
+		}
 
 #::logDebug("price for item before chain $item->{code}=$price PriceField=$Vend::Cfg->{PriceField}");
 		$price = chain_cost($item,$price || $Vend::Cfg->{CommonAdjust});
