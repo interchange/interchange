@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.7.2.1 2000-10-06 19:49:24 zarko Exp $
+# $Id: Server.pm,v 1.7.2.2 2000-11-06 18:12:33 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.7.2.1 $, 10);
+$VERSION = substr(q$Revision: 1.7.2.2 $, 10);
 
 use strict;
 use POSIX qw(setsid strftime);
@@ -1974,6 +1974,7 @@ DOACTION: {
 		Vend::Interpolate::init_calc();
 		$CGI::values{mv_nextpage} = $Vend::FinalPath
 			if ! defined $CGI::values{mv_nextpage};
+		new Vend::Parse;
 	}
 	elsif ( defined ($sub = $action{$Vend::Action}) )  {
 		Vend::Interpolate::init_calc();
