@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.26.4.5 2000-11-06 10:44:14 racke Exp $
+# $Id: makecat.PL,v 1.26.4.6 2000-11-20 13:29:41 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -86,6 +86,10 @@ BEGIN {
 	elsif(-f "$Global::VendRoot/interchange.cfg.dist") {
 		$Global::ExeName = 'interchange';
 		$Global::ConfigFile = 'interchange.cfg';
+	}
+	elsif(-f '/etc/interchange/interchange.cfg') {
+		$Global::ExeName = 'interchange';
+		$Global::ConfigFile = '/etc/interchange/interchange.cfg';
 	}
 
 }
@@ -2071,7 +2075,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.26.4.5 2000-11-06 10:44:14 racke Exp $
+$Id: makecat.PL,v 1.26.4.6 2000-11-20 13:29:41 racke Exp $
 
 =head1 INTRODUCTION
 
