@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.31 2003-08-04 05:01:37 mheins Exp $
+# $Id: Menu.pm,v 2.32 2003-08-20 16:22:31 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.31 $, 10);
+$VERSION = substr(q$Revision: 2.32 $, 10);
 
 use Vend::Util;
 use strict;
@@ -710,22 +710,15 @@ EOF
 		if( ${vpf}browserType() == "other" )
 			return;
 		var pos = 0;
-		if( ${vpf}browserType() == "ie" )
-			if(${vpf}anchor_down == 1 && level == 0) 
-				pos = obj.getBoundingClientRect().left + 2;
-			else
-				pos = obj.getBoundingClientRect().right - 2;
-		else {
-			var n = 0;
-			var x = obj.offsetParent;
-			while(x.offsetParent != undefined) {
-				n += x.offsetLeft;
-				x = x.offsetParent;
-			}
-			pos = n + obj.offsetLeft;
-			if(${vpf}anchor_down != 1 || level > 0)
-				pos += obj.offsetWidth;
+		var n = 0;
+		var x = obj.offsetParent;
+		while(x.offsetParent != undefined) {
+			n += x.offsetLeft;
+			x = x.offsetParent;
 		}
+		pos = n + obj.offsetLeft;
+		if(${vpf}anchor_down != 1 || level > 0)
+			pos += obj.offsetWidth;
 		return pos;
 	}
 
@@ -735,22 +728,15 @@ EOF
 			return;
 
 		var pos = 0;
-		if( ${vpf}browserType() == "ie" )
-			if(${vpf}anchor_down && level == 0) 
-				pos = obj.getBoundingClientRect().bottom + 2;
-			else
-				pos = obj.getBoundingClientRect().top - 2;
-		else {
-			var n = 0;
-			var x = obj;
-			while(x.offsetParent != undefined) {
-				n += x.offsetParent.offsetTop;
-				x = x.offsetParent;
-			}
-			pos = n + obj.offsetTop;
-			if(${vpf}anchor_down && level == 0)
-				pos += obj.offsetHeight;
+		var n = 0;
+		var x = obj;
+		while(x.offsetParent != undefined) {
+			n += x.offsetParent.offsetTop;
+			x = x.offsetParent;
 		}
+		pos = n + obj.offsetTop;
+		if(${vpf}anchor_down && level == 0)
+			pos += obj.offsetHeight;
 		return pos;
 	}
 	
