@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.15 2002-01-30 21:53:15 racke Exp $
+# $Id: Util.pm,v 2.16 2002-01-31 17:55:02 racke Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -81,7 +81,7 @@ use Text::ParseWords;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.15 $, 10);
+$VERSION = substr(q$Revision: 2.16 $, 10);
 
 BEGIN {
 	eval {
@@ -123,7 +123,7 @@ sub setup_escape_chars {
     }
 
 	my $string = "[^$ESCAPE_CHARS::ok_in_filename]";
-	$need_escape = qr{"$string="};
+	$need_escape = qr{$string=};
 
 }
 
@@ -1631,15 +1631,16 @@ sub errmsg {
 	elsif($Global::Locale and defined $Global::Locale->{$fmt}) {
 	 	$location = $Global::Locale;
 	}
-	return sprintf $fmt, @strings if ! $location;
-	if(ref $location->{$fmt}) {
-		$fmt = $location->{$fmt}[0];
-		@strings = @strings[ @{ $location->{$fmt}[1] } ];
+	if($location) {
+		if(ref $location->{$fmt}) {
+			$fmt = $location->{$fmt}[0];
+			@strings = @strings[ @{ $location->{$fmt}[1] } ];
+		}
+		else {
+			$fmt = $location->{$fmt};
+		}
 	}
-	else {
-		$fmt = $location->{$fmt};
-	}
-	return sprintf $fmt, @strings;
+	scalar(@strings) ? sprintf $fmt, @strings : $fmt;
 }
 
 *l = \&errmsg;
