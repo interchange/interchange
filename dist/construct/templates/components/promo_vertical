@@ -1,7 +1,7 @@
 <!-- BEGIN COMPONENT promo_vertical -->
 [query arrayref=main
 	   sql="
-		SELECT sku,timed_promotion,start,finish
+		SELECT sku,timed_promotion,start_date,finish_date
 		FROM merchandising
 		WHERE featured = '[scratch vpromo_type]'
 		"][/query]
