@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.11 2000-09-25 15:24:48 heins Exp $
+# $Id: Order.pm,v 1.12 2000-09-25 18:35:01 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.11 $, 10);
+$VERSION = substr(q$Revision: 1.12 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1061,9 +1061,9 @@ sub check_order {
 }
 
 my $state = <<EOF;
-| AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD |
-| MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA PR RI |
-| SC SD TN TX UT VT VA WA WV WI WY DC AP FP FPO APO GU VI AS  |
+| AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO |
+| MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY |
+| PR DC AA AE GU VI AS MP FM MH PW AP FP FPO APO |
 EOF
 
 my $province = <<EOF;
