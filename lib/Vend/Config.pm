@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.56 2001-06-29 02:19:25 jon Exp $
+# $Id: Config.pm,v 1.25.2.57 2001-06-29 06:31:57 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.56 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.57 $, 10);
 
 my %CDname;
 
@@ -472,7 +472,6 @@ sub catalog_directives {
 	['SOAP',			 'yesno',			 'No'],
 	['SOAP_Enable',		 'hash',			 ''],
 	['UserDB',			 'locale',	     	 ''], 
-	['UserDBPasswordMinLength', 'integer',   4],
 	['UserDatabase',	 undef,		     	 ''],  #undocumented
 	['RobotLimit',		 'integer',		      0],
 	['OrderLineLimit',	 'integer',		      0],

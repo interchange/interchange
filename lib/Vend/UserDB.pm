@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 1.13.6.24 2001-06-29 02:19:26 jon Exp $
+# $Id: UserDB.pm,v 1.13.6.25 2001-06-29 06:31:57 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -16,13 +16,13 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.13.6.24 $, 10);
+$VERSION = substr(q$Revision: 1.13.6.25 $, 10);
 
 use vars qw!
 	$VERSION
 	@S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS
 	%S_to_B %B_to_S
-	$USERNAME_GOOD_CHARS $USERNAME_MIN_LENGTH
+	$USERNAME_GOOD_CHARS
 !;
 
 use Vend::Data;
@@ -229,7 +229,6 @@ the preference set.
 
 # user name and password restrictions
 $USERNAME_GOOD_CHARS = '[-A-Za-z0-9_@.]';
-$USERNAME_MIN_LENGTH = 2;
 
 @P_FIELDS = qw ( p_nickname email fax email_copy phone_night mail_list fax_order );
 
@@ -299,6 +298,8 @@ sub new {
 			NICKNAME   	=> $options{nickname}	|| '',
 			PROFILE   	=> $options{profile}	|| '',
 			LAST   		=> '',
+			USERMINLEN	=> $options{userminlen}	|| 2,
+			PASSMINLEN	=> $options{passminlen}	|| 4,
 			CRYPT  		=> defined $options{'crypt'}
 							? $options{'crypt'}
 							: ! $::Variable->{MV_NO_CRYPT},
@@ -1011,9 +1012,9 @@ sub login {
 		}
 
 		# Username must be long enough
-		if (length($self->{USERNAME}) < $USERNAME_MIN_LENGTH) {
+		if (length($self->{USERNAME}) < $self->{USERMINLEN}) {
 			logError("Denied attempted login for user name '%s'; must have at least %s characters",
-				$self->{USERNAME}, $USERNAME_MIN_LENGTH);
+				$self->{USERNAME}, $self->{USERMINLEN});
 			die $stock_error, "\n";
 		}
 
@@ -1025,9 +1026,9 @@ sub login {
 		}
 
 		# Fail if password is too short
-		if (length($self->{PASSWORD}) < $Vend::Cfg->{UserDBPasswordMinLength}) {
+		if (length($self->{PASSWORD}) < $self->{PASSMINLEN}) {
 			logError("Denied attempted login with user name '%s' and password less than %s characters",
-				$self->{USERNAME}, $Vend::Cfg->{UserDBPasswordMinLength});
+				$self->{USERNAME}, $self->{PASSMINLEN});
 			die $stock_error, "\n";
 		}
 
@@ -1159,7 +1160,7 @@ sub scrub {
 
 sub change_pass {
 
-	my $self;
+	my ($self, $original_self);
 
 	$self = shift
 		if ref $_[0];
@@ -1179,12 +1180,13 @@ sub change_pass {
 			if ($super) {
 				if ($CGI::values{mv_username} and
 					$CGI::values{mv_username} ne $self->{USERNAME}) {
+					$original_self = $self;
 					$options{username} = $CGI::values{mv_username};
 					undef $self;
 				}
 			} else {
 				::logError("Unprivileged user '%s' attempted to change password of user '%s'",
-					$Vend::username, $self->{USERNAME});
+					$Vend::username, $self->{USERNAME}) if $options{log};
 				die ::errmsg("You are not allowed to change another user's password.") . "\n";
 			}
 		}
@@ -1207,8 +1209,8 @@ sub change_pass {
 		}
 
 		die ::errmsg("Must enter at least %s characters for password.",
-			$Vend::Cfg->{UserDBPasswordMinLength}) . "\n"
-			if length($self->{PASSWORD}) < $Vend::Cfg->{UserDBPasswordMinLength};
+			$self->{PASSMINLEN}) . "\n"
+			if length($self->{PASSWORD}) < $self->{PASSMINLEN}; 
 		die ::errmsg("Password and check value don't match.") . "\n"
 			unless $self->{PASSWORD} eq $self->{VERIFY};
 
@@ -1229,6 +1231,8 @@ sub change_pass {
 	};
 
 	scrub();
+
+	$self = $original_self if $original_self;
 
 	if($@) {
 		if(defined $self) {
@@ -1274,8 +1278,8 @@ sub new_account {
 			if $self->{OPTIONS}{username_mask} 
 				and $self->{USERNAME} =~ m!$self->{OPTIONS}{username_mask}!;
 		die ::errmsg("Must enter at least %s characters for password.",
-			$Vend::Cfg->{UserDBPasswordMinLength}) . "\n"
-			if length($self->{PASSWORD}) < $Vend::Cfg->{UserDBPasswordMinLength};
+			$self->{PASSMINLEN}) . "\n"
+			if length($self->{PASSWORD}) < $self->{PASSMINLEN};
 		die ::errmsg("Password and check value don't match.") . "\n"
 			unless $self->{PASSWORD} eq $self->{VERIFY};
 
@@ -1303,8 +1307,8 @@ sub new_account {
 			$self->{USERNAME}) . "\n"
 			if $self->{USERNAME} !~ m{^$USERNAME_GOOD_CHARS+$};
 		die ::errmsg("Must have at least %s characters in username.",
-			$USERNAME_MIN_LENGTH) . "\n"
-			if length($self->{USERNAME}) < $USERNAME_MIN_LENGTH;
+			$self->{USERMINLEN}) . "\n"
+			if length($self->{USERNAME}) < $self->{USERMINLEN};
 		if ($self->{DB}->record_exists($self->{USERNAME})) {
 			die ::errmsg("Username already exists.") . "\n"
 		}
