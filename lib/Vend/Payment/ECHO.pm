@@ -1,6 +1,6 @@
 # Vend::Payment::ECHO - Interchange ECHO support
 #
-# $Id: ECHO.pm,v 1.5 2004-06-07 20:59:18 mheins Exp $
+# $Id: ECHO.pm,v 1.6 2004-10-29 05:09:27 danb Exp $
 #
 # Copyright (C) 2002 
 #      Electric Pulp. <info@electricpulp.com> 
@@ -273,7 +273,20 @@ package Vend::Payment;
 use OpenECHO;
 
 sub echo {
-	my ($opt) = @_;
+
+	my ($user, $amount) = @_;
+
+	my $opt;
+	my $secret;
+	
+	if(ref $user) {
+		$opt = $user;
+		$user = $opt->{id} || undef;
+		$secret = $opt->{secret} || undef;
+	}
+	else {
+		$opt = {};
+	}
 
 #::logDebug("echo called, args=" . ::uneval(\@_));
 	
@@ -386,7 +399,7 @@ sub echo {
 
     if(! $amount) {
         $amount = Vend::Interpolate::total_cost();
-        $amount = sprintf("%.${precision}f", $amount);
+        $amount = Vend::Util::round_to_frac_digits($amount,$precision);
     }
 
     my($orderID);
