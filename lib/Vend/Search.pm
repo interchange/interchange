@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.15 2002-10-28 20:46:30 mheins Exp $
+# $Id: Search.pm,v 2.16 2003-05-16 08:40:33 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.15 $, 10);
+$VERSION = substr(q$Revision: 2.16 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -349,7 +349,7 @@ sub more_matches {
 	my $id = $s->{mv_more_id} || $s->{mv_session_id};
 	$id .= ".$s->{mv_cache_key}";
 	
-	my $file = Vend::Util::get_filename($id,undef,undef,$Vend::Cfg->{StaticScratch});
+	my $file = Vend::Util::get_filename($id);
 #::logDebug("more_matches: $id from $file");
 
 	my $obj;
@@ -1035,7 +1035,7 @@ sub save_more {
 		more_alpha($s,$out);
 	}
 	
-	$file = Vend::Util::get_filename($id,undef,undef,$Vend::Cfg->{StaticScratch}); 
+	$file = Vend::Util::get_filename($id); 
 #::logDebug("save_more: $id to $file.");
 	my $new = { %$s };
 	$new->{mv_results} = $out;
