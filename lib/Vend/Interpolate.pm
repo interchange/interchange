@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.203 2004-02-04 23:45:39 edl Exp $
+# $Id: Interpolate.pm,v 2.204 2004-02-16 21:25:10 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.203 $, 10);
+$VERSION = substr(q$Revision: 2.204 $, 10);
 
 @EXPORT = qw (
 
@@ -1433,11 +1433,11 @@ sub conditional {
 
 	RUNSAFE: {
 		last RUNSAFE if defined $status;
-		last RUNSAFE if $status = ($noop && $op);
+		last RUNSAFE if $status = ($noop && $op) ? 1 : 0;
 		$ready_safe->trap(@{$Global::SafeTrap});
 		$ready_safe->untrap(@{$Global::SafeUntrap});
-		$status = $ready_safe->reval($op)
-			unless ($@ or $status);
+		$status = $ready_safe->reval($op) ? 1 : 0
+			unless $@;
 		if ($@) {
 			logError qq%Bad if '@_': $@%;
 			$status = 0;
@@ -1449,7 +1449,7 @@ sub conditional {
 	for(@addl) {
 		my $chain = /^\[[Aa]/;
 		last if ($chain ^ $status);
-		$status = ${(new Vend::Parse)->parse($_)->{OUT}};
+		$status = ${(new Vend::Parse)->parse($_)->{OUT}} ? 1 : 0;
 	}
 #::logDebug("if status=$status");
 
