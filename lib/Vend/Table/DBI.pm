@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.53 2003-07-24 12:53:49 mheins Exp $
+# $Id: DBI.pm,v 2.54 2003-07-29 23:56:54 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.53 $, 10);
+$VERSION = substr(q$Revision: 2.54 $, 10);
 
 use strict;
 
@@ -1612,7 +1612,7 @@ sub set_field {
 		@args = ($value, $key);
 	}
 	else {
-		@args = ($key, $key);
+		@args = ($key, $value);
 	}
 	my $sth = $s->[$DBI]->prepare($q)
 		or $s->log_error("%s prepare error for %s: %s", 'set_field', $q, $DBI::errstr)
