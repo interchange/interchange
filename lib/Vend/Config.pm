@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.38 2002-02-18 01:00:21 mheins Exp $
+# $Id: Config.pm,v 2.39 2002-02-18 02:07:03 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.38 $, 10);
+$VERSION = substr(q$Revision: 2.39 $, 10);
 
 my %CDname;
 
@@ -3092,6 +3092,7 @@ my %tagCanon = ( qw(
 	interpolate		Interpolate
 	invalidatecache	InvalidateCache
 	isendanchor		isEndAnchor
+	norearrange		noRearrange
 	order			Order
 	posnumber		PosNumber
 	posroutine		PosRoutine
@@ -3119,6 +3120,7 @@ my %tagBool = ( qw!
                 isEndAnchor 1
                 isOperator  1
                 ItemAction  1
+				noRearrange	1
                 OrderCheck  1
                 UserTag     1
 				! );

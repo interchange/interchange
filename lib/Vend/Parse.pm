@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.13 2002-02-18 01:00:21 mheins Exp $
+# $Id: Parse.pm,v 2.14 2002-02-18 02:07:03 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.13 $, 10);
+$VERSION = substr(q$Revision: 2.14 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -302,7 +302,7 @@ sub new {
 	$Initialized = $self;
 }
 
-my %noRearrange = qw/attr_list/;
+my %noRearrange = qw//;
 
 my %Documentation;
 use vars '%myRefs';
