@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.103 2003-04-01 04:12:32 mheins Exp $
+# $Id: Config.pm,v 2.104 2003-04-01 17:34:36 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -37,6 +37,7 @@ use vars qw(
 			$VERSION $C
 			@Locale_directives_ary @Locale_directives_scalar
 			@Locale_directives_code
+			%ContainerSave %ContainerTrigger %ContainerSpecial %ContainerType
 			@Locale_directives_currency @Locale_keys_currency
 			$GlobalRead  $SystemCodeDone $SystemGroupsDone $CodeDest
 			);
@@ -47,9 +48,32 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.103 $, 10);
+$VERSION = substr(q$Revision: 2.104 $, 10);
 
 my %CDname;
+my %CPname;
+%ContainerType = (
+	yesno => sub {
+		my ($var, $value, $end) = @_;
+		$var = $CDname{lc $var};
+		if($end) {
+			my $val = delete $ContainerSave{$var};
+			no strict 'refs';
+			if($C) {
+				$C->{$var} = $val;
+			}
+			else {
+				${"Global::$var"} = $val;
+				
+			}
+		}
+		else {
+			no strict 'refs';
+			$ContainerSave{$var} = $C ? $C->{$var} : ${"Global::$var"};
+			$ContainerSave{$var} ||= 'No';
+		}
+	},
+);
 
 for( qw(search refresh cancel return secure unsecure submit control checkout) ) {
 	$Global::LegalAction{$_} = 1;
@@ -672,6 +696,7 @@ sub config {
 			$directive = lc $d->[0];
 			next if $Global::DeleteDirective->{$directive};
 			$CDname{$directive} = $ucdir;
+			$CPname{$directive} = $d->[1];
 			$parse{$directive} = get_parse_routine($d->[1]);
 		}
 	}
@@ -980,6 +1005,47 @@ CONFIGLOOP:
 	return $C;
 }
 
+sub read_container {
+	my($start, $handle, $marker, $parse, $allcfg) = @_;
+	my $lvar = lc $marker;
+	my $var = $CDname{$lvar};
+
+#::logDebug("Read container start=$start marker=$marker lvar=$lvar var=$var parse=$parse");
+	$parse ||= {};
+#::logDebug("Read container parse value=$CPname{$lvar}");
+	my $sub = $ContainerSpecial{$var}
+			  || $ContainerSpecial{$lvar}
+			  || $ContainerType{$CPname{$lvar}};
+
+	if($sub) {
+#::logDebug("Trigger special container");
+		$start =~ s/\n$//;
+		$sub->($var, $start);
+		$ContainerTrigger{$lvar} ||= $sub;
+		return $start;
+	}
+	
+	my $foundeot = 0;
+	my $startline = $.;
+	my $value = '';
+	if(length $start) {
+		$value .= "$start\n";
+	}
+	while (<$handle>) {
+		print ALLCFG $_ if $allcfg;
+		if ($_ =~ m{^\s*</$marker>\s*$}i) {
+			$foundeot = 1;
+			last;
+		}
+		$value .= $_;
+	}
+	return undef unless $foundeot;
+	#untaint
+	$value =~ /([\000-\377]*)/;
+	$value = $1;
+	return $value;
+}
+
 sub read_here {
 	my($handle, $marker, $allcfg) = @_;
 	my $foundeot = 0;
@@ -1198,10 +1264,22 @@ sub read_config_value {
 
 	local($Vend::config_line);
 	$Vend::config_line = $_;
-	# lines read from the config file become untainted
-	m/^[ \t]*(\w+)\s+(.*)/ or config_error("Syntax error");
-	my $var = $1;
-	my $value = $2;
+	my $container_here;
+	my $container_trigger;
+	my $var;
+	my $value;
+
+	if(s{^[ \t]*<(/?)(\w+)\s*(.*)\s*>\s*$}{$2$3}) {
+		$container_trigger = $1;
+		$var = $container_here = $2;
+		$value = $3;
+	}
+	else {
+		# lines read from the config file become untainted
+		m/^[ \t]*(\w+)\s+(.*)/ or config_error("Syntax error");
+		$var = $1;
+		$value = $2;
+	}
 	($lvar = $var) =~ tr/A-Z/a-z/;
 
 	config_error("Unknown directive '%s'", $lvar), next
@@ -1209,7 +1287,25 @@ sub read_config_value {
 
 	my($codere) = '[-\w_#/.]+';
 
-	if ($value =~ /^(.*)<<(\w+)\s*/) {                  # "here" value
+	if ($container_trigger) {                  # Apache container value
+		if(my $sub = $ContainerTrigger{$lvar}) {
+			$sub->($var, $value, 1);
+			return;
+		}
+	}
+
+	if ($container_here) {                  # Apache container value
+		my $begin  = $value;
+		$begin .= "\n" if length $begin;
+		my $mark = "</$container_here>";
+		my $startline = $.;
+		$value = read_container($begin, $fh, $container_here, \%parse);
+		unless (defined $value) {
+			config_error (sprintf('%d: %s', $startline,
+				qq#no end contaner ("</$container_here>") found#));
+		}
+	}
+	elsif ($value =~ /^(.*)<<(\w+)\s*/) {                  # "here" value
 		my $begin  = $1 || '';
 		$begin .= "\n" if $begin;
 		my $mark = $2;
@@ -1285,6 +1381,7 @@ sub global_config {
 	no strict 'refs';
 
 	%CDname = ();
+	%CPname = ();
 
 	my $directives = global_directives();
 
@@ -1296,6 +1393,7 @@ sub global_config {
 	foreach my $d (@$directives) {
 		$directive = lc $d->[0];
 		$CDname{$directive} = $d->[0];
+		$CPname{$directive} = $d->[1];
 		$parse = get_parse_routine($d->[1]);
 		$parse{$directive} = $parse;
 		undef $value;
