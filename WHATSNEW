@@ -6,7 +6,32 @@
 ------------------------------------------------------------------------------
 
 
-Interchange 5.1.0 not yet released.
+Interchange 5.1.0 released 2004-03-29.
+
+Security
+--------
+
+* Plug a security hole which allows an attacker to expose arbitrary variable 
+  contents by using an URL like 
+  http://shop.example.com/cgi-bin/store/__SQLUSER__. 
+
+  All Interchange applications using the standard "missing" special page
+  from the demo catalog or a similar one are vulnerable to this attack.
+  The attacker may learn the SQL access information for your Interchange
+  application and use this information to read and manipulate sensitive
+  data.
+
+* Disallow [ and < in page names when setting MV_PAGE and MV_PREV_PAGE
+  variables.
+
+* Prevent login information from getting re-saved on a session cancel.
+
+* Define a set of CGI keys that we don't want to save to disk, as
+  @Global::HideCGI.
+
+* Don't show sensitive (i.e. @Global::HideCGI) CGI variables in a dump.
+  This allows saving a session to disk for diagnositic purposes in case
+  of order failure.
 
 Core
 ----
@@ -16,9 +41,6 @@ Core
   attachment vs. inline is now controlled by attach_only attribute
   for [tag mime ...]. Demo'd with encrypted credit card attachment
   in etc/report.
-
-* Disallow [ and < in page names when setting MV_PAGE and MV_PREV_PAGE
-  variables.
 
 * Move mv_nextpage fallback before security check.
 
