@@ -1,6 +1,16 @@
 UserTag file-navigator Order mask
 UserTag file-navigator addAttr
 UserTag file-navigator Routine <<EOR
+use vars qw/$CGI $Session $Tag $Scratch/;
+eval {
+        require Fcntl;
+        import Fcntl qw/:mode/;
+};
+if ($@) {
+        sub S_ISUID  { return 2048 }
+        sub S_ISGID {return 1024}
+        sub S_ISVTX {return 512}
+}
 sub {
 	my ($dir_mask, $opt) = @_;
 
@@ -203,21 +213,20 @@ EOF
 	my @plain;
 
 
-	my @perm = qw/
-		---
-		--x
-		-w-
-		-wx
-		r--
-		r-x
-		rw-
-		rwx
-	/;
-
-	use Fcntl qw/:mode/;
-	
 	sub perm_line {
 		my $fn = shift;
+
+		my @perm = qw/
+			---
+			--x
+			-w-
+			-wx
+			r--
+			r-x
+			rw-
+			rwx
+		/;
+
 		my @det;
 		if (-l $fn) {
 			@det = lstat($fn);
