@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.52 2001-06-20 23:36:41 heins Exp $
+# $Id: Config.pm,v 1.25.2.53 2001-06-27 17:47:09 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -98,7 +98,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.52 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.53 $, 10);
 
 my %CDname;
 
@@ -366,14 +366,14 @@ sub catalog_directives {
 	['Message',          'message',           ''],
 	['Variable',	  	 'variable',     	 ''],
 	['VarName',          'varname',           ''],
-	['Limit',			 'hash',	     	 ''],
+	['Limit',			 'hash',    'option_list 5000 chained_cost_levels 32'],
 	['ScratchDefault',	 'hash',     	 	 ''],
 	['Profile',			 'locale',     	 	 ''],
 	['ValuesDefault',	 'hash',     	 	 ''],
 	['ProductFiles',	 'array_complete',  'products'],
 	['DisplayErrors',    'yesno',            'No'],
 	['ParseVariables',	 'yesno',     	     'No'],
-	['SpecialPage',		 'special',     	 'order ord/basket results results search results flypage flypage'],
+	['SpecialPage',		 'special', 'order ord/basket results results search results flypage flypage'],
 	['Sub',				 'subroutine',       ''],
 	['VendURL',          'url',              undef],
 	['SecureURL',        'url',              undef],

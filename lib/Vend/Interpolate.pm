@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.82 2001-06-27 13:56:49 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.83 2001-06-27 17:47:09 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.82 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.83 $, 10);
 
 @EXPORT = qw (
 
@@ -2112,11 +2112,20 @@ sub tag_accessories {
 
 	my @opts = split /\s*$delimiter\s*/, $data;
 
-	if($type =~ s/\bnumeric\b//i || $opt->{numeric} ) {
+	if($type =~ s/\branges\b//i || $opt->{ranges} ) {
 		my @out; 
+		my $max = $Vend::Cfg->{Limit}{option_list} || 5000;
 		for (@opts) {
-			if( /^\s* (\d+) \s* \.\.+ \s* (\d+) \s* $/x ) {
-				push @out, $1 .. $2;
+			if( /^\s* ([a-zA-Z0-9]+) \s* \.\.+ \s* ([a-zA-Z0-9]+) \s* $/x ) {
+				my @new = $1 .. $2;
+				if(@new > $max) {
+					::logError(
+						"Refuse to add %d options to option list via range.",
+						scalar(@new),
+						);
+					next;
+				}
+				push @out, @new;
 				next;
 			}
 			push @out, $_;
