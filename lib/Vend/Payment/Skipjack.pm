@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Skipjack.pm,v 1.1.2.1 2001-04-11 05:42:31 heins Exp $
+# $Id: Skipjack.pm,v 1.1.2.2 2001-04-11 05:53:24 heins Exp $
 #
 # Copyright (C) 1999-2001 Red Hat, Inc., http://www.redhat.com
 #
@@ -27,7 +27,7 @@ package Vend::Payment::Skipjack;
 
 =head1 Interchange Skipjack Support
 
-Vend::Payment::Skipjack $Revision: 1.1.2.1 $
+Vend::Payment::Skipjack $Revision: 1.1.2.2 $
 
 =head1 SYNOPSIS
 
@@ -85,19 +85,25 @@ or with only Skipjack as a payment provider
 
     Variable MV_PAYMENT_ID      YourskipjackID
 
+A fully valid catalog.cfg entry to work with the standard demo would be:
+
+    Variable MV_PAYMENT_MODE      skipjack
+    Route skipjack id             YourSkipjackID
+    Route skipjack vendor         YourSkipjackVendor
+
 The active settings are:
 
 =over 4
 
 =item id
 
-Your account ID, supplied by Skipjack when you sign up.
+Your account ID number, supplied by Skipjack when you sign up.
 Global parameter is MV_PAYMENT_ID.
 
 =item vendor
 
-The developer of the system which interfaces with Skipjack.
-Global parameter is MV_PAYMENT_vendor.
+The developer ID of the system which interfaces with Skipjack.
+Global parameter is MV_PAYMENT_VENDOR.
 
 =item transaction
 
@@ -128,7 +134,7 @@ If you set the C<test> parameter, Interchange will remap some values and
 the URL for the transaction to point to the Skipjack test server.
 It will return a valid transaction if all is working.
 
-=item test
+=item generate_error
 
 To generate errors in test mode only, set the parameter C<generate_error>
 to one of the following values (error it generates in parenthesese):
@@ -161,10 +167,18 @@ The Skipjack URL to submit to. Default is:
 
 =head2 Troubleshooting
 
-Try the instructions above, then enable test mode. A test order should complete.
+Try the instructions above, then enable test mode:
 
-Then move to live mode and try a sale with the card number C<4111 1111 1111 1111>
-and a valid expiration date. The sale should be denied, and the reason should
+	Route skipjack  test           1
+
+A test order should complete.
+
+Then set a generate error
+
+	Route skipjack  test           1
+	Route skipjack  generate_error number
+
+and try a sale. The sale should be denied, and the reason should
 be in [data session payment_error].
 
 If nothing works:
@@ -198,54 +212,6 @@ Check the error logs, both catalog and global.
 =item *
 
 Make sure you set your account ID properly.  
-
-=item *
-
-Try an order, then put this code in a page:
-
-    [calc]
-        $Tag->uneval( { ref => $Session->{payment_result} );
-    [/calc]
-
-That should show what happened.
-
-=item *
-
-If all else fails, Red Hat and other consultants are available to help
-with integration for a fee.
-
-=back
-
-=head2 Troubleshooting
-
-Try the instructions above, then enable test mode. A test order should complete.
-
-Then move to live mode and try a sale with the card number C<4111 1111 1111 1111>
-and a valid expiration date. The sale should be denied, and the reason should
-be in [data session payment_error].
-
-If nothing works:
-
-=over 4
-
-=item *
-
-Make sure you "Require"d the module in interchange.cfg:
-
-    Require module Vend::Payment::Skipjack
-
-=item *
-
-Make sure the Skipjack C<pfpro> executable is available either in your
-path or in /path_to_interchange/lib.
-
-=item *
-
-Check the error logs, both catalog and global.
-
-=item *
-
-Make sure you set your account ID and secret properly.
 
 =item *
 
@@ -449,8 +415,8 @@ sub post_data {
 
 	my %result;
 	if($Have_Net_SSLeay) {
-::logDebug("placing Net::SSLeay request: host=$server, port=$port, script=$script");
-::logDebug("values: " . ::uneval($query) );
+#::logDebug("placing Net::SSLeay request: host=$server, port=$port, script=$script");
+#::logDebug("values: " . ::uneval($query) );
 		my ($page, $response, %reply_headers)
                 = post_https(
 					   $server, $port, $script,
@@ -465,7 +431,7 @@ sub post_data {
 		for(keys %reply_headers) {
 			$header_string .= "$_: $reply_headers{$_}\n";
 		}
-::logDebug("received Net::SSLeay header: $header_string");
+#::logDebug("received Net::SSLeay header: $header_string");
 		$result{status_line} = $response;
 		$result{status_line} =~ /^HTTP\S+\s+(\d+)/
 			and $result{response_code} = $1;
@@ -475,14 +441,14 @@ sub post_data {
 	else {
 		my $ua = new LWP::UserAgent;
 		my $req = POST($submit_url, $query);
-::logDebug("placing LWP request: " . ::uneval_it($req) );
+#::logDebug("placing LWP request: " . ::uneval_it($req) );
 		my $resp = $ua->request($req);
 		$result{status_line} = $resp->status_line();
 		$result{status_line} =~ /(\d+)/
 			and $result{response_code} = $1;
 		$result{header_string} = $resp->as_string();
 		$result{header_string} =~ s/\r?\n\r?\n.*//s;
-::logDebug("received LWP header: $header_string");
+#::logDebug("received LWP header: $header_string");
 		$result{result_page} = $resp->content();
 	}
 	return \%result;
@@ -628,7 +594,7 @@ sub skipjack {
 	## check for errors
 	my $error;
 
-::logDebug("request returned: $thing->{result_page}");
+#::logDebug("request returned: $thing->{result_page}");
 
 	my %result;
 
@@ -636,11 +602,11 @@ sub skipjack {
 		my @lines = split /</, $thing->{result_page};
 		@lines = grep /\!-+/, @lines;
 		for (@lines) {
-::logDebug("found response line=$_");
+#::logDebug("found response line=$_");
 			s/-->.*//s;
 			if (/^!--(.*)/) {
 				my ($name, $val) = split(/=/,$1);
-::logDebug("name=$name value=$val");
+#::logDebug("name=$name value=$val");
 				$result{$name} = $val;
 			}
 		}
@@ -701,7 +667,7 @@ sub skipjack {
             if defined $result{$result_map{$_}};
     }
 
-::logDebug("Skipjack request result: " . ::uneval(\%result) );
+#::logDebug("Skipjack request result: " . ::uneval(\%result) );
 
 	return %result;
 }
