@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.40 2003-09-10 16:50:51 mheins Exp $
+# $Id: Server.pm,v 2.41 2003-09-10 16:55:14 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.40 $, 10);
+$VERSION = substr(q$Revision: 2.41 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -524,8 +524,24 @@ sub respond {
 #	select($oldfh);
 # END SUNOSDIGITAL
 
+	my $rfh = $s->{rfh};
+	if($Vend::write_redirect and ! $rfh) {
+		$rfh = gensym();
+		my $fn = $Vend::Cfg->{RedirectCache} . $CGI::path_info;
+		my $save = umask(022);
+		open $rfh, "> $fn"
+			or do {
+				::logError("Unable to write redirected page %s: %s", $fn, $!);
+				undef $Vend::write_redirect;
+				undef $rfh;
+			};
+		$s->{rfh} = $rfh;
+		umask $save;
+	}
+
 	if($Vend::ResponseMade || $CGI::values{mv_no_header} ) {
 		print $fh $$body;
+		print $rfh $$body if $rfh;
 #show_times("end response send") if $Global::ShowTimes;
 		return 1;
 	}
@@ -603,6 +619,7 @@ sub respond {
 
     print $fh "\r\n";
     print $fh $$body;
+	print $rfh $$body if $rfh;
 #show_times("end response send") if $Global::ShowTimes;
     $Vend::ResponseMade = 1;
 }
@@ -859,6 +876,7 @@ sub connection {
 	show_times("begin dispatch") if $Global::ShowTimes;
     ::dispatch($http) if $http;
 	show_times("end connection") if $Global::ShowTimes;
+	close $http->{rfh} if $http->{rfh};
 	undef $Vend::Cfg;
 }
 
