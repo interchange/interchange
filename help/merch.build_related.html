@@ -1,0 +1,88 @@
+<html>
+<head>
+   <title>Interchange Help: Build Related</title>
+
+</head>
+<body bgcolor="#ffffff" link="#7079aa" alink="#000000" vlink="#999999" >
+
+
+<style type="text/css">
+<!--
+A:link {text-decoration: none} 
+A:visited {text-decoration: none} 
+A:active {text-decoration: none}
+A:hover {color:#000000; text-decoration: none}
+-->
+</style>
+
+<form>
+<table width='100%' border=0 cellspacing=0 cellpadding=0><tr><td height=23 bgcolor="#e8a317" background="images/help.background.gif" valign=middle><table width='100%' cols=3 border=0 cellpadding=0 cellspacing=0><tr><td height=1 width=12 align=left valign=middle><img src='images/curve.left.help.gif' width=12 height=22></td><td valign=middle width=550><img src="images/cleardot.gif" height=1height=1 width=12><a href="main.html"><font face="Verdana, Arial, Helvetica, sans-serif" size=2>Home</font></a><img src="images/cleardot.gif" height=1 width=12><a href="faq.html"><font face="Verdana, Arial, Helvetica, sans-serif" size=2>FAQ</font></a><img src="images/cleardot.gif" height=1 width=12</td><td align=right valign=middle width=40><a href='help' target="Help" onclick='return ShowHelp()' onmouseover="window.status='Help';return true;" onmouseout="window.status='';return true;"><font face="Verdana, Arial, Helvetica, sans-serif" size=2>Back</font></a></td><td width=19 align=right valign=middle><img src="images/curve.right.help.gif" width=12 height=22 border=0></td></tr></table></td></tr></table>
+</form>
+
+<center>
+<table border=0 cellspacing=0 cellpadding=2 width="450">
+
+<tr>
+<td>
+<br>
+<font size="-1" face="Verdana,Arial,Helvetica,sans-serif"><b>Build Related</b></font> <br>
+<br>
+<hr noshade size=2 width=100%>
+<br>
+You can mine the data from your <TT>orderline</TT> database to suggest products that
+might be bought in combination with a certain product.
+<P>
+All that is necessary is to access this page. The database will be mined and
+entries made in the <TT>others_bought</TT> field of the <TT>merchandising</TT>
+database.
+<P>
+The database is scanned, and a list of items purchased on the same order with
+each item is built. This is stored in a data structure and can be accessed
+<I>in a shopping cart or flypage</I> with the code:
+<XMP>
+
+	[if-item-data merchandising others_bought]
+	[perl tables=products]
+		my $hash = [item-data merchandising others_bought];
+		my @ary = sort { $hash->{$b} <=> $hash->{$a} } keys %$hash;
+		return '' unless @ary;
+		my %in_basket;
+		splice(@ary, 3);
+		for(@{$Carts->{main}}) {
+			$in_basket{$_->{code}} = 1;
+		}
+		@ary = grep ! $in_basket{$_}, @ary;
+		return '' unless @ary;
+		my $out = q{
+		<BR><TABLE CELLPADDING=0 CELLSPACING=0 WIDTH="100%">
+		<TR><TD __HEADERBG__>
+		<FONT SIZE="-1" COLOR="__HEADERTEXT__">
+			Customers who bought this item also bought:
+		</TD>
+		</TR><TR>
+		<TD><FONT SIZE="-1">
+		};
+		for(@ary) {
+ 			my $desc = tag_data( 'products', 'description', $_);
+			$out .= q{<A HREF="[area $_]">$desc</A><BR>}
+		}
+		return $out . '</TD></TR></TABLE>';
+	[/perl]
+	[/if-item-data]
+</XMP>
+
+<P>
+This code is used in the <B>barry</B> and possibly other demos.
+<br>
+<br>
+
+<hr noshade size=2 width=100%>
+<font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+<a href="http://developer.akopia.com"><b>Interchange</b></a><a href="http://www.akopia.com"><b> - ©1999 Akopia, Inc.</b></a></font>
+
+</td>
+</tr>
+</table>
+</body>
+</html>
+
