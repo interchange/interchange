@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.75 2001-06-15 15:56:27 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.76 2001-06-15 18:09:01 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.75 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.76 $, 10);
 
 @EXPORT = qw (
 
@@ -699,6 +699,8 @@ sub catch {
 	return pull_else($body) 
 		unless $patt = $Vend::Session->{try}{$label};
 
+	$body = pull_if($body);
+
 	unless ( $opt->{exact} ) {
 		#----------------------------------------------------------------
 		# Convert multiple errors to 'or' list and compile it.
@@ -713,11 +715,13 @@ sub catch {
 	#--------------------------------------------------------------------
 	# Note: If more than one error in $patt, this will return only the
 	# first one listed in the catch tag $body.
-	$body =~ m{\[([^\]]*(?:$patt)[^\]]*)\](.*)\[/\1\]}s
-		and return $2;
+	if( $body =~ m{\[([^\]]*(?:$patt)[^\]]*)\](.*)\[/\1\]}s ) {
+		$body = $2;
+	}
+	else {
+		$body =~ s{\[([^\]]*)\].*\[/\1\]}{}sg;
+	}
 	#--------------------------------------------------------------------
-
-	$body =~ s{\[([^\]]*)\].*\[/\1\]}{}sg;
 	return $body;
 }
 

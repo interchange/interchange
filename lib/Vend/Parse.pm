@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12.2.24 2001-06-15 00:37:35 heins Exp $
+# $Id: Parse.pm,v 1.12.2.25 2001-06-15 18:09:01 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -38,7 +38,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12.2.24 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.25 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -825,7 +825,6 @@ my %Interpolate = (
 
 				qw(
 						calc		1
-						catch		1
 						currency	1
 						import		1
 						row			1
