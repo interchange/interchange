@@ -91,7 +91,7 @@ random:
             <table cellspacing="0">
      	    <tr>
   	      <td align="left" class="contentbar1">
-	        &nbsp;<b>[loop-description]</b>
+	        &nbsp;[loop-description]
               </td>
 	    </tr>
 	    <tr> 

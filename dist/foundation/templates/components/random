@@ -39,7 +39,7 @@ banner:
 <table width="[control table_width 90%]" align="center">
 <tr> 
   <td class="categorybar">
-    <b>&nbsp;[control banner See also]</b>
+    &nbsp;<b>[control banner See also]</b>
   </td>
 </tr>
 <tr>
@@ -64,7 +64,7 @@ banner:
 	<table border="0" cellspacing="0" cellpadding="0" width="75%">
 	<tr> 
 	  <td width="75%" id=rv class="contentbar1" nowrap align="center">
-	    &nbsp;<b>[loop-description]</b>
+	    &nbsp;[loop-description]
 	  </td>
 	</tr>
 	<tr> 
