@@ -1,6 +1,6 @@
 # Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 2.14 2003-11-13 16:15:40 mheins Exp $
+# $Id: Session.pm,v 2.15 2003-12-03 16:10:21 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -27,7 +27,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.14 $, 10);
+$VERSION = substr(q$Revision: 2.15 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -279,6 +279,7 @@ sub close_session {
 		undef $Vend::SessionOpen;
 	}
 	else {
+		undef $::Instance->{DB_sessions};
 		untie %Vend::SessionDBM
 			or die "Could not close $Vend::Cfg->{SessionDatabase}: $!\n";
 		undef $Vend::SessionOpen;
@@ -310,6 +311,7 @@ sub write_session {
 	$Vend::Session->{superuser} = $Vend::superuser;
 	$Vend::Session->{login_table} = $Vend::login_table;
     $s = ! $File_sessions ? uneval_fast($Vend::Session) : $Vend::Session;
+#::logDebug("writing \$s of length " . length($s) . " to SessionDB");
     $Vend::SessionDBM{$Vend::SessionName} = $s or 
 		die "Data was not stored in SessionDBM\n";
     $Vend::Session->{'user'} = $save;
@@ -359,10 +361,16 @@ EOF
 						$sleepleft = $left;
 					}
 				}
-				close_session();
-				sleep $sleepleft;
-				open_session();
-				read_session();
+				if($::Instance->{DB_sessions}) {
+					sleep $sleepleft;
+					read_session();
+				}
+				else {
+					close_session();
+					sleep $sleepleft;
+					open_session();
+					read_session();
+				}
 				next LOCKLOOP;
 			}
 		}
