@@ -413,27 +413,22 @@ EOF
 	$opts{defaults} = 1;
 	$opts{mv_cancelpage} ||= 'admin/index';
 	$opts{row_template} = <<'EOF';
-{HELP}    <td>&nbsp;</td>
-	<td class=cdata>
-   <span style="color: blue">$HELP$</span>
+{HELP?}<td>&nbsp;</td><td>
+     <span style="color: blue">{HELP}</span>
+	 {HELP_URL?}<BR><A HREF="{HELP_URL}">more help</A>{/HELP_URL?}
+	 </td>
+	</tr>
+    <tr class=rnorm>
+	{/HELP?}
+   <td class=cdata width="20%" valign=top> 
+     {LABEL}
    </td>
-</tr>
-<tr class=rnorm>{/HELP}
-   <td class=cdata width="20%"> 
-     $BLABEL$$LABEL$$ELABEL$
-   </td>
-   <td class=cdata> 
-     <table cellspacing=0 cellmargin=0 width="100%">
-       <tr> 
-         <td class=cwidget> 
+   <td class=cdata width=500> 
            $WIDGET$
-         </td>
-         <td class=chelp>~TKEY~{HELP_URL}<BR><A HREF="$HELP_URL$">more help</A>{/HELP_URL}</td>
-       </tr>
-     </table>
    </td>
-<tr class=rtitle>
-	<td colspan=2><img src="bg.gif"></td>
+ </tr>
+ <tr class=rspacer>
+   <td colspan=2><img src="bg.gif" height=1 width=1></td>
 EOF
 
 	$opts{ui_wizard_fields} = join " ", @$name;
@@ -471,7 +466,7 @@ EOF
 
 	delete $opts{type};
 #::logDebug("calling table_editor opts=" . ::uneval(\%opts));
-	$Tmp->{auto_wizard} = $Tag->table_editor_tpl( {all_opts => \%opts });
+	$Tmp->{auto_wizard} = $Tag->table_editor( {all_opts => \%opts });
 	if($Tmp->{auto_wizard} !~ /<form\s+/i) {
 		$attr{auto_wizard} .= "\n";
 		my $msg = errmsg("Auto wizard failed to run wizard %s.", $name);

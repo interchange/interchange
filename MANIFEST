@@ -166,7 +166,6 @@ code/UI_Tag/su.coretag
 code/UI_Tag/substitute_file.coretag
 code/UI_Tag/tabbed_display.coretag
 code/UI_Tag/table_editor.coretag
-code/UI_Tag/table_editor_tpl.coretag
 code/UI_Tag/uneval.coretag
 code/UI_Tag/unlink_file.coretag
 code/UI_Tag/version.coretag

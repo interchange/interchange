@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.36 2002-09-16 23:06:31 mheins Exp $
+# $Id: Util.pm,v 2.37 2002-10-05 05:26:29 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -83,7 +83,7 @@ require HTML::Entities;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.36 $, 10);
+$VERSION = substr(q$Revision: 2.37 $, 10);
 
 BEGIN {
 	eval {
@@ -1232,11 +1232,21 @@ sub is_no {
 # contains the session ID as well as a unique integer to avoid caching
 # of pages by the browser.
 
+my @scratches = qw/
+				add_dot_html
+				add_source
+				link_relative
+				match_security
+				no_count
+				no_session_id
+				/;
+
 sub vendUrl {
-    my($path, $arguments, $r) = @_;
+    my($path, $arguments, $r, $opt) = @_;
     $r = $Vend::Cfg->{VendURL}
 		unless defined $r;
 
+	my $secure;
 	my $can_cache = ! $Vend::Cfg->{NoCache}{$path};
 	my @parms;
 
@@ -1244,27 +1254,70 @@ sub vendUrl {
 		$r = $Vend::Cfg->{SecureURL};
 	}
 
+	$opt ||= {};
+	for(@scratches) {
+		next if defined $opt->{$_};
+		my $mvparm = "mv_$_";
+		next unless $::Scratch->{$mvparm};
+		$opt->{$_} = $::Scratch->{$mvparm};
+	}
+
+	my $extra;
+	if($opt->{form}) {
+		$path = 'process' unless $path;
+		if($opt->{form} eq 'auto') {
+			my $form = '';
+			my %skip = qw/form 1 href 1 reparse 1/;
+			while( my ($k, $v) = each %$opt) {
+				next if $skip{$k};
+				$k =~ s/^__//;
+				$form .= "$k=$v\n";
+			}
+			$opt->{form} = $form;
+		}
+		push @parms, Vend::Interpolate::escape_form($opt->{form});
+	}
+
 	my($id, $ct);
 	$id = $Vend::SessionID
-		unless $can_cache and $Vend::Cookie && $::Scratch->{mv_no_session_id};
+		unless $can_cache and $Vend::Cookie && $opt->{no_session_id};
 	$ct = ++$Vend::Session->{pageCount}
 		unless $can_cache and $::Scratch->{mv_no_count};
+
+	if($opt->{match_security}) {
+		$opt->{secure} = $CGI::secure;
+	}
+
+	if($opt->{no_session}) {
+		undef $id;
+		undef $ct;
+	}
+
+	if($opt->{link_relative}) {
+		my $cur = $Global::Variable->{MV_PAGE};
+		$cur =~ s{/[^/]+$}{}
+			and $path = "$cur/$path";
+	}
+
+	if($opt->{secure} or exists $Vend::Cfg->{AlwaysSecure}{$path}) {
+		$r = $Vend::Cfg->{SecureURL};
+	}
 
 	$path = escape_chars_url($path)
 		if $path =~ $need_escape;
     $r .= '/' . $path;
-	$r .= '.html' if $::Scratch->{mv_add_dot_html} and $r !~ /\.html?$/;
+	$r .= '.html' if $opt->{add_dot_html} and $r !~ /\.html?$/;
 
-	if($::Scratch->{mv_add_source} and $Vend::Session->{source}) {
+	if($opt->{add_source} and $Vend::Session->{source}) {
 		my $sn = hexify($Vend::Session->{source});
 		push @parms, "$::VN->{mv_source}=$sn";
 	}
 
-	push @parms, "$::VN->{mv_session_id}=$id"			 	if defined $id;
-	push @parms, "$::VN->{mv_arg}=" . hexify($arguments)	if defined $arguments;
-	push @parms, "$::VN->{mv_pc}=$ct"                 	if defined $ct;
-	push @parms, "$::VN->{mv_cat}=$Vend::Cat"
-														if defined $Vend::VirtualCat;
+	push @parms, "$::VN->{mv_session_id}=$id"			 if $id;
+	push @parms, "$::VN->{mv_arg}=" . hexify($arguments) if defined $arguments;
+	push @parms, "$::VN->{mv_pc}=$ct"                 	 if $ct;
+	push @parms, "$::VN->{mv_cat}=$Vend::Cat"            if $Vend::VirtualCat;
+
 	if($Vend::AccumulatingLinks) {
 		my $key = $path;
 		$key =~ s/\.html?$//;
@@ -1276,12 +1329,17 @@ sub vendUrl {
 		push(@Vend::Links, [$key, $value]) unless $Vend::LinkFound{$key}++;
 
 	}
-	return $r unless @parms;
-    return $r . '?' . join($Global::UrlJoiner, @parms);
+
+    $r .= '?' . join($Global::UrlJoiner, @parms) if @parms;
+	if($opt->{anchor}) {
+		$opt->{anchor} =~ s/^#//;
+		$r .= $opt->{anchor};
+	}
+	return $r;
 } 
 
 sub secure_vendUrl {
-	return vendUrl($_[0], $_[1], $Vend::Cfg->{SecureURL});
+	return vendUrl($_[0], $_[1], $Vend::Cfg->{SecureURL}, $_[3]);
 }
 
 my %strip_vars;

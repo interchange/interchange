@@ -57,12 +57,14 @@ sub regen_build {
 		if $regen_arg;
 
 	if($action eq 'scan') {
+#::logDebug("building scan");
 		$regen_scan = 1;
 		my $c = {};
-		::find_search_params($c, $path);
+		my $npath = Vend::Util::unhexify($path);
+		::find_search_params($c, $npath);
 		$c->{mv_more_id} = 'static';
-		$Vend::SearchObject{''} = perform_search($c);
-		$initial = $Vend::SearchObject{''}->{mv_search_page}
+		$::Instance->{SearchObject}{''} = perform_search($c);
+		$initial = $::Instance->{SearchObject}{''}->{mv_search_page}
 										|| find_special_page('search');
 	}
 
@@ -253,7 +255,9 @@ EOF
 	$Vend::Cfg->{VendURL} = $Vend::Cfg->{VendURLOriginal}; 
 
 	my $umask = umask(022);
-	my $statpath = 'http://' . $::Variable->{SERVER_NAME} . $Vend::Cfg->{StaticPath};
+	my $statpath = $Vend::Cfg->{StaticPath};
+	$statpath = 'http://' . $::Variable->{SERVER_NAME} . $statpath
+		unless $statpath =~ m{^http:/};
 	my @bad;
 	my $base = $Vend::Cfg->{StaticDir};
 	eval {

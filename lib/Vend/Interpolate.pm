@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.115 2002-09-28 04:27:01 mheins Exp $
+# $Id: Interpolate.pm,v 2.116 2002-10-05 05:26:29 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.115 $, 10);
+$VERSION = substr(q$Revision: 2.116 $, 10);
 
 @EXPORT = qw (
 
@@ -3044,43 +3044,7 @@ sub escape_mv {
 	return join $joiner, grep(defined $_, @args);
 }
 
-sub form_link {
-	my ($href, $arg, $opt) = @_;
-
-	if( $href and $opt->{alias}) {
-		my $aloc = $opt->{once} ? 'one_time_path_alias' : 'path_alias';
-		$Vend::Session->{$aloc}{$href} = {}
-			if not defined $Vend::Session->{path_alias}{$href};
-		$Vend::Session->{$aloc}{$href} = $opt->{alias};
-	}
-
-	if($opt->{form} eq 'auto') {
-		my $form = '';
-		my %skip = qw/form 1 href 1 reparse 1/;
-		while( my ($k, $v) = each %$opt) {
-			next if $skip{$k};
-			$k =~ s/^__//;
-			$form .= "$k=$v\n";
-		}
-		$opt->{form} = $form;
-	}
-
-	$href = 'process' unless length($href);
-	$href =~ s:^/+::;
-	$href = Vend::Util::escape_chars_url($href);
-	$opt->{secure} = 1 if exists $Vend::Cfg->{AlwaysSecure}{$href};
-	my $base = ! $opt->{secure} ? ($Vend::Cfg->{VendURL}) : $Vend::Cfg->{SecureURL};
-	$href = "$base/$href"     unless $href =~ /^\w+:/;
-
-	my $extra = '';
-	$extra .= "mv_session_id=$Vend::Session->{id}\n"
-		unless $::Scratch->{mv_force_cache};
-	$extra .= "mv_pc=" . ++$Vend::Session->{pageCount} . "\n"
-		unless $::Scratch->{mv_force_cache};
-	$arg = "mv_arg=$arg\n" if length($arg) && $arg !~ /\n/; 
-	$extra .= $arg . $opt->{form};
-	return $href . '?' . escape_form($extra);
-}
+*form_link = \&tag_area;
 
 PAGELINK: {
 
@@ -3096,7 +3060,7 @@ sub resolve_static {
 #::logDebug("have cookie...");
 	return if ! $Vend::Cfg->{Static};
 #::logDebug("are static...");
-	my $key = $page;
+	my $key = Vend::Util::escape_chars_url($page);
 	if($arg) {
 		my $tmp = $arg;
 		$tmp =~ s:([^\w/]): sprintf '%%%02x', ord($1) :eg;
@@ -3121,33 +3085,15 @@ sub resolve_static {
 }
 
 sub tag_page {
-    ($page, $arg, $opt) = @_;
+    my ($page, $arg, $opt) = @_;
+
+	my $url = tag_area(@_);
 
 	my $extra;
 	if($extra = ($opt ||= {})->{extra} || '') {
 		$extra =~ s/^(\w+)$/class=$1/;
 		$extra = " $extra";
 	}
-
-	my $url;
-	my $urlroutine = $opt->{secure} ? \&secure_vendUrl : \&vendUrl;
-
-	if($opt->{form}) {
-		$url = form_link(@_);
-	}
-	elsif ($opt->{search}) {
-		$page = escape_scan($opt->{search});
-	}
-	elsif ($page eq 'scan') {
-		$page = escape_scan($arg);
-		undef $arg;
-	}
-
-	resolve_static(), $url = $urlroutine->($page, $arg)
-		unless $url;
-
-	$url .= '#' . $opt->{anchor} if $opt->{anchor};
-
     return qq{<a href="$url"$extra>};
 }
 
@@ -3156,9 +3102,14 @@ sub tag_page {
 sub tag_area {
     ($page, $arg, $opt) = @_;
 
-	return form_link(@_) if defined $opt and $opt->{form};
-
 	$page = '' if ! defined $page;
+
+	if( $page and $opt->{alias}) {
+		my $aloc = $opt->{once} ? 'one_time_path_alias' : 'path_alias';
+		$Vend::Session->{$aloc}{$page} = {}
+			if not defined $Vend::Session->{path_alias}{$page};
+		$Vend::Session->{$aloc}{$page} = $opt->{alias};
+	}
 
 	if ($opt->{search}) {
 		$page = escape_scan($opt->{search});
@@ -3180,7 +3131,7 @@ sub tag_area {
 	if($opt->{anchor}) {
 		$anchor = '#' . $opt->{anchor};
 	}
-	return $urlroutine->($page, $arg) . $anchor;
+	return $urlroutine->($page, $arg, undef, $opt) . $anchor;
 }
 
 }

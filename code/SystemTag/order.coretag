@@ -35,8 +35,11 @@ sub {
 	$opt->{page} = find_special_page('order')
 		unless $opt->{page};
 
-	return form_link($opt->{page}, $opt->{arg}, $opt)
-		if $opt->{area};
-	return tag_page($opt->{page}, $opt->{arg}, $opt);
+	if ($opt->{area}) {
+		return tag_area($opt->{page}, $opt->{arg}, $opt);
+	}
+	else {
+		return tag_page($opt->{page}, $opt->{arg}, $opt);
+	}
 }
 EOR
