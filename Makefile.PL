@@ -279,7 +279,7 @@ sub extra_libs {
 	};
 	unless ($@) {
 				my $def = 's';
-		        print <<EOF;
+		        print <<EOF if $MV::Default{storable};
 
 You appear to have Raphael Manfredi's Storable module installed.
 
@@ -306,7 +306,10 @@ EOF
 		elsif($ENV{MINIVEND_STORABLE} || -f "$realdir/_session_storable" || -f "_session_storable") {
 			$def = 's';
 		}
-		my $ask = my_prompt("Use Storable module? (y/n/s) ", $def);
+		my $ask;
+		$ask = $def;
+		$ask = my_prompt("Use Storable module? (y/n/s) ", $def) 
+			if $MV::Default{storable};
 		if ($ask =~ /^\s*(y|d)/i) {
 			open(TSTORABLE, ">_db_storable")
 				or die "creat _db_storable: $!\n";
@@ -803,7 +806,7 @@ EOF
 }
 
 	my %mv_specific = qw/
-						PREFIX 1 FORCE 1 FINAL 1 RPMBUILDDIR 1 INTERCHANGE_USER 1
+						STORABLE 1 PREFIX 1 FORCE 1 FINAL 1 RPMBUILDDIR 1 INTERCHANGE_USER 1
 					  /;
 	my %delete;
 	use Getopt::Long;
