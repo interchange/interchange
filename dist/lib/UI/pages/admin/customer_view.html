@@ -265,8 +265,19 @@ mv_nextpage=__UI_BASE__/customer_change_pass
 </form>
 </SMALL>
 
+[if type=data term="forum::code::customer-[loop-code]"]
+	[forum top="customer-[loop-code]" /]
+[else]
+	[page href=forum/submit
+			form="
+				customer=1
+				mv_arg=[loop-code]
+			"]Create forum for this user</A>
+[/else]
+[/if]
+
 [/loop]
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ -->
+<!-- page: @@MV_PAGE@@ version: $Id: customer_view.html,v 2.5 2002-11-20 17:40:11 mheins Exp $ -->
