@@ -1,6 +1,6 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 2.14 2002-02-03 22:01:57 mheins Exp $
+# $Id: Primitive.pm,v 2.15 2002-02-04 01:31:17 mheins Exp $
 
 # Copyright (C) 1998-2001 Red Hat, Inc. <interchange@redhat.com>
 
@@ -25,7 +25,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 2.14 $, 10);
+$VERSION = substr(q$Revision: 2.15 $, 10);
 
 $DEBUG = 0;
 
@@ -36,7 +36,7 @@ use vars qw!
 	!;
 
 use File::Find;
-use File::CounterFile;
+use Vend::CounterFile;
 use Text::ParseWords;
 use Exporter;
 use strict;

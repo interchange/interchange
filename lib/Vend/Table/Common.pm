@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.10 2002-02-02 18:52:54 mheins Exp $
+# $Id: Common.pm,v 2.11 2002-02-04 01:31:17 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,13 +22,13 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.10 $, 10);
+$VERSION = substr(q$Revision: 2.11 $, 10);
 use strict;
 
 package Vend::Table::Common;
 require Vend::DbSearch;
 require Vend::TextSearch;
-require File::CounterFile;
+require Vend::CounterFile;
 use Vend::Util;
 
 use Exporter;
@@ -140,7 +140,7 @@ sub autonumber {
 	local($/) = "\n";
 	my $c = $s->[$CONFIG];
 	if(! defined $c->{AutoNumberCounter}) {
-		$c->{AutoNumberCounter} = new File::CounterFile
+		$c->{AutoNumberCounter} = new Vend::CounterFile
 									"$c->{DIR}/$c->{name}.autonumber", $start;
 	}
 	my $num;

@@ -1,67 +1,5 @@
 UserTag read-ui-page Order page 
 UserTag read-ui-page addAttr
-UserTag read-ui-page Documentation <<EOD
-[read-ui-page page="<filespec>"]
-
-Returns the structure of a page.
-
-
-ui_component
-
-	Returns the component settings as an array with the elements
-	as major keys, i.e:
-
-		[control-set]
-			[size]1[/size]
-			[color]red[/color]
-		[/control-set]
-
-		[control-set]
-			[size]5[/size]
-			[color]green[/color]
-			[banner]Very Green[/banner]
-		[/control-set]
-
-	becomes:
-
-		[
-			{ size => 1, color => 'red' },
-			{ size => 5, color => 'green', banner => 'Very Green' },
-		]
-
-ui_component_text
-
-	The component settings as text, in the event component settings are
-	not to be edited.
-
-ui_page_setting
-
-	Returns the page global settings as a hash. Reads [set|tmp|seti ..][/set]
-	in the area above the first template region (i.e. @_LEFTONLY_TOP_@), but outside
-	of the [control] region.
-
-		[set page_title]Some title[/set]
-		[set members_only][/set]
-
-	becomes:
-
-		{ page_title => 'Some title', members_only => 1 }
-
-ui_page_setting_text
-
-	The text of the page setting area, used if the page settings are not to
-	be edited.
-
-If the textref=1 is passed in the tag call, a stringified version is
-returned.
-
-ui_content
-
-    Returns the content, which is the section between
-	<!-- BEGIN CONTENT --> and <!-- END CONTENT -->.
-
-EOD
-
 UserTag read-ui-page Routine <<EOR
 sub {
 	my ($pn, $opt) = @_;
@@ -142,13 +80,13 @@ sub {
 
 	my @comps;
 
-	sub _setref {
-		my ($ref, $key, $val) = @_;
-		$key = lc $key;
-		$key =~ tr/-/_/;
+	my $setref = sub {
+			my ($ref, $key, $val) = @_;
+			$key = lc $key;
+			$key =~ tr/-/_/;
 #Log("_setref key=$key val=$val");
-		$ref->{$key} = $val;
-	}
+			$ref->{$key} = $val;
+		};
 
 #Debug("preamble=|$preamble| postamble=|$postamble|");
 	if ( 
@@ -202,7 +140,7 @@ sub {
 		while($stuff =~ s{\[control-set\](.*?)\[/control-set\]}{}is ) {
 			my $sets = $1;
 			my $r = {};
-			$sets =~ s{\[([-\w]+)\](.*?)\[/\1\]}{ _setref($r, $1, $2) }eisg;
+			$sets =~ s{\[([-\w]+)\](.*?)\[/\1\]}{ $setref->($r, $1, $2) }eisg;
 			push @comps, $r;
 		}
 
@@ -232,3 +170,66 @@ sub {
 
 }
 EOR
+
+UserTag read-ui-page Documentation <<EOD
+[read-ui-page page="<filespec>"]
+
+Returns the structure of a page.
+
+
+ui_component
+
+	Returns the component settings as an array with the elements
+	as major keys, i.e:
+
+		[control-set]
+			[size]1[/size]
+			[color]red[/color]
+		[/control-set]
+
+		[control-set]
+			[size]5[/size]
+			[color]green[/color]
+			[banner]Very Green[/banner]
+		[/control-set]
+
+	becomes:
+
+		[
+			{ size => 1, color => 'red' },
+			{ size => 5, color => 'green', banner => 'Very Green' },
+		]
+
+ui_component_text
+
+	The component settings as text, in the event component settings are
+	not to be edited.
+
+ui_page_setting
+
+	Returns the page global settings as a hash. Reads [set|tmp|seti ..][/set]
+	in the area above the first template region (i.e. @_LEFTONLY_TOP_@), but outside
+	of the [control] region.
+
+		[set page_title]Some title[/set]
+		[set members_only][/set]
+
+	becomes:
+
+		{ page_title => 'Some title', members_only => 1 }
+
+ui_page_setting_text
+
+	The text of the page setting area, used if the page settings are not to
+	be edited.
+
+If the textref=1 is passed in the tag call, a stringified version is
+returned.
+
+ui_content
+
+    Returns the content, which is the section between
+	<!-- BEGIN CONTENT --> and <!-- END CONTENT -->.
+
+EOD
+

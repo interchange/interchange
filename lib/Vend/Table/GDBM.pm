@@ -1,6 +1,6 @@
 # Vend::Table::GDBM - Access an Interchange table stored in a GDBM file
 #
-# $Id: GDBM.pm,v 2.0 2001-07-18 02:23:20 jon Exp $
+# $Id: GDBM.pm,v 2.1 2002-02-04 01:31:17 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -29,7 +29,7 @@ use GDBM_File;
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 2.0 $, 10);
+$VERSION = substr(q$Revision: 2.1 $, 10);
 
 sub new {
 	my ($class, $obj) = @_;
@@ -91,7 +91,7 @@ sub open_table {
 		$flags = GDBM_WRITER;
 		if(! defined $config->{AutoNumberCounter}) {
 			eval {
-				$config->{AutoNumberCounter} = new File::CounterFile
+				$config->{AutoNumberCounter} = new Vend::CounterFile
 											"$config->{DIR}/$config->{name}.autonumber",
 											$config->{AUTO_NUMBER} || '00001';
 			};

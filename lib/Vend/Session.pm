@@ -1,6 +1,6 @@
 # Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 2.2 2002-01-22 02:07:08 mheins Exp $
+# $Id: Session.pm,v 2.3 2002-02-04 01:31:17 mheins Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -26,7 +26,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -201,8 +201,8 @@ sub count_ip {
 		my $grace = time() - ($Global::Variable->{MV_ROBOT_EXPIRE} || 86400);
 		unlink $fn if -M $fn < $grace;
 	}
-	return File::CounterFile->new($fn)->inc() if $inc;
-	return File::CounterFile->new($fn)->value();
+	return Vend::CounterFile->new($fn)->inc() if $inc;
+	return Vend::CounterFile->new($fn)->value();
 }
 
 

@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.54 2002-02-03 06:44:42 mheins Exp $
+# $Id: Interpolate.pm,v 2.55 2002-02-04 01:31:17 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.54 $, 10);
+$VERSION = substr(q$Revision: 2.55 $, 10);
 
 @EXPORT = qw (
 
@@ -2523,7 +2523,7 @@ sub tag_counter {
 #::logDebug("counter: file=$file start=$opt->{start}");
     $file = $Vend::Cfg->{VendRoot} . "/$file"
         unless Vend::Util::file_name_is_absolute($file);
-    my $ctr = new File::CounterFile $file, $opt->{start} || undef;
+    my $ctr = new Vend::CounterFile $file, $opt->{start} || undef;
     return $ctr->value() if $opt->{value};
     return $ctr->dec() if $opt->{decrement};
     return $ctr->inc();

@@ -167,7 +167,7 @@ sub {
 						|| 'templates';
 
 	if($opt->{template}) {
-		$tref;
+		#$tref;
 	}
 	my $rowcount = 0;
 	my $rowdiv = $opt->{across} || 1;

@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.9.0
 #
-# $Id: interchange.PL,v 2.20 2002-02-03 07:18:52 mheins Exp $
+# $Id: interchange.PL,v 2.21 2002-02-04 01:31:18 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -316,7 +316,7 @@ use Vend::Data;
 use Vend::UserDB;
 use Vend::Interpolate;
 use Vend::Page;
-use File::CounterFile;
+use Vend::CounterFile;
 
 if( ! $Global::Windows and $> == -1 || scalar(getpwuid($>)) eq 'nobody' ) {
 	warn errmsg("\aYou probably don't want to run as nobody!\n");
@@ -1859,7 +1859,7 @@ EOF
 	}
 
 	if($Global::HitCount) {
-		my $ctr = new File::CounterFile
+		my $ctr = new Vend::CounterFile
 					"$Global::ConfDir/hits.$Vend::Cat";
         $ctr->inc();
 	}

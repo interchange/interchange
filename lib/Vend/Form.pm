@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.7 2002-02-03 06:37:55 mheins Exp $
+# $Id: Form.pm,v 2.8 2002-02-04 01:31:17 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -36,7 +36,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 
 @EXPORT = qw (
 	display
@@ -800,7 +800,7 @@ sub box {
 	$run .= $footer;
 }
 
-sub scalar_to_array {
+sub options_to_array {
 	my ($passed, $opt) = @_;
 	return $passed if ref($passed) eq 'ARRAY'
 		and (
@@ -858,12 +858,12 @@ sub scalar_to_array {
 		return \@out;
 	}
 	else {
-		die "bad data type to scalar_to_array";
+		die "bad data type to options_to_array";
 	}
 }
 
 sub display {
-	my($opt, $item) = @_;
+	my($opt, $item, $data) = @_;
 
 if($opt->{debug}) {
 	::logDebug("display called, options=" . uneval($opt));
@@ -936,16 +936,15 @@ if($opt->{debug}) {
 	#            in $opt
 	my $type = parse_type($opt);
 
-	my $data;
 	my $look;
 
 	if($opt->{passed}) {
-		$data = scalar_to_array($opt->{passed}, $opt);
+		$data = options_to_array($opt->{passed}, $opt);
 	}
 	elsif($opt->{column} and $opt->{table}) {
 		my $key = $opt->{outboard} || $item->{code} || $opt->{code};
 		$opt->{passed} = $Tag->data($opt->{table}, $opt->{column}, $key);
-		$data = scalar_to_array($opt->{passed}, $opt);
+		$data = options_to_array($opt->{passed}, $opt);
 	}
 	elsif(! $Global::VendRoot) {
 		# Not in Interchange
@@ -991,7 +990,7 @@ if($opt->{debug}) {
 	if($look and $data) {
 		my $ary;
 		if($opt->{options}) {
-			$ary = scalar_to_array($opt->{options}, $opt) || [];
+			$ary = options_to_array($opt->{options}, $opt) || [];
 		}
 		elsif(! scalar(@$data)) {
 			$ary = [['', errmsg('--no current values--')]];

@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.13 2002-01-29 05:52:43 mheins Exp $
+# $Id: Order.pm,v 2.14 2002-02-04 01:31:17 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.13 $, 10);
+$VERSION = substr(q$Revision: 2.14 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1198,9 +1198,9 @@ sub _required {
 
 sub counter_number {
 	my $file = shift || $Vend::Cfg->{OrderCounter};
-	$File::CounterFile::DEFAULT_DIR = $Vend::Cfg->{VendRoot}
+	$Vend::CounterFile::DEFAULT_DIR = $Vend::Cfg->{VendRoot}
 		unless $file =~ m!^/!;
-	my $c = new File::CounterFile $file, "000000";
+	my $c = new Vend::CounterFile $file, "000000";
 	return $c->inc;
 }
 

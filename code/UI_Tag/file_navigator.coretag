@@ -4,6 +4,7 @@ UserTag file-navigator Routine <<EOR
 use vars qw/$CGI $Session $Tag $Scratch/;
 eval {
         require Fcntl;
+		local($^W) = 0;
         import Fcntl qw/:mode/;
 };
 if ($@) {

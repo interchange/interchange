@@ -180,9 +180,6 @@ sub extra_libs {
 
 	my @extra_lib_dirs;
 	my @extra_lib_files;
-	# We will use our own version of File::CounterFile always
-	push @extra_lib_dirs, 'File';
-	push @extra_lib_files, 'File/CounterFile.pm';
 
 	eval {
 		require IniConf;

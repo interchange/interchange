@@ -7,7 +7,7 @@ sub {
 	my $opt = shift;
     $file = $Vend::Cfg->{VendRoot} . "/$file"
         unless index($file, '/') == 0;
-    my $ctr = new File::CounterFile $file, $opt->{start} || undef;
+    my $ctr = new Vend::CounterFile $file, $opt->{start} || undef;
     return $ctr->inc();
 }
 EOF

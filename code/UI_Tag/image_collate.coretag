@@ -152,7 +152,7 @@ sub {
 		chdir '..';
 	}
 
-	my $save_mask = umask(2);
+	my $save_mask = umask(02);
 
 	foreach my $base (qw/ items thumb /) {
 		my $imgbase = "$Vend::Cfg->{VendRoot}/images/$base";

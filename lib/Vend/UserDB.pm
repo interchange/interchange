@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.2 2001-09-18 21:59:22 jon Exp $
+# $Id: UserDB.pm,v 2.3 2002-02-04 01:31:17 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -16,7 +16,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1258,7 +1258,7 @@ sub assign_username {
         my $file = shift || $self->{OPTIONS}{'counter'};
         my $start = $self->{OPTIONS}{username} || 'U00000';
         $file = './etc/username.counter' if ! $file;
-        my $ctr = File::CounterFile->new($file, $start);
+        my $ctr = Vend::CounterFile->new($file, $start);
         return $ctr->inc();
 }
 
