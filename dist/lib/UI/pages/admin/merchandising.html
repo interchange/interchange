@@ -35,7 +35,7 @@
 	$Config->{Sub}{do_timed} = sub {
 		my $code = shift;
 		return unless $db->field($code, 'timed_promotion');
-		return if $date le $db->field($code, 'finish');
+		return if $date le $db->field($code, 'finish_date');
 		$db->set_field($code, 'featured', 'expired');
 		return;
 	};
@@ -44,7 +44,7 @@
 		my $feature = $db->field($code, 'featured');
 		return $space if ! $feature;
 		return $space if $feature =~ /^expire/;
-		return 'future' if $db->field($code, 'start') gt $date;
+		return 'future' if $db->field($code, 'start_date') gt $date;
 		my $exp =  $db->field($code, 'finish');
 		if($exp lt $date) {
 			$db->set_field($code, 'featured', 'expired');
@@ -55,7 +55,7 @@
 	return;
 [/perl]
 
-[comment]former ui_data_fields from tmp merch_edit:  blurb_begin blurb_end banner_text banner_image start finish[/comment]
+[comment]former ui_data_fields from tmp merch_edit:  blurb_begin blurb_end banner_text banner_image start_date finish[/comment]
 <FORM ACTION="[area @@MV_PAGE@@]">
 <INPUT NAME=ui_text_qualification>
 <INPUT TYPE=submit VALUE="Limit with search">
