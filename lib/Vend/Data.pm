@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.34 2004-02-12 18:22:08 mheins Exp $
+# $Id: Data.pm,v 2.35 2004-03-04 00:17:37 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -748,8 +748,13 @@ sub dummy_database {
 			next;
 		}
 		my $class = $db_config{$data->{Class}}->{Class};
+		eval {
 		$Vend::Database{$name} =
 				new $class ($data);
+		};
+		if($@) {
+			logGlobal("Error creating dummy database for $name: $@");
+		}
 	}
 	update_productbase();
 }
