@@ -1481,17 +1481,19 @@ special C<[order item-code]> tag:
 
 =over 4
 
-=item [order code cart/page* database*]
+=item [order code]
 
-named attributes: C<[order code="code" href="cart/page" base="database"]>
+named attributes:
+
+	C<[order code="sku" href="page" cart="cartname"* base="table"]>
 
 Expands into a hypertext link which will include the specified
 code in the list of products to order and display the order page. B<code>
-should be a product code listed in one of the "products" databases. The
+should be a product SKU listed in one of the "products" tables. The
 optional argument B<cart/page> selects the shopping cart the item will be
 placed in (begin with / to use the default cart C<main>) and the order page
-that will display the order. The optional argument B<database> constrains
-the order to a particular products file -- if not specified, all databases
+that will display the order. The optional argument B<base> constrains
+the order to a particular products file -- if not specified, all tables
 defined as products files will be searched in sequence for the item.
 
 Example:
@@ -3620,13 +3622,15 @@ shopping cart to the file logs/transactions.txt:
 The file is relative to the catalog directory, and only may be
 an absolute path name if I<NoAbsolute> is set to C<No>.
 
-=item mime description_string
+=item [tag op=mime arg=function ...]
 
 Returns a MIME-encapsulated message with the boundary as employed
 in the other mime tags, and the C<description_string> used as the 
 Content-Description. For example
 
-   [tag mime My Plain Text]Your message here.[/tag]
+   [tag op=mime description="My Plain Text"]
+   	Your message here.
+   [/tag]
 
 will return
 
@@ -3636,25 +3640,55 @@ will return
   
   Your message here.
 
-C<When used in concert with [tag mime boundary]C<>, [tag mime header]>, and
-C<[tag mime id]>, allows MIME attachments to be included -- typically with
-PGP-encrypted credit card numbers. See the demo page ord/report.html
-for an example.
+  ---Boundary
 
-=item mime boundary
+Allows MIME attachments to be included -- typically with PGP-encrypted
+credit card numbers. See the demo page etc/report for an example.
 
-Returns a MIME message boundary with unique string keyed on
-session ID, page count, and time.
+Named parameters:
 
-=item mime header
+	[tag op=mime
+		 arg="reset|boundary|id|header"
+		 type="media/type"
+		 description="Description text"
+		 attach_only=1|0 ]
 
-Returns a MIME message header with the proper boundary for that
-session ID, page count, and time.
+=over 4
 
-=item mime id
+=item type
 
-Returns a MIME message id with the proper boundary for that
-session ID, page count, and time.
+You can set the MIME media type like C<application/pgp-encrypted> or 
+C<application/x-pdf> or C<application/octet-stream>.
+
+=item arg
+
+THere are four subsidiary operations which can be done instead
+of the default encapsulation of a message. None are normally used;
+they are only needed if you wish to hand-craft a MIME message including
+the email message headers.
+
+	boundary
+
+	Returns a MIME message boundary with unique string keyed on
+	session ID, page count, and time. Not normally needed; if there are
+	nultiple parts then boundaries will be automatically generated.
+
+	id
+
+	Returns the current MIME id used in the boundary. Not normally needed.
+
+    header 
+
+	Returns a MIME header suitable for inclusion in a message. Affected 
+	by the attach_only parameter.
+
+=item attach_only
+
+Interchange sends messages in C<multipart/alternative> encoding. If the
+C<attach_only> parameter is set true (non-zero, non-empty) then the
+MULTIPART/MIXED type is used.
+
+=back
 
 =item time
 
@@ -7032,7 +7066,7 @@ the page number in the latter. The same example:
     [more]
     [/more-list]
 
-will display B<Forward Page 1 Page 2 Back> for 2 pages.
+will display C<Forward Page 1 Page 2 Back> for 2 pages.
 
 As shown, you must pass a 0 for the arguments of each to
 tell Interchange to look for the assignments.

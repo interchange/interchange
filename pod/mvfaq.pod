@@ -4,7 +4,7 @@ mvfaq - Interchange FAQ
 
 =head2 VERSION
 
-Document version: $Id: mvfaq.pod,v 1.2 2000-07-12 01:18:51 heins Exp $
+Document version: $Id: mvfaq.pod,v 1.3 2000-07-20 07:20:20 heins Exp $
 
 This document describes Interchange 4.5 and later.
 
@@ -23,15 +23,18 @@ to write an unencrypted credit card number to disk.
 Interchange has a host of features -- a partial list is available at
 its web home page:
 
-        http://www.minivend.com/
+	http://interchange.akopia.com/
 
 A more complete list is in its documentation, available via links from above.
 
 A full list can only be seen by examining its source code. 8-)
 
 Interchange is developed and supported by Akopia, Inc.,
-and was originally written by by Mike Heins.  It was
-based on Andrew Wilcox's 1995 Vend.
+and was originally written by by Mike Heins and distributed as
+Minivend. It was based on Andrew Wilcox's 1995 Vend.
+
+Later, Akopia acquired Minivend and its easy-to-use Tallyman user interface
+was attached, with many of its features added.
 
 Interchange is freely redistributable under the GNU General Public License,
 a copy of which should come with every Interchange package. Basically
@@ -43,7 +46,7 @@ modify and/or redistribute it. See the GNU GPL for more information.
 
 You simply download it from:
 
-    http://www.minivend.com/minivend/download.html
+    http://interchange.akopia.com/download.html
 
 You also need Perl 5.005 or higher, available from CPAN.
 A list of CPAN locations is always available at
@@ -73,11 +76,11 @@ not run on anything less than Perl 5.005.
 
 =item Perl modules
 
-Interchange I<will> run with a stock Perl, but to use some features
-of Interchange (like the admin interface) you will need some extra
+The core functions of Interchange I<will> run with a stock Perl, but to use some features
+of Interchange (like the administrative interface) you will need some extra
 modules. If you are on UNIX you can use the CPAN module and run:
 
-    perl -MCPAN -e 'install Bundle::Minivend'
+    perl -MCPAN -e 'install Bundle::Interchange'
 
 and it should install all of the modules necessary except the DBM/DBI
 ones.
@@ -89,52 +92,40 @@ These modules are strongly recommended:
     SQL::Statement
     URI::URL
     Safe::Hole
+    Bundle::LWP (contains MIME::Base64 and URI::URL)
     GDBM or DB_File (comes with most i386 Perls)
 
 These are definitely recommended:
 
     Storable
-    Bundle::LWP (contains MIME::Base64 and URI::URL)
+    Business::UPS (comes with Interchange)
 
 These are nice to have but are not essential:
 
-    Business::UPS (comes with Interchange)
     Term::ReadLine::Perl
     Term::ReadKey
 
 You will need the B<DBI> module if using SQL, along with the
 appropriate DBD module for your database.
 
-The recommended packages for ActiveState Perl for Windows are:
-
-    MD5
-    MIME::Base64
-    LWP
-    SQL_Statement
-    DB_File
-
-FUTURE: The Interchange setup program will attempt to use C<ppm.pl>, the ActivePerl
-package manager, to install them at installation time.
-
 =item Operating System
 
-UNIX is best. The Windows version, while perhaps more than just 
-a toy, is not suitable for high-volume catalog serving. This is
+UNIX is best. Interchange doesn't yet run on Windows, but will
+run on Mac OS/X.
+
+It is unknown when Interchange on Windows will
+be suitable for high-volume catalog serving. This is
 mostly due to NT not fitting the UNIX fork() model which works
 so well with Interchange.
 
-A catalog designed on a Windows machine should just move over to
-a UNIX machine with no changes, so Windows might be a suitable
-development environment.
-
-Mac OS is not supported. If the time comes when it starts to reasonably
+Mac OS/Finder is not supported. If the time comes when it starts to reasonably
 support normal POSIX services, then an attempt to port will be made. This
-is not likely, in my estimation. Interchange does run fine on OS/X.
+is not likely, in our estimation. Interchange does run fine on OS/X.
 
 =item Machine
 
-The server should be fast and have lots of memory. A 200MHz Pentium
-Pro or equivalent with 128MB of RAM works well and can serve many
+The server should be fast and have lots of memory. A 500MHz Pentium
+or equivalent with 128MB of RAM works well and can serve many
 catalogs if that is all it does.
 
 If you are located on a machine with many hundreds of domains, as sometimes
@@ -153,7 +144,7 @@ to make full source code of the current version available. However,
 Akopia is interested in making Interchange as reliable and trouble-free
 as possible and provides both free and paid support for Interchange.
 Forward bug reports, questions and comments to the mail list,
-minivend-users@minivend.com, or Akopia support, <support@akopia.com>.
+interchange-users@lists.akopia.com, or Akopia support, <support@akopia.com>.
 
 Do understand that any problems answered in this FAQ or the documentation
 will likely be ignored by people on the mail list. Other problems will
@@ -178,7 +169,7 @@ mention what is (or is not) in the error.log files
 
 The official Interchange web site is:
 
-    http://www.akopia.com/interchange/
+    http://interchange.akopia.com/
 
 The latest version of the software, this FAQ, and the documentation,
 are available there.  Your problem may not be unique -- check the site
@@ -199,13 +190,14 @@ where C<cgi-bin> is the directory that the program is located.
 
 To reenable it:
 
-    chmod u-s cgi-bin/simple
+    chmod u+s cgi-bin/simple
 
 If that doesn't work, it usually means you are on a virtual host with limited
 command set.
 
 To verify that this is the problem, try temporarily changing the
-permission of the MINIVEND_ROOT/etc/socket file to be read/write by
+permission of the interchange/etc/socket file (or /var/run/minivend/socket,
+or /var/run/interchange/socket, etc.) to be read/write by
 setting in C<minivend.cfg>:
 
     SocketPerms 0666
@@ -229,22 +221,16 @@ check to see if you can run I<any> CGI program from the path it
 is trying to use. The next most common problem is the user giving
 the wrong information to C<makecat>.
 
-Interchange is intended to work on Perl Version 5.005 and higher, but
-the author does not have the resources (read time) to regression
-test all versions with the different versions of Perl, nor the
-differing operating systems that exist. Interchange
-will definitely be tested with the last major release of Perl at
-the time of package release.  As of this writing, Interchange's
-version is 4.5.2 and Perl's latest release version is 5.6.0.
-
-B<Please understand that the first remedy in the case of unknown problems will>
-B<be to upgrade Perl to the latest version.>
+Interchange works on Perl Version 5.005 and higher.  Interchange will
+definitely be tested with the last major release of Perl at the time
+of package release.  As of this writing, Interchange's version is 4.5.4
+and Perl's latest release version is 5.6.0.
 
 =head2 Information Needed for Support
 
 First, check the the official Interchange web site for information:
 
-    http://www.minivend.com/
+    http://interchange.akopia.com/
 
 If you are unable to get Interchange installed, it is almost always
 a problem with your answers to its questions or with the the Perl
@@ -265,8 +251,8 @@ just fine.
 
 =item *
 
-Very old machine or a machine with very low memory (less than 64M).
-The test programs might time out while MiniVend might still work. It
+Very old machine or a machine with very low memory (less than 128M).
+The test programs might time out while Interchange might still work. It
 won't work very well; expect very slow performance if you don't have
 sufficient memory.
 
@@ -276,13 +262,13 @@ Bad installation of Perl. While not as common as it used to be, since
 Perl 5 is distributed with so many systems, it does happen.
 A proper Perl will need to be installed.
 
-If MiniVend does a core dump or causes a segmentation fault, this is
+If Interchange does a core dump or causes a segmentation fault, this is
 most certainly the problem.
 
 =item *
 
 Inadequate system privileges or quota restrictions.  If you have a
-virtual memory quota then MiniVend can easily exceed it.
+virtual memory quota then Interchange can easily exceed it.
 
 =item *
 
@@ -303,7 +289,7 @@ Second, double check that you have done the following things:
 =item *
 
 Checked I<B<all>> of the error.log files?  There is one for
-each catalog, and a global one in the MiniVend software root directory.
+each catalog, and a global one in the Interchange software root directory.
 
 =item *
 
@@ -344,7 +330,7 @@ the tlink program instead if you must cross NFS boundaries.
 =back
 
 If you have a problem you are not able to correct, and you have taken all
-of those steps, you can send email to the MiniVend users list:
+of those steps, you can send email to the Interchange users list:
 
     minivend-users@minivend.com
 
@@ -354,34 +340,34 @@ error logs.
 
 Please see this if you don't get an answer:
 
-    http://www.minivend.com/minivend/the_authors_life.txt
+    http://interchange.akopia.com/minivend/the_authors_life.txt
 
-MiniVend is an ambitious and complex program, and is not presented as
+Interchange is an ambitious and complex program, and is not presented as
 being I<easy to use>, I<easy to install>, or I<bug-free>.  The
 configuration script was done to try and make a very painful process only
 slightly painful.  Some people install in one pass.  Others never make it.
-Determined and thoughtful users almost always make MiniVend work.
+Determined and thoughtful users almost always make Interchange work.
 
-=head2 If you are intending to run MiniVend on an ISP
+=head2 If you are intending to run Interchange on an ISP
 
 The great majority of ISPs provide some CGI service, and more and more
-run systems that are compatible with MiniVend.  The catalog
-configurator for MiniVend is designed to figure out many ISP directory
+run systems that are compatible with Interchange.  The catalog
+configurator for Interchange is designed to figure out many ISP directory
 setups.
 
 Almost any Internet Service Provider (ISP) system
-I<should> be able to run MiniVend, but some cannot (or will not) run
-MiniVend at all.  On top of that, many times ISP personnel are too busy
+I<should> be able to run Interchange, but some cannot (or will not) run
+Interchange at all.  On top of that, many times ISP personnel are too busy
 to help, won't help, or don't know enough to help.  Some are secretive
 about details of the setup of their systems.
 
-MiniVend does require a stable platform underneath it. Many ISP servers
+Interchange does require a stable platform underneath it. Many ISP servers
 are heavily loaded (especially low-cost ones). If you run on a server
 which is constantly running out of memory and file descriptors, you will
-not be happy with your results with MiniVend.
+not be happy with your results with Interchange.
 
 Virtual servers that don't provide shell access are not really usable
-for MiniVend without direct support from the ISP -- unless you are
+for Interchange without direct support from the ISP -- unless you are
 a CGI/Perl wizard who can figure out how to do it. 8-) It can be done
 (with a good deal of difficulty) on some virtual servers.
 
@@ -390,13 +376,13 @@ will require some source-code twiddling to get the paths for vlink
 right -- the catalog configurator will not do the trick. See the mail
 list archives for the hack.
 
-MiniVend does require a lot of memory, and it does run as a daemon. You
+Interchange does require a lot of memory, and it does run as a daemon. You
 will find that that vexes a fair number of ISPs. I have found it difficult
 to provide power and speed without using memory, so it will have to stay
 that way for the time being.
 
 All in all, you can have a fair amount of confidence that
-your ISP can run MiniVend. Or, you can get one who will. 8-)
+your ISP can run Interchange. Or, you can get one who will. 8-)
 
 =head2 How can I unzip the file?
 
@@ -421,7 +407,9 @@ then transferring it to the ISP, make sure you have done all transfers
 in BINARY mode. You will have weird problems if you have made one or
 more of the transfers in ASCII mode.
 
-=head2 About Vend, MiniVend's ancestor
+=head2 About MiniVend, Interchange's ancestor
+
+Minivend was originally based on Vend by Andrew Wilcox.
 
 Vend was written by Andrew Wilcox in the early part of 1995, and
 the first released (beta) version was 0.2.  Vend 0.2 is the
@@ -432,10 +420,9 @@ DBM catalog storage.  Subsequent versions took parts from Vend
 adapted to run with MiniVend.
 
 The first release of MiniVend (0.2m7) was on December 28, 1995, making
-it over four years old.  A veritable eon in web time!
+it nearly five years old.  A veritable eon in web time!
 
-Other portions of Vend, notably the database interface from 0.3, were adopted,
-but the commonality between the original Vend and MiniVend is minimal.
+Minivend grew over time to thousands of users worldwide.
 
 =head2 Why doesn't my question get an answer on the mail list?
 
@@ -469,7 +456,7 @@ than "It doesn't work".
 =item *
 
 Information needed for support is not included or is not
-intelligible. Version of MiniVend, operating system and/or virtual
+intelligible. Version of Interchange, operating system and/or virtual
 server type, HTTP server (i.e. Apache), and database types in use are
 all relevant to most questions.
 
@@ -478,7 +465,7 @@ all relevant to most questions.
 The question is not easily comprehended.
 
 Sometimes this is due to language difficulties. While there are many
-Minivend users speaking many different languages, and there are a couple
+Interchange users speaking many different languages, and there are a couple
 of language-specific user lists, the language on the main mail list is
 English. The clearer the question, the more likely you are to get an
 answer. Babelfish translations will probably not get it.
@@ -514,58 +501,12 @@ No one knows the answer.
 
 =back
 
-=head2 I sent the author a REAL IMPORTANT question and he didn't answer!
+=head2 Is Interchange secure?
 
-I know your problem is important to you, but please take note of these facts:
-
-=over 4
-
-=item *
-
-MiniVend has been downloaded over a million times, and is included on
-CD-ROMs that have been distributed hundreds of thousands of times.
-
-=item *
-
-The mail list has had over 30,000 posts in its lifetime, many of them
-questions.
-
-=item *
-
-The author has received tens of thousands of messages about MiniVend.
-
-=item * 
-
-There are thousands of users running tens of thousands of catalogs
-with Minivend.
-
-=item * 
-
-The author is only one person, has a family, has a living to earn,
-and is still actively developing MiniVend.
-
-=back
-
-If you think about these things, you will see why the web site and
-the mail list are the only reliable support for MiniVend.
-
-There are a number of consultants who frequent the mail list, and the
-MiniVend web site has a list of people who have declared that they do
-MiniVend consulting.
-
-Bear in mind that companies spend up to millions of dollars to put
-a high-quality catalog operation on line. MiniVend has been used to
-provide catalogs that rival those high-end operations in many ways.
-But, as they say, TANSTAAFL.
-
-
-=head2 Is MiniVend secure?
-
-Maybe.  It has been downloaded over 500,000 times (availability
-at 50+ FTP sites means it is unknown how many more times than that)
-with no reported I<system> security problems.  It uses the Perl
-Safe.pm module for user-embedded Perl subroutines and conditionals to
-make use of those pretty carefree.
+Maybe.  It has had a couple of security exploits found over time, all
+of which have been corrected quickly.  It uses the Perl Safe.pm module
+for user-embedded Perl subroutines and conditionals to make use of those
+pretty carefree.
 
 However, there are definite potential problems with credit card number
 security that can be avoided:
@@ -576,7 +517,7 @@ security that can be avoided:
 
 B<Unencrypted credit card numbers stored on disk.>
 
-If you don't use MiniVend's encryption capability for encrypting credit
+If you don't use Interchange's encryption capability for encrypting credit
 card numbers, or the real-time payment (CyberCash, etc.) interface,
 then there will be unencrypted credit card numbers present in your
 session database files.
@@ -585,8 +526,8 @@ If your system is the target of a break in, then these numbers
 would be available to any user ID that can read the session
 files.
 
-This is the reason MiniVend defaults to read/write permission
-for the MiniVend user only.
+This is the reason Interchange defaults to read/write permission
+for the Interchange user only.
 
 =item *
 
@@ -615,23 +556,31 @@ Running SQL databases without WRITE_CONTROL or other permission
 blocks. 
 
 It is possible to enter arbitrary SQL in some search definitions. Though
-MiniVend tries to block non-select calls, this is not bulletproof. It 
-is best to have certain tables be read-only for MiniVend, i.e. no insert
+Interchange tries to block non-select calls, this is not bulletproof. It 
+is best to have certain tables be read-only for Interchange, i.e. no insert
 or update permission. For tables that must be updated (i.e. userdb, transactions,
 and orderline) should use the WRITE_CONTROL capability and the
 NoSearch directive to protect them.
 
+=item *
+
+Running with AllowGlobal set. This allows the user programming the catalog
+to do anything the Interchange user ID can, and also disables the Safe.pm checking
+for embedded Perl code. We recommend that you write global UserTag routines
+instead of using AllowGlobal.
+
 =back
 
-The bottom line is that security needs to be your concern.  MiniVend tries
+The bottom line is that security needs to be your concern.  Interchange tries
 to warn you and provide means for protecting customer data, but it can't
-stop you from doing all unwise things.  The author stands behind the license
-for MiniVend and disclaims all responsibility.
+stop you from doing all unwise things.  Akopia wants to make Interchange
+secure, but you can see that we must stand behind the license
+for Interchange and disclaim all responsibility.
 
-=head2 What HTML editors work with MiniVend?
+=head2 What HTML editors work with Interchange?
 
 None, really, though by accepting a performance penalty you can embed
-many MiniVend tags inside of regular HTML with things like:
+many Interchange tags inside of regular HTML with things like:
 
     [pragma no_html_parse 0]
     <A HREF="[href minivend_page]">Link</A>
@@ -640,7 +589,7 @@ many MiniVend tags inside of regular HTML with things like:
         mv_nextpage=your_page
     </SCRIPT>
 
-You will probably have to edit MiniVend pages by hand.
+You will probably have to edit Interchange pages by hand.
 
 Some HTML editors have a tag like <NOTOUCH></NOTOUCH> 
 that defines regions which should not be wrapped or reformatted
@@ -648,36 +597,31 @@ by the editor. You should use this.
 
 Also, if uploading a page from a Mac or PC make sure to upload in
 ASCII (i.e. non-image) mode. If you ignore this, you can break 
-your MiniVend catalog!
+your Interchange catalog!
 
 =head2 What can you expect in the way of support?
 
-(This is the author, Mike Heins, speaking.)
-
-I am interested in creating a better MiniVend. However, it has become
-pretty popular and you should not expect individual support.
-
-What I will typically do:
+What we will typically do:
 
 =over 4
 
 =item *
 
 Follow up on cogent bug reports, usually with fairly quick response. A bug
-is not that you cannot install MiniVend -- it is a demonstrated fault in
+is not that you cannot install Interchange -- it is a demonstrated fault in
 the program logic that can be duplicated. A cogent bug report is detailed
 and concise, and includes HTML/code snippets that demonstrate the problem.
 
 =item *
 
-Take note of faults in the demo. Any fixes will be discussed on
+Take note of faults in the demonstrations. Any fixes will be discussed on
 the mailing list and I<may> be fixed in the next release version
-of MiniVend.  The demos are demos -- not a finished application.
+of Interchange.
 
 =item *
 
 Take note of faults in the documentation and update the next release
-version of MiniVend. If you provide edited replacement text it is
+version of Interchange. If you provide edited replacement text it is
 appreciated. The documentation source is available if you would like to
 see how it is maintained.
 
@@ -692,64 +636,66 @@ information.
 
 =back
 
-All of these are things I try to do. There is no commitment -- check
-your license for MiniVend. All are done on a time-available basis. If
-you don't include all relevant information I will probably ignore the
-question. I answer on the mailing list so that information can get to
-more people and be archived for posterity.
+All of these are things we try to do. There is no commitment -- check
+your license for Interchange. All are done on a time-available basis.
 
-What I will not do:
+What we will not do:
 
 =over 4
 
 =item *
 
-Accept phone calls about MiniVend.
+Accept phone calls about Interchange.
 
 =item *
 
-Answer questions that are URGENT or cry for HELLLPPP!!!!
+Answer questions that are URGENT or cry for HELLLPPP!!!! These are reserved
+for fee-based support.
 
 =item *
 
-Conduct tutorials.
+Conduct tutorials except on the forum of the mail list.
 
 =item *
 
-Visit a URL to look at a problem.
+Visit a URL to look at a problem unless it is accompanied by a problem
+description.
 
 =item *
 
-Conduct a Q&A to extract needed information.
+Conduct a Q&A to extract needed information; we need versions, conditions,
+and symptoms before we can even begin to help.
 
 =back
 
 
 =head2 Where can I get more help?
 
-If you cannot work with MiniVend without more help, you should engage
-a consultant to help with integration and administration. The ideal
-consultant will have a complete understanding of web servers, HTML,
-databases, and Perl.
+If you cannot work with Interchange without more help, Akopia provides
+fee-based support.
+
+Or you can engage a consultant to help with integration and
+administration. The ideal consultant will have a complete understanding
+of web servers, HTML, databases, and Perl.
 
 If you cannot find a consultant, you might post to the mail list and
 solicit help. Several competent consultants frequent the list and may
 respond.
 
-=head2 How does MiniVend compare with other shopping carts?
+=head2 How does Interchange compare with other shopping carts?
 
-MiniVend is a full-featured shopping cart with high-end power.  It can
+Interchange is a full-featured shopping cart with high-end power.  It can
 and does maintain databases of hundreds of thousands of items or more, and
 is frequently used in catalogs with hundreds or many thousands of items.
 
-MiniVend is database-based.  It has a complex implementation and a
+Interchange is database-based.  It has a complex implementation and a
 fairly steep learning curve.  If all you are ever going to catalog is
-just a few items, and/or the items will not frequently change, MiniVend
+just a few items, and/or the items will not frequently change, Interchange
 is probably overkill for your needs. It may make more sense to go with
 a simpler cart that embeds the product information in the page and does
 not require database setup.
 
-Things that might call for the use of MiniVend:
+Things that might call for the use of Interchange:
 
 =over 4
 
@@ -783,7 +729,7 @@ need flexible searching and categorization options
 
 =back
 
-When Minivend might not be the right choice and you might want to
+When Interchange might not be the right choice and you might want to
 use another free cart
 
 =over 4
@@ -816,40 +762,9 @@ you want to interact only through a GUI like Windows and not edit files
 
 =back
 
-When comparing MiniVend to commercial products, the comparison is better
+When comparing Interchange to commercial products, the comparison is better
 drawn to the higher end ones costing thousands of dollars rather than
 the low end ones costing hundreds of dollars.
-
-Subjectively, people have both good and bad experiences with MiniVend.
-
-    After investing tens of thousands of dollars and almost
-    a year of effort in commercial software, we switched
-    to MiniVend and were operational within weeks.
-    -- large corporation
-   
-        MiniVend is too difficult for the user to configure. There
-        are too many things that must be gotten just so.
-        -- Small internet service provider
-  
-    I really like the new site, its laid out well and the
-    documentation is so good I've decided to use it even though
-    I'm not a programmer.
-    -- happy prospective user
-  
-        Your documentation is awful.
-        -- not-so-happy prospective user
-  
-    Your documentation is some of the best and most comprehensive
-    we have seen for a freeware program.
-    -- happy user
-  
-        And the your pages don't have the right information in
-        them and that's MY FAULT? How about the fact that your
-        configure script acts differently every time it gets run?
-        -- not-so-happy user
-
-(Obviously, mileage varies with the user. Thankfully, the happy ones *seem*
- to heavily outnumber the unhappy ones...)
 
 One user says:
 
@@ -859,9 +774,9 @@ One user says:
 This is not far from the truth, though modifying the "simple" or "basic"
 demo seems to work for many users.
 
-Despite being free, MiniVend will require an investment -- either your
+Despite being free, Interchange will require an investment -- either your
 time or the money to engage a consultant skilled in the web and in databases.
-If given its due, MiniVend can provide power that no other free shopping
+If given its due, Interchange can provide power that no other free shopping
 cart has.
 
 =head2 I want to partner with you, or exchange links, or ....
@@ -880,30 +795,31 @@ The only way we will consider putting in support for a specific payment gateway
 is if it is a funded consulting project. This is usually thousands of dollars
 and is prohibitive 
 
-Users have integrated Minivend with many different payment gateways -- we
+Users have integrated Interchange with many different payment gateways -- we
 have done various versions of CyberCash, Signio, and Authorize.net over time.
-We support CyberCash directly in MiniVend as the market leader; Minivend 4 makes
-it pretty easy to integrate your own gateway.
+We support CyberCash and Signio directly in Interchange as market leaders;
+also, Interchange makes it pretty easy to integrate your own gateway.
 
 =item Directory listings
 
-You may list Minivend in your software directory, but we won't maintain
-the listing and we don't want to be on your mail list.
+You may list Interchange in your software directory.
+We probably do not want to be on your mail list and probably don't have
+time to maintain the listing.
 
 =item CD-ROM distributions
 
-You may distribute MiniVend unchanged on your CDROM. We like to get a copy
+You may distribute Interchange unchanged on your CDROM. We like to get a copy
 if you do, but that is not strictly required.
 
 =item Reselling
 
-You can't resell Minivend because it is Gnu GPL licensed; but you can give
+You can't resell Interchange because it is Gnu GPL licensed; but you can give
 it away. See the www.gnu.org website for more information.
 
-=head2 How many Minivend installations are there?
+=head2 How many Interchange installations are there?
 
-This is unknown. The author knows thousands of separate catalogs have
-been made, but stopped counting quite a while ago. Minivend is known to
+This is unknown. Thousands of separate catalogs have
+been made, but we stopped counting quite a while ago. Minivend is known to
 have been downloaded at least 800,000 times. If 1% of downloaders each
 made one catalog that would make 8,000. There are at least a few "farms"
 of catalogs, some that encompass hundreds of domains.
@@ -914,36 +830,9 @@ users.
 
 (All numbers are SWAGs as of March 2000.)
 
-=head1 Windows-specific questions
-
-=head2 "Bad command or file name" when double-clicking on the setup icon
-
-This means Perl is not in your PATH or is not installed.
-
-You might try:
-
-    c:\full\path\to\perl setup.pl
-
-If you still have problems, it probably means Perl is not installed
-properly. You need the ActiveState 5.005 version, i.e. build 5xx.
-(If you can build your own Perl we assume you won't need the help
-of this question.)
-
-    http://www.perl.com/pace/pub/perldocs/latest.html
-
-See the Perl distribution for details on how to install it, the 
-MiniVend README-win.txt file for pointers to exact URLs, or visit
-
-    http://www.perl.com
-
-for more information.
-
-B<NOTE:> MiniVend will B<not> work with the ActiveState version 5.003 build 3xx
-distributed with the NT resource kit.
-
 =head1 Configuration Problems
 
-Most MiniVend configuration and setup problems are due to one
+Most Interchange configuration and setup problems are due to one
 of:
 
 =over 4
@@ -952,26 +841,26 @@ of:
 
 THIS IS BY FAR THE MOST COMMON PROBLEM.
 
-To install a working demo, MiniVend needs to know what DocumentRoot
+To install a working demo, Interchange needs to know what DocumentRoot
 is and how to run CGI programs. Details of this setup are server- and
 site-specific, and you may need to do some research.
 
 Re-run the configuration again, and I<pay close attention> to the
 prompts given. There are examples given which apply to most systems.
 
-If your web server is Apache or NCSA, Minivend will try and parse its
+If your web server is Apache or NCSA, Interchange will try and parse its
 C<httpd.conf> file to help you along, but many ISPs don't allow users
 to read these and it may fail.
 
 =item Too-low version of Perl
 
-If you have a Perl earlier than 5.005, MiniVend will not work.
+If you have a Perl earlier than 5.005, Interchange will not work.
 Don't even try an earlier version; you must update.
 
 =item Perl compiled with USE_THREADS
 
 Run C<perl -V>. If you see -DUSE_THREADS in the compilation definition,
-you might run into problems with MiniVend.
+you might run into problems with Interchange.
 
 =back
 
@@ -997,7 +886,7 @@ Some problems may occur.  In general, you can ignore warnings
 about pointers.
 
 Make sure that you have run the configure program in the src directory.
-If you use MiniVend's makecat program it will try to compile an appropriate
+If you use Interchange's makecat program it will try to compile an appropriate
 link at that time, and will substitute tlink.pl if that doesn't work.
 
 You can compile manually with the proper settings with this series
@@ -1014,43 +903,37 @@ and which will compile an approprate link.
 If you cannot compile, try using the C<tlink.pl> script which should work
 on most any system.
 
-=head2 We're sorry, the MiniVend server is unavailable...
+=head2 We're sorry, the Interchange server is unavailable...
 
 This is the most common problem on UNIX systems.  It almost always
 means that permissions are not properly set up, or that the VLINK
 program is not setuid. Try temporarily changing the permission of
 the MINIVEND_ROOT/etc/socket file to be read/write to all groups
 (C<chmod 666 etc/socket>). This must be done I<after> the
-server is started, as MiniVend deletes and recreates the socket every
-time it starts. If MiniVend then works you will have to make sure the
+server is started, as Interchange deletes and recreates the socket every
+time it starts. If Interchange then works you will have to make sure the
 user that the VLINK program runs as matches the user who is running the
-MiniVend daemon.
+Interchange daemon.
 
 <HR>
-B<It is not recommended that you install the MiniVend software
-as C<root>.> If you are setting MiniVend up for the entire
-machine, and not just as a virtual host user, it is usual to create a
-special C<mvend> or C<minivend> user to run the daemon and
-the link program.  This means the directory listing for your CGI-BIN
-should be something like:
+B<You cannot run  the Interchange software as> C<root>.
+If you are setting MiniVend up for the entire machine, and not just as a
+virtual host user, it is usual to create a special C<ichange> or C<interchange>
+user to run the daemon and the link program.  This means the directory
+listing for your CGI-BIN should be something like:
 
-
--rwsr-xr-x   1 minivend users        6312 Dec 30 11:39 cgi-bin/simple
+ -rwsr-xr-x   1 interchange users        6312 Dec 30 11:39 cgi-bin/simple
 
 and for the socket file it should be:
 
-
-srw-------   1 minivend users           0 Dec 30 11:41 etc/socket
+ srw-------   1 interchange users           0 Dec 30 11:41 etc/socket
 
 Once you have set up the software, you can easily install catalogs
 as root B<as long as your C<umask> is set to 2 or 22>.
 
-(The following assumes you have made the MiniVend software owned
+(The following assumes you have made the Interchange software owned
 and run by the special user C<mvend> and that each user has
-a MiniVend catalogs directory C</home/user/catalogs>).
-
-I<The following policies should be automatically offered when
-installing MiniVend 3.06 or higher.>
+a Interchange catalogs directory C</home/user/catalogs>).
 
 The best way to set permissions on a multi-user system is to make
 all files group readable and writable (660 or 664 mode). If you have
@@ -1058,10 +941,9 @@ a system setup that places each user in their own group, then make
 C<mvend> a member of each user's group and set ownership and
 permissions with:
 
-
-find /home/user/catalogs -print | xargs chown user
-find /home/user/catalogs -print | xargs chgrp user
-find /home/user/catalogs -print | xargs chmod g+rw
+	find /home/user/catalogs -print | xargs chown user
+	find /home/user/catalogs -print | xargs chgrp user
+	find /home/user/catalogs -print | xargs chmod g+rw
 
 For best results, make the user's default umask be 2 so that they will
 by default create files that have the proper permissions.
@@ -1069,28 +951,26 @@ by default create files that have the proper permissions.
 If you have all users in the same group, the above is not secure. You should
 put C<mvend> in a group of which no user is a member (perhaps mvend
 would be a good choice) and then make all files owned by the group mvend
-and all directories be set to mode 2775:
+and all directories be set to mode 2770:
 
-
-find /home/user/catalogs -print | xargs chown user
-find /home/user/catalogs -print | xargs chgrp mvend
-find /home/user/catalogs -print | xargs chmod g+rw
-find /home/user/catalogs -type d -print | xargs chmod g+s
+	find /home/user/catalogs -print | xargs chown user
+	find /home/user/catalogs -print | xargs chgrp mvend
+	find /home/user/catalogs -print | xargs chmod g+rw
+	find /home/user/catalogs -type d -print | xargs chmod g+s
 
 This will make files default to the proper group when created (on most
 UNIX versions, anyway).
 <HR>
 
-If you are on a virtual hosting system, the procedure varies. Making the
-program setuid should work for most systems -- if your setup uses CGI-WRAP
-or another setuid scheme it should still work OK, though you may have to
-I<unset> the setuid bit with C<chmod u-s cgi-bin/simple> or
-the like. If you have a non-standard
-CGI setup, as some virtual host systems do, you will need to know something
-about UNIX and the web -- or engage a consultant -- to properly set the paths
-up.  Usually switching to TLINK/INET mode is the easiest thing to do, though
-with B<Iserver> and a few others it may take more than that.
-<HR>
+If you are on a virtual hosting system, the procedure varies. Making
+the program setuid should work for most systems -- if your setup uses
+CGI-WRAP or another setuid scheme it should still work OK, though you
+may have to I<unset> the setuid bit with C<chmod u-s cgi-bin/simple>
+or the like. If you have a non-standard CGI setup, as some virtual host
+systems do, you will need to know something about UNIX and the web -- or
+engage a consultant -- to properly set the paths up.  Usually switching
+to TLINK/INET mode is the easiest thing to do, though with B<Iserver>
+and a few others it may take more than that.  <HR>
 
 If you used the C<makecat> program to build the catalog, it should
 warn you if it was not able to make the link program setuid. To set the
@@ -1099,19 +979,16 @@ use the command:
 
     chmod u+s cgi-bin/simple
 
-B<Please understand that the first remedy in the case of unknown problems will
-be to upgrade Perl to the latest version.>
+=head2 Error -- the Interchange server was not running...
 
-=head2 Error -- the MiniVend server was not running...
-
-This indicates that the link CGI is not communicating with the MiniVend server.
+This indicates that the link CGI is not communicating with the Interchange server.
 
 B<IMPORTANT NOTE:> The server should
 always be started by the same user ID which owns the suid
 I<vlink> program.  (This does not apply to TLINK/INET mode.)
 
 The server must be running, first of all.  If you didn't start it,
-you can do so by going to the B<MiniVend home directory> and typing:
+you can do so by going to the B<Interchange home directory> and typing:
 
     bin/start
 
@@ -1124,32 +1001,32 @@ B<Note>: Solaris and IRIX truncate the string, and doesn't allow setting of
 the $0 parameter. You may have to grep for 'perl' instead.
 
 If the server is not running, it may have failed due to another process
-occupying the TCP socket 7786.  If using VLINK, you may start MiniVend
+occupying the TCP socket 7786.  If using VLINK, you may start Interchange
 with C<start -u>, which will not monitor the internet-domain socket.
 
 If VLINK is not communicating with the server, there are a number of possible
-reasons.  First, if you are trying to run MiniVend on an ISP, go to the section
+reasons.  First, if you are trying to run Interchange on an ISP, go to the section
 about ISP problems -- it is probably one of those.  If you are running
-MiniVend on a single machine, it is probably one of:
+Interchange on a single machine, it is probably one of:
 
     1. Permissions problems
-    2. MiniVend on NFS-mounted file system
+    2. Interchange on NFS-mounted file system
 
 Permissions are easy.  If you for some reason can't run VLINK as an SUID
 program (SUID to your user ID, not to root), then you will need to
-make permissions more permissive.  See the MiniVend documentation
+make permissions more permissive.  See the Interchange documentation
 for how to use the ReadPermission and WritePermission directives to
 make the session files and sockets 'group' or 'world' readable and writable.
-If you can make your UID, or the one you have chosen to own MiniVend, the
+If you can make your UID, or the one you have chosen to own Interchange, the
 same group as your HTTP user, then you can make the files group read-write.
 If you can't, you will have to set the dreaded 'world' permissions.
 
-If you are running MiniVend on an NFS-mounted file system it cannot run
+If you are running Interchange on an NFS-mounted file system it cannot run
 in server mode, because UNIX-domain sockets don't work on NFS. You will
 need to change to static mode from server mode, or better yet, put
-MiniVend on a file system that is directly mounted.
+Interchange on a file system that is directly mounted.
 
-As of MiniVend 2.03, you can use MiniVend in INET mode along with the
+You can use Interchange in INET mode along with the
 tlink.c program to allow running across NFS boundaries. If you have
 not changed the configured defaults, and still it will not communicate,
 you should try setting the LINK_HOST and LINK_PORT directives in tlink.c
@@ -1158,8 +1035,8 @@ and recompiling.
 
 =head2 I get messages like 'Config.pm not found'. What does it mean?
 
-This means your Perl is not properly installed, or that MiniVend is
-not using the proper Perl binary. On UNIX, try reinstalling MiniVend and
+This means your Perl is not properly installed, or that Interchange is
+not using the proper Perl binary. On UNIX, try reinstalling Interchange and
 using the standard Perl installation sequence:
 
     /complete/path/to/proper/perl Makefile.PL
@@ -1171,10 +1048,10 @@ Otherwise, contact your system administrator.
 
 =head2 Your demo has a very large price for the first item, and when I change the quantity the price drops precipitously.
 
-This is a feeble attempt at humor.  Check out the B<Quantity Pricing>
-feature of MiniVend. Try looking at:
+This is a feeble attempt at humor in the older C<simple> demo catalog.
+Check out the B<Quantity Pricing> feature of Interchange. Try looking at:
 
-    http://www.minivend.com/cgi-bin/simple/quantity?;00-0011
+    http://interchange.akopia.com/cgi-bin/simple/quantity?;00-0011
 
 =head2 Can't locate lib.pm in @INC. BEGIN failed--compilation aborted.
 
@@ -1183,26 +1060,27 @@ system, then either moved or removed the library directory.
 
 Contact your system administrator and ask them to re-install Perl.
 
-=head2 Can I run MiniVend on my Macintosh?
+=head2 Can I run Interchange on my Macintosh?
 
-No. MiniVend will not run on a Macintosh running System 7 or other
+No. Interchange will not run on a Macintosh running System 7 or other
 "Finder" operating system. If some technically-oriented user would
-port it, or someone will give MiniVend's author a PowerMac, then
+port it, or someone will give Interchange's author a PowerMac, then
 it might. 8-)
 
-MiniVend's *files* can be manipulated by any computer. As long as
+Interchange's *files* can be manipulated by any computer. As long as
 uploads/downloads of database source, pages, and configuration files
 are done in ASCII mode, there is no reason you can't edit them on your
 Mac. And with MySQL or other ODBC databases on your UNIX-based ISP,
-you can even directly interface to the database you use with MiniVend --
+you can even directly interface to the database you use with Interchange --
 provided you have the scarce ODBC middleware needed for the Mac.  But you
-must run it on UNIX or another Mac operating system.  MiniVend I<does>
+must run it on UNIX or another Mac operating system.  Interchange I<does>
 run on MkLinux, Linux PPC, and OS/X.
 
 =head2 Shopping cart is dropped when using SSL.
 
 This is usually due to the HostnameLookups (Stronghold/Apache parameter)
-not matching for the two servers, secure and non-secure.
+not matching for the two servers, secure and non-secure. It can also be
+caused by the user having different web proxy addresses for HTTP and HTTPS.
 
 If it still does not work, then try changing some of the appropriate
 configuration parameters in minivend.cfg:
@@ -1217,12 +1095,17 @@ file:
     SessionExpire  10 minutes
     WideOpen       Yes
 
-The above setting will typically make MiniVend work when it is possible
+The above setting will typically make Interchange work when it is possible
 to work.
+
+Sometimes when you have multiple Interchange servers sharing the same 
+secure server, you will have problems after accessing the second
+one. (The first one issues a session ID cookie, and that causes
+problems).
 
 =head2 Segmentation fault or other core dump
 
-If this happens when you run the MiniVend test or server,
+If this happens when you run the Interchange test or server,
 it is always a Perl that has a problem. Not sometimes, always.
 
 A proper Perl should never have a segmentation violation, period.
@@ -1239,10 +1122,10 @@ installed.  It usually results from a naive system administrator
 who thinks they can bypass the 'make install' for Perl and
 just copy the Perl binary or directories.
 
-In any case, it has nothing to do with MiniVend when you are running
-on UNIX. MiniVend does not include any compiled libraries.
+In any case, it has nothing to do with Interchange when you are running
+on UNIX. Interchange does not include any compiled libraries.
 
-=head2 MiniVend doesn't work with RedHat 5.0 (glibc)
+=head2 Interchange doesn't work with RedHat 5.0 (glibc)
 
 This is a defective Perl distributed by RedHat.
 The problem is that they don't take GLIBC into account. It
@@ -1253,49 +1136,49 @@ Update to a later version and build a new Perl.
 
 =head1 ISP Problems
 
-Great strides have been made since MiniVend's early days. The great
+Great strides have been made since Interchange's early days. The great
 majority of ISPs provide some CGI service, and more and more
-run systems that are compatible with MiniVend.  The new catalog
-configurator for MiniVend makes setup much easier.
+run systems that are compatible with Interchange.  The new catalog
+configurator for Interchange makes setup much easier.
 
 A word of warning -- if you chose your ISP mostly on price, you can
 expect problems. There is no such thing as a free lunch; the low-cost
 providers typically have heavily-loaded machines and many domains. The
-more domains and the more load the unhappier you will be with MiniVend.
-MiniVend works best on a fast machine with plenty of memory.
+more domains and the more load the unhappier you will be with Interchange.
+Interchange works best on a fast machine with plenty of memory.
 
 A few Internet Service Provider (ISP) systems still have difficulty with
-one or the other aspect of running MiniVend.  A few cannot (or will
-not) run MiniVend at all.  On top of that, many times ISP personnel are
+one or the other aspect of running Interchange.  A few cannot (or will
+not) run Interchange at all.  On top of that, many times ISP personnel are
 too busy to help, won't help, or don't know enough to help.  Some are
 secretive about details of the setup of their systems. 
 
 All in all, you can have a fair amount of confidence that
-your ISP can run MiniVend. Or, you can get one who will. 8-)
+your ISP can run Interchange. Or, you can get one who will. 8-)
 
 =head2 No shell access allowed on my ISP.
 
 This used to mean that you were totally out of luck. You probably
-still are, but it is at least I<possible> to run MiniVend on
+still are, but it is at least I<possible> to run Interchange on
 a virtual server such as HWY.NET.
 
 You should be able to use the tlink.pl program and INET mode to start
-using MiniVend -- with quite a bit of work.  You will need to hand-edit
+using Interchange -- with quite a bit of work.  You will need to hand-edit
 all of the configuration files, and use tlink.pl with the appropriate
 settings. Long term, you should put a compiled tlink in place.
 
-You will also have to start the MiniVend daemon via a CGI program
+You will also have to start the Interchange daemon via a CGI program
 that you write.
 
 Bottom line: don't try this unless most people call you a wizard. 8-)
 
-The MiniVend web site has pointers to ISPs who happily host MiniVend.
+The Interchange web site has pointers to ISPs who happily host Interchange.
 
 =head2 No C compiler to compile VLINK or SVEND.
 
 Since VLINK needs certain values set in the source before compilation, a
 pre-compiled version will not work.  It is recommended that you get the latest
-version of MiniVend and run in INET mode along with the tlink.pl Perl-based
+version of Interchange and run in INET mode along with the tlink.pl Perl-based
 link program.
 
 A pre-compiled tlink.c might also work for you if you can use
@@ -1303,18 +1186,15 @@ the defaults of 'localhost' and port 7786.
 
 =head2 Perl version too low
 
-MiniVend requires Perl 5.005 or higher. Perl 5.005_03 or higher
+Interchange requires Perl 5.005 or higher. Perl 5.6.0 or higher
 is strongly recommended.
 
-MiniVend 3 can run on Perl 5.004, but it is no longer being actively
-developed.
+=head2 We're sorry, the Interchange server is unavailable...
 
-=head2 We're sorry, the MiniVend server is unavailable...
+I<The below all assume you were able to start the Interchange server.>
 
-I<The below all assume you were able to start the MiniVend server.>
-
-This could be almost anything, but with a properly configured MiniVend
-it is almost undoubtedly due to your CGI-BIN and/or your MiniVend
+This could be almost anything, but with a properly configured Interchange
+it is almost undoubtedly due to your CGI-BIN and/or your Interchange
 directory being located on a different filesystem than the actual machine
 that is executing the program.  VLINK uses UNIX-domain sockets, which
 don't work on NFS-mounted filesystems.
@@ -1324,7 +1204,7 @@ quite a bit of extra configuration to get going.
 
 If you have not been careful to set permissions properly when running
 in VLINK/UNIX mode, the link CGI will not be able to communicate with
-the MiniVend server.  Please read the documentation, which covers this
+the Interchange server.  Please read the documentation, which covers this
 in detail.
 
 You can run in INET mode with the C<tlink> link program
@@ -1336,7 +1216,7 @@ This usually means that your HTTP server ran out of resources
 during the execution of the link program.  It couldn't create more
 sockets, is unable to create a process, or can't open any more files.
 
-This happens especially in frames catalogs, when MiniVend is
+This happens especially in frames catalogs, when Interchange is
 sending more than one page simultaneously.  And even more especially
 on FreeBSD and BSDI, which are often distributed with the kernel parameters
 SOMAXCONN and CHILD_MAX set to levels unsuitable for serving
@@ -1351,13 +1231,13 @@ on how to set those parameters properly.
 
 =head2 My provider runs Windows NT
 
-MiniVend is unlikely to work on Windows NT ISPs in the near future. If
-you have a dedicated NT machine, there is a version of MiniVend for
+Interchange is unlikely to work on Windows NT ISPs in the near future. If
+you have a dedicated NT machine, there is a version of Interchange for
 Windows NT. It may work for you, but there are differences in
 operation from the UNIX version (mostly due to NT's lack of fork()
 or and lack of user-space threading support in Perl).
 
-=head2 MiniVend server only runs for a while, then dies.
+=head2 Interchange server only runs for a while, then dies.
 
 Many ISPs don't allow your user ID to run a program unless it is logged
 in!  The moment a watchdog program notices a daemon running with a
@@ -1365,34 +1245,33 @@ non-logged-in UID, it terminates the program.  Or it terminates programs
 that haven't been active for XX minutes.  Contact your ISP about this --
 they may be able to do something for you.
 
-=head1 Things about MiniVend that people sometimes don't understand....
+=head1 Things about Interchange that people sometimes don't understand....
 
 There are a few things that seem to escape some users
 in the documentation. This is no doubt due to the author's
-closeness and familiarity with the concepts of MiniVend.
+closeness and familiarity with the concepts of Interchange.
 
 This section attempts to explain some of these basic issues.
 
-=head2 Is MiniVend a script, an application, or what? Why is it so big?
+=head2 Is Interchange a script, an application, or what? Why is it so big?
 
-MiniVend is not just a script. It is a combination of many programs, Perl
+Interchange is not just a script. It is a combination of many programs, Perl
 modules, and links to other subsystems such as SQL databases, CyberCash,
 PGP, and the Glimpse search engine.
 
 It is so big because it is more than just a shopping cart -- it is a complete
-database access and retrieval application. It uses a lot of memory because the
-author got a case of feeping creaturitis and added too many features while
-attempting to maintain backward compatibility with older catalogs.
+database access and retrieval application. It uses no more memory than some
+large database servers.
 
-This means that MiniVend is probably not a good choice for someone who is
+This means that Interchange is probably not a good choice for someone who is
 going to offer only a few products. It is optimized for catalogs of
 more than a hundred items -- catalogs that expect to change and grow
 over time.  It is suitable for very large catalogs.
 
-=head2 What is a daemon? Why is MiniVend a daemon?
+=head2 What is a daemon? Why is Interchange a daemon?
 
 A daemon is a program that always is running in the background on
-the system, initialized and waiting for something to do. MiniVend
+the system, initialized and waiting for something to do. Interchange
 runs as a daemon in the normal course of events.
 
 Other programs that you may be familiar with that run as daemons
@@ -1414,7 +1293,7 @@ Sendmail
 
 =back
 
-MiniVend takes an appreciable amount of time to compile and load
+Interchange takes an appreciable amount of time to compile and load
 even on the fastest systems.  It has many configuration options,
 and can serve hundreds of catalogs. If it were to be loaded every time
 a user accessed it, it would be unusable.
@@ -1424,31 +1303,31 @@ fast. The actual CGI program (vlink or tlink) is a small program
 written in C -- it communicates with the minivend daemon.
 
 One of the side effects of this is that when you change a configuration
-file, you must tell MiniVend. You do this either by restarting the
+file, you must tell Interchange. You do this either by restarting the
 server, or better yet, using the I<reconfig> script to reconfigure
 an individual catalog.
 
 =head2 Hey, where are the pages?
 
-MiniVend pages are not kept in normal HTML space. Look in the
+Interchange pages are not kept in normal HTML space. Look in the
 catalog subdirectory pages.
 
-The pages are always filtered through the MiniVend daemon before
+The pages are always filtered through the Interchange daemon before
 being delivered.
 
 =head2 Hey, where are the images?
 
-MiniVend is a CGI program, and if you tried to use relative
+Interchange is a CGI program, and if you tried to use relative
 image paths you would end up with IMG tags like 
 
     <IMG SRC="/cgi-bin/simple/../whatever.jpg">
 
-Not what you want. So MiniVend by default uses an
+Not what you want. So Interchange by default uses an
 C<ImageDir> for a prefix. In the demo that would
 be C</simple/images/>, so image specs that have no
 absolute path information are prefixed with that.
 
-In your MiniVend page, this tag
+In your Interchange page, this tag
 
     <IMG SRC="ordernow.gif">
 
@@ -1489,18 +1368,18 @@ C<[item-data table column]>.
 
 =head2 How do you pass variables from page to page?
 
-No effort needed -- MiniVend does this automatically.
+No effort needed -- Interchange does this automatically.
 
-Every user session that is started by MiniVend automatically
+Every user session that is started by Interchange automatically
 creates a variable set for the user. As long as the user
 session is maintained, and does not expire, any variables
 you set on a form will be "remembered" in future sessions.
 
-Don't use the prefix mv_ for your own variables -- MiniVend
+Don't use the prefix mv_ for your own variables -- Interchange
 treats these specially and they may not behave as you wish.
 Use the mv_ variables only as they are documented.
 
-Also, because you can set so many variables, MiniVend does
+Also, because you can set so many variables, Interchange does
 not unset variables it does not find on the current form.
 That means you can't expect a checkbox to become unchecked
 unless you explicitly reset it.
@@ -1541,33 +1420,41 @@ performance; if you have large lists of tags you can achieve significant
 speedups by using positional parameters. It requires CPU power to parse
 and disassemble the named parameters.
 
-=head2 Can I use MiniVend with my existing static catalog pages?
+=head2 Can I use Interchange with my existing static catalog pages?
 
 Yes, but you probably won't want to in the long run.
 
-MiniVend is designed to build pages based on templates,
+Interchange is designed to build pages based on templates,
 from a database.  If all you want is a shopping cart, you
 probably should use a simpler program.
 
 It is not difficult to convert existing static pages
-to MiniVend, but maintaining them can be a nightmare.
+to Interchange, but maintaining them can be a nightmare.
 
 That being said, all you usually have to do to place an order
 link on a page is:
 
     <A HREF="/cgi-bin/simple/order?mv_order_item=SKU_OF_ITEM">Order!</A>
 
-Replace C</cgi-bin/simple> with the path to your MiniVend link.
+Replace C</cgi-bin/simple> with the path to your Interchange link.
 
 =head1 SQL Questions
 
-=head2 Does Minivend require SQL?
+=head2 Does Interchange require SQL?
 
 No.
 
-Minivend does not require SQL. If you have a small database
+Interchange does not require SQL. If you have a small database
 with no particular desire to integrate your own toolset, you may be 
-more comfortable using Minivend's internal database.
+more comfortable using Interchange's internal database.
+
+Bear in mind that the order manangement functions of Interchange will
+be slow and not as robust without SQL. SQL is strongly recommended for
+at least these three tables:
+
+	orderline
+	transactions
+	userdb
 
 =head2 I can't get SQL to work -- Undefined subroutine &Vend::Table::DBI::create ...
 
@@ -1577,12 +1464,12 @@ This probably means one of:
 
 =item No SQL database
 
-Minivend doesn't include a SQL database. You must select one and
+Interchange doesn't include a SQL database. You must select one and
 install it.
 
 =item no DBI
 
-You must install Perl's DBI module before using Minivend with SQL. You
+You must install Perl's DBI module before using Interchange with SQL. You
 can see where to get it at http://www.cpan.org, or try:
 
     perl -MCPAN -e 'install DBI'
@@ -1590,7 +1477,7 @@ can see where to get it at http://www.cpan.org, or try:
 =item no DBD
 
 You must install the specific Perl DBD module for your database
-before using Minivend with SQL. You can see where to get it at
+before using Interchange with SQL. You can see where to get it at
 http://www.cpan.org, or try:
 
     perl -MCPAN -e 'install DBD::XXXXX'
@@ -1618,21 +1505,26 @@ If you can't make this script run without error:
     use DBI;
     use DBD::XXXXX;
 
-then you don't have one of the above, and Minivend will never run
+then you don't have one of the above, and Interchange will never run
 a SQL type.
 
-=item I don't like the column types that Minivend defines!
+=item I don't like the column types that Interchange defines!
 
 Then change them. See the simple/mysql directory for some examples
 under MySQL.
 
 =item I change the ASCII file, but the table is not updated. Why?
 
+Interchange writes an empty file TABLE.sql (where TABLE is the name
+of the table). When this is present, Interchange will never update
+the table from disk.
 
+Also, if you have changed the field names in the file, you must
+restart the catalog (Apply Changes) before they will be picked up.
 
 =item Why do I even need an ASCII file?
 
-Minivend wants some source for column names initially. If you don't
+Interchange wants some source for column names initially. If you don't
 want to have one, just create a TABLENAME.sql file in the C<products>
 directory. For example, if you have this:
 
@@ -1644,15 +1536,15 @@ then create a file C<products/products.sql>. For
 
 create a file C<products/pricing.sql>. Etc.
 
-=item Minivend overwrites my predefined table!
+=item Interchange overwrites my predefined table!
 
 Yes, it will if you don't create a file called TABLENAME.sql, where
-C<TABLENAME> is the name of the Minivend table. If you want this to
+C<TABLENAME> is the name of the Interchange table. If you want this to
 happen by default, then set C<NoImport TABLENAME>.
 
-=head2 How can I use MiniVend with Microsoft Access?
+=head2 How can I use Interchange with Microsoft Access?
 
-Though MiniVend has ODBC capability, the Microsoft Access
+Though Interchange has ODBC capability, the Microsoft Access
 ODBC driver is not a network driver.  You cannot access it
 on a PC from your ISP or UNIX system.
 
@@ -1740,7 +1632,7 @@ the database residing on the UNIX side.
 
 =head1 Setup Questions
 
-MiniVend is quite powerful, but also quite complex. There are many
+Interchange is quite powerful, but also quite complex. There are many
 possibilities opened up with its conditional HTML, but also many
 pitfalls.
 
@@ -1753,17 +1645,17 @@ and C<simple> demo pages for help.  Pay particular attention to:
     ord/basket.html
     ord/checkout.html
 
-These pages use many of the powerful features of MiniVend, and studying
+These pages use many of the powerful features of Interchange, and studying
 them will be instructive.
 
 =head2 Can I run multiple catalogs on one server?
 
-Yes. MiniVend supports multiple independent catalogs. There are
+Yes. Interchange supports multiple independent catalogs. There are
 users who run more than 500 catalogs on a single machine. The capacity
 is usually a function of how busy the catalogs are and how much memory
 and processor speed your system has.
 
-=head2 How do I start MiniVend when I reboot?
+=head2 How do I start Interchange when I reboot?
 
 Use the standard facility on your operating system.  For BSD
 style systems, the file is usually called rc.local (in the
@@ -1773,7 +1665,7 @@ On SVR4 systems, it is quite a bit more complex -- look
 for the /etc/rc.d directory and see what other programs do.
 Often the file is called S99startup or something similar.
 
-B<IMPORTANT NOTE:> MiniVend must not run as root, which is
+B<IMPORTANT NOTE:> Interchange must not run as root, which is
 the user that the startup file executes as.
 
 The technique to start up depends on the facility of
@@ -1792,13 +1684,13 @@ UNIXes do) then you can just do:
 
     su -c /your/minivend/dir/bin/restart minivend
 
-MiniVend supplies a C<restart> script which tries to do the above
+Interchange supplies a C<restart> script which tries to do the above
 portably. It works on many operating systems (Linux and Solaris have
 been tested by the author.)
 
 =head2 How do I set up a Mall?
 
-MiniVend can share product databases, session files, and any
+Interchange can share product databases, session files, and any
 other databases. It has many features which support mall building.
 
 You can easily build separate and mostly identical catalogs which
@@ -1836,12 +1728,12 @@ mall, then you probably should not try.
 
 =head2 Can I attach a size or color to a product?
 
-MiniVend has product modifiers, or attributes, which can
+Interchange has product modifiers, or attributes, which can
 be carried around with the product.
 
 The [item-accessories I<attribute>] tag will automatically place a
 suitable select widget on an HTML form, and "remember" what should
-be selected.  See the MiniVend documentation for B<Item Attributes>.
+be selected.  See the Interchange documentation for B<Item Attributes>.
 
 You can use the B<SeparateItems> directive or set the B<mv_separate_items>
 variable on the order form to cause ordered items to be put on separate
@@ -1857,10 +1749,10 @@ like:
 
   <INPUT TYPE=XXXXX NAME="[modifier-name size]" VALUE="[item-modifier size]">
 
-The embedded Perl capability of MiniVend means that you can discover the
+The embedded Perl capability of Interchange means that you can discover the
 number of items on order of each type, and build quite detailed input forms.
 
-The MiniVend demos have some examples which should help you -- try ordering
+The Interchange demos have some examples which should help you -- try ordering
 the T-Shirt and visiting its flypage.
 
 =head2 PGP encryption -- Server Error
@@ -1877,10 +1769,10 @@ Probable causes:
 
 =over 4
 
-=item Minivend user ID doesn't have keyring
+=item Interchange user ID doesn't have keyring
 
 You must have a C<.pgp> or C<.gnupg> directory in the B<home> directory
-of the user running MiniVend. It is also possible to set an environment
+of the user running Interchange. It is also possible to set an environment
 variable (variously PGPPATH or GNUPGPATH) to orient the program correctly.
 
 =item Trust problems
@@ -2002,8 +1894,7 @@ to such reports.
 
 =head2 Difficulty interacting with browser: Request method for form submission is not POST
 
-There are many possible causes for this error. Using MiniVend 3.08 and above,
-the main 3 are:
+There are many possible causes for this error. The main ones are:
 
 =over 4
 
@@ -2037,7 +1928,7 @@ bug, so if you use Stronghold you should update.
 =back
 
 
-MiniVend also allows you to have forms with METHOD=GET.  To use, set
+Interchange also allows you to have forms with METHOD=GET.  To use, set
 the session ID in your form
 
     <INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
@@ -2047,7 +1938,7 @@ This may prevent errors due to one of the causes above.
 
 =head2 How can I trace the source of a purchase and run a partners program?
 
-MiniVend has a facility that adds a parameter called I<source>
+Interchange has a facility that adds a parameter called I<source>
 to the session database for that user.
 
 You should give your partners a source code, which must contain
@@ -2056,7 +1947,7 @@ sourcing URL as a query string of:
 
     mv_pc=Source1
 
-If this is appended to the URL with which the user B<calls MiniVend>
+If this is appended to the URL with which the user B<calls Interchange>
 it will then be placed in the session identifier C<source>.
 
 This URL:
@@ -2064,9 +1955,9 @@ This URL:
     C<<>A HREF="http://yourcatalog.com/cgi-bin/yourcat/sp_offer?mv_pc=Source1">
         Special offer!&lt;/A>
 
-Will yield C<Source1> from the MiniVend tag [data session source].
+Will yield C<Source1> from the Interchange tag [data session source].
 
-The Minivend 3 idiom ?;;Source1 continues to be supported, so existing partner
+The Interchange 3 idiom ?;;Source1 continues to be supported, so existing partner
 sites should work without change.
 
 =head2 How can I send an email copy of the receipt to a user?
@@ -2081,7 +1972,7 @@ have not taken the proper security measures (by enabling PGP
 credit card encryption or using CyberCash) you might just
 mail them their own unencrypted credit card number!
 
-This is supported in Minivend via a UserTag, [email ...]. See
+This is supported in Interchange via a UserTag, [email ...]. See
 the "simple" and "basic" demos.
 
 =head2 Configuring catalog whatever...Use of uninitialized value at Config.pm line 1614, <CONFIG> chunk 322.
@@ -2123,31 +2014,17 @@ problems due to the embedded null.
 
 Changing the checkout profile and not testing properly under all conditions.
 
-=back
-
-On earlier versions of MiniVend, the demo order profile was placed in an
-outboard file. On newer versions, it is embedded right in the checkout
-page. Try replacing [set checkout_profile] with:
-
-    [set checkout_profile]
-    &final=yes
-    &set=mv_Junk 1
-    [/set]
-
-If the order completes, then you have a problem in your profile. Also,
-check the C<RequiredFields> directive in C<catalog.cfg>, as that is
-set to C<name> in the demo. If the C<name> variable is blank, then
-you will find that the order doesn't complete.
-
 The order profile must not have non-blank lines that don't contain
 valid check procedures (excluding comments). If you are using a Perl
 routine in the profile, as above, you must take care that the routine
 returns a valid check routine.
 
+=back
+
 =head2 Sorting doesn't work across multiple pages
 
-This is a bug in all versions of MiniVend prior to 3.12. Update
-to solve the problem.
+If you are using the [sort table:field] idiom, it cannot. That sorts data
+present in the list only.
 
 =head2 I am searching for a string and it is not found. I know it is there!
 
@@ -2166,7 +2043,7 @@ still exist.
 
 (Thanks to Thomas "Balu" Walter for this answer.)
 
-You can use MiniVend's II8N facilty via the Locale directive:
+You can use Interchange's II8N facilty via the Locale directive:
 
 In catalog.cfg:
 
@@ -2195,10 +2072,10 @@ Any questions? Read the docs about "Internationalization".
 
 =head1 Performance issues
 
-MiniVend is not a lightweight program.
+Interchange is not a lightweight program.
 
 If you are running it on a low-end ISP whose major selling point is low
-cost, you will frequently find that MiniVend performance is very poor.
+cost, you will frequently find that Interchange performance is very poor.
 This is due to either:
 
 =over 4
@@ -2221,19 +2098,19 @@ at a very high "load average". IF load average runs routinely above
 
 =item Underpowered machine
 
-If it is an old machine, it may be too slow for MiniVend. A Pentium of
-less than 100MHz is probably not good enough unless it is completely
-dedicated to MiniVend. The faster the processor, the happier you will
+If it is an old machine, it may be too slow for Interchange. A Pentium of
+less than 300MHz is probably not good enough unless it is completely
+dedicated to Interchange. The faster the processor, the happier you will
 be.
 
-=head2 MiniVend runs, but it's sooo sllooowww...
+=head2 Interchange runs, but it's sooo sllooowww...
 
 This is almost certainly due to a system that has inadequate memory
 or network bandwidth.  On a moderately fast ISP server with sufficient
 memory, pages should start displaying in less than 2 seconds. On a fast
 server, pages should start loading almost instantaneously.
 
-=head2 MiniVend slows down over time
+=head2 Interchange slows down over time
 
 There are many possible reasons for this, but most have to do with memory
 or session database size.
@@ -2248,135 +2125,55 @@ accessing a key will get slow.
 
 =item *
 
-Second, if your machine is memory-poor you will find that MiniVend gets
+Second, if your machine is memory-poor you will find that Interchange gets
 swapped to disk. Unless your system is very fast, this will greatly hurt
-performance.  MiniVend works best on a machine that rarely if ever swaps
+performance.  Interchange works best on a machine that rarely if ever swaps
 to disk.
 
 =item *
 
-Third, this often has nothing to do with MiniVend at all but has to
+Third, this often has nothing to do with Interchange at all but has to
 do with your HTTP server. Any long-running daemon has the potential for
 a memory leak -- try stopping and starting your HTTP server and seeing
 what happens to performance.
 
-=item *
-
-On Windows, you will want to stop and re-start your MiniVend server at
-least once per day. You can use a system agent to automate it -- you will
-want to stop the server to expire the session database anyway. You need
-to do this because MiniVend requires the Unix-specific fork() call to
-spawn multi-tasked servers, and without multi-tasked servers there is
-a strong possibility of a memory leak -- especially if you use embedded
-Perl or conditional tags.
-
 =back
 
-=head2 The browse page (from the demo) is SLOW+!
-
-(This old page is not used any more starting at 3.12.)
+=head2 The browse.html page (from the demo) is SLOW+!
 
 That is because it is only useful for small product lines. It
 pulls out all keys from the entire database and iterates
 over them, which is not reasonable for more then 50 products
 or so (depending on your server speed).
 
+Look at the browse1.html page instead.
+
 A better approach is to use a search and browse by category, an
 example of which is given in the demo.
 
-You could also try something like:
+=head2 I am using SQL, and Interchange is so SLOW.....
 
-    [perl]
-            $start = $Session->{arg} || 1;
-            $chunk = 1;
-            if($start =~ /(\d+):(\d*)/) {
-                    $start = $1;
-                    $chunk = $2 || 1;
-            }
-            $prev = $start - $chunk;
-            if($prev < 1) {
-                    $prev = 0;
-            }
-            $Scratch->{'start'} = $start;
-            $Scratch->{'chunk'} = $chunk;
-            $Scratch->{'next'} = $start + $chunk;
-            $Scratch->{'prev'} = $prev;
-            $Scratch->{'not_shown'} = 1;        return '';
-    [/perl]
-  
-    [search-region arg="
-                        ra=yes
-                        fm=[scratch first]
-                        ml=[scratch chunk]
-                        sp=browse
-                        tf=category
-                        to=f         "]
-    [search-list]
-    
-    [item-change 1]
-    [condition][item-field category][/condition]
-    <TABLE WIDTH="80%"><TR BGCOLOR="#cccccc" TEXT="WHITE"><TD ALIGN=CENTER>
-        <BR><H1>[item-field category]</H1>
-    </TD></TR></TABLE>
-    [/item-change 1]
-    <P>
-    [if-item-field image]
-    <IMG SRC="[item-field image]">
-    <P>
-    [/if-item-field]
-  
-    <H2>[item-description]</H2>
-    <P>
-    [L]Catalog[/L] [L]Number[/L]: [item-code]
-    <P>
-    [L]Price[/L]: [item-price]
-    <P>
-    [page [item-code]]<IMG BORDER=0
-            SRC="details.gif" ALT="[L]More Info[/L]">[/page]
-    [order [item-code]]<IMG BORDER=0
-        SRC="ordernow.gif" ALT="[L]ORDER NOW[/L]">[/order]
-    [/search-list]
-    [/search-region]
+It isn't Interchange.
 
-    [if scratch prev]
-    [page href=browse1 arg="[scratch prev]:[scratch chunk]"]
-        <B>[L]Previous[/L]</B>
-        </A>&nbsp;&nbsp;
-    [/if]
-    [if type=explicit compare="[calc]
-                [value mv_search_match_count] > [scratch next]
-                [/calc]"]
-    [page href=browse1 arg="[scratch next]:[scratch chunk]"]<B>[L]Next[/L]</B></A>
-    [/if]
-
-=head2 I am using SQL, and MiniVend is so SLOW.....
-
-It isn't MiniVend.
-
-First of all, did you index your 'code' field? The reason MiniVend doesn't do
-it for you is that every SQL database seems to do that a bit differently. Even
-then, you can do some stuff with MiniVend's COLUMN_DEF parameter:
+First of all, did you index your 'sku' or other key fields? The reason
+Interchange doesn't do it for you is that every SQL database seems to do
+that a bit differently. Even then, you can do some stuff with Interchange's
+COLUMN_DEF parameter:
 
   Database  products  COLUMN_DEF  code=char(16) PRIMARY KEY
 
 That will index at least the C<code> field for MySQL. Other databases differ.
 
-MiniVend can return VERY fast
-SQL search results. But you need to at least give it something to work with. The proper method for fast selection is:
+Interchange can return VERY fast SQL search results. But you need to at least
+give it something to work with. The proper method for fast selection is:
 
- [sql type=list
-      query="select code,category,title,price from products" ]
+ [query sql="select code,category,title,price from products" ]
 
  Category: [sql-param category]<BR>
  Title:    <A HREF="[area [sql-code]]"> [sql-param title] </A><BR>
  Price:    <A HREF="[area order [sql-param 0]]"> [sql-param price] </A><BR>
 
  [/sql]
-
-IMPORTANT NOTE: The sql-param tag did not accept named fields before
-MiniVend 3.12beta4. Access with C<[sql-param n]>, where C<n> is a modulus-zero
-positional field set from your query. In the example above, code=0, category=1,
-title=2, price=3.
 
 This is especially powerful when you consider a joined query like
 
@@ -2385,117 +2182,25 @@ This is especially powerful when you consider a joined query like
         FROM   products, extended
         WHERE  products.category = 'Renaissance'
 
-That will index at least the C<code> field for MySQL. Other databases differ.
+Note that the extended.desc field will be accessed as [sql-param desc].
 
 Don't forget that you must index your fields if you want fast searching
 with them as a criteria.
 
-Here is a nice synonym for C<[sql type=list ...]>:
-
- [new]
- [search-region arg="
-     st=sql
-     ml=1000
-     sq=select code,title,artist,price from products where code < '5'
-     "]
- <PRE>
- [search-list][item-code]: [item-param title] [item-param artist] [item-param price]
- [/search-list] </PRE>
-
- [/search-region]
-
-=head2 My server is getting loaded. How do I use the static page capability?
-
-Here is an example based on the simple demo.
-
-To set up the simple demo catalog statically, all that is required is
-to put in catalog.cfg:
-
-
-    StaticDir   /ext/htdocs/simple/static
-    StaticPath  /simple/static
-    StaticAll   Yes
-    StaticFly   Yes
-    NoCache     ord special
-
-I<The root WWW directory (DocumentRoot) on my system is /ext/htdocs --  >
-I<you would change your StaticDir accordingly.> B<Make sure the directory>
-B<is empty -- MiniVend will overwrite files there!>
-
-Then edit a couple of the pages -- catalog.html and results.html.
-They have "dynamic" elements, ones that prevent the static build
-for those two pages (and any searches calling them for a template)
-from succeeding. Insert anywhere in the page:
-
-        [tag flag build][/tag]
-
-This tells the builder to go ahead and build the static page
-anyway, despite the dynamic elements. (The elements in this case
-are the Perl code telling the user their name in catalog.html,
-the dynamic "Check Basket" icon on the results page, and some
-sorting parameters that are not used in the one-click search.)
-
-At that point, if you are in control of the MiniVend software
-directory and changed directory to it, you should be able to run:
-
-
-        bin/minivend -build simple
-
-(Users who are provided a catalog without control of the server
-will not be able to do this. The administrator would need to
-get involved.)
-
-You will see some output from the build command, giving you the
-status of the build for individual pages. (HINT: send the standard
-output to a file to get a full report.) It will show information
-like:
-
-    Checking page catalog ......................................done.
-    Checking page browse .......................................done.
-    Checking page canceled ...............skipping, dynamic elements.
-    ...
-    Checking part number 00-0011................................done.
-    ...
-    Checking part number 00-342.................................done.
-    Building page browse........................................done.
-    ...
-    Building page catalog ......................................
-    >> found search mp=0/se=Renaissance.........................save.
-    >> found search mp=0/se=Impressionists......................save.
-    >> found search mp=0/se=Surrealists.........................save.
-    >> found search mp=0/se=Americana...........................save.
-    >> found search mp=0/se=Contemporary........................save.
-    done.
-    Building part number 00-0011................................done.
-    ...
-    Building part number 00-342.................................done.
-    Re-checking /simple/static/scan5.html.......................none.
-    ...
-    Re-checking /simple/static/scan3.html.......................none.
-    done.
-
-Restart the server and re-enter the catalog. Now all accesses should be
-fast whenever possible. One-click searches and flypages are in static
-HTML space, and only orders and checkout ops should be parsed by MiniVend.
-
-This should get you started -- see the documentation for more information,
-particularly the section on what are "dynamic" tags and how to flag
-databases as dynamic with the DynamicData directive.
-
 =head2 My session files change to owner root every day!
 
 You have the expireall C<-r> entry in the root crontab, and it should
-either be in the Minivend user crontab or run as:
+either be in the Interchange user crontab or run as:
 
- 44 4 * * * su -c "/MINIVEND_ROOT/bin/expireall -r" MINIVEND_USERNAME
+ 44 4 * * * su -c "/INTERCHANGE_ROOT/bin/expireall -r" INTERCHANGE_USERNAME
 
 =head1 Shipping questions
 
-MiniVend has one of the most complete and flexible shipping
+Interchange has one of the most complete and flexible shipping
 calculators found in an ecommerce program. 
  You can do most anything with a global
 UserTag, even to the point of looking up a cost at a remote calculator.
-(See the C<[ups-query]> tag in the C<flycat> or C<usertag> directories for
+(See the C<[ups-query]> tag in the C<usertag> directory for
 an example.)
 
 However, all of this comes at the price of complexity. Many questions have
@@ -2503,68 +2208,24 @@ already been answered on the user list.
 
 =head2 I am using "price" as the shipping criteria and it seems to be wrong
 
-When you put I<price> in the field, MiniVend will do exactly what
+When you put I<price> in the field, Interchange will do exactly what
 it says in the documentation; multiply the value of the C<products>
 database field I<price> by the number of items in the cart. If you have
 quantity discounds, price adjustments, or other discounts in force via
 C<CommonAdjust> or another facility they will not be taken into account.
 
 The solution is simple -- put C<[subtotal]> instead of C<price> in the 
-criterion field. MiniVend will interpret MML tags normally in that position,
+criterion field. Interchange will interpret MML tags normally in that position,
 as it will in the C<cost> field.
-
-=head2 I can't get shipping subroutines to work (Minivend 3)
-
-I don't blame you. The interface is terrible and has gone away in MiniVend 4.
-
-The best way to do this is to define a UserTag and use it as the subroutine
-method. For example, in the C<flycat> demo (or in the MiniVend 4 C<usertag/>
-directory) you will see a UserTag:
-
-    UserTag  ups-query  Order  mode origin zip weight country
-    UserTag  ups-query  Routine <<EOR
-    sub {
-        my( $mode, $origin, $zip, $weight, $country) = @_;
-        BEGIN {
-            eval {
-                require Business::UPS;
-                import Business::UPS;
-            };
-        };
-        $country = uc $country;
-        $country = undef if $country eq 'US';
-        my ($shipping, $zone, $error) =
-            getUPS( $mode, $origin, $zip, $weight, $country);
-        if($error) {
-            $Vend::Session->{ship_message} .= " $mode: $error";
-            return 0;
-        }
-        return $shipping;
-    }
-    EOR
-
-This is called via entries in shipping.asc:
-
-  GNDRES  Ground Residential  weight  0   150 f [ups-query
-                                                    origin="[dv origin_zip]"
-                                                    zip="[default zip 98366]"
-                                                    country="[default country US]"
-                                                    mode="GNDRES" weight="@@TOTAL@"
-                                                ] [dv ups_adder]
-
-
-NOTE: The above should be all on one line, or you need to escape the
-newline with a \.
-
-This is very flexible, but you can make the call much less complex
-if you do the parameter checks and substitutions in your own routine
-(i.e. read the value of $::Values->{country} or $Values->{country} instead
-of passing a parameter).
 
 =head1 CHANGES
 
 $Log: mvfaq.pod,v $
-Revision 1.2  2000-07-12 01:18:51  heins
+Revision 1.3  2000-07-20 07:20:20  heins
+Made pod version of Quickstart.
+Changed Minivend --> Interchange in docs.
+
+Revision 1.2  2000/07/12 01:18:51  heins
 Changed docs to reflect name Interchange. Obviously, there are still
 instances of "minivend" all over the place in file names and programs.
 
