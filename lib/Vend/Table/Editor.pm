@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.49 2004-02-02 20:58:13 mheins Exp $
+# $Id: Editor.pm,v 1.50 2004-02-06 17:12:43 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.49 $, 10);
+$VERSION = substr(q$Revision: 1.50 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -2407,6 +2407,7 @@ EOF
 	my $extra_ok =	$blob_widget
 						|| $opt->{output_map}
 	  					|| $linecount > 4
+						|| $opt->{notable}
 						|| defined $opt->{include_form}
 						|| $mlabel;
 	if ($extra_ok and ! $opt->{no_top} and ! $opt->{nosave}) {
