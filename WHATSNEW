@@ -7,10 +7,17 @@
 
 Interchange 4.9.7 not yet released
 
+
 Core
 ----
 
 * Allow [PREFIX-more-list] ... [/PREFIX-more-list] for nested loops.
+
+* Support sparsely-populated quantity pricing tables.
+
+* Fix bug in field name ranges in CommonAdjust where q99..q101 was handled
+  as a Perl alphanumeric range q99, r00, r01, r02, etc. instead of
+  q99, q100, q101.
 
 Menu
 ----
