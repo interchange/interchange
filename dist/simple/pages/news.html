@@ -196,23 +196,6 @@ You can use a form here, too:
       then limits length to 10. Any session-based filters are applied
       after this one.
 
-<LI> [input-filter name=foo] CODE [/input-filter]
-<P>
-      Sets a routine passed to the equivalent of a "[calc]" tag.
-      The value to be filtered is placed in the variable "$mv_filter_value",
-      and the name is set to "$mv_filter_name". It is possible to
-      do something like:
-<PRE>
-          [input-filter name=country]
-            my $touched = '[tag touch country][/tag]';
-            my $val = $mv_filter_value;
-            my $prospect = &tag_data('country', 'name', $val);
-            return $prospect || $val;
-          [/input-filter]
-</PRE>
-      That will return the name of a country if it is found as a key
-      in the database (assuming the simple demo country definitions).
-
 <LI> Small improvements in the parser, notably optimization when
       positional parameters are used.
 
