@@ -108,6 +108,8 @@ Foundation
 * Relocated code on pages/ord/checkout that was outside of the page
   content area and therefore subject to truncation by the Page Editor.
 
+* Fixed German translation of October in locale.txt.
+
 Packaging
 ---------
 
