@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.139 2002-12-24 16:43:12 mheins Exp $
+# $Id: Interpolate.pm,v 2.140 2002-12-31 14:09:26 ramoore Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.139 $, 10);
+$VERSION = substr(q$Revision: 2.140 $, 10);
 
 @EXPORT = qw (
 
@@ -5903,7 +5903,7 @@ sub timed_build {
 	}
 
     $file = Vend::Util::escape_chars($file);
-    if($Global::NoAbsolute and (file_name_is_absolute($file) or $file =~ m#\.\./.*\.\.#)) {
+    if(!$opt->{auto} and $Global::NoAbsolute and (file_name_is_absolute($file) or $file =~ m#\.\./.*\.\.#)) {
 	::logError("Can't use file '%s' with NoAbsolute set", $file);
 	::logGlobal({ level => 'auth'}, "Can't use file '%s' with NoAbsolute set", $file);
 	return '';
