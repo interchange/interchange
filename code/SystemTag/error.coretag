@@ -3,6 +3,7 @@
 UserTag error               Order        name
 UserTag error               addAttr
 UserTag error               PosNumber    1
+UserTag error               Version      $Revision: 1.2 $
 UserTag error               Routine      <<EOR
 sub set_error {
 	my ($error, $var, $opt) = @_;
@@ -31,9 +32,38 @@ sub tag_error {
 	}
 	my $err_ref = $Vend::Session->{errors};
 	my $text;
-	$text = $opt->{text} if $opt->{text};
 	my @errors;
 	my $found_error = '';
+
+	if($opt->{auto}) {
+		$opt->{all} = 1;
+		$opt->{show_error} = 1;
+		$opt->{std_label} = 0;
+		$opt->{show_var} = 1
+			unless defined $opt->{show_var};
+		$opt->{joiner} = '<li>'
+			unless length $opt->{joiner};
+		$opt->{text} ||= '%s';
+		$opt->{list_container} ||= 'ul';
+		my $out = '';
+		$out .= "<$opt->{list_container}";
+		for(qw/ class style extra /) {
+			next unless $opt->{$_};
+			if($_ eq 'extra') {
+				$out .= ' ' . $opt->{$_};
+			}
+			else {
+				$out .= ' ' . qq{$_="$opt->{$_}"};
+			}
+		}
+		$out .= '>';
+		$out .= $opt->{joiner};
+		$opt->{header} ||= $out;
+		$opt->{footer} ||= "</$opt->{list_container}>";
+	}
+
+	$text = $opt->{text} if $opt->{text};
+
 #::logDebug("tag_error: var=$var text=$text opt=" . ::uneval($opt));
 #::logDebug("tag_error: var=$var text=$text");
 	if($opt->{all}) {
@@ -62,7 +92,10 @@ sub tag_error {
 		return $found_error unless $text || $opt->{show_error};
 		$text .= "%s" if $text !~ /\%s/;
 		$text = pull_else($text, $found_error);
-		return sprintf $text, join($opt->{joiner}, @errors);
+
+		return '' unless @errors;
+		my $etext = sprintf $text, join($opt->{joiner}, @errors);
+		return join "", $opt->{header}, $etext, $opt->{footer};
 	}
 	$found_error = ! (not $err_ref->{$var});
 	my $err = $err_ref->{$var} || '';
