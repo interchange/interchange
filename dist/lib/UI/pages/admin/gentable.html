@@ -59,11 +59,7 @@ sub {
 					},
 		download => { 
 						img => '@_UI_IMG_@admin/down.gif',
-						url => "$Config->{VendURL}/ui_download/" .
-								$froot->(join "/",
-											($Config->{Database}{$tab}{dir} || $Config->{ProductDir}),
-											$Config->{Database}{$tab}{file}
-										),
+						url => "$Config->{VendURL}/ui_dbdownload/$tab",
 					},
 		import => { 
 						img => '@_UI_IMG_@admin/left.gif',
