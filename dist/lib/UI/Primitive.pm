@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.24 $, 10);
+$VERSION = substr(q$Revision: 1.25 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -828,6 +828,12 @@ sub meta_display {
 			next unless $record->{$_};
 			$record->{$_} = Vend::Util::resolve_links($record->{$_});
 			$record->{$_} =~ s/_UI_VALUE_/$value/g;
+			$record->{$_} =~ /_UI_URL_VALUE_/
+				and do {
+					my $tmp = $value;
+					$tmp =~ s/(\W)/sprintf '%%%02x', ord($1)/eg;
+					$record->{$_} =~ s/_UI_URL_VALUE_/$tmp/g;
+				};
 			$record->{$_} =~ s/_UI_TABLE_/$table/g;
 			$record->{$_} =~ s/_UI_COLUMN_/$column/g;
 			$record->{$_} =~ s/_UI_KEY_/$key/g;
