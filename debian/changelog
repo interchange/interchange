@@ -1,8 +1,9 @@
 interchange (5.1.1-1) unstable; urgency=low
 
   * new upstream release
-
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 20 Apr 2004 01:15:36 +0200
+  * added Russian translation of debconf templates (Closes: #137663)
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 20 Apr 2004 08:47:34 +0200
 
 interchange (5.1.0-1) unstable; urgency=low
 
