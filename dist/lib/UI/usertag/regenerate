@@ -213,6 +213,7 @@ EOF
 	::response("\n\n        Generating....\n");
 
 	my $umask = umask(022);
+	my $statpath = $Vend::Cfg->{StaticPath};
 	my @bad;
 	my $base = $Vend::Cfg->{StaticDir};
 	eval {
@@ -242,6 +243,7 @@ EOF
 			close REGENFILE;
 			my $dispfile = $file;
 			$dispfile =~ s:^$base/::o;
+			$dispfile = qq{<A HREF="$statpath/$dispfile"><U>$dispfile</U></A>};
 			::response("            Generated $dispfile.\n")
 				if $verbose;
 		}
