@@ -1,4 +1,4 @@
-[tag flag write]__MINIMATE_META__[/tag]
+[tag flag write]__UI_META_TABLE__[/tag]
 
 [set page_title][L]Format field[/L][/set]
 [if-mm !super]
@@ -16,10 +16,8 @@
 [/else]
 [/if]
 
-[seti ui_metadata][either]__UI_METADATA__[or]ui_metadata[/either][/seti]
-
-[perl tables="[scratch ui_metadata]"]
-	my $table = $Scratch->{ui_metadata};
+[perl tables="__UI_META_TABLE__"]
+	my $table = q{__UI_META_TABLE__};
 	my $key   = $Scratch->{arg};
 	if($key =~ /(\w+)::(.+)/) {
 
@@ -56,8 +54,8 @@
 [/perl]
 
 [set process_meta]
-[tag flag write]__MINIMATE_META__[/tag]
-[perl tables="__MINIMATE_META__"]
+[tag flag write]__UI_META_TABLE__[/tag]
+[perl tables="__UI_META_TABLE__"]
 	my $table	= $Values->{mv_data_table};
 	my $db		= $Db{$table};
 	my $key     = $CGI->{$CGI->{mv_data_key}};

@@ -5,7 +5,7 @@ UserTag field_label attrAlias field column
 UserTag field_label Routine <<EOR
 sub {
 	my ($table, $column, $meta) = @_;
-	$meta = $::Variable->{MINIMATE_META} || 'ui_metadata' if ! $meta;
+	$meta = $::Variable->{UI_META_TABLE} || 'mv_metadata' if ! $meta;
 	return "<B>$column</B>" if ! ::tag_data($meta, 'type', "${table}::$column");
 	my $label = Vend::Interpolate::tag_data($meta, 'label', "${table}::$column")
 			  || $column;

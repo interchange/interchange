@@ -9,7 +9,7 @@ sub {
 #::logDebug("list-keys $table");
 	my @keys;
 	my $record;
-	if(! ($record = $Vend::Minimate_entry) ) {
+	if(! ($record = $Vend::UI_entry) ) {
 		$record =  ui_acl_enabled();
 	}
 
@@ -37,7 +37,7 @@ sub {
 		$keys = $db->query(
 						{
 							query => $query,
-							ml => $::Variable->{MINIMATE_KEY_LIMIT} || 500,
+							ml => $::Variable->{UI_ACCESS_KEY_LIMIT} || 500,
 							st => 'db',
 						}
 					);

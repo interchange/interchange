@@ -14,7 +14,7 @@ sub {
 	$text = 1 if ! $text;
   CHECKIT: {
 	$reverse = $func =~ s/^\s*!\s*//;
-	unless ($record = $Vend::Minimate_entry) {
+	unless ($record = $Vend::UI_entry) {
 		$status = $record, last CHECKIT unless ref($record = ui_acl_enabled());
 	}
 #::logDebug("if-mm record: " . Vend::Util::uneval_it($record));

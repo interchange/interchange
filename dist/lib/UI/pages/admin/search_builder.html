@@ -1,0 +1,271 @@
+[set page_title]Search builder[/set]
+[set help_name]search.builder[/set]
+[set icon_name]admin/icon_pages.gif[/set]
+[set mv_no_session_id][/set]
+[set empty_basket]
+	[calc]
+		@{$Carts->{main}} = ();
+		return;
+	[/calc]
+[/set]
+[set search_button_build]
+[perl]
+	delete $Scratch->{search_result};
+	delete $Scratch->{test_button};
+	my $result = <<EOF;
+<tr>
+<td colspan=2  bgcolor=#94a0e0 VALIGN=TOP>
+	<B>Resulting button</B><BR>
+<TEXTAREA ROWS=5 COLS=70 NAME="search_result">
+EOF
+	$result =~ s/\s+$//;
+	my @parms;
+	BUILD: {
+		if(! $CGI->{search_id}) {
+			$result .= "ERROR: no item selected";
+			last BUILD;
+		}
+		my (@items) = split /\0/, $CGI->{search_id};
+		for (@items) {
+			push @parms, "mv_order_item=$_";
+		}
+		my @ones;
+		QUANTITY: {
+			last QUANTITY if ! length $CGI->{search_quantity};
+			$CGI->{search_quantity} =~ s/[\s\0,]+$//;
+			@ones = split /[\0,\s]/, $CGI->{search_quantity};
+			for(@ones) {
+				if(/[^\d.]/) {
+					$result .= "Error: item quantities must be numbers";
+					last BUILD;
+				}
+				if( ! $Config->{FractionalItems} and $_ =~ /\./) {
+					$result .= "Error: item quantities must be integers with FractionalItems=no";
+					last BUILD;
+				}
+				push @parms, "mv_order_quantity=$_";
+			}
+		}
+		if(length $CGI->{search_separate}) {
+			push @parms, "mv_separate_items=$CGI->{search_separate}";
+		}
+		if(length $CGI->{search_destination}) {
+			push @parms, "mv_nextpage=$CGI->{search_destination}";
+		}
+		if(length $CGI->{search_group}) {
+			push @parms, "mv_order_group=$CGI->{search_group}";
+		}
+		for my $mod (@{$Config->{UseModifier}}) {
+			if($CGI->{"search_modifier_$mod"}) {
+				@ones = split /\s*,\s*/, $CGI->{"search_modifier_$mod"};
+				for(@ones) {
+					push @parms, qq!mv_order_$mod=$_!;
+				}
+			}
+		}
+	}
+	my $button;
+	if(@parms) {
+		if($CGI->{search_button}) {
+			my $url = $Config->{VendURL} . '/order';
+			$button = qq{<FORM ACTION="$url" METHOD=POST>\n};
+			for(@parms) {
+				my ($name, $value) = split /=/, $_, 2;
+				$value =~ s/"/&quot;/g;
+				$button .= qq{<INPUT TYPE=hidden NAME=$name VALUE="$value">\n};
+			}
+			$button .= qq{<INPUT TYPE=submit VALUE="Test button"></FORM>};
+		}
+		else {
+			$button = $Tag->area(
+							{
+								href => 'order',
+								form => join ("\n", @parms),
+							}
+						);
+		}
+		$result .= $button;
+	}
+	$result .= "</TEXTAREA>\n";
+	if ($CGI->{search_button} and $button) {
+		$Scratch->{test_button} = $button;
+		$Scratch->{test_button} =~ s/METHOD=/TARGET=search_test METHOD=/;
+	}
+	else {
+		$Scratch->{test_button} = qq{<B><A HREF="$button" TARGET=search_test><FONT COLOR=__CONTRAST__>Test order link</FONT></A></B><BR>&nbsp;};
+	}
+	$result .= "</td></tr>\n\n";
+	$Scratch->{search_result} = $result;
+[/perl]
+[/set]
+
+@@UI_STD_HEAD@@
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+[if scratch ui_failure]
+	<FONT COLOR=RED>Failed:
+	[scratch ui_failure][set ui_failure][/set]</FONT><BR>
+[/if]
+
+[scratch test_button]
+
+<FORM METHOD=GET ACTION="[area @@MV_PAGE@@]">
+<INPUT TYPE=hidden NAME=mv_click VALUE="order_button_build">
+<INPUT TYPE=hidden NAME=mv_action VALUE="return">
+
+<table cellpadding=3 cellspacing=0>
+
+<tr>
+<td colspan=2 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+</tr>
+<tr>
+<td colspan=2  bgcolor=#94a0e0>
+	<B>Build an order button or link</B>
+</td>
+</tr>
+
+[scratch search_result]
+
+<tr>
+<td colspan=2 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+</tr>
+
+<tr>
+<td bgcolor=#94a0e0 align=right>
+<B>Type</B>
+</td>
+<td bgcolor=#94a0e0>
+<SELECT NAME=search_button>
+<OPTION VALUE=0>Link
+<OPTION VALUE=1 [selected search_button 1]>Button
+</SELECT>
+</td>
+</tr>
+
+<tr>
+<td bgcolor=#94a0e0 align=right>
+<B>Item code</B>
+</td>
+<td bgcolor=#94a0e0>
+[perl]
+	my $table = $Config->{ProductFiles}[0];
+	$Scratch->{keypos} = $Config->{Database}{$table}{KEYINDEX} || '0';
+	$Scratch->{flex_description} = $Config->{DescriptionField};
+	return;
+[/perl]
+[loop more=1
+	search="
+		st=db
+		ra=yes
+		md=1
+		tf=[scratch flex_description]
+		rf=[scratch keypos],[scratch flex_description]
+	"
+]
+<select name="search_id" MULTIPLE size=5>
+[list]<option value="[loop-code]">[loop-pos 1]
+[/list]
+</select>
+[more-list]<BR>Too big for one page: [more][/more-list]
+[/loop]
+
+</td>
+</tr>
+
+<tr>
+<td bgcolor=#94a0e0 align=right>
+<B>Specific Quantity</B>
+</td>
+<td bgcolor=#94a0e0>
+
+<INPUT NAME=search_quantity> <I>(Separate multiple quantities by commas)</I>
+
+</td>
+</tr>
+
+[calc]
+	my $ary = $Config->{ProductFiles};
+	return unless scalar @$ary > 1;
+	my $out = <<'EOF';
+<tr>
+<td bgcolor=#94a0e0 align=right>
+A specific database
+</td>
+<td bgcolor=#94a0e0>
+<SELECT NAME=search_db>
+EOF
+	for(@$ary) {
+		$out .= "<OPTION>$_";
+	}
+	$out .= <<EOF;
+</SELECT>
+</td>
+</tr>
+EOF
+[/calc]
+
+<tr>
+<td bgcolor=#94a0e0 align=right>
+<B>Separate line?</B>
+</td>
+<td bgcolor=#94a0e0>
+
+<SELECT NAME=search_separate>
+	<OPTION VALUE=0> No
+	<OPTION VALUE=1> Yes
+	<OPTION VALUE="" SELECTED> Default [calc]
+			return $Config->{SeparateItems} ? '(yes)' : '(no)';
+		[/calc]
+</SELECT>
+</td>
+</tr>
+
+
+<tr>
+<td bgcolor=#94a0e0 align=right>
+<B>Group items?</B>
+</td>
+<td bgcolor=#94a0e0>
+
+<SELECT NAME=search_group>
+	<OPTION VALUE=""> No
+	<OPTION VALUE=1> Yes
+</SELECT> (all items removed when first one is)
+</td>
+</tr>
+
+[calc]
+	my $out = '';
+	for(@{$Config->{UseModifier}}) {
+		$out .= <<EOF;
+<tr>
+<td bgcolor=#94a0e0 align=right>
+<B>$_ (if any)</B>
+</td>
+<td bgcolor=#94a0e0>
+<INPUT NAME=search_modifier_$_>
+ <I>(Separate multiple values by commas)</I>
+</SELECT>
+</td>
+</tr>
+EOF
+	}
+	return $out;
+[/calc]
+<tr>
+<td bgcolor=#94a0e0 align=right>
+<B>Action</B>
+</td>
+<td bgcolor=#94a0e0>
+<INPUT TYPE=submit VALUE=Build>
+</td>
+</tr>
+
+</table>
+
+</form>
+
+<BR>
+@@UI_STD_FOOTER@@
+<!-- page: @@MV_PAGE@@ -->

@@ -186,10 +186,11 @@
 "][loop-code]
 [/loop]
 
-<select name=order size=10 MULTIPLE>
 
-[loop search="
+[loop more=1 search="
 		fi=transactions
+		ml=100
+		md=1
 		st=db
 		co=yes
 		sf=archived
@@ -201,10 +202,13 @@
 		op=ne
 		rf=code,order_date,total_cost
 "]
-<OPTION VALUE="[loop-code]">[loop-code]  [loop-param order_date]  [loop-param total_cost]</OPTION>
-[/loop]
+<select name=order size=10 MULTIPLE>
+[list]<OPTION VALUE="[loop-code]">[loop-code]  [loop-param order_date]  [loop-param total_cost]</OPTION>
+[/list]
 </select>
 </pre>
+[more-list]<BR>Orders [matches] of [value mv_search_match_count]: [more][/more-list]
+[/loop]
 <B>Total: [currency]
 	[query
 		sql="select sum(total_cost) from transactions where archived [scratch archive_sense] 1"

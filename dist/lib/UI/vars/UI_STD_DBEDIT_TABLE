@@ -29,12 +29,12 @@ Variable UI_STD_DBEDIT_TABLE <<EndOfVar
 <table cellpadding=3 cellspacing=0>
 
 [seti extra_tables]
-[query list=1 sql="SELECT DISTINCT db FROM __MINIMATE_META__" table="__MINIMATE_META__"]
+[query list=1 sql="SELECT DISTINCT db FROM __UI_META_TABLE__" table="__UI_META_TABLE__"]
 	[sql-code]
 [/query]
 [/seti]
 
-[mvasp tables="[list-databases] __MINIMATE_META__ __MINIMATE_TABLE__"]
+[mvasp tables="[list-databases] __UI_META_TABLE__ __UI_ACCESS_TABLE__"]
 <%
 	my $table	= $Values->{mv_data_table};
 	my $db		= $Db{$table};

@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -44,7 +44,7 @@ $DECODE_CHARS = qq{&[<"\000-\037\177-\377};
 
 =head1 NAME
 
-Primitive.pm -- MiniMate Configuration Manager
+Primitive.pm -- Miniman Configuration Manager Primitives
 
 =head1 SYNOPSIS
 
@@ -61,10 +61,10 @@ $ui_safe->untrap(@{$Global::SafeUntrap});
 
 sub ui_acl_enabled {
 	my $table;
-	my $default = defined $Global::Variable->{MINIMATE_ACL}
-				 ? (! $Global::Variable->{MINIMATE_ACL})
+	my $default = defined $Global::Variable->{UI_ACL}
+				 ? (! $Global::Variable->{UI_ACL})
 				 : 1;
-	$table = $::Variable->{MINIMATE_TABLE} || 'minimate';
+	$table = $::Variable->{UI_ACCESS_TABLE} || 'minimate';
 	$Vend::WriteDatabase{$table} = 1;
 	my $db = Vend::Data::database_exists_ref($table);
 	return $default unless $db;
@@ -80,7 +80,7 @@ sub ui_acl_enabled {
 	if($ref->{table_control}) {
 		$ref->{table_control_ref} = $ui_safe->reval($ref->{table_control});
 	}
-	$Vend::Minimate_entry = $ref;
+	$Vend::UI_entry = $ref;
 }
 
 sub get_ui_table_acl {
@@ -89,22 +89,22 @@ sub get_ui_table_acl {
 #::logDebug("Call get_ui_table_acl: " . Vend::Util::uneval_it(\@_));
 	my $acl_top;
 	if($user and $user ne $Vend::Session->{ui_username}) {
-		if ($Vend::Minimate_acl{$user}) {
-			$acl_top = $Vend::Minimate_acl{$user};
+		if ($Vend::UI_acl{$user}) {
+			$acl_top = $Vend::UI_acl{$user};
 		}
 		else {
-			my $ui_table = $::Variable->{MINIMATE_TABLE} || 'minimate';
+			my $ui_table = $::Variable->{UI_ACCESS_TABLE} || 'minimate';
 			my $acl_txt = Vend::Interpolate::tag_data($ui_table, 'table_control', $user);
 			return undef unless $acl_txt;
 			$acl_top = $ui_safe->reval($acl_txt);
 			return undef unless ref($acl_top);
 		}
-		$Vend::Minimate_acl{$user} = $acl_top;
+		$Vend::UI_acl{$user} = $acl_top;
 		return keys %$acl_top if $keys;
 		return $acl_top->{$table};
 	}
 	else {
-		unless ($acl_top = $Vend::Minimate_entry) {
+		unless ($acl_top = $Vend::UI_entry) {
 	#::logDebug("Call get_ui_table_acl: acl_top=" . ::uneval($acl_top));
 			return undef unless ref($acl_top = ui_acl_enabled());
 		}
@@ -229,7 +229,7 @@ sub list_keys {
 #::logDebug("list-keys $table");
 	my @keys;
 	my $record;
-	if(! ($record = $Vend::Minimate_entry) ) {
+	if(! ($record = $Vend::UI_entry) ) {
 		$record =  ui_acl_enabled();
 	}
 
@@ -257,7 +257,7 @@ sub list_keys {
 		$keys = $db->query(
 						{
 							query => $query,
-							ml => $::Variable->{MINIMATE_KEY_LIMIT} || 500,
+							ml => $::Variable->{UI_ACCESS_KEY_LIMIT} || 500,
 							st => 'db',
 						}
 					);
@@ -461,7 +461,7 @@ sub meta_display {
 
 ::logDebug("metadisplay: t=$table c=$column k=$key v=$value md=$meta_db");
 	my $metakey;
-	$meta_db = $::Variable->{MINIMATE_META} || 'mv_metadata' if ! $meta_db;
+	$meta_db = $::Variable->{UI_META_TABLE} || 'mv_metadata' if ! $meta_db;
 ::logDebug("metadisplay: t=$table c=$column k=$key v=$value md=$meta_db");
 	my $meta = Vend::Data::database_exists_ref($meta_db)
 		or return undef;

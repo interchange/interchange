@@ -21,7 +21,7 @@
 <br>
 
 [set Import]
-mv_nextpage=[var UI_BASE 1]/table_import
+mv_nextpage=__UI_BASE__/import_table
 [/set]
 
 <input type="submit" name="mv_click" value="Import">
@@ -35,7 +35,7 @@ mv_nextpage=[var UI_BASE 1]/table_import
 </td>
 <td bgcolor="#94a0e0">
 
-<select name="mv_data_table" size=10>
+<select name="mv_data_table" size=20>
 [loop list="[list-databases]"]<option value="[loop-code]"> [loop-code]
 [/loop]
 </select>

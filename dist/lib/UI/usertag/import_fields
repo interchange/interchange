@@ -80,6 +80,14 @@ EOF
 		my $ext = POSIX::strftime("%Y%m%d%H%M%S", localtime());
 		rename $file, "$file.$ext"
 			or die "rename $file --> $file.$ext: $!\n";
+		if(	$opt->{dir}
+			and (-d $opt->{dir} or File::Path::mkpath($opt->{dir}))
+			and -w $opt->{dir}
+			)
+		{
+			File::Copy::move("$file.$ext", $opt->{dir})
+				or die "move $file.$ext --> $opt->{dir}: $!\n";
+		}
 	}
 	return $out;
 }
