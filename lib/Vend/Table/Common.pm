@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.30 2003-07-12 04:47:10 mheins Exp $
+# $Id: Common.pm,v 2.31 2003-07-12 12:56:56 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -23,7 +23,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.30 $, 10);
+$VERSION = substr(q$Revision: 2.31 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -1513,13 +1513,13 @@ sub log_error {
 	my $msg = errmsg($tpl, @args);
 	my $ekey = 'table ' . $s->[$CONFIG]{name};
 	my $cfg = $s->[$CONFIG];
-	unless(defined $cfg->{LOG_CATALOG} and ! $cfg->{LOG_CATALOG}) {
+	unless(defined $cfg->{LOG_ERROR_CATALOG} and ! $cfg->{LOG_CATALOG}) {
 		logError($msg);
 	}
-	if($cfg->{LOG_GLOBAL}) {
+	if($cfg->{LOG_ERROR_GLOBAL}) {
 		logGlobal($msg);
 	}
-	if($Vend::admin or ! defined($cfg->{LOG_SESSION}) or $cfg->{LOG_SESSION}) {
+	if($Vend::admin or ! defined($cfg->{LOG_ERROR_SESSION}) or $cfg->{LOG_ERROR_SESSION}) {
 		$Vend::Session->{errors} = {} unless ref($Vend::Session->{errors}) eq 'HASH';
 		$Vend::Session->{errors}{$ekey} = $msg;
 	}
