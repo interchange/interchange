@@ -2697,6 +2697,7 @@ Set up syslog(8) error logging for Interchange.
    SysLog  alert    local3.warn
    SysLog  warn     local3.info
    SysLog  info     local3.info
+   SysLog  debug    local3.debug
 
 This would cause global errors to be logged with the command:
 
@@ -2710,9 +2711,53 @@ and cause system log entries something like:
    Oct 26 17:30:11 bill int1: Config 'test' at server startup
    Oct 26 17:30:13 bill int1: START server (2345) (INET and UNIX)
 
-A custom wrapper can be created around it to get it to behave as
-desired.
+This would work in conjunction with a UNIX syslogd.conf entry of:
 
+# Log local3 stuff to Interchange log
+local3.*	/var/log/interchange.log
+
+A custom wrapper can be created around it to get it to behave as
+desired. For instance, if you didn't want to use syslog but instead
+wanted to log to a database (via DBI), you could create a Perl script
+named "logdatabase" to log things:
+
+	#!/usr/bin/perl
+ 
+	my $script_name = "logdatabase";
+	use DBI;
+	use Getopt::Std;
+ 
+	getopts('d:p:T:k:') 
+		or die "$script_name options: $@\n";
+ 
+ 	use vars qw/$opt_d $opt_p $opt_T $opt_k/;
+ 
+	my $dsn   = $opt_d || $ENV{DBI_DSN};
+	my $template = $opt_T
+		|| "insert into log values ('~~KEY~~', '~~LEVEL~~', '~~MSG~~')";
+ 
+	my $dbh = DBI->connect($dsn)
+		or die "$script_name cannot connect to DBI: $DBI::errstr\n";
+	
+	my %data;
+ 
+	$data{KEY} = $opt_k || '';
+ 
+	local ($/);
+	$data{MSG} = <>;
+ 
+	$data{LEVEL} = $opt_p || 'interchange.info';	
+ 
+	$template =~ s/\~\~(\w+)\~\~/$dbh->quote($data{$1})/;
+ 
+	my $sth = $dbh->prepare($template)
+		or die "$script_name error executing query: $template\n";
+ 
+	$sth->execute()
+		or die "$script_name error executing query: $template\n";
+ 
+	exit;
+ 
 =head2 Tag
 
 =head2 TcpHost *global*
