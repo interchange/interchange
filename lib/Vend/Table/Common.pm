@@ -1,8 +1,9 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.22 2002-12-12 03:22:58 mheins Exp $
+# $Id: Common.pm,v 2.23 2003-01-01 14:54:09 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
@@ -22,7 +23,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.22 $, 10);
+$VERSION = substr(q$Revision: 2.23 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -265,7 +266,8 @@ sub row_hash {
 sub unstuff_row {
     my ($s, $key) = @_;
     my $line = $s->[$TIE_HASH]{"k$key"};
-    die "There is no row with index '$key'" unless defined $line;
+    die "There is no row with index '$key' in database $s->[$FILENAME]"
+		unless defined $line;
     return map(unstuff($_), split(/\t/, $line, 9999))
 		unless $s->[$CONFIG]{FILTER_FROM};
 	my @f = map(unstuff($_), split(/\t/, $line, 9999));
