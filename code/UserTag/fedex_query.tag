@@ -265,11 +265,11 @@ sub {
     'FedEx International Economy'  => 'FIE',
 	);
 	@fe_map{values %fe_map} = @fe_map{keys %fe_map};
-Debug("fed=" . ::uneval($fed));
+#Debug("fed=" . ::uneval($fed));
 	my @services;
-Debug("can_ground=$can_do_ground country=$opt->{country} orig_country=$opt->{origin_country}");
+#Debug("can_ground=$can_do_ground country=$opt->{country} orig_country=$opt->{origin_country}");
 	if($opt->{services}) {
-Debug("can_ground=$can_do_ground country=$opt->{country} orig_country=$opt->{origin_country}");
+#Debug("can_ground=$can_do_ground country=$opt->{country} orig_country=$opt->{origin_country}");
 		if(
 			$can_do_ground
 			and ($opt->{country} eq 'US' or $opt->{country} eq 'CA')
@@ -372,7 +372,7 @@ Debug("can_ground=$can_do_ground country=$opt->{country} orig_country=$opt->{ori
 	}
 
 	return $result{TransitTime} if $opt->{transit_time};
-Debug("mode=$opt->{mode} total=$result{TotalCharges}");
+#Debug("mode=$opt->{mode} total=$result{TotalCharges}");
 	return $result{TotalCharges};
 }
 EOR

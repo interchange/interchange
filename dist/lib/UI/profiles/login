@@ -18,3 +18,12 @@ mv_nextpage=[either][cgi mv_failpage][or][cgi mv_nextpage][/either]
 [/else]
 [/if]
 __END__
+
+__NAME__ MMsu
+[if type=explicit compare="[su username='[cgi user]']"]
+mv_nextpage=[calc]$Config->{SpecialPage}{catalog}[/calc]
+[else]
+[calc]$Session->{ui_error} = "Failed to su to user $CGI->{user}"; return;[/calc]
+[/else]
+[/if]
+__END__

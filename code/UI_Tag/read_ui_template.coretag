@@ -80,7 +80,7 @@ sub {
 		my $tmp = "$tmpdir/$name";
 #::logDebug("looking for inprocess file $tmp");
 		if(! $name and $data = $opt->{passed}) {
-::logDebug("found passed data, no name");
+#::logDebug("found passed data, no name");
 			# do nothing
 		}
 		elsif(-f $tmp) {

@@ -343,6 +343,17 @@ so there's a full line across the page even if table cells are blank.
 [scratch active_nm]=1[/button]
 [/on-match]
 </FORM>
+[if-mm super]
+	<form action="[area @@MV_PAGE@@]">
+	<input type=hidden name=mv_action value=refresh>
+	<input type=hidden name=mv_click value=MMsu>
+	Switch to a user: <select name=user>
+						[search-list]
+						<option>[item-code]
+						[/search-list]
+					  </select><input type=submit value="[L]Switch[/L]">
+	</form>
+[/if-mm]
 [/search-region]
 
 

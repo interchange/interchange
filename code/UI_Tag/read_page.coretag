@@ -65,7 +65,7 @@ UserTag read-page Routine <<EOR
 sub {
 	my ($pn, $opt) = @_;
 	use vars qw/$Tag $Session $Variable/;
-::logDebug("read_ui_page pn=$pn");
+#::logDebug("read_ui_page pn=$pn");
 	my $suffix  = $Vend::Cfg->{HTMLsuffix} || '.html';
 	my $tmpdir  = $Vend::Cfg->{ScratchDir} || 'tmp';
 	my $pagedir = $Vend::Cfg->{PageDir} || 'pages';
@@ -112,9 +112,9 @@ sub {
 
 	my $tref;
 	my ($ary) = $Tag->read_ui_template( { passed => $data } );
-Debug("ary from read_ui_template: $ary");
+#Debug("ary from read_ui_template: $ary");
 	$tref = $ary->[0] if $ary;
-Debug("tref from read_ui_template: $tref");
+#Debug("tref from read_ui_template: $tref");
 	$tref ||= {};
 
 	# Read external template if not in page
@@ -122,10 +122,10 @@ Debug("tref from read_ui_template: $tref");
 		my $tdir = $Variable->{UI_TEMPLATE_DIR} || 'templates';
 		my $template = $tref->{ui_template_name};
 		undef $tref;
-Debug("tref read from $tdir/$template");
+#Debug("tref read from $tdir/$template");
 		($ary) = $Tag->read_ui_template("$tdir/$template");
 		$tref = shift @$ary if $ary;
-Debug("tref $template again from read_ui_template: $tref (no ui_template_elements)");
+#Debug("tref $template again from read_ui_template: $tref (no ui_template_elements)");
 	}
 
 	if(! $tref) {
@@ -259,12 +259,12 @@ Debug("tref $template again from read_ui_template: $tref (no ui_template_element
 	$ref->{ui_page_setting} = $tref;
 
 #Log("page reference: " . uneval($ref) );
-Debug("read_page found pref=$ref tref=$tref" );
+#Debug("read_page found pref=$ref tref=$tref" );
 	return uneval_it($ref) if $opt->{textref};
-Debug("not textref" );
+#Debug("not textref" );
 	return $ref unless wantarray;
-Debug("wants array");
-Debug("return from read_page, pref=$ref tref=$tref" );
+#Debug("wants array");
+#Debug("return from read_page, pref=$ref tref=$tref" );
 	return ($ref, $tref);
 
 }

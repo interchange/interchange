@@ -759,7 +759,7 @@ EOF
 EOF
 
 	my $create_sql = $ref->{CREATE_SQL} || $db->create_sql();
-Debug("create_sql=$create_sql");
+#Debug("create_sql=$create_sql");
 	if($current_sql or ($new and $base_sql) ) {
 		my @post;
 		if ($ref->{POSTCREATE}) {

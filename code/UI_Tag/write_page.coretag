@@ -33,7 +33,7 @@ sub {
 	$page .= $Vend::Cfg->{HTMLsuffix}
 		unless $page =~ /$Vend::Cfg->{HTMLsuffix}$/;
 
-Debug("final page=$page page_id=$page_id");
+#Debug("final page=$page page_id=$page_id");
 	
 	my $ptab = $Vend::Cfg->{PageTables};
 	my $db;
@@ -88,14 +88,14 @@ Debug("final page=$page page_id=$page_id");
 	}
 
 	if(! $ok) {
-Debug("failed to write page=$page dbwrite=$wrote_db");
+#Debug("failed to write page=$page dbwrite=$wrote_db");
 		$::Scratch->{ui_error} = errmsg("Couldn't save page %s.", $page);
 	}
 	elsif($opt->{publish}) {
 		my $unlink = $Tag->unlink_file("$tmpdir/$page");
-Debug("unlink=$unlink file=$tmpdir/$page");
+#Debug("unlink=$unlink file=$tmpdir/$page");
 	}
-::logDebug("wrote page=$page page_id=$page_id db=$wrote_db");
+#::logDebug("wrote page=$page page_id=$page_id db=$wrote_db");
 
 	return $ok;
 }

@@ -26,7 +26,7 @@ sub {
 		my $bu = $fn;
 		$bu =~ s:.*/qb::;
 		$bu =~ s/\.iif$//;
-Log("gqo -- bu=$bu currdate=$currdate fn=$fn ofn=$ofn date=$date");
+#Log("gqo -- bu=$bu currdate=$currdate fn=$fn ofn=$ofn date=$date");
 		if($bu eq $currdate) {
 			$fn = "$dir/qb$date.iif";
 			rename $ofn, $fn;

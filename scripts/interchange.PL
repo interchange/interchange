@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.9.0
 #
-# $Id: interchange.PL,v 2.21 2002-02-04 01:31:18 mheins Exp $
+# $Id: interchange.PL,v 2.22 2002-02-05 20:57:04 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -528,7 +528,7 @@ sub update_data {
 	my($key,$value);
     # Update a database record
 	# Check to see if this is allowed
-::logDebug("mv_data_enable=$::Scratch->{mv_data_enable}");
+#::logDebug("mv_data_enable=$::Scratch->{mv_data_enable}");
 	if(! $::Scratch->{mv_data_enable}) {
 		logError(
 			 "Attempted database update without permission, table=%s key=%s.",

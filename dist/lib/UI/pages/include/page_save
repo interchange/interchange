@@ -184,7 +184,7 @@ EOF
 
 	my $out = join "\n", @out;
 	unless ($Tag->write_relative_file($page, $out)) {
-Debug("failed to write page=$page");
+#Debug("failed to write page=$page");
 		$Scratch->{ui_error} = errmsg("Couldn't save page %s.", $page);
 	}
 	$Scratch->{ui_output_page} = $page; 
