@@ -14,8 +14,8 @@ Additional Shipping Addresses	Additional Shipping Addresses			Additionele verzen
 Address	Address	Adresse		Adres
 Admin	Admin			Administratie
 Admin interface	Admin interface			Administratie interface
-Advanced	Advanced	Erweitert			Verfijnd zoeken
-Advanced Search	Advanced Search			Uitgebreid zoeken
+Advanced	Advanced	Erweitert		 Verfijnd zoeken
+Advanced Search	Advanced Search	Erweiterte Suche		Uitgebreid zoeken
 Affiliate code	Affiliate code			
 Affiliate headquarters	Affiliate headquarters			
 Affiliates	Affiliates			
@@ -40,7 +40,7 @@ Buy	Buy	Kaufen		Kopen
 Buy List	Buy List			Bestellijst
 Buy it Now!	Buy it Now!			Koop nu!
 Buy now	Buy now			Koop nu
-BUY NOW		JETZT KAUFEN
+BUY NOW		JETZT KAUFEN		
 C.O.D.	C.O.D.			Rembours
 CANCELED_MSG1	If you wish to order another item, we would like you to do so, butunfortunately you will have to re-enter any account information.			
 CANCEL_PAR1	Please confirm your request to stop shopping by clicking the button below. Allitems will be cleared from your shopping cart, your name and address informationwill be expunged, and all saved settings from your visit will disappear.			Bevestig alstublieft uw verzoek om met winkelen te stoppen door op onderstaande knop te klikken. Als U dat doet worden alle producten uit uw winkelwagen verwijderd, uw naam en adresinformatie worden gewist en alle bewaarde instellingen tijdens uw bezoek zullen verdwijnen.
@@ -50,7 +50,7 @@ COLOR	COLOR			KLEUR
 CONFIRMATION_MSG1	Your order has been sent, and you will receive an order confirmation via email.			Uw bestelling is verzonden en U ontvangt een orderbevestiging per email.
 Canada	Canada			Canada
 Card Number	Card Number			Kaartnummer
-Cart		Warenkorb
+Cart		Warenkorb		
 Cart Contents	Cart Contents			Inhoud winkelwagen
 Catalog Reconfigured	Catalog Reconfigured			Catalogus opnieuw geconfigureerd
 Change Password	Change Password			Wijzigen wachtwoord
@@ -59,7 +59,7 @@ Change your password	Change your password			Wijzig uw wachtwoord
 Check Information	Check Information			Cheque-informatie
 Check Number	Check Number			Chequenummer
 Check Out	Check Out			Naar de kassa
-City	City			Plaats
+City	City	Stadt		Plaats
 City, State, Zip	City, State, Zip			Plaats, Provincie, Postcode
 Clear&nbsp;cart	Clear&nbsp;cart			Wis&nbsp;winkelwagen
 Clear&nbsp;name/address	Clear&nbsp;name/address			Wis&nbsp;naam/adres
@@ -71,19 +71,19 @@ Code	Code
 Collapse All Categories	Collapse All Categories			Verberg alle sub-categorieen
 Comment	Comment			Commentaar
 Comment on this product.	Comment on this product.			Geef uw mening over dit product.
-Company	Company			Bedrijf
+Company	Company	Firma		Bedrijf
 Company P.O.	Company P.O.			Bedrijf's inkooporder
-Contact Information	Contact Information			Contactinformatie
+Contact Information	Contact Information	Kontaktinformation		Contactinformatie
 Contact Us	Contact Us			Neem contact met ons op
 Continue shopping	Continue shopping			Doorgaan met winkelen
-Country	Country			Land
+Country	Country	Land		Land
 Create Account	Create Account			Aanmaken rekening
 Create a new account	Create a new account			Nieuwe rekening aanmaken
 Credit Amount	Credit Amount			Credit bedrag
 Credit Card	Credit Card			
 Credit Card Information	Credit Card Information			Credit Card Informatie
 Credit Card number fails test	Credit Card number fails test			
-Current Price	Current Price			Huidige prijs
+Current Price	Current Price	Aktueller Preis		Huidige prijs
 Custom configure and buy	Custom configure and buy			
 Customer Satisfaction Survey	Customer Satisfaction Survey			Klantentevredenheidsonderzoek
 Customer Service	Customer Service			Klantenservice
@@ -93,10 +93,10 @@ Date Issued	Date Issued			Datum uitgifte
 Day Phone	Day Phone			Telefoon overdag
 Daytime Phone	Daytime Phone			Telefoon overdag
 December		Dezember	D&eacute;cembre	December
-Description	Description			Omschrijving
+Description	Description	Beschreibung		Omschrijving
 Edit address	Edit address			Adres wijzigen
 Email	Email			Email
-Email Address	Email Address			Emailadres
+Email Address	Email Address	Emailadresse		Emailadres
 Enter as customer	Enter as customer			Betreedt als klant
 Errors	Errors			Fouten
 Evening Phone	Evening Phone			Telefoon avond
@@ -106,7 +106,7 @@ FAILED_MSG1	We're sorry, but your order could not be processed at this time due 
 Fax	Fax			Fax
 February		Februar	F&eacute;vrier	Februari
 First	First			Eerste
-First Name	First Name			Voornaam
+First Name	First Name	Vorname		Voornaam
 Frequently Asked Questions	Frequently Asked Questions			Veel gestelde vragen
 GET_PASSWORD_MSG1	Hello! You requested that your ID and password be sent to your email address of record. The information is			Hallo! U verzocht ons uw gebruikersnaam en wachtwoord te sturen naar het emailadres dat wij in ons bestand hebben. Onderstaand treft U deze informatie aan.
 GET_PASSWORD_MSG2	Please contact us if we can be of service, and thank you for doing business with us.			Neem gerust contact met ons op als wij U op enigerlij wijze van dienst kunnen zijn. Hartelijk dank voor uw vertrouwen.
@@ -138,7 +138,7 @@ June		Juni	Juin	Juni
 Just a thought...	Just a thought...			Zomaar een gedachte...
 Just complete enough to ensure one match.	Just complete enough to ensure one match.			Vul juist voldoende informatie in om verzekerd te zijn van slechts een zoekreslutaat.
 Last	Last			Laatste
-Last Name	Last Name			Achternaam
+Last Name	Last Name	Nachname		Achternaam
 Linkback URL	Linkback URL			Teruglink URL
 Links that will help you to use this software	Links that will help you to use this software			Links die U behulpzaam kunnen zijn bij het gebruiken van deze software.
 Log In	Log In			Aanmelden
@@ -206,7 +206,7 @@ Order this	Order this			Koop dit product
 Order total %s exceeds credit limit, please call.	Order total %s exceeds credit limit, please call.			Het totaal van uw bestelling (%s) overschrijdt uw kredietlimiet. Bel ons alstublieft.
 Other	Other			Ander
 Other items you may like	Other items you may like			Wellicht houdt U ook van deze artikelen
-Our Price	Our Price			Onze prijs
+Our Price	Our Price	Unser Preis		Onze prijs
 Out Of Stock	Out Of Stock	Nicht vorrätig		Niet voorradig
 P.O. Information	P.O. Information			
 PAYMENT<BR>METHOD	PAYMENT<BR>METHOD			BETALINGS<BR>METHODE
@@ -242,7 +242,7 @@ Process Order Return	Process Order Return			Verwerken retourzending
 Product	Product	Artikel		
 Product Views All	Product Views All			
 ProductFiles				
-Products		Artikel
+Products		Artikel		
 Put me on these mail lists (if any)	Put me on these mail lists (if any)			Plaats mij op deze emaillijsten (indien aanwezig)
 Put me on your email list of infrequent offers	Put me on your email list of infrequent offers			Plaats mij op uw emaillijst van niet frequente aanbiedingen
 QTY<BR>TOTAL	QTY<BR>TOTAL			TOTAAL<BR>AANTAL
@@ -254,7 +254,7 @@ Quantity Discounts	Quantity Discounts			Kwantumkortingen
 RMA Number	RMA Number			RMA nummer
 Recurring Orders	Recurring Orders			Herhalingsorders
 Regular price	Regular price			Normale prijs
-Remove	Remove			Verwijder
+Remove	Remove	Löschen		Verwijder
 Reply	Reply			Antwoord
 Requested Product Unavailable	Requested Product Unavailable			
 Return	Return			Retour
@@ -264,7 +264,7 @@ Return request received.	Return request received.			Verzoek voor retourzending o
 Returns	Returns			Retour producten
 Routing Number	Routing Number			
 SALES TAX	SALES TAX			BTW
-SEARCH		SUCHEN
+SEARCH		SUCHEN		
 SECURITY PROBLEM	SECURITY PROBLEM			BEVEILIGINGSPROBLEEM
 SHIPPING	SHIPPING			VERZENDING
 SHIPPING<BR>HANDLING	SHIPPING<BR>HANDLING			VERZENDING<BR>BEHANDELING
@@ -446,5 +446,5 @@ products		de_products	produits
 test number	test number			testnummer
 will update display	will update display			Ververst het scherm
 will work to start it.	will work to start it.			zal werken om het te starten.
-Posted on	Posted on
-Read more	Read more
+Posted on	Posted on			
+Read more	Read more			
