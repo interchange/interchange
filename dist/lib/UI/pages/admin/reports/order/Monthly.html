@@ -4,7 +4,7 @@
 			return;
 	[/calc]
 [/if-mm]
-[set page_title]Orders by day for a month[/set]
+[set page_title][L]Orders by day for a month[/L][/set]
 [set icon_name]icon_stats.gif[/set]
 [set help_name]orderstats.view[/set]
 @_UI_STD_HEAD_@
@@ -14,22 +14,22 @@
 <TR BGCOLOR="__UI_C_TOPBLOCKBAR__">
 <TD VALIGN="top" width="20%">
 <FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Date</B>
+<B>[L]Date[/L]</B>
 </FONT>
 </TD>
 <TD VALIGN="top">
 <FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Affiliate/Campaign</B>
+<B>[L]Affiliate[/L]/[L]Campaign[/L]</B>
 </FONT>
 </TD>
 <TD ALIGN=center VALIGN="top">
 <FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Number of Orders</B>
+<B>[L]Number of Orders[/L]</B>
 </FONT>
 </TD>
 <TD ALIGN=right VALIGN="top">
 <FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Revenue</B>
+<B>[L]Revenue[/L]</B>
 </FONT>
 </TD>
 </TR>
@@ -77,7 +77,8 @@ EOF
 		FROM  transactions
 		WHERE deleted != '1' [scratch date_limit] [scratch synd_limit]
 	"][/query]
-
+[tmp ALL][L]ALL[/L][/tmp]
+[tmp TOTAL][L]GRAND TOTAL[/L][/tmp]
 [perl tables="store"]
 	my %sales;
 	$master = {};
@@ -116,7 +117,7 @@ EOF
 	foreach $month (sort { $a <=> $b } keys %$master) {
 		my $year = $month;
 		$year =~ s/(\d\d\d\d)(\d\d)(\d\d)/$1/;
-		my $mname = $names{$2};
+		my $mname = errmsg($names{$2});
 		my $day = $3;
 		$day =~ s/^0+//;
 		my $subtotal_sales  = 0;
@@ -163,7 +164,7 @@ EOF
 	</FONT>
 	</TD>
 	<TD VALIGN=top>
-	ALL<BR><HR color=black size=1>
+	$Scratch->{ALL}<BR><HR color=black size=1>
 	</FONT>
 	</TD>
 	<TD ALIGN=center VALIGN=top>
@@ -181,11 +182,11 @@ EOF
 		$out .= <<EOF;
 	<TR BGCOLOR=__UI_C_INTBLOCK__>
 	<TD VALIGN="top">
-	GRAND TOTAL
+	$Scratch->{TOTAL}
 	</FONT>
 	</TD>
 	<TD VALIGN="top">
-	ALL
+	$Scratch->{ALL}
 	</FONT>
 	</TD>
 	<TD ALIGN=center VALIGN="top">
