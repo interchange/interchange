@@ -304,6 +304,7 @@ HREF="[area
 	}
 </SCRIPT>
 [/tmp]
+[tmp do_clone]1[/tmp]
 [loop prefix=item
 		search="
 				fi=[cgi mv_data_table]
@@ -333,6 +334,7 @@ HREF="[area
 	$Scratch->{built_js} =~ s/_NEXT_[A-Z]+_//g;
 	return;
 [/calc]
+[on-match][if type=data term="[cgi mv_data_table]::o_matrix::[cgi item_id]" op=eq compare=2][tmp do_clone][/tmp][/if][/on-match]
 [scratch built_js]
 [list]
 [item-sub do_js]
@@ -417,15 +419,16 @@ HREF="[area
 			ui_te_default:sku=[cgi item_id]
 			ui_data_fields=code sku o_group o_label o_value price
 			ui_te_widget:sku=hidden_text
-		"]<IMG SRC="plus.gif" ALT="Add new option" BORDER=0></A>
-&nbsp;&nbsp;
+		"]<IMG SRC="plus.gif" ALT="Add new option" BORDER=0 ALIGN=MIDDLE></A> &nbsp;<font size=2>Add new option</font>
+<br>
+[if scratch do_clone]
 [query
 	list=1
 	prefix=clone
 	db=1
 	sql="SELECT DISTINCT code
 		 FROM  [cgi mv_data_table]
-		 WHERE o_matrix  =  '1'
+		 WHERE o_matrix  >= '1'
 		 AND   o_enable  =  '1'
 		 AND   o_master  =  '1'
 		 AND   code      <> '[cgi item_id]'
@@ -433,12 +436,13 @@ HREF="[area
 	more=1]<SELECT NAME=ui_clone_id>
 <OPTION VALUE=""> --
 [list]<OPTION VALUE="[clone-code]">[clone-filter 30][clone-description][/clone-filter][/list]
-</SELECT>[more-list]<BR>[more]<BR>[/more-list][/query]&nbsp;[button text="Clone options"]
+</SELECT>[more-list]<BR>[more]<BR>[/more-list][/query]<br>[button text="Clone options"]
 [flag type=write table="[cgi mv_data_table]"]
 ui_clone_options=1
 mv_todo=back
 mv_nextpage=@@MV_PAGE@@
 [/button]
+[/if]
 
 </FORM>
 
