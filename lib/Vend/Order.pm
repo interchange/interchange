@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.61 2003-11-25 16:58:37 mheins Exp $
+# $Id: Order.pm,v 2.62 2003-12-27 14:01:17 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.61 $, 10);
+$VERSION = substr(q$Revision: 2.62 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1468,7 +1468,15 @@ sub counter_number {
 	my $file = shift || $Vend::Cfg->{OrderCounter};
 	my $sql = shift;
 	my $start = shift || '000000';
-	return Vend::Interpolate::tag_counter($file, { sql => $sql, start => $start });
+	my $date = shift;
+	return Vend::Interpolate::tag_counter(
+											$file,
+											{
+												sql => $sql,
+												start => $start,
+												date => $date
+											}
+										);
 }
 
 sub update_order_number {
@@ -1587,26 +1595,29 @@ sub route_order {
 	my @route_failed;
 	my @route_done;
 	my $route_checked;
-
-	### This used to be the check_only
-	# Here we return if it is only a check
-	#return route_profile_check(@routes) if $check_only;
+	$Vend::Session->{routes_run} = [];
 
 	# Careful! If you set it on one order and not on another,
 	# you must delete in between.
-	if(! $check_only and ! $main->{no_increment} and ! $Vend::Session->{mv_order_number}) {
+
+	my $no_increment = $check_only
+						|| $main->{no_increment}
+						|| $main->{counter_tid}
+						|| $Vend::Session->{mv_order_number};
+		
+	unless($no_increment) {
 		$::Values->{mv_order_number} = counter_number(
 											$main->{counter},
 											$main->{sql_counter},
 											$main->{first_order_number},
+											$main->{date_counter},
 										);
 	}
 
 	my $value_save = { %{$::Values} };
 
-	my @trans_tables;
-
-	# We aren't going to 
+	# We aren't going to allow encrypt_program setting from database as
+	# that is a security problem
 	my %override_key = qw/
 		encrypt_program 1
 	/;
@@ -1625,6 +1636,9 @@ sub route_order {
 		my $route = $Vend::Cfg->{Route_repository}{$c} || {};
 		$main = $route if $route->{master};
 		my $old;
+
+		## Record the routes run
+		push @{$Vend::Session->{routes_run}}, $c;
 
 #::logDebug("route $c is: " . ::uneval($route));
 		##### OK, can put variables in DB all the time. It can be dynamic
@@ -1677,6 +1691,9 @@ sub route_order {
 		#####
 		#####
 		#####
+
+		## Make route available to subsidiary files
+		$Vend::Session->{current_route} = $route;
 
 		# Compatibility 
 		if($route->{cascade}) {
@@ -1770,23 +1787,42 @@ sub route_order {
 							);
 		}
 
-		if($Vend::Session->{mv_order_number}) {
+		if($route->{counter_tid}) {
+			## This is designed to allow order number setting in
+			## the report code file
+			$Vend::Session->{mv_transaction_id} = counter_number(
+												$route->{counter_tid},
+												$route->{sql_counter},
+												$route->{first_order_number},
+												$route->{date_counter},
+											);
+		}
+		elsif($Vend::Session->{mv_order_number}) {
 			$::Values->{mv_order_number} = $Vend::Session->{mv_order_number};
+		}
+		elsif(defined $route->{increment}) {
+			$::Values->{mv_order_number} = counter_number(
+												$main->{counter},
+												$main->{sql_counter},
+												$main->{first_order_number},
+												$main->{date_counter},
+											)
+				if $route->{increment};
 		}
 		elsif($route->{counter}) {
 			$::Values->{mv_order_number} = counter_number(
 												$route->{counter},
 												$route->{sql_counter},
 												$route->{first_order_number},
+												$route->{date_counter},
 											);
 		}
-		elsif($route->{increment}) {
-			$::Values->{mv_order_number} = counter_number(
-												$main->{counter},
-												$main->{sql_counter},
-												$main->{first_order_number},
-											);
+
+		# Pick up transaction ID if already set
+		if($Vend::Session->{mv_transaction_id}) {
+			$::Values->{mv_transaction_id} = $Vend::Session->{mv_transaction_id};
 		}
+
 		my $pagefile;
 		my $page;
 		if($route->{empty} and ! $route->{report}) {
@@ -2038,6 +2074,11 @@ sub route_order {
 	# Get rid of this puppy
 	$::Values->{mv_credit_card_info}
 			=~ s/^(\s*\w+\s+)(\d\d)[\d ]+(\d\d\d\d)/$1$2 NEED ENCRYPTION $3/;
+
+	# Clear these, we are done with them
+	delete $Vend::Session->{mv_transaction_id};
+	delete $Vend::Session->{current_route};
+
 	# If we give a defined value, the regular mail_order routine will not
 	# be called
 #::logDebug("route errors=$errors supplant=$main->{supplant}");
