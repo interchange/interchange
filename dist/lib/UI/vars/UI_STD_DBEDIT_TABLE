@@ -5,7 +5,7 @@ Variable UI_STD_DBEDIT_TABLE <<EndOfVar
 	<FONT COLOR=RED>Failed:
 	[scratch ui_failure][set ui_failure][/set]</FONT><BR>
 [/if]
-
+[scratchd process_filter]
 <FORM METHOD=POST ACTION="[area ui]">
 <INPUT TYPE=hidden NAME=mv_doit VALUE="set">
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_filter">
@@ -56,8 +56,9 @@ EOF
 [comment]
 Display an extra Ok/Cancel button pair if there are more than
 4 rows of input, so user doesn't have to scroll to bottom of page.
+Also, display option to clone other table entries if a cloning.
 [/comment]
-[perl]
+[perl tables="__UI_ITEM_TABLES__"]
       my $linecount = (split / /, $CGI->{ui_data_fields}) - 1;
       my $out = '';
       $out .= <<'EOF' if $linecount > 4;
@@ -76,6 +77,80 @@ Display an extra Ok/Cancel button pair if there are more than
 </tr>
 
 EOF
+	if($CGI->{ui_new_item} and $CGI->{ui_clone_tables}) {
+		my %seen;
+		my @sets;
+		my @tables = split /[\s\0,]+/, $CGI->{ui_clone_tables};
+		for(@tables) {
+			if(/:/) {
+				push @sets, $_;
+			}
+			s/:.*//;
+		}
+
+		@tables = grep ! $seen{$_}++ && defined $Config->{Database}{$_}, @tables;
+
+		my $tab = '';
+		my $set = <<'EOF';
+[flag type=write table="_TABLES_"]
+[perl tables="_TABLES_"]
+	delete $Scratch->{clone_tables};
+	return if ! $CGI->{ui_clone_id};
+	my $id = $CGI->{ui_clone_id}
+		or do { Log("clone: no ui_clone_id!"); return; };
+	my $new =  $CGI->{$CGI->{mv_data_key}}
+		or do { Log("clone $id:no mv_data_key"); return; };
+	return if ! $CGI->{ui_clone_tables};
+	my %possible;
+	my @possible = qw/_TABLES_/;
+	@possible{@possible} = @possible;
+	my @tables = grep /\S/, split /[\s,\0]+/, $CGI->{ui_clone_tables};
+	my @sets = grep /:/, @tables;
+	@tables = grep $_ !~ /:/, @tables;
+	for(@tables) {
+		next unless $possible{$_};
+		my $db = $Db{$_};
+		next unless $db;
+		my $res = $db->clone_row($id, $CGI->{$CGI->{mv_data_key}});
+	}
+	for(@sets) {
+		my ($t, $col) = split /:/, $_;
+		my $db = $Db{$t} or next;
+		my $res = $db->clone_set($col, $id, $CGI->{$CGI->{mv_data_key}});
+	}
+	return;
+[/perl]
+EOF
+
+		my $tabform = '';
+		@tables = grep $Tag->if_mm( { table => "$_=i" } ), @tables;
+		for(@tables) {
+			my $db = $Db{$_}
+				or next;
+			next unless $db->record_exists($CGI->{ui_clone_id});
+			$tabform .= <<EOF;
+<INPUT TYPE=CHECKBOX NAME=ui_clone_tables VALUE="$_" CHECKED> clone to <b>$_</B><BR>
+EOF
+		}
+		for(@sets) {
+			my ($t, $col) = split /:/, $_;
+			$tabform .= <<EOF;
+<INPUT TYPE=CHECKBOX NAME=ui_clone_tables VALUE="$_"> clone entries of <b>$t</B> matching on <B>$col</B><BR>
+EOF
+		}
+		$tabs = join " ", @tables;
+		$set =~ s/_TABLES_/$tabs/g;
+		$Scratch->{clone_tables} = $set . '[' . '/perl]';
+		$out .= <<EOF;
+<tr BGCOLOR="__UI_C_TITLEBARBG__">
+<td colspan=2>
+$tabform<INPUT TYPE=hidden NAME=mv_click VALUE="clone_tables">
+<INPUT TYPE=hidden NAME=ui_clone_id VALUE="$CGI->{ui_clone_id}">
+</td>
+</tr>
+EOF
+	}
+	return $out;
 [/perl]
 
 [mvasp tables="[list-databases] __UI_META_TABLE__ __UI_ACCESS_TABLE__"]
@@ -138,14 +213,13 @@ EOF
 	}
 
 	my $super = $Tag->if_mm('super');
-	my $override;
 
 	my $refkey = $key;
 
 	if($db->record_exists($key)) {
 #Log("Should work. key=$key table=$table");
 	}
-	elsif($db->config('AUTO_NUMBER')) {
+	elsif(! $CGI->{ui_new_item} and $db->config('AUTO_NUMBER')) {
 		$CGI->{$Values->{ui_data_key_name}} = '';
 		undef $key;
 	}
@@ -156,7 +230,7 @@ EOF
 	foreach my $col (@cols) {
 		if($CGI->{ui_hide_key} and $col eq $keycol) {
 			$Document->write(<<EOF);
-<INPUT TYPE=hidden NAME="$col" VALUE="$Scratch->{arg}">
+<INPUT TYPE=hidden NAME="$col" VALUE="$refkey">
 EOF
 			next;
 		}
@@ -176,28 +250,34 @@ EOF
 		}
 
 		my $type;
+		my $override;
+
 		if($do) {
 			my $k = defined $key ? $key : $refkey;
 			$currval = tag_data($t, $c, $k);
 			$type = 'value';
-#Log("hit display_only for $col, t=$t, c=$c, k=$k, currval=$currval");
+Log("hit display_only for $col, t=$t, c=$c, k=$k, currval=$currval");
 		}
 		elsif (defined $CGI->{"ui_preload:$t:$c"} ) {
 			$currval = delete $CGI->{"ui_preload:$t:$c"};
 			$override = 1;
-#Log("hit preload for $col,currval=$currval");
+Log("hit preload for $col,currval=$currval");
 		}
 		elsif( 
 				defined $CGI->{$col}
 				and ( !defined($key) || !length(tag_data($t, $c, $key)) )
 				)
 		{
-#Log("hit CGI->col for $col, t=$t, c=$c, k=$k, currval=$currval");
+Log("hit CGI->col for $col, t=$t, c=$c, k=$k, currval=$currval");
 			$currval = $CGI->{$col};
 		}
+		elsif (defined $key) {
+Log("hit table load, key=$key");
+			$currval = tag_data($t, $c, $key);
+		}
 		else {
-			$currval = delete $Scratch->{"ui_preload:$t:$c"} || undef;
-#Log("hit preload fallback for $col,currval=$currval");
+Log("hit table load, refkey=$refkey");
+			$currval = tag_data($t, $c, $refkey);
 		}
 
 		my $meta = '';
