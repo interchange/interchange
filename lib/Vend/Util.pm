@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.66 2003-12-16 14:07:56 jon Exp $
+# $Id: Util.pm,v 2.67 2004-02-04 14:54:09 racke Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -87,7 +87,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.66 $, 10);
+$VERSION = substr(q$Revision: 2.67 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -954,7 +954,9 @@ my $Lang;
 
 sub find_locale_bit {
 	my $text = shift;
-	$Lang = $::Scratch->{mv_locale} unless defined $Lang;
+	unless (defined $Lang) {
+		$Lang = $::Scratch->{mv_locale} || $Vend::Cfg->{DefaultLocale};
+	}
 	$text =~ m{\[$Lang\](.*)\[/$Lang\]}s
 		and return $1;
 	$text =~ s{\[(\w+)\].*\[/\1\].*}{}s;
