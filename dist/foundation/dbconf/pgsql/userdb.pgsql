@@ -62,6 +62,7 @@ Database  userdb  COLUMN_DEF   "account_id=VARCHAR(20)"
 Database  userdb  COLUMN_DEF   "order_dest=VARCHAR(32)"
 Database  userdb  COLUMN_DEF   "inactive=VARCHAR(32)"
 Database  userdb  DEFAULT      "inactive=''"
+Database  userdb  COLUMN_DEF   "credit_balance=VARCHAR(12)"
 
 # Prevent problems with abstime representation
 UserDB    default    time_field    none
