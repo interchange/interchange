@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.37 2003-05-22 13:40:45 racke Exp $
+# $Id: Shadow.pm,v 1.38 2003-05-22 19:21:41 racke Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.37 $, 10);
+$VERSION = substr(q$Revision: 1.38 $, 10);
 
 # CREDITS
 #
@@ -319,7 +319,7 @@ sub query {
 				}
 			}
 			unless (defined $keypos) {
-				die "key not in query, cannot handle";
+				die "key $keyname not in query $opt->{query}, cannot handle";
 			}
 			# replace shadowed fields
 			my ($pos, $name, $row, $map_entry, $list, @qa, $result);
