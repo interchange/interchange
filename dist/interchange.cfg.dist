@@ -43,6 +43,8 @@ MaxServers   10
 PIDcheck     120
 endif
 
+NoAbsolute Yes
+
 # No real downside to adding this....
 Mall       Yes
 
