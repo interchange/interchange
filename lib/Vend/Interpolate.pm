@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.87 2002-07-22 17:44:41 jon Exp $
+# $Id: Interpolate.pm,v 2.88 2002-07-22 18:18:24 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.87 $, 10);
+$VERSION = substr(q$Revision: 2.88 $, 10);
 
 @EXPORT = qw (
 
@@ -3610,6 +3610,7 @@ sub tag_more_list {
 		and $q->{mv_matchlimit} > 0;
 	my($arg,$inc,$last,$m);
 	my($adder,$pages);
+	my($first_anchor,$last_anchor);
 	my $next_tag = '';
 	my $list = '';
 	$session = $q->{mv_cache_key};
@@ -3656,6 +3657,22 @@ sub tag_more_list {
 
 	if($first) {
 		$first = 0 if $first < 0;
+
+		# First link may appear when prev link is valid
+		if($r =~ s:\[first[-_]anchor\]($All)\[/first[-_]anchor\]::i) {
+			$first_anchor = $1;
+		}
+		else {
+			$first_anchor = ::errmsg('First');
+		}
+		unless ($first_anchor eq 'none') {
+			$arg = $session;
+			$arg .= ':0:';
+			$arg .= $chunk - 1;
+			$arg .= ":$chunk";
+			$list .= more_link_template($first_anchor, $arg, $form_arg) . ' ';
+		}
+
 		unless ($prev_anchor) {
 			if($r =~ s:\[prev[-_]anchor\]($All)\[/prev[-_]anchor\]::i) {
 				$prev_anchor = $1;
@@ -3676,12 +3693,14 @@ sub tag_more_list {
 			$arg .= ":$chunk";
 			$list .= more_link_template($prev_anchor, $arg, $form_arg) . ' ';
 		}
+
 	}
 	else {
-		$r =~ s:\[prev[-_]anchor\]($All)\[/prev[-_]anchor\]::i;
+		$r =~ s:\[(prev|first)[-_]anchor\]$All\[/\1[-_]anchor\]::ig;
 	}
 	
 	if($next) {
+
 		unless ($next_anchor) {
 			if($r =~ s:\[next[-_]anchor\]($All)\[/next[-_]anchor\]::i) {
 				$next_anchor = $1;
@@ -3697,9 +3716,21 @@ sub tag_more_list {
 		$last = $last > ($total - 1) ? $total - 1 : $last;
 		$arg = "$session:$next:$last:$chunk";
 		$next_tag .= more_link_template($next_anchor, $arg, $form_arg);
+
+ 		# Last link can appear when next link is valid
+		if($r =~ s:\[last[-_]anchor\]($All)\[/last[-_]anchor\]::i) {
+			$last_anchor = $1;
+		}
+		else {
+			$last_anchor = ::errmsg('Last');
+		}
+ 		$last = $total - 1;
+ 		my $last_beg_idx = $total - ($total % $chunk || $chunk);
+ 		$arg = "$session:$last_beg_idx:$last:$chunk";
+ 		$next_tag .= ' ' . more_link_template($last_anchor, $arg, $form_arg);
 	}
 	else {
-		$r =~ s:\[next[-_]anchor\]($All)\[/next[-_]anchor\]::i;
+		$r =~ s:\[(last|next)[-_]anchor\]$All\[/\1[-_]anchor\]::i;
 	}
 	
 	unless ($page_anchor) {
