@@ -14,6 +14,34 @@ Core
 * Disallow [ and < in page names when setting MV_PAGE and MV_PREV_PAGE
   variables.
 
+* Prevent login information from getting re-saved on a session cancel.
+
+* Define a set of CGI keys that we don't want to save to disk, as
+  @Global::HideCGI.
+
+* Don't show sensitive (i.e. @Global::HideCGI) CGI variables in a dump.
+  This allows saving a session to disk for diagnositic purposes in case
+  of order failure.
+
+* Allow [dump no-cgi=1 no-session=1 no-env=1] to finetune dump.
+
+* Tolerate leading whitespace in query in Vend::Form.
+
+Admin
+-----
+
+* Fix bug where affiliate reports don't filter based on that.  
+
+* Make reports with no specified end_date work.
+
+* Fix missing relocation variables in Vend::Table::Editor found by Paul
+  Vinciguerra.
+
+Foundation
+----------
+
+* Remove unmatched </FORM> from cart_display component.
+
 Debian
 ------
 
