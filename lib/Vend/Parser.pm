@@ -1,6 +1,6 @@
 package Vend::Parser;
 
-# $Id: Parser.pm,v 1.2.6.6 2001-05-16 15:59:44 heins Exp $
+# $Id: Parser.pm,v 1.2.6.7 2001-06-14 14:38:20 heins Exp $
 #
 # Vend::Parser - Interchange parser class
 # Copyright 1997-2001 by Michael J. Heins <heins@akopia.com>
@@ -67,7 +67,7 @@ use strict;
 
 use HTML::Entities ();
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.2.6.6 $, 10);
+$VERSION = substr(q$Revision: 1.2.6.7 $, 10);
 
 
 sub new
@@ -181,7 +181,10 @@ sub parse
 					# or quoted by `` to send to [calc]
 					} elsif ($$buf =~ s~(^=\s*([\`\|])(.*?)\2\s*)~~s) {
 						$eaten .= $1;
-						if    ($2 eq '`') { $val = Vend::Interpolate::tag_calc($3); }
+						if    ($2 eq '`') {
+							$val = Vend::Interpolate::tag_calc($3)
+								unless defined $Vend::Cfg->{AdminSub}{calc};
+						}
 						elsif ($2 eq '|') {
 								$val = $3;
 								$val =~ s/^\s+//;
@@ -329,7 +332,10 @@ sub parse
 					# or quoted by `` to send to [calc]
 					} elsif ($$buf =~ s~(^=\s*([\`\|]?)(.*?)\2\s*)~~s) {
 						$eaten .= $1;
-						if    ($2 eq '`') { $val =Vend::Interpolate::tag_calc($4); }
+						if    ($2 eq '`') {
+							$val = Vend::Interpolate::tag_calc($3)
+								unless defined $Vend::Cfg->{AdminSub}{calc};
+						}
 						elsif ($2 eq '|') {
 								$val = $3;
 								$val =~ s/^\s+//;
