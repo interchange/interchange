@@ -30,8 +30,8 @@ then
 	chmod $DMODE __MVC_RELOCATE__$LOGDIR/orders
 	if test -n "$CATUSER"
 	then
-		chown $CATUSER __MVC_RELOCATE____MVC_LOGDIR__/error.log
-		chgrp $CATGROUP __MVC_RELOCATE____MVC_LOGDIR__/error.log
+		chown $CATUSER  __MVC_RELOCATE__$LOGDIR/error.log
+		chgrp $CATGROUP __MVC_RELOCATE__$LOGDIR/error.log
 	fi
 else
 	LOGDIR='__MVC_CATROOT__'
@@ -41,8 +41,8 @@ else
 	chmod $DMODE __MVC_RELOCATE__$LOGDIR/orders
 	if test -n "$CATUSER"
 	then
-		chown $CATUSER __MVC_RELOCATE____MVC_LOGDIR__/error.log
-		chgrp $CATGROUP __MVC_RELOCATE____MVC_LOGDIR__/error.log
+		chown $CATUSER  __MVC_RELOCATE__$LOGDIR/error.log
+		chgrp $CATGROUP __MVC_RELOCATE__$LOGDIR/error.log
 	fi
 fi
 
