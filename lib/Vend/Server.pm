@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.13 2001-02-18 16:37:46 heins Exp $
+# $Id: Server.pm,v 1.8.2.14 2001-02-20 02:07:30 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.13 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.14 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -166,7 +166,7 @@ EOF
 			die($msg);
 		};
 
-	($::IV, $::VN, $::SV) = defined $g->{VarName}
+	($::IV, $::VN, $::SV) = $g->{VarName}
 			? ($g->{IV}, $g->{VN}, $g->{IgnoreMultiple})
 			: ($Global::IV, $Global::VN, $Global::IgnoreMultiple);
 
