@@ -1,6 +1,6 @@
 # SessionFile.pm:  stores session information in files
 #
-# $Id: SessionFile.pm,v 1.3.2.1 2000-11-07 22:41:47 zarko Exp $
+# $Id: SessionFile.pm,v 1.3.2.2 2000-11-13 16:36:23 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 
-# $Id: SessionFile.pm,v 1.3.2.1 2000-11-07 22:41:47 zarko Exp $
+# $Id: SessionFile.pm,v 1.3.2.2 2000-11-13 16:36:23 zarko Exp $
 
 package Vend::SessionFile;
 require Tie::Hash;
@@ -31,7 +31,7 @@ use strict;
 use Vend::Util;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.3.2.1 $, 10);
+$VERSION = substr(q$Revision: 1.3.2.2 $, 10);
 
 my $SessionDir;
 my $CommDir;
@@ -48,10 +48,14 @@ my $Last;
 my @Each;
 
 sub TIEHASH {
-	my($self, $dir) = @_;
+	my($self, $dir, $nfs) = @_;
 	die "Vend::SessionFile: directory name\n"
 		unless $dir;
 	$SessionDir = $dir;
+	if($nfs) {
+		*lockfile = \*Vend::Util::fcntl_lock;
+		*unlockfile = \*Vend::Util::fcntl_unlock;
+	}
 	bless {}, $self;
 }
 
