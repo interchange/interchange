@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.12 2000-09-28 16:55:07 zarko Exp $
+# $Id: UserDB.pm,v 1.13 2000-10-05 19:41:51 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.12 $, 10);
+$VERSION = substr(q$Revision: 1.13 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -560,13 +560,27 @@ sub clear_values {
 
 	@fields = @{ $self->{DB_FIELDS} } unless @fields;
 
+	my %scratch;
+
+	if($self->{OPTIONS}->{scratch}) {
+		my (@s) = split /[\s,]+/, $self->{OPTIONS}{scratch} ;
+		@scratch{@s} = @s;
+#::logError("scratch ones: " . join " ", @s);
+	}
+
 	for(@fields) {
-		delete $::Values->{$_};
-		delete $CGI::values{$_};
+		if($scratch{$_}) {
+			delete $::Scratch->{$_};
+		}
+		else {
+			delete $::Values->{$_};
+			delete $CGI::values{$_};
+		}
 	}
 
 	1;
 }
+
 sub get_values {
 	my($self, @fields) = @_;
 
