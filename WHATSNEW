@@ -46,10 +46,16 @@ Core and usertags
   <martin@trymedia.com>, who discovered and analyzed this bug
   (in his case any options for &charge are ignored)
 
+* Fixed bug in database query methods which can hose query strings
+  like "select ... where column like '%...%'".
+
 * New option -D for localize script (Don't put default locale in output.),
   insert comments only if they are distinct from the key
 
 * Allow [dump] of portion of session, for example [dump scratch].
+
+* New methods hash_query and get_slice added to the Table
+  modules.
 
 UI
 --------
