@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.13.6.3 2000-12-11 01:57:45 heins Exp $
+# $Id: UserDB.pm,v 1.13.6.4 2000-12-13 13:52:50 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.13.6.3 $, 10);
+$VERSION = substr(q$Revision: 1.13.6.4 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -294,6 +294,7 @@ sub new {
 						BILLING		=> $options{bill_field} || 'accounts',
 						SHIPPING	=> $options{addr_field} || 'address_book',
 						PREFERENCES	=> $options{pref_field} || 'preferences',
+						FEEDBACK	=> $options{feedback_field}   || 'feedback',
 						PRICING		=> $options{pricing_field} || 'price_level',
 						ORDERS     	=> $options{ord_field}  || 'orders',
 						CARTS		=> $options{cart_field} || 'carts',
