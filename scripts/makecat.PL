@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.13 2002-02-05 08:41:32 mheins Exp $
+# $Id: makecat.PL,v 2.14 2002-06-17 22:42:06 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -1956,13 +1956,16 @@ EOF
 			chdir "$Conf{relocate}$Conf{vendroot}"
 				or die "\nchdir $Conf{relocate}$Conf{vendroot}: $!\n";
 			# remember directories so we can chown below
-			chdir "share" or die "\nchdir 'share': $!\n";
+			chdir "share" or die "error.\nchdir 'share': $!\n";
 			map { push @sharedirs, $_ if -d $_ } glob('*');
 			chdir "..";
 			copy_dir("share", "$Conf{relocate}$Conf{sharedir}") or die;
 		};
-		if ($@) {
-			print "\nError installing share/ files: $@\n";
+		if (! @sharedirs) {
+			print "none found.\n";
+		}
+		elsif ($@) {
+			print "error.\nError installing share/ files: $@\n";
 		} else {
 			File::Find::find(
 				$chg_to_catuser,
@@ -2301,7 +2304,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.13 2002-02-05 08:41:32 mheins Exp $
+# $Id: makecat.PL,v 2.14 2002-06-17 22:42:06 jon Exp $
 
 =head1 INTRODUCTION
 
