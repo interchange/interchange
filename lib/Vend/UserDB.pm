@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.8 2002-07-04 23:11:13 mheins Exp $
+# $Id: UserDB.pm,v 2.9 2002-07-20 14:43:28 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -16,7 +16,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = substr(q$Revision: 2.9 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1224,6 +1224,13 @@ sub change_pass {
 
 	my(%options) = @_;
 	
+	if ($self->{OPTIONS}{ignore_case}) {
+	   $self->{USERNAME} = lc $self->{USERNAME};
+	   $self->{OLDPASS} = lc $self->{OLDPASS};
+	   $self->{PASSWORD} = lc $self->{PASSWORD};
+	   $self->{VERIFY} = lc $self->{VERIFY};
+	}
+
 	eval {
 		my $super = $Vend::superuser || (
 			$Vend::admin and
