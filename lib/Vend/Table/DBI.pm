@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.14 2001-03-14 22:01:02 heins Exp $
+# $Id: DBI.pm,v 1.25.2.15 2001-03-18 19:31:27 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.14 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.15 $, 10);
 
 use strict;
 
@@ -80,6 +80,12 @@ sub find_dsn {
 		$out[$i++] = $config->{ $param } || undef;
 	}
 
+	if ($config->{Transactions}) {
+#::logDebug("Should be opened in transaction mode");
+		$config->{AUTOCOMMIT} = 0;
+		undef $config->{dsn_id};
+	}
+
 	my @other = grep defined $config->{$_}, @Dattr;
 	
 	if(@other) {
@@ -95,7 +101,7 @@ sub find_dsn {
 	$out[3] = $cattr || undef;
 	$out[4] = $dattr || undef;
 #::logDebug("out# = " . scalar(@out));
-#::logDebug("out dump= " . ::uneval(\@out)) if $Vend::Cfg->{CatalogName} eq 'construct';
+#::logDebug("$config->{name} find_dsn dump= " . ::uneval(\@out));
 	@out;
 }
 
@@ -345,6 +351,7 @@ sub open_table {
 
 	unless($config->{dsn_id}) {
 		$config->{dsn_id} = join "_", grep ! ref($_), @call;
+		$config->{dsn_id} .= "_transact" if $config->{Transactions};
     	if($Global::HotDBI->{$Vend::Cfg->{CatalogName}}) {
 			$config->{hot_dbi} = 1;
 			$DBI_connect_count{$config->{dsn_id}}++;
@@ -375,6 +382,8 @@ sub open_table {
 #::logDebug("bad=$bad connecting to " . ::uneval(\@call));
 		eval {
 			$db = DBI->connect( @call ) unless $bad;
+			$db->trace($Global::DataTrace, $Global::DebugFile)
+				if $Global::DataTrace and $Global::DebugFile;
 		};
 #::logDebug("$config->{name}: DBI didn't die, bad=$bad");
 		if(! $db) {
@@ -556,6 +565,26 @@ sub inc_field {
 	#$value = $s->[$DBI]->quote($value, $column);
     $sth = $s->[$DBI]->do("update $s->[$TABLE] SET $column=$value where $s->[$KEY] = $key");
     $value;
+}
+
+sub commit {
+    my ($s) = @_;
+#::logDebug("committing $s->[$TABLE], dsn_id=$s->[$CONFIG]{dsn_id}");
+	if (! defined $s->[$DBI]) {
+		::logError("commit attempted on non-open database handle for table: %s", $s->[$TABLE]);
+		return undef;
+	}
+	return $s->[$DBI]->commit();
+}
+
+sub rollback {
+    my ($s) = @_;
+#::logDebug("rolling back $s->[$TABLE], dsn_id=$s->[$CONFIG]{dsn_id}");
+	if (! defined $s->[$DBI]) {
+		::logError("commit attempted on non-open database handle for table: %s", $s->[$TABLE]);
+		return undef;
+	}
+	return $s->[$DBI]->rollback();
 }
 
 sub column_index {

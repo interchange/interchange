@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.28 2001-03-18 00:20:11 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.29 2001-03-18 19:31:03 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.28 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.29 $, 10);
 
 @EXPORT = qw (
 
@@ -722,7 +722,7 @@ sub tag_data {
 		else {
 			$opt->{value} = filter_value($opt->{filter}, $opt->{value}, $field)
 				if $opt->{filter};
-::logDebug("set_field: table=$selector key=$key field=$field foreign=$opt->{foreign} value=$opt->{value}");
+#::logDebug("set_field: table=$selector key=$key field=$field foreign=$opt->{foreign} value=$opt->{value}");
 			return set_field($selector,$key,$field,$opt->{value},$opt->{append}, $opt->{foreign});
 		}
 	}
@@ -2296,14 +2296,14 @@ sub flag {
 			$Vend::Cfg->{DynamicData}->{$dbname} = $value;
 		}
 	}
-	elsif($flag eq 'transaction') {
+	elsif($flag =~ /^transactions?/i) {
 		my $arg = $opt->{table} || $text;
 		my (@args) = Text::ParseWords::shellwords($arg);
 		my $dbname;
 		foreach $dbname (@args) {
 			# Handle table:column:key
 			$dbname =~ s/:.*//;
-#::logDebug("tag flag write $dbname=$value");
+#::logDebug("tag flag transactions $dbname=$value");
 			$Vend::TransactionDatabase{$dbname} = $value;
 			$Vend::WriteDatabase{$dbname} = $value;
 		}
@@ -2319,7 +2319,11 @@ sub flag {
 			$dbname =~ s/:.*//;
 #::logDebug("tag commit $dbname=$value");
 			my $db = database_exists_ref($dbname);
-			if( ! $db or ! $db->$method() ) {
+			if( ! $db ) {
+				::logError("attempt to commit to unknown database: %s", $dbname);
+				return undef;
+			}
+			if( ! $db->$method ) {
 				::logError("problem committing for table: %s", $dbname);
 				return undef;
 			}

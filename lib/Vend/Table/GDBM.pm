@@ -1,6 +1,6 @@
 # Table/GDBM.pm: access a table stored in a GDBM file
 #
-# $Id: GDBM.pm,v 1.3.6.3 2001-03-14 22:01:02 heins Exp $
+# $Id: GDBM.pm,v 1.3.6.4 2001-03-18 19:31:27 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ use GDBM_File;
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 1.3.6.3 $, 10);
+$VERSION = substr(q$Revision: 1.3.6.4 $, 10);
 
 sub new {
 	my ($class, $obj) = @_;
@@ -134,6 +134,7 @@ sub open_table {
 *column_index	= \&Vend::Table::Common::column_index;
 *column_exists	= \&Vend::Table::Common::column_exists;
 *columns		= \&Vend::Table::Common::columns;
+*commit			= \&Vend::Table::Common::commit;
 *config			= \&Vend::Table::Common::config;
 *delete_record	= \&Vend::Table::Common::delete_record;
 *each_record	= \&Vend::Table::Common::each_record;
@@ -145,6 +146,7 @@ sub open_table {
 *quote			= \&Vend::Table::Common::quote;
 *record_exists	= \&Vend::Table::Common::record_exists;
 *ref			= \&Vend::Table::Common::ref;
+*rollback		= \&Vend::Table::Common::rollback;
 *row			= \&Vend::Table::Common::row;
 *row_hash		= \&Vend::Table::Common::row_hash;
 *row_settor		= \&Vend::Table::Common::row_settor;

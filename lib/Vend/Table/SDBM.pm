@@ -1,6 +1,6 @@
 # Table/SDBM.pm: access a table stored in Perl's internal SDBM
 #
-# $Id: SDBM.pm,v 1.1.2.3 2001-03-14 22:01:02 heins Exp $
+# $Id: SDBM.pm,v 1.1.2.4 2001-03-18 19:31:27 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -26,7 +26,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::SDBM;
-$VERSION = substr(q$Revision: 1.1.2.3 $, 10);
+$VERSION = substr(q$Revision: 1.1.2.4 $, 10);
 use strict;
 use Fcntl;
 use SDBM_File;
@@ -34,7 +34,7 @@ use vars qw($VERSION @ISA);
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 1.1.2.3 $, 10);
+$VERSION = substr(q$Revision: 1.1.2.4 $, 10);
 
 sub create {
 	my ($class, $config, $columns, $filename) = @_;
@@ -130,6 +130,7 @@ sub open_table {
 *column_index	= \&Vend::Table::Common::column_index;
 *column_exists	= \&Vend::Table::Common::column_exists;
 *columns		= \&Vend::Table::Common::columns;
+*commit			= \&Vend::Table::Common::commit;
 *config			= \&Vend::Table::Common::config;
 *delete_record	= \&Vend::Table::Common::delete_record;
 *each_record	= \&Vend::Table::Common::each_record;
@@ -141,6 +142,7 @@ sub open_table {
 *quote			= \&Vend::Table::Common::quote;
 *record_exists	= \&Vend::Table::Common::record_exists;
 *ref			= \&Vend::Table::Common::ref;
+*rollback		= \&Vend::Table::Common::rollback;
 *row			= \&Vend::Table::Common::row;
 *row_hash		= \&Vend::Table::Common::row_hash;
 *row_settor		= \&Vend::Table::Common::row_settor;

@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.17.2.12 2001-03-07 17:57:48 heins Exp $
+# $Id: Data.pm,v 1.17.2.13 2001-03-18 19:31:03 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -874,6 +874,8 @@ sub import_database {
 		$obj->{Read_only} = ! defined $Vend::WriteDatabase{$name}
 			if $class_config->{Tagged_write};
 	}
+
+	$obj->{Transactions} = 1 if $Vend::TransactionDatabase{$name};
 
     if($class_config->{Extension}) {
 
