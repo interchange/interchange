@@ -2,7 +2,7 @@
 #
 # MakeCat.pm - routines for catalog configurator
 #
-# $Id: MakeCat.pm,v 1.12.2.1 2000-11-07 22:41:46 zarko Exp $
+# $Id: MakeCat.pm,v 1.12.2.2 2000-12-04 18:17:40 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -62,7 +62,7 @@ sethistory
 use strict;
 
 use vars qw($Force $Error $History $VERSION);
-$VERSION = substr(q$Revision: 1.12.2.1 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.2 $, 10);
 
 $Force = 0;
 $History = 0;
@@ -106,7 +106,7 @@ my %Desc = (
 #                         ^^^^^^^^^^^^^^^^
 #
 # We set it to the name of the catalog by default to enable the
-# internal HTTTP server.
+# internal HTTP server.
 #
 EOF
 	basedir    =>  <<EOF,
@@ -288,7 +288,8 @@ sub findfiles {
 	my @files;
 	if($cmd = findexe('locate')) {
 		@files = `locate \\*/$file`;
-	} else {
+	}
+	else {
 		@files = `find / -name $file -print 2>/dev/null`;
 	}
 	return undef unless @files;
@@ -398,17 +399,21 @@ sub install_file {
 
 	if(! -f $srcfile) {
 		die "Source file $srcfile missing.\n";
-	} elsif(
+	}
+	elsif(
 		$opt->{Perm_hash}
 			and $opt->{Perm_hash}->{$filename}
 		)
 	{
 		$perms = $opt->{Perm_hash}->{$filename};
-	} elsif( $opt->{Perms} =~ /^(m|g)/i ) {
+	}
+	elsif( $opt->{Perms} =~ /^(m|g)/i ) {
 		$perms = (stat(_))[2] | 0660;
-	} elsif( $opt->{Perms} =~ /^u/i ) {
+	}
+	elsif( $opt->{Perms} =~ /^u/i ) {
 		$perms = (stat(_))[2] | 0600;
-	} else {
+	}
+	else {
 		$perms = (stat(_))[2] & 0777;
 	}
 
@@ -571,7 +576,8 @@ sub add_catalog {
 	if(-f $file) {
 		rename ($file, $tmpfile)
 			or die "Couldn't rename $file: $!\n";
-	} else {
+	}
+	else {
 		File::Copy::copy("$file.dist", $tmpfile);
 	}
 	open(CFG, "< $tmpfile")
@@ -590,7 +596,8 @@ sub add_catalog {
 		print NEWCFG @out[0..$mark-1];
 		print NEWCFG $newcfgline;
 		print NEWCFG @out[$mark..$#out];
-	} else { 
+	}
+	else { 
 		warn "\nNo $directive previously defined. Adding $configname at top.\n";
 		print NEWCFG $newcfgline;
 		print NEWCFG @out;
@@ -711,7 +718,8 @@ sub conf_parse_http {
 			$servname =~ s/\s+$//;
 			if(defined $servers->{$servname} and $port) {
 				$servname .= ":$port";
-			} elsif(defined $servers->{$servname} and $port) {
+			}
+			elsif(defined $servers->{$servname} and $port) {
 				$Error = "Server $servname defined twice.";
 				return undef;
 			}
@@ -741,7 +749,8 @@ sub conf_parse_http {
 					$val = &{$Http_process{$directive}}('value', $val);
 				}
 				$servers->{$servname}->{$directive}->{$key} = $val;
-			} elsif(defined $Http_scalar{$directive}) {
+			}
+			elsif(defined $Http_scalar{$directive}) {
 				$param =~ s/^"// and $param =~ s/"\s*$//;
 				if(defined $servers->{$servname}->{$directive}) {
 					undef $servers->{$servname};
