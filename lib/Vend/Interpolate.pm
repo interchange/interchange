@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.51 2002-02-01 13:41:28 racke Exp $
+# $Id: Interpolate.pm,v 2.52 2002-02-01 21:08:26 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.51 $, 10);
+$VERSION = substr(q$Revision: 2.52 $, 10);
 
 @EXPORT = qw (
 
@@ -2817,7 +2817,7 @@ sub esc {
 
 # Escapes a scan reliably in three different possible ways
 sub escape_scan {
-	my ($scan, $ref, $esc) = @_;
+	my ($scan, $ref) = @_;
 #::logDebug("escape_scan: scan=$scan");
 	if (ref $scan) {
 		for(@$scan) {
@@ -2849,7 +2849,7 @@ sub escape_scan {
 		}
 	}
 
-	return join '/', 'scan', escape_mv('/', $scan, undef, $esc);
+	return join '/', 'scan', escape_mv('/', $scan);
 }
 
 sub escape_mv {
@@ -2873,13 +2873,8 @@ sub escape_mv {
 	for(@args) {
 		s!/!__SLASH__!g unless defined $not_scan;
 		s!\0!-_NULL_-!g;
-		if ($esc) {
-			s!(\w\w=)(.*)!$1 . esc($2)!eg
-				or (undef $_, next);
-		} else {
-			m!\w=!
- 			    or (undef $_, next);
-		}
+		m!\w=!
+		    or (undef $_, next);
 		s!__SLASH__!::!g unless defined $not_scan;
 	}
 	return join $joiner, grep(defined $_, @args);
@@ -2968,10 +2963,10 @@ sub tag_page {
 	return '<A HREF="' . form_link(@_) . '">' if defined $opt and $opt->{form};
 
 	if ($opt->{search}) {
-		$page = escape_scan($opt->{search},undef,1);
+		$page = escape_scan($opt->{search});
 	}
 	elsif ($page eq 'scan') {
-		$page = escape_scan($arg,undef,1);
+		$page = escape_scan($arg);
 		undef $arg;
 	}
 
@@ -2994,10 +2989,10 @@ sub tag_area {
 	$page = '' if ! defined $page;
 
 	if ($opt->{search}) {
-		$page = escape_scan($opt->{search},undef,1);
+		$page = escape_scan($opt->{search});
 	}
 	elsif ($page eq 'scan') {
-		$page = escape_scan($arg,undef,1);
+		$page = escape_scan($arg);
 		undef $arg;
 	}
 

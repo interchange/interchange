@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.18 2002-02-01 17:03:38 jon Exp $
+# $Id: Util.pm,v 2.19 2002-02-01 21:08:27 racke Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -81,7 +81,7 @@ use Text::ParseWords;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.18 $, 10);
+$VERSION = substr(q$Revision: 2.19 $, 10);
 
 BEGIN {
 	eval {
@@ -106,6 +106,13 @@ $ESCAPE_CHARS::ok_in_filename =
 		'-:_.$/'
 	;
 
+$ESCAPE_CHARS::ok_in_url =
+		'ABCDEFGHIJKLMNOPQRSTUVWXYZ' .
+		'abcdefghijklmnopqrstuvwxyz' .
+		'0123456789'				 .
+		'-_./~='
+	;
+
 my $need_escape;
 
 sub setup_escape_chars {
@@ -120,11 +127,17 @@ sub setup_escape_chars {
 			$t = $a;
         }
         $ESCAPE_CHARS::translate[$i] = $t;
+        if (index($ESCAPE_CHARS::ok_in_url,$a) == -1) {
+			$t = '%' . sprintf( "%02X", $i );
+        }
+		else {
+			$t = $a;
+        }
+        $ESCAPE_CHARS::translate_url[$i] = $t;
     }
 
-	my $string = "[^$ESCAPE_CHARS::ok_in_filename]";
-	$need_escape = qr{$string=};
-
+	my $string = "[^$ESCAPE_CHARS::ok_in_url]";
+	$need_escape = qr{$string};
 }
 
 # Replace any characters that might not be safe in a filename (especially
@@ -137,6 +150,22 @@ sub escape_chars {
     $r = '';
     foreach $c (split(//, $in)) {
 		$r .= $ESCAPE_CHARS::translate[ord($c)];
+    }
+
+    # safe now
+    return $r;
+}
+
+# Replace any characters that might not be safe in an URL
+# with the %HH notation.
+
+sub escape_chars_url {
+    my($in) = @_;
+    my($c, $r);
+
+    $r = '';
+    foreach $c (split(//, $in)) {
+		$r .= $ESCAPE_CHARS::translate_url[ord($c)];
     }
 
     # safe now
@@ -1180,7 +1209,7 @@ sub vendUrl {
 	$ct = ++$Vend::Session->{pageCount}
 		unless $can_cache and $::Scratch->{mv_no_count};
 
-	$path = escape_chars($path)
+	$path = escape_chars_url($path)
 		if $path =~ $need_escape;
     $r .= '/' . $path;
 	$r .= '.html' if $::Scratch->{mv_add_dot_html} and $r !~ /\.html?$/;
