@@ -131,12 +131,33 @@ EOF
 	return $out_message;
 [/perl]
 
+[if-mm !super]
+[tmp ui_owner][db-hash
+				table="__UI_ACCESS_TABLE__"
+				column="table_control::[cgi mv_data_table]::owner_field"
+				key="[data session username]"][/tmp]
+[/if-mm]
+
+[if scratch ui_owner]
+[tmp ui_return_all]
+sf=[scratch ui_owner]
+se=[data session username]
+co=1
+op=eq
+[/tmp]
+[else]
+[tmp ui_return_all]
+	ra=yes
+[/tmp]
+[/else]
+[/if]
+
 <!-- tq: [cgi ui_text_qualification] -->
 
 	[tmp sparams]
 			fi=[cgi mv_data_table]
 			st=db
-			ra=yes
+			[scratch ui_return_all]
 			un=yes
 			sp=@@MV_PAGE@@
 			tf=[cgi mv_arg]

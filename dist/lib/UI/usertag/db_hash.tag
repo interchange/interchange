@@ -9,6 +9,7 @@ sub {
 	#$out .= ::uneval(\@_);
 	my $rest = $1;
 	my $val = ::tag_data($table,$col,$key);
+	#$out .= "val=$val";
 	my $ref;
 	if ($val !~ /\S/) {
 		$ref = {};
@@ -32,7 +33,10 @@ sub {
 	for(@extra) {
 		$out .= "key --> $_\n";
 		$curr = $curr->{$_};
-		return "BAD HASH: $out" if ! ref $curr;
+		if (! ref $curr) {
+			return "BAD HASH: $out" if $opt->{show_error};
+			return;
+		}
 	}
 
 	if($opt->{keys}) {

@@ -192,6 +192,13 @@
 &nbsp;
 [/if]
 
+[if-mm !super]
+[tmp ui_owner][db-hash
+				table="__UI_ACCESS_TABLE__"
+				column="table_control::[cgi mv_data_table]::owner_field"
+				key="[data session username]"][/tmp]
+[/if-mm]
+
 [set tmp_nomatch_message]<B>No records.</b>[/set]
 [set tmp_like_spec][/set]
 [perl tables="[cgi mv_data_table] __UI_META_TABLE__"]
@@ -225,7 +232,22 @@
 	$Config->{NoSearch} = '';
 	$ui_text_qualification = $CGI->{ui_text_qualification};
 	if ($ui_text_qualification and $CGI->{ui_text_qualification} =~ /[<!=>\^]/ ) {
-		$CGI->{ui_text_qualification} = "co=1\n";
+		if($Scratch->{ui_owner}) {
+			$CGI->{ui_text_qualification} = <<EOF;
+co=1
+st=db
+sf=$Scratch->{ui_owner}
+se=$Session->{username}
+op=eq
+nu=0
+os=0
+su=0
+bs=0
+EOF
+		}
+		else {
+			$CGI->{ui_text_qualification} = "co=1\n";
+		}
 
 		my @entries = split /\s+(and|or)\s+/i,  $ui_text_qualification;
 		my $or;
@@ -271,6 +293,16 @@ EOF
 		$out_message =  <<EOF;
 <H3>Entries matching "$CGI->{ui_text_qualification}"</H3>
 EOF
+		if($Scratch->{ui_owner}) {
+			$CGI->{ui_text_qualification} = <<EOF;
+co=1
+sf=$Scratch->{ui_owner}
+se=$Session->{username}
+op=eq
+sf=:*
+se=$CGI->{ui_text_qualification}
+EOF
+		}
 	}
 	elsif ( $CGI->{mv_like_field} ) {
 		my @f = split /\0/, $CGI->{mv_like_field};
@@ -285,6 +317,14 @@ EOF
 		}
 		if($found) { $CGI->{ui_text_qualification} = join "\n", @q; }
 		else	   { $CGI->{ui_text_qualification} = "" }
+	}
+	elsif($Scratch->{ui_owner}) {
+		$CGI->{ui_text_qualification} = <<EOF;
+co=1
+sf=$Scratch->{ui_owner}
+se=$Session->{username}
+op=eq
+EOF
 	}
 	elsif ($Scratch->{tmp_large}) {
 Debug("It is large.");

@@ -157,6 +157,13 @@ Message:
 </td>
 </tr>
 </table>
+[if-mm !super]
+[tmp ui_owner][db-hash
+				table="__UI_ACCESS_TABLE__"
+				column="table_control::[cgi mv_data_table]::owner_field"
+				key="[data session username]"][/tmp]
+[/if-mm]
+
 [perl tables="[cgi mv_data_table] __UI_META_TABLE__"]
 	my $tab = $CGI->{mv_data_table};
 	my $ref = $Db{$tab};
@@ -189,7 +196,21 @@ Message:
 	$ui_text_qualification = $CGI->{ui_text_qualification}
 		and $CGI->{changed_qual} = 1;
 	if ($ui_text_qualification and $CGI->{ui_text_qualification} =~ /[<!=>\^]/ ) {
-		$CGI->{ui_text_qualification} = "co=1\n";
+		if($Scratch->{ui_owner}) {
+			$CGI->{ui_text_qualification} = <<EOF;
+co=1
+sf=$Scratch->{ui_owner}
+se=$Session->{username}
+op=eq
+nu=0
+os=0
+su=0
+bs=0
+EOF
+		}
+		else {
+			$CGI->{ui_text_qualification} = "co=1\n";
+		}
 
 		my @entries = split /\s+(and|or)\s+/i,  $ui_text_qualification;
 		my $or;
@@ -234,6 +255,24 @@ EOF
 		$CGI->{ui_text_qualification} = "se=$CGI->{ui_text_qualification}";
 		$out_message =  <<EOF;
 <H3>Entries matching "$CGI->{ui_text_qualification}"</H3>
+EOF
+		if($Scratch->{ui_owner}) {
+			$CGI->{ui_text_qualification} = <<EOF;
+co=1
+sf=$Scratch->{ui_owner}
+se=$Session->{username}
+op=eq
+sf=:*
+se=$CGI->{ui_text_qualification}
+EOF
+		}
+	}
+	elsif($Scratch->{ui_owner}) {
+		$CGI->{ui_text_qualification} = <<EOF;
+co=1
+sf=$Scratch->{ui_owner}
+se=$Session->{username}
+op=eq
 EOF
 	}
 	else {
@@ -280,7 +319,7 @@ EOF
 	for(@cols) {
 		$numeric{$_} = 1 if $ref->numeric($_);
 	}
-	$CGI->{changed_qual} if delete $Scratch->{item_list_clicked};
+	$CGI->{changed_qual} = 1 if delete $Scratch->{item_list_clicked};
 
 	return $out_message;
 [/perl]

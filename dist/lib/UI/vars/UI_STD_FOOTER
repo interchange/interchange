@@ -30,7 +30,7 @@ Variable UI_STD_FOOTER  <<EOV
         [tmp window_name][tag time]%m%d%H%M%S[/tag][/tmp]
         [if session logged_in]
         <font size="1">
-	<a href="[area __UI_BASE__/gentable]"><small>Tables</small></A> - 
+	[if-mm advanced gentable]<a href="[area __UI_BASE__/gentable]"><small>Tables</small></A> - [/if-mm]
 	<a href="javascript:window.name = 'mainwindow[scratch window_name]';window.open('[area href=|admin/quicklinks| arg=|[scratch window_name]|]','Quicklinks[scratch window_name]','top=0,left=0,scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=170,height=700'); void 0"><small>Quicklinks</small></A> - 
         [/if]
 	[if-mm advanced reconfig]
@@ -39,7 +39,7 @@ Variable UI_STD_FOOTER  <<EOV
         <A href="[area __UI_BASE__/login]"><small>Log out</small></A>
       </td>
       <td valign="top" align="right" nowrap>
-        <a href="[area admin/index]"><img border="0" src="@_UI_IMG_@navigation/poweredby.gif" align="top"></a> &nbsp;
+        <a href="http://www.akopia.com/"><img border="0" src="@_UI_IMG_@navigation/poweredby.gif" align="top"></a> &nbsp;
       </td>
     </tr>
     </table>

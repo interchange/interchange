@@ -103,9 +103,8 @@ EOF
     <td nowrap> 
       <div align="left"><img src="@_UI_IMG_@navigation/B1.gif" width="9" height="19" alt=line>[loop
 	  prefix=am
-	  head_skip=1
 	  search="
-	  	fi=icmenu
+	  	fi=@_UI_MENU_TABLE_@
 		st=db
 		co=yes
 
