@@ -1,0 +1,46 @@
+[comment]
+ui_name: cart_tiny
+ui_type: component
+ui_class: vertical
+ui_group: info
+ui_label: Small cart for left/right display
+
+[/comment]
+<!-- BEGIN COMPONENT [control component cart_tiny] -->
+
+<tr><td align="center">
+  <table width="95%">
+
+  [if items]
+  <tr> 
+    <td class="categorybar" valign="top">
+      <table border="0" cellspacing="0" cellpadding="2">
+      <tr>
+        <td colspan="2" align="center" class="categorybar">
+	  <small>Cart Contents</small>
+	</td>
+      </tr>
+      <tr>
+	<td align="left" class="menubar">Description</td>
+	<td align="right" class="menubar">Quantity</td>
+      </tr>
+[item-list]
+	[item-next][item-modifier mv_si][/item-next]
+      <tr>
+	<td valign="top" align="left" class="contentbar2">
+	  <a href="[area [item-sku]]"><small>[item-filter 20][item-data products description][/item-filter]</small></A>
+	</td>
+	<TD ALIGN="right" valign="top" class="contentbar1">
+	  <small>[item-quantity]@[discount-price]</small>
+	</TD>
+      </tr>
+[/item-list]
+      </table>
+    </td>
+  </tr>
+[/if]
+
+  </table>
+</td></tr>
+
+<!-- END COMPONENT [control component cart_tiny] -->

@@ -1,0 +1,71 @@
+<!-- [set old_browser]1[/set][calc]
+	## Browser check, standalone so syntax error will not
+	## kill init code
+	my $regex = $Variable->{MV_DHTML_BROWSER};
+	$regex ||= 'MSIE [5-9].*Windows|Mozilla.*Gecko';
+
+	$regex = qr/$regex/;
+	if($Session->{browser} =~ $regex) {
+		delete $Scratch->{old_browser};
+	}
+	return $Scratch->{old_browser} ? 'Not a DHTML browser' : 'DHTML browser';
+[/calc] -->
+
+[perl tables="country products"]
+
+	## This section sets the shipping, handling, taxing, and payment
+	## initializations, as well as browser check
+
+	## Start with payment mode if none there
+	$Values->{mv_order_profile} ||= $Variable->{DEFAULT_PAYMENT_MODE}
+								||'credit_card';
+
+	## Check for COD order
+
+	my @handling;
+
+	if($Values->{mv_handling}) {
+			@handling = split /[\s,\0]+/, $Values->{mv_handling};
+			@handling = grep /\S/ && $_ ne 'cod', @handling;
+			$Values->{mv_handling} = join " ", @handling;
+	}
+
+	if($Values->{mv_order_profile} eq 'cod') {
+			push @handling, 'cod';
+	}
+
+	if(@handling) {
+			$Values->{mv_handling} = join " ", @handling;
+	}
+#Debug("mv_handling=$Values->{mv_handling}");
+    my $db = $Db{country} or return;
+ 
+    my $domestic = $Variable->{DOMESTIC_SHIPPING} || 'US CA';
+    $domestic =~ s/\W+/ /g;
+    my @dom = grep /\S/, split /\s+/, $domestic;
+    my %dom;
+    @dom{@dom} = @dom;
+    my $modes;
+    if($Values->{country}) {
+        $modes = tag_data('country', 'shipmodes', $Values->{country});
+        @modes = grep /\S/, split /[\s,\0]+/, $modes;
+    }
+    
+    delete $Scratch->{only_download};
+    my $hardgoods;
+    for(@$Items) {
+        next if tag_data('__ProductFiles_0__', 'download', $_->{code});
+        $hardgoods = 1;
+    }
+
+    ! $hardgoods and $Scratch->{only_download} = 1;
+
+    return unless @modes;
+    my %modes;
+    @modes{@modes} = @modes;
+
+    if(! $modes{$Values->{mv_shipmode}}) {
+        $Values->{mv_shipmode} = shift @modes;
+    }
+    return;
+[/perl]

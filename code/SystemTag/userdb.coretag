@@ -1,0 +1,7 @@
+UserTag userdb              Order        function
+UserTag userdb              addAttr
+UserTag userdb              attrAlias    table db
+UserTag userdb              attrAlias    name nickname
+UserTag userdb              InvalidateCache
+UserTag userdb              PosNumber    1
+UserTag userdb              MapRoutine   Vend::UserDB::userdb

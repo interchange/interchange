@@ -1,0 +1,6 @@
+UserTag tmp                 Order        name
+UserTag tmp                 hasEndTag
+UserTag tmp                 Interpolate
+UserTag tmp                 InvalidateCache
+UserTag tmp                 PosNumber    1
+UserTag tmp                 MapRoutine   Vend::Interpolate::set_tmp

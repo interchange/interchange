@@ -1,0 +1,13 @@
+UserTag uneval Order name ref
+UserTag uneval PosNumber 1
+UserTag uneval Routine <<EOR
+sub {
+	my ($name, $ref) = @_;
+#::logError("args: @_" . Vend::Util::uneval_it(@_));
+	if(! $ref) {
+		$ref = $Vend::Session->{$name};
+	}
+	return Vend::Util::uneval($ref);
+}
+EOR
+

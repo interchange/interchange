@@ -1,0 +1,22 @@
+Database  state  state.txt    __SQLDSN__
+Database  state  UPPERCASE    1
+ifdef SQLUSER
+Database  state  USER         __SQLUSER__
+endif
+ifdef SQLPASS
+Database  state  PASS         __SQLPASS__
+endif
+Database  state  AUTO_NUMBER  00001
+Database  state  DEFAULT_TYPE varchar2(128)
+Database  state  COLUMN_DEF   "code=VARCHAR2(8) NOT NULL PRIMARY KEY"
+Database  state  COLUMN_DEF   "country=VARCHAR2(20) DEFAULT ''"
+Database  state  INDEX         country
+Database  state  COLUMN_DEF   "sorder=VARCHAR2(8) NOT NULL"
+Database  state  INDEX         sorder
+Database  state  COLUMN_DEF   "state=VARCHAR2(20) DEFAULT ''"
+Database  state  INDEX         state
+Database  state  COLUMN_DEF   "postcode=VARCHAR2(20) DEFAULT ''"
+Database  state  INDEX         postcode
+Database  state  COLUMN_DEF   "tax=VARCHAR2(2000)"
+Database  state  COLUMN_DEF   "name=VARCHAR2(64) DEFAULT ''"
+Database  state  INDEX         name

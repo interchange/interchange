@@ -1,0 +1,7 @@
+CodeDef lc Filter
+CodeDef lc Routine <<EOR
+sub {
+	use locale;
+	return lc(shift);
+}
+EOR

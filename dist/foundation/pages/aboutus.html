@@ -1,0 +1,69 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+[/comment]
+
+[tmp page_banner]About Us[/tmp]
+[tmp page_title]__COMPANY__ -- About Us[/tmp]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]category_vertical[/component]
+[/control-set]
+
+[control-set]
+[component][/component]
+[/control-set]
+
+[control-set]
+[component][/component]
+[/control-set]
+
+[control-set]
+[component]promo[/component]
+[matches]3[/matches]
+[cols]3[/cols]
+[banner]Specials[/banner]
+[/control-set]
+
+[control reset=1]
+
+@_LEFTONLY_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+<br><br>
+
+<p>
+Welcome to <b>__COMPANY__</b>!
+</p>
+
+<p>
+Please [page contact]contact us</a> if you have any questions for us.
+</p>
+<br><br>
+
+<table width="80%">
+<tr>
+  <td>
+	<p>
+    This is a demo store. If you would like further information on how 
+    you can build a store or how you can get custom services, please
+    <a href="@_INTERCHANGE_URL_@">visit our web site</a>.
+	</p>
+
+    <p>
+	Or send an e-mail to: <a href="mailto:@_INTERCHANGE_EMAIL_@">@_INTERCHANGE_EMAIL_@</a>.
+	</p>
+  </td>
+</tr>
+</table>
+
+<!-- END CONTENT -->
+
+@_LEFTONLY_BOTTOM_@

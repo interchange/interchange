@@ -1,0 +1,10 @@
+UserTag strip               hasEndTag
+UserTag strip               PosNumber    0
+UserTag strip               Routine      <<EOR
+sub {
+	local($_) = shift;
+	s/^\s+//;
+	s/\s+$//;
+	return $_;
+}
+EOR

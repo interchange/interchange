@@ -1,0 +1,15 @@
+  <center>
+    <p><a href="@_INTERCHANGE_URL_@"><img src="__THEME_IMG_DIR__poweredby.gif" border="0" alt="Powered by Interchange"></a></p>
+    [if variable MV_DEMO_MODE]
+      <p>[page admin/index]Admin</a></p>
+    [/if]
+  </center>
+
+  </td>
+</tr>
+</table>
+
+<br>
+__ADL_PAGE__
+</body>
+</html>

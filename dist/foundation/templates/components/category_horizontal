@@ -1,0 +1,61 @@
+[comment]
+ui_name: category_horizontal
+ui_type: component
+ui_class: horizontal
+ui_group: navigation
+ui_label: Horizontal category list
+
+page_class:
+	advanced: 1
+	db: area
+	help: Defines which sets of items should be displayed
+	label: Page class
+	lookup: which_page
+	type: select
+
+set_selector:
+	advanced: 1
+	db: area
+	help: Defines which sets of items should be displayed
+	label: Page area selector
+	lookup: sel
+	type: select
+
+[/comment]
+<tr><td align="left" class="categorybar">
+  <br>
+  <table width="90%" align="center">
+  <tr>
+
+<!-- BEGIN COMPONENT [control component category_horizontal] -->
+[loop
+	prefix=box
+	search="
+		fi=area
+		st=db
+		tf=sort
+		ac=0
+		ac=0
+		co=yes
+		
+		sf=sel
+		op=eq
+		se=[control set_selector top]
+
+		sf=which_page
+		op=rm
+		se=[control page_class all|@@MV_PAGE@@]
+"]
+
+    <td valign="top" class="categorybar">
+      &nbsp;[box-exec bar_link]area[/box-exec]&nbsp;
+    </td>
+
+[/loop]
+  
+  </tr>
+  </table>
+  <br>
+</td></tr>
+
+<!-- END COMPONENT [control component category_horizontal] -->

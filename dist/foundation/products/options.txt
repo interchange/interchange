@@ -1,0 +1,1 @@
+code	o_master	sku	o_group	o_sort	phantom	o_enable	o_matrix	o_modular	o_default	o_label	o_value	o_widget	o_footer	o_header	o_height	o_width	description	price	wholesale	differential	weight	volume	mv_shipmode	o_exclude	o_include

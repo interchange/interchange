@@ -1,0 +1,29 @@
+UserTag selected            Order        name value
+UserTag selected            addAttr
+UserTag selected            InvalidateCache
+UserTag selected            PosNumber    2
+UserTag selected            Routine <<EOR
+# Returns ' SELECTED' when a value is present on the form
+# Must match exactly, but NOT case-sensitive
+sub {
+	my ($field,$value,$opt) = @_;
+	$value = '' unless defined $value;
+	my $ref = $opt->{cgi} ? $CGI::values{$field} : $::Values->{$field};
+	return ' SELECTED' if ! length($ref) and $opt->{default};
+
+	if(! $opt->{case}) {
+		$ref = lc($ref);
+		$value = lc($value);
+	}
+
+	my $r = '';
+
+	return ' SELECTED' if $ref eq $value;
+	if ($opt->{multiple}) {
+		my $regex = quotemeta $value;
+		return ' SELECTED' if $ref =~ /(?:^|\0)$regex(?:$|\0)/i;
+	}
+
+	return '';
+}
+EOR

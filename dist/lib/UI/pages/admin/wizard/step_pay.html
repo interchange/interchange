@@ -1,0 +1,123 @@
+[set help_name]payment[/set]
+[set page_title]Payment Preferences[/set]
+[set ui_checklist]1[/set]
+[set help_name]wizard.payment[/set]
+@_UI_STD_HEAD_@
+
+[if session browser =~ /mozilla.*gecko/i]
+	[set options_paygate]~~[L]Offline credit card handling[/L]~~,none=[L]no credit cards[/L], pgp=[L]PGP sent Credit cards[/L],~~[L]Real-time payment[/L]~~, authorize=Authorize.net, cc=CyberCash, itransact=iTransact, signio=Signio/Verisign, skipjack=Skipjack[/set]
+[else]
+	[set options_paygate]none=[L]no credit cards[/L], pgp=[L]PGP sent Credit cards[/L], authorize=Authorize.net, cc=CyberCash, itransact=iTransact, signio=Signio/Verisign, skipjack=Skipjack[/set]
+[/else]
+[/if]
+
+<table><tr><td width=500>
+Select your payment processing preference(s). 
+<p>
+The payment gateway you choose determines how
+your site will securely process credit card information. 
+If you have not obtained your payment gateway information yet,
+choose <i>no credit cards</i>.  This information may be entered
+at a later date. 
+</td></tr></table>
+<p>
+[table-editor 
+	
+	left_width=180
+	table_width="500"
+	wizard=1
+	defaults=1
+	bottom_buttons=1
+	no_top=1
+	no_bottom=1
+   	row_template="[scratch row_template]"
+
+	ui_profile="*pay"
+
+	mv_nextpage="[either][cgi ui_nextpage][or]__UI_BASE__/wizard/step_security[/either]"
+	mv_prevpage="[either][cgi ui_prevpage][or]__UI_BASE__/wizard/step_ship[/either]"
+	hidden.ui_return_to="__UI_BASE__/wizard/index"
+
+	ui_wizard_fields="paygate creditcards paycheck paymo paycod paypo"
+
+	label.paygate="Payment gateway"
+	help.paygate="Which payment gateway will you use for credit cards?"
+	widget.paygate=select
+	passed.paygate=`delete $Scratch->{options_paygate}`
+	default.paygate="pgp"
+
+	label.creditcards="Which cards?"
+	help.creditcards="Select credit cards to accept"
+	widget.creditcards=checkbox_left_2
+	filter.creditcards="checkbox null_to_space"
+	passed.creditcards="visa=Visa,
+		mc=MasterCard,
+		amex=American Express,
+		discover=Discover,
+		dinersclub=Diners Club,
+		carteblanche=Carte Blanche,
+		enroute=EnRoute,
+		jcb=JCB,
+		other=Other
+		"
+	default.creditcards="visa mc amex discover"
+
+	label.paycheck="Accept checks?"
+	help.paycheck="Enable online checks for your payment gateway (if supported)"
+	widget.paycheck=checkbox
+	filter.paycheck=checkbox
+	passed.paycheck="1=&nbsp;"
+
+	label.paymo="Accept money orders?"
+	help.paymo="Enable money-order option on checkout form."
+	widget.paymo=checkbox
+	filter.paymo=checkbox
+	passed.paymo="1=&nbsp;"
+
+	label.paycod="Accept COD payment?"
+	help.paycod="Enable COD option on checkout form."
+	widget.paycod=checkbox
+	filter.paycod=checkbox
+	passed.paycod="1=&nbsp;"
+
+	label.paypo="Accept purchase orders?"
+	help.paypo="Enable Interchange purchase order handling"
+	widget.paypo=checkbox
+	filter.paypo=checkbox
+	passed.paypo="1=&nbsp;"
+]
+[set ui_override_next]
+	[perl]
+		Debug("override next code");
+		if ($CGI->{paygate} eq 'pgp') {
+			$CGI->{mv_nextpage} = '__UI_BASE__/wizard/step_pay_pgp';
+		}
+		elsif ($CGI->{paygate} eq 'cc') {
+			$CGI->{mv_nextpage} = '__UI_BASE__/wizard/step_pay_cyber';
+			$Values->{payment_mode} = 'cybercash';
+		}
+		elsif ($CGI->{paygate} eq 'signio') {
+			$CGI->{mv_nextpage} = '__UI_BASE__/wizard/step_pay_signio';
+			$Values->{payment_mode} = 'signio';
+		}
+		elsif ($CGI->{paygate} eq 'authorize') {
+			$CGI->{mv_nextpage} = '__UI_BASE__/wizard/step_pay_auth';
+			$Values->{payment_mode} = 'authorizenet';
+		}
+		elsif ($CGI->{paygate} eq 'itransact') {
+			$CGI->{mv_nextpage} = '__UI_BASE__/wizard/step_pay_itransact';
+			$Values->{payment_mode} = 'itransact';
+		}
+		elsif ($CGI->{paygate} eq 'skipjack') {
+			$CGI->{mv_nextpage} = '__UI_BASE__/wizard/step_pay_skipjack';
+			$Values->{payment_mode} = 'skipjack';
+		}
+		else {
+			$CGI->{mv_nextpage} = '__UI_BASE__/wizard/step_security';
+		}
+		delete $Scratch->{ui_override_next};
+		return;
+	[/perl]
+[/set]
+
+@_UI_STD_FOOTER_@

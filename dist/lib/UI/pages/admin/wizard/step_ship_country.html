@@ -1,0 +1,117 @@
+[set page_title]Shipping Preferences -- set default country and rate[/set] 
+[set ui_checklist]1[/set]
+[set help_name]wizard.ship_country[/set]
+@_UI_STD_HEAD_@
+
+<table><tr><td width=500>
+You can select which country is the default country for customers.
+The default is the country you selected in the company information section.
+<P>
+You can select which shipping rate the customer defaults to. This should be
+a domestic rate, i.e. one which is offered for the country you selected as
+default.
+<P>
+If your default ship mode requires a postal code in order to calculate a price,
+you will need to select one as the target for defaults. If you want to show
+the customer the least it will be, select your origin zip/postal code. If you want to
+show the most it will be, select something at the opposite end of the country.
+<P>
+If you wish to refine your shipping methods further you may use the
+Administration section of the Interchange admin menus after you have finished
+the CommerceLauncher.
+</td></tr></table>
+<p>
+[calc]
+	delete $Scratch->{no_ups_fed};
+	$Scratch->{ups_modes} =~ s/^\s+//;
+	$Scratch->{ups_modes} =~ s/\s+$//;
+	$Scratch->{fed_modes} =~ s/^\s+//;
+	$Scratch->{fed_modes} =~ s/\s+$//;
+	my @modes =  grep /.=/, split /\s*,\s*/, $Scratch->{ups_modes};
+	push @modes, grep /.=/, split /\s*,\s*/, $Scratch->{fed_modes};
+	my @active =  grep /^\w+$/, split /[\s,\0]+/, $Values->{upsmodes};
+	push @active, grep /^\w+$/, split /[\s,\0]+/, $Values->{fedmodes};
+
+	my %mode_hash;
+
+	for (@modes) {
+		($mode, $desc) = split /\s*=\s*/, $_, 2;
+		$desc =~ s/,/&#44/g;
+		$mode_hash{$mode} = $desc;
+	}
+
+	my @out;
+	for (@active) {
+		push @out, "$_=$mode_hash{$_}";
+	}
+
+	push @out, "FLATD=Flat rate per order";
+	push @out, "PERD=Per item cost";
+	push @intout, "FLATI=Flat rate per order (int'l)";
+	push @intout, "PERI=Per item cost (int'l)";
+	push @out, "FREE=Free shipping";
+	push @intout, "FREE=Free shipping";
+
+	if(! @active) {
+			$Scratch->{no_ups_fed} = 1;
+			$Scratch->{tmp_defaultship} = $Values->{defaultshipd};
+	}
+	else {
+		for(@out) {
+            next unless /ground/i;
+            $Scratch->{tmp_defaultship} = $_;
+            $Scratch->{tmp_defaultship} =~ s/=.*//s;
+        }
+	}
+
+	$Scratch->{all_ship_modes} = join ",\n", @out;
+	$Scratch->{int_ship_modes} = join ",\n", @intout;
+	return;
+[/calc]
+
+[tmp country_options]
+=--select--[loop option=country search='
+		fi=country.txt
+		rf=0,name
+		tf=name
+		ra=yes
+		ml=1000
+	'],[loop-code]=[loop-pos 1][loop-calc] return '*' if "[loop-code]" eq 'US'; [/loop-calc][/loop][/tmp]
+
+
+[table-editor 
+	
+	left_width=120
+	table_width="500"
+	wizard=1
+	defaults=1
+	bottom_buttons=1
+	no_top=1
+	no_bottom=1
+   	row_template="[scratch row_template]"
+
+	mv_nextpage="[either][cgi ui_nextpage][or]__UI_BASE__/wizard/step_pay[/either]"
+	mv_prevpage="[either][cgi ui_prevpage][or]__UI_BASE__/wizard/step_ship[/either]"
+	hidden.ui_return_to="__UI_BASE__/wizard/index"
+
+	ui_wizard_fields="defaultcountry defaultshipmode defaultshipzip"
+
+	check.defaultcountry=mandatory
+	label.defaultcountry="Default country"
+	widget.defaultcountry=select
+	passed.defaultcountry=`$Scratch->{country_options}`
+
+	check.defaultshipmode=mandatory
+	label.defaultshipmode="Default domestic ship mode"
+	help.defaultshipmode="You must select something, even if it is Free Shipping"
+	widget.defaultshipmode=select
+	passed.defaultshipmode=`$Scratch->{all_ship_modes}`
+	default.defaultshipmode=`$Scratch->{tmp_defaultship}`
+
+	label.defaultshipzip="Default domestic ship postal code"
+	widget.defaultshipzip=text_5
+	default.defaultshipzip=61821
+
+]
+
+@_UI_STD_FOOTER_@

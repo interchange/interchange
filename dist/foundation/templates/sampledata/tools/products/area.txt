@@ -1,0 +1,17 @@
+code	sel	name	which_page	sort	display_type	image	image_prop	banner_image	banner_text	link_type	url	tab	page	search	selector	link_template
+17	top	Tool Storage	all 	05	name					simple		products		tf=category	prod_group=Tool Storage
+5	left	Measuring Tools	all	05	name
+13	top	Measuring Tools	all 	05	name					simple		products		tf=category	prod_group=Measuring Tools
+4	left	Ladders	all	05	name
+14	top	Miscellaneous	all 	05	name					simple		products		tf=category	prod_group=Miscellaneous
+10	top	Hand Tools	all 	05	name					simple		products		tf=category	prod_group=Hand Tools
+7	left	Painting Supplies	all	05	name
+3	left	Hardware	all	05	name
+11	top	Hardware	all 	05	name					simple		products		tf=category	prod_group=Hardware
+6	left	Miscellaneous	all	05	name
+15	top	Painting Supplies	all 	05	name					simple		products		tf=category	prod_group=Painting Supplies
+16	top	Safety Equipment	all 	05	name					simple		products		tf=category	prod_group=Safety Equipment
+12	top	Ladders	all 	05	name					simple		products		tf=category	prod_group=Ladders
+9	left	Tool Storage	all	05	name
+2	left	Hand Tools	all	05	name
+8	left	Safety Equipment	all	05	name

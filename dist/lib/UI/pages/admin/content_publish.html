@@ -1,0 +1,64 @@
+[set page_perm]page[/set]
+[set page_title][L]Content publisher[/L][/set]
+[set ui_class]Content[/set]
+[set help_name]content.editor[/set]
+[set icon_name]icon_pages.gif[/set]
+@_UI_STD_HEAD_@
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+[perl tables="__UI_COMPONENT_TABLE__ __UI_TEMPLATE_TABLE__ __UI_PAGE_TABLE__ __UI_META_TABLE__"]
+	my $tab;
+	my $dir;
+
+	my $op = delete $CGI->{ui_content_op};
+
+	if($CGI->{ui_type} eq 'component') {
+		$tab = q{__UI_COMPONENT_TABLE__};
+		$dir = q{__UI_COMPONENT_DIR__};
+	}
+	elsif($CGI->{ui_type} eq 'component') {
+		$tab = q{__UI_TEMPLATE_TABLE__};
+		$dir = q{__UI_TEMPLATE_DIR__};
+	}
+	elsif($CGI->{ui_type} eq 'component') {
+		$tab = q{__UI_PAGE_TABLE__};
+		$dir = q{__UI_PAGE_DIR__};
+	}
+	my $db = $Db{$tab};
+	my @existing;
+
+	my $dest = $CGI->{ui_destination};
+	$dest =~ s/^\s+//;
+	$dest =~ s/\s+$//;
+	
+	if(! $dest) {
+		## Publishing to same place, do nothing
+	}
+	elsif($dest =~ /::/ and $db) {
+		my $sqdest = $Tag->filter('sql', $dest);
+		my $q = "select * from $tab where base_code = '$sqdest'";
+		@existing = $db->query( { hashref => 1, sql => $q });
+	}
+	else {
+		@existing = $Tag->list_glob("$dir/$dest*");
+	}
+
+	if(! $db and ! @existing) {
+		$CGI->{ui_content_op} = $op;
+		return;
+	}
+[/perl]
+
+[if cgi ui_content_op]
+	[if type=explicit compare="[content-modify]"]
+		[warnings message="Published [cgi ui_type] [cgi ui_name]."]
+	[/if]
+	[bounce page=__UI_BASE__/content]
+[/if]
+
+
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ -->

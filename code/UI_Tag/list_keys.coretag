@@ -1,0 +1,69 @@
+UserTag list-keys Order table
+UserTag list-keys addAttr
+UserTag list-keys Routine <<EOR
+sub {
+	my $table = shift;
+#::logDebug("list-keys $table");
+	$table = $::Values->{mv_data_table}
+		unless $table;
+#::logDebug("list-keys $table");
+	my @keys;
+	my $record;
+	if(! ($record = $Vend::UI_entry) ) {
+		$record =  ui_acl_enabled();
+	}
+
+	my $acl;
+	my $keys;
+	if($record) {
+#::logDebug("list_keys: record=$record");
+		$acl = get_ui_table_acl($table);
+#::logDebug("list_keys table=$table: acl=$acl");
+		if($acl and $acl->{yes_keys}) {
+#::logDebug("list_keys table=$table: yes.keys enabled");
+			@keys = grep /\S/, split /\s+/, $acl->{yes_keys};
+		}
+	}
+	unless (@keys) {
+		my $db = Vend::Data::database_exists_ref($table);
+		return '' unless $db;
+		$db = $db->ref() unless $Vend::Interpolate::Db{$table};
+		my $keyname = $db->config('KEY');
+		if($db->config('LARGE')) {
+			return ::errmsg('--not listed, too large--');
+		}
+		my $query = "select $keyname from $table order by $keyname";
+#::logDebug("list_keys: query=$query");
+		$keys = $db->query(
+						{
+							query => $query,
+							ml => $::Variable->{UI_ACCESS_KEY_LIMIT} || 500,
+							st => 'db',
+						}
+					);
+		if(defined $keys) {
+			@keys = map {$_->[0]} @$keys;
+		}
+		else {
+			my $k;
+			while (($k) = $db->each_record()) {
+				push(@keys, $k);
+			}
+			if( $db->numeric($db->config('KEY')) ) {
+				@keys = sort { $a <=> $b } @keys;
+			}
+			else {
+				@keys = sort @keys;
+			}
+		}
+#::logDebug("list_keys: query=returned " . ::uneval(\@keys));
+	}
+	if($acl) {
+#::logDebug("list_keys acl: ". ::uneval($acl));
+		@keys = UI::Primitive::ui_acl_grep( $acl, 'keys', @keys);
+	}
+	return @keys if wantarray;
+	return join("\n", @keys);
+}
+EOR
+

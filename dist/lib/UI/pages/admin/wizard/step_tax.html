@@ -1,0 +1,50 @@
+[set page_title]Tax Information[/set]
+[set ui_checklist]1[/set]
+[set help_name]wizard.tax[/set]
+[set ui_override_next][/set]
+@_UI_STD_HEAD_@
+
+[calc] undef $Variable->{UI_META_LINK}; [/calc]
+
+<p>
+
+Enter your tax calculation information.  This information is used to determine the amount of tax to be charged.
+
+<p> 
+
+[table-editor
+	
+	left_width=120
+	table_width=500
+	wizard=1
+	defaults=1 
+	bottom_buttons=1
+	no_top=1
+	no_bottom=1
+   	row_template="[scratch row_template]"
+
+	ui_profile="*tax"
+
+	mv_nextpage="[either][cgi ui_nextpage][or]__UI_BASE__/wizard/step_ship[/either]"
+	mv_prevpage="[either][cgi ui_prevpage][or]__UI_BASE__/wizard/step_email[/either]"
+	hidden.ui_return_to="__UI_BASE__/wizard/index" 
+
+	ui_wizard_fields="taxlocation taxrate taxship" 
+
+	label.taxlocation="Tax location" 
+	help.taxlocation="The location this tax applies to (often a state, possibly a country)" 
+	widget.taxlocation=text_15 
+	default.taxlocation=`$Values->{country} eq 'US' and return $Values->{state}; return;`
+
+	label.taxrate="Tax rate" 
+	help.taxrate="Percentage of order assessed for tax" 
+	widget.taxrate=text_25
+
+	label.taxship="Tax shipping?" 
+	help.taxship="Check this box if tax should be applied to shipping costs" 
+	widget.taxship=checkbox 
+	filter.taxship=checkbox 
+	passed.taxship="1=&nbsp;&nbsp;&nbsp;&nbsp;"
+] 
+
+@_UI_STD_FOOTER_@

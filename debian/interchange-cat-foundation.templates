@@ -1,0 +1,91 @@
+Template: interchange-cat-foundation/install
+Type: boolean
+Default: false
+Description: Create the Interchange demo catalog ?
+ Whether to install the demo catalog from the foundation template
+ or let you manually install it with makecat.
+Description-de: Möchten Sie den Interchange-Demokatalog angelegt haben ?
+ Ob der Demokatalog aus dem Foundation-Template installiert werden
+ soll oder Sie ihn manuell mit makecat installieren möchten.
+
+Template: interchange-cat-foundation/purge
+Type: boolean
+Default: false
+Description: Remove Interchange demo catalog after "purging" this package ?
+ Should all files belonging to the Interchange demo catalog removed
+ when you purge this package, e.g. with dpkg --purge
+ or apt-get remove --purge ?
+Description-de: Soll der Interchange-Demokatalog durch --purge gelöscht werden ?
+ Sollen alle Dateien des Interchange-Demokatalogs gelöscht werden wenn
+ dieses Paket mit dpkg --purge oder apt-get remove --purge entfernt
+ wird ?
+
+Template: interchange-cat-foundation/replace
+Type: select
+Choices: always, ask, never
+Choices-de: immer, auf Nachfrage, niemals
+Default: never
+Description: Policy for replacing an existing demo catalog installation
+ Whether to silently replace an existing demo catalog installation,
+ ask for a confirmation or never touch an existing installation.
+Description-de: Richtlinie für das Ersetzen einer vorhandenen Demokatalog-Installation
+ Sie können auswählen, ob eine vorhandene Installation des
+ Demokatalogs ohne Nachfrage, auf Nachfrage oder niemals ersetzt
+ werden soll.
+
+Template: interchange-cat-foundation/confirm
+Type: boolean
+Default: false
+Description: Replace the Interchange demo catalog ?
+ There seems to already exist an Interchange demo catalog. 
+Description-de: Interchange Demokatalog ersetzen ?
+ Es ist bereits ein Demokatalog vorhanden.
+
+Template: interchange-cat-foundation/username
+Type: string
+Default: interchange
+Description: What is the username for the administration of this catalog ?
+ Please provide an username for administering the demo catalog. The username
+ must be at least 2 characters long and only contain letters, digits, 
+ underscore, @ or the dot as characters.
+Description-de: Was ist der Benutzername für die Adminstration dieses Katalogs ?
+ Bitte einen Benutzernamen für die Verwaltung des Demokatalogs eingeben.
+ Der Benutzername muß mindestens zwei Zeichen lang sein und nur Buchstaben,
+ Ziffern, den Unterstrich, @ oder den Punkt als Zeichen enthalten.
+
+Template: interchange-cat-foundation/password
+Type: password
+Default: pass
+Description: What is the password for the administration of this catalog ?
+ Please provide a password for administering the foundation demo
+ catalog. Choose one which can not be easily guessed. Default is pass.
+ The password  must be at least 4 characters long and only contain letters, 
+ digits, underscore @ or the dot as characters.
+Description-de: Was ist das Passwort für die Adminstration dieses Katalogs ?
+ Bitte ein Passwort für die Verwaltung des Demokatalogs eingeben. Das 
+ ausgewählte sollte nicht leicht erraten werden können. Das Wort pass
+ ist die Voreinstellung.
+ Das Passwort muß mindestens vier Zeichen lang sein und nur Buchstaben,
+ Ziffern, den Unterstrich, @ oder den Punkt als Zeichen enthalten.
+
+Template: interchange-cat-foundation/demomode
+Type: boolean
+Default: yes
+Description: Enable demo mode ?
+
+Template: interchange-cat-foundation/locales
+Type: multiselect
+Choices: de_DE, nl_NL
+Description: Select additional locales for the storefront of the demo catalog
+ The Interchange demo catalog is able to display the storefront in a number of 
+ different languages. Each selected locale will increase the memory footprint
+ of the Interchange server processes, so it is recommended to choose only 
+ locales which are really needed.
+
+Template: interchange-cat-foundation/defaultlocale
+Type: select
+Choices: ${LOCALES}
+Default: en_US
+Description: Select default locale for the storefront of the demo catalog
+ Please select the default locale for the Interchange demo catalog.
+

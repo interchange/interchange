@@ -1,0 +1,35 @@
+code	o_master	sku	o_group	o_sort	phantom	o_enable	o_matrix	o_modular	o_default	o_label	o_value	o_widget	o_footer	o_header	o_height	o_width	description	price	wholesale	differential	weight	volume	mv_shipmode	o_exclude	o_include
+00027		os28005	bristle			1				Bristle Type	synthetic=Synthetic,camel=Camel Hair	select			0	0									
+00028		os28005	color			1				Handle color	BLK=Black,BEIGE=Beige*,WHITE=White	radio			0	0									
+00031		os28080	blade							Blade material	P=Plastic,S=Steel*,T=Titanium	select			0	0		P=-1.22, T=100							
+00033		os28080	knob							Knob	W=Wood,E=Ebony	select			0	0		E=20							
+00037		os28009	blade							Blade material	P=Plastic,S=Steel*,T=Titanium	select			0	0		P=-1.22, T=100							
+00039		os28009	screws							Screws	G=Galvanized,S=Steel	select			0	0		S=.50							
+00040		os28009	size							Size	M=medium,L=Large*	select			0	0	Size of the object	L=10,M=-5							
+00041		os28011	blade							Blade material	P=Plastic blade,S=Steel blade*,T=Titanium blade	select			0	0		P=-1.22, T=100							
+00042		os28011	handle							Handle	W=Wood handle,E=Ebony handle	select			0	0		E=20							
+00122	os28004	00058	bristle			1				Bristle Type	SYN=Synthetic,CAM=Camel Hair	select			0	0		camel=5.00							
+00140		os28004	bristle			1				Bristle Type	=None,HUM=Human hair,CAM=Camel hair*,SYN=Synthetic	select			0	0									
+00146		os28004	color							Handle color	WHT=White,BLK=Black	select			0	0									
+00155		os28005	logo							logo	c=Construct Something,y=Your Logo*	select			0	0									
+00157		os28006	bristle			1				Bristle Type	synthetic=Synthetic,camel=Camel Hair	select			0	0									
+00158		os28006	color			1				Handle color	BLK=Black,BEIGE=Beige*,WHITE=White	radio			0	0									
+00159		os28006	logo							logo	c=Construct Something,y=Your Logo*	select			0	0									
+os28004						1	1								0	0									
+os28004-CAM-BLK		os28004					1					select			0	0	Ergo Roller - Camel hair, Black	16							
+os28004-HUM		os28004					1					select			0	0	Ergo Roller - Human hair	16.50							
+os28004-SYN-BLK		os28004					1								0	0	Ergo Roller - Synthetic, Black	16							
+os28004-SYN-WHT		os28004					1					select			0	0	Ergo Roller - Synthetic, White	12.25							
+os28005						1									0	0									
+os28006						1									0	0									
+os28006-camel-BLK		os28006					1								0	0	Painters Brush Set - Camel Hair, Black	40							
+os28006-synthetic-WHITE		os28006					1								0	0	Painters Brush Set - Synthetic, White	30							
+os28007							1								0	0									
+os28011						1									0	0									
+os28011-P-W		os28011					1					select			0	0	Spackling Knife - Plastic blade, Wood handle	2							
+os28011-S-W		os28011					1								0	0	Spackling Knife - Steel blade, Wood handle	10							
+os28011-T-E		os28011					1					select			0	0	Spackling Knife - Titanium blade, Ebony handle	150							
+os28011-T-W		os28011					1					select			0	0	Spackling Knife - Titanium blade, Wood handle	60							
+os28072						1									0	0									
+os28080						1									0	0									
+os28108						1									0	0									

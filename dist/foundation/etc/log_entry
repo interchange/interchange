@@ -1,0 +1,151 @@
+#### begin [value mv_order_number] #####
+[seti transaction_record]
+[tag flag write]transactions orderline userdb inventory[/tag]
+[if cgi new_customer_id]
+[or !cgi customer_id]
+Add new customer: [value name=customer_id set="[counter etc/customer.number]"]
+Set password:  [value name=password set="[value name=zip filter='word uc']"]
+[/if]
+Update userdb: [perl table=userdb]
+	my $id = $Values->{username} = $Values->{customer_id};
+	@always = qw/
+					company
+					fname
+					lname
+					address1
+					address2
+					city
+					state
+					zip
+					country
+					phone_day
+					mv_shipmode
+					mv_credit_card_type
+					mv_credit_card_exp_month
+					mv_credit_card_exp_year
+					email
+					phone_night
+					fax_order
+					email_copy
+					mail_list
+	/;
+	@sometimes = qw/
+						password
+						b_fname
+						b_lname
+						b_address1
+						b_address2
+						b_city
+						b_state
+						b_zip
+						b_country
+						b_phone
+						fax
+						credit_limit
+	/;
+
+	my $db = $Db{userdb};
+	
+	if(! $db->record_exists($id)) {
+		$db->set_row($id);
+		$db->set_field($id, 'password', $Values->{password});
+	}
+
+	for(@always) {
+		$db->set_field($id, $_, $Values->{$_});
+	}
+
+	for (@sometimes) {
+		next unless $Values->{$_} =~ /\S/;
+		$db->set_field($id, $_, $Values->{$_});
+	}
+
+	return "Updated customer record.";
+[/perl]
+
+
+[comment][perl] Log("Starting entry."); [/perl][/comment]
+
+[try]
+[comment][perl] Log("Past ACL update user."); [/perl][/comment]
+Add main order [data
+	table=userdb
+	column=order_numbers
+	key="[value customer_id]"
+	value=" [value mv_order_number]"
+	append="1"
+	] to transactions: [import table=transactions type=LINE continue=NOTES]
+code: [value mv_order_number]
+store_id: __STORE_ID__
+order_number: [value mv_order_number]
+session__MVC_FIELDMUNGE__: [data session id]
+username: [value username]
+shipmode: [value mv_shipmode] ([shipping-desc])
+shipping: [shipping noformat=1]
+nitems: [nitems]
+subtotal: [subtotal noformat=1]
+handling: [handling noformat=1]
+salestax: [salestax noformat=1]
+total_cost: [total-cost noformat=1]
+fname: [value filter=strip name=fname]
+lname: [value filter=strip name=lname]
+company: [value filter=strip name=company]
+address1: [value filter=strip name=address1]
+address2: [value filter=strip name=address2]
+city: [value filter=strip name=city]
+state: [value name=state filter="strip uc"]
+zip: [value name=zip filter="word uc"]
+country: [value country]
+phone_day: [value filter=strip name=phone_day]
+phone_night: [value filter=strip name=phone_night]
+b_fname: [value filter=strip name=b_fname]
+b_lname: [value filter=strip name=b_lname]
+b_address1: [value filter=strip name=b_address1]
+b_address2: [value filter=strip name=b_address2]
+b_city: [value filter=strip name=b_city]
+b_state: [value filter=strip name=b_state]
+b_zip: [value filter=strip name=b_zip]
+b_country: [value filter=strip name=b_country]
+b_phone: [value filter=strip name=b_phone]
+payment_method: [value mv_payment]
+order_date: [value name=order_date set="[tag time]%Y%m%d %H:%M:%S[/tag]"]
+order_ymd: [value name=order_date set="[tag time]%Y%m%d[/tag]"]
+order_wday: [value name=order_wday set="[tag time]%u[/tag]"]
+status: pending
+affiliate: ORDER_DESK
+po_number: [value filter=strip po_number] 
+deleted: 0
+archived: 0
+complete: 0
+comments: [value filter=mac name=gift_note]
+[/import]
+[comment][perl] Log("Past transactions entry."); [/perl][/comment][item-list]Added [item-code] to orderline: [import table=orderline type=LINE continue=NOTES]
+code: [value mv_order_number]-[item-increment]
+store_id: __STORE_ID__
+order_number: [value mv_order_number]
+session__MVC_FIELDMUNGE__: [data session id]
+username: [value username]
+shipmode: [item-modifier mv_shipmode]
+sku: [item-code]
+quantity: [item-quantity]
+price: [item-price noformat]
+subtotal: [item-subtotal noformat]
+size__MVC_FIELDMUNGE__: [item-modifier size__MVC_FIELDMUNGE__]
+color: [item-modifier color]
+order_date: [value order_date]
+affiliate: ORDER_DESK
+campaign: [value campaign]
+status: pending
+[/import]
+Inventory now: [data table=inventory col=quantity key="[item-code]" increment=1 value="-[item-quantity]"]
+[/item-list][/try]
+[catch] There was an error adding to the transaction log. [/catch]
+[comment][perl] Log("Past add data entry."); [/perl][/comment]
+[comment][perl] Log("Past all transaction log."); [/perl][/comment]
+[/seti][perl]
+	my $out = $Scratch->{transaction_record};
+	$out =~ s/^\s+//;
+	$out =~ s/\s+$//;
+	return $out;
+[/perl]
+#### end [value mv_order_number] #####

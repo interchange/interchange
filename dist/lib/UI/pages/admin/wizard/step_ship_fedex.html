@@ -1,0 +1,79 @@
+[set page_title]Shipping Preferences - Fed Ex[/set]
+[set ui_checklist]1[/set]
+[set help_name]wizard.fedex[/set]
+@_UI_STD_HEAD_@
+
+[perl]
+	# use company ZIP for default if it's a standard US ZIP code
+	$defaultshipzip = ($Values->{zip} =~ /^(\d{5})/) ? $1 : "";
+	return;
+[/perl]
+
+<p>
+Select the Federal Express shipping options you want to offer. 
+<p>
+
+[seti fed_modes][available-www-shipping fed][/seti]
+[calc]
+	my @modes = split /\n/, $Scratch->{fed_modes};
+	my @out;
+	for (@modes) {
+		s/^\w+://;
+		s/\t\w+:/=/;
+	}
+	$Scratch->{fed_modes} = join ",\n", @modes;
+	return;
+[/calc]
+[table-editor 
+	
+	left_width=120
+	table_width="500"
+	wizard=1
+	defaults=1
+	bottom_buttons=1
+	no_top=1
+	no_bottom=1
+   	row_template="[scratch row_template]"
+
+	mv_nextpage="[either][cgi ui_nextpage][or]__UI_BASE__/wizard/step_ship_country[/either]"
+	mv_prevpage="[either][cgi ui_prevpage][or]__UI_BASE__/wizard/step_ship[/either]"
+	hidden.ui_return_to="__UI_BASE__/wizard/index"
+
+	ui_wizard_fields="shipzip fedmodes fedadder"
+
+	label.shipzip="Warehouse ZIP code"
+	check.shipzip=zip
+	help.shipzip="From what ZIP code will your shipments be sent? (Leave blank if not in U.S.)"
+	widget.shipzip=text_5
+	default.shipzip=`$defaultshipzip`
+
+	check.fedmodes=mandatory
+	label.fedmodes="Federal Express Options"
+	help.fedmodes="The Federal Express delivery options you will allow?"
+	widget.fedmodes=checkbox_left_2
+	passed.fedmodes=`$Scratch->{fed_modes}`
+	filter.fedmodes="checkbox null_to_space"
+	default.fedmodes="FEG F2D FSO FIE FIP"
+
+	label.fedadder="Handling charge"
+	filter.fedadder="digits_dot"
+	check.fedadder="regex ^\\d+(?:\\.\\d+)?\$"
+	help.fedadder="Handling/packaging cost to be added to raw Fedex cost"
+	widget.fedadder=text_8
+	default.fedadder="3.00"
+]
+
+[set ui_override_next]
+[perl]
+	if ($Values->{shipmethod} =~ /\bups\b/i) {
+		$CGI->{mv_nextpage} = '__UI_BASE__/wizard/step_ship_ups';
+	}
+	elsif($Values->{shipmethod} =~ /\bflat\b/i) {
+		$CGI->{mv_nextpage} = '__UI_BASE__/wizard/step_ship_default';
+	}
+	delete $Scratch->{ui_override_next};
+	return;
+[/perl]
+[/set]
+
+@_UI_STD_FOOTER_@

@@ -1,0 +1,1 @@
+code	parent_fld	mgroup	msort	page	form	name	description	inactive	extended	next_line	indicator	exclude_on	depends_on	super	help_name	img_dn	img_up	img_sel	img_icon	url	member

@@ -1,0 +1,76 @@
+[set page_title]About Us Page[/set]
+[set ui_checklist]1[/set]
+[set help_name]wizard.aboutus[/set]
+@_UI_STD_HEAD_@
+
+Enter the title and content to be displayed on your About Us page.
+The <b>Content</b> section already contains sample text formatted in HTML. You can
+manipulate this text or enter all new text.
+<p>
+
+[tmp default_abouttext]
+<table width="90%">
+<tr>
+  <td align="left">
+    <br>
+    <B>[if value company][value company] is[else]We are[/else][/if]</B> the Internet's premier provider of ...
+    </p>
+
+    <p> 
+    We can be contacted at:
+
+	<BLOCKQUOTE>
+	[value company]<br>
+	[value address]<br>
+	[value city], [value state] [value zip]<br>
+	<BR>[if value phone]
+	Phone: [value phone]<br>
+	[/if][if value fax]
+	Fax: [value fax]<br>
+	[/if][if value tollfree]
+	Toll-free: [value tollfree]<BR>
+	[/if]</blockquote>
+    </p>
+
+    <p>
+    If you would like further information, please contact:
+
+	<BLOCKQUOTE>
+	<a href="mailto:[value emailinfo]">[value emailinfo]</a>
+	</BLOCKQUOTE>
+    </p>
+  </td>
+</tr>
+</table>
+[/tmp]
+
+[table-editor 
+	
+	left_width=120
+	table_width=300
+	wizard=1
+	defaults=1
+	bottom_buttons=1
+	no_top=1
+	no_bottom=1
+   	row_template="[scratch row_template]"
+
+	ui_profile="*about"
+
+	mv_nextpage="[either][cgi ui_nextpage][or]__UI_BASE__/wizard/step_products[/either]"
+	mv_prevpage="[either][cgi ui_prevpage][or]__UI_BASE__/wizard/step_index[/either]"
+	hidden.ui_return_to="__UI_BASE__/wizard/index"
+
+	ui_wizard_fields="abouttitle abouttext"
+
+	label.abouttitle="Page Title"
+	help.abouttitle="Title for the page (top bar)"
+	widget.abouttitle=text
+	default.abouttitle=`'About ' . ($Values->{company} || 'Us')`
+
+	label.abouttext="Content"
+	widget.abouttext=textarea_18_50
+	default.abouttext=`$Scratch->{default_abouttext}`
+]
+
+@_UI_STD_FOOTER_@

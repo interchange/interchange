@@ -1,0 +1,34 @@
+CodeDef uploadhelper  Widget  1
+CodeDef uploadhelper  Routine <<EOR
+sub {
+	# $column, $value, $record->{outboard}, $record->{width}
+    my ($opt) = @_;
+	my $name = $opt->{name};
+	my $val  = $opt->{value};
+	my $path = $opt->{path} || $opt->{outboard};
+	my $size = $opt->{cols} || $opt->{width};
+	
+	$path =~ s:^/+::;
+	my $view_url;
+	$size = qq{ SIZE="$size"} if $size > 0;
+	my $out = '';
+    if ($val) {
+		if($path) {
+			my $base = $::Variable->{UI_BASE} || 'admin';
+			my $view_url = Vend::Interpolate::tag_area("$base/do_view", "$path/$val");
+			$out .= qq{<A HREF="$view_url">};
+		}
+		$out .= $val;
+		$out .= "</A>" if $path;
+		$out .= qq{&nbsp;<INPUT TYPE=file NAME="$name" VALUE="$val">
+<INPUT TYPE=hidden NAME="ui_upload_file_path:$name" VALUE="$path">
+<INPUT TYPE=hidden NAME="$name" VALUE="$val">};      
+    }
+	else {
+        $out = qq{<INPUT TYPE=hidden NAME="ui_upload_file_path:$name" VALUE="$path">
+<INPUT TYPE=file NAME="$name"$size>};
+    }
+	return $out;
+}
+EOR
+

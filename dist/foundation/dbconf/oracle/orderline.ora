@@ -1,0 +1,30 @@
+Database  orderline  orderline.txt __SQLDSN__
+Database  orderline  UPPERCASE    1
+ifdef SQLUSER
+Database  orderline  USER         __SQLUSER__
+endif
+ifdef SQLPASS
+Database  orderline  PASS         __SQLPASS__
+endif
+Database  orderline  DEFAULT_TYPE VARCHAR2(128)
+Database  orderline  COLUMN_DEF   "code=VARCHAR2(14) PRIMARY KEY"
+Database  orderline  COLUMN_DEF   "store_id=VARCHAR2(9) DEFAULT ''"
+Database  orderline  INDEX         store_id
+Database  orderline  COLUMN_DEF   "order_number=VARCHAR2(14)"
+Database  orderline  INDEX         order_number
+Database  orderline  COLUMN_DEF   "session__MVC_FIELDMUNGE__=VARCHAR2(32)"
+Database  orderline  COLUMN_DEF   "username=VARCHAR2(20) DEFAULT ''"
+Database  orderline  COLUMN_DEF   "shipmode=VARCHAR2(255) DEFAULT ''"
+Database  orderline  COLUMN_DEF   "sku=VARCHAR2(64)"
+Database  orderline  COLUMN_DEF   "quantity=VARCHAR2(9)"
+Database  orderline  COLUMN_DEF   "price=VARCHAR2(12)"
+Database  orderline  COLUMN_DEF   "subtotal=VARCHAR2(12)"
+Database  orderline  COLUMN_DEF   "shipping=VARCHAR2(12)"
+Database  orderline  COLUMN_DEF   "taxable=VARCHAR2(3)"
+Database  orderline  COLUMN_DEF   "size__MVC_FIELDMUNGE__=VARCHAR2(30)"
+Database  orderline  COLUMN_DEF   "color=VARCHAR2(30)"
+Database  orderline  COLUMN_DEF   "options=VARCHAR2(255)"
+Database  orderline  COLUMN_DEF   "order_date=VARCHAR2(32)"
+Database  orderline  COLUMN_DEF   "update_date=VARCHAR2(20)"
+Database  orderline  COLUMN_DEF   "status=VARCHAR2(32)"
+Database  orderline  COLUMN_DEF   "parent=VARCHAR2(9)"

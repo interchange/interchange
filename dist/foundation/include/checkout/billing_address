@@ -1,0 +1,78 @@
+<table cellspacing=0 cellpadding=0 width="100%">
+  <tr>
+	<td>
+	  <table border=0 cellspacing=0 cellpadding=0 width="100%">
+		<tr class=contentbar2>
+		  <td colspan=4 class=contentbar2>
+		  	<b>&nbsp;Billing Address</b> - <i>If different than above</i>
+		  </td>
+		</tr>
+		<tr>
+		  <td align=right class=contentbar1>
+			<b>First Name</b>
+		  </td>
+		  <td align=left class=contentbar1>
+			<INPUT TYPE=text NAME=b_fname VALUE="[value b_fname]" size="20" maxlength="20">
+		  </td>
+		  <td class=contentbar1><b>Last Name</b></td>
+		  <td align=left class=contentbar1>
+			<INPUT TYPE=text NAME=b_lname VALUE="[value b_lname]" size="20">
+		  </td>
+		</tr>
+		<tr>
+		  <td align=right class=contentbar1>
+			<b>Company</b>
+		  </td>
+		  <td align=left class=contentbar1 colspan=3>
+			<INPUT TYPE=text NAME=b_company VALUE="[value b_company]" size="20" maxlength="44">
+		  </td>
+		</tr>
+		<tr>
+		  <td align=right class=contentbar1>
+			<b>Address</b>
+		  </td>
+		  <td align=left colspan=3 class=contentbar1>
+			<INPUT TYPE=text NAME=b_address1 VALUE="[value b_address1]" size=40 maxlength="64">
+		  </td>
+		</tr>
+		<tr>
+		  <td class=contentbar1>&nbsp;</td>
+		  <td align=left colspan=3 class=contentbar1>
+			<INPUT TYPE=text NAME=b_address2 VALUE="[value b_address2]" size=40 maxlength="64">
+		  </td>
+		</tr>
+		<tr>
+		  <td align=right class=contentbar1>
+			<b>City</b>
+		  </td>
+		  <td class=contentbar1>
+			<INPUT TYPE=text NAME=b_city VALUE="[value b_city]" size="20">
+		  </td>
+		  <td align=right class=contentbar1><b>State/Province</b></td>
+		  <td class=contentbar1>
+			<INPUT TYPE=text NAME=b_state VALUE="[value b_state]" size="5" maxlength="5">
+		  </td>
+		</tr>
+		<tr>
+		  <td align=right class=contentbar1>
+			<b>Zip/Postal Code </b>
+		  </td>
+		  <td class=contentbar1 colspan=3>
+			<INPUT TYPE=text NAME=b_zip VALUE="[value b_zip]" size="10" maxlength="10">
+		  </td>
+		</tr>
+		<tr>
+		  <td align=right class=contentbar1>
+			<b>Country</b>
+		  </td>
+		  <td class=contentbar1 colspan=3>
+			<INPUT TYPE=text NAME=b_country VALUE="[value b_country]" size="10" maxlength="10">
+		  </td>
+		</tr>
+		<tr>
+		  <td class=contentbar1 colspan=4>&nbsp;</td>
+		</tr>
+	  </table>
+	</td>
+  </tr>
+</table>                                          

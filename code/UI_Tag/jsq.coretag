@@ -1,0 +1,48 @@
+UserTag jsquote Alias jsq
+UserTag jsq hasEndTag
+UserTag jsq NoReparse
+UserTag jsq PosNumber 0
+UserTag jsq Routine <<EOR
+sub {
+	my $text = shift;
+	$text =~ s/^[ \t\r]*\n//;
+	my @lines = split /\r?\n/, $text;
+
+	for(@lines) {
+		( $_ !~ /'/ and s/\r/\\r/g, s/(^|[^\\])\$\{?(\w+)\}?/$1' + $2 + '/g, $_ = qq{'$_'} )
+		  or
+		( $_ !~ /"/ and s/\r/\\r/g, s/(^|[^\\])\$\{?(\w+)\}?/$1" + $2 + "/g, $_ = qq{"$_"} )
+		  or 
+		( s/'/\\'/g,  s/\r/\\r/g, s/(^|[^\\])\$\{?(\w+)\}?/$1' + $2 + '/g, $_ = qq{'$_'} );
+	}
+	return join (" +\n", @lines);
+}
+EOR
+
+UserTag jsq Documentation <<EOD
+
+=head1 jsq
+
+Returns a string quoted for JavaScript, with variable substitution.
+
+  <script>
+  	var astring = 'just an insert';
+  	var somevar = [jsq] Big long string you don't
+		want to have to quote for JS, and you want to
+		insert the variable $astring.[/jsq];
+  </script>
+
+Generates:
+
+	<script>
+		var astring = 'just an insert';
+		var somevar = " Big long string you don't" +
+	'       want to have to quote for JS, and you want to' +
+	'       insert the variable ' + astring + '.';
+	</script>
+
+Used in the UI dynamic HTML.
+
+=cut
+EOD
+

@@ -1,0 +1,166 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftright
+[/comment]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]category_vertical[/component]
+[/control-set]
+
+[control-set]
+[component]cart_tiny[/component]
+[/control-set]
+
+[control-set]
+[component][/component]
+[/control-set]
+
+[control-set]
+[component]cross[/component]
+[size]2[/size]
+[cols]2[/cols]
+[banner]You might also like...[/banner]
+[/control-set]
+
+[control-set]
+[component]random[/component]
+[size]3[/size]
+[cols]1[/cols]
+[banner]See also[/banner]
+[/control-set]
+
+[control reset=1]
+[set members_only]0[/set]
+[set page_banner]Product Views All[/set]
+[set page_title]__COMPANY__ -- Product Views All[/set]
+
+@_LEFTRIGHT_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+[loop more=1 search="ra=yes/tf=category/tf=title/ml=5"]
+  [list]
+
+    [comment]
+      [loop-change] is a way of setting up headers. You place a possibly
+      changing value in the [condition] container, and when the value
+      changes the contents of the [loop-change] container are output.
+      There can also be an [else] [/else] area.
+    [/comment]
+
+    [loop-change 1]
+      [condition][loop-field category][/condition]
+
+      <table border="0" cellspacing="0" cellpadding="0">
+      <tr> 
+	<td width="227">
+          <b>[loop-field category]</b>
+	</td>
+      </tr>
+      </table>
+    [/loop-change 1]
+
+    <table border="0" cellspacing="0" cellpadding="0">
+    <tr valign="middle"> 
+      <td align=center> 
+	<table border="0" cellspacing="0" cellpadding="3" align="center">
+	<tr> 
+	  <td valign="top" align="center"> 
+	    <table width="25%" border="0" cellspacing="0" cellpadding="0">
+	    <tr> 
+	      <td>
+		[if-loop-field image]
+		  <IMG SRC="items/[loop-field image]" ALT="[loop-description]" BORDER="0">
+		[/if-loop-field]
+	      </td>
+	    </tr>
+	    </table>
+	  </td>
+	  <td valign="top" align="center"> 
+	    <table border="0" cellpadding="3" cellspacing="0">
+
+	      <FORM ACTION="[process]" METHOD=POST>
+		  <input type=hidden  name=mv_session_id    value="[data session id]">
+	      <INPUT TYPE=hidden  NAME="mv_todo"        VALUE="refresh">
+	      <INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="[loop-code]">
+	
+	    <tr> 
+	      <td valign="top" colspan="2"> 
+	        <b>[loop-description]</b>
+	      </td>
+	    </tr>
+	    <tr> 
+	      <td align="center">
+		[loop-price]
+	      </td>
+				
+	    [loop-calc]
+		my $q = q{[loop-data inventory quantity]};
+		if($q > 0) {
+return <<EOF;
+	      <td align="center">
+	        <b>In Stock</b>
+	      </td>
+EOF
+		} else {
+return <<EOF;
+	      <td align="center">
+   	        <b>Out Of Stock</b></font>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+		<a href="[area stock-alert [loop-code]]">In Stock Notification</a>
+	      </td>
+EOF
+		}
+	    [/loop-calc]									
+				
+	    </tr>
+	    <tr> 
+	      <td align="center">
+ 	        Quantity:
+		<input type="text" name="mv_order_quantity" size="2" value="1">
+	      </td>
+	      <td align="center"> 
+		<input type="submit" value="Buy it Now!">
+	      </td>
+	    </tr>
+
+	    </FORM>
+	    </table>
+	  </td>
+	</tr>
+	<tr> 
+	  <td colspan="2"> 
+	    [loop-field comment__MVC_FIELDMUNGE__]
+	  </td>
+	</tr>
+	</table>
+      </td>
+    </tr>
+    </table>
+
+    <br>
+
+  [/list]
+
+  [more-list 0 0 0]
+    [page-anchor][/page-anchor]
+    [prev-anchor]<LARGE><B>&lt;-- Previous</b></large>[/prev-anchor]
+    [next-anchor]<LARGE><B>Next --&gt;</b></large>[/next-anchor]
+    [more]
+  [/more-list]
+
+[/loop]
+
+					
+<!-- END CONTENT -->
+
+@_LEFTRIGHT_BOTTOM_@

@@ -1,0 +1,106 @@
+[comment]
+ui_name: category_vertical
+ui_type: component
+ui_class: vertical
+ui_group: Navigation
+ui_label: Vertical category list
+
+page_class:
+	advanced: 1
+	db: area
+	help: Defines which sets of items should be displayed
+	label: Page class
+	lookup: which_page
+	type: select
+
+set_selector:
+	advanced: 1
+	db: area
+	help: Defines which sets of items should be displayed
+	label: Page area selector
+	lookup: sel
+	type: select
+
+timed:
+	advanced: 1
+	code: timed
+	help: Makes more efficient for large/busy catalogs
+	label: Use timed build
+	options: 0=No, 5=5 minutes, 10=10 minutes, 20=20 minutes, 60=60 minutes, 1440=Daily
+	type: select
+
+[/comment]
+<tr><td align="left" class="categorybar">
+  <br>
+  <table width="90%" align="center">
+
+<!-- BEGIN COMPONENT [control component category_vertical] -->
+[timed-build auto=1 if="[control timed 0]" minutes="[control timed 0]"]
+[set found_cat][/set]
+[loop
+	prefix=box
+	search="
+		fi=area
+		st=db
+		tf=sort
+		ac=0
+		ac=0
+		co=yes
+		
+		sf=sel
+		op=eq
+		se=[control set_selector left]
+
+		sf=which_page
+		op=rm
+		se=[control page_class all|@@MV_PAGE@@]
+"]
+
+  <tr> 
+    <td valign="top" class="categorybar">
+      <b>[box-exec bar_link]area[/box-exec]</b>
+    </td>
+  </tr>
+  <tr> 
+    <td valign="top" class="categorybar">
+
+[set found_cat]1[/set]
+[loop prefix=cat
+	search="
+		fi=cat
+		st=db
+		co=yes
+		tf=sort
+		tf=name
+		rf=code,name
+		sf=sel
+		se=[box-code]
+	"
+	]
+      &nbsp;&nbsp;[cat-exec bar_link]cat[/cat-exec]<BR>
+[/loop]
+
+    </td>
+  </tr>
+[/loop]
+[if !scratch found_cat]
+	<tr>
+		<td class="categorybar">
+[loop 
+    search="
+        ra=yes
+        tf=description
+    "
+    ]
+      &nbsp;&nbsp;[page [loop-code]][loop-field description]</a><BR>
+[/loop]
+	  </td>
+	</tr>
+[/if]
+[/timed-build]
+
+  </table>
+  <br>
+</td></tr>
+
+<!-- END COMPONENT [control component category_vertical] -->

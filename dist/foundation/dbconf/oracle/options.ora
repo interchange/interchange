@@ -1,0 +1,40 @@
+Database options options.txt  SQL
+Database options DSN          __SQLDSN__
+Database options UPPERCASE    1
+ifdef SQLUSER
+Database options USER         __SQLUSER__
+endif
+ifdef SQLPASS
+Database options PASS         __SQLPASS__
+endif
+Database options DEFAULT_TYPE VARCHAR2(2000)
+#Database options NUMERIC      price wholesale
+Database options AUTO_NUMBER  100001
+Database options NO_SEARCH    1
+
+Database options COLUMN_DEF   "code=VARCHAR2(64) primary key NOT NULL"
+Database options COLUMN_DEF   "o_matrix=CHAR(1)"
+Database options COLUMN_DEF   "o_modular=CHAR(1)"
+Database options COLUMN_DEF   "o_master=VARCHAR2(64) DEFAULT ''"
+Database options COLUMN_DEF   "sku=VARCHAR2(64) DEFAULT ''"
+Database options COLUMN_DEF   "o_group=VARCHAR2(20) DEFAULT ''"
+Database options COLUMN_DEF   "o_sort=VARCHAR2(16) DEFAULT ''"
+Database options COLUMN_DEF   "phantom=CHAR(1)"
+Database options COLUMN_DEF   "o_enable=CHAR(1) DEFAULT ''"
+Database options COLUMN_DEF   "o_default=VARCHAR2(64)"
+Database options COLUMN_DEF   "description=VARCHAR2(2000)"
+Database options COLUMN_DEF   "price=VARCHAR2(20)"
+Database options COLUMN_DEF   "wholesale=VARCHAR2(20)"
+Database options COLUMN_DEF   "differential=VARCHAR2(2000)"
+Database options COLUMN_DEF   "volume=VARCHAR2(20)"
+Database options COLUMN_DEF   "weight=VARCHAR2(20)"
+Database options COLUMN_DEF   "mv_shipmode=VARCHAR2(255)"
+Database options COLUMN_DEF   "o_label=VARCHAR2(2000)"
+Database options COLUMN_DEF   "o_value=VARCHAR2(2000)"
+Database options COLUMN_DEF   "o_height=INTEGER"
+Database options COLUMN_DEF   "o_width=INTEGER"
+Database options INDEX         o_enable
+Database options INDEX         o_group
+Database options INDEX         o_master
+Database options INDEX         o_sort
+Database options INDEX         sku

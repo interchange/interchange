@@ -1,0 +1,15 @@
+UserTag either              hasEndTag
+UserTag either              PosNumber    0
+UserTag either              Routine      <<EOR
+sub {
+	my @ary = split /\[or\]/, shift;
+	my $result;
+	while(@ary) {
+		$result = interpolate_html(shift @ary);
+		$result =~ s/^\s+//;
+		$result =~ s/\s+$//;
+		return $result if $result;
+	}
+	return;
+}
+EOR

@@ -1,0 +1,3 @@
+UserTag read-cookie         Order        name
+UserTag read-cookie         InvalidateCache
+UserTag read-cookie         MapRoutine   Vend::Util::read_cookie

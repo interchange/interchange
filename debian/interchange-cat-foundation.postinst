@@ -1,0 +1,117 @@
+#! /bin/sh -e
+#
+# Copyright 2001 by Stefan Hornburg (Racke) <racke@linuxia.de>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public
+# License along with this program; if not, write to the Free
+# Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+# MA  02111-1307  USA.
+
+# Source debconf library
+. /usr/share/debconf/confmodule
+
+GOAHEAD=false
+
+# Get interchange user and group
+db_get interchange/user
+USER=$RET
+db_get interchange/group
+GROUP=$RET
+
+# Whether to do the actual installation of the demo catalog
+db_get interchange-cat-foundation/install
+
+if [ "$RET" = "true" ]; then
+	CATALOG=foundation
+	if [ -d /var/lib/interchange/catalogs/$CATALOG ]; then
+		db_get interchange-cat-foundation/replace
+		if [ "$RET" = "always" ]; then
+			GOAHEAD=true
+		elif [ "$RET" = "ask" ]; then
+			db_get interchange-cat-foundation/confirm
+			GOAHEAD=$RET
+		fi
+		if [ "$GOAHEAD" = "true" ]; then
+			rm -rf /var/lib/interchange/catalogs/$CATALOG
+		fi
+	else
+		GOAHEAD=true
+	fi
+fi
+
+if [ "$GOAHEAD" = "true" ]; then
+	db_get interchange/docroot
+
+	# document root for static HTML
+	BASEDIR=/var/lib/interchange/catalogs
+	CGIBASE=/cgi-bin/ic
+	DOCROOT="$RET"
+	CATALOG=foundation
+
+	# replace document root
+	if [ "$DOCROOT" -a -d "$DOCROOT" ]; then
+		rm -rf $DOCROOT/$CATALOG
+	fi
+	mkdir -p $DOCROOT/$CATALOG/images
+	chown -R $USER.$GROUP $DOCROOT/$CATALOG
+
+	# replace catalog directory
+	mkdir /var/lib/interchange/catalogs/$CATALOG
+	chown $USER.$GROUP /var/lib/interchange/catalogs/$CATALOG
+	db_get interchange-cat-foundation/username
+	UI_SUPERUSER=$RET
+	db_get interchange-cat-foundation/password
+	UI_PASSWORD=$RET
+    db_get interchange-cat-foundation/locales
+    LOCALES=`echo "$RET" | sed -e 's/, /,/'`
+	db_get interchange-cat-foundation/defaultlocale
+	DEFAULTLOCALE=$RET
+	SERVERNAME=`hostname --fqdn`
+	MVC_ENABLESECURE=1 MVC_UISECURE=1 MVC_SUPERUSER="$UI_SUPERUSER" MVC_CRYPTPW="$UI_PASSWORD" MVC_LOCALES="$LOCALES" MVC_DEFAULTLOCALE="$DEFAULTLOCALE" /usr/bin/makecat \
+		-F \
+		-l /var/log/interchange/makecat.log \
+		--demotype=$CATALOG \
+		--catalogname=$CATALOG \
+		--basedir=$BASEDIR \
+		--catroot=$BASEDIR/$CATALOG \
+		--documentroot=$DOCROOT \
+		--samplehtml=$DOCROOT/$CATALOG \
+		--sampleurl=http://$SERVERNAME/shops/$CATALOG \
+		--imagedir=$DOCROOT/$CATALOG/images \
+		--imageurl=/shops/$CATALOG/images \
+		--servername=$SERVERNAME \
+		--sharedir=NONE \
+		--shareurl='' \
+		--cgidir=/usr/lib/cgi-bin/ic \
+		--cgibase=$CGIBASE \
+		--cgiurl=$CGIBASE/$CATALOG \
+		--interchangeuser=$USER \
+		--interchangegroup=$GROUP \
+		--permtype=user \
+		--serverconf=/etc/apache/httpd.conf \
+		--vendroot=/usr/lib/interchange \
+		--linkmode=UNIX \
+		--catuser=$USER \
+		--mailorderto=$USER \
+		--nocfg
+fi
+
+db_get interchange-cat-foundation/install
+if [ "$RET" = "true" ]; then
+	interchangeconfig USE_FOUNDATION=1
+
+	# add catalog to running server
+	echo 'Catalog foundation /var/lib/interchange/catalogs/foundation /cgi-bin/ic/foundation' | /usr/sbin/interchange --add foundation
+fi
+
+#DEBHELPER#

@@ -1,0 +1,6 @@
+code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url
+001		x001					index		Go to catalog		0							
+002		x002					javascript:window.name = 'mainwindow';window.open('[area admin/quicklinks]','Quicklinks','top=0,left=0,scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=170,height=700'); void 0		Quicklinks		0	Window with quick links to commonly-used functions						
+003		x003				reconfig	admin/reconfig		Apply Changes		0	Apply changes made to configuration						
+004		x004					admin/login		Log out		0	Log out as an administrator						
+005		x005					javascript:open_help()	Help%20on%20this%20screen	Help		0							

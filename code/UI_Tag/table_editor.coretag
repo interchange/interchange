@@ -1,0 +1,12 @@
+UserTag table-editor Order mv_data_table item_id
+UserTag table-editor addAttr
+UserTag table-editor AttrAlias clone ui_clone_id
+UserTag table-editor AttrAlias table mv_data_table
+UserTag table-editor AttrAlias fields ui_data_fields
+UserTag table-editor AttrAlias mv_data_fields ui_data_fields
+UserTag table-editor AttrAlias key   item_id
+UserTag table-editor AttrAlias view  ui_meta_view
+UserTag table-editor AttrAlias profile ui_profile
+UserTag table-editor AttrAlias email_fields ui_display_only
+UserTag table-editor hasEndTag
+UserTag table-editor MapRoutine Vend::Table::Editor::editor

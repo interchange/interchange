@@ -1,0 +1,19 @@
+UserTag item-list           Order        name
+UserTag item-list           addAttr
+UserTag item-list           attrAlias    cart name
+UserTag item-list           hasEndTag
+UserTag item-list           InvalidateCache
+UserTag item-list           Routine      <<EOR
+sub {
+	my($cart,$opt,$text) = @_;
+	my $obj = {
+				mv_results => $cart ? ($::Carts->{$cart} ||= [] ) : $Vend::Items,
+					};
+	return if ! $text;
+	$opt->{prefix} = 'item' unless defined $opt->{prefix};
+# LEGACY
+	list_compat($opt->{prefix}, \$text);
+# END LEGACY
+	return labeled_list($opt, $text, $obj);
+}
+EOR

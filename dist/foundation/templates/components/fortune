@@ -1,0 +1,45 @@
+[comment]
+ui_name: fortune
+ui_type: component
+ui_class: vertical
+ui_group: info
+ui_label: Random saying
+
+banner:
+	code: banner
+	default: Just a thought...
+	label: Banner Foo
+	type: text
+	width: 33
+
+short:
+	default: 1
+	label: Short only?
+	type: yesno
+
+[/comment]
+<!-- BEGIN COMPONENT [control component fortune] -->
+
+<tr><td align="center">
+  <table width="95%">
+
+  <tr> 
+    <td class=categorybar valign=top>
+      <table border=0 cellspacing=0 cellpadding=2>
+      <tr>
+        <td align=center class=categorybar>
+		[control banner Just a thought...]
+		</td>
+      </tr>
+      <tr>
+		<td valign=top align=left class=contentbar2>
+		[fortune short="[control short yes]"]
+		</td>
+      </table>
+    </td>
+  </tr>
+
+  </table>
+</td></tr>
+
+<!-- END COMPONENT [control component fortune] -->

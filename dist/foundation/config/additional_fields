@@ -1,0 +1,243 @@
+COMPANY
+Your company name
+Foundation Store
+
+STYLE
+Default theme
+blueyellow	fixedwidth	foundation	grayorange	grayscale	greens	purpleyellow
+
+SAMPDATATYPE
+Sample data type?
+tools	reports	none
+
+SOMESQL
+Set to 1 if you want to use MySQL, PostgreSQL, Oracle, or SQLite
+	1	0
+
+{SOMESQL}MYSQL
+Set to 1 if you want to use MySQL
+	1	0
+
+{MYSQL}SQLDB
+Database to use (will be created)
+test___MVC_CATALOGNAME__	interch
+
+{MYSQL}SQLDSN
+DBI DSN to use
+dbi:mysql:__MVC_SQLDB__
+
+{MYSQL}SQLUSER
+Username for MySQL (if any)
+	__MVC_CATUSER__	interch
+
+{MYSQL}SQLPASS
+Password for MySQL (if any)
+	pass
+
+{MYSQL}MYSQLCREATE
+Set to 1 to create '__MVC_SQLDB__' with mysqladmin
+1	0
+
+{MYSQLCREATE}MYSQLCREATEOPT
+Extra options for creation
+	-p	-u root -p
+
+{SOMESQL and ! '__MVC_MYSQL__'}PGSQL
+Set to 1 if you want to use PostgreSQL
+	1	0
+
+{PGSQL}SQLDB
+Database to use (will be created)
+__MVC_CATALOGNAME__	interch
+
+{PGSQL}SQLDSN
+DBI DSN to use
+dbi:Pg:dbname=__MVC_SQLDB__
+
+{PGSQL}SQLUSER
+Username for PostgreSQL (if any)
+	__MVC_CATUSER__	interch
+
+{PGSQL}SQLPASS
+Password for PostgreSQL (if any)
+	pass
+
+{PGSQL}!SQLUDATE
+Timestamp for PostgreSQL (if any)
+2000-01-01
+
+{SOMESQL and ! '__MVC_MYSQL__' and ! '__MVC_PGSQL__'}ORACLE
+Set to 1 if you want to use Oracle
+0	1
+
+{ORACLE}SQLDSN
+DBI DSN to use
+dbi:Oracle:
+
+{ORACLE}SQLUSER
+Username for Oracle (if any)
+	__MVC_CATALOGNAME__	__MVC_CATUSER__	interch
+
+{ORACLE}SQLPASS
+Password for Oracle (if any)
+	pass
+
+{ORACLE}!SQLUDATE
+Timestamp for Oracle (if any)
+01-JAN-2000
+
+{ORACLE}FIELDMUNGE
+Field name suffix for Oracle
+_field
+
+{SOMESQL and ! '__MVC_MYSQL__' and ! '__MVC_PGSQL__' and ! '__MVC_ORACLE__'}SQLITE
+Set to 1 if you want to use SQLite
+1	0
+
+{SQLITE}SQLDB
+Database file to use (will be created)
+__MVC_CATROOT__/products/sqlite.db
+
+{SQLITE}SQLDSN
+DBI DSN to use
+dbi:SQLite:__MVC_SQLDB__
+
+SUPERUSER
+Account name that will control this catalog
+__MVC_CATUSER__	interchange	admin	interch
+
+CRYPTPW
+Administrative password
+pass	nevairbe
+
+!ADDRESS
+Your company address
+123 Main St.
+
+!CITY
+Your company city/state/zip
+Anywhere, VA 20190
+
+!PHONE
+Your company phone
+(703) 555-1212
+
+!FAX
+Your company fax number
+(703) 555-9999
+
+!TOLLFREE
+Your company tollfree number (if any)
+(888) 555-1212
+
+!TAXAREA
+Area(s) to tax in
+VA UT OH
+
+!TAXRATE
+Percentage rate(s) for tax in different areas
+VA=4.5, UT=6.25, OH=5.0
+
+!UPSADDER
+Amount to add on to standard UPS costs
+3.00
+
+!UPSORIGIN
+Origin zip code for UPS lookups
+45056
+
+!PAYCOD
+Whether you accept COD orders
+0	1
+
+!PAYPO
+Whether you accept purchase orders
+0	1
+
+!PAYPOSTAL
+Whether you allow orders without payment to be completed by mail
+0	1
+
+!PAYCC
+Which credit cards you accept
+visa mc amex discover	visa mc discover	visa mc amex	visa mc
+
+!DEFAULTFONT
+Default font face for catalog
+Arial,Helvetica,sans-serif	Verdana, Arial, Helvetica, Sans-Serif
+
+!DOMAINNAME
+Your base domain for email addresses
+localhost
+
+!EMAILINFO
+Email address to reference for email product information requests
+sales@__MVC_DOMAINNAME__
+
+!EMAILSERVICE
+Email address to reference for emailed customer service requests
+service@__MVC_DOMAINNAME__
+
+!PGPKEYID
+PGP/GPG key id to use for encryption (if any)
+
+!LOGO
+Your logo image
+
+
+!SMLOGO
+Your small logo image
+
+
+!SECURESERVERNAME
+Secure server URL
+https://__MVC_SERVERNAME__
+
+!TAXFIELD
+The field which determines tax rate
+state	country
+
+!LOGDIR
+The base directory for logs
+	/var/log/interchange/__MVC_CATALOGNAME__
+
+!CACHEDIR
+The base directory for sessions and temps
+	/var/cache/interchange/__MVC_CATALOGNAME__
+
+!IMGADDCART
+Image to use for the "Add to cart" icon
+__MVC_STYLE__/add_cart.gif
+
+!IMGMOREINFO
+Image to use for the "More information" icon
+__MVC_STYLE__/more_info.gif
+
+!IMGCONTINUE
+Image to use for the "Continue Shopping" button
+__MVC_STYLE__/continue_shopping.gif
+
+!IMGCHECKOUT
+Image to use for the "Check Out" button
+__MVC_STYLE__/checkout_button.gif
+
+!IMGRECALC
+Image to use for the "Recalculate" button
+__MVC_STYLE__/recalculate_button.gif
+
+!IMGPLACEORDER
+Image to use for the "Place Order" button
+__MVC_STYLE__/placeorder_button.gif
+
+!DICTPRICESTD
+What you want for your regular price label
+Retail Price	List Price	MSRP Price
+
+!DICTPRICESALE
+What you want for your sale price label
+Our Price	Sale Price	Best Price
+
+DEMOMODE
+Set to 1 to display demo helper features in your store
+__MVC_DEMOMODE__	1	0
+

@@ -1,0 +1,68 @@
+#! /bin/sh -e
+#
+# Copyright 2001 by Stefan Hornburg (Racke) <racke@linuxia.de>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public
+# License along with this program; if not, write to the Free
+# Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+# MA  02111-1307  USA.
+
+# Source debconf library
+. /usr/share/debconf/confmodule
+
+if [ "$1" = "remove" ]; then
+	# If only interchange-ui is installed, we need to stop
+	# the server first
+
+	if [ -x /etc/init.d/interchange ]; then
+		/etc/init.d/interchange stop
+	fi
+
+	if [ -x /usr/sbin/interchangeconfig ]; then
+		/usr/sbin/interchangeconfig UI= USE_FOUNDATION=
+	fi
+	
+	# We use the file /var/run/interchange-install to record 
+	# the installed interchange packages, so only one server
+	# restart is needed 
+
+	echo interchange-ui >> /var/run/interchange-install
+
+	# Check if we run the startup
+	if [ -f /var/run/interchange-install ]; then
+		PACKAGES=""
+		exec 4</var/run/interchange-install
+		while read <&4 PKG; do
+			if [ ! "$PKG" = "interchange-ui" ]; then
+				PACKAGES="$PKG $PACKAGES"
+			fi
+		done
+		if [ -z "$PACKAGES" ]; then
+			rm /var/run/interchange-install
+		else 
+			exec 5>/var/run/interchange-install
+			for PKG in $PACKAGES; do
+				echo "$PKG" >&5
+			done
+		fi
+	fi
+
+	if [ -x /etc/init.d/interchange ]; then
+		/etc/init.d/interchange start
+	fi
+
+	# Don't wait on Interchange to close file handles
+	db_stop
+fi
+
+#DEBHELPER#

@@ -1,0 +1,17 @@
+/var/log/interchange/*.log {
+	rotate 4
+	weekly
+	compress
+}
+
+/var/log/interchange/*/error.log {
+	rotate 4
+	weekly
+	compress
+}
+
+/var/log/interchange/*/logs/usertrack {
+	rotate 12
+	monthly
+	compress
+}

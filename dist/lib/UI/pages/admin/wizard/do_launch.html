@@ -1,0 +1,74 @@
+[flag type=write table=access]
+[flag type=write table=variable]
+[flag type=write table=orderline]
+[flag type=write table=transactions]
+[flag type=write table=userdb]
+[flag type=write table=area]
+[flag type=write table=cat]
+[value name=site_launched set=1 hide=1]
+[set ui_checklist]1[/set]
+@_UI_STD_HEAD_@
+&nbsp;<br>
+<!-- 
+[perl tables="access variable userdb transactions orderline"]
+	my $udb = $Db{userdb};
+	my $tdb = $Db{transactions};
+	my $odb = $Db{orderline};
+	my $vdb = $Db{variable};
+
+my %doit = (
+nukeusers           => sub {
+						return unless $Values->{nukeusers};
+						$udb->query('delete from userdb');
+                    },
+nukeorders           => sub {
+						return unless $Values->{nukeorders};
+						$odb->query('delete from orderline');
+						$tdb->query('delete from transactions');
+                    },
+enablesecure        => 'SECURE_ENABLE',
+orderstart 	    => sub {
+						$Values->{orderstart} = '01000' unless $Values->{orderstart};
+						$Tag->substitute_file(
+								{ 
+									begin => q{^\w+},
+									global => 0,
+									replace => 1,
+									end => q!$!,
+									greedy => 0,
+									file => 'etc/order.number',
+									body => $Values->{orderstart},
+								}
+						);
+					},
+);
+	for (keys %doit) {
+		my $val;
+		next unless $val = $doit{$_};
+		if( ref($val) =~ /CODE/) {
+			my $status = $val->();
+			push @messages, "$_ subroutine returned $status.";
+		}
+		elsif ($vdb && $val =~ /\w+/) {
+			$vdb->set_field($val, 'Variable', $Values->{$_});
+			push @messages, "$_ set $val to '$Values->{$_}' in variable.";
+		}
+		else {
+			@errors, "Don't know what to do with $_=$val";
+		}
+	}
+
+	$out = "Messages: <BR>";
+	$out .= join "<BR>", @messages;
+	$out .= "<P>Errors: <BR>";
+	$out .= join "<BR>", @errors;
+[/perl]
+-->
+<P>
+Congratulations!  Your site has been activated!
+</P>
+<blockquote>
+<LARGE><A HREF="[area index]">Go to catalog home page</P></LARGE>
+</blockquote>
+
+@_UI_STD_FOOTER_@

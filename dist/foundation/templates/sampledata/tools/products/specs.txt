@@ -1,0 +1,7 @@
+code	sku	sort	header	detail
+	os28069	000	Case material	Painted Steel
+	os28069	000	Hinge material	Galvanized
+	os28069	000	Latch material	Stainless Steel
+	os28069	000	Height	14"
+	os28069	000	Width	24"
+	os28069	000	Depth	10"

@@ -1,0 +1,128 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftright
+[/comment]
+
+[set page_title]__COMPANY__ -- Advanced Search[/set]
+[set page_banner]Advanced Search[/set]
+[set bgcolor]#FFFFFF[/set]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]cart_tiny[/component]
+[/control-set]
+
+[control-set]
+[component]category_vertical[/component]
+[/control-set]
+
+[control-set]
+[component][/component]
+[/control-set]
+
+[control-set]
+[component]cross_horizontal[/component]
+[size]2[/size]
+[cols]2[/cols]
+[banner]Specials[/banner]
+[/control-set]
+
+[control-set]
+[component]random[/component]
+[size]3[/size]
+[cols]1[/cols]
+[banner]See also...[/banner]
+[/control-set]
+
+[control reset=1]
+
+@_LEFTRIGHT_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+[tmp matchlimit]10[/tmp]
+
+<table width="95%" border="0">
+<tr>
+<td>
+<br>
+
+<big><b>Advanced Search</b></big>
+<br><br>
+
+<p>
+<form action="[area search]" method=post>
+<input type=hidden name=mv_session_id value="[data session id]">
+[seti asearch]
+fi=products
+st=db
+su=yes
+ml=[scratch matchlimit]
+[/seti]
+<input type=hidden name=mv_profile value=asearch>
+<b>Search by Field:</b><br>
+Search for
+<input type=text name=mv_searchspec size=20 maxlength=30>
+in
+<select name=mv_search_field>
+[loop
+	lr=1
+	list="*	all fields
+description	Description
+sku	SKU
+price	Price
+weight	Weight
+color	Color
+size__MVC_FIELDMUNGE__	Size
+"]
+<option value="[loop-code]"[selected mv_search_field [loop-code]]>[loop-pos 1]
+[/loop]
+</select>
+&nbsp;
+<input type="image" alt="Search" src="__THEME_IMG_DIR__go.gif" border=0>
+</form>
+</p>
+
+<p>
+<form action="[area search]" method=post>
+<input type=hidden name=mv_session_id value="[data session id]">
+<input type=hidden name=mv_matchlimit value=[scratch matchlimit]>
+<input type=hidden name=mv_substring_match value="Yes">
+
+<b>Search by Category:</b><br>
+Search for
+<input type=text name=mv_searchspec size=20 maxlength=30>
+in the category
+<select name=mv_searchspec>
+[loop
+	search="
+		fi=cat
+		st=db
+		ra=yes
+		rf=name
+		ml=1000
+		tf=name
+		un=1
+	"
+]
+<option>[loop-code]
+[/loop]
+</select>
+&nbsp;
+<input type="image" alt="Search" src="__THEME_IMG_DIR__go.gif" border=0>
+</p>
+
+</form>
+
+</td>
+</tr>
+</table>
+
+<!-- END CONTENT -->
+
+@_LEFTRIGHT_BOTTOM_@

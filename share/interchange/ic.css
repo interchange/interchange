@@ -1,0 +1,268 @@
+<!--
+/* background colour styles */
+
+.tablightborder {
+	background-color: #FFFFFF;
+}
+
+.headerrow {
+	background-color: #CCCCCC;
+}
+
+.vr {
+	background-color: #999999;
+}
+
+.hrlight {
+	background-color: #FFFFFF;
+}
+
+.tabdark {
+	background-color: #B4B0AA;
+}
+
+.hrdark {
+	background-color: #404040;
+}
+
+.interfacemain {
+	background-color: #D4D0C8;
+}
+
+.tabborder {
+	background-color: #404040;
+}
+
+.hrmedium {
+	background-color: #E4E4E4;
+}
+
+/* font styles */
+.heading {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	font-weight: normal;
+	color: #000000;
+}
+.maincontent {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	font-weight: normal;
+	color: #333333;
+	background: #FFFFFF;
+}
+.footerb {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	color: #333333;
+}
+.footer {
+
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	font-weight: normal;
+	color: #333333;
+}
+.shrink {
+	font-size: 2px;
+}
+/* link styles */
+A.btnfont:link, A.btnfont:visited, A.btnfont:active {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #333333;
+    text-decoration:none;
+}
+
+A.btnfont:hover {
+    color: #000000;
+	font-size: 11px;
+    text-decoration:underline;
+}
+
+A.menufont:link, A.menufont:visited, A.menufont:active {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #333333;
+    text-decoration:none;
+}
+A.menufont:hover {
+    color: #000000;
+	font-weight: normal;
+	font-size: 11px;
+    text-decoration:underline;
+}
+
+
+BODY { 
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 11px;
+}
+
+TD { 
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 10px;
+}
+
+A:link { 
+  text-decoration: none; 
+  font-weight: normal; 
+  color: #CC3333;
+  font-size: 10px;
+}
+
+A:hover { 
+  text-decoration: underline; 
+  font-weight: normal; 
+  color: #CC3333;
+  font-size: 11px;
+}
+
+A:active { 
+  text-decoration: none; 
+  font-weight: normal; 
+  color: #FF3333;
+  font-size: 11px;
+}
+
+A:visited {
+  text-decoration: none; 
+  font-weight: normal; 
+  color: #CC3333;
+  font-size: 11px;
+}
+
+.margin { 
+  margin-top: 0px; 
+  margin-left: 0px;
+}
+
+.ctitle  { 
+  font-weight: bold; 
+  color: white;
+  font-size: 11px;
+}
+
+.cheader  { 
+  font-weight: bold; 
+  color: #663333;
+  font-size: 11px;
+}
+
+A:link.ctitle  { 
+  text-decoration: none;
+  font-weight: bold; 
+  color: white;
+  font-size: 11px;
+}
+
+A:hover.ctitle { 
+  text-decoration: underline; 
+  font-weight: bold; 
+  color: yellow; 
+  font-size: 11px;
+}
+
+A:active.ctitle { 
+  text-decoration: underline; 
+  font-weight: bold; 
+  color: yellow; 
+  font-size: 11px;
+}
+
+A:visited.ctitle {  
+  text-decoration: none;
+  font-weight: bold; 
+  color: white;
+  font-size: 11px;
+}
+
+.cbreak { 
+  font-weight: bold; 
+  font-size: 11px;
+}
+
+.cdata { 
+  vertical-align: center;
+  font-size: 11px;
+}
+
+.cerror { 
+  color: red; 
+  font-size: 11px;
+}
+
+.cmessage { 
+  color: green; 
+  font-size: 11px;
+}
+
+.chelp { 
+  vertical-align: center; 
+  font-size: 11px; 
+}
+
+.clabel { 
+  text-align: left; 
+  font-weight: bold; 
+  font-size: 11px;
+  padding-left: 5px;
+}
+
+.cwidget { 
+  vertical-align: center; 
+  font-size: 11px; 
+}
+
+.ralt { 
+  background-color: #FFFFFF; 
+} 
+
+.rbreak { 
+  background-color: #FFFFFF; 
+}
+
+.rmarq { 
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: bold;
+  background-color: #999999; 
+}
+
+A.rmarq:hover { color: #FFFF99; font-size: 12px; font-weight: bold; text-decoration: underline; }
+A.rmarq:link, A.rmarq:visited, A.rmarq:active { font-size: 12px; color: #FFFFCC; font-weight: bold; text-decoration:none; }
+
+.rnorm { 
+  background-color: #EEEEEE; 
+}
+.rborder { 
+  background-color: #CCCCCC; 
+  margin: 0;
+  padding: 2;
+}
+.rspacer { 
+  background-color: #999999; 
+  margin: 0;
+  padding: 0;
+}
+.cborder { 
+  background-color: #999999; 
+  padding: 0;
+}
+.rtitle { 
+  background-color: #999999; 
+}
+.rheader { 
+  background-color: #999999; 
+  color: #663333; 
+}
+.uitable { 
+  cellpadding: 3;
+  width: 90%;
+  spacing: 0 0 0;
+  padding: 0 0 0;
+}
+-->

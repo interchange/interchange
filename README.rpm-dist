@@ -1,0 +1,125 @@
+-----------------------------------------------------------------------------
+
+ Interchange RPM packages for Red Hat Linux and compatible operating systems
+
+-----------------------------------------------------------------------------
+
+The Interchange RPM packages integrate Interchange with a Red Hat Linux
+or compatible operating system. Files are installed in the usual Linux
+Standard Base locations:
+
+Interchange base: /usr/lib/interchange.
+
+Executables: /usr/lib/interchange/bin.
+
+Configuration: The global Interchange configuration file is
+/etc/interchange.cfg. It is only writable by root.
+
+Data: Catalog directories are located by default in /var/lib/interchange.
+
+Invocation: Invocation is the normal /etc/rc.d/init.d startup method.
+Interchange installs to be active in run levels 3, 4, and 5; to be killed
+in all.
+
+Logs: Logs go in /var/log/interchange. The subdirectory is needed to
+allow the Interchange user ID to write/create files. Interchange drops
+a file in /etc/logrotate.d to do log rotation.
+
+Run: Run files go in /var/run/interchange. This includes the UNIX-domain
+socket and catalog status files. The subdirectory is needed to allow
+the Interchange user ID to write/create files.
+
+Sessions and temporary files: /var/cache/interchange.
+
+Documentation: /usr/share/doc/interchange-x.y.z.
+
+On a dedicated production server, it is wise to segregate as many of these
+directories as possible onto their own partitions, to prevent problems if
+one partition runes out of inodes or disk space, or you have hard or soft
+disk corruption problems.
+
+
+INSTALL
+
+rpm -Uvh interchange-4.9.x.i386.rpm interchange-foundation-4.9.x.i386.rpm
+
+
+STARTING/RESTARTING INTERCHANGE
+
+Interchange, as installed from the RPM, needs a special invocation from
+/usr/sbin/interchange. This is because the locations of configuration,
+run, and log files differ from the places Interchange has traditionally
+expected them.
+
+As either the 'interch' user or the root user you should start or restart
+interchange with this command:
+
+/usr/sbin/interchange -r
+
+NOTE: Contrary to other documentation, you SHOULD NOT use 'bin/restart'
+or directly call 'bin/interchange' to start or restart Interchange when
+you use the RPM installation.
+
+
+-----------------------------------------------------------------------------
+
+                       Live Demo Catalog in RPM Format
+
+-----------------------------------------------------------------------------
+
+There is a separate RPM that provides a live demonstration catalog called
+'foundation', which you may optionally use to quickly try out Interchange.
+It should not be used as a basis for a real catalog; instead build
+your own with the makecat tool in '/usr/lib/interchange/bin/makecat',
+as described in the documentation. Do not confuse the 'foundation' live demo
+with the 'foundation' catalog skeleton from which you are encouraged to build
+your own catalog.
+
+
+APACHE ASSUMPTIONS
+
+The foundation-demo RPM relies upon the following things in the Apache
+installation:
+
+-- One of the following two default setups:
+
+   DocumentRoot /var/www/html
+   ScriptAlias  /cgi-bin/ /var/www/cgi-bin/
+
+-- ServerName must be the same as what is revealed by `hostname` when
+   the foundation RPM is installed. If it is not, temporarily change the
+   hostname with a command like 'hostname new.host.name' and then install
+   the foundation-demo RPM. Afterwards you can change the hostname back
+   to normal.
+
+-- suEXEC not enabled. If you have suEXEC enabled, you are responsible
+   for changing permissions and running parameters appropriately. You
+   can typically disable suEXEC by running `chmod u-s /usr/bin/suexec'.
+   If you want to continue to use suEXEC, you will have to compile the
+   appropriate INET mode link program and use it instead of vlink.
+
+
+INSTALL
+
+rpm -Uvh interchange-foundation-demo-4.9.x.rpm
+
+
+USING THE DEMO
+
+Once installed, you should be able to access the demo catalog like this
+(using your own hostname, of course):
+
+http://hostname/foundation/
+
+The initial administrative user name is "interch", and the password is
+"pass". CHANGE IT.
+
+
+-----------------------------------------------------------------------------
+
+                              More information
+
+-----------------------------------------------------------------------------
+
+http://www.icdevgroup.org/ has complete documentation, user mailing
+list information, and other resources.

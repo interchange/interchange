@@ -1,0 +1,8 @@
+UserTag content-info Order dir
+UserTag content-info addAttr
+UserTag content-info Routine <<EOR
+use UI::ContentEditor;
+sub {
+	UI::ContentEditor::content_info(@_);
+}
+EOR

@@ -1,0 +1,146 @@
+[calc]
+	$Values->{mv_data_table} = $CGI->{mv_data_table} = 'variable';
+	$CGI->{no_dbmenu} = 1;
+	return;
+[/calc]
+[flag type=write table=variable]
+[set table_perm]1[/set]
+[set ui_class]Admin[/set]
+[set page_title][L]Tax configuration[/L][/set]
+[set help_name]tax.main[/set]
+[set icon_name]icon_config.gif[/set]
+@_UI_STD_HEAD_@
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+[perl tables=variable]
+	delete $Scratch->{changes};
+	return unless $CGI->{tax_format} eq 'do';
+	for (my $i = 0; $i < 1000; $i++) {
+		last unless defined $CGI->{"taxarea$i"};
+		next if defined $CGI->{"Delete$i.x"};
+		my $area = $CGI->{"taxarea$i"};
+		my $rate = $CGI->{"taxrate$i"};
+		my $ship = $CGI->{"taxship$i"};
+		push @areas, ($area || 'new');
+		push @rates, "$area=$rate";
+		push (@taxes, $area) if $CGI->{"taxship$i"};
+	}
+	$Scratch->{taxarea} = join " ", @areas;
+	$Scratch->{taxrate} = join ",", @rates;
+	$Scratch->{taxship} = join " ", @taxes;
+	$Scratch->{changes} = 1;
+	return;
+[/perl]
+[if scratch changes]
+	<!-- setting:
+	[perl tables=variable]
+	my $db = $Db{variable};
+	$Values->{ui_changes_made} = 1;
+
+	my %sets = qw/taxarea TAXAREA taxrate TAXRATE taxship TAXSHIPPING/;
+
+	my ($v, $k);
+	while( ($v, $k) = each %sets) {
+		$out .= "Set $k ($Scratch->{$v}): ";
+		$out .= $db->set_field($k, 'Variable', delete $Scratch->{$v});
+	}
+	return $out;
+	[/perl]
+	exporting: [export variable] -->
+[/if]
+
+[if type=explicit
+	compare=|
+			[newer
+				source=__UI_PRODUCT_DIR__/variable.txt
+				target=`"$Config->{ConfDir}/status.$Config->{CatalogName}"`
+				]
+			|]
+[value name=ui_changes_made set=1 hide=1]
+<span class=cerror>You need to [page __UI_BASE__/reconfig @@MV_PAGE@@]apply changes</a> for changes to take effect.</span>
+[/if]
+
+[calc]
+		@areas = grep /\S/, split /\s+/, tag_data(qw/variable Variable TAXAREA/);
+		@rates = grep /\S/, split /,/, tag_data(qw/variable Variable TAXRATE/);
+		my $taxship = tag_data(qw/variable Variable TAXSHIPPING/);
+		$taxship = " $taxship ";
+		my $i;
+		my $last = -1;
+		for ($i = 0; $i < scalar @areas; $i++) {
+			my $rate = $rates[$i];
+			$rate =~ s/.*=//;
+			$rate =~ s/[^\d.]//g;
+			my $ship = ($taxship =~ / $areas[$i] /i) ? $areas[$i] : '';
+			push @out, "$i\t$areas[$i]\t$rate\t$ship";
+			$last = $i;
+		}
+		if ($CGI->{addnewtax}) {
+			$last++;
+			push @out, "$last\tnew";
+		}
+		$Scratch->{its} = join "\n", @out;
+		return;
+[/calc]
+<p>
+<form action="[area @@MV_PAGE@@]" method=POST>
+<input type=hidden name=mv_session_id value="[data session id]">
+<INPUT TYPE=hidden NAME=tax_format VALUE=do>
+<TABLE width="90%" border=0 cellpadding=0 cellspacing=0>
+<tr class=rborder height=1><td colspan=4></td></tr>
+<TR class=rmarq>
+	<TD VALIGN=top width="20%">
+		[L]Location[/L]
+	</td>
+	<TD align=center VALIGN=top>
+		[L]Tax Rate[/L] (%)
+	</td>
+	<TD align=center VALIGN=top>
+		[L]Apply tax to shipping charge[/L]
+	</td>
+	<TD VALIGN=top>
+	&nbsp;
+	</td>
+</tr>
+<tr class=rborder height=1><td colspan=4></td></tr>
+
+[loop lr=1 list="[scratch its]"]
+<tr>
+<td class=rnorm>
+<input type=text name="taxarea[loop-code]" size=40 value="[loop-pos 1]">
+</td>
+
+<td align=center class=rnorm>
+<input type=text name="taxrate[loop-code]" 
+ size=7 value="[loop-pos 2]">
+</td>
+
+<td class=rnorm align=center valign=center>
+<INPUT TYPE=CHECKBOX NAME=taxship[loop-code] VALUE="1"[if-loop-pos 3] CHECKED[/if-loop-pos]>
+</td>
+
+<td class=rnorm align=lrft valign=center>
+<INPUT TYPE=image src="delete.gif" width=20 height=20 border=0 NAME=Delete[loop-code]>
+</td>
+
+</tr>
+[/loop]
+<tr>
+<td colspan=4 class=rnorm><a href="[area href=@@MV_PAGE@@ form='addnewtax=ok']"><img src="plus.gif" width=20 height=20 border=0></a></td>
+</tr>
+
+<tr class=rborder height=1><td colspan=4></td></tr>
+
+</table>
+
+<p>
+[button text="[L]Update[/L]"]
+mv_todo=return
+[/button]
+</form>
+
+
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ -->

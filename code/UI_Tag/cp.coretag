@@ -1,0 +1,18 @@
+UserTag cp Order from to
+UserTag cp addAttr
+UserTag cp Routine <<EOR
+require File::Copy;
+sub {
+	my ($from, $to, $opt) = @_;
+#Debug("cp from=$from to=$to umask=$opt->{umask}");
+	my $save_mask;
+	if($opt->{umask}) {
+		$opt->{umask} = oct($opt->{umask});
+		$save_mask = umask($opt->{umask});
+	}
+	my $status = File::Copy::copy($from, $to);
+	umask($save_mask) if defined $save_mask;
+	return '' if $opt->{hide};
+	return $status;
+}
+EOR

@@ -1,0 +1,107 @@
+news component               
+===============
+
+Description
+-----------
+This component enables the shop owner to easily add news items to the 
+foundation catalog.
+If you are already familiar with the merchandising components (eg. promo) 
+you will notice that the news component has much resemblance (esp. the 
+usage) with the promo component.
+
+
+Installation
+------------
+In order to activate this feature, you have to copy the tree in the 
+eg/news_feature directory to the appropriate directory of the foundation 
+catalog.
+
+	cp -r eg/news_feature/* path_to_your_catalogs/the_catalog
+
+Restart the server after you have copied the files.
+
+Examples
+--------
+A couple of sample news items are also provided to illustrate some 
+features. To see them just point your browser to the news.html page.
+
+The news page (news.html) can be accessed with:
+
+	http://yourdomain.com/cgi-bin/your_catalog/news.html
+
+
+
+Features
+--------
+Fields in table news:
+- code		code of the news item (auto number if not entered)
+- featured	used for categorisation purposes. One could use this
+		field to display different types of news messages on 
+		different pages (different configuration of the news 
+		component on different pages)
+- banner_text	Text could be used for banner display; not used in 
+		sample data and sample page
+- banner_image	image to be displayed together with the news item
+		Currently only used when component is displayed
+		(not used in the news item itself on news.html)
+- blurb_begin	Teaser text (see promo component)
+		Will replace title in component display when present
+- blurb_end	Closer text (see promo component)
+- timed_news	Activates timing (start and finisch dates) of the news 
+		item. Should have any value not Null or 0 to activate.
+- start_date	News item will be displayed from this date (format 
+		20010804) if the timed_news field is set
+		You could set this field to the propper value
+		by choosing the 'Date Selector' in the meta editor
+- finish_date	News item will be displayed until this date
+		See also start_date
+- posted_on	Date the news item is posted
+		see also start_date
+- posted_by	Name of the author of the news item
+- posted_email	Email address of the author
+- url		not used in sample data
+- title		The title of the news item
+		See also blurb_begin
+- body		The text of the news item
+
+
+Files
+-----
+The directory structure of the news_feature directory has the same layout
+as the foundation catalog directory. This should assist in  
+
+news_feature
+	|
+	|--README
+	|--dbconf
+	|	|--default_db
+	|	|	|--news.dbm
+	|	|
+	|	|--mysql
+	|	|	|--news.mysql
+	|	|
+	|	|--oracle	
+	|	|	|--news.ora
+	|	|
+	|	|--pgsql
+	|		|--news.pgsql
+	|	
+	|--pages
+	|	|--news.html
+	|
+	|--products
+	|	|--news.txt
+	|
+	|--templates
+		|--components
+			|--news
+
+
+
+I welcome any comments for improvement.
+Ton Verhagen <ton@verhagen.net>
+
+
+
+
+

@@ -1,0 +1,1 @@
+code	username	order_date	original_amount	redeemed_amount	available_amount	passcode	active	redeemed	update_date

@@ -1,0 +1,34 @@
+[set page_title]Payment Preferences - iTransact[/set]
+[set ui_checklist]1[/set]
+[set help_name]wizard.itransact[/set]
+@_UI_STD_HEAD_@
+
+<table width=500><tr><td align=left>
+You only need enter your iTransact Vendor ID to enable processing.
+</td></tr></table>
+
+[table-editor 
+
+	left_width=120
+	table_width=500
+	wizard=1
+	defaults=1
+	bottom_buttons=1
+	no_top=1
+	no_bottom=1
+   	row_template="[scratch row_template]"
+
+	mv_nextpage="[either][cgi ui_nextpage][or]__UI_BASE__/wizard/step_security[/either]"
+	mv_prevpage="[either][cgi ui_prevpage][or]__UI_BASE__/wizard/step_pay[/either]"
+	hidden.ui_return_to="__UI_BASE__/wizard/index"
+
+	ui_wizard_fields="itransact_id"
+
+	check.itransact_id=mandatory
+	label.itransact_id="iTransact Vendor ID"
+	help.itransact_id="You should have received this when you signed up"
+	widget.itransact_id=text_20
+
+]
+
+@_UI_STD_FOOTER_@

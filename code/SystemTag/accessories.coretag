@@ -1,0 +1,11 @@
+UserTag accessories         Order        code arg
+UserTag accessories         addAttr
+UserTag accessories         attrAlias    db table
+UserTag accessories         attrAlias    base table
+UserTag accessories         attrAlias    database table
+UserTag accessories         attrAlias    col column
+UserTag accessories         attrAlias    row code
+UserTag accessories         attrAlias    field column
+UserTag accessories         attrAlias    key code
+UserTag accessories         PosNumber    2
+UserTag accessories         MapRoutine   Vend::Interpolate::tag_accessories

@@ -1,0 +1,4 @@
+code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url	member
+001		x001					admin/export_table	mv_data_table=%5Bcgi%20mv_data_table%5D	Single table		0	Export a single table to a text file							
+002		x002					admin/dbdownload	mv_data_table=%5Bcgi%20mv_data_table%5D	Multiple Table		0	Export multiple tables							
+003		x003					admin/flex_select	mv_data_table=%5Bcgi%20mv_data_table%5D	Back to table		0								

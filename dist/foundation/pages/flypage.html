@@ -1,0 +1,180 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+[/comment]
+
+[tmp page_title]__COMPANY__ -- [item-description][/tmp]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]category_vertical[/component]
+[/control-set]
+
+[control reset=1]
+
+@_LEFTONLY_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+<br>
+
+[fly-list code="[data session arg]"]
+[set cross_category][item-field category][/set]
+[set upsell][item-data merchandising upsell_to][/set]
+[set cross_codes][item-data merchandising cross_sell][/set]
+
+  <FORM ACTION="[area order]" METHOD=POST>
+  <INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="[item-code]">
+  <input type=hidden name=mv_session_id value="[data session id]">
+
+  <table width="70%" border="0" cellspacing="0" cellpadding="5">
+  <tr valign="middle"> 
+    <td align=center class="contentbar1">
+      <big>[item-field category] : <b>[item-description]</b></big>
+    </td>
+  </tr>
+  <tr valign="middle"> 
+    <td align=center> 
+      <table cellspacing=0 cellpadding=3 align=center>
+      <tr> 
+	<td valign="center" align="left"> 
+	  [if-item-field image]
+	    <IMG SRC="items/[item-field image]" ALT="[item-filter entities][item-description][/item-filter]" title="[item-filter entities][item-description][/item-filter]" BORDER=0>
+ 	  [/if-item-field]
+	</td>
+	<td valign="center" align="center"> 
+	  <table width="100%" border="0" cellpadding="3" cellspacing="0">
+	  <tr>
+	    <td colspan="2">
+	      [item-field comment__MVC_FIELDMUNGE__]
+	    </td>
+	  </tr>
+	  [if file products/specs.txt]
+	  [loop search="
+	  	fi=specs.txt
+		st=text
+		sf=sku
+		se=[item-code]
+		op=eq
+		co=yes
+		rf=header,detail
+	  "][on-match]
+		<tr>
+	    <td style="contentbar1" colspan=2><img src="bg.gif" alt="" height=3>
+		</tr>
+	  [/on-match]
+	  [list]<tr>
+	    <td style="contentbar1">
+	      <B>[loop-param header]:</b>
+	    </td>
+	    <td>
+	      [loop-param detail]
+	    </td>
+	  </tr>
+	  [/list]
+	  [on-match]
+		<tr>
+	    <td style="contentbar1" colspan=2><img src="bg.gif" alt="" height=3>
+		</tr>
+	  [/on-match]
+	  [/loop]
+	  [/if]
+	  <tr> 
+	    <td colspan="2">&nbsp;</td>
+	  </tr>
+
+	  [if-item-data options o_enable]
+	  <tr>
+	    <td colspan="2">
+	      [if ordered [item-code]]
+	        This item is currently in your [page ord/basket]shopping cart</a>.
+	        <br>
+	      [/if]
+	      [if-item-data options o_enable]
+	        [if-item-data !options o_modular]
+	          [table-organize cols=2 table=' ' font="size=1" pretty=1]
+	            [item-options td=1 label=1 bold=1 price=1]
+	          [/table-organize]
+	        [/if-item-data]
+	      [/if-item-data]
+
+   	      [if-item-data options o_modular]
+	        [set arg][item-code][/set]
+	        [include templates/components/modular_buy]
+	      [/if-item-data]
+	    </td>
+	  </tr>
+	  [/if-item-data]
+			 
+	  <tr> 
+  	    [if-item-data inventory quantity < 1]
+	    <td align="left">
+	      <b>Out Of Stock<b>
+	        <br>
+	        <a href="[area stock-alert [item-code]]">In-Stock Notification</a>
+	    </td>
+	    [else]
+	    <td align="left">
+		<b>In Stock</b>
+            </td>
+	    [/else]
+	    [/if-item-data]
+
+	    <td align="right">
+	      Quantity: <input type="text" name="mv_order_quantity" size="2" value="1">
+	    </td>
+
+	  </tr>
+	  </table>
+	</td>
+      </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td class="contentbar1">
+
+	<table width="100%">
+	<tr>
+	  <td align="left">
+      		Price: <b>[item-price]</b>
+	  </td>
+	  <td align="right">					
+
+	    <input type="image" src="__THEME_IMG_DIR__buynow.gif" border="0" value="Buy it Now!">
+
+	  </td>
+	</tr>
+	</table>
+
+    </td>
+  </tr>
+[if variable FORUM_PRODUCTS]
+  <tr>
+  	<td>
+		[forum top="[item-code]" display_page="forum/display" /]
+		<p>
+		[page href="forum/reply"
+				form="
+					product=1
+					mv_arg=[item-code]
+				"
+		]Comment on this product.</A>
+		</p>
+	</td>
+  </tr>
+[/if]
+  </table>
+
+</form>
+
+[/fly-list]
+
+<!-- END CONTENT -->
+
+@_LEFTONLY_BOTTOM_@

@@ -1,0 +1,800 @@
+[loop list="access area cat products country mv_metadata userdb variable"]
+[flag type=write table="[loop-code]"]
+[/loop]
+[value name=site_created set=1 hide=1]
+[set ui_checklist]1[/set]
+@_UI_STD_HEAD_@
+&nbsp;<br>
+
+<blockquote>
+[if value pgpkeytext =~ /BEGIN/]
+
+	[calc]
+		$Values->{pgpkeyid} = q{[add-gpg-key text="[value pgpkeytext]" return_id=1]};
+		return;
+	[/calc]
+
+	[if value pgpkeyid]
+	<P>GPG key (id [value pgpkeyid]) imported.</P>
+	[value name=pgpkeytext set=""]
+	[else]
+	<P>GPG key import FAILED.</P>
+	[/else]
+	[/if]
+
+[/if]
+
+[perl tables="access variable products country mv_metadata userdb"]
+	my $vdb = $Db{variable};
+	my $adb = $Db{access};
+	my $udb= $Db{userdb};
+	my $mvdb = $Db{mv_metadata};
+
+my %pref = (
+    ADDRESS                => 'Company',
+    AUTHNET_ID             => 'Payment',
+    AUTHNET_REFERER        => 'Payment',
+    AUTHNET_SECRET         => 'Payment',
+    AUTHNET_SERVER         => 'Payment',
+    CENTERED_FLYPAGE       => 'Display Layout',
+    CHECK_ACCEPTED         => 'Payment',
+    CLICK_ENLARGE          => 'Display Layout',
+    COD_ACCEPTED           => 'Payment',
+    COMPANY                => 'Company',
+    COUNTRY                => 'Company',
+    CREDIT_CARDS_ACCEPTED  => 'Payment',
+    CYBER_CONFIGFILE       => 'Payment',
+    DEALER_PRICE           => 'Display Layout',
+    DOMAINNAME             => 'Company',
+    EMAIL_INFO             => 'Company',
+    EMAIL_SERVICE          => 'Company',
+    FAX                    => 'Company',
+    FEDEX_MODES            => 'Shipping',
+    IN_STOCK_NOTIFY        => 'Display Layout',
+    IN_STOCK_OPTS          => 'Display Layout',
+    ITRANSACT_ID               => 'Payment',
+    MV_PAYMENT_ID          => 'Payment',
+    MV_PAYMENT_MODE        => 'Payment',
+    MV_PAYMENT_REFERER     => 'Payment',
+    MV_PAYMENT_SECRET      => 'Payment',
+    MV_PAYMENT_SERVER      => 'Payment',
+    ORDERS_TO              => 'Orders',
+    PGP_KEY                => 'Encryption',
+    PHONE                  => 'Company',
+    PO_ACCEPTED            => 'Payment',
+    POSTAL_ACCEPTED        => 'Payment',
+    SALE_PRICE             => 'Display Layout',
+    SECURE_ENABLE          => 'Security',
+    SEPARATE_SHIPPING      => 'Display Layout',
+    SHIP_DEFAULT_COUNTRY   => 'Shipping',
+    SHIP_DEFAULT_MODE      => 'Shipping',
+    SHIP_DEFAULT_ZIP       => 'Shipping',
+    SHIP_FLAT_DOM_RATE     => 'Shipping',
+    SHIP_FLAT_INTL_RATE    => 'Shipping',
+    SIGNIO_ID              => 'Payment',
+    SIGNIO_PARTNER         => 'Payment',
+    SIGNIO_SECRET          => 'Payment',
+    SIGNIO_SERVER          => 'Payment',
+    SIGNIO_VENDOR          => 'Payment',
+    SKIPJACK_ID            => 'Payment',
+    SKIPJACK_PARTNER       => 'Payment',
+    STATE                  => 'Company',
+    STYLE                  => 'Display Layout',
+    TAXAREA                => 'Tax',
+    TAXRATE                => 'Tax',
+    TAXSHIPPING            => 'Tax',
+    TOLLFREE               => 'Company',
+    TOWN                   => 'Company',
+    UPS_MODES              => 'Shipping',
+    UPS_ORIGIN             => 'Shipping',
+    ZIP                    => 'Company',
+);
+
+	my $vset = sub {
+		my($name, $value) = @_;
+		$vdb->set_field($name, 'Variable', $value);
+		return 1 if $vdb->field($name, 'pref_group');
+		return 0 if ! $pref{$name};
+		$vdb->set_field($name, 'pref_group', $pref{$name});
+		return 1;
+	};
+
+my %doit = (
+authnet_id   => 'AUTHNET_ID',
+authnet_referer    => 'AUTHNET_REFERER',
+authnet_secret     => 'AUTHNET_SECRET',
+authnet_server     => 'AUTHNET_SERVER',
+itransact_id       => 'ITRANSACT_ID',
+signio_id          => 'SIGNIO_ID',
+signio_partner     => 'SIGNIO_PARTNER',
+signio_secret      => 'SIGNIO_SECRET',
+signio_server      => 'SIGNIO_SERVER',
+signio_vendor      => 'SIGNIO_VENDOR',
+skipjack_id 	   => 'SKIPJACK_ID',
+skipjack_partner   => 'SKIPJACK_PARTNER',
+
+abouttext           => sub {
+						my $content = $Values->{abouttext};
+						$content =~ s/\r\n/\n/g;
+						$content =~ s/\r//g;
+						$Tag->substitute_file(
+								{ 
+									content => 1,
+									file => 'pages/aboutus.html',
+									body => $content,
+								}
+						);
+                    },
+abouttitle          => sub {
+						$Tag->substitute_file(
+								{ 
+									scratch => 'page_title',
+									file => 'pages/aboutus.html',
+									body => $Values->{abouttitle},
+								}
+						);
+                    },
+adminpass           => sub {
+						$adb->set_field(
+								$Values->{adminuser},
+								'password',
+								$Tag->crypt($Values->{adminpass}),
+								);
+						$adb->set_field(
+								$Values->{adminuser},
+								'name',
+								'Site Admin',
+								);
+						$adb->set_field(
+								$Values->{adminuser},
+								'super',
+								1,
+								);
+					},
+adminuser           => undef,
+address             => 'ADDRESS',
+city                => 'TOWN',
+company             => 'COMPANY',
+country             => 'COUNTRY',
+domainname          => 'DOMAINNAME',
+emailinfo           => 'EMAIL_INFO',
+emailservice        => 'EMAIL_SERVICE',
+fax                 => 'FAX',
+fedadder            => sub {
+						return unless $Values->{shipmethod} =~ /\bfed/i;
+						$Tag->substitute_file(
+								{ 
+									begin => q{FEDE:.*adder\s*=>\s*["']?},
+									global => 1,
+									end => q!["']?\s*[,}]!,
+									greedy => 0,
+									file => 'products/shipping.asc',
+									body => $Values->{fedadder},
+								}
+						);
+                    },
+fedmodes            => 'FEDEX_MODES',
+indextext           => sub {
+						my $content = $Values->{indextext};
+						$content =~ s/\r\n/\n/g;
+						$content =~ s/\r//g;
+						$Tag->substitute_file(
+								{ 
+									content => 1,
+									file => 'pages/index.html',
+									body => $content,
+								}
+						);
+                    },
+indextitle          => sub {
+						$Tag->substitute_file(
+								{ 
+									scratch => 'page_title',
+									file => 'pages/index.html',
+									body => $Values->{indextitle},
+								}
+						);
+                    },
+enablesecure        => 'SECURE_ENABLE',
+defaultcountry 	    => 'SHIP_DEFAULT_COUNTRY',
+defaultshipmode	    => 'SHIP_DEFAULT_MODE',
+defaultshipzip 	    => 'SHIP_DEFAULT_ZIP',
+flati		    => 'SHIP_FLAT_INTL_RATE',
+flatd		    => 'SHIP_FLAT_DOM_RATE',
+paymentreferer      => 'MV_PAYMENT_REFERER',
+paymentsecret       => 'MV_PAYMENT_SECRET',
+paymentid           => 'MV_PAYMENT_ID',
+paymentserver       => 'MV_PAYMENT_SERVER',
+authnetmode         => 'AUTHNET_MODE',
+signiomode          => 'SIGNIO_MODE',
+cyberkey            => 'CYBER_KEY',
+cyberid             => 'CYBER_ID',
+cyberfile           => 'CYBER_CONFIGFILE',
+cybermode           => 'CYBER_MODE',
+mailorderto         => 'ORDERS_TO',
+payment_mode        => 'MV_PAYMENT_MODE',
+paycheck            => 'CHECK_ACCEPTED',
+paycod              => 'COD_ACCEPTED',
+paygate             => 'PAYGATE',
+paymo               => 'POSTAL_ACCEPTED',
+paypo               => 'PO_ACCEPTED',
+pgp                 => 'PGP',
+pgpkeyid            => 'PGP_KEY',
+phone               => 'PHONE',
+images              => sub {
+						my $arch = $Values->{images}
+							or return;
+						$arch =~ s:.*/::;
+						$arch =~ s:.*\\::;
+						$arch = $Tag->filter('filesafe', $arch);
+						$Values->{images} = $arch;
+					},
+products              => sub {
+						my $arch = $Values->{products}
+							or return;
+						$arch =~ s:.*/::;
+						$arch =~ s:.*\\::;
+						$Values->{products} = $Tag->filter('filesafe', $arch);
+					},
+shipzip             => 'UPS_ORIGIN',
+shoppass           => sub {
+						$udb->set_field(
+								$Values->{shopuser},
+								'password',
+								$Values->{shoppass},
+								);
+						$udb->set_field(
+								$Values->{shopuser},
+								'fname',
+								$Values->{firstname},
+								);
+					},
+shopuser            => undef,
+colorset            => 'STYLE',
+cyberfile		    => sub {
+						my $infile = $Values->{cyberfile};
+						$infile =~ s:.*/::;
+						$infile =~ s:.*\\::;
+						$infile = $Tag->filter('filesafe', $infile);
+						$infile = "upload/$infile";
+						if(-f $infile) {
+							$Tag->cp( {
+										from => $infile,
+										to => "etc/cybercash_conf",
+									  });
+						}
+						$Values->{cyberfile} = 'etc/cybercash_conf';
+						return 'CYBER_CONFIGFILE';
+					},
+logo		    => sub {
+						$Values->{logo} =~ s:.*/::;
+						$Values->{logo} =~ s:.*\\::;
+						$Values->{logo} = $Tag->filter('filesafe', $Values->{logo});
+						$Tag->cp( {
+									from => "upload/$Values->{logo}",
+									to => "images/$Values->{logo}",
+									umask => 2,
+								  });
+						return 'LOGO';
+					},
+saleprice           => sub {
+				my $saleprice = $Values->{saleprice};
+				my $mvline = $mvdb->field('products','options');
+				if($saleprice eq "1") {
+					if($mvline !~ /sale_price\r/) {
+						$mvline =~ s/price\r/price\rsale_price\r/;
+					}
+				}
+				else {
+					$mvline =~ s/sale_price\r//;
+				}
+				$mvdb->set_field(
+					'products',
+					'options',
+					$mvline,
+				);
+				$vset->('SALE_PRICE', $saleprice);
+			}, 
+wholeprice	    => sub {
+				my $wholeprice = $Values->{wholeprice};
+				my $mvline = $mvdb->field('products','options');
+				if($wholeprice) { 
+					if($mvline !~ /wholesale\r/) {
+						$mvline =~ s/price\r/price\rwholesale\r/;
+					}
+				}
+  				else {
+					$mvline =~ s/wholesale\r//;
+				}
+				$mvdb->set_field(
+					'products',
+					'options',
+					$mvline,
+				);
+				$vset->(
+					'DEALER_PRICE',
+					$wholeprice,	
+				); 
+			},
+image_opts	    => sub {
+				my $image_opts = $Values->{image_opts};
+				my $mvline = $mvdb->field('products','options');
+				if($image_opts) {
+					if($mvline !~ /image_large\r/) {
+						$mvline =~ s/image\r/image\rimage_large\r/;
+					}
+				}
+				else {
+					$mvline =~ s/image_large\r//;
+				}
+				$mvdb->set_field(
+					'products',
+					'options',
+					$mvline,
+				);
+				$vset->(
+					'CLICK_ENLARGE',
+					$image_opts,
+				);
+			}, 
+imagepos	    => 'CENTERED_FLYPAGE', 
+instock		    => 'IN_STOCK_OPTS',
+outstock	    => 'IN_STOCK_NOTIFY',
+sep_ship	    => 'SEPARATE_SHIPPING',
+navlayout	    => sub {
+  			my %compset = (
+				catleft => {
+					LEFTRIGHT => q{
+			[control-set]
+			[component]search_box_small[/component]
+			[/control-set]
+
+			[tmp use_tiny_cart]USE_TINY_CART[/tmp]
+			[if scratch use_tiny_cart]
+			  [control-set]
+			  [component]cart_tiny[/component]
+			  [/control-set]
+
+			  [control-set]
+			  [component]category_vertical[/component]
+			  [/control-set]
+
+			[else]
+			  [control-set]
+			  [component]category_vertical[/component]
+			  [/control-set]
+
+			  [control-set]
+			  [component][/component]
+			  [/control-set]
+			[/else]
+			[/if]
+
+			[control-set]
+			[component][/component]
+			[/control-set]
+
+			[control-set]
+			[component]cross_horizontal[/component]
+			[size]2[/size]
+			[cols]2[/cols]
+			[banner]Specials[/banner]
+			[/control-set]
+
+			[control-set]
+			[component]random[/component]
+			[size]3[/size]
+			[cols]1[/cols]
+			[banner]See also...[/banner]
+			[/control-set]			
+					},
+					LEFTONLY => q{
+			[control-set]
+			[component]search_box_small[/component]
+			[/control-set]
+
+			[if scratch basket_page]
+			  [control-set]
+			  [component]saved_carts_list_small[/component]
+			  [/control-set]
+			[else]
+		 	  [tmp use_tiny_cart]USE_TINY_CART[/tmp]
+			  [if scratch use_tiny_cart]
+			    [control-set]
+			    [component]cart_tiny[/component]
+			    [/control-set]	
+			  [else]
+			    [control-set]
+			    [component][/component]
+			    [/control-set]
+			  [/else]
+			  [/if]
+			[/else]
+			[/if]
+
+			[control-set]
+			[component]category_vertical[/component]
+			[/control-set]
+
+			[if scratch basket_page]
+			  [control-set]
+			  [component]cart[/component]
+			  [/control-set]
+			[else]
+			  [control-set]
+		 	  [component][/component]
+			  [/control-set]
+			[/else]
+			[/if]
+
+			[if scratch fly_page]
+			  [control-set]
+			  [component]random[/component]
+			  [/control-set]
+			[/if]
+					},
+				},
+				cattop => {
+					LEFTRIGHT => q{
+			[control-set]
+			[component]category_horizontal[/component]
+			[/control-set]
+
+			[control-set]
+			[component]search_box_small_top[/component]
+			[/control-set]
+
+			[tmp use_tiny_cart]USE_TINY_CART[/tmp]
+			[if scratch use_tiny_cart]
+			  [control-set]
+			  [component]cart_tiny[/component]
+			  [/control-set]
+			[else]
+			  [control-set]
+			  [component][/component]
+			  [/control-set]
+			[/else]
+			[/if]
+
+			[control-set]
+			[component][/component]
+			[/control-set]
+
+			[control-set]
+			[component]cross_horizontal[/component]
+			[size]2[/size]
+			[cols]2[/cols]
+			[banner]Specials[/banner]
+			[/control-set]
+
+			[control-set]
+			[component]random[/component]
+			[size]3[/size]
+			[cols]1[/cols]
+			[banner]See also...[/banner]
+			[/control-set]
+					},
+					LEFTONLY => q{
+			[control-set]
+			[component]category_horizontal[/component]
+			[/control-set]
+
+			[control-set]
+			[component]search_box_small_top[/component]
+			[/control-set]
+
+			[if scratch basket_page]
+			  [control-set]
+			  [component]saved_carts_list_small[/component]  
+			  [/control-set]
+			[else]
+			  [tmp use_tiny_cart]USE_TINY_CART[/tmp]
+			  [if scratch use_tiny_cart]
+			    [control-set]
+			    [component]cart_tiny[/component]
+			    [/control-set]	
+			  [else]
+			    [control-set]
+			    [component][/component]
+			    [/control-set]
+			  [/else]
+			  [/if]
+			[/else]
+			[/if]
+
+			[if scratch basket_page]
+			  [control-set]
+			  [component]cart[/component]
+			  [/control-set]
+			[else]
+			  [control-set]
+			  [component][/component]
+			  [/control-set]
+			[/else]
+			[/if]
+
+			[if scratch fly_page]
+			  [control-set]
+			  [component]random[/component]
+			  [/control-set]
+			[/if]
+					},
+				},
+    			);
+			my $type = $Values->{navlayout};
+                        my $pages = $Tag->list_pages({ arrayref => 1, keep => 1 });
+                        my $dir = 'pages';
+                        my $set;
+                        return unless $set = $compset{$type};
+			for my $page (@$pages) {
+                                my $data = $Tag->file("$dir/$page");
+				if(! $data) { next; }
+				if($type eq "cattop")  {
+					if($data !~ /CATTOP/) { $data =~ s/\@_(\w+)_\@/\@_CATTOP_$1_\@/g; }
+				}
+				elsif($type eq "catleft") {
+					if($data =~ /CATTOP/) { $data =~ s/\@_CATTOP_(\w+)_\@/\@_$1_\@/g; }
+				}
+                                $data =~ /\@_(\w+)_TOP_\@/
+                                        or next;
+                                my $flavor = $1;
+				$flavor =~ s/CATTOP_//;
+                                my $replace = $set->{$flavor}
+                                        or next;
+				my $tinycartopt = $Values->{tinycart};
+				$replace =~ s/USE_TINY_CART/$tinycartopt/; 
+                                $data =~ s{
+                                                        \[control\s+reset=1\]
+                                                                (.*?)
+                                                        \[control\s+reset=1\]
+                                		}
+                                		{[control reset=1]\n$replace\n[control reset=1]}six
+                                        or next;
+                                $Tag->write_relative_file("$dir/$page", $data);
+                        }
+  		      },
+tinycart	    => undef, 
+creditcards         => 'CREDIT_CARDS_ACCEPTED',
+state               => 'STATE',
+taxlocation         => 'TAXAREA',
+taxrate             => 'TAXRATE',
+taxship             => 'TAXSHIPPING',
+tollfree            => 'TOLLFREE',
+upsadder            => sub {
+						my $mode = $Values->{shipmethod};
+						$mode =~ s/\W/ /g;
+						return unless $Values->{shipmethod} =~ /ups/i;
+						my $status = $Tag->substitute_file(
+								{ 
+									begin => q{UPSE:.*adder\s*=>\s*["']?},
+									global => 1,
+									end => q!["']?\s*[,}]!,
+									greedy => 0,
+									file => 'products/shipping.asc',
+									body => $Values->{upsadder},
+								}
+						);
+						return $status;
+                    },
+upsmodes            => 'UPS_MODES',
+zip                 => 'ZIP',
+
+);
+
+	my @relocate = qw/
+				images
+			/;
+	my %relocate;
+	@relocate{@relocate} = @relocate;
+
+	my @things = grep !$relocate{$_}, keys %doit;
+	push @things, @relocate;
+
+	for (@things) {
+		my $val;
+		next unless $val = $doit{$_};
+		if( ref($val) =~ /CODE/) {
+			my $status = $val->();
+			push @messages, "$_ subroutine returned $status.";
+			if($status =~ /^[A-Z][A-Z_]+[A-Z]$/) {
+				$vset->($status, $Values->{$_});
+				push @messages, "$_ set $status to '$Values->{$_}' in variable.";
+			}
+		}
+		elsif($val =~ /\w+/) {
+			$vset->($val, $Values->{$_});
+			push @messages, "$_ set $val to '$Values->{$_}' in variable.";
+		}
+		else {
+			@errors, "Don't know what to do with $_=$val";
+		}
+	}
+
+	if($Db{country}) {
+		my @all = grep /^\w+$/, split /[\s,\0]+/, $Values->{upsmodes};
+		push @all, grep /^\w+$/, split /[\s,\0]+/, $Values->{fedmodes};
+		unshift @all, grep /^\w+$/, split /[\s,\0]+/, $Values->{defaultshipi};
+		unshift @all, grep /^\w+$/, split /[\s,\0]+/, $Values->{defaultshipd};
+		my %seen;
+		@all = grep ! $seen{$_}++, @all;
+		my %intl =  qw/
+				FLATI 1 PERI 1 FREE 1
+				FIP 1 FIE 1
+				XPR 1 XDM 1 XPRL 1 XDML 1 XPD 1
+		/;
+		my @na_modes = grep ! $intl{$_}, @all;
+		my @intl_modes = grep $intl{$_}, @all;
+		my $na_string = join " ", splice @na_modes;
+		my $intl_string = join " ", splice @intl_modes;
+		my $db = $Db{country};
+		my ($k, @f);
+		my $rc = $db->query(qq{
+					update country set shipmodes = '$intl_string' where code != 'US'
+					});
+push @messages, "set shipmodes to '$intl_string' in $rc countries";
+		$rc = $db->query(qq{
+					update country set shipmodes = '$na_string'
+					where code = 'US'
+					});
+push @messages, "set shipmodes to '$na_string' in US";
+		$rc = $db->query(qq{
+					update country set shipmodes = '$na_string'
+					where code = 'CA'
+					});
+push @messages, "set shipmodes to '$na_string' in Canada";
+	}
+
+	my $out = '';
+	if($Values->{showactions}) {
+		$out .= "Messages: <BR>";
+		$out .= join "<BR>", @messages;
+	}
+	return $out unless @errors;
+	$out .= "<P>Errors: <BR>";
+	$out .= join "<BR>", @errors;
+[/perl]
+
+[if value sampleproducts]
+[and value products =~ /\.xls$/i]
+	[import-fields
+					convert="xls"
+					add=1
+					dir=backup
+					file="upload/[value products]"
+					move=1
+					multiple="1"
+					quiet="2"
+					table="products"
+	]
+[/if]
+[if value images]
+	[image-collate archive="[value images]" thumb="[value thumbs]" verbose="[value showactions]"]
+[/if]
+[if value sampleorders]
+[flag type=write table=transactions]
+[flag type=write table=orderline]
+	[import-fields
+					convert=xls
+					add=1
+					dir=backup
+					file="upload/sampledata.xls"
+					move=1
+					multiple=1
+					quiet=2
+					table=userdb
+	]
+[/if]
+<!-- export variables: [export variable] -->
+[if value buildcat !~ /^\s*(0|n)/i]
+[perl tables="area cat products"]
+	my $go_page = 'index';
+	$CGI->{mv_nextpage} = '@@MV_PAGE@@';
+	my $ptab = 'products'
+		or return "no area source table";
+	my $pdb = $Db{$ptab}
+		or return "area source table bad";
+	my $adb = $Db{area}
+		or return "no area table";
+	my $cdb = $Db{cat}
+		or return "no cat table";
+	my $acol = 'prod_group';
+	my $ccol = 'category';
+	if(! $acol and ! $ccol ) {
+		return "no column to populate either";
+	}
+
+	my $selector = '';
+	my $selcode = '';
+
+	my %area_defaults_left = (
+		name => undef,
+		which_page	=> 'all',
+		sort	=> '05',
+		sel	=> 'left',
+		display_type => 'name',
+	);
+        my %area_defaults_top = (
+                name => undef,
+                which_page      => 'all',
+                sort    => '05',
+                sel     => 'top',
+                display_type => 'name',
+                link_type => 'simple',
+        );
+	my %catmap;
+	my %cat_defaults = (
+		link_type => 'simple',
+		sort	=> '05',
+		display_type => 'name'
+	);
+	$adb->query('delete from area');
+	$cdb->query('delete from cat');
+	if($acol) {
+		$adb->config('AUTO_NUMBER', '1000') if ! $adb->config('_Auto_number');
+		return "area column $acol doesn't exist"
+			unless $pdb->column_exists($acol);
+		my $ary = $pdb->query("select distinct $acol from $ptab order by $acol")
+			or return "area column query failed";
+		for(@$ary) {
+			my ($area) = (@$_);
+			my $key = $adb->set_row('');
+			return "no autonumbering available" if ! $key;
+			$catmap{$area} = $key;
+			for(keys %area_defaults_left) {
+				$adb->set_field($key, $_, $area_defaults_left{$_} || $area);
+			}
+		 	$key = $adb->set_row('');	
+                        $area_defaults_top{selector} = "$acol=$area";
+                        for(keys %area_defaults_top) {
+                                $adb->set_field($key, $_, $area_defaults_top{$_} || $area);
+                        }
+		}
+	}
+
+	my %catdone;
+	if($ccol) {
+		$cdb->config('AUTO_NUMBER', '1000') if ! $cdb->config('_Auto_number');
+		return "cat column $ccol doesn't exist"
+			unless $pdb->column_exists($ccol);
+		my $ary = $pdb->query("select $acol, $ccol from $ptab order by $ccol")
+			or return "cat column query failed";
+		for(@$ary) {
+			my ($area, $cat) = (@$_);
+			next if $catdone{$cat}++;
+			my $key = $cdb->set_row('');
+			return "no cat autonumbering available" if ! $key;
+
+			$cat_defaults{name} = $cat;
+			$cat_defaults{sel} = $catmap{$area};
+			$cat_defaults{selector} = "$ccol=$cat";
+			
+			for(keys %cat_defaults) {
+				#Log("setting col=$_ key=$key = $cat_defaults{$_}");
+				$cdb->set_field($key, $_, $cat_defaults{$_});
+			}
+		}
+	}
+	my $out = $Tag->uneval( { ref => \%catmap } );
+	$out =~ s/,/,\n/g;
+	#return '<XMP>' . $Tag->uneval( { ref => \%catmap } ) . "</XMP";
+	return "<P>Categories built.</P>";
+[/perl]
+[/if]
+<P>[if type=explicit compare="[reconfig]"]
+Catalog activated with new values.
+[/if]</P>
+<P>
+Your catalog is now operational for testing.
+</P>
+<blockquote>
+<A HREF="[area index]" target="_new"><font size="+1">Preview</font></A>
+</blockquote>
+You may need to click your browser's Reload button to see the changes.
+<p>
+Once your site is ready, continue on to the 
+<a href="[area __UI_BASE__/wizard/step_launch]"><font size="+1">Launch</font></a>  
+phase.
+<p>
+See the full <A HREF="@_INTERCHANGE_URL_@">documentation on Interchange</A> to learn about all of its capabilities.
+</blockquote>
+@_UI_STD_FOOTER_@

@@ -1,0 +1,27 @@
+UserTag warnings            Order        message
+UserTag warnings            addAttr
+UserTag warnings            PosNumber    1
+UserTag warnings            Routine <<EOR
+sub {
+	my($message, $opt) = @_;
+
+	if($message) {
+		my $param = ref $opt->{param} ? $opt->{param} : [$opt->{param}];
+		push_warning($message, @$param);
+		return unless $opt->{show};
+	}
+
+	return unless $Vend::Session->{warnings};
+
+	my $out = $opt->{header} || "";
+	$out .= '<ul><li>' if $opt->{auto};
+	if(! length($opt->{joiner})) {
+		$opt->{joiner} = $opt->{auto} ? '<li>' : "\n";
+	}
+	$out .= join $opt->{joiner}, grep /\S/, @{$Vend::Session->{warnings}};
+	$out .= '</ul>' if $opt->{auto};
+	$out .= $opt->{footer} if length($opt->{footer});
+	delete $Vend::Session->{warnings} unless $opt->{keep};
+	return $out;
+}
+EOR

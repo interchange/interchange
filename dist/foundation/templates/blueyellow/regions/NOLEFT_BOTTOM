@@ -1,0 +1,17 @@
+  <br><br>
+  <center>
+  <a href="http://www.icdevgroup.org/">
+    <img src="__THEME_IMG_DIR__poweredby.gif" border="0"></a>
+    [if variable MV_DEMO_MODE]
+      <p>[page admin/index]Admin</a></p>
+    [/if]
+  </center>
+  <br><br>
+
+  </td>
+</tr>
+</table>
+
+__ADL_PAGE__
+</body>
+</html>

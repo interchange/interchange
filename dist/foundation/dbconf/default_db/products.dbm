@@ -1,0 +1,3 @@
+Database            products     products.txt      TAB
+Database            products     HOT               1
+Database            products     INDEX             category:c

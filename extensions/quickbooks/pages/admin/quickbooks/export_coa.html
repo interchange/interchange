@@ -1,0 +1,94 @@
+[set page_title]Quickbooks Chart of Accounts Export[/set]
+[set table_perm]=x[/set]
+[set help_name]quickbooks.items[/set]
+[set icon_name]icon_config.gif[/set]
+@_UI_STD_HEAD_@
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+[if cgi do_export]
+<PRE>
+	[export-quicken-coa file="products/coa.iif"]
+</PRE>
+[/if]
+
+[calc]
+	return if ! $CGI->{mv_data_table};
+	$Values->{mv_data_table} = $CGI->{mv_data_table};
+	return;
+[/calc]
+<form action="[area @@MV_PAGE@@]" method="POST" ENCTYPE="multipart/form-data">
+<INPUT TYPE=hidden NAME=mv_action     VALUE=return>
+<INPUT TYPE=hidden NAME=do_export value=1>
+<table __UI_T_PROPERTIES__>
+<tr>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+<tr>
+<td bgcolor="__UI_C_INTBLOCK__" VALIGN=top>
+The REFNUM will be set to an incrementing 
+integer in <B>PRODUCT_DIR/quickbooks.coa.refnum</B>.
+<br>
+<input type="submit" value="Export">
+<br>
+<hr>
+</td>
+<td bgcolor="__UI_C_INTBLOCK__">
+
+<FONT SIZE="+1"><B>Field mapping</B></FONT>
+<P>
+Fixed string to prepend to account NAME:<BR>
+	<INPUT TYPE=text SIZE=20 NAME="ui_qbcoa_prepend" VALUE=""><br>
+
+<P>
+Quickbook account type (ACCNTTYPE):<BR>
+	<INPUT TYPE=text SIZE=20 NAME="ui_qbcoa_type" VALUE="INC">
+(if not derived from a database field)
+<P>
+[perl tables="[either]__UI_QBITEM_TABLES__[or]products inventory[/either]"]
+	my @tables;
+	@tables = split /[\0\s,]+/, ('__UI_QBITEM_TABLES__' || 'products inventory');
+	@tables = grep /\S/, @tables;
+	my $default_map = $Variable->{UI_QBITEM_MAP} || <<EOF;
+products:sku       REFNUM
+inventory:account       NAME
+products:category       DESC
+EOF
+	%fmap = grep /\S/, split /\s+/, $default_map;
+	my $out = '';
+	
+	my $tab;
+	foreach $tab (@tables) {
+		my $db = $Db{$tab};
+		next if ! $db;
+		$out .= <<EOF;
+<TABLE>
+<TR><TD COLSPAN=2><B>$tab</B></TD></TR>
+EOF
+		for($db->columns()) {
+			$out .= <<EOF;
+<TR>
+	<TD><FONT SIZE="-1">$_</TD>
+	<TD><FONT SIZE="-1">
+		<INPUT TYPE=text NAME="qb:$tab:$_" SIZE=10 VALUE="$fmap{"$tab:$_"}">
+	</TD>
+</TR>
+EOF
+		}
+		$out .= "</TABLE><BR>";
+	}
+	return $out;
+[/perl]
+
+<tr>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+</table>
+
+</form>
+
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@

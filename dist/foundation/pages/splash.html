@@ -1,0 +1,70 @@
+[comment]
+ui_template: Yes
+ui_template_name: noleft
+[/comment]
+
+[tmp page_title]Welcome to __COMPANY__, an Interchange catalog![/tmp]
+
+@_NOLEFT_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+<CENTER>
+Welcome to __COMPANY__!
+<P>
+<B><A HREF="[area index]">Enter as customer</A></B>
+<P>
+<B><A HREF="[area admin/index]">Admin interface</A></B>
+<P>
+
+<table>
+<tr>
+  <td>
+
+    <B>If the above links do not work</B>, this is an indication 
+    of one of the following:
+
+	<UL>
+	<LI> Interchange server not running. Usually one of:
+	<blockquote>
+		/etc/rc.d/init.d/interchange restart<br>
+		/usr/local/interchange/bin/restart<br>
+	</blockquote>
+	will work to start it.
+	<P>
+	<LI> There are communication problems with the server. See the links
+	below.
+	</UL>
+  </td>
+</tr>
+</table>
+
+<BR CLEAR=all>
+
+<TABLE WIDTH=70%>
+<TR><TD>
+  This is the "foundation" demonstration of the Interchange 
+  electronic catalog system. Links that will help you to use this software:
+  <P>
+
+  <UL>
+  <LI><A HREF="http://www.icdevgroup.org/">Main Interchange developer site</A><BR>
+  <OL>
+  <LI><A HREF="http://www.icdevgroup.org/cgi-bin/ic/faq.html">Frequently Asked Questions</A>
+  <LI><A HREF="http://www.icdevgroup.org/cgi-bin/ic/document.html">Interchange Documentation</A>
+  <LI><A HREF="http://www.icdevgroup.org/mailman/listinfo/interchange-users">User support mail lists</A>
+  </OL>
+  <LI><A HREF="http://www.perl.com/">Perl Information</A><BR>
+  <LI><A HREF="http://www.w3.org/">WWW Resources</A><BR>
+  <LI><A HREF="http://www.apache.org/httpd.html">Apache Web Server</A><BR>
+  </UL>
+
+  </TD>
+</TR>
+</TABLE>
+
+<!-- current page: @@MV_PAGE@@ -->
+
+<!-- END CONTENT -->
+
+@_NOLEFT_BOTTOM_@

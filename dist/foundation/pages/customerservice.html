@@ -1,0 +1,114 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+[/comment]
+
+[tmp members_only]1[/tmp]
+[tmp page_title]__COMPANY__ -- Customer Service[/tmp]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]cart_tiny[/component]
+[/control-set]
+
+[control-set]
+[component]category_vertical[/component]
+[/control-set]
+
+[control-set]
+[component][/component]
+[/control-set]
+
+[control reset=1]
+
+@_LEFTONLY_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+<table width="95%">
+<tr>
+  <td>
+
+    <p>&nbsp;</p>
+
+    [if cgi mv_successpage]
+		<B>Welcome back[if value fname], [value fname][/if]!</B>
+	    <p>&nbsp;</p>
+	[/if]
+
+    Below are our automated customer service options.
+    If you need to talk to someone please [page contact]click here</a>.
+	<p>
+	We would also like you to take our
+		[page
+			href=survey/standard
+			form="survey_start=customer_satisfaction"
+		]Customer Satisfaction Survey</A>.
+	</p>
+
+    <br><br>
+
+    <table align="center">
+    <tr> 
+      <td class="contentbar2"> 
+        <table border="0" cellspacing="0">
+        <tr class="contentbar2">
+          <td class="contentbar2">Account Management Functions</td>
+        </tr>
+        <tr class="contentbar1"> 
+          <td>
+            <a href="[area help]"><b>Help</b></a>
+          </td>
+        </tr>
+        <tr class="contentbar1"> 
+          <td>
+	    <a href="[area account]"><b>Account Maintenance</b></a>
+          </td>
+        </tr>
+        <tr class="contentbar1">
+          <td>
+	    <a href="[area change_password]"><b>Change Password</b></a>
+          </td>
+        </tr>
+        <tr class="contentbar1"> 
+          <td>
+	    <a href="[area query/check_orders]"><b>Order Tracking</b></a>
+          </td>
+		</tr>
+        <tr class="contentbar1"> 
+          <td>
+            <a href="[area ship_addresses]"><b>Additional Shipping Addresses</b></a>
+		</td>
+        </tr>
+        <tr class="contentbar1"> 
+          <td>
+            <a href="[area returns]"><b>Order Returns</b></a>
+		</td>
+        </tr>
+        <tr class="contentbar1"> 
+          <td>
+            <a href="[area saved_carts]"><b>Saved Carts / Recurring Orders</b></a>
+		</td>
+        </tr>
+        <tr class="contentbar1"> 
+          <td>
+            <a href="[area new_account]"><b>New Account</b></a>
+		</td>
+        </tr>
+        </table>
+      </td>
+    </tr>
+    </table>
+
+  </td>
+</tr>
+</table>
+
+<!-- END CONTENT -->
+
+@_LEFTONLY_BOTTOM_@

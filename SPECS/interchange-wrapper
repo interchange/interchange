@@ -1,0 +1,29 @@
+#!/bin/sh
+
+# Interchange control script
+# Calls Interchange with special locations of files as installed by RPM
+# http://www.icdevgroup.org/
+
+IC=/usr/lib/interchange
+ETC=/etc
+RUN=/var/run/interchange
+LOG=/var/log/interchange
+
+RUNSTRING="$IC/bin/interchange \
+	--unix \
+	-configfile $ETC/interchange.cfg \
+	-pidfile $RUN/interchange.pid \
+	-logfile $LOG/error.log \
+	ErrorFile=$LOG/error.log \
+	PIDfile=$RUN/interchange.pid \
+	-confdir $IC/etc \
+	-rundir $RUN \
+	SocketFile=$RUN/socket \
+	IPCsocket=$RUN/socket.ipc"
+
+if test "`whoami`" = root
+then 
+	exec su - interch -c "$RUNSTRING $*"
+else
+	exec $RUNSTRING $*
+fi

@@ -1,0 +1,16 @@
+Database  country  country.txt  __SQLDSN__
+Database  country  UPPERCASE    1
+ifdef SQLUSER
+Database  country  USER         __SQLUSER__
+endif
+ifdef SQLPASS
+Database  country  PASS         __SQLPASS__
+endif
+Database  country  DEFAULT_TYPE VARCHAR2(128)
+Database  country  COLUMN_DEF   "code=VARCHAR2(3) PRIMARY KEY"
+Database  country  COLUMN_DEF   "selector=VARCHAR2(3)"
+Database  country  COLUMN_DEF   "shipmodes=VARCHAR2(255)"
+Database  country  COLUMN_DEF   "name=VARCHAR2(32) DEFAULT ''"
+Database  country  COLUMN_DEF   "iso=CHAR(3) DEFAULT ''"
+Database  country  COLUMN_DEF   "isonum=CHAR(3) DEFAULT ''"
+Database  country  INDEX         name

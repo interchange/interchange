@@ -1,0 +1,4 @@
+code	sel	name	which_page	sort	display_type	image	image_prop	banner_image	banner_text	link_type	url	tab	page	search	selector	link_template
+00004	4	Strategy		05	name					simple					category=Strategy
+00003	3	Sales		05	name					simple					category=Sales
+00002	2	Development		05	name					simple					category=Development

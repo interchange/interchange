@@ -1,0 +1,11 @@
+UserTag currency            Order        convert noformat
+UserTag currency            hasEndTag
+UserTag currency            Interpolate
+UserTag currency            addAttr
+UserTag currency            PosNumber    2
+UserTag currency            Routine      <<EOR
+sub {
+	my($convert,$noformat,$opt,$amount) = @_;
+	return Vend::Util::currency($amount, $noformat, $convert, $opt);
+}
+EOR

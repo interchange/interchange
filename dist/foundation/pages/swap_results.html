@@ -1,0 +1,140 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftright
+[/comment]
+
+[tmp page_title]__COMPANY__ -- Search results[/tmp]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]category_vertical[/component]
+[/control-set]
+
+[control-set]
+[component][/component]
+[/control-set]
+
+[control-set]
+[component][/component]
+[/control-set]
+
+[control-set]
+[component]random[/component]
+[size]2[/size]
+[cols]2[/cols]
+[banner]You might also like[/banner]
+[/control-set]
+
+[control-set]
+[component]random[/component]
+[size]3[/size]
+[cols]1[/cols]
+[/control-set]
+
+[control reset=1]
+
+@_LEFTRIGHT_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+<br>
+
+[search-region]
+
+[tmp cross_category][value-extended name=mv_searchspec index=0][/tmp]
+
+[search-list]
+
+[item-change 1][condition][item-field category][/condition]
+
+<table width="65%" border="0" cellspacing="0" cellpadding="5">
+<tr class="contentbar1"> 
+  <td class="contentbar1" width="100%" align="center">
+    &nbsp;<big><b>[either][value banner_text][or][item-field category][/either]</b></big>
+  </td>
+</tr>
+</table>
+
+[/item-change 1]
+	
+
+<FORM ACTION="[process]" METHOD=POST>
+<input type=hidden name=mv_session_id value="[data session id]">
+				
+<table width="65%" border="0" cellspacing="0" cellpadding="5">
+<tr valign="middle"> 
+  <td align=center> 
+    <table border="0" cellspacing="0" cellpadding="3" align="center">
+    <tr> 
+      <td valign="center" align="left"> 
+        [if-item-field image]
+	  <A HREF="[area [item-code]]"><img src="items/[item-field image]" ALT="[item-description]" BORDER="0"></A>
+	[/if-item-field]
+      </td>
+      <td valign="center"align="center"> 
+        <table border="0" cellpadding="3" cellspacing="0">
+	<INPUT TYPE=hidden  NAME="mv_todo"        VALUE="refresh">
+ 	<INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="[item-code]">
+        <tr> 
+          <td valign="top"> 
+            [item-description]
+          </td>
+        </tr>
+	<tr>
+          <td align="center">
+	    Amount: 
+	    <input type="text" name="mv_order_quantity" size="8" value="25.00">
+          </td>
+        </tr>
+        </table>
+      </td>
+    </tr>
+    <tr> 
+      <td colspan="2"> 
+        [item-field comment__MVC_FIELDMUNGE__]
+      </td>
+    </tr>
+    </table>
+  </td>
+  </tr>
+  <tr> 
+    <td class="contentbar1" align="right"> 
+      <input type="submit" value="Buy it Now!">
+    </td>
+  </tr>
+</table>
+</FORM>
+
+<br>
+					
+[/search-list]
+
+[no-match]
+<BR><BR>
+<BLOCKQUOTE>
+Sorry, no matches for <B>[value-extended name=mv_searchspec joiner=" | "]</B>.
+[if value mv_search_error]
+<P><B>Errors:
+<BR> [value-extended name=mv_search_error joiner="<BR>"]
+</B>
+[/if]
+<BR><BR></BLOCKQUOTE>
+[/no-match]
+<BR CLEAR=LEFT>
+[more-list]
+<BLOCKQUOTE>
+Matches [matches] of [match-count] found.
+<BR>[more]<BR>
+</BLOCKQUOTE>
+[/more-list]
+
+[/search-region]
+
+<!-- END CONTENT -->
+
+@_LEFTRIGHT_BOTTOM_@

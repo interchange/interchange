@@ -1,0 +1,4 @@
+LoadModule: interchange_module /usr/lib/apache/1.3/mod_interchange.so
+Directives:
+ InterchangeServer
+Description: Socket-based connector for Interchange E-Commerce system.

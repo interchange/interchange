@@ -1,0 +1,50 @@
+[tmp page_perm]files[/tmp]
+[tmp page_title][L]Accounting[/L]: [calc]$Config->{CatalogName}[/calc][/tmp]
+[set ui_class]Admin[/set]
+[tmp help_name]genconfig.main[/tmp]
+[tmp icon_name]icon_config.gif[/tmp]
+@_UI_STD_INIT_@
+<html>
+<head>
+<title>[scratch page_title]</title>
+<!-- ----- BEGIN REAL STUFF ----- -->
+[if type=explicit compare=`$Config->{Accounting}{Class} eq 'Vend::Accounting::SQL_Ledger'`]
+<frameset COLS="200,*" BORDER=0>
+<frame name="accounting_ic_menu" src="[area __UI_BASE__/accounting/return]">
+[calc]
+	my $acc = $Config->{Accounting};
+	$def = $Scratch->{sl_base_url} =  $acc->{base_url};
+	$def .=  "/login.pl";
+	my $user = $acc->{username}
+		or return $def;
+	my $pass = $acc->{password}
+		or return $def;
+	my $path = $acc->{path} || 'bin/mozilla';
+	my @parms = (
+		"login=$user",
+		"path=$path",
+	);
+	# Leave this as & instead of UrlJoiner for SQL-Ledger
+	$Scratch->{sl_parms} = join "&", @parms;
+	$Scratch->{tmp_url} =
+		$def .  "?" .  "$Scratch->{sl_parms}&password=$pass&action=Login";
+	return;
+[/calc]
+[tmp sl_result][get-url url="[scratchd tmp_url]"][/tmp]
+[calc]
+	$Scratch->{sl_result} =~ /[&?]password=([^\s"']+)/;
+	$Scratch->{sl_parms} .= "&password=$1";
+	$Scratch->{sql_ledger_url} = $def;
+	$Scratch->{sql_ledger_url} .= '?' . $Scratch->{sl_parms} .  "&action=company_logo";
+	return;
+[/calc]
+<frame name="accounting_ic_main" src="[scratch sql_ledger_url]">
+</frameset>
+[/if]
+<!-- ----- END REAL STUFF ----- -->
+
+</head>
+<body>
+<!-- page: @@MV_PAGE@@ -->
+</body>
+</html>

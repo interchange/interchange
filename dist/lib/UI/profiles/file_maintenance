@@ -1,0 +1,66 @@
+__NAME__ file_maintenance
+
+[comment]
+	I suppose this is odd, but I am always looking for better ways. 8-)
+[/comment]
+
+[set nevair]1[/set]
+[mm_locale]
+[if session logged_in]
+[and session login_table ne __UI_ACCESS_TABLE__]
+[then]
+	[perl tables=userdb]
+		return if ! $Tag->userdb( { function => file_acl,
+									location => $CGI->{ui_delete_file},
+									mode => 'd',
+									});
+		delete $Scratch->{nevair};
+		return;
+	[/calc]
+[/then]
+[else]
+	[if-mm function="!files" name="[cgi ui_delete_file]"] 
+		[seti ui_error]Not allowed to delete file [cgi ui_delete_file].[/seti]
+		[bounce page="__UI_BASE__/error"]
+	[else]
+		[set nevair][/set]
+	[/else]
+	[/if-mm]
+[/else]
+[/if]
+
+[if cgi ui_delete_file]
+[and !scratch nevair]
+	[perl]
+		my %refuse = (
+			qw!
+				catalog.cfg 1
+				./catalog.cfg 1
+			!
+		);
+		my $fn = $CGI->{ui_delete_file};
+		my $mfn = $fn;
+		my $prefix;
+		if ($fn =~ m{(.*/)}) {
+			$prefix = $1;
+		}
+		else {
+			$fn = "./$fn";
+			$prefix = './';
+		}
+		if( $refuse{$fn} ) {
+			$Scratch->{ui_failure} =
+				errmsg(
+						"Refuse to delete %s. Upload over the top if you wish.",
+						$mfn,
+						);
+		}
+		elsif( $Tag->unlink_file($fn, $prefix) ) {
+			$Scratch->{ui_message} = errmsg("File %s was deleted.", $mfn);
+		}
+		else {
+			$Scratch->{ui_failure} = errmsg("Delete of %s FAILED.", $mfn);
+		}
+		return;
+	[/perl]
+[/if]

@@ -1,0 +1,6 @@
+CodeDef foo ActionMap
+CodeDef foo Routine <<EOR
+sub {
+	$CGI->{mv_nextpage} = 'aboutus';
+}
+EOR

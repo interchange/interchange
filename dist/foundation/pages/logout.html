@@ -1,0 +1,36 @@
+[seti done][userdb function=logout clear=1][/seti]
+
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+[/comment]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]cart_tiny[/component]
+[/control-set]
+
+[control-set]
+[component]category_vertical[/component]
+[/control-set]
+
+[control reset=1]
+[tmp page_title]__COMPANY__ -- Log Out[/tmp]
+
+@_LEFTONLY_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+<br><br>
+You have been logged out.
+<br><br>
+Thank you for visiting.					
+
+<!-- END CONTENT -->
+
+@_LEFTONLY_BOTTOM_@

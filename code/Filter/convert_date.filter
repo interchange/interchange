@@ -1,0 +1,12 @@
+CodeDef convert_date Filter
+CodeDef convert_date Routine <<EOR
+sub {
+	my $time = shift(@_);
+	shift(@_);
+	my $fmt = shift(@_);
+	while(my $add = shift(@_)) {
+		$fmt .= " $add";
+	}
+	return $Tag->convert_date({ fmt => $fmt, body => $time});
+}
+EOR

@@ -1,0 +1,93 @@
+__NAME__ process_filter
+[flag type=write table="[cgi mv_data_table]"]
+[perl tables="[list-databases]"]
+# $Id: process_filter,v 2.3 2003-01-14 02:25:53 mheins Exp $
+	my @filters = grep /^ui_filter:/, keys %$CGI;
+  FILTERS: {
+	last FILTERS unless @filters;
+	foreach my $key (@filters) {
+		my $val = delete $CGI->{$key};
+		$key =~ s/ui_filter://;
+		next unless $val;
+		if($val =~ /checkbox/) {
+			$CGI->{$key} = $Tag->filter($val, $CGI->{$key}, $key);
+		}
+		else {
+			next unless defined $CGI->{$key};
+			$CGI->{$key} = $Tag->filter($val, $CGI->{$key}, $key);
+		}
+	}
+  }
+
+ SERIALIZE: {
+  	last SERIALIZE unless $CGI->{ui_serial_fields};
+#Debug("Found serialzed values $CGI->{ui_serial_fields}");
+	my(@scols) = split /\s+/, $CGI->{ui_serial_fields};
+	my(@cols) = split /\s+/, $CGI->{mv_data_fields};
+	my %serial_data;
+	for(@scols) {
+#Debug("serial field $_");
+		my $val = defined $CGI->{$_} ? $CGI->{$_} : '';
+#Debug("serial field $_ value=$val");
+		m/(\w+)\.(.*)/
+			or next;
+		my $maincol = $1;
+		my $hashkey = $2;
+		if(! $serial_data{$maincol}) {
+			for(@cols) {
+				next unless /^(\w+:+)?$maincol$/;
+				$serial_data{$maincol} = delete $CGI->{$_};
+				last;
+			}
+		}
+
+		$serial_data{$maincol} = dotted_hash(
+									$serial_data{$maincol},
+									$hashkey,
+									$val,
+									1,
+								);
+
+	}
+	for(keys %serial_data) {
+		$CGI->{$_} = $serial_data{$_};
+	}
+	for(@cols) {
+#Debug("after serialize data for $_: $CGI->{$_}");
+	}
+ }
+
+	my @uploads = grep /^ui_upload_file_path:/, keys %$CGI;
+#Debug("Check uploads: " . join ",", @uploads);
+	return unless @uploads;
+	foreach my $key (@uploads) {
+#Debug("Check key=$key");
+		my $path = delete $CGI->{$key};
+#Debug("path=$path");
+		$key =~ s/^ui_upload_file_path://;
+#Debug("key=$key");
+		next unless $path;
+#Debug("cgi->$key=$CGI->{$key}");
+		next unless defined $CGI->{$key};
+		$CGI->{$key} =~ s/\0(.*)//s;
+		my $old = $1;
+		unless($CGI->{$key}) {
+			$CGI->{$key} = $old; 
+			next;
+		}
+		my $isfile = $Tag->value_extended( { name => $key, test => 'isfile' } );
+#Debug("cgi->$key isfile='$isfile'");
+		next unless $isfile;
+		$path =~ s,[\\/]+$,,;
+		my $fn = $CGI->{$key};
+		$fn =~ s,.*/,,;
+		$fn =~ s,.*\\,,;
+		$fn = $Tag->filter('filesafe', $fn);
+#Debug("cgi->$key now='$CGI->{$key}'");
+		my $out = "$path/$fn";
+		unless ($Tag->value_extended( { name => $key, outfile => $out , yes => 1} ) ) {
+			$Scratch->{ui_failure} .= "\nFailed to write upload file $out";
+		}
+	}
+	return;
+[/perl]

@@ -1,0 +1,7 @@
+UserTag perl                Order        tables
+UserTag perl                addAttr
+UserTag perl                attrAlias    table tables
+UserTag perl                hasEndTag
+UserTag perl                InvalidateCache
+UserTag perl                PosNumber    1
+UserTag perl                MapRoutine   Vend::Interpolate::tag_perl

@@ -1,0 +1,12 @@
+UserTag levies            Order        group
+UserTag levies            addAttr
+UserTag levies            InvalidateCache
+UserTag levies            PosNumber    1
+UserTag levies            Routine     <<EOR
+sub {
+	my ($group, $opt) = @_;
+	my $cost = Vend::Interpolate::levies($opt->{recalculate}, $opt->{cart}, $opt);
+	return $cost unless $opt->{hide};
+	return '';
+}
+EOR

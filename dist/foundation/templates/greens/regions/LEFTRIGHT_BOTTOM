@@ -1,0 +1,27 @@
+      [component group=content]
+
+    <br><br>
+    <center>
+    <a href="http://www.icdevgroup.org/">
+      <img src="__THEME_IMG_DIR__poweredby.gif" border="0"></a>
+    [if variable MV_DEMO_MODE]
+      <p>[page admin/index]Admin</a></p>
+    [/if]
+    </center>
+    <br><br>
+
+  </td>
+  <td valign="top" width="1" height="100%">
+    <img src="__THEME_IMG_DIR__littlebar.gif" width="1" height="650">
+  </td>
+  <td width="15%" valign="top" align="right" class="maincontent">
+    [component group=vertical]
+    [component group=vertical]
+    [component group=vertical]
+  </td>
+</tr>
+</table>
+
+__ADL_PAGE__
+</body>
+</html>
