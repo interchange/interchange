@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12.2.22 2001-06-14 12:38:49 heins Exp $
+# $Id: Parse.pm,v 1.12.2.23 2001-06-14 12:52:40 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -38,7 +38,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12.2.22 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.23 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -584,9 +584,10 @@ $Routine{restrict} = sub {
 	my $save_restrict = $Vend::restricted;
 
 	my $default;
-	if($opt->{policy} eq 'accept') {
+	if("\L$opt->{policy}" eq 'allow') {
 		# Accept all, deny only ones defined in disable
 		$default = undef;
+		$opt->{policy} = 'allow';
 	}
 	else {
 		# This is default, deny all except enabled
