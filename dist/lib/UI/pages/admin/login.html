@@ -1,3 +1,4 @@
+[if session logged_in][userdb function=logout clear=1 hide=1][/if]
 [if !global Windows]
 [index table=icmenu export_only=1]
 [index table=ichelp export_only=1]
@@ -25,9 +26,6 @@
 <FONT COLOR=__CONTRAST__>[scratch ui_error]</FONT>
 [set ui_error][/set]
 [/if]
-<!-- logout: [if session logged_in]
-[userdb function=logout clear=1]
-[/if] -->
 
 <FORM ACTION="[process]" METHOD=POST>
 <INPUT TYPE=hidden NAME=mv_click VALUE=MMLogin>
