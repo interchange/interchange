@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.22 2003-01-23 05:00:16 jon Exp $
+# $Id: Data.pm,v 2.23 2003-02-06 20:27:16 jon Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -372,7 +372,7 @@ sub product_field {
 
 
 sub product_common {
-    my ($field_name, $code) = @_;
+    my ($field_name, $code, $emptyok) = @_;
 #::logDebug("product_field: name=$field_name code=$code base=$base");
 	my $result;
 	for(@{$Vend::Cfg->{ProductFiles}}) {
@@ -380,7 +380,7 @@ sub product_common {
 			or next;
 		next unless defined $db->test_column($field_name);
 		$result = database_field($db, $code, $field_name);
-		length($result) and last;
+		last if $emptyok or length($result);
 	}
     return $result;
 }
@@ -1860,18 +1860,20 @@ sub item_description {
 }
 
 sub item_common {
-	my ($item, $field) = @_;
+	my ($item, $field, $emptyok) = @_;
 	my $base = $item->{mv_ib};
+	my %seen;
 	my $res;
 	foreach my $code ($item->{code}, $item->{mv_sku}) {
 		next if ! length($code);
 		for my $dbname ($base, @{$Vend::Cfg->{ProductFiles}} ) {
 			next if ! $dbname;
+			next if $seen{$dbname}++;
 			my $db = database_exists_ref($dbname)
 				or next;
 			last unless defined $db->test_column($field);
 			$res = database_field($db, $code, $field);
-			return $res if length $res;
+			return $res if $emptyok or length($res);
 		}
 	}
 }

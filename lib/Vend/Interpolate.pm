@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.145 2003-02-02 15:00:15 mheins Exp $
+# $Id: Interpolate.pm,v 2.146 2003-02-06 20:27:16 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.145 $, 10);
+$VERSION = substr(q$Revision: 2.146 $, 10);
 
 @EXPORT = qw (
 
@@ -6354,7 +6354,7 @@ sub taxable_amount {
     foreach $i (0 .. $#$Vend::Items) {
 		$item =	$Vend::Items->[$i];
 		next if is_yes( $item->{mv_nontaxable} );
-		next if is_yes( item_field($item, $Vend::Cfg->{NonTaxableField}) );
+		next if is_yes( item_common($item, $Vend::Cfg->{NonTaxableField}, 1) );
 		$tmp = item_subtotal($item);
 		unless (defined $Vend::Session->{discount}) {
 			$taxable += $tmp;
