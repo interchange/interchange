@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.16 2002-02-05 20:57:04 mheins Exp $
+# $Id: Order.pm,v 2.17 2002-04-25 17:07:58 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.16 $, 10);
+$VERSION = substr(q$Revision: 2.17 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -849,12 +849,52 @@ sub do_check {
 					);
 			return undef;
 		}
+#::logDebug("&Vend::Order::do_check returning \$val $val, \$var $var, \$message $message");
 		return ($val, $var, $message);
 }
 
 sub check_order {
+	my ($profiles, $vref) = @_;
+	my @profiles = split /\0+/, $profiles;
+	my $status;
+	@Errors = ();
+	$Vend::Session->{errors} = {}
+		unless ref $Vend::Session->{errors} eq 'HASH';
+
+	for my $profile (@profiles) {
+
+		$status = check_order_each($profile, $vref);
+
+		if ($status) {
+			$CGI::values{mv_nextpage} = $Success_page
+				if $Success_page;
+		}
+		elsif ($Fail_page) {
+			$CGI::values{mv_nextpage} = $Fail_page;
+		}
+		if ($Final and ! scalar @{$Vend::Items}) {
+			$status = 0;
+			$::Values->{"mv_error_items"}		=
+				$Vend::Session->{errors}{items}	=
+					errmsg(
+						"You might want to order something! No items in cart.",
+					);
+		}
+::logDebug("FINISH checking profile $profile: Fatal=$Fatal Final=$Final Status=$status");
+
+		# first profile to fail prevents all other profiles from running
+		last unless $status;
+
+	}
+
+	my $errors = join "\n", @Errors;
+::logDebug("Errors after checking profile(s) " . join(", ", @profiles) . ":\n" . $errors);
+	$errors = '' unless defined $errors and ! $Success;
+	return ($status, $Final, $errors);
+}
+
+sub check_order_each {
 	my ($profile, $vref) = @_;
-	my($codere) = '[-\w_#/.]+';
 	my $params;
 	$Profile = $profile;
 	if(defined $Vend::Cfg->{OrderProfileName}->{$profile}) {
@@ -873,11 +913,9 @@ sub check_order {
 	}
 	return undef unless $params;
 
-	my $ref = \%CGI::values;
 	$params = interpolate_html($params);
 	$params =~ s/\\\n//g;
 
-	@Errors = ();
 	$And = 1;
 	$Fatal = $Final = 0;
 
@@ -921,7 +959,6 @@ sub check_order {
 		s/^\s+//;
 		s/\s+$//;
 		($val, $var, $message) = do_check($_, $vref);
-		next if ! defined $var;
 		if(defined $And) {
 			if($And) {
 				$val = ($last_one && $val);
@@ -932,36 +969,36 @@ sub check_order {
 			undef $And;
 		}
 		$last_one = $val;
-		if ($val) {
-			$::Values->{"mv_status_$var"} = $message
-				if defined $message and $message;
-			delete $Vend::Session->{errors}{$var};
-			delete $::Values->{"mv_error_$var"};
-		}
-		else {
-			$status = 0;
-# LEGACY
-			$::Values->{"mv_error_$var"} = $message;
-# END LEGACY
-			$Vend::Session->{errors} = {}
-				if ! $Vend::Session->{errors};
-			if( $No_error ) {
-				# do nothing
-			}
-			elsif( $Vend::Session->{errors}{$var} ) {
-				if ($message and $Vend::Session->{errors}{$var} !~ /\Q$message/) {
-					$Vend::Session->{errors}{$var} = errmsg(
-						'%s and %s',
-						$Vend::Session->{errors}{$var},
-						$message
-					);
-				}
+		$status = 0 unless $val;
+		if ($var) {
+			if ($val) {
+				$::Values->{"mv_status_$var"} = $message
+					if defined $message and $message;
+				delete $Vend::Session->{errors}{$var};
+				delete $::Values->{"mv_error_$var"};
 			}
 			else {
-				$Vend::Session->{errors}{$var} = $message ||
-					errmsg('%s: failed check', $var);
+# LEGACY
+				$::Values->{"mv_error_$var"} = $message;
+# END LEGACY
+				if( $No_error ) {
+					# do nothing
+				}
+				elsif( $Vend::Session->{errors}{$var} ) {
+					if ($message and $Vend::Session->{errors}{$var} !~ /\Q$message/) {
+						$Vend::Session->{errors}{$var} = errmsg(
+							'%s and %s',
+							$Vend::Session->{errors}{$var},
+							$message
+						);
+					}
+				}
+				else {
+					$Vend::Session->{errors}{$var} = $message ||
+						errmsg('%s: failed check', $var);
+				}
+				push @Errors, "$var: $message";
 			}
-			push @Errors, "$var: $message";
 		}
 		if (defined $Success) {
 			$status = $Success;
@@ -969,26 +1006,7 @@ sub check_order {
 		}
 		last if $Fatal && ! $status;
 	}
-	my $errors = join "\n", @Errors;
-	$errors = '' unless defined $errors and ! $Success;
-#::logDebug("FINISH checking profile $Profile: Fatal=$Fatal Final=$Final Status=$status\nErrors:\n$errors\n");
-	if($status) {
-		$CGI::values{mv_nextpage} = $Success_page
-			if $Success_page;
-	}
-	elsif ($Fail_page) {
-		$CGI::values{mv_nextpage} = $Fail_page;
-	}
-	if($Final and ! scalar @{$Vend::Items}) {
-		$status = 0;
-		$::Values->{"mv_error_items"}       =
-			$Vend::Session->{errors}{items}  =
-				errmsg(
-					"You might want to order something! No items in cart.",
-				);
-
-	}
-	return ($status, $Final, $errors);
+	return $status;
 }
 
 my $state = <<EOF;
