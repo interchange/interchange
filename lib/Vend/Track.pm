@@ -1,8 +1,8 @@
-# Track.pm - Interchange User Tracking
+# Vend::Track - Interchange User Tracking
 #
-# $Id: Track.pm,v 1.3.4.1 2001-03-23 12:31:55 racke Exp $
+# $Id: Track.pm,v 1.3.4.2 2001-09-11 10:12:07 racke Exp $
 #
-# Copyright 2000 by Stefan Hornburg <racke@linuxia.de>
+# Copyright (C) 2000 by Stefan Hornburg <racke@linuxia.de>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,8 +24,10 @@
 # check if tracking information is available
 # tag to add "view product" tracking information
 # support for quantity changes
+# consider other carts
 
 # DOCUMENTATION
+# "CategoryField" should be set
 # "DescriptionField" should be set
 # flypage should be used
 
@@ -33,7 +35,7 @@ package Vend::Track;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.3.4.1 $, 10);
+$VERSION = substr(q$Revision: 1.3.4.2 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -41,21 +43,23 @@ use strict;
 use Vend::Data;
 
 sub new {
-    my $proto = shift;
+	my $proto = shift;
 	my $class = ref ($proto) || $proto;
 	my $self = {actions => []};
 
-    bless ($self, $class);
+	bless ($self, $class);
 }
 
 # ACTIONS
 
 sub add_item {
-    my ($self,$cart,$item) = @_;
+	my ($self,$cart,$item) = @_;
 
-    push (@{$self->{actions}},
+	push (@{$self->{actions}},
 		  ['ADDITEM', {code => $item->{'code'},
-					   description => item_description($item)}]);
+					   description => item_description($item),
+					   category => item_category($item)
+					  }]);
 }
 
 sub user {
@@ -66,8 +70,24 @@ sub user {
 
 sub finish_order {
 	my ($self) = @_;
-
-	push (@{$self->{actions}}, ['ORDER', {}]);
+	my (@items, $item, $itemout);
+	
+	foreach my $item (@{$::Carts->{'main'}}) {
+		$itemout = {code => $item->{'code'},
+					description => item_description($item),
+					category => item_category($item),
+					quantity => $item->{'quantity'},
+					price => item_price($item)
+					};
+		push (@items, $itemout);
+	}
+		
+	push (@{$self->{actions}}, ['ORDER', {}],
+		  ['ORDERINFO', {total => Vend::Interpolate::total_cost (),
+					 payment => '',
+					 shipmode => Vend::Interpolate::tag_shipping_desc (),
+					 items => \@items
+					}]);
 }
 
 sub view_page {
@@ -79,15 +99,28 @@ sub view_page {
 sub view_product {
 	my ($self, $code) = @_;
 
-	push (@{$self->{actions}}, ['VIEWPROD', {code => $code}]);
+	push (@{$self->{actions}},
+		  ['VIEWPROD', {code => $code,
+						description => product_description($code),
+						category => product_category($code)
+					   }]);
 }
 
 # HEADER
 
 my %hdrsubs = ('ADDITEM' => sub {my $href = shift; join (',', $href->{'code'}, $href->{'description'});},
 			   'ORDER' => sub {my $href = shift; $::Values->{mv_order_number}},
+			   'ORDERINFO' => sub {my $href = shift;
+							   join ('/',
+									 join ("\t", $href->{'total'}, $href->{'payment'}, $href->{'shipmode'}),
+									 map {join ("\t", $_->{'code'},
+											   $_->{'description'},
+											   $_->{'category'},
+											   $_->{'quantity'},
+											   $_->{'price'})}
+									 @{$href->{'items'}});},
 			   'VIEWPAGE' => sub {my $href = shift; $href->{'page'}},
-			   'VIEWPROD' => sub {my $href = shift; join (',', $href->{'code'}, $href->{'description'});});
+			   'VIEWPROD' => sub {my $href = shift; join ("\t", $href->{'code'}, $href->{'description'}, $href->{'category'});});
 
 sub header {
 	my ($self) = @_;
@@ -98,7 +131,8 @@ sub header {
 		$href = $aref->[1];
 		if (exists $hdrsubs{$aref->[0]}) {
 			push(@hdr, $aref->[0] . '=' . &{$hdrsubs{$aref->[0]}} ($aref->[1]));
-		} else {
+		}
+		else {
 			push(@hdr, "$aref->[0]=$aref->[1]");
 		}
 	}
