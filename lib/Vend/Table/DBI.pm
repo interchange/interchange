@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.36 2002-10-27 04:18:33 mheins Exp $
+# $Id: DBI.pm,v 2.37 2002-12-02 22:14:22 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.36 $, 10);
+$VERSION = substr(q$Revision: 2.37 $, 10);
 
 use strict;
 
@@ -1414,13 +1414,12 @@ sub row_hash {
 sub field_settor {
     my ($s, $column) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
+	my $q = "update $s->[$TABLE] SET $column = ? where $s->[$KEY] = ?";
+	my $sth = $s->[$DBI]->prepare($q)
+		or Carp::croak errmsg("Unable to prepare query for field_settor: %s", $q);
     return sub {
         my ($key, $value) = @_;
-		$value = $s->quote($value)
-			unless exists $s->[$CONFIG]{NUMERIC}{$column};
-		$key = $s->quote($key)
-			unless exists $s->[$CONFIG]{NUMERIC}{$s->[$KEY]};
-        $s->[$DBI]->do("update $s->[$TABLE] SET $column=$value where $s->[$KEY] = $key");
+        $sth->execute($value, $key);
     };
 }
 
