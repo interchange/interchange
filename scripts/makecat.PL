@@ -52,7 +52,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.1 2001-07-25 12:35:39 racke Exp $
+# $Id: makecat.PL,v 2.2 2001-08-04 15:17:29 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -479,6 +479,7 @@ my %Prefix = (
 						chomp $host;
 						return $host || $Config{myhostname};
 					},
+    linkmode     =>  'UNIX',
     documentroot =>  $ENV{MVC_DOCUMENTROOT} || $DocrootDefault,
 	cgidir       =>  $ENV{MVC_CGIDIR} || $CgiDefault,
 	cgibase      =>  $ENV{MVC_CGIBASE} || $CgiUrlDefault,
@@ -574,6 +575,16 @@ my %Postprocess = (
 
 );
 
+sub sum_it {
+	my ($file) = @_;
+	open(IT, "<$file")
+		or return undef;
+	my $data = '';
+	$data .= $_ while (<IT>);
+	close IT;
+	return unpack("%32c*", $data);
+}
+
 sub prefix {
 	my ($parm, $nodefault) = @_;
 	$parm = lc $parm;
@@ -606,6 +617,7 @@ my %History = (
 						return @dir;
 					},
 
+	linkmode => sub { return ('UNIX', 'INET') },
     documentroot =>  sub {
 						if(defined $Servers->{$Servername}) {
 							return $Servers->{$Servername}->{documentroot}
@@ -1344,20 +1356,50 @@ EOF
 		$lm = "i";
 		$Inetmode = 1;
 
-		$prog = "$Conf{relocate}$Conf{vendroot}/src/tlink";
+		my $defport;
+		my $defhost;
 
-		$default = 7786;
+	  INETASK: {
+		my (@hosts);
+		my (@ports);
+		$prog = "$Conf{relocate}$Conf{vendroot}/src/tlink";
+		my $the_one = sum_it($prog);
+
+		my @poss = glob("$Conf{relocate}$Conf{vendroot}/src/tlink.*.*");
+		for (@poss) {
+			my $name = $_;
+			/tlink\.(.*)\.(\d+)$/
+				or next;
+			my ($h, $p) = ($1, $2);
+			push @hosts, $h;
+			push @ports, $p;
+			my $one = sum_it($_);
+			next unless $one eq $the_one;
+			$defhost = $h;
+			$defport = $p;
+		}
+
+		my %seen;
+		sethistory(grep !$seen{$_}++, @ports);
+		$default = $defport || 7786;
+		$lp = $lh = '';
 		while(! $lp) {
 			$lp = prompt("TCP socket to use? ", $default);
+			redo INETASK if $lp eq '@';
 			if($lp !~ /^\d+$/ or $lp < 1024) {
 				print "Looking for an integer number > 1024 here.\n";
 				undef $lp;
 			}
 		}
-		$default = 'localhost';
+
+		sethistory(grep !$seen{$_}++, @hosts);
+		$default = $defhost || 'localhost';
 		while(! $lh) {
 			$lh = prompt("Link host? ", $default);
+			redo INETASK if $lh eq '@';
 		}
+		unlink $prog unless $lh eq $defhost && $lp eq $defport;
+	  } # END INETASK
 	}
 	elsif($ask =~ /^\s*n/i) {
 		$prog = "NONE";
@@ -2213,7 +2255,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.1 2001-07-25 12:35:39 racke Exp $
+# $Id: makecat.PL,v 2.2 2001-08-04 15:17:29 heins Exp $
 
 =head1 INTRODUCTION
 
@@ -2616,26 +2658,6 @@ documentation for Interchange is at:
 
 __END__
 
-[catalog construct]
-basedir         =
-catroot         =
-catuser         =
-cgibase         =
-cgibin          =
-cgidir          =
-cgiurl          =
-demotype        = construct
-documentroot    =
-imagedir        =
-imageurl        =
-mailorderto     =
-interchangegroup=
-interchangeuser =
-samplehtml      =
-sampleurl       =
-servername      =
-vendroot        =
-
 [catalog foundation]
 basedir         =
 catroot         =
@@ -2656,46 +2678,6 @@ sampleurl       =
 servername      =
 vendroot        =
 
-[catalog barry]
-basedir         =
-catroot         =
-catuser         =
-cgibase         =
-cgibin          =
-cgidir          =
-cgiurl          =
-demotype        = barry
-documentroot    =
-imagedir        =
-imageurl        =
-mailorderto     =
-interchangegroup=
-interchangeuser =
-samplehtml      =
-sampleurl       =
-servername      =
-vendroot        =
-
-[catalog simple]
-basedir         =
-catroot         =
-catuser         =
-cgibase         =
-cgibin          =
-cgidir          =
-cgiurl          =
-demotype        = simple
-documentroot    =
-imagedir        =
-imageurl        =
-mailorderto     =
-interchangegroup=
-interchangeuser =
-samplehtml      =
-sampleurl       = 
-servername      =
-vendroot        =
-
 [base]
 permtype=
 basedir=
@@ -2709,6 +2691,7 @@ interchangeuser=
 serverconf=
 servername=
 vendroot=
+linkmode=
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
@@ -2734,6 +2717,7 @@ demotype
 documentroot
 imagedir
 imageurl
+linkmode
 mailorderto
 interchangegroup
 interchangeuser
@@ -2776,6 +2760,7 @@ shareurl
 vendroot
 basedir
 interchangeuser
+linkmode
 EOF
 
 # 
@@ -2831,6 +2816,7 @@ servername=1
 sharedir=1
 shareurl=1
 vendroot=1
+linkmode=1
 _EoP_
 	s{.*\n(#(.*)~_~(\w+)~_~(.*))}{$2 . doit($3) . "$4\n$1"}eg;
 	my $file = $0;
