@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.1
 #
-# $Id: interchange.PL,v 1.15.2.24 2001-03-28 06:18:46 jon Exp $
+# $Id: interchange.PL,v 1.15.2.25 2001-03-31 14:14:50 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -1614,7 +1614,7 @@ sub dispatch {
 
 	adjust_cgi();
 
-    my($sessionid);
+    my($sessionid, $seed);
 	my(@path);
 	my($g, $action);
 
@@ -1755,7 +1755,15 @@ EOF
 	$sessionid = $CGI::values{mv_session_id} || undef;
 	$sessionid =~ s/\0.*//s;
 
-	if (defined $CGI::cookie and
+	$::Instance->{CookieName} = $Vend::Cfg->{CookieName};
+
+	if ($::Instance->{CookieName} and defined $CGI::cookie) {
+		$CGI::cookie =~ m{$Vend::CookieName=($Vend::Cfg->{CookiePattern})};
+		$seed = $sessionid = $1;
+		$::Instance->{ExternalCookie} = $sessionid || 1;
+		$Vend::CookieID = $Vend::Cookie = 1;
+	}
+	elsif (defined $CGI::cookie and
 		 $CGI::cookie =~ /\bMV_SESSION_ID=(\w{8,32})
 								[:_] (
 									(	\d{1,3}\.   # An IP ADDRESS
@@ -1773,6 +1781,8 @@ EOF
 		$Vend::CookieID = $Vend::Cookie = 1;
     }
 
+	$::Instance->{CookieName} = 'MV_SESSION_ID' if ! $::Instance->{CookieName};
+
 	$CGI::host = 'nobody' if $Vend::Cfg->{WideOpen};
 
 	if(! $sessionid) {
@@ -1782,7 +1792,7 @@ EOF
 			$sessionid = generate_key($CGI::remote_addr . $CGI::useragent);
 		}
 	}
-	elsif ($sessionid !~ /^\w+$/) {
+	elsif (! $::Instance->{ExternalCookie} and $sessionid !~ /^\w+$/) {
 		my $msg = get_locale_message(
 						403,
 						"Unauthorized for that session %s. Logged.",
@@ -1808,7 +1818,7 @@ RESOLVEID: {
 		# get_session will return a value if a session is read,
 		# if not it will return false and a new session has been created.
 		# The IP address will be counted for robot_resolution
-		if(! get_session()) {
+		if(! get_session($seed)) {
 			retire_id($sessionid);
 			last RESOLVEID;
 		}
@@ -2196,7 +2206,7 @@ sub version {
 
 =head1 NAME
 
-Interchange - an e-commerce and general HTTP database display system
+interchange - an e-commerce and general HTTP database display system
 
 =head1 SYNOPSIS
 

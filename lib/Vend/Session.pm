@@ -1,6 +1,6 @@
 # Session.pm - Interchange Sessions
 #
-# $Id: Session.pm,v 1.7.2.4 2001-03-08 13:53:18 heins Exp $
+# $Id: Session.pm,v 1.7.2.5 2001-03-31 14:14:49 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -30,7 +30,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.7.2.4 $, 10);
+$VERSION = substr(q$Revision: 1.7.2.5 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -393,6 +393,8 @@ my $joiner = $Global::Windows ? '_' : ':';
 
 sub session_name {
     my($host, $user, $fn, $proxy);
+
+	return $Vend::SessionID if $::Instance->{ExternalCookie};
 
 	if(defined $CGI::user and $CGI::user) {
 		$host = escape_chars($CGI::user);

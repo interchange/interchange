@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.36 2001-03-27 21:09:41 heins Exp $
+# $Id: Config.pm,v 1.25.2.37 2001-03-31 14:14:48 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -98,7 +98,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.36 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.37 $, 10);
 
 my %CDname;
 
@@ -425,6 +425,8 @@ sub catalog_directives {
 	['FallbackIP',		 'yesno',     	     'No'],
 	['WideOpen',		 'yesno',     	     'No'],
 	['Cookies',			 'yesno',     	     'Yes'],
+	['CookieName',		 undef,     	     ''],
+	['CookiePattern',	 'regex',     	     '[-\w:.]+'],
 	['CookieLogin',      'yesno',            'No'],
 	['CookieDomain',     undef,              ''],
 	['MasterHost',		 undef,     	     ''],
