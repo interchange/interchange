@@ -104,6 +104,7 @@ EOF
 	foreach $line (@{$Tmp->{main}}) {
 		$total_sales    += $line->{total_cost};
 		$amount = sprintf '%.2f', $line->{total_cost};
+	    $line->{status} = $Tag->loc('', $line->{status});
 		$url = $Tag->area('__UI_BASE__/order_view', $line->{order_number});
 		$out .= <<EOF;
 	<TR BGCOLOR="__UI_C_INTBLOCK__">
