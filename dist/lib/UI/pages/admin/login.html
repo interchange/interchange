@@ -49,9 +49,40 @@
 </TR>
 [/if]
 
+[calc]
+	my $data = q{[version extended=1 modules=1 joiner="<P>"]};
+	return unless $data =~ /IMPORTANT/;
+	my @lines = grep /not\s+found/, split '<P>', $data;
+	my @important = grep /IMPORTANT/, @lines;
+	my @minor = grep $_ !~ /IMPORTANT/, @lines;
+	my $imp = join '<P>', @important;
+	my $minor = join '<P>', @minor;
+	return <<EOF;
+<TR>
+<TD COLSPAN=2>
+<H1>Admin interface will not work properly.</H1>
+Please install needed Perl modules:
+<small>
+<blockquote>
+	<FONT COLOR="__UI_C_CONTRAST__">$imp</FONT>
+</blockquote>
+<blockquote>
+	$minor
+</blockquote>
+</small>
+The easiest way to do this is to use the CPAN module and do:
+<blockquote>
+perl -MCPAN -e 'install Bundle::Interchange'
+</blockquote>
+
+</TD>
+</TR>
+EOF
+[/calc]
+
 <tr> 
 <td>&nbsp;</td>
-<td>&nbsp; </td>
+<td>&nbsp;</td>
 </tr>
 <tr> 
 <td> 
