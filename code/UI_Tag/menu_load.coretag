@@ -35,28 +35,36 @@ sub old_link {
 	  else {
 		push @out, "co=yes";
 		for(@items) {
-			my ($col, $string) = split /\s*=\s*/;
+			my ($col, $string) = split /\s*=\s*/, $_, 2;
 			push @out, "sf=$col";
 			push @out, "se=$string";
 		}
 		push @out, $row->{search}
 			if $row->{search} =~ /^\s*\w\w=/;
 
-		push @out, qq{va=banner_image=$row->{banner_image}} if $row->{banner_image};
-		push @out, qq{va=banner_text=$row->{banner_text}} if $row->{banner_text};
+		push @out, qq{va=banner_image=$row->{banner_image}}
+			if $row->{banner_image};
+		push @out, qq{va=banner_text=$row->{banner_text}}
+			if $row->{banner_text};
 		for(@out) {
 			s/(.*?=)(.*)/$1 . Vend::Util::hexify($2)/ges;
 		}
-		$arg = join "&", @out;
+		$arg = join $Global::UrlJoiner, @out;
 		$nrow->{form} = $arg;
 	  }
   }
   elsif	($row->{link_type} eq 'complex') {
 	  $nrow->{page} = 'search';
 	  $row->{search} =~ s/[\r\n+]/\n/g;
-	  $row->{search} .= qq{\nva=banner_text=$row->{banner_text}} if $row->{banner_text};
-	  $row->{search} .= qq{\nva=banner_image=$row->{banner_image}} if $row->{banner_image};
-	  $nrow->{form} = $row->{search};
+	  $row->{search} .= qq{\nva=banner_text=$row->{banner_text}}
+	  	if $row->{banner_text};
+	  $row->{search} .= qq{\nva=banner_image=$row->{banner_image}}
+	  	if $row->{banner_image};
+	  my @items = grep /\S/, split /[\r\n]+/, $row->{search};
+		for(@items) {
+			s/(.*?=)(.*)/$1 . Vend::Util::hexify($2)/ges;
+		}
+	  $nrow->{form} = join $Global::UrlJoiner, @items;
 	  $nrow->{form} =~ s/[\r\n]+/&/g;
   }
   return $nrow;
@@ -207,6 +215,8 @@ sub {
 	elsif ($type eq 'comb_category') {
 		$opt->{table} ||= 'products';
 		$opt->{comb_field} ||= 'comb_category';
+		$opt->{sort_string} ||= "tf=$opt->{comb_field},$Vend::Cfg->{DescriptionField}";
+		$opt->{sort_order} ||= $opt->{comb_field};
 
 
 		COMB_BUILD: {
@@ -280,7 +290,7 @@ sub {
 							$searchterm .= $Tag->filter('urlencode',$comb);
 							my $form = join "&",
 										@base_search,
-										"tf=$comb_field,description",
+										$opt->{sort_string},
 										"sf=$comb_field",
 										$searchterm
 										;
