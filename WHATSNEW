@@ -5,16 +5,36 @@
 
 ------------------------------------------------------------------------------
 
-Interchange-4.9.6 -- not yet released
+Interchange 4.9.6 not yet released.
 
-Interchange-4.9.5 -- minor bugfix release
+
+Core
+----
+
+* Fix whitespace transform and tolerate leading whitespace on HTTP
+  header lines.
+
+Content Management
+------------------
+
+* Get restrict_allow settings right -- the default was not allowing the "var"
+  to be expanded in the image preview path. Should probably look at this
+  concept on a per-field basis, and set the default to "".
+
+
+------------------------------------------------------------------------------
+
+
+Interchange 4.9.5 released 2002-12-02 (minor bugfix release).
+
 
 Foundation
 ----------
-* Add component files in for new selectable results-list done by Ton.
+
+* Add component files for new selectable results-list done by Ton.
 
 * Make proper patches to history-scan and barlink() to work with Randy
-  Moore's cateegory_vert_toggle component.
+  Moore's category_vert_toggle component.
 
 * Minor updates to category_vert_toggle component for HTML cleanup and 
   performance improvement.
@@ -80,7 +100,9 @@ UserTags
 
 Installation
 ------------
+
 * Various debian build patches.
+
 
 ------------------------------------------------------------------------------
 
@@ -92,6 +114,7 @@ Interchange 4.9.4 released 2002-12-02.
 
 * Tolerate people forgetting and putting , on the end of a parameter
   when using line2options.
+
 Core
 ----
 
