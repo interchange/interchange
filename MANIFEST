@@ -515,7 +515,6 @@ dist/lib/UI/pages/admin/bug_report.html
 dist/lib/UI/pages/admin/build_related.html
 dist/lib/UI/pages/admin/button_builder.html
 dist/lib/UI/pages/admin/compedit.html
-dist/lib/UI/pages/admin/config.html
 dist/lib/UI/pages/admin/customer.html
 dist/lib/UI/pages/admin/customer_all.html
 dist/lib/UI/pages/admin/customer_bill.html
@@ -689,6 +688,11 @@ dist/src/compile.pl
 dist/src/config.h.in
 dist/src/configure
 dist/src/cpan_local_install
+dist/src/mod_interchange/Makefile
+dist/src/mod_interchange/README
+dist/src/mod_interchange/mod_interchange.c
+dist/src/mod_interchange/mod_interchange.html
+dist/src/mod_interchange/mod_interchange.spec
 dist/src/mod_perl_tlink.pl
 dist/src/mvctl.c
 dist/src/syscfg.in
