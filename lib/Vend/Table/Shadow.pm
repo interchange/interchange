@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.40 2003-07-06 17:06:10 mheins Exp $
+# $Id: Shadow.pm,v 1.41 2003-10-08 11:24:07 racke Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.40 $, 10);
+$VERSION = substr(q$Revision: 1.41 $, 10);
 
 # CREDITS
 #
@@ -238,6 +238,12 @@ sub record_exists {
 	$s->[$OBJ]->record_exists($key);
 }
 
+sub delete_record {
+	my ($s, $key) = @_;
+	$s = $s->import_db() unless defined $s->[$OBJ];
+	$s->[$OBJ]->delete_record($key);
+}
+
 sub touch {
 	my ($s) = @_;
 	$s = $s->import_db() unless defined $s->[$OBJ];
@@ -282,7 +288,7 @@ sub query {
 		my $qref = $s->_parse_sql($opt->{query});
 
 		if (@{$qref->{tables}} > 1) {
-			die errmsg("Vend::Shadow::query can handle only one table");
+			die errmsg("Vend::Table::Shadow::query can handle only one table");
 		}
 
 		my $table = $qref->{tables}->[0];
@@ -295,6 +301,8 @@ sub query {
 				die errmsg("Table %s not found", $table);
 			}
 			return $db->query($opt, $text, @arg);
+		} elsif ($qref->{command} ne 'SELECT') {
+			return $s->[$OBJ]->query($opt, $text, @arg);
 		} else {
 			# check if one of the queried fields is shadowed
 			my (@map_matches, @map_entries, $colref);
