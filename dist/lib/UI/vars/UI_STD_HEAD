@@ -63,7 +63,7 @@ EOF
 [/calc]
 [if scratch table_perm]
 	[calc]
-		my $table = $CGI->{mv_data_table} || $Value->{mv_data_table};
+		my $table = $CGI->{mv_data_table} || $Values->{mv_data_table};
 		if($Scratch->{table_perm} =~ /^\s*=(\w+)/) {
 			$Scratch->{table_perm} = "$CGI->{mv_data_table}=$1";
 		}
