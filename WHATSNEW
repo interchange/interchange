@@ -49,6 +49,12 @@ Core
 * Fixed error in Vend::Interpolate::tag_mail where a code reference is
   used as a hash reference if the passed body is empty.
 
+* Pass the locale name instead of the locale settings in 
+  Vend::Config::parse_locales() to POSIX::setlocale. 
+  This bug was discovered due to a buffer overflow in the FreeBSD C
+  library. Thanks to Joachim Leidinger for reporting and pursuing
+  this problem and Alexander Leidinger for debugging.
+
 Usertags
 --------
 

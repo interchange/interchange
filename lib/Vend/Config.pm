@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.2.2.9 2002-06-27 22:38:24 jon Exp $
+# $Id: Config.pm,v 2.2.2.10 2002-08-01 16:31:27 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.2.2.9 $, 10);
+$VERSION = substr(q$Revision: 2.2.2.10 $, 10);
 
 my %CDname;
 
@@ -1707,7 +1707,7 @@ sub parse_locale {
 				and $eval = 1;
 		$eval and ! $safe and $safe = new Safe;
 		if(! defined $store->{$name} and $item eq 'Locale') {
-			if(POSIX::setlocale(POSIX::LC_ALL, $settings) ) {
+			if(POSIX::setlocale(POSIX::LC_ALL, $name) ) {
 				$store->{$name} = POSIX::localeconv();
 			}
 		}
