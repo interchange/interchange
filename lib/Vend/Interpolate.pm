@@ -1,7 +1,6 @@
-#!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.26 2001-03-08 13:53:16 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.27 2001-03-16 04:20:33 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.26 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.27 $, 10);
 
 @EXPORT = qw (
 
@@ -410,23 +409,28 @@ sub comment_out {
 sub substitute_image {
 	my ($text) = @_;
 
-	my $dir = $CGI::secure											?
-		($Vend::Cfg->{ImageDirSecure} || $Vend::Cfg->{ImageDir})	:
-		$Vend::Cfg->{ImageDir};
+	unless ( $Vend::Cfg->{Pragma}{no_image_rewrite} ) {
+		my $dir = $CGI::secure											?
+			($Vend::Cfg->{ImageDirSecure} || $Vend::Cfg->{ImageDir})	:
+			$Vend::Cfg->{ImageDir};
 
-    if ($dir) {
-        $$text =~ s#(<i\w+\s+[^>]*?src=")(?!https?:)([^/][^"]+)#
-                         $1 . $dir . $2#ige;
-        $$text =~ s#(<body\s+[^>]*?background=")(?!https?:)([^/][^"]+)#
-                         $1 . $dir . $2#ige;
-        $$text =~ s#(<t[dhr]\s+[^>]*?background=")(?!https?:)([^/][^"]+)#
-                         $1 . $dir . $2#ige
-            if $Vend::Cfg->{Pragma}{substitute_table_image};
+		if ($dir) {
+			$$text =~ s#(<i\w+\s+[^>]*?src=")(?!https?:)([^/][^"]+)#
+						$1 . $dir . $2#ige;
+	        $$text =~ s#(<body\s+[^>]*?background=")(?!https?:)([^/][^"]+)#
+						$1 . $dir . $2#ige;
+	        $$text =~ s#(<t(?:[dhr]|able)\s+[^>]*?background=")(?!https?:)([^/][^"]+)#
+						$1 . $dir . $2#ige;
+		}
+	}
 
-    }
     if($Vend::Cfg->{ImageAlias}) {
 		for (keys %{$Vend::Cfg->{ImageAlias}} ) {
         	$$text =~ s#(<i\w+\s+[^>]*?src=")($_)#
+                         $1 . ($Vend::Cfg->{ImageAlias}->{$2} || $2)#ige;
+        	$$text =~ s#(<body\s+[^>]*?background=")($_)#
+                         $1 . ($Vend::Cfg->{ImageAlias}->{$2} || $2)#ige;
+        	$$text =~ s#(<t(?:[dhr]|able)\s+[^>]*?background=")($_)#
                          $1 . ($Vend::Cfg->{ImageAlias}->{$2} || $2)#ige;
 		}
     }
@@ -2259,7 +2263,6 @@ sub pragma {
 
 	$Vend::Cfg->{Pragma}{$pragma} = $value;
 	if($pragma eq 'no_html_parse') {
-		$Vend::Cfg->{Pragma}{no_html_parse} = $value;
 		$Vend::Parse::find_tag	= $value
 									?  qr{^([^[]+)}
 									:  qr{^([^[<]+)}
