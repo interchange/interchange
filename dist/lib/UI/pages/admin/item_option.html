@@ -69,7 +69,7 @@
 	[either]
 		[cgi page_title]
 	[or]
-		Item option editor: [cgi item_id]
+        Item option editor: [data table="products" col="description" key="[cgi item_id]"] ([cgi item_id])
 	[/either]
 [/tmp]
 [tmp page_banner]
@@ -78,7 +78,7 @@
 	[or]
 		[cgi page_title]
 	[or]
-		Item option editor: <B>[cgi item_id]</B>
+        Item option editor: <B>[data table="products" col="description" key="[cgi item_id]"]</B> ([cgi item_id])
 	[/either]
 [/tmp]
 [tmp help_name][either][cgi help_name][or]item.option[/either][/tmp]
