@@ -12,7 +12,7 @@
             Name: [value fname] [value lname]
 [if value company]         Company: [value company][/if]
    Email address: [value email][if value email_copy] - EMAIL COPY REQUESTED[/if]
-   Mail List Req: [if value mail_list]REQUESTED TO BE ON LIST[/if]
+   Mail List Req: [value mail_list]
 
          Address: [value address1][if value address2]
                   [value address2][/if]
