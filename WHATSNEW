@@ -5,7 +5,167 @@
 ------------------------------------------------------------------------------
 
 
-Interchange 4.7.3 released 2001-06-12
+Interchange 4.7.4 released 2001-06-16.
+
+Core
+----
+* Fix bug #220, Interchange server crashing in Server.pm. Caused by
+  inappropriate "next" upon select timeout after MaxServer > Num_servers
+  condition.
+
+* Change default of [catch] to NOT interpolate. Impossible to conditionally
+  execute code if that is the case.
+
+* Fix [catch] to work with only the proper body, not with both THEN and ELSE.
+
+* Add maxsize parameter to file write in tag_value_extended, fulfilling
+  enhancement request #99 in Bugzilla.
+
+* Add a filter for decode_entities, and make encode_entities an alias to
+  entities.
+
+* Add ability to restrict tag execution in a region. If a restricted tag is
+  encountered, it is simply output. Based on an idea from Jon Jensen.
+
+  [restrict policy=deny*|accept enable="tag1 tag2" disable="tag1 tag2"]
+      restricted area
+  [/restrict]
+
+  options:
+  policy   "allow" or "deny". Default is deny.
+  enable   space or comma-separated list of tag names, including
+           UserTag names.
+  disable  space or comma-separated list of tag names, including
+           UserTag names.
+
+  For instance, this:
+
+  [restrict enable=page]
+      [area something]
+      [page aboutus]A link[/page]
+  [/restrict]
+
+  will output something like:
+
+      [area something]
+      <a href="http://sam.heins.net/cgi-bin/mfound/aboutus.html">A link</a>
+
+  Defaults are important:
+
+  interpolate=0
+  reparse=0
+
+  It would defeat the purpose to set interpolate or reparse, but it can be
+  done.
+
+* Allow parameters for comment tag -- not parsed, but at least tolerated.
+
+* Fix some Interpolate.pm bugs in option display to allow overriding for
+  simple options too, and to select the widget type for matrix options.
+
+* Add get=1 to setlocale tag. That is sort of counter-intuitive, so I added
+  a [getlocale] alias for [setlocale get=1].
+
+* Fix makecat instructions on how to set ShareURL if using ~yourname/
+  style paths, and allow ShareURL to be empty if passed from command line.
+
+Admin UI
+--------
+* Added German UI images and other text translations.
+
+* Automatically symlink to default en_US UI images for missing images in
+  other locales.
+
+* Fix problem with IMAGE_DIR variable being inadvertantly changed for store-
+  front by UI. (Thanks to John Beima for finding this.)
+
+* Fix area and cat reordering problem in layout.html of admin with a patch
+  from Mark Johnson. Fixes bug #180.
+
+* Finished help pages for the Wizard.
+
+* Make UI_SECURE behave so that global policy can be enforced --
+  i.e. if @@UI_SECURE@@ = 1 then the setting of __UI_SECURE__ does not matter.
+  @@UI_SECURE@@ isn't set in the foundation demo, so this doesn't affect
+  current defaults.
+
+* Move @@UI_STD_HEAD@@ before item bounce checks, so that when the bounce
+  occurs it will go to the right URL. Because we now use [table-editor],
+  the positioning is no longer necessary. Should fix Bugzilla bug #217,
+  though that was marked invalid because we don't support different
+  SSL/non-SSL domains.
+
+* Fixed missing mv_session_id variables in admin UI form posts, causing
+  problems when cookies were not used.
+
+* Add database-table based backup capability. Depends on a table "backup"
+  being available. Looked at CVS, but the repository creation/management
+  issues are too daunting at this point. Since it is likely that an entire
+  catalog would want to be in CVS, this partial solution seems wiser.
+
+* More improvements to page editor:
+
+  - Policy for editing individual components/page/template can be set in
+    template as well as globally. Soon we will have per-page and per-user
+    control.
+
+  - A PREAMBLE and POSTAMBLE area is defined, so that code can be run before/
+    after template regions without being restricted to what you can do with
+    the page settings.
+
+  - preamble and postamble are editable on a per-template basis.
+
+  - Preview works on latest version of Mozilla, Netscape 4, and MSIE 5.
+
+* Usertag changes:
+
+  - Update read_ui_page to support latest page edit.
+
+  - Add diff tag in support of new backup capability.
+
+* New, improved admin UI graphics make you healthy, wealthy, and wise.
+
+* Minor [table-editor] fix affecting special Wizard profiles.
+
+Foundation
+----------
+* Add supplant=1 to master route. Left in "main" so that it would be
+  compatible with old checkout forms, shouldn't cause any harm.
+
+* Turn off transactions by default in catalog.cfg -- not needed or wanted for
+  MySQL and DBM, two most common dbs. Since we have had virtually zero
+  complaint about transaction atomicity in general, it makes sense to disable
+  this. If someone wants transactions, they merely need to enable the
+  TRANSACTION_TABLES variable.
+
+* Add currency_locale field to transactions, resolving Bugzilla enhancement
+  request #128. This is valuable because if there is an exchange rate
+  situation, it needs to be known at time of purchase.
+
+* Include options in the emailed receipt and report.
+
+* Fix product description display in receipt.html.
+
+* Add example for configurable spec sheets for products. Can be extended to
+  track lists for albums, etc.
+
+* Fix template settings for some lesser-used pages.
+
+* Fixed a small typo in the 'cross' component. width_percent was set to 100,
+  instead of 100%, causing an occasional cross item to look very skinny.
+
+Other
+-----
+* RPM specfile reworked to build 3 RPMs: core, foundation skeleton, foundation
+  live demo. Foundation demo made friendly for relocation by RPM build.
+
+* Various cleanups: removal of unneeded variables, files, etc.
+
+
+------------------------------------------------------------------------------
+
+
+Interchange 4.7.3 released 2001-06-12.
 
 Core
 ----
@@ -129,7 +289,7 @@ Core
 * Fix bad username error message found by Ed LaFrance.
 
 * Get rid of language-dependent error message scan.
- 
+
 * Vend::Util::set_lock_type() allows setting global lock type at runtime.
 
 * Fix a bug that suppressed error messages that Vend::Scan::sql_statement
@@ -232,14 +392,14 @@ General
 ------------------------------------------------------------------------------
 
 
-Interchange 4.7.2 released 2001-05-10
+Interchange 4.7.2 released 2001-05-10.
 
 Server
 ------
 * There is a pre-forked server mode enabled in interchange.cfg with:
 
-	PreFork       Yes
-	StartServers  5
+    PreFork       Yes
+    StartServers  5
 
   The number 5 can be set as high as 50 if you have enough
   memory. A number less than 2 makes little sense.
@@ -330,16 +490,13 @@ Orders/Pricing/Shipping
 
 * Add new tag "assign". It allows you to assign to four things,
 
-	subtotal    preempts the cart subtotal derived from prices. NOT
-				ROUNDED.
-	shipping    if any  non-zero mv_shipmode is present at all,
-				sets the total value of shipping. Rounded
-				to fractional digits.
-	handling    if any non-zero mv_handling is present at all, sets the
-				total value of shipping. Rounded to fractional
-				digits.
-	salestax    preempts the salestax normally derived from the
-				salestax. NOT ROUNDED.
+  subtotal    preempts the cart subtotal derived from prices. NOT ROUNDED.
+  shipping    if any  non-zero mv_shipmode is present at all, sets the total
+              value of shipping. Rounded to fractional digits.
+  handling    if any non-zero mv_handling is present at all, sets the
+              total value of shipping. Rounded to fractional digits.
+  salestax    preempts the salestax normally derived from the salestax.
+              NOT ROUNDED.
 
   You cannot assign to total_cost -- it will always be the sum of the
   four above.
@@ -391,11 +548,11 @@ Payment
 
   &charge=route
 
-	  or
+      or
 
   $Tag->charge($route, $opt); # If no runtime "require"
 
-	  or
+      or
 
   [charge route=THE_ROUTE gateway=ccvs id=milton secret=pass]
 
@@ -405,7 +562,7 @@ Payment
 
 * A pretty convenient mechanism to bring in modules:
 
-	  Require module Vend::Payment::Authorize
+      Require module Vend::Payment::Authorize
 
   Prevents errors and memory bloat(er) when Net::SSLeay or other
   needed companion modules are present/not present, and should
@@ -417,7 +574,7 @@ Payment
 * There will be a Vend::Payment::Skeleton to show adding your own
   payment module.
 
-* All modules needing Net::SSLeay or Crypt::SSLeay updated to 
+* All modules needing Net::SSLeay or Crypt::SSLeay updated to
   support either with common calls.
 
 * GlobalSub method still supported, current GlobalSub things
@@ -456,25 +613,25 @@ Miscellaneous
 
 * Add set="Message" option to error tag, allowing you to set an error via tag.
 
-	[if value lname =~ /^mccoy$/i]
-	<!-- [error  show_error
-			set="No stinking McCoys' allowed at hatfield.com!"
-			name=lname ] -->
-	[/if]
+    [if value lname =~ /^mccoy$/i]
+    <!-- [error  show_error
+            set="No stinking McCoys allowed at hatfield.com!"
+            name=lname ] -->
+    [/if]
 
   Implies keep=1.
 
 * Allow set-cookie tag to set domain and path.
 
 * Added UI_SECURE variable which forces the use of the SecureURL instead
-  of VendURL if set, each UI page should include either UI_STD_INIT 
-  or UI_STD_HEAD to ensure this works 
+  of VendURL if set, each UI page should include either UI_STD_INIT
+  or UI_STD_HEAD to ensure this works
   (supplied by Stefan Hornburg <racke@linuxia.de>).
 
 * Added catalog configuration wizard, to move non-essential config from
   makecat and simplify it a bit.
 
-* Added more links based on the leading letters of the results 
+* Added more links based on the leading letters of the results
   so the selection of the more link is much easier for the customer,
   especially with huge number of results. Short example:
 
