@@ -52,7 +52,7 @@ Amount to add on to standard UPS costs
 
 UPSORIGIN
 Origin zip code for UPS lookups
-00000	45056
+45056	00000
 
 SOMESQL
 Set to 1 if you want to use MySQL or Postgres

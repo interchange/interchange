@@ -45,6 +45,7 @@ UI_C_TITLEBARBG	#336699	Admin colors
 UI_C_TITLEBARTXT	#CCCCCC	Admin colors
 UI_C_TOPBLOCKBAR	#336699	Admin colors
 UI_C_VLINK	#000000	Admin colors
+UI_IMG	__MVC_SHAREURL__/akopia/ui/	Admin control
 UI_ITEM_FIELDS	description image thumb comment size color sku price weight category	Item display
 UI_ITEM_EXPUNGE	products pricing inventory merchandising	Item display
 UI_LEFT_WIDTH	150	Admin layout
