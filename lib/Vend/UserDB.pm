@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.0.2.4 2002-11-26 03:21:10 jon Exp $
+# $Id: UserDB.pm,v 2.0.2.5 2003-01-24 04:50:47 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.0.2.4 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.5 $, 10);
 
 use vars qw!
 	$VERSION
@@ -593,10 +593,20 @@ sub clear_values {
 
 	for(@fields) {
 		if($scratch{$_}) {
-			delete $::Scratch->{$_};
+			if (exists $Vend::Cfg->{ScratchDefault}->{$_}) {
+				$::Scratch->{$_} = $Vend::Cfg->{ScratchDefault}->{$_};
+			}
+			else {
+				delete $::Scratch->{$_};
+			}
 		}
 		else {
-			delete $::Values->{$_};
+			if (exists $Vend::Cfg->{ValuesDefault}->{$_}) {
+				$::Values->{$_} = $Vend::Cfg->{ValuesDefault}->{$_};
+			}
+			else{
+				delete $::Values->{$_};
+			}
 			delete $CGI::values{$_};
 		}
 	}
