@@ -492,7 +492,6 @@ EoPC
 			nocancel=1
 			notable=1
 			no_meta=1
-			no-table-meta=1
 			override.ui_body_text=`$page_content`
 			show_reset=1
 			table=junk
