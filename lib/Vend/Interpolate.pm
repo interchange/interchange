@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.95 2002-08-02 01:20:53 mheins Exp $
+# $Id: Interpolate.pm,v 2.96 2002-08-02 01:33:34 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.95 $, 10);
+$VERSION = substr(q$Revision: 2.96 $, 10);
 
 @EXPORT = qw (
 
@@ -4059,7 +4059,7 @@ sub labeled_list {
 			}
 		}
 #::logDebug("Missing mv_field_hash and/or mv_field_names in Vend::Interpolate::labeled_list") unless ref $fh eq 'HASH';
-		$r = iterate_array_list($i, $end, $count, $text, $ary, $opt_select, $fh);
+		$r = iterate_array_list($i, $end, $count, $text, $ary, $opt_select, $fh, $opt);
 	}
 	$MVSAFE::Unsafe = $save_unsafe;
 	return $r;
@@ -4308,7 +4308,7 @@ sub resolve_nested_if {
 }
 
 sub iterate_array_list {
-	my ($i, $end, $count, $text, $ary, $opt_select, $fh) = @_;
+	my ($i, $end, $count, $text, $ary, $opt_select, $fh, $opt) = @_;
 
 	my $r = '';
 	# Optimize for no-match, on-match, etc
@@ -4363,6 +4363,7 @@ my $once = 0;
 	$run =~ s#$IB$QR{_param_if}# defined $fh->{$3} ||
 		::logOnce(@field_msg, $3, "if-$Orig_prefix-param") #ige;
 
+	$opt ||= {};
 	my $oexec = { %$opt };
 
 	for( ; $i <= $end ; $i++, $count++ ) {
@@ -4416,7 +4417,11 @@ my $once = 0;
 		$run =~ s#$B$QR{_calc}$E$QR{'/_calc'}#tag_calc($1)#ige;
 		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#
 					init_calc() if ! $Vend::Calc_initialized;
-					($Vend::Cfg->{Sub}{$1} || sub { 'ERROR' })->($2,$row,$oexec)
+					(
+						$Vend::Cfg->{Sub}{$1} ||
+						$Global::GlobalSub->{$1} ||
+						sub { 'ERROR' }
+					)->($2,$row,$oexec)
 				#ige;
 		$run =~ s#$B$QR{_filter}$E$QR{'/_filter'}#filter_value($1,$2)#ige;
 		$run =~ s#$B$QR{_last}$E$QR{'/_last'}#
@@ -4456,7 +4461,7 @@ sub iterate_hash_list {
 		return $r;
 	}
 
-	$opt = {} if ! $opt;
+	$opt ||= {};
 	my $code_field = $opt->{code_field} || 'mv_sku';
 	my ($run, $code, $return, $item);
 
@@ -4589,7 +4594,14 @@ sub iterate_hash_list {
 		$run =~ s#$B$QR{_tag}($All$E[-_]tag[-_]\1\])#
 						tag_dispatch($1,$count, $item, $hash, $2)#ige;
 		$run =~ s#$B$QR{_calc}$E$QR{'/_calc'}#tag_calc($1)#ige;
-		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#init_calc() if ! $Vend::Calc_initialized;($Vend::Cfg->{Sub}{$1} || sub { 'ERROR' })->($2,$item,$oexec)#ige;
+		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#
+					init_calc() if ! $Vend::Calc_initialized;
+					(
+						$Vend::Cfg->{Sub}{$1} ||
+						$Global::GlobalSub->{$1} ||
+						sub { 'ERROR' }
+					)->($2,$item,$oexec)
+				#ige;
 		$run =~ s#$B$QR{_filter}$E$QR{'/_filter'}#filter_value($1,$2)#ige;
 		$run =~ s#$B$QR{_last}$E$QR{'/_last'}#
                     my $tmp = interpolate_html($1);
