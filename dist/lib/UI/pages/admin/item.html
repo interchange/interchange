@@ -446,8 +446,9 @@ sub {
 		my $filter = $filter_show[$i] || 'entities';
 		$extra .= " $1" while $filter =~ s/(v?align=\w+)//i;
 #Log("$i filter = $filter");
+		$_ = $Tag->filter($filter, $_);
 		s/\[/&#91;/g;
-		$out .= "<TD$extra>" . $Tag->filter($filter, $_) . "</TD>";
+		$out .= "<TD$extra>$_</TD>";
 		$i++;
 	}
 	for(@special) {
