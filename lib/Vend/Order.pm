@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.4 2001-07-25 23:55:25 heins Exp $
+# $Id: Order.pm,v 2.5 2001-08-03 10:17:41 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -823,6 +823,7 @@ sub check_order {
 	my ($profile, $vref) = @_;
 	my($codere) = '[-\w_#/.]+';
 	my $params;
+	$Profile = $profile;
 	if(defined $Vend::Cfg->{OrderProfileName}->{$profile}) {
 		$profile = $Vend::Cfg->{OrderProfileName}->{$profile};
 		$params = $Vend::Cfg->{OrderProfile}->[$profile];
@@ -835,7 +836,6 @@ sub check_order {
 	}
 	else { return undef }
 	return undef unless $params;
-	$Profile = $profile;
 
 	my $ref = \%CGI::values;
 	$params = interpolate_html($params);
