@@ -30,7 +30,7 @@ sub regen_build {
 	
 	$Vend::Session = {
 		'ohost'		=> 'REGENERA',
-		'browser'	=> "Interchange $::VERSION regenrator",
+		'browser'	=> "Interchange $::VERSION regenerator",
 		'scratch'	=> { %{$Vend::Cfg->{ScratchDefault}},
 							mv_no_session_id => 1,
 							mv_no_count => 1,
