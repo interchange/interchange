@@ -158,7 +158,8 @@ Message:
 </tr>
 </table>
 [perl tables="[cgi mv_data_table] __UI_META_TABLE__"]
-	my $ref = $Db{$CGI->{mv_data_table}};
+	my $tab = $CGI->{mv_data_table};
+	my $ref = $Db{$tab};
 	my $mref = $Db{__UI_META_TABLE__};
 	
 	if (! $ref) {
@@ -170,8 +171,8 @@ Message:
 	}
 
 	my $meta;
-	if($mref and $mref->record_exists($CGI->{mv_data_table}) ) {
-		$meta = $mref->row_hash($CGI->{mv_data_table});
+	if($mref and $mref->record_exists($tab) ) {
+		$meta = $mref->row_hash($tab);
 	}
 	else {
 		$meta = {};
@@ -279,15 +280,16 @@ EOF
 	for(@cols) {
 		$numeric{$_} = 1 if $ref->numeric($_);
 	}
+	$CGI->{changed_qual} if delete $Scratch->{item_list_clicked};
 
 	return $out_message;
 [/perl]
 
-<!-- existing item_sparams: [scratch item_sparams]
-		tq: [cgi ui_text_qualification] -->
+<!-- existing item_sparams: '[scratch item_sparams]'
+		tq: '[cgi ui_text_qualification]' -->
 
-[if scratch item_list_clicked]
-[or cgi changed_qual]
+[if cgi changed_qual]
+[then]
 	[set item_list_clicked][/set]
 	[seti item_sparams]
 			fi=[cgi mv_data_table]
@@ -300,14 +302,27 @@ EOF
 			to=[cgi ui_sort_option]
 			rf=[cgi ui_show_fields]
 	[/seti]
+[/then]
+[elsif !scratch item_sparams]
+	[seti item_sparams]
+			fi=[cgi mv_data_table]
+			st=db
+			ra=yes
+			md=1
+			ml=[cgi ui_list_size]
+			tf=[cgi ui_sort_field]
+			to=[cgi ui_sort_option]
+			rf=[cgi ui_show_fields]
+	[/seti]
+[/elsif]
 [else]
 	[set item_list_clicked]1[/set]
 	<span class=cmessage>(click Items again to reset list)</span>
 [/else]
 [/if]
 
-<!-- existing item_sparams: [scratch item_sparams]
-		tq: [cgi ui_text_qualification] -->
+<!-- existing item_sparams: '[scratch item_sparams]'
+		tq: '[cgi ui_text_qualification]' -->
 
 [if cgi ui_special_sort]
 [seti item_special_sort][cgi ui_special_sort][/seti]
