@@ -1,0 +1,48 @@
+<title>Meta field information</title>
+<p>
+Interchange can store meta information for selected columns of tables in
+your database. This meta information is used when the user interacts with
+the database. For example, the meta informaton for a "Hide Item" field might
+specify that a checkbox be displayed when the user edits that field, since
+the only reasonable values are "on" and "off". Or, the meta information might
+specify a filter on data entered for a "Filename" field which makes sure that
+the characters entered are safe for use in a filename.
+</p>
+
+<p>
+"Widget type" specifies the HTML INPUT tag type to use when displaying the field
+in, say, the item editor.
+</p>
+
+<p>
+"Width" and "Height" only apply to some of the "Widget type" options, for
+instance the "Textarea" widget.
+</p>
+
+<p>
+"label" is displayed instead of the internal column name. For example, the
+"category" column of the "products" table might have a label of "Product
+Category".
+</p>
+
+<p>
+"help" is displayed below the column label, and helps describe the purpose of
+the field to the user.
+</p>
+
+<p>
+"help url" can be used to link to a page giving more information on the field.
+</p>
+
+<p>
+"lookup" can be used when a field is acting like a foreign key into another
+table. In that case, you'll probably want to use some sort of select box
+as the widget type, and if you want to reference multiple rows in the destination
+table, you'll probably want to use a multi select box, with "colons_to_null"
+as the pre_filter, and "::" as the lookup_exclude.
+</p>
+
+<p>
+"filter" and "pre_filter" can be used to filter data destined for that field
+or data read from that field, respectively.
+</p>
