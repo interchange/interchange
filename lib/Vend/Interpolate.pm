@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.179 2003-07-07 05:26:58 mheins Exp $
+# $Id: Interpolate.pm,v 2.180 2003-07-07 16:35:27 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.179 $, 10);
+$VERSION = substr(q$Revision: 2.180 $, 10);
 
 @EXPORT = qw (
 
@@ -1383,6 +1383,15 @@ sub conditional {
 		$op = "q{$op}" unless defined $noop;
 		$op .=	qq%	$operator $comp%
 				if defined $comp;
+    }
+    elsif($base =~ /^module.version/) {
+		eval {
+			no strict 'refs';
+			$op = ${"${term}::VERSION"};
+			$op = "q{$op}" unless defined $noop;
+			$op .=	qq%	$operator $comp%
+					if defined $comp;
+		};
     }
 	elsif($base =~ /^accessor/) {
         if ($comp) {
@@ -4108,6 +4117,31 @@ sub map_list_routines {
 	return $nc;
 }
 
+sub alternate {
+	my ($count, $inc, $end) = @_;
+
+	if(! length($inc)) {
+		$inc ||= $::Values->{mv_item_alternate} || 2;
+	}
+
+	return $count % $inc if $inc >= 1;
+
+	my $status;
+	if($inc == -1 or $inc eq 'except_last') {
+		$status = 1 unless $count - 1 == $end;
+	}
+	elsif($inc eq '0' or $inc eq 'first_only') {
+		$status = 1 if $count == 1;
+	}
+	elsif($inc eq 'except_first') {
+		$status = 1 unless $count == 1;
+	}
+	elsif('last_only') {
+		$status = 1 if $count - 1 == $end;
+	}
+	return ! $status;
+}
+
 sub iterate_array_list {
 	my ($i, $end, $count, $text, $ary, $opt_select, $fh, $opt) = @_;
 #::logDebug("passed opt=" . ::uneval($opt));
@@ -4216,7 +4250,7 @@ my $once = 0;
 
 	    $run = $text;
 		$run =~ s#$B$QR{_alternate}$E$QR{'/_alternate'}#
-				  $count % ($1 || $::Values->{mv_item_alternate} || 2)
+						  alternate($count, $1, $end)
 				  							?	pull_else($2)
 											:	pull_if($2)#ige;
 		1 while $run =~ s#$IB$QR{_param_if}$IE[-_]param\1\]#
@@ -4380,7 +4414,7 @@ sub iterate_hash_list {
 
 		$run = $text;
 		$run =~ s#$B$QR{_alternate}$E$QR{'/_alternate'}#
-				  ($i + 1) % ($1 || $::Values->{mv_item_alternate} || 2)
+						  alternate($i + 1, $1, $end)
 				  							?	pull_else($2)
 											:	pull_if($2)#ge;
 		tag_labeled_data_row($code,\$run);
