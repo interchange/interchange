@@ -59,6 +59,10 @@ Packaging
   not starting it after install anyway. Administrator should decide whether
   to do those things.
 
+* Check for demo catalog added in interchange-ui's postinst (fixes Debian
+  bug #147705). Fixes inaccesible demo catalog if only interchange-ui is
+  upgraded.
+
 * Turned Depends of the libapache-mod-interchange Debian package on 
   interchange into a Suggests, thanks to Christopher F. Miller 
   <cfm.maine.com> for the suggestion.

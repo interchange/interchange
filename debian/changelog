@@ -1,6 +1,8 @@
 interchange (4.8.6-0.1) unstable; urgency=low
 
   * new upstream release
+  * check for demo catalog added in interchange-ui's postinst 
+    (Closes: #147705) 
   * turned Depends of libapache-mod-interchange on interchange into a
     Suggests (interchange might be running on a remote host), thanks to
     Christopher F.Miller <cfm.maine.com> for the suggestion
