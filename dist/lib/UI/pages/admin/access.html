@@ -91,6 +91,17 @@ mv_nextpage=@@MV_PAGE@@
 [/button]
 [/if-mm]
 
+[if-mm super]
+[button text="[L]Switch to user[/L]" form=accessform]
+mv_todo=return
+mv_nextpage=@@MV_PAGE@@
+mv_click=MMsu
+admin=1
+user=[cgi user_id]
+dest=admin/index
+[/button]
+[/if-mm]
+
 </td>
 
 <td bgcolor="__UI_C_INTBLOCK__" width=__UI_RIGHT_WIDTH__>

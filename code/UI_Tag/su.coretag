@@ -6,8 +6,41 @@ UserTag su Routine <<EOR
 sub {
 	my ($user, $opt) = @_;
 	use vars qw/$Session $Tag $ready_safe $Scratch/;
-	if($user and ! $Tag->if_mm('super')) {
-		::logError("attempt to su to user %s", $user);
+
+	my $super  = $Tag->if_mm('super');
+	my $former = $Vend::username;
+
+	$opt->{profile} = 'ui'     if $opt->{admin} and ! $opt->{profile};
+
+	my $u;
+	if($opt->{profile}) {
+		$u = $Vend::Cfg->{UserDB_repository}{$opt->{profile}};
+	}
+	else {
+		$u = $Vend::Cfg->{UserDB};
+	}
+
+	if(! $u) {
+		my $place = $opt->{profile} || 'default';
+		::logError("Can't find UserDB repository, profile '%'", $place);
+		return undef;
+	}
+	my $table  = $u->{database};
+	my $ufield = $u->{user_field};
+	my $going_to_admin = $u->{admin} || $opt->{admin};
+
+	if($user and $going_to_admin and ! $super) {
+		::logError("attempt to su to admin user %s by non-super user %s",
+						$user,
+						$former,
+					);
+		return undef;
+	}
+	elsif($user and ! $Vend::admin) {
+		::logError("attempt to su to user %s by non-admin user %s",
+						$user,
+						$former,
+					);
 		return undef;
 	}
 
@@ -54,10 +87,9 @@ sub {
 		delete $Session->{su};
 		$Vend::admin = $Vend::Session->{admin};
 		$Vend::username = $Vend::Session->{username};
-		$Vend::logged_in = $Vend::Session->{logged_in};
-		$Tag->if_mm('super')
+		$Tag->if_mm('logged_in')
 			and logError(
-					"Superuser %s returned from login as %s",
+					"Admin user %s returned from login as %s",
 					$Session->{username},
 					$former,
 				)
@@ -65,20 +97,19 @@ sub {
 		return;
 	}
 	elsif ($user) {
-		my $u = $Vend::Cfg->{UserDB}{$opt->{profile} ||= 'default'};
-		my $table  = $u->{login_table};
-		my $ufield = $u->{user_field};
-#::logDebug("user table=$table ufield=$ufield");
+		if( $u->{admin} and ! $super) {
+		}
+::logDebug("user table=$table ufield=$ufield");
 		$table  ||= 'userdb';
 		$ufield ||= 'username';
-#::logDebug("user table=$table ufield=$ufield");
+::logDebug("user table=$table ufield=$ufield");
 		if(! $Tag->data($table, $ufield, $user) ) {
 			$Scratch->{ui_error} = errmsg("attempt to su to non-existent user %s", $user);
 			return undef;
 		}
 		my $rand	= random_string();
 		my $sess	= uneval_it($Session);
-#::logDebug("sess is $sess");
+::logDebug("sess is $sess");
 		my $sesskey	= generate_key($rand . $sess);
 
 		open(MDIT, "> $dir/$Session->{id}")
@@ -87,20 +118,32 @@ sub {
 		close MDIT;
 		$Tag->set_cookie( { name => 'MV_SU_KEY', value => $sesskey } );
 		my $former = $Session->{username};
+
 		undef $Vend::admin;
 		undef $Vend::superuser;
+		undef $Vend::UI_entry;
+
 		Vend::Session::init_session();
 		$Session = $Vend::Session;
-		$Vend::username = $user;
-		$Session->{username} = $user;
+
+		$Vend::username = $Session->{username} = $user;
+		$Vend::admin    = $Session->{admin}    = $going_to_admin;
+
 		$Session->{su} = $sess;
 		$Session->{logged_in} = 1;
+
 		$Tag->userdb('load');
-		logError("superuser %s switched user to %s", $former, $Session->{username});
+		my $dest = $Tag->if_mm('logged_in') ? 'admin user' : 'regular user';
+		logError(
+			"superuser %s switched user to %s %s",
+			$former,
+			$dest,
+			$Session->{username},
+			);
 		return 1;
 	}
 	else {
-		::logError("unknown su operation");
+		::logError("unknown su operation: " . uneval_it($opt));
 		return undef;
 	}
 }
