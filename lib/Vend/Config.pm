@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.28 2002-01-31 05:38:12 kwalsh Exp $
+# $Id: Config.pm,v 2.29 2002-01-31 07:27:42 kwalsh Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.28 $, 10);
+$VERSION = substr(q$Revision: 2.29 $, 10);
 
 my %CDname;
 
@@ -987,9 +987,9 @@ sub get_system_code {
 	for(@files) {
 		next if m{^\.};
 		next if m{/\.};
-		next unless m{\.(\w+)$};
-		my $ext = $1;
-		$CodeDest = $extmap{lc $ext} || 'UserTag';
+		next unless m{/[^.]+\.(\w+)$};
+
+		$CodeDest = $extmap{lc $1} or next;
 		open SYSTAG, "< $_"
 			or config_error("read system tag file %s: %s", $_, $!);
 		while(<SYSTAG>) {
