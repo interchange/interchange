@@ -11,6 +11,7 @@ Type: string
 Default: interchange
 Description: Which is the name of the user to run the interchange server as ?
  This determines the user for the interchange server and for file permissions.
+ Please note that using another user has serious security implications.
  Don't choose root, it is not recommended and will be discarded anyway.
 
 Template: interchange/createuser
@@ -29,6 +30,7 @@ Type: string
 Default: interchange
 Description: Which is the name of the group to run the interchange server as ?
  This determines the group for the interchange server and for file permissions.
+ Please note that using another user has serious security implications.
  Don't choose root, it is not recommended and will be discarded anyway.
 
 Template: interchange/groupnoroot
@@ -41,3 +43,9 @@ Template: interchange/creategroup
 Type: boolean
 Default: true
 Description: Should I create the group ${GROUP} ?
+
+Template: interchange/olduser
+Type: string
+Default: ""
+Description: 
+
