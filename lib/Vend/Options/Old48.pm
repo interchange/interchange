@@ -1,6 +1,6 @@
 # Vend::Options::Old48 - Interchange 4.8 compatible product options
 #
-# $Id: Old48.pm,v 1.7 2004-07-19 22:23:26 jon Exp $
+# $Id: Old48.pm,v 1.8 2004-12-15 21:26:26 mheins Exp $
 #
 # Copyright (C) 2002-2003 Mike Heins <mikeh@perusion.net>
 # Copyright (C) 2002-2003 Interchange Development Group <interchange@icdevgroup.org>
@@ -23,7 +23,7 @@
 
 package Vend::Options::Old48;
 
-$VERSION = substr(q$Revision: 1.7 $, 10);
+$VERSION = substr(q$Revision: 1.8 $, 10);
 
 =head1 NAME
 
@@ -386,7 +386,7 @@ sub display_options_simple {
 	
 	my $q = "SELECT " . join (",", @rf) . " FROM $tname where $fsel = $rsel";
 
-	if(my $rsort = find_sort($opt)) {
+	if(my $rsort = find_sort($opt, $db, $loc)) {
 		$q .= " $rsort";
 	}
 #::logDebug("tag_options simple query: $q");
