@@ -227,8 +227,16 @@ function MM_swapImage() {
 	 </div>
 	 </td>
 	 <td align=right>
+	 [if-mm super]
+	 [if type=explicit compare=`
+	 		return $Values->{ui_meta_force}
+				if defined $Values->{ui_meta_force};
+			return $Variable->{UI_META_LINK};
+			`]
 	  <A HREF="[area href=__UI_BASE__/menu_editor form="qmenu_name=Top"]"
 	  	style="font-size: 7pt" class=ctitle>edit</A>
+	 [/if]
+	 [/if-mm]
     </td>
   </tr>
 </table>
@@ -240,7 +248,6 @@ function MM_swapImage() {
 	localize=name
 	indicator=indicator,page
 	inactive=inactive
-	reparse=1
 	nbsp=name
 ][menu-header]
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -258,9 +265,20 @@ function MM_swapImage() {
 		{INDICATED?}color: __UI_C_TITLEBARTXT__; font-size: 10pt;{/INDICATED?}
 		{INDICATED:}color: __UI_C_TITLEBARCONT__; font-size: 10pt;{/INDICATED:}
 ">{NAME}</A>{/PAGE?}{PAGE:}{NAME}{/PAGE:}&nbsp;&nbsp;&nbsp;&nbsp;[menu-footer]
-	</td>
-	<td align=right><A HREF="[area href=__UI_BASE__/menu_editor form="qmenu_name=[scratch ui_class]"]"
-	  	style="font-size: 7pt" class=ctitle>edit</A></td></TR>
+	</td><td align=right>
+	 [if-mm super]
+	 [if type=explicit compare=`
+			if (defined $Values->{ui_meta_force}) {
+				return $Values->{ui_meta_force};
+			}
+			else {
+				return $Variable->{UI_META_LINK};
+			}
+			`]
+	<A HREF="[area href=__UI_BASE__/menu_editor form="qmenu_name=[scratch ui_class]"]"
+	  	style="font-size: 7pt" class=ctitle>edit</A>
+	[/if]
+	[/if-mm]</td></TR>
 <tr bgcolor="#000000"><td colspan=2><IMG SRC="bg.gif" WIDTH="1" HEIGHT="1" alt=x></td></tr></table>
 [/menu-footer][/menu]
 <!-- ----- END MENUBAR ----- -->

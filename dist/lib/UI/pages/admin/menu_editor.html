@@ -328,7 +328,12 @@ __UI_META_TABLE__
 		}
 		$Scratch->{qmenu_data} = $filedata;
 		$Scratch->{qmenu_name} = $mn;
-		$menumeta = $Tag->meta_record("menu_editor::$mn");
+		my $mbase;
+		for $mbase ( $CGI->{ui_meta_view}, "menu_editor::$mn") {
+			$menumeta = $Tag->meta_record($mbase)
+				and $metabase = $mbase
+					and last;
+		}
 	}
 
 	my %illegal;
@@ -425,7 +430,10 @@ __UI_META_TABLE__
 	var extended;
 	var extra = new Array;
 	var label = new Array;
+	var meta = new Array;
+	var help = new Array;
 	var widget = new Array;
+	var ltitle = new Array;
 	var emodes;
 	var evalues;
 
@@ -433,11 +441,7 @@ __UI_META_TABLE__
 	my @out;
 	my $i = 0;
 	
-	my $metabase;
-	if($menumeta) {
-		$metabase = $menumeta->{name};
-	}
-	$metabase ||= "menu_editor::$CGI->{qmenu_name}";
+	$metabase ||= 'icmenu';
 	for(@menufields) {
 		push @out, "    var \U$_\E = $i;";
 		DOMETA: {
@@ -445,12 +449,32 @@ __UI_META_TABLE__
 			my $metaname = "${metabase}::$_";
 			my $mrecord = $Tag->meta_record($metaname)
 				or last DOMETA;
-			if(my $lab = $mrecord->{label}) {
+			my $lab;
+			my $help;
+			if($lab = $mrecord->{label}) {
 				push @out, "    label[$i] = " . $Tag->jsq($lab) . ';';
+			}
+			if($help = $mrecord->{help}) {
+				$help = '<span style="font-size: 12pt;">' .
+						'<u>' . "$lab " . "($_)" . '</u><br>' . $help .
+						'</span>';
+				$help = $Tag->filter('encode_entities', $help);
+				push @out, "    help[$i] = " . $Tag->jsq($help) . ';';
+			}
+			if( defined $Values->{ui_meta_force} && $Values->{ui_meta_force}
+				or $Variable->{UI_META_LINK}
+			   )
+			{
+				my $u = $Tag->page({ href => '__UI_BASE__/flex_editor',
+									form => qq(
+										ui_meta_view=metaconfig
+										item_id=$metaname
+									) });
+				push @out, "    meta[$i] = " . $Tag->jsq($u . 'meta</a>');
 			}
 			if(my $type = $mrecord->{type}) {
 				$mrecord->{name} = "ext_$_";
-				$mrecord->{extra} = qq{ onChange="form_changed(1)"};
+				$mrecord->{extra} = qq{onChange="form_changed(1)"};
 				my $wid = $Tag->display( {
 										meta => $mrecord,
 										override => 1,
@@ -784,6 +808,21 @@ sub {
 		return str;
 	}
 
+	function show_title (idx, msg) {
+		var el = document.getElementById('titlebox');
+		if(el == undefined) 
+			return;
+		if(msg == undefined) 
+			msg = ltitle[idx];
+		if(idx == 0 || msg.length == 0) {
+			el.style.visibility = 'Hidden';
+		}
+		else {
+			el.innerHTML = msg;
+			el.style.visibility = 'Visible';
+		}
+	}
+
 	function set_mode (mode) {
 		if(mode == 'toggle') {
 			if(tree_mode == 0) {
@@ -904,6 +943,13 @@ sub {
 				out = out + 'src="__UI_IMG__box_empty.gif" ';
 			}
 
+			var linktitle = '';
+			var lzero = lines[0];
+			for(var k = 1; k < lzero.length; k++) {
+				var lstring = l[k] + '';
+				if(lstring.length > 0)
+					linktitle = linktitle + '<b>' + lzero[k] + ':</b> ' + lstring + "<br>";
+			}
 			out = out + 'border=0 align=absbottom ' +
 					'id="img' + idx + '"></A>' + "\n" +
 					'<a href="javascript:motion(' + idx + ", 'up');void(0)" +
@@ -916,20 +962,26 @@ sub {
 				out = out + '&nbsp;&nbsp;&nbsp;<a href="javascript:loadForm(' +
 						idx + ');void(0)"' +
 						' onDblClick="checkit(' + idx + ')"' +
+						' onMouseOver="show_title(' + idx + ')"' +
+						' onMouseOut="show_title(0)"' +
 						' title="' + l[PAGE];
 				if(l[FORM])
 					out = out + '?' + l[FORM];
-				if(l[DESCRIPTION])
-					out = out + " : " + l[DESCRIPTION];
 				out = out + '">' + l[NAME] + '</a>';
 			}
 			else {
-				out = out + '<b>' + l[NAME] + '</b>';
+				out = out + '<span style="font-weight: bold"' +
+						' onMouseOver="show_title(' + idx + ')"' +
+						' onMouseOut="show_title(0)"' + '>'
+						l[NAME] + '</span>';
 			}
 
 			if(l[MSG]) {
 				out = out + ' <i style="font-size: 8pt;">(' + l[MSG] + ')</i>';
 			}
+
+			// Set box title array
+			ltitle[idx] = linktitle.replace(/\r/g, '<br>');
 		}
 
 		var el = document.getElementById('box' + idx);
@@ -1542,6 +1594,18 @@ Save to new menu <input name=qmenu_new type=text size=20 value="[cgi qmenu_new]"
 	</td>
 </tr>
 </table>
+	<div id=titlebox style="
+						position: Absolute;
+						Top: 300;
+						Left: 300;
+						border: 2pt gray solid;
+						background: #CCCCCC;
+						float: right;
+						Visibility: Hidden;
+						zAxis: 2;
+						">
+		Test floatbox.
+	</div>
 <table width="95%">
 <tr>
 	<td width="40%" valign=top>[set empty][/set]
@@ -1691,6 +1755,9 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 				extra[nidx] = fn;
 				var lab = fn;
 				var wid;
+				var helptext = help[i];
+				if(helptext == undefined)
+					helptext = '';
 				if(label[eidx] != undefined) {
 					lab = label[eidx];
 				}
@@ -1701,7 +1768,7 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 					wid = [jsq]<input type=text name="$nn" onChange="form_changed(1);">[/jsq];
 				}
 				document.write([jsq]
-		<tr>
+		<tr onMouseOver="show_title(1, '$helptext')" onMouseOut="show_title(0)">
 			<td class=clabel>
 				$lab
 			</td>
