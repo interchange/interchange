@@ -35,12 +35,32 @@ Usertags
   profiles from working right ($Values->{whatever} etc.). Also tolerate
   profiles that don't end with a newline (e.g. when quoted with |...|).
 
+Admin UI
+--------
+
+* Added capability to page editor to cope with any ITL page instead of only
+  the ones derived from the foundation demo.
+
+Foundation
+----------
+
+* Use standard description display in cart to make sure onfly item 
+  descriptions work correctly. 
+
+* Fix postal abbreviation for Nunavut. Thanks to Kari Suomela for reporting.
+
 Packaging
 ---------
 
 * Minor RPM changes: Don't set Interchange to autostart on boot, since we're
   not starting it after install anyway. Administrator should decide whether
   to do those things.
+
+* Turned Depends of the libapache-mod-interchange Debian package on 
+  interchange into a Suggests, thanks to Christopher F. Miller 
+  <cfm.maine.com> for the suggestion.
+
+* doc-base support added to libapache-mod-interchange Debian package.
 
 Miscellaneous
 -------------
