@@ -74,8 +74,9 @@ Hit action for no-content
     border-bottom-style:none;"]
 
 [tabbed-panel Group and Category Fields]
-<blockquote class=chelp>
+<blockquote class=chelp>[L MENU_LOADER_PAR1]
 This function loads a tree menu based on the contents of two category fields, producing a two-level tree with individual products/items as a leaf on the third level. The menu may be added to after that.
+[/L]
 </blockquote>
 	<form action="[process href=admin/menu_editor]" style="margin-bottom:0px;">
 	<input type=hidden name=mv_session_id value="[data session id]">
@@ -117,61 +118,61 @@ This function loads a tree menu based on the contents of two category fields, pr
 			</select>
 		</td>
 		<td class=chelp>
-			Default: products
+			[L]Default: products[/L]
 		</td>
 	</tr>
 	<tr>
 		<td class=clabel>
-			Top level field
+			[L]Top level field[/L]
 		</td>
 		<td class=cdata>
 		<select name="qmenu_toplevel_field" style="width:130px;">
-			<option value=""> -- none --
+			<option value=""> [L]-- none --[/L]
 			[loop list="[db-columns table='[cgi qmenu_products]']" option=qmenu_toplevel_field cgi=1]
 			<option>[loop-code]
 			[/loop]
 		</select>
 		</td>
 		<td class=chelp>
-			Default: prod_group
+			[L]Default: prod_group[/L]
 		</td>
  	</tr>
 	<tr>
 		<td class=clabel>
-			Sub level field
+			[L]Sub level field[/L]
 		</td>
 		<td class=cdata>
 		<select name="qmenu_sublevel_field" style="width:130px;">
-			<option value=""> -- none --
+			<option value=""> [L]-- none --[/L]
 			[loop list="[db-columns table='[cgi qmenu_products]']" option=qmenu_sublevel_field cgi=1]
 			<option>[loop-code]
 			[/loop]
 		</select>
 		</td>
 		<td class=chelp>
-			Default: category
+			[L]Default: category[/L]
 		</td>
  	</tr>
 	<tr>
 		<td class=clabel>
-		 Sort string
+		 	[L]Sort string[/L]
 		</td>
 		<td class=cdata>
 			<input name="qmenu_sort_string" type=text value="[cgi qmenu_sort_string]" style="width:130px;">
 		</td>
 		<td class=chelp>
-			Determines extra information in search link. Default: tf=prod_group,category
+			[L]Determines extra information in search link. Default: tf=prod_group,category[/L]
 		</td>
 	</tr>
 	<tr>
 		<td class=clabel>
-			Options
+			[L]Options[/L]
 		</td>
 		<td class=cdata>
-                <input type=checkbox name="qmenu_even_large" value=1  [checked name=qmenu_even_large value=1 cgi=1]> Override, build even if large &nbsp;
+                <input type=checkbox name="qmenu_even_large" value=1  [checked name=qmenu_even_large value=1 cgi=1]> [L]Override, build even if large[/L] &nbsp;
 		</td>
 		<td class=chelp>
-			Use to allow building even if the table is defined as LARGE
+			[L]Use to allow building even if the table is defined as LARGE[/L]
 		</td>
 	</tr>
 	<tr>
@@ -182,7 +183,7 @@ This function loads a tree menu based on the contents of two category fields, pr
 				<input type=submit value="[L]Load Menu[/L]"><br>
 		</td>
 		<td class=chelp>
-			Do menu build
+			[L]Do menu build[/L]
 		</td>
 	</tr>
 </table>
@@ -190,14 +191,15 @@ This function loads a tree menu based on the contents of two category fields, pr
 </form>
 [/tabbed-panel]
 [tabbed-panel Combined category field]
-<blockquote class=chelp>
+<blockquote class=chelp>[L MENU_LOADER_PAR2]
 This function loads a tree menu based on the contents of a combined category field. Example:
+[/L]
 	<blockquote>
-	<tt>
+	<tt>[L MENU_LOADER_PAR3]
 		First level:Second Level A<BR>
 		First level:Second Level B<BR>
 		First level:Second Level B: Third level A<BR>
-		First level:Second Level B: Third level B<BR>
+		First level:Second Level B: Third level B<BR>[/L]
 	</tt>
 	</blockquote>
 </blockquote>
@@ -210,7 +212,7 @@ This function loads a tree menu based on the contents of a combined category fie
 <table width="100%" border=0 cellpadding=4 cellspacing=0>
 	<tr>
 		<td class=clabel>
-		Table
+			[L]Table[/L]
 		</td>
 		<td class=cdata>
 			<select name="qmenu_products"
@@ -243,62 +245,62 @@ This function loads a tree menu based on the contents of a combined category fie
 			</select>
 		</td>
 		<td class=chelp>
-			Default: products
+			[L]Default: products[/L]
 		</td>
 	</tr>
 	<tr>
 		<td class=clabel>
-			Field to use
+			[L]Field to use[/L]
 		</td>
 		<td class=cdata>
 			<select name="qmenu_comb_field" style="width:130px;">
-				<option value=""> -- none --
+				<option value=""> [L]-- none --[/L]
 				[loop list="[db-columns table='[cgi qmenu_products]']" option=qmenu_comb_field cgi=1]
 				<option>[loop-code]
 				[/loop]
 			</select>
 		</td>
 		<td class=chelp>
-			Default: comb_category
+			[L]Default: comb_category[/L]
 		</td>
  	</tr>
 	<tr>
 		<td class=clabel>
-		Sort field 
+			[L]Sort field[/L] 
 		</td>
 		<td class=cdata>
 
 		<select name="qmenu_sort_order" style="width:130px;">
-			<option value=""> -- none --
+			<option value=""> [L]-- none --[/L]
 			[loop list="[db-columns table='[cgi qmenu_products]']" option=qmenu_sort_order cgi=1]
 			<option>[loop-code]
 			[/loop]
 		</select>
 		</td>
 		<td class=chelp>
-			(Default: comb_category)
+			[L](Default: comb_category)[/L]
 		</td>
 	</tr>
 	<tr>
 		<td class=clabel>
-		 Sort string
+		 	[L]Sort string[/L]
 		</td>
 		<td class=cdata>
 			<input name="qmenu_sort_string" type=text value="[cgi qmenu_sort_string]" style="width:130px;">
 		</td>
 		<td class=chelp>
-			Determines extra information in search link. Default: tf=comb_category,description
+			[L]Determines extra information in search link. Default: tf=comb_category,description[/L]
 		</td>
 	</tr>
 	<tr>
 		<td class=clabel>
-			Options
+			[L]Options[/L]
 		</td>
 		<td class=cdata>
-                <input type=checkbox name="qmenu_even_large" value=1  [checked name=qmenu_even_large value=1 cgi=1]> Override, build even if large &nbsp;
+                <input type=checkbox name="qmenu_even_large" value=1  [checked name=qmenu_even_large value=1 cgi=1]> [L]Override, build even if large[/L] &nbsp;
 		</td>
 		<td class=chelp>
-			Use to allow building even if the table is defined as LARGE
+			[L]Use to allow building even if the table is defined as LARGE[/L]
 		</td>
 	</tr>
 	<tr>
@@ -306,10 +308,10 @@ This function loads a tree menu based on the contents of a combined category fie
 			&nbsp;
 		</td>
 		<td class=cdata>
-				<input type=submit value="[L]Load Menu[/L]"><br>
+			<input type=submit value="[L]Load Menu[/L]"><br>
 		</td>
 		<td class=chelp>
-			Do menu build
+			[L]Do menu build[/L]
 		</td>
 	</tr>
 </table>
@@ -317,8 +319,9 @@ This function loads a tree menu based on the contents of a combined category fie
 </form>
 [/tabbed-panel]
 [tabbed-panel Separate Category File]
-<blockquote class=chelp>
+<blockquote class=chelp>[L MENU_LOADER_PAR4]
 This function loads a tree menu based on the contents of two category fields in a separate table, producing a two-level tree with no leaf items. The menu may be added to after that.
+[/L]
 </blockquote>
 	<form action="[process href=admin/menu_editor]" style="margin-bottom:0px;">
 	<input type=hidden name=mv_session_id value="[data session id]">
@@ -328,7 +331,7 @@ This function loads a tree menu based on the contents of two category fields in 
 <table width="100%" border=0 cellpadding=4 cellspacing=0>
 	<tr>
 		<td class=clabel>
-		Table
+			[L]Table[/L]
 		</td>
 		<td class=cdata>
 			<select name="qmenu_separate"
@@ -361,56 +364,56 @@ This function loads a tree menu based on the contents of two category fields in 
 			</select>
 		</td>
 		<td class=chelp>
-			Default: pub_category
+			[L]Default: pub_category[/L]
 		</td>
 	</tr>
 	<tr>
 		<td class=clabel>
-			Top level field
+			[L]Top level field[/L]
 		</td>
 		<td class=cdata>
 		<select name="qmenu_toplevel_field" style="width:130px;">
-			<option value=""> -- none --
+			<option value=""> [L]-- none --[/L]
 			[loop list="[db-columns table='[cgi qmenu_products]']" option=qmenu_toplevel_field cgi=1]
 			<option>[loop-code]
 			[/loop]
 		</select>
 		</td>
 		<td class=chelp>
-			Default: prod_group
+			[L]Default: prod_group[/L]
 		</td>
  	</tr>
 	<tr>
 		<td class=clabel>
-			Sub level field
+			[L]Sub level field[/L]
 		</td>
 		<td class=cdata>
 		<select name="qmenu_sublevel_field" style="width:130px;">
-			<option value=""> -- none --
+			<option value=""> [L]-- none --[/L]
 			[loop list="[db-columns table='[cgi qmenu_products]']" option=qmenu_sublevel_field cgi=1]
 			<option>[loop-code]
 			[/loop]
 		</select>
 		</td>
 		<td class=chelp>
-			Default: category
+			[L]Default: category[/L]
 		</td>
  	</tr>
 	<tr>
 		<td class=clabel>
-			SKU field
+			[L]SKU field[/L]
 		</td>
 		<td class=cdata>
 		<select name="qmenu_sku_field" style="width:130px;">
-			<option value=""> -- none --
+			<option value=""> [L]-- none --[/L]
 			[loop list="[db-columns table='[cgi qmenu_products]']" option=qmenu_sku_field cgi=1]
 			<option>[loop-code]
 			[/loop]
 		</select>
 		</td>
-		<td class=chelp>
+		<td class=chelp>[L MENU_LOAD_PAR5]
 			Default: sku<br><br>
-			This field holds the sku of the actual items that are returned in the search.
+			This field holds the sku of the actual items that are returned in the search.[/L]
 		</td>
  	</tr>
 	<tr>
@@ -419,26 +422,26 @@ This function loads a tree menu based on the contents of two category fields in 
 		</td>
 		<td class=cdata>
 		<select name="qmenu_desc_field" style="width:130px;">
-			<option value=""> -- none --
+			<option value=""> [L]-- none --[/L]
 			[loop list="[db-columns table='[cgi qmenu_products]']" option=qmenu_desc_field cgi=1]
 			<option>[loop-code]
 			[/loop]
 		</select>
 		</td>
-		<td class=chelp>
+		<td class=chelp>[L MENU_LOAD_PAR6]
 			Default: <not used><br><br>
-			Use this field to set extra information, for example to sort the items in the order of this field when the search is returned.
+			Use this field to set extra information, for example to sort the items in the order of this field when the search is returned.[/L]
 		</td>
  	</tr>
 	<tr>
 		<td class=clabel>
-		 Search page
+		 	[L]Search page[/L]
 		</td>
 		<td class=cdata>
 			<input name="qmenu_search_page"  style="width:130px;" value="[either][cgi qmenu_search_page][or]results_tree[/either]">
 		</td>
 		<td class=chelp>
-			Selects page to display search
+			[L]Selects page to display search[/L]
 		</td>
 	</tr>
 	<tr>
@@ -449,7 +452,7 @@ This function loads a tree menu based on the contents of two category fields in 
 				<input type=submit value="[L]Load Menu[/L]"><br>
 		</td>
 		<td class=chelp>
-			Do menu build
+			[L]Do menu build[/L]
 		</td>
 	</tr>
 </table>
@@ -458,7 +461,7 @@ This function loads a tree menu based on the contents of two category fields in 
 [/tabbed-panel]
 [tabbed-panel Top and Sub Level Tables]
 
-<blockquote class=chelp>
+<blockquote class=chelp>[L MENU_LOAD_PAR7]
 <p>
 	This function loads a tree menu based on the contents of two tables.
 	(Typically these are the Interchange 4 <i>area</i> and <i>cat</i>
@@ -468,7 +471,7 @@ This function loads a tree menu based on the contents of two category fields in 
 </p>
 <p>
 	The menu may be added to after that.
-</p>
+</p>[/L]
 </blockquote>
 	<form action="[process href=admin/menu_editor]" style="margin-bottom:0px;">
 	<input type=hidden name=mv_session_id value="[data session id]">
@@ -478,7 +481,7 @@ This function loads a tree menu based on the contents of two category fields in 
 <table width="100%" border=0 cellpadding=4 cellspacing=0>
 	<tr>
 		<td class=clabel>
-		Top Level table
+			[L]Top Level table[/L]
 		</td>
 		<td class=cdata>
 					<select name=qmenu_toplevel>
@@ -487,12 +490,12 @@ This function loads a tree menu based on the contents of two category fields in 
 					</select>
 		</td>
 		<td class=chelp>
-			Default: area
+			[L]Default: area[/L]
 		</td>
 	</tr>
 	<tr>
 		<td class=clabel>
-		Sub Level table
+			[L]Sub Level table[/L]
 		</td>
 		<td class=cdata>
 					<select name=qmenu_sublevel>
@@ -501,12 +504,12 @@ This function loads a tree menu based on the contents of two category fields in 
 					</select>
 		</td>
 		<td class=chelp>
-			Default: cat
+			[L]Default: cat[/L]
 		</td>
 	</tr>
 	<tr>
 		<td class=clabel>
-			Selector (if any)
+			[L]Selector (if any)[/L]
 		</td>
 		<td class=cdata>
 					[display type=select name=qmenu_sel_value
@@ -514,18 +517,18 @@ This function loads a tree menu based on the contents of two category fields in 
 							 options="=none" cgi=1]
 		</td>
 		<td class=chelp>
-			Default: none
+			[L]Default: none[/L]
 		</td>
  	</tr>
 	<tr>
 		<td class=clabel>
-			Options
+			[L]Options[/L]
 		</td>
 		<td class=cdata>
                 <input type=checkbox name="qmenu_even_large" value=1  [checked name=qmenu_even_large value=1 cgi=1]> Override, build even if large &nbsp;
 		</td>
 		<td class=chelp>
-			Use to allow building even if the table is defined as LARGE
+			[L]Use to allow building even if the table is defined as LARGE[/L]
 		</td>
 	</tr>
 	<tr>
@@ -536,7 +539,7 @@ This function loads a tree menu based on the contents of two category fields in 
 				<input type=submit value="[L]Load Menu[/L]"><br>
 		</td>
 		<td class=chelp>
-			Do menu build
+			[L]Do menu build[/L]
 		</td>
 	</tr>
 </table>
