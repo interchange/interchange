@@ -90,15 +90,15 @@ Customers who bought this item also bought	Customers who bought this item also b
 DATE	DATE			DATUM
 Date Issued	Date Issued			Datum uitgifte
 Day Phone	Day Phone	Telefon tagsüber		Telefoon overdag
-Daytime Phone	Daytime Phone			Telefoon overdag
+Daytime Phone	Daytime Phone	Telefon tagsüber		Telefoon overdag
 December		Dezember	D&eacute;cembre	December
 Description	Description	Beschreibung		Omschrijving
 Edit address	Edit address			Adres wijzigen
 Email	Email			Email
-Email Address	Email Address			Emailadres
+Email Address	Email Address	Emailadresse		Emailadres
 Enter as customer	Enter as customer			Betreedt als klant
 Errors	Errors	Fehler		Fouten
-Evening Phone	Evening Phone			Telefoon avond
+Evening Phone	Evening Phone	Telefon abends		Telefoon avond
 Expiration	Expiration			Expiratiedatum
 Extension	Extension	Summe		Bedrag
 FAILED_MSG1	We're sorry, but your order could not be processed at this time due totechnical problems.  Please print the order page and give us a call.We will follow up as soon as possible.			
@@ -128,7 +128,7 @@ In-Stock Notification	In-Stock Notification			Op voorraadmelding
 Interchange Documentation	Interchange Documentation			Interchange Documentie
 Interchange server not running. Usually one of	Interchange server not running. Usually one of			Interchange server loopt niet. Meestal een van
 Is that really a phone number?	Is that really a phone number?			Is dat werkelijk een telefoonnummer?
-Item No.	Item No.			Artikelnr.
+Item No.	Item No.	Best-Nr.		Artikelnr.
 Item Quantity	Item Quantity			Productaantal
 Item is discounted %s	Item is discounted %s			
 January		Januar	Janvier	Januari
@@ -181,7 +181,7 @@ Note	Note			Opmerking
 November		November	Novembre	November
 Number Of Items	Number Of Items			Aantal producten
 ORDER ID	ORDER ID			ORDER NR
-ORDER NUMBER	ORDER NUMBER			ORDERNUMMER
+ORDER NUMBER	ORDER NUMBER	BESTELLNUMMER		ORDERNUMMER
 ORDER TOTAL	ORDER TOTAL			ORDER TOTAAL
 ORDER_RETURN_PAR1	Please verify the information below and select the items you wish to return by checking the corresponding checkboxes and modifying the quantity as needed.			Controleert U alstublieft onderstaande informatie en selecteer de artikelen die U wenst te retourneren door het aanvinken van de corresponderende vakjes. Pas de aantallen zonodig aan.
 ORDER_SECURITY_MSG1	Either this web server did not receive the last transaction viaSSL/HTTPS, or your browser doesn't handle SSL.<P>We recommend you do not leave any critical informationuntil this situation is corrected. You can CANCEL yoursession below to wipe all information, or return to thecatalog with the buttonbar.			
@@ -246,10 +246,11 @@ Put me on your email list of infrequent offers	Put me on your email list of infr
 QTY<BR>TOTAL	QTY<BR>TOTAL			TOTAAL<BR>AANTAL
 QUANTITY PRICING	QUANTITY PRICING			KWANTUMPRIJZEN
 Qty	Qty	Anz.		Aantal
-Quan	Quan			Aantal
+Quan	Quan	Anz.		Aantal
 Quantity	Quantity	Anzahl		Aantal
 Quantity Discounts	Quantity Discounts			Kwantumkortingen
 RMA Number	RMA Number			RMA nummer
+Receipt		Bestellbestätigung			
 Recurring Orders	Recurring Orders			Herhalingsorders
 Regular price	Regular price			Normale prijs
 Remove	Remove	Löschen		Verwijder
@@ -261,9 +262,9 @@ Return Selected Items	Return Selected Items			Retourneer geselecteerde producten
 Return request received.	Return request received.			Verzoek voor retourzending ontvangen.
 Returns	Returns			Retour producten
 Routing Number	Routing Number			
-SALES TAX	SALES TAX			BTW
+SALES TAX	SALES TAX	MWST.		BTW
 SECURITY PROBLEM	SECURITY PROBLEM			BEVEILIGINGSPROBLEEM
-SHIPPING	SHIPPING			VERZENDING
+SHIPPING	SHIPPING	VERSANDKOSTEN		VERZENDING
 SHIPPING<BR>HANDLING	SHIPPING<BR>HANDLING			VERZENDING<BR>BEHANDELING
 SIZE	SIZE			MAAT
 Size		Größe
@@ -301,7 +302,7 @@ Shipping Address Added	Shipping Address Added			Verzendadres toegevoegd
 Shipping Address Removed	Shipping Address Removed			Verzendadres verwijderd
 Shipping Addresses	Shipping Addresses			Verzendadressen
 Shipping Country	Shipping Country			Verzendland
-Shipping Method	Shipping Method			Verzendmethode
+Shipping Method	Shipping Method	Versandart		Verzendmethode
 Shipping Weight	Shipping Weight	Versandgewicht		Verzendgewicht
 Shipping method	Shipping method			Verzendwijze
 Shopping Cart	Shopping Cart	Warenkorb		Winkelwagen
