@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.10 2001-01-18 19:42:03 heins Exp $
+# $Id: Config.pm,v 1.25.2.11 2001-01-19 17:21:09 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -104,7 +104,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.25.2.10 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.11 $, 10);
 
 my %CDname;
 
@@ -293,6 +293,7 @@ sub global_directives {
 	['AllowGlobal',		 'boolean',			 ''],
 	['AddDirective',	 'directive',		 ''],
 	['UserTag',			 'tag',				 ''],
+	['HotDBI',			 'boolean',			 ''],
 	['AdminSub',		 'boolean',			 ''],
 	['AdminUser',		  undef,			 ''],
 	['AdminHost',		  undef,			 ''],
@@ -2202,7 +2203,6 @@ my %Ary_ref = (   qw!
 						ALTERNATE_USER      ALTERNATE_USER
 						ALTERNATE_PASS      ALTERNATE_PASS
 						ALTERNATE_BASE_DN   ALTERNATE_BASE_DN
-						ALTERNATE_LDAP_PORT ALTERNATE_LDAP_PORT
 						ALTERNATE_LDAP_HOST ALTERNATE_LDAP_HOST
 						ALTERNATE_BIND_DN   ALTERNATE_BIND_DN
 						ALTERNATE_BIND_PW   ALTERNATE_BIND_PW
