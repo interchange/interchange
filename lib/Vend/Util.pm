@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.9 2000-09-27 22:06:47 zarko Exp $
+# $Id: Util.pm,v 1.10 2000-09-28 10:10:59 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -67,7 +67,7 @@ require Exporter;
 );
 
 # LEGACY4
-push @EXPORT qw(
+push @EXPORT, qw(
 	send_mail
 );
 # END LEGACY4
@@ -77,7 +77,7 @@ use Config;
 use Fcntl;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.9 $, 10);
+$VERSION = substr(q$Revision: 1.10 $, 10);
 
 BEGIN {
 	eval {
