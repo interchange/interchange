@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.4 2000-09-10 21:25:55 heins Exp $
+# $Id: Parse.pm,v 1.5 2000-09-14 08:08:07 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,12 +27,12 @@
 
 package Vend::Parse;
 
-# $Id: Parse.pm,v 1.4 2000-09-10 21:25:55 heins Exp $
+# $Id: Parse.pm,v 1.5 2000-09-14 08:08:07 heins Exp $
 
 require Vend::Parser;
 
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.5 $ =~ /(\d+)\.(\d+)/);
 
 use Safe;
 use Vend::Util;
@@ -44,7 +44,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -511,6 +511,7 @@ my %Routine = (
 			);
 
 my %attrAlias = (
+	 counter        => { 'name' => 'file' },
 	 query          => { 'query' => 'sql' },
 	 perl          	=> { 'table' => 'tables' },
 	 mvasp         	=> { 'table' => 'tables' },
