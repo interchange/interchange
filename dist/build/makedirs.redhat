@@ -75,9 +75,9 @@ cat > $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d/interchange <<EOF
 # chkconfig: 345 96 4
 # description: Interchange is a database access and HTML templating system \
 #	       focused on ecommerce
-# processname: minivend
-# pidfile: $RUNBASE/interchange/minivend.pid
-# config: $ETCBASE/minivend.cfg
+# processname: interchange
+# pidfile: $RUNBASE/interchange/interchange.pid
+# config: $ETCBASE/interchange.cfg
 # config: $LIBBASE/interchange/*/catalog.cfg
 
 
@@ -100,7 +100,7 @@ case "\$1" in
 	killproc interchange
 	echo
 	rm -f /var/lock/subsys/interchange
-	rm -f $RUNBASE/interchange/minivend.pid
+	rm -f $RUNBASE/interchange/interchange.pid
 	;;
   status)
 	status interchange
@@ -128,12 +128,12 @@ EOF
 cat > $RPM_BUILD_ROOT/usr/local/bin/interchange <<EOF
 #!/bin/sh
 
-RUNSTRING="/usr/local/interchange/bin/minivend -q \\
-	-configfile $ETCBASE/minivend.cfg \\
-	-pidfile $RUNBASE/interchange/minivend.pid \\
+RUNSTRING="/usr/local/interchange/bin/interchange -q \\
+	-configfile $ETCBASE/interchange.cfg \\
+	-pidfile $RUNBASE/interchange/interchange.pid \\
 	-logfile $LOGBASE/interchange/error.log \\
 	ErrorFile=$LOGBASE/interchange/error.log \\
-	PIDfile=$RUNBASE/interchange/minivend.pid \\
+	PIDfile=$RUNBASE/interchange/interchange.pid \\
 	-confdir $RUNBASE/interchange \\
 	SocketFile=$RUNBASE/interchange/socket"
 
