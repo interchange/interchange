@@ -475,6 +475,7 @@ dist/lib/UI/Primitive.pm
 dist/lib/UI/ichelp.txt
 dist/lib/UI/icmenu.txt
 dist/lib/UI/locales/README
+dist/lib/UI/locales/TODO
 dist/lib/UI/locales/da_DK.cfg
 dist/lib/UI/locales/de_DE.cfg
 dist/lib/UI/locales/default.cfg
@@ -501,6 +502,10 @@ dist/lib/UI/pages/admin/customer_pref.html
 dist/lib/UI/pages/admin/customer_select.html
 dist/lib/UI/pages/admin/customer_ship.html
 dist/lib/UI/pages/admin/customer_view.html
+dist/lib/UI/pages/admin/db_metaconfig.html
+dist/lib/UI/pages/admin/db_metaconfig_edit.html
+dist/lib/UI/pages/admin/db_metaconfig_select.html
+dist/lib/UI/pages/admin/db_metaconfig_spread.html
 dist/lib/UI/pages/admin/dbconfig.html
 dist/lib/UI/pages/admin/dbdownload.html
 dist/lib/UI/pages/admin/dbinfo.html
@@ -686,6 +691,7 @@ dist/lib/UI/usertag/list_databases.tag
 dist/lib/UI/usertag/list_glob.tag
 dist/lib/UI/usertag/list_keys.tag
 dist/lib/UI/usertag/list_pages.tag
+dist/lib/UI/usertag/meta_record.tag
 dist/lib/UI/usertag/mm_locale.tag
 dist/lib/UI/usertag/mm_value.tag
 dist/lib/UI/usertag/newer.tag
@@ -739,6 +745,7 @@ dist/usertag/db_date.tag
 dist/usertag/delete_cart.tag
 dist/usertag/email.tag
 dist/usertag/email_raw.tag
+dist/usertag/env.tag
 dist/usertag/fcounter.tag
 dist/usertag/fedex_query.tag
 dist/usertag/formel.tag
@@ -869,6 +876,7 @@ scripts/expireall.PL
 scripts/interchange.PL
 scripts/localize.PL
 scripts/makecat.PL
+scripts/newcat.PL
 scripts/offline.PL
 scripts/restart.PL
 scripts/update.PL
@@ -962,13 +970,16 @@ share/interchange/he_IL/A1_b.gif
 share/interchange/he_IL/A2.gif
 share/interchange/he_IL/A3.gif
 share/interchange/he_IL/A3_b.gif
+share/interchange/he_IL/B2.gif
 share/interchange/he_IL/B2_b.gif
 share/interchange/he_IL/B3.gif
 share/interchange/he_IL/B3_b.gif
 share/interchange/he_IL/B4.gif
 share/interchange/he_IL/B4_b.gif
 share/interchange/he_IL/B5.gif
+share/interchange/he_IL/B5_b.gif
 share/interchange/he_IL/B6.gif
+share/interchange/he_IL/B6_b.gif
 share/interchange/he_IL/B7.gif
 share/interchange/he_IL/B7_b.gif
 share/interchange/he_IL/B8.gif
