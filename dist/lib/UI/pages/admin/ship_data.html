@@ -13,6 +13,7 @@
 <!-- do update?: [cgi price_ok]
 	[perl]
 		return if ! $CGI->{price_ok};
+		$CGI->{ui_shipmode} ||= $Values->{ui_shipmode};
 		my $inmode = $CGI->{ui_shipmode};
 		$inmode =~ s/\W+//g;
 		#Log("write inmode=$inmode");
@@ -129,6 +130,7 @@
 </tr>
 
 [perl]
+		$CGI->{ui_shipmode} ||= $Values->{ui_shipmode};
 		my $inmode = $CGI->{ui_shipmode};
 		#Log("ship_data inmode=$inmode");
 		my $lines = $Config->{Shipping_line};
