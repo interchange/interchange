@@ -236,9 +236,9 @@ UserTags
 
 * [history-scan ...] now escapes form parameters properly.
 
-* Changed [import-fields] to strip a CR as well as a LF from the
-  end of each input line, to help people who import using files
-  generated using proprietrary software.
+* Extended stripping of line endings by [import-fields] to 
+  help people who import using files generated on non-Unix
+  operating systems.
 
 * Add [jsq] [/jsq] .. and [jsqn] [/jsqn] tags that build properly
   JavaScript strings (jsq with variable substitution, jsqn without).
