@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.81 2002-11-15 13:43:10 mheins Exp $
+# $Id: Config.pm,v 2.82 2002-11-20 14:45:47 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -45,7 +45,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.81 $, 10);
+$VERSION = substr(q$Revision: 2.82 $, 10);
 
 my %CDname;
 
@@ -1778,7 +1778,7 @@ sub parse_require {
 		$name = 'Perl module';
 		$testsub = sub {
 			my $module = shift;
-			my $oldtype;
+			my $oldtype = '';
 			if($module =~ s/\.pl$//) {
 				$oldtype = '.pl';
 			}
