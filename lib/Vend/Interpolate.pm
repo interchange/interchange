@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.63 2001-05-29 13:50:35 bill Exp $
+# $Id: Interpolate.pm,v 1.40.2.64 2001-06-04 17:13:18 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.63 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.64 $, 10);
 
 @EXPORT = qw (
 
@@ -605,7 +605,10 @@ sub filter_value {
 				if length($value) > $_;
 			next;
 		}
-		next unless defined $Filter{$_};
+		unless (defined $Filter{$_}) {
+			::logError ('Unknown filter %s', $_);
+			next;
+		}
 		unshift @args, $value, $tag;
 		$value = $Filter{$_}->(@args);
 	}
