@@ -15,7 +15,6 @@ sub {
 	$zip		= $::Values->{$::Variable->{UPS_POSTCODE_FIELD}}
 					if ! $zip;
 	$country = uc $country;
-	$country = undef if $country eq 'US';
 #::logGlobal("calling with: " . join("|", $mode, $origin, $zip, $weight, $country));
 	my ($shipping, $zone, $error) =
 		getUPS( $mode, $origin, $zip, $weight, $country);
