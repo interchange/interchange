@@ -1,6 +1,6 @@
 # Vend::Payment::BoA - Interchange BoA support
 #
-# $Id: BoA.pm,v 1.2 2001-11-13 19:59:32 mheins Exp $
+# $Id: BoA.pm,v 1.3 2001-11-14 01:18:33 mheins Exp $
 #
 # Copyright (C) 1999-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -33,7 +33,7 @@ package Vend::Payment::BoA;
 
 =head1 Interchange BoA Support
 
-Vend::Payment::BoA $Revision: 1.2 $
+Vend::Payment::BoA $Revision: 1.3 $
 
 =head1 SYNOPSIS
 
@@ -443,14 +443,14 @@ sub boa {
     $opt->{extra_headers} = { Referer => $referer };
 
     my $call_gateway = sub {
-	my ($opt,$query,$trans) = @_;
+	my ($opt,$query) = @_;
 	my $thing    = post_data($opt, $query);
 	my $page     = $thing->{result_page};
 	my $response = $thing->{status_line};
 #::logDebug("BoA post_data response: " . ::uneval($thing) );
 	
 	my %result;
-	if ($trans eq 'auth') {
+ 	if ($opt->{script} =~ /payment/) {
 		$page =~ s/^.*?A HREF=\?m=$user&//si;
 		$page =~ s/>.*$//s;
 	
