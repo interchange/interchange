@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.45 2004-10-06 23:36:13 jon Exp $
+# $Id: Dispatch.pm,v 1.46 2005-01-19 15:55:13 ton Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.45 $, 10);
+$VERSION = substr(q$Revision: 1.46 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1281,8 +1281,8 @@ RESOLVEID: {
 			if (Vend::Session::count_ip() > $Vend::Cfg->{RobotLimit}) {
 				my $msg;
 				# Here they can get it back if they pass expiration time
-				my $wait = $Global::Variable->{MV_ROBOT_EXPIRE} || 86400;
-				$wait /= 3600;
+				my $wait = $Vend::Cfg->{Limit}{robot_expire} || 1;
+				$wait *= 24;
 				$msg = errmsg(<<EOF, $wait); 
 Too many new ID assignments for this IP address. Please wait at least %d hours
 before trying again. Only waiting that period will allow access. Terminating.
