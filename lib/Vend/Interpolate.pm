@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.53 2001-04-18 06:40:07 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.54 2001-04-19 20:40:07 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.53 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.54 $, 10);
 
 @EXPORT = qw (
 
@@ -507,6 +507,10 @@ sub var_ui_sub {
 
 sub dynamic_var {
 	my $varname = shift;
+
+	return readfile($Vend::Cfg->{DirConfig}{Variable}{$varname})
+		if defined $Vend::Cfg->{DirConfig}{Variable}{$varname};
+
 	VARDB: {
 		last VARDB unless $Vend::Cfg->{VariableDatabase};
 		if($Vend::VarDatabase) {
@@ -518,10 +522,6 @@ sub dynamic_var {
 				or undef $Vend::Cfg->{VariableDatabase};
 			redo VARDB;
 		}
-	}
-	VARFILE: {
-		return readfile($Vend::Cfg->{DirConfig}{Variable}{$varname})
-			if defined $Vend::Cfg->{DirConfig}{Variable}{$varname};
 	}
 	return $::Variable->{$varname};
 }
@@ -5055,23 +5055,33 @@ sub region {
 	my($opt,$page) = @_;
 
 	my $obj;
+
 	if($opt->{object}) {
+		### The caller supplies the object, no search to be done
+		#::logDebug("region: object was supplied by caller.");
 		$obj = $opt->{object};
 	}
 	else {
-#::logDebug("no object.");
+		### We need to run a search to get an object
+		#::logDebug("region: no object supplied");
 		my $c;
 		if($CGI::values{mv_more_matches} || $CGI::values{MM}) {
-#::logDebug("more object = $CGI::values{mv_more_matches}");
+
+			### It is a more function, we need to get the parameters
+			#::logDebug("more object = $CGI::values{mv_more_matches}");
+
 			find_search_params();
 			delete $CGI::values{mv_more_matches};
-#::logDebug("more object = " . ::uneval($c));
+
+			#::logDebug("more object = " . ::uneval($c));
+
 		}
 		elsif ($opt->{search}) {
-#::logDebug("opt->search object label=$opt->{label}.");
+			### Explicit search in tag parameter, run just like any
+			#::logDebug("opt->search object label=$opt->{label}.");
 			if($opt->{more} and $::Instance->{SearchObject}{''}) {
 				$obj = $::Instance->{SearchObject}{''};
-#::logDebug("cached search");
+				#::logDebug("cached search");
 			}
 			else {
 				$c = {	mv_search_immediate => 1,
@@ -5079,15 +5089,19 @@ sub region {
 						};
 				my $params = escape_scan($opt->{search});
 				Vend::Scan::find_search_params($c, $params);
-#::logDebug("perform_search");
+				#::logDebug("perform_search");
 				$obj = perform_search($c);
 			}
 		}
 		else {
-#::logDebug("try labeled object label=$opt->{label}.");
+			### See if we have a search already done for this label
+			#::logDebug("try labeled object label=$opt->{label}.");
 			$obj = $::Instance->{SearchObject}{$opt->{label}};
 		}
-#::logDebug("no found object") if ! $obj;
+
+		# If none of the above happen, we need to perform a search
+		# based on the passed CGI parameters
+		#::logDebug("no found object") if ! $obj;
 		if(! $obj) {
 			$obj = perform_search();
 			$obj = {
@@ -5096,8 +5110,11 @@ sub region {
 				} if ! $obj;
 		}
 		finish_search($obj);
+
+		# Label it for future reference
+		#::logDebug("labeling as '$opt->{label}'");
+
 		$::Instance->{SearchObject}{$opt->{label}} = $opt->{object} = $obj;
-#::logDebug("labeling as '$opt->{label}'");
 	}
 	my $prefix = defined $opt->{list_prefix} ? $opt->{list_prefix} : 'list';
 
