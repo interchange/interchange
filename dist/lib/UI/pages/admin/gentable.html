@@ -22,6 +22,7 @@ Database tables
 
 <tr><td align=left bgcolor=__UI_C_INTBLOCK__>
 
+<!-- touch metatable [data __UI_META_TABLE__ test test] -->
 <table border=0 cellspacing=0 cellmargin=0 cellpadding=0>
 [loop list="[list-databases]"]
 [loop-sub db_action]
@@ -92,7 +93,11 @@ sub {
 <td ALIGN=center><A HREF="$line->{url}"><img src="$line->{img}" border=0 alt="$_ $tab" align=top></A></td>
 EOF
 	}
-	return $out . qq{<td>&nbsp;<FONT SIZE="+1">$name</FONT></td></tr>};
+	$out .= qq{<td>&nbsp;<FONT SIZE="+1">$name</FONT>};
+	my $desc = tag_data('__UI_META_TABLE__', 'name', $name);
+	$out .= qq{ ($desc)} if $desc;
+	$out .= q{</td></tr>};
+	return $out;
 }
 [/loop-sub]
 [loop-exec db_action][loop-data __UI_META_TABLE__ label][/loop-exec]
