@@ -13,6 +13,7 @@ Database  tree  COLUMN_DEF   "parent_fld=varchar(20)"
 Database  tree  COLUMN_DEF   "msort=varchar(8)"
 Database  tree  COLUMN_DEF   "extended=text"
 Database  tree  COLUMN_DEF   "inactive=int not null default 0"
+Database  tree  COLUMN_DEF   "member=varchar(1)"
 Database  tree  INDEX        parent_fld
 Database  tree  INDEX        mgroup
 Database  tree  INDEX        msort

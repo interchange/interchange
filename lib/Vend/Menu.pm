@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange payment processing routines
 #
-# $Id: Menu.pm,v 2.16 2002-10-03 17:26:28 mheins Exp $
+# $Id: Menu.pm,v 2.17 2002-10-13 03:42:49 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.16 $, 10);
+$VERSION = substr(q$Revision: 2.17 $, 10);
 
 use Vend::Util;
 use strict;
@@ -345,7 +345,6 @@ sub old_simple {
 		my $list = $opt->{object}{mv_results};
 		$main = '';
 		for(@$list) {
-#::logDebug("here's a row: " . ::uneval($_));
 			$main .= menu_link($template, $_, $opt);
 		}
 	}
@@ -442,12 +441,13 @@ EOF
 		$o{iterator} = \&transforms_only;
 		Vend::Tags->tree(\%o);
 		delete $o{_transform};
-		$rows = $o{object}{mv_results};
-		$main = '';
-		for(@$rows) {
-#::logDebug("here's a row: " . ::uneval($_));
+		my @o;
+		for(@{$o{object}{mv_results}}) {
+			next if $_->{deleted};
+			push @o, $_ unless $_->{deleted};
 			$main .= tree_line(undef, $_, \%o);
 		}
+		$rows = \@o;
 	}
 
 	# Prevent possibility of memory leak
@@ -696,9 +696,8 @@ EOF
 		push @out, $header;
 	}
 
-#::logDebug("Template is: $template");
 	for my $row (@$rows) {
-#::logDebug("Doing row: " . ::uneval($row));
+		next if $_->{deleted};
 		push @out, Vend::Tags->uc_attr_list($row, $template);
 	}
 
@@ -754,7 +753,6 @@ EOF
 			subordinate => 'code',
 			autodetect  => '1',
 			sort        => $opt->{sort} || 'code',
-			iterator    => \&tree_line,
 			js_prefix	=> $vpf,
 			full        => '1',
 			spacing     => '4',
@@ -765,8 +763,27 @@ EOF
 		$o{$_} = $opt->{$_};
 	}
 
-	push @out, Vend::Tags->tree(\%o);
-#::logDebug("out now=" . ::uneval(\@out) );
+	my $main;
+	my $rows;
+	if($opt->{iterator}) {
+		$o{iterator} = $opt->{iterator};
+		$main =  Vend::Tags->tree(\%o);
+		$rows = $o{object}{mv_results};
+	}
+	else {
+		$o{iterator} = \&transforms_only;
+		Vend::Tags->tree(\%o);
+		delete $o{_transform};
+		my @o;
+		for(@{$o{object}{mv_results}}) {
+			next if $_->{deleted};
+			push @o, $_ unless $_->{deleted};
+			$main .= tree_line(undef, $_, \%o);
+		}
+		$rows = \@o;
+	}
+
+	push @out, $main;
 	if(defined $CGI::values{open}) {
 		 $::Scratch->{dhtml_tree_open} = $CGI::values{open};
 	}
@@ -1029,7 +1046,6 @@ sub tree_link {
 ## returns UPPERCASE var name index defines for the fields.
 sub tree_line {
 	my($template, $row, $opt) = @_;
-#::logDebug("tree_line: loopname=$opt->{loopname} row=" . uneval($row));
 
 	my @out;
 	my $fields;
@@ -1121,7 +1137,7 @@ sub transforms_only {
 	}
 
 	for(@{$opt->{_transform}}) {
-		return unless $transform{$_}->($row, $opt->{$_});
+		$row->{deleted} = 1, return unless $transform{$_}->($row, $opt->{$_});
 	}
 	return;
 }
@@ -1152,14 +1168,10 @@ EOF
 
 	$row->{mv_ip} = $opt->{mv_ip}++ || 0;
 	$row->{mv_increment} = ++$opt->{mv_incrmement};
-#::logDebug("here's a row: " . ::uneval($row)) if $row->{debug};
 
 	for(@{$opt->{_transform}}) {
-#::logDebug("doing $_ tranform") if  $row->{debug};
 		return unless $transform{$_}->($row, $opt->{$_});
-#::logDebug("passed $_ tranform") if  $row->{debug};
 	}
-#::logDebug("passed transforms, row now: " . ::uneval($row)) if  $row->{debug};
 
 	#return $row->{name} if ! $row->{page} and $row->{name} =~ /^\s*</;
 	if(! $row->{page}) {
@@ -1341,7 +1353,6 @@ sub menu {
 		}
 
 		return old_flyout($name,$opt,$template) unless $opt->{dhtml_browser};
-#::logDebug("ready to run dhtml_flyout");
 		return dhtml_flyout($name,$opt,$template);
 	}
 	elsif($opt->{menu_type} eq 'simple') {
