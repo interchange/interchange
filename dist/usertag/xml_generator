@@ -5,8 +5,7 @@ UserTag xml-generator Interpolate
 UserTag xml-generator Documentation <<EOD
 =head2 xml_generator
 
-This UserTag generates XML tags based upon one of two types of
-data:
+This UserTag generates XML tags based upon one of two types of data:
 
 =over 4
 
@@ -134,7 +133,7 @@ sub {
 
 	my @fields;
 	my @lines;
-	my $out;
+	my $out = '';
 	my $attr_string = '';
 	if($opt->{attributes}) {
 		my @attr = split /[\s,]+/, $opt->{attributes};
@@ -166,7 +165,35 @@ sub {
 	}
 
 	$type = 'delimited' unless $type;
-	if($type eq 'delimited') {
+    if($opt->{dbdump}) {
+		my ($key, @f);
+		$out .= qq{<database catalog="$Vend::Cfg->{CatalogName}">\n};
+		for( sort keys %Vend::Database) {
+			my $db = ::database_exists_ref($_)
+				or die "Bad database $_???";
+			$db = $db->ref();
+			$out .= '<';
+			$out .= $opt->{toplevel_tag} || 'table';
+			$out .= qq{ name="$_">\n};
+			@fields = $db->columns();
+			my $cnt = scalar(@fields);
+			my $rtag = $opt->{record_tag} || 'record';
+			my $ftag = $opt->{field_tag} || 'field';
+			while( ($key, @f) = $db->each_record() ) {
+				$key =~ s/"/\\"/g;
+				$out .= qq{\t<$rtag key="$key">\n};
+				for (my $i = 0; $i < $cnt; $i++) {
+					next if $opt->{skip_empty} && length($f[$i]) == 0;
+					HTML::Entities::encode_entities($f[$i]);
+					$out .= qq{\t\t<$ftag name="$fields[$i]">$f[$i]</$ftag>\n};
+				}
+				$out .= qq{\t</$rtag>\n};
+			}
+			$out .= "</" . ($opt->{toplevel_tag} || 'table' ) .  ">\n";
+		}
+		$out .= qq{</database>\n};
+	}
+	elsif($type eq 'delimited') {
 		my $delim = $opt->{delimiter};
 		if($opt->{field_names}) {
 			@fields = grep /\S/, split /[\s,]+/, $opt->{field_names};	
