@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.225 2004-10-29 05:02:01 danb Exp $
+# $Id: Interpolate.pm,v 2.226 2004-10-29 13:20:18 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.225 $, 10);
+$VERSION = substr(q$Revision: 2.226 $, 10);
 
 @EXPORT = qw (
 
@@ -872,11 +872,6 @@ sub tag_data {
 	#The most common , don't enter a block, no accoutrements
 	return ed(database_field($selector,$key,$field,$opt->{foreign}));
 }
-
-$Filter{upper} = $Filter{uc};
-$Filter{lower} = $Filter{lc};
-$Filter{entities} = $Filter{encode_entities};
-$Filter{e} = $Filter{encode_entities};
 
 sub input_filter_do {
 	my($varname, $opt, $routine) = @_;
