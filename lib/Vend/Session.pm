@@ -1,6 +1,6 @@
 # Session.pm - Interchange Sessions
 #
-# $Id: Session.pm,v 1.7.2.8 2001-04-01 04:25:44 heins Exp $
+# $Id: Session.pm,v 1.7.2.9 2001-04-09 06:28:17 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -30,7 +30,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.7.2.8 $, 10);
+$VERSION = substr(q$Revision: 1.7.2.9 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -274,6 +274,7 @@ sub write_session {
 #::logDebug ("write session id=$Vend::SessionID  name=$Vend::SessionName\n");
 	my $time = time;
     $Vend::Session->{'time'} = $time;
+	delete $Vend::Session->{values}->{mv_credit_card_number};
     my $save = $Vend::Session->{'user'};
     undef $Vend::Session->{'user'};
     #undef $Vend::Session->{'arg'};
