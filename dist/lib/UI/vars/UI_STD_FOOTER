@@ -19,10 +19,21 @@ Variable UI_STD_FOOTER  <<EOV
 			</td>
 			<td valign=top align="right">
 [tmp window_name][tag time]%m%d%H%M%S[/tag][/tmp]
+			<table>
+			<tr>
+				<td>
 <font face="Verdana,Arial,Helvetica,sans-serif" size="1">
-<a href="javascript:window.name = 'mainwindow[scratch window_name]';window.open('[area href=|admin/quicklinks| arg=|[scratch window_name]|]','Quicklinks[scratch window_name]','top=0,left=0,scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=170,height=700'); void 0">Quicklinks</A></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			<a href="[area admin/index]"><img height="46" width="90" border="0" src="__UI_BOTTOMIMG__" align=top></a>
-			</td>
+<a href="javascript:window.name = 'mainwindow[scratch window_name]';window.open('[area href=|admin/quicklinks| arg=|[scratch window_name]|]','Quicklinks[scratch window_name]','top=0,left=0,scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=170,height=700'); void 0">Quicklinks</A><br>
+			[if-mm advanced reconfig]
+			<A href="[area __UI_BASE__/reconfig]">Apply changes</A><br>
+			[/if-mm]
+			<A href="[area __UI_BASE__/login]">Log out</A>
+				</td>
+				<td>
+			<a href="[area admin/index]"><img height="46" width="90" border="0" src="__UI_BOTTOMIMG__" align=top></a><br>
+				</td>
+			</tr>
+			</table>
         </tr>
 </table>
 </center> 
