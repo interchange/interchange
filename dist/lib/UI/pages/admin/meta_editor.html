@@ -10,13 +10,14 @@
 	else {
 		($m_view, $m_table, $m_col, $m_key) = @parts;
 	}
-	my $string = "Meta field edit: ";
-	$string .= "view=$m_view " if $m_view;
-	$string .= "table=$m_table column=$m_col";
-	$string .= " key=$m_key" if $m_key;
-	$Scratch->{page_title} = $string;
+	my @frags;
+	push(@frags,errmsg('Meta field edit') . ':');
+    push(@frags,errmsg('view=%s', $m_view)) if $m_view;
+    push(@frags,errmsg('table=%s column=%s', $m_table, $m_col));
+	push(@frags,errmsg('key=%s', $m_key)) if $m_key;
+	$Scratch->{page_title} = join(' ',@frags);
 
-	$string = <<EOF;
+	my $string = <<EOF;
 	<B>Meta information edit&nbsp;&nbsp;&nbsp;</b><BR>
 	<table>
 EOF
