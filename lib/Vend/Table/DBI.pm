@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.22 2002-07-09 17:42:12 mheins Exp $
+# $Id: DBI.pm,v 2.23 2002-07-15 20:18:46 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.22 $, 10);
+$VERSION = substr(q$Revision: 2.23 $, 10);
 
 use strict;
 
@@ -1019,23 +1019,18 @@ sub set_slice {
 	$tkey = $s->quote($key, $s->[$KEY]) if defined $key;
 #::logDebug("tkey now $tkey");
 
-
 	if ( defined $tkey and $s->record_exists($key) ) {
 		my $fstring = join ",", map { "$_=?" } @$fary;
 		$sql = "update $s->[$TABLE] SET $fstring WHERE $s->[$KEY] = $tkey";
 	}
 	else {
-		my $found;
-		for(my $i = 0; $i < @$fary; $i++) {
-			next unless $fary->[$i] eq $s->[$KEY];
-			splice @$fary, $i;
-			splice @$vary, $i;
-			last;
+		my ($found_key) = grep $_ eq $s->[$KEY], @$fary;
+		unless ($found_key) {
+			unshift @$fary, $s->[$KEY];
+			unshift @$vary, $key;
 		}
-		unshift @$fary, $s->[$KEY];
-		unshift @$vary, $key;
 		my $fstring = join ",", @$fary;
-		my $vstring	= join ",", map {"?"} @$vary;
+		my $vstring = join ",", map {"?"} @$vary;
 		$sql = "insert into $s->[$TABLE] ($fstring) VALUES ($vstring)";
 	}
 
