@@ -1,4 +1,4 @@
-sku	description	title	template_page	comment	thumb	image	price	wholesale	prod_group	category	nontaxable	weight	size	color	gift_cert	related	featured	download	dl_type	dl_location	inactive	url
+sku	description	title	template_page	comment	thumb	image	price	wholesale	prod_group	category	nontaxable	weight	size	color	gift_cert	related	featured	download	dl_type	dl_location	inactive	url	sale_price
 7000015	ATX Mid Tower-Grey (3)5.25 (2)3.5 & (1)3.5 Hidden				thumb.gif	yourimage.gif	49.00	44.10	Hardware	Cases		0										http://www.explorermicro.com/sysinfo/cases.html
 7000043	ATX Tower Case			This case is packed with options. Four 5.25 & two 3.5 drive bays provide plenty of expansion space.	thumb.gif	yourimage.gif	49.00	44.10	Hardware	Cases		0										http://www.explorermicro.com/sysinfo/cases.html
 7000063	ATX Desktop Case (2)5.25 & (2)3.5				thumb.gif	yourimage.gif	35.00	31.50	Hardware	Cases		0										http://www.explorermicro.com/sysinfo/cases.html

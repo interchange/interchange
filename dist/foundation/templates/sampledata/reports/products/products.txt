@@ -1,4 +1,4 @@
-sku	description	title	template_page	comment	thumb	image	price	wholesale	prod_group	category	nontaxable	weight	size	color	gift_cert	related	featured	download	dl_type	dl_location	inactive
+sku	description	title	template_page	comment	thumb	image	price	wholesale	prod_group	category	nontaxable	weight	size	color	gift_cert	related	featured	download	dl_type	dl_location	inactive	sale_price
 90773sh	Automotive Strategy Report	The Built-to-order Business		Get the inside scoop on how to make car sales work for you.	thumb.gif	yourimage.gif	89.99	-10%	Automotive	Strategy	1							1	application/pdf	download/90773sh.pdf	
 59330rt	Sales Lead Development	Court The Web Customer		Drive up sales by attracting customers on the web.	thumb.gif	yourimage.gif	120.00	-10%	Automotive	Development	1							1	application/pdf	download/59330rt.pdf	
 59402fw	Engineering Possibilities	Cars Go Live		Find new engineering avenues to enhance your product.	thumb.gif	yourimage.gif	99.98	-10%	Automotive	Development	1							1	application/pdf	download/59402fw.pdf	
