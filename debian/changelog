@@ -1,8 +1,11 @@
-interchange (4.8.4-1) unstable; urgency=low
+interchange (4.8.4-1) unstable; urgency=high
 
   * new upstream release
-
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed,  6 Mar 2002 23:52:03 +0100
+  * the reasoning for the high urgency is that almost nothing changed 
+    since the release from the CVS code and I prefer a sane version number
+    in woody
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 19 Mar 2002 17:23:20 +0100
 
 interchange (4.8.3.20020306-1) unstable; urgency=low
 
