@@ -10,6 +10,9 @@
 [set help_name]export.main[/set]
 [set icon_name]admin/icon_config.gif[/set]
 @_UI_STD_HEAD_@
+
+[page __UI_BASE__/dbdownload]Multiple table export[/page]<BR>
+
 [seti user_tables][loop list="[list-databases]"][if-mm function=export table="[loop-code]"][loop-code]
 [/if-mm][/loop][/seti]
 [seti tables][scratch user_tables]

@@ -7,7 +7,7 @@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
-[if cgi ui_allow_multiple]
+[if cgi ui_import_convert]
 	[calc]
 		my @tables = grep /\S/, split /[\s,\0]+/, q{[list-databases extended="i"]};
 		for(@tables) {
@@ -20,36 +20,74 @@
 [if type=explicit compare="[value-extended
 							name=upload_file
 							test=isfile]"]
-	[title-bar]Import of table [cgi mv_data_file]:
+	[title-bar]
+	[if cgi ui_import_convert]
+		Importing multiple tables:
+	[else]
+		Import of table [cgi mv_data_file]:
+	[/else]
+	[/if]
+	[calc]
+		if(! $CGI->{ui_import_convert}) {
+				$CGI->{ui_allow_multiple} = 0;
+			$CGI->{ui_upload_filename} = "$Session->{id}.$CGI->{mv_data_table}.$CGI->{ui_upload_ext}";
+		}
+		else {
+			$CGI->{ui_upload_filename} = $CGI->{upload_file};
+			$CGI->{ui_upload_filename} =~ s:.*[/\\]::;
+			$CGI->{ui_upload_filename} = $Tag->filter(
+											'filesafe',
+											"$Session->{id}.$CGI->{ui_upload_filename}",
+											);
+			if($CGI->{ui_import_convert} == 1) {
+				$CGI->{ui_allow_multiple} = 1;
+				$CGI->{ui_import_convert} = 'txt';
+			}
+			elsif($CGI->{ui_import_convert} == 2) {
+				$CGI->{ui_allow_multiple} = 1;
+				$CGI->{ui_import_convert} = 'xls';
+			}
+			elsif($CGI->{ui_import_convert} eq 'auto') {
+				$CGI->{ui_allow_multiple} = 1;
+				$CGI->{ui_import_convert} = 'auto';
+			}
+		}
+		return;
+	[/calc]
+		
 	[value-extended
 		name=upload_file
-		outfile="upload/[cgi mv_data_table].[cgi ui_upload_ext]"
-		yes=Succeeded
-		no=FAILED
-		][/title-bar]
+		outfile="upload/[cgi ui_upload_filename]"
+		yes="Upload succeeded"
+		no="Upload FAILED"
+		]
 	<P>
-	[if type=file term="upload/[cgi mv_data_table].[cgi ui_upload_ext]"]
-	[check-upload file="[cgi mv_data_table].[cgi ui_upload_ext]" same=1]
-	[/if]
-
-	[if type=file term="__UI_PRODUCT_DIR__/[cgi mv_data_table].[cgi ui_upload_ext]"]
-	[flag type=write table="[cgi mv_data_table]"]
-	[/if]
-
-	[if cgi ui_upload_ext eq add]
-	[import-fields	table="[cgi mv_data_table]"
-					file="__UI_PRODUCT_DIR__/[cgi mv_data_table].add"
-					multiple="[cgi ui_allow_multiple]"
+	[if type=!file term="upload/[cgi ui_upload_filename]"]
+		<B>Import file [cgi ui_upload_filename] not found!!!</B>
+	[elsif cgi ui_upload_ext eq add]
+	[import-fields
+					add=1
+					convert="[cgi ui_import_convert]"
 					delete="[cgi ui_allow_delete]"
+					dir=backup
+					file="upload/[cgi ui_upload_filename]"
+					move=1
+					multiple="[cgi ui_allow_multiple]"
 					quiet="[cgi ui_import_quiet]"
-					move=1 add=1 dir=backup]
+					table="[cgi mv_data_table]"
+	]
+	[/elsif]
 	[elsif cgi ui_upload_ext eq update]
-	[import-fields	table="[cgi mv_data_table]"
-					multiple="[cgi ui_allow_multiple]"
+	[import-fields
+					convert="[cgi ui_import_convert]"
 					delete="[cgi ui_allow_delete]"
+					dir=backup
+					file="upload/[cgi ui_upload_filename]"
+					move=1
+					multiple="[cgi ui_allow_multiple]"
 					quiet="[cgi ui_import_quiet]"
-					file="__UI_PRODUCT_DIR__/[cgi mv_data_table].update"
-					move=1 dir=backup]
+					table="[cgi mv_data_table]"
+	]
 	[/elsif]
 	[/if]
 [/if]
@@ -78,7 +116,14 @@
 	<OPTION VALUE=add> Add new items if present
 	<OPTION VALUE=update> Ignore new items
 </SELECT>&nbsp;&nbsp;&nbsp;<INPUT TYPE=checkbox NAME=ui_allow_delete VALUE=1> Allow delete
-<BR><INPUT TYPE=checkbox NAME=ui_allow_multiple VALUE=1> Multiple tables (gnumeric simple text)
+<BR><select NAME=ui_import_convert>
+		<OPTION VALUE=0> Single table
+		<OPTION VALUE=1> Gnumeric simple tex
+		[if type=explicit compare="[version modtest='Spreadsheet::ParseExcel' extended=1]"]
+		<OPTION VALUE=2> XLS Spreadsheet
+		[/if]
+		</select>
+
 <BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=0 [checked name=ui_import_quiet value=0]> Show summary/add record/delete record messages
 <BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=1 [checked name=ui_import_quiet value=1 default=1]> Show summary messages only
 <BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=2 [checked name=ui_import_quiet value=2]> Show *no* messages
