@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# $Id: Search.pm,v 1.8.2.4 2000-12-13 16:19:33 zarko Exp $
+# $Id: Search.pm,v 1.8.2.5 2000-12-17 07:24:21 heins Exp $
 #
 # Vend::Search -- Base class for search engines
 #
@@ -26,7 +26,7 @@
 #
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 1.8.2.4 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.5 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -134,12 +134,12 @@ sub hash_fields {
 }
 
 sub escape {
-	my($s, @text) = @_;
+    my($s, @text) = @_;
 #::logDebug( "text=@text");
 	return @text if ! $s->{mv_all_chars}[0];
 	@text = map {quotemeta $_} @text;
 #::logDebug( "text=@text");
-	return @text;
+    return @text;
 }
 
 my (@splice) = qw(
@@ -197,7 +197,7 @@ sub dump_coord {
 	return 
 		sprintf "%s coord=%s specs=%s(%s) fields=%s(%s) op=%s(%s) nu=%s(%s) ne=%s(%s)",
 			$msg,
-			$s->{mv_coordinate},
+            $s->{mv_coordinate},
 			scalar @$specs,
 			::uneval($specs),
 			scalar @{$s->{mv_search_field}},
@@ -212,126 +212,126 @@ sub dump_coord {
 }
 
 sub spec_check {
-	my ($s, @specs) = @_;
-	my @pats;
-	SPEC_CHECK: {
-		last SPEC_CHECK if $s->{mv_return_all};
-		# Patch supplied by Don Grodecki
-		# Now ignores empty search strings if coordinated search
-		my $i = 0;
+  my ($s, @specs) = @_;
+  my @pats;
+  SPEC_CHECK: {
+	last SPEC_CHECK if $s->{mv_return_all};
+	# Patch supplied by Don Grodecki
+	# Now ignores empty search strings if coordinated search
+	my $i = 0;
 #::logDebug($s->dump_coord(\@specs, 'BEFORE'));
 
-		$s->{mv_coordinate} = ''
-			unless $s->{mv_coordinate} and @specs == @{$s->{mv_search_field}};
+	$s->{mv_coordinate} = ''
+		unless $s->{mv_coordinate} and @specs == @{$s->{mv_search_field}};
 
-		my $all_chars = $s->{mv_all_chars}[0];
+	my $all_chars = $s->{mv_all_chars}[0];
 
-		while ($i < @specs) {
+	while ($i < @specs) {
 #::logDebug("i=$i specs=$#specs");
-			if($#specs and length($specs[$i]) == 0) { # should add a switch
-				if($s->{mv_coordinate}) {
-					splice(@{$s->{mv_search_group}}, $i, 1);
-					splice(@{$s->{mv_search_field}}, $i, 1);
-					splice(@{$s->{mv_column_op}}, $i, 1);
-					splice(@{$s->{mv_begin_string}}, $i, 1);
-					splice(@{$s->{mv_case}}, $i, 1);
-					splice(@{$s->{mv_numeric}}, $i, 1);
-					splice(@{$s->{mv_all_chars}}, $i, 1);
-					splice(@{$s->{mv_substring_match}}, $i, 1);
-					splice(@{$s->{mv_negate}}, $i, 1);
-				}
-				splice(@specs, $i, 1);
+		if($#specs and length($specs[$i]) == 0) { # should add a switch
+			if($s->{mv_coordinate}) {
+		        splice(@{$s->{mv_search_group}}, $i, 1);
+		        splice(@{$s->{mv_search_field}}, $i, 1);
+		        splice(@{$s->{mv_column_op}}, $i, 1);
+		        splice(@{$s->{mv_begin_string}}, $i, 1);
+		        splice(@{$s->{mv_case}}, $i, 1);
+		        splice(@{$s->{mv_numeric}}, $i, 1);
+		        splice(@{$s->{mv_all_chars}}, $i, 1);
+		        splice(@{$s->{mv_substring_match}}, $i, 1);
+		        splice(@{$s->{mv_negate}}, $i, 1);
 			}
-			else {
-				if(length($specs[$i]) < $s->{mv_min_string}) {
-					my $msg = <<EOF;
+		    splice(@specs, $i, 1);
+		}
+		else {
+			if(length($specs[$i]) < $s->{mv_min_string}) {
+				my $msg = <<EOF;
 Search strings must be at least $s->{mv_min_string} characters.
 You had '$specs[$i]' as one of your search strings.
 EOF
-					$s->{matches} = -1;
-					return undef;
-				}
-				COLOP: {
-					last COLOP unless $s->{mv_coordinate};
-#::logDebug("i=$i, begin_string=$s->{mv_begin_string}[$i]");
-					$s->{mv_all_chars}[$i] = $all_chars
-						if ! defined $s->{mv_all_chars}[$i];
-					last COLOP if $s->{mv_search_relate} =~ s/\bor\b/or/ig;
-					if(	$s->{mv_column_op}[$i] =~ /([=][~]|rm|em)/ ) {
-						$specs[$i] = quotemeta $specs[$i]
-							if $s->{mv_all_chars}[$i];
-						$s->{regex_specs} = []
-							unless $s->{regex_specs};
-						last COLOP if $s->{mv_begin_string}[$i];
-						$specs[$i] =~ /(.*)/;
-						push @{$s->{regex_specs}}, $1
-					}
-					elsif(	$s->{mv_column_op}[$i] =~ /^(==?|eq)$/ ) {
-						$s->{eq_specs} = []
-							unless $s->{eq_specs};
-						$specs[$i] =~ /(.*)/;
-						my $spec = $1;
-						push @{$s->{eq_specs}}, $spec;
-						last COLOP unless $s->{dbref};
-						$spec = $s->{dbref}->quote($spec, $s->{mv_search_field}[$i]);
-						$spec = $s->{mv_search_field}[$i] . " = $spec";
-						push(@{$s->{eq_specs_sql}}, $spec);
-					}
-				}
-				$i++;
+				$s->{matches} = -1;
+				return undef;
 			}
+			COLOP: {
+				last COLOP unless $s->{mv_coordinate};
+#::logDebug("i=$i, begin_string=$s->{mv_begin_string}[$i]");
+				$s->{mv_all_chars}[$i] = $all_chars
+					if ! defined $s->{mv_all_chars}[$i];
+				last COLOP if $s->{mv_search_relate} =~ s/\bor\b/or/ig;
+				if(	$s->{mv_column_op}[$i] =~ /([=][~]|rm|em)/ ) {
+					$specs[$i] = quotemeta $specs[$i]
+						if $s->{mv_all_chars}[$i];
+					$s->{regex_specs} = []
+						unless $s->{regex_specs};
+					last COLOP if $s->{mv_begin_string}[$i];
+					$specs[$i] =~ /(.*)/;
+					push @{$s->{regex_specs}}, $1
+				}
+				elsif(	$s->{mv_column_op}[$i] =~ /^(==?|eq)$/ ) {
+					$s->{eq_specs} = []
+						unless $s->{eq_specs};
+					$specs[$i] =~ /(.*)/;
+					my $spec = $1;
+					push @{$s->{eq_specs}}, $spec;
+					last COLOP unless $s->{dbref};
+					$spec = $s->{dbref}->quote($spec, $s->{mv_search_field}[$i]);
+					$spec = $s->{mv_search_field}[$i] . " = $spec";
+					push(@{$s->{eq_specs_sql}}, $spec);
+				}
+			}
+			$i++;
 		}
+	}
 
 #::logDebug("regex_specs=" . ::uneval($s->{regex_specs}));
 
-		if ( ! $s->{mv_exact_match} and ! $s->{mv_coordinate}) {
-			my $string = join ' ', @specs;
-			eval {
-				@specs = Text::ParseWords::shellwords( $string );
-			};
-			if($@ or ! @specs) {
-				$string =~ s/['"]/./g;
-				$s->{mv_all_chars}[0] = 0;
-				@specs = Text::ParseWords::shellwords( $string );
-			}
+	if ( ! $s->{mv_exact_match} and ! $s->{mv_coordinate}) {
+		my $string = join ' ', @specs;
+		eval {
+			@specs = Text::ParseWords::shellwords( $string );
+		};
+		if($@ or ! @specs) {
+			$string =~ s/['"]/./g;
+			$s->{mv_all_chars}[0] = 0;
+			@specs = Text::ParseWords::shellwords( $string );
 		}
+	}
 
-		@specs = $s->escape(@specs) if ! $s->{mv_coordinate};
+	@specs = $s->escape(@specs) if ! $s->{mv_coordinate};
 
-		if(! scalar @specs or ! $s->{mv_coordinate}) {
-			my $passed;
-			my $msg;
-			for (@specs) {
-				$passed = 1;
-				next if length($_) >= $s->{mv_min_string};
-				$msg = <<EOF;
+	if(! scalar @specs or ! $s->{mv_coordinate}) {
+		my $passed;
+		my $msg;
+		for (@specs) {
+			$passed = 1;
+		    next if length($_) >= $s->{mv_min_string};
+			$msg = <<EOF;
 Search strings must be at least $s->{mv_min_string} characters.
 You had '$_' as one of your search strings.
 EOF
-				undef $passed;
-				last;
-			}
-			$passed = 1 if ! $s->{mv_min_string};
-			if(! defined $passed) {
-				$msg = <<EOF if ! $msg;
+			undef $passed;
+			last;
+		}
+		$passed = 1 if ! $s->{mv_min_string};
+		if(! defined $passed) {
+			$msg = <<EOF if ! $msg;
 Search strings must be at least $s->{mv_min_string} characters.
 You had no search string specified.
 EOF
-				return $s->search_error($msg);
-			}
+			return $s->search_error($msg);
 		}
+	}
 
-		# untaint
-		for(@specs) {
-			/(.*)/s;
-			push @pats, $1;
-		}
-		$s->{mv_searchspec} = \@pats;
+	# untaint
+	for(@specs) {
+		/(.*)/s;
+		push @pats, $1;
+	}
+	$s->{mv_searchspec} = \@pats;
 #::logDebug($s->dump_coord(\@specs, 'AFTER '));
-		return @pats;
-
-	} # last SPEC_CHECK
 	return @pats;
+
+  } # last SPEC_CHECK
+  return @pats;
 }
 
 
@@ -427,6 +427,7 @@ my %numopmap  = (
 				'like' => [' =~ m{LIKE', '}i'],
 				'LIKE' => [' =~ m{LIKE', '}i'],
 );
+               
 
 my %stropmap  = (
 				'!=' => [' ne q{', '}'],
@@ -451,6 +452,7 @@ my %stropmap  = (
 				'like' => [' =~ m{LIKE', '}i'],
 				'LIKE' => [' =~ m{LIKE', '}i'],
 );
+               
 
 sub map_ops {
 	my($s, $count) = @_;
@@ -565,7 +567,7 @@ EOF
 	\@fields = ${callchar}fields[$fields];
 EOF
 		$code .= <<EOF if $Global::DebugFile and $CGI::values{debug};
-::logDebug("fields=" . join "|", \@fields);
+   ::logDebug("fields=" . join "|", \@fields);
 EOF
 
 		my @specs;
@@ -808,33 +810,33 @@ sub create_search_and {
 		unless @_;
 	my $pat;
 
-	my $code = <<EOCODE;
+    my $code = <<EOCODE;
 sub {
 EOCODE
 
-	$code .= <<EOCODE if @_ > 5;
-	study;
+    $code .= <<EOCODE if @_ > 5;
+    study;
 EOCODE
 
 	my $i = 0;
-	for $pat (@_) {
+    for $pat (@_) {
 		$pat =~ s/(.*)/$bound$1$bound/
 			if $bound;
 		$pat =~ s/^(?:\\b)?/$begin/ if $begin;
 		$code .= <<EOCODE;
-	return 0 unless $negate m{$pat}$case;
+    return 0 unless $negate m{$pat}$case;
 EOCODE
 		undef $begin;
-	} 
+    } 
 
-	$code .= "\treturn 1;\n}";
+    $code .= "\treturn 1;\n}";
 #::logDebug("search_and: $code");
 
 	use locale;
-	my $func = eval $code;
-	die "bad pattern: $@" if $@;
+    my $func = eval $code;
+    die "bad pattern: $@" if $@;
 
-	return $func;
+    return $func;
 } 
 
 sub create_search_or {
@@ -853,33 +855,33 @@ sub create_search_or {
 	return sub{1} unless @_;
 	my $pat;
 
-	my $code = <<EOCODE;
+    my $code = <<EOCODE;
 sub {
 EOCODE
 
-	$code .= <<EOCODE if @_ > 5;
-	study;
+    $code .= <<EOCODE if @_ > 5;
+    study;
 EOCODE
 
-	for $pat (@_) {
+    for $pat (@_) {
 		$pat =~ s/(.*)/$bound$1$bound/
 			if $bound;
 		$pat =~ s/^(?:\\b)?/$begin/ if $begin;
 		$code .= <<EOCODE;
-	return 1 if $negate m{$pat}$case;
+    return 1 if $negate m{$pat}$case;
 EOCODE
 		undef $begin;
-	} 
+    } 
 
-	$code .= "\treturn 0;\n}\n";
+    $code .= "\treturn 0;\n}\n";
 
 #::logDebug("search_or: $code");
 
 	use locale;
-	my $func = eval $code;
-	die "bad pattern: $@" if $@;
+    my $func = eval $code;
+    die "bad pattern: $@" if $@;
 
-	return $func;
+    return $func;
 } 
 
 # Returns an unevaled string with saved 
@@ -955,7 +957,7 @@ use vars qw/ %Sort_field /;
 
 
 sub sort_search_return {
-	my ($s, $target) = @_;
+    my ($s, $target) = @_;
 
 	@Flds	= @{$s->{mv_sort_field}};
 	for(@Flds) {
