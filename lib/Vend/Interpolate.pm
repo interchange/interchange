@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.41 2001-04-06 21:42:35 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.42 2001-04-10 23:50:25 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.41 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.42 $, 10);
 
 @EXPORT = qw (
 
@@ -4446,7 +4446,7 @@ my $once = 0;
 		$run =~ s#$B$QR{_next}$E$QR{'/_next'}#
                     interpolate_html($1) != 0 ? next : '' #ixge;
 		$run =~ s/<option\s*/<OPTION SELECTED /i
-			if $opt_select and $opt_select->($code);	
+			if $opt_select and $opt_select->($code);
 
 		$r .= $run;
 		last if $return;
@@ -6120,6 +6120,40 @@ sub tag_row {
 	join "\n", @out;
 }
 
+my %_assignable = (qw/
+				salestax	1
+				shipping	1
+				handling	1
+				subtotal    1
+				/);
+
+sub tag_assign {
+	my ($opt) = @_;
+	if($opt->{clear}) {
+		delete $Vend::Session->{assigned};
+		return;
+	}
+	$Vend::Session->{assigned} ||= {};
+	for(keys %$opt) {
+		next unless $_assignable{$_};
+		my $value = $opt->{$_};
+		$value =~ s/^\s+//;
+		$value =~ s/\s+$//;
+		if($value =~ /^-?\d+\.?\d*$/) {
+			$Vend::Session->{assigned}{$_} = $value;
+		}
+		else {
+			::logError(
+				"Attempted assign of non-numeric '%s' to %s. Deleted.",
+				$value,
+				$_,
+			);
+			delete $Vend::Session->{assigned}{$_};
+		}
+	}
+	return;
+}
+
 sub shipping {
 	my($mode, $opt) = @_;
 	return undef unless $mode;
@@ -6571,14 +6605,27 @@ sub tag_shipping {
 			if tag_shipping($::Values->{mv_shipmode});
 	}
 	if($opt->{label}) {
+		$out = '';
 		for(@modes) {
 			$out .= shipping($_, $opt);
 		}
 	}
 	else {
-		$out = 0;
-		for(@modes) {
-			$out += shipping($_, $opt) || 0;
+		### If the user has assigned to shipping or handling,
+		### we use their value
+		if($Vend::Session->{assigned}) {
+			my $tag = $opt->{handling} ? 'handling' : 'shipping';
+			$out = $Vend::Session->{assigned}{$tag} 
+				if defined $Vend::Session->{assigned}{$tag} 
+				&& length( $Vend::Session->{assigned}{$tag});
+		}
+		### If no assignment has been made, we read the shipmodes
+		### and use their value
+		unless (defined $out) {
+			$out = 0;
+			for(@modes) {
+				$out += shipping($_, $opt) || 0;
+			}
 		}
 		$out = Vend::Util::round_to_frac_digits($out);
 		$out = currency($out, $opt->{noformat}, $opt->{convert});
@@ -6630,6 +6677,13 @@ sub fly_tax {
 sub salestax {
 	my($cart) = @_;
 	my($save);
+	### If the user has assigned to salestax,
+	### we use their value come what may, no rounding
+	if($Vend::Session->{assigned}) {
+		return $Vend::Session->{assigned}{salestax} 
+			if defined $Vend::Session->{assigned}{salestax} 
+			&& length( $Vend::Session->{assigned}{salestax});
+	}
 
     if ($cart) {
         $save = $Vend::Items;
@@ -6713,6 +6767,14 @@ sub salestax {
 # applied
 sub subtotal {
 	my($cart) = @_;
+
+	### If the user has assigned to salestax,
+	### we use their value come what may, no rounding
+	if($Vend::Session->{assigned}) {
+		return $Vend::Session->{assigned}{subtotal}
+			if defined $Vend::Session->{assigned}{subtotal} 
+			&& length( $Vend::Session->{assigned}{subtotal});
+	}
 
     my($save,$subtotal, $i, $item, $tmp, $cost, $formula);
 	if ($cart) {

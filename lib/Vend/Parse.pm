@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12.2.17 2001-04-09 06:39:20 heins Exp $
+# $Id: Parse.pm,v 1.12.2.18 2001-04-10 23:50:25 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -38,7 +38,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12.2.17 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.18 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -54,6 +54,7 @@ my %PosNumber =	( qw!
 				accessories      2
 				and              1
 				area             2
+				assign           0
 				attr_list        1
 				banner           1
 				bounce           2
@@ -138,6 +139,7 @@ my %Order =	(
 				accessories		=> [qw( code arg )],
 				attr_list		=> [qw( hash )],
 				area			=> [qw( href arg )],
+				assign			=> [],
 				banner          => [qw( category )],
 				bounce			=> [qw( href if )],
 				calc			=> [],
@@ -231,6 +233,7 @@ my %addAttr = (
 				qw(
 					accessories     1
 					area            1
+					assign          1
 					banner          1
 					catch           1
 					charge          1
@@ -431,6 +434,7 @@ my %Routine = (
 				accessories		=> \&Vend::Interpolate::tag_accessories,
 				attr_list		=> \&Vend::Interpolate::tag_attr_list,
 				area			=> \&Vend::Interpolate::tag_area,
+				assign			=> \&Vend::Interpolate::tag_assign,
 				banner			=> \&Vend::Interpolate::tag_banner,
 				bounce          => sub { return '' },
 				calc			=> \&Vend::Interpolate::tag_calc,
