@@ -18,6 +18,7 @@ code/SystemTag/assign.coretag
 code/SystemTag/attr_list.coretag
 code/SystemTag/banner.coretag
 code/SystemTag/calc.coretag
+code/SystemTag/calcn.coretag
 code/SystemTag/cart.coretag
 code/SystemTag/catch.coretag
 code/SystemTag/cgi.coretag
@@ -88,7 +89,7 @@ code/SystemTag/tag.coretag
 code/SystemTag/time.coretag
 code/SystemTag/timed_build.coretag
 code/SystemTag/tmp.coretag
-code/SystemTag/tmp_no.coretag
+code/SystemTag/tmpn.coretag
 code/SystemTag/total_cost.coretag
 code/SystemTag/tree.coretag
 code/SystemTag/try.coretag
