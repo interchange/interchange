@@ -44,7 +44,7 @@ function open_help(url) {
 
 function open_quicklinks() {
   window.name = "mainwindow[scratch window_name]";
-  opts="top=0,left=0,scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=120,height=470";
+  opts="top=0,left=0,scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=128,height=475";
   window.open('[area href="admin/quicklinks" arg="[scratch window_name]"]', 'Quicklinks[scratch window_name]', opts);
 }
 
@@ -60,7 +60,7 @@ function open_quicklinks() {
  cellspacing="0">
 
 <tr height="22">
-<td width="12" align="left" valign="top" height="22"><img src="admin/curve_left.gif" width="12" height="22"></td>
+<td width="12" align="left" valign="top" height="22"><img src="admin/curve_left.gif" width="12" height="22" align="top"></td>
 
 <td valign="middle" height="22">
 
@@ -68,96 +68,82 @@ function open_quicklinks() {
 
 <a href="[area admin/order]">
 <img src="admin/icon_orders.gif" height="16" width="16" border="0" 
- align="top">
+ >
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
  color="#ffffff">
  &nbsp;Orders
 </font></a>
 
-<img src="admin/cleardot.gif" width="12">
+<img src="admin/cleardot.gif" width="22">
 
-<a href="[area admin/page]">
-<img src="admin/icon_pages.gif" height="16" width="16" border="0" align="top">
-<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
- color="#ffffff">
-&nbsp;Pages
-</font></a>
-
-<img src="admin/cleardot.gif" width="12">
 
 <a href="[area admin/item]">
-<img src="admin/icon_item.gif" height="16" width="16" border="0" align="top">
+<img src="admin/icon_item.gif" height="16" width="16" border="0" >
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
  color="#ffffff">
 &nbsp;Items
 </font></a>
 
-<img src="admin/cleardot.gif" width="12">
-
-<a href="[area admin/genconfig]">
-<img src="admin/icon_config.gif" height="16" width="16" border="0" 
- align="top">
-<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
- color="#ffffff">
-&nbsp;Configure
-</font></a>
-
-<img src="admin/cleardot.gif" width="12">
+<img src="admin/cleardot.gif" width="22">
 
 <a href="[area admin/genstats]">
-<img src="admin/icon_stats.gif" height="16" width="16" border="0" align="top">
+<img src="admin/icon_stats.gif" height="16" width="16" border="0" >
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
  color="#ffffff">
 &nbsp;Statistics
 </font></a>
 
-<img src="admin/cleardot.gif" width="12">
+<img src="admin/cleardot.gif" width="22">
 
 <a href="[area admin/reconfig]">
-<img src="admin/icon_regen.gif" height="16" width="16" border="0" align="top">
+<img src="admin/icon_regen.gif" height="16" width="16" border="0" >
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
  color="#ffffff">
-&nbsp;Regenerate
+&nbsp;Apply Changes
 </font></a>
 
-<img src="admin/cleardot.gif" width="12">
 </td>
 
 <td align="right" valign="middle" height="22">
+
+
 <a href="javascript:open_quicklinks()">
+<img src="admin/icon_pages.gif" height="16" width="16" border="0">
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
  color="#ffffff">
 Quicklinks
 </font>
 </a>
 
+<img src="admin/cleardot.gif" width="22">
+
 <a href="javascript:open_help('http://www.tallyman.com/help/2.0.6/[scratch help_name].html')">
+<img src="admin/icon_help.gif" height="16" width="16" border="0" >
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
  color="#ffffff">
 Help
 </font></a>
 </td>
 
-<td width="12" align="right" valign="top" height="22"><img src="admin/curve_right.gif" border="0" width="12" height="22"></td>
+<td width="12" align="right" height="22" valign="top"><img align="top" src="admin/curve_right.gif" border="0" width="12" height="22"></td>
 
 </tr>
 </table>
 
 <!-- ----- END TITLEBAR ----- -->
 
-<p>
+<br><br>
 
 <center>
 <table cellpadding="0" cellspacing="0">
 <tr>
-<td colspan=2><br>
-<img src="[scratch icon_name]" width=16 height="16" border="0" valign="top" align="top">
-
+<td colspan=2>
+<img src="[scratch icon_name]" width=16 height="16" border="0" valign="top" >
 &nbsp;
 <font size="+1" face="Verdana,arial,helvetica,sans-serif" color="#000000">
 [either][scratch page_banner][or][scratch page_title][/either]
-<p>
 &nbsp;
+<br>
 </font>
 </td>
 </tr>
@@ -171,5 +157,29 @@ Help
 [set table_perm][/set]
 [set page_perm][/set]
 [set no_login_reqired][/set]
+
+[comment]
+
+Currently unused stuff:
+
+
+<a href="[area admin/page]">
+<img src="admin/icon_pages.gif" height="16" width="16" border="0" >
+<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
+ color="#ffffff">
+&nbsp;Pages
+</font></a>
+
+<img src="admin/cleardot.gif" width="12">
+
+<a href="[area admin/genconfig]">
+<img src="admin/icon_config.gif" height="16" width="16" border="0">
+<font face="Verdana,Arial,Helvetica,sans-serif" size="2"
+ color="#ffffff">
+&nbsp;Configure
+</font></a>
+
+[/comment]
+
 
 EOV
