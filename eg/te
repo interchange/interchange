@@ -103,51 +103,97 @@ using running Perl's platform-specific chomp. If preserving a trailing
 solitary CR in the last field of a line is important, you'll want to
 change this behavior.
 
+2002-08-40. Add option -s for starting value support (really only vi).
+
+	te -s os28004 <file>
+
+Jumps to first occurrence of "os28004" in <file>. Option -i ignores case
+in the search.
+
 =cut
 
 use strict;
 use Digest::MD5;
 use File::Basename 'fileparse';
+use Text::ParseWords;
 
-die "Usage: $0 tablefile1 [tablefile2 ...]\n" unless @ARGV;
+use Getopt::Std;
 
-my $editor = $ENV{VISUAL} || $ENV{EDITOR} || 'vi';
+my ($prog) = fileparse($0);
+
+my $USAGE = <<EOF;
+Usage: $prog [-i] [-s startpoint] tablefile1 [tablefile2 ...]
+
+Edit tab-delimited file with easy field name delineation.
+
+Options:
+        -i       Ignores case on vim jump search.
+        -s TEXT  Jumps to first line where TEXT is. Only for vim.
+EOF
+
+use vars qw/$opt_i $opt_s/;
+getopts('is:') or die "$@\n$USAGE";
+
+die $USAGE unless @ARGV;
+
+my @ED = Text::ParseWords::shellwords($ENV{VISUAL} || $ENV{EDITOR} || 'vi');
+
+if($opt_s) {
+        my $pushed;
+        if($opt_i) {
+                push @ED, '-c';
+                $pushed++;
+                push @ED, q{set ic};
+        }
+        push @ED, '-c';
+        $opt_s =~ s:/:\\/:g;
+        $opt_s =~ s:":\\":g;
+        push @ED, qq{/$opt_s/};
+}
 
 # run gvim in foreground mode, since it otherwise immediately returns
 # control to us and we never get the user's changes
-$editor .= ' -f' if $editor =~ /\bgvim\b/ and $editor !~ /\s-f\b/;
+if($ED[0] =~ /\bgvim\b/) {
+        my $ffound;
+        for(@ED) {
+                next unless $_ eq '-f';
+                $ffound = 1;
+                last;
+        }
+        push @ED, '-f' unless $ffound;
+}
 
 for my $filename (@ARGV) {
-	my (@fieldnames, $fieldcount, @fields);
-	my ($name, $path, $tmpfile, $newfile, $digest1, $digest2);
-	unless (-e $filename) {
-		warn "Skipping '$filename': file does not exist\n";
-		next;
-	}
-	unless (-f $filename) {
-		warn "Skipping '$filename': not a regular file\n";
-		next;
-	}
-	unless (open IN, "<$filename") {
-		warn "Error 'opening' $filename for reading: $!\n";
-		next;
-	}
-	$_ = <IN>;
-	s/\x0d?\x0a?$//;
-	die "Error in '$filename' header: null field name found\n" if /\t\t/;
-	$fieldcount = tr/\t/\t/ + 1;
-	@fieldnames = split /\t/, $_, $fieldcount;
-	($name, $path) = fileparse($filename);
+        my (@fieldnames, $fieldcount, @fields);
+        my ($name, $path, $tmpfile, $newfile, $digest1, $digest2);
+        unless (-e $filename) {
+                warn "Skipping '$filename': file does not exist\n";
+                next;
+        }
+        unless (-f $filename) {
+                warn "Skipping '$filename': not a regular file\n";
+                next;
+        }
+        unless (open IN, "<$filename") {
+                warn "Error 'opening' $filename for reading: $!\n";
+                next;
+        }
+        $_ = <IN>;
+        s/\x0d?\x0a?$//;
+        die "Error in '$filename' header: null field name found\n" if /\t\t/;
+        $fieldcount = tr/\t/\t/ + 1;
+        @fieldnames = split /\t/, $_, $fieldcount;
+        ($name, $path) = fileparse($filename);
 
-	# I tried keeping the whole file in memory (for MD5's sake) instead of
-	# first writing to disk, but doing it this way turned out to be about 5
-	# times faster and used 1/10th the memory on large files. (My benchmark
-	# was a 12 MB products.txt database for Interchange.)
+        # I tried keeping the whole file in memory (for MD5's sake) instead of
+        # first writing to disk, but doing it this way turned out to be about 5
+        # times faster and used 1/10th the memory on large files. (My benchmark
+        # was a 12 MB products.txt database for Interchange.)
 
-	$tmpfile = "$path.$name.tmp.$$";
-	open OUT, ">$tmpfile" or die "Error opening '$tmpfile' for writing: $!\n";
-	print STDERR "Prettifying $filename\n";
-	print OUT <<EOF;
+        $tmpfile = "$path.$name.tmp.$$";
+        open OUT, ">$tmpfile" or die "Error opening '$tmpfile' for writing: $!\n";
+        print STDERR "Prettifying $filename\n";
+        print OUT <<EOF;
 #
 # This is a temporary file, automatically generated from the database file:
 #
@@ -157,91 +203,100 @@ for my $filename (@ARGV) {
 # format and will replace the original file.
 #
 EOF
-	while (<IN>) {
-		s/\x0d?\x0a?$//;
-		@fields = split /\t/, $_, $fieldcount;
-		for (my $i = 0; $i < @fieldnames; $i++) {
-			print OUT $fieldnames[$i], ":",
-				defined $fields[$i] ? $fields[$i] : '', "\n";
-		}
-		print OUT "#\n";
-	}
-	if (@fields) {
-		print OUT <<EOF;
+        while (<IN>) {
+                s/\x0d?\x0a?$//;
+                @fields = split /\t/, $_, $fieldcount;
+                for (my $i = 0; $i < @fieldnames; $i++) {
+                        print OUT $fieldnames[$i], ":",
+                                defined $fields[$i] ? $fields[$i] : '', "\n";
+                }
+                print OUT "#\n";
+        }
+        if (@fields) {
+                print OUT <<EOF;
 # You can uncomment the following lines to use as a template for inserting
 # a new row into the table. Copy as many times as needed to add many rows.
 #
 EOF
-	} else {
-		print OUT <<EOF;
+        } else {
+                print OUT <<EOF;
 # Your file was empty -- it had no data rows, only field definitions.
 # You can copy the following empty row template as many times as needed
 # to add new rows to the table.
 #
 EOF
-	}
-	print OUT join("\n", map { (@fields ? '#' : '') . $_ . ":" } @fieldnames);
-	print OUT "\n#\n";
-	close IN;
-	print OUT <<EOF;
+        }
+        print OUT join("\n", map { (@fields ? '#' : '') . $_ . ":" } @fieldnames);
+        print OUT "\n#\n";
+        close IN;
+        print OUT <<EOF;
 # end of file
 #
 EOF
-	close OUT or die "Error closing '$tmpfile' after writing: $!\n";
-	open IN, "<$tmpfile" or die "Error opening '$tmpfile' for reading: $!\n";
-	binmode IN;
-	$digest1 = Digest::MD5->new->addfile(*IN)->digest;
-	close IN;
-	system (split(/ /, $editor), $tmpfile) == 0
-		or die "Error calling editor '$editor' with '$tmpfile': $!\n";
-	open IN, "<$tmpfile" or die "Error opening '$tmpfile' for reading: $!\n";
-	binmode IN;
-	$digest2 = Digest::MD5->new->addfile(*IN)->digest;
-	if ($digest1 eq $digest2) {
-		print STDERR "No changes made; '$filename' untouched\n";
-		close IN;
-		unlink $tmpfile;
-		next;
-	}
-	print STDERR "Importing changes back into '$filename'\n";
-	$newfile = "$path.$name.new.$$";
-	open OUT, ">$newfile" or die "Error opening '$newfile' for writing: $!\n";
-	print OUT join("\t", @fieldnames), "\n";
-	my $tabcounter = 0;
-	my $fieldpos = 0;
-	my $done;
-	seek IN, 0, 0 or die "Error rewinding file '$tmpfile': $!\n";
-	@fields = ();
-	while (<IN>) {
-		$done = 1 if /^#\s*DONE/;
-		next if /^\s*#/ || /^\s*$/;
-		/^([^:]+):(.*)$/ or
-			die "Error parsing line $. of '$tmpfile': line format unknown:\n$_";
-		$1 eq $fieldnames[$fieldpos] or
-			die "Error parsing line $. of '$tmpfile': expected field name '$fieldnames[$fieldpos]', found '$1'\n";
-		$_ = $2;
-		$tabcounter += s/\t/ /g;
-		push @fields, $_;
-		if (++$fieldpos >= $fieldcount) {
-			print OUT join("\t", @fields), "\n";
-			@fields = ();
-			$fieldpos = 0;
-		}
-	}
-	print STDERR "$tabcounter tab character",
-		$tabcounter == 1 ? ' was' : 's were',
-		" found in the data! Each tab was replaced with a space.\n"
-		if $tabcounter;
-	close OUT or die "Error closing '$filename.new' after writing: $!\n";
-	close IN or die "Error closing '$tmpfile' after reading: $!\n";
-	my ($mode, $uid, $gid) = (stat($filename))[2,4,5];
-	chmod $mode, $newfile;
-	chown $uid, $gid, $newfile if $> == 0;
-	rename $newfile, $filename or
-		die "Error renaming '$newfile' to '$filename': $!\n";
-	unlink $tmpfile;
-	if ($done) {
-		print STDERR "Found 'DONE' command; skipping rest of files.\n";
-		last;
-	}
+        close OUT or die "Error closing '$tmpfile' after writing: $!\n";
+        open IN, "<$tmpfile" or die "Error opening '$tmpfile' for reading: $!\n";
+        binmode IN;
+        $digest1 = Digest::MD5->new->addfile(*IN)->digest;
+        close IN;
+        system (@ED, $tmpfile) == 0
+                or do {
+                        @ED = ('gvim', '-f', 'some quotes " "', "some space");
+                        for(@ED) {
+                                next unless /\s/;
+                                s/"/\\"/g;
+                                $_ = qq["$_"];
+                        }
+                        my $editor = join " ", @ED;
+                        die "Error calling editor '$editor' with '$tmpfile': $!\n";
+                };
+        open IN, "<$tmpfile" or die "Error opening '$tmpfile' for reading: $!\n";
+        binmode IN;
+        $digest2 = Digest::MD5->new->addfile(*IN)->digest;
+        if ($digest1 eq $digest2) {
+                print STDERR "No changes made; '$filename' untouched\n";
+                close IN;
+                unlink $tmpfile;
+                next;
+        }
+        print STDERR "Importing changes back into '$filename'\n";
+        $newfile = "$path.$name.new.$$";
+        open OUT, ">$newfile" or die "Error opening '$newfile' for writing: $!\n";
+        print OUT join("\t", @fieldnames), "\n";
+        my $tabcounter = 0;
+        my $fieldpos = 0;
+        my $done;
+        seek IN, 0, 0 or die "Error rewinding file '$tmpfile': $!\n";
+        @fields = ();
+        while (<IN>) {
+                $done = 1 if /^#\s*DONE/;
+                next if /^\s*#/ || /^\s*$/;
+                /^([^:]+):(.*)$/ or
+                        die "Error parsing line $. of '$tmpfile': line format unknown:\n$_";
+                $1 eq $fieldnames[$fieldpos] or
+                        die "Error parsing line $. of '$tmpfile': expected field name '$fieldnames[$fieldpos]', found '$1'\n";
+                $_ = $2;
+                $tabcounter += s/\t/ /g;
+                push @fields, $_;
+                if (++$fieldpos >= $fieldcount) {
+                        print OUT join("\t", @fields), "\n";
+                        @fields = ();
+                        $fieldpos = 0;
+                }
+        }
+        print STDERR "$tabcounter tab character",
+                $tabcounter == 1 ? ' was' : 's were',
+                " found in the data! Each tab was replaced with a space.\n"
+                if $tabcounter;
+        close OUT or die "Error closing '$filename.new' after writing: $!\n";
+        close IN or die "Error closing '$tmpfile' after reading: $!\n";
+        my ($mode, $uid, $gid) = (stat($filename))[2,4,5];
+        chmod $mode, $newfile;
+        chown $uid, $gid, $newfile if $> == 0;
+        rename $newfile, $filename or
+                die "Error renaming '$newfile' to '$filename': $!\n";
+        unlink $tmpfile;
+        if ($done) {
+                print STDERR "Found 'DONE' command; skipping rest of files.\n";
+                last;
+        }
 }
