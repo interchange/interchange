@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.2.2.6 2002-01-24 05:07:01 jon Exp $
+# $Id: Config.pm,v 2.2.2.7 2002-01-24 06:44:28 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.2.2.6 $, 10);
+$VERSION = substr(q$Revision: 2.2.2.7 $, 10);
 
 my %CDname;
 
@@ -680,7 +680,7 @@ sub config {
 		}
 	}
 
-	my(@include) = ($passed_file || $C->{ConfigFile});
+	my(@include) = my $catalogcfg = ($passed_file || $C->{ConfigFile});
 	my $done_one;
 	my ($db, $dname, $nm);
 	my ($before, $after);
@@ -1003,7 +1003,7 @@ EOF
 				my $msg = errmsg(
 					"Please specify the %s directive in the configuration file '%s'",
 					$CDname{$var},
-					$configfile,
+					$catalogcfg,
 				);
 
 				die "$msg\n";
