@@ -44,7 +44,7 @@ Variable UI_STD_FOOTER  <<EOV
         <A href="[area __UI_BASE__/login]"><small>[loc]Log out[/loc]</small></A>
       </td>
       <td valign="top" align="right" nowrap>
-        <a href="http://www.akopia.com/"><img border="0" src="@_UI_IMG_@navigation/poweredby.gif" align="top"></a> &nbsp;
+        <a href="http://www.akopia.com/"><img border="0" src="poweredby.gif" align="top"></a> &nbsp;
       </td>
     </tr>
     </table>

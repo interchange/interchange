@@ -112,7 +112,7 @@
                      mv_action=back
                      mv_nextpage=@@MV_PAGE@@
                     '
-         ]"><IMG SRC="@_UI_IMG_@admin/delete.gif" ALT="Delete" ALIGN=CENTER BORDER=0></A></TD></TR>
+         ]"><IMG SRC="delete.gif" ALT="Delete" ALIGN=CENTER BORDER=0></A></TD></TR>
 [tmp o_value][perl]
     my @vals = split(',','[sql-param o_value]');
     map { s/[\r\n]//g; } @vals;

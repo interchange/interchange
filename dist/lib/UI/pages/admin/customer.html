@@ -3,21 +3,21 @@
 		delete $Values->{showinactive};
 		$Values->{showactive} = 1;
 		$Scratch->{active_sense} = 'ne';
-		$Scratch->{active_img} = '@_UI_IMG_@admin/right.gif';
+		$Scratch->{active_img} = 'right.gif';
 		$Scratch->{active_nm} = 'deactivate';
 	}
 	elsif($CGI->{showinactive}) {
 		delete $Values->{showactive};
 		$Values->{showinactive} = 1;
 		$Scratch->{active_sense} = 'eq';
-		$Scratch->{active_img} = '@_UI_IMG_@admin/left.gif';
+		$Scratch->{active_img} = 'left.gif';
 		$Scratch->{active_nm} = 'activate';
 	}
 	elsif(! $Values->{showactive} and ! $Values->{showinactive}) {
 		delete $Values->{showinactive};
 		$Values->{showactive} = 1;
 		$Scratch->{active_sense} = 'ne';
-		$Scratch->{active_img} = '@_UI_IMG_@admin/right.gif';
+		$Scratch->{active_img} = 'right.gif';
 		$Scratch->{active_nm} = 'deactivate';
 	}
 	return;
@@ -132,7 +132,7 @@
 [bounce href=`delete $Scratch->{ui_location}`]
 [/if]
 
-[set icon_name]admin/icon_people.gif[/set]
+[set icon_name]icon_people.gif[/set]
 [seti page_title]
 	[if value showinactive]
 	Customers: Inactive Customers
@@ -250,7 +250,7 @@ mv_nextpage=@@MV_PAGE@@
 		deletecustomer=1
 		customer=[item-code]
 	']"
-	onClick="return confirm('Are you sure you want to delete customer [item-code]?')"><IMG src="@_UI_IMG_@admin/delsm.gif" ALT="DELETE [item-code]" BORDER=0></A>
+	onClick="return confirm('Are you sure you want to delete customer [item-code]?')"><IMG src="delsm.gif" ALT="DELETE [item-code]" BORDER=0></A>
 </td><td>
 [page href=__UI_BASE__/customer_view
 			  form="

@@ -46,7 +46,7 @@ my $row = <<"END";
 
 <tr class="">
   <td valign=top class="contentbar2">
-    $delink<img src="@_UI_IMG_@/admin/delsm.gif" border=0></a>&nbsp;&nbsp;
+    $delink<img src="[image dir_only=1 ui=1]delsm.gif" border=0></a>&nbsp;&nbsp;
   </td>
   <td valign=top class="contentbar1">$golink$name</A></td>
   <td valign=top class="contentbar2" nowrap><small>$last_update</small></td>

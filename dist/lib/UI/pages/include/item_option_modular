@@ -166,7 +166,7 @@
 #
 		if($ref->{level}) {
 			my $level = $ref->{level} * 28;
-			$ref->{ui_spacer} = qq{<IMG SRC="@_UI_IMG_@admin/bg.gif" HEIGHT=1 WIDTH=$level>};
+			$ref->{ui_spacer} = qq{<IMG SRC="bg.gif" HEIGHT=1 WIDTH=$level>};
 		}
 		for(qw/ products.description description /) {
 			if(length($ref->{$_}) >=30) {
@@ -178,17 +178,17 @@
 			if($expand->{$code} or $explode && ! defined $expand->{$code}) {
 				$ref->{ui_action} = "contract=$code";
 				$ref->{ui_action_img} = 
-					 qq{<FONT size=1>$indent</FONT><IMG SRC="@_UI_IMG_@admin/down.gif" height=11 width=14 BORDER=0>};
+					 qq{<FONT size=1>$indent</FONT><IMG SRC="down.gif" height=11 width=14 BORDER=0>};
 			}
 			else {
 				$ref->{ui_action} = "expand=$code";
 				$ref->{ui_action_img} = 
-					 qq{<FONT size=1>$indent</FONT><IMG SRC="@_UI_IMG_@admin/right.gif" height=11 width=14 BORDER=0>};
+					 qq{<FONT size=1>$indent</FONT><IMG SRC="right.gif" height=11 width=14 BORDER=0>};
 			}
 		}
 		else {
 			$ref->{ui_action_img} = 
-				 qq{<IMG SRC="@_UI_IMG_@admin/bg.gif" HEIGHT=1 WIDTH=14>};
+				 qq{<IMG SRC="bg.gif" HEIGHT=1 WIDTH=14>};
 		}
 		my $body = $Scratch->{mod_template};
 #Log("body first:\n$body\n\n") unless $Scratch->{debug_body};
@@ -300,7 +300,7 @@
 			ui_return_to=@@MV_PAGE@@
 			ui_return_to=item_id=[cgi item_id]
 			ui_return_to=ignore_sku=1
-		"]<IMG SRC="@_UI_IMG_@admin/plus.gif" ALT="Add new option" BORDER=0>Add option</A>
+		"]<IMG SRC="plus.gif" ALT="Add new option" BORDER=0>Add option</A>
 &nbsp;&nbsp;
 
 
@@ -313,7 +313,7 @@
 			ui_return_to=ui_return_table=[cgi mv_data_table]
 			ui_return_to=item_id=[cgi item_id]
 			ui_return_to=ignore_sku=1
-		"]<IMG SRC="@_UI_IMG_@admin/plus.gif" ALT="Add phantom" BORDER=0> Add phantom</A>
+		"]<IMG SRC="plus.gif" ALT="Add phantom" BORDER=0> Add phantom</A>
 &nbsp;&nbsp;
 <FORM ACTION="[area @@MV_PAGE@@]">
 <input type=hidden name=mv_action value=back>

@@ -25,7 +25,6 @@
 	shift;
 	my ($page, $name, $indicator, $next_line, $help_name) = @{shift || []};
 	my $current = q{@@MV_PAGE@@};
-	my $imgbase = q{@_UI_IMG_@admin/};
 	
 	my $complete = $Tag->run_profile($indicator);
 
@@ -53,7 +52,7 @@
 		return <<EOF;
 <tr>
 	<td bgcolor="$bgcolor" width="1%">&nbsp;</td>
-	<td bgcolor="$bgcolor"><img src="$imgbase$img" width="15" height="15" alt="" border="0"></td>
+	<td bgcolor="$bgcolor"><img src="$img" width="15" height="15" alt="" border="0"></td>
 	<td bgcolor="$bgcolor" width="98%"><a href="$url" class="flowchart"><font size=-1>$name</a></td>
 </tr>
 EOF
@@ -61,7 +60,7 @@ EOF
 	else {
 		return <<EOF;
 <tr>
-	<td bgcolor="$bgcolor"><img src="$imgbase$img" width="15" height="15" alt="" border="0"></td>
+	<td bgcolor="$bgcolor"><img src="$img" width="15" height="15" alt="" border="0"></td>
 	<td bgcolor="$bgcolor" width="98%" colspan=2><a href="$url" class="flowchart"><font size=-1>$name</a></td>
 </tr>
 EOF

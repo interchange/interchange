@@ -221,7 +221,7 @@ HREF="[area
 				mv_action=back
 				mv_nextpage=@@MV_PAGE@@
 			'
-]"><IMG SRC="@_UI_IMG_@admin/delete.gif" ALT="Delete [variant-code] variant" BORDER=0></A></TD>
+]"><IMG SRC="delete.gif" ALT="Delete [variant-code] variant" BORDER=0></A></TD>
 </tr>
 [/list]
 [no-match]
@@ -382,7 +382,7 @@ HREF="[area
 				mv_action=back
 				mv_nextpage=@@MV_PAGE@@
 			'
-]"><IMG SRC="@_UI_IMG_@admin/delete.gif" ALT="Delete [item-param o_group] option" BORDER=0></A></TD>
+]"><IMG SRC="delete.gif" ALT="Delete [item-param o_group] option" BORDER=0></A></TD>
 </tr>
 [/list]
 [no-match]
@@ -407,7 +407,7 @@ HREF="[area
 			ui_te_default:sku=[cgi item_id]
 			ui_data_fields=code sku o_group o_label o_value price
 			ui_te_widget:sku=hidden_text
-		"]<IMG SRC="@_UI_IMG_@admin/plus.gif" ALT="Add new option" BORDER=0></A>
+		"]<IMG SRC="plus.gif" ALT="Add new option" BORDER=0></A>
 &nbsp;&nbsp;
 [query
 	list=1

@@ -1,7 +1,7 @@
 [set page_title]Edit Template[/set]
 [set ui_class]Content[/set]
 [set help_name]page.main[/set]
-[set icon_name]admin/icon_pages.gif[/set]
+[set icon_name]icon_pages.gif[/set]
 @_UI_STD_HEAD_@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
@@ -12,14 +12,13 @@
 <table __UI_T_PROPERTIES__>
 <tr id=rborder>
 <td colspan=2>
-<img src="@_UI_IMG_@admin/bg.gif" height=1>
+<img src="bg.gif" height=1>
 </td>
 </tr>
 
 [perl tables="[list-databases] __UI_META_TABLE__"] 
 
 	# Some inits
-	my $imgpath = $Tag->var('UI_IMG', 1) || $Variable->{UI_IMG} || '';
 	my $template_dir = $Variable->{UI_TEMPLATE_DIR} || 'templates';
 	my $out = '';
 	$Values->{ui_theme} = $CGI->{ui_theme} if defined $CGI->{ui_theme};
@@ -192,7 +191,7 @@ Debug("trying to read: $template_dir/$theme/$rdir/$bot");
 	</td>
 </tr>
 <tr class=rtitle>
-<td colspan=2 class=ctitle><img src="${imgpath}admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=ctitle><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 EOF
 
@@ -295,7 +294,7 @@ EOF
 
 	$template_top_widget = <<EOF if $CGI->{ui_show_template};
 <tr class=cmarq>
-<td colspan=2><img src="${imgpath}admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr class=ralt>
 	<td colspan=2 valign=top>
@@ -309,7 +308,7 @@ EOF
 	</td>
 </tr>
 <tr>
-<td colspan=2 class=rtitle><img src="${imgpath}admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rtitle><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 EOF
 
 
@@ -346,7 +345,7 @@ EOF
 
 	my $break_template = <<EOF;
 <tr class=cmarq>
-<td colspan=2><img src="${imgpath}admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 EOF
 
@@ -439,7 +438,7 @@ EOF
 
 	$template_bot_widget = <<EOF if $CGI->{ui_show_template};
 <tr>
-<td colspan=2 class=rtitle><img src="${imgpath}admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rtitle><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr class=ralt>
 	<td colspan=2 valign=top>
@@ -494,7 +493,7 @@ EOF
 [/perl]
 
 <tr>
-<td colspan=2 class=rtitle><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rtitle><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr class=ralt>
@@ -540,7 +539,7 @@ Show template:<BR>
 </tr>
 
 <tr>
-<td colspan=2 class=rtitle><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 class=rtitle><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

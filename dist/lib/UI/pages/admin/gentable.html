@@ -2,7 +2,7 @@
 [set page_title][L]Table Manager[/L][/set]
 [set ui_class]Admin[/set]
 [set help_name]genconfig.main[/set]
-[set icon_name]admin/icon_config.gif[/set]
+[set icon_name]icon_config.gif[/set]
 @_UI_STD_HEAD_@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
@@ -52,7 +52,7 @@ sub {
 	};
 	my $ref = {
 		upload => { 
-						img => '@_UI_IMG_@admin/up.gif',
+						img => 'up.gif',
 						url => $Tag->area(
 									'__UI_BASE__/upload_file',
 									$froot->(join "/",
@@ -66,7 +66,7 @@ sub {
 									
 					},
 		download => { 
-						img => '@_UI_IMG_@admin/down.gif',
+						img => 'down.gif',
 						url => $Tag->area( 
 									{
 										href => 'ui_download/' .
@@ -83,7 +83,7 @@ sub {
 								),
 					},
 		import => { 
-						img => '@_UI_IMG_@admin/left.gif',
+						img => 'left.gif',
 						url => $Tag->area(
 									{
 										href => '__UI_BASE__/import_table',
@@ -92,7 +92,7 @@ sub {
 									),
 					},
 		export => { 
-						img => '@_UI_IMG_@admin/right.gif',
+						img => 'right.gif',
 						url => $Tag->area(
 									{
 										href => '__UI_BASE__/export_table',
@@ -101,7 +101,7 @@ sub {
 									),
 					},
 		edit => { 
-						img => '@_UI_IMG_@admin/layout.gif',
+						img => 'layout.gif',
 						url => $Tag->area(
 									{
 										href => '__UI_BASE__/flex_select',

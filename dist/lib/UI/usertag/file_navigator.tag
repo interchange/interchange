@@ -162,16 +162,13 @@ sub {
 	my $this = Vend::Interpolate::tag_area($this_page);
 	$this =~ s/\?(.*)//;
 
-	my $imgpath = $::Variable->{UI_IMG} || $Global::Variable->{UI_IMG} || '';
-	$imgpath .= "admin";
-
-	my $up_img = qq{<img src="$imgpath/up.gif" align=center border=0 height=22 width=20 title="upload ~FN~">};
-	my $dn_img = qq{<img src="$imgpath/down.gif" align=center border=0 height=22 width=20 title="download ~FN~">};
-	my $vw_img = qq{<img src="$imgpath/index.gif" align=center border=0 height=22 width=20 title="view ~FN~">};
-	my $ed_img = qq{<img src="$imgpath/layout.gif" align=center border=0 height=22 width=20 title="edit ~FN~">};
-	my $dir_img = qq{<img src="$imgpath/folder.gif" align=center border=0 height=22 width=20 title="change directory to ~FN~">};
-	my $del_img = qq{<img src="$imgpath/delete.gif" align=center border=0 height=20 width=20 title="DELETE ~FN~">};
-	my $sp_img = qq{<img src="$imgpath/bg.gif" align=center border=0 height=20 width=20>};
+	my $up_img = qq{<img src="up.gif" align=center border=0 height=22 width=20 title="upload ~FN~">};
+	my $dn_img = qq{<img src="down.gif" align=center border=0 height=22 width=20 title="download ~FN~">};
+	my $vw_img = qq{<img src="index.gif" align=center border=0 height=22 width=20 title="view ~FN~">};
+	my $ed_img = qq{<img src="layout.gif" align=center border=0 height=22 width=20 title="edit ~FN~">};
+	my $dir_img = qq{<img src="folder.gif" align=center border=0 height=22 width=20 title="change directory to ~FN~">};
+	my $del_img = qq{<img src="delete.gif" align=center border=0 height=20 width=20 title="DELETE ~FN~">};
+	my $sp_img = qq{<img src="bg.gif" align=center border=0 height=20 width=20>};
 
 	if(defined $CGI->{details}) {
 		$Session->{ui_file_details} = $CGI->{details};

@@ -12,7 +12,7 @@
 		Phantom option editor: <B>[cgi item_id]</B>
 [/tmp]
 [tmp help_name][either][cgi help_name][or]item.option[/either][/tmp]
-[tmp icon_name][either][cgi icon_name][or]admin/icon_item.gif[/either][/tmp]
+[tmp icon_name][either][cgi icon_name][or]icon_item.gif[/either][/tmp]
 [set ui_class]Items[/set]
 
 [if-mm function="!tables" table="[cgi mv_data_table]"]
@@ -121,7 +121,7 @@
 
 		if($ref->{level}) {
 			my $level = $ref->{level} * 28;
-			$ref->{ui_spacer} = qq{<IMG SRC="@_UI_IMG_@admin/bg.gif" HEIGHT=1 WIDTH=$level>};
+			$ref->{ui_spacer} = qq{<IMG SRC="bg.gif" HEIGHT=1 WIDTH=$level>};
 		}
 		for(qw/ products.description description /) {
 			if(length($ref->{$_}) >=30) {
