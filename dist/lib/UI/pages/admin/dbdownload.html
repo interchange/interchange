@@ -1,4 +1,4 @@
-[set page_title]Database export[/set]
+[set page_title][L]Database export[/L][/set]
 [set ui_class]Admin[/set]
 [set help_name]dbdownload.main[/set]
 [set icon_name]icon_config.gif[/set]
@@ -18,12 +18,12 @@
 
 [if scratch exported_tables]
 <BLOCKQUOTE>
-	[backup-database
+	[msg arg.0='[backup-database
 		compress="[cgi ui_compress]"
 		xls="[cgi ui_export_xls]"
 		max_xls_string="[cgi ui_export_max_xls_string]"
 		tables="[scratch exported_tables]"
-	] tables backed up.
+	]']%s tables backed up.[/msg]
 </BLOCKQUOTE>
 [/if]
 
@@ -36,11 +36,11 @@
 			form="
 				mv_data_file=backup/DBDOWNLOAD.xls
 				mv_todo=deliver
-			"]Download XLS file ([file-info name="backup/DBDOWNLOAD.xls" date=1])</A><BR>
+			"][L]Download XLS file[/L] ([file-info name="backup/DBDOWNLOAD.xls" date=1])</A><BR>
 [/if]
 
 [if scratch ui_error]
-	<B>Errors on last operation:</B>
+	<B>[L]Errors on last operation[/L]:</B>
 	[scratch ui_error][set ui_error][/set]
 [/if]
 
@@ -91,7 +91,7 @@ What data would you like to export?
 	[/if]
 	</BLOCKQUOTE>
 	<p>
-	<input type=submit name="do_download" value="Perform export">
+	<input type=submit name="do_download" value="[L]Perform export[/L]">
 	</td>
 </tr>
 </table>
