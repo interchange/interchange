@@ -526,6 +526,27 @@ sub initialize {
 			or die "No MANIFEST?\n";
 		my (@files) = <MANI>;
 		close MANI;
+
+		# install share/ files from MANIFEST
+		chomp(my @sharefiles = grep m:^share/:, @files);
+		install_file('.', $realdir, $_) for @sharefiles;
+
+		# build context-sensitive admin help files
+		my $sourcedir = getcwd;
+		BUILD_HELP_HTML: {
+			chdir "$realdir/share/akopia/ui/help" or last BUILD_HELP_HTML;
+			local $/;
+			open HELP_MAKE, "help_make.pl" or
+				warn("Unimportant: Unable to open help_make.pl\n"), last BUILD_HELP_HTML;
+			my $help_make = <HELP_MAKE>;
+			close HELP_MAKE;
+			print "Generating admin help HTML\n";
+			eval $help_make;
+			warn("Unimportant: Error generating admin help HTML\n") if $@;
+		}
+		chdir $sourcedir;
+
+		# install dist/ files from MANIFEST
 		@files = grep m:^dist/:, @files;
 		chomp(@files);
 		@files = map { s:^dist/::; $_} @files;
@@ -545,6 +566,8 @@ sub initialize {
 		for (@files) {
 			install_file('.', $realdir, $_);
 		}
+		chdir '..';
+
 		for(@os_hints) {
 			my ($condition, $routine) = @$_;
 			unless (ref($condition) =~ /CODE/ and ref($routine) =~ /CODE/) {
@@ -594,9 +617,17 @@ libraries, it is usually safe to remove them, but you might copy them somewhere
 just in case you forgot something you changed.
 EOF
 			print $msg;
-
 		}
+
+		print <<EOF;
+
+Your Interchange main software installation appears to have been successful.
+You are now ready to cd to $realdir and run 'bin/makecat'
+to set up your first catalog.
+
+EOF
 		exit;
+
 	}
 
 
