@@ -96,6 +96,8 @@ if [ "$GOAHEAD" = "true" ]; then
 		--catuser=$USER \
 		--mailorderto=$USER \
 		--nocfg
+
+	interchangeconfig USE_FOUNDATION=1
 fi
 
 
