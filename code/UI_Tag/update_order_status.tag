@@ -1,9 +1,10 @@
 UserTag update-order-status Order order_number
 UserTag update-order-status addAttr
-UserTag update-order-status Version $Id: update_order_status.tag,v 1.8 2003-08-25 18:31:14 mheins Exp $
+UserTag update-order-status Version $Id: update_order_status.tag,v 1.9 2003-11-09 16:39:52 mheins Exp $
 UserTag update-order-status Routine <<EOR
 sub {
 	my ($on, $opt) = @_;
+#::logDebug("Shipping order number $on, opt=" . ::uneval($opt));
 	my $die = sub {
 		logError(@_);
 		return undef;
@@ -174,25 +175,34 @@ sub {
 		$tdb->set_field($on, 'tracking_number', $opt->{tracking_number});
 	}
 
-	my @shiplines = grep /\S/, split /\0/, $opt->{lines_shipped};
+	my $need_shiplines;
+	my @shiplines;
+	if($opt->{lines_shipped}) {
+		@shiplines = grep /\S/, split /\0/, $opt->{lines_shipped};
+	}
+	else {
+		$need_shiplines = 1;
+	}
+
 	if(! @shiplines and ! $opt->{ship_all}) {
 		my @keys = grep /status__1/, keys %CGI::values;
 #::logDebug("keys to ship: " . join(',', @keys));
 		my %stuff;
 		for(@keys) {
-			m/^(\d+)_/;
-			my $n = $1 || 0;
+#::logDebug("examining $_");
+			my $n = 0;
+			m/^(\d+)_/ and $n = $1;
 			$n++;
 			if($opt->{ship_all} or $CGI::values{$_} eq 'shipped') {
 				push @shiplines, $n;
 #::logDebug("ship $n");
 			}
 		}
+		undef $need_shiplines;
 	}
 	else {
 		@shiplines = map { s/.*\D//; $_; } @shiplines;
 	}
-	my $to_ship = scalar @shiplines;
 
 	my $count_q = "select * from orderline where order_number = '$on'";
 	my $lines_ary =  $odb->query($count_q);
@@ -201,7 +211,6 @@ sub {
 		return;
 	}
 	my $total_lines = scalar @$lines_ary;
-#::logDebug("total_lines=$total_lines to_ship=$to_ship shiplines=" . uneval(\@shiplines));
 
 	my $odb_keypos = $odb->config('KEY_INDEX');
 
@@ -215,6 +224,7 @@ sub {
 		my $code = $_->[$odb_keypos];
 		my $status = $odb->field($code, 'status');
 		my $line = $code;
+		push @shiplines, $line if $need_shiplines;
 		$line =~ s/.*\D//;
 		$line =~ s/^0+//;
 		if($status eq $target_status and ! $opt->{cancel_order}) {
@@ -224,6 +234,10 @@ sub {
 			$shipping{$line} = 1;
 		}
 	}
+
+	my $to_ship = scalar @shiplines;
+
+#::logDebug("total_lines=$total_lines to_ship=$to_ship shiplines=" . uneval(\@shiplines));
 	
 	my $ship_mesg;
 	my $g_status;
