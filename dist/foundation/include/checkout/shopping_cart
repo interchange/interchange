@@ -43,7 +43,7 @@
             <INPUT TYPE=text NAME="[quantity-name]" VALUE="[item-quantity]" SIZE=3>
           </TD>
           <TD ALIGN=RIGHT>
-            [discount-price]
+            [item-discount-price]
             [if discount [item-code]]<BR>Item is discounted [item-discount][/if]
           </TD>
           <TD ALIGN=RIGHT>[item-subtotal]</TD>

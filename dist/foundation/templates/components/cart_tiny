@@ -31,7 +31,7 @@ ui_label: Small cart for left/right display
 	  <a href="[area [item-sku]]"><small>[item-filter 20][item-data products description][/item-filter]</small></A>
 	</td>
 	<TD ALIGN="right" valign="top" class="contentbar1">
-	  <small>[item-quantity]@[discount-price]</small>
+	  <small>[item-quantity]@[item-discount-price]</small>
 	</TD>
       </tr>
 [/item-list]

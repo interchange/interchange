@@ -219,7 +219,7 @@ EOF
 	  <TD ALIGN=right>
 	    Regular price <STRIKE>[item-price]</STRIKE>
 	    <BR>
-	    <B>Your price: [discount-price]<br>
+	    <B>Your price: [item-discount-price]<br>
 	    You save: [item-difference]
 	  </TD>
 	  <TD ALIGN=right>
