@@ -44,6 +44,9 @@ ui_template_name: leftonly
 [set upsell][item-data merchandising upsell_to][/set]
 [set cross_codes][item-data merchandising cross_sell][/set]
 
+  <FORM ACTION="[area order]" METHOD=POST>
+  <INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="[item-code]">
+
   <table width="70%" border="0" cellspacing="0" cellpadding="5">
   <tr valign="middle"> 
     <td align=center class="contentbar1">
@@ -72,9 +75,6 @@ ui_template_name: leftonly
 
 	  [if-item-data options o_modular]
 	  [else]
-
-	  <FORM ACTION="[area order]" METHOD=POST>
-	  <INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="[item-code]">
 
 	  <tr>
 	    <td colspan="2">
