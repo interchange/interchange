@@ -29,6 +29,13 @@
 	They can be relocated to a catalog-specific place
 	by copying to CATROOT/include.
 [/comment]
+[calcn]
+unless ($CGI->{new} || $CGI->{ui_name} =~ /\S/) {
+	$CGI->{new} = 1;
+	$Tag->error({name => 'ui_name', set => 'Please supply name'});
+}
+return;
+[/calcn]
 [if cgi new]
 <form action="[area __UI_BASE__/content_editor]">
 <table width="60%">
@@ -39,6 +46,7 @@
 	<td>
 		[set page_name_click]
 			[calc]
+				return unless $CGI->{ui_name} =~ /\S/;
 				$CGI->{ui_name} =~ s/^\s+//;
 				$CGI->{ui_name} =~ s/\s+$//;
 				if($CGI->{ui_type} eq 'page') {
