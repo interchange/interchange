@@ -1,6 +1,6 @@
 # Error.pm - Handle Interchange error pages and messages
 # 
-# $Id: Error.pm,v 1.3.6.5 2001-02-14 05:03:55 jon Exp $
+# $Id: Error.pm,v 1.3.6.6 2001-02-26 00:59:23 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -37,7 +37,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 1.3.6.5 $, 10);
+$VERSION = substr(q$Revision: 1.3.6.6 $, 10);
 
 my $wantref = 1;
 
@@ -112,9 +112,11 @@ EOF
 sub full_dump {
 	my $out = minidump();
 	local($Data::Dumper::Indent) = 2;
-	$out .= "###### ENVIRONMENT     #####\n";
-	$out .= ::uneval(::http()->{env});
-	$out .= "\n###### END ENVIRONMENT #####\n";
+	unless(caller() eq 'Vend::SOAP') {
+		$out .= "###### ENVIRONMENT     #####\n";
+		$out .= ::uneval(::http()->{env});
+		$out .= "\n###### END ENVIRONMENT #####\n";
+	}
 	$out .= "###### CGI VALUES      #####\n";
 	$out .= ::uneval(\%CGI::values);
 	$out .= "\n###### END CGI VALUES  #####\n";
