@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.6 2001-08-02 13:28:04 racke Exp $
+# $Id: Interpolate.pm,v 2.7 2001-08-06 15:08:27 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.7 $, 10);
 
 @EXPORT = qw (
 
@@ -2490,6 +2490,8 @@ sub tag_perl {
 
 	$body =~ tr/\r//d if $Global::Windows;
 
+	$Items = $Vend::Items;
+
 	if(! $MVSAFE::Safe) {
 		$result = eval($body);
 	}
@@ -3609,6 +3611,8 @@ sub tag_calc {
 					"Attempt to interpolate perl/ITL from RPC, no permissions."
 					);
 	}
+
+	$Items = $Vend::Items;
 
 	if($MVSAFE::Safe) {
 		$result = eval($body);
