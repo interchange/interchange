@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.35 2002-10-09 14:24:58 mheins Exp $
+# $Id: DBI.pm,v 2.36 2002-10-27 04:18:33 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.35 $, 10);
+$VERSION = substr(q$Revision: 2.36 $, 10);
 
 use strict;
 
@@ -1971,7 +1971,7 @@ sub auto_config {
 	my $string = shift;
 	my ($dsn, $user, $pass) = Text::ParseWords::shellwords($string);
 	my $handle = DBI->connect($dsn, $user, $pass)
-		or ::logDebug(errmsg("DatabaseAuto DSN '%s' does not connect.", $dsn));
+		or ::logDebug(::errmsg("DatabaseAuto DSN '%s' does not connect.", $dsn));
 	my $schema;
 	my @tabs;
 	my @out;
