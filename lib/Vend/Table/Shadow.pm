@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.27 2003-04-03 21:30:22 racke Exp $
+# $Id: Shadow.pm,v 1.28 2003-04-04 12:50:20 racke Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.27 $, 10);
+$VERSION = substr(q$Revision: 1.28 $, 10);
 
 # TODO
 #
@@ -292,18 +292,31 @@ sub reset {
 }
 
 sub _parse_config_line {
-	my ($d, $val) = @_;
+	my ($d, $p, $val) = @_;
 	my @f = split(/\s+/, $val);
 	my %parms;
+	my %map_global_options = (share => 0);
 	my %map_options = (fallback => 1);
 	my ($map_table, $map_column);
-			
-	if (@f < 2) {
-		Vend::Config::config_error("At least two parameters needed for MAP.");
-	} elsif (@f == 2) {
-		@f = ($f[0], 'default', $f[1]);
-	}
 
+	::logError("Calling config: $p $val");
+	if (@f < 2) {
+		Vend::Config::config_error("At least two parameters needed for $p.");
+	}
+	
+	if ($p eq 'MAP_OPTIONS') {
+		if ($f[0] eq 'share') {
+			if (@f != 3) {
+				Vend::Config::config_error("Two parameters needed for MAP option share");
+			}
+			$d->{MAP_OPTIONS}->{share}->{$f[1]} = $f[2];
+		} else {
+			Vend::Config::config_error("Unknown MAP option $f[0]");
+		}
+	} elsif ($p ne 'MAP') {
+		Vend::Config::config_error("Unknown MAP directive $p");
+	}
+	
 	my $field = shift @f;
 
 	if (@f % 2) {
@@ -480,6 +493,16 @@ sub _map_column {
 	}
 
 	return $value;
+}
+
+sub _shared_databases {
+	my ($s) = @_;
+	
+	if ($s->[$CONFIG]->{MAP_OPTIONS}->{share}) {
+		my $tables = $s->[$CONFIG]->{MAP_OPTIONS}->{share}->{$::Scratch->{mv_locale}};
+		::logError ("Tables: $tables");
+		return split(/[\s,]+/, $tables);
+	}
 }
 
 1;
