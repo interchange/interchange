@@ -15,6 +15,12 @@
 	return;
 [/calc]
 
+<BLOCKQUOTE>
+	<B>Dire warning</B>: If you don't know what you are doing, 
+	please don't set this. It will change the order number sequence
+	on the live catalog, which should rarely be done.
+</BLOCKQUOTE>
+	
 [table-editor 
 	wizard=1
 	no_top=1
@@ -22,6 +28,7 @@
 	mv_todo=return
 	left_width=100
 	table_width=500
+	no-meta=1
 
 	ui_wizard_fields="new_order_number"
 	mv_nextpage="__UI_BASE__/genconfig"
