@@ -1,19 +1,22 @@
 # Copyright 2002-2004 Interchange Development Group (http://www.icdevgroup.org/)
 # Copyright 1996-2002 Red Hat, Inc.
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: convert_date.filter,v 1.3 2004-10-19 10:03:51 docelic Exp $
+# $Id: strftime.filter,v 1.1 2004-10-19 10:03:51 docelic Exp $
 
-CodeDef convert_date Filter
-CodeDef convert_date Routine <<EOR
+CodeDef strftime Filter
+CodeDef strftime Routine <<EOR
 sub {
 	my $time = shift(@_);
-	# Don't convert nothing to something
-	return '' unless $time;
 	shift(@_);
 	my $fmt = shift(@_);
 	while(my $add = shift(@_)) {
 		$fmt .= " $add";
 	}
-	return $Tag->convert_date({ fmt => $fmt, body => $time});
+	if($fmt) {
+		return POSIX::strftime($fmt, localtime($time));
+	}
+	else {
+		return scalar localtime($time);
+	}
 }
 EOR

@@ -1,0 +1,17 @@
+# Copyright 2002-2004 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 1996-2002 Red Hat, Inc.
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: upload.filter,v 1.1 2004-10-19 10:03:51 docelic Exp $
+
+CodeDef upload Filter
+CodeDef upload Routine <<EOR
+sub {
+	my ($fn, $vn) = @_;
+	if( tag_value_extended($vn, { test => 'isfile', })) {
+		return tag_value_extended($vn, { file_contents => 1 });
+	}
+	else {
+		return $fn;
+	}
+}
+EOR

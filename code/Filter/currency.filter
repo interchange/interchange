@@ -1,0 +1,13 @@
+# Copyright 2002-2004 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 1996-2002 Red Hat, Inc.
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: currency.filter,v 1.1 2004-10-19 10:03:51 docelic Exp $
+
+CodeDef currency Filter
+CodeDef currency Routine <<EOR
+sub {
+	my ($val, $tag, $locale) = @_;
+	my $convert = $locale ? 1 : 0;
+	return Vend::Util::currency($val, 0, $convert, { locale => $locale });
+}
+EOR

@@ -1,0 +1,11 @@
+# Copyright 2002-2004 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 1996-2002 Red Hat, Inc.
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: encode_entities.filter,v 1.1 2004-10-19 10:03:51 docelic Exp $
+
+CodeDef encode_entities Filter
+CodeDef encode_entities Routine <<EOR
+sub {
+	return HTML::Entities::encode(shift, $ESCAPE_CHARS::std);
+}
+EOR

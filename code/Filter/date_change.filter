@@ -1,0 +1,36 @@
+# Copyright 2002-2004 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 1996-2002 Red Hat, Inc.
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: date_change.filter,v 1.1 2004-10-19 10:03:51 docelic Exp $
+
+CodeDef date_change Filter
+CodeDef date_change Routine <<EOR
+sub {
+	my $val = shift;
+	$val =~ s/\0+//g;
+	return $val 
+		unless $val =~ m:(\d+)[-/]+(\d+)[-/]+(\d+):;
+	my ($yr, $mon, $day);
+
+	if (length($1) == 4) {
+	# MySQL date style 2003-03-20
+		($yr, $mon, $day) = ($1, $2, $3);
+	} else {
+		($yr, $mon, $day) = ($3, $1, $2);
+	}
+
+	my $time;
+	$val =~ /:(\d+)$/
+		and $time = $1;
+	if(length($yr) < 4) {
+		$yr =~ s/^0//;
+		$yr = $yr < 50 ? $yr + 2000 : $yr + 1900;
+	}
+	$mon =~ s/^0//;
+	$day =~ s/^0//;
+	$val = sprintf("%04d%02d%02d", $yr, $mon, $day);
+	return $val unless $time;
+	$val .= sprintf('%04d', $time);
+	return $val;
+}
+EOR

@@ -1,0 +1,16 @@
+# Copyright 2002-2004 Interchange Development Group (http://www.icdevgroup.org/)
+# Copyright 1996-2002 Red Hat, Inc.
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: restrict_html.filter,v 1.1 2004-10-19 10:03:51 docelic Exp $
+
+CodeDef restrict_html Filter
+CodeDef restrict_html Routine <<EOR
+sub {
+	my $val = shift;
+	shift;
+	my %allowed;
+	$allowed{lc $_} = 1 for @_;
+	$val =~ s{<(/?(\w[-\w]*)[\s>])}{ ($allowed{lc $2} ? '<' : '&lt;') . $1 }ge;
+	return $val;
+}
+EOR
