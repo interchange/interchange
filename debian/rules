@@ -62,7 +62,8 @@ install: build
 	rm $(TMP)/usr/lib/interchange/interchange.cfg.dist
 
 	mkdir -p $(TMP)/usr/sbin
-	cd $(TMP)/usr/sbin && ln -s ../lib/interchange/bin/interchange interchange
+	cp debian/interchange.wrapper $(TMP)/usr/sbin/interchange
+	cp debian/makecat.wrapper $(TMP)/usr/sbin/makecat
 # Drop scripts into bin directory
 	mkdir -p $(TMP)/usr/bin
 	mv $(TMP)/usr/lib/interchange/bin/makecat $(TMP)/usr/bin

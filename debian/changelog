@@ -1,4 +1,4 @@
-interchange (4.6.0-1.5) unstable; urgency=low
+interchange (4.6.0-1.6) unstable; urgency=low
 
   * upstream patches
   * pragma substitute_table_image added
@@ -16,8 +16,9 @@ interchange (4.6.0-1.5) unstable; urgency=low
   * profile check de_postcode added
   * protect currency against leaking locale
   * imagehelper widget fix
+  * wrapper for interchange and makecat added
   
- -- Stefan Hornburg <racke@linuxia.de>  Mon,  6 Nov 2000 15:20:31 +0100
+ -- Stefan Hornburg <racke@linuxia.de>  Sun, 19 Nov 2000 19:06:47 +0100
 
 interchange (4.6.0-1) unstable; urgency=low
 

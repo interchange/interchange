@@ -1,0 +1,3 @@
+#! /bin/sh -e
+
+/usr/lib/interchange/bin/makecat -c makecat.cfg $@

@@ -25,8 +25,7 @@ case "$1" in
 	echo -n "Starting $DESC: "
 	start-stop-daemon --start --quiet --pidfile /var/run/interchange/$NAME.pid \
 		--chuid $USER --exec $DAEMON -- --serve $MODE \
-        -f /etc/interchange/interchange.cfg \
-        --confdir /var/run/interchange
+        -f /etc/interchange/interchange.cfg
 	;;
   stop)
 	echo -n "Stopping $DESC: "
@@ -60,8 +59,7 @@ case "$1" in
 
     start-stop-daemon --start --quiet --pidfile /var/run/interchange/$NAME.pid \
 		--chuid $USER --exec $DAEMON -- --serve $MODE \
-        -f /etc/interchange/interchange.cfg \
-        --confdir /var/run/interchange
+        -f /etc/interchange/interchange.cfg
     ;;
   *)
 	N=/etc/init.d/$NAME
