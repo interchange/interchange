@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.47 2001-05-25 17:04:43 jon Exp $
+# $Id: Config.pm,v 1.25.2.48 2001-06-06 10:20:57 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -98,7 +98,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.47 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.48 $, 10);
 
 my %CDname;
 
@@ -2844,11 +2844,11 @@ my %tagCanon = ( qw(
 	replacehtml		replaceHTML
 	required		Required
 	routine			Routine
-
+	version			Version
 ));
 
 
-my %tagAry 	= ( qw! Order 1 Required 1 ! );
+my %tagAry 	= ( qw! Order 1 Required 1 Version 1 ! );
 my %tagHash	= ( qw!
 				replaceAttr	1
 				Implicit	1
