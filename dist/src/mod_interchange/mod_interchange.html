@@ -1,0 +1,56 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <TITLE>Module mod_interchange</TITLE>
+</HEAD>
+<BODY>
+
+<H1>Module mod_interchange</H1>
+
+<H2>Interchange link module</H2>
+
+<p>This module replaces the <tt>tlink</tt> and <tt>vlink</tt> programs
+that come with <a href="http://developer.akopia.com/">Interchange</a>.</p>
+
+<P>This modules requires Apache 1.3.6 or greater, and works with any
+version of Interchange (back to MiniVend 3.12).</p>
+
+<P>&nbsp;</P>        
+
+<P><A href="#example">Configuration example</A></p>
+
+<H2>Directives</H2>
+
+<ul>
+<li><A href="#server">InterchangeServer</A></li>
+</ul>
+
+<hr>
+<h2>
+<A name="server"></A>InterchangeServer</H2>
+<B>Syntax:</B> InterchangeServer <I>address</I>
+<BR><B>Context:</B> Directory
+<BR><B>Override:</B> None
+<BR><B>Status:</B> Extension
+
+<p>Specifies the way to connect to the Interchange server.</p>
+
+<HR>
+<H2>
+<A NAME="example"></A>Example</H2>
+Here is an example UNIX configuration:
+
+<PRE>&lt;Location /store&gt;
+   SetHandler interchange-handler
+   InterchangeServer /var/run/interchange/socket
+&lt;/Location&gt;</PRE>
+
+and here is an INET example:
+
+<PRE>&lt;Location /store&gt;
+   SetHandler interchange-handler
+   InterchangeServer ic.host.com:7786
+&lt;/Location&gt;</PRE>
+
+</body>
+</html>

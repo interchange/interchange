@@ -1,3 +1,12 @@
+Interchange 4.6.4
+
+* Added mod_interchange to the standard Interchange distribution.
+  It is the direct descendant of mod_minivend, created by Francis
+  J. Lacoste <francis.lacoste@iNsu.com> at iNsu Innovations Inc.
+  in 1999. With Francis's blessing, we're taking over maintenance of
+  the module. Thanks, Francis!
+ 
+
 Interchange 4.6.3
 
 * Fixed a bad bug that kept product options from working right. A bugfix
