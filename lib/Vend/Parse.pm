@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12.2.1 2000-11-30 02:45:49 heins Exp $
+# $Id: Parse.pm,v 1.12.2.2 2000-12-11 01:30:42 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,12 +27,12 @@
 
 package Vend::Parse;
 
-# $Id: Parse.pm,v 1.12.2.1 2000-11-30 02:45:49 heins Exp $
+# $Id: Parse.pm,v 1.12.2.2 2000-12-11 01:30:42 heins Exp $
 
 require Vend::Parser;
 
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.12.2.1 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.12.2.2 $ =~ /(\d+)\.(\d+)/);
 
 use Safe;
 use Vend::Util;
@@ -44,7 +44,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12.2.1 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.2 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -58,6 +58,7 @@ my(@SavedSearch, @SavedCode, @SavedDB, @SavedWith, @SavedItem);
 my %PosNumber =	( qw!
                     
 				and              1
+				attr_list        1
                 accessories      2
                 area             2
 				banner           1
@@ -136,6 +137,7 @@ my %PosNumber =	( qw!
 my %Order =	(
 
 				accessories		=> [qw( code arg )],
+				attr_list		=> [qw( hash )],
 				area			=> [qw( href arg )],
 				banner          => [qw( category )],
 				bounce			=> [qw( href if )],
@@ -200,6 +202,7 @@ my %Order =	(
 				setlocale		=> [qw( locale currency )],
 				set				=> [qw( name )],
 				seti			=> [qw( name )],
+				tree			=> [qw( table master subordinate start )],
 				tmp 			=> [qw( name )],
 				'shipping'		=> [qw( mode )],
 				'handling'		=> [qw( mode )],
@@ -263,6 +266,7 @@ my %addAttr = (
                     log             1
 					time			1
 					timed_build     1
+                    tree            1
                     try             1
 					update          1
 					userdb          1
@@ -274,6 +278,7 @@ my %addAttr = (
 my %hasEndTag = (
 
 				qw(
+                        attr_list       1
                         calc            1
 						catch           1
                         currency        1
@@ -301,6 +306,7 @@ my %hasEndTag = (
                         strip           1
                         tag             1
                         log             1
+                        tree            1
                         try             1
                         tmp             1
                         time			1
@@ -409,6 +415,7 @@ my %PosRoutine = (
 my %Routine = (
 
 				accessories		=> \&Vend::Interpolate::tag_accessories,
+				attr_list		=> \&Vend::Interpolate::tag_attr_list,
 				area			=> \&Vend::Interpolate::tag_area,
 				banner			=> \&Vend::Interpolate::tag_banner,
 				bounce          => sub { return '' },
@@ -511,6 +518,7 @@ my %Routine = (
 									},
 				tag				=> \&Vend::Interpolate::do_tag,
 				tmp				=> \&Vend::Interpolate::set_tmp,
+				tree			=> \&Vend::Interpolate::tag_tree,
 				try				=> \&Vend::Interpolate::try,
 				'time'			=> \&Vend::Interpolate::mvtime,
 				timed_build		=> \&Vend::Interpolate::timed_build,
@@ -525,6 +533,7 @@ my %Routine = (
 my %attrAlias = (
 	 counter        => { 'name' => 'file' },
 	 query          => { 'query' => 'sql' },
+	 tree          	=> { 'sub' => 'subordinate' },
 	 perl          	=> { 'table' => 'tables' },
 	 mvasp         	=> { 'table' => 'tables' },
 	 price         	=> { 'base' => 'mv_ib' },
@@ -1526,10 +1535,27 @@ sub _find_tag {
 			$val = $2;
 			HTML::Entities::decode($val);
 		# or quoted by " or ' 
-		} elsif ($$buf =~ s|(^=\s*([\"\'])(.*?)\2\s*)||s) {
+		} elsif ($$buf =~ s~(^=\s*([\"\'\`\|])(.*?)\2\s*)~~s) {
 			$eaten .= $1;
+			my $q = $2;
 			$val = $3;
 			HTML::Entities::decode($val);
+			if ($q eq "`") {
+				$val = Vend::Interpolate::tag_calc($val);
+			}
+			else {
+				$q eq '|'
+			    	and do {
+						$val =~ s/^\s+//;
+						$val =~ s/\s+$//;
+					};
+				$val =~ /__[A-Z]\w*[A-Za-z]__|\[.*\]/s
+					and do {
+						my $p = new Vend::Parse;
+						$p->parse($val);
+						$val = $p->{OUT};
+					};
+			}
 		# truncated just after the '=' or inside the attribute
 		} elsif ($$buf =~ m|^(=\s*)$| or
 				 $$buf =~ m|^(=\s*[\"\'].*)|s) {
