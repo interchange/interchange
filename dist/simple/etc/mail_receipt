@@ -1,7 +1,7 @@
 [if value email_copy]
 Sending email copy of order [value mv_order_number] to [value email]: [email to="[value email]"
         subject="Thank you for your order [value mv_order_number]!"
-        from=|__COMPANY__ Customer Service <__ORDERS_TO__>| ]
+        from=|"__COMPANY__ Customer Service" <__ORDERS_TO__>| ]
 Dear __COMPANY__ customer,
 
 Thank you for your order #[value mv_order_number], it is being electronically

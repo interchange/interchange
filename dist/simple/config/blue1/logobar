@@ -124,12 +124,12 @@
 		<TD __HEADERBG__ VALIGN=MIDDLE ALIGN=left><FONT SIZE="-1" FACE="Tahoma, Arial, Helvetica">&nbsp;&nbsp;<A HREF="[area query/check_orders]">Order Status</A>
 		</TD>
 		</TR>
-	[if type=data term="__UI_ACCESS_TABLE__::username::[data session username]"]
+	[if session login_table eq '__UI_ACCESS_TABLE__']
 		<TR>
 		<TD COLSPAN=2><HR></TD>
 		</TR>
 		<TR>
-		<TD WIDTH=68 __HEADERBG__ VALIGN=MIDDLE ALIGN=right><FONT SIZE="-1" FACE="Tahoma, Arial, Helvetica">[page admin/index]Admin</A>&nbsp;&nbsp;</TD>
+		<TD WIDTH=68 __HEADERBG__ VALIGN=MIDDLE ALIGN=right><FONT SIZE="-1" FACE="Tahoma, Arial, Helvetica">[page __UI_BASE__/index]Admin</A>&nbsp;&nbsp;</TD>
 		<TD __HEADERBG__ VALIGN=MIDDLE ALIGN=left><FONT SIZE="-1" FACE="Tahoma, Arial, Helvetica">&nbsp;&nbsp;<A HREF="[area __UI_BASE__/orderstats]">Reports</A>
 		</TD>
 		</TR>

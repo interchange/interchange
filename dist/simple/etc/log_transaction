@@ -2,6 +2,8 @@
 [seti transaction_record]
 [tag flag write]transactions orderline userdb inventory[/tag]
 [if !session logged_in]
+[or session login_table ne 'userdb']
+	[if session logged_in] [userdb logout] [/if]
 	[set auto_create]1[/set]
 	[if type=explicit compare=|
 		[userdb
