@@ -1,6 +1,6 @@
 # Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 2.4 2002-01-16 02:28:25 jon Exp $
+# $Id: Scan.pm,v 2.5 2002-01-30 22:01:00 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -29,7 +29,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 
 use strict;
 use Vend::Util;
@@ -261,7 +261,6 @@ sub find_search_params {
 		($var,$val) = split /=/, $_, 2;
 		next unless defined $Scan{$var};
 		$val =~ s!::!/!g;
-		$val =~ s/%([A-Fa-f0-9][A-Fa-f0-9])/chr(hex($1))/ge;
 		$c->{$Scan{$var}} = defined $c->{$Scan{$var}}
 							? ($c->{$Scan{$var}} . "\0$val" )
 							: $val;
