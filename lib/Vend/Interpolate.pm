@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.97 2001-07-15 04:12:15 jon Exp $
+# $Id: Interpolate.pm,v 1.40.2.98 2001-07-15 18:11:42 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.97 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.98 $, 10);
 
 @EXPORT = qw (
 
@@ -7183,6 +7183,99 @@ sub fly_tax {
 	return $amount * $rate;
 }
 
+sub tax_vat {
+	my($type, $opt) = @_;
+#::logDebug("entering VAT");
+	my $cfield = $::Variable->{MV_COUNTRY_FIELD} || 'country';
+	my $country = $opt->{country} || $::Values->{$cfield};
+
+	return 0 if ! $country;
+	my $ctable   = $opt->{country_table}
+				|| $::Variable->{MV_COUNTRY_TABLE}
+				|| 'country';
+	my $c_taxfield   = $opt->{country_tax_field}
+				|| $::Variable->{MV_COUNTRY_TAX_FIELD}
+				|| 'tax';
+#::logDebug("ctable=$ctable c_taxfield=$c_taxfield");
+	my $type = tag_data($ctable, $c_taxfield, $country)
+		or return 0;
+#::logDebug("tax type=$type");
+	$type =~ s/^\s+//;
+	$type =~ s/\s+$//;
+	if($type =~ /^(\w+)$/) {
+		my $sfield = $1;
+		my $state  = $::Values->{$sfield};
+		return 0 if ! $state;
+		my $stable   = $opt->{state_table}
+					|| $::Variable->{MV_STATE_TABLE}
+					|| 'state';
+		my $s_taxfield   = $opt->{state_tax_field}
+					|| $::Variable->{MV_STATE_TAX_FIELD}
+					|| 'tax';
+		my $db = database_exists_ref($stable)
+			or return 0;
+		my $q = qq{
+						SELECT $s_taxfield FROM $stable
+						WHERE  $cfield = '$country'
+						AND    $sfield = '$state'
+					};
+#::logDebug("tax state query=$q");
+		my $ary;
+		eval {
+			$ary = $db->query($q);
+		};
+		if($@) {
+			::logError("error on state tax query %s", $q);
+		}
+#::logDebug("query returns " . ::uneval($q));
+		return 0 unless ref $ary;
+		return 0 unless $type = $ary->[0][0];
+	}
+	$type =~ s/^\s+//;
+	$type =~ s/\s+$//;
+	if ($type =~ /simple:(.*)/) {
+		return fly_tax($::Values->{$1});
+	}
+	elsif ($type =~ /handling:(.*)/) {
+		my @modes = grep /\S/, split /[\s,]+/, $1;
+		
+		my $cost = 0;
+		$cost += tag_handling($_) for @modes;
+		return $cost;
+	}
+	my $tax;
+#::logDebug("tax type=$type");
+	if($type =~ /^(\d+(?:\.\d+)?)\s*(\%)$/) {
+		my $rate = $1;
+		$rate /= 100 if $2;
+		my $amount = Vend::Interpolate::taxable_amount();
+		return $rate * $amount;
+	}
+	else {
+		$tax = Vend::Util::get_option_hash($type);
+	}
+#::logDebug("tax hash=" . ::uneval($tax));
+	my $pfield   = $opt->{tax_category_field}
+				|| $::Variable->{MV_TAX_CATEGORY_FIELD}
+				|| 'tax_category';
+	my @pfield = split /:+/, $pfield;
+
+	my $total = 0;
+	for my $item (@$Vend::Items) {
+		my $rhash = tag_data($item->{mv_ib}, undef, $item->{code}, { hash => 1} );
+		my $cat = join ":", @{$rhash}{@pfield};
+		my $rate = defined $tax->{$cat} ? $tax->{$cat} : $tax->{default};
+#::logDebug("item $item->{code} cat=$cat rate=$rate");
+		$rate =~ s/\s*%\s*$// and $rate /= 100;
+		next if $rate <= 0;
+		my $sub = Vend::Data::item_subtotal($item);
+#::logDebug("item $item->{code} subtotal=$sub");
+		$total += $sub * $rate;
+#::logDebug("tax total=$total");
+	}
+	return $total;
+}
+
 # Calculate the sales tax
 sub salestax {
 	my($cart) = @_;
@@ -7200,12 +7293,13 @@ sub salestax {
         tag_cart($cart);
     }
 
-
 	my $tax_hash;
-	if($Vend::Cfg->{SalesTax} =~ /\[/) {
-		my $cost = interpolate_html($Vend::Cfg->{SalesTax});
-		$Vend::Items = $save if $save;
-		return Vend::Util::round_to_frac_digits($cost);
+	my $cost;
+	if($Vend::Cfg->{SalesTax} eq 'multi') {
+		$cost = tax_vat();
+	}
+	elsif($Vend::Cfg->{SalesTax} =~ /\[/) {
+		$cost = interpolate_html($Vend::Cfg->{SalesTax});
 	}
 	elsif($Vend::Cfg->{SalesTaxFunction}) {
 		$tax_hash = tag_calc($Vend::Cfg->{SalesTaxFunction});
@@ -7216,13 +7310,17 @@ sub salestax {
 #::logDebug("looking for tax function: " . ::uneval($tax_hash));
 	}
 
-	if(! $tax_hash) {
-		my $cost = fly_tax();
+# if we have a cost from previous routines, return it
+	if(defined $cost) {
 		$Vend::Items = $save if $save;
 		return Vend::Util::round_to_frac_digits($cost);
 	}
-#::logDebug("got to tax function: " . ::uneval($tax_hash));
 
+	if(! $tax_hash) {
+		$cost = fly_tax();
+	}
+
+#::logDebug("got to tax function: " . ::uneval($tax_hash));
 	my $amount = taxable_amount();
 	my($r, $code);
 	# Make it upper case for state and overseas postal
