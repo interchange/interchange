@@ -1,8 +1,8 @@
 # Vend::MakeCat - Routines for Interchange catalog configurator
 #
-# $Id: MakeCat.pm,v 2.12 2003-08-01 15:05:54 jon Exp $
+# $Id: MakeCat.pm,v 2.13 2004-07-27 19:40:45 jon Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -111,7 +111,7 @@ use vars qw/
 	%Window
 /;
 
-$VERSION = substr(q$Revision: 2.12 $, 10);
+$VERSION = substr(q$Revision: 2.13 $, 10);
 
 $Force = 0;
 $History = 0;
@@ -238,7 +238,7 @@ EOF
 # strongly suggested that the catalog name be all lower case.
 #
 # If you are doing the demo for the first time, you might use
-# "foundation".
+# "standard".
 EOF
 
 	catroot   =>  <<EOF,
@@ -292,12 +292,12 @@ EOF
 	demotype   =>  <<EOF,
 # The type of demo catalog to use. The standard one distributed is:
 #
-#    foundation
+#    standard
 #
 # If you have defined your own custom template catalog,
 # you can enter its name.
 #
-# If you are new to Interchange, use "foundation" to start with.
+# If you are new to Interchange, use "standard" to start with.
 EOF
 
 	documentroot    =>  <<EOF,
@@ -318,7 +318,7 @@ EOF
 # directive in the catalog configuration file. This is a URL
 # fragment, not a directory or file name.
 #
-#         <IMG SRC="/foundation/images/icon.gif">
+#         <IMG SRC="/standard/images/icon.gif">
 #                   ^^^^^^^^^^^^^^^^^^
 #
 EOF
@@ -438,10 +438,10 @@ EOF
 # The URL base for the administration user interface images.
 # This is a URL fragment, not an entire URL.
 #
-#         <IMG SRC="/interchange/en_US/bg.gif">
+#         <IMG SRC="/interchange-5/en_US/bg.gif">
 #                   (leave blank)
 #
-#         <IMG SRC="/~yourname/interchange/en_US/bg.gif">
+#         <IMG SRC="/~yourname/interchange-5/en_US/bg.gif">
 #                   ^^^^^^^^^^
 #
 EOF
