@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# $Id: Search.pm,v 1.8.2.1 2000-11-25 00:21:46 heins Exp $
+# $Id: Search.pm,v 1.8.2.2 2000-11-30 02:44:58 heins Exp $
 #
 # Vend::Search -- Base class for search engines
 #
@@ -26,7 +26,7 @@
 #
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 1.8.2.1 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.2 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -256,6 +256,7 @@ EOF
 #::logDebug("i=$i, begin_string=$s->{mv_begin_string}[$i]");
 				$s->{mv_all_chars}[$i] = $all_chars
 					if ! defined $s->{mv_all_chars}[$i];
+				last COLOP if $s->{mv_search_relate} =~ s/\bor\b/or/ig;
 				if(	$s->{mv_column_op}[$i] =~ /([=][~]|rm|em)/ ) {
 					$specs[$i] = quotemeta $specs[$i]
 						if $s->{mv_all_chars}[$i];
@@ -636,7 +637,7 @@ EOF
 				undef $candidate if $candidate;
 			 }
 			 my $grp = $group[$i] || 0;
-			 my $frag = qq{($negates[$i]\$fields[$i] $start$specs[$i]$term )};
+			 my $frag = qq{$negates[$i]\$fields[$i] $start$specs[$i]$term};
 			 unless ($code[$grp]) {
 				 $code[$grp] = [ $frag ];
 			 }
@@ -647,6 +648,7 @@ EOF
 		}
 #::logDebug("coderef=" . ::uneval_it(\@code));
 
+		undef $f if $s->{mv_search_relate} =~ s/\bor\b/or/ig;
 		DOLIMIT: {
 #::logDebug(::uneval_it({%$s}));
 #::logDebug("do_limit.");
@@ -655,7 +657,7 @@ EOF
 			last DOLIMIT if $s->{mv_small_data};
 			last DOLIMIT if (grep $_, @{$s->{mv_orsearch}});
 			last DOLIMIT if defined $s->{mv_search_relate}
-							&& $s->{mv_search_relate} =~ /\bor\b/;
+							&& $s->{mv_search_relate} =~ s/\bor\b/or/i;
 			my @pats;
 #::logDebug("regex_specs=" . ::uneval($s->{regex_specs}));
 			for(@{$s->{regex_specs}}) {
