@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.42 2002-05-27 12:06:11 racke Exp $
+# $Id: Config.pm,v 2.43 2002-05-31 01:08:24 kwalsh Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.42 $, 10);
+$VERSION = substr(q$Revision: 2.43 $, 10);
 
 my %CDname;
 
@@ -3627,6 +3627,7 @@ $StdTags = <<'EOF';
 						seti
 						tag
 						tmp
+						tmp_no
 						value
 				"
 				:commerce "
@@ -3737,6 +3738,7 @@ $StdTags = <<'EOF';
 				:perl "
 					perl
 					calc
+					calc_no
 					mvasp
 				"
 				:time "
