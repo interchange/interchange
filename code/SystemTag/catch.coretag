@@ -58,6 +58,11 @@ sub {
 
 	$body =~ s/\s+$//;
 	$body =~ s/^\s+//;
+
+	if($opt->{error_set}) {
+		set_error($body, $opt->{error_set});
+	}
+	return '' if $opt->{hide};
 	return $body;
 }
 EOR
