@@ -1,6 +1,6 @@
 # Table/Common.pm: Common access methods for Interchange Databases
 #
-# $Id: Common.pm,v 1.16.4.10 2001-04-14 09:26:55 heins Exp $
+# $Id: Common.pm,v 1.16.4.11 2001-05-16 16:07:32 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -25,7 +25,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.16.4.10 $, 10);
+$VERSION = substr(q$Revision: 1.16.4.11 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -715,23 +715,9 @@ eval {
 	}
 
 	if($update) {
-#::logDebug("Updating, update=$update");
-#		$relocate = $stmt->{MV_VALUE_RELOCATE}
-#			if defined $stmt->{MV_VALUE_RELOCATE};
 		$opt->{row_count} = 1;
 		die "Reached update query without object"
 			if ! $s;
-#		if($relocate) {
-#			my $code = splice(@vals, $stmt->{MV_VALUE_RELOCATE}, 1);
-#			unshift(@vals, $code) if $update ne 'UPDATE';
-##::logDebug("relocating values col=$relocate: columns='@na' vals='@vals'"); 
-#		}
-#		elsif (!defined $relocate) {
-#			die "Must have code field to insert"
-#				 if $update eq 'INSERT';
-#			unshift(@na, $codename);
-##::logDebug("NOT defined relocating values col=$relocate: columns='@na' vals='@vals'"); 
-#		}
 		my $sub = $update eq 'DELETE'
 					? sub { delete_record($s, @_) }
 					: $s->row_settor(@na);
