@@ -90,6 +90,7 @@
 [/set]
 
 [set profile_launch]
+	orderstart=required
 [/set]
 
 [set profile_save_values]
