@@ -36,7 +36,7 @@ EOF
 		if $CGI->{campaign};
 	if ($Tag->var('UI_COMMISSION_FIELD')) {
 		$Scratch->{comm_select} = ", __UI_COMMISSION_FIELD__";
-        $Scratch->{comm_states} = [split ($Tag->var('UI_COMMISSION_STATES'))];
+        $Scratch->{comm_states} = [split (/\s+/, '__UI_COMMISSION_STATES__')];
 		if (@{$Scratch->{comm_states}}) {
 		    $Scratch->{comm_select} .= ', status';
 		}
