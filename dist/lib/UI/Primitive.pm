@@ -1,8 +1,10 @@
-#!/usr/bin/perl
+# UI::Primitive - Interchange configuration manager primitives
 
-# Copyright (C) 1998-2000 Akopia, Inc. <info@akopia.com>
+# $Id: Primitive.pm,v 1.25.4.18 2001-06-29 04:20:31 jon Exp $
 
-# Author: Michael J. Heins <heins@akopia.com>
+# Copyright (C) 1998-2001 Red Hat, Inc. <interchange@redhat.com>
+
+# Author: Michael J. Heins <mheins@redhat.com>
 # Former maintainer: Stefan Hornburg <racke@linuxia.de>
 
 # This file is free software; you can redistribute it and/or modify it
@@ -23,7 +25,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.25.4.17 $, 10);
+$VERSION = substr(q$Revision: 1.25.4.18 $, 10);
 $DEBUG = 0;
 
 use vars qw!

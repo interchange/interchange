@@ -15,7 +15,7 @@ Release: %ic_rpm_release
 Vendor: Red Hat, Inc.
 Copyright: GPL
 URL: http://interchange.redhat.com/
-Packager: Interchange Development Team <info@akopia.com>
+Packager: Interchange Development Team <interchange@redhat.com>
 Source: http://interchange.redhat.com/interchange/interchange-%{ic_version}.tar.gz
 Group: Applications/Internet
 Requires: perl >= 5.005
@@ -218,7 +218,7 @@ cat > $RPM_BUILD_ROOT%{_sbindir}/interchange <<EOF
 
 # Interchange control script
 # Calls Interchange with special locations of files as installed by RPM
-# http://developer.akopia.com/
+# http://interchange.redhat.com/
 
 RUNSTRING="%{_libdir}/interchange/bin/interchange \\
 	-configfile $ETCBASE/interchange.cfg \\

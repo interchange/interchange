@@ -4,8 +4,8 @@ Version: 1.04
 Release: 1
 Copyright: GPL
 Group: WWW/Applications
-Source: http://ftp.interchange.com/interchange/%{name}-%{version}.tar.gz
-URL: http://developer.akopia.com/
+Source: http://ftp.akopia.com/interchange/%{name}-%{version}.tar.gz
+URL: http://interchange.redhat.com/
 BuildRoot: /var/tmp/%{name}-%{version}-root
 
 #

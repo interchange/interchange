@@ -65,7 +65,7 @@ Unpack the tar file and install as normal. See the README file and other
 documentation for help. You should already be familiar with the Interchange
 developer website at:
 
-	http://developer.akopia.com
+	http://interchange.redhat.com/
 
 Make sure you don't check out your CVS copy into $HOME/interchange
 and then install on top of it, since $HOME/interchange is the default

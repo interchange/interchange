@@ -23,7 +23,7 @@ open(CONFIG, ">$ENV{MINIVEND_ROOT}/catalog.cfg")
 	or die "open: $!\n";
 
 print CONFIG <<EOF;
-MailOrderTo info\@akopia.com
+MailOrderTo  interchange\@redhat.com
 VendURL      http:/test
 SecureURL    http:/test
 Database     products products.asc DEFAULT
