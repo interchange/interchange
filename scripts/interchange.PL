@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.0
 #
-# $Id: interchange.PL,v 1.15.2.4 2000-12-03 03:39:10 heins Exp $
+# $Id: interchange.PL,v 1.15.2.5 2000-12-07 08:35:50 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -350,6 +350,13 @@ sub do_order {
     return 1;
 }
 
+my @Scan_modifiers = qw/
+		mv_ad
+		mv_an
+		mv_bd
+		mv_bd
+/;
+
 # Returns undef if interaction error
 sub update_quantity {
     return 1 unless defined  $CGI::values{"quantity0"};
@@ -357,33 +364,33 @@ sub update_quantity {
 
 	$cart = Vend::Cart::get_cart($CGI::values{mv_cartname});
 
-	if(defined $CGI::values{mv_item_option}) {
-#::logDebug("adding modifiers");
-		$Vend::Cfg->{UseModifier} = [] if ! $Vend::Cfg->{UseModifier};
-		my %seen;
-		my @mods = (grep $_ !~ /^mv_/, split /\0/, $CGI::values{mv_item_option});
-		@mods = grep ! $seen{$_}++, @mods,@{$Vend::Cfg->{UseModifier}};
-		$Vend::Cfg->{UseModifier} = \@mods;
-	}
+	my @mods;
+	@mods = @{$Vend::Cfg->{UseModifier}} if ! $Vend::Cfg->{UseModifier};
 
-	if(ref $Vend::Cfg->{UseModifier}) {
-		foreach $h (@{$Vend::Cfg->{UseModifier}}) {
-			delete @{$::Values}{grep /^$h\d+$/, keys %$::Values};
-			foreach $i (0 .. $#$cart) {
+#::logDebug("adding modifiers");
+	push(@mods, (grep $_ !~ /^mv_/, split /\0/, $CGI::values{mv_item_option}))
+		if defined $CGI::values{mv_item_option};
+
+	my %seen;
+	push @mods, grep defined $CGI::values{"${_}0"}, @Scan_modifiers;
+	@mods = grep ! $seen{$_}++, @mods;
+
+	foreach $h (@mods) {
+		delete @{$::Values}{grep /^$h\d+$/, keys %$::Values};
+		foreach $i (0 .. $#$cart) {
 #::logDebug("updating line $i modifiers: " . ::uneval($cart->[$i]));
 #::logDebug(qq{CGI value=$CGI::values{"$h$i"}});
-				$modifier = $CGI::values{"$h$i"}
-						  || (defined $cart->[$i]{$h} ? '' : undef);
-#::logDebug("modifier now $modifier");
-				if (defined($modifier)) {
-					$modifier =~ s/\0+/\0/g;
-					$modifier =~ s/\0$//;
-					$modifier =~ s/^\0//;
-					$modifier =~ s/\0/, /g;
-					$cart->[$i]->{$h} = $modifier;
-					$::Values->{"$h$i"} = $modifier;
-					delete $CGI::values{"$h$i"};
-				}
+			$modifier = $CGI::values{"$h$i"}
+					  || (defined $cart->[$i]{$h} ? '' : undef);
+#::logDebug("line $i modifier $h now $modifier");
+			if (defined($modifier)) {
+				$modifier =~ s/\0+/\0/g;
+				$modifier =~ s/\0$//;
+				$modifier =~ s/^\0//;
+				$modifier =~ s/\0/, /g;
+				$cart->[$i]->{$h} = $modifier;
+				$::Values->{"$h$i"} = $modifier;
+				delete $CGI::values{"$h$i"};
 			}
 		}
 	}
@@ -391,6 +398,7 @@ sub update_quantity {
 	foreach $i (0 .. $#$cart) {
 #::logDebug("updating line $i quantity: " . ::uneval($cart->[$i]));
 		my $line = $cart->[$i];
+		$line->{mv_ip} = $i;
     	$quantity = $CGI::values{"quantity$i"};
     	if (! defined $quantity) {
         	interaction_error("Variable '$quantity' not passed from form\n");
@@ -511,7 +519,7 @@ sub update_data {
 						 $::Scratch->{mv_data_enable},
 						 $CGI::values{mv_data_table},
 						 $CGI::values{mv_data_fields},
-						 $CGI::values{mv_data_key},
+						 $CGI::values{$CGI::values{mv_data_key}},
 				 );
 			return undef;
 		}
@@ -540,7 +548,8 @@ sub update_data {
 		$en_col =~ s/^\s+//;
 		$en_col =~ s/\s+$//;
 		my %col_present;
-		@col_present{ split /[\s\0,]+/, $en_col } = ();
+		@col_present{ grep /\S/, split /[\s\0,]+/, $en_col } = ();
+		$col_present{$prikey} = 1;
 		for(@fields, $CGI::values{mv_blob_field}, $CGI::values{mv_blob_pointer}) {
 			next unless $_;
 			next if exists $col_present{$_};
@@ -553,7 +562,7 @@ sub update_data {
 						 $::Scratch->{mv_data_enable},
 						 $CGI::values{mv_data_table},
 						 $CGI::values{mv_data_fields},
-						 $CGI::values{mv_data_key},
+						 $CGI::values{$CGI::values{mv_data_key}},
 				 );
 			return undef;
 		}
@@ -1166,7 +1175,7 @@ sub do_process {
 
 	if($CGI::values{mv_form_profile}) {
 #::logDebug("checking form profile $CGI::values{mv_form_profile} = $::Scratch->{$CGI::values{mv_form_profile}}");
-		my ($status) = check_order($CGI::values{mv_form_profile});
+		my ($status) = check_order($CGI::values{mv_form_profile}, \%CGI::values);
 #::logDebug("checked form profile=" . (defined $status ? $status : 'undef') );
 		return 1 if defined $status and ! $status;
 	}
