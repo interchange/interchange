@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.8.2
 #
-# $Id: interchange.PL,v 2.7.2.1 2001-08-14 08:39:56 jon Exp $
+# $Id: interchange.PL,v 2.7.2.2 2001-09-04 13:25:17 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -704,6 +704,7 @@ sub update_data {
 
 			# remove path components
 			$data{$file_fields[$i]}->[0] =~ s:.*/::; 
+			$data{$file_fields[$i]}->[0] =~ s:.*\\::; 
 
 			if (length ($file_paths[$i])) {
 				# real file upload
