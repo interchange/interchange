@@ -5,7 +5,6 @@ Makefile.PL
 QuickStart
 README
 README.rpm
-SPECS/interchange-4.5.5.spec
 SPECS/interchange-4.5.6.spec
 WHATSNEW
 configure
