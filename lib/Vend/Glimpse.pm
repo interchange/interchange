@@ -1,6 +1,6 @@
 # Vend::Glimpse - Search indexes with Glimpse
 #
-# $Id: Glimpse.pm,v 2.10 2004-04-09 19:39:55 jon Exp $
+# $Id: Glimpse.pm,v 2.11 2004-08-09 18:00:43 jon Exp $
 #
 # Adapted for use with Interchange from Search::Glimpse
 #
@@ -26,7 +26,7 @@ package Vend::Glimpse;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.10 $, 10);
+$VERSION = substr(q$Revision: 2.11 $, 10);
 use strict;
 use Vend::File;
 use Vend::Util;
@@ -120,6 +120,21 @@ sub search {
 	for(@searchfiles) {
 		$_ = Vend::Util::catfile($s->{mv_base_directory}, $_)
 			unless Vend::Util::file_name_is_absolute($_);
+	}
+
+	unless ($s->{mv_no_hide} or $s->{mv_hide_field}) {
+		my $dbref = $s->{table} || undef;
+		if (! $dbref) {
+			my $table = $s->{mv_field_file};
+			$table =~ s:.*/::;
+			$table =~ s/\..*//;
+			$dbref = Vend::Data::database_exists_ref($table);
+		}
+		if ($dbref) {
+			my $hf = $dbref->config('HIDE_FIELD');
+			$s->{mv_hide_field} = $hf if defined $hf;
+#::logDebug("mv_hide_field=$hf");
+		}
 	}
 
 #::logDebug("gsearch: self=" . ::Vend::Util::uneval_it({%$s}));

@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.24 2004-07-19 22:26:00 mheins Exp $
+# $Id: Search.pm,v 2.25 2004-08-09 18:00:43 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -22,7 +22,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.24 $, 10);
+$VERSION = substr(q$Revision: 2.25 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -685,6 +685,22 @@ sub get_limit {
 		$code       = "sub {\nmy \$line = shift;\n";
 	}
 	$code .= "my \@fields = \@\$line;\n";
+
+	my $have_hf;
+	if ($s->{mv_hide_field}) {
+		$s->{mv_field_hash} = create_field_hash($s) 
+			unless $s->{mv_field_hash};
+		my $hf = $s->{mv_field_hash}{$s->{mv_hide_field}};
+		if (defined $hf) {
+			$code .= "return if \$fields[$hf];\n";
+			$have_hf = 1;
+		}
+		else {
+		 	::logError("Ignoring unknown mv_hide_field specification: $s->{mv_hide_field}");
+			delete $s->{mv_hide_field};
+		}
+	}
+		
 	my $join_key;
 	$join_key = defined $s->{mv_return_fields} ? $s->{mv_return_fields}[0] : 0;
 	$join_key = 0 if $join_key eq '*';
@@ -971,6 +987,12 @@ EOF
 		$code .= <<EOF;
 	$range_code
 	$ender
+}
+EOF
+	}
+	elsif ($have_hf) {
+		$code .= <<'EOF';
+return 1;
 }
 EOF
 	}
