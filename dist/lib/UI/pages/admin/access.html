@@ -29,7 +29,7 @@
 <tr>
 <td colspan=2 bgcolor="__UI_C_INTBLOCK__">
 
-[button text="Create new administrator" src="@_UI_IMG_@admin/create.gif"]
+[button text="Create new administrator"]
 mv_nextpage=__UI_BASE__/user_edit
 user_id=NEW
 ui_hide_key=0
@@ -47,18 +47,18 @@ ui_hide_key=0
 <td bgcolor="__UI_C_INTBLOCK__" width=__UI_LEFT_WIDTH__>
 
 [if-mm advanced access=e]
-	[button name=mv_junk value="Edit administrator" src="@_UI_IMG_@admin/edit.gif"][/button]<p>
+	[button name=mv_junk value="Edit administrator"][/button]<p>
 [/if-mm]
 
 [if-mm advanced perm=v]
-[button value="Show permissions" src="@_UI_IMG_@admin/show.gif"]
+[button value="Show permissions"]
 mv_nextpage=__UI_BASE__/access_permissions
 ui_return_to=@@MV_PAGE@@
 [/button]<p>
 [/if-mm]
 
 [if-mm advanced access=e]
-[button value="Change password" src="@_UI_IMG_@admin/change_password.gif"]
+[button value="Change password"]
 mv_nextpage=__UI_BASE__/user_change_pass
 ui_hide_key=0
 [/button]
