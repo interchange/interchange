@@ -204,7 +204,7 @@ In case you were wondering, CPAN is a worldwide network of
 over 40 FTP sites which maintain the latest Perl software.
 If you don't know a URL to use, you can try:
 
-	ftp://ftp.cdrom.com/pub/perl/CPAN
+	ftp://ftp.freesoftware.com/pub/perl/CPAN
 	ftp://ftp.funet.fi/pub/languages/perl/CPAN
 
 If you have never used CPAN before, you may want to reply NO.
