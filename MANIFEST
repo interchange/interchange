@@ -458,6 +458,7 @@ dist/interchange.cfg.dist
 dist/lib/UI/Primitive.pm
 dist/lib/UI/ichelp.txt
 dist/lib/UI/icmenu.txt
+dist/lib/UI/locales/default.cfg
 dist/lib/UI/locales/de_DE.cfg
 dist/lib/UI/pages/admin/.access
 dist/lib/UI/pages/admin/.autoload
