@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.50 2003-07-12 04:47:10 mheins Exp $
+# $Id: DBI.pm,v 2.51 2003-07-14 02:35:55 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.50 $, 10);
+$VERSION = substr(q$Revision: 2.51 $, 10);
 
 use strict;
 
@@ -1602,9 +1602,9 @@ sub set_field {
 		}
 		else {
 #::logDebug("creating key '$rawkey' in table $s->[$TABLE]");
-			$s->set_row($$key);
+			$s->set_row($key);
 		}
-		}
+	}
 
 	my @args;
 	if(!$q) {
@@ -1920,9 +1920,9 @@ sub query {
 	eval {
 		if($update and $s->[$CONFIG]{Read_only}) {
 			$s->log_error(
-						"Attempt to do update on read-only table.\nquery: %s",
-						$query,
-					  );
+				"Attempt to do update on read-only table.\nquery: %s",
+				$query,
+			);
 			return undef;
 		}
 		$opt->{row_count} = 1 if $update;
