@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.17 2001-12-28 17:16:26 mheins Exp $
+# $Id: Config.pm,v 2.18 2002-01-02 23:25:57 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.17 $, 10);
+$VERSION = substr(q$Revision: 2.18 $, 10);
 
 my %CDname;
 
@@ -607,15 +607,10 @@ sub evaluate_ifdef {
 # This is what happens when ParseVariables is true
 sub substitute_variable {
 	my($val) = @_;
-	# Return after globals so can others can be contained
-	$val =~ s/\@\@([A-Z][A-Z_0-9]+[A-Z0-9])\@\@/$Global::Variable->{$1}/g
-		and return $val;
-	return $val unless $val =~ /([_%])\1/;
 	1 while $val =~ s/__([A-Z][A-Z_0-9]*?[A-Z0-9])__/$C->{Variable}->{$1}/g;
-	# YALOS (yet another level)
-	return $val unless $val =~ /%%[A-Z]/;
-	$val =~ s/%%([A-Z][A-Z_0-9]+[A-Z0-9])%%/$Global::Variable->{$1}/g;
-	$val =~ s/__([A-Z][A-Z_0-9]*?[A-Z0-9])__/$C->{Variable}->{$1}/g;
+	# Only parse once for globals so they can contain other
+	# global and catalog variables
+	$val =~ s/\@\@([A-Z][A-Z_0-9]+[A-Z0-9])\@\@/$Global::Variable->{$1}/g;
 	return $val;
 }
 
@@ -631,7 +626,7 @@ sub config {
 	my($catalog, $dir, $confdir, $subconfig, $existing, $passed_file) = @_;
 	my($d, $parse, $var, $value, $lvar);
 
-	if(ref $existing) {
+	if(ref $existing eq 'HASH') {
 #::logDebug("existing=$existing");
 		$C = $existing;
 	}
@@ -640,8 +635,6 @@ sub config {
 		$C = {};
 		$C->{CatalogName} = $catalog;
 		$C->{VendRoot} = $dir;
-		# Default to old #ifdef, #endif, #include syntax for backward compatibility
-		$C->{ConfigParseComments} = 1;
 
 		unless (defined $subconfig) {
 			$C->{ErrorFile} = 'error.log';
@@ -744,8 +737,8 @@ sub config {
 	my $read = sub {
 		my ($lvar, $value, $tie) = @_;
 		$parse = $parse{$lvar};
-					# call the parsing function for this directive
-		if($C->{ParseVariables} and $value =~ /([_%@])\1/) {
+		# call the parsing function for this directive
+		if($C->{ParseVariables} and $value =~ /(?:__|\@\@)/) {
 			save_variable($CDname{$lvar}, $value);
 			$value = substitute_variable($value);
 		}
@@ -1055,9 +1048,6 @@ sub global_config {
 	$directives = global_directives();
 
 	$Global::Structure = {} unless $Global::Structure;
-
-	# Default to old #ifdef, #endif, #include syntax for backward compatibility
-	$Global::ConfigParseComments = 1;
 
 	# Prevent parsers from thinking it is a catalog
 	undef $C;
@@ -1856,7 +1846,7 @@ my $Have_set_global_defaults;
 
 # Set the default search files based on ProductFiles setting
 # Honor a NO_SEARCH parameter in the Database structure
-# Set MV_DEFAULT_SEARCH_FILES to the {file} entry,
+# Set MV_DEFAULT_SEARCH_FILE to the {file} entry,
 # and set MV_DEFAULT_SEARCH_TABLE to the table name.
 #
 # Error out if not SubCatalog and can't find a setting.
@@ -3112,13 +3102,8 @@ sub parse_variable {
 		$c = ${"Global::$var"};
 	}
 
-	if($value =~ /\n/) {
-		($name, $param) = split /\s+/, $value, 2;
-		chomp $param;
-	}
-	else {
-		($name, $param) = split /\s+/, $value, 2;
-	}
+	($name, $param) = split /\s+/, $value, 2;
+	chomp $param;
 	$c->{$name} = $param;
 	return $c;
 }
