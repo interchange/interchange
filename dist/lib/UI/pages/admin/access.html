@@ -1,4 +1,4 @@
-[set page_title]Admin User Manager[/set]
+[set page_title]Administrator Accounts[/set]
 [set page_perm]access=l[/set]
 [set help_name]access.main[/set]
 [set icon_name]admin/icon_config.gif[/set]
@@ -83,7 +83,7 @@ mv_nextpage=@@MV_PAGE@@
 [if-mm advanced access=c]
 <tr>
 <td colspan=2 bgcolor="__UI_C_INTBLOCK__">
-<input type="submit" name="mv_click" value="Create new user">
+<input type="submit" name="mv_click" value="Create new administrator">
 </td>
 </tr>
 
@@ -95,7 +95,7 @@ mv_nextpage=@@MV_PAGE@@
 <tr>
 <td bgcolor="__UI_C_INTBLOCK__" width=__UI_LEFT_WIDTH__>
 [if-mm advanced access=e]
-	<input type="submit" value="Edit user"><br>
+	<input type="submit" value="Edit administrator"><br>
 [/if-mm]
 [if-mm advanced perm=v]
 <input type="submit" name="mv_click" value="Show permissions"><p>
@@ -104,8 +104,8 @@ mv_nextpage=@@MV_PAGE@@
 <input type="submit" name="mv_click" value="Change password"><p>
 [/if-mm]
 [if-mm advanced access=d]
-<input type="submit" name="mv_click" value="Delete user" 
- onClick="return confirm('Are you sure you want to delete this user?')">
+<input type="submit" name="mv_click" value="Delete administrator" 
+ onClick="return confirm('Are you sure you want to delete this administrator?')">
 [/if-mm]
 </td>
 

@@ -12,7 +12,7 @@
 
 [seti page_title]Edit Permissions: [cgi user_id][/seti]
 [set page_perm]access=v[/set]
-[set help_name]access.main[/set]
+[set help_name]access.permissions[/set]
 [set icon_name]admin/icon_config.gif[/set]
 
 [set process_perm]
@@ -105,7 +105,7 @@
         grouptype	=> 'Group type editor',
         matrix		=> 'Matrix editor',
         knar		=> 'Knar editor',
-        access		=> 'Access User editor',
+        access		=> 'Administrator Permissions',
         group		=> 'Access Group editor',
         perm		=> 'Permission editor',
         layout		=> 'Layout editor',
@@ -227,7 +227,7 @@ EOF
 
 <tr>
 <td bgcolor=__UI_C_INTBLOCK__ valign=top>
-<b>User manager:</b>
+<b>Administrator Permissions:</b>
 <INPUT type=hidden value="userdb=" name="yes_functions">
 <li><INPUT type=checkbox value=l name="yes_functions"$ref->{l}> View list
 <li><input type=checkbox value=v name="yes_functions"$ref->{v}> View single
