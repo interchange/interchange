@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.19 $, 10);
+$VERSION = substr(q$Revision: 1.20 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -107,7 +107,7 @@ sub ui_wrap {
 sub wrap_edit {
 	package Vend::Interpolate;
 	my $name = shift;
-::logGlobal("entering wrap_edit $name");
+#::logGlobal("entering wrap_edit $name");
 	my $ref;
 	if ($compdb->record_exists($name)) {
 		$ref = $compdb->row_hash($name);
@@ -146,7 +146,7 @@ EOF
 	}
 	$out .= qq{[calc] \$Scratch->{ui_component} = pop \@\$C_stack; return; [/calc]};
 	$out =~ s:\[comment\]\s*\$EDIT_LINK\$\s*\[/comment\]:$edit_link:;
-::logGlobal("returning wrap_edit $out");
+#::logGlobal("returning wrap_edit $out");
 	return $out;
 }
 
@@ -740,7 +740,7 @@ sub meta_display {
 		if($record->{options} and $record->{options} =~ /^[\w:]+$/) {
 			PASS: {
 				my $passed = $record->{options};
-::logDebug("passed = '$passed'");
+#::logDebug("passed = '$passed'");
 
 				if($passed eq 'tables') {
 					$record->{passed} = list_tables({ joiner => ',' });
@@ -749,7 +749,7 @@ sub meta_display {
 					my $total = $1;
 					my $tname = $2 || $record->{db} || $table;
 					$tname = $base_entry_value if $total eq '::';
-::logDebug("tname=$tname total=$total");
+#::logDebug("tname=$tname total=$total");
 					my $db = $Vend::Database{$tname};
 					$record->{passed} = join (',', $db->columns())
 						if $db;
@@ -796,6 +796,10 @@ sub meta_display {
 									map
 										{ $_->[1] =~ s/,/&#44;/g; $_->[0] . "=" . $_->[1]}
 									@$ary;
+				if($record->{options}) {
+					$record->{passed} =
+						join ",", $record->{options}, $record->{passed};
+				}
 				$record->{passed} = "=--no current values--"
 					if ! $record->{passed};
 			}
@@ -855,7 +859,7 @@ sub meta_display {
 			name		=> ($o->{'name'} || $record->{'name'} || $column),
 			outboard	=> ($record->{'outboard'}	|| $metakey),
 			passed		=> ($record->{'passed'}		|| undef),
-			type		=> ($record->{'type'}		|| undef),
+			type		=> ($o->{type} || $record->{'type'}		|| undef),
 			prepend		=> ($record->{'prepend'}	|| undef),
 			append		=> ($record->{'append'}		|| undef),
 		};
@@ -869,7 +873,7 @@ sub meta_display {
 		}
 #::logDebug("template=$o->{template}");
 		return $w unless $o->{template};
-#::logDebug("supposed to return template: " . ::uneval_it($record));
+#::logDebug("supposed to return template: widget=$w record=" . ::uneval_it($record));
 		return ($w, $record->{label}, $record->{help}, $record->{help_url});
 	}
 	return undef;
