@@ -137,7 +137,7 @@ return;
 [convert-date][loop-data transactions update_date][/convert-date]</TD>
 </TR>
 [loop prefix=row list="status deleted archived"]
-[display table=transactions column="[row-code]" key="[loop-code]"
+[display table=transactions column="[row-code]" key="[loop-code]" applylocale=1
 										template=|
 <TR BGCOLOR="__UI_T_ROW_ODD__">
 <TD BGCOLOR="__UI_C_TITLEBARBG__" ALIGN=right>
@@ -346,7 +346,7 @@ return;
 <table width="100%"><tr><td BGCOLOR="__UI_C_TITLEBARBG__">
 <table CELLSPACING=0 CELLMARGIN=0 WIDTH="100%">
 <TR>
-<TD ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__"><B>SKU/Description</B></TD>
+<TD ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__"><B>[L]SKU[/L]/[L]Description[/L]</B></TD>
 <TD BGCOLOR="__UI_T_ROW_ODD__">
 [L]SKU[/L]: [loop-data orderline sku], [loop-data orderline quantity]@[filter %.2f][loop-data orderline price][/filter] = [currency][loop-data orderline subtotal][/currency]<BR>
 [loop-data orderline description]
@@ -371,7 +371,7 @@ return;
 <TR>
 <TD ALIGN=RIGHT>&nbsp;</TD>
 <TD BGCOLOR="__UI_T_ROW_ODD__">
-<INPUT TYPE=submit VALUE="Update status of line [loop-increment]">
+<INPUT TYPE=submit VALUE="[msg arg.0="[loop-increment]"]Update status of line %s[/msg]">
 </TD>
 </table>
 </td></tr></table>
