@@ -1,0 +1,43 @@
+code	mgroup	msort	inactive	page	form	name	description	extended
+001		001				Store Admin		
+002		002		admin/order		Orders		
+003	full	003		admin/entry		Order entry		
+004		004						
+005	full	005		admin/orderstats		Order stats		
+006	full	006		admin/trafficstats		Traffic stats		
+007	full	007		admin/affiliates		Affiliates		
+008	full	008						
+009		009		admin/item		Items		
+010		010				<hr noshade size=1>		
+011		011				Site Design		
+012		012		admin/layout		Site Layout		
+013		013		admin/page		Page Edit		
+014		014		admin/regenerate		Generate static		
+015		015		admin/build_related		Build related		
+016		016		admin/search_wizard		Search Builder		
+017		017		admin/button_builder		Button Builder		
+018		018		admin/menu_editor		Menu Builder	Create and edit quick menus with a graphical UI	
+019		019				<hr noshade size=1>		
+020		020				Technical Admin		
+021		021		admin/tax		Tax		
+022		022		admin/ship		Shipping		
+023		023		admin/payment		Payment		
+024		024						
+025		025		admin/file_transfer		File transfer		
+026		026		admin/auto_wizard		Wizard		
+027		027						
+028		028		admin/gentable		Direct Table Edit		
+029		029		admin/import_table		Table import		
+030		030		admin/export_table		Table export		
+031		031						
+032		032		admin/access		Administrators		
+033	full	033		admin/group		Admin Groups		
+034	full	034		admin/access_permissions		Permissions		
+035		035						
+036		036		admin/env_vars		Environment		
+037		037		admin/preferences		Preferences		
+038	full	038		admin/flex_select	mv_data_table=variable&page_title=Knar%20editor&ui_meta_specific=1&help_name=knar.main	Knar editor		
+039		039				<hr noshade size=1>		
+040		040		index		<b>Go to catalog</b>		
+041		041		admin/login		<b>Logout</b>		
+042		042		admin/reconfig		<b>Apply Changes</b>		
