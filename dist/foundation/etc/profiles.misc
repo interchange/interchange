@@ -1,0 +1,7 @@
+__NAME__		contact_form
+name=required required
+email=email valid email address needed
+message=required required
+&success=../special_pages/send_contact_form
+&fail=contact_form
+__END__

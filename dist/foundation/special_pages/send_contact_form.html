@@ -1,0 +1,20 @@
+[email
+to="__EMAIL_SERVICE__"
+from="[value name] <[value email]>"
+Subject="[L]Message from visitor to online store[/L]"
+]
+[L]Name[/L]: [value name][if value phone]
+[L]Phone[/L]: [value phone]
+
+[L]Message[/L]:
+[value message]
+
+------
+
+[if session logged_in][L]Customer ID[/L]: [data session username]
+[/if][L]Remote Host[/L]: [env REMOTE_ADDR]
+[L]Client Browser[/L]: [env HTTP_USER_AGENT]
+[/email]
+
+[set message_sent]1[/set]
+[bounce page=contact_form]
