@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.22 2000-09-25 15:31:32 heins Exp $
+# $Id: Config.pm,v 1.23 2000-10-04 19:04:15 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -103,7 +103,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.22 $, 10);
+$VERSION = substr(q$Revision: 1.23 $, 10);
 
 my %CDname;
 
@@ -205,7 +205,7 @@ sub config_error {
 			$Vend::config_line,
 	);
     if ($Vend::ExternalProgram) {
-		warn "$msg\n";
+		warn "$msg\n" unless $Vend::Quiet;
 	}
 	else {
 		::logGlobal({level => 'warn'}, $msg);
@@ -2248,6 +2248,7 @@ sub get_configdb {
 	my ($var, $value) = @_;
 	my ($table, $file, $type);
 	unless ($C->{Database}{$value}) {
+		return if $Vend::ExternalProgram;
 		($table, $file, $type) = split /\s+/, $value, 3;
 		$file = "$table.txt" unless $file;
 		$type = 'TAB' unless $type;
@@ -2268,6 +2269,7 @@ sub get_configdb {
 
 	my $db;
 	unless ($db = $C->{Database}{$table}) {
+		return if $Vend::ExternalProgram;
 		my $err = $@;
 		config_warn(
 			errmsg("Bad $var '%s': %s", $table, $err)
@@ -2294,6 +2296,7 @@ sub parse_routeconfig {
 
 	my ($db, $table) = get_configdb($var, $value);
 
+	return '' if ! $db;
 
 	my ($k, @f);	# key and fields
 	my @l;			# refs to locale repository
@@ -2323,6 +2326,7 @@ sub parse_dbconfig {
 
 	my ($db, $table) = get_configdb($var, $value);
 
+	return '' if ! $db;
 
 	my ($k, @f);	# key and fields
 	my @l;			# refs to locale repository
