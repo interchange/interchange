@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.18 2002-11-26 15:17:32 jon Exp $
+# $Id: Data.pm,v 2.19 2002-12-10 20:09:43 jon Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -240,7 +240,7 @@ sub database_field {
 }
 
 sub database_row {
-    my ($db, $key, $field_name) = @_;
+    my ($db, $key) = @_;
     $db = database_exists_ref($db) or return undef;
 return undef unless defined $db;
     return '' unless $db->test_record($key);
