@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.10 2001-01-19 16:11:27 heins Exp $
+# $Id: DBI.pm,v 1.25.2.11 2001-01-28 08:43:16 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.10 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.11 $, 10);
 
 use strict;
 
@@ -124,7 +124,6 @@ my %known_capability = (
 	HAS_LIMIT => {
 		mysql	=> 1,
 		Pg		=> 1,
-		Oracle	=> 1,
 	},
 	ALTER_DELETE => { 
 		mysql => 'ALTER TABLE _TABLE_ DROP _COLUMN_',
