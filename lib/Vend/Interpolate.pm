@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.35 2002-01-08 20:58:06 mheins Exp $
+# $Id: Interpolate.pm,v 2.36 2002-01-09 19:22:50 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.35 $, 10);
+$VERSION = substr(q$Revision: 2.36 $, 10);
 
 @EXPORT = qw (
 
@@ -3197,7 +3197,7 @@ sub tag_value_extended {
 	eval {
 		@ary = @ary[$ready_safe->reval( $index eq '*' ? "0 .. $#ary" : $index )];
 	};
-	::logError("value-extend $var: bad index") if $@;
+	::logError("value-extended $var: bad index") if $@;
 
 	if($opt->{filter}) {
 		for(@ary) {
