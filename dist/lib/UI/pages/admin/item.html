@@ -7,8 +7,11 @@
 [/if]
 
 
+[comment]
 <!-- sequence_edit: [cgi ui_sequence_edit] -->
 <!-- item_id_left: [cgi item_id_left] -->
+[/comment]
+
 [if cgi deleterecords]
 [if-mm function="!tables" table="[cgi mv_data_table]"]
 [set ui_error]Not allowed to delete from [cgi mv_data_table].[/set]

@@ -1,15 +1,15 @@
-[seti total_junk][perl]
+[tmp total_junk][perl tables="__UI_ACCESS_TABLE__ __UI_META_TABLE__"]
 	delete $Scratch->{violation};
 	$_ = delete $Session->{arg};
-	$Scratch->{violation} = 'No .. allowed in file name.'
+	$Scratch->{violation} = errmsg('No .. allowed in file name.')
 		if m{\.\./};
-	$Scratch->{violation} = 'No | allowed.'
+	$Scratch->{violation} = errmsg('No | allowed.')
 		if m{\|};
-	$Scratch->{violation} = 'No whitespace allowed.'
+	$Scratch->{violation} = errmsg('No whitespace allowed.')
 		if m{\s};
-	$Scratch->{violation} = 'No drive letters!'
+	$Scratch->{violation} = errmsg('No drive letters!')
 		if m{^\s*[a-zA-Z]:/};
-	$Scratch->{violation} = 'No absolute file paths allowed.'
+	$Scratch->{violation} = errmsg('No absolute file paths allowed.')
 		if s{^/}{};
 	if($Scratch->{violation}) {
 			Log (<<EOF);
@@ -25,6 +25,8 @@ EOF
 	else {
 		$Scratch->{file_to_view} = $_;
 	}
+
+	delete $Scratch->{alternate_view};
 	if(/\.gif$/i) {
 		$Scratch->{content_type} = 'image/gif';
 	}
@@ -34,6 +36,21 @@ EOF
 	elsif(/\.png$/i) {
 		$Scratch->{content_type} = 'image/png';
 	}
+	elsif(
+		/:/
+		and $Tag->if_mm('super')
+		and $Config->{SessionType} eq 'File'
+		and $sd = $Config->{SessionDatabase}
+		and $sd =~ s:^$Config->{VendRoot}/::
+		and $_ =~ m{^$sd/././(.*)}
+		and $check = $1
+		and $check !~ /\.lock$/
+		) 
+	{
+		$Scratch->{alternate_view} = "[dump-session name='$check']";
+		$Scratch->{content_type} = 'text/plain';
+		delete $Scratch->{file_to_view};
+	}
 	else {
 		$Scratch->{content_type} = 'text/plain';
 	}
@@ -42,8 +59,8 @@ EOF
 [seti ui_error][scratch violation] -- logged.[/seti]
 [bounce page="__UI_BASE__/error"]
 [else]
-[tag op=header interpolate=1]Content-Type: [scratch content_type][set content_type][/set][/tag]
+[tag op=header interpolate=1]Content-Type: [scratchd content_type][/tag]
 [/else]
 [/if]
-[/seti][file name="[scratch file_to_view]" type="[value download_conversion]"
+[/tmp][scratchd name=alternate_view interpolate=1][file name="[scratch file_to_view]" type="[value download_conversion]"
 ][goto end=1 abort=1]

@@ -22,6 +22,7 @@
 	my $imgpath = $Tag->var('UI_IMG', 1) || $Variable->{UI_IMG} || '';
 	my $template_dir = $Variable->{UI_TEMPLATE_DIR} || 'templates';
 	my $out = '';
+	my $ver = $Tag->version();
 
 	sub tmp_error {
 		my $msg = errmsg(@_);
@@ -98,6 +99,7 @@ ui_template: $t_name;
 ui_template_name: $t_name;
 ui_template_layout: $name_top, UI_CONTENT, $name_bot
 ui_template_description: $t_desc
+ui_template_version: $ver
 
 EOF
 		my $template_input;
@@ -256,8 +258,6 @@ EOF
 EOF
 
 
-	my $ver = $Tag->version();
-
 	# Find the current settings
 	if($current =~ m/
 						\[control \s+ reset \s* = \s* ["']?
@@ -295,7 +295,7 @@ EOF
 
 	my $sep_template = <<EOF;
 <tr class=rtitle>
-<td colspan=2 class=ctitle>~NAME~</td>
+<td colspan=2 class=ctitle>~NAME~ - ~DESC~<INPUT TYPE=hidden NAME="~VARNAME~" VALUE="~NAME~"</td>
 </tr>
 EOF
 
@@ -337,7 +337,9 @@ EOF
 		my @def;
 
 		my $titlebar = $sep_template;
-		$titlebar =~ s/~NAME~/$c_name - $c_label/g;
+		$titlebar =~ s/~NAME~/$c_name/g;
+		$titlebar =~ s/~DESC~/$c_label/g;
+		$titlebar =~ s/~VARNAME~/$i.ui_component/g;
 		push @controls, $titlebar;
 		my $def_string = $ref->{ui_definition};
 		$def_string =~ s/"/&quot;/g;
@@ -378,7 +380,7 @@ push @messages, "r key $_ set='$set' options=$options value=$Values->{$_} widget
 							if ! $r->{width};
 					}
 					$widget = $Tag->display( {
-									name => "ui_control_$_",
+									name => "$i.ui_control_$_",
 									type => $wtype,
 									lookup => $r->{lookup},
 									db => $r->{db},
@@ -452,12 +454,8 @@ mv_action=back
 mv_nextpage=__UI_BASE__/page_save
 [/set]
 
-[set Cancel]
-mv_nextpage=__UI_BASE__/page
-mv_todo=back
-[/set]
-
 <INPUT TYPE=submit NAME=mv_click VALUE=Preview onClick="this.form.target='page_preview'">
+<INPUT TYPE=hidden NAME=ui_return_to VALUE="__UI_BASE__/page">
 <INPUT TYPE=submit NAME=mv_click VALUE=Save onClick="this.form.target='_self'">
 <INPUT TYPE=submit NAME=mv_click VALUE=Cancel onClick="this.form.target='_self'"><br>
 <INPUT TYPE=checkbox NAME=ui_save_t_in_page VALUE=1 [cgi save_in_page]> Save template in page

@@ -202,13 +202,6 @@
 <td colspan="[calc]$Scratch->{ui_num_col} - 1[/calc]" bgcolor=__UI_C_INTBLOCK__>
 
 
-[set Cancel]
-mv_todo=back
-[return-to click]
-[/set]
-
-	[set OK]
-	[/set]
 	<B></B>&nbsp;&nbsp;&nbsp;[button text="Ok" bold=1]
 		mv_todo=set
 		[return-to click]
@@ -250,10 +243,7 @@ mv_todo=return
 [/if-mm]
 	[return-to click]
 [/button]&nbsp;&nbsp;&nbsp;
-	[button text=Cancel]
-		mv_todo=back
-		[return-to click]
-	[/button]
+	<INPUT TYPE=submit NAME=mv_click VALUE=cancel>
 	[if-mm super]
 	<BR><b><INPUT TYPE=checkbox NAME=mv_auto_export [if !scratch ui_too_large]CHECKED [/if]VALUE="[value mv_data_table]">
 		Auto-export</b>
