@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.25 2001-03-14 22:02:21 heins Exp $
+# $Id: Server.pm,v 1.8.2.26 2001-03-19 18:38:37 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.25 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.26 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -365,9 +365,18 @@ sub create_cookie {
 		$out .= " path=$path;";
 		$out .= " domain=" . $domain . ";" if $domain;
 		if (defined $expire or $Vend::Expire) {
-			$expire = $Vend::Expire unless defined $expire;
-			$out .= " expires=" .
-						strftime "%a, %d-%b-%y %H:%M:%S GMT ", gmtime($expire);
+			my $expstring;
+			if(! $expire) {
+				$expire = $Vend::Expire;
+			}
+			elsif($expire =~ /\s\S+\s/) {
+				$expstring = $expire;
+			}
+			$expstring = strftime "%a, %d-%b-%Y %H:%M:%S GMT ", gmtime($expire)
+				unless $expstring;
+			$expstring = "expires=$expstring" if $expstring !~ /^\s*expires=/i;
+			$expstring =~ s/^\s*/ /;
+			$out .= $expstring;
 		}
 		$out .= "\r\n";
 	}
