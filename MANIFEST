@@ -301,6 +301,7 @@ dist/foundation/templates/components/best
 dist/foundation/templates/components/cart
 dist/foundation/templates/components/cart_display
 dist/foundation/templates/components/cart_tiny
+dist/foundation/templates/components/category_horizontal
 dist/foundation/templates/components/category_vertical
 dist/foundation/templates/components/cross
 dist/foundation/templates/components/modular_buy
@@ -310,6 +311,7 @@ dist/foundation/templates/components/promo
 dist/foundation/templates/components/random
 dist/foundation/templates/components/saved_carts_list_small
 dist/foundation/templates/components/search_box_small
+dist/foundation/templates/components/search_box_small_top
 dist/foundation/templates/components/upsell
 dist/foundation/templates/foundation/cart
 dist/foundation/templates/foundation/regions/LEFTONLY_BOTTOM
@@ -458,8 +460,8 @@ dist/interchange.cfg.dist
 dist/lib/UI/Primitive.pm
 dist/lib/UI/ichelp.txt
 dist/lib/UI/icmenu.txt
-dist/lib/UI/locales/default.cfg
 dist/lib/UI/locales/de_DE.cfg
+dist/lib/UI/locales/default.cfg
 dist/lib/UI/pages/admin/.access
 dist/lib/UI/pages/admin/.autoload
 dist/lib/UI/pages/admin/access.html
@@ -628,7 +630,6 @@ dist/lib/UI/usertag/available_www_shipping.tag
 dist/lib/UI/usertag/backup_database.tag
 dist/lib/UI/usertag/backup_file.tag
 dist/lib/UI/usertag/base_url.tag
-dist/lib/UI/usertag/button.tag
 dist/lib/UI/usertag/check_upload.tag
 dist/lib/UI/usertag/component.tag
 dist/lib/UI/usertag/crypt.tag
@@ -670,7 +671,6 @@ dist/lib/UI/usertag/set_alias.tag
 dist/lib/UI/usertag/set_click.tag
 dist/lib/UI/usertag/substitute_file.tag
 dist/lib/UI/usertag/table_editor.tag
-dist/lib/UI/usertag/title_bar.tag
 dist/lib/UI/usertag/uneval.tag
 dist/lib/UI/usertag/unlink_file.tag
 dist/lib/UI/usertag/version.tag
