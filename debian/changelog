@@ -21,7 +21,7 @@ interchange (4.6.2-1) unstable; urgency=low
   * architecture of interchange package changed to any
   * location of global log file set by the wrapper now
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed,  7 Feb 2001 09:59:28 +0100
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed,  7 Feb 2001 19:13:41 +0100
 
 interchange (4.6.1-1) unstable; urgency=low
 
