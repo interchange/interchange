@@ -19,8 +19,7 @@
 # MA  02111-1307  USA.
 
 UserTag formel Order label name type size
-# may be should place version information on user-defined tags
-# UserTag formel Version 0.05
+UserTag formel Version 0.06
 UserTag formel addAttr
 UserTag formel Routine <<EOF
 sub {
@@ -57,7 +56,7 @@ sub {
     if ($opt->{'format'}) {
         $fmt = $opt->{'format'};
     } else {
-        $fmt = '%s %s';
+        $fmt = '%s %s %s';
     }
 
     if ($opt->{'size'}) {
@@ -141,10 +140,10 @@ sub {
 
     if ($opt->{order}) {
         # display form element first
-        sprintf ($fmt, $elhtml, $labelhtml);
+        sprintf ($fmt, $elhtml, $labelhtml, $opt->{help});
     } else {
         # display label first
-        sprintf ($fmt, $labelhtml, $elhtml);
+        sprintf ($fmt, $labelhtml, $elhtml, $opt->{help});
     }
 }
 EOF
@@ -199,7 +198,11 @@ C<value1=label1,value2=label2,...> notation.
 =item format
 
 The container format string for the label and the form element.
-The default is C<%s %s>. 
+The default is C<%s %s %s>.
+
+=item help
+
+Help text for this form element.
 
 =item maxlength
 
@@ -234,5 +237,9 @@ To display the label and the form element seperately call C<formel> twice:
 
 	[formel label=Username: name=login format="%s"]
 	[formel name=login order=1 format="%s"]
+
+You may add a help text for the form element.
+
+	[formel label=Username: name=login help="alphanumeric (5-10 characters)"]
 
 EOD
