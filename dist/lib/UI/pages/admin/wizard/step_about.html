@@ -3,9 +3,9 @@
 [set help_name]wizard.aboutus[/set]
 @_UI_STD_HEAD_@
 
-Enter the title and content to be displayed on your About Us page.
+[L WIZARD_STEP_ABOUT_PAR_1]Enter the title and content to be displayed on your About Us page.
 The <b>Content</b> section already contains sample text formatted in HTML. You can
-manipulate this text or enter all new text.
+manipulate this text or enter all new text.[/L]
 <p>
 
 [tmp default_abouttext]
@@ -13,27 +13,27 @@ manipulate this text or enter all new text.
 <tr>
   <td align="left">
     <br>
-    <B>[if value company][value company] is[else]We are[/else][/if]</B> the Internet's premier provider of ...
+    <B>[if value company][value company] [L]is[/L][else][L]We are[/L][/else][/if]</B> [L]the Internet's premier provider of[/L] ...
     </p>
 
     <p> 
-    We can be contacted at:
+    [L]We can be contacted at[/L]:
 
 	<BLOCKQUOTE>
 	[value company]<br>
 	[value address]<br>
 	[value city], [value state] [value zip]<br>
 	<BR>[if value phone]
-	Phone: [value phone]<br>
+	[L]Phone[/L]: [value phone]<br>
 	[/if][if value fax]
-	Fax: [value fax]<br>
+	[L]Fax[/L]: [value fax]<br>
 	[/if][if value tollfree]
-	Toll-free: [value tollfree]<BR>
+	[L]Toll-free[/L]: [value tollfree]<BR>
 	[/if]</blockquote>
     </p>
 
     <p>
-    If you would like further information, please contact:
+    [L]If you would like further information, please contact[/L]:
 
 	<BLOCKQUOTE>
 	<a href="mailto:[value emailinfo]">[value emailinfo]</a>
@@ -63,12 +63,12 @@ manipulate this text or enter all new text.
 
 	ui_wizard_fields="abouttitle abouttext"
 
-	label.abouttitle="Page Title"
-	help.abouttitle="Title for the page (top bar)"
+	label.abouttitle="[L]Page Title[/L]"
+	help.abouttitle="[L]Title for the page (top bar)[/L]"
 	widget.abouttitle=text
-	default.abouttitle=`'About ' . ($Values->{company} || 'Us')`
+	default.abouttitle=`errmsg("About %s", $Values->{company} || "US")`
 
-	label.abouttext="Content"
+	label.abouttext="[L]Content[/L]"
 	widget.abouttext=textarea_18_50
 	default.abouttext=`$Scratch->{default_abouttext}`
 ]
