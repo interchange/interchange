@@ -155,7 +155,7 @@ sub copyright_prompt {
 
  Interchange V$VERSION
  
-  Copyright (C) 1996-2000 Akopia, Inc. <info\@akopia.com>
+  Copyright (C) 1996-2001 Red Hat, Inc. <info\@akopia.com>
 
  Interchange is free under the terms of the GNU General Public License.
 
@@ -527,6 +527,9 @@ sub initialize {
 			my $help_make = <HELP_MAKE>;
 			close HELP_MAKE;
 			print "Generating admin help HTML\n";
+			# keep help generator quiet, since install is already too verbose
+			local *STDOUT;
+			open STDOUT, ">/dev/null";
 			eval $help_make;
 			warn("Unimportant: Error generating admin help HTML\n") if $@;
 		}
@@ -535,6 +538,7 @@ sub initialize {
 #warn "Got past install Helpfiles\n" ; #if $X{RPMBUILDDIR};
 
 		# install dist/ files from MANIFEST
+		print "Installing dist/ files\n";
 		@files = grep m:^dist/:, @files;
 		chomp(@files);
 		@files = map { s:^dist/::; $_} @files;
