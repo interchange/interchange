@@ -4,8 +4,8 @@
 	return;
 [/calc]
 [seti page_title]Administrator Edit: [cgi user_id][/seti]
+[seti page_banner]Administrator Edit: <b>[cgi user_id]</b>[/seti]
 [set ui_class]Admin[/set]
-[seti page_banner]Administrator Edit: <B>[cgi user_id]</B>[/seti]
 [set page_perm]access=v[/set]
 [set help_name]admin.edit[/set]
 [set icon_name]icon_config.gif[/set]
@@ -26,7 +26,9 @@
 [loop list="[cgi user_id]"]
 <form action="[area ui]" method="post">
 <INPUT TYPE=hidden NAME=mv_todo VALUE=back>
-<INPUT TYPE=hidden NAME=mv_nextpage VALUE=__UI_BASE__/access>
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE=[comment]
+If creating new user, go to password entry page after this.
+[/comment]"[if cgi user_id eq 'NEW']__UI_BASE__/user_change_pass[else]__UI_BASE__/access[/else][/if]">
 <INPUT TYPE=hidden NAME=mv_data_table VALUE="[value mv_data_table]">
 <INPUT TYPE=hidden NAME=mv_data_key VALUE="username">
 <INPUT TYPE=hidden NAME=mv_update_empty VALUE="1">
@@ -128,10 +130,12 @@
 		[calc]$CGI->{groups} =~ s/://g; return[/calc]
 		mv_todo=set
 	[/button]
-	[button text=Permissions]
-		mv_todo=back
-		mv_nextpage=__UI_BASE__/access_permissions
-	[/button]
+	[if cgi user_id ne 'NEW']
+		[button text=Permissions]
+			mv_todo=set
+			mv_nextpage=__UI_BASE__/access_permissions
+		[/button]
+	[/if]
 	<input type=submit value="Cancel">
 [else]
 	[button text=Back]
