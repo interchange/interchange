@@ -62,12 +62,12 @@ EOF
 
 [comment]
 Display an extra Ok/Cancel button pair if there are more than
-4 rows of input, so user doesn't have to scroll to bottom of page.
+4 input rows, so user doesn't have to scroll to bottom of page.
 [/comment]
 [perl]
-      my $linecount = (split / /, $CGI->{ui_data_fields}) - 1;
+      my $linecount = split ' ', $CGI->{ui_data_fields};
       my $out = '';
-      $out .= <<'EOF' if $linecount > 4;
+      $out = <<'EOF' if $linecount > 5;  # add one for hidden SKU field
 <TR BGCOLOR="__UI_T_ROW_EVEN__">
 <td>&nbsp;</td>
 <td align=left>
