@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.3 2001-10-11 01:34:37 mheins Exp $
+# $Id: Parse.pm,v 2.4 2001-10-18 09:34:29 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -130,7 +130,7 @@ my %PosNumber =	( qw!
 				total_cost       2
 				try              1
 				userdb           1
-				value            2
+				value            1
 				value_extended   1
 
 			! );
@@ -1206,8 +1206,9 @@ sub html_start {
 		return 1;
 	}
 
-	$attr->{'decode'} = 1 unless defined $attr->{'decode'};
-	$attr->{'reparse'} = 1 unless	defined $NoReparse{$tag}
+	$attr->{enable_html} = 1 if $Vend::Cfg->{Promiscuous};
+	$attr->{decode} = 1 unless defined $attr->{'decode'};
+	$attr->{reparse} = 1 unless	defined $NoReparse{$tag}
 								||	defined $attr->{'reparse'};
 	$attr->{'undef'} = undef;
 
@@ -1509,7 +1510,8 @@ sub start {
 		$self->{INVALID} += $p->{INVALID};
 	}
 
-	$attr->{'reparse'} = 1
+	$attr->{enable_html} = 1 if $Vend::Cfg->{Promiscuous};
+	$attr->{reparse} = 1
 		unless (defined $NoReparse{$tag} || defined $attr->{'reparse'});
 
 	my ($routine,@args);
