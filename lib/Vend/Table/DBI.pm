@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.44 2003-04-21 13:35:31 mheins Exp $
+# $Id: DBI.pm,v 2.45 2003-04-21 19:27:00 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.44 $, 10);
+$VERSION = substr(q$Revision: 2.45 $, 10);
 
 use strict;
 
@@ -178,6 +178,9 @@ my %known_capability = (
 		Oracle => "CREATE SEQUENCE _SEQUENCE_NAME_",
 		Pg => "CREATE SEQUENCE _SEQUENCE_NAME_",
 	},
+	HAS_TABLE_TYPE	 => { 
+		mysql => 1,
+	},
 	SEQUENCE_QUERY	 => { 
 		Oracle => "SELECT _SEQUENCE_NAME_.nextval FROM dual",
 		Pg => "SELECT nextval('_SEQUENCE_NAME_')",
@@ -286,6 +289,9 @@ sub create_sql {
 	my $query = "create table $tablename ( \n";
 	$query .= join ",\n", @cols;
 	$query .= "\n)\n";
+	if($config->{HAS_TABLE_TYPE} and $config->{TABLE_TYPE} ) {
+		$query =~ s/\s*$/ type=$config->{TABLE_TYPE}\n/;
+	}
 	return $query;
 }
 
