@@ -31,8 +31,19 @@ UI
 Usertags
 --------
 
-* [formel] fetches the label for the display type from the metadata if not passed
-  with the parameters.
+* new Usertag [report-table] generates an HTML table based on
+  the results of a query, with bells and whistles. Can do horizontal
+  (colspan) and vertical (rowspan) subheaders, apply any Interchange filter
+  or widget to any column, add a CSS class to any column, link cell contents
+  (and add parameters to the link based on any column in the query results),
+  add virtual columns based on internal variables (such as the line number),
+  and skip rows based on an array of toggles you specify.
+  
+  Good for making quick tables, sophisticated reports, and easy forms.
+  Written by Christopher Wenham <cwenham@synesmedia.com>.
+
+* [formel] fetches the label for the display type from the metadata 
+  if not passed with the parameters.
 
 Foundation
 ----------
