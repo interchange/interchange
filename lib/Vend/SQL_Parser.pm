@@ -1,6 +1,6 @@
 # Vend::SQL_Parser - Interchange SQL parser class
 #
-# $Id: SQL_Parser.pm,v 2.7 2003-09-15 17:26:30 mheins Exp $
+# $Id: SQL_Parser.pm,v 2.8 2004-02-19 23:06:21 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1997-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use strict;
 use Vend::Util;
 use Text::ParseWords;
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 
 sub new {
 	my $class = shift;
@@ -112,7 +112,6 @@ sub new {
 
 sub errdie {
 	my $self = shift;
-	my $msg = ::errmsg(@_);
 	my $sub;
 	if($self->{log} eq 'debug')     { $sub = \&Vend::Util::logDebug;  }
 	elsif($self->{log} eq 'global') { $sub = \&Vend::Util::logGlobal; }
@@ -214,7 +213,6 @@ sub limit {
 sub order {
 	my $s = shift;
 	return @{$s->{order}} if $s->{order};
-	my @try;
 	my @col;
 
 	my $st = $s->{order_by}
