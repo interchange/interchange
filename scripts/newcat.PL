@@ -25,8 +25,6 @@ if(! $MV::Self ) {
 
 eval 'exec $Config{perlpath} -S \$0 \${1+"\$@"}'
     if 0; # not running under some shell
-    [catalogname] must contain alphanumerics and hyphens only.
-
 EOF
 	$Special{perlpath} =~ s/\s+$//;
 }
@@ -52,7 +50,7 @@ DOIT: {
 #
 # Interchange catalog configurator with curses
 #
-# $Id: newcat.PL,v 2.4 2002-04-17 17:55:48 jon Exp $
+# $Id: newcat.PL,v 2.5 2002-06-26 22:12:26 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
