@@ -16,7 +16,15 @@ Hit action for no-content
 @_UI_STD_HEAD_@
 <!-- ----- BEGIN REAL STUFF ----- -->
 
-[perl tables="__MV_TREE_TABLE__ __ProductFiles_0__ tree [cgi qmenu_products]"]
+[seti medit_tables]
+__MV_TREE_TABLE__
+__ProductFiles_0__
+tree
+[cgi qmenu_products]
+__UI_META_TABLE__
+[/seti]
+
+[perl tables="[scratch medit_tables]"]
 	my $menupath = $Variable->{MENU_DIRECTORY} || 'include/menus';
 	@menufields = qw/code mgroup inactive msort page form name description extended/;
 
@@ -312,11 +320,11 @@ Hit action for no-content
 		}
 		$Scratch->{qmenu_data} = $filedata;
 		$Scratch->{qmenu_name} = $mn;
+		$menumeta = $Tag->meta_record("menu_editor::$mn");
 	}
 
 	my %illegal;
 	my @illegal  = qw/check msg code/;
-	my %required;
 	my %suggested = qw/
                         extended 1
                         inactive 1
@@ -345,15 +353,15 @@ Hit action for no-content
 			$illegal++;
 		}
 	}
-	@required = keys %required;
 	@suggested = keys %suggested;
-	for(@required) {
+	for(keys %required) {
 			$Tag->error({
 						set => errmsg( "Required field '%s' missing.", $_),
 					});
 			$illegal++;
 	}
 	delete $Scratch->{qmenu_data} if $illegal;
+	@required{@required} = @required;
 	return;
 [/perl]
 
@@ -374,15 +382,14 @@ Hit action for no-content
 	<B>Menu name:</B>
 	<select name=qmenu_name><option value="">--select--</option>[scratch qmenu_options]</select>
 	<input type=submit value="[L]Load[/L]">
+	[page href="__UI_BASE__/file_transfer"
+			form="
+				initial_dir=include/menus
+			"]Delete/Manage</A>
 	</form>
 [/if]
 	</td>
 	<td width="40%">
-	[page href="__UI_BASE__/file_transfer"
-			form="
-				initial_dir=include/menus
-			"]Delete/Manage files</A>
-	<br>
 	<span class=cmessage>[warnings auto=1]</span>
 	[error all=1 text="<ul class=cerror><li>%s</ul>" joiner="<li>"]
 	</td>
@@ -402,20 +409,49 @@ Hit action for no-content
 </tr>
 </table>
 
-[restrict enable="calc scratch loop image" log=none]
 <script language="JavaScript1.2">
 	var lines = new Array;
 	var initialized = 0;
 	var no_alert = 0;
 	var tree_mode = 0;
 	var extended;
+	var extra = new Array;
+	var label = new Array;
+	var widget = new Array;
 	var emodes;
 	var evalues;
 
-[calc]
+[perl reparse=0]
 	my @out;
-	for(my $i = 1; $i < @menufields; $i++) {
-		push @out, "    var \U$menufields[$i]\E = $i;";
+	my $i = 0;
+	
+	my $metabase;
+	if($menumeta) {
+		$metabase = $menumeta->{name};
+	}
+	$metabase ||= "menu_editor::$CGI->{qmenu_name}";
+	for(@menufields) {
+		push @out, "    var \U$_\E = $i;";
+		DOMETA: {
+			last DOMETA if $required{$_} or $_ eq 'code';
+			my $metaname = "${metabase}::$_";
+			my $mrecord = $Tag->meta_record($metaname)
+				or last DOMETA;
+			if(my $lab = $mrecord->{label}) {
+				push @out, "    label[$i] = " . $Tag->jsquote($lab) . ';';
+			}
+			if(my $type = $mrecord->{type}) {
+				$mrecord->{name} = "ext_$_";
+				$mrecord->{extra} = qq{ onChange="form_changed(1)"};
+				my $wid = $Tag->display( {
+										meta => $mrecord,
+										override => 1,
+										default => '',
+										} );
+				push @out, "    widget[$i] = " . $Tag->jsquote($wid) . ';';
+			}
+		}
+		$i++;
 	}
 
 	for (@suggested) {
@@ -429,8 +465,9 @@ Hit action for no-content
 
 	push @out, "\tlines[0] = ['" . join("', '", @menufields) . "'];";
 	return join "\n", @out;
-[/calc]
+[/perl]
 
+[restrict enable="perl calc scratch loop image" log=none]
 [loop head-skip=1 lr=1 list="[scratch qmenu_data]"][loop-sub jsline]
 sub {
 	$loopname = shift;
@@ -731,38 +768,12 @@ sub {
 		return;
 	}
 
-	function extended_name (str) {
+	function ext_name (str) {
 		var pos = str.indexOf('_') + 1;
 		if(pos < 1) 
 			return '';
 		str = str.substr(pos);
 		return str;
-	}
-
-	function find_extended () {
-		var el;
-		extended = new Array;
-		emodes = new Array;
-		var i;
-		for(i = 0; i < form.elements.length; i++) {
-			var str = form.elements[i].name;
-			if(str.indexOf('extended_') == 0) {
-				var len = extended.length;
-				extended.length = len + 1;
-				emodes.length = len + 1;
-				extended[len] = form.elements[i];
-				emodes[len] = 0;
-				var nm = extended_name(str);
-				var j;
-				for(j = 1; j < CHECK; j++) {
-					if(lines[0][j] == nm) {
-						emodes[len] = j;
-						break;
-					}
-				}
-// alert("Extended field name is " + nm + ", mode is " + emodes[len]);
-			}
-		}
 	}
 
 	function set_mode (mode) {
@@ -797,7 +808,6 @@ sub {
 		for(i = 1; i < lines.length; i++) {
 			rewrite(i);
 		}
-		setOutput();
 		return;
 	}
 
@@ -980,7 +990,6 @@ sub {
 		rewrite(len);
 		for(i = idx; i <= len; i++) 
 			rewrite(i);
-		setOutput();
 		return;
 	}
 
@@ -1044,7 +1053,6 @@ sub {
 		if(something > 0 && confirm("Start item out with values from form?")) {
 			saveForm(idx);
 		}
-		setOutput();
 		return;
 	}
 
@@ -1073,53 +1081,30 @@ sub {
 		form.description.value            = l[DESCRIPTION];
 		form.mgroup.value                 = l[MGROUP];
 
-		if( EXTENDED != undefined ) {
-			form.extended.value = l[EXTENDED];
-
-			if(extended.length > 0) {
-				var j;
-				var hash = l[EXTENDED];
-				if(hash == undefined || ! hash.match(/=>/)) {
-					hash = '[]';
-				}
-				else {
-					hash = hash.replace(/^{\s*/, '[');
-					hash = hash.replace(/,?\s*}\s*$/, ']');
-					// hash = hash.replace(/\\'/g, "-_ESC_QUOTE_-");
-					hash = hash.replace(/\s*(\w+)\s+=>\s+/g, "  '$1', ");
-					hash = hash.replace(/\s=>\s/g, ", ");
-					hash = hash.replace(/\r/g, "\\r");
-				}
-				var ary = eval(hash);
-				for(j = 0; j < extended.length; j++) {
-					var el = extended[j];
-					var nm = extended_name(el.name);
-
-					if(nm == '')
-						continue;
-					var val;
-					for(j = 0; j < ary.length; j = j + 2) {
-						if( ary[j] == nm ) {
-							val = ary[j + 1];
-							break;
-						}
-					}
-
-					if(val == undefined)
-						val = '';
-
-					if(el.type == 'select') {
-						for(j = 0; j < el.length; j++) {
-							if(val == el.options[j].value) {
-								el.selectedIndex = j;
-								break;
-							}
-						}
-					}
-					else {
-						el.value = val;
+		for(var x = 0; x < extra.length; x++) {
+			var el;
+			var en = extra[x];
+			var un = en.toUpperCase();
+			var eidx;
+			eval('eidx = ' + un);
+			eval ('el = form.ext_' + en );
+//			if( x < 2) {
+// alert('loading extra form value ' + en + '(' + un + '), eidx=' + eidx + ', value=' + l[eidx]);
+//			}
+			if(el == undefined) {
+				alert('bad extra form element: ' + en);
+				continue;
+			}
+			if(el.type == 'select') {
+				for(var j = 0; j < el.length; j++) {
+					if(el.options[j].value == l[eidx]) {
+						el.selectedIndex = j;
+						break;
 					}
 				}
+			}
+			else {
+				el.value = l[eidx];
 			}
 		}
 
@@ -1174,17 +1159,20 @@ sub {
 		form.label.checked = 0;
 		form.lineidx.value = 0;
 
-		if(extended.length > 0) {
-			for(j = 0; j < extended.length; j++) {
-				var el = extended[j];
-				if(el.type == 'select') {
-					el.selectedIndex = undefined;
-				}
-				else {
-					el.value = '';
-				}
+		for(var x = 0; x < extra.length; x++) {
+			var el;
+			var en = extra[x];
+			var un = en.toUpper;
+			eval ('el = form.ext_' + en );
+
+			if(el.type == 'select') {
+				el.selectedIndex = undefined;
+			}
+			else {
+				el.value = '';
 			}
 		}
+
 
 		form_changed(0);
 		return;
@@ -1223,32 +1211,26 @@ sub {
 		ttt = ttt.replace(/\r\n/g, "\r");
 		l[DESCRIPTION] = ttt.replace(/\n/g, "\r");
 
-		if(EXTENDED != undefined) {
-			if(extended.length > 0) {
-				ttt = "{\r";
-				var j;
-				for(j = 0; j < extended.length; j++) {
-					var el = extended[j];
-					var nm = extended_name(el.name);
-					if(nm == '')
-						continue;
-					var val;
-					if(el.type == 'select') {
-						val = el.options[el.selectedIndex].value;
-					}
-					else {
-						val = el.value;
-					}
-					val = val.replace(/'/g, "\\'");
-					ttt = ttt + "  " + nm + " => '" + val + "',\n";
+		for(var x = 0; x < extra.length; x++) {
+			var el;
+			var en = extra[x];
+			var un = en.toUpperCase();
+			var eidx;
+			eval('eidx = ' + un);
+			eval('el = form.ext_' + en );
+
+			if(el.type == 'select') {
+				var sel = el.options[el.selectedIndex];
+				if(sel == defined) {
+					l[eidx] = sel.value;
 				}
-				ttt = ttt + "}";
+				else {
+					l[eidx] = '';
+				}
 			}
 			else {
-				ttt = form.extended.value;
+				l[eidx] = el.value;
 			}
-			ttt = ttt.replace(/\r\n/g, "\r");
-			l[EXTENDED] = ttt.replace(/\n/g, "\r");
 		}
 
 		if(INACTIVE != undefined) {
@@ -1267,7 +1249,6 @@ sub {
 		if(checkcur > 0)
 			checkit(checkcur);
 		rewrite(idx);
-		setOutput();
 		zeroForm();
 		return;
 	}
@@ -1284,7 +1265,10 @@ sub {
 				ttt = '0' + ttt;
 			var tl = new Array;
 			var j;
-			for( j = 0; j < linelen; j++) {
+			tl[0] = ttt;
+			if(tree_mode != 1)
+				lines[i][MSORT] = 'x' + ttt;
+			for( j = 1; j < linelen; j++) {
 				tl[j] = lines[i][j];
 				if(tl[j] == undefined) 
 					tl[j] = '';
@@ -1396,7 +1380,6 @@ sub {
 			rewrite(x);
 		}
 
-		setOutput();
 		return;
 	}
 
@@ -1462,7 +1445,6 @@ sub {
 			moveit(idx, motion);
 		}
 
-		setOutput();
 		return void(0);
 	}
 
@@ -1485,7 +1467,7 @@ Save to new menu <input name=qmenu_new type=text size=20 value="[cgi qmenu_new]"
 				disabled=1
 				name=junksubmit
 				value=".">
-		<input type=submit name=doit style="font-weight: bold" value="Publish" onClick="check_change(1)">
+		<input type=submit name=doit style="font-weight: bold" value="Publish" onClick="check_change(1) && setOutput()">
 		&nbsp;&nbsp;&nbsp;
 		<input type=submit
 				onClick="
@@ -1604,7 +1586,7 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 					style="visibility: Hidden;"
 					value="Copy to checked entry">
 		<br><br>
-		<input type=submit style="font-weight: bold" name=doit value="Publish" onClick="check_change(1)">
+		<input type=submit style="font-weight: bold" name=doit value="Publish" onClick="check_change(1) && setOutput()">
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 		<input type=submit
 				onClick="
@@ -1634,7 +1616,6 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 			else {
 				set_mode('simple');
 			}
-			setOutput();
 		}
 
 		set_checked_buttons();
@@ -1643,16 +1624,57 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 			document.qmenuform.inactive.disabled = 1;
 		}
 		initialized = 1;
-		find_extended();
+		var reserved = /^(extended|inactive|description|form|mgroup|msort|name|page|code)$/;
+		var f = lines[0];
+		for (i = 0; i < f.length; i++) {
+			var fn = f[i];
+			if(! fn.match(reserved) ) {
+				var nn = 'ext_' + fn;
+				var un = fn.toUpperCase();
+// alert([jsquote]fn=$fn nn=$nn un=$un[/jsquote]);
+				var eidx;
+				eval('eidx = ' + un);
+// alert([jsquote]fn=$fn un=$un nn=$nn eidx=$eidx[/jsquote]);
+				var nidx = extra.length;
+				extra.length += 1;
+				extra[nidx] = fn;
+				var lab = fn;
+				var wid;
+				if(label[eidx] != undefined) {
+					lab = label[eidx];
+				}
+				if(widget[eidx] != undefined) {
+					wid = widget[eidx];
+				}
+				else {
+					wid = [jsquote]<input type=text name="$nn" onChange="form_changed(1);">[/jsquote];
+				}
+				document.write([jsquote]
+		<tr>
+			<td class=clabel>
+				$lab
+			</td>
+			<td class=cdata>
+				$wid
+			</td>
+		</tr>
+			[/jsquote]);
+
+			}
+
+		}
+		
 		if(EXTENDED != undefined) {
-			document.write("<tr>" +
-'			<td class=clabel>' +
-'				Extended Parameters (advanced)' +
-'			</td>' +
-'			<td class=cdata>' +
-'				<textarea cols=50 rows=4 name=extended onChange="form_changed(1);"></textarea>' +
-'			</td>' +
-'		</tr>');
+			document.write([jsquote]
+		<tr>
+			<td class=clabel>
+				Extended Parameters (advanced)
+			</td>
+			<td class=cdata>
+				<textarea cols=50 rows=4 name=extended onChange="form_changed(1);"></textarea>
+			</td>
+		</tr>
+			[/jsquote]);
 		}
 
 </script>
@@ -1665,4 +1687,3 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 </form>
 <!-- ----- END REAL STUFF ----- -->
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ -->
