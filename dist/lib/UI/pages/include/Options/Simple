@@ -206,8 +206,8 @@
 			ui_te_filter:weight=line2options
 			ui_te_pre_filter:price=options2line
 			ui_te_pre_filter:weight=options2line
-			ui_te_help:price=Standard VALUE=N.NN, VALUE2=N.NN format
-			ui_te_help:weight=Standard VALUE=N.NN, VALUE2=N.NN format
+			ui_te_help:price=Standard VALUE=N.NN format, one per line
+			ui_te_help:weight=Standard VALUE=N.NN format, one per line
 			ui_te_help:o_value=Values in this option
 		"][L]edit[/L]</A>
 [L]Price differential:[/L] [sql-param price]
