@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.50 2001-06-18 01:57:03 heins Exp $
+# $Id: Config.pm,v 1.25.2.51 2001-06-20 15:22:53 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -98,7 +98,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.50 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.51 $, 10);
 
 my %CDname;
 
@@ -1678,7 +1678,7 @@ sub parse_locale {
 
 	# Try POSIX first if Locale.
 	$name = POSIX::setlocale(POSIX::LC_ALL, $settings)
-		if $item eq 'Locale';
+		if $item eq 'Locale' and $settings !~ /\s/;
 
 	my ($eval, $safe);
 	if (defined $name and $name and $item eq 'Locale') {
