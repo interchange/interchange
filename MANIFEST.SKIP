@@ -22,6 +22,8 @@ Makefile.old$
 ^test/.*
 bin/.*
 blib/.*
+dist/mvmall.*
+dist/lib/MiniMate.*
 catalogs/[^.].*
 control/.*
 scripts/initp.PL
