@@ -142,7 +142,7 @@ sub {
   }
 	if(! $status and $record and (@groups or $record->{groups}) ) {
 		goto CHECKIT if $group = shift @groups;
-		(@groups) = grep /\S/, split /\0,\s]+/, $record->{groups};
+		(@groups) = grep /\S/, split /[\0,\s]+/, $record->{groups};
 		($group, @groups) = map { s/^/:/; $_ } @groups;
 		goto CHECKIT;
 	}
