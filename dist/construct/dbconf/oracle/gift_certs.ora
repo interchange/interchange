@@ -7,7 +7,7 @@ Database  gift_certs  USER         __SQLUSER__
 Database  gift_certs  PASS         __SQLPASS__
 #endif
 Database  gift_certs  DEFAULT_TYPE VARCHAR2(128)
-Database  gift_certs  COLUMN_DEF   "code=VARCHAR2(14) CONSTRAINT pk_gift_certs PRIMARY KEY"
+Database  gift_certs  COLUMN_DEF   "code=VARCHAR2(14) PRIMARY KEY"
 Database  gift_certs  COLUMN_DEF   "username=VARCHAR2(20) DEFAULT ''"
 Database  gift_certs  COLUMN_DEF   "order_date=VARCHAR2(32)"
 Database  gift_certs  COLUMN_DEF   "original_amount=NUMBER"

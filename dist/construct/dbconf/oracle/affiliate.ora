@@ -7,4 +7,4 @@ Database  affiliate  USER         __SQLUSER__
 Database  affiliate  PASS         __SQLPASS__
 #endif
 Database  affiliate  DEFAULT_TYPE VARCHAR2(2000)
-Database  affiliate  COLUMN_DEF   "affiliate=VARCHAR2(12) CONSTRAINT pk_affiliate PRIMARY KEY"
+Database  affiliate  COLUMN_DEF   "affiliate=VARCHAR2(12) PRIMARY KEY"

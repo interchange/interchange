@@ -7,7 +7,7 @@ Database  userdb  USER         __SQLUSER__
 Database  userdb  PASS         __SQLPASS__
 #endif
 Database  userdb  DEFAULT_TYPE VARCHAR2(128)
-Database  userdb  COLUMN_DEF   "username=VARCHAR2(20) CONSTRAINT pk_userdb PRIMARY KEY"
+Database  userdb  COLUMN_DEF   "username=VARCHAR2(20) PRIMARY KEY"
 Database  userdb  COLUMN_DEF   "password=VARCHAR2(20)"
 Database  userdb  COLUMN_DEF   "acl=VARCHAR2(2000)"
 Database  userdb  COLUMN_DEF   "mod_time=VARCHAR2(20)"

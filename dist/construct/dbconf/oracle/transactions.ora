@@ -8,7 +8,7 @@ Database  transactions  PASS         __SQLPASS__
 #endif
 Database  transactions  transactions.raw  SQL
 Database  transactions  DEFAULT_TYPE VARCHAR2(128)
-Database  transactions  COLUMN_DEF   "code=VARCHAR2(14) CONSTRAINT pk_transactions PRIMARY KEY"
+Database  transactions  COLUMN_DEF   "code=VARCHAR2(14) PRIMARY KEY"
 Database  transactions  COLUMN_DEF   "store_id=VARCHAR2(9) DEFAULT ''"
 Database  transactions  POSTCREATE   "CREATE INDEX transactions_store_id ON transactions (store_id)"
 Database  transactions  COLUMN_DEF   "order_number=VARCHAR2(14)"

@@ -7,7 +7,7 @@ Database  inventory  USER         __SQLUSER__
 Database  inventory  PASS         __SQLPASS__
 #endif
 Database  inventory  DEFAULT_TYPE VARCHAR2(128)
-Database  inventory  COLUMN_DEF   "sku=VARCHAR2(14) CONSTRAINT pk_inventory PRIMARY KEY"
+Database  inventory  COLUMN_DEF   "sku=VARCHAR2(14) PRIMARY KEY"
 Database  inventory  COLUMN_DEF   "quantity=INTEGER"
 Database  inventory  COLUMN_DEF   "stock_msg=VARCHAR2(64)"
 Database  inventory  COLUMN_DEF   "account=VARCHAR2(128)"

@@ -7,7 +7,7 @@ Database  recurring_orders  USER         __SQLUSER__
 Database  recurring_orders  PASS         __SQLPASS__
 #endif
 Database  recurring_orders  DEFAULT_TYPE VARCHAR2(128)
-Database  recurring_orders  COLUMN_DEF   "code=VARCHAR2(9) CONSTRAINT pk_recurring_orders PRIMARY KEY"
+Database  recurring_orders  COLUMN_DEF   "code=VARCHAR2(9) PRIMARY KEY"
 Database  recurring_orders  COLUMN_DEF   "username=VARCHAR2(24)"
 Database  recurring_orders  COLUMN_DEF   "nitems=VARCHAR2(9)"
 Database  recurring_orders  COLUMN_DEF   "subtotal=NUMBER"
