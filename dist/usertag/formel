@@ -20,7 +20,7 @@
 
 UserTag formel Order label name type size
 # may be should place version information on user-defined tags
-# UserTag formel Version 0.01
+# UserTag formel Version 0.02
 UserTag formel addAttr
 UserTag formel Routine <<EOF
 sub {
@@ -32,7 +32,7 @@ sub {
     # set defaults
     $type = 'text' unless $type;
     
-    for ('format', 'order', 'reset', 'size') {
+    for ('format', 'order', 'reset', 'signal', 'size') {
         next if $opt->{$_};
         if ($::Values->{"mv_formel_$_"}) {
             $opt->{$_} = $::Values->{"mv_formel_$_"};
@@ -50,7 +50,11 @@ sub {
     }
 
     if ($Tag->error($name)) {
-        $labelhtml = "<font color=\"$contrast\">$label</font>";
+		if ($opt->{signal}) {
+			$labelhtml = sprintf($opt->{signal}, $label);
+		} else {
+	        $labelhtml = "<font color=\"$contrast\">$label</font>";
+		}
     } else {      
         $labelhtml = $label;
     }
@@ -115,12 +119,19 @@ The default is C<%s %s>.
 
 Discards the user input if set to 1.
 
+=item signal
+
+Label container in case of errors. The default is
+<font color="__CONTRAST__">%s</font>. If the variable
+CONTRAST doesn't exist, the color red is used instead.
+
 =back
 
-You can set defaults for format, order, reset and size with the corresponding
-mv_formel_... form variable values, e.g.:
+You can set defaults for format, order, reset, signal and size with the
+corresponding mv_formel_... form variable values, e.g.:
 
     [value name="mv_formel_format" set="<TR><TD>%s</TD><TD>%s</TD></TR>" hide=1]
     [value name="mv_formel_order" set=1 hide=1]
-    
+
+	[value name="mv_formel_signal" set="<BLINK>%s</BLINK>" hide=1]    
 EOD
