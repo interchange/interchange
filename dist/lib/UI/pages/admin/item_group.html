@@ -111,11 +111,13 @@ EOF
 	else {
 		$CGI->{ui_text_qualification} = "ra=yes";
 	}
-	$CGI->{ui_sort_field} = $meta->{lookup} || $Scratch->{keyname}
-		if ! $CGI->{ui_sort_field};
+	$CGI->{ui_sort_field}	||= $meta->{ui_sort_field}
+							||  $meta->{lookup}
+							||  $Scratch->{keyname};
 	$CGI->{ui_list_size} = $meta->{height}
 		if ! $CGI->{ui_list_size};
-	if(! ($CGI->{ui_show_fields} = $meta->{field}) ) {
+	$CGI->{ui_show_fields} ||= $meta->{ui_show_fields} || $meta->{field};
+	if(! $CGI->{ui_show_fields}) {
 		$CGI->{ui_show_fields} = '*';
 		$CGI->{ui_description_fields} = join ",", $ref->columns();
 	}

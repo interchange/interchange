@@ -12,8 +12,8 @@
 				 form='
 				 mv_data_table=__UI_META_TABLE__
 				 ui_meta_view=dbconfig
-				 ui_data_fields=code name height field outboard options help help_url display_filter
-				 ui_break_before=height display_filter
+				 ui_data_fields=code name height extended.ui_show_fields extended.ui_sort_field extended.ui_select_add extended.ui_data_fields help help_url extended.ui_backup_select
+				 ui_break_before=height help extended.ui_backup_select
 				 page_title=[L]Change display information[/L]: [cgi mv_data_table]
 				 ui_return_to=__UI_BASE__/item
 				 ui_return_to=ui_scrub_table=1
@@ -117,24 +117,20 @@
 
 [perl tables="[cgi mv_data_table] __UI_META_TABLE__"]
 	my $tab = $CGI->{mv_data_table};
+	my $view = $CGI->{ui_meta_view};
 	my $ref = $Db{$tab};
-	my $mref = $Db{__UI_META_TABLE__};
-	
+	my $meta = $Tag->meta_record($tab, $view);
+Debug("Meta record: " . uneval($meta));
 	if (! $ref) {
 		$Scratch->{keypos} = 0;
 		return;
 	}
-	elsif (! $mref) {
+	elsif (! $meta) {
 		$Scratch->{keypos} = 0;
 	}
 
-	my $meta;
-	if($mref and $mref->record_exists($tab) ) {
-		$meta = $mref->row_hash($tab);
-	}
-	else {
-		$meta = {};
-	}
+	$meta ||= {};
+
 	if($CGI->{ui_flex_key}) {
 		$Scratch->{keypos} = $CGI->{ui_flex_key};
 	}
@@ -233,11 +229,15 @@ EOF
 		delete $Scratch->{item_special_sort};
 	}
 	elsif(! $Scratch->{ui_special_sort}) {
-		$CGI->{ui_sort_field} = $meta->{lookup} || $Scratch->{keyname};
+		$CGI->{ui_sort_field}	||= $meta->{ui_sort_field}
+								||  $meta->{lookup}
+								||  $Scratch->{keyname};
 	}
 	$CGI->{ui_list_size} = $meta->{height}
 		if ! $CGI->{ui_list_size};
-	if(! ($CGI->{ui_show_fields} = $meta->{field}) ) {
+	$CGI->{ui_show_fields} ||= $meta->{ui_show_fields} || $meta->{field};
+Debug("CGI->{ui_show_fields}=$CGI->{ui_show_fields}");
+	if(! $CGI->{ui_show_fields}) {
 		$CGI->{ui_show_fields} = '*';
 		$CGI->{ui_description_fields} = join ",", $ref->columns();
 	}
@@ -245,13 +245,15 @@ EOF
 		my $i = 0;
 		$CGI->{ui_show_fields} =~
 			s/(\w+)(?:\((.*?)\))?/ ($filter_show[$i++] = $2), $1/eg;
-#Log("filter_show: " . $Tag->uneval( { ref => \@filter_show } ));
+Debug("filter_show: " . $Tag->uneval( { ref => \@filter_show } ));
 		$CGI->{ui_show_fields} =~ s/[\0,\s]+/,/g;
 		$CGI->{ui_description_fields} = $CGI->{ui_show_fields};
 	}
 
+	$meta->{ui_special_add} ||= $meta->{outboard};
 	# Set in item editor area
-	@special = grep /\S/, split /[,\0]+/, $meta->{outboard};
+	@special = grep /\S/, split /[,\0]+/, $meta->{ui_special_add}
+		if ($meta->{ui_special_add} ||= $meta->{outboard});
 	unless (@special) {
 		@special = (
 			'Qty price;pricing:q5:r',
