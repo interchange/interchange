@@ -97,8 +97,8 @@ return;
 [comment]END former UI_STD_DBEDIT_HEAD[/comment]
 
 [set ui_class]Orders[/set]
-[seti page_title]Order status -- [cgi order][/seti]
-[tmp page_banner]Order status: order <B>[page href="__UI_BASE__/order_view" form="order=[cgi order]"][cgi order]</A></B>[/tmp]
+[seti page_title][L]Order status[/L] -- [cgi order][/seti]
+[tmp page_banner][L]Order status[/L]: [L]order[/L] <B>[page href="__UI_BASE__/order_view" form="order=[cgi order]"][cgi order]</A></B>[/tmp]
 [set help_name]item.edit[/set]
 [set icon_name]icon_item.gif[/set]
 
@@ -127,12 +127,12 @@ return;
 <table CELLSPACING=0 CELLMARGIN=0 WIDTH="100%">
 [loop list="[cgi order]"]
 <TR>
-<TD ALIGN=RIGHT><B>Order date</B></TD>
+<TD ALIGN=RIGHT><B>[L]Order date[/L]</B></TD>
 <TD BGCOLOR="__UI_T_ROW_ODD__">
 [convert-date][loop-data transactions order_date][/convert-date]</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT><B>Status last updated</B></TD>
+<TD ALIGN=RIGHT><B>[L]Status last updated[/L]</B></TD>
 <TD BGCOLOR="__UI_T_ROW_ODD__">
 [convert-date][loop-data transactions update_date][/convert-date]</TD>
 </TR>
@@ -153,7 +153,7 @@ return;
 <TD ALIGN=RIGHT>&nbsp;</TD>
 <TD BGCOLOR="__UI_T_ROW_ODD__">
 [if-mm advanced order]
-	[button form=transactions bold=1 text="Ship checked order lines, send email to customer if appropriate"]
+	[button form=transactions bold=1 text="[L]Ship checked order lines, send email to customer if appropriate[/L]"]
 	mv_todo=back
 	order=[cgi code]
 	[tag flag write]orderline transactions[/tag]
@@ -288,17 +288,17 @@ return;
 	<INPUT TYPE=checkbox NAME=lines_shipped VALUE="[partial-code]" CHECKED> Line [partial-increment] ([partial-filter 16][partial-data orderline description][/partial-filter])<BR>
 	[/loop]
 	<BR>
-	[button bold=1 text="Change global status"]
+	[button bold=1 text="[L]Change global status[/L]"]
 	order=[cgi code]
 	[/button]&nbsp;&nbsp;&nbsp;
-	[button text="Cancel"]
+	[button text="[L]Cancel[/L]"]
 	mv_nextpage=__UI_BASE__/order_view
 	order=[cgi code]
 	mv_todo=back
 	[set Cancel][/set]
 	[/button]
 [else]
-	[button text="Back"]
+	[button text="[L]Back[/L]"]
 	mv_nextpage=__UI_BASE__/order_view
 	order=[cgi code]
 	mv_todo=back
@@ -313,7 +313,7 @@ return;
 
 [/loop]
 
-<h2>Individual line item status</H2>
+<h2>[L]Individual line item status[/L]</H2>
 <TABLE>
 [loop search="
 		fi=orderline
@@ -348,12 +348,12 @@ return;
 <TR>
 <TD ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__"><B>SKU/Description</B></TD>
 <TD BGCOLOR="__UI_T_ROW_ODD__">
-SKU: [loop-data orderline sku], [loop-data orderline quantity]@[filter %.2f][loop-data orderline price][/filter] = [currency][loop-data orderline subtotal][/currency]<BR>
+[L]SKU[/L]: [loop-data orderline sku], [loop-data orderline quantity]@[filter %.2f][loop-data orderline price][/filter] = [currency][loop-data orderline subtotal][/currency]<BR>
 [loop-data orderline description]
 </TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__"><B>Last updated</B></TD>
+<TD ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__"><B>[L]Last updated[/L]</B></TD>
 <TD BGCOLOR="__UI_T_ROW_ODD__">
 [convert-date][loop-data orderline update_date][/convert-date]</TD>
 </TR>
