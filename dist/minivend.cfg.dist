@@ -17,7 +17,6 @@ Environment  MOD_PERL
 #ifdef @DEBUG
 Message Sending debug to /tmp/mvdebug.
 DebugFile /tmp/mvdebug
-DumpStructure Yes
 GlobalSub sub test_global_sub { return 'Test of global subroutine OK.' }
 Variable  TEST_VARIABLE Test of global variable OK.
 #endif
