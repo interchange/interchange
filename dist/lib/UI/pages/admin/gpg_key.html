@@ -2,6 +2,7 @@
 [set ui_class]Admin[/set]
 [set mv_logical_page][/set]
 [set help_name]wizard.pgp[/set]
+[flag type=write table=variable]
 @_UI_STD_HEAD_@
 
 <table width=500>
@@ -43,6 +44,18 @@ to the keyring at time of preview.
 	[/if]
 [/if]
 
+[if value pgpkeyid]
+[/if]
+
+    [if cgi pgpkeyid]
+	<!--
+	[flag type=write table=variable]
+	[data table=variable col=Variable key=PGP_KEY value="[value pgpkeyid]"]
+	Set pgpkey=[value name=pgpkeyid set="[cgi pgpkeyid]"]
+	--> 
+	[/if]
+	
+
 [tmp tmp_pgpkeys][get-gpg-keys][/tmp]
 <p>
 [table-editor 
@@ -60,6 +73,7 @@ to the keyring at time of preview.
 	top_buttons=1
 	mv_nextpage="@@MV_PAGE@@"
 	hidden.ui_return_to="__UI_BASE__/wizard/index"
+	hidden.mv_click="set_variable_write"
 	file-upload=1
 
 	ui_wizard_fields="pgpkeyid pgpkeyfile pgpkeytext"
@@ -72,7 +86,6 @@ to the keyring at time of preview.
 	help.pgpkeyid="This is either the key ID or the email address associated with the PGP/GPG key"
 	passed.pgpkeyid=`$Scratch->{tmp_pgpkeys}`
 	widget.pgpkeyid=select
-	override.pgpkeyid="[cgi pgpkeyid]"
 
 	label.pgpkeytext="PGP/GPG Public Key"
 	help.pgpkeytext="...or export an ASCII-armored version of your key, and paste it in."
@@ -87,3 +100,4 @@ to the keyring at time of preview.
 ]
 
 @_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ Revision: $Id: gpg_key.html,v 2.2 2003-07-12 04:15:23 mheins Exp $ -->
