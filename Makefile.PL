@@ -737,7 +737,7 @@ localefiles:
 	@for lang in $(UILANGS); do \
         mv $(UIDIR)/locales/$$lang.cfg $(UIDIR)/locales/$$lang.cfg.old; \
         cat $(UIDIR)/locales/default.cfg >> $(UIDIR)/locales/$$lang.cfg.old; \
-		if ! $(INSTALLBIN)/localize -n -m $(UIDIR)/locales/$$lang.cfg.old -u $(UIDIR) -l $$lang `find $(UIDIR) -type f -not -empty` > $(UIDIR)/locales/$$lang.cfg; then \
+		if ! $(INSTALLBIN)/localize -m $(UIDIR)/locales/$$lang.cfg.old -u $(UIDIR) -l $$lang -D `find $(UIDIR) -type f -not -empty` > $(UIDIR)/locales/$$lang.cfg; then \
 		echo "Failed to generate locale file $(UIDIR)/locales/$$lang.cfg"; \
 		mv $(UIDIR)/locales/$$lang.cfg.old $(UIDIR)/locales/$$lang.cfg; \
 		fi; \
