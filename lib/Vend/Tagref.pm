@@ -1,6 +1,6 @@
 # Tagref.pm - Document Interchange tags
 # 
-# $Id: Tagref.pm,v 1.5 2000-09-26 18:15:35 zarko Exp $
+# $Id: Tagref.pm,v 1.5.2.1 2000-10-20 16:52:40 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -23,11 +23,11 @@ package Vend::Tagref;
 use lib "$Global::VendRoot/lib";
 use lib '../lib';
 
-# $Id: Tagref.pm,v 1.5 2000-09-26 18:15:35 zarko Exp $
+# $Id: Tagref.pm,v 1.5.2.1 2000-10-20 16:52:40 zarko Exp $
 
 use Vend::Parse;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.5 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.5.2.1 $ =~ /(\d+)\.(\d+)/);
 
 use vars '%myRefs';
 
@@ -655,6 +655,8 @@ Causes the counter to count down instead of up.
 =item value=1
 
 Shows the value of the counter without incrementing or decrementing it.
+
+=back
 
 %%%
 currency
@@ -2103,11 +2105,8 @@ The two-letter abbreviations are mapped with these letters:
   sq  mv_sql_query
   st  mv_searchtype
   su  mv_substring_match
-  td  mv_table_cell
   tf  mv_sort_field
-  th  mv_table_header
   to  mv_sort_option
-  tr  mv_table_row
   un  mv_unique
   va  mv_value
 
@@ -2179,7 +2178,7 @@ you would need to use new syntax.
 
 The optional I<arg> is used just as in the I<page> tag.
 
-=head2 [/page]
+=item [/page]
 
 Expands into </a>. Used with the page element, such as:
 
