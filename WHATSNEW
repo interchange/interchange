@@ -18,7 +18,8 @@ Core
 Admin UI
 --------
 
-* Fixed permission checks in several pages.
+* Fixed permission checks in several pages (problem found by
+  Massimiliano Ciancio <mciancio@tiscali.it>)
 
 * About links are working now in catalogs that are not based on foundation.
 
