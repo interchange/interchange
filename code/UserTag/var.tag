@@ -24,7 +24,7 @@ sub {
 			if $global;
 		return Vend::Interpolate::dynamic_var($key);
 	}
-	return $::Variable->{$key} || $Global::Variable if $global;
+	return $::Variable->{$key} || $Global::Variable->{$key} if $global;
 	return $::Variable->{$key};
 }
 EOR
