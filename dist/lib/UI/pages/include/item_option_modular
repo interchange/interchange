@@ -290,8 +290,7 @@
 			mv_data_table=[cgi mv_data_table]
 			ui_class=Admin
 			ui_data_fields=code sku o_master o_group phantom o_enable description
-			ui_te_widget:sku=text_20
-			ui_te_check:sku=unique products
+			ui_te_default:o_master=[cgi item_id]
 			ui_meta_view=modular_create
 			ui_hide_key=1
 			ui_new_item=1
