@@ -1,4 +1,10 @@
 Database  variants  variants.txt __SQLDSN__
+ifdef SQLUSER
+Database  variants  USER         __SQLUSER__
+endif
+ifdef SQLPASS
+Database  variants  PASS         __SQLPASS__
+endif
 Database  variants  DEFAULT_TYPE varchar(255)
 Database  variants  COLUMN_DEF   "code=varchar(64) NOT NULL PRIMARY KEY"
 Database  variants  COLUMN_DEF   "sku=varchar(64)"
