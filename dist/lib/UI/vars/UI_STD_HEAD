@@ -139,7 +139,7 @@ Quicklinks
 
 <img src="admin/cleardot.gif" width="22">
 
-<a href="javascript:open_help('http://www.akopia.com/tallyman/help/2.0.6/[scratch help_name].html')">
+<a href="javascript:open_help('__UI_HELP_BASE_URL__/[scratch help_name].html')">
 <img src="admin/icon_help.gif" height="16" width="16" border="0" >
 <font face="Verdana,Arial,Helvetica,sans-serif" size="2"
  color="__UI_C_TITLEBARTXT__">
