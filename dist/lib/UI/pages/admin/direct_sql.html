@@ -30,6 +30,9 @@
 		$CGI->{mv_data_table} = $1;
 		delete $CGI->{rc};
 		delete $CGI->{list};
+		if($CGI->{output_action} eq 'download') {
+			$CGI->{download} = 1;
+		}
 		$CGI->{html} = 1;
 #		$Scratch->{message} = qq{
 #			Rows selected by query:
@@ -83,9 +86,18 @@
 ]Return to [cgi mv_data_table] edit</a>
 [/if]
 
-<FORM ACTION="[area @@MV_PAGE@@]" name=query>
+<FORM ACTION="[area @@MV_PAGE@@]" name=query method=POST>
+<input type=hidden name=mv_nextpage value="@@MV_PAGE@@">
+<input type=hidden name=mv_session_id value="[data session id]">
 
 <table>
+<tr>
+	<td>
+		<input type=radio value=display name="output_action" onClick="this.form.action='[area href="@@MV_PAGE@@"]'" CHECKED> Display
+		<input type=radio value=download name="output_action" onClick="this.form.action='[area href="process/output.txt" add_dot_html=0]'"> Download
+	</td>
+
+</tr>
 <tr>
 <td>
 <textarea name=sql rows=4 cols=80>[cgi sql]</textarea>
@@ -132,7 +144,32 @@ Base table <select name=mv_data_table>
 	[scratchd message]
 	</blockquote>
 	<table border=1>
-[if cgi html]
+[if cgi download]
+	
+	[deliver interpolate=1][query
+		table="[cgi mv_data_table]"
+		st=db
+		list=1
+		sql=`$sql`
+		ml="[cgi limit]"
+	][sql-sub line_proc]
+		shift;
+		my $row = shift;
+		my $out = '';
+		if(! $t_header_done++) {
+			my $o = shift;
+			$out .= join "\t", @{$o->{mv_return_fields}};
+			$out .= "\n";
+		}
+		for(@$row) {
+			s/\r?\n/\r/g;
+			s/\t/ /g;
+		}
+		$out .= join "\t", @$row;
+		$out .= "\n";
+	[/sql-sub][sql-exec line_proc][/sql-exec][/query][/deliver]
+
+[elsif cgi html]
 	[query
 		table="[cgi mv_data_table]"
 		st=db
@@ -142,6 +179,7 @@ Base table <select name=mv_data_table>
 		ml="[cgi limit]"
 	]
 	[/query]
+[/elsif]
 [elsif cgi list]
 	[query
 		table="[cgi mv_data_table]"

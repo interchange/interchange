@@ -185,7 +185,9 @@ EOF
 <tr>
 <td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
-
+<tr class=titlebox>
+<td colspan=2>[L]Export complete table to file[/L]</td>
+</tr>
 <tr>
 <td class=rnorm>
 [L]Table to export[/L]
@@ -283,6 +285,74 @@ ui_export_database=1
 </table>
 
 </form>
+
+[set joincol]
+	[calc]
+		my $cols = $CGI->{cols};
+		$cols =~ s/[\s,\0]+/,/g;
+		$cols =~ s/^,+//;
+		$cols =~ s/,+$//;
+		$CGI->{sql} = "select $cols from $CGI->{mv_data_table}";
+		return;
+	[/calc]
+[/set]
+<form action="[area href="process/[cgi mv_data_table]_slice.txt" add_dot_html=0] method="POST" name=dl>
+<input type=hidden name=mv_session_id value="[data session id]">
+<INPUT TYPE=hidden NAME=mv_action         VALUE=return>
+<INPUT TYPE=hidden NAME=mv_data_table     VALUE="[cgi mv_data_table]">
+<INPUT TYPE=hidden NAME=mv_click          VALUE=joincol>
+<INPUT TYPE=hidden NAME=mv_nextpage       VALUE="admin/direct_sql">
+<INPUT TYPE=hidden NAME=output_action     VALUE=download>
+
+<table __UI_T_PROPERTIES__>
+<tr>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+<tr class=titlebox>
+<td colspan=2>Download table slice</td>
+</tr>
+<tr>
+<td class=rnorm valign=top>
+[L]Fields from[/L] <i>[cgi mv_data_table]</i> [L]to download[/L]
+<br>
+<br>
+<br>
+			<A HREF="javascript:checkAll(document.dl,'cols')">Check all</A>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<A HREF="javascript:checkAll(document.dl,'cols',1)">Uncheck all</A>
+</td>
+<td class=rnorm>
+[display name=cols type=checkbox_left_4 passed="[db-columns table='[cgi mv_data_table]' joiner=',']"]
+</td>
+</tr>
+
+<tr>
+<td class=rnorm>
+[L]Output File[/L]
+</td>
+<td class=rnorm>
+	<input name=output_file value="" type=text onChange="this.form.action='[area href=process no_session_id=1 no_count=1 add_dot_html=0]/' + this.value">
+</td>
+</tr>
+
+<tr>
+<td class=rnorm>
+	[L]Export to file[/L]<br>
+	<small><I>([L]leave empty for default file[/L])</I></small>
+</td>
+<td class=rnorm>
+ <INPUT type=submit value="Download">
+</td>
+</tr>
+
+<tr>
+<td colspan=2 class=rborder><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+</table>
+
+</form>
+
 
 <!-- ----- END REAL STUFF ----- -->
 
