@@ -1,7 +1,5 @@
 # To do:
 # Deal with broken UI image location
-# Check for existing foundation catalog before install (can't count on RPM checks)
-# Adapt foundation uninstall for new makecat method
 # Use new install stuff in foundation/config/makedirs etc. instead of RPM symlinking
 
 %define ic_version			4.7.0
@@ -208,8 +206,12 @@ mv interchange.cfg.dist $RPM_BUILD_ROOT$ETCBASE/interchange.cfg
 ln -s $ETCBASE/interchange.cfg
 chmod +r $RPM_BUILD_ROOT$ETCBASE/interchange.cfg
 
+# Put global error log in /var/log/interchange instead of IC software directory
+RPMICLOG=$LOGBASE/interchange/error.log
 rm -f error.log
-ln -s $LOGBASE/interchange/error.log
+ln -s $RPMICLOG
+touch $RPM_BUILD_ROOT$RPMICLOG
+chown %{ic_user}.%ic_group $RPM_BUILD_ROOT$RPMICLOG
 
 cd $RPM_BUILD_ROOT
 # I don't know of a way to exclude a subdirectory from one of the directories
@@ -266,10 +268,13 @@ fi
 %{_mandir}/man1
 %{_mandir}/man8
 
-%{_sbindir}/interchange
-/var/log/interchange
-/var/run/interchange
+%dir %{_sbindir}/interchange
+
+%defattr(-, %{ic_user}, %{ic_group})
+
+%dir /var/run/interchange
 %dir /var/lib/interchange
+/var/log/interchange
 
 %config(noreplace) /etc/interchange.cfg
 %config(noreplace) /etc/rc.d/init.d/interchange
@@ -289,10 +294,10 @@ fi
 
 # Give interch user ownership of all files the Interchange daemon will
 # need read/write access to
-chown -R %{ic_user}.%ic_group \
-	/var/lib/interchange \
-	/var/log/interchange \
-	/var/run/interchange
+#chown -R %{ic_user}.%ic_group \
+#	/var/lib/interchange \
+#	/var/log/interchange \
+#	/var/run/interchange
 
 # Get to a place where no random Perl libraries should be found
 cd /usr
@@ -364,10 +369,19 @@ CGIBASE=/cgi-bin
 SERVERCONF=/etc/httpd/conf/httpd.conf
 
 cd $VENDROOT
-pwd
 for i in %cat_name
 do 
-	# build the demo catalog
+	# Make sure we don't clobber an existing catalog of the same name
+	if [ -d $BASEDIR/$i ] || [ -d $DOCROOT/$i ] || [ -f $CGIDIR/$i ] || \
+		[ -n "`grep \"^[ \t]*Catalog[ \t][ \t]*$i[ \t]\" /etc/interchange.cfg`" ]
+	then
+		echo "Aborting build -- a catalog named '$i' appears to already have been built!"
+		echo "Installed catalog skeleton in $VENDROOT/$i. You can still manually"
+		echo "run $VENDOOT/bin/makecat to build a catalog from this template."
+		exit 1
+	fi
+		
+	# Build the demo catalog
 	mkdir -p $CGIDIR
 	mkdir -p $DOCROOT/$i/images
 	mkdir $BASEDIR/$i
@@ -396,81 +410,92 @@ do
 		--servername=$HOST \
 		--catuser=%ic_user \
 		--mailorderto=%{ic_user}@$HOST
-	touch $LOGDIR/$i.error.log
-	ln -sf $LOGDIR/$i.error.log $BASEDIR/$i/error.log
+
+	# Put catalog error log in /var/log/interchange instead of catalog directory
+	RPMCATLOG=$LOGDIR/$i.error.log
+	touch $RPMCATLOG
+	chown %{ic_user}.%ic_group $RPMCATLOG
+	ln -sf $RPMCATLOG $BASEDIR/$i/error.log
+
+	# Shouldn't we have makecat take care of these permissions?
+	find $BASEDIR/$i | xargs chown %{ic_user}.%ic_group
+	find $BASEDIR/$i -type d | xargs chmod 755
+
+	# Add the new catalog to the running Interchange daemon
+	%{_sbindir}/interchange --add=$i
 done
-
-# Shouldn't we have makecat take care of these permissions?
-find $BASEDIR | xargs chown %{ic_user}.%ic_group
-find $BASEDIR -type d | xargs chmod 755
-
-# Restart Interchange to recognize new catalog
-%{_sbindir}/interchange -r
 
 
 %preun
 
-# Stop Interchange if running
 if test -x /etc/rc.d/init.d/interchange
 then
+	# Stop Interchange if running
 	/etc/rc.d/init.d/interchange stop > /dev/null
-fi
-
-# Remove autostart of interchange
-if test $1 = 0
-then
+	# Remove autostart of interchange
 	/sbin/chkconfig --del interchange
 fi
 
 # Remove non-user data
+rm -f %{_libdir}/interchange/etc/makecat.cfg
+rm -f %{_libdir}/interchange/etc/makecat.cfg.new
 rm -rf /var/run/interchange/*
 rm -rf %{_libdir}/interchange/lib/HTML
-rm -f %warning_file
 rm -f /var/log/interchange/error.log
+rm -f %warning_file
 
 
 %preun %cat_name
 
-# Remove catalog from running Interchange
-if test -x %{_sbindir}/interchange
+if [ -d /var/www ]
 then
-	%{_sbindir}/interchange --remove=%{cat_name} > /dev/null
+	WEBDIR=/var/www
+else
+	WEBDIR=/home/httpd
 fi
 
-# Remove Catalog directive from interchange.cfg
-ICCFG=/etc/interchange.cfg
-ICCFGTMP=/tmp/rpm.$$.interchange.cfg
-if [ -f $ICCFG ]
-then
-	grep -v "^[ \t]*Catalog[ \t][ \t]*%{cat_name}[ \t]" $ICCFG > $ICCFGTMP && \
-		chown --reference=$ICCFG $ICCFGTMP && \
-		chmod --reference=$ICCFG $ICCFGTMP && \
-		mv $ICCFGTMP $ICCFG
-fi
-
-# Remove foundation store stuff -- we'd rather not do this, but
-# Red Hat's certification tests require no files be left over
 for i in %cat_name
 do
-	DEMOCATDIR=/var/lib/interchange/$i
-	rm -rf $DEMOCATDIR/tmp/* \
-		$DEMOCATDIR/session/* \
-		$DEMOCATDIR/logs/* \
-		$DEMOCATDIR/images
-	rm -f $DEMOCATDIR/products/*.gdbm \
-		$DEMOCATDIR/products/Ground.csv.numeric \
-		$DEMOCATDIR/products/products.txt.* \
-		$DEMOCATDIR/etc/status.$i
+	# Remove catalog from running Interchange
+	if test -x %{_sbindir}/interchange
+	then
+		%{_sbindir}/interchange --remove=$i > /dev/null
+	fi
+
+	# Remove Catalog directive from interchange.cfg
+	ICCFG=/etc/interchange.cfg
+	if [ -f $ICCFG ]
+	then
+		ICCFGTMP=/tmp/rpm.$$.interchange.cfg
+		grep -v "^[ \t]*Catalog[ \t][ \t]*$i[ \t]" $ICCFG > $ICCFGTMP && \
+			chown --reference=$ICCFG $ICCFGTMP && \
+			chmod --reference=$ICCFG $ICCFGTMP && \
+			mv $ICCFGTMP $ICCFG
+	fi
+
+	# Remove locally built foundation store -- we'd rather not do this, but
+	# Red Hat's certification tests require no files be left over
+	rm -rf /var/lib/interchange/$i
+	rm -f /var/log/interchange/$i.error.log
+
+	# Remove link program and HTML/images for catalog
+	rm -f $WEBDIR/cgi-bin/$i
+	rm -rf $WEBDIR/html/$i
 done
 
 
 %clean
 
 rm -f %main_filelist
-#[ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
+[ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+
+* Fri Feb 23 2001 Jon Jensen <jon@redhat.com>
+- Check for existing foundation catalog before install (can't count on RPM
+  checks since Interchange is building the catalog after skeleton install)
+- Completely uninstall new locally-built foundation instance
 
 * Tue Feb 20 2001 Jon Jensen <jon@redhat.com>
 - build separate packages for Interchange server and foundation demo
