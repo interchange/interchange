@@ -2,7 +2,7 @@
 
 Interchange CVS -- tracking the distribution
 
-=head1 DESCRIPTION 
+=head1 DESCRIPTION
 
 If you don't want to wait for an official distribution, you can use
 anonymous CVS to follow the latest Interchange.
@@ -58,7 +58,7 @@ Your home directory or more probably a src/ subdirectory:
 	$ cd
 	$ mkdir src
 	$ cd src
-	$ cvs checkout interchange
+	$ cvs checkout -P interchange
 
 It will take a while -- if you are on a modem it may take quite a bit
 of time, as there are several megabytes of CVS files.
