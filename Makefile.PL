@@ -113,6 +113,14 @@ sub compare_file {
 	$first eq $second;
 }
 
+sub get_rename {
+	my ($bn, $extra) = @_;
+	$bn =~ s:(.*/)::;
+	my $dn = $1;
+	$extra = '~' if ! $extra;
+	return $dn . "/.$extra." . $bn;
+}
+
 sub install_file {
 	my ($srcdir, $targdir, $filename) = @_;
 	my $srcfile  = $srcdir . '/' . $filename;
@@ -142,14 +150,16 @@ sub install_file {
 			$extra =~ tr/0-9//cd;
 			last;
 		}
-		$extra = 'old' unless $extra;
-		while (-f "$targfile.$extra") {
-			push @remove_old, "$targfile.$extra";
+		$extra = '~' unless $extra;
+		my $rename = get_rename($targfile, $extra);
+		while (-f $rename ) {
+			push @remove_old, $rename;
 			$extra .= '~';
+			$rename = get_rename($targfile, $extra);
 		}
-		push @remove_old, "$targfile.$extra";
-		rename $targfile, "$targfile.$extra"
-			or die "Couldn't rename $targfile to $targfile.$extra: $!\n";
+		push @remove_old, $rename;
+		rename $targfile, $rename
+			or die "Couldn't rename $targfile to $rename: $!\n";
 	}
 
 	File::Copy::copy($srcfile, $targfile)

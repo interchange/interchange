@@ -2,7 +2,7 @@
 #
 # MakeCat.pm - routines for catalog configurator
 #
-# $Id: MakeCat.pm,v 1.9 2000-09-24 07:00:07 jon Exp $
+# $Id: MakeCat.pm,v 1.10 2000-09-25 11:33:19 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -62,7 +62,7 @@ sethistory
 use strict;
 
 use vars qw($Force $Error $History $VERSION);
-$VERSION = substr(q$Revision: 1.9 $, 10);
+$VERSION = substr(q$Revision: 1.10 $, 10);
 
 $Force = 0;
 $History = 0;
@@ -352,6 +352,14 @@ sub get_ids {
 
 my $Windows = ($^O =~ /win32/i ? 1 : 0);
 
+sub get_rename {
+	my ($bn, $extra) = @_;
+	$extra = '~' unless $extra;
+	$bn =~ s:(.*/)::;
+	my $dn = $1;
+	return $dn . "/.$extra." . $bn;
+}
+
 sub compare_file {
     my($first,$second) = @_;
     return 0 unless -f $first && -f $second;
@@ -422,12 +430,14 @@ sub install_file {
             $extra =~ tr/0-9//cd;
             last;
         }
-        $extra = 'old' unless $extra;
-        while (-f "$targfile.$extra") {
-            $extra .= '~';
-        }
-        rename $targfile, "$targfile.$extra"
-            or die "Couldn't rename $targfile to $targfile.$extra: $!\n";
+        $extra = '~' unless $extra;
+		my $rename = get_rename($targfile, $extra);
+		while (-f $rename ) {
+			$extra .= '~';
+			$rename = get_rename($targfile, $extra);
+		}
+		rename $targfile, $rename
+			or die "Couldn't rename $targfile to $rename: $!\n";
     }
 
     File::Copy::copy($srcfile, $targfile)

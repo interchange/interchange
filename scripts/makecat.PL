@@ -1471,7 +1471,7 @@ ADDITIONAL: {
 			$help{$ucvar} =~ s/__MVC_([A-Z0-9]+)(__)?/substitute($1,$2)/eg;
 			print $help{$ucvar};
 		}
-		$Conf{$var} = prompt( do_msg("$prompt: ", 40),
+		$Conf{$var} = prompt( do_msg("$prompt: ", 50),
 							 (delete $ENV{"MVC_$ucvar"} || $Conf{$var} || $default) ) ;
 	}
 	close ADDL;
@@ -1510,7 +1510,7 @@ PRECMD: {
 			next unless $true;
 		}
 		print "$prompt\n\n";
-		my $ans = prompt( do_msg(qq{run "$command"? }, 40), 'y' );
+		my $ans = prompt( qq{run "$command"? }, 'y' );
 		if($ans =~ /^\s*y/i) {
 			system $command;
 			if($?) {
@@ -1539,6 +1539,15 @@ DOCOPY: {
 	#system "tar -cf - * | (cd $Conf{catroot}; tar -xf -)";
 
 	umask(07) unless $Conf{noumask};
+
+	# remove any existing symbolic links in target directory
+	File::Find::find( sub {
+								return if ! -l $_;
+								unlink $_
+									or die "couldn't unlink $File::Find::name: $!\n";
+							},
+					 "$Conf{relocate}$Conf{catroot}",
+					 );
 
 	eval {
 		copy_current_to_dir("$Conf{relocate}$Conf{catroot}");
@@ -1675,10 +1684,15 @@ sub wanted {
 
 	unless ($prog eq 'NONE') {
 		my $ask_cgi = 'y';
-		print do_msg("Moving link program to $cginame");
 		if(-f $cginame) {
-			$ask_cgi = prompt ("$cginame exists, overwrite? ", 'n');
-		}
+            $ask_cgi = prompt (
+                            do_msg("Moving link, $cginame exists, overwrite? "),
+                            'n',
+                            );
+        }
+        else {
+            print do_msg("Moving link program to $cginame");
+        }
 
 		if(is_yes($ask_cgi)) {
 			File::Copy::copy("$Conf{relocate}$Conf{catroot}/executable", $cginame)
@@ -1856,7 +1870,7 @@ POSTCMD: {
 			next unless $true;
 		}
 		print "$prompt\n\n";
-		my $ans = prompt( do_msg(qq{run "$command"? }, 40), 'y' );
+		my $ans = prompt( qq{run "$command"? }, 'y' );
 		if($ans =~ /^\s*y/i) {
 			system $command;
 			if($?) {
@@ -2049,7 +2063,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.20 2000-09-25 08:45:01 heins Exp $
+$Id: makecat.PL,v 1.21 2000-09-25 11:33:20 heins Exp $
 
 =head1 INTRODUCTION
 
