@@ -38,7 +38,7 @@
                 push @cc, 'disc' if $accepted =~ /discover/;
                 push @cc, 'amex' if $accepted =~ /amex/;
                 for (@cc) {
-                  push @out, qq{<IMG SRC="small$_.png">};
+                  push @out, qq{<IMG id="img_$_" SRC="small$_.png">};
                 }
                 return join '&nbsp;&nbsp;', @out;
               [/calc]
@@ -49,7 +49,128 @@
               <b>[L]Card Number[/L]: </b>
             </td>
             <td colspan=2 class="contentbar1">
-              <b><INPUT TYPE=text NAME=mv_credit_card_number SIZE=22></b>
+<script>
+	var cards = [ 'visa', 'mc', 'disc', 'amex' ];
+	var cardimg = new Array;
+	for( var i = 0; i < cards.length; i++) {
+		var el = document.getElementById('img_' + cards[i]);
+		if(el != undefined) {
+			cardimg[cards[i]] = el;
+			el.border = 0;
+		}
+	}
+
+	function highlight_card (num) {
+
+		var ti = document.getElementById('textindication');
+		ti.innerHTML = '';
+		var e;
+		for(e in cardimg) {
+			cardimg[e].border = 0;
+		}
+
+		var type;
+		var desc;
+
+		if(num == undefined) 
+			return;
+
+		if(num.substr(0,1) == '4')  {
+			type = 'visa';
+			desc = '(Visa)';
+		}
+
+		if(
+			desc == undefined &&
+			num.substr(0,2) == '51' ||
+			num.substr(0,2) == '52' ||
+			num.substr(0,2) == '53' ||
+			num.substr(0,2) == '54' ||
+			num.substr(0,2) == '55'
+		)
+		{
+			type = 'mc';
+			desc = '(Mastercard)';
+		}
+
+		if(
+			desc == undefined &&
+			num.substr(0,4) == '6011'
+			)
+		{
+			type = 'disc';
+			desc = '(Discover card)';
+		}
+
+		if(
+			desc == undefined &&
+			num.substr(0,2) == '34' ||
+			num.substr(0,2) == '37'
+			)
+		{
+			type = 'amex';
+			desc = '(American Express card)';
+		}
+
+		if(
+			desc == undefined &&
+			num.substr(0,2) == '36' ||
+			num.substr(0,2) == '30'
+			)
+		{
+			type = 'diners';
+			desc = '(Diners Club card)';
+		}
+
+		if(
+			desc == undefined &&
+			num.substr(0,2) == '38'
+			)
+		{
+			type = 'carteblanche';
+			desc = '(Carte Blanche)';
+		}
+
+		if(
+			desc == undefined &&
+			num.substr(0,1) == '2'
+			)
+		{
+			type = 'enroute';
+			desc = '(En Route)';
+		}
+
+		if(
+			desc == undefined &&
+			num.substr(0,2) == '56'
+			)
+		{
+			type = 'bankcard';
+			desc = '(BankCard)';
+		}
+
+		if(
+			desc == undefined &&
+			num.substr(0,1) == '3' ||
+			num.substr(0,4) == '2131' ||
+			num.substr(0,4) == '1800'
+			)
+		{
+			type = 'jcb';
+			desc = '(JCB card)';
+		}
+
+		var el = cardimg[type];
+// alert("el is " + el);
+		if( el != undefined ) {
+			el.border = 2;
+		}
+		if( desc != undefined ) {
+			ti.innerHTML = desc;
+		}
+	}
+</script>
+              <b><INPUT TYPE=text NAME=mv_credit_card_number SIZE=22 onChange="highlight_card(this.value)"></b> <i id=textindication style="font-size: smaller"></i>
             </td>
           </tr>
 		  [if variable MV_DEMO_MODE]
@@ -57,7 +178,7 @@
 		  	<td class=contentbar1>
 			</td>
 		  	<td colspan=2 class=contentbar1>
-              ([L]test number[/L] <A HREF="javascript:void 0" onclick="checkout.mv_credit_card_number.value='4111 1111 1111 1111'; return false;">4111 1111 1111 1111</A>)
+              ([L]test number[/L] <A HREF="javascript:void 0" onclick="checkout.mv_credit_card_number.value='4111 1111 1111 1111'; highlight_card('4'); return false;">4111 1111 1111 1111</A>)
 			</td>
 		  </tr>
 		  [/if]
