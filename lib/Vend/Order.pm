@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.21 2002-06-05 07:26:56 racke Exp $
+# $Id: Order.pm,v 2.22 2002-06-11 04:16:58 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.21 $, 10);
+$VERSION = substr(q$Revision: 2.22 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1140,6 +1140,18 @@ sub _phone_us_with_area_strict {
 }
 
 sub _email {
+	my($ref, $var, $val) = @_;
+	if($val and $val =~ /[\040-\176]+\@[-A-Za-z0-9.]+\.[A-Za-z]+/) {
+		return (1, $var, '');
+	}
+	else {
+		return (undef, $var,
+			errmsg( "'%s' not an email address", $val )
+		);
+	}
+}
+
+sub _email_only {
 	my($ref, $var, $val) = @_;
 	if($val and $val =~ /^[\040-\176]+\@[-A-Za-z0-9.]+\.[A-Za-z]+$/) {
 		return (1, $var, '');
