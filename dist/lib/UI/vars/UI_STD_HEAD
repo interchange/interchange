@@ -113,10 +113,17 @@ function MM_swapImage() { //v3.0
 //-->
 </script>
 <STYLE TYPE="text/css">
-__UI_STYLE__
 <!--
+@_UI_STYLE_@
 -->
 </STYLE>
+[if value css_personal]
+	<STYLE TYPE="text/css">
+	<!--
+	[value css_personal]
+	-->
+	</STYLE>
+[/if]
 [scratch meta_header][set meta_header][/set]
 </head>
 
