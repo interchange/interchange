@@ -729,7 +729,7 @@ EOF
 sub MY::postamble {
 	return <<'EOF';
 UIDIR=dist/lib/UI
-UILANGS=da_DK de_DE he_IL ja_JP nl_NL pt_BR sv_SE
+UILANGS=da_DK de_DE es_ES he_IL ja_JP nl_NL pt_BR sv_SE
 
 localefiles:
 	@for lang in $(UILANGS); do \
