@@ -37,6 +37,11 @@ ui_template_name: leftonly
 
     <p>&nbsp;</p>
 
+    [if cgi mv_successpage]
+		<B>Welcome back, [value fname] [value lname]!</B>
+    <p>&nbsp;</p>
+	[/if]
+
     This is a demonstration Interchange customer service page.  Here
     are some example links that your future customers might find helpful:
 
