@@ -33,7 +33,13 @@
   <td width="100%" class="menubar">
     <a href="[area index]"><img name="Home" border="0" src="__THEME_IMG_DIR__home.gif"></a>
       <img src="__THEME_IMG_DIR__sep.gif">
-    <a href="[area login]"><img alt="Log In" border="0" src="__THEME_IMG_DIR__login.gif"></a>
+    <a href="[area login]">
+    [if session logged_in]
+      <img alt="Log Out" border="0" src="__THEME_IMG_DIR__logout.gif"></a>
+    [else]
+      <img alt="Log In" border="0" src="__THEME_IMG_DIR__login.gif"></a>
+    [/else]
+    [/if]
       <img src="__THEME_IMG_DIR__sep.gif">
     <a href="[area ord/basket]"><img alt="Your Cart" border="0" src="__THEME_IMG_DIR__cart.gif"></a>
       <img src="__THEME_IMG_DIR__sep.gif">
