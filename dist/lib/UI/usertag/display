@@ -32,7 +32,9 @@ EOF
 	}
 
 #::logDebug("meta call: table=$table col=$column key=$key text=$text");
-	$text = $db->field($key,$column) if $db->record_exists($key);
+	if (defined $key && $db->record_exists($key)) {
+		$text = $db->field($key,$column);
+	}
 	if($opt->{override}) {
 		$text = $opt->{default};
 	}

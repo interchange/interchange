@@ -1,12 +1,19 @@
-interchange (4.6.0-1.3) unstable; urgency=low
+interchange (4.6.0-1.4) unstable; urgency=low
 
+  * upstream patches
   * pragma substitute_table_image added
   * emit error message on undefined filters
   * user/group configuration introduced
   * use directory /usr/lib/cgi-bin/ic for link programs
   * added CGI_BASE to configuration file
+  * user defined break labels
+  * moved UI help stuff to interchange-ui package, removed unneeded
+    stuff in share, link help to localhost
+  * allow catalog-defined user tags in action maps
+  * option signal added to formel user tag
+  * fix for empty code field within meta editor
   
- -- Stefan Hornburg <racke@linuxia.de>  Fri, 27 Oct 2000 20:55:59 +0200
+ -- Stefan Hornburg <racke@linuxia.de>  Thu,  2 Nov 2000 11:08:20 +0100
 
 interchange (4.6.0-1) unstable; urgency=low
 

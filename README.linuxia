@@ -35,6 +35,10 @@ This file documents all changes of the LINUXIA branch of Interchange.
 - page_* works without any template 
   (page_save.html: 1.4.4.2, page_preview.html: 1.5.4.2)
 - tried a shipping fix (Interpolate.pm: 1.29.4.5)
+- user-defined break labels (item_edit.html: 1.12.4.5)
+- allow catalog-defined user tags in action maps (interchange.PL: 1.8.4.8) 
+- code input field is empty if table::column doesn't exist within
+  metadata database (display: 1.7.4.2)
 
 Changes that made into the main branch:
 
