@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.16 2003-04-28 15:25:32 mheins Exp $
+# $Id: Dispatch.pm,v 1.17 2003-05-07 17:25:19 racke Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.16 $, 10);
+$VERSION = substr(q$Revision: 1.17 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -1003,9 +1003,6 @@ EOF
 		or die "Couldn't change to $Vend::Cfg->{VendRoot}: $!\n";
 	POSIX::setlocale(POSIX::LC_ALL, $Vend::Cfg->{ExecutionLocale});
 	set_file_permissions();
-# STATICPAGE
-	tie_static_dbm() if $Vend::Cfg->{StaticDBM};
-# END STATICPAGE
 	umask $Vend::Cfg->{Umask};
 
 #show_times("end cgi and config mapping") if $Global::ShowTimes;
@@ -1273,8 +1270,7 @@ EOF
 
 	$Vend::Session->{'user'} = $CGI::user;
 
-	undef $Vend::Cookie if 
-		$Vend::Session->{logged_in} && ! $Vend::Cfg->{StaticLogged};
+	undef $Vend::Cookie if 	$Vend::Session->{logged_in};
 
 	$CGI::pragma = 'no-cache'
 		if delete $::Scratch->{mv_no_cache};

@@ -1,6 +1,6 @@
 # Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 2.11 2003-04-04 04:43:20 mheins Exp $
+# $Id: Session.pm,v 2.12 2003-05-07 17:25:19 racke Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -26,7 +26,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.11 $, 10);
+$VERSION = substr(q$Revision: 2.12 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -565,39 +565,6 @@ sub check_save {
 
 	return ($expire > $time);
 }	
-
-sub tie_static_dbm {
-	my $rw = shift;
-	untie(%Vend::StaticDBM) if $rw;
-	if($Global::GDBM) {
-        my $flags = $rw ? &GDBM_WRITER : &GDBM_READER;
-        $flags = &GDBM_NEWDB
-            if $rw && (! -f "$Vend::Cfg->{StaticDBM}.gdbm");
-        tie(%Vend::StaticDBM,
-            'GDBM_File',
-            "$Vend::Cfg->{StaticDBM}.gdbm",
-            $flags,
-            $Vend::Cfg->{'FileCreationMask'},
-        )
-        or $Vend::Cfg->{SaveStaticDBM} = delete $Vend::Cfg->{StaticDBM};
-	}
-	elsif ($Global::DB_File) {
-		tie(%Vend::StaticDBM,
-			'DB_File',
-			"$Vend::Cfg->{StaticDBM}.db",
-			($rw ? &O_RDWR | &O_CREAT : &O_RDONLY),
-			$Vend::Cfg->{'FileCreationMask'},
-			)
-		or undef $Vend::Cfg->{StaticDBM};
-	}
-	else {
-        $Vend::Cfg->{SaveStaticDBM} = delete $Vend::Cfg->{StaticDBM};
-	}
-	::logError("Failed to create StaticDBM %s", $Vend::Cfg->{StaticDBM})
-		if $rw && ! $Vend::Cfg->{StaticDBM};
-	return $Vend::Cfg->{StaticDBM} || undef;
-}
-
 
 1;
 
