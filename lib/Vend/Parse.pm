@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12.2.11 2001-02-26 00:58:36 heins Exp $
+# $Id: Parse.pm,v 1.12.2.12 2001-03-06 15:08:54 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -38,7 +38,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12.2.11 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.12 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -551,6 +551,7 @@ my %attrAlias = (
 	 perl          	=> { 'table' => 'tables' },
 	 mvasp         	=> { 'table' => 'tables' },
 	 price         	=> { 'base' => 'mv_ib' },
+	 query 			=> { 'base' => 'table' },
 	 page          	=> {
 	 						'base' => 'arg',
 						},
