@@ -58,11 +58,30 @@ In order to launch, you must have a secure (SSL) connection and a payment gatewa
 	}
 	else {
 		$Scratch->{tmessage} = "No orders currently in the database - select No to leave blank";
-		$Values->{sampleorders} = $Scratch->{tdefault} = '1';
+		$Values->{sampleorders} = $Scratch->{tdefault} = '';
 	}
 	return;
 [/perl]
 
+[set write_flag]
+	[flag type=write table="variable"]
+	[flag type=write table="pricing"]
+	[flag type=write table="products"]
+[/set]
+
+[comment]
+When we get Postgres better figured out, we can put this back in for
+it. Until then, MySQL and DBM only.
+[/comment]
+
+[if variable PGSQL]
+	[tmp the_fields]sampleproducts enablesecure[/tmp]
+[else]
+	[tmp the_fields]sampleproducts sampleorders enablesecure[/tmp]
+[/else]
+[/if]
+
+		
 [table-editor 
 	table=variable
 	left_width=120
@@ -76,15 +95,17 @@ In order to launch, you must have a secure (SSL) connection and a payment gatewa
    	row_template="[scratch row_template]"
 
 	mv_nextpage=__UI_BASE__/wizard/do_save
-	mv_prevpage=__UI_BASE__/wizard/step_finalize
+	mv_prevpage=__UI_BASE__/wizard/step_manualentry
 	hidden.ui_return_to="__UI_BASE__/wizard/index"
+	hidden.mv_click="write_flag"
+	hidden.mv_check=profile_save_values
 
 	ui_data_key=code
 	default.code="[value code]"
 	widget.code=text_10
 
-	ui_data_fields="code sampleproducts sampleorders enablesecure"
-	ui_display_only="sampleproducts sampleorders enablesecure"
+	ui_data_fields="code [scratch the_fields]"
+	ui_display_only="[scratch the_fields]"
 	ui_hide_key=1
 
 	label.sampleorders="Insert sample order data"
@@ -97,8 +118,7 @@ In order to launch, you must have a secure (SSL) connection and a payment gatewa
 
 	label.enablesecure="Enable Secure (SSL)"
 	help.enablesecure="Select Yes if your Stronghold secure server is set up"
-	widget.enablesecure=select
-	passed.enablesecure="0=No, 1=Yes"
+	widget.enablesecure=yesno
 ]
 
 @_UI_STD_FOOTER_@

@@ -5,7 +5,7 @@
 
 Enter the title and content to be displayed on your About Us page.
 The <b>Content</b> section already contains sample text formatted in HTML. You can
-manipulate this text or enter new text.
+manipulate this text or enter all new text.
 <p>
 
 [tmp default_abouttext]
@@ -17,7 +17,7 @@ manipulate this text or enter new text.
     </p>
 
     <p> 
-	We can be contacted at:
+    We can be contacted at:
 
 	<BLOCKQUOTE>
 	[value company]<br>
@@ -33,7 +33,7 @@ manipulate this text or enter new text.
     </p>
 
     <p>
-	If you would like further information, please contact:
+    If you would like further information, please contact:
 
 	<BLOCKQUOTE>
 	<a href="mailto:[value emailinfo]">[value emailinfo]</a>
@@ -47,7 +47,7 @@ manipulate this text or enter new text.
 [table-editor 
 	table=variable
 	left_width=120
-	table_width=500
+	table_width=300
 	wizard=1
 	defaults=1
 	bottom_buttons=1
@@ -77,7 +77,7 @@ manipulate this text or enter new text.
 	default.abouttitle=`'About ' . ($Values->{company} || 'Us')`
 
 	label.abouttext="Content"
-	widget.abouttext=textarea_18_60
+	widget.abouttext=textarea_18_50
 	default.abouttext=`$Scratch->{default_abouttext}`
 ]
 
