@@ -23,11 +23,9 @@
   <td align="left" valign="middle" class="maincontent">
     &nbsp;<img src="__THEME_LOGO__">
   </td>        	
-  [if variable NO_REDHAT_LOGO ne "1"]
   <td align="right" valign="middle" class="maincontent">
     <img width="174" height="60" src="__THEME_IMG_DIR__logo2.gif">&nbsp;
   </td>
-  [/if]
 </tr>
 </table>
 

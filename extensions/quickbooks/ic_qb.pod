@@ -302,5 +302,5 @@ parentheses after the company or name.
 
 =head1 AUTHOR
 
-Mike Heins, Red Hat, Inc. <mheins@redhat.com>.
+Mike Heins, mike@perusion.com
 

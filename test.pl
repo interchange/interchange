@@ -29,8 +29,8 @@ EOF
 open(CONFIG, ">$ENV{MINIVEND_ROOT}/catalog.cfg")
 	or die "open: $!\n";
 
-print CONFIG <<EOF;
-MailOrderTo  interchange\@redhat.com
+print CONFIG <<'EOF';
+MailOrderTo  info@icdevgroup.org
 VendURL      http:/test
 SecureURL    http:/test
 Database     products products.asc DEFAULT

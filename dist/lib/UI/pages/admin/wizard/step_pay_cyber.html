@@ -1,4 +1,4 @@
-[set page_title]Payment Preferences : CyberCash[/set]
+[set page_title][L]Payment Preferences : CyberCash[/L][/set]
 [set ui_checklist]1[/set]
 [set help_name]wizard.cybercash[/set]
 @_UI_STD_HEAD_@
@@ -8,14 +8,14 @@
 	my $readstatus = q{[version extended=1 modtest="CCMckLib3_2"]};
 	return if $readstatus;
 	$Scratch->{need_cybercash_modules} = <<EOF;
-<H2>XLS product upload will not work properly.</H2>
-Please install needed Perl modules:
+<H2>[L]XLS product upload will not work properly.[/L]</H2>
+[L]Please install needed Perl modules[/L]:
 <small>
-<blockquote class=cerror>
-	$miss
+<blockquote>
+	<FONT COLOR="__UI_C_CONTRAST__">$miss</FONT>
 </blockquote>
 </small>
-The easiest way to do this is to use the CPAN module and do:
+[L]The easiest way to do this is to use the CPAN module and do[/L]:
 <blockquote>
 $inst
 </blockquote>
@@ -25,16 +25,14 @@ EOF
 [/calc]
 
 [if scratch need_cybercash_modules]
-	Sorry, this machine does not have the CyberCash libraries
-	installed. Please contact your system administrator and
-	have them install CyberCash. If you need assistance with
-	this, Red Hat can install them for a fee. Contact
-	<A HREF="mailto:support@interchange.redhat.com">support@interchange.redhat.com</A> for more information.
+	[L WIZARD_STEP_PAY_CYBER_1]Sorry, this machine does not have the CyberCash libraries
+	installed. Please ask your system administrator or a competent consultant
+	to install CyberCash for you.[/L]
 [else]
 <table width=500><tr><td align=left>
-CyberCash only requires a configuration file that we will upload
+[L WIZARD_STEP_PAY_CYBER_2]CyberCash only requires a configuration file that we will upload
 now. Upload the merchant_conf file created during your installation
-process.
+process.[/L]
 </td></tr></table>
 
 [table-editor 
@@ -56,7 +54,7 @@ process.
 
 	ui_wizard_fields="cyberfile"
 
-	label.cyberfile="CyberCash configuration file"
+	label.cyberfile="[L]CyberCash configuration file[/L]"
 	widget.cyberfile=uploadhelper
 	filter.cyberfile=nullselect
 	outboard.cyberfile=upload
