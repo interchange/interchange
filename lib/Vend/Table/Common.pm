@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.7 2001-12-07 00:20:28 jon Exp $
+# $Id: Common.pm,v 2.8 2001-12-29 19:49:33 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -1277,6 +1277,66 @@ EndOfRoutine
 		);
 	}
     return $out;
+}
+
+sub import_from_ic_db {
+    my ($infile, $options, $table_name) = @_;
+
+	my $tname = $options->{MIRROR}
+		or die errmsg(
+				"Memory mirror table not specified for table %s.",
+				$table_name,
+			);
+#::logDebug("Importing mirrored $table_name from $tname");
+
+	$Vend::Database{$tname} =
+		Vend::Data::import_database($Vend::Cfg->{Database}{$tname})
+			unless $Vend::Database{$tname};
+
+	my $idb = Vend::Data::database_exists_ref($tname)
+		or die errmsg(
+				"Memory mirror table %s does not exist (yet) to create mirror %s.\n",
+				$tname,
+				$table_name,
+			);
+
+	my @field_names = $idb->columns;
+
+	my $odb;
+
+	if($options->{ObjectType}) {
+		no strict 'refs';
+		$odb = &{"$options->{ObjectType}::create"}(
+									$options->{ObjectType},
+									$options,
+									\@field_names,
+									$table_name,
+								);
+	}
+	else {
+		$odb = $options->{Object};
+	}
+
+#::logDebug("idb=$idb odb=$odb");
+	eval {
+		my $f;
+		while($f = $idb->each_nokey()) {
+#::logDebug("importing key=$f->[0]");
+			$odb->set_row(@$f);
+		}
+	};
+
+	if($@) {
+		die ::errmsg(
+				"Problem with mirror import from source %s to target %s\n",
+				$tname,
+				$table_name,
+				);
+	}
+	
+	$odb->[$CONFIG]{Mirror_complete} = 1;
+	delete $odb->[$CONFIG]{Clean_start};
+    return $odb;
 }
 
 my $white = ' \t';

@@ -1,6 +1,6 @@
 # Vend::Glimpse - Search indexes with Glimpse
 #
-# $Id: Glimpse.pm,v 2.2 2001-11-26 18:34:02 mheins Exp $
+# $Id: Glimpse.pm,v 2.3 2001-12-29 19:49:33 mheins Exp $
 #
 # Adapted for use with Interchange from Search::Glimpse
 #
@@ -25,27 +25,27 @@ package Vend::Glimpse;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 use strict;
 
 sub array {
 	my ($s, $opt) = @_;
-	$s->{mv_list_only} = 1;
-	Vend::Scan::perform_search($opt, undef, $s);
+	$s->{mv_list_only} = 1; # makes perform_search only return results array
+	return Vend::Scan::perform_search($opt, undef, $s);
 }
 
 sub hash {
 	my ($s, $opt) = @_;
 	$s->{mv_return_reference} = 'HASH';
-	$s->{mv_list_only} = 1;
-	Vend::Scan::perform_search($opt, undef, $s);
+	$s->{mv_list_only} = 1; # makes perform_search only return results array
+	return Vend::Scan::perform_search($opt, undef, $s);
 }
 
 sub list {
 	my ($s, $opt) = @_;
-	$s->{mv_list_only} = 1;
 	$s->{mv_return_reference} = 'LIST';
-	Vend::Scan::perform_search($opt, undef, $s);
+	$s->{mv_list_only} = 1; # makes perform_search only return results array
+	return Vend::Scan::perform_search($opt, undef, $s);
 }
 
 my %Default = (

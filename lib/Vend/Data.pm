@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.4 2001-12-28 17:55:44 mheins Exp $
+# $Id: Data.pm,v 2.5 2001-12-29 19:49:33 mheins Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -647,7 +647,22 @@ sub tie_database {
 	if($Global::Database) {
 		copyref($Global::Database, $Vend::Cfg->{Database});
 	}
-    while (($name,$data) = each %{$Vend::Cfg->{Database}}) {
+
+	my @tables = keys %{$Vend::Cfg->{Database}};
+
+	my @delayed;
+	my $redone;
+
+	TIEDB: {
+
+		foreach $name (@tables) {
+			$data = $Vend::Cfg->{Database}{$name} || {};
+			if(! $redone and $data->{MIRROR}) {
+#::logDebug("mirror database $name, delaying");
+				$data->{HOT} = 1;
+				push @delayed, $name;
+				next;
+			}
 		if(! $data->{name}) {
 #::logDebug("Screwed up database: " . ::uneval( $data) );
 			next;
@@ -678,6 +693,16 @@ sub tie_database {
 			my $class = $db_config{$data->{Class}}->{Class};
 			$Vend::Database{$name} = new $class ($data);
 		}
+	}
+
+		# So mirrors will not happen until after mirror source
+		if(@delayed) {
+			@tables = @delayed;
+			@delayed = ();
+			$redone = 1;
+			redo TIEDB;
+		}
+
 	}
 	update_productbase();
 }
@@ -816,6 +841,17 @@ sub import_database {
 		}
 	}
 
+	if($obj->{MIRROR}) {
+		if($obj->{Mirror_complete}) {
+			$no_import = 1;
+		}
+		else {
+#::logDebug ("table $new_table_name: undeffing $database_dbm, hot=$obj->{HOT}");
+			undef $database_dbm;
+			undef $no_import;
+		}
+	}
+
 	last IMPORT if $no_import;
 #::logDebug ("moving to import") if $type == 9;
 
@@ -826,6 +862,7 @@ sub import_database {
     if (
 		! defined $database_dbm
 		or ! -e $database_dbm
+		or $obj->{MIRROR}
         or ($txt_time = file_modification_time($database_txt, $obj->{PRELOAD}))
 				>
            ($dbm_time = file_modification_time($database_dbm))
@@ -848,11 +885,20 @@ sub import_database {
 
 		local($/) = $record_delim if defined $record_delim;
 
+		if($obj->{MIRROR}) {
+			$db = Vend::Table::Common::import_from_ic_db(
+							$database_txt,
+							$obj,
+							$new_table_name,
+				);
+		}
+		else {
         $db = Vend::Table::Common::import_ascii_delimited(
 							$database_txt,
 							$obj,
 							$new_table_name,
 				);
+		}
 
 		$/ = $save;
 		if(defined $database_dbm) {
@@ -1021,7 +1067,7 @@ EOF
 	$scan =~ s:^scan/::;
 
 	my $c = {
-				mv_list_only		=> 1,
+				mv_list_only        => 1,
 				mv_search_file		=> $bx_fn,
 			};
 
