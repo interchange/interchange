@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.151 2003-03-07 19:48:05 mheins Exp $
+# $Id: Interpolate.pm,v 2.152 2003-03-20 11:24:17 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.151 $, 10);
+$VERSION = substr(q$Revision: 2.152 $, 10);
 
 @EXPORT = qw (
 
@@ -873,8 +873,15 @@ sub tag_data {
 					$val =~ s/\0+//g;
 					return $val 
 						unless $val =~ m:(\d+)[-/]+(\d+)[-/]+(\d+):;
-					my ($yr, $mon, $day) = ($3, $1, $2);
+					my ($yr, $mon, $day);
 
+					if (length($1) == 4) {
+						# MySQL date style 2003-03-20
+						($yr, $mon, $day) = ($1, $2, $3);
+					} else {
+						($yr, $mon, $day) = ($3, $1, $2);
+					}
+					
 					my $time;
 					$val =~ /:(\d+)$/
 						and $time = $1;
