@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.36 2003-07-15 02:06:05 jon Exp $
+# $Id: Form.pm,v 2.37 2003-07-18 20:06:55 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.36 $, 10);
+$VERSION = substr(q$Revision: 2.37 $, 10);
 
 @EXPORT = qw (
 	display
@@ -235,13 +235,18 @@ sub show_data {
 sub show_options {
 	my $opt = shift;
 	my $ary = shift;
+	my $idx = shift || 0;
 	return undef if ! $ary;
 	my @out;
 	eval {
-		@out = map {$_->[0]} @$ary;
+		@out = map {$_->[$idx]} @$ary;
 	};
 	my $delim = Vend::Interpolate::get_joiner($opt->{delimiter}, ',');
 	return join $delim, @out;
+}
+
+sub show_labels {
+	return show_options($_[0], $_[1], 1);
 }
 
 sub template_sub {
@@ -1196,6 +1201,7 @@ if($opt->{debug}) {
 		noyes		=> \&noyes,
 		option_format => \&option_widget,
 		options     => \&show_options,
+		labels      => \&show_labels,
 		radio       => \&box,
 		select      => \&dropdown,
 		show        => \&show_data,
