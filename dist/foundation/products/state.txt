@@ -151,7 +151,7 @@ code	sorder	country	state	name	tax	postcode	shipmodes	tax_name
 	05	UK	KENT	Kent
 	05	UK	LANCS	Lancashire
 	05	UK	LEICS	Leicestershire
-	05	UK	LINCS	Licolnshire
+	05	UK	LINCS	Lincolnshire
 	05	UK	MERSEY	Merseyside
 	05	UK	NORF	Norfolk
 	05	UK	NHANTS	Northamptonshire
