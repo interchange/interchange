@@ -18,8 +18,16 @@
 			return;
 		[/calc]
 		[include file="[scratch ui_output_page]"]
-	[else]
+	[elsif cgi ui_page_finalize]
 		[bounce page="__UI_BASE__/page"]
+	[/elsif]
+	[else]
+		[tmp junkref][area
+							href=__UI_BASE__/page_edit
+							form=auto
+							ui_page="[cgi ui_page]"
+							][/tmp]
+		[bounce href="[scratch junkref]"]
 	[/else]
 	[/if]
 [else]

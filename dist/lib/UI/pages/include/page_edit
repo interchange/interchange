@@ -37,7 +37,7 @@
 [/on-match]
 [/loop]
 
-<form action="[area ui]" method=POST ENCTYPE="multipart/form-data">
+<form action="[area __UI_BASE__/page_save]" method=POST ENCTYPE="multipart/form-data">
 <input type=hidden name=mv_session_id value="[data session id]">
 <input type=hidden name=mv_todo value=back>
 <input type=hidden name=ui_template_version value="[version]">
@@ -268,13 +268,13 @@ EOF
 		}
 		for($i = 0; $i < $found; $i++) {
 			$template_top .= $Tag->var($el[$i], 2);
-#Log("i=$i, reading top variable $el[$i]");
+#Debug("i=$i, reading top variable $el[$i]");
 		}
 		for($i = $found + 1; $i < @el; $i++) {
 			$template_bot .= $Tag->var($el[$i], 2);
-#Log("i=$i, reading bot variable $el[$i]");
+#Debug("i=$i, reading bot variable $el[$i]");
 		}
-#Log("Template top: $template_top");
+#Debug("Template top: $template_top");
 	}
 
 	$control_display = $tref->{ui_template_edit}
@@ -282,9 +282,10 @@ EOF
 
 	my %control_display = map { ($_, 1) } split /[\s\0,]/, $control_display;
 
-#Log("t_name=$t_name");
+#Debug("t_name=$t_name");
 
 	my $page = $CGI->{ui_page};
+#Debug("page_edit ui_page=$page");
 
 	$out .= title_row( errmsg("Page file: %s", $page ) );
 	$hidden{ui_page}			= $page;
@@ -406,19 +407,33 @@ EOF
 				 	(.*?)
 					<!--+ \s+ end \s+ component \s+ \1 \s+ --+> 
 				 | 
-				 	\[ include \s+ file \s*=\s*["'][^"]*/
+				 	\[ include \s+ (.*?) file \s*=\s*["'][^"]*/
 						(?:\[control \s+ component \s+ )?
 							(\w+)
 						\]? ['"]
-				 	\s*
-					(?:group=["']?(\w+)['"]?)?
-					.*?
+				 	(.*?)
 					\]  \s*  \[control\]
+				 |
+				 	\[ component \s+  (.*?) comp(?:[-_]name|onent) \s*=\s*["']\s*
+						(?:\[control \s+ component \s+ )?
+							(\w+)
+						\]? \s* ['"]
+					(.*?)
+					\]\s
 				 )
 			}gsix)
 		{
-			my $compname = $1 || $4;
-			my $comptype = $2 || $5;
+			my $compname = $1 || $5 || $8;
+			my $comptype = $2;
+			if(! $comptype) {
+				my @stuff = ($4, $6, $7, $9);
+#Debug("no comptype, stuff is: " . uneval(\@stuff));
+				@stuff = grep $_, @stuff;
+				my $stuff = join "", @stuff;
+				$stuff =~ /\s+group\s*=[\s'"]*(\w+)/i
+					and $comptype = $1;
+#Debug("comptype=$comptype");
+			}
 #Log("Found component $compname, group $comptype");
 			my $current_content = $3 || '';
 			
@@ -552,7 +567,7 @@ EOF
 		my %seen;
 		@comps = grep !$seen{$_}++, @comps;
 
-		my $out = qq{<SELECT NAME="$name">};
+		my $out = qq{<SELECT NAME="$name" onChange="this.form.submit()">};
 		for(@comps) {
 			$out .= qq{<OPTION VALUE="$_"};
 			$out .= " SELECTED" if $curr eq $_;
@@ -863,20 +878,28 @@ EOF
 
 <tr class=ralt>
 <td colspan=2>
-[set Preview]
+[set [L]Preview[/L]]
 mv_todo=back
 mv_nextpage=__UI_BASE__/page_preview
 [/set]
 
-[set Save]
+[set [L]Save[/L]]
+ui_page_finalize=0
+mv_nextpage=__UI_BASE__/page_save
+[/set]
+
+[set [L]Publish[/L]]
+ui_page_finalize=1
 mv_nextpage=__UI_BASE__/page_save
 [/set]
 
 [scratchd tmp_hidden]
-<INPUT TYPE=submit NAME=mv_click VALUE=Preview onClick="this.form.target='page_preview'; this.form.action='[area __UI_BASE__/page_preview]'">
+<INPUT TYPE=hidden NAME=mv_action VALUE="go">
+<INPUT TYPE=submit NAME=mv_click VALUE="[L]Preview[/L]" onClick="this.form.target='page_preview'; this.form.action='[area __UI_BASE__/page_preview]'">
 <INPUT TYPE=hidden NAME=ui_return_to VALUE="__UI_BASE__/page">
-<INPUT TYPE=submit NAME=mv_click VALUE=Save onClick="this.form.target='_self'; this.form.action='[area __UI_BASE__/page_save]'">
-<INPUT TYPE=submit NAME=mv_click VALUE=Cancel onClick="this.form.target='_self'; this.form.action='[area __UI_BASE__/page]'"><br>
+<INPUT TYPE=submit NAME=mv_click VALUE="[L]Save[/L]" onClick="this.form.target='_self'">
+<INPUT TYPE=submit NAME=mv_click VALUE="[L]Publish[/L]" onClick="this.form.target='_self'">
+<INPUT TYPE=submit NAME=mv_click VALUE="[L]Cancel[/L]" onClick="this.form.target='_self'; this.form.action='[area __UI_BASE__/page]'"><br>
 [comment]
 <!-- may come back someday -->
 <INPUT TYPE=checkbox NAME=ui_save_t_in_page VALUE=1 [cgi save_in_page]> Save template in page

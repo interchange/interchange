@@ -156,25 +156,35 @@ EOF
 	delete $Scratch->{ui_output_page};
 
 	my $page = $Tag->filter('filesafe', $CGI->{ui_page});
+	my $tmpdir = "$Config->{ScratchDir}/pages/$Session->{id}";
+	$tmpdir =~ s:^$Config->{VendRoot}/::;
+
+#Debug("finalize=$CGI->{ui_page_finalize}");
 	if( $CGI->{ui_page_preview} ) {
 		$page = "preview.html" unless $page;
 		$page =~ s:.*/::;
 		$page = "tmp/$Session->{id}.$page";
+	}
+	elsif($CGI->{ui_page_finalize}) {
+		my $unlink = $Tag->unlink_file("$tmpdir/$page");
+#Debug("unlink=$unlink file=$tmpdir/$page");
 	}
 	elsif( ! $page) {
 		$Scratch->{ui_error} = errmsg("No page name given.");
 		$Tag->bounce('__UI_BASE__/error');
 		return;
 	}
+	else {
+		$page = "$tmpdir/$page";
+	}
 	$page .= $Config->{HTMLsuffix}
 		unless $page =~ /$Config->{HTMLsuffix}$/;
-	$page = "pages/$page" if $page !~ m{^pages/|^tmp/};
-#Log("final page=$page");
+#Debug("final page=$page");
 	push @out, '';
 
 	my $out = join "\n", @out;
 	unless ($Tag->write_relative_file($page, $out)) {
-#Log("failed to write page=$page");
+Debug("failed to write page=$page");
 		$Scratch->{ui_error} = errmsg("Couldn't save page %s.", $page);
 	}
 	$Scratch->{ui_output_page} = $page; 

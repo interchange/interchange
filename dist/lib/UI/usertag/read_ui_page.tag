@@ -65,18 +65,39 @@ EOD
 UserTag read-ui-page Routine <<EOR
 sub {
 	my ($pn, $opt) = @_;
-	
+#::logDebug("read_ui_page pn=$pn");
 	my $suffix  = $Vend::Cfg->{HTMLsuffix} || '.html';
+	my $tmpdir  = $Vend::Cfg->{ScratchDir} || 'tmp';
 	my $pagedir = $Vend::Cfg->{PageDir} || 'pages';
+	$tmpdir .= "/pages/$Session->{id}";
+	File::Path::mkpath($tmpdir) unless -d $tmpdir;
 	my $name = $pn;
 	my $data;
+	my $inprocess;
 
+	### We look for a saved but unpublished page in 
+	### the temporary space for the user, and use that if
+	### it is there. Otherwise, we read normally.
 	if($pn) {
-		if(not -f $pn) {
+		FINDPN: {
+			$pn = "$tmpdir/$name";
+			if(-f $pn) {
+				$inprocess = 1;
+				last FINDPN;
+			}
+
+			if ($pn !~ /$suffix$/) {
+				$pn .= $suffix;
+				if(-f $pn) {
+					$inprocess = 1;
+					last FINDPN;
+				}
+			}
+
+			$pn = $name;
+			last FINDPN if -f $pn;
+
 			$pn .= $suffix if $pn !~ /$suffix$/;
-		}
-		if(not -f $pn) {
-			$pn = "$pagedir/$pn";
 		}
 		$data = Vend::Util::readfile($pn, $Global::NoAbsolute, 0);
 	}
@@ -93,6 +114,7 @@ sub {
 			ui_page_setting	=> {},
 			ui_pre_region	=> [],
 			ui_post_region	=> [],
+			ui_page_inprocess => $inprocess,
 		};
 
 	my $preamble;

@@ -48,15 +48,30 @@ sub {
 	else {
 		@files = glob($fn);
 	}
+	
+	my $tmpdir = "$Config->{ScratchDir}/pages/$Session->{id}";
+	$tmpdir =~ s:^$Config->{VendRoot}/::;
 
 	my $data;
 	my %out;
 	my @out;
 	foreach my $fn (@files) {
 		my $name = $fn;
-		# force substitution of [L..]-stuff off by defining third param
-		$data = Vend::Util::readfile($fn, $Global::NoAbsolute, 0);
+
+		### We look for a saved but unpublished page in 
+		### the temporary space for the user, and use that if
+		### it is there. Otherwise, we read normally.
+		my $tmp = "$tmpdir/$name";
+		if(-f $tmp) {
+			# force substitution of [L..]-stuff off by defining third param
+			$data = Vend::Util::readfile($tmp, $Global::NoAbsolute, 0);
+		}
+		else {
+			# force substitution of [L..]-stuff off by defining third param
+			$data = Vend::Util::readfile($fn, $Global::NoAbsolute, 0);
+		}
 		next unless length($data);
+
 		$name =~ s:.*/::;
 		my $ref = {};
 		$data =~ m{\[comment\]\s*(ui_.*?)\[/comment\]\s*(.*)}s;
