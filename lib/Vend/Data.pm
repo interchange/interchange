@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.17.2.1 2000-11-25 00:17:23 heins Exp $
+# $Id: Data.pm,v 1.17.2.2 2000-11-30 02:40:36 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -196,7 +196,7 @@ sub increment_field {
 	$db = $db->ref();
     return undef unless $db->test_record($key);
     return undef unless defined $db->test_column($field_name);
-#::logDebug(__PACKAGE__ . "increment_field: " . ::uneval(\@_));
+#::logDebug(__PACKAGE__ . "increment_field: " . ::uneval_it(\@_));
     return $db->inc_field($key, $field_name, $adder);
 }
 
@@ -614,6 +614,15 @@ my %db_config = (
 					Class                Vend::Table::DB_File
 				/
 		},
+		'SDBM' => {
+				qw/
+					TableExtension		 .sdbm
+					Extension			 sdbm
+					Tagged_write		 1
+					Class                Vend::Table::SDBM
+				/,
+				FileExtensions	=> [ qw/dir pag/ ],
+		},
 # LDAP
 		'LDAP' => {
 				qw/
@@ -836,8 +845,22 @@ sub import_database {
 			$db->close_table() if defined $db;
 			undef $db;
 			unlink $database_dbm if $Global::Windows;
-        	rename($new_database_dbm, $database_dbm)
-            	or die "Couldn't move '$new_database_dbm' to '$database_dbm': $!\n";
+			if($class_config->{FileExtensions}) {
+				open(TOUCH, ">>$database_dbm")
+					or die "Couldn't freshen $database_dbm: $_";
+				close TOUCH 
+					or die "Couldn't freshen $database_dbm: $_";
+				for(@{$class_config->{FileExtensions}}) {
+					my ($old, $new) = ("$new_database_dbm.$_", "$database_dbm.$_");
+					rename($old, $new)
+						or die
+							"Couldn't move '$old' to '$new': $!\n";
+				}
+			}
+			else {
+				rename($new_database_dbm, $database_dbm)
+					or die "Couldn't move '$new_database_dbm' to '$database_dbm': $!\n";
+			}
 		}
     }
 	elsif ($obj->{AUTO_EXPORT} and $dbm_time > $txt_time) {
@@ -1215,7 +1238,7 @@ my %opt_map;
 
 sub option_cost {
 	my ($item, $table, $final) = @_;
-::logDebug("called option_cost");
+#::logDebug("called option_cost");
 	my $db = Vend::Data::database_exists_ref($table);
 	if(! $db) {
 		::logError('Non-existent price option table %s', $table);
@@ -1248,7 +1271,7 @@ sub option_cost {
 
 	return if ! $record->{o_enable};
 
-::logDebug("option_cost found enabled record");
+#::logDebug("option_cost found enabled record");
 	my $fsel = $opt_map{sku} || 'sku';
 	my $rsel = $db->quote($sku, $fsel);
 	my @rf;
@@ -1264,7 +1287,7 @@ sub option_cost {
 	my $f;
 
 	foreach $ref (@$ary) {
-::logDebug("checking option " . ::uneval_it($ref));
+#::logDebug("checking option " . ::uneval_it($ref));
 		next unless defined $item->{$ref->[0]};
 		$ref->[1] =~ s/^\s+//;
 		$ref->[1] =~ s/\s+$//;
@@ -1285,7 +1308,7 @@ sub option_cost {
 			}
 		}
 	}
-::logDebug("option_cost returning price=$price f=$f");
+#::logDebug("option_cost returning price=$price f=$f");
 	return ($price, $f);
 }
 
@@ -1397,9 +1420,9 @@ CHAIN:
 				}
 				$price = database_field(
 						($table || $item->{mv_ib} || $Vend::Cfg->{ProductFiles}[0]),
-											($key || $item->{code}),
-											$field
-										);
+						($key ?  ($item->{$key} || $key) : $item->{code}),
+						$field
+						);
 				redo CHAIN;
 			}
 			elsif ($mod =~ s/^[&]//) {
@@ -1478,13 +1501,13 @@ sub item_price {
 	my ($price, $base, $adjusted);
 	$item = { 'code' => $item, 'quantity' => ($quantity || 1) } unless ref $item;
 	if(not $base = $item->{mv_ib}) {
-		$base = product_code_exists_tag($item->{code}, $item->{mv_ib})
-			or $Vend::Cfg->{OnFly}
+		$base = product_code_exists_tag($item->{code})
+			or ($Vend::Cfg->{OnFly} && 'mv_fly')
 			or return undef;
 	}
 	$price = database_field($base, $item->{code}, $Vend::Cfg->{PriceField})
 		if $Vend::Cfg->{PriceField};
-#::logDebug("item_price before chain cost: $price PriceField=$Vend::Cfg->{PriceField} base=$base");
+#::logDebug("item_price before chain cost=|$price| PriceField=$Vend::Cfg->{PriceField} base=$base");
 	$price = chain_cost($item,$price || $Vend::Cfg->{CommonAdjust});
 	$price = $price / $Vend::Cfg->{PriceDivide};
 #::logDebug("item_price before cache: $price");
@@ -1495,12 +1518,17 @@ sub item_price {
 }
 
 sub item_description {
-	return item_field($_[0], $Vend::Cfg->{DescriptionField});
+	my $item = shift;
+	my $base = $Vend::Database{$item->{mv_ib}} || $Products;
+	return database_field($base, $item->{code}, $Vend::Cfg->{DescriptionField});
 }
 
 sub item_field {
-	my $base = $Vend::Database{$_[0]->{mv_ib}} || $Products;
-	return database_field($base, $_[0]->{code}, $_[1]);
+	my ($item, $field) = @_;
+	my $base = $Vend::Database{$item->{mv_ib}} || $Products;
+	my $res = database_field($base, $item->{code}, $field);
+	return $res if length($res);
+	return database_field($base, $item->{mv_sku}, $field);
 }
 
 sub item_subtotal {
