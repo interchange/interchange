@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.8 2000-09-20 07:46:44 heins Exp $
+# $Id: UserDB.pm,v 1.9 2000-09-20 07:56:05 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.8 $, 10);
+$VERSION = substr(q$Revision: 1.9 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -587,7 +587,7 @@ sub get_values {
 	if($self->{OPTIONS}->{scratch}) {
 		my (@s) = split /[\s,]+/, $self->{OPTIONS}{scratch} ;
 		@scratch{@s} = @s;
-::logError("scratch ones: " . join " ", @s);
+#::logError("scratch ones: " . join " ", @s);
 	}
 	for(@fields) {
 		if($ignore{$_}) {
