@@ -1,10 +1,5 @@
 code	sel	name	which_page	sort	display_type	image	image_prop	banner_image	banner_text	link_type	url	tab	page	search	selector	link_template
-5	left	Multimedia	all	05	name
-4	left	Monitors	all	05	name
-10	left	Systems	all	05	name
-7	left	Service	all	05	name
-3	left	Input devices	all	05	name
-6	left	RAM	all	05	name
-9	left	Storage	all	05	name
-2	left	Hardware	all	05	name
-8	left	Software	all	05	name
+10	left	Systems	all	05	name											
+3	left	Input devices	all	05	name											
+9	left	Storage	all	05	name											
+2	left	Hardware	all	05	name											
