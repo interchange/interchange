@@ -270,7 +270,9 @@ ui_template_name: noleft
         <table border="0" cellspacing="0" cellpadding="0" width="50%">
         <TR>
           <td align="left">
+			[if items]
             <INPUT TYPE=image VALUE="Refresh" src="__THEME_IMG_DIR__recalculate_button.gif" border=0>
+			[/if]
           </td>
           <td align="right">
             <table align="center" cellspacing="0" border="0">
@@ -897,6 +899,7 @@ ui_template_name: noleft
     <tr><td>
       <br>
       <table align="center" cellpadding="10" cellspacing="10"><tr>
+	[if items]
       <td> 
 	[button 
 		name="mv_click" 
@@ -919,6 +922,10 @@ ui_template_name: noleft
 			mv_todo=refresh
 		[/button]
       </td>
+	[else]
+		<td><b>No items in your shopping cart!</b></td>
+	[/else]
+	[/if]
       </tr></table>
         
       </form>
