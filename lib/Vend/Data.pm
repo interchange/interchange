@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.29 2003-06-25 16:38:17 mheins Exp $
+# $Id: Data.pm,v 2.30 2003-08-09 15:14:11 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -570,14 +570,6 @@ sub find_delimiter {
 	return;
 }
 
-=head1 auto_delimiter
-
-This routine finds the delimiter type automatically, given the text file
-name. Below is a test of it -- run the code from the definition of %Delimiter to
-end of the =cut below the routine.
-
-=cut
-
 sub auto_delimiter {
 	my ($fn) = @_;
 	my $fdelim = "\t";
@@ -618,31 +610,6 @@ sub auto_delimiter {
 	}
 	return ($fdelim, $rdelim);
 }
-
-=head2 Test code 
-
-	my @test = qw(
-					/cc/products/products.txt
-					/cc/products/NextDayAir.csv
-					/tmp/products.pipe
-					/tmp/products.line
-					/tmp/products.pct
-				);	
-	my %map = (
-		"\t" => '\t',
-		"\n" => '\n',
-		"\n\n" => '\n\n',
-	);
-
-	for(@test) {
-		my $file = $_;
-		my ($f, $r) = auto_delimiter($file);
-		my $fs = $map{$f} || $f;
-		my $rs = $map{$r} || $r;
-		print "$file: f=$fs r=$rs\n";
-	}
-
-=cut
 
 use vars '%db_config';
 
