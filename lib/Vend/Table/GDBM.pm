@@ -1,6 +1,6 @@
 # Vend::Table::GDBM - Access an Interchange table stored in a GDBM file
 #
-# $Id: GDBM.pm,v 2.6 2003-06-18 17:34:46 jon Exp $
+# $Id: GDBM.pm,v 2.7 2003-07-06 17:06:10 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -30,7 +30,7 @@ use GDBM_File;
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.7 $, 10);
 
 sub new {
 	my ($class, $obj) = @_;
@@ -119,6 +119,9 @@ sub open_table {
 		unless $dbm;
 
 	my $columns = [split(/\t/, $tie->{'c'})];
+
+	$config->{VERBATIM_FIELDS} = 1 unless defined $config->{VERBATIM_FIELDS};
+
 	my $column_index = Vend::Table::Common::create_columns($columns, $config);
 
 	my $s = [

@@ -1,6 +1,6 @@
 # Vend::SQL_Parser - Interchange SQL parser class
 #
-# $Id: SQL_Parser.pm,v 2.1 2003-07-06 04:38:28 mheins Exp $
+# $Id: SQL_Parser.pm,v 2.2 2003-07-06 17:06:10 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1997-2002 Red Hat, Inc.
@@ -40,7 +40,7 @@ use strict;
 use Vend::Util;
 use Text::ParseWords;
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2 $, 10);
 
 sub new {
 	my $class = shift;
@@ -135,6 +135,20 @@ sub command {
 	return shift->{command};
 }
 
+my @stopphrase = (
+	'where',
+	'order by',
+	'group by',
+	'having',
+	'limit',
+);
+
+for(@stopphrase) {
+	s/\s+/\\s+/g;
+}
+
+my $stopregex = join "|", @stopphrase;
+
 sub tables {
 	my $s = shift;
 	return @{$s->{tables}} if $s->{tables};
@@ -153,12 +167,17 @@ sub tables {
 		push @try, grep /\S/, split /\s*,\s*/, $tab;
 	}
 	elsif($s->{command} eq 'SELECT') {
-		$st =~ s/(.*?)\s+from\s+(\w+(?:\s*,\s*\w+)*)//is;
+		$st =~ s/(.*?)\s+from\s+//;
 		$s->{raw_columns} = $1;
-		my $tabtry = $2;
+		my @t = Text::ParseWords::quotewords('\s*,\s*', 0, $st);
+		my $last;
+		for (@t) {
+			$last++ if s/\s+$stopregex\s+.*//is;
+			push @try, $_;
+			last if $last;
+		}
 		$s->{raw_columns} =~ s/^\s*distinct\s+//i
 			and $s->{distinct} = 1;
-		push @try, grep /\S/, split /\s*,\s*/, $tabtry;
 	}
 	elsif ($s->{command} eq 'UPDATE') {
 		$st =~ s/(\w+(?:\s*,\s*\w+)*)\s+set\s+//is;
@@ -175,8 +194,6 @@ sub tables {
 	my $found;
 
 	for(@try) {
-		/\W+/ and
-			return $s->errdie("Improper table '%s'", $_);
 		$found = Vend::SQL_Parser::Table->new( name => $_ );
 		push @tab, $found;
 	}
@@ -185,7 +202,6 @@ sub tables {
 		unless $found;;
 
 	$s->{tables} = \@tab;
-
 	return @tab;
 }
 
@@ -245,6 +261,7 @@ my %valid_op  = (
 				'>='      => 'ge',
 				'like'    => 1,
 				'in'      => 1,
+				'is'      => 'eq',
 				'between' => 1,
 );
 
@@ -258,6 +275,7 @@ my %not_op  = (
 );
 
 sub find_param_or_col {
+	my $s = shift;
 	my $raw = shift;
 	my $rhs = shift;
 
@@ -292,11 +310,12 @@ sub find_param_or_col {
 		}
 		else {
 			$type = 'reference';
-			$val = lc $val;
+			$val = lc $val unless $s->{verbatim_fields};
 		}
 	}
 	else {
-		$val = lc $raw;
+		$val = $raw;
+		$val = lc $val unless $s->{verbatim_fields};
 		$type = 'reference';
 	}
 	return($val, $type);
@@ -392,7 +411,7 @@ sub where {
 		if(s/^(not)$//i) {
 			if($lhs) {
 				die "syntax error: negation where rhs expected"
-					if $op;
+					unless $op and $op eq 'is';
 				$neg = 1;
 			}
 			else {
@@ -418,7 +437,7 @@ sub where {
 				unshift @things, $2;
 #::logDebug("found merged operator $things[0]");
 			}
-			my ($val, $type) = find_param_or_col($_);
+			my ($val, $type) = $s->find_param_or_col($_);
 			if($type eq 'literal') {
 				die "syntax error: literal on left-hand side";
 			}
@@ -445,7 +464,7 @@ sub where {
 		elsif( ref($rhs) eq 'ARRAY') {
 			next if $_ eq ',';
 #::logDebug("rhs=array, val=$_");
-			my ($val, $type) = find_param_or_col($_, 1);
+			my ($val, $type) = $s->find_param_or_col($_, 1);
 			$rhs_type ||= $type;
 			push @$rhs, $val;
 			if($op eq 'between' and scalar(@$rhs) == 2) {
@@ -455,7 +474,7 @@ sub where {
 		}
 		else {
 #::logDebug("rhs=non_array, val=$_");
-			($rhs, $rhs_type) = find_param_or_col($_, 1);
+			($rhs, $rhs_type) = $s->find_param_or_col($_, 1);
 			$rhs_done = 1;
 #::logDebug("rhs now=" . ::uneval($rhs));
 		}
@@ -466,6 +485,9 @@ sub where {
 			$statement++;
 			push @out, $close if $close;
 			my $sub = $s->{regex_percent} || '.*';
+			if($op eq 'is') {
+				$rhs = '' if $rhs eq 'NULL';
+			}
 
 			$number = $rhs_type eq 'number' ? 1 : 0;
 			if($op eq 'between') {
@@ -567,9 +589,7 @@ sub where {
 		}
 	}
 
-	if( ($statement + $extra_statement) > 1) {
-		unshift @stack, [ 'co', '1' ];
-	}
+	unshift @stack, [ 'co', '1' ];
 	if($statement > 1) {
 		unshift @stack, ["sr", join(" ", @out)];
 	}
@@ -728,6 +748,16 @@ sub row_values {
 	return @out;
 }
 
+sub verbatim_fields {
+	my $s = shift;
+	my $val = shift;
+	if(defined $val) {
+		$s->{verbatim_fields} = $val;
+	}
+#::logDebug("verbatim_fields returning $s->{verbatim_fields}");
+	return $s->{verbatim_fields};
+}
+
 1;
 
 package Vend::SQL_Parser::Table;
@@ -736,11 +766,20 @@ sub name {
 	return shift->{name};
 }
 
+sub alias {
+	return shift->{alias};
+}
+
 sub new {
 	my $class = shift;
 	my $self = { @_ };
 	die "No table name!" unless $self->{name};
-	$self->{name} = lc $self->{name};
+	$self->{name} =~ s/\s+(?:as\s+)?(.*)//is
+		and do {
+			$self->{alias} = $1;
+			$self->{alias} =~ s/\s+$//;
+			$self->{alias} =~ s/^(["'])(.*)\1$/$2/s;
+		};
 	return bless $self, $class;
 }
 
@@ -778,13 +817,13 @@ sub new {
 		}
 	}
 	else {
-		$name = lc $raw;
+		$name = $raw;
 	}
 
 	if($name !~ /^\w+$/ and $name ne '*') {
 		die ::errmsg("Bad column name (from %s): '%s'", $raw, $name);
 	}
-	$self->{name} = lc $name;
+	$self->{name} = lc $name unless $self->{verbatim_fields};
 	return bless $self, $class;
 }
 
@@ -855,13 +894,14 @@ sub new {
 		}
 	}
 	else {
-		$name = lc $raw;
+		$name = $raw;
 	}
 
 	if($name !~ /^\w+$/) {
 		die ::errmsg("Bad column name (from %s): '%s'", $raw, $name);
 	}
-	$self->{name} = lc $name;
+	$name = lc $name;
+	$self->{name} = $name;
 	return bless $self, $class;
 }
 

@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.39 2003-07-06 04:46:02 mheins Exp $
+# $Id: Shadow.pm,v 1.40 2003-07-06 17:06:10 mheins Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.39 $, 10);
+$VERSION = substr(q$Revision: 1.40 $, 10);
 
 # CREDITS
 #
@@ -425,7 +425,7 @@ sub _parse_sql {
 	my ($stmt);
 	
 	eval {
-		$stmt = Vend::SQL_Parser->new($query, $parser);
+		$stmt = Vend::SQL_Parser->new($query);
 	};
 	
 	if ($@) {

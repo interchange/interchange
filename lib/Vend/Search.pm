@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.18 2003-06-25 16:38:17 mheins Exp $
+# $Id: Search.pm,v 2.19 2003-07-06 17:06:10 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -22,7 +22,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.18 $, 10);
+$VERSION = substr(q$Revision: 2.19 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -684,6 +684,7 @@ EOF
 #::logDebug("Begin=" . join ",", @begin);
 #::logDebug("Group=" . join ",", @group);
 #::logDebug("Ors=" . join ",", @{$s->{mv_orsearch}});
+#::logDebug("Field count=$field_count");
 		my @code;
 		my $candidate = '';
 		my ($i, $start, $term, $like);
@@ -742,6 +743,7 @@ EOF
 			 }
 			 my $grp = $group[$i] || 0;
 			 my $frag = qq{$negates[$i]\$fields[$i] $start$specs[$i]$term};
+#::logDebug("Code fragment is q!$frag!");
 			 unless ($code[$grp]) {
 				 $code[$grp] = [ $frag ];
 			 }

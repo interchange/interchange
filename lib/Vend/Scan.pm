@@ -1,6 +1,6 @@
 # Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 2.21 2003-07-06 04:46:02 mheins Exp $
+# $Id: Scan.pm,v 2.22 2003-07-06 17:06:10 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -30,7 +30,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 2.21 $, 10);
+$VERSION = substr(q$Revision: 2.22 $, 10);
 
 use strict;
 use Vend::Util;
@@ -549,7 +549,7 @@ sub perform_search {
 
 }
 
-my %scalar = (qw/ st 1 ra 1 co 1 os 1 sr 1 ml 1/);
+my %scalar = (qw/ st 1 ra 1 co 1 os 1 sr 1 ml 1 ms 1/);
 
 sub push_spec {
 	my ($parm, $val, $ary, $hash) = @_;
@@ -627,6 +627,8 @@ sub sql_statement {
 			$codename = $db->config('KEY') || 'code';
 			$nuhash = $db->config('NUMERIC') || undef;
 			push_spec( 'fi', $db->config('file'), $ary, $hash);
+			$stmt->verbatim_fields(1)
+				if $db->config('VERBATIM_FIELDS');
 		}
 # GLIMPSE
 		elsif ("\L$t" eq 'glimpse') {
@@ -687,6 +689,8 @@ sub sql_statement {
 	@where = $stmt->where();
 #::logDebug("where returned=" . ::uneval(\@where));
 	if(@where) {
+		## In a SQL query, we never want to drop out on empty string
+		push_spec('ms', 0, $ary, $hash);
 		for(@where) {
 			push_spec( @$_, $ary, $hash );
 		}
@@ -698,7 +702,7 @@ sub sql_statement {
 	if($hash->{sg} and ! $hash->{sr}) {
 		delete $hash->{sg};
 	}
-#::logDebug("sql_statement output=" . Vend::Util::uneval($hash)) if $hash;
+#::logDebug("sql_statement output=" . Vend::Util::uneval_it($hash)) if $hash;
 	return ($hash, $stmt) if $hash;
 
 	my $string = join "\n", @$ary;

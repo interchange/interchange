@@ -1,6 +1,6 @@
 # Vend::DbSearch - Search indexes with Interchange
 #
-# $Id: DbSearch.pm,v 2.18 2003-06-18 17:34:44 jon Exp $
+# $Id: DbSearch.pm,v 2.19 2003-07-06 17:06:09 mheins Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
@@ -27,7 +27,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.18 $, 10);
+$VERSION = substr(q$Revision: 2.19 $, 10);
 
 use Search::Dict;
 use strict;
@@ -149,9 +149,11 @@ sub search {
 
 	my (@fn) = $dbref->columns();
 
+#::logDebug("specs=" . ::uneval($s->{mv_searchspec}));
 	@specs = @{$s->{mv_searchspec}};
 
 	@pats = $s->spec_check(@specs);
+#::logDebug("specs now=" . ::uneval(\@pats));
 
 	if ($s->{mv_coordinate}) {
 		undef $f;
