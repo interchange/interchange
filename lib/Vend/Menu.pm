@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.30 2003-05-10 22:06:14 mheins Exp $
+# $Id: Menu.pm,v 2.31 2003-08-04 05:01:37 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.30 $, 10);
+$VERSION = substr(q$Revision: 2.31 $, 10);
 
 use Vend::Util;
 use strict;
@@ -1259,6 +1259,7 @@ sub tree_link {
 							href => $row->{page},
 							form => $row->{form},
 							add_dot_html => $add,
+							auto_format => 1,
 						});
 	}
 	$row->{name} =~ s/ /&nbsp;/g;
@@ -1365,7 +1366,8 @@ sub tree_line {
 								form => $form,
 								no_count => $opt->{timed},
 								add_dot_html => $add,
-								no_session_id => $opt->{timed}
+								no_session_id => $opt->{timed},
+								auto_format => 1,
 							});
 
 		unless($opt->{no_open}) {
@@ -1451,6 +1453,7 @@ EOF
 									href => $row->{page},
 									form => $row->{form},
 									add_dot_html => $add,
+									auto_format => 1,
 								});
 	}
 	extra_value($opt->{extra_value}, $row)
