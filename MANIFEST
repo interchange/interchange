@@ -10,6 +10,7 @@ SPECS/interchange.spec
 UPGRADE
 WHATSNEW
 code/ActionMap/foo.am
+code/Filter/date2time.filter
 code/Filter/lc.filter
 code/SystemTag/accessories.coretag
 code/SystemTag/area.coretag
@@ -658,6 +659,7 @@ dist/lib/UI/locales/de_DE.cfg
 dist/lib/UI/locales/default.cfg
 dist/lib/UI/locales/he_IL.cfg
 dist/lib/UI/locales/nl_NL.cfg
+dist/lib/UI/locales/pt_BR.cfg
 dist/lib/UI/locales/sv_SE.cfg
 dist/lib/UI/pages/admin/.access
 dist/lib/UI/pages/admin/.autoload
@@ -847,6 +849,7 @@ dist/lib/UI/usertag/db_columns.tag
 dist/lib/UI/usertag/db_hash.tag
 dist/lib/UI/usertag/dbinfo.tag
 dist/lib/UI/usertag/diff.tag
+dist/lib/UI/usertag/diffmerge.tag
 dist/lib/UI/usertag/directive_value.tag
 dist/lib/UI/usertag/display.tag
 dist/lib/UI/usertag/dump_session.tag
@@ -947,6 +950,7 @@ eg/globalsub/ccvs
 eg/globalsub/signio
 eg/globalsub/test_card
 eg/grant.sql
+eg/ical2vcal
 eg/ifdef
 eg/news_feature/README
 eg/news_feature/dbconf/default_db/news.dbm
@@ -1007,10 +1011,12 @@ lib/Vend/Parse.pm
 lib/Vend/Parser.pm
 lib/Vend/Payment.pm
 lib/Vend/Payment/AuthorizeNet.pm
+lib/Vend/Payment/BoA.pm
 lib/Vend/Payment/CCVS.pm
 lib/Vend/Payment/CyberCash.pm
 lib/Vend/Payment/Signio.pm
 lib/Vend/Payment/Skipjack.pm
+lib/Vend/Payment/WellsFargo.pm
 lib/Vend/Payment/iTransact.pm
 lib/Vend/SOAP.pm
 lib/Vend/SOAP/Transport.pm
@@ -1079,6 +1085,7 @@ share/interchange/de_DE/B7.gif
 share/interchange/de_DE/B7_b.gif
 share/interchange/de_DE/B8.gif
 share/interchange/de_DE/B8_b.gif
+share/interchange/en_US/.xvpics/az.gif
 share/interchange/en_US/A1.gif
 share/interchange/en_US/A1_b.gif
 share/interchange/en_US/A2.gif
@@ -1102,6 +1109,7 @@ share/interchange/en_US/B8.gif
 share/interchange/en_US/B8_b.gif
 share/interchange/en_US/B9.gif
 share/interchange/en_US/B9_b.gif
+share/interchange/en_US/az.gif
 share/interchange/en_US/bg.gif
 share/interchange/en_US/box_checked.gif
 share/interchange/en_US/box_empty.gif
