@@ -7,13 +7,13 @@ Build-Depends: debhelper, libdigest-md5-perl, libmime-base64-perl, libsafe-hole-
 
 Package: interchange-cat-foundation
 Architecture: all
-Depends: interchange (>=4.8.1), interchange-ui (>=4.8.1)
+Depends: debconf, interchange (>=4.8.1), interchange-ui (>=4.8.1)
 Description: Sample Interchange catalog
  Sample Interchange catalog
 
 Package: interchange-ui
 Architecture: all
-Depends: ${perl:Depends}, interchange (>=4.8.1)
+Depends: ${perl:Depends}, debconf, interchange (>=4.8.1)
 Suggests: libspreadsheet-parseexcel-perl, libspreadsheet-writeexcel-perl
 Description: Interchange administration interface
  Interchange administration interface

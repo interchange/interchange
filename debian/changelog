@@ -7,7 +7,6 @@ interchange (4.8.1-1) unstable; urgency=low
   * changed makecat.wrapper to run as interchange user instead of root
   * docroot for catalogs added to makecat.wrapper
   * wrappers described within README.debian
-  * UI needs now a std.js file
   * put poweredby.gif in place again
   * UI_SECURE added to interchange.cfg
   * interchange-doc package removed (PDF's no longer part of distribution)
@@ -19,8 +18,10 @@ interchange (4.8.1-1) unstable; urgency=low
   * get rid of .packlist (Closes: #104747)
   * /usr/lib/interchange/etc is symlink now for makecat's sake
   * Standards-Version updated
+  * dependencies to debconf added to interchange-ui and
+    interchange-cat-foundation to keep lintian happy
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon,  6 Aug 2001 22:22:03 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sun, 12 Aug 2001 20:17:32 +0200
   
 interchange (4.6.5-1) unstable; urgency=high
 
