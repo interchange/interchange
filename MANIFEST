@@ -661,8 +661,10 @@ dist/lib/UI/pages/admin/wizard/step_launch.html
 dist/lib/UI/pages/admin/wizard/step_pay.html
 dist/lib/UI/pages/admin/wizard/step_pay_auth.html
 dist/lib/UI/pages/admin/wizard/step_pay_cyber.html
+dist/lib/UI/pages/admin/wizard/step_pay_itransact.html
 dist/lib/UI/pages/admin/wizard/step_pay_pgp.html
 dist/lib/UI/pages/admin/wizard/step_pay_signio.html
+dist/lib/UI/pages/admin/wizard/step_pay_skipjack.html
 dist/lib/UI/pages/admin/wizard/step_preview.html
 dist/lib/UI/pages/admin/wizard/step_products.html
 dist/lib/UI/pages/admin/wizard/step_security.html
@@ -827,6 +829,7 @@ extra/IniConf.pm
 extra/Tie/ShadowHash.pm
 extra/URI/URL.pm
 hints.pl
+lib/Tie/ShadowHash.pm
 lib/Vend/Cart.pm
 lib/Vend/Config.pm
 lib/Vend/Control.pm
