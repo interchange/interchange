@@ -569,13 +569,13 @@ Card Number<BR>
 </TABLE>
 
 <CENTER>
-[set Place Order]
-mv_todo=submit
-mv_nextpage=admin/order
-[value name=mv_order_route set="log_entry main copy_user" hide=1]
+[set [L]Place Order[/L]]
+	mv_todo=submit
+	mv_nextpage=admin/order
+	[value name=mv_order_route set="log_entry main copy_user" hide=1]
 [/set]
 
-<INPUT name=mv_click TYPE=submit VALUE="Place Order">
+<INPUT name=mv_click TYPE=submit VALUE="[L]Place Order[/L]">
 </CENTER>
 
 <P>
