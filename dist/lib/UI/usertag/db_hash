@@ -4,7 +4,7 @@ UserTag db-hash addAttr
 UserTag db-hash Routine <<EOR
 sub {
 	my($table, $col, $key, $opt) = @_;
-	$col =~ s/::(.*)//s;
+	$col =~ s/:+(.*)//s;
 	my $out;
 	#$out .= ::uneval(\@_);
 	my $rest = $1;
@@ -20,10 +20,10 @@ sub {
 		}
 	}
 	if (! $rest) {
-		return $val unless $opt->{value};
+		return $val unless defined $opt->{value};
 	}
 	my @extra;
-	@extra = split /::/, $rest;
+	@extra = split /:+/, $rest;
 	my $final = pop @extra;
 	my $curr = $ref;
 	$out .= "Original key request: $rest\n";
@@ -34,12 +34,17 @@ sub {
 		$curr = $curr->{$_};
 		return "BAD HASH: $out" if ! ref $curr;
 	}
-	if(! defined $opt->{value}) {
+
+	if($opt->{keys}) {
+		return join get_joiner($opt->{joiner}), sort keys %$curr;
+	}
+	elsif(! defined $opt->{value}) {
 		return $curr->{$final};
 	}
 	else {
 		$curr->{$final} = $opt->{value};
 		tag_data($table, $col, $key, { value => ::uneval_it($ref) });
+		return $curr->{$final};
 	}
 }
 EOR
