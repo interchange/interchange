@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.23 2001-03-11 02:31:16 jon Exp $
+# $Id: Server.pm,v 1.8.2.24 2001-03-14 21:35:52 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.23 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.24 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -1616,7 +1616,7 @@ my $pretty_vector = unpack('b*', $s_vector);
         if ($n == -1) {
 			last if $!{EINTR} and $Signal_Terminate;
 			my $msg = $!;
-			$msg = ::errmsg("error '%s' from select, n=$n." , $msg );
+			$msg = ::errmsg("error '%s' from select, n=%s.", $msg, $n );
 			die "$msg";
         }
 		elsif($n == 0) {
@@ -2002,7 +2002,7 @@ my $pretty_vector = unpack('b*', $rin);
         if ($n == -1) {
 			last if $Signal_Terminate;
 			my $msg = $!;
-			$msg = ::errmsg("error '%s' from select, n=$n." , $msg );
+			$msg = ::errmsg("error '%s' from select, n=%s." , $msg, $n);
 			die "$msg";
         }
 		elsif($n == 0) {
@@ -2264,7 +2264,10 @@ sub run_server {
     else {
 
         fcntl($pidh, F_SETFD, 0)
-            or die "Can't fcntl close-on-exec flag for '$Global::PIDfile': $!\n";
+            or die ::errmsg(
+					"Can't fcntl close-on-exec flag for '%s': %s\n",
+					$Global::PIDfile, $!,
+					);
         my ($pid1, $pid2);
         if ($pid1 = fork) {
             # parent
