@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.2.2.7 2002-01-24 06:44:28 jon Exp $
+# $Id: Config.pm,v 2.2.2.8 2002-06-09 19:47:13 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.2.2.7 $, 10);
+$VERSION = substr(q$Revision: 2.2.2.8 $, 10);
 
 my %CDname;
 
@@ -1729,6 +1729,7 @@ sub parse_locale {
 			%{$sethash} = Text::ParseWords::shellwords($settings);
 		}
 		$c = $store->{$name} || {};
+		my $nodefaults = delete $sethash->{MV_LOCALE_NO_DEFAULTS};
 		if (delete $sethash->{MV_LOCALE_CHOMP_VALUES}) {
 			chomp ($c->{$_} = $sethash->{$_}) for keys %$sethash;
 		}
@@ -1737,12 +1738,14 @@ sub parse_locale {
 		}
 		if($item eq 'Locale') {
 			$Vend::Cfg->{DefaultLocale} = $name;
-			$c->{mon_thousands_sep} = ','
-				unless defined $c->{mon_thousands_sep};
-			$c->{decimal_point} = '.'
-				unless $c->{decimal_point};
-			$c->{frac_digits} = 2
-				unless defined $c->{frac_digits};
+			unless ($nodefaults) {
+				$c->{mon_thousands_sep} = ','
+					unless defined $c->{mon_thousands_sep};
+				$c->{decimal_point} = '.'
+					unless $c->{decimal_point};
+				$c->{frac_digits} = 2
+					unless defined $c->{frac_digits};
+			}
 		}
 	}
 	else {
