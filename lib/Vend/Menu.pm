@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange payment processing routines
 #
-# $Id: Menu.pm,v 2.2 2002-08-05 06:17:49 mheins Exp $
+# $Id: Menu.pm,v 2.3 2002-08-06 22:08:04 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 
 use Vend::Util;
 use strict;
@@ -126,13 +126,13 @@ sub old_tree {
 	if(! $opt->{explode_url}) {
 		$u = Vend::Tags->history_scan( { var_exclude => 'toggle,collapse,expand' });
 		$opt->{explode_url} = $u;
-		$opt->{explode_url} .= $u =~ /\?/ ? '&' : "?";
+		$opt->{explode_url} .= $u =~ /\?/ ? $Global::UrlJoiner : "?";
 		$opt->{explode_url} .= 'explode=1';
 	}
 	if(! $opt->{collapse_url}) {
 		$u ||= Vend::Tags->history_scan( { var_exclude => 'toggle,collapse,expand' });
 		$opt->{collapse_url} = $u;
-		$opt->{collapse_url} .= $u =~ /\?/ ? '&' : "?";
+		$opt->{collapse_url} .= $u =~ /\?/ ? $Global::UrlJoiner : "?";
 		$opt->{collapse_url} .= 'collapse=1';
 	}
 
@@ -433,8 +433,8 @@ sub tree_link {
 ];
 
 	if($row->{page}) {
-		unless($row->{form} =~ /\r/) {
-			$row->{form} = join "\n", split /\&/, $row->{form};
+		unless($row->{form} =~ /[\r\n]/) {
+			$row->{form} = join "\n", split $Global::UrlSplittor, $row->{form};
 		}
 		$row->{url} = Vend::Tags->area( { href => $row->{page}, form => $row->{form} });
 	}
@@ -446,7 +446,7 @@ sub tree_link {
 	$row->{link_style} ||= $opt->{link_style};
 	if($row->{mv_children}) {
 		my $u = $opt->{toggle_base_url};
-		$u .= $u =~ /\?/ ? '&' : "?";
+		$u .= $u =~ /\?/ ? $Global::UrlJoiner : "?";
 		$u .= "toggle=$row->{code}";
 		$row->{toggle_url} = $u;
 		if($row->{mv_toggled}) {
@@ -568,6 +568,7 @@ EOF
 	return '<br>' unless $row->{name};
 	return $row->{name} if ! $row->{page} and $row->{name} =~ /^\s*</;
 	$row->{win}  = $::Scratch->{win};
+	$row->{form} =~ tr/&/\n/;
 	$row->{href} = Vend::Tags->area( { href => $row->{page}, form => $row->{form} });
 	$row->{name} = errmsg($row->{name});
 	$row->{description} =~ s/"/&quot;/g;

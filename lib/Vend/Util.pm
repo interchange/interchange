@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.31 2002-07-22 14:24:55 jon Exp $
+# $Id: Util.pm,v 2.32 2002-08-06 22:08:04 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -82,7 +82,7 @@ require HTML::Entities;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.31 $, 10);
+$VERSION = substr(q$Revision: 2.32 $, 10);
 
 BEGIN {
 	eval {
@@ -1268,14 +1268,23 @@ sub secure_vendUrl {
 	return vendUrl($_[0], $_[1], $Vend::Cfg->{SecureURL});
 }
 
+my %strip_vars;
+my $strip_init;
+
 sub change_url {
 	my $url = shift;
 	return $url if $url =~ m{^\w+:};
 	return $url if $url =~ m{^/};
+	if(! $strip_init) {
+		for(qw/mv_session_id mv_pc/) {
+			$strip_vars{$_} = 1;
+			$strip_vars{$::IV->{$_}} = 1;
+		}
+	}
 	my $arg;
 	my @args;
 	($url, $arg) = split /[?&]/, $url, 2;
-	@args = split $Global::UrlSplittor, $arg;
+	@args = grep ! $strip_vars{$_}, split $Global::UrlSplittor, $arg;
 	return Vend::Interpolate::tag_area( $url, '', {
 											form => join "\n", @args,
 										} );
