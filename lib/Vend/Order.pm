@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18.2.22 2001-05-08 15:39:20 jon Exp $
+# $Id: Order.pm,v 1.18.2.23 2001-05-23 03:06:42 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.22 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.23 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1089,7 +1089,7 @@ sub _postcode {
 	my($ref,$var,$val) = @_;
 	((_zip(@_))[0] or (_ca_postcode(@_))[0])
 		and return (1, $var, '');
-	return (undef, $var, errmsg("'%s' not a US or Canada postal/zip code", $val));
+	return (undef, $var, errmsg("'%s' not a US zip or Canadian postal code", $val));
 }
 
 sub _ca_postcode {
@@ -1307,8 +1307,6 @@ sub route_order {
 	$route = 'default' unless $route;
 
 	my $cart = [ @$save_cart ];
-
-	my $main = $Vend::Cfg->{Route};
 
 	my $save_mime = $::Instance->{MIME} || undef;
 
