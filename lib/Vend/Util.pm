@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.50 2003-02-13 10:23:08 racke Exp $
+# $Id: Util.pm,v 2.51 2003-03-01 15:39:16 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -85,7 +85,7 @@ require HTML::Entities;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.50 $, 10);
+$VERSION = substr(q$Revision: 2.51 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -258,10 +258,10 @@ sub round_to_frac_digits {
 		$digits = 2;
 	}
 	my @frac;
-	$num =~ /^(\d*)\.(\d+)$/
+	$num =~ /^(\d*)(?:\.(\d+))*$/
 		or return $num;
 	my $int = $1;
-	@frac = split //, $2;
+	@frac = split(//, ($2 || 0));
 	local($^W) = 0;
 	my $frac = join "", @frac[0 .. $digits - 1];
 	if($frac[$digits] > 4) {
