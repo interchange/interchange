@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.91 2002-07-25 17:14:21 kwalsh Exp $
+# $Id: Interpolate.pm,v 2.92 2002-07-28 05:28:12 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.91 $, 10);
+$VERSION = substr(q$Revision: 2.92 $, 10);
 
 @EXPORT = qw (
 
@@ -2550,7 +2550,7 @@ sub do_tag {
 sub tag_counter {
     my $file = shift || 'etc/counter';
 	my $opt = shift;
-#::logDebug("counter: file=$file start=$opt->{start}");
+#::logDebug("counter: file=$file start=$opt->{start} sql=$opt->{sql} caller=" . scalar(caller()) );
 	if($opt->{sql}) {
 		my ($tab, $seq) = split /:+/, $opt->{sql}, 2;
 		my $db = database_exists_ref($tab);
@@ -5831,9 +5831,9 @@ sub shipping {
 	    my $use_modifier;
 
 	    if ($::Variable->{MV_SHIP_MODIFIERS}){
-		my @pieces = grep {$_ = quotemeta $_} split(/[\s,|]+/,$::Variable->{MV_SHIP_MODIFIERS});
-		my $regex = join('|',@pieces);
-		$use_modifier = 1 if ($regex && $field =~ /^($regex)$/);
+			my @pieces = grep {$_ = quotemeta $_} split(/[\s,|]+/,$::Variable->{MV_SHIP_MODIFIERS});
+			my $regex = join('|',@pieces);
+			$use_modifier = 1 if ($regex && $field =~ /^($regex)$/);
 	    }
 
 	    my $col_checked = 0;
@@ -6181,6 +6181,12 @@ sub tag_shipping {
 
 sub fly_tax {
 	my ($area) = @_;
+
+	if(my $country_check = $::Variable->{TAXCOUNTRY}) {
+		$country_check =~ /\b$::Values->{country}\b/
+			or return 0;
+	}
+
 	if(! $area) {
 		my $zone = $Vend::Cfg->{SalesTax};
 		while($zone =~ m/(\w+)/g) {
@@ -6219,7 +6225,7 @@ sub fly_tax {
 
 sub tax_vat {
 	my($type, $opt) = @_;
-#::logDebug("entering VAT");
+#::logDebug("entering VAT, opts=" . ::uneval($opt));
 	my $cfield = $::Variable->{MV_COUNTRY_FIELD} || 'country';
 	my $country = $opt->{country} || $::Values->{$cfield};
 
@@ -6230,15 +6236,18 @@ sub tax_vat {
 	my $c_taxfield   = $opt->{country_tax_field}
 				|| $::Variable->{MV_COUNTRY_TAX_FIELD}
 				|| 'tax';
-#::logDebug("ctable=$ctable c_taxfield=$c_taxfield");
-	$type = tag_data($ctable, $c_taxfield, $country)
+#::logDebug("ctable=$ctable c_taxfield=$c_taxfield country=$country");
+	$type ||= tag_data($ctable, $c_taxfield, $country)
 		or return 0;
 #::logDebug("tax type=$type");
 	$type =~ s/^\s+//;
 	$type =~ s/\s+$//;
+
+	my @taxes;
+
 	if($type =~ /^(\w+)$/) {
 		my $sfield = $1;
-		my $state  = $::Values->{$sfield};
+		my $state  = $opt->{state} || $::Values->{$sfield};
 		return 0 if ! $state;
 		my $stable   = $opt->{state_table}
 					|| $::Variable->{MV_STATE_TABLE}
@@ -6246,12 +6255,21 @@ sub tax_vat {
 		my $s_taxfield   = $opt->{state_tax_field}
 					|| $::Variable->{MV_STATE_TAX_FIELD}
 					|| 'tax';
+		my $s_taxtype   = $opt->{tax_type_field} 
+					|| $::Variable->{MV_TAX_TYPE_FIELD}
+					|| 'tax_name';
 		my $db = database_exists_ref($stable)
 			or return 0;
+		my $addl = '';
+		if($opt->{tax_type}) {
+			$addl = " AND $s_taxtype = " .
+					$db->quote($opt->{tax_type}, $s_taxtype);
+		}
 		my $q = qq{
 						SELECT $s_taxfield FROM $stable
 						WHERE  $cfield = '$country'
 						AND    $sfield = '$state'
+						$addl
 					};
 #::logDebug("tax state query=$q");
 		my $ary;
@@ -6261,32 +6279,43 @@ sub tax_vat {
 		if($@) {
 			::logError("error on state tax query %s", $q);
 		}
-#::logDebug("query returns " . ::uneval($q));
+#::logDebug("query returns " . ::uneval($ary));
 		return 0 unless ref $ary;
-		return 0 unless $type = $ary->[0][0];
+		for(@$ary) {
+			next unless $_->[0];
+			push @taxes, $_->[0];
 	}
-	$type =~ s/^\s+//;
-	$type =~ s/\s+$//;
-	if ($type =~ /simple:(.*)/) {
-		return fly_tax($::Values->{$1});
 	}
-	elsif ($type =~ /handling:(.*)/) {
+	else {
+		@taxes = $type;
+	}
+
+	my $total = 0;
+	foreach my $t (@taxes) {
+		$t =~ s/^\s+//;
+		$t =~ s/\s+$//;
+		if ($t =~ /simple:(.*)/) {
+			$total += fly_tax($::Values->{$1});
+			next;
+		}
+		elsif ($t =~ /handling:(.*)/) {
 		my @modes = grep /\S/, split /[\s,]+/, $1;
 		
 		my $cost = 0;
 		$cost += tag_handling($_) for @modes;
-		return $cost;
+			$total += $cost;
+			next;
 	}
 	my $tax;
-#::logDebug("tax type=$type");
-	if($type =~ /^(\d+(?:\.\d+)?)\s*(\%)$/) {
+#::logDebug("tax type=$t");
+		if($t =~ /^(\d+(?:\.\d+)?)\s*(\%)$/) {
 		my $rate = $1;
 		$rate /= 100 if $2;
 		my $amount = Vend::Interpolate::taxable_amount();
-		return $rate * $amount;
+			$total += ($rate * $amount);
 	}
 	else {
-		$tax = Vend::Util::get_option_hash($type);
+			$tax = Vend::Util::get_option_hash($t);
 	}
 #::logDebug("tax hash=" . ::uneval($tax));
 	my $pfield   = $opt->{tax_category_field}
@@ -6294,9 +6323,8 @@ sub tax_vat {
 				|| 'tax_category';
 	my @pfield = split /:+/, $pfield;
 
-	my $total = 0;
 	for my $item (@$Vend::Items) {
-		my $rhash = tag_data($item->{mv_ib}, undef, $item->{code}, { hash => 1} );
+			my $rhash = tag_data($item->{mv_ib}, undef, $item->{code}, { hash => 1});
 		my $cat = join ":", @{$rhash}{@pfield};
 		my $rate = defined $tax->{$cat} ? $tax->{$cat} : $tax->{default};
 #::logDebug("item $item->{code} cat=$cat rate=$rate");
@@ -6307,12 +6335,16 @@ sub tax_vat {
 		$total += $sub * $rate;
 #::logDebug("tax total=$total");
 	}
+	}
 	return $total;
 }
 
 # Calculate the sales tax
 sub salestax {
-	my($cart) = @_;
+	my($cart, $opt) = @_;
+
+	$opt ||= {};
+
 	my($save);
 	### If the user has assigned to salestax,
 	### we use their value come what may, no rounding
@@ -6331,7 +6363,7 @@ sub salestax {
 	my $tax_hash;
 	my $cost;
 	if($Vend::Cfg->{SalesTax} eq 'multi') {
-		$cost = tax_vat();
+		$cost = tax_vat($opt->{type}, $opt);
 	}
 	elsif($Vend::Cfg->{SalesTax} =~ /\[/) {
 		$cost = interpolate_html($Vend::Cfg->{SalesTax});
@@ -6648,6 +6680,28 @@ sub levies {
 			logOnce('error', "Levy '%s' called but not defined. Skipping.", $name);
 			next;
 		}
+		if(my $if = $l->{include_if}) {
+			if($if =~ /^\w+$/) {
+				next unless $::Values->{$if};
+			}
+			elsif($if =~ /__[A-Z]\w+__|[[a-zA-Z]/) {
+				next unless interpolate_html($if);
+			}
+			else {
+				next unless tag_calc($if);
+			}
+		}
+		if(my $if = $l->{exclude_if}) {
+			if($if =~ /^\w+$/) {
+				next if $::Values->{$if};
+			}
+			elsif($if =~ /__[A-Z]\w+__|[[a-zA-Z]/) {
+				next if interpolate_html($if);
+			}
+			else {
+				next if tag_calc($if);
+			}
+		}
 		my $type = $l->{type} || ($name eq 'salestax' ? 'salestax' : 'shipping');
 		my $mode;
 
@@ -6670,7 +6724,11 @@ sub levies {
 				$save = $Vend::Cfg->{SalesTax};
 				$Vend::Cfg->{SalesTax} = $l->{tax_fields};
 			}
-			$cost = salestax();
+			elsif ($l->{multi}) {
+				$save = $Vend::Cfg->{SalesTax};
+				$Vend::Cfg->{SalesTax} = 'multi';
+			}
+			$cost = salestax(undef, { tax_type => $l->{tax_type} } );
 			$desc = errmsg(
 						$l->{description} || 'Sales Tax',
 						$::Values->{$Vend::Cfg->{SalesTax}},
