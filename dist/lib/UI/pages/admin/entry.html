@@ -38,31 +38,31 @@
 	<COL WIDTH="1%">
 	<COL WIDTH="18%">
 	<THEAD>
-		<tr bgcolor="000000" height=1><td colspan=7></td></tr>
-		<TR BGCOLOR=__UI_C_TITLEBARBG__ VALIGN=TOP>
-			<TH BGCOLOR=__UI_C_TITLEBARBG__ WIDTH="10%">
-				<P><FONT COLOR=__UI_C_TITLEBARTXT__><FONT SIZE="-1" FACE="helvetica, sans-serif">[L]SKU[/L]</FONT></FONT></P>
+		<tr class=rborder height=1><td colspan=7></td></tr>
+		<TR class=rmarq VALIGN=TOP>
+			<TH class=rmarq WIDTH="10%">
+				[L]SKU[/L]
 			</TH>
-			<TH BGCOLOR=__UI_C_TITLEBARBG__ WIDTH="1%">&nbsp;</TH>
-			<TH BGCOLOR=__UI_C_TITLEBARBG__ WIDTH="40%">
-				<P><FONT COLOR=__UI_C_TITLEBARTXT__><FONT SIZE="-1" FACE="helvetica, sans-serif">[L]Description[/L]</FONT></FONT></P>
+			<TH class=rmarq WIDTH="1%">&nbsp;</TH>
+			<TH class=rmarq WIDTH="40%">
+				[L]Description[/L]
 			</TH>
-			<TH BGCOLOR=__UI_C_TITLEBARBG__ WIDTH="13%">
-				<P><FONT COLOR=__UI_C_TITLEBARTXT__><FONT SIZE="-1" FACE="helvetica, sans-serif">[L]Quantity[/L]</FONT></FONT></P>
+			<TH class=rmarq WIDTH="13%">
+				[L]Quantity[/L]
 			</TH>
-			<TH ALIGN=RIGHT BGCOLOR=__UI_C_TITLEBARBG__ WIDTH="17%">
-				<P><FONT COLOR=__UI_C_TITLEBARTXT__><FONT SIZE="-1" FACE="helvetica, sans-serif">[L]Price[/L]</FONT></FONT></P>
+			<TH ALIGN=RIGHT class=rmarq WIDTH="17%">
+				[L]Price[/L]
 			</TH>
-			<TH BGCOLOR=__UI_C_TITLEBARBG__ WIDTH="1%">&nbsp;</TH>
-			<TH ALIGN=RIGHT BGCOLOR=__UI_C_TITLEBARBG__ WIDTH="18%">
-				<P><FONT COLOR=__UI_C_TITLEBARTXT__><FONT SIZE="-1" FACE="helvetica, sans-serif">[L]Extension[/L]</FONT></FONT></P>
+			<TH class=rmarq WIDTH="1%">&nbsp;</TH>
+			<TH ALIGN=RIGHT class=rmarq WIDTH="18%">
+				[L]Extension[/L]
 			</TH>
 		</TR>
-		<tr bgcolor="000000" height=1><td colspan=7></td></tr>
+		<tr class=rborder height=1><td colspan=7></td></tr>
 	</THEAD>
 	<TBODY>
-<TR BGCOLOR=__UI_C_INTBLOCK__>
-	<TD BGCOLOR=__UI_C_INTBLOCK__ VALIGN=TOP align=center>
+<TR class=rnorm>
+	<TD class=rnorm VALIGN=TOP align=center>
 	[search-region prefix=sku]
 	[if value mv_search_match_count]
 	<small>
@@ -80,34 +80,34 @@
 	[/if]
 	[/search-region]
 	</TD>
-	<TH BGCOLOR=__UI_C_INTBLOCK__ WIDTH="2">&nbsp;</TH>
-	<TD BGCOLOR=__UI_C_INTBLOCK__ ALIGN=CENTER VALIGN=TOP MARGINWIDTH=12 MARGINHEIGHT=12>
+	<TH class=rnorm WIDTH="2">&nbsp;</TH>
+	<TD class=rnorm ALIGN=CENTER VALIGN=TOP MARGINWIDTH=12 MARGINHEIGHT=12>
 	<INPUT NAME=mv_searchspec
 			onChange="this.form.action='[process-search]'; this.form.submit()">
 	</TD>
-	<TD BGCOLOR=__UI_C_INTBLOCK__ VALIGN=TOP ALIGN=CENTER>
+	<TD class=rnorm VALIGN=TOP ALIGN=CENTER>
 	<INPUT TYPE=text NAME="mv_order_quantity" onChange="this.form.submit()" SIZE=3>
 
 	</TD>
-	<TD BGCOLOR=__UI_C_INTBLOCK__ VALIGN=TOP ALIGN=RIGHT>
+	<TD class=rnorm VALIGN=TOP ALIGN=RIGHT>
 		&nbsp;
 	</TD>
-	<TH BGCOLOR=__UI_C_INTBLOCK__ WIDTH="2">&nbsp;</TH>
-	<TD BGCOLOR=__UI_C_INTBLOCK__ VALIGN=TOP ALIGN=RIGHT>
+	<TH class=rnorm WIDTH="2">&nbsp;</TH>
+	<TD class=rnorm VALIGN=TOP ALIGN=RIGHT>
 		&nbsp;
 	</TD>
 </TR>
 <TR><TD ALIGN=CENTER COLSPAN=7><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="1" BORDER="0"></TR>
 
 [item-list]
-<TR BGCOLOR=__UI_C_INTBLOCK__>
-	<TD BGCOLOR=__UI_C_INTBLOCK__ VALIGN=TOP align=center>
+<TR class=rnorm>
+	<TD class=rnorm VALIGN=TOP align=center>
 	<FONT SIZE="-2"><INPUT TYPE=checkbox NAME="[quantity-name]"
 			   onClick="this.form.action='[process-target]',
 			   			this.form.submit()"
 			   VALUE=0>remove</FONT>&nbsp;&nbsp;&nbsp;[item-code]</TD>
-	<TH BGCOLOR=__UI_C_INTBLOCK__ WIDTH="2">&nbsp;</TH>
-	<TD BGCOLOR=__UI_C_INTBLOCK__ VALIGN=TOP MARGINWIDTH=12 MARGINHEIGHT=12>
+	<TH class=rnorm WIDTH="2">&nbsp;</TH>
+	<TD class=rnorm VALIGN=TOP MARGINWIDTH=12 MARGINHEIGHT=12>
 	[page [item-code]][item-description]</A>
 	[if-item-field weight]&nbsp;&nbsp;&nbsp;
 	<SMALL>WEIGHT: [summary amount=`[item-quantity] * [item-field weight]`]</SMALL>
@@ -122,11 +122,11 @@
 	</table>
 	[/if-item-data]
 	</TD>
-	<TD BGCOLOR=__UI_C_INTBLOCK__ VALIGN=TOP ALIGN=CENTER>
+	<TD class=rnorm VALIGN=TOP ALIGN=CENTER>
 	<INPUT TYPE=text NAME="[quantity-name]" VALUE="[item-quantity]" SIZE=3>
 
 	</TD>
-	<TD BGCOLOR=__UI_C_INTBLOCK__ VALIGN=TOP ALIGN=RIGHT>
+	<TD class=rnorm VALIGN=TOP ALIGN=RIGHT>
 		[discount-price]
 		[if discount [item-code]]
 		<BR><FONT COLOR=__CONTRAST__ SIZE=-2>[L]Item is discounted[/L]
@@ -134,8 +134,8 @@
 			</FONT>
 		[/if]
 	</TD>
-	<TH BGCOLOR=__UI_C_INTBLOCK__ WIDTH="2">&nbsp;</TH>
-	<TD BGCOLOR=__UI_C_INTBLOCK__ VALIGN=TOP ALIGN=RIGHT>
+	<TH class=rnorm WIDTH="2">&nbsp;</TH>
+	<TD class=rnorm VALIGN=TOP ALIGN=RIGHT>
 		[item-subtotal]
 	</TD>
 </TR>
@@ -147,24 +147,24 @@
 	onClick="this.form.action='[process-target]'"
 	VALUE="[L]Enter / Recalculate[/L]">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<FONT SIZE="-1">[summary format="<B>[L]Shipping weight[/L]:</B> %s" total=1]</FONT></TD>
 <TR>
-	<TD BGCOLOR=__UI_C_INTBLOCK__><SMALL><B>[L]Subtotal[/L]</TD>
-	<TD BGCOLOR=__UI_C_INTBLOCK__><SMALL>&nbsp;</TD>
-	<TD BGCOLOR=__UI_C_INTBLOCK__ ALIGN=RIGHT VALIGN=RIGHT><SMALL><B>[subtotal]</TD>
+	<TD class=rnorm><SMALL><B>[L]Subtotal[/L]</TD>
+	<TD class=rnorm><SMALL>&nbsp;</TD>
+	<TD class=rnorm ALIGN=RIGHT VALIGN=RIGHT><SMALL><B>[subtotal]</TD>
 </TR>
 <TR>
-	<TD BGCOLOR=__UI_C_INTBLOCK__><SMALL>[L]Shipping[/L]</TD>
-	<TD BGCOLOR=__UI_C_INTBLOCK__><SMALL>&nbsp;</TD>
-	<TD BGCOLOR=__UI_C_INTBLOCK__ ALIGN=RIGHT VALIGN=RIGHT><SMALL>[shipping]</TD>
+	<TD class=rnorm><SMALL>[L]Shipping[/L]</TD>
+	<TD class=rnorm><SMALL>&nbsp;</TD>
+	<TD class=rnorm ALIGN=RIGHT VALIGN=RIGHT><SMALL>[shipping]</TD>
 </TR>
 <TR>
-	<TD BGCOLOR=__UI_C_INTBLOCK__><SMALL>[L]Tax[/L]</TD>
-	<TD BGCOLOR=__UI_C_INTBLOCK__><SMALL>&nbsp;</TD>
-	<TD BGCOLOR=__UI_C_INTBLOCK__ ALIGN=RIGHT VALIGN=RIGHT><SMALL>[salestax]</TD>
+	<TD class=rnorm><SMALL>[L]Tax[/L]</TD>
+	<TD class=rnorm><SMALL>&nbsp;</TD>
+	<TD class=rnorm ALIGN=RIGHT VALIGN=RIGHT><SMALL>[salestax]</TD>
 </TR>
 <TR>
-	<TD BGCOLOR=__UI_C_INTBLOCK__><SMALL><B>[L]TOTAL[/L]</TD>
-	<TD BGCOLOR=__UI_C_INTBLOCK__><SMALL>&nbsp;</TD>
-	<TD BGCOLOR=__UI_C_INTBLOCK__ ALIGN=RIGHT VALIGN=RIGHT><SMALL><B>[total-cost]</TD>
+	<TD class=rnorm><SMALL><B>[L]TOTAL[/L]</TD>
+	<TD class=rnorm><SMALL>&nbsp;</TD>
+	<TD class=rnorm ALIGN=RIGHT VALIGN=RIGHT><SMALL><B>[total-cost]</TD>
 </TR>
 </TBODY>
 </TABLE>
@@ -182,8 +182,8 @@ They are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
 [comment] Order routes in catalog.cfg [/comment]
 
 <br>
-<TABLE border=0 WIDTH=600><TR><TD BGCOLOR="__UI_C_TITLEBARBG__">
-<FONT COLOR="__UI_C_TITLEBARTXT__"><B>[L]Shipping Address[/L]</B></FONT>
+<TABLE border=0 WIDTH=600><TR><TD class=rmarq>
+[L]Shipping Address[/L]
 </TD></TR></TABLE>
 
 [calc]
@@ -381,8 +381,8 @@ mv_todo=return
 [/item-list]
 [if !scratch only_downloadable]
 <P>
-<TABLE WIDTH=600><TR><TD BGCOLOR="__UI_C_TITLEBARBG__">
-<FONT COLOR=__UI_C_TITLEBARTXT__><B>[L]Choose your shipping method[/L]</B></FONT>
+<TABLE WIDTH=600><TR><TD class=rmarq>
+[L]Choose your shipping method[/L]
 </TD></TR></TABLE>
 
 <P>
@@ -410,8 +410,8 @@ mv_todo=return
 
 
 [if variable CREDIT_CARDS_ACCEPTED =~ /\S/]
-<TABLE WIDTH=600><TR><TD BGCOLOR="__UI_C_TITLEBARBG__">
-<FONT COLOR=__UI_C_TITLEBARTXT__>[error std_label="<B>Credit Card Information</B>" name=mv_credit_card_valid]</FONT>
+<TABLE WIDTH=600><TR><TD class=rmarq>
+[error std_label="<B>Credit Card Information</B>" name=mv_credit_card_valid]
 </TD></TR></TABLE>
 
 <P>  
@@ -497,8 +497,8 @@ Card Number<BR>
 	<I>I will pay by COD ([handling cod] extra charge will be added)</I><BR>
 [/if]
 <br>
-<TABLE WIDTH=__UI_MAIN_WIDTH__><TR><TD BGCOLOR="__UI_C_TITLEBARBG__">
-<FONT COLOR="__UI_C_TITLEBARTXT__"><B>Billing Address (if different)</B></FONT>
+<TABLE WIDTH=__UI_MAIN_WIDTH__><TR><TD class=rmarq>
+Billing Address (if different)
 </TD></TR></TABLE>
 
 <TABLE border=0>
@@ -543,8 +543,8 @@ Card Number<BR>
 
 </TABLE><br>
 
-<TABLE WIDTH=600><TR><TD BGCOLOR="__UI_C_TITLEBARBG__">
-<FONT COLOR="__UI_C_TITLEBARTXT__"><B>Email preferences</B></FONT>
+<TABLE WIDTH=600><TR><TD class=rmarq>
+Email preferences
 </TD></TR></TABLE>
 
 <TABLE>

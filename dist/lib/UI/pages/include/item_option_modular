@@ -20,12 +20,12 @@
 				sub=sku
 				start="[cgi item_id]"][/tree][/tmp]
 	[if scratch testing]
-	<BLOCKQUOTE>
-	<FONT COLOR="__CONTRAST__"><B>[scratch testing]</B></FONT>
+	<BLOCKQUOTE class=cmessage>
+		[scratch testing]
 	</BLOCKQUOTE>
 	[else]
-	<BLOCKQUOTE>
-	<FONT COLOR="__UI_C_SUCCESS__"><B>Tree appears OK.</B></FONT>
+	<BLOCKQUOTE class=cmessage>
+		Tree appears OK.
 	</BLOCKQUOTE>
 	[/else]
 	[/if]
@@ -46,12 +46,12 @@
 	"]Check integrity</A>
 
 <TABLE CELLSPACING=0 CELLPADDING=2 CELLMARGIN=3 WIDTH="100%">
-<TR BGCOLOR="__UI_C_TITLEBARBG__">
-	<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">SKU</TH>
-	<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">Master</TH>
-	<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">Group</TH>
-	<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">Description</TH>
-	<TH ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__">Price</TH>
+<TR class=rmarq>
+	<TH ALIGN=LEFT>SKU</TH>
+	<TH ALIGN=LEFT>Master</TH>
+	<TH ALIGN=LEFT>Group</TH>
+	<TH ALIGN=LEFT>Description</TH>
+	<TH ALIGN=RIGHTPrice</TH>
 </TR>
 [seti mod_template]
 <TR>

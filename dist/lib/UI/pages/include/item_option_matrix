@@ -173,11 +173,11 @@
 &nbsp;
 [/if]
 <TABLE CELLSPACING=0 cellpadding=2 cellmargin=3 width="100%">
-<TR BGCOLOR="__UI_C_TITLEBARBG__">
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">[L]SKU[/L]</TH>
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">[L]Description[/L]</TH>
-<TH ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__">[L]Price[/L]</TH>
-<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">&nbsp;</TH>
+<TR class=rmarq>
+<TH ALIGN=LEFT>[L]SKU[/L]</TH>
+<TH ALIGN=LEFT>[L]Description[/L]</TH>
+<TH ALIGN=RIGHT>[L]Price[/L]</TH>
+<TH ALIGN=CENTER>&nbsp;</TH>
 </tr>
 [loop prefix=variant
 		search="
