@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.23 2003-02-12 15:35:54 mheins Exp $
+# $Id: Menu.pm,v 2.24 2003-04-10 17:39:24 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.23 $, 10);
+$VERSION = substr(q$Revision: 2.24 $, 10);
 
 use Vend::Util;
 use strict;
@@ -1471,7 +1471,7 @@ sub menu {
 			my $page_name = $Global::Variable->{MV_PAGE};
 			my $dir = Vend::Tags->var('MV_MENU_DIRECTORY', 2) || 'include/menus';
 			while($page_name =~ s:/[^/]+$::) {
-				my $fn = "$dir/$page_name.txt";
+				my $fn = "$dir/auto/$page_name.txt";
 #::logDebug("page name=$page_name, testing for $fn");
 				if(-f $fn) {
 					$opt->{file} = $fn;
