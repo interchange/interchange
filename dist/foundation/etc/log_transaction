@@ -183,7 +183,7 @@ Order desk entry, set next page to: [cgi name=mv_nextpage set="admin/order_view"
 [/if]
 [seti total_cost][total-cost noformat=1][/seti]
 Add main order [value mv_order_number] to transactions:
-[import table=transactions type=LINE continue=NOTES]
+[import table=transactions type=LINE continue=NOTES no-commit=1]
 code: [value mv_order_number]
 store_id: __STORE_ID__
 order_number: [value mv_order_number]
@@ -258,7 +258,7 @@ set credit_limit: [seti credit_limit][data
 [set download_present][/set]
 
 [item-list]Added [item-code] to orderline:
-[import table=orderline type=LINE continue=NOTES]
+[import table=orderline type=LINE continue=NOTES no-commit=1]
 code: [value mv_order_number]-[item-increment]
 store_id: __STORE_ID__
 order_number: [value mv_order_number]

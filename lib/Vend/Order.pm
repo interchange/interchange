@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.54 2003-04-20 16:26:16 mheins Exp $
+# $Id: Order.pm,v 2.55 2003-04-23 16:01:02 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.54 $, 10);
+$VERSION = substr(q$Revision: 2.55 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -345,13 +345,13 @@ sub _format {
 }
 
 sub chain_checks {
-	my ($or, $ref, $checks, $err) = @_;
+	my ($or, $ref, $checks, $err, $vref) = @_;
 	my ($var, $val, $mess, $message);
 	my $result = 1;
 	$mess = "$checks $err";
 	while($mess =~ s/(\S+=\w+)[\s,]*//) {
 		my $check = $1;
-		($val, $var, $message) = do_check($check);
+		($val, $var, $message) = do_check($check, $vref);
 		return undef if ! defined $var;
 		if($val and $or) {
 			1 while $mess =~ s/(\S+=\w+)[\s,]*//;
@@ -963,7 +963,8 @@ sub do_check {
 		$val =~ s/&#(\d+);/chr($1)/ge;
 
 		if ($Parse{$var}) {
-			($val, $var, $message) = $Parse{$var}->($ref, $val, $m);
+			## $vref added for chained checks only
+			($val, $var, $message) = $Parse{$var}->($ref, $val, $m, $vref);
 		}
 		else {
 			logError( "Unknown order check parameter in profile %s: %s=%s",
@@ -1623,6 +1624,11 @@ sub route_order {
 	# Settable by user to indicate failure
 	delete $::Scratch->{mv_route_failed};
 
+	## Allow setting of a master transaction route. This allows 
+	## setting tables in transaction mode, then only committing
+	## once all routes have completed.
+	my $master_transactions;
+
 	ROUTES: {
 		BUILD:
 	foreach $c (@routes) {
@@ -1963,7 +1969,14 @@ sub route_order {
 
 	for(@route_failed) {
 		my $route = $Vend::Cfg->{Route_repository}{$_};
+
+#::logDebug("checking route $_ for transactions");
+		## We only want to roll back the master at the end
+		next if $route->{master};
+
+
 		if($route->{transactions}) {
+#::logDebug("rolling back route $_");
 			Vend::Interpolate::flag( 'rollback', {}, $route->{transactions})
 		}
 		next unless $route->{rollback};
@@ -1976,7 +1989,12 @@ sub route_order {
 
 	for(@route_complete) {
 		my $route = $Vend::Cfg->{Route_repository}{$_};
+#::logDebug("checking route $_ for transactions");
+		## We only want to commit the master if nothing failed
+		next if $route->{master};
+
 		if($route->{transactions}) {
+#::logDebug("committing route $_");
 			Vend::Interpolate::flag( 'commit', {}, $route->{transactions})
 		}
 		next unless $route->{commit};
@@ -1989,19 +2007,42 @@ sub route_order {
 
 	if(! $errors) {
 		delete $Vend::Session->{order_error};
-	}
-	elsif ($main->{errors_to}) {
-		$Vend::Session->{order_error} = $errors;
-#### change this to use Vend::Mail::send
-		send_mail(
-			$main->{errors_to},
-			errmsg("ERRORS on ORDER %s", $::Values->{mv_order_number}),
-			$errors
+#::logDebug("no errors, commiting main route");
+		if($main->{transactions}) {
+			Vend::Interpolate::flag( 'commit', {}, $main->{transactions})
+		}
+		if($main->{commit}) {
+			Vend::Interpolate::tag_perl(
+						$main->{commit_tables},
+						{},
+						$main->{commit}
 			);
+		}
 	}
 	else {
-		$Vend::Session->{order_error} = $errors;
-		::logError("ERRORS on ORDER %s:\n%s", $::Values->{mv_order_number}, $errors);
+		if($main->{transactions}) {
+#::logDebug("errors, rolling back main route");
+			Vend::Interpolate::flag( 'rollback', {}, $main->{transactions})
+		}
+		if($main->{rollback}) {
+			Vend::Interpolate::tag_perl(
+						$main->{rollback_tables},
+						{},
+						$main->{rollback}
+			);
+		}
+		if ($main->{errors_to}) {
+			$Vend::Session->{order_error} = $errors;
+			send_mail(
+				$main->{errors_to},
+				errmsg("ERRORS on ORDER %s", $::Values->{mv_order_number}),
+				$errors
+				);
+		}
+		else {
+			$Vend::Session->{order_error} = $errors;
+			::logError("ERRORS on ORDER %s:\n%s", $::Values->{mv_order_number}, $errors);
+		}
 	}
 
 	# Get rid of this puppy
