@@ -95,7 +95,7 @@ sub regen_build {
 				 };
 
 	# bindings for Safe are no longer valid
-	$Vend::Calc_initialized = 0;
+	$Vend::Interpolate::Calc_initialized = 0;
 
 	eval {
 		($pageref) = ::cache_html($page, 1);
