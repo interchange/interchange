@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.39 2001-04-05 03:11:30 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.40 2001-04-05 13:04:06 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.39 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.40 $, 10);
 
 @EXPORT = qw (
 
@@ -1398,16 +1398,25 @@ EOF
 }
 
 sub build_accessory_textarea {
-	my($name, $type, $default, $opt, @opts) = @_;
+	my($name, $type, $default, $opt) = @_;
 
 	my $select;
 	my $run = qq|<TEXTAREA NAME="$name"|;
 
-	while($type =~ m/\b(row|col)(?:umn)s?[=\s'"]*(\d+)/gi) {
-		$run .= " \U$1\ES=$2";
+	if($opt->{rows}) {
+		$run .= qq{ ROWS=$opt->{rows}}
+			if $opt->{rows};
+		$run .= qq{ COLS=$opt->{cols}}
+			if $opt->{cols};
 	}
+	else {
+		while($type =~ m/\b(row|col)(?:umn)s?[=\s'"]*(\d+)/gi) {
+			$run .= " \U$1\ES=$2";
+		}
+	}
+
 	if ($type =~ m/\bwrap[=\s'"]*(\w+)/i) {
-		$run .= qq{WRAP="$1"};
+		$run .= qq{ WRAP="$1"};
 	}
 	$run .= " $opt->{extra}" if $opt->{extra};
 	$run .= '>';
@@ -1955,9 +1964,19 @@ sub tag_accessories {
 		HTML::Entities::encode($attrib_value);
 		$opt->{extra} = " $opt->{extra}" if $opt->{extra} ||= $opt->{js};
 		my $cols;
-		if ("\L$type" =~ /^textarea(?:_(\d+)_(\d+))?$/) {
+		if ($type =~ /^textarea(?:_(\d+)_(\d+))/i) {
 			my $rows = $1 || $opt->{rows} || 4;
 			$cols = $2 || $opt->{cols} || 40;
+			$type =~ s/^textarea[_\d]+/textarea/;
+			$opt->{rows} = $rows;
+			$opt->{cols} = $cols;
+			return build_accessory_textarea(
+					$name,
+					$type,
+					$attrib_value,
+					$opt,
+			);
+						
 			return qq|$p<TEXTAREA NAME="$name" ROWS="$rows" COLS="$cols"$opt->{extra}>$attrib_value</TEXTAREA>$a|;
 		}
 		elsif("\L$type" =~ /^text_(\d+)$/) {
@@ -2032,9 +2051,6 @@ sub tag_accessories {
 
 	if ($type =~ /^(radio|check)/i) {
 		return $p . build_accessory_box($name, $type, $default, $opt, @opts) . $a;
-	}
-	elsif($type =~ /^textarea/i) {
-		return $p . build_accessory_textarea($name, $type, $default, $opt, @opts) . $a;
 	}
 	elsif($type eq 'links') {
 		return $p . build_accessory_links($name, $type, $default, $opt, @opts) . $a;
