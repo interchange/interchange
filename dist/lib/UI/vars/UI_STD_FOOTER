@@ -1,4 +1,9 @@
 Variable UI_STD_FOOTER  <<EOV
+[if scratch ui_checklist]
+	</td>
+	</tr>
+	</table>
+[/if]
 [if !scratch ui_no_title]
       </td>
     </tr>
@@ -52,5 +57,5 @@ Variable UI_STD_FOOTER  <<EOV
 
 </body>
 </html>
-
+[set ui_checklist][/set]
 EOV
