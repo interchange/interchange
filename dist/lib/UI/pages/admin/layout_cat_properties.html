@@ -166,6 +166,30 @@ setcat=[cgi selector]
 	</td>
 </tr>
 
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<B>Explode file</B>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small>
+	<select name=explode>
+	[calc]
+		my (%current);
+		my (%seen);
+		my ($exp, $exp_parm) = q{[table-data cat explode]}, 2;
+		my @passed = $Tag->list_glob("$Config->{ProductDir}/*.txt");
+		my $out = '<OPTION VALUE="">--none--';
+		for (@passed) {
+			$out .= qq{<OPTION};
+			$out .= ' SELECTED' if $exp eq $_;
+			$out .= qq{>$_};
+		}
+		return $out;
+	[/calc]
+	</SELECT>&nbsp;Parameters:&nbsp;<INPUT NAME=explode SIZE=16 VALUE="[calc]$exp_parm[/calc]">
+	</td>
+</tr>
+
 <td bgcolor=__UI_C_TOPBLOCKBAR__ colspan=2><font color="#ffffff">Banner info</td>
 
 <tr>
@@ -181,11 +205,11 @@ setcat=[cgi selector]
 		</td>
 		<td>
 		<small>
-		<INPUT SIZE=30 NAME=banner_img value="[table-data cat banner_img]">
+		<INPUT SIZE=30 NAME=banner_text value="[table-data cat banner_text]">
 		</td>
 		<td>
 		<small>or
-		<INPUT SIZE=30 NAME=banner_text value="[table-data cat banner_text]">
+		<INPUT SIZE=30 NAME=banner_img value="[table-data cat banner_img]">
 		</td>
 	</tr>
 	</table>
