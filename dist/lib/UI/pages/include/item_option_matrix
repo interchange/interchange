@@ -294,7 +294,7 @@ HREF="[area
 			other_form.price.value = '[field code="[cgi item_id]" column=price]';
 		}
 		if(! other_form.wholesale.value) {
-			other_form.price.value = '[field code="[cgi item_id]" column=wholesale]';
+			other_form.wholesale.value = '[field code="[cgi item_id]" column=wholesale]';
 		}
 		if(! other_form.weight.value) {
 			other_form.weight.value = '[field weight code="[cgi item_id]"]';
