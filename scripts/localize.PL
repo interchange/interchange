@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange localizer
 #
-# $Id: localize.PL,v 2.0.2.3 2001-10-04 09:06:37 racke Exp $
+# $Id: localize.PL,v 2.0.2.4 2001-10-04 09:28:01 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -78,7 +78,7 @@ use strict;
 use Vend::Util qw(readfile escape_chars);
 require Vend::Config;
 use Getopt::Std;
-use vars qw($opt_c $opt_d $opt_l $opt_M $opt_m $opt_n $opt_o $opt_t $opt_u);
+use vars qw($opt_c $opt_d $opt_D $opt_l $opt_M $opt_m $opt_n $opt_o $opt_t $opt_u);
 
 BEGIN {
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
@@ -105,6 +105,7 @@ OPTIONS
     -c         Rewrite [L] sections with [LC]text[do_DO]text[/do_dO],
                adjust file and data -- mutually exclusive with -o
     -d lg_CC   Create default domain file with Locale lg_CC as prefix
+    -D         Don't put default locale in output.
     -l lg_CC   Create file with Locale lg_CC as prefix
     -m <file>  Read existing information to merge from <file>
     -n         Don't write comments
@@ -133,7 +134,7 @@ one level. Subsequent .bak files will be overwritten.
 
 EOF
 
-getopts('cd:l:Mm:notu:') or die "$USAGE\n";
+getopts('cd:Dl:Mm:notu:') or die "$USAGE\n";
 
 die "$USAGE\n" if $@;
 die "$USAGE\n" unless $opt_l;
@@ -388,7 +389,7 @@ $def_text .= "\n}\nEOF\n";
 $loc_text .= "\n}\nEOF\n\n";
 
 print $loc_text;
-print $def_text;
+print $def_text unless $opt_D;
 
 =head1 NAME
 
@@ -396,7 +397,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-# $Id: localize.PL,v 2.0.2.3 2001-10-04 09:06:37 racke Exp $
+# $Id: localize.PL,v 2.0.2.4 2001-10-04 09:28:01 racke Exp $
 
 =head1 SYNOPSIS
 
@@ -423,6 +424,10 @@ Create default domain file with Locale lg_CC as prefix
 
 Create file with Locale lg_CC as prefix. This is mandatory unless in
 -c mode with C<-m> option.
+
+=item C<-D>
+
+Don't put default locale in output.
 
 =item C<-m file>
 
