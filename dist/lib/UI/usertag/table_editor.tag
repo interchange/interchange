@@ -338,7 +338,7 @@ EOF
 	my $tmeta = UI::Primitive::meta_record($table, $opt->{ui_meta_view}) || {};
 
 	for(grep defined $tmeta->{$_}, @mapdirect) {
-		$opt->{$_} = $tmeta->{$_};
+		$opt->{$_} ||= $tmeta->{$_};
 	}
 
 	if($opt->{cgi}) {
@@ -1400,7 +1400,7 @@ EOF
 	if(@ext_enable) {
 		$Scratch->{mv_data_enable} .= " " . join(" ", @ext_enable) . " ";
 	}
-
+#Debug("setting mv_data_enable to $Scratch->{mv_data_enable}");
 	my @serial = keys %serialize;
 	my @serial_fields;
 	for (@serial) {
