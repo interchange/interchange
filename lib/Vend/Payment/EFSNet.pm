@@ -1,6 +1,6 @@
 # Vend::Payment::EFSNet - Interchange EFSNet support
 #
-# $Id: EFSNet.pm,v 1.1 2004-04-16 22:13:28 kwalsh Exp $
+# $Id: EFSNet.pm,v 1.1.2.2 2004-04-18 01:59:12 kwalsh Exp $
 #
 # Connection routine for Concord EFSNet ( http://www.concordefsnet.com/ )
 #
@@ -306,7 +306,7 @@ sub efsnet {
 		$actual = \%actual;
 	}
 
-::logDebug("actual map result: " . ::uneval($actual));
+#::logDebug("actual map result: " . ::uneval($actual));
 	if (! $user ) {
 		$user    =  charge_param('id')
 						or return (
@@ -323,7 +323,7 @@ sub efsnet {
 
     $opt->{port}   ||= 443;
     
-::logDebug("Host: $opt->{host} Script: $opt->{script}");
+#::logDebug("Host: $opt->{host} Script: $opt->{script}");
 
 	my $precision = $opt->{precision} 
                     || 2;
@@ -390,7 +390,7 @@ sub efsnet {
     
 	my $order_id = gen_order_id($opt);
 	
-::logDebug("auth_code=$actual->{auth_code} order_id=$opt->{order_id}");
+#::logDebug("auth_code=$actual->{auth_code} order_id=$opt->{order_id}");
     my %query = (
     		Method				=> $transtype,
 		StoreKey			=> $secret,
@@ -446,7 +446,7 @@ sub efsnet {
     }
     my $string = join '&', @query;
 
-::logDebug("EFSNet query: " . ::uneval(\%query));
+#::logDebug("EFSNet query: " . ::uneval(\%query));
 
     my $thing    = post_data($opt, \%query);
     my $page     = $thing->{result_page};
@@ -465,7 +465,7 @@ sub efsnet {
     );
 
 
-::logDebug(qq{\nefsnet page: $page response: $response\n});
+#::logDebug(qq{\nefsnet page: $page response: $response\n});
 
    my %result;
    my @results = split /\&/,$page;
@@ -474,7 +474,7 @@ sub efsnet {
 	$result{$key} = $val;
    }
     	
-::logDebug(qq{efsnet response_reason_text=$result{ResultMessage} response_code: $result{ResponseCode}});    	
+#::logDebug(qq{efsnet response_reason_text=$result{ResultMessage} response_code: $result{ResponseCode}});    	
 
     for (keys %result_map) {
         $result{$_} = $result{$result_map{$_}}
@@ -501,7 +501,7 @@ sub efsnet {
     		$result{MErrMsg} = errmsg($msg, $result{ResultMessage});
     	}
     }
-::logDebug(qq{efsnet result=} . uneval(\%result));    	
+#::logDebug(qq{efsnet result=} . uneval(\%result));    	
 
     return (%result);
 }
