@@ -9,7 +9,16 @@ to users visiting your e-commerce site. The required fields are displayed
 in <b>Bold</b>.
 [unless value domainname]
 <p>
+[if type="file" term="upload/[data session username].wizard"]
+	    [page href="@@MV_PAGE@@" form="
+		        mv_action=back
+				mv_click=profile_get_values
+			"]Retrieve saved values[/page]
+
+[elsif variable COMPANY]
 [page __UI_BASE__/wizard/guess_info]Guess my info[/page]
+[/elsif]
+[/if]
 [/unless]
 </td></tr></table>
 
