@@ -40,6 +40,8 @@ Core
   http://www.icdevgroup.org/i/dev/index?&&id=abcd
   http://www.icdevgroup.org/i/dev/index?id=abcd&&&xyz=123
 
+* Don't track admin pages.
+
 UI
 --
 
@@ -57,6 +59,20 @@ UI
 * Improve [flex-select] so that key column can have formatting options 
   via mv_metadata just like all other columns in a table.
   The value that is passed to the flex_editor is unadulterated in all cases.
+
+* Make description and icon of menu item 'Tables' a bit more appropriate.
+
+* Add "-" spacer between items in top menu.
+
+* Remove "Accounting" from menus and replace with "Reports". Not
+  active by default.
+
+* Remove unused code in item select page.
+
+* Add [traffic-report] tag and modified admin/reports/traffic/ByAffiliate
+  page which calls it. Now reports on large files without crashing the
+  system. Probably can handle up to 500MB files with on any kind
+  of a reasonable server.
 
 Usertags
 --------
@@ -101,6 +117,12 @@ Foundation
 * Fix ordering of THEME_CSS so it will be set in high-traffic and
   PreFork mode.
 
+Menu
+----
+
+* Add code which tells you which is the last row in the menu. Improves
+  ability to add spacers and other HTML formatting.
+
 Options
 -------
 
@@ -128,6 +150,8 @@ i18n
 
 * Add and improve foundation and UI translations.
 
+* localize script is now able to detect backtick quoting in [msg]
+  
 Debian
 ------
 
