@@ -60,10 +60,10 @@ banner:
 					ra=yes
 					ml=[control pool 1000]
 				"]
-      <TD width="[scratch width_percent]"> 
-	<table border="0" cellspacing="0" cellpadding="0" width="100%">
+      <TD width="[scratch width_percent]" valign="top"> 
+	<table border="0" cellspacing="0" cellpadding="0" width="75%">
 	<tr> 
-	  <td width="100%" id=rv class="contentbar2">
+	  <td width="75%" id=rv class="contentbar2" nowrap align="center">
 	    &nbsp;[loop-description]
 	  </td>
 	</tr>
@@ -84,13 +84,13 @@ banner:
 	    Our Price: <b>[loop-price]</b>
 	  </td>
 	</tr>
-<!---	<tr> 
+	<tr> 
 	  <td align="center"> 
 	    <a href="[area [loop-code]]">
 	      <img border="0" src="thumb/[loop-field thumb]">
 	    </a>
 	  </td>
-	</tr> ---->
+	</tr>
         <tr>
           <td><p>&nbsp;<br><br></p></td>
         </tr>
