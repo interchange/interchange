@@ -710,6 +710,9 @@ dist/foundation/templates/components/product_flyout
 dist/foundation/templates/components/product_tree
 dist/foundation/templates/components/promo
 dist/foundation/templates/components/random
+dist/foundation/templates/components/results_big
+dist/foundation/templates/components/results_buylist
+dist/foundation/templates/components/results_grid
 dist/foundation/templates/components/saved_carts_list_small
 dist/foundation/templates/components/search_box_small
 dist/foundation/templates/components/search_box_small_top
