@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.65 2002-08-11 16:12:40 mheins Exp $
+# $Id: Config.pm,v 2.66 2002-08-12 19:05:12 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.65 $, 10);
+$VERSION = substr(q$Revision: 2.66 $, 10);
 
 my %CDname;
 
@@ -1160,7 +1160,7 @@ sub global_config {
 	undef $C;
 
 	foreach my $d (@$directives) {
-		($directive = $d->[0]) =~ tr/A-Z/a-z/;
+		$directive = lc $d->[0];
 		$CDname{$directive} = $d->[0];
 		$parse = get_parse_routine($d->[1]);
 		$parse{$directive} = $parse;
