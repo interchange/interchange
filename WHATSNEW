@@ -5,7 +5,8 @@
 
 ------------------------------------------------------------------------------
 
-Interchange 4.9.7 not yet released
+
+Interchange 4.9.8 released 2003-06-18.
 
 
 Core
@@ -1015,11 +1016,17 @@ Extensions
  
   - Bug fixes
 
+
+------------------------------------------------------------------------------
+
+
+Interchange 4.9.7 released only via nightly builds.
+
   
 ------------------------------------------------------------------------------
 
 
-Interchange 4.9.6, released 8-Jan-2003.
+Interchange 4.9.6 released 2003-01-08.
 
 
 Core
