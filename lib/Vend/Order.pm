@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.50 2003-04-06 01:09:33 ramoore Exp $
+# $Id: Order.pm,v 2.51 2003-04-11 00:00:52 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.50 $, 10);
+$VERSION = substr(q$Revision: 2.51 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1167,59 +1167,99 @@ sub check_order_each {
 	return $status;
 }
 
-my $state = <<EOF;
+use vars qw/ %state_template %state_error /;
+$state_error{US} = "'%s' not a two-letter state code";
+$state_error{CA} = "'%s' not a two-letter province code";
+$state_template{US} = <<EOF;
 | AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO |
 | MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY |
 | PR DC AA AE GU VI AS MP FM MH PW AP FP FPO APO |
 EOF
 
-my $province = <<EOF;
+$state_template{CA} = <<EOF;
 | AB BC MB NB NF NS NT ON PE QC SK YT YK |
 EOF
 
 sub _state_province {
 	my($ref,$var,$val) = @_;
-	$province = " $::Variable->{MV_VALID_PROVINCE} "
-		if defined $::Variable->{MV_VALID_PROVINCE};
-	$state = " $::Variable->{MV_VALID_STATE} "
-		if defined $::Variable->{MV_VALID_STATE};
-	if( $val =~ /\S/ and ($state =~ /\s$val\s/i or $province =~ /\s$val\s/i) ) {
-		return (1, $var, '');
+	my $error;
+	if(length($val) != 2) {
+		$error = 1;
 	}
 	else {
+		my $pval	= $::Variable->{MV_VALID_PROVINCE}
+					? " $::Variable->{MV_VALID_PROVINCE} "
+					: $state_template{CA};
+		my $sval	= $::Variable->{MV_VALID_STATE}
+					? " $::Variable->{MV_VALID_STATE} "
+					: $state_template{US};
+		$error = 1
+			unless  $sval =~ /\s$val\s/i or $pval =~ /\s$val\s/i ;
+	}
+	if($error) {
 		return (undef, $var,
 			errmsg( "'%s' not a two-letter state or province code", $val )
 		);
 	}
+	return (1, $var, '');
 }
 
 sub _state {
 	my($ref,$var,$val) = @_;
-	$state = " $::Variable->{MV_VALID_STATE} "
-		if defined $::Variable->{MV_VALID_STATE};
+	my $sval	= $::Variable->{MV_VALID_STATE}
+				? " $::Variable->{MV_VALID_STATE} "
+				: $state_template{US};
 
-	if( $val =~ /\S/ and $state =~ /\s$val\s/i ) {
+	if( $val =~ /\S/ and $sval =~ /\s$val\s/i ) {
 		return (1, $var, '');
 	}
 	else {
 		return (undef, $var,
-			errmsg( "'%s' not a two-letter state code", $val )
+			errmsg( $state_error{US}, $val )
 		);
 	}
 }
 
 sub _province {
 	my($ref,$var,$val) = @_;
-	$province = " $::Variable->{MV_VALID_PROVINCE} "
-		if defined $::Variable->{MV_VALID_PROVINCE};
-	if( $val =~ /\S/ and $province =~ /\s$val\s/i) {
+	my $pval	= $::Variable->{MV_VALID_PROVINCE}
+				? " $::Variable->{MV_VALID_PROVINCE} "
+				: $state_template{CA};
+	if( $val =~ /\S/ and $pval =~ /\s$val\s/i) {
 		return (1, $var, '');
 	}
 	else {
 		return (undef, $var,
-			errmsg( "'%s' not a two-letter province code", $val )
+			errmsg( $state_error{CA}, $val )
 		);
 	}
+}
+
+sub _multistate {
+	my($ref,$var,$val) = @_;
+
+	my $error;
+
+	my $cfield = $::Variable->{MV_COUNTRY_FIELD} || 'country';
+	my $cval = $ref->{$cfield} || $::Values->{$cfield};
+
+	if($var =~ /^b_/ and $ref->{"b_$cfield"} || $::Values->{"b_$cfield"}) {
+		$cval = $ref->{"b_$cfield"} || $::Values->{"b_$cfield"};
+	}
+
+	if (length($val) < 2) {
+		$error = 1;
+	}
+	elsif(my $sval = $state_template{$cval}) {
+		$error = 1 unless $sval =~ /\s$val\s/;
+	}
+
+	if($error) {
+		my $tpl = $state_error{$cval} || "'%s' not a valid state for country '%s'";
+		my $msg = errmsg( $tpl, $val, $cval );
+		return (undef, $var, $msg );
+	}
+	return (1, $var, '');
 }
 
 sub _array {
