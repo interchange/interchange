@@ -100,13 +100,9 @@ install: build
 	mkdir -p $(TMP)/usr/lib/interchange/src
 	for file in dist/src/*; do if test -f $$file; then cp $$file $(TMP)/usr/lib/interchange/src; fi; done
 # UI images and stuff
-	mkdir -p $(TMP)/var/www/ui/admin
-	cp share/akopia/ui/std.js $(TMP)/var/www/ui
-	cp dist/foundation/images/poweredby.gif $(TMP)/var/www/ui
-	for file in share/akopia/ui/admin/*.*; do cp $$file $(TMP)/var/www/ui/admin; done
-	mkdir $(TMP)/var/www/ui/navigation
-	for file in share/akopia/ui/navigation/*.*; do cp $$file $(TMP)/var/www/ui/navigation; done
-	rm -r $(TMP)/usr/lib/interchange/share/akopia/
+	mkdir -p $(TMP)/var/www/interchange
+	for dir in share/interchange/*; do cp -r $$dir $(TMP)/var/www/interchange; done
+	rm -r $(TMP)/usr/lib/interchange/share/interchange
 # mod_interchange
 	mkdir -p $(TMP)/usr/lib/apache/1.3
 	(cd dist/src/mod_interchange; $(APXS) -i -S LIBEXECDIR=$(TMP)/usr/lib/apache/1.3 -n interchange mod_interchange.so)
