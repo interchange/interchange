@@ -3,7 +3,7 @@
 #
 # Interchange localizer
 #
-# $Id: localize.PL,v 2.5 2003-04-01 22:24:30 racke Exp $
+# $Id: localize.PL,v 2.6 2003-05-28 14:41:25 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -32,7 +32,7 @@ use strict;
 use Vend::Util qw(readfile escape_chars);
 require Vend::Config;
 use Getopt::Std;
-use vars qw($opt_c $opt_d $opt_l $opt_M $opt_m $opt_n $opt_o $opt_t $opt_u);
+use vars qw($opt_c $opt_d $opt_l $opt_M $opt_m $opt_n $opt_o $opt_s $opt_t $opt_u);
 
 BEGIN {
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
@@ -52,7 +52,7 @@ BEGIN {
 my $USAGE = <<EOF;
 $0 -- produce localization file from set of pages
 
-usage:    localize -l lg_CC [-d lg_CC] [-m file|-t] [-u dir] file [file2 file3 ...]
+usage:    localize -l lg_CC [-d lg_CC|-s] [-m file|-t] [-u dir] file [file2 file3 ...]
 
 OPTIONS
 
@@ -66,6 +66,7 @@ OPTIONS
                when in regular mode, strip MM_ from [LC] defs
     -o         Rewrite [L] sections with [L msgNNNN], adjust file and data
                -- mutually exclusive with -c
+    -s         Suppress default locale.
     -t         Two page mode, mutually exclusive with -m 
     -u <dir>   UI directory, e.g. /usr/lib/interchange/lib/UI. This can
 	           be used to include the menu titles in the output.
@@ -87,7 +88,7 @@ one level. Subsequent .bak files will be overwritten.
 
 EOF
 
-getopts('cd:l:Mm:notu:') or die "$USAGE\n";
+getopts('cd:l:Mm:nostu:') or die "$USAGE\n";
 
 die "$USAGE\n" if $@;
 die "$USAGE\n" unless $opt_l;
@@ -333,8 +334,14 @@ foreach $key (sort keys %$d) {
 		$dat = ($Comment{$key} || '') and
 			$dat =~ s/\n/\n# /g;
 
-		$def_text .= "# $dat\n" if $dat;
-
+		if ($dat) {
+			if ($opt_s) {
+				$loc_text .= "# $dat\n";
+			} else {
+				$def_text .= "# $dat\n";
+			}
+		}
+		
         unless ($opt_n) {
 		    if ($dat) {
 			    $cmt = $dat;
@@ -355,6 +362,7 @@ foreach $key (sort keys %$d) {
 					 :  'undef';
 		$loc_text .= ",\n\n";
 
+		next if $opt_s;
 		next unless $Comment{$key};
 		$def_text .= "$text,\n";
 		$def_text .= &$Uneval($Comment{$key});
@@ -375,7 +383,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-# $Id: localize.PL,v 2.5 2003-04-01 22:24:30 racke Exp $
+# $Id: localize.PL,v 2.6 2003-05-28 14:41:25 racke Exp $
 
 =head1 SYNOPSIS
 
