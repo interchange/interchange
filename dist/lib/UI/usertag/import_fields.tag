@@ -128,6 +128,7 @@ EOF
 		undef $table;
 		$change_sub = sub {
 			my $table = shift;
+			$Vend::WriteDatabase{$table} = 1;
 #::logDebug("changing table to $table");
 			$db = Vend::Data::database_exists_ref($table);
 #::logDebug("db now=$db");
@@ -143,6 +144,7 @@ EOF
 		};
 	}
 	else {
+		$Vend::WriteDatabase{$table} = 1;
 		$db = Vend::Data::database_exists_ref($table);
 		die "Non-existent table '$table'\n" unless $db;
 		$db = $db->ref() unless $Vend::Interpolate::Db{$table};
