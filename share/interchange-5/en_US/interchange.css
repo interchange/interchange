@@ -207,6 +207,10 @@ A.headlink:active,A.headlink:hover,A.headlink:link,A.headlink:visited {
 	font-weight: normal;
 }
 
+.nowrap {
+	white-space: nowrap;
+}
+
 .rborder {
 	background-color: #CCCCCC;
 	margin: 0;;

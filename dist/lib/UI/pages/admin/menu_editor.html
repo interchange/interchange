@@ -930,7 +930,7 @@ function set_mode (mode) {
 		tree_mode = 1;
 		toggleItem(0, form.collapse, 0);
 		lines[1][MSORT] = 0;
-		el.value = "Set simple mode";
+		el.value = "[L]Set simple mode[/L]";
 		ch.checked = 1;
 		cht.checked = 1;
 		tel.style.visibility = 'Visible';
@@ -1824,12 +1824,12 @@ function motion (idx, motion, fromchecked) {
 	</td>
 	<td>
 		<div id=treebox style="font-size: 10px; display: none">
-		<input type=checkbox name=show_info value=1>&nbsp;Show&nbsp;item&nbsp;info
-		<input type=checkbox name=qmenu_tree value=1>&nbsp;Tree&nbsp;mode
-		<input type=checkbox name=qmenu_write_tree value=1>&nbsp;Write&nbsp;tree&nbsp;to&nbsp;DB
-		<input type=checkbox name=showlevel value=1 onClick="toggleShowlevel()" CHECKED=1>&nbsp;Show&nbsp;numerical&nbsp;level
-		<input type=checkbox name=collapse value=1 onClick="toggleItem(0,this,0)">&nbsp;Collapse&nbsp;tree
-		<input type=checkbox name=explode value=1 onClick="toggleItem(0,this,1)">&nbsp;Explode&nbsp;tree
+		<input type=checkbox name=show_info value=1 class=nowrap> [L]Show item info[/L]
+		<input type=checkbox name=qmenu_tree value=1 class=nowrap> [L]Tree mode[/L]
+		<input type=checkbox name=qmenu_write_tree value=1 class=nowrap> [L]Write tree to DB[/L]
+		<input type=checkbox name=showlevel value=1 class=nowrap onClick="toggleShowlevel()" CHECKED=1> [L]Show numerical level[/L]
+		<input type=checkbox name=collapse value=1 class=nowrap onClick="toggleItem(0,this,0)"> [L]Collapse tree[/L]
+		<input type=checkbox name=explode value=1 class=nowrap onClick="toggleItem(0,this,1)"> [L]Explode tree[/L]
 		</div>
 	</td>
 </tr>
@@ -1860,7 +1860,7 @@ function motion (idx, motion, fromchecked) {
 [/loop]
 [loop ranges=1 list="[scratch lastfull]..[scratch loopinc]"]<div id=box[loop-code] style="font-size: 11pt; width=300px;">[loop-change 1]
 [condition]1[/condition][if scratch empty]
-<h3>Create menu from HTML</h3>
+<h3>[L]Create menu from HTML[/L]</h3>
 <textarea name=qmenu_html_create rows=20 cols=50
 onChange="this.form.qmenu_new.focus()"></textarea>
 <br>
@@ -1877,11 +1877,11 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 	<tr>
 	  <td>
 [tabbed-display panel-width="500" panel-height="100%" panel-shade=e tab-height=24 tab-width=150]
-[tabbed-panel General]
+[tabbed-panel [L]General[/L]]
 		<table>
 		<tr>
 			<td class=clabel>
-				Name
+				[L]Name[/L]
 			</td>
 			<td class=cdata>
 				<input name=name type=text size=30 onChange="form_changed(1);toggleBreak(this.form,this.value); void(0)">
@@ -1889,7 +1889,7 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 		</tr>
 		<tr>
 			<td class=clabel>
-				Page
+				[L]Page[/L]
 			</td class=cdata>
 			<td class=cdata>
 				<input name=page type=text size=50 onChange="form_changed(1);toggleName(this.form,form.page.value)">
@@ -1897,7 +1897,7 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 		</tr>
 		<tr>
 			<td class=clabel>
-				Form values<br>
+				[L]Form values[/L]<br>
 				<input name=ui_searchblob type=hidden value="">
 				<input name=ui_source_win type=hidden value="[scratch window_name]">
 
@@ -1905,12 +1905,12 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 			<input
 				style="font-size: smaller; font-weight: bold;"
 				type=button
-				value="Create search"
+				value="[L]Create search[/L]"
 				onClick="this.form.page.value = 'search';form_changed(1);search_win();"
 				><br><input
 							style="font-size: smaller;"
 							type=button onClick="this.form.params.value=''"
-							value="clear search">
+							value="[L]Clear search[/L]">
 			</div>
 			</td>
 			<td class=cdata>
@@ -1919,7 +1919,7 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 		</tr>
 		<tr>
 			<td class=clabel>
-				Detailed Description
+				[L]Detailed Description[/L]
 			</td>
 			<td class=cdata>
 				<textarea cols=50 rows=4 name=description onChange="form_changed(1);"></textarea>
@@ -1927,16 +1927,16 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 		</tr>
 		<tr>
 			<td class=clabel>
-				Options
+				[L]Options[/L]
 			</td>
 			<td class=cdata>
-				<input name=label type=checkbox value=1 onChange="form_changed(1);toggleName(this.form)">Label only<br>
-				<input name=breakline type=checkbox value=1 onChange="form_changed(1);toggleBreak(this.form)">Break line
+				<input name=label type=checkbox value=1 onChange="form_changed(1);toggleName(this.form)">[L]Label only[/L]<br>
+				<input name=breakline type=checkbox value=1 onChange="form_changed(1);toggleBreak(this.form)">[L]Break line[/L]
 			</td>
 		</tr>
 		<tr>
 			<td class=clabel>
-				Inactive
+				[L]Inactive[/L]
 			</td class=cdata>
 			<td class=cdata>
 			<input name=inactive  type=checkbox value=1 onChange="form_changed(1);">
@@ -1944,7 +1944,7 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 		</tr>
 		<tr>
 			<td class=clabel>
-				Menu Group
+				[L]Menu Group[/L]
 			</td>
 			<td class=cdata>
 			 <input name=mgroup  type=text onChange="form_changed(1);">
@@ -1952,19 +1952,19 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 		</tr>
 		<tr>
 			<td colspan=2>
-			<input type=button onClick="saveForm()" name=savebutton value="Save menu item">
+			<input type=button onClick="saveForm()" name=savebutton value="[L]Save menu item[/L]">
 			<input type=button onClick="loadForm()" name=loadbutton
 						style="visibility: Hidden;"
-						value="Load menu item">
+						value="[L]Load menu item[/L]">
 			<input type=button onClick="saveForm(checkcur)" name=copybutton
 						style="visibility: Hidden;"
-						value="Copy to checked entry">
+						value="[L]Copy to checked entry[/L]">
 			</td>
 		</tr>
 		</table>
 [/tabbed-panel]
 
-[tabbed-panel Advanced]
+[tabbed-panel [L]Advanced[/L]]
 		<table>
 <script>
 		form = document.qmenuform;
@@ -2042,7 +2042,7 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 			document.write([jsq]
 		<tr>
 			<td class=clabel>
-				Extended Parameters (advanced)
+				[L]Extended Parameters (advanced)[/L]
 			</td>
 			<td class=cdata>
 				<textarea cols=50 rows=4 name=extended onChange="form_changed(1);"></textarea>
@@ -2054,13 +2054,13 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 </script>
 		<tr>
 			<td colspan=2>
-			<input type=button onClick="saveForm()" name=savebutton value="Save menu item">
+			<input type=button onClick="saveForm()" name=savebutton value="[L]Save menu item[/L]">
 			<input type=button onClick="loadForm()" name=loadbutton
 						style="visibility: Hidden;"
-						value="Load menu item">
+						value="[L]Load menu item[/L]">
 			<input type=button onClick="saveForm(checkcur)" name=copybutton
 						style="visibility: Hidden;"
-						value="Copy to checked entry">
+						value="[L]Copy to checked entry[/L]">
 			</td>
 		</tr>
 	</table>
@@ -2073,7 +2073,7 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 </tr>
 </table>
 [output name="bottom_buttons"]
-		<input type=submit name=doit style="font-weight: bold" value="Publish" onClick="check_change(1) && setOutput()" class=s3>
+		<input type=submit name=doit style="font-weight: bold" value="[L]Publish[/L]" onClick="check_change(1) && setOutput()" class=s3>
 		&nbsp;&nbsp;&nbsp;
 		<input type=submit
 				onClick="
@@ -2081,7 +2081,7 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 					this.form.qmenu_new.value='';
 					this.form.qmenu_name.value='';
 					"
-				value="Cancel" class=s3>
+				value="[L]Cancel[/L]" class=s3>
 [output name="bottom_of_form"]
 </form>
 [output name=""]
