@@ -1,4 +1,4 @@
-interchange (4.6.0-1.8) unstable; urgency=low
+interchange (4.6.1-0) unstable; urgency=low
 
   * upstream patches
   * pragma substitute_table_image added
@@ -9,7 +9,6 @@ interchange (4.6.0-1.8) unstable; urgency=low
   * user defined break labels
   * moved UI help stuff to interchange-ui package, removed unneeded
     stuff in share, link help to localhost
-  * allow catalog-defined user tags in action maps
   * options checkfor and signal, type radio added to formel user tag
   * fix for empty code field within meta editor
   * some absolute font settings extinguished
@@ -18,7 +17,7 @@ interchange (4.6.0-1.8) unstable; urgency=low
   * imagehelper widget fix
   * wrapper for interchange and makecat added
   
- -- Stefan Hornburg <racke@linuxia.de>  Wed, 22 Nov 2000 03:30:19 +0100
+ -- Stefan Hornburg <racke@linuxia.de>  Thu, 23 Nov 2000 13:37:20 +0100
 
 interchange (4.6.0-1) unstable; urgency=low
 

@@ -39,7 +39,6 @@ This file documents all changes of the LINUXIA branch of Interchange.
   (page_save.html: 1.4.4.2, page_preview.html: 1.5.4.2)
 - tried a shipping fix (Interpolate.pm: 1.29.4.5)
 - user-defined break labels (item_edit.html: 1.12.4.5)
-- allow catalog-defined user tags in action maps (interchange.PL: 1.8.4.8) 
 - code input field is empty if table::column doesn't exist within
   metadata database (display: 1.7.4.2)
 - extinguish absolute font settings (affiliates.html: 1.10.4.9,
@@ -54,6 +53,8 @@ Changes that made into the main branch:
 
 - patch to makecat.PL to make -f working (CVS 1.26.4.2, modified, 2000-10-18)
 - fix for dump_structure in Config.pm (CVS 1.23.4.1, modified, 2000-10-19)
+- allow catalog-defined user tags in action maps 
+  (interchange.PL: 1.8.4.8, modified, 2000-11-1) 
 - protect currency against leaking locale 
   (Util.pm: 1.10.4.2, modified, 2000-11-5)
 
