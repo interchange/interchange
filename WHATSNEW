@@ -6,11 +6,31 @@
 
 Interchange 4.9.0 not yet released
 
-Interchange 4.8.3 not yet released.
+UI
+--
+
+* Unused usertag component removed.
+
+------------------------------------------------------------------------------
+
+Interchange 4.8.4 not yet released.
+
+Admin UI
+--------
+
+* About links are working now in catalogs that are not based on foundation.
+
+* Edit button which appears on flex_select page if database attribute
+  LARGE is set works now as expected.
+
+
+------------------------------------------------------------------------------
+
+
+Interchange 4.8.3 released 2001-11-27.
 
 Core and usertags
 -----------------
-
 * Some fairly major changes to limit exposure to the cross-site
   JavaScript vulnerabilities described in:
 
@@ -19,8 +39,7 @@ Core and usertags
   The vulnerability is only serious if you have "CookieLogin Yes"
   in your catalog.cfg definition (as unfortunately was in foundation).
 
-  It is recommended that you either set CookieLogin to No, or at least
-  do
+  It is recommended that you either set CookieLogin to No, or at least do
 
   		SaveExpire  8 hours
 
@@ -34,7 +53,7 @@ Core and usertags
 
 	in your catalog.cfg file.
 
-* New filter restrict_html.  Called with:
+* New filter restrict_html. Called with:
 
 	[filter restrict_html.a.b.i.u.p.br]
 			<SCRIPT> malicious('Gotcha!') </SCRIPT>
@@ -42,23 +61,111 @@ Core and usertags
 
   which prevents the <SCRIPT> from executing.
 
-* Make mv_more_alpha working in query tags.
+* Fixed crash of page servers in PreFork mode due to phantom
+  database entries created by unwanted auto-vivification in
+  $Vend::Cfg->{Database}. Much thanks to Chris Ochs who researched
+  this problem which was plaguing a lot of people and wouldn't have
+  been found without his fine help.
+
+* Fixed Vend::Util::round_to_frac_digits() to work if frac_digits are
+  zero. Thanks to Shozo Murahashi <murahashi@ayayu.com> who
+  investigated and detailed this problem.
+
+* Make mv_more_alpha work in query tags.
+
+* Fixed get_option_hash in Util.pm, thanks to Javier Martin
+  <martin@trymedia.com> who discovered and analyzed this bug
+  (in his case any options for &charge are ignored).
+
+* Fixed bug in database query methods which can hose query strings
+  like "select ... where column like '%...%'".
+
+* Issue an error message if a search can not be performed due
+  to the NoSearch directive.
+
+* Added hide option to usertags email and email_raw.
+
+* Check for Digest::MD5 instead of MD5 in the usertag version and
+  the RPM spec file.
+
+* New option -D for localize script (Don't put default locale in output.),
+  insert comments only if they are distinct from the key.
 
 * Allow [dump] of portion of session, for example [dump scratch].
 
-UI
+* New methods hash_query and get_slice added to the Table modules.
+
+* In cases where tabs end up in database fields, prevent corruption of
+  tab-delimited DB exports by filtering tabs to spaces.
+
+* Added workaround for a bug in FreeBSD stock Perl build that sometimes
+  caused a segmentation fault when starting the Interchange daemon. If
+  you're upgrading from an earlier verson of Interchange, be sure to grab
+  the appropriate setting in interchange.cfg. Search the icconfig doc for
+  'MV_DOLLAR_ZERO' for more info.
+
+* Fix oversight that kept [on-match] and [no-match] from working with
+  [loop list=`...`].
+
+* Close security hole by disabling Safe :base_io group by default.
+
+* Log error message if order profile not found.
+
+* Add "filter" order check type. It runs the value through a filter and
+  checks that it is unchanged.
+
+* Support Database xxx NO_ASCII_INDEX attribute.
+
+* Prevent death when using row_hash in DBM types and non-existent key
+  is hit.
+
+Payment
+-------
+* Bank of America payment module added.
+* Added $transtype fix in AuthorizeNet module. Thanks to Javier Martin.
+
+Admin UI
 --------
+* Check for delete permissions before giving option and/or allowing delete
+  of orders. Resolves bug #333. Thanks to Donal Harrington and Mark Johnson
+  for pointing this out.
+
 * Static page building uses the original catalog settings instead
-  of the UI ones for images and URLs. Fixed another bug that
-  renders selection of "never build" pages useless.
+  of the UI ones for images and URLs. Fixed two more bugs which
+  render selection of "never build" and maximum number of pages useless.
 
 * Spreadsheet save error fixed. Interchange prevents loading of spreadsheet
   values when the key is empty now. This has the side effect that
   autonumbering is not possible when adding records from the spreadsheet.
 
+* New usertag diffmerge, improved usertag diff.
+
+* Bump matchlimit for order report queries to 100000.
+
+* Correct wizard help links. Thanks to John Beima for reporting.
+
+* Prevent limitations on database show for superuser in list_databases
+  usertag, found by Ed LaFrance.
+
 I18N
---------
+----
+* localization support added to UI usertag file_info.
+
 * Hebrew locale from Chen Naor <chen@lilux.co.il> added.
+
+* Japanese locale from Murahashi <murahashi@ayayu.com> and
+  Hiroyuki Cozy Kojima <kojima@redhat.com> added.
+
+* Brazilian Portuguese locale from Jack Tsai <jack@3light.com.br> added.
+
+Documentation
+-------------
+* Add ic_howto_cvs by Dan Browning, ic_ecommerce by Ed LaFrance (based on
+  rediscovered parts of the Minivend 4 docs), and the long-lost IC FAQ.
+
+
+------------------------------------------------------------------------------
+
 
 Interchange 4.8.2 released 2001-09-19.
 
@@ -166,6 +273,9 @@ Packaging
   - change owner/group of the base directory for static HTML files
     to the Interchange owner/group
   - let makecat write into /etc/interchange/catalogs.cfg
+
+
+------------------------------------------------------------------------------
 
 
 Interchange 4.8.1 released 2001-08-13.
