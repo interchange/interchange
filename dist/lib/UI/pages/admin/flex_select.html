@@ -172,7 +172,7 @@
 		[/loop]
 </td>
 <td>
-<input NAME=ui_text_qualification size=16> <INPUT TYPE=submit VALUE="Limit with search">
+<input NAME=ui_text_qualification size=16> <INPUT TYPE=submit VALUE="Limit with search"> 
 </td>
 </tr>
 </table>
@@ -222,12 +222,53 @@
 
 	$Config->{NoSearch} = '';
 	$ui_text_qualification = $CGI->{ui_text_qualification};
-	if ($ui_text_qualification and $CGI->{ui_text_qualification} =~ /=/ ) {
-		my ($f, $s) = split /\s*=\s*/, $CGI->{ui_text_qualification} , 2;
-		$CGI->{ui_text_qualification} = "co=1\nop=eq\nse=$s\nsf=$f";
+	if ($ui_text_qualification and $CGI->{ui_text_qualification} =~ /[<!=>\^]/ ) {
+		$CGI->{ui_text_qualification} = "co=1\n";
+
+		my @entries = split /\s+(and|or)\s+/i,  $ui_text_qualification;
+		my $or;
+		for(@entries) {
+			if(/^or$/i) {
+				$or = 1;
+				$CGI->{ui_text_qualification} .= "os=1\n";
+				next;
+			}
+			elsif(/^and$/i) {
+				$or = 0;
+				$CGI->{ui_text_qualification} .= "os=0\n";
+				next;
+			}
+			my ($f, $op, $s) = split /\s*([<=!>\^]+)\s*/, $_, 2;
+			$op = "eq" if $op eq "==";
+			$op = "rm" if $op eq "=";
+			if($op eq '^') {
+				$op = 'rm';
+				$CGI->{ui_text_qualification} .= "bs=1\nsu=1\n";
+			}
+			else {
+				$CGI->{ui_text_qualification} .= "bs=0\nsu=0\n";
+			}
+			$CGI->{ui_text_qualification} .= "se=$s\nsf=$f\nop=$op\n";
+			if($op =~ /[<>]/ and $s =~ /^[\d.]+$/) {
+				$CGI->{ui_text_qualification} .= "nu=1\n";
+			}
+			else {
+				$CGI->{ui_text_qualification} .= "nu=0\n";
+			}
+		}
+		if(defined $or) {
+			$CGI->{ui_text_qualification} .= $or ? "os=1\n" : "os=0\n";
+		}
+
+		$out_message =  <<EOF;
+<H3>Entries matching "$ui_text_qualification"</H3>
+EOF
 	}
 	elsif ($ui_text_qualification) {
 		$CGI->{ui_text_qualification} = "se=$CGI->{ui_text_qualification}";
+		$out_message =  <<EOF;
+<H3>Entries matching "$CGI->{ui_text_qualification}"</H3>
+EOF
 	}
 	else {
 		$CGI->{ui_text_qualification} = "ra=yes";
@@ -249,8 +290,10 @@
 		$numeric{$_} = 1 if $ref->numeric($_);
 	}
 
-	return;
+	return $out_message;
 [/perl]
+
+<!-- tq: [cgi ui_text_qualification] -->
 
 [if cgi ui_show_fields]
 	[tmp sparams]
@@ -285,6 +328,18 @@
 <INPUT TYPE=hidden NAME=ui_return_to     VALUE="ui_sequence_edit=1">
 <INPUT TYPE=hidden NAME=mv_action        VALUE=back>
 <TABLE CELLSPACING=1 cellmargin=3>
+<TR BGCOLOR="__UI_C_TITLEBARBG__">
+[loop list="[cgi ui_description_fields]"]
+<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
+	[loop-change 1][condition]1[/condition]&nbsp;&nbsp;&nbsp;&nbsp;[/loop-change 1]
+	<A HREF="[area href='__UI_BASE__/flex_group'
+					form='
+						mv_data_table=[cgi mv_data_table]
+						mv_arg=[loop-code]
+					'
+				]"><IMG ALT="select by [loop-code]" SRC="@_UI_IMG_@admin/layout.gif" BORDER=0></TH>
+[/loop]
+</tr>
 <TR BGCOLOR="__UI_C_TITLEBARBG__">
 [loop list="[cgi ui_description_fields]"]
 <TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
