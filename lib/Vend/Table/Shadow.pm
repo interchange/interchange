@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.24 2003-03-27 17:06:18 racke Exp $
+# $Id: Shadow.pm,v 1.25 2003-04-01 12:55:00 racke Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.24 $, 10);
+$VERSION = substr(q$Revision: 1.25 $, 10);
 
 # TODO
 #
@@ -364,7 +364,7 @@ sub _map_column {
 		$map = $mapentry->{$locale};
 		if (exists $map->{lookup_table}) {
 			my ($db_lookup, $lookup_key);
-			::logDebug ("Lookup $column with key $key in $map->{lookup_table}");
+#::logDebug ("Lookup $column with key $key in $map->{lookup_table}");
 			$db_lookup = Vend::Data::database_exists_ref($map->{lookup_table})
 				or die "unknown lookup table $map->{lookup_table} in mapping for column $column of $s->[$TABLE] for locale $locale";
 			$db = Vend::Data::database_exists_ref($map->{table})
