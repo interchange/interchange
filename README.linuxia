@@ -17,7 +17,8 @@ This file documents all changes of the LINUXIA branch of Interchange.
 - allow upload of new files (UI_STD_FILE_NAV: 1.4.4.2, 
   upload_file.html: 1.4.4.2)
 - expire scripts have now a -f option so they can called by cron in
-  the Debian setup (expire.PL/expireall.PL): 1.8.4.1
+  the Debian setup (expire.PL/expireall.PL: 1.8.4.1)
+- log form action errors (interchange.PL: 1.8.4.6)
 
 Changes that made into the main branch:
 

@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.5.8
 #
-# $Id: interchange.PL,v 1.8.4.5 2000-10-23 12:46:33 racke Exp $
+# $Id: interchange.PL,v 1.8.4.6 2000-10-26 09:31:38 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -964,6 +964,7 @@ EOF
 		$template .= "\n\nError: %s\n"
 				if $Global::DisplayErrors && $Vend::Cfg->{DisplayErrors}
 			;
+		logError ("Error in form action: $err");
 		$template = get_locale_message(500, $template, $err);
 		$template .= "($err)";
 		::response($template);
@@ -1719,6 +1720,7 @@ EOF
 		$template .= "\n\nError: %s\n"
 				if $Global::DisplayErrors && $Vend::Cfg->{DisplayErrors}
 			;
+		logError ("Error in form action: $err");
 		$template = get_locale_message(500, $template, $err);
 		$template .= "($err)";
 		::response($template);
