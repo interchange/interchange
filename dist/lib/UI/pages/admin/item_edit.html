@@ -24,16 +24,15 @@
 [/calc]
 [if cgi ui_new_item]
 	[calc]
-		$CGI->{item_id} = q{[counter file="products/products.autonumber" start=new0000]};
+		$CGI->{item_id} = q{[counter file="__UI_PRODUCT_DIR__/__UI_PRODUCT_DIR__.autonumber" start=new0000]};
 		return;
 	[/calc]
 [/if]
 @_UI_STD_DBEDIT_HEAD_@
 
-[set ui_class]Items[/set]
 [seti page_title]Item editor: [cgi item_id][/seti]
 [seti page_banner]Item editor: edit item <B>[cgi item_id]</B>[/seti]
-[set help_name]item.edit[/set]
+[set help_name]edit.item[/set]
 [set icon_name]admin/icon_item.gif[/set]
 
 @_UI_STD_HEAD_@
@@ -44,7 +43,7 @@
 <A HREF="[area href=admin/flex_editor
 				form='
 					item_id=[cgi item_id]
-					mv_data_table=products
+					mv_data_table=__UI_PRODUCT_TABLE__
 					page_title=Edit items: [cgi item_id]
 					help_name=inventory.edit
 					ui_no_meta_display=1
