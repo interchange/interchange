@@ -27,7 +27,16 @@
 
             next unless $name && $value;
 
-            unless($key) { $key = $CGI->{sku}."-$name"; }
+            unless($key) { 	
+				if($name =~ /\W/) {
+					$Tag->error({
+						name => 'Set option groups',
+						set => errmsg(qq{Group name "%s" contains non-word characters, will not set}, $name),
+					});
+					next;
+				}
+				$key = $CGI->{sku}."-$name"; 
+			}
 
             my @value = split("\r\n",$value);
 
