@@ -70,6 +70,15 @@ UI
 
 * Change name of "Bottom" menu (which was on top) to "Fixed". 
 
+Payment
+-------
+
+* Add support for Verisign's PFProAPI.pm Perl module, which implements
+  Payflow Pro gateway communication without needing any external binary,
+  and thus no forking or temporary files for communication. Use PFProAPI
+  automatically if it is found at IC startup time, but fall back to pfpro
+  or pfpro-file if not. Upgrades should be transparent.
+
 Foundation
 ----------
 
