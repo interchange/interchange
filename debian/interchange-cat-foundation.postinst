@@ -59,7 +59,9 @@ if [ "$GOAHEAD" = "true" ]; then
 	CATALOG=foundation
 
 	# replace document root
-	rm -rf $DOCROOT/$CATALOG
+	if [ "$DOCROOT" -a -d "$DOCROOT" ]; then
+		rm -rf $DOCROOT/$CATALOG
+	fi
 	mkdir -p $DOCROOT/$CATALOG/images
 	chown -R $USER.$GROUP $DOCROOT/$CATALOG
 
