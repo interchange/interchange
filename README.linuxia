@@ -58,6 +58,7 @@ This file documents all changes of the LINUXIA branch of Interchange.
   (login.html: 1.15.2.2, index.html: 1.22.4.8-11)
 - database download from gentable improved (catalog_after.cfg: 1.4.4.1,
   gentable.html: 1.11.4.2)
+- file widget added (Interpolate.pm: 1.29.4.9)
 
 Changes that made into the main branch:
 

@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.29.4.8 2000-12-21 12:31:09 racke Exp $
+# $Id: Interpolate.pm,v 1.29.4.9 2001-01-14 14:37:12 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.29.4.8 $, 10);
+$VERSION = substr(q$Revision: 1.29.4.9 $, 10);
 
 @EXPORT = qw (
 
@@ -1290,6 +1290,14 @@ sub build_accessory_textarea {
 	$run .= '</TEXTAREA>';
 }
 
+sub build_accessory_file {
+    my($name) = @_;
+
+    qq{<INPUT TYPE="hidden" NAME="mv_data_file_field" VALUE="$name">
+<INPUT TYPE="hidden" NAME="mv_data_file_path" VALUE="">
+<INPUT TYPE="hidden" NAME="mv_data_file_oldfile" VALUE="">       
+<INPUT TYPE="file" NAME="$name" accept="text/*">};
+}
 
 sub build_accessory_select {
 	my($name, $type, $default, $opt, @opts) = @_;
@@ -1483,7 +1491,7 @@ sub tag_accessories {
 		$data = $db ? tag_data($db, $field, $code) : product_field($field,$code);
 	}
 
-	unless ($data || $type =~ /^text|^hidden/i) {
+	unless ($data || $type =~ /^text|^hidden|^file/i) {
 		return '' if $item;
 		return '' if $name;
 		return qq|<INPUT TYPE="hidden" NAME="mv_order_$attribute" VALUE="">|;
@@ -1563,6 +1571,9 @@ sub tag_accessories {
 	elsif($type =~ /^textarea/i) {
 		return $p . build_accessory_textarea($name, $type, $default, $opt, @opts) . $a;
 	}
+    elsif($type =~ /^file/i) {
+        return $p . build_accessory_file($name);
+    }
 	elsif($type =~ /^combo[ _]*(?:(\d+)(?:[ _]+(\d+))?)?/i) {
 		$opt->{rows} = $opt->{rows} || $1 || 1;
 		$opt->{cols} = $opt->{cols} || $2 || 16;

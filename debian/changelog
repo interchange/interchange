@@ -18,8 +18,9 @@ interchange (4.6.2-0.4) unstable; urgency=low
   * improvement for database downloads from UI page gentable
   * create symbolic link for configuration file
   * hints script removed from distribution
+  * file widget added
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sun, 14 Jan 2001 13:01:05 +0100
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sun, 14 Jan 2001 15:30:17 +0100
 
 interchange (4.6.1-1) unstable; urgency=low
 
