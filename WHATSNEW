@@ -41,7 +41,7 @@ Core
   In interchange.cfg:
 
       RobotUA   Inktomi, Scooter, Site*Sucker
-      RobotIP   209.135.65, 64.172.5
+      RobotIP   209.135.65, 64.172.5.*
       RobotHost *.googlebot.com
 
   After that, it is all automatic. mv_tmp_session gets set to one, the
@@ -53,6 +53,13 @@ Core
         1. Allow those UAs to follow a URL.
         2. Prevent useless session files from cluttering disk
         3. Prevent session writes from inhibiting disk performance.
+
+* Added a (global) HostnameLookups directive to specify whether Interchange
+  should perform a DNS lookup to resolve the remote user's hostname from
+  their IP address.  The default is 'No'.  Hostnames are required for
+  facilities such as the RobotHost check to work.  If the web server is
+  configured to perform hostname resolution then this directive should remain
+  set to 'No'.
 
 * Add the oft-requested DirectoryIndex feature. 
 
