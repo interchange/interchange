@@ -1,51 +1,51 @@
 code	name
-00022	Step Stools
-00017	Rulers
-00021	Squares
-00016	Rollers
-00039	Pliers
+00022	Trittleitern
+00017	Maße
+00021	Winkel
+00016	Rollen
+00039	Zangen
 00020	Schaufeln
-00051	Wrenches
-00015	Putty Knives
-00038	Picks & Hatchets
-00050	Toolboxes
-00014	Pliers
-00037	Paintbrushes
+00051	Schraubenschlüssel
+00015	Spachtel
+00038	Spitzhacken & Beile
+00050	Werkzeugkästen
+00014	Zangen
+00037	Pinsel
 00045	Schaufeln
 00009	Leitern
-00013	Picks & Hatchets
+00013	Spitzhacken & Beile
 00036	Nägel
-00044	Shears
-00008	Hand Saws
-00012	Paintbrushes
-00035	Levels
+00044	Scheren
+00008	Handsägen
+00012	Pinsel
+00035	Wasserwaagen
 00043	Sandpapier
-00007	Hand Planes
+00007	Handhobel
 00011	Nägel
 00034	Ladders
-00042	Rulers
+00042	Maße
 00006	Hämmer
-00029	Eye Protection
-00010	Levels
+00029	Augenschutz
+00010	Wasserwagen
 00033	Handsägen
-00041	Rollers
+00041	Rollen
 00005	Geschenkgutschein
-00028	Brushes
-00032	Hand Planes
-00040	Putty Knives
-00004	Eye Protection
-00027	Breathing Protection
+00028	Bürsten
+00032	Handhobel
+00040	Spachtel
+00004	Augenschutz
+00027	Atemschutz
 00031	Hämmer
-00003	Brushes
-00026	Wrenches
-00049	Tool Belts
-00030	Gift Certificate
-00002	Breathing Protection
-00025	Toolboxes
-00048	Tape Measures
-00024	Tool Belts
-00047	Step Stools
-00019	Shears
-00023	Tape Measures
-00046	Squares
+00003	Bürsten
+00026	Schraubenschlüssel
+00049	Werkzeuggürtel
+00030	Geschenkgutschein
+00002	Atemschutz
+00025	Werkzeugkästen
+00048	Bandmaße
+00024	Werkzeuggürtel
+00047	Trittleitern
+00019	Scheren
+00023	Bandmaße
+00046	Winkel
 00018	Sandpapier
