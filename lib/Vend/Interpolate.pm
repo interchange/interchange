@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.29.4.5 2000-11-01 10:10:45 racke Exp $
+# $Id: Interpolate.pm,v 1.29.4.6 2000-11-06 07:39:14 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.29.4.5 $, 10);
+$VERSION = substr(q$Revision: 1.29.4.6 $, 10);
 
 @EXPORT = qw (
 
@@ -3340,17 +3340,19 @@ sub labeled_list {
 
 	if(defined $opt->{option}) {
 		$opt_value = $opt->{option};
+		my $optref = $opt->{cgi} ? (\%CGI::values) : $::Values;
+
 		if($opt_value =~ s/\s*($Codere)::($Codere)\s*//) {
             $opt_table = $1;
             $opt_field = $2;
-			$opt_value = lc($::Values->{$opt_value}) || undef;
+			$opt_value = lc($optref->{$opt_value}) || undef;
             $opt_select = sub {
                 return lc(tag_data($opt_table, $opt_field, shift)) eq $opt_value;
             }
 				if $opt_value;
         }
-		elsif(defined $::Values->{$opt_value} and length $::Values->{$opt_value} ) {
-			$opt_value = lc($::Values->{$opt_value});
+		elsif(defined $optref->{$opt_value} and length $optref->{$opt_value} ) {
+			$opt_value = lc($optref->{$opt_value});
 			$opt_select = ! $opt->{multiple} 
 						  ? sub { return "\L$_[0]" eq $opt_value }
 						  : sub { $opt_value =~ /^$_[0](?:\0|$)/i or  
@@ -4384,38 +4386,48 @@ sub read_shipping {
 # Must match exactly, but NOT case-sensitive
 
 sub tag_selected {
-	my ($field,$value,$multiple) = @_;
+	my ($field,$value,$opt) = @_;
 	$value = '' unless defined $value;
-	my $ref = lc $::Values->{$field};
-	$ref = lc $ref;
-	my $r;
+	my $ref = $opt->{cgi} ? $CGI::values{$field} : $::Values->{$field};
+	return ' SELECTED' if ! length($ref) and $opt->{default};
 
-	if( $ref eq "\L$value" ) {
-		$r = ' SELECTED';
+	if(! $opt->{case}) {
+		$ref = lc($ref);
+		$value = lc($value);
 	}
-	elsif ($multiple) {
-		$r = ' SELECTED' if $ref =~ /\b$value\b/i;
+
+	my $r = '';
+
+	return ' SELECTED' if $ref eq $value;
+	if ($opt->{multiple}) {
+		my $regex = quotemeta $value;
+		return ' SELECTED' if $ref =~ /(?:^|\0)$regex(?:$|\0)/i;
 	}
-	else {$r = ''}
-	return $r;
+
+	return '';
 }
 
 sub tag_checked {
-	my ($field,$value,$multiple,$default) = @_;
+	my ($field,$value,$opt) = @_;
 
 	$value = 'on' unless defined $value;
-	my $ref = lc $::Values->{$field};
-	my $r;
 
-	if( $ref eq "\L$value" or ! length($ref) && $default) {
-		$r = 'CHECKED';
+	my $ref = $opt->{cgi} ? $CGI::values{$field} : $::Values->{$field};
+	return 'CHECKED' if ! length($ref) and $opt->{default};
+
+	if(! $opt->{case}) {
+		$ref = lc($ref);
+		$value = lc($value);
 	}
-	elsif ($multiple) {
+
+	return 'CHECKED' if $ref eq $value;
+
+	if ($opt->{multiple}) {
 		my $regex = quotemeta $value;
-		$r = 'CHECKED' if $ref =~ /(?:^|\0)$regex(?:$|\0)/i;
+		return 'CHECKED' if $ref =~ /(?:^|\0)$regex(?:$|\0)/i;
 	}
-	else {$r = ''}
-	return $r;
+
+	return '';
 }
 
 # Returns an href to place an order for the product PRODUCT_CODE.
