@@ -43,9 +43,11 @@ Hit action for no-content
 
 	[if !cgi qmenu_products]
 			[cgi name=qmenu_products set=__ProductFiles_0__ hide=1]
+			[cgi name=qmenu_separate set="[either]__DEFAULT_CATEGORY_TABLE__[or]category[/either]" hide=1]
 			[cgi name=qmenu_comb_field set=comb_category hide=1]
 			[cgi name=qmenu_toplevel_field set=prod_group hide=1]
 			[cgi name=qmenu_sublevel_field set=category hide=1]
+			[cgi name=qmenu_sku_field set=sku hide=1]
 	[/if]
 
 [tabbed-display 
@@ -297,6 +299,146 @@ This function loads a tree menu based on the contents of a combined category fie
 		</td>
 		<td class=chelp>
 			Use to allow building even if the table is defined as LARGE
+		</td>
+	</tr>
+	<tr>
+		<td class=clabel>
+			&nbsp;
+		</td>
+		<td class=cdata>
+				<input type=submit value="[L]Load Menu[/L]"><br>
+		</td>
+		<td class=chelp>
+			Do menu build
+		</td>
+	</tr>
+</table>
+				
+</form>
+[/tabbed-panel]
+[tabbed-panel Separate Category File]
+<blockquote class=chelp>
+This function loads a tree menu based on the contents of two category fields in a separate table, producing a two-level tree with no leaf items. The menu may be added to after that.
+</blockquote>
+	<form action="[process href=admin/menu_editor]" style="margin-bottom:0px;">
+	<input type=hidden name=mv_session_id value="[data session id]">
+	<input type=hidden name=mv_action value="back">
+	<input type=hidden name=qmenu_load_type value="category_file">
+
+<table width="100%" border=0 cellpadding=4 cellspacing=0>
+	<tr>
+		<td class=clabel>
+		Table
+		</td>
+		<td class=cdata>
+			<select name="qmenu_separate"
+					onChange="
+							populateTable(
+								this.form.qmenu_separate.options,
+								this.form.qmenu_comb_field.options,
+								this.form.qmenu_separate.options[this.form.qmenu_separate.selectedIndex].value
+								);
+							populateTable(
+								this.form.qmenu_separate.options,
+								this.form.qmenu_sort_order.options,
+								this.form.qmenu_separate.options[this.form.qmenu_separate.selectedIndex].value
+								);
+							populateTable(
+								this.form.qmenu_separate.options,
+								this.form.qmenu_toplevel_field.options,
+								this.form.qmenu_separate.options[this.form.qmenu_separate.selectedIndex].value
+								);
+							populateTable(
+								this.form.qmenu_separate.options,
+								this.form.qmenu_sublevel_field.options,
+								this.form.qmenu_separate.options[this.form.qmenu_separate.selectedIndex].value
+								);
+						"
+			size=1 style="width:130px;">
+				[loop list="[list-databases]" option=qmenu_separate cgi=1]
+				<OPTION VALUE="[loop-code]">[loop-code]</OPTION>
+				[/loop]
+			</select>
+		</td>
+		<td class=chelp>
+			Default: pub_category
+		</td>
+	</tr>
+	<tr>
+		<td class=clabel>
+			Top level field
+		</td>
+		<td class=cdata>
+		<select name="qmenu_toplevel_field" style="width:130px;">
+			<option value=""> -- none --
+			[loop list="[db-columns table='[cgi qmenu_products]']" option=qmenu_toplevel_field cgi=1]
+			<option>[loop-code]
+			[/loop]
+		</select>
+		</td>
+		<td class=chelp>
+			Default: prod_group
+		</td>
+ 	</tr>
+	<tr>
+		<td class=clabel>
+			Sub level field
+		</td>
+		<td class=cdata>
+		<select name="qmenu_sublevel_field" style="width:130px;">
+			<option value=""> -- none --
+			[loop list="[db-columns table='[cgi qmenu_products]']" option=qmenu_sublevel_field cgi=1]
+			<option>[loop-code]
+			[/loop]
+		</select>
+		</td>
+		<td class=chelp>
+			Default: category
+		</td>
+ 	</tr>
+	<tr>
+		<td class=clabel>
+			SKU field
+		</td>
+		<td class=cdata>
+		<select name="qmenu_sku_field" style="width:130px;">
+			<option value=""> -- none --
+			[loop list="[db-columns table='[cgi qmenu_products]']" option=qmenu_sku_field cgi=1]
+			<option>[loop-code]
+			[/loop]
+		</select>
+		</td>
+		<td class=chelp>
+			Default: sku<br><br>
+			This field holds the sku of the actual items that are returned in the search.
+		</td>
+ 	</tr>
+	<tr>
+		<td class=clabel>
+			Description field
+		</td>
+		<td class=cdata>
+		<select name="qmenu_desc_field" style="width:130px;">
+			<option value=""> -- none --
+			[loop list="[db-columns table='[cgi qmenu_products]']" option=qmenu_desc_field cgi=1]
+			<option>[loop-code]
+			[/loop]
+		</select>
+		</td>
+		<td class=chelp>
+			Default: <not used><br><br>
+			Use this field to set extra information, for example to sort the items in the order of this field when the search is returned.
+		</td>
+ 	</tr>
+	<tr>
+		<td class=clabel>
+		 Search page
+		</td>
+		<td class=cdata>
+			<input name="qmenu_search_page"  style="width:130px;" value="[either][cgi qmenu_search_page][or]results_tree[/either]">
+		</td>
+		<td class=chelp>
+			Selects page to display search
 		</td>
 	</tr>
 	<tr>

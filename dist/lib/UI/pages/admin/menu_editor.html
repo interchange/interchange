@@ -8,6 +8,9 @@ Hit action for no-content
 [set page_title]Menu construction[/set]
 [tmpn dhtml_required]1[/tmpn]
 [set ui_class]Design[/set]
+[if cgi qmenu_separate]
+[cgi name=qmenu_products set="[cgi qmenu_separate]" hide=1]
+[/if]
 [if cgi qmenu_name]
 [set page_banner]Edit the <i>[cgi qmenu_name]</i> menu[/set]
 [else]
@@ -105,8 +108,10 @@ __UI_META_TABLE__
 			table => $CGI->{qmenu_products},
 			first_field => $CGI->{qmenu_toplevel_field},
 			second_field => $CGI->{qmenu_sublevel_field},
+			desc_field => $CGI->{qmenu_desc_field},
 			even_large => $CGI->{qmenu_even_large},
-			type => 'tree',
+			sku_field => $CGI->{qmenu_sku_field},
+			type => $CGI->{qmenu_load_type} || 'tree',
 		);
 
 		$CGI->{qmenu_text} = $Tag->menu_load(\%opt);
@@ -976,7 +981,7 @@ function rewrite_tree (idx, tog) {
 			l[MSORT] = 0;
 		}
 
-		toggle[l[MSORT]] = l[0];
+		toggle[ l[MSORT] ] = l[0];
 
 		out = out + 'border=0 align=absbottom ' +
 				'id="img' + idx + '"></A>' + "\n" +
