@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.29 2000-10-04 19:05:10 heins Exp $
+# $Id: Interpolate.pm,v 1.30 2000-10-08 19:07:10 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.29 $, 10);
+$VERSION = substr(q$Revision: 1.30 $, 10);
 
 @EXPORT = qw (
 
@@ -915,6 +915,10 @@ sub tag_data {
 	'entities' => sub {
 					return HTML::Entities::encode(shift);
 				},
+	'option_format' => sub {
+					my $val = shift;
+					s/[,\s]*[\r\n]+/,\r/g;
+				},
 	);
 
 sub input_filter_do {
@@ -1271,6 +1275,8 @@ sub build_accessory_select {
 
 	my $select;
 	my $run = qq|<SELECT NAME="$name"|;
+	$run .= qq{ SIZE="$opt->{rows}"} if $opt->{rows};
+	$run .= " $opt->{js}" if $opt->{js};
 	my ($multi, $re_b, $re_e, $regex);
 	
 	if($type =~ /multiple/i) {
@@ -1290,6 +1296,18 @@ sub build_accessory_select {
 		$re_e = '(?:\0|$)';
 	}
 
+	my $limit;
+	if($opt->{cols}) {
+		my $cols = $opt->{cols};
+		$limit = sub {
+			return $_[0] if length($_[0]) <= $cols;
+			return substr($_[0], 0, $cols - 2) . '..';
+		};
+	}
+	else {
+		$limit = sub { return $_[0] };
+	}
+
 	$run .= '>';
 	
 	for(@opts) {
@@ -1300,10 +1318,9 @@ sub build_accessory_select {
 			$select = '';
 		}
 		my ($value,$label) = split /=/, $_, 2;
-		if($label) {
-			$value =~ s/"/&quot;/;
-			$run .= qq| VALUE="$value"|;
-		}
+		my $vvalue = $value;
+		$vvalue =~ s/"/&quot;/;
+		$run .= qq| VALUE="$vvalue"|;
 		if ($default) {
 			$regex	= qr/$re_b\Q$value\E$re_e/;
 			$default =~ $regex and $select = 1;
@@ -1311,10 +1328,10 @@ sub build_accessory_select {
 		$run .= ' SELECTED' if $select;
 		$run .= '>';
 		if($label) {
-			$run .= $label;
+			$run .= $limit->($label);
 		}
 		else {
-			$run .= $value;
+			$run .= $limit->($value);
 		}
 	}
 	$run .= '</SELECT>';
@@ -1544,6 +1561,22 @@ sub tag_accessories {
 #warn("building reverse combo");
 		my $out = build_accessory_select($name, $type, $default, $opt, @opts);
 		$out .= qq|<INPUT TYPE=text NAME="$name" SIZE=$opt->{cols} VALUE="$default">|;
+		return "$p$out$a";
+	}
+	elsif($type =~ /^move_combo[ _]*(?:(\d+)(?:[ _]+(\d+))?)?/i) {
+		$opt->{rows} = $opt->{rows} || $1 || 1;
+		$opt->{cols} = $opt->{cols} || $2 || 16;
+		my $ejs = ",1" if $opt->{rows} > 1;
+		$opt->{js} = qq{onChange="addItem(this.form.X$name,this.form.$name$ejs)"}
+			unless $opt->{js};
+warn("building move combo");
+		my $out = build_accessory_select("X$name", $type, '', $opt, @opts);
+		if($opt->{rows} > 1) {
+			$out .= qq|<TEXTAREA ROWS="$opt->{rows}" WRAP=virtual COLS="$opt->{cols}" NAME="$name">$default</TEXTAREA>|;
+		}
+		else {
+			$out .= qq|<INPUT SIZE="$opt->{cols}" NAME="$name" VALUE="$default">|;
+		}
 		return "$p$out$a";
 	}
 	else {
