@@ -10,8 +10,8 @@
 @_UI_STD_HEAD_@
 
 [calc]
-	if ('__UI_COMMISSION_FIELD__')) {
-		$Scratch->{comm_select} = ", __UI_COMMISSION_FIELD__";
+	if ($comm_field = $Tag->var('UI_COMMISSION_FIELD')) {
+		$Scratch->{comm_select} = ", $comm_field";
         $Scratch->{comm_states} = [split (/\s+/, '__UI_COMMISSION_STATES__')];
 		if (@{$Scratch->{comm_states}}) {
 		    $Scratch->{comm_select} .= ', status';
