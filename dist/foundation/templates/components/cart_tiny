@@ -24,6 +24,7 @@ ui_component_label: Small cart for left/right display
 	<td align="right" class="menubar">Quantity</td>
       </tr>
 [item-list]
+	[item-next][item-modifier mv_si][/item-next]
       <tr>
 	<td valign="top" align="left" class="contentbar2">
 	  <a href="[area [item-code]]"><small>[item-filter 20][item-description][/item-filter]</small></A>
