@@ -1,13 +1,13 @@
-{MYSQL}mysqladmin create test_simple
+{MYSQL}mysqladmin create __MVC_SQLDB__
 Since you selected the MySQL option, you need to create
-a database named "test_simple". In a default MySQL
+a database named "__MVC_SQLDB__". In a default MySQL
 configuration, any user may create and drop and modify
 test_* databases, but some administrators disable this.
   
 
-{PGSQL}createdb test_simple
+{PGSQL}createdb __MVC_SQLDB__
 Since you selected the PostgreSQL option, you need to create
-a database named "test_simple". This will only work if
+a database named "__MVC_SQLDB__". This will only work if
 your administrator allowed it.
   
 
