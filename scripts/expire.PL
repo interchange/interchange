@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange session expiration
 #
-# $Id: expire.PL,v 1.8 2000-10-04 23:36:57 heins Exp $
+# $Id: expire.PL,v 1.8.4.1 2000-10-26 07:03:28 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -63,7 +63,7 @@ use Vend::Session;
 use Vend::Config qw(get_catalog_default parse_time);
 use Vend::Util qw/errmsg/;
 use Getopt::Std;
-use vars qw/$opt_c $opt_r $opt_e $opt_u $opt_v $opt_x/;
+use vars qw/$opt_c $opt_r $opt_e $opt_f $opt_u $opt_v $opt_x/;
 
 BEGIN {
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
@@ -133,15 +133,17 @@ sub logGlobal {
 sub is_retired {}
 
 my $USAGE = <<EOF;
-usage: expire [-r|-u] -c catalog [-e 'SessionExpire']
+usage: expire [-r|-u] -c catalog [-e 'SessionExpire'] [-f file]
            or
-       expire [-r|-u] [-e 'SessionExpire'] sessionfile [sessionfile.lock]
+       expire [-r|-u] [-e 'SessionExpire'] [-f file] sessionfile [sessionfile.lock]
 
  OPTIONS
       -c catalog  specify a catalog from interchange.cfg
 
       -e time     vary expire time from default in catalog.cfg.
                   time is a string like '4 hours' or '2 days'
+
+      -f file     global configuration file
 
       -r          reorganize database and recover lost disk space
 
@@ -158,8 +160,9 @@ my $reorg;
 
 $Vend::Cfg = { FileCreationMask => 0600 };
 
-getopts('c:e:ruvx') or die "$@\n$USAGE\n";
+getopts('c:e:f:ruvx') or die "$@\n$USAGE\n";
 
+$Global::ConfigFile = $opt_f || $Global::ConfigFile;
 $catalog    = $opt_c || undef;
 $expiretime = $opt_e || undef;
 $reorg      = $opt_r;
@@ -310,6 +313,10 @@ files.
 Accepts a Interchange expire time setting like "6 hours", "3 days", etc.
 The expire time is applied directly to sessions, and may be padded for
 temporary files.
+
+=item -f file
+
+Sets the global configuration file.
 
 =back
 

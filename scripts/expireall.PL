@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange session expiration for all catalogs
 #
-# $Id: expireall.PL,v 1.8 2000-09-25 16:57:54 zarko Exp $
+# $Id: expireall.PL,v 1.8.4.1 2000-10-26 07:03:28 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -111,6 +111,10 @@ if($opt_e) {
 	$flag .= qq{ -e "$opt_e"};
 }
 
+if ($opt_f) {
+    $flag .= qq{ -f "$opt_f"};
+}
+    
 unless ($opt_n) {
 	$flag .= " -u";
 }
@@ -144,7 +148,7 @@ expireall -- Run Interchange expire on all catalogs
 
 =head1 VERSION
 
-$Id: expireall.PL,v 1.8 2000-09-25 16:57:54 zarko Exp $
+$Id: expireall.PL,v 1.8.4.1 2000-10-26 07:03:28 racke Exp $
 
 =head1 DESCRIPTION
 
