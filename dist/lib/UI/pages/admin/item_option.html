@@ -1,8 +1,7 @@
 [strip int]
 
-[if cgi sku]
-  [tag flag write]options[/tag]
-[/if]
+[comment]See below, this seems to be the only way this will work[/comment]
+[tag flag write]options[/tag]
 
 [if cgi mv_more_ip]<!-- 
 [calc]
@@ -38,8 +37,13 @@
 	return;
 [/calc]
 
+[comment] I don't know why this doesn't work, but it doesn't
+[if cgi item_id]
+  [tag flag write][cgi mv_data_table][/tag]
+[/if]
+[/comment]
+
 [if cgi setting]
-    [tag flag write][cgi mv_data_table][/tag]
     [tmp hide_results]
         [if cgi setting eq 'none']
             [data table="[cgi mv_data_table]" col="o_enable" key="[cgi item_id]" value="0"]
