@@ -1,16 +1,148 @@
-interchange (4.6.5-1.2) unstable; urgency=low
+interchange (4.9.7-1) unstable; urgency=low
 
-  * backport of error message display within UI pages
-  * upstream fix for bad username error message added
+  * new upstream release
+  * new debconf option for traffic, use low traffic as default
+  * specify unix and inet modes explicitly if user selects both (thanks to
+    Doug Alcorn <doug@lathi.net> for reporting the changed behaviour in
+    4.9.x)
+  * check if /etc/init.d/interchange and /usr/sbin/interchangeconfig are
+    executable in interchange-ui maintainer scripts
+  * UPGRADE and README.cvs added to interchange.docs
+  * new debconf option for GnuPG home directory
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 18 May 2001 20:08:54 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 14 Jan 2003 14:09:24 +0100
 
+interchange (4.8.6.20021206-1) unstable; urgency=high
+
+  * need to specifiy INSTALLSCRIPT for Perl 5.8.x in order to get
+    the scripts installed to /usr/lib/interchange/bin
+    (Closes: #168308, #168510, #169217)
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri,  6 Dec 2002 03:38:45 +0100
+
+interchange (4.8.6.20021108-1) unstable; urgency=low
+
+  * removed debug code that inadvertently crept in
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri,  8 Nov 2002 13:07:38 +0100
+
+interchange (4.8.6.20021105-1) unstable; urgency=medium
+
+  * release from current CVS (stable branch)
+  * removed bashisms from interchange-cat-foundation script
+  * relaxed dependency on libsql-statement-perl (Closes: #158263, #167032)
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed,  6 Nov 2002 11:27:55 +0100
+
+interchange (4.8.6-1) unstable; urgency=high
+
+  * new upstream release, fixes security problem which allows access via
+    HTTP to files readable by the Interchange daemon. It is very unlikely
+    that Debian installations are vulnerable.
+  * removed unneeded file /usr/lib/interchange/perllocal.pod
+  * fixed permissions on UI image files
+    
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sun, 11 Aug 2002 20:39:34 +0200
+
+interchange (4.8.5.20020527-1) unstable; urgency=low
+
+  * release from current CVS (stable branch)
+  * check for demo catalog added in interchange-ui's postinst 
+    (Closes: #147705) 
+  * turned Depends of libapache-mod-interchange on interchange into a
+    Suggests (interchange might be running on a remote host), thanks to
+    Christopher F.Miller <cfm.maine.com> for the suggestion
+  * doc-base support added to libapache-mod-interchange
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 27 May 2002 22:40:03 +0200
+
+interchange (4.8.5-1) unstable; urgency=high
+
+  * new upstream release (fixes stupid order email problem)
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue,  7 May 2002 09:58:02 +0200
+
+interchange (4.8.4-1) unstable; urgency=medium
+
+  * new upstream release
+  * added check for expireall to cron job
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 16 Apr 2002 11:15:51 +0200
+
+interchange (4.8.3.20020306-1) unstable; urgency=low
+
+  * use sources from CVS (stable branch) in anticipation of the 4.8.4
+    upstream release
+  * fixed overly strict dependency on apache-common (Closes: #133671,
+    thanks to Matthew Wilcox <willy@debian.org>)
+  * add version to dependency on libsql-statement-perl, because newer
+    versions cause Interchange to fail in some cases
+  * /etc/interchange/usertag directory for locally used global usertags added
+  * interchange-ui package suggests now a HTTPS server
+  * query username and password for UI superuser account in the foundation
+    catalog from the user via debconf
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed,  6 Mar 2002 23:42:22 +0100
+
+interchange (4.8.3-1) unstable; urgency=low
+
+  * new upstream release (Closes: #112369)
+  * change ownership on "documentroot" only if "documentroot" exists
+    (Closes: #113357)
+  * 400mod_interchange.info added (thanks to Michael Bilow
+    <mike@bilow.com>)
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu, 22 Nov 2001 08:52:53 +0100
+
+interchange (4.8.2-1) unstable; urgency=low
+
+  * new upstream release
+  * upstream fixes and enhancements from CVS
+  * install README.debian into /usr/share/doc
+  * useful descriptions for interchange-ui and interchange-cat-foundation
+    added (Closes: #109228, #109565)
+  * foundation catalog was disabled if not reinstalled in postinst
+  * change owner/group of the base directory for static HTML files
+    to the Interchange owner/group
+  * let makecat write into /etc/interchange/catalogs.cfg
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 19 Sep 2001 21:02:53 +0200
+
+interchange (4.8.1-1) unstable; urgency=low
+
+  * new upstream release (Closes: #102645 due to new build)
+  * pass new NOCPANINSTALL variable during install (Closes: #93669)
+  * foundation is now the demo catalog instead of construct
+  * interchange wrapper handles now PID and sockets directives
+    instead of putting it into the configuration file
+  * changed makecat.wrapper to run as interchange user instead of root
+  * docroot for catalogs added to makecat.wrapper
+  * wrappers described within README.debian
+  * put poweredby.gif in place again
+  * UI_SECURE added to interchange.cfg
+  * interchange-doc package removed (PDF's no longer part of distribution)
+  * use new PreFork mode by default
+  * use new -rundir command line option
+  * Variable DEBUG now configurable by debconf
+  * use /var/lib/interchange/catalogs as default for catalog installations
+  * images are now installed to /var/www/interchange
+  * get rid of .packlist (Closes: #104747)
+  * /usr/lib/interchange/etc is symlink now for makecat's sake
+  * Standards-Version updated
+  * dependencies to debconf added to interchange-ui and
+    interchange-cat-foundation to keep lintian happy
+  * restart server only once if both interchange and interchange-ui
+  	are installed, stop server if only interchange-ui gets installed
+  * rotate debug.log and makecat.log as well
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 14 Aug 2001 09:43:45 +0200
+  
 interchange (4.6.5-1) unstable; urgency=high
 
   * new upstream release (fixes for serious security holes in interchange-ui)
   * libdb2-dev added to Build-Depends (Closes: #93776) 
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 17 Apr 2001 10:48:04 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sun, 15 Apr 2001 16:40:39 +0200
 
 interchange (4.6.4-2) unstable; urgency=low
 
@@ -18,11 +150,11 @@ interchange (4.6.4-2) unstable; urgency=low
   * Added upstream fix to InMemory.pm
   * Added mod_interchange
   * Suggest secure http daemon
-  
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sat,  7 Apr 2001 13:55:07 +0200
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri,  6 Apr 2001 13:22:22 +0200
 
 interchange (4.6.4-1) unstable; urgency=low
-
+  
   * new upstream release
   * don't abuse debconf any longer
   * interchange recommends interchange-ui now (suggested by
@@ -106,6 +238,4 @@ interchange (4.5.8-1) unstable; urgency=low
 
  -- Stefan Hornburg <racke@linuxia.de>  Fri, 20 Oct 2000 22:16:24 +0200
 
-Local variables:
-mode: debian-changelog
-End:
+
