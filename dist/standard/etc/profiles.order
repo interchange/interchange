@@ -181,13 +181,20 @@ __NAME__                            online_check
 &set = prof_mode_accepted [var CHECK_ACCEPTED]
 
 prof_mode_accepted=required This site doesn't accept online checks. You should not have been offered that option; please contact us.
-[value name=check_route filter=digits hide=1]
-check_num=required You must supply a check number for us to use.
-check_acct=required You must supply your checking account number.
-check_route=required You must supply your bank's ABA routing number. They are always 9 digits.
+[value name=check_routing filter=digits hide=1]
+check_account=required You must supply your checking account number.
+check_routing=required You must supply your bank's ABA routing number. They are always 9 digits.
 &and
-check_route=length 9-9 ABA bank route numbers are always 9 digits.
+check_routing=length 9-9 ABA bank route numbers are always 9 digits.
+[if variable MV_PAYMENT_MODE eq authorizenet]
+check_accttype=required You must supply an account type.
+check_bankname=required We need your bank's name.
+check_acctname=required We need the name on your bank account.
+[else]
+check_num=required You must supply a check number for us to use.
 check_bank_phone=required We need your bank's phone number.
+[/else]
+[/if]
 
 email=required
 email=email

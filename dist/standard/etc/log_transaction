@@ -120,7 +120,43 @@ Payment processing...payment_method=[value mv_order_profile]
 	[/perl]
 [/elsif]
 [elsif value mv_order_profile eq online_check]
-	[set do_invoice]1[/set]
+	[if variable MV_ONLINE_CHECK_MODE]
+	[calc]
+		return if $Scratch->{tmp_total} == $Scratch->{tmp_remaining};
+		my $msg = sprintf "Your checking account was charged %.2f", $Scratch->{tmp_remaining};
+		$Scratch->{pay_cert_total} = $Scratch->{tmp_total} - $Scratch->{tmp_remaining};
+		$Scratch->{charge_total_message} = $msg;
+		return "Check will be written for $Scratch->{tmp_remaining}";
+	[/calc]
+		Online check with payment mode=[var MV_ONLINE_CHECK_MODE]
+		[tmp name="charge_succeed"][charge route="[var MV_ONLINE_CHECK_MODE]" amount="[scratch tmp_remaining]" order_id="[value mv_transaction_id]" method="[var MV_ONLINE_CHECK_METHOD]"][/tmp]
+		[if scratch charge_succeed]
+		[then]
+			[set do_invoice]1[/set]
+			[set do_payment]1[/set]
+			Real-time online check succeeded. ID=[data session payment_id] amount=[scratch tmp_remaining]
+		[/then]
+		[else]
+			Real-time online check FAILED. Reason: [data session payment_error]
+			[calc]
+				for(qw/
+						charge_total_message
+						pay_cert_total
+				/)
+				{
+					delete $Scratch->{$_};
+				}
+				die errmsg(
+						"Real-time online check failed. Reason: %s\n",
+						errmsg($Session->{cybercash_error}),
+					);
+			[/calc]
+		[/else]
+		[/if]
+	[else]
+		[set do_invoice]1[/set]
+	[/else]
+	[/if]
 [/elsif]
 [elsif value mv_order_profile eq cod]
 	[comment] do nothing [/comment]

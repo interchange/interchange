@@ -3,7 +3,7 @@
 # Connection routine for AuthorizeNet version 3 using the 'ADC Direct Response'
 # method.
 #
-# $Id: AuthorizeNet.pm,v 2.13 2004-04-11 21:32:31 racke Exp $
+# $Id: AuthorizeNet.pm,v 2.14 2004-04-27 19:25:15 mheins Exp $
 #
 # Copyright (C) 2003-2004 Interchange Development Group, http://www.icdevgroup.org/
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -312,6 +312,8 @@ sub authorizenet {
 
     $opt->{port}   ||= 443;
 
+	$opt->{method} ||= charge_param('method') || 'CC';
+
 	my $precision = $opt->{precision} 
                     || 2;
 
@@ -368,6 +370,29 @@ sub authorizenet {
         $transtype = $type_map{$transtype};
     }
 
+	my %allowed_map = (
+		CC => {
+					AUTH_CAPTURE => 1,
+					AUTH_ONLY => 1,
+					CAPTURE_ONLY => 1,
+					CREDIT => 1,
+					VOID => 1,
+					PRIOR_AUTH_CAPTURE => 1,
+				},
+	    ECHECK => {
+					AUTH_CAPTURE => 1,
+					CREDIT => 1,
+					VOID => 1,
+				},
+	);
+
+	if(! $allowed_map{$opt->{method}}) {
+		::logDebug("Unknown Authorizenet method $opt->{method}");
+	}
+	elsif(! $allowed_map{$opt->{method}}{$transtype}) {
+		::logDebug("Unknown Authorizenet transtype $transtype for $opt->{method}");
+	}
+
 	$amount = $opt->{total_cost} if $opt->{total_cost};
 	
     if(! $amount) {
@@ -378,6 +403,15 @@ sub authorizenet {
 	my $order_id = gen_order_id($opt);
 
 #::logDebug("auth_code=$actual->{auth_code} order_id=$opt->{order_id}");
+	my %echeck_params = (
+		x_bank_aba_code    => $actual->{check_routing},
+		x_bank_acct_num    => $actual->{check_account},
+		x_bank_acct_type   => $actual->{check_accttype},
+		x_bank_name        => $actual->{check_bankname},
+		x_bank_acct_name   => $actual->{check_acctname},
+		x_Method => 'ECHECK',
+	);
+
     my %query = (
 		x_Test_Request			=> $opt->{test} || charge_param('test'),
 		x_First_Name			=> $actual->{b_fname},
@@ -416,6 +450,21 @@ sub authorizenet {
     );
 
     my @query;
+
+	my @only_cc = qw/ x_Card_Num x_Exp_Date x_Card_Code /;
+
+	if($opt->{use_transaction_key}) {
+		$query{x_Tran_Key} = delete $query{x_Password};
+	}
+
+	if($opt->{method} eq 'ECHECK') {
+		for (@only_cc) {
+			delete $query{$_};
+		}
+		for(keys %echeck_params) {
+			$query{$_} = $echeck_params{$_};
+		}
+	}
 
     for (keys %query) {
         my $key = $_;

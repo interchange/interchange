@@ -1,6 +1,6 @@
 # Vend::Payment - Interchange payment processing routines
 #
-# $Id: Payment.pm,v 2.13 2004-03-30 18:56:05 jon Exp $
+# $Id: Payment.pm,v 2.14 2004-04-27 19:25:14 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -23,7 +23,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.13 $, 10);
+$VERSION = substr(q$Revision: 2.14 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -123,7 +123,9 @@ sub map_actual {
 		b_state
 		b_zip
 		check_account
+		check_acctname
 		check_accttype
+		check_bankname
 		check_checktype
 		check_dl
 		check_magstripe
