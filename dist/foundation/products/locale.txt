@@ -33,7 +33,7 @@ Bank Phone	Bank Phone			Telefoon bank
 Be sure to list the RMA number issued below on your shipping label.	Be sure to list the RMA number issued below on your shipping label.			Vergeet niet het onderstaande RMA nummer te vermelden op uw verzendsticker.
 Below are our automated customer service options. If you need to talk to someone please %sclick here%s.	Below are our automated customer service options. If you need to talk to someone please %sclick here%s.			Onderstaand vindt U onze geautomatiseerde klantenservice mogelijkheden. Wilt U een medewerker spreken, %sklik dan hier%s.
 Best sellers...	Best sellers...			Best verkopende...
-Billing Address	Billing Address			Faktuuradres
+Billing Address	Billing Address	Rechnungsadresse		Faktuuradres
 Billing Name	Billing Name			Faktuurnaam
 Business name	Business name			Bedrijfsnaam
 Buy	Buy	Kaufen		Kopen
@@ -41,86 +41,8 @@ Buy List	Buy List			Bestellijst
 Buy it Now!	Buy it Now!			Koop nu!
 Buy now	Buy now			Koop nu
 C.O.D.	C.O.D.			Rembours
-CANCELED_MSG1	If you wish to order another item, we would like you to do so, butunfortunately you will have to re-enter any account information.			
-CANCEL_PAR1	Please confirm your request to stop shopping by clicking the button below. Allitems will be cleared from your shopping cart, your name and address informationwill be expunged, and all saved settings from your visit will disappear.			Bevestig alstublieft uw verzoek om met winkelen te stoppen door op onderstaande knop te klikken. Als U dat doet worden alle producten uit uw winkelwagen verwijderd, uw naam en adresinformatie worden gewist en alle bewaarde instellingen tijdens uw bezoek zullen verdwijnen.
-CART_MSG1	You must have cookies set to leave the basket. Check out now or forever lose your shopping cart.			Om de winkelwagen te kunnen verlaten dient het ontvangen van cookies te zijn ingesteld. Controleer dat alstublieft nu, anders gaat uw winkelwagen definitief verloren.
-CC_NOT_VALID_MSG1	Please go BACK and check the information you entered and see that the correct card type, expiration date, and number are entered.			
-COLOR	COLOR			KLEUR
-CONFIRMATION_MSG1	Your order has been sent, and you will receive an order confirmation via email.			Uw bestelling is verzonden en U ontvangt een orderbevestiging per email.
-Canada	Canada			Canada
-Card Number	Card Number			Kaartnummer
-Cart Contents	Cart Contents	Warenkorbinhalt		Inhoud winkelwagen
-Catalog Reconfigured	Catalog Reconfigured			Catalogus opnieuw geconfigureerd
-Change Password	Change Password	Passwort ändern		Wijzigen wachtwoord
-Change password	Change password	Passwort ändern		Wijzigen wachtwoord
-Change your password	Change your password			Wijzig uw wachtwoord
-Check Information	Check Information			Cheque-informatie
-Check Number	Check Number			Chequenummer
-Check Out	Check Out			Naar de kassa
-City	City	Stadt		Plaats
-City, State, Zip	City, State, Zip			Plaats, Provincie, Postcode
-Clear&nbsp;cart	Clear&nbsp;cart			Wis&nbsp;winkelwagen
-Clear&nbsp;name/address	Clear&nbsp;name/address			Wis&nbsp;naam/adres
-Click Here To Preorder	Click Here To Preorder			Klik hier om vooruit te bestellen
-Click for more information.	Click for more information.			Klik voor meer informatie.
-Click here for more information on this product	Click here for more information on this product			Klik hier voor meer informatie over dit product
-Click here to pre-order this item or get notified as soon as this item is available again.	Click here to pre-order this item or get notified as soon as this item is available again.			Klik hier om vooruit te bestellen. U ontvangt een kennisgeving zodra dit artikel weer voorradig is.
-Code	Code			
-Collapse All Categories	Collapse All Categories			Verberg alle sub-categorieen
-Color		Farbe		
-Comment	Comment			Commentaar
-Comments on %s		Meinungen zu		
-Comment on this product.	Comment on this product.	Meinung zu diesem Produkt		Geef uw mening over dit product.
-Company	Company	Firma		Bedrijf
-Company P.O.	Company P.O.			Bedrijf's inkooporder
-Contact Information	Contact Information			Contactinformatie
-Contact Us	Contact Us			Neem contact met ons op
-Continue shopping	Continue shopping			Doorgaan met winkelen
-Country	Country	Land		Land
-Create Account	Create Account			Aanmaken rekening
-Create a new account	Create a new account			Nieuwe rekening aanmaken
-Credit Amount	Credit Amount			Credit bedrag
-Credit Card	Credit Card			
-Credit Card Information	Credit Card Information			Credit Card Informatie
-Credit Card number fails test	Credit Card number fails test			
-Current Price	Current Price			Huidige prijs
-Custom configure and buy	Custom configure and buy			
-Customer Satisfaction Survey	Customer Satisfaction Survey			Klantentevredenheidsonderzoek
-Customer Service	Customer Service	Kundenservice		Klantenservice
-Customers who bought this item also bought	Customers who bought this item also bought	Kunden, die dieses Produkt erworben haben, kauften zusätzlich		Liefhebbers van dit artikel bestelden ook
-DATE	DATE			DATUM
-Date Issued	Date Issued			Datum uitgifte
-Day Phone	Day Phone	Telefon tagsüber		Telefoon overdag
-Daytime Phone	Daytime Phone			Telefoon overdag
-December		Dezember	D&eacute;cembre	December
-Description	Description	Beschreibung		Omschrijving
-Edit address	Edit address			Adres wijzigen
-Email	Email			Email
-Email Address	Email Address			Emailadres
-Enter as customer	Enter as customer			Betreedt als klant
-Errors	Errors	Fehler		Fouten
-Evening Phone	Evening Phone			Telefoon avond
-Expiration	Expiration			Expiratiedatum
-Extension	Extension	Summe		Bedrag
-FAILED_MSG1	We're sorry, but your order could not be processed at this time due totechnical problems.  Please print the order page and give us a call.We will follow up as soon as possible.			
-Fax	Fax			Fax
-February		Februar	F&eacute;vrier	Februari
-First	First			Eerste
-First Name	First Name	Vorname		Voornaam
-Frequently Asked Questions	Frequently Asked Questions			Veel gestelde vragen
-GET_PASSWORD_MSG1	Hello! You requested that your ID and password be sent to your email address of record. The information is			Hallo! U verzocht ons uw gebruikersnaam en wachtwoord te sturen naar het emailadres dat wij in ons bestand hebben. Onderstaand treft U deze informatie aan.
-GET_PASSWORD_MSG2	Please contact us if we can be of service, and thank you for doing business with us.			Neem gerust contact met ons op als wij U op enigerlij wijze van dienst kunnen zijn. Hartelijk dank voor uw vertrouwen.
-HANDLING	HANDLING			BEHANDELING
-HTML Formatted	HTML Formatted			Opgemaakt met HTML
-HTML Formatted (no wiki)	HTML Formatted (no wiki)			
-Handling	Handling			
-Hello and thank you for your interest in %s products.	Hello and thank you for your interest in %s products.			Hallo en bedankt voor uw interesse in de producten van %s.
-Hello and thank you for your interest in __COMPANY__ products.	Hello and thank you for your interest in __COMPANY__ products.			Hallo en bedankt voor uw interesse in de producten van __COMPANY__.
-Help	Help	Hilfe		Help
-Hi	Hi			Hallo
-ID sent by fastest available email method!	ID sent by fastest available email method!			Uw klantnummergegevens zijn verzonden met de snelste beschikbare emailmethode!
-INDEX_PAR1	    Welcome to the <b>Interchange</b> Foundation Store! This     site is intended to get you started building    your own e-business site. Replace the stock graphics, products,     and categories in this store to begin building your custom site.			Welkom bij de <b>Interchange</b> Foundation Store! Deze site is bedoeld om U op weg te helpen met het bouwen van uw eigen e-business site. Om te starten met uw eigen site vervangt U simpelweg de standaard afbeeldingen, producten en categorieen.
-If different than above	If different than above			Indien anders dan hierboven
+CANCELED_MSG1	I
+If different than above	If different than above	falls abweichend		Indien anders dan hierboven
 If you have an account with us, please login using the fields below. It is not required, but you can also %screate an account%s with us.	If you have an account with us, please login using the fields below. It is not required, but you can also %screate an account%s with us.			Als U een rekening bij ons hebt, kunt U zich aanmelden middels onderstaand formulier. Desgewenst kunt U ook een %snieuwe rekening%s aanmaken.
 If you would like further information on constructing a store like this, please contact the Interchange Development Group	If you would like further information on constructing a store like this, please contact the Interchange Development Group			Mocht u nadere informatie wensen over het bouwen van een winkel als deze, neem dan contact op met de Interchange Development Group
 In Stock	In Stock	Am Lager		Op Voorraad
@@ -303,9 +225,9 @@ Shipping Address Removed	Shipping Address Removed			Verzendadres verwijderd
 Shipping Addresses	Shipping Addresses			Verzendadressen
 Shipping Country	Shipping Country			Verzendland
 Shipping Method	Shipping Method			Verzendmethode
-Shipping Weight	Shipping Weight			Verzendgewicht
+Shipping Weight	Shipping Weight	Versandgewicht		Verzendgewicht
 Shipping method	Shipping method			Verzendwijze
-Shopping Cart	Shopping Cart			Winkelwagen
+Shopping Cart	Shopping Cart	Warenkorb		Winkelwagen
 Show All Subcategories	Show All Subcategories			Toon alle sub-categorieen
 Something went wrong when mailing, perhaps a typo in your email address?	Something went wrong when mailing, perhaps a typo in your email address?			Er is iets fout gegaan bij het versturen van de email. Misschien een typefout in uw emailadres?
 Sorry, no match for that. Try again?	Sorry, no match for that. Try again?			Sorry, daarvoor zijn geen resultaten gevonden. Opnieuw proberen?
@@ -347,7 +269,7 @@ This a confirmation of your request submission.	This a confirmation of your requ
 This is a demo store. If you would like further information on how you can build a store or how you can get custom services, please %svisit our web site%s.	This is a demo store. If you would like further information on how you can build a store or how you can get custom services, please %svisit our web site%s.			Dit is een demonstratie internet winkel. Wilt U meer informatie over hoe uzelf zo'n winkel bouwt of hoe U aangepaste diensten kunt krijgen, %sbezoek dan onze website%s.
 This is a demonstration <b>help page</b> for your customer service area.	This is a demonstration <b>help page</b> for your customer service area.	Dies ist eine Demonstrationshilfeseite für Ihren Kundenservicebereich.		Dit is een demonstratie <b>helppagina</b> voor uw klantenservice sectie. 
 This is the "foundation" demonstration of the Interchange electronic catalog system.	This is the "foundation" demonstration of the Interchange electronic catalog system.			Dit is de "foundation" demonstratie van het Interchange electronisch catalogussysteem.
-This item is currently in your %sshopping cart%s.	This item is currently in your %sshopping cart%s.			Dit artikel bevindt zich in uw %swinkelwagen%s.
+This item is currently in your %sshopping cart%s.	This item is currently in your %sshopping cart%s.	Dieses Produkt befindet sich z.Z. in %sIhrem Warenkorb%s.		Dit artikel bevindt zich in uw %swinkelwagen%s.
 To save this cart, give it a nickname, then press 'Save Cart'.	To save this cart, give it a nickname, then press 'Save Cart'.			Geef deze winkelwagen een korte naam om hem op te slaan en klik daarna 'Winkelwagen opslaan'.
 To save this recurring order, give it a nickname, then press 'Save Cart'.	To save this recurring order, give it a nickname, then press 'Save Cart'.			Geef deze herhalingsorder een korte naam om hem op te slaan en klik daarna 'Herhalingsorder opslaan'.
 Toll free	Toll free			
