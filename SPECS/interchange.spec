@@ -1,5 +1,4 @@
 # To do:
-# Use new install stuff in foundation/config/makedirs etc. instead of RPM symlinking
 # Fall back to vlink.pl if no C compiler available at foundation demo build time
 
 %define ic_version			4.7.3
@@ -72,6 +71,7 @@ ETCBASE=/etc
 RUNBASE=/var/run
 LOGBASE=/var/log
 LIBBASE=/var/lib
+CACHEBASE=/var/cache
 ICBASE=%{_libdir}/interchange
 
 # Create an interch user if one doesn't already exist (on build machine).
@@ -112,6 +112,7 @@ perl -pi -e "s:^(\s+)LINK_FILE(\s+)=>.*:\$1LINK_FILE\$2=> \"$RUNBASE/interchange
 mkdir -p $RPM_BUILD_ROOT$LIBBASE/interchange
 mkdir -p $RPM_BUILD_ROOT$RUNBASE/interchange
 mkdir -p $RPM_BUILD_ROOT$LOGBASE/interchange
+mkdir -p $RPM_BUILD_ROOT$CACHEBASE/interchange
 
 # Make SysV-style system startup/shutdown script
 mkdir -p $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d
@@ -251,6 +252,7 @@ fi
 %defattr(-, %{ic_user}, %{ic_group})
 
 %dir /var/run/interchange
+%dir /var/cache/interchange
 /var/log/interchange
 
 %defattr(-, root, root)
@@ -344,10 +346,11 @@ HOST=`hostname`
 VENDROOT=%{_libdir}/interchange
 BASEDIR=/var/lib/interchange
 LOGDIR=/var/log/interchange
+CACHEDIR=/var/cache/interchange
 DOCROOT=$WEBDIR/html
 CGIDIR=$WEBDIR/cgi-bin
 CGIBASE=/cgi-bin
-SERVERCONF=/etc/httpd/conf/httpd.conf
+HTTPDCONF=/etc/httpd/conf/httpd.conf
 
 cd $VENDROOT
 for i in %cat_name
@@ -392,26 +395,29 @@ do
 		--interchangeuser=%ic_user \
 		--interchangegroup=%ic_group \
 		--permtype=user \
-		--serverconf=$SERVERCONF \
+		--serverconf=$HTTPDCONF \
 		--vendroot=$VENDROOT \
 		--linkmode=UNIX \
 		--servername=$HOST \
 		--catuser=%ic_user \
 		--mailorderto=%{ic_user}@$HOST \
+		cachedir=$CACHEDIR/$i \
+		logdir=$LOGDIR/$i \
 		> /dev/null || exit 1
 	#echo "done." >&2
-
-	# Put catalog error log in /var/log/interchange instead of catalog directory
-	RPMCATLOG=$LOGDIR/$i.error.log
-	touch $RPMCATLOG
-	chown %{ic_user}.%ic_group $RPMCATLOG
-	ln -sf $RPMCATLOG $BASEDIR/$i/error.log
 
 	# Stamp the catalog so we know later whether it's safe to uninstall
 	echo "RPM built this catalog on `date`" > $BASEDIR/$i/%stamp_file
 
 	# Add the new catalog to the running Interchange daemon
-	%{_sbindir}/interchange --add=$i >/dev/null 2>&1
+	if test -n "`/etc/rc.d/init.d/interchange status | grep 'interchange.*is running'`"
+	then
+		catline="`grep \"^[ \t]*Catalog[ \t][ \t]*$i[ \t]\" /etc/interchange.cfg`"
+		if [ -n "$catline" ]
+		then
+			echo "$catline" | %{_sbindir}/interchange --add=$i > /dev/null 2>&1
+		fi
+	fi
 done
 
 
@@ -429,6 +435,7 @@ fi
 rm -f %{_libdir}/interchange/etc/makecat.cfg
 rm -f %{_libdir}/interchange/etc/makecat.cfg.new
 rm -rf /var/run/interchange/*
+rm -rf /var/cache/interchange/*
 rm -rf %{_libdir}/interchange/lib/HTML
 rm -f %warning_file
 
@@ -463,9 +470,13 @@ fi
 for i in %cat_name
 do
 	# Remove catalog from running Interchange
-	if test -x %{_sbindir}/interchange
+	if test -x /etc/rc.d/init.d/interchange && test -n \
+		"`/etc/rc.d/init.d/interchange status | grep 'interchange.*is running'`"
 	then
-		%{_sbindir}/interchange --remove=$i 2> /dev/null
+		if test -x %{_sbindir}/interchage
+		then
+			%{_sbindir}/interchange --remove=$i > /dev/null 2>&1
+		fi
 	fi
 
 	# Remove Catalog directive from interchange.cfg
@@ -481,12 +492,18 @@ do
 
 	# Remove locally built foundation demo catroot
 	rm -rf /var/lib/interchange/$i
-	rm -f /var/log/interchange/$i.error.log
+
+	# Remove session and log files
+	rm -rf /var/cache/interchange/$i
+	rm -rf /var/log/interchange/$i
 
 	# Remove link program and HTML/images for catalog
 	rm -f $WEBDIR/cgi-bin/$i
 	rm -rf $WEBDIR/html/$i
 done
+
+# Remove admin images
+rm -rf $WEBDIR/html/akopia
 
 
 %clean
@@ -497,6 +514,14 @@ rm -f %main_filelist
 
 %changelog
 
+* Tue May 15 2001 Jon Jensen <jon@redhat.com>
+- Quiet restart notice when removing foundation RPM.
+- Correct bad --add option when adding foundation to running Interchange.
+- Move session and temporary files to /var/cache/interchange per LSB.
+- Allow makecat to handle logdir location rather than manually symlinking.
+- Remove admin images when foundation is uninstalled (need to find a better
+  way to deal with this in the future).
+ 
 * Sat May 12 2001 Jon Jensen <jon@redhat.com>
 - Deal with 'useradd' not being in path.
 - Remove some superfluous chowning and chmodding.
