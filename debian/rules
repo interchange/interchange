@@ -91,7 +91,7 @@ binary-arch: build install
 	dh_installdebconf
 	dh_installdocs README QuickStart WHATSNEW
 # install init.d script
-	dh_installinit
+	dh_installinit -- defaults 21 19
 # install cron script
 	dh_installcron
 #	dh_installmanpages -v -pinterchange-doc
