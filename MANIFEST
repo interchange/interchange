@@ -930,6 +930,7 @@ eg/news_feature/pages/news.html
 eg/news_feature/products/news.txt
 eg/news_feature/README
 eg/news_feature/templates/components/news
+eg/pcode
 eg/reset_order_number
 eg/survey_graph.tag
 eg/te
@@ -1005,9 +1006,11 @@ lib/Vend/Parser.pm
 lib/Vend/Payment.pm
 lib/Vend/Payment/AuthorizeNet.pm
 lib/Vend/Payment/BoA.pm
+lib/Vend/Payment/BusinessOnlinePayment.pm
 lib/Vend/Payment/CyberCash.pm
 lib/Vend/Payment/ECHO.pm
 lib/Vend/Payment/EFSNet.pm
+lib/Vend/Payment/Ezic.pm
 lib/Vend/Payment/iTransact.pm
 lib/Vend/Payment/Linkpoint.pm
 lib/Vend/Payment/MCVE.pm
