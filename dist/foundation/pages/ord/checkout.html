@@ -134,7 +134,7 @@ mv_nextpage=@@MV_PAGE@@
 [if type=explicit compare="[error all=1 show_var=1 keep=1]"]
     <P><b>
 	There were errors in your last submission:<br>
-	[error all=1 keep=1 show_error=1 joiner="<br>"]
+	[error all=1 keep=1 show_error=1 show_label=1 joiner="<br>"]
 	</b></p>
 	<p>
     The field names you need to correct are shown in <FONT class="menubar">this color</FONT> below.
@@ -298,7 +298,7 @@ mv_nextpage=@@MV_PAGE@@
 			<td align=left class=cdata>
 				<INPUT TYPE=text NAME=fname VALUE="[value fname]" size="20" maxlength="20">
 			</td>
-			<td align="right" class=cdata>[error name=lname std_label=Last required=1]</td>
+			<td align="right" class=cdata>[error name=lname std_label="Last Name" required=1]</td>
 			<td align="left"><INPUT TYPE=text NAME=lname VALUE="[value lname]" size="20"></td>
 		  </tr>
 		  <tr>
