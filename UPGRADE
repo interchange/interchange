@@ -59,7 +59,7 @@ That's it. Verify your catalog's operation, and you are live.
 
 ---------------------------------------------------------------------------
 
-                K N O W N   I S S U E S
+                          K N O W N   I S S U E S
 
 KNOWN ISSUES UPGRADING FROM 5.0.x
 
@@ -113,6 +113,10 @@ UPGRADE NOTES FOR FOUNDATION-STYLE CATALOGS
   If you use the static page build facility, there are other means of
   accomplishing the same thing with scripts. Contact a competent
   Interchange consultant at interchange-biz@icdevgroup.org to get help.
+
+* Interchange 5 has its own built-in SQL parser, and Bundle::Interchange
+  no longer includes SQL::Statement, so you may need to remove this
+  directive from your catalog.cfg: "Require module SQL::Statement".
 
 * See the section "PROBLEMS WITH USERTAGS" below.
 
