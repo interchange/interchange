@@ -24,6 +24,9 @@ Interchange 4.6.4
 * Disallow login attempts with group names, usernames with invalid
   characters, and blank usernames or passwords.
 
+* Fix index statement problem for order_returns in PostgreSQL, found by
+  <lmorley@flexihost.com>.
+
 
 Interchange 4.6.3
 
