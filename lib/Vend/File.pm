@@ -1,6 +1,6 @@
 # Vend::File - Interchange file functions
 #
-# $Id: File.pm,v 2.14 2003-12-03 17:04:26 jon Exp $
+# $Id: File.pm,v 2.15 2005-03-06 04:14:08 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -53,7 +53,7 @@ use Errno;
 use Vend::Util;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK $errstr);
-$VERSION = substr(q$Revision: 2.14 $, 10);
+$VERSION = substr(q$Revision: 2.15 $, 10);
 
 sub writefile {
     my($file, $data, $opt) = @_;
@@ -359,7 +359,16 @@ sub get_filename {
 	my $i;
 	$levels = 1 unless defined $levels;
 	$chars = 1 unless defined $chars;
-	$dir = $Vend::Cfg->{ScratchDir} unless $dir;
+
+	# Accomodate PermanentDir not existing in pre-5.3.1 catalogs
+	# Block is better than always doing -d test
+	if(! $dir) {
+		$dir = $Vend::Cfg->{ScratchDir};
+	}
+	else {
+		mkdir $dir, 0777 unless -d $dir;
+	}
+
     for($i = 0; $i < $levels; $i++) {
 		$dir .= "/";
 		$dir .= substr($file, $i * $chars, $chars);

@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.26 2004-09-10 23:17:57 jon Exp $
+# $Id: Search.pm,v 2.27 2005-03-06 04:14:08 mheins Exp $
 #
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -22,7 +22,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.26 $, 10);
+$VERSION = substr(q$Revision: 2.27 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -347,8 +347,15 @@ sub more_matches {
 	my($s) = @_;
 	$s->{more_in_progress} = 1;
 
-	my $id = $s->{mv_more_id} || $s->{mv_session_id};
-	$id .= ".$s->{mv_cache_key}";
+	my $id;
+	if($s->{mv_more_permanent}) {
+#::logDebug("Permanent more");
+		$id = $s->{mv_cache_key};
+	}
+	else {
+		$id = $s->{mv_more_id} || $s->{mv_session_id};
+		$id .= ".$s->{mv_cache_key}";
+	}
 	
 	my $file;
 	my $obj;
@@ -365,7 +372,13 @@ sub more_matches {
 						);
 		}
 		else {
-			$file = Vend::Util::get_filename($id);
+			if($s->{mv_more_permanent}) {
+				$file = Vend::File::get_filename($id, 2, 1, $Vend::Cfg->{PermanentDir});
+			}
+			else {
+				$file = Vend::File::get_filename($id);
+			}
+
 #::logDebug("more_matches: $id from $file");
 			eval {
 				$obj = Vend::Util::eval_file($file);
@@ -1163,8 +1176,19 @@ sub save_more {
 	return if $MVSAFE::Safe;
 	my $file;
 	delete $s->{dbref} if defined $s->{dbref};
-	my $id = $s->{mv_more_id} || $Vend::SessionID;
-	$id .= ".$s->{mv_cache_key}";
+
+	my $id;
+	my $storedir;
+
+	unless($s->{mv_more_permanent}) {
+		$id = $s->{mv_more_id} || $Vend::SessionID;
+		$id .= ".$s->{mv_cache_key}";
+	}
+	else {
+		$id = $s->{mv_cache_key};
+		$storedir = $Vend::Cfg->{PermanentDir};
+	}
+
 	if ($s->{matches} > $s->{mv_matchlimit} and $s->{mv_matchlimit} > 0) {
 		$s->{overflow} = 1;
 		$s->{mv_next_pointer} = $s->{mv_matchlimit};
@@ -1193,7 +1217,13 @@ sub save_more {
 	else {
 #::logDebug("save_more: $id to $file.");
 #::logDebug("save_more:object:" . ::uneval($new));
-		$file = Vend::Util::get_filename($id); 
+		if($storedir) {
+			$file = Vend::File::get_filename($id,2,1,$storedir); 
+		}
+		else {
+			$file = Vend::File::get_filename($id); 
+		}
+
 		eval {
 			Vend::Util::uneval_file($new, $file);
 		};

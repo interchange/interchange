@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.232 2005-02-01 02:07:15 jon Exp $
+# $Id: Interpolate.pm,v 2.233 2005-03-06 04:14:08 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.232 $, 10);
+$VERSION = substr(q$Revision: 2.233 $, 10);
 
 @EXPORT = qw (
 
@@ -3048,6 +3048,7 @@ sub find_sort {
 		$opt,
 		$r,
 		$chunk,
+		$perm,
 		$total,
 		$current,
 		$page,
@@ -3093,7 +3094,7 @@ sub more_link {
 	}
 	else {
 		$pa =~ s/__BORDER__/$border/e;
-		$arg = "$session:$next:$last:$chunk";
+		$arg = "$session:$next:$last:$chunk$perm";
 		$list .= more_link_template($pa, $arg, $form_arg) . ' ';
 	}
 	return $list;
@@ -3122,6 +3123,7 @@ sub tag_more_list {
 	$session = $q->{mv_cache_key};
 	my $first = $q->{mv_first_match} || 0;
 	$chunk = $q->{mv_matchlimit};
+	$perm = $q->{mv_more_permanent} ? ':1' : '';
 	$total = $q->{matches};
 	my $next = defined $q->{mv_next_pointer}
 				? $q->{mv_next_pointer}
@@ -3181,7 +3183,7 @@ sub tag_more_list {
 			$arg = $session;
 			$arg .= ':0:';
 			$arg .= $chunk - 1;
-			$arg .= ":$chunk";
+			$arg .= ":$chunk$perm";
 			$list .= more_link_template($first_anchor, $arg, $form_arg) . ' ';
 		}
 
@@ -3202,7 +3204,7 @@ sub tag_more_list {
 			$arg .= $first - $chunk;
 			$arg .= ':';
 			$arg .= $first - 1;
-			$arg .= ":$chunk";
+			$arg .= ":$chunk$perm";
 			$list .= more_link_template($prev_anchor, $arg, $form_arg) . ' ';
 		}
 
@@ -3226,7 +3228,7 @@ sub tag_more_list {
 		}
 		$last = $next + $chunk - 1;
 		$last = $last > ($total - 1) ? $total - 1 : $last;
-		$arg = "$session:$next:$last:$chunk";
+		$arg = "$session:$next:$last:$chunk$perm";
 		$next_tag .= more_link_template($next_anchor, $arg, $form_arg);
 
  		# Last link can appear when next link is valid
@@ -3239,7 +3241,7 @@ sub tag_more_list {
 		unless ($last_anchor eq 'none') {
 			$last = $total - 1;
 			my $last_beg_idx = $total - ($total % $chunk || $chunk);
-			$arg = "$session:$last_beg_idx:$last:$chunk";
+			$arg = "$session:$last_beg_idx:$last:$chunk$perm";
 			$next_tag .= ' ' . more_link_template($last_anchor, $arg, $form_arg);
 		}
 	}
@@ -4494,11 +4496,9 @@ sub tag_sql_list {
 
 sub opt_region {
 	my $opt = pop @_;
-#::logDebug("opt_region called, prefix=$Prefix, text=$_[-1]");
 	my $new = { %$opt };
 	my $out = iterate_hash_list(@_,[$new]);
 	$Prefix = $Orig_prefix;
-#::logDebug("opt_region prefix=$Prefix, results=$out");
 	return $out;
 }
 
@@ -4510,27 +4510,19 @@ sub region {
 
 	if($opt->{object}) {
 		### The caller supplies the object, no search to be done
-		#::logDebug("region: object was supplied by caller.");
 		$obj = $opt->{object};
 	}
 	else {
 		### We need to run a search to get an object
-		#::logDebug("region: no object supplied");
 		my $c;
 		if($CGI::values{mv_more_matches} || $CGI::values{MM}) {
 
 			### It is a more function, we need to get the parameters
-			#::logDebug("more object = $CGI::values{mv_more_matches}");
-
 			find_search_params();
 			delete $CGI::values{mv_more_matches};
-
-#::logDebug("more object = " . uneval($c));
-
 		}
 		elsif ($opt->{search}) {
 			### Explicit search in tag parameter, run just like any
-			#::logDebug("opt->search object label=$opt->{label}.");
 			if($opt->{more} and $::Instance->{SearchObject}{''}) {
 				$obj = $::Instance->{SearchObject}{''};
 				#::logDebug("cached search");
@@ -4542,19 +4534,16 @@ sub region {
 				my $params = escape_scan($opt->{search});
 				Vend::Scan::find_search_params($c, $params);
 				$c->{mv_no_more} = ! $opt->{more};
-#::logDebug("perform_search, c=" . ::uneval($c));
 				$obj = perform_search($c);
 			}
 		}
 		else {
 			### See if we have a search already done for this label
-			#::logDebug("try labeled object label=$opt->{label}.");
 			$obj = $::Instance->{SearchObject}{$opt->{label}};
 		}
 
 		# If none of the above happen, we need to perform a search
 		# based on the passed CGI parameters
-		#::logDebug("no found object") if ! $obj;
 		if(! $obj) {
 			$obj = perform_search();
 			$obj = {
@@ -4565,10 +4554,9 @@ sub region {
 		finish_search($obj);
 
 		# Label it for future reference
-		#::logDebug("labeling as '$opt->{label}'");
-
 		$::Instance->{SearchObject}{$opt->{label}} = $opt->{object} = $obj;
 	}
+
 	my $lprefix;
 	my $mprefix;
 	if(defined $opt->{list_prefix}) {
@@ -4591,6 +4579,7 @@ sub region {
 		$obj->{mv_more_decade} = $opt->{md};
 		$obj->{matches} = scalar @{$obj->{mv_results}};
 		$obj->{mv_cache_key} = generate_key($opt->{query} || substr($page,0,100));
+		$obj->{mv_more_permanent} = $opt->{pm};
 		$obj->{mv_first_match} = $opt->{fm} if $opt->{fm};
 		$obj->{mv_search_page} = $opt->{sp} if $opt->{sp};
 		$obj->{prefix} = $opt->{prefix} if $opt->{prefix};

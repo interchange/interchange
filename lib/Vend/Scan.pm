@@ -1,6 +1,6 @@
 # Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 2.27 2004-07-20 05:24:00 mheins Exp $
+# $Id: Scan.pm,v 2.28 2005-03-06 04:14:08 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -30,7 +30,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 2.27 $, 10);
+$VERSION = substr(q$Revision: 2.28 $, 10);
 
 use strict;
 use Vend::Util;
@@ -165,6 +165,7 @@ my %Scan = ( qw(
 	op  mv_column_op
 	os  mv_orsearch
 	pf  prefix
+	pm  mv_more_permanent
 	ra  mv_return_all
 	rd  mv_return_delim
 	re	mv_search_reference
@@ -263,6 +264,10 @@ sub create_last_search {
 			push @out, "$RevScan{$key}=$_";
 		}
 	}
+
+	# Make repeatable for permanent store
+	@out = sort @out;
+
 	$Vend::Session->{last_search} = join "/", 'scan', @out;
 }
 
@@ -411,12 +416,15 @@ sub perform_search {
 	my($c,$more_matches,$pre_made) = @_;
 #::logDebug('searching....');
 	if (!$c) {
+#::logDebug("No search object");
 		return undef unless $Vend::Session->{search_params};
 		($c, $more_matches) = @{$Vend::Session->{search_params}};
 		unless($c->{mv_cache_key}) {
+#::logDebug("No cache key");
 			Vend::Scan::create_last_search($c);
 			$c->{mv_cache_key} = generate_key($Vend::Session->{last_search});
 		}
+#::logDebug("Found search object=" . ::uneval($c));
 	}
 	elsif ($c->{mv_search_immediate}) {
 		unless($c->{mv_cache_key}) {
@@ -436,11 +444,13 @@ sub perform_search {
 	my %options;
 	$options{mv_session_id} = $c->{mv_session_id} || $Vend::SessionID;
 	if($c->{mv_more_matches}) {
-		@options{qw/mv_cache_key mv_next_pointer mv_last_pointer mv_matchlimit/}
+#::logDebug("Found search object=" . ::uneval($c));
+		@options{qw/mv_cache_key mv_next_pointer mv_last_pointer mv_matchlimit mv_more_permanent/}
 			= split /:/, $c->{mv_more_matches};
 		$options{mv_more_id} = $c->{mv_more_id}
 			if $c->{mv_more_id};
 		my $s = new Vend::Search %options;
+#::logDebug("resulting search object=" . ::uneval($s));
 		$q = $s->more_matches();
 		finish_search($q);
 		return $q;
