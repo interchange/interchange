@@ -1,6 +1,6 @@
 # Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
 # Licensed under the GNU GPL v2. See file LICENSE for details.
-# $Id: image.tag,v 1.9 2004-10-05 11:11:08 docelic Exp $
+# $Id: image.tag,v 1.10 2004-10-16 17:59:20 docelic Exp $
 
 UserTag image Order src
 UserTag image AddAttr
@@ -228,7 +228,7 @@ sub {
 	$opt->{title} = $opt->{alt} if ! defined $opt->{title} and $opt->{alt};
 
 	my $opts = '';
-	for (qw: width height alt title border hspace vspace :) {
+	for (qw: width height alt title border hspace vspace align :) {
 		if (defined $opt->{$_}) {
 			my $val = $opt->{$_};
 			$val = HTML::Entities::encode($val) if $val =~ /\W/;
