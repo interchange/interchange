@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.66 2002-06-06 15:58:35 jon Exp $
+# $Id: Interpolate.pm,v 2.67 2002-06-14 13:30:04 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.66 $, 10);
+$VERSION = substr(q$Revision: 2.67 $, 10);
 
 @EXPORT = qw (
 
@@ -2464,7 +2464,11 @@ sub mvtime {
 		my $neg = $opt->{adjust} =~ s/^\s*-\s*//;
 		my $diff;
 		$opt->{adjust} =~ s/^\s*\+\s*//;
-		if($opt->{adjust} !~ /[A-Za-z]/) {
+		if($opt->{hours}) {
+			$diff = (60 * 60) * ($opt->{adjust} || $opt->{hours});
+		}
+		elsif($opt->{adjust} !~ /[A-Za-z]/) {
+			$opt->{adjust} =~ s:(\d+)(\d[05])$:$1 + $2 / 60:e;
 			$opt->{adjust} =~ s/00$//;
 			$diff = (60 * 60) * $opt->{adjust};
 		}
