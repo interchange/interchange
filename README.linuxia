@@ -50,8 +50,6 @@ This file documents all changes of the LINUXIA branch of Interchange.
   (DBI.pm: 1.19.4.7)
 - link help to localhost (catalog_before.cfg: 1.17.4.5-6)
 - new UserTag email_html
-- fixed problem with virtual hosts in srm.conf (MakeCat.pm: 1.12.4.2)
-- fixed confusing error message in makecat.PL (1.26.4.6)
 
 Changes that made into the main branch:
 
@@ -62,6 +60,8 @@ Changes that made into the main branch:
 - protect currency against leaking locale 
   (Util.pm: 1.10.4.2, modified, 2000-11-5)
 - spurious blank removed from makecat.PL POD section (1.33)
+- fixed problem with virtual hosts in srm.conf (MakeCat.pm: 1.14)
+- fixed confusing error message in makecat.PL (1.34, 2000-12-5)
 
 Changes that made into the development branch:
 
