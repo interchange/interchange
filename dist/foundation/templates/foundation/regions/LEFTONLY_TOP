@@ -65,8 +65,8 @@
     <!--Left Sidebar-->
     <table width="100%" border="0" cellspacing="0" cellpadding="0">
       [include file="templates/components/[control component search_box_small]" group=vertical][control]
-      [include file="templates/components/[control component none]" group=vertical][control]
       [include file="templates/components/[control component category_vertical]" group=vertical][control]
+      [include file="templates/components/[control component none]" group=vertical][control]
     </table>				  
   </td>
   <td width="80%" valign="top" align="center" class="maincontent"> 
