@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange session expiration
 #
-# $Id: expire.PL,v 2.1 2002-01-16 18:57:52 jon Exp $
+# $Id: expire.PL,v 2.2 2002-02-04 07:41:39 kwalsh Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -224,8 +224,14 @@ my $g;
 
 if(defined $catalog) {
 	my($name,$dir,$param);
-	chdir $Global::VendRoot;
+
+	# Parse the interchange.cfg file to look for script/catalog info
+	# but don't read in the core tags
+	$Vend::ControllingInterchange = 1;
+	chdir $Global::VendRoot
+		or die "Couldn't change to $Global::VendRoot: $!\n";
 	global_config();
+
 	$g = $Global::Catalog{$catalog};
 	chdir $g->{dir} or die "chdir to $g->{dir}: $!\n";
 	$Vend::Cfg = Vend::Config::config(
