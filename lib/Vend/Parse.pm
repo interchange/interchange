@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.6 2001-12-05 20:41:32 jon Exp $
+# $Id: Parse.pm,v 2.7 2001-12-06 03:13:54 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.7 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -763,10 +763,10 @@ my %Alias = (
 						warning			warnings
 						shipping_description	shipping_desc
 						process_target	process
+						process_order	process
 				),
 					getlocale		=> 'setlocale get=1',
 					process_search		=> 'area href=search',
-					process_order		=> 'process order=1',
 					buzzard		=> 'data table=products column=artist key=',
 			);
 
