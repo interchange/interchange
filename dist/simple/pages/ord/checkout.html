@@ -121,7 +121,7 @@ If you have an account with us, please enter your user name and password. (test/
     }
 </SCRIPT>
 
-<FORM ACTION="[process secure=1]" METHOD="POST">
+<FORM ACTION="[process secure=1]" METHOD="POST" NAME="checkout">
 <INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 
 [if type=explicit compare="[error all=1 show_var=1 keep=1]"]
@@ -333,7 +333,7 @@ They are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
 
 <P>  
 <TABLE><TR><TD VALIGN=TOP>
-Card Number <FONT SIZE=1>(test number 4111 1111 1111 1111)</FONT><BR>
+Card Number <FONT SIZE=1>(test number <A HREF="javascript:void 0" onclick="checkout.mv_credit_card_number.value='4111 1111 1111 1111'; return false;">4111 1111 1111 1111</A>)</FONT><BR>
 <INPUT TYPE=text NAME=mv_credit_card_number SIZE=19>
 [if variable MV_PAYMENT_MODE =~ /minivend_test/]
 	<BR>Interchange test should yield:
