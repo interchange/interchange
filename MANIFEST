@@ -1261,6 +1261,7 @@ lib/Vend/Swish.pm
 lib/Vend/Table/Common.pm
 lib/Vend/Table/DB_File.pm
 lib/Vend/Table/DBI.pm
+lib/Vend/Table/DBI_CompositeKey.pm
 lib/Vend/Table/Editor.pm
 lib/Vend/Table/GDBM.pm
 lib/Vend/Table/InMemory.pm
