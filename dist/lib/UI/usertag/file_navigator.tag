@@ -25,6 +25,10 @@ sub {
 	my $full_path;
 	my $action = $CGI::values{action} || '';
 	my $already_found;
+
+	my $edit_page = $opt->{edit_page} || 'page_edit';
+	my $edit_var = $opt->{edit_var} || 'ui_page';
+	
 	my @errors;
 	my @messages;
 
@@ -191,12 +195,12 @@ EOF
 	my $ftmpl_ed;
 	if(! $do_perms and $opt->{edit_only}) {
 		$ftmpl_ed = <<EOF;
-<A HREF="$base_url/page_edit?ui_page=~FN~&ui_return_to=$this_page">$ed_img</A>&nbsp;%s&nbsp;<A HREF="$base_url/page_edit?ui_page=~FN~&ui_return_to=$this_page">%s</A><BR>
+<A HREF="$base_url/$edit_page?$edit_var=~FN~&ui_return_to=$this_page">$ed_img</A>&nbsp;%s&nbsp;<A HREF="$base_url/$edit_page?$edit_var=~FN~&ui_return_to=$this_page">%s</A><BR>
 EOF
 	}
 	else {
 		$ftmpl_ed = <<EOF;
-<A HREF="$Vend::Cfg->{VendURL}/ui_download/~FN~">$dn_img</A>$del_string<A HREF="$base_url/upload_file?mv_arg=~FN~&ui_return_to=$this_page">$up_img</A><A HREF="$base_url/page_edit?ui_page=~FN~&ui_return_to=$this_page">$ed_img</A>&nbsp;%s&nbsp;<A HREF="$base_url/page_edit?ui_page=~FN~&ui_return_to=$this_page">%s</A><BR>
+<A HREF="$Vend::Cfg->{VendURL}/ui_download/~FN~">$dn_img</A>$del_string<A HREF="$base_url/upload_file?mv_arg=~FN~&ui_return_to=$this_page">$up_img</A><A HREF="$base_url/$edit_page?$edit_var=~FN~&ui_return_to=$this_page">$ed_img</A>&nbsp;%s&nbsp;<A HREF="$base_url/$edit_page?$edit_var=~FN~&ui_return_to=$this_page">%s</A><BR>
 EOF
 	}
 
@@ -271,7 +275,7 @@ EOF
 		if(-d $_) {
 			push @dir, [$fe, $fn, $dtmpl, $perms];
 		}
-		elsif (/\.html?$/) {
+		elsif ($opt->{edit_all} || /\.html?$/) {
 			push @plain, [$fe, $fn, $ftmpl_ed, $perms];
 		}
 		else {
@@ -290,6 +294,8 @@ EOF
 	}
 
 	unshift @dir, [ "$curdir/", '(new file)', $utmpl ];
+
+	@dir = () if $opt->{no_dirs};
 
 	for(@errors) {
 		$out .= "<span class=cerror>$_</span><br>";
