@@ -1,4 +1,4 @@
-interchange (4.7.7-1) unstable; urgency=low
+interchange (4.8.0-1) unstable; urgency=low
 
   * new upstream release (Closes: #102645 due to new build)
   * foundation is now the demo catalog instead of construct
@@ -17,8 +17,9 @@ interchange (4.7.7-1) unstable; urgency=low
   * use /var/lib/interchange/catalogs as default for catalog installations
   * images are now installed to /var/www/interchange
   * get rid of .packlist (Closes: #104747)
+  * /usr/lib/interchange/etc is symlink now for makecat's sake
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu, 26 Jul 2001 11:41:49 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sat, 28 Jul 2001 18:55:46 +0200
   
 interchange (4.6.5-1) unstable; urgency=high
 

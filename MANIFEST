@@ -34,6 +34,7 @@ debian/interchange.docs
 debian/interchange.files
 debian/interchange.init
 debian/interchange.logrotate
+debian/interchange.preinst
 debian/interchange.postinst
 debian/interchange.templates
 debian/interchange.wrapper
