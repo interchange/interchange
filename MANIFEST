@@ -369,6 +369,8 @@ dist/construct/special_pages/security.html
 dist/construct/special_pages/violation.html
 dist/construct/templates/components/random
 dist/construct/templates/components/specials
+dist/construct/templates/components/upsell_horiz_2
+dist/construct/templates/components/upsell_horiz_3
 dist/construct/templates/fullwidth
 dist/construct/templates/leftonly
 dist/construct/templates/leftright
