@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.23 2003-07-29 13:51:40 jon Exp $
+# $Id: UserDB.pm,v 2.24 2003-08-01 15:30:43 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.23 $, 10);
+$VERSION = substr(q$Revision: 2.24 $, 10);
 
 use vars qw!
 	$VERSION
@@ -165,25 +165,6 @@ form value C<accounts>, suitable for iteration in an HTML select
 box or in a set of links.
 
 =cut
-
-@S_FIELDS = ( 
-qw!
-	s_nickname
-	name
-	fname
-	lname
-	address
-	address1
-	address2
-	address3
-	city
-	state
-	zip
-	country	
-	phone_day
-	mv_shipmode
-  !
-);
 
 @B_FIELDS = ( 
 qw!
