@@ -20,27 +20,40 @@
 	[backup-database
 		compress="[cgi ui_compress]"
 		gnumeric="[cgi ui_gnumeric]"
+		xls="[cgi ui_export_xls]"
 		tables="[scratch exported_tables]"
 	] tables backed up.
 </BLOCKQUOTE>
 [/if]
 
+[set mv_deliver][/set]
+
 [if file backup/DBDOWNLOAD.all.gz]
 <BLOCKQUOTE>
+	[calc] $Scratch->{mv_deliver} .= ' backup/DBDOWNLOAD.all.gz'; return; [/calc]
 	[page href="ui/backup/DBDOWNLOAD.all.gz"
 			form="
 				mv_data_file=backup/DBDOWNLOAD.all.gz
 				mv_todo=deliver
-			"]Download compressed gnumeric file</A><BR>
+			"]Download compressed gnumeric file ([file-info name="backup/DBDOWNLOAD.all.gz" date=1])</A><BR>
 </BLOCKQUOTE>
 [/if]
 
 [if file backup/DBDOWNLOAD.all]
+	[calc] $Scratch->{mv_deliver} .= ' backup/DBDOWNLOAD.all'; return; [/calc]
 	[page href="ui/backup/DBDOWNLOAD.all"
 			form="
 				mv_data_file=backup/DBDOWNLOAD.all
 				mv_todo=deliver
-			"]Download gnumeric file</A><BR>
+			"]Download gnumeric file ([file-info name="backup/DBDOWNLOAD.all" date=1])</A><BR>
+[/if]
+[if file backup/DBDOWNLOAD.xls]
+	[calc] $Scratch->{mv_deliver} .= ' backup/DBDOWNLOAD.xls'; return; [/calc]
+	[page href="ui/backup/DBDOWNLOAD.xls"
+			form="
+				mv_data_file=backup/DBDOWNLOAD.xls
+				mv_todo=deliver
+			"]Download XLS file ([file-info name="backup/DBDOWNLOAD.xls" date=1])</A><BR>
 [/if]
 
 [if scratch ui_error]
@@ -60,40 +73,43 @@
 &nbsp;
 <p>
 
+<TABLE>
+<TR>
+<TD VALIGN=top>
 What data would you like to export?
-
 <blockquote>
 [loop list="[list-databases]"]
-[sort mv_metadata:label]
-<INPUT type=checkbox value="[loop-code]" name="ui_do_export" CHECKED>
-	[if-loop-data mv_metadata label]
-		[loop-data mv_metadata label]
-	[else]
-		[loop-code]
-	[/else]
+<INPUT type=checkbox value="[loop-code]" name="ui_do_export" [if-loop-data __UI_META_TABLE__ display_filter][else]CHECKED[/else][/if-loop-data]> [loop-code]
+	[if-loop-data __UI_META_TABLE__ name]
+		(<small>[loop-data __UI_META_TABLE__ name]</small>)
 	[/if-loop-data]
 	<BR>
 [/loop]
 </blockquote>
+</td>
+<td valign=top>
+	<B>Options:</B><BR><BR>
+	<BLOCKQUOTE>
+	<INPUT TYPE=checkbox NAME=ui_compress VALUE=on [checked ui_compress on]> Compress (if available)<BR>
+	<INPUT TYPE=radio VALUE=0 NAME=ui_gnumeric  [if !value ui_gnumeric]
+												CHECKED
+												[/if]
+												>
+		No Gnumeric output<BR>
 
-<p>
-<B>Options:</B><BR><BR>
-<BLOCKQUOTE>
-<INPUT TYPE=checkbox NAME=ui_compress VALUE=on [checked ui_compress on]> Compress (if available)<BR>
-<INPUT TYPE=radio VALUE=0 NAME=ui_gnumeric  [if !value ui_gnumeric]
-											CHECKED
-											[/if]
-											>
-	No Gnumeric output<BR>
-<INPUT TYPE=radio NAME=ui_gnumeric VALUE=on [checked ui_gnumeric on]>
-	Gnumeric simple text format<BR>
-<INPUT TYPE=radio NAME=ui_gnumeric VALUE=compressed [checked ui_gnumeric compressed]>
-	Gnumeric simple text format, compressed
-</BLOCKQUOTE>
-<p>
-<input type=submit name="do_download" value="Perform export">
-
-<p>
+	<INPUT TYPE=radio NAME=ui_gnumeric VALUE=on [checked ui_gnumeric on]>
+		Gnumeric simple text format<BR>
+	<INPUT TYPE=radio NAME=ui_gnumeric VALUE=compressed [checked ui_gnumeric compressed]>
+		Gnumeric simple text format, compressed
+	[if type=explicit compare="[version extended=1 modtest='Spreadsheet::WriteExcel']"]
+	<BR><INPUT TYPE=checkbox VALUE=1 NAME=ui_export_xls> Create XLS spreadsheet
+	[/if]
+	</BLOCKQUOTE>
+	<p>
+	<input type=submit name="do_download" value="Perform export">
+	</td>
+</tr>
+</table>
 &nbsp;
 </td>
 </tr>
