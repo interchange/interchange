@@ -4,6 +4,7 @@ MANIFEST.SKIP
 Makefile.PL
 QuickStart
 README
+README.cvs
 README.rpm
 SPECS/interchange-4.5.6.spec
 WHATSNEW
