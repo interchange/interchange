@@ -26,6 +26,7 @@ ui_template_name: leftonly
 @_LEFTONLY_TOP_@
 
 <!-- BEGIN CONTENT -->
+
 [if session arg]
 	[seti arg][data session arg][/seti]
 [else]
@@ -35,12 +36,12 @@ ui_template_name: leftonly
 [/if]
 
 [value name=test_user
-	   set="[data
-	   			table=transactions
-				col=username
-				key='[scratch arg]'
-	   		]"
-	   hide=1]
+	set="[data
+		table=transactions
+		col=username
+		key='[scratch arg]'
+	]"
+hide=1]
 
 [if value test_user]
 [else]
@@ -48,35 +49,30 @@ ui_template_name: leftonly
 [/else]
 [/if]
 [if type=explicit compare=`
-					return 1 if ! $Session->{username};
-					return 0 if $Session->{username} eq $Values->{test_user};
-					return 1;
-					`]
+	return 1 if ! $Session->{username};
+	return 0 if $Session->{username} eq $Values->{test_user};
+	return 1;
+`]
 [bounce href="[area special/user_violation username_no_match]&s=[data session username]&v=[value test_user]"]
 [/if]
 
 [seti order_status][data table=transactions column=status key='[scratch arg]'][/seti]
 
 [if scratch order_status eq shipped]
-
-                    <p><font __FFACE__ size="2" color="#669999">Please verify the information below and
-					select the items you wish to return by checking the corresponding checkboxes and modifying the quantity as needed.</font></p>
-
-
+                    
+<p>Please verify the information below and select the items you wish to return by checking the corresponding checkboxes and modifying the quantity as needed.</p>
 
 [loop list="[scratch arg]"]
-<TABLE WIDTH=450 BORDER=1>
-[html-table fr='bgcolor="#FEEDD2"']
-<B><font __FFACE__ size="2">ORDER NUMBER</font>	<font __FFACE__ size="2">[scratch arg]</font>
-<B><font __FFACE__ size="2">Order Date</font>	<font __FFACE__ size="2">[loop-data transactions order_date]</font>
+<TABLE BORDER=0>
+[html-table fr='class="contentbar1"']
+<B>ORDER NUMBER	[scratch arg]
+<B>Order Date	[loop-data transactions order_date]
 [/html-table]
 </TABLE>
 
 <p>
 
-
-
-<TABLE WIDTH=450 BORDER=1 __TABLEBG__>
+<TABLE BORDER=0 class="contentbar1">
 
 [perl products userdb]
 	sub get_download {
@@ -97,8 +93,9 @@ ui_template_name: leftonly
 <INPUT TYPE=hidden NAME=mv_todo VALUE=return>
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="process_return">
 <INPUT TYPE=hidden NAME=order_number VALUE="[scratch arg]">
+
 [html-table interpolate=1 td="VALIGN=TOP"]
-<B><font __FFACE__ size="1">Return</font>	<B><font __FFACE__ size="1">Qty</font>	<B><font __FFACE__ size="1">SKU</font>	<B><font __FFACE__ size="1">Description</font>	<B><font __FFACE__ size="1"><DIV ALIGN=RIGHT>Price</font>	<B><font __FFACE__ size="1"><DIV ALIGN=RIGHT>Extension</font>
+<B>Return	<B>Qty	<B>SKU	<B>Description	<B><DIV ALIGN=RIGHT>Price	<B><DIV ALIGN=RIGHT>Extension
 [query
 	list=1
 	st=db
@@ -107,98 +104,70 @@ ui_template_name: leftonly
 		WHERE order_number = '[scratch arg]'
 		ORDER BY code
 	|
-]<input type="checkbox" name="return_items" value="[sql-param code]">	<font __FFACE__ size="1"><input type="text" name="qty-[sql-param code]" size="3" value="[sql-param quantity]"></font>	<font __FFACE__ size="1">[sql-param sku]</font>	<font __FFACE__ size="1">[description [sql-param sku]]<BR>[if-sql-data orderline size]SIZE-->[sql-param size][/if-sql-data][if-sql-data orderline color] COLOR-->[sql-param color][/if-sql-data]</font>[calc]
+]<input type="checkbox" name="return_items" value="[sql-param code]">	<input type="text" name="qty-[sql-param code]" size="3" value="[sql-param quantity]">	[sql-param sku]	[description [sql-param sku]]<BR>[if-sql-data orderline size]SIZE-->[sql-param size][/if-sql-data][if-sql-data orderline color] COLOR-->[sql-param color][/if-sql-data][calc]
 return unless
 	q{[userdb function=check_file_acl mode=expire location="[sql-param sku]"]};
 	return get_download(q{[sql-param sku]});
-[/calc]	<DIV ALIGN=RIGHT><font __FFACE__ size="1">[currency][sql-param price][/currency]</font>	<DIV ALIGN=RIGHT><font __FFACE__ size="1">[currency][sql-param subtotal][/currency]</font>
+[/calc]	<DIV ALIGN=RIGHT>[currency][sql-param price][/currency]	<DIV ALIGN=RIGHT>[currency][sql-param subtotal][/currency]
 [/query]
 
 [/html-table]
 </TABLE>
-<p>
 
+<p>
 
 <table width="100%" cellpadding="2" cellspacing="2" border="0" align="center">
 <tr>
-<td valign="top">
+	<td valign="top">
+	
+        	<table border="0" cellspacing="0" cellpadding="0" align="center">
+                <tr> 
+                	<td class="contentbar1"><b>Contact Information</b></td>
+                        <td class="contentbar1">&nbsp;</td>
+                </tr>
+                <tr> 
+                	<td>[error name=fname std_label="Company" required=1]</td>
+                        <td><INPUT TYPE=text NAME=company VALUE="[loop-data transactions company]" size="20" maxlength="20"></td>
+                </tr>							  
+                <tr> 
+                	<td>[error name=fname std_label="First Name" required=1]</td>
+                        <td><INPUT TYPE=text NAME=fname VALUE="[loop-data transactions fname]" size="20" maxlength="20"></td>
+		</tr>
+		<tr>
+                        <td>[error name=lname std_label=Last required=1]</td>
+                        <td align="left"><INPUT TYPE=text NAME=lname VALUE="[loop-data transactions lname]" size="20"></td>
+                </tr>
+                <tr> 
+                	<td>[error name=email std_label="Email Address" required=1]</td>
+                        <td><b><INPUT TYPE=text NAME=email VALUE="[data table=userdb column=email key='[loop-data transactions username]']" size="20"></b></td>
+                </tr>
+                <tr> 
+                        <td>[error name=phone_day std_label="Daytime Phone" required=1]</td>
+                        <td><b><INPUT TYPE=text NAME=phone_day VALUE="[loop-data transactions phone_day]" size="10" maxlength="20"></b></td>
+		</tr>
+		<tr>
+                        <td><b>Evening Phone</b></td>
+                        <td align="left"><b><INPUT TYPE=text NAME=phone_night VALUE="[loop-data transactions phone_night]" size="10" maxlength="20"></b></td>
+                </tr>
+                </table>
 
-                      <table width="300" border="1" cellspacing="0" cellpadding="0" bordercolorlight="#000000" bordercolordark="#000000">
-                        <tr> 
-                          <td> 
-                            <table width="300" border="0" cellspacing="0" cellpadding="0" align="center">
-                              <tr> 
-                                <td bgcolor="#0099FF"><font __FFACE__><b><font size="1" color="#FFFFFF">
-								Contact Information</font></b></font></td>
-                                <td bgcolor="#0099FF"><font size="1">&nbsp;</font></td>
-                              </tr>
-                              <tr> 
-                                <td> 
-                                  <div align="right"><font __FFACE__ size="1">[error name=fname std_label="Company" required=1]</font></div>
-                                </td>
-                                <td> 
-                                  <div align="left"><b><font __FFACE__ size="1"> 
-                                    <INPUT TYPE=text NAME=company VALUE="[loop-data transactions company]" size="20" maxlength="20">
-                                    </font></b></div>
-                                </td>
-                              </tr>							  
-                              <tr> 
-                                <td> 
-                                  <div align="right"><font __FFACE__ size="1">[error name=fname std_label="First Name" required=1]</font></div>
-                                </td>
-                                <td> 
-                                  <div align="left"><b><font __FFACE__ size="1"> 
-                                    <INPUT TYPE=text NAME=fname VALUE="[loop-data transactions fname]" size="20" maxlength="20">
-                                    </font></b></div>
-                                </td>
-							</tr><tr>
-                                <td><div align="right"><font __FFACE__ size="1">[error name=lname std_label=Last required=1]</font></div></td>
-                                <td align="left"> <INPUT TYPE=text NAME=lname VALUE="[loop-data transactions lname]" size="20"></td>
-                              </tr>
-                              <tr> 
-                                <td> 
-                                  <div align="right"><font __FFACE__ size="1">[error name=email std_label="Email Address" required=1]</font></div>
-                                </td>
-                                <td><b><font __FFACE__ size="1"> 
-                                  <INPUT TYPE=text NAME=email VALUE="[data table=userdb column=email key='[loop-data transactions username]']" size="20">
-                                  </font></b></td>
-                              </tr>
-                              <tr> 
-                                <td> 
-                                  <div align="right"><font __FFACE__ size="1">[error name=phone_day std_label="Daytime Phone" required=1]</font></div>
-                                </td>
-                                <td><b><font __FFACE__ size="1"> 
-                                  <INPUT TYPE=text NAME=phone_day VALUE="[loop-data transactions phone_day]" size="10" maxlength="20">
-                                  </font></b></td>
-								</tr><tr>
-                                <td> 
-                                  <div align="right"><font __FFACE__ size="1"><b>Evening 
-                                    Phone</b></font></div>
-                                </td>
-                                <td align="left"><b><font __FFACE__ size="1"> 
-                                  <INPUT TYPE=text NAME=phone_night VALUE="[loop-data transactions phone_night]" size="10" maxlength="20">
-                                  </font></b></td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                      </table>
-<p>
+		<p>
 
-<input type="submit" value="Return Selected Items">
-</form>
-</td><td valign="top">
+		<input type="submit" value="Return Selected Items">
+		</form>
+	
+	</td>
+	<td valign="top">
 
-<table align="right" cellpadding="0" cellspacing="0" border="0"> 
-[html-table interpolate=1 td="VALIGN=TOP"]
-<font __FFACE__ size="1"><DIV ALIGN=RIGHT>Subtotal:</font>	<font __FFACE__ size="1"><DIV ALIGN=RIGHT>[currency][loop-data transactions subtotal][/currency]</font>	 	
-<font __FFACE__ size="1"><DIV ALIGN=RIGHT>Sales Tax:</font>	<font __FFACE__ size="1"><DIV ALIGN=RIGHT>[currency][loop-data transactions salestax][/currency]</font>	 	
-<font __FFACE__ size="1"><DIV ALIGN=RIGHT>Shipping:</font>	<font __FFACE__ size="1"><DIV ALIGN=RIGHT>[currency][loop-data transactions shipping][/currency]</font>	 	
-<font __FFACE__ size="1"><DIV ALIGN=RIGHT>Order Total:</font>	<font __FFACE__ size="1"><DIV ALIGN=RIGHT>[currency][loop-data transactions total_cost][/currency]</font>	 	
-[/html-table]
-</table>
-
-</td>
+		<table align="right" cellpadding="0" cellspacing="0" border="0"> 
+		[html-table interpolate=1 td="VALIGN=TOP"]
+			<DIV ALIGN=RIGHT>Subtotal:	<DIV ALIGN=RIGHT>[currency][loop-data transactions subtotal][/currency]	 	
+			<DIV ALIGN=RIGHT>Sales Tax:	<DIV ALIGN=RIGHT>[currency][loop-data transactions salestax][/currency]	 	
+			<DIV ALIGN=RIGHT>Shipping:	<DIV ALIGN=RIGHT>[currency][loop-data transactions shipping][/currency]	 	
+			<DIV ALIGN=RIGHT>Order Total:	<DIV ALIGN=RIGHT>[currency][loop-data transactions total_cost][/currency]	 	
+		[/html-table]
+		</table>
+	</td>
 </tr>
 </table>
 
@@ -206,10 +175,9 @@ return unless
 
 [else]
 
-                    <p><font __FFACE__ size="2" color="#669999">
-					You may only return items from orders that have been fully shipped. Please contact
-					<a href="[area customerservice]">Customer Service</a> for assistance.
-					</font></p>
+You may only return items from orders that have been fully shipped. 
+Please contact <a href="[area customerservice]">Customer Service</a> 
+for assistance.
 
 [/else]
 [/if]

@@ -26,19 +26,22 @@ ui_template_name: leftonly
 @_LEFTONLY_TOP_@
 
 <!-- BEGIN CONTENT -->
+
 [query st=db arrayref=orders
-		sql="SELECT
-			code,status,nitems,subtotal,shipping,handling,total_cost,payment_method,order_date
-			FROM transactions
-			WHERE username = '[data base=session field=username filter=sql]'
-			ORDER by code
-		"][/query]
+	sql="SELECT
+		code,status,nitems,subtotal,shipping,handling,total_cost,payment_method,order_date
+		FROM transactions
+		WHERE username = '[data base=session field=username filter=sql]'
+		ORDER by code
+	"]
+[/query]
+
 [mvasp tables=transactions]
 <%
 	my $uid = $Session->{username};
 
 	if (! $uid) {
-		$Document->write ("<H3><font face=\"Verdana, Arial, Helvetica, sans-serif\">You are not logged in.</font></H3>");
+		$Document->write ("<b>You are not logged in.</b>");
 		return;
 	}
 
@@ -49,70 +52,38 @@ ui_template_name: leftonly
 		return;
 	}
 
-	HTML "<TABLE CELLSPACING=0 CELLMARGIN=0 BORDER=1 WIDTH=450>";
+	HTML "<TABLE CELLSPACING=0 CELLMARGIN=0 BORDER=0>";
 
 	my $header_template = <<'EOF';
-<TR bgcolor="#0099FF">
-	<TD VALIGN=bottom>
-		<FONT COLOR="#FFFFFF" __FFACE__ size="1">DATE</FONT>
-	</TD>
-	<TD VALIGN=bottom>
-		<FONT COLOR="#FFFFFF" __FFACE__ size="1">ORDER ID</FONT>
-	</TD>
-	<TD VALIGN=bottom>
-		<FONT COLOR="#FFFFFF" __FFACE__ size="1">QTY<BR>TOTAL</FONT>
-	</TD>
-	<TD VALIGN=bottom>
-		<FONT COLOR="#FFFFFF" __FFACE__ size="1">PAYMENT<BR>METHOD</FONT>
-	</TD>
-	<TD VALIGN=bottom>
-		<FONT COLOR="#FFFFFF" __FFACE__ size="1">SUBTOTAL</FONT>
-	</TD>
-	<TD VALIGN=bottom>
-		<FONT COLOR="#FFFFFF" __FFACE__ size="1">SHIPPING<BR>HANDLING</FONT>
-	</TD>
-	<TD VALIGN=bottom>
-		<FONT COLOR="#FFFFFF" __FFACE__ size="1">TOTAL</FONT>
-	</TD>
-	<TD VALIGN=bottom>
-		<FONT COLOR="#FFFFFF" __FFACE__ size="1">STATUS</FONT>
-	</TD>
-</TR>
+	<TR>
+		<TD VALIGN=bottom>DATE</TD>
+		<TD VALIGN=bottom>ORDER ID</TD>
+		<TD VALIGN=bottom>QTY<BR>TOTAL</TD>
+		<TD VALIGN=bottom>PAYMENT<BR>METHOD</TD>
+		<TD VALIGN=bottom>SUBTOTAL</TD>
+		<TD VALIGN=bottom>SHIPPING<BR>HANDLING</TD>
+		<TD VALIGN=bottom>TOTAL</TD>
+		<TD VALIGN=bottom>STATUS</TD>
+	</TR>
 EOF
 
-		my $line_template = <<'EOF';
-<TR bgcolor="#FEEDD2">
-	<TD VALIGN=TOP>
-		<FONT __FFACE__ size="1">$order_date</FONT>
-	</TD>
-	<TD VALIGN=TOP>
-		<FONT __FFACE__ size="1"><A HREF="$detail_url">$order_number</A></FONT>
-	</TD>
-	<TD ALIGN=RIGHT VALIGN=TOP>
-		<FONT __FFACE__ size="1">$nitems</FONT>
-	</TD>
-	<TD VALIGN=TOP>
-		<FONT __FFACE__ size="1">$payment_method</FONT>&nbsp;
-	</TD>
-	<TD ALIGN=RIGHT VALIGN=TOP>
-		<FONT __FFACE__ size="1">$subtotal</FONT>
-	</TD>
-	<TD ALIGN=RIGHT VALIGN=TOP>
-		<FONT __FFACE__ size="1">$shipping$handling</FONT>
-	</TD>
-	<TD ALIGN=RIGHT VALIGN=TOP>
-		<FONT __FFACE__ size="1">$total_cost</FONT>
-	</TD>
-	<TD VALIGN=TOP>
-		<FONT __FFACE__ size="1">$status</FONT>
-	</TD>
-</TR>
+	my $line_template = <<'EOF';
+	<TR>
+		<TD VALIGN=TOP>$order_date</TD>
+		<TD VALIGN=TOP><A HREF="$detail_url">$order_number</A></TD>
+		<TD ALIGN=RIGHT VALIGN=TOP>$nitems</TD>
+		<TD VALIGN=TOP>$payment_method&nbsp;</TD>
+		<TD ALIGN=RIGHT VALIGN=TOP>$subtotal</TD>
+		<TD ALIGN=RIGHT VALIGN=TOP>$shipping$handling</TD>
+		<TD ALIGN=RIGHT VALIGN=TOP>$total_cost</TD>
+		<TD VALIGN=TOP>$status</TD>
+	</TR>
 EOF
 
 	my %hash;
 
 	my @fields = qw/order_number status nitems subtotal shipping
-					handling total_cost payment_method order_date/;
+			handling total_cost payment_method order_date/;
 			
 	my $row;
 
@@ -124,9 +95,9 @@ EOF
 		my $line = $line_template;
 		@hash{@fields} = @$record;
 		$hash{detail_url} = $Tag->area( {
-									href => 'query/order_detail',
-									arg => $hash{order_number},
-								});
+			href => 'query/order_detail',
+			arg => $hash{order_number},
+		});
 		if($hash{status} =~ /\d/) {
 			my @ids = grep /\S/, split /\s+/, $hash{status};
 			$hash{status} = '';
@@ -146,8 +117,8 @@ EOF
 		}
 		if($hash{handling}) {
 			$hash{handling} = "<BR>(handling "								.
-							  $Tag->currency ({ body=> $hash{handling} })	.
-							  ")";
+				  $Tag->currency ({ body=> $hash{handling} })	.
+			 ")";
 		}
 		else {
 			$hash{handling} = '';
@@ -155,7 +126,6 @@ EOF
 		$line =~ s/\$(\w+)/$hash{$1}/g;
 		HTML $line;
 	}
-
 	HTML "</TABLE>";
 %>
 [/mvasp]
@@ -164,6 +134,7 @@ EOF
 
 [seti export][tag export transactions transactions.txt][/tag][/seti]
 [seti export][tag export orderline orderline.txt][/tag][/seti]
+
 <!-- END CONTENT -->
 
 @_LEFTONLY_BOTTOM_@
