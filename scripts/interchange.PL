@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.0
 #
-# $Id: interchange.PL,v 1.15.2.13 2001-02-26 01:21:09 heins Exp $
+# $Id: interchange.PL,v 1.15.2.14 2001-02-26 01:24:37 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -2745,6 +2745,10 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 
 		# This should never return unless killed or a catastrophic error
         Vend::Server::run_server();
+	}
+	elsif($Vend::mode eq 'test') {
+		# Blank by design, this option only tests config files
+		# or builds catalogs
 	}
 	else {
 		die "No mode!\n";
