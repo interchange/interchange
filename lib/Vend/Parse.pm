@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.6 2000-09-23 17:29:30 heins Exp $
+# $Id: Parse.pm,v 1.7 2000-09-30 09:37:36 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,12 +27,12 @@
 
 package Vend::Parse;
 
-# $Id: Parse.pm,v 1.6 2000-09-23 17:29:30 heins Exp $
+# $Id: Parse.pm,v 1.7 2000-09-30 09:37:36 heins Exp $
 
 require Vend::Parser;
 
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.6 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.7 $ =~ /(\d+)\.(\d+)/);
 
 use Safe;
 use Vend::Util;
@@ -44,7 +44,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 1.7 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -481,7 +481,7 @@ my %Routine = (
 				'salestax'		=> \&Vend::Interpolate::tag_salestax,
 				scratch			=> \&Vend::Interpolate::tag_scratch,
 				scratchd		=> \&Vend::Interpolate::tag_scratchd,
-				search			=> \&Vend::Interpolate::tag_search,
+				search			=> \&Vend::Interpolate::tag_search_region,
 				record			=> \&Vend::Interpolate::tag_record,
 				region			=> \&Vend::Interpolate::region,
 				search_region	=> \&Vend::Interpolate::tag_search_region,
@@ -519,6 +519,7 @@ my %attrAlias = (
 	 query          => { 'query' => 'sql' },
 	 perl          	=> { 'table' => 'tables' },
 	 mvasp         	=> { 'table' => 'tables' },
+	 price         	=> { 'base' => 'mv_ib' },
 	 page          	=> {
 	 						'base' => 'arg',
 						},
