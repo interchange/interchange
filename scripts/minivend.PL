@@ -25,7 +25,7 @@ DOIT: {
 #
 # MiniVend version 4.0xxx
 #
-# $Id: minivend.PL,v 1.7 2000-06-23 07:40:30 heins Exp $
+# $Id: minivend.PL,v 1.8 2000-06-25 00:47:03 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -247,6 +247,10 @@ use autouse 'Vend::Order' => qw/
 # GLIMPSE
 use Vend::Glimpse;
 # END GLIMPSE
+
+# TRACK
+use Vend::Track;
+# END TRACK
 
 use Vend::Scan;
 use Vend::TextSearch;
@@ -773,6 +777,11 @@ my %form_action = (
 					# backend ordering with AsciiTrack and the order report.
 					# If the "supplant" option was set in order routing it will
 					# not be used ($ok would have been defined)
+
+# TRACK
+                    $Vend::Track->finish_order ();
+# END TRACK
+
 #::logDebug("Order number=$order_no\n");
 					$ok = mail_order(undef, $order_no || undef) unless defined $ok;
 #::logDebug("Order number=$order_no\n");
@@ -827,6 +836,7 @@ my %form_action = (
 					update_data();
 					return 1;
 				},
+	back    => sub { return 1 },
 	return	=> sub {
 					update_user();
 					update_quantity()
@@ -1466,6 +1476,10 @@ EOF
 					= $Vend::Session->{path_alias}{$Vend::FinalPath};
 	}
     url_history($Vend::FinalPath) if $Vend::Cfg->{History};
+
+# TRACK
+    $Vend::Track = new Vend::Track;
+# END TRACK
 
 	if($Vend::Cfg->{DisplayErrors} and $Global::DisplayErrors) {
 		$SIG{"__DIE__"} = sub {
@@ -2321,7 +2335,6 @@ and, of course, the entire Perl team without whom MiniVend could not exist.
 =cut
 
 __END__
-
 
 _EoP_
 	s{.*\n(#(.*)~_~(\w+)~_~(.*))}{$2 . doit($3) . "$4\n$1"}eg;

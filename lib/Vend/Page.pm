@@ -1,6 +1,6 @@
 # Page.pm - Handle MiniVend page routing
 # 
-# $Id: Page.pm,v 1.1 2000-05-26 18:50:39 heins Exp $
+# $Id: Page.pm,v 1.2 2000-06-25 00:47:03 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -48,7 +48,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.1 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/);
 
 my $wantref = 1;
 
@@ -82,6 +82,12 @@ sub display_page {
 	}
 
     $page = readin($name);
+# TRACK
+	if (defined $page) {
+		$Vend::Track->view_page($name);
+	}
+# END TRACK	
+		
 	# Try for on-the-fly if not there
 	if(! defined $page) {
 		$page = Vend::Interpolate::fly_page($name);

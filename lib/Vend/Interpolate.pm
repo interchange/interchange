@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret MiniVend tags
 # 
-# $Id: Interpolate.pm,v 1.7 2000-06-24 09:53:14 heins Exp $
+# $Id: Interpolate.pm,v 1.8 2000-06-25 00:47:03 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.7 $, 10);
+$VERSION = substr(q$Revision: 1.8 $, 10);
 
 @EXPORT = qw (
 
@@ -171,6 +171,7 @@ sub init_calc {
 	$Scratch    = $Safe{scratch} = $::Scratch;
 	$Values     = $Safe{values}  = $::Values;
 	$Session                     = $Vend::Session;
+	$Search                      = $Vend::SearchObject ||= {};
 	$Variable   = $::Variable;
 	$Calc_initialized = 1;
 	return;
@@ -3783,6 +3784,10 @@ sub fly_page {
 		return undef;
 	}
 
+# TRACK
+	$Vend::Track->view_product($code);
+# END TRACK
+	
 # LEGACY
 	list_compat($opt->{prefix}, \$page);
 # END LEGACY

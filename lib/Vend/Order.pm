@@ -2,7 +2,7 @@
 #
 # MiniVend version 4.0
 #
-# $Id: Order.pm,v 1.3 2000-06-12 22:50:52 heins Exp $
+# $Id: Order.pm,v 1.4 2000-06-25 00:47:03 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -33,7 +33,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1852,6 +1852,9 @@ sub add_items {
 			}
 			else {
 #::logDebug("adding to line");
+# TRACK
+                $Vend::Track->add_item($cart,$item);
+# END TRACK
 				push @$cart, $item;
 			}
 		}

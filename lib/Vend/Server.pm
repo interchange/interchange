@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.1 2000-05-26 18:50:40 heins Exp $
+# $Id: Server.pm,v 1.2 2000-06-25 00:47:03 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -305,6 +305,9 @@ sub respond {
 				and $Vend::StatusLine !~ m{^HTTP/};
 		$Vend::StatusLine .= ($Vend::StatusLine =~ /^Content-Type:/im)
 							? '' : "\r\nContent-Type: text/html\r\n";
+# TRACK
+        $Vend::StatusLine .= "X-Track: " . $Vend::Track->header() . "\r\n";
+# END TRACK        
 		print Vend::Server::MESSAGE canon_status($Vend::StatusLine);
 		print Vend::Server::MESSAGE "\r\n";
 		print Vend::Server::MESSAGE $$body;
@@ -328,6 +331,9 @@ sub respond {
 	}
 
 	if (defined $Vend::InternalHTTP or defined $ENV{MOD_PERL} or $CGI::script_name =~ m:/nph-[^/]+$:) {
+# TRACK
+        $Vend::StatusLine .= "X-Track: " . $Vend::Track->header() . "\r\n";
+# END TRACK                            
 		if(defined $Vend::StatusLine) {
 			$Vend::StatusLine = "HTTP/1.0 200 OK\r\n$Vend::StatusLine"
 				if $Vend::StatusLine !~ m{^HTTP/};
@@ -376,8 +382,11 @@ sub respond {
     if (defined $Vend::StatusLine) {
 		print $fh canon_status($Vend::StatusLine);
 	}
-	elsif(! $Vend::ResponseMade) {
+	elsif(! $Vend::ResponseMade) {        
 		print $fh canon_status("Content-Type: text/html");
+# TRACK        
+        print $fh canon_status("X-Track: " . $Vend::Track->header() . "\r\n");
+# END TRACK
 	}
 
     print $fh "\r\n";
