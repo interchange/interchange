@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.137 2002-12-01 16:28:45 mheins Exp $
+# $Id: Interpolate.pm,v 2.138 2002-12-08 06:21:40 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.137 $, 10);
+$VERSION = substr(q$Revision: 2.138 $, 10);
 
 @EXPORT = qw (
 
@@ -984,8 +984,8 @@ sub tag_data {
 					$value =~ s/^\s+//;
 					my @opts = split /[\r\n]+/, $value;
 					for(@opts) {
-						s/^\s+//g;
-						s/\s+$//g;
+						s/^\s+//;
+						s/[,\s]+$//;
 						s/,/&#44;/g;
 					}
 					return join ",", @opts;
