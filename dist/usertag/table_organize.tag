@@ -63,6 +63,37 @@ Contents to place in empty cells put on as filler. Defaults to C<&nbsp;>.
 
 Maximum number of cells to use. Truncates extra cells silently.
 
+=item embed
+
+If you want to embed other tables inside, make sure they are called with
+lower case <td> elements, then set the embed tag and make the cells you wish
+to organize be <TD> elements. To switch that sense, and make the upper-case
+or mixed case be the ignored cells, set the embed parameter to C<lc>.
+
+    [table-organize embed=lc]
+		<td>
+			<TABLE>
+				<TR>
+				<TD> something 
+				</TD>
+				</TR>
+			</table>
+		</td>
+    [/table-organize
+
+or
+
+    [table-organize embed=uc]
+		<TD>
+			<table>
+				<tr>
+				<td> something 
+				</td>
+				</tr>
+			</table>
+		</TD>
+	[/table-organize]
+
 =back
 
 The C<tr>, C<td>, and C<caption> attributes can be specified with indexes;
@@ -137,7 +168,17 @@ sub {
 	my $postamble = $2;
 
 	my @cells;
-	push @cells, $1 while $body =~ s:(<td\b.*?</td>)::is;
+	if($opt->{embed}) {
+		if($opt->{embed} eq 'lc') {
+			push @cells, $1 while $body =~ s:(<td\b.*?</td>)::s;
+		}
+		else {
+			push @cells, $1 while $body =~ s:(<TD\b.*?</TD>)::s;
+		}
+	}
+	else {
+		push @cells, $1 while $body =~ s:(<td\b.*?</td>)::is;
+	}
 
 	if(int($opt->{limit}) and $opt->{limit} < scalar(@cells) ) {
 		splice(@cells, $opt->{limit});
