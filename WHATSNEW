@@ -5,6 +5,106 @@
 ------------------------------------------------------------------------------
 
 
+Interchange 4.7.7 released 2001-07-26.
+
+Admin UI
+--------
+* Change payment wizard to do a better job. Only alters one global parameter,
+  MV_PAYMENT_MODE, to set up the route. The rest are done via Route.
+
+  - Change payment stuff to use Payment routes.
+  - Change CyberCash config to have them upload their merchant_conf.
+  - Add some parameters to Skipjack and Signio.
+  - Rename parameters to be gateway-specific.
+  - Set up to use new ui_wizard_fields= and wizard support, reducing page
+    complexity.
+
+* More admin translations.
+
+* Update admin order entry page to use [item-options]. Delete reference to
+  old "related" field in products. Remove [item-accessories size] and color.
+
+* Prevent double-escaping of [ characters in item.html.
+
+* page_new.html: Prevent path name in template name from polluting
+  template file spec. Prevent lack of current content from aborting page
+  edit. Make "New Page" honor UI_TEMPLATE_DIR.
+
+* ship_data.html: Read shipmode from either CGI or Values, which allows us
+  to bounce to the ship_data page and retain the mode.
+
+* table-editor:
+
+  - Remove improperly-set default for widget type disabling metadata from
+    the mv_metadata table.
+
+  - Wizard mode no longer requires a table, it creates a transitory
+    database object "mv_null" and uses that.
+
+  - In wizard mode, you don't need to have a key field, and you can
+    specify "ui_wizard_fields" instead of having to supply both
+    ui_data_fields and ui_display_only.
+
+  - Wizard no longer displays a Back button if no "mv_prevpage" is defined.
+
+  - View now can be "none" to override table display info in mv_metadata.
+
+  - Add start of some docs.
+
+Foundation
+----------
+* Add "Require module DBI" to foundation catalog configuration to further
+  isolate errors with SQL problems.
+
+* Make address and fname field lengths match between userdb and transactions.
+
+* On Stock-alert page, only display a thumbnail if it exists.
+
+* Fixed bug #275, found by Barry Flanagan. Up-sell question was mislabeled
+  as "cross-sell".
+
+* Change results.html button style to text type for Macs, which can't handle
+  onClick with type=image. Resolves Bugzilla #268.
+
+Core
+----
+* Remove CyberCash directive, but warn so old catalogs don't fail startup.
+  Never use CyberCash directive or never-implemented mv_payment_mode
+  for charges.
+
+* Clean up some discount pricing routines.
+
+* Encode HTML entities for accessories <textarea>s. (Keeps <img src="...">
+  from being processed for the current image directory in UI page or
+  template editing areas.)
+
+* Move cart copy to before inline_profile is run.
+
+* Put a structure in sesssion with the payment_id for each route, so that
+  split charges can be tracked.
+
+* Fix problem with payment_mode being run in check_only mode.
+
+* Change Order.pm so that it handles failed routes properly, even subroutes.
+
+* Get gateway from either Route or MV_PAYMENT_GATEWAY if not defined and
+  there is no gateway.
+
+* Unique check allows passing a custom message like "Username already
+  exists" instead of the default somewhat cryptic message.
+
+* Document --sharedir and --shareurl in makecat POD.
+
+* Fix --DEBUG startup option docs, resolving Bugzilla #158.
+
+Packaging
+---------
+* Several Debian packaging improvements.
+
+
+------------------------------------------------------------------------------
+
+
 Interchange 4.7.6 released 2001-07-18.
 
 Core
@@ -23,7 +123,7 @@ Core
   2. If string "simple:(\w+)" is found, uses fly_tax() as with
      recent standard demos.
 
-  3. If string "state" is found, does a re-lookoup with
+  3. If string "state" is found, does a re-lookup with
 
         select tax from state where country = country and state = state
 
