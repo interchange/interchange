@@ -30,10 +30,16 @@ EOF
 	}
 
 	$Scratch->{synd_limit} = '';
+	$Scratch->{campaign_field} = 'campaign';
 	return unless $CGI->{affiliate};
 	$Scratch->{synd_limit} = "AND affiliate = '$CGI->{affiliate}'";
-	$Scratch->{synd_limit} .= " AND campaign = '$CGI->{campaign}'"
-		if $CGI->{campaign};
+	if ($parent_field = $Tag->var('UI_AFFILIATE_PARENT_FIELD')) {
+	    $Scratch->{synd_limit} .= " OR $parent_field = '$CGI->{affiliate}'";
+		$Scratch->{campaign_field} = $parent_field;
+	} else {
+	    $Scratch->{synd_limit} .= " AND campaign = '$CGI->{campaign}'"
+		    if $CGI->{campaign};
+	}
 	if ($Tag->var('UI_COMMISSION_FIELD')) {
 		$Scratch->{comm_select} = ", __UI_COMMISSION_FIELD__";
         $Scratch->{comm_states} = [split (/\s+/, '__UI_COMMISSION_STATES__')];
@@ -86,10 +92,10 @@ EOF
 	table=transactions
 	hashref=main
 	sql="
-		select affiliate, campaign, total_cost, order_date[scratch comm_select]
+		select affiliate, [scratch campaign_field], total_cost, order_date[scratch comm_select]
 			from  transactions
 			WHERE deleted != '1' [scratch date_limit] [scratch synd_limit]
-			order by affiliate, campaign, order_date
+			order by affiliate, [scratch campaign_field], order_date
 	"][/query]
 
 [perl tables="transactions"]
@@ -105,7 +111,7 @@ EOF
 	foreach $line (@{$Tmp->{main}}) {
 		my ($month) = substr($line->{order_date}, 0, 6);
 		my $id = $line->{affiliate};
-		$id .= "-$line->{campaign}";
+		$id .= "\0$line->{$Scratch->{campaign_field}}";
 		$month{$month}++;
 		$master->{$month} = { } if ! $master->{$month};
 		$master->{$month}{$id} = { } if ! $master->{$month}{$id};
@@ -149,7 +155,7 @@ EOF
 			$subtotal_sales  += $record->{sales};
 			$subtotal_quantity += $record->{orders};
             $subtotal_commission += $record->{commission};
-			($syn, $camp) = split /-/, $id, 2;
+			($syn, $camp) = split /\0/, $id, 2;
 			my $synlabel = $syn || '(none)';
 			my $burl = $Tag->area('__UI_BASE__/reports/order/Monthly', $month);
 			my $url = qq{<A HREF="$burl$syndstring">$mname&nbsp;$year</A>}
