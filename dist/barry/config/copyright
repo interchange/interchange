@@ -1,9 +1,3 @@
-[if session ui_username]
-<P>
-<FONT SIZE="-1">
-[area admin/index]Admin[/page]
-</FONT>
-[/if]
 </body>
 </html>
 

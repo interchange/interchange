@@ -5,7 +5,7 @@
 			<area shape="rect" coords="0, 0, 212, 72"
 				href="[area index]">
 			<area shape="rect" coords="513, 22, 610, 35"
-				href="[area ord/basket]">
+				href="[area __ORDER_STYLE__/basket]">
 			<area shape="rect" coords="513, 5, 608, 19"
 				href="[area ord/checkout]">
 			<area shape="rect" coords="387, 22, 507, 35"
