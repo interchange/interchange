@@ -9,6 +9,19 @@ my $regen_scan;
 my $regen_out;
 my $regen_arg;
 my $initial;
+
+sub regen_track {
+	return unless $Vend::Cfg->{StaticTrack};
+	my(@parm) = @_;
+
+	Vend::Util::logData(
+		$Vend::Cfg->{StaticTrack},
+		POSIX::strftime('%Y%m%d %H%M%S', localtime()),
+				join('&', @parm),
+	);
+	return;
+}
+
 sub regen_build {
 	my $ref = shift;
 	my $page;
@@ -98,6 +111,7 @@ sub regen_build {
 #EOF
 	if($@) {
 		push @regen_messages, "$ref->[0]: $@";
+		regen_track("Problem with $ref->[0]: $@");
 		undef $Vend::CachePage;
 		undef $Vend::ForceBuild;
 	}
@@ -148,7 +162,7 @@ EOF
 	::response(::interpolate_html ($output));
 	::response(" " x 1024);
 	::response("<PRE>        Checking for links.....\n");
-
+	regen_track("Starting static page build");
 	my $suffix = $Vend::Cfg->{StaticSuffix} || '.html';
 	$output = '';
 	$Vend::Cookie = 'REGENERA';
@@ -167,6 +181,7 @@ EOF
 	while(@links) {
 		if($links_done++ > $max_links) {
 			::response("Reached maximum link count of $max_links, stopping.\n");
+			regen_track("Reached maximum link count of $max_links");
 			last;
 		}
 		$output .= '.';
@@ -179,8 +194,9 @@ EOF
 		undef $Vend::CachePage;
 		undef $Vend::ForceBuild;
 		$verbose and ::response(qq{            Checking page $ref->[0]....});
+		regen_track("Checking $ref->[0]");
 		regen_build($ref);
-
+		regen_track("Finished with $ref->[0]");
 		if($Vend::CachePage || $Vend::ForceBuild) {
 			$verbose and ::response(qq{will build.\n});
 			push (@links, @Vend::Links);
@@ -252,7 +268,9 @@ EOF
 			}
 			open(REGENFILE, ">$file")
 				or die "create $file: $!\n";
+			regen_track("Building $ref->[0]");
 			my $pageref = regen_build($ref);
+			regen_track("Finished with $ref->[0]");
 			if(! $pageref) {
 				push (@regen_messages, "problem building $_.");
 				push @bad, $_;
@@ -311,6 +329,7 @@ EOF
 	}
 	my $end = (times)[0] - $start;
 	$end = int($end);
+	regen_track("Finished static page building in $end seconds.");
 	::response(::interpolate_html(<<EOF, 1));
 <table cellpadding=2 cellspacing=0 width=__UI_OVERALL_WIDTH__ bgcolor=__UI_C_TITLEBARBG__ border=0>
 <tr>
