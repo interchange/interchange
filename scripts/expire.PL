@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange session expiration
 #
-# $Id: expire.PL,v 1.3 2000-07-20 07:24:13 heins Exp $
+# $Id: expire.PL,v 1.4 2000-09-19 18:40:29 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -308,7 +308,7 @@ temporary files.
 
 =head1 SEE ALSO
 
-mvdocs(8), expireall(1), http://www.minivend.com
+mvdocs(8), expireall(1), http://www.akopia.com/
 
 =head1 AUTHOR
 

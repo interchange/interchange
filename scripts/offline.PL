@@ -25,7 +25,7 @@ DOIT: {
 #
 # offline - Interchange database builder and indexer
 #
-# $Id: offline.PL,v 1.2 2000-07-12 03:08:13 heins Exp $
+# $Id: offline.PL,v 1.3 2000-09-19 18:40:29 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -263,7 +263,7 @@ offline -- Interchange offline database builder
 
 =head1 VERSION
 
-$Id: offline.PL,v 1.2 2000-07-12 03:08:13 heins Exp $
+$Id: offline.PL,v 1.3 2000-09-19 18:40:29 zarko Exp $
 
 =head1 DESCRIPTION
 
@@ -271,7 +271,7 @@ Skeleton POD to avoid make errors.
 
 =head1 SEE ALSO
 
-mvdocs(8), minivend(1), http://www.minivend.com
+mvdocs(8), interchange(1), http://www.akopia.com/
 
 =cut
 _EoP_

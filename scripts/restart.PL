@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange restarter
 #
-# $Id: restart.PL,v 1.3 2000-07-20 07:24:13 heins Exp $
+# $Id: restart.PL,v 1.4 2000-09-19 18:40:29 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -137,16 +137,16 @@ EOF
 EndOfExec
 	}
 	else {
-		exec qq{su -f -c "$Global::VendBin/minivend $force -r" $name};
+		exec qq{su -f -c "$Global::VendBin/interchange $force -r" $name};
 	}
 }
 else {
-		exec qq{$Global::VendBin/minivend $force -r};
+		exec qq{$Global::VendBin/interchange $force -r};
 }
 
 =head1 NAME
 
-restart -- call bin/minivend C<->r with possible su
+restart -- call bin/interchange C<->r with possible su
 
 =head1 VERSION
 
@@ -158,7 +158,7 @@ restart -- call bin/minivend C<->r with possible su
 
 =head1 DESCRIPTION
 
-The C<restart> script just tries to execute C<minivend> C<-r> with the proper permissions. If
+The C<restart> script just tries to execute C<interchange> C<-r> with the proper permissions. If
 the user is "root", a prompt will be made to see if you want to start as the guessed
 user ID. (This is the contents of the $Global::VendRoot/_uid file.)
 
@@ -169,7 +169,7 @@ a system startup script.
 
 =head1 SEE ALSO
 
-minivend(1), mvdocs(8), http://www.minivend.com
+interchange(1), mvdocs(8), http://www.akopia.com/
 
 =head1 AUTHOR
 

@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange session dumper
 #
-# $Id: dump.PL,v 1.3 2000-07-20 07:24:13 heins Exp $
+# $Id: dump.PL,v 1.4 2000-09-19 18:40:29 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -239,11 +239,11 @@ dump -- Interchange session dumper
 
 =head1 VERSION
 
-$Id: dump.PL,v 1.3 2000-07-20 07:24:13 heins Exp $
+$Id: dump.PL,v 1.4 2000-09-19 18:40:29 zarko Exp $
 
 =head1 SEE ALSO
 
-mvdocs(8), configdump(1), makecat(1), minivend(1)
+mvdocs(8), configdump(1), makecat(1), interchange(1)
 
 
 =head1 DESCRIPTION

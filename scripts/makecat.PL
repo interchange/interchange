@@ -1891,8 +1891,8 @@ EOF
 	}
 	
     my $start_string = $> == 0
-				? qq(su -c "$Conf{vendroot}/bin/minivend -r" $Conf{minivenduser})
-				: "$Conf{vendroot}/bin/minivend -r";
+				? qq(su -c "$Conf{vendroot}/bin/interchange -r" $Conf{minivenduser})
+				: "$Conf{vendroot}/bin/interchange -r";
 
 	print <<EOF;
 
@@ -1957,7 +1957,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.8 2000-09-16 02:34:19 heins Exp $
+$Id: makecat.PL,v 1.9 2000-09-19 18:40:29 zarko Exp $
 
 =head1 INTRODUCTION
 
@@ -2182,9 +2182,10 @@ Don't set umask to the value implied by mode.
 
 =head1 DESCRIPTION
 
-C<makecat> needs a template catalog to operate on. The I<simple> and
-I<barry> demo templates are distributed with Interchange. You can also look for
-older demo catalogs (mostly for ideas) at C<ftp.minivend.com>.
+C<makecat> needs a template catalog to operate on. The I<foundation site> and
+I<construct something> demo templates are distributed with Interchange. You can
+also look for additional demo catalogs (mostly for ideas) at
+http://developer.akopia.com/.
 
 B<IMPORTANT NOTE:> You only make a catalog once. All further configuration
 is done by editing the files within the I<catalog directory>.
@@ -2313,7 +2314,7 @@ Interchange has many, many, functions and features; they are too numerous
 to describe in this venue. Complete information can be found at
 its web site:
 
-        http://www.minivend.com
+        http://www.akopia.com/
 
 Interchange requires Perl 5.005 or higher; more information on Perl can
 be seen at:
@@ -2322,7 +2323,7 @@ be seen at:
 
 =head1 SEE ALSO
 
-mvdocs(8), minivend(1), http://www.minivend.com
+mvdocs(8), interchange(1), http://www.akopia.com/
 
 =head1 LICENSE
 
@@ -2342,12 +2343,12 @@ license.
 Mike Heins, <heins@akopia.com>. Please do not contact the author for
 direct help with the system. Use the Interchange mail lists:
 
-    minivend-users@minivend.com (English, subscribe at majordomo@minivend.com)
-    minivend-de@minivend.com    (Deutsch, subscribe at majordomo@minivend.com)
+    interchange-users	(English, subscribe at http://developer.akopia.com/)
 
 General information and documentation for Interchange is at:
 
-    http://www.minivend.com
+    http://www.akopia.com/
+    http://developer.akopia.com/
 
 =cut
 

@@ -24,7 +24,7 @@ DOIT: {
 #
 # Interchange localizer
 #
-# $Id: localize.PL,v 1.3 2000-07-20 07:24:13 heins Exp $
+# $Id: localize.PL,v 1.4 2000-09-19 18:40:29 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -353,7 +353,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-$Id: localize.PL,v 1.3 2000-07-20 07:24:13 heins Exp $
+$Id: localize.PL,v 1.4 2000-09-19 18:40:29 zarko Exp $
 
 =head1 SYNOPSIS
 
@@ -418,7 +418,7 @@ one level. Subsequent .bak files will be overwritten.
 
 =head1 SEE ALSO
 
-mvdocs(8), http://www.minivend.com
+mvdocs(8), http://www.akopia.com/
 
 =head1 AUTHOR
 

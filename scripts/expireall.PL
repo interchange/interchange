@@ -23,7 +23,7 @@ DOIT: {
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# expireall - Expire all minivend catalogs
+# expireall - Expire all interchange catalogs
 #
 
 use lib '/usr/local/minivend/lib';
@@ -106,7 +106,7 @@ expireall -- Run Interchange expire on all catalogs
 
 =head1 VERSION
 
-$Id: expireall.PL,v 1.3 2000-07-20 07:24:13 heins Exp $
+$Id: expireall.PL,v 1.4 2000-09-19 18:40:29 zarko Exp $
 
 =head1 DESCRIPTION
 
@@ -114,7 +114,7 @@ Skeleton POD to avoid make errors.
 
 =head1 SEE ALSO
 
-mvdocs(8), expire(1), http://www.minivend.com
+mvdocs(8), expire(1), http://www.akopia.com/
 
 
 =cut

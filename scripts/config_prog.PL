@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange program configurator
 #
-# $Id: config_prog.PL,v 1.2 2000-07-12 03:08:12 heins Exp $
+# $Id: config_prog.PL,v 1.3 2000-09-19 18:40:29 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -153,7 +153,7 @@ config_prog -- Configure Interchange programs with MakeMaker variables
 
 =head1 VERSION
 
-$Id: config_prog.PL,v 1.2 2000-07-12 03:08:12 heins Exp $
+$Id: config_prog.PL,v 1.3 2000-09-19 18:40:29 zarko Exp $
 
 =head1 DESCRIPTION
 
@@ -162,7 +162,7 @@ No documentation planned.
 =head1 SEE ALSO
 
 mvdocs(8), compile_link(1), config_prog(1), configdump(1), dump(1), expire(1),
-expireall(1), localize(1), makecat(1), minivend(1), offline(1),
+expireall(1), localize(1), makecat(1), interchange(1), offline(1),
 restart(1), update(1)
 
 =cut
