@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.121 2002-10-23 16:58:12 jon Exp $
+# $Id: Interpolate.pm,v 2.122 2002-10-29 17:04:32 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.121 $, 10);
+$VERSION = substr(q$Revision: 2.122 $, 10);
 
 @EXPORT = qw (
 
@@ -2446,10 +2446,13 @@ sub log {
 				or last;
 		}
 	}
-	elsif($opt->{type} =~ /^error/) {
-		if($opt->{file}) {
+	elsif($opt->{type} =~ /^(?:error|debug)/) {
+		if ($opt->{file}) {
 			$data = format_log_msg($data) unless $data =~ s/^\\//;;
 			$status = Vend::Util::writefile($file, $data, $opt);
+		}
+		elsif ($opt->{type} =~ /^debug/) {
+			$status = Vend::Util::logDebug($data);
 		}
 		else {
 			$status = Vend::Util::logError($data);
