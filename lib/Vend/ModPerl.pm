@@ -1,6 +1,6 @@
 # Vend::ModPerl - Run Interchange inside Apache and mod_perl
 #
-# $Id: ModPerl.pm,v 2.3 2002-11-24 04:38:50 jon Exp $
+# $Id: ModPerl.pm,v 2.4 2002-12-10 20:25:22 jon Exp $
 #
 # Copyright (C) 2002 Red Hat, Inc. and Jon Jensen <jon@icdevgroup.org>
 #
@@ -20,7 +20,7 @@
 
 package Vend::ModPerl;
 
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 
 use Apache::Constants qw(:common);
 use Apache::Request ();
@@ -67,6 +67,9 @@ sub handler {
 		}
 	}
 
+	select STDERR;
+	$| = 1;
+	undef *STDOUT;
 	tie *OUT, 'Apache';
 	my $http = new Vend::Server \*OUT, \%env, \$entity;
 	return NOT_FOUND unless $http;
