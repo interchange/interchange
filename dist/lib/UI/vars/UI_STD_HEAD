@@ -152,6 +152,18 @@ EOF
 ][sm-calc]
 	my $pre  = '';
 	my $post = '';
+	my $out = '';
+	$out .= <<'EOF' if ! $sm_once++;
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr> 
+    <td bgcolor="__UI_C_TOPBLOCKBAR__"><img src="@_UI_IMG_@navigation/spacer3.gif" width=1 height=1 alt=line></td>
+  </tr>
+  <tr bgcolor="000000"> 
+    <td><img src="@_UI_IMG_@navigation/spacer4.gif" width=1 height=1 alt=line></td>
+  </tr>
+  <tr bgcolor="__UI_C_TITLEBARBG__"> 
+    <td valign=center nowrap><font face="Verdana, Arial, Helvetica, sans-serif" size="-1"><img src="@_UI_IMG_@admin/bg.gif" height=19 width=3 align=middle alt=x>&nbsp;&nbsp;&nbsp;&nbsp;
+EOF
 	return if q{[sm-param inactive]};
 	return if q{[sm-param super]} and $Tag->if_mm('!super');
 	my $indicator = q{[sm-param indicator]};
@@ -179,18 +191,6 @@ EOF
 	}
 	$name =~ s/ /&nbsp;/g;
 #Log("Form is: $form");
-	my $out = '';
-	$out .= <<'EOF' if ! $sm_once++;
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
-  <tr> 
-    <td bgcolor="__UI_C_TOPBLOCKBAR__"><img src="@_UI_IMG_@navigation/spacer3.gif" width=1 height=1 alt=line></td>
-  </tr>
-  <tr bgcolor="000000"> 
-    <td><img src="@_UI_IMG_@navigation/spacer4.gif" width=1 height=1 alt=line></td>
-  </tr>
-  <tr bgcolor="__UI_C_TITLEBARBG__"> 
-    <td valign=center nowrap><font face="Verdana, Arial, Helvetica, sans-serif" size="-1"><img src="@_UI_IMG_@admin/bg.gif" height=19 width=3 align=middle alt=x>&nbsp;&nbsp;&nbsp;&nbsp;
-EOF
 	$out .= $pre;
 	$out .= q{</td></tr><tr bgcolor="__UI_C_INTBLOCKBAR__"><td nowrap valign=center><img src="@_UI_IMG_@admin/bg.gif" height=19 width=3 align=middle alt=x>&nbsp;&nbsp;&nbsp;&nbsp;
 }
@@ -243,6 +243,14 @@ EOF
           <br>
 		[if scratch icon_name]<img src="@_UI_IMG_@[scratch icon_name]" width=16 height=16 border=0 valign=top alt=icon> &nbsp; [/if]
 	   <font size="+1" face="Verdana,arial,helvetica,sans-serif" color="__UI_C_HEADERTXT__">[either][scratch page_banner][or][scratch page_title][/either]&nbsp;</font><p>
+    [if type=explicit compare="[error all=1 show_var=1 keep=1]"]
+	<P>
+	<B>Error:</B>
+	<BLOCKQUOTE class=cerror>
+		[error all=1 show_error=1 joiner="<br>"]
+	</BLOCKQUOTE>
+	</P>
+	[/if]
 	[if scratch ui_failure]
 	<P>
 	<BLOCKQUOTE>
