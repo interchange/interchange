@@ -150,7 +150,6 @@ code/UI_Tag/rotate_file.coretag
 code/UI_Tag/rotate_table.coretag
 code/UI_Tag/row_edit.coretag
 code/UI_Tag/run_profile.coretag
-code/UI_Tag/set_alias.coretag
 code/UI_Tag/substitute_file.coretag
 code/UI_Tag/table_editor.coretag
 code/UI_Tag/uneval.coretag
@@ -950,7 +949,6 @@ eg/globalsub/ccvs
 eg/globalsub/signio
 eg/globalsub/test_card
 eg/grant.sql
-eg/ical2vcal
 eg/ifdef
 eg/news_feature/README
 eg/news_feature/dbconf/default_db/news.dbm
@@ -1085,7 +1083,6 @@ share/interchange/de_DE/B7.gif
 share/interchange/de_DE/B7_b.gif
 share/interchange/de_DE/B8.gif
 share/interchange/de_DE/B8_b.gif
-share/interchange/en_US/.xvpics/az.gif
 share/interchange/en_US/A1.gif
 share/interchange/en_US/A1_b.gif
 share/interchange/en_US/A2.gif
