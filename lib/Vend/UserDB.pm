@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.13.6.10 2001-03-14 18:29:31 jason Exp $
+# $Id: UserDB.pm,v 1.13.6.11 2001-03-14 19:48:06 jason Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.13.6.10 $, 10);
+$VERSION = substr(q$Revision: 1.13.6.11 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -804,8 +804,6 @@ sub delete_nickname {
 
 	my $nick_field = shift @fields;
 	my $nick = $self->{NICKNAME} || $::Values->{$nick_field};
-	$nick =~ s/^[\0\s]+//;
-	$nick =~ s/[\0\s]+.*//;
 
 	delete $self->{$name}{$nick};
 
