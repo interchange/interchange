@@ -18,7 +18,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-/var/log/interchange/debug.log /var/log/interchange/error.log /var/log/interchange/makecat.log {
+/var/log/interchange/error.log {
 	rotate 7
 	size=100k
 	compress
@@ -26,5 +26,13 @@
 	postrotate
 		/etc/init.d/interchange restart >/dev/null
 	endscript
+}
+
+/var/log/interchange/debug.log /var/log/interchange/makecat.log {
+	rotate 7
+	size=100k
+	compress
+	delaycompress
+	missingok
 }
 

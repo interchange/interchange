@@ -23,8 +23,9 @@ interchange (4.8.1-1) unstable; urgency=low
     interchange-cat-foundation to keep lintian happy
   * restart server only once if both interchange and interchange-ui
   	are installed, stop server if only interchange-ui gets installed
+  * rotate debug.log and makecat.log as well
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 13 Aug 2001 11:45:14 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 14 Aug 2001 09:43:45 +0200
   
 interchange (4.6.5-1) unstable; urgency=high
 
