@@ -1,7 +1,7 @@
 #### begin [value mv_order_number] #####
 [calc]
 	if (! $Values->{separate_addresses} ) {
-		foreach (@{$Carts->{main}}) {
+		foreach (@$Items) {
 			$_->{mv_ad} = '';
 		}
 	}
