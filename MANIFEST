@@ -187,6 +187,7 @@ code/UserTag/fcounter.tag
 code/UserTag/fedex_query.tag
 code/UserTag/formel.tag
 code/UserTag/fortune.tag
+code/UserTag/forum.tag
 code/UserTag/get_url.tag
 code/UserTag/history_scan.tag
 code/UserTag/load_cart.tag
@@ -291,6 +292,7 @@ dist/foundation/dbconf/mysql/area.mysql
 dist/foundation/dbconf/mysql/cat.mysql
 dist/foundation/dbconf/mysql/component.dbm
 dist/foundation/dbconf/mysql/country.mysql
+dist/foundation/dbconf/mysql/forum.mysql
 dist/foundation/dbconf/mysql/gift_certs.mysql
 dist/foundation/dbconf/mysql/inventory.mysql
 dist/foundation/dbconf/mysql/locale.dbm
@@ -341,6 +343,7 @@ dist/foundation/dbconf/pgsql/area.pgsql
 dist/foundation/dbconf/pgsql/cat.pgsql
 dist/foundation/dbconf/pgsql/component.dbm
 dist/foundation/dbconf/pgsql/country.pgsql
+dist/foundation/dbconf/pgsql/forum.pgsql
 dist/foundation/dbconf/pgsql/gift_certs.pgsql
 dist/foundation/dbconf/pgsql/inventory.pgsql
 dist/foundation/dbconf/pgsql/locale.dbm
@@ -571,6 +574,8 @@ dist/foundation/include/checkout/payment_select
 dist/foundation/include/checkout/shipping_address
 dist/foundation/include/checkout/shopping_cart
 dist/foundation/include/checkout/tax_popup
+dist/foundation/include/forum/reply_form
+dist/foundation/include/forum/submit_form
 dist/foundation/pages/aboutus.html
 dist/foundation/pages/account.html
 dist/foundation/pages/admin/report_def/Order%20Status.html
@@ -587,6 +592,9 @@ dist/foundation/pages/contact.html
 dist/foundation/pages/customerservice.html
 dist/foundation/pages/deliver.html
 dist/foundation/pages/flypage.html
+dist/foundation/pages/forum/display.html
+dist/foundation/pages/forum/reply.html
+dist/foundation/pages/forum/submit.html
 dist/foundation/pages/help.html
 dist/foundation/pages/index.html
 dist/foundation/pages/login.html
@@ -627,6 +635,7 @@ dist/foundation/products/component.txt
 dist/foundation/products/country.txt
 dist/foundation/products/downloadable.txt
 dist/foundation/products/files.txt
+dist/foundation/products/forum.txt
 dist/foundation/products/gift_certs.txt
 dist/foundation/products/inventory.txt
 dist/foundation/products/locale.txt

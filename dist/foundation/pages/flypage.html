@@ -154,6 +154,21 @@ ui_template_name: leftonly
 
     </td>
   </tr>
+[if variable FORUM_PRODUCTS]
+  <tr>
+  	<td>
+		[forum top="[item-code]" display_page="forum/display" /]
+		<p>
+		[page href="forum/reply"
+				form="
+					product=1
+					mv_arg=[item-code]
+				"
+		]Comment on this product.</A>
+		</p>
+	</td>
+  </tr>
+[/if]
   </table>
 
 </form>
