@@ -3,7 +3,7 @@
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.15 2002-06-27 18:55:50 jon Exp $
+# $Id: makecat.PL,v 2.16 2002-08-12 00:34:58 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -454,7 +454,6 @@ my %Prefix = (
 							$dir =~ s/^\~/$userdir/;
 							return $dir;
 							},
-	aliases      =>  sub { return "/$catalog_name" },
 	cgiurl       =>  sub {
 							return $ENV{MVC_CGIURL} if $ENV{MVC_CGIURL};
 							my $url = '';
@@ -2044,6 +2043,7 @@ POSTCMD: {
 }
 	my $add;
 	my $add_tcp;
+	my $add_inet;
 
 	umask(07) unless $Conf{noumask};
 
@@ -2058,6 +2058,8 @@ POSTCMD: {
 	if($yes and $Inetmode) {
 		$add_tcp = prompt "Add port $lp to TcpMap in interchange.cfg if necessary? ", $add;
 		$add_tcp = is_yes($add_tcp);
+		$add_inet = prompt "Set Interchange to run in INET mode if necessary? ", $add;
+		$add_inet = is_yes($add_inet);
 	}
 
 	if($pid) {
@@ -2100,7 +2102,7 @@ POSTCMD: {
 				if s/^(catalog\s+$catalog_name\s+)/#$1/io;
 			$full = is_yes($1)
 				if /^\s*fullurl\s+(.*)/i;
-			if (/^tcpmap\s+/i and $_ !~ /\b$lp\b/) {
+			if ($add_tcp and /^tcpmap\s+/i and $_ !~ /\b$lh:$lp\b/) {
 				$tcpmark = /^tcpmap\s+[^<]+$/i ? $. : $. + 1;
 				$tcpmark-- if $mark;
 			}
@@ -2124,8 +2126,22 @@ POSTCMD: {
 				$catalog_name, $Conf{catroot}, $full . $Conf{cgiurl}, $Conf{aliases};
 
 		if($tcpmark) {
-			$out[$tcpmark] =~ s/\s*$/ $lp -\n/;
+			$out[$tcpmark] =~ s/\s*$/ $lh:$lp -\n/;
 		}
+
+		if($add_inet) {
+			my $found_inetmode;
+			for(@out) {
+				next unless /^\s*inet_mode\s+/i;
+				$_ = "Inet_Mode Yes\n";
+				$found_inetmode = 1;
+				last;
+			}
+			if(! $found_inetmode) {
+				push @out, "Inet_Mode Yes\n";
+			}
+		}
+
 		if (defined $mark) {
 			print NEWCFG @out[0..$mark-1];
 			print NEWCFG $newcfgline;
@@ -2257,7 +2273,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.15 2002-06-27 18:55:50 jon Exp $
+# $Id: makecat.PL,v 2.16 2002-08-12 00:34:58 mheins Exp $
 
 =head1 INTRODUCTION
 
