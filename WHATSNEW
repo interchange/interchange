@@ -54,16 +54,21 @@ Core and usertags
 
 * Fixed get_option_hash in Util.pm, thanks to Javier Martin
   <martin@trymedia.com> who discovered and analyzed this bug
-  (in his case any options for &charge are ignored)
+  (in his case any options for &charge are ignored).
 
 * Fixed bug in database query methods which can hose query strings
   like "select ... where column like '%...%'".
 
+* Issue an error message if a search can not be performed due
+  to the NoSearch directive.
+
+* Added hide option to usertags email and email_row.
+
 * Check for Digest::MD5 instead of MD5 in the usertag version and
-  the RPM spec file
+  the RPM spec file.
 
 * New option -D for localize script (Don't put default locale in output.),
-  insert comments only if they are distinct from the key
+  insert comments only if they are distinct from the key.
 
 * Allow [dump] of portion of session, for example [dump scratch].
 
@@ -73,7 +78,7 @@ Core and usertags
 Payment
 -------
 
-* Bank of America payment module added
+* Bank of America payment module added.
 
 UI
 --------
@@ -85,10 +90,12 @@ UI
   values when the key is empty now. This has the side effect that
   autonumbering is not possible when adding records from the spreadsheet.
 
+* New usertag diffmerge, improved usertag diff.
+
 I18N
 --------
 
-* localization support added to UI usertag file_info
+* localization support added to UI usertag file_info.
 
 * Hebrew locale from Chen Naor <chen@lilux.co.il> added.
 
