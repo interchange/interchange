@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.53 2002-02-02 08:57:11 mheins Exp $
+# $Id: Interpolate.pm,v 2.54 2002-02-03 06:44:42 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.53 $, 10);
+$VERSION = substr(q$Revision: 2.54 $, 10);
 
 @EXPORT = qw (
 
@@ -5322,7 +5322,7 @@ sub read_shipping {
 			}
 			my (@zone) = grep /\S/, split /[\r\n]+/, $ref->{zone_data};
 			if($zone[0] !~ /\t/) {
-				my $len = $ref->{str_len} || 3;
+				my $len = $ref->{str_length} || 3;
 				@zone = grep /\S/, @zone;
 				@zone = grep /^[^"]/, @zone;
 				$zone[0] =~ s/[^\w,]//g;
