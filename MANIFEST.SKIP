@@ -36,6 +36,7 @@ _$
 ^dist/barry(/|$)
 ^dist/basic(/|$)
 ^dist/books(/|$)
+^dist/test(/|$)
 ^dist/etc/[^.]
 ^dist/lib/MiniMate(/|$)
 ^dist/mvmall(/|$)
