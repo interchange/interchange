@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.14.4.3 2000-11-05 13:00:38 racke Exp $
+# $Id: Order.pm,v 1.14.4.4 2000-11-28 22:58:58 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.14.4.3 $, 10);
+$VERSION = substr(q$Revision: 1.14.4.4 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1054,7 +1054,7 @@ sub check_order {
 	if($Final and ! scalar @{$Vend::Items}) {
 		$status = 0;
 		$::Values->{"mv_error_items"}       =
-			$Vend::Session->{error}{items}  =
+			$Vend::Session->{errors}{items}  =
 				errmsg(
 					"You might want to order something! No items in cart.",
 				);
@@ -1539,7 +1539,11 @@ sub route_order {
 			$reply   = $route->{reply} || $main->{reply};
 			$reply   = $::Values->{$reply} if $reply =~ /^\w+$/;
 			$to		 = $route->{email};
-			push @out, [$to, $subject, $page, $reply, $use_mime];
+			my $ary = [$to, $subject, $page, $reply, $use_mime];
+			if($route->{from}) {
+				push @$ary, "From: $route->{from}";
+			}
+			push @out, $ary;
 		}
 		elsif ($route->{empty}) {
 			# Do nothing
