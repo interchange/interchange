@@ -1,14 +1,18 @@
-
-UserTag list_pages order options ext keep base
-UserTag list_pages PosNumber 4 
+UserTag list_pages Order options
+UserTag list_pages addAttr
 UserTag list_pages Routine <<EOR
 sub {
-	my ($return_options, $ext, $keep, $base) = @_;
+	my ($return_options, $opt) = @_;
 	my $out;
+	my @pages = UI::Primitive::list_pages($opt->{keep},$opt->{ext},$opt->{base});
 	if($return_options) {
-		$out = "<OPTION> " . (join "<OPTION> ", UI::Primitive::list_pages($keep,$ext,$base));
-	} else {
-		$out = join " ", UI::Primitive::list_pages($keep,$ext, $base);
+		$out = "<OPTION> " . (join "<OPTION> ", @pages);
+	}
+	elsif ($opt->{arrayref}) {
+		return \@pages;
+	}
+	else {
+		$out = join " ", @pages;
 	}
 }
 EOR
