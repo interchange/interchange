@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.19.4.7 2000-11-24 23:41:41 racke Exp $
+# $Id: DBI.pm,v 1.19.4.8 2001-02-07 17:58:14 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.19.4.7 $, 10);
+$VERSION = substr(q$Revision: 1.19.4.8 $, 10);
 
 use strict;
 
@@ -251,7 +251,7 @@ sub open_table {
     my $db;
 
 	unless($config->{dsn_id}) {
-		$config->{dsn_id} = join "_", @call;
+		$config->{dsn_id} = join "_", grep ! ref($_), @call;
     	if($Global::HotDBI->{$Vend::Cfg->{CatalogName}}) {
 			$config->{hot_dbi} = 1;
 			$DBI_connect_count{$config->{dsn_id}}++;
