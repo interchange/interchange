@@ -57,7 +57,6 @@ eval {
 my @chown_files = qw/
 						error.log
 						etc
-						minivend.cfg
 					/;
 
 # Now we can use the libraries
