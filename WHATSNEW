@@ -234,9 +234,11 @@ UserTags
   browser's Back button, then clicking on a different button, and both
   mv_clicks execute instead of just the most recent one.
 
-* [xml-generator] removed.
-
 * [history-scan ...] now escapes form parameters properly.
+
+* Changed [import-fields] to strip a CR as well as a LF from the
+  end of each input line, to help people who import using files
+  generated using proprietrary software.
 
 * Add [jsq] [/jsq] .. and [jsqn] [/jsqn] tags that build properly
   JavaScript strings (jsq with variable substitution, jsqn without).
@@ -264,6 +266,8 @@ UserTags
 
 * [update-order-status] tag added for shipping products. Also does
   charge settlement if needed.
+
+* [xml-generator] removed.
 
 UI
 ----
