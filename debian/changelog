@@ -1,8 +1,10 @@
-interchange (4.8.7-1) unstable; urgency=low
+interchange (4.8.6.20021018-1) unstable; urgency=medium
 
-  * new upstream release
-
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu,  5 Sep 2002 01:03:05 +0200
+  * release from current CVS (stable branch)
+  * removed bashisms from interchange-cat-foundation script
+  * relaxed dependency on libsql-statement-perl (Closes: #158263)
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 18 Oct 2002 21:07:01 +0200
 
 interchange (4.8.6-1) unstable; urgency=high
 
