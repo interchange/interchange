@@ -10,9 +10,11 @@ Summary:	Interchange is a powerful database access and HTML templating daemon fo
 Group:		Applications/Internet
 Version: 4.5.5
 Copyright: GNU General Public License
-Release: 1
+Release: 2
 URL: http://www.interchange.com/
 Packager: Mike Heins <nospam@minivend.com>
+Distribution: Red Hat Linux Applications CD
+Vendor: Akopia, Inc.
 Source: http://larry.minivend.com/interchange/preview/interchange-4.5.5.tar.gz
 Provides: interchange
 Obsoletes: interchange
@@ -49,6 +51,7 @@ rm -rf $RBR
 mkdir -p $RBR
 mkdir -p $RBR/usr/doc/%{interchange_package}-%{version}
 make install
+gzip $RBR/usr/local/man/man*/* 2>/dev/null
 cp extra/HTML/Entities.pm $RBR/usr/local/interchange/build
 cp extra/IniConf.pm $RBR/usr/local/interchange/build
 cp QuickStart WHATSNEW README README.rpm $RBR/usr/doc/%{interchange_package}-%{version}
@@ -59,11 +62,15 @@ export MINIVEND_ROOT=$RBR/usr/local/interchange
 perl -pi -e 's:^\s+LINK_FILE\s+=>.*:	LINK_FILE => "/var/run/interchange/socket",:' bin/compile_link
 bin/compile_link -build src
 sh build/makedirs.redhat
-sh build/makecat.redhat %{build_cats}
+sh build/makecat.redhat %{build_cats} 2>/dev/null
+find $RBR/var/lib/interchange -type d | xargs chmod 755
+find $RBR/usr/local/interchange/bin -type f | xargs chmod 755
 
+mkdir $RBR/var/log/interchange
 for i in %{build_cats}
 do
-	ln -s /var/log/interchange/$i.error.log $RBR/var/lib/interchange/$i/error.log
+	touch $RBR/var/log/interchange/$i.error.log
+	ln -s ../../../log/$i.error.log $RBR/var/lib/interchange/$i/error.log
 done
 mv minivend.cfg $RBR/etc/minivend.cfg
 ln -s /etc/minivend.cfg .
@@ -77,7 +84,7 @@ chmod +r $RBR/etc/minivend.cfg
 if test -x /etc/rc.d/init.d/interchange
 then
   /etc/rc.d/init.d/interchange stop > /dev/null 2>&1
-  echo "Giving interchange a couple of seconds to exit nicely"
+  #echo "Giving interchange a couple of seconds to exit nicely"
   sleep 5
 fi
 
@@ -88,7 +95,7 @@ useradd -M -r -d /var/lib/interchange -s /bin/bash -c "Interchange server" inter
 %files
 %config(noreplace) /etc/minivend.cfg
 %config(noreplace) /etc/logrotate.d/interchange
-/etc/rc.d/init.d/interchange
+%config /etc/rc.d/init.d/interchange
 /home/httpd/cgi-bin/barry
 /home/httpd/cgi-bin/simple
 /home/httpd/html/barry
@@ -133,13 +140,13 @@ status=`perl -e "require HTML::Entities and print 1;" 2>/dev/null`
 if test "x$status" != x1
 then
 	mkdir -p /usr/local/interchange/lib/HTML 2>/dev/null
-	cp /usr/local/interchange/build/Entities.pm /usr/local/interchange/lib/HTML
+	cp /usr/local/interchange/build/Entities.pm /usr/local/interchange/lib/HTML 2>/dev/null
 fi
 
 status=`perl -e "require IniConf and print 1;" 2>/dev/null`
 if test "x$status" != x1
 then
-	cp /usr/local/interchange/build/IniConf.pm /usr/local/interchange/lib
+	cp /usr/local/interchange/build/IniConf.pm /usr/local/interchange/lib 2>/dev/null
 fi
 
 status=`perl -e "require Storable and print 1;" 2>/dev/null`
@@ -160,32 +167,34 @@ do
     fi
 done
 
+WARNDEST=/usr/doc/%{interchange_package}-%{version}/WARNING_YOU_ARE_MISSING_SOMETHING
 if test -n "$missing"
 then
-        echo ""
-        echo "MISSING Perl modules:"
-        echo ""
-	echo "$missing"
-        echo ""
-        echo "Interchange catalogs will work without them, but the admin interface"
-	echo "will not. You need to install them for the UI to work."
-	echo ""
-	echo "Try:"
-	echo ""
-	echo " perl -MCPAN -e \"install Bundle::Interchange\""
-	echo ""
+        echo "" >> $WARNDEST
+        echo "MISSING Perl modules:"  >> $WARNDEST
+        echo ""  >> $WARNDEST
+	echo "$missing"  >> $WARNDEST
+        echo ""  >> $WARNDEST
+        echo "Interchange catalogs will work without them, but the admin interface"  >> $WARNDEST
+	echo "will not. You need to install them for the UI to work."  >> $WARNDEST
+	echo ""  >> $WARNDEST
+	echo "Try:"  >> $WARNDEST
+	echo ""  >> $WARNDEST
+	echo " perl -MCPAN -e \"install Bundle::Interchange\""  >> $WARNDEST
+	echo ""  >> $WARNDEST
 fi
 
 # Restart in the same way that interchange will be started normally.
-/etc/rc.d/init.d/interchange start
+# Would like to start, but then cannot pass RedHat tests
+#/etc/rc.d/init.d/interchange start >/dev/null 2>/dev/null
 
 # Allow interchange to start and print a message before we exit
-sleep 2
-echo ""
-echo You should now be able to access the Interchange demos with:
-echo ""
-echo "	http://$HOST/barry"
-echo "	http://$HOST/simple"
+#sleep 2
+#echo ""
+#echo You should now be able to access the Interchange demos with:
+#echo ""
+#echo "	http://$HOST/barry"
+#echo "	http://$HOST/simple"
 
 %preun
 if test -x /etc/rc.d/init.d/interchange
@@ -199,4 +208,5 @@ then
 fi
 
 rm -rf /var/run/interchange/*
+rm -rf /var/lib/interchange/*/images
 rm -rf /usr/local/interchange/lib/HTML
