@@ -1,12 +1,9 @@
 [comment]
-ui_component: cart_tiny
-ui_type: component
 ui_name: cart_tiny
+ui_type: component
 ui_class: vertical
 ui_group: info
 ui_label: Small cart for left/right display
-ui_source: templates/components/cart_tiny
-
 
 [/comment]
 <!-- BEGIN COMPONENT [control component cart_tiny] -->

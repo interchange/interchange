@@ -1,10 +1,8 @@
 [comment]
-ui_template: leftright
-ui_type: template
 ui_name: leftright
-ui_version: 4.9.0
+ui_type: template
+ui_version: 4.9.3
 ui_label: Page with top/left/right areas.
-ui_source: templates/leftright
 ui_template_layout: LEFTRIGHT_TOP, UI_CONTENT, LEFTRIGHT_BOTTOM
 
 page_title:
@@ -14,12 +12,6 @@ page_title:
 members_only:
 	label: Members only
 	type: yesno
-
-page_banner:
-	code: page_banner
-	label: Page Banner
-	type: text
-	width: 30
 
 [/comment]
 

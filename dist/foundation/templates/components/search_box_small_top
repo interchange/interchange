@@ -1,11 +1,9 @@
 [comment]
-ui_component: search_box_small_top
-ui_type: component
 ui_name: search_box_small_top
+ui_type: component
 ui_class: horizontal
 ui_group: search
 ui_label: Small search box (for top area)
-ui_source: templates/components/search_box_small_top
 
 matches:
 	help: Matches to return to page

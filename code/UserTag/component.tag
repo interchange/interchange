@@ -23,8 +23,9 @@ sub {
 	}
 
 	$name ||= $control->{component};
+	$name ||= $opt->{default};
 
-	if (! $name) {
+	if (! $name or $name eq 'none') {
 		# Increment control_index so empty component has no side effect
 		$::Scratch->{control_index}++;
 		return;

@@ -1,11 +1,9 @@
 [comment]
-ui_component: random
-ui_type: component
 ui_name: random
+ui_type: component
 ui_class: content, vertical
 ui_group: promotion
 ui_label: Random items
-ui_source: templates/components/random
 
 matches:
 	label: Number to show

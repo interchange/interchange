@@ -1,4 +1,4 @@
-    [include file="templates/components/[control component none]" group=content][control]
+    [component group=content]
 
   <br><br>
   <center>
@@ -13,6 +13,6 @@
   </td>
 </tr>
 </table>
-
+__ADL_PAGE__
 </body>
 </html>

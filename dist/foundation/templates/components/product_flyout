@@ -1,11 +1,9 @@
 [comment]
-ui_component: product_flyout
-ui_type: component
 ui_name: product_flyout
+ui_type: component
 ui_class: vertical
 ui_group: Navigation
 ui_label: Products Flyout Menu
-ui_source: templates/components/product_flyout
 
 tree_selector:
 	help: Defines which tree menu is selected
@@ -51,7 +49,7 @@ flyout_style:
 	flyout-style="[control flyout_style]"
 	menu-type=flyout
 ][/menu]
-
+	__ADL_MENU__
     </td>
   </tr>
   </table>

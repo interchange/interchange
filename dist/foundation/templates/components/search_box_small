@@ -1,11 +1,9 @@
 [comment]
-ui_component: search_box_small
-ui_type: component
 ui_name: search_box_small
+ui_type: component
 ui_class: vertical
 ui_group: search
 ui_label: Small search box
-ui_source: templates/components/search_box_small
 
 matches:
 	help: Matches to return to page

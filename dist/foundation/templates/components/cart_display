@@ -1,11 +1,9 @@
 [comment]
-ui_component: cart_display
-ui_type: component
 ui_name: cart_display
+ui_type: component
 ui_class: content
 ui_group: info
 ui_label: Smaller cart for display in content area
-ui_source: templates/components/cart_display
 
 
 [/comment]

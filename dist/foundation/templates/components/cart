@@ -1,11 +1,9 @@
 [comment]
-ui_component: cart
-ui_type: component
 ui_name: cart
+ui_type: component
 ui_class: content
 ui_group: checkout
 ui_label: Shopping cart display (full)
-ui_source: templates/components/cart
 
 others_bought:
 	label: Use "others who bought this" here

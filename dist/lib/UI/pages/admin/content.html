@@ -17,6 +17,10 @@
 </blockquote>
 [/if]
 
+[if cgi ui_content_op]
+<!-- [content-modify] -->
+[/if]
+
 [calc]
 	$cwd = $Session->{ui_cwd};
 	sub tmp_display_in_progress {
@@ -52,10 +56,6 @@
 	}
 	return;
 [/calc]
-
-[if cgi ui_content_op]
-<!-- [content-modify] -->
-[/if]
 
 [if session content_edit]
 	<A HREF="[area href=@@MV_PAGE@@ form='ui_content_op=purge']"
@@ -106,14 +106,15 @@
 					ui_type=template
 					new=1
 				]"><img src="layout.gif" border=0 align=textmiddle> [L]New template[/L]</A><br><br>
-	[file-navigator
-			initial_dir="__UI_TEMPLATE_DIR__"
-			start_open="__UI_TEMPLATE_DIR__"
-			edit_only=1
-			edit_all=1
-			edit_page=content_editor
-			edit_form="ui_name=~RN~&ui_type=template"
-			]
+	[loop acclist=1 list="[content-info templates=1 no-none=1]"]
+	<A HREF="[area
+					href=__UI_BASE__/content_editor
+					form=auto
+					ui_type=template
+					ui_name="[loop-code]"
+				]"><img src="layout.gif" border=0 align=textmiddle>[loop-param label]</A><br>
+	[/loop]
+
 	</td>
 
 	<td class=rnorm valign=top width="33%">
@@ -125,15 +126,14 @@
 					ui_type=component
 					new=1
 				]"><img src="layout.gif" border=0 align=textmiddle> [L]New component[/L]</A><br><br>
-	[file-navigator
-			initial_dir="__UI_COMPONENT_DIR__"
-			start_open="__UI_COMPONENT_DIR__"
-			edit_only=1
-			edit_all=1
-			edit_page=content_editor
-			edit_form="ui_name=~RN~&ui_type=component"
-			]
-	[calc] $Session->{ui_cwd} = $cwd; return; [/calc]
+	[loop acclist=1 list="[content-info components=1 no-none=1]"]
+	<A HREF="[area
+					href=__UI_BASE__/content_editor
+					form=auto
+					ui_type=component
+					ui_name="[loop-code]"
+				]"><img src="layout.gif" border=0 align=textmiddle>[loop-param label]</A><br>
+	[/loop]
 	</td>
 </tr>
 

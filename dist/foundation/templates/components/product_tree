@@ -1,11 +1,9 @@
 [comment]
-ui_component: product_tree
-ui_type: component
 ui_name: product_tree
+ui_type: component
 ui_class: vertical
 ui_group: Navigation
 ui_label: Products Tree
-ui_source: templates/components/product_tree
 
 tree_selector:
 	help: Defines which tree menu is selected
@@ -74,7 +72,7 @@ link_closed_style:
 		no-image="[control no_image]"
 		menu-type=tree
 		reparse=0][/menu]
-
+	__ADL_MENU__
     </td>
   </tr>
   </table>

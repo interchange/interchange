@@ -1,4 +1,4 @@
-[content-editor name="[cgi ui_name]" type="[cgi ui_type]"]
+[content-editor name="[cgi ui_name]" type="component"]
 [components]
 
 <script language=JavaScript>
@@ -143,10 +143,13 @@ function visible (index, base) {
 [on-match]
 <h3>Component Attributes</h3>
 <div align=right>
-	Description: <input type=text size=30 value="[comp-param ui_label]"><BR>
-	Classes:  <input type=text size=30 value="[comp-param ui_class]"><BR>
-	Groups:  <input type=text size=30 value="[comp-param ui_group]"><br>
-	<input type=submit value="Save" onClick="return check_change()">
+	Description:
+		<input type=text name=ui_label size=30 value="[comp-param ui_label]"><BR>
+	Classes:
+		<input type=text name=ui_class size=30 value="[comp-param ui_class]"><BR>
+	Groups:
+		<input type=text name=ui_group size=30 value="[comp-param ui_group]"><br>
+	<input type=submit name=mv_click value="[L]Save[/L]" onClick="return check_change()">
 </div>
 <hr>
 [/on-match]
@@ -205,16 +208,20 @@ Action:
 <p>
 [/comp-list]
 [on-match]
-[set Publish]
+[set [L]Save[/L]]
+ui_content_op=modify_top
+mv_click=ce_modify
+[/set]
+[set [L]Publish[/L]]
 ui_content_op=publish
 mv_nextpage=__UI_BASE__/content_publish
 [/set]
-[set Cancel]
+[set [L]Cancel[/L]]
 ui_content_op=cancel
 mv_nextpage=__UI_BASE__/content
 [/set]
 <input type=hidden name=ui_name value="[comp-param ui_name]">
-<input type=hidden name=ui_type value="[comp-param ui_type]">
+<input type=hidden name=ui_type value="component">
 <input type=hidden name=ui_source value="[comp-param ui_source]">
 <input type=hidden name=mv_action value="return">
 <input style="font-weight: bold" type=submit onClick="return check_change()" name=mv_click value="[L]Publish[/L]"> &nbsp;
@@ -244,7 +251,7 @@ New name: <input type=text name=ui_destination size=22 value="">
 		action=return
 		hidden.ui_content_op=modify_body
 		hidden.ui_name=[comp-param ui_name]
-		hidden.ui_type=[comp-param ui_type]
+		hidden.ui_type=component
 		item_id=ui_body
 		href=silent/ce_modify
 		show_reset=1

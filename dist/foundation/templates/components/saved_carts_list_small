@@ -1,11 +1,9 @@
 [comment]
-ui_component: saved_carts_list_small
-ui_type: component
 ui_name: saved_carts_list_small
+ui_type: component
 ui_class: vertical
 ui_group: info
 ui_label: Small saved cart list for left/right display
-ui_source: templates/components/saved_carts_list_small
 
 
 [/comment]

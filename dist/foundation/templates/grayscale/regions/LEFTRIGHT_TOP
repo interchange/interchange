@@ -62,11 +62,11 @@
   <td width="20%" valign="top" align="left" class="categorybar"> 
     <!--Left Sidebar-->
     <table width="100%" border="0" cellspacing="0" cellpadding="0">
-      [include file="templates/components/[control component search_box_small]" group=vertical][control]
-      [include file="templates/components/[control component category_vertical]" group=vertical][control]
-      [include file="templates/components/[control component none]" group=vertical][control]
+      [component default=search_box_small group=vertical]
+      [component default=category_vertical group=vertical]
+      [component group=vertical]
     </table>				  
   </td>
   <td width="65%" valign="top" align="center" class="maincontent"> 
-    [include file="templates/components/[control component none]" group=content][control]
+    [component group=content]
 

@@ -1,11 +1,9 @@
 [comment]
-ui_component: best
-ui_type: component
 ui_name: best
+ui_type: component
 ui_class: vertical, content
 ui_group: promotion
 ui_label: Best sellers
-ui_source: templates/components/best
 
 banner:
 	code: banner

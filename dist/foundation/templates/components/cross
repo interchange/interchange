@@ -1,12 +1,10 @@
 [comment]
-ui_component: cross
-ui_type: component
 ui_name: cross
+ui_type: component
 ui_class: content, vertical
 ui_group: promotions
 ui_help: depends on setting cross_codes or cross_category in page, falls back to featured/specials.
 ui_label: Cross-sell or specific feature
-ui_source: templates/components/cross
 
 banner:
 	code: banner

@@ -1,20 +1,44 @@
-[content-editor name="[cgi ui_name]" type="[cgi ui_type]"]
+[content-editor name="[cgi ui_name]" type="template"]
 [templates]
 
 <script language=JavaScript>
+
+function silent_revert () {
+	var sil = document.getElementById('silent_display');
+	if(sil != undefined)
+		sil.innerHTML = '[L]Template Attributes[/L]';
+	return true;
+}
+
+// Don't remove this, called with forms genned by UI::ContentEditor
 function changed (code, field) {
 	var name = "changed_" + code;
+	silent_revert();
 	cbox = document.getElementById(name);
 	cbox.checked = true;
 }
 
+// Don't remove this, called with forms genned by UI::ContentEditor
 function submitted (code) {
 	var name = "changed_" + code;
+	silent_revert();
 	cbox = document.getElementById(name);
 	cbox.checked = false;
 	return true;
 }
 
+var save_form_action;
+
+// Don't remove this, called with forms genned by UI::ContentEditor
+function silent_submit () {
+	var sil = document.getElementById('silent_display');
+	if(sil != undefined)
+		sil.innerHTML
+		= '[L]Template Attributes[/L] <span class=cmessage>[L]Change saved[/L]</span>';
+	return true;
+}
+
+// Don't remove this, called with forms genned by UI::ContentEditor
 function change_alert (code) {
 	if(code.length == 0) {
 		code = 'a new component';
@@ -24,8 +48,11 @@ function change_alert (code) {
 	return status;
 }
 
+// Don't remove this, called with forms genned by UI::ContentEditor
 function check_change () {
 	var el;
+	silent_revert();
+
 	el = document.getElementById('changed_ui_body');
 	if(el != undefined && el.checked == true) {
 		return change_alert('the component body');
@@ -140,9 +167,12 @@ function visible (index, base) {
 <td valign=top>
 <form name=overall action="[area @@MV_PAGE@@]" method=POST>
 
-<h3>Template Attributes</h3>
+<h3 id=silent_display>Template Attributes</h3>
 <div align=right>
-	Description: <input type=text size=30 value="[tem-param ui_label]"><BR>
+	Description: <input name=ui_label size=30 value="[tem-param ui_label]"><BR>
+	<input type=submit
+		   value="[L]Save[/L]"
+		   onClick="check_change()">
 </div>
 <hr>
 <h3>Template Controls</h3>
@@ -166,7 +196,7 @@ Action:
 		code="[cont-param code]"
 		ui_content_op=delete
 		ui_name="[cont-parent ui_name]"
-		ui_type="[cont-parent ui_type]"
+		ui_type=template
 ]" onClick="return check_change()">delete</A>&nbsp;&nbsp;
 <A HREF="[area
 		href="@@MV_PAGE@@"
@@ -175,7 +205,7 @@ Action:
 		code="[cont-param code]"
 		ui_content_op=motion
 		ui_name="[cont-parent ui_name]"
-		ui_type="[cont-parent ui_type]"
+		ui_type=template
 ]" onClick="return check_change()">up</A>&nbsp;&nbsp;
 <A HREF="[area
 		href="@@MV_PAGE@@"
@@ -184,7 +214,7 @@ Action:
 		code="[cont-param code]"
 		ui_content_op=motion
 		ui_name="[cont-parent ui_name]"
-		ui_type="[cont-parent ui_type]"
+		ui_type=template
 ]" onClick="return check_change()">down</A><BR>
 [else]
 	<A HREF="javascript:void(0)"
@@ -201,59 +231,56 @@ Action:
 <tr>
 	<td>
 	<b>Page layout</b>
-[components]
-[comp-sub tmp_slot]
-	return ++$slot;
-[/comp-sub]
-[if-comp-param where]
-[comp-change 1][condition][comp-param where][/condition]
 	</td>
 </tr>
+[regions]
+[if-reg-param where]
 <tr>
-<td id="comp_clicker[comp-increment]">
+<td id="comp_clicker[reg-increment]">
 	Template area
 	<A	HREF="javascript:void(0)"
-		onClick="visible([comp-increment],'comp')"
-		title="edit [comp-param where]"
+		onClick="visible([reg-increment],'comp')"
+		title="edit [reg-param where]"
 	><span
 		style="font-size: larger; font-weight: bolder"
-		>[comp-param where]</span></A><br>
+		>[reg-param where]</span></A><br>
 	<INPUT	TYPE=checkbox
 			VALUE=1
-			NAME="changed_[comp-param where]"
-			id="changed_[comp-param where]"
+			NAME="changed_[reg-param where]"
+			id="changed_[reg-param where]"
 	>&nbsp;changed<br>
-[/comp-change 1]
- [if-comp-param code]
- Slot [comp-exec tmp_slot][/comp-exec]:
-	class=[comp-param class],
-	default=[content-info label=1 code="[comp-code]"] ([comp-code])<br>
- [/if-comp-param]
+ [if-reg-param contents]
+ 	[reg-param contents]
+ [else]
+ 	No components
+ [/else]
+ [/if-reg-param]
 [else]
-	</td>
-</tr>
 <tr>
 	<td>
-Page content<BR>
+	[reg-param contents]
+	</td>
+</tr>
 [/else]
-[/if-comp-param]
+[/if-reg-param]
 </div>
-[/components]
+[/regions]
 	</td>
 </tr>
 </table>
 
-[set Publish]
+[set [L]Publish[/L]]
 ui_content_op=publish
-mv_nextpage=__UI_BASE__/content
+mv_nextpage=__UI_BASE__/content_publish
 [/set]
-[set Cancel]
+[set [L]Cancel[/L]]
 ui_content_op=cancel
 mv_nextpage=__UI_BASE__/content
 [/set]
 <input type=hidden name=ui_name value="[tem-param ui_name]">
-<input type=hidden name=ui_type value="[tem-param ui_type]">
+<input type=hidden name=ui_type value=template>
 <input type=hidden name=mv_action value="return">
+<input type=hidden name=ui_content_op value=modify_top>
 <input style="font-weight: bold" type=submit onClick="return check_change()" name=mv_click value="[L]Publish[/L]"> &nbsp;
 <input type=submit onClick="return check_change()" name=mv_click value="[L]Cancel[/L]"><br>
 New name: <input type=text name=ui_destination size=22 value="">
@@ -293,34 +320,33 @@ New name: <input type=text name=ui_destination size=22 value="">
 		When you select an element to the left, it will be edited here.
 		</blockquote>
 	</div>
-[components]
+[regions]
 	<div
-		id="comp_dynform[comp-increment]"
+		id="comp_dynform[reg-increment]"
 		style="
 				Position:Absolute; 
 				Left:0; Top:0; Height:100%; Width:100%;
 				Visibility: Hidden;
 				z-index:0;
 			">
-	[comp-change 1][condition][comp-param where][/condition]
-		[if-comp-param where]
-		[set c_content][comp-parent [comp-param where]][/set]
+		[if-reg-param where]
+		[set c_content][reg-parent [reg-param where]][/set]
 			[table-editor
 				form-extra=|
-					onSubmit="submitted('[comp-param where]'); return check_change()"
-					onReset="submitted('[comp-param where]')"
+					onSubmit="submitted('[reg-param where]'); check_change() && silent_submit()"
+					onReset="submitted('[reg-param where]')"
 				|
 				action=back
 				height.ui_body_text="40"
-				href="[area @@MV_PAGE@@]"
+				href="[area silent/ce_modify]"
 				hidden.ui_content_op=modify_body
-				hidden.ui_name=[comp-parent ui_name]
-				hidden.ui_type=[comp-parent ui_type]
-				hidden.visible=[comp-increment]
+				hidden.ui_name=[reg-parent ui_name]
+				hidden.ui_type=template
+				hidden.visible=[reg-increment]
 				hidden.visible_mod=comp
-				item_id="[comp-param where]"
+				item_id="[reg-param where]"
 				js_changed=changed
-				label.ui_body_text="[comp-param where] body"
+				label.ui_body_text="[reg-param where] body"
 				ui_nextpage=@@MV_PAGE@@
 				nocancel=1
 				override.ui_body_text=`$Scratch->{c_content}`
@@ -331,10 +357,9 @@ New name: <input type=text name=ui_destination size=22 value="">
 				ui_hide_key=1
 				view=ui_component
 				]
-		[/if-comp-param]
-	[/comp-change 1]
+		[/if-reg-param]
 	</div>
-[/components]
+[/regions]
 [controls]
 	<div
 		id=dynform[cont-increment]

@@ -84,7 +84,7 @@ function standout (nam) {
 function content_win () {
 	window.name = 'mainwindow[scratch window_name]';
 	var url = '[area
-					href="admin/page_upload"
+					href="admin/page_portion"
 					form=|
 						ui_source_form=content_edit
 						ui_source_var=ui_body_text
@@ -185,7 +185,7 @@ function visible (index, base) {
 	<form name=overall action="[area @@MV_PAGE@@]" method=POST>
 	<input type=hidden name=ui_content_op value="modify">
 	<input type=hidden name=ui_name value="[page-param ui_name]">
-	<input type=hidden name=ui_type value="[page-param ui_type]">
+	<input type=hidden name=ui_type value=page
 	<input type=hidden name=mv_action value="back">
 		<table width="100%" cellpadding=0 cellspacing=0 cellmargin=3>
 		<tr>
@@ -295,6 +295,7 @@ mv_nextpage=__UI_BASE__/content_preview
 			id=changed_PREAMBLE
 			value=1>
 </div>
+[tmpn CONTENT_shown][/tmpn]
 [components]
 	[comp-sub tmp_slot]
 		return ++$slot;
@@ -318,6 +319,7 @@ mv_nextpage=__UI_BASE__/content_preview
 				id=changed_slot[comp-increment]
 				value=1>
 	[else]
+	[set CONTENT_shown]1[/set]
 	 <A	HREF="javascript:void(0)"
 			style="font-size: larger; font-weight: bolder"
 			onClick="visible([comp-increment],'comp')"
@@ -331,6 +333,17 @@ mv_nextpage=__UI_BASE__/content_preview
 	[/if-comp-param]
 </div>
 [/components]
+[if !scratch CONTENT_shown]
+	 <A	HREF="javascript:void(0)"
+			style="font-size: larger; font-weight: bolder"
+			onClick="visible('only','comp')"
+			title="edit page content"
+		>CONTENT</A>&nbsp;<input
+			type=checkbox
+			name=changed_CONTENT
+			id=changed_CONTENT
+			value=1>
+[/if]
 <div id=clicker2
 	 style="
 	 	padding: 1px;
@@ -452,7 +465,7 @@ EoPC
 			width.ui_body_text="100%"
 			hidden.ui_content_op=modify_body
 			hidden.ui_name="[page-param ui_name]"
-			hidden.ui_type="[page-param ui_type]"
+			hidden.ui_type=page
 			form-name=content_edit
 			href="silent/ce_modify"
 			item_id="CONTENT"
@@ -471,8 +484,14 @@ EoPC
 			widget.ui_body_text="textarea"
 			view=ui_component
 			form-extra=|
+			  [if-comp-param where]
 				onSubmit="submitted('[comp-param where]'); return check_change()"
 				onReset="submitted('[comp-param where]')"
+			  [else]
+				onSubmit="submitted('CONTENT'); return check_change()"
+				onReset="submitted('CONTENT')"
+			  [/else]
+			  [/if-comp-param]
 			|
 		]
 		
@@ -480,6 +499,70 @@ EoPC
 	[/if-comp-param]
 	</div>
 [/components]
+
+[if !scratch CONTENT_shown]
+
+	<div
+		id="comp_dynformonly"
+		style="
+				border-style: inset;
+				border-width: thin;
+				Position:Absolute; 
+				Left:0; Top:0; Height:100%; Width:100%;
+				Visibility: Hidden;
+				z-index:0;
+				background: #EEEEEE;
+			">
+
+[calc]
+	$page_content = <<'EoPA';
+[page-param CONTENT]
+EoPA
+	$page_preamble = <<'EoPB';
+[page-param PREAMBLE]
+EoPB
+	$page_postamble = <<'EoPC';
+[page-param POSTAMBLE]
+EoPC
+	for(\$page_content, \$page_preamble, \$page_postamble) {
+		chop $$_;
+	}
+	return;
+[/calc]
+
+		[table-editor
+			action=return
+			height.ui_body_text="38"
+			width.ui_body_text="100%"
+			hidden.ui_content_op=modify_body
+			hidden.ui_name="[page-param ui_name]"
+			hidden.ui_type=page
+			form-name=content_edit
+			href="silent/ce_modify"
+			item_id="CONTENT"
+			js_changed=changed
+			label.ui_body_text=|&nbsp;&nbsp;&nbsp;Page&nbsp;content<br><br><input type=button onClick="content_win();" Value="[L]Edit in Browser[/L]">|
+			mv_nextpage=@@MV_PAGE@@
+			nocancel=1
+			notable=1
+			no_meta=1
+			override.ui_body_text=`$page_content`
+			show_reset=1
+			table=junk
+			table_width="100%"
+			ui_data_fields="code ui_body_text"
+			ui_hide_key=1
+			widget.ui_body_text="textarea"
+			view=ui_component
+			form-extra=|
+				onSubmit="submitted('CONTENT'); return check_change()"
+				onReset="submitted('CONTENT')"
+			|
+		]
+
+	</div>
+[/if]
+
 	<div
 		id=dynform0
 		style="
@@ -497,7 +580,7 @@ EoPC
 			width.ui_body_text="100%"
 			hidden.ui_content_op=modify_body
 			hidden.ui_name="[page-param ui_name]"
-			hidden.ui_type="[page-param ui_type]"
+			hidden.ui_type=page
 			href="silent/ce_modify"
 			item_id="PREAMBLE"
 			js_changed=changed
@@ -584,7 +667,7 @@ EoPC
 			width.ui_body_text="100%"
 			hidden.ui_content_op=modify_body
 			hidden.ui_name="[page-param ui_name]"
-			hidden.ui_type="[page-param ui_type]"
+			hidden.ui_type=page
 			href="silent/ce_modify"
 			item_id="POSTAMBLE"
 			js_changed=changed

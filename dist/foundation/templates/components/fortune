@@ -1,11 +1,9 @@
 [comment]
-ui_component: fortune
-ui_type: component
 ui_name: fortune
+ui_type: component
 ui_class: vertical
 ui_group: info
 ui_label: Random saying
-ui_source: templates/components/fortune
 
 banner:
 	code: banner

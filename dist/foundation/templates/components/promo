@@ -1,11 +1,9 @@
 [comment]
-ui_component: promo
-ui_type: component
 ui_name: promo
+ui_type: component
 ui_class: content, vertical
 ui_group: promotion
 ui_label: Promotion
-ui_source: templates/components/promo
 
 promo_type:
 	label: Promotion type

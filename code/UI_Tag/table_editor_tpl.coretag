@@ -566,7 +566,7 @@ EOF
 	}
 	### end build of error checking
 
-	$opt->{clear_image} = "bg.gif" if ! $opt->{clear_image};
+	$opt->{clear_image} ||= "bg.gif";
 
 #::logDebug("table-editor opt: " . ::uneval($opt));
 	my $die = sub {
@@ -905,6 +905,7 @@ EOF
 
 	$opt_out{href} = $opt->{href};
 	$opt_out{method} = $opt->{method};
+	$opt_out{clear_image} = $opt->{clear_image};
 	$opt_out{tpl_sidstr} = $sidstr;
 	$opt_out{enctype} = $opt->{file_upload} ? ' ENCTYPE="multipart/form-data"' : '';
 

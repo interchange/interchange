@@ -1,11 +1,9 @@
 [comment]
-ui_component: category_vertical
-ui_type: component
 ui_name: category_vertical
+ui_type: component
 ui_class: vertical
 ui_group: Navigation
 ui_label: Vertical category list
-ui_source: templates/components/category_vertical
 
 page_class:
 	advanced: 1

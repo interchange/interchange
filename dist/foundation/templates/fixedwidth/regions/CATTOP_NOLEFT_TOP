@@ -64,5 +64,5 @@
 <table class="pagewidth" border="0" cellspacing="0" cellpadding="0">
 <tr> 
   <td width="95%" valign="top" align="center" class="maincontent"> 
-    [include file="templates/components/[control component none]" group=content][control]
+    [component group=content]
 

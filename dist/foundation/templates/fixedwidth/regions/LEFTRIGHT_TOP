@@ -65,14 +65,14 @@
   <td valign="top" align="left" class="categorybar"> 
     <!--Left Sidebar-->
     <table class="leftwidth" border="0" cellspacing="0" cellpadding="0">
-      [include file="templates/components/[control component none]" group=vertical][control]
-      [include file="templates/components/[control component none]" group=vertical][control]
-      [include file="templates/components/[control component none]" group=vertical][control]
+      [component group=vertical]
+      [component group=vertical]
+      [component group=vertical]
     </table>				  
   </td>
   <td valign="top" align="center" class="maincontent"> 
     <table class="centerwidth">
     <tr>
       <td>
-        [include file="templates/components/[control component none]" group=content][control]
+        [component group=content]
 

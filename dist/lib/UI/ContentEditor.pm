@@ -2,7 +2,7 @@
 #
 # UI::ContentEditor - Interchange page/component edit
 # 
-# $Id: ContentEditor.pm,v 2.6 2002-09-02 16:21:28 mheins Exp $
+# $Id: ContentEditor.pm,v 2.7 2002-09-13 20:46:20 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -23,7 +23,7 @@
 
 package UI::ContentEditor;
 
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.7 $, 10);
 $DEBUG = 0;
 
 use POSIX qw/strftime/;
@@ -61,8 +61,6 @@ for Interchange pages, components, and templatees.
 
 =cut
 
-my $Tag = new Vend::Tags;
-
 my %New = (
 		page => {
 				},
@@ -72,17 +70,24 @@ my %New = (
 		},
 		);
 my %Template;  # Initialized at bottom of file
+my @All_templates;
+my @All_components;
+my @All_pages;
 
 my %CompCache;
 
 sub death {
 	my $name = shift;
-	$Tag->error( { set => errmsg(@_), name => $name } );
+#::logDebug("called death for $name: " . errmsg(@_));
+	Vend::Tags->error( { set => errmsg(@_), name => $name } );
 	return undef;
 }
 
 sub pain {
-	$Tag->warnings(errmsg(@_));
+	my ($tag, $msg, @args) = @_;
+#::logDebug("called pain for $tag: " . errmsg($msg,@args));
+	$msg = "$tag: $msg";
+	Vend::Tags->warnings(errmsg($msg,@args));
 	return;
 }
 
@@ -96,12 +101,25 @@ sub assert {
 	return undef;
 }
 
+sub save_store {
+	my $type = shift;
+	my $name = shift;
+	my $value = shift;
+	die("Must have type and name for save_store, args were: " . join(" ", @_))
+		unless $type and $name;
+	my $store = $Vend::Session->{content_edit} ||= {};
+	$store->{$type} ||= {};
+	$store->{$type}{$name} = $value;
+}
+
 sub get_store {
 	my $type = shift;
+	my $name = shift;
 	my $store = $Vend::Session->{content_edit} ||= {};
 	return $store unless $type;
 	$store->{$type} ||= {};
-	return $store->{$type};
+	return $store->{$type} unless $name;
+	return $store->{$type}{$name};
 }
 
 sub get_cdb {
@@ -143,6 +161,38 @@ sub parse_components {
 	my ($wanted, $opt, $components) = @_;
 }
 
+sub extract_template {
+	my $sref = shift;
+	my $opt = shift || {};
+	my $tname;
+	$sref =~ /\nui_page_template:\s*(\w+)/
+		or $sref =~ /\nui_template_name:\s*(\w+)/
+		or ( $sref =~ /\@_(\w+)_TOP_\@/ and $tname = lc $1);
+	$tname ||= $1;
+#::logDebug("extract_template read template name='$tname'");
+	my $tdef;
+	my $tref;
+
+	my $allt = $opt->{_templates} ||= available_templates($opt);
+#::logDebug("extract_template got all_templates=" . uneval($allt));
+
+	for my $ref (@$allt) {
+		if($tname and $tname eq $ref->[0]) {
+			$tref = $ref; 
+			last;
+		}
+		next unless is_yes($ref->[3]);
+		$tdef = $ref; 
+		last;
+	}
+
+	$tref ||= $tdef || $allt->[0];
+#::logDebug("extract_template derived template name=$tref->[0]");
+	my $o = {%$opt};
+	$o->{type} = 'template';
+	return read_template($tref->[0], $o);
+}
+
 ## This must be non-destructive of $opt, may add keys with component_
 sub parse_template {
 	my ($tref, $opt) = @_;
@@ -174,15 +224,15 @@ sub parse_template {
 		}
 		elsif(defined $::Variable->{$_}) {
 #::logDebug("thing=$_ is Variable");
-			push @int, $Tag->var($_);
+			push @int, Vend::Tags->var($_);
 		}
 		elsif($tdb and my $row = $tdb->row_hash($_)) {
 #::logDebug("thing=$_ is Data");
 			push @int, $row->{comp_text};
 		}
-		else {
-			::logDebug("parse_template: thing=$_ is unknown, using undef");
-			push @int, undef;
+		elsif(/^[A-Z][A-Z_0-9]+$/) {
+#::logDebug("parse_template: thing=$_ is unknown, creating new thing");
+			push @int, qq{<!-- BEGIN $_ -->\n<!-- END $_ -->};
 		}
 	}
 
@@ -219,27 +269,49 @@ sub parse_template {
 					<!--+ \s+ end \s+ component \s+ \1 \s+ --+> 
 				 | 
 				 	\[ include \s+ (.*?) file \s*=\s*["'][^"]*/
-						(?:\[control \s+ component \s+ )?
-							(\w+)
+						(?:\[control \s+ component \s* )?
+							(\w*)
 						\]? ['"]
 				 	(.*?)
 					\]  \s*  \[control\]
 				 |
-				 	\[ component \s+ 
-					(?:
-						(.*?) comp(?:[-_]name|onent) \s*=\s*["']\s*
-						(?:\[control \s+ component \s+ )?
-							(\w+)
-						\]? \s* ['"]
+				 	\[ component
+					(
+					  (?:
+						\s+
+						\w[-\w]+\w
+						
+							\s*=\s*
+
+						(["'\|]?)
+							\[?
+								[^\n]*?
+							\]?
+						\8
+					   )+
 					)?
-					(.*?)
+					\s*
 					\]
 				 )
 			}gsix)
 		{
-			my $compname = $1 || $5 || $8;
+			my $compname = $1 || $5;
 			my $comptype = $2;
-			if(! $comptype) {
+			my $all = $7;
+#::logDebug("all=$all");
+			if($all) {
+				if($all =~ m{(?:comp[-_]name|default|component)\s*=\s*(['"|])(.*?)\1}is) {
+					$compname = $2;
+					$compname =~ s/^\s*\[control\s+component\s+//i;
+					$compname =~ s/\]\s*$//;
+				}
+				if($all =~ m{\bgroup\s*=\s*['"\|]?([-\w]+)}) {
+					$comptype = $1;
+				}
+				$compname ||= '';
+				$comptype ||= '';
+			}
+			elsif(! $comptype) {
 				my @stuff = ($4, $6, $7, $9);
 #::logDebug("no comptype, stuff is: " . uneval(\@stuff));
 				@stuff = grep $_, @stuff;
@@ -252,17 +324,12 @@ sub parse_template {
 			push @comp, $compname;
 			$done_one = 1;
 		}
-
-#		if(! $done_one) {
-#			push @out, { where => $things->[$i] };
-#		}
-
 	}
 
 	$tref->{ui_slots} = \@out;
 	$tref->{ui_display_order} ||= [];
-	return @comp if wantarray;
-	return \@comp;
+#::logDebug("parsed tref=" . uneval($tref));
+	return $tref;
 }
 
 sub match_slots {
@@ -273,11 +340,18 @@ sub match_slots {
 
 #::logDebug("page slots in=" . uneval($p));
 #::logDebug("tpl  slots in=" . uneval($t));
+	$p ||= [];
+	$t ||= [];
 	#### Temporarily remove content slot
 	my $content;
 	my $idx;
+
+	unless (@$p) {
+		@$p = @$t;
+	}
+
 	for($idx = 0; $idx <= $#$p; $idx++) {
-		next if $p->[$idx] and $p->[$idx]{where};
+		next if defined $p and $p->[$idx] and $p->[$idx]{where};
 		last;
 	}
 
@@ -293,9 +367,17 @@ sub match_slots {
 
 	#### Find content slot in template
 	for($idx = 0; $idx <= $#$t; $idx++) {
-		next if $t->[$idx] and $t->[$idx]{where};
+		next if defined $t and $t->[$idx] and $t->[$idx]{where};
 		last;
 	}
+
+	while ($#$p > $#$t) {
+		pop @$p;
+	}
+
+#::logDebug("splice index=$idx");
+	splice @$p, $idx, 0, $content;
+#::logDebug("page slots now=" . uneval($p));
 
 	if($idx > $#$t) {
 		pain (	'parse_page',
@@ -303,51 +385,46 @@ sub match_slots {
 				$pref->{ui_page_template},
 			);
 	}
-	else {
-		splice @$p, $idx, 0, $content;
-	}
-
-	while ($#$p > $#$t) {
-		pop @$p;
-	}
 
 	for(my $i = 0; $i < @$t; $i++) {
+#::logDebug("Matching slot $i");
 		if (! defined $p->[$i]) {
-			push @$p, { %{$t->[$i]} };
+#::logDebug("slot $i not defined?");
+			$p->[$i] = { %{$t->[$i]} };
 		}
 		elsif ($p->[$i]) {
 			if($p->[$i]{class} ne $t->[$i]{class}) {
 				$p->[$i] =  { %{$t->[$i]} };
 			}
 			else {
-				$p->[$i]{where} = $t->[$i]{where}
+				$p->[$i]{where} = $t->[$i]{where};
 			}
 		}
 	}
 
+	$#$p = $#$t;
 #::logDebug("page slots out=" . uneval($p));
 #::logDebug("tpl  slots out=" . uneval($t));
+
 }
 
 sub parse_page {
 	my ($pref, $opt) = @_;
 	$opt ||= {};
 
+#::logDebug("pref ui_body=" . uneval($pref->{ui_body}));
 	my $tmpref = { %$pref };
 	$tmpref->{ui_body} = substr($tmpref->{ui_body},0,50);
 #::logDebug("begin page ref=" . uneval($tmpref));
 
+	if(my $otname = $pref->{ui_template_name}) {
+		$pref->{ui_page_template} ||= $otname;
+	}
 	my $tpl   = $pref->{ui_page_template} || 'none';
-#::logDebug("parse page, template=$tpl");
+#::logDebug("parse page $pref->{ui_name}, template=$tpl");
 
 	## Get template info
-	my $tref;
-
-	my $store = $Vend::Session->{content_edit};
-	if($store and $store->{template}) {
-		my $tmp = $store->{template}{$tpl};
-		$tref = $tmp if $tmp;
-	}
+	my $tref = get_store('template', $tpl);
 
 	if(! $tref) {
 #::logDebug("no tref first try...");
@@ -355,9 +432,10 @@ sub parse_page {
 		undef $topt->{dir};
 		undef $topt->{new};
 		$topt->{type} = 'template';
-		#$topt->{single} = 1;
 		$tref = read_template($tpl, $topt);
 	}
+
+#::logDebug("parse page looking for template, got " . uneval($tref));
 
 	assert('template_reference', $tref, 'HASH')
 		or undef $tref;
@@ -371,6 +449,8 @@ sub parse_page {
 	parse_template($tref, $opt);
 	## Xfer needed template info
 	my $order = $pref->{ui_display_order}   = [ @{ $tref->{ui_display_order} } ];
+#::logDebug("tref order was: " . uneval($order));
+
 	$pref->{ui_template_layout} = [ @{ $tref->{ui_template_layout} } ];
 	$pref->{ui_page_picture}    = $tref->{ui_page_picture};
 	for(@$order) {
@@ -379,9 +459,11 @@ sub parse_page {
 
 	my $body = delete $pref->{ui_body};
 
+#::logDebug("page body=" . uneval($body));
 	unless(defined $body) {
 		### Already parsed, match slots and leave if not new page
 		match_slots($pref, $tref);
+#::logDebug("pref now=" . uneval($pref));
 		return unless $opt->{new};
 	}
 
@@ -460,6 +542,8 @@ sub parse_page {
 			}
 		}
 	}
+
+	$pref->{CONTENT} = $body unless $found;
 
 	my $controls;
 	if($pref->{CONTROLS}) {
@@ -543,119 +627,198 @@ sub parse_page {
 
 }
 
-sub read_components {
-	my ($spec, $opt) = @_;
-	$opt ||= {};
-	$opt->{components} = 1;
-	return read_template($spec, $opt);
+my %leg_remap = qw/
+	ui_component              ui_name
+	ui_component_type         ui_class
+	ui_template_name          ui_name
+	ui_template_description   ui_label
+	ui_component_group        ui_group
+	ui_component_help         ui_help
+	ui_component_label        ui_label
+/;
+
+sub legacy_components {
+	my ($ref, $type) = @_;
+
+	return if $ref->{ui_name} and $ref->{ui_type} and $ref->{ui_label};
+	while( my($old, $new) = each %leg_remap) {
+		my $tmp = delete $ref->{$old};
+		next if defined $ref->{$new} and length($ref->{$new});
+		$ref->{$new} = $tmp;
+	}
+	$ref->{ui_type} = $type;
+	delete $ref->{ui_template};
+	return;
 }
 
 sub read_template {
-	my ($spec, $opt, $body) = @_;
+	my ($spec, $opt) = @_;
+
+	## For syntax check
+	#use vars qw/%CompCache/;
+
 	$opt ||= {};
 
-	## Default type is template, but won't get here if page
-	my $tdir	=  $opt->{template_dir}
-				|| $::Variable->{UI_TEMPLATE_DIR} || 'templates';
+	my $o = { %$opt };
 
-	## We always want {dir} first, but want to set defaults
-	## based on type of template
-	my $cdir	= $opt->{dir}
-				|| $opt->{component_dir}
-				|| $::Variable->{UI_COMPONENT_DIR} || "$tdir/components";
-
-	$opt->{dir} ||= $Vend::Cfg->{PageDir} if $opt->{type} eq 'page';
-	$opt->{dir} ||= $cdir                 if $opt->{type} eq 'component';
-
-	my $dir = $opt->{dir} || $tdir;
-
-	my $table = $opt->{table} || $::Variable->{UI_COMPONENT_TABLE};
+	my $type = $o->{type} = 'template';
 
 	my $class = $opt->{class};
 
-	my $tmpdir  = $Vend::Cfg->{ScratchDir} || 'tmp';
-	for(\$tmpdir, \$dir, \$cdir) {
-		$$_ =~ s!^$Vend::Cfg->{VendRoot}/!!;
-	}
-	$tmpdir .= "/components/$Vend::Session->{id}";
-#::logDebug("reading, dir=$dir spec=$spec tmpdir=$tmpdir");
+	my $db;
+	$db = database_exists_ref($opt->{table}) if $opt->{table};
 
-	my $data;
-	my %out;
-	my $out = [];
+	my @data;
+
+	if($spec eq 'none') {
+		return {
+            ui_name				=> 'none',
+            ui_type				=> 'template',
+            ui_label			=> 'No template',
+            ui_template_version	=> $::VERSION,
+            ui_template_layout  => 'UI_CONTENT',
+		};
+	}
+
+	if($opt->{new}) {
+		# do nothing
+	}
+	elsif($spec) {
+		if(! $db) {
+			@data = get_content_data($spec,$o);
+		}
+		else {
+			my @atoms;
+			my $tname = $db->name();
+			push @atoms, "select * from $tname";
+			push @atoms, "where code = '$spec'";
+			my $q = join " ", @atoms;
+			my $ary = $db->query({ sql => $q, hashref => 1 });
+			for(@$ary) {
+				push @data, [ $_->{comp_text}, "$table::$spec" ];
+			}
+		}
+	}
+
+	if(@data > 1) {
+		logError(
+			"ambiguous %s spec, %s selected. Remaining:\n%s",
+			errmsg($type),
+			$data[0][1],
+			join(",", map { $_->[1] } @data[1 .. $#data]),
+			);
+	}
+
+	my $ref;
+	my $dref;
+
+	if(not $dref = $data[0]) {
+#::logDebug("no data, and new");
+		$opt->{type} ||= 'page';
+		my $prefix = "ui_$type";
+		$ref = {
+            ui_name				=> $spec,
+            ui_type				=> $type,
+            ui_source			=> '',
+            ui_label			=> '',
+            "${prefix}_version"	=> Vend::Tags->version(),
+		};
+		my $name = uc $spec;
+		$name =~ s/\W/_/g;
+		$name =~ s/__+/_/g;
+		$ref->{ui_template_layout} = "${name}_TOP, UI_CONTENT, ${name}_BOTTOM";
+	}
+	else {
+	  READCOMP: {
+		assert("$type reference", $dref, 'ARRAY')
+			or return death("read_$type", "Component read error for %s", $spec);
+		my ($data, $source) = @$dref;
+#::logDebug("template data is $data");
+		$ref = {};
+
+		unless (length($data)) {
+			return death("read_$type", "empty %s: %s", errmsg($type), $source);
+		}
+
+		if($data =~ m{^\s*<\?xml version=.*?>}) {
+			$ref = read_xml_component($data, $source);
+#::logDebug("Got this from read_xml_component: " . ::uneval($ref));
+			last READCOMP;
+		}
+
+		$ref = {};
+
+		$data =~ m{\[comment\]\s*(ui_.*?)\[/comment\]\s*(.*)}s;
+		my $structure = $1 || '';
+		$ref->{ui_body} = $2;
+		unless ($structure) {
+			return death("read_$type", "bad %s: %s", errmsg($type), $source);
+		}
+
+		my @lines = get_lines($structure);
+#::logDebug("Got lines from get_lines: " . ::uneval(\@lines));
+		
+		parse_line($_, $ref) for @lines;
+#::logDebug("Parsed lines: " . ::uneval(\@lines));
+
+		delete $ref->{_current};
+
+		if(my $order = $ref->{ui_display_order}) {
+			for (@$order) {
+				remap_opts($ref->{$_});
+			}
+		}
+
+		$ref->{ui_type}   = $type;
+		$ref->{ui_source} = $source;
+
+#::logDebug("read tref=" . uneval($ref));
+		legacy_components($ref, $type);
+#::logDebug("tref after legacy remap=" . uneval($ref));
+
+		if(! $ref->{ui_name}) {
+			# Compatibility with old templates
+			unless ($ref->{ui_name} = delete $ref->{"ui_${type}_name"}) {
+				return death("read_$type", "%s (%s) must have a name", $type, $source);
+			}
+		}
+		if($ref->{"ui_$type"} eq 'Yes') {
+			delete $ref->{"ui_$type"};
+		}
+	  }
+	}
+
+	return $ref;
+
+}
+
+
+sub read_component {
+
+	my ($spec, $opt) = @_;
+	$opt ||= {};
+	
+	my $o = { %$opt };
+	my $type = $o->{type} = 'component';
+
+	my $class = $opt->{class};
 
 	my $db;
-	$db = database_exists_ref($table) if $table;
+	$db = database_exists_ref($opt->{table}) if $opt->{table};
 
-	my $found_cache;
 	my @data;
 
 	if($opt->{new}) {
 		# do nothing
 	}
-	elsif($opt->{class} and my $ref = $CompCache{$opt->{class}}) {
-		$out = $ref;
-		$found_cache = 1;
-	}
-	elsif($opt->{components}) {
-
-		if(! $db) {
-			my @files = grep -f $_, glob("$cdir/*");
-			for(@files) {
-				push @data, [
-							 Vend::Util::readfile($_, $Global::NoAbsolute, 0),
-							 $_,
-						 ];
-			}
-		}
-		else {
-			my @atoms;
-			push @atoms, "select code,comp_text from $table";
-			push @atoms, "where comp_type = '$opt->{type}'" if $opt->{type};
-			push @atoms, "where comp_class = '$opt->{class}'" if $opt->{class};
-			my $q = join " ", @atoms;
-			my $ary = $db->query({ sql => $q, hashref => 1 });
-			for(@$ary) {
-				push @data, [ $_->{comp_text}, "$table::$_->{code}" ];
-			}
-		}
-	}
-	elsif($opt->{templates}) {
-
-		if(! $db) {
-			my @files = grep -f $_, glob("$tdir/*");
-			for(@files) {
-				push @data, [
-							 Vend::Util::readfile($_, $Global::NoAbsolute, 0),
-							 $_,
-						 ];
-			}
-		}
-		else {
-			my @atoms;
-			push @atoms, "select code,content_text from $table";
-			push @atoms, "where content_type = '$opt->{type}'" if $opt->{type};
-			push @atoms, "where content_class = '$opt->{class}'" if $opt->{class};
-			my $q = join " ", @atoms;
-			my $ary = $db->query({ sql => $q, hashref => 1 });
-			for(@$ary) {
-				push @data, [ $_->{comp_text}, "$table::$_->{code}" ];
-			}
-		}
-	}
 	elsif($spec) {
 		if(! $db) {
-			my @files = grep -f $_, glob("$dir/$spec");
-			for(@files) {
-				push @data, [
-							 Vend::Util::readfile($_, $Global::NoAbsolute, 0),
-							 $_,
-						 ];
-			}
+			@data = get_content_data($spec, $o);
 		}
 		else {
+			my $tname = $db->name();
 			my @atoms;
-			push @atoms, "select * from $table";
+			push @atoms, "select * from $tname";
 			push @atoms, "where code = '$spec'";
 			my $q = join " ", @atoms;
 			my $ary = $db->query({ sql => $q, hashref => 1 });
@@ -668,78 +831,30 @@ sub read_template {
 		$opt->{new} = 1;
 	}
 
-	if($opt->{available}) {
-		my @out;
-			
-		if($opt->{components}) {
-			for my $dref (@data) {
-				my $data = \$dref->[0];
-				my ($name, $label, $class);
-				(
-				$$data =~ /\nui_name:\s*(.+)/
-					or $$data =~ /\nui_component_name:\s*(.+)/
-					or $$data =~ /\nui_component:\s*(.+)/
-					or logDebug("name not found in data: $$data")
-				)
-				and $name = $1;
-				(
-				$$data =~ /\nui_label:\s*(.+)/
-					or $$data =~ /\nui_component_label:\s*(.+)/
-					or $$data =~ /\nui_component_description:\s*(.+)/
-				)
-				and $label = $1;
-				(
-				$$data =~ /\nui_class:\s*(.+)/
-					or $$data =~ /\nui_component_type:\s*(.+)/
-					or $$data =~ /\nui_component_group:\s*(.+)/
-				)
-				and $class = $1;
-				push @out, [$name, $label, $class];
-			}
-		}
-		elsif ($opt->{templates}) {
-			for my $dref (@data) {
-				my $data = \$dref->[0];
-				my ($name, $label, $class);
-				(
-				$$data =~ /\nui_name:\s*(.+)/
-					or $$data =~ /\nui_template_name:\s*(.+)/
-					or $$data =~ /\nui_template:\s*(.+)/
-					or logDebug("name not found in data: $$data")
-				)
-				and $name = $1;
-				(
-				$$data =~ /\nui_label:\s*(.+)/
-					or $$data =~ /\nui_template_label:\s*(.+)/
-					or $$data =~ /\nui_template_description:\s*(.+)/
-				)
-				and $label = $1;
-				(
-				$$data =~ /\nui_class:\s*(.+)/
-					or $$data =~ /\nui_template_type:\s*(.+)/
-					or $$data =~ /\nui_template_group:\s*(.+)/
-				)
-					and $class = $1;
-				push @out, [$name, $label, $class];
-			}
-		}
-		@out = sort { $a->[1] cmp $b->[1] } @out;
-#::logDebug("found these components: " . uneval(\@out));
-		return wantarray ? @out : \@out;
+	if(@data > 1) {
+		logError(
+			"ambiguous %s spec, %s selected. Remaining:\n%s",
+			errmsg('component'),
+			$data[0][1],
+			join(",", map { $_->[1] } @data[1 .. $#data]),
+			);
 	}
 
-	my $might_be_single;
+	my $ref;
+	my $dref;
 
-	if(! @data and $opt->{new}) {
+	if(not $dref = $data[0]) {
 #::logDebug("no data, and new");
 		$opt->{type} ||= 'page';
 		my $prefix = "ui_$opt->{type}";
-		my $ref = {
+		$ref = {
             ui_name               => $spec,
+            ui_label              => '',
+            ui_class              => '',
+            ui_group              => '',
             ui_type               => $opt->{type},
             ui_source             => '',
-            $prefix               => $spec,
-            "${prefix}_version"   => $Tag->version(),
+            "${prefix}_version"   => Vend::Tags->version(),
 		};
 		if($opt->{type} eq 'page') {
 			$ref->{ui_page_template} = $opt->{template};
@@ -750,99 +865,39 @@ sub read_template {
 			$name =~ s/__+/_/g;
 			$ref->{ui_template_layout} = "${name}_TOP, UI_CONTENT, ${name}_BOTTOM";
 		}
-		$might_be_single = 1;
-		push @$out, $ref;
 	}
+	else {
+	  READCOMP: {
+		assert("$type reference", $dref, 'ARRAY')
+			or return death("read_$type", "Component read error for %s", $spec);
+		my ($data, $source) = @$dref;
+#::logDebug("component data is $data");
+		$ref = {};
 
-	if(scalar @data == 1) {
-		$might_be_single = 1;
-	}
+		unless (length($data)) {
+			return death("read_$type", "empty %s: %s", errmsg($type), $source);
+		}
 
-	foreach my $dref (@data) {
-		my ($data, $source) = @{$dref || []};
-#::logDebug("data is $data");
-		my $type;
-		my $ref;
-
-		next unless length($data);
 		if($data =~ m{^\s*<\?xml version=.*?>}) {
 			$ref = read_xml_component($data, $source);
 #::logDebug("Got this from read_xml_component: " . ::uneval($ref));
-			push @$out, $ref;
+			last READCOMP;
 		}
+
+		$ref = {};
 
 		$data =~ m{\[comment\]\s*(ui_.*?)\[/comment\]\s*(.*)}s;
 		my $structure = $1 || '';
 		$ref->{ui_body} = $2;
-		next unless $structure;
-		my @lines = split /\n/, $structure;
-		my $found;
-		for(;;) {
-			my $i = -1;
-			for(@lines) {
-				$i++;
-				next unless s/\\$//;
-				$found = $i;
-				last;
-			}
-			last unless defined $found;
-			if (defined $found) {
-				my $add = splice @lines, $found + 1, 1;
-#::logDebug("Add is '$add', found index=$found");
-				$lines[$found] .= $add;
-#::logDebug("Complete line now is '$lines[$found]'");
-				undef $found;
-			}
+		unless ($structure) {
+			return death("read_$type", "bad %s: %s", errmsg($type), $source);
 		}
-		#$ref->{ui_definition} = join "\n", @lines;
-		my $current;
-	
-		my $legacy = 1;
-		my $ui_count = 0;
-		for(@lines) {
-			s/\s+$//;
-			if(/^\s*ui_/) {
-				my ($el, $el_item, $el_data) = split /\s*:\s*/, $_;
-#::logDebug("found el=$el el_item=$el_item el_data=$el_data");
-				$type = $el_item, undef $legacy, next if $el eq 'ui_type';
-				if(! defined $el_data) {
-					$ref->{$el} = $el_item;
-				}
-				else {
-					if($el_item eq 'ARRAY') {
-						$ref->{$el} ||= [];
-						assert($el, $ref->{$el}, 'ARRAY')
-							or return undef;
-						push @{$ref->{$el}}, [ split /[\s,\0]+/, $el_data ];
-					}
-					if($el_item eq 'HASH') {
-						$ref->{$el} ||= {};
-						assert($el, $ref->{$el}, 'HASH')
-							or return undef;
-						my %hash = get_option_hash($el_data);
-						@{$ref->{$el}}{keys %hash} = values %hash;
-					}
-				}
-				if(! $type) {
-					$el =~ m{^ui_([^_]+)};
-					$type = $1 || 'component';
-				}
-				if($el eq "ui_$type") {
-					$ref->{ui_name} ||= $el_item;
-				}
-				$ui_count++;
-			}
-			elsif ( /^(\w+)\s*:\s*(.*)$/) {
-				$current = $1;
-				my $lab = $2;
-				$ref->{ui_display_order} ||= [];
-				push @{$ref->{ui_display_order}}, $current;
-			}
-			elsif( /^\s+(\w+)\s*:\s*(.*)/ ) {
-				my ($fn, $fv) = ( lc($1), $2 );
-				$ref->{$current}{$fn} = $fv;
-			}
-		}
+
+		my @lines = get_lines($structure);
+		
+		parse_line($_, $ref) for @lines;
+
+		delete $ref->{_current};
 
 		if(my $order = $ref->{ui_display_order}) {
 			for (@$order) {
@@ -850,69 +905,465 @@ sub read_template {
 			}
 		}
 		
-		# legacy
-		if($legacy and $ui_count <= 2 and $ref->{ui_template}) {
-#::logDebug("found page type=$type ref=" . join(',', keys %$ref));
+		$ref->{ui_type}   = $type;
+		$ref->{ui_source} = $source;
 
-			$ref->{ui_type} = $type	 = 'page';
+#::logDebug("read cref=" . uneval($ref));
+		legacy_components($ref, $type);
+#::logDebug("cref after legacy remap=" . uneval($ref));
 
-			$ref->{ui_page}          = delete $ref->{ui_template};
-			$ref->{ui_page_template} = delete $ref->{ui_template_name};
-			$ref->{ui_source}		 = $source;
-			my $n = $source;
-			$n =~ s:^$dir/::;
-			$ref->{ui_name}          = $n;
-#::logDebug("now page type=$type ref=" . join(',', keys %$ref));
-			undef $legacy;
+		if(! $ref->{ui_name}) {
+			return death(	
+						"read_$type",
+						"%s (%s) must have a name",
+						errmsg($type),
+						$source,
+					);
+		}
+	  }
+	}
+
+	return $ref;
+
+}
+
+sub get_content_dirs {
+	my $opt = shift;
+	$opt ||= {};
+	my $dir;
+	
+	if($dir = $opt->{dir}) {
+		# look no farther
+	}
+	elsif($opt->{type} eq 'page') {
+		$dir = $Vend::Cfg->{PageDir};
+	}
+	else {
+		my $tdir	=  $opt->{template_dir}
+					|| $::Variable->{UI_TEMPLATE_DIR} || 'templates';
+		if($opt->{type} eq 'component') {
+			$dir = $opt->{component_dir}
+				 || $::Variable->{UI_COMPONENT_DIR} || "$tdir/components";
 		}
 		else {
-			$ref->{ui_type}   = $type;
-			$ref->{ui_source} = $source;
+			$dir = $tdir;
+		}
+	}
+	my $tmpdir  = $Vend::Cfg->{ScratchDir} || 'tmp';
+	for(\$tmpdir, \$dir) {
+		$$_ =~ s!^$Vend::Cfg->{VendRoot}/!!;
+	}
+	$tmpdir .= "/components/$Vend::Session->{id}";
+	return($dir, $tmpdir) if wantarray;
+	return $dir;
+}
+
+sub get_content_filenames {
+	my $spec = shift;
+	my $opt = shift;
+
+	$spec ||= '*';
+	my $dir = get_content_dirs($opt);
+#::logDebug("got a dir=$dir for $opt->{type}");
+	return grep -f $_, glob("$dir/$spec");
+}
+
+sub get_content_data {
+	my $spec = shift;
+	my $opt = shift;
+
+	my @data;
+	for(get_content_filenames($spec, $opt)) {
+#::logDebug("Looking at filename $_");
+		push @data, [ Vend::Util::readfile($_, $Global::NoAbsolute, 0), $_ ];
+	}
+	
+	return @data if wantarray;
+	return \@data;
+}
+
+sub content_info {
+	my ($dir, $opt) = @_;
+
+	$opt ||= {};
+
+	$opt->{dir} = $dir if $dir;
+
+	my $delim = $opt->{delimiter} || ',';
+	my $type;
+	if( $opt->{templates} ) {
+		$type = 'templates';
+	}
+	else {
+		$type = 'components';
+	}
+
+	my $tpls;
+	my $comps;
+	my $things;
+	my $labels;
+	my $classes;
+
+	my $o = { %$opt };
+
+	if($Vend::caCompCache{$type}) {
+		$things = $Vend::caCompCache{$type};
+		$labels = $Vend::clCompCache{$type};
+		$classes = $Vend::ccCompCache{$type};
+	}
+	else {
+		if($opt->{templates}) {
+			$things = available_templates($o);
+		}
+		else {
+			$things = available_components($o);
+		}
+		$Vend::caCompCache{$type} = $things;
+		$labels = $Vend::clCompCache{$type} = {};
+		$classes = $Vend::ccCompCache{$type} = {};
+		for(@$things) {
+			$Vend::clCompCache->{$_->[0]} = $_->[1];
+			$Vend::ccCompCache->{$_->[0]} = $_->[2];
+		}
+	}
+
+	if($opt->{label}) {
+		return $Vend::clCompCache->{$opt->{code}};
+	}
+
+	if($opt->{structure}) {
+		$opt->{type} = $opt->{ui_type} = 'component';
+		return read_component($opt->{code}, $opt);
+	}
+
+	if ($opt->{show_class}) {
+		return $Vend::ccCompCache->{$opt->{code}};
+	}
+
+	## Default is to return options
+
+	my @out;
+	if(my $class = $opt->{class}) {
+		my $re = qr{\b(?:$class|ALL)\b};
+		my @comps = grep $_->[2] =~ $re, @$things;
+		$things = \@comps;
+	}
+
+	unless ($opt->{no_sort}) {
+		@$things = sort { $a->[1] cmp $b->[1] } @$things;
+	}
+
+	for(@$things) {
+		$_->[1] =~ s/($delim)/'&#' . ord($1) . ';'/ge;
+		my $def = is_yes($_->[3]) ? '*' : '';
+		push @out, join "=", $_->[0], "$_->[1]$def";
+	}
+	unshift @out, ($opt->{templates} ? "none=No template" : "=No component")
+		unless $opt->{no_none};
+	return join $delim, @out;
+}
+
+sub available_components {
+	my ($opt) = @_;
+	$opt ||= {};
+	my $db;
+	my $o = { %$opt };
+	$o->{type} = 'component';
+	$db = ::database_exists_ref($opt->{table}) if $opt->{table};
+	
+	my @data;
+	if(! $db) {
+		@data = get_content_data(undef,$o);
+#::logDebug(sprintf("got %d items from get_content_data", scalar(@data)));
+	}
+	else {
+		my @atoms;
+		my $tname = $db->name();
+		push @atoms, "select code,comp_text from $tname";
+		push @atoms, "where comp_type = '$opt->{type}'" if $opt->{type};
+		push @atoms, "where comp_class = '$opt->{class}'" if $opt->{class};
+		my $q = join " ", @atoms;
+		my $ary = $db->query({ sql => $q, hashref => 1 });
+		for(@$ary) {
+			push @data, [ $_->{comp_text}, "$table::$_->{code}" ];
+		}
+	}
+	my @out;
+			
+	for my $dref (@data) {
+		my $data = \$dref->[0];
+		my ($name, $label, $class);
+		(
+		$$data =~ /\nui_name:\s*(.+)/
+			or $$data =~ /\nui_component_name:\s*(.+)/
+			or $$data =~ /\nui_component:\s*(.+)/
+			or logDebug("name not found in data: $$data")
+		)
+		and $name = $1;
+		(
+		$$data =~ /\nui_label:\s*(.+)/
+			or $$data =~ /\nui_component_label:\s*(.+)/
+			or $$data =~ /\nui_component_description:\s*(.+)/
+		)
+		and $label = $1;
+		(
+		$$data =~ /\nui_class:\s*(.+)/
+			or $$data =~ /\nui_component_type:\s*(.+)/
+			or $$data =~ /\nui_component_group:\s*(.+)/
+		)
+		and $class = $1;
+		push @out, [$name, $label, $class];
+	}
+
+	return @out if wantarray;
+	return \@out;
+}
+
+sub available_templates {
+	my ($opt) = @_;
+	$opt ||= {};
+	my $db;
+	my $o = { %$opt };
+	$o->{type} = 'template';
+	$db = ::database_exists_ref($opt->{table}) if $opt->{table};
+
+	my @data;
+	if(! $db) {
+		@data = get_content_data(undef,$o);
+	}
+	else {
+		my @atoms;
+		my $tname = $db->name();
+		push @atoms, "select code,comp_text from $tname";
+		push @atoms, "where comp_type = '$opt->{type}'" if $opt->{type};
+		push @atoms, "where comp_class = '$opt->{class}'" if $opt->{class};
+		my $q = join " ", @atoms;
+		my $ary = $db->query({ sql => $q, hashref => 1 });
+		for(@$ary) {
+			push @data, [ $_->{comp_text}, "$table::$_->{code}" ];
+		}
+	}
+	my @out;
+			
+	for my $dref (@data) {
+		my $data = \$dref->[0];
+		my ($name, $label, $class, $default);
+		(
+		$$data =~ /\nui_name:\s*(.+)/
+			or $$data =~ /\nui_template_name:\s*(.+)/
+			or $$data =~ /\nui_template:\s*(.+)/
+			or logDebug("name not found in data: $$data")
+		)
+		and $name = $1;
+		(
+		$$data =~ /\nui_label:\s*(.+)/
+			or $$data =~ /\nui_template_label:\s*(.+)/
+			or $$data =~ /\nui_template_description:\s*(.+)/
+		)
+		and $label = $1;
+		(
+		$$data =~ /\nui_class:\s*(.+)/
+			or $$data =~ /\nui_template_type:\s*(.+)/
+			or $$data =~ /\nui_template_group:\s*(.+)/
+		)
+		and $class = $1;
+		(
+		$$data =~ /\nui_default:\s*(.+)/
+			or $$data =~ /\nui_template_default:\s*(.+)/
+		)
+		and $default = $1;
+		push @out, [$name, $label, $class, $default];
+	}
+	return @out if wantarray;
+	return \@out;
+}
+
+sub get_lines {
+	my ($structure, $opt) = @_;
+	$opt ||= $_;
+	$structure =~ s/\s+$//;
+	my @lines = split /\r?\n/, $structure;
+	my $found;
+	for(;;) {
+		my $i = -1;
+		for(@lines) {
+			$i++;
+			next unless s/\\$//;
+			$found = $i;
+			last;
+		}
+		last unless defined $found;
+		if (defined $found) {
+			my $add = splice @lines, $found + 1, 1;
+#::logDebug("Add is '$add', found index=$found");
+			$lines[$found] .= "\n$add";
+#::logDebug("Complete line now is '$lines[$found]'");
+			undef $found;
+		}
+	}
+	return @lines;
+}
+
+sub parse_line {
+	my ($line, $ref) = @_;
+	$line =~ s/\s+$//;
+	my $type;
+	if($line =~ /^\s*ui_/) {
+		my ($el, $el_item, $el_data);
+		if($line =~ /\n/) {
+			($el, $el_item) = split /\s*:\s*/, $_, 2;
+		}
+		else {
+			($el, $el_item, $el_data) = split /\s*:\s*/, $_, 3;
+		}
+#::logDebug("found el=$el el_item=$el_item el_data=$el_data");
+		if(! defined $el_data) {
+			$ref->{$el} = $el_item;
+		}
+		else {
+			if($el_item eq 'ARRAY') {
+				$ref->{$el} ||= [];
+				assert($el, $ref->{$el}, 'ARRAY')
+					or return undef;
+				push @{$ref->{$el}}, [ split /[\s,\0]+/, $el_data ];
+			}
+			if($el_item eq 'HASH') {
+				$ref->{$el} ||= {};
+				assert($el, $ref->{$el}, 'HASH')
+					or return undef;
+				my %hash = get_option_hash($el_data);
+				@{$ref->{$el}}{keys %hash} = values %hash;
+			}
+		}
+	}
+	elsif ( $line =~ /^(\w+)\s*:\s*(.*)/) {
+		$ref->{_current} = $1;
+		my $lab = $2;
+		$ref->{ui_display_order} ||= [];
+		push @{$ref->{ui_display_order}}, $ref->{_current};
+	}
+	elsif( $line =~ /^\s+(\w+)\s*:\s*(.*)/s ) {
+		my ($fn, $fv) = ( lc($1), $2 );
+		$ref->{$ref->{_current}}{$fn} = $fv;
+	}
+	return;
+}
+
+sub read_page {
+	my ($spec, $opt) = @_;
+
+	my $db;
+	$db = database_exists_ref($opt->{table}) if $opt->{table};
+
+	my @data;
+	my $type = 'page';
+
+	if($opt->{new}) {
+		# do nothing
+	}
+	elsif($spec and ! $db) {
+		@data = get_content_data($spec, $opt);
+	}
+	elsif($spec) {
+		my $tname = $db->name();
+		my @atoms;
+		push @atoms, "select * from $tname";
+		push @atoms, "where code = '$spec'";
+		my $q = join " ", @atoms;
+		my $ary = $db->query({ sql => $q, hashref => 1 });
+		for(@$ary) {
+			push @data, [ $_->{comp_text}, "$table::$spec" ];
+		}
+	}
+	else {
+		$opt->{new} = 1;
+	}
+
+	if(@data > 1) {
+		logError(
+			"ambiguous page spec, %s selected. Remaining:\n%s",
+			$data[0][1],
+			join(",", map { $_->[1] } @data[1 .. $#data]),
+			);
+	}
+
+	my $dref = $data[0];
+
+	my $ref;
+
+	if(! $dref) {
+#::logDebug("no data");
+		my $prefix = "ui_$type";
+		$ref = {
+            ui_name               => $spec,
+            ui_type               => $opt->{type},
+            ui_source             => '',
+			ui_body				  => '',
+            "${prefix}_version"   => Vend::Tags->version(),
+		};
+
+		my $tref = extract_template('', $opt);
+		assert('template', $tref, 'HASH')
+			or return death('Not even a default template!');
+		$ref->{ui_page_template} = $tref->{ui_name};
+	}
+	else {
+      READCOMP: {
+		my ($data, $source) = @{$dref || []};
+#::logDebug("read page from source=$source");
+
+		$ref = {};
+
+		my $tref = extract_template($data, $opt);
+		assert('read_page', $tref, 'HASH')
+		  or return death('read_page', "%s has no %s", $source, errmsg('template'));
+		$ref->{ui_page_template} = $tref->{ui_name};
+#::logDebug("page=$spec template=$ref->{ui_page_template}");
+
+		if($data =~ m{^\s*<\?xml version=.*?>}) {
+			$ref = read_xml_component($data, $source);
+#::logDebug("Got this from read_xml_component: " . ::uneval($ref));
+			last READCOMP;
 		}
 
-		if($legacy) {
-#::logDebug("is a legacy");
-			$ref->{ui_type}  = $type;
-			$ref->{ui_class} ||= $ref->{"ui_${type}_type"};
-			delete $ref->{"ui_${type}_type"};
+		$data =~ m{\[comment\]\s*(ui_.*?)\[/comment\]\s*(.*)}s;
+		my $structure = $1 || '';
+		$ref->{ui_body} = $2;
+		if(! $structure) {
+			$structure = <<EOF;
+ui_name: $spec
+ui_type: page
+ui_page_template: none
+EOF
+			$ref->{ui_body} = $data;
+		}
 
-			$ref->{ui_name} = $ref->{"ui_${type}_name"}
-				if  $ref->{"ui_${type}_name"};
-			delete $ref->{"ui_${type}_name"};
+		my @lines = get_lines($structure);
+		parse_line($_, $ref) for @lines;
 
-			$ref->{"ui_${type}_label"} ||= $ref->{"ui_${type}_description"};
-			delete $ref->{"ui_${type}_description"};
+#::logDebug("page=$spec ui_name=$ref->{ui_name} after structure parse");
 
-			for(qw/ group label help name version /) {
-				my $val = delete $ref->{"ui_${type}_$_"};
-				$ref->{"ui_$_"} ||= $val;
+		delete $ref->{_current};
+
+		if(my $order = $ref->{ui_display_order}) {
+			for (@$order) {
+				remap_opts($ref->{$_});
 			}
 		}
 
-		return death('read_template', "%s (%s) must have a name", $type, $source)
-			if ! $ref->{ui_name};
+#::logDebug("page=$spec ui_name=$ref->{ui_name} after remap_opts");
 
-		push @$out, $ref;
-	}
+		$ref->{ui_name}   ||= $spec;
+		$ref->{ui_type}   = $type;
+		$ref->{ui_source} = $source;
 
-	if(! $found_cache and $opt->{type}) {
-		$CompCache{$opt->{type}} = $out;
+	  }
 	}
-
-#::logDebug("read_template out is $out=" . uneval($out));
-	if(wantarray) {
-#::logDebug("returning array");
-		return @$out;
-	}
-	elsif($opt->{single} or $might_be_single) {
-#::logDebug("returning single element");
-		return $out->[0];
-	}
-	else {
-#::logDebug("returning arrayref");
-		return $out;
-	}
+#::logDebug("page=$spec ui_name=$ref->{ui_name}");
+#::logDebug("page read returning: " . uneval($ref));
+	return $ref;
 }
+
 sub page_component_editor {
 	my ($name, $pos, $comp, $pref, $opt) = @_;
 
@@ -936,18 +1387,16 @@ sub page_component_editor {
 
 	my @fields = 'code';
 
-	my $store = get_store('component');
-
 	my $topt = { %$opt };
 	delete $topt->{dir};
 	delete $topt->{new};
 	$topt->{type} = 'component';
-	my $cref = $store->{$name} || read_template($name, $topt);
+	my $cref = get_store('component', $name) || read_component($name, $topt);
 
 	ref($cref) eq 'HASH'
 		or $cref = {};
 
-	my $action = $Tag->area($Global::Variable->{MV_PAGE});
+	my $action = Vend::Tags->area($Global::Variable->{MV_PAGE});
 	$action =~ s/\?.*//;
 	my $extra = qq{ onChange="
 					if(check_change() == true) {
@@ -959,11 +1408,11 @@ sub page_component_editor {
 	my $meta = {
 		code => {
 			type => 'select',
-			passed => $Tag->content_info(),
+			passed => Vend::Tags->content_info(),
 			label => 'Component',
 		},
 	};
-	my $label = "$name - " . $Tag->content_info( { code => $name, label => 1});
+	my $label = "$name - " . Vend::Tags->content_info( { code => $name, label => 1});
 	$label = "<H3 align=center>$label</h3>";
 	my $value = { code => $name };
 
@@ -1010,10 +1459,9 @@ sub page_component_editor {
 		defaults => 1,
 		extra => $js,
 		force_defaults => 1,
-		form_extra => qq{onSubmit="submitted('slot$p')" onReset="submitted('slot$p')"},
+		form_extra => qq{onSubmit="submitted('slot$p'); silent_submit(this.form)" onReset="submitted('slot$p')"},
 		hidden => $hidden,
 		href   => 'silent/ce_modify',
-		#include_form => $label,
 		js_changed => qq{ onChange="changed('slot$p')"},
 		meta   => $meta,
 		next_text => 'Save',
@@ -1028,7 +1476,7 @@ sub page_component_editor {
 	);
 	$options{default_ref} = $value;
 	$options{item_id} = $name;
-	return $Tag->table_editor( \%options );
+	return Vend::Tags->table_editor( \%options );
 }
 
 sub page_control_editor {
@@ -1084,7 +1532,7 @@ sub page_control_editor {
 		action => 'return',
 		defaults => 1,
 		force_defaults => 1,
-		form_extra => qq{onSubmit="submitted('$p')" onReset="submitted('$p')" height="100%"},
+		form_extra => qq{onSubmit="submitted('$p'); silent_submit(this.form)" onReset="submitted('$p')" height="100%"},
 		hidden => $hidden,
 		href   => 'silent/ce_modify',
 		js_changed => qq{onChange="changed('$p')"},
@@ -1102,7 +1550,7 @@ sub page_control_editor {
 	);
 	$options{default_ref} = $pref->{ui_values};
 	$options{item_id} = $p;
-	return $Tag->table_editor( \%options );
+	return Vend::Tags->table_editor( \%options );
 }
 
 sub make_control_editor {
@@ -1116,11 +1564,17 @@ sub make_control_editor {
 			ui_source => $overall->{ui_source},
 			ui_type   => $overall->{ui_type},
 	};
+
+	my $extra;
+	my $href;
 	if($w) {
 		$widopt = {code =>'hiddentext'};
+		$href   = 'silent/ce_modify';
+		$extra  = qq{onSubmit="submitted('$w'); silent_submit(this.form)" onReset="submitted('$w')"};
 		$hidden->{ui_content_op} = 'modify';
 	}
 	else {
+		$href   = $Global::Variable->{MV_PAGE};
 		$hidden->{ui_content_op} = 'add';
 	}
 
@@ -1128,8 +1582,8 @@ sub make_control_editor {
 		action => 'return',
 		defaults => 1,
 		force_defaults => 1,
-		form_extra => qq{onSubmit="submitted('$w')" onReset="submitted('$w')"},
-		href   => 'silent/ce_modify',
+		form_extra => $extra,
+		href   => $href,
 		js_changed => 'changed',
 		nocancel => 1,
 		noexport => 1,
@@ -1140,9 +1594,10 @@ sub make_control_editor {
 		widget => $widopt,
 		hidden => $hidden,
 	);
+
 	$options{default_ref} = $r;
 	$options{item_id} = $w;
-	return $Tag->table_editor( \%options );
+	return Vend::Tags->table_editor( \%options );
 }
 
 sub page_region {
@@ -1214,7 +1669,6 @@ sub page_region {
 		push @tables, $r;
 	}
 
-	$::Scratch->{ce_modify} = '[content-modify]';
 	## Allow add of new component
 	if ($opt->{template_edit}) {
 		push @tables, { _editor_table => make_control_editor('', {}, $overall) };
@@ -1234,6 +1688,34 @@ sub template_region {
 
 	my $comp = $tref->{ui_slots};
 	$ignore{ui_slots} = 1;
+	
+	my @regions;
+	my $snum = 1;
+	for my $reg ( @{$tref->{ui_template_layout}} ) {
+		my $r = { name => $reg, code => $reg };
+		if($reg eq 'UI_CONTENT') {
+			$r->{contents} = "Slot $snum: Page content";
+			$snum++;
+		}
+		else {
+			my @things;
+			$r->{where} = $reg;
+			for(@$comp) {
+				next unless $_->{where} eq $reg;
+				my $code = $_->{code};
+				my $lab = '';
+				if($code) {
+					$lab = content_info(undef, { label => 1, code => $code} );
+					$lab = " default=$lab ($code)";
+				}
+				push @things, "Slot $snum: class=$_->{class}$lab";
+				$snum++;
+			}
+			$r->{contents} = join "<br>", @things;
+			$r->{slots} = \@things;
+		}
+		push @regions, $r;
+	}
 
 	$ignore{ui_display_order} = 1;
 
@@ -1280,7 +1762,7 @@ sub template_region {
 	if ($opt->{template_edit}) {
 		push @tables, { _editor_table => make_control_editor('', {}, $overall) };
 	}
-	return ($overall, $comp, \@tables);
+	return ($overall, \@regions, $comp, \@tables);
 }
 
 sub component_region {
@@ -1386,12 +1868,15 @@ sub trim_format {
 }
 
 sub format_page {
-	my ($ref) = @_;
+	my ($ref, $opt) = @_;
+	$opt ||= {};
 	my $type = 'page';
 	$ref->{ui_type} eq $type
 		or death("publish_$type", "Type must be %s to publish %s", $type, $type);
 	my $name = $ref->{ui_name}
 		or death("publish_$type", "Must have name to publish %s", $type);
+
+	my $found_something = 0;
 
 	my @sets;
 	if($ref->{PREAMBLE} =~ /\S/) {
@@ -1412,9 +1897,15 @@ sub format_page {
 	for my $n (@$order) {
 		my $r;
 		my $stype = $scratches->{$n} || 'tmpn'; 
-		push @sets, "[$stype $n]" . $vals->{$n} . "[/$stype]";
+		my $val = $vals->{$n};
+		if($opt->{preview} and $n eq $opt->{preview}) {
+			$val = ($opt->{preview_tag} || '**** PREVIEW ****') . " $val";
+		}
+		push @sets, "[$stype $n]" . $val . "[/$stype]";
 	}
 	
+	$found_something += scalar(@sets);
+
 	# Things we want every time
 	my $layout = delete $ref->{ui_template_layout} || [];
 
@@ -1425,7 +1916,7 @@ sub format_page {
 	push @header, "ui_type: $type";
 	push @header, "ui_name: $name";
 	push @header, "ui_page_template: $ref->{ui_page_template}";
-	push @header, "ui_version: " . $Tag->version();
+	push @header, "ui_version: " . Vend::Tags->version();
 	delete $ref->{ui_name};
 	delete $ref->{ui_type};
 	delete $ref->{"ui_$type"};
@@ -1441,6 +1932,7 @@ sub format_page {
 
 	for my $r (@$slots) {
 		next unless $r->{where};
+		$found_something++;
 		push @controls, '[control-set]';
 		my @order = 'component';
 		my %seen = qw/ code 1 mv_ip 1 where 1 class 1 component 1 /;
@@ -1463,11 +1955,13 @@ sub format_page {
 			push @bods, "<!-- END CONTENT -->";
 		}
 		elsif ($var =~ /^[A-Z]/) {
+			$found_something++;
 			push @bods, '@_' . $var . '_@';
 		}
 	}
 
 	if($ref->{POSTAMBLE} =~ /\S/) {
+		$found_something++;
 		push @bods, "<!-- BEGIN POSTAMBLE -->";
 		$ref->{POSTAMBLE} =~ s/^\s*\n//;
 		$ref->{POSTAMBLE} =~ s/\n\s*$//;
@@ -1476,7 +1970,7 @@ sub format_page {
 	}
 	delete $ref->{POSTAMBLE};
 
-
+	return $body unless $found_something;
 
 	for(sort keys %$ref) {
 		next unless /^ui_/;
@@ -1506,6 +2000,7 @@ sub format_page {
 sub format_template {
 	my ($ref) = @_;
 	my $type = 'template';
+#::logDebug("called format_template name=$ref->{ui_name} type=$ref->{ui_type}");
 	$ref->{ui_type} eq $type
 		or death("publish_$type", "Type must be %s to publish %s", $type, $type);
 	my $name = $ref->{ui_name}
@@ -1537,7 +2032,7 @@ sub format_template {
 	push @header, "ui_$type: $name";
 	push @header, "ui_type: $type";
 	push @header, "ui_name: $name";
-	push @header, "ui_version: " . $Tag->version();
+	push @header, "ui_version: " . Vend::Tags->version();
 	delete $ref->{ui_name};
 	delete $ref->{ui_type};
 	delete $ref->{"ui_$type"};
@@ -1550,24 +2045,47 @@ sub format_template {
 	my $dir = $::Variable->{UI_REGION_DIR} || 'templates/regions';
 
 	my $layout = delete $ref->{ui_template_layout} || [];
+	my $regdir;
 	for my $var (@$layout) {
 		next if $var eq 'UI_CONTENT';
 		my $thing = delete($ref->{$var});
 		my $r;
+		my $v;
 		$r = $Vend::Cfg->{DirConfig}
 			and $r = $r->{Variable}
-				and $r = $r->{$var}
-					and $Tag->write_relative_file($r, $thing)
+				and $v = $r->{$var}
+					and Vend::Tags->write_relative_file($v, $thing)
 						and next;
-		pain('format_template',
-			 "unable to write dynamic variable, saving %s to regions",
-			 $var);
-		$Tag->write_relative_file("$dir/$var", $thing)
+		if(! $regdir and ref($r) eq 'HASH') {
+			my ($k, $v);
+			while( ($k, $v) = each %$r) {
+				last if $k =~ /_(TOP|BOTTOM)$/;
+			}
+			$regdir = $v;
+			$regdir =~ s:/[^/]+$::;
+		}
+		if(! $regdir) {
+			pain('format_template',
+				 "unable to write dynamic variable, saving %s to $dir",
+				 $var);
+			$regdir = $dir;
+		}
+		Vend::Tags->write_relative_file("$regdir/$var", $thing)
 			or
 			death('format_template', "unable to write any dynamic variable, help!");
+		pain('publish_template', "Must apply changes for access to this template.");
 	}
 
 	$ref->{ui_template_layout} = join ", ", @$layout;
+
+	if(my $pp = delete $ref->{ui_page_picture}) {
+		$pp =~ s/^\s+//;
+		$pp =~ s/\s+$//;
+		$pp =~ s{^\s*<!--+\s*BEGIN PAGE_PICTURE\s*--+>\s*}{};
+		$pp =~ s{\s*<!--+\s*END PAGE_PICTURE\s*--+>\s*$}{};
+		$pp = qq{<!-- BEGIN PAGE_PICTURE -->\n$pp\n<!-- END PAGE_PICTURE -->\n};
+		push @sets, $pp;
+	}
 
 	for(sort keys %$ref) {
 		next unless /^ui_/;
@@ -1594,6 +2112,7 @@ sub format_template {
 sub format_component {
 	my ($ref) = @_;
 	my $type = 'component';
+#::logDebug("format component=" . ::uneval($ref));
 	$ref->{ui_type} eq $type
 		or death("publish_$type", "Type must be %s to publish %s", $type, $type);
 	my $name = $ref->{ui_name}
@@ -1651,29 +2170,29 @@ sub write_page {
 	my ($record, $dest) = @_;
 	my $dir = $::Variable->{UI_PAGE_DIR} || 'pages';
 	$dest ||= "$dir/$record->{code}";
-	$Tag->write_relative_file($dest, $record->{page_text});
+	Vend::Tags->write_relative_file($dest, $record->{page_text});
 }
 
 sub write_template {
 	my ($record, $dest) = @_;
 	my $dir = $::Variable->{UI_TEMPLATE_DIR} || 'templates';
 	$dest ||= "$dir/$record->{code}";
-	$Tag->write_relative_file($dest, $record->{temp_text});
+	Vend::Tags->write_relative_file($dest, $record->{temp_text});
 }
 
 sub write_component {
 	my ($record, $dest) = @_;
 	my $dir = $::Variable->{UI_COMPONENT_DIR} || 'templates/components';
 	$dest ||= "$dir/$record->{code}";
-	$Tag->write_relative_file($dest, $record->{comp_text});
+	Vend::Tags->write_relative_file($dest, $record->{comp_text});
 }
 
 sub ref_page {
 	my ($ref, $opt) = @_;
 	my $vref = $opt->{values_ref} || \%CGI::values;
 	my $curtime = strftime("%Y%m%d%H%M%S", gmtime() );
-	my $showdate = $Tag->filter('date_change', $vref->{ui_show_date});
-	my $expdate  = $Tag->filter('date_change', $vref->{ui_expiration_date});
+	my $showdate = Vend::Tags->filter('date_change', $vref->{ui_show_date});
+	my $expdate  = Vend::Tags->filter('date_change', $vref->{ui_expiration_date});
 	my $r = {
 		content_class => $ref->{ui_class},
 		mod_time => strftime("%Y%m%d%H%M%S", gmtime()),
@@ -1698,8 +2217,8 @@ sub ref_content {
 	my ($ref, $opt) = @_;
 	my $vref = $opt->{values_ref} || \%CGI::values;
 	my $curtime = strftime("%Y%m%d%H%M%S", gmtime() );
-	my $showdate = $Tag->filter('date_change', $vref->{ui_show_date});
-	my $expdate  = $Tag->filter('date_change', $vref->{ui_expiration_date});
+	my $showdate = Vend::Tags->filter('date_change', $vref->{ui_show_date});
+	my $expdate  = Vend::Tags->filter('date_change', $vref->{ui_expiration_date});
 	my $r = {
 		reftype => $ref->{ui_type},
 		content_class => $ref->{ui_class},
@@ -1721,16 +2240,28 @@ sub ref_content {
 	return $r;
 }
 
+sub preview_dir {
+	my $dir = $Vend::Cfg->{ScratchDir};
+	$dir =~ s,^$Vend::Cfg->{VendRoot}/,,;
+	$dir .= "/previews/$Vend::Session->{id}";
+	return $dir;
+}
+
 sub preview_page {
 	my ($ref, $opt) = @_;
-	my $dest = $Vend::Cfg->{ScratchDir};
-	$dest =~ s,^$Vend::Cfg->{VendRoot}/,,;
-	$dest .= "/previews/$Vend::Session->{id}.$ref->{ui_name}";
+	my $dest = preview_dir();
+	$dest .= "/$ref->{ui_name}";
 	$::Scratch->{tmp_tmpfile} = $dest;
 	my $tmp = { %$ref };
 	my $record = ref_content($tmp)
 		or return death("preview_template", "bad news");
-	my $text = format_page($tmp);
+	my $text = format_page(
+					$tmp,
+					{
+						preview => $::Variable->{PAGE_TITLE_NAME} || 'page_title',
+						preview_tag => errmsg('****PREVIEW****'),
+					},
+				);
 	$record->{page_text} = $text;
 #::logDebug("header record: " . uneval($record));
 	write_page($record, $dest);
@@ -1742,7 +2273,7 @@ sub publish_page {
 	my $dest = $vref->{ui_destination};
 	$dest =~ s/\s+$//;
 	$dest =~ s/^\s+$//;
-	my $record = ref_content($ref)
+	my $record = ref_content($ref, $opt)
 		or return death("publish_template", "bad news");
 	my $text = format_page($ref);
 	$record->{page_text} = $text;
@@ -1758,6 +2289,7 @@ sub publish_template {
 	$dest =~ s/^\s+$//;
 	my $record = ref_content($ref)
 		or return death("publish_template", "bad news");
+#::logDebug("Got publish_template ref=" . uneval($ref));
 	my $text = format_template($ref);
 	$record->{temp_text} = $text;
 #::logDebug("header record: " . uneval($record));
@@ -1774,12 +2306,16 @@ sub publish_component {
 		or return death("publish_component", "bad news");
 	my $text = format_component($ref);
 	$record->{comp_text} = $text;
-#::logDebug("header record: " . uneval($record));
+#::logDebug("publish_component header record: " . uneval($record));
 	write_component($record);
 }
 
 sub cancel_edit {
 	my ($ref, $opt) = @_;
+	my $dir = preview_dir();
+	if($ref->{ui_name} and -f "$dir/$ref->{ui_name}") {
+		unlink "$dir/$ref->{ui_name}";
+	}
 	my $store = $Vend::Session->{content_edit}
 		or return death('cancel', 'content store not found');
 	$store = $store->{$ref->{ui_type}}
@@ -1806,7 +2342,7 @@ sub add_attribute {
 
 	my @found = grep length($vref->{$_}), @valid_attr;
 	my %hash = map { $_ => $vref->{$_} } @found;
-
+#::logDebug("add attribute hash: " . uneval(\%hash));
 	push @{$ref->{ui_display_order} ||= []}, $name;
 	$ref->{$name} = \%hash;
 }
@@ -1872,7 +2408,7 @@ sub modify_component {
 			class     => $class,
 			where     => $where,
 		};
-		my $cref = read_template($submitted_name,
+		my $cref = read_component($submitted_name,
 									{
 										type => 'component', 
 										component_dir => $opt->{component_dir}, 
@@ -1975,7 +2511,7 @@ sub modify_top_attribute {
 
 	my @found;
 	for(keys %$vref) {
-#::logDebug("checking $_ for legality");
+#::logDebug("checking $_ ($ref->{$_} -> $vref->{$_}) for legality");
 		next if $illegal->{$_};
 		next unless defined $ref->{$_};
 #::logDebug("$_ is legal and defined in ref");
@@ -2079,12 +2615,16 @@ sub reorder_attribute {
 }
 
 my %immediate_action = (
-	purge       => sub { delete $Vend::Session->{content_edit} },
+	purge       => sub {
+						delete $Vend::Session->{content_edit};
+						File::Path::rmtree(preview_dir());
+					},
 );
 
 my %common_action = (
 		cancel              => \&cancel_edit,
 		motion              => \&reorder_attribute,
+		modify_top			=> \&modify_top_attribute,
 		modify              => \&modify_attribute,
 		modify_body         => \&modify_body,
 		delete              => \&delete_attribute,
@@ -2109,79 +2649,73 @@ my %specific_action = (
 );
 
 sub content_modify {
-	my($op, $name, $type, $opt) = @_;
+	my($ops, $name, $type, $opt) = @_;
 
+	$opt ||= {};
 	my $vref = $opt->{values_ref} || \%CGI::values;
-	$op ||= $vref->{ui_content_op};
-
-#::logDebug("content_modify: called, op=$op");
+	$ops ||= $vref->{ui_content_op};
 
 	my $sub;
-	if($sub = $immediate_action{$op}) {
+	if($sub = $immediate_action{$ops}) {
+#::logDebug("content modify immediate action");
 		return $sub->(undef, $opt);
 	}
+#::logDebug("content_modify: called, name=$name type=$type ops=$ops");
 
 	$type ||= $vref->{ui_type}
 		or return death('ui_type', "Must specify a type");
 
 	$name ||= $vref->{ui_name}
 		or return death('ui_name', "Must specify a name for %s", $type);
+#::logDebug("content_modify: called, name=$name type=$type");
 
-	my $store = $Vend::Session->{content_edit}{$type} ||= {};
-	my $ref = $store->{$name}
-		or return death($op, "%s %s not found", $type, $name);
+	my(@ops) = split /[\s,\0]+/, $ops;
+#::logDebug("content_modify: ops=" . join(",", @ops) . " vref=$vref");
+
+	my $ref = get_store($type,$name)
+		or return death('content_modify', "%s %s not found", $type, $name);
+
+	foreach my $op (@ops) {
 #::logDebug("content_modify: doing name=$name type=$type op=$op");
+#::logDebug("content_modify: doing name=$name type=$type op=$op ref=" . uneval($ref));
 
-	$sub = $specific_action{$type}{$op} || $common_action{$op};
-	
-	if(! $sub) {
-		return death(
-							'ui_content_op',
-							"%s %s not found",
-							'operation',
-							$op,
-						);
-	}
+		$sub = $specific_action{$type}{$op} || $common_action{$op};
+		
+		if(! $sub) {
+			return death('ui_content_op', "%s %s not found", 'operation', $op );
+		}
+
 #::logDebug("ref before modify, code=$vref->{code}=" . uneval($ref));
-	my $status = $sub->($ref, $opt);
+		if(! $sub->($ref, $opt) ) {
+			pain('content_modify', "op %s failed for %s %s.", $op, $type, $name);
+		}
 #::logDebug("ref AFTER modify=, code=$vref->{code}" . uneval($ref));
-	return $status;
+
+	}
+	return 1;
 }
  
 sub page_editor {
-	my($pref, $opt, $form_template) = @_;
+	my($name, $opt, $form_template) = @_;
 	
-	my $name;
 	my $source;
 
-	$opt->{page_edit} ||= 1;
+	$opt->{page_edit} = 1;
 
-	my $store = $Vend::Session->{content_edit} ||= {};
-	my $cstore = $store->{component} ||= {};
-	my $pstore = $store->{page} ||= {};
+#::logDebug("in page_editor, name=$name");
+	my $pref = read_page($name, $opt);
 
-	my $tmp;
-	if(! $pref) {
-#::logDebug("No page template");
-		$opt->{new_page} = 1;
-		$opt->{template} ||= $opt->{ui_page_template};
-		$pref = read_template($opt->{ui_name}, $opt);
-#::logDebug("page template=$pref");
-		$name = $opt->{ui_name} || $opt->{name} || 'new';
-		$pref->{ui_name} = $name;
-	}
-	elsif(ref($pref) ne 'HASH') {
-		return errmsg("Invalid component: %s", uneval($pref));
+	if(ref($pref) ne 'HASH') {
+		return death('page_editor', "Invalid page: %s", uneval($pref));
 	}
 	else {
-		$name = $pref->{ui_name} || $opt->{name};
-		$tmp = $pstore->{$name};
-		$pref = $tmp if $tmp;
+		$pref = get_store('page', $name) || $pref;
 	}
 
-	$pstore->{$name} = $pref;
+	save_store('page', $name, $pref);
 	parse_page($pref, $opt);
-	publish_page($pref, $opt) if $opt->{new_page};
+	publish_page($pref, $opt) if $opt->{new};
+
 #::logDebug("found a template name=$pref->{ui_name} store=$pstore: " . uneval($pref));
 
 	my ($overall, $comp) = page_region($pref, $opt);
@@ -2202,42 +2736,25 @@ sub page_editor {
 }
 
 sub template_editor {
-	my($tref, $opt, $form_template) = @_;
-#::logDebug("component editor called, cref=$cref opt=" . uneval($opt));
-	my $name;
+	my($name, $opt, $form_template) = @_;
+#::logDebug("template editor called, name=$name, opt=" . uneval($opt));
 	my $source;
 
-	$opt->{template_edit} ||= 1;
+	$opt->{template_edit} = 1;
 
-	$Vend::Session->{content_edit} ||= {};
-
-	my $tmp;
-	my $store = $Vend::Session->{content_edit}{template} ||= {};
-	if(! $tref) {
-		$opt->{new} = 1;
-		$tref = read_template($opt->{ui_name}, $opt);
-		$name = $opt->{ui_name} || $opt->{name} || 'new';
-		$tref->{ui_name} = $name;
-	}
-	elsif(ref($tref) ne 'HASH') {
-		return errmsg("Invalid component: %s", uneval($tref));
-	}
-	else {
-		$name = $tref->{ui_name} || $opt->{name};
-		$tmp = $store->{$name};
-		$tref = $tmp if $tmp;
-	}
-
-	$store->{$name} = $tref;
-#::logDebug("found a template name=$tref->{ui_name} store=$store: " . uneval($tref));
+	my $tref = get_store('template', $name) || read_template($name, $opt);
+	save_store('template', $name, $tref);
 
 	parse_template($tref, $opt);
 
-	my ($overall, $comp, $cont) = template_region($tref, $opt);
+	my ($overall, $reg, $comp, $cont) = template_region($tref, $opt);
 	my $to_run = [
 					$opt->{list_prefix}	|| 'templates',
 					$opt->{prefix}		|| 'tem',
 					[$tref],
+					$opt->{region_list_prefix} || 'regions',
+					$opt->{region_prefix}	  || 'reg',
+					$reg,
 					$opt->{comp_list_prefix} || 'components',
 					$opt->{comp_prefix}	  || 'comp',
 					$comp,
@@ -2253,32 +2770,19 @@ sub template_editor {
 }
 
 sub component_editor {
-	my($cref, $opt, $form_template) = @_;
+	my($name, $opt, $form_template) = @_;
 #::logDebug("component editor called, cref=$cref opt=" . uneval($opt));
-	my $name;
-	my $source;
 
-	$opt->{component_edit} ||= 1;
+	$opt->{component_edit} = 1;
 
-	$Vend::Session->{content_edit} ||= {};
-
-	my $store = $Vend::Session->{content_edit}{component} ||= {};
-	if(! $cref) {
-		$opt->{new} = 1;
-		$cref = read_template($opt->{ui_name}, $opt);
-		$name = $opt->{ui_name} || $opt->{name} || 'new';
-	}
-	elsif(! ref($cref) eq 'HASH') {
-		return errmsg("Invalid component: %s", uneval($cref));
-	}
-	else {
-		$name = $cref->{ui_name} || $opt->{name};
-		my $tmp = $store->{$name};
-		$cref = $tmp if $tmp;
+	my $cref = read_component($name, $opt);
+	if(! ref($cref) eq 'HASH') {
+		return death('component_editor', "Invalid component: %s", uneval($cref));
 	}
 
-#::logDebug("found a component name=$name store=$store: " . uneval($cref));
-	$store->{$name} = $cref;
+	$cref = get_store('component', $name) || $cref;
+
+	save_store('component', $name,$cref);
 
 	my ($overall, $tref) = component_region($cref, $opt);
 	my $to_run = ['components', 'comp', $tref];
@@ -2312,6 +2816,7 @@ sub run_templates {
 
 	my %todo = qw/
 		components	1
+		regions		1
 		pages		1
 		templates	1
 	/;
@@ -2352,55 +2857,19 @@ sub run_templates {
 sub editor {
 	my ($item, $opt, $form_template) = @_;
 
-	my $pref;
-	my $tref;
-	my $cref;
-
-	my $template;
-
-	$opt->{type} ||= 'page';
-	$opt->{ui_page_template} ||= $CGI->{ui_page_template};
-
-	## If we get a ref, assume it is already parsed
-	if(ref $item) {
-		$template = $item;
+	$::Scratch->{ce_modify} = '[content-modify]';
+	if($opt->{type} eq 'page') {
+		return page_editor($opt->{name}, $opt, $form_template);
 	}
-	## Else it is a file/db spec, and we read it
-	elsif($item) {
-		$template = read_template($item, $opt);
+	elsif ($opt->{type} eq 'template') {
+		return template_editor($opt->{name}, $opt, $form_template);
 	}
-
-	$opt->{new} = 1 if ! $template;
-
-	if(ref($template) eq 'ARRAY') {
-		my $ary = $template;
-		$template = shift(@$ary);
-		# bye-bye, those waiting in line...
-		$Vend::Session->{ui_components_to_edit} = $ary;
+	elsif ($opt->{type} eq 'component') {
+		return component_editor($opt->{name}, $opt, $form_template);
 	}
-
-	$template ||= {};
-#::logDebug("read this thing:\n" . ::uneval($template));
-	if($template->{ui_page}) {
-		$pref = $template;
-		$opt->{type} = 'page';
+	else {
+		return errmsg("Don't know how to edit type '%s'.\n", $opt->{type});
 	}
-	elsif($template->{ui_template}) {
-		$tref = $template;
-		$opt->{type} = 'template';
-	}
-	elsif($template->{ui_component}) {
-		$cref = $template;
-		$opt->{type} = 'component';
-	}
-
-	if($opt->{type} eq 'component') {
-		return component_editor($cref, $opt, $form_template);
-	}
-	if($opt->{type} eq 'template') {
-		return template_editor($tref, $opt, $form_template);
-	}
-	return page_editor($pref, $opt, $form_template);
 }
 
 $Template{component_standard} = <<'EOF';

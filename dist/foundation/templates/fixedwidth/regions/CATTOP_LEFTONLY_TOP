@@ -36,7 +36,7 @@
 <tr>
   <td width="100%" class="categorybar">
     <table width="100%" border="0" cellspacing="0" cellpadding="0">
-      [include file="templates/components/[control component none]" group=content][control]
+      [component group=content]
     </table>				  
   </td>
 </tr>
@@ -73,9 +73,9 @@
     <a href="[area aboutus]"><img alt="About Us" border="0" src="__THEME_IMG_DIR__about.gif"></a>
     <br><br>
     <table>
-      [include file="templates/components/[control component none]" group=vertical][control]
+      [component group=vertical]
       <tr><td><br></td></tr>
-      [include file="templates/components/[control component none]" group=vertical][control]
+      [component group=vertical]
     </table>
    </td>
    </tr>
@@ -85,4 +85,4 @@
    <table class="centerwidth">
    <tr>
    <td>
-    [include file="templates/components/[control component none]" group=horizontal][control]
+    [component group=horizontal]

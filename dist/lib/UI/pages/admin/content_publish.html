@@ -41,7 +41,7 @@
 		@existing = $db->query( { hashref => 1, sql => $q });
 	}
 	else {
-		@existing = glob("$dir/$dest*");
+		@existing = $Tag->list_glob("$dir/$dest*");
 	}
 
 	if(! $db and ! @existing) {

@@ -1,8 +1,9 @@
 [comment]
-ui_component: category_vert_toggle
-ui_component_type: vertical
-ui_component_group: Navigation
-ui_component_label: Collapsable Vertical Category List
+ui_name: category_vert_toggle
+ui_type: component
+ui_class: vertical
+ui_group: Navigation
+ui_label: Collapsable Vertical Category List
 
 page_class:
 	label: Page class

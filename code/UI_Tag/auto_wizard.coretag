@@ -179,14 +179,23 @@ sub {
 
 	return $Tmp->{auto_wizard} if $opt->{show} and ! $opt->{run};
 
+	if($opt->{compile} eq 'auto') {
+		$Session->{auto_wizard} ||= {};
+		undef $opt->{compile} if $wizname && $Session->{auto_wizard}{$wizname};
+		$opt->{show} = 1;
+		$opt->{run} = 1;
+	}
+
 	if($opt->{compile}) {
 		my $n;
 		$n = compile_wizard(@_)
 			or do {
-				$Tmp->{auto_wizard} = errmsg(
-										"Wizard %s failed to compile.",
-										$wizname,
-									);
+				::logError(
+					$Tmp->{auto_wizard} = errmsg(
+											"Wizard %s failed to compile.",
+											$wizname,
+										)
+							);
 				return;
 				};
 #Debug("compiler returned wizname=$n");
@@ -203,12 +212,10 @@ sub {
 	my $banner_var = $opt->{banner_scratch} || 'page_banner';
 	my $wiz;
 
-	return unless $wiz = $Session->{auto_wizard};
-
 	$wizname ||= $CGI->{wizard_name} || 'default';
 #Debug("wizname=$wizname");
 
-	return unless $wiz = $wiz->{$wizname};
+	return unless $wiz = $Vend::Session->{auto_wizard}{$wizname};
 #Debug("we have a wiz! wizname=$wizname");
 
 	my $beg = $wiz->[0];

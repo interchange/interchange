@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.34 2002-08-27 16:52:07 mheins Exp $
+# $Id: Util.pm,v 2.35 2002-09-13 20:46:21 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -82,7 +82,7 @@ require HTML::Entities;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.34 $, 10);
+$VERSION = substr(q$Revision: 2.35 $, 10);
 
 BEGIN {
 	eval {
@@ -1045,11 +1045,14 @@ sub readin {
 			undef $contents;
 		}
 	}
-	foreach $try (
-					$Vend::Cfg->{PageDir},
-					@{$Vend::Cfg->{TemplateDir}},
-					@{$Global::TemplateDir}          )
-	{
+
+	my @dirs = ($Vend::Cfg->{PreviewDir},
+				$Vend::Cfg->{PageDir},
+				@{$Vend::Cfg->{TemplateDir}},
+				@{$Global::TemplateDir});
+
+	foreach $try (@dirs) {
+		next unless $try;
 		$dir = $try . "/" . $pathdir;
 		if (-f "$dir/.access") {
 			if (-s _) {

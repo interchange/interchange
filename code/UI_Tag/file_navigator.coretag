@@ -279,8 +279,8 @@ EOF
 			push @dir, [$fe, $fn, $dtmpl, $perms];
 		}
 		elsif ($opt->{edit_all} || ($opt->{edit_only} && /\.html?$/) ) {
-			my $rn = '';
-			($rn = $fn) =~ s/$idir_re// if $idir_re;
+			my $rn = $curdir . "/$fn";
+			$rn =~ s{$idir_re}{} if $idir_re;
 			push @plain, [$fe, $fn, $ftmpl_ed, $perms, $rn];
 		}
 		else {

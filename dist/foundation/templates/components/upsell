@@ -1,12 +1,10 @@
 [comment]
-ui_component: upsell
-ui_type: component
 ui_name: upsell
+ui_type: component
 ui_class: content, vertical
 ui_group: promotions
 ui_help: depends on setting upsell codes in cart or flypage
 ui_label: Upsell
-ui_source: templates/components/upsell
 
 banner:
 	label: Top row banner

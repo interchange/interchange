@@ -45,6 +45,7 @@
 													op => 'filesafe',
 													body => $CGI->{ui_name},
 												});
+				return unless $CGI->{ui_type} eq 'page';
 				my $pat = quotemeta $Config->{HTMLsuffix};
 		#Debug("pat=$pat");
 				$pat = qr/$pat$/;
@@ -69,18 +70,17 @@
 	</td>
 	<td>
 			 [display
-							name=ui_page_template
-							type=select
-							default="[page-param ui_page_template]"
-							passed="[content-info templates=1]"
-							]
+					name=ui_page_template
+					type=select
+					passed="[content-info templates=1]"
+				]
 	</td>
 </tr>
 	[/if]
 <tr>
 	<td> &nbsp; </td>
 	<td>
-		<input type=submit value="[L]Create new page[/L]">
+		<input type=submit value="[msg arg.0=`$CGI->{ui_type}`]Create new %s[/msg]">
 	</td>
 </tr>
 </table>

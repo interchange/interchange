@@ -1,10 +1,8 @@
 [comment]
-ui_template: leftonly
-ui_type: template
 ui_name: leftonly
+ui_type: template
 ui_version: 4.9.0
 ui_label: Page with top/left areas.
-ui_source: templates/leftonly
 ui_template_layout: LEFTONLY_TOP, UI_CONTENT, LEFTONLY_BOTTOM
 
 page_title:

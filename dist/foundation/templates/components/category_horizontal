@@ -1,11 +1,9 @@
 [comment]
-ui_component: category_horizontal
-ui_type: component
 ui_name: category_horizontal
+ui_type: component
 ui_class: horizontal
 ui_group: navigation
 ui_label: Horizontal category list
-ui_source: templates/components/category_horizontal
 
 page_class:
 	advanced: 1
