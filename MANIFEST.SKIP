@@ -47,6 +47,8 @@ lib/src/config.h
 lib/src/config.log
 lib/src/config.status
 lib/src/syscfg
+pm_to_blib
+pod/mvtags.pod
 run/.*
 scripts/.*[a-z]$
 scripts/initp.PL
