@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.16 2001-01-29 18:28:06 heins Exp $
+# $Id: Config.pm,v 1.25.2.17 2001-02-05 13:19:28 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -104,7 +104,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.25.2.16 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.17 $, 10);
 
 my %CDname;
 
@@ -185,6 +185,7 @@ qw/
 
 my %DumpSource = (qw(
 					SpecialPage			1
+					GlobalSub			1
 				));
 
 my %DontDump = (qw(
@@ -295,7 +296,6 @@ sub global_directives {
 	['AddDirective',	 'directive',		 ''],
 	['UserTag',			 'tag',				 ''],
 	['HotDBI',			 'boolean',			 ''],
-	['AdminSub',		 'boolean',			 ''],
 	['AdminUser',		  undef,			 ''],
 	['AdminHost',		  undef,			 ''],
 	['HammerLock',		 'integer',     	 30],
@@ -331,6 +331,7 @@ sub catalog_directives {
 	['SpecialPageDir',   undef,     		 'special_pages'],
 	['ProductDir',       'relative_dir',     'products'],
 	['OfflineDir',       'relative_dir',     'offline'],
+	['ConfDir',          'relative_dir',	 'etc'],
 	['ConfigDir',        'relative_dir',	 'config'],
 	['TemplateDir',      'dir_array', 		 ''],
 	['ConfigDatabase',	 'config_db',	     ''],
@@ -407,6 +408,7 @@ sub catalog_directives {
 	['DifferentSecure',	 'boolean',  	     ''],
 	['AlwaysSecure',	 'boolean',  	     ''],
 	['Password',         undef,              ''],
+	['AdminSub',		 'boolean',			 ''],
 	['ExtraSecure',		 'yesno',     	     'No'],
 	['FallbackIP',		 'yesno',     	     'No'],
 	['WideOpen',		 'yesno',     	     'No'],
@@ -589,7 +591,6 @@ sub config {
 		$C = {};
 		$C->{CatalogName} = $catalog;
 		$C->{VendRoot} = $dir;
-		$C->{ConfDir} = $confdir;
 		# Default to old #ifdef, #endif, #include syntax for backward compatibility
 		$C->{ConfigParseComments} = 1;
 
@@ -2868,23 +2869,54 @@ sub parse_variable {
 }
 
 
-# Designed to parse Global subroutines only
+# Parse Sub and GlobalSub
 sub parse_subroutine {
 	my ($var, $value) = @_;
 	my ($c, $name);
+#::logDebug("parsing subroutine $var, " . substr($value, 0, 20) ) unless $C;
 	unless (defined $value and $value) { 
 		$c = {};
 		return $c;
 	}
+#::logDebug("into parse for $var") unless $C;
 
 	no strict 'refs';
 	$c = defined $C ? $C->{$var} : ${"Global::$var"};
 
-	$value =~ s/\s*sub\s+(\w+)\s*{/sub {/;
-	config_error("Bad $var: no subroutine name? ") unless $name = $1;
+	$value =~ s/^(\w+\s+)?\s*sub\s+(\w+\s*)?{/sub {/;
+
+	if($1 and $2) {
+		$name = $1;
+		my $alt = $2;
+		$name =~ s/\s+//;
+		$alt =~ s/\s+//;
+		config_warn(
+			errmsg(
+				"%s %s: named also %s?",
+				$var, $name, $alt,
+			)
+		);
+		
+	}
+	else {
+		$name = $1 || $2;
+	}
+
+	unless ($name) {
+		config_error(
+			errmsg(
+				"Bad %s: no subroutine name",
+				$var,
+			)
+		);
+	}
+
+	$name =~ s/\s+//g;
+#::logDebug("into parse for $var, found sub named $name") unless $C;
 	# Untainting
 	$value =~ /([\000-\377]*)/;
 	$value = $1;
+
 	if(! defined $C) {
 		$c->{$name} = eval $value;
 	}
@@ -2903,6 +2935,7 @@ sub parse_subroutine {
 
 #::logDebug("Parsing subroutine/variable (C=$C) $var=$name");
 	config_error("Bad $var '$name'") if $@;
+#::logDebug("Parsed subroutine/variable $var=$name code=$c->{$name}") unless $C;
 	return $c;
 }
 
