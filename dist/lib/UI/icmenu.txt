@@ -13,7 +13,7 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0013	Admin	04					admin/payment		Payment									
 0014	Admin	05					admin/access		Access									
 0015	Admin	06					admin/preferences		Preferences									
-0016	Admin	07					admin/flex_select	mv_data_table=variable&page_title=Knar editor&ui_meta_specific=1&help_name=knar.main&ui_description_fields=code&ui_return_to=admin/preferences Variable	Knar									
+0016	Admin	07					admin/flex_select	mv_data_table=variable&page_title=Knar editor&ui_meta_specific=1&help_name=knar.main&ui_description_fields=code&ui_return_to=admin/preferences	Knar									
 0017	Admin	08					admin/gentable		Tables									
 0017b	Admin	08b					admin/wizard/index		Wizard									
 0018	Admin	09					admin/reconfig	ui_changes_made	&nbsp;&nbsp;&nbsp;Apply Changes									
@@ -78,6 +78,5 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0077	Wizard	12	1	index			admin/wizard/step_index		Index page	1			content					
 0078	Wizard	13	1	about			admin/wizard/step_about		About us	1			content					
 0079	Wizard	14		products			admin/wizard/step_products		About Your Products	1			sprdsht					
-0080	Wizard	16		finalize			admin/wizard/step_finalize		Final Confirmation	1			finalize					
 0081	Wizard	17		preview			admin/wizard/step_preview		Preview	1			general					
 0082	Wizard	18		launch			admin/wizard/step_launch		Launch	1			general					
