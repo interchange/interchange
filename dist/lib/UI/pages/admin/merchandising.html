@@ -28,49 +28,6 @@
 &nbsp;
 [/if]
 
-[tmp pricing_edit]
-ui_return_to=__UI_BASE__/merchandising
-mv_data_table=pricing
-help_name=pricing.edit
-icon_name=admin/icon_item.gif
-ui_hide_key=1
-ui_break_before=price_group,q2
-[/tmp]
-[tmp inv_edit]
-ui_return_to=__UI_BASE__/merchandising
-mv_data_table=inventory
-help_name=inventory.edit
-ui_hide_key=1
-icon_name=admin/icon_item.gif
-ui_break_before=quantity,stock_message
-[/tmp]
-[tmp up_sell_edit]
-ui_return_to=__UI_BASE__/merchandising
-mv_data_table=merchandising
-help_name=merchandising
-ui_hide_key=1
-icon_name=admin/icon_item.gif
-ui_break_before=upsell_to
-ui_data_fields=sku upsell_to
-[/tmp]
-[tmp cross_sell_edit]
-ui_return_to=__UI_BASE__/merchandising
-mv_data_table=merchandising
-help_name=merchandising
-ui_hide_key=1
-icon_name=admin/icon_item.gif
-ui_break_before=cross_sell
-ui_data_fields=sku cross_sell
-[/tmp]
-[tmp promotion_edit]
-ui_return_to=__UI_BASE__/merchandising
-mv_data_table=merchandising
-help_name=merchandising
-ui_hide_key=1
-icon_name=admin/icon_item.gif
-ui_break_before=featured
-ui_data_fields=sku featured
-[/tmp]
 [comment]former ui_data_fields from tmp merch_edit:  blurb_begin blurb_end banner_text banner_image start finish[/comment]
 <FORM ACTION="[area @@MV_PAGE@@]">
 <INPUT NAME=ui_text_qualification>
@@ -130,29 +87,20 @@ ui_data_fields=sku featured
 <TR [item-alternate 2]BGCOLOR="__UI_T_ROW_EVEN__"[else]BGCOLOR="__UI_T_ROW_ODD__"[/else][/item-alternate]>
 <TD>[page href=__UI_BASE__/item_edit form="item_id=[item-code]"][item-code]</A></TD>
 <TD>[filter 30][item-description][/filter]</TD>
-<TD ALIGN=CENTER>[page href=__UI_BASE__/flex_editor form="
+<TD ALIGN=CENTER>[page href=__UI_BASE__/item_price form="
 	item_id=[item-code]
-	page_title=Pricing: [item-code]
-	ui_data_fields=products:price [db-columns name=pricing joiner=' ']
-	[scratch pricing_edit]
 "][if-item-data pricing sku]Yes[else]No[/else][/if-item-data]</A>
 </TD>
-<TD ALIGN=CENTER>[page href=__UI_BASE__/flex_editor form="
+<TD ALIGN=CENTER>[page href=__UI_BASE__/item_up form="
 	item_id=[item-code]
-	page_title=Up sell: [item-code]
-	[scratch up_sell_edit]
 "][if-item-data merchandising upsell_to]Yes[else]No[/else][/if-item-data]</a>
 </TD>
-<TD ALIGN=CENTER>[page href=__UI_BASE__/flex_editor form="
+<TD ALIGN=CENTER>[page href=__UI_BASE__/item_cross form="
 	item_id=[item-code]
-	page_title=Cross sell: [item-code]
-	[scratch cross_sell_edit]
 "][if-item-data merchandising cross_sell]Yes[else]No[/else][/if-item-data]</a>
 </TD>
-<TD ALIGN=CENTER>[page href=__UI_BASE__/flex_editor form="
+<TD ALIGN=CENTER>[page href=__UI_BASE__/item_feature form="
 	item_id=[item-code]
-	page_title=Promotion: [item-code]
-	[scratch promotion_edit]
 "][if-item-data merchandising featured]Yes[else]No[/else][/if-item-data]</a>
 </TD>
 </tr>
