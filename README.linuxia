@@ -17,7 +17,7 @@ This file documents all changes of the LINUXIA branch of Interchange.
 - added global_ignore in order to allow extern scripts to work
   with the Interchange library (Config.pm: 1.23.4.4)
 - allow upload of new files (UI_STD_FILE_NAV: 1.4.4.2, 
-  upload_file.html: 1.4.4.2)
+  upload_file.html: 1.4.4.2, if_mm: 1.3.4.1)
 - expire scripts have now a -f option so they can called by cron in
   the Debian setup (expire.PL/expireall.PL: 1.8.4.1)
 - log form action errors (interchange.PL: 1.8.4.6)
@@ -29,7 +29,7 @@ This file documents all changes of the LINUXIA branch of Interchange.
   (reports/order/ByAffiliate.html: 1.10.4.3-9,
   reports/order/Detail.html: 1.10.4.1-3,
   reports/order/Monthly.html: 1.11.4.1-6)
-- imagehelper widget added (Primitive.pm: 1.21.4.5, interchange.PL: 1.8.4.7, 
+- imagehelper widget added (Primitive.pm: 1.21.4.5, interchange.PL: 1.8.4.7+16, 
   UI_STD_EDIT_TABLE: 1.18.4.5)
 - safeguards for missing track files 
   (reports/traffic/ByAffiliate.html: 1.6.4.2)
