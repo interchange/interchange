@@ -7,13 +7,10 @@ README
 README.cvs
 README.debian
 README.rpm
-SPECS/interchange-4.6.1-rh6.spec
-SPECS/interchange-4.6.1-rh7.spec
+SPECS/interchange.spec
 UPGRADE_FROM_MV3
 WHATSNEW
 configure
-dist/build/makecat.redhat
-dist/build/makedirs.redhat
 dist/catalog_after.cfg
 dist/catalog_before.cfg
 dist/construct/backup/.empty
