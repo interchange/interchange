@@ -19,7 +19,7 @@
 # MA  02111-1307  USA.
 
 UserTag formel Order label name type size
-UserTag formel Version 0.08
+UserTag formel Version 0.09
 UserTag formel addAttr
 UserTag formel Routine <<EOF
 sub {
@@ -104,7 +104,7 @@ sub {
 			$elhtml .= qq{<input type=$type name=$name value="${rvalue}"$select> $rlabel};
 		}
 		# delete error implicitly
-		&$labelproc();
+		$labelhtml = &$labelproc($label);
 		return sprintf ($fmt, $labelhtml, $elhtml);
 	}
 
@@ -135,7 +135,10 @@ sub {
 			qq{<select name=$name>$elhtml</select>});
 	}
 
-    if ($opt->{reset}) {
+	if ($type eq 'display') {
+		# try to handle widget with UI tag display
+		$elhtml = $Tag->display($opt->{table} || 'products', $name);
+	} elsif ($opt->{reset}) {
 		if ($type eq 'textarea') {
 	        $elhtml = qq{<textarea name="${name}"$sizestr></textarea>};
 		} else {
@@ -184,7 +187,10 @@ attribute of the HTML tag.
 =item type
 
 The type of the form element (supported are text, textarea,
-checkbox, radio and select).
+checkbox, radio, select and display). If the given type is display,
+the display tag will be called and the return value will be used as 
+form element. Note that this tag might not be available depending 
+on your configuration.
 
 =item size
 
