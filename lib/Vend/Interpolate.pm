@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.29.4.7 2000-11-27 02:12:32 racke Exp $
+# $Id: Interpolate.pm,v 1.29.4.8 2000-12-21 12:31:09 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.29.4.7 $, 10);
+$VERSION = substr(q$Revision: 1.29.4.8 $, 10);
 
 @EXPORT = qw (
 
@@ -3880,6 +3880,28 @@ sub tag_loop_list {
 	$opt->{label}  =  "loop" . $List_it++ . $Global::Variable->{MV_PAGE}
 						unless defined $opt->{label};
 	my $delim;
+
+#::logDebug("list is: " . ::uneval($list) );
+
+	## Thanks to Kaare Rasmussen for this suggestion
+	## about passing embedded Perl objects to a list
+
+	# Can pass object.mv_results=$ary object.mv_field_names=$ary
+	return region($opt, $text) if $opt->{object};
+
+	# Here we can take the direct results of an op like
+	# @set = $db->query() && return \@set;
+	# Called with
+	#	[loop list=`$Scratch->{ary}`] [loop-code]
+	#	[/loop]
+	if (ref $list) {
+#::logDebug("opt->list in: " . ::uneval($list) );
+		my ($ary, $fh, $fa) = @$list;
+		$opt->{object}{mv_results} = $ary;
+		$opt->{object}{mv_field_names} = $fa if $fa;
+		$opt->{object}{mv_field_hash} = $fh if $fh;
+		return region($opt, $text);
+	}
 
   RESOLVELOOP: {
 	if($opt->{search}) {
