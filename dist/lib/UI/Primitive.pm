@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.25.4.7 $, 10);
+$VERSION = substr(q$Revision: 1.25.4.8 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -61,6 +61,9 @@ $ui_safe->untrap(@{$Global::SafeUntrap});
 
 sub is_super {
 #::logDebug("called is_super");
+	return 1
+		if  $Vend::Cfg->{RemoteUser}
+		and $Vend::Cfg->{RemoteUser} eq $CGI::remote_user;
 	return 0 if ! $Vend::Session->{logged_in};
 #::logDebug("is_super: logged in");
 	return 0 if ! $Vend::username;
@@ -79,6 +82,9 @@ sub is_super {
 
 sub is_logged {
 #::logDebug("is_logged check");
+	return 1
+		if  $Vend::Cfg->{RemoteUser}
+		and $Vend::Cfg->{RemoteUser} eq $CGI::remote_user;
 	return 0 if ! $Vend::Session->{logged_in};
 #::logDebug("is_logged logged_in=ok");
 	return 0 unless $Vend::admin or ! $Vend::Cfg->{AdminUserDB};
@@ -739,6 +745,33 @@ sub option_widget {
 	$out .= "</TABLE>";
 }
 
+sub uploadhelper_widget {
+	# $column, $value, $record->{outboard}, $record->{width}
+    my ($name, $val, $path, $size) = @_;
+	
+	$path =~ s:^/+::;
+	my $view_url;
+	$size = qq{ SIZE="$size"} if $size > 0;
+	my $out = '';
+    if ($val) {
+		if($path) {
+			my $base = $::Variable->{UI_BASE} || 'admin';
+			my $view_url = Vend::Interpolate::tag_area("$base/do_view", "$path/$val");
+			$out .= qq{<A HREF="$view_url">};
+		}
+		$out .= $val;
+		$out .= "</A>" if $path;
+		$out .= qq{&nbsp;<INPUT TYPE=file NAME="$name" VALUE="$val">
+<INPUT TYPE=hidden NAME="ui_upload_file_path:$name" VALUE="$path">
+<INPUT TYPE=hidden NAME="$name" VALUE="$val">};      
+    }
+	else {
+        $out = qq{<INPUT TYPE=hidden NAME="ui_upload_file_path:$name" VALUE="$path">
+<INPUT TYPE=file NAME="$name"$size>};
+    }
+	return $out;
+}
+
 sub imagehelper_widget {
     my ($name, $val, $path, $imagebase, $size) = @_;
 	
@@ -949,6 +982,16 @@ sub meta_display {
 							$value,
 							$record->{outboard},
 							$record->{prepend},
+							$record->{width},
+							);
+			return $w unless $o->{template};
+			return ($w, $record->{label}, $record->{help}, $record->{help_url});
+        }
+		elsif ($record->{type} eq 'uploadhelper') {
+            my $w = uploadhelper_widget(	
+							$column,
+							$value,
+							$record->{outboard},
 							$record->{width},
 							);
 			return $w unless $o->{template};
