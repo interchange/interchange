@@ -17,8 +17,17 @@ sub {
 	$::Scratch->{mv_no_count} = 1;
 
 	if ($opt->{expiry}) {
-		my $stat = (stat($file))[9];		
-		return 1 if $stat > $opt->{expiry};
+		my $stat = (stat($file))[9];
+
+		if ($stat > $opt->{expiry}) {
+			if ($opt->{touch}) {
+				my $now = time();
+				unless (utime ($now, $now, $file)) {
+					::logError ("Error on touching file $file: $!\n");
+				}
+			}
+			return;
+		}
 	}
 
 	my $pageref = Vend::Page::display_page($page,{return => 1});
