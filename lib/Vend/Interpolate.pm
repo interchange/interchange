@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.69 2001-06-08 15:45:37 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.70 2001-06-12 13:51:04 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.69 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.70 $, 10);
 
 @EXPORT = qw (
 
@@ -509,7 +509,8 @@ sub dynamic_var {
 	my $varname = shift;
 
 	return readfile($Vend::Cfg->{DirConfig}{Variable}{$varname})
-		if defined $Vend::Cfg->{DirConfig}{Variable}{$varname};
+		if $Vend::Cfg->{DirConfig}
+			and defined $Vend::Cfg->{DirConfig}{Variable}{$varname};
 
 	VARDB: {
 		last VARDB unless $Vend::Cfg->{VariableDatabase};
