@@ -1,6 +1,6 @@
 # Vend::Swish - Search indexes with Swish-e
 #
-# $Id: Swish.pm,v 1.1 2002-10-17 04:03:13 mheins Exp $
+# $Id: Swish.pm,v 1.2 2003-06-21 01:52:43 kwalsh Exp $
 #
 # Adapted from Vend::Glimpse
 #
@@ -25,7 +25,7 @@ package Vend::Swish;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 use strict;
 
 sub array {
@@ -181,7 +181,7 @@ sub search {
 		and ::logError("Removed unsafe characters from search string");
 
 	if(length($spec) < $s->{mv_min_string}) {
-		my $msg = errmsg(
+		my $msg = ::errmsg(
 					"Swish search string less than minimum %s characters: %s",
 					$s->{mv_min_string},
 					$spec,
