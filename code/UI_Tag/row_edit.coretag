@@ -132,6 +132,8 @@ sub {
 											name => "$prependor$_$appendor",
 											value => $text,
 											template => ' $WIDGET$ ',
+											specific => $opt->{ui_meta_specific},
+											key => $key,
 										});
 				$out .= "<TD$tm_extra>$tmp</TD>";
 				next;
