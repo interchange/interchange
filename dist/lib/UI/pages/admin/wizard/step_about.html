@@ -13,7 +13,10 @@ manipulate this text or enter all new text.[/L]
 <tr>
   <td align="left">
     <br>
-    <B>[if value company][value company] [L]is[/L][else][L]We are[/L][/else][/if]</B> [L]the Internet's premier provider of[/L] ...
+	<B>[if value company][msg arg.0="[value company]" arg.1="</B>"]%s is %s
+	the Internet's premier provider of ...[/msg][else][msg arg.1="</B>"]We are %s
+	the Internet's premier provider of ...[/msg][/else][/if]
+
     </p>
 
     <p> 
