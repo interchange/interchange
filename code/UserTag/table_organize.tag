@@ -192,7 +192,7 @@ sub {
 		push @cells, $1 while $body =~ s:(<td\b.*?</td>)::is;
 	}
 
-	while ($opt->{min_rows} and ($opt->{min_rows} * $cols) > scalar(@cells) ) {
+	while ($opt->{min_rows} and ($opt->{min_rows} * ($cols - 1)) > scalar(@cells) ) {
 		$cols--;
 		last if $cols == 1;
 	}
