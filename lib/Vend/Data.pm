@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.17.2.3 2000-12-11 00:55:11 heins Exp $
+# $Id: Data.pm,v 1.17.2.4 2000-12-11 09:45:09 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -1278,15 +1278,19 @@ sub modular_cost {
 		::logError('Non-existent price option table %s', $table);
 		return;
 	}
+#::logDebug("database $table exists");
 	
 	remap_options();
 
 	return unless $db->record_exists($ptr);
+#::logDebug("record $ptr exists");
 
 	my $fld = $opt_map{differential} || 'differential';
 	return unless $db->column_exists($fld);
+#::logDebug("field $fld exists");
 
 	my $p = $db->field($ptr,$fld);
+#::logDebug("p=$p for $fld") if $p;
 
 	return $p if $p != 0;
 	return;
@@ -1602,16 +1606,16 @@ sub item_price {
 		$price = database_field($base, $item->{code}, $Vend::Cfg->{PriceField})
 			if $Vend::Cfg->{PriceField};
 
-#::logDebug("price for item before chain $item->{code}=$price");
+#::logDebug("price for item before chain $item->{code}=$price PriceField=$Vend::Cfg->{PriceField}");
 		$price = chain_cost($item,$price || $Vend::Cfg->{CommonAdjust});
 		$price = $price / $Vend::Cfg->{PriceDivide};
 
 		$item->{mv_cache_price} = $price
 			if ! $quantity and exists $item->{mv_cache_price};
-#::logDebug("price for item $item->{code}=$price");
+#::logDebug("price for item $item->{code}=$price item=" . ::uneval($item)) if $price != 0;
 		$final += $price;
 	} while ($item = shift @items);
-#::logDebug("final price for item $master->{code}=$final item=" . ::uneval_it($master)) if $master;
+#::logDebug("#### final price for item $master->{code}=$final item=" . ::uneval($master)) if $master;
 	$master->{mv_cache_price} = $final 
 			if $master and ! $quantity and exists $master->{mv_cache_price};
 #::logDebug("final price in item $master->{code} is $master->{mv_cache_price}") if $master;
