@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.36 2003-07-11 17:25:34 mheins Exp $
+# $Id: Server.pm,v 2.37 2003-07-26 21:55:58 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.36 $, 10);
+$VERSION = substr(q$Revision: 2.37 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -528,7 +528,9 @@ sub respond {
 		else { print $fh "HTTP/1.0 $status\r\n"; }
 	}
 
-	if ( (	! $Vend::CookieID && ! $::Instance->{CookiesSet}
+	if ( ! $Vend::tmp_session
+		and (
+			! $Vend::CookieID && ! $::Instance->{CookiesSet}
 			or defined $Vend::Expire
 			or defined $::Instance->{Cookies}
 		  )
