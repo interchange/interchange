@@ -15,7 +15,7 @@ sub {
 		$opt->{raw} = 1 if $raw;
 	}
 
-	my $fmt = $opt->{format} || '%d-%b-%Y';
+	my $fmt = $opt->{format} || '';
 	if($text =~ /^(\d\d\d\d)-(\d?\d)-(\d?\d)$/) {
 		$t[5] = $1 - 1900;
 		$t[4] = $2 - 1;
@@ -42,8 +42,13 @@ sub {
 	if (defined $opt->{raw} and Vend::Util::is_yes($opt->{raw})) {
 					$fmt = $t[2] && $text ?  '%Y%m%d%H%M' : '%Y%m%d';
 	}
-	elsif ($t[2]) {
-					$fmt = '%d-%b-%Y %I:%M%p';
+
+	if (! $fmt) {
+		if ($t[2]) {
+			$fmt = '%d-%b-%Y %I:%M%p';
+		} else {
+			$fmt = '%d-%b-%Y';
+		}
 	}
 
     my $out = POSIX::strftime($fmt, @t);
