@@ -33,12 +33,13 @@ use lib '/usr/local/interchange';
 
 use Getopt::Std;
 
-$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
-#$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
-
 ## END CONFIGURABLE VARIABLES
 
 BEGIN {
+
+$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
+#$Global::VendRoot = $Global::VendRoot || '~_~INSTALLARCHLIB~_~';
+
     ($Global::VendRoot = $ENV{MINIVEND_ROOT})
         if defined $ENV{MINIVEND_ROOT};
 
@@ -119,7 +120,7 @@ expireall -- Run Interchange expire on all catalogs
 
 =head1 VERSION
 
-$Id: expireall.PL,v 1.6 2000-09-23 18:49:30 heins Exp $
+$Id: expireall.PL,v 1.7 2000-09-25 15:47:45 heins Exp $
 
 =head1 DESCRIPTION
 
