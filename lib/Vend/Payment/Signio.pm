@@ -1,6 +1,6 @@
 # Vend::Payment::Signio - Interchange support for Signio/Verisign Payflow Pro
 #
-# $Id: Signio.pm,v 2.10 2003-06-18 17:34:46 jon Exp $
+# $Id: Signio.pm,v 2.11 2003-06-18 21:43:24 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -24,7 +24,7 @@ package Vend::Payment::Signio;
 
 =head1 Interchange support for Signio/Verisign Payflow Pro
 
-Vend::Payment::Signio $Revision: 2.10 $
+Vend::Payment::Signio $Revision: 2.11 $
 
 =head1 SYNOPSIS
 
@@ -188,8 +188,6 @@ the C<Payment Settings> heading in the Interchange documentation for use.
 
 The payment gateway host to use. Default is C<payflow.verisign.com>, and
 C<test-payflow.verisign.com> when in test mode.
-
-=back
 
 =item check_sub
 
