@@ -1,6 +1,6 @@
 # Session.pm - Interchange Sessions
 #
-# $Id: Session.pm,v 1.7.2.9 2001-04-09 06:28:17 heins Exp $
+# $Id: Session.pm,v 1.7.2.10 2001-06-19 00:22:57 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -30,7 +30,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.7.2.9 $, 10);
+$VERSION = substr(q$Revision: 1.7.2.10 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -284,6 +284,7 @@ sub write_session {
 	}
 	$Vend::Session->{username} = $Vend::username;
 	$Vend::Session->{admin} = $Vend::admin;
+	$Vend::Session->{superuser} = $Vend::superuser;
     $s = ! $File_sessions ? uneval_fast($Vend::Session) : $Vend::Session;
     $Vend::SessionDBM{$Vend::SessionName} = $s or 
 		die "Data was not stored in SessionDBM\n";
@@ -379,6 +380,7 @@ sub read_session {
 
 	$Vend::username = $Vend::Session->{username};
 	$Vend::admin    = $Vend::Session->{admin};
+	$Vend::superuser   = $Vend::Session->{superuser};
 
 	$Vend::Session->{arg}  = $Vend::Argument;
 
