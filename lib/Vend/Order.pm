@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18.2.16 2001-04-09 06:39:20 heins Exp $
+# $Id: Order.pm,v 1.18.2.17 2001-04-10 03:59:05 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.16 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.17 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1642,7 +1642,7 @@ sub route_order {
 sub add_items {
 	my($items,$quantities) = @_;
 
-	$items = $CGI::values{mv_order_item} if ! defined $items;
+	$items = delete $CGI::values{mv_order_item} if ! defined $items;
 	return unless $items;
 
 	my($code,$found,$item,$base,$quantity,$i,$j,$q);
