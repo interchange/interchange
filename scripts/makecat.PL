@@ -3,7 +3,7 @@
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.21 2003-06-18 17:34:47 jon Exp $
+# $Id: makecat.PL,v 2.22 2003-08-01 15:05:54 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -1378,7 +1378,7 @@ EOF
 		}
 
 		sethistory(grep !$seen{$_}++, @hosts);
-		$default = $defhost || $Conf{linkhost} || 'localhost';
+		$default = $defhost || $Conf{linkhost} || '127.0.0.1';
 		while(! $lh) {
 			$lh = prompt("Link host? ", $default);
 			redo INETASK if $lh eq '@';
@@ -2299,7 +2299,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.21 2003-06-18 17:34:47 jon Exp $
+# $Id: makecat.PL,v 2.22 2003-08-01 15:05:54 jon Exp $
 
 =head1 INTRODUCTION
 

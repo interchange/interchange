@@ -108,7 +108,7 @@ else {
 $testnum++;
 
 use Socket;
-my $LINK_HOST    = 'localhost';
+my $LINK_HOST    = '127.0.0.1';
 my $LINK_PORT    = $ENV{MINIVEND_PORT};
 my $LINK_TIMEOUT = 15;
 my $ERROR_ACTION = "-none";

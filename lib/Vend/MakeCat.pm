@@ -1,6 +1,6 @@
 # Vend::MakeCat - Routines for Interchange catalog configurator
 #
-# $Id: MakeCat.pm,v 2.11 2003-06-18 17:34:44 jon Exp $
+# $Id: MakeCat.pm,v 2.12 2003-08-01 15:05:54 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -111,7 +111,7 @@ use vars qw/
 	%Window
 /;
 
-$VERSION = substr(q$Revision: 2.11 $, 10);
+$VERSION = substr(q$Revision: 2.12 $, 10);
 
 $Force = 0;
 $History = 0;
@@ -343,9 +343,9 @@ EOF
 # CGI will talk to.
 #
 # If Interchange is running on the same server as your web
-# server, this should be "localhost". If the web server is on a
-# different machine, it is the IP address of the machine
-# Interchange is running on.
+# server, this should be "localhost" or "127.0.0.1". If the web
+# server is on a different machine, it is the IP address of the
+# machine Interchange is running on.
 EOF
 
 	linkmode => <<EOF,
@@ -1514,7 +1514,7 @@ sub find_inet_info {
 	my $prog = "$Conf{relocate}$Conf{vendroot}/src/tlink";
 	my $the_one = sum_it($prog);
 	my $defport = '7786';
-	my $defhost = 'localhost';
+	my $defhost = '127.0.0.1';
 
 	my @poss = glob("$Conf{relocate}$Conf{vendroot}/src/tlink.*.*");
 	for (@poss) {

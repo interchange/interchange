@@ -3,7 +3,7 @@
 #
 # Interchange link program configurator
 #
-# $Id: compile_link.PL,v 2.4 2003-06-18 17:34:47 jon Exp $
+# $Id: compile_link.PL,v 2.5 2003-08-01 15:05:54 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -39,7 +39,7 @@ Getopt::Long::config(qw/permute/);
 
 BEGIN {
 	$::Self = {
-		LINK_HOST      => 'localhost',
+		LINK_HOST      => '127.0.0.1',
 		LINK_PORT      => 7786,
 		LINK_TIMEOUT   => 30,
 		LINK_FILE      => '/usr/local/interchange/etc/socket',
