@@ -1,10 +1,10 @@
-interchange (4.8.6.20021018-1) unstable; urgency=medium
+interchange (4.8.6.20021105-1) unstable; urgency=medium
 
   * release from current CVS (stable branch)
   * removed bashisms from interchange-cat-foundation script
-  * relaxed dependency on libsql-statement-perl (Closes: #158263)
+  * relaxed dependency on libsql-statement-perl (Closes: #158263, #167032)
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 18 Oct 2002 21:07:01 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed,  6 Nov 2002 11:27:55 +0100
 
 interchange (4.8.6-1) unstable; urgency=high
 
