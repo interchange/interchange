@@ -28,15 +28,3 @@ sub {
 	Vend::Interpolate::tag_accessories('', '', $ref, $item);
 }
 EOR
-
-UserTag counter Order file
-UserTag counter Routine <<EOF
-sub {
-    my $file = shift || 'etc/counter';
-    $file = $Vend::Cfg->{VendRoot} . "/$file"
-        unless index($file, '/') == 0;
-    my $ctr = new File::CounterFile $file;
-    return $ctr->inc();
-}
-EOF
-
