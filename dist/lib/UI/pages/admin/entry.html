@@ -113,27 +113,14 @@
 	<SMALL>WEIGHT: [summary amount=`[item-quantity] * [item-field weight]`]</SMALL>
 	[/if-item-field]
 	&nbsp;&nbsp;&nbsp;
-	[if-item-field related]
-	[if !ordered [item-field related]]
-	<TABLE CELLPADDING=0 CELLSPACING=0 WIDTH="100%">
-	[loop arg="[item-field related]" prefix=related]
-		[related-change 1][condition]1[/condition]
-		<TR><TD COLSPAN=2 BGCOLOR=__UI_C_TITLEBARBG__><FONT COLOR=__UI_C_TITLEBARTXT__>Other items to suggest:</TD>
-		</TR>
-		[/related-change 1]
-		[if !ordered [related-code]]
-		<TR>
-		<TD><FONT SIZE="1"><INPUT TYPE=checkbox NAME="mv_order_item"
-			onClick="this.form.action='[process-target]',
-					this.form.submit()"
-			VALUE="[related-code]"></TD>
-		<TD><FONT SIZE="1">[related-field title]</TD>
-		</TR>	
-		[/if]
-	[/loop]
-	</TABLE>
-	[/if]
-	[/if-item-field]<FONT SIZE=1>[item-accessories size][item-accessories color]</FONT>	
+	[if-item-data options o_enable]
+	<br>
+	<table>
+	[table-organize cols=2]
+	[item-options td=1]
+	[/table-organize]
+	</table>
+	[/if-item-data]
 	</TD>
 	<TD BGCOLOR=__UI_C_INTBLOCK__ VALIGN=TOP ALIGN=CENTER>
 	<INPUT TYPE=text NAME="[quantity-name]" VALUE="[item-quantity]" SIZE=3>
