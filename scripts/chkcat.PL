@@ -51,7 +51,7 @@ DOIT: {
 # Interchange catalog initialization update and query tool
 # inspired by chkconfig(8).
 #
-# $Id: chkcat.PL,v 1.1 2001-09-07 04:38:28 jon Exp $
+# $Id: chkcat.PL,v 1.2 2001-09-07 06:30:00 jon Exp $
 #
 # Copyright (C) 2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -170,6 +170,8 @@ for (@ARGV) {
 	die $usage unless $action eq 'on' or $action eq 'off';
 
 	# find out position in initialization list from each config file itself
+	s/\.cfg$//;
+	s/^S\d+//;
 	my $cfg = $_;
 	my $cfgfile = "$init_dir/$cfg.cfg";
 	my $header = Vend::Util::get_cfg_header($cfgfile);
@@ -236,7 +238,7 @@ Text sent to standard output is designed to be easily machine-parsable.
 
 =head1 VERSION
 
-# $Id: chkcat.PL,v 1.1 2001-09-07 04:38:28 jon Exp $
+# $Id: chkcat.PL,v 1.2 2001-09-07 06:30:00 jon Exp $
 
 =head1 AUTHOR
 
