@@ -22,7 +22,8 @@ ui_template_name: leftonly
 
 <!-- BEGIN CONTENT -->
 
-<H3>Log in as an affiliate</H3>
+Log in as an affiliate
+
 [set AFLogin]
 [if session logged_in]
 [userdb logout]
@@ -32,54 +33,49 @@ ui_template_name: leftonly
 
 [if session failure]
 <P>
-<font size="2" __FFACE__><b><font color="#FF0000">[data session failure][data base=session field=failure value=""]</font></b></font>
+<b>[data session failure][data base=session field=failure value=""]</b>
 <P>
 
-<table width="300" border="1" cellspacing="0" cellpadding="0" bordercolordark="#000000" bordercolorlight="#000000">
+<table border="0" cellspacing="0" cellpadding="0">
 <FORM ACTION="[process secure=1]" METHOD=POST>
 <INPUT TYPE=hidden NAME=mv_click VALUE=AFLogin>
 <INPUT TYPE=hidden NAME=mv_todo  VALUE=return>
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="affiliate/index">
+<tr>
+  <td> 
+    <table border="0" cellspacing="0" cellpadding="2">
+    <tr> 
+      <td align="right">
+        <b>Username:</b>
+      </td>
+      <td align="left"> 
+        <INPUT NAME=mv_username VALUE="[read-cookie MV_USERNAME]">
+      </td>
+    </tr>
+    <tr> 
+      <td align="right"> 
+        <b>Password:</b>
+      </td>
+      <td align="left"> 
+        <INPUT TYPE=password NAME=mv_password VALUE="">
+      </td>
+    </tr>
+    <tr> 
+      <td>&nbsp;</td>
+      <td> 
+        <input type="submit" value="Log In">
+      </td>
+    </tr>
+    </table>
+  </td>
+</tr>
+</table>
 
-
-
-                          <tr>
-                            <td> 
-                              <table width="300" border="0" cellspacing="0" cellpadding="2">
-                                <tr bgcolor="#0099FF"> 
-                                  <td width="81" align="right" bgcolor="#0099FF"><font size="2" __FFACE__><b><font color="#FFFFFF">Username</font></b></font></td>
-                                  <td width="204" bgcolor="#FF9900" align="left"> 
-                                    <INPUT NAME=mv_username VALUE="[read-cookie MV_USERNAME]">
-                                  </td>
-                                </tr>
-                                <tr bgcolor="#0099FF"> 
-                                  <td width="81" align="right" bgcolor="#0099FF"> 
-                                    <font color="#FFFFFF" size="2" __FFACE__><font color="#000000"><b><font color="#FFFFFF">Password</font></b></font></font></td>
-                                  <td width="204" bgcolor="#FF9900" align="left"> 
-                                    <INPUT TYPE=password NAME=mv_password VALUE="">
-                                  </td>
-                                </tr>
-                                <tr bgcolor="#999999"> 
-                                  <td width="81">&nbsp;</td>
-                                  <td width="204"> 
-                                    <input type="submit" value="Log In">
-                                  </td>
-                                </tr>
-                              </table>
-                            </td>
-                          </tr>
-                        </table>
-                        <p>&nbsp;</p>
+<p>&nbsp;</p>
                         
-                      </div>
-                    </form>
-                    <p>&nbsp;</p>
-                    <div align="center"> </div>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
+</form>
 
 <!-- END CONTENT -->
 
 @_LEFTONLY_BOTTOM_@
 
-@_LEFTONLY_BOTTOM_@
