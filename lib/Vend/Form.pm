@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.48 2005-02-13 06:48:30 mheins Exp $
+# $Id: Form.pm,v 2.49 2005-02-14 06:37:10 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.48 $, 10);
+$VERSION = substr(q$Revision: 2.49 $, 10);
 
 @EXPORT = qw (
 	display
@@ -1389,7 +1389,7 @@ sub parse_type {
 			$opt->{time_adjust} = $1
 				if $extra =~ /([+-]?\d+)/i;
 		}
-::logDebug("minutes=$opt->{minutes}");
+#::logDebug("minutes=$opt->{minutes}");
 	}
 	elsif($type =~ /^hidden_text/i) {
 		$opt->{type} = 'hiddentext';
