@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.9 2002-01-11 08:48:06 jon Exp $
+# $Id: DBI.pm,v 2.10 2002-01-26 16:48:01 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = substr(q$Revision: 2.10 $, 10);
 
 use strict;
 
@@ -132,6 +132,30 @@ my %known_capability = (
 		Pg		=> 1,
 		Oracle	=> 1,
 	},
+	HAS_DESCRIBE => {
+		mysql	=> 1,
+		Pg		=> 0,
+		Oracle	=> 0,
+	},
+	DESCRIBE_TABLE => {
+		mysql	=> sub {
+			my $s = shift;
+			my $q = "show create table $s->[$TABLE]";
+#::logDebug("describe query: $q");
+			my $sth = $s->[$DBI]->prepare($q);
+			$sth->execute();
+			my $out = '';
+			my $ary;
+			while($ary = $sth->fetchrow_arrayref()) {
+				$out .= $ary->[1];
+				$out .= "\n";
+			}
+#::logDebug("describe query returns: $out");
+			return $out;
+		},
+		Pg		=> 0,
+		Oracle	=> 0,
+	},
 	HAS_LIMIT => {
 		mysql	=> 1,
 		Pg		=> 1,
@@ -190,6 +214,59 @@ sub check_capability {
 	}
 }
 
+sub create_sql {
+	my ($s, $tablename, $config, $columns) = @_;
+
+#::logDebug("create_sql called, tablename=$tablename config=$config columns=$columns");
+	if($s) {
+		$config = $s->[$CONFIG];
+		my @col = $s->columns();
+		$columns = \@col;
+	}
+	elsif(! $config) {
+		return undef;
+	}
+
+	if($s and $config->{HAS_DESCRIBE}) {
+#::logDebug("attempting DESCRIBE_TABLE=$config->{DESCRIBE_TABLE}");
+		return $config->{DESCRIBE_TABLE}->($s);
+	}
+	my $key = $config->{KEY} || $columns->[0];
+
+	my @cols;
+	my $keycol;
+
+	my $def_type = $config->{DEFAULT_TYPE} || 'char(128)';
+#::logDebug("columns coming in: @{$columns}");
+    for (my $i = 0;  $i < @$columns;  $i++) {
+        $cols[$i] = $$columns[$i];
+#::logDebug("checking column '$cols[$i]'");
+		if(defined $key) {
+			$keycol = $i if $cols[$i] eq $key;
+		}
+		if(defined $config->{COLUMN_DEF}->{$cols[$i]}) {
+			$cols[$i] .= " " . $config->{COLUMN_DEF}->{$cols[$i]};
+		}
+		else {
+			$cols[$i] .= " $def_type";
+		}
+		$$columns[$i] = $cols[$i];
+		$$columns[$i] =~ s/\s+.*//;
+    }
+
+	$keycol = 0 unless defined $keycol;
+	$config->{KEY_INDEX} ||= $keycol;
+	$config->{KEY} ||= $key;
+
+	$cols[$keycol] =~ s/\s+.*/ char(16) NOT NULL/
+			unless defined $config->{COLUMN_DEF}->{$key};
+
+	my $query = "create table $tablename ( \n";
+	$query .= join ",\n", @cols;
+	$query .= "\n)\n";
+	return $query;
+}
+
 sub create {
     my ($class, $config, $columns, $tablename) = @_;
 #::logDebug("trying create table $tablename");
@@ -239,74 +316,43 @@ sub create {
 	my(@cols);
 
 	$key = $config->{KEY} || $columns->[0];
-
-	my $def_type = $config->{DEFAULT_TYPE} || 'char(128)';
-#::logDebug("columns coming in: @{$columns}");
-    for ($i = 0;  $i < @$columns;  $i++) {
-        $cols[$i] = $$columns[$i];
-#::logDebug("checking column '$cols[$i]'");
-		if(defined $key) {
-			$keycol = $i if $cols[$i] eq $key;
-		}
-		if(defined $config->{COLUMN_DEF}->{$cols[$i]}) {
-			$cols[$i] .= " " . $config->{COLUMN_DEF}->{$cols[$i]};
-		}
-		else {
-			$cols[$i] .= " $def_type";
-		}
-		$$columns[$i] = $cols[$i];
-		$$columns[$i] =~ s/\s+.*//;
-    }
-
 	$keycol = 0 unless defined $keycol;
 	$config->{KEY_INDEX} = $keycol;
 	$config->{KEY} = $key;
 
-	$cols[$keycol] =~ s/\s+.*/ char(16) NOT NULL/
-			unless defined $config->{COLUMN_DEF}->{$key};
-
-	my $query = "create table $tablename ( \n";
-	$query .= join ",\n", @cols;
-	$query .= "\n)\n";
-
 	if($config->{CREATE_SQL}) {
 #::logDebug("Trying to create with specified CREATE_SQL:\n$config->{CREATE_SQL}");
-		$db->do($config->{CREATE_SQL})
-			or die ::errmsg(
+		eval {
+			$db->do($config->{CREATE_SQL});
+		};
+		if($@) {
+			 die ::errmsg(
 				"DBI: Create table '%s' failed, explicit CREATE_SQL. Error: %s\n",
 				$tablename,
 				$DBI::errstr,
-				);
+			);
+		}
 	}
 	else {
 		# test creation of table
-		TESTIT: {
-			my $q = $query;
-			eval {
-				$db->do("drop table ic_test_create")
-			};
-			$q =~ s/create\s+table\s+\S+/create table ic_test_create/;
-			if(! $db->do($q) ) {
-				::logError(
-							"unable to create test table:\n%s\n\nError: %s",
-							$query,
-							$DBI::errstr,
-				);
-				warn "$DBI::errstr\n";
-				return undef;
-			}
-			$db->do("drop table ic_test_create")
-		}
+		my $query = create_sql(undef, $tablename, $config, $columns);
 
 		eval {
 			$db->do("drop table $tablename")
 				and $config->{Clean_start} = 1
 				or warn "$DBI::errstr\n";
 		};
-	#::logDebug("Trying to create with:$query");
-		$db->do($query)
-			or warn "DBI: Create table '$tablename' failed: $DBI::errstr\n";
-		::logError("table %s created: %s" , $tablename, $query );
+
+#::logDebug("Trying to create with:$query");
+		eval {
+			$db->do($query);
+		};
+		if($@) {
+			warn "DBI: Create table '$tablename' failed: $DBI::errstr\n";
+		}
+		else {
+			::logError("table %s created: %s" , $tablename, $query );
+		}
 
 	}
 
