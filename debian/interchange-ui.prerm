@@ -17,7 +17,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-# If only interchange-ui is installed, we need to stop
+# If only interchange-ui is removed, we need to stop
 # the server first
 
 /etc/init.d/interchange stop
