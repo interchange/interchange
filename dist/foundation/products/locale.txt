@@ -131,6 +131,7 @@ In Stock Notification	In Stock Notification			Op voorraadmelding
 In-Stock Notification	In-Stock Notification			Op voorraadmelding
 Interchange Documentation	Interchange Documentation			Interchange Documentie
 Interchange server not running. Usually one of	Interchange server not running. Usually one of			Interchange server loopt niet. Meestal een van
+Invalid user name or password.		Benutzername oder Passwort ungültig.
 Is that really a phone number?	Is that really a phone number?			Is dat werkelijk een telefoonnummer?
 Item No.	Item No.	Best-Nr.		Artikelnr.
 Item Quantity	Item Quantity			Productaantal
@@ -371,6 +372,7 @@ Use Our Online Form		Unser Onlineformular
 Use the Preview Button! Check those URLs!  Don't forget the http://!	Use the Preview Button! Check those URLs!  Don't forget the http://!			
 User support mail lists	User support mail lists			
 Username	Username	Benutzername		Gebruikersnaam
+Username already exists.		Benutzername bereits vorhanden.
 Username must be of characters [A-Za-z0-9]	Username must be of characters [A-Za-z0-9]			Gebruikersnaam moet bestaan uit letters [A-Za-z0-9]
 Verify	Verify	Kontrolle		Verifieer
 Verify Password	Verify Password	Passwort(Kontrolle)		Verifieer wachtwoord
