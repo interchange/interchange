@@ -4,6 +4,7 @@ build
 Makefile
 pm_to_blib
 build-stamp
+*.pdf
 .cpan.tried
 install-stamp
 *.tar.gz
