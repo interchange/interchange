@@ -8,6 +8,114 @@ UserTag table-editor AttrAlias key   item_id
 UserTag table-editor AttrAlias view  ui_meta_view
 UserTag table-editor AttrAlias profile ui_profile
 UserTag table-editor AttrAlias email_fields ui_display_only
+#UserTag table-editor Documentation <<EOD
+#=head1 NAME
+#
+#[table-editor]
+#
+#=head1 SYNOPSIS
+#
+#  [table-editor
+#  		table=ic_table
+#		cgi=1*
+#		item-id="key"
+#		across=n*
+#		noexport=1*
+# 
+#		wizard=1*
+#		next_text='Next -->'*
+#		cancel_text='Cancel'*
+#		back_text='<-- Back'*
+# 
+#		hidden.formvarname="value"
+#
+#		item_id_left="keys remaining"
+#		mv_blob_field=column*
+#		mv_blob_nick=name*
+#		mv_blob_pointer="current name"*
+#		mv_blob_label="Label text"
+#		mv_blob_title="Title HTML"
+#
+#		ui_break_before="field1 field2"
+#		ui_break_before_label="field1=Label 1, field2=Label 2"
+#		ui_data_fields="field1 field2 fieldn ..."*
+#		ui_data_fields_all=1*
+#		ui_display_only="no_set_field"*
+#		ui_hide_key=1*
+#		ui_meta_specific=1*
+#		ui_meta_view="viewname"
+#		ui_nextpage="next_destination"
+#		ui_prevpage="back_destination"
+#		ui_return_to="cancel_destination"
+#		ui_new_item=1*
+#		ui_sequence_edit=1*
+#		ui_clone_id="key"
+#		ui_clone_tables="table1 table2 ..."
+#		ui_delete_box=1*
+#		mv_update_empty=0*
+# 
+#		widget.field="select|text|any ic widget"
+#		label.field="Field Label"
+#		help.field="Help text"
+#		help-url.field="http://url/to/more/help"
+#		default.field="preset value"*
+#		override.field="forced value"*
+#		filter.field="filter1 filter2"
+#		pre-filter.field="filter1 filter2"
+#		error.field=1*
+#		height.field=N
+#		width.field=N
+#		passed.field="val1=Label 1, val2=Label 2"
+#		lookup.field="lookup_field"
+#		database.field="table"
+#		field.field="column"
+#		outboard.field="key"
+#		append.field="HTML"
+#		prepend.field="HTML"
+#
+#	]
+#
+#=head1 DESCRIPTION
+#
+#The [table-editor] tag produces an HTML form that edits a database
+#table or collects values for a "wizard". It is extremely configurable
+#as to display and characteristics of the widgets used to collect the
+#input.
+#
+#The widget types are based on the Interchange C<[display ...]> UserTag,
+#which in turn is heavily based on the ITL core C<[accessories ...]> tag.
+#
+#The C<simplest> form of C<[table-editor]> is:
+#
+#	[table-editor table=foo]
+#
+#A page which contains only that tag will edit the table C<foo>, where
+#C<foo> is the name of an Interchange table to edit. If no C<foo> table
+#is C<defined>, then nothing will be displayed.
+#
+#If the C<mv_metadata> entry "foo" is present, it is used as the
+#definition for table display, including the fields to edit and labels
+#for sections of the form. If C<ui_data_fields> is defined, this
+#cancels fetch of the view and any breaks and labels must be
+#defined with C<ui_break_before> and C<ui_break_before_label>. More
+#on the view concept later.
+#
+#A simple "wizard" can be made with:
+#
+#	[table-editor
+#			wizard=1
+#			ui_wizard_fields="foo bar"
+#			mv_nextpage=wizard2
+#			mv_prevpage=wizard_intro
+#			]
+#
+#The purpose of a "wizard" is to collect values from the user and
+#place them in the $Values array. A next page value (option mv_nextpage)
+#must be defined to give a destination; if mv_prevpage is defined then
+#a "Back" button is presented to allow paging backward in the wizard.
+#
+#EOD
+
 UserTag table-editor hasEndTag
 UserTag table-editor Routine <<EOR
 sub {
@@ -137,11 +245,16 @@ mv_form_profile=
 mv_nextpage=$hidgo
 mv_todo=return
 EOF
-		$btext = $Scratch->{$opt->{back_text}} = <<EOF;
+		if($opt->{mv_prevpage}) {
+			$btext = $Scratch->{$opt->{back_text}} = <<EOF;
 mv_form_profile=
 mv_nextpage=$opt->{mv_prevpage}
 mv_todo=return
 EOF
+		}
+		else {
+			delete $opt->{back_text};
+		}
 	}
 
 	for(qw/next_text back_text cancel_text/) {
@@ -338,8 +451,25 @@ EOF
 		return undef;
 	};
 
+	if($opt->{wizard} and ! $table) {
+		$table = 'mv_null';
+		$Vend::Database{mv_null} = 
+			bless [
+					{},
+					undef,
+					[ 'code', 'value' ],
+					[ 'code' => 0, 'value' => 1 ],
+					0,
+					{ },
+					], 'Vend::Table::InMemory';
+	}
+
 	my $db = Vend::Data::database_exists_ref($table)
 		or return $die->('table-editor: bad table %s', $table);
+
+	if($opt->{ui_wizard_fields}) {
+		$opt->{ui_data_fields} = $opt->{ui_display_only} = $opt->{ui_wizard_fields};
+	}
 
 	$Variable->{UI_META_TABLE} = 'mv_metadata' if ! $Variable->{UI_META_TABLE};
 
@@ -348,9 +478,15 @@ EOF
 
 	my $keycol = $db->config('KEY');
 
-	my $view_table;
-	$view_table = "$CGI::values{ui_meta_view}::$table"
-		if $CGI::values{ui_meta_view};
+	my $view_table = $opt->{ui_meta_view};
+
+	if (! $view_table) {
+		$view_table = $table;
+	}
+	elsif ("\L$view_table" ne 'none') {
+		$view_table = "$view_table::$table";
+	}
+
 	$opt->{form_name} = qq{ NAME="$opt->{form_name}"}
 		if $opt->{form_name};
 
@@ -360,17 +496,11 @@ EOF
 	if( $mdb
 		and ! $opt->{ui_data_fields}
 		and ! $opt->{ui_data_fields_all}
-		and
-			(
-			$view_table && $mdb->record_exists($view_table)
-				or
-			undef $view_table
-				or 
-			$mdb->record_exists($table)
-			)
+		and $view_table
+		and $mdb->record_exists($view_table)
 		)
 	{
-#::logDebug("meta info for table: view_table=$view_table table=$table");
+::logDebug("meta info for table: view_table=$view_table table=$table");
 		$opt->{ui_data_fields} = $mdb->field($view_table || $table, 'options');
 	}
 
@@ -750,6 +880,26 @@ $mlabel
 </tr>
 EOF
 		}
+		elsif ($opt->{wizard}) {
+		  $out .= <<EOF;
+<TR class=rnorm>
+<td>&nbsp;</td>
+<td align=left colspan=$oddspan class=cdata>
+EOF
+			$out .= <<EOF if ! $opt->{bottom_buttons};
+<INPUT TYPE=submit NAME=mv_click VALUE="Cancel">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
+<BR>
+EOF
+			$out .= <<EOF;
+$mlabel
+</TD>
+</TR>
+
+<tr class=rspacer>
+<td colspan=$span><img src="$opt->{clear_image}" width=1 height=3 alt=x></td>
+</tr>
+EOF
+		}
 		else {
 		  $out .= <<EOF;
 <TR class=rnorm>
@@ -935,12 +1085,12 @@ EOF
 	if($opt->{defaults}) {
 		for(@cols) {
 			if($opt->{wizard}) {
-				$default->{$_} = $Values->{$_} if defined $Values->{$_};
+				$default->{$_} = $::Values->{$_} if defined $::Values->{$_};
 			}
 			else {
 				next if defined $default->{$_};
-				next unless defined $Values->{$_};
-				$default->{$_} = $Values->{$_};
+				next unless defined $::Values->{$_};
+				$default->{$_} = $::Values->{$_};
 			}
 		}
 	}
@@ -1044,7 +1194,7 @@ EOF
 			$overridden = 1;
 		}
 
-		$type = 'value' if $do and ! $opt->{mailto};
+		$type = 'value' if $do and ! ($opt->{wizard} || ! $opt->{mailto});
 
 		if (! length $currval and defined $default->{$c}) {
 			$currval = $default->{$c};
@@ -1068,7 +1218,7 @@ EOF
 			$template =~ s/\$LABEL\$/$Tag->error($parm)/eg;
 		}
 		$template =~ s/~TKEY~/$tkey_message || ''/eg;
-#::logDebug("widget=$widget->{$c} (type=$type)");
+::logDebug("col=$c widget=$widget->{$c} (type=$type)");
 		my $display = $Tag->display({
 										arbitrary => $opt->{ui_meta_view},
 										column => $c,
@@ -1092,11 +1242,11 @@ EOF
 										db => $database->{$c},
 										pre_filter => $pre_filter->{$c},
 										table => $t,
-										type => $widget->{$c} || $type,
+										type => $widget->{$c} || $type || 'text_60',
 										width => $width->{$c},
 										template => $template,
 									});
-		if($super and ($Variable->{UI_META_LINK} || $Values->{ui_meta_force}) ) {
+		if($super and ($Variable->{UI_META_LINK} || $::Values->{ui_meta_force}) ) {
 			$meta .= '<BR><FONT SIZE=1>';
 			# Get global variables
 			my $base = $Tag->var('UI_BASE', 1);
@@ -1192,11 +1342,19 @@ EOF
   SAVEWIDGETS: {
   	last SAVEWIDGETS if $opt->{nosave}; 
 	  	if($opt->{back_text}) {
-      $out .= <<EOF;
+		  $out .= <<EOF;
 <TR class=rnorm>
 <td>&nbsp;</td>
 <td align=left colspan=$oddspan class=cdata>
 <INPUT TYPE=submit NAME=mv_click VALUE="$opt->{back_text}">&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="Cancel">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
+EOF
+		}
+		elsif($opt->{wizard}) {
+		  $out .= <<EOF;
+<TR class=rnorm>
+<td>&nbsp;</td>
+<td align=left colspan=$oddspan class=cdata>
+<INPUT TYPE=submit NAME=mv_click VALUE="Cancel">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
 EOF
 		}
 		else {
