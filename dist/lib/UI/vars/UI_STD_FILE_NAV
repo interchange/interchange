@@ -1,5 +1,4 @@
 Variable UI_STD_FILE_NAV <<EONav
-<center>
 <table cellpadding=3 cellspacing=0 width=__UI_MAIN_WIDTH__>
 
 <tr>
@@ -14,11 +13,39 @@ Variable UI_STD_FILE_NAV <<EONav
 				<SMALL>
 				<IMG SRC="@_UI_IMG_@admin/index.gif" HEIGHT=11 WIDTH=10> view<BR>
 				<IMG SRC="@_UI_IMG_@admin/down.gif" HEIGHT=11 WIDTH=10> download<BR>
+				[if-mm advanced delete_files]
+				<IMG SRC="@_UI_IMG_@admin/delete.gif" HEIGHT=10 WIDTH=10> DELETE<BR>
+				[/if-mm]
 				<IMG SRC="@_UI_IMG_@admin/up.gif" HEIGHT=11 WIDTH=10> upload<BR>
 				<IMG SRC="@_UI_IMG_@admin/layout.gif" HEIGHT=11 WIDTH=10> edit (if applicable)
 				</SMALL>
 			</td>
 			<td>
+			<FORM ACTION="[area @_MV_PAGE_@]" METHOD=GET>
+			<INPUT TYPE=hidden NAME=mv_action VALUE=back>
+			<INPUT TYPE=hidden NAME=action VALUE=find>
+			Find files in and under current directory [calc]
+						return '(catalog root)' if $Session->{ui_cwd} eq '.';
+						return "($Session->{ui_cwd})";
+					[/calc]:<BR>
+			<INPUT NAME=find VALUE="[calc]
+										return unless $CGI->{find};
+										my $str = $CGI->{find};
+										$str =~ s/"/&quot;/g;
+										return $str;
+									[/calc]">
+			<SELECT NAME="find_action">
+			<OPTION>In contents
+			<OPTION VALUE="filename" [selected
+										cgi=1
+										name=find_action
+										value=filename]>By file name
+			</SELECT>
+			<INPUT TYPE=submit VALUE="Find files"><BR>
+			<small>
+			<INPUT TYPE=checkbox NAME="find_session" VALUE=1> Look in session and temporary files
+			</small>
+			</FORM>
 			</td>
 		</tr>
 	</table>
@@ -48,5 +75,4 @@ Variable UI_STD_FILE_NAV <<EONav
 </tr>
 
 </table>
-</center>
 EONav
