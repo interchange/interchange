@@ -1,6 +1,6 @@
 # Vend::Error - Handle Interchange error pages and messages
 # 
-# $Id: Error.pm,v 2.3 2002-06-17 22:24:07 jon Exp $
+# $Id: Error.pm,v 2.4 2002-07-21 01:15:02 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -37,7 +37,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 
 sub get_locale_message {
 	my ($code, $message, @arg) = @_;
@@ -120,11 +120,14 @@ sub full_dump {
 
 	$out = minidump();
 	local($Data::Dumper::Indent) = 2;
-	unless(caller() eq 'Vend::SOAP') {
-		$out .= "###### ENVIRONMENT     #####\n";
-		$out .= ::uneval(::http()->{env});
-		$out .= "\n###### END ENVIRONMENT #####\n";
+	$out .= "###### ENVIRONMENT     #####\n";
+	if(my $h = ::http()) {
+		$out .= ::uneval($h->{env});
 	}
+	else {
+		$out .= ::uneval(\%ENV);
+	}
+	$out .= "\n###### END ENVIRONMENT #####\n";
 	$out .= "###### CGI VALUES      #####\n";
 	$out .= ::uneval(\%CGI::values);
 	$out .= "\n###### END CGI VALUES  #####\n";
@@ -134,7 +137,6 @@ sub full_dump {
 	$out =~ s/\0/\\0/g;
 	return $out;
 }
-
 
 sub do_lockout {
 	my ($cmd);

@@ -3,7 +3,7 @@
 #
 # Interchange version 4.9.1
 #
-# $Id: interchange.PL,v 2.41 2002-07-19 05:13:16 mheins Exp $
+# $Id: interchange.PL,v 2.42 2002-07-21 01:15:02 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -1447,35 +1447,42 @@ EOF
 }
 
 sub run_in_catalog {
-	my ($cat_name, $directory, $itl) = @_;
+	my ($cat, $job, $itl) = @_;
 	my ($g,$c);
 
-#::logGlobal("running job in cat=$cat_name");
-	$g = $Global::Catalog{$cat_name};
+#::logGlobal("running job in cat=$cat");
+	$g = $Global::Catalog{$cat};
 	unless (defined $g) {
-		logGlobal( "Can't find catalog '%s'" , $cat_name );
+		logGlobal( "Can't find catalog '%s'" , $cat );
 		return undef;
 	}
 
 	#$Vend::Log_suppress = 1;
 
 	unless ($Vend::Quiet) {
-		logGlobal("Run cron group=%s", $directory || 'INTERNAL');
+		logGlobal("Run catalog '%s' cron group=%s", $cat, $job || 'INTERNAL');
 	}
 	#undef $Vend::Log_suppress;
 
-	open_cat($cat_name);
+	open_cat($cat);
+
+	logError("Run cron group=%s", $job || 'INTERNAL');
+
+	my $croncfg = $Vend::Cfg->{Cron};
 
 	my $dir;
 	my @itl;
-	if($directory) {
-		my $ct = $Vend::Cfg->{TemplateDir} || [];
-		my $gt = $Global::TemplateDir || [];
+	if($job) {
+		my $ct = $croncfg->{base_directory} || 'etc/cron';
+		my $gt = '';
+		$gt = "$Global::ConfDir/$ct" if $croncfg->{use_global};
 
-		for my $d ($Vend::Cfg->{PageDir}, @$ct, @$gt) {
-#::logGlobal("check directory=$d for $directory");
-			$dir = "$d/$directory"
-				if -d "$d/$directory";
+		for my $d ($ct, $gt) {
+#::logGlobal("check directory=$d for $job");
+			next unless $d;
+			next unless -d "$d/$job";
+			$dir = "$d/$job";
+			last;
 		}
 		if($dir) {
 			my @f = glob("$dir/*");
@@ -1492,20 +1499,56 @@ sub run_in_catalog {
 		push @itl, ["Passed ITL", $itl];
 	}
 
-	if(! @itl) {
-		logGlobal("Empty cron job=%s", $directory);
-	}
-
 	my @out;
-	for(@itl) {
-		logError("Running cron task=%s", $_->[0]);
-		push @out, interpolate_html($_->[1]);
-	}
 
-	close_cat();
+	if(@itl) {
+		# Run once at beginning
+		run_macro($croncfg->{initialize});
+
+		# initialize or autoload can create session
+		# but must handle all aspects
+		init_session() unless $Vend::Session;
+
+		$CGI::remote_addr ||= 'none';
+		$CGI::useragent   ||= 'commandline';
+
+		for(@itl) {
+			# Run once at beginning of each job
+			run_macro($croncfg->{autoload});
+
+			push @out, interpolate_html($_->[1]);
+		}
+	}
+	else {
+		logGlobal("Empty cron job=%s", $job);
+	}
 	my $out = join "", @out;
 	$out =~ s/^\s+//;
 	$out =~ s/\s+$/\n/;
+	$out .= full_dump() if $croncfg->{add_session}; 
+
+	close_cat();
+	if(my $addr = $Vend::CronEmail || $croncfg->{email}) {
+		my $subject = $croncfg->{subject} || 'Interchange cron results for job: %s';
+		$subject = errmsg($subject, $job);
+		my $from = $croncfg->{from} || $Vend::Cfg->{MailOrderTo};
+		Vend::Interpolate::tag_mail($addr,
+									{
+										from => $from,
+										to => $addr,
+										subject => $subject,
+										reply_to => $croncfg->{reply_to},
+										mailer => "Interchange $::VERSION",
+										extra => $croncfg->{extra_headers},
+									},
+									$out,
+								);
+	}
+
+	if($croncfg->{log}) {
+		logData($croncfg->{log}, $out);
+	}
+
 	return $out;
 }
 
@@ -1925,20 +1968,51 @@ sub close_cat {
 	close_database();
 }
 
+sub run_macro {
+	my $macro = shift
+		or return;
+
+	my @mac;
+	if(ref $macro eq 'ARRAY') {
+		@mac = @$macro;
+	}
+	elsif ($macro =~ /^[-\s\w,]+$/) {
+		@mac = grep /\S/, split /[\s,]+/, $macro;
+	}
+	else {
+		push @mac, $macro;
+	}
+
+	for my $m (@mac) {
+		if ($m =~ /^\w+$/) {
+			my $sub = $Vend::Cfg->{Sub}{$m} || $Global::GlobalSub->{$m}
+				or do {
+					logError("Unknown Autoload macro '%s'.", $macro);
+					next;
+				};
+			$sub->();
+		}
+		elsif($m =~ /^\w+-\w+$/) {
+			Vend::Interpolate::tag_profile($m);
+		}
+		else {
+			interpolate_html($m);
+		}
+	}
+}
+
 sub dispatch {
 	my($http) = @_;
 	$H = $http;
 
 	adjust_cgi();
 
-    my($sessionid, $seed);
-	my(@path);
-	my($g, $action);
-
 	open_cat();
 
 	$CGI::user = Vend::Util::check_authorization($CGI::authorization)
 		if defined $CGI::authorization;
+
+    my($sessionid, $seed);
 
 	$sessionid = $CGI::values{mv_session_id} || undef;
 	$sessionid =~ s/\0.*//s;
@@ -2210,62 +2284,21 @@ EOF
 	}
 # END LEGACY
 
-	my $macro;
-	if ($macro = $Vend::Cfg->{Autoload}) {
-		if($macro =~ /\[\w+/) {
-			interpolate_html($macro);
-		}
-		elsif ($macro =~ /^\w+$/) {
-			my $sub = $Vend::Cfg->{Sub}{$macro} || $Global::GlobalSub->{$macro};
-			$sub->();
-		}
+	run_macro($Vend::Cfg->{Autoload});
 #show_times("end global Autoload macro") if $Global::ShowTimes;
-	}
 
-	if ($macro = $Vend::Cfg->{Filter}) {
+	for my $macro ( $Vend::Cfg->{Filter}, $Vend::Session->{Filter}) {
+		next unless $macro;
+		if (ref($macro) ne 'HASH') {
+			logError("Bad CGI filter '%s'", $macro);
+		}
 		for(keys %$macro) {
-			Vend::Interpolate::input_filter_do($_, { 'op' => $macro->{$_} } );
+			Vend::Interpolate::input_filter_do($_, { op => $macro->{$_} } );
 		}
 	}
 
-	if (
-		defined $Vend::Session->{Filter} and
-		$macro = $Vend::Session->{Filter}
-		)
-	{
-		for(keys %$macro) {
-			Vend::Interpolate::input_filter_do($_, $macro->{$_});
-		}
-	}
-
-	if (
-		defined $Vend::Session->{Autoload} and
-		$macro = $Vend::Session->{Autoload}
-		)
-	{
-		if(ref $macro) {
-			for (@$macro) {
-				if ($macro =~ /^\w+$/) {
-					my $sub = $Vend::Cfg->{Sub}{$macro} || $Global::GlobalSub->{$macro};
-					$sub->();
-				}
-				elsif(/^\w+-\w+$/) {
-					Vend::Interpolate::tag_profile($_);
-				}
-				else {
-					interpolate_html($_);
-				}
-			}
-		}
-		elsif ($macro =~ /^\w+$/) {
-			my $sub = $Vend::Cfg->{Sub}{$macro} || $Global::GlobalSub->{$macro};
-			$sub->();
-		}
-		else {
-			interpolate_html($macro);
-		}
+	run_macro($Vend::Session->{Autoload});
 #show_times("end session Autoload macro") if $Global::ShowTimes;
-	}
 
     # If the cgi-bin program was invoked with no extra path info,
     # just display the catalog page.
@@ -2325,7 +2358,7 @@ EOF
 #::logDebug("path=$Vend::FinalPath");
 
   DOACTION: {
-    @path = split('/', $Vend::FinalPath, 2);
+    my @path = split('/', $Vend::FinalPath, 2);
 	if (defined $CGI::values{mv_action}) {
 		$CGI::values{mv_todo} = $CGI::values{mv_action}
 			if ! defined $CGI::values{mv_todo}
@@ -2349,7 +2382,7 @@ EOF
 	}
 
 #::logGlobal("action=$Vend::Action path=$Vend::FinalPath");
-	my ($sub, $status);
+	my ($sub, $status, $action);
 	if(defined $Vend::Cfg->{ActionMap}{$Vend::Action}) {
 		$sub = $Vend::Cfg->{ActionMap}{$Vend::Action};
 		$CGI::values{mv_nextpage} = $Vend::FinalPath
