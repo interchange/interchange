@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.37 2001-04-02 17:19:09 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.38 2001-04-05 02:15:21 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.37 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.38 $, 10);
 
 @EXPORT = qw (
 
@@ -2181,6 +2181,8 @@ sub tag_perl {
 			}
 		}
 	}
+
+	$Tag = $hole->wrap($Tag);
 
 	init_calc() if ! $Calc_initialized;
 	$ready_safe->share(@share) if @share;
@@ -5941,7 +5943,9 @@ sub tag_column {
 		$spec{wrap} = 0;
 	}
 
-	$text =~ s/\s+/ /g;
+	if(! $spec{align} or $spec{align} !~ /^n/i) {
+		$text =~ s/\s+/ /g;
+	}
 
 	my $len = sub {
 		my($txt) = @_;
@@ -5964,21 +5968,21 @@ sub tag_column {
 	$usable = $spec{'width'} - $spec{'gutter'};
 	return "BAD_WIDTH" if  $usable < 1;
 	
-	if($spec{'align'} =~ /^l/) {
+	if($spec{'align'} =~ /^[ln]/i) {
 		$f = sub {
 					$_[0] .
 					' ' x ($usable - $len->($_[0])) .
 					' ' x $spec{'gutter'};
 					};
 	}
-	elsif($spec{'align'} =~ /^r/) {
+	elsif($spec{'align'} =~ /^r/i) {
 		$f = sub {
 					' ' x ($usable - $len->($_[0])) .
 					$_[0] .
 					' ' x $spec{'gutter'};
 					};
 	}
-	elsif($spec{'align'} =~ /^i/) {
+	elsif($spec{'align'} =~ /^i/i) {
 		$spec{'wrap'} = 0;
 		$usable = 9999;
 		$f = sub { @_ };
@@ -5992,10 +5996,13 @@ sub tag_column {
 		$append .= "\n" x ($spec{'spacing'} - 1);
 	}
 
-	if(is_yes($spec{'wrap'}) and length($text) > $usable) {
+	if($spec{'align'} =~ /^n/i) {
+		@lines = split(/\r?\n/, $text);
+	}
+	elsif(is_yes($spec{'wrap'}) and length($text) > $usable) {
 		@lines = wrap($text,$usable);
 	}
-	elsif($spec{'align'} =~ /^i/) {
+	elsif($spec{'align'} =~ /^i/i) {
 		$lines[0] = ' ' x $spec{'width'};
 		$lines[1] = $text . ' ' x $spec{'gutter'};
 	}
@@ -6557,6 +6564,7 @@ sub tag_shipping {
 		for(@modes) {
 			$out += shipping($_, $opt);
 		}
+		$out = Vend::Util::round_to_frac_digits($out);
 		$out = currency($out, $opt->{noformat}, $opt->{convert});
 	}
 	return $out unless $opt->{hide};
@@ -6753,7 +6761,7 @@ sub total_cost {
 	$shipping += tag_shipping()
 		if $::Values->{mv_shipmode};
 	$shipping += tag_handling()
-		if $::Values->{mv_shipmode};
+		if $::Values->{mv_handling};
     $total += subtotal();
     $total += $shipping;
     $total += salestax();
