@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange payment processing routines
 #
-# $Id: Menu.pm,v 2.9 2002-08-15 05:41:26 mheins Exp $
+# $Id: Menu.pm,v 2.10 2002-08-15 06:18:23 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = substr(q$Revision: 2.10 $, 10);
 
 use Vend::Util;
 use strict;
@@ -562,7 +562,7 @@ EOF
 
 	for(@levels) {
 		push @out, <<EOF;
-<div id="$fdiv$_" style="
+<div class="$opt->{flyout_class}" id="$fdiv$_" style="
 						position:absolute;
 						display:none;
 						$opt->{flyout_style}

@@ -34,6 +34,7 @@ code/SystemTag/counter.coretag
 code/SystemTag/currency.coretag
 code/SystemTag/data.coretag
 code/SystemTag/default.coretag
+code/SystemTag/deliver.coretag
 code/SystemTag/description.coretag
 code/SystemTag/discount.coretag
 code/SystemTag/dump.coretag
@@ -411,6 +412,16 @@ dist/foundation/images/smallmc.png
 dist/foundation/images/smallvisa.png
 dist/foundation/images/template.xls
 dist/foundation/images/thumb/thumb.gif
+dist/foundation/include/checkout/billing_address
+dist/foundation/include/checkout/initialization
+dist/foundation/include/checkout/login_form
+dist/foundation/include/checkout/mailing_status
+dist/foundation/include/checkout/new_browser_payment
+dist/foundation/include/checkout/old_browser_payment
+dist/foundation/include/checkout/payment_select
+dist/foundation/include/checkout/shipping_address
+dist/foundation/include/checkout/shopping_cart
+dist/foundation/include/checkout/tax_popup
 dist/foundation/pages/aboutus.html
 dist/foundation/pages/account.html
 dist/foundation/pages/admin/report_def/Order%20Status.html
@@ -512,6 +523,7 @@ dist/foundation/templates/components/category_vertical
 dist/foundation/templates/components/cross
 dist/foundation/templates/components/fortune
 dist/foundation/templates/components/none
+dist/foundation/templates/components/product_flyout
 dist/foundation/templates/components/product_tree
 dist/foundation/templates/components/promo
 dist/foundation/templates/components/random
