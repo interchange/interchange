@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.21 2001-04-03 14:12:21 heins Exp $
+# $Id: Util.pm,v 1.14.2.22 2001-04-08 15:27:30 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -80,7 +80,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.21 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.22 $, 10);
 
 BEGIN {
 	eval {
@@ -968,7 +968,7 @@ sub readfile {
     my($contents);
     local($/);
 
-	if($no and (::file_name_is_absolute($ifile) or $ifile =~ m#\.\./.*\.\.#)) {
+	if($no and (file_name_is_absolute($ifile) or $ifile =~ m#\.\./.*\.\.#)) {
 		::logError("Can't read file '%s' with NoAbsolute set" , $ifile);
 		::logGlobal({ level => 'auth'}, "Can't read file '%s' with NoAbsolute set" , $ifile );
 		return undef;
@@ -977,7 +977,7 @@ sub readfile {
 	my $file;
 
 #::logDebug("readfile ifile=$ifile");
-	if (::file_name_is_absolute($ifile) and -f $ifile) {
+	if (file_name_is_absolute($ifile) and -f $ifile) {
 		$file = $ifile;
 	}
 	else {
