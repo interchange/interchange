@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.39 2003-10-05 16:25:58 mheins Exp $
+# $Id: Form.pm,v 2.40 2004-01-30 17:33:10 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.39 $, 10);
+$VERSION = substr(q$Revision: 2.40 $, 10);
 
 @EXPORT = qw (
 	display
@@ -420,6 +420,9 @@ sub date_widget {
 	my $sel = 0;
 	my $out = qq{<SELECT NAME="$name">};
 	my $o;
+	if ($opt->{blank}) {
+		$out .= '<OPTION VALUE="0">------</OPTION>';
+	}
 	for(@Months) {
 		$o = qq{<OPTION VALUE="$_->[0]">} . errmsg($_->[1]) . '</OPTION>';
 		($out .= $o, next) unless ! $sel and $val;
@@ -431,6 +434,9 @@ sub date_widget {
 	$out .= qq{</SELECT>};
 	$out .= qq{<INPUT TYPE=hidden NAME="$name" VALUE="/">};
 	$out .= qq{<SELECT NAME="$name">};
+	if ($opt->{blank}) {
+		$out .= '<OPTION VALUE="0">--</OPTION>';
+	}
 	for(@Days) {
 		$o = qq{<OPTION VALUE="$_->[0]">$_->[1]} . '</OPTION>';
 		($out .= $o, next) unless ! $sel and $val;
@@ -453,6 +459,9 @@ sub date_widget {
 		}
 		@Years = ($by .. $ey);
 	}
+	if ($opt->{blank}) {
+		$out .= '<OPTION VALUE="0000">----</OPTION>';
+	}
 	for(@Years) {
 		$o = qq{<OPTION>$_} . '</OPTION>';
 		($out .= $o, next) unless ! $sel and $val;
@@ -468,6 +477,9 @@ sub date_widget {
 	$val = round_to_fifteen($val);
 	$out .= qq{<INPUT TYPE=hidden NAME="$name" VALUE=":">};
 	$out .= qq{<SELECT NAME="$name">};
+	if ($opt->{blank}) {
+		$out .= '<OPTION VALUE="0">--:--</OPTION>';
+	}
 	
 	my $ampm = defined $opt->{ampm} ? $opt->{ampm} : 1;
 	my $mod = '';
@@ -1031,7 +1043,7 @@ if($opt->{debug}) {
 	#            in $opt
 	my $type = parse_type($opt);
 
-#::logDebug("type=$type");
+#::logDebug("name=$opt->{name} type=$type");
 
 	my $look;
 
@@ -1270,14 +1282,17 @@ sub parse_type {
 			$opt->{type} = 'text';
 		}
 	}
-	elsif($type =~ /^date_?time(.*)/i) {
-		my $extra = $1;
+	elsif($type =~ /^date_?(time([^_]*))?(_?blank)?/i) {
 		$opt->{type} = 'date';
-		$opt->{time} = 1;
-		$opt->{ampm} = 1
-			if $extra =~ /ampm/i;
-		$opt->{time_adjust} = $1
-			if $extra =~ /([+-]?\d+)/i;
+		$opt->{blank} = 1 if $3;
+		if ($1) {
+			my $extra = $2;
+			$opt->{time} = 1;
+			$opt->{ampm} = 1
+				if $extra =~ /ampm/i;
+			$opt->{time_adjust} = $1
+				if $extra =~ /([+-]?\d+)/i;
+		}
 	}
 	elsif($type =~ /^hidden_text/i) {
 		$opt->{type} = 'hiddentext';
