@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.37 2001-03-31 14:14:48 heins Exp $
+# $Id: Config.pm,v 1.25.2.38 2001-04-08 19:15:47 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -98,7 +98,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.37 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.38 $, 10);
 
 my %CDname;
 
@@ -256,6 +256,9 @@ sub global_directives {
 	['ConfigAllBefore',	 'array',	         "$Global::VendRoot/catalog_before.cfg"],
 	['ConfigAllAfter',	 'array',	         "$Global::VendRoot/catalog_after.cfg"],
 	['Message',          'message',           ''],
+	['Capability',		 'capability',		 ''],
+	['Require',			 'require',			 ''],
+	['Suggest',			 'suggest',			 ''],
 	['VarName',          'varname',           ''],
 	['LockType',         undef,           	  ''],
 	['DumpStructure',	 'yesno',     	     'No'],
@@ -796,7 +799,7 @@ CONFIGLOOP:
 		next if $_ eq '';
 		$Vend::config_line = $_;
 		# lines read from the config file become untainted
-		m/^(\w+)\s+(.*)/ or config_error("Syntax error");
+		m/^[ \t]*(\w+)\s+(.*)/ or config_error("Syntax error");
 		$var = $1;
 		$value = $2;
 		$lvar = lc $var;
@@ -1155,7 +1158,7 @@ GLOBLOOP:
 		next if $_ eq '';
 		$Vend::config_line = $_;
 		# lines read from the config file become untainted
-		m/^(\w+)\s+(.*)/ or config_error("Syntax error");
+		m/^[ \t]*(\w+)\s+(.*)/ or config_error("Syntax error");
 		$var = $1;
 		$value = $2;
 		($lvar = $var) =~ tr/A-Z/a-z/;
@@ -1374,13 +1377,18 @@ sub parse_autovar {
 
 # Checks to see if a globalsub, sub, usertag, or Perl module is present
 # If called with a third parameter, is just "suggestion"
+# If called with a fourth parameter, is just capability check
+
+sub parse_capability {
+	return parse_require(@_, 1, 1);
+}
 
 sub parse_suggest {
 	return parse_require(@_, 1);
 }
 
 sub parse_require {
-	my($var, $val, $warn) = @_;
+	my($var, $val, $warn, $cap) = @_;
 
 	return if $Vend::ExternalProgram;
 
@@ -1391,7 +1399,10 @@ sub parse_require {
 		$error_message = "\a\n\n$1\n";
 	}
 
-	if($warn) {
+	if($cap) {
+		$carptype = sub { return; };
+	}
+	elsif($warn) {
 		$carptype = sub { return parse_message('', @_) };
 		$error_message = "\a\n\nSuggest %s %s for proper catalog operation. Not all functions will work!\n"
 			unless $error_message;
@@ -1402,6 +1413,7 @@ sub parse_require {
 			unless $error_message;
 	}
 
+	my $vref = $C ? $C->{Variable} : $Global::Variable;
 	my $require;
 	my $testsub = sub { 0 };
 	my $name;
@@ -1427,15 +1439,33 @@ sub parse_require {
 				$oldtype = '.pl';
 			}
 			$module =~ /[^\w:]/ and return undef;
-			eval "require $module$oldtype;";
-			return ! $@;
+			if(! $C or $Global::AllowGlobal->{$C->{CatalogName}}) {
+				eval "require $module$oldtype;";
+				return ! $@;
+			}
+			else {
+				# Since we aren't safe to actually require, we will 
+				# just look for a readable module file
+				$module =~ s!::!/!g;
+				$oldtype = '.pm' if ! $oldtype;
+				my $found;
+				for(@INC) {
+					next unless -f "$_/$module$oldtype" and -r _;
+					$found = 1;
+				}
+				return $found;
+			}
 		};
 	}
 	my @requires = grep /\S/, split /\s+/, $val;
 
+	my $uname = uc $name;
+	$uname =~ s/.*\s+//;
 	for(@requires) {
+		$vref->{"MV_REQUIRED_${uname}_$_"} = 1;
 		next if defined $require->{$_};
 		next if $testsub->($_);
+		delete $vref->{"MV_REQUIRED_${uname}_$_"};
 		$carptype->( ::errmsg($error_message, $name, $_) );
 	}
 	return '';	
@@ -1519,7 +1549,11 @@ sub parse_message {
 
 	return '' unless $val;
 
-	::logGlobal({level => 'info'},
+	my $strip;
+	## strip trailing whitespace if -n beins message
+	$val =~ s/^-n\s+// and $strip = 1 and $val =~ s/\s+$//;
+
+	::logGlobal({level => 'info', strip => $strip },
 				errmsg($val,
 						$name,
 						$.,
