@@ -103,13 +103,11 @@ EOF
 <font face="Arial, Helvetica, sans-serif">
 &nbsp;<a href="[area __UI_BASE__/order]">Orders</a></font>
 </b>
-[if 0]
 <br>
 <font face="Arial, Helvetica, sans-serif" size="-1">
-&nbsp;&nbsp;<a href="[area href=__UI_BASE__/order show_pending=1]">Pending</a><br>
-&nbsp;&nbsp;<a href="[area href=__UI_BASE__/order show_archived=1]">Archived</a>
+&nbsp;&nbsp;<a href="[area href=__UI_BASE__/order form="showpending=1"]">Pending</a><br>
+&nbsp;&nbsp;<a href="[area href=__UI_BASE__/order form="showarchive=1"]">Archived</a>
 </font>
-[/if]
 </font>
 </td>
 <td valign="top">
@@ -134,13 +132,11 @@ View and manage incoming orders, archive and access past orders
 <font face="Arial, Helvetica, sans-serif">
 &nbsp;<a href="[area __UI_BASE__/page]">Content</a></font>
 </b>
-[if 0]
 <br>
 <font face="Arial, Helvetica, sans-serif" size="-1">
 &nbsp;&nbsp;<a href="[area __UI_BASE__/page]">Page</a><br>
 &nbsp;&nbsp;<a href="[area __UI_BASE__/genupload]">File Xfer</a>
 </font>
-[/if]
 </font>
 </td>
 <td valign="top">
@@ -168,13 +164,11 @@ Create, edit, upload and download pages
 &nbsp;<a href="[area __UI_BASE__/customer]">Customers</a></font>
 </b>
 </font>
-[if 0]
 <br>
 <font face="Arial, Helvetica, sans-serif" size="-1">
 &nbsp;&nbsp;<a href="[area __UI_BASE__/customer_bill"]">Billing</a><br>
 &nbsp;&nbsp;<a href="[area __UI_BASE__/customer_ship"]">Shipping</a>
 </font>
-[/if]
 </font>
 </td>
 <td valign="top">
@@ -200,13 +194,11 @@ View and manage customer information and order history
 &nbsp;<a href="[area __UI_BASE__/layout]">Design</a></font>
 </b>
 </font>
-[if 0]
 <br>
 <font face="Arial, Helvetica, sans-serif" size="-1">
 &nbsp;&nbsp;<a href="[area __UI_BASE__/layout]">Layout</a><br>
 &nbsp;&nbsp;<a href="[area __UI_BASE__/search_wizard]">Search</a>
 </font>
-[/if]
 </td>
 <td valign="top">
 <font size="-1" face="Arial, Helvetica, sans-serif">
@@ -233,13 +225,11 @@ Organize site navigation, manage site layout
 &nbsp;<a href="[area __UI_BASE__/item]">Items</a></font>
 </b>
 </font>
-[if 0]
 <br>
 <font face="Arial, Helvetica, sans-serif" size="-1">
 &nbsp;&nbsp;<a href="[area __UI_BASE__/item]">List</a><br>
-&nbsp;&nbsp;<a href="[area __UI_BASE__/item_edit]">New</a>
+&nbsp;&nbsp;<a href="[area href=__UI_BASE__/item_edit form="ui_new_item=1"]">New</a>
 </font>
-[/if]
 </td>
 <td valign="top">
 <font size="-1" face="Arial, Helvetica, sans-serif">
@@ -264,13 +254,11 @@ Add and edit items displayed for sale on the site
 &nbsp;<a href="[area __UI_BASE__/orderstats]">Reporting</a></font>
 </b>
 </font>
-[if 0]
 <br>
 <font face="Arial, Helvetica, sans-serif" size="-1">
 &nbsp;&nbsp;<a href="[area __UI_BASE__/orderstats]">Orders</a><br>
 &nbsp;&nbsp;<a href="[area __UI_BASE__/trafficstats]">Traffic</a>
 </font>
-[/if]
 </td>
 <td valign="top">
 <font size="-1" face="Arial, Helvetica, sans-serif">
@@ -297,13 +285,11 @@ View statistics on orders and site traffic, create custom reports
 &nbsp;<a href="[area __UI_BASE__/merchandising]">Merchandising</a></font>
 </b>
 </font>
-[if 0]
 <br>
 <font face="Arial, Helvetica, sans-serif" size="-1">
 &nbsp;&nbsp;<a href="[area __UI_BASE__/merchandising]">Product</a><br>
 &nbsp;&nbsp;<a href="[area __UI_BASE__/affiliates]">Affiliate</a>
 </font>
-[/if]
 </td>
 <td valign="top">
 <font size="-1" face="Arial, Helvetica, sans-serif">
@@ -328,13 +314,11 @@ Set up quantity pricing, up-sell, promotions, and affiliates
 &nbsp;<a href="[area __UI_BASE__/genconfig]">Administration</a></font>
 </b>
 </font>
-[if 0]
 <br>
 <font face="Arial, Helvetica, sans-serif" size="-1">
 &nbsp;&nbsp;<a href="[area __UI_BASE__/tax]">Tax</a><br>
 &nbsp;&nbsp;<a href="[area __UI_BASE__/ship]">Shipping</a>
 </font>
-[/if]
 </td>
 <td valign="top">
 <font size="-1" face="Arial, Helvetica, sans-serif">
