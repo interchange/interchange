@@ -70,7 +70,7 @@ code	sorder	country	state	name	tax	postcode	shipmodes	tax_name
 00043	01	CA	NF	Newfoundland				
 00044	01	CA	NS	Nova Scotia				
 00045	01	CA	NT	Northwest Territories				
-00046	01	CA	NT	Nunavut				
+00046	01	CA	NU	Nunavut				
 00047	01	CA	ON	Ontario				
 00048	01	CA	PE	Prince Edward Island				
 00049	01	CA	QC	Quebec				
