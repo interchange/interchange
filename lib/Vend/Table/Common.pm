@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.32 2003-08-04 05:11:20 mheins Exp $
+# $Id: Common.pm,v 2.33 2003-10-19 17:01:47 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -23,13 +23,14 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.32 $, 10);
+$VERSION = substr(q$Revision: 2.33 $, 10);
 use strict;
 
 package Vend::Table::Common;
 require Vend::DbSearch;
 require Vend::TextSearch;
 require Vend::CounterFile;
+use Symbol;
 use Vend::Util;
 
 use Exporter;
@@ -126,6 +127,37 @@ sub separate_definitions {
 	return;
 }
 
+sub clear_lock {
+	my $s = shift;
+	return unless $s->[$CONFIG]{IC_LOCKING};
+	if($s->[$CONFIG]{_lock_handle}) {
+		close $s->[$CONFIG]{_lock_handle};
+		delete $s->[$CONFIG]{_lock_handle};
+	}
+}
+
+sub lock_table {
+	my $s = shift;
+	return unless $s->[$CONFIG]{IC_LOCKING};
+	my $lockhandle;
+	if(not $lockhandle = $s->[$CONFIG]{_lock_handle}) {
+		my $lf = $s->[$CONFIG]{file} . '.lock';
+		$lockhandle = gensym;
+		$s->[$CONFIG]{_lock_file} = $lf;
+		$s->[$CONFIG]{_lock_handle} = $lockhandle;
+		open $lockhandle, ">> $lf"
+			or die errmsg("Cannot lock table %s: %s", $s->[$CONFIG]{name}, $!);
+	}
+#::logDebug("lock handle=$lockhandle");
+	Vend::Util::lockfile($lockhandle);
+}
+
+sub unlock_table {
+	my $s = shift;
+	return unless $s->[$CONFIG]{IC_LOCKING};
+	Vend::Util::unlockfile($s->[$CONFIG]{_lock_handle});
+}
+
 sub stuff {
     my ($val) = @_;
     $val =~ s,([\t\%]),$Hex_string[ord($1)],eg;
@@ -203,6 +235,7 @@ sub close_table {
 	return 1 if ! defined $s->[$TIE_HASH];
 #::logDebug("closing table $s->[$FILENAME]");
 	undef $s->[$DBM];
+	$s->clear_lock();
     untie %{$s->[$TIE_HASH]}
 		or $s->log_error("%s %s: %s", errmsg("untie"), $s->[$FILENAME], $!);
 	undef $s->[$TIE_HASH];
@@ -276,7 +309,9 @@ sub row_hash {
 
 sub unstuff_row {
     my ($s, $key) = @_;
+	$s->lock_table() if $s->[$CONFIG]{IC_LOCKING};
     my $line = $s->[$TIE_HASH]{"k$key"};
+	$s->unlock_table() if $s->[$CONFIG]{IC_LOCKING};
     die $s->log_error(
 					"There is no row with index '%s' in database %s",
 					$key,
@@ -291,7 +326,9 @@ sub unstuff_row {
 
 sub thaw_row {
     my ($s, $key) = @_;
+	$s->lock_table() if $s->[$CONFIG]{IC_LOCKING};
     my $line = $s->[$TIE_HASH]{"k$key"};
+	$s->unlock_table() if $s->[$CONFIG]{IC_LOCKING};
     die $s->log_error( "There is no row with index '%s'", $key,)
 		unless defined $line;
     return (@{ Storable::thaw($line) })
@@ -444,7 +481,9 @@ sub stuff_row {
 		if ! length($key);
 	$s->filter(\@fields, $s->[$COLUMN_INDEX], $s->[$CONFIG]{FILTER_TO})
 		if $s->[$CONFIG]{FILTER_TO};
+	$s->lock_table();
     $s->[$TIE_HASH]{"k$key"} = join("\t", map(stuff($_), @fields));
+	$s->unlock_table();
 	return $key;
 }
 
@@ -456,7 +495,9 @@ sub freeze_row {
 		if ! length($key);
 	$s->filter(\@fields, $s->[$COLUMN_INDEX], $s->[$CONFIG]{FILTER_TO})
 		if $s->[$CONFIG]{FILTER_TO};
+	$s->lock_table();
 	$s->[$TIE_HASH]{"k$key"} = Storable::freeze(\@fields);
+	$s->unlock_table();
 	return $key;
 }
 
