@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.9 2001-11-18 11:04:13 mheins Exp $
+# $Id: Util.pm,v 2.10 2001-11-26 18:12:10 mheins Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -80,7 +80,7 @@ use Text::ParseWords;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = substr(q$Revision: 2.10 $, 10);
 
 BEGIN {
 	eval {
@@ -385,7 +385,6 @@ sub setlocale {
 
 sub currency {
 	my($amount, $noformat, $convert, $opt) = @_;
-#::logDebug("currency called: amount=$amount no=$noformat convert=$convert");
 	$opt = {} unless $opt;
 	
 	$amount = $amount / $Vend::Cfg->{PriceDivide}
@@ -456,7 +455,6 @@ eval {require Digest::MD5 };
 if(! $@) {
 	$Md = new Digest::MD5;
 	$Keysub = sub {
-#::logDebug("key gen args: '@_'");
 					@_ = time() unless @_;
 					$Md->reset();
 					$Md->add(@_);
@@ -739,13 +737,10 @@ sub check_gate {
 
 	my $gate;
 	if ($gate = readfile("$gatedir/.access_gate") ) {
-#::logDebug("found access_gate");
 		$f =~ s:.*/::;
 		$gate = Vend::Interpolate::interpolate_html($gate);
-#::logDebug("f=$f gate=$gate");
 		if($gate =~ m!^$f(?:\.html?)?[ \t]*:!m ) {
 			$gate =~ s!.*(\n|^)$f(?:\.html?)?[ \t]*:!!s;
-#::logDebug("gate=$gate");
 			$gate =~ s/\n[\S].*//s;
 			$gate =~ s/^\s+//;
 		}
@@ -777,9 +772,7 @@ sub is_hash {
 
 sub dotted_hash {
 	my($hash, $key, $value) = @_;
-#::logDebug("dotted_hash hash=$hash key=$key");
 	$hash = get_option_hash($hash) unless is_hash($hash);
-#::logDebug("dotted_hash hash=$hash key=$key after get_option_hash");
 	unless (is_hash($hash)) {
 		return undef unless defined $value;
 		$hash = {};
@@ -790,19 +783,16 @@ sub dotted_hash {
 
 	if(! defined $value) {
 		# Retrieving
-#::logDebug("dotted_hash retrieving key=$key");
 		$ref = $hash->{shift @keys};
 		for(@keys) {
 			return undef unless is_hash($ref);
 			$ref = $ref->{$_};
 		}
-#::logDebug("dotted_hash returning value=$ref");
 		return $ref;
 	}
 
 	# Storing
 	$final = pop @keys;
-#::logDebug("dotted_hash storing key=$key final=$final value=$value");
 	$ref = $hash;
 
 	for(@keys) {
@@ -812,7 +802,6 @@ sub dotted_hash {
 
 	$ref->{$final} = $value;
 	$hash = uneval_it($hash);
-#::logDebug("dotted_hash returning=$hash");
 	return $hash;
 }
 
@@ -887,7 +876,6 @@ my $Lang;
 sub find_locale_bit {
 	my $text = shift;
 	$Lang = $::Scratch->{mv_locale} unless defined $Lang;
-#::logDebug("find_locale: $Lang");
 	$text =~ m{\[$Lang\](.*)\[/$Lang\]}s
 		and return $1;
 	$text =~ s{\[(\w+)\].*\[/\1\].*}{}s;
@@ -1055,16 +1043,13 @@ sub readfile {
 
 	my $file;
 
-#::logDebug("readfile ifile=$ifile");
 	if (file_name_is_absolute($ifile) and -f $ifile) {
 		$file = $ifile;
 	}
 	else {
 		for( ".", @{$Global::TemplateDir} ) {
-#::logDebug("trying ifile=$_/$ifile");
 			next if ! -f "$_/$ifile";
 			$file = "$_/$ifile";
-#::logDebug("readfile file=$file FOUND");
 			last;
 		}
 	}
@@ -1161,7 +1146,6 @@ sub change_url {
 	my $url = shift;
 	return $url if $url =~ m{^\w+:};
 	return $url if $url =~ m{^/};
-#::logDebug("changed $url");
 	my $arg;
 	my @args;
 	($url, $arg) = split /[?&]/, $url, 2;
@@ -1428,7 +1412,6 @@ sub check_security {
 	}
 	elsif ($reconfig eq '2') {
 		$msg = "access protected database $item";
-#::logDebug("passed gate of $gate");
 		return 1 if is_yes($gate);
 	}
 	elsif ($reconfig eq '3') {
@@ -1654,7 +1637,7 @@ sub logGlobal {
 
 	$fn =~ s/^([^|>])/>>$1/
 		or $nolock = 1;
-#::logDebug("logging with $fn");
+
     $msg = format_log_msg($msg) if ! $nolock;
 
 	$Vend::Errors .= $msg if $Global::DisplayErrors;
@@ -1972,7 +1955,6 @@ sub send_mail {
 		$body = $subject;
 		undef $subject;
 		for(@$head) {
-#::logDebug("processing head=$_");
 			if( /^To:\s*(.+)/ ) {
 				$to = $1;
 			}
