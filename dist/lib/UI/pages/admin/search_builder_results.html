@@ -49,6 +49,7 @@
             case_sensitive    cs
             begin_string      bs
             substring         ss
+			return            rf
 		/
 	);
 	my %found;
@@ -79,6 +80,14 @@
 	else {
 		unshift @string, '', "co=1", '';
 	}
+
+	foreach my $one (0 .. 2) {
+		for (qw/ return /) {
+			next unless $CGI->{"$_$one"};
+			push @string, qq!$xlt{$_}=$CGI->{"$_$one"}!;
+		}
+	}
+
 	unshift @string, "sp=$CGI->{search_template}"
 		if $CGI->{search_template};
 	unshift @string, "st=$CGI->{search_type}"
