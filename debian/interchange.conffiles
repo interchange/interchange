@@ -2,6 +2,7 @@
 /etc/interchange/catalogs.cfg
 /etc/interchange/interchange.cfg
 /etc/interchange/jobs/i18n/update_locales
+/etc/interchange/jobs/merchandising/topsellers
 /etc/interchange/makecat.cfg
 /etc/interchange/robots.cfg
 /etc/init.d/interchange
