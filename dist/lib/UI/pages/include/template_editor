@@ -349,7 +349,7 @@ New name: <input type=text name=ui_destination size=22 value="">
 [/controls]
 </div>
 <script>
-	visible([either][cgi visible][or] 0 [/either],'[cgi visible_mod]');
+	visible([either][cgi visible][or] 1 [/either],'[cgi visible_mod]');
 </script>
 </td>
 </tr>
