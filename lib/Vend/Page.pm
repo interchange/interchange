@@ -1,6 +1,6 @@
 # Vend::Page - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 2.0 2001-07-18 02:23:14 jon Exp $
+# $Id: Page.pm,v 2.0.2.1 2001-10-11 23:06:01 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -45,7 +45,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.0 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.1 $, 10);
 
 my $wantref = 1;
 
@@ -100,6 +100,9 @@ sub display_page {
 		return 1;
 	}
 	else {
+		$name =~ s/\&/&amp;/g;
+		$name =~ s/\[/&#91;/g;
+		$name =~ s/\</&lt;/g;
 		display_special_page(find_special_page('missing'), $name);
 		return 0;
 	}
@@ -149,8 +152,8 @@ sub do_scan {
 	if ($c->{mv_more_matches}) {
 		$Vend::Session->{last_search} = "scan/MM=$c->{mv_more_matches}";
 		$Vend::More_in_progress = 1;
-		$c->{mv_more_matches} =~ m/([a-zA-Z0-9])+/;
 		$c->{mv_more_id} = $CGI::values{mv_more_id} || undef;
+		$c->{mv_more_matches} =~ m/([a-zA-Z0-9])+/;
 		$c->{mv_cache_key} = $1;
 		$CGI::values{mv_nextpage} = $c->{mv_nextpage}
 			if ! defined $CGI::values{mv_nextpage};
