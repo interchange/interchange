@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.50 2001-04-16 00:30:50 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.51 2001-04-16 07:40:37 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.50 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.51 $, 10);
 
 @EXPORT = qw (
 
@@ -136,19 +136,17 @@ $ready_safe = new Safe;
 $ready_safe->untrap(qw/sort ftfile/);
 
 sub reset_calc {
-#::logDebug("resetting calc");
+#::logDebug("reset_state=$Vend::Calc_reset -- resetting calc from " . caller);
 	if(! $Global::Foreground and $Vend::Cfg->{ActionMap}{_mvsafe}) {
 #::logDebug("already made");
 		$ready_safe = $Vend::Cfg->{ActionMap}{_mvsafe};
 	}
 	else {
-#::logDebug("new one made");
-		$ready_safe = new Safe 'MVSAFE';
-#::logDebug("::Instance::SearchObject=" . join ",", keys %$::Instance::SearchObject);
-		if($Global::Foreground) {
-			package MVSAFE;
-			reset 'A-Za-z_';
-		}
+		my $pkg = 'MVSAFE' . int(rand(100000));
+		undef $MVSAFE::Safe;
+		$ready_safe = new Safe $pkg;
+		$ready_safe->share_from('MVSAFE', ['$safe']);
+#::logDebug("new safe made=$ready_safe->{Root}");
 		$ready_safe->untrap(@{$Global::SafeUntrap});
 		no strict 'refs';
 		$Document   = new Vend::Document;
@@ -174,7 +172,7 @@ sub reset_calc {
 }
 
 sub init_calc {
-#::logDebug("initting calc");
+#::logDebug("reset_state=$Vend::Calc_reset init_state=$Vend::Calc_initialized -- initting calc from " . caller);
 	reset_calc() unless $Vend::Calc_reset;
 	$CGI_array                   = \%CGI::values_array;
 	$CGI        = $Safe{cgi}     = \%CGI::values;
@@ -463,8 +461,6 @@ sub cache_html {
 
 	# Comment facility
 
-	reset_calc() unless $Vend::Calc_reset;
-
 	$CacheInvalid = 0;
 
 	vars_and_comments(\$html);
@@ -535,8 +531,6 @@ sub interpolate_html {
 	return undef if $Vend::NoInterpolate;
 	my ($name, @post);
 	my ($bit, %post);
-
-	reset_calc() unless $Vend::Calc_reset;
 
 	defined $::Variable->{MV_AUTOLOAD}
 		and $html =~ s/^/$::Variable->{MV_AUTOLOAD}/;
@@ -1033,6 +1027,12 @@ sub tag_data {
 					return $val unless $Vend::Cfg->{Locale};
 					return $val unless defined $Vend::Cfg->{Locale}{$val};
 					return $Vend::Cfg->{Locale}{$val};
+				},
+
+	show_null => sub {
+					my $val = shift;
+					$val =~ s/\0/\\0/g;
+					return $val;
 				},
 	);
 
