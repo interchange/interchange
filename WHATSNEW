@@ -26,6 +26,31 @@ Core
   appropriate. Commandline options --job and --cron renamed as well
   to --jobgroup and --runjobs.
 
+* Have NonTaxableField check all ProductFiles tables for the field if
+  needed, instead of just the one in mv_ib or the first ProductFiles
+  table. This allows NonTaxableField to work with options when the base
+  product has a nontaxable field, but the options table has no nontaxable
+  field (as in Foundation). This should have no effect on people using
+  NonTaxableField the standard way.
+
+* Add option to product_common and item_common that allows an empty
+  field to be returned. In effect this option means "give me the value
+  of this field from the first ProductFiles table that has the field
+  at all" instead of "give me the first true value from a ProductFiles
+  table that has the field".
+
+* Optimize item_common a bit by looking at each table only once.
+
+* Allow systems with broken locks to not destroy the pidfile lock
+  by reading the file. Alleviates inability to use "interchange -stop".
+  Requires setting
+
+	Variable MV_BAD_LOCK 1
+
+  in interchange.cfg.
+
+  Thanks to Daniel Hutchinson for finding the problem!
+
 Menu
 ----
 
@@ -84,6 +109,10 @@ UI
 
 * Change name of "Bottom" menu (which was on top) to "Fixed". 
 
+* Check for SQL::Statement version (with hooks for testing any version,
+  lower or higher) at admin index load time, and provide warning that
+  things won't work properly.
+
 Payment
 -------
 
@@ -131,6 +160,9 @@ UserTags
 * history-scan - Added new option called 'pageonly' that causes history-scan 
   to return only the name of the previous page rather than a full "area" link.
   Can be used to set mv_successpage for a form.
+
+* Removed some code that caused table-organize to write the td.x attributes
+  twice. 
 
 ------------------------------------------------------------------------------
 
