@@ -313,6 +313,7 @@ Sorry, no matches for	Sorry, no matches for			Sorry, geen resultaten voor
 Sorry, no matches for <B>%s</B>.	Sorry, no matches for <B>%s</B>.	Leider keine Treffer für <B>%s</B>		Sorry, geen zoekresultaten gevonden voor <B>%s</B>.
 Sorry, the page (%s) was not found	Sorry, the page (%s) was not found			Sorry, de pagina (%s) is niet gevonden
 Specials	Specials	Angebote		Aanbiedingen
+State		Staat
 State/Province	State/Province	Staat/Provinz		Staat/Provincie
 Stock	Stock			Voorraad
 Stock Alert Request	Stock Alert Request			Op voorraadmelding
@@ -415,6 +416,7 @@ Your login information	Your login information			Uw login informatie
 Your price	Your price			Uw prijs
 Your request has been sent sucessfully.	Your request has been sent sucessfully.			Uw verzoek is met succes verzonden.
 Your session information has been canceled.	Your session information has been canceled.			
+Zip		PLZ
 Zip Code	Zip Code	Postleitzahl		Postcode
 Zip/Postal Code	Zip/Postal Code	Postleitzahl		Postcode
 all fields	all fields	allen Feldern		alle velden
