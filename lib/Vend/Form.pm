@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.47 2004-07-21 05:46:55 mheins Exp $
+# $Id: Form.pm,v 2.48 2005-02-13 06:48:30 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template %ExtraMeta/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.47 $, 10);
+$VERSION = substr(q$Revision: 2.48 $, 10);
 
 @EXPORT = qw (
 	display
@@ -518,8 +518,40 @@ sub date_widget {
 	undef $sel;
 	my %special = qw/ 0 midnight 12 noon /;
 	
-	for my $hr ( 0 .. 23) {
-		for my $min ( 0,15,30,45 ) {
+	my @min;
+
+	$opt->{minutes} ||= '';
+
+	if($opt->{minutes} =~ /half/i) {
+		@min = (0,30);
+	}
+	elsif($opt->{minutes} =~ /hourly/i) {
+		@min = (0);
+	}
+	elsif($opt->{minutes} =~ /ten/i) {
+		@min = (0,10,20,30,40,50);
+	}
+	elsif($opt->{minutes} =~ /[\0,]/) {
+		@min = grep /^\d+$/ && $_ <= 59, split /[\0,\s]+/, $opt->{minutes};
+	}
+	else {
+		@min = (0,15,30,45);
+	}
+
+	$opt->{start_hour} ||= 0;
+	for(qw/start_hour end_hour/) {
+		$opt->{$_} = int(abs($opt->{$_}));
+		if($opt->{$_} > 23) {
+			$opt->{$_} = 0;
+		}
+	}
+	$opt->{start_hour}	||= 0;
+	$opt->{end_hour}	||= 23;
+	
+	for my $hr ( $opt->{start_hour} .. $opt->{end_hour} ) {
+		next if defined $opt->{start_hour} and $hr < $opt->{start_hour};
+		next if defined $opt->{end_hour} and $hr > $opt->{end_hour};
+		for my $min ( @min ) {
 			my $disp_hour = $hr;
 			if($opt->{ampm}) {
 				if( $hr < 12) {
@@ -1312,7 +1344,9 @@ sub parse_type {
 		return $opt;
 	}
 
+	my %alias = (qw/ datetime date_time /);
 	my $type = $opt->{type} = lc($opt->{type}) || 'text';
+	$type = $alias{$type} if $alias{$type};
 	return $type if $type =~ /^[a-z][a-z0-9]*$/;
 
 	if($type =~ /^text/i) {
@@ -1332,17 +1366,30 @@ sub parse_type {
 			$opt->{type} = 'text';
 		}
 	}
-	elsif($type =~ /^date_?(time([^_]*))?(_?blank)?/i) {
+	elsif($type =~ /^date(.*)/i) {
 		$opt->{type} = 'date';
-		$opt->{blank} = 1 if $3;
-		if ($1) {
-			my $extra = $2;
-			$opt->{time} = 1;
-			$opt->{ampm} = 1
-				if $extra =~ /ampm/i;
+		my $extra = $1;
+		if ($extra) {
+			$opt->{time} = 1 if $extra =~ /time/i;
+			$opt->{ampm} = 1 if $extra =~ /ampm/i;
+			$opt->{blank} = 1 if $extra =~ /blank/i;
+			($extra =~ /\(\s*(\s*\d+\s*(,\s*\d+\s*)+)\s*\)/i
+					and $opt->{minutes} = $1)
+			  or
+			($extra =~ /half/i and $opt->{minutes} = 'half_hourly') 
+			  or 
+			($extra =~ /hourly/i and $opt->{minutes} = 'hourly')
+			  or 
+			($extra =~ /tens/i and $opt->{minutes} = 'tens')
+			;
+			if($extra =~ s/(\d+)-(\d+)//) {
+				$opt->{start_hour} = $1;
+				$opt->{end_hour} = $2;
+			}
 			$opt->{time_adjust} = $1
 				if $extra =~ /([+-]?\d+)/i;
 		}
+::logDebug("minutes=$opt->{minutes}");
 	}
 	elsif($type =~ /^hidden_text/i) {
 		$opt->{type} = 'hiddentext';
