@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.17.2.2 2000-11-30 02:40:36 heins Exp $
+# $Id: Data.pm,v 1.17.2.3 2000-12-11 00:55:11 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -812,7 +812,7 @@ sub import_database {
     if (
 		! defined $database_dbm
 		or ! -e $database_dbm
-        or ($txt_time = file_modification_time($database_txt))
+        or ($txt_time = file_modification_time($database_txt, $obj->{PRELOAD}))
 				>
            ($dbm_time = file_modification_time($database_dbm))
 		)
@@ -1233,13 +1233,69 @@ sub export_database {
 	1;
 }
 
-my $opt_remap;
+my $opt_remap = 0;
 my %opt_map;
+
+sub remap_options {
+	return if not defined $opt_remap;
+	my $record = shift;
+	if($opt_remap and $record) {
+		my %rec;
+		my @del;
+		my ($k, $v);
+		while (($k, $v) = each %opt_map) {
+			next unless defined $record->{$v};
+			$rec{$k} = $record->{$v};
+			push @del, $v;
+		}
+		delete @{$record}{@del};
+		@{$record}{keys %rec} = (values %rec);
+	}
+	elsif($::Variable->{MV_OPTION_TABLE_MAP}) {
+		$opt_remap = $::Variable->{MV_OPTION_TABLE_MAP};
+		$opt_remap =~ s/^\s+//;
+		$opt_remap =~ s/\s+$//;
+		map { m{(.*?)=(.*)} and $opt_map{$2} = $1} split /[\0,\s]+/, $opt_remap;
+		$opt_remap = 1;
+		remap_options($record);
+	}
+	else {
+		undef $opt_remap;
+	}
+	return;
+}
+
+sub modular_cost {
+	my ($item, $table, $final) = @_;
+#::logDebug("called modular_cost");
+	return unless $item->{mv_si};
+	my $ptr = $item->{mv_mp}
+		or return;
+#::logDebug("modular_cost ptr=$ptr");
+
+	my $db = database_exists_ref($table);
+	if(! $db) {
+		::logError('Non-existent price option table %s', $table);
+		return;
+	}
+	
+	remap_options();
+
+	return unless $db->record_exists($ptr);
+
+	my $fld = $opt_map{differential} || 'differential';
+	return unless $db->column_exists($fld);
+
+	my $p = $db->field($ptr,$fld);
+
+	return $p if $p != 0;
+	return;
+}
 
 sub option_cost {
 	my ($item, $table, $final) = @_;
 #::logDebug("called option_cost");
-	my $db = Vend::Data::database_exists_ref($table);
+	my $db = database_exists_ref($table);
 	if(! $db) {
 		::logError('Non-existent price option table %s', $table);
 		return;
@@ -1252,22 +1308,24 @@ sub option_cost {
 	my $record = $db->row_hash($sku)
 		or return;
 
-	if(! $opt_remap and $::Variable->{MV_OPTION_TABLE_MAP}) {
-		$opt_remap = $::Variable->{MV_OPTION_TABLE_MAP};
-		$opt_remap =~ s/^\s+//;
-		$opt_remap =~ s/\s+$//;
-		%opt_map = split /[,\s]+/, $opt_remap;
-		my %rec;
-		my @del;
-		my ($k, $v);
-		while (($k, $v) = each %opt_map) {
-			next unless defined $record->{$v};
-			$rec{$k} = $record->{$v};
-			push @del, $v;
-		}
-		delete @{$record}{@del};
-		@{$record}{keys %rec} = (values %rec);
-	}
+	remap_options($record);
+
+#	if(! $opt_remap and $::Variable->{MV_OPTION_TABLE_MAP}) {
+#		$opt_remap = $::Variable->{MV_OPTION_TABLE_MAP};
+#		$opt_remap =~ s/^\s+//;
+#		$opt_remap =~ s/\s+$//;
+#		%opt_map = split /[,\s]+/, $opt_remap;
+#		my %rec;
+#		my @del;
+#		my ($k, $v);
+#		while (($k, $v) = each %opt_map) {
+#			next unless defined $record->{$v};
+#			$rec{$k} = $record->{$v};
+#			push @del, $v;
+#		}
+#		delete @{$record}{@del};
+#		@{$record}{keys %rec} = (values %rec);
+#	}
 
 	return if ! $record->{o_enable};
 
@@ -1275,7 +1333,7 @@ sub option_cost {
 	my $fsel = $opt_map{sku} || 'sku';
 	my $rsel = $db->quote($sku, $fsel);
 	my @rf;
-	for(qw/o_group price/) {
+	for(qw/o_group price o_master/) {
 		push @rf, ($opt_map{$_} || $_);
 	}
 
@@ -1314,6 +1372,7 @@ sub option_cost {
 
 sub chain_cost {
 	my ($item, $raw) = @_;
+
 	return $raw if $raw =~ /^[\d.]*$/;
 	my $price;
 	my $final = 0;
@@ -1323,14 +1382,14 @@ sub chain_cost {
 	$raw =~ s/\s+$//;
 	if($raw =~ /^\[\B/ and $raw =~ /\]$/) {
 		my $ref = Vend::Interpolate::tag_calc($raw);
-		@p = @{$ref} if ref $ref;
+		@p = ref $ref ? @{$ref} : $ref;
 	}
 	else {
 		@p = Text::ParseWords::shellwords($raw);
 	}
-	if(scalar @p > 16) {
-			::logError('Too many chained cost levels for item ' .  uneval($item) );
-			return undef;
+	if(scalar @p > 64) {
+		::logError('Too many chained cost levels for item ' .  uneval($item) );
+		return undef;
 	}
 
 #::logDebug("chain_cost item = " . uneval ($item) );
@@ -1339,7 +1398,8 @@ sub chain_cost {
 	my $want_key;
 CHAIN:
 	foreach $price (@p) {
-		if($its++ > 20) {
+		next if ! length($price);
+		if($its++ > 64) {
 			::logError('Too many chained cost levels for item ' .  uneval($item) );
 			last CHAIN;
 		}
@@ -1448,9 +1508,15 @@ CHAIN:
 				}
 				elsif ($table) {
 #::logDebug("before option_cost price=$price final=$final");
-					my ($p, $f) = option_cost($item, $table, $final);
+					my ($p, $f);
+					if($item->{mv_mp}) {
+						($p, $f) = modular_cost($item, $table, $final);
+					}
+					else {
+						($p, $f) = option_cost($item, $table, $final);
+					}
 					$final = $f if defined $f;
-					$price = $p if defined $p;
+					$price = $p || '';
 #::logDebug("option_cost returned p=$p f=$f, price=$price final=$final");
 					redo CHAIN;
 				}
@@ -1495,26 +1561,61 @@ CHAIN:
 
 sub item_price {
 	my($item, $quantity, $noformat) = @_;
-#::logDebug("item_price: " . ::uneval_it(\@_));
+
+#::logDebug("item_price initial call: " . (ref $item ? $item->{code} : $item));
+
 	return $item->{mv_cache_price}
 		if ! $quantity and defined $item->{mv_cache_price};
-	my ($price, $base, $adjusted);
+
 	$item = { 'code' => $item, 'quantity' => ($quantity || 1) } unless ref $item;
-	if(not $base = $item->{mv_ib}) {
-		$base = product_code_exists_tag($item->{code})
-			or ($Vend::Cfg->{OnFly} && 'mv_fly')
-			or return undef;
+
+	my $master;
+
+	my @items;
+
+	if ($item->{mv_mp}) {
+		return 0 if $item->{mv_si};
+		$master = $item;
+		my $mv_mp = $item->{mv_mi}
+			or do {
+				::logError("Bad modular item %s: ", ::uneval_it($item));
+				return 0;
+			};
+		for(@$Vend::Items) {
+			next unless $_->{mv_si} and $_->{mv_mi} eq $mv_mp;
+#::logDebug("pushing item $_->{code}, mv_mi=$item->{mv_mi}, mv_mp=$item->{mv_mp}, mv_si=$item->{mv_si}");
+			push @items, $_;
+		}
 	}
-	$price = database_field($base, $item->{code}, $Vend::Cfg->{PriceField})
-		if $Vend::Cfg->{PriceField};
-#::logDebug("item_price before chain cost=|$price| PriceField=$Vend::Cfg->{PriceField} base=$base");
-	$price = chain_cost($item,$price || $Vend::Cfg->{CommonAdjust});
-	$price = $price / $Vend::Cfg->{PriceDivide};
-#::logDebug("item_price before cache: $price");
-	$item->{mv_cache_price} = $price
-		if ! $quantity and exists $item->{mv_cache_price};
-#::logDebug("item_price final: $price");
-	return $price;
+	
+
+	my $final = 0;
+	do {
+		my $base;
+		if(not $base = $item->{mv_ib}) {
+			$base = product_code_exists_tag($item->{code})
+				or ($Vend::Cfg->{OnFly} && 'mv_fly')
+				or return undef;
+		}
+
+		my $price;
+		$price = database_field($base, $item->{code}, $Vend::Cfg->{PriceField})
+			if $Vend::Cfg->{PriceField};
+
+#::logDebug("price for item before chain $item->{code}=$price");
+		$price = chain_cost($item,$price || $Vend::Cfg->{CommonAdjust});
+		$price = $price / $Vend::Cfg->{PriceDivide};
+
+		$item->{mv_cache_price} = $price
+			if ! $quantity and exists $item->{mv_cache_price};
+#::logDebug("price for item $item->{code}=$price");
+		$final += $price;
+	} while ($item = shift @items);
+#::logDebug("final price for item $master->{code}=$final item=" . ::uneval_it($master)) if $master;
+	$master->{mv_cache_price} = $final 
+			if $master and ! $quantity and exists $master->{mv_cache_price};
+#::logDebug("final price in item $master->{code} is $master->{mv_cache_price}") if $master;
+	return $final;
 }
 
 sub item_description {
