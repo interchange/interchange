@@ -555,7 +555,18 @@ mv_todo=return
 
 [output name=bottom_buttons]
 [button text="[L]Edit checked records in sequence[/L]" extra=" class=s2"]
-ui_sequence_edit=1
+ui_sequence_edit=[calc]
+	$CGI->{item_id_left} = $CGI->{item_id};
+	$CGI->{item_id_left} =~ s/\0+/,/g;
+	if($CGI->{item_id_left} =~ s/^(.*?),//) {
+		$CGI->{item_id} = $1;
+		return 1;
+	}
+	else {
+		delete $CGI->{item_id_left};
+		return '';
+	}
+[/calc]
 mv_nextpage=__UI_BASE__/flex_editor
 mv_todo=return
 [/button]
@@ -596,4 +607,4 @@ mv_click=db_maintenance
 [update values]
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ Revision: $Id: pref_select.html,v 2.2 2003-05-24 02:11:43 racke Exp $ -->
+<!-- page: @@MV_PAGE@@ Revision: $Id: pref_select.html,v 2.3 2003-11-14 12:08:28 racke Exp $ -->
