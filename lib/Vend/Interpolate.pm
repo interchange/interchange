@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.9.2.5 2001-10-13 23:10:23 mheins Exp $
+# $Id: Interpolate.pm,v 2.9.2.6 2001-10-17 17:41:24 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.9.2.5 $, 10);
+$VERSION = substr(q$Revision: 2.9.2.6 $, 10);
 
 @EXPORT = qw (
 
@@ -159,6 +159,7 @@ use vars @Share_vars, @Share_routines,
 use vars qw/%Filter %Ship_handler $Safe_data/;
 
 $ready_safe = new Safe;
+$ready_safe->trap(qw/:base_io/);
 $ready_safe->untrap(qw/sort ftfile/);
 
 sub reset_calc {
@@ -173,6 +174,7 @@ sub reset_calc {
 		$ready_safe = new Safe $pkg;
 		$ready_safe->share_from('MVSAFE', ['$safe']);
 #::logDebug("new safe made=$ready_safe->{Root}");
+		$ready_safe->trap(@{$Global::SafeTrap});
 		$ready_safe->untrap(@{$Global::SafeUntrap});
 		no strict 'refs';
 		$Document   = new Vend::Document;
@@ -1384,6 +1386,7 @@ sub conditional {
 	RUNSAFE: {
 		last RUNSAFE if defined $status;
 		last RUNSAFE if $status = ($noop && $op);
+		$ready_safe->trap(@{$Global::SafeTrap});
 		$ready_safe->untrap(@{$Global::SafeUntrap});
 		$status = $ready_safe->reval($op)
 			unless ($@ or $status);

@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.2.2.3 2001-10-13 23:10:23 mheins Exp $
+# $Id: Config.pm,v 2.2.2.4 2001-10-17 17:41:24 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.2.2.3 $, 10);
+$VERSION = substr(q$Revision: 2.2.2.4 $, 10);
 
 my %CDname;
 
@@ -324,6 +324,7 @@ sub global_directives {
 	['PIDcheck',		 'integer',          '0'],
 	['LockoutCommand',    undef,             ''],
 	['SafeUntrap',       'array',            'ftfile sort'],
+	['SafeTrap',         'array',            ':base_io'],
 	['NoAbsolute',		 'yesno',			 'No'],
 	['AllowGlobal',		 'boolean',			 ''],
 	['AddDirective',	 'directive',		 ''],
@@ -2981,6 +2982,7 @@ sub parse_tag {
 			my $code = $val;
 			$code =~ s'$Vend::Session->'$foo'g;
 			$code =~ s'$Vend::Cfg->'$bar'g;
+			$safe->trap(@{$Global::SafeTrap});
 			$safe->untrap(@{$Global::SafeUntrap});
 			$sub = $safe->reval($code);
 			if($@) {
