@@ -1,38 +1,40 @@
 [comment]
 ui_component: cross
-ui_component_type: content, vertical
-ui_component_group: promotions
-ui_component_label: Cross-sell or specific feature
-ui_component_help: depends on setting cross_codes or cross_category in page, \
-falls back to featured/specials.
+ui_type: component
+ui_name: cross
+ui_class: content, vertical
+ui_group: promotions
+ui_help: depends on setting cross_codes or cross_category in page, falls back to featured/specials.
+ui_label: Cross-sell or specific feature
+ui_source: templates/components/cross
+
+banner:
+	code: banner
+	default: See also...
+	label: Top row banner
+	type: text
+	width: 40
 
 size:
 	label: Number of selections
-	widget: select
 	options: 1,2,3*,4,5,6,7,8,9,10
+	type: select
 
 cols:
 	label: Number of columns
-	widget: select
 	options: 1,2,3*,4,5,6,7,8,9,10
-
-banner:
-	label: Top row banner
-	widget: text
-	width: 40
-	default: See also...
+	type: select
 
 cross_codes:
 	label: Specific featured products (sku)
-	widget: text
+	type: text
 	width: 40
 
 random:
 	label: Random order?
-	widget: yesno
+	type: yesno
 
 [/comment]
-
 <!-- BEGIN COMPONENT [control component cross_horizontal] -->
 [if !scratch cross_codes]
 [tmp cross_codes][control cross_codes][/tmp]

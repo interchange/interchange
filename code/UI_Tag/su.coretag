@@ -99,17 +99,17 @@ sub {
 	elsif ($user) {
 		if( $u->{admin} and ! $super) {
 		}
-::logDebug("user table=$table ufield=$ufield");
+#::logDebug("user table=$table ufield=$ufield");
 		$table  ||= 'userdb';
 		$ufield ||= 'username';
-::logDebug("user table=$table ufield=$ufield");
+#::logDebug("user table=$table ufield=$ufield");
 		if(! $Tag->data($table, $ufield, $user) ) {
 			$Scratch->{ui_error} = errmsg("attempt to su to non-existent user %s", $user);
 			return undef;
 		}
 		my $rand	= random_string();
 		my $sess	= uneval_it($Session);
-::logDebug("sess is $sess");
+#::logDebug("sess is $sess");
 		my $sesskey	= generate_key($rand . $sess);
 
 		open(MDIT, "> $dir/$Session->{id}")

@@ -1,38 +1,43 @@
-<!-- BEGIN COMPONENT [control component best] -->
 [comment]
 ui_component: best
-ui_component_type: vertical, content
-ui_component_group: promotion
-ui_component_label: Best sellers
+ui_type: component
+ui_name: best
+ui_class: vertical, content
+ui_group: promotion
+ui_label: Best sellers
+ui_source: templates/components/best
 
 banner:
-	widget: text
+	code: banner
+	type: text
 	width: 40
+	default: Best Sellers...
 
 toprow_css:
-	label: CSS describing top row
-	widget: textarea
-	width: 60
-	height: 4
 	advanced: 1
+	height: 4
+	label: CSS describing top row
+	type: textarea
+	width: 60
 
 toprow_color:
-	widget: text
-	width: 7
 	advanced: 1
+	type: text
+	width: 7
 
 matches:
-	widget: select
-	options: 1,2*,3,4,5,6,7,8,9,10
 	help: If you select more matches than columns, multiple rows will be generated.
+	options: 1,2,3,4,5,6,7,8,9,10
+	type: select
+	default: 2
 
 cols:
 	label: Columns
-	widget: select
-	options: 1,2*,3,4
+	options: 1,2,3,4
+	type: select
+	default: 2
 
 [/comment]
-
 <table width="95%" align=center>
 <tr> 
   <td class="categorybar"> 

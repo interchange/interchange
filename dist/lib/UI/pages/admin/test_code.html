@@ -23,7 +23,12 @@
 [/if]
 	<tr>
 		<td>
-		<textarea name=itl_code rows=20 cols=80>[filter op=entities][scratchd itl_code][/filter]</textarea>
+		[display
+			type=textarea
+			name=itl_code
+			rows=20 cols=80
+			value="[scratchd itl_code]"
+			enable-itl=1]
 		<br>
 		<input type=submit value="[L]Run[/L]"> <input type=button value="[L]Clear[/L]" onClick="this.form.itl_code.value=''"> [display type=select name=xmp cgi-default=1 options="1=Source, 0=HTML"]
 		</td>

@@ -1,0 +1,358 @@
+[content-editor name="[cgi ui_name]" type="[cgi ui_type]"]
+[templates]
+
+<script language=JavaScript>
+function changed (code, field) {
+	var name = "changed_" + code;
+	cbox = document.getElementById(name);
+	cbox.checked = true;
+}
+
+function submitted (code) {
+	var name = "changed_" + code;
+	cbox = document.getElementById(name);
+	cbox.checked = false;
+	return true;
+}
+
+function change_alert (code) {
+	if(code.length == 0) {
+		code = 'a new component';
+	}
+	var status;
+	status = confirm('You have changed ' + code + ". Choosing OK will lose these changes. Are you sure?");
+	return status;
+}
+
+function check_change () {
+	var el;
+	el = document.getElementById('changed_ui_body');
+	if(el != undefined && el.checked == true) {
+		return change_alert('the component body');
+	}
+	[controls]
+	el = document.getElementById('changed_[cont-code]');
+	if(el != undefined && el.checked == true) {
+		return change_alert('[cont-code]');
+	}
+	[/controls]
+	[components]
+		[comp-change 1][condition][comp-param where][/condition]
+			[if-comp-param code]
+			el = document.getElementById('changed_[comp-param where]');
+			if(el != undefined && el.checked == true) {
+				return change_alert('[comp-param where]');
+			}
+			[/if-comp-param]
+		[/comp-change 1]
+	[/components]
+	return true;
+}
+
+var visdone = new Array;
+function visible (index, base) {
+	var ai;
+	var xi;
+	var dosel;
+	var selstd = 'dynform';
+	var clickstd = 'clicker';
+
+	if(base == undefined || base.length == 0) {
+		selbase = selstd;
+		clickbase = clickstd;
+	}
+	else {
+		selbase   = base + '_' + selstd;
+		clickbase = base + '_' + clickstd;
+		var found = 0;
+		for(ai = 0; ai < visdone.length; ai++) {
+			if (visdone[ai].value == base) {
+				found = 1;
+				break;
+			}
+		}
+		if(found != 1) 
+			visdone[ai] = base;
+	}
+
+	selnam =  selbase + index;
+	clicknam = clickbase + index;
+
+	for(ai = 0; ai < visdone.length; ai++) {
+		sb = visdone[ai] + '_' + selstd;
+		cb = visdone[ai] + '_' + clickstd;
+		for( xi = 0; ; xi++) {
+			nam = sb + xi;
+			cnam = cb + xi;
+			var el = document.getElementById(nam);
+
+			if(el == undefined) {
+				break;
+			}
+
+			el.style.zIndex = 0;
+			el.style.visibility = 'Hidden';
+
+			var cel = document.getElementById(cnam);
+
+			if(cel != undefined) {
+				cel.style.background = '#FFFFFF';
+			}
+		}
+	}
+
+	for( xi = 0; ; xi++) {
+		nam = selstd + xi;
+		cnam = clickstd + xi;
+		var el = document.getElementById(nam);
+
+		if(el == undefined) {
+			break;
+		}
+
+		el.style.zIndex = 0;
+		el.style.visibility = 'Hidden';
+
+		var cel = document.getElementById(cnam);
+
+		if(cel != undefined) {
+			cel.style.background = '#FFFFFF';
+		}
+	}
+
+	if (index < 0) return;
+
+	var element = document.getElementById(selnam);
+	var celement = document.getElementById(clicknam);
+	element.style.visibility = 'Visible';
+	element.style.zIndex = 2;
+	if(celement != undefined) {
+		celement.style.background = '#EEEEEE';
+	}
+
+	return;
+}
+
+</script>
+
+<table>
+<tr>
+<td valign=top>
+<form name=overall action="[area @@MV_PAGE@@]" method=POST>
+
+<h3>Template Attributes</h3>
+<div align=right>
+	Description: <input type=text size=30 value="[tem-param ui_label]"><BR>
+</div>
+<hr>
+<h3>Template Controls</h3>
+[controls]
+<div id=clicker[cont-increment] style="border: 1; border-style: thin">
+[if-cont-param code]
+Name: <A
+		HREF="javascript:void(0)"
+		NAME=clicker[cont-increment]
+		onClick="visible([cont-increment])"
+		title="edit [cont-param code]"
+		><span
+			style="font-size: larger; font-weight: bolder"
+			>[cont-param code]</span></A><BR>
+Label: [cont-param label]<br>
+Widget: [cont-param type]<br>
+Action: 
+<A HREF="[area
+		href="@@MV_PAGE@@"
+		form=auto
+		code="[cont-param code]"
+		ui_content_op=delete
+		ui_name="[cont-parent ui_name]"
+		ui_type="[cont-parent ui_type]"
+]" onClick="return check_change()">delete</A>&nbsp;&nbsp;
+<A HREF="[area
+		href="@@MV_PAGE@@"
+		form=auto
+		ce_motion=up
+		code="[cont-param code]"
+		ui_content_op=motion
+		ui_name="[cont-parent ui_name]"
+		ui_type="[cont-parent ui_type]"
+]" onClick="return check_change()">up</A>&nbsp;&nbsp;
+<A HREF="[area
+		href="@@MV_PAGE@@"
+		form=auto
+		ce_motion=down
+		code="[cont-param code]"
+		ui_content_op=motion
+		ui_name="[cont-parent ui_name]"
+		ui_type="[cont-parent ui_type]"
+]" onClick="return check_change()">down</A><BR>
+[else]
+	<A HREF="javascript:void(0)"
+		NAME=clicker[cont-increment]
+		onClick="visible([cont-increment])">Add a new control</A><BR>
+[/else]
+[/if-cont-param]
+<INPUT TYPE=checkbox VALUE=1 NAME="changed_[cont-param code]" id="changed_[cont-param code]"> changed
+</div>
+<p>
+[/controls]
+
+<table border=1 borderstyle=thin>
+<tr>
+	<td>
+	<b>Page layout</b>
+[components]
+[comp-sub tmp_slot]
+	return ++$slot;
+[/comp-sub]
+[if-comp-param where]
+[comp-change 1][condition][comp-param where][/condition]
+	</td>
+</tr>
+<tr>
+<td id="comp_clicker[comp-increment]">
+	Template area
+	<A	HREF="javascript:void(0)"
+		onClick="visible([comp-increment],'comp')"
+		title="edit [comp-param where]"
+	><span
+		style="font-size: larger; font-weight: bolder"
+		>[comp-param where]</span></A><br>
+	<INPUT	TYPE=checkbox
+			VALUE=1
+			NAME="changed_[comp-param where]"
+			id="changed_[comp-param where]"
+	>&nbsp;changed<br>
+[/comp-change 1]
+ [if-comp-param code]
+ Slot [comp-exec tmp_slot][/comp-exec]:
+	class=[comp-param class],
+	default=[content-info label=1 code="[comp-code]"] ([comp-code])<br>
+ [/if-comp-param]
+[else]
+	</td>
+</tr>
+<tr>
+	<td>
+Page content<BR>
+[/else]
+[/if-comp-param]
+</div>
+[/components]
+	</td>
+</tr>
+</table>
+
+[set Publish]
+ui_content_op=publish
+mv_nextpage=__UI_BASE__/content
+[/set]
+[set Cancel]
+ui_content_op=cancel
+mv_nextpage=__UI_BASE__/content
+[/set]
+<input type=hidden name=ui_name value="[tem-param ui_name]">
+<input type=hidden name=ui_type value="[tem-param ui_type]">
+<input type=hidden name=mv_action value="return">
+<input style="font-weight: bold" type=submit onClick="return check_change()" name=mv_click value="[L]Publish[/L]"> &nbsp;
+<input type=submit onClick="return check_change()" name=mv_click value="[L]Cancel[/L]"><br>
+New name: <input type=text name=ui_destination size=22 value="">
+</form>
+</td>
+<td>
+<div
+    style="
+            Position:Relative;
+            Left:0; Top:0; Height:100%; Width:100%;
+            Visibility:Visible;
+            z-index:1;
+	">
+	<div 
+		id=dynform0
+		style="
+				Position:Absolute;
+				Left:0; Top:0; Height:100%; Width:100%;
+				Visibility:Visible;
+				z-index:2;
+		">
+		<blockquote>
+		<h2>Edit area</H2>
+		When you select an element to the left, it will be edited here.
+		</blockquote>
+	</div>
+	<div 
+		id=comp_dynform0
+		style="
+				Position:Absolute;
+				Left:0; Top:0; Height:100%; Width:100%;
+				Visibility:Visible;
+				z-index:0;
+		">
+		<blockquote>
+		<h2>Edit area</H2>
+		When you select an element to the left, it will be edited here.
+		</blockquote>
+	</div>
+[components]
+	<div
+		id="comp_dynform[comp-increment]"
+		style="
+				Position:Absolute; 
+				Left:0; Top:0; Height:100%; Width:100%;
+				Visibility: Hidden;
+				z-index:0;
+			">
+	[comp-change 1][condition][comp-param where][/condition]
+		[if-comp-param where]
+		[set c_content][comp-parent [comp-param where]][/set]
+			[table-editor
+				form-extra=|
+					onSubmit="submitted('[comp-param where]'); return check_change()"
+					onReset="submitted('[comp-param where]')"
+				|
+				action=back
+				height.ui_body_text="40"
+				href="[area @@MV_PAGE@@]"
+				hidden.ui_content_op=modify_body
+				hidden.ui_name=[comp-parent ui_name]
+				hidden.ui_type=[comp-parent ui_type]
+				hidden.visible=[comp-increment]
+				hidden.visible_mod=comp
+				item_id="[comp-param where]"
+				js_changed=changed
+				label.ui_body_text="[comp-param where] body"
+				ui_nextpage=@@MV_PAGE@@
+				nocancel=1
+				override.ui_body_text=`$Scratch->{c_content}`
+				show_reset=1
+				table=mv_metadata
+				ui_data_fields="code ui_body_text"
+				ui_display_only="ui_body_text"
+				ui_hide_key=1
+				view=ui_component
+				]
+		[/if-comp-param]
+	[/comp-change 1]
+	</div>
+[/components]
+[controls]
+	<div
+		id=dynform[cont-increment]
+		style="
+				Position:Absolute;
+				Left:0; Top:0; Width:98%; Height: 98%;
+				Visibility: Hidden;
+				z-index:0;
+		">
+	[cont-param _editor_table]
+	</div>
+[/controls]
+</div>
+<script>
+	visible([either][cgi visible][or] 0 [/either],'[cgi visible_mod]');
+</script>
+</td>
+</tr>
+</table>
+[/templates]
+[/content-editor]

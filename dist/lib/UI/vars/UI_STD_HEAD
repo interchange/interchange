@@ -339,11 +339,12 @@ EOF
           <br>
 		[if scratch icon_name]<img src="[scratch icon_name]" width=16 height=16 border=0 valign=top alt=icon> &nbsp; [/if]
 	   <font size="+1" face="Verdana,arial,helvetica,sans-serif" color="__UI_C_HEADERTXT__">[either][scratch page_banner][or][scratch page_title][/either]&nbsp;</font><p>
+
     [if type=explicit compare="[error all=1 show_var=1 keep=1]"]
 	<P>
 	<B>Error:</B>
 	<BLOCKQUOTE class=cerror>
-		[error all=1 show_error=1 joiner="<br>"]
+		[error show_var=1 all=1 show_error=1 joiner="<br>"]
 	</BLOCKQUOTE>
 	</P>
 	[/if]
@@ -361,6 +362,7 @@ EOF
 	</BLOCKQUOTE>
 	</P>
 	[/if]
+	[warnings auto=1]
 [/if]
 [comment] Clear these puppies [/comment]
 [calc]

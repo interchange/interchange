@@ -1,23 +1,26 @@
 [comment]
 ui_component: fortune
-ui_component_type: vertical
-ui_component_group: info
-ui_component_label: Random saying
-
-short:
-	widget: select
-	options: Yes, No
-	default: 1
-	label: Short only?
+ui_type: component
+ui_name: fortune
+ui_class: vertical
+ui_group: info
+ui_label: Random saying
+ui_source: templates/components/fortune
 
 banner:
-	widget: text_20
+	code: banner
 	default: Just a thought...
-	label: Banner
+	label: Banner Foo
+	type: text
+	width: 33
+
+short:
+	default: 1
+	label: Short only?
+	type: yesno
 
 [/comment]
-
-<!-- BEGIN COMPONENT [control component cart_tiny] -->
+<!-- BEGIN COMPONENT [control component fortune] -->
 
 <tr><td align="center">
   <table width="95%">
@@ -41,4 +44,4 @@ banner:
   </table>
 </td></tr>
 
-<!-- END COMPONENT [control component cart_tiny] -->
+<!-- END COMPONENT [control component fortune] -->

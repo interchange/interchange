@@ -1,25 +1,29 @@
 [comment]
 ui_component: affiliate_receptor
-ui_component_type: content
-ui_component_label: Welcome affiliate program arrivals
+ui_type: component
+ui_name: affiliate_receptor
+ui_class: content
+ui_label: Welcome affiliate program arrivals
+ui_source: templates/components/affiliate_receptor
 
-coupon_allowed: 
-		label: Allow discount coupons
-		widget: select
-		options: 1=Yes,0=No
+coupon_allowed:
+	code: coupon_allowed
+	label: Allow discount coupons
+	options: 1=Yes,0=No
+	type: select
 
-title_css: 
-		label: Style of title
-		widget: textarea
-		advanced: 1
+title_css:
+	advanced: 1
+	code: title_css
+	label: Style of title
+	type: textarea
 
-discount_css: 
-		label: Style of discount message
-		widget: textarea
-		advanced: 1
+discount_css:
+	advanced: 1
+	label: Style of discount message
+	type: textarea
 
 [/comment]
-
 <!-- begin component [control component affiliate_receptor] -->
 [if session source]						
 [calc]
@@ -35,9 +39,9 @@ discount_css:
 	$Scratch->{coupon_approve} = 1;
 	return;
 [/calc]
-
+<!-- see if was published -->
 <br>
-
+<!--Change some content-->
 Welcome Affiliate Program Visitor:
 
 <br>

@@ -1,18 +1,58 @@
 [comment]
-ui_template: Yes
-ui_template_name: leftonly
-ui_template_version: 4.7.3
+ui_template: leftonly
+ui_type: template
+ui_name: leftonly
+ui_version: 4.9.0
+ui_label: Page with top/left areas.
+ui_source: templates/leftonly
 ui_template_layout: LEFTONLY_TOP, UI_CONTENT, LEFTONLY_BOTTOM
-ui_template_description: Page with top/left areas.
 
-page_title: 
-	description: Page title
+page_title:
+	label: Page Title
+	width: 50
 
 members_only:
+	code: members_only
+	label: Members only?
 	options: 1=Yes,=No*
-	widget: radio
-	description: Members only
+	type: yesno
 
 [/comment]
-[set page_title][set]
-[set members_only][set]
+[set page_title][/set]
+[set members_only][/set]
+
+<!-- BEGIN PAGE_PICTURE -->
+<b>Representation</b><br>
+<table width="100%">
+<tr>
+	<td colspan=2 id=picture0>preamble</td>
+</tr>
+<tr>
+	<td colspan=2 id=picture1>controls</td>
+</tr>
+<tr>
+	<td colspan=2 bgcolor="#CCCCCC"><br>header<br>&nbsp;</td>
+</tr>
+<tr>
+	<td id=comp_picture1 width="25%">slot1</td>
+	<td rowspan=3>
+		<div id=comp_picture4 style="width: 100%">slot4</div>
+		<div id=comp_picture5 style="width: 100%"><br>CONTENT<br>&nbsp;</div>
+		<div id=comp_picture6 style="width: 100%">slot5</div>
+	</td>
+</tr>
+<tr>
+	<td id=comp_picture2 width="25%">slot2</td>
+</tr>
+<tr>
+	<td id=comp_picture3 width="25%">slot3</td>
+</tr>
+
+<tr>
+	<td colspan=2 bgcolor="#CCCCCC">footer</td>
+</tr>
+<tr>
+	<td colspan=2 id=picture2>postamble</td>
+</tr>
+</table>
+<!-- END PAGE_PICTURE -->

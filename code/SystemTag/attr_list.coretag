@@ -1,4 +1,12 @@
 UserTag attr-list           Order        hash
 UserTag attr-list           hasEndTag
 UserTag attr-list           PosNumber    1
-UserTag attr-list           MapRoutine   Vend::Interpolate::tag_attr_list
+UserTag attr-list           Routine      <<EOR
+sub {
+	my ($opt, $body) = @_;
+	if( ref $opt->{hash} ) {
+		$opt = $opt->{hash};
+	}
+	return Vend::Interpolate::tag_attr_list($body, $opt);
+}
+EOR

@@ -1,26 +1,29 @@
 [comment]
 ui_component: category_horizontal
-ui_component_type: horizontal
-ui_component_group: navigation
-ui_component_label: Horizontal category list
+ui_type: component
+ui_name: category_horizontal
+ui_class: horizontal
+ui_group: navigation
+ui_label: Horizontal category list
+ui_source: templates/components/category_horizontal
 
 page_class:
-	label: Page class
-	widget: select
-	lookup: which_page
+	advanced: 1
 	db: area
 	help: Defines which sets of items should be displayed
-	advanced: 1
+	label: Page class
+	lookup: which_page
+	type: select
 
 set_selector:
-	label: Page area selector
-	widget: select
-	db: area
-	lookup: sel
-	help: Defines which sets of items should be displayed
 	advanced: 1
-[/comment]
+	db: area
+	help: Defines which sets of items should be displayed
+	label: Page area selector
+	lookup: sel
+	type: select
 
+[/comment]
 <tr><td align="left" class="categorybar">
   <br>
   <table width="90%" align="center">

@@ -1,32 +1,34 @@
 [comment]
 ui_component: promo
-ui_component_type: content, vertical
-ui_component_group: promotion
-ui_component_label: Promotion
+ui_type: component
+ui_name: promo
+ui_class: content, vertical
+ui_group: promotion
+ui_label: Promotion
+ui_source: templates/components/promo
 
 promo_type:
 	label: Promotion type
 	options: specials=Specials, new=New items
-	widget: select
+	type: select
 
 matches:
 	label: Number to show
-	widget: select
 	options: 1,2,3*,4,5,6,7,8,9,10
+	type: select
 
 cols:
 	label: Columns
 	options: 1,2,3*,4
-	widget: select
+	type: select
 
 banner:
-	label: Banner for top box
 	default: Specials
-	widget: text
+	label: Banner for top box
+	type: text
 	width: 40
 
 [/comment]
-
 <!-- BEGIN COMPONENT [control component promo] -->
 
 <table width="95%" align=center>

@@ -1,0 +1,154 @@
+[set page_perm]page[/set]
+[set page_title][L]Content editor[/L][/set]
+[set ui_class]Content[/set]
+[set help_name]page.editor[/set]
+[set icon_name]icon_pages.gif[/set]
+@_UI_STD_HEAD_@
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+<form action="[area @@MV_PAGE@@]" method=POST>
+<input type=hidden name=mv_session_id value="[data session id]">
+<input type=hidden name=mv_action value=back>
+
+[if scratch ui_error]
+<BLOCKQUOTE>
+<FONT COLOR="__CONTRAST__" SIZE=+1>
+[scratchd ui_error]
+</FONT>
+</BLOCKQUOTE>
+[/if]
+
+[calc]
+	sub tmp_display_in_progress {
+		my ($type) = shift;
+		my $store;
+		return unless exists $Session->{content_edit} and $Session->{content_edit};
+		return unless $store = $Session->{content_edit}{$type};
+		my $out = '';
+		for (sort keys %$store) {
+			defined $store->{$_}
+				or delete $store->{$_}, next;
+			$store->{$_}{ui_name}
+				or delete $store->{$_}, next;
+			$out .= $Tag->page( {
+								href => '__UI_BASE__/content_editor',
+								form => 'auto',
+								ui_name => $_,
+								ui_type => $type,
+							});
+			$out .= "$_</a>&nbsp;(";
+			$out .= $Tag->page( {
+								href => '@@MV_PAGE@@',
+								form => 'auto',
+								ui_name => $_,
+								ui_type => $type,
+								ui_content_op => 'cancel',
+							});
+			$out .= "cancel</a>)<br>";
+		}
+		return unless $out;
+		$out = '<b>In process</b><br>' . $out . '<br>';
+		return $out;
+	}
+	return;
+[/calc]
+
+[if cgi ui_content_op]
+<!-- [content-modify] -->
+[/if]
+
+[if session content_edit]
+	<A HREF="[area href=@@MV_PAGE@@ form='ui_content_op=purge']"
+				onClick="return confirm('Are you sure you want to purge all in-process edits?')"
+	>Purge all in-process</A>
+[/if]
+
+[warnings auto=1]
+
+[if type=explicit compare="[error all=1 show_var=1 keep=1]"]
+<B>There were errors:<br>
+<blockquote>
+<FONT color="__CONTRAST__">
+	[error all=1 keep=1 show_error=1 show_label=1 joiner="<br>"]
+</font>
+</blockquote>
+[/if]
+
+<table border=0 __UI_T_PROPERTIES__>
+<tr>
+<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width="100%" height=1></td>
+</tr>
+
+<tr>
+	<td bgcolor="__UI_C_INTBLOCK__" valign=top width="33%">
+	<h2>Pages</h2>
+	[calc] tmp_display_in_progress('page'); [/calc]
+	<A HREF="[area
+					href=__UI_BASE__/content_editor
+					form=auto
+					ui_type=page
+					new=1
+				]"><img src="layout.gif" border=0 align=textmiddle> [L]New page[/L]</A><br><br>
+	[file-navigator
+			initial_dir="__UI_PAGE_DIR__"
+			start_open="__UI_PAGE_DIR__"
+			edit_only=1
+			edit_all=1
+			edit_page=content_editor
+			edit_form="ui_name=~RN~&ui_type=page"
+			]
+	</td>
+
+	<td bgcolor="__UI_C_INTBLOCK__" valign=top width="33%">
+	<h2>Templates</h2>
+	[calc] tmp_display_in_progress('template'); [/calc]
+	<A HREF="[area
+					href=__UI_BASE__/content_editor
+					form=auto
+					ui_type=template
+					new=1
+				]"><img src="layout.gif" border=0 align=textmiddle> [L]New template[/L]</A><br><br>
+	[file-navigator
+			initial_dir="__UI_TEMPLATE_DIR__"
+			start_open="__UI_TEMPLATE_DIR__"
+			edit_only=1
+			edit_all=1
+			edit_page=content_editor
+			edit_form="ui_name=~RN~&ui_type=template"
+			]
+	</td>
+
+	<td bgcolor="__UI_C_INTBLOCK__" valign=top width="33%">
+	<h2>Components</h2>
+	[calc] tmp_display_in_progress('component'); [/calc]
+	<A HREF="[area
+					href=__UI_BASE__/content_editor
+					form=auto
+					ui_type=component
+					new=1
+				]"><img src="layout.gif" border=0 align=textmiddle> [L]New component[/L]</A><br><br>
+	[file-navigator
+			initial_dir="__UI_COMPONENT_DIR__"
+			start_open="__UI_COMPONENT_DIR__"
+			edit_only=1
+			edit_all=1
+			edit_page=content_editor
+			edit_form="ui_name=~RN~&ui_type=component"
+			]
+	</td>
+</tr>
+
+<tr>
+<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+</table>
+
+</form>
+
+
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ -->

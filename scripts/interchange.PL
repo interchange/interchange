@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.9.0
 #
-# $Id: interchange.PL,v 2.23 2002-02-07 02:15:21 mheins Exp $
+# $Id: interchange.PL,v 2.24 2002-02-16 09:39:11 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -1746,16 +1746,27 @@ my %action = (
 	ui_wrap => \&UI::Primitive::ui_wrap,
     ui=> sub { 
 					&UI::Primitive::ui_acl_global();
-					\&do_process(@_);
+					&do_process(@_);
 				   },
     minimate=> sub { 
 					&MiniMate::CfgMgr::mm_acl_global;
-					\&do_process(@_);
+					&do_process(@_);
 				   },
     scan	=> \&do_scan,
     search	=> \&do_search,
     order	=> \&do_order,
     obtain	=> \&do_order,
+    silent	=> sub {
+						$Vend::StatusLine = "Status: 204 No content";
+						my $extra_click = $Vend::FinalPath;
+						$extra_click =~ s:/:\0:g;
+						$CGI->{mv_click} =  $CGI->{mv_click}
+											? "$CGI->{mv_click}\0$extra_click"
+											:  $extra_click;
+						do_process(@_);
+						::respond('');
+						return 0;
+					},
 );
 
 sub dispatch {

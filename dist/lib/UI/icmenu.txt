@@ -2,7 +2,7 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0001	Top	01		Orders		order	admin/order		Orders			View and manage incoming orders, archive and access past orders		B2.gif	B2_b.gif	B2_b.gif	icon_orders.gif	
 0002	Top	02		Customers		userdb	admin/customer		Customers			View and manage customer information and order history		B3.gif	B3_b.gif	B3_b.gif	icon_people.gif	
 0003	Top	03		Items		item	admin/item		Items			Add and edit items displayed for sale on the site		B4.gif	B4_b.gif	B4_b.gif	icon_item.gif	
-0004	Top	04		Content		page	admin/page		Content			Create, edit, upload and download pages		B5.gif	B5_b.gif	B5_b.gif	icon_pages.gif	
+0004	Top	04		Content		content	admin/content		Content			Create, edit, upload and download pages		B5.gif	B5_b.gif	B5_b.gif	icon_pages.gif	
 0005	Top	05		Design		layout	admin/layout		Design			Organize site navigation, manage site layout		B6.gif	B6_b.gif	B6_b.gif	icon_design.gif	
 0006	Top	06		Merchandising		item	admin/merchandising		Merchandising			Set up quantity pricing, up-sell, promotions, and affiliates		B7.gif	B7_b.gif	B7_b.gif	icon_merch.gif	
 0007	Top	07		Reports		stats	admin/orderstats		Reports			View statistics on orders and site traffic, create custom reports		B8.gif	B8_b.gif	B8_b.gif	icon_stats.gif	
@@ -15,7 +15,8 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0015	Admin	06					admin/preferences		Preferences									
 0016	Admin	07					admin/flex_select	mv_data_table=variable&page_title=Knar editor&ui_meta_specific=1&help_name=knar.main&ui_description_fields=code&ui_return_to=admin/flex_select&ui_return_to=mv_data_table=variable&ui_return_to=page_title=Knar Editor	Knar		1							
 0017	Admin	08					admin/gentable		Tables									
-0017b	Admin	08b					admin/wizard/index		Wizard									
+0017b	Admin	08b					admin/auto_wizard		Wizard									
+0017c	Admin	08c					admin/test_code		Test code									
 0018	Admin	09					admin/reconfig	ui_changes_made	&nbsp;&nbsp;&nbsp;Apply Changes									
 0019	Admin	10	1		no_dbmenu	mv_data_table	admin/flex_select	mv_data_table=[cgi mv_data_table]	Edit									
 0020	Admin	11			no_dbmenu	mv_data_table	admin/import_table	mv_data_table=[cgi mv_data_table]	Import Data									
@@ -27,8 +28,7 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0024	Admin	15			no_dbmenu	mv_data_table	admin/gentable		&nbsp;&nbsp;&nbsp;&nbsp;Re-select Table									
 0025	Admin	16	1			access_menu	admin/access		Users									
 0026	Admin	17				access_menu	admin/group		Groups									
-0027	Content	01					admin/page		Page Edit									
-0028	Content	02					admin/template		Template Edit									
+0027	Content	01					admin/content		Content Edit									
 0029	Content	03					admin/file_transfer		File Transfer									
 0030	Customers	01		showactive			admin/customer	showactive=1	Active Customers									
 0031	Customers	02		showinactive			admin/customer	showinactive=1	Inactive Customers									

@@ -17,7 +17,7 @@ sub {
 	my $template = $opt->{type} eq 'hidden' ? '' : $opt->{template};
 
 	if($opt->{override}) {
-		$opt->{value} = defined $opt->{default} ? $opt->{default} : undef;
+		$opt->{value} = defined $opt->{default} ? $opt->{default} : '';
 	}
 
 	if(! defined $opt->{value} and $table and $column and length($key)) {
@@ -28,7 +28,7 @@ sub {
 	my $record;
 
 	my $no_meta = $CGI::values{ui_no_meta_display};
-#::logDebug("no_meta=$no_meta");
+
 	METALOOK: {
 		## No meta display wanted
 		last METALOOK if $no_meta;
@@ -119,7 +119,7 @@ sub {
 								type
 								width
 								/;
-			for(keys %$record) {
+			for(@override) {
 				delete $record->{$_} if ! length($record->{$_});
 				next unless defined $opt->{$_};
 				$record->{$_} = $opt->{$_};
@@ -204,7 +204,7 @@ sub {
 		my %things = (
 			attribute	=> $column,
 			cols	 	=> $opt->{cols}   || $record->{width},
-			field	 	=> $column,
+			column	 	=> $column,
 			passed	 	=> $record->{options},
 			rows 		=> $opt->{rows}	|| $record->{height},
 			table		=> $table,

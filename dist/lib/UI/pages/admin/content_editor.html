@@ -1,0 +1,42 @@
+[set page_perm]page[/set]
+[set ui_class]Content[/set]
+[set help_name]page.editor[/set]
+[set icon_name]icon_pages.gif[/set]
+[seti page_title]Edit [cgi ui_type] [cgi ui_name][/seti]
+[seti page_banner]Edit [cgi ui_type] <i>[cgi ui_name]<i>[/seti]
+
+[comment]This modifies content when regular CGI submit is used[/comment]
+[if cgi ui_content_op]
+	[tmp ce_status][content-modify][/tmp]
+[/if]
+
+[comment]
+	This modifies content when silent process is used, set also in
+	ContentEditor.pm
+[/comment]
+[set ce_modify][content-modify][/set]
+
+@_UI_STD_HEAD_@
+
+<!-- [pragma safe_data] -->
+
+[comment]
+	These files are kept in lib/UI/pages/include so that
+	there will be little chance of a parsing error.
+
+		Include files: lib/UI/pages/include/*_editor
+
+	They can be relocated to a catalog-specific place
+	by copying to CATROOT/include.
+[/comment]
+[if cgi ui_type eq component]
+	[include include/component_editor]
+[elsif cgi ui_type eq template]
+	[include include/template_editor]
+[/elsif]
+[else]
+	[include include/page_editor]
+[/else]
+[/if]
+
+@_UI_STD_FOOTER_@

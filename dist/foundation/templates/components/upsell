@@ -1,31 +1,33 @@
 [comment]
 ui_component: upsell
-ui_component_type: content, vertical
-ui_component_group: promotions
-ui_component_label: Upsell
-ui_component_help: depends on setting upsell codes in cart or flypage
-
-size:
-	label: Number of selections
-	widget: select
-	options: 1,2*,3,4,5,6,7,8,9,10
-
-cols:
-	label: Number of selections
-	widget: select
-	options: 1,2*,3,4,5,6,7,8,9,10
+ui_type: component
+ui_name: upsell
+ui_class: content, vertical
+ui_group: promotions
+ui_help: depends on setting upsell codes in cart or flypage
+ui_label: Upsell
+ui_source: templates/components/upsell
 
 banner:
 	label: Top row banner
-	widget: text
+	type: text
 	width: 40
+
+size:
+	label: Number of selections
+	options: 1,2*,3,4,5,6,7,8,9,10
+	type: select
+
+cols:
+	label: Number of selections
+	options: 1,2*,3,4,5,6,7,8,9,10
+	type: select
 
 random:
 	label: Random order?
-	widget: yesno
+	type: yesno
 
 [/comment]
-
 <!-- BEGIN COMPONENT [control component upsell] -->
 
 [if scratch upsell]

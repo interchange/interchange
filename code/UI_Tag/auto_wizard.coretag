@@ -1,0 +1,427 @@
+UserTag  auto-wizard  Order  name
+UserTag  auto-wizard  AddAttr
+UserTag  auto-wizard  HasEndTag
+UserTag  auto-wizard  Routine <<EOR
+
+use vars qw/$Session $Tag $CGI $Tmp $Scratch $Values $ready_safe/;
+
+sub compile_wizard {
+	my ($wizname, $opt, $script) = @_;
+#Debug("script in: $script");
+	$script =~ s/^\s+//;
+	$script =~ s/\r\n/\n/g;
+	$script =~ s/\r/\n/g;
+	my @lines = split /\n/, $script;
+	my $ref;
+
+	my @pages;
+
+	my $qip; # question in progress
+	my $iip; # item in progress
+	my $fip; # final in progress
+	my $began; # We have begun
+
+	my $sip;
+	my $vip;
+	my $mark;
+
+#Debug("Found some lines, number=" . scalar @lines);
+	for(@lines) {
+		if($mark) {
+			$sip .= "$_\n", next
+				unless $_ eq $mark;
+			$_ = $sip;
+			undef $mark;
+			undef $sip;
+		}
+
+		if (s/<<(\w+)$//) {
+			$mark = $1;
+			$sip = $_;
+			next;
+		}
+
+		s/\s+$//;
+
+		if(! $_) {
+			undef $iip;
+			next;
+		}
+
+		if(! $ref) {
+			if(/^(\w+):\s*(.*)/) {
+				$began = 1;
+				$wizname ||= $1;
+				my $title = $2;
+				$ref = { _page_name => 'begin', _name => [], title => $title };
+			}
+			next;
+		}
+
+		if(/^(\d+):\s*(.*)/) {
+			my $pn = $1; my $title = $2;
+			push @pages, $ref;
+			my $lastpage = $ref->{_page_name};
+			$qip = [];
+			$ref = { _page_name => $pn, _name => $qip, _page_title => $title};
+			next;
+		}
+		if(/^final:\s*(.*)/) {
+			undef $qip;
+			undef $iip;
+			$fip = 1;
+			my $title = $1;
+			push @pages, $ref;
+			my $lastpage = $ref->{_page_name};
+			$ref = { _page_name => 'final', _page_title => $title};
+			next;
+		}
+
+
+		if($fip) {
+		
+			s/^\s+//;
+			unless (/^([A-Za-z]\w+)\s*:\s*(.*)/s) {
+				$Tag->warnings(qq{Unrecognized "$_" in middle of script.});
+				next;
+			}
+			my $thing = $1;
+			my $value = $2;
+			$ref->{$thing} = $value;
+			next;
+		}
+
+		if($qip) {
+			if(/^(itl|perl)(?:_condition)?:\s*(.*)$/s) {
+				if(! $ref->{_condition}) {
+					$ref->{_conditional_type} = $1;
+					$ref->{_condition} = $2;
+				}
+				else {
+					$Tag->error(
+						"%s_condition: cannot set twice in wizard %s screen %s",
+						$1,
+						$pages[0]->{_title},
+						$ref->{_page_name},
+					);
+					return;
+				}
+				next;
+			}
+			s/^\s+//;
+			unless (/^([A-Za-z]\w+)(?:=([^:]+))?\s*:\s*(.*)/s) {
+				$Tag->warnings(qq{Unrecognized "$_" in middle of script.});
+				next;
+			}
+			my $thing = $1;
+			my $modifier = $2;
+			my $value = $3;
+
+			if(! $iip) {
+				$iip = $thing;
+				push @$qip, $iip;
+				$ref->{label}{$iip} = $value;
+				next;
+			}
+
+			if($modifier) {
+				$ref->{_modifier} ||= {};
+				$ref->{_modifier}{$thing} ||= {};
+				$ref->{_modifier}{$thing}{$iip} = $modifier;
+			}
+			$ref->{$thing} ||= {};
+			$ref->{$thing}{$iip} = $value;
+		}
+	}
+	push @pages, $ref;
+	$wizname ||= 'default';
+	my $wiz_ary = $Session->{auto_wizard} ||= {};
+	$wiz_ary->{$wizname} = \@pages;
+#Debug("Wizard $wizname=" . ::uneval(\@pages));
+	return $wizname;
+}
+
+sub {
+	my ($wizname, $opt, $body) = @_;
+
+	return $Tmp->{auto_wizard} if $opt->{show} and ! $opt->{run};
+
+	if($opt->{compile}) {
+		my $n;
+		$n = compile_wizard(@_)
+			or do {
+				$Tmp->{auto_wizard} = errmsg(
+										"Wizard %s failed to compile.",
+										$wizname,
+									);
+				return;
+				};
+#Debug("compiler returned wizname=$n");
+		$wizname = $n;
+		undef $body;
+	}
+
+	if(! defined $opt->{run}) {
+		$opt->{run} = 1;
+		$opt->{show} = 0 if ! defined $opt->{show};
+	}
+
+	my $title_var = $opt->{title_scratch}   || 'page_title';
+	my $banner_var = $opt->{banner_scratch} || 'page_banner';
+	my $wiz;
+
+	return unless $wiz = $Session->{auto_wizard};
+
+	$wizname ||= $CGI->{wizard_name} || 'default';
+#Debug("wizname=$wizname");
+
+	return unless $wiz = $wiz->{$wizname};
+#Debug("we have a wiz! wizname=$wizname");
+
+	my $beg = $wiz->[0];
+	my $fin = $wiz->[-1];
+
+	for($beg, $fin) {
+		die "Bad wizard!" unless ref($_) eq 'HASH';
+	}
+
+	my $lastwiz = $#$wiz;
+	my $lastpage = $CGI->{wizard_page} || 0;
+	my $current_page;
+
+	my %opts;
+	copyref($beg, \%opts);
+
+	# Get rid of internal stuff
+	for(keys %opts) {
+		next unless /^_/;
+		delete $opts{$_};
+	}
+
+
+	if($CGI->{ui_wizard_action} eq 'Back') {
+		$current_page = $lastpage - 1;
+	}
+	elsif($CGI->{ui_wizard_action} eq 'Cancel') {
+		$current_page = 0;
+	}
+	elsif($CGI->{ui_wizard_action} eq 'Next') {
+		$current_page = $lastpage + 1;
+	}
+	else {
+		$current_page = $lastpage;
+	}
+
+	my $finished;
+	my $condition_done;
+	my $optref;
+	GETSCREEN: {
+		$optref = $wiz->[$current_page];
+		if(! $condition_done and $optref->{_condition}) {
+			$condition_done = 1;
+			my $result;
+			if($optref->{_condition_type} eq 'itl') {
+				eval {
+					$result = interpolate_html($optref->{_condition});
+				};
+				$result =~ s/\s+$//;
+				$result =~ s/.*\s//s;
+				$result += 0;
+				$current_page += $result;
+			}
+			else {
+				eval {
+					$result = $ready_safe->reval($optref->{_condition});
+				};
+				if($@) {
+					$Tag->error(
+						"error during perl conditional: $@\ncode was:\n%s",
+						$@,
+						$optref->{_condition},
+					);
+					$current_page -= 1;
+				}
+				$result += 0;
+#::logDebug("did perl conditional, result=$result");
+				$current_page += $result;
+			}
+			redo GETSCREEN;
+		}
+
+		if($current_page <= 0) {
+			$current_page = 1;
+		}
+		elsif ( ($current_page + 1) == $lastwiz ) {
+			$opts{next_text} = errmsg('Finish')
+				if $fin->{auto};
+		}
+		elsif ($current_page >= $lastwiz) {
+			$finished = 1;
+		}
+		$optref = $wiz->[$current_page];
+	}
+	
+	my %attr;
+
+	$attr{TITLE}  = $Scratch->{$title_var}  = $optref->{_page_title};
+	$attr{BANNER} = $Scratch->{$banner_var} = $optref->{_page_title};
+
+	if($finished) {
+			my $ref = { %$fin };
+			my @vals;
+			for my $w (@$wiz) {
+				next unless ref($w->{_name}) eq 'ARRAY';
+				push @vals, @{$w->{_name}};
+			}
+#Debug("finished, page ref=" . uneval($ref));
+			$ref->{href} ||= delete $ref->{page};
+			$attr{TITLE} = $Scratch->{$title_var}
+				= $ref->{_page_title} || "Finished with $wizname...";
+			$attr{PROMPT} = delete $ref->{prompt} || '';
+			$attr{ANCHOR} = delete $ref->{anchor} || 'Go';
+			$attr{EXTRA} = delete $ref->{extra} || '';
+			my $remap = delete $ref->{remap};
+			my $template = delete $ref->{template};
+			$attr{EXTRA} = " $attr{EXTRA}" if $attr{EXTRA};
+			my $auto = delete $ref->{auto};
+
+			for(keys %$ref) {
+				next unless /^_/;
+				delete $ref->{$_};
+			}
+
+			$ref->{form} = 'auto';
+			for(@vals) {
+				$ref->{$_} = $Values->{$_};
+			}
+
+			my $save = {};
+			if($remap) {
+				my @pairs = split /[\s,\0]+/, $remap;
+				for(@pairs) {
+					my ($k, $v) = split /=/, $_;
+					next unless $k and $v;
+					my $val = delete($ref->{$k}) || $save->{$k};
+					$save->{$k} = $val;
+					$ref->{$v} = $val;
+				}
+			}
+
+			$attr{URL} = $Tag->area($ref);
+
+			if($auto) {
+				$opt->{reparse} = 1;
+				return '[bounce href="' . $attr{URL} . '"]';
+			}
+			$template ||= <<'EOF';
+<H1>{TITLE}</h1>
+{PROMPT}
+<p>
+<blockquote>
+<A HREF="{URL}"{EXTRA}>{ANCHOR}</A>
+</blockquote>
+EOF
+			$Tmp->{auto_wizard} = $Tag->attr_list( { hash => \%attr }, $template);
+			return $Tmp->{auto_wizard} if $opt->{show};
+			return;
+	}
+
+#Debug("we have a wiz=$wizname! current_page = $current_page");
+
+#Debug("optref=" . $Tag->uneval(undef, $optref));
+	my $name = $optref->{_name} || die;
+	$Scratch->{page_title} = $optref->{_page_title};
+
+
+	$opts{all_errors} = '1';
+	$opts{hidden} = {
+		wizard_name => $wizname,
+		wizard_page => $current_page,
+	};
+
+	$opts{wizard} = 1;
+	$opts{notable} = 1;
+	$opts{no_meta} = 1;
+	$opts{defaults} = 1;
+	$opts{mv_cancelpage} ||= 'admin/index';
+	$opts{row_template} = <<'EOF';
+{HELP}    <td>&nbsp;</td>
+	<td class=cdata>
+   <span style="color: blue">$HELP$</span>
+   </td>
+</tr>
+<tr class=rnorm>{/HELP}
+   <td class=cdata width="20%"> 
+     $BLABEL$$LABEL$$ELABEL$
+   </td>
+   <td class=cdata> 
+     <table cellspacing=0 cellmargin=0 width="100%">
+       <tr> 
+         <td class=cwidget> 
+           $WIDGET$
+         </td>
+         <td class=chelp>~TKEY~{HELP_URL}<BR><A HREF="$HELP_URL$">more help</A>{/HELP_URL}</td>
+       </tr>
+     </table>
+   </td>
+<tr class=rtitle>
+	<td colspan=2><img src="bg.gif"></td>
+EOF
+
+	$opts{ui_wizard_fields} = join " ", @$name;
+	$opts{mv_nextpage} = $Global::Variable->{MV_PAGE};
+	$opts{mv_prevpage} = $Global::Variable->{MV_PAGE} if $current_page != 1;
+	$opts{bottom_buttons} = 1;
+
+	my %modsub = (
+			i		=> sub {
+							my $val = shift;
+							::logDebug("running interpolate of $val");
+							return interpolate_html($val);
+						},
+			default => sub {
+							my $val = shift;
+							my $filters = join " ", @_;
+							return $Tag->filter($filters, $val);
+						},
+		);
+	my $mod = $optref->{_modifier} || '';
+	for(keys %$optref) {
+		next if /^_/;
+		next unless ref($optref->{$_}) eq 'HASH';
+		$opts{$_} ||= {};
+		next unless ref($opts{$_}) eq 'HASH';
+		Vend::Util::copyref($optref->{$_}, $opts{$_});
+		my $m;
+		if($mod and $m = $mod->{$_}) {
+			my $r = $opts{$_};
+			for my $k (keys %$r) {
+				next unless $m->{$k};
+				my @subs = split /\s*,\s*/, $m->{$k};
+				for(@subs) {
+					my $sub = $modsub{$_} || $modsub{default};
+					$r->{$k} = $sub->($r->{$k}, $_);
+				}
+			}
+		}
+	}
+
+	$opts{widget} ||= {};
+	if( my $r = delete $opts{type} ) {
+		for(keys %$r) {
+			$opts{widget}{$_} = $r->{$_};
+		}
+	}
+
+	delete $opts{type};
+	$Tmp->{auto_wizard} = $Tag->table_editor( {all_opts => \%opts });
+	if($Tmp->{auto_wizard} !~ /<form\s+/i) {
+		$attr{auto_wizard} .= "\n";
+		my $msg = errmsg("Auto wizard failed to run wizard %s.", $name);
+		$Tmp->{auto_wizard} .= $Tag->error({ show => 1, set => $msg });
+	}
+
+	return $Tmp->{auto_wizard} if $opt->{show};
+	return;
+}
+EOR

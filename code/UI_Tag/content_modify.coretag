@@ -1,0 +1,8 @@
+UserTag content-modify Order op name type
+UserTag content-modify addAttr
+UserTag content-modify Routine <<EOR
+use UI::ContentEditor;
+sub {
+	return UI::ContentEditor::content_modify(@_);
+}
+EOR

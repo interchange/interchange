@@ -1,33 +1,37 @@
 [comment]
 ui_component: category_vertical
-ui_component_type: vertical
-ui_component_group: Navigation
-ui_component_label: Vertical category list
+ui_type: component
+ui_name: category_vertical
+ui_class: vertical
+ui_group: Navigation
+ui_label: Vertical category list
+ui_source: templates/components/category_vertical
 
 page_class:
-	label: Page class
-	widget: select
-	lookup: which_page
+	advanced: 1
 	db: area
 	help: Defines which sets of items should be displayed
-	advanced: 1
+	label: Page class
+	lookup: which_page
+	type: select
 
 set_selector:
-	label: Page area selector
-	widget: select
-	db: area
-	lookup: sel
-	help: Defines which sets of items should be displayed
 	advanced: 1
+	db: area
+	help: Defines which sets of items should be displayed
+	label: Page area selector
+	lookup: sel
+	type: select
 
 timed:
-	label: Use timed build
-	widget: select
-	help: Makes more efficient for large/busy catalogs
-	options: 0=No, 5=5 minutes, 10=10 minutes, 20=20 minutes, 60=60 minutes, 1440=Daily
 	advanced: 1
-[/comment]
+	code: timed
+	help: Makes more efficient for large/busy catalogs
+	label: Use timed build
+	options: 0=No, 5=5 minutes, 10=10 minutes, 20=20 minutes, 60=60 minutes, 1440=Daily
+	type: select
 
+[/comment]
 <tr><td align="left" class="categorybar">
   <br>
   <table width="90%" align="center">
@@ -67,6 +71,7 @@ timed:
 	search="
 		fi=cat
 		st=db
+		co=yes
 		tf=sort
 		tf=name
 		rf=code,name
