@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.30 2001-04-01 04:25:44 heins Exp $
+# $Id: Server.pm,v 1.8.2.31 2001-04-09 06:27:42 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.30 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.31 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -247,12 +247,12 @@ sub parse_post {
 	foreach $pair (@pairs) {
 		($key, $value) = ($pair =~ m/([^=]+)=(.*)/)
 			or do {
-				if($CGI::request_method =~ /^post$/i) {
-					die ::errmsg("Syntax error in POST input: %s\n", $pair);
-				}
-				elsif ($Global::TolerateGet) {
+				if ($Global::TolerateGet) {
 					$key = $pair;
 					$value = undef;
+				}
+				elsif($CGI::request_method =~ /^post$/i) {
+					die ::errmsg("Syntax error in POST input: %s\n%s", $pair, $$sref);
 				}
 				else {
 					die ::errmsg("Syntax error in GET input: %s\n", $pair);
@@ -1885,7 +1885,6 @@ sub server_both {
 	if($Global::SOAP) {
 		eval {
 			require Vend::SOAP;
-			require SOAP::Transport::IO;
 		};
 		if($@) {
 			::logGlobal( {
