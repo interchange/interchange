@@ -1,0 +1,4 @@
+This file documents all changes of the LINUXIA branch of Interchange.
+
+- Debian packaging files added
+- patch to makecat.PL to make -f working (CVS 1.26.4.2)
