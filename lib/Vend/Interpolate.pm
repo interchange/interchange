@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.29.4.13 2001-04-15 13:50:41 racke Exp $
+# $Id: Interpolate.pm,v 1.29.4.14 2001-08-11 11:31:56 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.29.4.13 $, 10);
+$VERSION = substr(q$Revision: 1.29.4.14 $, 10);
 
 @EXPORT = qw (
 
@@ -401,7 +401,7 @@ sub substitute_image {
                          $1 . $dir . $2#ige;
         $$text =~ s#(<body\s+[^>]*?background=")(?!https?:)([^/][^"]+)#
                          $1 . $dir . $2#ige;
-        $$text =~ s#(<t[dhr]\s+[^>]*?background=")(?!https?:)([^/][^"]+)#
+        $$text =~ s#(<t(?:[dhr]|able)\s+[^>]*?background=")(?!https?:)([^/][^"]+)#
                          $1 . $dir . $2#ige
             if $Vend::Cfg->{Pragma}{substitute_table_image};
     }
