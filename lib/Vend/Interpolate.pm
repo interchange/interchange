@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.214 2004-07-15 17:20:41 mheins Exp $
+# $Id: Interpolate.pm,v 2.215 2004-07-19 22:26:00 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.214 $, 10);
+$VERSION = substr(q$Revision: 2.215 $, 10);
 
 @EXPORT = qw (
 
@@ -4825,6 +4825,7 @@ sub tag_sql_list {
 					mv_results => $ary,
 					mv_field_hash => $nh,
 					mv_return_fields => $na,
+					mv_more_id => $opt->{mv_more_id},
 					matches => scalar @$ary,
 				};
 

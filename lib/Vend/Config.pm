@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.142 2004-07-16 23:49:06 jon Exp $
+# $Id: Config.pm,v 2.143 2004-07-19 22:26:00 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.142 $, 10);
+$VERSION = substr(q$Revision: 2.143 $, 10);
 
 my %CDname;
 my %CPname;
@@ -422,6 +422,7 @@ sub catalog_directives {
 	['SessionType', 	 undef,     		 'File'],
 	['SessionDatabase',  'relative_dir',     'session'],
 	['SessionLockFile',  undef,     		 'etc/session.lock'],
+	['MoreDB',			 'yesno',     		 'No'],
 	['DatabaseDefault',  'hash',	     	 ''],
 	['DatabaseAuto',	 'dbauto',	     	 ''],
 	['DatabaseAutoIgnore',	 'regex',	     	 ''],

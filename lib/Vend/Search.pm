@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.23 2004-06-07 03:09:36 mheins Exp $
+# $Id: Search.pm,v 2.24 2004-07-19 22:26:00 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -22,7 +22,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.23 $, 10);
+$VERSION = substr(q$Revision: 2.24 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -350,14 +350,34 @@ sub more_matches {
 	my $id = $s->{mv_more_id} || $s->{mv_session_id};
 	$id .= ".$s->{mv_cache_key}";
 	
-	my $file = Vend::Util::get_filename($id);
-#::logDebug("more_matches: $id from $file");
-
+	my $file;
 	my $obj;
 	eval {
-		$obj = Vend::Util::eval_file($file);
+		if($Vend::Cfg->{MoreDB}) {
+#::logDebug("more_matches: $id from $Vend::Cfg->{SessionDB}");
+			eval {
+				my $db = Vend::Util::dbref($Vend::Cfg->{SessionDB});
+				$obj = Vend::Util::evalr( $db->field($id,'session') );
+			};
+			$@ and return $s->search_error(
+							"Object saved wrong in session DB for search ID %s.",
+							$id,
+						);
+		}
+		else {
+			$file = Vend::Util::get_filename($id);
+#::logDebug("more_matches: $id from $file");
+			eval {
+				$obj = Vend::Util::eval_file($file);
+			};
+			$@ and return $s->search_error(
+							"Object saved wrong in %s for search ID %s.",
+							$file,
+							$id,
+						);
+		}
 	};
-	$@ and return $s->search_error("Object saved wrong in $file for search ID $id.");
+
 	for(qw/mv_cache_key mv_matchlimit /) {
 		$obj->{$_} = $s->{$_};
 	}
@@ -1117,6 +1137,7 @@ sub search_error {
 
 sub save_more {
 	my($s, $out) = @_;
+	return 1 if $s->{mv_no_more};
 	return if $MVSAFE::Safe;
 	my $file;
 	delete $s->{dbref} if defined $s->{dbref};
@@ -1137,15 +1158,24 @@ sub save_more {
 		more_alpha($s,$out);
 	}
 	
-	$file = Vend::Util::get_filename($id); 
-#::logDebug("save_more: $id to $file.");
 	my $new = { %$s };
-	$new->{mv_results} = $out;
 	delete $new->{search_routines};
+	$new->{mv_results} = $out;
+
+	if($Vend::Cfg->{MoreDB}) {
+#::logDebug("save_more: $id to Session DB.");
 #::logDebug("save_more:object:" . ::uneval($new));
-	eval {
-		Vend::Util::uneval_file($new, $file);
-	};
+		my $db = Vend::Util::dbref($Vend::Cfg->{SessionDB});
+		$db->set_field($id, 'session', Vend::Util::uneval_fast($new));
+	}
+	else {
+#::logDebug("save_more: $id to $file.");
+#::logDebug("save_more:object:" . ::uneval($new));
+		$file = Vend::Util::get_filename($id); 
+		eval {
+			Vend::Util::uneval_file($new, $file);
+		};
+	}
 	$@ and return $s->search_error("failed to store more matches");
 	return 1;
 }
