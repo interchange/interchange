@@ -1,6 +1,6 @@
 # Vend::Payment - Interchange payment processing routines
 #
-# $Id: Payment.pm,v 2.2.2.3 2002-11-26 03:21:10 jon Exp $
+# $Id: Payment.pm,v 2.2.2.4 2003-01-24 03:34:54 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
@@ -23,7 +23,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.2.2.3 $, 10);
+$VERSION = substr(q$Revision: 2.2.2.4 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -442,6 +442,7 @@ sub charge {
 
 	if($result{$svar} !~ /^success/) {
 		$Vend::Session->{payment_error} = $result{$evar};
+		$Vend::Session->{errors}{mv_credit_card_valid} = $result{$evar};
 		$result{'invalid-order-id'} = delete $result{'order-id'}
 			if $result{'order-id'};
 	}
