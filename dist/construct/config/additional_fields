@@ -56,7 +56,7 @@ Password for Postgres (if any)
 
 SUPERUSER
 Account name that will control this catalog
-__MVC_CATUSER__	intchg
+interchange	__MVC_CATUSER__
 
 CRYPTPW
 Administrative password
