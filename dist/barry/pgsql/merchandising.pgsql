@@ -7,6 +7,6 @@ Database  merchandising  PASS         __SQLPASS__
 #endif
 Database  merchandising  DEFAULT_TYPE text
 Database  merchandising  COLUMN_DEF   "sku=char(20) NOT NULL PRIMARY KEY"
-Database  merchandising  COLUMN_DEF   "featured=CHAR(32) NOT NULL, index(featured)"
-Database  merchandising  COLUMN_DEF   "start=CHAR(24) NOT NULL, index(start)"
-Database  merchandising  COLUMN_DEF   "finish=CHAR(24) NOT NULL, index(finish)"
+Database  merchandising  COLUMN_DEF   "featured=CHAR(32) NOT NULL"
+Database  merchandising  COLUMN_DEF   "start=CHAR(24) NOT NULL"
+Database  merchandising  COLUMN_DEF   "finish=CHAR(24) NOT NULL"
