@@ -2,13 +2,20 @@
 return unless $Config->{History};
 if ($recs = @{$Session->{History}} > 1) {
 	@revhist = reverse(@{$Session->{History}});
+	for (my $i = 0; $i < @revhist; $i++) {
+		Log ("URL $i: $revhist[$i]->[0]");
+	}
 	$login = $revhist[0];
 
 	if ($$login[0] ne '/__UI_BASE__/login.html') {
 		Log ("Suspicious URL for login page: $$login[0]");
 		return;
 	}
-	$Scratch->{ui_goto} = $revhist[1];
+	if ($revhist[1]->[0] eq '/__UI_BASE__/error.html') {
+		delete $Scratch->{ui_goto};
+    } else {
+		$Scratch->{ui_goto} = $revhist[1];
+	}
 }
 ''
 [/perl]
