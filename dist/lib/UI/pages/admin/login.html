@@ -3,7 +3,7 @@ return unless $Config->{History};
 if ($recs = @{$Session->{History}} > 1) {
 	@revhist = reverse(@{$Session->{History}});
 	for (my $i = 0; $i < @revhist; $i++) {
-		Log ("URL $i: $revhist[$i]->[0]");
+#		Log ("URL $i: $revhist[$i]->[0]");
 	}
 	$login = $revhist[0];
 
@@ -14,6 +14,7 @@ if ($recs = @{$Session->{History}} > 1) {
 	if ($revhist[1]->[0] eq '/__UI_BASE__/error.html') {
 		delete $Scratch->{ui_goto};
     } else {
+#		Log ("GOTO: $revhist[1]\n");
 		$Scratch->{ui_goto} = $revhist[1];
 	}
 }
