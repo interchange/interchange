@@ -8,7 +8,7 @@ foundation
 
 SAMPDATATYPE
 Sample data type?
-tools	computer	reports	none
+tools	computers	reports	none
 
 SOMESQL
 Set to 1 if you want to use MySQL, PostgreSQL, Oracle, or DB2
