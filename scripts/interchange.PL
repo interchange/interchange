@@ -3,7 +3,7 @@
 #
 # Interchange version 4.9.2
 #
-# $Id: interchange.PL,v 2.49 2002-08-10 01:59:32 mheins Exp $
+# $Id: interchange.PL,v 2.50 2002-08-12 18:56:14 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and others.
 # http://www.icdevgroup.org/
@@ -1854,8 +1854,8 @@ my %action = (
 						$Vend::StatusLine = "Status: 204 No content";
 						my $extra_click = $Vend::FinalPath;
 						$extra_click =~ s:/:\0:g;
-						$CGI->{mv_click} =  $CGI->{mv_click}
-											? "$CGI->{mv_click}\0$extra_click"
+						$CGI::values{mv_click} =  $CGI::values{mv_click}
+											? "$CGI::values{mv_click}\0$extra_click"
 											:  $extra_click;
 						do_process(@_);
 						::respond('');
