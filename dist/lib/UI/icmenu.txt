@@ -74,10 +74,10 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0073	Wizard	07	1	ship			admin/wizard/step_ship		Shipping Preferences	1			shipinfo
 0074	Wizard	08	1	pay			admin/wizard/step_pay		Payment Preferences	1			payment
 0075	Wizard	09	1	security			admin/wizard/step_security		Security Preferences	1			general
-0076	Wizard	11		products			admin/wizard/step_products		About Your Products	1			sprdsht
-0077	Wizard	12		groupcontent			admin/wizard/step_content		About Your Site	1			groupcontent
-0078	Wizard	13	1	index			admin/wizard/step_index		Index page	1			content
-0079	Wizard	14	1	about			admin/wizard/step_about		About us	1			content
+0076	Wizard	11		groupcontent			admin/wizard/step_content		About Your Site	1			groupcontent
+0077	Wizard	12	1	index			admin/wizard/step_index		Index page	1			content
+0078	Wizard	13	1	about			admin/wizard/step_about		About us	1			content
+0079	Wizard	14		products			admin/wizard/step_products		About Your Products	1			sprdsht
 0080	Wizard	16		finalize			admin/wizard/step_finalize		Content Inspection	1			finalck
 0081	Wizard	17		preview			admin/wizard/step_preview		Preview	1			general
 0082	Wizard	18		launch			admin/wizard/step_launch		Launch	1			general
