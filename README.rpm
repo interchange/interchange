@@ -2,16 +2,15 @@ NAME
     README.rpm - Interchange RPM for Redhat Systems
 
 VERSION
-    4.6.1
+    4.7.0
 
 SYNOPSIS
-    rpm -Uvh interchange-4.6.1-1.rh6.i386.rpm
-    rpm -Uvh interchange-4.6.1-1.rh7.i386.rpm
+    rpm -Uvh interchange-*.rpm
 
 DESCRIPTION
-    The Interchange 4 RPM is designed to integrate Interchange with a stock
-    Redhat installation. It places logs and run files in fairly standard
-    locations, i.e.:
+    The Interchange RPM is designed to integrate Interchange with a
+    stock Red Hat Linux installation. It places logs and run files in
+    fairly standard locations, i.e.:
 
     Configuration
         Configuration file is /etc/interchange.cfg. It is only writable by
