@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.36 2001-04-25 08:02:13 heins Exp $
+# $Id: Server.pm,v 1.8.2.37 2001-05-20 15:05:15 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.36 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.37 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -1033,7 +1033,6 @@ sub housekeeping {
 	my @pids;
 
 		if($Global::PreFork) {
-			my $count = 0;
 			my @bad_pids;
 			my (@pids) = sort keys %Page_pids;
 			my $count = scalar @pids;
