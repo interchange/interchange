@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.29 2003-04-09 15:08:50 mheins Exp $
+# $Id: Editor.pm,v 1.30 2003-05-05 14:18:53 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.29 $, 10);
+$VERSION = substr(q$Revision: 1.30 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -175,7 +175,7 @@ sub meta_record {
 
 	my $mkey = $view ? "${view}::$item" : $item;
 
-	if(! $mtable) {
+	if( ref ($mdb) eq 'HASH') {
 		$record = $mdb;
 	}
 	else {
@@ -292,7 +292,7 @@ sub display {
 		for my $metakey (@tries) {
 			## In case we were passed a meta record
 			last if $record = $sess->{$metakey} and ref $record;
-			$record = UI::Primitive::meta_record($metakey, $view, $meta)
+			$record = meta_record($metakey, $view, $meta)
 				and last;
 		}
 	}
@@ -428,10 +428,8 @@ sub display {
 		my %things = (
 			attribute	=> $column,
 			cols	 	=> $opt->{cols}   || $record->{width},
-			column	 	=> $column,
 			passed	 	=> $record->{options},
 			rows 		=> $opt->{rows}	|| $record->{height},
-			table		=> $table,
 			value		=> $opt->{value},
 		);
 
@@ -1762,7 +1760,8 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	my $elabel = $opt->{elabel};
 	my $mlabel = '';
 	my $hidden = $opt->{hidden} ||= {};
-
+	my $hidden_all = $opt->{hidden_all} ||= {};
+#::logDebug("hidden_all=" . ::uneval($hidden_all));
 	my $ntext;
 	my $btext;
 	my $ctext;
@@ -2080,28 +2079,54 @@ EOF
 			my %wid_data;
 			my %url_data;
 			my @labels = keys %$blob;
-			for my $key (@labels) {
-				my $ref = $blob->{$_};
-				my $lab = $ref->{$opt->{mv_blob_label} || 'name'};
-				if($lab) {
-					$lab =~ s/,/&#44/g;
-					$wid_data{$lab} = "$key=$key - $lab";
-					$url_data{$lab} = $Tag->page( {
-											href => $Global::Variable->{MV_PAGE},
-											form => "
-												item_id=$opt->{item_id}
-												mv_blob_nick=$key
-											",
-										});
-					$url_data{$lab} .= "$key - $lab</A>";
+			unshift @labels, '';
+
+			my $extra = '';
+			for my $k (keys %$hidden_all) {
+				my $v = $hidden_all->{$k};
+				if(ref($v) eq 'ARRAY') {
+					for(@$v) {
+						$extra .= "\n$k=$_";
+					}
 				}
 				else {
-					$wid_data{$key} = $key;
+					$extra .= "\n$k=$v";
+				}
+			}
+
+			for my $key (@labels) {
+				my $ref;
+				my $lab;
+				if($key) {
+					$ref = $blob->{$key};
+					$lab = $ref->{$opt->{mv_blob_label} || 'name'};
+				}
+				else {
+					$key = '';
+					$lab = '--' . errmsg('none') . '--';
+					$ref = {};
+				}
+				if($lab) {
+					$lab =~ s/,/&#44/g;
+					$wid_data{$key} = "$key=$key - $lab";
+					next unless $key;
 					$url_data{$key} = $Tag->page( {
 											href => $Global::Variable->{MV_PAGE},
 											form => "
 												item_id=$opt->{item_id}
-												mv_blob_nick=$key
+												mv_blob_nick=$key$extra
+											",
+										});
+					$url_data{$key} .= "$key - $lab</A><br>";
+				}
+				else {
+					$wid_data{$key} = $key;
+					next unless $key;
+					$url_data{$key} = $Tag->page( {
+											href => $Global::Variable->{MV_PAGE},
+											form => "
+												item_id=$opt->{item_id}
+												mv_blob_nick=$key$extra
 											",
 										});
 					$url_data{$key} .= "$key</A>";
@@ -2154,7 +2179,7 @@ EOF
 									passed => join (",", @wid_data{ sort keys %wid_data }) || 'default',
 									});
 				my $msg1 = errmsg('Save to');
-				my $msg2 = errmsg('Save here only');
+				my $msg2 = errmsg('Save to book only');
 				for (\$msg1, \$msg2) {
 					$$_ =~ s/ /&nbsp;/g;
 				}
@@ -2181,6 +2206,7 @@ EOF
 EOF
 
 		if($opt->{mv_blob_nick}) {
+			delete $opt->{force_defaults};
 			my @keys = split /::/, $opt->{mv_blob_nick};
 			my $ref = $blob->{shift @keys};
 			for(@keys) {
@@ -2302,10 +2328,13 @@ EOF
 #::logDebug("return-to stack = " . ::uneval($r_ary));
 	}
 
-	if(ref $opt->{hidden}) {
+	if(ref $opt->{hidden} or ref $opt->{hidden_all}) {
 		my ($hk, $hv);
 		my @o;
-		while ( ($hk, $hv) = each %{$opt->{hidden}} ) {
+		while ( ($hk, $hv) = each %$hidden ) {
+			push @o, produce_hidden($hk, $hv);
+		}
+		while ( ($hk, $hv) = each %$hidden_all ) {
 			push @o, produce_hidden($hk, $hv);
 		}
 		chunk 'HIDDEN_USER', 'OUTPUT_MAP', join("", @o); # unless $wo;
