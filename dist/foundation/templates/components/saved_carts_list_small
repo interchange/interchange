@@ -6,14 +6,17 @@ ui_component_label: Small saved cart list for left/right display
 [/comment]
 
 <!-- BEGIN COMPONENT [control component saved_carts_list_small] -->
+
 [if session logged_in]
 
- [if cgi delete_cart][delete_cart nickname="[cgi delete_cart]"][/if]
- [if cgi retrieve_cart][load_cart nickname="[cgi retrieve_cart]"][/if]
+  [if cgi delete_cart][delete_cart nickname="[cgi delete_cart]"][/if]
+  [if cgi retrieve_cart][load_cart nickname="[cgi retrieve_cart]"][/if]
 
- [userdb function=get_cart_names hide=1]
+  [userdb function=get_cart_names hide=1]
+
 [if value carts]
- [perl global=1]
+
+  [perl global=1]
   push(@Vend::TmpScratch,qw/saved_carts_carts saved_carts_recurring/);
   $Scratch->{saved_carts_carts} = '';
   $Scratch->{saved_carts_recurring} = '';
@@ -38,14 +41,15 @@ ui_component_label: Small saved cart list for left/right display
             mv_action=return
         ",
     });
-  
+
 my $row = <<"END";
-<tr class=cartrow>
-<td valign=top class=cartrow>
-  $delink<img src="@_UI_IMG_@admin/delsm.gif" border=0></a>&nbsp;&nbsp;
-</td>
-<td valign=top class=cartrow>$golink$name</A></td>
-<td valign=top class=cartrow>$last_update</td>
+
+<tr class="">
+  <td valign=top class="contentbar2">
+    $delink<img src="@_UI_IMG_@/admin/delsm.gif" border=0></a>&nbsp;&nbsp;
+  </td>
+  <td valign=top class="contentbar1">$golink$name</A></td>
+  <td valign=top class="contentbar2" nowrap><small>$last_update</small></td>
 </tr>
 END
 
@@ -60,40 +64,40 @@ END
 
  [loop list="saved_carts_carts saved_carts_recurring"]
  [if scratch [loop-code]]
- <tr> 
-   <td>
-   <p>&nbsp;</p>
-   </td>
-   <td width="119" bgcolor="__BARBG__" valign="top"><br clear=all>
-	<table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="__BARCONTRAST__">
-	<tr><td>
-	<table width="100%" border="0" cellspacing="0" cellpadding="0">
-	<tr class=sheader>
-	<td colspan=3 align=center class=sheader>
-        [if explicit]
-          [condition]'[loop-code]' eq 'saved_carts_carts'[/condition]
-            Saved Carts
-          [else]
-            Recurring Orders
-          [/else]
-        [/if]
-        </td>
-	</tr>
-	<tr VALIGN=TOP class=cartalt>
-                <td>&nbsp;</td>
-		<td align=center width="67" class=cartalt> 
-			Name
-		</td>
-		<td align=center width="33" class=cartalt> 
-			Modified
-		</td>
-	</tr>
+
+<tr> 
+  <td valign="top">
+    <table border="0" width="95%">
+    <tr>
+      <td align="center">
+        <table border="0" cellspacing="0" cellpadding="2">
+        <tr class="">
+          <td colspan=3 align=center class="categorybar">
+            [if explicit]
+            [condition]'[loop-code]' eq 'saved_carts_carts'[/condition]
+              Saved Carts
+            [else]
+              Recurring Orders
+            [/else]
+            [/if]
+           </td>
+        </tr>
+        <tr class="menubar">
+          <td class="menubar" align="left">&nbsp;X</td>
+          <td align="center" class="menubar">&nbsp;Name</td>
+	  <td align="right" class="menubar">Modified&nbsp;</td>
+        </tr>
+
         [scratch [loop-code]]
-	</table>
-	</td></tr>
-	</table>
- </td>
- </tr>
+
+        </table>
+      </td>
+    </tr>
+    </table>
+ 
+  </td>
+</tr>
+
  [/if]
  [/loop]
 
