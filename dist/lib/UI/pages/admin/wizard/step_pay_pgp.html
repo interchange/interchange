@@ -1,16 +1,16 @@
-[set page_title]Payment Preferences - PGP[/set]
+[set page_title][L]Payment Preferences - PGP[/L][/set]
 [set ui_checklist]1[/set]
 [set help_name]wizard.pgp[/set]
 @_UI_STD_HEAD_@
 
 <table width=500>
 <tr><td align=left>
-Enter the values used to enable payment processing through PGP or GnuPG.
+[L]Enter the values used to enable payment processing through PGP or GnuPG.[/L]
 </td></tr>
 <tr><td align=left>
-If you already have a GPG keyring, possible keys to encrypt against should
+[L WIZARD_STEP_PGP_PAR_1]If you already have a GPG keyring, possible keys to encrypt against should
 be displayed. You may select one, or you may input a new PGP/GPG public key to add
-to the keyring at time of preview.
+to the keyring at time of preview.[/L]
 </td></tr>
 </table>
 
@@ -33,17 +33,17 @@ to the keyring at time of preview.
 
 	ui_wizard_fields="pgpkeyid pgpkeytext"
 
-	label.pgp="Enable PGP/GPG mode"
+	label.pgp="[L]Enable PGP/GPG mode[/L]"
 	widget.pgp=yesno
 	default.pgp=1
 
-	label.pgpkeyid="PGP/GPG key selection"
-	help.pgpkeyid="This is either the key ID or the email address associated with the PGP/GPG key"
+	label.pgpkeyid="[L]PGP/GPG key selection[/L]"
+	help.pgpkeyid="[L]This is either the key ID or the email address associated with the PGP/GPG key[/L]"
 	passed.pgpkeyid=`$Scratch->{tmp_pgpkeys}`
 	widget.pgpkeyid=select
 
-	label.pgpkeytext="PGP/GPG Public Key"
-	help.pgpkeytext="Export an ASCII-armored version of your key, and paste it in."
+	label.pgpkeytext="[L]PGP/GPG Public Key[/L]"
+	help.pgpkeytext="[L]Export an ASCII-armored version of your key, and paste it in.[/L]"
 	widget.pgpkeytext=textarea_20_60
 	extra.pgpkeytext="wrap=off"
 ]

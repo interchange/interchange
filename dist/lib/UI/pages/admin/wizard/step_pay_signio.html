@@ -1,14 +1,14 @@
-[set page_title]Payment Preferences - Signio/Verisign[/set]
+[set page_title][L]Payment Preferences - Signio/Verisign[/L][/set]
 [set ui_checklist]1[/set]
 [set help_name]wizard.verisign[/set]
 @_UI_STD_HEAD_@
 
 <table width=500><tr><td align=left>
-Enter the values used to enable payment processing through Signio/Verisign.
+[L]Enter the values used to enable payment processing through Signio/Verisign.[/L]
 <P>
-NOTE: Signio became Verisign, and changed their interface. You may have
+[L WIZARD_STEP_PAY_SIGNIO_PAR_1]NOTE: Signio became Verisign, and changed their interface. You may have
 to pay close attention to partner and vendor settings, and the host to which
-you submit your transactions.
+you submit your transactions.[/L]
 </td></tr></table>
 
 [table-editor 
@@ -29,22 +29,22 @@ you submit your transactions.
 	ui_wizard_fields="signio_id signio_secret signio_server signio_partner signio_vendor"
 	ui_hide_key=1
 
-	label.signiomode="Enable Signio"
+	label.signiomode="[L]Enable Signio[/L]"
 	widget.signiomode=select
 	passed.signiomode="custom signio=Enable, =Disabled"
 	default.signiomode="custom signio"
 
-	label.signio_id="Signio account ID"
-	help.signio_id="You should have received this when you signed up"
+	label.signio_id="[L]Signio account ID[/L]"
+	help.signio_id="[L]You should have received this when you signed up[/L]"
 	widget.signio_id=text_20
 	check.signio_id=mandatory
 
-	label.signio_secret="Signio password"
-	help.signio_secret="You should have received this when you signed up -- sometimes known as 'secret'"
+	label.signio_secret="[L]Signio password[/L]"
+	help.signio_secret="[L]You should have received this when you signed up -- sometimes known as 'secret'[/L]"
 	widget.signio_secret=text_20
 	check.signio_secret=mandatory
 
-	label.signio_server="Payment server"
+	label.signio_server="[L]Payment server[/L]"
 	widget.signio_server=select
 	passed.signio_server="
 			payflow.verisign.com=Live server (new payflow.verisign.com),
@@ -54,12 +54,12 @@ you submit your transactions.
 			"
 	check.signio_server=mandatory
 
-	label.signio_partner="Verisign partner"
-	help.signio_partner="You should have received this when you signed up"
+	label.signio_partner="[L]Verisign partner[/L]"
+	help.signio_partner="[L]You should have received this when you signed up[/L]"
 	widget.signio_partner=text_20
 
-	label.signio_vendor="Verisign vendor"
-	help.signio_vendor="You should have received this when you signed up"
+	label.signio_vendor="[L]Verisign vendor[/L]"
+	help.signio_vendor="[L]You should have received this when you signed up[/L]"
 	widget.signio_vendor=text_20
 
 ]

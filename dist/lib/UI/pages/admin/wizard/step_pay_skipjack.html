@@ -1,12 +1,12 @@
-[set page_title]Payment Preferences - Skipjack[/set]
+[set page_title][L]Payment Preferences - Skipjack[/L][/set]
 [set ui_checklist]1[/set]
 [set help_name]wizard.authorizenet[/set]
 @_UI_STD_HEAD_@
 
 <table width=500><tr><td align=left>
-Enter your Skipjack account ID, usually the only parameter required.
+[L WIZARD_STEP_PAY_SKIPJACK_PAR_1]Enter your Skipjack account ID, usually the only parameter required.
 Sometimes you may need to enter a partner code as well -- refer to
-your SkipjackIC documentation.
+your SkipjackIC documentation.[/L]
 </td></tr></table>
 
 [table-editor 
@@ -31,12 +31,12 @@ your SkipjackIC documentation.
 	ui_wizard_fields="skipjack_id skipjack_partner"
 
 	check.skipjack_id=mandatory
-	label.skipjack_id="Skipjack Account ID"
-	help.skipjack_id="You should have received this when you signed up"
+	label.skipjack_id="[L]Skipjack Account ID[/L]"
+	help.skipjack_id="[L]You should have received this when you signed up[/L]"
 	widget.skipjack_id=text_20
 
-	label.skipjack_partner="Skipjack Partner"
-	help.skipjack_partner="You should have received this when you signed up"
+	label.skipjack_partner="[L]Skipjack Partner[/L]"
+	help.skipjack_partner="[L]You should have received this when you signed up[/L]"
 	widget.skipjack_partner=text_20
 
 ]
