@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.30 2003-03-24 10:57:38 racke Exp $
+# $Id: Server.pm,v 2.31 2003-04-07 14:15:19 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.30 $, 10);
+$VERSION = substr(q$Revision: 2.31 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -535,13 +535,13 @@ sub respond {
 
 		my @domains;
 		@domains = ('');
+		my @paths;
+		@paths = ('/');
+
 		if ($Vend::Cfg->{CookieDomain}) {
 			@domains = split /\s+/, $Vend::Cfg->{CookieDomain};
 		}
-
-		my @paths;
-		@paths = ('/');
-		if($Global::Mall) {
+		elsif($Global::Mall) {
 			my $ref = $Global::Catalog{$Vend::Cat};
 			@paths = ($ref->{script});
 			push (@paths, @{$ref->{alias}}) if defined $ref->{alias};
