@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.32.4.15 2001-06-15 02:48:28 jon Exp $
+# $Id: makecat.PL,v 1.32.4.16 2001-06-15 04:53:36 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -240,7 +240,7 @@ if (scalar @ARGV > 1) {
 	    serverconf|conf=s
 	    servername|server=s
 	    sharedir=s
-	    shareurl=s
+	    shareurl:s
 	    vendroot|mvdir=s
 	    <>
 	/);
@@ -2183,7 +2183,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 1.32.4.15 2001-06-15 02:48:28 jon Exp $
+# $Id: makecat.PL,v 1.32.4.16 2001-06-15 04:53:36 jon Exp $
 
 =head1 INTRODUCTION
 
