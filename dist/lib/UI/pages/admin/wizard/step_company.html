@@ -6,6 +6,10 @@
 Enter your company information. This contact information will be displayed
 to users visiting your e-commerce site. The required fields are displayed
 in <b>Bold</b>.
+[unless value domainname]
+<p>
+[page __UI_BASE__/wizard/guess_info]Guess my info[/page]
+[/unless]
 </td></tr></table>
 
 [if session browser =~ /.*/i]

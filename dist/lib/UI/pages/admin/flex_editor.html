@@ -58,10 +58,27 @@
 [flag type=write table="[cgi mv_data_table]"]
 
 [if cgi ui_new_item]
-	[calc]
-		$CGI->{item_id} = q{[counter file="__UI_PRODUCT_DIR__/[cgi mv_data_table].autonumber" start=00001]};
+	[loop list="__MV_ITEM_TABLES__"]
+		[flag type=write table="[loop-code]"]
+	[/loop]
+	[perl tables="[cgi mv_data_table]"]
+		my $db = $Db{$CGI->{mv_data_table}} or return;
+		unless ($db->config('AUTO_SEQUENCE')) {
+			$db->config('AUTO_NUMBER', '000001')
+				unless $db->config('AUTO_NUMBER');
+			$CGI->{item_id} = $db->autonumber();
+		}
+		if ($CGI->{ui_clone_id}) {
+			$CGI->{ui_clone_tables} = '__UI_ITEM_TABLES__';
+			my $db = $Db{$CGI->{mv_data_table}} or return;
+			return unless $db->record_exists($CGI->{ui_clone_id});
+			my $ref = $db->row_hash($CGI->{ui_clone_id});
+			$CGI->{ $db->config('KEY') } = $CGI->{item_id}
+				if defined $CGI->{item_id};
+			@{$CGI}{ keys %$ref } = values %$ref;
+		}
 		return;
-	[/calc]
+	[/perl]
 [/if]
 
 [/strip]@_UI_STD_HEAD_@

@@ -291,7 +291,7 @@ EOF
 	if($db->record_exists($key)) {
 #Log("Should work. key=$key table=$table");
 	}
-	elsif($db->config('AUTO_NUMBER')) {
+	elsif($db->config('_Auto_number')) {
 		$CGI->{$Values->{ui_data_key_name}} = '';
 		undef $key;
 	}

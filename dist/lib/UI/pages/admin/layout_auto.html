@@ -137,7 +137,7 @@ size=1>
 		$cdb->query('delete from cat');
 	}
 	if($acol) {
-		$adb->config('AUTO_NUMBER', '1000') if ! $adb->config('AUTO_NUMBER');
+		$adb->config('AUTO_NUMBER', '1000') if ! $adb->config('_Auto_number');
 		return "area column $acol doesn't exist"
 			unless $pdb->column_exists($acol);
 		my $ary = $pdb->query("select distinct $acol from $ptab order by $acol")
@@ -155,7 +155,7 @@ size=1>
 
 	my %catdone;
 	if($ccol) {
-		$cdb->config('AUTO_NUMBER', '1000') if ! $cdb->config('AUTO_NUMBER');
+		$cdb->config('AUTO_NUMBER', '1000') if ! $cdb->config('_Auto_number');
 		return "cat column $ccol doesn't exist"
 			unless $pdb->column_exists($ccol);
 		my $ary = $pdb->query("select $acol, $ccol from $ptab order by $ccol")
