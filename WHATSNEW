@@ -1,3 +1,7 @@
+Interchange 4.7.2.
+
+
+
 Interchange 4.7.1 released 2001-03-28.
 
 * Added ability to cascade mv_click statements, e.g.:
