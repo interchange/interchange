@@ -71,6 +71,9 @@ Payment
 * Mispelled month name fixed in iTransact module which caused failure.
   Found by Cameron Prince.
 
+* Fixed field name in AuthorizeNet module and a typo in the corresponding
+  global sub (the latter reported by Daryl Houston).
+
 Foundation
 ----------
 
@@ -124,14 +127,27 @@ I18N
 
 * Prepared more template pages for translation.
 
+Quickbooks Extension
+--------------------
+
+* restricted item description to 30 characters to avoid coredumps 
+  (thanks to Michael Wilk for pursuing this long enough)
+
+* "INTL" showing up without country fixed.
+
+* keep regular quickbooks invoice number progression
+
+* Quickbooks 2000 requires INVOICE instead of CASH SALE transaction type, 
+  even with "auto_create" users.
+
+* Remove Phone number & e-mail from bottom of "ship to" and 
+  "bill to" addresses.
+
 Miscellaneous
 -------------
 
 * stop expire script if catalog configuration fails and add catalog name
   to error message
-
-* restricted item description in quickbooks extension to 30 characters
-  to avoid coredumps (thanks to Michael Wilk for pursuing this long enough)
 
 ------------------------------------------------------------------------------
 
