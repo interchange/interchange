@@ -448,7 +448,9 @@ fi
 HOST=`hostname`
 perl -pi -e "s/RPM_CHANGE_HOST/$HOST/g" \
 	/var/lib/interchange/%{cat_name}/catalog.cfg \
-	/var/lib/interchange/%{cat_name}/products/variable.txt \
+	/var/lib/interchange/%{cat_name}/products/*.txt \
+	/var/lib/interchange/%{cat_name}/products/*.asc \
+	/var/lib/interchange/%{cat_name}/config/* \
 	%{webdir}/html/%{cat_name}/index.html
 
 for i in %cat_name
@@ -528,6 +530,9 @@ rm -f %filelist_main
 
 
 %changelog
+
+* Sat Jul 14 2001 Jon Jensen <jon@redhat.com>
+- Add some files to list for replacing RPM_CHANGE_HOST to real hostname.
 
 * Wed Jun 20 2001 Jon Jensen <jon@redhat.com>
 - Make /usr/lib/interchange/etc owned by interch.interch for makecat.cfg
