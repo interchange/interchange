@@ -1,6 +1,6 @@
 # Vend::SessionFile - Stores Interchange session information in files
 #
-# $Id: SessionFile.pm,v 2.3 2003-06-19 18:18:02 jon Exp $
+# $Id: SessionFile.pm,v 2.4 2003-12-03 17:04:36 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@ use strict;
 use Vend::Util;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.3 $, 10);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 
 my $SessionDir;
 my $CommDir;
@@ -102,7 +102,7 @@ sub NEXTKEY {
 }
 
 sub EXISTS {
-#::logDebug("check existance $_[1]");
+#::logDebug("check existence $_[1]");
 	return Vend::Util::exists_filename($_[1], 2, 1, $SessionDir);
 }
 
