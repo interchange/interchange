@@ -1,6 +1,6 @@
 # Vend::Payment::AuthorizeNet - Interchange AuthorizeNet support
 #
-# $Id: AuthorizeNet.pm,v 2.0 2001-07-18 02:23:16 jon Exp $
+# $Id: AuthorizeNet.pm,v 2.1 2001-08-06 13:23:51 heins Exp $
 #
 # Copyright (C) 1999-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -38,7 +38,7 @@ package Vend::Payment::AuthorizeNet;
 
 =head1 Interchange AuthorizeNet Support
 
-Vend::Payment::AuthorizeNet $Revision: 2.0 $
+Vend::Payment::AuthorizeNet $Revision: 2.1 $
 
 =head1 SYNOPSIS
 
@@ -108,7 +108,8 @@ Global parameter is MV_PAYMENT_ID.
 =item secret
 
 Your Authorize.net account password, supplied by Authorize.net when you sign up.
-Global parameter is MV_PAYMENT_SECRET.
+Global parameter is MV_PAYMENT_SECRET. This may not be needed for
+actual charges.
 
 =item referer
 
@@ -278,7 +279,6 @@ sub authorizenet {
 		$opt = $user;
 		$user = $opt->{id} || undef;
 		$secret = $opt->{secret} || undef;
-		$secret = $opt->{secret} || undef;
 	}
 	else {
 		$opt = {};
@@ -292,7 +292,8 @@ sub authorizenet {
 		my (%actual) = map_actual();
 		$actual = \%actual;
 	}
-	
+
+#::logDebug("actual map result: " . ::uneval($actual));
 	if (! $user ) {
 		$user    =  charge_param('id')
 						or return (
@@ -301,14 +302,7 @@ sub authorizenet {
 							);
 	}
 	
-	$secret  =  $opt->{secret} if ! $secret;
-	if(! $secret) {
-		$secret    =  charge_param('secret')
-						or return (
-							MStatus => 'failure-hard',
-							MErrMsg => errmsg('No account id'),
-							);
-    }
+	$secret    =  charge_param('secret') if ! $secret;
 
     $opt->{host}   ||= 'secure.authorize.net';
 
@@ -377,7 +371,8 @@ sub authorizenet {
                     x_Address       => $actual->{address},
                     x_City          => $actual->{b_city},
                     x_State         => $actual->{b_state},
-                    x_Zip			=> $actual->{zip},
+                    x_Zip			=> $actual->{b_zip},
+                    x_Country		=> $actual->{b_country},
 					x_Type			=> $actual->{cyber_mode},
                     x_Amount    	=> $amount,
                     x_Exp_Date  	=> $exp,
@@ -387,6 +382,8 @@ sub authorizenet {
                     x_Invoice_Num   => $actual->{mv_order_number},
 #                    x_Company      => $actual->{company},
 #                    x_Phone        => $actaul->{phone_day},
+                    x_Email         => $actual->{email},
+                    x_Phone        => $actaul->{phone_day},
                     x_Password  	=> $secret,
                     x_Login     	=> $user,
                     x_Version   	=> '3.0',
