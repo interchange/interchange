@@ -2,7 +2,7 @@
 #
 # MakeCat.pm - routines for catalog configurator
 #
-# $Id: MakeCat.pm,v 1.12 2000-09-27 12:05:12 zarko Exp $
+# $Id: MakeCat.pm,v 1.12.2.1 2000-11-07 22:41:46 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -62,7 +62,7 @@ sethistory
 use strict;
 
 use vars qw($Force $Error $History $VERSION);
-$VERSION = substr(q$Revision: 1.12 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.1 $, 10);
 
 $Force = 0;
 $History = 0;
@@ -92,8 +92,7 @@ my %Pretty = qw(
 	vendroot			VendRoot
 
 );
- 
- 
+
 my %Desc = (
 
 	aliases    =>  <<EOF,
@@ -269,28 +268,27 @@ EOF
 EOF
 
 );
- 
+
 sub findexe {
-    my($exe) = @_;
-    my($dir,$path) = ('', $ENV{PATH});
-    $path =~ s/\(\)//g;
-    $path =~ s/\s+/ /g;
-    my(@dirs) = split /[\s:]+/, $path;
-    foreach $dir (@dirs) {
-        return "$dir/$exe" if -x "$dir/$exe";
-    }
-    return '';
+	my($exe) = @_;
+	my($dir,$path) = ('', $ENV{PATH});
+	$path =~ s/\(\)//g;
+	$path =~ s/\s+/ /g;
+	my(@dirs) = split /[\s:]+/, $path;
+	foreach $dir (@dirs) {
+		return "$dir/$exe" if -x "$dir/$exe";
+	}
+	return '';
 }
- 
+
 sub findfiles {
-    my($file) = @_;
+	my($file) = @_;
 	return undef if $^O =~ /win32/i;
 	my $cmd;
 	my @files;
-    if($cmd = findexe('locate')) {
+	if($cmd = findexe('locate')) {
 		@files = `locate \\*/$file`;
-	}
-	else {
+	} else {
 		@files = `find / -name $file -print 2>/dev/null`;
 	}
 	return undef unless @files;
@@ -323,14 +321,14 @@ sub can_do_suid {
 
 sub get_id {
 	return 'everybody' if $^O =~ /win32/i;
-    my $file = -f "$Global::VendRoot/error.log"
-                ? "$Global::VendRoot/error.log" : '';
-    return '' unless $file;
-    my ($name);
+	my $file = -f "$Global::VendRoot/error.log"
+				? "$Global::VendRoot/error.log" : '';
+	return '' unless $file;
+	my ($name);
 
-    my($uid) = (stat($file))[4];
-    $name = (getpwuid($uid))[0];
-    return $name;
+	my($uid) = (stat($file))[4];
+	$name = (getpwuid($uid))[0];
+	return $name;
 }
 
 sub get_ids {
@@ -358,76 +356,72 @@ sub get_rename {
 }
 
 sub compare_file {
-    my($first,$second) = @_;
-    return 0 unless -f $first && -f $second;
-    return 0 unless -s $first == -s $second;
-    local $/;
-    open(FIRST, "< $first") or return undef;
-    open(SECOND, "< $second") or (close FIRST and return undef);
-    binmode(FIRST);
-    binmode(SECOND);
-    $first = '';
-    $second = '';
-    while($first eq $second) {
-        read(FIRST, $first, 1024);
-        read(SECOND, $second, 1024);
-        last if length($first) < 1024;
-    }
-    close FIRST;
-    close SECOND;
-    $first eq $second;
+	my($first,$second) = @_;
+	return 0 unless -f $first && -f $second;
+	return 0 unless -s $first == -s $second;
+	local $/;
+	open(FIRST, "< $first") or return undef;
+	open(SECOND, "< $second") or (close FIRST and return undef);
+	binmode(FIRST);
+	binmode(SECOND);
+	$first = '';
+	$second = '';
+	while($first eq $second) {
+		read(FIRST, $first, 1024);
+		read(SECOND, $second, 1024);
+		last if length($first) < 1024;
+	}
+	close FIRST;
+	close SECOND;
+	$first eq $second;
 }
 
 sub install_file {
-    my ($srcdir, $targdir, $filename, $opt) = @_;
+	my ($srcdir, $targdir, $filename, $opt) = @_;
 	$opt = {} unless $opt;
-	if (ref $srcdir) {
+	if(ref $srcdir) {
 		$opt = $srcdir;
 		$srcdir  = $opt->{Source} || die "Source dir for install_file not set.\n";
 		$targdir = $opt->{Target} || die "Target dir for install_file not set.\n";
 		$filename = $opt->{Filename} || die "File name for install_file not set.\n";
 	}
-    my $srcfile  = $srcdir . '/' . $filename;
-    my $targfile = $targdir . '/' . $filename;
-    my $mkdir = File::Basename::dirname($targfile);
-    my $extra;
-    my $perms;
+	my $srcfile  = $srcdir . '/' . $filename;
+	my $targfile = $targdir . '/' . $filename;
+	my $mkdir = File::Basename::dirname($targfile);
+	my $extra;
+	my $perms;
 
-    if(! -d $mkdir) {
-        File::Path::mkpath($mkdir)
-            or die "Couldn't make directory $mkdir: $!\n";
-    }
+	if(! -d $mkdir) {
+		File::Path::mkpath($mkdir)
+			or die "Couldn't make directory $mkdir: $!\n";
+	}
 
-    if (! -f $srcfile) {
-        die "Source file $srcfile missing.\n";
-    }
-    elsif (
+	if(! -f $srcfile) {
+		die "Source file $srcfile missing.\n";
+	} elsif(
 		$opt->{Perm_hash}
 			and $opt->{Perm_hash}->{$filename}
 		)
 	{
-        $perms = $opt->{Perm_hash}->{$filename};
+		$perms = $opt->{Perm_hash}->{$filename};
+	} elsif( $opt->{Perms} =~ /^(m|g)/i ) {
+		$perms = (stat(_))[2] | 0660;
+	} elsif( $opt->{Perms} =~ /^u/i ) {
+		$perms = (stat(_))[2] | 0600;
+	} else {
+		$perms = (stat(_))[2] & 0777;
 	}
-    elsif ( $opt->{Perms} =~ /^(m|g)/i ) {
-        $perms = (stat(_))[2] | 0660;
-	}
-    elsif ( $opt->{Perms} =~ /^u/i ) {
-        $perms = (stat(_))[2] | 0600;
-	}
-    else {
-        $perms = (stat(_))[2] & 0777;
-    }
 
-    if( ! $Windows and -f $targfile and ! compare_file($srcfile, $targfile) ) {
-        open (GETVER, "< $targfile")
-            or die "Couldn't read $targfile for version update: $!\n";
-        while(<GETVER>) {
-            /VERSION\s+=.*?\s+([\d.]+)/ or next;
-            $extra = $1;
-            $extra =~ tr/0-9//cd;
-            last;
-        }
-        $extra = '~' unless $extra;
+	if( ! $Windows and -f $targfile and ! compare_file($srcfile, $targfile) ) {
+		open (GETVER, "< $targfile")
+			or die "Couldn't read $targfile for version update: $!\n";
+		while(<GETVER>) {
+			/VERSION\s+=.*?\s+([\d.]+)/ or next;
+			$extra = $1;
+			$extra =~ tr/0-9//cd;
+			last;
+		}
+		$extra = '~' unless $extra;
 		my $rename = get_rename($targfile, $extra);
 		while (-f $rename ) {
 			$extra .= '~';
@@ -435,52 +429,52 @@ sub install_file {
 		}
 		rename $targfile, $rename
 			or die "Couldn't rename $targfile to $rename: $!\n";
-    }
-
-    File::Copy::copy($srcfile, $targfile)
-        or die "Copy of $srcfile to $targfile failed: $!\n";
-	if($opt->{Substitute}) {
-			my $bak = "$targfile.mv";
-			rename $targfile, $bak;
-			open(SOURCE, "< $bak")			or die "open $bak: $!\n";
-			open(TARGET, ">$targfile")		or die "create $targfile: $!\n";
-			local($/) = undef;
-			my $page = <SOURCE>; close SOURCE;
-
-			$page =~ s/^#>>(.*)(__MVR_(\w+)__.*)\n\1.*/#>>$1$2/mg;
-			$page =~ s/^#>>(.*__MVR_(\w+)__.*)/#>>$1\n$1/mg;
-			1 while $page =~ s/^([^#].*)__MVR_(.*)/$1__MVC_$2/mg;
-			$page =~ s/__MVC_(\w+)__/$opt->{Substitute}{lc $1}/g;
-
-			print TARGET $page				or die "print $targfile: $!\n";
-			close TARGET					or die "close $targfile: $!\n";
-			unlink $bak						or die "unlink $bak: $!\n";
 	}
-    chmod $perms, $targfile;
+
+	File::Copy::copy($srcfile, $targfile)
+		or die "Copy of $srcfile to $targfile failed: $!\n";
+	if($opt->{Substitute}) {
+		my $bak = "$targfile.mv";
+		rename $targfile, $bak;
+		open(SOURCE, "< $bak")			or die "open $bak: $!\n";
+		open(TARGET, ">$targfile")		or die "create $targfile: $!\n";
+		local($/) = undef;
+		my $page = <SOURCE>; close SOURCE;
+
+		$page =~ s/^#>>(.*)(__MVR_(\w+)__.*)\n\1.*/#>>$1$2/mg;
+		$page =~ s/^#>>(.*__MVR_(\w+)__.*)/#>>$1\n$1/mg;
+		1 while $page =~ s/^([^#].*)__MVR_(.*)/$1__MVC_$2/mg;
+		$page =~ s/__MVC_(\w+)__/$opt->{Substitute}{lc $1}/g;
+
+		print TARGET $page				or die "print $targfile: $!\n";
+		close TARGET					or die "close $targfile: $!\n";
+		unlink $bak						or die "unlink $bak: $!\n";
+	}
+	chmod $perms, $targfile;
 }
 
 sub copy_current_to_dir {
-    my($target_dir, $exclude_pattern) = @_;
+	my($target_dir, $exclude_pattern) = @_;
 	return copy_dir('.', $target_dir, $exclude_pattern);
 }
 
 sub copy_dir {
-    my($source_dir, $target_dir, $exclude_pattern) = @_;
+	my($source_dir, $target_dir, $exclude_pattern) = @_;
 	return undef unless -d $source_dir;
 	my $orig_dir;
 	if($source_dir ne '.') {
 		$orig_dir = cwd();
 		chdir $source_dir or die "chdir: $!\n";
 	}
-    my @files; 
-    my $wanted = sub {  
-        return unless -f $_;
-        my $name = $File::Find::name;
-        $name =~ s:^\./::;
-        return if $exclude_pattern and $name =~ m{$exclude_pattern}o;
-        push (@files, $name);
-    };
-    File::Find::find($wanted, '.');  
+	my @files; 
+	my $wanted = sub {  
+		return unless -f $_;
+		my $name = $File::Find::name;
+		$name =~ s:^\./::;
+		return if $exclude_pattern and $name =~ m{$exclude_pattern}o;
+		push (@files, $name);
+	};
+	File::Find::find($wanted, '.');  
 
 	# also exclude directories that match $exclude_pattern
 	@files = grep !m{$exclude_pattern}o, @files if $exclude_pattern;
@@ -500,30 +494,30 @@ my $History_add;
 my $History_set;
 my $term;
 eval {
-    require Term::ReadLine;
-    import Term::ReadLine;
-    $term = new Term::ReadLine::Perl 'Interchange Configuration';
+	require Term::ReadLine;
+	import Term::ReadLine;
+	$term = new Term::ReadLine::Perl 'Interchange Configuration';
 	die "No Term::ReadLine::Perl" unless defined $term;
 
 	readline::rl_bind('C-B', 'catch_at');
-    $Prompt_sub = sub {
-                    my ($prompt, $default) = @_;
+	$Prompt_sub = sub {
+					my ($prompt, $default) = @_;
 					if($Force) {
 						print "$prompt SET TO --> $default\n";
 						return $default;
 					}
-                    $prompt =~ s/^\s*(\n+)/print $1/ge;
-                    $prompt =~ s/\n+//g;
-                    my $out = $term->readline($prompt, $default);
+					$prompt =~ s/^\s*(\n+)/print $1/ge;
+					$prompt =~ s/\n+//g;
+					my $out = $term->readline($prompt, $default);
 					return '@' if ! defined $out;
 					return $out;
-                    };
-    $History_add = sub {
-                    my ($line) = @_;
-                    $term->addhistory($line)
-                        if $line =~ /\S/;
-                    };
-    $History_set = sub {
+					};
+	$History_add = sub {
+					my ($line) = @_;
+					$term->addhistory($line)
+						if $line =~ /\S/;
+					};
+	$History_set = sub {
 						$term->SetHistory(@_);
 					};
 	$History = 1;
@@ -532,21 +526,21 @@ eval {
 
 
 sub prompt {
-    return &$Prompt_sub(@_)
-        if defined $Prompt_sub;
-    my($prompt) = shift || '? ';
-    my($default) = shift;
+	return &$Prompt_sub(@_)
+		if defined $Prompt_sub;
+	my($prompt) = shift || '? ';
+	my($default) = shift;
 	if($Force) {
 		print "$prompt SET TO --> $default\n";
 		return $default;
 	}
-    my($ans);
+	my($ans);
 
-    print $prompt;
-    print "[$default] " if $default;
+	print $prompt;
+	print "[$default] " if $default;
 	local ($/) = "\n";
-    chomp($ans = <STDIN>);
-    length($ans) ? $ans : $default;
+	chomp($ans = <STDIN>);
+	length($ans) ? $ans : $default;
 }
 
 sub addhistory {
@@ -564,71 +558,69 @@ sub do_msg {
 	$size = 60 unless defined $size;
 	my $len = length $msg;
 	
-	return "$msg.." if ($len + 2) >= $size;
+	return "$msg.." if(($len + 2) >= $size);
 	$msg .= '.' x ($size - $len);
 	return $msg;
 }
 
 
 sub add_catalog {
-		my ($file, $directive, $configname, $value, $dynamic) = @_;
-		my ($newcfgline, $mark, @out);
-		my ($tmpfile) = "$file.$$";
-		if (-f $file) {
-			rename ($file, $tmpfile)
-				or die "Couldn't rename $file: $!\n";
-		}
-		else {
-			File::Copy::copy("$file.dist", $tmpfile);
-		}
-		open(CFG, "< $tmpfile")
-			or die "Couldn't open $tmpfile: $!\n";
-		$newcfgline = sprintf "%-19s %s\n", $directive, $value;
-		while(<CFG>) {
-			$mark = $. if /^#?\s*catalog\s+/i;
-			warn "\nDeleting old configuration $configname.\n"
-				if s/^(\s*$directive\s+$configname\s+)/#$1/io;
-			push @out, $_;
-		}
-		close CFG;
-		open(NEWCFG, ">$file")
-			or die "\nCouldn't write $file: $!\n";
-		if (defined $mark) {
-			print NEWCFG @out[0..$mark-1];
-			print NEWCFG $newcfgline;
-			print NEWCFG @out[$mark..$#out];
-		}
-		else { 
-			warn "\nNo $directive previously defined. Adding $configname at top.\n";
-			print NEWCFG $newcfgline;
-			print NEWCFG @out;
-		}
-		close NEWCFG || die "close: $!\n";
-		unlink $tmpfile;
+	my ($file, $directive, $configname, $value, $dynamic) = @_;
+	my ($newcfgline, $mark, @out);
+	my ($tmpfile) = "$file.$$";
+	if(-f $file) {
+		rename ($file, $tmpfile)
+			or die "Couldn't rename $file: $!\n";
+	} else {
+		File::Copy::copy("$file.dist", $tmpfile);
+	}
+	open(CFG, "< $tmpfile")
+		or die "Couldn't open $tmpfile: $!\n";
+	$newcfgline = sprintf "%-19s %s\n", $directive, $value;
+	while(<CFG>) {
+		$mark = $. if /^#?\s*catalog\s+/i;
+		warn "\nDeleting old configuration $configname.\n"
+			if s/^(\s*$directive\s+$configname\s+)/#$1/io;
+		push @out, $_;
+	}
+	close CFG;
+	open(NEWCFG, ">$file")
+		or die "\nCouldn't write $file: $!\n";
+	if(defined $mark) {
+		print NEWCFG @out[0..$mark-1];
+		print NEWCFG $newcfgline;
+		print NEWCFG @out[$mark..$#out];
+	} else { 
+		warn "\nNo $directive previously defined. Adding $configname at top.\n";
+		print NEWCFG $newcfgline;
+		print NEWCFG @out;
+	}
+	close NEWCFG || die "close: $!\n";
+	unlink $tmpfile;
 
-		if($dynamic and ! $Windows) {
-			my $pidfile = $dynamic;
-			$pidfile =~ s:/[^/]+$::;
-			$pidfile .= "/$Global::ExeName.pid";
-			my $pid;
-			PID: {
-				local ($/);
-				open(PID, "< $pidfile") or die "open $pidfile: $!\n";
-				$pid = <PID>;
-				$pid =~ /(\d+)/;
-				$pid = $1;
-			}
-
-			open(RESTART, "<+$dynamic") or
-				open(RESTART, ">>$dynamic") or
-					die "Couldn't write $dynamic to add catalog: $!\n";
-			Vend::Util::lockfile(\*RESTART, 1, 1) 	or die "lock $dynamic: $!\n";
-			printf RESTART "%-19s %s\n", $directive, $value;
-			Vend::Util::unlockfile(\*RESTART) 		or die "unlock $dynamic: $!\n";
-			close RESTART;
-			kill 'HUP', $pid;
+	if($dynamic and ! $Windows) {
+		my $pidfile = $dynamic;
+		$pidfile =~ s:/[^/]+$::;
+		$pidfile .= "/$Global::ExeName.pid";
+		my $pid;
+		PID: {
+			local ($/);
+			open(PID, "< $pidfile") or die "open $pidfile: $!\n";
+			$pid = <PID>;
+			$pid =~ /(\d+)/;
+			$pid = $1;
 		}
-		1;
+
+		open(RESTART, "<+$dynamic") or
+			open(RESTART, ">>$dynamic") or
+				die "Couldn't write $dynamic to add catalog: $!\n";
+		Vend::Util::lockfile(\*RESTART, 1, 1) 	or die "lock $dynamic: $!\n";
+		printf RESTART "%-19s %s\n", $directive, $value;
+		Vend::Util::unlockfile(\*RESTART) 		or die "unlock $dynamic: $!\n";
+		close RESTART;
+		kill 'HUP', $pid;
+	}
+	1;
 }
 
 my %Http_hash = (
@@ -692,7 +684,7 @@ sub conf_parse_http {
 	}
 
 	SRMCONF: {
-		if (-f $newfile) {
+		if(-f $newfile) {
 			open(HTTPDCONF, "< $newfile")
 				or last SRMCONF;
 			$data .= <HTTPDCONF>;
@@ -719,8 +711,7 @@ sub conf_parse_http {
 			$servname =~ s/\s+$//;
 			if(defined $servers->{$servname} and $port) {
 				$servname .= ":$port";
-			}
-			elsif(defined $servers->{$servname} and $port) {
+			} elsif(defined $servers->{$servname} and $port) {
 				$Error = "Server $servname defined twice.";
 				return undef;
 			}
@@ -745,20 +736,19 @@ sub conf_parse_http {
 					unless defined $servers->{$servname}->{$directive};
 				($key,$val) = split /\s+/, $param, 2;
 				$val =~ s/^\s*"// and $val =~ s/"\s*$//;
-				if (defined $Http_process{$directive}) {
+				if(defined $Http_process{$directive}) {
 					$key = &{$Http_process{$directive}}('key', $key);
 					$val = &{$Http_process{$directive}}('value', $val);
 				}
 				$servers->{$servname}->{$directive}->{$key} = $val;
-			}
-			elsif(defined $Http_scalar{$directive}) {
+			} elsif(defined $Http_scalar{$directive}) {
 				$param =~ s/^"// and $param =~ s/"\s*$//;
-				if (defined $servers->{$servname}->{$directive}) {
+				if(defined $servers->{$servname}->{$directive}) {
 					undef $servers->{$servname};
 					$Error = "$directive defined twice in $servname, only allowed once.";
 					return undef;
 				}
-				if (defined $Http_process{$directive}) {
+				if(defined $Http_process{$directive}) {
 					$param = &{$Http_process{$directive}}($param);
 				}
 				$servers->{$servname}->{$directive} = $param;
