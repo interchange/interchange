@@ -1,6 +1,6 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Postal.pm,v 1.2 2003-06-18 17:34:46 jon Exp $
+# $Id: Postal.pm,v 1.3 2004-04-09 03:18:55 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -51,6 +51,10 @@ sub calculate {
 	}
 
 	$country = $::Values->{$o->{geo}};
+
+	if($opt->{packaging_weight}) {
+		$weight += $opt->{packaging_weight};
+	}
 #::logDebug("ready to calculate postal type=$type country=$country weight=$weight");
 
 	if($opt->{source_grams}) {
@@ -152,6 +156,7 @@ sub calculate {
 
 	do {
 		$cost = tag_data($opt->{table}, $zone, $weight);
+		$weight++;
 	} until $cost or $its++ > $maxits;
 		
 	return do_error(

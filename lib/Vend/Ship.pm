@@ -1,6 +1,6 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.5 2003-09-12 19:45:49 jon Exp $
+# $Id: Ship.pm,v 2.6 2004-04-09 03:18:55 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -1038,6 +1038,22 @@ sub tag_ups {
 	my(@fieldnames);
 	my($i,$point,$zone);
 
+	$weight += $opt->{packaging_weight} if $opt->{packaging_weight};
+
+	if($opt->{source_grams}) {
+		$weight *= 0.00220462;
+	}
+	elsif($opt->{source_kg}) {
+		$weight *= 2.20462;
+	}
+	elsif($opt->{source_oz}) {
+		$weight /= 16;
+	}
+
+	if($opt->{oz}) {
+		$weight *= 16;
+	}
+
 #::logDebug("tag_ups: type=$type zip=$zip weight=$weight code=$code opt=" . uneval($opt));
 
 	if(my $modulo = $opt->{aggregate}) {
@@ -1055,7 +1071,6 @@ sub tag_ups {
 	}
 
 	$code = 'u' unless $code;
-
 
 	unless (defined $Vend::Database{$type}) {
 		logError("Shipping lookup called, no database table named '%s'", $type);
