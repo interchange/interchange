@@ -445,6 +445,7 @@ sub initialize {
 	my @re_dir  = qw();
 	my @re_copy = qw();
 
+	my $upgrade;
 	if($MV::Default{final}) {
 		$^W = 0;
 		for(glob "_*") {
@@ -510,6 +511,7 @@ sub initialize {
 			File::Copy::copy($from, $to);
 		}
 		for (@files) {
+			$upgrade ||= -f "$realdir/$_";
 			install_file('.', $realdir, $_);
 		}
 		chdir '..';
@@ -656,12 +658,24 @@ EOF
 			}
 			system $^X, 'src/cpan_local_install', '-c';
 		}
+		if($upgrade) {
+		print <<EOF;
+
+Since this was an update, you are now ready to restart and ensure
+your catalogs run as expected. You do NOT need to re-run makecat,
+though you can always do that to make a new catalog. Never run
+makecat on an existing catalog.
+
+EOF
+		}
+		else {
 		print <<EOF;
 
 You are now ready to cd to $realdir and run 'bin/makecat'
 to set up your first catalog.
 
 EOF
+		}
 		exit;
 
 	}
