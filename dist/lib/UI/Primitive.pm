@@ -1,6 +1,6 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 2.8 2001-11-06 22:42:21 edl Exp $
+# $Id: Primitive.pm,v 2.9 2001-11-06 23:30:50 mheins Exp $
 
 # Copyright (C) 1998-2001 Red Hat, Inc. <interchange@redhat.com>
 
@@ -25,7 +25,8 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = substr(q$Revision: 2.9 $, 10);
+
 $DEBUG = 0;
 
 use vars qw!
@@ -638,17 +639,29 @@ for(1 .. 31) {
 }
 
 sub date_widget {
-	my($name, $val) = @_;
+	my($name, $val, $time) = @_;
 	if($val =~ /\D/) {
 		$val = Vend::Interpolate::filter_value('date_change', $val);
 	}
-	@t = localtime();
-	$val = POSIX::strftime("%Y%m%d", @t) if not $val;
+	my $now;
+	if($time and $time =~ /([-+])(\d+)/) {
+		my $sign = $1;
+		my $adjust = $2;
+		$adjust *= 3600;
+		$now = time;
+		$now += $sign eq '+' ? $adjust : -$adjust;
+	}
+
+	@t = localtime($now || time);
+	if (not $val) {
+		$t[2]++ if $t[2] < 23;
+		$val = POSIX::strftime("%Y%m%d%H00", @t);
+	}
 	my $sel = 0;
 	my $out = qq{<SELECT NAME="$name">};
 	my $o;
 	for(@months) {
-		$o = qq{<OPTION VALUE="$_->[0]">} . errmsg($_->[1]);
+		$o = qq{<OPTION VALUE="$_->[0]">} . errmsg($_->[1]) . '</OPTION>';
 		($out .= $o, next) unless ! $sel and $val;
 		$o =~ s/>/ SELECTED>/ && $sel++
 			if substr($val, 4, 2) eq $_->[0];
@@ -659,7 +672,7 @@ sub date_widget {
 	$out .= qq{<INPUT TYPE=hidden NAME="$name" VALUE="/">};
 	$out .= qq{<SELECT NAME="$name">};
 	for(@days) {
-		$o = qq{<OPTION VALUE="$_->[0]">$_->[1]};
+		$o = qq{<OPTION VALUE="$_->[0]">$_->[1]} . '</OPTION>';
 		($out .= $o, next) unless ! $sel and $val;
 		$o =~ s/>/ SELECTED>/ && $sel++
 			if substr($val, 6, 2) eq $_->[0];
@@ -682,15 +695,60 @@ sub date_widget {
 		@years = ($by .. $ey);
 	}
 	for(@years) {
-		$o = qq{<OPTION>$_};
+		$o = qq{<OPTION>$_} . '</OPTION>';
 		($out .= $o, next) unless ! $sel and $val;
 		$o =~ s/>/ SELECTED>/ && $sel++
 			if substr($val, 0, 4) eq $_;
 		$out .= $o;
 	}
 	$out .= qq{</SELECT>};
-}
+	return $out unless $time;
 
+	$val =~ s/^\d{8}//;
+	$val =~ s/\D+//g;
+	$out .= qq{<INPUT TYPE=hidden NAME="$name" VALUE=":">};
+	$out .= qq{<SELECT NAME="$name">};
+
+	my $ampm = $time =~ /pm/ ? 1 : 0;
+	my $mod = '';
+	undef $sel;
+	my %special = qw/ 0 midnight 12 noon /;
+	
+	$ampm =1;
+	for my $hr ( 0 .. 23) {
+		for my $min ( 0,15,30,45 ) {
+			my $disp_hour = $hr;
+			if($ampm) {
+				if( $hr < 12) {
+					$mod = 'am';
+				}
+				else {
+					$mod = 'pm';
+					$disp_hour = $hr - 12 unless $hr == 12;
+				}
+				$mod = errmsg($mod);
+				$mod = " $mod";
+			}
+			if($special{$hr} and $min == 0) {
+				$disp_hour = errmsg($special{$hr});
+			}
+			elsif($ampm) {
+				$disp_hour = sprintf("%2d:%02d%s", $disp_hour, $min, $mod);
+			}
+			else {
+				$disp_hour = sprintf("%02d:%02d", $hr, $min);
+			}
+			my $time = sprintf "%02d%02d", $hr, $min;
+			$o = sprintf qq{<OPTION VALUE="%s">%s</OPTION>\n}, $time, $disp_hour;
+			($out .= $o, next) unless ! $sel and $val;
+			$o =~ s/>/ SELECTED>/ && $sel++
+				if substr($val, 0, 4) eq $time;
+			$out .= $o;
+		}
+	}
+	$out .= "</SELECT>";
+	return $out;
+}
 
 sub option_widget_box {
 	my ($name, $val, $lab, $default, $width) = @_;
@@ -1050,6 +1108,12 @@ sub meta_display {
 		}
 		elsif ($record->{type} eq 'date') {
 			my $w = date_widget($record->{name}, $value);
+			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$record->{name}" VALUE="date_change">};
+			return $w unless $o->{template};
+			return ($w, $record->{label}, $record->{help}, $record->{help_url});
+		}
+		elsif ($record->{type} =~ /^date_?time/) {
+			my $w = date_widget($record->{name}, $value, $record->{type});
 			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$record->{name}" VALUE="date_change">};
 			return $w unless $o->{template};
 			return ($w, $record->{label}, $record->{help}, $record->{help_url});
