@@ -1,4 +1,5 @@
 sku	quantity	stock_message	account	cogs_account
+gift_cert	1	In Stock		
 os28004	93	Ships in 3-5 days		
 os28005	100	Ships in 3-5 days		
 os28006	90	Ships in 3-5 days		
