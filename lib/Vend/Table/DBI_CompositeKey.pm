@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI_CompositeKey.pm,v 1.5 2004-04-11 18:01:11 mheins Exp $
+# $Id: DBI_CompositeKey.pm,v 1.6 2004-04-12 03:06:32 mheins Exp $
 #
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI_CompositeKey;
-$VERSION = substr(q$Revision: 1.5 $, 10);
+$VERSION = substr(q$Revision: 1.6 $, 10);
 
 use strict;
 
@@ -168,6 +168,8 @@ sub key_values {
 #::logDebug("DBI_CompositeKey keys = " . ::uneval(\@key));
 	return @key;
 }
+
+sub autonumber { return '' }
 
 sub inc_field {
     my ($s, $key, $column, $value) = @_;
