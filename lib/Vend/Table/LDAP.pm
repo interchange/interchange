@@ -1,6 +1,6 @@
 # Vend::Table::LDAP - Interchange LDAP pseudo-table access
 #
-# $Id: LDAP.pm,v 2.0 2001-07-18 02:23:20 jon Exp $
+# $Id: LDAP.pm,v 2.1 2001-11-26 18:34:02 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -24,7 +24,7 @@
 
 package Vend::Table::LDAP;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 2.0 $, 10);
+$VERSION = substr(q$Revision: 2.1 $, 10);
 use strict;
 
 use vars qw(
@@ -422,7 +422,7 @@ sub each_record {
 sub each_nokey {
 	my (@ary) = each_record(@_);
 	shift @ary;
-	return @ary;
+	return \@ary;
 }
 
 sub record_exists {

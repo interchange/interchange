@@ -1,6 +1,6 @@
 # Vend::DbSearch - Search indexes with Interchange
 #
-# $Id: DbSearch.pm,v 2.4 2001-11-22 03:53:15 jon Exp $
+# $Id: DbSearch.pm,v 2.5 2001-11-26 18:34:02 mheins Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
@@ -26,7 +26,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 
 use Search::Dict;
 use strict;
@@ -135,9 +135,11 @@ sub search {
 	my $dbref = $s->{table} || undef;
 #::logDebug("before db mapping: self=" . ::Vend::Util::uneval_it({%$s}));
 
+#::logDebug("searching $searchfiles[0], keys Database before=" . join ",", grep /backup/, keys %{$Vend::Cfg->{Database}});
 	if( ! $dbref ) {
 		$s->{dbref} = $dbref = Vend::Data::database_exists_ref($searchfiles[0]);
 	}
+#::logDebug("searching $searchfiles[0], keys  after=" . join ",", grep /backup/, keys %{$Vend::Cfg->{Database}});
 	if(! $dbref) {
 		return $s->search_error(
 			"your search file a valid database reference, was '$searchfiles[0]'."
@@ -251,27 +253,25 @@ sub search {
 
 		$@  and  return $s->search_error("Return subroutine creation: $@");
 
+#::logDebug("qual=$qual");
 		if(! defined $f and defined $limit_sub) {
 #::logDebug("no f, limit, dbref=$dbref");
 			local($_);
-			while ($_ = join "\t",
-						map { s/\t/ /g; $_ }
-						$dbref->each_nokey($qual || undef)
-					) {
-				next unless &$limit_sub($_);
-				push @out, &$return_sub($_);
+			my $ref;
+			while($ref = $dbref->each_nokey($qual) ) {
+				next unless $limit_sub->($ref);
+				push @out, $return_sub->($ref);
 			}
 		}
 		elsif(defined $limit_sub) {
 #::logDebug("f and limit, dbref=$dbref");
 			local($_);
-			while ($_ = join "\t",
-						map { s/\t/ /g; $_ }
-						$dbref->each_nokey($qual || undef)
-					) {
+			my $ref;
+			while($ref = $dbref->each_nokey($qual) ) {
+				$_ = join "\t", @$ref;
 				next unless &$f();
-				next unless &$limit_sub($_);
-				push @out, &$return_sub($_);
+				next unless $limit_sub->($ref);
+				push @out, $return_sub->($ref);
 			}
 		}
 		elsif (!defined $f) {
@@ -280,12 +280,12 @@ sub search {
 		else {
 #::logDebug("f and no limit, dbref=$dbref");
 			local($_);
-			while ($_ = join "\t",
-						map { s/\t/ /g; $_ }
-						$dbref->each_nokey($qual || undef)
-					) {
+			my $ref;
+			while($ref = $dbref->each_nokey($qual) ) {
+#::logDebug("f and no limit, ref=$ref");
+				$_ = join "\t", @$ref;
 				next unless &$f();
-				push @out, &$return_sub($_);
+				push @out, $return_sub->($ref);
 			}
 		}
 		$s->restore_specs();

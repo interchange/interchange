@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.4 2001-11-02 13:21:01 mheins Exp $
+# $Id: DBI.pm,v 2.5 2001-11-26 18:34:02 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 
 use strict;
 
@@ -980,14 +980,31 @@ sub set_slice {
 
 #::logDebug("set_slice query: $sql");
 #::logDebug("set_slice key/fields/values:\nkey=$key\n" . ::uneval($fary, $vary));
-	my $sth = $s->[$DBI]->prepare($sql)
-		or die ::errmsg("prepare %s: %s", $sql, $DBI::errstr);
-	my $rc = $sth->execute(@$vary)
-		or die ::errmsg("execute %s: %s", $sql, $DBI::errstr);
 
-	my $val	= $s->[$CONFIG]->{AUTO_SEQUENCE}
-			?  $s->last_sequence_value()
-			: $tkey;
+	my $val;
+	eval {
+		my $sth = $s->[$DBI]->prepare($sql)
+			or die ::errmsg("prepare %s: %s", $sql, $DBI::errstr);
+		my $rc = $sth->execute(@$vary)
+			or die ::errmsg("execute %s: %s", $sql, $DBI::errstr);
+
+		my $val	= $s->[$CONFIG]->{AUTO_SEQUENCE}
+				?  $s->last_sequence_value()
+				: $tkey;
+	};
+
+	if($@) {
+		my $caller = caller();
+		::logGlobal(
+			"%s error as called by %s: %s\nquery was:%s\nvalues were:'%s'",
+			'select_slice',
+			$caller,
+			$@,
+			$sql,
+			join("','", @$vary),
+			);
+		return undef;
+	}
 
 	return $val;
 }
@@ -1414,14 +1431,13 @@ sub sort_each {
 
 # Now supported, including qualification
 sub each_record {
-    my ($s, $qual) = @_;
-#::logDebug("each_record qual=$qual");
-	$qual = '' if ! $qual;
-	$qual .= $s->[$CONFIG]{Export_order} 
-		if $s->[$CONFIG]{Export_order};
+    my $s = shift;
 	$s = $s->import_db() if ! defined $s->[$DBI];
     my ($table, $db, $each);
     unless(defined $s->[$EACH]) {
+		my $qual = shift || '';
+		$qual .= $s->[$CONFIG]{Export_order} 
+			if $s->[$CONFIG]{Export_order};
 		($table, $db, $each) = @{$s}[$TABLE,$DBI,$EACH];
 		my $query = $db->prepare("select * from $table $qual")
             or die $DBI::errstr;
@@ -1445,14 +1461,13 @@ sub each_record {
 
 # Now supported, including qualification
 sub each_nokey {
-    my ($s, $qual) = @_;
-#::logDebug("each_nokey qual=$qual");
-	$qual = '' if ! $qual;
-	$qual .= $s->[$CONFIG]{Export_order} 
-		if $s->[$CONFIG]{Export_order};
+    my $s = shift;
 	$s = $s->import_db() if ! defined $s->[$DBI];
     my ($table, $db, $each);
     unless(defined $s->[$EACH]) {
+		my $qual = shift || '';
+		$qual .= $s->[$CONFIG]{Export_order} 
+			if $s->[$CONFIG]{Export_order};
 		($table, $db, $each) = @{$s}[$TABLE,$DBI,$EACH];
 		my $restrict;
 		if($restrict = $Vend::Cfg->{TableRestrict}{$table}
@@ -1465,7 +1480,6 @@ sub each_nokey {
 			$qual = $qual ? "$qual AND " : 'WHERE ';
 			my ($rfield, $rsession) = split /\s*=\s*/, $restrict;
 			$qual .= "$rfield = '$Vend::Session->{$rsession}'";
-#::logDebug("restricted qual=$qual");
 		}
 		my $query = $db->prepare("select * from $table " . ($qual || '') )
             or die $DBI::errstr;
@@ -1474,18 +1488,17 @@ sub each_nokey {
 		$each = sub {
 			my $ref = $query->fetchrow_arrayref()
 				or return undef;
-#::logDebug("query returned: " . ::uneval($ref));
-			return ($ref);
+			return $ref;
 		};
         push @$s, $each;
     }
-	my ($return) = $s->[$EACH]->();
+	my $return = $s->[$EACH]->();
 	if(! defined $return->[0]) {
 		pop @$s;
 		delete $s->[$CONFIG]{Export_order};
 		return ();
 	}
-    return (@$return);
+    return $return;
 }
 
 sub sprintf_substitute {

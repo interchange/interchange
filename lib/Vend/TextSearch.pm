@@ -1,6 +1,6 @@
 # Vend::TextSearch - Search indexes with Perl
 #
-# $Id: TextSearch.pm,v 2.0 2001-07-18 02:23:14 jon Exp $
+# $Id: TextSearch.pm,v 2.1 2001-11-26 18:34:02 mheins Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
@@ -28,7 +28,7 @@ require Exporter;
 use vars qw(@ISA);
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.0 $, 10);
+$VERSION = substr(q$Revision: 2.1 $, 10);
 
 use Search::Dict;
 use strict;
@@ -216,14 +216,15 @@ sub search {
 		my $prospect;
 
 		eval {
-			($limit_sub, $prospect) = $s->get_limit($f);
+			# 1 refers to fact you have to make ref from line
+			($limit_sub, $prospect) = $s->get_limit($f, 1);
 		};
 
 		$@  and  return $s->search_error("Limit subroutine creation: $@");
 
 		$f = $prospect if $prospect;
 
-		eval {($return_sub, $delayed_return) = $s->get_return()};
+		eval {($return_sub, $delayed_return) = $s->get_return( undef, 1 )};
 
 		$@  and  return $s->search_error("Return subroutine creation: $@");
 
@@ -269,37 +270,37 @@ sub search {
 			while(<SEARCH>) {
 #::logDebug("$_");
 				last if &$dict_limit($_);
-				next unless ! defined $f or &$f();
-				next unless &$limit_sub($_);
+				next unless &$f();
+				next unless $limit_sub->($_);
 				(push @out, $searchfile and last)
 					if $s->{mv_return_file_name};
-				push @out, &$return_sub($_);
+				push @out, $return_sub->($_);
 			}
 		}
 		elsif($s->{mv_dict_end}) {
 			while(<SEARCH>) {
-				last if &$dict_limit($_);
+				last if $dict_limit->($_);
 				next unless &$f();
 				(push @out, $searchfile and last)
 					if $s->{mv_return_file_name};
-				push @out, &$return_sub($_);
+				push @out, $return_sub->($_);
 			}
 		}
 		elsif(! defined $f and defined $limit_sub) {
 			while(<SEARCH>) {
-				next unless &$limit_sub($_);
+				next unless $limit_sub->($_);
 				(push @out, $searchfile and last)
 					if $s->{mv_return_file_name};
-				push @out, &$return_sub($_);
+				push @out, $return_sub->($_);
 			}
 		}
 		elsif(defined $limit_sub) {
 			while(<SEARCH>) {
 				next unless &$f();
-				next unless &$limit_sub($_);
+				next unless $limit_sub->($_);
 				(push @out, $searchfile and last)
 					if $s->{mv_return_file_name};
-				push @out, &$return_sub($_);
+				push @out, $return_sub->($_);
 			}
 		}
 		elsif (!defined $f) {
@@ -310,7 +311,7 @@ sub search {
 				next unless &$f();
 				(push @out, $searchfile and last)
 					if $s->{mv_return_file_name};
-				push @out, &$return_sub($_);
+				push @out, $return_sub->($_);
 			}
 		}
 		close SEARCH;
@@ -324,7 +325,7 @@ sub search {
 		$s->hash_fields($s->{mv_field_names}, qw/mv_sort_field/);
 #::logDebug("after hash fields: self=" . ::Vend::Util::uneval_it({%$s}));
 		$s->sort_search_return(\@out);
-		$delayed_return = $s->get_return(1);
+		$delayed_return = $s->get_return(1,1);
 		@out = map { $delayed_return->($_) } @out;
 	}
 #::logDebug("after delayed return: self=" . ::Vend::Util::uneval_it({%$s}));

@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.0 2001-07-18 02:23:14 jon Exp $
+# $Id: Search.pm,v 2.1 2001-11-26 18:34:02 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.0 $, 10);
+$VERSION = substr(q$Revision: 2.1 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -410,38 +410,59 @@ sub more_alpha {
 # Returns a field weeding function based on the search specification.
 # Input is the raw line and the delimiter, output is the fields
 # specified in the return_field specification
+# If we get a third parameter, $makeref, we need to build a reference
 sub get_return {
-	my($s, $final) = @_;
+	my($s, $final, $makeref) = @_;
 	my ($return_sub);
 
-	# We will pick out the return fields later if sorting
-	if(! $final and $s->{mv_sort_field}) {
-		return ( sub {@_}, 1);
-	}
+	if($makeref) {
 
-	if(! $s->{mv_return_fields}) {
-		my $delim = $s->{mv_index_delim} || "\t";
-#::logDebug("code return. delim='$delim'");
-		$return_sub = sub {
-				$_[0] =~ s/$delim.*//s;
-				my $ary = [ $_[0] ];
-#::logDebug("ary is:" . ::uneval($ary));
-				return $ary;
-				};
+		# Avoid the hash key lookup, it is a closure
+		my $delim = $s->{mv_index_delim};
+
+		# We will pick out the return fields later if sorting
+		# This returns
+		if(! $final and $s->{mv_sort_field}) {
+			return ( 
+				sub {
+					[ split /$delim/o, shift(@_) ]
+				},
+				1,
+			);
+		}
+
+		if(! $s->{mv_return_fields}) {
+			$return_sub = sub {
+								$_[0] =~ s/$delim.*//s;
+								return $_[0];
+						};
+		}
+		else {
+			my @fields = @{$s->{mv_return_fields}};
+			$return_sub = sub {
+							return [ (split /$delim/o, shift(@_))[@fields] ]
+						};
+		}
 	}
 	else {
-		my $delim = $s->{mv_index_delim};
-#::logDebug("rf[0]='$s->{mv_return_fields}[0]'");
-		my @fields = @{$s->{mv_return_fields}};
-#::logDebug("delim='$delim' fields='@fields'");
-		$return_sub = sub {
-			chomp($_[0]);
-			my $ary = [
-				(split /\Q$delim/o, $_[0])[@fields]
-				];
-#::logDebug("line is:$_[0]\nary is:" . ::uneval($ary));
-				return $ary;
-		};
+		# We will pick out the return fields later if sorting
+		# This returns
+		if(! $final and $s->{mv_sort_field}) {
+			return ( sub { [ @{ shift(@_) } ] }, 1);
+		}
+
+		if(! $s->{mv_return_fields}) {
+			$return_sub = sub {
+								return [ $_[0]->[0] ];
+						};
+		}
+		else {
+			my @fields = @{$s->{mv_return_fields}};
+			$return_sub = sub {
+				my $ref = [ @{$_[0]}[@fields] ];
+				return $ref;
+			};
+		}
 	}
 	return $return_sub;
 }
@@ -535,12 +556,19 @@ sub create_field_hash {
 # Returns a screening function based on the search specification.
 # The $f is a reference to previously created search function which does
 # a pattern match on the line.
+# Makeref says we have to build a reference from the supplied text line
 sub get_limit {
-	my($s, $f) = @_;
+	my($s, $f, $makeref) = @_;
 	my $limit_sub;
 	my $range_code = '';
 	my $rd = $s->{mv_record_delim} || '\n';
-	my $code       = "sub {\nmy \$line = shift; chomp \$line; \$line =~ tr/$rd//d;\n";
+	my $code;
+	if($makeref) {
+		$code       = "sub {\nmy \$line = [split /$s->{mv_index_delim}/, shift(\@_)];\n";
+	}
+	else {
+		$code       = "sub {\nmy \$line = shift;\n";
+	}
 	my $join_key;
 	$join_key = defined $s->{mv_return_fields} ? $s->{mv_return_fields}[0] : 0;
 	$join_key = 0 if $join_key eq '*';
@@ -574,15 +602,14 @@ sub get_limit {
 		$s->{mv_field_hash} = create_field_hash($s) 
 			unless $s->{mv_field_hash};
 		$code .= <<EOF;
-my \$key = (split m{$s->{mv_index_delim}}, \$line)[$join_key];
+my \$key = \$line->[$join_key];
 EOF
 		for(@join_fields) {
 			my ($table, $col) = split /:+/, $_, 2;
 			if($table) {
 				$wild_card = 0;
 				$code .= <<EOF;
-\$line .= qq{$s->{mv_index_delim}} .
-		  Vend::Data::database_field('$table', \$key, '$col');
+push \@\$line, Vend::Data::database_field('$table', \$key, '$col');
 EOF
 			}
 			elsif ($col =~ tr/:/,/) {
@@ -594,16 +621,15 @@ EOF
 				$wild_card = 1;
 				$col =~ s/[^\d,.]//g;
 			$code .= <<EOF;
-my \$addl = join " ", (split m{\Q$s->{mv_index_delim}\E}, \$line)[$col];
-\$line .= qq{$s->{mv_index_delim}} . \$addl;
+my \$addl = join " ", \@\$line[$col];
+push \@\$line .= \$addl;
 EOF
 			}
 			else {
 				$wild_card = 1;
 				$code .= <<EOF;
-my \$addl = \$line;
-\$addl =~ tr/$s->{mv_index_delim}/ /;
-\$line .= qq{$s->{mv_index_delim}} . \$addl;
+my \$addl = join " ", \@\$line;
+push \@\$line .= \$addl;
 EOF
 			}
 		}
@@ -613,7 +639,7 @@ EOF
 
 	if ( ref $s->{mv_range_look} )  {
 		$range_code = <<EOF;
-return $joiner \$s->range_check(qq{$s->{mv_index_delim}},\$line);
+return $joiner \$s->range_check(\$line);
 EOF
 	}
 	if ( $s->{mv_coordinate} ) {
@@ -624,7 +650,7 @@ EOF
 		 }
 		 my $callchar = $fields =~ /,/ ? '@' : '$';
 		 $code .= <<EOF;
-	my \@fields = split /\\Q$s->{mv_index_delim}/, \$line;
+	my \@fields = \@\$line;
 	\@fields = ${callchar}fields[$fields];
 EOF
 		$code .= <<EOF if $Global::DebugFile and $CGI::values{debug};
@@ -777,7 +803,7 @@ EOF
 	}
 	elsif ( @{$s->{mv_search_field}} )  {
 		if(! $s->{mv_begin_string}[0]) {
-#::logDebug("Not begin, sub=f");
+#::logDebug("Not begin, sub=$f");
 			$sub = $f;
 		}
 		elsif (! $s->{mv_orsearch}[0] ) {
@@ -800,9 +826,7 @@ EOF
 		}
 		 $code .= $range_code;
 		 $code .= <<EOF;
-	my \@fields = (split /\\Q$s->{mv_index_delim}/, \$line)[$fields];
-	my \$field = join q{$s->{mv_index_delim}}, \@fields;
-	\$_ = \$field;
+	\$_ = join q{$s->{mv_index_delim}}, \@\$line[$fields];
 	return(\$_ = \$line) if &\$sub();
 	return undef;
 }
@@ -831,8 +855,8 @@ EOF
 # Check to see if the fields specified in the range_look array
 # meet the criteria
 sub range_check {
-	my($s,$index_delim,$line) = @_;
-	my @fields = (split /\Q$index_delim/, $line)[@{$s->{mv_range_look}}];
+	my($s,$line) = @_;
+	my @fields = @$line[@{$s->{mv_range_look}}];
 	my $i = 0;
 	for(@fields) {
 		no strict 'refs';
@@ -1074,8 +1098,8 @@ my %Sorter = (
 	my $delim = quotemeta $s->{mv_index_delim};
 	my $code = <<EOF;
 sub {
-	my \@a = (split /$delim/, \$a, $max)[$f_string];
-	my \@b = (split /$delim/, \$b, $max)[$f_string];
+	my \@a = \@{\$a}[$f_string];
+	my \@b = \@{\$b}[$f_string];
 	my \$r;
 EOF
 #::logDebug("No define of Sort_field") if ! defined $Sort_field{'none'};

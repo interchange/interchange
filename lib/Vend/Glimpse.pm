@@ -1,6 +1,6 @@
 # Vend::Glimpse - Search indexes with Glimpse
 #
-# $Id: Glimpse.pm,v 2.1 2001-11-09 22:03:28 mheins Exp $
+# $Id: Glimpse.pm,v 2.2 2001-11-26 18:34:02 mheins Exp $
 #
 # Adapted for use with Interchange from Search::Glimpse
 #
@@ -25,7 +25,7 @@ package Vend::Glimpse;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2 $, 10);
 use strict;
 
 sub array {
@@ -260,14 +260,14 @@ EOF
 		my $prospect;
 
 		eval {
-			($limit_sub, $prospect) = $s->get_limit($f);
+			($limit_sub, $prospect) = $s->get_limit($f, 1);
 		};
 
 		$@  and  return $s->search_error("Limit subroutine creation: $@");
 
 		$f = $prospect if $prospect;
 
-		eval {($return_sub, $delayed_return) = $s->get_return()};
+		eval {($return_sub, $delayed_return) = $s->get_return(undef, 1)};
 
 		$@  and  return $s->search_error("Return subroutine creation: $@");
 
@@ -319,7 +319,7 @@ EOF
 		$s->hash_fields($s->{mv_field_names}, qw/mv_sort_field/);
 #::logDebug("gsearch after hash fields: self=" . ::Vend::Util::uneval_it({%$s}));
 		$s->sort_search_return(\@out);
-		$delayed_return = $s->get_return(1);
+		$delayed_return = $s->get_return(1,1);
 		@out = map { $delayed_return->($_) } @out;
 	}
 #::logDebug("after delayed return: self=" . ::Vend::Util::uneval_it({%$s}));
