@@ -43,7 +43,7 @@ sub {
 			$type = 'formlink';
 		}
 		else {
-			$type eq 'done';
+			$type = 'done';
 			$out .= "ui_return_to=\n";
 		}
 	}
