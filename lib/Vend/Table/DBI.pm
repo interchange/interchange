@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.19 2001-04-05 02:21:44 heins Exp $
+# $Id: DBI.pm,v 1.25.2.20 2001-04-09 06:29:08 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.19 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.20 $, 10);
 
 use strict;
 
@@ -492,8 +492,8 @@ sub open_table {
 	$config->{KEY_INDEX} = $config->{COLUMN_INDEX}{lc $key}
 		if ! $config->{KEY_INDEX};
 	die ::errmsg("Bad key specification: %s"  .
-					::uneval($config->{NAME}) .
-					::uneval($config->{COLUMN_INDEX}),
+					::uneval_it($config->{NAME}) .
+					::uneval_it($config->{COLUMN_INDEX}),
 					$key
 		)
 		if ! defined $config->{KEY_INDEX};
