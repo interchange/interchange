@@ -14,7 +14,7 @@ sub {
 	$keytext =~ s/^\s+//;
 	$keytext =~ s/\s+$//;
 	open(GPGIMP, "| $gpgexe $flags") 
-		or die "Can't fork!";
+		or die "Can't fork: $!";
 	print GPGIMP $keytext;
 	close GPGIMP;
 
