@@ -352,7 +352,7 @@ fi
 
 %doc LICENSE
 %doc README
-%doc README.rpm
+%doc README.rpm-dist
 %doc README.cvs
 %doc WHATSNEW
 %{_mandir}/man1

@@ -34,15 +34,15 @@ Unix-like operating system.
 
 More information is in the following files and directories:
 
-pod/           Documentation.
+pod/             Documentation.
 
-README.rpm     Notes on using Interchange when installed from RPM packages.
+README.rpm-dist  Notes on using Interchange when installed from RPM packages.
 
-README.debian  Notes on using Interchange when installed from Debian packages.
+README.debian    Notes on using Interchange when installed from Debian packages.
 
-README.cvs     How to access the CVS repository to track ongoing development.
+README.cvs       How to access the CVS repository to track ongoing development.
 
-WHATSNEW       Changes per version for this version family.
+WHATSNEW         Changes per version for this version family.
 
 -----------------------------------------------------------------------------
 
