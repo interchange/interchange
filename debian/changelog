@@ -1,8 +1,9 @@
-interchange (4.8.3-1.1) unstable; urgency=low
+interchange (4.8.3-1.4) unstable; urgency=low
 
   * /etc/interchange/usertag directory for locally used global usertags added
-
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed,  5 Dec 2001 20:54:08 +0100
+  * interchange-ui package suggests now a HTTPS server
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 22 Jan 2002 21:43:54 -0500
 
 interchange (4.8.3-1) unstable; urgency=low
 
