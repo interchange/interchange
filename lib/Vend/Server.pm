@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.19 2001-03-01 17:55:05 heins Exp $
+# $Id: Server.pm,v 1.8.2.20 2001-03-06 15:12:11 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.19 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.20 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -861,17 +861,17 @@ sub read_cgi_data {
 sub connection {
     my (%env, $entity);
     my $http;
-#::logDebug ("begin connection: " . (join " ", times()) . "\n");
+#::logDebug ("begin connection: " . (join " ", times()));
     read_cgi_data(\@Global::argv, \%env, \$entity)
     	or return 0;
 	$http = new Vend::Server \*MESSAGE, \%env, \$entity;
-#::logDebug("begin dispatch: " . (join " ", times()) . "\n");
+#::logDebug("begin dispatch: " . (join " ", times()));
 
 	# Can log all CGI inputs
 	log_http_data($http) if $Global::Logging;
 
     ::dispatch($http) if $http;
-#::logDebug ("end connection: " . (join " ", times()) . "\n");
+#::logDebug ("end connection: " . (join " ", times()));
 	undef $Vend::ResponseMade;
 	undef $Vend::InternalHTTP;
 }
@@ -953,8 +953,8 @@ sub setup_signals {
 	}
     else {
         $Sig_inc = sub { kill "USR1", $Vend::MasterProcess; };
-        #$Sig_dec = sub { kill "USR2", $Vend::MasterProcess; };
-        $Sig_dec = sub { send_ipc($$); };
+        $Sig_dec = sub { kill "USR2", $Vend::MasterProcess; };
+        #$Sig_dec = sub { send_ipc($$); };
     }
 }
 
@@ -1508,16 +1508,20 @@ my $pretty_vector = unpack('b*', $rin);
 	    ::logGlobal({ level => 'error' },  "Died in select, retrying: %s", $msg);
 	  }
 
+#::logDebug ("Past connect, spawn=$spawn");
+
 	  eval {
 		SPAWN: {
 			last SPAWN unless defined $spawn;
-#::logDebug ("Spawning connection, " .  ($no_fork ? 'no fork, ' : 'forked, ') .  scalar localtime() . "\n");
+#::logDebug ("Spawning connection, " .  ($no_fork ? 'no fork, ' : 'forked, ') .  scalar localtime());
 			if($no_fork) {
 				### Careful, returns after MaxRequests or terminate signal
 				$Vend::NoFork = {};
 				$::Instance = {};
 				$handled++;
+#::logDebug("begin non-forked ::connection()");
 				connection();
+#::logDebug("end non-forked ::connection()");
 				undef $Vend::NoFork;
 				undef $::Instance;
 			}
@@ -1529,7 +1533,7 @@ my $pretty_vector = unpack('b*', $rin);
 			elsif (! $pid) {
 				#fork again
 				unless ($pid = fork) {
-
+#::logDebug("forked connection");
 					$::Instance = {};
 					eval { 
 						touch_pid() if $Global::PIDcheck;
