@@ -26,6 +26,7 @@ debian/interchange-ui.config
 debian/interchange-ui.files
 debian/interchange-ui.prerm
 debian/interchange-ui.postinst
+debian/interchange-ui.preinst
 debian/interchange-ui.templates
 debian/interchange.cfg
 debian/interchange.conffiles
