@@ -206,8 +206,10 @@ EOF
 		$current =~ m{<!--\s+begin\s+content\s+-->(.*)<!--\s+end\s+content\s+-->}is;
 		$content = $1 || '';
 	}
-	$content =~ s/</&lt;/g;
+
 	$content =~ s/\[/&#91;/g;
+	$content =~ s/</&lt;/g;
+	$content =~ s/&nbsp;/&amp;nbsp;/g;
 
 	# If nothing else, display the content
 	$ref->{ui_template_layout} = 'UI_CONTENT'

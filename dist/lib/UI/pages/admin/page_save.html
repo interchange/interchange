@@ -48,6 +48,7 @@
 	$page .= $Config->{HTMLsuffix}
 		unless $page =~ /$Config->{HTMLsuffix}$/;
 #Log("final page=$page");
+	push @out, '';
 	$Tag->write_relative_file($page, (join "\n", @out));
 	$Scratch->{ui_output_page} = $page;
 	return;
