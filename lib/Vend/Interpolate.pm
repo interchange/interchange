@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.11 2000-12-31 15:22:21 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.12 2001-01-09 11:54:17 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.11 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.12 $, 10);
 
 @EXPORT = qw (
 
@@ -2437,6 +2437,8 @@ sub mvtime {
 		POSIX::setlocale(&POSIX::LC_TIME, $locale);
 	}
 
+	local($ENV{TZ}) = $opt->{tz} if $opt->{tz};
+
 	my $now = $opt->{time} || time();
 	$fmt = '%Y%m%d' if $opt->{sortable};
 
@@ -4288,6 +4290,8 @@ my $once = 0;
 		$run =~ s#$B$QR{_filter}$E$QR{'/_filter'}#filter_value($1,$2)#ige;
 		$run =~ s#$B$QR{_last}$E$QR{'/_last'}#
                     my $tmp = interpolate_html($1);
+					$tmp =~ s/^\s+//;
+					$tmp =~ s/\s+$//;
                     if($tmp && $tmp < 0) {
                         last;
                     }
