@@ -5,11 +5,14 @@
 [tmp window_name][tag time]%m%d%H%M%S[/tag][/tmp]
 <script language="JavaScript">
 <!--
-function open_help(url) {
+function open_help(url,dest) {
  if(url == undefined) 
   url = '[area href="[either]@_UI_HELP_URL_@[or]@_UI_BASE_@/help[/either]" form="topic=[scratch help_name]"]';
  opts="top=0,left=0,scrollbars,status=no,menubar=no,location=yes,toolbar=no,resizable=yes,fullsize=no,width=__UI_HELP_WIDTH__,height=__UI_HELP_HEIGHT__";
- window.open(url, 'Help', opts);
+ var dest;
+ if(dest == undefined)
+ 	dest = 'Help';
+ window.open(url, dest, opts);
 }
 function checkAll(form,what,uncheck) {
  var i, n, check;
