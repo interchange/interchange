@@ -50,8 +50,10 @@ sub {
 		# unless no image dir specified, add locale string and
 		# make sure there's a trailing slash
 		my $l = $Scratch->{mv_locale} ? $Scratch->{mv_locale} : 'en_US';
-		$imagedir		= $Tag->var('UI_IMAGE_DIR', 2);
-		$imagedirsecure	= $Tag->var('UI_IMAGE_DIR_SECURE', 2);
+		$imagedir		= $::Variable->{UI_IMAGE_DIR}
+						|| $Global::Variable->{UI_IMAGE_DIR};
+		$imagedirsecure	= $::Variable->{UI_IMAGE_DIR}
+						|| $Global::Variable->{UI_IMAGE_DIR};
 		for ($imagedir, $imagedirsecure) {
 			if ($_) {
 				$_ .= '/' if substr($_, -1, 1) ne '/';
