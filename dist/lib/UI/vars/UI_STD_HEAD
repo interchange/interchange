@@ -1,5 +1,14 @@
 Variable UI_STD_HEAD <<EOV
 [tag pragma strip_white][/tag]
+[perl]
+	# determine catalog URL before mangling config URLs
+	$Scratch->{ui_catalog_url} = $Tag->area('index');
+
+	if ($Tag->var('UI_SECURE', 2)) {
+		$Config->{VendURL} = $Config->{SecureURL};
+	}
+	''
+[/perl]
 [if-mm !logged_in]
 	[if !scratch no_login_required]
 		[bounce page="__UI_BASE__/login"]

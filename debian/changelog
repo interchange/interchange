@@ -6,8 +6,9 @@ interchange (4.7.2-0) unstable; urgency=low
     instead of putting it into the configuration file
   * UI needs now a std.js file
   * put poweredby.gif in place again
+  * UI_SECURE added to interchange.cfg
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed,  4 Apr 2001 20:34:04 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri,  6 Apr 2001 12:48:21 +0200
 
 interchange (4.6.4-1) unstable; urgency=low
   
