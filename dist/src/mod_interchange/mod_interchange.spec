@@ -1,8 +1,8 @@
 Summary: Apache Module to link with Interchange
 Name: mod_interchange
-Version: 1.04
+Version: 1.29
 Release: 1
-Copyright: GPL
+License: GPL
 Group: WWW/Applications
 Source: http://ftp.icdevgroup.org/interchange/%{name}-%{version}.tar.gz
 URL: http://www.icdevgroup.org/

@@ -1,6 +1,6 @@
 # This -*-perl -*- module implements a persistent counter class.
 #
-# $Id: CounterFile.pm,v 1.1 2002-02-04 03:08:16 mheins Exp $
+# $Id: CounterFile.pm,v 1.2 2003-06-18 17:34:44 jon Exp $
 #
 
 package Vend::CounterFile;
@@ -74,7 +74,7 @@ systems.  Perhaps we should use the File::Lock module?
 =head1 COPYRIGHT
 
 Copyright (c) 1995-1998 Gisle Aas. All rights reserved.
-Modifications made by and Red Hat, Inc (c) 2002. 
+Modifications made by and copyright (C) 2002 Red Hat, Inc.
 
 This library is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
@@ -97,7 +97,7 @@ eval {
 };
 
 sub Version { $VERSION; }
-$VERSION = sprintf("%d.%02d", q$Revision: 1.1 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/);
 
 $MAGIC           = "#COUNTER-1.0\n";   # first line in counter files
 $DEFAULT_INITIAL = 0;                  # default initial counter value

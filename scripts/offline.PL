@@ -3,9 +3,10 @@
 #
 # Interchange database builder and indexer
 #
-# $Id: offline.PL,v 2.3 2002-06-27 22:24:11 jon Exp $
+# $Id: offline.PL,v 2.4 2003-06-18 17:34:47 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995-96 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
@@ -247,7 +248,7 @@ offline -- Interchange offline database builder
 
 =head1 VERSION
 
-# $Id: offline.PL,v 2.3 2002-06-27 22:24:11 jon Exp $
+# $Id: offline.PL,v 2.4 2003-06-18 17:34:47 jon Exp $
 
 =head1 DESCRIPTION
 
@@ -255,6 +256,6 @@ Skeleton POD to avoid make errors.
 
 =head1 SEE ALSO
 
-interchange(1), http://interchange.redhat.com/
+interchange(1), http://www.icdevgroup.org/
 
 =cut

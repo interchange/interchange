@@ -7,8 +7,8 @@
 
 Summary: Interchange web application platform
 Name: interchange
-Version: 4.9.7
-Release: 2
+Version: 4.9.8
+Release: 1
 Vendor: Interchange Development Group
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
@@ -375,6 +375,9 @@ fi
 
 
 %changelog
+* Wed Jun 18 2003 Jon Jensen <jon@icdevgroup.org> 4.9.8-1
+- Update for new release
+
 * Tue Apr 25 2003 Jon Jensen <jon@icdevgroup.org> 4.9.7-2
 - Admin images moved to /var/www/html/interchange-5 to coexist with
   Interchange 4.8 installations.

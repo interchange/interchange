@@ -1,8 +1,8 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.19 2003-05-15 14:24:05 racke Exp $
+# $Id: Dispatch.pm,v 1.20 2003-06-18 17:34:44 jon Exp $
 #
-# Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
+# Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.19 $, 10);
+$VERSION = substr(q$Revision: 1.20 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;

@@ -1,8 +1,8 @@
 # Vend::Payment::Signio - Interchange support for Signio/Verisign Payflow Pro
 #
-# $Id: Signio.pm,v 2.9 2003-06-07 00:47:52 jon Exp $
+# $Id: Signio.pm,v 2.10 2003-06-18 17:34:46 jon Exp $
 #
-# Copyright (C) 2003 Interchange Development Group
+# Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@ package Vend::Payment::Signio;
 
 =head1 Interchange support for Signio/Verisign Payflow Pro
 
-Vend::Payment::Signio $Revision: 2.9 $
+Vend::Payment::Signio $Revision: 2.10 $
 
 =head1 SYNOPSIS
 

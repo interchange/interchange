@@ -3,9 +3,10 @@
 #
 # Interchange database updater
 #
-# $Id: update.PL,v 2.3 2002-11-20 18:52:17 mheins Exp $
+# $Id: update.PL,v 2.4 2003-06-18 17:34:47 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -311,9 +312,9 @@ C<update> program will terminate with an error.
 
 =head1 SEE ALSO
 
-http://interchange.redhat.com/
+http://www.icdevgroup.org/
 
 =head1 AUTHOR
 
-Mike Heins, <mheins@redhat.com>
+Mike Heins
 

@@ -1,8 +1,9 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.16 2003-05-16 08:40:33 racke Exp $
+# $Id: Search.pm,v 2.17 2003-06-18 17:34:44 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,7 +22,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.16 $, 10);
+$VERSION = substr(q$Revision: 2.17 $, 10);
 
 use strict;
 use vars qw($VERSION);

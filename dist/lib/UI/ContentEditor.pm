@@ -2,9 +2,9 @@
 #
 # UI::ContentEditor - Interchange page/component edit
 # 
-# $Id: ContentEditor.pm,v 2.10 2003-06-11 14:37:41 racke Exp $
+# $Id: ContentEditor.pm,v 2.11 2003-06-18 17:34:43 jon Exp $
 #
-# Copyright (C) 2003 Interchange Development Group
+# Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 
 package UI::ContentEditor;
 
-$VERSION = substr(q$Revision: 2.10 $, 10);
+$VERSION = substr(q$Revision: 2.11 $, 10);
 $DEBUG = 0;
 
 use POSIX qw/strftime/;

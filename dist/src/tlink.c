@@ -2,11 +2,10 @@
  * tlink.c: runs as a CGI program and passes request to Interchange
  *          server via TCP/IP
  *
- * $Id: tlink.c,v 2.2 2002-06-27 22:24:10 jon Exp $
+ * $Id: tlink.c,v 2.3 2003-06-18 17:34:43 jon Exp $
  *
+ * Copyright (C) 1996-2002 Red Hat, Inc.
  * Copyright (C) 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
- *
- * Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

@@ -2,7 +2,7 @@
 
 # reset_order_number -- date-based order numbers for Interchange
 
-# From an idea posted to the interchange-users@ic.redhat.com
+# From an idea posted to the interchange-users
 # mail list by Leon Harris <leon@quoll.com>
 
 # Place in crontab with 

@@ -3,9 +3,10 @@
 #
 # Interchange session expiration for all catalogs
 #
-# $Id: findtags.PL,v 1.1 2002-08-10 17:34:03 mheins Exp $
+# $Id: findtags.PL,v 1.2 2003-06-18 17:34:47 jon Exp $
 #
-# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

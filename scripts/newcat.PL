@@ -3,9 +3,10 @@
 #
 # Interchange catalog configurator with curses
 #
-# $Id: newcat.PL,v 2.6 2002-06-27 18:55:50 jon Exp $
+# $Id: newcat.PL,v 2.7 2003-06-18 17:34:47 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

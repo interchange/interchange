@@ -136,7 +136,7 @@ slashes).
 
 =head1 AUTHOR
 
-Jon Jensen <jon@redhat.com>, March 2002
+Jon Jensen <jon@icdevgroup.org>, March 2002
 
 =cut
 

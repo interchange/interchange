@@ -1893,7 +1893,7 @@ SQL-Ledger Accounting Interface for Interchange
 
 This module is an attempt to create a set of callable routines 
 that will allow the easy integration of the SQL-Ledger Accounting 
-package with "Red Hat's" Interchange. 
+package with Interchange. 
 
 It handles the mapping of the Interchange variable names to the 
 appropriate SQL-Ledger ones as well as parsing the html returned 

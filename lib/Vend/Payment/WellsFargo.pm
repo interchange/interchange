@@ -1,13 +1,13 @@
 # Vend::Payment::WellsFargo - Interchange WellsFargo support
 #
-# $Id: WellsFargo.pm,v 1.4 2003-02-19 04:23:03 mheins Exp $
+# $Id: WellsFargo.pm,v 1.5 2003-06-18 17:34:46 jon Exp $
 #
-# Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 1999-2002 Red Hat, Inc.
 #
-# by Mark Johnson <markj@redhat.com> based off of
-# AuthorizeNet.pm by
+# by Mark Johnson based off of AuthorizeNet.pm by
 # mark@summersault.com
-# Mike Heins <mheins@redhat.com>
+# Mike Heins
 # webmaster@nameastar.net
 # Jeff Nappi <brage@cyberhighway.net>
 # Paul Delys <paul@gi.alaska.edu>
@@ -33,7 +33,7 @@ package Vend::Payment::WellsFargo;
 
 =head1 Interchange WellsFargo Support
 
-Vend::Payment::WellsFargo $Revision: 1.4 $
+Vend::Payment::WellsFargo $Revision: 1.5 $
 
 =head1 SYNOPSIS
 
@@ -261,8 +261,8 @@ That should show what happened.
 
 =item *
 
-If all else fails, Red Hat and other consultants are available to help
-with integration for a fee.
+If all else fails, consultants are available to help with integration for a fee.
+See http://www.icdevgroup.org/
 
 =back
 
@@ -273,8 +273,7 @@ to Vend::Payment and places things there.
 
 =head1 AUTHORS
 
-Mark Johnson <markj@redhat.com>, based on original code by Mike Heins
-<mheins@redhat.com>.
+Mark Johnson, based on original code by Mike Heins.
 
 =head1 CREDITS
 

@@ -1,8 +1,8 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.33 2003-05-18 18:22:57 racke Exp $
+# $Id: Editor.pm,v 1.34 2003-06-18 17:34:46 jon Exp $
 #
-# Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
+# Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.33 $, 10);
+$VERSION = substr(q$Revision: 1.34 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;

@@ -1,12 +1,12 @@
 # Vend::Payment::TCLink - Interchange TrustCommerce TCLink support
 #
-# $Id: TCLink.pm,v 1.2 2003-02-19 04:23:03 mheins Exp $
+# $Id: TCLink.pm,v 1.3 2003-06-18 17:34:46 jon Exp $
 #
 # Copyright (C) 2002 TrustCommerce <developer@trustcommerce.com>
 #
 # by Dan Helfman <dan@trustcommerce.com> with code reused and inspired by
 #       Mark Stosberg <mark@summersault.com>
-#	Mike Heins <mheins@redhat.com>
+#	Mike Heins
 #	webmaster@nameastar.net
 #	Jeff Nappi <brage@cyberhighway.net>
 #	Paul Delys <paul@gi.alaska.edu>
@@ -30,7 +30,7 @@ package Vend::Payment::TCLink;
 
 =head1 Interchange TrustCommerce Support
 
-Vend::Payment::TCLink $Revision: 1.2 $
+Vend::Payment::TCLink $Revision: 1.3 $
 
 =head1 SYNOPSIS
 
@@ -209,8 +209,7 @@ packages to Vend::Payment and places things there.
 =head1 AUTHORS
 
 Dan Helfman <dan@trustcommerce.com>, based on code by Mark Stosberg
-<mark@summersault.com>, which was based on original code by Mike Heins
-<mheins@redhat.com>.
+<mark@summersault.com>, which was based on original code by Mike Heins.
 
 =head1 CREDITS
 

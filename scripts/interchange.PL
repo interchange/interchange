@@ -1,11 +1,12 @@
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# Interchange version 4.9.7
+# Interchange version 4.9.8
 #
-# $Id: interchange.PL,v 2.73 2003-06-18 14:21:02 racke Exp $
+# $Id: interchange.PL,v 2.74 2003-06-18 17:34:47 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. and others.
+# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 1996-2002 Red Hat, Inc.
 # http://www.icdevgroup.org/
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -138,7 +139,7 @@ use vars qw($VERSION);
 require Exporter;
 
 BEGIN {
-	$VERSION = '4.9.7';
+	$VERSION = '4.9.8';
 
 	unless ($] >= 5.006) {
 		die "Interchange $VERSION requires Perl 5.6.0 or later,\nbut you're trying to run it under Perl $]. Exiting.\n";
@@ -356,7 +357,7 @@ sub dontwarn {
 }
 
 sub version {
-	print "Interchange version $VERSION copyright 1996-2002 Red Hat, Inc. and others.\n";
+	print "Interchange version $VERSION copyright 2002-2003 Interchange Development Group and others.\n";
 }
 
 =head1 NAME
@@ -369,7 +370,7 @@ interchange [--options] [file]
 
 =head1 VERSION
 
-4.9.7
+4.9.8
 
 =head1 DESCRIPTION
 
@@ -975,7 +976,8 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-Copyright 1995-2002, Red Hat, Inc. and others.
+Copyright (C) 2002-2003 Interchange Development Group
+Copyright (C) 1995-2002 Red Hat, Inc.
 All rights reserved except those granted in the license.
 
 =cut

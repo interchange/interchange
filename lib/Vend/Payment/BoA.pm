@@ -1,13 +1,13 @@
 # Vend::Payment::BoA - Interchange BoA support
 #
-# $Id: BoA.pm,v 1.8 2003-06-06 06:35:34 danb Exp $
+# $Id: BoA.pm,v 1.9 2003-06-18 17:34:46 jon Exp $
 #
-# Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 1999-2002 Red Hat, Inc.
 #
-# by Mark Johnson <markj@redhat.com> based off of
-# AuthorizeNet.pm by
+# by Mark Johnson based off of AuthorizeNet.pm by
 # mark@summersault.com
-# Mike Heins <mheins@redhat.com>
+# Mike Heins
 # webmaster@nameastar.net
 # Jeff Nappi <brage@cyberhighway.net>
 # Paul Delys <paul@gi.alaska.edu>
@@ -27,13 +27,14 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
+
 # Connection routine for BoA's eStore payment gateway
 
 package Vend::Payment::BoA;
 
 =head1 Interchange BoA Support
 
-Vend::Payment::BoA $Revision: 1.8 $
+Vend::Payment::BoA $Revision: 1.9 $
 
 =head1 SYNOPSIS
 
@@ -222,8 +223,8 @@ That should show what happened.
 
 =item *
 
-If all else fails, Red Hat and other consultants are available to help
-with integration for a fee.
+If all else fails, consultants are available to help
+with integration for a fee. See http://www.icdevgroup.org/
 
 =back
 
@@ -234,8 +235,7 @@ to Vend::Payment and places things there.
 
 =head1 AUTHORS
 
-Mark Johnson <markj@redhat.com>, based on original code by Mike Heins
-<mheins@redhat.com>.
+Mark Johnson, based on original code by Mike Heins.
 
 =head1 CREDITS
 
