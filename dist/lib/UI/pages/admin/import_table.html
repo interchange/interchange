@@ -1,5 +1,5 @@
 [if-mm super][flag type=write table="icmenu ichelp"][/if-mm]
-[set page_title]Table Import[/set]
+[set page_title][L]Table Import[/L][/set]
 [set table_perm]=i[/set]
 [set help_name]import.main[/set]
 [set ui_class]Admin[/set]
@@ -25,9 +25,9 @@
 							test=isfile]"]
 	[title-bar]
 	[if cgi ui_import_convert]
-		Importing multiple tables:
+		[L]Importing multiple tables:[/L]
 	[else]
-		Import of table [cgi mv_data_file]:
+		[msg arg.0="[cgi mv_data_table]"]Import of table %s:[/msg]
 	[/else]
 	[/if]
 	[calc]
@@ -61,12 +61,12 @@
 	[value-extended
 		name=upload_file
 		outfile="upload/[cgi ui_upload_filename]"
-		yes="Upload succeeded"
-		no="Upload FAILED"
+		yes="[L]Upload succeeded[/L]"
+		no="[L]Upload FAILED[/L]"
 		]
 	<P>
 	[if type=!file term="upload/[cgi ui_upload_filename]"]
-		<B>Import file [cgi ui_upload_filename] not found!!!</B>
+		<B>[msg arg.0="[cgi ui_upload_filename]"]Import file %s not found!!![/msg]</B>
 	[elsif cgi ui_upload_ext eq add]
 	[import-fields
 					add=1
@@ -114,25 +114,25 @@
 <td bgcolor="__UI_C_INTBLOCK__">
 <input type=file name=upload_file>
 <BR>
-<input type="submit" value="Import">
+<input type="submit" value="[L]Import[/L]">
 <br>
 <hr>
 <SELECT NAME=ui_upload_ext>
-	<OPTION VALUE=add> Add new items if present
-	<OPTION VALUE=update> Ignore new items
-</SELECT>&nbsp;&nbsp;&nbsp;<SMALL><INPUT TYPE=checkbox NAME=ui_allow_delete VALUE=1> Allow delete
-&nbsp;&nbsp;<INPUT TYPE=checkbox NAME=ui_autonumber VALUE=1 CHECKED> Autonumber if no key</SMALL>
+	<OPTION VALUE=add> [L]Add new items if present[/L]
+	<OPTION VALUE=update> [L]Ignore new items[/L]
+</SELECT>&nbsp;&nbsp;&nbsp;<SMALL><INPUT TYPE=checkbox NAME=ui_allow_delete VALUE=1> [L]Allow delete[/L]
+&nbsp;&nbsp;<INPUT TYPE=checkbox NAME=ui_autonumber VALUE=1 CHECKED> [L]Autonumber if no key[/L]</SMALL>
 <BR><select NAME=ui_import_convert>
-		<OPTION VALUE=0> Single table
-		<OPTION VALUE=1> Gnumeric simple tex
+		<OPTION VALUE=0> [L]Single table[/L]
+		<OPTION VALUE=1> [L]Gnumeric simple tex[/L]
 		[if type=explicit compare="[version modtest='Spreadsheet::ParseExcel' extended=1]"]
-		<OPTION VALUE=2> XLS Spreadsheet
+		<OPTION VALUE=2> [L]XLS Spreadsheet[/L]
 		[/if]
 		</select>
 
-<BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=0 [checked name=ui_import_quiet value=0]> Show summary/add record/delete record messages
-<BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=1 [checked name=ui_import_quiet value=1 default=1]> Show summary messages only
-<BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=2 [checked name=ui_import_quiet value=2]> Show *no* messages
+<BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=0 [checked name=ui_import_quiet value=0]> [L]Show summary/add record/delete record messages[/L]
+<BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=1 [checked name=ui_import_quiet value=1 default=1]> [L]Show summary messages only[/L]
+<BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=2 [checked name=ui_import_quiet value=2]> [L]Show *no* messages[/L]
 </td>
 <td bgcolor="__UI_C_INTBLOCK__">
 
