@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.12 2000-09-30 06:18:13 heins Exp $
+# $Id: Data.pm,v 1.13 2000-09-30 14:56:33 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -277,10 +277,7 @@ sub set_field {
 
 	# Create it if it doesn't exist
 	unless ($db->record_exists($key)) {
-		my @fields;
-		my $count = scalar $db->columns();
-		@fields = ('') x $count;
-		$db->set_row($key, @fields);
+		$db->set_row($key);
 	}
 	elsif ($append) {
 		$value = $db->field($key, $field_name) . $value;

@@ -1,6 +1,6 @@
 # Table/Common.pm: Common access methods for Interchange Databases
 #
-# $Id: Common.pm,v 1.14 2000-09-25 15:29:10 heins Exp $
+# $Id: Common.pm,v 1.15 2000-09-30 14:56:33 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -25,7 +25,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.14 $, 10);
+$VERSION = substr(q$Revision: 1.15 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -369,7 +369,8 @@ sub set_field {
 	else {
 		$row[$s->[$KEY_INDEX]] = $key;
 	}
-    $row[$s->column_index($column)] = $value;
+    $row[$s->column_index($column)] = $value
+		if $column;
     $s->set_row(@row);
 	$value;
 }

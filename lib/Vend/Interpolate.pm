@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.26 2000-09-30 09:40:00 heins Exp $
+# $Id: Interpolate.pm,v 1.27 2000-09-30 14:56:33 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.26 $, 10);
+$VERSION = substr(q$Revision: 1.27 $, 10);
 
 @EXPORT = qw (
 
@@ -680,6 +680,7 @@ sub tag_data {
 		return increment_field($Vend::Database{$selector},$key,$field,$opt->{value} || 1);
 	}
 	elsif (defined $opt->{value}) {
+#::logDebug("set_field: table=$selector key=$key field=$field value=$opt->{value}");
 		$CacheInvalid = 1;
 		if($opt->{filter}) {
 			$opt->{value} = filter_value($opt->{filter}, $opt->{value}, $field);
@@ -1719,7 +1720,7 @@ sub flag {
 	my $fmt = $opt->{status} || '';
 	my @status;
 
-#::logDebug("tag flag=$flag text=$text value=$value opt=". ::uneval($opt));
+#::logDebug("tag flag=$flag text=$text value=$value opt=". ::uneval_it($opt));
 	if($flag eq 'write' || $flag eq 'read') {
 		my $arg = $opt->{table} || $text;
 		$value = 0 if $flag eq 'read';
