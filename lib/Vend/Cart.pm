@@ -1,6 +1,6 @@
 # Vend::Cart - Interchange shopping cart management routines
 #
-# $Id: Cart.pm,v 2.4 2002-06-28 05:00:25 mheins Exp $
+# $Id: Cart.pm,v 2.5 2002-07-06 07:13:01 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -24,7 +24,7 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 
 use strict;
 
@@ -212,7 +212,6 @@ sub toss_cart {
 		last DELETE;
 	}
 
-	return 1 unless @master;
 	my $mi;
 	my %save;
 	my @items;
@@ -239,7 +238,8 @@ sub toss_cart {
 			@{$s} = @items[sort {$a <=> $b} keys %save];
 		}
 	}
-	1;
+	Vend::Interpolate::levies();
+	return 1;
 }
 
 =head2 Test footer for item toss

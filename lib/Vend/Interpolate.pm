@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.80 2002-07-04 21:31:20 mheins Exp $
+# $Id: Interpolate.pm,v 2.81 2002-07-06 07:13:01 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.80 $, 10);
+$VERSION = substr(q$Revision: 2.81 $, 10);
 
 @EXPORT = qw (
 
@@ -3124,8 +3124,8 @@ sub tag_shipping_desc {
 	my $mode = 	shift;
 	$CacheInvalid = 1 unless $mode;
 	$mode = $mode || $::Values->{mv_shipmode} || 'default';
-	return '' unless defined $Vend::Cfg->{Shipping_desc}->{$mode};
-	$Vend::Cfg->{Shipping_desc}->{$mode};
+	return '' unless defined $Vend::Cfg->{Shipping_desc}{$mode};
+	return $Vend::Cfg->{Shipping_desc}{$mode};
 }
 
 sub tag_calc {
@@ -6281,6 +6281,7 @@ sub salestax {
         tag_cart($cart);
     }
 
+#::logDebug("salestax entered, cart=$cart");
 	my $tax_hash;
 	my $cost;
 	if($Vend::Cfg->{SalesTax} eq 'multi') {
@@ -6422,6 +6423,11 @@ sub total_cost {
 
 	$total = 0;
 
+	if($Vend::Cfg->{Levies}) {
+		$total = subtotal();
+		$total += levies();
+	}
+	else {
 	my $shipping = 0;
 	$shipping += tag_shipping()
 		if $::Values->{mv_shipmode};
@@ -6431,6 +6437,7 @@ sub total_cost {
     $total += $shipping;
     $total += salestax();
 
+	}
 	$Vend::Items = $save if defined $save;
 	$Vend::Session->{latest_total} = $total;
     return $total;
@@ -6527,4 +6534,97 @@ sub tag_ups {
 	return $cost;
 }
 
+sub levies {
+	my($set, $opt) = @_;
+	my $levies;
+#::logDebug("Calling levies");
+	return unless $levies = $Vend::Cfg->{Levies};
+	my $repos = $Vend::Cfg->{Levy_repository};
+	if(! $repos) {
+		logOnce('error', "Levies set but no levies defined! No tax or shipping.");
+		return;
+	}
+	$Vend::Levying = 1;
+	$set ||= $Vend::CurrentCart;
+	$set ||= 'main';
+
+	$Vend::Session->{levies} ||= {};
+	my $lcart = $Vend::Session->{levies}{$set} = [];
+	
+	my $run = 0;
+	for my $name (@$levies) {
+		my $l = $repos->{$name};
+#::logDebug("Levying $name, repos => " . uneval($l));
+		if(! $l) {
+			logOnce('error', "Levy '%s' called but not defined. Skipping.", $name);
+			next;
+		}
+		my $type = $l->{type} || ($name eq 'salestax' ? 'salestax' : 'shipping');
+		my $mode = $l->{mode} || $name;
+		my $cost = 0;
+		my $sort;
+		my $desc;
+		if($type eq 'salestax') {
+			my $save;
+			$sort = $l->{sort} || '010';
+			if($l->{tax_fields}) {
+				$save = $Vend::Cfg->{SalesTax};
+				$Vend::Cfg->{SalesTax} = $l->{tax_fields};
+			}
+			$cost = salestax();
+			$desc = errmsg(
+						$l->{description} || 'Sales Tax',
+						$::Values->{$Vend::Cfg->{SalesTax}},
+					);
+			$Vend::Cfg->{SalesTax} = $save if defined $save;
+		}
+		elsif ($type eq 'shipping' or $type eq 'handling') {
+			if(not $sort = $l->{sort}) {
+				$sort = $type eq 'handling' ? 100 : 500;
+			}
+			$cost = shipping($mode);
+			$desc = $l->{description} || shipping_desc($mode);
+		}
+		elsif($type eq 'custom') {
+			my $sub;
+			SUBFIND: {
+				$sub = $Vend::Cfg->{Sub}{$mode} || $Global::GlobalSub->{$mode}
+					and last SUBFIND;
+				eval {
+					$sub = $Vend::Cfg->{UserTag}{Routine}{$mode};
+				};
+				last SUBFIND if ! $@ and $sub;
+				eval {
+					$sub = $Global::UserTag->{Routine}{$mode};
+				};
+			}
+			if( ref($sub) ne 'CODE') {
+				($cost, $desc, $sort) = $sub->($opt);
+			}
+			else {
+				logError("No subroutine found for custom levy '%s'", $name);
+			}
+		}
+		my $item = {
+							code			=> $name,
+							mode			=> $mode,
+							sort			=> $sort,
+							cost			=> $cost,
+							description		=> $desc,
+						};
+		if($cost == 0) {
+			next unless $l->{keep_if_zero};
+			$item->{free} = 1;
+			$item->{free_message} = $l->{free_message} || $cost;
+		}
+		push @$lcart, $item;
+	}
+	@$lcart = sort { $a->{sort} cmp $b->{sort} } @$lcart;
+
+	for(@$lcart) {
+		$run += $_->{cost};
+	}
+	$run = round_to_frac_digits($run);
+	return $run;
+}
 1;

@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.51 2002-06-28 05:06:05 mheins Exp $
+# $Id: Config.pm,v 2.52 2002-07-06 07:13:01 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.51 $, 10);
+$VERSION = substr(q$Revision: 2.52 $, 10);
 
 my %CDname;
 
@@ -60,6 +60,7 @@ qw/
 		PriceField
 		PriceDefault
 		SalesTax
+		Levies
 		TaxShipping
 
 /	);
@@ -84,32 +85,33 @@ qw/
 
 @Locale_directives_scalar = (
 qw/
-		Autoload
 		AutoEnd
-		CommonAdjust
+        Autoload
 		CategoryField
+        CommonAdjust
 		DescriptionField
+        HTMLsuffix
 		ImageDir
 		ImageDirSecure
 		PageDir
-		SpecialPageDir
-		PriceDivide
 		PriceCommas
-		PriceField
 		PriceDefault
+        PriceDivide
+        PriceField
 		SalesTax
+        SpecialPageDir
 		StaticPath
-		HTMLsuffix
 		TaxShipping
 
 /   );
 
 @Locale_directives_ary = (
 qw/
+	AutoModifier
+	Levies
 	PriceAdjustment
 	ProductFiles
 	UseModifier
-	AutoModifier
 /   );
 
 # These are extra routines that are run if certain directives are
@@ -129,6 +131,7 @@ my %HashDefaultBlank = (qw(
 					Mail			1
 					DatabaseDefault	1
 					Accounting		1
+					Levy			1
 				));
 
 my %DumpSource = (qw(
@@ -488,6 +491,8 @@ sub catalog_directives {
 	['PriceField',		 undef,              'price'],
 	['Shipping',         'locale',           ''],
 	['Accounting',	 	 'locale',     	 	 ''],
+	['Levies',		 	 'array',     	 	 ''],
+	['Levy',		 	 'locale',     	 	 ''],
 	['AutoVariable',	 'autovar',     	 ''],
 
 	];
