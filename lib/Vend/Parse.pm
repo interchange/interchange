@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.15 2002-03-04 23:45:17 jon Exp $
+# $Id: Parse.pm,v 2.16 2002-03-11 17:25:46 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.15 $, 10);
+$VERSION = substr(q$Revision: 2.16 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -674,7 +674,7 @@ EOF
 			$tmpbuf = $p->{ABORT} ? '' : $p->{OUT};
 		}
 		if($attr->{reparse} ) {
-			$$buf = ($routine->(@args,$tmpbuf) || '') . $$buf;
+			$$buf = ($routine->(@args,$tmpbuf)) . $$buf;
 		}
 		else {
 			$self->{OUT} .= &{$routine}(@args,$tmpbuf);
