@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.25.4.12 $, 10);
+$VERSION = substr(q$Revision: 1.25.4.13 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -883,6 +883,8 @@ sub meta_display {
 			$record->{$_} = $o->{$_};
 		}
 
+		$record->{name} ||= $column;
+
 		if($record->{options} and $record->{options} =~ /^[\w:]+$/) {
 			PASS: {
 				my $passed = $record->{options};
@@ -963,14 +965,14 @@ sub meta_display {
 			$o->{type} = 'select' unless $o->{type} =~ /radio/;
 		}
 		elsif ($record->{type} eq 'option_format') {
-			my $w = option_widget($column, $value);
-			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$column" VALUE="option_format">};
+			my $w = option_widget($record->{name}, $value);
+			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$record->{name}" VALUE="option_format">};
 			return $w unless $o->{template};
 			return ($w, $record->{label}, $record->{help}, $record->{help_url});
 		}
 		elsif ($record->{type} eq 'date') {
-			my $w = date_widget($column, $value);
-			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$column" VALUE="date_change">};
+			my $w = date_widget($record->{name}, $value);
+			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$record->{name}" VALUE="date_change">};
 			return $w unless $o->{template};
 			return ($w, $record->{label}, $record->{help}, $record->{help_url});
 		}
@@ -983,7 +985,7 @@ sub meta_display {
 		}
 		elsif ($record->{type} eq 'imagehelper') {
             my $w = imagehelper_widget(	
-							$column,
+							$record->{name},
 							$value,
 							$record->{outboard},
 							$record->{prepend},
@@ -994,7 +996,7 @@ sub meta_display {
         }
 		elsif ($record->{type} eq 'uploadhelper') {
             my $w = uploadhelper_widget(	
-							$column,
+							$record->{name},
 							$value,
 							$record->{outboard},
 							$record->{width},
