@@ -83,8 +83,8 @@ function MM_swapImage() { //v3.0
 <!--
 .margin { margin-top: 0px; margin-left: 0px}
 a:link { text-decoration: none; font-weight: normal; color: __UI_C_LINK__ }
-a:hover { text-decoration: underline; font-weight: bold; color: __UI_C_LINK__ }
-a:active { text-decoration: none; font-weight: bold; color: __UI_C_ALINK__ }
+a:hover { text-decoration: underline; font-weight: normal; color: __UI_C_LINK__ }
+a:active { text-decoration: none; font-weight: normal; color: __UI_C_ALINK__ }
 a:visited { text-decoration: none; font-weight: normal; color: __UI_C_VLINK__ }
 -->
 </STYLE>
