@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.10 2000-09-28 10:10:59 heins Exp $
+# $Id: Util.pm,v 1.10.4.1 2000-11-05 23:12:17 racke Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -77,7 +77,7 @@ use Config;
 use Fcntl;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.10 $, 10);
+$VERSION = substr(q$Revision: 1.10.4.1 $, 10);
 
 BEGIN {
 	eval {
@@ -336,6 +336,7 @@ sub currency {
 		$fmt = "%.2f";
 	}
 
+	POSIX::setlocale (&POSIX::LC_NUMERIC, "C");
 	$amount = sprintf $fmt, $amount;
 	$amount =~ s/\./$dec/ if defined $dec;
 	$amount = commify($amount, $sep || undef)
