@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.3 2000-07-20 07:15:47 heins Exp $
+# $Id: Parse.pm,v 1.4 2000-09-10 21:25:55 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,12 +27,12 @@
 
 package Vend::Parse;
 
-# $Id: Parse.pm,v 1.3 2000-07-20 07:15:47 heins Exp $
+# $Id: Parse.pm,v 1.4 2000-09-10 21:25:55 heins Exp $
 
 require Vend::Parser;
 
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/);
 
 use Safe;
 use Vend::Util;
@@ -44,7 +44,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -65,6 +65,7 @@ my %PosNumber =	( qw!
                 cart             1
                 cgi              1
                 checked          4
+                counter          1
                 currency         2
                 data             3
 				dump			 0
@@ -121,6 +122,7 @@ my %PosNumber =	( qw!
                 tag              2
 				time			 1
 				timed_build      1
+				tmp				 1
 				try				 1
                 total_cost       2
                 userdb           1
@@ -141,6 +143,7 @@ my %Order =	(
 				cgi				=> [qw( name  )],
 				'currency'		=> [qw( convert noformat )],
 				checked			=> [qw( name value multiple default)],
+				counter			=> [qw( file )],
 				data			=> [qw( table field key )],
 				default			=> [qw( name default )],
 				dump			=> [qw( )],
@@ -193,6 +196,7 @@ my %Order =	(
 				setlocale		=> [qw( locale currency )],
 				set				=> [qw( name )],
 				seti			=> [qw( name )],
+				tmp 			=> [qw( name )],
 				'shipping'		=> [qw( mode )],
 				'handling'		=> [qw( mode )],
 				shipping_desc	=> [qw( mode )],
@@ -218,6 +222,7 @@ my %addAttr = (
 					area            1
 					banner          1
 					catch           1
+					counter         1
 					data			1
 					default			1
 					ecml            1
@@ -289,6 +294,7 @@ my %hasEndTag = (
                         tag             1
                         log             1
                         try             1
+                        tmp             1
                         time			1
                         timed_build     1
 
@@ -302,6 +308,7 @@ my %InvalidateCache = (
 				cgi			1
 				cart		1
 				checked		1
+				counter		1
 				default		1
 				discount	1
 				export  	1
@@ -320,6 +327,7 @@ my %InvalidateCache = (
 				read_cookie 1
 				set_cookie  1
 				set			1
+				tmp			1
 				seti		1
 				'shipping'	1
 				'handling'	1
@@ -399,6 +407,7 @@ my %Routine = (
 				catch			=> \&Vend::Interpolate::catch,
 				cgi				=> \&Vend::Interpolate::tag_cgi,
 				checked			=> \&Vend::Interpolate::tag_checked,
+				counter			=> \&Vend::Interpolate::tag_counter,
 				'currency'		=> sub {
 										my($convert,$noformat,$amount) = @_;
 										return &Vend::Util::currency(
@@ -489,6 +498,7 @@ my %Routine = (
 										return $_;
 									},
 				tag				=> \&Vend::Interpolate::do_tag,
+				tmp				=> \&Vend::Interpolate::set_tmp,
 				try				=> \&Vend::Interpolate::try,
 				'time'			=> \&Vend::Interpolate::mvtime,
 				timed_build		=> \&Vend::Interpolate::timed_build,
@@ -690,6 +700,7 @@ my %Interpolate = (
 						import		1
 						row			1
 						seti		1
+						tmp			1
 				)
 			);
 

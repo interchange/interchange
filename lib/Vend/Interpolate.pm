@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.18 2000-09-05 20:37:52 heins Exp $
+# $Id: Interpolate.pm,v 1.19 2000-09-10 21:25:55 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.18 $, 10);
+$VERSION = substr(q$Revision: 1.19 $, 10);
 
 @EXPORT = qw (
 
@@ -1964,6 +1964,17 @@ sub do_tag {
 	return &{$Tag_op_map{$op}}(@_);
 }
 
+sub tag_counter {
+    my $file = shift || 'etc/counter';
+	my $opt = shift;
+    $file = $Vend::Cfg->{VendRoot} . "/$file"
+        unless Vend::Util::filename_is_absolute($file);
+    my $ctr = new File::CounterFile $file, ($opt->{start} || undef);
+    return $ctr->value() if $opt->{value};
+    return $ctr->dec() if $opt->{decrement};
+    return $ctr->inc();
+}
+
 # Returns the text of a user entered field named VAR.
 sub tag_cgi {
     my($var, $opt) = @_;
@@ -3265,6 +3276,7 @@ sub labeled_list {
 #::logDebug("fn: " . ::uneval($fn));
 		$ary = tag_sort_ary($opt->{sort}, $ary) if $opt->{sort};
 		if($fa) {
+#::logDebug("fa before fn: " . ::uneval($fa));
 			my $idx = 0;
 			$fh = {};
 			for(@$fa) {
@@ -3272,11 +3284,16 @@ sub labeled_list {
 			}
 		}
 		elsif (! $fh and $fn) {
+#::logDebug("Not fh, fn: " . ::uneval($fn));
 			my $idx = 0;
 			$fh = {};
 			for(@$fn) {
-				$fh->{$fn->[$_]} = $idx++;
+				$fh->{$_} = $idx++;
 			}
+#::logDebug("Not fh, fn: " . ::uneval($fh));
+		}
+		else {
+#::logDebug("fh is there." . ::uneval($fh));
 		}
 		$r = iterate_array_list($i, $end, $count, $text, $ary, $opt_select, $fh);
 	}
@@ -3794,6 +3811,7 @@ sub tag_loop_list {
 	$opt->{object}{mv_results} = \@rows;
 	$opt->{object}{mv_field_names} = $fn
 		if defined $fn;
+#::logDebug("loop object: " . ::uneval($opt));
 	return region($opt, $text);
 }
 
@@ -4312,6 +4330,14 @@ EOF
 # Sets the value of a scratchpad field
 sub set_scratch {
 	my($var,$val) = @_;
+    $::Scratch->{$var} = $val;
+	return '';
+}
+
+# Sets the value of a temporary scratchpad field
+sub set_tmp {
+	my($var,$val) = @_;
+	push @Vend::TmpScratch, $var;
     $::Scratch->{$var} = $val;
 	return '';
 }
@@ -5287,21 +5313,18 @@ sub subtotal {
 		tag_cart($cart);
 	}
 	my $discount = defined $Vend::Session->{discount};
-
     $subtotal = 0;
 	$tmp = 0;
 
     foreach $i (0 .. $#$Vend::Items) {
         $item = $Vend::Items->[$i];
-        $tmp = item_subtotal($item);
+        $tmp = Vend::Data::item_subtotal($item);
         if($discount) {
             $subtotal +=
                 apply_discount($item, $tmp);
         }
         else { $subtotal += $tmp }
 	}
-
-
 
 	if (defined $Vend::Session->{discount}->{ENTIRE_ORDER}) {
 		$formula = $Vend::Session->{discount}->{ENTIRE_ORDER};

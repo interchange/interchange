@@ -1,6 +1,6 @@
 # Session.pm - Interchange Sessions
 #
-# $Id: Session.pm,v 1.4 2000-07-20 07:15:47 heins Exp $
+# $Id: Session.pm,v 1.5 2000-09-10 21:25:55 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -30,7 +30,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -248,6 +248,10 @@ sub write_session {
     my $save = $Vend::Session->{'user'};
     undef $Vend::Session->{'user'};
     #undef $Vend::Session->{'arg'};
+	for(@Vend::TmpScratch) {
+::logDebug ("delete TmpScratch=$_");
+		delete $::Scratch->{$_};
+	}
 	$Vend::Session->{username} = $Vend::username;
 	$Vend::Session->{admin} = $Vend::admin;
     $s = ! $File_sessions ? uneval_fast($Vend::Session) : $Vend::Session;

@@ -1,6 +1,6 @@
 # Tagref.pm - Document Interchange tags
 # 
-# $Id: Tagref.pm,v 1.2 2000-07-12 03:08:12 heins Exp $
+# $Id: Tagref.pm,v 1.3 2000-09-10 21:25:55 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -23,11 +23,11 @@ package Vend::Tagref;
 use lib "$Global::VendRoot/lib";
 use lib '../lib';
 
-# $Id: Tagref.pm,v 1.2 2000-07-12 03:08:12 heins Exp $
+# $Id: Tagref.pm,v 1.3 2000-09-10 21:25:55 heins Exp $
 
 use Vend::Parse;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/);
 
 use vars '%myRefs';
 
@@ -634,6 +634,27 @@ syntax: [comment] code [/comment]
 
 Comments out Interchange tags (and anything else) from a page. The contents
 are never displayed to the user.
+
+%%%
+counter
+%%
+Manipulates a file-based counter, by default incrementing it.
+The file name is passed with the parameter C<file> -- default
+is C<etc/counter>.
+
+WARNING: This tag will not work under Safe, i.e. in embedded Perl.
+
+Additional parameters:
+
+=over 4
+
+=item decrement=1
+
+Causes the counter to count down instead of up.
+
+=item value=1
+
+Shows the value of the counter without incrementing or decrementing it.
 
 %%%
 currency
@@ -2439,6 +2460,20 @@ A search profile would be set with:
 
 Any of these profile values can be set in the OrderProfile files
 as well.
+
+%%%
+tmp
+%%
+
+Sets a scratch variable to I<value>, but at the end of the user session the
+Scratch key is deleted. This saves session write time in many cases.
+
+This tag interpolates automatically. (Interpolation
+can be turned off with C<interpolate=0>.)
+
+IMPORTANT NOTE: the [tmp ...][/tmp] tag is not appropriate for setting
+order profiles or C<mv_click> actions. If you want to avoid that, use
+a profile stored via the catalog.cfg directive C<OrderProfile>.
 
 %%%
 shipping
