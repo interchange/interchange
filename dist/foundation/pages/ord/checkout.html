@@ -46,7 +46,7 @@ ui_template_name: noleft
 
 <table width="95%">
 <tr>
-  <td align="left">
+  <td align="left" width="100%">
 
     [if !session logged_in]
     <br>
@@ -887,9 +887,12 @@ ui_template_name: noleft
 	<INPUT TYPE=image VALUE="Refresh" src="__THEME_IMG_DIR__recalculate_button.gif">	
       </td>
       <td class="contentbar1">
-	<B>
-	<INPUT TYPE=submit src="__THEME_IMG_DIR__checkout_button.gif" VALUE="Place Order" name="mv_todo.submit.x">
-	</B>
+	[button
+	  name="mv_todo.submit.x"
+	  src="__THEME__/placeorder.gif"
+	  text="Place Order"
+	]
+        [/button]
       </td>
       </tr></table>
         
