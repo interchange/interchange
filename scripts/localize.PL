@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange localizer
 #
-# $Id: localize.PL,v 2.0.2.2 2001-10-01 13:22:58 racke Exp $
+# $Id: localize.PL,v 2.0.2.3 2001-10-04 09:06:37 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -353,7 +353,7 @@ my $def_text = "Locale $def <<EOF\n{\n";
 my $d = $Locale->{$def};
 my $l = $Locale->{$opt_l};
 
-my($text, $dat, $cmt);
+my($text, $dat);
 
 foreach $key (sort keys %$d) {
 		$dat = ($Comment{$key} || '') and
@@ -363,13 +363,8 @@ foreach $key (sort keys %$d) {
 
         unless ($opt_n) {
 		    if ($dat) {
-			    $cmt = $dat;
+		        $loc_text .= "# $dat\n";
 		    }
-		    else {
-			    $cmt = $key;
-			    $cmt =~ s/\n/\n# /g;
-		    }
-		    $loc_text .= "# $cmt\n";
         }
 
 		$text = &$Uneval($key);
@@ -401,7 +396,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-# $Id: localize.PL,v 2.0.2.2 2001-10-01 13:22:58 racke Exp $
+# $Id: localize.PL,v 2.0.2.3 2001-10-04 09:06:37 racke Exp $
 
 =head1 SYNOPSIS
 
