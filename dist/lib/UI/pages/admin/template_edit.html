@@ -22,6 +22,8 @@
 	my $imgpath = $Tag->var('UI_IMG', 1) || $Variable->{UI_IMG} || '';
 	my $template_dir = $Variable->{UI_TEMPLATE_DIR} || 'templates';
 	my $out = '';
+	$Values->{ui_theme} = $CGI->{ui_theme} if defined $CGI->{ui_theme};
+	$Values->{ui_theme} = $Variable->{THEME} unless defined $Values->{ui_theme};
 
 	$CGI->{ui_show_template} = 1 unless defined $CGI->{ui_show_template};
 
@@ -475,7 +477,12 @@ EOF
 </td>
 </tr>
 EOF
-
+	my @candidates = grep ! -f $_, $Tag->list_glob("$template_dir/*/regions");
+	for(@candidates) {
+		s:/regions$::;
+		s:.*/::;
+		$Scratch->{available_themes} = join " ", @candidates;
+	}
 	for(my $n = $template_break; $n < @controls; $n++) {
 		$out .= $controls[$n];
 	}
@@ -493,7 +500,7 @@ EOF
 <tr class=ralt>
 <td colspan=2>
 [set Preview]
-mv_nextpage=__UI_BASE__/page_preview
+mv_nextpage=__UI_BASE__/template_preview
 mv_action=back
 [/set]
 
@@ -512,7 +519,12 @@ mv_nextpage=__UI_BASE__/template_save
 <INPUT TYPE=submit NAME=mv_click VALUE=Preview onClick="this.form.target='page_preview'">
 <INPUT TYPE=hidden NAME=ui_return_to VALUE="__UI_BASE__/page">
 <INPUT TYPE=submit NAME=mv_click VALUE=Save onClick="this.form.target='_self'">
-<INPUT TYPE=submit NAME=mv_click VALUE=Cancel onClick="this.form.target='_self'"><br>
+Theme: <SELECT NAME=ui_theme>
+<OPTION VALUE=""> No change
+[loop list="[scratchd available_themes]" option=ui_theme]<OPTION>[loop-code]</OPTION>[/loop]
+</SELECT>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE=Cancel onClick="this.form.target='_self'"><br>
 
 Show template:<BR>
 [if cgi ui_show_template]

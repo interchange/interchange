@@ -21,15 +21,6 @@
 		next unless defined $CGI->{$key};
 		$CGI->{$key} = $Tag->filter($val, $CGI->{$key}, $key);
 	}
-	if(! $CGI->{ui_elements}) {
-		$CGI->{ui_template} = $Tag->filter('filesafe', $CGI->{ui_template});
-		$CGI->{ui_elements} = $Tag->read_ui_template( 
-									{
-										file => $CGI->{ui_template},
-										element => 'ui_template_layout',
-									});
-		#Log("elements: $CGI->{ui_elements}");
-	}
 
 	sub bleach_it {
 		my $val = shift;

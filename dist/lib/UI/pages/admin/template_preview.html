@@ -1,0 +1,50 @@
+[if-mm !advanced template][set ui_error]Need permission for template edit.[/set][bounce page="__UI_BASE__/error"][/if-mm]
+[if !session admin]
+	[set ui_error]Must be logged in as admin.[/set]
+	[bounce page="__UI_BASE__/error"]
+[/if]
+
+[pragma strip_white]
+
+[if !cgi good_template]
+	[set ui_error]Not a good template -- must enter from template editor.[/set]
+	[bounce page="__UI_BASE__/error"]
+[/if]
+
+[perl]
+	my $template_dir = $Variable->{UI_TEMPLATE_DIR} || 'templates';
+	my $compdir = $Variable->{UI_COMPONENT_DIR} || "$template_dir/components";
+	
+	my $t_name = $CGI->{ui_template_name};
+
+	my $top = $Tag->filter('textarea_get', $CGI->{ui_template_top});
+	my $bot = $Tag->filter('textarea_get', $CGI->{ui_template_bot});
+	$top =~ s~<!--+\s*COMPONENT[\s#]+(\d+)\s*--+>~
+					my $name = $1 - 1;
+					$name .= ".ui_control_component";
+				qq{[include file="$compdir/[control component }
+				. $CGI->{$name}
+				.  ']"][control]'
+			~ge if $top;
+	$bot =~ s~<!--+\s*COMPONENT[\s#]+(\d+)\s*--+>~
+					my $name = $1 - 1;
+					$name .= ".ui_control_component";
+				'[include file="[control component '
+				. $CGI->{$name}
+				.  ']"]'
+			~ge if $bot;
+
+	push @out, $top;
+	push @out, <<EOF;
+<!-- BEGIN CONTENT -->
+
+This is a preview of the <I>$CGI->{ui_template_name}</I> template.
+
+<!-- END CONTENT -->
+EOF
+	push @out, $bot;
+
+	$Tag->write_relative_file("tmp/tpreview/$Session->{id}", (join "\n", @out));
+	return;
+[/perl]
+[include file="tmp/tpreview/[data session id]"]
