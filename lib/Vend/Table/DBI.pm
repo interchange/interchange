@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.41 2003-01-30 22:21:04 kwalsh Exp $
+# $Id: DBI.pm,v 2.42 2003-02-07 16:46:14 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.41 $, 10);
+$VERSION = substr(q$Revision: 2.42 $, 10);
 
 use strict;
 
@@ -1879,6 +1879,10 @@ sub query {
 	if($@) {
 		if(! $sth or ! defined $rc) {
 			# query failed, probably because no table
+
+			# Allow failed query by design, maybe to use multiple key inserts
+			return undef if $opt->{no_requery};
+
 			# Do nothing but log to debug and fall through to MVSEARCH
 			eval {
 				($spec, $stmt) = Vend::Scan::sql_statement($query, $ref);
