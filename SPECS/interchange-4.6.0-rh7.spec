@@ -177,7 +177,7 @@ do
 	fi
 done
 
-WARNDEST=/usr/doc/%{interchange_package}-%{version}/WARNING_YOU_ARE_MISSING_SOMETHING
+WARNDEST=/usr/share/doc/%{interchange_package}-%{version}/WARNING_YOU_ARE_MISSING_SOMETHING
 if test -n "$missing"
 then
 	echo "" >> $WARNDEST
