@@ -1,6 +1,6 @@
 # Vend::Payment - Interchange payment processing routines
 #
-# $Id: Payment.pm,v 2.1 2001-07-20 21:43:45 heins Exp $
+# $Id: Payment.pm,v 2.2 2001-07-20 21:52:44 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -59,6 +59,12 @@ my %cyber_remap = (
 	/
 );
 
+my %ignore_mv_payment = (
+	qw/
+		gateway 1
+	/
+);
+
 sub charge_param {
 	my ($name, $value, $mode) = @_;
 	my $opt;
@@ -75,12 +81,16 @@ sub charge_param {
 	}
 
 	if(defined $value) {
-		$opt = {} unless $opt;
-		return $opt->{$name} = $value;
+		return $pay_opt->{$name} = $value;
 	}
 
+	# Find if set in route or options
 	return $opt->{$name}		if defined $opt->{$name};
 
+	# "gateway" and possibly other future options
+	return undef if $ignore_mv_payment{$name};
+
+	# Now check Variable space as last resort
 	my $uname = "MV_PAYMENT_\U$name";
 
 	return $::Variable->{$uname} if defined $::Variable->{$uname};
