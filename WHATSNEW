@@ -64,6 +64,18 @@ Core
 
 * Remove Vend::Server::http_log_msg which is only called for SOAP accesses.
 
+UserTag
+-------
+
+* Add option to specify useragent to get_url tag.
+
+UI
+--
+
+* customer_mailing: Add full path for sendmail in batch, 
+  using $Config->{SendMailProgram}, weed duplicate email addresses, 
+  sort by email instead of last name 
+
 Foundation
 ----------
 
@@ -76,6 +88,17 @@ TableEditor
 
 * Apply Paul Vinciguerra's patch to number of rows thing, which gets multiple row
   tabs working on the tabbed display if not in ui_style mode.
+
+Options
+-------
+
+* Add blank_label="--select--" option to [item-options], allows development
+  of code to enforce option selection.
+
+i18n
+----
+
+* "make localefiles" ignores CVS conflict files now
 
 Debian
 ------
