@@ -168,7 +168,7 @@
 </TD>
 <TD ALIGN=CENTER>[page href=__UI_BASE__/item_cross form="
 	item_id=[item-code]
-"][if-item-data merchandising cross_sell]Yes[else]No[/else][/if-item-data]</a>
+"][either][if-item-data merchandising cross_category]Yes[/if-item-data][or][if-item-data merchandising cross_sell]Yes[/if-item-data][or]No[/either]</a>
 </TD>
 <TD ALIGN=CENTER>[page href=__UI_BASE__/item_feature form="
 	item_id=[item-code]
