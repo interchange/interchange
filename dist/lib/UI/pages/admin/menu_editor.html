@@ -475,7 +475,7 @@ __UI_META_TABLE__
 	return join "\n", @out;
 [/perl]
 
-[restrict enable="perl calc scratch loop image" log=none]
+[restrict enable="perl calc scratch loop image area" log=none]
 [loop head-skip=1 lr=1 list="[scratch qmenu_data]"][loop-sub jsline]
 sub {
 	$loopname = shift;
@@ -683,7 +683,7 @@ sub {
 		parms = parms.replace(/=/g, "-_EQUAL_X_-");
 		parms = parms.replace(/\n/g, "-_NEWLINE_X_-");
 		parms = escape(parms);
-		parms = parms.replace(/-_NEWLINE_X_-/g, '&');
+		parms = parms.replace(/-_NEWLINE_X_-/g, '@@UrlJoiner@@');
 		parms = parms.replace(/-_EQUAL_X_-/g, '=');
 		// alert("parms=" + parms);
 		return parms;
@@ -692,7 +692,7 @@ sub {
     function unescapeParams (parms) {
 		// alert("parms=" + parms);
 		parms = parms.replace(/=/g, "-_EQUAL_X_-");
-		parms = parms.replace(/&/g, "-_NEWLINE_X_-");
+		parms = parms.replace(/@@UrlJoiner@@/g, "-_NEWLINE_X_-");
 		parms = unescape(parms);
 		parms = parms.replace(/-_NEWLINE_X_-/g, "\n");
 		parms = parms.replace(/-_EQUAL_X_-/g, '=');
@@ -879,6 +879,10 @@ sub {
 		if(l != undefined && l[CHECK] == 1)
 			checkcur = idx;
 		// alert("idx=" + idx + ", writing " + out);
+		if(lines.length > 25) 
+			document.getElementById('scrollbox').style.overflow = 'scroll';
+		if(lines.length < 25) 
+			document.getElementById('scrollbox').style.overflow = 'visible';
 		return;
 	}
 
@@ -934,6 +938,10 @@ sub {
 		if(l != undefined && l[CHECK] == 1)
 			checkcur = idx;
 		// alert("idx=" + idx + ", writing " + out);
+		if(lines.length > 25) 
+			document.getElementById('scrollbox').style.overflow = 'scroll';
+		if(lines.length < 25) 
+			document.getElementById('scrollbox').style.overflow = 'visible';
 		return;
 	}
 
@@ -1391,6 +1399,19 @@ sub {
 		return;
 	}
 
+	function search_win () {
+			window.name = 'mainwindow[scratch window_name]';
+			var url = '[area
+							href="admin/search_wizard"
+							form=|
+								ui_source_form=qmenuform
+								ui_source_var=params
+							|]';
+			url += '&ui_searchblob=' + escape(form.params.value);
+			window.open(url, undefined, 'scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=900,height=700');
+			return void(0);
+	}
+
 	function motion (idx, motion, fromchecked) {
 
 		if(motion == 'left' || motion == 'right') {
@@ -1523,6 +1544,12 @@ Save to new menu <input name=qmenu_new type=text size=20 value="[cgi qmenu_new]"
 <table width="95%">
 <tr>
 	<td width="40%" valign=top>[set empty][/set]
+	<div id=scrollbox style="
+						width: 100%;
+						height: 800px;
+						overflow: auto;
+						border: 1pt gray shaded;
+						">
 [loop head-skip=1 lr=1 list="[scratch qmenu_data]"][list]<div id=box[loop-increment] style="font-size: 11pt; width=300px;"></div>
 [/list][no-match][set empty]1[/set][/no-match]
 [/loop]
@@ -1536,6 +1563,7 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 [/if]
 [/loop-change 1]</div>
 [/loop]
+	</div>
 	</td>
 	<td valign=top>
 		<table>
@@ -1557,7 +1585,21 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 		</tr>
 		<tr>
 			<td class=clabel>
-				Form values
+				Form values<br>
+				<input name=ui_searchblob type=hidden value="">
+				<input name=ui_source_win type=hidden value="[scratch window_name]">
+
+			<div align=right>
+			<input
+				style="font-size: smaller; font-weight: bold;"
+				type=button
+				value="Create search"
+				onClick="this.form.page.value = 'search';form_changed(1);search_win();"
+				>&nbsp;<input
+							style="font-size: smaller;"
+							type=button onClick="this.form.params.value=''"
+							value="clear search">
+			</div>
 			</td>
 			<td class=cdata>
 				<textarea cols=50 rows=4 name=params onChange="form_changed(1);"></textarea>

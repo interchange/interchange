@@ -24,6 +24,7 @@
 		"login=$user",
 		"path=$path",
 	);
+	# Leave this as & instead of UrlJoiner for SQL-Ledger
 	$Scratch->{sl_parms} = join "&", @parms;
 	$Scratch->{tmp_url} =
 		$def .  "?" .  "$Scratch->{sl_parms}&password=$pass&action=Login";

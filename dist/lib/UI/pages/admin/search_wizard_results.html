@@ -170,6 +170,7 @@
 	$page .= "\tsearch=$qchar\n\t\t";
 	$page .= join "\n\t\t", @string;
 	$page .= "\n\t$qchar\n]";
+	$Scratch->{search_blob} = join "\r", grep /^\s*\w+=/, @string;
 	$Scratch->{search_page} = $page;
 	$Scratch->{rows} = scalar(@string) + 5;
 	return;
@@ -192,6 +193,32 @@ Location: [return-to url]
 
 <FORM>
 <TEXTAREA COLS=80 ROWS="[scratch rows]" NAME=junk>[scratch search_page]</TEXTAREA>
+<br>
+[if cgi ui_source_form]
+[and cgi ui_source_var]
+<script>
+	var par = window.opener;
+	function send_to (caller) {
+		if(par == undefined) {
+			alert("par is " + f);
+			return;
+		}
+		var f = par.document.[cgi ui_source_form].[cgi ui_source_var];
+		if(f == undefined) {
+			alert("f is " + f);
+		}
+		else {
+			caller.value = 'Sending to [cgi ui_source_form].[cgi ui_source_var]';
+			f.value = [jsq interpolate=1][scratch search_blob][/jsq];
+		}
+		window.close();
+	}
+
+	if(par)
+		document.write('<input style="font-weight: bold" type=button onClick="send_to(this); window.close()" value="Send back to source">');
+
+</script>
+[/if]
 </FORM>
 
 <A HREF="[scratch name=search_page interpolate=1]" TARGET=test>Test</A>

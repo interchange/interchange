@@ -204,6 +204,7 @@
 			$visit_by_aff_by_day{$_->[0]}{$_->[5]}++;
 		}
 
+		# Leave this at & instead of UrlJoiner because of Vend::Track
 		my (@items) = split /\&/, $_->[6];
 		foreach $it (@items) {
 			my($tag, $val) = split /=/, $it, 2;
