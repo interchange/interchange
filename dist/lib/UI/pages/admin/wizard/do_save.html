@@ -32,6 +32,10 @@
 
 my %pref = (
     ADDRESS                => 'Company',
+    AUTHNET_ID             => 'Payment',
+    AUTHNET_REFERER        => 'Payment',
+    AUTHNET_SECRET         => 'Payment',
+    AUTHNET_SERVER         => 'Payment',
     CENTERED_FLYPAGE       => 'Display Layout',
     CHECK_ACCEPTED         => 'Payment',
     CLICK_ENLARGE          => 'Display Layout',
@@ -39,10 +43,7 @@ my %pref = (
     COMPANY                => 'Company',
     COUNTRY                => 'Company',
     CREDIT_CARDS_ACCEPTED  => 'Payment',
-    CYBER_CONFIGFILE       => 'Company',
-    CYBER_ID               => 'Company',
-    CYBER_KEY              => 'Company',
-    CYBER_MODE             => 'Company',
+    CYBER_CONFIGFILE       => 'Payment',
     DEALER_PRICE           => 'Display Layout',
     DOMAINNAME             => 'Company',
     EMAIL_INFO             => 'Company',
@@ -51,6 +52,7 @@ my %pref = (
     FEDEX_MODES            => 'Shipping',
     IN_STOCK_NOTIFY        => 'Display Layout',
     IN_STOCK_OPTS          => 'Display Layout',
+    ITRANSACT_ID               => 'Payment',
     MV_PAYMENT_ID          => 'Payment',
     MV_PAYMENT_MODE        => 'Payment',
     MV_PAYMENT_REFERER     => 'Payment',
@@ -59,8 +61,8 @@ my %pref = (
     ORDERS_TO              => 'Orders',
     PGP_KEY                => 'Encryption',
     PHONE                  => 'Company',
-    POSTAL_ACCEPTED        => 'Payment',
     PO_ACCEPTED            => 'Payment',
+    POSTAL_ACCEPTED        => 'Payment',
     SALE_PRICE             => 'Display Layout',
     SECURE_ENABLE          => 'Security',
     SEPARATE_SHIPPING      => 'Display Layout',
@@ -69,6 +71,13 @@ my %pref = (
     SHIP_DEFAULT_ZIP       => 'Shipping',
     SHIP_FLAT_DOM_RATE     => 'Shipping',
     SHIP_FLAT_INTL_RATE    => 'Shipping',
+    SIGNIO_ID              => 'Payment',
+    SIGNIO_PARTNER         => 'Payment',
+    SIGNIO_SECRET          => 'Payment',
+    SIGNIO_SERVER          => 'Payment',
+    SIGNIO_VENDOR          => 'Payment',
+    SKIPJACK_ID            => 'Payment',
+    SKIPJACK_PARTNER       => 'Payment',
     STATE                  => 'Company',
     STYLE                  => 'Display Layout',
     TAXAREA                => 'Tax',
@@ -93,6 +102,19 @@ my %pref = (
 $vset->('NO_REDHAT_LOGO','1');
 
 my %doit = (
+authnet_id   => 'AUTHNET_ID',
+authnet_referer    => 'AUTHNET_REFERER',
+authnet_secret     => 'AUTHNET_SECRET',
+authnet_server     => 'AUTHNET_SERVER',
+itransact_id       => 'ITRANSACT_ID',
+signio_id          => 'SIGNIO_ID',
+signio_partner     => 'SIGNIO_PARTNER',
+signio_secret      => 'SIGNIO_SECRET',
+signio_server      => 'SIGNIO_SERVER',
+signio_vendor      => 'SIGNIO_VENDOR',
+skipjack_id 	   => 'SKIPJACK_ID',
+skipjack_partner   => 'SKIPJACK_PARTNER',
+
 abouttext           => sub {
 						my $content = $Values->{abouttext};
 						$content =~ s/\r\n/\n/g;
@@ -241,6 +263,21 @@ shoppass           => sub {
 					},
 shopuser            => undef,
 colorset            => 'STYLE',
+cyberfile		    => sub {
+						my $infile = $Values->{cyberfile};
+						$infile =~ s:.*/::;
+						$infile =~ s:.*\\::;
+						$infile = $Tag->filter('filesafe', $infile);
+						$infile = "upload/$infile";
+						if(-f $infile) {
+							$Tag->cp( {
+										from => $infile,
+										to => "etc/cybercash_conf",
+									  });
+						}
+						$Values->{cyberfile} = 'etc/cybercash_conf';
+						return 'CYBER_CONFIGFILE';
+					},
 logo		    => sub {
 						$Values->{logo} =~ s:.*/::;
 						$Values->{logo} =~ s:.*\\::;

@@ -4,11 +4,13 @@
 @_UI_STD_HEAD_@
 
 <table width=500><tr><td align=left>
-Enter the values used to enable payment processing through CyberCash.
+CyberCash only requires a configuration file that we will upload
+now. Upload the merchant_conf file created during your installation
+process.
 </td></tr></table>
 
 [table-editor 
-	table=variable
+	
 	left_width=120
 	table_width=500
 	wizard=1
@@ -18,45 +20,18 @@ Enter the values used to enable payment processing through CyberCash.
 	no_bottom=1
    	row_template="[scratch row_template]"
 
+	file_upload=1
+
 	mv_nextpage="[either][cgi ui_nextpage][or]__UI_BASE__/wizard/step_security[/either]"
 	mv_prevpage="[either][cgi ui_prevpage][or]__UI_BASE__/wizard/step_pay[/either]"
 	hidden.ui_return_to="__UI_BASE__/wizard/index"
 
-	ui_data_key=code
-	default.code="[value code]"
-	help.code="If this is the first time you have used this definition, you will need to assign a nickname. Only A-Z0-9 are valid."
-	label.code="Catalog Identifier"
-	widget.code=text_10
-
-	ui_data_fields="code cybermode cyberid cyberkey"
-	ui_display_only="cybermode cyberid cyberkey"
-	ui_hide_key="1"
-
-	label.cybermode="CyberCash mode"
-	help.cybermode="This normally doesn't matter in CyberCash 3.x -- used to enable"
-	widget.cybermode=select
-	passed.cybermode="mauthonly=Auth only, mauthcapture=Settle immediately,=Disabled"
+	ui_wizard_fields="cyberfile"
 
 	label.cyberfile="CyberCash configuration file"
-	help.cyberfile="The default should be OK if you insert the values below..."
-	widget.cyberfile=imagehelper
+	widget.cyberfile=uploadhelper
 	filter.cyberfile=nullselect
-	default.cyberfile=etc/merchant_conf
-
-	label.cyberid="CyberCash ID"
-	help.cyberid=`
-		my $comp = $Values->{company};
-		$comp =~ s/\W//g;
-		$comp = lc $comp;
-		$comp .= '-';
-		$comp .= int(rand(100));
-		"Usually a value like $comp";
-	`
-	widget.cyberid=text_30
-
-	label.cyberkey="CyberCash Merchant Key"
-	help.cyberkey="Supplied by CyberCash, a 57-character random string"
-	widget.cyberkey=text_57
+	outboard.cyberfile=upload
 ]
 
 @_UI_STD_FOOTER_@

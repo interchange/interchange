@@ -4,11 +4,11 @@
 @_UI_STD_HEAD_@
 
 <table width=500><tr><td align=left>
-Enter the values used to enable payment processing through iTransact.
+You only need enter your iTransact Vendor ID to enable processing.
 </td></tr></table>
 
 [table-editor 
-	table=variable
+
 	left_width=120
 	table_width=500
 	wizard=1
@@ -22,18 +22,12 @@ Enter the values used to enable payment processing through iTransact.
 	mv_prevpage="[either][cgi ui_prevpage][or]__UI_BASE__/wizard/step_pay[/either]"
 	hidden.ui_return_to="__UI_BASE__/wizard/index"
 
-	ui_data_key=code
-	default.code="[value code]"
-	widget.code=text_10
+	ui_wizard_fields="itransact_id"
 
-	ui_data_fields="code paymentid "
-	ui_display_only="paymentid"
-	ui_hide_key="1"
-
-	check.paymentid=mandatory
-	label.paymentid="iTransact Vendor ID"
-	help.paymentid="You should have received this when you signed up"
-	widget.paymentid=text_20
+	check.itransact_id=mandatory
+	label.itransact_id="iTransact Vendor ID"
+	help.itransact_id="You should have received this when you signed up"
+	widget.itransact_id=text_20
 
 ]
 

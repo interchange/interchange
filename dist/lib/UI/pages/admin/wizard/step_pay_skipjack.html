@@ -4,11 +4,13 @@
 @_UI_STD_HEAD_@
 
 <table width=500><tr><td align=left>
-Enter the values used to enable payment processing through Skipjack.
+Enter your Skipjack account ID, usually the only parameter required.
+Sometimes you may need to enter a partner code as well -- refer to
+your SkipjackIC documentation.
 </td></tr></table>
 
 [table-editor 
-	table=variable
+	
 	left_width=120
 	table_width=500
 	wizard=1
@@ -26,14 +28,16 @@ Enter the values used to enable payment processing through Skipjack.
 	default.code="[value code]"
 	widget.code=text_10
 
-	ui_data_fields="code paymentid "
-	ui_display_only="paymentid"
-	ui_hide_key="1"
+	ui_wizard_fields="skipjack_id skipjack_partner"
 
-	check.paymentid=mandatory
-	label.paymentid="Skipjack Account ID"
-	help.paymentid="You should have received this when you signed up"
-	widget.paymentid=text_20
+	check.skipjack_id=mandatory
+	label.skipjack_id="Skipjack Account ID"
+	help.skipjack_id="You should have received this when you signed up"
+	widget.skipjack_id=text_20
+
+	label.skipjack_partner="Skipjack Partner"
+	help.skipjack_partner="You should have received this when you signed up"
+	widget.skipjack_partner=text_20
 
 ]
 

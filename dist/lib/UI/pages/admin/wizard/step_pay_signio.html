@@ -5,10 +5,14 @@
 
 <table width=500><tr><td align=left>
 Enter the values used to enable payment processing through Signio/Verisign.
+<P>
+NOTE: Signio became Verisign, and changed their interface. You may have
+to pay close attention to partner and vendor settings, and the host to which
+you submit your transactions.
 </td></tr></table>
 
 [table-editor 
-	table=variable
+	
 	left_width=120
 	table_width=500
 	wizard=1
@@ -26,8 +30,7 @@ Enter the values used to enable payment processing through Signio/Verisign.
 	default.code="[value code]"
 	widget.code=text_10
 
-	ui_data_fields="code signiomode paymentid paymentsecret paymentserver"
-	ui_display_only="signiomode paymentid paymentsecret paymentserver"
+	ui_wizard_fields="signio_id signio_secret signio_server signio_partner signio_vendor"
 	ui_hide_key=1
 
 	label.signiomode="Enable Signio"
@@ -35,20 +38,34 @@ Enter the values used to enable payment processing through Signio/Verisign.
 	passed.signiomode="custom signio=Enable, =Disabled"
 	default.signiomode="custom signio"
 
-	label.paymentid="Signio account ID"
-	help.paymentid="You should have received this when you signed up"
-	widget.paymentid=text_20
-	check.paymentid=mandatory
+	label.signio_id="Signio account ID"
+	help.signio_id="You should have received this when you signed up"
+	widget.signio_id=text_20
+	check.signio_id=mandatory
 
-	label.paymentsecret="Signio password"
-	help.paymentsecret="You should have received this when you signed up -- sometimes known as 'secret'"
-	widget.paymentsecret=text_20
-	check.paymentsecret=mandatory
+	label.signio_secret="Signio password"
+	help.signio_secret="You should have received this when you signed up -- sometimes known as 'secret'"
+	widget.signio_secret=text_20
+	check.signio_secret=mandatory
 
-	label.paymentserver="Payment server"
-	widget.paymentserver=select
-	passed.paymentserver="test.signio.com=Test server (test.signio.com), connect.signio.com=Live server (connect.signio.com)"
-	check.paymentserver=mandatory
+	label.signio_server="Payment server"
+	widget.signio_server=select
+	passed.signio_server="
+			payflow.verisign.com=Live server (new payflow.verisign.com),
+			test-payflow.verisign.com=Test server (new test-payflow.verisign.com),
+			connect.signio.com=Live server (old connect.signio.com)
+			test.signio.com=Test server (old test.signio.com),
+			"
+	check.signio_server=mandatory
+
+	label.signio_partner="Verisign partner"
+	help.signio_partner="You should have received this when you signed up"
+	widget.signio_partner=text_20
+
+	label.signio_vendor="Verisign vendor"
+	help.signio_vendor="You should have received this when you signed up"
+	widget.signio_vendor=text_20
+
 ]
 
 @_UI_STD_FOOTER_@
