@@ -93,7 +93,7 @@ Set what to search for in that column:
 Choose the replacement string
 </td>
 <td class=cdata width="100%">
-<input name="replace_with" type="text" size="30">
+<input name="replace_with" type="text" size="30"> Replace all occurences ? [display name=replace_all type=yesno cgi-default=1]
 <br><i>(Exact text to be inserted instead of search value. Replaces parenthisized text if parentheses are used.)</i>
 </td>
 </tr>
@@ -153,9 +153,16 @@ Click this button to do it:
 	delete $Scratch->{try_message};
 
 	my @set;
-	for(@$ary) {
-		next unless $_->[1] =~ s{$regex}{$1$rw$3};
-		push @set, $_;
+	if ($CGI->{replace_all}) {
+        for(@$ary) {
+			next unless $_->[1] =~ s{$regex}{$1$rw$3}g;
+			push @set, $_;
+		}
+	} else {
+		for(@$ary) {
+			next unless $_->[1] =~ s{$regex}{$1$rw$3};
+			push @set, $_;
+		}
 	}
 
 	my @messages;
