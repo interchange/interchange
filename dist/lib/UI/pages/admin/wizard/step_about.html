@@ -7,17 +7,17 @@ Enter the title and content to be displayed on your <b>About Us</b> page.
 The <b>Content</b> section contains sample text formatted in HTML. You can
 manipulate this sample text or enter all new text.
 <p>
+
 [tmp default_abouttext]
-<p>
-<B>[if value company][value company] is[else]We are[/else][/if]</B> the Internet's premier provider of ...
-</p>
+<table width="90%">
+<tr>
+  <td align="left">
+    <p>
+    <B>[if value company][value company] is[else]We are[/else][/if]</B> the Internet's premier provider of ...
+    </p>
 
-<p>
-The key to [if value company]the [value company][else]our product[/else][/if] line is the ergonomic ...
-</p>
-
-<p>
-We can be contacted at:
+    <p> 
+	We can be contacted at:
 
 	<BLOCKQUOTE>
 	[value company]<br>
@@ -30,15 +30,18 @@ We can be contacted at:
 	[/if][if value tollfree]
 	Toll-free: [value tollfree]<BR>
 	[/if]</blockquote>
-</p>
+    </p>
 
-<p>
-If you would like further information, please contact:
+    <p>
+	If you would like further information, please contact:
 
 	<BLOCKQUOTE>
 	<a href="mailto:[value emailinfo]">[value emailinfo]</a>
 	</BLOCKQUOTE>
-</p>
+    </p>
+  </td>
+</tr>
+</table>
 [/tmp]
 
 [table-editor 
