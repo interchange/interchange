@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.27 2003-05-05 14:54:29 mheins Exp $
+# $Id: Menu.pm,v 2.28 2003-05-05 15:39:24 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.27 $, 10);
+$VERSION = substr(q$Revision: 2.28 $, 10);
 
 use Vend::Util;
 use strict;
@@ -901,6 +901,7 @@ EOF
 			file		=> $opt->{file},
 			subordinate => 'code',
 			autodetect  => '1',
+			open_variable => $opt->{open_variable} || 'open',
 			sort        => $opt->{sort} || 'code',
 			js_prefix	=> $vpf,
 			full        => '1',
@@ -934,15 +935,17 @@ EOF
 		$rows = \@o;
 	}
 
+	my $openvar = $opt->{open_variable} || 'open';
+
 	push @out, $main;
-	if(defined $CGI::values{open}) {
-		 $::Scratch->{dhtml_tree_open} = $CGI::values{open};
+	if(defined $CGI::values{$openvar}) {
+		 $::Scratch->{dhtml_tree_open} = $CGI::values{$openvar};
 	}
 	else {
-		$CGI::values{open} = $::Scratch->{dhtml_tree_open};
+		$CGI::values{$openvar} = $::Scratch->{dhtml_tree_open};
 	}
 	my $out = "  var ${vpf}openstatus = [";
-	my @open =  split /,/, $CGI::values{open};
+	my @open =  split /,/, $CGI::values{$openvar};
 	my @o;
 
 	my %hsh = (map { ($_, 1) } @open);
@@ -953,10 +956,10 @@ EOF
 	$out .= join ",", @o;
 	$out .= "];\n";
 	$out .= " var ${vpf}explode = ";
-	$out .= $CGI::values{explode} ? 1 : 0;
+	$out .= $CGI::values{$opt->{explode_variable} || 'explode'} ? 1 : 0;
 	$out .= ";\n";
 	$out .= " var ${vpf}collapse = ";
-	$out .= $CGI::values{collapse} ? 1 : 0;
+	$out .= $CGI::values{$opt->{collapse_variable} || 'collapse'} ? 1 : 0;
 	$out .= ";\n";
 
 	push @out, $out;
@@ -1360,10 +1363,10 @@ sub tree_line {
 
 		unless($opt->{no_open}) {
 			if($row->{page} =~ m{\?.+=}) {
-				$row->{page} .= $Global::UrlJoiner . 'open=';
+				$row->{page} .= "$Global::UrlJoiner$opt->{open_variable}=";
 			}
 			else {
-				$row->{page} .= '?open=';
+				$row->{page} .= "?$opt->{open_variable}=";
 			}
 		}
 	}
@@ -1441,8 +1444,37 @@ EOF
 	return Vend::Tags->uc_attr_list($row, $template);
 }
 
+sub open_script {
+	my $opt = shift;
+	my $vpf = $opt->{js_prefix} || 'mv_';
+
+	my $out = "<script>\n${vpf}openstatus = [";
+	my @open =  split /,/, $CGI::values{$opt->{open_variable} || 'open'};
+	my @o;
+
+	my %hsh = (map { ($_, 1) } @open);
+
+	for(0 .. $open[$#open]) {
+		push @o, ($hsh{$_} ? 1 : 0);
+	}
+	$out .= join ",", @o;
+	$out .= "];\n";
+	$out .= "${vpf}explode = ";
+	$out .= $CGI::values{$opt->{explode_variable} || 'explode'} ? 1 : 0;
+	$out .= ";\n";
+	$out .= "${vpf}collapse = ";
+	$out .= $CGI::values{$opt->{collapse_variable} || 'collapse'} ? 1 : 0;
+	$out .= ";\n";
+	$out .= "${vpf}gen_openstring();\n";
+	$out .= "${vpf}rewrite_tree();\n</script>";
+}
+
 sub menu {
 	my ($name, $opt, $template) = @_;
+
+	if($opt->{open_script}) {
+		return open_script($opt);
+	}
 	
 	Vend::Tags->tmp('mv_logical_page_used', $::Scratch->{mv_logical_page_used});
 	reset_transforms($opt);
