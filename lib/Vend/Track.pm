@@ -1,6 +1,6 @@
 # Track.pm - Interchange User Tracking
 #
-# $Id: Track.pm,v 1.3 2000-07-12 03:08:12 heins Exp $
+# $Id: Track.pm,v 1.3.2.1 2000-11-07 22:41:48 zarko Exp $
 #
 # Copyright 2000 by Stefan Hornburg <racke@linuxia.de>
 #
@@ -33,7 +33,7 @@ package Vend::Track;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.3.2.1 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -41,19 +41,19 @@ use strict;
 use Vend::Data;
 
 sub new {
-    my $proto = shift;
+	my $proto = shift;
 	my $class = ref ($proto) || $proto;
 	my $self = {actions => []};
 
-    bless ($self, $class);
+	bless ($self, $class);
 }
 
 # ACTIONS
 
 sub add_item {
-    my ($self,$cart,$item) = @_;
+	my ($self,$cart,$item) = @_;
 
-    push (@{$self->{actions}},
+	push (@{$self->{actions}},
 		  ['ADDITEM', {code => $item->{'code'},
 					   description => item_description($item)}]);
 }
@@ -96,7 +96,7 @@ sub header {
 	push(@hdr, "SESSION=$Vend::SessionID");
 	for my $aref (@{$self->{actions}}) {
 		$href = $aref->[1];
-		if (exists $hdrsubs{$aref->[0]}) {
+		if(exists $hdrsubs{$aref->[0]}) {
 			push(@hdr, $aref->[0] . '=' . &{$hdrsubs{$aref->[0]}} ($aref->[1]));
 		} else {
 			push(@hdr, "$aref->[0]=$aref->[1]");
@@ -130,10 +130,9 @@ sub filetrack {
 
 	for my $aref (@{$self->{actions}}) {
 		$href = $aref->[1];
-		if (exists $hdrsubs{$aref->[0]}) {
+		if(exists $hdrsubs{$aref->[0]}) {
 			push(@hdr, $aref->[0] . '=' . &{$hdrsubs{$aref->[0]}} ($aref->[1]));
-		}
-		else {
+		} else {
 			push(@hdr, "$aref->[0]=$aref->[1]");
 		}
 	}

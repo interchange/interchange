@@ -1,6 +1,6 @@
 # Error.pm - Handle Interchange error pages and messages
 # 
-# $Id: Error.pm,v 1.3.2.1 2000-10-06 19:49:23 zarko Exp $
+# $Id: Error.pm,v 1.3.2.2 2000-11-07 22:41:45 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -37,16 +37,15 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.3.2.1 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.3.2.2 $ =~ /(\d+)\.(\d+)/);
 
 my $wantref = 1;
 
 sub get_locale_message {
 	my ($code, $message, @arg) = @_;
-	if ($Vend::Cfg->{Locale} and defined $Vend::Cfg->{Locale}{$code}) {
+	if($Vend::Cfg->{Locale} and defined $Vend::Cfg->{Locale}{$code}) {
 		$message = $Vend::Cfg->{Locale}{$code};
-	}
-	elsif ($Global::Locale and defined $Global::Locale->{$code}) {
+	} elsif($Global::Locale and defined $Global::Locale->{$code}) {
 		$message = $Global::Locale->{$code};
 	}
 	if($message !~ /\s/) {
@@ -54,8 +53,7 @@ sub get_locale_message {
 			$Vend::StatusLine =~ s/([^\r\n])$/$1\r\n/;
 			$Vend::StatusLine .= "Status: 302 Moved\r\nLocation: $message\r\nContent-type: text/html\r\n";
 			$message = "Redirected to $message.";
-		}
-		else {
+		} else {
 			my $tmp = readin($message);
 			$message = $tmp if $tmp;
 		}
@@ -69,20 +67,19 @@ sub get_locale_message {
 # browser bug or bad html pages.
 
 sub interaction_error {
-    my($msg) = @_;
-    my($page);
+	my($msg) = @_;
+	my($page);
 
-    logError( "Difficulty interacting with browser: %s", $msg );
+	logError( "Difficulty interacting with browser: %s", $msg );
 
-    $page = readin(find_special_page('interact'));
-    if (defined $page) {
+	$page = readin(find_special_page('interact'));
+	if(defined $page) {
 		$page =~ s#\[message\]#$msg#ig;
 		Vend::Server::response(::interpolate_html($page, 1));
-    }
-	else {
+	} else {
 		logError( "Missing special page: interact" , '');
 		Vend::Server::response("$msg\n");
-    }
+	}
 }
 
 sub minidump {

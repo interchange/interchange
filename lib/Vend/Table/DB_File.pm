@@ -1,6 +1,6 @@
 # Table/DB_File.pm: access a table stored in a DB file hash
 #
-# $Id: DB_File.pm,v 1.3 2000-09-23 21:09:09 heins Exp $
+# $Id: DB_File.pm,v 1.3.2.1 2000-11-07 22:41:52 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -26,7 +26,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DB_File;
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.3.2.1 $, 10);
 use strict;
 use Fcntl;
 use DB_File;
@@ -34,35 +34,35 @@ use vars qw($VERSION @ISA);
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.3.2.1 $, 10);
 
 sub create {
-    my ($class, $config, $columns, $filename) = @_;
+	my ($class, $config, $columns, $filename) = @_;
 
-    $config = {} unless defined $config;
-    my $File_permission_mode = $config->{File_permission_mode} || 0666;
+	$config = {} unless defined $config;
+	my $File_permission_mode = $config->{File_permission_mode} || 0666;
 
-    die "columns argument $columns is not an array ref\n"
-        unless CORE::ref($columns) eq 'ARRAY';
+	die "columns argument $columns is not an array ref\n"
+		unless CORE::ref($columns) eq 'ARRAY';
 
-    # my $column_file = "$filename.columns";
-    # my @columns = @$columns;
-    # open(COLUMNS, ">$column_file")
-    #    or die "Couldn't create '$column_file': $!";
-    # print COLUMNS join("\t", @columns), "\n";
-    # close(COLUMNS);
+	# my $column_file = "$filename.columns";
+	# my @columns = @$columns;
+	# open(COLUMNS, ">$column_file")
+	#    or die "Couldn't create '$column_file': $!";
+	# print COLUMNS join("\t", @columns), "\n";
+	# close(COLUMNS);
 
-    my $column_index = Vend::Table::Common::create_columns($columns, $config);
+	my $column_index = Vend::Table::Common::create_columns($columns, $config);
 
-    my $tie = {};
-    my $flags = O_RDWR | O_CREAT;
+	my $tie = {};
+	my $flags = O_RDWR | O_CREAT;
 
-    my $dbm = tie(%$tie, 'DB_File', $filename, $flags, $File_permission_mode)
-        or die "Could not create '$filename': $!";
+	my $dbm = tie(%$tie, 'DB_File', $filename, $flags, $File_permission_mode)
+		or die "Could not create '$filename': $!";
 
-    $tie->{'c'} = join("\t", @$columns);
+	$tie->{'c'} = join("\t", @$columns);
 
-    my $s = [
+	my $s = [
 				$config,
 				$filename,
 				$columns,
@@ -71,7 +71,7 @@ sub create {
 				$tie,
 				$dbm
 			];
-    bless $s, $class;
+	bless $s, $class;
 }
 
 sub new {
@@ -81,27 +81,26 @@ sub new {
 
 
 sub open_table {
-    my ($class, $config, $filename) = @_;
-    my ($Read_only) = $config->{Read_only};
+	my ($class, $config, $filename) = @_;
+	my ($Read_only) = $config->{Read_only};
 
-    my $tie = {};
+	my $tie = {};
 
-    my $flags;
-    if ($Read_only) {
-        $flags = O_RDONLY;
-    }
-    else {
-        $flags = O_RDWR;
-    }
+	my $flags;
+	if($Read_only) {
+		$flags = O_RDONLY;
+	} else {
+		$flags = O_RDWR;
+	}
 
-    my $dbm = tie(%$tie, 'DB_File', $filename, $flags, 0600)
-        or die "Could not open '$filename': $!";
+	my $dbm = tie(%$tie, 'DB_File', $filename, $flags, 0600)
+		or die "Could not open '$filename': $!";
 
-    my $columns = [split(/\t/, $tie->{'c'})];
+	my $columns = [split(/\t/, $tie->{'c'})];
 
-    my $column_index = Vend::Table::Common::create_columns($columns, $config);
+	my $column_index = Vend::Table::Common::create_columns($columns, $config);
 
-    my $s = [
+	my $s = [
 				$config,
 				$filename,
 				$columns,
@@ -110,7 +109,7 @@ sub open_table {
 				$tie,
 				$dbm
 			];
-    bless $s, $class;
+	bless $s, $class;
 }
 
 # Unfortunate hack need for Safe searches
