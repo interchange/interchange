@@ -37,23 +37,23 @@ Interchange is a complete web application platform focused on
 ecommerce, dynamic data presentation, and content management.
 
 
-%package foundation
+%package standard
 Summary: A template store for Interchange
 Group: System Environment/Daemons
 Requires: interchange = %{version}-%{release}
 
-%description foundation
-The Foundation Store is a full-featured ecommerce catalog you can
+%description standard
+The Standard Store is a full-featured ecommerce catalog you can
 adapt to build your own store.
 
 
-%package foundation-demo
+%package standard-demo
 Summary: A prebuilt demonstration store for Interchange
 Group: System Environment/Daemons
 Prereq: interchange = %{version}-%{release}
 
-%description foundation-demo
-This demo is a prebuilt installation of the Foundation Store that
+%description standard-demo
+This demo is a prebuilt installation of the Standard Store that
 makes it easy to test drive Interchange's ecommerce features.
 
 
@@ -137,7 +137,7 @@ DOCROOT=%{webdir}/html
 CGIDIR=%{webdir}/cgi-bin
 CGIBASE=/cgi-bin
 HTTPDCONF=%{_sysconfdir}/httpd/conf/httpd.conf
-for i in foundation
+for i in standard
 do 
 	%__mkdir_p $RPM_BUILD_ROOT$CGIDIR
 	%__mkdir_p $RPM_BUILD_ROOT$DOCROOT/$i/images
@@ -200,11 +200,11 @@ touch $RPM_BUILD_ROOT$RPMICLOG
 
 # I don't know of a way to exclude a subdirectory from one of the directories
 # listed in the %files section, so I have to use this monstrosity to generate
-# a list of all directories in /usr/lib/interchange except the foundation demo
+# a list of all directories in /usr/lib/interchange except the standard demo
 # directory and pass the list to %files below.
 DIRDEPTH=`echo $ICBASE | sed 's:[^/]::g' | awk '{print length + 1}'`
 cd $RPM_BUILD_ROOT
-find . -path .$ICBASE/foundation -prune -mindepth $DIRDEPTH -maxdepth $DIRDEPTH \
+find . -path .$ICBASE/standard -prune -mindepth $DIRDEPTH -maxdepth $DIRDEPTH \
 	-o -print | %__grep "^\.$ICBASE" | sed 's:^\.::' | \
 	%__sed 's:^\(/usr/lib/interchange/etc\):%attr(-, %{ic_user}, %{ic_group}) \1:' \
 	> %filelist
@@ -223,10 +223,10 @@ find . -path .$ICBASE/foundation -prune -mindepth $DIRDEPTH -maxdepth $DIRDEPTH 
 	-r -d %{_localstatedir}/lib/interchange %ic_user 2>/dev/null || :
 
 
-%files foundation
+%files standard
 
 %defattr(-, root, root)
-%{_libdir}/interchange/foundation
+%{_libdir}/interchange/standard
 
 
 %files -f %filelist
@@ -258,14 +258,14 @@ find . -path .$ICBASE/foundation -prune -mindepth $DIRDEPTH -maxdepth $DIRDEPTH 
 %{_bindir}/te
 
 
-%files foundation-demo
+%files standard-demo
 
 %defattr(-, %{ic_user}, %{ic_group})
-%{_localstatedir}/lib/interchange/foundation
-%{_localstatedir}/log/interchange/foundation
-%{_localstatedir}/cache/interchange/foundation
-%{webdir}/html/foundation
-%{webdir}/cgi-bin/foundation
+%{_localstatedir}/lib/interchange/standard
+%{_localstatedir}/log/interchange/standard
+%{_localstatedir}/cache/interchange/standard
+%{webdir}/html/standard
+%{webdir}/cgi-bin/standard
 
 
 %post
@@ -305,11 +305,11 @@ then
 fi
 
 
-%post foundation-demo
+%post standard-demo
 
 HOST=`hostname`
 
-i=foundation
+i=standard
 %__perl -pi -e "s/RPM_CHANGE_HOST/$HOST/g" \
 	%{_localstatedir}/lib/interchange/$i/catalog.cfg \
 	%{_localstatedir}/lib/interchange/$i/products/*.txt \
@@ -349,10 +349,10 @@ if [ $1 = 0 ]; then
 fi
 
 
-%preun foundation-demo
+%preun standard-demo
 
 if [ $1 = 0 ]; then
-	i=foundation
+	i=standard
 
 	# Remove catalog from running Interchange
 	if [ -n "`/sbin/service interchange status 2>/dev/null | %__grep -i 'interchange.*is running'`" ]
@@ -386,6 +386,9 @@ fi
 
 
 %changelog
+* Mon Jul 12 2004 Jon Jensen <jon@icdevgroup.org>
+- Switch demo catalog to Standard instead of older Foundation.
+
 * Mon Apr 12 2004 Jon Jensen <jon@icdevgroup.org>
 - simplify logrotate params
 - rebuild for Interchange 5.3.0
