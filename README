@@ -28,8 +28,6 @@ Unix-like operating system.
 
 More information is in the following files and directories:
 
-pod/             Documentation.
-
 README.rpm-dist  Notes on using Interchange when installed from RPM packages.
 
 README.debian    Notes on using Interchange when installed from Debian packages.
@@ -51,7 +49,7 @@ dist/          The distribution files, exclusive of executable
                foundation/            Demo catalog skeleton, used by makecat
                src/                   C and Perl code for CGI links
                lib/                   Back-end administrative interface
-               usertag/               Some fairly standard usertags
+               code/                  Usertags and other customizable code
 
 extra/         Some not-always-needed Perl libraries.
 
@@ -61,6 +59,9 @@ lib/           The library modules needed to run Interchange.
 
 scripts/       The executable files, relocated to bin/ in the install
                directory.
+
+relocate.pl    Script that adjusts paths in scripts/ for installation into
+               bin/.
 
 test.pl        The installation test script.
 
@@ -77,8 +78,12 @@ gzip -dc interchange-4.9.?.tar.gz | tar xvf -
 cd interchange-4.9.?
 ./configure
 
-Then you will need to make your first Interchange catalog, as described in
-the next section.
+The configure script asks where you'd like to install Interchange, and
+(against common practice) also install it.
+
+The Interchange server doesn't do much if it isn't servicing one or more
+actual catalogs, so you next need to make your first Interchange catalog,
+as described in the next section.
 
 -----------------------------------------------------------------------------
 
