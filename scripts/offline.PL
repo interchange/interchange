@@ -25,7 +25,7 @@ DOIT: {
 #
 # offline - Interchange database builder and indexer
 #
-# $Id: offline.PL,v 1.5 2000-09-23 18:49:30 heins Exp $
+# $Id: offline.PL,v 1.6 2000-09-25 15:19:36 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -83,7 +83,6 @@ BEGIN {
 		$Global::ConfigFile = 'interchange.cfg';
 	}
 	
-}
 }
 
 ### END CONFIGURABLE VARIABLES
@@ -277,7 +276,7 @@ offline -- Interchange offline database builder
 
 =head1 VERSION
 
-$Id: offline.PL,v 1.5 2000-09-23 18:49:30 heins Exp $
+$Id: offline.PL,v 1.6 2000-09-25 15:19:36 heins Exp $
 
 =head1 DESCRIPTION
 
