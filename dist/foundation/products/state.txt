@@ -147,7 +147,7 @@ code	sorder	country	state	name	tax	postcode	shipmodes	tax_name
 	05	UK	HERTS	Hertfordshire
 	05	UK	HUMBER	Humberside
 	05	UK	IOM	Isle of Man
-	05	UK	IOW	Isle of White
+	05	UK	IOW	Isle of Wight 
 	05	UK	KENT	Kent
 	05	UK	LANCS	Lancashire
 	05	UK	LEICS	Leicestershire
