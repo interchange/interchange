@@ -1,6 +1,6 @@
 # Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 2.17 2004-06-07 03:44:19 mheins Exp $
+# $Id: Session.pm,v 2.18 2004-07-05 22:04:34 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -27,7 +27,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.17 $, 10);
+$VERSION = substr(q$Revision: 2.18 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -496,6 +496,12 @@ sub init_session {
 	tie $Vend::Items, 'Vend::Cart';
 	$::Values->{mv_shipmode} = $Vend::Cfg->{DefaultShipping}
 		if ! defined $::Values->{mv_shipmode};
+	if(my $macro = $Vend::Cfg->{SpecialSub}{init_session}) {
+		Vend::Dispatch::run_macro(
+				$macro,
+				$Vend::Session,
+			);
+	}
 }
 
 sub dump_sessions {
