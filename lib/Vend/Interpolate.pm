@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.15 2001-10-06 06:41:10 mheins Exp $
+# $Id: Interpolate.pm,v 2.16 2001-10-07 11:53:21 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.15 $, 10);
+$VERSION = substr(q$Revision: 2.16 $, 10);
 
 @EXPORT = qw (
 
@@ -490,6 +490,10 @@ sub cache_html {
 	my ($name, @post);
 	my ($bit, %post);
 
+	# static page building should be independent from secure mode
+	my $secure = $CGI::secure;
+	$CGI::secure = 0;
+	
 	$CacheInvalid = 0;
 
 	vars_and_comments(\$html);
@@ -511,6 +515,10 @@ sub cache_html {
 	$CacheInvalid++ if $parse->{INVALID};
 	$Vend::CachePage = $CacheInvalid ? undef : 1;
 	$complete = \$full if $full;
+
+	# restore secure mode
+	$CGI::secure = $secure;
+	
 	if (defined $Vend::BuildingPages) {
 		return $full if $full;
 		return $parse->{OUT};
