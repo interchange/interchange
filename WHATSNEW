@@ -169,6 +169,9 @@ Payment
   Written, tested, and donated by Tom Friedel <tom@readyink.com>.
   Thanks, Tom!
  
+* Support for ECHO added. Written, tested, and donated by
+  Michael Lehmkuhl <michael@electricpulp.com>.  Ported from globalsub to 
+  Vend::Payment by Dan Browning <db@kavod.com>.  Thanks Michael!
 
 UI
 --
