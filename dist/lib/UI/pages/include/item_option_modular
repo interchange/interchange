@@ -1,0 +1,186 @@
+<!-- ----- BEGIN REAL STUFF ----- -->
+[if scratch ui_failure]
+<P>
+<BLOCKQUOTE>
+<FONT COLOR="__CONTRAST__">[scratch ui_failure][set ui_failure][/set]</FONT>
+</BLOCKQUOTE>
+<P>
+&nbsp;
+[/if]
+[if scratch ui_message]
+<P>
+<BLOCKQUOTE>
+<FONT COLOR="__CONTRAST__">[scratch ui_message][set ui_message][/set]</FONT>
+</BLOCKQUOTE>
+<P>
+&nbsp;
+[/if]
+<H2>Selected Options</H2>
+<TABLE CELLSPACING=0 CELLPADDING=2 CELLMARGIN=3 WIDTH="100%">
+<TR BGCOLOR="__UI_C_TITLEBARBG__">
+	<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">Option Group</TH>
+	<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">Description</TH>
+	<TH ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__">Price</TH>
+	<TH ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__">&nbsp;</TH>
+</TR>
+[calc]
+	my $include = tag_data($CGI->{mv_data_table}, 'o_include', $CGI->{item_id});
+	my $exclude = tag_data($CGI->{mv_data_table}, 'o_exclude', $CGI->{item_id});
+
+	$include =~ s/^\s+//;
+	$include =~ s/\s+$//;
+	$include =~ s/\s+/ /;
+	$exclude =~ s/^\s+//;
+	$exclude =~ s/\s+$//;
+	$exclude =~ s/\s+/ /;
+
+	my $out = <<EOF;
+	fi=$CGI->{mv_data_table}
+	st=db
+	co=yes
+	tf=o_group
+	rf=*
+
+EOF
+
+	my $os = 0;
+	if($include) {
+		# If they have this, assume they know perl
+		unless( $include =~ /\|/ ) {
+			$include =~ s/\s+/|/g;
+			$include =~ s/\./\\./g;
+			$include =~ s/\*/.*/g;
+		}
+		$os = 1 if ! $exclude;
+		$out .= <<EOF;
+	ac=0
+	sf=o_group
+	se=$include
+	op=rm
+	sg=0
+	nu=0
+
+EOF
+
+	}
+
+	if($exclude) {
+		# If they have this, assume they know perl
+		unless( $exclude =~ /\|/ ) {
+			$exclude =~ s/\s+/|/g;
+			$exclude =~ s/\./\\./g;
+			$exclude =~ s/\*/.*/g;
+		}
+		$os = 0 if ! $include;
+		$out .= <<EOF;
+	ac=0
+	sf=o_group
+	se=$exclude
+	op=rn
+	sg=0
+	nu=0
+
+EOF
+	}
+
+	$out .= <<EOF;
+	ac=0
+	sf=o_master
+	se=$CGI->{item_id}
+	op=eq
+	sg=1
+	nu=0
+
+EOF
+	if(defined $os) {
+		$out .= "sr=0 or 1\n";
+	}
+	$CGI->{ui_sparams} = $out;
+	return;
+[/calc]
+[loop prefix=item search="[cgi ui_sparams]"]
+[calc]
+	$Scratch->{built_js} =~ s/_NEXT_[A-Z]+_//g;
+	return;
+[/calc]
+[scratch built_js]
+[list]
+<TR [item-alternate 2]BGCOLOR="__UI_T_ROW_EVEN__"[else]BGCOLOR="__UI_T_ROW_ODD__"[/else][/item-alternate]>
+[item-change 2][condition][item-param o_group][/condition]
+[item-change 1][condition]1[/condition]
+[else]
+<tr BGCOLOR="__UI_C_TITLEBARBG__"><td colspan=4><img src="@_UI_IMG_@admin/bg.gif" HEIGHT=1></td></tr>
+[/else]
+[/item-change 1]
+[/item-change 2]
+<TD>&nbsp;[page href=__UI_BASE__/flex_editor form=|
+									mv_data_table=[cgi mv_data_table]
+									ui_page_title=[cgi ui_page_title]
+									ui_page_banner=[cgi ui_page_banner]
+									ui_class=Items
+									ui_meta_view=modular
+									ui_data_fields=code o_master o_group description price weight differential
+									ui_meta_specific=[cgi ui_meta_specific]
+									ui_return_to=@@MV_PAGE@@
+									ui_return_to=ui_return_table=[cgi mv_data_table]
+									ui_return_to=sku=[cgi item_id]
+									item_id=[item-code]
+						|][item-param o_group]</A></TD>
+<TD> [item-filter 30][item-param description][/item-filter] </td>
+<TD> [item-filter currency][item-param price][/item-filter] </td>
+<TD ALIGN=CENTER WIDTH="1"><A
+onClick="return confirm('Are you sure you want to delete the [item-param o_group] ([item-code]) option?')"
+HREF="[area
+			href='@@MV_PAGE@@'
+			form='
+				deleterecords=1
+				ui_delete_id=[item-code]
+				sku=[cgi item_id]
+				mv_data_table=[cgi mv_data_table]
+				mv_click=db_maintenance
+				mv_action=back
+				mv_nextpage=@@MV_PAGE@@
+			'
+]"><IMG SRC="@_UI_IMG_@admin/delete.gif" ALT="Delete [item-param o_group] option" BORDER=0></A></TD>
+</tr>
+[/list]
+[no-match]
+<tr>
+<td colspan=6 align=center>
+<B>No options.</B>
+</td>
+</tr>
+[/no-match]
+</table>
+[/loop]
+
+[page href=__UI_BASE__/flex_editor
+		form="
+			mv_data_table=[cgi mv_data_table]
+			ui_class=Items
+			ui_data_fields=code o_master o_group description price weight differential
+			ui_meta_view=modular
+			ui_new_item=1
+			ui_page_banner=[cgi ui_page_banner]
+			ui_page_title=[cgi ui_page_title]
+			ui_return_to=@@MV_PAGE@@
+			ui_return_to=ui_return_table=[cgi mv_data_table]
+			ui_return_to=sku=[cgi item_id]
+		"]<IMG SRC="@_UI_IMG_@admin/plus.gif" ALT="Add new option" BORDER=0></A>
+&nbsp;&nbsp;
+
+[table-editor
+	table=options
+	key=""
+	form_name=variant
+	ui_data_fields="code sku products:description:sku description price weight o_matrix"
+	default.o_matrix=1
+	widget.o_matrix=hidden
+	ui_meta_view="variant"
+	widget.sku="hidden_text"
+	ui_display_only=products:description:sku
+	default.sku=`$CGI->{item_id}`
+	extra.description="wrap=auto"
+	width.description="20"
+	ui_new_item=1
+]
