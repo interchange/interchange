@@ -41,7 +41,7 @@
 				 form='
 				 mv_data_table=__UI_META_TABLE__
 				 ui_meta_view=dbconfig
-				 ui_data_fields=code name height field options help help_url display_filter
+				 ui_data_fields=code name height field options attribute width type display_filter help help_url
 				 ui_break_before=height display_filter
 				 page_title=Change display information: [loop-code]
 				 ui_return_to=__UI_BASE__/gentable
@@ -53,9 +53,9 @@
 [tmp help_name][either][cgi help_name][or]flex.select[/either][/tmp]
 [tmp icon_name][either][cgi icon_name][or]admin/icon_config.gif[/either][/tmp]
 
-[if cgi ui_return_table]
+[if cgi mv_return_table]
 	[calc]
-		$CGI->{mv_data_table} = delete $CGI->{ui_return_table};
+		$CGI->{mv_data_table} = delete $CGI->{mv_return_table};
 		return;
 	[/calc]
 [/if]
@@ -363,7 +363,7 @@ EOF
 						mv_data_table=[cgi mv_data_table]
 						mv_arg=[loop-code]
 					'
-				]"><IMG ALT="select by [loop-code]" SRC="@_UI_IMG_@admin/layout.gif" BORDER=0></A></TH>
+				]"><IMG ALT="select by [loop-code]" SRC="@_UI_IMG_@admin/smindex.gif" BORDER=0></A></TH>
 [/loop]
 </tr>
 <TR BGCOLOR="__UI_C_TITLEBARBG__">
@@ -392,10 +392,11 @@ EOF
 [tmp tmp_url]
 	mv_data_table=[cgi mv_data_table]
 	ui_page_title=[cgi ui_page_title]
-	ui_page_title=[cgi ui_page_banner]
+	ui_page_banner=[cgi ui_page_banner]
 	ui_meta_specific=[cgi ui_meta_specific]
 	[if cgi ui_return_to]
-	[return-to formlink]
+	[and !cgi ui_return_stack]
+		[return-to formlink]
 	[else]
 		ui_return_to=@@MV_PAGE@@
 		ui_return_to=mv_data_table=[cgi mv_data_table]

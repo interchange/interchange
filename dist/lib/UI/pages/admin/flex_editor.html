@@ -1,6 +1,9 @@
-[if cgi ui_return_table]
-	[calc] $CGI->{mv_data_table} = delete $CGI->{ui_return_table}; return; [/calc]
-[/if]
+[strip int]
+[calc]
+	$CGI->{mv_data_table} = delete $CGI->{mv_return_table}
+		if $CGI->{mv_return_table};
+	return;
+[/calc]
 [tmp page_title]
 	[either]
 		[cgi page_title]
@@ -21,7 +24,7 @@
 				 form='
 				 mv_data_table=__UI_META_TABLE__
 				 ui_meta_view=dbconfig
-				 ui_data_fields=code name height field options help help_url display_filter
+				 ui_data_fields=code name height field options attribute width type display_filter help help_url
 				 ui_break_before=height display_filter
 				 page_title=Change display information: [cgi mv_data_table]
 				 ui_return_to=__UI_BASE__/gentable
@@ -32,7 +35,7 @@
 				 form='
 				 mv_data_table=__UI_META_TABLE__
 				 ui_meta_view=dbconfig
-				 ui_data_fields=code name height field options help help_url display_filter
+				 ui_data_fields=code name height field options attribute width type display_filter help help_url
 				 ui_break_before=height display_filter
 				 page_title=Change display information: [cgi mv_data_table]
 				 ui_return_to=__UI_BASE__/gentable
@@ -59,7 +62,7 @@
 	[/calc]
 [/if]
 
-@_UI_STD_HEAD_@
+[/strip]@_UI_STD_HEAD_@
 [table-editor cgi=1]
 
 <A HREF="[area href=admin/flex_editor

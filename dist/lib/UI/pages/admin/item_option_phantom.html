@@ -1,6 +1,6 @@
 [calc]
 	$CGI->{ui_meta_view} = 'modular_create';
-	$CGI->{mv_data_table} = $Variable->{MV_OPTION_TABLE} || 'options';
+	$CGI->{mv_data_table} = '@_MV_OPTION_TABLE_@' || 'options';
 	$CGI->{ui_display_only} = '__ProductFiles_0__:__DescriptionField__';
 	return;
 [/calc]

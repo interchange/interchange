@@ -27,6 +27,7 @@
 			
 		}
 		$CGI->{ui_template} = $Tag->filter('filesafe', $CGI->{ui_template});
+		# Parens are necessary to generate array context
 		my ($ary) = $Tag->read_ui_template($CGI->{ui_template});
 		$ref = shift @$ary || {};
 		$t_name = $CGI->{ui_template};

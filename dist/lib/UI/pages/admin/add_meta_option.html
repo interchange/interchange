@@ -376,7 +376,7 @@ EOF
 										item_id=${t}::$c
 										ui_return_to=$page
 										ui_return_to=item_id=$CGI->{item_id}
-										ui_return_to=ui_return_table=$t
+										ui_return_to=mv_return_table=$t
 										}
 							});
 			$meta .= 'meta</A>';
@@ -389,7 +389,7 @@ EOF
 										ui_meta_view=metaconfig
 										ui_return_to=$page
 										ui_return_to=item_id=$CGI->{item_id}
-										ui_return_to=ui_return_table=$t
+										ui_return_to=mv_return_table=$t
 										}
 							}) . 'item-specific meta</A></FONT>'
 				if $CGI->{ui_meta_specific};

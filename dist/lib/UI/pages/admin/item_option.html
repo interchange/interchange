@@ -1,4 +1,5 @@
-<!-- [if cgi mv_more_ip]
+[strip int]
+[if cgi mv_more_ip]<!-- 
 [calc]
 	for( grep defined $Values->{$_}, qw/
 		help_name
@@ -9,7 +10,7 @@
 		ui_show_fields
 		ui_sort_field
 		ui_return_to
-		ui_return_table
+		mv_return_table
 		ui_sort_option
 		ui_description_fields
 		ui_flex_description
@@ -22,12 +23,12 @@
 	}
 	return join "\n", @out;
 [/calc]
-[/if] -->
+-->[/if]
 
 [calc]
 	$CGI->{item_id} = $CGI->{sku} if $CGI->{sku} and ! $CGI->{ignore_sku};
 	$CGI->{ui_meta_view} = 'optmaster';
-	$CGI->{mv_data_table} = $Variable->{MV_OPTION_TABLE} || 'options';
+	$CGI->{mv_data_table} = '@_MV_OPTION_TABLE_@' || 'options';
 	$CGI->{ui_display_only} = '__ProductFiles_0__:__DescriptionField__';
 	return;
 [/calc]
@@ -71,7 +72,6 @@
 	return;
 [/perl]
 
-<!-- ui_location: [scratch ui_location] -->
 [if scratch ui_location]
 [bounce href=`delete $Scratch->{ui_location}`]
 [elsif !cgi mv_data_table]
@@ -79,11 +79,31 @@
 [/elsif]
 [/if]
 
-@_UI_STD_HEAD_@
+[/strip]@_UI_STD_HEAD_@
 
 <!---- MAJOR -----><table>
 <!---- MAJOR -----><tr>
-<!---- MAJOR -----><td valign=top>
+<td valign=top>
+<!---- MAJOR ----->
+[if cgi ui_change_options]
+[tmp ui_change_options]1[/tmp]
+[/if]
+
+[if type="!data" term="[cgi mv_data_table]::o_enable::[cgi item_id]"]
+[tmp ui_change_options]1[/tmp]
+[tmp ui_never_options]1[/tmp]
+[/if]
+
+[if scratch ui_change_options]
+[then]
+<H2>
+	Select option type and/or
+	[if scratch ui_never_options]
+		enable
+	[else]
+		disable
+	[/else][/if] options
+</H2>
 [table-editor
 	table="[cgi mv_data_table]"
 	hidden.item_id="[cgi item_id]"
@@ -96,16 +116,54 @@
 	widget.o_master="hidden"
 	override.sku="[cgi item_id]"
 	override.o_master="NONE"
+	table_width="400"
 ]
-<!---- MAJOR -----></td>
-<!---- MAJOR -----><td valign=top>
+[/then]
+[else]
+[loop list="[cgi item_id]"]
+
+<table width="__UI_OVERALL_WIDTH__" __UI_T_PROPERTIES__>
+<tr class=rtitle>
+	<td colspan=2><IMG SRC="@_UI_IMG_@admin/bg.gif" height=2 width=1></td>
+</tr>
+
+<tr class=rnorm>
+	<td class=clabel>Option type:
+		[if-loop-data @_MV_OPTION_TABLE_@ o_matrix]
+			Matrix [tmp matrix_or_modular]1[/tmp]
+		[/if-loop-data]
+		[if-loop-data @_MV_OPTION_TABLE_@ o_modular]
+			Modular [tmp matrix_or_modular]1[/tmp]
+		[/if-loop-data]
+		[if !scratch matrix_or_modular]
+			Simple
+		[/if]</STRONG>
+	</td>
+	<td class=chelp align=right>
+<SPAN style="align: right">[page href="@@MV_PAGE@@" form="
+							ui_change_options=1
+							item_id=[loop-code]
+							"]Change</A></span><br>
+	</td>
+</tr>
+<tr class=rtitle>
+	<td colspan=2><IMG SRC="@_UI_IMG_@admin/bg.gif" height=2 width=1></td>
+</tr>
+
+</table>
+<P>
+[/loop]
+
 [if type=data term="options::o_matrix::[cgi item_id]"]
-[include include/item_option_matrix]
+	[include include/item_option_matrix]
 [elsif type=data term="options::o_modular::[cgi item_id]"]
-[include include/item_option_modular]
+	[include include/item_option_modular]
 [/elsif]
 [else]
-[include include/item_option_simple]
+	[include include/item_option_simple]
+[/else]
+[/if]
+
 [/else]
 [/if]
 

@@ -13,13 +13,15 @@
 	if(! $CGI->{ui_break_before}) {
 		$CGI->{ui_break_before} = 'account';
 	}
-	my @args = (
-		 '__UI_BASE__/item_edit',
-		 "item_id=$CGI->{item_id}",
-		 "item_id_left=$CGI->{item_id_left}",
-		 "ui_sequence_edit=$CGI->{ui_sequence_edit}",
-	);
-	$CGI->{ui_return_to} = join "\0", @args;
+	if(! $CGI->{ui_return_to}) {
+		my @args = (
+			 '__UI_BASE__/item_edit',
+			 "item_id=$CGI->{item_id}",
+			 "item_id_left=$CGI->{item_id_left}",
+			 "ui_sequence_edit=$CGI->{ui_sequence_edit}",
+		);
+		$CGI->{ui_return_to} = join "\0", @args;
+	}
 	return;
 [/calc]
 

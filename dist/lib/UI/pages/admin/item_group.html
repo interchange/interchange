@@ -1,4 +1,4 @@
-[if !cgi mv_data_table]
+[strip int][if !cgi mv_data_table]
 [or cgi ui_scrub_table]
 [calc]
 	$CGI->{mv_data_table} = $Values->{mv_data_table} = $Config->{ProductFiles}[0];
@@ -6,14 +6,20 @@
 [/calc]
 [/if]
 
+[tmp tmp_ftitle][either][data
+							table=mv_metadata
+							col=label
+							key="[cgi mv_data_table]::[cgi mv_arg]"
+						][or][cgi mv_arg][/either][/tmp]
+
 [set ui_class]Items[/set]
-[tmp page_title]Item group -- [cgi mv_arg][/tmp]
-[tmp page_banner] Item group by <B>[cgi mv_arg]</B>
+[tmp page_title]Item group -- [scratch tmp_ftitle][/tmp]
+[tmp page_banner] Item group by <B>[scratch tmp_ftitle]</B>
 [/tmp]
 [set table_perm]__ProductFiles_0__=v[/set]
 [set help_name]item.editor[/set]
 [set icon_name]admin/icon_item.gif[/set]
-@_UI_STD_HEAD_@
+[/strip]@_UI_STD_HEAD_@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 [if scratch ui_message]
@@ -139,9 +145,6 @@ EOF
 
 
 [search-region more=1 arg="[scratch sparams]"]
-[on-match]
-<LARGE>Unique <B>[cgi mv_arg]</B></LARGE>
-[/on-match]
 <UL>
 [search-list]
 	<A HREF="[area href='__UI_BASE__/item'

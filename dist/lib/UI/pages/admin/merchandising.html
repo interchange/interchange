@@ -112,21 +112,32 @@
 [/on-match]
 [search-list]
 <TR [item-alternate 2]BGCOLOR="__UI_T_ROW_EVEN__"[else]BGCOLOR="__UI_T_ROW_ODD__"[/else][/item-alternate]>
-<TD>[page href=__UI_BASE__/item_edit form="item_id=[item-code]"][item-code]</A></TD>
+<TD>[page href=__UI_BASE__/item_edit
+			form="
+				ui_return_to=@@MV_PAGE@@
+				item_id=[item-code]
+			"][item-code]</A></TD>
 <TD>[filter 30][item-description][/filter]</TD>
 <TD ALIGN=CENTER>[page href=__UI_BASE__/item_price form="
+	ui_return_to=@@MV_PAGE@@
 	item_id=[item-code]
 "][if-item-data pricing sku]Yes[else]No[/else][/if-item-data]</A>
 </TD>
 <TD ALIGN=CENTER>[page href=__UI_BASE__/item_up form="
+	ui_return_to=@@MV_PAGE@@
 	item_id=[item-code]
 "][if-item-data merchandising upsell_to]Yes[else]No[/else][/if-item-data]</a>
 </TD>
 <TD ALIGN=CENTER>[page href=__UI_BASE__/item_cross form="
+	ui_return_to=@@MV_PAGE@@
 	item_id=[item-code]
 "][if-item-data merchandising cross_sell]Yes[else]No[/else][/if-item-data]</a>
 </TD>
-<TD ALIGN=CENTER>[page href=__UI_BASE__/item_feature form="item_id=[item-code]"][if-item-data merchandising featured][item-exec do_timed][item-code][/item-exec][display table=merchandising column=featured type=display key="[item-code]"][else]none[/else][/if-item-data]</a></td>
+<TD ALIGN=CENTER>[page href=__UI_BASE__/item_feature
+								form="
+									ui_return_to=@@MV_PAGE@@
+									item_id=[item-code]
+								"][if-item-data merchandising featured][item-exec do_timed][item-code][/item-exec][display table=merchandising column=featured type=display key="[item-code]"][else]none[/else][/if-item-data]</a></td>
 <TD ALIGN=CENTER>[if-item-data merchandising timed_promotion]<font size=1>[item-exec show_exp][item-code][/item-exec]</font>[else]&nbsp;[/else][/if-item-data]
 </TD>
 </tr>

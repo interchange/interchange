@@ -24,12 +24,14 @@
 									|| 'image size';
 		}
 	}
-	my @args = (
-		 '__UI_BASE__/item',
-		 "item_id_left=$CGI->{item_id_left}",
-		 "ui_sequence_edit=$CGI->{ui_sequence_edit}",
-	);
-	$CGI->{ui_return_to} = join "\0", @args;
+	if(! $CGI->{ui_return_to} or $CGI->{ui_sequence_edit}) {
+		my @args = (
+			 '__UI_BASE__/item',
+			 "item_id_left=$CGI->{item_id_left}",
+			 "ui_sequence_edit=$CGI->{ui_sequence_edit}",
+		);
+		$CGI->{ui_return_to} = join "\0", @args;
+	}
 	return;
 [/perl]
 

@@ -256,11 +256,11 @@ EOF
 	@special = grep /\S/, split /[,\0]+/, $meta->{outboard};
 	unless (@special) {
 		@special = (
-			'Qty price',
-			'Up-sell',
-			'Cross-sell',
-			'Promo',
-			'Inventory',
+			'Qty price=pricing:q5:r',
+			'Up-sell=merchandising:upsell_to:r',
+			'Cross-sell=merchandising:cross_sell:r',
+			'Promo=merchandising:featured:r',
+			'Inventory=inventory:quantity:r',
 			);
 	}
 	@special = grep $_ !~ /^none$/i, @special;
@@ -301,7 +301,7 @@ EOF
 [/if]
 
 
-[search-region more=1 arg="[scratch sparams]"]
+[search-region more=1 sort="[cgi ui_special_sort]" arg="[scratch sparams]"]
 [on-match]
 [calc] 
 	my $so   = $CGI->{ui_sort_option};
@@ -321,29 +321,33 @@ EOF
 <FORM ACTION="[area __UI_BASE__/item_edit]" METHOD=POST>
 <INPUT TYPE=hidden NAME=mv_action VALUE=back>
 <TABLE border=0 CELLSPACING=0 width="90%">
-<TR BGCOLOR="__UI_C_TITLEBARBG__">
+<TR class=rtitle><TD>&nbsp;</TD>
 [loop list="[cgi ui_description_fields]"]
-<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
-	[loop-change 1][condition]1[/condition]&nbsp;&nbsp;&nbsp;&nbsp;[/loop-change 1]
+<TH[loop-calc]
+			my $extra = '';
+			while ($filter_show[ [loop-increment] - 1] =~ m/\b(v?align\s*=\w+)/gi) {
+				$extra .= " $1";
+			}
+			return $extra || ' ALIGN=LEFT';
+		[/loop-calc] class=ctitle>
 				<A HREF="[area
 							href='__UI_BASE__/item_group'
 							form='
 								mv_arg=[loop-code]
 								mv_data_table=[cgi mv_data_table]
-							']"><IMG ALT="select by [loop-code]" SRC="@_UI_IMG_@admin/layout.gif" BORDER=0></A></TH>
+							']"><IMG ALT="select by [loop-code]" SRC="@_UI_IMG_@admin/smindex.gif" BORDER=0></A></TH>
 [/loop]
 [calc]
-	my $special = $CGI->{ui_show_special};
 	my $out = '';
 	for(@special) {
 		$out .= <<EOF;
-<TH>&nbsp;</TH>
+<TH class=ctitle>&nbsp;</TH>
 EOF
 	}
 	return $out;
 [/calc]
 </tr>
-<TR BGCOLOR="__UI_C_TITLEBARBG__">
+<TR class=rtitle><TD>&nbsp;</TD>
 [loop list="[cgi ui_description_fields]"]
 <TH[loop-calc]
 			my $extra = '';
@@ -352,7 +356,6 @@ EOF
 			}
 			return $extra || ' ALIGN=LEFT';
 		[/loop-calc]><FONT COLOR="__UI_C_TITLEBARTXT__">
-	[loop-change 1][condition]1[/condition]&nbsp;&nbsp;&nbsp;&nbsp;[/loop-change 1]
 	<A HREF="[area href='@@MV_PAGE@@'
 					form=`
 						my $f = '[loop-code]';
@@ -369,14 +372,45 @@ EOF
 							ui_sort_option=$o
 						);
 					`
-				]">[either][data table="__UI_META_TABLE__" column=label key="[cgi mv_data_table]::[loop-code]"][or][loop-code][/either]</TH>
+				]" class=ctitle>[either][data table="__UI_META_TABLE__" column=label key="[cgi mv_data_table]::[loop-code]"][or][loop-code][/either]</TH>
 [/loop]
 [calc]
-	my $special = $CGI->{ui_show_special};
 	my $out = '';
 	for(@special) {
+		my $display = $_;
+		$display =~ s/\s*;\s*(.*)//;
+		my $sort = $1; 
+		if($sort) {
+			my $cgi = $CGI->{ui_special_sort};
+			$cgi =~ s/(.*:.*):(\w+)$/$1/;
+			my $cgiopt = $1;
+			$sort =~ s/(.*:.*):(\w+)$/$1/;
+			my $sortopt = $2;
+			if($cgi eq $sort) {
+				$cgiopt =~ tr/nrx//cds;
+				%toggle = ( qw/
+								rn n
+								nr n
+								n  rn
+								x  r
+								r  x
+							/);
+				$toggle{''} = 'r';
+				$sortopt = $toggle{$cgiopt};
+			}
+			my $url = $Tag->page({
+						href => '@@MV_PAGE@@',
+						extra => 'class=ctitle',
+						form => "
+									ui_text_qualification=$ui_text_qualification
+									mv_data_table=$CGI->{mv_data_table}
+									ui_special_sort=$sort:$sortopt
+								",
+							    });
+			$display = "$url$display</A>";
+		}
 		$out .= <<EOF;
-<TH ALIGN=CENTER><small><FONT COLOR="__UI_C_TITLEBARTXT__">$_</TH>
+<td class=ctitle ALIGN=CENTER><small class=ctitle>$display</small></td>
 EOF
 	}
 	return $out;
@@ -384,9 +418,9 @@ EOF
 </tr>
 [/on-match]
 [search-list]
-<TR [item-alternate 2]BGCOLOR="__UI_T_ROW_EVEN__"[else]BGCOLOR="__UI_T_ROW_ODD__"[/else][/item-alternate]>
+<tr class=[item-alternate 2]ralt[else]rnorm[/else][/item-alternate]>
 
-<TD><INPUT TYPE=checkbox NAME=item_id VALUE="[item-code]">&nbsp;&nbsp;[page href=__UI_BASE__/item_edit form="item_id=[item-code]"][item-code]</A></TD>
+<TD><INPUT TYPE=checkbox NAME=item_id VALUE="[item-code]"></TD><TD>[page href=__UI_BASE__/item_edit form="item_id=[item-code]"][item-code]</A></TD>
 [item-sub show_line]
 sub {
 	my $extra = shift;
@@ -408,7 +442,11 @@ sub {
 		$i++;
 	}
 	for(@special) {
-		$out .= $extra{$_};
+#Log("Special='$_'");
+		my $item = $_;
+		$item =~ s/\s*;.*//;
+#Log("Special='$item'");
+		$out .= $extra{$item};
 	}
 	return $out . "\n";
 }

@@ -114,12 +114,14 @@ size=1>
 	my %area_defaults = (
 		name => undef,
 		which_page	=> $CGI->{which_page} || 'all',
+		sort	=> '05',
 		sel	=> $CGI->{sel} || 'left',
-		display_type => 'name'
+		display_type => 'name',
 	);
 	my %catmap;
 	my %cat_defaults = (
 		link_type => 'simple',
+		sort	=> '05',
 		display_type => 'name'
 	);
 	if($acol) {
@@ -165,7 +167,8 @@ size=1>
 	$CGI->{mv_nextpage} = $go_page;
 	my $out = $Tag->uneval( { ref => \%catmap } );
 	$out =~ s/,/,\n/g;
-	return '<XMP>' . $Tag->uneval( { ref => \%catmap } ) . "</XMP";
+	#return '<XMP>' . $Tag->uneval( { ref => \%catmap } ) . "</XMP";
+	return;
 [/perl]
 [/seti]
 [/button]

@@ -14,10 +14,15 @@
 [if !cgi mv_data_table]
 [bounce page="__UI_BASE__/gentable"]
 [/if]
+[tmp tmp_ftitle][either][data
+							table=mv_metadata
+							col=label
+							key="[cgi mv_data_table]::[cgi mv_arg]"
+						][or][cgi mv_arg][/either][/tmp]
 
 [set ui_class]Admin[/set]
-[tmp page_title]Display table [cgi mv_data_table] by group [cgi mv_arg][/tmp]
-[tmp page_banner] Table <B>[cgi mv_data_table]</B> group by <B>[cgi mv_arg]</B>
+[tmp page_title]Display table [cgi mv_data_table] by group [scratch tmp_ftitle][/tmp]
+[tmp page_banner] Table <B>[cgi mv_data_table]</B> group by <B>[scratch tmp_ftitle]</B>
 [/tmp]
 [set table_perm]=v[/set]
 [set help_name]flex.select[/set]
@@ -150,17 +155,12 @@ EOF
 
 
 [search-region more=1 arg="[scratch sparams]"]
-[on-match]
-<LARGE>Unique <B>[cgi mv_arg]</B></LARGE>
-[/on-match]
 <UL>
 [search-list]
 	<A HREF="[area href='__UI_BASE__/flex_select'
 					form="
 						mv_data_table=[cgi mv_data_table]
 						ui_text_qualification=[cgi mv_arg]==[item-code]
-						ui_limit_fields=[cgi ui_limit_fields]
-						ui_show_fields=[cgi ui_show_fields]
 					"
 				]"><LI>[either][item-code][or](blank)[/either]</LI></A>
 [/search-list]

@@ -227,8 +227,9 @@ EOF
 
 @_UI_STD_HEAD_@
 
-<FORM NAME=search_wizard ACTION="[process]" METHOD=POST>
+<FORM NAME=search_wizard ACTION="[process]" METHOD=GET>
 <INPUT TYPE=hidden NAME=mv_todo VALUE=back>
+<INPUT TYPE=hidden NAME=ui_target VALUE="[cgi ui_target]">
 [return-to]
 
 <P>

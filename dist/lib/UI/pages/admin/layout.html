@@ -7,17 +7,6 @@
 [seti ui_body_extra][/seti]
 
 @_UI_STD_HEAD_@
-[if scratch ui_message]
-<BLOCKQUOTE>
-<FONT COLOR="__CONTRAST__" SIZE="+1"><B>[scratch ui_message][set ui_message][/set]</B></FONT>
-</BLOCKQUOTE>
-[/if]
-
-[if scratch ui_failure]
-	<FONT COLOR=RED>Failed:
-	[scratch ui_failure][set ui_failure][/set]</FONT><BR>
-[/if]
-
 <!-- ----- BEGIN REAL STUFF ----- -->
 <table __UI_T_PROPERTIES__>
 
@@ -44,8 +33,8 @@
 [set Delete section]
 [/set]
 
-<tr>
-<td [if value area]colspan=3[/if] bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<tr class=rtitle>
+<td [if value area]colspan=3[/if] class=ctitle><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1>[page __UI_BASE__/layout_auto]auto-populate</A></td>
 </tr>
 
 <tr>
@@ -155,7 +144,7 @@
 </td>
 
 
-[if value area]
+[if cgi area]
 [then]
 <td valign=top bgcolor="__UI_C_INTBLOCK__">
 
@@ -338,7 +327,7 @@
 </td>
 </tr>
 </table>
-</form>
+</FORM>
 </td>
 </tr>
 </table>
@@ -383,7 +372,7 @@ setarea=[cgi selector]
 
 [loop list="[value area]" prefix=table]
 <FORM METHOD=POST name=layout_area_properties ACTION="[area ui]">
-<INPUT TYPE=hidden NAME=mv_doit VALUE="set">
+<INPUT TYPE=hidden NAME=mv_todo VALUE="set">
 <INPUT TYPE=hidden NAME=from_section VALUE=1>
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_ui_area">
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
@@ -600,8 +589,8 @@ setarea=[cgi selector]
 [elsif scratch ui_area_type eq complex]
 
 <INPUT TYPE=hidden NAME=mv_data_fields value="search">
-<INPUT TYPE=hidden NAME=ui_target value="mainwindow[scratch win]">
 <INPUT TYPE=hidden NAME=ui_searchblob value="">
+<INPUT TYPE=hidden NAME=ui_target value="mainwindow[scratch win]">
 <INPUT TYPE=hidden NAME=ui_return_to value="@@MV_PAGE@@">
 <INPUT TYPE=hidden NAME=ui_return_to value="area=[table-code]">
 <tr>
@@ -614,9 +603,7 @@ setarea=[cgi selector]
 						name=mv_click
 						value="Create"
 						onClick="
-							this.form.ui_target.value=window.name;
 							this.form.ui_searchblob.value=this.form.search.value;
-							this.form.target='search_prop';
 						">&nbsp;<small><INPUT TYPE=button onClick="this.form.search.value=''" VALUE="clear search">
 	</td>
 	<td bgcolor=__UI_C_INTBLOCK__>
@@ -701,7 +688,7 @@ setarea=[cgi selector]
 
 [button text="Change area"][/button]
 
-</form>
+</FORM>
 [/loop]
 
 </td>
@@ -743,8 +730,8 @@ return;
 [/set]
 
 [loop list="[either][value cat][or]NEW[/either]" prefix=table]
-<FORM METHOD=POST ACTION="[area ui]">
-<INPUT TYPE=hidden NAME=mv_doit VALUE="set">
+<FORM METHOD=GET ACTION="[area ui]" name=layout_cat_properties>
+<INPUT TYPE=hidden NAME=mv_todo VALUE="set">
 <INPUT TYPE=hidden NAME=from_category VALUE=1>
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_ui_cat">
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
@@ -914,6 +901,7 @@ return;
 <INPUT TYPE=hidden NAME=ui_target value="mainwindow[scratch win]">
 <INPUT TYPE=hidden NAME=ui_searchblob value="">
 <INPUT TYPE=hidden NAME=ui_return_to value="@@MV_PAGE@@">
+<INPUT TYPE=hidden NAME=ui_return_to value="area=[cgi area]">
 <INPUT TYPE=hidden NAME=ui_return_to value="cat=[table-code]">
 <tr>
 	<td bgcolor=__UI_C_INTBLOCK__>
@@ -925,9 +913,7 @@ return;
 						name=mv_click
 						value="Create"
 						onClick="
-							this.form.ui_target.value=window.name;
 							this.form.ui_searchblob.value=this.form.search.value;
-							this.form.target='search_prop';
 						">&nbsp;<small><INPUT TYPE=button onClick="this.form.search.value=''" VALUE="clear search">
 	</td>
 	<td bgcolor=__UI_C_INTBLOCK__>
@@ -1041,7 +1027,7 @@ return;
 [button text="Change category"]
 [/button]
 
-</form>
+</FORM>
 [/loop]
 
 </body>
