@@ -168,22 +168,6 @@ Core
 
 * Patch slight security hole where user password can be saved in session.
 
-* Allow redirection of shipping modes.
-
-  Basically, you can do:
-
-  upsg_or_free	UPS Ground	[subtotal noformat=1]	0	99.99	>>upsg
-  upsg_or_free	UPS Ground	price	100	99999	0		{ free => 'Free!' }
-
-  upsg	UPS Ground	weight	0	150	u Ground
-
-  The first mode redirects to the second one if the order total is
-  less that $100; if it is more, it gives free shipping.
-
-  Add [shipping widget="Vend::Form widget" mode="mode1 mode2"] to
-  automatically build widget with Vend::Form. Works just like
-  [shipping label=1 ...] but produces a complete widget.
-
 * Keep copy of CGI values at time of history save, not reference to them
   (which can be changed in subsequent code).
 
@@ -455,6 +439,8 @@ Menu
 * Add "items" check to menu to allow showing an entry only if items are
   in the cart. Works for current cart ($Vend::Items) only.
 
+* Don't add .html extension if file already has extension.
+
 Form
 ----
 
@@ -519,6 +505,11 @@ Form
 
 * Allow multiple semi-colon-separated queries to populate options via
   lookup_query.
+
+Editor
+------
+
+* Allow override of checking for incomplete forms.
 
 UI
 --
@@ -611,6 +602,43 @@ Payment
   comment1 and comment2 by default in Payment.pm, but can be remapped.
 
   Also put SHIPTOZIP in the varmap for simplicity, but same function.
+
+Shipping
+--------
+
+* Allow redirection of shipping modes.
+
+  Basically, you can do:
+
+  upsg_or_free	UPS Ground	[subtotal noformat=1]	0	99.99	>>upsg
+  upsg_or_free	UPS Ground	price	100	99999	0		{ free => 'Free!' }
+
+  upsg	UPS Ground	weight	0	150	u Ground
+
+  The first mode redirects to the second one if the order total is
+  less that $100; if it is more, it gives free shipping.
+
+  Add [shipping widget="Vend::Form widget" mode="mode1 mode2"] to
+  automatically build widget with Vend::Form. Works just like
+  [shipping label=1 ...] but produces a complete widget.
+
+* Support Canadian and 2003 US UPS Zone files.
+
+* Add mv_ship_residential with automatic lookup of residential charge in
+  properly formatted rate tables.
+
+  Requires residential => 1 option in shipping definition.
+
+* Add EAS surcharge via different means than EAS capability. Allows lookup
+  of exception zip codes in surcharge_table => 'tablename' option.
+  surcharge_field => 'fieldname' defaults to "surcharge".
+
+* Allow aggregation of weights over a number of pounds.
+
+  If aggregate => 1, that is 150 pounds. Breaks it up into 150-pound
+  packages and then a final package at the remainder.
+
+  If aggregate > 10, breaks it up into that many pound packages.
 
 Levies
 ------
@@ -747,6 +775,8 @@ UserTags
 
   Allow direct setting of id, class, and style HTML characteristics without
   having to shoehorn them in extra=" style='...'" etc.
+
+* Fix typo in auto-wizard UserTag so it works with ITL conditionals.
 
 Filters
 -------
