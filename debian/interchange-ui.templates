@@ -1,0 +1,5 @@
+Template: interchange-ui/uilocales
+Type: multiselect
+Choices: German
+Description: Select available locales for UI
+

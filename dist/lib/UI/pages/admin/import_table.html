@@ -1,8 +1,9 @@
-[set page_title]Individual Table Import[/set]
+[if-mm super][flag type=write table="icmenu ichelp"][/if-mm]
+[set page_title]Table Import[/set]
 [set table_perm]=i[/set]
 [set help_name]import.main[/set]
 [set ui_class]Admin[/set]
-[set icon_name]admin/icon_config.gif[/set]
+[set icon_name]icon_config.gif[/set]
 @_UI_STD_HEAD_@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
@@ -17,6 +18,8 @@
 		return;
 	[/calc]
 [/if]
+
+
 [if type=explicit compare="[value-extended
 							name=upload_file
 							test=isfile]"]
@@ -67,6 +70,7 @@
 	[elsif cgi ui_upload_ext eq add]
 	[import-fields
 					add=1
+					autonumber="[cgi ui_autonumber]"
 					convert="[cgi ui_import_convert]"
 					delete="[cgi ui_allow_delete]"
 					dir=backup
@@ -102,7 +106,7 @@
 <INPUT TYPE=hidden NAME=ui_return_to VALUE="__UI_BASE__/genxport">
 <table __UI_T_PROPERTIES__>
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
@@ -115,7 +119,8 @@
 <SELECT NAME=ui_upload_ext>
 	<OPTION VALUE=add> Add new items if present
 	<OPTION VALUE=update> Ignore new items
-</SELECT>&nbsp;&nbsp;&nbsp;<INPUT TYPE=checkbox NAME=ui_allow_delete VALUE=1> Allow delete
+</SELECT>&nbsp;&nbsp;&nbsp;<SMALL><INPUT TYPE=checkbox NAME=ui_allow_delete VALUE=1> Allow delete
+&nbsp;&nbsp;<INPUT TYPE=checkbox NAME=ui_autonumber VALUE=1 CHECKED> Autonumber if no key</SMALL>
 <BR><select NAME=ui_import_convert>
 		<OPTION VALUE=0> Single table
 		<OPTION VALUE=1> Gnumeric simple tex
@@ -138,7 +143,7 @@
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

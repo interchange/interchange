@@ -1,0 +1,19 @@
+Database  gift_certs  gift_certs.txt __SQLDSN__
+Database  gift_certs  UPPERCASE    1
+ifdef SQLUSER
+Database  gift_certs  USER         __SQLUSER__
+endif
+ifdef SQLPASS
+Database  gift_certs  PASS         __SQLPASS__
+endif
+Database  gift_certs  DEFAULT_TYPE VARCHAR2(128)
+Database  gift_certs  COLUMN_DEF   "code=VARCHAR2(14) PRIMARY KEY"
+Database  gift_certs  COLUMN_DEF   "username=VARCHAR2(20) DEFAULT ''"
+Database  gift_certs  COLUMN_DEF   "order_date=VARCHAR2(32)"
+Database  gift_certs  COLUMN_DEF   "original_amount=NUMBER"
+Database  gift_certs  COLUMN_DEF   "redeemed_amount=NUMBER"
+Database  gift_certs  COLUMN_DEF   "available_amount=NUMBER"
+Database  gift_certs  COLUMN_DEF   "passcode=VARCHAR2(20)"
+Database  gift_certs  COLUMN_DEF   "active=VARCHAR2(3)"
+Database  gift_certs  COLUMN_DEF   "redeemed=VARCHAR2(3)"
+Database  gift_certs  COLUMN_DEF   "update_date=DATE DEFAULT SYSDATE"

@@ -1,0 +1,64 @@
+[comment]
+ui_component: affiliate_receptor
+ui_component_type: content
+ui_component_label: Welcome affiliate program arrivals
+
+coupon_allowed: 
+		label: Allow discount coupons
+		widget: select
+		options: 1=Yes,0=No
+
+title_css: 
+		label: Style of title
+		widget: textarea
+		advanced: 1
+
+discount_css: 
+		label: Style of discount message
+		widget: textarea
+		advanced: 1
+
+[/comment]
+
+<!-- begin component [control component affiliate_receptor] -->
+[if session source]						
+[calc]
+	my $coupon_enable = $CGI->{coupon};
+	my $campaigns = q{[data
+	table=affiliate
+		column=campaigns
+		key='[data session source]'
+	]};
+	delete $Scratch->{coupon_approve};
+	return unless $coupon_enable;
+	return unless $campaigns =~ /\bcoupon\b/;
+	$Scratch->{coupon_approve} = 1;
+	return;
+[/calc]
+
+<br>
+
+Welcome Affiliate Program Visitor:
+
+<br>
+
+<a href="[data table=affiliate column=url key='[data session source]']"><img src="[data table=affiliate column=image key='[data session source]']" border="0"></a>
+	
+[if scratch coupon_approve]
+	[seti coupon_amount][data table=affiliate column=coupon_amount key='[data session source]'][/seti]
+	[discount ENTIRE_ORDER] $s - $Scratch->{coupon_amount}; [/discount]
+	[set order_discounted]1[/set]
+[/if]
+	
+[if type=explicit compare=`
+					return 1 if q{[control coupon_allowed 1]} 
+						 and $Scratch->{order_discounted};
+					return 0;
+					`]
+[currency][scratch coupon_amount][/currency]
+Off Coupon Active
+[/if]
+
+[/if]
+
+<!-- end component [control component affiliate_receptor] -->

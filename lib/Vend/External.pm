@@ -1,8 +1,8 @@
-# External.pm - Interchange routines rarely used or not requiring much performance
+# Vend::External - Interchange routines for calling external programs
 # 
-# $Id: External.pm,v 1.2 2000-07-12 03:08:10 heins Exp $
+# $Id: External.pm,v 1.3 2001-07-18 01:56:44 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

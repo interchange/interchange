@@ -1,7 +1,7 @@
-[seti page_title]Search wizard: sorting[/seti]
+[seti page_title]Search Builder: sorting[/seti]
 [set help_name]search_builder[/set]
 [set ui_class]Design[/set]
-[set icon_name]admin/icon_config.gif[/set]
+[set icon_name]icon_config.gif[/set]
 [seti name=tables][list-databases][/seti]
 [seti meta_header]
 [perl table="[scratch tables]"]
@@ -133,15 +133,16 @@ EOF
 
 @_UI_STD_HEAD_@
 
-<FORM NAME=search_wizard ACTION="[process]" METHOD=POST>
+<FORM NAME=search_wizard ACTION="[process]" METHOD=GET>
 <INPUT TYPE=hidden NAME=mv_todo VALUE=back>
 <INPUT TYPE=hidden NAME=current_column VALUE="[value current_column]">
+<INPUT TYPE=hidden NAME=ui_target VALUE="[cgi ui_target]">
 [return-to]
 <P>
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <TR>
 	<TD BGCOLOR="__UI_C_INTBLOCK__" WIDTH="20%" VALIGN=top>
@@ -176,7 +177,7 @@ EOF
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 
@@ -206,7 +207,7 @@ EOF
 
 <tr>
 <td colspan=3 bgcolor=__UI_C_INTBLOCK__>
-[button text="Cancel"]
+[button text="Cancel search"]
 	saved_search=
 	mv_todo=return
 	[return-to click]
@@ -217,8 +218,8 @@ EOF
 	mv_nextpage=__UI_BASE__/search_wizard_results.html
 [/button]&nbsp;&nbsp;&nbsp;&nbsp;[button text="Finish -->"]
 	generate_page=1
-	[return_to click]
 	mv_nextpage=__UI_BASE__/search_wizard_results.html
+	[set Cancel search][/set]
 [/button]
 </tr>
 

@@ -1,13 +1,10 @@
-#!/usr/bin/perl
+# Vend::Cart - Interchange shopping cart management routines
 #
-# $Id: Cart.pm,v 1.2 2000-07-12 03:08:10 heins Exp $
+# $Id: Cart.pm,v 1.3 2001-07-18 01:56:43 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
+# This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -27,7 +24,7 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.3 $, 10);
 
 use strict;
 
@@ -62,41 +59,157 @@ sub STORE {
 
 sub DESTROY { }
 
+
+# BEGTEST
+
+=head2 Test header for item toss
+
+ my $cart = [
+	{
+		code => 1,
+		mv_mi => 1,
+		mv_si => 0,
+		mv_ci => 0,
+		quantity => 0,
+	},
+	{
+		code => 2,
+		mv_mi => 1,
+		mv_si => 1,
+		mv_ci => 2,
+		quantity => 1,
+	},
+	{
+		code => 3,
+		mv_mi => 2,
+		mv_si => 1,
+		mv_ci => 0,
+		quantity => 1,
+	},
+	{
+		code => 5,
+		mv_mi => 1,
+		mv_si => 1,
+		mv_ci => 3,
+		quantity => 1,
+	},
+	{
+		code => 50,
+		mv_mi => 3,
+		mv_si => 1,
+		mv_ci => 0,
+		quantity => 1,
+	},
+	{
+		code => 51,
+		mv_mi => 3,
+		mv_si => 1,
+		mv_ci => 31,
+		quantity => 1,
+	},
+	{
+		code => 52,
+		mv_mi => 31,
+		mv_si => 1,
+		mv_ci => 0,
+		quantity => 1,
+	},
+	{
+		code => 6,
+		mv_mi => 1,
+		mv_si => 1,
+		mv_ci => 0,
+		quantity => 1,
+	},
+	{
+		code => 7,
+		mv_mi => 0,
+		mv_si => 0,
+		mv_ci => 0,
+		quantity => 1,
+	},
+];
+
+=cut
+
 # If the user has put in "0" for any quantity, delete that item
 # from the order list.
 sub toss_cart {
 	my($s) = @_;
 	my $i;
+	my $sub;
 	my (@master);
-    DELETE: for (;;) {
-        foreach $i (0 .. $#$s) {
-            if ($s->[$i]->{quantity} <= 0) {
+	my (@cascade);
+	DELETE: for (;;) {
+		foreach $i (0 .. $#$s) {
+			if ($sub = $Vend::Cfg->{ItemAction}{$s->[$i]{code}}) {
+				$sub->($s->[$i]);
+			}
+			if ($s->[$i]->{quantity} <= 0) {
 				next if defined $s->[$i]->{mv_control} and
 								$s->[$i]->{mv_control} =~ /\bnotoss\b/;
-				push (@master, $s->[$i]->{mv_mi})
-					if $s->[$i]->{mv_mi} && ! $s->[$i]->{mv_si};
-                splice(@$s, $i, 1);
-                next DELETE;
-            }
-        }
-        last DELETE;
-    }
+				if ($s->[$i]->{mv_mi} && ! $s->[$i]->{mv_si}) {
+					push (@master, $s->[$i]->{mv_mi});
+				}
+				elsif ( $s->[$i]->{mv_ci} ) {
+					push (@master, $s->[$i]->{mv_ci});
+				}
+				splice(@$s, $i, 1);
+				next DELETE;
+			}
+			next unless $Vend::Cfg->{Limit}{cart_quantity_per_line};
+			
+			$s->[$i]->{quantity} = $Vend::Cfg->{Limit}{cart_quantity_per_line}
+				if
+					$s->[$i]->{quantity}
+						>
+					$Vend::Cfg->{Limit}{cart_quantity_per_line};
+		}
+		last DELETE;
+	}
 
 	return 1 unless @master;
 	my $mi;
 	my %save;
 	my @items;
+
 	# Brute force delete for subitems of any deleted master items
-	foreach $mi (@master) {
-        foreach $i (0 .. $#$s) {
-            $save{$i} = 1
-				unless $s->[$i]->{mv_si} and $s->[$i]->{mv_mi} eq $mi;
-        }
+	while (@master) {
+		@cascade = @master;
+		@master = ();
+		foreach $mi (@cascade) {
+			%save = ();
+			foreach $i (0 .. $#$s) {
+				if ( $s->[$i]->{mv_si} and $s->[$i]->{mv_mi} eq $mi ) {
+					delete $save{$i};
+# print "mi=$mi == $s->[$i]->{mv_mi}, si=$s->[$i]->{mv_si}, ci=$s->[$i]->{mv_ci}\n";
+					push(@master, $s->[$i]->{mv_ci})
+						if $s->[$i]->{mv_ci};
+				}
+				else {
+# print "mi=$mi != $s->[$i]->{mv_mi}, si=$s->[$i]->{mv_si}\n";
+					$save{$i} = 1;
+				}
+			}
+			@items = @$s;
+			@{$s} = @items[sort {$a <=> $b} keys %save];
+		}
 	}
-	@items = @$s;
-	@{$s} = @items[sort {$a <=> $b} keys %save];
-    1;
+	1;
 }
+
+=head2 Test footer for item toss
+
+	toss_cart($cart);
+
+	use Data::Dumper;
+	$Data::Dumper::Indent = 2;
+	$Data::Dumper::Terse = 2;
+	print Data::Dumper::Dumper($cart);
+
+	# ENDTEST
+
+=cut
 
 sub get_cart {
 	my($cart) = shift or return $Vend::Items;

@@ -1,0 +1,218 @@
+[set page_title]Layout auto-populate[/set]
+[set ui_class]Design[/set]
+[set page_banner]Layout Editor: Organize your site into categories[/set]
+[set page_perm]layout=e[/set]
+[set help_name]layout.edit[/set]
+[set icon_name]icon_pages.gif[/set]
+[tmp meta_header][include include/table_populator][/tmp]
+[seti ui_body_extra][/seti]
+
+@_UI_STD_HEAD_@
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+<form action="[area __UI_BASE__/layout]" method=GET>
+<input type=hidden name=mv_action value=back>
+
+<table border=0 __UI_T_PROPERTIES__>
+<tr>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+<tr bgcolor="__UI_C_INTBLOCK__">
+<td width=25%>
+
+1. Choose a table as the source:
+
+</td>
+<td>
+[if !value area_table]
+	[value name=area_table set=products hide=1]
+	[value name=area_column set=prod_group hide=1]
+	[value name=cat_column set=category hide=1]
+[/if]
+<select name="area_table"
+	onChange="
+		populateTable(
+            this.form.area_table.options,
+            this.form.area_column.options,
+            this.form.area_table.options[this.form.area_table.selectedIndex].value
+            );
+		populateTable(
+            this.form.area_table.options,
+            this.form.cat_column.options,
+            this.form.area_table.options[this.form.area_table.selectedIndex].value
+            );
+	"
+size=1>
+[loop list="[list-databases]" option=area_table]
+	<OPTION VALUE="[loop-code]">[loop-code]</OPTION>
+[/loop]
+</select>
+</td>
+</tr>
+<tr>
+<td>
+2. Choose a column to populate areas:
+</td>
+<td>
+<select name="area_column">
+<option value=""> -- none --
+[loop list="[db-columns table='[value area_table]']" option=area_column]
+<option>[loop-code]
+[/loop]
+</select>
+</td>
+</tr>
+<tr>
+<td>
+3. Choose a column to populate categories:
+</td>
+<td>
+<select name="cat_column">
+<option value=""> -- none --
+[loop list="[db-columns table='[value area_table]']" option=cat_column]
+<option>[loop-code]
+[/loop]
+</select>
+</td>
+</tr>
+<tr bgcolor="__UI_C_INTBLOCK__">
+<td>
+4. Select the page class:
+</td>
+<td>
+<INPUT NAME=which_page VALUE=all>
+</td>
+</tr>
+<tr bgcolor="__UI_C_INTBLOCK__">
+<td>
+5. Select the page area:
+</td>
+<td>
+<INPUT NAME=sel VALUE=left>
+</td>
+</tr>
+<tr bgcolor="__UI_C_INTBLOCK__">
+<td>
+6. Decide whether to remove previous settings:
+</td>
+<td>
+<SELECT NAME=nuke><OPTION VALUE=0>No <OPTION VALUE=1>Yes</SELECT>
+</td>
+</tr>
+<tr>
+<td>
+6. Click this button to populate:
+</td>
+<td>
+[button text="Populate"]
+[flag type=write table="area"]
+[flag type=write table="cat"]
+[seti ui_failure]
+[perl tables="area cat [cgi area_table]"]
+	my $go_page = $CGI->{mv_nextpage};
+	$CGI->{mv_nextpage} = '@@MV_PAGE@@';
+	my $ptab = $CGI->{area_table}
+		or return "no area source table";
+	my $pdb = $Db{$ptab}
+		or return "area source table bad";
+	my $adb = $Db{area}
+		or return "no area table";
+	my $cdb = $Db{cat}
+		or return "no cat table";
+	my $acol = $CGI->{area_column};
+	my $ccol = $CGI->{cat_column};
+	if(! $acol and ! $ccol ) {
+		return "no column to populate either";
+	}
+
+	my $selector = '';
+	my $selcode = '';
+
+	my %area_defaults = (
+		name => undef,
+		which_page	=> $CGI->{which_page} || 'all',
+		sort	=> '05',
+		sel	=> $CGI->{sel} || 'left',
+		display_type => 'name',
+	);
+	my %catmap;
+	my %cat_defaults = (
+		link_type => 'simple',
+		sort	=> '05',
+		display_type => 'name'
+	);
+	if($CGI->{nuke}) {
+		$adb->query('delete from area');
+		$cdb->query('delete from cat');
+	}
+	if($acol) {
+		$adb->config('AUTO_NUMBER', '1000') if ! $adb->config('_Auto_number');
+		return "area column $acol doesn't exist"
+			unless $pdb->column_exists($acol);
+		my $ary = $pdb->query("select distinct $acol from $ptab order by $acol")
+			or return "area column query failed";
+		for(@$ary) {
+			my ($area) = (@$_);
+			my $key = $adb->set_row('');
+			return "no autonumbering available" if ! $key;
+			$catmap{$area} = $key;
+			for(keys %area_defaults) {
+				$adb->set_field($key, $_, $area_defaults{$_} || $area);
+			}
+		}
+	}
+
+	my %catdone;
+	if($ccol) {
+		$cdb->config('AUTO_NUMBER', '1000') if ! $cdb->config('_Auto_number');
+		return "cat column $ccol doesn't exist"
+			unless $pdb->column_exists($ccol);
+		my $ary = $pdb->query("select $acol, $ccol from $ptab order by $ccol")
+			or return "cat column query failed";
+		for(@$ary) {
+			my ($area, $cat) = (@$_);
+			next if $catdone{$cat}++;
+			my $key = $cdb->set_row('');
+			return "no cat autonumbering available" if ! $key;
+
+			$cat_defaults{name} = $cat;
+			$cat_defaults{sel} = $catmap{$area};
+			$cat_defaults{selector} = "$ccol=$cat";
+			
+			for(keys %cat_defaults) {
+				Log("setting col=$_ key=$key = $cat_defaults{$_}");
+				$cdb->set_field($key, $_, $cat_defaults{$_});
+			}
+		}
+	}
+	$CGI->{mv_nextpage} = $go_page;
+	my $out = $Tag->uneval( { ref => \%catmap } );
+	$out =~ s/,/,\n/g;
+	#return '<XMP>' . $Tag->uneval( { ref => \%catmap } ) . "</XMP";
+	return;
+[/perl]
+[/seti]
+[/button]
+<BR>
+</td>
+</tr>
+
+<tr>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+</table>
+
+</form>
+
+
+<!-- ----- END REAL STUFF ----- -->
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ -->
+
+
+
+
+
+

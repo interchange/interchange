@@ -3,21 +3,21 @@
 		delete $Values->{showinactive};
 		$Values->{showactive} = 1;
 		$Scratch->{active_sense} = 'ne';
-		$Scratch->{active_img} = 'admin/right.gif';
+		$Scratch->{active_img} = 'right.gif';
 		$Scratch->{active_nm} = 'deactivate';
 	}
 	elsif($CGI->{showinactive}) {
 		delete $Values->{showactive};
 		$Values->{showinactive} = 1;
 		$Scratch->{active_sense} = 'eq';
-		$Scratch->{active_img} = 'admin/left.gif';
+		$Scratch->{active_img} = 'left.gif';
 		$Scratch->{active_nm} = 'activate';
 	}
 	elsif(! $Values->{showactive} and ! $Values->{showinactive}) {
 		delete $Values->{showinactive};
 		$Values->{showactive} = 1;
 		$Scratch->{active_sense} = 'ne';
-		$Scratch->{active_img} = 'admin/right.gif';
+		$Scratch->{active_img} = 'right.gif';
 		$Scratch->{active_nm} = 'deactivate';
 	}
 	return;
@@ -30,6 +30,8 @@
 [/set]
 [bounce page="__UI_BASE__/error"]
 [/if-mm]
+
+[tmp can_delete][if-mm advanced userdb=d]1[/if-mm][/tmp]
 
 [set ui_class]Customers[/set]
 [set page_perm]userdb[/set]
@@ -54,7 +56,7 @@
 		$value = 1;
 		$action_col = 'inactive';
 	}
-	elsif($CGI->{deletecustomer}) {
+	elsif($CGI->{deletecustomer} and $Scratch->{can_delete}) {
 		$delete = 1;
 	}
 	elsif($CGI->{viewcustomer} and ! $CGI->{viewnext}) {
@@ -132,7 +134,7 @@
 [bounce href=`delete $Scratch->{ui_location}`]
 [/if]
 
-[set icon_name]admin/icon_people.gif[/set]
+[set icon_name]icon_people.gif[/set]
 [seti page_title]
 	[if value showinactive]
 	Customers: Inactive Customers
@@ -243,14 +245,16 @@ mv_nextpage=@@MV_PAGE@@
 	form="
 		[scratch active_nm]=1
 		customer=[item-code]
-	"]<IMG SRC="@_UI_IMG_@[scratch active_img]" HEIGHT=10 WIDTH=11 ALT="[scratch active_nm] [item-code]" BORDER=0></A>
+	"]<IMG SRC="[scratch active_img]" HEIGHT=10 WIDTH=11 ALT="[scratch active_nm] [item-code]" BORDER=0></A>
+[if scratch can_delete]
 <A HREF="[area
 	href='@@MV_PAGE@@'
 	form='
 		deletecustomer=1
 		customer=[item-code]
 	']"
-	onClick="return confirm('Are you sure you want to delete customer [item-code]?')"><IMG src="@_UI_IMG_@admin/delsm.gif" ALT="DELETE [item-code]" BORDER=0></A>
+	onClick="return confirm('Are you sure you want to delete customer [item-code]?')"><IMG src="delsm.gif" ALT="DELETE [item-code]" BORDER=0></A>
+[/if]
 </td><td>
 [page href=__UI_BASE__/customer_view
 			  form="
@@ -285,11 +289,11 @@ so there's a full line across the page even if table cells are blank.
 <tr bgcolor="#FFFFFF" height=8><td colspan=8></td></tr>
 
 </table>
-[if-mm advanced userdb=d]
+[if scratch can_delete]
 [button form=batch text="Delete checked customers"
  confirm='Are you sure you want to delete the checked customers?']deletecustomer=1
 [/button]
-[/if-mm]
+[/if]
 &nbsp;&nbsp;&nbsp;[button form=batch text=`
 			my $tmp = "$Scratch->{active_nm} checked customers";
 			return "\u$tmp";

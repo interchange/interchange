@@ -1,10 +1,34 @@
-#$self = {
-#	INSTALLPRIVLIB => '/usr/local/interchange/lib',
-#	INSTALLARCHLIB => '/usr/local/interchange',
-#};
+my $base = $ARGV[0] || '/work/interchange';
+$self = {
+	INSTALLARCHLIB => $base,
+	INSTALLBIN     => "$base/bin",
+	INSTALLDIRS    => 'perl',
+	INSTALLMAN1DIR => "$base/doc",
+	INSTALLMAN3DIR => "$base/doc",
+	INSTALLPRIVLIB => "$base/lib",
+	INSTALLSCRIPT  => "$base/bin",
+};
+
+my %Special;
 
 use Config;
-require 'scripts/initp.pl';
+
+eval {
+	require 'scripts/initp.pl';
+};
+
+if(! $MV::Self ) {
+	$MV::Self = $self;
+	$Special{perlpath} = $Config{perlpath};
+	$Special{perlpath} .= <<EOF;
+
+
+eval 'exec $Config{perlpath} -S \$0 \${1+"\$@"}'
+    if 0; # not running under some shell
+EOF
+	$Special{perlpath} =~ s/\s+$//;
+}
+
 
 sub doit {
 	my ($key) = @_;
@@ -14,7 +38,8 @@ sub doit {
 		return $val;
 	}
 	return $MV::Self->{$key} unless $key =~ /[a-z]/;
-	return $Config{$key};
+	return $Special{$key} if defined $Special{$key};
+	$Config{$key};
 }
 
 DOIT: {
@@ -23,19 +48,16 @@ DOIT: {
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# Interchange version 4.6
+# Interchange version 4.7.6
 #
-# $Id: interchange.PL,v 1.26 2001-04-14 22:48:19 jon Exp $
+# $Id: interchange.PL,v 1.27 2001-07-18 01:57:01 jon Exp $
 #
-# Copyright (C) 1996-2001 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
-# This program was originally based on Vend 0.2
+# This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
 #
-# Portions from Vend 0.3
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# See the file 'Changes' for information.
+# See the files 'README' and 'WHATSNEW' for information.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -60,7 +82,7 @@ use lib '/usr/local/interchange';
 use strict;
 
 BEGIN {
-	$Vend::Foreground = 1;
+	$Global::Foreground = 1;
 	
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
 		if defined $ENV{MINIVEND_ROOT};
@@ -83,12 +105,16 @@ BEGIN {
 
 	$Global::InitialErrorFile = $Global::ErrorFile = "$Global::VendRoot/error.log";
 
-	if($^O =~ /win32/i) {
+	if($^O =~ /cygwin|win32/i) {
 		$Global::Windows = 1;
 	}
 
 # Uncomment next line if you want to guarantee use of DB_File
 #$ENV{MINIVEND_DBFILE} = 1;
+
+# Uncomment next line in the unlikely event you want to ignore
+# GDBM and DB_File and force use of SDBM.
+#$ENV{MINIVEND_SDBM} = 1;
 
 # Uncomment next line if you want to guarantee use of GDBM and not DB_File
 #$ENV{MINIVEND_GDBM} = 1;
@@ -96,6 +122,10 @@ BEGIN {
 # Uncomment next line if you want to use no DBM, sessions
 # stored in files and databases in memory (or SQL)
 #$ENV{MINIVEND_NODBM} = 1;
+
+# Uncomment next line if you want the ability to use ALL DBM.
+# Otherwise we use only the first choice to save memory.
+#$ENV{MINIVEND_ALLDBM} = 1;
 
 # Uncomment next line if you DON'T want to use DBI, can
 # save a bit on code size
@@ -136,7 +166,7 @@ use vars qw($VERSION);
 require Exporter;
 
 BEGIN {
-	$VERSION = '4.6.5';
+	$VERSION = '4.7.6';
 }
 
 use Fcntl;
@@ -144,8 +174,9 @@ use Fcntl;
 # BSD, among others, defines sendmail to be in /usr/sbin, and
 # we want to make sure the program is there. Insert the location
 # of you sendmail binary (the configure script should do this)
+$Global::SendMailLocation = '' if ! $Global::SendMailLocation;
 $Global::SendMailLocation = ($Global::Windows and $Global::SendMailLocation) ||
-	(-x $Global::SendMailLocation and $Global::SendMailLocation) ||
+	($Global::SendMailLocation and -x $Global::SendMailLocation and $Global::SendMailLocation) ||
 	(-x '/usr/lib/sendmail' and '/usr/lib/sendmail') ||
 	(-x '/usr/sbin/sendmail' and '/usr/sbin/sendmail') ||
 	'';
@@ -154,7 +185,7 @@ $Global::SendMailLocation = ($Global::Windows and $Global::SendMailLocation) ||
 #select a DBM
 
 BEGIN {
-	$Global::GDBM = $Global::DB_File =
+	$Global::GDBM = $Global::DB_File = $Global::SDBM =
 # LDAP
 	$Global::LDAP =
 # END LDAP
@@ -182,11 +213,20 @@ BEGIN {
 		last AUTO if 
 			(defined $ENV{MINIVEND_DBFILE} and $Global::DB_File = 1);
 		last AUTO if 
+			(defined $ENV{MINIVEND_SDBM} and $Global::SDBM = 1);
+		last AUTO if 
 			(defined $ENV{MINIVEND_NODBM});
 		eval {require GDBM_File and $Global::GDBM = 1};
 		last AUTO if 
 			(defined $ENV{MINIVEND_GDBM} and $Global::GDBM = 1);
+		last AUTO if
+				!   $ENV{MINIVEND_ALLDBM}
+				and $Global::GDBM;
 		eval {require DB_File and $Global::DB_File = 1};
+		last AUTO if
+				!   $ENV{MINIVEND_ALLDBM}
+				and $Global::GDBM || $Global::DB_File;
+		eval {require SDBM_File and $Global::SDBM = 1};
 	}
 
 	if($Global::GDBM) {
@@ -203,6 +243,13 @@ BEGIN {
 		$Global::Default_database = 'DB_FILE'
 			unless defined $Global::Default_database;
 	}
+	if($Global::SDBM) {
+		require Vend::Table::SDBM;
+		import SDBM_File;
+		$Global::SDBM = 1;
+		$Global::Default_database = 'SDBM'
+			unless defined $Global::Default_database;
+	}
 	$Global::Default_database = 'MEMORY'
 			unless defined $Global::Default_database;
 	require Vend::Table::InMemory;
@@ -213,11 +260,12 @@ use Vend::Util;
 use Vend::Server;
 use Vend::Session;
 use Vend::Config;
+use Vend::Payment;
 
 # You might try commenting out these lines and uncommenting the ones
 # below to compact memory size
 # NOAUTOUSE
-#use Vend::Order;
+use Vend::Order;
 #use Vend::Imagemap;
 #use Vend::Error;
 #use Vend::Control;
@@ -234,24 +282,22 @@ use autouse 'Vend::Control' => qw/
 											signal_add
 											signal_remove
 											control_interchange
-											change_catalog_directive
-											change_global_directive
 											remove_catalog
 											add_catalog
 											change_catalog_directive
 											change_global_directive
 									/;
-use autouse 'Vend::Order' => qw/
-											add_items
-											check_order
-											check_required
-											cyber_charge
-   										encrypt_standard_cc
-   										mail_order
-   										onfly
-   										route_order
-   										validate_whole_cc
-   								/;
+#use autouse 'Vend::Order' => qw/
+#											add_items
+#											check_order
+#											check_required
+#											cyber_charge
+#   										encrypt_standard_cc
+#   										mail_order
+#   										onfly
+#   										route_order
+#   										validate_whole_cc
+#   								/;
 
 # END AUTOUSE
 
@@ -278,6 +324,10 @@ if( ! $Global::Windows and $> == -1 || scalar(getpwuid($>)) eq 'nobody' ) {
 	warn errmsg("The security problems are on your head, though. Continuing...\n");
 }
 
+## This was set to 1 in Vend::Config, so that external programs calling it
+## would act properly by default
+undef $Vend::ExternalProgram;
+
 my $H;
 sub http {
 	return $H;
@@ -285,7 +335,6 @@ sub http {
 
 sub response {
 	my ($output) = @_;
-	return 1 if $Vend::BuildingPages;
 	my $out = ref $output ? $output : \$output;
 	if (defined $Vend::CheckHTML) {
 		require Vend::External;
@@ -326,46 +375,71 @@ sub do_order {
     return 1;
 }
 
+my @Scan_modifiers = qw/
+		mv_ad
+		mv_an
+		mv_bd
+		mv_bd
+/;
+
 # Returns undef if interaction error
 sub update_quantity {
-    return 1 unless defined  $CGI::values{"quantity0"};
+    return 1 unless defined  $CGI::values{"quantity0"}
+		|| $CGI::values{mv_quantity_update};
 	my($h, $i, $quantity, $modifier, $cart);
 
 	$cart = Vend::Cart::get_cart($CGI::values{mv_cartname});
 
-	if(ref $Vend::Cfg->{UseModifier}) {
-		foreach $h (@{$Vend::Cfg->{UseModifier}}) {
-			delete @{$::Values}{grep /^$h\d+$/, keys %$::Values};
-			foreach $i (0 .. $#$cart) {
+	my @mods;
+	@mods = @{$Vend::Cfg->{UseModifier}} if $Vend::Cfg->{UseModifier};
+
+#::logDebug("adding modifiers");
+	push(@mods, (grep $_ !~ /^mv_/, split /\0/, $CGI::values{mv_item_option}))
+		if defined $CGI::values{mv_item_option};
+
+	my %seen;
+	push @mods, grep defined $CGI::values{"${_}0"}, @Scan_modifiers;
+	@mods = grep ! $seen{$_}++, @mods;
+
+	foreach $h (@mods) {
+		delete @{$::Values}{grep /^$h\d+$/, keys %$::Values};
+		foreach $i (0 .. $#$cart) {
 #::logDebug("updating line $i modifiers: " . ::uneval($cart->[$i]));
-				$modifier = $CGI::values{"$h$i"} || undef;
-				if (defined($modifier)) {
-					$modifier =~ s/\0+/\0/g;
-					$modifier =~ s/\0$//;
-					$modifier =~ s/^\0//;
-					$modifier =~ s/\0/, /g;
-					$cart->[$i]->{$h} = $modifier;
-					$::Values->{"$h$i"} = $modifier;
-					delete $CGI::values{"$h$i"};
-				}
+#::logDebug(qq{CGI value=$CGI::values{"$h$i"}});
+			$modifier = $CGI::values{"$h$i"}
+					  || (defined $cart->[$i]{$h} ? '' : undef);
+#::logDebug("line $i modifier $h now $modifier");
+			if (defined($modifier)) {
+				$modifier =~ s/\0+/\0/g;
+				$modifier =~ s/\0$//;
+				$modifier =~ s/^\0//;
+				$modifier =~ s/\0/, /g;
+				$cart->[$i]->{$h} = $modifier;
+				$::Values->{"$h$i"} = $modifier;
+				delete $CGI::values{"$h$i"};
 			}
 		}
 	}
 
 	foreach $i (0 .. $#$cart) {
 #::logDebug("updating line $i quantity: " . ::uneval($cart->[$i]));
+		my $line = $cart->[$i];
+		$line->{mv_ip} = $i;
     	$quantity = $CGI::values{"quantity$i"};
-    	if (! defined $quantity) {
-        	interaction_error("Variable '$quantity' not passed from form\n");
-        	return undef;
-		}
-    	elsif ($quantity =~ m/^\d*$/) {
-        	$cart->[$i]->{'quantity'} = $quantity || 0;
+    	next unless defined $quantity;
+    	if ($quantity =~ m/^\d*$/) {
+        	$line->{'quantity'} = $quantity || 0;
     	}
     	elsif ($quantity =~ m/^[\d.]+$/
 				and $Vend::Cfg->{FractionalItems} ) {
-        	$cart->[$i]->{'quantity'} = $quantity;
+        	$line->{'quantity'} = $quantity;
     	}
+		# This allows a last-positioned input of item quantity to
+		# remove the item
+		elsif ($quantity =~ s/.*\00$/0/) {
+			$CGI::values{"quantity$i"} = $quantity;
+			redo;
+		}
 		# This allows a multiple input of item quantity to
 		# pass -- FIRST ONE CONTROLS
 		elsif ($quantity =~ s/\0.*//) {
@@ -373,16 +447,58 @@ sub update_quantity {
 			redo;
 		}
 		else {
-			my $item = $cart->[$i]->{'code'};
-        	interaction_error("'$quantity' for item $item is not numeric\n");
-        	return undef;
+			my $item = $line->{'code'};
+			$line->{quantity} = int $line->{quantity};
+        	$Vend::Session->{errors}{mv_order_quantity} =
+				errmsg("'%s' for item %s is not numeric/integer", $quantity, $item);
     	}
     	$::Values->{"quantity$i"} = delete $CGI::values{"quantity$i"};
+		SKUSET: {
+			my $sku;
+			my $found_option;
+			last SKUSET unless $sku = delete $CGI::values{"mv_sku$i"};
+			my @sku = split /\0/, $sku, -1;
+			for(@sku[1..$#sku]) {
+				if (not length $_) {
+				$_ = $::Variable->{MV_VARIANT_JOINER} || '0';
+				next;
+				}
+				$found_option++;
+			}
+
+			if(@sku > 1 and ! $found_option) {
+				splice @sku, 1;
+			}
+
+			$sku = join "-", @sku;
+
+			my $ib;
+			unless($ib 	= ::product_code_exists_tag($sku)) {
+				push @{$Vend::Session->{warnings} ||= []},
+					errmsg("Not a valid option combination: %s", $sku);
+					last SKUSET;
+			}
+
+			$line->{mv_ib} = $ib;
+
+			if($sku ne $line->{code}) {
+				if($line->{mv_mp}) {
+					$line->{mv_sku} = $line->{code} = $sku;
+				}
+				elsif (! $line->{mv_sku}) {
+					$line->{mv_sku} = $line->{code};
+					$line->{code} 	= $sku;
+				}
+				else {
+					$line->{code}	= $sku;
+				}
+			}
+		}
     }
 #::logDebug("after update, cart is: " . ::uneval($cart));
 
 	# If the user has put in "0" for any quantity, delete that item
-    # from the order list.
+    # from the order list. Handles sub-items.
     Vend::Cart::toss_cart($cart);
 
 #::logDebug("after toss, cart is: " . ::uneval($cart));
@@ -396,7 +512,7 @@ sub set_db {
 	return ($base, $thing) unless $thing =~ /^(\w+):+(.*)/;
 	my $t = $1;
 	my $c = $2;
-	$Vend::WriteDatabase = 1 if $::Scratch->{mv_data_enable} =~ /\b$t\b/;
+	$Vend::WriteDatabase = 1 if $::Scratch->{mv_data_enable} =~ / $t[: ]/;
 	my $db = ::database_exists_ref($t);
 	return undef unless $db;
 	return ($db->ref(), $c);
@@ -406,7 +522,6 @@ sub set_db {
 sub update_data {
 	my($key,$value);
     # Update a database record
-
 	# Check to see if this is allowed
 	if(! $::Scratch->{mv_data_enable}) {
 		logError(
@@ -440,9 +555,35 @@ sub update_data {
 	my $decode		= is_yes($CGI::values{mv_data_decode});
 	my ($ref, $db, $database);
 
-	$ref = $Vend::Cfg->{Database}->{$table} || '';
+	my $en_col;
+#::logDebug("data_enable=$::Scratch->{mv_data_enable}, checking");
+	if($::Scratch->{mv_data_enable} =~ /^(\w+):(.*?):/) {
+		# check for single key and possible set of columns
+		my $en_table = $1;
+		$en_col   = $2;
+		my $en_key   = $::Scratch->{mv_data_enable_key};
+#::logDebug("en_table=$en_table en_col=$en_col, en_key=$en_key, checking");
+		if(  $en_table ne $table
+			 or 
+			 ($en_key and $CGI::values{$prikey} ne $en_key)
+			)
+		{
+			logError("Attempted database operation without permission:\n" .
+						 "Permission: '%s' (key='$en_key')\n" .
+						 "Table: '%s'\n" .
+						 "Fields:'%s'\n" .
+						 "Key:   '%s'\n",
+						 $::Scratch->{mv_data_enable},
+						 $CGI::values{mv_data_table},
+						 $CGI::values{mv_data_fields},
+						 $CGI::values{$CGI::values{mv_data_key}},
+				 );
+			return undef;
+		}
+	}
 
-	if (! $ref) {
+
+	if (! $Vend::Cfg->{Database}{$table}) {
 		logError("set: non-existent table %s", $table);
 		return undef;
 	}
@@ -455,6 +596,34 @@ sub update_data {
 	my @fields		= grep $_ && $_ ne $prikey,
 						split /[\s\0,]+/, $CGI::values{mv_data_fields};
 	unshift(@fields, $prikey);
+
+    my @file_fields = split /[\s\0,]+/, $CGI::values{mv_data_file_field};
+    my @file_paths = split /[\s\0,]+/, $CGI::values{mv_data_file_path};
+    my @file_oldfiles = split /[\s\0,]+/, $CGI::values{mv_data_file_oldfile};
+
+	if($en_col) {
+		$en_col =~ s/^\s+//;
+		$en_col =~ s/\s+$//;
+		my %col_present;
+		@col_present{ grep /\S/, split /[\s\0,]+/, $en_col } = ();
+		$col_present{$prikey} = 1;
+		for(@fields, $CGI::values{mv_blob_field}, $CGI::values{mv_blob_pointer}) {
+			next unless $_;
+			next if exists $col_present{$_};
+			next if /:/ and $::Scratch->{mv_data_enable} =~ / $_ /;
+			logError("Attempted database operation without permission:\n" .
+						 "Permission: '%s'\n" .
+						 "Table: '%s'\n" .
+						 "Fields:'%s'\n" .
+						 "Key:   '%s'\n",
+						 $::Scratch->{mv_data_enable},
+						 $CGI::values{mv_data_table},
+						 $CGI::values{mv_data_fields},
+						 $CGI::values{$CGI::values{mv_data_key}},
+				 );
+			return undef;
+		}
+	}
 	$function = 'update' unless $function;
 
 	my (%data);
@@ -462,9 +631,133 @@ sub update_data {
 		$data{$_} = [];
 	}
 
-    while (($key, $value) = each %CGI::values) {
-        next unless defined $data{$key};
-		@{$data{$key}} = split /\0/, $value;
+	my $count;
+	my $multi = $CGI::values{$prikey} =~ tr/\0/\0/;
+	my $max = 0;
+	my $min = 9999;
+	my ($minname, $maxname);
+
+	while (($key, $value) = each %CGI::values) {
+		next unless defined $data{$key};
+		$count = (@{$data{$key}} = split /\0/, $value);
+		$max = $count, $maxname = $key if $count > $max;
+		$min = $count, $minname = $key if $count < $min;
+	}
+
+	if( $multi and ($max - $min) > 1 and ! $CGI::values{mv_data_force}) {
+		my $msg = errmsg(
+				"probable bad form -- number of values min=%s (%s) max=%s (%s)",
+				$min, $minname, $max, $maxname,
+				);
+		Vend::Interpolate::set_error($msg);
+		return;
+	}
+
+	my $autonumber;
+	if ($CGI::values{mv_data_auto_number}) {
+		$autonumber = 1;
+		my $ref = $data{$prikey};
+		while (scalar @$ref < $max) {
+			push @$ref, '';
+		}
+		$base_db->config('AUTO_NUMBER', '000001')
+			if ! $base_db->config('_Auto_number');
+		$CGI::values{mv_data_return_key} = $prikey
+			unless $CGI::values{mv_data_return_key};
+	}
+	elsif($function eq 'insert' and $base_db->config('_Auto_number') ) {
+			$autonumber = 1;
+	}
+ 
+
+ 	if(@file_fields) {
+		my $Tag = new Vend::Tags;
+		my $acl_func;
+		my $outfile;
+		if($Vend::Session->{logged_in} and $Vend::admin) {
+			$acl_func = sub {
+				return $Tag->if_mm('files', shift);
+			};
+		}
+		elsif($Vend::Session->{logged_in} and ! $Vend::admin) {
+			$acl_func = sub {
+				my $file = shift;
+				return 1 if $::Scratch->{$file} == 1;
+				return $Tag->userdb(
+								function => 'check_file_acl',
+								location => $file,
+								mode => 'w'
+								);
+			};
+		}
+		else {
+			$acl_func = sub { return $::Scratch->{shift(@_)} == 1 }
+		}
+
+		for (my $i = 0; $i < @file_fields; $i++) {
+			unless (length($data{$file_fields[$i]}->[0])) {
+				# no need for a file update
+				$data{$file_fields[$i]}->[0] = $file_oldfiles[$i];
+				next;
+			}
+
+			# remove path components
+			$data{$file_fields[$i]}->[0] =~ s:.*/::; 
+
+			if (length ($file_paths[$i])) {
+				# real file upload
+				$outfile = join('/', $file_paths[$i], $data{$file_fields[$i]}->[0]);
+#::logDebug("file upload: field=$file_fields[$i] path=$file_paths[$i] outfile=$outfile");
+				my $ok;
+				if (-f $outfile) {
+					eval {
+						$ok = $acl_func->($outfile);
+					};
+				} else {
+					eval {
+						$ok = $acl_func->($file_paths[$i]);
+					};
+				}
+				if (! $ok) {
+					if($@) {
+						::logError ("ACL function failed on '%s': %s", $outfile, $@);
+					}
+					else {
+						::logError ("Not allowed to upload \"%s\"", $outfile);
+					}
+					next;
+				} 
+				my $err;
+				Vend::Interpolate::tag_value_extended(
+										$file_fields[$i],
+										{
+											test => 'isfile'
+										}
+										)
+					or do {
+						 ::logError("%s is not a file.", $data{$file_fields[$i]}->[0]);
+						 next;
+					};
+				Vend::Interpolate::tag_value_extended(
+										$file_fields[$i],
+										{
+											outfile => $outfile,
+											umask => '022',
+											yes => '1',
+										}
+										)
+					or do {
+						 ::logError("failed to write %s: %s", $outfile, $!);
+						 next;
+					};
+			}
+			else {
+				# preparing to dump file contents into database column
+				$data{$file_fields[$i]}->[0]
+					= Vend::Interpolate::tag_value_extended ($file_fields[$i],
+						{file_contents => 1});
+			}
+		}
 	}
 
 	if (not defined $data{$prikey}) {
@@ -472,21 +765,68 @@ sub update_data {
 		return undef;
 	}
 	elsif ( ! @{$data{$prikey}}) {
-		logError("No key '%s' found for function='%s' table='%s'",
-					$prikey, $function, $CGI::values{mv_data_table},
-					);
-		return undef;
+		if($autonumber) {
+			@{$data{$prikey}} = map { '' } @{ $data{$fields[1]} };
+		}
+		else {
+			logError("No key '%s' found for function='%s' table='%s'",
+						$prikey, $function, $CGI::values{mv_data_table},
+						);
+			return undef;
+		}
 	}
 
 	my ($query,$i);
 	my (@k);
 	my (@v);
 	my (@c);
+	my (@rows_set);
+	my (@email_rows);
+
+	my $safe;
+	my $blob_field;
+	my $blob_nick;
+	my $blob_ptr;
+
+	# Fields to set in database despite mv_blob_only
+	my %blob_exception;
+
+	if($CGI::values{mv_blob_field} and $CGI::values{mv_blob_nick}) {
+#::logDebug("update_data: blob processing enabled");
+		$blob_field = $CGI::values{mv_blob_field};
+		$blob_nick  = $CGI::values{mv_blob_nick};
+		$blob_ptr   = $CGI::values{mv_blob_pointer};
+
+		%blob_exception   =
+				map { ($_, 1) } split /[\s,\0]+/, $CGI::values{mv_blob_exception};
+
+		if( ! $base_db->column_exists($blob_field) ) {
+			undef $blob_field;
+			undef $blob_nick;
+			logError("No blob field '%s' found for table='%s', skipping blob save.",
+						$CGI::values{mv_blob_field}, $CGI::values{mv_data_table},
+						);
+		}
+		elsif ($MVSAFE::Safe) {
+			$safe = $Vend::Interpolate::ready_safe;
+		}
+		else {
+			$safe = new Safe;
+		}
+		$base_db->column_exists($blob_ptr)
+			or undef $blob_ptr;
+#::logDebug("update_data: blob safe object=$safe");
+	}
+
 #::logDebug("update_data:db=$db key=$prikey VALUES=" . ::uneval(\%CGI::values));
+#::logDebug("update_data:db=$db key=$prikey data=" . ::uneval(\%data));
 	my $select_key;
 	for($i = 0; $i < @{$data{$prikey}}; $i++) {
+#::logDebug("iteration of update_data:db=$db key=$prikey data=" . ::uneval(\%data));
 		@k = (); @v = ();
 		for(keys %data) {
+#::logDebug("iteration of field $_");
+
 			next unless (length($value = $data{$_}->[$i]) || $CGI::values{mv_update_empty} );
 			push(@k, $_);
 # LEGACY
@@ -509,18 +849,112 @@ sub update_data {
 		else {
 			my $field;
 			$key = $data{$prikey}->[$i];
+			if(! length($key) and $autonumber) {
+				## KEY IS possibly SET HERE 
+				$key = $base_db->set_row($key);
+			}
+			push(@rows_set, $key);
+
+			# allow form submissions to go to database and to mail
+			if ($CGI::values{mv_data_email}) {
+				push( @email_rows,
+					[ ::errmsg("### Form Submission from %s", $key), $blob_nick, ],
+					[ $prikey, $key, ],
+				);
+			}
+
+			my $qd = {};
+			my $qf = {};
+			my $qv = {};
+			my $qret;
+
+			my $blob;
+			my $brec;
+			if($blob_field) {
+				my $string = $base_db->field($key, $blob_field);
+#::logDebug("update_data: blob string=$string");
+				$blob = $safe->reval($string);
+#::logDebug("update_data: blob object=$blob");
+				$blob = {} if ! $blob;
+				$blob->{$blob_nick} = {}
+					if ! $blob->{$blob_nick};
+				$brec = $blob->{$blob_nick};
+			}
 			while($field = shift @k) {
 				$value = shift @v;
 				next if $field eq $prikey;
-				my ($d, $f) = set_db($base_db, $field);
+				
+				## DATA IS SET HERE
+				# We are going to set the field unless it is only for
+				# storing in a blob (and possibly emailing)
+				my  ($d, $f);
+				if ($CGI::values{mv_blob_only} and ! $blob_exception{$field}) {
+#::logDebug("$field not storing, only blob");
+					$f = $field;
+				}
+				else {
+#::logDebug("storing d=$d $field blob_only=$CGI::values{mv_blob_only}");
+					($d, $f) = set_db($base_db, $field);
+#::logDebug("storing table=$table d=$d f=$f key=$key");
+					if(! defined $qd->{$d}) {
+						$qd->{$d} = $d;
+						$qf->{$d} = [$f];
+						$qv->{$d} = [$value];
+					}
+					else {
+						push @{$qf->{$d}}, $f;
+						push @{$qv->{$d}}, $value;
+					}
+					#$d->set_field($key, $f, $value);
+				}
+
+				push(@email_rows, [$f, $value])
+					if $CGI::values{mv_data_email};
 #::logDebug("update_data:db=$d key=$key field=$f value=$value");
-				$d->set_field($key, $f, $value);
+				$brec->{$f} = $value if $brec;
 			}
+
+			for(keys %$qd) {
+				$qret = $qd->{$_}->set_slice($key, $qf->{$_}, $qv->{$_});
+				$rows_set[$i] = $qret unless $rows_set[$i];
+			}
+			if($blob) {
+				$brec->{mv_data_fields} = join " ", @fields;
+				my $string =  ::uneval_it($blob);
+#::logDebug("update_data: blob saving string=$string");
+				$base_db->set_field($key, $blob_field, $string);
+				if($blob_ptr) {
+					$base_db->set_field($key, $blob_ptr, $blob_nick);
+				}
+			}
+			push(
+					@email_rows,
+					[ ::errmsg("### END FORM SUBMISSION %s", $key), $blob_nick, ]
+				)
+				if $CGI::values{mv_data_email};
+		}
+	}
+
+	if($CGI::values{mv_data_return_key}) {
+		my @keys = split /\0/, $CGI::values{mv_data_return_key};
+		for(@keys) {
+#::logDebug("return_key, setting $_");
+			$CGI::values{$_} = join("\0", @rows_set);
 		}
 	}
 
 	if($CGI::values{mv_auto_export}) {
 		Vend::Data::export_database($table);
+	}
+
+	if($CGI::values{mv_data_email}) {
+		push @email_rows, [ 'mv_data_fields', \@fields ];
+		Vend::Interpolate::tag_mail('', { log_error => 1 }, \@email_rows);
+	}
+
+	# Allow setting in one then returning to another
+	if($CGI::values{mv_return_table}) {
+		$CGI::values{mv_data_table} = $CGI::values{mv_return_table};
 	}
 	return;
 }
@@ -593,8 +1027,11 @@ my %Ignore = qw(
 	mv_check  1
 	mv_click  1
 	mv_nextpage  1
+	mv_failpage  1
+	mv_successpage  1
 	mv_more_ip  1
 	mv_credit_card_number  1
+	mv_credit_card_cvv2  1
 	);
 
 sub update_values {
@@ -649,23 +1086,25 @@ sub update_user {
 
 sub do_click {
 	my($click, @clicks);
-	if(defined $CGI::values{mv_click}) {
-		@clicks = split /\s*[\0]+\s*/, $CGI::values{mv_click};
-	}
-
-	if(defined $CGI::values{mv_click_map}) {
-		my(@map) = split /\s*[\0]+\s*/, $CGI::values{mv_click_map};
-		foreach $click (@map) {
-			push (@clicks, $click)
-				if defined $CGI::values{"mv_click.$click.x"}
-				or defined $CGI::values{"$click.x"}
-				or $click = $CGI::values{"mv_click_$click"};
+	do {
+		if($CGI::values{mv_click}) {
+			@clicks = split /\s*[\0]+\s*/, delete $CGI::values{mv_click};
 		}
-	}
 
-	foreach $click (@clicks) {
-		parse_click \%CGI::values, $click;
-	}
+		if(defined $CGI::values{mv_click_map}) {
+			my(@map) = split /\s*[\0]+\s*/, delete $CGI::values{mv_click_map};
+			foreach $click (@map) {
+				push (@clicks, $click)
+					if defined $CGI::values{"mv_click.$click.x"}
+					or defined $CGI::values{"$click.x"}
+					or $click = $CGI::values{"mv_click_$click"};
+			}
+		}
+
+		foreach $click (@clicks) {
+			parse_click \%CGI::values, $click;
+		}
+	} while $CGI::values{mv_click};
 	return 1;
 }
 
@@ -724,12 +1163,43 @@ my %form_action = (
 					update_quantity()
 						or return interaction_error("quantities");
 					my $ok;
-					my($missing,$next,$status,$final);
+					my($missing,$next,$status,$final,$result_hash);
 
 					# Set shopping cart if necessary
 					# Vend::Items is tied, remember!
 					$Vend::Items = $CGI::values{mv_cartname}
 						if $CGI::values{mv_cartname};
+
+#::logDebug("Default order route=$::Values->{mv_order_route}");
+					## Determine the master order route, if routes
+					## are not set in CGI values (4.7.x default)
+					if(
+						$Vend::Cfg->{Route}
+						and ! defined $::Values->{mv_order_route}
+						)
+					{
+						my $curr = $Vend::Cfg->{Route};
+						my $repos = $Vend::Cfg->{Route_repository};
+
+						if($curr->{master}) {
+							# Default route is master
+
+							for(keys %$repos) {
+								next unless $curr eq $repos->{$_};
+								$::Values->{mv_order_route} = $_;
+								last;
+							}
+						}
+						else {
+							for(keys %$repos) {
+								next unless $repos->{$_}->{master};
+								$::Values->{mv_order_route} = $_;
+								last;
+							}
+						}
+					}
+
+#::logDebug("Default order route=$::Values->{mv_order_route}");
 
 				  CHECK_ORDER: {
 
@@ -743,13 +1213,15 @@ my %form_action = (
 					else {
 						$status = $final = 1;
 					}
+#::logDebug("Profile status status=$status final=$final errors=$missing");
 
 					my $provisional;
-					if ($status and defined $CGI::values{mv_order_route}) {
+					if ($status and defined $::Values->{mv_order_route}) {
 						# This checks only route order profiles
 #::logDebug("Routing order, pre-check");
-						($status, $provisional, $missing) = route_order(
-												$CGI::values{mv_order_route},
+						($status, $provisional, $missing)
+										= route_order(
+												$::Values->{mv_order_route},
 												$Vend::Items,
 												'check',
 											);
@@ -759,14 +1231,14 @@ my %form_action = (
 
 #::logDebug("Routing status status=$status final=$final errors=$missing");
 					if($status) {
-						$CGI::values{mv_nextpage} = $::Values->{mv_successpage} 
-							if $::Values->{mv_successpage};
+						$CGI::values{mv_nextpage} = $CGI::values{mv_successpage} 
+							if $CGI::values{mv_successpage};
 						$CGI::values{mv_nextpage} = $::Values->{mv_orderpage} 
 							if ! $CGI::values{mv_nextpage};
 					}
 					else {
-						$CGI::values{mv_nextpage} = $::Values->{mv_failpage}
-							if $::Values->{mv_failpage};
+						$CGI::values{mv_nextpage} = $CGI::values{mv_failpage}
+							if $CGI::values{mv_failpage};
 						$CGI::values{mv_nextpage} = find_special_page('needfield')
 							if ! $CGI::values{mv_nextpage};
 						undef $final;
@@ -775,15 +1247,18 @@ my %form_action = (
 					return 1 unless $final;
 
 					my $order_no;
-					if (defined $CGI::values{mv_order_route}) {
+					if (defined $::Values->{mv_order_route}) {
 						# $ok will not be defined unless Route "supplant" was set
 						# $order_no will come back so we don't issue two of them
-#::logDebug("Routing order");
-						($ok, $order_no) = route_order(
-											$CGI::values{mv_order_route},
+#::logDebug("Routing order $::Values->{mv_order_route}");
+						($ok, $order_no, $result_hash) = route_order(
+											$::Values->{mv_order_route},
 											$Vend::Items
 											);
 					}
+
+					$result_hash = {} unless $result_hash;
+
 					my $mode = $CGI::values{mv_payment_mode};
 					if (! $ok and defined $Vend::Cfg->{ActionMap}{$mode}) {
 						($ok, $status) = $Vend::Cfg->{ActionMap}{$mode}->();
@@ -802,28 +1277,40 @@ my %form_action = (
 						}
 					}
 
+# TRACK
+                    $Vend::Track->finish_order ();
+# END TRACK
 					# This function (followed down) now does the rudimentary
 					# backend ordering with AsciiTrack and the order report.
 					# If the "supplant" option was set in order routing it will
 					# not be used ($ok would have been defined)
 
-# TRACK
-                    $Vend::Track->finish_order ();
-# END TRACK
 
 #::logDebug("Order number=$order_no\n");
 					$ok = mail_order(undef, $order_no || undef) unless defined $ok;
-#::logDebug("Order number=$order_no\n");
+#::logDebug("Order number=$order_no, result_hash=" . ::uneval($result_hash));
 
 					# Display a receipt if configured
 
-					if ($ok) {
+					my $not_displayed = 1;
+
+					if(! $ok) {
+						display_special_page(
+								find_special_page('failed'),
+								errmsg('Error transmitting order(%s): %s', $!, $@),
+						);
+					}
+					elsif (! $result_hash->{no_receipt} ) {
 						eval {
-							display_special_page(
-											$::Values->{mv_order_receipt}	||
-											find_special_page('receipt')
-											);
+
+							my $receipt = $result_hash->{receipt}
+										|| $::Values->{mv_order_receipt}
+										|| find_special_page('receipt');
+#::logDebug("selected receipt=$receipt");
+							display_special_page($receipt);
 						};
+						$not_displayed = 0;
+#::logDebug("not_displayed=$not_displayed");
 						if($@) {
 							my $msg = $@;
 							::logError( 
@@ -833,19 +1320,12 @@ my %form_action = (
 							);
 						}
 					}
-					else {
-						display_special_page(
-								find_special_page('failed'),
-								errmsg('Error transmitting order(%s): %s', $!, $@),
-						);
-					}
 
 					# Remove the items
 					@$Vend::Items = ();
-					put_session();
-					return 0;
+#::logDebug("returning order_number=$order_no, not_displayed=$not_displayed");
+					return $not_displayed;
 				  }
-
 			},
 	refresh	=> sub {
 					update_quantity()
@@ -861,8 +1341,14 @@ my %form_action = (
 					return 1;
 				},
 	set		=> sub {
-					update_user();
+					update_user() unless $CGI::values{mv_data_auto_number};
 					update_data();
+					update_user() if $CGI::values{mv_data_auto_number};
+					return 1;
+				},
+	autoset	=> sub {
+					update_data();
+					update_user();
 					return 1;
 				},
 	back    => sub { return 1 },
@@ -888,40 +1374,53 @@ $form_action{go} = $form_action{return};
 
 sub do_process {
 
+	if($CGI::values{mv_form_profile}) {
+#::logDebug("checking form profile $CGI::values{mv_form_profile} = $::Scratch->{$CGI::values{mv_form_profile}}");
+		my ($status) = check_order($CGI::values{mv_form_profile}, \%CGI::values);
+#::logDebug("checked form profile=" . (defined $status ? $status : 'undef') );
+		return 1 if defined $status and ! $status;
+	}
+
+#::logDebug("todo=$CGI::values{mv_todo} prior to mv_click=" . join ",", split /\0/, $CGI::values{mv_click});
+
+    my $orig_todo = $CGI::values{mv_todo};
+
 	do_click();
 
     my $todo = $CGI::values{mv_todo};
 
+#::logDebug("todo=$todo after mv_click");
+
 	# Maybe we have an imagemap input, if not, use $doit
-    if ( ! defined $todo) {
-		if (defined $CGI::values{'mv_todo.x'}) {
-				my $x = $CGI::values{'mv_todo.x'};
-				my $y = $CGI::values{'mv_todo.y'};
-				my $map = $CGI::values{'mv_todo.map'};
-				# Called with action_map and not package id
-				# since "autouse" is possibly in force...found
-				# by Jeff Carnahan
-				$todo = action_map($x,$y,$map);
-		}
-		elsif (defined $CGI::values{'mv_todo.submit.x'}) {
-			$todo = 'submit';
-		}
-		elsif (defined $CGI::values{'mv_todo.checkout.x'}) {
-			$todo = 'checkout';
-		}
-		elsif (defined $CGI::values{'mv_todo.return.x'}) {
-			$todo = 'return';
-		}
-		else {
-			$todo = $CGI::values{mv_doit} if defined $CGI::values{mv_doit};
-		}
+	if($orig_todo ne $todo) {
+		# Don't mess with it, changed in click
 	}
+	elsif (defined $CGI::values{'mv_todo.x'}) {
+		my $x = $CGI::values{'mv_todo.x'};
+		my $y = $CGI::values{'mv_todo.y'};
+		my $map = $CGI::values{'mv_todo.map'};
+		# Called with action_map and not package id
+		# since "autouse" is possibly in force...found
+		# by Jeff Carnahan
+		$todo = action_map($x,$y,$map);
+	}
+	elsif( my @todo = grep /^mv_todo\.\w+(?:\.x)?$/, keys %CGI::values ) {
+		# Only one todo!
+		for(@todo) {
+			delete $CGI::values{$_};
+			s/^mv_todo\.(\w+)(?:\.[xy])?$/$1/;
+		}
+		$todo = shift @todo;
+	}
+
+	$todo = $CGI::values{mv_doit} || 'back' if ! $todo;
+
+#::logDebug("todo=$todo after mv_click");
 
 	my ($sub, $status);
 	#Now determine the action on the todo
     if (defined $Vend::Cfg->{FormAction}{$todo}) {
 		$sub = $Vend::Cfg->{FormAction}{$todo};
-		new Vend::Parse;
 	}
     elsif (not $sub = $form_action{$todo} ) {
 		interaction_error("No action passed for processing\n");
@@ -949,8 +1448,8 @@ EOF
 }
 
 sub config_named_catalog {
-	my ($cat_name, $source, $build) = @_;
-	my ($g,$c,$conf);
+	my ($cat_name, $source, $db_only, $dbconfig) = @_;
+	my ($g,$c);
 
 	$g = $Global::Catalog{$cat_name};
 	unless (defined $g) {
@@ -959,17 +1458,48 @@ sub config_named_catalog {
 	}
 
 	$Vend::Log_suppress = 1;
-    logGlobal( "Config '%s' %s", $g->{'name'}, $source )
-		unless $Vend::Quiet;
+
+	unless ($db_only or $Vend::Quiet) {
+		logGlobal( "Config '%s' %s%s", $g->{'name'}, $source );
+	}
 	undef $Vend::Log_suppress;
 
     chdir $g->{'dir'}
             or die "Couldn't change to $g->{'dir'}: $!\n";
-    $conf = $g->{'dir'} . '/etc';
+
+	if($db_only) {
+		logGlobal(
+			"Config table '%s' (file %s) for catalog %s from %s",
+			$db_only,
+			$dbconfig,
+			$g->{'name'},
+			$source,
+			);
+		my $cfg = $Global::Selector{$g->{script}}
+			or die errmsg("'%s' not a catalog (%s).", $g->{name}, $g->{script});
+		undef $cfg->{Database}{$db_only};
+		$Vend::Cfg = config(
+				$g->{name},
+				$g->{dir},
+				undef,
+				undef,
+				$cfg,
+				$dbconfig,
+				)
+			or die errmsg("error configuring catalog %s table %s: %s",
+							$g->{name},
+							$db_only,
+							$@,
+					);
+		open_database();
+		close_database();
+		return $Vend::Cfg;
+	}
+
     eval {
         $c = config($g->{'name'},
 					$g->{'dir'},
-					$conf,
+					undef,
 					$g->{'base'} || undef,
 # OPTION_EXTENSION
 #					$Vend::CommandLine->{$g->{'name'}} || undef
@@ -987,27 +1517,6 @@ sub config_named_catalog {
 
 	eval {
 		$Vend::Cfg = $c;	
-# STATICPAGE
-	READSTATIC: {
-			my $basedir = $c->{PageDir};
-			if ($c->{Static}) {
-				last READSTATIC if $c->{StaticDBM};
-				last READSTATIC if ! -f "$basedir/.static";
-				print "loading static page names..." unless $Vend::Quiet;
-				last READSTATIC if $c->{StaticDBM};
-				open STATICPAGE, "< $basedir/.static"
-					or warn <<EOF;
-Couldn't read static page status file $basedir/.static: $!
-EOF
-				while(<STATICPAGE>) {
-					chomp;
-					s/\t(.*)//;
-					$c->{StaticPage}->{$_} = $1 || '';
-				}
-				close STATICPAGE;
-			}
-		}
-# END STATICPAGE
 		$::Variable = $Vend::Cfg->{Variable};
 		Vend::Data::read_salestax();
 		Vend::Data::read_shipping();
@@ -1055,7 +1564,6 @@ EOF
 	};
 
 	undef $Vend::Cfg;
-	undef $Vend::BuildingPages;  # In case of eval error
     if($@) {
 		my $msg = $@;
 		$msg =~ s/\s+$//;
@@ -1063,17 +1571,10 @@ EOF
      	return undef;
     }
 
-	if ($c->{IPC}) {
-		my $dir = '.';
-		$dir = $c->{IPCdir} if $c->{IPCdir};
-		dump_structure($c, "$dir/$g->{name}");
-		chmod($c->{IPCmode} | 0644 , "$dir/$g->{name}")
-	}
 	dump_structure($c, $g->{name}) if $Global::DumpStructure;
 
-	undef $c->{Source};
 	my $stime = scalar localtime();
-	Vend::Util::writefile(">$Global::ConfDir/status.$g->{name}", "$stime\n");
+	Vend::Util::writefile(">$Global::RunDir/status.$g->{name}", "$stime\n");
 	Vend::Util::writefile(">$c->{ConfDir}/status.$g->{name}", "$stime\n");
 
 	return $c;
@@ -1106,7 +1607,7 @@ sub tie_static_dbm {
 	if($Global::GDBM) {
         my $flags = $rw ? &GDBM_WRITER : &GDBM_READER;
         $flags = &GDBM_NEWDB
-            if $rw && (! -f "$Vend::Cfg->{StaticDBM}.gdbm" || $Vend::BuildingPages);
+            if $rw && (! -f "$Vend::Cfg->{StaticDBM}.gdbm");
         tie(%Vend::StaticDBM,
             'GDBM_File',
             "$Vend::Cfg->{StaticDBM}.gdbm",
@@ -1167,7 +1668,6 @@ sub adjust_cgi {
 
     $CGI::user = $CGI::remote_user if $CGI::remote_user;
 	undef $CGI::authorization if $CGI::remote_user;
-	$Vend::Cookie = $CGI::cookie;
 
 	unless ($Global::FullUrl) {
 		$CGI::script_name = $CGI::script_path;
@@ -1180,7 +1680,6 @@ sub adjust_cgi {
 							$CGI::script_path;
 	}
 }
-
 
 sub url_history {
 	$Vend::Session->{History} = []
@@ -1195,9 +1694,11 @@ sub url_history {
 		push (@{$Vend::Session->{History}},  [ 'expired', {} ]);
 	}
 	else {
-		my $save = delete $CGI::values{mv_credit_card_number};
+		my $save_number = delete $CGI::values{mv_credit_card_number};
+		my $save_cvv2   = delete $CGI::values{mv_credit_card_cvv2};
 		push (@{$Vend::Session->{History}},  [ $CGI::path_info, \%CGI::values ]);
-		$CGI::values{mv_credit_card_number} = $save if length($save);
+		$CGI::values{mv_credit_card_number} = $save_number if length($save_number);
+		$CGI::values{mv_credit_card_cvv2}   = $save_cvv2   if length($save_cvv2);
 	}
 	return;
 }
@@ -1226,15 +1727,10 @@ my %action = (
 sub dispatch {
 	my($http) = @_;
 	$H = $http;
-	if($Vend::Foreground) {
-		Vend::Interpolate::reset_calc();
-	}
-#::logDebug ("begin dispatch: " . (join " ", times()) . "\n");
-#::logDebug ("begin dispatch, locale LC_CTYPE: " . POSIX::setlocale(POSIX::LC_CTYPE()) . "\n");
 
 	adjust_cgi();
 
-    my($sessionid);
+    my($sessionid, $seed);
 	my(@path);
 	my($g, $action);
 
@@ -1252,7 +1748,15 @@ EOF
 		logGlobal($msg);
 		return;
 	}
-	$Vend::Cfg = $Global::Selector{$CGI::script_name};
+
+	if($Global::Foreground) {
+		my %hash;
+		tie %hash, 'Tie::ShadowHash', $Global::Selector{$CGI::script_name} ;
+		$Vend::Cfg = \%hash;
+	}
+	else {
+		$Vend::Cfg = $Global::Selector{$CGI::script_name};
+	}
 
 ## Uncomment this to get global directive setting on a per-catalog basis
 ## Probably only useful for:
@@ -1273,8 +1777,9 @@ EOF
 ##   UserTag
 ##   Variable
 
-	my $catref = $Global::Catalog{$Vend::Cfg->{CatalogName}};
-	if(! $Vend::Foreground and defined $catref->{directive}) {
+	$Vend::Cat = $Vend::Cfg->{CatalogName};
+	my $catref = $Global::Catalog{$Vend::Cat};
+	if(! $Global::Foreground and defined $catref->{directive}) {
 		no strict 'refs';
 		my ($key, $val);
 		while ( ($key, $val) = each %{$catref->{directive}}) {
@@ -1282,7 +1787,6 @@ EOF
 			${"Global::$key"} = $val;
 		}
 	}
-
 
 	# See if it is a subcatalog
 	if (defined $Vend::Cfg->{BaseCatalog}) {
@@ -1303,7 +1807,6 @@ EOF
 			unless $Vend::Cfg->{Static};
 	}
 	$::Variable = $Vend::Cfg->{Variable};
-
 
 	if (defined $Global::SelectorAlias{$CGI::script_name}
 		and ! defined $Vend::InternalHTTP                 )
@@ -1333,7 +1836,7 @@ EOF
 
 	if($Global::HitCount) {
 		my $ctr = new File::CounterFile
-					"$Global::ConfDir/hits.$Vend::Cfg->{CatalogName}";
+					"$Global::ConfDir/hits.$Vend::Cat";
         $ctr->inc();
 	}
 
@@ -1359,15 +1862,26 @@ EOF
 	tie_static_dbm() if $Vend::Cfg->{StaticDBM};
 # END STATICPAGE
 	umask $Vend::Cfg->{Umask};
+
+#show_times("end cgi and config mapping") if $Global::ShowTimes;
 	open_database();
+#show_times("end open_database") if $Global::ShowTimes;
 
 	$CGI::user = Vend::Util::check_authorization($CGI::authorization)
 		if defined $CGI::authorization;
 
-	my $from_cookie;
 	$sessionid = $CGI::values{mv_session_id} || undef;
+	$sessionid =~ s/\0.*//s;
 
-	if (defined $CGI::cookie and
+	$::Instance->{CookieName} = $Vend::Cfg->{CookieName};
+
+	if ($::Instance->{CookieName} and defined $CGI::cookie) {
+		$CGI::cookie =~ m{$Vend::CookieName=($Vend::Cfg->{CookiePattern})};
+		$seed = $sessionid = $1;
+		$::Instance->{ExternalCookie} = $sessionid || 1;
+		$Vend::CookieID = $Vend::Cookie = 1;
+	}
+	elsif (defined $CGI::cookie and
 		 $CGI::cookie =~ /\bMV_SESSION_ID=(\w{8,32})
 								[:_] (
 									(	\d{1,3}\.   # An IP ADDRESS
@@ -1380,10 +1894,12 @@ EOF
 	{
 		$sessionid = $1
 			unless defined $CGI::values{mv_pc} and $CGI::values{mv_pc} eq 'RESET';
-		$CGI::cookiehost = $3 || undef;
-		$CGI::cookieuser = $4 || undef;
-		$from_cookie = 1;
+		$CGI::cookiehost = $3;
+		$CGI::cookieuser = $4;
+		$Vend::CookieID = $Vend::Cookie = 1;
     }
+
+	$::Instance->{CookieName} = 'MV_SESSION_ID' if ! $::Instance->{CookieName};
 
 	$CGI::host = 'nobody' if $Vend::Cfg->{WideOpen};
 
@@ -1394,7 +1910,7 @@ EOF
 			$sessionid = generate_key($CGI::remote_addr . $CGI::useragent);
 		}
 	}
-	elsif ($sessionid !~ /^\w+$/) {
+	elsif (! $::Instance->{ExternalCookie} and $sessionid !~ /^\w+$/) {
 		my $msg = get_locale_message(
 						403,
 						"Unauthorized for that session %s. Logged.",
@@ -1420,12 +1936,12 @@ RESOLVEID: {
 		# get_session will return a value if a session is read,
 		# if not it will return false and a new session has been created.
 		# The IP address will be counted for robot_resolution
-		if(! get_session()) {
+		if(! get_session($seed) and ! $::Instance->{ExternalCookie}) {
 			retire_id($sessionid);
 			last RESOLVEID;
 		}
 		my $now = time;
-		if(! $from_cookie) {
+		if(! $Vend::CookieID) {
 			if( is_retired($sessionid) ) {
 				new_session();
 				last RESOLVEID;
@@ -1435,16 +1951,23 @@ RESOLVEID: {
 								: ($Vend::Session->{ohost});
 
 			if(! $compare_host) {
-				new_session() unless $CGI::secure;
+				new_session($seed) unless $CGI::secure;
+				init_session();
 				$Vend::Session->{shost} = $CGI::remote_addr;
 			}
 			elsif ($compare_host ne $CGI::remote_addr) {
-				new_session();
+				new_session($seed);
+				init_session();
 			}
 		}
 		if ($now - $Vend::Session->{'time'} > $Vend::Cfg->{SessionExpire}) {
-			retire_id($sessionid);
-			new_session();
+			if($::Instance->{ExternalCookie}) {
+				init_session();
+			}
+			else {
+				retire_id($sessionid);
+				new_session();
+			}
 			last RESOLVEID;
 		}
 		elsif($Vend::Cfg->{RobotLimit}) {
@@ -1453,7 +1976,11 @@ RESOLVEID: {
 			}
 			else {
 				$Vend::Session->{accesses}++;
-				if($Vend::Session->{'accesses'} > $Vend::Cfg->{RobotLimit}) {
+#::logDebug("accesses=$Vend::Session->{accesses} admin=$Vend::admin");
+				if($Vend::Session->{accesses} > $Vend::Cfg->{RobotLimit}
+					and ! $Vend::admin
+					)
+				{
 					my $msg = errmsg(
 			"WARNING: POSSIBLE BAD ROBOT. %s accesses with no 30 second pause.",
 			$Vend::Session->{accesses},
@@ -1530,6 +2057,7 @@ EOF
 
 	$CGI::pragma = 'no-cache'
 		if delete $::Scratch->{mv_no_cache};
+#show_times("end session get") if $Global::ShowTimes;
 
 	$Vend::FinalPath = $Vend::Session->{last_url} = $CGI::path_info;
 	if(	defined $Vend::Session->{one_time_path_alias}{$Vend::FinalPath} ) {
@@ -1563,6 +2091,9 @@ EOF
 		};
 	}
 
+	# Do it here so we can use autoloads and such
+	Vend::Interpolate::reset_calc() if $Global::Foreground;
+	Vend::Interpolate::init_calc();
 # LEGACY
 	ROUTINES: {
 		last ROUTINES unless index($Vend::FinalPath, '/process/') == 0;
@@ -1603,6 +2134,7 @@ EOF
 			my $sub = $Vend::Cfg->{Sub}{$macro} || $Global::GlobalSub->{$macro};
 			$sub->();
 		}
+#show_times("end global Autoload macro") if $Global::ShowTimes;
 	}
 
 	if ($macro = $Vend::Cfg->{Filter}) {
@@ -1628,12 +2160,26 @@ EOF
 	{
 		if(ref $macro) {
 			for (@$macro) {
-				interpolate_html($_);
+				if ($macro =~ /^\w+$/) {
+					my $sub = $Vend::Cfg->{Sub}{$macro} || $Global::GlobalSub->{$macro};
+					$sub->();
+				}
+				elsif(/^\w+-\w+$/) {
+					Vend::Interpolate::tag_profile($_);
+				}
+				else {
+					interpolate_html($_);
+				}
 			}
+		}
+		elsif ($macro =~ /^\w+$/) {
+			my $sub = $Vend::Cfg->{Sub}{$macro} || $Global::GlobalSub->{$macro};
+			$sub->();
 		}
 		else {
 			interpolate_html($macro);
 		}
+#show_times("end session Autoload macro") if $Global::ShowTimes;
 	}
 
     # If the cgi-bin program was invoked with no extra path info,
@@ -1673,23 +2219,22 @@ EOF
 
 #::logGlobal("action=$Vend::Action path=$Vend::FinalPath");
 	my ($sub, $status);
-	Vend::Interpolate::reset_calc();
 	if(defined $Vend::Cfg->{ActionMap}{$Vend::Action}) {
 		$sub = $Vend::Cfg->{ActionMap}{$Vend::Action};
-		Vend::Interpolate::init_calc();
 		$CGI::values{mv_nextpage} = $Vend::FinalPath
 			if ! defined $CGI::values{mv_nextpage};
 		new Vend::Parse;
 	}
 	elsif ( defined ($sub = $action{$Vend::Action}) )  {
-		Vend::Interpolate::init_calc();
 		$Vend::FinalPath = join "", @path;
 	}
 
+#show_times("end path/action resolve") if $Global::ShowTimes;
+
 	eval {
 		if(defined $sub) {
-#::logDebug("found sub");
 				$status = $sub->($Vend::FinalPath);
+#show_times("end action") if $Global::ShowTimes;
 		}
 		else {
 			$status = 1;
@@ -1716,8 +2261,8 @@ EOF
 		if ! defined $CGI::values{mv_nextpage};
 
 	do_page() if $status;
+#show_times("end page display") if $Global::ShowTimes;
 
-#::logDebug ("end dispatch: " . (join " ", times()) . "\n");
 
 	if(my $macro = $Vend::Cfg->{AutoEnd}) {
 		if($macro =~ /\[\w+/) {
@@ -1727,6 +2272,7 @@ EOF
 			$sub = $Vend::Cfg->{Sub}{$macro} || $Global::GlobalSub->{$macro};
 			$sub->();
 		}
+#show_times("end AutoEnd macro") if $Global::ShowTimes;
 	}
   }
 
@@ -1735,18 +2281,12 @@ EOF
 # END TRACK
 
 	put_session() if $Vend::HaveSession;
+	close_session() if $Vend::SessionOpen;
 	close_database();
 
 	undef $H;
-	if($Vend::Save) {
-		copyref ($Vend::Save, $Vend::Cfg);
-		undef $Vend::Save;
-	}
-	undef $Vend::Cfg;
 
-# DEBUG
-#::logDebug ("closed all: " .  join " ", times() . "\n");
-# END DEBUG
+#show_times("end dispatch cleanup") if $Global::ShowTimes;
 
 	return 1;
 }
@@ -1758,16 +2298,21 @@ sub dontwarn {
 # STATICPAGE
 	$File::Find::name +
 	$File::Find::prune +
+	$File::Find::prune +
 	<DATA> + 
 # END STATICPAGE
 	$Global::AdminSub +
 	$Global::DomainTail +
 	$Global::FullUrl +
     $Global::HitCount +
+    $Global::ProfilesName +
+    $Global::Profiles +
+    $Global::LockoutCommand +
     $Global::LockoutCommand +
 	$Global::IpHead +
 	$Vend::CheckHTML +
 	$Vend::Action +
+	$Vend::CC3 +
 	$CGI::server_name +
 	$CGI::content_type +
 	$CGI::http_host +
@@ -1786,7 +2331,7 @@ sub dump_env {
 }
 
 sub version {
-	print "Interchange version $VERSION Copyright 1996-2001 Akopia, Inc.\n";
+	print "Interchange version $VERSION Copyright 1996-2001 Red Hat, Inc.\n";
 }
 
 =head1 NAME
@@ -1799,7 +2344,7 @@ interchange [--options] [file]
 
 =head1 VERSION
 
-4.6.5
+4.7.6
 
 =head1 DESCRIPTION
 
@@ -1808,10 +2353,11 @@ It allows customers to select items to buy from catalog pages. The program
 tracks user information in sessions and interacts with an HTTP server
 through sockets.
 
-Interchange has many, many, functions and features; they are too numerous to
-describe in this venue. Complete information can be found at its web site:
+Interchange has many, many, functions and features; they are too numerous
+to describe in this venue. Complete information can be found at
+its web site:
 
-		http://www.akopia.com/
+		http://interchange.redhat.com/
 
 Interchange requires Perl 5.005 or higher; more information on Perl can
 be seen at:
@@ -1835,10 +2381,6 @@ Add a catalog to the system. Information taken from the input file
 The information is in the form of a standard Interchange catalog line,
 and must be in the single-line format.
 
-=item C<-b catalog, --build=catalog>
-
-Build static page tree for C<catalog>.
-
 =item -d dir, --dir=dir
 
 Directory for VendRoot. This is where the Interchange configuration file
@@ -1852,10 +2394,6 @@ Exclude catalog from this startup.
 =item -f file, --config=file
 
 Configuration file to use (default is interchange.cfg in VendRoot).
-
-=item --files spec
-
-File specification to build (perl regexp OK) for static page tree
 
 =item -h, --help
 
@@ -1954,10 +2492,8 @@ GNU General Public License.
 
 Command line options (first letter will usually work):
 
-     --add=catalog         remove a catalog from operation, parms taken
-                           from the standard input
-     -b catalog
-        --build=catalog    build static page tree for catalog
+     --add=catalog         add a catalog to operation; parms taken from the
+                           standard input as a "Catalog ..." directive
      -d dir, --dir=dir     directory for VendRoot (interchange.cfg, error.log, etc.)
      -e name,
         --exclude=name     exclude catalog
@@ -2044,7 +2580,6 @@ sub parse_options {
 						die "Can't set two modes -$mode and -$Vend::mode.\n"
 								if $Vend::saw_mode;
 						$Vend::saw_mode = 1;
-						$Vend::CatalogToBuild{$val} = 1 if $mode eq 'build';
 						$Vend::mode = $mode;
 					};
 
@@ -2056,18 +2591,18 @@ sub parse_options {
 	my %optctl = (
 
 		DEBUG 		    => \$Global::DEBUG,
-		build           => $modesub,
 		reconfig        => $rcfgsub,
 		confdir         => \$Global::ConfDir,
+		rundir          => \$Global::RunDir,
 		configfile      => \$Global::ConfigFile,
 		dir          	=> \$Global::VendRoot,
 		exclude         => \%Vend::CatalogToSkip,
-		files	        => \$Vend::BuildSpec,
 		help            => sub { usage(); exit 0 },
 		inetmode        => \$Global::Inet_Mode,
 		log             => \$Global::ErrorFile,
 		quiet			=> \$Vend::Quiet,
 		pidfile			=> \$Global::PIDfile,
+		soappidfile		=> \$Global::SOAP_PIDfile,
 		serve           => $modesub,
 
 		test			=> $modesub,
@@ -2132,12 +2667,11 @@ sub parse_options {
 		DEBUG|D:i
 		Ignore
 		add|a=s
-		build|b=s
 		confdir=s
+		rundir=s
 		configfile|config|c|f=s
 		dir|vendroot|d=s
 		exclude|e=s
-		files=s
 		help|h
 		inetmode|inet|i
 		kill:s
@@ -2190,7 +2724,9 @@ sub main_loop {
 	# These are only starting values, can be changed by command-line
 	# options or the interchange.cfg file
 	$Global::ConfDir = "$Global::VendRoot/etc";
-	$Global::PIDfile = "$Global::ConfDir/$Global::ExeName.pid";
+	$Global::RunDir = "$Global::VendRoot/etc";
+	$Global::PIDfile = "$Global::RunDir/$Global::ExeName.pid";
+	$Global::SOAP_PIDfile = "$Global::RunDir/$Global::ExeName.soap.pid";
 
 	$Vend::mode = 'serve';      # mode will be reset by options if appropriate
 
@@ -2205,35 +2741,12 @@ sub main_loop {
 			unless $ENV{MINIVEND_ROOT} =~ m{/blib$};
 	}
 
-	## Bring in the CyberCash libraries if present
-	## Moved here to prevent unwanted messages
+	# Kept here for compatibility
 	eval {
-		package Vend::Order;
-		require CCLib;
-		$Vend::CC2 = 1;
-		my $ver = $CCLib::VERSION || '2.1';
-		::logGlobal({}, "CyberCash module found (Version %s)", $ver )
-			unless $Vend::Quiet;
+		require Vend::Payment::CyberCash;
 	};
 
 	$Vend::CyberCash = ! $@;
-
-	eval {
-		package Vend::Order;
-		require CCMckLib3_2 ;
-		import CCMckLib3_2 qw/InitConfig %Config $MCKversion/;
-		require CCMckDirectLib3_2;
-		import CCMckDirectLib3_2 qw/SendCC2_1Server doDirectPayment/;
-		require CCMckErrno3_2;
-		import CCMckErrno3_2 qw/MCKGetErrorMessage/;
-		$Vend::CC3 = 1;
-		$Vend::CC3server = 0;
-		my $ver = $CCMckLib3_2::VERSION || '3.x';
-		::logGlobal({}, "CyberCash module found (Version %s)", $ver )
-			unless $Vend::Quiet;
-	};
-
-	$Vend::CyberCash = $Vend::CyberCash || ! $@;
 
 	# These modules no longer necessary, why take up memory?
 	delete $INC{'Getopt/Long.pm'};
@@ -2262,6 +2775,11 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 	# Read interchange.cfg (or whatever its name is set to be)
 	global_config();
 
+	@action{keys %{$Global::ActionMap}} = (values %{$Global::ActionMap})
+		if $Global::ActionMap;
+	@form_action{keys %{$Global::FormAction}} = (values %{$Global::FormAction})
+		if $Global::FormAction;
+
 #::logDebug(::uneval(\%Global::Catalog));
 
 	# This is only gotten to if -reconfig passed in on command line
@@ -2284,9 +2802,6 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 		foreach $name (sort keys %Global::Catalog) {
 			$g =  $Global::Catalog{$name};
 			next if defined $Vend::CatalogToSkip{$g->{'name'}};
-			next if
-				$Vend::mode eq 'build' and
-				! defined $Vend::CatalogToBuild{$g->{'name'}};
 			print "Configuring catalog " . $g->{'name'} . '...'
 				unless $Vend::Quiet or $g->{name} eq '_mv_admin';
 			if (exists $Global::Selector{$g->{'script'}}) {
@@ -2327,27 +2842,14 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 						warn "Alias $_ used a second time, skipping.\n";
 						next;
 					}
-					elsif (m![^\w-_:~#/.]!) {
+					elsif (m![^-\w_:~#/.]!) {
 						warn "Bad alias $_, skipping.\n";
 					}
 					$Global::Selector{$_} = $c;
 					$Global::SelectorAlias{$_} = $g->{'script'};
 				}
 			}
-# STATICPAGE
-			# This is probably not useful any more.....use the
-			# regen feature of the UI.
-			if ($Vend::CatalogToBuild{$g->{name}}) {
-				require Vend::Misc::Static;
-				eval {
-					Vend::Misc::Static::build_all($g->{name});
-				};
-				if($@) {
-					die "Error building pages: $@\n";
-				}
-				undef $Vend::BuildingPages;
-			}
-# END STATICPAGE
+
 			print "done.\n"  unless $Vend::Quiet or $g->{name} =~ /^_/;
 		}
 	}
@@ -2355,7 +2857,7 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 	#undef $Global::DumpStructure;
 
 	if ($Vend::mode eq 'serve') {
-		undef $Vend::Foreground;
+		undef $Global::Foreground;
 
 		# Here we prepare enter the daemon mode.
 
@@ -2380,9 +2882,9 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 		# This should never return unless killed or a catastrophic error
         Vend::Server::run_server();
 	}
-	elsif ($Vend::mode eq 'test' || $Vend::mode eq 'build') {
-				# Blank by design, this option only tests config files
-				# or builds catalogs
+	elsif($Vend::mode eq 'test') {
+		# Blank by design, this option only tests config files
+		# or builds catalogs
 	}
 	else {
 		die "No mode!\n";
@@ -2398,48 +2900,52 @@ if ($@) {
 	if ($Global::DisplayErrors) {
 		print "$msg\n";
 	}
-	die "$msg\n" if $Vend::ForeGround;
+	die "$msg\n" if $Global::Foreground;
 }
 
 =head1 SEE ALSO
 
-mvdocs(8), compile_link(1), config_prog(1), configdump(1), dump(1), expire(1),
+compile_link(1), config_prog(1), configdump(1), dump(1), expire(1),
 expireall(1), localize(1), makecat(1), offline(1), restart(1), update(1),
-http://www.akopia.com/
+http://interchange.redhat.com/
 
 =head1 LICENSE
 
-Interchange comes with ABSOLUTELY NO WARRANTY.  This is free software, and
+Interchange comes with ABSOLUTELY NO WARRANTY. This is free software, and
 you are welcome to redistribute and modify it under the terms of the
 GNU General Public License.
 
 =head1 COPYRIGHT
 
-Copyright 1995-2001 Akopia, Inc. All rights reserved except as in the license.
+Copyright 1995-2001, Red Hat, Inc. All rights reserved except as in the
+license.
 
 =cut
 
 =head1 AUTHOR
 
-Mike Heins, <heins@akopia.com>. Please do not contact the author for
-direct help with the system. Use the Interchange mail lists:
+Mike Heins, <mheins@redhat.com>, along with Dave Adams, Jon Jensen,
+Brev Patterson, Jason Kohles, and others of the Red Hat E-Business
+Solutions Group. Please do not contact the author for direct help with
+the system. Use the Interchange mail list:
 
-	interchange-users	(English, subscribe at http://developer.akopia.com/)
+    interchange-users
 
-General information and documentation for Interchange is at:
+Information on subscribing to the list, as well as general information and
+documentation for Interchange is at:
 
-	http://www.akopia.com/
-	http://developer.akopia.com/
+    http://interchange.redhat.com/
 
 =head1 SPECIAL ACKNOWLEDGEMENTS
 
-Original author of the Vend was Andrew Wilcox. Interchange could never
+The original author of Vend was Andrew Wilcox. Interchange could never
 have come into being without him.
 
 Stefan Hornburg has had his hand in many parts of Interchange, and is by
 far the most prolific bug-finder. He also was primarily responsible for
-bringing MiniMate, precursor to the Interchange UI database editor, to
-being as a supported facility. He continues to make valuable contributions.
+bringing MiniMate, precursor to the Interchange store administration UI,
+to being as a supported facility. He continues to make valuable
+contributions.
 
 =head1 ACKNOWLEDGEMENTS
 
@@ -2447,54 +2953,40 @@ Original author of Vend, ancestor to Minivend and Interchange, was Andrew
 Wilcox. Interchange was based on Vend 0.2, with portions from Vend 0.3;
 both were produced in 1995.
 
+# columnize with "pr -t -2 | expand -8 | sed 's/^/    /'"
+
 Contributions to Interchange have been made by:
 
-    Andreas Koenig     
-    Bill Randle
-    Birgitt Funk       
-    Bob Jordan         
-    Brian Bullen       
-    Bruce Albrecht     
-	Cameron Prince
-    Christian Mueller
-    Christopher Thompson
-    Dave Adams
-    Dan Busarow
-    Dave Wingate
-	Dennis Cronin
-    Don Grodecki       
-    Frank Bonita       
-    Gunnar Hellekson   
-    Hans-Joachim Leidinger
-    Heinz Wittenbecher
-    Jason Holt
-    Jeff Carnahan
-    Jeff Nappi
-    Jochen Wiedmann
-    Jon Jensen
-    Keiko
-    Keith Oberlin
-    Larry Leszczynski
-    Marc Austin
-    Mark Stosberg
-    Michael McCune
-    Michael Wilk
-    Mike Frager
-    Neil Evans
-    Raj Goel
-    Ray Desjardins
-    Sonny Cook
-    Tim Baverstock
-    Ton Verhagen
-    William Dan Terry
-    and many others
+    Andreas Koenig                      Jeff Carnahan
+    Bill Dawkins                        Jeff Nappi
+    Bill Randle                         Jochen Wiedmann
+    Birgitt Funk                        Jon Jensen
+    Bob Jordan                          Keiko
+    Brev Patterson                      Keith Oberlin
+    Brian Bullen                        Larry Leszczynski
+    Bruce Albrecht                      Marc Austin
+    Cameron Prince                      Mark Johnson
+    Christian Mueller                   Mark Stosberg
+    Christopher Thompson                Matthew Schick
+    Dan Browning                        Michael McCune
+    Dan Busarow                         Michael Wilk
+    Dave Adams                          Mike Frager
+    Dave Wingate                        Neil Evans
+    Dennis Cronin                       Raj Goel
+    Don Grodecki                        Ray Desjardins
+    Ed LaFrance                         Sonny Cook
+    Frank Bonita                        Tim Baverstock
+    Gunnar Hellekson                    Ton Verhagen
+    Hans-Joachim Leidinger              Troy Davis
+    Heinz Wittenbecher                  Victor Nolton
+    Jason Holt                          William Dan Terry
+    Jason Kohles                        and many others
 
 and, of course, the entire Perl team without whom Interchange could not exist.
 
 =cut
 
 __END__
-
 _EoP_
 	s{.*\n(#(.*)~_~(\w+)~_~(.*))}{$2 . doit($3) . "$4\n$1"}eg;
 	my $file = $0;

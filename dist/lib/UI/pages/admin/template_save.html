@@ -1,0 +1,174 @@
+[if !session admin]
+[or !session logged_in]
+[then]
+	[set ui_error]Must be logged in as admin.[/set]
+	[bounce page="__UI_BASE__/error"]
+[/then]
+[/if]
+
+[if !cgi good_template]
+	[set ui_error]Not a good template -- must enter from template editor.[/set]
+	[bounce page="__UI_BASE__/error"]
+[/if]
+
+[perl]
+	delete $Scratch->{bounce_url};
+	my @filters = grep /^ui_filter:/, keys %$CGI;
+	foreach my $key (@filters) {
+		my $val = delete $CGI->{$key};
+		$key =~ s/ui_filter://;
+		next unless $val;
+		next unless defined $CGI->{$key};
+		$CGI->{$key} = $Tag->filter($val, $CGI->{$key}, $key);
+	}
+
+	sub bleach_it {
+		my $val = shift;
+		$val =~ s/\W+/_/g;
+		$val =~ s/_+/_/g;
+		return lc($val);
+	}
+
+	my $t_name = bleach_it($CGI->{ui_template_name});
+
+	if (!$t_name) {
+		$Scratch->{ui_error} = errmsg("No template name given.");
+		return;
+	}
+	
+	my $compdir = $Variable->{UI_COMPONENT_DIR} || 'templates/components';
+	my $top = $Tag->filter('textarea_get', $CGI->{ui_template_top});
+	my $bot = $Tag->filter('textarea_get', $CGI->{ui_template_bot});
+	$top =~ s~<!--+\s*COMPONENT[\s#]+(\d+)\s*--+>~
+					my $name = $1 - 1;
+					$name .= ".ui_component";
+					my $type = $name;
+					$type .= "_type";
+				qq{[include file="$compdir/[control component }
+				. $CGI->{$name}
+				.  ']"' . qq{ group="$CGI->{$type}"} . '][control]'
+			~ge if $top;
+	$bot =~ s~<!--+\s*COMPONENT[\s#]+(\d+)\s*--+>~
+					my $name = $1 - 1;
+					$name .= ".ui_component";
+					my $type = $name;
+					$type .= "_type";
+				qq{[include file="$compdir/[control component }
+				. $CGI->{$name}
+				.  ']"' . qq{ group="$CGI->{$type}"} . '][control]'
+			~ge if $bot;
+
+	for(\$top, \$bot) {
+		$$_ =~ s/\s*$/\n/;
+	}
+
+	my $ver = $Tag->version();
+	$CGI->{ui_template_top} = $top;
+	$CGI->{ui_template_bot} = $bot;
+	for(qw/ ui_theme ui_template_name /) {
+		my $stuff = $CGI->{$_};
+		$stuff =~ s/\W+/_/g;
+		$stuff =~ s/__+/_/g;
+		$CGI->{$_} = lc $stuff;
+	}
+	my $name_top = "\U$CGI->{ui_template_name}_TOP";
+	my $name_bot = "\U$CGI->{ui_template_name}_BOTTOM";
+
+	my @laundry = qw/
+		ui_template_top
+		ui_template_bot
+		ui_template_setting
+		ui_template_description
+	/;
+
+	sub regular {
+		local($_) = shift;
+		s/^\s+//;
+		s/\s+$//;
+		s/\r\n/\n/g;
+		tr/\r/\n/;
+		s/^[ \t]+$//mg;
+		return $_;
+	}
+
+	for(@laundry) {
+		$CGI->{$_} = regular($CGI->{$_});
+	}
+
+	$CGI->{ui_template_setting} =~ s/\n\n\n+/\n\n/g;
+	$CGI->{ui_definition} = <<EOF;
+ui_template: $t_name
+ui_template_name: $t_name
+ui_template_layout: $name_top, UI_CONTENT, $name_bot
+ui_template_description: $CGI->{ui_template_description}
+ui_template_limit_tag: $CGI->{ui_template_limit_tag} 
+ui_template_version: $ver
+
+$CGI->{ui_template_setting}
+EOF
+
+	my $tdir    = $Variable->{UI_TEMPLATE_DIR} || 'templates';
+
+	my $theme   = bleach_it($CGI->{ui_theme}) || 'default';
+
+	my $rdir    = $Variable->{UI_REGION_DIR}   || 'regions';
+
+	my $topname = uc($CGI->{ui_template_name}) . "_TOP";
+	my $botname = uc($CGI->{ui_template_name}) . "_BOTTOM";
+
+	my $fname;
+
+	# Write top
+	if($CGI->{ui_template_top}) {
+		$fname   = $Tag->filter('filesafe', "$tdir/$theme/$rdir/$topname");
+		$Tag->write_relative_file($fname, $CGI->{ui_template_top})
+			or do {
+				$Scratch->{ui_error}
+					= errmsg("error writing template top '%s'", $fname);
+				return;
+			};
+	}
+
+	if($CGI->{ui_template_bot}) {
+		# Write bottom
+		$fname = $Tag->filter('filesafe', "$tdir/$theme/$rdir/$botname");
+		$Tag->write_relative_file($fname, $CGI->{ui_template_bot})
+			or do {
+				$Scratch->{ui_error} =
+					errmsg("error writing template bottom '%s'", $fname);
+				return;
+			};
+	}
+
+	my $begin_comment = '[' . 'comment]';
+	my $end_comment = '[' . '/comment]';
+
+	my $template = <<EOT;
+$begin_comment
+$CGI->{ui_definition}
+$end_comment
+EOT
+	$fname = $Tag->filter('filesafe', "$tdir/$t_name");
+	$Tag->write_relative_file($fname, $template)
+		or do {
+			$Scratch->{ui_error} =
+				errmsg("error writing template '%s'", $fname);
+			return;
+		};
+
+	$Scratch->{bounce_url} = $Tag->area({
+									href => '__UI_BASE__/template_edit',
+									form => "
+										ui_template=$t_name
+										ui_show_template=$CGI->{ui_show_template}
+									",
+							});
+	
+	return;
+[/perl]
+[if scratch bounce_url]
+[bounce href="[scratch bounce_url]"]
+[else]
+[bounce page="__UI_BASE__/error"]
+[/else]
+[/if]

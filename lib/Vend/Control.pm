@@ -1,13 +1,10 @@
-# Control.pm - Interchange routines rarely used or not requiring much performance
+# Vend::Control - Routines that alter the running Interchange daemon
 # 
-# $Id: Control.pm,v 1.6 2000-10-19 12:08:12 heins Exp $
+# $Id: Control.pm,v 1.7 2001-07-18 01:56:44 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
+# This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -48,7 +45,7 @@ sub signal_reconfig {
 	for(@cats) {
 		my $ref = $Global::Catalog{$_}
 			or die ::errmsg("Unknown catalog '%s'. Stopping.\n", $_);
-		Vend::Util::writefile("$Global::ConfDir/reconfig", "$ref->{script}\n");
+		Vend::Util::writefile("$Global::RunDir/reconfig", "$ref->{script}\n");
 	}
 }
 
@@ -56,13 +53,13 @@ sub signal_remove {
 	shift;
 	$Vend::mode = 'reconfig';
 	my $cat = shift;
-	Vend::Util::writefile("$Global::ConfDir/restart", "remove catalog $cat\n");
+	Vend::Util::writefile("$Global::RunDir/restart", "remove catalog $cat\n");
 	control_interchange('remove', 'HUP');
 }
 
 sub signal_add {
 	$Vend::mode = 'reconfig';
-	Vend::Util::writefile("$Global::ConfDir/restart", <>);
+	Vend::Util::writefile("$Global::RunDir/restart", <>);
 	control_interchange('add', 'HUP');
 }
 
@@ -77,14 +74,13 @@ sub control_interchange {
 		exit 1 unless $restart;
 		return;
 	}
-	Vend::Server::open_pid()
+	my $pidh = Vend::Server::open_pid()
 		or die errmsg(
 				"Couldn't open PID file %s: %s\n",
 				$Global::PIDfile,
 				$!,
 				);
-	my $pid = Vend::Server::grab_pid();
-	Vend::Server::unlink_pid();
+	my $pid = Vend::Server::grab_pid($pidh);
 	if(! $pid) {
 		warn errmsg(<<EOF);
 The previous Interchange server was not running and probably
@@ -108,7 +104,7 @@ sub remove_catalog {
 	my @aliases;
 
 	unless(defined $g) {
-		::logGlobal( "Attempt to remove non-existant catalog %s." , $name );
+		::logGlobal( {level => 'error'}, "Attempt to remove non-existant catalog %s." , $name );
 		return undef;
 	}
 
@@ -151,7 +147,7 @@ sub add_catalog {
 			if (exists $Global::Selector{$_}
 				and $Global::SelectorAlias{$_} ne $g->{'script'})
 			{
-				logGlobal("Alias %s used a second time, skipping.", $_);
+				logGlobal({level => 'notice'}, "Catalog ScriptAlias %s used a second time, skipping.", $_);
 				next;
 			}
 			elsif (m![^-\w_\~:#/.]!) {
@@ -162,7 +158,7 @@ sub add_catalog {
 		}
 	}
 
-	Vend::Util::writefile("$Global::ConfDir/reconfig", "$script\n");
+	Vend::Util::writefile("$Global::RunDir/reconfig", "$script\n");
 	my $msg = <<EOF;
 Added/changed catalog %s:
 
@@ -170,19 +166,19 @@ Added/changed catalog %s:
  Script:    %s
 EOF
 	
-	logGlobal( $msg, $name, $dir, $script);
+	logGlobal({level => 'notice'},  $msg, $name, $dir, $script);
 
 	$Global::Selector{$g->{script}} = $c;
 }
 
 sub change_catalog_directive {
-    my($cat, $line) = @_;
-    $line =~ s/^\s+//;
-    my($dir,$val) = split /\s+/, $line, 2;
-    my $ref = Vend::Config::set_directive($dir,$val);
-    die "Bad directive '$line'.\n" unless defined $ref;
-    $cat->{$ref->[0]} = $ref->[1];
-    return 1;
+	my($cat, $line) = @_;
+	$line =~ s/^\s+//;
+	my($dir,$val) = split /\s+/, $line, 2;
+	my $ref = Vend::Config::set_directive($dir,$val);
+	die "Bad directive '$line'.\n" unless defined $ref;
+	$cat->{$ref->[0]} = $ref->[1];
+	return 1;
 }
 
 sub change_global_directive {
@@ -197,7 +193,7 @@ sub change_global_directive {
 	$Global::Structure->{$ref->[0]} = $ref->[1]
 		if $Global::DumpStructure;
 
-	dump_structure($Global::Structure, "$Global::ConfDir/$Global::ExeName")
+	dump_structure($Global::Structure, "$Global::RunDir/$Global::ExeName")
 		if $Global::DumpStructure;
 	return 1;
 }

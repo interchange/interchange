@@ -3,32 +3,22 @@
 [set page_banner]Layout Editor: Organize your site into categories[/set]
 [set page_perm]layout=e[/set]
 [set help_name]layout.edit[/set]
-[set icon_name]admin/icon_pages.gif[/set]
-[seti ui_body_extra][/seti]
+[set icon_name]icon_pages.gif[/set]
+[set ui_body_extra][/set]
 
 @_UI_STD_HEAD_@
-[if scratch ui_message]
-<BLOCKQUOTE>
-<FONT COLOR="__CONTRAST__" SIZE="+1"><B>[scratch ui_message][set ui_message][/set]</B></FONT>
-</BLOCKQUOTE>
-[/if]
-
-[if scratch ui_failure]
-	<FONT COLOR=RED>Failed:
-	[scratch ui_failure][set ui_failure][/set]</FONT><BR>
-[/if]
-
 <!-- ----- BEGIN REAL STUFF ----- -->
 <table __UI_T_PROPERTIES__>
 
+[flag type=write table=area]
+[flag type=write table=cat]
+
 [if cgi newarea]
 <!-- Creating area: 
-[flag type=write table=area]
 [value name=area set="[counter file=etc/area.recordnumber start=1000]" hide=1]
 [data table=area column=name key="[value area]" value="[cgi newarea]"] -->
 [elsif cgi newcat]
 <!-- Creating category: 
-[flag type=write table=cat]
 [value name=cat set="[counter file=etc/cat.recordnumber start=1000]" hide=1]
 [data table=cat column=name key="[value cat]" value="[cgi newcat]"]
 [data table=cat column=sel key="[value cat]" value="[value area]"] -->
@@ -44,8 +34,8 @@
 [set Delete section]
 [/set]
 
-<tr>
-<td [if value area]colspan=3[/if] bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<tr class=rtitle>
+<td [if value area]colspan=3[/if] class=ctitle><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1>[page __UI_BASE__/layout_auto]auto-populate</A></td>
 </tr>
 
 <tr>
@@ -64,6 +54,7 @@
 </select>
 <br>
 <select name="area" size=10 onchange="this.form.submit()">
+[calc]$Scratch->{start_sort} = 0; $Scratch->{area_sort} = []; return;[/calc]
 [loop   search="
 			fi=area
 			tf=sel
@@ -80,51 +71,87 @@
 			rf=code,name,sel
 		"
 		option=area ]
-<option value="[loop-code]">[loop-param sel] -- [loop-filter 20][loop-param name][/loop-filter]
+<option value="[loop-code]">[loop-param sel] -- [loop-filter 20][loop-param name][/loop-filter][loop-calc]
+	push @{ $Scratch->{area_sort} }, [
+		q/[loop-code]/,
+		sprintf('%03d', ++$Scratch->{start_sort})
+	];
+	return;
+[/loop-calc]
 [/loop]
 </select>
+
+[perl tables=area]
+	my $db = $Db{area} || return;
+	my $settor = $db->field_settor('sort');
+	foreach ( @{ $Scratch->{area_sort} } ) {
+		$settor->( @$_ );
+	}
+	delete $Scratch->{start_sort};
+	return;
+[/perl]
 <br>
 
 <small>
-[button text="Section properties" hspace=2 vspace=5 src="@_UI_IMG_@admin/icon_pages.gif" hidetext=1]
+[button text="Section properties" hspace=2 vspace=5 src="icon_pages.gif" hidetext=1]
 [/button]
 
-[button text="Sort section higher" src="@_UI_IMG_@admin/up.gif" hidetext=1]
+[button text="Sort section higher" src="up.gif" hidetext=1]
 	[flag type=write table=area]
 	[perl tables=area]
 		my $db = $Db{area} || return;
-		my $curr = $db->field($CGI->{area}, 'sort');
-		$curr =~ s/^0+//;
-		$curr = 1 if ! $curr || $curr < 0;
-		$curr--;
-		$db->set_field($CGI->{area}, 'sort', sprintf("%02d", $curr));
+		my $arr = delete $Scratch->{area_sort};
+		my $sort;
+
+		foreach (reverse @$arr) {
+			# Swap sort with previous one
+			if ($sort) {
+				$db->set_field($CGI->{area}, 'sort', $_->[1]);
+				$db->set_field($_->[0], 'sort', $sort);
+				last;
+			}
+			# Current: swap with next
+			if ( $CGI->{area} eq $_->[0] ) {
+				$sort = $_->[1];
+			}
+		}
 		return;
 	[/perl]
 [/button]
 
 
-[button text="Sort section lower" src="@_UI_IMG_@admin/down.gif" hidetext=1]
+[button text="Sort section lower" src="down.gif" hidetext=1]
 	[flag type=write table=area]
 	[perl tables=area]
 		my $db = $Db{area} || return;
-		my $curr = $db->field($CGI->{area}, 'sort');
-		$curr =~ s/^0+//;
-		$curr = 0 if ! $curr || $curr < 0;
-		$curr++;
-		$db->set_field($CGI->{area}, 'sort', sprintf("%02d", $curr));
+		my $arr = delete $Scratch->{area_sort};
+		my $sort;
+
+		foreach (@$arr) {
+			# Swap sort with previous one
+			if ($sort) {
+				$db->set_field($CGI->{area}, 'sort', $_->[1]);
+				$db->set_field($_->[0], 'sort', $sort);
+				last;
+			}
+			# Current: swap with next
+			if ( $CGI->{area} eq $_->[0] ) {
+				$sort = $_->[1];
+			}
+		}
 		return;
 	[/perl]
 [/button]
 
-[button text="Create section" src="@_UI_IMG_@admin/plus.gif" hidetext=1]
+[button text="Create section" src="plus.gif" hidetext=1]
 	mv_todo=back
 	newarea=NEW
 [/button]
 
 [button
-	text="Delete section" src="@_UI_IMG_@admin/delete.gif" 
+	text="Delete section" src="delete.gif" 
 	confirm="Are you sure you want to delete this section?"
- hidetext=1]
+	hidetext=1]
 	[tag flag write]area[/tag]
 	[if-mm advanced sitedesign=d]
 		[perl tables="area"]
@@ -155,13 +182,14 @@
 </td>
 
 
-[if value area]
+[if cgi area]
 [then]
 <td valign=top bgcolor="__UI_C_INTBLOCK__">
 
 <B>Contains:</B><BR>
 
 <select name="cat" size=10 [if !value cat]onChange="this.form.submit()"[/if]>
+[calc]$Scratch->{start_sort} = 0; $Scratch->{cat_sort} = []; return;[/calc]
 [loop   search="
 			fi=cat
 			st=db
@@ -178,45 +206,82 @@
 
 			rf=code,name,sort
 			" option=cat]
-<OPTION VALUE="[loop-code]">[loop-param name]
+<OPTION VALUE="[loop-code]">[loop-param name][loop-calc]
+	push @{ $Scratch->{cat_sort} }, [
+		q/[loop-code]/,
+		sprintf('%04d', ++$Scratch->{start_sort})
+	];
+	return;
+[/loop-calc]
 [/loop]
 </select>
+
+[perl tables=cat]
+	my $db = $Db{cat} || return;
+	my $settor = $db->field_settor('sort');
+	foreach ( @{ $Scratch->{cat_sort} } ) {
+		$settor->( @$_ );
+	}
+	delete $Scratch->{start_sort};
+	return;
+[/perl]
 <br>
+
 <small>
-[button text="Category properties" hspace=2 vspace=5 hidetext=1 src="@_UI_IMG_@admin/icon_pages.gif"][/button]
+[button text="Category properties" hspace=2 vspace=5 hidetext=1 src="icon_pages.gif"][/button]
 
-[button text="Sort category higher" hidetext=1 src="@_UI_IMG_@admin/up.gif"]
+[button text="Sort category higher" hidetext=1 src="up.gif"]
 	[flag type=write table=cat]
 	[perl tables=cat]
 		my $db = $Db{cat} || return;
-		my $curr = $db->field($CGI->{cat}, 'sort');
-		$curr =~ s/^0+//;
-		$curr = 1 if ! $curr || $curr < 0;
-		$curr--;
-		$db->set_field($CGI->{cat}, 'sort', sprintf("%02d", $curr));
+		my $arr = delete $Scratch->{cat_sort};
+		my $sort;
+
+		foreach (reverse @$arr) {
+			# Swap sort with previous one
+			if ($sort) {
+				$db->set_field($CGI->{cat}, 'sort', $_->[1]);
+				$db->set_field($_->[0], 'sort', $sort);
+				last;
+			}
+			# Current: swap with next
+			if ( $CGI->{cat} eq $_->[0] ) {
+				$sort = $_->[1];
+			}
+		}
 		return;
 	[/perl]
 [/button]
 
-[button text="Sort category lower" hidetext=1 src="@_UI_IMG_@admin/down.gif"]
+[button text="Sort category lower" hidetext=1 src="down.gif"]
 	[flag type=write table=cat]
 	[perl tables=cat]
 		my $db = $Db{cat} || return;
-		my $curr = $db->field($CGI->{cat}, 'sort');
-		$curr =~ s/^0+//;
-		$curr = 0 if ! $curr || $curr < 0;
-		$curr++;
-		$db->set_field($CGI->{cat}, 'sort', sprintf("%02d", $curr));
+		my $arr = delete $Scratch->{cat_sort};
+		my $sort;
+
+		foreach (@$arr) {
+			# Swap sort with previous one
+			if ($sort) {
+				$db->set_field($CGI->{cat}, 'sort', $_->[1]);
+				$db->set_field($_->[0], 'sort', $sort);
+				last;
+			}
+			# Current: swap with next
+			if ( $CGI->{cat} eq $_->[0] ) {
+				$sort = $_->[1];
+			}
+		}
 		return;
 	[/perl]
 [/button]
 
-[button text="Create category" hidetext=1 src="@_UI_IMG_@admin/plus.gif"]
+[button text="Create category" hidetext=1 src="plus.gif"]
 	mv_todo=back
 	newcat=NEW
 [/button]
 
-[button text="Delete category" hidetext=1 src="@_UI_IMG_@admin/delete.gif"
+[button text="Delete category" hidetext=1 src="delete.gif"
 	 confirm="Are you sure you want to delete this category?"
 ]
 	[tag flag write]cat[/tag]
@@ -258,7 +323,7 @@
 [set name="<--"]
 [/set]
 
-[button text="Move category left" hidetext=1 src="@_UI_IMG_@admin/left.gif"]
+[button text="Move category left" hidetext=1 src="left.gif"]
 [if-mm advanced layout=e]
 [flag type=write table=cat]
 [perl tables=cat]
@@ -285,7 +350,7 @@
 [/if-mm]
 [/button]
 
-[button text="Move category right" hidetext=1 src="@_UI_IMG_@admin/right.gif"]
+[button text="Move category right" hidetext=1 src="right.gif"]
 [if-mm advanced layout=e]
 [flag type=write table=cat]
 [perl tables=cat]
@@ -338,7 +403,7 @@
 </td>
 </tr>
 </table>
-</form>
+</FORM>
 </td>
 </tr>
 </table>
@@ -383,7 +448,7 @@ setarea=[cgi selector]
 
 [loop list="[value area]" prefix=table]
 <FORM METHOD=POST name=layout_area_properties ACTION="[area ui]">
-<INPUT TYPE=hidden NAME=mv_doit VALUE="set">
+<INPUT TYPE=hidden NAME=mv_todo VALUE="set">
 <INPUT TYPE=hidden NAME=from_section VALUE=1>
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_ui_area">
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
@@ -396,7 +461,7 @@ setarea=[cgi selector]
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__ colspan=2><font color="#ffffff"><img src="@_UI_IMG_@admin/icon_pages.gif">&nbsp;Section Properties</td>
+<td bgcolor=__UI_C_TOPBLOCKBAR__ colspan=2><font color="#ffffff"><img src="icon_pages.gif">&nbsp;Section Properties</td>
 </tr>
 
 <tr>
@@ -600,8 +665,8 @@ setarea=[cgi selector]
 [elsif scratch ui_area_type eq complex]
 
 <INPUT TYPE=hidden NAME=mv_data_fields value="search">
-<INPUT TYPE=hidden NAME=ui_target value="mainwindow[scratch win]">
 <INPUT TYPE=hidden NAME=ui_searchblob value="">
+<INPUT TYPE=hidden NAME=ui_target value="mainwindow[scratch win]">
 <INPUT TYPE=hidden NAME=ui_return_to value="@@MV_PAGE@@">
 <INPUT TYPE=hidden NAME=ui_return_to value="area=[table-code]">
 <tr>
@@ -614,9 +679,7 @@ setarea=[cgi selector]
 						name=mv_click
 						value="Create"
 						onClick="
-							this.form.ui_target.value=window.name;
 							this.form.ui_searchblob.value=this.form.search.value;
-							this.form.target='search_prop';
 						">&nbsp;<small><INPUT TYPE=button onClick="this.form.search.value=''" VALUE="clear search">
 	</td>
 	<td bgcolor=__UI_C_INTBLOCK__>
@@ -701,7 +764,7 @@ setarea=[cgi selector]
 
 [button text="Change area"][/button]
 
-</form>
+</FORM>
 [/loop]
 
 </td>
@@ -743,8 +806,8 @@ return;
 [/set]
 
 [loop list="[either][value cat][or]NEW[/either]" prefix=table]
-<FORM METHOD=POST ACTION="[area ui]">
-<INPUT TYPE=hidden NAME=mv_doit VALUE="set">
+<FORM METHOD=GET ACTION="[area ui]" name=layout_cat_properties>
+<INPUT TYPE=hidden NAME=mv_todo VALUE="set">
 <INPUT TYPE=hidden NAME=from_category VALUE=1>
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_ui_cat">
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
@@ -756,7 +819,7 @@ return;
 
 <table __UI_T_PROPERTIES__>
 
-<td bgcolor=__UI_C_TOPBLOCKBAR__ colspan=2><font color="#ffffff"><img src="@_UI_IMG_@admin/icon_pages.gif">&nbsp;Category properties</td>
+<td bgcolor=__UI_C_TOPBLOCKBAR__ colspan=2><font color="#ffffff"><img src="icon_pages.gif">&nbsp;Category properties</td>
 </tr>
 
 <tr>
@@ -914,6 +977,7 @@ return;
 <INPUT TYPE=hidden NAME=ui_target value="mainwindow[scratch win]">
 <INPUT TYPE=hidden NAME=ui_searchblob value="">
 <INPUT TYPE=hidden NAME=ui_return_to value="@@MV_PAGE@@">
+<INPUT TYPE=hidden NAME=ui_return_to value="area=[cgi area]">
 <INPUT TYPE=hidden NAME=ui_return_to value="cat=[table-code]">
 <tr>
 	<td bgcolor=__UI_C_INTBLOCK__>
@@ -925,9 +989,7 @@ return;
 						name=mv_click
 						value="Create"
 						onClick="
-							this.form.ui_target.value=window.name;
 							this.form.ui_searchblob.value=this.form.search.value;
-							this.form.target='search_prop';
 						">&nbsp;<small><INPUT TYPE=button onClick="this.form.search.value=''" VALUE="clear search">
 	</td>
 	<td bgcolor=__UI_C_INTBLOCK__>
@@ -1041,7 +1103,7 @@ return;
 [button text="Change category"]
 [/button]
 
-</form>
+</FORM>
 [/loop]
 
 </body>
@@ -1051,11 +1113,11 @@ return;
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 [/then]
@@ -1064,7 +1126,7 @@ return;
 </tr>
 
 <tr>
-<td [if value area]colspan=2[/if] bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td [if value area]colspan=2[/if] bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 [/else]
 [/if]
@@ -1072,11 +1134,6 @@ return;
 </table>
 
 <BR>
+
 @_UI_STD_FOOTER_@
 <!-- page: @@MV_PAGE@@ -->
-
-
-
-
-
-

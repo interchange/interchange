@@ -12,7 +12,7 @@
 [/seti]
 [set ui_class]Admin[/set]
 [seti help_name][either][cgi help_name][or]gensql.main[/either][/seti]
-[seti icon_name][either][cgi icon_name][or]admin/icon_config.gif[/either][/seti]
+[seti icon_name][either][cgi icon_name][or]icon_config.gif[/either][/seti]
 @_UI_STD_HEAD_@
 
 [perl tables="[cgi mv_data_table]"]
@@ -122,7 +122,7 @@
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td colspan="[scratch ui_num_col]" bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan="[scratch ui_num_col]" bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 [with param=table value="[value mv_data_table]"]
@@ -137,7 +137,7 @@
 </TR>
 
 <tr>
-<td colspan="[scratch ui_num_col]" bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan="[scratch ui_num_col]" bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 	[search-list]
@@ -179,7 +179,7 @@
 
 [more-list]
 <tr>
-<td colspan="[scratch ui_num_col]" bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan="[scratch ui_num_col]" bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 <tr>
 <td bgcolor=__UI_C_INTBLOCK__>&nbsp;</td>
@@ -190,11 +190,11 @@
 [/more-list]
 
 <tr>
-<td colspan="[scratch ui_num_col]" bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan="[scratch ui_num_col]" bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
-<td colspan="[scratch ui_num_col]" bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan="[scratch ui_num_col]" bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
@@ -202,13 +202,6 @@
 <td colspan="[calc]$Scratch->{ui_num_col} - 1[/calc]" bgcolor=__UI_C_INTBLOCK__>
 
 
-[set Cancel]
-mv_todo=back
-[return-to click]
-[/set]
-
-	[set OK]
-	[/set]
 	<B></B>&nbsp;&nbsp;&nbsp;[button text="Ok" bold=1]
 		mv_todo=set
 		[return-to click]
@@ -250,10 +243,7 @@ mv_todo=return
 [/if-mm]
 	[return-to click]
 [/button]&nbsp;&nbsp;&nbsp;
-	[button text=Cancel]
-		mv_todo=back
-		[return-to click]
-	[/button]
+	<INPUT TYPE=submit NAME=mv_click VALUE=cancel>
 	[if-mm super]
 	<BR><b><INPUT TYPE=checkbox NAME=mv_auto_export [if !scratch ui_too_large]CHECKED [/if]VALUE="[value mv_data_table]">
 		Auto-export</b>

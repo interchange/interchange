@@ -1,10 +1,34 @@
-#$self = {
-#	INSTALLPRIVLIB => '/usr/local/interchange/lib',
-#	INSTALLARCHLIB => '/usr/local/interchange',
-#};
+my $base = $ARGV[0] || '/work/interchange';
+$self = {
+	INSTALLARCHLIB => $base,
+	INSTALLBIN     => "$base/bin",
+	INSTALLDIRS    => 'perl',
+	INSTALLMAN1DIR => "$base/doc",
+	INSTALLMAN3DIR => "$base/doc",
+	INSTALLPRIVLIB => "$base/lib",
+	INSTALLSCRIPT  => "$base/bin",
+};
+
+my %Special;
 
 use Config;
-require 'scripts/initp.pl';
+
+eval {
+	require 'scripts/initp.pl';
+};
+
+if(! $MV::Self ) {
+	$MV::Self = $self;
+	$Special{perlpath} = $Config{perlpath};
+	$Special{perlpath} .= <<EOF;
+
+
+eval 'exec $Config{perlpath} -S \$0 \${1+"\$@"}'
+    if 0; # not running under some shell
+EOF
+	$Special{perlpath} =~ s/\s+$//;
+}
+
 
 sub doit {
 	my ($key) = @_;
@@ -14,7 +38,8 @@ sub doit {
 		return $val;
 	}
 	return $MV::Self->{$key} unless $key =~ /[a-z]/;
-	return $Config{$key};
+	return $Special{$key} if defined $Special{$key};
+	$Config{$key};
 }
 
 DOIT: {
@@ -25,11 +50,9 @@ DOIT: {
 #
 # Interchange configuration dumper
 #
-# $Id: configdump.PL,v 1.8 2000-09-25 16:35:28 zarko Exp $
+# $Id: configdump.PL,v 1.9 2001-07-18 01:57:01 jon Exp $
 #
 # Copyright 1999, 2000 by Stefan Hornburg <racke@linuxia.de>
-#
-# See the file 'Changes' for information.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -94,7 +117,7 @@ unless ($#ARGV == 0) {
     exit 1;
 }
     
-my ($catalog, $name);
+my $catalog;
 
 $Vend::Cfg = {};
 
@@ -183,7 +206,7 @@ to standard output. This includes the default settings too.
 
 =head1 SEE ALSO
 
-mvdocs(8), dump(1), makecat(1), interchange(1)
+dump(1), makecat(1), interchange(1)
 
 =head1 LICENSE
 

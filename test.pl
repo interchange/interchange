@@ -5,6 +5,11 @@ use Errno;
 $cur_dir = cwd();
 $failed = 0;
 
+if($^O =~ /cygwin|win32/) {
+	print "no tests supported on Windows platform.\n";
+	exit;
+}
+
 die "Must be in build directory\n" unless -d 'blib';
 die "No tests defined for Windows\n" if $^O =~ /win32/i;
 
@@ -23,7 +28,7 @@ open(CONFIG, ">$ENV{MINIVEND_ROOT}/catalog.cfg")
 	or die "open: $!\n";
 
 print CONFIG <<EOF;
-MailOrderTo info\@akopia.com
+MailOrderTo  interchange\@redhat.com
 VendURL      http:/test
 SecureURL    http:/test
 Database     products products.asc DEFAULT

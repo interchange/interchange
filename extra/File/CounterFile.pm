@@ -1,6 +1,6 @@
 # This -*-perl -*- module implements a persistent counter class.
 #
-# $Id: CounterFile.pm,v 1.1 2000-05-26 18:50:31 heins Exp $
+# $Id: CounterFile.pm,v 1.2 2001-07-18 01:56:37 jon Exp $
 #
 
 package File::CounterFile;
@@ -63,14 +63,10 @@ and you can interpolate counters diretly into strings.
 It uses flock(2) to lock the counter file.  This does not work on all
 systems.  Perhaps we should use the File::Lock module?
 
-=head1 INSTALLATION
-
-Copy this file to the F<File> subdirectory of your Perl 5 library
-directory (often F</usr/local/lib/perl5>).
 
 =head1 COPYRIGHT
 
-Copyright (c) 1995-1996 Gisle Aas. All rights reserved.
+Copyright (c) 1995-1998 Gisle Aas. All rights reserved.
 
 This library is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
@@ -84,9 +80,16 @@ Gisle Aas <aas@sn.no>
 require 5.002;
 use Carp   qw(croak);
 use Symbol qw(gensym);
+my $rewind_check;
+eval {
+	require 5.005;
+	require Errno;
+	import Errno qw(EINTR);
+	$rewind_check = 1;
+};
 
 sub Version { $VERSION; }
-$VERSION = sprintf("%d.%02d", q$Revision: 1.1 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/);
 
 $MAGIC           = "#COUNTER-1.0\n";   # first line in counter files
 $DEFAULT_INITIAL = 0;                  # default initial counter value
@@ -95,11 +98,11 @@ $DEFAULT_INITIAL = 0;                  # default initial counter value
 $DEFAULT_DIR     = $ENV{TMPDIR} || "/usr/tmp";
 
 # Experimental overloading.
-%OVERLOAD = ('++'     => \&inc,
-	     '--'     => \&dec,
- 	     '""'     => \&value,
-	     fallback => 1,
-);
+use overload ('++'     => \&inc,
+	      '--'     => \&dec,
+	      '""'     => \&value,
+	      fallback => 1,
+             );
 
 
 sub new
@@ -110,6 +113,7 @@ sub new
     $file = "$DEFAULT_DIR/$file" unless $file =~ /^[\.\/]/;
     $initial = $DEFAULT_INITIAL unless defined $initial;
 
+    local($/, $\) = ("\n", undef);
     my $value;
     if (-e $file) {
 	croak "Specified file is a directory" if -d _;
@@ -117,18 +121,18 @@ sub new
 	my $first_line = <F>;
 	$value = <F>;
 	close(F);
-	croak "Bad counter magic in $file" unless $first_line eq $MAGIC;
+	croak "Bad counter magic '$first_line' in $file" unless $first_line eq $MAGIC;
 	chomp($value);
     } else {
 	open(F, ">$file") or croak "Can't create $file: $!";
 	print F $MAGIC;
-	print F $initial, "\n";
+	print F "$initial\n";
 	close(F);
 	$value = $initial;
     }
 
     bless { file    => $file,  # the filename for the counter
-	    value   => $value, # the current value
+	   'value'  => $value, # the current value
 	    updated => 0,      # flag indicating if value has changed
 	    # handle => XXX,   # file handle symbol. Only present when locked
 	  };
@@ -144,22 +148,26 @@ sub locked
 sub lock
 {
     my($self) = @_;
-	# MODIFICATION FOR WIN32, UGGH
-	return $self if $ =~ /win32/i;
     $self->unlock if $self->locked;
 
     my $fh = gensym();
     my $file = $self->{file};
 
     open($fh, "+<$file") or croak "Can't open $file: $!";
-    flock($fh, 2) or croak "Can't flock: $!";  # 2 = exlusive lock
+	my $lstatus;
+    do {
+		$lstatus = flock($fh, 2)
+	} while $rewind_check and ! $lstatus and $!{EINTR};
+	croak "Can't flock: $!"
+		if ! $lstatus;  # 2 = exlusive lock
 
+    local($/) = "\n";
     my $magic = <$fh>;
     if ($magic ne $MAGIC) {
 	$self->unlock;
 	croak("Bad counter magic '$magic' in $file");
     }
-    chomp($self->{value} = <$fh>);
+    chomp($self->{'value'} = <$fh>);
 
     $self->{handle}  = $fh;
     $self->{updated} = 0;
@@ -176,9 +184,17 @@ sub unlock
 
     if ($self->{updated}) {
 	# write back new value
-	seek($fh, 0, 0) or croak "Can't seek to beginning: $!";
+	local($\) = undef;
+	my $sstatus;
+	do {
+		$sstatus = seek($fh, 0, 0)
+	} while $rewind_check and ! $sstatus and $!{EINTR};
+		
+	croak "Can't seek to beginning: $!"
+		if ! $sstatus;
+
 	print $fh $MAGIC;
-	print $fh "$self->{value}\n";
+	print $fh "$self->{'value'}\n";
     }
 
     close($fh) or warn "Can't close: $!";
@@ -192,15 +208,15 @@ sub inc
     my($self) = @_;
 
     if ($self->locked) {
-	$self->{value}++;
+	$self->{'value'}++;
 	$self->{updated} = 1;
     } else {
 	$self->lock;
-	$self->{value}++;
+	$self->{'value'}++;
 	$self->{updated} = 1;
 	$self->unlock;
     }
-    $self->{value}; # return value
+    $self->{'value'}; # return value
 }
 
 
@@ -210,18 +226,18 @@ sub dec
 
     if ($self->locked) {
 	croak "Autodecrement is not magical in perl"
-	    unless $self->{value} =~ /^\d+$/;
-	$self->{value}--;
+	    unless $self->{'value'} =~ /^\d+$/;
+	$self->{'value'}--;
 	$self->{updated} = 1;
     } else {
 	$self->lock;
 	croak "Autodecrement is not magical in perl"
-	    unless $self->{value} =~ /^\d+$/;
-	$self->{value}--;
+	    unless $self->{'value'} =~ /^\d+$/;
+	$self->{'value'}--;
 	$self->{updated} = 1;
 	$self->unlock;
     }
-    $self->{value}; # return value
+    $self->{'value'}; # return value
 }
 
 
@@ -230,10 +246,10 @@ sub value
     my($self) = @_;
     my $value;
     if ($self->locked) {
-	$value = $self->{value};
+	$value = $self->{'value'};
     } else {
 	$self->lock;
-	$value = $self->{value};
+	$value = $self->{'value'};
 	$self->unlock;
     }
     $value;

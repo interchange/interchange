@@ -1,10 +1,34 @@
-#$self = {
-#	INSTALLPRIVLIB => '/usr/local/interchange/lib',
-#	INSTALLARCHLIB => '/usr/local/interchange',
-#};
+my $base = $ARGV[0] || '/work/interchange';
+$self = {
+	INSTALLARCHLIB => $base,
+	INSTALLBIN     => "$base/bin",
+	INSTALLDIRS    => 'perl',
+	INSTALLMAN1DIR => "$base/doc",
+	INSTALLMAN3DIR => "$base/doc",
+	INSTALLPRIVLIB => "$base/lib",
+	INSTALLSCRIPT  => "$base/bin",
+};
+
+my %Special;
 
 use Config;
-require 'scripts/initp.pl';
+
+eval {
+	require 'scripts/initp.pl';
+};
+
+if(! $MV::Self ) {
+	$MV::Self = $self;
+	$Special{perlpath} = $Config{perlpath};
+	$Special{perlpath} .= <<EOF;
+
+
+eval 'exec $Config{perlpath} -S \$0 \${1+"\$@"}'
+    if 0; # not running under some shell
+EOF
+	$Special{perlpath} =~ s/\s+$//;
+}
+
 
 sub doit {
 	my ($key) = @_;
@@ -14,7 +38,8 @@ sub doit {
 		return $val;
 	}
 	return $MV::Self->{$key} unless $key =~ /[a-z]/;
-	return $Config{$key};
+	return $Special{$key} if defined $Special{$key};
+	$Config{$key};
 }
 
 DOIT: {
@@ -25,11 +50,9 @@ DOIT: {
 #
 # Interchange restarter
 #
-# $Id: restart.PL,v 1.8 2000-09-25 16:24:05 zarko Exp $
+# $Id: restart.PL,v 1.9 2001-07-18 01:57:01 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
-#
-# See the file 'Changes' for information.
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -107,8 +130,8 @@ my($name,$Trysu);
 if ($< == 0) {
 	$name = get_id() || 'YOUR_INTERCHANGE_USER_NAME';
 	die "Interchange user ID not set in $Global::VendRoot/_uid.\n" if $name eq 'YOUR_INTERCHANGE_USER_NAME';
-	if(-t) {
-		print <<EOM unless $force;
+	if(! $force and -t) {
+		print <<EOM;
 
 The Interchange server should not be run as root. It should run
 as a the user name you configured in when you set up the catalogs.
@@ -175,11 +198,11 @@ a system startup script.
 
 =head1 SEE ALSO
 
-interchange(1), mvdocs(8), http://www.akopia.com/
+interchange(1), http://interchange.redhat.com/
 
 =head1 AUTHOR
 
-Mike Heins, <heins@akopia.com>
+Mike Heins, <mheins@redhat.com>
 
 
 _EoP_

@@ -1,0 +1,11 @@
+#! /bin/sh -e
+
+. /etc/interchange/init.cfg
+OPTS="--interchangeuser=$USER --linkprogram=/usr/lib/cgi-bin/ic/vlink --documentroot=$DOCROOT"
+CMD="/usr/lib/interchange/bin/makecat $OPTS $@"
+if [ "$UID" -eq 0 ]; then
+	su -s /bin/sh -c "$CMD" $USER
+else
+	OPTS="$OPTS --nocfg --norunning"
+	/usr/lib/interchange/bin/makecat -c makecat.cfg $OPTS $@
+fi

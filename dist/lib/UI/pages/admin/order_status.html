@@ -5,16 +5,102 @@
 [calc]
 	$Values->{ui_data_fields} = $CGI->{ui_data_fields} = 'status archive delete';
 	$CGI->{mv_data_table} = 'transactions';
-	$Scratch->{arg} = $CGI->{item_id} = $CGI->{order};
+	$CGI->{item_id} = $CGI->{order};
 	return;
 [/calc]
 
-@_UI_STD_DBEDIT_HEAD_@
+[comment]BEGIN former UI_STD_DBEDIT_HEAD[/comment]
+
+[if cgi mv_data_table]
+[value name=mv_data_table set="[cgi mv_data_table]" hide=1]
+[else]
+[value name=mv_data_table set="[calc]$Config->{ProductFiles}[0][/calc]" hide=1]
+[/else]
+[/if]
+
+[if-mm !tables]
+	[calc]
+		delete $Scratch->{no_bounce};
+		my $tmp = delete $Scratch->{ui_override_table};
+		if($tmp eq $Values->{mv_data_table}) {
+			$Scratch->{no_bounce} = 1;
+		}
+		return;
+	[/calc]
+	[if scratch no_bounce]
+		[set no_bounce][/set]
+	[else]
+		[seti ui_error]Not authorized for table [value mv_data_table].[/seti]
+		[bounce page="__UI_BASE__/error"]
+	[/else]
+	[/if]
+[/if-mm]
+
+[if-mm function=keys name="[cgi item_id]"]
+[else][bounce href="[area admin/special/key_violation]"][/else]
+[/if-mm]
+
+[perl tables="[value mv_data_table] __UI_META_TABLE__"]
+my $table = $Values->{mv_data_table};
+my $db = $Db{$table};
+my $mdb = $Db{__UI_META_TABLE__};
+if(! $db) {
+	$Scratch->{ui_error} = "Bad table '$table'.";
+	$Tag->bounce( { page => '__UI_BASE__/error' } );
+}
+
+$Values->{ui_data_key_name} = $db->config('KEY');
+
+###############################################################
+# Get the field display information including breaks and labels
+###############################################################
+if( $mdb
+	and ! $CGI->{ui_data_fields}
+	and ! $CGI->{ui_data_fields_all}
+	and $mdb->record_exists($table)
+	)
+{
+	$CGI->{ui_data_fields} = $mdb->field($table, 'options');
+	$CGI->{ui_data_fields} =~ s/\r\n/\n/g;
+	$CGI->{ui_data_fields} =~ s/\r/\n/g;
+	if($CGI->{ui_data_fields} =~ /\n\n/) {
+		my @breaks;
+		my @break_labels;
+		while ($CGI->{ui_data_fields} =~ s/\n+(?:\n=(.*)\n)?\n+(\w+)/\n$2/) {
+			push @breaks, $2;
+			push @break_labels, "$2=$1" if $1;
+		}
+		$CGI->{ui_break_before} = join " ", @breaks;
+		$CGI->{ui_break_before_label} = join ",", @break_labels;
+	}
+	$CGI->{ui_data_fields} =~ s/^\s+//;
+	$CGI->{ui_data_fields} =~ s/\s+$//;
+}
+
+$Values->{ui_data_fields} =
+	$CGI->{ui_data_fields} ||
+	$CGI->{mv_data_fields} ||
+	$Values->{"$table:ui_data_fields"} || 
+	(join " ", $db->columns());
+#Log("data fields: '$Values->{ui_data_fields}' cgi='$CGI->{ui_data_fields}'");
+$Values->{ui_data_fields} =~ s/[,\0\s]+/ /g;
+###############################################################
+
+my @cols = split /[,\0\s]/, $Values->{ui_data_fields};
+@cols = grep /:/ || $db->column_exists($_), @cols;
+
+$Values->{ui_data_fields} = $CGI->{ui_data_fields} = join " ", @cols;
+return;
+
+[/perl]
+
+[comment]END former UI_STD_DBEDIT_HEAD[/comment]
+
 [set ui_class]Orders[/set]
-[seti page_title]Order status -- [cgi order][/seti]
-[tmp page_banner]Order status: order <B>[page href="__UI_BASE__/order_view" form="order=[cgi order]"][cgi order]</A></B>[/tmp]
+[seti page_title][L]Order status[/L] -- [cgi order][/seti]
+[tmp page_banner][L]Order status[/L]: [L]order[/L] <B>[page href="__UI_BASE__/order_view" form="order=[cgi order]"][cgi order]</A></B>[/tmp]
 [set help_name]item.edit[/set]
-[set icon_name]admin/icon_item.gif[/set]
+[set icon_name]icon_item.gif[/set]
 
 @_UI_STD_HEAD_@
 
@@ -41,12 +127,12 @@
 <table CELLSPACING=0 CELLMARGIN=0 WIDTH="100%">
 [loop list="[cgi order]"]
 <TR>
-<TD ALIGN=RIGHT><B>Order date</B></TD>
+<TD ALIGN=RIGHT><B>[L]Order date[/L]</B></TD>
 <TD BGCOLOR="__UI_T_ROW_ODD__">
 [convert-date][loop-data transactions order_date][/convert-date]</TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT><B>Status last updated</B></TD>
+<TD ALIGN=RIGHT><B>[L]Status last updated[/L]</B></TD>
 <TD BGCOLOR="__UI_T_ROW_ODD__">
 [convert-date][loop-data transactions update_date][/convert-date]</TD>
 </TR>
@@ -67,7 +153,7 @@
 <TD ALIGN=RIGHT>&nbsp;</TD>
 <TD BGCOLOR="__UI_T_ROW_ODD__">
 [if-mm advanced order]
-	[button form=transactions bold=1 text="Ship checked order lines, send email to customer if appropriate"]
+	[button form=transactions bold=1 text="[L]Ship checked order lines, send email to customer if appropriate[/L]"]
 	mv_todo=back
 	order=[cgi code]
 	[tag flag write]orderline transactions[/tag]
@@ -202,16 +288,17 @@
 	<INPUT TYPE=checkbox NAME=lines_shipped VALUE="[partial-code]" CHECKED> Line [partial-increment] ([partial-filter 16][partial-data orderline description][/partial-filter])<BR>
 	[/loop]
 	<BR>
-	[button bold=1 text="Change global status"]
+	[button bold=1 text="[L]Change global status[/L]"]
 	order=[cgi code]
 	[/button]&nbsp;&nbsp;&nbsp;
-	[button text="Cancel"]
+	[button text="[L]Cancel[/L]"]
 	mv_nextpage=__UI_BASE__/order_view
 	order=[cgi code]
 	mv_todo=back
+	[set Cancel][/set]
 	[/button]
 [else]
-	[button text="Back"]
+	[button text="[L]Back[/L]"]
 	mv_nextpage=__UI_BASE__/order_view
 	order=[cgi code]
 	mv_todo=back
@@ -226,7 +313,7 @@
 
 [/loop]
 
-<h2>Individual line item status</H2>
+<h2>[L]Individual line item status[/L]</H2>
 <TABLE>
 [loop search="
 		fi=orderline
@@ -238,13 +325,12 @@
 [calc]
 	$Values->{ui_data_fields} = $CGI->{ui_data_fields} = 'code status delete';
 	$CGI->{mv_data_table} = 'transactions';
-	$Scratch->{arg} = $CGI->{item_id} = $CGI->{order};
+	$CGI->{item_id} = $CGI->{order};
 	return;
 [/calc]
 
 <TR><TD>
 
-@@UI_STD_DBEDIT_HEAD@@
 <FORM METHOD=POST ACTION="[area ui]" NAME="orderline[loop-increment]">
 <INPUT TYPE=hidden NAME=mv_doit VALUE="set">
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_filter">
@@ -262,12 +348,12 @@
 <TR>
 <TD ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__"><B>SKU/Description</B></TD>
 <TD BGCOLOR="__UI_T_ROW_ODD__">
-SKU: [loop-data orderline sku], [loop-data orderline quantity]@[filter %.2f][loop-data orderline price][/filter] = [currency][loop-data orderline subtotal][/currency]<BR>
+[L]SKU[/L]: [loop-data orderline sku], [loop-data orderline quantity]@[filter %.2f][loop-data orderline price][/filter] = [currency][loop-data orderline subtotal][/currency]<BR>
 [loop-data orderline description]
 </TD>
 </TR>
 <TR>
-<TD ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__"><B>Last updated</B></TD>
+<TD ALIGN=RIGHT><FONT COLOR="__UI_C_TITLEBARTXT__"><B>[L]Last updated[/L]</B></TD>
 <TD BGCOLOR="__UI_T_ROW_ODD__">
 [convert-date][loop-data orderline update_date][/convert-date]</TD>
 </TR>

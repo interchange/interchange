@@ -1,0 +1,68 @@
+[perl]
+
+my @domain = split /\./, $Variable->{SERVER_NAME};
+my $domain = join ".", @domain[ $#domain - 1, $#domain ];
+my $cc = pop @domain;
+if(length ($cc) < 3) {
+	$cc = uc $cc;
+}
+else {
+	$cc = 'US',
+}
+
+my $zip;
+my ($city, $state) = split /\s*,\s*/, $Variable->{CITY}, 2;
+$state =~ s/\s+([\d][-\d]+)// and $zip = $1;
+$state =~ s/\W+//g;
+$state = uc $state;
+
+%vars = (
+	address => qq{__ADDRESS__},
+	adminuser => qq{},
+	adminpass => qq{},
+	city => q{__TOWN__} || $city,
+	code => qq{store},
+	colorset => q{__STYLE__},
+	company => q{__COMPANY__},
+	country => $cc,
+	domainname => $domain,
+	mailorderto => q{__MailOrderTo__},
+	emailservice => q{service@} . $domain,
+	emailinfo => q{info@} . $domain,
+	image_opts => q{__CLICK_ENLARGE__},
+	imagepos => q{__CENTERED_FLYPAGE__},
+	instock => q{__IN_STOCK_OPTS__},
+	outstock => q{__IN_STOCK_NOTIFY__},
+	logo => q{__LOGO__},
+	paycheck => q{__CHECK_ACCEPTED_},
+	paycod => q{__COD_ACCEPTED__},
+	paygate => q{__MV_PAYMENT_MODE__},
+	paymentid => q{__MV_PAYMENT_ID__},
+	paymo => undef,
+	paypo => q{__PO_ACCEPTED__},
+	phone => q{__PHONE__},
+	saleprice => q{__SALE_PRICE__},
+	sep_ship => q{__SEPARATE_SHIPPING__},
+	wholeprice => q{__DEALER_PRICE__},
+	shipmethod => join("\n", keys %{$Config->{Shipping_desc}}),
+	shipzip => q{__UPS_ORIGIN__},
+	shoppass => qq{},
+	shopuser => qq{},
+	smlogo => q{__SMLOGO__},
+	state => q{__STATE__} || $state,
+	taxrate => q{__TAXRATE__},
+	taxlocation => q{__TAXAREA__},
+	tinycart => q{__USE_TINY_CART__},
+	taxship => q{__TAXSHIP__},
+	tollfree => qq{__TOLLFREE__},
+	zip => q{__ZIP__} || $zip,
+);
+
+for(keys %vars) {
+	$Values->{$_} = $vars{$_};
+	$out .= "$_=$Values->{$_}<BR>";
+}
+return $out;
+[/perl]
+
+[bounce page=__UI_BASE__/wizard/step_company]

@@ -1,4 +1,4 @@
-[if-mm !reconfig]
+@_UI_STD_INIT_@[if-mm !reconfig]
 [set ui_error]Not authorized to regenerate.[/set]
 [bounce page="__UI_BASE__/error"]
 [/if-mm]
@@ -12,7 +12,7 @@
 					return join " ", 1 .. $hk;
 				[/calc][/set]
 [/seti]
-[set icon_name]admin/icon_regen.gif[/set]
+[set icon_name]icon_regen.gif[/set]
 @_UI_STD_HEAD_@
 
 [L]Reconfiguring catalog[/L]: ...<BR>[seti reconfig_status][reconfigure][/seti]

@@ -1,0 +1,32 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+[/comment]
+
+[tmp page_title]__COMPANY__ -- Shipping Address Removed[/tmp]
+
+@_LEFTONLY_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+[perl]
+my $dbname = 'ship_addresses';
+my @addresses = split /\0/, $Values->{remove_sa};
+my $sql_req = "delete from $dbname WHERE code = ";
+$sql_req .= join(' or code = ', @addresses);
+$Scratch->{sql_req} = $sql_req;
+return "";
+[/perl]
+
+[tag flag write]ship_addresses[/tag]
+[seti remove_addresses][query sql="[scratch sql_req]"][/query][/seti]
+
+<br>
+The selected shipping addresses have been removed.
+<P>			
+
+<a href="[area ship_addresses]"><b>BACK</b></a>
+
+<!-- END CONTENT -->
+
+@_LEFTONLY_BOTTOM_@

@@ -1,3 +1,4 @@
+@_UI_STD_INIT_@
 [if-mm function="!files" name="[value ui_upload_fn]"]
 [seti ui_error] Not allowed to upload [value ui_upload_fn].[/seti]
 [bounce page=__UI_BASE__/error]
@@ -28,7 +29,7 @@
 							outfile="[value ui_upload_fn]"
 						]
 					|]
-[bounce href="[either][return-to url][or][area __UI_BASE__/genupload][/either]"]
+[bounce href="[either][return-to url][or][area __UI_BASE__/file_transfer][/either]"]
 [else]
 [seti ui_error] Error writing file [value ui_upload_fn].[/seti]
 [bounce page=__UI_BASE__/error]

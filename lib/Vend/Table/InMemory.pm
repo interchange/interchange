@@ -1,13 +1,10 @@
-# Table/InMemory.pm: store a table in memory
+# Vend::Table::InMemory - Store an Interchange table in memory
 #
-# $Id: InMemory.pm,v 1.4 2001-03-29 16:32:52 heins Exp $
+# $Id: InMemory.pm,v 1.5 2001-07-18 01:56:52 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
+# This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -28,7 +25,7 @@
 package Vend::Table::InMemory;
 use Vend::Table::Common;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 use strict;
 
 # 0: column names
@@ -67,17 +64,20 @@ sub import_db {
 }
 
 sub create {
-    my ($class, $config, $columns) = @_;
+	my ($class, $config, $columns) = @_;
 
-    $config = {} unless defined $config;
+	$config = {} unless defined $config;
 
-    die "columns argument $columns is not an array ref\n"
-        unless CORE::ref($columns) eq 'ARRAY';
+	undef $config->{Transactions};
 
-    my $column_index = Vend::Table::Common::create_columns($columns, $config);
+	die "columns argument $columns is not an array ref\n"
+		unless CORE::ref($columns) eq 'ARRAY';
 
-    my $tie = {};
-    my $s = [
+	my $column_index = Vend::Table::Common::create_columns($columns, $config);
+	$config->{_Auto_number} = 1 if $config->{AUTO_NUMBER};
+
+	my $tie = {};
+	my $s = [
 				$config,
 				undef,
 				$columns,
@@ -87,7 +87,7 @@ sub create {
 				1
 			];
 #::logDebug("Create database $config->{name}: " . ::uneval($s));
-    bless $s, $class;
+	bless $s, $class;
 }
 
 sub new {
@@ -100,112 +100,116 @@ sub close_table {
 }
 
 sub row {
-    my ($s, $key) = @_;
-    my $a = $s->[$TIE_HASH]{$key};
-    die "There is no row with index '$key'" unless defined $a;
-    return @$a;
+	my ($s, $key) = @_;
+	my $a = $s->[$TIE_HASH]{$key};
+	die "There is no row with index '$key'" unless defined $a;
+	return @$a;
 }
 
 sub row_hash {
-    my ($s, $key) = @_;
-    my $a = $s->[$TIE_HASH]{$key};
+	my ($s, $key) = @_;
+	my $a = $s->[$TIE_HASH]{$key};
 #::logDebug("here is row $key: " . ::uneval($a));
-    die "There is no row with index '$key'" unless defined $a;
+	die "There is no row with index '$key'" unless defined $a;
 	my %row;
 	@row{ @{$s->[$COLUMN_NAMES]} } = @$a;
-    return \%row;
+	return \%row;
 }
 
 *row_array = \&row;
 
 sub columns {
-    my ($s) = @_;
-    return @{$s->[$COLUMN_NAMES]};
+	my ($s) = @_;
+	return @{$s->[$COLUMN_NAMES]};
 }
 
 
 sub field_settor {
-    my ($s, $column) = @_;
-    my $index = $s->column_index($column);
-    return sub {
-        my ($key, $value) = @_;
-        my $a = $s->[$TIE_HASH]{$key};
-        $a = $s->[$TIE_HASH]{$key} = [] unless defined $a;
-        $a->[$index] = $value;
-        return undef;
-    };
+	my ($s, $column) = @_;
+	my $index = $s->column_index($column);
+	return sub {
+		my ($key, $value) = @_;
+		my $a = $s->[$TIE_HASH]{$key};
+		$a = $s->[$TIE_HASH]{$key} = [] unless defined $a;
+		$a->[$index] = $value;
+		return undef;
+	};
 }
 
 sub set_row {
-    my ($s, @fields) = @_;
+	my ($s, @fields) = @_;
 	my $key = $fields[$s->[$KEY_INDEX]];
-    $s->[$TIE_HASH]{$key} = [@fields];
+	$s->[$TIE_HASH]{$key} = [@fields];
 }
 
 sub inc_field {
-    my ($s, $key, $column, $adder) = @_;
-    my $a = $s->[$TIE_HASH]{$key};
-    $a = $s->[$TIE_HASH]{$key} = [] unless defined $a;
-    $a->[$s->column_index($column)] += $adder;
+	my ($s, $key, $column, $adder) = @_;
+	my $a = $s->[$TIE_HASH]{$key};
+	$a = $s->[$TIE_HASH]{$key} = [] unless defined $a;
+	$a->[$s->column_index($column)] += $adder;
 }
 
 sub each_record {
-    my ($s) = @_;
-    my $key;
+	my ($s) = @_;
+	my $key;
 
 #::logDebug("reached each_record InMemory");
 	return $s->each_sorted() if defined $s->[$EACH];
-    for (;;) {
-        $key = each %{$s->[$TIE_HASH]};
+	for (;;) {
+		$key = each %{$s->[$TIE_HASH]};
 		return () unless defined $key;
 		return ($key, $s->row($key));
-    }
+	}
 }
 
 sub each_nokey {
-    my ($s) = @_;
+	my ($s) = @_;
 #::logDebug("reached each_nokey InMemory");
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
-    my $key;
+	my $key;
 
-    for (;;) {
-        $key = each %{$s->[$TIE_HASH]};
+	for (;;) {
+		$key = each %{$s->[$TIE_HASH]};
 		return () unless defined $key;
 		return ($s->row($key));
-    }
+	}
 }
 
 
 #sub each_record {
-#    my ($s) = @_;
-#    my @e = each %{$s->[$TIE_HASH]};
-#    if (@e) {
-#        return ($e[0], @{$e[1]});
-#    }
-#    else {
-#        return ();
-#    }
+#	my ($s) = @_;
+#	my @e = each %{$s->[$TIE_HASH]};
+#	if (@e) {
+#		return ($e[0], @{$e[1]});
+#	}
+#	else {
+#		return ();
+#	}
 #}
 
 sub record_exists {
-    my ($s, $key) = @_;
+	my ($s, $key) = @_;
 #::logDebug("$key exist test");
-    return exists($s->[$TIE_HASH]{$key});
+	return exists($s->[$TIE_HASH]{$key});
 }
 
 *test_record = \&record_exists;
 
 sub delete_record {
-    my ($s, $key) = @_;
-    delete($s->[$TIE_HASH]{$key});
+	my ($s, $key) = @_;
+	delete($s->[$TIE_HASH]{$key});
 }
 
 sub clear_table {
-    my ($s) = @_;
-    %{$s->[$TIE_HASH]} = ();
+	my ($s) = @_;
+	%{$s->[$TIE_HASH]} = ();
 }
 
 sub touch {
+	1
+}
+
+sub isopen {
 	1
 }
 
@@ -219,5 +223,7 @@ sub ref {
 *field			= \&Vend::Table::Common::field;
 *numeric		= \&Vend::Table::Common::numeric;
 *set_field		= \&Vend::Table::Common::set_field;
+*suicide		= \&Vend::Table::Common::suicide;
+*set_slice		= \&Vend::Table::Common::set_slice;
 
 1;

@@ -2,7 +2,7 @@
 [set ui_class]Admin[/set]
 [set page_perm]knar[/set]
 [set help_name]knar.main[/set]
-[set icon_name]admin/icon_config.gif[/set]
+[set icon_name]icon_config.gif[/set]
 @_UI_STD_HEAD_@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
@@ -11,7 +11,7 @@
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 [loop search="
@@ -25,17 +25,30 @@
 "]
 <tr><td align=left bgcolor=__UI_C_INTBLOCK__>
 <font size="+1" face="arial,helvetica,sans-serif">
+[comment]
 <a href="[area href="__UI_BASE__/spread" form=|
+                mv_data_table=variable
+                page_title=Preferences -- [loop-code]
+                ui_meta_specific=1 
+                ui_hide_key=1
+                ui_data_fields=Variable pref_group
+                ui_text_qualification=pref_group=[loop-code]
+                ui_spreadsheet_rows=20
+                ui_spread_size:variable=50
+                ui_spread_meta:variable=1
+                ui_return_to=__UI_BASE__/preferences
+                help_name=knar.main
+|]"> [loop-code] </a>
+[/comment]
+<a href="[area href="__UI_BASE__/flex_select" form=|
 				mv_data_table=variable
-				page_title=Preferences -- [loop-code]
 				ui_meta_specific=1
 				ui_hide_key=1
-				ui_data_fields=Variable pref_group
 				ui_text_qualification=pref_group=[loop-code]
-				ui_spreadsheet_rows=20
-				ui_spread_size:variable=50
-				ui_spread_meta:variable=1
 				ui_return_to=__UI_BASE__/preferences
+				ui_return_to=page_title=Preferences -- [loop-code]
+				ui_return_to=ui_text_qualification=pref_group=[loop-code]
+				ui_return_to=ui_hide_key=1
 				help_name=knar.main
 |]"> [loop-code] </a>
 </font>
@@ -45,7 +58,7 @@
 
 [if !variable UI_META_LINK]
 <tr>
-<td bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
@@ -66,15 +79,33 @@
 [/if]
 
 <tr>
-<td bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr><td bgcolor=__UI_C_INTBLOCK__>
-<a href="http://developer.akopia.com/cgi-bin/ic/register">Register</a>
+<a href="http://interchange.redhat.com/cgi-bin/ic/register.html">Register</a>
 </td></tr>
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+<tr><td bgcolor=__UI_C_INTBLOCK__>
+Personal CSS
+<FORM ACTION="[area @@MV_PAGE@@]" METHOD=post>
+<INPUT TYPE=hidden NAME=mv_action VALUE=refresh
+<TEXTAREA COLS=70 ROWS=10 NAME=personal_css>[value personal_css]</textarea><INPUT TYPE=submit VALUE="Set CSS">
+<br>
+<i>(personal changes to presentation)</i>
+</FORM>
+Current system CSS
+<SMALL><SMALL><PRE>
+@_UI_STYLE_@
+</PRE></SMALL></SMALL>
+</td></tr>
+
+<tr>
+<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

@@ -1,49 +1,51 @@
 =head1 NAME
 
-Catalog-Building Tutorial
+iccattut - Catalog-Building Tutorial
+
+=head1 DESCRIPTION
 
 =head1 Purpose
 
-This document is a tutorial that guides you through constructing a
-simple Interchange catalog. The demo catalogs that ship with
-Interchange have become rather complex since they attempt to highlight
-some of the many capabilities of Interchange offers. As a template for
-your own catalog, the demos can be a somewhat intimidating place to
-start.
+The purpose of this document is to guide you through constructing a
+simple Interchange catalog from scratch. The demo catalog that ships
+with Interchange is quite complex since it highlights some of the many
+capabilities that Interchange offers. As a template for your own
+catalog, the demos can either be an intimidating place to start or too
+customized to relate to your business.
 
-The simple catalog you create in this tutorial should give you a feel
-for the Interchange system. It should also be a stepping stone to a
-more complete and functional ecommerce system built with Interchange.
-To this end, this tutorial will take a minimum of initiative and rely
-as much as possible on default settings. It will use as few of
-Interchange's capabilities as possible, while still building a usable
-store. The resultant site will be simple. It will be unappealing. Your
-friends would make fun of you if you used it in real life. It should,
-however, be instructive.
+The simple catalog you create using this tutorial should give you a
+feel for the basic Interchange system. It should also be considered a
+stepping stone to a more complete and functional e-commerce system
+built with Interchange. The tutorial relies as much as possible on
+default settings to accentuate how Interchange works. It will use as
+few of Interchange's capabilities as possible, while still building a
+usable store. The resulting site will be simple but usable. The value
+of this tutorial is not in the resulting e-commerce site, but in the
+instruction that occurs along the way.
 
-We encourage you to create the files used in this tutorial yourself.
-Compared to just downloading ready-to-go files, you'll learn much more
-when you create the directory structure and use your favorite text
-editor to create files in the proper places on your own system as they
-are discussed.
+It is recommended that you create the files used in this tutorial
+yourself. You will learn more by creating the directory structure and
+using your favorite text editor to create files in the proper places
+on your own system as they are discussed.
 
-=head1 Preliminary
+=head1 Before you begin
+
+This section explains the initial set up tasks that must be completed
+before you can begin building your simple e-commerce site.
 
 =head2 Install Interchange and the demo catalog
 
-The easiest way to get Interchange and the demo set up is with an
-I<RPM install>, on the Red Hat Linux or Linux Mandrake operating
-systems. Another way is by unpacking an Interchange tarball, or
-checking out a copy of the CVS repository, and doing a I<manual
-installation>. To further complicate matters, this can be done either
-as a regular user, or as root with a special Interchange user.
+The easiest way to get Interchange and the demo set up is through an
+I<RPM install> on the Red Hat Linux or Linux Mandrake operating
+systems. You can also get Interchange by unpacking an Interchange
+tarball or checking out a copy of the CVS repository and doing a
+I<manual installation>. These installations can be done either as a
+regular user or as root with a special Interchange user.
 
-Detailed installation instructions are beyond the scope of this
-document. However, you need to know which type of installation you
-have so you know where to place the various files we will create.
-Before going any further, verify that Interchange is properly
-installed and the demo catalog runs as expected, and note which type
-of installation you have:
+You must also know what type of installation you ran so you know where
+to place the various files created. Before proceeding, verify that
+Interchange is properly installed. Also, which type of installation
+you ran:
 
 =over 4
 
@@ -61,37 +63,28 @@ Manual install as regular user
 
 =back
 
-Huge amounts of frustration can be avoided by making sure that the
-demo works correctly before venturing off on your own.
+B<Note: >After installation, F<makecat> should be run to build your
+catalog. For information on installing Interchange and building your
+catalog using F<makecat>, see the I<Red Hat Interchange 4.8: Getting
+Started Guide>. Do not to continue with this tutorial without a
+working demo catalog.
 
-=head2 Why we need the demo catalog
-
-In this tutorial, we want only to create a single installed catalog.
-By contrast, we normally discuss catalog B<templates> such as
-I<construct>, I<barry>, and I<simple>, from which one can create
-multiple new catalogs, set up in various ways. The F<makecat> program
-is used to generate individual catalogs from catalog templates, but we
-want to avoid using it for this tutorial to keep things simple. So,
-we're going to take a few shortcuts that rely on the demo catalog
-having already been installed by F<makecat>.
-
-Installing the demo catalog did a few things for us. First, it set up
-the Interchange global configuration file F<interchange.cfg>, which
-resides in the Interchange software directory. Second, it compiled the
-link program for your specific server and placed the executable
-program in your cgi-bin directory.
+Installing the demo catalog set up the Interchange global
+configuration file F<interchange.cfg>, which resides in the
+Interchange software directory. Also, it compiled the link program for
+your specific server and placed the executable program in your cgi-bin
+directory. This is necessary for your catalog to run properly.
 
 =head2 The Interchange operating system user
 
 If Interchange was installed as a regular user, that will be the user
-Interchange will run as. But if Interchange was installed as root or
-from an RPM, you need to know the name of the separate Interchange
-user. The Interchange daemon does not run as root, or even as the web
-server user (often www or httpd or nobody), but rather as its own
-user. Usually the username is C<interch>. If Interchange was installed
-from RPM, or with the default source installation settings, this will
-be the case. If a different user name was chosen, you will need to
-find out what it is.
+Interchange runs as. If Interchange was installed as root or from an
+RPM, you need to know the name of the separate Interchange user. The
+Interchange daemon will not run as root, or even as the web server
+user (often www or httpd or nobody). If Interchange was installed from
+the RPM, or with the default source installation settings, the default
+username is interch. If a different user name was established, you
+will need to know what it is.
 
 =head2 Important directories
 
@@ -103,404 +96,381 @@ them:
 
 =item *
 
-Interchange software directory
-
-RPM install: /usr/lib/interchange
-
-Manual install as root: /usr/local/interchange
-
-Manual install as regular user: /home/username/interchange
+Interchange software directory B<.RPM install:> /usr/lib/interchange
+B<.Manual install as root:> /usr/local/interchange B<.Manual install
+as regular user:> /home/username/interchange
 
 =item *
 
-Catalogs directory
-
-RPM install: /var/lib/interchange
-
-Manual install as root: /usr/local/interchange/catalogs
-
-Manual install as regular user: /home/username/catalogs
+Catalogs directory B<.RPM install:> /var/lib/interchange B<.Manual
+install as root:> /usr/local/interchange/catalogs B<.Manual install as
+regular user:> /home/username/catalogs
 
 =item *
 
-cgi-bin directory
-
-RPM install or source install as root (Red Hat 6, Linux Mandrake):
-/home/httpd/cgi-bin
-
-RPM install or source install as root (Red Hat 7): /var/www/cgi-bin
-
-Manual install as root (locally installed web server):
-/usr/local/htdocs, /opt/www, ...
-
-Manual install as regular user: /home/username/public_html (with .cgi
-extension)
+cgi-bin directory B<.RPM install or source install as root (Red Hat 6,
+Linux Mandrake):> /home/httpd/cgi-bin B<.RPM install or source install
+as root (Red Hat 7):> /var/www/cgi-bin B<.Manual install as root
+(locally installed web server):> /usr/local/htdocs, /opt/www, ...
+B<.Manual install as regular user:> /home/username/public_html (with
+.cgi extension)
 
 =back
 
-B<Note: >Installation of Interchange is extremely flexible and the
-exact locations on your system may vary. Please do yourself a favor
-and do not proceed until you are sure you have this information and
-have the necessary permissions to write to these directories.
+B<Note: >The installation of Interchange is very flexible and the file
+locations on your system may vary, depending on how your system was
+set up. It is recommended that you not proceed until you are sure you
+have this information and the necessary permissions to write to these
+directories.
 
 =head2 Your catalog URL
 
 Finally, you need to know the URL to access your store from a web
-browser. Again, this can vary widely depending on the setup of your
-web server. But given a common setup of the Apache web server, it is
-likely to be:
+browser. Again, this can vary depending on how your web server has
+been set up. But, assuming a common setup of the Apache web server,
+your URL should be one of the following:
 
 =over 4
 
 =item *
 
-Root or RPM install: C<http://localhost/cgi-bin/tutorial/pagename>
+B<Root or RPM install:> http://localhost/cgi-bin/tutorial/pagename
 
 =item *
 
-Manual install as user:
-C<http://localhost/~username/tutorial.cgi/pagename>
+B<Manual install as user:>
+http://localhost/~username/tutorial.cgi/pagename
 
 =back
 
-If you aren't running your web browser on the server itself, you'll
-need to substitute your server's host name (something like
-C<machine.domain.com>) for C<localhost> whenever we mention URLs.
+If you aren't running your web browser on the server where Interchange
+is running, you need to substitute your server's host name (for
+example: machine.domain.com for localhost) where mentioned.
+
+B<Note: >It is recommended that you use the real machine name instead
+of localhost. The standard for cookies specifies that they can only be
+set when a domain name has at least two dots in it. If you use
+localhost, you will lose session information if you leave catalog,
+since the session ID is passed only as part of the URL.
 
 =head2 Starting or restarting Interchange
 
-You may have the Interchange server running already, but whenever you
-change the configuration files you will need to restart the
-Interchange server. How this is done depends (like so many other
-things) on how you installed Interchange:
+When you make changes to the configuration files you need to restart
+the Interchange server. How this is done depends on how you installed
+Interchange:
 
 =over 4
 
 =item *
 
-RPM install as root:
-
-C</usr/sbin/interchange -r>
+B<RPM install as root:> /usr/sbin/interchange -r
 
 =item *
 
-Manual install as Interchange user:
-
-C</usr/local/interchange/bin/interchange -r>
-
-=item *
-
-Manual install as root:
-
-C<su interch -c '/usr/local/interchange/bin/interchange -r'>
+B<Manual install as Interchange user:>
+/usr/local/interchange/bin/interchange -r
 
 =item *
 
-Manual install as regular user:
+B<Manual install as root:> su interch -c
+'/usr/local/interchange/bin/interchange -r'
 
-C<~/interchange/bin/interchange -r>
+=item *
+
+B<Manual install as regular user:> ~/interchange/bin/interchange -r
 
 =back
 
-Find the right command for your system and remember it, as you'll need
-to restart Interchange a few times during the tutorial.
+Find the right command for your system and remember it, since you will
+need to restart Interchange a few times during the tutorial.
 
-=head2 Our assumptions
+=head2 Tutorial assumptions
 
-For the sake of simplicity, B<the remainder of this tutorial assumes
-you've installed Interchange under Red Hat 7 from the RPM onto your
-own workstation>. This gives us the following settings:
+Because it is impossible to cover all senarios, this tutorial assumes
+that you installed Interchange on Red Hat 7 from the RPM. This creates
+the following settings:
 
 =over 4
 
 =item *
 
-Interchange software directory: /usr/lib/interchange
+B<Interchange software directory:> /usr/lib/interchange
 
 =item *
 
-Catalogs directory: /var/lib/interchange
+B<Catalogs directory:> /var/lib/interchange
 
 =item *
 
-cgi-bin directory: /var/www/cgi-bin
+B<cgi-bin directory:> /var/www/cgi-bin
 
 =item *
 
-Interchange user: interch
+B<Interchange user:> interch
 
 =item *
 
-Demo catalog name: construct
+B<Demo catalog name:> foundation
 
 =item *
 
-Demo catalog URL base: http://localhost/cgi-bin/construct
+B<Demo catalog URL base:> http://localhost/cgi-bin/foundation
 
 =item *
 
-Tutorial catalog name: tutorial
+B<Tutorial catalog name:> tutorial
 
 =item *
 
-Tutorial catalog URL base: http://localhost/cgi-bin/tutorial
+B<Tutorial catalog URL base:> http://localhost/cgi-bin/tutorial
 
 =item *
 
-Tutorial catalog directory: /var/lib/interchange/tutorial
+B<Tutorial catalog directory:> /var/lib/interchange/tutorial
 
 =back
 
-Substitute the correct values for your system when we mention these
-settings in the tutorial.
+If you did not install with these settings, substitute the correct
+values for your system when these settings are mentioned in the
+tutorial.
 
-B<Note: >Unless you are fairly experienced with Unix, your web server,
-and the basic layout of the Interchange software, we highly recommend
-using the RPM installation with Red Hat Linux or Linux Mandrake.
+=head1 Building Your Catalog
 
-=head1 Starting our catalog
+This section describes the pages and directories that need to be
+established to create a properly functioning catalog.
 
 =head2 Create the link program
 
-We will now make a copy of the demo link program in your cgi-bin
+You need to make a copy of the demo link program in your cgi-bin
 directory and name it F<tutorial>.
 
 The demo link program has the same name as your demo catalog, usually
-C<construct>. This file links the Interchange daemon with your web
-server. You need to make sure that it has the same owner and file
-permissions as the one you copied from. Especially important is the
-set-UID bit (unless you installed as a regular user). You will
-probably need to be root to have write permission in the cgi-bin
-directory.
+foundation. The link program links the Interchange daemon with your
+web server. Make sure that it has the same owner and file permissions
+as the one you copied from. The set-UID bit is especially (unless you
+installed as a regular user). Normally you will need to be root to
+have write permissions in the cgi-bin directory.
 
-Typing this command as root while in your cgi-bin directory should do
-what you need:
+Type this command as root while in your cgi-bin directory:
 
- cp -p construct tutorial
+  cp -p foundation tutorial
 
-If everything's working correctly, typing C<ls -l construct tutorial>
-should describe your files roughly like this:
+If everything is working correctly, typing ls -l should describe
+your files roughly like this:
 
- -rwsr-xr-x    1 interch  interch      7708 Dec 16 22:47 construct
--rwsr-xr-x    1 interch  interch      7708 Dec 16 22:47 tutorial
+  -rwsr-xr-x    1 interch  interch      7708 Dec 16 22:47 foundation
+  -rwsr-xr-x    1 interch  interch      7708 Dec 16 22:47 tutorial
 
 =head2 Create the tutorial catalog directory
 
-Create a subdirectory named F<tutorial> under your catalogs directory
-(probably F</var/lib/interchange/>). This is where all of our
-catalog-specific files will go. It needs to be readable, writable, and
-executable by the Interchange user. We will refer to this as your
-I<catalog directory> (singular, not plural). These commands, run while
-in the catalogs directory, should do what you need:
+As root, create a subdirectory named F<tutorial> under your catalogs
+directory (probably F</var/lib/interchange/>). This is where all of
+the catalog-specific files will go. It needs to be readable, writable,
+and executable by the Interchange user. This will be referred to as
+your catalog directory. Type the following while in the catalogs
+directory to create the tutorial subdirectory:
 
- mkdir tutorial
-chown interch.interch tutorial
-chmod 770 tutorial
+  mkdir tutorial
+  chown interch.interch tutorial
+  chmod 770 tutorial
 
 =head2 Become the Interchange user
 
-From here on out, you should be able to do everything you need to do
-as the 'interch' user. So do C<su interch> now. You'll have to supply
-user interch's password if you weren't root. (If you installed
-Interchange from RPM, user interch probably doesn't have a password.
-You'll have to set it with the F<passwd> command while root.)
+You should be able to do everything you need to do as the 'interch'
+user for the rest of this tutorial. So you can switch to that user now
+(su interch). If you installed Interchange from the RPM, the user
+B<interch> probably doesn't have a password. You'll have to set it
+with a command such as passwd interch while root.
 
 =head2 Go to the tutorial catalog directory
 
-Change to the catalog directory with the 'cd' command now. B<From here
-on out, all file locations will be given relative to the tutorial
-catalog directory.> For example, F<pages/ord/basket.html> would
-actually be F</var/lib/interchange/tutorial/pages/ord/basket.html> or
-the equivalent on your system. The only exception is
-F<interchange.cfg>, which is in the Interchange software directory and
-is described below.
+Change to the catalog directory with the 'cd' command. For the rest of
+this tutorial, all file locations will be given relative to the
+tutorial catalog directory. For example, F<pages/ord/basket.html>
+would actually be
+F</var/lib/interchange/tutorial/pages/ord/basket.html> or the
+equivalent on your system. The only exception is F<interchange.cfg>,
+which is in the Interchange software directory.
 
-Note that to improve clarity, we will append a trailing slash to
-directory names, to more clearly distinguish them from file names.
-(This is similar to the output of the F<ls> command with the C<-F>
-option.)
+B<Note: >To improve clarity, we will append a trailing slash to
+directory names to clearly distinguish them from file names. (Similar
+to the output of the F<ls> command with the -F option.)
 
 =head2 Create the session directory
 
-You need to create the session directory, which is where Interchange
-will save information on each visitor's browsing session. If you do
-not have this directory, Interchange may fail to work for you in what
-appears to be a mysterious way. This directory is called F<session/>
-and goes under your catalog directory. A simple C<mkdir session>
-should do the trick.
+You need to create the session directory where Interchange saves
+information on each visitor's browsing session. If you do not have
+this directory, Interchange may fail to work. This directory is called
+F<session/> and goes under your catalog directory. Type mkdir
+session to create this directory.
 
 =head1 Configuration files
 
 Interchange configuration is controlled by a number of directives,
-which are specified in two kinds of configuration files. Global
-configuration directives go in F<interchange.cfg> in the Interchange
-software directory. Catalog-specific configuration directives go in
-F<catalog.cfg> in the catalog directory.
+which are specified in two files. Global configuration directives go
+in F<interchange.cfg> in the Interchange software directory.
+Catalog-specific configuration directives go in F<catalog.cfg> in the
+catalog directory.
 
 A complete directive consists of the directive name followed by
-whitespace-separated parameters. It doesn't matter how many spaces or
-tabs are between the directive and its options, but the directive and
-all its options must be on the same line (with a few exceptions that
-don't concern us here). The case of the directive isn't important, but
-it's recommended that you preserve the capitalization given for
-readability and consistency.
+whitespace-separated parameters. Any number of spaces or tabs can be
+between the directive and its options, but the directive and its
+options must be on the same line. The directive is case-insensitive,
+but it is recommended that you use it consistently for readability.
 
-You are free to insert blank lines or comment lines (lines where the
-first non-blank character is '#') freely throughout the configuration
-files to improve readability. The order the lines appear in is
-significant, but won't matter for our simple catalog.
+You can insert blank lines or comment lines (lines where the first
+non-blank character is '#') throughout the configuration files to
+improve readability. The order the lines appear in is significant, but
+unimportant for the simple catalog you are creating.
 
-Now it's time to pull out your favorite text editor (vi, emacs, pico,
-joe, gedit, and nedit are all favorites) and start editing some files.
+For the next part, access your text editor (for example, vi, emacs,
+pico, joe, gedit, or nedit) to start editing some files.
 
 =head2 interchange.cfg
 
 The first directive we need to use is a global directive that tells
-Interchange where our new catalog is. The B<Catalog> directive has the
-following format:
+Interchange where the new catalog is, called I<Catalog>. The
+B<Catalog> directive has the following format:
 
- Catalog   name   catalog_base_directory   link_url_path
+  Catalog   name   catalog_base_directory   link_url_path
 
-Open F<interchange.cfg> (remember, it is in the Interchange software
-directory). Go near the top of the file, right below the other Catalog
-directives. Add this line:
+Open F<interchange.cfg> in the Interchange software directory. Go near
+the top of the file, right below the other Catalog directives, and add
+this line:
 
- Catalog  tutorial  /var/lib/interchange/tutorial  /cgi-bin/tutorial
+  Catalog  tutorial  /var/lib/interchange/tutorial  /cgi-bin/tutorial
 
-That's it for this file! Save it.
+Save the file.
 
 =head2 catalog.cfg
 
-From here on out, most of the files we mention don't exist yet. You'll
-create them yourself with initial text we give.
+For the rest of the tutorial, most of the files mentioned do not exist
+yet. You will create them yourself with initial text we give.
 
-We need to create a F<catalog.cfg> file for our tutorial store (back
-in the tutorial catalog directory). We'll start with a very simple
+You need to create a F<catalog.cfg> file for your tutorial store (in
+the tutorial catalog directory). We'll start with a very simple
 products database table with a few fields and a few products.
 
 The B<Database> directive describes a database table to the
 Interchange system in this format:
 
- Database  name  filename  format
+  Database  name  filename  format
 
 Interchange has several database options available. We will use the
 simplest, which is the built-in default (specifically, some variant of
 DBM). The default location for I<filename> is in a subdirectory called
 F<products> under the catalog directory. Interchange recongnizes a
 number of file formats. We will use a tab-delimited text file. Enter
-this line into F<catalog.cfg>:
+the following into F<catalog.cfg>:
 
- Database  products  products.txt  TAB
+  Database  products  products.txt  TAB
 
-This tells Interchange that we have a database table named 'products'
-which is described in a tab-delimited file named F<products.txt>. You
+This tells Interchange that you have a database table named 'products'
+that is described in a tab-delimited file named F<products.txt>. You
 can describe an unlimited number of arbitrary database tables for the
-system to use this way. Since Interchange is at heart an electronic
-commerce system, it expects to find at least a database table of
-products. We can specify all of the database tables that contain
-products by using the B<ProductFiles> directive. There is no default
-for this, so we will have to specify our products database by adding
-the following line to F<catalog.cfg>:
+system to use this way. Interchange is an e-commerce system and it
+expects at least a products database table. You can specify all of the
+database tables that contain products by using the B<ProductFiles>
+directive. There is no default for this, so you will have to specify
+your products database by adding the following line to F<catalog.cfg>:
 
- ProductFiles  products
+  ProductFiles  products
 
-There are a few other directives which Interchange expects to see in
-order to complete our minimum configuration. These are B<VendURL>,
-B<SecureURL>, and B<MailOrderTo>. These are, respectively, your
+There are a few other directives that Interchange expects to see in
+order to complete the minimum configuration. They are B<VendURL>,
+B<SecureURL>, and B<MailOrderTo>. They are, respectively, your
 catalog's base URL, its secure URL, and the e-mail address to mail
-order notices to. We will supply these by adding the following lines
-to F<catalog.cfg>:
+order notices to. Add the following lines to F<catalog.cfg> to
+establish these directives:
 
- VendURL  http://localhost/cgi-bin/tutorial
-SecureURL  http://localhost/cgi-bin/tutorial
-MailOrderTo  your@email.address
+  VendURL  http://localhost/cgi-bin/tutorial
+  SecureURL  http://localhost/cgi-bin/tutorial
+  MailOrderTo  your@email.address
 
-Your first brand-new file, F<catalog.cfg>, should look like this when
-you save it:
+The F<catalog.cfg> file should look like this when you save it:
 
- Database  products  products.txt  TAB
-ProductFiles  products
-VendURL  http://localhost/cgi-bin/tutorial
-SecureURL  http://localhost/cgi-bin/tutorial
-MailOrderTo  your@email.address
+  Database  products  products.txt  TAB
+  ProductFiles  products
+  VendURL  http://localhost/cgi-bin/tutorial
+  SecureURL  http://localhost/cgi-bin/tutorial
+  MailOrderTo  your@email.address
 
 =head1 The products database table
 
 =head2 products/products.txt
 
-Create the F<products/> directory in your tutorial catalog directory
-now.
+Create the F<products/> directory in your tutorial catalog directory.
 
 The F<products/products.txt> file will serve two purposes. It will
 provide Interchange with the layout of the products database table and
-it will provide the data. When Interchange parses the products.txt
-file it will expect the first line to contain the names of the fields
-for the database table. The first field in the list is expected to be
-a primary key (unique identifier) for that row. In this case we are
-going to use the SKU (stock keeping unit) as the unique identifier for
-each product.
+it will also provide the data. When Interchange parses the
+products.txt file, it will expect the first line to contain the names
+of the fields for the database table (for example, sku, description,
+price). The first field in the list is expected to be a primary key
+(unique identifier) for that row. In most cases you are going to use
+the SKU (stock keeping unit) as the unique identifier for each
+product.
 
-The product database is handled as a special case by Interchange. It
-expects to find at least a description and a price field in addition
-to the product ID. In other words, this file must at least contain
-fields named "sku", "price", and "description". Any other fields you
-wish to include are handled normally.
+The product database is handled as a special case since Interchange
+expects at least the description, price, and product ID (sku) fields.
+In other words, the F<products.txt> file must at least contain fields
+named sku, price, and description. Any other fields you decide to
+include are handled normally.
 
-Since this is kind of a test catalog, let's sell tests. Digging
-through my files, I find the following tests from classes I've taken.
-Create the file F<products/products.txt> to look like this, with a
-single tab separating each field:
+The simple store that we are going to build will sell tests. You can
+choose another sample product line, but it is recommended that you
+keep it simple. Create the file F<products/products.txt> to look like
+this, with a single tab separating each field:
 
- sku     description     price
-4595    Nice Bio Test   275.45
-2623    Stack of Econ Quizzes   1.24
-0198    Really Hard Physics Test        1589.34
-1299    Ubiquitous diff eq final        37.00
+  sku   description     price
+  4595  Nice Bio Test   275.45
+  2623  Stack of Econ Quizzes   1.24
+  0198  Really Hard Physics Test        1589.34
+  1299  Ubiquitous diff eq final        37.00
 
 B<Note: >When using tab-delimited files as we are, make sure you have
 exactly one tab between each field. Some text editors will use spaces
-to simulate tabs. Interchange expects actual ASCII tab characters, and
-spaces or anything else will mess things up.
+to simulate tabs. Interchange expects actual ASCII tab characters; no
+spaces or extra characters are accepted.
 
-You may notice (or you may not) that the columns don't line up in your
-text editor. If you are tempted to fix this to make it easier to read,
-maybe you missed my warning.
+You may notice that the columns don't line up in your text editor.
+This is the nature of tab-delimited files. Do not try to fix these.
 
 =head1 Page templates
 
-Now we need something to display. Let's start by assuming that certain
-aspects of our site will remain the same as the content of the
-different pages changes. We are going to create a template that we can
-use for all of our pages. We'll divide our pages into four sections
-like so:
+Since most sites have certain aspects of the site that remain the same
+as the content of the pages changes, we are going to create a template
+that we can use for all pages. We'll divide the page into four
+sections:
 
- _____________________
-|                     |
-|         top         |
-|                     |
-|---------------------|
-|      |              |
-|      |              |
-| left |     main     |
-|      |              |
-|      |              |
-|---------------------|
-|                     |
-|        bottom       |
-|_____________________|
+   _____________________
+  |                     |
+  |         top         |
+  |                     |
+  |---------------------|
+  |      |              |
+  |      |              |
+  | left |     main     |
+  |      |              |
+  |      |              |
+  |---------------------|
+  |                     |
+  |        bottom       |
+  |_____________________|
 
-The main section holds the content which will be different for each
-page. The top is for headers, banners, menus and the like. The left
-could be used for a sidebar or something similar, and the bottom can
-be the copyright and contact info. The top, left, and bottom sections
-will remain constant throughout the site.
+The "main" section holds the content that is different for each page.
+The "top" section is for headers, banners, menus, and so on. The
+"left" section can be used as a sidebar or navagation bar, and the
+"bottom" section can contain the copyright and contact info. The top,
+left, and bottom sections will remain constant throughout the site.
+Making a change to information in one of these sections will make that
+change to all pages in your site.
 
-Now create the HTML for each template section in its own plain text
-file in the catalog directory, named simply 'top', 'left', and
-'bottom', respectively. Why no '.html' suffix on these? Mostly to make
-clear that they're not meant to be parsed directly by Interchange as
-full pages. Why no '.txt' suffix? To make our [include] tags simpler
-(as you'll see below). And because we can.
+Now type the HTML for each template section in an individual plain
+text file in the catalog directory, named 'top', 'left', and 'bottom',
+respectively using the code displayed below. No '.html' suffixes are
+used on these because they are not meant to be parsed directly by
+Interchange as full pages.
 
 =head2 top
 
@@ -529,63 +499,60 @@ full pages. Why no '.txt' suffix? To make our [include] tags simpler
   </body>
   </html>
 
-Since this isn't an HTML tutorial, there will be no commentary on
-these fragments.
+=head2 The Interchange Tag Language
 
-=head2 Interchange Tag Language
-
-Now we need a way to pull the template pieces into the proper places
-on our pages to make a complete page. It's time to introduce you to
-ITL, the Interchange Tag Language.
+Now we need a way to pull the template pieces we just created into the
+proper places to make a complete page. This is done using ITL, the
+Interchange Tag Language.
 
 ITL is at the heart of almost all Interchange catalog pages. It's how
-you tap Interchange's functionality. The tags spoken of appear between
+you use Interchange's functionality. The ITL tags appear between
 square brackets like [this]. Options appear after the tag, separated
-by whitespace, like this: [tag value1 value2] and this: [tag
-option1=value1 option2=value2]. They may span multiple lines. (That
+by whitespace, like this: [tag option1 option2] and this: [tag
+option1=value1 option2=value2]. They can span multiple lines. (That
 can help readability when the tag has many options.) There are many
-tags, and we will only scratch the surface of what can be done. Please
-refer to the ITL Tag Reference for full details.
+ITL tags, and for this tutorial very few will be addressed. For a
+complete listing of the ITL tags, see the I<Interchange Tag Reference
+Guide>.
 
-Our first tag will be [include], which reads the file mentioned
+Your first tag will be [include], which reads the file mentioned
 (relative to the catalog directory), parses any Interchange tags, and
-puts the result in place of the tag. We'll see how this works on the
-page we need to create next.
+puts the result in place of the tag. This is demonstrated on the next
+page you need to create.
 
-=head1 A welcome page
+=head1 Creating a welcome page
 
 =head2 pages/index.html
 
-Create a directory called F<pages/> in your tutorial catalog directory
-now.
+Create a directory called F<pages/> in your tutorial catalog
+directory.
 
-Now we will create a very simple page to test that everything works so
-far. Type the following text and save it as F<pages/index.html>:
+Type the following text and save it as F<pages/index.html>. This will
+create a page to test that everything works so far.
 
- [include top]
-[include left]
-This is where our content goes.
-[include bottom]
+  [include top]
+  [include left]
+  This is where your content goes.
+  [include bottom]
 
-Let's see if it works. Restart Interchange so your changes take
-effect. Now go to your web browser and load the page. The URL should
-look like C<http://localhost/cgi-bin/tutorial/index.html>.
+Restart Interchange so your changes take effect. Go to your web
+browser and load the page. The URL should be similar to the following:
+http://localhost/cgi-bin/tutorial/index.html.
 
-B<Note: >Before we go on, we should mention that Interchange pages in
-the F<pages/> or other directories B<must> have the .html suffix on
-them. You may drop the suffix in your URL and other places such as the
-[page] tag you'll learn about later, but the file name itself must
-have the suffix.
+B<Note: >Interchange pages in the F<pages/> or other directories
+B<must> have the .html suffix on them. You can drop the suffix in your
+URL and in other places, such as the [page] tag you'll learn about
+later, but the file name itself must have the suffix.
 
 =head1 Troubleshooting
 
-Hopefully your first Interchange page worked well. If it didn't,
-you'll need to try to figure out what went wrong. The vast majority of
-the time, overlooked details is the problem. Double-checking your
+Your first Interchange page should have displayed as described in your
+browser. If it didn't, you need to figure out what went wrong. Most of
+the time, overlooked details are the problem. Double-checking your
 typing is a good habit to get into.
 
-Here is a troubleshooting checklist that will come in handy whenever
-you run into problems:
+The following is a troubleshooting checklist to use when you run into
+problems:
 
 =over 4
 
@@ -593,13 +560,13 @@ you run into problems:
 
 Have you created directories with the proper names in the proper
 locations? (See Appendix A for a full directory and file structure of
-our tutorial catalog.)
+the tutorial catalog.)
 
 =item 2.
 
 Have you misspelled any file names or put them in the wrong
 directories? Are the files and parent directories readable by the
-I<interch> user? Double-check with the F<ls> command.
+interch user? Double-check with the F<ls> command.
 
 =item 3.
 
@@ -613,7 +580,7 @@ Did you type all punctuation, ITL tags, and HTML tags correctly?
 
 =item 5.
 
-Did you type whitespace correctly in the cases where it mattered?
+Did you use whitespace correctly in the cases where it mattered?
 Remember to use tabs when tabs are called for (in lists and database
 text files).
 
@@ -626,7 +593,7 @@ mode?
 =item 7.
 
 Check your catalog error log, F<error.log> in your tutorial catalog
-directory, to see if Interchange reported anything of interest.
+directory, to see if Interchange reported any errors.
 
 =item 8.
 
@@ -636,9 +603,9 @@ catalog at all.
 
 =item 9.
 
-View the HTML source of any catalog pages that are messed up. The
-problem may reveal itself when you see what HTML the browser is
-getting.
+View the HTML source of any catalog pages that are loading incorrectly
+to check for a coding error. The problem may reveal itself when you
+see what HTML the browser is getting.
 
 =back
 
@@ -646,83 +613,83 @@ getting.
 
 =head2 Listing all products
 
-Now that we have the store running let's display our products on the
-welcome page. We will loop over all of the products in our database
-and produce an entry for each one in a table. Replace the line "This
-is where ..." in F<pages/index.html> with the following:
+Now that your store is running, you need to display your products on
+the welcome page. We will loop over all of the products in our
+database and produce an entry for each one in a table. Replace the
+line "This is where your content goes" in F<pages/index.html> with the
+following:
 
- <table cellpadding=5>
-<tr>
-<th>Test #</th>
-<th>Description</th>
-<th>Price</th>
-</tr>
+  <table cellpadding=5>
+  <tr>
+  <th>Test #</th>
+  <th>Description</th>
+  <th>Price</th>
+  </tr>
 
-. . .
+  . . .
 
-</table>
+  </table>
 
 Now we will use Interchange tags to fill in the rest of the table from
-our products database. The [loop] [/loop] pair tells Interchange to
-iterate over each item provided in the parameter list. In this case
-the loop is over the result of an Interchange search. The search
-parameter does a database search on the provided parameters. In this
-case, we're doing a very simple search that returns all of the fields
-for all of the entries in the products database. The parameters passed
-to the search tell Interchange to I<return all> ('ra') on the file
-('fi') I<products> respectively. The following code should take the
-place of the above ellipsis in F<index.html>:
+the products database you created. The [loop] [/loop] ITL tag pair
+tells Interchange to iterate over each item in the parameter list. In
+this case, the loop is over the result of an Interchange search. The
+search parameter does a database search on the provided parameters. In
+this case, we're doing a very simple search that returns all of the
+fields for all of the entries in the products database. The parameters
+passed to the search tell Interchange to I<return all> ('ra') on the
+file ('fi') I<products> respectively. The following should take the
+place of the ellipsis in the code you placed in F<index.html>:
 
- [loop search="ra=yes/fi=products"]
+  [loop search="ra=yes/fi=products"]
 
-. . .
+  . . .
 
-[/loop]
+  [/loop]
 
-Inside the loop we access the individual elements of the entry using
-the [loop-field] tag. The following code should replace the above
-ellipsis in F<pages/index.html>:
+In the loop we just established, the individual elements of the entry
+using the [loop-field] tag. The following code should replace the
+above ellipsis in the code we placed in F<pages/index.html>:
 
- <tr>
-<td>[loop-code]</td>
-<td>[loop-field description]</td>
-<td align=right>[loop-field price]</td>
-</tr>
+  <tr>
+  <td>[loop-code]</td>
+  <td>[loop-field description]</td>
+  <td align=right>[loop-field price]</td>
+  </tr>
 
 The [loop-code] tag refers to the primary key (unique identifier) for
-the current row of the database table in question. Here it will
-produce the same output as [loop-field sku], because the 'sku' field
-is the primary key for table products.
+the current row of the database table in question. In this case, it
+will produce the same output as the [loop-field sku] tag, because the
+'sku' field is the primary key for products table. In each case the
+tag is replaced by the appropriate element. When put together,
+Interchange generates a page with your products table on it.
 
-In each case the tag is replaced by the appropriate element. Put it
-all together and Interchange will generate a page with your products
-table on it. Your finished page should look like this:
+Your finished page should look like this:
 
- [include top]
-[include left]
-<table cellpadding=5>
-<tr>
-<th>Test #</th>
-<th>Description</th>
-<th>Price</th>
-</tr>
-[loop search="ra=yes/fi=products"]
-<tr>
-<td>[loop-code]</td>
-<td>[loop-field description]</td>
-<td align=right>[loop-field price]</td>
-</tr>
-[/loop]
-</table>
-[include bottom]
+  [include top]
+  [include left]
+  <table cellpadding=5>
+  <tr>
+  <th>Test #</th>
+  <th>Description</th>
+  <th>Price</th>
+  </tr>
+  [loop search="ra=yes/fi=products"]
+  <tr>
+  <td>[loop-code]</td>
+  <td>[loop-field description]</td>
+  <td align=right>[loop-field price]</td>
+  </tr>
+  [/loop]
+  </table>
+  [include bottom]
 
-Now is a good time to test this. Go ahead and refresh the
-C<index.html> page in your browser.
+Test this page by refreshing the index.html page in your browser.
 
 =head2 pages/flypage.html
 
-Now let's go ahead and create an individual page for each item. All we
-have to do is to create a special generic page called
+The next step is to create an individual page for each item. To do
+this, you need to create a special generic page called
 F<pages/flypage.html>. When a page is requested that does not exist in
 the F<pages/> directory, Interchange will check and see if the
 requested page has the same name as a product ID from the product
@@ -731,137 +698,134 @@ flypage for that product. If there's no product with that ID, the
 special error page F<special_pages/missing.html> (described in the
 next section) will be displayed.
 
-For example, if we request F<0198.html>, Interchange will first check
-for a page with that name. When it doesn't find one, it will search
-the products database table and see there is a product with that ID.
-Then it will create a product page "on the fly" using
-F<pages/flypage.html>. When constructing the flypage, the entire
-product record for the requested product is available via the
-[item-field] tag (much like the [loop-field] tag). So, let's create
-F<pages/flypage.html> like so:
+For example, if the page F<0198.html> was requested, Interchange first
+checks for a page with that name. If one is not found, it searches the
+products database table for a product with that ID. Interchange then
+creates a product page "on the fly" using F<pages/flypage.html>. When
+constructing the flypage, the entire product record for the requested
+product is available through the [item-field] tag (similar to the
+[loop-field] tag). To create a fly page, type the following code and
+save it as F<pages/flypage.html>.
 
- [include top]
-[include left]
+  [include top]
+  [include left]
 
-<h3>Test #[item-code]</h3>
-<p>[item-field description] . . . [item-field price]</p>
+  <h3>Test #[item-code]</h3>
+  <p>[item-field description] . . . [item-field price]</p>
 
-[include bottom]
+  [include bottom]
 
-To provide links to the product flypages from our home page we will
+Then, to provide links to the product flypages from your home page,
 modify F<pages/index.html> slightly, so that:
 
- <td>[loop-field description]</td>
+  <td>[loop-field description]</td>
 
 becomes:
 
- <td><a href="[loop-code].html">[loop-field description]</a></td>
-
-=head1 Unknown URL error page
+  <td><a href="[loop-code].html">[loop-field description]</a></td>
 
 =head2 special_pages/missing.html
 
 Create the F<special_pages/> directory in your tutorial catalog
-directory now. (B<Not> in the F<pages/> directory!)
+directory (not in the F<pages/> directory).
 
-We mentioned above that Interchange wants to display an error page
-when it is asked for an unknown page. Let's create
-F<special_pages/missing.html> for this purpose. Make it look like
-this:
+As mentioned, it is a good idea to display an error page when
+Interchange is asked for an unknown page. To create a missing page for
+display, type the following and save it as
+F<special_pages/missing.html>.
 
- [include top]
-[include left]
-<p>Page not found, good buddy.</p>
+  [include top]
+  [include left]
+  <p>We're sorry, the page you requested has not been found.</p>
 
-<p>[page index]Go to welcome page[/page]</p>
-[include bottom]
+  <p>Try finding what you need on the [page index]welcome page</a>.</p>
+  [include bottom]
 
-That will ensure users see a mildly friendly message instead of a
-mysterious server error if they mistype a URL.
+The addition of this page ensures that users see your error message
+instead of a mysterious server error if they mistype a URL.
 
 =head1 The shopping basket
 
 =head2 A link for ordering
 
-Now that we have the products available for perusal, let's add a
-shopping cart so that folks can actually purchase our wares. For this
-we will use the [order] [/order] tags. These create an HTML link which
-will cause the specified item to be ordered and then will transfer the
-shopper to the basket page. This is actually just a built-in shortcut
-to the complete order process which uses an HTML form submission
-process. The parameter for the [order] tag is the product ID. To add
-these tags to the catalog, make the following change to
-F<pages/index.html>:
+Now that you have your products available, let's add a shopping cart
+so customers can purchase them. This is created using the [order]
+[/order] tags. These tags create an HTML link that causes the
+specified item to be ordered and transfers the shopper to the basket
+page. This is a built-in shortcut to the complete order process which
+uses an HTML form submission process. The parameter for the [order]
+tag is the product ID. To add these tags to the catalog, make the
+following change to F<pages/index.html>:
 
   <tr>
   <td>[loop-code]</td>
   <td>[loop-field description]</td>
   <td align=right>[loop-field price]</td>
-+ <td>[order [loop-code]]order now[/order]</td>
++ <td>[order [loop-code]]Order Now[/order]</td>
   </tr>
   [/loop]
 
-B<Note: >The line to add is marked by a '+'. Do not include the '+'.
-The other lines are shown to give you context. (This style is called a
-"context diff" and will be used frequently.)
+B<Note: >The line you need to add is marked by a '+'. However, do not
+include the '+' when adding this line. The surrounding lines are shown
+to give you context. This style is called a "context diff" and is used
+often in this tutorial.
 
 =head2 pages/ord/basket.html
 
-Create the directory F<pages/ord/> inside the tutorial catalog
-directory now. In other words, you should have an F<ord/> I<inside>
-the F<pages/> directory.
+Create the directory F<pages/ord/> in the tutorial catalog directory.
+In other words, F<ord/> should be inside the F<pages/> directory.
 
-For the [order] tag Interchange will expect a default page called
-F<pages/ord/basket.html>. This page will display the contents of the
-shopping basket as well as have other shopping basket functionality.
+For the [order] tag, Interchange expects a default page called
+F<pages/ord/basket.html>. This page displays the contents of the
+shopping basket and contains other shopping basket functionality.
 
-The Interchange demo store has a full-featured shopping basket
-available for you to use, but we'll cobble our own simple one
-together. The shopping basket items can be accessed using a set of
-tags which have an [item] prefix. Let's put this text in the new file
-F<pages/ord/basket.html> first and then we'll discuss the tags used in
-it:
+The Foundation store has a full-featured shopping basket available for
+use, but this tutorial teaches you to build your own simple one. The
+shopping basket items can be accessed using a set of tags that have an
+[item] prefix. Put the following code in the new file
+F<pages/ord/basket.html>. The section that follows explains the tags
+used.
 
- [include top]
-[include left]
+  [include top]
+  [include left]
 
-<h2>This is your shopping cart!</h2>
+  <h2>This is your shopping cart!</h2>
 
-<table cellpadding=5>
+  <table cellpadding=5>
 
-<tr>
-<th>Qty.</th>
-<th>Description</th>
-<th>Cost</th>
-<th>Subtotal</th>
-</tr>
+  <tr>
+  <th>Qty.</th>
+  <th>Description</th>
+  <th>Cost</th>
+  <th>Subtotal</th>
+  </tr>
 
-[item-list]
-<tr>
-<td align=right>[item-quantity]</td>
-<td>[item-field description]</td>
-<td align=right>[item-price]</td>
-<td align=right>[item-subtotal]</td>
-</tr>
-[/item-list]
+  [item-list]
+  <tr>
+  <td align=right>[item-quantity]</td>
+  <td>[item-field description]</td>
+  <td align=right>[item-price]</td>
+  <td align=right>[item-subtotal]</td>
+  </tr>
+  [/item-list]
 
-<tr><td colspan=4></td></tr>
+  <tr><td colspan=4></td></tr>
 
-<tr>
-<td colspan=3 align=right><strong>Total:</strong></td>
-<td align=right>[subtotal]</td>
-</tr>
+  <tr>
+  <td colspan=3 align=right><strong>Total:</strong></td>
+  <td align=right>[subtotal]</td>
+  </tr>
 
-</table>
+  </table>
 
-<hr>
+  <hr>
 
-<p>
-[page checkout]Purchase now[/page]<br>
-[page index]Return to shopping[/page]
-</p>
+  <p>
+  [page checkout]Purchase now</a><br>
+  [page index]Return to shopping</a>
+  </p>
 
-[include bottom]
+  [include bottom]
 
 The basket items can be accessed one at a time by using the
 [item-list] tag. So we will create a table by iterating through the
@@ -872,193 +836,197 @@ created for each item in the list.
 
 =item *
 
-[item-quantity] will show the quantity of this item ordered. If the
-same item is ordered multiple times, this quantity will increase.
+[item-quantity] shows the quantity of the item ordered. If the same
+item is ordered multiple times, the quantity increases.
 
 =item *
 
-[item-field description] shows the I<description> from the product
-database table. Any field which is not special to Interchange can be
+[item-field description] shows the description from the product
+database table. Any field that is not special to Interchange can be
 accessed from the shopping cart this way.
 
 =item *
 
-[item-price] is the per-item price which is defined in the product
+[item-price] shows the per-item price that is defined in the product
 database table.
 
 =item *
 
-[item-subtotal] is the total cost of this order line. This is
-nominally price multiplied by quantity but can also take into account
-other considerations, such as various kinds of price discounts.
+[item-subtotal] shows the total cost of this order line. This is
+normally the price multiplied by the quantity, but it can also take
+into account other considerations, such as various kinds of price
+discounts.
 
 =item *
 
-[subtotal] is the calculated shopping basket subtotal.
+[subtotal] shows the calculated shopping basket subtotal.
 
 =item *
 
-[page index]...[/page] creates a link to the catalog welcome page.
+[page index] creates the starting HTML <a href="..."> for a link to
+the catalog welcome page.
 
 =back
 
-Now we will also put a link in the index page so that shoppers can go
+You also need to put a link in the index page so that shoppers can go
 to their shopping cart without ordering something. Modify the end of
-F<pages/index.html> thusly:
+F<pages/index.html> by adding the following lines.
 
   </table>
 + <hr>
-+ <p align=center>[page order]View shopping cart[/page]</p>
++ <p align=center>[page order]View shopping cart</a></p>
   [include bottom]
 
-Go ahead and test out the shopping basket in your browser.
+Refresh the page and test the shopping basket in your browser.
 
 =head1 Order checkout
 
 =head2 pages/checkout.html
 
-We can now complete the site by adding the ability to check out with
-the shopping cart and finalize the order. To do this we want the
-customer to provide a shipping address (which we will lazily assume is
-the same as the billing address), and payment information. We will
-process the order by verifying their payment information and sending
-an email to the merchant (ourselves) detailing the order.
+The site can now be completed by adding the ability to check out with
+the shopping cart and finalize the order. To do this the customer
+needs to provide a shipping address (which, for the sake of this
+tutorial, we will assume is the same as the billing address), and
+payment information. We will process the order by verifying the
+customer's payment information and sending an email to the merchant
+(ourselves) detailing the order.
 
-We'll start by creating a checkout page. The checkout page will
-consist of a form that takes the pertinent information from the
-customer and performs a simple credit card number check. In this case
-we'll use the built-in test that only checks to see if a given card
-number could be valid. If all of the information is acceptable the
-customer will move on to the next phase of the order process. If it is
-not, an error page will be displayed.
+First you need to create a checkout page. The checkout page consists
+of a form that receives order information from the customer and
+performs a simple credit card number check. In this tutorial we will
+use a built-in test that only checks to see if a given credit card
+number could be valid. If the information is acceptable the customer
+will move to the next phase of the order process. If it is not, an
+error page will be displayed.
 
-Let's create F<pages/checkout.html> and then we can discuss it step by
-step. This page is a bit more complex than the others, but don't be
-intimidated. Most of it is just standard HTML form coding.
+To create a checkout page, type the following code and save it as
+F<pages/checkout.html>. The section that follows explains the code.
 
- [include top]
-[include left]
-<h1>Checkout Page</h1>
+  [include top]
+  [include left]
+  <h1>Checkout Page</h1>
 
-<form method=post action="[process]">
-<input type=hidden name=mv_todo value=submit>
-<input type=hidden name=mv_order_profile value=order_profile>
-<input type=hidden name=mv_cyber_mode value=minivend_test>
+  <form method=post action="[process]">
+  <input type=hidden name=mv_todo value=submit>
+  <input type=hidden name=mv_order_profile value=order_profile>
+  <input type=hidden name=mv_cyber_mode value=minivend_test>
 
-<table cellpadding=3>
+  <table cellpadding=3>
 
-<tr>
-<td align=right><b>First name:</b></td>
-<td><input type=text name=fname value="[value fname]"></td>
-</tr>
+  <tr>
+  <td align=right><b>First name:</b></td>
+  <td><input type=text name=fname value="[value fname]"></td>
+  </tr>
 
-<tr>
-<td align=right><b>Last name:</b></td>
-<td><input type=text name=lname value="[value lname]"></td>
-</tr>
+  <tr>
+  <td align=right><b>Last name:</b></td>
+  <td><input type=text name=lname value="[value lname]"></td>
+  </tr>
 
-<tr>
-<td align=right rowspan=2><b>Address:</b></td>
-<td><input type=text name=address1 value="[value address1]"></td>
-</tr>
+  <tr>
+  <td align=right rowspan=2><b>Address:</b></td>
+  <td><input type=text name=address1 value="[value address1]"></td>
+  </tr>
 
-<tr>
-<td><input type=text name=address2 value="[value address2]"></td>
-</tr>
+  <tr>
+  <td><input type=text name=address2 value="[value address2]"></td>
+  </tr>
 
-<tr>
-<td align=right><b>City:</b></td>
-<td><input type=text name=city value="[value city]"></td>
-</tr>
+  <tr>
+  <td align=right><b>City:</b></td>
+  <td><input type=text name=city value="[value city]"></td>
+  </tr>
 
-<tr>
-<td align=right><b>State:</b></td>
-<td><input type=text name=state value="[value state]"></td>
-</tr>
+  <tr>
+  <td align=right><b>State:</b></td>
+  <td><input type=text name=state value="[value state]"></td>
+  </tr>
 
-<tr>
-<td align=right><b>Postal code:</b></td>
-<td><input type=text name=zip value="[value zip]"></td>
-</tr>
+  <tr>
+  <td align=right><b>Postal code:</b></td>
+  <td><input type=text name=zip value="[value zip]"></td>
+  </tr>
 
-<tr>
-<td align=right><b>Country:</b></td>
-<td><input type=text name=country value="[value country]"></td>
-</tr>
+  <tr>
+  <td align=right><b>Country:</b></td>
+  <td><input type=text name=country value="[value country]"></td>
+  </tr>
 
-</table>
+  </table>
 
-<p>
-Note: We assume that your billing address is the same as your shipping address.
-</p>
+  <p>
+  Note: We assume that your billing address is the same as your shipping address.
+  </p>
 
-<table cellpadding=3>
+  <table cellpadding=3>
 
-<tr>
-<td align=right><b>Credit card number:</b></td>
-<td><input type=text name=mv_credit_card_number value="" size=20></td>
-</tr>
+  <tr>
+  <td align=right><b>Credit card number:</b></td>
+  <td><input type=text name=mv_credit_card_number value="" size=20></td>
+  </tr>
 
-<tr>
-<td align=right><b>Credit card expiration date:</b></td>
-<td>
-Month (number from 1-12):
-<input type=text name=mv_credit_card_exp_month value="" size=2 maxlength=2>
-<br>
-Year (last two digits only):
-<input type=text name=mv_credit_card_exp_year value="" size=2 maxlength=2>
-</td>
-</tr>
+  <tr>
+  <td align=right><b>Credit card expiration date:</b></td>
+  <td>
+  Month (number from 1-12):
+  <input type=text name=mv_credit_card_exp_month value="" size=2 maxlength=2>
+  <br>
+  Year (last two digits only):
+  <input type=text name=mv_credit_card_exp_year value="" size=2 maxlength=2>
+  </td>
+  </tr>
 
-</table>
+  </table>
 
-<p>
-<input type=submit name=submit value="Finalize!">
-<input type=reset name=reset value="Reset">
-</p>
+  <p>
+  <input type=submit name=submit value="Finalize!">
+  <input type=reset name=reset value="Reset">
+  </p>
 
-</form>
+  </form>
 
-<p>[page index]Return to shopping instead[/page]</p>
-[include bottom]
+  <p>[page index]Return to shopping instead</a></p>
+  [include bottom]
 
-First we begin an HTML form with a method of 'post' (which sends the
-form data as its own stream, as opposed to the 'get' method which
-encodes the data as part of the URL). The [process] tag creates a
-special URL for form processing. Interchange has a built-in form
-processor which is configured by submitting certain fields in the
-form. The Finalize button will invoke this form processor and then
-link the user to the F<special_pages/receipt.html> page (described
-later).
+The HTML form begins with a method of 'post' (which sends the form
+data as its own stream, as opposed to the 'get' method which encodes
+the data as part of the URL). The [process] tag creates a special URL
+for form processing. Interchange has a built-in form processor that is
+configured by submitting certain fields in the form. The Finalize
+button will invoke this form processor and link the user to the
+F<special_pages/receipt.html> page, which is described later.
 
-We will submit some hidden form values which will tell Interchange how
-to process this form. The first value B<mv_todo> has the value of
-I<submit>; this causes the form to be submitted for validation. The
-second value sets B<mv_order_profile> to I<order_profile>. The order
-profile determines the validation process for the form. We'll go into
-this in the next section.
+You are submitting some hidden form values that will tell Interchange
+how to process this form. The first value, B<mv_todo> was set as
+I<submit>. This causes the form to be submitted for validation. The
+second value, B<mv_order_profile> was set as I<order_profile>. This
+determines the validation process for the form. It is explained
+further in the next section.
 
-Lastly we set B<mv_cyber_mode> to be I<minivend_test>. The
-B<mv_cyber_mode> value determines which method will be used to charge
-a credit card. The value of I<minivend_test> tells it to use the
-internal test method which calculates a simple checksum against the
-card to determine whether it is a valid number.
+The last value, B<mv_cyber_mode>, was set to be I<minivend_test>. The
+B<mv_cyber_mode> value determines what method will be used to charge a
+credit card. The value of I<minivend_test> uses the internal test
+method, which calculates a simple checksum against the card to
+determine if it is a valid number.
 
 When preparing an order for processing, Interchange looks for certain
 named fields in the form values for name, address, and credit card
-info. We are using all of the expected field names in this form so
-that no translation has to take place.
+information. We are using all expected field names in this form so
+that no translation needs to take place.
 
-Have a look at the checkout page in your browser. The "Finalize!" link
-won't work yet, of course.
+View the checkout page in your browser. The "Finalize!" link has not
+been enabled, but the page should display properly.
 
 =head2 etc/profiles.order
 
 Create the F<etc/> directory in the tutorial catalog directory now.
 
-Now we need to set up verification for the order form. This involves
-defining an order profile for the form. Create F<etc/profiles.order>
-as follows and then we'll discuss the various features.
+You need to set up verification for the order form by defining an
+order profile for the form. An order profile determines what fields
+are necessary for the form to be accepted. Create an order profile
+verification page by typing the following and saving it as
+F<etc/profiles.order>. The section that follows explains the code
+used.
 
   __NAME__ order_profile
 
@@ -1075,18 +1043,18 @@ as follows and then we'll discuss the various features.
   __END__
 
 A single file can contain multiple profile definitions. First the
-profile is named using the I<__NAME__> pragma. (This is unrelated to
-the __VARIABLE__ syntax seen elsewhere in Interchange.) We then list
-the fields from the form which are required. The B<&fatal> setting
-indicates that validation will fail if any of the requirements are not
-met. B<&final> indicates that this form will complete the ordering
-process. This setting is useful if you have a multi-page ordering
-process, each of which you wish to validate as you go through them.
-The I<__END__> pragma signals the end of this profile, after which you
-are free to begin another one.
+profile is named using the __NAME__ pragma. (This is unrelated to the
+__VARIABLE__ syntax seen elsewhere in Interchange.) Then in the
+profile there is a list of the form fields that are required. The
+B<&fatal> setting indicates that validation will fail if any of the
+requirements are not met. B<&final> indicates that this form will
+complete the ordering process. This setting is helpful if you have a
+multi-page ordering process and you want to validate each page
+individually. The __END__ pragma signals the end of this profile,
+after which you can begin another one.
 
-In order to make your order profile effective, add the following
-B<OrderProfile> directive to the bottom of F<catalog.cfg>:
+In order to activate your order profile, add the following
+B<OrderProfile> directive to the end of F<catalog.cfg>:
 
   OrderProfile etc/profiles.order
 
@@ -1094,34 +1062,34 @@ B<OrderProfile> directive to the bottom of F<catalog.cfg>:
 
 If the submitted form lacks a required field, Interchange will display
 an error page. The default location is
-F<special_pages/needfield.html>. A simple example of this page is:
+F<special_pages/needfield.html>. To create this page, type the
+following text and save it as F<special_pages/needfield.html>.
 
- [include top]
-[include left]
-<p>You left something important out:</p>
+  [include top]
+  [include left]
+  <p>The following information was not given:</p>
 
-<p><b>[error all=1 show_var=1 show_error=1 joiner='<br>']</b></p>
+  <p><b>[error all=1 show_var=1 show_error=1 joiner='<br>']</b></p>
 
-<p>Please go back to the [page checkout]checkout page[/page]
-and fill the form out properly.</p>
+  <p>Please go back to the [page checkout]checkout page</a>
+  and fill out the form properly.</p>
 
-[include bottom]
+  [include bottom]
 
-The important tag here is [error]. The output for this tag with these
-parameters is terse. The B<all> parameter tells it to iterate through
-all of the errors reported from the failed verification. The
-B<show_var> parameter indicates that the failed variable should be
-displayed. For example, if the first name was left empty, I<fname>
-would be shown. Then B<show_error> displays the actual error for the
-variable. The B<joiner> parameter says that an HTML I<<brE<gt>> tag
-should go between each error message, that is, each error should be on
-its own line. In more complex configurations, the [error] tag can be
-much more expressive.
+The [error] tag is the most important tag on this page. The B<all>
+parameter tells the tag to iterate through all of the errors reported
+from the failed verification, and the B<show_var> parameter indicates
+that the failed variable name should be displayed. For example, if the
+first name was left empty, I<fname> would be shown. The B<show_error>
+parameter displays the actual error for the variable. The B<joiner>
+parameter inserts an HTML I<<brE<gt>> tag between each error message,
+so each error is displayed on its own line. In more complex
+configurations, the [error] tag can be even more expressive.
 
 =head2 Credit card processing
 
-For this tutorial, we are going to implement a very simple order
-process. To this end, we will add one more directive to the file
+This tutorial uses a very simple order process. To accomplish this,
+one more directive needs to be added to the file
 F<etc/profiles.order>:
 
   &fatal=yes
@@ -1132,133 +1100,120 @@ F<etc/profiles.order>:
 
 This issues two instructions to the credit card system.
 
-The first option B<standard> uses the standard built-in encryption
-algorithm to encrypt the credit card number and then erases the
-unencrypted copy from memory. We are using the standard option not to
-encrypt the number (in fact we aren't even going to define an
-encryption program) but to run the checksum verification on the number
-to verify that it is at least a potentially correct number. We will
-not be checking with a real payment processor to see if it is actually
-a valid card number. For testing purposes, you can use the card number
-4111 1111 1111 1111, which will pass the checksum test.
+The first option, B<standard>, uses the standard built-in encryption
+algorithm to encrypt the credit card number and erases the unencrypted
+copy from memory. We are using the standard option not to encrypt the
+number but to run the checksum verification on the number to verify
+that it is a potentially correct number. We will not be checking with
+a real payment processor to see if it actually is a valid card number.
+For testing purposes, you can use the card number 4111 1111 1111 1111,
+which will pass the checksum test.
 
-The second option B<keep> keeps the credit card number from getting
-removed from memory. We wish to keep the number in memory so that it
-is available later in the process, when it is mailed as part of the
-order.
+The second option, B<keep>, keeps the credit card number from getting
+removed from memory. We want to keep the number in memory so that it
+is available when it is mailed as part of the order.
 
-If this passes and all of the required fields are present, then the
-customer will be sent to the final page indicating success. Behind the
-scenes, Interchange will move on to send mail to the store owner
-(you).
+If the credit card number passes and all of the required fields are
+present, the customer will be sent to the final page. Interchange then
+sends an e-mail to the store owner (you).
 
 =head2 etc/report
 
 When the customer's involvement in the order is complete, Interchange
-will then compose an email and send it to the recipient defined in the
+composes an email and sends it to the recipient defined in the
 MailOrderTo directive in F<catalog.cfg>. The default location for the
-template of this email report is F<etc/report>. Interchange tags can
-be used to fill in blanks in the body of the message.
+template for this email report is F<etc/report>. Interchange tags can
+be used to fill in the body of the message.
 
-For it to be useful, the report will need to include the customer's
-name and address, as well as the items they ordered. The following is
-a simple report template which will report this information. Save it
-as F<etc/report>.
+The report should include at least the customer's name, address, and
+the items they ordered. The following is a simple report template;
+save it as F<etc/report>.
 
-             Name: [value fname] [value lname]
-          Address: [value address1][if value address2]
-                   [value address2][/if]
-City, State, etc.: [value city], [value state]  [value zip] [value country]
+               Name: [value fname] [value lname]
+            Address: [value address1][if value address2]
+                     [value address2][/if]
+  City, State, etc.: [value city], [value state]  [value zip] [value country]
 
-    Credit Card #: [cgi mv_credit_card_number]
-  Expiration Date: [cgi mv_credit_card_exp_month]/[cgi mv_credit_card_exp_year]
+      Credit Card #: [cgi mv_credit_card_number]
+    Expiration Date: [cgi mv_credit_card_exp_month]/[cgi mv_credit_card_exp_year]
 
 
-************ ORDER ************
-[item-list]
-[item-quantity] x [item-description] ([item-code]), [item-price] ea.
-[/item-list]
-Subtotal: [subtotal]
-   Total: [total-cost]
+  ************ ORDER ************
+  [item-list]
+  [item-quantity] x [item-description] ([item-code]), [item-price] ea.
+  [/item-list]
+  Subtotal: [subtotal]
+     Total: [total-cost]
 
-This file is in plain text format, where white space is relevant,
-unlike HTML. It is fairly straightforward, except that we have added
-the [if] tag to only include the optional second address line if the
-shopper filled it in.
+This file is in plain text format where, unlike HTML, white space is
+relevant. It is fairly straightforward, except that the [if] tag was
+added to only include the optional second address line if the customer
+filled it in.
 
 One of the special properties of the I<mv_credit_card_number> field is
-that Interchange specifically precludes it from getting saved so that
-it persists throughout the session. Thus it is unavailable to us in
-the [value] tag. The B<[cgi]> tag can be used to circumvent this
-important security measure and get the value submitted from the last
-form.
+that Interchange specifically precludes the credit card number from
+being saved. This makes it unavailable to you in the [value] tag. The
+B<[cgi]> tag is used to circumvent this important security measure in
+order to get the value submitted from the last form.
 
-B<WARNING!> Obviously it would be a bad idea to send a real credit
-card number over an insecure channel like email. We are doing this
-purely for academic purposes. In a real configuration, you would
-absolutely want to encrypt the number in a secure fashion before
-emailing or storing it anywhere. You ignore this important security
-warning at your own peril.
+B<WARNING!> Obviously it is a bad idea to send a real credit card
+number over an insecure channel like email. In a real configuration,
+you would encrypt the number securely before emailing or storing it.
 
 =head2 special_pages/receipt.html
 
-Once the report has been run, Interchange will finish things on the
-customer's end by displaying a success screen. We are just going to
-show a nice "Thank you for ordering stuff from us" type of page. The
-default location for this page is F<special_pages/receipt.html>:
+Once the report has been run, Interchange will finish the order
+process on the customer side by displaying a success screen containing
+a receipt. The default location for this page is
+F<special_pages/receipt.html>. To create a receipt page, type the
+following code and save it as F<special_pages/receipt.html>.
 
- [include top]
-[include left]
-<p>Thank you for ordering stuff from us.<br>Have a nice day!</p>
-<p>[page index]Return to our welcome page[/page]</p>
-[include bottom]
+  [include top]
+  [include left]
+  <p>Thank you for ordering stuff from us.<br>Have a nice day!</p>
+  <p>[page index]Return to our welcome page</a></p>
+  [include bottom]
 
-That's it. Once the order is processed, the customer's shopping cart
-is emptied.
+Once the order is processed, the customer's shopping cart is emptied.
 
-At this point you have a more-or-less fully dysfunctional store.
+At this point you have a more-or-less functional store.
 Congratulations.
 
 =head1 Enhancing the catalog
 
-Now that we have a working catalog, we can go back and add little
-improvements here and there and test them incrementally. We'll walk
-through several together and then suggest more enhancements you can
-figure out on your own.
+Now that you have a working catalog, you can go back and add
+improvements and test them incrementally. This section walks you
+through several and then suggests more enhancements you can attempt on
+your own.
 
 =head2 Price pictures
 
-It's probably really been annoying you that the product prices aren't
-formatted as prices usually are. You may have even added a dollar sign
-($) before the [loop-field price] tag in your F<pages/index.html> file
-to help out. But that still didn't make the thirty-seven dollar price
-of the "Ubiquitous diff eq final" test show up as "$37.00" -- instead
-it was simply "$37". (Assuming you didn't change the price from our
-sample data and your system locale is the same as ours.) The way to
-deal with this is an Interchange feature called I<price pictures>.
+You may have noticed that the product prices aren't formatted as
+prices usually are. The way to correct this is with an Interchange
+feature called I<price pictures>.
 
-There are several properties of price pictures: the currency symbol,
+There are several properties to price pictures: the currency symbol,
 the thousands separator, the decimal point, the number of digits to
-show behind the decimal, and so on. Many Unix systems will have U.S.
-currency and English as the default locale, which we call C<en_US>.
-The only thing we need to do on such a system is specify the currency
-symbol, the dollar sign. To do this, add the following line to your
-F<catalog.cfg> file:
+show behind the decimal, and so on. Most Unix systems have U.S.
+currency and the English language as the default locale, which is
+called en_US. The only thing you need to do on such a system is
+specify the currency symbol, which, in this case, is the dollar sign.
+To do this, add the following line to your F<catalog.cfg> file:
 
- Locale en_US currency_symbol $
+  Locale en_US currency_symbol $
 
-Restart Interchange and go look at your catalog. You'll notice little
-changed on the welcome page or the flypages, but in the shopping cart,
-all your prices should be formatted as U.S. dollars usually are:
-"1347.3" becomes "$1,347.30". This is because Interchange
-automatically formats shopping cart prices as currency. To turn off
-this feature, you would have to change the [item-price] tag to
-[item-price noformat] in F<pages/ord/basket.html>.
+Restart Interchange and view your catalog. You will notice little has
+changed on the welcome page or the flypages, but in the shopping cart
+all your prices should be formatted as U.S. dollars ("1347.3" has
+become "$1,347.30"). This is because Interchange automatically formats
+shopping cart prices as currency. To turn off this feature, you would
+have to change the [item-price] tag to [item-price noformat] in
+F<pages/ord/basket.html>.
 
 But that's probably not what you want to do. You're probably more
 interested in formatting your other prices as currency. To do that,
-simply use the [currency] [/currency] tag pair wherever prices show
-up. Make this change to F<pages/index.html>:
+simply use the [currency] [/currency] tag pair for all price values.
+Make the following change to F<pages/index.html>:
 
   [loop search="ra=yes/fi=products"]
   <tr>
@@ -1270,65 +1225,65 @@ up. Make this change to F<pages/index.html>:
   [/loop]
 
 B<Note: >The line that begins with '-' should be deleted. Do not type
-the '-' or anything after it. The next line that starts with '+'
-replaces it.
+the '-'. The next line, that starts with '+', replaces it.
 
-A similar change to the C<[item-field price]> tag in
-F<pages/flypage.html> will fix that page. Now take a look in your
-browser. All your prices should look pretty.
+A similar change to the [item-field price] tag in the
+F<pages/flypage.html> page will fix that currency display. View the
+page in your browser. All your prices should be formatted for U.S.
+currency.
 
 If your prices are not being formatted correctly, your default system
-locale may be set up differently or your C<en_US> locale settings may
+locale may be set up differently or your en_US locale settings may
 be wrong. There are a few other F<catalog.cfg> directives you can use
 to correct the situation:
 
- Locale en_US p_cs_precedes 1
+  Locale en_US p_cs_precedes 1
 
-That will make the currency symbol precede the currency value. A '0'
-setting will make the symbol come after the currency value.
+Makes the currency symbol precede the currency value. A '0' setting
+makes the symbol come after the currency value.
 
- Locale en_US mon_thousands_sep ,
+  Locale en_US mon_thousands_sep ,
 
-That sets your thousands separator to a comma. You can set it to
-whatever you want.
+Sets your thousands separator to a comma. It can be set to any value.
 
- Locale en_US mon_decimal_point .
+  Locale en_US mon_decimal_point .
 
-That should be pretty obvious too. Many countries use a comma instead
-of a period to separate the integer from the decimal part.
+Sets your decimal separator to a comma. Many countries use a comma
+instead of a period to separate the integer from the decimal part.
 
-Consult the Interchange documentation and your operating system manual
-for more information on locale settings.
+B<Note: >Consult the Interchange documentation and your operating
+system manual for more information on locale settings.
 
 =head2 Catalog variables
 
-Interchange has provides a very useful feature that we haven't used
-yet: catalog variables. This is a way for us to set a variable to a
-certain value in our F<catalog.cfg> file, then use it anywhere in our
-catalog pages. The B<Variable> directive causes an Interchange catalog
-variable to be created, with the name taken from the first parameter
-and the value from the rest of the line, like this:
+Interchange provides a very useful feature that has not been discussed
+yet called catalog variables. It provides a way for you to set a
+variable to a certain value in the F<catalog.cfg> file and use it
+anywhere in your catalog pages. The B<Variable> directive allows an
+Interchange catalog variable to be created with the name coming from
+the first parameter and the value from the rest of the line, like
+this:
 
- Variable SOMENAME whatever value you want
+  Variable SOMENAME whatever value you want
 
-To access that variable in your pages, use a token with the pattern
-__SOMENAME__. Note that there are two underscore characters before the
-variable name and two more after the name, and that in place of the
-word SOMENAME you put the actual name of the variable. Interchange
-will replace the token with the variable's value before anything else
-is done to the page. The value can even include Interchange tags to be
-parsed.
+To access that variable in your pages, type the token __SOMENAME__.
+Notice that there are two underscore characters before the variable
+name and two after it, and that in place of the word SOMENAME you
+would put the actual name of the variable. The first thing Interchange
+does on a page is to replace the token with the variable's value. The
+value can also include Interchange tags to be parsed.
 
-=head2 A slightly more interesting page footer
+=head2 A more interesting page footer
 
-Let's put a contact email address at the bottom of each page in case
-our loyal customers would like to get in touch with us. You could just
-add it to the footer, but by putting it in a variable, you can use it
-in contact pages as well. Then later on it's easy to change in one
-place and be reflected in many places. Set a catalog variable in
-F<catalog.cfg> like this:
+You can put a contact email address at the bottom of each page in case
+your customers want to contact you. You could just add it to the
+footer, but by putting it into a variable you can use it in contact
+pages as well. This allows you to easily change the variable
+information and have that change reflected in all instances of that
+variable. The following is an example of how to set a catalog variable
+in F<catalog.cfg>:
 
- Variable CONTACT_EMAIL someone@your.domain
+  Variable CONTACT_EMAIL someone@your.domain
 
 Now make the following change to your template file F<bottom>:
 
@@ -1342,40 +1297,40 @@ Now make the following change to your template file F<bottom>:
   </body>
   </html>
 
-Make sure to restart Interchange before reloading the page in your
-browser, since we've changed F<catalog.cfg>.
+Be sure to restart Interchange before reloading the page in your
+browser, since you made a change to F<catalog.cfg>.
 
-Let's add another variable to our catalog. This time it will contain
-an Interchange tag that returns the current date in a nice format. Add
-this to F<catalog.cfg>:
+Let's add another variable to your catalog. This variable demonstrates
+how an Interchange tag can be included in the variable. This
+Interchange tag returns the current date in a standard format. Add the
+following to F<catalog.cfg>:
 
- Variable DISPLAYDATE [tag time]%A, %B %d, %Y[/tag]
+  Variable DISPLAYDATE [time]%A, %B %d, %Y[/time]
 
-The [tag] tag is documented in the Interchange Tag Reference. The
-format strings inside [tag time] are documented in your system
-strftime(3) manual page. We won't discuss them further here.
+B<Note: >See the I<Interchange Tag Reference Guide> for an explanation
+of the [time] tag.
 
-Now add the variable to the boring F<left> template piece:
+Now add the following to the F<left> template piece:
 
   <tr>
 - <td align=center>(left)</td>
 + <td align=center>__DISPLAYDATE__</td>
   <td align=center>
 
-Restart Interchange and try it out.
+Restart Interchange and view the page.
 
-=head2 Fancy credit card expiration date selection
+=head2 Advanced credit card expiration date selection
 
-To reduce human error at checkout time, most online stores use
-pull-down option menus to list the months of the year and the years
-for the credit card expiration date, instead of expecting the user to
-type the numbers by hand. This also lets you avoid explaining whether
-the user should enter 2- or 4-digit years.
+To reduce the possibility of human error at checkout time, most online
+stores use a pull-down option menu to list the months and the years
+for the credit card expiration date, instead of having the user to
+type the numbers by hand. It also lets you avoid explaining whether
+the user should enter a 2- or 4-digit year.
 
-The following change to your F<pages/checkout.html> gives you just
-such an enhancement. (You may want to read the explanation below
-before typing it in so you know where tabs should be used instead of
-spaces, and where to watch out for `backticks`.)
+Make the following change to your F<pages/checkout.html> page. The
+section that follows explains the code. Read the explanation section
+below before typing the code to be sure you know where tabs should be
+used instead of spaces and where to watch out for `backticks`.
 
   <tr>
   <td align=right><b>Credit card expiration date:</b></td>
@@ -1433,85 +1388,87 @@ spaces, and where to watch out for `backticks`.)
 
   </table>
 
-In the first set of <select> </select> tags we generate a list of the
-months to choose from. We accomplish this by using a B<[loop]> tag. In
-this case we are looping over an explicit list. We provide the list in
-the I<list> parameter. Be careful with this, as it is sensitive to
-formatting--which the formatting of this document may not reflect. You
-want to make sure that the numbers are the first characters on each
-new line and that the elements are tab-separated. Since the columns in
-this list are not named the first element can be accessed using
-B<[loop-code]> or B<[loop-pos 0]>, with subsequent elements being
-accessed by B<[loop-pos N]> where N is the element you want. Notice
-that the elements are zero-indexed. Each time through this loop
-Interchange will generate a select <option> with a number as the value
-and the name of the month as the text for the select menu.
+In the first set of <select> </select> tags a list is generated of the
+months to choose from. This is accomplished by using a B<[loop]> tag.
+In this case we are looping over an explicit list. The list is
+provided in the I<list> parameter. Use caution when typing this, as it
+is sensitive to formatting (which may not be reflected in this
+document). Make sure that the numbers are the first characters on each
+new line and that the elements are separated by a single tab. Since
+the columns in this list are not named, the first element can be
+accessed using B<[loop-code]> or B<[loop-pos 0]> with subsequent
+elements being accessed by B<[loop-pos N]> where N is the number of
+the element you want. Notice that the elements are zero-indexed. Each
+time through this loop Interchange generates a select <option> with a
+number as the value and the name of the month as the text for the
+select menu.
 
-For the next set of <select> </select> tags we use embedded Perl to
+For the next set of <select> </select> tags embedded Perl is used to
 generate the list which is iterated over. Perl code can be embedded in
 Interchange pages in order to extend the abilities of the system. Make
 sure you typed backticks (grave accents) after "list=" and before the
-closing bracket, and not apostrophes. This code generates an entry for
-each of seven years in addition to the current year. It is not
-necessary at this point for you to understand this Perl code.
+closing bracket and not apostrophes. This code generates an entry for
+seven years in addition to the current year. It is not necessary at
+this point for you to understand this Perl code.
 
 =head2 Sorting the product list
 
-You may have noticed that the products listed on your welcome page are
-shown in the same order you entered them into
-F<products/products.txt>. As you add more products, you'll want this
-list to show up in a nice, predictable order. We need to change the
-search parameters in F<index.html>, which originally were:
+The products listed on your welcome page are shown in the same order
+that you entered them into F<products/products.txt>. As you add more
+products, you will want this list to show up in a predictable order.
+To do this, you need to change the search parameters in F<index.html>,
+which were originally:
 
- [loop search="ra=yes/fi=products"]
+  [loop search="ra=yes/fi=products"]
 
-You'll recall that 'ra' stands for 'return all' and 'fi' stands for
-file. Let's use the search parameter 'tf', which specifies the sorB<t
-f>ield. We can specify the field either by name or by number (starting
-with 0), with names and order as given in the first line of
-F<products/products.txt>). Let's change the search in F<index.html>
-to:
+You will recall that 'ra' stands for 'return all' and 'fi' stands for
+file. Let's add the search parameter 'tf', which specifies the sorB<t
+f>ield. You can specify the field either by name or by number
+(starting with 0), with names and order as given in the first line of
+F<products/products.txt>). Make the following change in F<index.html>:
 
- [loop search="ra=yes/fi=products/tf=price"]
+  [loop search="ra=yes/fi=products/tf=price"]
 
-Now take a look. That's not quite what we wanted. The default ordering
-is done on a character-by-character basis, but we actually want to do
-a numeric sort here. We need to set 'to', the sorB<t o>rder, to 'n',
-for I<numeric>:
+Refresh your browser. The default ordering is done on a
+character-by-character basis, but we were looking to do a numeric
+sort. For this you need to set 'to', the sorB<t o>rder, to 'n', for
+I<numeric>:
 
- [loop search="ra=yes/fi=products/tf=price/to=n"]
+  [loop search="ra=yes/fi=products/tf=price/to=n"]
 
-That should work better. Now try reversing the sort order by adding
-'r' to the 'to' setting:
+Refresh your browser. Now try reversing the sort order by adding 'r'
+to the 'to' setting:
 
- [loop search="ra=yes/fi=products/tf=2/to=nr"]
+  [loop search="ra=yes/fi=products/tf=2/to=nr"]
 
-You'll notice it worked equally well to specify the sort field by
-number instead of name. We can also do a reverse alphabetical sort by
-description, silly as that may be:
+You'll notice that it worked equally well to specify the sort field by
+number instead of name. You could also do a reverse alphabetical sort
+by description:
 
- [loop search="ra=yes/fi=products/tf=1/to=r"]
+  [loop search="ra=yes/fi=products/tf=1/to=r"]
 
-Let's try narrowing our search down a bit. We'll no longer be
-returning all; instead, we'll give 'se', the B<se>arch spec, and turn
-on 'su', which allows B<su>bstring matches. Let's look only for
-products that have the word "test" in one of their fields somewhere,
-and sort the results by description, like this:
+Now let's try narrowing the search down a bit. Instead of returning
+all, we'll give 'se', the B<se>arch paramerter, and and use 'su',
+which allows B<su>bstring matches. To search only for products that
+have the word "test" in one of their fields, and sort the results by
+description, type:
 
- [loop search="se=test/su=yes/fi=products/tf=description"]
+  [loop search="se=test/su=yes/fi=products/tf=description"]
 
 Which seems like something that would be better done in a search box
-for our store visitors. Before we go on, let's change this search back
-to the simple list, sorted by description:
+for your store visitors.
 
- [loop search="ra=yes/fi=products/tf=description"]
+Before moving on, change this search back to the simple list, sorted
+by description:
 
-=head2 A search box
+  [loop search="ra=yes/fi=products/tf=description"]
 
-Our customers would appreciate the ability to search for a test by SKU
-or part of the test description. Let's help them out. First, we'll add
-a search box to the hitherto unused left portion of our page layout.
-Make this change to the file F<left>:
+=head2 Adding a search box
+
+Your customers might appreciate the ability to search for a test by
+SKU or part of the test description. To do this, you need to add a
+search box to the left portion of the page layout. Make the following
+change to the file F<left>:
 
   <tr>
 - <td align=center>__DISPLAYDATE__</td>
@@ -1529,137 +1486,137 @@ Make this change to the file F<left>:
 
 This is a simple HTML form with a single input box for text. The
 action goes to a special Interchange processor called 'search' that
-will perform our search and pass the results to a still-nonexistent
-page called F<pages/results.html>.
+will perform the search and pass the results to a page called
+F<pages/results.html> (that has not been created yet).
 
-The [set testname] ... [/set] tags set an Interchange 'value'
-variable, which in this case we will use as a predefined search
-profile. We specify all the search parameters except the one the user
-will enter, 'mv_searchspec' (the long name for 'se'). We then tell
-Interchange we want to use this search profile in a hidden form tag
-named 'mv_profile'.
+The [set testname] ... [/set] tags set an Interchange 'value' variable
+that, in this case, will be used as a predefined search profile. We
+specify all the search parameters except the one the user will enter,
+'mv_searchspec' (the long name for 'se'). We then tell Interchange we
+want to use this search profile in a hidden form tag named
+'mv_profile'.
 
-Our search box will now appear on all our catalog pages, but we still
-need to create the search results page. Interchange will go to
-F<pages/results.html> to display search results. Let's create it now:
+The search box will now appear on all catalog pages, but you still
+need to create the search results page. To create the search results
+page, type the following code and save it as F<pages/results.html>.
 
- [include top]
-[include left]
-<h3>Search Results</h3>
-[search-region]
-  [on-match]
-    <table cellpadding=5>
-    <tr>
-    <th>Test #</th>
-    <th>Description</th>
-    <th>Price</th>
-    </tr>
-  [/on-match]
-  [search-list]
-    <tr>
-    <td>[item-code]</td>
-    <td><a href="[item-code].html">[item-field description]</a></td>
-    <td align=right>[item-field price]</td>
-    <td>[order [item-code]]order now[/order]</td>
-    </tr>
-  [/search-list]
-  [on-match]
-    </table>
-  [/on-match]
-  [no-match]
-    <p>Sorry, no matches were found for '[cgi mv_searchspec]'.</p>
-  [/no-match]
-[/search-region]
-<hr>
-<p align=center>[page index]Go to welcome page[/page]</p>
-<p align=center>[page order]View shopping cart[/page]</p>
-[include bottom]
+  [include top]
+  [include left]
+  <h3>Search Results</h3>
+  [search-region]
+    [on-match]
+      <table cellpadding=5>
+      <tr>
+      <th>Test #</th>
+      <th>Description</th>
+      <th>Price</th>
+      </tr>
+    [/on-match]
+    [search-list]
+      <tr>
+      <td>[item-code]</td>
+      <td><a href="[item-code].html">[item-field description]</a></td>
+      <td align=right>[item-field price]</td>
+      <td>[order [item-code]]order now[/order]</td>
+      </tr>
+    [/search-list]
+    [on-match]
+      </table>
+    [/on-match]
+    [no-match]
+      <p>Sorry, no matches were found for '[cgi mv_searchspec]'.</p>
+    [/no-match]
+  [/search-region]
+  <hr>
+  <p align=center>[page index]Return to welcome page</a></p>
+  <p align=center>[page order]View shopping cart</a></p>
+  [include bottom]
 
-The search results will all be contained within [search-region]
+The search results will be contained in the [search-region]
 [/search-region] tags. The text in the [on-match] [/on-match]
-container will only be displayed if there matches were found for the
-search, while text in the [no-match] [/no-match] will only be
-displayed if no matches were found. The [search-list] [/search-list]
+container will be displayed only if matches were found for the search.
+The text in the [no-match] [/no-match] container will be displayed
+only if no matches were found. The [search-list] [/search-list]
 container functions just like [loop] [/loop], iterating over its
 contents for each item in the search results list.
 
-That's all there is to it.
+=head2 The default catalog page
 
-=head2 Default catalog page
+As you know, a standard Interchange catalog page URL looks like this:
 
-As you know, a standard Interchange catalog page URL looks like:
-
- http://localhost/cgi-bin/tutorial/index.html
+  http://localhost/cgi-bin/tutorial/index.html
 
 But what happens if you leave off the page name, as people often do
-when typing URLs in by hand? Try:
+when typing URLs in by hand? Type:
 
- http://localhost/cgi-bin/tutorial
+  http://localhost/cgi-bin/tutorial
 
-And you get a nasty server error message. We can deal with this by
-adding a directive to F<catalog.cfg>:
+and you get a server error message. We can change this by adding the
+following directive to F<catalog.cfg>:
 
- SpecialPage catalog index
+  SpecialPage catalog index
 
-Now restart Interchange and try the above URL again.
+Restart Interchange and try the above URL again.
 
-If you want to make the welcome page something other than
-F<pages/index.html>, just modify the 'index' part of the directive
+B<Note: >If you want to make the welcome page something other than
+F<pages/index.html>, modify the 'index' part of the directive
 appropriately.
 
 =head2 High-traffic changes
 
-All through the tutorial we've created catalog pages that use the
-[include] tag to include template pieces into our pages. This has
-worked well for us, but there are a few drawbacks. One is that if we
-want to rename any of the template piece files, or move them out of
-the main catalog directory and into their own subdirectory, we would
-have to update the [include] tags on every page. To avoid this, we can
-set up catalog variables set to the [include] tags. Add these lines to
-your F<catalog.cfg> file:
+Through this tutorial you have created catalog pages that use the
+[include] tag to include template pieces in the pages. This has worked
+well, but there are a few drawbacks. First, if you want to rename any
+of the template piece files or move them out of the main catalog
+directory and into their own subdirectory, you would have to update
+the [include] tag on every page. To avoid this, you can create catalog
+variables set to the [include] tags. Add these lines to your
+F<catalog.cfg> file:
 
- Variable TOP    [include top]
-Variable LEFT   [include left]
-Variable BOTTOM [include bottom]
+  Variable TOP    [include top]
+  Variable LEFT   [include left]
+  Variable BOTTOM [include bottom]
 
-Now just change every instance of [include top] to __TOP__, and so on
-for each [include] tag. You may not feel like doing a bunch of
-search-and-replace on all the .html files you just created, but it's a
-good idea to use this capability in the next catalog you work on.
+Now change every instance of [include top] to __TOP__, doing the same
+for each [include] tag. At this point, you might not want to do a
+search-and-replace on all the .html files you just created, but keep
+this capability in mind for the next catalog you work on.
 
-If you made all the replacements and then renamed and moved your
+If you made all of the replacements and then renamed and moved your
 F<top> file, you would only have to make a single change for each
-region in F<catalog.cfg> to get all your pages up to date:
+region in F<catalog.cfg> to get your pages up to date:
 
- Variable TOP    [include templates/main-top]
+  Variable TOP    [include templates/main-top]
 
 And so on, depending on your naming scheme.
 
-Another concern is that every time a catalog page is viewed, each file
-in an [include] tag must be loaded from disk anew. In a test
-situation, this takes no noticeable amount of time at all. But on a
-very busy Interchange server, this can start to slow things down
-somewhat.
+=head2 High traffic mode
 
-We can switch to a high-traffic mode that doesn't require that each
-template piece be read from disk every time the page is hit. Instead,
-all the pieces are read into variables once when Interchange is
-started and they remain in memory from then on. On very busy
-Interchange catalogs, this can speed things up noticeably. The only
-drawback is that you must restart the Interchange daemon whenever you
-make changes to the template pieces in order to have the changes take
-effect. You can set up high-traffic templates by changing the Variable
-directives in F<catalog.cfg> as follows:
+Every time a catalog page is viewed, each file in an [include] tag
+must be loaded from disk. In a test situation, this takes no
+noticeable amount of time. But on a busy Interchange server, this can
+slow your system.
 
- Variable TOP    <top
-Variable LEFT   <left
-Variable BOTTOM <bottom
+You can switch to a high-traffic mode that doesn't require each
+template piece to be read from disk every time the page is loaded.
+Instead, all of the pieces are read into variables once when
+Interchange is started and they remain in memory until Interchange is
+restarted. On very busy Interchange catalogs, this can increase your
+speed noticeably. The only drawback is that you need to restart the
+Interchange daemon when you make changes to the template pieces in
+order to have the changes take effect. You can set up high-traffic
+templates by changing the Variable directives in F<catalog.cfg> as
+follows:
+
+  Variable TOP    <top
+  Variable LEFT   <left
+  Variable BOTTOM <bottom
 
 =head1 Ideas for further enhancements
 
 You can expand your skill with Interchange by adding more
-functionality to your test catalog. Here are some relatively simple
-ideas to get you started:
+functionality to your test catalog. Here are some simple ideas to get
+you started:
 
 =over 4
 
@@ -1693,7 +1650,7 @@ Organize your products into categories and group lists by category
 Catalog directory structure
 
 This diagram shows the directory and file structure used for the
-'tutorial' catalog we built. The base will be a directory with the
+'tutorial' catalog you built. The base will be a directory with the
 name of your catalog:
 
   tutorial/
@@ -1740,6 +1697,6 @@ January 2001. Proofread and clarified by Alison Smith and David Adams.
 
  ________________________________________
 
-Copyright 2001 Akopia, Inc. Freely redistributable under terms of the
+Copyright 2001 Red Hat, Inc. Freely redistributable under terms of the
 GNU General Public License.
 

@@ -1,9 +1,8 @@
-#!/usr/bin/perl
-# Tags.pm - Interpret Interchange tags for Safe
+# Vend::Tags - Interpret Interchange tags for Safe
 # 
-# $Id: Tags.pm,v 1.3 2000-10-17 19:59:24 jon Exp $
+# $Id: Tags.pm,v 1.4 2001-07-18 01:56:44 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

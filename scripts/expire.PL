@@ -1,10 +1,34 @@
-#$self = {
-#	INSTALLPRIVLIB => '/usr/local/interchange/lib',
-#	INSTALLARCHLIB => '/usr/local/interchange',
-#};
+my $base = $ARGV[0] || '/work/interchange';
+$self = {
+	INSTALLARCHLIB => $base,
+	INSTALLBIN     => "$base/bin",
+	INSTALLDIRS    => 'perl',
+	INSTALLMAN1DIR => "$base/doc",
+	INSTALLMAN3DIR => "$base/doc",
+	INSTALLPRIVLIB => "$base/lib",
+	INSTALLSCRIPT  => "$base/bin",
+};
+
+my %Special;
 
 use Config;
-require 'scripts/initp.pl';
+
+eval {
+	require 'scripts/initp.pl';
+};
+
+if(! $MV::Self ) {
+	$MV::Self = $self;
+	$Special{perlpath} = $Config{perlpath};
+	$Special{perlpath} .= <<EOF;
+
+
+eval 'exec $Config{perlpath} -S \$0 \${1+"\$@"}'
+    if 0; # not running under some shell
+EOF
+	$Special{perlpath} =~ s/\s+$//;
+}
+
 
 sub doit {
 	my ($key) = @_;
@@ -14,7 +38,8 @@ sub doit {
 		return $val;
 	}
 	return $MV::Self->{$key} unless $key =~ /[a-z]/;
-	return $Config{$key};
+	return $Special{$key} if defined $Special{$key};
+	$Config{$key};
 }
 
 DOIT: {
@@ -25,17 +50,12 @@ DOIT: {
 #
 # Interchange session expiration
 #
-# $Id: expire.PL,v 1.8 2000-10-04 23:36:57 heins Exp $
+# $Id: expire.PL,v 1.9 2001-07-18 01:57:01 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# See the file 'Changes' for information.
+# This program was originally based on Vend 0.2 and 0.3
+# Copyright 1995-96 by Andrew M. Wilcox <awilcox@world.std.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -60,10 +80,10 @@ use lib '/usr/local/interchange';
 use strict;
 use Fcntl;
 use Vend::Session;
-use Vend::Config qw(get_catalog_default parse_time);
+use Vend::Config qw(get_catalog_default global_config parse_time);
 use Vend::Util qw/errmsg/;
 use Getopt::Std;
-use vars qw/$opt_c $opt_r $opt_e $opt_u $opt_v $opt_x/;
+use vars qw/$opt_c $opt_r $opt_e $opt_f $opt_u $opt_v $opt_x/;
 
 BEGIN {
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
@@ -125,10 +145,9 @@ BEGIN {
 	}
 }
 
-sub logGlobal {
-	ref $_[0] and shift(@_);
-	warn(errmsg(@_)) unless $Vend::Quiet;
-}
+sub logGlobal {  }
+sub logError  {  }
+sub logDebug  {  }
 
 sub is_retired {}
 
@@ -158,11 +177,18 @@ my $reorg;
 
 $Vend::Cfg = { FileCreationMask => 0600 };
 
-getopts('c:e:ruvx') or die "$@\n$USAGE\n";
+getopts('c:e:f:ruvx') or die "$@\n$USAGE\n";
 
 $catalog    = $opt_c || undef;
 $expiretime = $opt_e || undef;
 $reorg      = $opt_r;
+
+if($opt_f) {
+	$Global::ConfigFile = $opt_f;
+}
+else {
+	$Global::ConfigFile = "$Global::VendRoot/$Global::ConfigFile";
+}
 
 GETOPT: {
 
@@ -199,15 +225,7 @@ my $g;
 if(defined $catalog) {
 	my($name,$dir,$param);
 	chdir $Global::VendRoot;
-	open(GLOBAL, "< $Global::ConfigFile") or
-		die "No global configuration file? Aborting.\n";
-	while(<GLOBAL>) {
-		next unless /^\s*((?:sub)?catalog)\s+($catalog\s+.*)/i;
-		Vend::Config::parse_catalog($1, $2);
-	}
-	close GLOBAL;
-	die "Catalog $catalog not found in $Global::ConfigFile.\n"
-		unless $Global::Catalog{$catalog};
+	global_config();
 	$g = $Global::Catalog{$catalog};
 	chdir $g->{dir} or die "chdir to $g->{dir}: $!\n";
 	$Vend::Cfg = Vend::Config::config(
@@ -315,12 +333,11 @@ temporary files.
 
 =head1 SEE ALSO
 
-mvdocs(8), expireall(1), http://www.akopia.com/
+expireall(1), http://interchange.redhat.com/
 
 =head1 AUTHOR
 
-Mike Heins, <heins@akopia.com>
-
+Mike Heins, <mheins@redhat.com>
 
 _EoP_
 	s{.*\n(#(.*)~_~(\w+)~_~(.*))}{$2 . doit($3) . "$4\n$1"}eg;

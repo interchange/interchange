@@ -1,7 +1,7 @@
-[seti page_title]Search wizard[/seti]
+[seti page_title]Search Builder[/seti]
 [set help_name]search_builder[/set]
 [set ui_class]Design[/set]
-[set icon_name]admin/icon_config.gif[/set]
+[set icon_name]icon_config.gif[/set]
 [seti name=tables][list-databases][/seti]
 [seti meta_header]
 [perl table="[scratch tables]"]
@@ -227,15 +227,16 @@ EOF
 
 @_UI_STD_HEAD_@
 
-<FORM NAME=search_wizard ACTION="[process]" METHOD=POST>
+<FORM NAME=search_wizard ACTION="[process]" METHOD=GET>
 <INPUT TYPE=hidden NAME=mv_todo VALUE=back>
+<INPUT TYPE=hidden NAME=ui_target VALUE="[cgi ui_target]">
 [return-to]
 
 <P>
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <TR>
@@ -268,7 +269,7 @@ EOF
 
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <TR>
@@ -292,7 +293,7 @@ EOF
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <TR>
@@ -318,7 +319,7 @@ EOF
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 
@@ -339,7 +340,7 @@ EOF
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <TR>
@@ -361,7 +362,7 @@ EOF
 
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <TR>
@@ -386,14 +387,12 @@ EOF
 </tr>
 
 <tr>
-<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
 <td colspan=3 bgcolor=__UI_C_INTBLOCK__>
-[button text="Cancel"]
-	[return-to click]
-[/button]&nbsp;&nbsp;&nbsp;&nbsp;[button text="Next -->"]
+<input type=submit name=mv_click value=Cancel>&nbsp;&nbsp;&nbsp;&nbsp;[button text="Next -->"]
 	mv_nextpage=__UI_BASE__/search_wizard2
 [/button]
 </tr>

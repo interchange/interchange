@@ -1,13 +1,10 @@
-# Table/DB_File.pm: access a table stored in a DB file hash
+# Vend::Table::DB_File - Access an Interchange table stored in a DB file hash
 #
-# $Id: DB_File.pm,v 1.3 2000-09-23 21:09:09 heins Exp $
+# $Id: DB_File.pm,v 1.4 2001-07-18 01:56:52 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
+# This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -26,7 +23,6 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DB_File;
-$VERSION = substr(q$Revision: 1.3 $, 10);
 use strict;
 use Fcntl;
 use DB_File;
@@ -34,35 +30,35 @@ use vars qw($VERSION @ISA);
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 
 sub create {
-    my ($class, $config, $columns, $filename) = @_;
+	my ($class, $config, $columns, $filename) = @_;
 
-    $config = {} unless defined $config;
-    my $File_permission_mode = $config->{File_permission_mode} || 0666;
+	$config = {} unless defined $config;
+	my $File_permission_mode = $config->{File_permission_mode} || 0666;
 
-    die "columns argument $columns is not an array ref\n"
-        unless CORE::ref($columns) eq 'ARRAY';
+	die "columns argument $columns is not an array ref\n"
+		unless CORE::ref($columns) eq 'ARRAY';
 
-    # my $column_file = "$filename.columns";
-    # my @columns = @$columns;
-    # open(COLUMNS, ">$column_file")
-    #    or die "Couldn't create '$column_file': $!";
-    # print COLUMNS join("\t", @columns), "\n";
-    # close(COLUMNS);
+	# my $column_file = "$filename.columns";
+	# my @columns = @$columns;
+	# open(COLUMNS, ">$column_file")
+	#    or die "Couldn't create '$column_file': $!";
+	# print COLUMNS join("\t", @columns), "\n";
+	# close(COLUMNS);
 
-    my $column_index = Vend::Table::Common::create_columns($columns, $config);
+	my $column_index = Vend::Table::Common::create_columns($columns, $config);
 
-    my $tie = {};
-    my $flags = O_RDWR | O_CREAT;
+	my $tie = {};
+	my $flags = O_RDWR | O_CREAT;
 
-    my $dbm = tie(%$tie, 'DB_File', $filename, $flags, $File_permission_mode)
-        or die "Could not create '$filename': $!";
+	my $dbm = tie(%$tie, 'DB_File', $filename, $flags, $File_permission_mode)
+		or die "Could not create '$filename': $!";
 
-    $tie->{'c'} = join("\t", @$columns);
+	$tie->{'c'} = join("\t", @$columns);
 
-    my $s = [
+	my $s = [
 				$config,
 				$filename,
 				$columns,
@@ -71,7 +67,7 @@ sub create {
 				$tie,
 				$dbm
 			];
-    bless $s, $class;
+	bless $s, $class;
 }
 
 sub new {
@@ -81,27 +77,37 @@ sub new {
 
 
 sub open_table {
-    my ($class, $config, $filename) = @_;
-    my ($Read_only) = $config->{Read_only};
+	my ($class, $config, $filename) = @_;
 
-    my $tie = {};
+	my $tie = {};
 
-    my $flags;
-    if ($Read_only) {
-        $flags = O_RDONLY;
-    }
-    else {
-        $flags = O_RDWR;
-    }
+	my $flags = O_RDONLY;
 
-    my $dbm = tie(%$tie, 'DB_File', $filename, $flags, 0600)
-        or die "Could not open '$filename': $!";
+	if (! $config->{Read_only}) {
+		undef $config->{Transactions};
+		$config->{_Auto_number} = 1 if $config->{AUTO_NUMBER};
+		$flags = O_RDWR;
+		if(! defined $config->{AutoNumberCounter}) {
+			eval {
+				$config->{AutoNumberCounter} = new File::CounterFile
+											"$config->{DIR}/$config->{name}.autonumber",
+											$config->{AUTO_NUMBER} || '00001';
+			};
+			if($@) {
+				::logError("Cannot create AutoNumberCounter: %s", $@);
+				$config->{AutoNumberCounter} = '';
+			}
+		}
+	}
 
-    my $columns = [split(/\t/, $tie->{'c'})];
+	my $dbm = tie(%$tie, 'DB_File', $filename, $flags, 0600)
+		or die "Could not open '$filename': $!";
 
-    my $column_index = Vend::Table::Common::create_columns($columns, $config);
+	my $columns = [split(/\t/, $tie->{'c'})];
 
-    my $s = [
+	my $column_index = Vend::Table::Common::create_columns($columns, $config);
+
+	my $s = [
 				$config,
 				$filename,
 				$columns,
@@ -110,13 +116,14 @@ sub open_table {
 				$tie,
 				$dbm
 			];
-    bless $s, $class;
+	bless $s, $class;
 }
 
 # Unfortunate hack need for Safe searches
 *column_index	= \&Vend::Table::Common::column_index;
 *column_exists	= \&Vend::Table::Common::column_exists;
 *columns		= \&Vend::Table::Common::columns;
+*commit			= \&Vend::Table::Common::commit;
 *config			= \&Vend::Table::Common::config;
 *delete_record	= \&Vend::Table::Common::delete_record;
 *each_record	= \&Vend::Table::Common::each_record;
@@ -124,15 +131,19 @@ sub open_table {
 *field_accessor	= \&Vend::Table::Common::field_accessor;
 *field_settor	= \&Vend::Table::Common::field_settor;
 *inc_field		= \&Vend::Table::Common::inc_field;
+*isopen			= \&Vend::Table::Common::isopen;
 *numeric		= \&Vend::Table::Common::numeric;
 *quote			= \&Vend::Table::Common::quote;
 *record_exists	= \&Vend::Table::Common::record_exists;
 *ref			= \&Vend::Table::Common::ref;
+*rollback		= \&Vend::Table::Common::rollback;
 *row			= \&Vend::Table::Common::row;
 *row_hash		= \&Vend::Table::Common::row_hash;
 *row_settor		= \&Vend::Table::Common::row_settor;
 *set_field		= \&Vend::Table::Common::set_field;
+*set_slice		= \&Vend::Table::Common::set_slice;
 *set_row  		= \&Vend::Table::Common::set_row;
+*suicide		= \&Vend::Table::Common::suicide;
 *test_column	= \&Vend::Table::Common::test_column;
 *test_record	= \&Vend::Table::Common::record_exists;
 *touch			= \&Vend::Table::Common::touch;

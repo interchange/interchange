@@ -1,0 +1,137 @@
+[set page_title]Quickbooks Item Import[/set]
+[set table_perm]=i[/set]
+[set help_name]quickbooks.items[/set]
+[set icon_name]icon_config.gif[/set]
+@_UI_STD_HEAD_@
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+[if type=explicit compare="[value-extended
+							name=upload_file
+							test=isfile]"]
+	[title-bar]Import of table [cgi mv_data_file]:
+	[value-extended
+		name=upload_file
+		outfile="upload/[cgi mv_data_table].[cgi ui_upload_ext]"
+		yes=Succeeded
+		no=FAILED
+		][/title-bar]
+	<P>
+	[if type=file term="upload/[cgi mv_data_table].[cgi ui_upload_ext]"]
+	[check-upload file="[cgi mv_data_table].[cgi ui_upload_ext]" same=1]
+	[/if]
+
+	[if type=file term="products/[cgi mv_data_table].[cgi ui_upload_ext]"]
+	[flag type=write table="[cgi mv_data_table]"]
+	[/if]
+
+	[if cgi ui_upload_ext eq add]
+	[import-quicken-items	type=items
+					file="products/[cgi mv_data_table].add"
+					move=1
+					add=1
+					dir=backup]
+	[elsif cgi ui_upload_ext eq update]
+	[import-quicken-items	type=items
+					file="products/[cgi mv_data_table].update"
+					move=1
+					dir=backup]
+	[/elsif]
+	[/if]
+[/if]
+
+[calc]
+	return if ! $CGI->{mv_data_table};
+	$Values->{mv_data_table} = $CGI->{mv_data_table};
+	return;
+[/calc]
+<form action="[area @@MV_PAGE@@]" method="POST" ENCTYPE="multipart/form-data">
+<INPUT TYPE=hidden NAME=mv_action     VALUE=return>
+<INPUT TYPE=hidden NAME=ui_return_to VALUE="__UI_BASE__/genxport">
+<table __UI_T_PROPERTIES__>
+<tr>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+<tr>
+<td bgcolor="__UI_C_INTBLOCK__" VALIGN=top>
+<input type=file name=upload_file>
+<BR>
+<input type="submit" value="Import">
+<br>
+<hr>
+<SELECT NAME=ui_upload_ext>
+	<OPTION VALUE=add> Add new items if present
+	<OPTION VALUE=update> Ignore new items
+</SELECT>
+</td>
+<td bgcolor="__UI_C_INTBLOCK__">
+
+
+<FONT SIZE="+1"><B>Field mapping</B></FONT>
+<P>
+INVITEM types to select:<BR>
+	<INPUT
+		TYPE=text
+		SIZE=20
+		NAME="ui_qbitem_types"
+		VALUE="[either]__UI_QBITEM_TYPES__[or]PART INVENTORY[/either]">
+<P>
+[perl tables="[either]__UI_QBITEM_TABLES__[or]products inventory[/either]"]
+	my @tables;
+	@tables = split /[\0\s,]+/, ('__UI_QBITEM_TABLES__' || 'products inventory');
+	@tables = grep /\S/, @tables;
+	my $default_map = $Variable->{UI_QBITEM_MAP} || <<EOF;
+products:title       NAME
+products:sku         REFNUM
+products:display	 INVITEMTYPE
+products:description DESC
+products:category    CUSTFLD1
+products:image       CUSTFLD2
+products:weight      CUSTFLD3
+products:color       CUSTFLD4
+products:size        CUSTFLD5
+inventory:sku        REFNUM
+inventory:quantity   QNTY
+inventory:account    ACCNT
+inventory:cogs_account    COGSACCNT
+products:price       PRICE
+products:nontaxable	 !TAXABLE
+EOF
+	%fmap = grep /\S/, split /\s+/, $default_map;
+	my $out = '';
+	
+	my $tab;
+	foreach $tab (@tables) {
+		my $db = $Db{$tab};
+		next if ! $db;
+		$out .= <<EOF;
+<TABLE>
+<TR><TD COLSPAN=2><B>$tab</B></TD></TR>
+EOF
+		for($db->columns()) {
+			$out .= <<EOF;
+<TR>
+	<TD><FONT SIZE="-1">$_</TD>
+	<TD><FONT SIZE="-1">
+		<INPUT TYPE=text NAME="qb:$tab:$_" SIZE=10 VALUE="$fmap{"$tab:$_"}">
+	</TD>
+</TR>
+EOF
+		}
+		$out .= "</TABLE><BR>";
+	}
+	return $out;
+[/perl]
+
+<tr>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+</table>
+
+</form>
+
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@

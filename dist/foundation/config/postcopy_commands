@@ -1,0 +1,9 @@
+sh __MVC_RELOCATE____MVC_CATROOT__/config/makedirs
+We need to make some directories to store sessions, logs, and such.
+  
+
+sh __MVC_RELOCATE____MVC_CATROOT__/config/installsample
+You can install some sample data to start with in this catalog.
+This script will install the sample (__MVC_SAMPDATATYPE__) you selected.
+  
+

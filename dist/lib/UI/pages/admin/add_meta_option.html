@@ -49,7 +49,92 @@ EOF
 	return;
 [/calc]
 
-@_UI_STD_DBEDIT_HEAD_@
+[comment] BEGIN former UI_STD_DBEDIT_HEAD [/comment]
+
+[if cgi mv_data_table]
+[value name=mv_data_table set="[cgi mv_data_table]" hide=1]
+[else]
+[value name=mv_data_table set="[calc]$Config->{ProductFiles}[0][/calc]" hide=1]
+[/else]
+[/if]
+
+[if-mm !tables]
+	[calc]
+		delete $Scratch->{no_bounce};
+		my $tmp = delete $Scratch->{ui_override_table};
+		if($tmp eq $Values->{mv_data_table}) {
+			$Scratch->{no_bounce} = 1;
+		}
+		return;
+	[/calc]
+	[if scratch no_bounce]
+		[set no_bounce][/set]
+	[else]
+		[seti ui_error]Not authorized for table [value mv_data_table].[/seti]
+		[bounce page="__UI_BASE__/error"]
+	[/else]
+	[/if]
+[/if-mm]
+
+[if-mm function=keys name="[cgi item_id]"]
+[else][bounce href="[area admin/special/key_violation]"][/else]
+[/if-mm]
+
+[perl tables="[value mv_data_table] __UI_META_TABLE__"]
+my $table = $Values->{mv_data_table};
+my $db = $Db{$table};
+my $mdb = $Db{__UI_META_TABLE__};
+if(! $db) {
+	$Scratch->{ui_error} = "Bad table '$table'.";
+	$Tag->bounce( { page => '__UI_BASE__/error' } );
+}
+
+$Values->{ui_data_key_name} = $db->config('KEY');
+
+###############################################################
+# Get the field display information including breaks and labels
+###############################################################
+if( $mdb
+	and ! $CGI->{ui_data_fields}
+	and ! $CGI->{ui_data_fields_all}
+	and $mdb->record_exists($table)
+	)
+{
+	$CGI->{ui_data_fields} = $mdb->field($table, 'options');
+	$CGI->{ui_data_fields} =~ s/\r\n/\n/g;
+	$CGI->{ui_data_fields} =~ s/\r/\n/g;
+	if($CGI->{ui_data_fields} =~ /\n\n/) {
+		my @breaks;
+		my @break_labels;
+		while ($CGI->{ui_data_fields} =~ s/\n+(?:\n=(.*)\n)?\n+(\w+)/\n$2/) {
+			push @breaks, $2;
+			push @break_labels, "$2=$1" if $1;
+		}
+		$CGI->{ui_break_before} = join " ", @breaks;
+		$CGI->{ui_break_before_label} = join ",", @break_labels;
+	}
+	$CGI->{ui_data_fields} =~ s/^\s+//;
+	$CGI->{ui_data_fields} =~ s/\s+$//;
+}
+
+$Values->{ui_data_fields} =
+	$CGI->{ui_data_fields} ||
+	$CGI->{mv_data_fields} ||
+	$Values->{"$table:ui_data_fields"} || 
+	(join " ", $db->columns());
+#Log("data fields: '$Values->{ui_data_fields}' cgi='$CGI->{ui_data_fields}'");
+$Values->{ui_data_fields} =~ s/[,\0\s]+/ /g;
+###############################################################
+
+my @cols = split /[,\0\s]/, $Values->{ui_data_fields};
+@cols = grep /:/ || $db->column_exists($_), @cols;
+
+$Values->{ui_data_fields} = $CGI->{ui_data_fields} = join " ", @cols;
+return;
+
+[/perl]
+[comment] END former UI_STD_DBEDIT_HEAD [/comment]
+
 
 [set ui_class]Admin[/set]
 [set help_name]meta.edit[/set]
@@ -81,9 +166,8 @@ EOF
 <INPUT TYPE=hidden NAME=mv_data_key VALUE="[value ui_data_key_name]">
 <INPUT TYPE=hidden NAME=mv_data_decode VALUE="[value mv_data_decode]">
 [calc]
-	$ui_img = q{@_UI_IMG_@};
 	unless ($CGI->{ui_return_to}) {
-		$CGI->{ui_return_to} = "[var MV_PAGE global]\0item_id=$Scratch->{arg}";
+		$CGI->{ui_return_to} = "[var MV_PAGE global]\0item_id=$CGI->{item_id}";
 	}
 	@inst = split /\0/, $CGI->{ui_return_to};
 	my $out;
@@ -97,21 +181,21 @@ EOF
 [/calc]
 <INPUT TYPE=hidden NAME=mv_update_empty VALUE="1">
 
-[if-key-exists table="[value mv_data_table]" key="[scratch arg]"]
+[if-key-exists table="[value mv_data_table]" key="[cgi item_id]"]
 <INPUT TYPE=hidden NAME="mv_data_function" VALUE="update">
 [else]
 <INPUT TYPE=hidden NAME="mv_data_function" VALUE="insert">
 [/else]
 [/if-key-exists]
 
-<table width="60%" border="" cellspacing="0" cellpadding="0" bordercolor="__UI_C_TITLEBARBG__">
+<table width="60%" border="" cellspacing="0" cellpadding="0">
 <tr>
   <td>
 
 <table cellspacing=0 cellmargin=0 width="100%" cellpadding="2" align="center" border="0">
 
 <tr bgcolor="__UI_C_TITLEBARBG__"> 
-<td align=right colspan=2><img src="@_UI_IMG_@admin/bg.gif" width=1 height=3 alt=x></td>
+<td align=right colspan=2><img src="bg.gif" width=1 height=3 alt=x></td>
 </tr>
 
 [comment]
@@ -133,7 +217,7 @@ Display an extra Ok/Cancel button pair if there are more than
 </TR>
 
 <tr BGCOLOR="__UI_C_TITLEBARBG__">
-<td colspan=2><img src="${ui_img}admin/bg.gif" width=1 height=3 alt=x></td>
+<td colspan=2><img src="bg.gif" width=1 height=3 alt=x></td>
 </tr>
 
 EOF
@@ -142,9 +226,9 @@ EOF
 [mvasp tables="[list-databases] __UI_META_TABLE__ __UI_ACCESS_TABLE__"]
 <%
 	my $table	= $Values->{mv_data_table};
-	my $mtable	= q{__UI_META_TABLE__} || 'mv_metadata';
+	my $mtable	= qq{__UI_META_TABLE__} || 'mv_metadata';
 	my $db		= $Db{$table};
-	my $mdb		= $Db{$mtable};
+	my $mdb		= $Db{__UI_META_TABLE__};
 	my %break;
 	my %break_label;
 	if($CGI->{ui_break_before}) {
@@ -206,7 +290,7 @@ EOF
 	if($db->record_exists($key)) {
 #Log("Should work. key=$key table=$table");
 	}
-	elsif($db->config('AUTO_NUMBER')) {
+	elsif($db->config('_Auto_number')) {
 		$CGI->{$Values->{ui_data_key_name}} = '';
 		undef $key;
 	}
@@ -214,10 +298,12 @@ EOF
 		$CGI->{$Values->{ui_data_key_name}} = $key;
 		undef $key;
 	}
+
 	foreach my $col (@cols) {
 		if($CGI->{ui_hide_key} and $col eq $keycol) {
+			my $k = defined $key && length($key) ? $key : $refkey;
 			$Document->write(<<EOF);
-<INPUT TYPE=hidden NAME="$col" VALUE="$Scratch->{arg}">
+<INPUT TYPE=hidden NAME="$col" VALUE="$key">
 EOF
 			next;
 		}
@@ -288,8 +374,8 @@ EOF
 								form => qq{
 										item_id=${t}::$c
 										ui_return_to=$page
-										ui_return_to=item_id=$Scratch->{arg}
-										ui_return_to=ui_return_table=$t
+										ui_return_to=item_id=$CGI->{item_id}
+										ui_return_to=mv_return_table=$t
 										}
 							});
 			$meta .= 'meta</A>';
@@ -301,8 +387,8 @@ EOF
 										ui_hide_key=1
 										ui_meta_view=metaconfig
 										ui_return_to=$page
-										ui_return_to=item_id=$Scratch->{arg}
-										ui_return_to=ui_return_table=$t
+										ui_return_to=item_id=$CGI->{item_id}
+										ui_return_to=mv_return_table=$t
 										}
 							}) . 'item-specific meta</A></FONT>'
 				if $CGI->{ui_meta_specific};
@@ -314,7 +400,7 @@ EOF
         #}
 		$Document->write(<<EOF) if $break{$col};
 <TR BGCOLOR="__UI_T_ROW_ODD__">
-	<TD COLSPAN=2><B>$break_label{$col}</B><IMG SRC="${ui_img}admin/bg.gif" WIDTH=1 HEIGHT=1 alt=x></TD>
+	<TD COLSPAN=2><B>$break_label{$col}</B><IMG SRC="bg.gif" WIDTH=1 HEIGHT=1 alt=x></TD>
 </TR>
 EOF
 		$display =~ s/\~META\~/$meta/g;
@@ -326,7 +412,7 @@ EOF
 <INPUT TYPE=hidden NAME=mv_data_fields VALUE="[cgi ui_data_fields]">
 
 <tr>
-<td colspan=2 BGCOLOR="__UI_C_TITLEBARBG__"><img src="@_UI_IMG_@admin/bg.gif" height=3 alt=x></td>
+<td colspan=2 BGCOLOR="__UI_C_TITLEBARBG__"><img src="bg.gif" height=3 alt=x></td>
 </tr>
 
 <TR BGCOLOR="__UI_T_ROW_EVEN__">
@@ -339,10 +425,7 @@ mv_data_table=[cgi mv_data_table]
 [/button]</B>
 &nbsp;
 &nbsp;
-[button text="Cancel"]
-mv_todo=return
-[return-to click]
-[/button]
+<INPUT TYPE=submit NAME=mv_click VALUE="Cancel">
 [if-mm tables =x]
 <small>
 &nbsp;
@@ -365,7 +448,7 @@ mv_todo=return
 </tr>
 
 <tr>
-<td colspan=2 BGCOLOR="__UI_C_TITLEBARBG__"><img src="@_UI_IMG_@admin/bg.gif" height=3 alt=x></td>
+<td colspan=2 BGCOLOR="__UI_C_TITLEBARBG__"><img src="bg.gif" height=3 alt=x></td>
 </tr>
 
 </table>

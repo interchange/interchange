@@ -2,7 +2,7 @@
 [set ui_class]Admin[/set]
 [seti page_title]Shipping options: edit method [cgi ui_shipmode][/seti]
 [seti page_banner]Shipping options: edit method <I>[cgi ui_shipmode]</I>[/seti]
-[set icon_name]admin/icon_config.gif[/set]
+[set icon_name]icon_config.gif[/set]
 [set meta_header]
 <SCRIPT LANGUAGE=JavaScript>
 		function check_for_ups(form, mode) {
@@ -176,7 +176,7 @@
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
@@ -392,7 +392,7 @@ EOF
 </tr>
 
 <tr>
-<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>
@@ -406,7 +406,7 @@ EOF
 	do_update_cmd=Ok
 	ui_bounce_url=__UI_BASE__/ship_data
 [/button]
-[button text="[L]Cancel[/L]"]
+[button text="[L]Cancel ship edit[/L]"]
 	mv_nextpage=__UI_BASE__/ship
 	mv_todo=back
 [/button]

@@ -1,13 +1,10 @@
-# Page.pm - Handle Interchange page routing
+# Vend::Page - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 1.6 2001-03-22 22:46:42 jon Exp $
+# $Id: Page.pm,v 1.7 2001-07-18 01:56:44 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
+# This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -48,21 +45,24 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 1.7 $, 10);
 
 my $wantref = 1;
 
 sub display_special_page {
-    my($name, $subject) = @_;
-    my($page);
+	my($name, $subject) = @_;
+	my($page);
 	
 	$subject = $subject || 'unspecified error';
 	
-    $page = readin($name);
-    die ::get_locale_message(412, "Missing special page: %s\n", $name)
+#::logDebug("looking for special_page=$name");
+	$page = readfile($name, $Global::NoAbsolute, 1) || readin($name);
+
+	die ::get_locale_message(412, "Missing special page: %s\n", $name)
 		unless defined $page;
-    $page =~ s#\[subject\]#$subject#ig;
-    return ::response(::interpolate_html($page, 1));
+#::logDebug("displaying special_page=$name");
+	$page =~ s#\[subject\]#$subject#ig;
+	return ::response(::interpolate_html($page, 1));
 }
 
 # Displays the catalog page NAME.  If the file is not found, displays
@@ -70,8 +70,8 @@ sub display_special_page {
 # 
 
 sub display_page {
-    my($name) = @_;
-    my($page);
+	my($name) = @_;
+	my($page);
 
 	$name = $CGI::values{mv_nextpage} unless $name;
 #::logDebug("display_page: $name");
@@ -81,26 +81,28 @@ sub display_page {
 		$name = find_special_page('violation');
 	}
 
-    $page = readin($name);
+	$page = readin($name);
 # TRACK
 	if (defined $page) {
 		$Vend::Track->view_page($name);
 	}
 # END TRACK	
 		
+	my $opt;
 	# Try for on-the-fly if not there
 	if(! defined $page) {
-		$page = Vend::Interpolate::fly_page($name);
+		$page = Vend::Interpolate::fly_page($name)
+			and $opt->{onfly} = 1;
 	}
 
-    if (defined $page) {
-		::response(::interpolate_html($page, 1));
+	if (defined $page) {
+		::response(::interpolate_html($page, 1, $opt));
 		return 1;
-    }
+	}
 	else {
 		display_special_page(find_special_page('missing'), $name);
 		return 0;
-    }
+	}
 }
 
 
@@ -108,14 +110,12 @@ sub display_page {
 
 sub do_page {
 	display_page();
-	put_session();
 }
 
 ## DO SEARCH
 sub do_search {
 	my($c) = \%CGI::values;
 	::update_user();
-	::put_session();
 #::logDebug($more);
 	if ($c->{mv_more_matches}) {
 		$Vend::Session->{last_search} = "scan/MM=$c->{mv_more_matches}";
@@ -129,8 +129,8 @@ sub do_search {
 	$c->{mv_cache_key} = generate_key($Vend::Session->{last_search})
 			unless defined $c->{mv_cache_key};
 
-	$Vend::SearchObject{''} = perform_search($c);
-	$CGI::values{mv_nextpage}	= $Vend::SearchObject{''}->{mv_search_page}
+	$::Instance->{SearchObject}{''} = perform_search($c);
+	$CGI::values{mv_nextpage}	= $::Instance->{SearchObject}{''}->{mv_search_page}
 							 	|| find_special_page('search')
 		if ! $CGI::values{mv_nextpage};
 	return 1;
@@ -142,7 +142,6 @@ sub do_scan {
 	my($path) = @_;
 	my ($key,$page);
 
-	put_session();
 	my $c = {};
 	$Vend::ScanPassed = "scan/$path";
 	find_search_params($c,$path);
@@ -160,9 +159,8 @@ sub do_scan {
 		$c->{mv_cache_key} = generate_key(create_last_search($c));
 	}
 
-	$Vend::SearchObject{''} = perform_search($c);
-	put_session();
-	$CGI::values{mv_nextpage} = $Vend::SearchObject{''}->{mv_search_page}
+	$::Instance->{SearchObject}{''} = perform_search($c);
+	$CGI::values{mv_nextpage} = $::Instance->{SearchObject}{''}->{mv_search_page}
 							 	|| find_special_page('search')
 		if ! $CGI::values{mv_nextpage};
 	return 1;

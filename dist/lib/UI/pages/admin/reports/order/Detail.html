@@ -4,47 +4,47 @@
 			return;
 	[/calc]
 [/if-mm]
-[set page_title]Order detail report[/set]
-[set icon_name]admin/icon_stats.gif[/set]
+[set page_title][L]Order detail report[/L][/set]
+[set icon_name]icon_stats.gif[/set]
 [set help_name]orderstats.view[/set]
 @_UI_STD_HEAD_@
 
 <TABLE width="90%" border=0 callpadding=0 cellspacing=0>
 <tr bgcolor="#000000" height=1><td colspan=7></td></tr>
-<TR BGCOLOR="#__UI_C_TOPBLOCKBAR__">
+<TR BGCOLOR="__UI_C_TOPBLOCKBAR__">
 <TD VALIGN="top">
 <FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Order</B>
+<B>[L]Order[/L]</B>
 </FONT>
 </TD>
 <TD VALIGN="top">
 <FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Affiliate</B>
+<B>[L]Affiliate[/L]</B>
 </FONT>
 </TD>
 <TD VALIGN="top">
 <FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Campaign</B>
+<B>[L]Campaign[/L]</B>
 </FONT>
 </TD>
 <TD VALIGN="top">
 <FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Address</B>
+<B>[L]Address[/L]</B>
 </FONT>
 </TD>
 <TD VALIGN="top">
 <FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Date/Time</B>
+<B>[L]Date[/L]/[L]Time[/L]</B>
 </FONT>
 </TD>
 <TD ALIGN="right" VALIGN="top">
 <FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Amount</B>
+<B>[L]Amount[/L]</B>
 </FONT>
 </TD>
 <TD ALIGN="right" VALIGN="top">
 <FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Status</B>
+<B>[L]Status[/L]</B>
 </FONT>
 </TD>
 </TR>
@@ -100,9 +100,11 @@ EOF
 	<H2>Bad query specified, caused error.</H2>
 	</TD>
 EOF
+	$out = '';
 	foreach $line (@{$Tmp->{main}}) {
 		$total_sales    += $line->{total_cost};
 		$amount = sprintf '%.2f', $line->{total_cost};
+	    $line->{status} = $Tag->loc('', $line->{status});
 		$url = $Tag->area('__UI_BASE__/order_view', $line->{order_number});
 		$out .= <<EOF;
 	<TR BGCOLOR="__UI_C_INTBLOCK__">
@@ -136,7 +138,7 @@ EOF
 <tr bgcolor="#000000" height=1><td colspan=7></td></tr>
 	<TR BGCOLOR="__UI_C_INTBLOCK__">
 	<TD VALIGN="top">
-	GRAND TOTAL
+	[L]GRAND TOTAL[/L]
 	</TD>
 	<TD VALIGN="top">
 	&nbsp;

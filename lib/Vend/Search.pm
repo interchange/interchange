@@ -1,10 +1,8 @@
-#!/usr/bin/perl -w
+# Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 1.10 2000-12-05 09:39:46 heins Exp $
+# $Id: Search.pm,v 1.11 2001-07-18 01:56:44 jon Exp $
 #
-# Vend::Search -- Base class for search engines
-#
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,13 +18,10 @@
 # License along with this program; if not, write to the Free
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
-#
 
-#
-#
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 1.10 $, 10);
+$VERSION = substr(q$Revision: 1.11 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -365,6 +360,53 @@ sub more_matches {
 	return $obj;
 }
 
+sub more_alpha {
+	my ($s, $out) = @_;
+	my ($sfpos, $letter, $sortkey, $last, @alphaspecs, $i);
+	my $alphachars = $s->{mv_more_alpha_chars} || 3;
+
+	# determine position of sort field within results
+	for ($i = 0; $i < @{$s->{mv_return_fields}}; $i++) {
+		last if $s->{mv_return_fields}->[$i] == $s->{mv_sort_field}->[0];
+	}
+	$sfpos = $i;
+	
+	# add dummy record
+	@alphaspecs = (['']);
+		
+	$last = 0;
+	for ($i = 0; $i < @$out; $i++) {
+		$sortkey = $out->[$i]->[$sfpos];
+		$letter = substr($sortkey,0,1);
+
+		if ($letter ne substr($alphaspecs[$last]->[0],0,1)) {
+			# add record if first letter has changed
+			push (@alphaspecs, [$sortkey, 1, $i]);
+			# add last pointer to previous record
+			push (@{$alphaspecs[$last++]}, $i - 1);
+		} elsif ($alphachars > 1
+				 && $i - $alphaspecs[$last]->[2] >= $s->{mv_matchlimit}) {
+			# add record if match limit is exceeded and significant
+			# letters are different
+			for (my $c = 2; $c <= $alphachars; $c++) {
+				if (substr($sortkey,0,$c)
+					ne substr($alphaspecs[$last]->[0],0,$c)) {
+					push (@alphaspecs, [$sortkey, $c, $i]);
+					# add last pointer to previous record
+					push (@{$alphaspecs[$last++]}, $i - 1);
+					last;
+				}
+			}
+		}
+			
+	}
+	# add last pointer to last record
+	push (@{$alphaspecs[$last]}, $i - 1);
+	# remove dummy record
+	shift (@alphaspecs);
+	$s->{mv_alpha_list} = \@alphaspecs;
+}
+
 # Returns a field weeding function based on the search specification.
 # Input is the raw line and the delimiter, output is the fields
 # specified in the return_field specification
@@ -477,6 +519,19 @@ sub code_join {
 	$out .= ' ) ';
 }
 
+sub create_field_hash {
+	my $s = shift;
+	my $fn = $s->{mv_field_names}
+		or return;
+	my $fh = {};
+	my $idx = 0;
+	for(@$fn) {
+		$fh->{$idx} = $idx;
+		$fh->{$_} = $idx++;
+	}
+	return $fh;
+}
+
 # Returns a screening function based on the search specification.
 # The $f is a reference to previously created search function which does
 # a pattern match on the line.
@@ -516,6 +571,8 @@ sub get_limit {
 	}
 	# Add the code to get the join data if it is there
 	if(@join_fields) {
+		$s->{mv_field_hash} = create_field_hash($s) 
+			unless $s->{mv_field_hash};
 		$code .= <<EOF;
 my \$key = (split m{$s->{mv_index_delim}}, \$line)[$join_key];
 EOF
@@ -530,6 +587,10 @@ EOF
 			}
 			elsif ($col =~ tr/:/,/) {
 				$col =~ tr/ \t//d;
+				my @col = map { $s->{mv_field_hash}{$_} } split /,/, $col;
+				@col = grep defined $_, @col;
+				$col = join ",", @col;
+				next unless $col;
 				$wild_card = 1;
 				$col =~ s/[^\d,.]//g;
 			$code .= <<EOF;
@@ -565,8 +626,11 @@ EOF
 		 $code .= <<EOF;
 	my \@fields = split /\\Q$s->{mv_index_delim}/, \$line;
 	\@fields = ${callchar}fields[$fields];
-#::logDebug("fields=" . join "|", \@fields);
 EOF
+		$code .= <<EOF if $Global::DebugFile and $CGI::values{debug};
+   ::logDebug("fields=" . join "|", \@fields);
+EOF
+
 		my @specs;
 		# For a limiting function, can't if orsearch
 
@@ -681,7 +745,8 @@ EOF
 			};
 			undef $f if $@;
 		}
-#::logDebug("filter function code is: $f");
+		::logDebug("filter function code is: $f")
+			if $Global::DebugFile and $CGI::values{debug};
 		use locale;
 		$f = eval $f if $f and ! ref $f;
 		die($@) if $@;
@@ -707,7 +772,8 @@ EOF
 		}
 		$code .= $relate;
 		$code .= "\n}\n";
-#::logDebug("coordinate search code is:\n$code");
+		::logDebug("coordinate search code is:\n$code")
+			if $Global::DebugFile and $CGI::values{debug};
 	}
 	elsif ( @{$s->{mv_search_field}} )  {
 		if(! $s->{mv_begin_string}[0]) {
@@ -920,6 +986,16 @@ sub save_more {
 	if ($s->{matches} > $s->{mv_matchlimit}) {
 		$s->{overflow} = 1;
 		$s->{mv_next_pointer} = $s->{mv_matchlimit};
+	}
+	if ($s->{mv_more_alpha}) {
+		unless ($s->{mv_sort_field} and @{$s->{mv_sort_field}}) {
+			return $s->search_error("mv_sort_field required for mv_more_alpha");
+		}
+		unless ($s->{mv_return_fields}
+				and grep {$_ eq $s->{mv_sort_field}->[0]} @{$s->{mv_return_fields}}) {
+					return $s->search_error("mv_sort_field missing in mv_return_fields (required for mv_more_alpha)");
+		}
+		more_alpha($s,$out);
 	}
 	
 	$file = Vend::Util::get_filename($id,undef,undef,$Vend::Cfg->{StaticScratch}); 

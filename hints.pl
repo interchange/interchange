@@ -8,7 +8,7 @@ sub get_hints {
 	my $condition;
 	my $routine;
 
-	$condition = sub { $^O =~ /bsd/i };
+	$condition = sub { $^O =~ /nolongernecessary/i };
 	$routine = sub {
 		my $fn = 'interchange.cfg.dist';
 		rename $fn, "$fn.bak";

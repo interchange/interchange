@@ -4,16 +4,17 @@
 [set no_login_required]1[/set]
 [seti page_title]Error: [scratch ui_error][/seti]
 [set help_name]item.error[/set]
-[set icon_name]admin/icon_error.gif[/set]
+[set icon_name]icon_error.gif[/set]
 @_UI_STD_HEAD_@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
 <table __UI_T_PROPERTIES__>
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
+[if session ui_error]
 <tr>
 <td bgcolor="__UI_C_INTBLOCK__">
 &nbsp;
@@ -22,7 +23,7 @@
 The following error occurred:
 <p>
 <BLOCKQUOTE>
-<b>[scratch ui_error]</b>[set ui_error][/set]
+<b>[calc] delete $Session->{ui_error} [/calc]</b>
 </BLOCKQUOTE>
 <p>
 Please correct and try again.
@@ -31,9 +32,51 @@ Please correct and try again.
 &nbsp;
 </td>
 </tr>
+[/if]
+
+[if scratch ui_error]
+<tr>
+<td bgcolor="__UI_C_INTBLOCK__">
+&nbsp;
+<p>
+
+The following error occurred:
+<p>
+<BLOCKQUOTE>
+<b>[scratchd ui_error]</b>
+</BLOCKQUOTE>
+<p>
+Please correct and try again.
+<p>
+<i>Maybe you need to [page __UI_BASE__/login]<U><B>log in</b></U></A>?</I>
+&nbsp;
+</td>
+</tr>
+[/if]
+
+
+[if scratch violation]
+<tr>
+<td bgcolor="__UI_C_INTBLOCK__">
+&nbsp;
+<p>
+
+The following violation occurred:
+<p>
+<BLOCKQUOTE>
+<b>[scratchd violation]</b>
+</BLOCKQUOTE>
+<p>
+Please correct and try again.
+<p>
+<i>Maybe you need to [page __UI_BASE__/login]<U><B>log in</b></U></A>?</I>
+&nbsp;
+</td>
+</tr>
+[/if]
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 </table>

@@ -4,7 +4,7 @@
 [/if]
 [set page_title]Traffic Statistics[/set]
 [set ui_class]Reports[/set]
-[set icon_name]admin/icon_stats.gif[/set]
+[set icon_name]icon_stats.gif[/set]
 [set help_name]stats.traffic[/set]
 @_UI_STD_HEAD_@
 
@@ -40,6 +40,7 @@
 <tr bgcolor="#FFFFFF" height=2><td colspan=8></td></tr>
 
 <FORM ACTION="[process]">
+<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 <INPUT TYPE=hidden NAME=mv_todo VALUE=return>
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/reports/traffic/ByAffiliate">
 

@@ -1,13 +1,10 @@
-# Session.pm - Interchange Sessions
+# Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 1.7 2000-11-12 20:52:25 heins Exp $
+# $Id: Session.pm,v 1.8 2001-07-18 01:56:44 jon Exp $
 # 
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
-# This program was originally based on Vend 0.2
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# Portions from Vend 0.3
+# This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -24,13 +21,12 @@
 # License along with this program; if not, write to the Free
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
-#
 
 package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.7 $, 10);
+$VERSION = substr(q$Revision: 1.8 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -39,6 +35,7 @@ $VERSION = substr(q$Revision: 1.7 $, 10);
 check_save
 dump_sessions
 expire_sessions
+close_session
 get_session
 init_session
 new_session
@@ -138,10 +135,19 @@ NFS => [ 1, 0, sub {
 # SESSIONS implemented using DBM
 
 sub get_session {
+	my $seed = shift;
+
+	if($seed and ! $Vend::SessionID) {
+#::logDebug("received seed=$seed");
+		$Vend::SessionID = $seed;
+	}
+	$Vend::SessionName = session_name() if ! $Vend::SessionName;
+#::logDebug("session name now $Vend::SessionName");
+
 	$Vend::HaveSession = 0;
 	open_session();
 	my $new;
-	$new = read_session() unless $Vend::ExternalProgram;
+	$new = read_session($seed) unless $Vend::ExternalProgram;
 	unless($File_sessions) {
 		lock_session();
 		close_session();
@@ -151,6 +157,7 @@ sub get_session {
 }
 
 sub put_session {
+	return unless $Vend::HaveSession;
 	unless($File_sessions) {
 		open_session();
 		write_session();
@@ -203,10 +210,13 @@ sub new_session {
     my($seed) = @_;
     my($name);
 
-#::logDebug ("new session id=$Vend::SessionID  name=$Vend::SessionName\n");
+#::logDebug ("new session id=$Vend::SessionID  name=$Vend::SessionName seed=$seed");
 	open_session();
     for (;;) {
-		$Vend::SessionID = random_string() unless defined $seed;
+		unless (defined $seed) {
+			$Vend::SessionID = random_string();
+			undef $Vend::CookieID;
+		}
 		undef $seed;
 		if (::is_retired($Vend::SessionID)) {
 			::retire_id($Vend::SessionID);
@@ -221,7 +231,7 @@ sub new_session {
 		}
     }
 	count_ip(1);
-	$CGI::cookie = $Vend::Cookie = '';
+	undef $Vend::Cookie;
     $Vend::SessionName = $name;
     init_session();
 #::logDebug("init_session $Vend::SessionName is: " . ::uneval($Vend::Session));
@@ -234,13 +244,15 @@ sub new_session {
 }
 
 sub close_session {
-#::logDebug ("close session id=$Vend::SessionID  name=$Vend::SessionName\n");
-	return 1 if ! defined $Vend::SessionOpen;
+#::logDebug ("try to close session id=$Vend::SessionID  name=$Vend::SessionName");
+	return 0 if ! defined $Vend::SessionOpen;
 
 	unless($DB_sessions) {
+#::logDebug ("close session id=$Vend::SessionID  name=$Vend::SessionName");
 		undef $DB_object;
 		untie %Vend::SessionDBM
 			or die "Could not close $Vend::Cfg->{SessionDatabase}: $!\n";
+		undef $Vend::SessionOpen;
 	}
 	
 	return 1 unless $Lock_sessions;
@@ -250,6 +262,7 @@ sub close_session {
     close(Vend::SessionLock)
 		or die "Could not close '$Vend::Cfg->{SessionLockFile}': $!\n";
 	undef $Vend::SessionOpen;
+	return 1;
 }
 
 sub write_session {
@@ -257,6 +270,7 @@ sub write_session {
 #::logDebug ("write session id=$Vend::SessionID  name=$Vend::SessionName\n");
 	my $time = time;
     $Vend::Session->{'time'} = $time;
+	delete $Vend::Session->{values}->{mv_credit_card_number};
     my $save = $Vend::Session->{'user'};
     undef $Vend::Session->{'user'};
     #undef $Vend::Session->{'arg'};
@@ -266,6 +280,7 @@ sub write_session {
 	}
 	$Vend::Session->{username} = $Vend::username;
 	$Vend::Session->{admin} = $Vend::admin;
+	$Vend::Session->{superuser} = $Vend::superuser;
     $s = ! $File_sessions ? uneval_fast($Vend::Session) : $Vend::Session;
     $Vend::SessionDBM{$Vend::SessionName} = $s or 
 		die "Data was not stored in SessionDBM\n";
@@ -334,6 +349,7 @@ EOF
 }
 
 sub read_session {
+	my $seed = shift;
     my($s);
 
 #::logDebug ("read session id=$Vend::SessionID  name=$Vend::SessionName\n");
@@ -352,7 +368,7 @@ sub read_session {
 		};
 		
 #::logDebug ("Session:\n$s\n");
-	return new_session() unless $s;
+	return new_session($seed) unless $s;
     $Vend::Session = ref $s ? $s : evalr($s);
     die "Could not eval '$s' from session dbm: $@\n" if $@;
 
@@ -360,12 +376,14 @@ sub read_session {
 
 	$Vend::username = $Vend::Session->{username};
 	$Vend::admin    = $Vend::Session->{admin};
+	$Vend::superuser   = $Vend::Session->{superuser};
 
 	$Vend::Session->{arg}  = $Vend::Argument;
 
     $::Values	= $Vend::Session->{'values'};
     $::Scratch	= $Vend::Session->{scratch};
     $::Carts	= $Vend::Session->{carts};
+    $::Control	= $Vend::Session->{control} = [];
 	tie $Vend::Items, 'Vend::Cart';
 }
 
@@ -377,13 +395,15 @@ my $joiner = $Global::Windows ? '_' : ':';
 sub session_name {
     my($host, $user, $fn, $proxy);
 
+	return $Vend::SessionID if $::Instance->{ExternalCookie};
+
 	if(defined $CGI::user and $CGI::user) {
 		$host = escape_chars($CGI::user);
 	}
-	elsif(defined $CGI::cookieuser) {
+	elsif($CGI::cookieuser) {
 		$host = $CGI::cookieuser;
 	}
-	elsif(defined $CGI::cookiehost) {
+	elsif($CGI::cookiehost) {
 		$host = $CGI::cookiehost;
 	}
 	else {

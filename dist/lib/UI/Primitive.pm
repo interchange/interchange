@@ -1,8 +1,10 @@
-#!/usr/bin/perl
+# UI::Primitive - Interchange configuration manager primitives
 
-# Copyright (C) 1998-2000 Akopia, Inc. <info@akopia.com>
+# $Id: Primitive.pm,v 1.28 2001-07-18 01:54:40 jon Exp $
 
-# Author: Michael J. Heins <heins@akopia.com>
+# Copyright (C) 1998-2001 Red Hat, Inc. <interchange@redhat.com>
+
+# Author: Michael J. Heins <mheins@redhat.com>
 # Former maintainer: Stefan Hornburg <racke@linuxia.de>
 
 # This file is free software; you can redistribute it and/or modify it
@@ -23,7 +25,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.27 $, 10);
+$VERSION = substr(q$Revision: 1.28 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -60,29 +62,27 @@ my $ui_safe = new Safe;
 $ui_safe->untrap(@{$Global::SafeUntrap});
 
 sub is_super {
-#::logDebug("called is_super");
+	return 1
+		if  $Vend::Cfg->{RemoteUser}
+		and $Vend::Cfg->{RemoteUser} eq $CGI::remote_user;
 	return 0 if ! $Vend::Session->{logged_in};
-#::logDebug("is_super: logged in");
 	return 0 if ! $Vend::username;
 	return 0 if $Vend::Cfg->{AdminUserDB} and ! $Vend::admin;
-#::logDebug("is_super: have username");
 	my $db = Vend::Data::database_exists_ref(
 						$Vend::Cfg->{Variable}{UI_ACCESS_TABLE} || 'access'
 						);
 	return 0 if ! $db;
-#::logDebug("is_super: access db exists");
 	$db = $db->ref();
 	my $result = $db->field($Vend::username, 'super');
-#::logDebug("is_super: result=$result");
 	return $result;
 }
 
 sub is_logged {
-#::logDebug("is_logged check");
+	return 1
+		if  $Vend::Cfg->{RemoteUser}
+		and $Vend::Cfg->{RemoteUser} eq $CGI::remote_user;
 	return 0 if ! $Vend::Session->{logged_in};
-#::logDebug("is_logged logged_in=ok");
 	return 0 unless $Vend::admin or ! $Vend::Cfg->{AdminUserDB};
-#::logDebug("is_logged admin=ok");
 	return 1;
 }
 
@@ -166,20 +166,20 @@ sub ui_acl_enabled {
 	my $default = defined $Global::Variable->{UI_SECURITY_OVERRIDE}
 				? $Global::Variable->{UI_SECURITY_OVERRIDE}
 				: 0;
+	if ($Vend::superuser) {
+		return $Vend::UI_entry = { super => 1 };
+	}
 	$table = $::Variable->{UI_ACCESS_TABLE} || 'access';
 	$Vend::WriteDatabase{$table} = 1;
 	my $db = Vend::Data::database_exists_ref($table);
 	return $default unless $db;
 	$db = $db->ref() unless $Vend::Interpolate::Db{$table};
 	my $uid = $try || $Vend::username || $CGI::remote_user;
-#::logDebug("ACL enabled try uid=$uid");
 	if(! $uid or ! $db->record_exists($uid) ) {
 		return 0;
 	}
-#::logDebug("ACL enabled record exists uid=$uid");
 	my $ref = $db->row_hash($uid)
 		or die "Bad database record for $uid.";
-#::logDebug("ACL enabled, table_control=$ref->{table_control}");
 	if($ref->{table_control}) {
 		$ref->{table_control_ref} = $ui_safe->reval($ref->{table_control});
 	}
@@ -190,7 +190,6 @@ sub ui_acl_enabled {
 sub get_ui_table_acl {
 	my ($table, $user, $keys) = @_;
 	$table = $::Values->{mv_data_table} unless $table;
-#::logDebug("Call get_ui_table_acl: " . Vend::Util::uneval_it(\@_));
 	my $acl_top;
 	if($user and $user ne $Vend::username) {
 		if ($Vend::UI_acl{$user}) {
@@ -209,7 +208,6 @@ sub get_ui_table_acl {
 	}
 	else {
 		unless ($acl_top = $Vend::UI_entry) {
-#::logDebug("Call get_ui_table_acl: acl_top=" . ::uneval($acl_top));
 			return undef unless ref($acl_top = ui_acl_enabled());
 		}
 	}
@@ -219,7 +217,6 @@ sub get_ui_table_acl {
 
 sub ui_acl_grep {
 	my ($acl, $name, @entries) = @_;
-#::logDebug("Call ui_acl_grep: " . ::uneval(\@_));
 	my $val;
 	my %ok;
 	@ok{@entries} = @entries;
@@ -233,7 +230,6 @@ sub ui_acl_grep {
 			for(@entries) {
 
 				my $v = ::tag_data($t, $val, $_);
-#::logDebug("ui_acl_grep owner: t=$t f=$val k=$_ v=$v u=$u");
 				$ok{$_} = $v eq $u;
 			}
 	}
@@ -268,30 +264,19 @@ sub ui_acl_atom {
 sub ui_extended_acl {
 	my ($item, $string) = @_;
 	$string = " $string ";
-#::logDebug("extended acl string='$string'");
 	my ($name, $sub) = split /=/, $item, 2;
-#::logDebug("extended acl: name=$name sub=$sub");
-#::logDebug("extended acl trying /[\s,]!${name}\[,\s]/");
 	return 0 if $string =~ /[\s,]!$name(?:[,\s])/;
-#::logDebug("extended acl passed /[\s,]!${name}\[,\s]/");
-#::logDebug("extended acl trying /[\s,]${name}\[,\s]/");
 	return 1 if $string =~ /[\s,]$name(?:[,\s])/;
-#::logDebug("extended acl passed /[\s,]${name}\[,\s]/");
 	my (@subs) = split //, $sub;
 	for(@subs) {
-#::logDebug("extended acl trying /[\s,]!$name=[^,\s]*$sub/");
 		return 0 if $string =~ /[\s,]!$name=[^,\s]*$sub/;
-#::logDebug("extended acl passed /[\s,]!$name=[^,\s]*$sub/");
-#::logDebug("extended acl trying /[\s,]$name=[^,\s]*$sub/");
 		return 0 unless $string =~ /[\s,]$name=[^,\s]*$sub/;
-#::logDebug("extended acl passed /[\s,]$name=[^,\s]*$sub/");
 	}
 	return 1;
 }
 
 sub ui_check_acl {
 	my ($item, $string) = @_;
-#::logDebug("checking item=$item");
 	return ui_extended_acl(@_) if $item =~ /=/;
 	$string = " $string ";
 	return 0 if $string =~ /[\s,]!$item[=,\s]/;
@@ -357,6 +342,9 @@ sub ui_acl_global {
   		}
 
 		my @fields = grep /\S/, split /[,\s\0]+/, $CGI->{mv_data_fields};
+		push @fields, $CGI->{mv_blob_field}
+			if $CGI->{mv_blob_field};
+
 		for(@fields) {
 			$CGI->{$_} =~ s/\[/&#91;/g unless $mml_enable;
 			$CGI->{$_} =~ s/\</&lt;/g unless $html_enable;
@@ -386,10 +374,8 @@ sub ui_acl_global {
 sub list_keys {
 	my $table = shift;
 	my $opt = shift;
-#::logDebug("list-keys $table");
 	$table = $::Values->{mv_data_table}
 		unless $table;
-#::logDebug("list-keys $table");
 	my @keys;
 	my $record;
 	if(! ($record = $Vend::UI_entry) ) {
@@ -399,11 +385,8 @@ sub list_keys {
 	my $acl;
 	my $keys;
 	if($record) {
-#::logDebug("list_keys: record=$record");
 		$acl = get_ui_table_acl($table);
-#::logDebug("list_keys table=$table: acl=$acl");
 		if($acl and $acl->{yes_keys}) {
-#::logDebug("list_keys table=$table: yes.keys enabled");
 			@keys = grep /\S/, split /\s+/, $acl->{yes_keys};
 		}
 	}
@@ -416,7 +399,6 @@ sub list_keys {
 			return ::errmsg('--not listed, too large--');
 		}
 		my $query = "select $keyname from $table order by $keyname";
-#::logDebug("list_keys: query=$query");
 		$keys = $db->query(
 						{
 							query => $query,
@@ -439,10 +421,8 @@ sub list_keys {
 				@keys = sort @keys;
 			}
 		}
-#::logDebug("list_keys: query=returned " . ::uneval(\@keys));
 	}
 	if($acl) {
-#::logDebug("list_keys acl: ". ::uneval($acl));
 		@keys = UI::Primitive::ui_acl_grep( $acl, 'keys', @keys);
 	}
 	my $joiner = $opt->{joiner} || "\n";
@@ -527,10 +507,6 @@ sub list_pages {
 	$base = $Vend::Cfg->{PageDir} if ! $base;
 	my @names;
 	my $wanted = sub {
-					if(-d $_ and $Vend::Cfg->{AdminPage}{$_}) {
-						$File::Find::prune = 1;
-						return;
-					}
 					return undef unless -f $_;
 					return undef unless /$suf$/;
 					my $n = $File::Find::name;
@@ -578,7 +554,6 @@ sub rotate {
 
 	my $motion = $options->{Motion} || 'save';
 
-#::logDebug( "rotate $base with options dir=$dir motion=$motion from >> " . ::uneval($options));
 
 	$dir =~ s:/+$::;
 
@@ -611,7 +586,6 @@ sub rotate {
 
 	$base = "$dir/$base";
 
-#::logDebug( "rotate $base with options dir=$dir motion=$motion from >> " . ::uneval($options));
 
 	my $base_exists = -f $base;
 	push @forward, $base if $base_exists;
@@ -666,7 +640,7 @@ sub date_widget {
 	my $out = qq{<SELECT NAME="$name">};
 	my $o;
 	for(@months) {
-		$o = qq{<OPTION VALUE="$_->[0]">$_->[1]};
+		$o = qq{<OPTION VALUE="$_->[0]">} . errmsg($_->[1]);
 		($out .= $o, next) unless ! $sel and $val;
 		$o =~ s/>/ SELECTED>/ && $sel++
 			if substr($val, 4, 2) eq $_->[0];
@@ -697,23 +671,113 @@ sub date_widget {
 	$out .= qq{</SELECT>};
 }
 
+
+sub option_widget_box {
+	my ($name, $val, $lab, $default, $width) = @_;
+	my $half = int($width / 2);
+	my $sel = $default ? ' SELECTED' : '';
+	$val =~ s/"/&quot;/g;
+	$lab =~ s/"/&quot;/g;
+	$width = 10 if ! $width;
+	return qq{<TR><TD><SMALL><INPUT TYPE=text NAME="$name" VALUE="$val" SIZE=$half></SMALL></TD><TD><SMALL><INPUT TYPE=text NAME="$name" VALUE="$lab" SIZE=$width></SMALL></TD><TD><SMALL><SMALL><SELECT NAME="$name"><OPTION value="0">no<OPTION value="1"$sel>default*</SELECT></SMALL></SMALL></TD></TR>};
+}
+
+sub option_widget {
+	my($name, $val, $opt) = @_;
+	$opt = {} if ! ref $opt;
+	my $width = $opt->{width} || 16;
+	$val = Vend::Interpolate::filter_value('option_format', $val);
+	my @opts = split /\s*,\s*/, $val;
+	my $out = "<TABLE CELLPADDING=0 CELLSPACING=0><TR><TH><SMALL>Value</SMALL></TH><TH ALIGN=LEFT COLSPAN=2><SMALL>Label</SMALL></TH></TR>";
+	my $done;
+	for(@opts) {
+		my ($v,$l) = split /\s*=\s*/, $_, 2;
+		next unless $l || length($v);
+		$done++;
+		my $default;
+		($l =~ s/\*$// or ! $l && $v =~ s/\*$//)
+			and $default = 1;
+		$out .= option_widget_box($name, $v, $l, $default, $width);
+	}
+	while($done++ < 3) {
+		$out .= option_widget_box($name, '', '', '', $width);
+	}
+	$out .= option_widget_box($name, '', '', '', $width);
+	$out .= option_widget_box($name, '', '', '', $width);
+	$out .= "</TABLE>";
+}
+
+sub uploadhelper_widget {
+	# $column, $value, $record->{outboard}, $record->{width}
+    my ($name, $val, $path, $size) = @_;
+	
+	$path =~ s:^/+::;
+	my $view_url;
+	$size = qq{ SIZE="$size"} if $size > 0;
+	my $out = '';
+    if ($val) {
+		if($path) {
+			my $base = $::Variable->{UI_BASE} || 'admin';
+			my $view_url = Vend::Interpolate::tag_area("$base/do_view", "$path/$val");
+			$out .= qq{<A HREF="$view_url">};
+		}
+		$out .= $val;
+		$out .= "</A>" if $path;
+		$out .= qq{&nbsp;<INPUT TYPE=file NAME="$name" VALUE="$val">
+<INPUT TYPE=hidden NAME="ui_upload_file_path:$name" VALUE="$path">
+<INPUT TYPE=hidden NAME="$name" VALUE="$val">};      
+    }
+	else {
+        $out = qq{<INPUT TYPE=hidden NAME="ui_upload_file_path:$name" VALUE="$path">
+<INPUT TYPE=file NAME="$name"$size>};
+    }
+	return $out;
+}
+
+sub imagehelper_widget {
+    my ($name, $val, $path, $imagebase, $size) = @_;
+	
+	Vend::Interpolate::vars_and_comments(\$path);
+	Vend::Interpolate::vars_and_comments(\$imagebase);
+	if ($imagebase ||= '') {
+		$imagebase =~ s/^\s+//;
+		$imagebase =~ s:[\s/]*$:/:;
+	}
+	$size = qq{ SIZE="$size"} if $size > 0;
+    if ($val) {
+        qq{<A HREF="$imagebase$path/$val">$val</A>&nbsp;<INPUT TYPE=hidden NAME=mv_data_file_field VALUE="$name">
+<INPUT TYPE=hidden NAME=mv_data_file_path VALUE="$path">
+<INPUT TYPE=hidden NAME=mv_data_file_oldfile VALUE="$val">
+<INPUT TYPE=file NAME="$name" VALUE="$val">};      
+    } else {
+        qq{<INPUT TYPE=hidden NAME=mv_data_file_field VALUE="$name">
+<INPUT TYPE=hidden NAME=mv_data_file_path VALUE="$path">
+<INPUT TYPE=hidden NAME=mv_data_file_oldfile VALUE="">
+<INPUT TYPE=file NAME="$name"$size>};
+    }
+}
+
 my $base_entry_value;
 
 sub meta_display {
 	my ($table,$column,$key,$value,$meta_db,$query,$o) = @_;
 
-#::logDebug("metadisplay: t=$table c=$column k=$key v=$value md=$meta_db");
 	my $metakey;
 	$meta_db = $::Variable->{UI_META_TABLE} || 'mv_metadata' if ! $meta_db;
 	$o = {} if ! ref $o;
-#::logDebug("metadisplay: t=$table c=$column k=$key v=$value opt=" . ::uneval_it($o));
 	my $meta = Vend::Data::database_exists_ref($meta_db)
 		or return undef;
 	$meta = $meta->ref();
 	if($column eq $meta->config('KEY')) {
-		$base_entry_value = $value =~ /::/ ? $table : $value;
+		if($o->{arbitrary} and $value !~ /::.+::/) {
+			$base_entry_value = ($value =~ /^[^:]+::(\w+)$/)
+								? $1
+								: $value;
+		}
+		else {
+			$base_entry_value = $value =~ /::/ ? $table : $value;
+		}
 	}
-#::logDebug("metadisplay: got meta ref=$meta");
 	my $tag = '';
 	if($o->{arbitrary}) {
 		$tag = "$o->{arbitrary}::";
@@ -724,27 +788,73 @@ sub meta_display {
 		# unshift @tries, "$tag${table}::${column}::$key", "$tag${table}::$key";
 		unshift @tries, "$tag${table}::${column}::$key";
 	}
+
+	my $sess = $Vend::Session->{mv_metadata} || {};
+
 	if($tag and $o->{fallback}) {
 		push @tries, "${table}::${column}::$key", "${table}::${column}";
 	}
 
-	my $sess = $Vend::Session->{mv_metadata} || {};
+	push @tries, { type => $o->{type} }
+		if $o->{type} || $o->{label};
+
 	for $metakey (@tries) {
-#::logDebug("enter metadisplay record $metakey");
 		my $record;
 		unless ( $record = $sess->{$metakey} and ref $record ) {
-			next unless $meta->record_exists($metakey);
-			$record = $meta->row_hash($metakey);
+			if(ref $metakey) {
+				$record = $metakey;
+				undef $metakey;
+			}
+			else {
+				next unless $meta->record_exists($metakey);
+				$record = $meta->row_hash($metakey);
+			}
 		}
 		if($query) {
 			return $record->{query};
 		}
-#::logDebug("metadisplay record: " . Vend::Util::uneval_it($record));
 		my $opt;
+
+		if($record->{extended}) {
+			my $hash = Vend::Util::get_option_hash($record->{extended});
+			if(ref $hash) {
+				for (keys %$hash) {
+					$record->{$_} = $hash->{$_};
+				}
+			}
+		}
+		## Here we allow override with the display tag...
+		my @override = grep defined $o->{$_},
+						qw/
+							append
+							attribute
+							db
+							field
+							filter
+							height
+							help
+							help_url
+							label
+							lookup
+							lookup_exclude
+							name
+							options
+							outboard
+							passed
+							pre_filter
+							prepend
+							type
+							width
+							/;
+		for(@override) {
+			$record->{$_} = $o->{$_};
+		}
+
+		$record->{name} ||= $column;
+
 		if($record->{options} and $record->{options} =~ /^[\w:]+$/) {
 			PASS: {
 				my $passed = $record->{options};
-#::logDebug("passed = '$passed'");
 
 				if($passed eq 'tables') {
 					$record->{passed} = "=--none--," . list_tables({ joiner => ',' });
@@ -752,16 +862,15 @@ sub meta_display {
 				elsif($passed eq 'filters') {
 					$record->{passed} = $Vend::Interpolate::Tag->filters(1),
 				}
-				elsif($passed =~ /^columns(::(\w*))?$/) {
+				elsif($passed =~ /^columns(::(\w*))?\s*$/) {
 					my $total = $1;
 					my $tname = $2 || $record->{db} || $table;
 					$tname = $base_entry_value if $total eq '::';
-#::logDebug("tname='$tname' total=$total");
 					my $db = $Vend::Database{$tname};
 					$record->{passed} = join (',', "=--none--", $db->columns())
 						if $db;
 				}
-				elsif($passed =~ /^keys(::(\w+))?$/) {
+				elsif($passed =~ /^keys(::(\w+))?\s*$/) {
 					my $tname = $2 || $record->{db} || $table;
 					$record->{passed} = "=--none--," . list_keys($tname, { joiner => ',' });
 				}
@@ -777,8 +886,15 @@ sub meta_display {
 				my $dbname = $record->{db} || $table;
 				my $db = Vend::Data::database_exists_ref($dbname);
 				last LOOK unless $db;
-				my $query = "select DISTINCT $key, $fld FROM $dbname ORDER BY $fld";
-				my $ary = $db->query($query);
+				my $flds = $key eq $fld ? $key : "$key, $fld";
+				my $query = "select DISTINCT $flds FROM $dbname ORDER BY $fld";
+				my $ary = $db->query(
+						{
+							query => $query,
+							ml => $::Variable->{UI_ACCESS_KEY_LIMIT} || 500,
+							st => 'db',
+						}
+					);
 				last LOOK unless ref($ary);
 				if(! scalar @$ary) {
 					push @$ary, ["=--no current values--"];
@@ -811,9 +927,25 @@ sub meta_display {
 					if ! $record->{passed};
 			}
 		}
+		elsif ($record->{type} eq 'yesno') {
+			$record->{passed}  = '=' . ::errmsg('No');
+			$record->{passed} .= ',1=' . ::errmsg('Yes');
+			$o->{type} = 'select' unless $o->{type} =~ /radio/;
+		}
+		elsif ($record->{type} eq 'noyes') {
+			$record->{passed}  = '1=' . ::errmsg('No');
+			$record->{passed} .= ',=' . ::errmsg('Yes');
+			$o->{type} = 'select' unless $o->{type} =~ /radio/;
+		}
+		elsif ($record->{type} eq 'option_format') {
+			my $w = option_widget($record->{name}, $value);
+			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$record->{name}" VALUE="option_format">};
+			return $w unless $o->{template};
+			return ($w, $record->{label}, $record->{help}, $record->{help_url});
+		}
 		elsif ($record->{type} eq 'date') {
-			my $w = date_widget($column, $value);
-			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$column" VALUE="date_change">};
+			my $w = date_widget($record->{name}, $value);
+			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$record->{name}" VALUE="date_change">};
 			return $w unless $o->{template};
 			return ($w, $record->{label}, $record->{help}, $record->{help_url});
 		}
@@ -824,6 +956,27 @@ sub meta_display {
 			$record->{passed} = join ",",
 									map { s/,/&#44;/g; $_} @files;
 		}
+		elsif ($record->{type} eq 'imagehelper') {
+            my $w = imagehelper_widget(	
+							$record->{name},
+							$value,
+							$record->{outboard},
+							$record->{prepend},
+							$record->{width},
+							);
+			return $w unless $o->{template};
+			return ($w, $record->{label}, $record->{help}, $record->{help_url});
+        }
+		elsif ($record->{type} eq 'uploadhelper') {
+            my $w = uploadhelper_widget(	
+							$record->{name},
+							$value,
+							$record->{outboard},
+							$record->{width},
+							);
+			return $w unless $o->{template};
+			return ($w, $record->{label}, $record->{help}, $record->{help_url});
+        }
 
 		for(qw/append prepend/) {
 			next unless $record->{$_};
@@ -839,17 +992,13 @@ sub meta_display {
 			$record->{$_} =~ s/_UI_COLUMN_/$column/g;
 			$record->{$_} =~ s/_UI_KEY_/$key/g;
 		}
-		for(qw/height width/) {
-			$record->{$_} = $o->{$_}
-				if defined $o->{$_};
-		}
 		if($record->{height}) {
 			if($record->{type} =~ /multi/i) {
 				$record->{type} = "MULTIPLE SIZE=$record->{height}";
 			}
 			elsif ($record->{type} =~ /textarea/i) {
 				my $width = $record->{width} || 80;
-				$record->{type} = "textarea_" . $record->{height} . '_' . $width;
+				$record->{type} =~ s/textarea/textarea_$record->{height}_$width/;
 			}
 		}
 		elsif ($record->{width}) {
@@ -864,6 +1013,9 @@ sub meta_display {
 			}
 		}
 
+		if(! $o->{type} and ! $record->{type}) {
+			$o->{type} = 'text' unless $record->{passed};
+		}
 		$opt = {
 			attribute	=> ($record->{'attribute'}	|| $column),
 			table		=> ($record->{'db'}			|| $meta_db),
@@ -876,20 +1028,17 @@ sub meta_display {
 			type		=> ($o->{type} || $record->{'type'}		|| undef),
 			prepend		=> ($record->{'prepend'}	|| undef),
 			append		=> ($record->{'append'}		|| undef),
+			extra		=> ($o->{'extra'} || $record->{extra} || undef),
 		};
-#::logDebug("going to display for $opt->{name} type=$opt->{type}");
 		my $w = Vend::Interpolate::tag_accessories(
 				undef, undef, $opt, { $column => $value } );
 		my $filter;
-#::logDebug("filters: o=$o->{filter} r=$record->{filter}");
 		if($filter = ($o->{filter} || $record->{filter})) {
-			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$column" VALUE="};
+			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$opt->{name}" VALUE="};
 			$w .= $filter;
 			$w .= '">';
 		}
-#::logDebug("template=$o->{template}");
 		return $w unless $o->{template};
-#::logDebug("supposed to return template: widget=$w record=" . ::uneval_it($record));
 		return ($w, $record->{label}, $record->{help}, $record->{help_url});
 	}
 	return undef;

@@ -4,8 +4,14 @@
 [calc]
 	my $location = $CGI->{item_id};
 	my @parts = split /::/, $location;
-	($m_table, $m_col, $m_key) = @parts;
+	if($Config->{Database}{$parts[0]}) {
+		($m_table, $m_col, $m_key) = @parts;
+	}
+	else {
+		($m_view, $m_table, $m_col, $m_key) = @parts;
+	}
 	my $string = "Meta field edit: ";
+	$string .= "view=$m_view " if $m_view;
 	$string .= "table=$m_table column=$m_col";
 	$string .= " key=$m_key" if $m_key;
 	$Scratch->{page_title} = $string;
@@ -13,6 +19,16 @@
 	$string = <<EOF;
 	<B>Meta information edit&nbsp;&nbsp;&nbsp;</b><BR>
 	<table>
+EOF
+
+	$string .= <<EOF if $m_view;
+	<tr>
+	<td align=right>view:</td>
+	<td><B>$m_view</b></td>
+	</tr>
+EOF
+
+	$string .= <<EOF;
 	<tr>
 	<td align=right>table:</td>
 	<td><B>$m_table</b></td>
@@ -39,13 +55,12 @@ EOF
 	}
 	return;
 [/calc]
-@_UI_STD_DBEDIT_HEAD_@
 
 [set ui_class]Admin[/set]
 [set help_name]meta.edit[/set]
 [set icon_name][/set]
 
 @_UI_STD_HEAD_@
-@_UI_STD_DBEDIT_TABLE_@
+[table-editor cgi=1]
 @_UI_STD_FOOTER_@
 <!-- page: @@MV_PAGE@@ -->

@@ -1,13 +1,11 @@
-package Vend::Parser;
-
-# $Id: Parser.pm,v 1.3 2001-03-22 22:47:37 jon Exp $
-#
 # Vend::Parser - Interchange parser class
-# Copyright 1997-2001 by Michael J. Heins <heins@akopia.com>
+#
+# $Id: Parser.pm,v 1.4 2001-07-18 01:56:44 jon Exp $
+#
+# Copyright (C) 1997-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # Based on HTML::Parser
 # Copyright 1996 Gisle Aas. All rights reserved.
-#
 
 =head1 NAME
 
@@ -49,7 +47,7 @@ expanded.
 
 =head1 COPYRIGHT
 
-Copyright 1997-2001 Akopia, Inc.  
+Copyright 1997-2001 Red Hat, Inc.  
 Original HTML::Parser module copyright 1996 Gisle Aas.
 
 This library is free software; you can redistribute it and/or
@@ -57,17 +55,18 @@ modify it under the same terms as Perl itself.
 
 =head1 AUTHORS
 
-Vend::Parser - Mike Heins <heins@akopia.com>  
+Vend::Parser - Mike Heins <mheins@redhat.com>  
 HTML::Parser - Gisle Aas <aas@sn.no>
 
 =cut
 
+package Vend::Parser;
 
 use strict;
 
 use HTML::Entities ();
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 
 
 sub new
@@ -159,6 +158,7 @@ sub parse
 				{
 					$eaten .= $1;
 					my $attr = lc $2;
+					$attr =~ tr/-/_/;
 #::logDebug("in parse, eaten=$eaten");
 					$attr =~ s/\.(.*)//
 						and $element = $1;
@@ -180,7 +180,10 @@ sub parse
 					# or quoted by `` to send to [calc]
 					} elsif ($$buf =~ s~(^=\s*([\`\|])(.*?)\2\s*)~~s) {
 						$eaten .= $1;
-						if    ($2 eq '`') { $val = Vend::Interpolate::tag_calc($3); }
+						if    ($2 eq '`') {
+							$val = Vend::Interpolate::tag_calc($3)
+								unless defined $Vend::Cfg->{AdminSub}{calc};
+						}
 						elsif ($2 eq '|') {
 								$val = $3;
 								$val =~ s/^\s+//;
@@ -263,7 +266,7 @@ sub parse
 		} elsif ($$buf =~ s|^<||) {
 			# start tag
 			$eaten = '<';
-#::logDebug("do < tag") if ! $Vend::DoneDebug++;
+#::logDebug("do < tag") if ! $Tmp::DoneDebug++;
 
 			# This first thing we must find is a tag name.  RFC1866 says:
 			#   A name consists of a letter followed by letters,
@@ -273,7 +276,7 @@ sub parse
 			#   for HTML".  In a start-tag, the element name must
 			#   immediately follow the tag open delimiter `<'.
 			if ($$buf =~ s|^(([a-zA-Z][-a-zA-Z0-9._]*)((?:\s+[^>]+)?\s+[mM][Vv]\s*=)\s*)||) {
-#::logDebug("REALLY do < tag") if ! $Vend::DoneDebug++;
+#::logDebug("REALLY do < tag") if ! $Tmp::DoneDebug++;
 				$eaten .= $1;
 				$self->{HTML} = 1;
 
@@ -328,7 +331,10 @@ sub parse
 					# or quoted by `` to send to [calc]
 					} elsif ($$buf =~ s~(^=\s*([\`\|]?)(.*?)\2\s*)~~s) {
 						$eaten .= $1;
-						if    ($2 eq '`') { $val =Vend::Interpolate::tag_calc($4); }
+						if    ($2 eq '`') {
+							$val = Vend::Interpolate::tag_calc($3)
+								unless defined $Vend::Cfg->{AdminSub}{calc};
+						}
 						elsif ($2 eq '|') {
 								$val = $3;
 								$val =~ s/^\s+//;

@@ -1,64 +1,26 @@
 =head1 NAME
 
-Interchange Databases
+icdatabase - Interchange Databases
 
-=head1 AKOPIA INTERCHANGE(TM) DATABASES
+=head1 DESCRIPTION
 
-Akopia Interchange is the industry's most widely distributed and
-implemented open source e-commerce platform. This document discusses
-databases, SQL support, the Interchange search engine, frequently
-asked questions, and usertags.
+=head1 Databases and Interchange
 
-=head2 A Typical User Session
+Interchange can use GDBM, DB_File, SQL, LDAP, or in-memory databases.
+In most cases, these different database formats should operate the
+same when called by Interchange's access methods.
 
-The customer discovers a merchant site using the Interchange catalog
-with a search engine, a link from another page, or a click-through
-from a banner ad. He or she clicks the link, which is a URL pointing
-to the Interchange CGI link program (generically called VLINK or
-TLINK). The link calls the Interchange server through a socket. The
-Interchange server detects the path information from the link, and
-loads the corresponding page.
-
-The displayed page contains links to either locate or order items from
-the merchant's catalog. When the customer clicks a link to purchase an
-item, Interchange searches the product database, finds the item, and
-places it in the customer's shopping cart. (Each user has a separate
-shopping cart, which is attached to their session.)
-
-Once the customer decides to purchase the items in their shopping
-cart, he or she checks out by completing a form with their name,
-address, payment information, shipping information, and any other
-information that may be required. Interchange has the capacity to
-compute sales taxes and shipping cost. The order is then submitted.
-The customer's payment can be taken online by real-time electronic
-payment, or their order information may be transmitted using encrypted
-email or FAX to a processing center.
-
-The customer's order is saved to a file or to a database table as
-backup. In the case of fully automated systems, it can be sent
-directly to an order entry program or database link.
-
-All of these operations are fully configurable. The Interchange demo
-program includes a sample store called Construct Something. Some users
-have actually customized the text and images inside Construct
-Something's sample catalogs, changed the database entries, and opened
-their store. Most users, however, have built their catalogs using
-their own distinctive look and feel.
-
-=head1 DATABASES
-
-As with most powerful shopping cart programs, Interchange is all about
-databases. Interchange can use GDBM, DB_File, SQL, LDAP, or in-memory
-database formats. In most cases, these different database formats
-should operate the same when called by Interchange's access methods.
-
-B<Note: >No other database besides Interchange's internal one is
-required.
+Also, Interchange does not require an external SQL database. If you
+have a small database and do not want to integrate your own tool set,
+you might want to use Interchange's internal database. However, the
+order management functions of Interchange will be slower and not as
+robust without an SQL database. SQL is strongly recommended for at
+least the orderline, transactions, and userdb tables.
 
 Keeping a database in an SQL manager makes it easier to integrate
 Interchange with other tools. Interchange can be used to maintain a
-spreadsheet containing product information by only modifying the file
-C<products.txt> as needed. References to SQL, DBI, and DBD can be
+spreadsheet containing product information through modifying the file
+products.txt as needed. References to SQL, DBI, and DBD can be
 ignored.
 
 =head2 Text Source Files
@@ -67,57 +29,69 @@ Interchange reads delimited text files to obtain data. However, the
 text files are not the database. They are the source information for
 the database tables.
 
-Note the following configuration directive:
+By default, all database source files are located in the products
+subdirectory of the catalog directory. The main products database is
+in the products/products.txt file in the supplied demo catalog.
+
+B<Note: >If you are using one of the internal database methods, any
+changes made to the ASCII source file will be reflected in the
+database in the next user session. If the product database contains
+less than a thousand records, updates will be instantaneous. If the
+product database is larger, updates will take longer. Use the
+NoImport reference tag to stop auto updating.
+
+In the following configuration directive:
 
    Database  products  products.txt   TAB
 
-This says that the C<products> table will obtain its source
-information from the file C<products.txt>. What is done with it
-depends on the type of underlying database being used. The different
-types:
+the products table will obtain its source information from the file
+products.txt. What is done with it depends on the type of
+underlying database being used. The different types and their behavior
+are described below:
 
 =over 4
 
 =item GDBM
 
 The database source file is checked to see if it is newer than the
-actual database file, which would be C<products.gdbm>. If it is, then
-the database table is re-imported from the file.
+actual database file, products.gdbm. If it is, the database table
+is re-imported from the file.
 
-This behavior can be changed in a couple of ways. If files are never
-to be imported unless the C<.gdbm> file disappears, set the
-C<NoImport> directive:
+This behavior can be changed in a few ways. If files should not be
+imported unless the .gdbm file disappears, set the NoImport
+directive:
 
     NoImport  products
 
-If the database source file is only imported at catalog start-up time,
-use the IMPORT_ONCE modifier:
+If the database source file is only to be imported at catalog start-up
+time, use the IMPORT_ONCE modifier:
 
     Database products IMPORT_ONCE 1
 
-GDBM is the default type if the GDBM_File Perl module is installed (as
-it will be on LINUX).
+GDBM is the default database type if the GDBM_File Perl module is
+installed (as it is on LINUX).
 
 =item DB_File
 
 The database source file is checked to see if it is newer than the
-actual database file, which would be C<products.db>. If it is, then
-the database table is re-imported from the file. You can change this
-behavior in the same way as with GDBM_File (above).
+actual database file, products.db. If it is, the database table is
+re-imported from the file. You can change this behavior in the same
+way as GDBM_File, described above.
 
-DB_File is the default type if the GDBM_File Perl module is not
-installed. This is typical on FreeBSD. To explicitly specify DB_File
-as the type, specify it with a Database directive in C<catalog.cfg>:
+DB_File is the default database type if the GDBM_File Perl module is
+not installed. This is common on FreeBSD. To specify DB_File as your
+database type, set it in catalog.cfg with a Database directive:
 
    Database  products  DB_FILE   1
 
 =item DBI/SQL
 
-If a file named C<products.sql> is present in the same directory as
-C<products.txt>, the database table will not be imported from ASCII
-source. If there is no C<products.sql>, the following will occur:
+If a file named products.sql is in the same directory as
+products.txt, the database table will not be imported from the
+ASCII source. If there is no products.sql, the following will
+occur:
 
-DBI/SQL imports only happen at catalog configuration time.
+DBI/SQL imports will only happen at catalog configuration time.
 
 =over 8
 
@@ -127,89 +101,93 @@ Interchange will connect to the SQL database using the specified DSN.
 (DBI parameter meaning "Database Source Name".)
 
 The table will be dropped with "DROP TABLE products;". This will occur
-without warning! NOTE: This can be prevented in several ways. See
-C<NoImport External> or the SQL documentation.
+without warning. NOTE: This can be prevented in several ways. See
+NoImport External or the SQL documentation for more information.
 
 The table will be created. If there are COLUMN_DEF specifications in
-C<catalog.cfg>, they will be used. Otherwise, the key (first field in
-the text file by default) will be created with a C<char(16)> type and
-all other fields will be created as C<char(128)>. The table creation
-statement will be written to the C<error.log> file.
+catalog.cfg, they will be used. Otherwise, the key (first field in
+the text file by default) will be created with a char(16) type and
+all other fields will be created as char(128). The table creation
+statement will be written to the error.log file.
 
 The text source file will be imported into the SQL database.
 Interchange will place the data in the columns. Data typing must be
 user-configured. This means that if "none" is placed in a field, and
 it is defined as a numeric type, the database import will not succeed.
-If it does not, the catalog will not become active.
+And if it does not succeed, the catalog will not become active.
 
 =back
 
 =item In-Memory
 
-Every time the catalog is configured, the C<products.txt> file is
-imported into memory and forms the database. The database is not
-changed otherwise. In-memory is the default type if there is no
-GDBM_File or DB_File Perl module installed; specify it with:
+Every time the catalog is configured, the products.txt file is
+imported into memory and forms the database. Otherwise, the database
+is not changed. The in-memory database is the default database if
+there is no GDBM_File or DB_File Perl module installed; specify it
+with:
 
    Database   products   MEMORY   1
 
 =back
 
-=head2 Interchange Database Operation
+=head2 Interchange Database Conventions
 
-B<Note: >In the following descriptions, the following terms are used
-somewhat interchangeably:
+This section describes naming and file usage conventions used with
+Interchange.
+
+B<Note: >Throughout the documentation, the following terms and their
+definitions are used interchangeably:
 
 =over 4
 
 =item key, code
 
-Either one is a reference to the key for the database. In Interchange,
-this is often the product code or SKU, which is the part number for
-the product. Other key values may be used to generate relationships to
-other database tables.
+A reference to the database key. In Interchange, this is usually the
+product code or SKU, which is the part number for the product. Other
+key values may be used to generate relationships to other database
+tables.
 
-It is suggested that the key be the first column of the ASCII source
-file, since Interchange's import, export, and search facilities will
-work much better with that practice.
+It is recommended that the key be the first column of the ASCII source
+file, since Interchange's import, export, and search facilities rely
+on this practice.
 
 =item field, column
 
-This is a column of the database. One of the columns is always the
-key; Interchange prefers that the key be the first column.
+The vertical row of a database. One of the columns is always the key
+and it is usually the first one.
 
 =item table, database
 
-A table in the database. Because of the evolution of Interchange from
-a single-table database to an access method for an unlimited number of
-tables (and databases, for that matter), a table will sometimes be
-referred to as a database. The only time database refers to something
-different is when describing that concept as it relates to SQL, where
-a database contains a series of tables. Interchange cannot create SQL
-databases, but given the proper permissions it may drop and create
-tables within that database.
+A table in the database. Because Interchange has evolved from a
+single-table database to an access method for an unlimited number of
+tables (and databases, for that matter), a table will occasionally be
+referred to as a database. The only time the term database refers to
+something different is when describing the concept as it relates to
+SQL, where a database contains a series of tables. While Interchange
+cannot create SQL databases, it can drop and create tables with that
+database if given the proper permissions.
 
 =back
 
-If necessary, Interchange reads the data to place in tables from
-standard ASCII-delimited files. All of these ASCII source files are
-kept in the products directory, normally products in the catalog
+If necessary, Interchange can read the data to be placed in tables
+from a standard ASCII-delimited file. All of the ASCII source files
+are kept in the products directory, which is normally in the catalog
 directory (where catalog.cfg is located). The ASCII files can have ^M
-(carriage return) characters if desired, but must have a new line
-character at the end of the line to work. NOTE: Mac users uploading
-files must use ASCII mode, not binary mode.
+(carriage return) characters, but must have a new line character at
+the end of the line to work. NOTE: Mac users uploading files must use
+ASCII mode, not binary mode.
 
 Interchange's default ASCII delimiter is TAB.
 
-IMPORTANT NOTE: The items must be separated by a single delimiter. The
-items are lined up for reading convenience.
+B<Note: >The items must be separated by a single delimiter. The items
+in this document are lined up for reading convenience.
 
 =over 4
 
 =item TAB
 
-Fields separated by C<^I> characters. No whitespace should be at the
-beginning of the line.
+Fields are separated by ^I characters. No whitespace is allowable
+at the beginning of the line.
 
     code    description             price      SH543   Men's fine cotton shirt 14.95   shirts.jpg
 
@@ -217,8 +195,8 @@ image
 
 =item PIPE
 
-Fields separated by C<|> characters. No whitespace should be at the
-beginning of the line.
+Fields are separated by pipe | characters. No whitespace is
+allowable at the beginning of the line.
 
     code|description|price    SH543|Men's fine cotton shirt|14.95|shirts.jpg
 
@@ -226,8 +204,8 @@ image
 
 =item CSV
 
-Fields enclosed in quotes, separated by commas. No whitespace should
-be at the beginning of the line.
+Fields are enclosed in quotes, separated by commas. No whitespace
+should be at the beginning of the line.
 
     "code","description","price","    "SH543","Men's fine cotton shirt","14.95","shirts.jpg"
 
@@ -235,38 +213,40 @@ mage"
 
 =back
 
-B<Note: >Using the default TAB delimiter is highly recommended, if
-searching the ASCII source file of the database is planned. PIPE works
-fairly well, but CSV delimiter schemes cause problems with searching.
+B<Note: >Using the default TAB delimiter is recommended if you plan on
+searching the ASCII source file of the database. PIPE works fairly
+well, but CSV delimiter schemes might cause problems with searching.
 
-B<IMPORTANT NOTE: >Field names are usually case-sensitive. Unless
-there is consistency in the names, there will be problems. All lower
-or all upper case names are recommended.
+B<IMPORTANT NOTE: >Field names are usually case-sensitive. Use
+consistency when naming or you might encounter problems. All lower or
+all upper case names are recommended.
 
 =over 4
 
 =item
 
 Interchange uses one mandatory database, which is referred to as the
-products database. In the supplied demo catalogs, it is called
-products and the ASCII source is kept in the file C<products.txt> in
-the products directory. This file is also the default file for
-searching with the THE SEARCH ENGINE.
+products database. In the supplied demo catalog, it is called products
+and the ASCII source is kept in the file products.txt in the
+products directory. This is also the default file for searching with
+the THE SEARCH ENGINE.
 
-Interchange also has a two of standard, but optional, databases, which
-are in fixed special formats:
+Interchange also has a two of standard, but optional, databases that
+are in fixed formats:
 
 =over 8
 
 =item shipping.asc
 
-The database of shipping options if the C<CustomShipping> directive is
-in use.  This is a fixed-format database, and must be created as
-specified. See C<SHIPPING>.
+The database of shipping options that is accessed if the
+CustomShipping directive is in use.  This is a fixed-format
+database, and must be created as specified. For more information, see
+the Shipping ITL tag in the I<Red Hat Interchange 4.8: Tag Reference
+Guide>.
 
 =item salestax.asc
 
-The database of sales tax information if the C<[salestax]> tag is to
+The database of sales tax information if the [salestax] tag is to
 be used. A default is supplied. NOTE: Caution, these things change!
 This is a fixed-format database, and must be created as specified. See
 Sales Tax.
@@ -283,27 +263,27 @@ Each product being sold should be given a product code, usually
 referred to as SKU, a short code that identifies the product on the
 ordering page and in the catalog. The products.txt file is a
 ASCII-delimited list of all the product codes, along with an arbitrary
-number of fields which must contain at least the fields C<description>
-and C<price> (or however the C<PriceField> and C<DescriptionField>
+number of fields which must contain at least the fields description
+and price (or however the PriceField and DescriptionField
 directives have been set). Any additional information needed in the
 catalog can be placed in any arbitrary field. See Interchange Database
 Capability for details on the format.
 
 Field names can be case-sensitive depending on the underlying database
 type. Unless there are fields with the names "description" and "price"
-field, set the C<PriceField> and C<DescriptionField> directives to use
-the C<[item-price]> and C<[item-description]> tags.
+field, set the PriceField and DescriptionField directives to use
+the [item-price] and [item-description] tags.
 
 The product code, or SKU, must be the first field in the line, and
 must be unique. Product codes can contain the characters B<A-Za-z0-9>,
-along with hyphen (C<->), underscore (C<_>), pound sign/hash mark
-(C<#>), slash (C</>), and period (C<.>). Note that slash (/) will
+along with hyphen (-), underscore (_), pound sign/hash mark
+(#), slash (/), and period (.). Note that slash (/) will
 interfere with on-the-fly page references. Avoid if at all possible.
 
 The words should be separated by one of the approved delimiting
 schemes (TAB, PIPE, or CSV), and are case-sensitive in some cases. If
 the case of the "description" or "price" fields have been modified,
-the C<PriceField> and C<DescriptionField> directives must be
+the PriceField and DescriptionField directives must be
 appropriately set.
 
 B<Note: >CSV is not recommended as the scheme for the products
@@ -313,16 +293,16 @@ searches are possible. Using CSV for any small database that will not
 be searched is fine.
 
 B<IMPORTANT NOTE: >The field names must be on the first line of the
-C<products.txt> file. These field names must match exactly the field
-names of the C<[item-field]> tags in the catalog pages, or the
+products.txt file. These field names must match exactly the field
+names of the [item-field] tags in the catalog pages, or the
 Interchange server will not access them properly. Field names can
-contain the characters A-Za-z0-9 and underscore (C<_>).
+contain the characters A-Za-z0-9 and underscore (_).
 
 More than one database may be used as a products database. If the
 catalog directive, ProductFiles, is set to a space-separated list of
 valid Interchange database identifiers, those databases will be
 searched (in the order specified) for any items that are ordered, or
-for product information (as in the C<[price code]> and C<[field code]>
+for product information (as in the [price code] and [field code]
 tags).
 
 When the database table source file (i.e., products.txt) changes after
@@ -355,20 +335,20 @@ delimiter schemes are available. These are defined by default:
    Type 7      reserved
    Type 8      SQL
 
-The databases are specified in C<Database> directives, as:
+The databases are specified in Database directives, as:
 
    Database    arbitrary arbitrary.csv CSV
 
 This specifies a Type 4 database, the ASCII version of which is
-located in the file C<arbitrary.csv>, and the identifier it will be
+located in the file arbitrary.csv, and the identifier it will be
 accessed under in Interchange is "arbitrary." The DBM file, if any,
 will be created in the same directory if the ASCII file is newer, or
 if the DBM file does not exist. The files will be created as
-C<arbitrary.db> or C<arbitrary.gdbm>, depending on DBM type.
+arbitrary.db or arbitrary.gdbm, depending on DBM type.
 
-The C<identifier> is case sensitive, and can only contain characters
+The identifier is case sensitive, and can only contain characters
 in the class [A-Za-z0-9_]. Fields are accessed with the [item_data
-C<identifier> field] or [data C<identifier> field key] elements. NOTE:
+identifier field] or [data identifier field key] elements. NOTE:
 Use of lower-case letters is strongly recommended.
 
 If one of the first six types is specified, the database will
@@ -386,7 +366,7 @@ The order of preference is:
 
 =item GDBM
 
-This uses the Perl C<GDBM_File> module to build a GDBM database. The
+This uses the Perl GDBM_File module to build a GDBM database. The
 following command will indicate if GDBM is in Perl:
 
     perl -e 'require GDBM_File and print "I have GDBM.\n"'
@@ -398,17 +378,17 @@ to specifically build in this capability.
 
 =item DB_File (Berkeley DB)
 
-This uses the C<DB_File> module to build a Berkeley DB (hash)
+This uses the DB_File module to build a Berkeley DB (hash)
 database. The following command will indicate if DB_File is in Perl:
 
     perl -e 'require DB_File and print "I have Berkeley DB.\n"'
 
-Installing C<DB_File> requires rebuilding Perl after obtaining the
+Installing DB_File requires rebuilding Perl after obtaining the
 Berkeley DB package, and is beyond the scope of this document. BSDI,
 FreeBSD, and LINUX will typically have it by default; most other
 operating systems will need to specifically build this in.
 
-If using C<DB_File>, even though C<GDBM_File> is in Perl, set the
+If using DB_File, even though GDBM_File is in Perl, set the
 environment variable MINIVEND_DBFILE to a true (non-zero, non-blank)
 value:
 
@@ -422,7 +402,7 @@ value:
 Then, re-start the server.
 
 Or, to set a particular table to use Berkeley DB, the DB_FILE class in
-C<catalog.cfg> can be specified:
+catalog.cfg can be specified:
 
     Database arbitrary  DB_FILE  1
 
@@ -432,7 +412,7 @@ This uses Perl hashes to store the data directly in memory. Every time
 the Interchange server is restarted, it will re-import all in-memory
 databases for every catalog.
 
-If this is used, despite the presence of C<GDBM_File> or C<DB_File>,
+If this is used, despite the presence of GDBM_File or DB_File,
 set the environment variable MINIVEND_NODBM as above or specify the
 memory type in the Database directive:
 
@@ -479,7 +459,7 @@ unless using type LINE.)
 One of UNIX, DITTO, LINE, NONE, or NOTES. The default, NONE, is to
 simply split the line/record according to the delimiter, with no
 possible spanning of records. Setting CONTINUE to UNIX appends the
-next line to the current when it encounters a backslash (C<\>) at the
+next line to the current when it encounters a backslash (\) at the
 end of a record, just like many UNIX commands and shells.
 
 DITTO is invoked when the key field is blank. It adds the contents of
@@ -501,7 +481,7 @@ Products.asc file:
 ption
 
 The description for product 00-0011 will contain the contents of the
-C<description> field on both lines, separated by a new line.
+description field on both lines, separated by a new line.
 
 =back
 
@@ -552,24 +532,24 @@ Records are separated by a settable delimiting character which goes on
 a line by itself, much like a "here document." By default, it is a
 form feed (^L) character. The final field begins at the first blank
 line and continues to the end of the record. This final field is named
-C<notes_field>, unless set as mentioned below.
+notes_field, unless set as mentioned below.
 
 Interchange reads the field names from the first paragraph of the
 file. The key field should be first, followed by other fields in any
 order. If one (and only one) field name has whitespace, then its name
-is used for the C<notes_field>. Any characters after a space or TAB
+is used for the notes_field. Any characters after a space or TAB
 are used as the record delimiter.
 
 If there are none, then the delimiter returns to the default form feed
-(^L) and the field name reverts to C<notes_field>. The field in
+(^L) and the field name reverts to notes_field. The field in
 question will be discarded, but a second field with whitespace will
 cause an import error. Following records are then read by name, and
-only fields with data in them need be set. Only the C<notes_field> may
+only fields with data in them need be set. Only the notes_field may
 contain a new line. It is always the last field in the record, and
 begins at the B<first> blank line.
 
-The following example sets the delimiter to a tilde C<(~)> and renames
-the C<notes_field> to C<description>.
+The following example sets the delimiter to a tilde (~) and renames
+the notes_field to description.
 
 Example in catalog.cfg:
 
@@ -635,14 +615,14 @@ situations.
 
 Such a search requires a dictionary ordered index with the field to be
 searched contained in the first field and the database key (product
-code) in the second field. If the C<INDEX field> modifier is
+code) in the second field. If the INDEX field modifier is
 specified, Interchange will build the index upon database import:
 
   Database  products  products.txt   TAB
   Database  products  INDEX          title
 
-If the C<title> field is the fourth column in the C<products> database
-table, a file C<products.txt.4> will be built, containing two
+If the title field is the fourth column in the products database
+table, a file products.txt.4 will be built, containing two
 tab-separated fields something like:
 
    American Gothic   19-202
@@ -651,10 +631,10 @@ tab-separated fields something like:
    The Starry Night  00-343
 
 Options can be appended to the field name after a colon (:). The most
-useful will be C<f>, which does a case-insensitive sort. The
-C<mv_dict_fold> option must be added to the search in this case.
+useful will be f, which does a case-insensitive sort. The
+mv_dict_fold option must be added to the search in this case.
 
-Another option is C<c>, which stands for "comma index." To index on
+Another option is c, which stands for "comma index." To index on
 comma-separated sub-fields within a field, use the :c option:
 
   Database  products  products.txt   TAB
@@ -664,7 +644,7 @@ This can get slow for larger databases and fields. Interchange will
 split the field on a comma (stripping surrounding whitespace) and make
 index entries for each one. This allows multiple categories in one
 field while retaining the fast category search mechanism. It might
-also be useful for a C<keywords> field.
+also be useful for a keywords field.
 
 The fast binary search is described in greater detail in THE SEARCH
 ENGINE below.
@@ -702,7 +682,7 @@ reconfiguration:
   Database  products  IMPORT_ONCE    1
 
 SQL databases don't normally need this. They will only be imported
-once in normal operation. Also see C<NoImport> for a way to guarantee
+once in normal operation. Also see NoImport for a way to guarantee
 that the table will never be imported.
 
 IMPORT_ONCE is always in effect for MEMORY databases. A catalog
@@ -711,7 +691,7 @@ reconfiguration is required to force a change.
 =head2 Importing in a Page
 
 To add a data record to a database as a result of an order or other
-operation, use Interchange's C<[import ...]> tag.
+operation, use Interchange's [import ...] tag.
 
 =over 4
 
@@ -728,7 +708,7 @@ _name
 
 =back
 
-Import one or more records into a database. The C<type> is any of the
+Import one or more records into a database. The type is any of the
 valid Interchange delimiter types, with the default being TAB. The
 table must already be a defined Interchange database table. It cannot
 be created on-the-fly. If on-the-fly functionality is need, it is time
@@ -737,7 +717,7 @@ to use SQL.
 The import type selected need not match the type the database was
 specified. Different delimiters may be used.
 
-The C<type> of C<LINE> and C<continue> setting of C<NOTES> is
+The type of LINE and continue setting of NOTES is
 particularly useful, for it allows fields to be named and not have to
 be in any particular order of appearance in the database. The
 following two imports are identical in effect:
@@ -754,34 +734,33 @@ following two imports are identical in effect:
    code:          [value mv_order_number]
    [/import]
 
-The C<code> or key must always be present, and is always named
-C<code>. If C<NOTES> mode is not used, the fields must be imported in
+The code or key must always be present, and is always named
+code. If NOTES mode is not used, the fields must be imported in
 the same order as they appear in the ASCII source file.
 
-The C<file> option overrides the container text and imports directly
+The file option overrides the container text and imports directly
 from a named file based in the catalog directory. To import from
-C<products.txt>, specify C<file="products/products.txt">. If the
-NoAbsolute directive is set to C<Yes> in minivend.cfg, only relative
+products.txt, specify file="products/products.txt". If the
+NoAbsolute directive is set to Yes in minivend.cfg, only relative
 path names will be allowed.
 
-The C<[import ....] TEXT [/import]> region may contain multiple
-records. If using C<NOTES> mode, a separator must be used, which, by
+The [import ....] TEXT [/import] region may contain multiple
+records. If using NOTES mode, a separator must be used, which, by
 default, is a form-feed character (^L). See Import Attributes for more
 information.
 
 =head2 Exporting from a Database
 
 To export an existing database to a file suitable for searching by
-Interchange, create an AdminPage (or any page, for that matter) that
-contains a C<[tag export ...][/tag]> element. Perhaps a better method
-is to define the same sort of tags in an OrderProfile, and use forms
-and buttons to access the profile.
+Interchange, create a page that contains a [tag export ...][/tag]
+element. Perhaps a better method is to define the same sort of tags in
+an OrderProfile, and use forms and buttons to access the profile.
 
 =head2 Write Control
 
 Interchange databases can be written in the normal course of events,
-either using the C<[import ...]> tag or with a tag like C<[data
-table=table column=field key=code value=new-value]>. To control
+either using the [import ...] tag or with a tag like [data
+table=table column=field key=code value=new-value]. To control
 writing of a global database, or to a certain catalog within a series
 of subcatalogs, or make one read only, see the following:
 
@@ -790,11 +769,11 @@ To enable write control:
    Database   products  WRITE_CONTROL  1
 
 Once this is done, to make a database read only, which won't allow
-writing even if C<[tag flag write]products[/tag]> is specified:
+writing even if [tag flag write]products[/tag] is specified:
 
    Database   products  READ_ONLY  1
 
-To have control with C<[tag flag write]products[/tag]>:
+To have control with [tag flag write]products[/tag]:
 
    Database   products  WRITE_TAGGED  1
 
@@ -803,9 +782,9 @@ To limit write to certain catalogs, set:
    Database   products  WRITE_CATALOG  simple=0, sample=1
 
 The "simple" catalog will not be able to write, while "sample" will if
-C<[tag flag write]products[/tag]> is enabled. If a database is to
-always be writable, without having to specify C<[tag flag write] ...
-[/tag]>, then define:
+[tag flag write]products[/tag] is enabled. If a database is to
+always be writable, without having to specify [tag flag write] ...
+[/tag], then define:
 
    Database   products  WRITE_ALWAYS  1
 
@@ -819,23 +798,23 @@ equivalent to:
 =head2 Global Databases
 
 If a database is to be available to all catalogs on the Interchange
-server, it may be defined in C<minivend.cfg>. Any catalog running
-under that server will be able to use it. NOTE: It is writable by any
+server, it may be defined in minivend.cfg. Any catalog running
+under that server will be able to use it. It is writable by any
 catalog unless WRITE_CONTROL is used.
 
-=head1 SQL SUPPORT
+=head1 SQL Support
 
 Interchange can use any of a number of SQL databases through the
 powerful Perl DBI/DBD access methods. This allows transparent access
 to any database engine that is supported by a DBD module. The current
-list includes mSQL, mySQL, Solid, Postgres, Oracle, Sybase, Informix,
-Ingres, Dbase, DB2, Fulcrum, and others. Any ODBC (with appropriate
-driver) should also be supported.
+list includes mSQL, MySQL, Solid, PostgreSQL, Oracle, Sybase,
+Informix, Ingres, Dbase, DB2, Fulcrum, and others. Any ODBC (with
+appropriate driver) should also be supported.
 
 No SQL database is included with Interchange, but there are a number
-widely available on the Internet. Many are free for non-commercial
-use, such as mSQL, mySQL, Sybase, and Qbase. It is beyond the scope of
-this document to describe SQL or DBI/DBD. Sufficient familiarity is
+widely available on the Internet. Most commonly used with Interchange
+are PostgreSQL, MySQL, and Oracle. It is beyond the scope of this
+document to describe SQL or DBI/DBD. Sufficient familiarity is
 assumed.
 
 In most cases, Interchange cannot perform administrative functions,
@@ -850,7 +829,7 @@ The configuration of the DBI database is accomplished by setting
 attributes in additional Database directives after the initial
 defining line as described above. For example, the following defines
 the database B<arbitrary> as a DBI database, sets the data source
-(DSN) to an appropriate value for an mSQL database named C<minivend>
+(DSN) to an appropriate value for an mSQL database named minivend
 on port 1114 of the local machine:
 
    Database arbitrary arbitrary.asc SQL
@@ -871,10 +850,10 @@ DBD::mSQL driver for DBI, use:
 
     dbi:mSQL:minivend:othermachine.my.com:1112
 
-where mSQL selects the driver (case IS important), C<minivend> selects
-the database, C<othermachine.my.com> selects the host, and 1112 is the
-port. On many systems, C<dbi:mSQL:minivend> will work fine. Of course,
-the C<minivend> database must already exist.
+where mSQL selects the driver (case IS important), minivend selects
+the database, othermachine.my.com selects the host, and 1112 is the
+port. On many systems, dbi:mSQL:minivend will work fine. Of course,
+the minivend database must already exist.
 
 This is the same as the DBI_DSN environment variable, if the DSN
 parameter is not set. Then, the value of DBI_DSN will be used to try
@@ -922,7 +901,7 @@ DBD drivers do not yet support type queries.
 =item UPPERCASE
 
 Tells Interchange to force field names to UPPER case for row accesses
-using the C<[item-data ...]>, C<[loop-data ...]>, C<[item-field ...>,
+using the [item-data ...], [loop-data ...], [item-field ...,
 etc. Typically used for Oracle and some other SQL implementations.
 
 =item DELIMITER
@@ -934,16 +913,16 @@ parameter. It is specific to Interchange.
 
 =item KEY
 
-The keying default of C<code> in the first column of the database can
+The keying default of code in the first column of the database can
 be changed with the KEY directive. Don't use this unless prepared to
 alter all searches, imports, and exports accordingly. It is best to
 just accept the default and make the first column the key for any
 Interchange database.
 
-=item ChopBlanks,LongReadLen,LongTruncOK,RaiseError, etc.
+=item ChopBlanks, LongReadLen, LongTruncOK, RaiseError, etc.
 
 Sets the corresponding DBI attribute. Of particular interest is
-C<ChopBlanks>, which should be set on drivers which by default return
+ChopBlanks, which should be set on drivers which by default return
 space-padded fixed-length character fields (Solid is an example).
 
 The supported list as of this release of Interchange is:
@@ -957,13 +936,13 @@ The supported list as of this release of Interchange is:
 
 lanks
 
-Issue the shell command C<perldoc DBI> for more information.
+Issue the shell command perldoc DBI for more information.
 
 =back
 
-Here is an example of a completely set up DBI database on mySQL, using
+Here is an example of a completely set up DBI database on MySQL, using
 a comma-separated value input, setting the DBI attribute
-C<LongReadLen> to retrieve an entire field, and changing some field
+LongReadLen to retrieve an entire field, and changing some field
 definitions from the default char(128):
 
  Database   products  products.csv  dbi:mysql:minivend
@@ -985,10 +964,10 @@ definitions from the default char(128):
  Database   products  NUMERIC       price
  Database   products  NUMERIC       discount
 
-mySQL, DBI, and DBD::mysql must be completely installed and tested,
-and have created the database C<minivend>, for this to work.
-Permissions are difficult on mySQL. if having trouble, try starting
-the mySQL daemon with C<safe_mysqld --skip-grant-tables &> for testing
+MySQL, DBI, and DBD::mysql must be completely installed and tested,
+and have created the database minivend, for this to work.
+Permissions are difficult on MySQL. if having trouble, try starting
+the MySQL daemon with safe_mysqld --skip-grant-tables & for testing
 purposes.
 
 To change to ODBC, the only changes required might be:
@@ -996,7 +975,7 @@ To change to ODBC, the only changes required might be:
    Database products  DSN         dbi:ODBC:TCP/IP localhost 1313
    Database products  ChopBlanks  1
 
-The DSN setting is specific to a ODBC setup. The C<ChopBlanks> setting
+The DSN setting is specific to a ODBC setup. The ChopBlanks setting
 takes care of the space-padding in Solid and some other databases. It
 is not specific to ODBC. Once again, DBI, DBD::ODBC, and the
 appropriate ODBC driver must be installed and tested.
@@ -1005,13 +984,13 @@ appropriate ODBC driver must be installed and tested.
 
 An Interchange SQL database can be accessed with the same tags as any
 of the other databases can. Arbitrary SQL queries can be passed with
-the C<[query sql="SQL STATEMENT"]> MML tag.
+the [query sql="SQL STATEMENT"] MML tag.
 
 =head2 Importing from an ASCII File
 
 When importing a file for SQL, Interchange by default uses the first
-column of the ASCII file as the primary key, with a C<char(16)> type,
-and assigns all other columns a C<char (128)> definition. These
+column of the ASCII file as the primary key, with a char(16) type,
+and assigns all other columns a char (128) definition. These
 definitions can be changed by placing the proper definitions in
 COLUMN_DEF Database directive attribute:
 
@@ -1054,21 +1033,64 @@ proper .sql file. If that is not done, and the database source file is
 changed, the SQL database could be overwritten. In any case, always
 back up the database before enabling it for use by Interchange.
 
-=head1 THE SEARCH ENGINE
+=head1 Managing DBM Databases
+
+=head2 Making the Database
+
+The DBM databases can be built offline with the offline command.
+The directory to be used for output is specified either on the command
+line with the -d option, or is taken from the catalog.cfg
+directive OfflineDir -- offline in the catalog directory by
+default. The directory must exist. The source ASCII files should be
+present in that directory, and the DBM files are created there.
+Existing files will be overwritten.
+
+   offline -c catalog [-d offline_dir]
+
+Do a perldoc VENDROOT/bin/offline for full documentation.
+
+=head2 Updating Individual Records
+
+If it takes a long time to build a very large DBM database, consider
+using the bin/update script to change just one field in a record,
+or to add from a corrections list.
+
+The database is specified with the -n option, or is 'products' by
+default.
+
+The following updates the products database price field for item
+19-202 with the new value 25.00:
+
+   update -c catalog -f price 25.00
+
+More than one field can be updated on a single command line.
+
+   update -c catalog -f price -f comment 25.00 "That pitchfork couple"
+
+The following takes input from file, which must be formatted
+exactly like the original database, and adds/corrects any records
+contained therein.
+
+   update -c catalog -i file
+
+Invoke the command without any arguments for a usage message
+describing the options.
+
+=head1 The Search Engine
 
 Interchange implements a search engine which will search the product
 database (or any other file) for items based on customer input. It
 uses either forms or link-based searches that are called with the
-special page name C<scan>. The search engine uses many special
+special page name scan. The search engine uses many special
 Interchange tags and variables.
 
 If the search is implemented in a link or a form, it will always
 display formatted results on the results page, an Interchange page
-that uses some combination of the C<[search-region]>,
-C<[search-list]>, C<[more-list]>, C<[more]>, and other Interchange
+that uses some combination of the [search-region],
+[search-list], [more-list], [more], and other Interchange
 tags to format and display the results. The search results are usually
 a series of product codes/SKUs or other database keys, which are then
-iterated over similar to the C<[item-list]>.
+iterated over similar to the [item-list].
 
 B<Note: >Examples of search forms and result pages are included in the
 demos.
@@ -1078,7 +1100,7 @@ are available. The default is a text-based search of the first
 products database source file (i.e., products.txt). A binary search of
 a dictionary-ordered file can be specified. An optional Glimpse search
 is enabled by placing the command specification for Glimpse in the
-C<catalog.cfg> directive C<Glimpse>. There is a range-based search,
+catalog.cfg directive Glimpse. There is a range-based search,
 used in combination with one of the above. And finally, there is a
 fully-coordinated search with grouping.
 
@@ -1106,8 +1128,8 @@ Here is a simple search form:
  </FORM>
 
 When the "Search" submit button is pressed (or <ENTER> is pressed),
-Interchange will search the C<products.txt> file for the string
-entered into the text field C<mv_searchspec>, and return the product
+Interchange will search the products.txt file for the string
+entered into the text field mv_searchspec, and return the product
 code pertaining to that line.
 
 The same search for a fixed string, say "shirt," could be performed
@@ -1144,15 +1166,15 @@ will be searched.
 To use the Glimpse search, the Glimpse index must be built based on
 files in the ProductDir, or wherever the files to be searched will be
 located. If Interchange was installed in the default
-C</usr/local/lib/minivend>, the command line to build the index for
+/usr/local/lib/minivend, the command line to build the index for
 the products file would be:
 
    chdir products
    glimpseindex -b -H . products.txt
 
 There are several ways to improve search speed for large catalogs. One
-method that works well for large C<products.txt> files is to split the
-C<products.txt> file into small index files (in the example, 100
+method that works well for large products.txt files is to split the
+products.txt file into small index files (in the example, 100
 lines) with the split(1) UNIX/POSIX command. Then, index it with
 Glimpse:
 
@@ -1164,7 +1186,7 @@ least if the search term is relatively unique. If it is a common
 string, in a category search, for example, it is better to use the
 text-based search.
 
-To search for numbers, add the C<-n> option to the Glimpse command
+To search for numbers, add the -n option to the Glimpse command
 line.
 
 B<Note: >A large catalog is one of more than several thousand items;
@@ -1185,25 +1207,25 @@ To use field-specific searching on Glimpse, tell it what the field
 names are. If the search is on the products database (file), nothing
 is needed for the default is to use the field names from the products
 database. If it is some other field layout, specify the file to get
-the field names from with C<mv_field_file> (ff).
+the field names from with mv_field_file (ff).
 
 =head2 Fast Binary Search
 
 Fast binary searching is useful for scanning large databases for
 strings that match the beginning of a line. They use the standard Perl
 module Search::Dict, and are enabled through use of the
-C<mv_dict_look>, C<mv_dict_end>, C<mv_dict_limit>, C<mv_dict_fold>,
-and C<mv_dict_order> variables.
+mv_dict_look, mv_dict_end, mv_dict_limit, mv_dict_fold,
+and mv_dict_order variables.
 
 The field to search is the first field in the file, the product code
 should be in the second field, delimited by TAB. Set the
-C<mv_return_fields=1> to return the product code in the search.
+mv_return_fields=1 to return the product code in the search.
 
 The search must be done on a dictionary-ordered pre-built index, which
 can be produced with the database INDEX modifier. See Dictionary
 indexing with INDEX.
 
-If using the C<mv_dict_look> parameter by itself, and the proper index
+If using the mv_dict_look parameter by itself, and the proper index
 file is present, Interchange will set the options:
 
    mv_return_fields=1
@@ -1211,8 +1233,8 @@ file is present, Interchange will set the options:
 
 This will make the search behave much like the simple search described
 above, except it will be much faster on large files and will match
-only from the beginning of the field. Here is an example. A C<title>
-index has been built by including in C<catalog.cfg>:
+only from the beginning of the field. Here is an example. A title
+index has been built by including in catalog.cfg:
 
    Database   products   INDEX    title
 
@@ -1246,12 +1268,12 @@ case-insensitively:
 =head2 Coordinated and Joined Searching
 
 Interchange will do a complete range of tests on individual columns in
-the database. To use this function, set C<mv_coordinate> to Yes
+the database. To use this function, set mv_coordinate to Yes
 (co=yes in the one-click syntax). In order to use coordinated
 searching, the number of search fields must equal the number of search
 strings.
 
-To make sure that is the case, use the C<mv_search_map> variable. It
+To make sure that is the case, use the mv_search_map variable. It
 allows variables to be mapped to others in the search specification.
 For example:
 
@@ -1270,21 +1292,21 @@ For example:
 Even if the user leaves one blank, the search will work.
 
 Leading/trailing whitespace is stripped from all lines in the
-C<mv_search_map> variable, so it can be positioned as shown for
+mv_search_map variable, so it can be positioned as shown for
 convenience.
 
 Coordinated searches may be joined with the output of another table if
-set one of the C<mv_search_field> values is set to a C<table:column>
+set one of the mv_search_field values is set to a table:column
 pair. Note that this will slow down large searches considerably unless
 there is another search specification, as the database must be
 accessed for every search line If there is a search field that
 qualifies for a regular expression search function, or conducting a
-binary search with C<mv_dict_look>, or are not doing an C<OR> search,
+binary search with mv_dict_look, or are not doing an OR search,
 the penalty should not be too great as only matching lines will cause
 an access to the database.
 
 Individual field operations can then be specified with the
-C<mv_column_op> (or op) parameter. The operations include:
+mv_column_op (or op) parameter. The operations include:
 
    operation            string     numeric   equivalent
    ---------
@@ -1349,21 +1371,21 @@ avoid having to do this, use Interchange's option array feature:
                "
        ] Any in stock except Sunflowers, Van Gogh [/page]
 
-The C<co=yes> is assumed when specifying a multiple search.
+The co=yes is assumed when specifying a multiple search.
 
 The second search will check the stock status of the painting provided
-there is an C<inventory> table as in some of the Interchange demo
-catalogs. If the C<qty> field is greater than or equal to 1, the
+there is an inventory table as in some of the Interchange demo
+catalogs. If the qty field is greater than or equal to 1, the
 product will be picked. If out of stock, it will not be found.
 
-It always helps to have an C<rm> type included in the search. This is
+It always helps to have an rm type included in the search. This is
 used to pre-screen records so that database accesses only need be made
 for already-matching entries. If accesses must be made for every
 record, large searches can get quite slow.
 
 =head2 Specifying a Text-Based Search with SQL-Like Syntax
 
-If Jochen Wiedmann's C<SQL::Statement> module is installed, a SQL
+If Jochen Wiedmann's SQL::Statement module is installed, a SQL
 syntax can be specified for the text-based search. (This is not the
 same as the SQL search, treated below separately. It would work on an
 SQL table, but only on the ASCII text source file, not on the actual
@@ -1423,9 +1445,9 @@ searches above would be similar to:
 
 Range searching allows qualification of search returns with a field
 that must be within a certain numeric or alphanumeric range. To use
-it, set the C<mv_range_look> variable to the products database field,
+it, set the mv_range_look variable to the products database field,
 or a column/field number for another file. Then, set the corresponding
-C<mv_range_min> and C<mv_range_max> variables with a selectable field.
+mv_range_min and mv_range_max variables with a selectable field.
 
    <INPUT TYPE="hidden" NAME="mv_range_look" VALUE="price">
        Search on Price
@@ -1444,22 +1466,22 @@ C<mv_range_min> and C<mv_range_max> variables with a selectable field.
            <OPTION value=40000000> $40,000,000
        </SELECT>
 
-The value of 0 for C<mv_range_max> is equivalent to infinity if doing
+The value of 0 for mv_range_max is equivalent to infinity if doing
 a numeric search. This makes it impossible to search for a ceiling of
-0 with a negative C<mv_range_min>.
+0 with a negative mv_range_min.
 
 The fields are stackable, so more than one range to check can be set.
 The order is significant, in the sense that the array of field names
 and minimum/maximum values must be kept in order to achieve
 correspondence.
 
-The optional C<mv_range_alpha> specification allows alphanumeric range
+The optional mv_range_alpha specification allows alphanumeric range
 matching for the corresponding field. If it is set, and the fields are
-stacked, they must all be set. The C<mv_case> field does apply if it
+stacked, they must all be set. The mv_case field does apply if it
 is set. Otherwise, the comparison is without regard to case.
 
 If ONLY a range search is required, all lines with
-C<mv_return_all>=yes must be selected in order to make the search
+mv_return_all=yes must be selected in order to make the search
 operate. Range-only searches will be quite slow for large databases
 since every line must be scanned. It should be quite usable for
 catalogs of less than 10,000 items in size on a fast machine. Using it
@@ -1470,7 +1492,7 @@ yield faster search returns.
 
 Interchange allows a search to be passed in a URL, as shown above.
 Just specify the search with the special page parameter search or
-special page C<scan>. Here is an example:
+special page scan. Here is an example:
 
     [page search="
                se=Impressionists
@@ -1565,15 +1587,13 @@ method of specification, the characters will automatically be escaped
 for a URL.
 
 IMPORTANT NOTE: An incompatibility in earlier Interchange catalogs is
-specifying C<[page scan/se=searchstring]>. This is interpreted by the
-parser as C<[page scan/se="searchstring"]> and will cause a bad URL.
-Change this to C<[page scan se=searchstring]>, or perhaps better yet:
+specifying [page scan/se=searchstring]. This is interpreted by the
+parser as [page scan/se="searchstring"] and will cause a bad URL.
+Change this to [page scan se=searchstring], or perhaps better yet:
 
    [page search="
                    se=searchstring
            "]
-
-cause a bad URL. Change this to C<[page scan se=searchstring]>.
 
 A one-click search may be specified in three different ways.
 
@@ -1629,11 +1649,11 @@ Any "unsafe" characters will be escaped.
 =head2 Setting Display Options with mv_value
 
 A value can be specified that will be set in the link with the
-C<mv_value> parameter. It takes an argument of C<var=value>, just as
+mv_value parameter. It takes an argument of var=value, just as
 setting a normal variable in an Interchange profile. Actually
-C<mv_value> is a misnomer, it will almost never be used in a form
+mv_value is a misnomer, it will almost never be used in a form
 where variable values can be set. Always specify it in a one-click
-search with C<va=var=value>. Example:
+search with va=var=value. Example:
 
    [page href=scan
          arg="se=Renaissance
@@ -1642,16 +1662,16 @@ search with C<va=var=value>. Example:
               os=yes"]Renaissance and Impressionist Paintings[/page]
 
 Display the appropriate category on the search results page with
-C<[value category_name]>.
+[value category_name].
 
 =head2 In-Page Searches
 
-To specify a search inside a page with the C<[search-region
-parameters*]> tag. The parameters are the same as the one-click
+To specify a search inside a page with the [search-region
+parameters*] tag. The parameters are the same as the one-click
 search, and the output is always a newline-separated list of the
 return objects, by default, a series of item codes.
 
-The C<[loop ...]> tag directly accepts a search parameter. To search
+The [loop ...] tag directly accepts a search parameter. To search
 for all products in the categories "Americana" and "Contemporary," do:
 
    [loop search="
@@ -1669,8 +1689,8 @@ within searches, and there can be straight unchanging links from
 static HTML pages.
 
 To place an in-page search with the full range of display in a normal
-results page, use the C<[search-region]> tag the same as above, except
-that C<[search-list]>, C<[more-list]>, and C<[more]> tags can be
+results page, use the [search-region] tag the same as above, except
+that [search-list], [more-list], and [more] tags can be
 placed within it. Use them to display and format the results,
 including paging. For example:
 
@@ -1691,7 +1711,7 @@ including paging. For example:
    [/search-region]
 
 To use the same page for search paging, make sure to set the
-C<sp=page> parameter.
+sp=page parameter.
 
 =head2 Search Profiles
 
@@ -1723,12 +1743,12 @@ Then, in the search form, set a variable with the name of the profile:
 
    <INPUT TYPE=hidden NAME=mv_profile VALUE=artist_profile>
 
-In a one-click search, use the C<mp> modifier:
+In a one-click search, use the mp modifier:
 
  [page scan se=Leonardo/mp=artist_profile]A left-handed artist[/page]
 
 They can also be placed in a file. Define the file name in the
-C<SearchProfile> directive. The catalog must be reconfigured for
+SearchProfile directive. The catalog must be reconfigured for
 Interchange to read it. The profile is named by placing a name
 following a __NAME__ pragma:
 
@@ -1737,7 +1757,7 @@ following a __NAME__ pragma:
 The __NAME__ must begin the line, and be followed by whitespace and
 the name.
 
-The special variable C<mv_last> stops interpretation of search
+The special variable mv_last stops interpretation of search
 variables. The following variables are always interpreted:
 
    mv_dict_look
@@ -1746,7 +1766,7 @@ variables. The following variables are always interpreted:
    mv_range_min
    mv_range_max
 
-Other than that, if C<mv_last> is set in a search profile, and there
+Other than that, if mv_last is set in a search profile, and there
 are other variables on the search form, they will not be interpreted.
 
 To place multiple search profiles in the same file, separate them with
@@ -1754,7 +1774,7 @@ __END__, which must be on a line by itself.
 
 =head2 Search Reference
 
-The supplied C<simple/srchform.html> and C<simple/results.html> pages
+The supplied simple/srchform.html and simple/results.html pages
 show example search forms. Modify them to present the search in any
 way desired. Be careful to use the proper variable names for passing
 to Interchange. It is also necessary to copy the hidden variables
@@ -1771,14 +1791,14 @@ The field names can be specified in several ways.
 =item ProductFiles
 
 If the file to be searched is left empty in the search form or
-definition (it is set with C<mv_search_file (fi)>), the text files
+definition (it is set with mv_search_file (fi)), the text files
 associated with the products databases will be searched, and field
 names are already available as named in the first line of the file(s).
-This is defined to be C<products.txt> in the Interchange
+This is defined to be products.txt in the Interchange
 demonstrations.
 
 Be Careful if using SQL! If the database is change and not exporte
-with C<[tag export products][/tag]>, searches will not be successful.
+with [tag export products][/tag], searches will not be successful.
 
 =item Other database files
 
@@ -1791,7 +1811,7 @@ names.
 
 If the file or files to be searched are ASCII delimited files, but
 don't have field names specified on the first line of the file, set
-the variable C<mv_field_names> to a comma-separated list of field
+the variable mv_field_names to a comma-separated list of field
 names as they will be referenced.
 
 =back
@@ -1812,7 +1832,7 @@ Perl. The characters ()[]\$^ are included.
 Scan abbreviation: bd=/directory/name. In the text search, set to the
 directory from which to base file searches. File names without leading
 / characters will be based from there. In the Glimpse search, passed
-to Glimpse with the C<-H> option, and Glimpse will look for its
+to Glimpse with the -H option, and Glimpse will look for its
 indices there. Default is ProductDir.
 
 If an absolute path directory is used, for security enable it in the
@@ -1830,7 +1850,7 @@ of a field. The handling is a bit different for the default AND search
 compared to the OR search. With OR searches all words are searched for
 from the beginning of the field, with AND searches all are.
 
-This is a multiple parameter. If C<mv_coordinate> is in force, it
+This is a multiple parameter. If mv_coordinate is in force, it
 should be set as many times as necessary to match the
 field/searchstring combination. If set only once, it applies to all
 fields. If set more than once but not as many times as the fields, it
@@ -1838,21 +1858,21 @@ will default to off.
 
 =item mv_case
 
-If this item is set to C<No>, the search will return items without
-regard to upper or lower case. This is the default. Set to C<Yes> if
+If this item is set to No, the search will return items without
+regard to upper or lower case. This is the default. Set to Yes if
 case should be matched. Implement with a checkbox <INPUT
 TYPE=CHECKBOX> field.
 
-If stacked to match the C<mv_search_field> and C<mv_searchspec>
-variables, and C<mv_coordinate> is set, it will operate only for the
+If stacked to match the mv_search_field and mv_searchspec
+variables, and mv_coordinate is set, it will operate only for the
 corresponding field.
 
 =item mv_coordinate
 
-If this item is set to C<Yes>, and the number of search fields equals
+If this item is set to Yes, and the number of search fields equals
 the number of search specs, the search will return only items that
 match field to spec. (The search specifications are set by stacked
-C<mv_searchspec> and C<mv_search_field> variables.)
+mv_searchspec and mv_search_field variables.)
 
 Case sensitivity, substring matching, and negation all work on a
 field-by field basis according to the following:
@@ -1880,16 +1900,16 @@ accordingly.
 =item mv_dict_end
 
 If the string at the beginning of a line lexically exceeds this value,
-matching will stop. Ignored without C<mv_dict_look>.
+matching will stop. Ignored without mv_dict_look.
 
 =item mv_dict_fold
 
 Make dictionary matching case-insensitive. Ignored without
-C<mv_dict_look>.
+mv_dict_look.
 
 =back
 
-B<Note: >This is the reverse sense from C<mv_case>.
+B<Note: >This is the reverse sense from mv_case.
 
 =over 4
 
@@ -1898,14 +1918,14 @@ B<Note: >This is the reverse sense from C<mv_case>.
 Automatically set the limiting string (mv_dict_end) to be one
 character greater than the mv_dict_look variable, at the character
 position specified. A value of 1, for instance, will set the limiting
-string to "fprsythe" if the value of C<mv_dict_look> is "forsythe". A
+string to "fprsythe" if the value of mv_dict_look is "forsythe". A
 useful value is -1, which will increment the last character (setting
 the mv_dict_end to "forsythf" in our example). This prevents having to
 scan the whole file once a unique match is found.
 
 =back
 
-B<Note: >The order of this and the C<mv_dict_end> variable is
+B<Note: >The order of this and the mv_dict_end variable is
 significant. Each will overwrite the other.
 
 =over 4
@@ -1914,10 +1934,10 @@ significant. Each will overwrite the other.
 
 If this is set to a non-numeric value, an automatic mode is entered
 which looks for a dictionary-indexed file that corresponds to the file
-name plus C<.field>, where C<field> is whatever C<mv_dict_limit> is
-set to. The actual value of mv_dict_limit is set to C<-1>. If the file
+name plus .field, where field is whatever mv_dict_limit is
+set to. The actual value of mv_dict_limit is set to -1. If the file
 does not exist, the original file is silently used. Also, the value of
-C<mv_return_fields> is set to C<1> to correspond to the location of
+mv_return_fields is set to 1 to correspond to the location of
 the key in the auto-indexed file.
 
 To illustrate:
@@ -1944,9 +1964,9 @@ h for
 
 which would allow automatic binary search file selection.
 
-Combined with the C<INDEX> attribute to the Database directive, this
+Combined with the INDEX attribute to the Database directive, this
 allows fast binary search qualification combined with regular
-C<mv_searchspec> text searches.
+mv_searchspec text searches.
 
 =back
 
@@ -1955,25 +1975,25 @@ C<mv_searchspec> text searches.
 =item mv_dict_look
 
 The string at which to begin matching at in a dictionary-based search.
-If not set, the C<mv_dict_end>, C<mv_dict_fold>, and C<mv_dict_case>
+If not set, the mv_dict_end, mv_dict_fold, and mv_dict_case
 variables will be ignored. May be set in a search profile based on
 other form variables.
 
 =item mv_dict_order
 
 Make dictionary matching follow dictionary order, where only word
-characters and whitespace matter. Ignored without C<mv_dict_look>.
+characters and whitespace matter. Ignored without mv_dict_look.
 
 =item mv_doit
 
-This must be set to C<search> to make this a search page.
+This must be set to search to make this a search page.
 
 =item mv_exact_match
 
 Normally Interchange searches match words, as opposed to sentences.
-This behavior can be overridden with C<mv_exact_match>, which when set
-will place quotes around any value in C<mv_searchspec> or
-C<mv_dict_look>.
+This behavior can be overridden with mv_exact_match, which when set
+will place quotes around any value in mv_searchspec or
+mv_dict_look.
 
 =item mv_field_names
 
@@ -1988,8 +2008,8 @@ profile as a comma-separated list.
 =back
 
 B<Note: >Use this on the product database only if planning on both
-pre-sorting with C<mv_sort_field> and then post-sorting C<with
-[sort]field:opt[/sort]>.
+pre-sorting with mv_sort_field and then post-sorting with
+[sort]field:opt[/sort].
 
 =over 4
 
@@ -2016,14 +2036,14 @@ is TAB.
 
 The page size for matches that are returned. If more matches than
 mv_matchlimit are found, the search paging mechanism will be employed
-if the proper C<[more-list]> is present. Can be implemented as a
+if the proper [more-list] is present. Can be implemented as a
 scrolling list (INPUT TYPE=SELECT) or radiobox (INPUT TYPE=RADIO)
 field.
 
 =item mv_max_matches
 
 The maximum number of records that will be returned in a search.
-Default is 2000. This only applies to Glimpse. Use C<mv_matchlimit> to
+Default is 2000. This only applies to Glimpse. Use mv_matchlimit to
 set the search page size.
 
 =item mv_min_string
@@ -2036,22 +2056,22 @@ Default is 4 for the Glimpse search, and 1 for the text search.
 Specifies that records NOT matching the search criteria will be
 returned. Default is no. It is not operative for the Glimpse search.
 
-If stacked to match the C<mv_search_field> and C<mv_searchspec>
-variables, and C<mv_coordinate> is set, it will operate only for the
+If stacked to match the mv_search_field and mv_searchspec
+variables, and mv_coordinate is set, it will operate only for the
 corresponding field.
 
 =item mv_orsearch
 
-If this item is set to C<Yes>, the search will return items matching
-any of the words in C<searchspec>. The default is No.
+If this item is set to Yes, the search will return items matching
+any of the words in searchspec. The default is No.
 
 =item mv_profile
 
 Selects one of the pre-defined search specifications set by the
-C<SearchProfile> directive. If the special variable within that file,
-C<mv_last>, is defined, it will prevent the scanning of the form input
-for further search modifications. The values of C<mv_searchspec> and
-C<mv_dict_look> are always scanned, so specify this to do the
+SearchProfile directive. If the special variable within that file,
+mv_last, is defined, it will prevent the scanning of the form input
+for further search modifications. The values of mv_searchspec and
+mv_dict_look are always scanned, so specify this to do the
 equivalent of setting multiple checkboxes or radioboxes with one
 click, while still reading the search input text.
 
@@ -2059,14 +2079,14 @@ click, while still reading the search input text.
 
 Sets the type of match, numeric or alphanumeric, for the range search
 in its corresponding range field. The search will return true,
-assuming it is greater than the C<mv_range_min> specification, if the
-field searched is less than or equal to C<mv_range_max>, in an
+assuming it is greater than the mv_range_min specification, if the
+field searched is less than or equal to mv_range_max, in an
 alphanumeric sense.
 
 =item mv_range_look
 
 This sets a field to scan for a range of numbers. It must be
-accompanied with corresponding C<mv_range_min> and C<mv_range_max>
+accompanied with corresponding mv_range_min and mv_range_max
 variables. It can be specified with either a field name or a column
 number.
 
@@ -2074,16 +2094,16 @@ number.
 
 Sets the high bound for the range search in its corresponding range
 field. The search will return true, assuming it is greater than the
-C<mv_range_min> specification, if the field searched is less than or
-equal to C<mv_range_max>. To set the bound at infinity, or whatever
-your integer limit is, set C<mv_range_min> to 0.
+mv_range_min specification, if the field searched is less than or
+equal to mv_range_max. To set the bound at infinity, or whatever
+your integer limit is, set mv_range_min to 0.
 
 =item mv_range_min
 
 Sets the low bound for the range search in its corresponding range
 field. The search will return true, assuming it is less than the
-C<mv_range_max> specification, if the field searched is less than or
-equal to C<mv_range_min>.
+mv_range_max specification, if the field searched is less than or
+equal to mv_range_min.
 
 =item mv_record_delim
 
@@ -2101,7 +2121,7 @@ accessing database fields.
 =item mv_return_spec
 
 Returns the string specified as the search (i.e., the value of
-C<mv_searchspec>) as the one and only match. Typically used in a
+mv_searchspec) as the one and only match. Typically used in a
 SKU/part number search.
 
 =item mv_search_field
@@ -2110,7 +2130,7 @@ The field(s) to be searched, specified either by column name or by
 column number.
 
 If the number of instances matches the number of fields specified in
-the C<mv_searchspec> variable and C<mv_coordinate> is set to true,
+the mv_searchspec variable and mv_coordinate is set to true,
 each search field (in order specified on the form) will be matched
 with each search spec (again in that order).
 
@@ -2133,15 +2153,15 @@ Set by the search to indicate the total number of matches found.
 =item mv_search_over_msg
 
 The message that should be displayed if there is an overflow condition
-(C<mv_matchlimit> is exceeded). Overrides the SearchOverMsg directive.
+(mv_matchlimit is exceeded). Overrides the SearchOverMsg directive.
 It is cleared by Interchange if there is no overflow. Somewhat
 deprecated by match paging.
 
 =item mv_search_page
 
 The Interchange-style name of the page that should display the search
-results. Overrides the C<FrameSearchPage> directive, and the default
-value of C<search>.
+results. Overrides the FrameSearchPage directive, and the default
+value of search.
 
 =item mv_searchspec
 
@@ -2152,13 +2172,13 @@ will be concatenated just as if multiple words had been placed in a
 text field.
 
 The user can place quotes around words to specify that they match as a
-string. To enable this by default, use the C<mv_exact_match> variable.
+string. To enable this by default, use the mv_exact_match variable.
 
-If C<mv_dict_look> has a value, and C<mv_searchspec> does not, then
-C<mv_searchspec> will be set to the value of C<mv_dict_look>.
+If mv_dict_look has a value, and mv_searchspec does not, then
+mv_searchspec will be set to the value of mv_dict_look.
 
 If the number of instances matches the number of fields specified in
-the C<mv_search_field> variable and C<mv_coordinate> is set to true,
+the mv_search_field variable and mv_coordinate is set to true,
 each search field (in order specified on the form) will be matched
 with each search spec (again in that order).
 
@@ -2169,12 +2189,12 @@ If set to Glimpse, selects the Glimpse search (if Glimpse is defined).
 If set to db, iterates over every row of the database (not the
 associated text source file).
 
-If set to sql, same as C<db>.
+If set to sql, same as db.
 
 If set to text, selects the text-based search.
 
-When using C<st=db>, returned keys may be affected by
-C<TableRestrict>. See C<CATALOG.CFG>.
+When using st=db, returned keys may be affected by
+TableRestrict. See CATALOG.CFG.
 
 Defaults to text if Glimpse is not defined; defaults to Glimpse if it
 is defined. This can allow use of both search types if that is
@@ -2194,16 +2214,16 @@ specification separated by commas.
 
 =back
 
-B<NOTE FOR ADVANCED USERS: >If specifying a sort for the product
-database, C<mv_field_names> must be specified if doing a
-fieldname-addressed post-sort.
+B<Note: >If specifying a sort for the product database,
+mv_field_names must be specified if doing a fieldname-addressed
+post-sort.
 
 =over 4
 
 =item mv_sort_option
 
-The way that each field should be sorted. The flags are C<r>, C<n>,
-and C<f>, reverse, numeric, and case-insensitive respectively. These
+The way that each field should be sorted. The flags are r, n,
+and f, reverse, numeric, and case-insensitive respectively. These
 can be stacked if coming from a form or placed in a single
 specification separated by commas. The stacked options will be applied
 to the sort fields as they are defined, presuming those are stacked.
@@ -2215,25 +2235,25 @@ using Glimpse. For a large catalog, limit this to two.
 
 =item mv_substring_match
 
-If C<mv_substring_match> is set to C<Yes>, matches on substrings as
+If mv_substring_match is set to Yes, matches on substrings as
 well as whole words. Typically set this for dictionary-based searches.
 
-If stacked to match the C<mv_search_field> and C<mv_searchspec>
-variables and C<mv_coordinate> is set, it will operate only for the
+If stacked to match the mv_search_field and mv_searchspec
+variables and mv_coordinate is set, it will operate only for the
 corresponding field.
 
 =item mv_unique
 
 If set to a true value, causes the sort to return only unique results.
 This operates on whatever the search return is, as defined by
-C<mv_return_fields>.
+mv_return_fields.
 
 =item mv_value
 
 This is normally only used in the one-click search (va=var=value). It
 allows setting of a session variable based on the clicked link, which
 makes for easy definition of headers and other display choices. (If
-had trouble using C<mv_searchspec> for this before, this is what is
+had trouble using mv_searchspec for this before, this is what is
 needed.)
 
 =back
@@ -2241,16 +2261,16 @@ needed.)
 =head2 The Results Page
 
 Once a search has been completed, there needs to be a way of
-presenting the output. By default, the C<SpecialPage> search is used.
-It is set to C<results> in the distribution demo, but any number of
+presenting the output. By default, the SpecialPage search is used.
+It is set to results in the distribution demo, but any number of
 search pages can be specified by passing the value in the search form
-specified in the variable C<mv_search_page>.
+specified in the variable mv_search_page.
 
 On the search page, some special Interchange tags are used to format
 the otherwise standard HTML. Each of the iterative tags is applied to
 every code returned from the search. This is normally the product
 code, but could be a key to any of the arbitrary databases. The value
-placed by the C<[item-code]> tag is set to the first field returned
+placed by the [item-code] tag is set to the first field returned
 from the search.
 
 The basic structure looks like this:
@@ -2267,8 +2287,8 @@ The basic structure looks like this:
 [/more-list]
 [/search-region]
 
-TIP FOR MV3 PORTS: A C<[search-list][/search-list]> must always be
-surrounded by a C<[search-region][/search-region]> pair. This is a
+TIP FOR MV3 PORTS: A [search-list][/search-list] must always be
+surrounded by a [search-region][/search-region] pair. This is a
 change from Interchange 3.
 
 =over 4
@@ -2280,9 +2300,9 @@ embedded in the search list, yielding a table or formatted list of
 items with part number, description, price, and hyperlinks to order or
 go to its catalog page.
 
-The example tags shown have an C<item-> prefix, which is the default.
-Set any prefix desired with the C<prefix> parameter to
-C<[search-region]>:
+The example tags shown have an item- prefix, which is the default.
+Set any prefix desired with the prefix parameter to
+[search-region]:
 
     [search-region pref    [search-list]
         SKU:   [my-code]
@@ -2350,28 +2370,28 @@ search specification.
 
 =item [item-change marker]
 
-Active only within C<[search-list][/search-list]>.
+Active only within [search-list][/search-list].
 
-Along with the companion C<[/item-change marker]>, surrounds a region
+Along with the companion [/item-change marker], surrounds a region
 which should only be output when a field (or other repeating value)
 changes its value. This allows indented lists similar to database
 reports to be easily formatted. The repeating value must be a tag
-interpolated in the search process, such as C<[item-field field]> or
-C<[item-data database field]>.
+interpolated in the search process, such as [item-field field] or
+[item-data database field].
 
 Of course, this will only work as expected when the search results are
 properly sorted.
 
-The C<marker> field is mandatory, and is also arbitrary, meaning that
+The marker field is mandatory, and is also arbitrary, meaning that
 any marker can be selected as long as it matches the marker associated
-with C<[/item-change marker]>. The value to be tested is contained
-within a C<[condition]value[/condition]> tag pair. The C<[item-change
-marker]> tag also processes an C<[else] [/else]> pair for output when
+with [/item-change marker]. The value to be tested is contained
+within a [condition]value[/condition] tag pair. The [item-change
+marker] tag also processes an [else] [/else] pair for output when
 the value does not change. The tags may be nested as long as the
 markers are different.
 
 The following is a simple example for a search list that has a field
-C<category> and C<subcategory> associated with each item:
+category and subcategory associated with each item:
 
  < <TR><TH>Category</TH><TH>Subcategory</TH><TH>Product</TH></TR>
  [search-list]
@@ -2406,46 +2426,46 @@ ABLE>
 
 The above should output a table that only shows the category and
 subcategory once, while showing the name for every product. (The
-C<&nbsp;> will prevent blanked table cells if using a border.)
+&nbsp; will prevent blanked table cells if using a border.)
 
 =item [/item-change marker]
 
-Companion to C<[item-change marker]>.
+Companion to [item-change marker].
 
 =item [matches]
 
 Replaced with the range of match numbers displayed by the search page.
 Looks something like "1-50". Make sure to insert this item between a
-C<[more-list]> and C<[/more-list]> element pair.
+[more-list] and [/more-list] element pair.
 
 =item [more-list next_img* prev_img* page_img* border* border_current*]
 
 Starts the section of the search page which is only displayed if there
-are more matches than specified in C<mv_matchlimit>. If there are less
+are more matches than specified in mv_matchlimit. If there are less
 matches than the number in mv_matchlimit, all text/html between the
-C<[more_list]> and C<[/more_list]> elements is stripped.
+[more_list] and [/more_list] elements is stripped.
 
-Use in conjunction with the C<[more]> element to place pointers to
+Use in conjunction with the [more] element to place pointers to
 additional pages of matches.
 
-If the optional arguments C<next_img>, C<prev_img>, and/or C<page_img>
+If the optional arguments next_img, prev_img, and/or page_img
 are present, they represent image files that will be inserted instead
-of the standard 'Next,' 'Previous,' and page number. If C<prev_img> is
-C<none>, then no previous link will be output. If C<page_img> is
-C<none>, then no links to pages of matches will be output. These are
+of the standard 'Next,' 'Previous,' and page number. If prev_img is
+none, then no previous link will be output. If page_img is
+none, then no links to pages of matches will be output. These are
 URLs, are substituted for with I<ImageDir> and friends, and will be
-encased in IMG tags. Lastly, C<border> is the border number to put.
+encased in IMG tags. Lastly, border is the border number to put.
 
-In addition, if C<page_img> is used, it will be passed an argument of
+In addition, if page_img is used, it will be passed an argument of
 the digit that is to be represented. This would allow an image
 generator program to be used, generating page numbers on the fly. The
-C<border> and C<border_selected> values are integers indicating the
-border that should be put around images in the C<page_img> selection.
+border and border_selected values are integers indicating the
+border that should be put around images in the page_img selection.
 The <border_selected> is used for the current page if set.
 
 \Examples:
 
-C<[more-list next.gif prev.gif page_num.cgi 3]> causes anchors of:
+[more-list next.gif prev.gif page_num.cgi 3] causes anchors of:
 
      Previous   <IMG SRC="prev.gif" Bor     Page 1     <IMG SRC="/cgi-bin/page_num.cgi?1">
      Page 2     <IMG SRC="/cgi-bin/page_num.cgi?2">
@@ -2453,7 +2473,7 @@ C<[more-list next.gif prev.gif page_num.cgi 3]> causes anchors of:
 
 er=3>
 
-C<[more-list next.gif prev.gif page_num.cgi]> causes anchors of:
+[more-list next.gif prev.gif page_num.cgi] causes anchors of:
 
      Previous   <IMG SRC="prev     Page 1     <IMG SRC="/cgi-bin/page_num.cgi?1">
      Page 2     <IMG SRC="/cgi-bin/page_num.cgi?2">
@@ -2461,7 +2481,7 @@ C<[more-list next.gif prev.gif page_num.cgi]> causes anchors of:
 
 gif">
 
-C<[more-list next.gif prev.gif 0 0]> causes anchors of:
+[more-list next.gif prev.gif 0 0] causes anchors of:
 
      Previous   <IMG SRC="prev.gif" Bor     Page 1     <IMG SRC="/cgi-bin/page_num.cgi?1">
      Page 2     <IMG SRC="/cgi-bin/page_num.cgi?2">
@@ -2470,9 +2490,9 @@ C<[more-list next.gif prev.gif 0 0]> causes anchors of:
 er=0>
 
 To set custom text for the "Previous" and "Next" usually used, define
-the C<next_img>, C<prev_img>, and C<page_img> with
-C<[next-anchor][/next-anchor]>, C<[prev-anchor][/prev-anchor]> and
-C<[page-anchor][/page-anchor]>. The string $PAGE$ will be replaced
+the next_img, prev_img, and page_img with
+[next-anchor][/next-anchor], [prev-anchor][/prev-anchor] and
+[page-anchor][/page-anchor]. The string $PAGE$ will be replaced
 with the page number in the latter. The same example:
 
     [more-list     [next-anchor] Forward [/next-anchor]
@@ -2483,14 +2503,14 @@ with the page number in the latter. The same example:
 
  0 0]
 
-will display C<Forward Page 1 Page 2 Back> for 2 pages.
+will display Forward Page 1 Page 2 Back for 2 pages.
 
 As shown, pass a 0 for the arguments of each to tell Interchange to
 look for the assignments.
 
 If have many pages of matches and don't wish to have all displayed at
-once, set C<[decade-next][/decade-next]> and
-C<[decade-prev][/decade-prev]>. If set them empty, a search with 31
+once, set [decade-next][/decade-next] and
+[decade-prev][/decade-prev]. If set them empty, a search with 31
 pages will display pages 21-30 like:
 
   Previous 1 2 3 4 5 6 7 8 9 10 [more>>] Next
@@ -2499,8 +2519,8 @@ and pages 11-20 like:
 
   Previous [<<more] 11 12 13 14 15 16 17 18 19 20 [more>>] Next
 
-If set to C<[decade-next](higher)[/decade-next]> and
-C<[decade-prev](lower)[/decade-prev]>, the following will be
+If set to [decade-next](higher)[/decade-next] and
+[decade-prev](lower)[/decade-prev], the following will be
 displayed:
 
   Previous (lower) 11 12 13 14 15 16 17 18 19 20 (higher) Next
@@ -2509,7 +2529,7 @@ Of course, image-based anchors can be used as well.
 
 =item [/more-list]
 
-Companion to C<[more-list]>.
+Companion to [more-list].
 
 =item [more]
 
@@ -2520,10 +2540,10 @@ series. They look like this:
 
 The current page will not be a hyperlink. Every time the new link is
 pressed, the list is re-built to correspond to the current page. If
-there is no C<Next> or C<Previous> page, that link will not be shown.
+there is no Next or Previous page, that link will not be shown.
 
-See the C<fr_resul.html> or C<search.html> files for examples. Make
-sure to insert this item between a C<[more-list]> and C<[/more-list]>
+See the fr_resul.html or search.html files for examples. Make
+sure to insert this item between a [more-list] and [/more-list]
 element pair.
 
 =item [process-search]
@@ -2540,7 +2560,7 @@ to be targeted to a different window than the one set by SearchFrame
 
 =back
 
-=head1 SORTING
+=head1 Sorting
 
 Interchange has standard sorting options for sorting the search lists,
 loop lists, and item lists based on the contents of database fields.
@@ -2569,8 +2589,8 @@ tag which must be directly after the list call:
    [loop-field category] [loop-field title] <BR>
    [/loop]
 
-All sort situations, C<[search list]>, C<[loop list]>, C<[tag each
-table]>, and C<[item-list]>, take options of the form:
+All sort situations, [search list], [loop list], [tag each
+table], and [item-list], take options of the form:
 
  [sort database:field:option* -n +n =n-n ... ]
 
@@ -2606,12 +2626,12 @@ The number of entries to display in this list segment.
 =item =n-n
 
 The starting and ending point of the list display. This is an
-alternative to C<-n> and +n. They should be specified in only one
+alternative to -n and +n. They should be specified in only one
 form. If both are specified, the last one will take effect.
 
 =item ...
 
-Don't really put C<...> in. This means that many sort levels are
+Don't really put ... in. This means that many sort levels are
 specified. Lots of sort levels with large databases will be quite
 slow.
 
@@ -2621,10 +2641,10 @@ Multiple levels of sort are supported, and database boundaries on
 different sort levels can be crossed. Cross-database sorts on the same
 level are not supported. If using multiple product databases, they
 must be sorted with embedded Perl. This is actually a feature in some
-cases, all items in a C<used> database can be displayed before or
-after new ones in C<products>.
+cases, all items in a used database can be displayed before or
+after new ones in products.
 
-Examples, all based on the C<simple> demo:
+Examples, all based on the simple demo:
 
 =over 4
 
@@ -2658,7 +2678,7 @@ trait
 
  Cats
 
-The tag C<[sort products:title =3-4]> is equivalent to the above.
+The tag [sort products:title =3-4] is equivalent to the above.
 
 =item Search list
 
@@ -2734,11 +2754,11 @@ category, then on their title within the category.
 =back
 
 Note that large lists may take some time to sort. If a product
-database contains many thousands of items, using the C<[tag each
-products]> sort is not recommended unless planning on caching or
+database contains many thousands of items, using the [tag each
+products] sort is not recommended unless planning on caching or
 statically building pages.
 
-=head1 SHIPPING
+=head1 Shipping
 
 Interchange has a powerful custom shipping facility that performs UPS
 and other shipper lookups, as well as a flexible rule-based facility
@@ -2752,10 +2772,10 @@ criteria (quantity or weight, for example), minimum number, maximum
 number, and cost. None of the fields are case-sensitive.
 
 To define the shipping database in a catalog configuration file, set
-the Variable C<MV_SHIPPING> to what would be its contents.
+the Variable MV_SHIPPING to what would be its contents.
 
-To set the file to be something other than C<shipping.asc> in the
-products directory, set the C<Special> directive:
+To set the file to be something other than shipping.asc in the
+products directory, set the Special directive:
 
    Special  shipping.asc  /home/user/somewhere/shipping_defs
 
@@ -2769,7 +2789,7 @@ upsg    UPS Ground  weight  0   0   e Nothing to ship! upsg    UPS
 Ground  weight  0   150 u Ground [default zip 98366] 3.00 upsg    UPS
 Ground  weight  150 999999  e @@TOTAL@@ lbs too heavy for UPS
 
-The second is a freeform method with a C<mode: Description text>
+The second is a freeform method with a mode: Description text
 introducing the mode line. The special encoding is called out by
 indented parameters. The below is identical to the above:
 
@@ -2816,7 +2836,7 @@ many times as needed.
 =item DESCRIPTION
 
 Text to describe the method (can be accessed on a page with the
-C<[shipping-description]> element).
+[shipping-description] element).
 
 =item CRITERIA
 
@@ -2826,7 +2846,7 @@ a number is returned, that is used as the accumulated criteria. That
 is, the total of weight, quantity, or price as applied to all items in
 the shopping cart.
 
-See C<Criteria Determination> below.
+See Criteria Determination below.
 
 =item MINIMUM
 
@@ -2852,7 +2872,7 @@ Perl)
 
 =item NEXT
 
-The C<next> field supplies an alternative shipping mode to substitute
+The next field supplies an alternative shipping mode to substitute
 if the cost of the current one is zero.
 
 =item ZONE
@@ -2873,7 +2893,7 @@ The geographic qualification (if any) for this mode.
 =item PERL
 
 Perl code that is read and determines the criterion, not the cost. Use
-the C<cost> option with "f" as the prelim to supply Perl code to
+the cost option with "f" as the prelim to supply Perl code to
 determine cost.
 
 =item TOTAL
@@ -2906,21 +2926,21 @@ The return must be one of:
 
 The literal value quantity as the main criterion will simply count the
 number of items in the shopping cart and return it as the accumulated
-criteria. If using a database table field named C<quantity>, use the
-C<table::field> notation.
+criteria. If using a database table field named quantity, use the
+table::field notation.
 
 =item o <field name> or <table>::<field name>
 
 A valid database field (column) name as main criterion will cause the
 number of items in the shopping cart to be multiplied by the value of
 the field for each item to obtain the accumulated criteria. If the
-table is not supplied, defaults to the first C<ProductFiles> table.
+table is not supplied, defaults to the first ProductFiles table.
 
 =item o n.nn
 
 Where B<n.nn> is any number, it will be directly used as the
 accumulated criteria. This can be effectively returned from a Perl
-subroutine or Interchange C<[calc][item-list] ... [/item-list][/calc]>
+subroutine or Interchange [calc][item-list] ... [/item-list][/calc]
 to create custom shipping routines.
 
 =back
@@ -2932,7 +2952,7 @@ qualifier matching strings.
 =head2 Shipping Calculation Modes
 
 There are eight ways that shipping cost may be calculated. The method
-used depends on the first character of the C<cost> field in the
+used depends on the first character of the cost field in the
 shipping database.
 
 =over 4
@@ -2944,13 +2964,13 @@ directly as the shipping cost.
 
 =item e
 
-If the first character is an C<e>, a cost of zero is returned and an
-error message is placed in the session value C<ship_message> (i.e.,
-C<[data session ship_message]> or $Session->{ship_message}).
+If the first character is an e, a cost of zero is returned and an
+error message is placed in the session value ship_message (i.e.,
+[data session ship_message] or $Session->{ship_message}).
 
 =item f
 
-If the character C<f> is the first, Interchange will first interpret
+If the character f is the first, Interchange will first interpret
 the text for any Interchange tags and then interpret the result as a
 formula. It is read as Perl code; the entire set of Interchange
 objects may be referenced with the code.
@@ -2972,7 +2992,7 @@ if want to do the hundreds available, it is best done on-the-fly.
 
 =item x
 
-If an C<x> is first, a number is expected and is applied as a fixed
+If an x is first, a number is expected and is applied as a fixed
 multiplier for the accumulated criterion (@@TOTAL@@).
 
 =item A-Z
@@ -2989,10 +3009,10 @@ named directly).
 
 =item 1.
 
-The base code is selected by reading the value of C<mv_shipmode> in
+The base code is selected by reading the value of mv_shipmode in
 the user session. If it has not been explicitly set, either by means
 of the DefaultShipping directive or by setting the variable on a form
-(or in an order profile), it will be C<default>.
+(or in an order profile), it will be default.
 
 The mv_shipmode must be in the character class [A-Za-z0-9_]. If there
 are spaces, commas, or nulls in the value, they will be read as
@@ -3039,28 +3059,28 @@ If the cost is fixed, it is simply added.
 
 =item 5.
 
-If the cost field begins with an C<x>, the cost is multiplied by the
+If the cost field begins with an x, the cost is multiplied by the
 accumulated criterion, i.e., price, weight, etc.
 
 =item 6.
 
-If the cost field begins with C<f>, the formula following is applied.
+If the cost field begins with f, the formula following is applied.
 Use @@TOTAL@@ as the value of the accumulated criterion.
 
 =item 7.
 
-If the cost field begins with C<u> or a single letter from A-Z, a
+If the cost field begins with u or a single letter from A-Z, a
 UPS-style lookup is done.
 
 =item 8.
 
-If the cost field begins with C<s>, a Perl subroutine call is made.
+If the cost field begins with s, a Perl subroutine call is made.
 
 =item 9.
 
-If the cost field begins with C<e>, zero cost is returned and an error
-placed in the session B<ship_message> field, available as C<[data
-session ship_message]>.
+If the cost field begins with e, zero cost is returned and an error
+placed in the session B<ship_message> field, available as [data
+session ship_message].
 
 =back
 
@@ -3098,10 +3118,10 @@ PriceDivide=0 upsca  UPS/CA   weight            0   150    C upsca
 
 =item global
 
-This is a global option setting, called out by the C<g> at the
+This is a global option setting, called out by the g at the
 beginning. PriceDivide tells the shipping routines to multiply all
 shipping settings by the PriceDivide factor, except those explicitly
-set differently with the C<o> individual modifier. This allows
+set differently with the o individual modifier. This allows
 currency conversion. (Currently the only option is PriceDivide.)
 
 =item rpsg
@@ -3115,9 +3135,9 @@ total cost of 14.25.
 
 =item usps
 
-The next mode, C<usps>, is a more complicated formula using price as
+The next mode, usps, is a more complicated formula using price as
 the criteria. If the total price of all items in the shopping cart
-(same as C<[subtotal]> without quantity price breaks in place) is from
+(same as [subtotal] without quantity price breaks in place) is from
 1 to 50, the cost will be 7.00 plus 10 percent of the order. If the
 total is from 50.01 to 100, the cost will be 12.00 plus 9 percent of
 the order total. If the cost is 100.01 or greater, 5 percent of the
@@ -3125,7 +3145,7 @@ order total will be used as the shipping cost.
 
 =item upsg
 
-The next, C<upsg>, is a special case. It specifies a UPS lookup based
+The next, upsg, is a special case. It specifies a UPS lookup based
 on the store's UPS zone and two required values (and two optional
 arguments):
 
@@ -3139,8 +3159,8 @@ arguments):
 eight
 
 If the cost returned is zero, the reason will be placed as an error
-message in the session variable ship_message (available as C<[data
-session ship_message]>).
+message in the session variable ship_message (available as [data
+session ship_message]).
 
 UPS weights are always rounded up if any fraction is present.
 
@@ -3149,15 +3169,15 @@ must be present. That is a standard UPS document specific to the
 retailer's area that must be obtained from UPS. It is entered into and
 made available to Interchange in TAB-delimited format. (As of March
 1997, use the standard .csv file distributed by UPS on their Web site
-at C<www.ups.com>.) Specify it with the UpsZoneFile directive. It is
-usually named something like C<NNN.csv>, where NNN is the first three
+at www.ups.com.) Specify it with the UpsZoneFile directive. It is
+usually named something like NNN.csv, where NNN is the first three
 digits of the originating zip code. If placed in the products
 directory, the directive would look like:
 
     UPSZoneFile  products/450.csv
 
 Second, obtain the cost tables from UPS (again, get them from
-C<www.ups.com>) and place them into an Interchange database. That
+www.ups.com) and place them into an Interchange database. That
 database, its identifier specified with the first argument (Ground in
 the example) of the cost specification, is consulted to determine the
 UPS cost for that weight and rate schedule.
@@ -3169,8 +3189,8 @@ In the example below, use a database specification like:
 A simple shipping cost qualification can be appended to a UPS lookup.
 If any additional parameters are present after the five usual ones
 used for UPS lookup, they will be interpreted as a Perl subroutine
-call. The syntax is the same as if it was encased in the tag C<[perl
-sub] [/perl]>, but the following substitutions are made prior to the
+call. The syntax is the same as if it was encased in the tag [perl
+sub] [/perl], but the following substitutions are made prior to the
 call:
 
     @@COST@@  is replaced with whatever the UPS lookup re    @@GEO@@   is replaced with the zip (or other geo code)
@@ -3190,27 +3210,27 @@ that can be encoded in the file.
 =item upsca
 
 The next entry is just like the UPS definition except it defines a
-different lookup zone file (C<products/can.csv>) and uses a different
-database, C<upsca>. It also disables the global PriceDivide option for
+different lookup zone file (products/can.csv) and uses a different
+database, upsca. It also disables the global PriceDivide option for
 itself only, not allowing currency conversion. Otherwise, the process
 is the same.
 
 Up to 27 different lookup zones can be defined in the same fashion. If
-one of the cost lines (the last field) in the C<shipping.asc> file
-begins with a C<c>, it configures another lookup zone which must be
-lettered from C<A to Z>.  It takes the format:
+one of the cost lines (the last field) in the shipping.asc file
+begins with a c, it configures another lookup zone which must be
+lettered from A to Z.  It takes the format:
 
     c X name file* length* multiplier*
 
-where X is the letter from C<A-Z>. The name is used internally as an
-identifier and must be present. The optional C<file> is relative to
-the catalog root (like C<UpsZoneFile> is). If it is not present, the
-file equal to C<name> in the products directory (ProductDir) will be
-used as the zone file. If the optional digit C<length> is present,
+where X is the letter from A-Z. The name is used internally as an
+identifier and must be present. The optional file is relative to
+the catalog root (like UpsZoneFile is). If it is not present, the
+file equal to name in the products directory (ProductDir) will be
+used as the zone file. If the optional digit length is present,
 that determines the number of significant digits in the passed
 postal/geo code.
 
-When the optional C<multiplier> is present, the weight is multiplied
+When the optional multiplier is present, the weight is multiplied
 by it before doing the table lookup. This allows shipping weights in
 pounds or kilograms to be adapted to a table using the opposite as the
 key. Remember, the match on weight must be exact, and Interchange
@@ -3222,7 +3242,7 @@ following:
     c U UPS products/450.csv 3 1
 
 The only difference is that the beginning code to call the lookup is
-upper-case C<U> instead of lower-case C<u>.
+upper-case U instead of lower-case u.
 
 =back
 
@@ -3234,13 +3254,13 @@ need to be in a format like UPS distributes for US shippers.
 The zone file is a file that is usually specific to the originating
 location. For US shippers shipping to US locations, it is named for
 the first three digits of the originating zip code with a CSV
-extension. For example, C<450.csv>.
+extension. For example, 450.csv.
 
 It has a format similar to:
 
    low - high, zone,zone,zone,zone
 
-The C<low> entry is the low bound of the geographic location; C<high>
+The low entry is the low bound of the geographic location; high
 is the high bound. (By geographic location, the zip code is meant.) If
 the first digits of the zip code, compared alphanumerically, fall
 between the low and high values, that zone is used as the column name
@@ -3259,16 +3279,16 @@ DestZIP,Ground,3DaySelect,2ndDayAir,2ndDayAirAM,NextDayAirSaver,NextDayAir
 
 Therefore, the zone column (shipping type) that would be used for UPS
 ground would be "Ground," and that is what the database should be
-named. To support the above, use a C<shipping.asc> line that reads:
+named. To support the above, use a shipping.asc line that reads:
 
    upsg  UPS Ground  weight  0  150  u Ground [default zip 983]
 
-and a C<catalog.cfg> database callout of:
+and a catalog.cfg database callout of:
 
    Database  Ground  Ground.csv  CSV
 
 These column names can be changed as long as they correspond to the
-C<identifier> of the rate database.
+identifier of the rate database.
 
 The rate database is a standard Interchange database. For U.S.
 shippers, UPS distributes their rates in a fairly standard
@@ -3308,7 +3328,7 @@ It will need to be changed to:
    G0M-G0S, 51
    G0T-G0W, 54
 
-Match it with a C<canstnd> CSV database that looks like this:
+Match it with a canstnd CSV database that looks like this:
 
    Weight,51,52,53,54,55,56
    1,7.00,7.05,7.10,11.40,11.45,11.50
@@ -3339,20 +3359,20 @@ qualifications for shipping, as in:
 upsg   UPS Ground   AK HI                  0     150   u Ground [value zip] 12.00
 upsg   UPS Ground                          0     150   u Ground [value zip] 3.00
 
-If C<upsg> is the mode selected, the value of the user session
-variable C<state> is examined to see if it matches the geographic
-qualification on a whole-word boundary. If it is C<AK> or C<HI>, UPS
+If upsg is the mode selected, the value of the user session
+variable state is examined to see if it matches the geographic
+qualification on a whole-word boundary. If it is AK or HI, UPS
 Ground with an adder of 12 will be selected. If it "falls through,"
 UPS Ground with an adder of 3 will be selected.
 
 =head2 Handling Charges
 
 Additional handling charges can be defined in the shipping file by
-setting the form variable C<mv_handling> to a space, comma, or
+setting the form variable mv_handling to a space, comma, or
 null-separated set of valid shipping modes. The lookup and charges are
 created in the same fashion, and the additional charges are added to
 the order. (The user is responsible for displaying the charge on the
-order report or receipt with a C<[shipping handling]> tag, or the
+order report or receipt with a [shipping handling] tag, or the
 like.) All of the shipping modes found in mv_handling will be applied.
 If multiple instances are found on a form, the accordingly
 null-separated values will all be applied. NOTE: This should not be
@@ -3371,12 +3391,12 @@ To only process a handling charge once, do the following:
    [/item-list]
 
 A non-blank/non-zero value in the database field will trigger Perl
-code which will only set C<mv_handling> once.
+code which will only set mv_handling once.
 
 =head2 Default Shipping Mode
 
-If a default shipping mode other than C<default> is desired, enter it
-into the C<DefaultShipping> directive:
+If a default shipping mode other than default is desired, enter it
+into the DefaultShipping directive:
 
    DefaultShipping     upsg
 
@@ -3385,11 +3405,11 @@ user starts the order process, if it is put in the form:
 
  <INPUT TYPE=RADIO NAME=mv_shipmode VALUE=upsg [checked mv_shipmode upsg]>
 
-To force a choice by the user, make C<mv_shipmode> a required form
+To force a choice by the user, make mv_shipmode a required form
 variable (with RequiredFields or in an order profile) and set
-C<DefaultShipping> to zero.
+DefaultShipping to zero.
 
-=head1 USER DATABASE
+=head1 User Database
 
 Interchange has a user database function which allows customers to
 save any pertinent values from their session. It also allows the
@@ -3398,15 +3418,15 @@ controlling access to pages and databases on a user-by-user basis.
 
 The database field names in the user database correspond with the form
 variable names in the user session. If there is a column named
-C<address>, when the user logs in the contents of that field will be
-placed in the form variable C<address>, and will be availabe for
-display with C<[value address]>. Similarly, the database value is
-available with C<[data table=userdb column=address key=username]>.
+address, when the user logs in the contents of that field will be
+placed in the form variable address, and will be availabe for
+display with [value address]. Similarly, the database value is
+available with [data table=userdb column=address key=username].
 
 The ASCII file for the database will not reflect changes unless the
-file is exported with C<[tag export userdb][/tag]>. It is not
+file is exported with [tag export userdb][/tag]. It is not
 advisable to edit the ASCII file, as it will overwrite the real data
-that is in the DBM table. User logins and changes would be lost. NOTE:
+that is in the DBM table. User logins and changes would be lost. Note:
 This would not happen with SQL, but editing the ASCII file would have
 no effect. It is recommended that the NoImport configuration directive
 be set accordingly.
@@ -3460,9 +3480,9 @@ A few of those fields are special in naming, though all can be changed
 via an option. A couple of the fields are reserved for Interchange's
 use.
 
-B<IMPORTANT NOTE: >If not running with PGP or other encryption for
-credit card numbers, which is never recommended, it is important that
-the mv_credit_card_info field be removed from the database.
+B<Note: >If not running with PGP or other encryption for credit card
+numbers, which is never recommended, it is important that the
+mv_credit_card_info field be removed from the database.
 
 The special database fields are:
 
@@ -3479,8 +3499,8 @@ The special database fields are:
 
 If not defined, the corresponding capability is not available.
 
-B<Note: >The fields C<accounts>, C<address_book>, C<carts>, and
-C<preferences> should be defined as a BLOB type, if using SQL. This is
+B<Note: >The fields accounts, address_book, carts, and
+preferences should be defined as a BLOB type, if using SQL. This is
 also suggested for the acl fields if those lists could be large.
 
 Reserved fields include:
@@ -3491,7 +3511,7 @@ Reserved fields include:
 
 =head2 The [userdb ...] Tag
 
-Interchange provides a C<[userdb ...]> tag to access the UserDB
+Interchange provides a [userdb ...] tag to access the UserDB
 functions.
 
  [userdb
@@ -3515,7 +3535,7 @@ functions.
 
 * Optional
 
-It is normally called in an C<mv_click> or C<mv_check> setting, as in:
+It is normally called in an mv_click or mv_check setting, as in:
 
    [set Login]
    mv_todo=return
@@ -3530,9 +3550,9 @@ It is normally called in an C<mv_click> or C<mv_check> setting, as in:
    </FORM>
 
 There are several global parameters that apply to any use of the
-C<userdb> functions. Most importantly, by default, the database table
+userdb functions. Most importantly, by default, the database table
 is set to be userdb. If another table name must be used, include a
-C<database=table> parameter with any call to C<userdb>. The global
+database=table parameter with any call to userdb. The global
 parameters (default in parens):
 
    database     Sets user database table (userdb)
@@ -3559,41 +3579,41 @@ password. This is best for security, but the passwords in the user
 database will not be human readable.
 
 If no critical information is kept and Interchange administration is
-not done via the C<UserDB> capability, use the C<UserDB> directive
+not done via the UserDB capability, use the UserDB directive
 (described below) to set encryption off by default:
 
    UserDB   default   crypt   0
 
-Encryption can still be set on by passing C<crypt=1> with any call to
-a C<new_account>, C<change_pass>, or C<login> call.
+Encryption can still be set on by passing crypt=1 with any call to
+a new_account, change_pass, or login call.
 
 =head2 Setting Defaults with the UserDB Directive
 
-The C<UserDB> directive provides a way to set defaults for the user
+The UserDB directive provides a way to set defaults for the user
 database. For example, to save and recall the scratch variable
-C<tickets> in the user database instead of the form variable
-C<tickets>, set:
+tickets in the user database instead of the form variable
+tickets, set:
 
    UserDB   default   scratch  tickets
 
-That makes every call to C<[userdb function=login]> equivalent to
-C<[userdb function=login scratch=tickets]>.
+That makes every call to [userdb function=login] equivalent to
+[userdb function=login scratch=tickets].
 
-To override that default for one call only, use C<[userdb
-function=login scratch="passes"]>.
+To override that default for one call only, use [userdb
+function=login scratch="passes"].
 
-To log failed access authorizations, set the C<UserDB> profile
-parameter C<log_failed> true:
+To log failed access authorizations, set the UserDB profile
+parameter log_failed true:
 
    UserDB  default  log_failed 1
 
 To disable logging of failed access authorizations (the default), set
-the C<UserDB> profile parameter C<log_failed> to 0:
+the UserDB profile parameter log_failed to 0:
 
    UserDB  default  log_failed 0
 
-The C<UserDB> directive uses the same key-value pair settings as the
-C<Locale> and C<Route> directives. If there are more than one set of
+The UserDB directive uses the same key-value pair settings as the
+Locale and Route directives. If there are more than one set of
 defaults, set them in a hash structure:
 
    UserDB  crypt_case  <<EOF
@@ -3617,7 +3637,7 @@ line by itself with no leading/trailing whitespace.
 
 The last one to be set becomes the default.
 
-The option C<profile> selects the set to use. For usernames and
+The option profile selects the set to use. For usernames and
 passwords to be case sensitive with no encryption, pass this call:
 
    [userdb function=new_account profile=case_crypt]
@@ -3628,7 +3648,7 @@ will be encrypted in the database.
 =head2 User Database Functions
 
 The user database features are implemented as a series of functions
-attached to the C<userdb> tag. The functions are:
+attached to the userdb tag. The functions are:
 
 =over 4
 
@@ -3637,18 +3657,18 @@ attached to the C<userdb> tag. The functions are:
 Active parameters: username, password, crypt, pass_field, ignore_case
 
 Log in to Interchange. By default, the username is contained in the
-form variable C<mv_username> and the password in C<mv_password>. If
-the login is successful, the session value C<username> (C<[data
-session username]>) will be set to the user name.
+form variable mv_username and the password in mv_password. If
+the login is successful, the session value username ([data
+session username]) will be set to the user name.
 
 This will recall the values of all non-special fields in the user
 database and place them in their corresponding user form variables.
 
-The C<CookieLogin> directive (catalog.cfg) allows users to save their
+The CookieLogin directive (catalog.cfg) allows users to save their
 username/password in a cookie. Expiration time is set by
-C<SaveExpire>, renewed every time they log in. To cause the cookie to
-be generated originally, the form variable C<mv_cookie_password> or
-C<mv_cookie_username> must be set in the login form. The former causes
+SaveExpire, renewed every time they log in. To cause the cookie to
+be generated originally, the form variable mv_cookie_password or
+mv_cookie_username must be set in the login form. The former causes
 both username and password to be saved, the latter just the username.
 
 =item logout
@@ -3660,21 +3680,21 @@ Log out of Interchange. No additional parameters are needed.
 Active parameters: username, password, verify, assign_username,
 username_mask, ignore_case
 
-Create a new account. It requires the C<username>, C<password>, and
-C<verify> parameters, which are by default contained in the form
-variables C<mv_username>, C<mv_password>, C<mv_verify> respectively.
+Create a new account. It requires the username, password, and
+verify parameters, which are by default contained in the form
+variables mv_username, mv_password, mv_verify respectively.
 
-If the C<assign_username> parameter is set, C<UserDB> will assign a
-sequential username. The C<counter> parameter can be used to set the
+If the assign_username parameter is set, UserDB will assign a
+sequential username. The counter parameter can be used to set the
 filename (must be absolute), or the default of
 CATALOG_DIR/etc/username.counter can be accepted. The first username
 will be "U0001" if the counter doesn't exist already.
 
-The C<ignore_case> parameter forces the username and password to lower
+The ignore_case parameter forces the username and password to lower
 case in the database, in effect rendering the username and password
 case-insensitive.
 
-If C<username_mask> is set to a valid Perl regular expression (without
+If username_mask is set to a valid Perl regular expression (without
 the surrounding / /), then any username containing a matching string
 will not be allowed for use. For example, to screen out order numbers
 from being used by a random user:
@@ -3684,15 +3704,15 @@ from being used by a random user:
 
 count
 
-The C<CookieLogin> directive (catalog.cfg) allows users to save their
+The CookieLogin directive (catalog.cfg) allows users to save their
 username/password in a cookie. Expiration time is set by
-C<SaveExpire>, renewed every time they log in. To cause the cookie to
-be generated originally, the form variable C<mv_cookie_password> or
-C<mv_cookie_username> must be set in the login form. The former causes
+SaveExpire, renewed every time they log in. To cause the cookie to
+be generated originally, the form variable mv_cookie_password or
+mv_cookie_username must be set in the login form. The former causes
 both username and password to be saved, the latter just the username.
 
 To automatically create an account for every order, set the following
-in the C<OrderReport> file:
+in the OrderReport file:
 
     [userdb function=new_a            username="[value mv_order_number]"
             password="[value zip]"
@@ -3712,9 +3732,9 @@ information or a shipping company tracking number.
 Active parameters: username, password, verify, oldpass
 
 Change the password on the currently logged-in account. It requires
-the C<username>, C<password>, C<verify>, and C<oldpass> parameters,
-which are by default contained in the form variables C<mv_username>,
-C<mv_password>, C<mv_verify>, C<mv_password_old> respectively.
+the username, password, verify, and oldpass parameters,
+which are by default contained in the form variables mv_username,
+mv_password, mv_verify, mv_password_old respectively.
 
 =item set_shipping
 
@@ -3741,8 +3761,8 @@ See Address Book below.
 Active parameters: ship_field
 
 Gets the names of shipping address book entries and places them in the
-variable C<address_book>. By default, it does not return the values.
-To have the values returned, set the parameter C<show> to 1, as in:
+variable address_book. By default, it does not return the values.
+To have the values returned, set the parameter show to 1, as in:
 
     [set name=shipping_nic         interpolate=1]
       [userdb function=get_shipping_names show=1]
@@ -3791,8 +3811,8 @@ Recall a saved shopping cart.
 
     [userdb function=get_cart nickname=mom_birthday]
 
-Setting C<target> saves to a different shopping cart than the default
-main cart. The C<carts_field> controls the database field used for
+Setting target saves to a different shopping cart than the default
+main cart. The carts_field controls the database field used for
 storage.
 
 =item set_acl
@@ -3810,7 +3830,7 @@ To delete access, do:
 
     [userdb function=set_acl location=cartcfg/editcart delete=1]
 
-To display the setting at the same time as setting, use the C<show>
+To display the setting at the same time as setting, use the show
 attribute:
 
     [userdb function=set_acl location=cartcf/editcart show=1]
@@ -3843,7 +3863,7 @@ Sets a complex access control value. Takes the form:
 
 e_acl
 
-where mode is any value to be checked with C<check_file_acl>. As with
+where mode is any value to be checked with check_file_acl. As with
 the simple ACL, use delete=1 to delete the location entirely.
 
 =item check_file_acl, check_db_acl
@@ -3858,7 +3878,7 @@ value. Takes the form:
 
 b_acl
 
-where mode is any value to be checked with C<check_file_acl>. It will
+where mode is any value to be checked with check_file_acl. It will
 return true, if the mode string is contained within the entry for that
 location. For example:
 
@@ -3901,18 +3921,18 @@ values are included:
   mv_shipmode
 
 The first field is always the name of the form variable that contains
-the key for the entry. The values are saved with the C<[userdb
-function=set_shipping]> tag call, and are recalled with C<[userdb
-function=get_shipping]>. A list of the keys available is kept in the
-form value C<address_book>, suitable for iteration in an HTML select
+the key for the entry. The values are saved with the [userdb
+function=set_shipping] tag call, and are recalled with [userdb
+function=get_shipping]. A list of the keys available is kept in the
+form value address_book, suitable for iteration in an HTML select
 box or in a set of links.
 
-To get the names of the addresses, use the C<get_shipping_names>
+To get the names of the addresses, use the get_shipping_names
 function:
 
    [userdb function=get_shipping_names]
 
-By default, they are placed in the variable C<address_book>. Here is a
+By default, they are placed in the variable address_book. Here is a
 little snippet that builds a select box:
 
    <FORM ACTION="[process-target]" METHOD=POST>
@@ -3926,7 +3946,7 @@ little snippet that builds a select box:
 
 The same principle works with accounts, carts, and preferences.
 
-To restore a cart based on the above, put in an C<mv_check> routine:
+To restore a cart based on the above, put in an mv_check routine:
 
    [set Recall Shipping]
    mv_todo=return
@@ -3934,20 +3954,20 @@ To restore a cart based on the above, put in an C<mv_check> routine:
    [userdb function=get_shipping nickname="[value s_nickname]"]
    [/set]
 
-When the C<mv_check> variable is encountered, the contents of the
-scratch variable C<Recall Shipping> are processed and the shipping
+When the mv_check variable is encountered, the contents of the
+scratch variable Recall Shipping are processed and the shipping
 address information inserted into the user form values. This is
 destructive of any current values of those user session variables, of
 course.
 
-To change the fields that are recalled or saved, use the C<shipping>
+To change the fields that are recalled or saved, use the shipping
 parameter:
 
    [userdb function=get_shipping
            nickname=city_and_state
            shipping="city state"]
 
-Only the values of the C<city> and C<state> variables will be
+Only the values of the city and state variables will be
 replaced.
 
 =head2 Accounts Book
@@ -3974,9 +3994,9 @@ default these form values are included:
   mv_credit_card_exp_year
   mv_credit_card_info
 
-The values are saved with the C<[userdb function=set_billing]> tag
-call, and are recalled with C<[userdb function=get_billing]>. A list
-of the keys available is kept in the form value C<accounts>, suitable
+The values are saved with the [userdb function=set_billing] tag
+call, and are recalled with [userdb function=get_billing]. A list
+of the keys available is kept in the form value accounts, suitable
 for iteration in an HTML select box or in a set of links.
 
 =head2 Preferences
@@ -3990,8 +4010,8 @@ default, the following fields:
    fax_order
    email_copy
 
-The field C<p_nickname> acts as a key to select the preference set. To
-change the values that are included with the C<preferences> parameter:
+The field p_nickname acts as a key to select the preference set. To
+change the values that are included with the preferences parameter:
 
    [userdb function=set_preferences
            preferences="email_copy email fax_order fax"]
@@ -4003,30 +4023,30 @@ or in catalog.cfg:
 =head2 Carts
 
 The contents of shopping carts may be saved or recalled in much the
-same fashion. See the Simple demo application C<ord/basket.html> page
+same fashion. See the Simple demo application ord/basket.html page
 for an example.
 
 =head2 Controlling Page Access With UserDB
 
 Interchange can implement a simple access control scheme with the user
 database. Controlled pages must reside in a directory which has a file
-named C<.access> that is zero bytes in length. (If it is more than 0
+named .access that is zero bytes in length. (If it is more than 0
 bytes, only the RemoteUser or MasterHost may access files in that
 directory.)
 
-Set the following variables in C<catalog.cfg>:
+Set the following variables in catalog.cfg:
 
    Variable   MV_USERDB_ACL_TABLE  userdb
    Variable   MV_USERDB_ACL_COLUMN acl
 
-The C<MV_USERDB_ACL_TABLE> is the table which controls access, and
-likewise the C<MV_USERDB_ACL_TABLE> names the column in that database
+The MV_USERDB_ACL_TABLE is the table which controls access, and
+likewise the MV_USERDB_ACL_TABLE names the column in that database
 which will be checked for authorization.
 
 The database entry should contain the complete Interchange-style page
 name of the page to be allowed. It will not match substrings.
 
-For example, if the user C<flycat> followed this link:
+For example, if the user flycat followed this link:
 
    <A HREF="[area cartcfg/master_edit]">Edit</A>
 
@@ -4053,21 +4073,508 @@ Access can be disallowed with:
 Of course, a pre-existing database with the ACL values will work as
 well. It need not be in the UserDB setup.
 
-=head1 FREQUENTLY ASKED QUESTIONS
+=head1 Tracking and Back-End Order Entry
 
-=head2 Does Interchange require SQL?
+Interchange allows the entry of orders into a system through one of
+several methods. The AsciiBackend capability allows submission of
+parameters to an external order entry script. Support for SQL allows
+the entry of orders directly into an SQL database. Orders can be
+written to an ASCII file. They can be formatted precisely for
+e-mail-based systems. The orders can be placed in a DBM file. Finally,
+embedded Perl allows completely flexible order entry, including
+real-time credit card verification and settlement.
 
-No. Interchange does not require SQL. If you have a small database
-with no particular desire to integrate your own tool set, you may be
-more comfortable using Interchange's internal database.
+=head2 ASCII Backup Order Tracking
 
-Bear in mind that the order management functions of Interchange will
-be slow and not as robust without SQL. SQL is strongly recommended for
-at least these three tables:
+If AsciiTrack is set to a legal file name (based in VendRoot unless
+it has a leading "/"). A copy of the order is saved and sent in an
+e-mail.
 
-       orderline
-       transactions
-       userdb
+If the file name string begins with a pipe "|," a program will be run
+and the output "piped" to that program. This allows easy back-end
+entry of orders with an external program.
+
+=head2 Database Tracking
+
+Once the order report is processed, the order is complete. Therefore,
+it is the ideal place to put Interchange tags that make order entries
+in database tables.
+
+A good model is to place a single record in a database summarizing the
+order and a series of lines that correspond to each line item in the
+order. This can be in the same database table. If the order number
+itself is the key for the summary, a line number can be appended to
+the order number to show each line of the order.
+
+The following would summarize a sample order number S00001 for part
+number 00-0011 and 99-102:
+
+   code     order_number part_number  quantity   price    shipping  tax
+   S00001   S00001                    3          2010     12.72     100.50
+   S00001-1 S00001       00-0011      2          1000     UPS       yes
+   S00001-2 S00001       99-102       1          10       UPS       yes
+
+Fields can be added where needed, perhaps with order status, shipping
+tracking number, address, customer number, or other information.
+
+The above is accomplished with Interchange's [import ....] tag
+using the convenient NOTES format:
+
+   [set import_status]
+   [import table=orders type=LINE continue=NOTES]
+
+   code: [value mv_order_number]
+   order_number: [value mv_order_number]
+   quantity: [nitems]
+   price: [subtotal noformat=1]
+   shipping: [shipping noformat=1]
+   tax: [salestax noformat=1]
+
+   [/import]
+
+   [item-list]
+   [import table=orders type=LINE continue=NOTES]
+
+   code: [value mv_order_number]-[item-increment]
+   order_number: [value mv_order_number]
+   quantity: [item-quantity]
+   price: [item-price noformat=1]
+   shipping: [shipping-description]
+   tax: [if-item-field nontaxable]No[else]Yes[/else][/if]
+
+   [/import][/item-list]
+
+=head2 Order Routing
+
+Interchange can send order emails and perform custom credit card
+charges and/or logging for each item. The Route directive is used to
+control this behavior, along with the mv_order_route item
+attribute.
+
+If no Route is in the catalog, Interchange uses a default "mail out
+the order and show a receipt" model.
+
+Routes are established with the Route directive, which is similar
+to the Locale directive. Each route is like a locale, so that
+key-value pairs can be set. Here is an example setting:
+
+   Route  mail  pgp_key         0x67798115
+   Route  mail  email           orders@akopia.com
+   Route  mail  reply           service@akopia.com
+   Route  mail  encrypt         1
+   Route  mail  encrypt_program "/usr/bin/pgpe -fat -q -r %s"
+   Route  mail  report          etc/report_mail
+
+B<Note: >Values with whitespace in them must be quoted.
+
+You can also set the route in a valid Perl hash reference string:
+
+   Route  mail <<EOR
+   {
+        pgp_key         => '0x67798115',
+        email           => 'orders@akopia.com',
+        reply           => 'service@akopia.com',
+        encrypt         => 1,
+        encrypt_program => q{/usr/bin/gpg -e -a -r '%s' --batch},
+        report          => 'etc/report_mail',
+  }
+  EOR
+
+This route would be used whenever the I<mail> route was called by one
+of the three possible methods:
+
+=over 4
+
+=item route called from master route
+
+Called via the cascade parameter from the master route. This is the
+way that most routes are called in Interchange's L<Foundation> demo.
+These routes treat the order as a whole.
+
+=item route set in item
+
+An item in the shopping cart has mail as the value in the attribute
+ mv_order_route. This method is item-specific to this item (or
+group of items in route mail).
+
+=item route set in the form variable mv_order_route
+
+By setting a value in the mv_order_route form variable, you can
+specify one or more routes to run. This is the deprecated method used
+in earlier Interchange 4.6.x and Minivend 4 routes. It will still work
+fine.
+
+=back
+
+The last route that is defined is the master route, by convention
+named I<main>. Besides setting the global behavior of the routing, it
+provides some defaults for other routes. For example, if
+encrypt_program is set there, then the same value will be the
+default for all routes. Most settings do not fall through.
+
+The attributes that can be set are:
+
+=over 4
+
+=item attach
+
+Determines whether the order report should be attached to the main
+order report e-mail. This is useful if certain items must be printed
+separately from others, perhaps for FAX to a fulfillment house.
+
+cascade
+
+A list of routes which should be pushed on the stack of routes to run,
+I<after all currently scheduled routes are done>. NOTE: cascades can
+cause endless loops, so only one setting is recommended, that being
+the main route.
+
+=item commit
+
+Perl code which should be performed on a route commit.
+
+=item commit_tables
+
+Tables that are to be pre-opened before running the Perl commit code.
+
+=item counter
+
+The location of a counter file which should be used instead of
+OrderCounter for this route. It will generate a different value for
+mv_order_number for the route. This is normally used to obtain
+unique order references for multi-vendor routing.
+
+=item credit_card
+
+Determines whether credit card encryption should be done for this
+order. Either this or encrypt should always be set.
+
+=item dynamic_routes
+
+If set in the L<master> route, will cause the L<RouteDatabase> to be
+checked for a route. If it exists, it will be read in and the database
+copy used instead of the static copy build at catalog configuration
+time. If set in a subsidiary route, that route will be ignored during
+catalog.cfg, and dynamic_routes must be active for it to be seen.
+
+=item email
+
+The email address(es) where the order should be sent. Set just like
+the MailOrderTo directive, which is also the default.
+
+=item encrypt
+
+Whether the entire order should be encrypted with the
+B<encrypt_program>. If credit_card is set, the credit card will
+first be encrypted, then the entire order encrypted.
+
+=item encrypt_program
+
+The encryption program incantaton which should be used. Set
+identically to the EncryptProgram directive, except that %s will be
+replaced with the pgp_key. Default is empty.
+
+=item errors_to
+
+Sets the Errors-To: e-mail header so that bounced orders will go to
+the proper address. Default is the same as MailOrderTo.
+
+=item expandable
+
+If set in the L<master> route, route settings will be expanded for ITL
+tags. No effect if the route is not the master.
+
+=item extended
+
+Extended route settings that take the form of an Interchange option
+list; normally a Perl hash reference that will be read. These settings
+always overwrite any that currently exist, regardless of the order in
+which they are specified. For example:
+
+        Route  main   extended    { email => 'milton@akopia.com' }
+
+=back
+        Route  main   email       papabear@minivend.com
+
+The ultimate setting of email will be milton@akopia.com.
+
+=over 4
+
+=item increment
+
+Whether the order number should be incremented as a result of this
+result. Default is not to increment, as the order number should
+usually be the same for different routes within the same customer
+order.
+
+=item individual_track
+
+A directory where individual order tracking files will be placed. The
+file name will correspond to the value of mv_order_number. This can
+be useful for batching orders via download.
+
+=item individual_track_ext
+
+The extension that will be added to the file name for
+individual_track. Must contain a period (.), if that is desired.
+
+   individual_track_ext     .pgp
+
+=back
+
+=over 4
+
+=item individual_track_mode
+
+A number representing the final permission mode for the
+individual_track file. Usually expressed in octal:
+
+   individual_track_mode    0444
+
+=back
+
+=over 4
+
+=item master
+
+If set, this route becomes the master route for supplant,
+dynamic_routes, errors_to, and expandable, and supplies the
+setting for receipt and the attach report.  Switching master
+in midstream is unlikely to be successful -- it should certainly be
+the first route in a cascade.
+
+=item payment_mode
+
+If this is set, enables a payment mode for the route. (Payment modes
+are also set in the Route directive.)
+
+=item pgp_cc_key
+
+The PGP/GPG key selector that is used to determine which public key is
+used for encryption of credit cards only. With PGP 5 and 6, see
+appropriate values by using the command pgpk -l. For GPG, use gpg
+--list-keys. Defaults to the value of L<pgp_key>.
+
+=item pgp_key
+
+The PGP key selector that is used to determine which public key is
+used for encryption. If pgp_cc_key is set, that key will be used
+for credit card encryption instead of pgp_key. With PGP 5 and 6,
+see appropriate values by using the command pgpk -l. For GPG, use
+gpg --list-keys. Defaults to the value of L<pgp_key>.
+
+=item profile
+
+The custom order profile which should be performed to check the order
+I<prior> to actually running the route. If it fails, the route will
+not be performed. See OrderProfile and mv_order_profile.
+
+=item receipt
+
+The receipt page that should be used for this routing. This only
+applies if supplant is set for the route, and that normally would only
+be in the default route.
+
+=item report
+
+The report page that should be used for this routing. If attach is
+defined, the contents of the report will be placed in a MIME
+attachment in the main order report.
+
+=item reply
+
+The Reply-To header that should be set. Default is the same as
+email.
+
+If there are only word characters (A-Za-z0-9 and underscore), it
+describes an Interchange variable name where the address can be found.
+
+=item rollback
+
+Perl code which should be performed on a route rollback.
+
+=item rollback_tables
+
+Tables that are to be pre-opened before running the Perl rollback
+code.
+
+=item supplant
+
+Whether the master route should supplant the main order report. If
+set, the AsciiTrack operation will use this route and the normal
+Interchange order e-mail sequence will not be performed. This is
+normally set in the master route.
+
+=item track
+
+The name of a file which should be used for tracking. If the
+supplant attribute is set, the normal order tracking will be used
+as well.
+
+=item track_mode
+
+A number representing the final permission mode for the track file.
+Usually expressed in octal:
+
+   track_mode    0444
+
+=back
+
+=over 4
+
+=item transactions
+
+A list of tables to put in transactions mode at the beginning of the
+route. Used to ensure that orders get rolled back if another route
+fails.
+
+The I<first> route to open a table must have this parameter, otherwise
+transactions will not work. If any route fails (except ones marked
+error_ok) then a rollback will be done on these tables. If all routes
+succeed, a commit will be performed at the end of all order routes.
+
+=back
+
+Individual item routing causes all items labeled with that route to be
+placed in a special sub-cart that will be used for the order report.
+This means that the [item-list] LIST [/item-list] will only contain
+those items, allowing operations to be performed on subsets of the
+complete order. The [subtotal], [salestax], [shipping],
+[handling], and [total-cost] tags are also affected.
+
+Here is an example of an order routing:
+
+   Route  HARD      pgp_key          0x67798115
+   Route  HARD      email            hardgoods@akopia.com
+   Route  HARD      reply            service@akopia.com
+   Route  HARD      encrypt          1
+   Route  HARD      report           etc/report_mail
+
+   Route  SOFT      email            ""
+   Route  SOFT      profile          create_download_link
+   Route  SOFT      empty            1
+
+   Route  mail      pgp_key          0x67798115
+   Route  mail      email            orders@akopia.com
+   Route  mail      reply            service@akopia.com
+   Route  mail      encrypt          1
+   Route  mail      report           etc/report_all
+
+   Route  user      error_ok         1
+   Route  user      email            email
+   Route  user      reply            service@akopia.com
+   Route  user      report           etc/user_copy
+
+   Route  log       empty            1
+   Route  log       report           etc/log_transaction
+   Route  log       transactions     "transactions orderline inventory"
+   Route  log       track            logs/log
+
+   Route  main      supplant         1
+   Route  main      receipt          etc/receipt.html
+   Route  main      master           log mail user
+   Route  main      cascade          log mail user
+   Route  main      encrypt_program  "/usr/bin/gpg -e -a r '%s' --batch"
+
+
+This will have the following behavior:
+
+=over 4
+
+=item Order
+
+The master order route is I<main>, the last one defined. It cascades
+the routes I<log>, I<mail>, and I<user>, which means they will run in
+that order at the completion of the I<main> route. The individual item
+routes HARD and SOFT, if applicable, will run before those.
+
+=item Transactions
+
+The route I<log> specifies the tables that will be put in transaction
+mode, in this case transactions orderline, and inventory.
+
+=item Failure
+
+All order routes must succeed except I<user>, which has error_ok
+set to 1.
+
+=item Encryption The I<mail> order route and the HARD order route will be sent by email, and encrypted against different GPG key IDs. They will get their encrypt_program setting from the main route.
+
+=back
+
+To set the order routing for individual items, some method of
+determining their status must be made and the mv_order_route
+attribute must be set. This could be set at the time of the item being
+placed in the basket, or have a database field called goods_type
+set to the appropriate value. The following example uses a Perl
+routine on the final order form:
+
+  [perl table=products]
+     my %route;
+     my $item;
+     foreach $item (@{$Items}) {
+         my $code = $item->{code};
+         my $keycode = $Tag->data('products', 'goods_type', $code);
+         $item->{mv_order_route} = $keycode;
+     }
+     return;
+  [/perl]
+
+Now the individual items are labeled with a mv_order_route value
+which causes their inclusion in the appropriate order routing.
+
+Upon submission of the order form, any item labeled HARD will be
+accumulated and sent to the e-mail address hardgoods@akopia.com,
+where the item will be pulled from inventory and shipped.
+
+Any item labeled SOFT will be passed to the order profile
+create_download_link, which will place it in a staging area for
+customer download. (This would be supported by a link on the receipt,
+possibly by reading a value set in the profile).
+
+=head1 SSL Support
+
+Interchange has several features that enable secure ordering via SSL
+(Secure Sockets Layer). Despite their mystique, SSL servers are
+actually quite easy to operate. The difference between the standard
+HTTP server and the SSL HTTPS server, from the standpoint of the user,
+is only in the encryption and the specification of the URL; https:
+is used for the URL protocol specification instead of the usual http:
+designation.
+
+B<IMPORTANT NOTE: >Interchange attempts to perform operations
+securely, but no guarantees or warranties of any kind are made! Since
+Interchange comes with Perl source, it is possible to modify the
+program to create security problems. One way to minimize this
+possibility is to record digital signatures, using MD5 or PGP, of
+interchange, interchange.cfg, and all modules included in
+Interchange. Check them on a regular basis to ensure they have not
+been changed.
+
+Interchange uses the SecureURL directive to set the base URL for
+secure transactions, and the VendURL directive for normal
+non-secure transactions. Secure URLs can be enabled for forms through
+a form action of [process-target secure=1]. An individual page can
+be displayed via SSL with [page href=mvstyle_pagename secure=1]. A
+certain page can be set to be always secure with the AlwaysSecure
+catalog.cfg directive.
+
+Interchange incorporates additional security for credit card numbers.
+The field mv_credit_card_number will not ever be written to disk.
+
+To enable automated encryption of the credit card information, the
+directive CreditCardAuto needs to be defined as Yes.
+EncryptProgram also needs to be defined with some value, one which
+will, hopefully, encrypt the number. PGP is now recommended above all
+other encryption program. The entries should look something like:
+
+ CreditCardAuto   Yes
+ EncryptProgram   /usr/bin/pgpe -fat -r sales@company.com
+
+See CreditCardAuto for more information on how to set the form
+variables.
+
+=head1 Frequently Asked Questions
 
 =head2 I can't get SQL to work: Undefined subroutine &Vend::Table::DBI::create ...
 
@@ -4083,7 +4590,7 @@ install it.
 =item No DBI.
 
 You must install Perl's DBI module before using Interchange with SQL.
-You can see where to get it at C<http://www.cpan.org>, or try:
+You can see where to get it at http://www.cpan.org, or try:
 
     perl -MCPAN -e 'install DBI'
 
@@ -4091,7 +4598,7 @@ You can see where to get it at C<http://www.cpan.org>, or try:
 
 You must install the specific Perl DBD module for your database before
 using Interchange with SQL. You can see where to get it at
-C<http://www.cpan.org>, or try:
+http://www.cpan.org, or try:
 
     perl -MCPAN -e 'install DBD::XXXXX'
 
@@ -4118,17 +4625,17 @@ If you can't make this script run without error:
 
  DBI;
 
-Then you don't have one of the above, and Interchange will never run a
-SQL type.
+Then you don't have one of the above, and Interchange can't use an SQL
+database until you get one installed.
 
 =item I don't like the column types that Interchange defines!
 
-They can be changed. See the C<simple/mysql> directory for some
-examples under MySQL.
+They can be changed. See the foundation/dbconf/mysql directory for
+some examples under MySQL.
 
 =item I change the ASCII file, but the table is not updated. Why?
 
-Interchange writes an empty file C<TABLE.sql> (where TABLE is the name
+Interchange writes an empty file TABLE.sql (where TABLE is the name
 of the table). When this is present, Interchange will never update the
 table from disk.
 
@@ -4138,24 +4645,24 @@ restart the catalog (Apply Changes) before they will be picked up.
 =item Why do I even need an ASCII file?
 
 Interchange wants some source for column names initially. If you don't
-want to have one, just create a C<TABLENAME.sql> file in the
-C<products> directory. For example, if you have this:
+want to have one, just create a TABLENAME.sql file in the
+products directory. For example, if you have this:
 
     Database products products.txt dbi:mysql:test_minivend
 
-Then create a file C<products/products.sql>.
+Then create a file products/products.sql.
 
 \For:
 
     Database pricing pricing.txt dbi:mysql:test_minivend
 
-Create a file C<products/pricing.sql>. .
+Create a file products/pricing.sql. .
 
 =item Interchange overwrites my predefined table!
 
-Yes, it will if you don't create a file called C<TABLENAME.sql>, where
-C<TABLENAME> is the name of the Interchange table. If you want this to
-happen by default, then set C<NoImport TABLENAME>.
+Yes, it will if you don't create a file called TABLENAME.sql, where
+TABLENAME is the name of the Interchange table. If you want this to
+happen by default, then set NoImport TABLENAME.
 
 =back
 
@@ -4167,7 +4674,7 @@ ISP or UNIX system.
 
 However, you can turn it around.  Once you have created a MySQL or
 other SQL database on the UNIX machine, you may then obtain the
-Windows ODBC driver for the database (mySQL has a package called
+Windows ODBC driver for the database (MySQL has a package called
 myODBC) and use the UNIX database as a data source for your PC-based
 database program.
 
@@ -4177,28 +4684,28 @@ Here is a quick procedure that might get you started:
 
 =item *
 
-Get mySQL from:
+Get MySQL from:
 
-    http://www.mysql.com
+    http://www.mysql.com/
 
 Install it on your UNIX box. On LINUX, it is as easy as getting the
 RPM distribution:
 
     http://www.mysql.com/rpm/
 
-You install it by typing, as root, C<rpm -i mysql-3.XX.XX.rpm>. If you
+You install it by typing, as root, rpm -i mysql-3.XX.XX.rpm. If you
 are not root, you will have to build the source distribution.
 
 =item *
 
-To avoid permissions problems for your testing, stop the mysql daemon
+To avoid permissions problems for your testing, stop the MySQL daemon
 and allow global read-write access with:
 
     mysqladmin sh    safe_mysqld --skip-grant-tables &
 
 tdown
 
-Obviously, you will want to study mySQL permissions and set up some
+Obviously, you will want to study MySQL permissions and set up some
 security pretty quickly. It has excellent capability in that area, and
 the FAQ will help you get over the hurdles.
 
@@ -4226,208 +4733,22 @@ Make an SQL query to set up a table, for example:
 
 =item *
 
-Get and install myODBC, also from the MySQL site (use a mirror):
+Get and install myODBC, also from the MySQL site:
 
-    http://www.mysql.com
+    http://www.mysql.com/
 
 You install this package on your Windows 95 or NT box. It is a simple
 setup.exe process which leads you to the control panel for setting up
-an ODBC data source.  Set up a data source named C<test_odbc> that
-points to the database C<test_odbc> on the UNIX box. You will need to
+an ODBC data source. Set up a data source named test_odbc that
+points to the database test_odbc on the UNIX box. You will need to
 know the host name and the port (usually 3306).
 
 =item *
 
-With MS-Access, you can then open a blank database and select:
+With Microsoft Access, you can then open a blank database and select:
 File/Get External Data/Link Tables. Select File Type of 'ODBC
 databases' and the proper data source, and you should have access to
 the database residing on the UNIX side.
 
-=back
-
-=head1 INTERCHANGE DATABASE USERTAGS
-
-=head2 Data
-
-=over 4
-
-=item
-
-Named Parameters: [data table=db_table column=column_name key=key
-filter=``uc|lc|name|namecase|no_white|etc.''* append=1* value=``value
-to set to''* increment=1* ]
-
-Positional parameters: [data db_table column key]
-
-The attribute hash reference is passed to the subroutine after the
-parameters as the last argument. This may mean that there are
-parameters not shown here.
-
-Must pass named parameter interpolate=1 to cause interpolation.
-
-Invalidates cache: no
-
-Called Routine:
-
-ASP/perl tag calls:
-
-   $Tag-       {
-        table => VALUE,
-        field => VALUE,
-        key => VALUE,
-       }
-   )
-
-data(
-
-OR
-
-   $Tag->data($table, $field, $key, $ATTRHASH);
-
-Attribute aliases:
-
-           base ==>           code ==> key
-           col ==> field
-           column ==> field
-           database ==> table
-           name ==> field
-           row ==> key
-
-table
-
-Returns the value of the field in a database table, or (DEPRECATED)
-from the session namespace. If the optional value is supplied, the
-entry will be changed to that value. If the option increment* is
-present, the field will be  automatically incremented with the value
-in value. Use negative numbers in value to decrement. The append
-attribute causes the value to be appended. The filter attribute is a
-set of Interchange filters that are applied to the data 1) after it is
-read; or 2) before it is placed in the table.
-
-If a DBM-based database is to be modified, it must be flagged writable
-on the page calling the write tag. Use [tag flag write]products[/tag]
-to mark the products database writable, for example. This must be done
-before ANY access to that table.
-
-DEPRECATED BEHAVIOR: (replace with session tag). In addition, the
-[data ...]  tag can access a number of elements in the Interchange
-session database:
-
-    accesses           Accesses within the last 30 s    arg                The argument passed in a [page ...] or [area ...] tag
-    browser            The user browser string
-    cybercash_error    Error from last CyberCash operation
-    cybercash_result   Hash of results from CyberCash (access with usertag)
-    host               Interchange's idea of the host (modified by DomainTail)
-    last_error         The last error from the error logging
-    last_url           The current Interchange path_info
-    logged_in          Whether the user is logged in (add-on UserDB feature)
-    pageCount          Number of unique URLs generated
-    prev_url           The previous path_info
-    referer            HTTP_REFERER string
-    ship_message       The last error messages from shipping
-    source             Source of original entry to Interchange
-    time               Time (seconds since Jan 1, 1970) of last access
-    user               The REMOTE_USER string
-    username           User name logged in as (UserDB feature)
-
-conds
-
-=back
-
-B<Note: >Databases will hide session values, so don't name a database
-`session''. or you won't be able to use the [data ...] tag to read
-them. Case is sensitive, so in a pinch you could call the database
-``Session'', but it would be better not to use that name at all.
-
-=head2 db_date
-
-   # [db-date table f   #
-   # This tag returns the last-modified time of a database table,
-   # 'products' by default. Accepts a POSIX strftime value for
-   # date format; uses '%A %d %b %Y' by default.
-   #
-   UserTag  db-date  Order table format
-   UserTag  db-date  PosNumber 2
-   UserTag  db-date  Routine <<EOF
-   sub {
-       my ($db, $format) = @_;
-       my ($dbfile, $mtime);
-
-       # use defaults if necessary
-       $db = 'products' unless $db;
-       $format = '%A %d %b %Y' unless $format;
-
-       # build database file name
-       $dbfile = $Vend::Cfg->{ProductDir} . '/'
-               . $Vend::Cfg->{Database}{$db}{'file'};
-
-       # get last modified time
-       $mtime = (stat ($dbfile))[9];
-
-       if (defined ($mtime)) {
-               return POSIX::strftime($format, localtime($mtime));
-       } else {
-               logError ("Couldn't stat $dbfile: $!\n");
-       }
-   }
-   EOF
-
-rmat]
-
-=head2 Search_region
-
-=over 4
-
-=item
-
-Named Parameters: [search_region arg="arg"]
-
-Positional Parameters: [search_region arg]
-
-The attribute hash reference is passed after the parameters but before
-the container text argument. This may mean that there are parameters
-not shown here.
-
-Must pass named parameter interpolate=1 to cause interpolation.
-
-This is a container tag, i.e. [search_region] FOO [/search_region].
-Nesting: NO
-
-Invalidates cache: no
-
-Called Routine:
-
-ASP/perl tag calls:
-
-    $Tag->search_r        {
-         arg => VALUE,
-        },
-        BODY
-    )
-
-gion(
-
-OR
-
-    $Tag->search_region($arg, $ATTRHASH, $BODY);
-
-Attribute aliases:
-
-            args =            params ==> arg
-            search ==> arg
-
-> arg
-
-
-=over 8
-
-=item *
-
-Akopia and Interchange are registered trademarks of Akopia, Inc. All
-other product names are trademarks or registered trademarks of their
-respective manufacturers. This version of the document supersedes any
-and all previous versions.
-
-=back
 =back
 

@@ -1,9 +1,10 @@
+
 [calc]
 	if ( $CGI->{showarchive} ) {
 		delete $Values->{showpending};
 		$Values->{showarchive} = 1;
 		$Scratch->{archive_sense} = 'eq';
-		$Scratch->{archive_img} = 'admin/left.gif';
+		$Scratch->{archive_img} = 'left.gif';
 		$Scratch->{archive_nm} = 'unarchive';
 		$Scratch->{archive_label} = 'archived';
 	}
@@ -11,7 +12,7 @@
 		delete $Values->{showarchive};
 		$Values->{showpending} = 1;
 		$Scratch->{archive_sense} = 'ne';
-		$Scratch->{archive_img} = 'admin/right.gif';
+		$Scratch->{archive_img} = 'right.gif';
 		$Scratch->{archive_nm} = 'archive';
 		$Scratch->{archive_label} = 'pending';
 	}
@@ -19,23 +20,36 @@
 		delete $Values->{showarchive};
 		$Values->{showpending} = 1;
 		$Scratch->{archive_sense} = 'ne';
-		$Scratch->{archive_img} = 'admin/right.gif';
+		$Scratch->{archive_img} = 'right.gif';
 		$Scratch->{archive_nm} = 'archive';
 		$Scratch->{archive_label} = 'pending';
 	}
+	$Scratch->{archive_label} = $Tag->loc('', "$Scratch->{archive_label} displayed");
 	return;
 [/calc]
+[set icon_name]icon_orders.gif[/set]
+[seti page_title]
+	[if value showarchive]
+	[L]Orders[/L]: [L]Archived Orders[/L]
+	[set help_name]order.main.archived[/set]
+	[else]
+	[L]Orders[/L]: [L]Pending Orders[/L]
+	[set help_name]order.main.pending[/set]
+	[/else]
+	[/if]
+[/seti]
+[set ui_class]Orders[/set]
+[tmp page_perm]order=l[/tmp]
+
+@_UI_STD_HEAD_@
 
 [value name=mv_data_table set=transactions hide=1]
 [if-mm !tables]
 [set ui_error]
-	Not authorized for order administration. Contact administrator?
+	[L]Not authorized for order administration. Contact administrator?[/L]
 [/set]
 [bounce page="__UI_BASE__/error"]
 [/if-mm]
-
-[set ui_class]Orders[/set]
-[tmp page_perm]order[/tmp]
 
 [tag flag write]transactions[/tag]
 [perl tables=transactions]
@@ -126,21 +140,7 @@
 [if scratch ui_location]
 [bounce href=`delete $Scratch->{ui_location}`]
 [/if]
-
-[set icon_name]admin/icon_orders.gif[/set]
-[seti page_title]
-	[if value showarchive]
-	Orders: Archived Orders
-	[set help_name]order.main.archived[/set]
-	[else]
-	Orders: Pending Orders
-	[set help_name]order.main.pending[/set]
-	[/else]
-	[/if]
-[/seti]
 [update values]
-
-@_UI_STD_HEAD_@
 
 [if scratch message]
 <BLOCKQUOTE>
@@ -166,23 +166,23 @@
 <small>
     <FORM ACTION="[area @@MV_PAGE@@]">
     <INPUT NAME=order VALUE="[cgi order]">
-    <INPUT TYPE=submit VALUE="Start at order number">
+    <INPUT TYPE=submit VALUE="[L]Start at order number[/L]">
     </FORM>
 </small>
 </td>
-<td valign=top><B> or </B></td>
+<td valign=top><B> [L]or[/L] </B></td>
 <td>
 <small>
     <FORM ACTION="[area @@MV_PAGE@@]">
     <INPUT NAME=ui_text_qualification VALUE="">
-    <INPUT TYPE=submit VALUE="Limit with search">
+    <INPUT TYPE=submit VALUE="[L]Limit with search[/L]">
     </FORM>
 </small>
 </td>
 </tr>
 </table>
 [if cgi ui_text_qualification]
-<H4>Entries containing "[cgi ui_text_qualification]"</H3>
+<H4>[L]Entries containing[/L] "[cgi ui_text_qualification]"</H3>
 [/if]
 [search-region more=1 arg="
 		fi=transactions
@@ -227,6 +227,7 @@
 	return;
 [/calc]
 <FORM ACTION="[process]" METHOD=POST NAME=batch>
+<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
 <INPUT TYPE=hidden NAME=mv_todo VALUE=back>
 <TABLE border=0 CELLSPACING=0 width="90%">
@@ -236,37 +237,37 @@
 <TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
 [page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=code\n" . sortrev('code');
-	`]Order</A>
+	`][L]Order[/L]</A>
 </TH>
 <TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
 [page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=lname,fname\n" . sortrev('lname');
-	`]User</A>
+	`][L]User[/L]</A>
 </TH>
 <TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
 [page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=country,state,city\n" . sortrev('country');
-	`]Location</A>
+	`][L]Location[/L]</A>
 </TH>
 <TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
 [page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=order_date\n" . sortrev('order_date');
-	`]Date/Time</A>
+	`][L]Date[/L]/[L]Time[/L]</A>
 </TH>
 <TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">
 [page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=nitems\n" . sortrev('nitems', 1);
-`]Items</A>
+`][L]Items[/L]</A>
 </TH>
 <TH ALIGN=CENTER><FONT SIZE=-1 COLOR="__UI_C_TITLEBARTXT__">
 [page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=total_cost\n" . sortrev('total_cost', 1);
-`]Total</A>
+`][L]Total[/L]</A>
 </TH>
 <TH ALIGN=RIGHT><FONT SIZE=-1 COLOR="__UI_C_TITLEBARTXT__">
 [page href=@@MV_PAGE@@ form=`
 	return "ui_sort_field=status\n" . sortrev('status');
-`]Status</A>
+`][L]Status[/L]</A>
 </TH>
 </tr>
 <tr bgcolor=000000 height=1><td colspan=8></td></tr>
@@ -285,14 +286,14 @@
 	form="
 		[scratch archive_nm]order=1
 		order=[item-code]
-	"]<IMG SRC="@_UI_IMG_@[scratch archive_img]" HEIGHT=10 WIDTH=11 ALT="[scratch archive_nm] [item-code]" BORDER=0></A>
+	"]<IMG SRC="[scratch archive_img]" HEIGHT=10 WIDTH=11 ALT="[scratch archive_nm] [item-code]" BORDER=0></A>
 <A HREF="[area
 	href='@@MV_PAGE@@'
 	form='
 		deleteorder=1
 		order=[item-code]
 	']"
-	onClick="return confirm('Are you sure you want to delete order [item-code]?')"><IMG src="@_UI_IMG_@admin/delsm.gif" ALT="DELETE [item-code]" BORDER=0></A>
+	onClick="return confirm('Are you sure you want to delete order [item-code]?')"><IMG src="delsm.gif" ALT="DELETE [item-code]" BORDER=0></A>
 </TD>
 <TD>[page href=__UI_BASE__/order_view form="order=[item-code]"][item-code]</A></TD>
 <TD>
@@ -302,14 +303,14 @@
 <TD ALIGN=LEFT>[convert-date][item-param order_date][/convert-date]</TD>
 <TD ALIGN=CENTER>[item-param nitems]</TD>
 <TD ALIGN=Right>[currency][item-param total_cost][/currency]</TD>
-<TD ALIGN=Right>[page href="__UI_BASE__/order_status" form="order=[item-code]"][item-param status]</A></TD>
+<TD ALIGN=Right>[page href="__UI_BASE__/order_status" form="order=[item-code]"][loc][item-param status][/loc]</A></TD>
 </tr>
 [/search-list]
 [no-match]
 <tr>
 <td colspan=6>
 <br>
-<B>No orders</B>
+<B>[L]No orders[/L]</B>
 <br><br>
 </td>
 </tr>
@@ -319,20 +320,20 @@
 [more-list]
 <tr>
 <td colspan=6 align=center>
-Orders [matches] of [value mv_search_match_count] [scratch archive_label] displayed. More orders: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
+[msg arg.0="[matches]" arg.1="[value mv_search_match_count]" arg.2="[scratch archive_label]"]Orders %s of %s %s.[/msg] [L]More orders[/L]: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
 </td>
 </tr>
 [/more-list]
 </table>
 [if-mm advanced order=d]
-[button form=batch text="Delete checked orders"
- confirm='Are you sure you want to delete the checked orders?']deleteorder=1
+[button form=batch text="[L]Delete checked orders[/L]"
+ confirm='[L]Are you sure you want to delete the checked orders?[/L]']deleteorder=1
 [/button]
 [/if-mm]
-&nbsp;&nbsp;&nbsp;[button form=batch src="@_UI_IMG_@admin/[scratch archive_img]"
+&nbsp;&nbsp;&nbsp;[button form=batch src="[scratch archive_img]"
 			text=`
 			my $tmp = "$Scratch->{archive_nm} checked orders";
-			return "\u$tmp";
+			return $Tag->loc('', "\u$tmp");
 			`]
 [scratch archive_nm]order=1[/button]
 </FORM>

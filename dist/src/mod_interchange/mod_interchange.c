@@ -2,7 +2,9 @@
  *  mod_interchange.c
  *  Apache module implementation of the Interchange link program.
  *
- *  Support: http://developer.akopia.com/
+ *  $Id: mod_interchange.c,v 1.3 2001-07-18 01:56:13 jon Exp $
+ *
+ *  Support: http://interchange.redhat.com/
  *
  *  Author: Francis J. Lacoste <francis.lacoste@iNsu.COM>
  *
@@ -23,11 +25,6 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307 USA
  */
-
-/*
- *  $Id: mod_interchange.c,v 1.2 2001-03-09 07:11:22 jon Exp $
- *
-*/
 
 #include "httpd.h"
 #include "http_config.h"

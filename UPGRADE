@@ -1,0 +1,68 @@
+-----------------------------------------------------------------------------
+
+                U P G R A D I N G     I N T E R C H A N G E
+
+Interchange is designed to be compatible between major versions, and
+for the most part a catalog designed under Interchange 4.6 should
+be compatible with 4.7.
+
+Full information on upgrades is available in the document icupgrade(8)
+(in the distribution in pod/icupgrade.pod).
+
+To upgrade from another 4.x version, it is recommended that you:
+
+    1. Make a tar backup of your Interchange software directory, i.e.
+       
+            tar xzvf ~/ic_backup.tar.gz /usr/lib/interchange 
+
+    2. Install over the top of it by specifying the same installation
+       directory during the installation.
+
+    3. If you have this line in interchange.cfg:
+
+        #include usertag/*
+
+       You should change it to:
+
+        include usertag/*.tag
+
+       (The leading # sign is no longer needed).
+
+       If you have created any other UserTag definitions you will need
+       to either rename the file to add a .tag extension, or include
+       them explicitly like:
+
+          include usertag/my_tag
+  
+     4. If you use CyberCash, you should replace these lines in catalog.cfg
+        
+            Variable CYBER_MODE       mauthonly
+            Variable CYBER_CONFIGFILE /path/to/your/merchant_conf
+
+        with
+        
+            Variable MV_PAYMENT_MODE        cybercash
+            Variable MV_PAYMENT__CONFIGFILE /path/to/your/merchant_conf
+
+     5. Restart Interchange.
+
+That should be it. Test the catalog to make sure it works. 
+
+IF YOU UPGRADED FROM 4.6.x
+
+There is one security change that can break constructs that ran under 4.6.x.
+
+    safe_data=1
+
+        If you had a database object which contained ITL tags and
+        they now show up as [itl-tag arg=val], then you probably
+        need to add the safe-data=1 parameter around your [loop ...]
+        or [query ...] construct.
+
+        The reason this change was made was the capability of Interchange
+        to directly enter user submissions into a database. If the
+        user put in something in [square brackets], knowingly or even
+        unknowingly, it could cause anomalous or insecure behavior. 
+        (There were no known exploits in the demo, but they could
+        easily be constructed.
+

@@ -1,0 +1,125 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+[/comment]
+
+[tmp page_title]Affiliate headquarters[/tmp]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]category_vertical[/component]
+[/control-set]
+
+[control reset=1]
+
+@_LEFTONLY_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+[if !session logged_in]
+[or session login_table ne 'affiliate']
+	[bounce page="affiliate/login"]
+[/if]
+
+[loop list="[data session username]"]
+<TABLE>
+<TR>
+	<TH ALIGN=RIGHT>
+	Affiliate code
+	</TH>
+	<TD>
+		[loop-code]
+	</TD>
+</TR>
+<TR>
+	<TH ALIGN=RIGHT>
+	Business name
+	</TH>
+	<TD>
+		[loop-data affiliate name]
+	</TD>
+</TR>
+
+<TR>
+	<TH ALIGN=RIGHT>
+	Account active
+	</TH>
+	<TD>
+		[if-loop-data affiliate active]Yes[else]no[/else][/if-loop-data]
+	</TD>
+</TR>
+
+<TR>
+	<TH ALIGN=RIGHT>
+	Linkback URL
+	</TH>
+	<TD>
+		[if-loop-data affiliate url]<A HREF="[loop-data affiliate url]">[loop-data affiliate url]</A>[else]none[/else][/if-loop-data]
+	</TD>
+</TR>
+
+
+<TR>
+	<TH ALIGN=RIGHT>
+	Logo image
+	</TH>
+	<TD>
+		[if-loop-data affiliate image]<IMG SRC="[loop-data affiliate image]">[else]none[/else][/if-loop-data]
+	</TD>
+</TR>
+
+
+<TR>
+	<TD COLSPAN=2><HR>
+	</TD>
+</TR>
+
+<TR>
+	<TH ALIGN=RIGHT VALIGN=top>
+	URL to enter catalog
+	</TH>
+	<TD>
+		<A HREF="[area href='index' form='mv_pc=[loop-code]']">[calc]$Config->{VendURL}[/calc]?mv_pc=[loop-code]</A>
+	</TD>
+</TR>
+
+<TR>
+	<TD COLSPAN=2><HR>
+	</TD>
+</TR>
+
+<TR>
+	<TH ALIGN=RIGHT VALIGN=top>
+	URL to order a product
+	</TH>
+	<TD>
+		[if cgi SKU]
+		<B>To <B><A HREF="[area href=order
+						form="
+							mv_order_item=[cgi SKU]
+							mv_pc=[loop-code]
+						"]">order SKU [cgi SKU]</A>, "[description code="[cgi SKU]"]", use:
+			<FORM>
+			<TEXTAREA COLS=70 ROWS=1>[calc] $Config->{VendURL} [/calc]/order?mv_pc=[loop-code]&mv_order_item=[cgi SKU]</TEXTAREA>
+			</FORM><BR>
+		<P>
+		[/if]
+		[loop search="ra=yes" prefix=prod]
+			[page href="@@MV_PAGE@@" form="SKU=[prod-code]"][prod-code]: [prod-description]</A><BR>
+		[/loop]
+	</TD>
+</TR>
+
+</TABLE>
+
+[/loop]
+
+<!-- END CONTENT -->
+
+@_LEFTONLY_BOTTOM_@
+

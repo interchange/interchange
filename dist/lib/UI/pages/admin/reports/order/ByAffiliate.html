@@ -4,32 +4,32 @@
 			return;
 	[/calc]
 [/if-mm]
-[seti page_title]Orders by Affiliate[if cgi affiliate]: [cgi affiliate][/if][/seti]
-[set icon_name]admin/icon_stats.gif[/set]
+[seti page_title][L]Orders by Affiliate[/L][if cgi affiliate]: [cgi affiliate][/if][/seti]
+[set icon_name]icon_stats.gif[/set]
 [set help_name]orderstats.view[/set]
 
 @_UI_STD_HEAD_@
 <TABLE width="90%" border=0 callpadding=0 cellspacing=0>
 <tr bgcolor="#000000" height=1><td colspan=4></td></tr>
-<TR BGCOLOR="#__UI_C_TOPBLOCKBAR__">
+<TR BGCOLOR="__UI_C_TOPBLOCKBAR__">
 <TD VALIGN="top" width="20%">
 <FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Date</B>
+<B>[L]Date[/L]</B>
 </FONT>
 </TD>
 <TD VALIGN="top">
 <FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Affiliate</B>
+<B>[L]Affiliate[/L]</B>
 </FONT>
 </TD>
 <TD ALIGN=center VALIGN="top">
 <FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Number of Orders</B>
+<B>[L]Number of Orders[/L]</B>
 </FONT>
 </TD>
 <TD ALIGN=right VALIGN="top">
 <FONT COLOR="__UI_C_TITLEBARTXT__">
-<B>Revenue</B>
+<B>[L]Revenue[/L]</B>
 </FONT>
 </TD>
 </TR>
@@ -74,7 +74,8 @@ EOF
 			WHERE deleted != '1' [scratch date_limit] [scratch synd_limit]
 			order by affiliate, campaign, order_date
 	"][/query]
-
+[tmp ALL][L]ALL[/L][/tmp]
+[tmp TOTAL][L]GRAND TOTAL[/L][/tmp]
 [perl tables="transactions"]
 	my %sales;
 	$master = {};
@@ -124,8 +125,9 @@ EOF
 			$subtotal_sales  += $record->{sales};
 			$subtotal_quantity += $record->{orders};
 			($syn, $camp) = split /-/, $id, 2;
-			my $synlabel = $syn || '(none)';
-			my $burl = $Tag->area('__UI_BASE__/reports/order/Monthly', $month);
+			my $synlabel = $syn || $Tag->loc('','(none)');
+			my $burl = $Tag->area('__UI_BASE__/reports/order/Monthly', 
+				$Tag->loc('',$month));
 			my $url = qq{<A HREF="$burl$syndstring">$mname&nbsp;$year</A>}
 				if $mname;
 			$out .= <<EOF;
@@ -154,7 +156,7 @@ EOF
 	&nbsp;
 	</TD>
 	<TD VALIGN=top>
-	ALL<BR><HR color=black size=1>
+	$Scratch->{ALL}<BR><HR color=black size=1>
 	</TD>
 	<TD ALIGN=center VALIGN=top>
 	$subtotal_quantity
@@ -170,11 +172,11 @@ EOF
 	<TR BGCOLOR="__UI_C_INTBLOCK__">
 	<TD VALIGN="top">
 
-	GRAND TOTAL
+	$Scratch->{TOTAL}
 	</TD>
 	<TD VALIGN="top">
 
-	ALL
+	$Scratch->{ALL}
 	</TD>
 	<TD ALIGN=center VALIGN="top">
 

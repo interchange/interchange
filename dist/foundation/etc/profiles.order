@@ -1,0 +1,248 @@
+__NAME__                            invalid
+&fatal     = yes
+mv_failpage= interact
+&set       = mv_junk 0
+__END__
+
+__NAME__                            checkout_profile
+fname=required
+lname=required
+address1=required
+city=required
+country=required
+[if value country =~ /^(US|CA)$/i]
+	state=state_province
+	zip=postcode
+[/if]
+&or phone_night=phone, phone_day=phone Must have day or evening phone number
+
+&fatal = yes
+email=required
+email=email
+
+&set = mv_payment Incomplete
+
+[if value fax_order == 1]
+&set = mv_payment Check or Money Order (will call)
+
+[elsif value fax_order == 2]
+project_id=required Please include your PO number
+&set = mv_payment Purchase order [value project_id]
+[value name=tmp_total set="[total-cost noformat=1]" hide=1]
+[perl tables="pricing products userdb"]
+	$CGI->{credit_limit_ok} = 1;
+	my $total = delete $Values->{tmp_total};
+	return unless $limit = tag_data('userdb', 'credit_limit', $Session->{username});
+	Log("credit_limit=$limit total=$total");
+	delete $CGI->{credit_limit_ok};
+	if($limit >= $total) {
+		$CGI->{credit_limit_ok} = 1;
+	}
+	return;
+[/perl]
+credit_limit_ok=mandatory Credit limit exceeded.
+[/elsif]
+
+[elsif value fax_order == 3]
+&set = mv_payment COD
+[value name=mv_handling set=cod hide=1]
+[/elsif]
+[elsif variable MV_PAYMENT_MODE]
+&credit_card=standard keep __CREDIT_CARDS_ACCEPTED__
+&charge=[var MV_PAYMENT_MODE][cgi mv_payment_test]
+&set=mv_payment Real-time ([var MV_PAYMENT_MODE]) Credit Card 
+[/elsif]
+
+[elsif config CyberCash]
+&fail=../special_pages/failed
+&charge=[var CYBER_MODE]
+[/elsif]
+
+[elsif config CreditCardAuto]
+mv_credit_card_valid=required Credit card fails tests.
+&set=mv_payment Credit Card (%c)
+[/elsif]
+
+[else]
+&credit_card=standard __CREDIT_CARDS_ACCEPTED__
+&set=mv_payment Credit Card (%c)
+[/else]
+[/if]
+
+&calc = $Values->{mv_payment} =~ s/\%c/$Values->{mv_credit_card_type}/g; 1;
+&final = yes
+&setcheck=mv_email [value email]
+
+__END__
+
+__NAME__                            shipping_address
+fname=required
+lname=required
+address1=required
+city=required
+country=required
+[if value country =~ /^(US|CA)$/i]
+	state=state_province
+	zip=postcode
+[/if]
+&or phone_day=phone, phone_night=phone Must have day or evening phone number
+email=required
+
+&fatal = yes
+
+email=email
+
+__END__
+
+
+__NAME__                            account_change
+fname=required
+lname=required
+address1=required
+city=required
+country=required
+[if value country =~ /^(US|CA)$/i]
+	state=state_province
+	zip=postcode
+[/if]
+&or phone_day=phone, phone_night=phone Must have day or evening phone number
+email=required
+&fatal = yes
+email=email
+
+__END__
+
+__NAME__                            credit_card
+fname=required
+lname=required
+address1=required
+city=required
+country=required
+[if value country =~ /^(US|CA)$/i]
+	state=state_province
+	zip=postcode
+[/if]
+&or phone_night=phone, phone_day=phone Must have day or evening phone number
+
+&fatal = yes
+email=required
+email=email
+
+&set = mv_payment Incomplete
+
+[if variable MV_PAYMENT_MODE]
+&credit_card=standard keep __CREDIT_CARDS_ACCEPTED__
+&charge=[var MV_PAYMENT_MODE][cgi mv_payment_test]
+&set=mv_payment Real-time Credit Card (%c -- [var MV_PAYMENT_MODE])
+[else]
+&credit_card=standard __CREDIT_CARDS_ACCEPTED__
+&set=mv_payment Credit Card (%c)
+[/else]
+[/if]
+
+&calc = $Values->{mv_payment} =~ s/\%c/$Values->{mv_credit_card_type}/g; 1;
+&final = yes
+&setcheck=mv_email [value email]
+
+__END__
+
+__NAME__                            purchase_order
+fname=required
+lname=required
+address1=required
+city=required
+country=required
+[if value country =~ /^(US|CA)$/i]
+	state=state_province
+	zip=postcode
+[/if]
+&or phone_night=phone, phone_day=phone Must have day or evening phone number
+
+&fatal = yes
+email=required
+email=email
+
+&set = prof_po_accepted [var PO_ACCEPTED]
+
+prof_po_accepted=required This site doesn't accept purchase orders. You should not have been offered that option; please contact us.
+
+project_id=required Please include your PO number
+&set = mv_payment Purchase order [value project_id]
+[value name=tmp_total set="[total-cost noformat=1]" hide=1]
+[perl tables="pricing products userdb"]
+	$CGI->{credit_limit_ok} = 1;
+	my $total = delete $Values->{tmp_total};
+	return unless $limit = tag_data('userdb', 'credit_limit', $Session->{username});
+	Log("credit_limit=$limit total=$total");
+	delete $CGI->{credit_limit_ok};
+	if($limit >= $total) {
+		$CGI->{credit_limit_ok} = 1;
+	}
+	return;
+[/perl]
+credit_limit_ok=mandatory Credit limit exceeded.
+&final = yes
+&setcheck=mv_email [value email]
+
+__END__
+
+__NAME__                            mail_order
+fname=required
+lname=required
+address1=required
+city=required
+country=required
+[if value country =~ /^(US|CA)$/i]
+	state=state_province
+	zip=postcode
+[/if]
+&or phone_night=phone, phone_day=phone Must have day or evening phone number
+
+&set = prof_mode_accepted [var POSTAL_ACCEPTED]
+
+prof_mode_accepted=required This site doesn't accept postal orders. You should not have been offered that option; please contact us.
+
+&fatal = yes
+email=required
+email=email
+
+&set = mv_payment Check or Money Order (will call)
+&final = yes
+&setcheck=mv_email [value email]
+
+__END__
+
+__NAME__                            cod
+fname=required
+lname=required
+[if value address1 =~ /p\.o\.\s*box\b/i]
+not_po_box=mandatory No PO boxes allowed for COD.
+[/if]
+[if value address2 =~ /p\.o\.\s*box\b/i]
+not_po_box=mandatory No PO boxes allowed for COD.
+[/if]
+address1=required
+city=required
+country=required
+[if value country =~ /^(US|CA)$/i]
+	state=state_province
+	zip=postcode
+[/if]
+&or phone_night=phone, phone_day=phone Must have day or evening phone number
+
+&set = prof_mode_accepted [var COD_ACCEPTED]
+
+prof_mode_accepted=required This site doesn't accept COD orders. You should not have been offered that option; please contact us.
+
+&fatal = yes
+email=required
+email=email
+
+&set = mv_payment COD
+&calc = $Values->{mv_handling} .= "\0cod" unless $Values->{mv_handling} =~ /\bcod\b/; return 1;
+
+&final = yes
+&setcheck=mv_email [value email]
+
+__END__
+

@@ -1,0 +1,104 @@
+<!-- BEGIN COMPONENT [control component best] -->
+[comment]
+ui_component: best
+ui_component_type: vertical, content
+ui_component_group: promotion
+ui_component_label: Best sellers
+
+banner:
+	widget: text
+	width: 40
+
+toprow_css:
+	label: CSS describing top row
+	widget: textarea
+	width: 60
+	height: 4
+	advanced: 1
+
+toprow_color:
+	widget: text
+	width: 7
+	advanced: 1
+
+matches:
+	widget: select
+	options: 1,2*,3,4,5,6,7,8,9,10
+	help: If you select more matches than columns, multiple rows will be generated.
+
+cols:
+	label: Columns
+	widget: select
+	options: 1,2*,3,4
+
+[/comment]
+
+<table width="95%" align=center>
+<tr> 
+  <td class="categorybar"> 
+    [control banner Best sellers...]
+  </td>
+</tr>
+<tr>
+  <td> 
+    [calc]
+  	my $n = [control cols 2];
+	$Scratch->{width_percent} = int(100 / $n) . '%';
+	return;
+    [/calc]
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+    [table-organize embed=1 pretty=1 cols="[control cols 2]"]
+	[loop search="
+		fi=merchandising
+		st=db
+		ra=yes
+		tf=times_ordered
+		to=rn
+		ml=[control matches 2]
+	"]
+	<TD width="[scratch width_percent]" align="center"> 
+		<table border="0" cellspacing="0" cellpadding="0">
+		<tr><td colspan="2">&nbsp;</td></tr>
+		<tr> 
+			<td align="center" colspan="2" class="contentbar1">
+				<b>[loop-description]</b>
+			</td>
+		</tr>
+		[if-loop-field thumb]
+		<tr> 
+			<td align="center" colspan="2"> 
+				<img src="thumb/[loop-field thumb]"></td>
+			</td>
+		</tr>
+		[/if-loop-field]
+		<tr> 
+			<td align="center" colspan="2">
+				Our Price: <b>[loop-price]</b>
+			</td>
+		</tr>
+		<tr> 
+			<td align="center">
+				<a href="[area [loop-code]]">More Info</a>&nbsp;
+			</td>
+			<td align="center">
+				[if-loop-data options o_modular]
+				[page [loop-code]]
+				[else][order [loop-code]]
+				[/else]
+				[/if-loop-data]
+				<img src="__THEME_IMG_DIR__buynow.gif" border="0" alt="buy now"></A>
+			</td>
+		</tr>
+		</table>
+	</TD>
+	[/loop]
+    [/table-organize]
+    </table>
+
+    <p>&nbsp;</p>
+
+  </td>
+</tr>
+</table>
+
+<!-- END COMPONENT [control component best_horizontal] -->

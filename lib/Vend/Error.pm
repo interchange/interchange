@@ -1,8 +1,8 @@
-# Error.pm - Handle Interchange error pages and messages
+# Vend::Error - Handle Interchange error pages and messages
 # 
-# $Id: Error.pm,v 1.4 2001-03-22 22:46:41 jon Exp $
+# $Id: Error.pm,v 1.5 2001-07-18 01:56:44 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 
 my $wantref = 1;
 
@@ -48,6 +48,12 @@ sub get_locale_message {
 	}
 	elsif ($Global::Locale and defined $Global::Locale->{$code}) {
 		$message = $Global::Locale->{$code};
+	}
+	elsif ($Vend::Cfg->{Locale} and -f "$Global::ConfDir/$code.html" ) {
+		$message = readfile("$Global::ConfDir/$code.$::Scratch->{mv_locale}");
+	}
+	elsif (-f "$Global::ConfDir/$code.html") {
+		$message = readfile("$Global::ConfDir/$code.html");
 	}
 	if($message !~ /\s/) {
 		if($message =~ /^http:/) {
@@ -106,15 +112,19 @@ EOF
 sub full_dump {
 	my $out = minidump();
 	local($Data::Dumper::Indent) = 2;
-	$out .= "###### ENVIRONMENT     #####\n";
-	$out .= ::uneval(::http()->{env});
-	$out .= "\n###### END ENVIRONMENT #####\n";
+	unless(caller() eq 'Vend::SOAP') {
+		$out .= "###### ENVIRONMENT     #####\n";
+		$out .= ::uneval(::http()->{env});
+		$out .= "\n###### END ENVIRONMENT #####\n";
+	}
 	$out .= "###### CGI VALUES      #####\n";
 	$out .= ::uneval(\%CGI::values);
 	$out .= "\n###### END CGI VALUES  #####\n";
 	$out .= "###### SESSION         #####\n";
 	$out .= ::uneval($Vend::Session);
 	$out .= "\n###### END SESSION    #####\n";
+	$out =~ s/\0/\\0/g;
+	return $out;
 }
 
 
@@ -128,7 +138,7 @@ sub do_lockout {
 		system $cmd;
 		$msg .= errmsg("\nBad status %s from '%s': %s\n", $?, $cmd, $!)
 			if $?;
-		logGlobal( $msg);
+		logGlobal({level => 'notice'}, $msg);
 	}
 	$Vend::Cfg->{VendURL} = $Vend::Cfg->{SecureURL} = 'http://127.0.0.1';
 	logError($msg);

@@ -7,7 +7,7 @@
 [bounce page="__UI_BASE__/error"]
 [/if-mm]
 [seti page_title][cgi report_title][/seti]
-[set icon_name]admin/icon_stats.gif[/set]
+[set icon_name]icon_stats.gif[/set]
 [set ui_class]Design[/set]
 [set help_name]report[/set]
 
@@ -187,6 +187,7 @@ Window-Target: test
 [/elsif]
 [/if]
 
+Location: [return-to url]
 <A HREF="[scratch name=search_page interpolate=1]" TARGET=test>Test</A>
 
 <FORM>

@@ -1,3 +1,7 @@
+[if !global Windows]
+[index table=icmenu export_only=1]
+[index table=ichelp export_only=1]
+[/if]
 [strip interpolate=1]
 [if-mm !logged_in]
 	[bounce page="__UI_BASE__/login"]
@@ -5,7 +9,7 @@
 [set page_title]Interchange Administration[/set]
 [tmp ui_no_title]1[/tmp]
 [set icon_name][/set]
-[set help_name]index[/set]
+[set help_name]home[/set]
 [set ui_class]None[/set]
 
 [seti meta_header]
@@ -55,7 +59,7 @@ function open_quicklinks() {
 <td valign=top>
 <br><br><br>
 <div align=center>
-<table width="90%" border="1" cellspacing=0 cellpadding="0" bordercolorlight="#6699FF" bordercolordark="#6699FF">
+<table width="90%" border="1" cellspacing=0 cellpadding="0">
 <tr>
 <td bgcolor="#FFFFFF">
 <br>						
@@ -107,174 +111,45 @@ EOF
 	return $out;
 [/calc]
 
-[if-mm advanced order]
+[loop
+	  prefix=am
+	  search="
+	  	fi=icmenu
+		st=db
+		co=yes
+
+		sf=mgroup
+		se=Top
+		op=eq
+
+		tf=msort
+		rf=*
+	  "
+	  lr=1]
+	  [if-am-param !inactive]
+	  [if-mm advanced [am-param depends_on]]
 <tr>
 <td valign="top">
-<font color="#000066">
-<img src="@_UI_IMG_@admin/icon_orders.gif">
+	  [if-am-param img_icon]
+<img src="[am-param img_icon]">
+	  [/if-am-param]
 </td>
 <td valign="top">
 <b>
 <font face="Arial, Helvetica, sans-serif">
-&nbsp;<a href="[area __UI_BASE__/order]">Orders</a></font>
+&nbsp;<a href="[area [am-param page]]">[loc][am-param name][/loc]</a></font>
 </b>
 </font>
 </td>
 <td valign="top">
-<font size="-1" face="Arial, Helvetica, sans-serif">
-View and manage incoming orders, archive and access past orders 
-</font>
-</td>
-</tr>
-[/if-mm]
-
-[if-mm advanced page]
-<tr>
-<td valign="top">
-<font color="#000066">
-<img src="@_UI_IMG_@admin/icon_pages.gif">
-</td>
-<td valign="top">
-<b>
 <font face="Arial, Helvetica, sans-serif">
-&nbsp;<a href="[area __UI_BASE__/page]">Content</a></font>
-</b>
-</font>
-</td>
-<td valign="top">
-<font size="-1" face="Arial, Helvetica, sans-serif">
-Create, edit, upload and download pages 
+[loc][am-param special][/loc]
 </font>
 </td>
 </tr>
-[/if-mm]
-
-[if-mm advanced userdb]
-<tr>
-<td valign="top">
-<font color="#000066">
-<img src="@_UI_IMG_@admin/icon_people.gif">
-</td>
-<td valign="top">
-<b>
-<font face="Arial, Helvetica, sans-serif">
-&nbsp;<a href="[area __UI_BASE__/customer]">Customers</a></font>
-</b>
-</font>
-</font>
-</td>
-<td valign="top">
-<font size="-1" face="Arial, Helvetica, sans-serif">
-View and manage customer information and order history 
-</font>
-</td>
-</tr>
-[/if-mm]
-
-[if-mm advanced sitedesign]
-<tr>
-<td valign="top">
-<font color="#000066">
-<img src="@_UI_IMG_@admin/icon_design.gif">
-</td>
-<td valign="top">
-<b>
-<font face="Arial, Helvetica, sans-serif">
-&nbsp;<a href="[area __UI_BASE__/layout]">Design</a></font>
-</b>
-</font>
-</td>
-<td valign="top">
-<font size="-1" face="Arial, Helvetica, sans-serif">
-Organize site navigation, manage site layout 
-</font>
-</td>
-</tr>
-[/if-mm]
-
-[if-mm advanced item]
-</tr>
-<td valign="top">
-<font color="#000066">
-<img src="@_UI_IMG_@admin/icon_item.gif">
-</td>
-<td valign="top">
-<b>
-<font face="Arial, Helvetica, sans-serif">
-&nbsp;<a href="[area __UI_BASE__/item]">Items</a></font>
-</b>
-</font>
-</td>
-<td valign="top">
-<font size="-1" face="Arial, Helvetica, sans-serif">
-Add and edit items displayed for sale on the site 
-</font>
-</td>
-</tr>
-[/if-mm]
-
-[if-mm advanced stats]
-<tr>
-<td valign="top">
-<font color="#000066">
-<img src="@_UI_IMG_@admin/icon_stats.gif">
-</td>
-<td valign="top">
-<b>
-<font face="Arial, Helvetica, sans-serif">
-&nbsp;<a href="[area __UI_BASE__/orderstats]">Reporting</a></font>
-</b>
-</font>
-</td>
-<td valign="top">
-<font size="-1" face="Arial, Helvetica, sans-serif">
-View statistics on orders and site traffic, create custom reports 
-</font>
-</td>
-</tr>
-[/if-mm]
-</tr>
-
-[if-mm advanced item]
-<tr>
-<td valign="top">
-<font color="#000066">
-<img src="@_UI_IMG_@admin/icon_merch.gif">
-</td>
-<td valign="top">
-<b>
-<font face="Arial, Helvetica, sans-serif">
-&nbsp;<a href="[area __UI_BASE__/merchandising]">Merchandising</a></font>
-</b>
-</font>
-</td>
-<td valign="top">
-<font size="-1" face="Arial, Helvetica, sans-serif">
-Set up quantity pricing, up-sell, promotions, and affiliates 
-</font>
-</td>
-[/if-mm]
-
-[if-mm advanced techadmin]
-<tr>
-<td valign="top">
-<font color="#000066">
-<img src="@_UI_IMG_@admin/icon_config.gif">
-</td>
-<td valign="top">
-<b>
-<font face="Arial, Helvetica, sans-serif">
-&nbsp;<a href="[area __UI_BASE__/genconfig]">Administration</a></font>
-</b>
-</font>
-</td>
-<td valign="top">
-<font size="-1" face="Arial, Helvetica, sans-serif">
-Administrator and developer-oriented tools 
-</font>
-</td>
-</tr>
-[/if-mm]
+	[/if-mm]
+	[/if-am-param]
+[/loop]
 
 </table>
 </div>

@@ -1,8 +1,8 @@
-# Interchange.pm - Interchange access for perl scripts
+# Interchange.pm - Interchange access for Perl scripts
 #
-# $Id: Interchange.pm,v 1.1 2000-07-20 07:24:43 heins Exp $
+# $Id: Interchange.pm,v 1.2 2001-07-18 01:56:57 jon Exp $
 # 
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ require Exporter;
 use strict;
 use Fcntl;
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 
 BEGIN {
 	require 5.005;
