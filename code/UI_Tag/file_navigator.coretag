@@ -302,7 +302,7 @@ EOF
 		  or $nd = $opt->{top_of_tree};
 		my $msg = errmsg(
 					"<large><b>..</b></large> &#91;%s&#93",
-					$opt->{parent_directory_nessage} || 'parent directory',
+					$opt->{parent_directory_message} || 'parent directory',
 					);
 		unshift @dir, [ $nd, $msg, $dtmpl ];
 	}
