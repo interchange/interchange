@@ -2,7 +2,7 @@
 
 # tlink.pl: runs as a cgi program and passes request to Interchange server
 #
-# $Id: Link.pm,v 1.1 2004-04-22 19:30:40 mheins Exp $
+# $Id: Link.pm,v 1.1.2.1 2004-04-22 19:49:03 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc.
 # Copyright (C) 2002-2003 Interchange Development Group
@@ -45,7 +45,7 @@ Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 
 =head1 VERSION
 
-$Revision: 1.1 $
+$Revision: 1.1.2.1 $
 
 =head1 SYNOPSIS
 

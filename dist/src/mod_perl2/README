@@ -2,7 +2,7 @@ NAME
     Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 
 VERSION
-    $Revision: 1.1 $
+    $Revision: 1.1.2.1 $
 
 SYNOPSIS
       <Location /foundation>
