@@ -92,7 +92,7 @@ __NAME__ db_maintenance
 
 [if cgi deleterecords]
 [and !scratch nevair]
-	[flag type=write tables="[cgi mv_data_table] [cgi ui_delete_tables]"]
+	[flag type=write table="[cgi mv_data_table] [cgi ui_delete_tables]"]
 	[perl tables="[cgi mv_data_table] [cgi ui_delete_tables]"]
 		my $idp;
 		return unless delete $CGI->{deleterecords};
