@@ -211,7 +211,6 @@ debian/changelog
 debian/control
 debian/copyright
 debian/CREDITS.debian
-debian/docs
 debian/interchange-cat-foundation.config
 debian/interchange-cat-foundation.files
 debian/interchange-cat-foundation.postinst
