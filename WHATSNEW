@@ -65,6 +65,11 @@ Core
 * Let Vend::Util::unhexify mangle only representations of hex chars instead
   of any three-letter-string starting with the percent sign.
 
+* Add stub for sort_each method to Shadow database.
+
+* Add database filename in question to the fatal error in the
+  Vend::Table::Common::column_index method.
+
 Options
 -------
 
@@ -264,6 +269,9 @@ UI
   and have to re-enter custom view information that is already
   present in a modified base meta display.
 
+* Add check for existence of the extended column and display of merge
+  errors to merge_meta page.
+
 Payment
 -------
 
@@ -272,6 +280,11 @@ Payment
   and thus no forking or temporary files for communication. Use PFProAPI
   automatically if it is found at IC startup time, but fall back to pfpro
   or pfpro-file if not. Upgrades should be transparent.
+
+* Add COMMENT1 and COMMENT2 to Verisign queries. These map to values
+  comment1 and comment2 by default in Payment.pm, but can be remapped.
+
+  Also put SHIPTOZIP in the varmap for simplicity, but same function.
 
 Foundation
 ----------
@@ -287,6 +300,8 @@ Foundation
   with editor components.
 
 * Preparation of pages for translation.
+
+* Typo in state database fixed (Bugzilla #499).
 
 Debian
 ------
@@ -316,6 +331,11 @@ UserTags
 
 * Removed some code that caused table-organize to write the td.x attributes
   twice. 
+
+Jobs
+----
+
+* update_locales job added.
 
 ------------------------------------------------------------------------------
 
