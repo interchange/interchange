@@ -1,6 +1,6 @@
 # Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 2.10 2002-11-18 16:55:15 mheins Exp $
+# $Id: Session.pm,v 2.11 2003-04-04 04:43:20 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -26,7 +26,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.10 $, 10);
+$VERSION = substr(q$Revision: 2.11 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -301,6 +301,7 @@ sub write_session {
 	$Vend::Session->{username} = $Vend::username;
 	$Vend::Session->{admin} = $Vend::admin;
 	$Vend::Session->{superuser} = $Vend::superuser;
+	$Vend::Session->{login_table} = $Vend::login_table;
     $s = ! $File_sessions ? uneval_fast($Vend::Session) : $Vend::Session;
     $Vend::SessionDBM{$Vend::SessionName} = $s or 
 		die "Data was not stored in SessionDBM\n";
@@ -394,9 +395,10 @@ sub read_session {
 
 	$Vend::Session->{host} = $CGI::host;
 
-	$Vend::username = $Vend::Session->{username};
-	$Vend::admin    = $Vend::Session->{admin};
+	$Vend::username    = $Vend::Session->{username};
+	$Vend::admin       = $Vend::Session->{admin};
 	$Vend::superuser   = $Vend::Session->{superuser};
+	$Vend::login_table = $Vend::Session->{login_table};
 
 	$Vend::Session->{arg}  = $Vend::Argument;
 

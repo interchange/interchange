@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.11 2002-11-05 17:00:04 kwalsh Exp $
+# $Id: UserDB.pm,v 2.12 2003-04-04 04:43:20 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -16,7 +16,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.11 $, 10);
+$VERSION = substr(q$Revision: 2.12 $, 10);
 
 use vars qw!
 	$VERSION
@@ -472,6 +472,7 @@ sub set_acl {
 sub _check_acl {
 	my ($self, $loc, %options) = @_;
 	return undef unless $options{location};
+	$options{mode} = 'r' if ! defined $options{mode};
 	my $acl = $self->{DB}->field( $self->{USERNAME}, $loc);
 	my $f = $ready->reval($acl);
 	return 0 unless exists $f->{$options{location}};
@@ -1211,7 +1212,7 @@ sub login {
 								);
 	}
 
-	$Vend::Session->{login_table} = $self->{DB_ID};
+	$Vend::login_table = $Vend::Session->{login_table} = $self->{DB_ID};
 	$Vend::username = $Vend::Session->{username} = $self->{USERNAME};
 	$Vend::Session->{logged_in} = 1;
 	
@@ -1605,8 +1606,6 @@ sub userdb {
 	my $opt = shift;
 
 	my %options;
-
-#::logDebug("Called userdb function=$function opt=$opt " .  Data::Dumper::Dumper($opt));
 
 	if(ref $opt) {
 		%options = %$opt;
