@@ -122,6 +122,7 @@ Debug("tref from read_ui_template: $tref");
 		my $tdir = $Variable->{UI_TEMPLATE_DIR} || 'templates';
 		my $template = $tref->{ui_template_name};
 		undef $tref;
+Debug("tref read from $tdir/$template");
 		($ary) = $Tag->read_ui_template("$tdir/$template");
 		$tref = shift @$ary if $ary;
 Debug("tref $template again from read_ui_template: $tref (no ui_template_elements)");
@@ -166,13 +167,11 @@ Debug("tref $template again from read_ui_template: $tref (no ui_template_element
 		)
 	{
 		$preamble = $1;
-		$ref->{ui_content} = $2;
+		$ref->{ui_current_content} = $2;
 		$postamble = $3;
 	}
 	else {
-		$ref->{ui_content} = $data;
-		return uneval($ref) if $opt->{textref};
-		return $ref;
+		$ref->{ui_current_content} = $data;
 	}
 
 	my @comps;
@@ -260,8 +259,12 @@ Debug("tref $template again from read_ui_template: $tref (no ui_template_element
 	$ref->{ui_page_setting} = $tref;
 
 #Log("page reference: " . uneval($ref) );
+Debug("read_page found pref=$ref tref=$tref" );
 	return uneval_it($ref) if $opt->{textref};
+Debug("not textref" );
 	return $ref unless wantarray;
+Debug("wants array");
+Debug("return from read_page, pref=$ref tref=$tref" );
 	return ($ref, $tref);
 
 }

@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.9.0
 #
-# $Id: interchange.PL,v 2.18 2001-12-28 17:16:26 mheins Exp $
+# $Id: interchange.PL,v 2.19 2002-02-02 08:57:11 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -2229,11 +2229,24 @@ EOF
 	$Vend::FinalPath =~ s:^/+::;
 	$Vend::FinalPath =~ s/(\.html?)$//;
 
+	my $record;
+	my $adb;
+
+	if(ref $Vend::Session->{alias_table}) {
+		$record = $Vend::Session->{alias_table}{$Vend::FinalPath};
+		$Vend::Cfg->{AliasTable} ||= 'alias';
+	}
+
 	if(
 		$Vend::Cfg->{AliasTable}
 			and
-		my $record = database_exists_ref($Vend::Cfg->{AliasTable})
-						->row_hash($Vend::FinalPath)
+		$record 
+			or 
+		(
+			$adb = database_exists_ref($Vend::Cfg->{AliasTable})
+			  and 
+			$record = $adb->row_hash($Vend::FinalPath)
+		)
 	 )
 	{
 		$Vend::FinalPath = $record->{real_page};
@@ -2260,7 +2273,6 @@ EOF
 		}
 
 	}
-
 
 	$Vend::Session->{extension} = $1 || '';
 #::logDebug("path=$Vend::FinalPath");

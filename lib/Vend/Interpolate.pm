@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.52 2002-02-01 21:08:26 racke Exp $
+# $Id: Interpolate.pm,v 2.53 2002-02-02 08:57:11 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.52 $, 10);
+$VERSION = substr(q$Revision: 2.53 $, 10);
 
 @EXPORT = qw (
 
@@ -930,29 +930,34 @@ sub tag_data {
 					return '';
 				},
 	'option_format' =>		sub {
-					my $value = shift;
-					my $pv = $value;
-					$pv =~ s/\0/_NULL_/g;
-					$pv =~ s/\r/_CR_/g;
-#::logDebug("option_format received: $pv");
-					$value =~ s/\00[\s,]*$//;
-					$value =~ s/\0([^\0]*)\0([10])(\0|$)/'=' . $1 . ($2 ? '*' : '') . ",\r"/ge;
-					$pv = $value;
-					$pv =~ s/\0/_NULL_/g;
-					$pv =~ s/\r/_CR_/g;
-#::logDebug("option_format now: $pv");
-					1 while $value =~ s/\r=,\r/\r/;
-					$value =~ s/\0//g;
-					$value =~ s/[ \t]*[\r\n]+[ \t]*/\r/g;
-					$value =~ s/([^,])[\r\n]/$1,/g;
-					$value =~ s/\r//g;
-					$value =~ s/,/,\r/g;
-					$value =~ s/[=\s,]+$//;
-					$pv = $value;
-					$pv =~ s/\0/_NULL_/g;
-					$pv =~ s/\r/_CR_/g;
-#::logDebug("option_format finally: $pv");
-					return $value;
+					my ($value, $tag, $delim) = @_;
+
+					return $value unless $value =~ /\0.*\0/s;
+
+					if(! length($delim) ) {
+						$delim = ',';
+					}
+					else {
+						$delim =~ /pipe/i and $delim = '|' 
+						 or
+						$delim =~ ';'  and $delim =~ /semicolon/i
+						 or
+						$delim =~ ':'  and $delim =~ /colon/i
+						 or
+						$delim =~ ':'  and $delim =~ /null/i;
+					}
+
+					my @opts = split /\0/, $value;
+					my @out;
+
+					while(@opts) {
+						my ($v, $l, $d) = splice @opts, 0, 3;
+						$l = length($l) ? "=$l" : '';
+						$d = $d ? '*' : '';
+						next unless length("$v$l");
+						push @out, "$v$l$d";
+					}
+					return join $delim, @out;
 				},
 	'nullselect' =>		sub {
 					my @some = split /\0+/, shift;

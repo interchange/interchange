@@ -34,13 +34,10 @@ sub {
 				outboard	=> $opt->{key},
 				passed		=> $opt->{data} || $opt->{passed} || $string,
 				type		=> $opt->{type} || 'select',
+				value		=> $value,
 				};
-	my $item = { $ref->{attribute} => $value };
-	if($ref->{type} =~ /date/i) {
-		return UI::Primitive::date_widget($name, $value);
-	}
 
-	my $w = Vend::Interpolate::tag_accessories('', '', $ref, $item);
+	my $w = Vend::Form::display($ref);
 	if($opt->{filter}) {
 		$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$name" VALUE="};
 		$w .= $opt->{filter};

@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.4 2002-02-01 04:21:46 mheins Exp $
+# $Id: Form.pm,v 2.5 2002-02-02 08:57:11 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,6 @@
 package Vend::Form;
 
 require HTML::Entities;
-use Data::Dumper;
 use Vend::Interpolate;
 use Vend::Util;
 use Vend::Tags;
@@ -36,7 +35,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 
 @EXPORT = qw (
 	display
@@ -52,11 +51,12 @@ Vend::Form -- Interchange form element routines
 
 =head1 DESCRIPTION
 
-TBA.
+Provides form element routines for Interchange, emulating the old
+tag_accessories stuff. Allows user-added widgets.
+
+=head1 ROUTINES
 
 =cut
-
-use Safe;
 
 my $Some = '[\000-\377]*?';
 my $Codere = '[-\w#/.]+';
@@ -182,72 +182,14 @@ my $Tag = new Vend::Tags;
 
 $Template{default} = $Template{text};
 
-my $Safe;
-
-sub string_to_ref {
-	my ($string) = @_;
-	if(! $Vend::Cfg->{ExtraSecure} and $MVSAFE::Safe) {
-		return eval $string;
-	}
-	elsif ($MVSAFE::Safe) {
-		die errmsg("not allowed to eval in Safe mode.");
-	}
-	my $safe = $Safe ||= new Safe;
-	return $safe->reval($string);
-}
-
-sub get_option_hash {
-	my $string = shift;
-	my $merge = shift;
-	if (ref $string) {
-		return $string unless ref $merge;
-		for(keys %{$merge}) {
-			$string->{$_} = $merge->{$_}
-				unless defined $string->{$_};
-		}
-		return $string;
-	}
-	return {} unless $string =~ /\S/;
-	$string =~ s/^\s+//;
-	$string =~ s/\s+$//;
-	if($string =~ /^{/ and $string =~ /}/) {
-		return string_to_ref($string);
-	}
-
-	my @opts;
-	unless ($string =~ /,/) {
-		@opts = grep $_ ne "=", Text::ParseWords::shellwords($string);
-		for(@opts) {
-			s/^(\w+)=(["'])(.*)\2$/$1$3/;
-		}
-	}
-	else {
-		@opts = split /\s*,\s*/, $string;
-	}
-
-	my %hash;
-	for(@opts) {
-		my ($k, $v) = split /[\s=]+/, $_, 2;
-		$hash{$k} = $v;
-	}
-	if($merge) {
-		return \%hash unless ref $merge;
-		for(keys %$merge) {
-			$hash{$_} = $merge->{$_}
-				unless defined $hash{$_};
-		}
-	}
-	return \%hash;
-}
-
 sub attr_list {
 	my ($body, $hash) = @_;
 	return $body unless ref($hash) eq 'HASH';
-	$body =~ s!\{($Codere)\}!$hash->{lc $1}!g;
-	$body =~ s!\{($Codere)\|($Some)\}!$hash->{lc $1} || $2!eg;
-	$body =~ s!\{($Codere)\s+($Some)\}! $hash->{lc $1} ? $2 : ''!eg;
-	$body =~ s!\{($Codere)\?\}($Some){/\1\?\}! $hash->{lc $1} ? $2 : ''!eg;
-	$body =~ s!\{($Codere)\:\}($Some){/\1\:\}! $hash->{lc $1} ? '' : $2!eg;
+	$body =~ s!\{([A-Z_]+)\}!$hash->{lc $1}!g;
+	$body =~ s!\{([A-Z_]+)\|($Some)\}!$hash->{lc $1} || $2!eg;
+	$body =~ s!\{([A-Z_]+)\s+($Some)\}! $hash->{lc $1} ? $2 : ''!eg;
+	$body =~ s!\{([A-Z_]+)\?\}($Some){/\1\?\}! $hash->{lc $1} ? $2 : ''!eg;
+	$body =~ s!\{([A-Z_]+)\:\}($Some){/\1\:\}! $hash->{lc $1} ? '' : $2!eg;
 	return $body;
 }
 
@@ -363,6 +305,216 @@ EOF
 	return join $opt->{joiner}, @out;
 }
 
+my @Years;
+my @Months;
+my @Days;
+
+INITTIME: {
+	my @t = localtime();
+	(@Years) = ( $t[5] + 1899 .. $t[5] + 1910 );
+
+	for(1 .. 12) {
+		$t[4] = $_ - 1;
+		$t[5] = 1;
+		push @Months, [sprintf("%02d", $_), POSIX::strftime("%B", @t)];
+	}
+
+	for(1 .. 31) {
+		push @Days, [sprintf("%02d", $_), $_];
+	}
+}
+
+sub round_to_fifteen {
+	my $val = shift;
+#::logDebug("round_to_fifteen val in=$val");
+	$val = substr($val, 0, 4);
+	$val = "0$val" if length($val) == 3;
+	return '0000' if length($val) < 4;
+	if($val !~ /(00|15|30|45)$/) {
+		my $hr = substr($val, 0, 2);
+		$hr =~ s/^0//;
+		my $min = substr($val, 2, 2);
+		$min =~ s/^0//;
+		if($min > 45 and $hr < 23) {
+			$hr++;
+			$min = 0;
+		}
+		elsif($min > 30) {
+			$min = 45;
+		}
+		elsif($min > 15) {
+			$min = 30;
+		}
+		elsif($min > 0) {
+			$min = 15;
+		}
+		elsif ($hr == 23) {
+			$min = 45;
+		}
+		else {
+			$min = 0;
+		}
+		$val = sprintf('%02d%02d', $hr, $min);
+	}
+#::logDebug("round_to_fifteen val out=$val");
+	return $val;
+}
+
+sub date_widget {
+	my($opt) = @_;
+
+	my $name = $opt->{name};
+	my $val  = $opt->{value};
+
+	if($val =~ /\D/) {
+		$val = Vend::Interpolate::filter_value('date_change', $val);
+	}
+	my $now;
+	if($opt->{time} and $opt->{time_adjust} =~ /([-+]?)(\d+)/) {
+		my $sign = $1 || '+';
+		my $adjust = $2;
+		$adjust *= 3600;
+		$now = time;
+		$now += $sign eq '+' ? $adjust : -$adjust;
+	}
+
+	my @t = localtime($now || time);
+	if (not $val) {
+		$t[2]++ if $t[2] < 23;
+		$val = POSIX::strftime("%Y%m%d%H00", @t);
+	}
+	my $sel = 0;
+	my $out = qq{<SELECT NAME="$name">};
+	my $o;
+	for(@Months) {
+		$o = qq{<OPTION VALUE="$_->[0]">} . errmsg($_->[1]) . '</OPTION>';
+		($out .= $o, next) unless ! $sel and $val;
+		$o =~ s/>/ SELECTED>/ && $sel++
+			if substr($val, 4, 2) eq $_->[0];
+		$out .= $o;
+	}
+	$sel = 0;
+	$out .= qq{</SELECT>};
+	$out .= qq{<INPUT TYPE=hidden NAME="$name" VALUE="/">};
+	$out .= qq{<SELECT NAME="$name">};
+	for(@Days) {
+		$o = qq{<OPTION VALUE="$_->[0]">$_->[1]} . '</OPTION>';
+		($out .= $o, next) unless ! $sel and $val;
+		$o =~ s/>/ SELECTED>/ && $sel++
+			if substr($val, 6, 2) eq $_->[0];
+		$out .= $o;
+	}
+	$sel = 0;
+	$out .= qq{</SELECT>};
+	$out .= qq{<INPUT TYPE=hidden NAME="$name" VALUE="/">};
+	$out .= qq{<SELECT NAME="$name">};
+	if(my $by = $opt->{year_begin} || $::Variable->{UI_DATE_BEGIN}) {
+		my $cy = $t[5] + 1900;
+		my $ey = $opt->{year_end}  || $::Variable->{UI_DATE_END} || ($cy + 10);
+		if($by < 100) {
+			$by = $cy - abs($by);
+		}
+		if($ey < 100) {
+			$ey += $cy;
+		}
+		@Years = ($by .. $ey);
+	}
+	for(@Years) {
+		$o = qq{<OPTION>$_} . '</OPTION>';
+		($out .= $o, next) unless ! $sel and $val;
+		$o =~ s/>/ SELECTED>/ && $sel++
+			if substr($val, 0, 4) eq $_;
+		$out .= $o;
+	}
+	$out .= qq{</SELECT>};
+	return $out unless $opt->{time};
+
+	$val =~ s/^\d{8}//;
+	$val =~ s/\D+//g;
+	$val = round_to_fifteen($val);
+	$out .= qq{<INPUT TYPE=hidden NAME="$name" VALUE=":">};
+	$out .= qq{<SELECT NAME="$name">};
+	
+	my $ampm = defined $opt->{ampm} ? $opt->{ampm} : 1;
+	my $mod = '';
+	undef $sel;
+	my %special = qw/ 0 midnight 12 noon /;
+	
+	for my $hr ( 0 .. 23) {
+		for my $min ( 0,15,30,45 ) {
+			my $disp_hour = $hr;
+			if($opt->{ampm}) {
+				if( $hr < 12) {
+					$mod = 'am';
+				}
+				else {
+					$mod = 'pm';
+					$disp_hour = $hr - 12 unless $hr == 12;
+				}
+				$mod = errmsg($mod);
+				$mod = " $mod";
+			}
+			if($special{$hr} and $min == 0) {
+				$disp_hour = errmsg($special{$hr});
+			}
+			elsif($ampm) {
+				$disp_hour = sprintf("%2d:%02d%s", $disp_hour, $min, $mod);
+			}
+			else {
+				$disp_hour = sprintf("%02d:%02d", $hr, $min);
+			}
+			my $time = sprintf "%02d%02d", $hr, $min;
+			$o = sprintf qq{<OPTION VALUE="%s">%s}, $time, $disp_hour;
+			($out .= $o, next) unless ! $sel and $val;
+#::logDebug("prospect=$time actual=$val");
+			$o =~ s/>/ SELECTED>/ && $sel++
+				if $val eq $time;
+			$out .= $o;
+		}
+	}
+	$out .= "</SELECT>";
+	return $out;
+}
+
+sub option_widget_box {
+	my ($name, $val, $lab, $default, $width) = @_;
+	my $half = int($width / 2);
+	my $sel = $default ? ' SELECTED' : '';
+	$val =~ s/"/&quot;/g;
+	$lab =~ s/"/&quot;/g;
+	$width = 10 if ! $width;
+	return qq{<TR><TD><SMALL><INPUT TYPE=text NAME="$name" VALUE="$val" SIZE=$half></SMALL></TD><TD><SMALL><INPUT TYPE=text NAME="$name" VALUE="$lab" SIZE=$width></SMALL></TD><TD><SMALL><SMALL><SELECT NAME="$name"><OPTION value="0">no<OPTION value="1"$sel>default*</SELECT></SMALL></SMALL></TD></TR>};
+}
+
+sub option_widget {
+	my($opt) = @_;
+	my($name, $val) = ($opt->{name}, $opt->{value});
+	
+	my $width = $opt->{width} || 16;
+	$opt->{filter} = 'option_format'
+		unless length($opt->{filter});
+	$val = Vend::Interpolate::filter_value('option_format', $val);
+	my @opts = split /\s*,\s*/, $val;
+	my $out = "<TABLE CELLPADDING=0 CELLSPACING=0><TR><TH><SMALL>Value</SMALL></TH><TH ALIGN=LEFT COLSPAN=2><SMALL>Label</SMALL></TH></TR>";
+	my $done;
+	for(@opts) {
+		my ($v,$l) = split /\s*=\s*/, $_, 2;
+		next unless $l || length($v);
+		$done++;
+		my $default;
+		($l =~ s/\*$// or ! $l && $v =~ s/\*$//)
+			and $default = 1;
+		$out .= option_widget_box($name, $v, $l, $default, $width);
+	}
+	while($done++ < 3) {
+		$out .= option_widget_box($name, '', '', '', $width);
+	}
+	$out .= option_widget_box($name, '', '', '', $width);
+	$out .= option_widget_box($name, '', '', '', $width);
+	$out .= "</TABLE>";
+}
+
+
 sub movecombo {
 	my ($opt, $opts) = @_;
 	my $name = $opt->{name};
@@ -370,13 +522,24 @@ sub movecombo {
 	my $ejs = ",1" if $opt->{rows} > 1;
 	$opt->{extra} .= qq{ onChange="addItem(this.form['X$name'],this.form['$name']$ejs)"}
             unless $opt->{extra};
+	my $tbox = '';
 	my $out = dropdown($opt, $opts);
-	if($opt->{rows} > 1) {
-		$out .= qq(<TEXTAREA ROWS="$opt->{rows}");
-		$out .= qq( WRAP="virtual" COLS="$opt->{cols}");
-		$out .= qq( NAME="$name">$opt->{value}</TEXTAREA>);
+
+	my $template = $opt->{o_template} || '';
+	if(! $template) {
+		if($opt->{rows} > 1) {
+			$template .= q(<textarea rows="{ROWS|4}" wrap="{WRAP|virtual}");
+			$template .= q( cols="{COLS|20} name="{NAME}">{ENCODED}</textarea>);
+		}
+		else {
+			$template .= qq(<input TYPE="text" size="{COLS||40}");
+			$template .= qq( name="{NAME}" value="{ENCODED}">);
+		}
 	}
-	return $out;
+	$opt->{name} = $name;
+	$tbox = attr_list($template, $opt);
+
+	return $opt->{reverse} ? $tbox . $out : $out . $tbox;
 }
 
 sub combo {
@@ -395,6 +558,8 @@ sub combo {
 sub dropdown {
 	my($opt, $opts) = @_;
 #::logDebug("called select opt=" . ::uneval($opt) . "\nopts=" . ::uneval($opts));
+
+	$opts ||= [];
 
 	my $price = $opt->{price} || {};
 
@@ -484,6 +649,60 @@ sub dropdown {
 	}
 	$run .= "</optgroup>" if $optgroup_one++;
 	$run .= attr_list($Template{selecttail}, $opt);
+}
+
+=head2 yesno
+
+Provides an easy "Yes/No" widget. C<No> returns a value of blank/false,
+and C<Yes> returns 1/true.
+
+Calling:
+
+  {
+    name => 'varname' || undef,       ## Derived from item if called by
+                                       # [PREFIX-options] or [PREFIX-accessories]
+    type => 'yesno' || 'yesno radio', ## Second is shorthand for variant=>radio
+    variant => 'radio' || 'select',   ## Default is select
+  }
+
+The data array passed by C<passed> is never used, it is overwritten
+with the equivalent of '=No,1=Yes'. C<No> and C<Yes> are generated from
+the locale, so if you want a translated version set those keys in the locale.
+
+If you want another behavior the same widget can be constructed with:
+
+	[display passed="=My no,0=My yes" type=select ...]
+
+=cut
+
+
+sub yesno {
+	my $opt = shift;
+	$opt->{value} = is_yes($opt->{value});
+	my @opts = (
+					['', errmsg('No')],
+					['1', errmsg('Yes')],
+				);
+	my $routine = $opt->{subwidget} || \&dropdown;
+	return $routine->($opt, \@opts);
+}
+
+=head2 noyes
+
+Same as C<yesno> except sense is reversed. C<No> returns a value of 1/true,
+and C<Yes> returns blank/false.
+
+=cut
+
+sub noyes {
+	my $opt = shift;
+	$opt->{value} = is_no($opt->{value});
+	my @opts = (
+					['1', errmsg('No')],
+					['', errmsg('Yes')],
+				);
+	my $routine = $opt->{subwidget} || \&dropdown;
+	return $routine->($opt, \@opts);
 }
 
 sub box {
@@ -580,33 +799,6 @@ sub box {
 	$run .= $footer;
 }
 
-sub produce_range {
-	my ($ary, $max) = @_;
-	$max = $Vend::Cfg->{Limit}{option_list} if ! $max;
-	my @do;
-	for (my $i = 0; $i < scalar(@$ary); $i++) {
-		$ary->[$i] =~ /^\s* ([a-zA-Z0-9]+) \s* \.\.+ \s* ([a-zA-Z0-9]+) \s* $/x
-			or next;
-		my @new = $1 .. $2;
-		if(@new > $max) {
-			::logError(
-				"Refuse to add %d options to option list via range, max %d.",
-				scalar(@new),
-				$max,
-				);
-			next;
-		}
-		push @do, $i, \@new;
-	}
-	my $idx;
-	my $new;
-	while($new = pop(@do)) {
-		my $idx = pop(@do);
-		splice @$ary, $idx, 1, @$new;
-	}
-	return;
-}
-
 sub scalar_to_array {
 	my ($passed, $opt) = @_;
 	return $passed if ref($passed) eq 'ARRAY'
@@ -618,6 +810,10 @@ sub scalar_to_array {
 
 	$opt ||= {};
 	my @out;
+
+	if($passed =~ m{^[^=]*\0}) {
+		$passed = filter_value($passed, 'option_format');
+	}
 
 	my $delim = $opt->{delimiter} || ',';
 	$delim = '\s*' . $delim . '\s*';
@@ -668,6 +864,11 @@ sub scalar_to_array {
 sub display {
 	my($opt, $item) = @_;
 
+if($opt->{debug}) {
+	::logDebug("display called, options=" . uneval($opt));
+	::logDebug("item=" . uneval($item)) if $item;
+}
+
 	if(! ref $opt) {
 		### Has effect of simple default widget for name
 		### or some text output
@@ -685,6 +886,13 @@ sub display {
 			push @out, display( ref $_ eq 'ARRAY' ? @$_ : ($_));
 		}
 		return join "", @out;
+	}
+
+	if($opt->{pre_filter} and defined $opt->{value}) {
+		$opt->{value} = Vend::Interpolate::filter_value(
+							$opt->{pre_filter},
+							$opt->{value},
+						);
 	}
 
 	if($opt->{override}) {
@@ -711,14 +919,24 @@ sub display {
 	## Note the fact that attribute can take its value from name
 	## and vice-versa
 	$opt->{attribute} ||= $opt->{name};
-	$opt->{field}     ||= $opt->{attribute};
 	$opt->{prepend}   = ''  unless defined $opt->{prepend};
 	$opt->{append}    = ''  unless defined $opt->{append};
 	$opt->{delimiter} = ',' unless length($opt->{delimiter});
 	$opt->{cols}      ||= $opt->{width} || $opt->{size};
+	$opt->{rows}      ||= $opt->{height};
+
+	# This handles the embedded attribute information in certain types,
+	# for example: 
+	# 
+	#	text_60       is the same as type => 'text', width => '60'
+	#   datetime_ampm is the same as type => 'datetime', ampm => 1
+
+	# Warning -- this sets $opt->{type} and has possible side-effects
+	#            in $opt
+	my $type = parse_type($opt);
 
 	my $data;
-	
+	my $look;
 
 	if($opt->{passed}) {
 		$data = scalar_to_array($opt->{passed}, $opt);
@@ -731,55 +949,77 @@ sub display {
 	elsif(! $Global::VendRoot) {
 		# Not in Interchange
 	}
-	elsif($opt->{lookup_query}) {
+	elsif($look = $opt->{lookup_query}) {
 		my $tab = $opt->{table} || $Vend::Cfg->{ProductFiles}[0];
 		my $db = Vend::Data::database_exists_ref($tab);
-		$data = $db->query($opt->{lookup_query})
+		$data = $db->query($look)
 			if $db;
+		$data ||= [];
 	}
-	elsif(my $look = $opt->{lookup}) {
-		## Replace with Vend::Specific stuff
-		my $tab = $opt->{table} || $Vend::Cfg->{ProductFiles}[0];
-		my @f = split /\s*,\s*/, $look;
-		my $order = $opt->{sort} || $f[1] || $f[0];
+	elsif($look = $opt->{lookup}) {
+::logDebug("lookup called, opt=" . uneval($opt));
 		LOOK: {
-			last LOOK unless $tab;
+			my $tab = $opt->{db} || $opt->{table} || $Vend::Cfg->{ProductFiles}[0];
 			my $db = Vend::Data::database_exists_ref($tab)
 				or last LOOK;
-			my $q = qq{SELECT DISTINCT $look FROM $tab ORDER BY $order};
+			my $fld = $opt->{field} || $look;
+			my $key = $look;
+
+			if($key ne $fld and $fld !~ /,/) {
+				$fld = "$key,$fld";
+			}
+
+			my @f = split /\s*,\s*/, $fld;
+			my $order = $opt->{sort} || $f[1] || $f[0];
+			last LOOK unless $tab;
+			my $q = qq{SELECT DISTINCT $fld FROM $tab ORDER BY $order};
 			eval {
-				$data = $db->query($q);
+				$data = $db->query($q) || die;
+				if(@f > 2) {
+					for(@$data) {
+						my $join = $opt->{label_joiner} || '-';
+						my $string = join $join, splice @$_, 1;
+						$_->[1] = $string;
+					}
+				}
 			};
 		}
 	}
 
-	# This handles the embedded attribute information in certain types,
-	# for example: 
-	# 
-	#	text_60       is the same as type => 'text', width => '60'
-	#   datetime_ampm is the same as type => 'datetime', ampm => 1
+	## This means a lookup was attempted above
+	if($look and $data) {
+		my $ary;
+		if($opt->{options}) {
+			$ary = scalar_to_array($opt->{options}, $opt) || [];
+		}
+		elsif(! scalar(@$data)) {
+			$ary = [['', errmsg('--no current values--')]];
+		}
+		if($opt->{lookup_exclude}) {
+			my $sub;
+			eval {
+				$sub = sub { $_[0] !~ m{$opt->{lookup_exclude}} };
+			};
+			if ($@) {
+				logError(
+					"Bad lookup pattern m{%s}: %s", $opt->{lookup_exclude}, $@,
+				);
+				undef $sub;
+			}
+			if($sub) {
+				@$data = grep $_,
+							map {
+								$sub->(join '=', @$_)
+									or return undef;
+								return $_;
+							} @$data;
+			}
+		}
+		unshift @$data, @$ary if $ary;
+	}
 
-#::logDebug("type=$opt->{type}");
-	parse_type($opt);
-#::logDebug("type=$opt->{type} after parse_type(opt)");
-
-	# Action taken for various types
-	my %daction = (
-		value       => \&processed_value,
-		display     => \&current_label,
-		value       => sub { my $opt = shift; return $opt->{value} },
-		show        => \&show_data,
-		options     => \&show_options,
-		select      => \&dropdown,
-		default     => \&template_sub,
-		radio       => \&box,
-		checkbox    => \&box,
-		links		=> \&links,
-		movecombo	=> \&movecombo,
-		combo		=> \&combo,
-	);
-
-## Some legacy stuff
+## Some legacy stuff, has to do with default behavior when called from
+## item-accessories or item-options
 	if($ishash) {
 		my $adder;
 		$adder = $item->{mv_ip} if	defined $item->{mv_ip}
@@ -817,7 +1057,52 @@ sub display {
 	$opt->{value} = $opt->{default} if ! defined $opt->{value};
     $opt->{encoded} = HTML::Entities::encode($opt->{value});
 
-	my $sub = $daction{$opt->{type}} || $daction{default};
+	# Action taken for various types
+	my %daction = (
+		checkbox    => \&box,
+		combo		=> \&combo,
+		date		=> \&date_widget,
+		default     => \&template_sub,
+		display     => \&current_label,
+		links		=> \&links,
+		movecombo	=> \&movecombo,
+		noyes		=> \&noyes,
+		option_format => \&option_widget,
+		options     => \&show_options,
+		radio       => \&box,
+		select      => \&dropdown,
+		show        => \&show_data,
+		value       => \&processed_value,
+		value       => sub { my $opt = shift; return $opt->{value} },
+		yesno		=> \&yesno,
+	);
+
+	## The user/admin widget space
+	# Optimization for large lists
+	unless($Vend::UserWidget) {
+		my $ref;
+		$Vend::UserWidget	= ($ref = $Vend::Cfg->{CodeDef}{Widget})
+							? $ref->{Routine}
+							: {};
+		if(my $ref = $Global::CodeDef->{Widget}{Routine}) {
+			while ( my ($k, $v) = each %$ref) {
+				next if $Vend::UserWidget->{$k};
+				$Vend::UserWidget->{$k} = $v;
+			}
+		}
+	}
+
+	my $sub =  $Vend::UserWidget->{$type}
+			|| $daction{$type}
+			|| $daction{default};
+
+	if($opt->{variant}) {
+::logDebug("variant='$opt->{variant}'");
+		$opt->{subwidget}	=  $Vend::UserWidget->{$opt->{variant}}
+							|| $daction{$opt->{variant}}
+							|| $daction{default};
+	}
+
 	return $sub->($opt, $data);
 }
 
@@ -828,11 +1113,8 @@ sub parse_type {
 		return $opt;
 	}
 
-	$opt->{type} = lc($opt->{type}) || 'text';
-	return if $opt->{type} =~ /^[a-z][a-z0-9]*$/;
-
-	my $type = $opt->{type};
-	return if $type =~ /^[a-z]+$/;
+	my $type = $opt->{type} = lc($opt->{type}) || 'text';
+	return $type if $type =~ /^[a-z][a-z0-9]*$/;
 
 	if($type =~ /^text/i) {
 		my $cols;
@@ -889,7 +1171,7 @@ sub parse_type {
 		}
 
 		if($type =~ /nbsp/i) {
-			$opt->{nbsp};
+			$opt->{nbsp} = 1;
 		}
 		elsif ($type  =~ /left[\s_]*(\d?)/i ) {
 			$opt->{breakmod} = $1;
@@ -922,41 +1204,20 @@ sub parse_type {
 		$type =~ /.*?multiple\s+(.*)/
 			and $opt->{extra} ||= $1;
 	}
-}
-
-sub test {
-	my $out = qq{<form action="/">\n};
-	for(qw/
-		text_60
-		select
-		links
-		multi
-		combo
-	/)
-	{
-		$out .= display({
-			name   => 'SelectName',
-			value  => 'Test',
-			type   => $_,
-			left   => 1,
-			breakmod   => 2,
-			passed => '
-				=--select it--,
-				~~Valid~~,
-				Test=Testing,
-				Testing1=Testing again,
-				Testing2=Testing again and again,
-				Testing3=Testing again redux,
-				Testing4=Testing redux redux,
-				~~Invalid~~,
-				Not=Not,
-				Not1=Not again,
-				Not2=Not again and again,
-				',
-		} );
+	elsif($type =~ /^yesno/i) {
+		$type =~ s/^yesno[_\s]+//;
+		$opt->{type}    = 'yesno';
+		$type =~ s/\W+//g;
+		$opt->{variant} = $type =~ /radio/ ? 'radio' : $type;
 	}
-	$out .= "</form>\n";
-	return $out;
+	elsif($type =~ /^noyes/i) {
+		$type =~ s/^noyes[_\s]+//;
+		$opt->{type}    = 'noyes';
+		$type =~ s/\W+//g;
+		$opt->{variant} = $type =~ /radio/ ? 'radio' : $type;
+	}
+
+	return $opt->{type};
 }
 
 1;

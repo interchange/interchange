@@ -131,11 +131,11 @@ sub {
 		)
 	{
 		$preamble = $1;
-		$ref->{ui_content} = $2;
+		$ref->{ui_current_content} = $2;
 		$postamble = $3;
 	}
 	else {
-		$ref->{ui_content} = $data;
+		$ref->{ui_current_content} = $data;
 		return uneval($ref) if $opt->{textref};
 		return $ref;
 	}

@@ -1,6 +1,6 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 2.10 2001-11-11 07:15:30 mheins Exp $
+# $Id: Primitive.pm,v 2.11 2002-02-02 08:57:11 mheins Exp $
 
 # Copyright (C) 1998-2001 Red Hat, Inc. <interchange@redhat.com>
 
@@ -25,7 +25,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 2.10 $, 10);
+$VERSION = substr(q$Revision: 2.11 $, 10);
 
 $DEBUG = 0;
 
@@ -622,207 +622,6 @@ sub rotate {
 	return 1;
 }
 
-my @t = localtime();
-
-my (@years) = ( $t[5] + 1899 .. $t[5] + 1910 );
-my (@months);
-my (@days);
-
-for(1 .. 12) {
-	$t[4] = $_ - 1;
-	$t[5] = 1;
-	push @months, [sprintf("%02d", $_), POSIX::strftime("%B", @t)];
-}
-
-for(1 .. 31) {
-	push @days, [sprintf("%02d", $_), $_];
-}
-
-sub round_to_fifteen {
-	my $val = shift;
-#::logDebug("round_to_fifteen val in=$val");
-	$val = substr($val, 0, 4);
-	$val = "0$val" if length($val) == 3;
-	return '0000' if length($val) < 4;
-	if($val !~ /(00|15|30|45)$/) {
-		my $hr = substr($val, 0, 2);
-		$hr =~ s/^0//;
-		my $min = substr($val, 2, 2);
-		$min =~ s/^0//;
-		if($min > 45 and $hr < 23) {
-			$hr++;
-			$min = 0;
-		}
-		elsif($min > 30) {
-			$min = 45;
-		}
-		elsif($min > 15) {
-			$min = 30;
-		}
-		elsif($min > 0) {
-			$min = 15;
-		}
-		elsif ($hr == 23) {
-			$min = 45;
-		}
-		else {
-			$min = 0;
-		}
-		$val = sprintf('%02d%02d', $hr, $min);
-	}
-#::logDebug("round_to_fifteen val out=$val");
-	return $val;
-}
-
-sub date_widget {
-	my($name, $val, $time) = @_;
-	if($val =~ /\D/) {
-		$val = Vend::Interpolate::filter_value('date_change', $val);
-	}
-	my $now;
-	if($time and $time =~ /([-+])(\d+)/) {
-		my $sign = $1;
-		my $adjust = $2;
-		$adjust *= 3600;
-		$now = time;
-		$now += $sign eq '+' ? $adjust : -$adjust;
-	}
-
-	@t = localtime($now || time);
-	if (not $val) {
-		$t[2]++ if $t[2] < 23;
-		$val = POSIX::strftime("%Y%m%d%H00", @t);
-	}
-	my $sel = 0;
-	my $out = qq{<SELECT NAME="$name">};
-	my $o;
-	for(@months) {
-		$o = qq{<OPTION VALUE="$_->[0]">} . errmsg($_->[1]) . '</OPTION>';
-		($out .= $o, next) unless ! $sel and $val;
-		$o =~ s/>/ SELECTED>/ && $sel++
-			if substr($val, 4, 2) eq $_->[0];
-		$out .= $o;
-	}
-	$sel = 0;
-	$out .= qq{</SELECT>};
-	$out .= qq{<INPUT TYPE=hidden NAME="$name" VALUE="/">};
-	$out .= qq{<SELECT NAME="$name">};
-	for(@days) {
-		$o = qq{<OPTION VALUE="$_->[0]">$_->[1]} . '</OPTION>';
-		($out .= $o, next) unless ! $sel and $val;
-		$o =~ s/>/ SELECTED>/ && $sel++
-			if substr($val, 6, 2) eq $_->[0];
-		$out .= $o;
-	}
-	$sel = 0;
-	$out .= qq{</SELECT>};
-	$out .= qq{<INPUT TYPE=hidden NAME="$name" VALUE="/">};
-	$out .= qq{<SELECT NAME="$name">};
-	if($::Variable->{UI_DATE_BEGIN}) {
-		my $cy = $t[5] + 1900;
-		my $by = $::Variable->{UI_DATE_BEGIN};
-		my $ey = $::Variable->{UI_DATE_END} || ($cy + 10);
-		if($by < 100) {
-			$by = $cy - abs($by);
-		}
-		if($ey < 100) {
-			$ey += $cy;
-		}
-		@years = ($by .. $ey);
-	}
-	for(@years) {
-		$o = qq{<OPTION>$_} . '</OPTION>';
-		($out .= $o, next) unless ! $sel and $val;
-		$o =~ s/>/ SELECTED>/ && $sel++
-			if substr($val, 0, 4) eq $_;
-		$out .= $o;
-	}
-	$out .= qq{</SELECT>};
-	return $out unless $time;
-
-	$val =~ s/^\d{8}//;
-	$val =~ s/\D+//g;
-	$val = round_to_fifteen($val);
-	$out .= qq{<INPUT TYPE=hidden NAME="$name" VALUE=":">};
-	$out .= qq{<SELECT NAME="$name">};
-	
-	my $ampm = $time =~ /pm/ ? 1 : 0;
-	my $mod = '';
-	undef $sel;
-	my %special = qw/ 0 midnight 12 noon /;
-	
-	$ampm =1;
-	for my $hr ( 0 .. 23) {
-		for my $min ( 0,15,30,45 ) {
-			my $disp_hour = $hr;
-			if($ampm) {
-				if( $hr < 12) {
-					$mod = 'am';
-				}
-				else {
-					$mod = 'pm';
-					$disp_hour = $hr - 12 unless $hr == 12;
-				}
-				$mod = errmsg($mod);
-				$mod = " $mod";
-			}
-			if($special{$hr} and $min == 0) {
-				$disp_hour = errmsg($special{$hr});
-			}
-			elsif($ampm) {
-				$disp_hour = sprintf("%2d:%02d%s", $disp_hour, $min, $mod);
-			}
-			else {
-				$disp_hour = sprintf("%02d:%02d", $hr, $min);
-			}
-			my $time = sprintf "%02d%02d", $hr, $min;
-			$o = sprintf qq{<OPTION VALUE="%s">%s}, $time, $disp_hour;
-			($out .= $o, next) unless ! $sel and $val;
-#::logDebug("prospect=$time actual=$val");
-			$o =~ s/>/ SELECTED>/ && $sel++
-				if $val eq $time;
-			$out .= $o;
-		}
-	}
-	$out .= "</SELECT>";
-	return $out;
-}
-
-sub option_widget_box {
-	my ($name, $val, $lab, $default, $width) = @_;
-	my $half = int($width / 2);
-	my $sel = $default ? ' SELECTED' : '';
-	$val =~ s/"/&quot;/g;
-	$lab =~ s/"/&quot;/g;
-	$width = 10 if ! $width;
-	return qq{<TR><TD><SMALL><INPUT TYPE=text NAME="$name" VALUE="$val" SIZE=$half></SMALL></TD><TD><SMALL><INPUT TYPE=text NAME="$name" VALUE="$lab" SIZE=$width></SMALL></TD><TD><SMALL><SMALL><SELECT NAME="$name"><OPTION value="0">no<OPTION value="1"$sel>default*</SELECT></SMALL></SMALL></TD></TR>};
-}
-
-sub option_widget {
-	my($name, $val, $opt) = @_;
-	$opt = {} if ! ref $opt;
-	my $width = $opt->{width} || 16;
-	$val = Vend::Interpolate::filter_value('option_format', $val);
-	my @opts = split /\s*,\s*/, $val;
-	my $out = "<TABLE CELLPADDING=0 CELLSPACING=0><TR><TH><SMALL>Value</SMALL></TH><TH ALIGN=LEFT COLSPAN=2><SMALL>Label</SMALL></TH></TR>";
-	my $done;
-	for(@opts) {
-		my ($v,$l) = split /\s*=\s*/, $_, 2;
-		next unless $l || length($v);
-		$done++;
-		my $default;
-		($l =~ s/\*$// or ! $l && $v =~ s/\*$//)
-			and $default = 1;
-		$out .= option_widget_box($name, $v, $l, $default, $width);
-	}
-	while($done++ < 3) {
-		$out .= option_widget_box($name, '', '', '', $width);
-	}
-	$out .= option_widget_box($name, '', '', '', $width);
-	$out .= option_widget_box($name, '', '', '', $width);
-	$out .= "</TABLE>";
-}
-
 sub uploadhelper_widget {
 	# $column, $value, $record->{outboard}, $record->{width}
     my ($name, $val, $path, $size) = @_;
@@ -938,7 +737,7 @@ sub meta_display {
 	$meta = $meta->ref();
 	if($column eq $meta->config('KEY')) {
 		if($o->{arbitrary} and $value !~ /::.+::/) {
-			$base_entry_value = ($value =~ /^[^:]+::(\w+)$/)
+			$base_entry_value = ($value =~ /^([^:]+)::(\w+)$/)
 								? $1
 								: $value;
 		}
@@ -1002,11 +801,11 @@ sub meta_display {
 
 		## Here we allow override with the display tag, even with views and
 		## extended
-		my @override = grep defined $o->{$_},
-						qw/
+		my @override = qw/
 							append
 							attribute
 							db
+							extra
 							field
 							filter
 							height
@@ -1015,6 +814,7 @@ sub meta_display {
 							label
 							lookup
 							lookup_exclude
+							lookup_query
 							name
 							options
 							outboard
@@ -1025,6 +825,8 @@ sub meta_display {
 							width
 							/;
 		for(@override) {
+			delete $record->{$_} if ! length($record->{$_});
+			next unless defined $o->{$_};
 			$record->{$_} = $o->{$_};
 		}
 
@@ -1044,9 +846,11 @@ sub meta_display {
 				elsif($passed =~ /^columns(::(\w*))?\s*$/) {
 					my $total = $1;
 					my $tname = $2 || $record->{db} || $table;
-#::logDebug("columns options, total=$total tname=$tname");
-					$tname = $base_entry_value if $total eq '::';
-					my $db = $Vend::Database{$tname};
+::logDebug("columns options, total=$total tname=$tname base_entry_value=$base_entry_value");
+					if ($total eq '::' and $base_entry_value) {
+						$tname = $base_entry_value;
+					}
+					my $db = ::database_exists_ref($tname);
 					$record->{passed} = join (',', "=--none--", $db->columns())
 						if $db;
 				}
@@ -1056,68 +860,8 @@ sub meta_display {
 				}
 			}
 		}
-		if($record->{pre_filter}) {
-			$value = Vend::Interpolate::filter_value($record->{pre_filter}, $value);
-		}
-		if($record->{lookup}) {
-			my $fld = $record->{field} || $record->{lookup};
-			my $key = $record->{lookup};
-			LOOK: {
-				my $dbname = $record->{db} || $table;
-				my $db = Vend::Data::database_exists_ref($dbname);
-				last LOOK unless $db;
-				my $flds = $key eq $fld ? $key : "$key, $fld";
-				my $query = "select DISTINCT $flds FROM $dbname ORDER BY $fld";
-				my $ary = $db->query(
-						{
-							query => $query,
-							ml => $::Variable->{UI_ACCESS_KEY_LIMIT} || 500,
-							st => 'db',
-						}
-					);
-				last LOOK unless ref($ary);
-				if(! scalar @$ary) {
-					push @$ary, ["=--no current values--"];
-				}
-				undef $record->{type} unless $record->{type} =~ /multi|combo/;
-				my $sub;
-				if($record->{lookup_exclude}) {
-					eval {
-						$sub = sub { $_[0] !~ m{$record->{lookup_exclude}} };
-					};
-					if ($@) {
-						::logError(errmsg(
-										"Bad lookup pattern m{%s}: %s",
-										$record->{exclude},
-										$@,
-									));
-						$sub = \&CORE::length;
-					}
-				}
-				$sub = sub { length(@_) } if ! $sub;
-				$record->{passed} = join ",", grep $sub->($_),
-									map
-										{ $_->[1] =~ s/,/&#44;/g; $_->[0] . "=" . $_->[1]}
-									@$ary;
-				if($record->{options}) {
-					$record->{passed} =
-						join ",", $record->{options}, $record->{passed};
-				}
-				$record->{passed} = "=--no current values--"
-					if ! $record->{passed};
-			}
-		}
-		elsif ($record->{type} eq 'yesno') {
-			$record->{passed}  = '=' . ::errmsg('No');
-			$record->{passed} .= ',1=' . ::errmsg('Yes');
-			$o->{type} = 'select' unless $o->{type} =~ /radio/;
-		}
-		elsif ($record->{type} eq 'noyes') {
-			$record->{passed}  = '1=' . ::errmsg('No');
-			$record->{passed} .= ',=' . ::errmsg('Yes');
-			$o->{type} = 'select' unless $o->{type} =~ /radio/;
-		}
-		elsif ($record->{type} =~ s/^custom\s+//s) {
+
+		if ($record->{type} =~ s/^custom\s+//s) {
 			my $wid = lc $record->{type};
 			$wid =~ tr/-/_/;
 			my $w;
@@ -1135,24 +879,6 @@ sub meta_display {
 			if($@) {
 				::logError("error using custom widget %s: %s", $wid, $@);
 			}
-			return $w unless $o->{template};
-			return ($w, $record->{label}, $record->{help}, $record->{help_url});
-		}
-		elsif ($record->{type} eq 'option_format') {
-			my $w = option_widget($record->{name}, $value);
-			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$record->{name}" VALUE="option_format">};
-			return $w unless $o->{template};
-			return ($w, $record->{label}, $record->{help}, $record->{help_url});
-		}
-		elsif ($record->{type} eq 'date') {
-			my $w = date_widget($record->{name}, $value);
-			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$record->{name}" VALUE="date_change">};
-			return $w unless $o->{template};
-			return ($w, $record->{label}, $record->{help}, $record->{help_url});
-		}
-		elsif ($record->{type} =~ /^date_?time/) {
-			my $w = date_widget($record->{name}, $value, $record->{type});
-			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$record->{name}" VALUE="date_change">};
 			return $w unless $o->{template};
 			return ($w, $record->{label}, $record->{help}, $record->{help_url});
 		}
@@ -1207,50 +933,36 @@ sub meta_display {
 			$record->{$_} =~ s/_UI_COLUMN_/$column/g;
 			$record->{$_} =~ s/_UI_KEY_/$key/g;
 		}
-		if($record->{height}) {
-			if($record->{type} =~ /multi/i) {
-				$record->{type} = "MULTIPLE SIZE=$record->{height}";
-			}
-			elsif ($record->{type} =~ /textarea/i) {
-				my $width = $record->{width} || 80;
-				$record->{type} =~ s/textarea/textarea_$record->{height}_$width/;
-			}
-		}
-		elsif ($record->{width}) {
-			if($record->{type} =~ /textarea/) {
-				$record->{type} = "textarea_2_" . $record->{width};
-			}
-			elsif($record->{type} =~ /text/) {
-				$record->{type} = "text_$record->{width}";
-			}
-			elsif($record->{type} =~ /radio|check/) {
-				$record->{type} =~ s/(left|right)[\s_]*\d*/$1 $record->{width}/;
-			}
-		}
 
 		if(! $o->{type} and ! $record->{type}) {
 			$o->{type} = 'text' unless $record->{passed};
 		}
-		$opt = {
-			attribute	=> ($record->{'attribute'}	|| $column),
-			table		=> ($record->{'db'}			|| $meta_db),
-			rows 		=> ($o->{rows} || $record->{height}),
-			cols 		=> ($o->{cols} || $record->{width}),
-			column		=> ($record->{'field'}		|| 'options'),
-			name		=> ($o->{'name'} || $record->{'name'} || $column),
-			outboard	=> ($record->{'outboard'}	|| $metakey),
-			passed		=> ($record->{'passed'}		|| undef),
-			type		=> ($o->{type} || $record->{'type'}		|| undef),
-			prepend		=> ($record->{'prepend'}	|| undef),
-			append		=> ($record->{'append'}		|| undef),
-			extra		=> ($o->{'extra'} || $record->{extra} || undef),
-		};
-		my $w = Vend::Interpolate::tag_accessories(
-				undef, undef, $opt, { $column => $value } );
+# Copied above
+# append attribute db extra field filter height help help_url js label lookup
+# lookup_exclude name options outboard passed pre_filter prepend
+# type width
+
+::logDebug("passed=$record->{passed}") if $record->{debug};
+		my %things = (
+			attribute	=> $column,
+			cols	 	=> $o->{cols}   || $record->{width},
+			field	 	=> $column,
+			passed	 	=> $record->{options},
+			rows 		=> $o->{rows}	|| $record->{height},
+			table		=> $table,
+			value		=> $value,
+		);
+
+		while( my ($k, $v) = each %things) {
+			next if length $record->{$k};
+			$record->{$k} = $v;
+		}
+		
+		my $w = Vend::Form::display($record);
 		my $filter;
-		if($filter = ($o->{filter} || $record->{filter})) {
+		if($opt->{filter}) {
 			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$opt->{name}" VALUE="};
-			$w .= $filter;
+			$w .= $opt->{filter};
 			$w .= '">';
 		}
 		return $w unless $o->{template};
