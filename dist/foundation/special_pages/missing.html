@@ -1,5 +1,5 @@
 [if type=explicit compare=`q{[subject]} =~ m{^admin/}` ]
-[set ui_failure]<h2>[msg arg.0="[subject]"]Sorry, the page (%s) was not found[/msg]</h2>[/set]
+[set ui_error]<h2>[msg arg.0="[subject]"]Sorry, the page (%s) was not found[/msg]</h2>[/set]
 [include admin/error.html]
 [else]
 
