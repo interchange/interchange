@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.32 2001-05-24 19:10:27 jason Exp $
+# $Id: DBI.pm,v 1.25.2.33 2001-05-28 13:51:51 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.32 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.33 $, 10);
 
 use strict;
 
@@ -1442,10 +1442,7 @@ sub query {
 		$rc = $sth->execute();
 #::logDebug("Query executed OK. rc=" . (defined $rc ? $rc : 'undef'));
 		
-		if($opt->{row_count}) {
-			# don't do any fetching when just counting rows
-			$ref = \$rc; # so we skip the MVSEARCH stuff below
-		} elsif ($opt->{hashref}) {
+		if ($opt->{hashref}) {
 			my @ary;
 			while ( defined (my $rowhashref = $sth->fetchrow_hashref) ) {
 				if ($s->config('UPPERCASE')) {
@@ -1563,7 +1560,7 @@ eval {
 	}
 } # MVSEARCH
 #::logDebug("finished query, rc=$rc ref=$ref arrayref=$opt->{arrayref} Tmp=$Vend::Interpolate::Tmp->{$opt->{arrayref}}");
-	if(ref $ref && ! $rc) {
+	if(ref $ref) {
 		# make sure rc is set if we got a ref from MVSEARCH
 		$rc = scalar @{$ref};
 	}
