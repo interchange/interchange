@@ -29,6 +29,7 @@
 #		to return one the value of one variable:
 #		[env VARNAME]
 #		[env arg="VARNAME"]
+#		[env name="VARNAME"]
 #
 # NOTES:	Works when configured in either catalog.cfg
 #		or interchange.cfg. Thanks to Mike Heins and 
@@ -39,18 +40,19 @@
 
 Usertag env Order arg
 Usertag env PosNumber 1
+UserTag env attrAlias name arg
 Usertag env Routine <<EOR
 sub {
 	my $arg = shift;
 	my $env = ::http()->{env};
 	my $out;
 	if (! $arg) {
-		$out = "<table cellpadding=2 cellspacing=1 border=1>\n";
+		$out = "<table cellpadding='2' cellspacing='1' border='1'>\n";
 		foreach ((keys %$env)) {
-			$out .= "<tr><td><b>$_\&nbsp;<\/b><\/td><td>";
-			$out .= "$env->{$_}\&nbsp;<\/td>\n<\/tr><tr>\n";
+			$out .= "<tr><td><b>$_</b></td><td>";
+			$out .= "$env->{$_}</td>\n</tr><tr>\n";
 		}
-		$out .= "<\/table>\n";
+		$out .= "</table>\n";
 	}
 	else {
 		$out = $env->{$arg};
