@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.4 2001-07-29 22:10:12 racke Exp $
+# $Id: Interpolate.pm,v 2.5 2001-08-01 16:24:11 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 
 @EXPORT = qw (
 
@@ -2439,23 +2439,22 @@ sub tag_perl {
 
 	if($tables) {
 		my (@tab) = grep /\S/, split /\s+/, $tables;
-		for(@tab) {
-			next if $Db{$_};
-			my $db = Vend::Data::database_exists_ref($_);
+		foreach my $tab (@tab) {
+			next if $Db{$tab};
+			my $db = Vend::Data::database_exists_ref($tab);
 			next unless $db;
 			$db = $db->ref();
 			if($hole) {
-			$db = $db->ref();
-				$Sql{$_} = $hole->wrap($db->[$Vend::Table::DBI::DBI])
+				$Sql{$tab} = $hole->wrap($db->[$Vend::Table::DBI::DBI])
 					if $db =~ /::DBI/;
-				$Sql{$_} = $hole->wrap($db->[$Vend::Table::LDAP::TIE_HASH])
+				$Sql{$tab} = $hole->wrap($db->[$Vend::Table::LDAP::TIE_HASH])
 					if $db =~ /::LDAP/;
-				$Db{$_} = $hole->wrap($db);
+				$Db{$tab} = $hole->wrap($db);
 			}
 			else {
-				$Sql{$_} = $db->[$Vend::Table::DBI::DBI]
+				$Sql{$tab} = $db->[$Vend::Table::DBI::DBI]
 					if $db =~ /::DBI/;
-				$Db{$_} = $db;
+				$Db{$tab} = $db;
 			}
 		}
 	}
@@ -2546,7 +2545,6 @@ sub tag_perl {
 #::logDebug("tag_perl succeeded result=$result\nEND");
 	return $result;
 }
-
 sub ed {
 	return $_[0] if $Safe_data or $Vend::Cfg->{Pragma}{safe_data};
 	$_[0] =~ s/\[/&#91;/g;
