@@ -473,6 +473,7 @@ sub initialize {
 		chdir '..'
 			or die "Cannot chdir back to ..: $!\n";
 	}
+	my @re_link  = qw( interchange bin/minivend );
 	my @re_dir  = qw( simple/download );
 	my @re_copy = qw(	
 						../pod/mvtags.pod simple/download/mvtags.pod
@@ -587,6 +588,18 @@ EOF
 				or die "Cannot chdir to $realdir: $!\n";
 			$routine->();
 
+		}
+		while ($_ = shift @re_link ) {
+			my $from = $_;
+			my $to = shift @re_link;
+			push @files, $to;
+			my $odir = cwd();
+			chdir $realdir
+				or die "Cannot chdir to $realdir: $!\n";
+			eval {
+				symlink($from, $to);
+			};
+			chdir $odir;
 		}
 		if(-f "$realdir/_uid" and $> == 0) {
 			open(UID, "$realdir/_uid")
