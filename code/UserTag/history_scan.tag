@@ -12,7 +12,7 @@ sub {
 	my $ref = $Vend::Session->{History} or return $Tag->area($default);
 	my ($hist, $href, $cgi);
 	$exclude = qr/$exclude/ if $exclude;
-	for(my $i = $#$ref; $i >= 0; $i--) {
+	for (my $i = $#$ref - abs($opt->{count}); $i >= 0; $i--) {
 		next if $ref->[$i][0] eq 'expired';
 		#Log("checking $ref->[$i][0] for $exclude");
 		if ($exclude and $ref->[$i][0] =~ $exclude) {
@@ -21,7 +21,6 @@ sub {
 		if($find) {
 			next unless $ref->[$i][0] =~ /$find/;
 		}
-		next if abs($opt->{count}) >= (@$ref - $i);
 		($href, $cgi) = @{$ref->[$i]};
 		last;
 	}
