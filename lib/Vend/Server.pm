@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.7.2.6 2000-12-08 20:42:21 zarko Exp $
+# $Id: Server.pm,v 1.7.2.7 2000-12-08 20:58:03 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.7.2.6 $, 10);
+$VERSION = substr(q$Revision: 1.7.2.7 $, 10);
 
 use strict;
 use POSIX qw(setsid strftime);
@@ -46,10 +46,6 @@ use File::CounterFile;
 
 sub new {
 	my($class, $fh, $env, $entity) = @_;
-		map_cgi();
-		$Global::FastMode = 1;
-		return bless { fh => $fh }, $class;
-	}
 	populate($env);
 	my $http = {
 					fh => $fh,
@@ -448,6 +444,7 @@ sub _find {
 	$before;
 }
 
+# used by read_cgi_data
 sub _string {
 	my($in) = @_;
 	my $len = _find($in, " ");
