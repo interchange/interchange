@@ -690,6 +690,7 @@ dist/lib/UI/pages/admin/db_metaconfig_spread.html
 dist/lib/UI/pages/admin/dbconfig.html
 dist/lib/UI/pages/admin/dbdownload.html
 dist/lib/UI/pages/admin/dbinfo.html
+dist/lib/UI/pages/admin/direct_sql.html
 dist/lib/UI/pages/admin/do_upload.html
 dist/lib/UI/pages/admin/do_upload_page.html
 dist/lib/UI/pages/admin/do_view.html
