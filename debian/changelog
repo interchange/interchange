@@ -1,8 +1,8 @@
-interchange (4.8.8-1) unstable; urgency=high
+interchange (4.8.9-1) unstable; urgency=high
 
   * new upstream release (Closes: #240800, upstream fix for security hole)
 
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 29 Mar 2004 12:57:52 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 29 Mar 2004 15:15:33 +0200
 
 interchange (4.8.7-1) unstable; urgency=low
 
