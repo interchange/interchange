@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.89 2001-06-30 21:56:34 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.90 2001-06-30 22:15:11 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.89 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.90 $, 10);
 
 @EXPORT = qw (
 
@@ -706,33 +706,26 @@ sub catch {
 		#----------------------------------------------------------------
 	}
 
-	if($opt->{exact}) {
-		#--------------------------------------------------------------------
-		# Note: If more than one error in $patt, this will return only the
-		# first one listed in the catch tag $body.
-		if( $body =~ m{\[([^\]]*(?:$patt)[^\]]*)\](.*)\[/\1\]}s ) {
-			$body = $2;
-		}
-		else {
-			$body =~ s{\[([^\]]*)\].*\[/\1\]}{}sg;
-		}
-		#--------------------------------------------------------------------
+	my $found;
+	while ($body =~ s{
+						\[/
+							(.+?)
+						/\]
+						(.*?)
+						\[/
+						(?:\1)?/?
+						\]}{}sx ) {
+		my $re;
+		my $error = $2;
+		eval {
+			$re = qr{$1}
+		};
+		next if $@;
+		next unless $patt =~ $re;
+		$found = $error;
+		last;
 	}
-	else {
-		my $found;
-		while ($body =~ s{\[/(.+?)/\](.*?)\[/\1/]}{}s ) {
-			my $re;
-			my $error = $2;
-			eval {
-				$re = qr{$1}
-			};
-			next if $@;
-			next unless $patt =~ $re;
-			$found = $error;
-			last;
-		}
-		$body = $found if $found;
-	}
+	$body = $found if $found;
 
 	$body =~ s/\s+$//;
 	$body =~ s/^\s+//;
@@ -1970,13 +1963,13 @@ sub tag_options {
 		my $ary = $db->query($q); 
 		my $ref;
 		my $i = 0;
+		my $phony = { %$item };
 		foreach $ref (@$ary) {
 
 			next unless $ref->[3];
 			$i++;
 
 			# skip unless o_value
-			my $phony = { %$item };
 			$phony->{mv_sku} = $def[$i];
 
 			if ($opt->{label}) {
@@ -1998,16 +1991,17 @@ sub tag_options {
 						);
 		}
 		
+		$phony->{mv_sku} = $sku;
 		my $begin = tag_accessories(
 							$sku,
 							'',
 							{ 
 								type => 'hidden',
 								attribute => 'mv_sku',
-								item => $item,
+								item => $phony,
 								default => $sku,
 							},
-							$item || undef,
+							$phony,
 						);
 		if($opt->{td}) {
 			for(@out) {
