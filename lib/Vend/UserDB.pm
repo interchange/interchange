@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.13.6.15 2001-03-31 17:28:35 heins Exp $
+# $Id: UserDB.pm,v 1.13.6.16 2001-04-01 04:15:46 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.13.6.15 $, 10);
+$VERSION = substr(q$Revision: 1.13.6.16 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -1408,9 +1408,6 @@ sub userdb {
 		}
 		if ($user->{OPTIONS}{clear_session}) {
 			Vend::Session::init_session();
-			undef $Vend::CookieID;
-			$::Instance->{ClearCookie} = 1;
-			$Vend::Expire = time() + $Vend::Cfg->{SaveExpire};
 		}
 	}
 	elsif (! $Vend::Session->{logged_in}) {
