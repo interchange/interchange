@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.14.2.1 2000-10-20 16:38:41 zarko Exp $
+# $Id: Order.pm,v 1.14.2.2 2000-11-07 23:06:22 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.14.2.1 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.2 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -47,9 +47,8 @@ $VERSION = substr(q$Revision: 1.14.2.1 $, 10);
 	validate_whole_cc
 );
 # LEGACY4
-push @EXPORT, qw (
-	send_mail
-);
+push @EXPORT, 'send_mail';
+*send_mail = \&Vend::Mail::send_compat;
 # END LEGACY4
 
 use Vend::Util;
@@ -108,13 +107,11 @@ sub chain_checks {
 			1 while $mess =~ s/(\S+=\w+)[\s,]*//;
 #::logDebug("chain check $check or succeeded, returning '$val'");
 			return ($val, $var, $message)
-		}
-		elsif ($val) {
+		} elsif($val) {
 #::logDebug("chain check $check and succeeded, remaining '$mess'");
 			$result = 1;
 			next;
-		}
-		else {
+		} else {
 #::logDebug("chain check $check or=$or failed, remaining '$mess'");
 			next if $or;
 			1 while $mess =~ s/(\S+=\w+)[\s,]*//;
@@ -144,8 +141,7 @@ sub _charge {
 	if($@) {
 		::logError("Fatal error on charge operation '%s': %s", $params, $@);
 		$message = "Error on charge operation.";
-	}
-	elsif(! $result) {
+	} elsif(! $result) {
 		$message = "Charge operation '$ref->{mv_cyber_mode}' failed" if ! $message;
 	}
 #::logDebug("charge result: result=$result params=$params message=$message");
@@ -167,8 +163,7 @@ sub _credit_card {
 	}
 	if(! $params || $params =~ /^standard$/i ) {
 		$sub = \&encrypt_standard_cc;
-	}
-	elsif(! defined ($sub = $Global::GlobalSub->{$params}) ) {
+	} elsif(! defined ($sub = $Global::GlobalSub->{$params}) ) {
 		::logError("bad credit card check GlobalSub: %s", $params);
 		return undef;
 	}
@@ -188,39 +183,36 @@ sub _credit_card {
 	if($@) {
 		::logError("credit card check GlobalSub %s error: %s", $params, $@);
 		return undef;
-	}
-	elsif(! $::Values->{mv_credit_card_valid}) {
+	} elsif(! $::Values->{mv_credit_card_valid}) {
 		return (0, 'mv_credit_card_valid', $::Values->{mv_credit_card_error});
-	}
-	else {
+	} else {
 		return (1, 'mv_credit_card_valid');
 	}
 }
 
 my %Parse = (
-
-	'&charge'       =>	\&_charge,
-	'&credit_card'  =>	\&_credit_card,
-	'&return'       =>	\&_return,
-	'&fatal'       	=>	\&_fatal,
-	'&and'       	=>	\&_and_check,
-	'&or'       	=>	\&_or_check,
-	'&format'		=> 	\&_format,
-	'&success'		=> 	sub { $Success_page = $_[1] },
-	'&fail'         =>  sub { $Fail_page    = $_[1] },
-	'&final'		=>	\&_final,
-	'&calc'			=>  sub { Vend::Interpolate::tag_calc($_[1]) },
-	'&test'			=>	sub {		
+	'&charge'       => \&_charge,
+	'&credit_card'  => \&_credit_card,
+	'&return'       => \&_return,
+	'&fatal'        => \&_fatal,
+	'&and'          => \&_and_check,
+	'&or'           => \&_or_check,
+	'&format'       => \&_format,
+	'&success'      => sub { $Success_page = $_[1] },
+	'&fail'         => sub { $Fail_page    = $_[1] },
+	'&final'        => \&_final,
+	'&calc'         => sub { Vend::Interpolate::tag_calc($_[1]) },
+	'&test'         => sub {		
 								my($ref,$params) = @_;
 								$params =~ s/\s+//g;
 								return $params;
 							},
-	'&set'			=>	sub {		
+	'&set'          => sub {		
 								my($ref,$params) = @_;
 								my ($var, $value) = split /\s+/, $params, 2;
 								$::Values->{$var} = $value;
 							},
-	'&setcheck'			=>	sub {		
+	'&setcheck'     => sub {		
 								my($ref,$params) = @_;
 								my ($var, $value) = split /\s+/, $params, 2;
 								$::Values->{$var} = $value;
@@ -237,8 +229,7 @@ sub valid_exp_date {
 		$month = $1;
 		$year = $2;
 		$year =~ s/\D+//;
-	}
-	else {
+	} else {
 		$month = $CGI::values{mv_credit_card_exp_month};
 		$year = $CGI::values{mv_credit_card_exp_year};
 	}
@@ -248,7 +239,7 @@ sub valid_exp_date {
 	$year += ($year < 70) ? 2000 : 1900 if $year < 1900;
 	my (@now) = localtime();
 	$now[5] += 1900;
-	return '' if ($year < $now[5]) || ($year == $now[5] && $month <= $now[4]);
+	return '' if($year < $now[5]) || ($year == $now[5] && $month <= $now[4]);
 	return 1;
 }
 
@@ -264,7 +255,6 @@ sub validate_whole_cc {
 	}
 	return 0 unless valid_exp_date($expire);
 	return luhn($num);
-
 }
 
 =head1 Validate credit card routine
@@ -276,20 +266,20 @@ Jon Orwant, from Business::CreditCard and well-known algorithms
 =cut
 
 sub luhn {
-    my ($number) = @_;
-    my ($i, $sum, $weight);
+	my ($number) = @_;
+	my ($i, $sum, $weight);
 
-    $number =~ s/\D//g;
+	$number =~ s/\D//g;
 
-    return 0 unless length($number) >= 13 && 0+$number;
+	return 0 unless length($number) >= 13 && 0+$number;
 
-    for ($i = 0; $i < length($number) - 1; $i++) {
-        $weight = substr($number, -1 * ($i + 2), 1) * (2 - ($i % 2));
-        $sum += (($weight < 10) ? $weight : ($weight - 9));
-    }
+	for ($i = 0; $i < length($number) - 1; $i++) {
+		$weight = substr($number, -1 * ($i + 2), 1) * (2 - ($i % 2));
+		$sum += (($weight < 10) ? $weight : ($weight - 9));
+	}
 
-    return 1 if substr($number, -1) == (10 - $sum % 10) % 10;
-    return 0;
+	return 1 if substr($number, -1) == (10 - $sum % 10) % 10;
+	return 0;
 }
 
 
@@ -306,7 +296,7 @@ sub encrypt_cc {
 	my $tempfile = $Vend::Cfg->{ScratchDir} . '/' . $Vend::SessionID . '.cry';
 
 	#Substitute the filename
-	if ($cmd =~ s/%f/$tempfile/) {
+	if($cmd =~ s/%f/$tempfile/) {
 		$infile = 1;
 	}
 
@@ -328,8 +318,7 @@ sub encrypt_cc {
 		chomp($encrypted = <CRYPT>);
 		close CRYPT;
 		$status = $?;
-	}
-	else {
+	} else {
 		$cmd = "| $cmd " if $cmd;
 		open(CRYPT, "$cmd>$tempfile ") || die "Couldn't fork: $!\n";
 		print CRYPT $enclair;
@@ -378,11 +367,16 @@ sub encrypt_standard_cc {
 	my $force	= $ref->{mv_credit_card_force}		|| '';
 	my $separate = $ref->{mv_credit_card_separate}  || '';
 
-	for ( qw (	mv_credit_card_type		mv_credit_card_number
-				mv_credit_card_exp_year	mv_credit_card_exp_month
-				mv_credit_card_exp_separate mv_credit_card_exp_reference
-				mv_credit_card_exp_all  mv_credit_card_force))
-	{
+	for(qw(
+		mv_credit_card_type
+		mv_credit_card_number
+		mv_credit_card_exp_year
+		mv_credit_card_exp_month
+		mv_credit_card_exp_separate
+		mv_credit_card_exp_reference
+		mv_credit_card_exp_all
+		mv_credit_card_force
+	)) {
 		next unless defined $ref->{$_};
 		delete $ref->{$_} unless $nodelete;
 	}
@@ -398,36 +392,32 @@ sub encrypt_standard_cc {
 				'',			# 2- Month
 				'',			# 3- Year
 				'',			# 4- Month/year
-				'',         # 5- type
-				'',         # 6- Reference number in form 41**1111
+				'',			# 5- type
+				'',			# 6- Reference number in form 41**1111
 	);
 
 	# Get the expiration
-	if ($all =~ m!(\d\d?)[-/](\d\d)(\d\d)?! ){
+	if($all =~ m!(\d\d?)[-/](\d\d)(\d\d)?! ){
 		$month = $1;
 		$year  = "$2$3";
-	}
-	elsif ($month >= 1  and $month <= 12 and $year) 
-	{
+	} elsif($month >= 1  and $month <= 12 and $year) {
 		$all = "$month/$year";
-	}
-	else {
+	} else {
 		$all = '';
 	}
 
-	if ($all) {
+	if($all) {
 		$return[2] = $month;
 		$return[3] = $year;
 		$return[4] = $all;
-	}
-	else {
+	} else {
 		my $msg = errmsg("Can't figure out credit card expiration.");
 		$Vend::Session->{errors}{mv_credit_card_valid} = $msg;
 		push @return, $msg;
 		return @return;
 	}
 
-	if(! valid_exp_date($all) ) {
+	if(! valid_exp_date($all)) {
 		my $msg = errmsg("Card is expired.");
 		$Vend::Session->{errors}{mv_credit_card_valid} = $msg;
 		push @return, $msg;
@@ -437,7 +427,7 @@ sub encrypt_standard_cc {
 	$num =~ s/\D+//g;
 
 	# Get the type
-	unless ( $type ) {
+	unless( $type ) {
 		($num =~ /^3/) and $type = 'amex';
 		($num =~ /^4/) and $type = 'visa';
 		($num =~ /^5/) and $type = 'mc';
@@ -448,16 +438,14 @@ sub encrypt_standard_cc {
 		$type = 'other' if $num !~ /^37/;
 	}
 
-	if ($type and $opt->{accepted} and $opt->{accepted} !~ /\b$type\b/i) {
+	if($type and $opt->{accepted} and $opt->{accepted} !~ /\b$type\b/i) {
 		my $msg = errmsg("Sorry, we don't accept credit card type '%s'.", $type);
 		$Vend::Session->{errors}{mv_credit_card_valid} = $msg;
 		push @return, $msg;
 		return @return;
-	}
-	elsif ($type) {
+	} elsif($type) {
 		$return[5] = $type;
-	}
-	else {
+	} else {
 		my $msg = errmsg("Can't figure out credit card type.");
 		$Vend::Session->{errors}{mv_credit_card_valid} = $msg;
 		push @return, $msg;
@@ -490,7 +478,6 @@ sub encrypt_standard_cc {
 	$return[6] = $check_string;
 
 	return @return;
-
 }
 
 sub testSetServer {
@@ -514,9 +501,8 @@ sub testsendmserver {
 }
 
 sub map_actual {
-
 	# Allow remapping of payment variables
-    my %map = qw(
+	my %map = qw(
 		mv_credit_card_number       mv_credit_card_number
 		name                        name
 		fname                       fname
@@ -542,7 +528,7 @@ sub map_actual {
 		mv_credit_card_exp_year     mv_credit_card_exp_year
 		cyber_mode                  mv_cyber_mode
 		amount                      amount
-    );
+	);
 
 	# Allow remapping of the variable names
 	my $remap = $::Variable->{MV_PAYMENT_REMAP} || $::Variable->{CYBER_REMAP};
@@ -566,7 +552,7 @@ sub map_actual {
 		$actual{$key} = $::Values->{$map{$secondary}} ||
 						$CGI::values{$map{$secondary}};
 	}
-	$actual{b_name}		 = "$actual{b_fname} $actual{b_lname}"
+	$actual{b_name} = "$actual{b_fname} $actual{b_lname}"
 		if $actual{b_lname};
 	if($actual{b_address1}) {
 		$actual{b_address} = "$actual{b_address1}";
@@ -581,55 +567,55 @@ sub charge {
 	my (%actual) = map_actual();
 
 #::logDebug ("cyber_charge, mode val=$::Values->{mv_cyber_mode} cgi=$CGI::values{mv_cyber_mode} actual=$actual{cyber_mode}");
-    my $currency =  $::Variable->{MV_PAYMENT_CURRENCY}
+	my $currency =  $::Variable->{MV_PAYMENT_CURRENCY}
 					|| $::Variable->{CYBER_CURRENCY}
 					|| 'usd';
-    $actual{mv_credit_card_exp_month} =~ s/\D//g;
-    $actual{mv_credit_card_exp_month} =~ s/^0+//;
-    $actual{mv_credit_card_exp_year} =~ s/\D//g;
-    $actual{mv_credit_card_exp_year} =~ s/\d\d(\d\d)/$1/;
+	$actual{mv_credit_card_exp_month} =~ s/\D//g;
+	$actual{mv_credit_card_exp_month} =~ s/^0+//;
+	$actual{mv_credit_card_exp_year} =~ s/\D//g;
+	$actual{mv_credit_card_exp_year} =~ s/\d\d(\d\d)/$1/;
 
-    $actual{mv_credit_card_number} =~ s/\D//g;
+	$actual{mv_credit_card_number} =~ s/\D//g;
 
-    my $exp = $actual{mv_credit_card_exp_month} . '/' .
-    		  $actual{mv_credit_card_exp_year};
+	my $exp = $actual{mv_credit_card_exp_month} . '/' .
+		$actual{mv_credit_card_exp_year};
 
-    $actual{cyber_mode} = 'mauthcapture'
+	$actual{cyber_mode} = 'mauthcapture'
 		unless $actual{cyber_mode};
 
-    my($orderID);
-    my($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime(time());
+	my($orderID);
+	my($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime(time());
 
-    # We'll make an order ID based on date, time, and PID
+	# We'll make an order ID based on date, time, and PID
 
-    # $mon is the month index where Jan=0 and Dec=11, so we use
-    # $mon+1 to get the more familiar Jan=1 and Dec=12
-    $orderID = sprintf("%02d%02d%02d%02d%02d%05d",
-            $year + 1900,$mon + 1,$mday,$hour,$min,$$);
+	# $mon is the month index where Jan=0 and Dec=11, so we use
+	# $mon+1 to get the more familiar Jan=1 and Dec=12
+	$orderID = sprintf("%02d%02d%02d%02d%02d%05d",
+		$year + 1900,$mon + 1,$mday,$hour,$min,$$);
 
-    # The following characters are illegal in an order ID:
-    #    : < > = + @ " % = &
-    #
-    # If you want, you could use a line similar to the following
-    # to remove these illegal characters:
+	# The following characters are illegal in an order ID:
+	#    : < > = + @ " % = &
+	#
+	# If you want, you could use a line similar to the following
+	# to remove these illegal characters:
 
-    $orderID =~ tr/:<>=+\@\"\%\&/_/d;
+	$orderID =~ tr/:<>=+\@\"\%\&/_/d;
 
-    #
-    # Or use something like the following line to only allow
-    # alphanumeric and dash, converting other characters to underscore:
-    #    $orderID =~ tr/A-Za-z0-9\-/_/c;
+	#
+	# Or use something like the following line to only allow
+	# alphanumeric and dash, converting other characters to underscore:
+	#    $orderID =~ tr/A-Za-z0-9\-/_/c;
 
-    # Our test order ID only contains digits, so we don't have
-    # to strip any characters here. You might have to if you
-    # use a different scheme.
+	# Our test order ID only contains digits, so we don't have
+	# to strip any characters here. You might have to if you
+	# use a different scheme.
 
 	my $precision = $::Variable->{CYBER_PRECISION} || 2;
-    $amount = Vend::Interpolate::total_cost();
+	$amount = Vend::Interpolate::total_cost();
 	$amount = sprintf("%.${precision}f", $amount);
-    $amount = "$currency $amount";
+	$amount = "$currency $amount";
 
-    my %result;
+	my %result;
 
 	if($charge_type =~ /^\s*custom\s+(\w+)(?:\s+(.*))?/si) {
 		my ($sub, @args);
@@ -641,8 +627,7 @@ sub charge {
 		%result = $sub->(@args);
 		$Vend::Session->{payment_result} =
 			$Vend::Session->{cybercash_result} = \%result;
-	}
-    elsif ($actual{cyber_mode} =~ /^minivend_test(?:_(.*))?/) {
+	} elsif($actual{cyber_mode} =~ /^minivend_test(?:_(.*))?/) {
 		my $status = $1 || 'success';
 		# Interchange test mode
 		my %payment = (
@@ -668,15 +653,14 @@ sub charge {
 		$result{MStatus} = $status;
 		$Vend::Session->{payment_result} =
 			$Vend::Session->{cybercash_result} = \%result;
-    }
-	elsif ($Vend::CC3) {
+	} elsif($Vend::CC3) {
 		# Live interface operations follow
 		$Vend::CC3server = 1;
 
 		# Cybercash 3.x libraries to be used.
 		# Initialize the merchant configuration file
 		my $status = InitConfig($::Variable->{CYBER_CONFIGFILE});
-		if ($status != 0) {
+		if($status != 0) {
 			$Vend::Session->{cybercash_error} = MCKGetErrorMessage($status);
 			::logError(
 				"Failed to initialize CyberCash from file %s: %s",
@@ -692,7 +676,7 @@ sub charge {
 		if($Vend::CC3server) {
 			# Cybercash 3.x server and libraries to be used.
 
-			if ($status != 0) {
+			if($status != 0) {
 				$Vend::Session->{cybercash_error} = MCKGetErrorMessage($status);
 				return undef;
 			}
@@ -734,16 +718,14 @@ sub charge {
 			#		$POP{'pop.avs_code'};
 			#		$POP{'pop.price'};
 		}
-    }
+	}
 
 	if($result{MStatus} !~ /^success/) {
 		$Vend::Session->{cybercash_error} = $result{MErrMsg};
 		return undef;
-	}
-	elsif($result{MStatus} =~ /success-duplicate/) {
+	} elsif($result{MStatus} =~ /success-duplicate/) {
 		$Vend::Session->{cybercash_error} = $result{MErrMsg};
-	}
-	else {
+	} else {
 		$Vend::Session->{cybercash_error} = '';
 	}
 	$Vend::Session->{payment_id} =
@@ -764,24 +746,20 @@ sub charge {
 	return $result{'order-id'};
 }
 
-
 *cyber_charge = \&charge;
 
-
-
 sub report_field {
-    my($field_name, $seen) = @_;
-    my($field_value, $r);
+my($field_name, $seen) = @_;
+	my($field_value, $r);
 
-    $field_value = $Vend::Session->{'values'}->{$field_name};
-    if (defined $field_value) {
+	$field_value = $Vend::Session->{'values'}->{$field_name};
+	if(defined $field_value) {
 		$$seen{$field_name} = 1;
 		$r = $field_value;
-    }
-	else {
+	} else {
 		$r = "<no input box>";
-    }
-    $r;
+	}
+	$r;
 }
 
 #sub create_onfly {
@@ -792,8 +770,7 @@ sub report_field {
 #		my $secure = $opt->{secure} || '';
 #		if(defined $split_fields) {
 #			return join $joiner, @{$opt}{ split /[\s,]+/, $split_fields };
-#		}
-#		else {
+#		} else {
 #			my @out;
 #			my @fly;
 #			for(keys %{$opt}) {
@@ -818,10 +795,9 @@ sub onfly {
 	my ($code, $qty, $opt) = @_;
 #::logDebug("called onfly");
 	my $item_text;
-	if (ref $opt) {
+	if(ref $opt) {
 		$item_text = $opt->{text} || '';
-	}
-	else {
+	} else {
 		$item_text = $opt;
 		$opt = {};
 	}
@@ -842,8 +818,7 @@ sub onfly {
 	if(defined $split_fields) {
 		@fields = split /[,\s]+/, $split_fields;
 		@{$item}{@fields} = @parms;
-	}
-	else {
+	} else {
 		for(@parms) {
 			($k, $v)  = split /=/, $_;
 			$item->{$k} = $v;
@@ -861,17 +836,17 @@ sub onfly {
 sub mail_order {
 	my ($email, $order_no) = @_;
 	$email = $Vend::Cfg->{MailOrderTo} unless $email;
-    my($body, $ok);
-    my($subject);
+	my($body, $ok);
+	my($subject);
 # LEGACY
-    $body = readin($::Values->{mv_order_report})
+	$body = readin($::Values->{mv_order_report})
 		if $::Values->{mv_order_report};
 # END LEGACY
 #::logDebug( sprintf "found body length %s in values->mv_order_report", length($body));
-    $body = readfile($Vend::Cfg->{OrderReport})
+	$body = readfile($Vend::Cfg->{OrderReport})
 		if ! $body;
 #::logDebug( sprintf "found body length %s in OrderReport", length($body));
-    unless (defined $body) {
+	unless (defined $body) {
 		::logError(
 			q{Cannot find order report in:
 
@@ -885,7 +860,7 @@ trying one more time. Fix this.},
 		$body = readin($Vend::Cfg->{OrderReport});
 		return undef if ! $body;
 	}
-    return undef unless defined $body;
+	return undef unless defined $body;
 
 	$order_no = update_order_number() unless $order_no;
 
@@ -901,14 +876,13 @@ trying one more time. Fix this.},
 
 	if(defined $order_no) {
 	    $subject =~ s/%n/$order_no/;
-	}
-	else { $subject =~ s/\s*%n\s*//g; }
+	} else { $subject =~ s/\s*%n\s*//g; }
 
 #::logDebug("Now ready to send mail, subject=$subject");
 
 #### change this to use Vend::Mail::send
-    $ok = send_mail($email, $subject, $body);
-    return $ok;
+	$ok = send_mail($email, $subject, $body);
+	return $ok;
 }
 
 sub pgp_encrypt {
@@ -935,59 +909,55 @@ sub pgp_encrypt {
 }
 
 sub do_check {
-		local($_) = shift;
-		$parameter = $_;
-		my($var, $val, $m, $message);
-		my $ref = \%CGI::values;
-		if (/^&/) {
-			($var,$val) = split /[\s=]+/, $parameter, 2;
-		}
-		elsif ($parameter =~ /(\w+)[\s=]+(.*)/) {
-			my $k = $1;
-			my $v = $2;
-			$m = $v =~ s/\s+(.*)// ? $1 : undef;
-			($var,$val) =
-				('&format',
-				  $v . ' ' . $k  . ' ' .  $::Values->{$k}
-				  );
-		}
-		else {
-			logError("Unknown order check '%s' in profile %s", $parameter, $profile);
-			return undef;
-		}
-		$val =~ s/&#(\d+);/chr($1)/ge;
+	local($_) = shift;
+	$parameter = $_;
+	my($var, $val, $m, $message);
+	my $ref = \%CGI::values;
+	if(/^&/) {
+		($var,$val) = split /[\s=]+/, $parameter, 2;
+	} elsif($parameter =~ /(\w+)[\s=]+(.*)/) {
+		my $k = $1;
+		my $v = $2;
+		$m = $v =~ s/\s+(.*)// ? $1 : undef;
+		($var,$val) =
+			('&format',
+			  $v . ' ' . $k  . ' ' .  $::Values->{$k}
+			  );
+	} else {
+		logError("Unknown order check '%s' in profile %s", $parameter, $profile);
+		return undef;
+	}
+	$val =~ s/&#(\d+);/chr($1)/ge;
 
 #::logDebug("checking profile $Profile: var=$var val=$val Fatal=$Fatal Final=$Final");
-		if (defined $Parse{$var}) {
-			($val, $var, $message) = &{$Parse{$var}}($ref, $val, $m || undef);
-		}
-		else {
-			logError( "Unknown order check parameter in profile %s: %s=%s",
-					$Profile,
-					$var,
-					$val,
-					);
-			return undef;
-		}
+	if(defined $Parse{$var}) {
+		($val, $var, $message) = &{$Parse{$var}}($ref, $val, $m || undef);
+	} else {
+		logError( "Unknown order check parameter in profile %s: %s=%s",
+				$Profile,
+				$var,
+				$val,
+				);
+		return undef;
+	}
 #::logDebug("profile $Profile check result: var=$var val='$val' message='$message' Fatal=$Fatal Final=$Final");
-		return ($val, $var, $message);
+	return ($val, $var, $message);
 }
 
 sub check_order {
 	my ($profile) = @_;
-    my($codere) = '[-\w_#/.]+';
+	my($codere) = '[-\w_#/.]+';
 	my $params;
 	if(defined $Vend::Cfg->{OrderProfileName}->{$profile}) {
 		$profile = $Vend::Cfg->{OrderProfileName}->{$profile};
 		$params = $Vend::Cfg->{OrderProfile}->[$profile];
-	}
-	elsif($profile =~ /^\d+$/) {
+	} elsif($profile =~ /^\d+$/) {
 		$params = $Vend::Cfg->{OrderProfile}->[$profile];
-	}
-	elsif(defined $::Scratch->{$profile}) {
+	} elsif(defined $::Scratch->{$profile}) {
 		$params = $::Scratch->{$profile};
+	} else {
+		return undef;
 	}
-	else { return undef }
 	return undef unless $params;
 	$Profile = $profile;
 
@@ -1018,13 +988,12 @@ sub check_order {
 		($val, $var, $message) = do_check($_);
 #::logDebug("check returned val='$val' var=" . (defined $var ? 'DEFINED' : 'UNDEF'));
 		next if ! defined $var;
-		if ($val) {
- 			$::Values->{"mv_status_$var"} = $message
+		if($val) {
+			$::Values->{"mv_status_$var"} = $message
 				if defined $message and $message;
 			delete $Vend::Session->{errors}{$var};
- 			delete $::Values->{"mv_error_$var"};
-		}
-		else {
+			delete $::Values->{"mv_error_$var"};
+		} else {
 			$status = 0;
 # LEGACY
 			$::Values->{"mv_error_$var"} = $message;
@@ -1035,7 +1004,7 @@ sub check_order {
 			push @Errors, "$var: $message";
 		}
 #::logDebug("profile status now=$status");
-		if (defined $Success) {
+		if(defined $Success) {
 			$status = $Success;
 			last;
 		}
@@ -1047,8 +1016,7 @@ sub check_order {
 	if($status) {
 		$::Values->{mv_nextpage} = $CGI::values{mv_nextpage} = $Success_page
 			if $Success_page;
-	}
-	elsif ($Fail_page) {
+	} elsif($Fail_page) {
 		$::Values->{mv_nextpage} = $CGI::values{mv_nextpage} = $Fail_page;
 	}
 	if($Final and ! scalar @{$Vend::Items}) {
@@ -1081,8 +1049,7 @@ sub _state_province {
 		if defined $::Variable->{MV_VALID_STATE};
 	if( $val =~ /\S/ and ($state =~ /\s$val\s/i or $province =~ /\s$val\s/i) ) {
 		return (1, $var, '');
-	}
-	else {
+	} else {
 		return (undef, $var, "'$val' not a two-letter state or province code");
 	}
 }
@@ -1094,8 +1061,7 @@ sub _state {
 
 	if( $val =~ /\S/ and $state =~ /\s$val\s/i ) {
 		return (1, $var, '');
-	}
-	else {
+	} else {
 		return (undef, $var, "'$val' not a two-letter state code");
 	}
 }
@@ -1106,8 +1072,7 @@ sub _province {
 		if defined $::Variable->{MV_VALID_PROVINCE};
 	if( $val =~ /\S/ and $province =~ /\s$val\s/i) {
 		return (1, $var, '');
-	}
-	else {
+	} else {
 		return (undef, $var, "'$val' not a two-letter province code");
 	}
 }
@@ -1157,8 +1122,7 @@ sub _phone_us {
 	my($ref, $var,$val) = @_;
 	if($val and $val =~ /\d{3}.*?\d{4}/) {
 		return (1, $var, '');
-	}
-	else {
+	} else {
 		return (undef, $var, 'not a US phone number');
 	}
 }
@@ -1167,8 +1131,7 @@ sub _phone_us_with_area {
 	my($ref, $var,$val) = @_;
 	if($val and $val =~ /\d{3}\D*\d{3}\D*\d{4}/) {
 		return (1, $var, '');
-	}
-	else {
+	} else {
 		return (undef, $var, 'not a US phone number with area code');
 	}
 }
@@ -1177,8 +1140,7 @@ sub _phone_us_with_area_strict {
 	my($ref, $var,$val) = @_;
 	if($val and $val =~ /^\d{3}-\d{3}-\d{4}$/) {
 		return (1, $var, '');
-	}
-	else {
+	} else {
 		return (undef, $var, 'not a US phone number with area code (strict formatting)');
 	}
 }
@@ -1187,8 +1149,7 @@ sub _email {
 	my($ref, $var, $val) = @_;
 	if($val and $val =~ /[\040-\176]+\@[-A-Za-z0-9.]+\.[A-Za-z]+/) {
 		return (1, $var, '');
-	}
-	else {
+	} else {
 		return (undef, $var, "$val not an email address");
 	}
 }
@@ -1210,22 +1171,21 @@ sub _isbn {
 	my($ref, $var, $val) = @_;
 	$val =~ s/\D//g;	# weed out non-digits
 	if( $val && length($val) == 10 ) {
-	  my @digits = split("", $val);
-	  my $sum=0;
-	  for(my $i=10; $i > 0; $i--) {
-		$sum += $digits[10-$i] * $i;
-	  }
-	  return ( $sum%11 ? 0 : 1, $var, '' );
-	}
-	else {
-	  return (undef, $var, "not a valid isbn number");
+		my @digits = split("", $val);
+		my $sum=0;
+		for(my $i=10; $i > 0; $i--) {
+			$sum += $digits[10-$i] * $i;
+		}
+		return ( $sum%11 ? 0 : 1, $var, '' );
+	} else {
+		return (undef, $var, "not a valid isbn number");
 	}
 }
 
 sub _mandatory {
 	my($ref,$var,$val) = @_;
 	return (1, $var, '')
-		if (defined $ref->{$var} and $ref->{$var} =~ /\S/);
+		if(defined $ref->{$var} and $ref->{$var} =~ /\S/);
 	return (undef, $var, "blank");
 }
 
@@ -1244,9 +1204,9 @@ sub _false {
 sub _required {
 	my($ref,$var,$val) = @_;
 	return (1, $var, '')
-		if (defined $val and $val =~ /\S/);
+		if(defined $val and $val =~ /\S/);
 	return (1, $var, '')
-		if (defined $ref->{$var} and $ref->{$var} =~ /\S/);
+		if(defined $ref->{$var} and $ref->{$var} =~ /\S/);
 	return (undef, $var, "blank");
 }
 
@@ -1259,13 +1219,11 @@ sub counter_number {
 }
 
 sub update_order_number {
-
 	my($c,$order_no);
 
 	if($Vend::Cfg->{OrderCounter}) {
 		$order_no = counter_number();
-	}
-	else {
+	} else {
 		$order_no = $Vend::SessionID . '.' . time;
 	}
 
@@ -1277,7 +1235,7 @@ sub update_order_number {
 sub track_order {
 	my ($order_no,$order_report) = @_;
 	
-	if ($Vend::Cfg->{AsciiTrack}) {
+	if($Vend::Cfg->{AsciiTrack}) {
 		logData ($Vend::Cfg->{AsciiTrack}, <<EndOOrder);
 ##### BEGIN ORDER $order_no #####
 $order_report
@@ -1402,7 +1360,7 @@ sub route_order {
 
 	my $value_save = { %{$::Values} };
 
-		BUILD:
+BUILD:
 	foreach $c (@routes) {
 		my $route = $Vend::Cfg->{Route_repository}{$c};
 
@@ -1418,20 +1376,17 @@ sub route_order {
 				die "$errors\n" unless $status;
 			};
 		}
-		if ($CGI::values{mv_credit_card_number}) {
+		if($CGI::values{mv_credit_card_number}) {
 			if(! $CGI::values{mv_credit_card_type} and
 				 $CGI::values{mv_credit_card_number} )
 			{
 				if($CGI::values{mv_credit_card_number} =~ /\s*4/) {
 					$CGI::values{mv_credit_card_type} = 'visa';
-				}
-				elsif($CGI::values{mv_credit_card_number} =~ /\s*5/) {
+				} elsif($CGI::values{mv_credit_card_number} =~ /\s*5/) {
 					$CGI::values{mv_credit_card_type} = 'mc';
-				}
-				elsif($CGI::values{mv_credit_card_number} =~ /\s*37/) {
+				} elsif($CGI::values{mv_credit_card_number} =~ /\s*37/) {
 					$CGI::values{mv_credit_card_type} = 'amex';
-				}
-				else {
+				} else {
 					$CGI::values{mv_credit_card_type} = 'discover/other';
 				}
 			}
@@ -1447,114 +1402,105 @@ sub route_order {
 			logError("Non-existent order routing %s", $c);
 			next;
 		}
-	eval {
-
-		if($route->{cyber_mode}) {
-			my $save = $CGI::values{mv_cyber_mode};
-			$CGI::values{mv_cyber_mode} = $route->{cyber_mode};
-			my $glob = {};
-			my (@vars) =  (qw/ CYBER_CONFIGFILE CYBER_CURRENCY CYBER_HOST
-							CYBER_PORT CYBER_REMAP CYBER_SECRET CYBER_VERSION /);
-			for(@vars) {
-				next unless $route->{$_};
-				$glob->{$_} = $::Variable->{$_};
-				$::Variable->{$_} = $route->{$_};
+		eval {
+			if($route->{cyber_mode}) {
+				my $save = $CGI::values{mv_cyber_mode};
+				$CGI::values{mv_cyber_mode} = $route->{cyber_mode};
+				my $glob = {};
+				my (@vars) =  (qw/ CYBER_CONFIGFILE CYBER_CURRENCY CYBER_HOST
+								CYBER_PORT CYBER_REMAP CYBER_SECRET CYBER_VERSION /);
+				for(@vars) {
+					next unless $route->{$_};
+					$glob->{$_} = $::Variable->{$_};
+					$::Variable->{$_} = $route->{$_};
+				}
+				my $ok;
+				eval {
+					$ok = _charge(\%CGI::values, $route->{cyber_mode});
+				};
+				for(@vars) {
+					next unless exists $glob->{$_};
+					$::Variable->{$_} = $glob->{_};
+				}
+				$CGI::values{mv_cyber_mode} = $save;
+				unless ($ok) {
+					die errmsg("Failed online charge for routing %s: %s",
+									$c,
+									$Vend::Session->{mv_payment_error}
+								);
+				}
+			} elsif($route->{credit_card} and ! $pre_encrypted) {
+				$::Values->{mv_credit_card_info} = pgp_encrypt(
+									$::Values->{mv_credit_card_info},
+									($route->{pgp_cc_key} || $route->{pgp_key}),
+									($route->{encrypt_program} || $encrypt_program),
+								);
 			}
-			my $ok;
-			eval {
-				$ok = _charge(\%CGI::values, $route->{cyber_mode});
-			};
-			for(@vars) {
-				next unless exists $glob->{$_};
-				$::Variable->{$_} = $glob->{_};
-			}
-			$CGI::values{mv_cyber_mode} = $save;
-			unless ($ok) {
-				die errmsg("Failed online charge for routing %s: %s",
-								$c,
-								$Vend::Session->{mv_payment_error}
-							);
-			}
-		}
-		elsif($route->{credit_card} and ! $pre_encrypted) {
-			$::Values->{mv_credit_card_info} = pgp_encrypt(
-								$::Values->{mv_credit_card_info},
-								($route->{pgp_cc_key} || $route->{pgp_key}),
-								($route->{encrypt_program} || $encrypt_program),
-							);
-		}
 
-		if($Vend::Session->{mv_order_number}) {
-			$::Values->{mv_order_number} = $Vend::Session->{mv_order_number};
-		}
-		elsif($route->{counter}) {
-			$::Values->{mv_order_number} = counter_number($route->{counter});
-		}
-		elsif($route->{increment}) {
-			$::Values->{mv_order_number} = counter_number();
-		}
-		my $page;
-		if($route->{empty} and ! $route->{report}) {
-			$page = '';
-		}
-		else {
-			$page = readfile($route->{'report'} || $main->{'report'});
-		}
-		die errmsg(
-			"No order report %s or %s found.",
-			$route->{'report'},
-			$main->{'report'},
-			) unless defined $page;
+			if($Vend::Session->{mv_order_number}) {
+				$::Values->{mv_order_number} = $Vend::Session->{mv_order_number};
+			} elsif($route->{counter}) {
+				$::Values->{mv_order_number} = counter_number($route->{counter});
+			} elsif($route->{increment}) {
+				$::Values->{mv_order_number} = counter_number();
+			}
+			my $page;
+			if($route->{empty} and ! $route->{report}) {
+				$page = '';
+			} else {
+				$page = readfile($route->{'report'} || $main->{'report'});
+			}
+			die errmsg(
+				"No order report %s or %s found.",
+				$route->{'report'},
+				$main->{'report'},
+				) unless defined $page;
 
-		my $use_mime;
-		undef $::Instance->{MIME};
-		$page = interpolate_html($page) if $page;
+			my $use_mime;
+			undef $::Instance->{MIME};
+			$page = interpolate_html($page) if $page;
 
 #::logDebug("MIME=$::Instance->{MIME}");
-		$use_mime   = $::Instance->{MIME} || undef;
-		$::Instance->{MIME} = $save_mime  || undef;
+			$use_mime   = $::Instance->{MIME} || undef;
+			$::Instance->{MIME} = $save_mime  || undef;
 
-		if($route->{encrypt}) {
-			$page = pgp_encrypt($page,
+			if($route->{encrypt}) {
+				$page = pgp_encrypt($page,
 								$route->{pgp_key},
 								$route->{encrypt_program} || $encrypt_program,
 								);
+			}
+			my ($address, $reply, $to, $subject, $template);
+			if($route->{attach}) {
+				$Vend::Items->[0]{mv_order_report} = $page;
+			} elsif($address = $route->{email}) {
+				$address = $::Values->{$address} if $address =~ /^\w+$/;
+				$subject = $::Values->{mv_order_subject} || 'ORDER %s';
+				$subject =~ s/%n/%s/;
+				$subject = sprintf "$subject", $::Values->{mv_order_number};
+				$reply   = $route->{reply} || $main->{reply};
+				$reply   = $::Values->{$reply} if $reply =~ /^\w+$/;
+				$to		 = $route->{email};
+				push @out, [$to, $subject, $page, $reply, $use_mime];
+			} elsif($route->{empty}) {
+				# Do nothing
+			} else {
+				die "Empty order routing $c (and not explicitly empty)";
+			}
+			if($route->{supplant}) {
+				track_order($::Values->{mv_order_number}, $page);
+			}
+			if($route->{track}) {
+				Vend::Util::writefile($route->{track}, $page)
+					or ::logError("route tracking error writing $route->{track}: $!");
+				my $mode = $route->{track_mode} || '';
+			if($mode =~ s/^0+//) {
+				chmod oct($mode), $fn;
+			} elsif($mode) {
+				chmod $mode, $fn;
+			}
 		}
-		my ($address, $reply, $to, $subject, $template);
-		if($route->{attach}) {
-			$Vend::Items->[0]{mv_order_report} = $page;
-		}
-		elsif ($address = $route->{email}) {
-			$address = $::Values->{$address} if $address =~ /^\w+$/;
-			$subject = $::Values->{mv_order_subject} || 'ORDER %s';
-			$subject =~ s/%n/%s/;
-			$subject = sprintf "$subject", $::Values->{mv_order_number};
-			$reply   = $route->{reply} || $main->{reply};
-			$reply   = $::Values->{$reply} if $reply =~ /^\w+$/;
-			$to		 = $route->{email};
-			push @out, [$to, $subject, $page, $reply, $use_mime];
-		}
-		elsif ($route->{empty}) {
-			# Do nothing
-		}
-		else {
-			die "Empty order routing $c (and not explicitly empty)";
-		}
-		if ($route->{supplant}) {
-			track_order($::Values->{mv_order_number}, $page);
-		}
-		if ($route->{track}) {
-			Vend::Util::writefile($route->{track}, $page)
-				or ::logError("route tracking error writing $route->{track}: $!");
-			my $mode = $route->{track_mode} || '';
-            if ($mode =~ s/^0+//) {
-                chmod oct($mode), $fn;
-            }
-            elsif ($mode) {
-                chmod $mode, $fn;
-            }
-		}
-		if ($route->{individual_track}) {
+		if($route->{individual_track}) {
 			my $fn = Vend::Util::catfile(
 							$route->{individual_track},
 							$::Values->{mv_order_number} . 
@@ -1563,30 +1509,29 @@ sub route_order {
 			Vend::Util::writefile( $fn, $page,	)
 				or ::logError("route tracking error writing $fn: $!");
 			my $mode = $route->{track_mode} || '';
-            if ($mode =~ s/^0+//) {
-                chmod oct($mode), $fn;
-            }
-            elsif ($mode) {
-                chmod $mode, $fn;
-            }
+			if($mode =~ s/^0+//) {
+				chmod oct($mode), $fn;
+			} elsif($mode) {
+				chmod $mode, $fn;
+			}
 		}
 	};
-		if($@) {
-			my $err = $@;
-			$errors .=  errmsg(
-							"Error during creation of order routing %s:\n%s",
-							$c,
-							$err,
-						);
-			push @route_failed, $c;
-			next BUILD if $route->{continue};
-			@route_complete = ();
-			last BUILD;
-		}
+	if($@) {
+		my $err = $@;
+		$errors .=  errmsg(
+						"Error during creation of order routing %s:\n%s",
+						$c,
+						$err,
+					);
+		push @route_failed, $c;
+		next BUILD if $route->{continue};
+		@route_complete = ();
+		last BUILD;
+	}
 
-		push @route_complete, $c;
+	push @route_complete, $c;
 
-	} #BUILD
+} #BUILD
 	my $msg;
 
 	foreach $msg (@out) {
@@ -1603,8 +1548,7 @@ sub route_order {
 						);
 			$status = 0;
 			next;
-		}
-		else {
+		} else {
 			$status = 1;
 		}
 	}
@@ -1634,8 +1578,7 @@ sub route_order {
 
 	if(! $errors) {
 		delete $Vend::Session->{order_error};
-	}
-	elsif ($main->{errors_to}) {
+	} elsif($main->{errors_to}) {
 		$Vend::Session->{order_error} = $errors;
 #### change this to use Vend::Mail::send
 		send_mail(
@@ -1643,8 +1586,7 @@ sub route_order {
 			errmsg("ERRORS on ORDER %s", $::Values->{mv_order_number}),
 			$errors
 			);
-	}
-	else {
+	} else {
 		$Vend::Session->{order_error} = $errors;
 		::logError("ERRORS on ORDER %s:\n%s", $::Values->{mv_order_number}, $errors);
 	}
@@ -1658,7 +1600,6 @@ sub route_order {
 }
 
 sub add_items {
-
 	my($items,$quantities) = @_;
 
 	$items = $CGI::values{mv_order_item} if ! defined $items;
@@ -1673,7 +1614,7 @@ sub add_items {
 	my($attr,%attr);
 
 	my $value;
-	if ($value = delete $Vend::Session->{scratch}{mv_UseModifier}) {
+	if($value = delete $Vend::Session->{scratch}{mv_UseModifier}) {
 		$Vend::Cfg->{UseModifier} = [split /[\s\0,]+/, $value];
 	}
 
@@ -1691,13 +1632,12 @@ sub add_items {
 	if($CGI::values{mv_order_fly} and $Vend::Cfg->{OnFly}) {
 		if(scalar @items == 1) {
 			@fly = $CGI::values{mv_order_fly};
-		}
-		else {
+		} else {
 			@fly = split /\0/, $CGI::values{mv_order_fly}, -1;
 		}
 	}
 
-	if ($Vend::Cfg->{UseModifier}) {
+	if($Vend::Cfg->{UseModifier}) {
 		foreach $attr (@{$Vend::Cfg->{UseModifier} || []}) {
 			$attr{$attr} = [];
 			next unless defined $CGI::values{"mv_order_$attr"};
@@ -1705,11 +1645,11 @@ sub add_items {
 		}
 	}
 
-    my ($group, $found_master, $mv_mi, $mv_si, @group);
+	my ($group, $found_master, $mv_mi, $mv_si, @group);
 
-    @group = split /\0/, (delete $CGI::values{mv_order_group} || ''), -1;
-    for( $i = 0; $i < @group; $i++ ) {
-       $attr{mv_mi}->[$i] = $group[$i] ? ++$Vend::Session->{pageCount} : 0;
+	@group = split /\0/, (delete $CGI::values{mv_order_group} || ''), -1;
+	for( $i = 0; $i < @group; $i++ ) {
+		attr{mv_mi}->[$i] = $group[$i] ? ++$Vend::Session->{pageCount} : 0;
 	}
 
 	my $separate = defined $CGI::values{mv_separate_items}
@@ -1724,14 +1664,13 @@ sub add_items {
 	$j = 0;
 	my $set;
 	foreach $code (@items) {
-	   undef $item;
-       $quantity = defined $quantities[$j] ? $quantities[$j] : 1;
-       ($j++,next) unless $quantity;
-	   $set = $quantity =~ s/^=//;
-	    if(! $fly[$j]) {
+		undef $item;
+		$quantity = defined $quantities[$j] ? $quantities[$j] : 1;
+		($j++,next) unless $quantity;
+		$set = $quantity =~ s/^=//;
+		if(! $fly[$j]) {
 			$base = product_code_exists_tag($code, $bases[$j] || undef);
-		}
-		else {
+		} else {
 			$base = 'mv_fly';
 			my $ref;
 #::logError("onfly call=$Vend::Cfg->{OnFly} ($code, $quantity, $fly[$j])");
@@ -1754,13 +1693,12 @@ sub add_items {
 				next;
 			}
 		}
-		if (! $base ) {
+		if(! $base ) {
 			logError( "Attempt to order missing product code: %s", $code);
 			next;
 		}
 
 		INCREMENT: {
-
 			# Check that the item has not been already ordered.
 			# But let us order separates if so configured
 			$found = -1;
@@ -1768,7 +1706,7 @@ sub add_items {
 			last INCREMENT if defined $lines[$j] and length($lines[$j]);
 
 			foreach $i (0 .. $#$cart) {
-				if ($cart->[$i]->{'code'} eq $code) {
+				if($cart->[$i]->{'code'} eq $code) {
 					next unless $base eq $cart->[$i]->{mv_ib};
 #::logDebug("incrementing line $i");
 					$found = $i;
@@ -1782,20 +1720,19 @@ sub add_items {
 
 		# And if not, start with a whole new line.
 		# If mv_orderline is set, will replace a line.
-		if ($found == -1) {
+		if($found == -1) {
 			$item = {'code' => $code, 'quantity' => $quantity, mv_ib => $base}
 				if ! $item;
 
 			# Add the master item/sub item ids if appropriate
-          if(@group) {
-           if($attr{mv_mi}->[$j]) {
-              $item->{mv_mi} = $mv_mi = $attr{mv_mi}->[$j];
-              $item->{mv_si} = $mv_si = 0;
-           }
-           else {
-              $item->{mv_mi} = $mv_mi;
-              $item->{mv_si} = ++$mv_si;
-           }
+			if(@group) {
+				if($attr{mv_mi}->[$j]) {
+					$item->{mv_mi} = $mv_mi = $attr{mv_mi}->[$j];
+					$item->{mv_si} = $mv_si = 0;
+				} else {
+					$item->{mv_mi} = $mv_mi;
+					$item->{mv_si} = ++$mv_si;
+				}
 			}
 
 			if($Vend::Cfg->{UseModifier}) {
@@ -1817,11 +1754,10 @@ sub add_items {
 			if($lines[$j] =~ /^\d+$/ and defined $cart->[$lines[$j]] ) {
 #::logDebug("editing line $lines[$j]");
 				$cart->[$lines[$j]] = $item;
-			}
-			else {
+			} else {
 #::logDebug("adding to line");
 # TRACK
-                $Vend::Track->add_item($cart,$item);
+				$Vend::Track->add_item($cart,$item);
 # END TRACK
 				push @$cart, $item;
 			}
@@ -1839,74 +1775,6 @@ EOF
 	}
 	Vend::Cart::toss_cart($cart);
 }
-
-#### recode this in Vend::Mail as send
-# LEGACY4
-sub send_mail {
-    my($to, $subject, $body, $reply, $use_mime, @extra_headers) = @_;
-    my($ok);
-#::logDebug("send_mail: to=$to subj=$subject r=$reply mime=$use_mime\n");
-
-	unless (defined $use_mime) {
-		$use_mime = $::Instance->{MIME} || undef;
-	}
-
-	if(!defined $reply) {
-		$reply = $::Values->{mv_email}
-				?  "Reply-To: $::Values->{mv_email}\n"
-				: '';
-	}
-	elsif ($reply) {
-		$reply = "Reply-To: $reply\n"
-			unless $reply =~ /^reply-to:/i;
-		$reply =~ s/\s+$/\n/;
-	}
-
-    $ok = 0;
-	my $none;
-
-	if("\L$Vend::Cfg->{SendMailProgram}" eq 'none') {
-		$none = 1;
-		$ok = 1;
-	}
-
-    SEND: {
-		last SEND if $none;
-		open(MVMAIL,"|$Vend::Cfg->{SendMailProgram} $to") or last SEND;
-		my $mime = '';
-		$mime = Vend::Interpolate::mime('header', {}, '') if $use_mime;
-		print MVMAIL "To: $to\n", $reply, "Subject: $subject\n"
-	    	or last SEND;
-		for(@extra_headers) {
-			s/\s*$/\n/;
-			print MVMAIL $_
-				or last SEND;
-		}
-		$mime =~ s/\s*$/\n/;
-		print MVMAIL $mime
-	    	or last SEND;
-		print MVMAIL $body
-				or last SEND;
-		print MVMAIL Vend::Interpolate::do_tag('mime boundary') . '--'
-			if $use_mime;
-		print MVMAIL "\r\n\cZ" if $Global::Windows;
-		close MVMAIL or last SEND;
-		$ok = ($? == 0);
-    }
-    
-    if ($none or !$ok) {
-		logError("Unable to send mail using %s\nTo: %s\nSubject: %s\n%s\n\n%s",
-				$Vend::Cfg->{SendMailProgram},
-				$to,
-				$subject,
-				$reply,
-				$body,
-		);
-    }
-
-    $ok;
-}
-# END LEGACY4
 
 1;
 __END__
