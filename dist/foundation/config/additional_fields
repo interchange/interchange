@@ -144,7 +144,7 @@ VA UT OH
 
 !TAXRATE
 Percentage rate(s) for tax in different areas
-VA=7.5, UT=7.25, OH=6.75
+VA=3.5, UT=4.75, OH=5.0
 
 !UPSADDER
 Amount to add on to standard UPS costs
