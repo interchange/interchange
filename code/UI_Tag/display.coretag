@@ -227,6 +227,9 @@ sub {
 	}
 
 #::logDebug("widget=$w");
+	# don't output label if widget is hidden form variable only
+	return $w if $w =~ /^\s*<input\s[^>]*type\s*=\W*hidden\b[^>]*>\s*$/i;
+
 	if(! defined $w) {
 		my $text = $opt->{value};
 		my $iname = $opt->{name} || $column;

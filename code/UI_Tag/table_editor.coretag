@@ -917,7 +917,7 @@ EOF
 	}
 
 	push @out, <<EOF unless $wo;
-<table class=touter border="" cellspacing="0" cellpadding="0" width="$opt->{table_width}">
+<table class=touter border="0" cellspacing="0" cellpadding="0" width="$opt->{table_width}">
 <tr>
   <td>
 
@@ -1426,6 +1426,13 @@ EOF
 										template => $template,
 									});
 #::logDebug("finished display of col=$c");
+
+		# don't use template if we have only a hidden HTML form variable
+		if ($display =~ /^\s*<input\s[^>]*type\s*=\W*hidden\b[^>]*>\s*$/i) {
+			push @controls, $display . "\n";
+			next;
+		}
+
 		if($super and ! $opt->{no_meta} and ($Variable->{UI_META_LINK} || $def->{ui_meta_force}) ) {
 			$meta .= '<BR><FONT SIZE=1>';
 			# Get global variables
@@ -1478,7 +1485,7 @@ EOF
 EOF
 			$rowcount = 0;
 		}
-		$w .= "<tr class=rnorm>" unless $rowcount++ % $rowdiv;
+		$w .= "<tr class=rnorm>\n" unless $rowcount++ % $rowdiv;
 		$w .= $display;
 		$w .= "</TR>\n" unless $rowcount % $rowdiv;
 		push @controls, $w;
