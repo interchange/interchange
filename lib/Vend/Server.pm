@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.4 2000-07-12 03:08:11 heins Exp $
+# $Id: Server.pm,v 1.5 2000-08-06 19:52:23 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -299,8 +299,14 @@ sub respond {
 	# $body is now a reference
     my ($s, $body) = @_;
 
+	my $status;
+	if($Vend::StatusLine) {
+		$status = $Vend::StatusLine =~ /(?:^|\n)Status:\s+(.*)/i
+				? "$1"
+				: "200 OK";
+	}
 	if(! $s and $Vend::StatusLine) {
-		$Vend::StatusLine = "HTTP/1.0 200 OK\r\n$Vend::StatusLine"
+		$Vend::StatusLine = "HTTP/1.0 $status\r\n$Vend::StatusLine"
 			if defined $Vend::InternalHTTP
 				and $Vend::StatusLine !~ m{^HTTP/};
 		$Vend::StatusLine .= ($Vend::StatusLine =~ /^Content-Type:/im)
@@ -332,16 +338,20 @@ sub respond {
 
 	if (defined $Vend::InternalHTTP or defined $ENV{MOD_PERL} or $CGI::script_name =~ m:/nph-[^/]+$:) {
 # TRACK
+		my $save = select $fh;
+		$| = 1;
+		select $save;
         $Vend::StatusLine .= "X-Track: " . $Vend::Track->header() . "\r\n";
 # END TRACK                            
+		$status = '200 OK' if ! $status;
 		if(defined $Vend::StatusLine) {
-			$Vend::StatusLine = "HTTP/1.0 200 OK\r\n$Vend::StatusLine"
+			$Vend::StatusLine = "HTTP/1.0 $status\r\n$Vend::StatusLine"
 				if $Vend::StatusLine !~ m{^HTTP/};
 			print $fh canon_status($Vend::StatusLine);
 			$Vend::ResponseMade = 1;
 			undef $Vend::StatusLine;
 		}
-		else { print $fh "HTTP/1.0 200 OK\r\n"; }
+		else { print $fh "HTTP/1.0 $status\r\n"; }
 	}
 
 	if ( (	! $CGI::cookie && ! $::Instance->{CookiesSet}
@@ -558,7 +568,7 @@ sub http_server {
 	$$env{REMOTE_HOST} = gethostbyaddr($Remote_addr, AF_INET);
 	$Remote_addr = inet_ntoa($Remote_addr);
 
-	$$env{QUERY_STRING} = $url->query();
+	$$env{QUERY_STRING} = $url->equery();
 	$$env{REMOTE_ADDR} = $Remote_addr;
 
 	my (@path) = $url->path_components();
@@ -643,7 +653,11 @@ sub read_cgi_data {
         $block = _find(\$in, "\n");
         if ($block =~ m/^[GPH]/) {
            	return http_server($block, $in, @_);
-		} elsif (($n) = ($block =~ m/^arg (\d+)$/)) {
+		}
+		elsif ($block =~ s/^ipc ([-\w]+)$//) {
+			my $cat = $1;
+		}
+		elsif (($n) = ($block =~ m/^arg (\d+)$/)) {
             $#$argv = $n - 1;
             foreach $i (0 .. $n - 1) {
                 $$argv[$i] = _string(\$in);
@@ -1101,6 +1115,7 @@ sub server_both {
         }
 
         elsif (	$Global::Unix_Mode && vec($rout, fileno(Vend::Server::USOCKET), 1) ) {
+			undef $Vend::OnlyInternalHTTP;
             my $ok = accept(Vend::Server::MESSAGE, Vend::Server::USOCKET);
             die "accept: $!" unless defined $ok;
 			$spawn = 1;
