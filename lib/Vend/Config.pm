@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.15 2001-01-28 17:47:51 jon Exp $
+# $Id: Config.pm,v 1.25.2.16 2001-01-29 18:28:06 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -104,7 +104,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.25.2.15 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.16 $, 10);
 
 my %CDname;
 
@@ -258,7 +258,7 @@ sub global_directives {
 	['Message',          'message',           ''],
 	['VarName',          'varname',           ''],
 	['DumpStructure',	 'yesno',     	     'No'],
-	['OutputAllCfg',	 'yesno',     	     'No'],
+	['DumpAllCfg',	     'yesno',     	     'No'],
 	['DisplayErrors',    'yesno',            'No'],
 	['Inet_Mode',         'yesno',            defined $Global::Inet_Mode ? ($Global::Inet_Mode) : 'Yes'],
 	['Unix_Mode',         'yesno',            defined $Global::Unix_Mode ? ($Global::Unix_Mode) : 'Yes'],
@@ -686,7 +686,7 @@ sub config {
 	}
 
 	my $allcfg;
-	if($Global::OutputAllCfg) {
+	if($Global::DumpAllCfg) {
 		open ALLCFG, ">allconfigs.cfg"
 			and $allcfg = 1;
 	}
