@@ -36,7 +36,7 @@ ui_template_name: leftonly
 
 [userdb function=get_cart_names hide=1]
 [if value carts]
-  [perl]
+  [calc]
     $Scratch->{saved_carts_carts} = '';
     $Scratch->{saved_carts_recurring} = '';
     push(@Vend::TmpScratch,qw/saved_carts_carts saved_carts_recurring/);
@@ -78,7 +78,7 @@ END
     }
 
     return '';
-  [/perl]
+  [/calc]
 [/if]
 
 [loop list="saved_carts_carts saved_carts_recurring"]
