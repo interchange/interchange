@@ -33,8 +33,8 @@ TAXFIELD	state	Tax
 TAXRATE	OH=6.75,AZ=5,CA=6,FL=6,MD=5,NY=4,OR=0,TX=6.3,VA=3.5,WA=6.5,DC=5.8	Tax
 TAXSHIPPING		Tax
 TOLLFREE	(888) 555-5555	Company
-UI_ABOUT_LOGIN_URL	http://help.akopia.com/4.5.6/about/	Admin control
-UI_ABOUT_NORMAL_URL	http://help.akopia.com/4.5.6/about/	Admin control
+UI_ABOUT_LOGIN_URL	http://help.akopia.com/4.5.7/about/	Admin control
+UI_ABOUT_NORMAL_URL	http://help.akopia.com/4.5.7/about/	Admin control
 UI_BOTTOMIMG	poweredby.gif	Admin layout
 UI_C_BG	#FFFFFF	Admin colors
 UI_C_HEADERTXT	#333333	Admin colors
@@ -43,7 +43,7 @@ UI_C_INTBLOCK	#EEEEEE	Admin colors
 UI_C_TITLEBARBG	#6699FF	Admin colors
 UI_C_TITLEBARTXT	#FFFFFF	Admin colors
 UI_C_TOPBLOCKBAR	#6699FF	Admin colors
-UI_HELP_BASE_URL	http://help.akopia.com/4.5.6/	Admin control
+UI_HELP_BASE_URL	http://help.akopia.com/4.5.7	Admin control
 UI_IMG	__MVC_SHAREURL__/akopia/ui/	Admin control
 UI_ITEM_FIELDS	sku description category price image comment size color weight	Item display
 UI_META_LINK	0	Admin control
