@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.14 2001-03-09 06:53:50 jon Exp $
+# $Id: Util.pm,v 1.14.2.15 2001-03-22 14:56:30 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -79,7 +79,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.14 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.15 $, 10);
 
 BEGIN {
 	eval {
@@ -1089,7 +1089,7 @@ sub resolve_links {
 	return $html;
 }
 
-my $use = undef;
+my $use = $Global::LockType;
 
 ### flock locking
 
@@ -1170,20 +1170,12 @@ sub fcntl_unlock {
 my $lock_function;
 my $unlock_function;
 
-unless (defined $use) {
-    my $os = $Vend::Util::Config{'osname'};
-	$use = 'flock';
-	if ($os =~ /win32/i) {
-        $use = 'none';
-	}
-}
- 
-if ($use eq 'none') {
+if ($Global::LockType eq 'none') {
     print "using NO locking\n";
     $lock_function = sub {1};
     $unlock_function = sub {1};
 }
-elsif ($use eq 'fcntl') {
+elsif ($Global::LockType =~ /fcntl/i) {
     print "using fcntl(2) locking\n";
     $lock_function = \&flock_lock;
     $unlock_function = \&flock_unlock;

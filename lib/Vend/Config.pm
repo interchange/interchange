@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.30 2001-03-19 17:48:58 heins Exp $
+# $Id: Config.pm,v 1.25.2.31 2001-03-22 14:56:30 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -98,7 +98,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.30 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.31 $, 10);
 
 my %CDname;
 
@@ -257,6 +257,7 @@ sub global_directives {
 	['ConfigAllAfter',	 'array',	         "$Global::VendRoot/catalog_after.cfg"],
 	['Message',          'message',           ''],
 	['VarName',          'varname',           ''],
+	['LockType',         undef,           	  ''],
 	['DumpStructure',	 'yesno',     	     'No'],
 	['DumpAllCfg',	     'yesno',     	     'No'],
 	['DisplayErrors',    'yesno',            'No'],
