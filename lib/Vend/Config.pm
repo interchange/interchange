@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.96 2003-01-23 20:15:36 mheins Exp $
+# $Id: Config.pm,v 2.97 2003-01-27 16:39:13 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -46,7 +46,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.96 $, 10);
+$VERSION = substr(q$Revision: 2.97 $, 10);
 
 my %CDname;
 
@@ -131,7 +131,6 @@ qw/
 my %HashDefaultBlank = (qw(
 					SOAP			1
 					Mail			1
-					DatabaseDefault	1
 					Accounting		1
 					Levy			1
 				));
