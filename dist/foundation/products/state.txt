@@ -56,10 +56,11 @@ code	sorder	country	state	name	tax	postcode	shipmodes	tax_name
 00180	00	US	VT	Vermont				
 00181	00	US	WA	Washington				
 00182	00	US	WI	Wisconsin				
-00183	00	US	WY	Wyoming				
-001831	00a	US	AA	Military Americas        
-001832	00a	US	AE	Military Europe/ME/Canada
-001833	00a	US	AP	Military Pacific                          
+00183	00	US	WV	West Virginia				
+00184	00	US	WY	Wyoming				
+001841	00a	US	AA	Military Americas				
+001842	00a	US	AE	Military Europe/ME/Canada				
+001843	00a	US	AP	Military Pacific				
 00185	01	CA	AB	Alberta	7%			PST
 00187	01	CA	MB	Manitoba	8%			GST
 00039	01	CA	AB	Alberta	8%			GST
