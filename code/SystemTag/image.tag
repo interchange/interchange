@@ -194,7 +194,7 @@ sub {
 		}
 	} else {
 		$imagedir		= $Vend::Cfg->{ImageDir};
-		$imagedirsecure	= $Vend::Cfg->{ImageDirSecure};
+		$imagedirsecure	= $Vend::Cfg->{ImageDirSecure} || $imagedir ;
 	}
 
 	# make sure there's a trailing slash on directories
