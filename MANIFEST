@@ -658,6 +658,7 @@ lib/Vend/UserDB.pm
 lib/Vend/Util.pm
 pdf/README
 pdf/icbackoffice.pdf
+pdf/iccattut.pdf
 pdf/icconfig.pdf
 pdf/icdatabase.pdf
 pdf/icinstall.pdf
@@ -666,6 +667,7 @@ pdf/ictemplates.pdf
 perl/Interchange.pm
 pod/README
 pod/icbackoffice.pod
+pod/iccattut.pod
 pod/icconfig.pod
 pod/icdatabase.pod
 pod/icinstall.pod
