@@ -1,0 +1,44 @@
+[comment]
+ui_component: fortune
+ui_component_type: vertical
+ui_component_group: info
+ui_component_label: Random saying
+
+short:
+	widget: select
+	options: Yes, No
+	default: 1
+	label: Short only?
+
+banner:
+	widget: text_20
+	default: Just a thought...
+	label: Banner
+
+[/comment]
+
+<!-- BEGIN COMPONENT [control component cart_tiny] -->
+
+<tr><td align="center">
+  <table width="95%">
+
+  <tr> 
+    <td class=categorybar valign=top>
+      <table border=0 cellspacing=0 cellpadding=2>
+      <tr>
+        <td align=center class=categorybar>
+		[control banner Just a thought...]
+		</td>
+      </tr>
+      <tr>
+		<td valign=top align=left class=contentbar2>
+		[fortune short="[control short yes]"]
+		</td>
+      </table>
+    </td>
+  </tr>
+
+  </table>
+</td></tr>
+
+<!-- END COMPONENT [control component cart_tiny] -->
