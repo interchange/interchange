@@ -45,6 +45,8 @@ Usertags
 * [formel] fetches the label for the display type from the metadata 
   if not passed with the parameters.
 
+* removed unfinished [find] usertag 
+
 Foundation
 ----------
 
@@ -54,6 +56,11 @@ Payment
 -------
 
 * Add Linkpoint payment module.
+
+Jobs
+----
+
+* removed update_locales job - as a consequence of the removal of the [find] usertag
 
 
 ------------------------------------------------------------------------------

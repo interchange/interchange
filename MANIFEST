@@ -192,7 +192,6 @@ code/UserTag/email.tag
 code/UserTag/email_raw.tag
 code/UserTag/env.tag
 code/UserTag/fedex_query.tag
-code/UserTag/find.tag
 code/UserTag/formel.tag
 code/UserTag/fortune.tag
 code/UserTag/forum.tag
@@ -264,7 +263,6 @@ dist/catalog_after.cfg
 dist/catalog_before.cfg
 dist/error.log
 dist/etc/.empty
-dist/etc/jobs/i18n/update_locales
 dist/etc/jobs/merchandising/topsellers
 dist/foundation/backup/.empty
 dist/foundation/catalog.cfg
