@@ -5,17 +5,8 @@ mv_failpage= interact
 __END__
 
 __NAME__                            shipping_address
-fname=required
-lname=required
-address1=required
-city=required
-country=required
-[if value country =~ /^(US|CA)$/i]
-	state=state_province
-	zip=postcode
-[/if]
-&or phone_day=phone, phone_night=phone Must have day or evening phone number
-email=required
+
+ __COMMON_ORDER_PROFILE__
 
 &fatal = yes
 
@@ -25,33 +16,17 @@ __END__
 
 
 __NAME__                            account_change
-fname=required
-lname=required
-address1=required
-city=required
-country=required
-[if value country =~ /^(US|CA)$/i]
-	state=state_province
-	zip=postcode
-[/if]
-&or phone_day=phone, phone_night=phone Must have day or evening phone number
-email=required
+
+ __COMMON_ORDER_PROFILE__
+
 &fatal = yes
 email=email
 
 __END__
 
 __NAME__                            credit_card
-fname=required
-lname=required
-address1=required
-city=required
-country=required
-[if value country =~ /^(US|CA)$/i]
-	state=state_province
-	zip=postcode
-[/if]
-&or phone_night=phone, phone_day=phone Must have day or evening phone number
+
+__COMMON_ORDER_PROFILE__
 
 &fatal = yes
 email=required
@@ -77,16 +52,8 @@ email=email
 __END__
 
 __NAME__                            purchase_order
-fname=required
-lname=required
-address1=required
-city=required
-country=required
-[if value country =~ /^(US|CA)$/i]
-	state=state_province
-	zip=postcode
-[/if]
-&or phone_night=phone, phone_day=phone Must have day or evening phone number
+
+ __COMMON_ORDER_PROFILE__
 
 &fatal = yes
 email=required
@@ -127,16 +94,8 @@ credit_limit_ok=mandatory Credit limit exceeded.
 __END__
 
 __NAME__                            postal
-fname=required
-lname=required
-address1=required
-city=required
-country=required
-[if value country =~ /^(US|CA)$/i]
-	state=state_province
-	zip=postcode
-[/if]
-&or phone_night=phone, phone_day=phone Must have day or evening phone number
+
+ __COMMON_ORDER_PROFILE__
 
 &set = prof_mode_accepted [var POSTAL_ACCEPTED]
 
@@ -153,22 +112,16 @@ email=email
 __END__
 
 __NAME__                            cod
-fname=required
-lname=required
+
+ __COMMON_ORDER_PROFILE__
+
+[cgi set="" name=not_po_box]
 [if value address1 =~ /p\.?o\.?\s*box\b/i]
 not_po_box=mandatory No PO boxes allowed for COD.
 [/if]
 [if value address2 =~ /p\.?o\.?\s*box\b/i]
 not_po_box=mandatory No PO boxes allowed for COD.
 [/if]
-address1=required
-city=required
-country=required
-[if value country =~ /^(US|CA)$/i]
-	state=state_province
-	zip=postcode
-[/if]
-&or phone_night=phone, phone_day=phone Must have day or evening phone number
 
 &set = prof_mode_accepted [var COD_ACCEPTED]
 
@@ -187,16 +140,8 @@ email=email
 __END__
 
 __NAME__                            online_check
-fname=required
-lname=required
-address1=required
-city=required
-country=required
-[if value country =~ /^(US|CA)$/i]
-	state=state_province
-	zip=postcode
-[/if]
-&or phone_night=phone, phone_day=phone Must have day or evening phone number
+
+ __COMMON_ORDER_PROFILE__
 
 &set = prof_mode_accepted [var CHECK_ACCEPTED]
 
