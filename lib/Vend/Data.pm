@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.17 2000-11-03 23:38:30 heins Exp $
+# $Id: Data.pm,v 1.17.2.1 2000-11-25 00:17:23 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -633,7 +633,14 @@ sub tie_database {
     while (($name,$data) = each %{$Vend::Cfg->{Database}}) {
 		if( $data->{type} > 6 or $data->{HOT} ) {
 #::logDebug("Importing $data->{name}...");
-			$Vend::Database{$name} = import_database($data);
+			eval {
+				$Vend::Database{$name} = import_database($data);
+			};
+			if($@) {
+					my $msg = "table '%s' failed: %s";
+					$msg = ::errmsg($msg, $name, $@);
+					::logError($msg);
+			}
 		}
 		else {
 			if($data->{GUESS_NUMERIC}) {
@@ -714,7 +721,7 @@ sub import_database {
 
 	$class_config = $db_config{$obj->{Class} || $Global::Default_database};
 
-::logDebug ("params=$database_txt path='$path' base='$base' tail='$tail' dir='$dir'") if $type == 9;
+#::logDebug ("params=$database_txt path='$path' base='$base' tail='$tail' dir='$dir'") if $type == 9;
 	$table_name     = $name;
 	my $export;
 
@@ -868,20 +875,20 @@ sub import_database {
 		$obj->{db_file} = $table_name unless $obj->{db_file};
 		$obj->{db_text} = $database_txt unless $obj->{db_text};
 		no strict 'refs';
+#::logDebug("ready to try opening db $table_name") if ! $db;
 		eval { 
 			if($MVSAFE::Safe) {
-#::logDebug("Opening under Safe: $obj->{name}: table=$table_name") if $type == 9;
 				$db = $Vend::Interpolate::Db{$class_config->{Class}}->open_table( $obj, $table_name );
 			}
 			else {
-#::logDebug("Opening $obj->{name}: table=$table_name") if $type == 9;
 				$db = $class_config->{Class}->open_table( $obj, $table_name );
-#::logDebug("Opened $obj->{name}") if $type == 9;
 			}
 			$obj->{NAME} = $db->[$Vend::Table::Common::COLUMN_INDEX]
 				unless defined $obj->{NAME};
+#::logDebug("didn't die but no db") if ! $db;
 		};
 
+#::logDebug("db=$db, \$\!='$!' \$\@='$@' (" . length($@) . ")\n") if ! $db;
 		if($@) {
 #::logDebug("Dieing of $@");
 			die $@ unless $no_import;
@@ -890,6 +897,7 @@ sub import_database {
 				$Vend::ForceImport{$obj->{name}} = 1;
 				return import_database($obj);
 			}
+			die $@;
 		}
 		undef $tried_import;
 #::logDebug("Opening $obj->{name}: RO=$obj->{Read_only} WC=$obj->{WRITE_CONTROL} WA=$obj->{WRITE_ALWAYS}");
@@ -1202,6 +1210,85 @@ sub export_database {
 	1;
 }
 
+my $opt_remap;
+my %opt_map;
+
+sub option_cost {
+	my ($item, $table, $final) = @_;
+::logDebug("called option_cost");
+	my $db = Vend::Data::database_exists_ref($table);
+	if(! $db) {
+		::logError('Non-existent price option table %s', $table);
+		return;
+	}
+
+	my $sku = $item->{code};
+
+	$db->record_exists($sku)
+		or return;
+	my $record = $db->row_hash($sku)
+		or return;
+
+	if(! $opt_remap and $::Variable->{MV_OPTION_TABLE_MAP}) {
+		$opt_remap = $::Variable->{MV_OPTION_TABLE_MAP};
+		$opt_remap =~ s/^\s+//;
+		$opt_remap =~ s/\s+$//;
+		%opt_map = split /[,\s]+/, $opt_remap;
+		my %rec;
+		my @del;
+		my ($k, $v);
+		while (($k, $v) = each %opt_map) {
+			next unless defined $record->{$v};
+			$rec{$k} = $record->{$v};
+			push @del, $v;
+		}
+		delete @{$record}{@del};
+		@{$record}{keys %rec} = (values %rec);
+	}
+
+	return if ! $record->{o_enable};
+
+::logDebug("option_cost found enabled record");
+	my $fsel = $opt_map{sku} || 'sku';
+	my $rsel = $db->quote($sku, $fsel);
+	my @rf;
+	for(qw/o_group price/) {
+		push @rf, ($opt_map{$_} || $_);
+	}
+
+	my $q = "SELECT " . join (",", @rf) . " FROM $table where $fsel = $rsel";
+	my $ary = $db->query($q); 
+	return if ! $ary->[0];
+	my $ref;
+	my $price = 0;
+	my $f;
+
+	foreach $ref (@$ary) {
+::logDebug("checking option " . ::uneval_it($ref));
+		next unless defined $item->{$ref->[0]};
+		$ref->[1] =~ s/^\s+//;
+		$ref->[1] =~ s/\s+$//;
+		$ref->[1] =~ s/==/=:/g;
+		my %info = split /\s*[=,]\s*/, $ref->[1];
+		if(defined $info{ $item->{$ref->[0]} } ) {
+			my $atom = $info{ $item->{$ref->[0]} };
+			if($atom =~ s/^://) {
+				$f = $atom;
+				next;
+			}
+			elsif ($atom =~ s/\%$//) {
+				$f = $final if ! defined $f;
+				$f += ($atom * $final / 100);
+			}
+			else {
+				$price += $atom;
+			}
+		}
+	}
+::logDebug("option_cost returning price=$price f=$f");
+	return ($price, $f);
+}
+
 sub chain_cost {
 	my ($item, $raw) = @_;
 	return $raw if $raw =~ /^[\d.]*$/;
@@ -1326,17 +1413,24 @@ CHAIN:
 			elsif ($mod =~ s/^=([\d.]*)=([^=]+)//) {
 				$final += $1 if $1;
 				my ($attribute, $table, $field, $key) = split /:/, $2;
-				$item->{$attribute} and
-					do {
-						$key = $field ? $item->{$attribute} : $item->{'code'};
-						$price = database_field( ( $table ||
-													$item->{mv_ib} ||
-													$Vend::Cfg->{ProductFiles}[0]),
-												$key,
-												($field || $item->{$attribute})
-										);
-						redo CHAIN;
-					};
+				if($item->{$attribute}) {
+					$key = $field ? $item->{$attribute} : $item->{'code'};
+					$price = database_field( ( $table ||
+												$item->{mv_ib} ||
+												$Vend::Cfg->{ProductFiles}[0]),
+											$key,
+											($field || $item->{$attribute})
+									);
+					redo CHAIN;
+				}
+				elsif ($table) {
+#::logDebug("before option_cost price=$price final=$final");
+					my ($p, $f) = option_cost($item, $table, $final);
+					$final = $f if defined $f;
+					$price = $p if defined $p;
+#::logDebug("option_cost returned p=$p f=$f, price=$price final=$final");
+					redo CHAIN;
+				}
 			}
 			elsif($mod =~ /^\s*[[_]+/) {
 				$::Scratch->{mv_item_object} = $Vend::Interpolate::item = $item;
