@@ -1,7 +1,7 @@
 #!/usr/bin/perl -wT
 # tlink.pl: runs as a cgi program and passes request to Vend server
 #
-#   $Id: tlink.pl,v 1.3.2.1.2.1 2000-12-17 06:50:51 heins Exp $
+#   $Id: tlink.pl,v 1.3.2.1.2.2 2001-06-20 14:46:26 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -86,6 +86,9 @@ sub get_entity {
   return '' unless $len;
 
   my $check;
+
+  # Can't hurt, helps Windows people
+  binmode(STDIN);
 
   $check = read(STDIN, $Entity, $len);
 
