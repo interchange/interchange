@@ -1,0 +1,121 @@
+<html>
+<head>
+   <title>Interchange Help: Shipping: create/edit</title>
+
+</head>
+<body bgcolor="#ffffff" link="#7079aa" alink="#000000" vlink="#999999" >
+
+
+<style type="text/css">
+<!--
+A:link {text-decoration: none} 
+A:visited {text-decoration: none} 
+A:active {text-decoration: none}
+A:hover {color:#000000; text-decoration: none}
+-->
+</style>
+
+<form>
+<table width='100%' border=0 cellspacing=0 
+  cellpadding=0><tr><td 
+    height=23 bgcolor="#e8a317" background="images/help.background.gif" 
+    valign=middle><table width='100%' cols=3 border=0 cellpadding=0 
+    cellspacing=0><tr><td height=1 width=12 align=left valign=middle><img 
+    src='images/curve.left.help.gif' width=12 height=22></td><td valign=middle 
+    width=550><img src="images/cleardot.gif" height=1height=1 width=12><a 
+    href="main.html"><font face="Verdana, Arial, Helvetica, sans-serif" 
+    size=2>Home</font></a><img src="images/cleardot.gif" height=1 width=12><!--
+
+<a href="faq.html"><font face="Verdana, Arial, Helvetica, sans-serif" 
+   size=2>FAQ</font></a><img src="images/cleardot.gif" height=1 width=12</td><td
+   align=right valign=middle width=40><a href='help' target="Help" 
+   onclick='return ShowHelp()' onmouseover="window.status='Help';return true;" 
+   onmouseout="window.status='';return true;"><font 
+   face="Verdana, Arial, Helvetica, sans-serif" size=2>Back</font></a>
+
+--></td><td width=19 align=right valign=middle><img src="images/curve.right.help.gif" width=12 height=22 border=0></td></tr></table></td></tr></table>
+</form>
+
+<center>
+<table border=0 cellspacing=0 cellpadding=2 width="450">
+
+<tr>
+<td>
+<br>
+<font size="-1" face="Verdana,Arial,Helvetica,sans-serif"><b>Shipping: create/edit</b></font> <br>
+<br>
+<hr noshade size=2 width=100%>
+<br>
+<b>Name of this method</b><br>
+This is the internal name used for the shipping method, and should be a single
+word, like "air1".
+
+<p>
+
+<b>Label for this method</b><br>
+The name you specify here will appear in the list of available shipping 
+methods shown to shoppers when they place orders.  Take care to make them 
+easy-to-understand.  The name you enter should reflect the shipping algorithm 
+you choose.
+
+<b>Calculate based on this algorithm</b></br>
+Choose from:
+<p>
+Standard shipping by price: shipping total based on the total price of the 
+order.  This can also be used to calculate a flat shipping price ($0 - 
+infinity = $4.95) or a flat rate with big orders shipped free ($0 - 500 = $4.95
+ and $500 - infinity = free).  The shipping charge can either be a flat charge 
+or a percentage.
+
+<p>
+Standard shipping by weight: calculates shipping by total weight.  To use this 
+method, you must enter a weight for each item in your inventory.  You can use 
+any unit of measure you wish as long as you are consistent:  if you enter your 
+item prices in grams then configure shipping with pounds, your customers will 
+not be happy when they are quoted huge shipping rates. 
+
+<p>
+<a name="quantity">Standard by quantity:</a> charges an amount according to 
+how many items are ordered.
+
+<p>
+<a href="shipping.ups.html">UPS zones-based:</a>  Interchange is pre-configured
+ with UPS zones tables for ground, three day select, second day air, and next 
+day air.  If you require zones support for Fedex, DHL, or USPS, please 
+<a href="mailto:information@akopia.com">contact Akopia.</a>
+
+<p>
+<b>Minimum shipping charge</b><br>
+The amount you enter into this field will be the minimum allowed quote for 
+that particular shipping method.  For example, if you want to charge no less 
+than $4.50 for ground shipping, enter "4.5" or "4.50" into this field.  
+Remember, you must set the minimum for each of your shipping methods, if you 
+want each to have a minimum charge.
+
+<p>
+<a name="additional"><b>Additional shipping calculation</b><br></a>
+
+Here, you can enter any additional calculation you would like to apply to the 
+shipping calculation.  This is especially useful for the zones-based 
+shipping calculations.  Very few merchants pay the full rates for UPS 
+shipping, and some merchants want to slightly mark up their shipping charges 
+for handling.  Other merchants may want to discount them slightly to promote 
+goodwill.  This feature would allow you to discount your UPS ground shipping 
+quote by 25% to match your discount, then add $2.50 to cover a packaging and 
+handling charge.  Tip:  if you're currently not receiving a discount on your 
+shipping rates, call UPS and ask for one.  
+
+ <br>
+<br>
+
+<hr noshade size=2 width=100%>
+<font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+<a href="http://www.akopia.com/product.html"><b>Interchange</b></a>
+<a href="http://www.akopia.com/"><b> - &copy; 2000 Akopia, Inc.</b></a></font>
+
+</td>
+</tr>
+</table>
+</body>
+</html>
+
