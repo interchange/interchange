@@ -13,6 +13,11 @@ UI
 
 * Unused usertag component removed.
 
+Payment
+-------
+
+* Support for WellsFargo added
+
 ------------------------------------------------------------------------------
 
 Interchange 4.8.4 not yet released.
