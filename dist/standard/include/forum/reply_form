@@ -36,8 +36,8 @@
 <input TYPE="checkbox" NAME="anon" [if cgi anon]CHECKED[/if]> [L]Post Anonymously[/L]
 [/if]
 <br>
-<input type="submit" name="operation" VALUE="[L]Submit[/L]">
-<input type="submit" name="operation" VALUE="[L]Preview[/L]">
+<input type="submit" name="operation" VALUE="[L]Submit[/L]" class="button2">
+<input type="submit" name="operation" VALUE="[L]Preview[/L]" class="button2">
 <select NAME="commtype">
 <option VALUE="2"[selected cgi=1 name=commtype value=2]>[L]Plain Old Text[/L]</option>
 <option VALUE="3"[selected cgi=1 name=commtype value=3]>[L]HTML Formatted[/L]</option>

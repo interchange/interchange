@@ -1,9 +1,9 @@
 <table cellspacing="0" cellpadding="0" width="100%">
   <tr>
     <td>
-       <table border="0" cellspacing="0" cellpadding="0" width="100%">
-          <tr class="contentbar2">
-            <td colspan=4 class="contentbar2"><b>[L]Payment Method[/L]</b></td>
+       <table border="0" cellspacing="0" cellpadding="4" width="100%">
+          <tr class="titletab_small">
+            <td colspan=4 class="titletab_small"><b>[L]&nbsp;Payment Method[/L]</b></td>
           </tr>
           <tr>
             <td colspan=4 class="contentbar1">&nbsp;</td>

@@ -9,14 +9,14 @@
 <input TYPE="HIDDEN" NAME="artid" VALUE="[loop-data forum artid]">
 <input TYPE="HIDDEN" NAME="parent" VALUE="[loop-code]">
 <input TYPE="HIDDEN" NAME="mv_arg" VALUE="[loop-code]">
-<table BORDER="0" CELLSPACING="0" CELLPADDING="1">
+<table BORDER="0" CELLSPACING="0" CELLPADDING="4">
+<!--
 <tr><td WIDTH="130" ALIGN="RIGHT">[L]Name[/L]: </td><td WIDTH="500">
 [page href=forum_user arg="[loop-data forum username]"][data table=userdb column=nickname key="[loop-data forum username]"]&#91; [page logout][L]Log Out[/L]</a> ]</td></tr>
+-->
 
-
-
-<tr><td ALIGN="RIGHT">[L]Subject[/L]: </td>
-<td><input TYPE="text" NAME="subject" VALUE="[loop-calc]
+<tr><td ALIGN="RIGHT"><br>[L]Subject[/L]: </td>
+<td><br><input TYPE="text" NAME="subject" VALUE="[loop-calc]
 						my $subj = $CGI->{subject} || q{[loop-data forum subject]};
 						$subj = "Re: $subj" unless $subj =~ /^\s*re:/i;
 						return $Tag->filter('restrict_html', $subj);
@@ -50,8 +50,8 @@
 <input TYPE="checkbox" NAME="anon" [if cgi anon]CHECKED[/if]> [L]Post Anonymously[/L]
 [/if]
 <br>
-<input TYPE="SUBMIT" NAME="operation" VALUE="Submit">
-<input TYPE="SUBMIT" NAME="operation" VALUE="Preview">
+<input TYPE="SUBMIT" NAME="operation" VALUE="Submit" class="button2">
+<input TYPE="SUBMIT" NAME="operation" VALUE="Preview" class="button2">
 <select NAME="commtype">
 <option VALUE="2">[L]Plain Old Text[/L]</option>
 <option VALUE="3"[selected name=commtype cgi=1 value=3]>[L]HTML Formatted (no wiki)[/L]</option>

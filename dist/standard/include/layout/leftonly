@@ -7,59 +7,61 @@
 </head>
 <body>
 <!--- top left and right logo --->
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<table cellspacing="0" cellpadding="0" border="0" width="100%" align="center">
 <tr>
-  <td align=left valign=middle class=logoarea>
-    &nbsp;[image src="[scratch logo]"]
+  <td>
+    &nbsp;<a href="[area index]">[image src="[scratch logo]" border="0"]</a>
   </td>        	
-  <td style="padding: 0; margin: 0; vertical-align: top" class=logoarea>
-	  <table align=right>
-		<tr>
-			<td width="100%" style="padding: 0; margin: 0" class=maincontent>
-			  <div class=borderdraw></div>
-			  {{LINE_MENU}}
-			</td>
-		</tr>
-	  </table>
+  <td class="linemenu">	  
+  	{{LINE_MENU}}			
   </td>
 </tr>
-</table>
-<!--- menu bar along the top ---><table width="100%" border=0 cellspacing=0 cellpadding=0>
+<!--- menu bar along the top --->
 <tr>
-  <td width="100%" class="menubar" valign=top>
-  {{TOP_MENU}}
+  <td colspan="2">																
+	<div width="100%" class="navigation_bar">{{TOP_MENU}}</div>							
   </td>
 </tr>
-</table>
-{{BREADCRUMBS?}}
-<!--- menu bar along the top ---><table width="100%" border=0 cellspacing=0 cellpadding=0>
 <tr>
-  <td width="100%" class="bread" valign=top>
-  {{BREADCRUMBS}}
+  <td colspan="2">							
+	{{BREADCRUMBS?}}									
+	<div width="100%" class="breadcrumb_bar">{{BREADCRUMBS}}</div>
+	{{/BREADCRUMBS?}}
   </td>
 </tr>
 </table>
-{{/BREADCRUMBS?}}
 <!--- left category column, main content column, and right special column --->
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<table cellspacing="0" cellpadding="0" border="0" width="100%" align="center">
 <tr> 
-	<td width="20%" valign="top" align="left" class="leftarea"> 
-	  {{LEFT}}
-	</td>
-	<td width="80%" valign=top style="[if scratch dhtml_browser]padding-left: 10px[/if]" class=maincontent>
-{{TOP?}}
-	<div align=center>{{TOP}}</div>
-{{/TOP?}}
-	{{:DEFAULT}}
-{{BOTTOM?}}
-	<div align=center>{{BOTTOM}}</div>
-{{/BOTTOM?}}
-	</td>
+  <td class="left" valign="top">
+	<div class="left_table">			
+		{{LEFT}}			
+	</div>
+  </td>
+  <td class="center_leftonly">
+	<div class="center_padding" align="center">
+ 		<div class="center_table">		
+			{{TOP?}}		
+				{{TOP}}
+			{{/TOP?}}
+			{{:DEFAULT}}
+		</div>
+	</div>
+	<div class="center_padding" align="center">
+		{{BOTTOM?}}
+		<div class="specials">
+			{{BOTTOM}}
+		</div>
+		{{/BOTTOM?}}
+	</div>
+  </td>  	
 </tr>
+</table>
+<table cellspacing="0" cellpadding="0" border="0" width="100%" align="center">
 <tr>
-	<td colspan=2>
-		{{COPYRIGHT}}
-	</td>
+  <td>
+	{{COPYRIGHT}}
+  </td>
 </tr>
 </table>
 [if session admin]

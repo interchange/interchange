@@ -1,11 +1,11 @@
         <table cellspacing=0 cellpadding=5 border=0 width="100%">
-        <tr class=contentbar2>
-          <td class=contentbar2>&nbsp;<b>[L]Remove[/L]</b></td>
-          <td class=contentbar2 align=center><b>[L]SKU[/L]</b></td>
-          <td class=contentbar2><b>[L]Description[/L]</b></td>
-          <td class=contentbar2><b>[L]Quantity[/L]</b></td>
-          <td class=contentbar2 align=center><b>[L]Price[/L]</b></td>
-          <td class=contentbar2><b>[L]Extension[/L]&nbsp;</b></td>
+        <tr class="titletab_small">
+          <td class="titletab_small">&nbsp;<b>[L]Remove[/L]</b></td>
+          <td class="titletab_small"><b>[L]SKU[/L]</b></td>
+          <td class="titletab_small"><b>[L]Description[/L]</b></td>
+          <td class="titletab_small"><b>[L]Quantity[/L]</b></td>
+          <td class="titletab_small"><b>[L]Price[/L]</b></td>
+          <td class="titletab_small"><b>[L]Extension[/L]&nbsp;</b></td>
         </tr>
         <tbody>
 
@@ -13,16 +13,16 @@
         [then]
         [item-list modular=1]
 
-        <tr class="[item-alternate 2]maincontent[else]contentbar1[/else][/item-alternate]">
-          <td align=center valign=top>
+        <tr class="[item-alternate 2]cartnorm[else]cartalt[/else][/item-alternate]">
+          <td valign=top>
             <inPUT type=checkbox name="[quantity-name]" onClick="this.form.action='[process]', this.form.submit()" value=0>
           </td>
           <td><b>[item-sku]</b></td>
-          <td>[page [item-sku]]<b>[item-description]</b></a>
+          <td><a href="[area href="[item-sku]"]" class="cartlink"><b>[item-description]</b></a>
 
             [if scratch dealer]
             [if-item-data pricing sku]
-              <br>[page quantity [item-code]]
+              <br><a href="[area href="quantity [item-code]"]" class="cartlink">
               [L]QUANTITY PRICING[/L]</a>
             [/if-item-data]
             [/if]
@@ -39,21 +39,21 @@
             [seti weight][summary amount=`[item-quantity] * [item-field weight]`][/seti]
             [/if-item-field]
           </td>
-          <td align=center valign=top>
+          <td valign=top>
             <input type=text name="[quantity-name]" value="[item-quantity]" size=3>
           </td>
-          <td align=right>
+          <td>
             [item-discount-price]
             [if discount [item-code]]<br>[msg arg.0="[item-discount]"]Item is discounted %s[/msg][/if]
           </td>
-          <td align=right>[item-subtotal]</td>
+          <td>[item-subtotal]</td>
         </tr>
 
         [/item-list]
         [/then]
         [else]
         <tr>
-          <td align=center colspan=6 class="contentbar2">
+          <td align=center colspan=6 class="titletab_small">
             [L]No items at the moment.[/L]
           </td>
         </tr>
@@ -68,7 +68,7 @@
         <tr>
           <td align=left>
                         [if items]
-            <input type=submit value="[L]Recalculate[/L]" class=button1>
+            <input type=submit value="[L]Recalculate[/L]" class=button3>
                         [/if]
           </td>
           <td align=right>
@@ -103,8 +103,8 @@
 		[/else]
 		[/if]
             <tr>
-              <td align=left class=contentbar2>[L]TOTAL[/L]:</td>
-              <td align=right class=contentbar2>[total-cost]</td>
+              <td align=left class="titletab_small">[L]TOTAL[/L]:</td>
+              <td align=right class="titletab_small">[total-cost]</td>
             </tr>
             </table>
           </td>

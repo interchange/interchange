@@ -6,12 +6,12 @@
   <td>
 	<table border=0 cellspacing=0 cellpadding=4 width="100%">
 	<tr>
-	  <td colspan="2" class="contentbar2" width="30%">
+	  <td colspan="2" class="titletab_small" width="30%">
 		<b>
 		[error std_label="[L]Credit Card Information[/L]" name=mv_credit_card_valid]
 		</b>
 	  </td>
-	  <td class="contentbar2">
+	  <td class="titletab_small">
 		[calc]
 		  my $accepted = $Variable->{CREDIT_CARDS_ACCEPTED};
 		  my (@out);
@@ -29,10 +29,10 @@
 	  </td>
 	</tr>
 	<tr>
-	  <td align=right class="contentbar1" width="30%">
+	  <td align=right class="contentbar1" width="30%"><br>
 		<b>[L]Card Number[/L]: </b>
 	  </td>
-	  <td colspan=2 class="contentbar1">
+	  <td colspan=2 class="contentbar1"><br>
 		<b><input type=text name=mv_credit_card_number size=22></b>
 	  </td>
 	</tr>
@@ -113,11 +113,11 @@
 	  <td>
 		<table border="0" cellspacing="0" cellpadding="0"  width="100%">
 		<tr>
-		  <td class="contentbar2" colspan="2" width="30%">
+		  <td class="titletab_small" colspan="2" width="30%">
 			<b>&nbsp;&nbsp;[L]Check Information[/L]</b>
 		  </td>
-		  <td class="contentbar2">&nbsp;</td>
-		  <td class="contentbar2">&nbsp;</td>
+		  <td class="titletab_small">&nbsp;</td>
+		  <td class="titletab_small">&nbsp;</td>
 		</tr>
 		<tr>
 		  <td align="right" class="contentbar1">
@@ -174,11 +174,11 @@
 <tr>
   <td>
 	<table border="0" cellspacing="0" cellpadding="0" width="100%">
-	<tr class="contentbar2">
-	  <td class="contentbar2" colspan="2">
+	<tr class="titletab_small">
+	  <td class="titletab_small" colspan="2">
 		<b> [L]P.O. Information[/L] </b>
 	  </td>
-	  <td colspan=2 class="contentbar2">&nbsp;</td>
+	  <td colspan=2 class="titletab_small">&nbsp;</td>
 	</tr>
 	<tr>
 	  <td align=right class="contentbar1" width="30%">
