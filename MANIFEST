@@ -39,6 +39,7 @@ code/SystemTag/control_set.coretag
 code/SystemTag/counter.coretag
 code/SystemTag/currency.coretag
 code/SystemTag/data.coretag
+code/SystemTag/debug.coretag
 code/SystemTag/default.coretag
 code/SystemTag/deliver.coretag
 code/SystemTag/description.coretag
@@ -1281,6 +1282,7 @@ lib/Vend/Payment/iTransact.pm
 lib/Vend/RefSearch.pm
 lib/Vend/SOAP.pm
 lib/Vend/SOAP/Transport.pm
+lib/Vend/SQL_Parser.pm
 lib/Vend/Scan.pm
 lib/Vend/Search.pm
 lib/Vend/Server.pm

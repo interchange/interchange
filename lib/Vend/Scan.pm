@@ -1,6 +1,6 @@
 # Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 2.19 2003-06-18 17:34:44 jon Exp $
+# $Id: Scan.pm,v 2.20 2003-07-06 04:38:28 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -30,11 +30,12 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 2.19 $, 10);
+$VERSION = substr(q$Revision: 2.20 $, 10);
 
 use strict;
 use Vend::Util;
 use Vend::File;
+use Vend::SQL_Parser;
 use Vend::Interpolate;
 use Vend::Data qw(product_code_exists_ref column_index);
 use Vend::TextSearch;
@@ -552,7 +553,7 @@ BEGIN {
 	eval { require SQL::Statement; };
 }
 
-my %scalar = (qw/ st 1 ra 1 co 1 os 1/);
+my %scalar = (qw/ st 1 ra 1 co 1 os 1 sr 1 ml 1/);
 
 sub push_spec {
 	my ($parm, $val, $ary, $hash) = @_;
@@ -588,23 +589,21 @@ sub sql_statement {
 # END GLIMPSE
 	}
 
-	die "SQL is not enabled for Interchange. Get the SQL::Statement module.\n"
-		unless defined &SQL::Statement::new;
-
-	my $parser = SQL::Parser->new('Ansi');
+#	die "SQL is not enabled for Interchange. Get the SQL::Statement module.\n"
+#		unless defined &SQL::Statement::new;
 
 	# Strip possible leading stuff
 	$text =~ s/^\s*sq\s*=//;
 	my $stmt;
 	eval {
-		$stmt = SQL::Statement->new($text, $parser);
+		$stmt = Vend::SQL_Parser->new($text, $ref);
 	};
 	if($@ and $text =~ s/^\s*sq\s*=(.*)//m) {
 #::logDebug("failed first query, error=$@");
 		my $query = $1;
 		push @$ary, $text if $ary;
 		eval {
-			$stmt = SQL::Statement->new($query, $parser);
+			$stmt = Vend::SQL_Parser->new($text, $ref);
 		};
 	}
 	if($@) {
@@ -616,11 +615,18 @@ sub sql_statement {
 	my $nuhash;
 	my $codename;
 
+#::logDebug("SQL statement=" . ::uneval($stmt));
+
 	my $update = $stmt->command();
+#::logDebug("SQL command=$update");
 	undef $update if $update eq 'SELECT';
 
 	for($stmt->tables()) {
 		my $t = $_->name();
+		if($ref->{table_only}) {
+			return $t;
+		}
+#::logDebug("found table=$t");
 
 		my $codename;
 		my $db = Vend::Data::database_exists_ref($t);
@@ -644,11 +650,29 @@ sub sql_statement {
 
 	$text =~ /\bselect\s+distinct\s+/i and push_spec( 'un', 'yes', $ary, $hash);
 
+	if(my $l = $stmt->limit()) {
+#::logDebug("found limit=" . $l->limit());
+		push_spec('ml', $l->limit(), $ary, $hash);
+		if(my $fm = $l->offset()) {
+#::logDebug("found offset=$fm");
+			push_spec('fm', $fm, $ary, $hash);
+		}
+	}
+
 	for($stmt->columns()) {
 		my $name = $_->name();
+#::logDebug("found column=$name");
 		push_spec('rf', $name, $ary, $hash);
 		last if $name eq '*';
 #::logDebug("column name=" . $_->name() . " table=" . $_->table());
+	}
+
+	for my $v ($stmt->params()) {
+		my $val = $v->value();
+		my $type = $v->type();
+#::logDebug(qq{found value="$val" type=$type});
+		push_spec('vv', $val, $ary, $hash);
+		push_spec('vt', $type, $ary, $hash);
 	}
 
 	my @order;
@@ -656,77 +680,31 @@ sub sql_statement {
 	@order = $stmt->order();
 	for(@order) {
 		my $c = $_->column();
+#::logDebug("found order column=$c");
 		push_spec('tf', $c, $ary, $hash);
 		my $d = $_->desc() ? 'fr' : 'f';
+#::logDebug("found order sense=$d");
 		push_spec('to', $d, $ary, $hash);
 	}
 
-	my $where;
+	push_spec('un', 1, $ary, $hash) if $stmt->distinct();
+#::logDebug("ary spec to this point=" . ::uneval($ary));
+#::logDebug("hash spec to this point=" . ::uneval($hash));
 	my @where;
-	my $numeric;
 	@where = $stmt->where();
-# Account for undocumented behavior in SQL::Statement
-# Fix by Kestutis Lasys
-	if(CORE::ref $where[0]) {
-	  my $or;
-	  push_spec('co', 'yes', $ary, $hash);
-	  do {
-	  	my $where = shift @where;
-		my $op = $where->op();
-		my $col = $where->arg1();
-		my $spec = $where->arg2();
-#::logDebug("where=$where op=$op arg1=$col arg2=$spec");
-		OP: {
-			if($op eq 'OR') {
-				push_spec( 'os', 'yes', $ary, $hash)     unless $or++;
-				push(@where, $where->arg1() , $where->arg2());
-			}
-			elsif($op eq 'AND') {
-				push(@where, $where->arg1() , $where->arg2());
-			}
-			else {
-
-				my ($col, $spec);
-
-				# Search spec is a variable if a ref
-				$spec = $where->arg2();
-#::logDebug("where col=$col spec=$spec");
-				$spec = $ref->{$spec->name()}		if ref $spec;
-
-				last OP unless defined $spec;
-
-				# Column name is a variable if a string
-				$col = $where->arg1();
-				$col = ref $col ? $col->name() : $::Values->{$col};
-
-				last OP unless $col;
-
-				$numeric = (defined $nuhash)
-							? (exists $nuhash->{$col})
-							: (
-								$spec =~ /^-?\d+\.?\d*$/
-								and
-								$spec !~ /^0\d+$/			 );
-
-#::logDebug("where col=$col spec=$spec");
-
-#::logDebug("numeric for $col=$numeric");
-				push_spec('nu', ($numeric || 0),      $ary, $hash); 
-				push_spec('se', $spec,                $ary, $hash);
-				push_spec('op', $op,                  $ary, $hash);
-				push_spec('sf', $col,                 $ary, $hash);
-				push_spec('ne', ($where->neg() || 0), $ary, $hash);
-
-				
-			}
+#::logDebug("where returned=" . ::uneval(\@where));
+	if(@where) {
+		for(@where) {
+			push_spec( @$_, $ary, $hash );
 		}
-	  } while @where;
-
 	}
 	else {
 		push_spec('ra', 'yes', $ary, $hash);
 	}
 	
+	if($hash->{sg} and ! $hash->{sr}) {
+		delete $hash->{sg};
+	}
 #::logDebug("sql_statement output=" . Vend::Util::uneval($hash)) if $hash;
 	return ($hash, $stmt) if $hash;
 

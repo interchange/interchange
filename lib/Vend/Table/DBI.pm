@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.48 2003-06-18 17:34:46 jon Exp $
+# $Id: DBI.pm,v 2.49 2003-07-06 04:38:28 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.48 $, 10);
+$VERSION = substr(q$Revision: 2.49 $, 10);
 
 use strict;
 
@@ -1952,18 +1952,29 @@ sub query {
 			return undef if $opt->{no_requery};
 
 			# Do nothing but log to debug and fall through to MVSEARCH
+			my $trytab;
+			my $newdb;
 			eval {
-				($spec, $stmt) = Vend::Scan::sql_statement($query, $ref);
-				my @additions = grep length($_) == 2, keys %$opt;
-				if(@additions) {
-					@{$spec}{@additions} = @{$opt}{@additions};
-				}
+				$trytab = Vend::Scan::sql_statement($query, { table_only => 1 } );
+				$newdb = Vend::Data::database_exists_ref($trytab);
 			};
 			if($@) {
 				my $msg = ::errmsg(
 						qq{Query rerouted from table %s failed: %s\nQuery was: %s},
-						$s->[$TABLE],
+						$trytab,
 						$@,
+						$query,
+					);
+				Carp::croak($msg) if $Vend::Try;
+				::logError($msg);
+				return undef;
+			}
+			if($newdb) {
+				return $newdb->query($opt, $text, @arg);
+			}
+			else {
+				my $msg = ::errmsg(
+						qq{Unable to find base table in query: %s},
 						$query,
 					);
 				Carp::croak($msg) if $Vend::Try;
