@@ -1,11 +1,36 @@
 UserTag accounting Order function
 UserTag accounting addAttr
 UserTag accounting Routine <<EOR
+my %account_super = (qw/
+	noparts_update 1
+/);
+my %account_admin = (qw/
+	inventory_update 1
+/);
+
 sub {
 	my ($func, $opt) = @_;
 
+	use vars qw/$Tag/;
 	die "Accounting not enabled!"
 		unless $Vend::Cfg->{Accounting};
+
+	my $enable;
+	if($account_super{$func}) {
+		eval {
+			$enable = $Vend::admin && $Tag->if_mm('super');
+		};
+	}
+	elsif($account_admin{$func}) {
+		$enable = $Vend::admin;
+	}
+	else {
+		$enable = 1;
+	}
+
+	if(! $enable) {
+		die errmsg("Function '%s' not enabled for current user level.", $func);
+	}
 
 	if(my $sys = $opt->{system}) {
 		my $former = $Vend::Cfg->{Accounting};
@@ -29,7 +54,8 @@ sub {
 	
 	my $class = $a->{Class};
 	my $self = new $class;
-	unless( $self->can($func) ) {
+	my $can;
+	unless( $can = $self->can($func) ) {
 		logError(
 			"No function '%s' in accounting system %s. Aborting.",
 			$func,
@@ -37,6 +63,8 @@ sub {
 		);
 		return undef;
 	}
+
+	return $can if $opt->{can_do_function};
 
 	return $self->$func($opt);
 }
