@@ -186,8 +186,11 @@ dist/foundation/images/foundation/login.gif
 dist/foundation/images/foundation/logo.gif
 dist/foundation/images/foundation/logo2.gif
 dist/foundation/images/foundation/logout.gif
+dist/foundation/images/foundation/placeorder.gif
 dist/foundation/images/foundation/poweredby.gif
 dist/foundation/images/foundation/recalculate_button.gif
+dist/foundation/images/foundation/savecart.gif
+dist/foundation/images/foundation/saverecur.gif
 dist/foundation/images/foundation/search.gif
 dist/foundation/images/foundation/sep.gif
 dist/foundation/images/foundation/service.gif
@@ -637,6 +640,7 @@ dist/lib/UI/pages/admin/wizard/guess_info.html
 dist/lib/UI/pages/admin/wizard/index.html
 dist/lib/UI/pages/admin/wizard/step_about.html
 dist/lib/UI/pages/admin/wizard/step_company.html
+dist/lib/UI/pages/admin/wizard/step_content.html
 dist/lib/UI/pages/admin/wizard/step_email.html
 dist/lib/UI/pages/admin/wizard/step_finalize.html
 dist/lib/UI/pages/admin/wizard/step_groupcontent.html
@@ -811,6 +815,7 @@ extra/IniConf.pm
 extra/Tie/ShadowHash.pm
 extra/URI/URL.pm
 hints.pl
+lib/Tie/ShadowHash.pm
 lib/Vend/Cart.pm
 lib/Vend/Config.pm
 lib/Vend/Control.pm
