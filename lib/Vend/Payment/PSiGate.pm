@@ -1,6 +1,6 @@
 # Vend::Payment::PSiGate - Interchange PSiGate support
 #
-# $Id: PSiGate.pm,v 1.2 2003-08-04 22:01:08 racke Exp $
+# $Id: PSiGate.pm,v 1.3 2004-03-25 00:59:27 kwalsh Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group <interchange@icdevgroup.org>
 # Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
@@ -380,7 +380,7 @@ sub psigate {
                     Bcompany            => $actual->{company},
                     Email               => $actual->{email},
                     Phone               => $actual->{phone_day},
-
+                    IP                  => $CGI::remote_addr,
     );
 
     my @query;
