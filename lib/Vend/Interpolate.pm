@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.131 2002-11-23 03:20:40 mheins Exp $
+# $Id: Interpolate.pm,v 2.132 2002-11-26 04:07:34 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.131 $, 10);
+$VERSION = substr(q$Revision: 2.132 $, 10);
 
 @EXPORT = qw (
 
@@ -1174,6 +1174,10 @@ sub tag_data {
 				},
 	'decode_entities' => sub {
 					return HTML::Entities::decode(shift);
+				},
+	encrypt => sub {
+					my ($val, $tag, $key) = @_;
+					return Vend::Order::pgp_encrypt($val, $key);
 				},
 	'yesno' => sub {
 					my $val = shift(@_) ? 'Yes' : 'No';
