@@ -1,6 +1,6 @@
 # Vend::Glimpse - Search indexes with Glimpse
 #
-# $Id: Glimpse.pm,v 2.11 2004-08-09 18:00:43 jon Exp $
+# $Id: Glimpse.pm,v 2.12 2004-08-21 22:47:23 jon Exp $
 #
 # Adapted for use with Interchange from Search::Glimpse
 #
@@ -26,7 +26,7 @@ package Vend::Glimpse;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.11 $, 10);
+$VERSION = substr(q$Revision: 2.12 $, 10);
 use strict;
 use Vend::File;
 use Vend::Util;
@@ -167,7 +167,7 @@ sub search {
 	push(@cmd, "-F '$s->{mv_search_file}[0]'")
 		if defined $s->{mv_search_file}[0];
 
-	push(@cmd, '-w') unless $s->{mv_substring_match};
+	push @cmd, '-w' unless @{$s->{mv_substring_match}};
 	push(@cmd, '-O -X') if $s->{mv_return_file_name};
 	
 	if($s->{mv_return_file_name}) { 
