@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.47 2004-12-14 23:03:47 racke Exp $
+# $Id: Shadow.pm,v 1.48 2004-12-17 00:03:40 racke Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.47 $, 10);
+$VERSION = substr(q$Revision: 1.48 $, 10);
 
 # CREDITS
 #
@@ -315,7 +315,7 @@ sub query {
 			# pass query to other table, but preserve the query info
 			$opt->{queryinfo} = $qref;
 			unless ($db = Vend::Data::database_exists_ref($table)) {
-				die ::errmsg("Table %s not found", $table);
+				die ::errmsg(qq{Table %s not found for query "%s"}, $table, $opt->{query});
 			}
 			return $db->query($opt, $text, @arg);
 		} elsif ($qref->{command} ne 'SELECT') {
