@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.5
 #
-# $Id: interchange.PL,v 1.15.2.49 2001-06-18 15:51:57 heins Exp $
+# $Id: interchange.PL,v 1.15.2.50 2001-06-23 00:46:20 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -2107,13 +2107,21 @@ EOF
 	{
 		if(ref $macro) {
 			for (@$macro) {
-				if(/^\w+-\w+$/) {
+				if ($macro =~ /^\w+$/) {
+					my $sub = $Vend::Cfg->{Sub}{$macro} || $Global::GlobalSub->{$macro};
+					$sub->();
+				}
+				elsif(/^\w+-\w+$/) {
 					Vend::Interpolate::tag_profile($_);
 				}
 				else {
 					interpolate_html($_);
 				}
 			}
+		}
+		elsif ($macro =~ /^\w+$/) {
+			my $sub = $Vend::Cfg->{Sub}{$macro} || $Global::GlobalSub->{$macro};
+			$sub->();
 		}
 		else {
 			interpolate_html($macro);
