@@ -1,5 +1,6 @@
-interchange (4.8.3-0.1) unstable; urgency=low
+interchange (4.8.3-0.2) unstable; urgency=low
 
+  * new upstream release (Closes: #112369)
   * change ownership on "documentroot" only if "documentroot" exists
     (Closes: #113357)
   * 400mod_interchange.info added (thanks to Michael Bilow
