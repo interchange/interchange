@@ -2,7 +2,7 @@
 #
 # UI::ContentEditor - Interchange page/component edit
 # 
-# $Id: ContentEditor.pm,v 2.7 2002-09-13 20:46:20 mheins Exp $
+# $Id: ContentEditor.pm,v 2.8 2003-01-22 15:26:59 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -23,7 +23,7 @@
 
 package UI::ContentEditor;
 
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 $DEBUG = 0;
 
 use POSIX qw/strftime/;
@@ -99,6 +99,16 @@ sub assert {
 	my $caller = caller;
 	death($caller, "%s (%s) not a(n) %s", $name, $thing, $type);
 	return undef;
+}
+
+sub delete_store {
+	my $type = shift;
+	my $name = shift;
+	die("Must have type and name for delete_store, args were: " . join(" ", @_))
+		unless $type and $name;
+	my $store = $Vend::Session->{content_edit} ||= {};
+	$store->{$type} ||= {};
+	delete $store->{$type}{$name};
 }
 
 sub save_store {
@@ -208,9 +218,11 @@ sub parse_template {
 	my @out;
 	my @comp;
 
+#::logDebug("ui_template_layout=$tref->{ui_template_layout}");
 	if(! ref $tref->{ui_template_layout}) {
 		$tref->{ui_template_layout} = [split /\s*,\s*/, $tref->{ui_template_layout}];
 	}
+#::logDebug("ui_template_layout=$tref->{ui_template_layout}");
 	$things = $tref->{ui_template_layout} || [];
 
 	for(@$things) {
@@ -355,7 +367,7 @@ sub match_slots {
 		last;
 	}
 
-	if($idx > $#$p) {
+	if($idx > $#$p and $#$p > 0) {
 		pain (	'parse_page',
 				"No content slot found in page %s",
 				$pref->{ui_page_template},
@@ -379,7 +391,7 @@ sub match_slots {
 	splice @$p, $idx, 0, $content;
 #::logDebug("page slots now=" . uneval($p));
 
-	if($idx > $#$t) {
+	if($idx > $#$t and $#$t > 0) {
 		pain (	'parse_page',
 				"No content slot found in template %s",
 				$pref->{ui_page_template},
@@ -1906,9 +1918,12 @@ sub format_page {
 	
 	$found_something += scalar(@sets);
 
+#::logDebug("publish_page ref=" . ::uneval($ref));
+
 	# Things we want every time
 	my $layout = delete $ref->{ui_template_layout} || [];
 
+#::logDebug("layout=" . ::uneval($layout));
 	my @header;
 
 	my $slots = delete $ref->{ui_slots} || [];
@@ -1957,6 +1972,9 @@ sub format_page {
 		elsif ($var =~ /^[A-Z]/) {
 			$found_something++;
 			push @bods, '@_' . $var . '_@';
+		}
+		else {
+#::logDebug("bad bod: $var");
 		}
 	}
 
@@ -2274,7 +2292,7 @@ sub publish_page {
 	$dest =~ s/\s+$//;
 	$dest =~ s/^\s+$//;
 	my $record = ref_content($ref, $opt)
-		or return death("publish_template", "bad news");
+		or return death("publish_page", "bad news");
 	my $text = format_page($ref);
 	$record->{page_text} = $text;
 #::logDebug("header record: " . uneval($record));
@@ -2293,6 +2311,7 @@ sub publish_template {
 	my $text = format_template($ref);
 	$record->{temp_text} = $text;
 #::logDebug("header record: " . uneval($record));
+	delete_store('template', $record->{code});
 	write_template($record);
 }
 
@@ -2503,18 +2522,25 @@ my %illegal_top = (
 	},
 );
 
+my %always_top = (
+	default => {
+		ui_label   => 1,
+	},
+);
+
 sub modify_top_attribute {
 	my ($ref, $opt) = @_;
 	my $vref = $opt->{values_ref} || \%CGI::values;
 
 	my $illegal = $illegal_top{$ref->{ui_type}} || $illegal_top{default};
+	my $always = $always_top{$ref->{ui_type}} || $always_top{default};
 
 	my @found;
 	for(keys %$vref) {
 #::logDebug("checking $_ ($ref->{$_} -> $vref->{$_}) for legality");
 		next if $illegal->{$_};
-		next unless defined $ref->{$_};
-#::logDebug("$_ is legal and defined in ref");
+		next unless defined $ref->{$_} or $always->{$_};
+#::logDebug("$_ is legal and defined in ref (or is always allowed)");
 		push @found, $_;
 	}
 
