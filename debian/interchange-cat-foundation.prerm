@@ -24,8 +24,10 @@
 
 db_get interchange-cat-foundation/install
 if [ "$RET" = "true" ]; then
-	# remove catalog from running server
-	/usr/sbin/interchange --remove=foundation
+	if [ ! -f /var/run/interchange-install ]; then
+		# remove catalog from running server
+		/usr/sbin/interchange --remove=foundation
+	fi
 fi
 
 #DEBHELPER#

@@ -110,8 +110,11 @@ db_get interchange-cat-foundation/install
 if [ "$RET" = "true" ]; then
 	interchangeconfig USE_FOUNDATION=1
 
-	# add catalog to running server
-	echo 'Catalog foundation /var/lib/interchange/catalogs/foundation /cgi-bin/ic/foundation' | /usr/sbin/interchange --add foundation
+
+	if [ ! -f /var/run/interchange-install ]; then
+		# add catalog to running server
+		echo 'Catalog foundation /var/lib/interchange/catalogs/foundation /cgi-bin/ic/foundation' | /usr/sbin/interchange --add foundation
+	fi
 fi
 
 #DEBHELPER#
