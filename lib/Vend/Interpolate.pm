@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.9.2.23 2003-01-23 19:19:30 jon Exp $
+# $Id: Interpolate.pm,v 2.9.2.24 2003-01-23 19:32:15 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and
 # Interchange Development Group, http://www.icdevgroup.org/
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.9.2.23 $, 10);
+$VERSION = substr(q$Revision: 2.9.2.24 $, 10);
 
 @EXPORT = qw (
 
@@ -4090,7 +4090,6 @@ sub tag_search_list {
 		$page,
 		$prefix,
 		$more_id,
-		$form_arg,
 		$session,
 		);
 
@@ -4156,6 +4155,9 @@ sub tag_more_list {
 	if($q->{mv_more_id}) {
 		$more_id = $q->{mv_more_id};
 		$form_arg .= "\nmi=$more_id";
+	}
+	else {
+		$more_id = undef;
 	}
 
 	if($r =~ s:\[border\]($All)\[/border\]::i) {
