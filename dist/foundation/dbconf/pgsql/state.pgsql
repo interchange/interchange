@@ -6,6 +6,7 @@ ifdef SQLPASS
 Database  state  PASS         __SQLPASS__
 endif
 Database  state  AUTO_NUMBER  00001
+Database  state  DEFAULT_TYPE varchar(128)
 Database  state  COLUMN_DEF   "code=VARCHAR(8) NOT NULL PRIMARY KEY"
 Database  state  COLUMN_DEF   "country=VARCHAR(20) DEFAULT '' NOT NULL"
 Database  state  COLUMN_DEF   "sorder=VARCHAR(8) NOT NULL"

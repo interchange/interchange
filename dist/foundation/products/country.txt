@@ -1,4 +1,4 @@
-code	sorder	region	selector	shipmodes	name	iso	isonum
+code	sorder	region	selector	shipmodes	name	iso	isonum	tax
 AF	9	Other	AF	XDM	Afghanistan	AFG	004
 AL	9	Other	AL	XDM	Albania	ALB	008
 DZ	9	Other	DZ	XDM	Algeria	DZA	012
