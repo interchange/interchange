@@ -1,26 +1,34 @@
-code	en_US	de_DE	fr_FR
-January		Januar	Janvier
-February		Februar	F&eacute;vrier
-March		M&auml;rz	Mars
-April		April	Avril
-May		Mai	Mai
-June		Juni	Juin
-July		Juli	Juillet
-August		August	Aout
-September		September	Septembre
-October		Oktober	Octobre
-November		November	Novembre
-December		Dezember	D&eacute;cembre
-PriceDivide	1	0.5409	0.1632
-ProductFiles			
-currency_symbol	$	DM	FF
-decimal_point	.	.	.
-default	1	0	0
-frac_digits	2	2	2
-mon_decimal_point	.	,	,
-mon_thousand_sep		 	
-mon_thousands_sep	,	,	.
-p_cs_precedes	1		
-p_sep_by_space			1
-price_picture		DM ### ### ###,##	
-products		de_products	produits
+code	en_US	de_DE	fr_FR	nl_NL
+About Us	About Us			Over ons
+April		April	Avril	April
+August		August	Aout	Augustus
+December		Dezember	D&eacute;cembre	December
+February		Februar	F&eacute;vrier	Februari
+January		Januar	Janvier	Januari
+July		Juli	Juillet	Juli
+June		Juni	Juin	Juni
+March		M&auml;rz	Mars	Maart
+May		Mai	Mai	Mei
+November		November	Novembre	November
+October		Oktober	Octobre	October
+Or send an e-mail to	Or send an e-mail to			Of stuur een e-mail naar
+Please %scontact us%s if you have any questions for us.	Please %scontact us%s if you have any questions for us.			Hebt U nog vragen, neem dan vrijblijvend %scontact%s met ons op.
+Preview	Preview			
+PriceDivide	1	0.5409	0.1632	
+ProductFiles				
+September		September	Septembre	September
+Specials	Specials			Aanbiedingen
+Submit	Submit			Verzend
+This is a demo store. If you would like further information on how you can build a store or how you can get custom services, please %svisit our web site%s.	This is a demo store. If you would like further information on how you can build a store or how you can get custom services, please %svisit our web site%s.			Dit is een demonstratie internet winkel. Wilt U meer informatie over hoe uzelf zo'n winkel bouwt of hoe U aangepaste diensten kunt krijgen, %sbezoek dan onze website%s.
+Welcome to	Welcome to			Welkom bij
+currency_symbol	$	DM	FF	
+decimal_point	.	.	.	
+default	1	0	0	
+frac_digits	2	2	2	
+mon_decimal_point	.	,	,	
+mon_thousand_sep		 		
+mon_thousands_sep	,	,	.	
+p_cs_precedes	1			
+p_sep_by_space			1	
+price_picture		DM ### ### ###,##		
+products		de_products	produits	
