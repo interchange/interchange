@@ -41,11 +41,12 @@
 
 [table-editor
 	table=mv_metadata
+	display-only=fieldmeta
 	view=dbconfig
 	no-table-meta=1
 	tabbed=1
 	table_width=900
-	tab_width=150
+	tab_width=120
 	break_row_class=rmarq
 	panel_width=900
 	panel_height=700
@@ -76,12 +77,17 @@
 		extended.ui_sort_combined
 		extended.ui_show_fields
 		extended.ui_special_add
+		fieldmeta
 
-		=Edit page display
+		=Edit page
 
 		extended.ui_data_fields
 		extended.bottom_buttons
 		extended.top_buttons
+		extended.view_from
+
+		=Form Linking
+
 		extended.link_table
 		extended.link_before
 		extended.link_key
@@ -92,8 +98,10 @@
 		extended.link_extra
 		extended.include_before
 		extended.include_form
+		extended.include_form_expand
+		extended.include_form_interpolate
 
-		=Tabbed display
+		=Tabbed Display
 
 		extended.tab_width
 		extended.tab_height
@@ -102,7 +110,7 @@
 		extended.tab_horiz_offset
 		extended.tab_vert_offset
 
-		=HTML formatting of edit page
+		=Edit Page HTML
 
 		extended.table_width
 		extended.left_width
@@ -115,7 +123,7 @@
 		extended.widget_cell_class
 		extended.help_cell_class
 
-		=Spreadsheet page display
+		=Spreadsheet page
 
 		extended.spread_fields
 		extended.spread_height
@@ -150,6 +158,7 @@
 		'extended.table_width' => 'Width specification for editor table',
 		'extended.ui_data_fields'		=> 'Fields to edit',
 		'extended.ui_display_only'		=> 'Fields for display only',
+		'extended.view_from'			=> 'Custom view from field',
 		'extended.ui_show_fields'		=> 'Show on select page',
 		'extended.ui_sort_field'		=> 'Sort by on select page',
 		'extended.ui_sort_option'		=> 'Sort modifier for select page',
@@ -159,6 +168,8 @@
 		'extended.link_before'			=> 'Column to appear before',
 		'extended.include_before'		=> 'Column for include to appear before',
 		'extended.include_form'			=> 'Custom form widget for inclusion',
+		'extended.include_form_expand'	=> 'Expand values of include',
+		'extended.include_form_interpolate'	=> 'Full interpolate of include',
 		'extended.link_key'				=> 'Foreign Key',
 		'extended.link_label'			=> 'Label for linked table',
 		'extended.link_sort'			=> 'Sort linked records by',
@@ -175,6 +186,7 @@
 		'extended.help_cell_class'		=> 'Help cell class (standard row)',
 		'extended.bottom_buttons'		=> 'Buttons only on bottom',
 		'extended.top_buttons'			=> 'Buttons only on top',
+		'fieldmeta'						=> 'Individual field meta (view only)',
 
 	}`
 
@@ -216,6 +228,7 @@
 		'extended.table_width'		    => 'text_8',
 		'extended.ui_data_fields'		=> 'move_combo_8',
 		'extended.ui_display_only'		=> 'text_40',
+		'extended.view_from'			=> 'select',
 		'extended.ui_show_fields'		=> 'move_combo_8',
 		'extended.ui_sort_field'		=> 'select',
 		'extended.ui_sort_option'		=> 'multiple',
@@ -224,10 +237,13 @@
 		'extended.link_table'			=> 'select',
 		'extended.link_before'			=> 'text_12',
 		'extended.include_form'			=> 'textarea_10_80',
+		'extended.include_form_expand'	=> 'yesno',
+		'extended.include_form_interpolate'	=> 'yesno',
 		'extended.link_label'			=> 'text_50',
 		'extended.link_fields'			=> 'text_70',
 		'extended.link_key'			=> 'text_20',
 		'extended.top_buttons'		=> 'yesno',
+		'fieldmeta'					=> 'links',
 	}`
 
 	filter=`{
@@ -241,6 +257,7 @@
 		'extended.ui_sort_field'		=> $CGI->{ui_table},
 		'extended.ui_show_fields'		=> $CGI->{ui_table},
 		'extended.ui_data_fields'		=> $CGI->{ui_table},
+		'extended.view_from'			=> $CGI->{ui_table},
 		'extended.spread_fields'		=> $CGI->{ui_table},
 		'extended.spread_meta'			=> $CGI->{ui_table},
 		'extended.spread_textarea'		=> $CGI->{ui_table},
@@ -258,10 +275,19 @@
 		'extended.ui_show_fields'		=> 30,
 	}`
 
+	form=`{
+			fieldmeta => '',
+	}`
+
+	wid_href=`{
+			fieldmeta => 'meta_editor',
+	}`
+
 	options=`{
 		'extended.ui_sort_field'		=> 'columns',
 		'extended.ui_show_fields'		=> 'columns',
 		'extended.ui_data_fields'		=> 'columns',
+		'extended.view_from'			=> 'columns',
 		'extended.spread_fields'		=> 'columns',
 		'extended.spread_meta'			=> 'columns',
 		'extended.spread_textarea'		=> 'columns',
@@ -279,4 +305,4 @@ Inventory;inventory:quantity:rn=Inventory},
 
 ]
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: db_metaconfig.html,v 2.8 2002-10-17 04:46:23 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: db_metaconfig.html,v 2.9 2002-10-27 05:09:39 mheins Exp $ -->

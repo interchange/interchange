@@ -209,6 +209,7 @@ A:visited.ctitle {
   text-align: left; 
   font-weight: bold; 
   font-size: 11px;
+  padding-left: 5px;
 }
 
 .cwidget { 
@@ -245,7 +246,11 @@ A.rmarq:link, A.rmarq:visited, A.rmarq:active { font-size: 12px; color: #FFFFCC;
 .rspacer { 
   background-color: #999999; 
   margin: 0;
-  padding: 1;
+  padding: 0;
+}
+.cborder { 
+  background-color: #999999; 
+  padding: 0;
 }
 .rtitle { 
   background-color: #999999; 

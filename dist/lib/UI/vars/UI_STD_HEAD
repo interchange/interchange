@@ -465,9 +465,9 @@ function addItem(selector, receptor, joiner) {
 				<!-- row 10: main content -->
 				<tr>
 					<td align=left valign=top>
-						<table width="100%" border=0 cellspacing=0 cellpadding=10>
+						<table width="100%" border=0 cellspacing=0 cellpadding=0>
 							<tr>
-								<td class=maincontent valign=top>[if scratch ui_checklist]
+								<td class="[either][scratch display_class][or]maincontent[/either]" valign=top>[if scratch ui_checklist]
 <table>
 	<tr>
 		<td width="20%">

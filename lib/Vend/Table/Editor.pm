@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.15 2002-10-18 07:12:37 mheins Exp $
+# $Id: Editor.pm,v 1.16 2002-10-27 05:09:39 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,11 +26,13 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.15 $, 10);
+$VERSION = substr(q$Revision: 1.16 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
 use Vend::Data;
+use Exporter;
+@EXPORT_OK = qw/meta_record expand_values tabbed_display display/;
 use strict;
 
 =head1 NAME
@@ -898,17 +900,7 @@ sub editor_init {
 }
 
 my %o_default_length = (
-	
-);
-
-my %o_default_var = (qw/
-	color_fail			UI_CONTRAST
-	color_success		UI_C_SUCCESS
-/);
-
-my %o_default_defined = (
-	mv_update_empty		=> 1,
-	restrict_allow		=> 'page area',
+	border_cell_class	=> 'cborder',
 	widget_cell_class	=> 'cwidget',
 	label_cell_class	=> 'clabel',
 	data_cell_class	=> 'cdata',
@@ -920,6 +912,16 @@ my %o_default_defined = (
 	data_row_class => 'rnorm',
 );
 
+my %o_default_var = (qw/
+	color_fail			UI_CONTRAST
+	color_success		UI_C_SUCCESS
+/);
+
+my %o_default_defined = (
+	mv_update_empty		=> 1,
+	restrict_allow		=> 'page area',
+);
+
 my %o_default = (
 	action				=> 'set',
 	wizard_next			=> 'return',
@@ -928,8 +930,11 @@ my %o_default = (
 	across				=> 1,
 	color_success		=> '#00FF00',
 	color_fail			=> '#FF0000',
-	table_width			=> '60%',
-	left_width			=> '30%',
+	spacer_height		=> 1,
+	border_height		=> 1,
+	clear_image			=> 'bg.gif',
+	table_width			=> '100%',
+	table_height		=> '100%',
 );
 
 # Build maps for ui_te_* option pass
@@ -966,7 +971,7 @@ for(@cgi_opts) {
 }
 
 sub resolve_options {
-	my ($opt, $CGI) = @_;
+	my ($opt, $CGI, $data) = @_;
 
 	# This may be passed by the caller, but is normally from the form
 	# or URL
@@ -1019,6 +1024,17 @@ sub resolve_options {
 		$tmeta = meta_record($table, $opt->{ui_meta_view}) || {};
 	}
 
+	$opt->{view_from} ||= $tmeta->{view_from};
+
+	if( !   $opt->{ui_meta_view}
+		and $opt->{view_from}
+		and $data
+		and $opt->{ui_meta_view} = $data->{$opt->{view_from}}
+		)
+	{
+		$tmeta = meta_record($table, $opt->{ui_meta_view}) || {};
+	}
+
 	# This section checks the passed options and converts them from
 	# strings to refs if necessary
 	FORMATS: {
@@ -1067,10 +1083,15 @@ sub resolve_options {
 
 	my @mapdirect = qw/
 		bottom_buttons
+		border_cell_class
+		border_height
+		break_cell_style
+		border_height
 		break_cell_class
 		break_cell_style
 		break_row_class
 		break_row_style
+		clear_image
 		data_cell_class
 		data_cell_style
 		data_row_class
@@ -1081,6 +1102,8 @@ sub resolve_options {
 		help_anchor
 		include_before
 		include_form
+		include_form_expand
+		include_form_interpolate
 		label_cell_class
 		label_cell_style
 		left_width
@@ -1107,6 +1130,7 @@ sub resolve_options {
 		panel_width
 		spacer_row_class
 		spacer_row_style
+		spacer_height
 		start_at
 		tab_bgcolor_template
 		tab_cellpadding
@@ -1116,6 +1140,7 @@ sub resolve_options {
 		tab_vert_offset
 		tab_width
 		tabbed
+		table_height
 		table_width
 		title_row_class
 		title_row_style
@@ -1133,6 +1158,7 @@ sub resolve_options {
 		ui_new_item
 		ui_nextpage
 		ui_no_meta_display
+		view_from
 		widget_cell_class
 		widget_cell_style
 	/;
@@ -1182,18 +1208,6 @@ sub resolve_options {
 		$opt->{$_} = errmsg($opt->{$_});
 	}
 
-	if (! $opt->{inner_table_width}) {
-		if($opt->{table_width} =~ /%/) {
-			$opt->{inner_table_width} = '100%';
-		}
-		elsif ($opt->{table_width} =~ /^\d+$/) {
-			$opt->{inner_table_width} = $opt->{table_width} - 2;
-		}
-		else {
-			$opt->{inner_table_width} = $opt->{table_width};
-		}
-	}
-
 	if($opt->{wizard} || $opt->{notable} and ! $opt->{table}) {
 		$opt->{table} = 'mv_null';
 		$Vend::Database{mv_null} = 
@@ -1223,6 +1237,39 @@ sub resolve_options {
 
 	while( my ($k, $v) = each %o_default) {
 		$opt->{$k} ||= $v;
+	}
+
+	if (! $opt->{inner_table_width}) {
+		if ($opt->{table_width} =~ /^\d+$/) {
+			$opt->{inner_table_width} = $opt->{table_width} - 2;
+		}
+		elsif($opt->{table_width} =~ /\%/) {
+			$opt->{inner_table_width} = '100%';
+		}
+		else {
+			$opt->{inner_table_width} = $opt->{table_width};
+		}
+	}
+
+	if (! $opt->{inner_table_height}) {
+		if ($opt->{table_height} =~ /^\d+$/) {
+			$opt->{inner_table_height} = $opt->{table_height} - 2;
+		}
+		elsif($opt->{table_height} =~ /\%/) {
+			$opt->{inner_table_height} = '100%';
+		}
+		else {
+			$opt->{inner_table_height} = $opt->{table_height};
+		}
+	}
+
+	if(! $opt->{left_width}) {
+		if($opt->{table_width} eq '100%') {
+			$opt->{left_width} = 150;
+		}
+		else {
+			$opt->{left_width} = '30%';
+		}
 	}
 
 	# init the row styles
@@ -1262,6 +1309,19 @@ sub resolve_options {
 		$opt->{$mainp} = $thing;
 	}
 
+	#### This code is also in main editor routine, change there too!
+	my $rowdiv         = $opt->{across}    || 1;
+	my $cells_per_span = $opt->{cell_span} || 2;
+	my $rowcount = 0;
+	my $span = $rowdiv * $cells_per_span;
+	#### 
+
+	# Make standard fixed rows
+	$opt->{spacer_row} = <<EOF;
+<tr class=$opt->{spacer_row_class}>
+<td colspan=$span class=$opt->{spacer_row_class}><img src="$opt->{clear_image}" width=1 height="$opt->{spacer_height}" alt=x></td>
+</tr>
+EOF
 
 	###############################################################
 	# Get the field display information including breaks and labels
@@ -1341,7 +1401,31 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	$opt->{table}		  = $opt->{mv_data_table};
 	$opt->{ui_meta_view}  ||= $CGI->{ui_meta_view} if $opt->{cgi};
 
-	resolve_options($opt);
+	my $data;
+	my $exists;
+	my $db;
+
+	## Try and sneak a peek at the data so we can determine views and
+	## maybe some other stuff -- we definitely need table/key or a 
+	## clone id
+	unless($opt->{notable}) {
+		# From Vend::Data
+		my $tab = $table || $opt->{mv_data_table} || $CGI->{mv_data_table};
+		my $key = $key || $opt->{item_id} || $CGI->{item_id};
+		$db = database_exists_ref($tab);
+
+		if($db) {
+			if($opt->{ui_clone_id} and $db->record_exists($opt->{ui_clone_id})) {
+				$data = $db->row_hash($opt->{ui_clone_id});
+			}
+			elsif ($key and $db->record_exists($key)) {
+				$data = $db->row_hash($key);
+				$exists = 1;
+			}
+		}
+	}
+
+	resolve_options($opt, undef, $data);
 	$table = $opt->{table};
 	$key = $opt->{item_id};
 	if($opt->{save_meta}) {
@@ -1349,10 +1433,13 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	}
 #::logDebug("key after resolve_options: $key");
 
+	#### This code is also in resolve_options routine, change there too!
 	my $rowdiv         = $opt->{across}    || 1;
 	my $cells_per_span = $opt->{cell_span} || 2;
 	my $rowcount = 0;
 	my $span = $rowdiv * $cells_per_span;
+	#### 
+
 	my $oddspan = $span - 1;
 	my $def = $opt->{default_ref} || $::Values;
 
@@ -1557,8 +1644,6 @@ EOF
 	}
 	### end build of error checking
 
-	$opt->{clear_image} = "bg.gif" if ! $opt->{clear_image};
-
 	my $die = sub {
 		::logError(@_);
 		$::Scratch->{ui_error} .= "<BR>\n" if $::Scratch->{ui_error};
@@ -1566,7 +1651,6 @@ EOF
 		return undef;
 	};
 
-	my $db;
 	unless($opt->{notable}) {
 		# From Vend::Data
 		$db = database_exists_ref($table)
@@ -1624,9 +1708,6 @@ EOF
 			$key_message = errmsg('(new key will be assigned if left blank)');
 		}
 	}
-
-	my $data;
-	my $exists;
 
 	if($opt->{notable}) {
 		$data = {};
@@ -1792,18 +1873,18 @@ EOF
 			}
 
 			$blob_widget = <<EOF unless $opt->{ui_blob_hidden};
-<TR class=rnorm>
-	 <td class=clabel width="$opt->{left_width}">
+<TR class=$opt->{data_row_class}>
+	 <td class=$opt->{label_cell_class} width="$opt->{left_width}">
 	   <SMALL>$opt->{mv_blob_title}<BR>
 		$loaded_from
 	 </td>
-	 <td class=cwidget>
+	 <td class=$opt->{widget_cell_class}>
 	 	$blob_widget&nbsp;
 	 </td>
 </TR>
 
-<tr class=rtitle>
-<td colspan=$span><img src="$opt->{clear_image}" width=1 height=3 alt=x></td>
+<tr>
+<td colspan=$span class=$opt->{border_cell_class}><img src="$opt->{clear_image}" width=1 height="$opt->{border_height}" alt=x></td>
 </tr>
 EOF
 
@@ -1948,15 +2029,15 @@ EOF
 	}
 
 	chunk ttag(), <<EOF; # unless $wo;
-<table class=touter border="0" cellspacing="0" cellpadding="0" width="$opt->{table_width}">
+<table class=touter border="0" cellspacing="0" cellpadding="0" width="$opt->{table_width}" height="$opt->{table_height}">
 <tr>
   <td>
 
-<table class=tinner  width="$opt->{inner_table_width}" cellspacing=0 cellmargin=0 width="100%" cellpadding="2" align="center" border="0">
+<table class=tinner width="$opt->{inner_table_width}" height="$opt->{inner_table_height}" cellspacing=0 cellmargin=0 cellpadding="2" align="center" border="0">
 EOF
 	chunk ttag(), 'NO_TOP', <<EOF; # unless $opt->{no_top} or $wo;
-<tr class=rtitle> 
-<td align=right colspan=$span><img src="$opt->{clear_image}" width=1 height=3 alt=x></td>
+<tr> 
+<td colspan=$span class=$opt->{border_cell_class}><img src="$opt->{clear_image}" width=1 height="$opt->{border_height}" alt=x></td>
 </tr>
 EOF
 
@@ -1968,9 +2049,9 @@ EOF
 	if ($extra_ok and ! $opt->{no_top} and ! $opt->{nosave}) {
 	  	if($opt->{back_text}) {
 		  chunk ttag(), '', <<EOF; # unless $wo;
-<TR class=rnorm>
+<TR class=$opt->{data_row_class}>
 <td>&nbsp;</td>
-<td align=left colspan=$oddspan class=cdata>
+<td align=left colspan=$oddspan class=$opt->{data_cell_class}>
 EOF
 			chunk 'COMBINED_BUTTONS_TOP', 'BOTTOM_BUTTONS', <<EOF; # if ! $opt->{bottom_buttons};
 <INPUT TYPE=submit NAME=mv_click VALUE="$opt->{back_text}">&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
@@ -1978,19 +2059,16 @@ EOF
 EOF
 			chunk 'MLABEL', '', 'MESSAGES', $mlabel;
 			chunk ttag(), <<EOF;
-</TD>
-</TR>
-
-<tr class=rspacer>
-<td colspan=$span><img src="$opt->{clear_image}" width=1 height=3 alt=x></td>
+	</td>
 </tr>
+$opt->{spacer_row}
 EOF
 		}
 		elsif ($opt->{wizard}) {
 		  chunk ttag(), 'NO_TOP', <<EOF;
-<TR class=rnorm>
+<TR class=$opt->{data_row_class}>
 <td>&nbsp;</td>
-<td align=left colspan=$oddspan class=cdata>
+<td align=left colspan=$oddspan class=$opt->{data_cell_class}>
 EOF
 			chunk 'WIZARD_BUTTONS_TOP', 'BOTTOM_BUTTONS NO_TOP', <<EOF; # if ! $opt->{bottom_buttons};
 <INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
@@ -1998,19 +2076,16 @@ EOF
 EOF
 			chunk 'MLABEL', 'BOTTOM_BUTTONS', 'MESSAGES', $mlabel;
 			chunk ttag(), <<EOF;
-</TD>
-</TR>
-
-<tr class=rspacer>
-<td colspan=$span><img src="$opt->{clear_image}" width=1 height=3 alt=x></td>
+	</td>
 </tr>
+$opt->{spacer_row}
 EOF
 		}
 		else {
 		  chunk ttag(), 'BOTTOM_BUTTONS NO_TOP', <<EOF;
-<TR class=rnorm>
+<TR class=$opt->{data_row_class}>
 <td>&nbsp;</td>
-<td align=left colspan=$oddspan class=cdata>
+<td align=left colspan=$oddspan class=$opt->{data_cell_class}>
 EOF
 
 		  $opt->{ok_button_style} = 'font-weight: bold; width: 40px; text-align: center'
@@ -2031,12 +2106,9 @@ EOF
 
 			chunk 'MLABEL', 'BOTTOM_BUTTONS', $mlabel;
 			chunk ttag(), 'BOTTOM_BUTTONS NO_TOP', <<EOF;
-</TD>
-</TR>
-
-<tr class=rspacer>
-<td colspan=$span><img src="$opt->{clear_image}" width=1 height=3 alt=x></td>
+	</td>
 </tr>
+$opt->{spacer_row}
 EOF
 		}
 	}
@@ -2145,8 +2217,8 @@ EOF
 		$set =~ s/_TABLES_/$tabs/g;
 		$::Scratch->{clone_tables} = $set;
 		chunk ttag(), <<EOF; # unless $wo;
-<tr class=rtitle>
-<td colspan=$span>
+<tr>
+<td colspan=$span class=$opt->{border_cell_class}>
 EOF
 		chunk 'CLONE_TABLES', <<EOF;
 $tabform<INPUT TYPE=hidden NAME=mv_check VALUE="clone_tables">
@@ -2291,6 +2363,12 @@ EOF
 			$opt->{meta_prepend} ||= '';
 			$opt->{meta_append} ||= '';
 		}
+		$opt->{meta_title} ||= errmsg('Edit field meta display info, table %s, column %s');
+		$opt->{meta_title_specific} ||= errmsg('Item-specific meta edit, table %s, column %s, key %s');
+		$opt->{meta_image_specific} ||= errmsg('specmeta.png');
+		$opt->{meta_image} ||= errmsg('meta.png');
+		$opt->{meta_image_extra} ||= 'border=0';
+		$opt->{meta_anchor_specific} ||= errmsg('item-specific meta');
 		$opt->{meta_anchor} ||= errmsg('meta');
 		$opt->{meta_anchor_specific} ||= errmsg('item-specific meta');
 		$opt->{meta_extra} = " $opt->{meta_extra}"
@@ -2311,6 +2389,24 @@ EOF
      {BLABEL}{LABEL}{ELABEL}
    </td>
    <td$opt->{data_cell_extra}>{WIDGET}{HELP_EITHER?}&nbsp;<a href="{HELP_URL}" title="{HELP}">$opt->{help_anchor}</a>{/HELP_EITHER?}&nbsp;{META_URL?}<A HREF="{META_URL}">$opt->{meta_anchor}</A>{/META_URL?}
+   </td>
+EOF
+		}
+		elsif($opt->{image_meta}) {
+			$row_template = <<EOF;
+   <td$opt->{label_cell_extra}> 
+     {BLABEL}{LABEL}{ELABEL}
+   </td>
+   <td$opt->{data_cell_extra}>
+     <table cellspacing=0 cellmargin=0 width="100%">
+       <tr> 
+         <td$opt->{widget_cell_extra}>
+           {WIDGET}
+         </td>
+         <td$opt->{help_cell_extra}>{TKEY}{HELP?}<i>{HELP}</i>{/HELP?}{HELP_URL?}<BR><A HREF="{HELP_URL}">$opt->{help_anchor}</A>{/HELP_URL?}</td>
+         <td align=right>{META_STRING}</td>
+       </tr>
+     </table>
    </td>
 EOF
 		}
@@ -2761,10 +2857,25 @@ EOF
 								
 			$opt->{meta_append} = '</FONT>'
 				unless defined $opt->{meta_append};
-			$meta_string = <<EOF;
+			if($opt->{image_meta}) {
+#::logDebug("meta-title=$opt->{meta_title}");
+				my $title = errmsg($opt->{meta_title}, $t, $c);
+				$meta_string = <<EOF;
+<a href="$meta_url"$opt->{meta_extra}><img src="$opt->{meta_image}" title="$title" $opt->{meta_image_extra}></A></A>
+EOF
+				if($meta_specific) {
+					$title = errmsg($opt->{meta_title_specific}, $t, $c, $key);
+					$meta_string .= <<EOF;
+<a href="$meta_url_specific"$opt->{meta_extra}><img src="$opt->{meta_image_specific}" title="$title" $opt->{meta_image_extra}></A>
+EOF
+				}
+			}
+			else {
+				$meta_string = <<EOF;
 $opt->{meta_prepend}<a href="$meta_url"$opt->{meta_extra}>$opt->{meta_anchor}</A>
 $meta_specific$opt->{meta_append}
 EOF
+			}
 		}
 
 #::logDebug("col=$c currval=$currval widget=$widget->{$c} label=$label->{$c} (type=$type)");
@@ -2840,7 +2951,15 @@ EOF
 		}
 		if($opt->{include_before} and $opt->{include_before}{$col}) {
 #::logDebug("include_before: $col $opt->{include_before}{$col}");
-			my $h = { ROW => delete $opt->{include_before}{$col} };
+			my $chunk = delete $opt->{include_before}{$col};
+			if($opt->{include_form_interpolate}) {
+				$chunk = interpolate_html($chunk);
+			}
+			elsif($opt->{include_form_expand}) {
+				$chunk = expand_values($chunk);
+#::logDebug("include_before: expanded values on $col $chunk");
+			}
+			my $h = { ROW => $chunk };
 			$h->{TEMPLATE} = $opt->{whole_template} || '<tr>{ROW}</tr>';
 			col_chunk "_INCLUDE_$col", $h;
 		}
@@ -2902,9 +3021,16 @@ EOF
 	### Here the user can include some extra stuff in the form....
 	###
 	if($opt->{include_form}) {
+		my $chunk = delete $opt->{include_form};
+		if($opt->{include_form_interpolate}) {
+			$chunk = interpolate_html($chunk);
+		}
+		elsif($opt->{include_form_expand}) {
+			$chunk = expand_values($chunk);
+		}
 		col_chunk '_INCLUDE_FORM',
 					{
-						ROW => $opt->{include_form},
+						ROW => $chunk,
 						TEMPLATE => $opt->{whole_template} || '<tr>{ROW}</tr>',
 					};
 	}
@@ -2915,26 +3041,19 @@ EOF
 	}
 	$passed_fields = join " ", @cols;
 
-
-	chunk ttag(), <<EOF;
-<tr class=rspacer>
-<td colspan=$span>
-EOF
-	chunk 'HIDDEN_EXTRA', <<EOF; # unless $wo;
-<INPUT TYPE=hidden NAME=mv_data_fields VALUE="$passed_fields">@extra_hidden
-EOF
-	chunk ttag(), <<EOF;
-<img src="$opt->{clear_image}" height=3 alt=x></td>
-</tr>
-EOF
+	my ($beghid, $endhid) = split m{</td>}i, $opt->{spacer_row}, 2;
+	$endhid = "</td>$endhid" if $endhid;
+	chunk ttag(), $beghid;
+	chunk 'HIDDEN_EXTRA', qq{<INPUT TYPE=hidden NAME=mv_data_fields VALUE="$passed_fields">@extra_hidden};
+	chunk ttag(), $endhid;
 
   SAVEWIDGETS: {
   	last SAVEWIDGETS if $wo || $opt->{nosave}; 
 #::logDebug("in SAVEWIDGETS");
 		chunk ttag(), <<EOF;
-<TR class=rnorm>
+<TR class=$opt->{data_row_class}>
 <td>&nbsp;</td>
-<td align=left colspan=$oddspan class=cdata>
+<td align=left colspan=$oddspan class=$opt->{data_cell_class}>
 EOF
 
 
@@ -2946,9 +3065,9 @@ EOF
 		}
 		elsif($opt->{wizard}) {
 			chunk 'WIZARD_BUTTONS_BOTTOM', <<EOF;
-<TR class=rnorm>
+<TR class=$opt->{data_row_class}>
 <td>&nbsp;</td>
-<td align=left colspan=$oddspan class=cdata>
+<td align=left colspan=$oddspan class=$opt->{data_cell_class}>
 <INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
 EOF
 		}
@@ -3047,8 +3166,8 @@ EOF
 	$Tag->error( { all => 1 } );
 
 	chunk ttag(), 'NO_BOTTOM _MESSAGE', <<EOF;
-<tr class=rtitle>
-	<td colspan=$span>
+<tr>
+	<td colspan=$span class=$opt->{border_cell_class}>
 EOF
 
 	chunk 'MESSAGE_TEXT', 'NO_BOTTOM', $message; # unless $wo or ($opt->{no_bottom} and ! $message);
@@ -3060,6 +3179,9 @@ EOF
 
 #::logDebug("tcount=$tcount_all, prior to closing table");
 	chunk ttag(), <<EOF; # unless $wo;
+<tr> 
+<td colspan=$span class=$opt->{border_cell_class}><img src="$opt->{clear_image}" width=1 height="$opt->{border_height}" alt=x></td>
+</tr>
 </table>
 </td></tr></table>
 EOF

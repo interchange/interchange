@@ -1,3 +1,6 @@
+[if cgi fieldmeta]
+	[cgi name=item_id set="[cgi fieldmeta]"]
+[/if]
 [if !cgi item_id]
 	[bounce page="__UI_BASE__/gentable"]
 [/if]
@@ -113,4 +116,4 @@ EOF
 	][/table-editor]
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ -->
+<!-- page: @@MV_PAGE@@ version: $Id: meta_editor.html,v 2.3 2002-10-27 05:09:39 mheins Exp $ -->
