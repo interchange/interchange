@@ -439,8 +439,6 @@ dist/lib/UI/pages/admin/item_up.html
 dist/lib/UI/pages/admin/layout.html
 dist/lib/UI/pages/admin/login.html
 dist/lib/UI/pages/admin/logout.html
-dist/lib/UI/pages/admin/matrix_create.html
-dist/lib/UI/pages/admin/matrix_edit.html
 dist/lib/UI/pages/admin/merchandising.html
 dist/lib/UI/pages/admin/order.html
 dist/lib/UI/pages/admin/order_status.html
