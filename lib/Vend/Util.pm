@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.10 2001-11-26 18:12:10 mheins Exp $
+# $Id: Util.pm,v 2.11 2001-12-28 17:18:39 mheins Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -80,7 +80,7 @@ use Text::ParseWords;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.10 $, 10);
+$VERSION = substr(q$Revision: 2.11 $, 10);
 
 BEGIN {
 	eval {
@@ -890,6 +890,10 @@ sub find_locale_bit {
 
 sub readin {
     my($file, $only) = @_;
+
+	## We don't want to try if we are forcing a flypage
+	return undef if $Vend::ForceFlypage;
+
     my($fn, $contents, $gate, $pathdir, $dir, $level);
     local($/);
 
