@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.222 2004-09-23 16:39:02 mheins Exp $
+# $Id: Interpolate.pm,v 2.223 2004-10-15 18:35:02 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.222 $, 10);
+$VERSION = substr(q$Revision: 2.223 $, 10);
 
 @EXPORT = qw (
 
@@ -5947,7 +5947,8 @@ sub total_cost {
 			if $::Values->{mv_handling};
 		$total += subtotal();
 		$total += $shipping;
-		$total += salestax();
+		$total += salestax()
+			unless $Vend::Cfg->{TaxInclusive};
 	}
 	$Vend::Items = $save if defined $save;
 	$Vend::Session->{latest_total} = $total;

@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.146 2004-10-14 23:01:16 racke Exp $
+# $Id: Config.pm,v 2.147 2004-10-15 18:35:02 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.146 $, 10);
+$VERSION = substr(q$Revision: 2.147 $, 10);
 
 my %CDname;
 my %CPname;
@@ -89,7 +89,7 @@ qw/
 		SalesTax
 		Levies
 		TaxShipping
-
+		TaxInclusive
 /	);
 
 @Locale_keys_currency = (
@@ -128,7 +128,7 @@ qw/
 		SalesTax
         SpecialPageDir
 		TaxShipping
-
+		TaxInclusive
 /   );
 
 @Locale_directives_ary = (
@@ -502,6 +502,7 @@ sub catalog_directives {
 	['CodeDef',			 'mapped_code',    	 ''],
 	['RemoteUser',		 undef,     	     ''],
 	['TaxShipping',		 undef,     	     ''],
+	['TaxInclusive',     'yesno',			 'No'],
 	['FractionalItems',  'yesno',			 'No'],
 	['SeparateItems',    'yesno',			 'No'],
 	['PageSelectField',  undef,     	     ''],
