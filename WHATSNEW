@@ -150,6 +150,10 @@ Core
 
 * Added debug type to [log].
 
+* [userdb function=logout clear=1] will now restore the appropriate
+  ScratchDefault and ValuesDefault values instead of simply
+  deleting the scratches and values under its control.
+
 Installation
 ------------
 
