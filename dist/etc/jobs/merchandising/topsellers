@@ -1,4 +1,4 @@
-[perl tables="merchandising orderline transactions"]
+[perl tables="__ProductFiles_0__ merchandising orderline transactions"]
 my (%count, $order_number, $last_order_number, $order_state);
 my $set = $Db{orderline}->query("select sku,quantity,order_number from orderline order by order_number");
 
@@ -14,7 +14,11 @@ for (@$set) {
 }
 my $db = $Db{merchandising};
 for (keys %count) {
-    $db->set_field($_, 'times_ordered', $count{$_});
+	if ($Tag->data($Config->{ProductFiles}[0], 'sku', $_)) {	
+	    $db->set_field($_, 'times_ordered', $count{$_});
+	} else {
+	    $db->set_field($_, 'times_ordered', 0);
+	}
 }
 return;
 [/perl]
