@@ -295,37 +295,27 @@ sub mk_initp {
 }
 
 sub initialize {
-    my %X;
 #warn "Got to initialize\n";
-    $X{INSTALLDIRS}     = "perl";
-	$X{EXE_FILES}  = [qw(
-							scripts/compile_link
-							scripts/config_prog
-							scripts/configdump
-							scripts/dump
-							scripts/expire
-							scripts/expireall
-							scripts/localize
-							scripts/makecat
-							scripts/interchange
-							scripts/offline
-							scripts/restart
-							scripts/update
-						)];
-	$X{PL_FILES}  = {qw(
-							scripts/compile_link.PL	scripts/compile_link
-							scripts/config_prog.PL	scripts/config_prog
-							scripts/configdump.PL	scripts/configdump
-							scripts/dump.PL			scripts/dump
-							scripts/expire.PL		scripts/expire
-							scripts/expireall.PL	scripts/expireall
-							scripts/localize.PL		scripts/localize
-							scripts/makecat.PL		scripts/makecat
-							scripts/interchange.PL	scripts/interchange
-							scripts/offline.PL		scripts/offline
-							scripts/restart.PL		scripts/restart
-							scripts/update.PL		scripts/update
-						)};
+	my @scripts = map { "scripts/$_" } qw(
+		compile_link
+		config_prog
+		configdump
+		dump
+		expire
+		expireall
+		ic_mod_perl
+		interchange
+		localize
+		makecat
+		newcat
+		offline
+		restart
+		update
+	);
+	my %X;
+	$X{INSTALLDIRS}	= "perl";
+	$X{EXE_FILES}	= [ @scripts ];
+	$X{PL_FILES}	= { 'relocate.pl' => [ @scripts ] };
 
 	if(! $MV::Default{force} and ! $MV::Default{PREFIX}) {
 		if($> == 0) {
@@ -450,8 +440,6 @@ sub initialize {
 	my @re_dir  = qw();
 	my @re_copy = qw();
 
-#warn "Got past mvtags build\n" ; #if $X{RPMBUILDDIR};
-
 	if($MV::Default{final}) {
 		$^W = 0;
 		for(glob "_*") {
@@ -495,7 +483,7 @@ sub initialize {
 		}
 		chdir($cwd)
 			|| die "Couldn't enter directory $cwd: $!\n";
-		
+
 #warn "Got past install SHAREFILES\n" ; #if $X{RPMBUILDDIR};
 
 		# install dist/ files from MANIFEST
@@ -714,14 +702,14 @@ VERBINST=0
 mv_install ::
 			\$(PERL) Makefile.PL force nocpaninstall=\$(NOCPANINSTALL) $uidparm final=\$(INSTALLARCHLIB)
 
-install :: all pure_install doc_install mv_install
+install :: all pure_install mv_install
 
 EOF
 	$new .= <<EOF;
 rpm_move ::
 		\$(PERL) Makefile.PL force=1 rpmbuilddir=$MV::Default{RPMBUILDDIR} final=\$(INSTALLARCHLIB)
 
-rpm_build :: all pure_install doc_install rpm_move
+rpm_build :: all pure_install rpm_move
 
 EOF
 	$_ = $self->MM::install;
@@ -794,7 +782,7 @@ WriteMakefile(
 	NAME     => "Interchange",
 	DISTNAME => "interchange",
 	clean    => {
-				FILES => "lib/IniConf.pm _uid _db_storable _session_storable lib/File/CounterFile.pm scripts/initp.pl scripts/compile_link scripts/config_prog scripts/configdump scripts/dump scripts/expire scripts/localize scripts/expireall scripts/makecat scripts/interchange scripts/offline scripts/restart scripts/update",
+				FILES => "lib/IniConf.pm _uid _db_storable _session_storable lib/File/CounterFile.pm scripts/initp.pl scripts/compile_link scripts/config_prog scripts/configdump scripts/dump scripts/expire scripts/localize scripts/expireall scripts/makecat scripts/ic_mod_perl scripts/interchange scripts/newcat scripts/offline scripts/restart scripts/update",
 			   },
 
 	dist     => {
