@@ -9,7 +9,18 @@
 
 [tmp fontface]Verdana, Arial, Helvetica, sans-serif[/tmp]
 
-[tmp help_key][filter interpolate=1 op=filesafe][cgi topic][/filter][/tmp]
+[comment]
+	This is a grievous hack made necessary by Apaceh mod_rewrite, which
+	re-urlencodes query strings on a rewrite.
+[/comment]
+[tmp help_key][/tmp]
+[calc]
+    my $topic = $CGI->{topic}; 
+	$topic =~ s/\%(\w\w)/chr( hex($1))/eg;
+	$Scratch->{help_orig} = $Scratch->{help_key}=$topic;
+	return;
+[/calc]
+
 
 [if scratch help_key =~ /^\s*$/]
 	[tmp help_key]home[/tmp]
