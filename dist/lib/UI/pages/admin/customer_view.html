@@ -159,7 +159,6 @@
                      <tr> 
                         <td height="99%" valign="top" class="block4"> 
 [if-loop-param b_address1]
-	[loop prefix=bill list="[loop-code]"]
                            <table width="100%" border="0" cellspacing="0" cellpadding="1">
                               <tr> 
                                  <td width="30%" class="block4bold">[L]Name[/L]:</td>
@@ -169,48 +168,48 @@
 		]"><u>[loop-param b_fname] [loop-param b_lname]</A>
                                  </td>
                               </tr>
-							  [if-bill-data userdb b_company]
+							[if-loop-param b_company]
                               <tr> 
                                  <td width="30%" class="block4bold">[L]Company[/L]:</td>
                                  <td width="70%" class="maincontent">
-								 	[loop-param b_company]
+									[loop-param b_company]
                                  </td>
                               </tr>
-							  [/if-bill-data]
+							[/if-loop-param]
                               <tr> 
                                  <td valign="top" class="block4bold">[L]Address[/L]:</td>
                                  <td class="maincontent">
-								 [loop-param b_address1]
-								 [if-bill-data userdb b_address2]
-								 <br>
-								 [loop-param b_address2]
-								 [/if-bill-data]
-								 </td>
+								[loop-param b_address1]
+								[if-loop-param b_address2]
+								<br>
+								[loop-param b_address2]
+								[/if-loop-param]
+								</td>
                               </tr>
-							  [if-bill-data userdb b_country =~ /^US|^CA/]
+							[if-loop-param b_country =~ /^US|^CA/]
                               <tr> 
                                  <td class="block4bold">[L]City, State, Zip[/L]:</td>
                                  <td class="maincontent">[loop-param b_city], [loop-param state]  [loop-param zip]</td>
                               </tr>
-							  [else]
+							[else]
                               <tr> 
                                  <td class="block4bold">[L]City[/L]:</td>
                                  <td class="maincontent">[loop-param b_city]</td>
                               </tr>
-							  		[if-bill-param b_state]
+								[if-loop-param b_state]
                               <tr> 
                                  <td class="block4bold">[L]State[/L]:</td>
                                  <td class="maincontent">[loop-param b_state]</td>
                               </tr>
-								    [/if-bill-param]
-							  		[if-bill-param b_zip]
+								[/if-loop-param]
+								[if-loop-param b_zip]
                               <tr> 
                                  <td class="block4bold">[L]Postal code[/L]:</td>
                                  <td class="maincontent">[loop-param b_zip]</td>
                               </tr>
-								    [/if-bill-param]
-							  [/else]
-							  [/if-bill-data]
+								[/if-loop-param]
+							[/else]
+							[/if-loop-param]
                               <tr> 
                                  <td class="block4bold">[L]Country[/L]:</td>
                                  <td class="maincontent">[data table=country col=name key="[loop-param b_country]"]</td>
@@ -219,7 +218,6 @@
                                  <td height="15" colspan="2" class="block4bold"><img src="bg.gif" width="1" height="1"></td>
                               </tr>
                            </table>
-		[/loop]
 [else]
 						<i>[L]Same as shipping address[/L]</i>
 [/else]
@@ -395,4 +393,4 @@ vieworder=
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: customer_view.html,v 2.10 2003-08-19 20:15:41 jon Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: customer_view.html,v 2.11 2003-08-20 03:34:20 jon Exp $ -->
