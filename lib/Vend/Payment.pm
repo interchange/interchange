@@ -1,6 +1,6 @@
 # Vend::Payment - Interchange payment processing routines
 #
-# $Id: Payment.pm,v 2.5 2002-07-21 14:08:50 mheins Exp $
+# $Id: Payment.pm,v 2.6 2002-07-24 18:54:09 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.5 $, 10);
+$VERSION = substr(q$Revision: 2.6 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -269,8 +269,7 @@ sub charge {
 	### We get the payment base information from a route with the
 	### same name as $charge_type if it is there
 	if($Vend::Cfg->{Route}) {
-		$pay_route = $Vend::Cfg->{Route_repository}{$charge_type}
-					|| $Vend::Cfg->{Route};
+		$pay_route = $Vend::Cfg->{Route_repository}{$charge_type} || {};
 	}
 	else {
 		$pay_route = {};
