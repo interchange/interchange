@@ -1,13 +1,51 @@
 [if cgi ui_return_table]
 	[calc] $CGI->{mv_data_table} = delete $CGI->{ui_return_table}; return; [/calc]
 [/if]
-[seti page_title]
+[tmp page_title]
 	[either]
 		[cgi page_title]
 	[or]
 		Table Edit: [cgi mv_data_table]
 	[/either]
-[/seti]
+[/tmp]
+[tmp page_banner]
+	[either]
+		[cgi page_banner]
+	[or]
+		[if cgi mv_data_table ne __UI_META_TABLE__]
+		[if-mm super]
+		Select for table edit:
+		 [cgi mv_data_table]
+		[if cgi ui_meta_view]
+		 (<b>[page href="__UI_BASE__/flex_editor"
+				 form='
+				 mv_data_table=__UI_META_TABLE__
+				 ui_meta_view=dbconfig
+				 ui_data_fields=code name height field options help help_url display_filter
+				 ui_break_before=height display_filter
+				 page_title=Change display information: [cgi mv_data_table]
+				 ui_return_to=__UI_BASE__/gentable
+				 item_id=[cgi ui_meta_view]::[cgi mv_data_table]
+		 '][cgi ui_meta_view]</b> view</A>)
+		 [/if]
+		([page href="__UI_BASE__/flex_editor"
+				 form='
+				 mv_data_table=__UI_META_TABLE__
+				 ui_meta_view=dbconfig
+				 ui_data_fields=code name height field options help help_url display_filter
+				 ui_break_before=height display_filter
+				 page_title=Change display information: [cgi mv_data_table]
+				 ui_return_to=__UI_BASE__/gentable
+				 item_id=[cgi ui_meta_view]::[cgi mv_data_table]
+		 ']standard view</A>)
+		[/if-mm]
+		 [/if]
+	[or]
+		[cgi page_title]
+	[or]
+		Select for table edit: [cgi mv_data_table]
+	[/either]
+[/tmp]
 [seti table_perm][cgi mv_data_table]=v[/seti]
 [seti help_name][either][cgi help_name][or]flex.meta[/either][/seti]
 [seti icon_name][either][cgi icon_name][or]admin/icon_config.gif[/either][/seti]
@@ -21,11 +59,6 @@
 	[/calc]
 [/if]
 
-[comment]
-@_UI_STD_DBEDIT_HEAD_@
-@_UI_STD_HEAD_@
-@_UI_STD_DBEDIT_TABLE_@
-[/comment]
 @_UI_STD_HEAD_@
 [table-editor cgi=1]
 
