@@ -5,7 +5,7 @@
 ------------------------------------------------------------------------------
 
 
-Interchange 4.8.8 released 2004-03-29.
+Interchange 4.8.9 released 2004-03-29.
 
 Security
 --------
@@ -26,6 +26,22 @@ Miscellaneous
 -------------
 
 * Fix order import problem found by Karen Gold.
+
+
+------------------------------------------------------------------------------
+
+
+Interchange 4.8.8 released 2003-12-16.
+
+Security
+--------
+
+* Fix security hole in @@MV_PREV_PAGE@@ -- in the standard Foundation this
+  is found in special_pages/missing.html and special_pages/violation.html.
+
+
+------------------------------------------------------------------------------
+
 
 Interchange 4.8.7 released 2003-01-30.
 
