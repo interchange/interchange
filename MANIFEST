@@ -442,6 +442,7 @@ dist/interchange.cfg.dist
 dist/lib/UI/Primitive.pm
 dist/lib/UI/ichelp.txt
 dist/lib/UI/icmenu.txt
+dist/lib/UI/locales/da_DK.cfg
 dist/lib/UI/locales/de_DE.cfg
 dist/lib/UI/locales/default.cfg
 dist/lib/UI/pages/admin/.access
@@ -565,7 +566,6 @@ dist/lib/UI/pages/admin/wizard/guess_info.html
 dist/lib/UI/pages/admin/wizard/index.html
 dist/lib/UI/pages/admin/wizard/step_about.html
 dist/lib/UI/pages/admin/wizard/step_company.html
-dist/lib/UI/pages/admin/wizard/step_content.html
 dist/lib/UI/pages/admin/wizard/step_email.html
 dist/lib/UI/pages/admin/wizard/step_finalize.html
 dist/lib/UI/pages/admin/wizard/step_groupcontent.html
@@ -615,6 +615,7 @@ dist/lib/UI/usertag/backup_file.tag
 dist/lib/UI/usertag/base_url.tag
 dist/lib/UI/usertag/check_upload.tag
 dist/lib/UI/usertag/component.tag
+dist/lib/UI/usertag/cp.tag
 dist/lib/UI/usertag/crypt.tag
 dist/lib/UI/usertag/db_columns.tag
 dist/lib/UI/usertag/db_hash.tag
@@ -634,6 +635,7 @@ dist/lib/UI/usertag/grep_mm.tag
 dist/lib/UI/usertag/if_key_exists.tag
 dist/lib/UI/usertag/if_mm.tag
 dist/lib/UI/usertag/if_sql.tag
+dist/lib/UI/usertag/image_collate.tag
 dist/lib/UI/usertag/import_fields.tag
 dist/lib/UI/usertag/list_databases.tag
 dist/lib/UI/usertag/list_glob.tag
@@ -814,6 +816,22 @@ scripts/makecat.PL
 scripts/offline.PL
 scripts/restart.PL
 scripts/update.PL
+share/interchange/da_DK/B2.gif
+share/interchange/da_DK/B2_b.gif
+share/interchange/da_DK/B3.gif
+share/interchange/da_DK/B3_b.gif
+share/interchange/da_DK/B4.gif
+share/interchange/da_DK/B4_b.gif
+share/interchange/da_DK/B5.gif
+share/interchange/da_DK/B5_b.gif
+share/interchange/da_DK/B6.gif
+share/interchange/da_DK/B6_b.gif
+share/interchange/da_DK/B7.gif
+share/interchange/da_DK/B7_b.gif
+share/interchange/da_DK/B8.gif
+share/interchange/da_DK/B8_b.gif
+share/interchange/da_DK/B9.gif
+share/interchange/da_DK/B9_b.gif
 share/interchange/de_DE/B2.gif
 share/interchange/de_DE/B2_b.gif
 share/interchange/de_DE/B3.gif
