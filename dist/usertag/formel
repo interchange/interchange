@@ -33,7 +33,7 @@ sub {
 
 	$labelproc = sub {
 		my ($label, $keep) = @_;
-	    if ($Tag->error($checkfor, {keep => $keep})) {
+	    if ($Tag->error({name => $checkfor, keep => $keep})) {
 			if ($opt->{signal}) {
 				sprintf($opt->{signal}, $label);
 			} else {
@@ -70,16 +70,24 @@ sub {
     }
 
 	if ($type eq 'radio') {		
-		my ($rlabel, $rvalue);
+		my ($rlabel, $rvalue, $select);
+		
 		for my $button (split (/\s*,\s*/, $opt->{choices})) {
+			$select = '';
 			if ($button =~ /^(.*?)=(.*)$/) {
 				$rvalue = $1;
 				$rlabel = $2;
 			} else {
 				$rvalue = $rlabel = $button;
 			}
+
+			if ($::Values->{$name} eq $rvalue) {
+				$select = ' checked';
+			}
+
 			$rlabel = &$labelproc($rlabel, 1);
-			$elhtml .= qq{<input type=radio name=$name value=$rvalue> $rlabel};
+			
+			$elhtml .= qq{<input type=radio name=$name value="${rvalue}"$select> $rlabel};
 		}
 		# delete error implicitly
 		&$labelproc();
