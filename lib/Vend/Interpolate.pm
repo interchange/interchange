@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.42 2002-01-24 07:03:30 jon Exp $
+# $Id: Interpolate.pm,v 2.43 2002-01-25 19:46:04 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.42 $, 10);
+$VERSION = substr(q$Revision: 2.43 $, 10);
 
 @EXPORT = qw (
 
@@ -914,14 +914,8 @@ sub tag_data {
 
 %Filter = (
 	
-	'value' =>	sub {
-					my $var = shift;
-					return $var ? $::Values->{$var} : '';
-				},
-	'cgi' =>	sub {
-					my $var = shift;
-					return $var ? $CGI::values{$var} : '';
-				},
+	'value' =>	sub { $::Values->{$_[0]} },
+	'cgi' =>	sub { $CGI::values{$_[0]} },
 	'filesafe' =>	sub {
 						return Vend::Util::escape_chars(shift);
 				},
