@@ -1,6 +1,6 @@
 # Vend::ModPerl - Run Interchange inside Apache and mod_perl
 #
-# $Id: ModPerl.pm,v 2.5 2003-06-18 17:34:44 jon Exp $
+# $Id: ModPerl.pm,v 2.6 2004-07-23 12:58:56 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Red Hat, Inc.
@@ -21,7 +21,7 @@
 
 package Vend::ModPerl;
 
-$VERSION = substr(q$Revision: 2.5 $, 10);
+$VERSION = substr(q$Revision: 2.6 $, 10);
 
 use Apache::Constants qw(:common);
 use Apache::Request ();
@@ -63,6 +63,11 @@ sub handler {
 	# not handling MV3-style requests or TolerateGet compatibility yet
 	my $apr = Apache::Request->new($r);
 	for my $k ($apr->param) {
+		if (my $upload = $apr->upload($k)) {
+			my $fh = $upload->fh;
+			$CGI::file{$k} = join('', <$fh>);
+			#::logDebug("Vend::ModPerl: cgi param $k is an upload file of length " . length($CGI::file{$k}));
+		}
 		for my $v ($apr->param($k)) {
 			Vend::Server::store_cgi_kv($k, $v);
 		}
