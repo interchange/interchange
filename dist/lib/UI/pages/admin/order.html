@@ -1,3 +1,5 @@
+@_UI_STD_HEAD_@
+
 [calc]
 	if ( $CGI->{showarchive} ) {
 		delete $Values->{showpending};
@@ -112,7 +114,6 @@
 									{
 										href => '__UI_BASE__/order_view',
 										form => "order=$ordnum",
-										secure => "@@UI_SECURE@@",
 									}
 									);
 		}
@@ -140,8 +141,6 @@
 	[/if]
 [/seti]
 [update values]
-
-@_UI_STD_HEAD_@
 
 [if scratch message]
 <BLOCKQUOTE>
