@@ -56,6 +56,8 @@ Core
   in the database referenced....avoids errors on multiple key inserts that
   might return undef.
 
+* Fixed the row_count (0E0) problem in Vend::Table::DBI.
+
 Menu
 ----
 
@@ -104,6 +106,10 @@ Menu
 			specific-image-link=1
 			reparse=0]
 
+Form
+----
+
+* Fix "double March" bug in date widget.
 
 UI
 --
@@ -126,6 +132,8 @@ UI
 * Fix "admin/bg.gif not found" error.
 
 * Allow pass of nodelete and mv_auto_export options in URL.
+
+* Add "Decrypt Credit Card" back in order view.
 
 Payment
 -------
