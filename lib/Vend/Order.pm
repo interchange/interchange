@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.45 2003-02-26 16:30:46 mheins Exp $
+# $Id: Order.pm,v 2.46 2003-03-29 20:19:20 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.45 $, 10);
+$VERSION = substr(q$Revision: 2.46 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -965,13 +965,52 @@ sub check_order {
 
 		$status = check_order_each($profile, $vref);
 
+		my $np = $CGI::values{mv_nextpage};
 		if ($status) {
-			$CGI::values{mv_nextpage} = $Success_page
-				if $Success_page;
+			if($Success_page) {
+				$np = $CGI::values{mv_nextpage} = $Success_page;
+			}
+			elsif ($CGI::values{mv_success_href}) {
+				$np = $CGI::values{mv_nextpage} = $CGI::values{mv_success_href};
+			}
+
+			my $f = $CGI::values{mv_success_form};
+
+			if($CGI::values{mv_success_zero}) {
+				%CGI::values = ();
+				$CGI::values{mv_nextpage} ||= $np;
+			}
+
+			if($f) {
+				my $r = Vend::Util::scalar_to_hash($f);
+				while (my ($k, $v) = each %$r) {
+					$CGI::values{$k} = $v;
+				}
+			}
 		}
-		elsif ($Fail_page) {
-			$CGI::values{mv_nextpage} = $Fail_page;
+		else {
+			if($Fail_page) {
+				$np = $CGI::values{mv_nextpage} = $Fail_page;
+			}
+			elsif ($CGI::values{mv_fail_href}) {
+				$np = $CGI::values{mv_nextpage} = $CGI::values{mv_fail_href};
+			}
+
+			my $f = $CGI::values{mv_fail_form};
+
+			if($CGI::values{mv_fail_zero}) {
+				%CGI::values = ();
+				$CGI::values{mv_nextpage} ||= $np;
+			}
+
+			if($f) {
+				my $r = Vend::Util::scalar_to_hash($f);
+				while (my ($k, $v) = each %$r) {
+					$CGI::values{$k} = $v;
+				}
+			}
 		}
+
 		if ($Final and ! scalar @{$Vend::Items}) {
 			$status = 0;
 			$::Values->{"mv_error_items"}		=
@@ -1951,12 +1990,15 @@ sub update_quantity {
 		$line->{mv_ip} = $i;
     	$quantity = $CGI::values{"quantity$i"};
     	next unless defined $quantity;
+		my $do_update;
     	if ($quantity =~ m/^\d*$/) {
         	$line->{'quantity'} = $quantity || 0;
+			$do_update = 1;
     	}
     	elsif ($quantity =~ m/^[\d.]+$/
 				and $Vend::Cfg->{FractionalItems} ) {
         	$line->{'quantity'} = $quantity;
+			$do_update = 1;
     	}
 		# This allows a last-positioned input of item quantity to
 		# remove the item
@@ -1976,6 +2018,28 @@ sub update_quantity {
         	$Vend::Session->{errors}{mv_order_quantity} =
 				errmsg("'%s' for item %s is not numeric/integer", $quantity, $item);
     	}
+
+		if($do_update and my $oe = $Vend::Cfg->{OptionsAttribute}) {
+		  eval {
+			my $loc = $Vend::Cfg->{Options_repository}{$line->{$oe}};
+			if($loc and $loc->{item_update_routine}) {
+				no strict 'refs';
+				my $sub = \&{"$loc->{item_update_routine}"}; 
+				if(defined $sub) {
+					$sub->($line, $loc);
+				}
+			}
+		  };
+		  if($@) {
+			::logError(
+				"error during %s (option type %s) item_update_routine: %s",
+				$line->{code},
+				$line->{$oe},
+				$@,
+			);
+		  }
+		}
+
     	$::Values->{"quantity$i"} = delete $CGI::values{"quantity$i"};
 		SKUSET: {
 			my $sku;
@@ -2228,6 +2292,7 @@ sub add_items {
 					}
 				}
 			}
+
 			if(my $oe = $Vend::Cfg->{OptionsAttribute}) {
 			  eval {
 				my $loc = $Vend::Cfg->{Options_repository}{$item->{$oe}};
@@ -2248,6 +2313,7 @@ sub add_items {
 				);
 			  }
 			}
+
 			if($lines[$j] =~ /^\d+$/ and defined $cart->[$lines[$j]] ) {
 				$cart->[$lines[$j]] = $item;
 			}
