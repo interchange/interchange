@@ -176,6 +176,8 @@ Core
 * Change processing of [PREFIX-line] to use that value instead of
   rebuilding from scratch.
 
+* Make multi-output play nice with download via [deliver ...].
+
 File
 ----
 
@@ -807,6 +809,8 @@ Debian
 
 * protect against scripts ending up in /usr/lib/interchange
 
+* get_url UserTag forces dependency on libwww-perl
+
 UserTags
 --------
 
@@ -826,6 +830,8 @@ UserTags
   having to shoehorn them in extra=" style='...'" etc.
 
 * Fix typo in auto-wizard UserTag so it works with ITL conditionals.
+
+* weight  - New usertag to set and determine shipping weight easily.
 
 Filters
 -------
@@ -865,6 +871,9 @@ SOAP
 * Add SOAP_Control configuration directive and soap_gate access
   check routine to control requests to the SOAP server.
 
+* Change to the catalog directory so that log messages end up
+  in the correct file etc.
+
 Shadow Database
 ---------------
 
@@ -884,6 +893,24 @@ Shadow Database
 * Introduce mv_shadowpass scratch variable which instructs
   the Shadow database code to return the original database record.
 
+Static Page Generation
+----------------------
+
+* Remove this feature completely from Interchange:
+
+  -- remove configuration directives StaticIndex, StaticSessionDefault,
+     StaticTrack (introduced in 4.9.x)
+  -- deprecate configuration directives NoCache, Static, StaticAll,
+     StaticDBM, StaticDepth, StaticFly, StaticLogged, StaticPage,
+     StaticPath, StaticPattern, StaticSuffix
+  -- remove UI tag regenerate
+  -- remove InvalidateCache attribute from usertags
+  -- remove build flag from [tag] usertag
+  -- remove UI pages (regen and regenerate)
+  -- remove Vend::Interpolate::cache_html, Vend::Interpolate::resolve_static, 
+     Vend::Session::tie_static_dbm routines
+  
+  
 Miscellaneous
 -------------
 
@@ -1090,7 +1117,7 @@ Core
 	- expand_values_form allows setting of ITL tag values even
 	  on multiple form values.  Honors [cgi ..], [value ..], and [var ..].
 
-    - Fix ordering of open paramter for trees -- it was broken by the new
+    - Fix ordering of open parameter for trees -- it was broken by the new
 	  Vend::Util::vendUrl routine.
 
 * Simplify field_settor subroutines with prepared query and placeholders.
