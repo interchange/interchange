@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.21 2002-10-06 00:03:34 mheins Exp $
+# $Id: Common.pm,v 2.22 2002-12-12 03:22:58 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.21 $, 10);
+$VERSION = substr(q$Revision: 2.22 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -504,6 +504,10 @@ sub inc_field {
     $value = $row[$s->column_index($column)] += $adder;
     $s->set_row(@row);
     return $value;
+}
+
+sub create_sql {
+    return undef;
 }
 
 sub touch {
