@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.141 2004-06-05 18:21:06 mheins Exp $
+# $Id: Config.pm,v 2.142 2004-07-16 23:49:06 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.141 $, 10);
+$VERSION = substr(q$Revision: 2.142 $, 10);
 
 my %CDname;
 my %CPname;
@@ -1684,7 +1684,7 @@ sub parse_action {
 				$c->{$name} = $C->{Sub}{$sub};
 			}
 
-			if(! $c->{name} and $Global::GlobalSub) {
+			if(! $c->{$name} and $Global::GlobalSub) {
 				$c->{$name} = $Global::GlobalSub->{$sub};
 			}
 		}
@@ -1692,7 +1692,7 @@ sub parse_action {
 			$c->{$name} = $sub;
 		}
 		elsif(! $c->{$name}) {
-			$@ = errmsg("Mapped %s action routine '%s' is non-existant.", $var, $sub);
+			$@ = errmsg("Mapped %s action routine '%s' is non-existent.", $var, $sub);
 		}
 	}
 	elsif ( ! $mapped and $sub !~ /^sub\b/) {
