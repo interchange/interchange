@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange session expiration
 #
-# $Id: expire.PL,v 1.8.2.1.2.1 2001-04-25 15:28:43 heins Exp $
+# $Id: expire.PL,v 1.8.2.1.2.2 2001-04-26 09:04:26 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -60,7 +60,7 @@ use lib '/usr/local/interchange';
 use strict;
 use Fcntl;
 use Vend::Session;
-use Vend::Config qw(get_catalog_default parse_time);
+use Vend::Config qw(get_catalog_default global_config parse_time);
 use Vend::Util qw/errmsg/;
 use Getopt::Std;
 use vars qw/$opt_c $opt_r $opt_e $opt_f $opt_u $opt_v $opt_x/;
