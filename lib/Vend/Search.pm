@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.1 2001-11-26 18:34:02 mheins Exp $
+# $Id: Search.pm,v 2.2 2001-12-06 20:44:02 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -622,14 +622,14 @@ EOF
 				$col =~ s/[^\d,.]//g;
 			$code .= <<EOF;
 my \$addl = join " ", \@\$line[$col];
-push \@\$line .= \$addl;
+push \@\$line, \$addl;
 EOF
 			}
 			else {
 				$wild_card = 1;
 				$code .= <<EOF;
 my \$addl = join " ", \@\$line;
-push \@\$line .= \$addl;
+push \@\$line, \$addl;
 EOF
 			}
 		}
