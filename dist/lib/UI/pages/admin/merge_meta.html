@@ -212,7 +212,7 @@
 					$mtab);
 			return;
 		}
-		my @needcols = qw(extended default);
+		my @needcols = qw(extended);
 		if(@needcols = grep {! $mdb->column_exists($_)} @needcols) {
 			$Scratch->{merge_error}
 				= errmsg("Cannot merge metadata -- column(s) '%s' is missing in table %s.", join(',', @needcols), $mtab);
