@@ -126,7 +126,8 @@ EOF
 			$subtotal_quantity += $record->{orders};
 			($syn, $camp) = split /-/, $id, 2;
 			my $synlabel = $syn || $Tag->loc('','(none)');
-			my $burl = $Tag->area('__UI_BASE__/reports/order/Monthly', $month);
+			my $burl = $Tag->area('__UI_BASE__/reports/order/Monthly', 
+				$Tag->loc('',$month));
 			my $url = qq{<A HREF="$burl$syndstring">$mname&nbsp;$year</A>}
 				if $mname;
 			$out .= <<EOF;
