@@ -1,6 +1,6 @@
 # Vend::Payment::Signio - Interchange support for Signio/Verisign Payflow Pro
 #
-# $Id: Signio.pm,v 2.12 2003-08-04 22:01:09 racke Exp $
+# $Id: Signio.pm,v 2.13 2004-03-30 18:56:05 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -491,6 +491,7 @@ sub signio {
 
     my %varmap = ( qw/
 						ACCT		mv_credit_card_number
+						CVV2		mv_credit_card_cvv2
 						ZIP			b_zip
 						STREET		b_address
 						SHIPTOZIP	zip
