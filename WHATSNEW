@@ -120,7 +120,7 @@ Debian
 ------
 
 * Drop Build-Depends on libdb2-dev to allow builds on woody and sid,
-  apache-dev already has the proper dependency (Closes: #198136)
+  apache-dev already has the proper dependency (Closes:#198136)
 
 Miscellaneous
 -------------
@@ -130,6 +130,26 @@ Miscellaneous
 * Various minor cleanup, prevents warnings on startup.
 
 * Call tracking functions only if Vend::Track object exists.
+
+Extensions
+----------
+
+* Quickbooks updates:
+
+  - Updated documentation.
+  
+  - Installation fixes.
+  
+  - Rewrite of the IIF generation query page:
+    - Can query by order number range, date range, or "since last generation"
+    - Allow specification of QuickBooks invoice number to be used 
+      and incremented during IIF generation.
+    - Filters out deleted orders.
+  
+  - IIF Generation changes:
+    - Use the country name instead of the country code.
+    - Some filter updates (the period is not as dangerous as it looks).
+
 
 ------------------------------------------------------------------------------
 

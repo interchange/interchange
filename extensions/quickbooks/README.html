@@ -64,14 +64,19 @@
 <BR>
 <A HREF="#Test">4.12. Test</A></UL>
 <BR>
-<A HREF="#Discussion">5. Discussion</A><UL>
-<A HREF="#Sales Tax">5.1. Sales Tax</A>
+<A HREF="#Usage">5. Usage</A><UL>
+<A HREF="#Accessing Admin UI Features">5.1. Accessing Admin UI Features</A>
 <BR>
-<A HREF="#Shipping">5.2. Shipping</A>
+<A HREF="#Generating IIF Files">5.2. Generating IIF Files</A></UL>
 <BR>
-<A HREF="#Customer Imports">5.3. Customer Imports</A>
+<A HREF="#Discussion">6. Discussion</A><UL>
+<A HREF="#Sales Tax">6.1. Sales Tax</A>
 <BR>
-<A HREF="#IIF generation at time of order">5.4. IIF generation at time of order</A></UL>
+<A HREF="#Shipping">6.2. Shipping</A>
+<BR>
+<A HREF="#Customer Imports">6.3. Customer Imports</A>
+<BR>
+<A HREF="#IIF generation at time of order">6.4. IIF generation at time of order</A></UL>
 <BR>
 <A HREF="#Credits">A. Credits</A>
 <BR>
@@ -152,6 +157,7 @@ We will use the user ID <TT>interch</TT> in these examples.</UL>
 <P>It is assumed you have tools and knowledge to create directories with the proper permissions. Any directories that will contain varying files like order transaction logs will require write permission for the Interchange daemon user; pages and configuration only need have read permission.</P>
 <H2><A NAME="Quick Installation Script">4.3. Quick Installation Script</A></H2>
 <P>This script will install the necessary files for you, provided that you modify the variables to your environment.  Alternately, you can follow the more detailed installation instructions that follow it.</P>
+<P>Note that if you are not using a 4.9.8+ version of Interchange, you will need to manually install the qb_safe.filter by copying it from the 4.9.8 code/Filter/qb_safe.filter into your Interchange version.</P>
 <PRE>
 
 # Modify these three variables to match your environment.
@@ -167,11 +173,19 @@ cp -r $QB/pages/admin/quickbooks \
 cp -i $QB/usertag/* \
       $VENDROOT/code/UI_Tag
 
+# Alternate usertag installation style:
+#
+#mkdir -p $CATROOT/usertags/global
+#cp -i $QB/usertag/* \
+#      $CATROOT/usertags/global
+#
+# Then include the global/*.tag in your interchange.cfg
+
 # Variables that optionally modify the export process, along with
 # their help entries.
-cat   $QB/variable.txt-additions &gt;&gt; \
+cat   $QB/products/variable.txt.append &gt;&gt; \
       $CATROOT/products/variable.txt
-cat   $QB/mv_metadata.asc-additions &gt;&gt; \
+cat   $QB/products/mv_metadata.asc.append &gt;&gt; \
       $CATROOT/products/mv_metadata.asc
 
 # Menu entries: start with the existing menu, then add ours.
@@ -260,16 +274,33 @@ cd /usr/lib/interchange cp -i extensions/quickbooks/usertag/* lib/UI/usertag</UL
 <H2><A NAME="Test">4.12. Test</A></H2>
 <P>Place a test order on your Interchange catalog once you have finished installing. You should find a file in the <TT>orders</TT> directory with the name <TT>qbYYYYMMDD.iif</TT>. (YYYY=year, MM=month, DD=day.) Transfer this file to your QuickBooks machine and run File/Import and select that file as the source. This should import the customer and order into the system. If it doesn't work, it may be due to lack of sales tax or shipping definitions, discussed below.</P>
 <HR>
-<H1><A NAME="Discussion">5. Discussion</A></H1>
+<H1><A NAME="Usage">5. Usage</A></H1>
+<H2><A NAME="Accessing Admin UI Features">5.1. Accessing Admin UI Features</A></H2>
+<P>A typical installation will cause the Administrative User Interface Features to become available via the top level menu:</P>
+<UL>
+<LI>Login to the Admin UI
+<LI>Administration
+<LI>Quickbooks</UL>
+<P>You should then be presented with a menu of the Admin UI features.</P>
+<H2><A NAME="Generating IIF Files">5.2. Generating IIF Files</A></H2>
+<P>To generate the IIF files, access the corresponding page from the Admin UI Quickbooks Menu (Administration -&gt; Quickbooks -&gt; Generate IIF Files).</P>
+<P>You will be presented with a query tool.  Select the query options that you would like and submit your query.  Among the query options, you have the option to input a QB transaction number.  This will be the first number that is used when generating the IIF files, and it will be incremented for each sequential order in the query.</P>
+<P>You will be notified of its success or failure.  The resulting page will:</P>
+<UL>
+<LI>Inform you of the success or failure of the query.
+<LI>Provide a link to the &quot;results&quot; IIF file (which includes all of the orders found by the query).  Note that this &quot;results&quot; IIf file is overwritten every time a query is run.
+<LI>Provide a link for each IIF file (one per order).  This can be used as a backup, or for importing one-by-one instead of all at once.</UL>
+<HR>
+<H1><A NAME="Discussion">6. Discussion</A></H1>
 <P>The interface provided works for the sample company data distributed with QuickBooks. There are certain requirements to make sure it works in your environment.</P>
 <P>Also, you can change the configuration by editing the file etc/trans_quickbooks to suit your IIF file needs.</P>
-<H2><A NAME="Sales Tax">5.1. Sales Tax</A></H2>
+<H2><A NAME="Sales Tax">6.1. Sales Tax</A></H2>
 <P>QuickBooks has a taxing system whereby tax rates are defined by customer location. There is usually also a generic <TT>Sales Tax Item</TT>, such as contained in the sample company data. This allows Interchange to calculate the sales tax. If that item is not present then you will need to create it, or specify your tax item using the <TT>QB_SALES_TAX_ITEM</TT> variable.</P>
-<H2><A NAME="Shipping">5.2. Shipping</A></H2>
+<H2><A NAME="Shipping">6.2. Shipping</A></H2>
 <P>Interchange will add a generic item <TT>Shipping</TT> to each order that has a shipping cost. Its MEMO field will contain the text description of the mode. If that item is not in your QuickBooks item definitions, then you must create it, or specify your shipping item using the <TT>QB_SHIPPING_ITEM</TT> variable.</P>
-<H2><A NAME="Customer Imports">5.3. Customer Imports</A></H2>
+<H2><A NAME="Customer Imports">6.3. Customer Imports</A></H2>
 <P>To generate a QuickBooks transtype of INVOICE, a CUSTOMER is required. Interchange outputs a CUST IIF record for each sale with the customer information. Since QuickBooks uses the customer name or company to generate the unique listing, we place the Interchange username in parentheses after the company or name.</P>
-<H2><A NAME="IIF generation at time of order">5.4. IIF generation at time of order</A></H2>
+<H2><A NAME="IIF generation at time of order">6.4. IIF generation at time of order</A></H2>
 <P>As of 4.9, the IIF generation was moved from an order route into the Admin UI. This was done so that the IIF generation process could be fine tuned without restarting Interchange and placing an order.  If you need the IIF file generated at the time of order, you can still access the pre-4.9.6 files in <TT>extensions/quickbooks/legacy</TT>.</P>
 <HR>
 <H1><A NAME="Credits">A. Credits</A></H1>
@@ -293,8 +324,8 @@ cd /usr/lib/interchange cp -i extensions/quickbooks/usertag/* lib/UI/usertag</UL
 <P ALIGN="Center"><A HREF="index.html" TARGET="_top">Catalog</A></P>
 </DIV>
 <HR>
-<ADDRESS><SPAN CLASS="doc-id">ic_howto_qb-1.3</SPAN> <SPAN CLASS="doc-status">(Draft)</SPAN></ADDRESS>
-<ADDRESS CLASS="doc-modified">4 June 2003</ADDRESS>
+<ADDRESS><SPAN CLASS="doc-id">ic_howto_qb-1.4</SPAN> <SPAN CLASS="doc-status">(Draft)</SPAN></ADDRESS>
+<ADDRESS CLASS="doc-modified">2 July 2003</ADDRESS>
 <ADDRESS CLASS="copyright">Copyright &copy;  2001,2002 Mike Heins &lt;<A HREF="mailto:mike@perusion.com">mike@perusion.com</A>&gt;, Dan Browning &lt;<A HREF="mailto:db@kavod.com">db@kavod.com</A>&gt;</ADDRESS>
 </DIV>
 

@@ -5,7 +5,7 @@ CodeDef qb_safe Filter
 CodeDef qb_safe Routine <<EOR
 sub {
 	my $val = shift;
-	$val =~ s/[\"\.\/\\]//g;
+	$val =~ s/[\"\/\\]//g;
 	return $val;
 }
 EOR

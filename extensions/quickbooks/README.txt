@@ -1,7 +1,7 @@
 Interchange + QuickBooks HOWTO
 ==============================
 
-ic_howto_qb.1.3 (Draft)
+ic_howto_qb.1.4 (Draft)
 
 1. Introduction
 ===============
@@ -151,6 +151,10 @@ This script will install the necessary files for you, provided that
 you modify the variables to your environment.  Alternately, you can
 follow the more detailed installation instructions that follow it.
 
+Note that if you are not using a 4.9.8+ version of Interchange, you
+will need to manually install the qb_safe.filter by copying it from
+the 4.9.8 code/Filter/qb_safe.filter into your Interchange version.
+
 
 # Modify these three variables to match your environment.
 export QB=/path/to/interchange/extensions/quickbooks
@@ -165,11 +169,19 @@ cp -r $QB/pages/admin/quickbooks \
 cp -i $QB/usertag/* \
       $VENDROOT/code/UI_Tag
 
+# Alternate usertag installation style:
+#
+#mkdir -p $CATROOT/usertags/global
+#cp -i $QB/usertag/* \
+#      $CATROOT/usertags/global
+#
+# Then include the global/*.tag in your interchange.cfg
+
 # Variables that optionally modify the export process, along with
 # their help entries.
-cat   $QB/variable.txt-additions >> \
+cat   $QB/products/variable.txt.append >> \
       $CATROOT/products/variable.txt
-cat   $QB/mv_metadata.asc-additions >> \
+cat   $QB/products/mv_metadata.asc.append >> \
       $CATROOT/products/mv_metadata.asc
 
 # Menu entries: start with the existing menu, then add ours.
@@ -364,7 +376,50 @@ the source. This should import the customer and order into the system.
 If it doesn't work, it may be due to lack of sales tax or shipping
 definitions, discussed below.
 
-5. Discussion
+5. Usage
+========
+
+5.1. Accessing Admin UI Features
+--------------------------------
+
+A typical installation will cause the Administrative User Interface
+Features to become available via the top level menu:
+
+o    Login to the Admin UI
+
+o    Administration
+
+o    Quickbooks
+
+You should then be presented with a menu of the Admin UI features.
+
+5.2. Generating IIF Files
+-------------------------
+
+To generate the IIF files, access the corresponding page from the
+Admin UI Quickbooks Menu (Administration -> Quickbooks -> Generate IIF
+Files).
+
+You will be presented with a query tool.  Select the query options
+that you would like and submit your query.  Among the query options,
+you have the option to input a QB transaction number.  This will be
+the first number that is used when generating the IIF files, and it
+will be incremented for each sequential order in the query.
+
+You will be notified of its success or failure.  The resulting page
+will:
+
+o    Inform you of the success or failure of the query.
+
+o    Provide a link to the "results" IIF file (which includes all of
+     the orders found by the query).  Note that this "results" IIf
+     file is overwritten every time a query is run.
+
+o    Provide a link for each IIF file (one per order).  This can be
+     used as a backup, or for importing one-by-one instead of all at
+     once.
+
+6. Discussion
 =============
 
 The interface provided works for the sample company data distributed
@@ -374,7 +429,7 @@ in your environment.
 Also, you can change the configuration by editing the file
 etc/trans_quickbooks to suit your IIF file needs.
 
-5.1. Sales Tax
+6.1. Sales Tax
 --------------
 
 QuickBooks has a taxing system whereby tax rates are defined by
@@ -384,7 +439,7 @@ to calculate the sales tax. If that item is not present then you will
 need to create it, or specify your tax item using the
 QB_SALES_TAX_ITEM variable.
 
-5.2. Shipping
+6.2. Shipping
 -------------
 
 Interchange will add a generic item Shipping to each order that has a
@@ -393,7 +448,7 @@ mode. If that item is not in your QuickBooks item definitions, then
 you must create it, or specify your shipping item using the
 QB_SHIPPING_ITEM variable.
 
-5.3. Customer Imports
+6.3. Customer Imports
 ---------------------
 
 To generate a QuickBooks transtype of INVOICE, a CUSTOMER is required.
@@ -402,7 +457,7 @@ information. Since QuickBooks uses the customer name or company to
 generate the unique listing, we place the Interchange username in
 parentheses after the company or name.
 
-5.4. IIF generation at time of order
+6.4. IIF generation at time of order
 ------------------------------------
 
 As of 4.9, the IIF generation was moved from an order route into the

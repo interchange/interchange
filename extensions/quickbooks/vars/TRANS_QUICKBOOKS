@@ -1,6 +1,7 @@
 #### begin quickbooks for [tx-param order_number] #####
 [tmp quickbooks_record]
-[if-tx-param salestax]
+[tmp order_number][either][scratch qb_invoice_num][or][tx-param order_number][/either][/tmp]
+[if-tx-param salestax > 0]
 	[set NAMEISTAXABLE]Y[/set]
 	[set ISTAXABLE]1[/set]
 	[set NAME]Invoice[/set]
@@ -18,28 +19,28 @@ Setting salestax: ISTAXABLE=[scratch ISTAXABLE]
 [/else]
 [/if-tx-param]
 Checking shipping: HASSHIPPING=[scratch HASSHIPPING]
-[if-tx-param b_address1] [comment]User put in billing info, use that[/comment]
+[if-tx-param b_address1]
 	[seti ADDR1][if-tx-param b_fname][tx-param b_fname] [tx-param b_lname][else][tx-param fname] [tx-param lname][/else][/if-tx-param][/seti]
 	[seti ADDR2][if-tx-param company][tx-param company][/if-tx-param][/seti]
 	[seti ADDR3][tx-param b_address1][if-tx-param b_address2], [tx-param b_address2][/if-tx-param][/seti]
 	[seti ADDR4][tx-param b_city], [tx-param b_state] [tx-param b_zip][/seti]
-	[seti ADDR5][tx-param b_country][/seti]
+	[seti ADDR5][data table=country field=name key="[tx-param b_country]"][/seti]
 	[seti SADDR1][tx-param fname] [tx-param lname][/seti]
 	[seti SADDR2][if-tx-param company][tx-param company][/if-tx-param][/seti]
 	[seti SADDR3][tx-param address1][if-tx-param address2], [tx-param address2][/if-tx-param][/seti]
 	[seti SADDR4][tx-param city], [tx-param state] [tx-param zip][/seti]
-	[seti SADDR5][tx-param country][/seti]
+	[seti SADDR5][data table=country field=name key="[tx-param country]"][/seti]
 [else]
 	[seti ADDR1][tx-param fname] [tx-param lname][/seti]
 	[seti ADDR2][if-tx-param company][tx-param company][/if-tx-param][/seti]
 	[seti ADDR3][tx-param address1][if-tx-param address2], [tx-param address2][/if-tx-param][/seti]
 	[seti ADDR4][tx-param city], [tx-param state] [tx-param zip][/seti]
-	[seti ADDR5][tx-param country][/seti]
+	[seti ADDR5][data table=country field=name key="[tx-param country]"][/seti]
 	[seti SADDR1][tx-param fname] [tx-param lname][/seti]
 	[seti SADDR2][if-tx-param company][tx-param company][/if-tx-param][/seti]
 	[seti SADDR3][tx-param address1][if-tx-param address2], [tx-param address2][/if-tx-param][/seti]
 	[seti SADDR4][tx-param city], [tx-param state] [tx-param zip][/seti]
-	[seti SADDR5][tx-param country][/seti]
+	[seti SADDR5][data table=country field=name key="[tx-param country]"][/seti]
 [/else]
 [/if-tx-param]
 [if variable FILE_BY_COMPANY]
@@ -54,7 +55,7 @@ Checking shipping: HASSHIPPING=[scratch HASSHIPPING]
 [seti qb_trans]!CUST	NAME	REFNUM	TIMESTAMP	EMAIL	BADDR1	BADDR2	BADDR3	BADDR4	BADDR5	SADDR1	SADDR2	SADDR3	SADDR4	SADDR5	PHONE1	PHONE2	FAXNUM	NOTE	CONT1	CONT2	CTYPE	TERMS	TAXABLE	LIMIT	RESALENUM	REP	TAXITEM	NOTEPAD	SALUTATION	COMPANYNAME	FIRSTNAME	MIDINIT	LASTNAME	CUSTFLD1	CUSTFLD2	CUSTFLD3	CUSTFLD4	CUSTFLD5	CUSTFLD6	CUSTFLD7	CUSTFLD8	CUSTFLD9	CUSTFLD10	CUSTFLD11	CUSTFLD12	CUSTFLD13	CUSTFLD14	CUSTFLD15	JOBDESC	JOBTYPE	JOBSTATUS	JOBSTART	JOBPROJEND	JOBEND	HIDDEN	DELCOUNT
 [filter tabbed]CUST
 [scratch CUSTNAME]
-[tx-param order_number][comment][data table=userdb field=customer_number key="[tx-param username]"][/comment][comment]Customer number... just use order number?[/comment]
+[scratch order_number][comment][data table=userdb field=customer_number key="[tx-param username]"][/comment][comment]Customer number... just use order number?[/comment]
 [tag time]%s[/tag]
 [tx-param email]
 [scratch ADDR1]
@@ -70,7 +71,7 @@ Checking shipping: HASSHIPPING=[scratch HASSHIPPING]
 [filter op=mac interpoloate=1][tx-param phone_day][/filter]
 [filter op=mac interpoloate=1][tx-param phone_night][/filter]
 [filter op=mac interpoloate=1][tx-param fax][/filter]
-[filter op=mac interpoloate=1][tx-param gift_note][/filter] 
+[filter op=mac interpoloate=1][tx-param comments][/filter] 
 [tx-param fname] [tx-param lname]
 [tx-param b_fname] [tx-param b_lname]
 Retail
@@ -109,18 +110,20 @@ Cash
 [comment]JOBDESC[/comment]
 N
 __STORE_ID__[/filter]
-!TRNS	TRNSID	TRNSTYPE	DATE	ACCNT	NAME	CLASS	AMOUNT	[if !variable QB_DISABLE_DOCNUM]DOCNUM	[/if]MEMO	CLEAR	TOPRINT	NAMEISTAXABLE	ADDR1	ADDR2	ADDR3	ADDR4	ADDR5	PAYMETH	SHIPVIA	SADDR1	SADDR2	SADDR3	SADDR4	SADDR5
+!TRNS	TRNSID	TRNSTYPE	DATE	ACCNT	NAME	CLASS	AMOUNT	DOCNUM	MEMO	PONUM	CLEAR	TOPRINT	NAMEISTAXABLE	ADDR1	ADDR2	ADDR3	ADDR4	ADDR5	PAYMETH	SHIPVIA	SADDR1	SADDR2	SADDR3	SADDR4	SADDR5
 !SPL	SPLID	TRNSTYPE	DATE	ACCNT	NAME	CLASS	AMOUNT	DOCNUM	MEMO	CLEAR	QNTY	PRICE	INVITEM	PAYMETH	TAXABLE	VALADJ	SERVICEDATE	OTHER2	EXTRA
 !ENDTRNS
 [filter tabbed]TRNS
-[tx-param order_number]
+[scratch order_number]
 [scratch TRNSTYPE]
 [scratch DATE]
 [either]__QB_TRANSACTION_ACCOUNT__[or]Checking[/either]
 [scratch CUSTNAME]
 __QB_TRANSACTION_CLASS__
-[tx-param total_cost][calc] return "\t" . q{[tx-param order_number]} unless $Variable->{QB_DISABLE_DOCNUM}; [/calc]
-Order Number: [tx-param order_number].  [filter op=mac interpoloate=1][tx-param gift_note][/filter]
+[tx-param total_cost]
+[scratch order_number]
+IC Order Number: [tx-param order_number].  [filter op=mac interpoloate=1][tx-param comments][/filter]
+[tx-param order_number]
 N
 N
 [scratch NAMEISTAXABLE]
@@ -149,20 +152,16 @@ SPL	[filter tabbed][fcounter etc/qbline.number]
 [scratch CUSTNAME]
 __QB_TRANSACTION_CLASS__
 -[ol-param subtotal]
-[ol-param order_number]
-[seti DESC][filter
-                interpolate=1
-                op="strip mac __QB_ITEM_LENGTH__ 45"
-            ]
-				[tmp qb_item_prefix]__QB_ITEM_PREFIX__[/tmp]
-				[filter op=qb_safe interpolate=1][scratch qb_item_prefix][either][ol-param title][or][ol-param description][/either][/filter]
-[/filter][/seti][scratch DESC]
+[scratch order_number]
+[filter interpolate=1 op="strip mac qb_safe"][ol-param description][/filter]
 N
 -[ol-param quantity]
 [ol-param price]
-[filter op="qb_safe 25" interpolate=1][ol-param sku][/filter]
+[tmp filter_length][either]@_QB_ITEM_LENGTH_@[or]45[/either][/tmp][filter 
+	op="qb_safe [scratch filter_length]" 
+	interpolate=1]@_QB_ITEM_PREFIX_@[either]@_QB_SKU_@[or][ol-param sku][/either][/filter]
 
-[if-ol-param nontaxable]N[else][scratch NAMEISTAXABLE][/else][/if-ol-param]
+[if-ol-param taxable][scratch NAMEISTAXABLE][else]N[/else][/if-ol-param]
 N
 
 
@@ -175,12 +174,12 @@ SPL[filter tabbed]
 [scratch CUSTNAME]
 
 -[tx-param shipping]
-[tx-param order_number]
+[scratch order_number]
 [tx-param shipmode]
 N
 -1
 [tx-param shipping]
-[either]__QB_SHIPPING_ITEM__[or]Shipping[/either]
+[either]@_QB_SHIPPING_ITEM_@[or]Shipping[/either]
 
 N
 N
@@ -195,7 +194,7 @@ N
 [either][query list=1 sql=|SELECT qb_tax_agency FROM state WHERE country = '[tx-param country]' AND state = '[tx-param state]'|][sql-param qb_tax_agency][/query][or]__QB_SALES_TAX_AGENCY__[or]State Board of Equalization[/either]
 
 -[tx-param salestax]
-[tx-param order_number]
+[scratch order_number]
 [tx-param state]
 N
 -1
@@ -214,7 +213,7 @@ ENDTRNS
 	$Scratch->{qb_trans} =~ s/\s*$/\r\n/;
 	return;
 [/calc]
-Logging transaction to orders/qb[either]__QB_FILE_SUFFIX__[or][scratch FILEDATE][/either].iif: [log umask=022 file=">orders/qb[tx-param order_number].iif" type=text interpolate=1][scratch qb_trans][/log]
+Logging transaction to orders/[tx-param order_number].iif: [log umask=022 file=">orders/[tx-param order_number].iif" type=text interpolate=1][scratch qb_trans][/log]
 Also appending transaction to orders/0_qb_results.iif: [log umask=022 file="orders/0_qb_results.iif" type=text interpolate=1][scratch qb_trans][/log]
 
 
