@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.5.6
 #
-# $Id: interchange.PL,v 1.4 2000-09-25 14:19:41 jon Exp $
+# $Id: interchange.PL,v 1.5 2000-09-25 15:54:54 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -530,7 +530,7 @@ sub update_data {
 # Parse the mv_click and mv_check special variables
 sub parse_click {
 	my ($ref, $click, $extra) = @_;
-    my($codere) = '[\w-_#/.]+';
+    my($codere) = '[-\w_#/.]+';
 	my $params;
 
 #::logDebug("Looking for click $click");
