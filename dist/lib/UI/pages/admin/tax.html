@@ -1,6 +1,7 @@
 @_UI_STD_INIT_@
 [if config SalesTax ne multi]
-	[bounce page="__UI_BASE__/tax_simple"]
+	[tmp tax_url][area href="admin/tax_simple"  form="tax=1"][/tmp]
+	[bounce href="[scratch tax_url]"]
 [/if]
 [calc]
 	$Values->{mv_data_table} = $CGI->{mv_data_table} = 'country';
