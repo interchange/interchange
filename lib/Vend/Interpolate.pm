@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.74 2001-06-14 18:30:58 jason Exp $
+# $Id: Interpolate.pm,v 1.40.2.75 2001-06-15 15:56:27 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.74 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.75 $, 10);
 
 @EXPORT = qw (
 
@@ -2823,6 +2823,14 @@ sub tag_value_extended {
 			else {
 				$CGI::file{$var} =~ s/\n/$replace/g;
 			}
+		}
+		if($opt->{maxsize} and length($CGI::file{$var}) > $opt->{maxsize}) {
+			::logError(
+				"Uploaded file write of %s bytes greater than maxsize %s. Aborted.",
+				length($CGI::file{$var}),
+				$opt->{maxsize},
+			);
+			return $opt->{no} || '';
 		}
 #::logDebug(">$file \$CGI::file{$var}" . ::uneval($opt)); 
 		Vend::Util::writefile(">$file", \$CGI::file{$var}, $opt)
