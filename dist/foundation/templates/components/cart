@@ -399,7 +399,7 @@ EOF
     	    <INPUT TYPE=HIDDEN NAME="save_cart" VALUE="cart">
     	    <INPUT TYPE=HIDDEN NAME="mv_todo" VALUE="return">
     	    <INPUT TYPE=HIDDEN NAME="mv_check" VALUE="Save Cart">
-	    <input type=hidden name=mv_session_id vlaue="[data session id]">
+	    <input type=hidden name=mv_session_id value="[data session id]">
     	    <INPUT TYPE=SUBMIT VALUE="[L]Save Cart[/L]">
 	    </FORM>
   [/elsif]
