@@ -1,3 +1,130 @@
+Interchange 4.6.5
+
+* Fix two admin security holes, in do_view and page_save. Thanks to
+  Merlyn J. Pease <peasemj@bellatlantic.net> for reporting in bug #167.
+
+* Several minor database field definition improvements.
+
+* Clean up cruft in sample pricing table.
+
+* Prevent admin/genconfig.html error.log entry about not being able to
+  display status file with NoAbsolute set.
+
+* Backport from 4.7 the error report if page couldn't be saved by
+  admin/page_save.
+
+* Fix a couple of bugs with AlwaysSecure not working in an order link.
+
+* Fix rounding problem with Shipping.
+
+* Fix problem with FullURL.
+
+* Add stub for test_column in Table/InMemory.pm.
+  Problem found by vasile_abo@wexim.com.
+
+
+Interchange 4.6.4
+
+* Added mod_interchange to the standard Interchange distribution.
+  It is the direct descendant of mod_minivend, created by Francis
+  J. Lacoste <francis.lacoste@iNsu.com> at iNsu Innovations Inc.
+  in 1999. With Francis's blessing, we're taking over maintenance of
+  the module. Thanks, Francis!
+
+* Changed test.pl to use Errno.pm to derive socket test error messages.
+  Thanks to Patxi Larrayoz Elcano <larrayoz@retemail.es> for finding this.
+ 
+* Fix problem with MV_DEFAULT_SEARCH_FILE. Found by Joshua Scott
+  <josh@bluebonnet.net>.
+
+* Fixed bug with encrypted-password users not being logged in after
+  new account creation. Reported by tamas.kohegyi@unforgettable.com.
+
+* Add CGIWRAP workaround. Remove bogus PATH_INFO that is prepended to
+  SCRIPT_NAME.
+
+* Add unusable password hash for group ':backup' in access.asc. It was
+  possible to access the admin interface with this username and no password.
+
+* Disallow login attempts with group names, usernames with invalid
+  characters, and blank usernames or passwords.
+
+* Fix index statement problem for order_returns in PostgreSQL, found by
+  <lmorley@flexihost.com>.
+
+
+Interchange 4.6.3
+
+* Fixed a bad bug that kept product options from working right. A bugfix
+  in 4.6.2 uncovered a worse bug due to swapped parameters in a subroutine
+  call in Data.pm. Thanks to Marc Infield <marc@geronimo.com> for pointing
+  this out quickly.
+
+
+Interchange 4.6.2
+
+* [loop list=`$Scratch->{ary}`] now accepts a prebuilt array reference to
+  loop over. Must be in the form returned by $db->query(), i.e. the list
+  array (of arrays), an optional field hash ref giving the field name to
+  index pointers, and an optional array ref giving the field names in
+  order. Thanks to Kaare Rasmussen for the suggestion.
+
+* Fixed bad bug in History, saving mv_credit_card_number in session. Oops.
+ 
+* Fixed bug in secure/non-secure host comparison, thanks to Murray Gibbins,
+  Stefan Hornburg, and Hans-Joachim Leidinger.
+  
+* Add MV_USERPROFILE to the list of recognized cookies, allowing a
+  cookie-based admin login. Providing the password is saved in a cookie
+  (perhaps with no expiration time?) then this will allow multiple-order
+  entry by running the login process again.
+   
+* Fixed up the DisplayErrors auto-response to be localized. Not many people
+  use this, but trying to localize all error messages.
+
+* Fixed bug in ui_date_widget, generated month name for "Feb 30" which turned
+  into March.
+
+* Patch supplied by Hans-Joachim Leidinger <jojo@buchonline.net> prevents
+  blank credit card info from being encrypted.
+
+* Fixed bug #106, hang at install time if specified Interchange user ID
+  doesn't exist.
+
+* Fixed problem in Search.pm where coordinated search of op=rm would not
+  match on words only.
+
+* Fixed recent bug that prevented cached DBI connections.
+
+* Fixed a couple of hard-coded mv_metadata references in admin pages
+  preventing renaming of __UI_META_TABLE__.
+
+* Fix problem with ProductFiles resolution in loops. The Vend::OnlyProducts
+  setting was confused after the on-the-fly update.
+
+* Convert '[' characters to &#91; in [value-extended] to prevent reparsing
+  of Interchange tags from user data.
+
+* Fixed problem with fly-list not accepting base parameter as per docs.
+  Found by Victor Nolton.
+
+* Added Stefan Hornburg's patch for table image background paths.
+  Set pragma substitute_table_image to enable this.
+
+* Improved makecat error message when problems occur reading config file.
+
+* Made NoAbsolute default to Yes in interchange.cfg, which gives better
+  default security for newly-built catalogs.
+
+* Various minor HTML corrections. Thanks to Paul <porl@namee.com.au> and
+  Mediabang.
+
+* Fixed in-stock notification problem on flypage.html and stock-alert.html.
+
+* RPM only: Fixed logrotate.d file to prevent cascading log rotation like
+  error.log.1.gz.1.gz etc. Thanks to Murray Gibbins for diagnosis & fix.
+
+
 Interchange 4.6.1
 
 * Added MS Excel import/export capability.
@@ -46,6 +173,22 @@ Interchange 4.6.1
   error from being seen at checkout (bug #82). Thanks to Bas Bezemer.
 
 * Removed some duplicated image files, reducing package size by ~ 200 KB.
+
+* Fixed scoping problem with override from user image upload.
+
+* Allow internationalization of error messages in UserDB.
+
+* interchange.PL: Fixed bad call to Vend::Imagemap::action_map, must be
+  just the action_map since autouse is in force. Thanks to Jeff Carnahan.
+
+* Fixed bugs in or-ed searches in DbSearch, fixed mv_search_relate bugs.
+
+* Fixed problem with nu parameter getting out of sync in mv_sql_query.
+
+* Added 3 usertags: benchmark, sleep, and table_organize (in eg/).
+
+* Filled in some missing timestamp fields in construct demo store data,
+  which was causing PostgreSQL 7 data imports to fail.
 
 
 Interchange 4.6.0

@@ -1,6 +1,6 @@
 # Vend/Scan.pm:  Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 1.7 2000-11-20 03:03:43 heins Exp $
+# $Id: Scan.pm,v 1.9 2001-06-07 16:30:52 jason Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -29,7 +29,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 1.7 $, 10);
+$VERSION = substr(q$Revision: 1.9 $, 10);
 
 use strict;
 use Vend::Util;
@@ -426,7 +426,8 @@ sub perform_search {
 	parse_map($c) if defined $c->{mv_search_map};
 
 	if(defined $c->{mv_sql_query}) {
-		my $params = Vend::Interpolate::escape_scan(delete $c->{mv_sql_query}, $c);
+#::logDebug("found sql query in perform_search");
+		my $params = Vend::Interpolate::escape_scan(delete $c->{mv_sql_query}, \%CGI::values);
 		find_search_params($c, $params);
 	}
 
@@ -568,7 +569,7 @@ sub sql_statement {
 	}
 
 	die "SQL is not enabled for Interchange. Get the SQL::Statement module.\n"
-		unless $INC{'SQL/Statement.pm'};
+		unless defined &SQL::Statement::new;
 
 	my $parser = SQL::Parser->new('Ansi');
 
@@ -685,29 +686,32 @@ sub sql_statement {
 
 				# Search spec is a variable if a ref
 				$spec = $where->arg2();
+#::logDebug("where col=$col spec=$spec");
 				$spec = $ref->{$spec->name()}		if ref $spec;
+
+				last OP unless $spec;
 
 				# Column name is a variable if a string
 				$col = $where->arg1();
 				$col = ref $col ? $col->name() : $::Values->{$col};
 
+				last OP unless $col;
+
 				$numeric = (defined $nuhash)
 							? (exists $nuhash->{$col})
 							: (
-								$spec !~ /[^\d.]/		and
-								($spec =~ tr/././) < 2	and
-								$spec !~ /^0\d/				 );
-#::logDebug("numeric for $col=$numeric");
-				push_spec  ('nu', $numeric, $ary, $hash); 
+								$spec =~ /^-?\d+\.?\d*$/
+								and
+								$spec !~ /^0\d+$/			 );
 
 #::logDebug("where col=$col spec=$spec");
-				# If both are not supplied, we ignore it
-				last OP unless defined $col and $spec;
 
-				push_spec('se', $spec, $ary, $hash);
-				push_spec('op', $op, $ary, $hash);
-				push_spec('sf', $col, $ary, $hash);
-				push_spec('ne', ($where->neg() || 0), $ary, $hash) ;
+#::logDebug("numeric for $col=$numeric");
+                push_spec('nu', ($numeric || 0),      $ary, $hash); 
+                push_spec('se', $spec,                $ary, $hash);
+                push_spec('op', $op,                  $ary, $hash);
+                push_spec('sf', $col,                 $ary, $hash);
+                push_spec('ne', ($where->neg() || 0), $ary, $hash);
 
 				
 			}

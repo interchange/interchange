@@ -472,8 +472,8 @@ Language. The pages in the catalog are in HTML, but use ITL to provide
 access to Interchange's functions. ITL tags are delimited by C<[square
 brackets]> instead of angle brackets. They are usually called
 Interchange tags or just tags. They are similar to HTML in syntax in
-that there are both <I>standalone</I> and <I>container</I> tags. A
-standalone tag has no ending element. For example:
+that there are both I<standalone> and I<container> tags. A standalone
+tag has no ending element. For example:
 
    [value name]
 
@@ -2270,6 +2270,22 @@ is blank.
 
    AllowGlobal  simple
 
+=head2 AutoVariable *global*
+
+Specifies directives which should be translated to Variable settings.
+For scalars, the directive name becomes the Variable name and yields
+its value, i.e. C<DescriptionField> becomes
+C<__>C<DescriptionField__>, which would by default be C<description>.
+Array variables have a C<_N> added, where C<_N> is the ordinal index,
+i.e. C<ProductFiles> becomes C<__>C<ProductFiles_0__>,
+C<__>C<ProductFiles_1__>, etc. Hash variables have a _KEY added, i.e. 
+C<SpecialPage> becomes C<__>C<SpecialPage_missing__>,
+C<__>C<SpecialPage_violation>, etc. Doesn't handle hash keys that have
+non-word characters or whitespace. Only single-level arrays and hashes
+are translated properly.
+
+   AutoVariable  PriceField DescriptionField ProductFiles SpecialPage
+
 =head2 Catalog *global*
 
 Specifies a catalog that can run using this Interchange server. There
@@ -2309,8 +2325,6 @@ only. This is mostly useful for C<ErrorFile> and C<DisplayErrors>:
 
    Catalog simple directive ErrorFile /var/log/interchange/simple_error.log
 
-=head2 Catch
-
 =head2 CheckHTML *global*
 
 Set to the name of an external program that will check the users HTML
@@ -2335,25 +2349,18 @@ read. Default is C<catalog_before.cfg>.
 
    ConfigAllBefore   set_actions.cfg set_variables.cfg
 
-=head2 Counter
+=head2 Database *global*
 
-Inserts the value of a persistent counter. The counter value is stored
-in the given file, which is created if necessary. If the file name
-begins with a "/," then it is an absolute path. Otherwise, it is
-relative to VendRoot. If the tag causes the counter file to be
-created, the value is initialized to start. If value is given, the
-counter's value is set to the given value. If value is not supplied,
-the counter is incremented and its value is returned, unless decrement
-is supplied. In this case, the counter is decremented and its value is
-returned. The counter is implemented using Perl's C<File::Counter>
-module, which protects the file against simultaneous access by
-multiple processes.
+Defines a database which is global and available to all catalogs.
+Writing can be controlled by catalog. See C<Database>.
 
-   [counter file=FILE start=START value=VALUE decrement*]
+=head2 DebugFile
 
-=head2 Discount-Subtotal
+Names a file, relative to the Interchange root directory, which should
+store the output of C<logDebug> statements, and warnings if warnings
+are enabled.
 
-Inserts the discounted subtotal of the ordered items.
+        DebugFile  /tmp/icdebug
 
 =head2 DisplayErrors *global*
 
@@ -2407,27 +2414,6 @@ permission to write that file.
 
 Optionally, syslog error logging can be set up as well. See C<SysLog>.
 
-=head2 Export
-
-=head2 Filter
-
-Applies any of Interchange's standard filters to an arbitray value, or
-custom filters may be defined. The filters are also available as
-parameters to the C<cgi>, C<data>, and C<value> tags. Filters can be
-applied in sequence and as many as needed can be applied. Here is an
-example. If author or artist names are stored in the database ``LAST,
-First'' so that they sort properly, they may be displayed normally as
-``First Last''. This call
-
-    [filter op="name namecase"]WOOD, Grant[/filter] will display as
-    Grant Wood Another way to do this would be:
-    [data table=products column=artist key=99-102 filter="name namecase"]
-
-=head2 Fly-Tax
-
-Builds a tax rate from C<taxarea>, C<taxrate>, C<taxshipping>,
-variable values, and the C<SalesTax> directive value.
-
 =head2 FormAction *global*
 
 Allows a form action (like the standard ones C<return, submit,
@@ -2446,6 +2432,9 @@ Interchange will not display any page. The default Interchange actions
 can be overridden, if desired. There is also a catalog-specific
 version of this directive, which overrides any action of the same
 name.
+
+The global version affects all catalogs -- there is also a
+catalog-specific version of FormAction which is protected by Safe.
 
 =head2 FullUrl *global*
 
@@ -2500,10 +2489,16 @@ in the error log, the system setup should be examined. Default is 30.
 
    HammerLock          60
 
-=head2 Handling
+This mostly doesn't apply to Interchange when using the default
+file-based sessions.
 
-Calculates and inserts handling costs. Accepts the same noformat and
-convert arguments as the shipping tag.
+=head2 HitCount *global*
+
+Increments a counter in C<ConfDir> for every access to the catalog.
+The file is named C<hits.catalogname>, where C<catalogname> is the
+short catalog identifier. A Yes/No directive, default is C<No>.
+
+   HitCount  Yes
 
 =head2 HouseKeeping *global*
 
@@ -2534,14 +2529,12 @@ The number of dot-quads that IpHead will look at. Default is 1.
 
    IpQuad  2
 
-=head2 Legacy *global*
-
-Makes a few optimizations for newer catalogs. Set to C<Yes> for the
-maximum compatibility with older Interchange catalogs.
-
 =head2 Locale *global*
 
-Sets the global C<Locale> for use in error messages.
+Sets the global C<Locale> for use in error messages. Normally set from
+a file's contents, as in the example before:
+
+   Locale <locale.error
 
 =head2 LockoutCommand *global*
 
@@ -2568,8 +2561,6 @@ user).
 
    LockoutCommand   lockout %s
 
-=head2 Log
-
 =head2 Mall *global*
 
 Set to C<Yes> to issue cookies only for the current catalog's script.
@@ -2578,6 +2569,8 @@ domain. This will allow multiple catalogs to operate on the same
 domain without interfering with each others session ID.
 
 A yes/no directive.
+
+   Mall   Yes
 
 =head2 MaxServers *global*
 
@@ -2627,6 +2620,13 @@ stopping or reconfiguring the server.
    PIDfile  /var/run/interchange/interchange.pid
 
 This file must be writable by the Interchange server user ID.
+
+=head2 Profiles *global*
+
+Names a file (or files) which contain C<OrderProfile> and
+C<SearchProfile> settings that will apply for all catalogs.
+
+   Profiles     etc/profiles.common
 
 =head2 SafeUntrap *global*
 
@@ -2697,6 +2697,7 @@ Set up syslog(8) error logging for Interchange.
    SysLog  alert    local3.warn
    SysLog  warn     local3.info
    SysLog  info     local3.info
+   SysLog  debug    local3.debug
 
 This would cause global errors to be logged with the command:
 
@@ -2710,10 +2711,52 @@ and cause system log entries something like:
    Oct 26 17:30:11 bill int1: Config 'test' at server startup
    Oct 26 17:30:13 bill int1: START server (2345) (INET and UNIX)
 
-A custom wrapper can be created around it to get it to behave as
-desired.
+This would work in conjunction with a UNIX syslogd.conf entry of:
 
-=head2 Tag
+ # Log local3 stuff to Interchange log
+local3.*                /var/log/interchange.log
+
+A custom wrapper can be created around it to get it to behave as
+desired. For instance, if you didn't want to use syslog but instead
+wanted to log to a database (via DBI), you could create a Perl script
+named "logdatabase" to log things:
+
+ #!/usr/bin/perl
+
+my $script_name = "logdatabase";
+use DBI;
+use Getopt::Std;
+
+getopts('d:p:T:k:')
+        or die "$script_name options: $@\n";
+
+use vars qw/$opt_d $opt_p $opt_T $opt_k/;
+
+my $dsn   = $opt_d || $ENV{DBI_DSN};
+my $template = $opt_T
+        || "insert into log values ('~~KEY~~', '~~LEVEL~~', '~~MSG~~')";
+
+my $dbh = DBI->connect($dsn)
+        or die "$script_name cannot connect to DBI: $DBI::errstr\n";
+
+my %data;
+
+$data{KEY} = $opt_k || '';
+
+local ($/);
+$data{MSG} = <>;
+
+$data{LEVEL} = $opt_p || 'interchange.info';
+
+$template =~ s/\~\~(\w+)\~\~/$dbh->quote($data{$1})/;
+
+my $sth = $dbh->prepare($template)
+        or die "$script_name error executing query: $template\n";
+
+$sth->execute()
+        or die "$script_name error executing query: $template\n";
+
+exit;
 
 =head2 TcpHost *global*
 
@@ -2777,10 +2820,6 @@ The user's page, if it exists, will take precedence. There is also a
 catalog-specific version of this directive. If a page is found in that
 directory (or directories), it will take precedence.
 
-=head2 Time
-
-=head2 Try
-
 =head2 UserTag *global*
 
 This defines a UserTag which is global in nature, meaning not limited
@@ -2800,6 +2839,9 @@ contain any valid Interchange tags including catalog variables.
 
    Variable   DOCUMENT_ROOT   /usr/local/etc/httpd/htdocs
 
+If a variable is called with @_VARIABLE_@, and there is no catalog
+Variable with its name, the global Variable value will be inserted.
+
 There are several standard variables which should not be used:
 
 =over 4
@@ -2818,11 +2860,11 @@ Set this to 1 to disable encrypted passwords for the C<AdminUser>.
 Name of the last page read in, as in the page called with mv_nextpage
 or mv_orderpage.
 
-=item CURRENCY
+=item CURRENCY, MV_CURRENCY
 
 The current locale for currency.
 
-=item LANG
+=item LANG, MV_LANG
 
 The current locale for language.
 
@@ -3083,6 +3125,26 @@ default.
 
 If a C<Route> is set up to C<supplant>, this is ignored.
 
+=head2 Autoend
+
+Sets an action that is automatically performed at the end every
+access. It is performed after any page parsing occurs, just before the
+transaction ends. See C<Autoload>.
+
+=head2 Autoload
+
+Sets an action that is automatically performed for every access. It is
+performed before any page parsing occurs, and before the action or
+page is even determined. Can contain ITL tags or a global subroutine
+name. If the return value is true, a normal display of
+$CGI->{mv_nextpage} will occur -- if it returns a false (zero, undef,
+or blank) value, no page will be processed.
+
+As an example, to remap any C<mv_nextpage> accesses to the C<private>
+subdirectory of pages, set:
+
+   Autoload   [perl] $CGI->{mv_nextpage} =~ s:^private/:public/:; [/perl]
+
 =head2 AutoModifier
 
 Sets an attribute in a shopping cart entry to the field of the same
@@ -3108,17 +3170,6 @@ Some values are used by Interchange and are not legal:
        code
        quantity
        item
-
-=head2 Autoload
-
-Sets an action that is automatically performed for every access. It is
-performed before any page parsing occurs, and before the action or
-page is even determined.
-
-As an example, to remap any C<mv_nextpage> accesses to the C<private>
-subdirectory of pages, set:
-
-   Autoload   [perl] $CGI->{mv_nextpage} =~ s:^private/:public/:; [/perl]
 
 =head2 CommonAdjust
 
@@ -3795,12 +3846,13 @@ Capitalization must be exact on each directive.
 
 =head2 Require
 
-Forces a global UserTag or C<GlobalSub> to be present before the
-catalog will configure. This is useful when transporting catalogs to
-make sure they will have all needed facilities.
+Forces a Perl module, global C<UserTag>, or C<GlobalSub> to be present
+before the catalog will configure. This is useful when transporting
+catalogs to make sure they will have all needed facilities.
 
    Require usertag   email
    Require globalsub form_mail
+   Require module    Business::UPS
 
 =head2 RobotLimit
 
@@ -4171,6 +4223,16 @@ catalog startup time.
 Catalog subroutines may not perform unsafe operations. The Safe.pm
 module enforces this unless global operations are allowed for the
 catalog. See C<AllowGlobal>.
+
+=head2 Suggests
+
+Generates a warning message when a Perl module, global C<UserTag>, or
+C<GlobalSub> is not present at catalog configuration time. Same as the
+C<Require> directive except not fatal.
+
+   Suggest usertag   table_editor
+   Suggest globalsub file_info
+   Suggest module    Business::UPS
 
 =head2 TableRestrict
 
@@ -5721,6 +5783,52 @@ TLINK/INET mode must be used.
 B<Windows: >Interchange will not work properly with Windows. No
 strategy has been yet developed for providing reliable operation on
 Windows.
+
+=head1 Extra tags
+
+=head2 Counter
+
+Inserts the value of a persistent counter. The counter value is stored
+in the given file, which is created if necessary. If the file name
+begins with a "/," then it is an absolute path. Otherwise, it is
+relative to VendRoot. If the tag causes the counter file to be
+created, the value is initialized to start. If value is given, the
+counter's value is set to the given value. If value is not supplied,
+the counter is incremented and its value is returned, unless decrement
+is supplied. In this case, the counter is decremented and its value is
+returned. The counter is implemented using Perl's C<File::Counter>
+module, which protects the file against simultaneous access by
+multiple processes.
+
+   [counter file=FILE start=START value=VALUE decrement*]
+
+=head2 Discount-Subtotal
+
+Inserts the discounted subtotal of the ordered items.
+
+=head2 Filter
+
+Applies any of Interchange's standard filters to an arbitray value, or
+custom filters may be defined. The filters are also available as
+parameters to the C<cgi>, C<data>, and C<value> tags. Filters can be
+applied in sequence and as many as needed can be applied. Here is an
+example. If author or artist names are stored in the database ``LAST,
+First'' so that they sort properly, they may be displayed normally as
+``First Last''. This call
+
+    [filter op="name namecase"]WOOD, Grant[/filter] will display as
+    Grant Wood Another way to do this would be:
+    [data table=products column=artist key=99-102 filter="name namecase"]
+
+=head2 Fly-Tax
+
+Builds a tax rate from C<taxarea>, C<taxrate>, C<taxshipping>,
+variable values, and the C<SalesTax> directive value.
+
+=head2 Handling
+
+Calculates and inserts handling costs. Accepts the same noformat and
+convert arguments as the shipping tag.
 
 =over 4
 

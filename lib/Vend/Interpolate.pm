@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40 2000-11-11 19:41:39 heins Exp $
+# $Id: Interpolate.pm,v 1.47 2001-04-13 21:08:50 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40 $, 10);
+$VERSION = substr(q$Revision: 1.47 $, 10);
 
 @EXPORT = qw (
 
@@ -401,6 +401,9 @@ sub substitute_image {
                          $1 . $dir . $2#ige;
         $$text =~ s#(<body\s+[^>]*?background=")(?!https?:)([^/][^"]+)#
                          $1 . $dir . $2#ige;
+        $$text =~ s#(<t[dhr]\s+[^>]*?background=")(?!https?:)([^/][^"]+)#
+                         $1 . $dir . $2#ige
+            if $Vend::Cfg->{Pragma}{substitute_table_image};
     }
     if($Vend::Cfg->{ImageAlias}) {
 		for (keys %{$Vend::Cfg->{ImageAlias}} ) {
@@ -2058,7 +2061,7 @@ sub tag_cgi {
 
 	local($^W) = 0;
 	$CGI::values->{$var} = $opt->{set} if defined $opt->{set};
-	$value = $CGI::values{$var} || '';
+	$value = defined $CGI::values{$var} ? ($CGI::values{$var}) : '';
     if ($value) {
 		# Eliminate any Interchange tags
 		$value =~ s~<([A-Za-z]*[^>]*\s+[Mm][Vv]\s*=\s*)~&lt;$1~g;
@@ -2162,8 +2165,12 @@ sub tag_value_extended {
 	};
 	::logError("value-extend $var: bad index") if $@;
 
-	if($opt->{filter}) {
-		for(@ary) {
+	for(@ary) {
+		# Eliminate any Interchange tags
+		s~<([A-Za-z]*[^>]*\s+[Mm][Vv]\s*=\s*)~&lt;$1~g;
+		s/\[/&#91;/g;
+		# Apply any filters specified
+		if($opt->{filter}) {
 			$_ = filter_value($opt->{filter}, $_, $var);
 		}
 	}
@@ -2418,6 +2425,8 @@ sub form_link {
 
 	$href = 'process' unless $href;
 	$href =~ s:^/+::;
+	$opt->{secure} = 1 if exists $Vend::Cfg->{AlwaysSecure}{$href};
+	my $base = ! $opt->{secure} ? ($Vend::Cfg->{VendURL}) : $Vend::Cfg->{SecureURL};
 	$href = "$base/$href"     unless $href =~ /^\w+:/;
 
 	my $extra = <<EOF;
@@ -3019,7 +3028,10 @@ sub tag_more_list {
 	$prefix = $q->{prefix} || '';
 	my $form_arg = "mv_more_ip=1\nmv_nextpage=$page";
 	$form_arg .= "\npf=$q->{prefix}" if $q->{prefix};
-	$form_arg .= "\nmi=$q->{mv_more_id}" if $q->{mv_more_id};
+	if($q->{mv_more_id}) {
+		$more_id = $q->{mv_more_id};
+		$form_arg .= "\nmi=$more_id";
+	}
 
 	if($r =~ s:\[border\]($All)\[/border\]::i) {
 		$border = $1;
@@ -3875,6 +3887,28 @@ sub tag_loop_list {
 						unless defined $opt->{label};
 	my $delim;
 
+#::logDebug("list is: " . ::uneval($list) );
+
+	## Thanks to Kaare Rasmussen for this suggestion
+	## about passing embedded Perl objects to a list
+
+	# Can pass object.mv_results=$ary object.mv_field_names=$ary
+	return region($opt, $text) if $opt->{object};
+
+	# Here we can take the direct results of an op like
+	# @set = $db->query() && return \@set;
+	# Called with
+	#	[loop list=`$Scratch->{ary}`] [loop-code]
+	#	[/loop]
+	if (ref $list) {
+#::logDebug("opt->list in: " . ::uneval($list) );
+		my ($ary, $fh, $fa) = @$list;
+		$opt->{object}{mv_results} = $ary;
+		$opt->{object}{mv_field_names} = $fa if $fa;
+		$opt->{object}{mv_field_hash} = $fh if $fh;
+		return region($opt, $text);
+	}
+
   RESOLVELOOP: {
 	if($opt->{search}) {
 #::logDebug("loop resolve search");
@@ -3970,7 +4004,7 @@ sub fly_page {
 
 	$Vend::Flypart = $code;
 
-	my $base = product_code_exists_ref($code);
+	my $base = product_code_exists_ref($code, $opt->{base});
 #::logDebug("fly_page: code=$code base=$base page=" . substr($page, 0, 100));
 	return undef unless $base || $opt->{onfly};
 
@@ -5336,6 +5370,7 @@ sub tag_shipping {
 		for(@modes) {
 			$out += shipping($_, $opt);
 		}
+		$out = Vend::Util::round_to_frac_digits($out);
 		$out = currency($out, $opt->{noformat}, $opt->{convert});
 	}
 	return $out unless $opt->{hide};

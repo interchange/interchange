@@ -199,7 +199,10 @@ sub authorizenet {
     	if ($avs_code eq 'N') { 
     		$result{MErrMsg} = "You must enter the correct billing address of your credit card. The bank returned the following error: " . $response_reason_text; 
     	} else { 
-    		$result{MErrMsg} = "$response_reason_text" 
+    		$result{MErrMsg} = "$response_reason_text" ;
+			my $msg = errmsg("Authorizenet error: %s. Please call in your order or try again.",
+					$response_reason_text,
+					);
     	} 
     } 
      

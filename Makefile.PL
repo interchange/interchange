@@ -1,10 +1,13 @@
 use ExtUtils::MakeMaker;
 require ExtUtils::Install;
 
+my $changed_dir_initially;
+
 BEGIN {
 	eval {
 		require FindBin;
-		chdir $FindBin::RealBin;
+		chdir $FindBin::RealBin
+			and $changed_dir_initially = 1;
 	};
 }
 
@@ -28,7 +31,7 @@ my @mods_to_get;
 my @remove_old;
 my $Lock_troubles;
 
-$VERSION = '4.6.1';
+$VERSION = '4.6.5';
 
 # See if we have the CPAN module
 
@@ -48,7 +51,27 @@ my @chown_files = qw/
 use lib './lib';
 
 
-my $origdir = cwd();
+my $origdir;
+if ($changed_dir_initially) {
+	$origdir = cwd();
+}
+elsif($ENV{PWD}) {
+	## We will try
+	$origdir = $ENV{PWD};
+}
+else {
+	print <<EOF;
+We know this sounds dumb, but we need to know the current directory. Your
+system administratory appears to have set up your system so that you cannot
+search the directory path above you. Were you to ever change directory
+to /tmp or something, you couldn't even walk the tree back to your own
+directory.
+
+EOF
+
+	$origdir = my_prompt(qq{What is the directory you are in currently? });
+
+}
 
 # See if we have Term::ReadLine::Perl
 eval {
@@ -57,6 +80,7 @@ eval {
 		require Term::ReadKey;
 		$TermRead = 1;
 };
+
 unless($@) {
 	$ENV{PERL_RL} = 'Perl';
 }
@@ -155,7 +179,7 @@ sub copyright_prompt {
 
  Interchange V$VERSION
  
-  Copyright (C) 1996-2000 Akopia, Inc. <info\@akopia.com>
+  Copyright (C) 1996-2001 Akopia, Inc. <info\@akopia.com>
 
  Interchange is free under the terms of the GNU General Public License.
 
@@ -713,11 +737,21 @@ sub MY::install {
 		\*install;
 	}
 
-	my $new = <<'EOF';
+	my $uidparm;
+
+	if (-f "_uid") {
+		if (open UID, '_uid') {
+			chomp (my $uid = <UID>);
+			close UID;
+			$uidparm = "INTERCHANGE_USER=$uid";
+		}
+	}
+
+	my $new = <<EOF;
 VERBINST=0
 
 mv_install ::
-			$(PERL) Makefile.PL force final=$(INSTALLARCHLIB)
+			\$(PERL) Makefile.PL force $uidparm final=\$(INSTALLARCHLIB)
 
 install :: all pure_install doc_install mv_install
 
@@ -770,6 +804,10 @@ EOF
 	GetOptions(\%optctl, @options)
 		or die "Bad option get\n";
 
+	if($MV::Default{PREFIX} and ! $changed_dir_initially) {
+		$origdir = cwd();
+	}
+
 #	use Data::Dumper;
 #	$Data::Dumper::Terse = $Data::Dumper::Indent = 2;
 #	print "ARGV: " . Dumper(\@ARGV);
@@ -784,14 +822,15 @@ else {
 	WriteMakefile(
 		NAME       => "Interchange",
 		MAN3PODS => {
-						'pod/icbackoffice.pod' => 'blib/man3/icbackoffice.8',
+						'pod/icbackoffice.pod'	=> 'blib/man3/icbackoffice.8',
+						'pod/iccattut.pod'		=> 'blib/man3/iccattut.8',
 						'pod/icconfig.pod'		=> 'blib/man3/icconfig.8',
 						'pod/icdatabase.pod'	=> 'blib/man3/icdatabase.8',
 						'pod/icinstall.pod'		=> 'blib/man3/icinstall.8',
 						'pod/icintro.pod'		=> 'blib/man3/icintro.8',
 						'pod/ictemplates.pod'	=> 'blib/man3/ictemplates.8',
 						'pod/mv_metadata.pod'	=> 'blib/man3/mv_metadata.8',
-						'pod/mvtags.pod'       => 'blib/man3/mvtags.8',
+						'pod/mvtags.pod'		=> 'blib/man3/mvtags.8',
 						},
 		DISTNAME => "interchange",
 		clean    => {

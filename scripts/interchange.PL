@@ -23,11 +23,11 @@ DOIT: {
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# Interchange version 4.6.1
+# Interchange version 4.6
 #
-# $Id: interchange.PL,v 1.15 2000-11-22 18:47:22 jon Exp $
+# $Id: interchange.PL,v 1.26 2001-04-14 22:48:19 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Akopia, Inc. <info@akopia.com>
 #
 # This program was originally based on Vend 0.2
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
@@ -136,7 +136,7 @@ use vars qw($VERSION);
 require Exporter;
 
 BEGIN {
-	$VERSION = '4.6.1';
+	$VERSION = '4.6.5';
 }
 
 use Fcntl;
@@ -898,7 +898,10 @@ sub do_process {
 				my $x = $CGI::values{'mv_todo.x'};
 				my $y = $CGI::values{'mv_todo.y'};
 				my $map = $CGI::values{'mv_todo.map'};
-				$todo = Vend::Imagemap::action_map($x,$y,$map);
+				# Called with action_map and not package id
+				# since "autouse" is possibly in force...found
+				# by Jeff Carnahan
+				$todo = action_map($x,$y,$map);
 		}
 		elsif (defined $CGI::values{'mv_todo.submit.x'}) {
 			$todo = 'submit';
@@ -1155,6 +1158,11 @@ sub adjust_cgi {
 	#
 	# end AOL fix
 
+	# Fix Cobalt/CGIwrap problem
+    if($Global::Variable->{CGIWRAP_WORKAROUND}) {
+        $CGI::path_info =~ s!^$CGI::script_name!!;
+    }
+
     $CGI::host = $host || $CGI::ip;
 
     $CGI::user = $CGI::remote_user if $CGI::remote_user;
@@ -1179,11 +1187,17 @@ sub url_history {
 		unless defined $Vend::Session->{History};
 	shift @{$Vend::Session->{History}}
 		if $#{$Vend::Session->{History}} >= $Vend::Cfg->{History};
-	if($CGI::pragma =~ /\bno-cache\b/ || $CGI::values{mv_no_cache}) {
+	if(
+		($CGI::pragma =~ /\bno-cache\b/ and ! $CGI::values{mv_force_cache})
+		or $CGI::values{mv_no_cache}
+		)
+	{
 		push (@{$Vend::Session->{History}},  [ 'expired', {} ]);
 	}
 	else {
+		my $save = delete $CGI::values{mv_credit_card_number};
 		push (@{$Vend::Session->{History}},  [ $CGI::path_info, \%CGI::values ]);
+		$CGI::values{mv_credit_card_number} = $save if length($save);
 	}
 	return;
 }
@@ -1352,9 +1366,6 @@ EOF
 
 	my $from_cookie;
 	$sessionid = $CGI::values{mv_session_id} || undef;
-	$Vend::OnlyProducts = defined $Vend::Cfg->{ProductFiles}->[1]
-						  ? undef
-						  : $Vend::Cfg->{ProductFiles}->[0];
 
 	if (defined $CGI::cookie and
 		 $CGI::cookie =~ /\bMV_SESSION_ID=(\w{8,32})
@@ -1425,7 +1436,7 @@ RESOLVEID: {
 
 			if(! $compare_host) {
 				new_session() unless $CGI::secure;
-				$Vend::Session->{shost} = $CGI::secure;
+				$Vend::Session->{shost} = $CGI::remote_addr;
 			}
 			elsif ($compare_host ne $CGI::remote_addr) {
 				new_session();
@@ -1492,10 +1503,11 @@ EOF
 			last COOKIELOGIN unless
 				$password = Vend::Util::read_cookie('MV_PASSWORD');
 			$CGI::values{mv_password} = $password;
+			my $profile = Vend::Util::read_cookie('MV_USERPROFILE');
 			local(%SIG);
 			undef $SIG{__DIE__};
 			eval {
-				Vend::UserDB::userdb('login');
+				Vend::UserDB::userdb('login', profile => $profile );
 			};
 			if($@) {
 				$Vend::Session->{failure} .= $@;
@@ -1539,14 +1551,16 @@ EOF
 	if($Vend::Cfg->{DisplayErrors} and $Global::DisplayErrors) {
 		$SIG{"__DIE__"} = sub {
 							my $msg = shift;
-							response( <<EOF);
+							put_session() if $Vend::HaveSession;
+							my $content = get_locale_message(500, <<EOF, $msg);
 <HTML><HEAD><TITLE>Fatal Interchange Error</TITLE></HEAD><BODY>
 <H1>FATAL error</H1>
-<PRE>$msg</PRE>
+<PRE>%s</PRE>
 </BODY></HTML>
 EOF
+							::response(\$content);
 							exit 0;
-						};
+		};
 	}
 
 # LEGACY
@@ -1772,7 +1786,7 @@ sub dump_env {
 }
 
 sub version {
-	print "Interchange version $VERSION Copyright 1996-2000 Akopia, Inc.\n";
+	print "Interchange version $VERSION Copyright 1996-2001 Akopia, Inc.\n";
 }
 
 =head1 NAME
@@ -1785,7 +1799,7 @@ interchange [--options] [file]
 
 =head1 VERSION
 
-4.0
+4.6.5
 
 =head1 DESCRIPTION
 
@@ -1794,16 +1808,15 @@ It allows customers to select items to buy from catalog pages. The program
 tracks user information in sessions and interacts with an HTTP server
 through sockets.
 
-Interchange has many, many, functions and features; they are too numerous
-to describe in this venue. Complete information can be found at
-its web site:
+Interchange has many, many, functions and features; they are too numerous to
+describe in this venue. Complete information can be found at its web site:
 
 		http://www.akopia.com/
 
 Interchange requires Perl 5.005 or higher; more information on Perl can
 be seen at:
 
-		http://www.perl.com
+		http://www.perl.com/
 
 =head1 OPTIONS
 
@@ -2402,8 +2415,7 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-Copyright 1995-2000, Mike Heins. All rights reserved except as in the
-license.
+Copyright 1995-2001 Akopia, Inc. All rights reserved except as in the license.
 
 =cut
 
@@ -2426,9 +2438,8 @@ have come into being without him.
 
 Stefan Hornburg has had his hand in many parts of Interchange, and is by
 far the most prolific bug-finder. He also was primarily responsible for
-bringing MiniMate, precursor to the Interchange UI database editor,
-to being as a supported facility. He continues to make valuable
-contributions.
+bringing MiniMate, precursor to the Interchange UI database editor, to
+being as a supported facility. He continues to make valuable contributions.
 
 =head1 ACKNOWLEDGEMENTS
 
@@ -2454,6 +2465,7 @@ Contributions to Interchange have been made by:
     Don Grodecki       
     Frank Bonita       
     Gunnar Hellekson   
+    Hans-Joachim Leidinger
     Heinz Wittenbecher
     Jason Holt
     Jeff Carnahan

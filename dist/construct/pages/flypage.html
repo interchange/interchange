@@ -93,7 +93,7 @@ ui_template_name: leftright
 	[if-item-data inventory quantity < 1]
 					<tr>
 					  <td align="center"><font __FFACE__ size="1" color="#FF0000"><b>Out Of Stock</b></font><br><br>
-					  <font __FFACE__ size="1"><a href="[area stock-alert [loop-code]]">In Stock Notification</a></font></td>
+					  <font __FFACE__ size="1"><a href="[area href="stock-alert" arg="[item-code]"]">In Stock Notification</a></font></td>
 					</tr>
 	[else]
 					<tr>

@@ -131,7 +131,7 @@ Remember, you can always visit our site at:
 Regards and thanks for your business!
 
 __COMPANY__
-__ADDRESS__
+[filter op=html2text]__ADDRESS__[/filter]
 __CITY__
 __PHONE__
 __TOLLFREE__

@@ -19,10 +19,10 @@ sub get_hints {
 		while(<HINTIN>) {
 			s/
 				^\s*Housekeeping\s+\d+.*$
-			/# Changed for $^O, no safe signals\nHousekeeping 1/xi;
+			/# Changed for $^O, no safe signals\nHousekeeping 1/xig;
 			s/
 				^\s*MaxServers\s+\d+.*$
-			/# Changed for $^O, no safe signals\nMaxServers 0/xi;
+			/# Changed for $^O, no safe signals\nMaxServers 0/xig;
 			print HINTOUT $_;
 		}
 		close HINTIN;

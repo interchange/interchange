@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.17 2000-11-03 23:38:30 heins Exp $
+# $Id: Data.pm,v 1.20 2001-02-10 01:30:07 jon Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -108,9 +108,8 @@ sub product_code_exists_ref {
         return $ref->ref() if $ref->record_exists($code);
     }
 
-    my $return;
     foreach $ref (@Vend::Productbase) {
-        return ($return = $ref) if $ref->record_exists($code);
+        return ($ref->ref()) if $ref->record_exists($code);
     }
     return undef;
 }
@@ -147,9 +146,14 @@ sub update_productbase {
 		$Vend::Productbase{$_} = $Vend::Database{$_};
 		$Vend::Basefinder{$Vend::Database{$_}} = $_;
 		push @Vend::Productbase, $Vend::Database{$_};
+		$Vend::OnlyProducts = $_;
 	}
 	$Products = $Vend::Productbase[0];
+
+	undef $Vend::OnlyProducts if scalar @Vend::Productbase > 1;
+	
 #::logError("Productbase: '@Vend::Productbase' --> " . ::uneval(\%Vend::Basefinder));
+	return $Products;
 
 }
 
@@ -287,8 +291,8 @@ sub set_field {
 
 sub product_field {
     my ($field_name, $code, $base) = @_;
-	return database_field($Vend::Cfg->{OnlyProducts}, $field_name, $code)
-		if $Vend::Cfg->{OnlyProducts};
+	return database_field($Vend::OnlyProducts, $code, $field_name)
+		if $Vend::OnlyProducts;
 	my ($db);
     $db = product_code_exists_ref($code, $base || undef)
 		or return '';
@@ -1243,7 +1247,7 @@ CHAIN:
 		if ($price =~ s/^;//) {
 			next if $final;
 		}
-		$chain = $price =~ s/,$// ? 1 : 0 unless $chain;
+		$price =~ s/,$// and $chain = 1;
 		if ($price =~ /^ \(  \s*  (.*)  \s* \) \s* $/x) {
 			$price = $1;
 			$want_key = 1;
@@ -1328,7 +1332,8 @@ CHAIN:
 				my ($attribute, $table, $field, $key) = split /:/, $2;
 				$item->{$attribute} and
 					do {
-						$key = $field ? $item->{$attribute} : $item->{'code'};
+						$key = $field ? $item->{$attribute} : $item->{'code'}
+							unless $key;
 						$price = database_field( ( $table ||
 													$item->{mv_ib} ||
 													$Vend::Cfg->{ProductFiles}[0]),

@@ -6,6 +6,7 @@ Database  merchandising  USER         __SQLUSER__
 Database  merchandising  PASS         __SQLPASS__
 #endif
 Database  merchandising  DEFAULT_TYPE text
+Database  merchandising  ChopBlanks   1
 Database  merchandising  COLUMN_DEF   "sku=char(20) NOT NULL PRIMARY KEY"
 Database  merchandising  COLUMN_DEF   "featured=CHAR(32)"
 Database  merchandising  COLUMN_DEF   "start_date=CHAR(24)"

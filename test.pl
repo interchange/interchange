@@ -1,5 +1,6 @@
 use Cwd;
 use Config;
+use Errno;
 
 $cur_dir = cwd();
 $failed = 0;
@@ -146,7 +147,7 @@ eval {
 	my $ok;
 	do {
 	   $ok = connect(SOCK, sockaddr_un($LINK_FILE));
-	} while ( ! defined $ok and $! =~ /interrupt|such file or dir/i);
+	} while ( ! defined $ok and $!{EINTR} || $!{ENOENT});
 
 	my $undef = ! defined $ok;
 	die "ok=$ok def: $undef connect: $!\n" if ! $ok;
@@ -220,7 +221,7 @@ eval {
 
 	do {
 	   $ok = connect(SOCK, $paddr);
-	} while ( ! defined $ok and $! =~ /interrupt/i);
+	} while ( ! defined $ok and $!{EINTR});
 
 	my $undef = ! defined $ok;
 	die "ok=$ok def: $undef connect: $!\n" if ! $ok;
