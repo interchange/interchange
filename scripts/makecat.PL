@@ -507,7 +507,7 @@ my %Prefix = (
 							return $ENV{MVC_SHAREURL} if $ENV{MVC_SHAREURL};
 							my $url = '';
 							$url = $Tilde if defined $Tilde;
-							$url .= '/';
+							$url .= '/akopia/ui/';
 							return $url;
 						},
 
@@ -2048,7 +2048,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.17 2000-09-24 08:03:45 jon Exp $
+$Id: makecat.PL,v 1.18 2000-09-24 11:49:59 heins Exp $
 
 =head1 INTRODUCTION
 
