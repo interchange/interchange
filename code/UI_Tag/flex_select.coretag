@@ -29,6 +29,7 @@ sub flex_select_init {
 			$CGI->{$_} = $::Values->{$_};
 		}
 	}
+
 	if($CGI->{mv_return_table}) {
 		$CGI->{mv_data_table} = delete $CGI->{mv_return_table};
 	}
@@ -36,6 +37,24 @@ sub flex_select_init {
 	my $bounce_url;
 	$::Scratch->{ui_class} = $CGI->{ui_class}
 		if $CGI->{ui_class} &&  $CGI->{ui_class} =~ /^\w+$/;
+
+	if($opt->{sql_query}) {
+		my $spec;
+		eval {
+			($table) = Vend::Scan::sql_statement($opt->{sql_query}, { table_only => 1});
+		};
+		if($@) {
+			$Tag->error( {
+						set => errmsg(
+									"flex-select -- bad query %s: %s",
+									$opt->{sql_query},
+									$@,
+								),
+						name => 'flex_select',
+						});
+			return undef;
+		}
+	}
 
 	if($table =~ s/\.(txt|asc)$/_$1/) {
 		$table =~ s:.*/::;
@@ -159,6 +178,39 @@ sub {
 		return flex_select_init($table, $opt);
 	}
 
+	my $spec;
+	my $stmt;
+	my $q;
+	if($opt->{sql_query}) {
+		$q = $opt->{sql_query};
+		if($CGI->{ui_sort_field} =~ s/^(\w+)(:[rfn]+)?$/$1/) {
+			my $field = $1;
+			my $opt = $2 || $CGI->{ui_sort_option};
+			$field .= ' DESC', $CGI->{ui_sort_option} = 'r' if $opt =~ /r/i;
+			$q =~ s/
+						\s+ORDER\s+BY
+						\s+(\w+(\s+desc\w*)?)
+						(\s*,\s*\w+(\s+desc\w*)?)*
+						(\s*$|\s+LIMIT\s+\d+(?:\s*,\s*\d+)?)
+				   / ORDER BY $field$5/ix
+			or
+				$q =~ s/(\s+LIMIT\s+\d+(?:\s*,\s*\d+)?)/ ORDER BY $field$1/ix
+				or $q .= " ORDER BY $field";
+		}
+
+		eval {
+			($spec) = Vend::Scan::sql_statement($q);
+		};
+		if($@ || ! $spec->{rt}) {
+			$Tag->error( {
+						set => errmsg("flex-select -- bad query %s: %s", $q, $@),
+						name => 'flex_select',
+						});
+			return undef;
+		}
+		$table = $spec->{rt}->[0];
+	}
+
 	my $ref = dbref($table)
 		or do {
 			my $msg = errmsg("%s: table '%s' does not exist", 'flex_select', $table);
@@ -168,10 +220,67 @@ sub {
 		};
 	my $ts = $Tmp->{flex_select}{$table} ||= {};
 	my $meta = $ts->{table_meta} ||= $Tag->meta_record($table, $CGI->{ui_meta_view});
-	
+
+	if($meta->{sql_query}) {
+		$q = $meta->{sql_query};
+		if($CGI->{ui_sort_field} =~ s/^(\w+)(:[rfn]+)?$/$1/) {
+			my $field = $1;
+			my $opt = $2 || $CGI->{ui_sort_option};
+			$field .= ' DESC', $CGI->{ui_sort_option} = 'r' if $opt =~ /r/i;
+			$q =~ s/
+						\s+ORDER\s+BY
+						\s+(\w+(\s+desc\w*)?)
+						(\s*,\s*\w+(\s+desc\w*)?)*
+						(\s*$|\s+LIMIT\s+\d+(?:\s*,\s*\d+)?)
+				   / ORDER BY $field$5/ix
+			or
+				$q =~ s/(\s+LIMIT\s+\d+(?:\s*,\s*\d+)?)/ ORDER BY $field$1/ix
+				or $q .= " ORDER BY $field";
+		}
+
+		eval {
+			($spec) = Vend::Scan::sql_statement($q);
+		};
+		if($@ or ! $spec->{rt}) {
+			$Tag->error( {
+						set => errmsg("flex-select -- bad query %s: %s", $q, $@),
+						name => 'flex_select',
+						});
+			return undef;
+		}
+		$table = $spec->{rt}->[0];
+	}
+
 	if( $table ne $ref->config('name')) {
 		## Probably transient database
 		$CGI->{mv_data_table_real} = $table = $ref->config('name');
+	}
+
+	if($spec) {
+		if($spec->{rf} and $spec->{rf}[0] ne '*') {
+			my @c;
+			my $header;
+			for(my $i = 0; $i < @{$spec->{rf}}; $i++) {
+				if($spec->{hf}[$i]) {
+					$header++;
+					push @c, $spec->{rf}[$i] . '=' . $spec->{hf}[$i];
+				}
+				else {
+					push @c, $spec->{rf}[$i];
+				}
+			}
+			if($header) {
+				$CGI->{ui_show_fields} = join "\n", @c;
+			}
+			else {
+				$CGI->{ui_show_fields} = join " ", @c;
+			}
+		}
+		if($spec->{tf} and $spec->{tf}[0]) {
+			$CGI->{ui_sort_field} = join ",", @{$spec->{tf}};
+			$CGI->{ui_sort_option} = join ",", @{$spec->{to}};
+		}
+		$CGI->{ui_list_size} = $spec->{ml} if $spec->{ml};
 	}
 
 	$meta ||= {};
@@ -409,8 +518,10 @@ EOF
 		$CGI->{ui_description_fields} = $show;
 	}
 
-	my @cols = grep $ref->column_exists($_), 
-				split /,/, $CGI->{ui_description_fields};
+	my @cols = split /,/, $CGI->{ui_description_fields};
+
+	@cols = grep $ref->column_exists($_), @cols
+		unless $spec;
 
 	my %limit_field;
 
@@ -436,7 +547,7 @@ EOF
 	} 
 
 	my $fi = $CGI->{mv_data_table_real} || $CGI->{mv_data_table};
-	$ts->{sparams} = $ts->{like_spec} ? '' : <<EOF;
+	$ts->{sparams} = ($ts->{like_spec} || $spec) ? '' : <<EOF;
 
 	fi=$fi
 	st=db
@@ -663,7 +774,7 @@ EOF
 		if($o = $m->{ui_sort_option}) {
 			my @m;
 			$msg = "sort by %s (%s)";
-#::logDebug("sort field=$col, meta sort_option=$o, ui_sort_option=$CGI->{ui_sort_option}");
+
 			if($CGI->{ui_sort_field} eq $col) {
 				if($CGI->{ui_sort_option} =~ /r/) {
 					$o =~ s/r//;
@@ -671,7 +782,6 @@ EOF
 				else {
 					$o .= "r";
 				}
-#::logDebug("sort field=$col, sort_option now=$o, sort_option=$CGI->{ui_sort_option}");
 			}
 			push @m, errmsg('reverse') if $o =~ /r/;
 			push @m, errmsg('case insensitive') if $o =~ /f/;
@@ -837,6 +947,18 @@ EOF
 #::logDebug("search first_match=$search->{mv_first_match} length=$search->{mv_matchlimit}");
 #::logDebug("Found search=" . ::uneval($search));
 		}
+		elsif($q) {
+			my $db = dbref($table);
+			my $o = {
+				ma		=> $CGI->{ui_more_alpha},
+				md		=> $CGI->{ui_more_decade},
+				ml		=> $CGI->{ui_list_size},
+				more	=> 1,
+				table	=> $fi,
+				query	=> $q,
+			};
+			$ary = $db->query($o);
+		}
 		else {
 #::logDebug("In new search");
 			$params = escape_scan($ts->{sparams});
@@ -846,8 +968,10 @@ EOF
 			$ary = $search->{mv_results};
 		}
 
-		finish_search($search);
+		finish_search($search) if $search;
 		
+		$search ||= {};
+
 		if($CGI->{ui_return_to} and ! $CGI->{ui_return_stack}) {
 			$edit_extra .= $Tag->return_to('formlink');	
 		}
