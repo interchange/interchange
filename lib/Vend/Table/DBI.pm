@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.23 2000-10-18 18:16:48 jon Exp $
+# $Id: DBI.pm,v 1.24 2000-10-20 06:52:37 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.23 $, 10);
+$VERSION = substr(q$Revision: 1.24 $, 10);
 
 use strict;
 
@@ -123,6 +123,8 @@ sub create {
     die "columns argument $columns is not an array ref\n"
         unless CORE::ref($columns) eq 'ARRAY';
 
+	my $oracle = 1 if $db->{Driver}->{Name} =~ /Oracle/;
+
 	if(defined $dattr) {
 		for(keys %$dattr) {
 			$db->{$_} = $dattr->{$_};
@@ -167,10 +169,10 @@ sub create {
 	TESTIT: {
 		my $q = $query;
 		eval {
-			$db->do("drop table mv_test_create")
+			$db->do("drop table ic_test_create")
 		};
-		$q =~ s/create\s+table\s+(\S+)/create table mv_test_create/;
-		if(!  $db->do($q) ) {
+		$q =~ s/create\s+table\s+\S+/create table ic_test_create/;
+		if(! $db->do($q) ) {
 			::logError(
 						"bad table creation statement:\n%s\n\nError: %s",
 						$query,
@@ -179,7 +181,7 @@ sub create {
 			warn "$DBI::errstr\n";
 			return undef;
 		}
-		$db->do("drop table mv_test_create")
+		$db->do("drop table ic_test_create")
 	}
 
 	eval {
@@ -201,8 +203,10 @@ sub create {
 								$DBI::errstr,
 					);
 		}
-	}
-	else {
+	} elsif ($oracle and ($config->{COLUMN_DEF}->{$key} =~ /PRIMARY\s+KEY/i)) {
+		# Oracle automatically creates indexes on primary keys,
+		# so we don't need to do it again
+	} else {
 		$db->do("create index ${tablename}_${key} on $tablename ($key)")
 			or ::logError("table %s index failed: %s" , $tablename, $DBI::errstr);
 	}
