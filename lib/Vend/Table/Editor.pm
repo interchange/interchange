@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.35 2003-06-19 16:00:39 mheins Exp $
+# $Id: Editor.pm,v 1.36 2003-07-02 04:05:51 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.35 $, 10);
+$VERSION = substr(q$Revision: 1.36 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -234,6 +234,7 @@ sub display {
 
 	if(! defined $opt->{value} and $table and $column and length($key)) {
 		$opt->{value} = tag_data($table, $column, $key);
+		$opt->{already_got_data} = 1;
 	}
 
 	my $mtab;
@@ -319,15 +320,18 @@ sub display {
 								help
 								help_url
 								label
+								js_check
 								lookup
 								lookup_exclude
 								lookup_query
+								maxlength
 								name
 								options
 								outboard
 								passed
 								pre_filter
 								prepend
+								table
 								type
 								width
 								/;
@@ -757,7 +761,6 @@ function ${vpf}selectTab(n) {
 	left:0px;
 	top:${int1}px;
 	margin:0px;
-	padding:6px;
 	$opt->{panel_style}
 	}
 -->
@@ -1362,6 +1365,8 @@ sub resolve_options {
                     label
                     lookup
                     lookup_query
+					js_check
+                    maxlength
                     meta
                     options
                     outboard
@@ -1758,6 +1763,8 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	my $lookup       = $opt->{lookup};
 	my $lookup_query = $opt->{lookup_query};
 	my $meta         = $opt->{meta};
+	my $js_check     = $opt->{js_check};
+	my $maxlength    = $opt->{maxlength};
 	my $options      = $opt->{options};
 	my $outboard     = $opt->{outboard};
 	my $override     = $opt->{override};
@@ -2347,14 +2354,16 @@ EOF
 		chunk 'HIDDEN_USER', 'OUTPUT_MAP', join("", @o); # unless $wo;
 	}
 
-	if($opt->{tabbed} and $Session->{browser} !~ /Gecko/) {
-		$opt->{table_width} ||= $opt->{panel_width} + 10;
-		$opt->{table_height} ||= $opt->{panel_height} + 10;
+	if($opt->{tabbed}) {
+		$opt->{table_width} ||= ($opt->{panel_width} || 800) + 10;
+		$opt->{table_height} ||= ($opt->{panel_height} || 600) + 10;
+		$opt->{inner_table_width} ||= ($opt->{panel_width} || 800);
+		$opt->{inner_table_height} ||= ($opt->{panel_height} || 600);
 	}
 	chunk ttag(), <<EOF; # unless $wo;
 <table class=touter border="0" cellspacing="0" cellpadding="0" width="$opt->{table_width}" height="$opt->{table_height}">
 <tr>
-  <td>
+  <td valign=top>
 
 <table class=tinner width="$opt->{inner_table_width}" height="$opt->{inner_table_height}" cellspacing=0 cellmargin=0 cellpadding="2" align="center" border="0">
 EOF
@@ -3035,9 +3044,7 @@ $l_pkey</td>};
         my $pw = $opt->{panel_width} || '800';
         my $th = $opt->{tab_height} || '30';
         my $oh = $ph + $th;
-        my $extra = $Vend::Session->{browser} =~ /Gecko/
-                  ? ''
-                  : " width=$pw height=$oh";
+        my $extra = " width=$pw height=$oh valign=top";
         chunk ttag(), qq{<tr><td colspan=$span$extra>\n};
     }
 
@@ -3284,6 +3291,7 @@ EOF
 							label				=> $label->{$c},
 							lookup				=> $lookup->{$c},
 							lookup_query		=> $lookup_query->{$c},
+							maxlength			=> $maxlength->{$c},
 							meta				=> $meta->{$c},
 							meta_url			=> $meta_url,
 							meta_url_specific	=> $meta_url_specific,

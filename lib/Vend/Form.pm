@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.33 2003-06-18 17:34:44 jon Exp $
+# $Id: Form.pm,v 2.34 2003-07-02 04:05:51 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.33 $, 10);
+$VERSION = substr(q$Revision: 2.34 $, 10);
 
 @EXPORT = qw (
 	display
@@ -94,6 +94,8 @@ my $Tag = new Vend::Tags;
 		.
 		qq({COLS?} cols="{COLS}"{/COLS?})
 		.
+		qq({MAXLENGTH?} maxlength="{MAXLENGTH}"{/MAXLENGTH?})
+		.
 		qq({WRAP?} wrap="{WRAP}"{/WRAP?})
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
@@ -106,6 +108,8 @@ my $Tag = new Vend::Tags;
 		qq({PREPEND}<input type="password" name="{NAME}" value="{ENCODED}")
 		.
 		qq({COLS?} size="{COLS}"{/COLS?})
+		.
+		qq({MAXLENGTH?} maxlength="{MAXLENGTH}"{/MAXLENGTH?})
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
 		.
@@ -133,6 +137,8 @@ my $Tag = new Vend::Tags;
 		qq({PREPEND}<input type="text" name="{NAME}" value="{ENCODED}")
 		.
 		qq({COLS?} size="{COLS}"{/COLS?})
+		.
+		qq({MAXLENGTH?} maxlength="{MAXLENGTH}"{/MAXLENGTH?})
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
 		.
