@@ -8,6 +8,7 @@
 [/if-mm]
 
 [set ui_class]Customers[/set]
+[set help_name]customer.mailing[/set]
 [set page_perm]mailing[/set]
 
 @_UI_STD_HEAD_@
@@ -151,7 +152,7 @@ Thanks for your business!
 			type=text
 			size=50
 			maxlength="70"
-			value="[value name=mail_from filter=entities]"
+			value="[value name=mail_from filter=entities keep=1]"
 			>
 	</td>
 </tr>
@@ -165,7 +166,7 @@ Thanks for your business!
 			type=text
 			size=40
 			maxlength="70"
-			value="[value name=mail_to filter=entities]"
+			value="[value name=mail_to filter=entities keep=1]"
 			>
 	</td>
 </tr>
@@ -179,7 +180,7 @@ Thanks for your business!
 			type=text
 			size=50
 			maxlength="70"
-			value="[value name=mail_subject filter=entities]"
+			value="[value name=mail_subject filter=entities keep=1]"
 			>
 	</td>
 </tr>
@@ -193,22 +194,21 @@ Thanks for your business!
 			type=text
 			size=40
 			maxlength="70"
-			value="[value name=mail_reply filter=entities]"
+			value="[value name=mail_reply filter=entities keep=1]"
 			> <I>(blank is same as From)</i>
 	</td>
 </tr>
 <tr>
 <td colspan=2>
-<TEXTAREA name=mail_template cols=80 rows=15>[value name=mail_template filter=entities]</textarea>
+<TEXTAREA name=mail_template cols=80 rows=15>[value name=mail_template filter=entities keep=1]</textarea>
 <br>
 		<b><u>Mailing List</u>:</b><br>
 [display default="[cgi target_list]" name=target_list type=select options="[scratch mail_list_options]"]
 
 		<input
 			type=submit
-			name=show_members
-			onClick="selfit(this.form)"
-			value="Show list members and select"
+			onClick="checkAll(this.form, 'produce', 1); this.form.produce.value = ''; selfit(this.form)"
+			value="Select list"
 		>
 		&nbsp;&nbsp;&nbsp;
 		<input
@@ -216,6 +216,10 @@ Thanks for your business!
 			onClick="confirm('Reset to defaults?') && clearform(this.form) && this.form.submit()"
 			value="Clear form"
 		>
+		<select name=show_members>
+			<option value=0> Don't show list
+			<option value=1 [selected show_members 1]> Show list members
+		</select>
 	</td>
 </tr>
 </table>
@@ -227,15 +231,17 @@ Thanks for your business!
 <br>
 [if cgi mail_template]<!-- update: [update values]-->[/if]
 
-[if cgi show_members]
+[if !cgi produce]
 <div style="
 			Margin-left: 5%;
 			Width: 600px;
-			[if !scratch ui_old_browser]
+			[if type=explicit
+				compare=`$CGI->{show_members} && ! $Scratch->{ui_old_browser}`
+			]
 			Height: 100px;
 			Overflow: auto;
 			[/if]
-		">[tmpn tmp_seen][/tmpn]
+		">[tmpn tmp_seen][/tmpn][tmpn tmp_users][/tmpn]
 [loop search="
 		fi=userdb
 		st=db
@@ -262,12 +268,22 @@ Thanks for your business!
 		 return if $s =~ /\s$list\s/;
 	}
 	$Scratch->{tmp_seen}++;
+	if(! $CGI->{show_members}) {
+		$uary = $Scratch->{tmp_users} ||= [];
+		push @$uary, $user;
+		return;
+	}
 	my $url = $tmp_url . '&' . "customer=$user";
 	$stuff =~ s/HREF=""/href="$url"/;
 	return $stuff;
 [/loop-sub][loop-exec sent_check]
 <input type=checkbox name=produce value="[loop-code]" CHECKED><A href="mailto:[loop-param email]">[loop-param email]</A> -- [loop-param fname] [loop-param lname][if-loop-param company], [loop-param company][/if-loop-param] (<A HREF="">[loop-code]</A>)<br>
 [/loop-exec][/loop]
+[if scratch tmp_users]
+    <input name=produce
+           value="[calc] return join ",", @{$Scratch->{tmp_users}}; [/calc]"
+           type=hidden>
+[/if]
 [if !scratch tmp_seen]
 <blockquote style="font-size: larger">
 You have already sent email to all users on this list. You should not send more
@@ -280,15 +296,25 @@ mail to this list again. And it be on your head...
 [/if]
 </div>
 <div style="margin-left: 5%">
-<P>
-<A HREF="javascript:checkAll(document.mailform, 'produce', 0)"><img src="__UI_IMG__box_checked.gif" border=0>Check all</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<A HREF="javascript:checkAll(document.mailform, 'produce', 1)"><img src="__UI_IMG__box_empty.gif" border=0>Uncheck all</A>
-</p>
+	[if value show_members]
+	<P>
+	<A HREF="javascript:checkAll(document.mailform, 'produce', 0)"><img src="__UI_IMG__box_checked.gif" border=0>Check all</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<A HREF="javascript:checkAll(document.mailform, 'produce', 1)"><img src="__UI_IMG__box_empty.gif" border=0>Uncheck all</A>
+	</p>
+	[else]
+		<b>[scratch tmp_seen] users selected.</b>
+	[/else]
+	[/if]
 <p>
 <input type=submit name=show onClick="blanktarg(this.form)" value="Preview email">
 <input type=submit name=download_batch onClick="selfit(this.form, 1)" value="Download Mail Batch">
-[if value mv_search_match_count > 50]
-(too many matches to send directly)
+
+[if
+	type=value
+	term=mv_search_match_count
+	op=">"
+	compare="[either]__MAILING_MAX_DIRECT__[or]50[/either]"
+](too many matches to send directly)
 [else]
 <input type=submit name="direct_send" onClick="selfit(this.form, 1)" value="Send now">
 [/else]
