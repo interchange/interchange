@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# $Id: Search.pm,v 1.9 2000-12-02 05:29:17 heins Exp $
+# $Id: Search.pm,v 1.10 2000-12-05 09:39:46 heins Exp $
 #
 # Vend::Search -- Base class for search engines
 #
@@ -26,7 +26,7 @@
 #
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 1.9 $, 10);
+$VERSION = substr(q$Revision: 1.10 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -591,6 +591,9 @@ EOF
 				if $begin[$i] or $s->{mv_orsearch}[$i];
 			if($ops[$i]) {
 				$ops[$i][0] =~ s/m\{$/m{^/ if $begin[$i];
+				! $bounds[$i] 
+					and $ops[$i][0] =~ s/=~\s+m\{$/=~ m{\\b/
+					and $ops[$i][1] = '\b' . $ops[$i][1];
 				$start = $ops[$i][0];
 #::logDebug("Op now=" .  ::uneval($ops[$i]));
 				($term  = $ops[$i][1] || '')
