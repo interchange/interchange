@@ -105,16 +105,16 @@ entry:&nbsp;[calc]
 	return qq{<A HREF="$url">$url</A>};
 [/calc]</font>
 </TD>
-<TD ALIGN=CENTER VALIGN=TOP>[page href="__UI_BASE__/reports/traffic/ByAffiliate"
-		form="
-			start_date=[tag time]%Y%m[/tag]
-			affiliate=[item-code]
-			"]Traffic report</A><br>
-			[page href="__UI_BASE__/reports/order/ByAffiliate"
+<TD ALIGN=CENTER VALIGN=TOP>[page href="__UI_BASE__/reports/order/ByAffiliate"
 				form="
 					start_date=[tag time]%Y%m[/tag]
 					affiliate=[item-code]
-			"]Order report</A></TD>
+					 "]Orders</A><br>
+				[page href="__UI_BASE__/reports/traffic/ByAffiliate"
+				form="
+				start_date=[tag time]%Y%m[/tag]
+				affiliate=[item-code]
+				"]Traffic</A></td>
 <TD ALIGN=CENTER VALIGN=top>[if-item-data affiliate active]Yes[else]No[/else][/if-item-data]
 </TD>
 </tr>
