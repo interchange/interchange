@@ -120,8 +120,8 @@ sub {
 		}
 	}
 
-	mkdir 'items';
-	mkdir 'thumb';
+	mkdir 'items', 0777;
+	mkdir 'thumb', 0777;
 
 	for(@do) {
 		my $sku = shift @$_;
