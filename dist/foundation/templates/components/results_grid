@@ -141,14 +141,14 @@ Please send any comments or suggestions for improvement to:
 	<td valign=top bgcolor="#eeeeee" width="100%">
 		<div style="padding-left:5px;">	
 			<span style="font-size:10px;">
-				SKU: {SKU}<br><br>
-				Stock: {STOCK}<br>
+				[L]SKU[/L]: {SKU}<br><br>
+				[L]Stock[/L]: {STOCK}<br>
 			</span>
-			<p align=right><a href="{PRODUCT_LINK}" style="text-decoration:none; font-size:10px;" title="Click here for more information on this product">More info...</a></p>
+			<p align=right><a href="{PRODUCT_LINK}" style="text-decoration:none; font-size:10px;" title="[L]Click here for more information on this product[/L]">[L]More info...[/L]</a></p>
 		</div>
 	</td>
     </tr>
-    <tr class="contentbar1"><td style="font-size:10px;">Price: {PRICE}</td><td align=right valign=middle>{QUANTITY_BOX} &nbsp; {BUY_BUTTON}</td></tr>
+    <tr class="contentbar1"><td style="font-size:10px;">[L]Price[/L]: {PRICE}</td><td align=right valign=middle>{QUANTITY_BOX} &nbsp; {BUY_BUTTON}</td></tr>
   </table>
 </div>
 EO_TMPL
@@ -158,27 +158,27 @@ EO_TMPL
 					imagesubdir => "items",
 					src => $record->{image},
 					extra => "border=0",
-					title => "Click for more information.",
+					title => "[L]Click for more information.[/L]",
 					alt => $record->{description},
 				});
 	$record->{thumb} = $Tag->image({
 					imagesubdir => "thumb",
 					src => $record->{thumb},
 					extra => "border=0",
-					title => "Click for more information.",
+					title => "[L]Click for more information.[/L]",
 					alt => $record->{description},
 				});
 
 	my $q = $Tag->data('inventory', 'quantity', $sku);
 	if ($q > 0) {
 		$record->{stock} = <<EOF;
-<span style="color: #008000; font-size:10px; font-family: san-serif; font-weight: bold;">Yes</span>
+<span style="color: #008000; font-size:10px; font-family: san-serif; font-weight: bold;">[L]Yes[/L]</span>
 EOF
 	}
 	else {
 		my $url = $Tag->area('stock-alert', $sku);
 		$record->{stock} = <<EOF;
-<a href="$url" title="Click here to pre-order this item or get notified as soon as this item is available again." style="color: #FF0000; font-size:10px; font-family: san-serif; font-weight: bold;">No</a>
+<a href="$url" title="[L]Click here to pre-order this item or get notified as soon as this item is available again.[/L]" style="color: #FF0000; font-size:10px; font-family: san-serif; font-weight: bold;">[L]No[/L]</a>
 EOF
 	}
 
@@ -213,7 +213,7 @@ EOF
 [/table-organize]
 
 [on-match]
-[if scratch buylist_button]<div align=right style="width:95%;"><br><INPUT TYPE=submit VALUE="Buy List"></div>[/if]
+[if scratch buylist_button]<div align=right style="width:95%;"><br><INPUT TYPE=submit VALUE="[L]Buy List[/L]"></div>[/if]
 </FORM>
 [/on-match]
 
@@ -226,12 +226,12 @@ EOF
 [/comment]
 [tmp matchstring][value-extended name=mv_searchspec joiner=" | "][/tmp]
 [if scratch matchstring]
-Sorry, no matches for <B>[scratch matchstring]</B>.
+[msg arg.0="[scratch matchstring]"]Sorry, no matches for <B>%s</B>.[/msg]
 [/if]
 [if value mv_search_error]
 <P>
 <B>
-Errors:
+[L]Errors[/L]:
 <BR> 
 [value-extended name=mv_search_error joiner="<BR>"]
 </B>
@@ -243,7 +243,7 @@ Errors:
 <BR CLEAR=LEFT>
 [more-list]
 <BLOCKQUOTE>
-Matches [matches] of [match-count] found.
+[msg arg.0="[matches]" arg.1="[match-count]"]Matches %s of %s found.[/msg]
 <BR>[more]<BR>
 </BLOCKQUOTE>
 [/more-list]

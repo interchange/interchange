@@ -45,6 +45,9 @@ City, State, Zip	City, State, Zip			Plaats, Provincie, Postcode
 Clear&nbsp;cart	Clear&nbsp;cart			Wis&nbsp;winkelwagen
 Clear&nbsp;name/address	Clear&nbsp;name/address			Wis&nbsp;naam/adres
 Click Here To Preorder	Click Here To Preorder			Klik hier om vooruit te bestellen
+Click for more information.	Click for more information.			Klik voor meer informatie.
+Click here for more information on this product	Click here for more information on this product			Klik hier voor meer informatie over dit product
+Click here to pre-order this item or get notified as soon as this item is available again.	Click here to pre-order this item or get notified as soon as this item is available again.			Klik hier om vooruit te bestellen. U ontvangt een kennisgeving zodra dit artikel weer voorradig is.
 Collapse All Categories	Collapse All Categories			Verberg alle sub-categorieen
 Comment on this product.	Comment on this product.			Geef uw mening over dit product.
 Company	Company			Bedrijf
@@ -119,6 +122,8 @@ May		Mai	Mai	Mei
 Minimum order quantity of %s enforced.	Minimum order quantity of %s enforced.			Minimale bestelhoeveelheid is %s.
 Modified	Modified			Gewijzigd
 More Info	More Info			Meer informatie
+More info	More info			Meer informatie
+More info...	More info...			Meer informatie...
 Name	Name			Naam
 New Account	New Account			Nieuwe rekening
 New items	New items			Nieuw artikel
@@ -244,7 +249,7 @@ Show All Subcategories	Show All Subcategories			Toon alle sub-categorieen
 Something went wrong when mailing, perhaps a typo in your email address?	Something went wrong when mailing, perhaps a typo in your email address?			Er is iets fout gegaan bij het versturen van de email. Misschien een typefout in uw emailadres?
 Sorry, no match for that. Try again?	Sorry, no match for that. Try again?			Sorry, daarvoor zijn geen resultaten gevonden. Opnieuw proberen?
 Sorry, no matches for	Sorry, no matches for			Sorry, geen resultaten voor
-Sorry, no matches for <B>%s</B>.	Sorry, no matches for <B>%s</B>.			
+Sorry, no matches for <B>%s</B>.	Sorry, no matches for <B>%s</B>.			Sorry, geen zoekresultaten gevonden voor <B>%s</B>.
 Specials	Specials			Aanbiedingen
 State/Province	State/Province			Staat/Provincie
 Stock	Stock			Voorraad
