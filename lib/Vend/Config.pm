@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.25 2002-01-30 00:52:29 mheins Exp $
+# $Id: Config.pm,v 2.26 2002-01-30 01:09:06 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.25 $, 10);
+$VERSION = substr(q$Revision: 2.26 $, 10);
 
 my %CDname;
 
@@ -889,7 +889,7 @@ CONFIGLOOP:
 			$value =~ s/^\s+//;
 			$value =~ s/\s+$//;
 			$lvar = lc $dir;
-			&$read($lvar, $value);
+			$read->($lvar, $value);
 		}
 	}
 
@@ -1070,17 +1070,18 @@ sub read_config_value {
 		}
 	}
 	elsif ($value =~ /^(\S+)?(\s*)?<\s*($codere)$/o) {   # read from file
+		my $confdir = $C ? $C->{ConfigDir} : $Global::ConfigDir;
 		$value = $1 || '';
 		my $file = $3;
 		$value .= "\n" if $value;
-		unless (defined $Global::ConfigDir) {
+		unless ($confdir) {
 			config_error(
 				"%s: Can't read from file until ConfigDir defined",
 				$CDname{$lvar},
 			);
 		}
 		$file = $CDname{$lvar} unless $file;
-		$file = "$Global::ConfigDir/$file" unless $file =~ m!^/!;
+		$file = "$confdir/$file" unless $file =~ m!^/!;
 		$file = escape_chars($file);			# make safe for filename
 		my $tmpval = readfile($file);
 		unless( defined $tmpval ) {
@@ -3154,7 +3155,7 @@ sub finalize_mapped_code {
 sub parse_mapped_code {
 	my ($var, $value) = @_;
 
-	return {} if ! $value and $C;
+	return {} if ! $value;
 
 	## Can't give CodeDef a default or this will be premature
 	get_system_code() unless defined $SystemCodeDone;
