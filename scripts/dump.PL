@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange session dumper
 #
-# $Id: dump.PL,v 1.6 2000-09-23 18:49:30 heins Exp $
+# $Id: dump.PL,v 1.7 2000-09-25 15:44:23 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -103,7 +103,7 @@ use Fcntl;
 my $Extension;
 
 BEGIN {
-	$Global::GDBM = $Global::DB_File = $Global::NDBM = 0;
+	$Global::GDBM = $Global::DB_File = 0;
 	$Extension = '';
     AUTO: {
         eval {require GDBM_File and $Global::GDBM = 1};
@@ -250,7 +250,7 @@ dump -- Interchange session dumper
 
 =head1 VERSION
 
-$Id: dump.PL,v 1.6 2000-09-23 18:49:30 heins Exp $
+$Id: dump.PL,v 1.7 2000-09-25 15:44:23 heins Exp $
 
 =head1 SEE ALSO
 

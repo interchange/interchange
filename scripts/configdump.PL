@@ -95,11 +95,9 @@ unless ($#ARGV == 0) {
     exit 1;
 }
     
-my ($catalog, $name);
-
 $Vend::Cfg = {};
 
-$catalog = shift;
+my $catalog = shift;
 
 my($name,$dir,$param,$subcat,$subconfig,$junk);
 chdir $Global::VendRoot;
