@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.123 2002-10-30 17:39:06 mheins Exp $
+# $Id: Interpolate.pm,v 2.124 2002-10-31 17:43:47 kwalsh Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.123 $, 10);
+$VERSION = substr(q$Revision: 2.124 $, 10);
 
 @EXPORT = qw (
 
@@ -839,7 +839,12 @@ sub tag_data {
 	}
 
 	#The most common , don't enter a block, no accoutrements
-	return ed(database_field($selector,$key,$field,$opt->{foreign}));
+	my $value = ed(database_field($selector,$key,$field,$opt->{foreign}));
+
+	if ($opt->{filter}) {
+		$value = filter_value($opt->{filter}, $value, $field);
+	}
+	return $value;
 
 }
 
