@@ -146,9 +146,19 @@ EOF
 <blockquote>
 	[L]Hidden admin tables[/L]:
 <blockquote>
-	[loop list="[scratch ui_tmp_admin]"]
-	[page href=__UI_BASE__/flex_select form="mv_data_table=[loop-code]"][loop-code]</A>, 
-	[/loop]
+	[calc]
+		return
+			join ', ',
+			map {
+				$Tag->page( {
+					href => '__UI_BASE__/flex_select',
+					form => "mv_data_table=$_",
+				} ) .
+				$_ .
+				'</a>'
+			} split / /, $Scratch->{ui_tmp_admin}
+		;
+	[/calc]
 </blockquote>
 </blockquote>
 [/if-mm]
