@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.18 2001-10-10 19:45:23 racke Exp $
+# $Id: Interpolate.pm,v 2.19 2001-10-11 00:19:04 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.18 $, 10);
+$VERSION = substr(q$Revision: 2.19 $, 10);
 
 @EXPORT = qw (
 
@@ -1183,6 +1183,16 @@ sub tag_data {
 					return ::errmsg($val);
 				},
 
+	restrict_html => sub {
+					my $val = shift;
+					shift;
+					my %allowed;
+					@allowed{@_} = @_;
+					$val =~ s{<(/?(\w[-\w]*)[\s>])}
+						     { ($allowed{lc $2} ? '<' : '&lt;') . $1 }ge;
+					return $val;
+				},
+
 	);
 
 $Filter{upper} = $Filter{uc};
@@ -2310,11 +2320,11 @@ sub tag_accessories {
 
 #::logDebug("item in tag_accessories: " . ::uneval_it($item));
 	if(exists $item->{$attribute}) {
-::logDebug("default from attribute=$attribute, value=$item->{$attribute}");
+#::logDebug("default from attribute=$attribute, value=$item->{$attribute}");
 		$default = $item->{$attribute};
 	}
 	elsif (exists $opt->{default}) {
-::logDebug("default from opt");
+#::logDebug("default from opt");
 		$default = $opt->{default};
 	}
 	elsif ($name) {
@@ -4772,6 +4782,14 @@ sub iterate_array_list {
 	my ($i, $end, $count, $text, $ary, $opt_select, $fh) = @_;
 
 	my $r = '';
+	# Optimize for no-match, on-match, etc
+	if($text !~ /\[(?:if-)?$Prefix-/) {
+		for(; $i <= $end; $i++) {
+			$r .= $text;
+		}
+		return $r;
+	}
+
 	my ($run, $row, $code, $return);
 my $once = 0;
 #::logDebug("iterating array $i to $end. count=$count opt_select=$opt_select ary=" . ::uneval($ary));
@@ -4883,9 +4901,18 @@ my $once = 0;
 sub iterate_hash_list {
 	my($i, $end, $count, $text, $hash, $opt_select, $opt) = @_;
 
+	my $r = '';
+
+	# Optimize for no-match, on-match, etc
+	if($text !~ /\[(?:if-)?$Prefix-/) {
+		for(; $i <= $end; $i++) {
+			$r .= $text;
+		}
+		return $r;
+	}
+
 	$opt = {} if ! $opt;
 	my $code_field = $opt->{code_field} || 'mv_sku';
-	my $r = '';
 	my ($run, $code, $return, $item);
 
 #::logDebug("iterating hash $i to $end. count=$count opt_select=$opt_select hash=" . ::uneval($hash));
@@ -5121,9 +5148,9 @@ sub tag_tree {
 
 #::logDebug("tree-list: valid parent=$parent sub=$sub start=$start_item mult=$mult");
 
-	my @ary_stack   = ( $ary );
-	my @above_stack = { $start_item => 1 };
-	my @inc_stack   = ($outline[0]);
+	my @ary_stack   = ( $ary );				# Stacks the rows
+	my @above_stack = { $start_item => 1 }; # Holds the previous levels
+	my @inc_stack   = ($outline[0]);		# Holds the increment characters
 	my @rows;
 	my $row;
 
@@ -5136,10 +5163,13 @@ sub tag_tree {
 		my $increment = pop(@inc_stack);
 		ROW: for(;;) {
 #::logDebug("next row level=$level increment=$increment");
+			my $prev = $row;
 			$row = shift @$ary
-				or last ROW;
+				or ($prev and $prev->{mv_last} = 1), last ROW;
 			$row->{mv_level} = $level;
 			$row->{mv_spacing} = $level * $mult;
+			$row->{mv_spacer} = $opt->{spacer} x $row->{mv_spacing}
+				if $opt->{mv_spacer};
 			$row->{mv_increment} = $increment++;
 			push(@rows, $row);
 			my $code = $row->{$keyfield};
@@ -5201,7 +5231,7 @@ EOF
 		}  # END ROW
 #::logDebug("last row");
 	} # END ARY
-#::logDebug("last ary");
+#::logDebug("last ary, results =" . ::uneval(\@rows));
 	return labeled_list($opt, $text, {mv_results => \@rows});
 }
 
@@ -5482,20 +5512,27 @@ sub region {
 
 	$opt->{prefix} = $obj->{prefix} if $obj->{prefix};
 
+	$Orig_prefix = $Prefix = $opt->{prefix} || 'item';
+
+	$B  = qr(\[$Prefix)i;
+	$E  = qr(\[/$Prefix)i;
+	$IB = qr(\[if[-_]$Prefix)i;
+	$IE = qr(\[/if[-_]$Prefix)i;
+
 	$page =~ s!$QR{more_list}! tag_more_list($1,$2,$3,$4,$5,$opt,$6)!ge;
 	$page =~   s!
 					\[ ( $mprefix  on[-_]match )\]
 						($Some)
 					\[/\1\]
 				!
-					$obj->{matches} > 0 ? tag_attr_list($2, $opt) : ''
+					$obj->{matches} > 0 ? iterate_hash_list(0,0,1,$2,[$opt]) : ''
 				!xige;
 	$page =~   s!
 					\[ ( $mprefix  no[-_]match )\]
 						($Some)
 					\[/\1\]
 				!
-					$obj->{matches} > 0 ? '' : tag_attr_list($2, $opt)
+					$obj->{matches} > 0 ? '' : iterate_hash_list(0,0,1,$2,[$opt])
 				!xige;
 	$page =~ s:\[($lprefix)\]($Some)\[/\1\]:labeled_list($opt,$2,$obj):ige
 		or $page = labeled_list($opt,$page,$obj);
