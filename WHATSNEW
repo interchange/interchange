@@ -6,7 +6,7 @@
 ------------------------------------------------------------------------------
 
 
-Interchange 5.0.1 not yet released.
+Interchange 5.0.1 released 2004-03-26.
 
 Core
 ----
@@ -36,6 +36,12 @@ Admin
 
 * Fix missing relocation variables in Vend::Table::Editor found by Paul
   Vinciguerra.
+
+Usertags
+--------
+
+* history-scan: Make pageonly=1 option work correctly when there's no
+  History saved in the user's session.
 
 Foundation
 ----------
