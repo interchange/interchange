@@ -387,6 +387,7 @@ dist/foundation/templates/sampledata/computers/images/items/yourimage.gif
 dist/foundation/templates/sampledata/computers/images/thumb/generic_thumb.gif
 dist/foundation/templates/sampledata/computers/images/thumb/gift_certificate.gif
 dist/foundation/templates/sampledata/computers/images/thumb/thumb.gif
+dist/foundation/templates/sampledata/computers/products/area.txt
 dist/foundation/templates/sampledata/computers/products/inventory.txt
 dist/foundation/templates/sampledata/computers/products/merchandising.txt
 dist/foundation/templates/sampledata/computers/products/mv_metadata.asc
@@ -404,6 +405,7 @@ dist/foundation/templates/sampledata/reports/download/66548ch.pdf
 dist/foundation/templates/sampledata/reports/download/73358ee.pdf
 dist/foundation/templates/sampledata/reports/download/83491vp.pdf
 dist/foundation/templates/sampledata/reports/download/90773sh.pdf
+dist/foundation/templates/sampledata/reports/products/area.txt
 dist/foundation/templates/sampledata/reports/products/mv_metadata.asc
 dist/foundation/templates/sampledata/reports/products/products.txt
 dist/foundation/templates/sampledata/reports/products/userdb.txt
@@ -783,6 +785,9 @@ lib/Vend/Order.pm
 lib/Vend/Page.pm
 lib/Vend/Parse.pm
 lib/Vend/Parser.pm
+lib/Vend/Payment.pm
+lib/Vend/Payment/AuthorizeNet.pm
+lib/Vend/Payment/CyberCash.pm
 lib/Vend/SOAP.pm
 lib/Vend/SOAP/Transport.pm
 lib/Vend/Scan.pm
