@@ -112,6 +112,8 @@ Packaging
 
 * interchange-ui Debian package now suggests a HTTPS server.
 
+* added check for expireall binary to cron job
+
 I18N
 ----
 
