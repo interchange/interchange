@@ -8,7 +8,8 @@ Variable UI_STD_DBEDIT_HEAD <<EndOfVariable
 [/if]
 
 [if-mm !tables]
-[bounce href="[area admin/special/table_violation]"]
+[seti ui_error]Not authorized for table [value mv_data_table].[/seti]
+[bounce href="[area __UI_BASE__/error]"]
 [/if-mm]
 
 [calc]

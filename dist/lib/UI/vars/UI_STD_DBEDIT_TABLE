@@ -138,6 +138,10 @@ EOF
 										key => $key,
 										default => $currval,
 									});
+        unless ($label) {
+            $Document->write ($display);
+            next;
+        }
 		$Document->write(<<EOF) if $break{$col};
 <tr>
 <td colspan=2 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
@@ -178,8 +182,13 @@ mv_data_table=[cgi mv_data_table]
 <BR>
 [if-mm tables =x]
 	[if !value ui_too_large]
+	[if-mm super]
 	<INPUT TYPE=checkbox NAME=mv_auto_export CHECKED VALUE="[value mv_data_table]">
 		Auto-export
+	[else]
+	<INPUT TYPE=hidden NAME=mv_auto_export VALUE="[value mv_data_table]">
+	[/else]
+	[/if-mm]
 	[/if]
 [/if-mm]
 
