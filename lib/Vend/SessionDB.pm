@@ -1,6 +1,6 @@
 # Vend::SessionDB - Stores Interchange session information in files
 #
-# $Id: SessionDB.pm,v 2.4 2004-06-07 03:44:19 mheins Exp $
+# $Id: SessionDB.pm,v 2.5 2004-06-28 21:25:27 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ use strict;
 use Vend::Util;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 
 sub TIEHASH {
 	my($class, $db) = @_;
@@ -83,7 +83,7 @@ sub FETCH {
 				};
 			my $ary = $sth->fetchrow_arrayref
 				or return undef;
-			return $ary->[0];
+			return $ary->[1];
 		}
 		else {
 			## No session there already
