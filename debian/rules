@@ -26,17 +26,28 @@ export DH_COMPAT=2
 ifndef PERL
 	PERL = /usr/bin/perl
 endif
-TMP =`pwd`/debian/tmp
+TMP = $(shell pwd)/debian/tmp
+
+APXS=/usr/bin/apxs
+
+# (From mod-perl packaging)
+DEV_DPKG_VERSION := $(shell dpkg -s apache-dev | awk '/Version:/ {print $2}')
+DEV_VERSION := $(shell echo $(DEV_DPKG_VERSION) | sed "s/^Version: \(.*\)-.*$$/\1/")
+NEXTVERNO := $(shell echo $(DEV_VERSION) | awk -F. '{OFS="."; $$NF = $$NF + 1; print}')
 
 build: build-stamp
 build-stamp:
 	dh_testdir
 
-# Add here commands to compile the package.
+# Compile main stuff
 	$(PERL) Makefile.PL force=1 \
 		INTERCHANGE_USER=interchange \
 		PREFIX=/usr/lib/interchange
 	$(MAKE)
+
+# Compile mod_interchange
+	$(MAKE) -C dist/src/mod_interchange
+
 	touch build-stamp
 
 clean:
@@ -98,6 +109,9 @@ install: build
 	rm $(TMP)/var/www/ui/help/*.pl
 	rm -r $(TMP)/var/www/ui/help/src
 	rm -r $(TMP)/usr/lib/interchange/share/akopia/
+# mod_interchange
+	mkdir -p $(TMP)/usr/lib/apache/1.3
+	(cd dist/src/mod_interchange; $(APXS) -i -S LIBEXECDIR=$(TMP)/usr/lib/apache/1.3 -n interchange mod_interchange.so)
 # remove unneeded stuff
 	rm $(TMP)/usr/lib/interchange/error.log
 	rm $(TMP)/usr/lib/interchange/hints.pl
@@ -129,8 +143,9 @@ binary-arch: build install
 	dh_fixperms
 	# You may want to make some executables suid here.
 	dh_installdeb
+	dh_shlibdeps
 	dh_perl usr/lib/interchange
-	dh_gencontrol
+	dh_gencontrol -- -VTHISDEV="$(DEV_VERSION)" -VNEXTDEV="$(NEXTVERNO)"
 	dh_md5sums
 	dh_builddeb
 
