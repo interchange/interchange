@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.120 2003-07-07 05:49:33 mheins Exp $
+# $Id: Config.pm,v 2.121 2003-07-19 00:41:57 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.120 $, 10);
+$VERSION = substr(q$Revision: 2.121 $, 10);
 
 my %CDname;
 my %CPname;
@@ -3018,6 +3018,7 @@ my %Hash_ref = (  qw!
 							FILTER_FROM   FILTER_FROM
 							FILTER_TO     FILTER_TO 
 							COLUMN_DEF    COLUMN_DEF
+							LENGTH_EXCEPTION LENGTH_EXCEPTION
 							DEFAULT       DEFAULT
 							DEFAULT_SESSION       DEFAULT_SESSION
 							FIELD_ALIAS   FIELD_ALIAS
