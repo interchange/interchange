@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.5 2000-12-21 11:29:22 heins Exp $
+# $Id: Server.pm,v 1.8.2.6 2001-01-19 17:30:05 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.5 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.6 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -56,7 +56,13 @@ sub new {
 					entity => $entity,
 					env => $env,
 				};
-	map_cgi($http);
+	eval {
+		map_cgi($http);
+	};
+	if($@) {
+		::logGlobal($@);
+		return undef;
+	}
     bless $http, $class;
 }
 
@@ -116,7 +122,22 @@ sub map_cgi {
 			if $Global::FullUrl;
 	}
 	my $g = $Global::Selector{$CGI::script_name}
-		or die ::errmsg("catalog %s not defined", $CGI::script_name);
+		or do {
+			my $msg = ::get_locale_message(
+						404,
+						"Undefined catalog: %s",
+						$CGI::script_name,
+						);
+			my $content_type = $msg =~ /<html/i ? 'text/html' : 'text/plain';
+			my $len = length($msg);
+			$Vend::StatusLine = <<EOF;
+Status: 404
+Content-Type: $content_type
+Content-Length: $len
+EOF
+			respond('', \$msg);
+			die($msg);
+		};
 
 	($::IV, $::VN, $::SV) = defined $g->{VarName}
 			? ($g->{IV}, $g->{VN}, $g->{IgnoreMultiple})
@@ -338,7 +359,8 @@ sub respond {
 		$Vend::StatusLine .= ($Vend::StatusLine =~ /^Content-Type:/im)
 							? '' : "\r\nContent-Type: text/html\r\n";
 # TRACK
-        $Vend::StatusLine .= "X-Track: " . $Vend::Track->header() . "\r\n";
+        $Vend::StatusLine .= "X-Track: " . $Vend::Track->header() . "\r\n"
+			if $Vend::Track;
 # END TRACK        
         $Vend::StatusLine .= "Pragma: no-cache\r\n"
 			if delete $::Scratch->{mv_no_cache};
@@ -469,7 +491,6 @@ my $Remote_addr;
 my $Remote_host;
 my %CGImap;
 my %CGIspecial;
-my %MIME_type;
 
 BEGIN {
 	eval {
@@ -509,18 +530,6 @@ BEGIN {
 					/
 		);
 		%CGIspecial = ();
-
-		%MIME_type = (qw|
-							jpg		image/jpeg
-							gif		image/gif
-							JPG		image/jpeg
-							GIF		image/gif
-							JPEG	image/jpeg
-							jpeg	image/jpeg
-							htm		text/html
-							html	text/html
-						|
-		);
 	};
 										 
 }                                    
@@ -602,15 +611,16 @@ sub http_server {
 	my $status = 200;
 
 	shift(@path);
-	my $cat = "/" . shift(@path);
+	my $catname = shift(@path);
 
 	if ($Global::TcpMap->{$Global::TcpPort} =~ /^\w+/) {
-		$cat = $Global::TcpMap->{$Global::TcpPort};
-		$cat = "/$cat" unless index($cat, '/') == 0;
+		$catname = $Global::TcpMap->{$Global::TcpPort};
 	}
+	my $cat = "/$catname";
 
-	if($cat eq '/mv_admin') {
-#::logDebug("found mv_admin");
+::logDebug("cat=$cat allowglobal=$Global::AllowGlobal->{$cat}");
+	if($Global::Selector{$cat} and $Global::AllowGlobal->{$cat}) {
+::logDebug("found mv_admin");
 		if ($$env{AUTHORIZATION}) {
 			$$env{REMOTE_USER} =
 					Vend::Util::check_authorization( delete $$env{AUTHORIZATION} );
@@ -657,9 +667,9 @@ EOF
 		);
 
 	if (defined $doc) {
-		$path =~ /\.([^.]+)$/;
+		my $type = Vend::Util::mime_type($path);
 		$Vend::StatusLine = '' unless defined $Vend::StatusLine;
-		$Vend::StatusLine .= "\r\nContent-type: " . ($MIME_type{$1} || "text/plain");
+		$Vend::StatusLine .= "\r\nContent-type: $type";
 		respond(
 					'',
 					\$doc,
@@ -721,7 +731,7 @@ sub connection {
     	or return 0;
 	$http = new Vend::Server \*Vend::Server::MESSAGE, \%env, \$entity;
 #::logGlobal ("begin dispatch: " . (join " ", times()) . "\n");
-    ::dispatch($http);
+    ::dispatch($http) if $http;
 #::logDebug ("end connection: " . (join " ", times()) . "\n");
 	undef $Vend::ResponseMade;
 	undef $Vend::InternalHTTP;
