@@ -33,8 +33,9 @@ sub {
 	my $pageref = Vend::Page::display_page($page,{return => 1});
 	Vend::Interpolate::substitute_image($pageref);
 
-	return Vend::File::writefile (">$file", $pageref, 
+	my $retval = Vend::File::writefile (">$file", $pageref, 
         {auto_create_dir => $opt->{auto_create_dir},
 		umask => $opt->{umask}});
+	return $opt->{hide} ? '' : $retval;
 }
 EOR
