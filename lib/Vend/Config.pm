@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.132 2004-02-11 14:34:33 jon Exp $
+# $Id: Config.pm,v 2.133 2004-02-20 01:09:11 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.132 $, 10);
+$VERSION = substr(q$Revision: 2.133 $, 10);
 
 my %CDname;
 my %CPname;
@@ -244,7 +244,7 @@ sub global_directives {
 #   Directive name      Parsing function    Default value
 
 	['RunDir',			 'root_dir',     	 $Global::RunDir || 'etc'],
-	['DebugFile',		  undef,     	     ''],
+	['DebugFile',		 'root_dir',     	 ''],
 	['CatalogUser',		 'hash',			 ''],
 	['ConfigDir',		  undef,	         'etc/lib'],
 	['ConfigDatabase',	 'config_db',	     ''],
@@ -477,7 +477,6 @@ sub catalog_directives {
 	['OptionsEnable',	 undef,     	     ''],
 	['OptionsAttribute', undef,     	     ''],
 	['Options',			 'locale',     	     ''],
-	['DifferentSecure',	 'boolean',  	     ''],
 	['AlwaysSecure',	 'boolean',  	     ''],
 	['Password',         undef,              ''],
 	['AdminSub',		 'boolean',			 ''],

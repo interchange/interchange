@@ -46,8 +46,8 @@ NoAbsolute Yes
 
 ifdef @DEBUG
 
-Message Sending debug to /tmp/icdebug.
-DebugFile /tmp/icdebug
+Message Sending debug messages to debug.log.
+DebugFile debug.log
 
 # A few simple tests ...
 GlobalSub sub test_global_sub { return 'Test of global subroutine OK.' }
