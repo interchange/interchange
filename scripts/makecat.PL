@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.32.4.6 2001-02-22 00:09:36 jon Exp $
+# $Id: makecat.PL,v 1.32.4.7 2001-02-26 01:17:26 heins Exp $
 #
 # Copyright (C) 1996-2001 Akopia, Inc. <info@akopia.com>
 #
@@ -1831,6 +1831,20 @@ EOF
 		}
 
 		print "done.\n";
+
+		if($CGIwrap and $isroot) {
+			print <<EOF;
+Since you selected the SUEXEC/CGIwrap option and are root, we aren't sure
+which user and group you intended to own the link program. We have selected
+the catalog user's UID/GID ($catuid/$catgid), but this may not match your
+server definition. If you get a server error, change the ownership to its
+proper value and ensure that the SUID bit is turned off on the link
+program ($cginame).
+
+EOF
+			chown($catuid, $catgid, $_) or die "\nchown $_: $!\n";
+			prompt("Press <ENTER> to continue....");
+		}
 	}
 
 	my $chg_to_catuser = sub {
@@ -2166,7 +2180,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 1.32.4.6 2001-02-22 00:09:36 jon Exp $
+# $Id: makecat.PL,v 1.32.4.7 2001-02-26 01:17:26 heins Exp $
 
 =head1 INTRODUCTION
 
