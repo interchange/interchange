@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.2 2001-10-18 04:16:16 mheins Exp $
+# $Id: Common.pm,v 2.3 2001-10-18 09:35:46 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -307,6 +307,21 @@ sub row_settor {
 #::logDebug("setting $key indices '@index' to '@vals'");
         $s->set_row(@row);
     };
+}
+
+sub get_slice {
+    my ($s, $key, $fary) = @_;
+	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
+
+	return undef unless $s->record_exists($key);
+
+	if(ref $fary ne 'ARRAY') {
+		shift; shift;
+		$fary = [ @_ ];
+	}
+
+	my @result = ($s->row($key))[ map { $s->column_index($_) } @$fary ];
+	return wantarray ? @result : \@result;
 }
 
 sub set_slice {
