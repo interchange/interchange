@@ -114,7 +114,7 @@
 [elsif scratch merge_anyway]
 	<blockquote class=cerror>
 		[scratchd merge_anyway]<br>
-	Merging anyway.
+	[L]Merging anyway.[/L]
 	</blockquote>
 	[tmpn do_merge]1[/tmpn]
 [/elsif]
@@ -128,7 +128,7 @@
 <div style="margin-left: 5px">
 <dl>
 
-	<dt class=titlebox>Merge run, UI version [scratch newver], metadata version [scratch curver]</dt>
+	<dt class=titlebox>[msg arg.0="[scratch newver]" arg.1="[scratch curver]"]Merge run, UI version %s, metadata version %s[/msg]</dt>
 	<dd>
 	<br>
 	
@@ -274,15 +274,15 @@
 	<blockquote class=cerror>[scratchd merge_error]</blockquote>
 	[else]
 	<UL>
-		<LI>Entries merged: [scratch merge_updated]
-		<LI>No merge needed: [scratch merge_complete]
-		<LI>Merge still needed: [scratch merge_needed]
+		<LI>[L]Entries merged:[/L] [scratch merge_updated]
+		<LI>[L]No merge needed:[/L] [scratch merge_complete]
+		<LI>[L]Merge still needed:[/L] [scratch merge_needed]
 	</UL>
 	[/else]
 	[/if]
 	</dd>
 
-	<dt class=titlebox>Items to merge </dt>
+	<dt class=titlebox>[L]Items to merge[/L] </dt>
 [output name=top_of_form]
 	<form action="[process href=@@MV_PAGE@@]" method=POST name=mergeform>
 	<input type=hidden name=mv_action value=back>
@@ -303,14 +303,14 @@
 			<td width=600>
 				<input type=hidden name=merge_key value="$code">
 				<select name=merge_status>
-					<option value=0>Defer decision
-					<option value=1>Merge
-					<option value="-1">Keep old value forever
+					<option value=0>[L]Defer decision[/L]
+					<option value=1>[L]Merge[/L]
+					<option value="-1">[L]Keep old value forever[/L]
 				</select>
-				<a href="javascript:set_all_select(0)">Defer all</a>
-				<a href="javascript:set_all_select(1)">Merge all</a>
-				<a href="javascript:set_all_select(2)">Keep all</a>
-				<a href="javascript:toggle_identical()">Toggle showing identical keys</a>
+				<a href="javascript:set_all_select(0)">[L]Defer all[/L]</a>
+				<a href="javascript:set_all_select(1)">[L]Merge all[/L]</a>
+				<a href="javascript:set_all_select(2)">[L]Keep all[/L]</a>
+				<a href="javascript:toggle_identical()">[L]Toggle showing identical keys[/L]</a>
 			</td>
 		</tr>
 		</table>
@@ -452,9 +452,9 @@ EOF
 [/perl]
 	</table>
 [output name=bottom_buttons]
-	<input type=submit value=Merge>
+	<input type=submit value="[L]Merge[/L]">
 [output name=top_buttons]
-	<input type=submit value=Merge>
+	<input type=submit value="[L]Merge[/L]">
 [output name=bottom_of_form]
 	</form>
 [output name=""]
