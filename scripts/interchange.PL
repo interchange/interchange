@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.2
 #
-# $Id: interchange.PL,v 1.15.2.31 2001-04-08 17:00:46 heins Exp $
+# $Id: interchange.PL,v 1.15.2.32 2001-04-09 06:58:11 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -235,6 +235,7 @@ use Vend::Util;
 use Vend::Server;
 use Vend::Session;
 use Vend::Config;
+use Vend::Payment;
 
 # You might try commenting out these lines and uncommenting the ones
 # below to compact memory size
@@ -1082,7 +1083,7 @@ my %form_action = (
 					update_quantity()
 						or return interaction_error("quantities");
 					my $ok;
-					my($missing,$next,$status,$final);
+					my($missing,$next,$status,$final,$result_hash);
 
 					# Set shopping cart if necessary
 					# Vend::Items is tied, remember!
@@ -1101,12 +1102,14 @@ my %form_action = (
 					else {
 						$status = $final = 1;
 					}
+#::logDebug("Profile status status=$status final=$final errors=$missing");
 
 					my $provisional;
 					if ($status and defined $CGI::values{mv_order_route}) {
 						# This checks only route order profiles
 #::logDebug("Routing order, pre-check");
-						($status, $provisional, $missing) = route_order(
+						($status, $provisional, $missing)
+										= route_order(
 												$CGI::values{mv_order_route},
 												$Vend::Items,
 												'check',
@@ -1137,11 +1140,14 @@ my %form_action = (
 						# $ok will not be defined unless Route "supplant" was set
 						# $order_no will come back so we don't issue two of them
 #::logDebug("Routing order $CGI::values{mv_order_route}");
-						($ok, $order_no) = route_order(
+						($ok, $order_no, $result_hash) = route_order(
 											$CGI::values{mv_order_route},
 											$Vend::Items
 											);
 					}
+
+					$result_hash = {} unless $result_hash;
+
 					my $mode = $CGI::values{mv_payment_mode};
 					if (! $ok and defined $Vend::Cfg->{ActionMap}{$mode}) {
 						($ok, $status) = $Vend::Cfg->{ActionMap}{$mode}->();
@@ -1160,28 +1166,40 @@ my %form_action = (
 						}
 					}
 
+# TRACK
+                    $Vend::Track->finish_order ();
+# END TRACK
 					# This function (followed down) now does the rudimentary
 					# backend ordering with AsciiTrack and the order report.
 					# If the "supplant" option was set in order routing it will
 					# not be used ($ok would have been defined)
 
-# TRACK
-                    $Vend::Track->finish_order ();
-# END TRACK
 
 #::logDebug("Order number=$order_no\n");
 					$ok = mail_order(undef, $order_no || undef) unless defined $ok;
-#::logDebug("Order number=$order_no\n");
+#::logDebug("Order number=$order_no, result_hash=" . ::uneval($result_hash));
 
 					# Display a receipt if configured
 
-					if ($ok) {
+					my $not_displayed = 1;
+
+					if(! $ok) {
+						display_special_page(
+								find_special_page('failed'),
+								errmsg('Error transmitting order(%s): %s', $!, $@),
+						);
+					}
+					elsif (! $result_hash->{no_receipt} ) {
 						eval {
-							display_special_page(
-											$::Values->{mv_order_receipt}	||
-											find_special_page('receipt')
-											);
+
+							my $receipt = $result_hash->{receipt}
+										|| $::Values->{mv_order_receipt}
+										|| find_special_page('receipt');
+#::logDebug("selected receipt=$receipt");
+							display_special_page($receipt);
 						};
+						$not_displayed = 0;
+#::logDebug("not_displayed=$not_displayed");
 						if($@) {
 							my $msg = $@;
 							::logError( 
@@ -1191,18 +1209,12 @@ my %form_action = (
 							);
 						}
 					}
-					else {
-						display_special_page(
-								find_special_page('failed'),
-								errmsg('Error transmitting order(%s): %s', $!, $@),
-						);
-					}
 
 					# Remove the items
 					@$Vend::Items = ();
-					return 0;
+#::logDebug("returning order_number=$order_no, not_displayed=$not_displayed");
+					return $not_displayed;
 				  }
-
 			},
 	refresh	=> sub {
 					update_quantity()
@@ -1259,6 +1271,9 @@ sub do_process {
 	}
 
 #::logDebug("todo=$CGI::values{mv_todo} prior to mv_click=" . join ",", split /\0/, $CGI::values{mv_click});
+
+    my $orig_todo = $CGI::values{mv_todo};
+
 	do_click();
 
     my $todo = $CGI::values{mv_todo};
@@ -1266,29 +1281,29 @@ sub do_process {
 #::logDebug("todo=$todo after mv_click");
 
 	# Maybe we have an imagemap input, if not, use $doit
-    if ( ! defined $todo) {
-		if (defined $CGI::values{'mv_todo.x'}) {
-				my $x = $CGI::values{'mv_todo.x'};
-				my $y = $CGI::values{'mv_todo.y'};
-				my $map = $CGI::values{'mv_todo.map'};
-				# Called with action_map and not package id
-				# since "autouse" is possibly in force...found
-				# by Jeff Carnahan
-				$todo = action_map($x,$y,$map);
-		}
-		elsif (defined $CGI::values{'mv_todo.submit.x'}) {
-			$todo = 'submit';
-		}
-		elsif (defined $CGI::values{'mv_todo.checkout.x'}) {
-			$todo = 'checkout';
-		}
-		elsif (defined $CGI::values{'mv_todo.return.x'}) {
-			$todo = 'return';
-		}
-		else {
-			$todo = $CGI::values{mv_doit} if defined $CGI::values{mv_doit};
-		}
+	if($orig_todo ne $todo) {
+		# Don't mess with it, changed in click
 	}
+	elsif (defined $CGI::values{'mv_todo.x'}) {
+		my $x = $CGI::values{'mv_todo.x'};
+		my $y = $CGI::values{'mv_todo.y'};
+		my $map = $CGI::values{'mv_todo.map'};
+		# Called with action_map and not package id
+		# since "autouse" is possibly in force...found
+		# by Jeff Carnahan
+		$todo = action_map($x,$y,$map);
+	}
+	elsif( my @todo = grep /^mv_todo\.\w+(?:\.x)?$/, keys %CGI::values ) {
+		# Only one todo!
+		for(@todo) {
+			delete $CGI::values{$_};
+			s/^mv_todo\.(\w+)(?:\.[xy])?$/$1/;
+		}
+		$todo = shift @todo;
+	}
+
+	$todo = $CGI::values{mv_doit} || 'back' if ! $todo;
+
 #::logDebug("todo=$todo after mv_click");
 
 	my ($sub, $status);
@@ -2182,9 +2197,7 @@ sub dontwarn {
 	$Global::IpHead +
 	$Vend::CheckHTML +
 	$Vend::Action +
-	$Vend::CC2 +
 	$Vend::CC3 +
-	$Vend::CC3server +
 	$CGI::server_name +
 	$CGI::content_type +
 	$CGI::http_host +
@@ -2612,9 +2625,10 @@ sub main_loop {
 
 	## Bring in the CyberCash libraries if present
 	## Moved here to prevent unwanted messages
+	## May be going to Vend::Payment::CyberCash
 
 	eval {
-		package Vend::Order;
+		package Vend::Payment;
 		require CCMckLib3_2 ;
 		import CCMckLib3_2 qw/InitConfig %Config $MCKversion/;
 		require CCMckDirectLib3_2;
@@ -2622,7 +2636,6 @@ sub main_loop {
 		require CCMckErrno3_2;
 		import CCMckErrno3_2 qw/MCKGetErrorMessage/;
 		$Vend::CC3 = 1;
-		$Vend::CC3server = 0;
 		my $ver = $CCMckLib3_2::VERSION || '3.x';
 		::logGlobal({}, "CyberCash module found (Version %s)", $ver )
 			unless $Vend::Quiet;

@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.32.4.8 2001-03-23 12:17:20 jon Exp $
+# $Id: makecat.PL,v 1.32.4.9 2001-04-09 06:58:11 heins Exp $
 #
 # Copyright (C) 1996-2001 Akopia, Inc. <info@akopia.com>
 #
@@ -463,7 +463,7 @@ my %Prefix = (
 							$dir =~ s/^\~/$userdir/;
 							return $dir;
 							},
-	aliases      =>  sub { return "/" . $catalog_name },
+	aliases      =>  sub { return "/$catalog_name" },
 	cgiurl       =>  sub {
 							return $ENV{MVC_CGIURL} if $ENV{MVC_CGIURL};
 							my $url = '';
@@ -2180,7 +2180,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 1.32.4.8 2001-03-23 12:17:20 jon Exp $
+# $Id: makecat.PL,v 1.32.4.9 2001-04-09 06:58:11 heins Exp $
 
 =head1 INTRODUCTION
 
