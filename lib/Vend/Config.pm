@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.35 2002-02-04 04:36:45 mheins Exp $
+# $Id: Config.pm,v 2.36 2002-02-06 02:38:58 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.35 $, 10);
+$VERSION = substr(q$Revision: 2.36 $, 10);
 
 my %CDname;
 
@@ -148,7 +148,7 @@ my %UseExtended = (qw(
 
 my $StdTags;
 
-my $configfile;
+use vars qw/ $configfile /;
 
 ### This is unset when interchange script is run, so that the default
 ### when used by an external program is not to compile subroutines
@@ -161,6 +161,7 @@ sub config_error {
 		$msg = errmsg($msg, @_);
 	}
 
+	local($^W);
 	$msg = errmsg("%s\nIn line %s of the configuration file '%s':\n%s\n",
 			$msg,
 			$.,
@@ -181,13 +182,15 @@ sub config_warn {
 	if(@_) {
 		$msg = errmsg($msg, @_);
 	}
+
+	local($^W);
+
 	::logGlobal({level => 'notice'},
-				errmsg("%s\nIn line %s of the configuration file '%s':\n%s\n",
+				"%s\nIn line %s of the configuration file '%s':\n%s\n",
 						$msg,
 						$.,
 						$configfile,
 						$Vend::config_line,
-				)
 	);
 }
 
@@ -989,16 +992,19 @@ sub get_system_code {
 	};
 	File::Find::find($wanted, @$Global::TagDir);
 
+	local($configfile);
 	for(@files) {
 		$CodeDest = $_->[1];
 
-		open SYSTAG, "< $_->[0]"
-			or config_error("read system tag file %s: %s", $_->[0], $!);
+		$configfile = $_->[0];
+		open SYSTAG, "< $configfile"
+			or config_error("read system tag file %s: %s", $configfile, $!);
 		while(<SYSTAG>) {
 			my($lvar, $value) = read_config_value($_, \*SYSTAG);
 			next unless $lvar;
 			$GlobalRead->($lvar, $value);
 		}
+		close SYSTAG;
 	}
 
 	undef $CodeDest;
@@ -3283,20 +3289,19 @@ sub parse_tag {
 			}
 		}
 		local($^W) = 1;
-		my $fail;
+		my $fail = '';
 		{
-			local $SIG{'__WARN__'} = sub {$fail .= "@_";};
+			local $SIG{'__WARN__'} = sub {$fail .= "$_[0]\n";};
 			eval {
 				package Vend::Interpolate;
 				$sub = eval $val;
-				die $@ if $@;
 			};
 		}
 		if($@) {
 			config_warn(
 						"UserTag '%s' subroutine failed compilation:\n\n\t%s",
 						$tag,
-						"$fail $@",
+					"$@ (warnings=$fail)",
 			);
 			return $c;
 		}
