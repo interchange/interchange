@@ -161,6 +161,11 @@ Core
 * Remove attempt to unimport Config (to save a small amount of memory)
   because it causes Perl 5.6.0 to die.
 
+* Allow setting of table type in MySQL (or others if HAS_TABLE_TYPE
+  is put in capabilities). This allows setting the table type to
+  something besides the default -- in particular allows InnoDB type
+  setting for userdb/transactions/orderline.
+
 File
 ----
 
@@ -344,7 +349,7 @@ Options
 
 * The options table contains options for both Matrix and Simple types,
   but only fields for building those simple-type options (which are
-  used to generate variants for Matrix). The followign fields
+  used to generate variants for Matrix). The following fields
   have been removed from options:
 
 	differential
@@ -548,6 +553,8 @@ UI
 
 * Fixed typo in file_navigator tag.
 
+* Fix extra parameter passing in wizard.
+
 * Display size, color and options on "Order view" page again.
 
 * Fix Query-By-Example forms for LARGE tables.
@@ -561,6 +568,8 @@ UI
   Small example of how to use this in pages/admin/customer.html -- allows
   you to change "Company" to "Affilation" or "Organization" and have a hope
   of having it show up everywhere.
+
+* Continued preparation for translation.
 
 Payment
 -------
@@ -665,9 +674,11 @@ Foundation
 * Use LENGTH_EXCEPTION_DEFAULT for Postgres userdb, transactions,
   orderline tables in foundation.
 
-* Remove unused large gift certificate image.
+* Remove unused ship address pages and unused large gift certificate image.
 
 * Use the common placeholder for the email address in survey database.
+
+* Set more reasonable default types for each SQL DB.
 
 Debian
 ------
