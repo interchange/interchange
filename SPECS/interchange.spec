@@ -25,6 +25,7 @@ Source: http://ic.redhat.com/pub/interchange/interchange-%{ic_version}.tar.gz
 Group: Applications/Internet
 Provides: %ic_package_basename
 Obsoletes: %ic_package_basename
+BuildArchitectures: noarch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}
 
@@ -104,7 +105,7 @@ cd $RPM_BUILD_ROOT%{_libdir}/interchange
 export PERL5LIB=$RPM_BUILD_ROOT%{_libdir}/interchange/lib
 export MINIVEND_ROOT=$RPM_BUILD_ROOT%{_libdir}/interchange
 perl -pi -e "s:^\s+LINK_FILE\s+=>.*:	LINK_FILE => \"$RUNBASE/interchange/socket\",:" bin/compile_link
-bin/compile_link -build src
+#bin/compile_link -build src
 
 mkdir -p $RPM_BUILD_ROOT$LIBBASE/interchange
 
@@ -186,7 +187,8 @@ RUNSTRING="%{_libdir}/interchange/bin/interchange -q \\
 	ErrorFile=$LOGBASE/interchange/error.log \\
 	PIDfile=$RUNBASE/interchange/interchange.pid \\
 	-confdir $RUNBASE/interchange \\
-	SocketFile=$RUNBASE/interchange/socket"
+	SocketFile=$RUNBASE/interchange/socket \\
+	IPCsocket=$RUNBASE/interchange/socket.ipc"
 
 USER=\`whoami\`
 if test \$USER = "root"
@@ -381,8 +383,9 @@ do
 		echo "run $VENDOOT/bin/makecat to build a catalog from this template."
 		exit 1
 	fi
-		
+
 	# Build the demo catalog
+	echo "Building catalog '$i' from newly-installed skeleton"
 	mkdir -p $CGIDIR
 	mkdir -p $DOCROOT/$i/images
 	mkdir $BASEDIR/$i
@@ -492,6 +495,14 @@ rm -f %main_filelist
 
 
 %changelog
+
+* Tue Mar 27 2001 Jon Jensen <jon@redhat.com>
+- Fix error.log symlink.
+- Specify that socket.ipc goes in /var/run/interchange
+- Work with Red Hat Linux 6 or 7 from same RPM file.
+- Move to noarch RPM builds. The downside is that we're compiling vlink for
+  foundation *after* install ... This should be ok if we can fall back to
+  the Perl vlink if compile fails.
 
 * Fri Feb 23 2001 Jon Jensen <jon@redhat.com>
 - Check for existing foundation catalog before install (can't count on RPM
