@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.36 2004-07-23 03:03:39 mheins Exp $
+# $Id: Common.pm,v 2.37 2004-09-13 12:42:18 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -23,7 +23,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.36 $, 10);
+$VERSION = substr(q$Revision: 2.37 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -1364,7 +1364,7 @@ EndOfRoutine
 );
 
     eval $format{$format};
-	die errmsg("%s import failed: %s", $options->{name}, $@) if $@;
+	die errmsg("%s import into %s failed: %s", $options->{name}, $options->{table}, $@) if $@;
     if($realfile) {
 		close IN
 			or die errmsg("%s %s: %s\n", errmsg("close"), $infile, $!);
