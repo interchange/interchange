@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.19 2002-06-28 05:06:05 mheins Exp $
+# $Id: DBI.pm,v 2.20 2002-07-03 18:32:08 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.19 $, 10);
+$VERSION = substr(q$Revision: 2.20 $, 10);
 
 use strict;
 
@@ -597,7 +597,7 @@ sub open_table {
 
 
 	die "DBI: no column names returned for $tablename\n"
-			unless defined $config->{NAME}[1];
+			unless defined $config->{NAME}[0];
 
 	# Check if we have a non-first-column key
 	if($config->{KEY}) {
@@ -638,6 +638,12 @@ sub close_table {
 	return 1 if $Global::HotDBI->{$Vend::Cat};
 	undef $DBI_connect_cache{$cfg->{dsn_id}};
 	$s->[$DBI]->disconnect();
+}
+
+sub dbh {
+	my ($s) = shift;
+	$s = $s->import_db() if ! defined $s->[$DBI];
+	return $s->[$DBI];
 }
 
 sub columns {
