@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 1.25.2.38 2001-07-03 19:57:34 heins Exp $
+# $Id: DBI.pm,v 1.25.2.39 2001-07-06 17:37:46 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.38 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.39 $, 10);
 
 use strict;
 
@@ -145,6 +145,12 @@ my %known_capability = (
 	},
 	ALTER_ADD	 => { 
 		mysql => 'ALTER TABLE _TABLE_ ADD COLUMN _COLUMN_ _DEF_',
+		Pg => 'ALTER TABLE _TABLE_ ADD COLUMN _COLUMN_ _DEF_',
+	},
+	ALTER_INDEX	 => { 
+		mysql => 'CREATE _UNIQUE_ INDEX $TABLE$_$COLUMN$ ON _TABLE_ (_COLUMN_)',
+		Pg => 'CREATE _UNIQUE_ INDEX $TABLE$_$COLUMN$ ON _TABLE_ (_COLUMN_)',
+		default => 'CREATE _UNIQUE_ INDEX $TABLE$_$COLUMN$ ON _TABLE_ (_COLUMN_)',
 	},
 	SEQUENCE_NO_EXPLICIT => { 
 		Pg => 1,
@@ -304,6 +310,27 @@ sub create {
 
 	}
 
+	my @index;
+	if(ref $config->{INDEX}) {
+		for my $def (@{$config->{INDEX}}) {
+			my $uniq = '';
+			$uniq = 'UNIQUE' if $def =~ s/^\s*unique\s+//i;
+			$def =~ s/:\w+//g;
+			my $col = $def;
+			$col =~ s/\W.*//s;
+			my $template = $config->{ALTER_INDEX}
+						|| $known_capability{ALTER_INDEX}{default};
+			$template =~ s/\b_TABLE_\b/$tablename/g;
+			$template =~ s/\b_COLUMN_\b/$col/g;
+			$template =~ s/\b_DEF_\b/$def/g;
+			$template =~ s/\$TABLE\$/$tablename/g;
+			$template =~ s/\$DEF\$/$def/g;
+			$template =~ s/\$COLUMN\$/$col/g;
+			$template =~ s/\b_UNIQUE_(\w+_)?/$uniq ? ($1 || $uniq) : ''/eg;
+			push @index, $template;
+		}
+	}
+
 	if(ref $config->{POSTCREATE}) {
 		for(@{$config->{POSTCREATE}} ) {
 			$db->do($_) 
@@ -319,6 +346,16 @@ sub create {
 	} else {
 		$db->do("create index ${tablename}_${key} on $tablename ($key)")
 			or ::logError("table %s index failed: %s" , $tablename, $DBI::errstr);
+	}
+
+	for(@index) {
+::logDebug("Running: $_");
+		$db->do($_) 
+			or ::logError(
+							"DBI: Post creation query '%s' failed: %s" ,
+							$_,
+							$DBI::errstr,
+				);
 	}
 
 	if(! defined $config->{EXTENDED}) {
@@ -743,6 +780,11 @@ sub delete_column {
 	return $s->alter_column($column, $def, 'ALTER_DELETE');
 }
 
+sub index_column {
+	my ($s, $column, $def) = @_;
+	return $s->alter_column($column, $def, 'ALTER_INDEX');
+}
+
 sub alter_column {
 	my ($s, $column, $def, $function) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
@@ -780,6 +822,10 @@ sub alter_column {
 	$template =~ s/\b_TABLE_\b/$s->[$TABLE]/g;
 	$template =~ s/\b_COLUMN_\b/$column/g;
 	$template =~ s/\b_DEF_\b/$def/g;
+	$template =~ s/\$BACKUP\$/"bak_$s->[$TABLE]"/g;
+	$template =~ s/\$TABLE\$/$s->[$TABLE]/g;
+	$template =~ s/\$COLUMN\$/$column/g;
+	$template =~ s/\$DEF\$/$def/g;
 
 	my $rc;
 	eval {

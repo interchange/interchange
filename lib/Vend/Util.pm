@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.38 2001-06-29 02:19:26 jon Exp $
+# $Id: Util.pm,v 1.14.2.39 2001-07-06 17:37:45 heins Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -74,7 +74,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.38 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.39 $, 10);
 
 BEGIN {
 	eval {
@@ -241,16 +241,15 @@ use vars qw/%MIME_type/;
 sub mime_type {
 	my ($val) = @_;
 	$val =~ s:.*\.::s;
+
+	! length($val) and return $Vend::Cfg->{MimeType}{default} || 'text/plain';
+
 	$val = lc $val;
-	if(! length($val)) {
-		return $Vend::Cfg->{MimeType}{default} || 'text/plain';
-	}
-	else {
-		return $Vend::Cfg->{MimeType}{$val}
+
+	return $Vend::Cfg->{MimeType}{$val}
 				|| $MIME_type{$val}
 				|| $Vend::Cfg->{MimeType}{default}
 				|| $MIME_type{default};
-	}
 }
 
 # Return AMOUNT formatted as currency.
@@ -876,8 +875,8 @@ sub readin {
 HTTP/1.0 401 Unauthorized
 WWW-Authenticate: Basic realm="$realm"
 EOF
-			if(-f "$try/violation.$suffix") {
-				$fn = "$try/violation.$suffix";
+			if(-f "$try/violation$suffix") {
+				$fn = "$try/violation$suffix";
 			}
 			else {
 				$file = find_special_page('violation');

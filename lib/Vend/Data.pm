@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 1.17.2.22 2001-06-29 02:19:25 jon Exp $
+# $Id: Data.pm,v 1.17.2.23 2001-07-06 17:37:45 heins Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -1080,7 +1080,7 @@ sub export_database {
 
 	my ($notouch, $nuke);
 	if ($field and ! $delete) {
-#::logDebug("Trying for delete field=$field delete=$delete");
+#::logDebug("Trying for add field=$field delete=$delete");
 		if($db->column_exists($field)) {
 			logError(
 				"Can't define column '%s' twice in table '%s'",
@@ -1094,7 +1094,7 @@ sub export_database {
 		$notouch = 1;
 	}
 	elsif ($field) {
-#::logDebug("Trying for add field=$field delete=$delete");
+#::logDebug("Trying for delete field=$field delete=$delete");
 		if(! $db->column_exists($field)) {
 			logError(
 				"Can't delete non-existent column '%s' in table '%s'",

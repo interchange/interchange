@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 1.16.4.14 2001-07-01 12:02:12 heins Exp $
+# $Id: Common.pm,v 1.16.4.15 2001-07-06 17:37:46 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -22,7 +22,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.16.4.14 $, 10);
+$VERSION = substr(q$Revision: 1.16.4.15 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -958,7 +958,7 @@ EndOfExcel
 		my @f; my $f;
 		my @n;
 		my $i;
-		@f = split /[\s,]+/, $options->{INDEX};
+		@f = @{$options->{INDEX}};
 		foreach $f (@f) {
 			my $found = 0;
 			$i = 0;

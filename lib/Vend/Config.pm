@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.58 2001-07-03 19:57:33 heins Exp $
+# $Id: Config.pm,v 1.25.2.59 2001-07-06 17:37:44 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.58 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.59 $, 10);
 
 my %CDname;
 
@@ -2381,6 +2381,7 @@ my %Ary_ref = (   qw!
 						NAME                NAME
 						BINARY              BINARY 
 						POSTCREATE          POSTCREATE 
+						INDEX               INDEX 
 						ALTERNATE_DSN       ALTERNATE_DSN
 						ALTERNATE_USER      ALTERNATE_USER
 						ALTERNATE_PASS      ALTERNATE_PASS

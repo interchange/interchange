@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 1.18.2.28 2001-07-03 19:57:33 heins Exp $
+# $Id: Order.pm,v 1.18.2.29 2001-07-06 17:37:45 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.28 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.29 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -759,7 +759,11 @@ sub pgp_encrypt {
 	$cmd = $Vend::Cfg->{EncryptProgram} unless $cmd;
 	$key = $Vend::Cfg->{EncryptKey}	    unless $key;
 
-	if($cmd =~ m{^(?:/\S+/)?\bgpg$}) {
+	
+	if("\L$cmd" eq 'none') {
+		return ::errmsg("NEED ENCRYPTION ENABLED.");
+	}
+	elsif($cmd =~ m{^(?:/\S+/)?\bgpg$}) {
 		$cmd .= " --batch --always-trust -e -a -r '%s'";
 	}
 	elsif($cmd =~ m{^(?:/\S+/)?pgpe$}) {
