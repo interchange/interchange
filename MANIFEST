@@ -529,6 +529,7 @@ dist/lib/UI/usertag/read_serial
 dist/lib/UI/usertag/read_shipping
 dist/lib/UI/usertag/read_ui_template
 dist/lib/UI/usertag/regenerate
+dist/lib/UI/usertag/related
 dist/lib/UI/usertag/return_to
 dist/lib/UI/usertag/rotate_database
 dist/lib/UI/usertag/rotate_file

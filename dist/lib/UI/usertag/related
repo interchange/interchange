@@ -1,0 +1,91 @@
+#
+# UserTag related - see POD documentation for more information
+#
+# Copyright 2000 by Stefan Hornburg <racke@linuxia.de>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public
+# License along with this program; if not, write to the Free
+# Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+# MA  02111-1307  USA.
+
+UserTag related Order table
+# I suggest to place version information on user-defined tags
+# UserTag related Version 0.01
+UserTag related Routine <<EOF
+sub {
+    my ($table) = @_;
+    my $db = $Db{$table};
+    my (%relmap, $url, $out, $ary);
+    my $ui_base = $Vend::Cfg->{Variable}{UI_BASE};
+    my $return_to = ''; "$ui_base/item_edit";
+
+    # sanity check
+    unless ($db) {
+        Log ("related: no such table \"$table\"");
+        return;
+    }
+    # check table acls !!
+
+    # search for related tables
+    my ($dbname, $colname);
+    for (split (/\s/, $db->config('FOREIGN_KEY'))) {
+        ($dbname, $colname) = split /::/;
+        $relmap{$dbname} = $colname;
+    }   
+
+    # build and display links
+    for my $base (sort (keys (%relmap))) {
+        # search table for corresponding foreign keys
+        $db = Vend::Data::database_exists_ref($base);
+        unless ($db) {
+            Log ("related: no such table \"$base\"");            
+            return;
+        }
+        $DbSearch->{table} = $db;
+        $ary = $DbSearch->array ({
+            st => 'db',
+            fi => $base,
+            sf => [$relmap{$dbname}],
+            se => $CGI->{item_id},
+            rf => [$db->config('KEY')]
+        });
+        if (@$ary > 1) {
+            my $rows = join(' ', map{$_->[0]} @$ary);
+            $url = $Tag->area({href=>"$ui_base/spread",
+                               form=>qq{
+                                  mv_data_table=$base
+                                  ui_return_to=$return_to
+                                  ui_text_qualification=$relmap{$base}=$CGI->{item_id}
+            }});    
+            $out .= qq{<BR>\n<A HREF="$url">Related entries from $base</A>};
+        } elsif (@$ary) {
+            $url = $Tag->area({href=>"$ui_base/flex_editor",
+                               form=>qq{
+                                  item_id=$$ary[0][0];
+                                  mv_data_table=$base
+                                  ui_return_to=$return_to
+            }});
+            $out .= qq{<BR>\n<A HREF="$url">Related entry from $base</A>};
+        } else {
+            $url = $Tag->area({href=>"$ui_base/flex_editor",
+                               form=>qq{
+                                  mv_data_table=$base
+                                  ui_return_to=$return_to
+                                  $relmap{$base}=$CGI->{item_id}
+            }});
+            $out .= qq{<BR>\n<A HREF="$url">Add related entry to $base</A>};
+        }
+    }
+    $out;
+}
+EOF
