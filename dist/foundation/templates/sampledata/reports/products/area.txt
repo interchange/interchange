@@ -1,0 +1,4 @@
+code	sel	name	which_page	sort	display_type	image	image_prop	banner_image	banner_text	link_type	url	tab	page	search	selector	link_template
+35	left	Automotive	all	05	name
+36	left	Marketing	all	05	name
+37	left	Retail	all	05	name
