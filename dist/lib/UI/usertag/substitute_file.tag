@@ -55,17 +55,23 @@ sub {
 	my $end = $opt->{end};
 	my $subbed;
 
+	my $sub = sub {
+			my ($begin, $replace, $end) = @_;
+			return $replace if $opt->{replace};
+			return $begin . $replace . $end;
+	};
+
 	if($opt->{case} and $opt->{global}) {
-		$subbed = $data =~ s{($begin)$exist($end)}{$1$replace$2}g;
+		$subbed = $data =~ s{($begin)$exist($end)}{$sub->($1, $replace, $2)}ge;
 	}
 	elsif($opt->{global}) {
-		$subbed = $data =~ s{($begin)$exist($end)}{$1$replace$2}ig;
+		$subbed = $data =~ s{($begin)$exist($end)}{$sub->($1, $replace, $2)}ige;
 	}
 	elsif($opt->{case}) {
-		$subbed = $data =~ s{($begin)$exist($end)}{$1$replace$2};
+		$subbed = $data =~ s{($begin)$exist($end)}{$sub->($1, $replace, $2)}e;
 	}
 	else {
-		$subbed = $data =~ s{($begin)$exist($end)}{$1$replace$2}i;
+		$subbed = $data =~ s{($begin)$exist($end)}{$sub->($1, $replace, $2)}ie;
 	}
 
 	if( $subbed ) {
