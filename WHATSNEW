@@ -81,6 +81,9 @@ Core
 
 * Make aliased UserTag respect EndTag setting.
 
+* Vend::Util::string_to_ref no longer looks at $Vend::Cfg->{ExtraSecure},
+  which really contradicts the documentation.
+
 Options
 -------
 
@@ -395,6 +398,9 @@ Foundation
   Replaced <img ...> by:
 	[image 	src="[var IMAGE_DIR]/items/[cgi item_id]" extra="border=0 id=item_img"]
 
+* Remove straggling Red Hat/IC logo and URLs, update foundation logos to match
+  Interchange 4.8's latest.
+
 Debian
 ------
 
@@ -452,6 +458,8 @@ SOAP
 * Allow tracing in SOAP calls in order to get a handle on SOAP request
   resp. response.
 
+* Error handling revised.
+
 Shadow Database
 ---------------
 
@@ -459,6 +467,8 @@ Shadow Database
 
 * column_exists method calls now method of underlying class instead of a
   lookup in the database structure which didn't work properly
+
+* each_nokey is now properly replacing the shadowed fields.
 
 Miscellaneous
 -------------
