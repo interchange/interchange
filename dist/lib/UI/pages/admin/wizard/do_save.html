@@ -6,7 +6,26 @@
 @_UI_STD_HEAD_@
 &nbsp;<br>
 
-<!-- [perl tables="access variable products country mv_metadata userdb"]
+<blockquote>
+[if value pgpkeytext =~ /BEGIN/]
+
+	[calc]
+		$Values->{pgpkeyid} = q{[add-gpg-key text="[value pgpkeytext]" return_id=1]};
+		return;
+	[/calc]
+
+	[if value pgpkeyid]
+	GPG key (id [value pgpkeyid]) imported.
+	[value name=pgpkeytext set=""]
+	[else]
+	GPG key import FAILED.
+	[/else]
+	[/if]
+
+[/if]
+
+[if !cgi showactions]<!--[/if]
+[perl tables="access variable products country mv_metadata userdb"]
 	my $vdb = $Db{variable};
 	my $adb = $Db{access};
 	my $udb= $Db{userdb};
@@ -601,25 +620,8 @@ push @messages, "set shipmodes to '$na_string' in Canada";
 	return $out unless @errors;
 	$out .= "<P>Errors: <BR>";
 	$out .= join "<BR>", @errors;
-[/perl] -->
-
-<blockquote>
-[if value pgpkeytext =~ /BEGIN/]
-
-	[calc]
-		$Values->{pgpkeyid} = q{[add-gpg-key text="[value pgpkeytext]" return_id=1]};
-		return;
-	[/calc]
-
-	[if value pgpkeyid]
-	GPG key (id [value pgpkeyid]) imported.
-	[value name=pgpkeytext set=""]
-	[else]
-	GPG key import FAILED.
-	[/else]
-	[/if]
-
-[/if]
+[/perl]
+[if !cgi showactions] -->[/if]
 
 [if value sampleproducts]
 [and value products =~ /\.xls$/i]
