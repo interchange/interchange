@@ -140,6 +140,7 @@ code	sorder	country	state	name	tax	postcode	shipmodes	tax_name
 	05	UK	DEVON	Devonshire
 	05	UK	DORSET	Dorsetshire
 	05	UK	DUMGAL	Dumfries & Galloway
+	05	UK	DURHAM	Durham
 	05	UK	GLAM	Glamorganshire
 	05	UK	GLOUS	Gloucestershire
 	05	UK	GRAMP	Grampian
@@ -180,7 +181,32 @@ code	sorder	country	state	name	tax	postcode	shipmodes	tax_name
 	06	EI	CO ANTRIM	County Antrim
 	06	EI	CO ARMAGH	County Armagh
 	06	EI	CO DOWN	County Down
-	06	EI	CO DURHAM	County Durham
-	06	EI	CO FERMANAgh	County Fermanagh
+	06	EI	CO FERMANAGH	County Fermanagh
 	06	EI	CO DERRY	County Londonderry
 	06	EI	CO TYRONE	County Tyrone
+	06	EI	CO CAVAN	County Cavan
+	06	EI	CO DONEGAL	County Donegal
+	06	EI	CO MONAGHAN	County Monaghan
+	06	EI	CO DUBLIN	County Dublin
+	06	EI	CO CARLOW	County Carlow
+	06	EI	CO KILDARE	County Kildare
+	06	EI	CO KILKENNY	County Kilkenny
+	06	EI	CO LAOIS	County Laois
+	06	EI	CO LONGFORD	County Longford
+	06	EI	CO LOUTH	County Louth
+	06	EI	CO MEATH	County Meath
+	06	EI	CO OFFALY	County Offaly
+	06	EI	CO WESTMEATH	County Westmeath
+	06	EI	CO WEXFORD	County Wexford
+	06	EI	CO WICKLOW	County Wicklow
+	06	EI	CO GALWAY	County Galway
+	06	EI	CO MAYO	County Mayo
+	06	EI	CO LEITRIM	County Leitrim
+	06	EI	CO ROSCOMMON	County Roscommon
+	06	EI	CO SLIGO	County Sligo
+	06	EI	CO CLARE	County Clare
+	06	EI	CO CORK	County Cork
+	06	EI	CO KERRY	County Kerry
+	06	EI	CO LIMERICK	County Limerick
+	06	EI	CO TIPPERARY	County Tipperary
+	06	EI	CO WATERFORD	County Waterford
