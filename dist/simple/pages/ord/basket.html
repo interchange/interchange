@@ -144,6 +144,14 @@ lose your shopping cart.
 <INPUT TYPE=submit
 	onClick="this.form.action='[process-target]'"
 	NAME=mv_click value="Stop shopping">
+	[if session logged_in]
+	[and !value show_saved]
+	<BR><A HREF="[area form='
+						mv_todo=return
+						mv_nextpage=@@MV_PAGE@@
+						show_saved=1
+					']">Show saved carts</A>
+	[/if]
 </TD>
 </TR>
 </TBODY>
@@ -152,24 +160,24 @@ lose your shopping cart.
 <BR CLEAR=ALL>
 
 [if session logged_in]
+[and value show_saved]
 [userdb function=get_cart_names hide=1]
-
 <P>
 <FORM ACTION="[process-target secure=1]" METHOD=POST>
 <INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 <INPUT TYPE=hidden NAME=mv_todo VALUE=return>
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="ord/basket">
 <TABLE WIDTH="450" BORDER=0 CELLPADDING=4 CELLSPACING=0 ALIGN=RIGHT>
-<TR><TD COLSPAN=5 BGCOLOR="__TITLEBG__" ALIGN=CENTER><FONT SIZE="+2" FACE="arial,helvetica" COLOR="__TITLETEXT__">Cart Storage Area</FONT><BR></TD></TR>
-	<COL WIDTH="40%">
-	<COL WIDTH="40%">
+<TR><TD COLSPAN=3 BGCOLOR="__TITLEBG__" ALIGN=CENTER><FONT SIZE="+2" FACE="arial,helvetica" COLOR="__TITLETEXT__">Cart Storage Area</FONT><BR></TD></TR>
+	<COL WIDTH="50%">
+	<COL WIDTH="30%">
 	<COL WIDTH="20%">
 	<THEAD>
 		<TR __HEADERBG__ VALIGN=TOP>
-			<TH __HEADERBG__ WIDTH="40%">
+			<TH __HEADERBG__ WIDTH="50%">
 				<P><FONT COLOR="__HEADERTEXT__"><FONT FACE="helvetica, sans-serif">New Cart Name</FONT></FONT></P>
 			</TH>
-			<TH __HEADERBG__ WIDTH="40%">
+			<TH __HEADERBG__ WIDTH="30%">
 				<P><FONT COLOR="__HEADERTEXT__"><FONT FACE="helvetica, sans-serif">Existing Cart Name</FONT></FONT></P>
 			</TH>
 			<TH __HEADERBG__ WIDTH="20%">
@@ -178,9 +186,17 @@ lose your shopping cart.
 		</TR>
 	</THEAD>
 	<TBODY>
-<TR VALIGN=TOP><TD __TABLEFG__ VALIGN=top ALIGN=center WIDTH="40%">
-	<INPUT TYPE=text NAME=c_nickname0 SIZE=20 VALUE="[tag time]%b-%d-%Y:%H:%M[/tag]">
-	</TD><TD __TABLEFG__ WIDTH="40%">
+<TR VALIGN=TOP><TD __TABLEFG__ VALIGN=top ALIGN=center WIDTH="50%">
+	<INPUT TYPE=text NAME=c_nickname0 SIZE=10 VALUE="">&nbsp;<SELECT NAME=c_nickname0>
+		<OPTION VALUE=wishlist> Wish List
+		<OPTION VALUE=daily> Daily order
+		<OPTION VALUE=weekly> Weekly order
+		<OPTION VALUE=monthly> Monthly order
+		<OPTION VALUE=yearly> Yearly order
+		<OPTION VALUE=temp> Temporary
+		<OPTION>[tag time]%b-%d-%Y:%H:%M[/tag]
+	</SELECT>
+	</TD><TD __TABLEFG__ WIDTH="30%">
 		<SELECT NAME=c_nickname MULTIPLE>
 		[loop arg="[value carts]" option=c_nickname]
 		[sort code]
@@ -194,7 +210,7 @@ lose your shopping cart.
 	</TD></TR>
 [set Save to new cart]
 [value name=c_nickname set="[value c_nickname0]"]
-[userdb function=set_cart nickname="[value c_nickname]"]
+[userdb function=set_cart nickname="[value name=c_nickname filter='nullselect no_white']"]
 [/set]
 
 [set Save to existing cart]
@@ -219,6 +235,11 @@ lose your shopping cart.
 	<INPUT TYPE=submit NAME=mv_check VALUE="Recall cart(s)">
 	<INPUT TYPE=submit NAME=mv_check VALUE="Save to existing cart">
 	<INPUT TYPE=submit NAME=mv_check VALUE="DELETE cart">
+	<BR><A HREF="[area form='
+						mv_todo=return
+						mv_nextpage=@@MV_PAGE@@
+						show_saved=0
+					']">Hide saved carts</A>
 </TR>
 </TBODY>
 </TABLE>
