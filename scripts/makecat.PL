@@ -252,7 +252,7 @@ NOTE: This will be the name of 'vlink' or 'tlink', the link CGI
 program. Depending on your CGI setup, it may also have the 
 extension .cgi added.
 
-If you are doing the demo for the first time, you might use "basic".
+If you are doing the demo for the first time, you might use "barry".
 
 EOF
    $catalog_name = prompt ("Catalog name? ");
@@ -521,8 +521,8 @@ my %History = (
     demotype =>  sub {
 						my @dir; 
 						@dir = sort map { s:(.*)/.*:$1:; $_ } glob("*/catalog.cfg");
-						@dir = grep $_ ne 'basic', @dir;
-						unshift(@dir, 'basic') if -f 'basic/catalog.cfg';
+						@dir = grep $_ ne 'barry', @dir;
+						unshift(@dir, 'barry') if -f 'barry/catalog.cfg';
 						unshift(@dir, 'simple') if $catalog_name =~ /simp/;
 						return @dir;
 					},
@@ -1946,7 +1946,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.3 2000-06-18 08:42:46 heins Exp $
+$Id: makecat.PL,v 1.4 2000-07-11 21:52:06 heins Exp $
 
 =head1 INTRODUCTION
 
@@ -2172,7 +2172,7 @@ Don't set umask to the value implied by mode.
 =head1 DESCRIPTION
 
 C<makecat> needs a template catalog to operate on. The I<simple> and
-I<basic> demo templates are distributed with MiniVend. You can also look for
+I<barry> demo templates are distributed with MiniVend. You can also look for
 older demo catalogs (mostly for ideas) at C<ftp.minivend.com>.
 
 B<IMPORTANT NOTE:> You only make a catalog once. All further configuration
@@ -2343,7 +2343,7 @@ General information and documentation for Minivend is at:
 __END__
 
 # Sample catalog definition
-[catalog basic]
+[catalog barry]
 basedir      =
 catroot      =
 catuser      =
@@ -2351,7 +2351,7 @@ cgibase      =
 cgibin       =
 cgidir       =
 cgiurl       =
-demotype     = basic
+demotype     = barry
 documentroot =
 imagedir     =
 imageurl     =
