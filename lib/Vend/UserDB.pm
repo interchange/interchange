@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.7 2002-07-04 17:19:48 mheins Exp $
+# $Id: UserDB.pm,v 2.8 2002-07-04 23:11:13 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -16,7 +16,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1311,19 +1311,21 @@ sub assign_username {
 	my $start = $self->{OPTIONS}{username} || 'U00000';
 	$file = './etc/username.counter' if ! $file;
 
-	my $custno = Vend::Interpolate::tag_counter(
-						$file,
-						{ sql => $self->{OPTIONS}{sql_counter} },
-					);
+	my $o = { start => $start, sql => $self->{OPTIONS}{sql_counter} };
+
+	my $custno;
 
 	if(my $l = $Vend::Cfg->{Accounting}) {
 
 		my $class = $l->{Class};
 
+		my $assign = defined $l->{assign_username} ? $l->{assign_username} : 1;
+
+		if($assign) {
 #::logDebug("Accounting class is $class");
 		my $obj;
 		eval {
-			$obj = $class->new;;
+				$obj = $class->new;
 		};
 #::logDebug("Accounting object is $obj");
 
@@ -1334,10 +1336,11 @@ sub assign_username {
 				);
 		}
 		$custno = $obj->assign_customer_number();
+		}
 #::logDebug("assigned new customer number $custno");
 	}
 
-	return $custno;
+	return $custno || Vend::Interpolate::tag_counter($file, $o);
 }
 
 sub new_account {
