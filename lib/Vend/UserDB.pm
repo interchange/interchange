@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.6 2000-07-20 07:15:47 heins Exp $
+# $Id: UserDB.pm,v 1.7 2000-08-06 19:55:42 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 1.7 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -154,7 +154,7 @@ order. By default these form values are included:
 	mv_credit_card_type
 	mv_credit_card_exp_month
 	mv_credit_card_exp_year
-	mv_credit_card_info
+	mv_credit_card_reference
 
 The values are saved with the $obj->set_billing() method and restored 
 with $obj->get_billing. A list of the keys available is kept in the
@@ -202,7 +202,7 @@ qw!
 	mv_credit_card_type
 	mv_credit_card_exp_month
 	mv_credit_card_exp_year
-	mv_credit_card_info
+	mv_credit_card_reference
 	!
 );
 
