@@ -301,7 +301,7 @@ so there's a full line across the page even if table cells are blank.
 [/button]
 [/if]
 &nbsp;&nbsp;&nbsp;[button form=batch text=`
-			my $tmp = "$Scratch->{active_nm} checked customers";
+			my $tmp = errmsg("$Scratch->{active_nm} checked customers");
 			return "\u$tmp";
 			`]
 [scratch active_nm]=1[/button]
