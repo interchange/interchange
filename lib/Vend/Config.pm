@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.2 2001-08-01 00:58:49 heins Exp $
+# $Id: Config.pm,v 2.3 2001-08-15 11:55:59 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 
 my %CDname;
 
@@ -472,6 +472,7 @@ sub catalog_directives {
 	['EncryptKey',		 undef,     	     ''],
 	['AsciiTrack',	 	 undef,     	     ''],
 	['TrackFile',	 	 undef,     	     ''],
+	['TrackPageParam',	 'hash',     	     ''],
 	['SalesTax',		 undef,     	     ''],
 	['SalesTaxFunction', undef,     	     ''],
 	['StaticDBM',  	 	 undef,     	     ''],
