@@ -3,7 +3,7 @@ ui_template: Yes
 ui_template_name: leftonly
 [/comment]
 
-[tmp page_title]__COMPANY__ -- Contact Us[/tmp]
+[tmp page_title]__COMPANY__ -- [L]Contact Us[/L][/tmp]
 
 [control reset=1]
 
@@ -28,7 +28,7 @@ ui_template_name: leftonly
 [promo_type]new[/promo_type]
 [matches]3[/matches]
 [cols]3[/cols]
-[banner]New items[/banner]
+[banner][L]New items[/L][/banner]
 [/control-set]
 
 [control reset=1]
@@ -43,7 +43,7 @@ ui_template_name: leftonly
 
     <br>
 
-	<p>You can contact us the following ways:</p>
+	<p>[L]You can contact us the following ways[/L]:</p>
 
 	<p>
     <b>__COMPANY__</b><br>
@@ -52,25 +52,24 @@ ui_template_name: leftonly
 	</p>
 
 	<p>
-    Phone: __PHONE__<br>
+    [L]Phone[/L]: __PHONE__<br>
 	[if variable FAX]
-	    Fax: __FAX__<br>
+	    [L]Fax[/L]: __FAX__<br>
 	[/if]
     [if variable TOLLFREE]
-    	Toll-free: __TOLLFREE__<br>
+    	[L]Toll-free[/L]: __TOLLFREE__<br>
 	[/if]
 	[if variable EMAIL_INFO]
-		e-mail: <a href="mailto:__EMAIL_INFO__">__EMAIL_INFO__</a><br>
+		[L]e-mail[/L]: <a href="mailto:__EMAIL_INFO__">__EMAIL_INFO__</a><br>
 	[/if]
 	</p>
 
 	<hr>
 
-	<p>If you would like further information on constructing a store
-	like this, please contact Red Hat E-Business Solutions:</p>
+	<p>[L]If you would like further information on constructing a store like this, please contact the Interchange Development Group[/L]:</p>
 
     <p><a href="@_INTERCHANGE_URL_@">@_INTERCHANGE_URL_@</a><br>
-    e-mail: <a href="mailto:@_INTERCHANGE_EMAIL_@">@_INTERCHANGE_EMAIL_@</a></p>
+    [L]e-mail[/L]: <a href="mailto:@_INTERCHANGE_EMAIL_@">@_INTERCHANGE_EMAIL_@</a></p>
 
   </td>
 </tr>

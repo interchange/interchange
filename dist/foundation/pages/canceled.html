@@ -31,20 +31,20 @@ ui_template_name: leftonly
 [control reset=1]
 
 [set members_only]0[/set]
-[set page_banner]Stop Shopping[/set]
-[set page_title]__COMPANY__ -- Stop Shopping[/set]
+[set page_banner][L]Stop Shopping[/L][/set]
+[set page_title]__COMPANY__ -- [L]Stop Shopping[/L][/set]
 
 @_LEFTONLY_TOP_@
 
 <!-- BEGIN CONTENT -->
 
-Please confirm your request to stop shopping by clicking the button below. All
+[L CANCEL_PAR1]Please confirm your request to stop shopping by clicking the button below. All
 items will be cleared from your shopping cart, your name and address information
-will be expunged, and all saved settings from your visit will disappear.
+will be expunged, and all saved settings from your visit will disappear.[/L]
 
 <br><br>
 
-Thank you for visiting!
+[L]Thank you for visiting![/L]
 
 <br><br>
 					
@@ -52,7 +52,7 @@ Thank you for visiting!
 <input type=hidden name=mv_session_id value="[data session id]">
 <input type=hidden name=mv_todo      value=cancel>
 <input type=hidden name=mv_nextpage  value=index>
-<input type=submit value="Stop Shopping">
+<input type=submit value="[L]Stop Shopping[/L]">
 </form>
 
 <!-- END CONTENT -->
