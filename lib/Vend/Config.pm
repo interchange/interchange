@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.21 2000-09-25 15:24:48 heins Exp $
+# $Id: Config.pm,v 1.22 2000-09-25 15:31:32 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -103,7 +103,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.21 $, 10);
+$VERSION = substr(q$Revision: 1.22 $, 10);
 
 my %CDname;
 
@@ -2288,7 +2288,7 @@ sub get_configdb {
 sub parse_routeconfig {
 	my ($var, $value) = @_;
 
-	my ($table, $file, $type);
+	my ($file, $type);
 	return '' if ! $value;
 	local($Vend::Cfg) = $C;
 
@@ -2317,7 +2317,7 @@ sub parse_routeconfig {
 sub parse_dbconfig {
 	my ($var, $value) = @_;
 
-	my ($table, $file, $type);
+	my ($file, $type);
 	return '' if ! $value;
 	local($Vend::Cfg) = $C;
 
@@ -2371,10 +2371,10 @@ sub parse_dbdatabase {
 	my ($k, @f);	# key and fields
 	my @l;			# refs to locale repository
 	my @n;			# names of locales
+	my $name;		# names of current locale
 
 	@n = $db->columns();
-	my $name;
-	my $k = 0;
+	$k = 0;
 	foreach $name (@n) {
 		next if $k++ == $kindex;
 		my $file = $db->field('_file', $name);
