@@ -1,6 +1,6 @@
 # SessionFile.pm:  stores session information in files
 #
-# $Id: SessionFile.pm,v 1.4 2000-11-12 20:52:25 heins Exp $
+# $Id: SessionFile.pm,v 1.4.2.1 2000-12-14 17:01:37 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -19,9 +19,6 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-
-# $Id: SessionFile.pm,v 1.4 2000-11-12 20:52:25 heins Exp $
-
 package Vend::SessionFile;
 require Tie::Hash;
 @ISA = qw(Tie::Hash);
@@ -31,7 +28,7 @@ use strict;
 use Vend::Util;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.4.2.1 $, 10);
 
 my $SessionDir;
 my $CommDir;
@@ -74,8 +71,8 @@ sub comm_keyname {
 sub FETCH {
 	my($self, $key) = @_;
 #::logDebug("fetch $key");
-    $SessionFile = keyname($key);
-    $SessionLock = $SessionFile . ".lock";
+	$SessionFile = keyname($key);
+	$SessionLock = $SessionFile . ".lock";
 	return undef unless -f $SessionFile;
 	my $str;
 	unless ($HaveLock{$SessionFile}) {
@@ -158,19 +155,19 @@ sub EXISTS {
 # IPC not handled yet
 sub DELETE {
 	my($self,$key) = @_;
-    my $filename = keyname($key);
+	my $filename = keyname($key);
 	unlink $filename;
 	return 1 if $Global::Windows;
-    my $lockname = $filename . ".lock";
+	my $lockname = $filename . ".lock";
 	unlink $lockname;
 }
 
 sub STORE {
 	my($self, $key, $ref) = @_;
 #::logDebug("store $key");
-    $SessionFile = keyname($key);
-    $SessionLock = $SessionFile . ".lock";
-    unlink $SessionFile;
+	$SessionFile = keyname($key);
+	$SessionLock = $SessionFile . ".lock";
+	unlink $SessionFile;
 	unless ($HaveLock{$SessionFile}) {
 		$Lh = gensym();
 		open($Lh, "+>>$SessionLock")
