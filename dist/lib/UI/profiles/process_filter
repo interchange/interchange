@@ -1,5 +1,7 @@
 __NAME__ process_filter
-[perl]
+[flag type=write table="[cgi mv_data_table]"]
+[perl tables="[list-databases]"]
+# $Id: process_filter,v 2.2 2002-10-14 21:35:02 mheins Exp $
 	my @filters = grep /^ui_filter:/, keys %$CGI;
   FILTERS: {
 	last FILTERS unless @filters;
