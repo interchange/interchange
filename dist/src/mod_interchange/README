@@ -1,9 +1,9 @@
 mod_interchange
 ===============
 
-$Id: README,v 2.4 2002-11-03 14:08:20 kwalsh Exp $
+$Id: README,v 2.5 2002-11-28 22:19:24 kwalsh Exp $
 
-Version: 1.26
+Version: 1.27
 
 Description
 -----------
@@ -81,17 +81,6 @@ UNIX mode local primary connection and INET mode remote backup connection:
 	SetHandler interchange-handler
 	InterchangeServer /opt/interchange/etc/socket
 	InterchangeServerBackup another.server.com:7786
-    </Location>
-
-If the <Location> has more than one directory level in the URI path then the
-URILevels parameter will need to be specified in order for full path to be
-passed to Interchange.  URILevels defaults to 1, if not specified.
-Here is an example:
-
-    <Location /somepath/shop>
-	SetHandler interchange-handler
-	InterchangeServer localhost:7786
-	URILevels 2
     </Location>
 
 The ConnectTries parameter specifies the number of connection attempts to

@@ -1,11 +1,11 @@
-<!-- $Id: mod_interchange.html,v 2.5 2002-11-03 14:08:20 kwalsh Exp $ -->
+<!-- $Id: mod_interchange.html,v 2.6 2002-11-28 22:19:24 kwalsh Exp $ -->
 <html>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <title>Apache module: mod_interchange (version 1.26)</title>
+   <title>Apache module: mod_interchange (version 1.27)</title>
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
-    <h1>Apache module: mod_interchange (version 1.26)</h1>
+    <h1>Apache module: mod_interchange (version 1.27)</h1>
     <h2>Apache link module for Interchange</h2>
     <p>
 	This module replaces the <i>tlink</i> and <i>vlink</i> programs
@@ -27,7 +27,6 @@
 	    <ul>
 		<li><a href="#server">InterchangeServer</a></li>
 		<li><a href="#serverbackup">InterchangeServerBackup</a></li>
-		<li><a href="#urilevels">URILevels</a></li>
 		<li><a href="#tries">ConnectTries</a></li>
 		<li><a href="#retrydelay">ConnectRetryDelay</a></li>
 		<li><a href="#droplist">DropRequestList</a></li>
@@ -65,16 +64,6 @@
 	The InterchangeServerBackup directive is only of any use if you
 	have multiple Interchange servers configured in a clustered
 	environment.
-    </p>
-
-    <h2><a name="urilevels">URILevels</a></h2>
-    <b>Syntax:</b> <code>URILevels <i>number</i></code>
-    <br><b>Context:</b> Location
-    <br><b>Override:</b> None
-    <br><b>Status:</b> Extension
-    <p>
-	Specifies the number of URI directory levels that will be passed
-	to interchange in the request.
     </p>
 
     <h2><a name="tries">ConnectTries</a></h2>
@@ -155,23 +144,6 @@
 	&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;/Location&gt;</b><br>
     </code>
     <p>
-	The <b>URILevels</b> parameter controls the number of
-	URI directory levels that will be passed along to Interchange
-	to help it decide which catalog to use.&nbsp;
-	If the <b>&lt;Location&gt;</b> has more than one directory
-	level in the URI path then the <b>URILevels</b> parameter will
-	need to be specified in order for full path to be passed to
-	Interchange.&nbsp; <b>URILevels</b> defaults to 1, if not
-	specified.&nbsp; Here is an example:
-    </p>
-    <code>
-	&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;Location</b> <i>/somepath/shop</i><b>&gt;</b><br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>SetHandler interchange-handler</b><br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>InterchangeServer</b> <i>localhost</i>:<i>7786</i><br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>URILevels</b> <i>2</i><br>
-	&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;/Location&gt;</b><br>
-    </code>
-    <p>
 	Two parameters control what happens when mod_interchange
 	fails to connect to the Interchange server.&nbsp;
 	The most likely reason for a failure to connect is that Interchange
@@ -223,6 +195,20 @@
     <h2><a name="changelog">Change Log</a></h2>
     <ul>
 	<li>
+	    1.27
+	    (Wed 27 Nov 2002)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Implemented a proper (automatic) URILevels mechanism and
+		    removed the URILevels configuration directive.&nbsp;
+		    This also fixes a bug, reported by Philip Hempel in the
+		    interchange-users mail list, where [PT] redirects were
+		    not being handled correctly.
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
 	    1.26
 	    (Sun 03 Nov 2002)
 	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>

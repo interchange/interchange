@@ -1,10 +1,10 @@
 /*
- *	$Id: mod_interchange.c,v 2.5 2002-11-03 14:08:20 kwalsh Exp $
+ *	$Id: mod_interchange.c,v 2.6 2002-11-28 22:19:24 kwalsh Exp $
  *
  *	Apache Module implementation of the Interchange application server
  *	link programs.
  *
- *	Version: 1.26
+ *	Version: 1.27
  *
  *	Author: Kevin Walsh <kevin@cursor.biz>
  *	Based on original code by Francis J. Lacoste <francis.lacoste@iNsu.COM>
@@ -42,7 +42,7 @@
 #include <sys/un.h>
 #include <unistd.h>
 
-#define	MODULE_VERSION	"mod_interchange/1.26"
+#define	MODULE_VERSION	"mod_interchange/1.27"
 
 #ifdef	OSX
 typedef long socklen_t;
@@ -63,7 +63,6 @@ typedef long socklen_t;
 #define IC_DEFAULT_PORT			7786
 #define IC_DEFAULT_ADDR			"127.0.0.1"
 #define	IC_DEFAULT_TIMEOUT		10
-#define	IC_DEFAULT_LEVELS		1
 #define	IC_DEFAULT_CONNECT_TRIES	10
 #define	IC_DEFAULT_CONNECT_RETRY_DELAY	2
 
@@ -81,10 +80,11 @@ typedef struct ic_socket_struct{
 
 typedef struct ic_conf_struct{
 	ic_socket_rec *server[IC_MAX_SERVERS];	/* connection to IC server(s) */
-	int levels;		/* URI directory levels to pass to IC */
 	int connect_tries;	/* number of times to ret to connect to IC */
 	int connect_retry_delay; /* delay this many seconds between retries */
 	int droplist_no;
+	int loclen;			/* size of the location string */
+	char location[HUGE_STRING_LEN];	/* configured <Location> */
 	char droplist[IC_MAX_DROPLIST][HUGE_STRING_LEN];
 }ic_conf_rec;
 
@@ -99,7 +99,6 @@ static void *ic_create_dir_config(pool *,char *);
 static const char *ic_server_cmd(cmd_parms *,void *,const char *);
 static const char *ic_serverbackup_cmd(cmd_parms *,void *,const char *);
 static const char *ic_server_setup(cmd_parms *,void *,int,const char *arg);
-static const char *ic_urilevels_cmd(cmd_parms *,void *,const char *);
 static const char *ic_connecttries_cmd(cmd_parms *,void *,const char *);
 static const char *ic_connectretrydelay_cmd(cmd_parms *,void *,const char *);
 static BUFF *ic_connect(request_rec *,ic_conf_rec *);
@@ -129,7 +128,7 @@ static void ic_initialise(server_rec *s,pool *p)
 static void *ic_create_dir_config(pool *p,char *dir)
 {
 	struct sockaddr_in *inet_sock;
-	int i;
+	int tmp;
 
 	ic_conf_rec *conf_rec = (ic_conf_rec *)ap_pcalloc(p,sizeof(ic_conf_rec));
 	if (conf_rec == NULL)
@@ -155,10 +154,22 @@ static void *ic_create_dir_config(pool *p,char *dir)
 	conf_rec->server[0]->family = PF_INET;
 	conf_rec->server[0]->address = IC_DEFAULT_ADDR;
 
-	for (i = 1; i < IC_MAX_SERVERS; i++)
-		conf_rec->server[i] = (ic_socket_rec *)NULL;
+	for (tmp = 1; tmp < IC_MAX_SERVERS; tmp++)
+		conf_rec->server[tmp] = (ic_socket_rec *)NULL;
 
-	conf_rec->levels = IC_DEFAULT_LEVELS;
+	if (dir){
+		if (*dir == '/')
+			dir++;
+		strcpy(conf_rec->location,dir);
+		conf_rec->loclen = strlen(conf_rec->location);
+	}else{
+		conf_rec->location[0] = '\0';
+		conf_rec->loclen = 0;
+	}
+	if (conf_rec->location[conf_rec->loclen] != '/'){
+		conf_rec->location[conf_rec->loclen++] = '/';
+		conf_rec->location[conf_rec->loclen] = '\0';
+	}
 	conf_rec->connect_tries = IC_DEFAULT_CONNECT_TRIES;
 	conf_rec->connect_retry_delay = IC_DEFAULT_CONNECT_RETRY_DELAY;
 	conf_rec->droplist_no = 0;
@@ -281,19 +292,6 @@ static const char *ic_server_setup(cmd_parms *parms,void *mconfig,int server,con
 		sock_rec->family = PF_INET;
 		sock_rec->size = sizeof(struct sockaddr_in);
 	}
-	return NULL;
-}
-
-/*
- *	ic_urilevels_cmd()
- *	------------------
- *	Handle the "URILevels" module configuration directive
- */
-static const char *ic_urilevels_cmd(cmd_parms *parms,void *mconfig,const char *arg)
-{
-	ic_conf_rec *conf_rec = (ic_conf_rec *)mconfig;
-
-	conf_rec->levels = atoi(arg);
 	return NULL;
 }
 
@@ -430,7 +428,7 @@ static int ic_select(int sock_rd,int sock_wr,int secs,int usecs)
 			wr = &sock_set_wr;
 		}
 
-		tv.tv_sec= secs;
+		tv.tv_sec = secs;
 		tv.tv_usec = usecs;
 		rc = ap_select(((sock_rd > sock_wr) ? sock_rd : sock_wr) + 1,rd,wr,NULL,&tv);
 	}while (rc == 0);
@@ -445,9 +443,10 @@ static int ic_select(int sock_rd,int sock_wr,int secs,int usecs)
 static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 {
 	char **env,**e,*rp;
-	int env_count,rc,level;
+	int env_count,rc;
 	char request_uri[HUGE_STRING_LEN];
 	char redirect_url[HUGE_STRING_LEN];
+char DEBUG[100];
 
 	/*
 	 *	send the Interchange-link arg parameter
@@ -501,25 +500,11 @@ static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 		if (strncmp(*e,"REQUEST_URI=",12) == 0)
 			strcpy(request_uri,(*e) + 12);
 		else if (strncmp(*e,"SCRIPT_NAME=",12) == 0){
-			char *st = (*e) + 12;
-			char *p = st;
-
-			while (*p == '/'){
-				p++;
-				st++;
-			}
-			level = conf_rec->levels;
-			while (*p != '\0'){
-				if (*p == '/' && --level == 0){
-					*p = '\0';
-					break;
-				}
-				p++;
-			}
 			*(*e + 12) = '/';
-			strcpy(*e + 13,st);
+			strcpy(*e + 13,conf_rec->location);
+			if (*(*e + 12 + conf_rec->loclen) == '/')
+				*(*e + 12 + conf_rec->loclen) = '\0';
 		}
-
 		if (ap_bprintf(ic_buff,"%d %s\n",strlen(*e),*e) < 0){
 			ap_log_reason("error writing to Interchange",r->uri,r);
 			return HTTP_INTERNAL_SERVER_ERROR;
@@ -531,9 +516,9 @@ static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 	while (*rp == '/')
 		rp++;
 
-	level = conf_rec->levels;
-	while (*rp != '\0' && (*rp != '/' || --level))
-		rp++;
+	if (strncmp(rp,conf_rec->location,conf_rec->loclen) == 0){
+		rp += conf_rec->loclen;
+	}
 
 	strcpy(request_uri,rp);
 	for (rp = request_uri; *rp != '\0'; rp++){
@@ -566,9 +551,9 @@ static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 		while (*rp == '/')
 			rp++;
 
-		level = conf_rec->levels;
-		while (*rp != '\0' && (*rp != '/' || --level))
-			rp++;
+		if (strncmp(rp,conf_rec->location,conf_rec->loclen) == 0){
+			rp += conf_rec->loclen;
+		}
 
 		strcpy(redirect_url,rp);
 		for (rp = redirect_url; *rp != '\0'; rp++){
@@ -635,11 +620,11 @@ static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 	/*
 	 *	all data has been sent, so send the "end" marker
 	 */
+	ap_reset_timeout(r);
 	if (ap_bputs("end\n",ic_buff) < 0){
 		ap_log_reason("error writing the end marker to Interchange",r->uri,r);
 		return HTTP_INTERNAL_SERVER_ERROR;
 	}
-	ap_reset_timeout(r);
 	if (ap_bflush(ic_buff) < 0){
 		ap_log_reason("error flushing data to Interchange",r->uri,r);
 		return HTTP_INTERNAL_SERVER_ERROR;
@@ -670,7 +655,7 @@ static int ic_transfer_response(request_rec *r,BUFF *ic_buff)
 	ic_sock = ap_bfileno(ic_buff,B_RD);
 	rc = ic_select(ic_sock,0,IC_DEFAULT_TIMEOUT,0);
 	if (rc < 0){
-		ap_log_reason("Timeout on Interchange header read",r->uri,r);
+		ap_log_reason("Failed to select the response header",r->uri,r);
 		return HTTP_INTERNAL_SERVER_ERROR;
 	}
 
@@ -702,7 +687,7 @@ static int ic_transfer_response(request_rec *r,BUFF *ic_buff)
 		 */
 		rc = ic_select(ic_sock,0,IC_DEFAULT_TIMEOUT,0);
 		if (rc < 0){
-			ap_log_reason("Select timeout on Interchange socket read",r->uri,r);
+			ap_log_reason("Failed to select the response text",r->uri,r);
 			return HTTP_INTERNAL_SERVER_ERROR;
 		}
 
@@ -845,15 +830,6 @@ static command_rec ic_cmds[] ={
 		ACCESS_CONF,		/* where available */
 		TAKE1,			/* arguments */
 		"Address of the backup Interchange server - for use in a <Location> block"
-					/* directive description */
-	},
-	{
-		"URILevels",		/* directive name */
-		ic_urilevels_cmd,	/* config action routine */
-		NULL,			/* argument to include in call */
-		ACCESS_CONF,		/* where available */
-		TAKE1,			/* arguments */
-		"The number of URI directory levels to pass on to Interchange"
 					/* directive description */
 	},
 	{
