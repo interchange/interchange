@@ -1,5 +1,3 @@
-ifndef USERTAG_BUTTON
-Variable USERTAG_BUTTON 1
 UserTag button Order name src text
 UserTag button addAttr
 UserTag button attrAlias value text
@@ -8,7 +6,7 @@ UserTag button Documentation <<EOD
 This tag creates an mv_click button either as a <INPUT TYPE=submit ...>
 or a JavaScript-linked <A HREF=....><img src=...> combination.
 
-[button text="Delete item" confirm="Are you sure? src="admin/delete.gif"]
+[button text="Delete item" confirm="Are you sure? src="delete.gif"]
 	[comment]
 		This is the action, same as [set Delete item] action [/set]
 	[/comment]
@@ -52,15 +50,21 @@ sub {
 	my @js;
 	my $image;
 
-	if(		$src and
-			(
-				$src =~ m{^(http:|/)}
-					or 
-				  -f "$::Variable->{DOCROOT}$::Variable->{IMAGE_DIR}/$src"
-			)
-		)
-	{
-			$image = "$::Variable->{DOCROOT}$::Variable->{IMAGE_DIR}/$src";
+
+	if($src) {
+		my $dr = $::Variable->{DOCROOT};
+		my $id = $::Variable->{IMAGE_DIR} || $Vend::Cfg->{ImageDir};
+		$id =~ s:/+$::;
+		$id =~ s:/~[^/]+::;
+		if(	$src =~ m{^http:}i ) {
+				$image = $src;
+		}
+		elsif( $dr and $id and $src =~ m{^[^/]} and -f "$dr$id/$src" ) {
+				$image = $src;
+		}
+		elsif( $dr and $src =~ m{^/} and -f "$dr/$src" ) {
+				$image = "$::Variable->{IMAGE_DIR}/$src";
+		}
 	}
 
 	my $onclick = '';
@@ -70,7 +74,7 @@ sub {
 						)
 						\]
 							(.*?)
-					  \[ \1 \]
+					  \[ / \1 \]
 					  !!xgis
 		)
 	{
@@ -93,6 +97,7 @@ sub {
 	
 	my $out = '';
 	my $confirm = '';
+	$opt->{extra} = $opt->{extra} ? " $opt->{extra}" : '';
 	if($opt->{confirm}) {
 		$opt->{confirm} =~ s/'/\\'/g;
 		$confirm = "confirm('$opt->{confirm}')";
@@ -103,38 +108,45 @@ sub {
 		$onclick = qq{onClick="$confirm$onclick"};
 	}
 
-	# Constructing form button. Will be sent back in
-	# all cases, either as the primary button or as
-	# the <noscript> option for js-challenged browsers.
-
+	# Constructing form button. Will be sent back in all cases,
+	# either as the primary button or as the <noscript> option
+	# for JavaScript-challenged browsers.
 	$text =~ s/"/&quot;/g;
 	$name =~ s/"/&quot;/g;
-
 	if(! $onclick and $confirm) {
 		$onclick = qq{ onclick="return $confirm"};
 	}
 	$out = qq{<INPUT TYPE="submit" NAME="$name" VALUE="$text"$onclick>};
-
-	if(@js) {
+	if (@js) {
 		$out =~ s/ /join "\n", '', @js, ''/e;
 	}
 
-	# return form button only if not an image
-
+	# return submit button if not an image
 	if(! $image) {
+		$text =~ s/"/&quot;/g;
+		$name =~ s/"/&quot;/g;
+		if(! $onclick and $confirm) {
+			$onclick = qq{ onclick="return $confirm"};
+		}
+		my $out = $opt->{bold} ? "<B>" : '';
+		$out .= qq{<INPUT$opt->{extra} TYPE="submit" NAME="$name" VALUE="$text"$onclick>};
+		$out .= "</B>" if $opt->{bold};
+		if(@js) {
+			$out =~ s/ /join "\n", '', @js, ''/e;
+		}
 		return $out;
 	}
 
 	# If we got here the button is an image
 	# Wrap form button code in <noscript>
-
-	my $no_script = qq!<noscript>$out</noscript>\n!;
+	my $no_script = qq{<noscript>$out</noscript>\n};
 	$out = '';
 
 	my $wstatus = $opt->{alt} || $text;
 	$wstatus =~ s/'/\\'/g;
 
 	my $clickname = $name;
+	$out .= "</B>" if $opt->{bold};
 	my $clickvar = $name;
 	if($image and $name eq 'mv_click') {
 		$clickvar = $text;
@@ -150,7 +162,7 @@ sub {
 		if ! $opt->{form};
 
 	$confirm .= ' && ' if $confirm;
-	$opt->{border}	= 0 if ! $opt->{border};
+	$opt->{border} = 0 if ! $opt->{border};
 
 	if($opt->{getsize}) {
 		eval {
@@ -174,14 +186,13 @@ sub {
 	}
 
 	$out .= <<EOF;
-<A HREF="javascript:void 0" onMouseOver="window.status='$wstatus'"
+<A HREF="javascript:void 0"$opt->{extra} onMouseOver="window.status='$wstatus'"
 	onClick="$confirm ($opt->{form}.$clickname.value='$text') && $opt->{form}.submit(); return(false);"
 	ALT="$wstatus"><IMG ALT="$wstatus" SRC="$src" border=$opt->{border}$position></A>$anchor
 EOF
 
-	# Must escape escapes and single quotes for js write function. Also must get rid of
-	# newlines and carriage returns.
-
+	# Must escape backslashes and single quotes for JavaScript write function.
+	# Also must get rid of newlines and carriage returns.
 	$out =~ s/(['\\])/\\$1/g;
 	$out =~ s/[\n\r]+/ /g;
 	$out = <<EOV;
@@ -196,4 +207,3 @@ EOV
 	return $out;
 }
 EOR
-endif
