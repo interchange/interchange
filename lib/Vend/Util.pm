@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.29 2001-04-15 05:59:11 heins Exp $
+# $Id: Util.pm,v 1.14.2.30 2001-04-16 00:39:57 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -76,7 +76,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.29 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.30 $, 10);
 
 BEGIN {
 	eval {
@@ -179,7 +179,7 @@ sub format_log_msg {
 	push @params, logtime();
 
 	# Catalog name
-	my $string = ! defined $Vend::Cfg ? '-' : ($Vend::Cfg->{CatalogName} || '-');
+	my $string = ! defined $Vend::Cfg ? '-' : ($Vend::Cat || '-');
 	push @params, $string;
 
 	# Path info and script
@@ -862,7 +862,7 @@ sub readin {
 		}
 
 		if( defined $level and ! check_security($file, $level, $gate) ){
-			my $realm = $::Variable->{COMPANY} || $Vend::Cfg->{CatalogName};
+			my $realm = $::Variable->{COMPANY} || $Vend::Cat;
 			$Vend::StatusLine = <<EOF if $Vend::InternalHTTP;
 HTTP/1.0 401 Unauthorized
 WWW-Authenticate: Basic realm="$realm"
@@ -1049,7 +1049,7 @@ sub vendUrl {
 	push @parms, "$::VN->{mv_session_id}=$id"			 	if defined $id;
 	push @parms, "$::VN->{mv_arg}=" . hexify($arguments)	if defined $arguments;
 	push @parms, "$::VN->{mv_pc}=$ct"                 	if defined $ct;
-	push @parms, "$::VN->{mv_cat}=$Vend::Cfg->{CatalogName}"
+	push @parms, "$::VN->{mv_cat}=$Vend::Cat"
 														if defined $Vend::VirtualCat;
 	if($Vend::AccumulatingLinks) {
 		my $key = $path;
