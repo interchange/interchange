@@ -1033,7 +1033,7 @@ EOF
 		my $checked = ' CHECKED';
 		$checked = ''
 			if defined $opt->{mv_auto_export} and ! $opt->{mv_auto_export};
-		$out .= <<EOF if ! $opt->{nosave};
+		$out .= <<EOF unless $opt->{noexport} or $opt->{nosave};
 <small>
 &nbsp;
 &nbsp;
