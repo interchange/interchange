@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.26 2003-03-07 19:48:04 mheins Exp $
+# $Id: Form.pm,v 2.27 2003-03-13 22:07:17 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -37,7 +37,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.26 $, 10);
+$VERSION = substr(q$Revision: 2.27 $, 10);
 
 @EXPORT = qw (
 	display
@@ -104,7 +104,7 @@ my $Tag = new Vend::Tags;
 	password =>
 		qq({PREPEND}<input type="password" name="{NAME}" value="{ENCODED}")
 		.
-		qq({COLS?} size="{COLS}"{/COLS?}>)
+		qq({COLS?} size="{COLS}"{/COLS?})
 		.
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
 		.
