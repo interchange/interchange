@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.161 2003-05-05 22:29:27 racke Exp $
+# $Id: Interpolate.pm,v 2.162 2003-05-06 13:35:41 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,11 +27,10 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.161 $, 10);
+$VERSION = substr(q$Revision: 2.162 $, 10);
 
 @EXPORT = qw (
 
-cache_html
 interpolate_html
 subtotal
 tag_data
@@ -609,8 +608,6 @@ sub interpolate_html {
 	return $parse->{OUT} if defined $wantref;
 	return ${$parse->{OUT}};
 }
-
-*cache_html = \&interpolate_html;
 
 my $Filters_initted;
 
