@@ -142,6 +142,7 @@ code/UI_Tag/if_sql.coretag
 code/UI_Tag/image_collate.coretag
 code/UI_Tag/import_fields.coretag
 code/UI_Tag/jsq.coretag
+code/UI_Tag/jsqn.coretag
 code/UI_Tag/list_databases.coretag
 code/UI_Tag/list_glob.coretag
 code/UI_Tag/list_keys.coretag
@@ -758,6 +759,7 @@ dist/lib/UI/pages/admin/order.html
 dist/lib/UI/pages/admin/order_status.html
 dist/lib/UI/pages/admin/order_view.html
 dist/lib/UI/pages/admin/orderstats.html
+dist/lib/UI/pages/admin/page_upload.html
 dist/lib/UI/pages/admin/payment.html
 dist/lib/UI/pages/admin/preferences.html
 dist/lib/UI/pages/admin/quicklinks.html
@@ -1067,6 +1069,7 @@ share/interchange/en_US/doc.gif
 share/interchange/en_US/down.gif
 share/interchange/en_US/folder.gif
 share/interchange/en_US/folder.open.gif
+share/interchange/en_US/forward.gif
 share/interchange/en_US/generic.gif
 share/interchange/en_US/icon_config.gif
 share/interchange/en_US/icon_design.gif
