@@ -216,16 +216,20 @@ mv_nextpage=@@MV_PAGE@@
 <TR BGCOLOR="__UI_C_TITLEBARBG__">
 	<th>&nbsp;</th>
 	<TH ALIGN=left><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
+	$qual = '';
+	if($CGI->{ui_text_qualification}) {
+		$qual .= "ui_text_qualification=$CGI->{ui_text_qualification}";
+	}
     return "ui_sort_field=username\n" . sortrev('username');
     `]ID</a></TH>
 	<TH ALIGN=left><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
-    return "ui_sort_field=lname,fname\n" . sortrev('lname');
+    return "$qual\nui_sort_field=lname,fname\n" . sortrev('lname');
     `]Name</A></TH>
 	<TH ALIGN=left><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
-    return "ui_sort_field=company,lname\n" . sortrev('company');
+    return "$qual\nui_sort_field=company,lname\n" . sortrev('company');
     `]Company</A></TH>
 	<TH ALIGN=left><FONT COLOR="__UI_C_TITLEBARTXT__">[page href=@@MV_PAGE@@ form=`
-    return "ui_sort_field=country,state,city\n" . sortrev('country');
+    return "$qual\nui_sort_field=country,state,city\n" . sortrev('country');
     `]Location</A></TH>
 </TR>
 <tr bgcolor="#000000" height=1><td colspan=8></td></tr>

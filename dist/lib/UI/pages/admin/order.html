@@ -5,6 +5,7 @@
 		$Scratch->{archive_sense} = 'eq';
 		$Scratch->{archive_img} = 'admin/left.gif';
 		$Scratch->{archive_nm} = 'unarchive';
+		$Scratch->{archive_label} = 'archived';
 	}
 	elsif($CGI->{showpending}) {
 		delete $Values->{showarchive};
@@ -12,6 +13,7 @@
 		$Scratch->{archive_sense} = 'ne';
 		$Scratch->{archive_img} = 'admin/right.gif';
 		$Scratch->{archive_nm} = 'archive';
+		$Scratch->{archive_label} = 'pending';
 	}
 	elsif(! $Values->{showarchive} and ! $Values->{showpending}) {
 		delete $Values->{showarchive};
@@ -19,6 +21,7 @@
 		$Scratch->{archive_sense} = 'ne';
 		$Scratch->{archive_img} = 'admin/right.gif';
 		$Scratch->{archive_nm} = 'archive';
+		$Scratch->{archive_label} = 'pending';
 	}
 	return;
 [/calc]
@@ -219,10 +222,11 @@ th a:visited { text-decoration: none }
 [calc] 
 	my $so   = $CGI->{ui_sort_option};
 	my $fld  = $CGI->{ui_sort_field};
+	my $qual = $CGI->{ui_text_qualification} ? "se=$CGI->{ui_text_qualification}" : '';
 	$fld =~ s/[\s,\0].*//;
 	sub sortrev {
 		my ($f, $n) = @_;
-		my $out = 'ui_sort_option=';
+		my $out = "$qual\nui_sort_option=";
 		$out .= 'n' if $n;
 		return $out unless $fld eq $f;
 		return $out if $so =~ /r/;
@@ -319,7 +323,7 @@ th a:visited { text-decoration: none }
 [more-list]
 <tr>
 <td colspan=6 align=center>
-Orders [matches] displayed. More orders: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
+Orders [matches] of [value mv_search_match_count] [scratch archive_label] displayed. More orders: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
 </td>
 </tr>
 [/more-list]
