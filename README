@@ -33,7 +33,7 @@ for more information.
 --------------------------------------------------------------
 
                         I N T E R C H A N G E
-                                       
+
    Interchange is a full-featured electronic catalog system (commonly known
    as a shopping cart) with online ordering capability. It is a high-end
    database access and retrieval system with SQL support via the Perl DBI.
@@ -41,7 +41,7 @@ for more information.
    A full list of its features is available at:
 
         http://www.minivend.com/
- 
+
 IMPORTANT NOTE:  Interchange 4.5.x requires, repeat REQUIRES, Perl 5.005 or Perl 5.6.
 
 The information you need is in the following files:
@@ -57,7 +57,7 @@ The information you need is in the following files:
                version family.
 
     MANIFEST   List of all core distribution files.
-    
+
 Major files/directories in the distribution:
 
     Makefile.PL The installation scripts
