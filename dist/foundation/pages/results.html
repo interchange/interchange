@@ -51,6 +51,7 @@ ui_template_name: leftright
 [/if]
 [set did_order][/set]
 [search-region]
+[seti results_return_to][history-scan exclude=nothing count=0][/seti]
 [set munge_quantity]
 [calc]
 	$Scratch->{did_order} = 1;
@@ -85,7 +86,7 @@ ui_template_name: leftright
 	$CGI->{mv_order_quantity} = "$q[$idx]";
 	return;
 [/calc]
-	[bounce href="[history-scan exclude=nothing]"]
+	[bounce href="[scratch results_return_to]"]
 [/set]
 
 <br>
@@ -129,12 +130,12 @@ ui_template_name: leftright
 	my $q = q{[item-data inventory quantity]};
 	if($q > 0) {
 		return <<EOF;
-<font __FFACE__ size="1" color="#008000"><b>Y</b></font>
+<font __FFACE__ size="1" color="#008000"><b>Yes</b></font>
 EOF
 	}
 	else {
 		return <<EOF;
-<a href="[area stock-alert [item-code]]"><b>N</b></a>
+<a href="[area stock-alert [item-code]]"><b>No</b></a>
 EOF
 	}
 [/item-calc]
@@ -150,7 +151,7 @@ EOF
 		[/if]
 			</td>
 </tr>
-					
+
 [/search-list]
 
 </table>
