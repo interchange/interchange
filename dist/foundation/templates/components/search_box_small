@@ -1,0 +1,41 @@
+<!-- BEGIN COMPONENT [control component search_box_small] -->
+[comment]
+ui_component: search_box_small
+ui_component_name: search_box_small
+
+matches:
+	widget: select
+	options: 1,2,3,5,10*,20,25,50,100
+	help: Matches to return to page
+
+[/comment]
+
+ <tr valign=top> 
+   <td>&nbsp;</td>
+   <td width="119"> 
+   <br>     
+
+	<form action="[area search]">
+	 <table width="126" border="0" cellspacing="0" cellpadding="0" bgcolor="__BARBG__">
+	   <tr valign=top> 
+		 <td width="119">
+			<FORM ACTION="[area search]">
+			<INPUT TYPE=hidden NAME=mv_coordinate VALUE=1>
+			<INPUT TYPE=hidden NAME=mv_searchtype VALUE=db>
+			<INPUT TYPE=hidden NAME=mv_matchlimit VALUE=[control matches 10]>
+			<INPUT TYPE=hidden NAME=mv_sort_field VALUE=category>
+			<INPUT TYPE=hidden NAME=mv_search_field VALUE=inactive>
+			<INPUT TYPE=hidden NAME=mv_search_field VALUE=":*">
+			<INPUT TYPE=hidden NAME=mv_column_op VALUE=ne>
+			<INPUT TYPE=hidden NAME=mv_column_op VALUE=rm>
+			<INPUT TYPE=hidden NAME=mv_searchspec VALUE=1>
+			<INPUT MAXLENGTH=30 NAME=mv_searchspec type=text size=10>
+		 </td>
+		 <td width="119" valign=middle><input type=image alt="Search Go" border="0" src="__THEME_IMG_DIR__go.gif"></td>
+	   </tr>
+	 </table>
+	</form>
+   </td>
+ </tr>
+
+<!-- END COMPONENT [control component search_box_small] -->

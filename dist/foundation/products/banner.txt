@@ -1,0 +1,5 @@
+code	category	weight	rotate	banner
+Renaissance3	Renaissance	7	0	Renaissance banner 3
+Renaissance	Renaissance	1	0	Renaissance banner 1
+default			1	Default banner 1{or}Default banner 2{or}Default banner 3
+Renaissance2	Renaissance	2	0	Renaissance banner 2

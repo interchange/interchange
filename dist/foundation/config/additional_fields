@@ -1,0 +1,254 @@
+COMPANY
+Your company name
+Foundation Site
+
+STYLE
+Default theme
+loopy1	factory1	reddish1	skeet1	sleek1
+
+SAMPDATATYPE
+Sample data type?
+tools	computer	reports	none
+
+DOMAINNAME
+Your base domain
+
+SOMESQL
+Set to 1 if you want to use MySQL, PostgreSQL, Oracle, or DB2
+	1	0
+
+{SOMESQL}MYSQL
+Set to 1 if you want to use MySQL
+	1	0
+
+{MYSQL}SQLDB
+Database to use (will be created)
+test___MVC_CATALOGNAME__	intchg
+
+{MYSQL}SQLDSN
+DBI DSN to use
+dbi:mysql:test___MVC_CATALOGNAME__
+
+{MYSQL}SQLUSER
+Username for MySQL (if any)
+	__MVC_CATUSER__	interch
+
+{MYSQL}SQLPASS
+Password for MySQL (if any)
+	pass
+
+{MYSQL}MYSQLCREATE
+Set to 1 to create 'test___MVC_CATALOGNAME__' with mysqladmin
+1	0
+
+{MYSQLCREATE}MYSQLCREATEOPT
+Extra options for creation
+	-p	-u root -p
+
+{SOMESQL and ! '1'}PGSQL
+Set to 1 if you want to use PostgreSQL
+	1	0
+
+{PGSQL}SQLDB
+Database to use (will be created)
+test___MVC_CATALOGNAME__	interchange
+
+{PGSQL}SQLDSN
+DBI DSN to use
+dbi:Pg:dbname=test___MVC_CATALOGNAME__
+
+{PGSQL}SQLUSER
+Username for PostgreSQL (if any)
+	mike
+
+{PGSQL}SQLPASS
+Password for PostgreSQL (if any)
+	pass
+
+{PGSQL}!SQLUDATE
+Timestamp for PostgreSQL (if any)
+2000-01-01
+
+{SOMESQL and ! '1' and ! ''}ORACLE
+Set to 1 if you want to use Oracle
+1	0
+
+{ORACLE}SQLDSN
+DBI DSN to use
+dbi:Oracle:
+
+{ORACLE}SQLUSER
+Username for Oracle (if any)
+	intchg
+
+{ORACLE}SQLPASS
+Password for Oracle (if any)
+	pass
+
+{ORACLE}!SQLUDATE
+Timestamp for Oracle (if any)
+01-JAN-2000
+
+{ORACLE}!FIELDMUNGE
+Field name suffix for Oracle
+_field
+
+{SOMESQL and ! '1' and ! '' and ! ''}DB2
+Set to 1 if you want to use DB2
+	1	0
+
+{DB2}SQLDB
+Database to use (will be created)
+test___MVC_CATALOGNAME__	intchg
+
+{DB2}SQLDSN
+DBI DSN to use
+dbi:DB2:test___MVC_CATALOGNAME__
+
+{DB2}SQLUSER
+Username for DB2 (if any)
+	intchg
+
+{DB2}SQLPASS
+Password for DB2 (if any)
+	pass
+
+{DB2}DB2CREATE
+Set to 1 to create 'test___MVC_CATALOGNAME__' with db2admin
+1	0
+
+{DB2CREATE}DB2CREATEOPT
+Extra options for creation
+	-p	-u root -p
+
+
+SUPERUSER
+Account name that will control this catalog
+__MVC_CATUSER__	interchange	admin	interch
+
+CRYPTPW
+Administrative password
+pass	nevairbe
+
+ADDRESS
+Your company address
+11480 Sunset Hills Rd.<BR>Suite 200 East
+
+CITY
+Your company city/state/zip
+Reston, VA 20190
+
+PHONE
+Your company phone
+(703) 456-2900
+
+FAX
+Your company fax number
+(703) 555-5556
+
+TOLLFREE
+Your company tollfree number (if any)
+(888) 555-5555
+
+TAXAREA
+Area(s) to tax in
+VA UT OH
+
+TAXRATE
+Percentage rate(s) for tax in different areas
+VA=7.5, UT=7.25, OH=6.75
+
+UPSADDER
+Amount to add on to standard UPS costs
+3.00
+
+UPSORIGIN
+Origin zip code for UPS lookups
+45056
+
+PAYCOD
+Whether you accept COD orders
+0	1
+
+PAYPO
+Whether you accept purchase orders
+0	1
+
+PAYPOSTAL
+Whether you allow orders without payment, to be completed by mail
+0	1
+
+PAYCC
+Which credit cards you accept
+visa mc amex discover	visa mc discover	visa mc amex	visa mc
+
+DEFAULTFONT
+Default font face for catalog
+Arial,Helvetica,sans-serif	Verdana, Arial, Helvetica, Sans-Serif
+
+EMAILINFO
+Email address to reference for email product information requests
+sales@__MVC_DOMAINNAME__
+
+EMAILSERVICE
+Email address to reference for emailed customer service requests
+service@__MVC_DOMAINNAME__
+
+PGPKEYID
+PGP/GPG key id to use for encryption (if any)
+
+LOGO
+Your logo image
+logo.gif
+
+SMLOGO
+Your small logo image
+logo.gif
+
+SECURESERVERNAME
+Secure server URL
+https://__MVC_SERVERNAME__
+
+TAXFIELD
+The field which determines taxing
+state	country
+
+LOGDIR
+The base directory for logs
+	/var/log/interchange/__MVC_CATALOGNAME__
+
+CACHEDIR
+The base directory for sessions and temps
+	/var/cache/interchange/__MVC_CATALOGNAME__
+
+IMGADDCART
+Your image selection for the "Add to cart" icon
+__MVC_STYLE__/add_cart.gif
+
+IMGMOREINFO
+Your image selection for the "More information" icon
+__MVC_STYLE__/more_info.gif
+
+IMGCONTINUE
+Your image selection for the "Continue Shopping" button
+__MVC_STYLE__/continue_shopping.gif
+
+IMGCHECKOUT
+Your image selection for the "Check Out" button
+__MVC_STYLE__/checkout_button.gif
+
+IMGRECALC
+Your image selection for the "Recalculate" button
+__MVC_STYLE__/recalculate_button.gif
+
+IMGRECALC
+Your image selection for the "Place Order" button
+__MVC_STYLE__/recalculate_button.gif
+
+DICTPRICESTD
+What you want for your regular price label
+Retail Price	List Price	MSRP Price
+
+DICTPRICESALE
+What you want for your sale price label
+Our Price	Sale Price	Best Price

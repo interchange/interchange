@@ -1,0 +1,42 @@
+[comment]
+ui_template: Yes
+ui_template_name: cart
+[/comment]
+
+[set page_title]__COMPANY__ -- Shopping Cart[/set]
+[set page_banner]Shopping Cart Contents[/set]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]category_vertical[/component]
+[/control-set]
+
+[control-set]
+[component][/component]
+[/control-set]
+
+[control-set]
+[component]cart[/component]
+[/control-set]
+
+[control-set]
+[component]random[/component]
+[size]3[/size]
+[cols]3[/cols]
+[banner]See also[/banner]
+[/control-set]
+
+[control reset=1]
+
+@_LEFTONLY_TOP_@
+
+<!-- BEGIN CONTENT -->
+<!-- placeholder -->
+<!-- END CONTENT -->
+
+@_LEFTONLY_BOTTOM_@

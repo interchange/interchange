@@ -1,0 +1,27 @@
+
+[include file="templates/components/[control component none]"][control]
+
+	</td>
+	<td valign=top align=center width=132>
+[include file="templates/components/[control component none]"][control]
+
+	</td>
+      </tr>
+      <tr> 
+	<td bgcolor="__BARBG__" align=center>
+	      &nbsp;<BR><img src="__THEME_IMG_DIR__poweredby.gif">
+	</td>
+	<td colspan=3>
+	      &nbsp;
+	</td>
+      </tr>
+    </table>
+    </td>
+  </tr>
+</table>
+    </td>
+  </tr>
+</table>
+</div>
+</body>
+</html>

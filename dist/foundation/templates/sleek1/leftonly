@@ -1,0 +1,65 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+ui_template_layout: LEFTONLY_TOP, UI_CONTENT, LEFTONLY_BOTTOM
+ui_template_description: Page with top/left areas.
+
+break:
+	widget: break
+
+page_title: 
+	description: Page title
+
+page_banner: 
+	description: Page banner
+	help: Defaults to page title
+
+members_only:
+	options: 1=Yes,0=No*
+	widget: radio
+	description: Members only
+
+break1:
+	widget: break
+
+component_before:
+	options: =none, best_horizontal=Best Sellers,\
+			cross_horizontal=Cross sell, promo_horizontal=Promotion, \
+			random_horizontal=Random items, upsell_horizontal=Upsell
+	widget: select
+	description: Component before content
+
+component_after:
+	options: =none, best_horizontal=Best Sellers, \
+				cross_horizontal=Cross sell, \
+				promo_horizontal=Promotion, \
+				random_horizontal=Random items, \
+				upsell_horizontal=Upsell
+	widget: select
+	description: Component after content
+
+component_hsize:
+	options: 1,2,3*
+	widget: select
+	description: Component items horizontal
+
+hbanner:
+	options: =--custom--, Also see..., Best Sellers, New items, Some of our fine products, Specials, You might also like
+	widget: move_combo
+	width: 40
+	description: Before/after Banner
+	help: Banner for Before/after component
+
+hpromo_type:
+	options: specials=Specials, new=New items
+	widget: select
+	description: Special tag
+	help: Only for a horizontal Promotion
+
+[/comment]
+[set page_title][set]
+[set page_banner][set]
+[set members_only][set]
+[set component_before][set]
+[set component_after][set]
+[set bgcolor]#FFFFFF[/set]

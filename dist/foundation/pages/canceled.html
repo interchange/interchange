@@ -1,0 +1,62 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+[/comment]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]category_vertical[/component]
+[/control-set]
+
+[control-set]
+[component]cart_tiny[/component]
+[/control-set]
+
+[control-set]
+[component][/component]
+[/control-set]
+
+[control-set]
+[component]promo_horizontal[/component]
+[size]3[/size]
+[cols]3[/cols]
+[banner]Specials[/banner]
+[/control-set]
+
+[control reset=1]
+
+[set members_only]0[/set]
+[set page_banner]Stop Shopping[/set]
+[set page_title]__COMPANY__ -- Stop Shopping[/set]
+
+@_LEFTONLY_TOP_@
+
+<!-- BEGIN CONTENT -->
+<p><font __FFACE__ size="2">
+Please confirm your request to stop shopping by click the button below. All
+items will be cleared from your shopping cart.
+<br><br>
+Thank you for visiting.
+</font></p>
+					
+<FORM ACTION="[process]" METHOD="POST">
+<INPUT TYPE=hidden NAME=mv_doit      VALUE=refresh>
+<INPUT TYPE=hidden NAME=mv_orderpage VALUE=index>
+<INPUT TYPE=hidden NAME=mv_nextpage  VALUE=ord/basket>
+
+[item-list]
+<input type=hidden name="[quantity-name]" value=0>
+[/item-list]
+
+<FONT FACE="arial,helvetica">
+<INPUT TYPE=submit VALUE="Remove Shopping Cart Items">
+</FONT>
+</form>
+<!-- END CONTENT -->
+
+@_LEFTONLY_BOTTOM_@

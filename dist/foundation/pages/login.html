@@ -1,0 +1,143 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+[/comment]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]category_vertical[/component]
+[/control-set]
+
+[control reset=1]
+
+[set page_banner]Log In[/set]
+[set page_title]__COMPANY__ -- Log In[/set]
+@_LEFTONLY_TOP_@
+
+<!-- BEGIN CONTENT -->
+                      <div align="left">
+
+[if session failure]
+<P>
+<B><font color="__CONTRAST__">[calc] delete $Session->{failure}[/calc]</font></b>
+<P>
+[else]
+                        <p>&nbsp;</p>
+[/else]
+[/if]
+
+[set mv_no_cache]1[/set]
+[set New Account]
+mv_nextpage=new_account
+[set new]1[/set]
+[/set]
+
+[if !session logged_in]
+<FORM ACTION="[process secure=1]" METHOD=POST>
+<INPUT TYPE=hidden NAME=mv_todo  VALUE=return>
+<INPUT TYPE=hidden NAME=mv_click VALUE=Login>
+<INPUT TYPE=hidden NAME=mv_failpage VALUE="login">
+<INPUT TYPE=hidden NAME=mv_successpage VALUE="account">
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="index">
+<table width=300 border=1 cellspacing=0 cellpadding=0 bordercolordark=#000000 bordercolorlight=#000000>
+	  <tr>
+		<td> 
+		  <table width=300 border=0 cellspacing=0 cellpadding=2>
+			<tr class=cheader> 
+			  <td width=81 align=right class=cheader>
+			  	Username
+			  </td>
+			  <td width=204 class=xheader>
+				<INPUT NAME=mv_username VALUE="[read-cookie MV_USERNAME]">
+			  </td>
+			</tr>
+			<tr class=cheader>
+			  <td width=81 align=right class=cheader>
+				Password
+			  </td>
+			  <td width=204 class=xheader>
+				<INPUT TYPE=password NAME=mv_password VALUE="">
+			  </td>
+			</tr>
+			<tr class=yheader>
+			  <td>&nbsp;</td>
+			  <td class=yheader>
+				<input type=submit value="Log In">
+				<input type="submit" NAME="mv_click" value="New Account">
+			  </td>
+			</tr>
+			<tr class=yheader>
+			  <td width=81 align=right class=yheader> 
+			   <INPUT TYPE=hidden NAME=mv_cookie_password VALUE=0>
+			   <INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1>
+			  </td>
+			  <td class=yheader>
+			  Log me in automatically<br>(sets cookie)
+			  </td>
+			</tr>
+		  </table>
+		</td>
+	  </tr>
+	</table>
+	<p>&nbsp;</p>
+	
+  </div>
+</form>
+[else]
+<table width=300 border=1 cellspacing=0 cellpadding=0 bordercolordark=#000000 bordercolorlight=#000000>
+<FORM ACTION="[process]" METHOD=POST>
+<INPUT TYPE=hidden NAME=mv_todo  VALUE=return>
+<INPUT TYPE=hidden NAME=mv_click VALUE=Logout>
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="login">
+
+	  <tr>
+		<td> 
+		  <table width=300 border=0 cellspacing=0 cellpadding=2>
+			<tr class=cheader> 
+			  <td width=81 align=right class=cheader>
+			  	You are already logged in.
+			  </td>
+			  <td width=204 class=xheader>
+			  	You are already logged in.
+			  </td>
+			</tr>
+			<tr class=yheader>
+			  <td>&nbsp;</td>
+			  <td class=yheader>
+				<INPUT TYPE=submit VALUE="Log out">
+				<input type="submit" NAME="mv_click" value="New Account">
+			  </td>
+			</tr>
+		  </table>
+		</td>
+	  </tr>
+	</table>
+	<p>&nbsp;</p>
+	
+  </div>
+</form>
+[/else]
+[/if]
+<p>&nbsp;</p>
+<div align="center"> </div>
+
+<p>
+Log in to complete a transaction in the Construct Something demo. Choose one of 
+three ways to log in:<br>
+<ol>
+<li>Log in as a new user. Click on the "New Account" button above and enter the 
+requested information.</li>
+<li>Log in as a dealer by entering username "jdoe" and password "test" above. As 
+a dealer you may be offered different pricing structures.</li>
+<li>Log in as an affiliate. Enter Construct Something from our affilate site: 
+<a href="http://demo.akopia.com/~hardhat">http://demo.akopia.com/~hardhat</a></li>
+</ol>
+</p>
+<!-- END CONTENT -->
+
+@_LEFTONLY_BOTTOM_@

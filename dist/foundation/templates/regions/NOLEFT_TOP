@@ -1,0 +1,71 @@
+<!-- BEGIN LEFTONLY_TOP -->
+[if scratch members_only]
+    [set members_only][/set]
+    [if !session logged_in]
+    [set mv_successpage]@@MV_PAGE@@[/set]
+    [bounce page=login]
+    [/if]
+[/if]<html>
+<html>
+<head>
+<title>[scratch page_title]</title>
+</head>
+<body bgcolor="[either][scratchd bgcolor][or]__BGCOLOR__[or]#FFFFFF[/either]">
+<center> 
+   <table width="600" border="1" cellspacing="0" cellpadding="0">
+    <tr>
+      <td>
+        <table width="600" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+				<td>
+
+<!--Top Banner Graphic-->
+
+	<img src="__LOGO__" width="600" height="71">
+				</td>        	
+          	</tr>
+
+<!--Top Navigation Buttons-->
+
+           <tr> 
+	<td width="590"><a href="[area index]"><img name="Home" border="0"
+	src="home.gif"
+	width="100" height="20"></a><a href="[area ord/basket]"><img alt="Your Cart" border="0"
+	src="cart.gif"
+	width="100" height="20"></a><a href="[area login]"><img alt="Log In" border="0"
+	src="login.gif"
+	width="100" height="20"></a><a href="[area ord/checkout]"><img alt="Check Out" border="0"
+	src="checkout.gif"
+	width="100" height="20"></a><a href="[area customerservice]"><img alt="Customer Service" border="0"
+	src="service.gif"
+	width="100" height="20"></a><a href="[area aboutus]"><img alt="About Us" border="0"
+	src="about.gif"
+	width="100" height="20"></a></td>
+           </tr>
+         </table>
+       </td>
+     </tr>
+     <tr>
+
+<!--Divider Line-->
+
+       <td><img src="d.gif" width="600" height="2"></td>
+     </tr>
+     <tr> 
+       <td> 
+
+<!--Begin Page Body-->
+
+         <table width="600" border="0" cellspacing="0" cellpadding="0">
+           <tr> 
+             <td bgcolor="#999999" valign="top">
+				  
+<!--Spacer Column-->
+
+             <td>&nbsp;</td>
+             <td valign="top"> 
+<!--Center Section-->
+
+[if scratch component_before]
+[include file="templates/components/[scratchd component_before]"]
+[/if]

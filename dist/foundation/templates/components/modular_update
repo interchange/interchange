@@ -1,0 +1,182 @@
+[comment]
+ui_component: modular_buy
+ui_component_label: Modular item update display
+[/comment]
+
+<!-- BEGIN COMPONENT [control component modular_update] -->
+<SCRIPT>
+	[comment]
+		Set the base info -- base price, item-code, etc.
+	[/comment]
+	[item-list modular=1 master="[data session arg]"]
+	[if-item-param !mv_si][set sku][item-code][/set][/if-item-param]
+	[/item-list]
+var base_price = [price code="[scratch sku]" noformat=1];
+var price = new Array; var desc = new Array; var ptr = new Array; var k = 0; var j = -1;
+	[tree
+		prefix=tree
+		full=1
+		tolerate=1
+		log_error=1
+		master=o_master
+		sub=sku
+		sort=o_group
+		start="[scratch sku]"
+		table=options
+	][tree-sub do_js]
+		my $level = shift;
+		my $row = shift;
+
+		if( ! $level) {
+			#$k = 0;
+			#$j++;
+			$differential = $row->{differential} || 0;
+		return <<EOF if ! $level;
+k = 0; j++; desc[j] = new Array; price[j] = new Array; ptr[j] = '$row->{o_group}';
+EOF
+		}
+		my $desc = $row->{description};
+		my $price = $row->{price} + $differential;
+		$desc =~ s/"/&quot;/g;
+		
+		if($price != 0) {
+			$desc .= " (";
+			$desc .= $Tag->currency($price);
+			$desc .= ")";
+		}
+		else {
+			# Make sure JS doesn't error out
+			$price = 0;
+		}
+		return <<EOF;
+price[j][k] = "$price"; desc[j][k] = "$desc"; k++;
+EOF
+		return $out;
+[/tree-sub][tree-exec do_js][tree-param mv_level][/tree-exec][/tree]
+
+function currency(amount) {
+	amount = amount.toString().replace(/\$|\,/g,'');
+	if (isNaN(amount)) {
+		amount = '0';
+	}
+	cents  = Math.floor( (amount * 100 + 0.5 ) % 100); 
+	amount = Math.floor(amount).toString();
+	if(cents < 10) cents = "0" + cents; 
+		for (var i = 0; i < Math.floor ((amount.length - (1+i)) / 3); i++) 
+			amount = amount.substring(0,amount.length-(4*i+3))+','+amount.substring(amount.length-(4*i+3)); 
+	return ('$' + amount + '.' + cents); 
+}
+
+function update_price (form) {
+	var total = base_price;
+	var debug = '';
+	var name;
+	for(i = 0; i < ptr.length; i++) {
+		curr = eval('form.' + ptr[i] + '.selectedIndex');
+[comment]
+			debug = debug
+					+ "group=" + ptr[i]
+					+ " i=" + i
+					+ " curr=" + curr
+					+ " price=" + price[i][curr]
+					+ "\n";
+[/comment]
+		total = eval(total + '+' + price[i][curr]);
+	}
+	form.current_price.value = currency(total);
+}
+</SCRIPT>
+
+<FORM ACTION="[area ord/basket]" METHOD=POST>
+<INPUT TYPE=hidden NAME=mv_click	VALUE="arrange_sku">
+<INPUT TYPE=hidden NAME=mv_action	VALUE="refresh">
+<INPUT TYPE=hidden NAME=mv_quantity_update	VALUE="1">
+[set arrange_sku]
+	[calc]
+		my @pointers = split /\0/, $CGI->{item_pointer};
+		for(@pointers) {
+			my ($name, $location) = split /=/, $_, 2;
+			$CGI->{$name} = delete $CGI->{$location};
+		}
+		return;
+	[/calc]
+[/set]
+
+[item-list modular=1 master="[data session arg]" subitems=1]
+
+[if-item-param !mv_si][comment] This will be the first item [/comment]
+	<H3>[item-description]</H3>
+	[set sku][item-code][/set]
+	Current price: <INPUT NAME="current_price" SIZE=10 VALUE="[item-price]"><BR>
+	<INPUT TYPE=hidden NAME="[quantity-name]" VALUE="[item-quantity]">
+
+	[comment]
+	<TEXTAREA name=debug ROWS=12 COLS=60></TEXTAREA>
+	[/comment]
+
+	<INPUT TYPE=submit VALUE="Make change">
+	<P>
+[/if-item-param]
+
+[if-item-param mv_si][comment] Subitems [/comment]
+
+	<B>[query
+			hashref=master
+			list=1
+			sql="
+				SELECT *
+				FROM   options
+				WHERE  code = '[item-modifier mv_mp]'
+				"
+			][sql-param description][/query]</B>
+	<br>
+	<INPUT TYPE=hidden NAME="[quantity-name]" VALUE="[item-quantity]">
+	<INPUT TYPE=hidden NAME="item_pointer" VALUE="[modifier-name mv_sku]=[item-data options o_group]">
+	<SMALL><SMALL><SELECT NAME="[item-data options o_group]" onChange="update_price(this.form)">
+
+[tree
+		prefix=tree
+		full=1
+		tolerate=1
+		master=o_master
+		sub=sku
+		sort=o_group
+		start=[item-data options o_master]
+		table=options
+	]
+[tree-sub do_level]
+	shift;
+	my $row = shift;
+	my $ivalue = q{[item-code]};
+	# Get results of previous query but only once
+	if(! $Tmp->{master}[1]) {
+		$master = $Tmp->{master}[0];
+		push @{$Tmp->{master}}, 1;
+		%default_item = ();
+		undef $override_default;
+		$differential = $master->{differential} || 0;
+
+#Log("differential=$differential");
+	}
+	my $sel = $ivalue eq $row->{code} ? ' SELECTED' : '';
+	
+	my $price = $row->{price} + $differential;
+#Log("differential=$differential rowprice=$row->{price} price=$price");
+	$price = $price != 0
+				? $Tag->filter('currency', $price)
+				: '';
+	my $desc = $row->{description};
+	$desc .= " ($price)" if $price;
+	return qq{<OPTION VALUE="$row->{code}"$sel>$desc</OPTION>};
+[/tree-sub][tree-exec do_level][/tree-exec][/tree]
+
+	</SELECT></SMALL></SMALL>
+	<HR>
+[/if-item-param]
+
+[/item-list]
+<input type=submit>
+
+</FORM>
+
+<!-- END COMPONENT [control component modular_update] -->

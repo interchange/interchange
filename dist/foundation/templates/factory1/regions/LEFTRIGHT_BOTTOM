@@ -1,0 +1,26 @@
+
+[include file="templates/components/[control component none]"][control]
+
+				  </td>
+				  <td valign=top align=center width=132>
+[include file="templates/components/[control component none]"][control]
+
+                  </td>
+                </tr>
+                <tr> 
+                  <td class=cheader>&nbsp;<BR><img src="__THEME_IMG_DIR__poweredby.gif"></td>
+                  <td width="12">&nbsp;</td>
+                  <td valign="top" colspan=2>&nbsp;</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</div>
+</body>
+</html>

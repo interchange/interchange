@@ -1,0 +1,29 @@
+
+[if scratch component_after]
+[include file="templates/components/[scratch component_after]"]
+[set component_after][/set]
+[/if]
+				  </td>
+				  <td valign=top align=center width=132>
+
+					[include file="templates/components/[scratch component_right]"]
+
+                  </td>
+                </tr>
+                <tr> 
+                  <td bgcolor="#999999" width="131"><img src="navigation/poweredby.gif" width="131" height="61"></td>
+                  <td width="12">&nbsp;</td>
+                  <td valign="top" colspan=2>&nbsp;</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</div>
+</body>
+</html>

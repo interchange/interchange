@@ -1,0 +1,433 @@
+[comment]
+ui_component: cart
+ui_component_group: checkout
+ui_component_label: Shopping cart display (full)
+
+others_bought:
+	label: Use "others who bought this" here
+	widget: yesno
+
+upsell_in_cart:
+	label: Put upsell come-in under item
+	widget: yesno
+
+[/comment]
+
+<!-- BEGIN COMPONENT [control component cart] -->
+[if type=explicit compare="q{[read-cookie MV_SESSION_ID]}"]
+[elsif scratch tried]
+You must have cookies set to leave the basket. Check out now or forever
+lose your shopping cart.
+[/elsif]
+[else]
+[set tried]1[/set]
+[bounce href="[area ord/basket]"]
+[/else]
+[/if]
+
+<FORM ACTION="[process-target secure=1]" METHOD=POST name="basket">
+<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+<INPUT TYPE=hidden NAME=mv_doit      VALUE=refresh>
+<INPUT TYPE=hidden NAME=mv_orderpage VALUE="ord/basket">
+<INPUT TYPE=hidden NAME=mv_checkout  VALUE="ord/checkout">
+<INPUT TYPE=hidden NAME=mv_nextpage  VALUE=index>
+ <br>
+  <table width="450" border="1" cellspacing="0" cellpadding="0" bordercolor="__BARCONTRAST__">
+    <tr>
+      <td>
+
+  <table width="450" border="0" cellspacing="0" cellpadding="0" bordercolor="__BARCONTRAST__">
+		<TR VALIGN=TOP class=rheader>
+                        <td width="9%" class=cheader>Remove</td>
+                        <td width="13%" class=cheader align=center> 
+                          SKU
+                        </td>
+                        <td width="27%" class=cheader> 
+                          Description
+                        </td>
+                        <td width="13%" class=cheader align=center>
+                          Quantity
+                        </td>
+                        <td width="19%" class=cheader align=right> 
+                          Price
+                        </td>
+                        <td width="19%" class=cheader align=right> 
+                          Extension
+                        </td>
+		</TR>
+	<TBODY>
+
+
+[if items]
+[then]
+[item-list modular=1]
+
+[item-change 2][condition]2[/condition]
+[else]
+<TR bgcolor="__BARCONTRAST__"><TD ALIGN=CENTER COLSPAN=6><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="1" BORDER="0"></td></TR>
+[/else]
+[/item-change 2]
+
+[item-calc]
+	return if '[item-modifier mv_si]';
+	delete $Scratch->{subitems[item-increment]};
+	my $master = '[item-modifier mv_mi]';
+#Log("Checking master item $master");
+	$row_class = ++$count % 2 ?  'cartrow' : 'cartalt';
+	my $item = '[item-increment]';
+	my $up = q{[item-data merchandising upsell_to]};
+	my $cr = q{[item-data merchandising cross_sell]};
+	$upsell_remove{'[item-code]'} = 1;
+	$cross_remove{'[item-code]'} = 1;
+	my %seen = ( '' => 1 );
+	my @subitems;
+
+	for my $i (@$Items) {
+		next unless $i->{mv_si};
+		push @subitems, $i->{code}
+			if $i->{mv_mi} eq $master;
+	}
+
+	$Scratch->{subitems[item-increment]} = join " ", @subitems;
+
+	$Scratch->{upsell} .= " $up" if $up;
+	$Scratch->{cross_codes} .= " $cr" if $cr;
+	my @up = split /\s+/, $Scratch->{upsell};
+	my @cr = split /\s+/, $Scratch->{cross_codes};
+	@up = grep  ( (!$seen{$_}++ && ! $upsell_remove{$_}), @up);
+	@cr = grep  ( (!$seen{$_}++ && ! $cross_remove{$_}), @cr);
+	$Scratch->{upsell} = join " ", @up;
+	$Scratch->{cross_codes} = join " ", @cr;
+	return;
+[/item-calc]
+
+<TR class="[item-calc]$row_class || 'cartalt'[/item-calc]">
+	<TD align=center valign=top>
+	<span style="font-size: smaller"><INPUT TYPE=checkbox NAME="[quantity-name]"
+			   onClick="this.form.action='[process-target]',
+			   			this.form.submit()"
+			   VALUE=0></span></TD>
+	<TD valign=top>[item-sku]</TD>
+	<td valign=top>[page [item-code]][item-description]</A>
+	[if scratch dealer]
+	[if-item-data pricing sku]
+		<BR>[page quantity [item-code]]
+			<span style="color: __CONTRAST__">QUANTITY PRICING</span>
+			</A>
+	[/if-item-data]
+	[/if]
+	[if-item-field weight]
+	[seti weight][summary amount=`[item-quantity] * [item-field weight]`][/seti]
+	[/if-item-field]
+
+[if type=explicit compare="[control others_bought]"]
+	[if-item-data merchandising others_bought]
+	[perl tables=products]
+		my $hash = [item-data merchandising others_bought];
+		my @ary = sort { $hash->{$b} <=> $hash->{$a} } keys %$hash;
+		return '' unless @ary;
+		my %in_basket;
+		splice(@ary, 3);
+		for(@{$Carts->{main}}) {
+			$in_basket{$_->{code}} = 1;
+		}
+		@ary = grep ! $in_basket{$_}, @ary;
+		return '' unless @ary;
+		my $out = <<'EOF';
+	<TABLE CELLPADDING=0 CELLSPACING=0 WIDTH="100%">
+		<TR class=sheader><TD>Customers who bought this item also bought:</TD>
+		</TR><TR class="[item-calc]$row_class || 'cartalt'[/item-calc]">
+		<TD>
+EOF
+		for(@ary) {
+ 			my $desc = tag_data( 'products', 'description', $_);
+			$out .= <<EOF;
+		<A HREF="[area $_]">$desc</A><BR>
+EOF
+		}
+		return $out . '</TD></TR></TABLE>';
+	[/perl]
+	[/if-item-data]
+[/if]
+
+
+[if type=explicit compare="[control upsell_in_cart]"]
+	[set upsell_found][/set]
+	[loop list="[item-data merchandising upsell_to]"]
+	[if scratch upsell_found]
+	<TABLE CELLPADDING=0 CELLSPACING=0 WIDTH="100%">
+		<TR class=sheader>
+			<TD __HEADERBG__>
+			<span style="font-size: smaller">
+				Other items you may like:
+			</span>
+			<TD __HEADERBG__>
+			</TD>
+		</TR>
+		<TR>
+			<TD class=listing>
+	[list]
+	[loop-calc]
+		@ary = grep $_->{code} eq q{[loop-code]}, @{$Carts->{main}};
+		return if scalar @ary;
+		$Scratch->{upsell_found} = 1;
+		return q{<A HREF="[area [loop-code]]">[loop-description]</A><BR>};
+	[/loop-calc]
+	[/list]
+
+		</TD>
+		</TR>
+	</table>
+	[/if]
+	[/loop]
+[/if]
+
+<br>
+
+
+	[if-item-data options o_enable]
+		[if-item-data !options o_modular]
+			<span style="font-size: 8pt">
+			[table-organize cols=4 table=' ' font="size=1" pretty=1]
+			[item-options td=1 label=1 bold=1 price=1]
+			[/table-organize]
+			</span>
+		[/if-item-data]
+	[/if-item-data]
+
+</TD>
+
+[input-filter name="[quantity-name]" op="nullselect digits_dot"][/input-filter]
+
+[if-item-field gift_cert]
+	<TD ALIGN=CENTER><small>Amount of gift:</small></TD>
+	<TD ALIGN=CENTER><INPUT TYPE=text NAME="[quantity-name]" VALUE="[item-quantity]" SIZE=7></TD>
+	<TD ALIGN=right>
+		<span style="font-size: smaller">
+			[item-subtotal]
+		</span>
+	</TD>
+[else]
+	<TD ALIGN=CENTER><INPUT TYPE=text NAME="[quantity-name]" VALUE="[item-quantity]" SIZE=3></TD>
+	[if discount [item-code]]
+		<TD ALIGN=right>
+		<span style="font-size: smaller">
+			Regular price <STRIKE>[item-price]</STRIKE>
+		<BR>
+			<B>Your price [discount-price]<br>
+			<span style="color: __CONTRAST__">
+			You save [item-difference]
+			</span>
+		</span>
+		</TD>
+		<TD ALIGN=right>
+			<span style="font-size: smaller">
+				<strike>[item-subtotal]</strike><br>
+			<B>[item-discount-subtotal]<BR>
+			<span style="color: __CONTRAST__">
+			You save [item-discount]
+			</span>
+			</b>
+			</span>
+		</TD>
+	[else]
+	<TD ALIGN=right>
+		<span style="font-size: smaller">
+			[item-price]
+		</span>
+	</TD>
+	<TD ALIGN=right>
+		<span style="font-size: smaller">
+			[item-subtotal]
+		</span>
+	</TD>
+	[/else]
+	[/if]
+[/else]
+[/if-item-field]
+</TR>
+
+[if scratch subitems[item-increment]]
+	[calc]
+	$string = <<EOF;
+[loop list="[scratch subitems[item-increment]]"][loop-description]
+[/loop]
+EOF
+	my $modify = $Tag->area( {
+								href => 'modular_modify',
+								form => '
+											mv_arg=[item-modifier mv_mi]
+											sku=[item-code]
+										',
+							});
+
+	my @lines = split /\n/, $string;
+	my $half = int(scalar(@lines) / 2);
+	my $first = join "<BR>", splice @lines, 0, $half;
+	my $last = join "<BR>", @lines;
+	return <<EOF;
+<TR class="[item-calc]$row_class || 'cartalt'[/item-calc]">
+<TD COLSPAN=3 align="left" WIDTH="50%" VALIGN=top>
+	<span style="font-size: smaller">
+$first<BR>
+<A HREF="$modify">modify</A>
+</span>
+</td>
+<TD COLSPAN=3 align="left" WIDTH="50%" VALIGN=top>
+	<span style="font-size: smaller">
+$last</span>
+<td>&nbsp;</td>
+</TR>
+EOF
+	[/calc]
+[/if]
+
+[item-tag-address
+			set="[cgi mv_an[item-modifier mv_ip]]"
+			address_label=city
+			nick="[cgi mv_an[item-modifier mv_ip]]"
+			if="[value separate_addresses]"
+			form="
+				mv_action=refresh
+				edit_addresses=1
+				"
+			textarea=1
+			widget=links]
+[address]
+<TR BGCOLOR="[scratch color]">
+[if cgi edit_addresses]
+<TD>&nbsp;</TD>
+<TD>&nbsp;</td>
+<TD>
+<SMALL><SMALL>
+<INPUT TYPE=hidden NAME="[modifier-name mv_an]" VALUE="{mv_an}">
+{textarea}
+</SMALL>
+</SMALL>
+</TD>
+<TD><INPUT TYPE=submit VALUE=Save></TD>
+[else]
+<TD COLSPAN=2><SMALL><SMALL>Retrieve:<BR>
+{address_book}
+</TD>
+<TD>
+<SMALL><SMALL>
+{mv_ad}<INPUT TYPE=hidden NAME="[modifier-name mv_ad]" VALUE="[filter entities]{mv_ad}[/filter]">
+</SMALL>
+</SMALL>
+</TD>
+<TD>&nbsp;</TD>
+[/else]
+[/if]
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+[/address]
+[/item-tag-address]
+
+[if session logged_in]
+<TR class=rheader><TD ALIGN=CENTER COLSPAN=6>
+		[if value separate_addresses]
+
+		[page href="@@MV_PAGE@@" form="
+			separate_addresses=0
+			mv_action=return
+		"]<FONT COLOR="__BARTEXT__">Same shipping address</FONT></A>&nbsp;&nbsp;&nbsp;
+		[page href="@@MV_PAGE@@" form="edit_addresses=1"]<FONT COLOR="__BARTEXT__" SIZE=1>Edit address</FONT></A>&nbsp;&nbsp;&nbsp;
+		[page href="ship_addresses" form="ui_return_to=@@MV_PAGE@@"]<FONT COLOR="__BARTEXT__" SIZE=1>Add address</FONT></A>
+		[else]
+		[page href="@@MV_PAGE@@" form="
+			separate_addresses=1
+			mv_action=return
+		"]<FONT COLOR="__BARTEXT__" SIZE=1>Separate shipping addresses</FONT></A>
+		[/else]
+		[/if]
+</td></TR>
+[/if]
+
+[/item-list]
+[/then]
+[else]
+	<TR><TD ALIGN=CENTER COLSPAN=6>
+		<H3>No items at the moment.</H3>
+	</TD></TR>
+[/else]
+[/if]
+</TBODY>
+</table>
+					  
+</td></tr></table>
+<br clear=left>
+<table cellpadding="1" cellpadding="1" align="right" border="0">  
+<tr>
+<td>
+					 <table border="0" cellspacing="0" cellpadding="2">
+                      <tr> 
+					  <td>
+                          <div align="center">
+						  <INPUT type="image" src="__THEME__/recalculate_button.gif" BORDER=0>
+                          </div>
+					  </td>
+                        <td width="34%">
+[if type=explicit compare="[control continue_shopping]"]
+                          <div align="center">
+						  
+    [button
+	text="Continue shopping"
+     	src="continue_shopping.gif"
+		hidetext=1
+		form=basket
+	]
+     [bounce page=index]
+     mv_nextpage=nothing
+    [/button]
+
+                          </div>
+[/if]
+
+                        </td>
+						</tr>
+						<tr>
+						<td colspan="4" align="right">
+
+    [button
+		text="Check out"
+     	src="checkout_button.gif"
+		extra="class=rheader"
+		hidetext=1
+		form=basket
+	]
+	mv_todo=return
+	mv_nextpage=ord/checkout
+	[/button]
+
+					
+						</td>				
+
+						
+                      </tr>
+                    </table>
+
+			</td><td align="right">
+                    <table border="0" cellspacing="2" cellpadding="2" align="right">
+                      <tr> 
+                        <td nowrap align=right class=clisting>
+                          Shipping Weight:
+                        </td>
+                        <td class=cartrow align="right">[summary format="%s" total=1]</td>
+                      </tr>
+                      <tr>
+                        <td align="right">
+                          <Subtotal:
+                        </td>
+                        <td class=cartrow align=right>[subtotal]</td>
+                      </tr>
+					  </table>
+
+</td>
+</tr>
+</TABLE>
+</FORM>
+<br clear=all>
+
+<!-- END COMPONENT [control component cart] -->

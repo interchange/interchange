@@ -1,0 +1,49 @@
+#!/bin/sh
+
+if test "x__MVC_PERMTYPE__" = x -o "x__MVC_PERMTYPE__" = xM -o "x__MVC_PERMTYPE__" = xG
+then
+	DMODE=2770
+else
+	DMODE=700
+fi
+
+# Link the image directory always
+ln -s __MVC_IMAGEDIR__ __MVC_CATROOT__
+
+# Make log directories to store logs.
+if test -n "__MVC_LOGDIR__"
+then 
+	mkdir -p __MVC_LOGDIR__/logs
+	mkdir -p __MVC_LOGDIR__/orders
+	ln    -s __MVC_LOGDIR__/error.log __MVC_CATROOT__
+	ln    -s __MVC_LOGDIR__/logs      __MVC_CATROOT__
+	ln    -s __MVC_LOGDIR__/orders    __MVC_CATROOT__
+	chmod $DMODE __MVC_LOGDIR__/logs
+	chmod $DMODE __MVC_LOGDIR__/orders
+else
+	mkdir -p __MVC_CATROOT__/orders
+	mkdir -p __MVC_CATROOT__/logs
+	chmod $DMODE __MVC_CATROOT__/logs
+	chmod $DMODE __MVC_CATROOT__/orders
+fi
+ 
+# Make cache directories to store tmps.
+if test -n "__MVC_CACHEDIR__" 
+then 
+	mkdir -p __MVC_CACHEDIR__/session
+	ln    -s __MVC_CACHEDIR__/session    __MVC_CATROOT__
+	mkdir -p __MVC_CACHEDIR__/tmp
+	ln    -s __MVC_CACHEDIR__/tmp        __MVC_CATROOT__
+else
+	mkdir -p __MVC_CATROOT__/session
+	mkdir -p __MVC_CATROOT__/tmp
+	chmod $DMODE __MVC_CATROOT__/session
+	chmod $DMODE __MVC_CATROOT__/tmp
+fi
+
+# Link in a default style
+if test -n "__MVC_STYLE__"
+then
+	ln -s __MVC_STYLE__ __MVC_CATROOT__/templates/default
+fi
+	

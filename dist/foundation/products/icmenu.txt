@@ -1,0 +1,103 @@
+code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	special	help_name	
+	Admin	01					admin/genconfig		Info			
+	Admin	02					admin/tax		Tax			
+	Admin	03					admin/ship		Shipping			
+	Admin	04					admin/payment		Payment			
+	Admin	05					admin/access		Access			
+	Admin	06					admin/preferences		Preferences			
+	Admin	06a					admin/flex_group	mv_data_table=icmenu&mv_arg=mgroup	Menus	1		
+	Admin	07					admin/flex_select	mv_data_table=variable&page_title=Knar editor&ui_meta_specific=1&help_name=knar.main&ui_description_fields=code&ui_return_to=admin/preferences Variable	Knar		1	
+	Admin	08					admin/gentable		Tables			
+	Admin	09					admin/reconfig	ui_changes_made	&nbsp;&nbsp;&nbsp;Apply Changes			
+	Admin	10	1		no_dbmenu	mv_data_table	admin/flex_select	mv_data_table=[cgi mv_data_table]	Edit			
+	Admin	11			no_dbmenu	mv_data_table	admin/import_table	mv_data_table=[cgi mv_data_table]	Import Data			
+	Admin	12			no_dbmenu	mv_data_table	admin/export_table	mv_data_table=[cgi mv_data_table]	Export Data			
+	Admin	13			no_dbmenu	mv_data_table	admin/spread	mv_data_table=[cgi mv_data_table]	Spreadsheet			
+	Admin	14			no_dbmenu	mv_data_table	admin/flex_editor	mv_data_table=[cgi mv_data_table]&ui_new_item=1	New Entry			
+	Admin	15			no_dbmenu	mv_data_table	admin/gentable		&nbsp;&nbsp;&nbsp;&nbsp;Re-select Table			
+	Admin	16	1			access_menu	admin/access		Users			
+	Admin	17				access_menu	admin/group		Groups			
+	Content	01					admin/page	action=chdir&dir=pages	Page Edit			
+	Content	02					admin/file_transfer	action=chdir&dir=.	File Transfer			
+	Content	03					admin/template_new		Create new template			
+	Customers	01		showactive			admin/customer	showactive=1	Active Customers			
+	Customers	02		showinactive			admin/customer	showinactive=1	Inactive Customers			
+	Customers	03					admin/flex_editor	page_title=Create new customer&mv_data_table=userdb&help_name=create.new.customer&item_id=new&ui_return_to=admin/customer	Create new customer			
+	Customers	04	1		deletecustomer	customer	admin/customer_view	customer=[cgi customer]	View			
+	Customers	05			deletecustomer	customer	admin/customer_ship	customer=[cgi customer]	Shipping			
+	Customers	06			deletecustomer	customer	admin/customer_bill	customer=[cgi customer]	Billing			
+	Customers	07			deletecustomer	customer	admin/customer_comments	customer=[cgi customer]	Feedback			
+	Customers	08			deletecustomer	customer	admin/customer_all	customer=[cgi customer]	All			
+	Customers	09			deletecustomer	customer	admin/customer_pref	customer=[cgi customer]	Preferences			
+	Customers	10			deletecustomer	customer	admin/entry	customer=[cgi customer]	Enter Order			
+	Design	01					admin/layout		Site layout			
+	Design	02					admin/search_wizard		Search Builder			
+	Design	03					admin/button_builder		Button Builder			
+	Design	04					admin/regenerate		Generate Static			
+	Design	05					admin/file_transfer	action=chdir&dir=.	File Transfer			
+	Design	06					admin/page		Page Edit			
+	Items	01					admin/item		Item list			
+	Items	02					admin/item_edit	item_id=new&ui_new_item=1	&nbsp;&nbsp;&nbsp;&nbsp;Create new item			
+	Items	03				item_id	admin/item_edit	item_id=new&ui_new_item=1&ui_clone_id=[cgi item_id]&ui_clone_tables=[var UI_ITEM_TABLES]	&nbsp;&nbsp;&nbsp;&nbsp;Clone item			
+	Items	04				item_id			&nbsp;&nbsp;&nbsp;sku: [cgi item_id]			
+	Items	13	1			item_id	admin/item_edit	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Edit			
+	Items	14				item_id	admin/item_price	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Pricing			
+	Items	15				item_id	admin/item_up	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Up-sell			
+	Items	16				item_id	admin/item_cross	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Cross-sell		1	
+	Items	17				item_id	admin/item_feature	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Promotion			
+	Items	18				item_id	admin/item_inventory	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Inventory			
+	Items	19				item_id	admin/item_option	item_id=[cgi item_id]&ui_sequence_edit=[cgi ui_sequence_edit]&item_id_left=[cgi item_id_left]	Options			
+	Merchandising	01					admin/merchandising		Product Merchandising			
+	Merchandising	02					admin/affiliates		Affiliates			
+	Merchandising	03					admin/build_related		Generate "others who ..."			
+	Merchandising	04	1		affiliates		admin/flex_editor	page_title=Create new affiliate&mv_data_table=affiliate&help_name=create.new.affiliate&ui_new_item=1&item_id=new&ui_return_to=admin/affiliates&icon_name=admin/icon_people.gif	Create new affiliate			
+	None	1		!nevairbe					<font size="-1"><b>Welcome to Akopia Interchange</b></font>			
+	Orders	01		!showarchive			admin/order	showpending=1	Pending Orders			
+	Orders	02		showarchive			admin/order	showarchive=1	Archived Orders			
+	Orders	03					admin/entry		Enter Order			
+	Reports	01					admin/orderstats		Orders			
+	Reports	02					admin/trafficstats		Traffic			
+	Reports	03					admin/tablereport		Custom			
+	Wizard	01		initial			admin/wizard/info_initial		Initial System Configuration	1			
+	Wizard	02	1	mysql			admin/wizard/info_mysql_pass		Set MySQL password	1			
+	Wizard	03	1	admin_pass			admin/wizard/info_admin_pass		Set Catalog Admin password	1			
+	Wizard	04		catalog			admin/wizard/index		About Your Business	1			routinfo
+	Wizard	05	1	company			admin/wizard/step_company		Company Information	1			compinfo
+	Wizard	06	1	tax			admin/wizard/step_tax		Tax Information	1			taxcalc
+	Wizard	07	1	ship			admin/wizard/step_ship		Shipping Preferences	1			shipinfo
+	Wizard	08	1	pay			admin/wizard/step_pay		Payment Preferences	1			payment
+	Wizard	09	1	security			admin/wizard/step_security		Security Preferences	1			general
+	Wizard	10		style			admin/wizard/step_style		About Your Style	1			theme
+	Wizard	11		products			admin/wizard/step_products		About Your Products	1			sprdsht
+	Wizard	12		content			admin/wizard/step_content		About Your Site	1			content
+	Wizard	13	1	index			admin/wizard/step_index		Index page	1			content
+	Wizard	14	1	about			admin/wizard/step_about		About us	1			content
+	Wizard	16		finalize			admin/wizard/step_finalize		Content Inspection	1			finalck
+	Wizard	17		launch			admin/wizard/step_launch		Launch	1			general
+	Wizard	17		testing			admin/wizard/step_testing		Preview	1			general
+a	Wizard	03a	1	admin_pass			admin/wizard/info_store_build		Build blank store	1			
+admin/wizard/index	Dictionary	04		catalog			admin/wizard/index		About Your Business	1			routinfo
+admin/wizard/info_admin_pass	Dictionary	03	1	admin_pass			admin/wizard/info_admin_pass		Set Catalog Admin password	1			
+admin/wizard/info_initial	Dictionary	01		initial			admin/wizard/info_initial		Initial System Configuration	1			
+admin/wizard/info_mysql_pass	Dictionary	02	1	mysql			admin/wizard/info_mysql_pass		Set MySQL password	1			
+admin/wizard/info_store_build	Dictionary	03a	1	admin_pass			admin/wizard/info_store_build		Build blank store	1			
+admin/wizard/step_about	Dictionary	14	1	about			admin/wizard/step_about		About us	1			aboutus
+admin/wizard/step_auth	Dictionary	17		testing			admin/wizard/step_testing		Payment Preferences	1			authorize
+admin/wizard/step_company	Dictionary	05	1	company			admin/wizard/step_company		Company Information	1			compinfo
+admin/wizard/step_company2	Dictionary	17		testing			admin/wizard/step_testing		Company Information	1			routinfo
+admin/wizard/step_content	Dictionary	12		content			admin/wizard/step_content		About Your Site	1			content
+admin/wizard/step_finalize	Dictionary	16		finalize			admin/wizard/step_finalize		Content Inspection	1			finalck
+admin/wizard/step_index	Dictionary	13	1	index			admin/wizard/step_index		Index page	1			index
+admin/wizard/step_launch	Dictionary	17		launch			admin/wizard/step_launch		Launch	1			general
+admin/wizard/step_pay	Dictionary	08	1	pay			admin/wizard/step_pay		Payment Preferences	1			payment
+admin/wizard/step_pay_cyber	Dictionary	17		testing			admin/wizard/step_testing		Payment Preferences	1			cych
+admin/wizard/step_pay_pgp	Dictionary	17		testing			admin/wizard/step_testing		Payment Preferences	1			pgp
+admin/wizard/step_pay_signio	Dictionary	17		testing			admin/wizard/step_testing		Payment Preferences	1			signio
+admin/wizard/step_products	Dictionary	11		products			admin/wizard/step_products		About Your Products	1			sprdsht
+admin/wizard/step_security	Dictionary	09	1	security			admin/wizard/step_security		Security Preferences	1			security
+admin/wizard/step_ship	Dictionary	07	1	ship			admin/wizard/step_ship		Shipping Preferences	1			shipinfo
+admin/wizard/step_ship_fedex	Dictionary	17		testing			admin/wizard/step_testing		Shipping Preferences	1			fedex
+admin/wizard/step_ship_ups	Dictionary	17		testing			admin/wizard/step_testing		Shipping Preferences	1			ups
+admin/wizard/step_style	Dictionary	10		style			admin/wizard/step_style		About Your Style	1			theme
+admin/wizard/step_tax	Dictionary	06	1	tax			admin/wizard/step_tax		Tax Information	1			taxcalc
+admin/wizard/step_testing	Dictionary	17		testing			admin/wizard/step_testing		Preview	1			testing

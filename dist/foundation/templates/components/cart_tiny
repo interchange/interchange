@@ -1,0 +1,50 @@
+[comment]
+ui_component: cart_tiny
+ui_component_group: info
+ui_component_label: Small cart for left/right display
+
+[/comment]
+
+<!-- BEGIN COMPONENT [control component cart_tiny] -->
+[if items]
+ <tr> 
+   <td>
+   <p>&nbsp;</p>
+   </td>
+   <td width="119" bgcolor="__BARBG__" valign="top"><br clear=all>
+	<table width="102" border="1" cellspacing="0" cellpadding="0" bordercolor="__BARCONTRAST__">
+	<tr><td>
+	<table width="100" border="0" cellspacing="0" cellpadding="0">
+	<tr class=sheader>
+	<td colspan=2 align=center class=sheader>Cart Contents</td>
+	</tr>
+	<tr VALIGN=TOP class=cartalt>
+		<td align=center width="67" class=cartalt> 
+			Description
+		</td>
+		<td align=center width="33" class=cartalt> 
+			Quantity
+		</td>
+	</tr>
+[item-list]
+<tr class=cartrow>
+	<td valign=top class=cartrow>
+		[page [item-code]][item-filter 20][item-description][/item-filter]</A>
+	</td>
+	<TD ALIGN=CENTER class=cartrow>[item-quantity]@[discount-price]</TD>
+</tr>
+
+<tr class=cartrow>
+	<TD ALIGN=CENTER COLSPAN=2>
+		<IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="4" BORDER="0">
+	</td>
+</tr>
+[/item-list]
+	</table>
+	</td></tr>
+	</table>
+</td>
+</tr>
+[/if]
+
+<!-- END COMPONENT [control component cart_tiny] -->

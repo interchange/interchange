@@ -1,0 +1,107 @@
+sku	description	title	template_page	comment	thumb	image	price	wholesale	prod_group	category	nontaxable	weight	size	color	gift_cert	related	featured	download	dl_type	dl_location	inactive	url														
+7000015	ATX Mid Tower-Grey (3)5.25 (2)3.5 & (1)3.5 Hidden				thumb.gif	yourimage.gif	49.00	44.10	Hardware	Cases		0										http://www.explorermicro.com/sysinfo/cases.html														
+7000043	Alltech ATX Tower Case			This case is packed with options. Four 5.25 & two 3.5 drive bays provide plenty of expansion space.	thumb.gif	yourimage.gif	49.00	44.10	Hardware	Cases		0										http://www.explorermicro.com/sysinfo/cases.html														
+7000063	Alltech ATX Desktop Case (2)5.25 & (2)3.5				thumb.gif	yourimage.gif	35.00	31.50	Hardware	Cases		0										http://www.explorermicro.com/sysinfo/cases.html														
+7000095	Super Tower Case (6)5.25 & (3)3.5				thumb.gif	yourimage.gif	75.00	67.50	Hardware	Cases		0										http://www.explorermicro.com/sysinfo/cases.html														
+7000033	Micro ATX Tower - Smokey Grey				thumb.gif	yourimage.gif	69.00	62.10	Hardware	Cases		0																								
+7000032	Micro ATX Tower - Rage Red				thumb.gif	yourimage.gif	69.00	62.10	Hardware	Cases		0																								
+7000030	Micro ATX Tower				thumb.gif	yourimage.gif	69.00	62.10	Hardware	Cases		49																								
+7000031	Micro ATX Tower - Moody Blue				thumb.gif	yourimage.gif	69.00	62.10	Hardware	Cases		0																								
+7000017	Zoomer (1 ISA,1 PCI,3 DIMMs,2 USB,56K,10/100NIC)				thumb.gif	yourimage.gif	150.00	135.00	Hardware	Motherboards		0										http://www.explorermicro.com/sysinfo/motherboards/m3741lmt/m3741lmt.html														
+7000026	Screamer (2DIMMs,3PCI,2USB,20MVid,56K,10/100)				thumb.gif	yourimage.gif	179.00	161.10	Hardware	Motherboards		0										http://www.explorermicro.com/sysinfo/motherboards/m754lmr/m754lmr.html														
+7000099	Celeron 466 CPU				thumb.gif	yourimage.gif	40.00	36.00	Hardware	CPU chips		0																								
+7000100	Celeron 500 CPU				thumb.gif	yourimage.gif	50.00	45.00	Hardware	CPU chips		0																								
+7000101	Celeron 533 CPU				thumb.gif	yourimage.gif	60.00	54.00	Hardware	CPU chips		0																								
+7000102	Celeron 566 CPU				thumb.gif	yourimage.gif	70.00	63.00	Hardware	CPU chips		0																								
+7000103	Celeron 600 CPU				thumb.gif	yourimage.gif	80.00	72.00	Hardware	CPU chips		0																								
+7000104	Celeron 633 CPU				thumb.gif	yourimage.gif	90.00	81.00	Hardware	CPU chips		0																								
+7000105	Celeron 700 CPU				thumb.gif	yourimage.gif	110.00	99.00	Hardware	CPU chips		0																								
+7000124	PIII-600 Mhz CPU				thumb.gif	yourimage.gif	140.00	126.00	Hardware	CPU chips		0																								
+7000126	PIII-650 Mhz CPU				thumb.gif	yourimage.gif	150.00	135.00	Hardware	CPU chips		0																								
+7000127	PIII-700 Mhz CPU				thumb.gif	yourimage.gif	160.00	144.00	Hardware	CPU chips		0																								
+7000128	PIII-750 Mhz CPU				thumb.gif	yourimage.gif	200.00	180.00	Hardware	CPU chips		0																								
+7000129	PIII-800 Mhz CPU				thumb.gif	yourimage.gif	220.00	198.00	Hardware	CPU chips		0																								
+7000130	PIII-850 Mhz CPU Available with B28 Only				thumb.gif	yourimage.gif	230.00	207.00	Hardware	CPU chips		0																								
+7000013	32 Meg 100 MHz SDRAM				thumb.gif	yourimage.gif	39.00	35.10	RAM	SDRAM		0																								
+7000025	64 Meg 100 MHz SDRAM - (1) 64 DIMM				thumb.gif	yourimage.gif	71.00	63.90	RAM	SDRAM		0																								
+7000062	96 Meg 100 MHz SDRAM - (1) 32 & (1) 64 DIMM				thumb.gif	yourimage.gif	99.00	89.10	RAM	SDRAM		0																								
+7000085	128 Meg 100 MHz SDRAM - (1) 128 DIMM				thumb.gif	yourimage.gif	137.00	123.30	RAM	SDRAM		0																								
+7000111	256 Meg 100 MHz SDRAM - (2) 128 DIMM's				thumb.gif	yourimage.gif	256.00	230.40	RAM	SDRAM		0																								
+7000116	384 Meg 100 MHz SDRAM - (3) 128 DIMM's				thumb.gif	yourimage.gif	384.00	345.60	RAM	SDRAM		0																								
+7000036	X-Wave Mach One PCI Sound Card W/3D Sound				thumb.gif	yourimage.gif	19.00	17.10	Multimedia	Sound cards		0																								
+7000068	Sound Blaster AWE64 Value (CT4520)				thumb.gif	yourimage.gif	29.00	26.10	Multimedia	Sound cards		0										http://americas.creative.com/sound/64-value/														
+7000092	Sound Blaster Live Value (CT4832)				thumb.gif	yourimage.gif	59.00	53.10	Multimedia	Sound cards		0										http://americas.creative.com/sound/live-value/														
+7000069	Sound Blaster PCI 128 (CT4750)				thumb.gif	yourimage.gif	39.00	35.10	Multimedia	Sound cards		0										http://americas.creative.com/sound/pci-128/														
+7000070	Sound Blaster PCI 512 (CT4790)				thumb.gif	yourimage.gif	59.00	53.10	Multimedia	Sound cards		0										http://americas.creative.com/sound/pci-512/														
+7000093	Sound Blaster Live Value MP3+ (SB4760M)				thumb.gif	yourimage.gif	99.00	89.10	Multimedia	Sound cards		0										http://americas.creative.com/sound/live-mp3/														
+7000094	Sound Blaster Live Value X-Gamer (SB4760X)				thumb.gif	yourimage.gif	99.00	89.10	Multimedia	Sound cards		0										http://americas.creative.com/sound/live-xgamer/														
+7000108	Sound Blaster Live Platinum-Retail				thumb.gif	yourimage.gif	179.00	161.10	Multimedia	Sound cards		0										http://americas.creative.com/sound/live-platinum/														
+7000113	Diamond Monster Sound MX300				thumb.gif	yourimage.gif	69.00	62.10	Multimedia	Sound cards		0										http://209.10.46.172/default.asp?menu=monster_sound_mx300&sub_menu=														
+7000088	3C905 TX 3COM 10/100 NIC				thumb.gif	yourimage.gif	59.00	53.10	Hardware	Networking		0										http://www.3com.com/products/dsheets/400250.html														
+7000040	10.1 Gig UDMA 7200rpm Hard Drive				thumb.gif	yourimage.gif	150.00	135.00	Storage	Hard drives		0																								
+7000041	10.2 Gig UDMA Hard Drive				thumb.gif	yourimage.gif	131.00	117.90	Storage	Hard drives		0																								
+7000046	17.2 Gig UDMA Hard Drive				thumb.gif	yourimage.gif	140.00	126.00	Storage	Hard drives		0																								
+7000049	20.4 Gig UDMA Hard Drive				thumb.gif	yourimage.gif	160.00	144.00	Storage	Hard drives		0																								
+7000076	25 Gig UDMA Hard Drive				thumb.gif	yourimage.gif	170.00	153.00	Storage	Hard drives		0																								
+7000077	27 Gig UDMA 7200rpm Hard Drive				thumb.gif	yourimage.gif	280.00	252.00	Storage	Hard drives		0																								
+7000079	34 Gig UDMA 7200rpm Hard Drive				thumb.gif	yourimage.gif	470.00	423.00	Storage	Hard drives		0																								
+7000080	40 Gig UDMA Hard Drive				thumb.gif	yourimage.gif	240.00	216.00	Storage	Hard drives		0																								
+7000081	45 Gig UDMA Hard Drive				thumb.gif	yourimage.gif	310.00	279.00	Storage	Hard drives		0																								
+7000082	60 Gig UDMA Hard Drive				thumb.gif	yourimage.gif	320.00	288.00	Storage	Hard drives		0																								
+7000083	60 Gig 7200 rpm UDMA Hard Drive				thumb.gif	yourimage.gif	540.00	486.00	Storage	Hard drives		0																								
+7000084	75 Gig 7200 rpm UDMA Hard Drive				thumb.gif	yourimage.gif	740.00	666.00	Storage	Hard drives		0																								
+7000078	30Gig UDMA Hard Drive				thumb.gif	yourimage.gif	180.00	162.00	Storage	Hard drives		0																								
+7000014	50x CD-ROM				thumb.gif	yourimage.gif	49.00	44.10	Storage	CDROM		1		test																						
+7000037	10x DVD (No Decoder)				thumb.gif	yourimage.gif	69.00	62.10	Storage	DVD		0																								
+7000039	10x DVD & MPEG2 PCI Decoder Card				thumb.gif	yourimage.gif	119.00	107.10	Storage	DVD		0																								
+7000042	CD Rewriter - 8x4x32x				thumb.gif	yourimage.gif	119.00	107.10	Storage	CD-RW		0																								
+7000045	CD Rewriter - 8x4x32x & 44x CD-ROM				thumb.gif	yourimage.gif	159.00	143.10	Storage	CD-RW		0																								
+7000047	CD Rewriter - 8x4x32x & 10x DVD				thumb.gif	yourimage.gif	219.00	197.10	Storage	CD-RW		0																								
+7000061	6x4x24x4 CDR/CDRW/CD/DVD All-In-One Drive				thumb.gif	yourimage.gif	199.00	179.10	Storage	CD-RW		0																								
+7000012	3.5 inch Mitsumi Floppy Drive				thumb.gif	yourimage.gif	29.95	26.95	Storage	Floppy		0										http://www.mitsumi.com/products/3_floppy.html														
+7000035	Panasonic LS120 Super Floppy Drive				thumb.gif	yourimage.gif	99.00	89.10	Storage	Floppy		0										http://www.iomega.com/zip/products/insider.html														
+7000027	Iomega 100 MB Internal Zip Drive				thumb.gif	yourimage.gif	79.00	71.10	Storage	ZIP		0										http://www.iomega.com/zip/products/insider.html														
+7000064	HP 5 Gig Travan TB4354 Tape Backup				thumb.gif	yourimage.gif	199.00	179.10	Storage	Backup devices		0										http://www.hp.com/tape/colorado/5-8gbfeatures.html														
+7000090	HP 8 Gig Travan TB4386 Tape Backup				thumb.gif	yourimage.gif	249.00	224.10	Storage	Backup devices		0										http://www.hp.com/tape/colorado/5-8gbfeatures.html														
+7000106	HP 5 Gig Travan Tape Backup & Iomega 100 Meg Zip				thumb.gif	yourimage.gif	279.00	251.10	Storage	Backup devices		0																								
+7000114	HP 8 Gig Travan Tape Backup & Iomega 100 Meg Zip				thumb.gif	yourimage.gif	329.00	296.10	Storage	Backup devices		0																								
+7000028	Iomega 250 MB Internal Zip Drive				thumb.gif	yourimage.gif	120.00	108.00	Storage	ZIP		0																								
+7000009	104 Key Win '98 Keyboard				thumb.gif	yourimage.gif	19.00	17.10	Input devices	Keyboards		0																								
+7000066	Microsoft Natural Keyboard				thumb.gif	yourimage.gif	45.50	40.95	Input devices	Keyboards		0										http://www.microsoft.com/catalog/display.asp?site=596&subid=22&pg=1														
+7000010	2 Button High Resolution Mouse				thumb.gif	yourimage.gif	9.95	8.96	Input devices	Mouse		0																								
+7000065	Microsoft Intellimouse				thumb.gif	yourimage.gif	26.50	23.85	Input devices	Mouse		0										http://www.microsoft.com/catalog/display.asp?site=304&subid=22&pg=1														
+7000023	150 Watt (P.M.P.O) Speakers				thumb.gif	yourimage.gif	7.00	6.30	Multimedia	Speakers		0										http://www.bridgeview.com/speakers.htm														
+7000060	400 Watt Speakers With Subwoofer				thumb.gif	yourimage.gif	43.00	38.70	Multimedia	Speakers		0																								
+7000089	Creative Labs 4 Point Surround Sound				thumb.gif	yourimage.gif	99.00	89.10	Multimedia	Speakers		0										http://www.soundblaster.com/speakers/pc-four-point/														
+7000098	Altec ACS33 Amplified Powercube - 10W SPK 15W Sub				thumb.gif	yourimage.gif	49.00	44.10	Multimedia	Speakers		0										http://www.altecmm.com/products/acs33.html														
+7000112	Altec ACS45.2 Amplified Powercube - 6W SPK 20W Sub				thumb.gif	yourimage.gif	69.00	62.10	Multimedia	Speakers		0										http://www.altecmm.com/products/acs45_2.html														
+7000117	Altec ACS48 Amplified Powercube - 20W SPK 40W Sub				thumb.gif	yourimage.gif	135.00	121.50	Multimedia	Speakers		0										http://www.altecmm.com/products/acs48.html														
+7000119	Altec ACS54 Amplified 5-Peice-20W SPK 40W Sub BLK				thumb.gif	yourimage.gif	79.00	71.10	Multimedia	Speakers		0										http://www.altecmm.com/products/acs54_gaming.html														
+7000120	Altec ACS56 Amplified Powercube - 70W SPK 35W Sub				thumb.gif	yourimage.gif	129.00	116.10	Multimedia	Speakers		0										http://www.altecmm.com/products/acs56.html														
+7000123	Altec ACS65I Amplified-13W SPK 20W Sub-MAC BGE/B				thumb.gif	yourimage.gif	89.00	80.10	Multimedia	Speakers		0										http://www.altecmm.com/products/acs65i.html														
+7000125	Altec ADA305 Ampl Pwrcube-20W SPK Sub Surround BGE				thumb.gif	yourimage.gif	169.00	152.10	Multimedia	Speakers		0										http://www.altecmm.com/products/ada305_systems.html														
+7000131	Altec ADA70 Ampl Pwrcube-USB 7W SPK Beige 15W Sub				thumb.gif	yourimage.gif	139.00	125.10	Multimedia	Speakers		0										http://www.altecmm.com/products/ada70.html														
+7000132	Altec ADA880R Ampl-80W 5-PCE SPK Dolby Dig Sub				thumb.gif	yourimage.gif	269.00	242.10	Multimedia	Speakers		0										http://www.altecmm.com/products/ada880.html														
+7000029	Linux (CD Only, No Manuals, No Support)				thumb.gif	yourimage.gif	3.00	2.70	Software	Software		0										http://www.redhat.com/														
+7000096	Windows 98 Second Edition				thumb.gif	yourimage.gif	99.00	89.10	Software	Software		0										http://www.microsoft.com/windows98/														
+7000109	Windows NT 4.0 Workstation				thumb.gif	yourimage.gif	199.00	179.10	Software	Software		0										http://www.microsoft.com/ntworkstation/default.asp														
+7000115	Windows NT Server 4.0 With 5 Client Access Lic.				thumb.gif	yourimage.gif	799.00	719.10	Software	Software		0																								
+7000021	Windows ME Millenium Edition				thumb.gif	yourimage.gif	109.00	98.10	Software	Software		0										http://www.microsoft.com/WindowsMe/														
+7000071	Windows 2000 Professional (Requires 64M RAM)				thumb.gif	yourimage.gif	149.00	134.10	Software	Software		0										http://www.microsoft.com/windows2000/														
+7000016	Corel Wordperfect Suite 8.0				thumb.gif	yourimage.gif	99.00	89.10	Software	Software		0																								
+7000034	Microsoft Works 2000				thumb.gif	yourimage.gif	49.00	44.10	Software	Software		0										http://www.microsoft.com/insider/works/articles/w2k.htm														
+7000067	Microsoft Works Suites 2000				thumb.gif	yourimage.gif	99.00	89.10	Software	Software		0										http://www.microsoft.com/insider/works/articles/ws2k.htm														
+7000091	Microsoft Office 2000 Small Bus Edition				thumb.gif	yourimage.gif	219.00	197.10	Software	Software		0										http://shop.microsoft.com/store/products/ProductOverview.asp?strGroup=Software&intCat=930359&intSubCat=930371&intProductIID=693&														
+7000107	Microsoft Office 2000 Professional Edition				thumb.gif	yourimage.gif	349.00	314.10	Software	Software		0										http://shop.microsoft.com/store/products/ProductOverview.asp?strGroup=Software&intCat=930359&intSubCat=930373&intProductIID=725&														
+7000058	15 in .28 dpi Amptron CS15 Monitor 1024x768				thumb.gif	yourimage.gif	139.00	125.10	Monitors	Monitors		0										http://www.amptron.com/html/cs_monitor.html														
+7000087	17 in (16 vis) .25 dpi Amptron GS17 1600x1200				thumb.gif	yourimage.gif	209.00	188.10	Monitors	Monitors		0										http://www.amptron.com/html/gs_monitor.html														
+7000097	19 in (18 vis) .26 dpi 1600x1200 Hansol Monitor				thumb.gif	yourimage.gif	379.00	341.10	Monitors	Monitors		0										http://www.hansol.ca/900p.html														
+7000110	21 in (19 vis) .25 dpi 1920x144 KDS VS21E Monitor				thumb.gif	yourimage.gif	699.00	629.10	Monitors	Monitors		0										http://www.kdsusa.com/ALL/Visual%20Sensations/VS21e.htm														
+7000075	15 in (15 Vis) Amptron Flat Panel LCD				thumb.gif	yourimage.gif	799.00	719.10	Monitors	Monitors		0										http://www.amptron.com/html/l5exLCD_monitor.html														
+7000086	17 in (15.8 vis) .27 dpi Amptron CS17 1280x1024				thumb.gif	yourimage.gif	189.00	170.10	Monitors	Monitors		0										http://www.amptron.com/html/cs17.html														
+7000022	1 Year On Site - Parts & Labor With 24/7 Tech Supp				thumb.gif	yourimage.gif	29.00	26.10	Service	Service		0										http://www.nwcserv.com/Profile/Your_Sales_Partner/24X7/24x7.html														
+7000059	2 Year On Site - Parts & Labor With 24/7 Tech Supp				thumb.gif	yourimage.gif	79.00	71.10	Service	Service		0										http://www.nwcserv.com/Profile/Your_Sales_Partner/24X7/24x7.html														
+7000024	36 Bit 600x1200 dpi Flatbed USB Scanner				thumb.gif	yourimage.gif	79.00	71.10	Input devices	Scanners		0										http://www.silitek.com/scanners/fc600.htm														
+00010	Pentium Computer				generic_thumb.gif	generic.gif	499.95	449.95	Systems	Pentium																										
+00011	Athlon Computer -- 800MHz, 96M				generic_thumb.gif	generic.gif	849.95	764.96	Systems	Athlon -- preconfigured																										
+00009	Athlon Computer				generic_thumb.gif	generic.gif	499.95	449.95	Systems	Athlon																										

@@ -1,0 +1,238 @@
+code	o_master	sku	o_group	o_sort	phantom	o_enable	o_matrix	o_modular	o_default	o_label	o_value	o_widget	o_footer	o_header	o_height	o_width	description	price	wholesale	differential	weight	volume	mv_shipmode	
+1002	999000	7000015	A	01				0	1						0	0	ATX Mid Tower-Grey (3)5.25 (2)3.5 & (1)3.5 Hidden	0.00						
+1003	999000	7000043	A	02				0							0	0	Enlight ATX Tower Case (4) 5.25 & (2)3.5	29						
+1004	999000	7000063	A	03				0							0	0	Enlight ATX Desktop Case (2)5.25 & (2)3.5	35						
+1005	999000	7000095	A	04				0							0	0	Super Tower Case (6)5.25 & (3)3.5	75						
+1006	999000	7000033	A	47				0							0	0	Micro ATX Tower - Smokey Grey	0.00						
+1007	999000	7000032	A	48				0							0	0	Micro ATX Tower - Rage Red	0.00						
+1008	999000	7000030	A	49				0							0	0	Micro ATX Tower - Honey Yellow	0.00						
+1009	999000	7000031	A	50				0							0	0	Micro ATX Tower - Moody Blue	0.00						
+100015	00010	999001	B	00	1	1		0							0	0	Select motherboard							
+1011	999001	7000017	B	10				0	1						0	0	Explorer (1 ISA,1 PCI,3 DIMMs,2 USB,56K,10/100NIC)	0.00						
+1012	999001	7000026	B	28				0							0	0	Explorer TNT2 (2DIMMs,3PCI,2USB,20MVid,56K,10/100)	29						
+1013	00010	999002	C	00	1	1		0				select			0	0	Select a CPU	0.00						
+1014	999002	7000099	C	53				0	1						0	0	Celeron 466 CPU	0.00						
+1015	999002	7000100	C	54				0							0	0	Celeron 500 CPU	10						
+1016	999002	7000101	C	56				0							0	0	Celeron 533 CPU	20						
+1017	999002	7000102	C	57				0							0	0	Celeron 566 CPU	30						
+1018	999002	7000103	C	58				0							0	0	Celeron 600 CPU	40						
+1019	999002	7000104	C	59				0							0	0	Celeron 633 CPU	50						
+1020	999002	7000105	C	60				0							0	0	Celeron 700 CPU	70						
+1021	999002	7000124	C	75				0							0	0	PIII-600 Mhz CPU	100						
+1022	999002	7000126	C	78				0							0	0	PIII-650 Mhz CPU	110						
+1023	999002	7000127	C	80				0							0	0	PIII-700 Mhz CPU	120						
+1024	999002	7000128	C	81				0							0	0	PIII-750 Mhz CPU	170						
+1025	999002	7000129	C	83				0							0	0	PIII-800 Mhz CPU	190						
+1026	999002	7000130	C	84				0							0	0	PIII-850 Mhz CPU Available with B28 Only	230						
+1028	999050	7000013	D	01				0	1						0	0	32 Meg 100 MHz SDRAM	0.00						
+1029	999050	7000025	D	02				0							0	0	64 Meg 100 MHz SDRAM - (1) 64 DIMM	39						
+1030	999050	7000062	D	03				0							0	0	96 Meg 100 MHz SDRAM - (1) 32 & (1) 64 DIMM	79						
+1031	999050	7000085	D	04				0							0	0	128 Meg 100 MHz SDRAM - (1) 128 DIMM	99						
+1032	999050	7000111	D	05				0							0	0	256 Meg 100 MHz SDRAM - (2) 128 DIMM's	232						
+1033	999050	7000116	D	06				0							0	0	384 Meg 100 MHz SDRAM - (3) 128 DIMM's	365						
+100020	00010	999007	G		1	1		0							0	0	Select modem							
+1010	00010	999000	A	00	1	1		0							0	0	Select case type	0.00						
+1036	999008	7000036	F	02				0							0	0	X-Wave Mach One PCI Sound Card W/3D Sound	19						
+1037	999008	7000068	F	03				0							0	0	Sound Blaster AWE64 Value (CT4520)	29						
+1038	999008	7000092	F	04				0							0	0	Sound Blaster Live Value (CT4832)	59						
+1039	999008	7000069	F	05				0							0	0	Sound Blaster PCI 128 (CT4750)	39						
+1040	999008	7000070	F	06				0							0	0	Sound Blaster PCI 512 (CT4790)	59						
+1041	999008	7000093	F	07				0							0	0	Sound Blaster Live Value MP3+ (SB4760M)	99						
+1042	999008	7000094	F	08				0							0	0	Sound Blaster Live Value X-Gamer (SB4760X)	99						
+1043	999008	7000108	F	09				0							0	0	Sound Blaster Live Platinum-Retail	179						
+1044	999008	7000113	F	50				0							0	0	Diamond Monster Sound MX300	69						
+1045	999007	7000006	G	00				0	1						0	0	Integrated 56K Modem	0.00						
+1046	999010	7000018	H	00				0	1						0	0	Integrated 10/100 NIC	0.00						
+1047	999010	7000088	H	03				0							0	0	3C905 TX 3COM 10/100 NIC	59						
+1049	999060	7000038	I	04				0							0	0	10.1 Gig UDMA 7200 rpm Hard Drive	19						
+1050	999062	7000040	J	04				0							0	0	10.1 Gig UDMA 7200rpm Hard Drive	150						
+1051	999060	7000041	I	05				0	1						0	0	10.2 Gig UDMA Hard Drive	0.00						
+1052	999062	7000041	J	05				0							0	0	10.2 Gig UDMA Hard Drive	131						
+1053	999060	7000046	I	07				0							0	0	17.2 Gig UDMA Hard Drive	9						
+1054	999062	7000046	J	07				0							0	0	17.2 Gig UDMA Hard Drive	140						
+1055	999060	7000049	I	09				0							0	0	20.4 Gig UDMA Hard Drive	29						
+1056	999062	7000049	J	09				0							0	0	20.4 Gig UDMA Hard Drive	160						
+1057	999060	7000076	I	11				0							0	0	25 Gig UDMA Hard Drive	39						
+1058	999062	7000076	J	11				0							0	0	25 Gig UDMA Hard Drive	170						
+1059	999060	7000077	I	14				0							0	0	27 Gig UDMA 7200rpm Hard Drive	129						
+1060	999062	7000077	J	14				0							0	0	27 Gig UDMA 7200rpm Hard Drive	280						
+1061	999060	7000053	I	15				0							0	0	34 Gig 7200rpm UDMA Hard Drive	339						
+1062	999062	7000079	J	15				0							0	0	34 Gig UDMA 7200rpm Hard Drive	470						
+1063	999060	7000080	I	16				0							0	0	40 Gig UDMA Hard Drive	109						
+1064	999062	7000080	J	16				0							0	0	40 Gig UDMA Hard Drive	240						
+1065	999060	7000081	I	17				0							0	0	45 Gig UDMA Hard Drive	179						
+1066	999062	7000081	J	17				0							0	0	45 Gig UDMA Hard Drive	310						
+1067	999060	7000082	I	18				0							0	0	60 Gig UDMA Hard Drive	189						
+1068	999062	7000082	J	18				0							0	0	60 Gig UDMA Hard Drive	320						
+1069	999060	7000073	I	19				0							0	0	60 Gig UDMA 7200 rpm Hard Drive	409						
+1070	999062	7000083	J	19				0							0	0	60 Gig 7200 rpm UDMA Hard Drive	540						
+1071	999060	7000074	I	20				0							0	0	75 Gig UDMA 7200 rpm Hard Drive	609						
+1072	999062	7000084	J	20				0							0	0	75 Gig 7200 rpm UDMA Hard Drive	740						
+1073	999060	7000078	I	21				0							0	0	30Gig UDMA Hard Drive	49						
+1074	999062	7000078	J	21				0							0	0	30Gig UDMA Hard Drive	180						
+1075	00010	999062	J	90	1	1		0		Add a second hard drive		select			0	0	Add a second hard drive	0.00						
+1076	00010	999003	K	00	1	1		0							0	0	CDROM DVD options	0.00						
+100018	00010	999009	E	00	1	1		0							0	0	Select video							
+1077	999003	7000014	K	01				0	1						0	0	50x CD-ROM	0.00						
+1078	999003	7000037	K	03				0							0	0	10x DVD (No Decoder)	69						
+1079	999003	7000039	K	05				0							0	0	10x DVD & MPEG2 PCI Decoder Card	119						
+1080	999003	7000042	K	09				0							0	0	CD Rewriter - 8x4x32x	119						
+1081	999003	7000045	K	10				0							0	0	CD Rewriter - 8x4x32x & 44x CD-ROM	159						
+1082	999003	7000047	K	11				0							0	0	CD Rewriter - 8x4x32x & 10x DVD	219						
+1083	999003	7000061	K	12				0							0	0	6x4x24x4 CDR/CDRW/CD/DVD All-In-One Drive	199						
+1097	999004	7000121	N	99				0				select			0	0	-- No Keyboard --	-2						
+1085	999015	7000012	L	01				0	1			select			0	0	3.5 inch Mitsumi Floppy Drive	0.00						
+1086	999015	7000035	L	02				0				select			0	0	Panasonic LS120 Super Floppy Drive	99						
+1087	00010	103001	M	00	1	1		0							0	0	Add Zip Drive / Tape Backup	0.00						
+1088	103001	7000027	M	01				0							0	0	Iomega 100 MB Internal Zip Drive	79						
+1089	103001	7000064	M	02				0							0	0	HP 5 Gig Travan TB4354 Tape Backup	199						
+1090	103001	7000090	M	03				0							0	0	HP 8 Gig Travan TB4386 Tape Backup	249						
+1091	103001	7000106	M	04				0							0	0	HP 5 Gig Travan Tape Backup & Iomega 100 Meg Zip	279						
+1092	103001	7000114	M	05				0							0	0	HP 8 Gig Travan Tape Backup & Iomega 100 Meg Zip	329						
+1093	103001	7000028	M	06				0							0	0	Iomega 250 MB Internal Zip Drive	120						
+1094	00010	999004	N	00	1	1		0							0	0	Keyboard	0.00						
+1095	999004	7000009	N	01				0	1						0	0	104 Key Win '98 Keyboard	0.00						
+1096	999004	7000066	N	02				0							0	0	Microsoft Natural Keyboard	26.5						
+200006	103001	7000090	M	02				0							0	0	HP 5 Gig Travan TB4354 Tape Backup	199						
+7000064						1									0	0								
+7000090						1									0	0								
+1027	999050	7000118	D	00				0							0	0	No Memory	-15						
+1100	999012	7000010	O	01				0	1						0	0	2 Button High Resolution Mouse	0.00						
+1101	999012	7000065	O	02				0							0	0	Microsoft Intellimouse	26.5						
+1102	00010	103002	P	00	1	1		0							0	0	Select speakers	0.00						
+1103	103002	7000023	P	01				0							0	0	150 Watt (P.M.P.O) Speakers	7						
+1104	103002	7000060	P	02				0							0	0	400 Watt Speakers With Subwoofer	43						
+1105	103002	7000089	P	03				0							0	0	Creative Labs 4 Point Surround Sound	99						
+1106	103002	7000098	P	20				0							0	0	Altec ACS33 Amplified Powercube - 10W SPK 15W Sub	49						
+1107	103002	7000112	P	21				0							0	0	Altec ACS45.2 Amplified Powercube - 6W SPK 20W Sub	69						
+1108	103002	7000117	P	22				0							0	0	Altec ACS48 Amplified Powercube - 20W SPK 40W Sub	135						
+1109	103002	7000119	P	23				0							0	0	Altec ACS54 Amplified 5-Peice-20W SPK 40W Sub BLK	79						
+1110	103002	7000120	P	24				0							0	0	Altec ACS56 Amplified Powercube - 70W SPK 35W Sub	129						
+1111	103002	7000123	P	25				0							0	0	Altec ACS65I Amplified-13W SPK 20W Sub-MAC BGE/B	89						
+1112	103002	7000125	P	26				0							0	0	Altec ADA305 Ampl Pwrcube-20W SPK Sub Surround BGE	169						
+1113	103002	7000131	P	27				0							0	0	Altec ADA70 Ampl Pwrcube-USB 7W SPK Beige 15W Sub	139						
+1114	103002	7000132	P	28				0							0	0	Altec ADA880R Ampl-80W 5-PCE SPK Dolby Dig Sub	269						
+1115	00010	103003	Q	00	1	1		0							0	0	Add Operating System	0.00						
+1116	103003	7000029	Q	01				0							0	0	Linux (CD Only, No Manuals, No Support)	3						
+1117	103003	7000096	Q	02				0							0	0	Windows 98 Second Edition	99						
+1118	103003	7000109	Q	03				0							0	0	Windows NT 4.0 Workstation	199						
+1119	103003	7000115	Q	06				0							0	0	Windows NT Server 4.0 With 5 Client Access Lic.	799						
+1120	103003	7000021	Q	08				0							0	0	Windows ME Millenium Edition	109						
+1121	103003	7000071	Q	10				0							0	0	Windows 2000 Professional (Requires 64M RAM)	149						
+1122	999107	7000016	R	00				0	1						0	0	Corel Wordperfect Suite 8.0	0.00						
+1123	999107	7000034	R	01				0							0	0	Microsoft Works 2000	49						
+1124	999107	7000067	R	03				0							0	0	Microsoft Works Suites 2000	99						
+1125	999107	7000091	R	04				0							0	0	Microsoft Office 2000 Small Bus Edition	219						
+1126	999107	7000107	R	05				0							0	0	Microsoft Office 2000 Professional Edition	349						
+100035	999105	999801	S					0	1			select			0	0	-- No monitor --	0.00						
+1128	999105	7000058	S	02				0							0	0	15 in .28 dpi Amptron CS15 Monitor 1024x768	139						
+1129	999105	7000087	S	03				0							0	0	17 in (16 vis) .25 dpi Amptron GS17 1600x1200	209						
+1130	999105	7000097	S	04				0							0	0	19 in (18 vis) .26 dpi 1600x1200 Hansol Monitor	379						
+1131	999105	7000110	S	05				0							0	0	21 in (19 vis) .25 dpi 1920x144 KDS VS21E Monitor	699						
+1132	999105	7000075	S	06				0							0	0	15 in (15 Vis) Amptron Flat Panel LCD	799						
+1133	999105	7000086	S	07				0							0	0	17 in (15.8 vis) .27 dpi Amptron CS17 1280x1024	189						
+1135	103013	7000022	T	10				0							0	0	1 Year On Site - Parts & Labor With 24/7 Tech Supp	29						
+1136	103013	7000059	T	11				0							0	0	2 Year On Site - Parts & Labor With 24/7 Tech Supp	79						
+1137	00010	103004	X	00	1	1		0							0	0	Add Accessories	0.00						
+1138	103004	7000024	X	29				0							0	0	36 Bit 600x1200 dpi Flatbed USB Scanner	79						
+00010	NONE	00010				1		1				select			0	0								
+100021	00010	999008	F	00	1	1		0							0	0	Select sound							
+100022	00010	999010	H		1	1		0				select			0	0	Select NIC							
+1999	00010	999060	I	00	1	1		0							0	0	Hard Drive	0.00						
+100024	00010	999012	O		1	1		0							0	0	Mouse							
+100026	00010	999015	L		1	1		0							0	0	Floppy options							
+100029	00010	999105	S		1	1		0							0	0	Monitor							
+100030	00010	999107	R		1	1		0							0	0	Add software							
+100036	103004	999803	X					0	1			select			0	0	-- No added accessories --	0.00						
+01001	999062	01001	J					0	1			select			0	0	-- No second hard drive --	0.00						
+100034	103002	999800	P					0	1						0	0	no speakers	0.00						
+0999	00010	999050	D	00	1	1		0							0	0	Memory	0.00						
+100037	103001	999804	M					0	1			select			0	0	-- No backup device --	0.00						
+100038	103003	999805	Q					0	1			select			0	0	-- No operating system --	0.00						
+100040	103013	10600	T					0	1						0	0	3-year labor, 1 year parts warranty	0.00						
+00009	NONE	00009				1		1				select			0	0								
+200007		7000090	tape							Include tapes	1=One 8GB tape,2=Two 8GB tapes,=None*	select			0	0		1=50, 2=90						
+200004			color							Case color	red=Rage Red,yellow=Honey Yellow				0	0								
+7000030						1	1								0	0								
+1084	999015	7000057	L	00				0				select			0	0	-- No Floppy Drive --	-5						
+100049	00009	999001	B	00	1	1		0							0	0	Select motherboard							
+100069	00009	999114	C		1	1									0	0	Select CPU	0.00						
+100051	00009	999007	G		1	1		0							0	0	Select modem							
+100052	00009	999062	J	90	1	1		0		Add a second hard drive		select			0	0	Add a second hard drive	0.00						
+100053	00009	999003	K	00	1	1		0							0	0	CDROM DVD options	0.00						
+100054	00009	999009	E	00	1	1		0							0	0	Select video							
+100055	00009	103001	M	00	1	1		0							0	0	Add Zip Drive / Tape Backup	0.00						
+100056	00009	999004	N	00	1	1		0							0	0	Keyboard	0.00						
+100057	00009	103002	P	00	1	1		0							0	0	Select speakers	0.00						
+100058	00009	103003	Q	00	1	1		0							0	0	Add Operating System	0.00						
+200003	999008	7000019	F						1						0	0	Soundpro 3D Integrated Sound W/Wave Table	0.00						
+100060	00009	103004	X	00	1	1		0							0	0	Add Accessories	0.00						
+100061	00009	999008	F	00	1	1		0							0	0	Select sound							
+100062	00009	999010	H		1	1		0							0	0	Select NIC							
+100063	00009	999060	I	00	1	1		0							0	0	Hard Drive	0.00						
+100064	00009	999012	O		1	1		0							0	0	Mouse							
+100065	00009	999015	L		1	1		0							0	0	Floppy options							
+100066	00009	999105	S		1	1		0							0	0	Monitor							
+100067	00009	999107	R		1	1		0							0	0	Add software							
+100068	00009	999050	D	00	1	1		0							0	0	Memory	0.00						
+100070	999114	11000	C						1						0	0	AMD Athlon Thunderbird 700 MHz CPU	0.00						
+100071	999114	11001	C												0	0	AMD Athlon Thunderbird 750 MHz CPU	20						
+100072	999114	11002	C												0	0	AMD Athlon Thunderbird 800 MHz CPU	40						
+100073	999114	11003	C												0	0	AMD Athlon Thunderbird 850 MHz CPU	60						
+100074	999114	11004	C												0	0	AMD Athlon Thunderbird 900 MHz CPU	70						
+100075	999114	11005	C												0	0	AMD Athlon Thunderbird 950 MHz CPU	130						
+100076	999114	11006	C												0	0	AMD Athlon Thunderbird 1000 MHz CPU	200						
+100077	999114	11007	C												0	0	AMD Athlon Thunderbird 1.1 Gigahertz CPU	300						
+100078	999114	11008	C												0	0	AMD Athlon Thunderbird 1.2 Gigahertz CPU	450						
+00011	NONE	00011				1		1				select			0	0								
+1048	999060	7000133	I	00				0				select			0	0	-- No Hard Drive --	-50						
+100080	00011	999001	B	00	1	1		0							0	0	Select motherboard							
+100081	00011	999114	C		1	1			11002						0	0	Select CPU	0.00		-40				
+100082	00011	999007	G		1	1		0							0	0	Select modem							
+100083	00011	999062	J	90	1	1		0		Add a second hard drive		select			0	0	Add a second hard drive	0.00						
+100084	00011	999003	K	00	1	1		0							0	0	CDROM DVD options	0.00						
+100085	00011	999009	E	00	1	1		0							0	0	Select video							
+100086	00011	103001	M	00	1	1		0							0	0	Add Zip Drive / Tape Backup	0.00						
+100087	00011	999004	N	00	1	1		0							0	0	Keyboard	0.00						
+100088	00011	103002	P	00	1	1		0							0	0	Select speakers	0.00						
+100089	00011	103003	Q	00	1	1		0							0	0	Add Operating System	0.00						
+200002	999009	7000020	E						1						0	0	Trident 8 Meg shared Video	0.00						
+100091	00011	103004	X	00	1	1		0							0	0	Add Accessories	0.00						
+100092	00011	999008	F	00	1	1		0							0	0	Select sound							
+100093	00011	999010	H		1	1		0							0	0	Select NIC							
+100094	00011	999060	I	00	1	1		0							0	0	Hard Drive	0.00						
+100095	00011	999012	O		1	1		0							0	0	Mouse							
+100096	00011	999015	L		1	1		0							0	0	Floppy options							
+100097	00011	999105	S		1	1		0	7000087						0	0	Monitor	0.00		-209				
+100098	00011	999107	R		1	1		0							0	0	Add software							
+100099	00011	999050	D	00	1	1		0	7000062			select			0	0	Memory	0.00		-79				
+100102			tape							Include tapes		select			0	0								
+100103		7000064	tape							Include tapes	a=One 8GB tape,b=Two 8GB tapes,=None*	select			0	0		a=50, b=90						
+200001	999007	79009	G									select			0	0	No Modem	-25						
+100079	00011	999000	A	00	1	1		0							0	0	Select case type	0.00						
+100048	00009	999000	A	00	1	1		0							0	0	Select case type	0.00						
+1098	999003	7000072	K	00				0				select			0	0	-- No CD-ROM --	-20						
+1099	999012	7000122	O	00				0				select			0	0	-- No mouse --	-1						
+1134	00010	103013	T	00	1	1		0							0	0	Service	0.00						
+100059	00009	103013	T	00	1	1		0							0	0	Service	0.00						
+100090	00011	103013	T	00	1	1		0							0	0	Service	0.00						
+adfdf			red							Red					0	0								
+200032		7000030	color							Case Color	red=Passion Red,yellow=Lemon Yellow,blue=Electric Blue,green=Sea Green				0	0								
+200034		7000030	style							Case style	baby=Baby tower,mid=Mid-tower,full=Full tower				0	0		full=30						
+200035						1									0	0								
+7000030-yellow-full		7000030					1					select			0	0	Micro ATX Tower - Lemon Yellow, Full tower	49						
+7000010						1									0	0								
+7000043						1	1								0	0								
+200036	999000	7000043	A	49				0							0	0	Micro ATX Tower - Honey Yellow	0.00						
+7000043-full-blue		7000043					1					select			0	0	Enlight ATX Tower Case - Full tower, Electric Blue	15.00	13					
+200044		7000043	style				!			Case style	baby=Baby Tower,mid=Mid-tower,full=Full Tower	select			0	0		full=30						
+200054		7000043	color							Case color	red=Passion Red,blue=Electric Blue,green=Sea Green,grey=Smoky Grey				0	0								
+200042	999000	7000043	A	49				0							0	0	Micro ATX Tower - Honey Yellow	0.00						
+7000043-full-green		7000043					1					select			0	0	Enlight ATX Tower Case - Full tower, Sea Green	49.00	40.00		5			
+200055	999050	11111	D		1	1									0	0	Memory Options							
+7000030-blue-mid		7000030					1								0	0	Micro ATX Tower - Electric Blue, Mid-tower							
+200050	888888	888889	A		1	1			1			select			0	0								
+200052	888889	123456	A												0	0	abc	111						
+200056	11111	11112	D					M				select			0	0	ECC Memory Option	25						
+200058	11111	12345	D												0	0	Gold plated memory label	44						
+7000021						1									0	0								

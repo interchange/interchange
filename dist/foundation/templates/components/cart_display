@@ -1,0 +1,66 @@
+[comment]
+ui_component: cart_display
+ui_component_group: info
+ui_component_label: Smaller cart for display in content area
+
+[/comment]
+
+<!-- BEGIN COMPONENT [control component cart_display] -->
+[if items]
+<center>
+  <table width="90%" border="0" cellspacing="0" cellpadding="0" bordercolor="#FF9900">
+		<TR class=sheader VALIGN=TOP>
+                        <td width="9%" align=center class=sheader>Action</td>
+                        <td width="13%" class=sheader> 
+                          SKU
+                        </td>
+                        <td width="27%" class=sheader> 
+                          Description
+                        </td>
+                        <td width="13%" class=sheader> 
+                          Quantity
+                        </td>
+                        <td width="19%" class=sheader> 
+                          Price
+                        </td>
+                        <td width="19%" class=sheader> 
+                          Extension
+                        </td>
+		</TR>
+	<TBODY>
+[item-list]
+
+<tr class="[item-alternate 2]cartrow[else]cartalt[/else][/item-alternate]">
+	<td align=center valign=top>
+	<span class="font-size: 8px">[page ord/basket]edit</A></span></TD>
+	<td valign=top>[item-code]</font></TD>
+	<td valign=top>[page [item-code]][item-description]</A></font>
+</TD>
+
+[if-item-modifier gift_cert]
+	<TD ALIGN=CENTER><small>Amount of gift:</small></TD>
+	<TD ALIGN=CENTER>[item-quantity]</TD>
+	<TD ALIGN=right>
+			[item-subtotal]
+	</TD>
+[else]
+	<TD ALIGN=CENTER>[item-quantity]</TD>
+	<TD ALIGN=right>
+			[item-price]
+	</TD>
+	<TD ALIGN=right>
+			[item-subtotal]
+	</TD>
+[/else]
+[/if-item-modifier]
+</TR>
+
+<TR class="[item-alternate 2]cartrow[else]cartalt[/else][/item-alternate]"><TD ALIGN=CENTER COLSPAN=6><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="4" BORDER="0"></td></TR>
+[/item-list]
+</TBODY>
+</table>
+</FORM>
+</center>
+[/if]
+
+<!-- END COMPONENT [control component cart_display] -->

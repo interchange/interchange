@@ -1,0 +1,60 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftright
+[/comment]
+
+[pragma strip_white]
+[set page_title]__COMPANY__ -- Welcome[/set]
+[set page_banner]Welcome[/set]
+[set bgcolor]#FFFFFF[/set]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]cart_tiny[/component]
+[/control-set]
+
+[control-set]
+[component]category_vertical[/component]
+[/control-set]
+
+[control-set]
+[component][/component]
+[/control-set]
+
+[control-set]
+[component]cross_horizontal[/component]
+[size]2[/size]
+[cols]2[/cols]
+[banner]Specials[/banner]
+[/control-set]
+
+[control-set]
+[component]random[/component]
+[size]3[/size]
+[cols]1[/cols]
+[banner]See also...[/banner]
+[/control-set]
+
+[control reset=1]
+
+@_LEFTRIGHT_TOP_@
+
+<!-- BEGIN CONTENT -->
+               <table width="313" border="0" cellspacing="0" cellpadding="0">
+                 <tr> 
+                   <td>
+					 <p><img src="image.gif" width="313" height="252" align="top"></p>
+                     <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2">
+                     This foundation site is intended to give you the start you need to design your own interchange site.  Just replace the stock graphics, products, and categories we have here with your own, and you're good to go.
+                     </font></p><br>
+                   </td>
+                 </tr>
+               </table>
+<!-- END CONTENT -->
+
+@_LEFTRIGHT_BOTTOM_@

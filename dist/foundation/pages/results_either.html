@@ -1,0 +1,14 @@
+[calc]
+     my $category = $CGI_array->{se}[0] || $CGI->{category};
+
+     if (   $category eq 'Athlon' or $category eq 'Pentium')
+     {   
+        $Scratch->{page} = 'results_big.html';
+     }
+     else {
+        $Scratch->{page} = 'results.html';
+     }
+	return $category;
+[/calc] 
+[include file="pages/[scratch page]"]
+ 

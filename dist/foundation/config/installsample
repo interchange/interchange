@@ -1,0 +1,39 @@
+#!/bin/sh
+
+## They didn't want sample data
+if test -z "__MVC_SAMPDATATYPE__"
+then
+	exit
+fi
+
+if test Xnone = "X__MVC_SAMPDATATYPE__" -o XNONE = "X__MVC_SAMPDATATYPE__" -o XNone = "X__MVC_SAMPDATATYPE__" 
+then
+	exit
+fi
+
+if test "x__MVC_PERMTYPE__" = x -o "x__MVC_PERMTYPE__" = xM -o "x__MVC_PERMTYPE__" = xG
+then
+	DMODE=775
+	FMODE=664
+else
+	DMODE=755
+	FMODE=644
+fi
+
+
+# Copy the sample data
+if test -d __MVC_CATROOT__/templates/sampledata/__MVC_SAMPDATATYPE__
+then
+  chmod $DMODE __MVC_CATROOT__/templates/sampledata/__MVC_SAMPDATATYPE__/images
+  chmod $DMODE __MVC_CATROOT__/templates/sampledata/__MVC_SAMPDATATYPE__/images/*
+  chmod $FMODE __MVC_CATROOT__/templates/sampledata/__MVC_SAMPDATATYPE__/images/??*.*
+  chmod $FMODE __MVC_CATROOT__/templates/sampledata/__MVC_SAMPDATATYPE__/images/*/??*.*
+  cp -pr __MVC_CATROOT__/templates/sampledata/__MVC_SAMPDATATYPE__/* __MVC_CATROOT__
+
+else 
+	echo "Sample data directory does not exist:"
+	echo ""
+	echo "    __MVC_CATROOT__/templates/sampledata/__MVC_SAMPDATATYPE__"
+	echo ""
+	exit 1
+fi

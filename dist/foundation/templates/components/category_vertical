@@ -1,0 +1,75 @@
+[comment]
+ui_component: category_vertical
+ui_component_group: Navigation
+ui_component_label: Vertical category list
+
+page_class:
+	label: Page class
+	widget: select
+	lookup: which_page
+	db: area
+	help: Defines which sets of items should be displayed
+	advanced: 1
+
+set_selector:
+	label: Page area selector
+	widget: select
+	db: area
+	lookup: sel
+	help: Defines which sets of items should be displayed
+	advanced: 1
+[/comment]
+
+<!-- BEGIN COMPONENT [control component category_vertical] -->
+[loop
+	prefix=box
+	search="
+		fi=area
+		st=db
+		tf=sort
+		ac=0
+		ac=0
+		co=yes
+		
+		sf=sel
+		op=eq
+		se=[control set_selector left]
+
+		sf=which_page
+		op=rm
+		se=[control page_class all|@@MV_PAGE@@]
+"]
+ <tr> 
+   <td colspan=2>&nbsp;</td>
+ </tr> 
+ <tr> 
+   <td>
+   <p>&nbsp;</p>
+   </td>
+   <td width="119" bgcolor="__BARBG__" valign="top"><font face="Geneva,Arial,Helvetica" size=2 color="#FFFFFF"><b>[box-exec bar_link]area[/box-exec]</b></font></td>
+ </tr>
+ <tr> 
+   <td> 
+	 <p>&nbsp;</p>
+   </td>
+   <td width="119" valign="top">
+	 <p>
+[set found_cat][/set]
+[loop prefix=cat
+	search="
+		fi=cat
+		st=db
+		tf=sort
+		tf=name
+		rf=code,name
+		sf=sel
+		se=[box-code]
+	"
+	]
+&nbsp;&nbsp;[cat-exec bar_link]cat[/cat-exec]<BR>
+[/loop]
+	   </p>
+   </td>
+ </tr>
+[/loop]
+<!-- END COMPONENT [control component category_vertical] -->

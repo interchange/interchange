@@ -1,0 +1,216 @@
+[comment]
+ui_component: modular_buy
+ui_component_label: Modular item buy display
+[/comment]
+
+<!-- BEGIN COMPONENT [control component modular_buy] -->
+[if session arg]
+[tmp arg][data session arg][/tmp]
+[/if]
+<SCRIPT>
+	[comment]
+		Set the base info -- base price, item-code, etc.
+	[/comment]
+var base_price = [price code="[scratch arg]" noformat=1];
+var base_quantity = 1;
+var price = new Array; var desc = new Array; var ptr = new Array; var k = 0; var j = -1;
+[tree
+		prefix=tree
+		full=1
+		tolerate=1
+		master=o_master
+		log_error=1
+		sub=sku
+		sort=o_group
+		start="[scratch arg]"
+		table=options
+	][tree-sub do_js]
+		my $level = shift;
+		my $row = shift;
+
+		if( ! $level) {
+			#$k = 0;
+			#$j++;
+			$differential = $row->{differential} || 0;
+			return <<EOF;
+k = 0; j++; desc[j] = new Array; price[j] = new Array; ptr[j] = '$row->{o_group}';
+EOF
+		}
+		my $desc = $row->{description};
+		my $price = $row->{price} + $differential;
+		$desc =~ s/"/&quot;/g;
+		
+		if($price != 0) {
+			$desc .= " (";
+			$desc .= $Tag->currency($price);
+			$desc .= ")";
+		}
+		else {
+			# Make sure JS doesn't error out
+			$price = 0;
+		}
+		return <<EOF;
+price[j][k] = "$price"; desc[j][k] = "$desc"; k++;
+EOF
+		return $out;
+[/tree-sub][tree-exec do_js][tree-param mv_level][/tree-exec][/tree]
+
+function currency(amount) {
+	amount = amount.toString().replace(/\$|\,/g,'');
+	if (isNaN(amount)) {
+		amount = '0';
+	}
+	cents  = Math.floor( (amount * 100 + 0.5 ) % 100); 
+	amount = Math.floor(amount).toString();
+	if(cents < 10) cents = "0" + cents; 
+		for (var i = 0; i < Math.floor ((amount.length - (1+i)) / 3); i++) 
+			amount = amount.substring(0,amount.length-(4*i+3))+','+amount.substring(amount.length-(4*i+3)); 
+	return ('$' + amount + '.' + cents); 
+}
+
+function update_quantity (form) {
+	found = 0;
+	for(i = 0; i < form.length; i++) {
+		if(form.elements[i].name == 'mv_order_quantity') {
+			if( found == 0 ) {
+				found++;
+				base_quantity = form.elements[i].value;
+			}
+			else {
+				form.elements[i].value = base_quantity;
+			}
+		}
+	}
+	return true;
+}
+
+function update_price (form) {
+	var total = base_price;
+	var debug = '';
+	var name;
+	for(i = 0; i < ptr.length; i++) {
+		curr = eval('form.' + ptr[i] + '.selectedIndex');
+[comment]
+			debug = debug
+					+ "group=" + ptr[i]
+					+ " i=" + i
+					+ " curr=" + curr
+					+ " price=" + price[i][curr]
+					+ "\n";
+[/comment]
+		total = eval(total + ' + ' + price[i][curr]);
+	}
+	total = eval(base_quantity + ' * ' + total );
+	form.current_price.value = currency(total);
+	return true;
+}
+</SCRIPT>
+
+<FORM ACTION="[area ord/basket]" METHOD=POST>
+<INPUT TYPE=hidden NAME=mv_click	VALUE="arrange_sku">
+<INPUT TYPE=hidden NAME=mv_action	VALUE="refresh">
+<INPUT TYPE=hidden NAME=mv_nextpage	VALUE="ord/basket">
+[set arrange_sku]
+	[calc]
+		my @pointers = split /\0/, $CGI->{item_pointer};
+		my @items = split /\0/, $CGI->{mv_order_item};
+		for(@pointers) {
+			my ($index, $location) = split /=/, $_, 2;
+			push @items, delete $CGI->{$location};
+		}
+		$CGI_array->{mv_order_item} = \@items;
+		$CGI->{mv_order_item} = join "\0", @items;
+Debug("items: " . join(',', @items));
+		return;
+	[/calc]
+[/set]
+
+	<H3>[description code="[scratch arg]"]</H3>
+	Current price: <INPUT NAME="current_price" SIZE=10 VALUE="[price code='[scratch arg]']"><BR>
+	Quantity:
+<INPUT TYPE=hidden NAME=mv_order_item	VALUE="[scratch arg]">
+<INPUT TYPE=hidden NAME=mv_order_group	VALUE="[scratch arg]">
+<INPUT TYPE=hidden NAME=mv_order_modular	VALUE="[scratch arg]">
+<INPUT NAME="mv_order_quantity" SIZE=4 VALUE="1" onChange="update_quantity(this.form); update_price(this.form)">
+
+	[comment]
+	<TEXTAREA name=debug ROWS=12 COLS=60></TEXTAREA>
+	[/comment]
+
+	<INPUT TYPE=submit VALUE="Buy">
+	<P>
+
+	<B></B>
+	<br>
+
+[tree
+		prefix=tree
+		full=1
+		tolerate=1
+		log_error=1
+		master=o_master
+		sub=sku
+		sort=o_group
+		start="[scratch arg]"
+		table=options
+	]
+[tree-sub do_level]
+	shift;
+	my $row = shift;
+	my $level = $row->{mv_level};
+	my $out = '';
+	$out .= "</SELECT>" if ! $level and $did_first++;
+	if($level == 0) {
+		%default_item = ();
+		undef $override_default;
+		$differential = $row->{differential} || 0;
+#Log("differential=$differential");
+		if($row->{o_default}) {
+			my @def = split /[\0,\s]+/, $row->{o_default};
+			for (@def) {
+				next unless /\S/;
+				$default_item{$_} = 1;
+				$override_default++;
+			}
+		}
+		$out .= "</SELECT></SMALL></SMALL><HR>" if $did_first++;
+		$out .= <<EOF;
+
+<B>$row->{description}</B>
+<br>
+<INPUT TYPE=hidden NAME="mv_order_quantity" VALUE="1">
+<INPUT TYPE=hidden NAME="mv_order_modular" VALUE="$row->{code}">
+<INPUT TYPE=hidden NAME="item_pointer" VALUE="$row->{mv_increment}=$row->{o_group}">
+<SMALL>
+	<SMALL>
+		<SELECT NAME="$row->{o_group}" onChange="update_price(this.form)">
+EOF
+	}
+	else {
+		my $sel;
+		if($override_default) {
+			$sel = $default_item{$row->{sku}} ? ' SELECTED' : '';
+		}
+		else {
+			$sel = $row->{o_default} ? ' SELECTED' : '';
+		}
+		my $price = $row->{price} + $differential;
+#Log("differential=$differential rowprice=$row->{price} price=$price");
+		$price = $price != 0
+					? $Tag->filter('currency', $price)
+					: '';
+		my $desc = $row->{description};
+		$desc .= " ($price)" if $price;
+		$out .= qq{<OPTION VALUE="$row->{code}"$sel>$desc</OPTION>};
+	}
+	return $out;
+[/tree-sub][tree-exec do_level][/tree-exec]
+[/tree]
+
+	</SELECT></SMALL></SMALL>
+	<HR>
+<input type=submit VALUE=Buy>
+
+</FORM>
+
+<!-- END COMPONENT [control component modular_buy] -->

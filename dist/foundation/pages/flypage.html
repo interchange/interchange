@@ -1,0 +1,143 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+[/comment]
+
+[set page_banner][item-description][/set]
+[set page_title]__COMPANY__ -- [item-description][/set]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]cart_tiny[/component]
+[/control-set]
+
+[control-set]
+[component]category_vertical[/component]
+[/control-set]
+
+[control-set]
+[component][/component]
+[/control-set]
+
+[control-set]
+[component]upsell_horizontal[/component]
+[size]2[/size]
+[cols]2[/cols]
+[banner]You might also like[/banner]
+[/control-set]
+
+[control reset=1]
+
+@_LEFTONLY_TOP_@
+
+<!-- BEGIN CONTENT -->
+[fly-list code="[data session arg]"]
+[set cross_category][item-field category][/set]
+[set upsell][item-data merchandising upsell_to][/set]
+[set cross_codes][item-data merchandising cross_sell][/set]
+
+<table width="313" border="1" cellspacing="0" cellpadding="0" bordercolor="0099ff">
+ <tr valign="middle"> 
+   <td align=center height="5" class=cheader>[item-field category]</td>
+   </td>
+ </tr>
+ <tr valign="middle"> 
+   <td align=center height="5"> 
+	 <div align="left"> 
+	   <table cellspacing=0 cellpadding=3 bordercolor="#FFFFFF" align=center>
+		 <tr> 
+		   <td valign=top align=center> 
+			 <table width="25%" border=0 cellspacing=0 cellpadding=0>
+			   <tr> 
+				 <td>[if-item-field image]<IMG SRC="items/[item-field image]" ALT="[item-filter entities][item-description][/item-filter]" title="[item-filter entities][item-description][/item-filter]" BORDER=0>[/if-item-field]</td>
+			   </tr>
+			 </table>
+		   </td>
+		   <td valign="top" align="center"> 
+			 <table border="0" cellpadding="3" cellspacing="0">
+			   <tr> 
+				 <td valign="top" class=cdata align=center> 
+				   <p><b><i>[item-description]</i></b></p>
+				 </td>
+			   </tr>
+			   <tr> 
+				 <td align="center">[item-price]</td>
+			   </tr>
+			   <tr> 
+				 <td>&nbsp;</td>
+			   </tr>
+					
+	[if-item-data inventory quantity < 1]
+					<tr>
+					  <td align="center"><font color="__CONTRAST__"><b>Out Of Stock</b></font><br><br>
+					  <a href="[area stock-alert [loop-code]]">In Stock Notification</a></td>
+					</tr>
+	[else]
+			   <tr> 
+				 <td align="center"><font color="__STANDOUT__"><b>In Stock</b></font></td>
+			   </tr>						
+	[/else]
+	[/if-item-data]
+
+			   <tr> 
+				 <td>&nbsp;</td>
+			   </tr>
+
+[if-item-data options o_modular]
+[else]
+			   <tr> 
+				 <td>&nbsp;</td>
+			   </tr>
+<FORM ACTION="[area order]" METHOD=POST>
+<INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="[item-code]">
+			   <tr> 
+				 <td align="center" class=cdata>Quantity:
+				   <input type="text" name="mv_order_quantity" size="4" value="1">
+				 </td>
+			   </tr>
+			   <tr> 
+				 <td align=center> 
+				   <input type="submit" value="Buy it Now!">
+				 </td>
+			   </tr>
+[/else]
+[/if-item-data]
+			 </table>
+		   </td>
+		 </tr>
+		 <tr> 
+		   <td colspan="2" class=cdata> 
+			 <p>
+			  [if ordered [item-code]]
+			  <FONT COLOR="__CONTRAST__">This item is currently in your [page ord/basket]shopping cart</a>.</font><br>
+			  [/if]
+	[if-item-data options o_enable]
+	[if-item-data !options o_modular]
+	[table-organize cols=4 table=' ' font="size=1" pretty=1]
+	[item-options td=1 label=1 bold=1 price=1]
+	[/table-organize]
+	[/if-item-data]
+	[/if-item-data]
+	[item-field comment]
+	</font>
+
+[if-item-data options o_modular]
+[set arg][item-code][/set]
+[include templates/components/modular_buy]
+[/if-item-data]
+</p>
+		   </td>
+		 </tr>
+	   </table>
+   </td>
+ </tr>
+</table>
+[/fly-list]
+<!-- END CONTENT -->
+
+@_LEFTONLY_BOTTOM_@

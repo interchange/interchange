@@ -1,0 +1,15 @@
+sku	quantity	stock_message	account	cogs_account	
+00009	11	Ships in 3-5 days			
+00011	7	In stock			
+00010	51	Ships in 3-5 days			
+7000030-yellow	1				
+7000030-yellow-full	1				
+7000030-red-baby	1				
+7000030	22	Ships in 4-6 weeks			
+7000043-full-green	1				
+7000043-full-blue	1				
+7000030-blue-mid	1				
+7000009	44	Ships in 3-5 days			
+7000013	7	In stock			
+7000014	8	4-6 weeks			
+7000015	9	In stock			
