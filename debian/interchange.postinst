@@ -54,6 +54,10 @@ if [ -d "$RET" ]; then
 	chown $USER.$GROUP "$RET"
 fi
 
+# More permissions
+
+chown -R $USER.$GROUP /etc/interchange/usertag
+
 # Record debconf configuration in multiple files
 # 1. Stuff needed for the init script
 

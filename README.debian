@@ -21,3 +21,12 @@ Interchange Debian packages for stable (potato) are available from:
 
 deb http://ftp.interchange.redhat.com/interchange/debian interchange main
 deb-src http://ftp.interchange.redhat.com/interchange/debian interchange main
+
+Debian Specific Changes
+=======================
+
+* all catalog configuration should we put into catalogs.cfg, so that 
+  /etc/interchange/interchange.cfg can upgraded easily 
+
+* any global usertags used locally should go into /etc/interchange/usertag
+  and they'll be included if they have the extension .tag
