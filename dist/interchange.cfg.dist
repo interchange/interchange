@@ -42,7 +42,7 @@ NoAbsolute Yes
 
 ifdef @DEBUG
 
-Message Sending debug to /tmp/icdebug.
+Message -i Sending debug to /tmp/icdebug.
 DebugFile /tmp/icdebug
 
 # A few simple tests ...
@@ -97,7 +97,7 @@ TcpMap 7786 -
 
 # Include back office administration UI if variable set above.
 ifdef UI
-Message Calling UI...
+Message -i -n Calling UI...
 Variable UI_TAG_TITLE_BAR 1
 include lib/UI/ui.cfg
 endif
