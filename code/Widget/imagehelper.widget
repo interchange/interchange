@@ -19,7 +19,7 @@ sub  {
 	my $of_widget;
 	if($path =~ s!/\*(?:\.([^/]+))?$!!) {
 		my $spec = $1;
-		my @files = list_images($path, $spec);
+		my @files = UI::Primitive::list_images($path, $spec);
 		unshift(@files, "=(none)");
 		my $passed = join ",", map { s/,/&#44;/g; $_} @files;
 		my $opt = {
