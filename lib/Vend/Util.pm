@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.68 2004-02-11 14:37:02 jon Exp $
+# $Id: Util.pm,v 2.69 2004-02-29 20:18:39 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -87,7 +87,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.68 $, 10);
+$VERSION = substr(q$Revision: 2.69 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1239,7 +1239,7 @@ sub vendUrl {
 	$path = escape_chars_url($path)
 		if $path =~ $need_escape;
     	$r .= '/' . $path;
-	$r .= '.html' if $opt->{add_dot_html} and $r !~ /\.html?$/;
+	$r .= '.html' if $opt->{add_dot_html} and $r !~ m{(?:/|\.html?)$};
 
 	if($opt->{add_source} and $Vend::Session->{source}) {
 		my $sn = hexify($Vend::Session->{source});
