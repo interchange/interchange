@@ -924,6 +924,7 @@ dist/lib/UI/pages/admin/content.html
 dist/lib/UI/pages/admin/content_editor.html
 dist/lib/UI/pages/admin/content_preview.html
 dist/lib/UI/pages/admin/content_publish.html
+dist/lib/UI/pages/admin/content_push.html
 dist/lib/UI/pages/admin/customer.html
 dist/lib/UI/pages/admin/customer_all.html
 dist/lib/UI/pages/admin/customer_bill.html
@@ -1193,10 +1194,12 @@ lib/Vend/Payment/AuthorizeNet.pm
 lib/Vend/Payment/BoA.pm
 lib/Vend/Payment/CCVS.pm
 lib/Vend/Payment/CyberCash.pm
+lib/Vend/Payment/ECHO.pm
 lib/Vend/Payment/MCVE.pm
 lib/Vend/Payment/Signio.pm
 lib/Vend/Payment/Skipjack.pm
 lib/Vend/Payment/TCLink.pm
+lib/Vend/Payment/TestPayment.pm
 lib/Vend/Payment/WellsFargo.pm
 lib/Vend/Payment/iTransact.pm
 lib/Vend/RefSearch.pm
