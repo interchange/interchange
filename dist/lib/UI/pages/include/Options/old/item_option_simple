@@ -146,7 +146,7 @@ document.write('<br><INPUT TYPE=checkbox [sql-calc]q{[sql-param o_label]} eq q{[
 
 <BR><BR><BR>
 [button text="[L]Commit Changes[/L]"]
-mv_nextpage=admin/item
+mv_nextpage=@@MV_PAGE@@
 [/button]
 
 </TD><TD><PRE>                          </PRE></TD><TD VALIGN=TOP>
