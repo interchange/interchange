@@ -599,7 +599,7 @@ our tutorial catalog.)
 
 Have you misspelled any file names or put them in the wrong
 directories? Are the files and parent directories readable by the
-I<interch> user? Double-check with the F<ls> command.
+C<interch> user? Double-check with the F<ls> command.
 
 =item 3.
 
