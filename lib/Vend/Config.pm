@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.6 2000-12-13 16:16:15 zarko Exp $
+# $Id: Config.pm,v 1.25.2.7 2000-12-17 04:06:17 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -104,7 +104,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.25.2.6 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.7 $, 10);
 
 my %CDname;
 
@@ -252,6 +252,7 @@ sub global_directives {
 
 	['ConfigDir',		  undef,	         'etc/lib'],
 	['ConfigDatabase',	 'config_db',	     ''],
+	['ConfigParseComments',	'yesno',		'Yes'],
 	['ConfigAllBefore',	 'array',	         "$Global::VendRoot/catalog_before.cfg"],
 	['ConfigAllAfter',	 'array',	         "$Global::VendRoot/catalog_after.cfg"],
 	['Message',          'message',           ''],
@@ -328,6 +329,7 @@ sub catalog_directives {
 	['ConfigDir',        'relative_dir',	 'config'],
 	['TemplateDir',      'dir_array', 		 ''],
 	['ConfigDatabase',	 'config_db',	     ''],
+	['ConfigParseComments',	'yesno',		'Yes'],
 	['Require',			 'require',			 ''],
 	['Suggest',			 'suggest',			 ''],
 	['Message',          'message',           ''],
@@ -581,6 +583,8 @@ sub config {
 		$C->{CatalogName} = $catalog;
 		$C->{VendRoot} = $dir;
 		$C->{ConfDir} = $confdir;
+		# Default to old #ifdef, #endif, #include syntax for backward compatibility
+		$C->{ConfigParseComments} = 1;
 
 		unless (defined $subconfig) {
 			$C->{ErrorFile} = 'error.log';
@@ -723,23 +727,28 @@ CONFIGLOOP:
 	my ($ifdef, $begin_ifdef);
 	while(<CONFIG>) {
 		chomp;			# zap trailing newline,
-		if(/^#endif\s*$/) {
+		# Look for meta commands (ifdef, endif, include) after '#'?
+		my $leadinghash = $C->{ConfigParseComments} ? '#?' : '';
+		if(/^\s*${leadinghash}endif\s*$/) {
+#print "found $_\n";
 			undef $ifdef;
 			undef $begin_ifdef;
 			next;
 		}
-		if(/^#if(n?)def\s+(.*)/) {
+		if(/^\s*${leadinghash}if(n?)def\s+(.*)/) {
 			if(defined $ifdef) {
-				config_error("Can't overlap #ifdef at line $. of $configfile");
+				config_error("Can't overlap ifdef at line $. of $configfile");
 			}
 			$ifdef = evaluate_ifdef($2,$1);
 			$begin_ifdef = $.;
+#print "found $_\n";
 			next;
 		}
 		if(defined $ifdef) {
 			next unless $ifdef;
 		}
-		if(/^\s*#include\s+(.+)/) {
+		if(/^\s*${leadinghash}include\s+(.+)/) {
+#print "found $_\n";
 			my $spec = $1;
 			my $ref = [ $configfile, tell(CONFIG)];
 #print "saving config $configfile (pos $ref->[1])\n";
@@ -975,6 +984,9 @@ sub global_config {
 
 	$Global::Structure = {} unless $Global::Structure;
 
+	# Default to old #ifdef, #endif, #include syntax for backward compatibility
+	$Global::ConfigParseComments = 1 unless $Global::ConfigParseComments;
+
 	# Prevent parsers from thinking it is a catalog
 	undef $C;
 
@@ -1067,14 +1079,18 @@ GLOBLOOP:
 #print "seeking to $tellmark in $configfile, include is @include\n";
 	my ($ifdef, $begin_ifdef);
 	while(<GLOBAL>) {
-		if(/^#endif\s*$/) {
+		# Look for meta commands (ifdef, endif, include) after '#'?
+		my $leadinghash = $Global::ConfigParseComments ? '#?' : '';
+		if(/^\s*${leadinghash}endif\s*$/) {
+#print "found $_";
 			undef $ifdef;
 			undef $begin_ifdef;
 			next;
 		}
-		if(/^#if(n?)def\s+(.*)/) {
+		if(/^\s*${leadinghash}if(n?)def\s+(.*)/) {
+#print "found $_";
 			if(defined $ifdef) {
-				config_error("Can't overlap #ifdef at line $. of $configfile");
+				config_error("Can't overlap ifdef at line $. of $configfile");
 			}
 			$ifdef = evaluate_ifdef($2,$1,1);
 			$begin_ifdef = $.;
@@ -1083,7 +1099,8 @@ GLOBLOOP:
 		if(defined $ifdef) {
 			next unless $ifdef;
 		}
-		if(/^\s*#include\s+(.+)/) {
+		if(/^\s*${leadinghash}include\s+(.+)/) {
+#print "found $_";
 			my $spec = $1;
 			my $ref = [ $configfile, tell(GLOBAL)];
 #print "saving config $configfile (pos $ref->[1])\n";
