@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.150 2003-03-01 15:47:15 mheins Exp $
+# $Id: Interpolate.pm,v 2.151 2003-03-07 19:48:05 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.150 $, 10);
+$VERSION = substr(q$Revision: 2.151 $, 10);
 
 @EXPORT = qw (
 
@@ -1022,6 +1022,15 @@ sub tag_data {
 					$val =~ s|\s*<P>\s*|\n|gi;
 					$val =~ s|\s*</P>\s*||gi;
 					return $val;
+				},
+	'upload' => sub {
+					my ($fn, $vn) = @_;
+					if( tag_value_extended($vn, { test => 'isfile', })) {
+						return tag_value_extended($vn, { file_contents => 1 });
+					}
+					else {
+						return $fn;
+					}
 				},
 	'namecase' => sub {
 					use locale;

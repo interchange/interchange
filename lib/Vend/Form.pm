@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.25 2003-02-08 20:08:11 mheins Exp $
+# $Id: Form.pm,v 2.26 2003-03-07 19:48:04 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -37,7 +37,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.25 $, 10);
+$VERSION = substr(q$Revision: 2.26 $, 10);
 
 @EXPORT = qw (
 	display
@@ -118,6 +118,15 @@ my $Tag = new Vend::Tags;
 		qq({EXTRA?} {EXTRA}{/EXTRA?})
 		.
 		qq(>{APPEND})
+		,
+	filetext =>
+		qq({PREPEND}<input type="file" name="{NAME}" value="{ENCODED}")
+		.
+		qq({COLS?} size="{COLS}"{/COLS?})
+		.
+		qq({EXTRA?} {EXTRA}{/EXTRA?})
+		.
+		qq(><br><textarea cols="{WIDTH}" rows="{HEIGHT}" NAME="{NAME}">{ENCODED}</textarea>{APPEND})
 		,
 	text =>
 		qq({PREPEND}<input type="text" name="{NAME}" value="{ENCODED}")
