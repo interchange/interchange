@@ -2,6 +2,8 @@ CodeDef convert_date Filter
 CodeDef convert_date Routine <<EOR
 sub {
 	my $time = shift(@_);
+	# Don't convert nothing to something
+	return '' unless $time;
 	shift(@_);
 	my $fmt = shift(@_);
 	while(my $add = shift(@_)) {
