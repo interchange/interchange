@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.76 2001-06-15 18:09:01 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.77 2001-06-16 13:22:11 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.76 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.77 $, 10);
 
 @EXPORT = qw (
 
@@ -5355,14 +5355,17 @@ sub tag_loop_list {
 		::logError("bad split delimiter in loop list: $@");
 #::logDebug("loop resolve error $@");
 	}
-	$opt->{object} = { } if ! $opt->{object};
 	if ($opt->{head_skip}) {
 		my $i = 0;
 		$fn = shift(@rows) while $i++ < $opt->{head_skip};
 	}
-	$opt->{object}{mv_results} = \@rows;
-	$opt->{object}{mv_field_names} = $fn
-		if defined $fn;
+
+	$opt->{object} = {
+			matches		=> scalar(@rows),
+			mv_results	=> \@rows,
+			mv_field_names => $fn,
+	};
+	
 #::logDebug("loop object: " . ::uneval($opt));
 	return region($opt, $text);
 }
