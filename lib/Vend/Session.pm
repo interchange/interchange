@@ -1,6 +1,6 @@
 # Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 2.13 2003-06-18 17:34:44 jon Exp $
+# $Id: Session.pm,v 2.14 2003-11-13 16:15:40 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -27,7 +27,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.13 $, 10);
+$VERSION = substr(q$Revision: 2.14 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -69,7 +69,7 @@ BEGIN {
 }
 
 my (%Session_class);
-my ($Session_open, $File_sessions, $Lock_sessions, $DB_sessions, $DB_object);
+my ($Session_open, $File_sessions, $Lock_sessions);
 
 
 # Selects based on initial config
@@ -77,7 +77,7 @@ my ($Session_open, $File_sessions, $Lock_sessions, $DB_sessions, $DB_object);
 %Session_class = (
 # $File_sessions, $Lock_sessions, &$Session_open
 GDBM => [ 0, 1, sub {
-			$DB_object =
+			$::Instance->{DB_object} =
 				tie(%Vend::SessionDBM,
 					'GDBM_File',
 					$Vend::Cfg->{SessionDatabase} . ".gdbm",
@@ -85,7 +85,7 @@ GDBM => [ 0, 1, sub {
 					$Vend::Cfg->{FileCreationMask}
 			);
 			die "Could not tie to $Vend::Cfg->{SessionDatabase}: $!\n"
-				unless defined $DB_object;
+				unless defined $::Instance->{DB_object};
 		},
 	],
 DB_File => [ 0, 1, sub {
@@ -101,14 +101,14 @@ DB_File => [ 0, 1, sub {
 ],
 
 DBI => [ 0, 0, sub {
-				return 1 if $DB_sessions;
+				return 1 if $::Instance->{DB_sessions};
 				tie (
 					%Vend::SessionDBM,
 					'Vend::SessionDB',
 					$Vend::Cfg->{SessionDB}
 				)
 				or die "Could not tie to $Vend::Cfg->{SessionDB}: $!\n";
-				$DB_sessions = 1;
+				$::Instance->{DB_sessions} = 1;
 			},
 		],
 
@@ -182,7 +182,7 @@ sub open_session {
 		($File_sessions, $Lock_sessions, $Session_open) = @{$Session_class{File}};
 	}
 #::logDebug("open_session: File_sessions=$File_sessions Sub=$Session_open");
-	unless($File_sessions) {
+	if($Lock_sessions) {
 		open(Vend::SessionLock, "+>>$Vend::Cfg->{SessionLockFile}")
 			or die "Could not open lock file '$Vend::Cfg->{SessionLockFile}': $!\n";
 		lockfile(\*Vend::SessionLock, 1, 1)
@@ -261,7 +261,7 @@ sub new_session {
 #::logDebug("init_session $Vend::SessionName is: " . ::uneval($Vend::Session));
 #::logDebug("init_session $Vend::SessionName");
 	$Vend::HaveSession = 1;
-	return if $File_sessions || $DB_sessions;
+	return if $File_sessions || $::Instance->{DB_sessions};
 	write_session();
 	close_session();
 	return;
@@ -269,11 +269,16 @@ sub new_session {
 
 sub close_session {
 #::logDebug ("try to close session id=$Vend::SessionID  name=$Vend::SessionName");
-	return 0 if ! defined $Vend::SessionOpen;
+	return 0 unless defined $Vend::SessionOpen;
 
-	unless($DB_sessions) {
-#::logDebug ("close session id=$Vend::SessionID  name=$Vend::SessionName");
-		undef $DB_object;
+	unless($::Instance->{DB_sessions}) {
+		undef $::Instance->{DB_object};
+		undef $File_sessions;
+		untie %Vend::SessionDBM
+			or die "Could not close $Vend::Cfg->{SessionDatabase}: $!\n";
+		undef $Vend::SessionOpen;
+	}
+	else {
 		untie %Vend::SessionDBM
 			or die "Could not close $Vend::Cfg->{SessionDatabase}: $!\n";
 		undef $Vend::SessionOpen;
@@ -301,6 +306,7 @@ sub write_session {
 	}
 	$Vend::Session->{username} = $Vend::username;
 	$Vend::Session->{admin} = $Vend::admin;
+	$Vend::Session->{groups} = $Vend::groups;
 	$Vend::Session->{superuser} = $Vend::superuser;
 	$Vend::Session->{login_table} = $Vend::login_table;
     $s = ! $File_sessions ? uneval_fast($Vend::Session) : $Vend::Session;
@@ -399,6 +405,7 @@ sub read_session {
 	$Vend::username    = $Vend::Session->{username};
 	$Vend::admin       = $Vend::Session->{admin};
 	$Vend::superuser   = $Vend::Session->{superuser};
+	$Vend::groups      = $Vend::Session->{groups};
 	$Vend::login_table = $Vend::Session->{login_table};
 
 	$Vend::Session->{arg}  = $Vend::Argument;
@@ -494,9 +501,9 @@ sub dump_sessions {
 }
 
 sub reorg {
-	return unless $DB_object;
-	GDBM_File::reorganize($DB_object);
-	GDBM_File::sync($DB_object);
+	return unless $::Instance->{DB_object};
+	GDBM_File::reorganize($::Instance->{DB_object});
+	GDBM_File::sync($::Instance->{DB_object});
 }
 
 sub expire_sessions {
