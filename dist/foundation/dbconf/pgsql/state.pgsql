@@ -8,7 +8,7 @@ Database  state  PASS         __SQLPASS__
 Database  state  AUTO_NUMBER  00001
 Database  state  COLUMN_DEF   "code=CHAR(8) NOT NULL PRIMARY KEY"
 Database  state  COLUMN_DEF   "country=CHAR(20) DEFAULT '' NOT NULL"
-Database  state  COLUMN_DEF   "sorder=CHAR(8) NOT NULL PRIMARY KEY"
+Database  state  COLUMN_DEF   "sorder=CHAR(8) NOT NULL"
 Database  state  COLUMN_DEF   "state=CHAR(20) DEFAULT '' NOT NULL"
 Database  state  COLUMN_DEF   "postcode=CHAR(20) DEFAULT '' NOT NULL"
 Database  state  COLUMN_DEF   "tax=text"
