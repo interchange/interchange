@@ -2,7 +2,7 @@
 #
 # MakeCat.pm - routines for catalog configurator
 #
-# $Id: MakeCat.pm,v 1.12.6.3 2001-03-27 10:56:30 racke Exp $
+# $Id: MakeCat.pm,v 1.12.6.4 2001-04-18 05:19:50 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -62,7 +62,7 @@ sethistory
 use strict;
 
 use vars qw($Force $Error $History $VERSION);
-$VERSION = substr(q$Revision: 1.12.6.3 $, 10);
+$VERSION = substr(q$Revision: 1.12.6.4 $, 10);
 
 $Force = 0;
 $History = 0;
@@ -158,13 +158,12 @@ EOF
 	demotype   =>  <<EOF,
 # The type of demo catalog to use. The standard one distributed is:
 #
-#    construct
+#    foundation
 #
 # If you have defined your own custom template catalog,
 # you can enter its name.
 #
-# If you are new to Interchange and not a sophisticated web designer,
-# use "construct" to start with.
+# If you are new to Interchange, use "foundation" to start with.
 EOF
 	documentroot    =>  <<EOF,
 # The base directory for HTML for this (possibly virtual) domain.
@@ -226,8 +225,8 @@ EOF
 # directive in the catalog configuration file. This is a URL
 # fragment, not a directory or file name.
 #
-#         <IMG SRC="/construct/images/icon.gif">
-#                   ^^^^^^^^^^^^^^^^^
+#         <IMG SRC="/foundation/images/icon.gif">
+#                   ^^^^^^^^^^^^^^^^^^
 #
 EOF
 	samplehtml =>  <<EOF,

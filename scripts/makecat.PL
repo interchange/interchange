@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.32.4.9 2001-04-09 06:58:11 heins Exp $
+# $Id: makecat.PL,v 1.32.4.10 2001-04-18 05:19:48 jon Exp $
 #
 # Copyright (C) 1996-2001 Akopia, Inc. <info@akopia.com>
 #
@@ -2180,7 +2180,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 1.32.4.9 2001-04-09 06:58:11 heins Exp $
+# $Id: makecat.PL,v 1.32.4.10 2001-04-18 05:19:48 jon Exp $
 
 =head1 INTRODUCTION
 
@@ -2327,18 +2327,18 @@ For testing on your local machine, just use C<localhost>.
 =item --cgiurl=url_fragment
 
 The path to the CGI link (no server name). For a catalog named
-C<construct>, this would normally be one of:
+C<foundation>, this would normally be one of:
 
-    --cgiurl=/cgi-bin/construct
+    --cgiurl=/cgi-bin/foundation
 
 or 
 
-    --cgiurl=/construct.cgi
+    --cgiurl=/foundation.cgi
 
 
 =item --demotype=template
 
-The template catalog. The default is <construct>.
+The template catalog. The default is <foundation>.
 
 =item --mailorderto=email
 
@@ -2405,8 +2405,8 @@ Don't set umask to the value implied by mode.
 
 =head1 DESCRIPTION
 
-C<makecat> needs a template catalog to operate on. The I<foundation site> and
-I<construct something> demo templates are distributed with Interchange. You can
+C<makecat> needs a template catalog to operate on. The I<Foundation
+Store> demo template is distributed with Interchange. You can
 also look for additional demo catalogs (mostly for ideas) at
 http://developer.akopia.com/.
 
@@ -2414,11 +2414,11 @@ B<IMPORTANT NOTE:> You only make a catalog once. All further configuration
 is done by editing the files within the I<catalog directory>.
 
 A catalog template contains an image of a configured catalog. The best
-way to see what the makecat program does is to configure the 'construct'
+way to see what the makecat program does is to configure the 'foundation'
 demo and then run a recursive C<diff> on the template and configured
 catalog directories:
 
-  diff -r interchange/construct catalogs/construct
+  diff -r interchange/foundation catalogs/foundation
 
 You will see that the files are mostly the same, except that certain
 macro strings have been replaced with the answers you gave to the script.
@@ -2445,7 +2445,7 @@ substituted, and include (at least):
     MVC_DOCUMENTROOT MVC_VENDROOT
     MVC_ENCRYPTOR
 
-(Not all of these are present in the construct template, and
+(Not all of these are present in the foundation template, and
 quite a few more may be defined.)  In fact, any environment variable that
 is set and begins with MVC_ will be substituted for by the C<makecat>
 script. So if you wanted to set up a configurable parameter to customize
@@ -2464,7 +2464,7 @@ B<IMPORTANT NOTE:> The template directory is located in the Interchange
 software directory, i.e. where C<interchange.cfg> resides. You normally do
 not edit files in the template directory.  If you want to try creating
 your own template, it is recommended that you name it something besides
-construct and copy the C<construct> demo directory to it as a starting point.
+foundation and copy the C<foundation> demo directory to it as a starting point.
 Templates are normally placed in the Interchange base directory, but can
 be located anywhere -- the script will prompt you for location if it
 cannot find a template.
@@ -2517,7 +2517,7 @@ This will cause the prompt:
     We need to create an SQL database for your Interchange
     database tables.
      
-    Run command "mysqladmin create test_construct"?
+    Run command "mysqladmin create test_foundation"?
 
 If the response is "y" or "yes", then the command will be run
 by passing it through the Perl system() function. As with any
