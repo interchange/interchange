@@ -1,3 +1,4 @@
+.#MANIFEST.1.20
 LICENSE
 MANIFEST
 MANIFEST.SKIP
@@ -403,6 +404,7 @@ dist/lib/UI/pages/admin/customer_select.html
 dist/lib/UI/pages/admin/customer_ship.html
 dist/lib/UI/pages/admin/customer_view.html
 dist/lib/UI/pages/admin/dbdownload.html
+dist/lib/UI/pages/admin/dbinfo.html
 dist/lib/UI/pages/admin/do_upload.html
 dist/lib/UI/pages/admin/do_upload_page.html
 dist/lib/UI/pages/admin/do_view.html
@@ -433,7 +435,6 @@ dist/lib/UI/pages/admin/item_edit.html
 dist/lib/UI/pages/admin/item_feature.html
 dist/lib/UI/pages/admin/item_inventory.html
 dist/lib/UI/pages/admin/item_price.html
-dist/lib/UI/pages/admin/item_select.html
 dist/lib/UI/pages/admin/item_up.html
 dist/lib/UI/pages/admin/layout.html
 dist/lib/UI/pages/admin/login.html
@@ -447,6 +448,7 @@ dist/lib/UI/pages/admin/order_view.html
 dist/lib/UI/pages/admin/orderstats.html
 dist/lib/UI/pages/admin/page.html
 dist/lib/UI/pages/admin/page_edit.html
+dist/lib/UI/pages/admin/page_new.html
 dist/lib/UI/pages/admin/page_preview.html
 dist/lib/UI/pages/admin/page_save.html
 dist/lib/UI/pages/admin/payment.html
@@ -656,9 +658,9 @@ scripts/configdump.PL
 scripts/dump.PL
 scripts/expire.PL
 scripts/expireall.PL
+scripts/interchange.PL
 scripts/localize.PL
 scripts/makecat.PL
-scripts/interchange.PL
 scripts/offline.PL
 scripts/restart.PL
 scripts/update.PL
@@ -670,6 +672,7 @@ share/akopia/ui/admin/b-pages2.gif
 share/akopia/ui/admin/b-regenerate2.gif
 share/akopia/ui/admin/b-statistics2.gif
 share/akopia/ui/admin/back.sm.gif
+share/akopia/ui/admin/bg.gif
 share/akopia/ui/admin/bluedot.gif
 share/akopia/ui/admin/cleardot.gif
 share/akopia/ui/admin/coinlogo.jpg
@@ -682,6 +685,7 @@ share/akopia/ui/admin/folder.gif
 share/akopia/ui/admin/folder.open.gif
 share/akopia/ui/admin/greendot.gif
 share/akopia/ui/admin/icon_config.gif
+share/akopia/ui/admin/icon_design.gif
 share/akopia/ui/admin/icon_error.gif
 share/akopia/ui/admin/icon_help.gif
 share/akopia/ui/admin/icon_item.gif
