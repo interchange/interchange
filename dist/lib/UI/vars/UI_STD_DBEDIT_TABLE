@@ -20,6 +20,7 @@ Variable UI_STD_DBEDIT_TABLE <<EndOfVar
 <INPUT TYPE=hidden NAME=mv_data_key VALUE="[value ui_data_key_name]">
 <INPUT TYPE=hidden NAME=mv_data_decode VALUE="[value mv_data_decode]">
 [calc]
+	$ui_img = q{@_UI_IMG_@};
 	unless ($CGI->{ui_return_to}) {
 		$CGI->{ui_return_to} = "[var MV_PAGE global]\0item_id=$Scratch->{arg}";
 	}
@@ -49,7 +50,7 @@ EOF
 <table cellspacing=0 cellmargin=0 width="100%" cellpadding="2" align="center" border="0">
 
 <tr bgcolor="__UI_C_TITLEBARBG__"> 
-<td align=right colspan=2><img src="admin/bg.gif" width=1 height=3></td>
+<td align=right colspan=2><img src="@_UI_IMG_@admin/bg.gif" width=1 height=3></td>
 </tr>
 [if !cgi ui_data_fields]
 	[calc]
@@ -62,12 +63,12 @@ EOF
 
 [comment]
 Display an extra Ok/Cancel button pair if there are more than
-4 input rows, so user doesn't have to scroll to bottom of page.
+4 rows of input, so user doesn't have to scroll to bottom of page.
 [/comment]
 [perl]
-      my $linecount = split ' ', $CGI->{ui_data_fields};
+      my $linecount = (split / /, $CGI->{ui_data_fields}) - 1;
       my $out = '';
-      $out = <<'EOF' if $linecount > 5;  # add one for hidden SKU field
+      $out .= <<'EOF' if $linecount > 4;
 <TR BGCOLOR="__UI_T_ROW_EVEN__">
 <td>&nbsp;</td>
 <td align=left>
@@ -79,7 +80,7 @@ Display an extra Ok/Cancel button pair if there are more than
 </TR>
 
 <tr BGCOLOR="__UI_C_TITLEBARBG__">
-<td colspan=2><img src="admin/bg.gif" width=1 height=3></td>
+<td colspan=2><img src="${ui_img}admin/bg.gif" width=1 height=3></td>
 </tr>
 
 EOF
@@ -257,7 +258,7 @@ EOF
         #}
 		$Document->write(<<EOF) if $break{$col};
 <TR BGCOLOR="__UI_T_ROW_ODD__">
-	<TD ALIGN=RIGHT COLSPAN=2><IMG SRC="admin/bg.gif" WIDTH=1 HEIGHT=1></TD>
+	<TD ALIGN=RIGHT COLSPAN=2><IMG SRC="${ui_img}admin/bg.gif" WIDTH=1 HEIGHT=1></TD>
 </TR>
 EOF
 		$display =~ s/\~META\~/$meta/g;
@@ -269,7 +270,7 @@ EOF
 <INPUT TYPE=hidden NAME=mv_data_fields VALUE="[cgi ui_data_fields]">
 
 <tr>
-<td colspan=2 BGCOLOR="__UI_C_TITLEBARBG__"><img src="admin/bg.gif" height=3></td>
+<td colspan=2 BGCOLOR="__UI_C_TITLEBARBG__"><img src="@_UI_IMG_@admin/bg.gif" height=3></td>
 </tr>
 
 <TR BGCOLOR="__UI_T_ROW_EVEN__">
@@ -308,7 +309,7 @@ mv_todo=return
 </tr>
 
 <tr>
-<td colspan=2 BGCOLOR="__UI_C_TITLEBARBG__"><img src="admin/bg.gif" height=3></td>
+<td colspan=2 BGCOLOR="__UI_C_TITLEBARBG__"><img src="@_UI_IMG_@admin/bg.gif" height=3></td>
 </tr>
 
 </table>
