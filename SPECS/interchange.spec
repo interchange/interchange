@@ -9,11 +9,11 @@ Summary: Interchange web application platform
 Name: interchange
 Version: 4.9.1
 Release: 1
-Vendor: Red Hat, Inc.
+Vendor: Interchange Development Group
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
-URL: http://interchange.redhat.com/
-Source0: http://interchange.redhat.com/interchange/interchange-%{version}.tar.gz
+URL: http://www.icdevgroup.org/
+Source0: http://www.icdevgroup.org/interchange/interchange-%{version}.tar.gz
 Source1: interchange-wrapper
 Source2: interchange-init
 Source3: interchange-logrotate
