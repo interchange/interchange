@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.5 2001-09-01 14:20:30 mheins Exp $
+# $Id: Config.pm,v 2.6 2001-10-06 06:06:35 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.5 $, 10);
+$VERSION = substr(q$Revision: 2.6 $, 10);
 
 my %CDname;
 
@@ -2565,6 +2565,22 @@ sub parse_database {
 			}
 		}
 # END LDAP
+		elsif(	$type =~ /^ic:(\w*)(:(.*))?/ ) {
+			my $class = $1;
+			my $dir = $3;
+			$d->{DIR} = $dir if $dir;
+			if($class =~ /^default$/i) {
+				# Do nothing
+			}
+			elsif($class) {
+				$class = uc $class;
+				if(! $Vend::Data::db_config{$class}) {
+					config_error("unrecognized IC database class: %s (from %s)", $class, $type);
+				}
+				$d->{Class} = $class;
+			}
+			$d->{'type'} = 6;
+		}
 		elsif(	"\U$type" eq 'TAB'	) {
 			$d->{'type'} = 6;
 		}
