@@ -1,7 +1,16 @@
 [set page_title]Order Status[/set]
 [set icon_name]admin/icon_stats.gif[/set]
 [set table_perm]1[/set]
+[if cgi printable]
+<HTML><HEAD>
+  <TITLE>[scratch page_title]</TITLE>
+</HEAD><BODY BGCOLOR="#ffffff" ONLOAD="print();close();">
+[else]
 @_UI_STD_HEAD_@
+<A HREF="javascript:var w = window.open('[area href=admin/reports/Order%20Status.html form="printable=1"]','print','width=500,height=600,resizable=false');">print</A>
+[/else]
+[/if]
+
 <TABLE>
 [set first_done][/set]
 [search-region more=1 search="
@@ -26,4 +35,10 @@
 
 [/search-region]
 </TABLE>
+[if cgi printable]
+</BODY></HTML>
+[else]
 @_UI_STD_FOOTER_@
+[/else]
+[/if]
+
