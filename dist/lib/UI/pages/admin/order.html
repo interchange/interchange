@@ -49,25 +49,6 @@
 [set ui_class]Orders[/set]
 [tmp page_perm]order=l[/tmp]
 
-@_UI_STD_HEAD_@
-
-[comment]
-<!-- sequence_edit: [cgi ui_sequence_edit] -->
-<!-- item_id_left: [cgi item_id_left] -->
-[/comment]
-
-[value name=mv_data_table set=transactions hide=1]
-[if-mm !tables]
-[set ui_error]
-	[L]Not authorized for order administration. Contact administrator?[/L]
-[/set]
-[bounce page="__UI_BASE__/error"]
-[/if-mm]
-
-[tmp can_delete][if-mm advanced order=d]1[/if-mm][/tmp]
-
-[include include/order_delete_archive]
-
 [perl tables="[cgi mv_data_table] [scratch extra_tables] __UI_META_TABLE__"]
 	delete $Scratch->{ui_location};
 	my $dest = $CGI->{ui_sequence_destination} || '__UI_BASE__/order_status';
@@ -104,6 +85,30 @@
 
 [/perl]
 
+[if scratch ui_location]
+[comment]Comes from above include[/comment]
+[bounce href="[scratchd ui_location]"]
+[/if]
+
+@_UI_STD_HEAD_@
+
+[comment]
+<!-- sequence_edit: [cgi ui_sequence_edit] -->
+<!-- item_id_left: [cgi item_id_left] -->
+[/comment]
+
+[value name=mv_data_table set=transactions hide=1]
+[if-mm !tables]
+[set ui_error]
+	[L]Not authorized for order administration. Contact administrator?[/L]
+[/set]
+[bounce page="__UI_BASE__/error"]
+[/if-mm]
+
+[tmp can_delete][if-mm advanced order=d]1[/if-mm][/tmp]
+
+[include include/order_delete_archive]
+
 [calc]
 	if ($CGI->{mv_like_spec}) {
 		my @f = split /\0/, $CGI->{mv_like_field};
@@ -137,7 +142,7 @@
 
 [if scratch ui_location]
 [comment]Comes from above include[/comment]
-[bounce href=`delete $Scratch->{ui_location}`]
+[bounce href="[scratchd ui_location]"]
 [/if]
 
 [update values]
@@ -493,4 +498,4 @@ mv_nextpage=__UI_BASE__/order_status
 
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: order.html,v 2.10 2002-10-18 06:00:10 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order.html,v 2.11 2002-11-04 14:48:27 mheins Exp $ -->

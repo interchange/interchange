@@ -2,23 +2,6 @@
 	$Values->{ui_data_fields} = $CGI->{ui_data_fields} = 'status archive delete';
 	$CGI->{mv_data_table} = 'transactions';
 	$CGI->{item_id} ||= $CGI->{order};
-
-	$Tag->tmp('hidden');
-	my $hidden;
-	if($CGI->{ui_sequence_edit}) {
-		$Scratch->{mv_nextpage} = "__UI_BASE__/order";
-		$hidden = {
-			item_id_left	=> $CGI->{item_id_left},
-			ui_sequence_edit	=> $CGI->{ui_sequence_edit},
-		}
-	}
-	else {
-		$CGI->{ui_sequence_destination} ||= '__UI_BASE__/order';
-		$Scratch->{mv_nextpage} = $CGI->{ui_sequence_destination};
-		$hidden = { };
-	}
-	$hidden->{ui_sequence_destination} = q{@@MV_PAGE@@};
-	$Scratch->{hidden} = $hidden;
 	$CGI->{order} = $CGI->{item_id};
 	return;
 [/calc]
@@ -170,7 +153,7 @@
 	next-text="Update status only, no ship function"
 	ok-button-style="font-weight: normal; font-size: smaller"
 	no-table-meta=1
-	mv-nextpage="[scratch mv_nextpage]"
+	mv-nextpage="__UI_BASE__/order"
 	ui_data_fields="code status tracking_number order_id auth_code archived deleted"
 	include-form="[scratch form_include]"
 	include-before="order_id"
@@ -180,7 +163,7 @@
 	link-before=order_id
 	link-no-blank=1
 	link-label="Ordered Items"
-	hidden=`$Scratch->{hidden}`
+	hidden.ui_sequence_destination="@@MV_PAGE@@"
 /]
 
 <script>
@@ -196,4 +179,4 @@
 </script>
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: order_status.html,v 2.9 2002-11-04 14:19:07 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order_status.html,v 2.10 2002-11-04 14:48:27 mheins Exp $ -->
