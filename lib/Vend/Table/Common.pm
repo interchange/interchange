@@ -1,6 +1,6 @@
 # Table/Common.pm: Common access methods for Interchange Databases
 #
-# $Id: Common.pm,v 1.16.4.1 2000-11-30 02:51:14 heins Exp $
+# $Id: Common.pm,v 1.16.4.2 2000-12-11 01:55:39 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -25,7 +25,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.16.4.1 $, 10);
+$VERSION = substr(q$Revision: 1.16.4.2 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -768,9 +768,24 @@ sub import_ascii_delimited {
 		$format = 'NONE';
 	}
 
-    open(IN, "+<$infile")
-		or die "Couldn't open '$infile' read/write: $!\n";
-	lockfile(\*IN, 1, 1) or die "lock\n";
+	my $realfile;
+	if($options->{PRELOAD}) {
+		$realfile = $infile;
+		$infile = $options->{PRELOAD};
+		$infile = "$Global::VendRoot/$infile" if ! -f $infile;
+		($infile = $realfile, undef $realfile) if ! -f $infile;
+	}
+
+	if(! $realfile) {
+		open(IN, "+<$infile")
+			or die ::errmsg("Couldn't open '%s' read/write: %s", $infile, $!);
+		lockfile(\*IN, 1, 1)
+			or die ::errmsg("lock '%s': %s", $infile, $!);
+	}
+	else {
+		open(IN, "<$infile")
+			or die ::errmsg("Couldn't open '%s' for read: %s", $infile, $!);
+	}
 
 	my $field_hash;
 	my $para_sep;
@@ -1097,7 +1112,33 @@ EndOfRoutine
 );
 
     eval $format{$format};
-    die $@ if $@;
+	die ::errmsg("$options->{name} import failed: %s", $@) if $@;
+    if($realfile) {
+		close IN
+			or die ::errmsg("close preload file %s: %s", $infile, $!) . "\n";
+		if(-f $realfile) {
+			open(IN, "+<$realfile")
+				or die ::errmsg(
+					"Couldn't open user file %s read/write: %s",
+					$realfile,
+					$!) . "\n";
+			lockfile(\*IN, 1, 1) or die "lock\n";
+			<IN>;
+			eval $format{$format};
+			die ::errmsg("%s import failed: %s", $options->{name}, $@) if $@;
+		}
+		elsif (! open(IN, ">$realfile") ) {
+				warn ::errmsg(
+					"can't create %s import failed: %s",
+									$options->{file}, $@
+								);
+		} 
+		else {
+			print IN join($options->{DELIMITER}, @field_names);
+			print IN $/;
+			close IN;
+		}
+	}
 	if(@fh) {
 		my $no_sort;
 		my $sort_sub;
