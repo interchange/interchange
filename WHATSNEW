@@ -64,6 +64,12 @@ Core
 * Minor cleanup in Data.pm, including ensuring $obj->{DELIMITER} 
   and $obj->{delimiter} match.
 
+Filters
+-------
+
+* Allow % in filter arguments. This could conceivably be a problem for
+  someone who had a filter ".%s" or something.
+
 Content Management
 ------------------
 
