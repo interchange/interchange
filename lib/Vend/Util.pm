@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.5 2000-12-17 07:02:53 heins Exp $
+# $Id: Util.pm,v 1.14.2.6 2000-12-21 11:29:22 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -76,9 +76,10 @@ push @EXPORT, qw(
 use strict;
 use Config;
 use Fcntl;
+use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.5 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.6 $, 10);
 
 BEGIN {
 	eval {
@@ -1052,10 +1053,8 @@ sub flock_lock {
     }
     else {
         if (! flock($fh, $flag | $flock_LOCK_NB)) {
-            if ($! =~ m/^Try again/
-                or $! =~ m/^Resource temporarily unavailable/
-                or $! =~ m/^Operation would block/) {
-                return 0;
+            if ($!{EAGAIN} or $!{EWOULDBLOCK}) {
+				return 0;
             }
             else {
                 die "Could not lock file: $!\n";
@@ -1083,9 +1082,7 @@ sub fcntl_lock {
     }
     else {
         if (fcntl($fh, $op, $struct) < 0) {
-            if ($! =~ m/^Try again/
-                or $! =~ m/^Resource temporarily unavailable/
-                or $! =~ m/^Operation would block/) {
+            if ($!{EAGAIN} or $!{EWOULDBLOCK}) {
                 return 0;
             }
             else {

@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.4 2000-12-17 07:24:58 heins Exp $
+# $Id: Server.pm,v 1.8.2.5 2000-12-21 11:29:22 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,11 +28,12 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.4 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.5 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
 use Fcntl;
+use Errno;
 use Config;
 use Socket;
 use strict;
@@ -326,6 +327,10 @@ sub respond {
 				? "$1"
 				: "200 OK";
 	}
+
+	$$body =~ s/^\s+//
+		if ! $Vend::ResponseMade and $Vend::Cfg->{Pragma}{strip_white};
+
 	if(! $s and $Vend::StatusLine) {
 		$Vend::StatusLine = "HTTP/1.0 $status\r\n$Vend::StatusLine"
 			if defined $Vend::InternalHTTP
@@ -435,7 +440,7 @@ sub _read {
     
     do {
         $r = sysread(Vend::Server::MESSAGE, $$in, 512, length($$in));
-    } while (!defined $r and $! =~ m/^Interrupted/);
+    } while (!defined $r and $!{EINTR});
     die "read: $!" unless defined $r;
     die "read: closed" unless $r > 0;
 }
@@ -1125,10 +1130,8 @@ sub server_both {
 		undef $Vend::Cfg;
 
         if ($n == -1) {
-            if ($! =~ m/^Interrupted/) {
-                if ($Signal_Terminate) {
-                    last;
-                }
+            if ($!{EINTR}) {
+                last if $Signal_Terminate;
             }
             else {
 				my $msg = $!;
