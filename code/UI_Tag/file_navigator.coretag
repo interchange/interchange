@@ -295,10 +295,9 @@ EOF
 	if($nd ne $opt->{top_of_tree} and ! $opt->{no_up}) {
 		$nd =~ s:/[^/]*$::
 		  or $nd = $opt->{top_of_tree};
-		my $msg = errmsg(
-					"<large><b>..</b></large> &#91;%s&#93",
-					$opt->{parent_directory_message} || 'parent directory',
-					);
+		my $msg = '<large><b>..</b></large> &#91;'
+		  . errmsg ($opt->{parent_directory_message} || 'parent directory')
+			. '%s&#93';
 		unshift @dir, [ $nd, $msg, $dtmpl ];
 	}
 
