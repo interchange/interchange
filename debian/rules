@@ -93,7 +93,7 @@ install: build
 # Setup configuration directory
 	mkdir -p $(TMP)/etc/interchange/
 	cp debian/interchange.cfg debian/catalogs.cfg debian/makecat.cfg \
-		$(TMP)/etc/interchange    
+		debian/robots.cfg $(TMP)/etc/interchange    
 # build Interchange control program(s)
 	mkdir -p $(TMP)/usr/lib/cgi-bin/ic
 	$(PERL) scripts/compile_link \
