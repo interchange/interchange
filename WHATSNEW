@@ -79,6 +79,8 @@ Core
 * Add Australian BankCard to Vend::Order::guess_cc_type 
   (contributed by Howard Lowndes).
 
+* Make aliased UserTag respect EndTag setting.
+
 Options
 -------
 
@@ -299,6 +301,15 @@ UI
 
 * Add Levies to the 'show only' list of the show_session page.
 
+* Use sane default while merging metadata to avoid breakage of perl code 
+  if no ui-version record exists.
+
+* Allow the "Next order" button in the admin order_view to jump over a few
+  (20, by default) missing order numbers in the order sequence so that
+  deleted order numbers here and there don't throw the user back to the
+  order list view. Maximum number to skip settable by variable
+  UI_ORDER_VIEWNEXT_MAX_SKIP, now in Foundation "Admin control" section.
+
 Payment
 -------
 
@@ -353,6 +364,12 @@ Levies
   which will display
 
     Shipping (45056)
+
+i18n
+----
+
+* Add alias [L] => [loc] in order to resolve [L] tags in variables
+  independent of the configuration.
 
 Foundation
 ----------
@@ -410,6 +427,9 @@ Filters
   $CGI->{$varname}. Otherwise uses the value of the variable.
 
 * Add "line" filter which rips off the first line of a longer text.
+
+* Change "date_change" field in order to handle MySQL DATE resp.
+  DATETIME fields.
 
 Jobs
 ----
