@@ -3,7 +3,7 @@
 #
 # Interchange version 4.9.1
 #
-# $Id: interchange.PL,v 2.38 2002-06-27 22:24:11 jon Exp $
+# $Id: interchange.PL,v 2.39 2002-07-03 16:23:43 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -1962,7 +1962,10 @@ RESOLVEID: {
 								? ($Vend::Session->{shost})
 								: ($Vend::Session->{ohost});
 
-			if(! $compare_host) {
+			if($Vend::Cfg->{WideOpen}) {
+				# do nothing, no host checking
+			}
+			elsif(! $compare_host) {
 				new_session($seed) unless $CGI::secure;
 				init_session();
 				$Vend::Session->{shost} = $CGI::remote_addr;
