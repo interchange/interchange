@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange localizer
 #
-# $Id: localize.PL,v 1.7.2.1.2.4 2001-05-18 19:58:32 racke Exp $
+# $Id: localize.PL,v 1.7.2.1.2.5 2001-05-20 14:29:23 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -313,6 +313,9 @@ foreach $file (@ARGV) {
 print STDERR ".";
 					substitute_lc($1);
 		}
+        while ($data =~ m:\[loc\](\s*[^\[].*?[^\]]\s*)\[/loc\]:gsi) {
+					write_structure(undef, $1);
+		}
 	}
 
 	if($opt_c || $opt_o) {
@@ -372,7 +375,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-# $Id: localize.PL,v 1.7.2.1.2.4 2001-05-18 19:58:32 racke Exp $
+# $Id: localize.PL,v 1.7.2.1.2.5 2001-05-20 14:29:23 racke Exp $
 
 =head1 SYNOPSIS
 
