@@ -963,7 +963,6 @@ sub parts_update {
 sub enter_payment {
     my ($self, $string) = @_;
 	my $datastuff = uneval(\@_);
-	`echo "This is a enter_customer_payment test... $datastuff" >> testlog.txt`;
     return $string;
 }
 
