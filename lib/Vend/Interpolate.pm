@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.9.2.13 2002-01-25 19:54:06 jon Exp $
+# $Id: Interpolate.pm,v 2.9.2.14 2002-03-01 20:10:53 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.9.2.13 $, 10);
+$VERSION = substr(q$Revision: 2.9.2.14 $, 10);
 
 @EXPORT = qw (
 
@@ -3464,6 +3464,21 @@ sub escape_scan {
 	return join '/', 'scan', escape_mv('/', $scan);
 }
 
+sub escape_form {
+	my $val = shift;
+
+	$val =~ s/^\s+//mg;
+	$val =~ s/\s+$//mg;
+	my @args = split /\n+/, $val;
+
+	for(@args) {
+		s!\0!-_NULL_-!g;
+		s!(\w=)(.*)!$1 . esc($2)!eg
+			or (undef $_, next);
+	}
+	return join $Global::UrlJoiner, grep length($_), @args;
+}
+
 sub escape_mv {
 	my ($joiner, $scan, $not_scan) = @_;
 
@@ -3485,8 +3500,8 @@ sub escape_mv {
 	for(@args) {
 		s!/!__SLASH__!g unless defined $not_scan;
 		s!\0!__NULL__!g;
-		s!(\w\w=)(.*)!$1 . esc($2)!eg
-			or (undef $_, next);
+		m!\w=!
+		    or (undef $_, next);
 		s!__SLASH__!::!g unless defined $not_scan;
 	}
 	return join $joiner, grep(defined $_, @args);
@@ -3517,8 +3532,7 @@ sub form_link {
 	$arg = '' if ! $arg;
 	$arg = "mv_arg=$arg\n" if $arg && $arg !~ /\n/; 
 	$extra .= $arg . $opt->{form};
-	$extra = escape_mv($Global::UrlJoiner, $extra, 1);
-	return $href . '?' . $extra;
+	return $href . '?' . escape_form($extra);
 }
 
 PAGELINK: {

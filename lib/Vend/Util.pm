@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.1.2.5 2002-02-28 14:41:59 racke Exp $
+# $Id: Util.pm,v 2.1.2.6 2002-03-01 20:10:53 racke Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -74,7 +74,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.1.2.5 $, 10);
+$VERSION = substr(q$Revision: 2.1.2.6 $, 10);
 
 BEGIN {
 	eval {
@@ -99,6 +99,15 @@ $ESCAPE_CHARS::ok_in_filename =
 		'-:_.$/'
 	;
 
+$ESCAPE_CHARS::ok_in_url =
+		'ABCDEFGHIJKLMNOPQRSTUVWXYZ' .
+		'abcdefghijklmnopqrstuvwxyz' .
+		'0123456789'				 .
+		'-_./~='
+	;
+
+my $need_escape;
+
 sub setup_escape_chars {
     my($ok, $i, $a, $t);
 
@@ -111,7 +120,17 @@ sub setup_escape_chars {
 			$t = $a;
         }
         $ESCAPE_CHARS::translate[$i] = $t;
+        if (index($ESCAPE_CHARS::ok_in_url,$a) == -1) {
+			$t = '%' . sprintf( "%02X", $i );
+        }
+		else {
+			$t = $a;
+        }
+        $ESCAPE_CHARS::translate_url[$i] = $t;
     }
+
+	my $string = "[^$ESCAPE_CHARS::ok_in_url]";
+	$need_escape = qr{$string};
 
 }
 
@@ -125,6 +144,22 @@ sub escape_chars {
     $r = '';
     foreach $c (split(//, $in)) {
 		$r .= $ESCAPE_CHARS::translate[ord($c)];
+    }
+
+    # safe now
+    return $r;
+}
+
+# Replace any characters that might not be safe in an URL
+# with the %HH notation.
+
+sub escape_chars_url {
+    my($in) = @_;
+    my($c, $r);
+
+    $r = '';
+    foreach $c (split(//, $in)) {
+		$r .= $ESCAPE_CHARS::translate_url[ord($c)];
     }
 
     # safe now
@@ -1071,6 +1106,8 @@ sub vendUrl {
 	$ct = ++$Vend::Session->{pageCount}
 		unless $can_cache and $::Scratch->{mv_no_count};
 
+	$path = escape_chars_url($path)
+		if $path =~ $need_escape;
     $r .= '/' . $path;
 	$r .= '.html' if $::Scratch->{mv_add_dot_html} and $r !~ /\.html?$/;
 	push @parms, "$::VN->{mv_session_id}=$id"			 	if defined $id;
@@ -1521,15 +1558,16 @@ sub errmsg {
 	elsif($Global::Locale and defined $Global::Locale->{$fmt}) {
 	 	$location = $Global::Locale;
 	}
-	return sprintf $fmt, @strings if ! $location;
-	if(ref $location->{$fmt}) {
-		$fmt = $location->{$fmt}[0];
-		@strings = @strings[ @{ $location->{$fmt}[1] } ];
+	if($location) {
+		if(ref $location->{$fmt}) {
+			$fmt = $location->{$fmt}[0];
+			@strings = @strings[ @{ $location->{$fmt}[1] } ];
+		}
+		else {
+			$fmt = $location->{$fmt};
+		}
 	}
-	else {
-		$fmt = $location->{$fmt};
-	}
-	return sprintf $fmt, @strings;
+	return scalar(@strings) ? sprintf $fmt, @strings : $fmt;
 }
 
 sub show_times {
