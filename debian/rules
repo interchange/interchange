@@ -44,6 +44,7 @@ build-stamp:
 		INTERCHANGE_USER=interchange \
 		PREFIX=/usr/lib/interchange
 	$(MAKE)
+	pod2man	debian/interchangeconfig > blib/man1/interchangeconfig.1p
 
 # Compile mod_interchange
 	$(MAKE) -C dist/src/mod_interchange
