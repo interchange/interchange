@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.10 2001-11-08 16:17:31 mheins Exp $
+# $Id: Order.pm,v 2.11 2001-11-08 18:27:35 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.10 $, 10);
+$VERSION = substr(q$Revision: 2.11 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -856,7 +856,10 @@ sub check_order {
 	elsif(defined $::Scratch->{$profile}) {
 		$params = $::Scratch->{$profile};
 	}
-	else { return undef }
+	else {
+		::logError("Order profile %s not found", $profile);
+		return undef;
+	}
 	return undef unless $params;
 
 	my $ref = \%CGI::values;
