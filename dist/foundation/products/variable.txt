@@ -16,7 +16,7 @@ DEFAULT_FONT	__MVC_DEFAULTFONT__	Template
 DOCROOT	__MVC_DOCUMENTROOT__	Directories and Paths
 EMAIL_INFO	__MVC_EMAILINFO__	Company
 EMAIL_SERVICE	__MVC_EMAILSERVICE__	Company
-ENCRYPTOR	/bin/echo Encryption not enabled yet	Payment
+ENCRYPTOR		Encryption
 FAX	__MVC_FAX__	Company
 IMAGE_DIR	__MVC_IMAGEURL__	Directories and Paths
 LOGGED_STATIC	1	Static pages
@@ -29,6 +29,7 @@ ORACLE	__MVC_ORACLE__	Database
 ORDER_ROUTES	log main copy_user	Order
 ORDERS_TO	__MVC_MAILORDERTO__	Order
 PGSQL	__MVC_PGSQL__	Database
+PGP_KEY		Encryption
 PHONE	__MVC_PHONE__	Company
 PO_ACCEPTED	__MVC_PAYPO__	Payment
 POSTAL_ACCEPTED	0	Payment
