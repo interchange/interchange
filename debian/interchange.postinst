@@ -96,9 +96,15 @@ if [ "$RET" = true ]; then
 else
 	DEBUG=0
 fi
+db_get interchange/full_url
+if [ "$RET" = true ]; then
+	FULL_URL=1
+else
+	FULL_URL=0
+fi
 db_get interchange/traffic
 TRAFFIC="$RET"
-/usr/sbin/interchangeconfig DEBUG=$DEBUG TRAFFIC=$RET
+/usr/sbin/interchangeconfig DEBUG=$DEBUG FULL_URL=$FULL_URL TRAFFIC=$RET
 
 # Make configuration files owned by the interchange user
 chown -R $USER.$GROUP /etc/interchange

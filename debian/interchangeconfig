@@ -29,7 +29,8 @@ my $featconf = '/etc/interchange/features.cfg';
 my $settingsconf = '/etc/interchange/settings.cfg';
 
 # Interchange variables
-my %setvars = (DEBUG => 0, TRAFFIC => 'low', UI_LOCALE => 'en_US');
+my %setvars = (DEBUG => 0, FULL_URL => 0,
+			   TRAFFIC => 'low', UI_LOCALE => 'en_US');
 my %featvars = (UI => '', USE_FOUNDATION => '');
 my %skipvars;
 	

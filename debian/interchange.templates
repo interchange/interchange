@@ -80,3 +80,10 @@ Description: Selects set of server parameters
  You can choose different sets of server parameters. Any store based on
  the foundation demo will change its behaviour too. If rpc is selected,
  the Interchange server will run in PreFork mode.
+
+Template: interchange/full_url
+Type: boolean
+Default: false
+Description: Whether to enable the FullURL directive or not
+ This setting determines if the whole URL is considered while checking
+ for the corresponding catalog.
