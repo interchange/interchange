@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.2
 #
-# $Id: interchange.PL,v 1.15.2.34 2001-04-11 15:40:00 heins Exp $
+# $Id: interchange.PL,v 1.15.2.35 2001-04-14 09:39:30 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -601,12 +601,12 @@ sub update_data {
 			push @$ref, '';
 		}
 		$base_db->config('AUTO_NUMBER', '000001')
-			if ! $base_db->config('AUTO_NUMBER');
+			if ! $base_db->config('_Auto_number');
 		$CGI::values{mv_data_return_key} = $prikey
 			unless $CGI::values{mv_data_return_key};
 	}
-	elsif($function eq 'insert' and $base_db->config('AUTO_NUMBER')) {
-		$autonumber = 1;
+	elsif($function eq 'insert' and $base_db->config('_Auto_number') ) {
+			$autonumber = 1;
 	}
  
 
