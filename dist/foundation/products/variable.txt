@@ -22,7 +22,7 @@ IMAGE_DIR	__MVC_IMAGEURL__	Directories and Paths
 LOGGED_STATIC	1	Static pages
 LOGO	__MVC_LOGO__	Template
 MV_DEFAULT_SEARCH_DB	1	Database
-MV_DEMO_MODE	0	General
+MV_DEMO_MODE	__MVC_DEMOMODE__	General
 MV_OPTION_TABLE	options	Item display
 MYSQL	__MVC_MYSQL__	Database
 ORACLE	__MVC_ORACLE__	Database

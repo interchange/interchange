@@ -244,3 +244,8 @@ Retail Price	List Price	MSRP Price
 !DICTPRICESALE
 What you want for your sale price label
 Our Price	Sale Price	Best Price
+
+DEMOMODE
+Set to 1 to display demo helper features in your store
+	1	0
+
