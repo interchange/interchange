@@ -618,13 +618,26 @@ EOF
 		}
 		if(@mods_to_get) {
 			my $mods = join "\n\t", @mods_to_get;
-			print <<EOF;
+			
+			if ($MV::Default{nocpaninstall}) {
+				print <<EOF;
+You do not appear to have all the required modules installed. You are missing:
+
+	$mods
+
+Please run src/cpan_local_install to install them.
+EOF
+  				exit 1;
+			} else {
+				print <<EOF;
 You do not appear to have all the required modules installed. You are missing:
 
 	$mods
 
 Trying to install now.
 EOF
+			}
+
 			chdir $realdir
 				or die "Couldn't change directory to $realdir: $!\n";
 			system $^X, 'src/cpan_local_install';
@@ -698,7 +711,7 @@ sub MY::install {
 VERBINST=0
 
 mv_install ::
-			\$(PERL) Makefile.PL force $uidparm final=\$(INSTALLARCHLIB)
+			\$(PERL) Makefile.PL force nocpaninstall=\$(NOCPANINSTALL) $uidparm final=\$(INSTALLARCHLIB)
 
 install :: all pure_install doc_install mv_install
 
