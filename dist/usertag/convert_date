@@ -8,7 +8,12 @@ sub {
     my @t;
 
         my $fmt = '%d-%b-%Y';
-        if($text =~ /\d/) {
+        if($text =~ /^(\d\d\d\d)-(\d?\d)-(\d?\d)$/) {
+            $t[5] = $1 - 1900;
+            $t[4] = $2 - 1;
+            $t[3] = $3;
+        } 
+        elsif($text =~ /\d/) {
                         $text =~ s/\D//g;
                         $text =~ /(\d\d\d\d)(\d\d)(\d\d)(?:(\d\d)(\d\d))?/;
                         $t[2] = $4 || undef;
