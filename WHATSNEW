@@ -63,12 +63,20 @@ Payment
 Foundation
 ----------
 
+* Make sure mv_successpage gets passed on from login page, so customers
+  can go straight to an arbitrary members_only page instead of always 
+  'customerservice' (Bug #392). Thanks to Ron Phipps 
+  <rphipps@reliant-solutions.com> for reporting this problem.
+
 * Removed trailing whitespace that caused browse page to contain
   Perl code garbage. Found by Salvador Caballe.
 
 * Added missing Database UPPERCASE 1 settings in the Oracle database
   configuration. Thanks to Jonathan Lee <jonalee740304@yahoo.com>
-  for reporting.
+  for reporting this problem.
+
+* Avoid Oracle constraint errors where empty string looks like NULL
+  in country database.
 
 Packaging
 ---------
@@ -83,6 +91,10 @@ Packaging
 * Fixed overly strict dependency of the libapache-mod-interchange
   Debian package on apache-common. Thanks to Matthew Wilcox 
   <willy@debian.org>).
+
+* Added version to dependency of the interchange Debian package 
+  on libsql-statement-perl, because newer versions cause Interchange 
+  to fail in some cases.
 
 * interchange-ui Debian package now suggests a HTTPS server.
 
