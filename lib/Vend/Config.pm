@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.23.4.10 2001-10-09 12:03:27 racke Exp $
+# $Id: Config.pm,v 1.23.4.11 2001-10-29 08:55:21 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -104,7 +104,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.23.4.10 $, 10);
+$VERSION = substr(q$Revision: 1.23.4.11 $, 10);
 
 my %CDname;
 
@@ -428,6 +428,7 @@ sub catalog_directives {
     ['StaticDir',		 undef,     	     ''],
     ['StaticIndex',		 undef,     	     ''],
     ['StaticSessionDefault',	'hash',	     ''],
+	['StaticTrack',		 undef,     	     ''],
 	['UserDB',			 'locale',	     	 ''], 
 	['UserDatabase',	 undef,		     	 ''],  #undocumented
     ['RobotLimit',		 'integer',		      0],
