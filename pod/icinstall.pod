@@ -147,7 +147,7 @@ sections will explain this installation process in detail.
 
 Obtain, decompress, and untar the distribution on a UNIX server:
 
-       gzip -dc interchange-4.5.x.tar.gz | tar xvf -
+       gzip -dc interchange-4.6.x.tar.gz | tar xvf -
 
 =back
 
@@ -925,7 +925,7 @@ Text similar to this should be displayed on the monitor screen:
 
        Low traffic set        Calling UI....
         ....UI is loaded....
-        Interchange V4.5.x
+        Interchange V4.6.x
         Configuring catalog example...done.
         Interchange server started in INET and UNIX mode(s) (process id 22200)
 
