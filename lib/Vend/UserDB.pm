@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.16 2001-02-21 17:51:19 heins Exp $
+# $Id: UserDB.pm,v 1.17 2001-03-22 22:49:49 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.16 $, 10);
+$VERSION = substr(q$Revision: 1.17 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -214,6 +214,9 @@ and C<fax_order>. The field C<p_nickname> acts as a key to select
 the preference set.
 
 =cut
+
+# valid characters in user names
+my $GOOD_CHARS = '[-A-Za-z0-9_@.]';
 
 @P_FIELDS = qw ( p_nickname email fax email_copy phone_night mail_list fax_order );
 
@@ -889,7 +892,12 @@ sub login {
 		if ref $_[0];
 
 	my(%options) = @_;
-	
+
+	# Note that this trailing newline is important! The string is used in a
+	# die() statement, and without a trailing newline, Perl will append path
+	# and line info, which should be avoided.
+	my $stock_error = ::errmsg("Invalid user name or password.\n");
+
 	eval {
 		unless($self) {
 			$self = new Vend::UserDB %options;
@@ -908,18 +916,42 @@ sub login {
 			$self->{PASSWORD} = lc $self->{PASSWORD};
 			$self->{USERNAME} = lc $self->{USERNAME};
 		}
-		die ::errmsg("Username does not exist.") . "\n"
-			unless $self->{DB}->record_exists($self->{USERNAME});
+
+		# We specifically check for login attempts with group names to see if
+		# anyone is trying to exploit a former vulnerability in the demo catalog.
+		if ($self->{USERNAME} =~ /^:/) {
+			logError("Attempted login with group name '%s'",
+				$self->{USERNAME});
+			die $stock_error;
+		}
+		if ($self->{USERNAME} !~ m{^$GOOD_CHARS+$}) {
+			logError("Attempted login with illegal user name '%s'",
+				$self->{USERNAME});
+			die $stock_error;
+		}
+		unless ($self->{DB}->record_exists($self->{USERNAME})) {
+			logError("Attempted login with nonexistent user name '%s'",
+				$self->{USERNAME});
+			die $stock_error;
+		}
 		my $db_pass = $self->{DB}->field(
 						$self->{USERNAME},
 						$self->{LOCATION}{PASSWORD},
 						);
 		my $pw = $self->{PASSWORD};
+		if ($pw =~ /^\s*$/) {
+			logError("Attempted login by user '%s' with empty password",
+				$self->{USERNAME});
+			die $stock_error;
+		}
 		if($self->{CRYPT}) {
 			$self->{PASSWORD} = crypt($pw,$db_pass);
 		}
-		die ::errmsg("Password mismatch.") . "\n"
-			unless $self->{PASSWORD} eq $db_pass;
+		unless ($self->{PASSWORD} eq $db_pass) {
+			logError("Attempted login by user '%s' with incorrect password",
+				$self->{USERNAME});
+			die $stock_error;
+		}
 
 		if($self->{PRESENT}->{ $self->{LOCATION}{EXPIRATION} } ) {
 			my $now = time();
@@ -1028,8 +1060,6 @@ sub change_pass {
 	
 	1;
 }
-
-my $GOOD_CHARS = '[-A-Za-z0-9_@.]';
 
 sub assign_username {
 	my $self = shift;
