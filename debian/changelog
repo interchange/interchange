@@ -1,4 +1,4 @@
-interchange (4.9.8.20030803-1) unstable; urgency=low
+interchange (4.9.8.20030911-1) unstable; urgency=low
 
   * release from upstream CVS, adds missing manual pages (Closes: #203926,
     in conjunction with the following items)
@@ -10,7 +10,7 @@ interchange (4.9.8.20030803-1) unstable; urgency=low
     (Closes: #202063, thanks to Adrian Bunk <bunk@fs.tum.de> for his
     bugreport and help to trace down the problem) 
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue,  5 Aug 2003 00:06:24 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu, 11 Sep 2003 03:03:18 +0200
 
 interchange (4.9.8.20030706-1) unstable; urgency=low
 
