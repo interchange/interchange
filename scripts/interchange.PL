@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.2
 #
-# $Id: interchange.PL,v 1.15.2.39 2001-04-25 15:29:09 heins Exp $
+# $Id: interchange.PL,v 1.15.2.40 2001-05-08 15:39:22 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -975,6 +975,7 @@ my %Ignore = qw(
 	mv_successpage  1
 	mv_more_ip  1
 	mv_credit_card_number  1
+	mv_credit_card_cvv2  1
 	);
 
 sub update_values {
@@ -1606,9 +1607,11 @@ sub url_history {
 		push (@{$Vend::Session->{History}},  [ 'expired', {} ]);
 	}
 	else {
-		my $save = delete $CGI::values{mv_credit_card_number};
+		my $save_number = delete $CGI::values{mv_credit_card_number};
+		my $save_cvv2   = delete $CGI::values{mv_credit_card_cvv2};
 		push (@{$Vend::Session->{History}},  [ $CGI::path_info, \%CGI::values ]);
-		$CGI::values{mv_credit_card_number} = $save if length($save);
+		$CGI::values{mv_credit_card_number} = $save_number if length($save_number);
+		$CGI::values{mv_credit_card_cvv2}   = $save_cvv2   if length($save_cvv2);
 	}
 	return;
 }
@@ -1697,7 +1700,6 @@ EOF
 			${"Global::$key"} = $val;
 		}
 	}
-
 
 	# See if it is a subcatalog
 	if (defined $Vend::Cfg->{BaseCatalog}) {

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18.2.21 2001-05-04 17:52:19 jon Exp $
+# $Id: Order.pm,v 1.18.2.22 2001-05-08 15:39:20 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.21 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.22 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -434,13 +434,9 @@ sub validate_whole_cc {
 
 }
 
-=head1 Validate credit card routine
 
-=head1 AUTHOR
-
-Jon Orwant, from Business::CreditCard and well-known algorithms
-
-=cut
+# Validate credit card routine
+# by Jon Orwant, from Business::CreditCard and well-known algorithms
 
 sub luhn {
 	my ($number) = @_;
@@ -457,6 +453,63 @@ sub luhn {
 
 	return 1 if substr($number, -1) == (10 - $sum % 10) % 10;
 	return 0;
+}
+
+
+sub build_cc_info {
+	my ($cardinfo, $template) = @_;
+#::logDebug("Entering sub build_cc_info");
+
+	if (ref $cardinfo eq 'SCALAR') {
+		$cardinfo = { MV_CREDIT_CARD_NUMBER => $$cardinfo };
+	} elsif (! ref $cardinfo) {
+		$cardinfo = { MV_CREDIT_CARD_NUMBER => $cardinfo };
+	} elsif (ref $cardinfo eq 'ARRAY') {
+		my $i = 0;
+		my %c = map { $_ => $cardinfo->[$i++] } qw(
+			MV_CREDIT_CARD_NUMBER
+			MV_CREDIT_CARD_EXP_MONTH
+			MV_CREDIT_CARD_EXP_YEAR
+			MV_CREDIT_CARD_CVV2
+			MV_CREDIT_CARD_TYPE
+		);
+		$cardinfo = \%c;
+	} elsif (ref $cardinfo ne 'HASH') {
+		return;
+	}
+
+	$template = $template ||
+		$::Variable->{MV_CREDIT_CARD_INFO_TEMPLATE} ||
+		join("\t", qw(
+			{MV_CREDIT_CARD_TYPE}
+			{MV_CREDIT_CARD_NUMBER}
+			{MV_CREDIT_CARD_EXP_MONTH}/{MV_CREDIT_CARD_EXP_YEAR}
+			{MV_CREDIT_CARD_CVV2}
+		)) . "\n";
+
+	$cardinfo->{MV_CREDIT_CARD_TYPE} ||=
+		guess_cc_type($cardinfo->{MV_CREDIT_CARD_NUMBER});
+#::logDebug("attrlist:\n".join("\n",map { $_.":".$cardinfo->{$_} } keys %$cardinfo));
+
+	return Vend::Interpolate::tag_attr_list($template, $cardinfo);
+}
+
+
+sub guess_cc_type {
+	my ($ccnum) = @_;
+	$ccnum =~ s/\D+//g;
+
+	# based on logic by Karl Moore from http://www.vb-world.net/tips/tip509.html
+	if ($ccnum eq '')										{ '' }
+	elsif ($ccnum =~ /^4(?:\d{12}|\d{15})$/)				{ 'visa' }
+	elsif ($ccnum =~ /^5[1-5]\d{14}$/)						{ 'mc' }
+	elsif ($ccnum =~ /^6011\d{12}$/)						{ 'discover' }
+	elsif ($ccnum =~ /^3[47]\d{13}$/)						{ 'amex' }
+	elsif ($ccnum =~ /^3(?:6\d{12}|0[0-5]\d{11})$/)			{ 'dinersclub' }
+	elsif ($ccnum =~ /^38\d{12}$/)							{ 'carteblanche' }
+	elsif ($ccnum =~ /^2(?:014|149)\d{11}$/)				{ 'enroute' }
+	elsif ($ccnum =~ /^(?:3\d{15}|2131\d{11}|1800\d{11})$/)	{ 'jcb' }
+	else													{ 'other' }
 }
 
 
@@ -526,6 +579,7 @@ sub encrypt_cc {
 #    mv_credit_card_exp_all     A combined expiration MM/YY
 #    mv_credit_card_exp_month   Month only, used if _all not present
 #    mv_credit_card_exp_year    Year only, used if _all not present
+#    mv_credit_card_cvv2        CVV2 verification number from back of card
 #    mv_credit_card_type        A = Amex, D = Discover, etc. Attempts
 #                               to guess from number if not there
 #    mv_credit_card_separate    Causes mv_credit_card_info to contain only number, must
@@ -541,6 +595,7 @@ sub encrypt_standard_cc {
 					mv_credit_card_exp_year	mv_credit_card_exp_month
 					mv_credit_card_force	mv_credit_card_exp_reference
 					mv_credit_card_exp_all	mv_credit_card_exp_separate  
+					mv_credit_card_cvv2
 					/;
 
 	my $month	= $ref->{mv_credit_card_exp_month}	|| '';
@@ -548,6 +603,7 @@ sub encrypt_standard_cc {
 	my $num		= $ref->{mv_credit_card_number}		|| '';
 	my $year	= $ref->{mv_credit_card_exp_year}	|| '';
 	my $all		= $ref->{mv_credit_card_exp_all}	|| '';
+	my $cvv2	= $ref->{mv_credit_card_cvv2}		|| '';
 	my $force	= $ref->{mv_credit_card_force}		|| '';
 	my $separate = $ref->{mv_credit_card_separate}  || $opt->{separate} || '';
 
@@ -599,19 +655,8 @@ sub encrypt_standard_cc {
 		return @return;
 	}
 
-	$num =~ s/\D+//g;
-
-	# Get the type
-	unless ( $type ) {
-		($num =~ /^3/) and $type = 'amex';
-		($num =~ /^4/) and $type = 'visa';
-		($num =~ /^5/) and $type = 'mc';
-		($num =~ /^6/) and $type = 'discover';
-	}
-
-	if($type eq 'amex') {
-		$type = 'other' if $num !~ /^37/;
-	}
+	$type = guess_cc_type($num) unless $type;
+#::logDebug("encrypt_standard_cc: type is: $type\n");
 
 	if ($type and $opt->{accepted} and $opt->{accepted} !~ /\b$type\b/i) {
 		my $msg = errmsg("Sorry, we don't accept credit card type '%s'.", $type);
@@ -640,8 +685,11 @@ sub encrypt_standard_cc {
 
 	my $check_string = $num;
 	$check_string =~ s/(\d\d).*(\d\d\d\d)$/$1**$2/;
-	my $encrypt_string = $separate ? $num : "$type\t$num\t$all\n";
 	
+#::logDebug("Building mv_credit_card_info in sub encrypt_standard_cc");
+	my $encrypt_string = $separate ? $num :
+		build_cc_info( [$num, $month, $year, $cvv2, $type] );
+#::logDebug("mv_credit_card_info:".$encrypt_string);
 	$info = encrypt_cc ($encrypt_string);
 
 	unless (defined $info) {
@@ -1253,6 +1301,7 @@ sub route_profile_check {
 
 sub route_order {
 	my ($route, $save_cart, $check_only) = @_;
+#::logDebug("in sub route_order");
 	my $main = $Vend::Cfg->{Route};
 	return unless $main;
 	$route = 'default' unless $route;
@@ -1394,28 +1443,12 @@ sub route_order {
 		}
 
 		if ($CGI::values{mv_credit_card_number}) {
-			$CGI::values{mv_credit_card_number} =~ s/^\s+//;
-			if(! $CGI::values{mv_credit_card_type} and
-				 $CGI::values{mv_credit_card_number} )
-			{
-				if($CGI::values{mv_credit_card_number} =~ /^4/) {
-					$CGI::values{mv_credit_card_type} = 'visa';
-				}
-				elsif($CGI::values{mv_credit_card_number} =~ /^5/) {
-					$CGI::values{mv_credit_card_type} = 'mc';
-				}
-				elsif($CGI::values{mv_credit_card_number} =~ /^37/) {
-					$CGI::values{mv_credit_card_type} = 'amex';
-				}
-				else {
-					$CGI::values{mv_credit_card_type} = 'discover/other';
-				}
-			}
-			$::Values->{mv_credit_card_info} = join "\t", 
-								$CGI::values{mv_credit_card_type},
-								$CGI::values{mv_credit_card_number},
-								$CGI::values{mv_credit_card_exp_month} .
-								"/" . $CGI::values{mv_credit_card_exp_year};
+			$CGI::values{mv_credit_card_type} ||=
+				guess_cc_type($CGI::values{mv_credit_card_number});
+#::logDebug("Building mv_credit_card_info in sub route_order");
+			my %attrlist = map { uc($_) => $CGI::values{$_} } keys %CGI::values;
+			$::Values->{mv_credit_card_info} = build_cc_info(\%attrlist);
+#::logDebug("mv_credit_card_info:".$::Values->{mv_credit_card_info});
 		}
 
 		$Vend::Items = $shelf->{$c};
