@@ -3,7 +3,7 @@
 #
 # Interchange version 4.9.2
 #
-# $Id: interchange.PL,v 2.45 2002-07-23 22:44:50 racke Exp $
+# $Id: interchange.PL,v 2.46 2002-08-01 18:51:10 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and others.
 # http://www.icdevgroup.org/
@@ -3188,31 +3188,43 @@ portions from Vend 0.3; both were produced in 1995.
 
 Contributions to Interchange have been made by:
 
-    Andreas Koenig                      Jeff Nappi
-    Bill Dawkins                        Jochen Wiedmann
-    Bill Randle                         Jon Jensen
-    Birgitt Funk                        Keiko
-    Bob Jordan                          Keith Oberlin
-    Brev Patterson                      Kevin Walsh
-    Brian Bullen                        Larry Leszczynski
-    Bruce Albrecht                      Marc Austin
-    Cameron Prince                      Mark Johnson
-    Christian Mueller                   Mark Stosberg
-    Christopher Thompson                Matthew Schick
-    Dan Browning                        Michael McCune
-    Dan Busarow                         Michael Wilk
-    David Adams                         Mike Frager
-    Dave Wingate                        Neil Evans
-    Dennis Cronin                       Raj Goel
-    Don Grodecki                        Ray Desjardins
-    Ed LaFrance                         Sonny Cook
-    Frank Bonita                        Tim Baverstock
-    Gunnar Hellekson                    Ton Verhagen
-    Hans-Joachim Leidinger              Troy Davis
-    Heinz Wittenbecher                  Victor Nolton
+    Andreas Koenig                      Jason Kohles
+    Bill Carr                           Javier Martin
+    Bill Dawkins                        Jeff Carnahan
+    Bill Randle                         Jeff Nappi
+    Birgitt Funk                        Jochen Wiedmann
+    Bob Jordan                          Jon Jensen
+    Brev Patterson                      Jonathan Clark
+    Brian Bullen                        José Mª Revuelto
+    Brian Kosick                        Jurgen Botz
+    Bruce Albrecht                      Keiko
+    Cameron Prince                      Keith Oberlin
+    Chen Naor                           Kevin Walsh
+    Christian Mueller                   Kim Lauritz Christensen
+    Christopher Miller                  Larry Leszczynski
+    Christopher Thompson                Marc Austin
+    Dan Browning                        Mark Johnson
+    Dan Busarow                         Mark Stosberg
+    Dan Helfman                         Massimiliano Ciancio
+    Daniel Thompson                     Matthew Schick
+    Dave Wingate                        Michael McCune
+    David Adams                         Michael Wilk
+    David Kelly                         Mike Frager
+    Dennis Cronin                       Neil Evans
+    Don Grodecki                        Nelson Ferrari
+    Ed LaFrance                         Raj Goel
+    Frank Bonita                        Ray Desjardins
+    Frederic Steinfels                  Ron Phipps
+    Greg Hanson                         Shozo Murahashi
+    Gunnar Hellekson                    Sonny Cook
+    Hamish Bradick                      Tim Baverstock
+    Hans-Joachim Leidinger              Tom Friedel
+    Heinz Wittenbecher                  Tommi Laberno
+    Hiroyuki Cozy Kojima                Ton Verhagen
+    Ignacio Lizarán                     Troy Davis
+    Jack Tsai                           Victor Nolton
     Jason Holt                          William Dan Terry
-    Jason Kohles                        and many others
-    Jeff Carnahan
+    and many others
 
 and, of course, the entire Perl team without whom Interchange could not exist.
 
