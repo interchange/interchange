@@ -8,7 +8,17 @@
 <!-- ----- BEGIN REAL STUFF ----- -->
 
 <!-- touch metatable [data __UI_META_TABLE__ test test] -->
+[tmp list_databases][list-databases][/tmp]
 [perl tables="__UI_META_TABLE__"]
+	my %all_tables = map { $_ => 1 }
+		grep /\S/,
+		split /\s+/, $Scratch->{list_databases};
+	# %admin is used throughout this page
+	%admin = map { $_ => 1 }
+		grep { $all_tables{$_} }
+		split /[\s,\0]+/, $Variable->{UI_ADMIN_TABLES};
+	$Tag->tmp(ui_tmp_admin => join ' ', sort keys %admin);
+
 	my $db = $Db{__UI_META_TABLE__};
 	my $q = "select code from __UI_META_TABLE__ where type = 'table'";
 	my $ary = $db->query($q);
@@ -38,7 +48,7 @@
 		<td>
 			<table width="100%" border=0 cellpadding=0 cellspacing=1 class=rseparator>
 			  <tr class=rhead> 
-[loop list="[list-databases]"]
+[loop list="[scratch list_databases]"]
 [loop-sub db_action]
 sub {
 #Log("args=" . $Tag->uneval({ ref => \@_ }));
@@ -46,13 +56,6 @@ sub {
 	return if $admin{$name};
 	my $rec = shift;
 	my $tab = $rec->[0];
-	if(! $admin_done++) {
-		# Set up hidden tables
-		%admin = map { ($_, 1) } split /[\s,\0]+/, $Variable->{UI_ADMIN_TABLES};
-		# To build the links to hidden tables
-		$Scratch->{ui_tmp_admin} = join " ", sort keys %admin;
-	}
-
 	return '' if $admin{$tab};
 
 #Log("name=$name tab=$tab");
