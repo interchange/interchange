@@ -1,0 +1,140 @@
+=head1 NAME
+
+Interchange CVS -- tracking the distribution
+
+=head1 DESCRIPTION
+
+If you don't want to wait for an official distribution, you can use
+anonymous CVS to follow the latest Interchange.
+
+B<WARNING:> There may be bugs introduced at any time! Thoroughly test
+any changes before incorporating. Better yet, don't use CVS changes
+for anything but fixing present bugs, and run the latest release.
+
+=head1 USING THE CVS DISTRIBUTION
+
+THe basic steps are:
+
+=head2 Check out from CVS
+
+You need to have CVS installed on your system, to begin with. It comes as
+a default on most RedHat systems where you selected the development tools
+at install time.
+
+If you are already an experienced CVS user, the information is:
+
+	spec          :pserver:anon_cvs@akopia.com:/anon_cvs/repository
+	password      anon_cvs
+	distribution  interchange
+
+If you are not experienced, it is still easy to get by following the
+few steps below.
+
+=over 4
+
+=item Set CVSROOT
+
+Using bash/ksh/sh, type at the shell prompt:
+
+	$ CVSROOT=:pserver:anon_cvs@akopia.com:/anon_cvs/repository
+	$ export CVSROOT
+
+If you use tcsh/csh, do:
+
+	% setenv CVSROOT :pserver:anon_cvs@akopia.com:/anon_cvs/repository
+
+=item Log in to cvs
+
+Before you can check out from the server, log in:
+
+	$ cvs login
+	password: anon_cvs
+
+=item Select a place to put it and check it out
+
+Your home directory or more probably a src/ subdirectory:
+
+	$ cd
+	$ mkdir src
+	$ cd src
+	$ cvs checkout -P interchange
+
+It will take a while -- if you are on a modem it may take quite a bit
+of time, as there are several megabytes of CVS files.
+
+=back
+
+=head2 Make an installation tar file
+
+If it is your first time installing Interchange from the CVS, you will want
+to make a distribution tar file:
+
+	$ cd interchange
+	$ perl Makefile.PL nocopy
+	Writing Makefile for Interchange
+	$ make tardist
+	/usr/local/bin/perl -I/YOUR/PERL/LIB -MExtUtils::Manifest=manicopy,maniread \
+	-e "manicopy(maniread(),'interchange-4.5.6', 'best');"
+	mkdir interchange-4.5.6
+	mkdir interchange-4.5.6/dist
+	....
+	$ ls interch*
+	interchange-4.X.X.tar.gz
+
+If you want to experiment with ZIP, which doesn't work quite as well, try:
+
+	$ make zipdist
+	.... messages ....
+	$ ls inter*
+	interchange-4.X.X.tar.gz  interchange-4.X.X.zip
+
+=head2 Unpack and install
+
+Unpack the tar file and install as is normal. See the README and QuickStart.pod
+files for help.
+
+=head2 Checking for differences
+
+If you want to see how your current image compares to the repository, log in
+to CVS and run:
+
+	cvs diff | more
+
+=head2 Updating
+
+To update the distribution, log into CVS as above, change to the distribution
+directory (i.e. src/interchange), then run:
+
+	$ cd $HOME/src/interchange
+	$ cvs update
+	U MANIFEST
+	U WHATSNEW
+	....
+
+In many cases, the major differences in the distribution will be easily
+updateable. You can copy any changed files directly to these
+library directories:
+
+	lib/Vend           (and all subdirectories)
+	lib/UI             (and all subdirectories)
+
+You should check the files:
+
+	catalog_after.cfg     (infrequently updated)
+	catalog_before.cfg    (frequently updated)
+	interchange.cfg.dist  (infrequently updated)
+	usertag/*             (infrequently updated)
+
+Finally, you should check differences in the bin/* files. While they
+are not as frequently updated as the lib/* files, they do change. Run
+diffs against the source files in scripts/*.PL, or do another install
+to a blank directory and do a diff to that.
+
+=head2 Keeping the catalog in sync
+
+If you are patterning your order methods after one of the template
+catalogs, you will want to check the products/*.txt and products/*.asc
+files for changes. In particular, mv_metadata.asc is used to format
+and present quite a few things in the user interface. You may have
+to merge the databases manually. In most cases, you can import them
+into a spreadsheet or database.
