@@ -212,6 +212,14 @@ sub extra_libs {
 	}
 
 	eval {
+		require Business::Fedex;
+	};
+	if ($@) {
+		push @extra_lib_dirs, 'Business';
+		push @extra_lib_files, 'Business/Fedex.pm';
+	}
+
+	eval {
 		require Storable;
 	};
 	unless ($@) {
