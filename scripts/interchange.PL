@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.6.2
 #
-# $Id: interchange.PL,v 1.19 2001-01-31 13:16:19 heins Exp $
+# $Id: interchange.PL,v 1.20 2001-02-03 07:53:29 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -1182,11 +1182,17 @@ sub url_history {
 		unless defined $Vend::Session->{History};
 	shift @{$Vend::Session->{History}}
 		if $#{$Vend::Session->{History}} >= $Vend::Cfg->{History};
-	if($CGI::pragma =~ /\bno-cache\b/ || $CGI::values{mv_no_cache}) {
+	if(
+		($CGI::pragma =~ /\bno-cache\b/ and ! $CGI::values{mv_force_cache})
+		or $CGI::values{mv_no_cache}
+		)
+	{
 		push (@{$Vend::Session->{History}},  [ 'expired', {} ]);
 	}
 	else {
+		my $save = delete $CGI::values{mv_credit_card_number};
 		push (@{$Vend::Session->{History}},  [ $CGI::path_info, \%CGI::values ]);
+		$CGI::values{mv_credit_card_number} = $save if length($save);
 	}
 	return;
 }
@@ -1425,7 +1431,7 @@ RESOLVEID: {
 
 			if(! $compare_host) {
 				new_session() unless $CGI::secure;
-				$Vend::Session->{shost} = $CGI::secure;
+				$Vend::Session->{shost} = $CGI::remote_addr;
 			}
 			elsif ($compare_host ne $CGI::remote_addr) {
 				new_session();
@@ -1492,10 +1498,11 @@ EOF
 			last COOKIELOGIN unless
 				$password = Vend::Util::read_cookie('MV_PASSWORD');
 			$CGI::values{mv_password} = $password;
+			my $profile = Vend::Util::read_cookie('MV_USERPROFILE');
 			local(%SIG);
 			undef $SIG{__DIE__};
 			eval {
-				Vend::UserDB::userdb('login');
+				Vend::UserDB::userdb('login', profile => $profile );
 			};
 			if($@) {
 				$Vend::Session->{failure} .= $@;
@@ -1539,14 +1546,16 @@ EOF
 	if($Vend::Cfg->{DisplayErrors} and $Global::DisplayErrors) {
 		$SIG{"__DIE__"} = sub {
 							my $msg = shift;
-							response( <<EOF);
+							put_session() if $Vend::HaveSession;
+							my $content = get_locale_message(500, <<EOF, $msg);
 <HTML><HEAD><TITLE>Fatal Interchange Error</TITLE></HEAD><BODY>
 <H1>FATAL error</H1>
-<PRE>$msg</PRE>
+<PRE>%s</PRE>
 </BODY></HTML>
 EOF
+							::response(\$content);
 							exit 0;
-						};
+		};
 	}
 
 # LEGACY
