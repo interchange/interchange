@@ -1,0 +1,90 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftright
+ui_template_layout: LEFTRIGHT_TOP, UI_CONTENT, LEFTRIGHT_BOTTOM
+ui_template_description: Page with top/left/right areas.
+
+break:
+	widget: break
+
+page_title: 
+	description: Page title
+
+page_banner: 
+	description: Page banner
+	help: Defaults to page title
+
+members_only:
+	options: 1=Yes,0=No*
+	widget: radio
+	description: Members only
+
+break1:
+	widget: break
+
+component_before:
+	options: =none, best_horizontal=Best Sellers, cross_horizontal=Cross sell, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Upsell,
+	widget: select
+	description: Horizontal before content
+
+component_after:
+	options: =none, best_horizontal=Best Sellers, cross_horizontal=Cross sell, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Upsell,
+	widget: select
+	description: Horizontal after content
+
+component_hsize:
+	options: 1,2*,3
+	widget: select
+	description: Horizontal item width
+
+hpromo_type:
+	options: specials=Specials, new=New items
+	widget: select
+	description: Special tag
+	help: Only for a promotion
+
+hbanner:
+	options: =--custom--, Also see..., Best Sellers, New items, Some of our fine products, Specials, You might also like
+	widget: move_combo
+	width: 40
+	description: Before/after Banner
+	help: Banner for after/before component
+
+break2:
+	widget: break
+
+component_right:
+	options: =none, best_vertical=Best Sellers, cross_vertical=Cross sell, promo_vertical=Promotion, random_vertical=Random items, upsell_vertical=Upsell,
+	widget: select
+	description: Vertical Component
+
+component_vsize:
+	options: 1,2,3*,4,5,10
+	widget: select
+	description: Vertical items height
+
+vbanner:
+	options: =--custom--, Also see..., Best Sellers, New items, Some of our fine products, Specials, You might also like
+	widget: move_combo
+	width: 40
+	description: Right Banner
+	help: Banner for vertical component
+
+vpromo_type:
+	options: specials=Specials, new=New items
+	widget: select
+	description: Special tag
+	help: Only for a promotion
+
+bgcolor:
+	options: #FFFFFF=White,pink=Pink
+	widget: select
+	description: Background color
+
+[/comment]
+[set page_title][set]
+[set page_banner][set]
+[set members_only][set]
+[set component_before][set]
+[set component_after][set]
+[set bgcolor]#FFFFFF[/set]
