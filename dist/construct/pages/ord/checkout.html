@@ -18,12 +18,12 @@ __TOP__
               <table width="600" border="0" cellspacing="0" cellpadding="0">
                 <tr> 
                   <td width="131" bgcolor="#999999"><img src="navigation/d1.gif" width="131" height="20"></td>
-                  <td width="12" valign="top"> 
-                    <div align="left"><img src="navigation/d2.gif" width="10" height="20"></div>
+                  <td width=12 align=left valign=top> 
+                    <img src="navigation/d2.gif" width="10" height="20">
                   </td>
-                  <td width="457"> 
-                    <div align="left"><i><b><font face="Verdana, Arial, Helvetica, sans-serif"><font color="#0099FF" size="2">Check 
-                      Out </font><font color="#0099FF" size="1"> </font></font></b></i></div>
+                  <td width=457 align=left> 
+                   <i><b><font face="Verdana, Arial, Helvetica, sans-serif"><font color="#0099FF" size="2">Check 
+                      Out </font><font color="#0099FF" size="1"> </font></font></b></i>
                   </td>
                 </tr>
                 <tr> 
@@ -47,7 +47,7 @@ __LEFT__
                       <div align="center">
 
 <P>
-<font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b><font color="#FF0000">[data session failure]</font></b></font>
+<font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b><font color="#FF0000">[calc]delete $Session->{failure}[/calc]</font></b></font>
 <P>
 
                       </div>
@@ -61,7 +61,7 @@ __LEFT__
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="ord/checkout">
 
 [set Log In]
-mv_nextpage=ord/checkout
+mv_nextpage=@@MV_PAGE@@
 [/set]
 
                           <tr>
@@ -78,6 +78,7 @@ mv_nextpage=ord/checkout
                                     <font color="#FFFFFF" size="2" face="Verdana, Arial, Helvetica, sans-serif"><font color="#000000"><b><font color="#FFFFFF">Password</font></b></font></font></td>
                                   <td width="204" bgcolor="#FF9900" align="left"> 
                                     <INPUT TYPE=password NAME=mv_password VALUE="">
+                                    <input type="hidden" NAME="mv_check" value="LogIn">
                                   </td>
                                 </tr>
 [comment]								
@@ -96,7 +97,7 @@ mv_nextpage=ord/checkout
                                 <tr bgcolor="#999999"> 
                                   <td width="81">&nbsp;</td>
                                   <td width="204"> 
-                                    <input type="submit" NAME="mv_check" value="Log In">
+                                    <input type="submit" value="Log In">
                                   </td>
                                 </tr>
                                 <tr bgcolor="#999999"> 
@@ -133,7 +134,7 @@ mv_nextpage=ord/checkout
     }
 </SCRIPT>
 
-<FORM ACTION="[process secure=1]" METHOD="POST">
+<FORM ACTION="[process secure=1]" METHOD="POST" name=checkout>
 <INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
 
 [if type=explicit compare="[error all=1 show_var=1 keep=1]"]
@@ -158,8 +159,6 @@ They are shown in <FONT COLOR=__CONTRAST__>__CONTRAST__</FONT> below.</FONT>
 [userdb save]
 [/set]
 
-<INPUT TYPE=hidden NAME=fax_order VALUE=1>
-
                     <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#669999">Please
 					verify the information below and click the &quot;Place Order&quot; button to process
 					your order.</font></p>
@@ -176,39 +175,28 @@ They are shown in <FONT COLOR=__CONTRAST__>__CONTRAST__</FONT> below.</FONT>
   <table width="455" border="0" cellspacing="0" cellpadding="0" bordercolor="#FF9900">
 		<TR bgcolor="#669999" VALIGN=TOP>
                         <td width="9%"><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="0"><b>Remove</b></font></td>
-                        <td width="13%"> 
-                          <div align="center"><font color="#FFFFFF" size="2" face="Verdana, Arial, Helvetica, sans-serif"><b><font size="1">SKU</font></b></font></div>
+                        <td width="13%" align=center> 
+                          <font color="#FFFFFF" size="2" face="Verdana, Arial, Helvetica, sans-serif"><b><font size="1">SKU</font></b></font>
                         </td>
-                        <td width="27%"> 
-                          <div align="center"><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="1"><b>Description</b></font></div>
+                        <td align=center width="27%"> 
+                          <font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="1"><b>Description</b></font>
                         </td>
-                        <td width="13%"> 
-                          <div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF"><b>Quantity</b></font></div>
+                        <td width="13%" align="center"> 
+                          <font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF"><b>Quantity</b></font>
                         </td>
-                        <td width="19%"> 
-                          <div align="center"><b><font size="1" face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF">Price</font></b></div>
+                        <td width="19%" align="center"> 
+                          <b><font size="1" face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF">Price</font></b>
                         </td>
-                        <td width="19%"> 
-                          <div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF"><b>Extension</b></font></div>
+                        <td align=center width="19%"> 
+                          <font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF"><b>Extension</b></font>
                         </td>
 		</TR>
 	<TBODY>
 [if items]
 [then]
 [item-list]
-[seti eo][perl interpolate=1]
-my $item = '[item-increment]';
-if ($item % 2 == 1) {
-$Scratch->{color} = "#CCCCCC";
-}
-else {
-$Scratch->{color} = "#CCCC99";
-}
-return;
-[/perl]
-[/seti]
 
-<TR bgcolor="[scratch color]">
+<TR bgcolor="[item-alternate 2]#CCCCCC[else]#CCCC99[/else][/item-alternate]">
 	<TD align=center>
 	<FONT SIZE="-2"><INPUT TYPE=checkbox NAME="[quantity-name]"
 			   onClick="this.form.action='[process-target]',
@@ -226,29 +214,8 @@ return;
 	[if-item-field weight]
 	[seti weight][summary amount=`[item-quantity] * [item-field weight]`][/seti]
 	[/if-item-field]
-	[if-item-field related]
-	[if !ordered [item-field related]]
-	<TABLE CELLPADDING=0 CELLSPACING=0 WIDTH="100%">
-	[loop arg="[item-field related]"]
-		[loop-change 1][condition]1[/condition]
-		<TR><TD COLSPAN=2><FONT SIZE="1">Other items you may like:</TD>
-		</TR>
-		[/loop-change 1]
-		[if !ordered [loop-code]]
-		<TR>
-		<TD><FONT SIZE="1"><INPUT TYPE=checkbox NAME="mv_order_item"
-			onClick="this.form.action='[process-target]',
-					this.form.submit()"
-			VALUE="[loop-code]"></TD>
-		<TD><FONT SIZE="1">[loop-field title]</TD>
-		</TR>	
-		[/if]
-	[/loop]
-	</TABLE>
-	[/if]
-	[/if-item-field]
 <br>
-[seti count][data table=inventory column=quantity key='[item-code]'][/seti]
+[seti count][item-data inventory quantity][/seti]
 [if scratch count eq 0]
 	<a href="[area stock-alert [item-code]]"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FF0000">Back Ordered</FONT>
 [else]
@@ -260,8 +227,8 @@ return;
 	<TD ALIGN=RIGHT><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[discount-price]</font>[if discount [item-code]]<BR><font face="Verdana, Arial, Helvetica, sans-serif" size="1" COLOR=__CONTRAST__>Item is discounted [item-discount]</FONT>[/if]</TD>
 	<TD ALIGN=RIGHT><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[item-subtotal]</font></TD>
 </TR>
-<TR bgcolor="[scratch color]"><TD ALIGN=CENTER COLSPAN=6><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="2" BORDER="0"></td></TR>
-<TR bgcolor="[scratch color]">
+<TR bgcolor="[item-alternate 2]#CCCCCC[else]#CCCC99[/else][/item-alternate]"><TD ALIGN=CENTER COLSPAN=6><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="2" BORDER="0"></td></TR>
+<TR bgcolor="[item-alternate 2]#CCCCCC[else]#CCCC99[/else][/item-alternate]">
 <TD COLSPAN=2 align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" ><b>Address To<br>Ship To:</b></font></td>
 <TD COLSPAN=4 align="left">&nbsp;
 [if !value shipto_[item-increment]][value name=shipto_[item-increment] set="primary" hide=1][/if]
@@ -280,7 +247,7 @@ return;
 <a href="[area ship_addresses]"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" >Add New Address</font></a>
 </td>
 </TR>
-<TR bgcolor="[scratch color]"><TD ALIGN=CENTER COLSPAN=6><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="4" BORDER="0"></td></TR>
+<TR bgcolor="[item-alternate 2]#CCCCCC[else]#CCCC99[/else][/item-alternate]"><TD ALIGN=CENTER COLSPAN=6><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="4" BORDER="0"></td></TR>
 
 [/item-list]
 [/then]
@@ -342,43 +309,51 @@ return;
                                 <td bgcolor="#0099FF">&nbsp;</td>
                                 <td bgcolor="#0099FF">&nbsp;</td>
                               </tr>
+							  [if scratch dealer]
                               <tr> 
-                                <td> 
-                                  <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=fname std_label="First Name" required=1]</font></div>
+                                <td align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=address1 std_label=Company required=1]</font>
                                 </td>
-                                <td> 
-                                  <div align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                                <td align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                                    <INPUT TYPE=text NAME=company VALUE="[value company]" size="20" maxlength="40">
+                                    </font></b>
+                                </td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                              </tr>
+							  [/if]
+                              <tr> 
+                                <td align=right> 
+                                  <font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=fname std_label="First Name" required=1]</font>
+                                </td>
+                                <td align=left> 
+                                  <b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
                                     <INPUT TYPE=text NAME=fname VALUE="[value fname]" size="20" maxlength="20">
-                                    </font></b></div>
+                                    </font></b>
                                 </td>
-                                <td><div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=lname std_label=Last required=1]</font></div></td>
+                                <td align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=lname std_label=Last required=1]</font></td>
                                 <td align="left"> <INPUT TYPE=text NAME=lname VALUE="[value lname]" size="20"></td>
                               </tr>
                               <tr> 
-                                <td> 
-                                  <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=address1 std_label=Address required=1]</font></div>
+                                <td align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=address1 std_label=Address required=1]</font>
                                 </td>
-                                <td> 
-                                  <div align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                                <td align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
                                     <INPUT TYPE=text NAME=address1 VALUE="[value address1]" size="20" maxlength="40">
-                                    </font></b></div>
+                                    </font></b>
                                 </td>
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
                               </tr>
                               <tr> 
                                 <td>&nbsp;</td>
-                                <td> 
-                                  <div align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                                <td align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
                                     <INPUT TYPE=text NAME=address2 VALUE="[value address2]" size="20" maxlength="40">
-                                    </font></b></div>
+                                    </font></b>
                                 </td>
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
                               </tr>
                               <tr> 
-                                <td> 
-                                  <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=city std_label="City" required=1]</font></div>
+                                <td align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=city std_label="City" required=1]</font>
                                 </td>
                                 <td><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
                                   <INPUT TYPE=text NAME=city VALUE="[value city]" size="20" maxlength="20">
@@ -409,8 +384,7 @@ return;
                                 <td>&nbsp;</td>
                               </tr>
                               <tr> 
-                                <td> 
-                                  <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=zip std_label="Zip/Postal Code" required=1] </font></div>
+                                <td align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=zip std_label="Zip/Postal Code" required=1] </font>
                                 </td>
                                 <td><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
                                   <INPUT TYPE=text NAME=zip VALUE="[value name=zip filter=word]" size="10" maxlength="10">
@@ -419,8 +393,7 @@ return;
                                 <td>&nbsp;</td>
                               </tr>
                               <tr> 
-                                <td> 
-                                  <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=email std_label="Email Address" required=1]</font></div>
+                                <td align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=email std_label="Email Address" required=1]</font>
                                 </td>
                                 <td><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
                                   <INPUT TYPE=text NAME=email VALUE="[value email]" size="30">
@@ -429,8 +402,7 @@ return;
                                 <td>&nbsp;</td>
                               </tr>
                               <tr> 
-                                <td> 
-                                  <div align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Country</font></b></div>
+                                <td align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Country</font></b>
                                 </td>
                                 <td colspan="2"> 
 		[if value country =~ /(^$|US|CA)/]
@@ -459,15 +431,13 @@ return;
                                   update display)</font></td>
                               </tr>
                               <tr> 
-                                <td> 
-                                  <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=phone_day std_label="Daytime Phone" required=1]</font></div>
+                                <td align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=phone_day std_label="Daytime Phone" required=1]</font>
                                 </td>
                                 <td><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
                                   <INPUT TYPE=text NAME=phone_day VALUE="[value phone_day]" size="12" maxlength="20">
                                   </font></b></td>
-                                <td> 
-                                  <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Evening 
-                                    Phone</font></div>
+                                <td align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Evening 
+                                    Phone</font>
                                 </td>
                                 <td align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
                                   <INPUT TYPE=text NAME=phone_night VALUE="[value phone_night]" size="12" maxlength="20">
@@ -484,13 +454,12 @@ return;
                               </tr>
 [/if]							  
                               <tr> 
-                                <td> 
-                                  <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b>Shipping 
+                                <td align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b>Shipping 
                                     method</b></font><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
 									
 
 									
-                                    </font></b></div>
+                                    </font></b>
                                 </td>
                                 <td colspan="3"> 
 		<SELECT NAME=mv_shipmode>
@@ -515,19 +484,19 @@ return;
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
                               </tr>
-                              <tr bgcolor="#FF9900"> 
-                                <td><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b><font color="#FFFFFF">Mailing 
-                                  Status</font></b></font></td>
-                                <td><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b><font color="#FF9900">a</font></b></font></td>
-                                <td>&nbsp;</td>
-                                <td>&nbsp;</td>
-                              </tr>
-                              <tr> 
-                                <td align="center" valign="middle">&nbsp;</td>
-                                <td align="left">&nbsp;</td>
-                                <td>&nbsp;</td>
-                                <td>&nbsp;</td>
-                              </tr>
+  <tr bgcolor="#FF9900"> 
+	<td><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b><font color="#FFFFFF">Mailing 
+	  Status</font></b></font></td>
+	<td><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b><font color="#FF9900">a</font></b></font></td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+  </tr>
+  <tr> 
+	<td align="center" valign="middle">&nbsp;</td>
+	<td align="left">&nbsp;</td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+  </tr>
                               <tr> 
                                 <td align="center" valign="middle"> 
 <SELECT NAME=email_copy>
@@ -548,13 +517,25 @@ return;
                               </tr>
                               <tr> 
                                 <td align="center" valign="middle"> 
+
+[perl tables="__UI_META_TABLE__ mv_metadata"]
+	return;
+[/perl]
 <SELECT NAME=mail_list>
-<OPTION VALUE="0">No
-<OPTION [selected mail_list 1] VALUE="1">Yes
+[loop
+		acclist=1
+		option=mail_list
+		list=`
+			$table = '__UI_META_TABLE__' || 'mv_metadata';
+			return
+				tag_data( $table, 'mail_list', 'userdb::mail_list')
+				|| '=No, 1=Yes';
+		`]
+<OPTION VALUE="[loop-code]">[loop-pos 1]
+[/loop]
 </SELECT>
                                 </td>
-                                <td align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Put 
-                                  me on your email list of infrequent offers</font></td>
+                                <td align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Mail list</font></td>
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
                               </tr>
@@ -562,9 +543,6 @@ return;
                           </td>
                         </tr>
                       </table>
-                      <div align="left"></div>
-                      <div align="left"></div>
-                      <div align="left"></div>
                       <p>&nbsp;</p>
                       <table width="350" border="1" cellspacing="0" cellpadding="0" bordercolordark="#000000" bordercolorlight="#000000">
                         <tr> 
@@ -578,14 +556,12 @@ return;
                                 <td bgcolor="#0099FF">&nbsp;</td>
                               </tr>
                               <tr> 
-                                <td> 
-                                  <div align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">First 
-                                    Name</font></b></div>
+                                <td align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">First 
+                                    Name</font></b>
                                 </td>
-                                <td> 
-                                  <div align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                                <td align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
                                     <INPUT TYPE=text NAME=b_fname VALUE="[value b_fname]" size="20" maxlength="20">
-                                    </font></b></div>
+                                    </font></b>
                                 </td>
                                 <td> <b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Last 
                                   Name</font></b> </td>
@@ -594,30 +570,26 @@ return;
                                 </td>
                               </tr>
                               <tr> 
-                                <td> 
-                                  <div align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Address</font></b></div>
+                                <td align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Address</font></b>
                                 </td>
-                                <td> 
-                                  <div align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                                <td align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
                                     <INPUT TYPE=text NAME=b_address1 VALUE="[value b_address1]" size="20" maxlength="20">
-                                    </font></b></div>
+                                    </font></b>
                                 </td>
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
                               </tr>
                               <tr> 
                                 <td>&nbsp;</td>
-                                <td> 
-                                  <div align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                                <td align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
                                     <INPUT TYPE=text NAME=b_address2 VALUE="[value b_address2]" size="20">
-                                    </font></b></div>
+                                    </font></b>
                                 </td>
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
                               </tr>
                               <tr> 
-                                <td> 
-                                  <div align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">City</font></b></div>
+                                <td align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">City</font></b>
                                 </td>
                                 <td><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
                                   <INPUT TYPE=text NAME=b_city VALUE="[value b_city]" size="20">
@@ -628,9 +600,8 @@ return;
                                   </font></b></td>
                               </tr>
                               <tr> 
-                                <td> 
-                                  <div align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Zip/Postal 
-                                    Code </font></b></div>
+                                <td align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Zip/Postal 
+                                    Code </font></b>
                                 </td>
                                 <td><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
                                   <INPUT TYPE=text NAME=b_zip VALUE="[value b_zip]" size="10" maxlength="10">
@@ -639,8 +610,7 @@ return;
                                 <td>&nbsp;</td>
                               </tr>
                               <tr> 
-                                <td> 
-                                  <div align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Country</font></b></div>
+                                <td align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Country</font></b>
                                 </td>
                                 <td> 
 <INPUT TYPE=text NAME=b_country VALUE="[value b_country]" size="10" maxlength="10">
@@ -672,13 +642,6 @@ return;
                                 <td>&nbsp;</td>							  
                                 <td> 
 								
-[if session logged_in]
-[value name=payment_method interpolate=1 set="[data table=userdb column=payment_method key='[data session username]']" hide=1]
-[if !value payment_method][value name=payment_method set="credit" hide=1][/if]
-[else]
-[if !value payment_method][value name=payment_method set="credit" hide=1][/if]
-[/else]
-[/if]
 
 	<SELECT NAME="payment_method" onChange="this.form.submit()">
 	<option [selected payment_method credit] value="credit">Credit Card
@@ -699,80 +662,8 @@ return;
                             </table>
 							</td></tr></table>
 							
-[if value payment_method eq credit]
-							
-                      <div align="left"></div>
-                      <div align="left"></div>
-                      <div align="left"></div>
-                      <p>&nbsp;</p>
-                      <table width="300" border="1" cellspacing="0" cellpadding="0" bordercolordark="#000000" bordercolorlight="#000000">
-                        <tr> 
-                          <td> 
-                            <table width="300" border="0" cellspacing="0" cellpadding="0" align="center">
-                              <tr> 
-                                <td bgcolor="#0099FF" colspan="2"><font face="Verdana, Arial, Helvetica, sans-serif"><b><font size="1" color="#FFFFFF">
-[error std_label="Credit Card Information" name=mv_credit_card_valid]
-								</font></b></font></td>
-                                <td bgcolor="#0099FF">&nbsp;</td>
-                                <td bgcolor="#0099FF">&nbsp;</td>
-                              </tr>
-                              <tr> 
-                                <td> 
-                                  <div align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
-								  Card Number
-								  </font></b></div>
-                                </td>
-                                <td colspan="3"> 
-                                  <div align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
-                                    <INPUT TYPE=text NAME=mv_credit_card_number SIZE=22>
-                                    </font></b></div>
-                                </td>
-							</tr><tr>
-                                <td><div align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
-								  Expiration
-								  </font></b></div></td>
-                                <td align="left" colspan="3"> 
-  	<SELECT NAME=mv_credit_card_exp_month>
-		<OPTION VALUE=1 [selected mv_credit_card_exp_month 1]> 01 - January
-		<OPTION VALUE=2 [selected mv_credit_card_exp_month 2]> 02 - February
-		<OPTION VALUE=3 [selected mv_credit_card_exp_month 3]> 03 - March
-		<OPTION VALUE=4 [selected mv_credit_card_exp_month 4]> 04 - April
-		<OPTION VALUE=5 [selected mv_credit_card_exp_month 5]> 05 - May
-		<OPTION VALUE=6 [selected mv_credit_card_exp_month 6]> 06 - June
-		<OPTION VALUE=7 [selected mv_credit_card_exp_month 7]> 07 - July
-		<OPTION VALUE=8 [selected mv_credit_card_exp_month 8]> 08 - August
-		<OPTION VALUE=9 [selected mv_credit_card_exp_month 9]> 09 - September
-		<OPTION VALUE=10 [selected mv_credit_card_exp_month 10]> 10 - October
-		<OPTION VALUE=11 [selected mv_credit_card_exp_month 11]> 11 - November
-		<OPTION VALUE=12 [selected mv_credit_card_exp_month 12]> 12 - December
-	</SELECT>
-	
-	<SELECT NAME=mv_credit_card_exp_year>
-		<OPTION VALUE=00 [selected mv_credit_card_exp_year 00]> 2000
-		<OPTION VALUE=01 [selected mv_credit_card_exp_year 01]> 2001
-		<OPTION VALUE=02 [selected mv_credit_card_exp_year 02]> 2002
-		<OPTION VALUE=03 [selected mv_credit_card_exp_year 03]> 2003
-		<OPTION VALUE=04 [selected mv_credit_card_exp_year 04]> 2004
-		<OPTION VALUE=05 [selected mv_credit_card_exp_year 05]> 2005
-		<OPTION VALUE=06 [selected mv_credit_card_exp_year 06]> 2006
-		<OPTION VALUE=07 [selected mv_credit_card_exp_year 07]> 2007
-		<OPTION VALUE=08 [selected mv_credit_card_exp_year 08]> 2008
-		<OPTION VALUE=09 [selected mv_credit_card_exp_year 09]> 2009
-		<OPTION VALUE=10 [selected mv_credit_card_exp_year 10]> 2010
-	</SELECT>
-
-                                </td>
-                              </tr>
-                            </table>
-						</td></tr></table>
-						
-[/if]
-
 [if value payment_method eq check]
-							
-                      <div align="left"></div>
-                      <div align="left"></div>
-                      <div align="left"></div>
+					  <input type=hidden name=fax_order value=1>
                       <p>&nbsp;</p>
                       <table width="300" border="1" cellspacing="0" cellpadding="0" bordercolordark="#000000" bordercolorlight="#000000">
                         <tr> 
@@ -786,45 +677,39 @@ Check Information
                                 <td bgcolor="#0099FF">&nbsp;</td>
                               </tr>
                               <tr> 
-                                <td> 
-                                  <div align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+                                <td align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
 								  Account Number
-								  </font></b></div>
+								  </font></b>
                                 </td>
-                                <td colspan="3"> 
-                                  <div align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                                <td colspan="3 align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
                                     <INPUT TYPE=text NAME=check_acct SIZE=22>
-                                    </font></b></div>
+                                    </font></b>
                                 </td>
 							</tr><tr>
-                                <td><div align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+                                <td align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
 								  Routing Number
-								  </font></b></div></td>
+								  </font></b></td>
                                 <td align="left" colspan="3"> 
-                                  <div align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                                  <b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
                                     <INPUT TYPE=text NAME=check_route SIZE=22>
-                                    </font></b></div>
+                                    </font></b>
                                 </td>
                               </tr><tr>
-                                <td><div align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+                                <td align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
 								  Check Number
-								  </font></b></div></td>
+								  </font></b></td>
                                 <td align="left" colspan="3"> 
-                                  <div align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                                  <b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
                                     <INPUT TYPE=text NAME=check_num SIZE=22>
-                                    </font></b></div>
+                                    </font></b>
                                 </td>
                               </tr>
                             </table>
 						</td></tr>
 						</table>
-[/if]
-
-[if value payment_method eq po]
-							
-                      <div align="left"></div>
-                      <div align="left"></div>
-                      <div align="left"></div>
+[/elsif]
+[elsif value payment_method eq po]
+					  <input type=hidden name=fax_order value=2>
                       <p>&nbsp;</p>
                       <table width="300" border="1" cellspacing="0" cellpadding="0" bordercolordark="#000000" bordercolorlight="#000000">
                         <tr> 
@@ -837,40 +722,132 @@ P.O. Information
                                 <td bgcolor="#0099FF">&nbsp;</td>
                                 <td bgcolor="#0099FF">&nbsp;</td>
                               </tr>
-                              <tr> 
-                                <td> 
-                                  <div align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
-								  Company Name
-								  </font></b></div>
-                                </td>
-                                <td colspan="3"> 
-                                  <div align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
-                                    <INPUT TYPE=text NAME=po_company SIZE=22>
-                                    </font></b></div>
-                                </td>
-							</tr><tr>
-                                <td><div align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
-								  P.O. Number
-								  </font></b></div></td>
-                                <td align="left" colspan="3"> 
-                                  <div align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
-                                    <INPUT TYPE=text NAME=po_number SIZE=22>
-                                    </font></b></div>
+							  <tr>
+                                <td align=right><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+								[error name=credit_limit_ok std_label="PO Number" required=1]
+								  </font></b></td>
+                                <td align=left colspan=3> 
+                                  <b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+							<INPUT NAME=project_id VALUE="[value project_id]" SIZE=14>
+                                    </font></b>
                                 </td>
                               </tr>
+		[if type=data
+			term="userdb::credit_limit::[data session username]"
+			op=">"
+			compare=0.01]
+						  <tr>
+							<td align=right valign=top><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+							
+						Available credit
+							  </font></b></td>
+							<td align=left colspan=3> 
+							  <b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+			[currency]
+			[data table=userdb col=credit_limit key="[data session username]"]
+			[/currency]
+		
+			[if type=data
+				term="userdb::credit_limit::[data session username]"
+				op=<
+				compare="[total-cost noformat=1]"
+				]
+			<BR>
+			Order total [total-cost] exceeds credit limit, please call.</FONT>
+			[/if]
+			<BR>
+								</font></b>
+							</td>
+						  </tr>
+		[/if]
                             </table>
 						</td></tr>
 						</table>
 
 						
+[/elsif]
+[else]
+					<input type=hidden name=fax_order value=0>
+							
+                      <p>&nbsp;</p>
+                      <table width="300" border="1" cellspacing="0" cellpadding="0" bordercolordark="#000000" bordercolorlight="#000000">
+                        <tr> 
+                          <td> 
+                            <table width="300" border="0" cellspacing="0" cellpadding="0" align="center">
+                              <tr> 
+                                <td bgcolor="#0099FF" colspan="4"><font face="Verdana, Arial, Helvetica, sans-serif"><b><font size="1" color="#FFFFFF">
+[error std_label="Credit Card Information" name=mv_credit_card_valid]
+[if session username eq test]<BR>(test number <A HREF="javascript:void 0" onclick="checkout.mv_credit_card_number.value='4111 1111 1111 1111'; return false;">4111 1111 1111 1111</A>)[/if]
+								</font></b></font></td>
+                              </tr>
+                              <tr> 
+                                <td align=right> 
+                                  <b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+								  Card Number
+								  </font></b>
+                                </td>
+                                <td align=left colspan=3> 
+                                  <b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                                    <INPUT TYPE=text NAME=mv_credit_card_number SIZE=22>
+                                    </font></b>
+                                </td>
+							</tr><tr>
+                                <td align=right><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+								  Expiration
+								  </font></b></td>
+                                <td align="left" colspan="3"> 
+<SELECT NAME=mv_credit_card_exp_month>
+[loop
+	lr=1
+  	option=mv_credit_card_exp_month
+	list="
+1	01 - January
+2	02 - February
+3	03 - March
+4	04 - April
+5	05 - May
+6	06 - June
+7	07 - July
+8	08 - August
+9	09 - September
+10	10 - October
+11	11 - November
+12	12 - December"]
+<OPTION VALUE="[loop-code]"> [loop-pos 1]
+[/loop]
+</SELECT>
+	
+	<SELECT NAME=mv_credit_card_exp_year>
+	[comment]
+		This should always return the current year as the first, then
+		7 more years.
+	[/comment]
+	[loop option=mv_credit_card_exp_year lr=1 list=`
+		my $year = $Tag->time( '', { format => '%Y' }, '%Y' );
+		my $out = '';
+		for ($year .. $year + 7) {
+			/\d\d(\d\d)/;
+			$last_two = $1;
+			$out .= "$last_two\t$_\n";
+		}
+		return $out;
+	`]
+		<OPTION VALUE="[loop-code]"> [loop-pos 1]
+	[/loop]
+	</SELECT>
+
+                                </td>
+                              </tr>
+                            </table>
+						</td></tr></table>
+						
+[/else]
 [/if]
 			</td></tr>
 			
 			  <tr><td>
-					  <div align="left"></div>
                       <p>&nbsp;</p>
 		<INPUT TYPE=SUBMIT VALUE="Refresh">		<INPUT TYPE=SUBMIT VALUE="Place Order" name="mv_click">
-                      <div align="left"></div>
                       <p>&nbsp;</p>
                       </form>
 [seti clear_errors][error all=1 hide=1 comment="Clear errors"][/seti]
@@ -910,6 +887,5 @@ mv_todo=submit
     </tr>
   </table>
   <p>&nbsp;</p>
-</div>
 </body>
 </html>
