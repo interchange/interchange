@@ -10,31 +10,41 @@
 [/perl]
 [/if]
 
-[if scratch ui_failure]
-<P>
-<BLOCKQUOTE>
-<FONT COLOR="__CONTRAST__">[scratch ui_failure][set ui_failure][/set]</FONT>
-</BLOCKQUOTE>
-<P>
-&nbsp;
+[if cgi diagnose]
+[tmp testing][tree 
+				table="[cgi mv_data_table]"
+				pedantic=1
+				show_error=1
+				full=1
+				master=o_master
+				sub=sku
+				start="[cgi item_id]"][/tree][/tmp]
+	[if scratch testing]
+	<BLOCKQUOTE>
+	<FONT COLOR="__CONTRAST__"><B>[scratch testing]</B></FONT>
+	</BLOCKQUOTE>
+	[else]
+	<BLOCKQUOTE>
+	<FONT COLOR="__UI_C_SUCCESS__"><B>Tree appears OK.</B></FONT>
+	</BLOCKQUOTE>
+	[/else]
+	[/if]
 [/if]
-[if scratch ui_message]
-<P>
-<BLOCKQUOTE>
-<FONT COLOR="__CONTRAST__">[scratch ui_message][set ui_message][/set]</FONT>
-</BLOCKQUOTE>
-<P>
-&nbsp;
-[/if]
+
 [page href="@@MV_PAGE@@"
+		form="
+			collapse=1
+			sku=[cgi item_id]
+	"]Collapse all</A>&nbsp;&nbsp;&nbsp;[page href="@@MV_PAGE@@"
 		form="
 			explode=1
 			sku=[cgi item_id]
 	"]Explode all</A>&nbsp;&nbsp;&nbsp;[page href="@@MV_PAGE@@"
 		form="
-			collapse=1
+			diagnose=1
 			sku=[cgi item_id]
-	"]Collapse all</A>
+	"]Check integrity</A>
+
 <TABLE CELLSPACING=0 CELLPADDING=2 CELLMARGIN=3 WIDTH="100%">
 <TR BGCOLOR="__UI_C_TITLEBARBG__">
 	<TH ALIGN=LEFT><FONT COLOR="__UI_C_TITLEBARTXT__">SKU</TH>
@@ -60,7 +70,7 @@
 					ui_meta_view=modular
 					{phantom?}
 					ui_te_widget:o_default=text
-					ui_te_width:o_default=20
+					ui_te_widget_width:o_default=20
 					ui_te_help:o_default=Override the option defaults, select SKU to use instead
 					{/phantom?}
 					ui_page_banner=[cgi ui_page_banner]
