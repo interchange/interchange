@@ -1,4 +1,4 @@
-[set page_title]Preferences[/set]
+[set page_title][L]Preferences[/L][/set]
 [set ui_class]Admin[/set]
 [set page_perm]knar[/set]
 [set help_name]knar.main[/set]
@@ -46,7 +46,7 @@
 				ui_hide_key=1
 				ui_text_qualification=pref_group=[loop-code]
 				ui_return_to=__UI_BASE__/preferences
-				ui_return_to=page_title=Preferences -- [loop-code]
+				ui_return_to=page_title=[L]Preferences[/L] -- [loop-code]
 				ui_return_to=ui_text_qualification=pref_group=[loop-code]
 				ui_return_to=ui_hide_key=1
 				help_name=knar.main
@@ -67,12 +67,12 @@
 	[page href="@@MV_PAGE@@"
 			form="
 				mv_action=return
-				ui_meta_force=0"]Turn off meta links in database edit</A></td>
+				ui_meta_force=0"][L]Turn off meta links in database edit[/L]</A></td>
 	[else]
 	[page href="@@MV_PAGE@@"
 			form="
 				mv_action=return
-				ui_meta_force=1"]Temporarily turn on meta links in database edit</A></td>
+				ui_meta_force=1"][L]Temporarily turn on meta links in database edit[/L]</A></td>
 	[/else]
 	[/if]
 </tr>
@@ -83,7 +83,7 @@
 </tr>
 
 <tr><td bgcolor=__UI_C_INTBLOCK__>
-<a href="http://interchange.redhat.com/cgi-bin/ic/register.html">Register</a>
+<a href="http://interchange.redhat.com/cgi-bin/ic/register.html">[L]Register[/L]</a>
 </td></tr>
 
 <tr>
@@ -91,14 +91,14 @@
 </tr>
 
 <tr><td bgcolor=__UI_C_INTBLOCK__>
-Personal CSS
+[L]Personal CSS[/L]
 <FORM ACTION="[area @@MV_PAGE@@]" METHOD=post>
 <INPUT TYPE=hidden NAME=mv_action VALUE=refresh
-<TEXTAREA COLS=70 ROWS=10 NAME=personal_css>[value personal_css]</textarea><INPUT TYPE=submit VALUE="Set CSS">
+<TEXTAREA COLS=70 ROWS=10 NAME=personal_css>[value personal_css]</textarea><INPUT TYPE=submit VALUE="[L]Set CSS[/L]">
 <br>
-<i>(personal changes to presentation)</i>
+<i>[L](personal changes to presentation)[/L]</i>
 </FORM>
-Current system CSS
+[L]Current system CSS[/L]
 <SMALL><SMALL><PRE>
 @_UI_STYLE_@
 </PRE></SMALL></SMALL>
