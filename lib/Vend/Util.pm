@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.7 2000-09-10 21:07:51 heins Exp $
+# $Id: Util.pm,v 1.8 2000-09-19 18:58:39 zarko Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -74,7 +74,7 @@ use Config;
 use Fcntl;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.7 $, 10);
+$VERSION = substr(q$Revision: 1.8 $, 10);
 
 BEGIN {
 	eval {
@@ -1353,7 +1353,7 @@ sub logGlobal {
 				unless "\L$Global::Syslog->{tag}" eq 'none';
 		}
 		else {
-			$tag = " -t minivend";
+			$tag = " -t interchange";
 		}
 		$tag .= ".$opt->{level}" if $tag and ! $leveled;
 

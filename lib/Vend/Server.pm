@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.6 2000-09-10 21:27:37 heins Exp $
+# $Id: Server.pm,v 1.7 2000-09-19 18:58:39 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 1.7 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -1056,7 +1056,7 @@ sub server_both {
 			print "$msg\n";
 		}
 		else {
-			$msg = errmsg( "No sockets -- MINIVEND SERVER TERMINATING\a" );
+			$msg = errmsg( "No sockets -- INTERCHANGE SERVER TERMINATING\a" );
 			::logGlobal( {level => 'alert'}, $msg );
 			print "$msg\n";
 			exit 1;
