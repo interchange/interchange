@@ -12,9 +12,9 @@
 <table __UI_T_PROPERTIES__>
 
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td bgcolor=__UI_C_TOPBLOCKBAR__ COLSPAN=2><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
-<tr><td align=left bgcolor=__UI_C_INTBLOCK__>
+<tr><td align=left bgcolor=__UI_C_INTBLOCK__ colspan=2>
 <TABLE border=0 width="100%">
 
 [perl tables="[list-databases] __UI_META_TABLE__"]
@@ -59,13 +59,15 @@
 		8	=> 'DBI/SQL',
 		9	=> 'LDAP',
 	);
+	my $tcount = 0;
 	for (@tables) {
 		my $tname = $_;
+		my $bgcol = ($tcount++ % 2) ? '__UI_T_ROW_ODD__' : '__UI_T_ROW_EVEN__';
 		my $tinfo = '';
 		if($mdb and $mdb->record_exists($tname) ) {
 			$tinfo = $mdb->field($tname, 'label');
 			if($tinfo) {
-				$tinfo = "<br>($tinfo)";
+				$tinfo .= "<br>($tinfo)";
 			}
 		}
 
@@ -100,7 +102,7 @@
 		my $obj   = $ref->{Object};
 		$out .= <<EOF;
 <TR>
-	<TH VALIGN=TOP ALIGN=RIGHT width="15%">
+	<TH VALIGN=TOP ALIGN=RIGHT width="15%" BGCOLOR="$bgcol">
 	$tname$tinfo
 	</TH>
 	<td VALIGN=TOP>
@@ -183,7 +185,7 @@ EOF
 		}
 
 		$out .= <<EOF;
-		</table>
+		</TABLE>
 	</TD>
 </TR>
 EOF
@@ -192,17 +194,11 @@ EOF
 	return $out;
 [/perl]
 
-</TABLE>
-
-</td></tr>
-
 <tr>
-<td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td bgcolor=__UI_C_TOPBLOCKBAR__ COLSPAN=2><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
-</table>
-</center>
-
+</TABLE>
 
 <!-- ----- END REAL STUFF ----- -->
 
