@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.17 2000-09-24 18:29:16 heins Exp $
+# $Id: DBI.pm,v 1.18 2000-09-24 21:15:57 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.17 $, 10);
+$VERSION = substr(q$Revision: 1.18 $, 10);
 
 use strict;
 
@@ -844,8 +844,8 @@ sub query {
 		if($@) {
 			if(! $sth) {
 				# query failed, probably because no table
-				# Do nothing and fall through to MVSEARCH
-::logDebug(qq{query "$query" failed: $@});
+				# Do nothing but log to debug and fall through to MVSEARCH
+				::logDebug(qq{query "$query" failed: $@});
 			}
 			else {
 				::logError("SQL query failed: %s\nquery was: %s", $@, $query);
