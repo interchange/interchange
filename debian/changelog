@@ -1,3 +1,12 @@
+interchange (4.9.8.20031010-1) unstable; urgency=low
+
+  * don't throw an error if removal of the file
+    /usr/lib/interchange/auto/Interchange/.packlist fails 
+    (Closes: #215003, thanks to Daniel Schepler
+    <schepler@math.berkeley.edu> for the bug report)
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 10 Oct 2003 00:42:15 +0200
+
 interchange (4.9.8.20030911-1) unstable; urgency=low
 
   * release from upstream CVS, adds missing manual pages (Closes: #203926,
