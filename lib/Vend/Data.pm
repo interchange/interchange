@@ -1,6 +1,6 @@
 # Data.pm - Minivend databases
 #
-# $Id: Data.pm,v 1.1 2000-05-26 18:50:37 heins Exp $
+# $Id: Data.pm,v 1.2 2000-06-16 03:49:59 heins Exp $
 # 
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -70,6 +70,11 @@ BEGIN {
 		require Vend::Table::DBI;
 	}
 # END SQL
+# LDAP
+	if($Global::LDAP) {
+		require Vend::Table::LDAP;
+	}
+# END LDAP
 	if($Global::GDBM) {
 		require Vend::Table::GDBM;
 	}
@@ -536,6 +541,15 @@ my %db_config = (
 					Class                Vend::Table::DB_File
 				/
 		},
+# LDAP
+		'LDAP' => {
+				qw/
+					RestrictedImport	 1
+					Extension			 ldap
+					Class				 Vend::Table::LDAP
+				/
+		},
+# END LDAP
 	);
 
 sub tie_database {
@@ -546,7 +560,7 @@ sub tie_database {
     while (($name,$data) = each %{$Vend::Cfg->{Database}}) {
 		$Vend::UPPERCASE{$name} = 1
 				if $data->{UPPERCASE};
-		if( $data->{type} eq '8' or $data->{HOT} ) {
+		if( $data->{type} > 6 or $data->{HOT} ) {
 #::logDebug("Importing $data->{name}...");
 			$Vend::Database{$name} = import_database($data);
 		}
@@ -579,18 +593,19 @@ sub dummy_database {
 sub import_database {
     my ($obj, $dummy) = @_;
 
-#::logDebug ("enter import_database: dummy=$dummy obj=" . ::uneval($obj));
 
 	my $database = $obj->{'file'};
 	my $type     = $obj->{'type'};
 	my $name     = $obj->{'name'};
+#	if($type == 9) {
 #my @caller = caller();
+#::logDebug ("enter import_database: dummy=$dummy");
 #::logDebug("opening table table=$database config=" . ::uneval($obj) . " caller=@caller");
-
+#
 #::logDebug ("database=$database type=$type name=$name obj=" . ::uneval($obj));
 #::logDebug ("database=$database type=$type name=$name obj=" . ::uneval($obj)) if $obj->{HOT};
-	
-
+#	
+#	}
 	return $Vend::Cfg->{SaveDatabase}->{$name}
 		if defined $Vend::Cfg->{SaveDatabase}->{$name};
 
@@ -600,7 +615,6 @@ sub import_database {
 	die "import_database: No database name!\n"
 		unless $database;
 
-#::logDebug ("start=$database_txt path='$path' base='$base' tail='$tail'");
 
 	my $database_dbm;
 	my $new_database_dbm;
@@ -621,12 +635,14 @@ sub import_database {
 
 	$class_config = $db_config{$obj->{Class} || $Global::Default_database};
 
+#::logDebug ("params=$database_txt path='$path' base='$base' tail='$tail'") if $type == 9;
 	$table_name     = $name;
 	my $export;
 
   IMPORT: {
 	last IMPORT if $no_import and $obj->{'dir'};
 	last IMPORT if defined $obj->{IMPORT_ONCE} and $obj->{'dir'};
+#::logDebug ("first no_import_check: passed") if $type == 9;
 
     $database_txt = $database;
 
@@ -687,6 +703,7 @@ sub import_database {
 	}
 
 	last IMPORT if $no_import;
+#::logDebug ("moving to import") if $type == 9;
 
 	$change_delimiter = $obj->{DELIMITER} if defined $obj->{DELIMITER};
 
@@ -760,12 +777,13 @@ sub import_database {
 		no strict 'refs';
 		eval { 
 			if($MVSAFE::Safe) {
+#::logDebug("Opening under Safe: $obj->{name}: table=$table_name") if $type == 9;
 				$db = $Vend::Interpolate::Db{$class_config->{Class}}->open_table( $obj, $table_name );
 			}
 			else {
-#::logDebug("Opening $obj->{name}: table=$table_name");
+#::logDebug("Opening $obj->{name}: table=$table_name") if $type == 9;
 				$db = $class_config->{Class}->open_table( $obj, $table_name );
-#::logDebug("Opened $obj->{name}");
+#::logDebug("Opened $obj->{name}") if $type == 9;
 			}
 			$obj->{NAME} = $db->[$Vend::Table::Common::COLUMN_INDEX]
 				unless defined $obj->{NAME};

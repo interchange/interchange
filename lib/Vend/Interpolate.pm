@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret MiniVend tags
 # 
-# $Id: Interpolate.pm,v 1.3 2000-06-05 05:34:32 heins Exp $
+# $Id: Interpolate.pm,v 1.4 2000-06-16 03:49:59 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
 
 @EXPORT = qw (
 
@@ -747,6 +747,13 @@ sub tag_data {
 					my $val = shift;
 					$val =~ s/\0+/,/g;
 					return $val;
+				},
+	'last_non_null' =>		sub {
+					my @some = reverse split /\0+/, shift;
+					for(@some) {
+						return $_ if length $_;
+					}
+					return '';
 				},
 	'nullselect' =>		sub {
 					my @some = split /\0+/, shift;
@@ -1518,17 +1525,22 @@ sub tag_perl {
 	if($tables) {
 		my (@tab) = grep /\S/, split /\s+/, $tables;
 		for(@tab) {
-#::logDebug("tag_perl: priming table $_");
+#::logDebug("tag_perl: priming table $_, current=$Db{$_}");
 			next if $Db{$_};
+#::logDebug("tag_perl: getting ref $_");
 			my $db = Vend::Data::database_exists_ref($_);
+#::logDebug("tag_perl: ref returned $db");
 			next unless $db;
 #::logDebug("tag_perl: need to init table $_, ref=$db");
 			$db = $db->ref();
 			if($hole) {
-#::logDebug("tag_perl: wrapped table $_");
+#::logDebug("tag_perl: wrapped table $_ db=$db");
 			$db = $db->ref();
+#::logDebug("recall db: db=$db");
 				$Sql{$_} = $hole->wrap($db->[$Vend::Table::DBI::DBI])
 					if $db =~ /::DBI/;
+				$Sql{$_} = $hole->wrap($db->[$Vend::Table::LDAP::TIE_HASH])
+					if $db =~ /::LDAP/;
 				$Db{$_} = $hole->wrap($db);
 			}
 			else {

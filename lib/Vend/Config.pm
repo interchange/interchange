@@ -1,6 +1,6 @@
 # Config.pm - Configure Minivend
 #
-# $Id: Config.pm,v 1.3 2000-06-12 22:50:52 heins Exp $
+# $Id: Config.pm,v 1.4 2000-06-16 03:49:59 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -101,7 +101,9 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.4 $, 10);
+
+my %CDname;
 
 for( qw(search refresh cancel return secure unsecure submit control checkout) ) {
 	$Global::LegalAction{$_} = 1;
@@ -536,9 +538,9 @@ sub substitute_variable {
 
 sub config {
 	my($catalog, $dir, $confdir, $subconfig) = @_;
-    my($directives, $d, %name, %parse, $var, $value, $lvar, $parse);
+    my($directives, $d, %parse, $var, $value, $lvar, $parse);
     my($directive);
-
+	%CDname = ();
 	$C = {};
 	$C->{CatalogName} = $catalog;
 	$C->{VendRoot} = $dir;
@@ -559,7 +561,7 @@ sub config {
 
 	foreach $d (@$directives) {
 		($directive = $d->[0]) =~ tr/A-Z/a-z/;
-		$name{$directive} = $d->[0];
+		$CDname{$directive} = $d->[0];
 		if (defined $d->[1]) {
 			$parse = 'parse_' . $d->[1];
 		} else {
@@ -580,7 +582,7 @@ sub config {
 		if (defined $parse and defined $value and ! defined $subconfig) {
 			$value = &$parse($d->[0], $value);
 		}
-		$C->{$name{$directive}} = $value;
+		$C->{$CDname{$directive}} = $value;
 	}
 
 	my(@include) = ($C->{ConfigFile});
@@ -634,16 +636,16 @@ sub config {
 		$parse = $parse{$lvar};
 					# call the parsing function for this directive
 		if($C->{ParseVariables} and $value =~ /([_%@])\1/) {
-			save_variable($name{$lvar}, $value);
+			save_variable($CDname{$lvar}, $value);
 			$value = substitute_variable($value);
 		}
-		$value = &$parse($name{$lvar}, $value) if defined $parse and ! $tie;
+		$value = &$parse($CDname{$lvar}, $value) if defined $parse and ! $tie;
 		# and set the $C->directive variable
 		if($tie) {
-			watch ( $name{$lvar}, $value );
+			watch ( $CDname{$lvar}, $value );
 		}
 		else {
-			$C->{$name{$lvar}} = $value;
+			$C->{$CDname{$lvar}} = $value;
 		}
 	};
 
@@ -754,9 +756,9 @@ CONFIGLOOP:
 			$value .= "\n" if $value;
 			unless (defined $C->{ConfigDir}) {
 				config_error
-					("$name{$lvar}: Can't read from file until ConfigDir defined");
+					("$CDname{$lvar}: Can't read from file until ConfigDir defined");
 			}
-			$file = $name{$lvar} unless $file;
+			$file = $CDname{$lvar} unless $file;
 			if($Global::NoAbsolute) {
 				config_error(<<EOF) if Vend::Util::file_name_is_absolute($file);
 Absolute filenames not allowed if NoAbsolute set. Contact administrator.
@@ -775,7 +777,7 @@ EOF
 			unless( defined $tmpval ) {
 				config_warn errmsg(
 						"%s: read from non-existent file %s, skipping.",
-						$name{$lvar},
+						$CDname{$lvar},
 						$file,
 						);
 				next;
@@ -787,7 +789,7 @@ EOF
 		}
 			
 		# Now we can give an unknown error
-		config_error("Unknown directive '$var'"), next unless defined $name{$lvar};
+		config_error("Unknown directive '$var'"), next unless defined $CDname{$lvar};
 
 		&$read($lvar, $value, $tie);
 		last if $C->{ConfigDatabase}->{ACTIVE};
@@ -802,7 +804,7 @@ EOF
 
 		# Actually load ConfigDatabase if present
 		if($db) {
-			$nm = $name{$lvar};
+			$nm = $CDname{$lvar};
 			my ($extended, $status);
 			undef $extended;
 
@@ -869,11 +871,11 @@ EOF
 	REQUIRED: {
 		last REQUIRED if defined $subconfig;
 		last REQUIRED if defined $Vend::ExternalProgram;
-		foreach $var (keys %name) {
-			if (! defined $C->{$name{$var}}) {
+		foreach $var (keys %CDname) {
+			if (! defined $C->{$CDname{$var}}) {
 				my $msg = errmsg(
 					"Please specify the %s directive in the configuration file '%s'",
-					$name{$var},
+					$CDname{$var},
 					$configfile,
 				);
 
@@ -882,6 +884,7 @@ EOF
 		}
 	}
 	$C->{Special} = $C->{SpecialPage} if defined $C->{SpecialPage};
+	%CDname = ();
 	return $C;
 }
 
@@ -1986,6 +1989,14 @@ sub parse_config_db {
 				$d->{DSN} = $type;
 			}
 		}
+# LDAP
+		elsif(	$type =~ /^ldap\b/i) {
+			$d->{'type'} = 9;
+			if($type =~ /^ldap:(.*)/i) {
+				$d->{LDAP_HOST} = $1;
+			}
+		}
+# END LDAP
 		elsif(	"\U$type" eq 'TAB'	) {
 			$d->{'type'} = 6;
 		}
@@ -2040,6 +2051,7 @@ sub parse_config_db {
 		}
 	}
 
+::logDebug("d object: " . ::uneval($d));
 	if($d->{ACTIVE} and ! $d->{OBJECT}) {
 		my $name = $d->{'name'};
 		$d->{OBJECT} = Vend::Data::import_database($d)
@@ -2091,6 +2103,14 @@ sub parse_database {
 				$d->{DSN} = $type;
 			}
 		}
+# LDAP
+		elsif(	$type =~ /^ldap\b/i) {
+			$d->{'type'} = 9;
+			if($type =~ /^ldap:(.*)/i) {
+				$d->{LDAP_HOST} = $1;
+			}
+		}
+# END LDAP
 		elsif(	"\U$type" eq 'TAB'	) {
 			$d->{'type'} = 6;
 		}
@@ -2113,7 +2133,10 @@ sub parse_database {
 			$d->{'type'} = 1;
 			$d->{DELIMITER} = $type;
 		}
-		$d->{Class} = $d->{'type'} eq '8' ? 'DBI' : $Global::Default_database;
+		if    ($d->{'type'} eq '8')	{ $d->{Class} = 'DBI'						}
+		elsif ($d->{'type'} eq '9') { $d->{Class} = 'LDAP'						}
+		else 						{ $d->{Class} = $Global::Default_database	}
+
 		$d->{HOT} = 1 if $d->{Class} eq 'MEMORY';
 #::logDebug("parse_database: type $type -> $d->{type}");
 	}
@@ -2137,7 +2160,7 @@ sub parse_database {
 			$d->{$p} = [] unless defined $d->{$p};
 			push @{$d->{$p}}, @v;
 		}
-		elsif ($p =~ /^(MEMORY|GDBM|DB_FILE)$/i) {
+		elsif ($p =~ /^(MEMORY|GDBM|DB_FILE|LDAP)$/i) {
 			$d->{Class} = uc $p;
 		}
 		elsif ($p eq 'ALIAS') {
@@ -2224,17 +2247,19 @@ sub parse_dbconfig {
 	shift @n;
 	my $extra;
 	for(@n) {
-		if (! ref $Vend::Cfg->{$_} or $Vend::Cfg->{$_} !~ /HASH/) {
+		my $real = $CDname{lc $_};
+		if (! ref $Vend::Cfg->{$real} or $Vend::Cfg->{$real} !~ /HASH/) {
 			# ignore non-existent directive, but put in hash
 			my $ref = {};
 			push @l, $ref;
-			push @h, [$_, $ref];
+			push @h, [$real, $ref];
 			next;
 		}
-		push @l, $Vend::Cfg->{$_};
+		push @l, $Vend::Cfg->{$real};
 	}
 	my $i;
 	while( ($k, undef, @f ) = $db->each_record) {
+::logDebug("Got key=$k f=@f");
 		for ($i = 0; $i < @f; $i++) {
 			next unless length($f[$i]);
 			$l[$i]->{$k} = $f[$i];
@@ -2246,6 +2271,7 @@ sub parse_dbconfig {
 	$db->close_table();
 	return $table;
 }
+
 sub parse_dbdatabase {
 	my ($var, $value) = @_;
 
@@ -2449,6 +2475,7 @@ sub parse_tag {
 			eval {
 				package Vend::Interpolate;
 				$sub = eval $val;
+				die $@ if $@;
 			};
 		}
 		if($@ or $fail) {

@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.4 2000-06-12 22:50:52 heins Exp $
+# $Id: DBI.pm,v 1.5 2000-06-16 03:49:59 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 
 use strict;
 
@@ -580,15 +580,28 @@ sub touch {
 	return ''
 }
 
+sub sort_each {
+	my($s, $sort_field, $sort_option) = @_;
+	if(length $sort_field) {
+		$sort_field .= " DESC" if $sort_option =~ /r/;
+		$s->[$CONFIG]{Export_order} = " ORDER BY $sort_field"
+	}
+}
+
+*each_sorted = \&each_record;
+
 # Now supported, including qualification
 sub each_record {
     my ($s, $qual) = @_;
 #::logDebug("qual=$qual");
+	$qual = '' if ! $qual;
+	$qual .= $s->[$CONFIG]{Export_order} 
+		if $s->[$CONFIG]{Export_order};
 	$s = $s->import_db() if ! defined $s->[$DBI];
     my ($table, $db, $each);
     unless(defined $s->[$EACH]) {
 		($table, $db, $each) = @{$s}[$TABLE,$DBI,$EACH];
-		my $query = $db->prepare("select * from $table " . ($qual || '') )
+		my $query = $db->prepare("select * from $table $qual")
             or die $DBI::errstr;
 		$query->execute();
 		my $idx = $s->[$CONFIG]{KEY_INDEX};
@@ -602,6 +615,7 @@ sub each_record {
 	my ($key, $return) = $s->[$EACH]->();
 	if(! defined $key) {
 		pop @$s;
+		delete $s->[$CONFIG]{Export_order};
 		return ();
 	}
     return ($key, @$return);
@@ -611,6 +625,9 @@ sub each_record {
 sub each_nokey {
     my ($s, $qual) = @_;
 #::logDebug("qual=$qual");
+	$qual = '' if ! $qual;
+	$qual .= $s->[$CONFIG]{Export_order} 
+		if $s->[$CONFIG]{Export_order};
 	$s = $s->import_db() if ! defined $s->[$DBI];
     my ($table, $db, $each);
     unless(defined $s->[$EACH]) {
@@ -642,6 +659,7 @@ sub each_nokey {
 	my ($return) = $s->[$EACH]->();
 	if(! defined $return->[0]) {
 		pop @$s;
+		delete $s->[$CONFIG]{Export_order};
 		return ();
 	}
     return (@$return);
