@@ -1,4 +1,3 @@
-@_UI_STD_HEAD_@
 
 [calc]
 	if ( $CGI->{showarchive} ) {
@@ -27,6 +26,19 @@
 	}
 	return;
 [/calc]
+[set icon_name]icon_orders.gif[/set]
+[seti page_title]
+	[if value showarchive]
+	[L]Orders[/L]: [L]Archived Orders[/L]
+	[set help_name]order.main.archived[/set]
+	[else]
+	[L]Orders[/L]: [L]Pending Orders[/L]
+	[set help_name]order.main.pending[/set]
+	[/else]
+	[/if]
+[/seti]
+
+@_UI_STD_HEAD_@
 
 [value name=mv_data_table set=transactions hide=1]
 [if-mm !tables]
@@ -128,18 +140,6 @@
 [if scratch ui_location]
 [bounce href=`delete $Scratch->{ui_location}`]
 [/if]
-
-[set icon_name]icon_orders.gif[/set]
-[seti page_title]
-	[if value showarchive]
-	[L]Orders[/L]: [L]Archived Orders[/L]
-	[set help_name]order.main.archived[/set]
-	[else]
-	[L]Orders[/L]: [L]Pending Orders[/L]
-	[set help_name]order.main.pending[/set]
-	[/else]
-	[/if]
-[/seti]
 [update values]
 
 [if scratch message]
