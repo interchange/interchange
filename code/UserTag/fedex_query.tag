@@ -217,18 +217,12 @@ sub {
 
 	my $fed;
 
-	$opt->{target_url} = 'http://grd.fedex.com/cgi-bin/rrr2010.exe'
-		unless $opt->{target_url};
-	$opt->{origin}	= $::Variable->{UPS_ORIGIN}
-						if ! $opt->{origin};
-	$opt->{country}	= $::Values->{$::Variable->{UPS_COUNTRY_FIELD}}
-						if ! $opt->{country};
-	$opt->{zip}		= $::Values->{$::Variable->{UPS_POSTCODE_FIELD}}
-					if ! $opt->{zip};
+	$opt->{target_url} ||= 'http://grd.fedex.com/cgi-bin/rrr2010.exe';
+	$opt->{origin_country} ||= $::Variable->{COUNTRY} || 'US';
+	$opt->{origin} ||= $::Variable->{UPS_ORIGIN};
+	$opt->{zip} ||= $::Values->{$::Variable->{UPS_POSTCODE_FIELD}};
+	$opt->{country} ||= $::Values->{$::Variable->{UPS_COUNTRY_FIELD}};
 	$opt->{country} = uc $opt->{country};
-
-	$opt->{origin_country} = $::Variable->{COUNTRY} || 'US'
-		if ! $opt->{origin_country};
 
 	if($can_do_express and (! $opt->{cache} || ! $Vend::fedex_object) ) {
 		eval {
@@ -242,7 +236,9 @@ sub {
 			);
 			$Vend::fedex_object->getrate;
 		};
-		return $die->($@) if $@;
+		# if there's a problem here with express lookups, log the error
+		# but don't actually return so ground lookups can still be done 
+		$die->($@) if $@;
 	}
 	$fed = $Vend::fedex_object if $can_do_express;
 
@@ -269,7 +265,6 @@ sub {
 	my @services;
 #Debug("can_ground=$can_do_ground country=$opt->{country} orig_country=$opt->{origin_country}");
 	if($opt->{services}) {
-#Debug("can_ground=$can_do_ground country=$opt->{country} orig_country=$opt->{origin_country}");
 		if(
 			$can_do_ground
 			and ($opt->{country} eq 'US' or $opt->{country} eq 'CA')
@@ -294,7 +289,6 @@ sub {
 		}
 		return 0;
 	}
-#::logGlobal("calling with: " . join("|", $mode, $origin, $zip, $weight, $country));
 
 	if($opt->{mode} eq 'FEH') {
 		$opt->{mode} = 'HomeD';
