@@ -638,6 +638,7 @@ EOF
 	$opt->{enctype} = $opt->{file_upload} ? ' ENCTYPE="multipart/form-data"' : '';
 
 	my $out = <<EOF;
+[restrict]
 <FORM METHOD=$opt->{method} ACTION="$opt->{href}"$opt->{form_name}$opt->{enctype}>
 $sidstr<INPUT TYPE=hidden NAME=mv_todo VALUE="set">
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_filter">
@@ -1299,6 +1300,7 @@ EOF
 </td></tr></table>
 
 </form>
+[/restrict]
 EOF
 
 }
