@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange localizer
 #
-# $Id: localize.PL,v 1.7.2.1.2.1 2000-12-21 12:14:48 heins Exp $
+# $Id: localize.PL,v 1.7.2.1.2.2 2001-05-10 18:32:19 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -353,7 +353,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-# $Id: localize.PL,v 1.7.2.1.2.1 2000-12-21 12:14:48 heins Exp $
+# $Id: localize.PL,v 1.7.2.1.2.2 2001-05-10 18:32:19 racke Exp $
 
 =head1 SYNOPSIS
 
@@ -423,7 +423,8 @@ mvdocs(8), http://www.akopia.com/
 =head1 AUTHOR
 
 Mike Heins, <heins@akopia.com>. Valuable contributions made by Stefan Hornburg,
-<racke@linuxia.net>.
+<racke@linuxia.de>.
+
 =cut
 
 _EoP_
