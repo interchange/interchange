@@ -227,6 +227,10 @@ sub {
 		$opt->{next_text} = "Ok" unless $opt->{next_text};
 	}
 
+	for(qw/ next_text cancel_text back_text/ ) {
+		$opt->{$_} = errmsg($opt->{$_});
+	}
+
 	my $ntext;
 	my $btext;
 	my $ctext;
@@ -867,7 +871,7 @@ EOF
 <td align=left colspan=$oddspan class=cdata>
 EOF
 			$out .= <<EOF if ! $opt->{bottom_buttons};
-<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{back_text}">&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="Cancel">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
+<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{back_text}">&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
 <BR>
 EOF
 			$out .= <<EOF;
@@ -887,7 +891,7 @@ EOF
 <td align=left colspan=$oddspan class=cdata>
 EOF
 			$out .= <<EOF if ! $opt->{bottom_buttons};
-<INPUT TYPE=submit NAME=mv_click VALUE="Cancel">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
+<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
 <BR>
 EOF
 			$out .= <<EOF;
@@ -908,7 +912,7 @@ EOF
 <B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}">
 </B>
 &nbsp;
-<INPUT TYPE=submit NAME=mv_click VALUE="Cancel">$mlabel
+<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">$mlabel
 </TD>
 </TR>
 
@@ -1347,7 +1351,7 @@ EOF
 <TR class=rnorm>
 <td>&nbsp;</td>
 <td align=left colspan=$oddspan class=cdata>
-<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{back_text}">&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="Cancel">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
+<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{back_text}">&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
 EOF
 		}
 		elsif($opt->{wizard}) {
@@ -1355,7 +1359,7 @@ EOF
 <TR class=rnorm>
 <td>&nbsp;</td>
 <td align=left colspan=$oddspan class=cdata>
-<INPUT TYPE=submit NAME=mv_click VALUE="Cancel">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
+<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">&nbsp;<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
 EOF
 		}
 		else {
@@ -1363,7 +1367,7 @@ EOF
 <TR class=rnorm>
 <td>&nbsp;</td>
 <td align=left colspan=$oddspan class=cdata>
-<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="Cancel">
+<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>&nbsp;<INPUT TYPE=submit NAME=mv_click VALUE="$opt->{cancel_text}">
 EOF
 		}
 #
@@ -1375,7 +1379,7 @@ EOF
 #<B><INPUT TYPE=submit NAME=mv_click VALUE="$opt->{next_text}"></B>
 #&nbsp;
 #&nbsp;
-#<INPUT TYPE=submit NAME=mv_click VALUE=Cancel>
+#<INPUT TYPE=submit NAME=mv_click VALUE=$opt->{cancel_text}>
 #EOF
 	if($Tag->if_mm('tables', "$table=x") and ! $db->config('LARGE') ) {
 		my $checked = ' CHECKED';
