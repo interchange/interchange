@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.33 2003-10-19 17:01:47 mheins Exp $
+# $Id: Common.pm,v 2.34 2003-11-17 23:41:13 edl Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -23,7 +23,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.33 $, 10);
+$VERSION = substr(q$Revision: 2.34 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -640,7 +640,7 @@ my $rsession;
 sub each_nokey {
     my ($s, $qual) = @_;
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
-    my ($key);
+    my ($key, $hf);
 
 	if (! defined $restrict) {
 		# Support hide_field
@@ -648,10 +648,14 @@ sub each_nokey {
 #::logDebug("Found qual=$qual");
 			$hfield = $qual;
 			if($hfield =~ s/^\s+WHERE\s+(\w+)\s*!=\s*1($|\s+)//) {
-				my $hf = $1;
+				$hf = $1;
 #::logDebug("Found hf=$hf");
 				$s->test_column($hf) and $hfield = $s->column_index($hf);
 			}
+			else {
+				undef $hfield;
+			}
+
 #::logDebug("hf index=$hfield");
 		}
 		if($restrict = ($Vend::Cfg->{TableRestrict}{$s->config('name')} || 0)) {
@@ -669,7 +673,9 @@ sub each_nokey {
 			$rsession = $Vend::Session->{$rsession};
 		}
 	}
-		$restrict = 1 if $hfield and $s->[$CONFIG]{HIDE_FIELD} eq $hfield;
+
+		$restrict = 1 if $hfield and $s->[$CONFIG]{HIDE_FIELD} eq $hf;
+
 	}
 
     for (;;) {
