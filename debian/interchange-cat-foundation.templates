@@ -23,6 +23,7 @@ Description-de: Soll der Interchange-Demokatalog durch --purge gelöscht werden ?
 Template: interchange-cat-foundation/replace
 Type: select
 Choices: always, ask, never
+Choices-de: immer, auf Nachfrage, niemals
 Default: never
 Description: Policy for replacing an existing demo catalog installation
  Whether to silently replace an existing demo catalog installation,
