@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.201 2003-12-04 02:35:39 mheins Exp $
+# $Id: Interpolate.pm,v 2.202 2004-02-03 13:32:41 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.201 $, 10);
+$VERSION = substr(q$Revision: 2.202 $, 10);
 
 @EXPORT = qw (
 
@@ -869,7 +869,7 @@ sub tag_data {
 					}
 					$mon =~ s/^0//;
 					$day =~ s/^0//;
-					$val = sprintf("%d%02d%02d", $yr, $mon, $day);
+					$val = sprintf("%04d%02d%02d", $yr, $mon, $day);
 					return $val unless $time;
 					$val .= sprintf('%04d', $time);
 					return $val;
