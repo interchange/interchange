@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange program configurator
 #
-# $Id: config_prog.PL,v 1.7 2001-07-18 01:57:01 jon Exp $
+# $Id: config_prog.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -180,7 +180,7 @@ config_prog -- Configure Interchange programs with MakeMaker variables
 
 =head1 VERSION
 
-# $Id: config_prog.PL,v 1.7 2001-07-18 01:57:01 jon Exp $
+# $Id: config_prog.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
 
 =head1 DESCRIPTION
 

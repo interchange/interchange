@@ -1,6 +1,6 @@
 # This -*-perl -*- module implements a persistent counter class.
 #
-# $Id: CounterFile.pm,v 1.2 2001-07-18 01:56:37 jon Exp $
+# $Id: CounterFile.pm,v 2.0 2001-07-18 02:23:00 jon Exp $
 #
 
 package File::CounterFile;
@@ -89,7 +89,7 @@ eval {
 };
 
 sub Version { $VERSION; }
-$VERSION = sprintf("%d.%02d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 2.0 $ =~ /(\d+)\.(\d+)/);
 
 $MAGIC           = "#COUNTER-1.0\n";   # first line in counter files
 $DEFAULT_INITIAL = 0;                  # default initial counter value

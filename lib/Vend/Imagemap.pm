@@ -1,6 +1,6 @@
 # Vend::Imagemap - Interpret NCSA imagemaps in Interchange
 #
-# $Id: Imagemap.pm,v 1.3 2001-07-18 01:56:44 jon Exp $
+# $Id: Imagemap.pm,v 2.0 2001-07-18 02:23:13 jon Exp $
 #
 # This module adapted from the Perl imagemap program by:
 #
@@ -46,7 +46,7 @@ require Exporter;
 @EXPORT = qw(action_map);
 use strict;
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 2.0 $, 10);
 
 my $Action = "";
 my $minDistance = -1;

@@ -1,6 +1,6 @@
 # Interchange.pm - Interchange access for Perl scripts
 #
-# $Id: Interchange.pm,v 1.2 2001-07-18 01:56:57 jon Exp $
+# $Id: Interchange.pm,v 2.0 2001-07-18 02:23:22 jon Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -30,7 +30,7 @@ require Exporter;
 use strict;
 use Fcntl;
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 2.0 $, 10);
 
 BEGIN {
 	require 5.005;

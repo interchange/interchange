@@ -1,6 +1,6 @@
 # Vend::SessionFile - Stores Interchange session information in files
 #
-# $Id: SessionFile.pm,v 1.5 2001-07-18 01:56:44 jon Exp $
+# $Id: SessionFile.pm,v 2.0 2001-07-18 02:23:14 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@ use strict;
 use Vend::Util;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.5 $, 10);
+$VERSION = substr(q$Revision: 2.0 $, 10);
 
 my $SessionDir;
 my $CommDir;

@@ -2,7 +2,7 @@
  *  mod_interchange.c
  *  Apache module implementation of the Interchange link program.
  *
- *  $Id: mod_interchange.c,v 1.3 2001-07-18 01:56:13 jon Exp $
+ *  $Id: mod_interchange.c,v 2.0 2001-07-18 02:22:22 jon Exp $
  *
  *  Support: http://interchange.redhat.com/
  *

@@ -3,7 +3,7 @@
 # vlink.pl: runs as a cgi program and passes request to Interchange server
 #           via TCP UNIX-domain socket
 
-# $Id: vlink.pl,v 1.3 2001-07-18 01:56:11 jon Exp $
+# $Id: vlink.pl,v 2.0 2001-07-18 02:22:20 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #

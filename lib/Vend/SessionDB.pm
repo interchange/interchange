@@ -1,6 +1,6 @@
 # Vend::SessionDB - Stores Interchange session information in files
 #
-# $Id: SessionDB.pm,v 1.3 2001-07-18 01:56:44 jon Exp $
+# $Id: SessionDB.pm,v 2.0 2001-07-18 02:23:14 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ use strict;
 use Vend::Util;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 2.0 $, 10);
 
 my $SessionDB;
 my $SessionLock;

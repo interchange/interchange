@@ -1,6 +1,6 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 1.28 2001-07-18 01:54:40 jon Exp $
+# $Id: Primitive.pm,v 2.0 2001-07-18 02:21:56 jon Exp $
 
 # Copyright (C) 1998-2001 Red Hat, Inc. <interchange@redhat.com>
 
@@ -25,7 +25,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.28 $, 10);
+$VERSION = substr(q$Revision: 2.0 $, 10);
 $DEBUG = 0;
 
 use vars qw!

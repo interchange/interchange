@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange database builder and indexer
 #
-# $Id: offline.PL,v 1.8 2001-07-18 01:57:01 jon Exp $
+# $Id: offline.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -294,7 +294,7 @@ offline -- Interchange offline database builder
 
 =head1 VERSION
 
-# $Id: offline.PL,v 1.8 2001-07-18 01:57:01 jon Exp $
+# $Id: offline.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
 
 =head1 DESCRIPTION
 

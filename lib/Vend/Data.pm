@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 1.21 2001-07-18 01:56:44 jon Exp $
+# $Id: Data.pm,v 2.0 2001-07-18 02:23:13 jon Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #

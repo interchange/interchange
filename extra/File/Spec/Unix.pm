@@ -7,8 +7,8 @@ use DirHandle;
 use strict;
 use vars qw(@ISA $VERSION $Is_Mac $Is_OS2 $Is_VMS $Is_Win32);
 
-$VERSION = substr q$Revision: 1.1 $, 10;
-# $Id: Unix.pm,v 1.1 2000-05-26 18:50:31 heins Exp $
+$VERSION = substr q$Revision: 2.0 $, 10;
+# $Id: Unix.pm,v 2.0 2001-07-18 02:23:03 jon Exp $
 
 Exporter::import('File::Spec', '$Verbose');
 

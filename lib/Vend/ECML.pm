@@ -1,6 +1,6 @@
 # Vend::ECML - map Interchange forms/userdb to ECML checkout
 #
-# $Id: ECML.pm,v 1.3 2001-07-18 01:56:44 jon Exp $
+# $Id: ECML.pm,v 2.0 2001-07-18 02:23:13 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #

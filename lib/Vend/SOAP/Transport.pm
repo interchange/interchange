@@ -1,6 +1,6 @@
 # SOAP::Transport - Handle Interchange SOAP connections
 #
-# $Id: Transport.pm,v 1.2 2001-07-18 01:56:50 jon Exp $
+# $Id: Transport.pm,v 2.0 2001-07-18 02:23:18 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -31,7 +31,7 @@ package Vend::SOAP::Transport;
 
 use strict;
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 2.0 $, 10);
 
 # ======================================================================
 

@@ -1,6 +1,6 @@
 package HTML::Entities;
 
-# $Id: Entities.pm,v 1.1 2000-05-26 18:50:31 heins Exp $
+# $Id: Entities.pm,v 2.0 2001-07-18 02:23:05 jon Exp $
 
 =head1 NAME
 
@@ -60,7 +60,7 @@ require Exporter;
 @EXPORT = qw(encode_entities decode_entities);
 @EXPORT_OK = qw(%entity2char %char2entity);
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.1 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 2.0 $ =~ /(\d+)\.(\d+)/);
 sub Version { $VERSION; }
 
 

@@ -1,6 +1,6 @@
 # Vend::Track - Interchange User Tracking
 #
-# $Id: Track.pm,v 1.6 2001-07-18 01:56:44 jon Exp $
+# $Id: Track.pm,v 2.0 2001-07-18 02:23:14 jon Exp $
 #
 # Copyright (C) 2000 by Stefan Hornburg <racke@linuxia.de>
 #
@@ -35,7 +35,7 @@ package Vend::Track;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 2.0 $, 10);
 
 @ISA = qw(Exporter);
 

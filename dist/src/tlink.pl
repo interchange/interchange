@@ -2,7 +2,7 @@
 
 # tlink.pl: runs as a cgi program and passes request to Interchange server
 #
-# $Id: tlink.pl,v 1.4 2001-07-18 01:56:11 jon Exp $
+# $Id: tlink.pl,v 2.0 2001-07-18 02:22:20 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #

@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange link program configurator
 #
-# $Id: compile_link.PL,v 1.9 2001-07-18 01:57:01 jon Exp $
+# $Id: compile_link.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #

@@ -1,6 +1,6 @@
 # Vend::Tags - Interpret Interchange tags for Safe
 # 
-# $Id: Tags.pm,v 1.4 2001-07-18 01:56:44 jon Exp $
+# $Id: Tags.pm,v 2.0 2001-07-18 02:23:14 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #

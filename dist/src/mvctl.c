@@ -2,7 +2,7 @@
  * mvctl.c: runs as a command line or cgi program and starts up
  *			Interchange in various modes
  *
- * $Id: mvctl.c,v 1.3 2001-07-18 01:56:11 jon Exp $
+ * $Id: mvctl.c,v 2.0 2001-07-18 02:22:20 jon Exp $
  *
  * Copyright (C) 1997-2001 Red Hat, Inc. <interchange@redhat.com>
  *

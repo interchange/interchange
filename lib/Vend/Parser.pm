@@ -1,6 +1,6 @@
 # Vend::Parser - Interchange parser class
 #
-# $Id: Parser.pm,v 1.4 2001-07-18 01:56:44 jon Exp $
+# $Id: Parser.pm,v 2.0 2001-07-18 02:23:14 jon Exp $
 #
 # Copyright (C) 1997-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -66,7 +66,7 @@ use strict;
 
 use HTML::Entities ();
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 2.0 $, 10);
 
 
 sub new

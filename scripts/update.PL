@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange database updater
 #
-# $Id: update.PL,v 1.8 2001-07-18 01:57:01 jon Exp $
+# $Id: update.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #

@@ -1,6 +1,6 @@
 # Vend::Payment::CyberCash - Interchange CyberCash support
 #
-# $Id: CyberCash.pm,v 1.2 2001-07-18 01:56:48 jon Exp $
+# $Id: CyberCash.pm,v 2.0 2001-07-18 02:23:16 jon Exp $
 #
 # Copyright (C) 1999-2001 Red Hat, Inc. <interchange@redhat.com>
 
@@ -24,11 +24,11 @@
 
 package Vend::Payment::CyberCash;
 
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 2.0 $, 10);
 
 =head1 Interchange CyberCash Support
 
-Vend::Payment::CyberCash $Revision: 1.2 $
+Vend::Payment::CyberCash $Revision: 2.0 $
 
 =head1 SYNOPSIS
 

@@ -52,7 +52,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.35 2001-07-18 01:57:01 jon Exp $
+# $Id: makecat.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -2213,7 +2213,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 1.35 2001-07-18 01:57:01 jon Exp $
+# $Id: makecat.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
 
 =head1 INTRODUCTION
 

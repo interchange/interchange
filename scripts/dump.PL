@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange session dumper
 #
-# $Id: dump.PL,v 1.9 2001-07-18 01:57:01 jon Exp $
+# $Id: dump.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -268,7 +268,7 @@ dump -- Interchange session dumper
 
 =head1 VERSION
 
-# $Id: dump.PL,v 1.9 2001-07-18 01:57:01 jon Exp $
+# $Id: dump.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
 
 =head1 SEE ALSO
 

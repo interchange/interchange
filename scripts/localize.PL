@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange localizer
 #
-# $Id: localize.PL,v 1.8 2001-07-18 01:57:01 jon Exp $
+# $Id: localize.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -399,7 +399,7 @@ localize -- produce Interchange localization file from set of pages
 
 =head1 VERSION
 
-# $Id: localize.PL,v 1.8 2001-07-18 01:57:01 jon Exp $
+# $Id: localize.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
 
 =head1 SYNOPSIS
 

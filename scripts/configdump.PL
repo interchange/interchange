@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange configuration dumper
 #
-# $Id: configdump.PL,v 1.9 2001-07-18 01:57:01 jon Exp $
+# $Id: configdump.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
 #
 # Copyright 1999, 2000 by Stefan Hornburg <racke@linuxia.de>
 #
