@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.19.4.5 2000-10-26 20:41:25 racke Exp $
+# $Id: DBI.pm,v 1.19.4.6 2000-11-22 08:40:42 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.19.4.5 $, 10);
+$VERSION = substr(q$Revision: 1.19.4.6 $, 10);
 
 use strict;
 
@@ -113,8 +113,25 @@ sub create {
 #::logDebug("trying create table $tablename");
 	my @call = find_dsn($config);
 	my $dattr = pop @call;
-	my $db = DBI->connect( @call )
-		or die "DBI connect failed: $DBI::errstr\n";
+
+	my $db;
+	eval {
+		$db = DBI->connect( @call );
+	};
+	if(! $db) {
+		my $msg = $@ || $DBI::errstr;
+		if(! $msg) {
+			my($dname);
+			(undef, $dname) = split /:+/, $config->{DSN};
+			eval {
+				DBI->install_driver($dname);
+			};
+			$msg = $@
+					|| $DBI::errstr
+					|| "unknown error. Driver '$dname' installed?";
+		}
+		die "connect failed (create) -- $msg\n";
+	}
 
 	if($config->{HANDLE_ONLY}) {
 		return bless [$config, $tablename, undef, undef, undef, $db], $class;
@@ -243,7 +260,21 @@ sub open_table {
 #::logDebug("db_file: $config->{db_file}");
 #::logDebug("db_file_extended: $config->{db_file_extended}");
 	unless ($db = $DBI_connect_cache{ $config->{dsn_id} }) {
-		$db = DBI->connect( @call );
+		eval {
+			$db = DBI->connect( @call );
+		};
+		if(! $db) {
+			my $msg = $@ || $DBI::errstr;
+			if(! $msg) {
+				my($dname);
+				(undef, $dname) = split /:+/, $config->{DSN};
+				eval {
+					DBI->install_driver($dname);
+				};
+				$msg = $@ || $DBI::errstr || "unknown error. Driver '$dname' installed?";
+			}
+			die "connect failed -- $msg\n";
+		}
 		$DBI_connect_cache{$config->{dsn_id}} = $db;
 #::logDebug("connected to $config->{dsn_id}");
 	}
