@@ -1,3 +1,10 @@
+[calc]
+	$Values->{email} =~ s/^\s+//;
+	$Values->{email} =~ s/\s+$//;
+	$Values->{email} =~ s/[\r\n].*//s;
+	$Values->{name} =~ s/[\r\n].*//s;
+	return;
+[/calc]
 [email
 to="__EMAIL_SERVICE__"
 from="[value name] <[value email]>"
