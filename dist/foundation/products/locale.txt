@@ -1,34 +1,87 @@
 code	en_US	de_DE	fr_FR	nl_NL
 About Us	About Us			Over ons
+Account Maintenance	Account Maintenance			Rekeningonderhoud
+Address	Address			Adres
+Advanced Search	Advanced Search			Uitgebreid zoeken
 April		April	Avril	April
 August		August	Aout	Augustus
+Billing Address	Billing Address			Verzendadres
+Buy it Now!	Buy it Now!			Koop nu!
+Canada	Canada			Canada
+City	City			Plaats
+Company	Company			Bedrijf
+Country	Country			Land
+Daytime Phone	Daytime Phone			Telefoon overdag
 December		Dezember	D&eacute;cembre	December
+Email Address	Email Address			Emailadres
+Evening Phone	Evening Phone			Telefoon avond
 February		Februar	F&eacute;vrier	Februari
+First	First			Eerste
+First Name	First Name			Voornaam
+If different than above	If different than above			Indien anders dan hierboven
+In Stock	In Stock			Op Voorraad
+In Stock Notification	In Stock Notification			Op voorraadmelding
 January		Januar	Janvier	Januari
 July		Juli	Juillet	Juli
 June		Juni	Juin	Juni
+Last	Last			Laatste
+Last Name	Last Name			Achternaam
+Mailing Status	Mailing Status			
 March		M&auml;rz	Mars	Maart
 May		Mai	Mai	Mei
+Next	Next			Volgende
+No	No			Nee
+No change, go to checkout	No change, go to checkout			Geen wijziging, ga naar kassa
 November		November	Novembre	November
 October		Oktober	Octobre	October
 Or send an e-mail to	Or send an e-mail to			Of stuur een e-mail naar
+Other	Other			Ander
+Out Of Stock	Out Of Stock			Niet voorradig
 Please %scontact us%s if you have any questions for us.	Please %scontact us%s if you have any questions for us.			Hebt U nog vragen, neem dan vrijblijvend %scontact%s met ons op.
 Preview	Preview			
+Previous	Previous			Vorige
 PriceDivide	1	0.5409	0.1632	
+Product Views All	Product Views All			
 ProductFiles				
+Put me on these mail lists (if any)	Put me on these mail lists (if any)			Plaats mij op deze emaillijsten (indien aanwezig)
+Quantity	Quantity			Aantal
+Save Acct. Info	Save Acct. Info			
+Save and Checkout	Save and Checkout			
+Search	Search			Zoeken
+Search by Category	Search by Category			Zoek op categorie
+Search by Field	Search by Field			Zoek op veld
+Search for	Search for			Zoek voor
+See also	See also			Zie ook
+See also...	See also...			Zie ook...
+Send an email copy of my receipt	Send an email copy of my receipt			Stuur een copie per email
 September		September	Septembre	September
+Shipping Address	Shipping Address			Verzendadres
+Shipping method	Shipping method			Verzendwijze
 Specials	Specials			Aanbiedingen
+State/Province	State/Province			Staat/Provincie
 Submit	Submit			Verzend
+There were errors in your last submission.	There were errors in your last submission.			Er zijn fouten opgetreden bij de verzending
+They are shown in %sthis color%s below.	They are shown in %sthis color%s below.			Ze zijn hieronder aangegeven in %sdeze kleur%s.
 This is a demo store. If you would like further information on how you can build a store or how you can get custom services, please %svisit our web site%s.	This is a demo store. If you would like further information on how you can build a store or how you can get custom services, please %svisit our web site%s.			Dit is een demonstratie internet winkel. Wilt U meer informatie over hoe uzelf zo'n winkel bouwt of hoe U aangepaste diensten kunt krijgen, %sbezoek dan onze website%s.
+United States	United States			Verenigde Staten
+We need the bold fields to process your order	We need the bold fields to process your order			De vetgedrukte velden zijn nodig voor een correcte verwerking van dit formulier
 Welcome to	Welcome to			Welkom bij
+Yes	Yes			Ja
+You might also like...	You might also like...			Misschien houdt U ook van...
+Zip/Postal Code	Zip/Postal Code			Postcode
+all fields	all fields			alle velden
 currency_symbol	$	DM	FF	
 decimal_point	.	.	.	
 default	1	0	0	
 frac_digits	2	2	2	
+in	in			
+in the category	in the category			in categorie
 mon_decimal_point	.	,	,	
 mon_thousand_sep		 		
 mon_thousands_sep	,	,	.	
 p_cs_precedes	1			
 p_sep_by_space			1	
 price_picture		DM ### ### ###,##		
+primary	primary			primair
 products		de_products	produits	
+will update display	will update display			Ververst het scherm

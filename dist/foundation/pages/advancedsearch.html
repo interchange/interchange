@@ -3,8 +3,8 @@ ui_template: Yes
 ui_template_name: leftright
 [/comment]
 
-[set page_title]__COMPANY__ -- Advanced Search[/set]
-[set page_banner]Advanced Search[/set]
+[set page_title]__COMPANY__ -- [L]Advanced Search[/L][/set]
+[set page_banner][L]Advanced Search[/L][/set]
 [set bgcolor]#FFFFFF[/set]
 
 [control reset=1]
@@ -36,7 +36,7 @@ ui_template_name: leftright
 [component]random[/component]
 [size]3[/size]
 [cols]1[/cols]
-[banner]See also...[/banner]
+[banner][L]See also...[/L][/banner]
 [/control-set]
 
 [control reset=1]
@@ -52,7 +52,7 @@ ui_template_name: leftright
 <td>
 <br>
 
-<big><b>Advanced Search</b></big>
+<big><b>[L]Advanced Search[/L]</b></big>
 <br><br>
 
 <p>
@@ -65,14 +65,14 @@ su=yes
 ml=[scratch matchlimit]
 [/seti]
 <input type=hidden name=mv_profile value=asearch>
-<b>Search by Field:</b><br>
-Search for
+<b>[L]Search by Field[/L]:</b><br>
+[L]Search for[/L]
 <input type=text name=mv_searchspec size=20 maxlength=30>
-in
+[L]in[/L]
 <select name=mv_search_field>
 [loop
 	lr=1
-	list="*	all fields
+	list="*	[L]all fields[/L]
 description	Description
 sku	SKU
 price	Price
@@ -84,7 +84,7 @@ size__MVC_FIELDMUNGE__	Size
 [/loop]
 </select>
 &nbsp;
-<input type="image" alt="Search" src="__THEME_IMG_DIR__go.gif" border=0>
+<input type="image" alt="[L]Search[/L]" src="__THEME_IMG_DIR__go.gif" border=0>
 </form>
 </p>
 
@@ -94,10 +94,10 @@ size__MVC_FIELDMUNGE__	Size
 <input type=hidden name=mv_matchlimit value=[scratch matchlimit]>
 <input type=hidden name=mv_substring_match value="Yes">
 
-<b>Search by Category:</b><br>
-Search for
+<b>[L]Search by Category[/L]:</b><br>
+[L]Search for[/L]
 <input type=text name=mv_searchspec size=20 maxlength=30>
-in the category
+[L]in the category[/L]
 <select name=mv_searchspec>
 [loop
 	search="
@@ -114,7 +114,7 @@ in the category
 [/loop]
 </select>
 &nbsp;
-<input type="image" alt="Search" src="__THEME_IMG_DIR__go.gif" border=0>
+<input type="image" alt="[L]Search[/L]" src="__THEME_IMG_DIR__go.gif" border=0>
 </p>
 
 </form>

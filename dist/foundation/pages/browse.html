@@ -25,20 +25,20 @@ ui_template_name: leftright
 [component]cross[/component]
 [size]2[/size]
 [cols]2[/cols]
-[banner]You might also like...[/banner]
+[banner][L]You might also like...[/L][/banner]
 [/control-set]
 
 [control-set]
 [component]random[/component]
 [size]3[/size]
 [cols]1[/cols]
-[banner]See also[/banner]
+[banner][L]See also[/L][/banner]
 [/control-set]
 
 [control reset=1]
 [set members_only]0[/set]
-[set page_banner]Product Views All[/set]
-[set page_title]__COMPANY__ -- Product Views All[/set]
+[set page_banner][L]Product Views All[/L][/set]
+[set page_title]__COMPANY__ -- [L]Product Views All[/L][/set]
 
 @_LEFTRIGHT_TOP_@
 
@@ -105,18 +105,18 @@ ui_template_name: leftright
 		if($q > 0) {
 return <<EOF;
 	      <td align="center">
-	        <b>In Stock</b>
+	        <b>[L]In Stock[/L]</b>
 	      </td>
 EOF
 		} else {
 return <<EOF;
 	      <td align="center">
-   	        <b>Out Of Stock</b></font>
+   	        <b>[L]Out Of Stock[/L]</b></font>
               </td>
             </tr>
             <tr>
               <td colspan="2">
-		<a href="[area stock-alert [loop-code]]">In Stock Notification</a>
+		<a href="[area stock-alert [loop-code]]">[L]In Stock Notification[/L]</a>
 	      </td>
 EOF
 		}
@@ -125,11 +125,11 @@ EOF
 	    </tr>
 	    <tr> 
 	      <td align="center">
- 	        Quantity:
+ 	        [L]Quantity[/L]:
 		<input type="text" name="mv_order_quantity" size="2" value="1">
 	      </td>
 	      <td align="center"> 
-		<input type="submit" value="Buy it Now!">
+		<input type="submit" value="[L]Buy it Now![/L]">
 	      </td>
 	    </tr>
 
@@ -153,8 +153,8 @@ EOF
 
   [more-list 0 0 0]
     [page-anchor][/page-anchor]
-    [prev-anchor]<LARGE><B>&lt;-- Previous</b></large>[/prev-anchor]
-    [next-anchor]<LARGE><B>Next --&gt;</b></large>[/next-anchor]
+    [prev-anchor]<LARGE><B>&lt;-- [L]Previous[/L]</b></large>[/prev-anchor]
+    [next-anchor]<LARGE><B>[L]Next[/L] --&gt;</b></large>[/next-anchor]
     [more]
   [/more-list]
 
