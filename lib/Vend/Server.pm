@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.5 2000-08-06 19:52:23 heins Exp $
+# $Id: Server.pm,v 1.6 2000-09-10 21:27:37 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.5 $, 10);
+$VERSION = substr(q$Revision: 1.6 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -314,6 +314,8 @@ sub respond {
 # TRACK
         $Vend::StatusLine .= "X-Track: " . $Vend::Track->header() . "\r\n";
 # END TRACK        
+        $Vend::StatusLine .= "Pragma: no-cache\r\n"
+			if delete $::Scratch->{mv_no_cache};
 		print Vend::Server::MESSAGE canon_status($Vend::StatusLine);
 		print Vend::Server::MESSAGE "\r\n";
 		print Vend::Server::MESSAGE $$body;
@@ -343,6 +345,8 @@ sub respond {
 		select $save;
         $Vend::StatusLine .= "X-Track: " . $Vend::Track->header() . "\r\n";
 # END TRACK                            
+        $Vend::StatusLine .= "Pragma: no-cache\r\n"
+			if delete $::Scratch->{mv_no_cache};
 		$status = '200 OK' if ! $status;
 		if(defined $Vend::StatusLine) {
 			$Vend::StatusLine = "HTTP/1.0 $status\r\n$Vend::StatusLine"
