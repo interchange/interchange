@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.159 2003-04-28 15:23:36 mheins Exp $
+# $Id: Interpolate.pm,v 2.160 2003-04-29 18:13:47 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.159 $, 10);
+$VERSION = substr(q$Revision: 2.160 $, 10);
 
 @EXPORT = qw (
 
@@ -5917,6 +5917,8 @@ sub shipping {
 		}
 		elsif ($what =~ /^>>(\w+)/) {
 			my $newmode = $1;
+			local($opt->{redirect_from});
+			$opt->{redirect_from} = $mode;
 			return shipping($newmode, $opt);
 		}
 		elsif ($what eq 'x') {
@@ -6055,7 +6057,7 @@ sub shipping {
 #::logDebug("label start: $label");
 		my %subst = (
 						'%' => '%',
-						M => $mode,
+						M => $opt->{redirect_from} || $mode,
 						T => $total,
 						S => $sel ? ' SELECTED' : '',
 						C => $sel ? ' CHECKED' : '',
@@ -6192,7 +6194,7 @@ sub tag_shipping {
 			$o->{type} = delete $o->{widget};
 			$o->{passed} = join ",", @out;
 			$o->{name} ||= 'mv_shipmode';
-			$o->{default} ||= $::Values->{mv_shipmode};
+			$o->{value} ||= $::Values->{mv_shipmode};
 			$out = Vend::Form::display($o);
 		}
 		else {
