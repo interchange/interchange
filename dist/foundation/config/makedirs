@@ -2,7 +2,8 @@
 
 if [ "x`whoami`" = xroot ]
 then
-	ICUSER=`cat __MVC_RELOCATE____MVC_VENDROOT__/_uid`
+	CATUSER=__MVC_CATUSER__
+	CATGROUP=__MVC_CATGROUP__
 fi
 
 if test "x__MVC_PERMTYPE__" = x -o "x__MVC_PERMTYPE__" = xM -o "x__MVC_PERMTYPE__" = xG
@@ -27,9 +28,10 @@ then
 	ln    -s     $LOGDIR/orders    __MVC_RELOCATE____MVC_CATROOT__
 	chmod $DMODE __MVC_RELOCATE__$LOGDIR/logs
 	chmod $DMODE __MVC_RELOCATE__$LOGDIR/orders
-	if test -n "$ICUSER"
+	if test -n "$CATUSER"
 	then
-		chown $ICUSER.$ICUSER __MVC_RELOCATE____MVC_LOGDIR__/error.log
+		chown $CATUSER __MVC_RELOCATE____MVC_LOGDIR__/error.log
+		chgrp $CATGROUP __MVC_RELOCATE____MVC_LOGDIR__/error.log
 	fi
 else
 	LOGDIR='__MVC_CATROOT__'
@@ -37,6 +39,11 @@ else
 	mkdir -p     __MVC_RELOCATE__$LOGDIR/logs
 	chmod $DMODE __MVC_RELOCATE__$LOGDIR/logs
 	chmod $DMODE __MVC_RELOCATE__$LOGDIR/orders
+	if test -n "$CATUSER"
+	then
+		chown $CATUSER __MVC_RELOCATE____MVC_LOGDIR__/error.log
+		chgrp $CATGROUP __MVC_RELOCATE____MVC_LOGDIR__/error.log
+	fi
 fi
 
 # Make cache directories to store tmps.
@@ -56,11 +63,12 @@ else
 fi
 
 # Fix directory ownership if running as root
-if test -n "$ICUSER"
+if test -n "$CATUSER"
 then
 	for i in $LOGDIR/logs $LOGDIR/orders $CACHEDIR/session $CACHEDIR/tmp
 	do
-		chown $ICUSER.$ICUSER __MVC_RELOCATE__$i
+		chown $CATUSER __MVC_RELOCATE__$i
+		chgrp $CATGROUP __MVC_RELOCATE__$i
 	done
 fi
 

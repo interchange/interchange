@@ -52,7 +52,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.3 2001-08-06 15:41:31 heins Exp $
+# $Id: makecat.PL,v 2.4 2001-08-10 18:59:52 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -1291,6 +1291,7 @@ if ($Conf{interchangegroup}) {
 }
 else {
 	$mvgid = $Windows ? 'nogroup' : (getpwnam($Conf{interchangeuser}))[3];
+	$Conf{interchangegroup} = $Windows ? 'nogroup' : getgrgid($mvgid)
 }
 
 if($Windows) {
@@ -1300,6 +1301,15 @@ else {
 	($catuid,$catgid) = (getpwnam($Conf{catuser}))[2,3];
 	unless (defined $catuid) {
 		die "$Conf{catuser} is not a valid user name on this machine.\n";
+	}
+}
+
+if($isroot) {
+	if(! $Conf{permtype} or $Conf{permtype} =~ /^[MUmu]/) {
+		$Conf{catgroup} = getgrgid($catgid);
+	}
+	else {
+		$Conf{catgroup} = getgrgid($mvgid);
 	}
 }
 
@@ -2259,7 +2269,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.3 2001-08-06 15:41:31 heins Exp $
+# $Id: makecat.PL,v 2.4 2001-08-10 18:59:52 heins Exp $
 
 =head1 INTRODUCTION
 
