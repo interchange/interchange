@@ -8,6 +8,10 @@ sub {
 		push @args, "ui_target=$CGI->{ui_target}";
 	}
 	my $out = '';
+	if ($opt->{page}) {
+		push @args, "ui_return_to=mv_nextpage=$page";
+		$page = $opt->{page};
+	}
 
 	if($type eq 'click') {
 		$out .= qq{mv_nextpage=$page\n} if $page;
