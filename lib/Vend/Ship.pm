@@ -1,6 +1,6 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.6 2004-04-09 03:18:55 mheins Exp $
+# $Id: Ship.pm,v 2.7 2004-07-05 21:46:33 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -848,6 +848,7 @@ sub shipping {
 			return '' if $final == 0;
 			$o->{adder} =~ s/\bx\b/$final/g;
 			$o->{adder} =~ s/\@\@TOTAL\@\\?\@/$final/g;
+			$o->{adder} =~ s/\@\@CRIT\@\\?\@/$total/g;
 			$o->{adder} = $Vend::Interpolate::ready_safe->reval($o->{adder});
 			$final += $o->{adder} if $o->{adder};
 			$final = POSIX::ceil($final) if is_yes($o->{round});
