@@ -1,6 +1,6 @@
 [if value email_copy]
-Sending email copy of order [value mv_order_number] to [value email]: [email	to="[value email]"
-		subject="Thank you for your order [value mv_order_number]!"
+Sending email copy of order [value mv_order_number] to [value email]: [email to="[value email]"
+        subject="Thank you for your order [value mv_order_number]!"
         from=|__COMPANY__ Customer Service <__ORDERS_TO__>| ]
 Dear __COMPANY__ customer,
 
@@ -58,11 +58,11 @@ Quan  Item No.    Description                            Price       Extension
 [column width=16 align=right gutter=0][salestax][/column]
 [/row]
 [row 82]
-	[column width=5 align=right][/column]
-	[column width=12 gutter=1][/column]
-	[column width=32 align=R wrap=1 gutter=1][/column]
-	[column width=15 gutter=1]SHIPPING[/column]
-	[column width=16 align=right gutter=0][shipping][/column]
+    [column width=5 align=right][/column]
+    [column width=12 gutter=1][/column]
+    [column width=32 align=R wrap=1 gutter=1][/column]
+    [column width=15 gutter=1]SHIPPING[/column]
+    [column width=16 align=right gutter=0][shipping][/column]
 [/row]
 
 [row 82]
@@ -82,11 +82,24 @@ Note for Gift
 Should you have a question about your order, or about other __COMPANY__
 products, please reply to this message and let us help.
 
-Always reference your Order Number when calling for a status.
+Always reference your Order Number when calling for a status. [if !session logged_in]
+Or you can check status via this URL:
+
+   [area form='
+            mv_username=[data
+                table=transactions
+                col=username
+                key="[value mv_order_number]"
+                ]
+            mv_password=[value zip]
+            mv_click=Login
+            mv_todo=return
+            mv_nextpage=query/check_orders
+     ']"
 
 Remember, you can always visit our site at:
 
-	__SERVER_NAME__
+    __SERVER_NAME__
 
 Regards and thanks for your business!
 

@@ -25,7 +25,7 @@ DOIT: {
 #
 # MiniVend version 4.0xxx
 #
-# $Id: minivend.PL,v 1.1 2000-05-26 18:50:47 heins Exp $
+# $Id: minivend.PL,v 1.2 2000-05-27 14:03:18 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -1146,7 +1146,7 @@ sub url_history {
 my %action = (
     process	=> \&do_process,
     ui=> sub { 
-					&UI::Primitive::mm_acl_global();
+					&UI::Primitive::ui_acl_global();
 					\&do_process(@_);
 				   },
     minimate=> sub { 

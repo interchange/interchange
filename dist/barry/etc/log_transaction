@@ -1,3 +1,4 @@
+#### begin [value mv_order_number] #####
 [seti transaction_record]
 [tag flag write]transactions orderline userdb[/tag]
 [if !session logged_in]
@@ -83,7 +84,7 @@ status: pending
 [/item-list][/try]
 [catch] There was an error adding to the transaction log. [/catch]
 [if scratch auto_create]
-	[userdb logout]
+	Logout auto-created user: [userdb logout]
 	[value name=mv_username set=""]
 [/if]
 [comment][perl] Log("Past add data entry."); [/perl][/comment]
@@ -95,3 +96,4 @@ status: pending
 	$out =~ s/\s+$//;
 	return $out;
 [/perl]
+#### end [value mv_order_number] #####
