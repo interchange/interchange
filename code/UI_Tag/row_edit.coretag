@@ -2,6 +2,7 @@ UserTag row-edit HasEndTag
 UserTag row-edit Order key table size columns
 UserTag row-edit addAttr
 UserTag row-edit Interpolate 1
+UserTag row-edit Version $Revision: 1.8 $
 UserTag row-edit Routine <<EOR
 sub {
 	my ($key,$table,$size,$columns,$opt) = @_;
@@ -115,7 +116,7 @@ sub {
 	}
 	my $tmp;
 
-	$size = $size || $view->{width} || 12;
+	$size = $size || $view->{spread_width} || $view->{width} || 12;
 	if($bad) {
 		for(@cols) {
 			$out .= "<TD$tf_extra>$bad</TD>";
