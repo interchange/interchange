@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.83 2002-07-09 15:17:05 mheins Exp $
+# $Id: Interpolate.pm,v 2.84 2002-07-12 23:08:43 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.83 $, 10);
+$VERSION = substr(q$Revision: 2.84 $, 10);
 
 @EXPORT = qw (
 
@@ -3552,7 +3552,17 @@ sub find_sort {
 		$more_id,
 		$form_arg,
 		$session,
+		$link_template,
 		);
+
+sub more_link_template {
+	my ($anchor, $arg, $form_arg) = @_;
+	my $url = tag_area( "scan/MM=$arg", '', { form => $form_arg } );
+	my $lt = $link_template;
+	$lt =~ s/\$URL\$/$url/g;
+	$lt =~ s/\$ANCHOR\$/$anchor/g;
+	return $lt;
+}
 
 sub more_link {
 	my($inc, $pa) = @_;
@@ -3577,11 +3587,7 @@ sub more_link {
 	else {
 		$pa =~ s/__BORDER__/$border/e;
 		$arg = "$session:$next:$last:$chunk";
-		$list .= '<A HREF="';
-		$list .= tag_area( "scan/MM=$arg", '', { form => $form_arg });
-		$list .= '">';
-		$list .= $pa;
-		$list .= '</A> ';
+		$list .= more_link_template($pa, $arg, $form_arg) . ' ';
 	}
 	return $list;
 }
@@ -3631,6 +3637,9 @@ sub tag_more_list {
 		$border =~ s/\D//g;
 	}
 
+	$r =~ s:\[link[-_]template\]($All)\[/link[-_]template\]::i;
+	$link_template = $1 || '<A HREF="$URL$">$ANCHOR$</A>';
+
 	if(! $chunk or $chunk >= $total) {
 		return '';
 	}
@@ -3663,11 +3672,7 @@ sub tag_more_list {
 			$arg .= ':';
 			$arg .= $first - 1;
 			$arg .= ":$chunk";
-			$list .= '<A HREF="';
-			$list .= tag_area( "scan/MM=$arg", '', { form => $form_arg });
-			$list .= '">';
-			$list .= $prev_anchor;
-			$list .= '</A> ';
+			$list .= more_link_template($prev_anchor, $arg, $form_arg) . ' ';
 		}
 	}
 	else {
@@ -3689,11 +3694,7 @@ sub tag_more_list {
 		$last = $next + $chunk - 1;
 		$last = $last > ($total - 1) ? $total - 1 : $last;
 		$arg = "$session:$next:$last:$chunk";
-		$next_tag .= '<A HREF="';
-		$next_tag .= tag_area( "scan/MM=$arg", '', { form => $form_arg });
-		$next_tag .= '">';
-		$next_tag .= $next_anchor;
-		$next_tag .= '</A>';
+		$next_tag .= more_link_template($next_anchor, $arg, $form_arg) . ' ';
 	}
 	else {
 		$r =~ s:\[next[-_]anchor\]($All)\[/next[-_]anchor\]::i;
@@ -3757,11 +3758,8 @@ sub tag_more_list {
 	if ($q->{mv_alpha_list}) {
 		for my $record (@{$q->{mv_alpha_list}}) {
 			$arg = "$session:$record->[2]:$record->[3]:" . ($record->[3] - $record->[2] + 1);
-			$list .= '<A HREF="';
-			$list .= tag_area( "scan/MM=$arg", '', { form => $form_arg });
-			$list .= '">';
-			$list .= substr($record->[0],0,$record->[1]);
-			$list .= '</A> ';
+			my $letters = substr($record->[0], 0, $record->[1]);
+			$list .= more_link_template($letters, $arg, $form_arg) . ' ';
 		}
 	} else {
 		foreach $inc ($b .. $e) {
