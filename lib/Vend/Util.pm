@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.10 2001-02-05 13:28:44 heins Exp $
+# $Id: Util.pm,v 1.14.2.11 2001-02-25 18:19:21 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -79,7 +79,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.10 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.11 $, 10);
 
 BEGIN {
 	eval {
@@ -132,8 +132,6 @@ sub escape_chars {
     }
 
     # safe now
-    $r =~ /(.*)/;
-    $r = $1;
     return $r;
 }
 
@@ -1276,7 +1274,7 @@ sub check_authorization {
 	}
 	else {
 		$pwinfo = $Vend::Cfg->{UserDatabase} unless $pwinfo;
-		undef $use_crypt unless $::Variable->{MV_USE_CRYPT};
+		undef $use_crypt if $::Variable->{MV_NO_CRYPT};
 		$cmp_pw = Vend::Interpolate::tag_data($pwinfo, 'password', $user)
 			if defined $Vend::Cfg->{Database}{$pwinfo};
 	}
