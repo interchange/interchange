@@ -1,8 +1,11 @@
-interchange (4.8.6-1) unstable; urgency=low
+interchange (4.8.6-0.1) unstable; urgency=low
 
   * new upstream release
-
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu,  9 May 2002 11:41:05 +0200
+  * turned Depends of libapache-mod-interchange on interchange into a
+    Suggests (interchange might be running on a remote host), thanks to
+    Christopher F.Miller <cfm.maine.com> for the suggestion
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 21 May 2002 12:45:33 +0200
 
 interchange (4.8.5-1) unstable; urgency=high
 
