@@ -577,7 +577,6 @@ dist/lib/UI/pages/admin/wizard/index.html
 dist/lib/UI/pages/admin/wizard/step_about.html
 dist/lib/UI/pages/admin/wizard/step_company.html
 dist/lib/UI/pages/admin/wizard/step_email.html
-dist/lib/UI/pages/admin/wizard/step_finalize.html
 dist/lib/UI/pages/admin/wizard/step_groupcontent.html
 dist/lib/UI/pages/admin/wizard/step_grouppolicy.html
 dist/lib/UI/pages/admin/wizard/step_index.html
