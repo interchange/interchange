@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.18 2002-11-15 13:43:11 mheins Exp $
+# $Id: Editor.pm,v 1.19 2002-11-20 18:52:17 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.18 $, 10);
+$VERSION = substr(q$Revision: 1.19 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -162,8 +162,9 @@ sub meta_record {
 #::logDebug("meta_record: item=$item view=$view mdb=$mdb");
 	return undef unless $item;
 
+	my $mtable;
 	if(! ref ($mdb)) {
-		my $mtable = $mdb || $::Variable->{UI_META_TABLE} || 'mv_metadata';
+		$mtable = $mdb || $::Variable->{UI_META_TABLE} || 'mv_metadata';
 #::logDebug("meta_record mtable=$mtable");
 		$mdb = database_exists_ref($mtable)
 			or return undef;
@@ -174,7 +175,7 @@ sub meta_record {
 
 	my $mkey = $view ? "${view}::$item" : $item;
 
-	if(ref $mdb eq 'HASH') {
+	if(! $mtable) {
 		$record = $mdb;
 	}
 	else {
@@ -182,7 +183,7 @@ sub meta_record {
 #::logDebug("used mkey=$mkey to select record=$record");
 	}
 
-	$record ||= $mdb->row_hash($item) if $view;
+	$record ||= $mdb->row_hash($item) if $view and $mdb;
 #::logDebug("meta_record  record=$record");
 
 	return undef if ! $record;
@@ -982,6 +983,55 @@ for(@cgi_opts) {
 	push @hmap, [ qr/ui_te_$_:/, $_ ];
 }
 
+my %ignore_cgi = qw/
+					item_id				1
+					item_id_left		1
+					mv_pc				1
+					mv_action           1
+					mv_todo             1
+					mv_ui               1
+					mv_data_table       1
+					mv_session_id       1
+					mv_nextpage         1
+					ui_sequence_edit	1
+				  /;
+sub save_cgi {
+	my $ref = {};
+	my @k; 
+	if($CGI::values{save_cgi}) {
+		@k = split /\0/, $CGI::values{save_cgi};
+	}
+	else {
+		@k = grep ! $ignore_cgi{$_}, keys %CGI::values;
+	}
+
+	# Can be an array because of produce_hidden
+	$ref->{save_cgi} = \@k;
+
+	for(@k) {
+		$ref->{$_} = $CGI::values{$_};
+	}
+	return $ref;
+}
+
+sub produce_hidden {
+	my ($key, $val) = @_;
+	return unless length $val;
+	my @p; # pieces of var
+	my @o; # output
+	if(ref($val) eq 'ARRAY') {
+		@p = @$val;
+	}
+	else {
+		@p = split /\0/, $val;
+	}
+	for(@p) {
+		s/"/&quot;/g;
+		push @o, qq{<input type=hidden name="$key" value="$_">\n};
+	}
+	return join "", @o;
+}
+
 sub resolve_options {
 	my ($opt, $CGI, $data) = @_;
 
@@ -1109,6 +1159,7 @@ sub resolve_options {
 		data_row_class
 		data_row_style
 		default_widget
+		display_type
 		file_upload
 		help_cell_class
 		help_cell_style
@@ -1117,6 +1168,7 @@ sub resolve_options {
 		include_form
 		include_form_expand
 		include_form_interpolate
+		intro_text
 		label_cell_class
 		label_cell_style
 		left_width
@@ -1407,13 +1459,36 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 
 	my @messages;
 	my @errors;
+	my $pass_return_to;
 
 #::logDebug("key at beginning: $key");
 	$opt->{mv_data_table} = $table if $table;
-	$opt->{item_id}		  = $key if $key;
 	$opt->{table}		  = $opt->{mv_data_table};
 	$opt->{ui_meta_view}  ||= $CGI->{ui_meta_view} if $opt->{cgi};
 
+	$key ||= $opt->{item_id};
+
+	if($opt->{cgi}) {
+		$key ||= delete $CGI->{item_id};
+		$opt->{item_id_left} ||= delete $CGI::values{item_id_left};
+		$opt->{ui_sequence_edit} ||= delete $CGI::values{ui_sequence_edit};
+	}
+
+	if($key =~ /\0/ or (! $key and $key = delete $opt->{item_id_left}) ) {
+		delete $opt->{ui_sequence_edit};
+		if($key =~ s/\0(.*)//s or $key =~ s/,(.*)//s ) {
+			$opt->{item_id_left} = $1;
+			$opt->{ui_sequence_edit} = 1;
+		}
+	}
+
+	$opt->{item_id} = $key;
+
+	$pass_return_to = save_cgi() if $opt->{ui_sequence_edit};
+
+#::logDebug("item_id_left=" . ::uneval($opt->{item_id_left}));
+#::logDebug("pass_return_to=" . ::uneval($pass_return_to));
+#::logDebug("ui_sequence_edit=$opt->{ui_sequence_edit}");
 	my $data;
 	my $exists;
 	my $db;
@@ -1424,7 +1499,7 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	unless($opt->{notable}) {
 		# From Vend::Data
 		my $tab = $table || $opt->{mv_data_table} || $CGI->{mv_data_table};
-		my $key = $key || $opt->{item_id} || $CGI->{item_id};
+		my $key = $opt->{item_id} || $CGI->{item_id};
 		$db = database_exists_ref($tab);
 
 		if($db) {
@@ -1486,11 +1561,15 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	my $blabel = $opt->{blabel};
 	my $elabel = $opt->{elabel};
 	my $mlabel = '';
+	my $hidden = $opt->{hidden} ||= {};
 
 	my $ntext;
 	my $btext;
 	my $ctext;
-	unless ($opt->{wizard} || $opt->{nosave}) {
+	if($pass_return_to) {
+		delete $::Scratch->{$opt->{next_text}};
+	}
+	elsif (! $opt->{wizard} and ! $opt->{nosave}) {
 		$::Scratch->{$opt->{next_text}} = $Tag->return_to('click', 1);
 	}
 	else {
@@ -1556,12 +1635,12 @@ EOF
 	if($opt->{ui_profile} or $check) {
 		$Tag->error( { all => 1 } )
 			unless $CGI->{mv_form_profile} or $opt->{keep_errors};
-		my $prof = $opt->{ui_profile} || '';
+		my $prof = $opt->{ui_profile} || "&update=yes\n";
 		if ($prof =~ s/^\*//) {
 			# special notation ui_profile="*whatever" means
 			# use automatic checklist-related profile
 			my $name = $prof;
-			$prof = $::Scratch->{"profile_$name"} || '';
+			$prof = $::Scratch->{"profile_$name"} || "&update=yes\n";
 			if ($prof) {
 				$prof =~ s/^\s*(\w+)[\s=]+required\b/$1=mandatory/mg;
 				for (grep /\S/, split /\n/, $prof) {
@@ -1606,7 +1685,6 @@ EOF
 				$prof .= "$_=mandatory\n";
 			}
 		}
-		$opt->{hidden} = {} if ! $opt->{hidden};
 		$opt->{hidden}{mv_form_profile} = 'ui_profile';
 		my $fail = $opt->{mv_failpage} || $Global::Variable->{MV_PAGE};
 
@@ -1940,15 +2018,7 @@ EOF
 	$opt->{href} = "$url_base/$opt->{href}"
 		if $opt->{href} !~ m{^(https?:|)/};
 
-	my $sidstr;
-	if ($opt->{get}) {
-		$opt->{method} = 'GET';
-		$sidstr = '';
-	} else {
-		$opt->{method} = 'POST';
-		$sidstr = qq{<INPUT TYPE=hidden NAME=mv_session_id VALUE="$Vend::Session->{id}">
-};
-	}
+	$opt->{method} = $opt->{get} ? 'GET' : 'POST';
 
 	my $wo = $opt->{widgets_only};
 
@@ -1965,12 +2035,16 @@ EOF
 	chunk 'FORM_BEGIN', <<EOF; # unless $wo;
 $restrict_begin<FORM METHOD=$opt->{method} ACTION="$opt->{href}"$opt->{enctype}$opt->{form_extra}>
 EOF
+
+    $hidden->{mv_click}      = $opt->{process_filter};
+    $hidden->{mv_todo}       = $opt->{action};
+    $hidden->{mv_nextpage}   = $opt->{mv_nextpage};
+    $hidden->{mv_data_table} = $table;
+    $hidden->{mv_data_key}   = $keycol;
+
 	chunk 'HIDDEN_ALWAYS', <<EOF;
-$sidstr<INPUT TYPE=hidden NAME=mv_todo VALUE="$opt->{action}">
+<INPUT TYPE=hidden NAME=mv_session_id VALUE="$Vend::Session->{id}">
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_filter">
-<INPUT TYPE=hidden NAME=mv_nextpage VALUE="$opt->{mv_nextpage}">
-<INPUT TYPE=hidden NAME=mv_data_table VALUE="$table">
-<INPUT TYPE=hidden NAME=mv_data_key VALUE="$keycol">
 EOF
 
 	my @opt_set = (qw/
@@ -1985,36 +2059,23 @@ EOF
 						mv_update_empty
 						mv_data_auto_number
 						mv_data_function
-				/ );
+				/);
 
 	my @cgi_set = ( qw/
 						item_id_left
 						ui_sequence_edit
 					/ );
 
-	push(@opt_set, splice(@cgi_set, 0)) if $opt->{cgi};
-
-  OPTSET: {
-  	my @o;
-	for(@opt_set) {
-		next unless length $opt->{$_};
-		my $val = $opt->{$_};
-		$val =~ s/"/&quot;/g;
-		push @o, qq{<INPUT TYPE=hidden NAME=$_ VALUE="$val">\n}; # unless $wo;
+	for my $k (@opt_set, @cgi_set) {
+		$opt->{hidden}{$k} = $opt->{$k};
 	}
-	chunk 'HIDDEN_OPT', '', join("", @o);
-  }
 
-  CGISET: {
-	my @o;
-	for (@cgi_set) {
-		next unless length $CGI->{$_};
-		my $val = $CGI->{$_};
-		$val =~ s/"/&quot;/g;
-		push @o, qq{<INPUT TYPE=hidden NAME=$_ VALUE="$val">\n}; # unless $wo;
+	if($pass_return_to) {
+		while( my($k, $v) = each %$pass_return_to) {
+			next if defined $opt->{hidden}{$k};
+			$opt->{hidden}{$k} = $pass_return_to->{$k};
+		}
 	}
-	chunk 'HIDDEN_CGI', '', join("", @o);
-  }
 
 	if($opt->{mailto}) {
 		$opt->{mailto} =~ s/\s+/ /g;
@@ -2024,7 +2085,7 @@ EOF
 
 	$Vend::Session->{ui_return_stack} ||= [];
 
-	if($opt->{cgi}) {
+	if($opt->{cgi} and ! $pass_return_to) {
 		my $r_ary = $Vend::Session->{ui_return_stack};
 
 #::logDebug("ready to maybe push/pop return-to from stack, stack = " . ::uneval($r_ary));
@@ -2043,7 +2104,7 @@ EOF
 		my ($hk, $hv);
 		my @o;
 		while ( ($hk, $hv) = each %{$opt->{hidden}} ) {
-			push @o, qq{<INPUT TYPE=hidden NAME="$hk" VALUE="$hv">\n};
+			push @o, produce_hidden($hk, $hv);
 		}
 		chunk 'HIDDEN_USER', join("", @o); # unless $wo;
 	}
@@ -2061,8 +2122,17 @@ EOF
 </tr>
 EOF
 
-	  #### Extra buttons
-      my $extra_ok =	$blob_widget
+	if ($opt->{intro_text}) {
+#::logDebug("intro_text=$opt->{intro_text}");
+		chunk ttag(), <<EOF;
+<tr> 
+	<td colspan=$span class=$opt->{title_cell_class}>$opt->{intro_text}</td>
+</tr>
+EOF
+	}
+
+	#### Extra buttons
+	my $extra_ok =	$blob_widget
 	  					|| $linecount > 4
 						|| defined $opt->{include_form}
 						|| $mlabel;
@@ -2336,15 +2406,15 @@ EOF
 	$keycol = $cols[0] if ! $keycol;
 
 	if($opt->{defaults}) {
-			if($opt->{force_defaults}) {
+		if($opt->{force_defaults}) {
 			$default->{$_} = $def->{$_} for @cols;
-			}
-			elsif($opt->{wizard}) {
+		}
+		elsif($opt->{wizard}) {
 			for(@cols) {
 				$default->{$_} = $def->{$_} if defined $def->{$_};
 			}
 		}
-			else {
+		else {
 			for(@cols) {
 				next if defined $default->{$_};
 				next unless defined $def->{$_};
@@ -2401,9 +2471,11 @@ EOF
 	}
 
  	my $row_template = convert_old_template($opt->{row_template});
-	
+
+#::logDebug("display_type='$opt->{display_type}' row_template length=" . length($row_template));
+
 	if(! $row_template) {
-		if($opt->{simple_row}) {
+		if($opt->{simple_row} || $opt->{display_type} eq 'simple_row') {
 			$row_template = <<EOF;
    <td$opt->{label_cell_extra}> 
      {BLABEL}{LABEL}{ELABEL}
@@ -2428,6 +2500,24 @@ EOF
        </tr>
      </table>
    </td>
+EOF
+		}
+		elsif($opt->{display_type} eq 'over_under') {
+			$row_template = <<EOF;
+{HELP?}
+	<td colspan=2$opt->{help_cell_extra}>
+		{HELP}
+	</td>
+</tr>
+<tr>
+{/HELP?}	<td colspan=2$opt->{label_cell_extra}>
+		{LABEL}
+	</td>
+</tr>
+<tr>
+	<td colspan=2$opt->{widget_cell_extra}>
+		{WIDGET}
+	</td>
 EOF
 		}
 		else {
@@ -2763,7 +2853,7 @@ $l_pkey</td>};
 		elsif (defined $default->{$c} and ! length($data->{$c}) ) {
 			$currval = $default->{$c};
 			$overridden = 1;
-#::logDebug("hit default setting for $col,currval=$currval");
+#::logDebug("hit preload for $col,currval=$currval");
 		}
 		else {
 #::logDebug("hit data->col for $col, t=$t, c=$c, k=$k, currval=$currval");
@@ -3151,9 +3241,7 @@ EOF
 	}
 	chunk_alias 'HIDDEN_FIELDS', qw/
 										HIDDEN_ALWAYS
-										HIDDEN_OPT
-										HIDDEN_CGI
-										HIDDEN_USER
+										HIDDEN_AUTO
 										HIDDEN_EXTRA
 										/;
 	chunk_alias 'BOTTOM_BUTTONS', qw/

@@ -148,6 +148,7 @@ code/UI_Tag/list_databases.coretag
 code/UI_Tag/list_glob.coretag
 code/UI_Tag/list_keys.coretag
 code/UI_Tag/list_pages.coretag
+code/UI_Tag/menu_load.coretag
 code/UI_Tag/meta_record.coretag
 code/UI_Tag/mm_locale.coretag
 code/UI_Tag/mm_value.coretag
@@ -282,6 +283,7 @@ dist/foundation/dbconf/default_db/orderline.dbm
 dist/foundation/dbconf/default_db/pricing.dbm
 dist/foundation/dbconf/default_db/products.dbm
 dist/foundation/dbconf/default_db/state.dbm
+dist/foundation/dbconf/default_db/survey.dbm
 dist/foundation/dbconf/default_db/transactions.dbm
 dist/foundation/dbconf/default_db/tree.dbm
 dist/foundation/dbconf/default_db/userdb.dbm
@@ -308,6 +310,7 @@ dist/foundation/dbconf/mysql/orderline.mysql
 dist/foundation/dbconf/mysql/pricing.mysql
 dist/foundation/dbconf/mysql/products.mysql
 dist/foundation/dbconf/mysql/state.mysql
+dist/foundation/dbconf/mysql/survey.dbm
 dist/foundation/dbconf/mysql/transactions.mysql
 dist/foundation/dbconf/mysql/tree.mysql
 dist/foundation/dbconf/mysql/userdb.mysql
@@ -333,6 +336,7 @@ dist/foundation/dbconf/oracle/orderline.ora
 dist/foundation/dbconf/oracle/pricing.ora
 dist/foundation/dbconf/oracle/products.ora
 dist/foundation/dbconf/oracle/state.ora
+dist/foundation/dbconf/oracle/survey.dbm
 dist/foundation/dbconf/oracle/transactions.ora
 dist/foundation/dbconf/oracle/tree.ora
 dist/foundation/dbconf/oracle/userdb.ora
@@ -359,6 +363,7 @@ dist/foundation/dbconf/pgsql/pgsql.cfg
 dist/foundation/dbconf/pgsql/pricing.pgsql
 dist/foundation/dbconf/pgsql/products.pgsql
 dist/foundation/dbconf/pgsql/state.pgsql
+dist/foundation/dbconf/pgsql/survey.dbm
 dist/foundation/dbconf/pgsql/transactions.pgsql
 dist/foundation/dbconf/pgsql/tree.pgsql
 dist/foundation/dbconf/pgsql/userdb.pgsql
@@ -625,6 +630,7 @@ dist/foundation/pages/ship_addresses_removed.html
 dist/foundation/pages/splash.html
 dist/foundation/pages/stock-alert-added.html
 dist/foundation/pages/stock-alert.html
+dist/foundation/pages/survey/standard.html
 dist/foundation/pages/swap_results.html
 dist/foundation/products/2ndDayAir.csv
 dist/foundation/products/450.csv
@@ -653,6 +659,7 @@ dist/foundation/products/route.txt
 dist/foundation/products/salestax.asc
 dist/foundation/products/shipping.asc
 dist/foundation/products/state.txt
+dist/foundation/products/survey.txt
 dist/foundation/products/transactions.txt
 dist/foundation/products/tree.txt
 dist/foundation/products/userdb.txt
@@ -1023,6 +1030,9 @@ dist/lib/UI/pages/admin/special/.autoload
 dist/lib/UI/pages/admin/special/key_violation.html
 dist/lib/UI/pages/admin/spread.html
 dist/lib/UI/pages/admin/spread_control.html
+dist/lib/UI/pages/admin/survey/index.html
+dist/lib/UI/pages/admin/survey/overall.html
+dist/lib/UI/pages/admin/survey/question.html
 dist/lib/UI/pages/admin/tablereport.html
 dist/lib/UI/pages/admin/tax.html
 dist/lib/UI/pages/admin/tax_simple.html

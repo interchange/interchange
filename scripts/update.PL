@@ -3,7 +3,7 @@
 #
 # Interchange database updater
 #
-# $Id: update.PL,v 2.2 2002-06-27 18:55:50 jon Exp $
+# $Id: update.PL,v 2.3 2002-11-20 18:52:17 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -208,6 +208,8 @@ close GLOBAL;
 global_config();
 
 chdir $dir or die "Couldn't change directory to $dir: $!\n";
+
+$Vend::ExternalProgram = $Vend::Quiet = 1;
 
 $Vend::Cfg = config($name, $dir, "$dir/etc", ($subconfig || undef));
 $::Variable = $Vend::Cfg->{Variable};

@@ -1,0 +1,52 @@
+[calc]
+	$Values->{mv_data_table} = $CGI->{mv_data_table} = 'survey_q';
+	$CGI->{no_dbmenu} = 1;
+	return;
+[/calc]
+[set table_perm]1[/set]
+[set ui_class]Admin[/set]
+[set page_title][L]Set up a survey[/L][/set]
+[set help_name]survey.main[/set]
+[set icon_name]icon_config.gif[/set]
+@_UI_STD_HEAD_@
+
+<!-- BEGIN REAL STUFF -->
+
+<blockquote>
+
+<form action="[area __UI_BASE__/survey/overall]">
+<input type=hidden name=mv_action value=back>
+<input type=hidden name=mv_session_id value="[data session_id]">
+<input type=hidden name="mv_filter:item_id" value=word>
+New survey name: <input type=text size=16 name=item_id>
+<br>
+<input type=submit value="[L]Create[/L]">
+</form>
+
+Edit an existing survey:
+<ul>
+[loop search="
+		ml=1000
+		fi=survey
+		st=db
+		co=yes
+		se=master
+		sf=type
+		op=eq
+		rf=code,label
+	  "]
+<li>[page href="__UI_BASE__/survey/overall" form="item_id=[loop-code]"][loop-code] -- [loop-param label]</A></li>
+[/loop]
+</ul>
+</blockquote>
+
+<blockquote>
+<h2>Access survey results</h2>
+
+	[file-navigator initial_dir="logs/survey" no-up=1 no-new-file=1]
+
+</blockquote>
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ version: $Id: index.html,v 1.1 2002-11-20 18:52:17 mheins Exp $ -->

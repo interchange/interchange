@@ -7,7 +7,7 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 006	Admin	x006					admin/preferences		Preferences		0								
 007	Admin	x007		`$CGI->{mv_data_table} eq 'variable' or $CGI->{mv_data_table} && return -1`			admin/flex_select	mv_data_table=variable&page_title=Knar%20editor&ui_meta_specific=1&doing_knar=1&help_name=knar.main&ui_description_fields=code&ui_return_to=admin/flex_select&ui_return_to=mv_data_table=variable&ui_return_to=page_title=Knar%20Editor	Knar	1	1								1
 008	Admin	x008					admin/gentable		Tables		0								
-009	Admin	x009					admin/auto_wizard		Wizard		0								
+009	Admin	x009					admin/survey/index		Surveys		0	Create polls, surveys, and mail forms	survey						
 010	Admin	x010					admin/test_code		Test code		0								
 011	Admin	x011					admin/reconfig		&nbsp;&nbsp;&nbsp;Apply Changes		0								
 012	Admin	x012	1		no_dbmenu	mv_data_table	admin/flex_select	mv_data_table=[cgi mv_data_table]	Edit		0								

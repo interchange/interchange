@@ -1,17 +1,13 @@
-[perl tables="__UI_META_TABLE__"]
+[calc]
 	$CGI->{mv_data_table} = $Config->{ProductFiles}[0];
 	$CGI->{ui_hide_key} = 1 unless $CGI->{ui_new_item};
-
-	if(! $CGI->{ui_return_to} or $CGI->{ui_sequence_edit}) {
-		my @args = (
-			 '__UI_BASE__/item',
-			 "item_id_left=$CGI->{item_id_left}",
-			 "ui_sequence_edit=$CGI->{ui_sequence_edit}",
-		);
-		$CGI->{ui_return_to} = join "\0", @args;
-	}
+	$CGI->{ui_return_to} ||= '__UI_BASE__/item';
+	$Tag->tmpn('tmp_item_id');
+	$Scratch->{tmp_item_id} = $CGI->{item_id} || $CGI->{item_id_left};
+	$Scratch->{tmp_item_id} =~ s/\0.*//
+		or $Scratch->{tmp_item_id} =~ s/,.*//;
 	return;
-[/perl]
+[/calc]
 
 [if cgi ui_new_item]
 	[loop list="__MV_ITEM_TABLES__"]
@@ -33,7 +29,7 @@
 [/if]
 
 [set ui_class]Items[/set]
-[seti page_title][L]Item editor[/L]: [cgi item_id][/seti]
+[seti page_title][L]Item editor[/L]: [scratch tmp_item_id][/seti]
 [set help_name]edit.item[/set]
 [set icon_name]icon_item.gif[/set]
 
@@ -41,7 +37,7 @@
 [if cgi ui_new_item]
 	[msg]New item[/msg]
 [else]
-	[msg arg.0="<B>[cgi item_id]</B>"]edit item %s[/msg]
+	[msg arg.0="<B>[scratch tmp_item_id]</B>"]edit item %s[/msg]
 [/else]
 [/if]
 [/tmp]
@@ -80,4 +76,4 @@
 [/if-mm]
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Revision: 2.4 $ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.5 $ -->

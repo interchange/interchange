@@ -3,7 +3,7 @@
 #
 # Interchange version 4.9.3
 #
-# $Id: interchange.PL,v 2.60 2002-10-25 01:49:36 mheins Exp $
+# $Id: interchange.PL,v 2.61 2002-11-20 18:52:17 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and others.
 # http://www.icdevgroup.org/
@@ -254,7 +254,6 @@ use autouse 'Vend::Control' => qw/
 #											add_items
 #											check_order
 #											check_required
-#											cyber_charge
 #   										encrypt_standard_cc
 #   										mail_order
 #   										onfly

@@ -68,39 +68,6 @@
 	$Scratch->{ui_class} = $CGI->{ui_class}
 		if $CGI->{ui_class}
 		&&  $CGI->{ui_class} =~ /^\w+$/;
-	if($CGI->{ui_sequence_edit}) {
-		my $doit;
-		if($CGI->{item_id_left} =~ s/^(.*?),//) {
-			$CGI->{item_id} = $1;
-			$doit = 1;
-		}
-		elsif ($CGI->{item_id_left}) {
-			$CGI->{item_id} = delete $CGI->{item_id_left};
-			delete $CGI->{ui_sequence_edit};
-			$doit = 1;
-		}
-		else {
-			delete $CGI->{item_id};
-			delete $CGI->{ui_sequence_edit};
-		}
-		return unless $doit;
-		$Scratch->{ui_location}
-				= $Tag->area( {
-						href => '__UI_BASE__/flex_editor',
-						secure => $Scratch->{page_secure},
-						form => qq{
-							mv_data_table=$CGI->{mv_data_table}
-							item_id=$CGI->{item_id}
-							item_id_left=$CGI->{item_id_left}
-							ui_sequence_edit=$CGI->{ui_sequence_edit}
-							ui_return_to=__UI_BASE__/flex_select
-							ui_return_to=mv_data_table=$CGI->{mv_data_table}
-							ui_return_to=ui_sequence_edit=$CGI->{ui_sequence_edit}
-							ui_page_banner=Edit next key $CGI->{item_id}
-						},
-					});
-		return;
-	}
 
 	my $tab = $CGI->{mv_data_table} or return;
 	if($tab =~ s/\.(txt|asc)$/_$1/) {
@@ -443,11 +410,12 @@ EOF
 	<INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
 	[if cgi ui_meta_view]
 	[return-to]
+	<!-- got a return-to -->
 	[else]
+	<!-- got no return-to -->
 	<INPUT TYPE=hidden NAME=ui_meta_specific VALUE="[cgi ui_meta_specific]">
 	<INPUT TYPE=hidden NAME=ui_page_title    VALUE="[cgi ui_page_title]">
-	<INPUT TYPE=hidden NAME=ui_page_title    VALUE="[cgi ui_page_banner]">
-	<INPUT TYPE=hidden NAME=ui_meta_specific VALUE="[cgi ui_meta_specific]">
+	<INPUT TYPE=hidden NAME=ui_page_banner   VALUE="[cgi ui_page_banner]">
 	<INPUT TYPE=hidden NAME=ui_limit_fields VALUE="[cgi ui_limit_fields]">
 	<INPUT TYPE=hidden NAME=ui_show_fields VALUE="[cgi ui_show_fields]">
 	<INPUT TYPE=hidden NAME=ui_return_to     VALUE="@@MV_PAGE@@">
@@ -586,18 +554,7 @@ sub {
 [on-match]
 [if !cgi ui_meta_view]
 [button text="[L]Edit checked records in sequence[/L]"]
-ui_sequence_edit=[calc]
-	$CGI->{item_id_left} = $CGI->{item_id};
-	$CGI->{item_id_left} =~ s/\0+/,/g;
-	if($CGI->{item_id_left} =~ s/^(.*?),//) {
-		$CGI->{item_id} = $1;
-		return 1;
-	}
-	else {
-		delete $CGI->{item_id_left};
-		return '';
-	}
-[/calc]
+ui_sequence_edit=1
 mv_nextpage=__UI_BASE__/flex_editor
 mv_todo=return
 [/button]
@@ -621,4 +578,4 @@ mv_click=db_maintenance
 [update values]
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ Revision: $Id: flex_select.html,v 2.16 2002-10-11 18:42:47 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ Revision: $Id: flex_select.html,v 2.17 2002-11-20 18:52:17 mheins Exp $ -->
