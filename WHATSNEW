@@ -85,6 +85,9 @@ UserTag
 
 * Add option to specify useragent to get_url tag.
 
+* Add locale option to [convert-date] following a suggestion from 
+  Rene Hertell" <rene@hertell.com>.
+
 UI
 --
 
