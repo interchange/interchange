@@ -4,6 +4,8 @@ About Us	About Us			Over ons
 Account Maintenance	Account Maintenance			Rekeningonderhoud
 Account Management Functions	Account Management Functions			Functies rekeningonderhoud
 Account active	Account active			Rekening actief
+Action	Action			Actie
+Add address	Add address			Adres toevoegen
 Additional Shipping Addresses	Additional Shipping Addresses			Additionele verzendadressen
 Address	Address			Adres
 Admin interface	Admin interface			Administratie interface
@@ -12,6 +14,7 @@ Affiliate code	Affiliate code
 Affiliate headquarters	Affiliate headquarters			
 Affiliates	Affiliates			
 Also see...	Also see...			Zie ook...
+Amount of gift	Amount of gift			Bedrag van het kado
 Apache Web Server	Apache Web Server			
 Approximate Credit	Approximate Credit			Credit circa
 April		April	Avril	April
@@ -19,13 +22,17 @@ August		August	Aout	Augustus
 BACK	BACK			TERUG
 Be sure to list the RMA number issued below on your shipping label.	Be sure to list the RMA number issued below on your shipping label.			Vergeet niet het onderstaande RMA nummer te vermelden op uw verzendsticker.
 Below are our automated customer service options. If you need to talk to someone please %sclick here%s.	Below are our automated customer service options. If you need to talk to someone please %sclick here%s.			Onderstaand vindt U onze geautomatiseerde klantenservice mogelijkheden. Wilt U een medewerker spreken, %sklik dan hier%s.
+Best sellers...	Best sellers...			Best verkopende...
 Billing Address	Billing Address			Faktuuradres
 Billing Name	Billing Name			Faktuurnaam
 Business name	Business name			Bedrijfsnaam
 Buy it Now!	Buy it Now!			Koop nu!
+Buy now	Buy now			Koop nu
 CANCEL_PAR1	Please confirm your request to stop shopping by clicking the button below. Allitems will be cleared from your shopping cart, your name and address informationwill be expunged, and all saved settings from your visit will disappear.			Bevestig alstublieft uw verzoek om met winkelen te stoppen door op onderstaande knop te klikken. Als U dat doet worden alle producten uit uw winkelwagen verwijderd, uw naam en adresinformatie worden gewist en alle bewaarde instellingen tijdens uw bezoek zullen verdwijnen.
+CART_MSG1	You must have cookies set to leave the basket. Check out now or forever lose your shopping cart.			Om de winkelwagen te kunnen verlaten dient het ontvangen van cookies te zijn ingesteld. Controleer dat alstublieft nu, anders gaat uw winkelwagen definitief verloren.
 COLOR	COLOR			KLEUR
 Canada	Canada			Canada
+Cart Contents	Cart Contents			Inhoud winkelwagen
 Change Password	Change Password			Wijzigen wachtwoord
 Change password	Change password			Wijzigen wachtwoord
 Change your password	Change your password			Wijzig uw wachtwoord
@@ -35,22 +42,26 @@ City, State, Zip	City, State, Zip			Plaats, Provincie, Postcode
 Clear&nbsp;cart	Clear&nbsp;cart			Wis&nbsp;winkelwagen
 Clear&nbsp;name/address	Clear&nbsp;name/address			Wis&nbsp;naam/adres
 Click Here To Preorder	Click Here To Preorder			Klik hier om vooruit te bestellen
+Collapse All Categories	Collapse All Categories			Verberg alle sub-categorieen
 Comment on this product.	Comment on this product.			Geef uw mening over dit product.
 Company	Company			Bedrijf
 Contact Information	Contact Information			Contactinformatie
 Contact Us	Contact Us			Neem contact met ons op
+Continue shopping	Continue shopping			Doorgaan met winkelen
 Country	Country			Land
 Create Account	Create Account			Aanmaken rekening
 Credit Amount	Credit Amount			Credit bedrag
 Current Price	Current Price			Huidige prijs
 Customer Satisfaction Survey	Customer Satisfaction Survey			Klantentevredenheidsonderzoek
 Customer Service	Customer Service			Klantenservice
+Customers who bought this item also bought	Customers who bought this item also bought			Liefhebbers van dit artikel bestelden ook
 DATE	DATE			DATUM
 Date Issued	Date Issued			Datum uitgifte
 Day Phone	Day Phone			Telefoon overdag
 Daytime Phone	Daytime Phone			Telefoon overdag
 December		Dezember	D&eacute;cembre	December
 Description	Description			Omschrijving
+Edit address	Edit address			Adres wijzigen
 Email	Email			Email
 Email Address	Email Address			Emailadres
 Enter as customer	Enter as customer			Betreedt als klant
@@ -98,15 +109,20 @@ Mailing Status	Mailing Status			Mailing Status
 Main Interchange developer site	Main Interchange developer site			
 March		M&auml;rz	Mars	Maart
 Matches %s of %s found.	Matches %s of %s found.			%s van %s gevonden resultaten
+Maximum order quantity of %s enforced.	Maximum order quantity of %s enforced.			Maximale bestelhoeveelheid is %s.
 May		Mai	Mai	Mei
+Minimum order quantity of %s enforced.	Minimum order quantity of %s enforced.			Minimale bestelhoeveelheid is %s.
 Modified	Modified			Gewijzigd
+More Info	More Info			Meer informatie
 Name	Name			Naam
 New Account	New Account			Nieuwe rekening
 New items	New items			Nieuw artikel
 Next	Next			Volgende
+Nickname	Nickname			Korte naam
 No	No			Nee
 No %s entered.	No %s entered.			Geen %s ingegeven.
 No change, go to checkout	No change, go to checkout			Geen wijziging, ga naar kassa
+No items at the moment.	No items at the moment.			Momenteel geen artikelen.
 No items in your shopping cart!	No items in your shopping cart!			Er bevinden zich geen artikelen in uw winkelwagen!
 No items were selected for return.	No items were selected for return.			Er zijn geen producten geselecteerd om te retourneren.
 November		November	Novembre	November
@@ -116,6 +132,7 @@ ORDER NUMBER	ORDER NUMBER			ORDERNUMMER
 ORDER TOTAL	ORDER TOTAL			ORDER TOTAAL
 ORDER_RETURN_PAR1	Please verify the information below and select the items you wish to return by checking the corresponding checkboxes and modifying the quantity as needed.			Controleert U alstublieft onderstaande informatie en selecteer de artikelen die U wenst te retourneren door het aanvinken van de corresponderende vakjes. Pas de aantallen zonodig aan.
 October		Oktober	Octobre	October
+Off Coupon Active	Off Coupon Active			Kortingcoupon actief
 Old password	Old password			Oud wachtwoord
 One message below your threshold	One message below your threshold			Een bericht beneden uw drempel
 Or send an e-mail to	Or send an e-mail to			Of stuur een e-mail naar
@@ -129,6 +146,8 @@ Order Total	Order Total			Ordertotaal
 Order Tracking	Order Tracking			Traceren orders
 Order this	Order this			Koop dit product
 Other	Other			Ander
+Other items you may like	Other items you may like			Wellicht houdt U ook van deze artikelen
+Our Price	Our Price			Onze prijs
 Out Of Stock	Out Of Stock			Niet voorradig
 PAYMENT<BR>METHOD	PAYMENT<BR>METHOD			BETALINGS<BR>METHODE
 PROCESS_RETURNS_PAR1	Your return has been processed. Please ship the item(s) to the address below and your account will be credited for the returned amount. A return confirmation has also been emailed to you.			Uw retourzending is verwerkt. Stuur het(de) product(en) naar onderstaand adres en uw rekening zal worden gecrediteerd voor het bedrag dat de teruggestuurde goederen vertegenwoordigen. Ter confirmatie van deze retourzending is een email naar U verzonden.
@@ -160,12 +179,15 @@ ProductFiles
 Put me on these mail lists (if any)	Put me on these mail lists (if any)			Plaats mij op deze emaillijsten (indien aanwezig)
 Put me on your email list of infrequent offers	Put me on your email list of infrequent offers			Plaats mij op uw emaillijst van niet frequente aanbiedingen
 QTY<BR>TOTAL	QTY<BR>TOTAL			TOTAAL<BR>AANTAL
+QUANTITY PRICING	QUANTITY PRICING			KWANTUMPRIJZEN
 Qty	Qty			Aantal
 Quan	Quan			Aantal
 Quantity	Quantity			Aantal
 Quantity Discounts	Quantity Discounts			Kwantumkortingen
 RMA Number	RMA Number			RMA nummer
 Recurring Orders	Recurring Orders			Herhalingsorders
+Regular price	Regular price			Normale prijs
+Remove	Remove			Verwijder
 Reply	Reply			Antwoord
 Return	Return			Retour
 Return Info	Return Info			Informatie retourzending
@@ -176,13 +198,17 @@ SALES TAX	SALES TAX			BTW
 SHIPPING	SHIPPING			VERZENDING
 SHIPPING<BR>HANDLING	SHIPPING<BR>HANDLING			VERZENDING<BR>BEHANDELING
 SIZE	SIZE			MAAT
-SKU	SKU			NR.
+SKU	SKU			Art.Nr.
 STATUS	STATUS			STATUS
 STOCK_ALERT_PAR1	Please complete the form below and we will contact you once the item you have selected becomes available. This is a complementary feature         and you are not in any way obligated to purchase the item.			Als U onderstaand formulier invult zullen wij U berichten zodra het door U geselecteerde artikel weer voorradig is. Dit is een aanvullende dienst en U bent op geen enkele wijze verplicht om het artikel te kopen.
 STOCK_ALERT_PAR2	You may also pre-order the item. When the item becomes available, you will be        notified via email and the order will be shipped the same day.			U mag het product ook vooruit bestellen. Zodra het product op voorraad is sturen wij U een kennisgeving per email en het artikel zal dezelfde dag worden verzonden. 
 SUBTOTAL	SUBTOTAL			SUBTOTAAL
 Sales Tax	Sales Tax			Btw
+Same shipping address	Same shipping address			Hetzelfde verzendadres
+Save	Save			Opslaan
 Save Acct. Info	Save Acct. Info			Opslaan rekeninginformatie
+Save Cart	Save Cart			Winkelwagen opslaan
+Save This Cart	Save This Cart			Deze winkelwagen opslaan
 Save and Checkout	Save and Checkout			Opslaan en naar kassa
 Saved Carts	Saved Carts			Opgeslagen winkelwagen
 Saved Carts / Recurring Orders	Saved Carts / Recurring Orders			Opgeslagen winkelwagens / herhalingsorders
@@ -195,7 +221,9 @@ See also	See also			Zie ook
 See also...	See also...			Zie ook...
 See...	See...			Zie...
 Send an email copy of my receipt	Send an email copy of my receipt			Stuur een copie per email
+Separate shipping addresses	Separate shipping addresses			Separate verzendadressen
 September		September	Septembre	September
+Set As Recurring Order	Set As Recurring Order			Bewaar als herhalingsorder
 Shipping	Shipping			Verzending
 Shipping Address	Shipping Address			Verzendadres
 Shipping Address Added	Shipping Address Added			Verzendadres toegevoegd
@@ -203,8 +231,10 @@ Shipping Address Removed	Shipping Address Removed			Verzendadres verwijderd
 Shipping Addresses	Shipping Addresses			Verzendadressen
 Shipping Country	Shipping Country			Verzendland
 Shipping Method	Shipping Method			Verzendmethode
+Shipping Weight	Shipping Weight			Verzendgewicht
 Shipping method	Shipping method			Verzendwijze
 Shopping Cart	Shopping Cart			Winkelwagen
+Show All Subcategories	Show All Subcategories			Toon alle sub-categorieen
 Something went wrong when mailing, perhaps a typo in your email address?	Something went wrong when mailing, perhaps a typo in your email address?			Er is iets fout gegaan bij het versturen van de email. Misschien een typefout in uw emailadres?
 Sorry, no match for that. Try again?	Sorry, no match for that. Try again?			Sorry, daarvoor zijn geen resultaten gevonden. Opnieuw proberen?
 Sorry, no matches for	Sorry, no matches for			Sorry, geen resultaten voor
@@ -234,6 +264,8 @@ This is a demo store. If you would like further information on how you can build
 This is a demonstration <b>help page</b> for your customer service area.	This is a demonstration <b>help page</b> for your customer service area.			Dit is een demonstratie <b>helppagina</b> voor uw klantenservice sectie. 
 This is the "foundation" demonstration of the Interchange electronic catalog system.	This is the "foundation" demonstration of the Interchange electronic catalog system.			Dit is de "foundation" demonstratie van het Interchange electronisch catalogussysteem.
 This item is currently in your %sshopping cart%s.	This item is currently in your %sshopping cart%s.			Dit artikel bevindt zich in uw %swinkelwagen%s.
+To save this cart, give it a nickname, then press 'Save Cart'.	To save this cart, give it a nickname, then press 'Save Cart'.			Geef deze winkelwagen een korte naam om hem op te slaan en klik daarna 'Winkelwagen opslaan'.
+To save this recurring order, give it a nickname, then press 'Save Cart'.	To save this recurring order, give it a nickname, then press 'Save Cart'.			Geef deze herhalingsorder een korte naam om hem op te slaan en klik daarna 'Herhalingsorder opslaan'.
 Toll free	Toll free			
 Toll-free	Toll-free			
 Trying to retrieve....	Trying to retrieve....			Probeert op te halen....
@@ -264,6 +296,7 @@ We need the bold fields to process your order	We need the bold fields to process
 We will contact you once your selected item becomes available.	We will contact you once your selected item becomes available.			Wij nemen contact met U op zodra de door U geselecteerde artikelen beschikbaar zijn.
 We would also like you to take our	We would also like you to take our			Wij stellen het zeer op prijs als u deelneemt aan ons
 Welcome	Welcome			Welkom
+Welcome Affiliate Program Visitor	Welcome Affiliate Program Visitor			
 Welcome back	Welcome back			Welkom terug
 Welcome to	Welcome to			Welkom bij
 Welcome to __COMPANY__, an Interchange catalog!	Welcome to __COMPANY__, an Interchange catalog!			Welkom bij __COMPANY__, een Interchange catalogus!
@@ -278,11 +311,16 @@ You may now use the added shipping address by selecting it on the shopping cart 
 You may only return items from orders that have been fully shipped.	You may only return items from orders that have been fully shipped.			U kunt alleen producten retourneren van volledig uitgeleverde orders.
 You might also like	You might also like			Misschien houdt U ook van
 You might also like...	You might also like...			Misschien houdt U ook van...
+You save	You save			U bespaart
+Your Cart	Your Cart			Uw winkelwagen
+Your Current Shopping Cart	Your Current Shopping Cart			Uw huidige winkelwagen
 Your login information	Your login information			Uw login informatie
+Your price	Your price			Uw prijs
 Your request has been sent sucessfully.	Your request has been sent sucessfully.			Uw verzoek is met succes verzonden.
 Zip Code	Zip Code			Postcode
 Zip/Postal Code	Zip/Postal Code			Postcode
 all fields	all fields			alle velden
+buy now	buy now			koop nu
 by	by			door
 contact us	contact us			neem contact met ons op
 create a new account	create a new account			nieuwe rekening aanmaken
@@ -290,6 +328,7 @@ currency_symbol	$	DM	FF	Euro
 decimal_point	.	.	.	.
 default	1	0	0	1
 e-mail	e-mail			
+edit	edit			bewerk
 frac_digits	2	2	2	2
 in	in			in
 in the category	in the category			in categorie
