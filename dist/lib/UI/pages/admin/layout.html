@@ -9,7 +9,7 @@
 @_UI_STD_HEAD_@
 [if scratch ui_message]
 <BLOCKQUOTE>
-<FONT COLOR="__CONTRAST__" SIZE=+1><B>[scratch ui_message][set ui_message][/set]</B></FONT>
+<FONT COLOR="__CONTRAST__" SIZE="+1"><B>[scratch ui_message][set ui_message][/set]</B></FONT>
 </BLOCKQUOTE>
 [/if]
 
@@ -58,7 +58,11 @@
 
 
 <B>Area -- section:</B><br>
-
+<select name=ui_filter_class onChange="this.form.submit()">
+<option value=""> --every--
+[loop option=which_page search="fi=area/st=db/ra=yes/un=yes/rf=which_page"]<option>[loop-code][/loop]
+</select>
+<br>
 <select name="area" size=10 onchange="this.form.submit()">
 [loop   search="
 			fi=area
@@ -66,11 +70,17 @@
 			tf=sort
 			tf=name
 			st=db
+			[if cgi ui_filter_class]
+			sf=which_page
+			se=[cgi ui_filter_class]
+			[else]
 			ra=yes
+			[/else]
+			[/if]
 			rf=code,name,sel
 		"
 		option=area ]
-<option value="[loop-code]">[loop-param sel] -- [loop-param name]
+<option value="[loop-code]">[loop-param sel] -- [loop-filter 20][loop-param name][/loop-filter]
 [/loop]
 </select>
 <br>
@@ -395,7 +405,7 @@ setarea=[cgi selector]
 	</td>
 	<td bgcolor=__UI_C_INTBLOCK__>
 	<small>
-	<INPUT SIZE=20 NAME=name Value="[table-data area name]">
+	<INPUT SIZE=40 NAME=name Value="[table-data area name]">
 	</td>
 </tr>
 
@@ -494,7 +504,7 @@ setarea=[cgi selector]
 	</td>
 	<td bgcolor=__UI_C_INTBLOCK__>
 	<small>
-	<INPUT SIZE=30 NAME=url value="[table-data area url]">
+	<INPUT SIZE=40 NAME=url value="[table-data area url]">
 	</td>
 </tr>
 [elsif scratch ui_area_type eq internal]
@@ -530,7 +540,7 @@ setarea=[cgi selector]
 	</td>
 	<td bgcolor=__UI_C_INTBLOCK__>
 	<small>
-	<INPUT NAME=url SIZE=16 VALUE="[calc]$ui_arg[/calc]">
+	<INPUT NAME=url SIZE=40 VALUE="[calc]$ui_arg[/calc]">
 	</td>
 </tr>
 [/elsif]
@@ -678,6 +688,15 @@ setarea=[cgi selector]
 	</td>
 </tr>
 [/if]
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<B>Link template</B>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small>
+	[display table=area column=link_template key="[value area]"]
+	</td>
+</tr>
 </table>
 
 [button text="Change area"][/button]
@@ -746,7 +765,7 @@ return;
 	</td>
 	<td bgcolor=__UI_C_INTBLOCK__>
 	<small>
-	<INPUT SIZE=20 NAME=name Value="[table-data cat name]">
+	<INPUT SIZE=40 NAME=name Value="[table-data cat name]">
 	</td>
 </tr>
 
@@ -770,7 +789,7 @@ return;
 	</td>
 	<td bgcolor=__UI_C_INTBLOCK__>
 	<small>
-	<INPUT SIZE=30 NAME=url value="[table-data cat url]">
+	<INPUT SIZE=40 NAME=url value="[table-data cat url]">
 	</td>
 </tr>
 [elsif scratch ui_cat_type eq internal]
@@ -806,7 +825,7 @@ return;
 	</td>
 	<td bgcolor=__UI_C_INTBLOCK__>
 	<small>
-	<INPUT NAME=url SIZE=16 VALUE="[calc]$ui_arg[/calc]">
+	<INPUT NAME=url SIZE=40 VALUE="[calc]$ui_arg[/calc]">
 	</td>
 </tr>
 [/elsif]
@@ -831,7 +850,7 @@ return;
 		}
 		return $out;
 	[/calc]
-	</SELECT>&nbsp;Parameters:&nbsp;<INPUT NAME=explode SIZE=16 VALUE="[calc]$exp_parm[/calc]">
+	</SELECT>&nbsp;Parameters:&nbsp;<INPUT NAME=explode SIZE=40 VALUE="[calc]$exp_parm[/calc]">
 	</td>
 </tr>
 [/elsif]
@@ -946,7 +965,7 @@ return;
 	</td>
 	<td bgcolor=__UI_C_INTBLOCK__>
 	<small>
-	<INPUT SIZE=30 NAME=banner_text value="[table-data cat banner_text]">
+	<INPUT SIZE=40 NAME=banner_text value="[table-data cat banner_text]">
 	</td>
 </tr>
 <tr>
@@ -955,7 +974,7 @@ return;
 	</td>
 	<td bgcolor=__UI_C_INTBLOCK__>
 	<small>
-		<INPUT SIZE=30 NAME=banner_img value="[table-data cat banner_img]">
+		<INPUT SIZE=40 NAME=banner_img value="[table-data cat banner_img]">
 	</td>
 </tr>
 [/if]
@@ -1004,6 +1023,16 @@ return;
 	</td>
 </tr>
 [/if]
+
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<B>Link template</B>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small>
+	[display table=cat column=link_template key="[value cat]"]
+	</td>
+</tr>
 
 </table>
 
