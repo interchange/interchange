@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.0
 #
-# $Id: interchange.PL,v 1.15.2.22 2001-03-23 15:33:42 heins Exp $
+# $Id: interchange.PL,v 1.15.2.23 2001-03-27 18:39:49 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -421,8 +421,9 @@ sub update_quantity {
 		}
 		else {
 			my $item = $line->{'code'};
-        	interaction_error("'$quantity' for item $item is not numeric\n");
-        	return undef;
+			$line->{quantity} = int $line->{quantity};
+        	$Vend::Session->{errors}{mv_order_quantity} =
+				errmsg("'%s' for item %s is not numeric/integer", $quantity, $item);
     	}
     	$::Values->{"quantity$i"} = delete $CGI::values{"quantity$i"};
 		my $sku;
