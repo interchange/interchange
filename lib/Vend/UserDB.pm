@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.13 2003-04-05 01:29:39 mheins Exp $
+# $Id: UserDB.pm,v 2.14 2003-04-11 22:03:01 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -16,7 +16,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.13 $, 10);
+$VERSION = substr(q$Revision: 2.14 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1374,10 +1374,13 @@ sub new_account {
 		unless($self) {
 			$self = new Vend::UserDB %options;
 		}
+
+		delete $Vend::Session->{auto_created_user};
+
 		die ::errmsg("Bad object.") . "\n" unless defined $self;
 
 		die ::errmsg("Already logged in. Log out first.") . "\n"
-			if $Vend::Session->{logged_in};
+			if $Vend::Session->{logged_in} and ! $options{no_login};
 		die ::errmsg("Sorry, reserved user name.") . "\n"
 			if $self->{OPTIONS}{username_mask} 
 				and $self->{USERNAME} =~ m!$self->{OPTIONS}{username_mask}!;
@@ -1456,13 +1459,21 @@ sub new_account {
 				or die ::errmsg("Database access error.");
 		}
 
-		username_cookies($self->{USERNAME}, $pw) 
-			if $Vend::Cfg->{CookieLogin};
+		if($options{no_login}) {
+			$Vend::Session->{auto_created_user} = $self->{USERNAME};
+		}
+		else {
+			username_cookies($self->{USERNAME}, $pw) 
+				if $Vend::Cfg->{CookieLogin};
 
-		$self->log('new account') if $options{'log'};
-		$self->set_values();
-		$self->login()
-			or die ::errmsg("Cannot log in after new account creation: %s", $self->{ERROR});
+			$self->log('new account') if $options{'log'};
+			$self->set_values();
+			$self->login()
+				or die ::errmsg(
+							"Cannot log in after new account creation: %s",
+							$self->{ERROR},
+						);
+		}
 	};
 
 	scrub();
@@ -1646,7 +1657,8 @@ sub userdb {
 			$Vend::Session->{failure} = ::errmsg("Unable to access user database.");
 			return undef;
 		}
-		if($status = $user->new_account(%options)) {
+		$status = $user->new_account(%options);
+		if($status and ! $options{no_login}) {
 			$Vend::Session->{logged_in} = 1;
 			$Vend::Session->{username} = $user->{USERNAME};
 			undef $Vend::Cookie
