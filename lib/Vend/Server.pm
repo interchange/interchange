@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.27 2003-02-06 20:26:29 mheins Exp $
+# $Id: Server.pm,v 2.28 2003-03-08 00:14:58 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.27 $, 10);
+$VERSION = substr(q$Revision: 2.28 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -1769,6 +1769,7 @@ my $pretty_vector = unpack('b*', $s_vector);
 				unless $Vend::StatusLine =~ /^Content-Type:/im;
 
 			print MESSAGE canon_status($Vend::StatusLine);
+			print MESSAGE "\r\n";
 			print MESSAGE $result;
 			undef $Vend::StatusLine;
 			$Vend::ResponseMade = 1;
