@@ -352,7 +352,7 @@ sub initialize {
 							scripts/expireall
 							scripts/localize
 							scripts/makecat
-							scripts/minivend
+							scripts/interchange
 							scripts/offline
 							scripts/restart
 							scripts/update
@@ -366,7 +366,7 @@ sub initialize {
 							scripts/expireall.PL   scripts/expireall
 							scripts/localize.PL    scripts/localize
 							scripts/makecat.PL     scripts/makecat
-							scripts/minivend.PL    scripts/minivend
+							scripts/interchange.PL    scripts/interchange
 							scripts/offline.PL     scripts/offline
 							scripts/restart.PL     scripts/restart
 							scripts/update.PL      scripts/update
@@ -374,7 +374,7 @@ sub initialize {
 
 	if(! $MV::Default{force} and ! $MV::Default{PREFIX}) {
 		if($> == 0) {
-			$MV::Default{PREFIX} = '/usr/local/minivend';
+			$MV::Default{PREFIX} = '/usr/local/interchange';
 		}
 		else {
 			$MV::Default{PREFIX} = "$ENV{HOME}/mvend";
@@ -769,7 +769,7 @@ else {
 						},
 		DISTNAME => "interchange",
 		clean    => {
-					FILES=> "lib/IniConf.pm _uid _db_storable _session_storable lib/File/CounterFile.pm scripts/initp.pl scripts/compile_link scripts/config_prog scripts/configdump scripts/dump scripts/expire scripts/localize scripts/expireall scripts/makecat scripts/minivend scripts/offline scripts/restart scripts/update dist/simple/download/mvdocs.pod dist/simple/download/mvtags.pod dist/simple/download/mvfaq.pod pod/mvtags.pod",
+					FILES=> "lib/IniConf.pm _uid _db_storable _session_storable lib/File/CounterFile.pm scripts/initp.pl scripts/compile_link scripts/config_prog scripts/configdump scripts/dump scripts/expire scripts/localize scripts/expireall scripts/makecat scripts/interchange scripts/offline scripts/restart scripts/update dist/simple/download/mvdocs.pod dist/simple/download/mvtags.pod dist/simple/download/mvfaq.pod pod/mvtags.pod",
 				   },
 
 		dist     => {
@@ -779,7 +779,7 @@ else {
 						COMPRESS => "gzip -9f",
 						ZIP_FLAGS => '-pr9',
 					},
-		VERSION_FROM => "scripts/minivend.PL",
+		VERSION_FROM => "scripts/interchange.PL",
 		EXE_FILES  => [],
 		CONFIGURE  => \&initialize,
 	);
