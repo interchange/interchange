@@ -1,0 +1,3 @@
+sku	featured	banner_text	banner_image	blurb_begin	blurb_end	start	finish	upsell_to	cross_sell
+22-200		Featured in the Abstract Gallery					
+98-101		Featured in the Expressionist Gallery				20000805	20001005
