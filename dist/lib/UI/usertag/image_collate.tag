@@ -138,6 +138,8 @@ sub {
 		File::Copy::copy($_->[0], 'thumb') if $thumb;
 	}
 
+	my @errors;
+
 	if($thumb) {
 		my $size = $opt->{thumb_size} || '60x60';
 		chdir('thumb')
@@ -145,12 +147,11 @@ sub {
 		system("/usr/X11R6/bin/mogrify -geometry $size *");
 		if($?) {
 			my $status = $? >> 8;
-			return tmp_die("error %s creating thumbs: %s", $status, $!);
+			undef $thumb;
+			push @errors, errmsg("error %s creating thumbs: %s", $status, $!);
 		}
 		chdir '..';
 	}
-
-	my @errors;
 
 	my $save_mask = umask(2);
 
