@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.75 2004-07-15 17:29:23 mheins Exp $
+# $Id: Util.pm,v 2.76 2005-01-07 21:26:07 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -87,7 +87,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.75 $, 10);
+$VERSION = substr(q$Revision: 2.76 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1692,6 +1692,13 @@ sub logError {
 	else {
 		$opt = {};
 	}
+
+    if(! $opt->{file}) {
+        my $tag = $opt->{tag} || $msg;
+        if(my $dest = $Vend::Cfg->{ErrorDestination}{$tag}) {
+            $opt->{file} = $dest;
+        }
+    }
 
 	$opt->{file} ||= $Vend::Cfg->{ErrorFile};
 
