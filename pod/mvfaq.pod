@@ -4,7 +4,7 @@ mvfaq - Interchange FAQ
 
 =head2 VERSION
 
-Document version: $Id: mvfaq.pod,v 1.4 2000-10-12 21:02:08 zarko Exp $
+Document version: $Id: mvfaq.pod,v 1.5 2000-10-14 16:50:25 heins Exp $
 
 This document describes Interchange 4.5 and later.
 
@@ -1659,6 +1659,66 @@ users who run more than 500 catalogs on a single machine. The capacity
 is usually a function of how busy the catalogs are and how much memory
 and processor speed your system has.
 
+=head2 Can I internationalize a store?
+
+Yes, to the limit of your concentration. 8-)
+
+You can change the source page directory for each locale, falling
+back to a common set when not found for that language:
+
+    TemplateDir common_pages
+    Locale      it_IT  PageDir  it_pages
+
+You can change the description field each locale:
+
+    Locale it_IT DescriptionField  it_pages
+
+You can change the price source field each locale:
+
+    Locale it_IT PriceField  prezzo
+
+You can do percentage adjustments in price:
+
+    Locale en_US PriceDivide 2200
+
+You can use the standard POSIX currency localization:
+
+	Locale fr_FR  currency_symbol     ff
+	Locale fr_FR  cs_precedes         0
+	Locale fr_FR  frac_digits         0
+	Locale fr_FR  mon_thousands_sep   .
+	Locale fr_FR  mon_decimal_point   ,
+
+You can display arbitrary pieces of text in different
+locales, from a stored database:
+
+    Locale it_IT "text to display" "testo da visualizzare"
+    Locale fr_FR "text to display" "texte à afficher"
+    Locale fr_FR "text to display" "anzuzeigender Text"
+  
+    [L]text to display[/L]
+
+This can be maintained in a database table.
+
+You can display arbitrary pieces of text in different
+locales, stored in the page:
+
+	[LC] text to display
+	[it_IT] testo da visualizzare [/it_IT]
+	[fr_FR] texte à afficher [/fr_FR]
+	[de_DE] anzuzeigender Text [/fr_FR]
+	[/LC]
+
+The locale can be set in the page:
+
+	[setlocale locale=fr_FR persist=1]
+
+Or as a side-effect from a URL:
+
+	[page process/locale/fr_FR/page/index]En Francais[/page]
+
+There is much more. The complete list is in the documentation.
+
 =head2 How do I start Interchange when I reboot?
 
 Use the standard facility on your operating system.  For BSD
@@ -1792,7 +1852,7 @@ in catalog.cfg:
 For GNU Privacy Guard, GPG, you would use something like:
 
  EncryptProgram /usr/local/bin/gpg -fa --always-trust -r sales@your.com
-    
+
 On Windows or other operating systems, the only fix is to sign the
 key or otherwise prevent the error from occurring.
 
@@ -1804,7 +1864,7 @@ This depends on what you do with orders once you receive them
 by email.
 
 Some PC mail agents (notably Eudora) will decrypt the PGP message
-embedded within the message text. In that case, you can simply 
+embedded within the message text. In that case, you can simply
 embed the C<[value mv_credit_card_info]> call right in the message
 and be done with it.
 
@@ -2043,7 +2103,7 @@ Also, if you are searching for non-alpha characters then they will also
 not be interpreted as word characters and the boundary problems will
 still exist.
 
-=head2 How do I display Euro pricing?                                                
+=head2 How do I display Euro pricing?
 
 (Thanks to Thomas "Balu" Walter for this answer.)
 
@@ -2202,9 +2262,8 @@ either be in the Interchange user crontab or run as:
 
 =head1 Shipping questions
 
-Interchange has one of the most complete and flexible shipping
-calculators found in an ecommerce program. 
- You can do most anything with a global
+Interchange has one of the most complete and flexible shipping calculators
+found in an ecommerce program.  You can do most anything with a global
 UserTag, even to the point of looking up a cost at a remote calculator.
 (See the C<[ups-query]> tag in the C<usertag> directory for
 an example.)
@@ -2220,14 +2279,19 @@ database field I<price> by the number of items in the cart. If you have
 quantity discounds, price adjustments, or other discounts in force via
 C<CommonAdjust> or another facility they will not be taken into account.
 
-The solution is simple -- put C<[subtotal]> instead of C<price> in the 
+The solution is simple -- put C<[subtotal]> instead of C<price> in the
 criterion field. Interchange will interpret MML tags normally in that position,
 as it will in the C<cost> field.
 
 =head1 CHANGES
 
 $Log: mvfaq.pod,v $
-Revision 1.4  2000-10-12 21:02:08  zarko
+Revision 1.5  2000-10-14 16:50:25  heins
+Minor changes to remove wrong 3.x stuff in mvdocs.pod.
+
+Added Internationalization FAQ.
+
+Revision 1.4  2000/10/12 21:02:08  zarko
 fixed pod errors
 
 Revision 1.3  2000/07/20 07:20:20  heins
