@@ -113,6 +113,44 @@ Form
 
 * Fix "double March" bug in date widget.
 
+* Allow templated options in select, radio, checkbox, etc. Enabled
+  by passing option_template="ATTR Template".
+
+  Uses same attr_list methodology as in most IC secondary templating.
+
+  Active keys:
+
+  	  LABEL           The normal label value
+  	  VALUE           The normal value
+	  PRICE           The formatted price, converted for locale
+	  PRICE_NOFORMAT  The raw price data
+	  ABSOLUTE        The formatted price, absolute (no negative)
+	  NEGATIVE        Set true if price data is negative
+
+  The default is equivalent to (though it doesn't use formatting):
+
+  		{LABEL} {PRICE?}({PRICE}){/PRICE?}
+
+  This example:
+
+	{LABEL}
+		{PRICE?}
+			{NEGATIVE?}(subtract {ABSOLUTE}){/NEGATIVE?}
+			{NEGATIVE:}(add {PRICE}){/NEGATIVE:}
+		{/PRICE?}
+
+	Would turn:
+
+		Ebony handle ($20.00)
+		Wood handle
+		Plastic handle ($-5.00)
+
+    into:
+
+		Ebony handle (add $20.00)
+		Wood handle
+		Plastic handle (subtract $5.00)
+
 UI
 --
 
@@ -137,6 +175,11 @@ UI
 
 * Add "Decrypt Credit Card" back in order view.
 
+* Add mv_more_alpha and mv_more_decade options to flex_selector. Make
+  locale and country tables use them by default.
+
+* Fix link_rows_blank setting in table editor for form linking.
+
 Payment
 -------
 
@@ -158,6 +201,8 @@ Foundation
 
 * Change [discount-price] to [item-discount-price] to make it compatible
   with editor components.
+
+* Preparation of pages for translation.
 
 Debian
 ------
