@@ -20,7 +20,7 @@ UI
 
 * Display server hostname on the information page (genconfig).
 
-* Unused usertag component removed.
+* Unused usertags component, set-alias and set-click removed.
 
 Payment
 -------
