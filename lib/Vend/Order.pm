@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.10 2000-09-20 07:52:00 heins Exp $
+# $Id: Order.pm,v 1.11 2000-09-25 15:24:48 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.10 $, 10);
+$VERSION = substr(q$Revision: 1.11 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -972,7 +972,7 @@ sub do_check {
 
 sub check_order {
 	my ($profile) = @_;
-    my($codere) = '[\w-_#/.]+';
+    my($codere) = '[-\w_#/.]+';
 	my $params;
 	if(defined $Vend::Cfg->{OrderProfileName}->{$profile}) {
 		$profile = $Vend::Cfg->{OrderProfileName}->{$profile};

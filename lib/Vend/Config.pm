@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.20 2000-09-25 15:10:24 heins Exp $
+# $Id: Config.pm,v 1.21 2000-09-25 15:24:48 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -103,7 +103,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.20 $, 10);
+$VERSION = substr(q$Revision: 1.21 $, 10);
 
 my %CDname;
 
@@ -372,7 +372,7 @@ sub catalog_directives {
     ['Pragma',		 	 'boolean',     	 ''],
     ['DynamicData', 	 'boolean',     	 ''],
     ['NoImport',	 	 'boolean',     	 ''],
-    ['NoImportExternal', 'yesno',	     	 ''],
+    ['NoImportExternal', 'yesno',	     	 'no'],
     ['CommonAdjust',	 undef,  	     	 ''],
     ['PriceAdjustment',	 'array',  	     	 ''],
     ['PriceBreaks',	 	 'array',  	     	 ''],
@@ -728,7 +728,7 @@ CONFIGLOOP:
 		$var = $1;
 		$value = $2;
 		($lvar = $var) =~ tr/A-Z/a-z/;
-		my($codere) = '[\w-_#/.:]+';
+		my($codere) = '[-\w_#/.:]+';
 
 		if ($value =~ /^(.*)<<(\w+)\s*/) {                  # "here" value
 			my $begin  = $1 || '';
@@ -1072,7 +1072,7 @@ GLOBLOOP:
 		$var = $1;
 		$value = $2;
 		($lvar = $var) =~ tr/A-Z/a-z/;
-		my($codere) = '[\w-_#/.]+';
+		my($codere) = '[-\w_#/.]+';
 
 		if ($value =~ /^(.*)<<(\w+)\s*/) {                  # "here" value
 			my $begin  = $1 || '';

@@ -1,6 +1,6 @@
 # Rare.pm - Interchange routines rarely used or not requiring much performance
 # 
-# $Id: Control.pm,v 1.4 2000-09-23 18:30:02 heins Exp $
+# $Id: Control.pm,v 1.5 2000-09-25 15:24:48 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -183,7 +183,7 @@ sub add_catalog {
 				logGlobal("Alias %s used a second time, skipping.", $_);
 				next;
 			}
-			elsif (m![^\w-_\~:#/.]!) {
+			elsif (m![^-\w_\~:#/.]!) {
 				logGlobal( "Bad alias %s, skipping.", $_,);
 			}
 			$Global::Selector{$_} = $c;
