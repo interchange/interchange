@@ -3,7 +3,7 @@ Your company name
 Construct Something
 
 SOMESQL
-Set to 1 if you want to use MySQL or Postgres
+Set to 1 if you want to use MySQL, PostgreSQL, or Oracle
 0	1
 
 {SOMESQL}MYSQL
@@ -26,16 +26,16 @@ Username for MySQL (if any)
 Password for MySQL (if any)
 	pass
 
-{MYSQL}SQLCREATE
+{MYSQL}MYSQLCREATE
 Set to 1 to create '__MVC_SQLDB__' with mysqladmin
 1	0
 
-{SQLCREATE}SQLCREATEOPT
+{MYSQLCREATE}MYSQLCREATEOPT
 Extra options for creation
 	-p	-u root -p
 
 {SOMESQL and ! '__MVC_MYSQL__'}PGSQL
-Set to 1 if you want to use PostGres
+Set to 1 if you want to use PostgreSQL
 1	0
 
 {PGSQL}SQLDB
@@ -47,16 +47,40 @@ DBI DSN to use
 dbi:Pg:dbname=__MVC_SQLDB__
 
 {PGSQL}SQLUSER
-Username for Postgres (if any)
+Username for PostgreSQL (if any)
 	__MVC_CATUSER__
 
 {PGSQL}SQLPASS
-Password for Postgres (if any)
+Password for PostgreSQL (if any)
 	pass
 
 {PGSQL}!SQLUDATE
-Timestamp for Postgres (if any)
+Timestamp for PostgreSQL (if any)
 2000-01-01
+
+{SOMESQL and ! '__MVC_MYSQL__' and ! '__MVC_PGSQL__'}ORACLE
+Set to 1 if you want to use Oracle
+1	0
+
+{ORACLE}SQLDSN
+DBI DSN to use
+dbi:Oracle:
+
+{ORACLE}SQLUSER
+Username for Oracle (if any)
+	intchg
+
+{ORACLE}SQLPASS
+Password for Oracle (if any)
+	pass
+
+{ORACLE}!SQLUDATE
+Timestamp for Oracle (if any)
+01-JAN-2000
+
+{ORACLE}!FIELDMUNGE
+Field name suffix for Oracle
+_field
 
 SUPERUSER
 Account name that will control this catalog

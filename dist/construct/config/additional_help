@@ -15,7 +15,7 @@ SOMESQL
 .
 Interchange has a workable internal database, but many things will
 work better (and a few worse) if you use a SQL database. Interchange
-can configure MySQL and Postgres in a test configuration.
+can configure MySQL, PostgreSQL, and Oracle in a test configuration.
 
 MYSQL
 .
@@ -24,28 +24,36 @@ This requires the ability to create a database named "test_construct",
 and is highly dependent on your Perl and MySQL configuration. Don't
 be too surprised if this doesn't work.
 
-SQLCREATE
+MYSQLCREATE
 .
 We can try and use mysqladmin to create the database in
-MySQL. In many default Mysql distributions, any user can create
+MySQL. In many default MySQL distributions, any user can create
 a database beginning with "test". 
 .
-Use the next option to add parameters. If your Mysql is password-protected
+Use the next option to add parameters. If your MySQL is password-protected
 (and you know the password) you may want to add "-u root -p".
 
-SQLCREATEOPT
+MYSQLCREATEOPT
 .
 To create the database you may need to supply a password and
 username. To do that, add the option "-u USERNAME -p", where
-USERNAME is a Mysql user with permission to create databases.
+USERNAME is a MySQL user with permission to create databases.
 This is often the user "root".
 
 PGSQL
 .
-You can select this to use PostGres in your test catalog.
+You can select this to use PostgreSQL in your test catalog.
 This requires the ability to create a database named "test_construct",
 and is highly dependent on your Perl and system configuration. Don't
 be too surprised if this doesn't work.
+
+ORACLE
+.
+You can select this to use Oracle in your test catalog. This requires
+that you know your Oracle DSN and that you've already created a user and
+tablespace for Interchange. You should also have the environment variables
+ORACLE_BASE, ORACLE_HOME, and ORACLE_SID set. Don't be too surprised if
+this doesn't work.
 
 MULTIORDER
 .
