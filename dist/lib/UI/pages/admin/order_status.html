@@ -146,7 +146,7 @@
 		[if scratch tmp_orderid]
 			<input type=checkbox name=settle_transaction value=1
 				onChange="copasetic(this, this.form)"
-				[if scratch tmp_orderid !~ /[-*]$/] CHECKED [/if]>
+				[if type=scratch term=tmp_orderid op="!~" compare="/[-*]$/"] CHECKED [/if]>
 					<b>Settle transaction</b>
 			&nbsp;
 			&nbsp;
@@ -196,4 +196,4 @@
 </script>
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: order_status.html,v 2.8 2002-10-18 06:00:10 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order_status.html,v 2.9 2002-11-04 14:19:07 mheins Exp $ -->
