@@ -1,0 +1,121 @@
+       <table border=0 cellspacing=0 cellpadding=4 width="100%">
+          <tr>
+            <td colspan=4 class=contentbar1><b>[L]Payment Method[/L]</b></td>
+          </tr>
+          <tr>
+            <td colspan=4>&nbsp;</td>
+          </tr>                                                   
+          <tr>
+            <td>&nbsp;</td>
+            <td>
+
+[if !scratch old_browser]
+<script>
+var possible = ['credit_card', 'cod', 'postal', 'online_check', 'purchase_order'];
+
+function visible (selnam) {
+
+	if(selnam == undefined) {
+		var form = document.checkout;
+		if(form == undefined) 
+			return;
+		var selec = form.mv_order_profile;
+		if(selec.selectedIndex == undefined)
+			selec.selectedIndex = 0;
+		selnam = selec.options[selec.selectedIndex].value;
+	}
+
+	// alert("selnam=" + selnam);
+
+	var sel = document.getElementById(selnam);
+	// alert("sel=" + sel);
+	if(sel == undefined) 
+		return;
+	
+	for(var i = 0; i < possible.length; i++) {
+		var xel = document.getElementById(possible[i]);
+		if(xel != undefined) {
+			xel.style.zIndex = 0;
+			xel.style.visibility = 'Hidden';
+		}
+	}
+
+	sel.style.visibility = 'Visible';
+	sel.style.zIndex = 2;
+
+	return;
+}
+</script>
+[/if]
+
+              <select name="mv_order_profile"
+			  	onChange="[if scratch old_browser]
+								this.form.submit()
+							[else]
+								visible()
+							[/else]
+							[/if]">
+			  [if scratch pay_cert_code]
+				  [loop list="[scratch pay_cert_code]"]
+					[loop-calc]
+						$pay_cert_amount += [loop-data pay_certs amount];
+						return;
+					[/loop-calc]
+				  [/loop]
+				  [calc]
+					$Tag->tmp('can_use_pay_cert');
+					my $total = [total-cost noformat=1];
+					if($total <= $pay_cert_amount) {
+						$Scratch->{can_use_pay_cert} = 1;
+					}
+					return;
+				  [/calc]
+				  [if scratch can_use_pay_cert]
+				  [value name=mv_order_profile set=pay_cert hide=1]
+				  <option value=pay_cert SELECTED>[L]Gift Certificate[/L]
+				  [/if]
+			  [/if]
+              [if variable CREDIT_CARDS_ACCEPTED]
+              <option [selected mv_order_profile credit_card] value="credit_card">[L]Credit Card[/L]
+              [/if]
+              [if variable CHECK_ACCEPTED]
+              <option [selected mv_order_profile online_check] value="online_check">[L]Online Check[/L]
+              [/if]
+              [if variable PO_ACCEPTED]
+              <option [selected mv_order_profile purchase_order] value="purchase_order">[L]Company P.O.[/L]
+              [/if]
+              [if variable POSTAL_ACCEPTED]
+              <option [selected mv_order_profile postal] value="postal">[L]Postal Billing[/L]
+              [/if]
+              [if variable COD_ACCEPTED]
+              <option [selected mv_order_profile cod] value="cod">[L]C.O.D.[/L]
+              [/if]
+              </select>
+            </td>
+            <td colspan="2"> 
+			  [if scratch old_browser]
+              ([L]will update display[/L])
+			  [/if]
+			  [if variable PO_ALWAYS]
+				<b>[L]P.O. Number[/L]:</b>
+					<input type=text name=po_number value="[value po_number]">
+			  [/if]
+
+			  [if scratch pay_cert_code]
+			  	[loop list="[scratch pay_cert_code]"]
+				[if-loop-data pay_certs amount > 0]
+				<br>
+				<input type=checkbox name=use_pay_cert value="[loop-code]">
+					Use gift certificate [loop-code] for
+						[currency][loop-data pay_certs amount][/currency]
+				[/if-loop-data]
+				[/loop]
+			  [/if]
+            </td>                              
+          </tr>
+          <tr>
+            <td colspan="4">&nbsp;</td>
+          </tr>
+          </table>
+                                                        
+

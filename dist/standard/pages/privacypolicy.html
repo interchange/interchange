@@ -1,0 +1,66 @@
+[comment]
+ui_page: privacypolicy.html
+ui_type: page
+ui_name: privacypolicy.html
+ui_page_template: leftonly
+ui_version: 4.9.7
+ui_source: pages/privacypolicy.html
+ui_template: Yes
+ui_template_name: leftonly
+[/comment]
+
+[tmp page_title]__COMPANY__ -- [L]Privacy Policy[/L][/tmp]
+[tmpn members_only][/tmpn]
+
+[control reset=1]
+[control-set]
+	[component]search_box_small[/component]
+[/control-set]
+[control-set]
+	[component]cart_tiny[/component]
+[/control-set]
+[control-set]
+	[component]category_vert_toggle[/component]
+	[imagedirpath][/imagedirpath]
+	[imagedirurl][/imagedirurl]
+	[page_class]all[/page_class]
+	[set_selector]left[/set_selector]
+	[timed]0[/timed]
+	[toggleswitchoff][/toggleswitchoff]
+	[toggleswitchon][/toggleswitchon]
+[/control-set]
+[control-set]
+	[component][/component]
+[/control-set]
+[control-set]
+	[component]random[/component]
+	[banner][L]See...[/L][/banner]
+	[cols]2[/cols]
+	[size]2[/size]
+[/control-set]
+[control reset=1]
+
+@_LEFTONLY_TOP_@
+<!-- BEGIN CONTENT -->
+<blockquote>
+<p>&nbsp;</p>
+<p>[L]We don't give out your information to anyone![/L]</p>
+<p>[L]We can be contacted at[/L]:</p>
+<p>
+__COMPANY__<br>
+__ADDRESS__<br>
+__CITY__<br>
+[if variable PHONE]
+[L]Phone[/L]: __PHONE__<br>
+[/if]
+[if variable FAX]
+[L]Fax[/L]: __FAX__<br>
+[/if]
+[if variable TOLLFREE]
+[L]Toll free[/L]: __TOLLFREE__<br>
+[/if]
+<a href="mailto:__EMAIL_INFO__">__EMAIL_INFO__</a>
+</p>
+</blockquote>
+<!-- END CONTENT -->
+@_LEFTONLY_BOTTOM_@

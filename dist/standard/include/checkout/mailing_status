@@ -1,0 +1,38 @@
+
+<table cellspacing="0" cellpadding="0" width="100%">
+  <tr>
+	<td>
+	  <table border="0" align="center" cellspacing="0" width="100%">
+		<tr class="contentbar2">
+		  <td class="contentbar2" colspan=4><b>[L]Mailing Status[/L]</b></td>
+		</tr>
+		<tr>
+		  <td align="center" valign="middle" class="contentbar1">
+			<select name=email_copy>
+			<option value="1">[L]Yes[/L]
+			<option [selected name=email_copy value=0] value="0">[L]No[/L]
+			</select>
+		  </td>
+		  <td class="contentbar1"><B>[L]Send an email copy of my receipt[/L]</B></td>
+		  <td class="contentbar1">&nbsp;</td>
+		  <td class="contentbar1">&nbsp;</td>
+		</tr>
+	  [if variable CHECKOUT_MAIL_LIST]
+		<tr>
+		  <td align="center" valign="middle" class="contentbar1">
+			&nbsp;
+			[perl tables="__UI_META_TABLE__ mv_metadata"]
+			return;
+			[/perl]
+			[input-filter name=mail_list op=null_to_space][/input-filter]
+			[display table=userdb type=multiple column=mail_list key="[data session username]"]
+		  </td>
+		  <td class="contentbar1"><B>[L]Mail lists (if any)[/L]</B></td>
+		  <td class="contentbar1">&nbsp;</td>
+		  <td class="contentbar1">&nbsp;</td>
+		</tr>
+	  [/if]
+	  </table>
+	</td>
+  </tr>
+</table>

@@ -1,0 +1,7 @@
+  <div align=center><a href="http://www.icdevgroup.org/"><img src="[var UI_BOTTOMIMG]" border="0"></a>
+    [if variable MV_DEMO_MODE]
+      <p>[page admin/index][L]Admin[/L]</a></p>
+    [/if]
+	<p style="font-size: 8px; color: #CCCCCC">Portions copyright 2002-2003 ICDEVGROUP, freely redistributable under GPL</p>
+  </div>
+

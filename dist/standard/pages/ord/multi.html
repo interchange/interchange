@@ -1,0 +1,194 @@
+[comment]
+ui_template: Yes
+ui_template_name: noleft
+[/comment]
+
+[tmp page_title]__COMPANY__ -- [L]Check Out[/L][/tmp]
+
+@_NOLEFT_TOP_@
+
+[if session logged_in]
+[and !session admin]
+	[bounce href="[area href=ord/shipping secure=1]"]
+[/if]
+
+[include include/checkout/initialization]
+
+<!-- BEGIN CONTENT -->
+
+<div style="padding-left: 12px; padding-top: 12px;">
+<br>
+<h2>Check out</h2>
+
+<p>&nbsp;</p>
+<blockquote style="font-size: larger">
+You can decide to use [page ord/checkout]Express checkout</a> without creating
+an account, log in below with your existing account, or if you will be purchasing
+often and have not already done so, you can create a new account.
+</blockquote>
+
+[if session failure]
+<blockquote style="color: __CONTRAST__">
+	[calc] delete $Session->{failure} [/calc]
+</blockquote>
+[/if]
+
+[warnings auto=1]
+
+<table width="90%" align=center cellspacing=0>
+<tr>
+	<td width="30%" align=center valign=bottom class=titlebox style="border-bottom: 0">
+		Log in to account
+	</td>
+	<td width="5%" valign=top>
+	</td>
+	<td width="30%" align=center valign=bottom class=titlebox style="border-bottom: 0">
+		Create a new account
+	</td>
+	<td width="5%" valign=top>
+	</td>
+	<td width="30%" align=center valign=bottom class=titlebox style="border-bottom: 0">
+		Don't create an account
+	</td>
+<tr>
+	<td width="30%" valign=top class=shadowbox>
+		<FORM ACTION="[process secure=1]" METHOD=POST>
+		<INPUT TYPE=hidden NAME=mv_todo  VALUE=return>
+		<INPUT TYPE=hidden NAME=mv_click VALUE=Login>
+		<INPUT TYPE=hidden NAME=mv_failpage VALUE="@@MV_PAGE@@">
+		<INPUT TYPE=hidden NAME=mv_successpage VALUE="ord/country">
+		<INPUT TYPE=hidden NAME=mv_nextpage VALUE="ord/country">
+		<input type=hidden name=mv_session_id value="[data session id]">
+
+		<table border="0" align="center" width="100%" height="100%">
+		<tr>
+		  <td align="center"> 
+		<table align="center">
+		<tr> 
+		  <td align=right>
+			[L]Username[/L]
+		  </td>
+		  <td>
+			<INPUT NAME=mv_username VALUE="[read-cookie MV_USERNAME]">
+		  </td>
+		</tr>
+		<tr>
+		  <td align=right>
+			[L]Password[/L]
+		  </td>
+		  <td>
+			<INPUT TYPE=password NAME=mv_password VALUE="">
+		  </td>
+		</tr>
+		<tr>
+		  <td>&nbsp;</td>
+		  <td>
+			<input type=submit value="[L]Log In[/L] --&gt;" class=button1>
+		  </td>
+		</tr>
+		[if config CookieLogin]
+		<tr>
+		  <td align=right>
+			<INPUT TYPE=hidden NAME=mv_cookie_password VALUE=0>
+			<INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1>
+		  </td>
+		  <td>
+			[L]Log me in automatically (sets cookie)[/L]
+		  </td>
+		</tr>
+		[/if]
+			</table>
+		  </td>
+		</tr>
+		</table>
+		
+		</form>
+	</td>
+	<td width="5%" valign=top>
+		&nbsp;
+	</td>
+	<td width="30%" valign=top class=shadowbox>
+		<table border="0" align="center" width="100%" height="100%">
+
+		<FORM ACTION="[process secure=1]" METHOD=POST>
+		<input type=hidden name=mv_session_id value="[data session id]">
+		<INPUT TYPE=hidden NAME=mv_click VALUE=NewAccount>
+		<INPUT TYPE=hidden NAME=mv_failpage VALUE="@@MV_PAGE@@">
+		<INPUT TYPE=hidden NAME=mv_successpage VALUE="ord/country">
+		<INPUT TYPE=hidden NAME=mv_nextpage VALUE="ord/country">
+		<INPUT TYPE=hidden NAME=mv_todo  VALUE=return>
+
+		<tr> 
+		  <td>
+			<table border="0" align="center" width="100%" height="100%">
+			<tr> 
+			  <td align="right">
+				[L]Username[/L]:
+			  </td>
+			  <td align="left"> 
+				<input type="text" NAME=mv_username VALUE="">
+			  </td>
+			</tr>
+			<tr> 
+			  <td align="right"> 
+				[L]Password[/L]:
+			  </td>
+			  <td align="left"> 
+				<INPUT TYPE=password NAME=mv_password VALUE="">
+			  </td>
+			</tr>
+			<tr> 
+			  <td align="right"> 
+				[L]Verify Password[/L]:
+			  </td>
+			  <td align="left"> 
+				<INPUT TYPE=password NAME=mv_verify VALUE="">
+			  </td>
+			</tr>
+			<tr> 
+			  <td>&nbsp;</td>
+			  <td> 
+				<INPUT TYPE=submit VALUE="[L]Create[/L] --&gt;" class=button1>
+			  </td>
+			</tr>
+			[if config CookieLogin]
+			<tr> 
+			  <td align="right"> 
+				<INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1>
+			  </td>
+			  <td>[L]Log me in automatically (sets cookie)[/L]</td>
+			</tr>
+			[/if]
+			<tr> 
+			  <td align="right" colspan="2">&nbsp;</td>
+			</tr>
+			</table>
+			
+		  </td>
+		</tr>
+
+		</form>
+		</table>
+
+
+	</td>
+	<td width="5%" valign=top>
+		&nbsp;
+	</td>
+	<td width="30%" valign=top class=shadowbox style="padding-left: 10px">
+		<br>
+		I would prefer not to create an account at all. 
+			<blockquote>
+			[page ord/country]Take me to the next step</A>.
+			<br>
+			<br>
+			[page ord/checkout]Take me to express checkout</A>.
+			</blockquote>
+	</td>
+</tr>
+</table>
+
+</div>
+<!-- END CONTENT -->
+
+@_NOLEFT_BOTTOM_@

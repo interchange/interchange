@@ -1,0 +1,133 @@
+[comment]
+ui_name: cross
+ui_type: component
+ui_class: content, vertical
+ui_group: promotions
+ui_help: depends on setting cross_codes or cross_category in page, falls back to featured/specials.
+ui_label: Cross-sell or specific feature
+
+banner:
+	code: banner
+	default: [L]See also...[/L]
+	label: Top row banner
+	type: text
+	width: 40
+
+size:
+	label: Number of selections
+	options: 1,2,3*,4,5,6,7,8,9,10
+	type: select
+
+cols:
+	label: Number of columns
+	options: 1,2,3*,4,5,6,7,8,9,10
+	type: select
+
+cross_codes:
+	label: Specific featured products (sku)
+	type: text
+	width: 40
+
+random:
+	label: Random order?
+	type: yesno
+
+[/comment]
+<!-- BEGIN COMPONENT [control component cross_horizontal] -->
+[if !scratch cross_codes]
+[tmp cross_codes][control cross_codes][/tmp]
+[/if]
+[if !scratch cross_codes]
+[tmp cross_codes][loop search="
+[if scratch cross_category]
+						st=db
+						fi=merchandising
+						sf=cross_category
+						se=[scratch cross_category]
+[else]
+						st=db
+						fi=merchandising
+						sf=featured
+						se=specials
+[/else]
+[/if]
+					"] [loop-code][/loop][/tmp]
+[/if]
+[if !scratch cross_codes]
+[tmp cross_codes][loop search="
+						st=db
+						fi=merchandising
+						ra=yes
+						tf=times_ordered
+						ml=10
+					"] [loop-code][/loop][/tmp]
+[/if]
+
+<table width="[control width 95%]" align="[control table_align center]">
+<tr> 
+  <td class="titlebar3">
+    &nbsp;<b>[control name=banner default="[L]See also...[/L]"]</b>
+  </td>
+</tr>
+<tr>
+  <td> 
+    [calc]
+  	my $n = [control cols 3];
+	$Scratch->{width_percent} = q{[control width_percent 100%]}
+							  || int(100 / $n) . '%';
+	my $rand = q{[control random]};
+	delete $Scratch->{random};
+	if($rand) {
+		$Scratch->{random} = q{[control size 3]};
+	}
+	return;
+    [/calc]
+    <table border="0" width="100%">
+    [table-organize embed=1 pretty=1 cols="[control cols 3]"]
+    [loop random="[scratch random]" list="[strip interpolate=1][scratch cross_codes][/strip]"]
+      <TD width="[scratch width_percent]"> 
+	<table border="0">
+	<tr>
+    	  
+    [if-loop-field thumb]
+      <td>
+	    <a href="[area [loop-code]]">
+	      <img border="0" src="thumb/[loop-field thumb]"></a>
+	  </td>
+    [else]
+      <td>&nbsp;
+      </td>
+    [/else]
+    [/if-loop-field]
+
+          <td valign="middle">
+            <table cellspacing="0">
+     	    <tr>
+  	      <td align="left" class="contentbar1">
+	        &nbsp;[loop-description]
+              </td>
+	    </tr>
+	    <tr> 
+	      <td align="left">
+			[b-link order mv_order_item=[loop-code]]BUY NOW[/b-link]
+			[b-link [loop-code]][L]MORE INFO[/L][/b-link]
+              </td>
+	    </tr>
+	    <tr> 
+	      <td align="left">
+		[L]Our Price[/L]: <B>[loop-price]</B>
+	      </td>
+	    </tr>
+	    </table>
+	  </td>
+        </tr>
+        </table>
+      </TD>
+    [/loop]
+    [/table-organize]
+    </table>
+  </td>
+</tr>
+</table>
+
+<!-- END COMPONENT [control component cross_horizontal] -->

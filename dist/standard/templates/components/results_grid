@@ -1,0 +1,249 @@
+[comment]
+ui_component: results_grid
+ui_type: component
+ui_name: results_grid
+ui_class: content
+ui_group: search
+ui_help: Configurable results page with Buy List.
+ui_label: Search Results (configurable grid) with Buy List
+ui_source: templates/components/results_grid
+
+cols:
+        label: Number of Columns to display?
+        options: 1,2,3*,4,5,6,7,8,9,10
+        type: select
+	help: You can control the number of rows by using an appropriate number for mv_matchlimit in the search
+
+columnize:
+	label: Use Newspaper format?
+	widget: yesno
+	help: Set to Yes when you want your results vertically organized.  
+
+htmltmpl:
+	label: Template
+	widget: textarea_10_50
+	help: Define your own HTML template using {FIELDNAME} constructs as placeholders for the (record)fields. E.g. {SKU} for the SKU and {DESCRIPTION} for the description of a product. This will override the default template.
+
+buylist_button:
+	label: Display Buy List Button?
+	widget: yesno
+	help: Only useful in combination with a Quantity box placeholder( {QUANTITY_BOX} ) in template.
+
+[/comment]
+<!-- BEGIN COMPONENT [control component results_grid] -->
+
+
+[comment]
+Available placeholders for HTML Template:
+* All field names (in capitals) e.g. {SKU} for sku field, {COMMENT} for comment field, etc.
+* Additional place holders:
+	{PRICE}		- processed product field
+	{IMAGE}		- processed product field, full image tag (item image)
+	{THUMB}		- processed product field, full image tag (thumb image)
+	{STOCK}		- Inventory check, returns text 'Yes' or link 'No' to function/stock_alert page
+	{PRODUCT_LINK}	- Represents the URL to products page. To be used in href 
+	{QUANTITY_BOX}	- Text input box to specify the quantity of product
+	{BUY_BUTTON}	- The 'BUY NOW' button
+
+Please send any comments or suggestions for improvement to: 
+	Ton Verhagen (ton@verhagen.net) 
+[/comment]
+
+
+[tmp buylist_button][control buylist_button 0][/tmp]
+<br>
+
+[if scratch did_order]
+[include file="templates/components/cart_display"]<br>
+[/if]
+[set did_order][/set]
+
+[perl tables="products"]$Scratch->{itemcount}=0;return;[/perl]
+[search-region]
+[seti results_return_to][history-scan exclude=nothing count=0][/seti]
+[set munge_quantity]
+[calc]
+        $Scratch->{did_order} = 1;
+        @q = split /\0/, $CGI->{mv_order_quantity};
+        for (@q) {
+                next unless length $_;
+                $_ = "=$_";
+        }
+        @parms = grep /^mv_oi\d+/ && $CGI->{$_}, keys %{$CGI};
+
+        # If we have parms, means an individual buy. If we don't
+        # we want to strip empty items
+        unless (@parms) {
+                @i = split "\0", $CGI->{mv_order_item};
+                for(my $i = 0; $i < @i; $i++) {
+                        next if length($q[$i]);
+                        $i[$i] = '';
+                }
+                @i = grep length($_), @i;
+                @q = grep length($_), @q;
+                $CGI_array->{mv_order_quantity} = \@q;
+                $CGI->{mv_order_quantity} = join "\0", @q;
+                $CGI_array->{mv_order_item} = \@i;
+                $CGI->{mv_order_item} = join "\0", @i;
+                return;
+        }
+        my $item = $parms[0];
+        $item =~ /(\d+)/ or return;
+        my $idx = $1;
+        $idx--;
+        $CGI->{mv_order_item} = $CGI->{$item};
+        $CGI->{mv_order_quantity} = "$q[$idx]";
+        return;
+[/calc]
+        [bounce href="[scratch results_return_to]"]
+[/set]
+
+[on-match]
+<FORM ACTION="[area nothing]" METHOD=POST>
+<INPUT TYPE=hidden NAME=mv_session_id value="[data session id]">
+<INPUT TYPE=hidden NAME=mv_action VALUE=refresh>
+<INPUT TYPE=hidden NAME=mv_separate_items VALUE=0>
+<INPUT TYPE=hidden NAME=mv_click VALUE=munge_quantity>
+[/on-match]
+
+[calc]
+    my $n = [control cols 3];
+    $Scratch->{width_percent} = int(100 / $n) . '%' if $n > 0;
+    return;
+[/calc]
+
+[table-organize
+	embed=1
+	table='width="95%" border="0" cellspacing="0" cellpadding="3"'
+	cols='[control cols 3]'
+	columnize='[control columnize 0]'
+]
+[search-list]
+
+[item-sub show_product]
+
+	my $sku = shift;
+	my $pdb = $Db{products};
+        my $record = $pdb->row_hash($sku);
+        return undef unless $record;
+
+	$Scratch->{itemcount}++;
+
+
+	### Definition of default template ###
+	#
+	my $tmpl = $Tag->control('htmltmpl') || <<EO_TMPL;
+<div style="border: solid 1px #DDDDDD;" width="100%">
+  <table cellpadding=2 cellspacing=0 border=0 width="100%">
+     <tr class="contentbar1"><td colspan=2><b>{DESCRIPTION}</b></td></tr>
+     <tr>
+	<td><a href="{PRODUCT_LINK}">{THUMB}</a></td>
+	<td valign=top bgcolor="#eeeeee" width="100%">
+		<div style="padding-left:5px;">	
+			<span style="font-size:10px;">
+				[L]SKU[/L]: {SKU}<br><br>
+				[L]Stock[/L]: {STOCK}<br>
+			</span>
+			<p align=right><a href="{PRODUCT_LINK}" style="text-decoration:none; font-size:10px;" title="[L]Click here for more information on this product[/L]">[L]More info...[/L]</a></p>
+		</div>
+	</td>
+    </tr>
+    <tr class="contentbar1"><td style="font-size:10px;">[L]Price[/L]: {PRICE}</td><td align=right valign=middle>{QUANTITY_BOX} &nbsp; {BUY_BUTTON}</td></tr>
+  </table>
+</div>
+EO_TMPL
+
+	$record->{price} = $Tag->price($sku);
+	$record->{image} = $Tag->image({
+					imagesubdir => "items",
+					src => $record->{image},
+					extra => "border=0",
+					title => "[L]Click for more information.[/L]",
+					alt => $record->{description},
+				});
+	$record->{thumb} = $Tag->image({
+					imagesubdir => "thumb",
+					src => $record->{thumb},
+					extra => "border=0",
+					title => "[L]Click for more information.[/L]",
+					alt => $record->{description},
+				});
+
+	my $q = $Tag->data('inventory', 'quantity', $sku);
+	if ($q > 0) {
+		$record->{stock} = <<EOF;
+<span style="color: #008000; font-size:10px; font-family: san-serif; font-weight: bold;">[L]Yes[/L]</span>
+EOF
+	}
+	else {
+		my $url = $Tag->area('function/stock_alert', $sku);
+		$record->{stock} = <<EOF;
+<a href="$url" title="[L]Click here to pre-order this item or get notified as soon as this item is available again.[/L]" style="color: #FF0000; font-size:10px; font-family: san-serif; font-weight: bold;">[L]No[/L]</a>
+EOF
+	}
+
+	$record->{product_link} = $Tag->area($sku);
+
+	$record->{buy_button} = <<EOF;
+<input type=submit value="[L]BUY NOW[/L] onClick="this.form.mv_oi$Scratch->{itemcount}.value='$sku'" class=button2>
+EOF
+
+	$record->{quantity_box} = <<EOF;
+<input type=text name=mv_order_quantity size=2 value="" style="height:16px;font-size:10px;background-color:#eeeeee;">
+EOF
+	return $Tag->uc_attr_list($record,$tmpl);
+
+[/item-sub]
+
+
+<TD width="[scratch width_percent]">
+  <INPUT TYPE=hidden  NAME="mv_order_item" VALUE="[item-code]">
+  <input type=hidden name="mv_oi[item-increment]" value="">
+  [item-exec show_product][item-code][/item-exec]
+</TD>
+
+[/search-list]
+[/table-organize]
+
+[on-match]
+[if scratch buylist_button]<div align=right style="width:95%;"><br><INPUT TYPE=submit VALUE="[L]Buy List[/L]"></div>[/if]
+</FORM>
+[/on-match]
+
+[no-match]
+<BR><BR>
+<BLOCKQUOTE>
+[comment]
+        Don't show the search string if it was empty, since it looks weird
+        and the user will see the error below anyway.
+[/comment]
+[tmp matchstring][value-extended name=mv_searchspec joiner=" | "][/tmp]
+[if scratch matchstring]
+[msg arg.0="[scratch matchstring]"]Sorry, no matches for <B>%s</B>.[/msg]
+[/if]
+[if value mv_search_error]
+<P>
+<B>
+[L]Errors[/L]:
+<BR> 
+[value-extended name=mv_search_error joiner="<BR>"]
+</B>
+[/if]
+
+<BR><BR>
+</BLOCKQUOTE>
+[/no-match]
+<BR CLEAR=LEFT>
+[more-list]
+<BLOCKQUOTE>
+[msg arg.0="[matches]" arg.1="[match-count]"]Matches %s of %s found.[/msg]
+<BR>[more]<BR>
+</BLOCKQUOTE>
+[/more-list]
+
+[/search-region]
+
+<br>
+
+<!-- END COMPONENT [control component results_grid] -->
+

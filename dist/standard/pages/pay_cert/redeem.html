@@ -1,0 +1,80 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftright
+[/comment]
+
+[tmp page_title]__COMPANY__ -- [L]Gift certificate redemption[/L][/tmp]
+[tmpn members_only][/tmpn]
+
+[control reset=1]
+[control-set]
+	[component]search_box_small[/component]
+[/control-set]
+[control-set]
+	[component]cart_tiny[/component]
+[/control-set]
+[control-set]
+	[component]product_tree[/component]
+[/control-set]
+[control-set]
+	[component][/component]
+[/control-set]
+[control-set]
+	[component]cross[/component]
+	[banner][L]Specials[/L][/banner]
+	[cols]2[/cols]
+	[size]2[/size]
+[/control-set]
+[control-set]
+	[component]random[/component]
+	[banner][L]See also...[/L][/banner]
+	[cols]1[/cols]
+	[size]3[/size]
+[/control-set]
+[control-set]
+	[component][/component]
+[/control-set]
+[control-set]
+	[component][/component]
+[/control-set]
+[control reset=1]
+
+@_LEFTRIGHT_TOP_@
+
+<!-- BEGIN CONTENT -->
+<table width="95%" border="0">
+<tr> 
+  <td>
+  [if cgi pay_cert_code]
+  	[seti pay_cert_code][cgi pay_cert_code][/seti]
+  [/if]
+  [perl pay_certs]
+  	my $from_cookie = $Tag->read_cookie('MV_GIFT_CERT_CODE');
+	my $cert = join ",", $from_cookie, $Scratch->{pay_cert_code};
+	my @certs = grep /\S/, split /[\0,\s]+/, $cert;
+	my %seen;
+	@certs = grep !$seen{$_}++, @certs;
+	@certs = grep tag_data('pay_certs', 'amount', $_) > 0, @certs;
+	$Scratch->{pay_cert_code} = join ",", @certs;
+	$Tag->set_cookie( {
+						name => 'MV_GIFT_CERT_CODE',
+						value => $Scratch->{pay_cert_code},
+						expires => '3 months',
+					});
+	return;
+  [/perl]
+	<br>
+	[loop list="[scratch pay_cert_code]"]
+		[if-loop-data pay_certs amount > 0]
+		<blockquote>
+		<B>You have a[loop-alternate except_first]nother[/loop-alternate] gift certificate for [currency][loop-data pay_certs amount][/currency]!</B>
+		</blockquote>
+		[/if-loop-data]
+	[/loop]
+  </td>
+</tr>
+
+</table>
+
+<!-- END CONTENT -->
+@_LEFTRIGHT_BOTTOM_@

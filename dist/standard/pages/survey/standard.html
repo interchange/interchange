@@ -1,0 +1,71 @@
+[comment]
+ui_template: Yes
+ui_template_name: noleft
+[/comment]
+
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]product_tree[/component]
+[/control-set]
+
+[control-set]
+[component][/component]
+[/control-set]
+
+[control-set]
+[component][/component]
+[/control-set]
+
+[control-set]
+[component]promo[/component]
+[matches]3[/matches]
+[cols]3[/cols]
+[banner][L]Specials[/L][/banner]
+[/control-set]
+
+[control reset=1]
+
+<style type="text/css">
+.cerror {
+	color: red
+}
+</style>
+
+[if cgi survey_start]
+	[calc]
+		delete $Session->{auto_wizard}{$CGI->{survey_start}};
+		return;
+	[/calc]
+	[tmp survey_id]survey::[cgi survey_start][/tmp]
+[/if]
+
+[auto-wizard
+	compile=auto
+	show=0
+	scratch=survey_output
+	interpolate=1
+	db_id="[scratch survey_id]"
+/]
+
+@_LEFTONLY_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+<blockquote style="color: red">
+	[warnings]
+</blockquote>
+
+<div style="text-align: left; padding: 5">
+<h1>[scratch page_title]</h1>
+[scratch survey_output]
+</div>
+
+<!-- END CONTENT -->
+
+@_LEFTONLY_BOTTOM_@

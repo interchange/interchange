@@ -1,0 +1,149 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+[/comment]
+
+[tmp page_title]__COMPANY__ -- [L]Log In[/L][/tmp]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]product_tree[/component]
+[/control-set]
+
+[control reset=1]
+
+@_LEFTONLY_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+<table width="95%">
+<tr>
+<td>
+
+[if session failure]
+	<br><br>
+	<B>[calc] delete $Session->{failure}[/calc]</b>
+	<br>
+[/if]
+
+[set mv_no_cache]1[/set]
+[set New Account]
+mv_nextpage=new_account
+[set new]1[/set]
+[/set]
+
+[tmp cookie_username][read-cookie MV_USERNAME][/tmp]
+
+[if !session logged_in]
+
+    <FORM ACTION="[process secure=1]" METHOD=POST>
+    <INPUT TYPE=hidden NAME=mv_todo  VALUE=return>
+    <INPUT TYPE=hidden NAME=mv_click VALUE=Login>
+    <INPUT TYPE=hidden NAME=mv_failpage VALUE="login">
+	<INPUT TYPE=hidden NAME=mv_successpage VALUE="[either][scratchd mv_successpage][or]member/service[/either]">
+    <INPUT TYPE=hidden NAME=mv_nextpage VALUE="index">
+    <input type=hidden name=mv_session_id value="[data session id]">
+
+    <table border="0" align="center">
+    <tr>
+      <td class="contentbar1" align="center"> 
+	<table align="center">
+	<tr> 
+	  <td align=right class="contentbar2">
+	    [L]Username[/L]
+	  </td>
+	  <td class="contentbar2">
+	    <INPUT NAME=mv_username VALUE="[scratch cookie_username]">
+	  </td>
+	</tr>
+	<tr>
+	  <td align=right class="contentbar2">
+	    [L]Password[/L]
+	  </td>
+	  <td class="contentbar2">
+	    <INPUT TYPE=password NAME=mv_password VALUE="">
+	  </td>
+	</tr>
+	<tr>
+	  <td>&nbsp;</td>
+	  <td class="contentbar1">
+	    <input type=submit value="[L]Log In[/L]">
+	    <input type="submit" NAME="mv_click" value="New Account">
+	  </td>
+	</tr>
+	[if config CookieLogin]
+	<tr>
+	  <td align=right class="contentbar1"> 
+	    <INPUT TYPE=hidden NAME=mv_cookie_password VALUE=0>
+	    <INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1 [if scratch cookie_username]CHECKED[/if]>
+	  </td>
+	  <td class="contentbar1">
+	    [L]Log me in automatically (sets cookie)[/L]
+	  </td>
+	</tr>
+	[/if]
+        </table>
+      </td>
+    </tr>
+    </table>
+	
+    </form>
+
+[else]
+
+    <FORM ACTION="[process]" METHOD=POST>
+    <input type=hidden name=mv_session_id value="[data session id]">
+    <INPUT TYPE=hidden NAME=mv_todo  VALUE=return>
+    <INPUT TYPE=hidden NAME=mv_click VALUE=Logout_choice>
+    <INPUT TYPE=hidden NAME=mv_nextpage VALUE="login">
+
+    <table align="center">
+    <tr>
+      <td class="contentbar1" align="center"> 
+	<table>
+	<tr class=contentbar2> 
+	  <td colspan=2 class=contentbar2>
+	    <b>[L]You are already logged in.[/L]</b>
+	  </td>
+	</tr>
+	<tr>
+	  <td>&nbsp;</td>
+	  <td class="contentbar1">
+	  	<br>&nbsp;<br>
+	    <INPUT TYPE=submit VALUE="Log out"> <INPUT TYPE=checkbox NAME=clear_values CHECKED VALUE=1>&nbsp;[L]Clear&nbsp;name/address[/L][if items]&nbsp;&nbsp;<INPUT TYPE=checkbox NAME=clear_cart CHECKED VALUE=1>&nbsp;[L]Clear&nbsp;cart[/L][/if]<BR>
+	  	<br>&nbsp;<br>
+	  </td>
+	</tr>
+	<tr class=contentbar2> 
+	  <td colspan=2>
+	    [msg arg.0="<A HREF='[area new_account]'>" arg.1="</a>"]Or you can create a %snew account%s.[/msg]
+	  </td>
+	</tr>
+	</table>
+		
+      </td>
+    </tr>
+    </table>
+	
+    </form>
+
+[/else]
+[/if]
+
+	<p>
+	<center>
+	[page lost_password][L]Lost your password?[/L]</a>
+	</center>
+
+  </td>
+</tr>
+</table>
+
+<!-- END CONTENT -->
+
+@_LEFTONLY_BOTTOM_@

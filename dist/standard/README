@@ -1,0 +1,82 @@
+Thu May  1 15:08:29 EDT 2003 -- Initial alpha release
+
+This is Mike Heins' modified foundation demo. Changes from the one distributed
+with Interchange:
+
+	* Virtually all buttons and menus are text-based so that you can
+	  add menu entries, buttons, and translations for same without
+	  making images.
+
+	* All look/feel configuration is done by CSS. It should be quite
+	  possible to completely change the look simply by editing
+	  variables/THEME_CSS and include/layout/*.
+
+    * There is only one color scheme (blueyellow) and no THEME/STYLE
+	  variable. Therefore the regions/ directory is directly in 
+	  templates.
+
+	* The default for left-hand side is a product tree, for the top
+	  bar is a flydown/out menu. Each are editable from within the UI.
+
+	* The template layout is contained in include/layout/*, and
+	  by [set display_class]leftonly[/set] you can change the type
+	  within the page.
+
+	* The page title, and page banner can be set anywhere before
+	  the page footer.
+
+	* There is an alternative multi-page checkout which has received
+	  quite a bit of testing.
+
+	* UPS lookup for Canada and the US is supported out of the
+	  box.
+
+    * US Postal international shipping is supported.
+
+    * Customer service pages have been spiffed up and improved
+	  a bit.
+
+    * If you install Text::Query, the search boxes will use
+	  Altavista-style search language.
+
+	* Advanced search page improved quite a bit.
+
+	* All shipping files/databases moved to products/ship
+
+	* No more etc/after.cfg -- all configuration in catalog.cfg.
+
+    * A few new feature demonstrations included.
+
+	* Some files have been moved to unclutter the top level
+	  of the pages/ directory.
+
+    * More minor changes not mentioned here.
+
+The intent is to slowly document each of the areas of this template with
+online help to provide a constantly-improving catalog application for
+use by Interchange users not wishing to greatly change the foundation.
+
+I N S T A L L A T I O N
+-----------------------
+
+1. Install interchange normally -- must be from CVS devel tree or
+a nightly build later than the date: Thu May  1 15:12:39 EDT 2003
+
+2. Change directory to the interchange software directory then untar
+this file there:
+
+	## Substitute 
+	cd /usr/local/interchange
+	tar xzf /where/it/is/mike-X.XX.tar.gz
+
+3. Make an interchange catalog with bin/makecat, specifying the "mike"
+   template/demotype:
+
+   	   bin/makecat -demotype=mike
+
+4. Use normally.
+
+B U G S
+--------
+Undoubtedly many. Use at your own risk.
+

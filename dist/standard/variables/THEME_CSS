@@ -1,0 +1,367 @@
+<STYLE TYPE="text/css">
+
+BODY {
+  background-color: #FFFFFF;
+  font-family: Helvetica;
+  font-size: 12px;
+  margin: 0;
+}
+
+TD {
+  font-family: Helvetica;
+  font-size: 12px;
+}
+
+A:link, A:active, A:visited {
+  color: #333333;
+  font-family: Helvetica;
+  font-weight: normal;
+  text-decoration: underline;
+  font-size: 12px;
+}
+
+A:hover {
+  color: #333333;
+  font-family: Helvetica;
+  font-weight: normal;
+  text-decoration: underline;
+  font-size: 12px;
+}
+
+A.barlink:link, A.barlink:active, A.barlink:visited {
+  color: #333322;
+  font-family: Helvetica;
+  font-weight: normal;
+  text-decoration: none;
+  font-size: 11px;
+}
+
+A.barlink:hover {
+  color: #333333;
+  font-family: Helvetica;
+  font-weight: normal;
+  text-decoration: underline;
+  font-size: 11px;
+}
+
+.cartnorm {
+  background-color: #dddddd;
+  color: #000000;
+  font-family: Helvetica;
+  font-weight: normal;
+  font-size: 11px;
+  border-top: 2px solid black;
+  border-bottom: 2px solid black;
+  border-left: 1px solid black;
+  border-right: 2px solid black;
+}
+
+.cartalt {
+  background-color: #FFFFFF;
+  color: #000000;
+  font-family: Helvetica;
+  font-weight: normal;
+  font-size: 11px;
+  border-top: 2px solid black;
+  border-bottom: 2px solid black;
+  border-left: 1px solid black;
+  border-right: 2px solid black;
+}
+
+.maincontent {
+  background-color: #FFFFFF;
+  color: #000000;
+  font-family: Helvetica;
+  font-weight: normal;
+  font-size: 12px;
+}
+
+.contentbar1 {
+  background-color: #dddddd;
+  color: #000000;
+  font-family: Helvetica;
+  font-weight: normal;
+  font-size: 11px;
+}
+
+.contentbar2 {
+  background-color: #BBBBBB;
+  color: #000000;
+  font-family: Helvetica;
+  font-weight: normal;
+  font-size: 11px;
+}
+
+.bread {
+  background-color: #DDDDDD;
+  color: #333333;
+  border: 1px black solid;
+  font-family: Helvetica;
+  font-weight: normal;
+  font-size: 11px;
+}
+
+.titlebar1 {
+  background-color: #DDDDDD;
+  color: #333333;
+  border: 1px black solid;
+  font-family: Helvetica;
+  font-weight: normal;
+  font-size: 11px;
+}
+
+.titlebar2 {
+  background-color: #BBBBBB;
+  color: #000000;
+  border: 1px black solid;
+  font-family: Helvetica;
+  font-weight: normal;
+  font-size: 11px;
+}
+
+.titlebar3 {
+  background-color: #eeeeee;
+  color: #111111;
+  border: 1px solid black;
+  font-family: Helvetica;
+  font-weight: normal;
+  font-size: 11px;
+}
+
+.lineleft {
+	border-left: 1px solid black;
+	border-bottom: 1px solid black;
+	border-top: 1px solid black;
+}
+
+.linemid {
+	border-bottom: 1px solid black;
+	border-top: 1px solid black;
+}
+
+.lineright {
+	border-right: 1px solid black;
+	border-bottom: 1px solid black;
+	border-top: 1px solid black;
+}
+
+
+.categorybar {
+  background-color: #eeeeee;
+  color: #333333;
+  font-family: Helvetica;
+  font-weight: normal;
+  font-size: 11px;
+}
+
+.leftarea {
+  background-color: #eeeeee;
+  color: #FFFFFF;
+  font-family: Helvetica;
+  font-weight: normal;
+  font-size: 11px;
+  margin: 0;
+  border-top: 0px;
+  border-left: 1px solid black;
+  border-right: 2px outset black;
+  border-bottom: 2px outset black;
+}
+
+.borderdraw {
+	line-height:0px;
+	width:0px;
+	height:0px;
+	border-style:solid;
+	border-color: white white #FF0000 #FF0000;
+	border-width: 10px;
+	float: left;
+}
+
+.logoarea {
+  background-color: #FF0000;
+}
+
+.menubar {
+  background-color: #000000;
+  color: #FFFFFF !important;
+  font-family: Helvetica;
+  font-weight: normal;
+  font-size: 11px;
+}
+
+.topmenu {
+	font-face: helvetica;
+	font-size: 12pt !important;
+	font-weight: bold !important;
+	color: white !important;
+	text-decoration: none !important;
+}
+
+.topmenu_soft {
+	font-face: helvetica;
+	font-size: 12pt;
+	font-weight: bold;
+	color: white !important;
+	text-decoration: none;
+}
+
+A.topmenu:hover {
+	text-decoration: underline !important;
+}
+
+.submenu {
+	font-face: helvetica;
+	font-size: 11pt !important;
+	font-weight: bold !important;
+	background-color: white !important;
+	color: black !important;
+	text-decoration: none !important;
+}
+
+A.submenu:hover {
+	text-decoration: underline !important;
+}
+
+.titlebox {
+	background-color: #cccccc;
+	color: #111111;
+	font-face: helvetica;
+	font-size: 14pt;
+	font-weight: normal;
+	text-decoration: none;
+	border-left: 1px #999999 solid;
+	border-top: 1px #999999 solid;
+	border-bottom: 2px #999999 solid;
+	border-right: 2px #999999 solid;
+}
+
+.shadowbox {
+	border-left: 1px #999999 solid;
+	border-top: 1px #999999 solid;
+	border-bottom: 2px #999999 solid;
+	border-right: 2px #999999 solid;
+}
+
+.button1 {
+	background-image: url([var IMAGE_DIR]/blank1.gif);
+	background-color: transparent;
+	border: 0;
+	height: 18px;
+	width: 80px;
+	align: center;
+	cursor: pointer;
+	vertical-align: center;
+	text-decoration: none;
+	color: #0000CC;
+}
+
+.button2 {
+	background-image: url([var IMAGE_DIR]/blank2.gif);
+	background-color: transparent;
+	font-size: 8px;
+	font-weight: 500;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	height: 13px;
+	letter-spacing: 0px;
+	line-height: 13px;
+	width: 52px;
+	align: center;
+	cursor: pointer;
+	vertical-align: center;
+	text-decoration: none;
+	color: #000000;
+}
+
+.button3 {
+	background-image: url([var IMAGE_DIR]/blank3.gif);
+	background-color: transparent;
+	border: 0;
+	height: 18px;
+	width: 80px;
+	align: center;
+	cursor: pointer;
+	vertical-align: center;
+	text-decoration: none;
+	color: #0000CC;
+}
+
+.button4 {
+	background-image: url([var IMAGE_DIR]/blank4.gif);
+	background-color: transparent;
+	border: 0;
+	height: 25px;
+	width: 90px;
+	align: center;
+	cursor: pointer;
+	vertical-align: center;
+	text-decoration: none;
+	color: #FFFFFF;
+	font-weight: bold;
+	font-variant: small-caps;
+	font-size: 14px;
+	line-height: 23px;
+}
+
+.button5 {
+	background-color: #dab225;
+	height: 18px;
+	align: center;
+	cursor: pointer;
+	padding-left: 5px;
+	padding-right: 5px;
+	vertical-align: center;
+	text-decoration: none;
+	color: #FFFFFF;
+	font-weight: bold;
+	font-variant: small-caps;
+	font-size: 11px;
+}
+
+.button6 {
+	background-color: #dab225;
+	height: 18px;
+	align: center;
+	cursor: pointer;
+	vertical-align: center;
+	text-decoration: none;
+	color: #FFFFFF;
+	font-weight: bold;
+	font-variant: small-caps;
+	font-size: 11px;
+}
+
+.buttonv {
+	background-image: url([var IMAGE_DIR]/blankv.gif);
+	background-position: right;
+	background-color: transparent;
+	border-top: 0;
+	border-bottom: 0;
+	border-right: 0;
+	border-left: 1px solid black;
+	height: 18px;
+	align: center;
+	cursor: pointer;
+	vertical-align: center;
+	text-decoration: none;
+	color: #0000CC;
+}
+
+.buttonvl {
+	background-image: url([var IMAGE_DIR]/blankvl.gif);
+	background-color: transparent;
+	border-top: 0;
+	border-left: 0;
+	border-bottom: 0;
+	border-right: 1px solid black;
+	height: 18px;
+	align: center;
+	cursor: pointer;
+	vertical-align: center;
+	text-decoration: none;
+	color: #0000CC;
+}
+
+
+</STYLE>

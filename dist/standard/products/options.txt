@@ -1,0 +1,20 @@
+code	sku	o_group	o_sort	o_default	o_label	o_value	o_widget	o_height	o_width	description	price	wholesale	display_type
+100002	os28004	bristle			Bristle Type	=None,HUM=Human hair,CAM=Camel hair*,SYN=Synthetic	select	0	0		HUM=1.55,CAM=1.05,SYN=-2.70		
+100003	os28004	color			Handle color	WHT=White,BLK=Black	select	0	0				
+100004	os28005	bristle			Bristle Type	synthetic=Synthetic,camel=Camel Hair	select	0	0				
+100005	os28005	color			Handle color	BLK=Black,BEIGE=Beige*,WHITE=White	select	0	0				
+100006	os28005	logo			Handle Logo	c=Construct Something,y=Your Logo*	radio	0	0		c=-1,y=3.00		
+100007	os28006	bristle			Bristle Type	synthetic=Synthetic,camel=Camel Hair	select	0	0				
+100008	os28006	color			Handle color	BLK=Black,BEIGE=Beige*,WHITE=White	radio	0	0				
+100009	os28006	logo			logo	c=Construct Something,y=Your Logo*	select	0	0				
+100010	os28009	blade			Blade material	P=Plastic,S=Steel*,T=Titanium	select	0	0		P=-1.22, T=100		
+100011	os28009	screws			Screws	G=Galvanized,S=Steel	select	0	0		S=.50		
+100012	os28009	size			Size	M=medium,L=Large*	select	0	0	Size of the object	L=10,M=-5		
+100013	os28011	blade			Blade material	P=Plastic blade,S=Steel blade*,T=Titanium blade	select	0	0		P=-1.22, T=100		
+100014	os28011	handle			Handle	W=Wood handle,E=Ebony handle	select	0	0		E=20		
+100015	os28066	blade	03		Blade material	P=Plastic blade,S=Steel blade*,T=Titanium blade	select	0	0		P=-1.44,T=100		
+100016	os28066	handle	01		Handle	W=Wood handle,E=Ebony handle	radio	0	0		E=20,W=0		
+100017	os28066	logo	02		Logo	cs=Construct Something*,yl=Your Logo	select	0	0		yl=3.33,cs=-1		
+100018	os28080	blade			Blade material	P=Plastic,S=Steel*,T=Titanium	select	0	0		P=-1.22, T=100		
+100019	os28080	knob			Knob	W=Wood,E=Ebony	select	0	0		E=20		
+os28066													one

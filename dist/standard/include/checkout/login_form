@@ -1,0 +1,60 @@
+    <br>
+    <p>[msg arg.0="<a href='[area new_account]'>" arg.1="</a>"]If you have an account with us, please login using the fields below. It is not required, but you can also %screate an account%s with us.[/msg]</p>
+
+    [if session failure]
+      <P>
+      <b>[calc]delete $Session->{failure}[/calc]</b>
+      <P>
+    [/if]
+
+    <form action="[process secure=1]" METHOD=POST>
+    <input type=hidden name=mv_click value=Login>
+    <input type=hidden name=mv_todo  value=return>
+    <input type=hidden name=mv_nextpage value="ord/checkout">
+
+    [set Log In]
+      mv_nextpage=@@MV_PAGE@@
+    [/set]
+
+    <table align="center">
+    <tr>
+      <td class="contentbar2">
+        <table>
+        <tr>
+          <td align="right" class="contentbar1">
+            [L]Username[/L]:
+          </td>
+          <td align="left" class="contentbar1">
+            <input name=mv_username value="[read-cookie MV_USERNAME]">
+          </td>
+        </tr>
+        <tr>
+          <td align="right" class="contentbar1">
+            [L]Password[/L]:
+          </td>
+          <td class="contentbar1" align="left">
+            <input type=password name=mv_password value="">
+            <input type="hidden" name="mv_check" value="Log In">
+          </td>
+        </tr>
+        <tr>
+          <td>&nbsp;</td>
+          <td>
+            <input type="submit" value="[L]Log In[/L]">
+          </td>
+        </tr>
+                [if config CookieLogin]
+        <tr>
+          <td align="right">
+            <input type=hidden name=mv_cookie_password value=0><input type=checkbox name=mv_cookie_password value=1>
+          </td>
+          <td>[L]Log me in automatically (sets cookie)[/L]</td>
+        </tr>
+                [/if]
+        </table>
+      </td>
+    </tr>
+    </table>
+                       
+    </form>
+

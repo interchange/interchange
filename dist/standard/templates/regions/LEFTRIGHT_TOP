@@ -1,0 +1,27 @@
+__PAGE_INIT__
+[output name=main_css][css name=THEME_CSS basefile=variables/THEME_CSS][output name="trash"]
+
+[if !scratch logo]
+[set logo]__LOGO__[/set]
+[/if]
+[set top_menu][/set]
+[if !scratch menu_bar]
+[set menu_bar]catalog/top[/set]
+[/if]
+
+[output name=line_menu]
+__LINE_MENU__
+[output name=top_menu]
+__COMMON_MENU__
+[output name=breadcrumbs]
+[breadcrumbs reset-on-product=1]
+
+      [component group=vertical output="[control output left]"]
+      [component group=vertical output="[control output left]"]
+      [component group=vertical output="[control output left]"]
+	  [component group=content output="[control output top]"]
+	  [component group=content output="[control output bottom]"]
+	  [component group=vertical output="[control output right]"]
+	  [component group=vertical output="[control output right]"]
+	  [component group=vertical output="[control output right]"]
+[output name=""]

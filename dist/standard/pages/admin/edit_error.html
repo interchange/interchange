@@ -1,0 +1,27 @@
+[comment]
+ui_template: Yes
+ui_template_name: noleft
+[/comment]
+
+[tmp page_title]__COMPANY__ -- [L]Edit Error[/L][/tmp]
+
+@_NOLEFT_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+<br>
+<h2>There was an editing error:</h2>
+
+[if errors]
+<UL style="color:red">
+	<LI>[error all=1 show_error=1 show_var=1 joiner="<LI>"]
+</UL>
+[/if]
+
+<br>
+<br>
+<br>
+<br>
+<!-- END CONTENT -->
+
+@_NOLEFT_BOTTOM_@

@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>[scratch page_title]</title>
+[scratch meta_header]
+{{MAIN_CSS}}
+</head>
+<body>
+<!--- top left and right logo --->
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+  <td align=left valign=middle class=logoarea>
+    &nbsp;[image src="[scratch logo]"]
+  </td>        	
+  <td style="padding: 0; margin: 0; vertical-align: top" class=logoarea>
+	  <table align=right>
+		<tr>
+			<td width="100%" style="margin: 0; padding: 0" class=maincontent>
+			  <div class=borderdraw></div>
+			  {{LINE_MENU}}
+			</td>
+		</tr>
+	  </table>
+  </td>
+</tr>
+</table>
+
+<!--- menu bar along the top --->
+<table width="100%" border=0 cellspacing=0 cellpadding=0>
+<tr>
+  <td width="100%" class="menubar" valign=top>
+  {{TOP_MENU}}
+  </td>
+</tr>
+</table>
+{{BREADCRUMBS?}}
+<!--- menu bar along the top ---><table width="100%" border=0 cellspacing=0 cellpadding=0>
+<tr>
+  <td width="100%" class="bread" valign=top>
+  {{BREADCRUMBS}}
+  </td>
+</tr>
+</table>
+{{/BREADCRUMBS?}}
+<!--- left category column, main content column, and right special column --->
+<table width="100%" border=0 cellspacing=0 cellpadding=0>
+<tr> 
+	<td width="20%" valign=top align=left class=leftarea> 
+	  {{LEFT}}
+	</td>
+	<td width="60%" valign=top style="[if scratch dhtml_browser]padding-left: 10px[/if]" class=maincontent>
+{{TOP?}}
+	<div align=center>{{TOP}}</div>
+{{/TOP?}}
+	{{:DEFAULT}}
+{{BOTTOM?}}
+	<div align=center>{{BOTTOM}}</div>
+{{/BOTTOM?}}
+	</td>
+	<td width="20%" valign=top align=left class=rightarea> 
+	  {{RIGHT}}
+	</td>
+</tr>
+<tr>
+	<td colspan=3>
+		{{COPYRIGHT}}
+	</td>
+</tr>
+</table>
+[if session admin]
+[and scratch editable]
+[page href="admin/edit_page" form="page_name=@@MV_PAGE@@"]Edit page data</a>
+[/if]
+{{EDIT_CONTROLS}}
+</body>
+</html>

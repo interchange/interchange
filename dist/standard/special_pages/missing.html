@@ -1,0 +1,24 @@
+[if type=explicit compare=`q{[subject]} =~ m{^admin/}` ]
+[set ui_failure]<h2>[msg arg.0="[subject]"]Sorry, the page (%s) was not found[/msg]</h2>[/set]
+[include admin/error.html]
+[else]
+
+[tmp page_title]
+[msg arg.0="[subject]"]Sorry, the page (%s) was not found[/msg]
+[/tmp]
+@_NOLEFT_TOP_@
+
+<p>&nbsp;</p>
+
+<H1>[scratch page_title]</H1>
+
+<p>
+Sorry, the page @@MV_PREV_PAGE@@ was not found.
+</p>
+[msg arg.0="[subject]" arg.1="[page index]" arg.2="</a>"]The requested page (%s) was not found. You can %sreturn to browsing our catalog%s, if you wish.[/msg]
+</p>
+
+@_NOLEFT_BOTTOM_@
+<!-- current page: @@MV_PAGE@@ -->
+[/else]
+[/if]

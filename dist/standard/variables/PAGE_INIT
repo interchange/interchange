@@ -1,0 +1,10 @@
+[calc]
+	$Variable->{MV_DHTML_BROWSER} ||= 'MSIE.*[5-9]\..*Windows|Mozilla.*Gecko|Opera.*[7-9]\.';
+	$Scratch->{dhtml_browser} =
+		$Session->{browser} =~ m{$Variable->{MV_DHTML_BROWSER}};
+	if($Scratch->{members_only} and ! $Session->{logged_in}) {
+		$Scratch->{mv_successpage} = $Tag->var('MV_PAGE', 1);
+		$Tag->deliver({ location => $Tag->area('login')});
+	}
+	return;
+[/calc]

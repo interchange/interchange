@@ -1,0 +1,69 @@
+[if !session arg]
+[calc]
+	$Session->{arg} = $Variable->{FORUM_DEFAULT_THREAD} || 'TOP';
+	return;
+[/calc]
+[/if]
+[loop list="[data session arg]"]
+<form ACTION="[area @@MV_PAGE@@]" METHOD="GET">
+<input TYPE="HIDDEN" NAME="artid" VALUE="[loop-data forum artid]">
+<input TYPE="HIDDEN" NAME="parent" VALUE="[loop-code]">
+<input TYPE="HIDDEN" NAME="mv_arg" VALUE="[loop-code]">
+<table BORDER="0" CELLSPACING="0" CELLPADDING="1">
+<tr><td WIDTH="130" ALIGN="RIGHT">[L]Name[/L]: </td><td WIDTH="500">
+[page href=forum_user arg="[loop-data forum username]"][data table=userdb column=nickname key="[loop-data forum username]"]&#91; [page logout][L]Log Out[/L]</a> ]</td></tr>
+
+
+
+<tr><td ALIGN="RIGHT">[L]Subject[/L]: </td>
+<td><input TYPE="text" NAME="subject" VALUE="[loop-calc]
+						my $subj = $CGI->{subject} || q{[loop-data forum subject]};
+						$subj = "Re: $subj" unless $subj =~ /^\s*re:/i;
+						return $Tag->filter('restrict_html', $subj);
+				 [/loop-calc]" SIZE=50 MAXLENGTH=50></td>
+</tr>
+<tr>
+<td ALIGN="RIGHT" VALIGN="TOP">[L]Story[/L]:</td>
+<td><textarea WRAP="VIRTUAL" NAME="comment" ROWS="10"
+	COLS="60">[cgi
+				name=comment
+				filter="
+					restrict_html.a.b.i.u.blockquote.li.ol.ul.em.br.tt.p.strong.div
+					textarea_put
+				"]</textarea>
+</td></tr>
+<tr>
+<td ALIGN="RIGHT" VALIGN="TOP">[L]Additional (not required, shown on second page)[/L]:</td>
+<td><textarea WRAP="VIRTUAL" NAME="additional" ROWS="10"
+	COLS="60">[cgi
+				name=additional
+				filter="
+					restrict_html.a.b.i.u.blockquote.li.ol.ul.em.br.tt.p.strong.div
+					textarea_put
+				"]</textarea>
+		<br>([L]Use the Preview Button! Check those URLs!  Don't forget the http://![/L])
+</td></tr>
+<tr><td> </td><td>
+
+
+[if session logged_in]
+<input TYPE="checkbox" NAME="anon" [if cgi anon]CHECKED[/if]> [L]Post Anonymously[/L]
+[/if]
+<br>
+<input TYPE="SUBMIT" NAME="operation" VALUE="Submit">
+<input TYPE="SUBMIT" NAME="operation" VALUE="Preview">
+<select NAME="commtype">
+<option VALUE="2">[L]Plain Old Text[/L]</option>
+<option VALUE="3"[selected name=commtype cgi=1 value=3]>[L]HTML Formatted (no wiki)[/L]</option>
+<option VALUE="4"[selected name=commtype cgi=1 value=4]>[L]Code[/L]</option>
+</select>
+</td></tr><tr>
+<td VALIGN="TOP" ALIGN="RIGHT">[L]Allowed HTML[/L]: </td><td><font SIZE="1">
+&lt;B&gt; &lt;I&gt; &lt;P&gt; &lt;A&gt; &lt;LI&gt; &lt;OL&gt; &lt;UL&gt; &lt;EM&gt; &lt;BR&gt; &lt;TT&gt; &lt;STRONG&gt; &lt;BLOCKQUOTE&gt; &lt;DIV&gt;
+</font>
+</td></tr>
+</table>
+
+</form>
+
+[/loop]

@@ -1,0 +1,352 @@
+[comment]
+ui_template: Yes
+ui_template_name: leftonly
+[/comment]
+
+[tmp members_only]1[/tmp]
+[tmp page_title]__COMPANY__ -- [L]Account Maintenance[/L][/tmp]
+
+[control reset=1]
+
+[control-set]
+[component]search_box_small[/component]
+[/control-set]
+
+[control-set]
+[component]product_tree[/component]
+[/control-set]
+
+[control-set]
+[component]cart_tiny[/component]
+[/control-set]
+
+[control reset=1]
+
+@_LEFTONLY_TOP_@
+
+<!-- BEGIN CONTENT -->
+
+[if errors]
+<ul style="color: red">
+  [error all=1 show_error joiner="<LI>"]
+</ul>
+[/if]
+
+<span style="color: green">
+[warnings auto=1]
+</span>
+
+[userdb function=get_billing_names]
+[userdb function=get_shipping_names]
+
+<FORM ACTION="[process secure=1]" METHOD="POST">
+<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
+
+[if type=explicit compare="[error all=1 show_var=1 keep=1]"]
+<P>
+<b>[L]There were errors in your last submission.[/L]</b>
+<br>
+[msg arg.0="<SPAN style='color:red;'>" arg.1="</SPAN>"]They are shown in %sthis color%s below.[/msg]
+</P>
+[/if]
+
+[comment] account_change profile in etc/profiles.order [/comment]
+
+<INPUT TYPE=hidden NAME=mv_order_profile VALUE=account_change>
+<INPUT TYPE=hidden NAME=mv_todo     VALUE=return>
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="@@MV_PAGE@@">
+<INPUT TYPE=HIDDEN NAME=mv_check    VALUE="Save_database">
+
+[set Save_database]
+[calc]Debug("Saving!"); return[/calc]
+[if compare="[userdb save]"]
+[warnings message="Information saved."]
+[else]
+[error name=userdb set="Information saved."]
+[/else]
+[/if]
+[/set]
+
+<br>
+
+<table border="0" cellspacing="0" cellpadding="0" align="center" width="75%">
+<tr class="contentbar2"> 
+  <td class="contentbar2" colspan=4>
+    <big>&nbsp;<b>[L]Shipping Address[/L]</b> <i>([L]primary[/L])</i></big>
+  </td>
+</tr>
+<tr class="contentbar1"> 
+  <td align=right class="contentbar1"> 
+    [L]Company[/L]
+  </td>
+  <td class="contentbar1"> 
+    <INPUT TYPE=text NAME=company VALUE="[value company]" size="30" maxlength="40">
+  </td>
+  <td class="contentbar1" colspan="2">&nbsp;</td>
+</tr>							  
+<tr class="contentbar1"> 
+  <td align=right> 
+    [error name=fname std_label="[L]First Name[/L]" required=1]
+  </td>
+  <td> 
+    <INPUT TYPE=text NAME=fname VALUE="[value fname]" size="15" maxlength="20">
+  </td>
+  <td align=right>
+    [error name=lname std_label="[L]Last Name[/L]" required=1]
+  </td>
+  <td>
+    <INPUT TYPE=text NAME=lname VALUE="[value lname]" size="15">
+  </td>
+</tr>
+<tr class="contentbar1">  
+  <td align=right> 
+    [error name=address1 std_label="[L]Address[/L]" required=1]
+  </td>
+  <td colspan="3"> 
+    <INPUT TYPE=text NAME=address1 VALUE="[value address1]" size="30" maxlength="40">
+  </td>
+</tr>
+<tr class="contentbar1"> 
+  <td>&nbsp;</td>
+  <td colspan="3"> 
+    <INPUT TYPE=text NAME=address2 VALUE="[value address2]" size="30" maxlength="40">
+  </td>
+</tr>
+<tr class="contentbar1"> 
+  <td align=right> 
+    [error name=city std_label="[L]City[/L]" required=1]
+  </td>
+  <td>
+    <INPUT TYPE=text NAME=city VALUE="[value city]" size="15" maxlength="20">
+  </td>
+  <td align=right>
+    [error name=state std_label="[L]State/Province[/L]" required=1]
+  </td>
+  <td>
+    <INPUT TYPE=text NAME=state VALUE="[value name=state filter=uc]" size=3>
+  </td>
+</tr>
+<tr class="contentbar1"> 
+  <td align=right> 
+    [error name=zip std_label="[L]Zip/Postal Code[/L]" required=1]
+  </td>
+  <td>
+    <INPUT TYPE=text NAME=zip VALUE="[value zip]" size="10" maxlength="10">
+  </td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+</tr>
+<tr class="contentbar1"> 
+  <td align=right> 
+    [error name=email std_label="[L]Email Address[/L]" required=1]
+  </td>
+  <td colspan=3>
+    <INPUT TYPE=text NAME=email VALUE="[value email]" size="40">
+  </td>
+</tr>
+<tr class="contentbar1"> 
+  <td align=right> 
+    [error name=country std_label="[L]Country[/L]" required=1]
+  </td>
+  <td colspan=3> 
+      <SELECT NAME=country onChange="this.form.submit()">
+    [if value country =~ /(^$|US|CA)/]
+	<OPTION VALUE="US"> [L]United States[/L]
+	<OPTION [selected country CA] VALUE="CA"> [L]Canada[/L]
+	<OPTION VALUE="JP"> [L]Other[/L]
+    [else]
+	[loop option=country search="
+	 ra=yes
+	 fi=country
+	 rf=code,name
+	 ml=1000
+	 tf=name
+	"]
+	<OPTION VALUE="[loop-code]"> [loop-data country name] 
+	[/loop]
+    [/else]
+    [/if]
+      </SELECT>
+    <small>([L]will update display[/L])</small>
+  </td>
+</tr>
+<tr class="contentbar1"> 
+  <td align=right> 
+    [error name=phone_day std_label="[L]Daytime Phone[/L]" required=1]
+  </td>
+  <td>
+    <INPUT TYPE=text NAME=phone_day VALUE="[value phone_day]" size="15" maxlength="20">
+  </td>
+  <td align=right> 
+    [L]Evening Phone[/L]
+  </td>
+  <td>
+    <INPUT TYPE=text NAME=phone_night VALUE="[value phone_night]" size="15" maxlength="20">
+  </td>
+</tr>
+<tr class="contentbar1"> 
+  <td align=right> 
+    [L]Shipping method[/L]
+  </td>
+  <td colspan=3> 
+    <SELECT NAME=mv_shipmode>
+      [loop option=mv_shipmode
+       list=|[data table=country key='[default country US]' col=shipmodes]|
+      ]
+        <OPTION VALUE="[loop-code]"> [shipping-desc [loop-code]]
+      [/loop]
+    </SELECT>
+  </td>
+</tr>
+<tr class="contentbar1">
+  <td>&nbsp;</td>
+  <td colspan=3>
+    <I>[L]We need the bold fields to process your order[/L]</i>
+  </td>
+</tr>
+<tr class="contentbar1"> 
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+</tr>
+<tr class="contentbar2">
+  <td>
+    [L]Mailing Status[/L]
+  </td>
+  <td colspan=3>&nbsp;</td>
+</tr>
+<tr class="contentbar1"> 
+  <td colspan=4>&nbsp;</td>
+</tr>
+<tr class="contentbar1"> 
+  <td align=center colspan=2> 
+    <SELECT NAME=email_copy>
+      <OPTION VALUE="1">[L]Yes[/L]
+      <OPTION [selected name=email_copy value=0] VALUE="0">[L]No[/L]
+    </SELECT>
+  </td>
+  <td colspan=2>
+    [L]Send an email copy of my receipt[/L]
+  </td>
+</tr>
+<tr class="contentbar1"> 
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+</tr>
+<tr class="contentbar1"> 
+  <td align=center colspan=2> 
+    [display table=userdb type=multiple column=mail_list key="[data session username]"]
+  </td>
+  <td colspan=2>
+    [L]Put me on these mail lists (if any)[/L]
+  </td>
+</tr>
+<tr class="contentbar1"> 
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+</tr>
+</table>
+
+<p>&nbsp;</p>
+
+<table border="0" cellspacing="0" cellpadding="0" align="center" width="75%">
+<tr class="contentbar2"> 
+  <td class="contentbar2" colspan=4>
+    <big>&nbsp;<b>[L]Billing Address[/L]</b></big> - <i>[L]If different than above[/L]</i>
+  </td>
+</tr>
+<tr class="contentbar1"> 
+  <td class="contentbar1" align=right> 
+    [L]First Name[/L]
+  </td>
+  <td class="contentbar1"> 
+    <INPUT TYPE=text NAME=b_fname VALUE="[value b_fname]" size="15" maxlength="20">
+  </td>
+  <td class="contentbar1" align=right>
+    [L]Last Name[/L]
+  </td>
+  <td>
+    <INPUT TYPE=text NAME=b_lname VALUE="[value b_lname]" size="15">
+  </td>
+</tr>
+<tr class="contentbar1"> 
+  <td align=right> 
+    [L]Address[/L]
+  </td>
+  <td colspan="3"> 
+    <INPUT TYPE=text NAME=b_address1 VALUE="[value b_address1]" size="30" maxlength="20">
+  </td>
+</tr>
+<tr class="contentbar1"> 
+  <td>&nbsp;</td>
+  <td colspan="3"> 
+    <INPUT TYPE=text NAME=b_address2 VALUE="[value b_address2]" size="30">
+  </td>
+</tr>
+<tr class="contentbar1"> 
+  <td align=right>
+    [L]City[/L]
+  </td>
+  <td>
+    <INPUT TYPE=text NAME=b_city VALUE="[value b_city]" size="15">
+  </td>
+  <td align=right>
+    [L]State/Province[/L]
+  </td>
+  <td>
+    <INPUT TYPE=text NAME=b_state VALUE="[value b_state]" size="5" maxlength="5">
+  </td>
+</tr>
+<tr class="contentbar1"> 
+  <td align=right> 
+    [L]Zip/Postal Code[/L]
+  </td>
+  <td>
+    <INPUT TYPE=text NAME=b_zip VALUE="[value b_zip]" size="10" maxlength="10">
+  </td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+</tr>
+<tr class="contentbar1"> 
+  <td align=right>
+    [L]Country[/L]
+  </td>
+  <td>
+    <INPUT TYPE=text NAME=b_country VALUE="[value b_country]" size="10" maxlength="10">
+  </td>
+  <td>&nbsp; </td>
+  <td>&nbsp;</td>
+</tr>
+<tr class="contentbar1"> 
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+</tr>
+</table>
+
+<p>&nbsp;</p>
+
+<INPUT TYPE=SUBMIT VALUE="[L]Save Acct. Info[/L]">
+
+[if items]
+  [set Save and Checkout]
+    mv_nextpage=ord/checkout
+  [/set]
+
+  <INPUT TYPE=hidden VALUE="Save and Checkout" NAME="mv_click"  >
+  <INPUT TYPE=SUBMIT VALUE="[L]Save and Checkout[/L]">
+  <br><br>
+  <A HREF="[area ord/checkout]">[L]No change, go to checkout[/L]</A>
+[/if]
+
+ </form>
+
+<!-- END CONTENT -->
+
+@_LEFTONLY_BOTTOM_@

@@ -1,0 +1,53 @@
+[comment]
+ui_name: cart_display
+ui_type: component
+ui_class: content
+ui_group: info
+ui_label: Smaller cart for display in content area
+
+
+[/comment]
+<!-- BEGIN COMPONENT [control component cart_display] -->
+[if items]
+<center>
+  <table width="95%" border="0" cellspacing="0" cellpadding="0">
+		<tr class="contentbar2" valign=top>
+			<td colspan=6 class="contentbar2"> 
+				<b>[L]Your Cart[/L]:</b>
+			</td>
+		</tr>
+		<TR class="contentbar2" VALIGN=TOP>
+                        <td align=center class="contentbar2">[L]Action[/L]</td>
+                        <td class="contentbar2">[L]SKU[/L]</td>
+                        <td class="contentbar2">[L]Description[/L]</td>
+                        <td align=center class="contentbar2">[L]Quantity[/L]</td>
+                        <td align=right class="contentbar2">[L]Price[/L]</td>
+                        <td align=right class="contentbar2">[L]Extension[/L]</td>
+		</TR>
+	<TBODY>
+[item-list]
+
+<tr class="[item-alternate 2]maincontent[else]contentbar1[/else][/item-alternate]">
+	<td align=center valign=top>
+	  [page ord/basket][L]edit[/L]</A>
+	</TD>
+	<td valign=top>[item-sku]</TD>
+	<td valign=top>[page [item-sku]][item-data products description]</A></TD>
+
+	<TD ALIGN=CENTER>[item-quantity]</TD>
+	<TD ALIGN=right>
+			[item-price]
+	</TD>
+	<TD ALIGN=right>
+			[item-subtotal]
+	</TD>
+</TR>
+
+[/item-list]
+</TBODY>
+</table>
+</FORM>
+</center>
+[/if]
+
+<!-- END COMPONENT [control component cart_display] -->

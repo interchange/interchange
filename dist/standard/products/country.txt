@@ -1,0 +1,253 @@
+code	sorder	region	selector	shipmodes	name	iso	isonum	tax
+AF	9	Other	AF	surf_pp air_pp	Afghanistan	AFG	004	
+AL	9	Other	AL	surf_pp air_pp	Albania	ALB	008	
+DZ	9	Other	DZ	surf_pp air_pp	Algeria	DZA	012	
+AS	9	Other	AS		American Samoa	ASM	016	
+AD	9	Other	AD	surf_pp air_pp	Andorra	AND	020	
+AO	9	Other	AO	surf_pp air_pp	Angola	AGO	024	
+AI	9	Other	AI	surf_pp air_pp	Anguilla	AIA	660	
+AQ	9	Other	AQ		Antarctica	ATA	010	
+AG	9	Other	AG	surf_pp air_pp	Antigua and Barbuda	ATG	028	
+AR	9	Other	AR	surf_pp air_pp	Argentina	ARG	032	
+AM	9	Other	AM	surf_pp air_pp	Armenia	ARM	051	
+AW	9	Other	AW	surf_pp air_pp	Aruba	ABW	533	
+AU	9	Other	AU	surf_pp air_pp	Australia	AUS	036	
+AT	9	Other	AT	surf_pp air_pp	Austria	AUT	040	
+AZ	9	Other	AZ	surf_pp air_pp	Azerbaijan	AZE	031	
+AP	9	Other	AP	surf_pp air_pp	Azores			
+BS	9	Other	BS	surf_pp air_pp	Bahamas	BHS	044	
+BH	9	Other	BH	surf_pp air_pp	Bahrain	BHR	048	
+BD	9	Other	BD	surf_pp air_pp	Bangladesh	BGD	050	
+BB	9	Other	BB	surf_pp air_pp	Barbados	BRB	052	
+BY	9	Other	BY	surf_pp air_pp	Belarus	BLR	112	
+BE	3	Europe-EC	BE	surf_pp air_pp	Belgium	BEL	056	
+BZ	9	Other	BZ	surf_pp air_pp	Belize	BLZ	084	
+BJ	9	Other	BJ	surf_pp air_pp	Benin	BEN	204	
+BM	9	Other	BM	surf_pp air_pp	Bermuda	BMU	060	
+BT	9	Other	BT	surf_pp air_pp	Bhutan	BTN	064	
+BO	9	Other	BO	surf_pp air_pp	Bolivia	BOL	068	
+BA	9	Other	BA		Bosnia And Herzegowina	BIH	070	
+XB	9	Other	XB	surf_pp air_pp	Bosnia-Herzegovina			
+BW	9	Other	BW	surf_pp air_pp	Botswana	BWA	072	
+BV	9	Other	BV		Bouvet Island	BVT	074	
+BR	9	Other	BR	surf_pp air_pp	Brazil	BRA	076	
+IO	9	Other	IO		British Indian Ocean Territory	IOT	086	
+VG	9	Other	VG	surf_pp air_pp	British Virgin Islands	VGB	092	
+BN	9	Other	BN	surf_pp air_pp	Brunei Darussalam	BRN	096	
+BG	9	Other	BG	surf_pp air_pp	Bulgaria	BGR	100	
+BF	9	Other	BF	surf_pp air_pp	Burkina Faso	BFA	854	
+BI	9	Other	BI	surf_pp air_pp	Burundi	BDI	108	
+KH	9	Other	KH		Cambodia	KHM	116	
+CM	9	Other	CM	surf_pp air_pp	Cameroon	CMR	120	
+CA	1	North America	CA	surf_pp air_pp	Canada	CAN	124	
+CV	9	Other	CV	surf_pp air_pp	Cape Verde	CPV	132	
+KY	9	Other	KY	surf_pp air_pp	Cayman Islands	CYM	136	
+CF	9	Other	CF	surf_pp air_pp	Central African Republic	CAF	140	
+TD	9	Other	TD	surf_pp air_pp	Chad	TCD	148	
+CL	9	Other	CL	surf_pp air_pp	Chile	CHL	152	
+CN	9	Other	CN	surf_pp air_pp	China	CHN	156	
+CX	9	Other	CX		Christmas Island	CXR	162	
+CC	9	Other	CC		Cocos (Keeling) Islands	CCK	166	
+CO	9	Other	CO	surf_pp air_pp	Colombia	COL	170	
+KM	9	Other	KM	surf_pp air_pp	Comoros	COM	174	
+CG	9	Other	CG	surf_pp air_pp	Congo	COG	178	
+CD	9	Other	CD		Congo, The Democratic Republic O	COD	180	
+CK	9	Other	CK		Cook Islands	COK	184	
+XE	3	Europe-EC	XE	surf_pp air_pp	Corsica			
+CR	9	Other	CR	surf_pp air_pp	Costa Rica	CRI	188	
+CI	9	Other	CI	surf_pp air_pp	Cote d` Ivoire (Ivory Coast)	CIV	384	
+HR	9	Other	HR	surf_pp air_pp	Croatia	HRV	191	
+CU	9	Other	CU		Cuba	CUB	192	
+CY	9	Other	CY	surf_pp air_pp	Cyprus	CYP	196	
+CZ	9	Other	CZ	surf_pp air_pp	Czech Republic	CZE	203	
+DK	3	Europe-EC	DK	surf_pp air_pp	Denmark	DNK	208	
+DJ	9	Other	DJ	surf_pp air_pp	Djibouti	DJI	262	
+DM	9	Other	DM	surf_pp air_pp	Dominica	DMA	212	
+DO	9	Other	DO	surf_pp air_pp	Dominican Republic	DOM	214	
+TP	9	Other	TP		East Timor	TMP	626	
+EC	9	Other	EC	surf_pp air_pp	Ecuador	ECU	218	
+EG	9	Other	EG	surf_pp air_pp	Egypt	EGY	818	
+SV	9	Other	SV	surf_pp air_pp	El Salvador	SLV	222	
+GQ	9	Other	GQ	surf_pp air_pp	Equatorial Guinea	GNQ	226	
+ER	9	Other	ER	surf_pp air_pp	Eritrea	ERI	232	
+EE	9	Other	EE	surf_pp air_pp	Estonia	EST	233	
+ET	9	Other	ET	surf_pp air_pp	Ethiopia	ETH	231	
+FK	9	Other	FK		Falkland Islands (Malvinas)	FLK	238	
+FO	9	Other	FO	surf_pp air_pp	Faroe Islands	FRO	234	
+FJ	9	Other	FJ	surf_pp air_pp	Fiji	FJI	242	
+FI	3	Europe-EC	FI	surf_pp air_pp	Finland	FIN	246	
+FR	3	Europe-EC	FR	surf_pp air_pp	France (Includes Monaco)	FRA	250	
+FX	9	Other	FX		France, Metropolitan	FXX	249	
+GF	9	Other	GF	surf_pp air_pp	French Guiana	GUF	254	
+PF	9	Other	PF		French Polynesia	PYF	258	
+TA	9	Other	TA	surf_pp air_pp	French Polynesia (Tahiti)			
+TF	9	Other	TF		French Southern Territories	ATF	260	
+GA	9	Other	GA	surf_pp air_pp	Gabon	GAB	266	
+GM	9	Other	GM	surf_pp air_pp	Gambia	GMB	270	
+GE	9	Other	GE	surf_pp air_pp	Georgia	GEO	268	
+DE	3	Europe-EC	DE	surf_pp air_pp	Germany	DEU	276	
+GH	9	Other	GH	surf_pp air_pp	Ghana	GHA	288	
+GI	3	Europe-EC	GI	surf_pp air_pp	Gibraltar	GIB	292	
+GR	3	Europe-EC	GR	surf_pp air_pp	Greece	GRC	300	
+GL	9	Other	GL	surf_pp air_pp	Greenland	GRL	304	
+GD	9	Other	GD	surf_pp air_pp	Grenada	GRD	308	
+GP	9	Other	GP	surf_pp air_pp	Guadeloupe	GLP	312	
+GU	9	Other	GU		Guam	GUM	316	
+GT	9	Other	GT	surf_pp air_pp	Guatemala	GTM	320	
+GN	9	Other	GN	surf_pp air_pp	Guinea	GIN	324	
+GW	9	Other	GW	surf_pp air_pp	Guinea-Bissau	GNB	624	
+GY	9	Other	GY	surf_pp air_pp	Guyana	GUY	328	
+HT	9	Other	HT	surf_pp air_pp	Haiti	HTI	332	
+HM	9	Other	HM		Heard And Mc Donald Islands	HMD	334	
+VA	9	Other	VA		Holy See (Vatican City State)	VAT	336	
+HN	9	Other	HN	surf_pp air_pp	Honduras	HND	340	
+HK	9	Other	HK	surf_pp air_pp	Hong Kong	HKG	344	
+HU	9	Other	HU	surf_pp air_pp	Hungary	HUN	348	
+IS	3	Europe-EC	IS	surf_pp air_pp	Iceland	ISL	352	
+IN	9	Other	IN	surf_pp air_pp	India	IND	356	
+ID	9	Other	ID	surf_pp air_pp	Indonesia	IDN	360	
+IR	9	Other	IR	surf_pp air_pp	Iran	IRN	364	
+IQ	9	Other	IQ		Iraq	IRQ	368	
+IE	9	Other	IE		Ireland	IRL	372	
+EI	3	Europe-EC	EI	surf_pp air_pp	Ireland (Eire)			
+IL	9	Other	IL	surf_pp air_pp	Israel	ISR	376	
+IT	3	Europe-EC	IT	surf_pp air_pp	Italy	ITA	380	
+JM	9	Other	JM	surf_pp air_pp	Jamaica	JAM	388	
+JP	9	Other	JP	surf_pp air_pp	Japan	JPN	392	
+JO	9	Other	JO	surf_pp air_pp	Jordan	JOR	400	
+KZ	9	Other	KZ	surf_pp air_pp	Kazakhstan	KAZ	398	
+KE	9	Other	KE	surf_pp air_pp	Kenya	KEN	404	
+KI	9	Other	KI	surf_pp air_pp	Kiribati	KIR	296	
+KP	9	Other	KP		Korea, Democratic People'S Repub	PRK	408	
+KW	9	Other	KW	surf_pp air_pp	Kuwait	KWT	414	
+KG	9	Other	KG		Kyrgyzstan	KGZ	417	
+LA	9	Other	LA	surf_pp air_pp	Laos	LAO	418	
+LV	9	Other	LV		Latvia	LVA	428	
+LB	9	Other	LB	surf_pp air_pp	Lebanon	LBN	422	
+LS	9	Other	LS	surf_pp air_pp	Lesotho	LSO	426	
+LR	9	Other	LR		Liberia	LBR	430	
+LY	9	Other	LY	surf_pp air_pp	Libya	LBY	434	
+LI	9	Other	LI	surf_pp air_pp	Liechtenstein	LIE	438	
+LT	9	Other	LT	surf_pp air_pp	Lithuania	LTU	440	
+LU	3	Europe-EC	LU	surf_pp air_pp	Luxembourg	LUX	442	
+MO	9	Other	MO	surf_pp air_pp	Macao	MAC	446	
+MK	9	Other	MK	surf_pp air_pp	Macedonia	MKD	807	
+MG	9	Other	MG	surf_pp air_pp	Madagascar	MDG	450	
+ME	9	Other	ME	surf_pp air_pp	Madeira Islands			
+MW	9	Other	MW	surf_pp air_pp	Malawi	MWI	454	
+MY	9	Other	MY		Malaysia	MYS	458	
+MV	9	Other	MV	surf_pp air_pp	Maldives	MDV	462	
+ML	9	Other	ML	surf_pp air_pp	Mali	MLI	466	
+MT	9	Other	MT	surf_pp air_pp	Malta	MLT	470	
+MH	9	Other	MH		Marshall Islands	MHL	584	
+MQ	9	Other	MQ	surf_pp air_pp	Martinique	MTQ	474	
+MR	9	Other	MR	surf_pp air_pp	Mauritania	MRT	478	
+MU	9	Other	MU	surf_pp air_pp	Mauritius	MUS	480	
+YT	9	Other	YT		Mayotte	MYT	175	
+MX	1	North America	MX	surf_pp air_pp	Mexico	MEX	484	
+FM	9	Other	FM		Micronesia, Federated States Of	FSM	583	
+MD	9	Other	MD		Moldova, Republic Of	MDA	498	
+MC	9	Other	MC		Monaco	MCO	492	
+MN	9	Other	MN		Mongolia	MNG	496	
+MS	9	Other	MS	surf_pp air_pp	Montserrat	MSR	500	
+MA	9	Other	MA	surf_pp air_pp	Morocco	MAR	504	
+MZ	9	Other	MZ	surf_pp air_pp	Mozambique	MOZ	508	
+MM	9	Other	MM	surf_pp air_pp	Myanmar (Burma)	MMR	104	
+NA	9	Other	NA	surf_pp air_pp	Namibia	NAM	516	
+NR	9	Other	NR	surf_pp air_pp	Nauru	NRU	520	
+NP	9	Other	NP	surf_pp air_pp	Nepal	NPL	524	
+NL	3	Europe-EC	NL	surf_pp air_pp	Netherlands	NLD	528	
+AN	9	Other	AN	surf_pp air_pp	Netherlands Antilles	ANT	530	
+NC	9	Other	NC	surf_pp air_pp	New Caledonia	NCL	540	
+NZ	9	Other	NZ	surf_pp air_pp	New Zealand	NZL	554	
+NI	9	Other	NI	surf_pp air_pp	Nicaragua	NIC	558	
+NE	9	Other	NE	surf_pp air_pp	Niger	NER	562	
+NG	9	Other	NG	surf_pp air_pp	Nigeria	NGA	566	
+NU	9	Other	NU		Niue	NIU	570	
+NF	9	Other	NF		Norfolk Island	NFK	574	
+MP	9	Other	MP		Northern Mariana Islands	MNP	580	
+NO	3	Europe-EC	NO	surf_pp air_pp	Norway	NOR	578	
+OM	9	Other	OM	surf_pp air_pp	Oman	OMN	512	
+PK	9	Other	PK	surf_pp air_pp	Pakistan	PAK	586	
+PW	9	Other	PW		Palau	PLW	585	
+PS	9	Other	PS		Palestinian Territory, Occupied	PSE	275	
+PA	9	Other	PA	surf_pp air_pp	Panama	PAN	591	
+PG	9	Other	PG	surf_pp air_pp	Papua New Guinea	PNG	598	
+PY	9	Other	PY	surf_pp air_pp	Paraguay	PRY	600	
+PE	9	Other	PE	surf_pp air_pp	Peru	PER	604	
+PH	9	Other	PH	surf_pp air_pp	Philippines	PHL	608	
+PN	9	Other	PN	surf_pp air_pp	Pitcairn	PCN	612	
+PL	9	Other	PL	surf_pp air_pp	Poland	POL	616	
+PT	9	Other	PT	surf_pp air_pp	Portugal	PRT	620	
+PR	9	Other	PR		Puerto Rico	PRI	630	
+QA	9	Other	QA		Qatar	QAT	634	
+RE	9	Other	RE	surf_pp air_pp	Reunion	REU	638	
+RO	9	Other	RO		Romania	ROM	642	
+RU	9	Other	RU		Russian Federation	RUS	643	
+RW	9	Other	RW	surf_pp air_pp	Rwanda	RWA	646	
+KN	9	Other	KN		Saint Kitts And Nevis	KNA	659	
+SM	9	Other	SM		San Marino	SMR	674	
+ST	9	Other	ST	surf_pp air_pp	Sao Tome and Principe	STP	678	
+SA	9	Other	SA	surf_pp air_pp	Saudi Arabia	SAU	682	
+SN	9	Other	SN	surf_pp air_pp	Senegal	SEN	686	
+XS	9	Other	XS	surf_pp air_pp	Serbia-Montenegro			
+SC	9	Other	SC	surf_pp air_pp	Seychelles	SYC	690	
+SL	9	Other	SL	surf_pp air_pp	Sierra Leone	SLE	694	
+SG	9	Other	SG	surf_pp air_pp	Singapore	SGP	702	
+SK	9	Other	SK	surf_pp air_pp	Slovak Republic	SVK	703	
+SI	9	Other	SI	surf_pp air_pp	Slovenia	SVN	705	
+SB	9	Other	SB	surf_pp air_pp	Solomon Islands	SLB	090	
+SO	9	Other	SO		Somalia	SOM	706	
+ZA	9	Other	ZA	surf_pp air_pp	South Africa	ZAF	710	
+GS	9	Other	GS		South Georgia And The South Sand	SGS	239	
+KR	9	Other	KR	surf_pp air_pp	South Korea	KOR	410	
+ES	3	Europe-EC	ES	surf_pp air_pp	Spain	ESP	724	
+LK	9	Other	LK	surf_pp air_pp	Sri Lanka	LKA	144	
+NV	9	Other	NV	surf_pp air_pp	St. Christopher and Nevis			
+SH	9	Other	SH	surf_pp air_pp	St. Helena	SHN	654	
+LC	9	Other	LC	surf_pp air_pp	St. Lucia	LCA	662	
+PM	9	Other	PM	surf_pp air_pp	St. Pierre and Miquelon	SPM	666	
+VC	9	Other	VC	surf_pp air_pp	St. Vincent and the Grenadines	VCT	670	
+SD	9	Other	SD	surf_pp air_pp	Sudan	SDN	736	
+SR	9	Other	SR	surf_pp air_pp	Suriname	SUR	740	
+SJ	9	Other	SJ		Svalbard And Jan Mayen Islands	SJM	744	
+SZ	9	Other	SZ	surf_pp air_pp	Swaziland	SWZ	748	
+SE	3	Europe-EC	SE	surf_pp air_pp	Sweden	SWE	752	
+CH	3	Europe-EC	CH	surf_pp air_pp	Switzerland	CHE	756	
+SY	9	Other	SY	surf_pp air_pp	Syrian Arab Republic	SYR	760	
+TW	9	Other	TW	surf_pp air_pp	Taiwan	TWN	158	
+TJ	9	Other	TJ		Tajikistan	TJK	762	
+TZ	9	Other	TZ	surf_pp air_pp	Tanzania	TZA	834	
+TH	9	Other	TH	surf_pp air_pp	Thailand	THA	764	
+TG	9	Other	TG	surf_pp air_pp	Togo	TGO	768	
+TK	9	Other	TK		Tokelau	TKL	772	
+TO	9	Other	TO	surf_pp air_pp	Tonga	TON	776	
+TT	9	Other	TT	surf_pp air_pp	Trinidad and Tobago	TTO	780	
+XU	9	Other	XU	surf_pp air_pp	Tristan da Cunha			
+TN	9	Other	TN	surf_pp air_pp	Tunisia	TUN	788	
+TR	9	Other	TR	surf_pp air_pp	Turkey	TUR	792	
+TM	9	Other	TM		Turkmenistan	TKM	795	
+TC	9	Other	TC	surf_pp air_pp	Turks and Caicos Islands	TCA	796	
+TV	9	Other	TV	surf_pp air_pp	Tuvalu	TUV	798	
+UG	9	Other	UG	surf_pp air_pp	Uganda	UGA	800	
+UA	9	Other	UA	surf_pp air_pp	Ukraine	UKR	804	
+AE	9	Other	AE	surf_pp air_pp	United Arab Emirates	ARE	784	
+UK	3	Europe-EC	UK	surf_pp air_pp	United Kingdom			
+GB	9	Other	GB		Great Britain	GBR	826	
+UM	9	Other	UM		United States Minor Outlying Isl	UMI	581	
+UY	9	Other	UY	surf_pp air_pp	Uruguay	URY	858	
+UZ	9	Other	UZ		Uzbekistan	UZB	860	
+VU	9	Other	VU	surf_pp air_pp	Vanuatu	VUT	548	
+XV	9	Other	XV	surf_pp air_pp	Vatican City			
+VE	9	Other	VE	surf_pp air_pp	Venezuela	VEN	862	
+VN	9	Other	VN	surf_pp air_pp	Vietnam	VNM	704	
+VI	9	Other	VI		Virgin Islands (U.S.)	VIR	850	
+WF	9	Other	WF	surf_pp air_pp	Wallis and Furuna Islands	WLF	876	
+EH	9	Other	EH		Western Sahara	ESH	732	
+WS	9	Other	WS	surf_pp air_pp	Western Samoa	WSM	882	
+YE	9	Other	YE	surf_pp air_pp	Yemen	YEM	887	
+YU	9	Other	YU		Yugoslavia	YUG	891	
+ZR	9	Other	ZR	surf_pp air_pp	Zaire			
+ZM	9	Other	ZM	surf_pp air_pp	Zambia	ZMB	894	
+ZW	9	Other	ZW	surf_pp air_pp	Zimbabwe	ZWE	716	
+US	0		US	free_or_upsg upsb upsr pm	United States	USA	840	

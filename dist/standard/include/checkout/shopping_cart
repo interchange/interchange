@@ -1,0 +1,112 @@
+        <table cellspacing=0 cellpadding=5 border=0 width="100%">
+        <tr class=contentbar2>
+          <td class=contentbar2>&nbsp;<b>[L]Remove[/L]</b></td>
+          <td class=contentbar2 align=center><b>[L]SKU[/L]</b></td>
+          <td class=contentbar2><b>[L]Description[/L]</b></td>
+          <td class=contentbar2><b>[L]Quantity[/L]</b></td>
+          <td class=contentbar2 align=center><b>[L]Price[/L]</b></td>
+          <td class=contentbar2><b>[L]Extension[/L]&nbsp;</b></td>
+        </tr>
+        <tbody>
+
+        [if items]
+        [then]
+        [item-list modular=1]
+
+        <tr class="[item-alternate 2]maincontent[else]contentbar1[/else][/item-alternate]">
+          <td align=center valign=top>
+            <inPUT type=checkbox name="[quantity-name]" onClick="this.form.action='[process]', this.form.submit()" value=0>
+          </td>
+          <td><b>[item-sku]</b></td>
+          <td>[page [item-sku]]<b>[item-description]</b></a>
+
+            [if scratch dealer]
+            [if-item-data pricing sku]
+              <br>[page quantity [item-code]]
+              [L]QUANTITY PRICING[/L]</a>
+            [/if-item-data]
+            [/if]
+
+        [if-item-data options o_enable]
+            [if-item-data !options o_modular]
+                [table-organize cols=4 table=' ' font="size=1" pretty=1]
+                    [item-options td=1 label=1 bold=1 price=1]
+                [/table-organize]
+            [/if-item-data]
+        [/if-item-data]
+
+            [if-item-field weight]
+            [seti weight][summary amount=`[item-quantity] * [item-field weight]`][/seti]
+            [/if-item-field]
+          </td>
+          <td align=center valign=top>
+            <input type=text name="[quantity-name]" value="[item-quantity]" size=3>
+          </td>
+          <td align=right>
+            [item-discount-price]
+            [if discount [item-code]]<br>[msg arg.0="[item-discount]"]Item is discounted %s[/msg][/if]
+          </td>
+          <td align=right>[item-subtotal]</td>
+        </tr>
+
+        [/item-list]
+        [/then]
+        [else]
+        <tr>
+          <td align=center colspan=6 class="contentbar2">
+            [L]No items at the moment.[/L]
+          </td>
+        </tr>
+
+        [/else]
+        [/if]
+        </table>
+
+        <br>
+
+        <table border=0 cellspacing=0 cellpadding=0 width="50%">
+        <tr>
+          <td align=left>
+                        [if items]
+            <input type=submit value="[L]Recalculate[/L]" class=button1>
+                        [/if]
+          </td>
+          <td align=right>
+            <table align=center cellspacing=0 border=0>
+            <tr>
+              <td align=left class=contentbar1>[L]Subtotal[/L]: </td>
+              <td align=right class=contentbar1>[subtotal]</td>
+            </tr>
+		[if config Levies]
+			[levies recalculate=1 hide=1]
+                        [levy-list]
+            <tr>
+              <td align=left class=contentbar1>[levy-param label]:</td>
+              <td align=right class=contentbar1>[levy-param cost]</td>
+            </tr>
+                        [/levy-list]
+		[else]
+            <tr>
+              <td align=left class=contentbar1>[L]Sales Tax[/L]:</td>
+              <td align=right class=contentbar1>[salestax]</td>
+            </tr>
+            <tr>
+              <td align=left class=contentbar1>[L]Shipping[/L]:</td>
+              <td align=right class=contentbar1>[shipping]</td>
+            </tr>
+			[if value mv_handling]
+            <tr>
+              <td align=left class=contentbar1>[L]Handling[/L]:</td>
+              <td align=right class=contentbar1>[handling]</td>
+            </tr>
+			[/if]
+		[/else]
+		[/if]
+            <tr>
+              <td align=left class=contentbar2>[L]TOTAL[/L]:</td>
+              <td align=right class=contentbar2>[total-cost]</td>
+            </tr>
+            </table>
+          </td>
+        </tr>
+        </table>

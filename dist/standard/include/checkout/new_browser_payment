@@ -1,0 +1,396 @@
+<div
+    style="
+            Position:Relative;
+            Left:0; Top:0;
+            Visibility:Visible;
+			height: 140px;
+            z-index:1;
+	">
+	<div 
+		id=credit_card
+		style="
+				Position:Absolute;
+				Left:0; Top:0;
+				Visibility:Hidden;
+				z-index:0;
+		">
+      <!--- credit card information --->
+      <table cellspacing=0 cellpadding="0" width="100%">
+      <tr>
+        <td>
+          <table border=0 cellspacing=0 cellpadding=4 width="100%">
+          <tr>
+            <td colspan="2" class="contentbar2" width="30%">
+              <b>
+              [error std_label="[L]Credit Card Information[/L]" name=mv_credit_card_valid]
+              </b>
+            </td>
+            <td class="contentbar2">
+              [calc]
+                my $accepted = $Variable->{CREDIT_CARDS_ACCEPTED};
+                my (@out);
+                my (@cc);
+                my $out;
+                push @cc, 'visa' if $accepted =~ /visa/;
+                push @cc, 'mc' if $accepted =~ /mc/;
+                push @cc, 'disc' if $accepted =~ /discover/;
+                push @cc, 'amex' if $accepted =~ /amex/;
+                for (@cc) {
+                  push @out, qq{<img id="img_$_" src="small$_.png">};
+                }
+                return join '&nbsp;&nbsp;', @out;
+              [/calc]
+            </td>
+          </tr>
+          <tr>
+            <td align=right class="contentbar1" width="30%">
+              <b>[L]Card Number[/L]: </b>
+            </td>
+            <td colspan=2 class="contentbar1">
+<script>
+	var cards = [ 'visa', 'mc', 'disc', 'amex' ];
+	var cardimg = new Array;
+	for( var i = 0; i < cards.length; i++) {
+		var el = document.getElementById('img_' + cards[i]);
+		if(el != undefined) {
+			cardimg[cards[i]] = el;
+			el.border = 0;
+		}
+	}
+
+	function highlight_card (num) {
+
+		var ti = document.getElementById('textindication');
+		ti.innerHTML = '';
+		var e;
+		for(e in cardimg) {
+			cardimg[e].border = 0;
+		}
+
+		var type;
+		var desc;
+
+		if(num == undefined) 
+			return;
+
+		if(num.substr(0,1) == '4')  {
+			type = 'visa';
+			desc = '(Visa)';
+		}
+
+		if(
+			desc == undefined &&
+			num.substr(0,2) == '51' ||
+			num.substr(0,2) == '52' ||
+			num.substr(0,2) == '53' ||
+			num.substr(0,2) == '54' ||
+			num.substr(0,2) == '55'
+		)
+		{
+			type = 'mc';
+			desc = '(Mastercard)';
+		}
+
+		if(
+			desc == undefined &&
+			num.substr(0,4) == '6011'
+			)
+		{
+			type = 'disc';
+			desc = '(Discover card)';
+		}
+
+		if(
+			desc == undefined &&
+			num.substr(0,2) == '34' ||
+			num.substr(0,2) == '37'
+			)
+		{
+			type = 'amex';
+			desc = '(American Express card)';
+		}
+
+		if(
+			desc == undefined &&
+			num.substr(0,2) == '36' ||
+			num.substr(0,2) == '30'
+			)
+		{
+			type = 'diners';
+			desc = '(Diners Club card)';
+		}
+
+		if(
+			desc == undefined &&
+			num.substr(0,2) == '38'
+			)
+		{
+			type = 'carteblanche';
+			desc = '(Carte Blanche)';
+		}
+
+		if(
+			desc == undefined &&
+			num.substr(0,1) == '2'
+			)
+		{
+			type = 'enroute';
+			desc = '(En Route)';
+		}
+
+		if(
+			desc == undefined &&
+			num.substr(0,2) == '56'
+			)
+		{
+			type = 'bankcard';
+			desc = '(BankCard)';
+		}
+
+		if(
+			desc == undefined &&
+			num.substr(0,1) == '3' ||
+			num.substr(0,4) == '2131' ||
+			num.substr(0,4) == '1800'
+			)
+		{
+			type = 'jcb';
+			desc = '(JCB card)';
+		}
+
+		var el = cardimg[type];
+// alert("el is " + el);
+		if( el != undefined ) {
+			el.border = 2;
+		}
+		if( desc != undefined ) {
+			ti.innerHTML = desc;
+		}
+	}
+</script>
+              <b><input type=text name=mv_credit_card_number size=22 onChange="highlight_card(this.value)"></b> <i id=textindication style="font-size: smaller"></i>
+            </td>
+          </tr>
+		  [if variable MV_DEMO_MODE]
+		  <tr>
+		  	<td class=contentbar1>
+			</td>
+		  	<td colspan=2 class=contentbar1>
+              ([L]test number[/L] <a href="javascript:void 0" onclick="checkout.mv_credit_card_number.value='4111 1111 1111 1111'; highlight_card('4'); return false;">4111 1111 1111 1111</A>)
+			</td>
+		  </tr>
+		  [/if]
+          <tr>
+            <td align=right class="contentbar1">
+              <b>[L]Expiration[/L]: </b>
+            </td>
+            <td colspan=2 class="contentbar1">
+
+                <select name=mv_credit_card_exp_month>
+                [loop
+                        option=mv_credit_card_exp_month
+						acclist=1
+                        list=|
+1=01 - [L]January[/L],
+2=02 - [L]February[/L],
+3=03 - [L]March[/L],
+4=04 - [L]April[/L],
+5=05 - [L]May[/L],
+6=06 - [L]June[/L],
+7=07 - [L]July[/L],
+8=08 - [L]August[/L],
+9=09 - [L]September[/L],
+10=10 - [L]October[/L],
+11=11 - [L]November[/L],
+12=12 - [L]December[/L]|]
+                <option value="[loop-code]"> [loop-param label]
+                [/loop]
+                </SELECT>
+        
+                <select name=mv_credit_card_exp_year>
+                [comment]
+                This should always return the current year as the first, then
+                7 more years.
+                [/comment]
+                [loop option=mv_credit_card_exp_year lr=1 list=`
+                my $year = $Tag->time( '', { format => '%Y' }, '%Y' );
+                my $out = '';
+                for ($year .. $year + 7) {
+                        /\d\d(\d\d)/;
+                        $last_two = $1;
+                        $out .= "$last_two\t$_\n";
+                }
+                return $out;
+                `]
+
+                <option value="[loop-code]"> [loop-pos 1]
+                [/loop]
+                </SELECT>
+              </td>
+            </tr>
+            </table>
+                                                
+          </td>
+        </tr>
+        </table>
+	</div>
+	<div 
+		id=postal
+		style="
+				Position:Absolute;
+				Left:0; Top:0;
+				Visibility:Hidden;
+				z-index:0;
+		">
+		[L NEW_BROWSER_PAYMENT_MSG1]We will wait for a check sent to us referencing the order number you receive on your receipt.[/L]
+        </div>
+	<div 
+		id=cod
+		style="
+				Position:Absolute;
+				Left:0; Top:0;
+				Visibility:Hidden;
+				z-index:0;
+		">
+		[msg arg.0="[handling cod]"]There will be a %s charge added for COD.[/msg]
+        </div>
+        
+	<div 
+		id=online_check
+		style="
+				Position:Absolute;
+				Left:0; Top:0;
+				Visibility:Hidden;
+				z-index:0;
+		">
+        <table border=0 cellspacing=0 cellpadding=0 width="100%">
+        <tr>
+          <td>
+            <table border=0 cellspacing=0 cellpadding=0  width="100%">
+            <tr>
+              <td class=contentbar2 colspan=4 width="30%">
+                <b>&nbsp;&nbsp;[L]Check Information[/L]</b>
+              </td>
+            </tr>
+            <tr>
+              <td align=right>
+                [error name=check_acct std_label="[L]Account Number[/L]" required=1]
+              </td>
+              <td colspan="3 align="left" class="contentbar1">
+                <input type=text name=check_acct size=22 value="[value check_acct]">
+              </td>
+            </tr>
+            <tr>
+              <td align="right" class="contentbar1">
+                [error name=check_route std_label="[L]Routing Number[/L]" required=1]
+                
+              </td>
+              <td align="left" colspan="3" class="contentbar1">
+                <b><input type=text name=check_route size=22 value="[value check_route]"></b>
+              </td>
+            </tr>
+            <tr>
+              <td align="right" class="contentbar1">
+                [error name=check_num std_label="[L]Check Number[/L]" required=1]
+              </td>
+              <td align="left" colspan="3" class="contentbar1">
+                <b>
+                <input type=text name=check_num size=22 value="[value check_num]">
+                </b>
+              </td>
+                </tr>
+            <tr>
+              <td align="right" class="contentbar1">
+                [error name=check_bank_phone std_label="[L]Bank Phone[/L]" required=1]
+                
+              </td>
+              <td align="left" colspan="3" class="contentbar1">
+                <b>
+                <input type=text name=check_bank_phone size=22 value="[value check_bank_phone]">
+                </b>
+              </td>
+                </tr>
+			<tr>
+				<td colspan=4 class=contentbar1>&nbsp;</td>
+			</tr>
+		  </table>
+		</td>
+	  </tr>
+	</table>
+	</div>
+	<div 
+		id=purchase_order
+		style="
+				Position:Absolute;
+				Left:0; Top:0;
+				Visibility:Visible;
+				z-index:0;
+		">
+ 
+        <table cellspacing="0" cellpadding="0" width="100%">
+        <tr>
+          <td>
+            <table border="0" cellspacing="0" cellpadding="0" width="100%">
+            <tr class="contentbar2">
+              <td class="contentbar2" colspan="2">
+                <b> [L]P.O. Information[/L] </b>
+              </td>
+              <td colspan=2 class="contentbar2">&nbsp;</td>
+            </tr>
+			[if !variable PO_ALWAYS]
+            <tr>
+              <td align=right class="contentbar1" width="30%">
+                [error name=credit_limit_ok std_label="[L]PO Number[/L]" required=1] &nbsp; &nbsp;
+              </td>
+              <td align=left colspan=3 class="contentbar1">
+                <b>
+                <input name=po_number value="[value po_number]" size=14>
+                </b>
+              </td>
+            </tr>
+			[/if]
+			<tr>
+				<td colspan=4 class=contentbar1>&nbsp;</td>
+			</tr>
+        
+            [if type=data
+                term="userdb::credit_limit::[data session username]"
+                op=">"
+                compare=0.01]
+        
+            <tr>
+              <td align=right valign=top class=contentbar1>
+                <b> Available credit </b>&nbsp;&nbsp;&nbsp;
+              </td>
+              <td align=left colspan=3 class=contentbar1>
+                [currency]
+                [data table=userdb col=credit_limit key="[data session username]"]
+                [/currency]
+                
+                [if type=data
+                        term="userdb::credit_limit::[data session username]"
+                        op=<
+                        compare="[total-cost noformat=1]"
+                ]
+                <br>
+                [msg arg.0="[total-cost]"]Order total %s exceeds credit limit, please call.[/L]
+                [/if]
+                <br>
+              </td>
+            </tr>
+        
+            [/if]
+			<tr>
+				<td colspan=4 class=contentbar1>&nbsp;</td>
+			</tr>
+            </table>
+                                                
+          </td>
+        </tr>
+        </table>
+	</div>
+</div>
+
+<script>
+	visible('[either][value mv_order_profile][or]credit_card[/either]');
+</script>

@@ -1,0 +1,28 @@
+code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url	member
+001		0					index	bread_reset=1	HOME		0	The home page of this catalog							
+002		0					login		LOG IN		0	Sign on!							0
+003		0					logout		LOG OUT		0	Log out, remove your login cookie							1
+004		1					logout	keep_values=1	Log out and keep name/address		0								
+005		0					ord/basket		YOUR CART		0								
+006		1					ord/basket		View cart		0								
+007		1					ord/basket	empty_cart=1	Empty cart		0								
+008		0					ord/country		CHECK OUT		0	Place the order...							
+009		1					ord/checkout		Express		0	Simple one-page checkout form							
+010		1					ord/country		Multi-page		0	Multiple page checkout							
+011		2					ord/country		Select country		0								
+012		3					ord/shipping		US		0								
+013		3					ord/country	country_reset=1	Other		0								
+014		2					ord/shipping		Shipping Address		0								
+015		2					ord/billing		Billing Address (if different)		0								
+016		2					ord/shipmode		Shipping selection		0								
+017		2					ord/finalize		Payment Information		0								
+018		0					member/service		SERVICE		0	Track orders, do returns, manage name/address, more							1
+019		1					query/check_orders		Order Tracking		0								1
+020		1					member/returns		Order Returns		0	Get an RMA number for an order							1
+021		1					member/account		Account Maintenance		0	Change name, address, email, etc.							1
+022		1					change_password		Change Password		0								1
+023		1					member/ship_addresses		Additional Shipping Addresses		0								1
+024		1					member/saved_carts		Saved Carts/Recurring Orders		0								1
+025		0					aboutus		ABOUT US		0	More information on our company							
+026		1					aboutus		Our Story		0								
+027		1					contact		Contact us		0								

@@ -1,0 +1,89 @@
+<html>
+	<head>[if !cgi page_title][cgi name=page_title set="Select Item" hide=1][/if]
+	<title>[cgi name=page_title filter=encode_entities keep=1]</title>
+	[css name=THEME_CSS]
+	</head>
+</html>
+<body>
+<script>
+    var par = window.opener;
+	var source_form = '[cgi source_form]';
+	var source_var = '[cgi source_var]';
+	var source_div = '[cgi source_div]';
+    function send_to (dcode,dtext) {
+        par.document.[cgi source_form].[cgi source_var].value=dcode;
+		var el = par.document.getElementById(source_div);
+		el.innerHTML = dtext;
+        window.close();
+    }
+</script>
+
+<style type=text/css>
+A:link, A:active, A:visited {
+  font-size: 9pt;
+  font-family: Helvetica;
+}
+
+H3 {
+  font-size: 12pt;
+  font-family: Helvetica;
+}
+
+H4 {
+  font-size: 10pt;
+  font-family: Helvetica;
+  font-weight: bold;
+}
+</style>
+<form>
+<table>
+[loop 
+	search="
+		fi=[cgi table]
+		rf=[cgi fields]
+
+		ra=yes
+
+		ma=1
+		ml=20
+		mc=2
+		tf=[cgi sort]
+	"
+	form=|
+			source_form=[cgi source_form]
+			source_var=[cgi source_var]
+			source_div=[cgi source_div]
+			page_title=[cgi page_title]
+		|
+	more=1
+]
+[more-list]
+<td colspan=2 align=center>
+	[more]
+</td>
+[/more-list]
+[table-organize cols=2 columnize=1 min_rows=9]
+[list]
+<td>
+   <input
+   		type=checkbox
+		name=foo
+   	    onClick="javascript:send_to('[loop-code]', [jsq][loop-pos 1][/jsq])"
+		value=1
+	>
+			[loop-code] -- [loop-pos 1]
+</td>
+[/list]
+[/table-organize]
+[more-list]
+<td colspan=2 align=center>
+	[more]
+</td>
+[/more-list]
+[/loop]
+</table>
+</form>
+
+
+</body>
+</html>

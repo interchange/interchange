@@ -1,0 +1,15 @@
+[set page_title]Delete shipping addresses[/set]
+[set members_only]1[/set]
+
+@_LEFTONLY_TOP_@
+
+[if session arg]
+	[userdb function=delete_shipping nickname="[data session arg]"]
+[/if]
+
+[loop list="[userdb function=get_shipping_names show=1]"]
+[page @@MV_PAGE@@ [loop-code]]Delete <i>[loop-code]</i> shipping address</A><BR>
+[/loop]
+
+@_LEFTONLY_BOTTOM_@
+

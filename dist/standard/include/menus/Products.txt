@@ -1,0 +1,72 @@
+code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url	member
+001		0					scan/co=yes/fi=products/sf=prod_group/se=Gift Certificates/op=eq/tf=category,description		Gift Certificates		0								
+002		1					scan/co=yes/fi=products/sf=prod_group/se=Gift Certificates/op=eq/sf=category/se=Online/op=eq/tf=description		Online		0								
+003		2					os29099		Gift Certificate -- $10.00		0								
+004		0					scan/co=yes/fi=products/sf=prod_group/se=Hand Tools/op=eq/tf=category,description		Hand Tools		0								
+005		2					os28072				0								
+006		2					os28068a				0								
+007		1					scan/co=yes/fi=products/sf=prod_group/se=Hand Tools/op=eq/sf=category/se=Brushes/op=eq/tf=description		Brushes		0								
+008		2					os28009		Brush Set		0								
+009		2					os28108		Hand Brush		0								
+010		1					scan/co=yes/fi=products/sf=prod_group/se=Hand Tools/op=eq/sf=category/se=Hammers/op=eq/tf=description		Hammers		0								
+011		2					os28044		Framing Hammer		0								
+012		2					os28073		Mini-Sledge		0								
+013		2					os28075		Modeling Hammer		0								
+014		2					os28074		Rubber Mallet		0								
+015		1					scan/co=yes/fi=products/sf=prod_group/se=Hand Tools/op=eq/sf=category/se=Hand Planes/op=eq/tf=description		Hand Planes		0								
+016		2					os28080		The Blade Hand Planer		0								
+017		1					scan/co=yes/fi=products/sf=prod_group/se=Hand Tools/op=eq/sf=category/se=Picks & Hatchets/op=eq/tf=description		Picks & Hatchets		0								
+018		2					os28076		Digger Hand Trencher		0								
+019		2					os28113		The Claw Hand Rake		0								
+020		1					scan/co=yes/fi=products/sf=prod_group/se=Hand Tools/op=eq/sf=category/se=Pliers/op=eq/tf=description		Pliers		0								
+021		2					os28062		Electricians Plier Set		0								
+022		2					os28065		Mechanics Pliers		0								
+023		1					scan/co=yes/fi=products/sf=prod_group/se=Hand Tools/op=eq/sf=category/se=Shears/op=eq/tf=description		Shears		0								
+024		2					os28111		Hedge Shears		0								
+025		2					os28110		Mighty Mouse Tin Snips		0								
+026		1					scan/co=yes/fi=products/sf=prod_group/se=Hand Tools/op=eq/sf=category/se=Shovels/op=eq/tf=description		Shovels		0								
+027		2					os28112		Garden Shovel		0								
+028		2					os28109		Mini-Spade		0								
+029		1					scan/co=yes/fi=products/sf=prod_group/se=Hand Tools/op=eq/sf=category/se=Wrenches/op=eq/tf=description		Wrenches		0								
+030		2					os28064		Mechanics Wrench Set		0								
+031		0					scan/co=yes/fi=products/sf=prod_group/se=Hardware/op=eq/tf=category,description		Hardware		0								
+032		1					scan/co=yes/fi=products/sf=prod_group/se=Hardware/op=eq/sf=category/se=Nails/op=eq/tf=description		Nails		0								
+033		2					os28057c		10 Penny Nails		0								
+034		2					os28057a		16 Penny Nails		0								
+035		2					os28057b		8 Penny Nails		0								
+036		0					scan/co=yes/fi=products/sf=prod_group/se=Ladders/op=eq/tf=category,description		Ladders		0								
+037		1					scan/co=yes/fi=products/sf=prod_group/se=Ladders/op=eq/sf=category/se=Ladders/op=eq/tf=description		Ladders		0								
+038		2					os28085		Big A A-Frame Ladder		0								
+039		2					os28008		Painters Ladder		0								
+040		1					scan/co=yes/fi=products/sf=prod_group/se=Ladders/op=eq/sf=category/se=Step Stools/op=eq/tf=description		Step Stools		0								
+041		2					os29000		3' Step Ladder		0								
+042		0					scan/co=yes/fi=products/sf=prod_group/se=Measuring Tools/op=eq/tf=category,description		Measuring Tools		0								
+043		1					scan/co=yes/fi=products/sf=prod_group/se=Measuring Tools/op=eq/sf=category/se=Levels/op=eq/tf=description		Levels		0								
+044		2					os28082		24" Level		0								
+045		1					scan/co=yes/fi=products/sf=prod_group/se=Measuring Tools/op=eq/sf=category/se=Rulers/op=eq/tf=description		Rulers		0								
+046		2					os28086		Folding Ruler		0								
+047		1					scan/co=yes/fi=products/sf=prod_group/se=Measuring Tools/op=eq/sf=category/se=Squares/op=eq/tf=description		Squares		0								
+048		2					os28066		Big L Carpenters Square		0								
+049		1					scan/co=yes/fi=products/sf=prod_group/se=Measuring Tools/op=eq/sf=category/se=Tape Measures/op=eq/tf=description		Tape Measures		0								
+050		2					os28084		Tape Measure		0								
+051		0					scan/co=yes/fi=products/sf=prod_group/se=Painting Supplies/op=eq/tf=category,description		Painting Supplies		0								
+052		1					scan/co=yes/fi=products/sf=prod_group/se=Painting Supplies/op=eq/sf=category/se=Paintbrushes/op=eq/tf=description		Paintbrushes		0								
+053		2					os28007		Disposable Brush Set		0								
+054		2					os28006		Painters Brush Set		0								
+055		2					os28005		Trim Brush		0								
+056		1					scan/co=yes/fi=products/sf=prod_group/se=Painting Supplies/op=eq/sf=category/se=Putty Knives/op=eq/tf=description		Putty Knives		0								
+057		2					os28011		Spackling Knife		0								
+058		1					scan/co=yes/fi=products/sf=prod_group/se=Painting Supplies/op=eq/sf=category/se=Rollers/op=eq/tf=description		Rollers		0								
+059		2					os28004		Ergo Roller		0								
+060		1					scan/co=yes/fi=products/sf=prod_group/se=Painting Supplies/op=eq/sf=category/se=Sandpaper/op=eq/tf=description		Sandpaper		0								
+061		2					os28087		Sanders Multi-Pac		0								
+062		2					os28081		Steel Wool		0								
+063		0					scan/co=yes/fi=products/sf=prod_group/se=Safety Equipment/op=eq/tf=category,description		Safety Equipment		0								
+064		1					scan/co=yes/fi=products/sf=prod_group/se=Safety Equipment/op=eq/sf=category/se=Eye Protection/op=eq/tf=description		Eye Protection		0								
+065		2					os28068b		The Bug Eye Wear		0								
+066		0					scan/co=yes/fi=products/sf=prod_group/se=Tool Storage/op=eq/tf=category,description		Tool Storage		0								
+067		1					scan/co=yes/fi=products/sf=prod_group/se=Tool Storage/op=eq/sf=category/se=Tool Belts/op=eq/tf=description		Tool Belts		0								
+068		2					os28077		Carpenter's Tool Belt		0								
+069		2					os28070		Electricians Tool Belt		0								
+070		1					scan/co=yes/fi=products/sf=prod_group/se=Tool Storage/op=eq/sf=category/se=Toolboxes/op=eq/tf=description		Toolboxes		0								
+071		2					os28069		Flat Top Toolbox		0								

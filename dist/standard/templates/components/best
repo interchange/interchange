@@ -1,0 +1,102 @@
+[comment]
+ui_name: best
+ui_type: component
+ui_class: vertical, content
+ui_group: promotion
+ui_label: Best sellers
+
+banner:
+	code: banner
+	type: text
+	width: 40
+	default: [L]Best sellers...[/L]
+
+toprow_css:
+	advanced: 1
+	height: 4
+	label: CSS describing top row
+	type: textarea
+	width: 60
+
+toprow_color:
+	advanced: 1
+	type: text
+	width: 7
+
+matches:
+	help: If you select more matches than columns, multiple rows will be generated.
+	options: 1,2,3,4,5,6,7,8,9,10
+	type: select
+	default: 2
+
+cols:
+	label: Columns
+	options: 1,2,3,4
+	type: select
+	default: 2
+
+[/comment]
+<table width="95%" align=center>
+<tr> 
+  <td class="titlebar3"> 
+    [control name=banner default="[L]Best sellers...[/L]"]
+  </td>
+</tr>
+<tr>
+  <td> 
+    [calc]
+  	my $n = [control cols 2];
+	$Scratch->{width_percent} = int(100 / $n) . '%';
+	return;
+    [/calc]
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+    [table-organize embed=1 pretty=1 cols="[control cols 2]"]
+	[loop search="
+		fi=merchandising
+		st=db
+		ra=yes
+		tf=times_ordered
+		to=rn
+		ml=[control matches 2]
+	"]
+	<TD width="[scratch width_percent]" align="center"> 
+		<table border="0" cellspacing="0" cellpadding="0">
+		<tr><td colspan="2">&nbsp;</td></tr>
+		<tr> 
+			<td align="center" colspan="2" class="contentbar1">
+				<b>[loop-description]</b>
+			</td>
+		</tr>
+		[if-loop-field thumb]
+		<tr> 
+			<td align="center" colspan="2"> 
+				<img src="thumb/[loop-field thumb]"></td>
+			</td>
+		</tr>
+		[/if-loop-field]
+		<tr> 
+			<td align="center" colspan="2">
+				[L]Our Price[/L]: <b>[loop-price]</b>
+			</td>
+		</tr>
+		<tr> 
+			<td align="center">
+				[b-link [loop-code]][L]MORE INFO[/L][/b-link]
+			</td>
+			<td align="center">
+				[b-link order mv_order_item=[loop-code]]BUY NOW[/b-link]
+			</td>
+		</tr>
+		</table>
+	</TD>
+	[/loop]
+    [/table-organize]
+    </table>
+
+    <p>&nbsp;</p>
+
+  </td>
+</tr>
+</table>
+
+<!-- END COMPONENT [control component best_horizontal] -->

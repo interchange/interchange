@@ -1,0 +1,44 @@
+[comment]
+ui_name: noleft
+ui_type: template
+ui_template_layout: NOLEFT_TOP, UI_CONTENT, NOLEFT_BOTTOM
+ui_label: Page with top/bottom areas only, content in middle.
+
+page_title:
+	description: Page title
+
+members_only:
+	options: 1=Yes,=No*
+	description: Members only
+	widget: radio
+
+[/comment]
+[set page_title][/set]
+[set members_only][/set]
+
+<!-- BEGIN PAGE_PICTURE -->
+<b>Representation</b><br>
+<table width="100%">
+<tr>
+	<td colspan=2 id=picture0><a href="javascript:void(0)" onclick="visible(0)">preamble</a></td>
+</tr>
+<tr>
+	<td colspan=2 id=picture1><a href="javascript:void(0)" onclick="visible(1)">controls</a></td>
+</tr>
+<tr>
+	<td colspan=2 bgcolor="#CCCCCC"><br>header<br>&nbsp;</td>
+</tr>
+<tr>
+	<td>
+		<div id=comp_picture1 style="width: 100%"><a href="javascript:void(0)" onclick="visible(1,'comp')">slot&nbsp;1</a></div>
+		<div id=comp_picture2 style="width: 100%"><br><a href="javascript:void(0)" onclick="visible(2,'comp')">CONTENT</a><br>&nbsp;</div>
+	</td>
+</tr>
+<tr>
+	<td colspan=2 bgcolor="#CCCCCC">footer</td>
+</tr>
+<tr>
+	<td colspan=2 id=picture2><a href="javascript:void(0)" onclick="visible(2)">postamble</a></td>
+</tr>
+</table>
+<!-- END PAGE_PICTURE -->

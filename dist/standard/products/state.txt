@@ -1,0 +1,202 @@
+code	sorder	country	state	name	tax	postcode	shipmodes	tax_name
+00126	00	US	AK	Alaska				
+00127	00	US	AL	Alabama				
+00128	00	US	AR	Arkansas				
+00129	00	US	AS	American Samoa				
+00130	00	US	AZ	Arizona				
+00131	00	US	CA	California				
+00132	00	US	CO	Colorado				
+00133	00	US	CT	Connecticut				
+00134	00	US	DC	D.C.				
+00135	00	US	DE	Delaware				
+00136	00	US	FL	Florida				
+00137	00	US	FM	Micronesia				
+00138	00	US	GA	Georgia				
+00139	00	US	GU	Guam				
+00140	00	US	HI	Hawaii				
+00141	00	US	IA	Iowa				
+00142	00	US	ID	Idaho				
+00143	00	US	IL	Illinois	5%			
+00144	00	US	IN	Indiana				
+00145	00	US	KS	Kansas				
+00146	00	US	KY	Kentucky				
+00147	00	US	LA	Louisiana				
+00148	00	US	MA	Massachusetts				
+00149	00	US	MD	Maryland				
+00150	00	US	ME	Maine				
+00151	00	US	MH	Marshall Islands				
+00152	00	US	MI	Michigan				
+00153	00	US	MN	Minnesota				
+00154	00	US	MO	Missouri				
+00155	00	US	MP	Marianas				
+00156	00	US	MS	Mississippi				
+00157	00	US	MT	Montana				
+00158	00	US	NC	North Carolina				
+00159	00	US	ND	North Dakota				
+00160	00	US	NE	Nebraska				
+00161	00	US	NH	New Hampshire				
+00162	00	US	NJ	New Jersey				
+00163	00	US	NM	New Mexico				
+00164	00	US	NV	Nevada				
+00165	00	US	NY	New York				
+00166	00	US	OH	Ohio	6%			
+00167	00	US	OK	Oklahoma				
+00168	00	US	OR	Oregon				
+00169	00	US	PA	Pennsylvania				
+00170	00	US	PR	Puerto Rico				
+00171	00	US	PW	Palau				
+00172	00	US	RI	Rhode Island				
+00173	00	US	SC	South Carolina				
+00174	00	US	SD	South Dakota				
+00175	00	US	TN	Tennessee				
+00176	00	US	TX	Texas				
+00177	00	US	UT	Utah				
+00178	00	US	VA	Virginia				
+00179	00	US	VI	Virgin Islands				
+00180	00	US	VT	Vermont				
+00181	00	US	WA	Washington				
+00182	00	US	WI	Wisconsin				
+00183	00	US	WV	West Virginia				
+00184	00	US	WY	Wyoming				
+001841	00a	US	AA	Military Americas				
+001842	00a	US	AE	Military Europe/ME/Canada				
+001843	00a	US	AP	Military Pacific				
+00185	01	CA	AB	Alberta	7%			PST
+00187	01	CA	MB	Manitoba	8%			GST
+00039	01	CA	AB	Alberta	8%			GST
+00040	01	CA	BC	British Columbia				
+00041	01	CA	MB	Manitoba	6%			PST
+00042	01	CA	NB	New Brunswick				
+00043	01	CA	NF	Newfoundland				
+00044	01	CA	NS	Nova Scotia				
+00045	01	CA	NT	Northwest Territories				
+00046	01	CA	NU	Nunavut				
+00047	01	CA	ON	Ontario				
+00048	01	CA	PE	Prince Edward Island				
+00049	01	CA	QC	Quebec				
+00050	01	CA	SK	Saskatchewan				
+00051	01	CA	YT	Yukon Territory				
+	02	AU	AAT	Australian Antarctic Territory
+	02	AU	ACT	Australian Capital Territory
+	02	AU	NT	Northern Territory
+	02	AU	NSW	New South Wales
+	02	AU	QLD	Queensland
+	02	AU	SA	South Australia
+	02	AU	TAS	Tasmania
+	02	AU	VIC	Victoria
+	02	AU	WA	Western Australia
+	03	BR	AC	Acre
+	03	BR	AL	Alagoas
+	03	BR	AM	Amazonas
+	03	BR	AP	Amapa
+	03	BR	BA	Baia
+	03	BR	CE	Ceara
+	03	BR	DF	Distrito Federal
+	03	BR	ES	Espirito Santo
+	03	BR	FN	Fernando de Noronha
+	03	BR	GO	Goias
+	03	BR	MA	Maranhao
+	03	BR	MG	Minas Gerais
+	03	BR	MS	Mato Grosso do Sul
+	03	BR	MT	Mato Grosso
+	03	BR	PA	Para
+	03	BR	PB	Paraiba
+	03	BR	PE	Pernambuco
+	03	BR	PI	Piaui
+	03	BR	PR	Parana
+	03	BR	RJ	Rio de Janeiro
+	03	BR	RN	Rio Grande do Norte
+	03	BR	RO	Rondonia
+	03	BR	RR	Roraima
+	03	BR	RS	Rio Grande do Sul
+	03	BR	SC	Santa Catarina
+	03	BR	SE	Sergipe
+	03	BR	SP	Sao Paulo
+	03	BR	TO	Tocatins
+	04	NL	DR	Drente
+	04	NL	FL	Flevoland
+	04	NL	FR	Friesland
+	04	NL	GL	Gelderland
+	04	NL	GR	Groningen
+	04	NL	LB	Limburg
+	04	NL	NB	Noord Brabant
+	04	NL	NH	Noord Holland
+	04	NL	OV	Overijssel
+	04	NL	UT	Utrecht
+	04	NL	ZH	Zuid Holland
+	04	NL	ZL	Zeeland
+	05	UK	AVON	Avon
+	05	UK	BEDS	Bedfordshire
+	05	UK	BERKS	Berkshire
+	05	UK	BUCKS	Buckinghamshire
+	05	UK	CAMBS	Cambridgeshire
+	05	UK	CHESH	Cheshire
+	05	UK	CLEVE	Cleveland
+	05	UK	CORN	Cornwall
+	05	UK	CUMB	Cumbria
+	05	UK	DERBY	Derbyshire
+	05	UK	DEVON	Devon
+	05	UK	DORSET	Dorset
+	05	UK	DURHAM	Durham
+	05	UK	ESSEX	Essex
+	05	UK	GLOUS	Gloucestershire
+	05	UK	GLONDON	Greater London
+	05	UK	GMANCH	Greater Manchester
+	05	UK	HANTS	Hampshire 
+	05	UK	HERWOR	Hereford & Worcestershire
+	05	UK	HERTS	Hertfordshire
+	05	UK	HUMBER	Humberside
+	05	UK	IOM	Isle of Man
+	05	UK	IOW	Isle of Wight
+	05	UK	KENT	Kent
+	05	UK	LANCS	Lancashire
+	05	UK	LEICS	Leicestershire
+	05	UK	LINCS	Lincolnshire
+	05	UK	MERSEY	Merseyside
+	05	UK	NORF	Norfolk
+	05	UK	NHANTS	Northamptonshire
+	05	UK	NTHUMB	Northumberland
+	05	UK	NOTTS	Nottinghamshire
+	05	UK	OXON	Oxfordshire
+	05	UK	SHROPS	Shropshire
+	05	UK	SOM	Somerset
+	05	UK	STAFFS	Staffordshire
+	05	UK	SUFF	Suffolk
+	05	UK	SURREY	Surrey
+	05	UK	SUSS	Sussex
+	05	UK	WARKS	Warwickshire
+	05	UK	WMID	West Midlands
+	05	UK	WILTS	Wiltshire
+	05	UK	YORK	Yorkshire
+	06	EI	CO ANTRIM	County Antrim
+	06	EI	CO ARMAGH	County Armagh
+	06	EI	CO DOWN	County Down
+	06	EI	CO FERMANAGH	County Fermanagh
+	06	EI	CO DERRY	County Londonderry
+	06	EI	CO TYRONE	County Tyrone
+	06	EI	CO CAVAN	County Cavan
+	06	EI	CO DONEGAL	County Donegal
+	06	EI	CO MONAGHAN	County Monaghan
+	06	EI	CO DUBLIN	County Dublin
+	06	EI	CO CARLOW	County Carlow
+	06	EI	CO KILDARE	County Kildare
+	06	EI	CO KILKENNY	County Kilkenny
+	06	EI	CO LAOIS	County Laois
+	06	EI	CO LONGFORD	County Longford
+	06	EI	CO LOUTH	County Louth
+	06	EI	CO MEATH	County Meath
+	06	EI	CO OFFALY	County Offaly
+	06	EI	CO WESTMEATH	County Westmeath
+	06	EI	CO WEXFORD	County Wexford
+	06	EI	CO WICKLOW	County Wicklow
+	06	EI	CO GALWAY	County Galway
+	06	EI	CO MAYO	County Mayo
+	06	EI	CO LEITRIM	County Leitrim
+	06	EI	CO ROSCOMMON	County Roscommon
+	06	EI	CO SLIGO	County Sligo
+	06	EI	CO CLARE	County Clare
+	06	EI	CO CORK	County Cork
+	06	EI	CO KERRY	County Kerry
+	06	EI	CO LIMERICK	County Limerick
+	06	EI	CO TIPPERARY	County Tipperary
+	06	EI	CO WATERFORD	County Waterford
