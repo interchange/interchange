@@ -21,7 +21,7 @@ Vendor: Red Hat, Inc.
 Copyright: GPL
 URL: http://ic.redhat.com/
 Packager: Interchange Development Team <info@akopia.com>
-Source: http://ic.redhat.com/pub/interchange/interchange-%{ic_version}.tar.gz
+Source: http://developer.akopia.com/pub/interchange/interchange-%{ic_version}.tar.gz
 Group: Applications/Internet
 Provides: %ic_package_basename
 Obsoletes: %ic_package_basename
@@ -256,15 +256,6 @@ fi
 %doc README.rpm
 %doc README.cvs
 %doc WHATSNEW
-%doc pdf/icbackoffice.pdf
-%doc pdf/iccattut.pdf
-%doc pdf/icconfig.pdf
-%doc pdf/icdatabase.pdf
-%doc pdf/icinstall.pdf
-%doc pdf/icintro.pdf
-%doc pdf/ictags.pdf
-%doc pdf/ictemplates.pdf
-%doc pdf/icupgrade.pdf
 %{_mandir}/man1
 %{_mandir}/man8
 
