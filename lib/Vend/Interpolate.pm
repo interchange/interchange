@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.148 2003-02-18 23:10:42 mheins Exp $
+# $Id: Interpolate.pm,v 2.149 2003-02-27 10:12:15 ton Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.148 $, 10);
+$VERSION = substr(q$Revision: 2.149 $, 10);
 
 @EXPORT = qw (
 
@@ -6763,8 +6763,8 @@ sub levies {
 					$sub = $Global::UserTag->{Routine}{$mode};
 				};
 			}
-			if( ref($sub) ne 'CODE') {
-				($cost, $desc, $sort) = $sub->($opt);
+			if( ref($sub) eq 'CODE') {
+				($cost, $desc, $sort) = $sub->($l);
 			}
 			else {
 				logError("No subroutine found for custom levy '%s'", $name);
