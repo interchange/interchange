@@ -3,9 +3,10 @@
 #
 # Interchange version 4.9.1
 #
-# $Id: interchange.PL,v 2.42 2002-07-21 01:15:02 mheins Exp $
+# $Id: interchange.PL,v 2.43 2002-07-22 15:27:28 jon Exp $
 #
-# Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1996-2002 Red Hat, Inc. and others.
+# http://www.icdevgroup.org/
 #
 # This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
@@ -2493,7 +2494,7 @@ sub dump_env {
 }
 
 sub version {
-	print "Interchange version $VERSION Copyright 1996-2002 Red Hat, Inc.\n";
+	print "Interchange version $VERSION copyright 1996-2002 Red Hat, Inc. and others.\n";
 }
 
 =head1 NAME
@@ -2519,7 +2520,7 @@ Interchange has many, many, functions and features; they are too numerous
 to describe in this venue. Complete information can be found at
 its web site:
 
-		http://interchange.redhat.com/
+		http://www.icdevgroup.org/
 
 Interchange requires Perl 5.005 or higher; more information on Perl can
 be seen at:
@@ -3124,7 +3125,7 @@ if ($@) {
 
 compile_link(1), config_prog(1), configdump(1), dump(1), expire(1),
 expireall(1), localize(1), makecat(1), offline(1), restart(1), update(1),
-http://interchange.redhat.com/
+http://www.icdevgroup.org/
 
 =head1 LICENSE
 
@@ -3134,24 +3135,36 @@ GNU General Public License.
 
 =head1 COPYRIGHT
 
-Copyright 1995-2002, Red Hat, Inc. All rights reserved except as in the
-license.
+Copyright 1995-2002, Red Hat, Inc. and others.
+All rights reserved except those granted in the license.
 
 =cut
 
 =head1 AUTHOR
 
-Mike Heins, <mheins@redhat.com>, along with Dave Adams, Jon Jensen,
-Brev Patterson, Jason Kohles, and others of the Red Hat E-Business
-Solutions Group. Please do not contact the author for direct help with
-the system. Use the Interchange mail list:
+Mike Heins is the primary author of Interchange.
 
-    interchange-users
+The Interchange Development Group is:
+
+Brev Patterson
+Dan Browning
+Ed LaFrance
+Jonathan Clark
+Jon Jensen
+Kevin Walsh
+Mike Heins
+Stefan Hornburg (aka Racke), captain
+Ton Verhagen
+
+Please do not contact the authors for direct help with the system.
+Use the Interchange mail list:
+
+    interchange-users@icdevgroup.org
 
 Information on subscribing to the list, as well as general information and
 documentation for Interchange is at:
 
-    http://interchange.redhat.com/
+    http://www.icdevgroup.org/
 
 =head1 SPECIAL ACKNOWLEDGEMENTS
 
@@ -3167,8 +3180,8 @@ contributions.
 =head1 ACKNOWLEDGEMENTS
 
 Original author of Vend, ancestor to Minivend and Interchange, was Andrew
-Wilcox. Interchange was based on Vend 0.2, with portions from Vend 0.3;
-both were produced in 1995.
+Wilcox <amw@wilcoxsolutions.com>. Interchange was based on Vend 0.2, with
+portions from Vend 0.3; both were produced in 1995.
 
 # columnize with "sort -u | pr -t -2 | expand -8 | sed 's/^/    /'"
 
@@ -3187,7 +3200,7 @@ Contributions to Interchange have been made by:
     Christopher Thompson                Matthew Schick
     Dan Browning                        Michael McCune
     Dan Busarow                         Michael Wilk
-    Dave Adams                          Mike Frager
+    David Adams                         Mike Frager
     Dave Wingate                        Neil Evans
     Dennis Cronin                       Raj Goel
     Don Grodecki                        Ray Desjardins

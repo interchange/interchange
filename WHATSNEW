@@ -6,7 +6,7 @@
 ------------------------------------------------------------------------------
 
 
-Interchange 4.9.1 not yet released
+Interchange 4.9.1 released 2002-07-22
 
 
 Core
@@ -319,8 +319,13 @@ UserTags
 
 * [image] -- descriptionsfields and exists_only options added.
 
+
 Build
 -----
+
+* Removed stale POD documentation from main interchange repository; for
+  some time now, docs source has been in SDF format in docs repository
+  and available in separate docs package.
 
 * Keep test from giving warning about not being able to stat
   "code" directory.
