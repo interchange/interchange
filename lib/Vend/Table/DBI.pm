@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.6 2000-06-18 08:42:46 heins Exp $
+# $Id: DBI.pm,v 1.7 2000-06-23 07:40:30 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 1.7 $, 10);
 
 use strict;
 
@@ -110,7 +110,7 @@ my $Info;
 
 sub create {
     my ($class, $config, $columns, $tablename) = @_;
-#::logDebug("trying create table");
+#::logDebug("trying create table $tablename");
 	my @call = find_dsn($config);
 	my $dattr = pop @call;
 	my $db = DBI->connect( @call )

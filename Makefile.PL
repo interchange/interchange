@@ -27,7 +27,7 @@ my $Prompt_sub;
 my @mods_to_get;
 my $Lock_troubles;
 
-$VERSION = '4.5.0';
+$VERSION = '4.5.1';
 
 # See if we have the CPAN module
 my $Cpan = 0;

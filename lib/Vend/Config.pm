@@ -1,6 +1,6 @@
 # Config.pm - Configure Minivend
 #
-# $Id: Config.pm,v 1.5 2000-06-18 08:42:46 heins Exp $
+# $Id: Config.pm,v 1.6 2000-06-23 07:40:30 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -101,7 +101,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.5 $, 10);
+$VERSION = substr(q$Revision: 1.6 $, 10);
 
 my %CDname;
 
@@ -284,6 +284,7 @@ sub global_directives {
     ['SysLog',			 'hash',     	     undef],
     ['CheckHTML',		  undef,     	     ''],
 	['Variable',	  	 'variable',     	 ''],
+	['Profiles',	  	 'profile',     	 ''],
     ['Catalog',			 'catalog',     	 ''],
     ['SubCatalog',		 'catalog',     	 ''],
 
@@ -2312,20 +2313,26 @@ sub parse_dbdatabase {
 
 sub parse_profile {
 	my ($var, $value) = @_;
-	my ($c, $n, $i);
-	unless (defined $value && $value) { 
-		$c = [];
-		$C->{"${var}Name"} = {};
-		return $c;
+	my ($c, $ref, $sref, $i);
+
+	if($C) {
+		$C->{"${var}Name"} = {} if ! $C->{"${var}Name"};
+		$sref = $C->{Source};
+		$ref = $C->{"${var}Name"};
+		$c = $C->{$var} || [];
+	}
+	else {
+		no strict 'refs';
+		$sref = $Global::Source;
+		${"Global::${var}Name"} = {}
+			 if ! ${"Global::${var}Name"};
+		$ref = ${"Global::${var}Name"};
+		$c = ${"Global::$var"} || [];
 	}
 
-	$c = $C->{$var};
+	$sref->{$var} = $value;
 
-	$C->{Source}->{$var} = $value;
-
-	$n = $C->{"${var}Name"};
-
-	my (@files) = split /[\s,]+/, $value;
+	my (@files) = glob($value);
 	for(@files) {
 		config_error(
 		  "No leading / allowed if NoAbsolute set. Contact administrator.\n")
@@ -2338,7 +2345,7 @@ sub parse_profile {
 	for($i = 0; $i < @$c; $i++) {
 		if($c->[$i] =~ s/(^|\n)__NAME__\s+([^\n\r]+)\r?\n//) {
 			my $name = $2;
-			$n->{$name} = $i;
+			$ref->{$name} = $i;
 		}
 	}
 

@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.8 $, 10);
+$VERSION = substr(q$Revision: 1.9 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -579,6 +579,9 @@ sub meta_display {
 				}
 			}
 		}
+		if($record->{pre_filter}) {
+			$value = Vend::Interpolate::filter_value($record->{pre_filter}, $value);
+		}
 		if($record->{lookup}) {
 			my $fld = $record->{field} || $record->{lookup};
 #::logDebug("metadisplay lookup");
@@ -595,7 +598,22 @@ sub meta_display {
 				}
 #::logDebug("metadisplay lookup, query succeeded, " . ::uneval_it($ary));
 				undef $record->{type} unless $record->{type} =~ /multi|combo/;
-				$record->{passed} = join ",", grep length($_),
+				my $sub;
+				if($record->{lookup_exclude}) {
+					eval {
+						$sub = sub { $_[0] !~ m{$record->{lookup_exclude}}o };
+					};
+					if ($@) {
+						::logError(errmsg(
+										"Bad lookup pattern m{%s}: %s",
+										$record->{exclude},
+										$@,
+									));
+						$sub = \&CORE::length;
+					}
+				}
+				$sub = \&CORE::length if ! $sub;
+				$record->{passed} = join ",", grep $sub->($_),
 									map
 										{ $_->[0] =~ s/,/&#44;/g; $_->[0]}
 									@$ary;

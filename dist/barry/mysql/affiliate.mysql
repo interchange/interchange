@@ -1,9 +1,9 @@
-Database  affilate  affilate.txt __SQLDSN__
+Database  affiliate  affiliate.txt __SQLDSN__
 #ifdef SQLUSER
-Database  affilate  USER         __SQLUSER__
+Database  affiliate  USER         __SQLUSER__
 #endif
 #ifdef SQLPASS
-Database  affilate  PASS         __SQLPASS__
+Database  affiliate  PASS         __SQLPASS__
 #endif
-Database  affilate  COLUMN_DEF   "code=char(12) NOT NULL PRIMARY KEY"
-Database  affilate  DEFAULT_TYPE text
+Database  affiliate  COLUMN_DEF   "code=char(12) NOT NULL PRIMARY KEY"
+Database  affiliate  DEFAULT_TYPE text

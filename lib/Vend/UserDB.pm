@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.1 2000-05-26 18:50:41 heins Exp $
+# $Id: UserDB.pm,v 1.2 2000-06-23 07:40:30 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -8,9 +8,9 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 
-use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS %S_to_B %B_to_S!;
+use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
 use Vend::Data;
 use Vend::Util;
@@ -263,6 +263,11 @@ sub new {
 		$options{preferences} =~ s/^[,\s]+//;
 		@P_FIELDS = split /[\s,]+/, $options{preferences};
 	}
+	if($options{ignore}) {
+		$options{ignore} =~ s/[,\s]+$//;
+		$options{ignore} =~ s/^[,\s]+//;
+		@I_FIELDS = split /[\s,]+/, $options{ignore};
+	}
 	my $self = {
 			USERNAME  	=>	$options{username}	||
 							$Vend::Session->{username} ||
@@ -507,6 +512,10 @@ sub set_db {
 	my %ignore;
 
 	my @final;
+
+	for(@I_FIELDS) {
+		$ignore{$_} = 1;
+	}
 
 	for(values %{$self->{LOCATION}}) {
 		$ignore{$_} = 1;
