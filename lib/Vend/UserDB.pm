@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.13.6.17 2001-04-02 17:17:49 heins Exp $
+# $Id: UserDB.pm,v 1.13.6.18 2001-04-10 05:22:18 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.13.6.17 $, 10);
+$VERSION = substr(q$Revision: 1.13.6.18 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -658,7 +658,9 @@ sub set_values {
 
 	@fields = @{$self->{DB_FIELDS}};
 
-	unless ( $self->{DB}->record_exists($self->{USERNAME}) ) {
+	my $db = $self->{DB};
+
+	unless ( $db->record_exists($self->{USERNAME}) ) {
 		$self->{ERROR} = ::errmsg("username %s does not exist.", $self->{USERNAME});
 		return undef;
 	}
@@ -676,6 +678,10 @@ sub set_values {
 		push @fields, keys %outboard;
 	}
 
+	my @bfields;
+	my @bvals;
+
+  eval {
 	for( @fields ) {
 #::logDebug("set_values saving $_ as $::Values->{$_}\n");
 		my $val;
@@ -694,11 +700,33 @@ sub set_values {
 			my ($t, $c, $k) = split /:+/, $outboard{$_};
 			::tag_data($t, ($c || $_), $self->{USERNAME}, { value => $val, foreign => $k });
 		}
+		elsif ($db->test_column($_)) {
+			push @bfields, $_;
+			push @bvals, $val;
+		}
 		else {
-			$self->{DB}->set_field($user, $_, $val);
+			::logDebug( ::errmsg(
+							"cannot set unknown userdb field $_ to: %s",
+							$_,
+							$val,
+						)
+					);
 		}
 	}
-	1;
+	
+	if(@bfields) {
+		$db->set_slice($user, \@bfields, \@bvals);
+	}
+  };
+
+	if($@) {
+	  my $msg = ::errmsg("error saving values in userdb: %s", $@);
+	  $self->{ERROR} = $msg;
+	  ::logError($msg);
+	  return undef;
+	}
+
+	return 1;
 }
 
 sub set_billing {

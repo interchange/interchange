@@ -1,6 +1,6 @@
 # Table/SDBM.pm: access a table stored in Perl's internal SDBM
 #
-# $Id: SDBM.pm,v 1.1.2.4 2001-03-18 19:31:27 heins Exp $
+# $Id: SDBM.pm,v 1.1.2.5 2001-04-10 05:22:20 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -26,7 +26,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::SDBM;
-$VERSION = substr(q$Revision: 1.1.2.4 $, 10);
+$VERSION = substr(q$Revision: 1.1.2.5 $, 10);
 use strict;
 use Fcntl;
 use SDBM_File;
@@ -34,7 +34,7 @@ use vars qw($VERSION @ISA);
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 1.1.2.4 $, 10);
+$VERSION = substr(q$Revision: 1.1.2.5 $, 10);
 
 sub create {
 	my ($class, $config, $columns, $filename) = @_;
@@ -147,6 +147,7 @@ sub open_table {
 *row_hash		= \&Vend::Table::Common::row_hash;
 *row_settor		= \&Vend::Table::Common::row_settor;
 *set_field		= \&Vend::Table::Common::set_field;
+*set_slice		= \&Vend::Table::Common::set_slice;
 *set_row  		= \&Vend::Table::Common::set_row;
 *test_column	= \&Vend::Table::Common::test_column;
 *test_record	= \&Vend::Table::Common::record_exists;

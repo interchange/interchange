@@ -1,6 +1,6 @@
 # Table/GDBM.pm: access a table stored in a GDBM file
 #
-# $Id: GDBM.pm,v 1.3.6.4 2001-03-18 19:31:27 heins Exp $
+# $Id: GDBM.pm,v 1.3.6.5 2001-04-10 05:22:20 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ use GDBM_File;
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 1.3.6.4 $, 10);
+$VERSION = substr(q$Revision: 1.3.6.5 $, 10);
 
 sub new {
 	my ($class, $obj) = @_;
@@ -151,6 +151,7 @@ sub open_table {
 *row_hash		= \&Vend::Table::Common::row_hash;
 *row_settor		= \&Vend::Table::Common::row_settor;
 *set_field		= \&Vend::Table::Common::set_field;
+*set_slice		= \&Vend::Table::Common::set_slice;
 *set_row  		= \&Vend::Table::Common::set_row;
 *test_record	= \&Vend::Table::Common::record_exists;
 *touch			= \&Vend::Table::Common::touch;

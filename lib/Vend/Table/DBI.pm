@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.20 2001-04-09 06:29:08 heins Exp $
+# $Id: DBI.pm,v 1.25.2.21 2001-04-10 05:22:19 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.20 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.21 $, 10);
 
 use strict;
 
@@ -755,6 +755,26 @@ sub clone_set {
 #::logDebug("cloned, key=$k");
 	}
 	return $new;
+}
+
+sub set_slice {
+    my ($s, $key, $fary, $vary) = @_;
+	$s = $s->import_db() if ! defined $s->[$DBI];
+
+	unless($s->record_exists($key)) {
+		$key = $s->set_row($key);
+	}
+
+	my $tkey = $s->quote($key, $s->[$KEY]);
+
+	my $fstring = join ",", map { "$_=?" } @$fary;
+	my $sql = "update $s->[$TABLE] SET $fstring WHERE $s->[$KEY] = $tkey";
+#::logDebug("set_slice query: $sql");
+	my $sth = $s->[$DBI]->prepare($sql)
+		or die ::errmsg("prepare %s: %s", $sql, $DBI::errstr);
+	my $rc = $sth->execute(@$vary)
+		or die ::errmsg("execute %s: %s", $sql, $DBI::errstr);
+	return $rc;
 }
 
 sub set_row {

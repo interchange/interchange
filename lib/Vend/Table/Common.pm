@@ -1,6 +1,6 @@
 # Table/Common.pm: Common access methods for Interchange Databases
 #
-# $Id: Common.pm,v 1.16.4.6 2001-03-18 19:31:26 heins Exp $
+# $Id: Common.pm,v 1.16.4.7 2001-04-10 05:22:19 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -25,7 +25,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.16.4.6 $, 10);
+$VERSION = substr(q$Revision: 1.16.4.7 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -308,6 +308,25 @@ sub row_settor {
 #::logDebug("setting $key indices '@index' to '@vals'");
         $s->set_row(@row);
     };
+}
+
+sub set_slice {
+    my ($s, $key, $fary, $vary) = @_;
+	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
+
+	my $keyname = $s->[$CONFIG]{KEY};
+
+	my ($found_key) = grep $_ eq $keyname, @$fary;
+
+	if(! $found_key) {
+		unshift @$fary, $keyname;
+		unshift @$vary, $key;
+	}
+
+	my $sub = $s->row_settor(@$fary)
+		or die "failed to create row slice routine.";
+
+	return $sub->(@$vary);
 }
 
 sub field_settor {

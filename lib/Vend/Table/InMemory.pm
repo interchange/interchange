@@ -1,6 +1,6 @@
 # Table/InMemory.pm: store a table in memory
 #
-# $Id: InMemory.pm,v 1.3.6.2 2001-03-29 16:34:42 heins Exp $
+# $Id: InMemory.pm,v 1.3.6.3 2001-04-10 05:22:20 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Table::InMemory;
 use Vend::Table::Common;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 1.3.6.2 $, 10);
+$VERSION = substr(q$Revision: 1.3.6.3 $, 10);
 use strict;
 
 # 0: column names
@@ -219,5 +219,6 @@ sub ref {
 *field			= \&Vend::Table::Common::field;
 *numeric		= \&Vend::Table::Common::numeric;
 *set_field		= \&Vend::Table::Common::set_field;
+*set_slice		= \&Vend::Table::Common::set_slice;
 
 1;
