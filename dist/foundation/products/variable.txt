@@ -13,7 +13,7 @@ DEFAULT_FONT	__MVC_DEFAULTFONT__	Template
 DOCROOT	__MVC_DOCUMENTROOT__	Directories and Paths
 EMAIL_INFO	__MVC_EMAILINFO__	Company
 EMAIL_SERVICE	__MVC_EMAILSERVICE__	Company
-ENCRYPTOR	echo Encryption not enabled yet	Payment
+ENCRYPTOR	/bin/echo Encryption not enabled yet	Payment
 FAX	__MVC_FAX__	Company
 IMAGE_DIR	__MVC_IMAGEURL__	Directories and Paths
 LOGGED_STATIC	1	Static pages
