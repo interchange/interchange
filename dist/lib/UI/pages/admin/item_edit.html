@@ -49,7 +49,7 @@
 			$CGI->{item_id} = $db->autonumber();
 		}
 		if ($CGI->{ui_clone_id}) {
-			$CGI->{ui_clone_tables} = '__UI_ITEM_TABLES__';
+			$CGI->{ui_clone_tables} = '__UI_CLONE_TABLES__' || '__UI_ITEM_TABLES__';
 			my $db = $Db{$CGI->{mv_data_table}} or return;
 			return unless $db->record_exists($CGI->{ui_clone_id});
 			my $ref = $db->row_hash($CGI->{ui_clone_id});
