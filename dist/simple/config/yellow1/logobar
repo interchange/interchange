@@ -122,8 +122,8 @@
 		<TD COLSPAN=2><HR></TD>
 		</TR>
 		<TR>
-		<TD WIDTH=68 __HEADERBG__ VALIGN=MIDDLE ALIGN=right><FONT SIZE="-1" FACE="Tahoma, Arial, Helvetica">[page admin/index]MiniMate</A>&nbsp;&nbsp;</TD>
-		<TD __HEADERBG__ VALIGN=MIDDLE ALIGN=left><FONT SIZE="-1" FACE="Tahoma, Arial, Helvetica">&nbsp;&nbsp;<A HREF="[area config/dbedit products]">Products</A>
+		<TD WIDTH=68 __HEADERBG__ VALIGN=MIDDLE ALIGN=right><FONT SIZE="-1" FACE="Tahoma, Arial, Helvetica">[page admin/index]Admin</A>&nbsp;&nbsp;</TD>
+		<TD __HEADERBG__ VALIGN=MIDDLE ALIGN=left><FONT SIZE="-1" FACE="Tahoma, Arial, Helvetica">&nbsp;&nbsp;<A HREF="[area __UI_BASE__/orderstats]">Reports</A>
 		</TD>
 		</TR>
 	[/if]

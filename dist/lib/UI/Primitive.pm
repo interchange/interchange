@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.9 $, 10);
+$VERSION = substr(q$Revision: 1.10 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -505,6 +505,7 @@ sub date_widget {
 		$val = Vend::Interpolate::filter_value('date_change', $val);
 	}
 	@t = localtime();
+	$val = POSIX::strftime("%Y%m%d", @t) if not $val;
 	my $sel = 0;
 	my $out = qq{<SELECT NAME="$name">};
 	my $o;

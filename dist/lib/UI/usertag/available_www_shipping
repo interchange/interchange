@@ -39,7 +39,7 @@ sub {
 		my $i;
 		for ($i = 0; $i < @modes; $i += 2) {
 			my $ref = $modes[$i + 1];
-			$out .= qq{<OPTION VALUE="$modes[$i]">$ref->{type}: $ref->{description}</OPTION>};
+			$out .= qq{UPSE:$modes[$i]\t$ref->{type}: $ref->{description}\n};
 		}
 		return $out;
 	}

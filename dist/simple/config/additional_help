@@ -62,12 +62,12 @@ used. If you want to add a handling charge, do it here.
 
 SUPERUSER
 .
-You can use MiniMate, MiniVend's companion configuration
-interface, to do upload/download of files, manipulation of
-the database, reconfiguration of the catalog, and much more.
+You can use MiniVend's companion configuration interface to
+do upload/download of files, manipulation of the database,
+reconfiguration of the catalog, and much more.
 .
-To enable MiniMate, you will need a "super-user" account
-name that has full access.
+To enable the admin interface, you will need a "super-user"
+account name that has full access.
 
 NOCRYPT
 .

@@ -16,14 +16,8 @@ sub {
 		my @line = @$_;
 		my $opt = '';
 		if (ref($line[7]) =~ /HASH/) {
-			my @out;
-			my $ref = $line[7];
-			for(sort keys %$ref) {
-				push @out, "$_=$ref->{$_}";
-			}
-			$opt = join ", ", @out;
+			$line[7] = ::uneval_it($line[7]);
 		}
-		$line[7] = $opt || '';
 		push @outlines, \@line;
 	}
 	rename($file, "$file.bak");
