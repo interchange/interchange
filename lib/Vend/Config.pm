@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.17 2000-09-10 21:06:02 heins Exp $
+# $Id: Config.pm,v 1.18 2000-09-23 19:24:35 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -103,7 +103,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.17 $, 10);
+$VERSION = substr(q$Revision: 1.18 $, 10);
 
 my %CDname;
 
@@ -251,7 +251,7 @@ sub global_directives {
     ['TcpHost',           undef,             'localhost 127.0.0.1'],
 	['SendMailProgram',  'executable',		$Global::SendMailLocation
 												|| '/usr/lib/sendmail'],
-	['PIDfile',     	  undef,             "$Global::VendRoot/etc/minivend.pid"],
+	['PIDfile',     	  undef,             "$Global::VendRoot/etc/interchange.pid"],
 	['SocketFile',     	  undef,             "$Global::VendRoot/etc/socket"],
 	['SocketPerms',      'integer',          0600],
 	['HouseKeeping',     'integer',          60],
