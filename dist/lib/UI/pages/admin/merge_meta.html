@@ -198,10 +198,14 @@
 		my $bdb = $Db{mv_metadata_asc};
 		my $mtab = q{__UI_META_TABLE__} || 'mv_metadata';
 		my $mdb = $Db{$mtab};
-		if(! $bdb or ! $mdb) {
-			return errmsg("Cannot merge metadata -- a table is missing.");
+		if(! $bdb) {
+			return errmsg("Cannot merge metadata -- table %s is missing.",
+				'mv_metadata_asc');
 		}
-
+		if(! $mdb) {
+			return errmsg("Cannot merge metadata -- table %s is missing.",
+				$mtab);
+		}
 		my @base;
 		while( my ($k) = $bdb->each_record()) {
 			push @base, $k;
