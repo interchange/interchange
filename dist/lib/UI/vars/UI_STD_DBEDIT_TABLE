@@ -50,16 +50,8 @@ EOF
 <table cellspacing=0 cellmargin=0 width="100%" cellpadding="2" align="center" border="0">
 
 <tr bgcolor="__UI_C_TITLEBARBG__"> 
-<td align=right colspan=2><img src="@_UI_IMG_@admin/bg.gif" width=1 height=3></td>
+<td align=right colspan=2><img src="@_UI_IMG_@admin/bg.gif" width=1 height=3 alt=x></td>
 </tr>
-[if !cgi ui_data_fields]
-	[calc]
-		$CGI->{ui_data_fields}
-			= $Values->{ui_data_fields}
-			= q{[db-columns table="[cgi mv_data_table]"]};
-		return;
-	[/calc]
-[/if]
 
 [comment]
 Display an extra Ok/Cancel button pair if there are more than
@@ -80,7 +72,7 @@ Display an extra Ok/Cancel button pair if there are more than
 </TR>
 
 <tr BGCOLOR="__UI_C_TITLEBARBG__">
-<td colspan=2><img src="${ui_img}admin/bg.gif" width=1 height=3></td>
+<td colspan=2><img src="${ui_img}admin/bg.gif" width=1 height=3 alt=x></td>
 </tr>
 
 EOF
@@ -99,9 +91,17 @@ EOF
 	my $db		= $Db{$table};
 	my $mdb		= $Db{__UI_META_TABLE__};
 	my %break;
+	my %break_label;
 	if($CGI->{ui_break_before}) {
 		my @tmp = grep /\S/, split /[\s,\0]+/, $CGI->{ui_break_before};
 		@break{@tmp} = @tmp;
+		if($CGI->{ui_break_before_label}) {
+			@tmp = grep /\S/, split /\s*[,\0]\s*/, $CGI->{ui_break_before_label};
+			for(@tmp) {
+				my ($br, $lab) = split /\s*=\s*/, $_;
+				$break_label{$br} = $lab;
+			}
+		}
 	}
 	if(!$db) {
 		return "<TR><TD>Broken table '$table'</TD></TR>";
@@ -211,9 +211,9 @@ EOF
      <font color="__UI_C_TEXT__" size="-1"><b>$LABEL$</b>~META~
    </td>
    <td valign=TOP> 
-     <table cellspacing=0 cellmargin=0>
+     <table cellspacing=0 cellmargin=0 width="100%">
        <tr> 
-         <td> 
+         <td width="60%"> 
            <FONT SIZE="-1">$WIDGET$</FONT>
          </td>
          <td><FONT SIZE="-1"><i>$HELP$</i>{HELPURL}<BR><A HREF="$HELP_URL$">help</A>{/HELPURL}</FONT></td>
@@ -229,24 +229,25 @@ EOF
 			my $base = $Tag->var('UI_BASE', 1);
 			my $page = $Tag->var('MV_PAGE', 1);
 			$meta .= $Tag->page(
-							{	href => "$base/flex_editor",
+							{	href => "$base/meta_editor",
 								form => qq{
 										item_id=${t}::$c
-										mv_data_table=mv_metadata
 										ui_return_to=$page
 										ui_return_to=item_id=$Scratch->{arg}
-										ui_return_to=mv_data_table=$t
+										ui_return_to=ui_return_table=$t
 										}
 							});
 			$meta .= 'meta</A>';
 			$meta .= '<br>' . $Tag->page(
-							{	href => "$base/flex_editor",
+							{	href => "$base/meta_editor",
 								form => qq{
 										item_id=${t}::${c}::$key
 										mv_data_table=mv_metadata
+										ui_hide_key=1
+										ui_meta_view=metaconfig
 										ui_return_to=$page
 										ui_return_to=item_id=$Scratch->{arg}
-										ui_return_to=mv_data_table=$t
+										ui_return_to=ui_return_table=$t
 										}
 							}) . 'item-specific meta</A></FONT>'
 				if $CGI->{ui_meta_specific};
@@ -258,7 +259,7 @@ EOF
         #}
 		$Document->write(<<EOF) if $break{$col};
 <TR BGCOLOR="__UI_T_ROW_ODD__">
-	<TD ALIGN=RIGHT COLSPAN=2><IMG SRC="${ui_img}admin/bg.gif" WIDTH=1 HEIGHT=1></TD>
+	<TD COLSPAN=2><B>$break_label{$col}</B><IMG SRC="${ui_img}admin/bg.gif" WIDTH=1 HEIGHT=1 alt=x></TD>
 </TR>
 EOF
 		$display =~ s/\~META\~/$meta/g;
@@ -270,7 +271,7 @@ EOF
 <INPUT TYPE=hidden NAME=mv_data_fields VALUE="[cgi ui_data_fields]">
 
 <tr>
-<td colspan=2 BGCOLOR="__UI_C_TITLEBARBG__"><img src="@_UI_IMG_@admin/bg.gif" height=3></td>
+<td colspan=2 BGCOLOR="__UI_C_TITLEBARBG__"><img src="@_UI_IMG_@admin/bg.gif" height=3 alt=x></td>
 </tr>
 
 <TR BGCOLOR="__UI_T_ROW_EVEN__">
@@ -309,7 +310,7 @@ mv_todo=return
 </tr>
 
 <tr>
-<td colspan=2 BGCOLOR="__UI_C_TITLEBARBG__"><img src="@_UI_IMG_@admin/bg.gif" height=3></td>
+<td colspan=2 BGCOLOR="__UI_C_TITLEBARBG__"><img src="@_UI_IMG_@admin/bg.gif" height=3 alt=x></td>
 </tr>
 
 </table>
