@@ -1,4 +1,4 @@
-[set page_title]Page editor[/set]
+[set page_title][L]Page editor[/L][/set]
 [set ui_class]Content[/set]
 [set help_name]page.main[/set]
 [set icon_name]icon_pages.gif[/set]
@@ -7,6 +7,7 @@
 <!-- ----- BEGIN REAL STUFF ----- -->
 
 <form action="[area @@MV_PAGE@@]" method=POST>
+<input type=hidden name=mv_session_id value="[data session id]">
 <input type=hidden name=mv_action value=back>
 
 [if scratch ui_error]
@@ -24,10 +25,10 @@
 
 <tr bgcolor="__UI_C_INTBLOCK__">
 <td width=25%>
-[set Create new page]
+[set [L]Create new page[/L]]
 [if !cgi ui_page]
 mv_nextpage=@@MV_PAGE@@
-[set ui_error]Need to select a file name.[/set]
+[set ui_error][L]Need to select a file name.[/L][/set]
 mv_todo=return
 [else]
 mv_nextpage=__UI_BASE__/page_edit
@@ -41,7 +42,7 @@ mv_nextpage=__UI_BASE__/page_preview
 mv_todo=return
 [/set]
 
-1. Choose a page template from the pull-down menu:
+1. [L]Choose a page template from the pull-down menu:[/L]
 
 </td>
 <td>
@@ -80,15 +81,15 @@ mv_todo=return
 </tr>
 <tr>
 <td>
-2. (Optional) Preview your selection:
+2. [L](Optional)[/L] [L]Preview your selection:[/L]
 </td>
 <td>
-<input type="submit" name="mv_click" value="Preview template" onClick="this.form.target='_blank'"> &nbsp; (Opens a new window)
+<input type="submit" name="mv_click" value="[L]Preview template[/L]" onClick="this.form.target='_blank'"> &nbsp; [L](Opens a new window)[/L]
 </td>
 </tr>
 <tr bgcolor="__UI_C_INTBLOCK__">
 <td>
-3. Name the file you are creating:
+3. [L]Name the file you are creating:[/L]
 </td>
 <td>
 <INPUT NAME=ui_page>
@@ -96,10 +97,10 @@ mv_todo=return
 </tr>
 <tr>
 <td>
-4. Click this button to create the page:
+4. [L]Click this button to create the page:[/L]
 </td>
 <td>
-<input type="submit" name="mv_click" value="Create new page" onClick="this.form.target='_self'"><BR>
+<input type="submit" name="mv_click" value="[L]Create new page[/L]" onClick="this.form.target='_self'"><BR>
 </td>
 </tr>
 
