@@ -782,7 +782,9 @@ site's catalog.html (headers, footers, logos, etc.) A line-by-line
 comparison of the data fields in the checkout page should be
 performed, adding any custom fields as needed. Custom error checking
 in etc/order.profiles may have to be re-worked, or can be added into
-checkout.html using the in-page order profile capability.
+checkout.html using the in-page order profile capability. (Note that
+etc/order.profiles is called etc/profiles.order in newly-built
+Interchange catalogs.)
 
 Remember to update receipt.html and report/report.html with any custom
 fields, as well.
@@ -1205,6 +1207,17 @@ and "MVC_" will still appear in source code and configuration files.
 In January 2001, Red Hat acquired Akopia and created its new
 E-Business Solutions Division. Interchange development is going
 forward and the user community continues to grow.
+
+=back
+
+ ________________________________________
+
+=over 4
+
+=item
+
+Copyright 2001 Red Hat, Inc. Freely redistributable under terms of the
+GNU General Public License.
 
 =back
 

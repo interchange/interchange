@@ -3945,3 +3945,8 @@ In general, it's a good idea to leave fields empty if you don't want
 to use them, instead of removing them from the database altogether.
 That way nothing in admin or demo will break.
 
+ ________________________________________
+
+Copyright 2001 Red Hat, Inc. Freely redistributable under terms of the
+GNU General Public License.
+

@@ -1358,3 +1358,8 @@ placed on a network wire.
 
 =back
 
+ ________________________________________
+
+Copyright 2001 Red Hat, Inc. Freely redistributable under terms of the
+GNU General Public License.
+

@@ -1691,6 +1691,24 @@ default, disabling the feature.
 
    NonTaxableField    wholesale
 
+=head2 NoSearch
+
+Here you can provide one or more filename fragments that will be
+matched against the file name used in any attempted search (the
+mv_search_file or 'fi' attribute). You may separate multiple match
+strings with whitespace, and may include shell-style wildcards.
+
+The default setting is 'userdb', which means that by default you
+cannot use Interchange-style searches on the userdb table. (Pure SQL
+searches still work with it, however.)
+
+For example, consider this setting:
+
+   NoSearch  userdb  .*  *.secret
+
+In this case any search file with 'userdb' in its name, or beginning
+with a dot, or ending in '.secret', will not be searchable.
+
 =head2 OfflineDir
 
 The location of the offline database files for use with the
@@ -2080,13 +2098,31 @@ in the demo simple.
 =head2 SalesTax
 
 If non-blank, enables automatic addition of sales tax based on the
-order form. The value is a comma-separated list of the field names (as
-placed in order.html) in priority order, which should be used to look
-up sales tax percentage in the salestax.asc database. This database
-is not supplied with Interchange. It is typically received from a
-third party by quarterly or monthly subscription.
+order form. The value is one of three types of values:
+
+=over 4
+
+=item multi
+
+The special value "multi" enables table-based lookup of taxing rates
+based on the value of user form values, by default country and
+state.
+
+=item [itl-tags]
+
+If the value has a left square bracket, it is interpolated for ITL
+tags and the result used as the amount of the salestax.
+
+=item var1, var2
+
+A comma-separated list of the field names (as placed in the checkout
+page, for example ord/checkout.html) in priority order. These are be
+used to look up sales tax percentage in the salestax.asc ASCII
+table. (This table is not supplied with Interchange.)
 
    SalesTax            zip state
+
+=back
 
 =head2 SalesTaxFunction
 
@@ -2598,4 +2634,9 @@ Specifies the base URL that will run vlink as a cgi-bin program.
 Disables IP qualification of user sessions. B<This degrades catalog
 security.> Do not use unless using encryption or a real-time payment
 gateway.
+
+ ________________________________________
+
+Copyright 2001 Red Hat, Inc. Freely redistributable under terms of the
+GNU General Public License.
 

@@ -154,7 +154,7 @@ behavior of stripping leading and trailing whitespace. For example:
 
        [loop list="code        field    field2  field3
        k1    A1    A2    A3
-       k2      B1      B2      B3"]
+       k2    B1    B2    B3"]
        [loop-increment][loop-code]
        [/loop]
 
@@ -2838,10 +2838,7 @@ mv_base_directory    bd  S   Sets base directory for search file names
 mv_begin_string      bs  S   Pattern must match beginning of field
 mv_case              cs  S   Turns on case sensitivity
 mv_cartname              O   Sets the shopping cart name
-mv_cache_params          S   Determines caching of searches
-mv_change_frame          A   Any form, changes frame target of form output
 mv_check                 A   Any form, sets multiple user variables after update
-mv_checkout              O   Sets the checkout page
 mv_click                 A   Any form, sets multiple form variables before update
 mv_click                 XA  Default mv_click routine, click is mv_click_arg
 mv_click <name>          XA  Routine for a click <name>, sends click as arg
@@ -2849,7 +2846,6 @@ mv_click_arg             XA  Argument name in scratch space
 mv_coordinate        co  S   Enables field/spec matching coordination
 mv_column_op         op  S   Operation for coordinated search
 mv_credit_card*          O   Discussed in order security (some are read-only)
-mv_delay_page        dp  S   Delay search until after inital page display
 mv_dict_end          de  S   Upper bound for binary search
 mv_dict_fold         df  S   Non-case sensitive binary search
 mv_dict_limit        di  S   Sets upper bound based on character position
@@ -3998,4 +3994,9 @@ configuration files, including any include files.
 Important note: This information is only read during catalog
 configuration. It is not reasonable to access a database for
 translation or currency conversion in the normal course of events.
+
+ ________________________________________
+
+Copyright 2001 Red Hat, Inc. Freely redistributable under terms of the
+GNU General Public License.
 

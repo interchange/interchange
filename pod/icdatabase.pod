@@ -1519,6 +1519,7 @@ The two-letter abbreviations are mapped with these letters:
  ac  mv_all_chars
  bd  mv_base_directory
  bs  mv_begin_string
+ ck  mv_cache_key
  co  mv_coordinate
  cs  mv_case
  cv  mv_verbatim_columns
@@ -1538,8 +1539,12 @@ The two-letter abbreviations are mapped with these letters:
  hs  mv_head_skip
  ix  mv_index_delim
  lb  mv_search_label
+ lf  mv_like_field
  lo  mv_list_only
  lr  mv_search_line_return
+ ls  mv_like_spec
+ ma  mv_more_alpha
+ mc  mv_more_alpha_chars
  md  mv_more_decade
  ml  mv_matchlimit
  mm  mv_max_matches
@@ -1552,6 +1557,7 @@ The two-letter abbreviations are mapped with these letters:
  nu  mv_numeric
  op  mv_column_op
  os  mv_orsearch
+ pf  prefix
  ra  mv_return_all
  rd  mv_return_delim
  rf  mv_return_fields
@@ -1567,17 +1573,14 @@ The two-letter abbreviations are mapped with these letters:
  sf  mv_search_field
  sg  mv_search_group
  si  mv_search_immediate
+ sm  mv_start_match
  sp  mv_search_page
  sq  mv_sql_query
  sr  mv_search_relate
  st  mv_searchtype
  su  mv_substring_match
- tc  mv_sort_command
- td  mv_table_cell
  tf  mv_sort_field
- th  mv_table_header
  to  mv_sort_option
- tr  mv_table_row
  un  mv_unique
  va  mv_value
 
@@ -2113,10 +2116,40 @@ files.
 
 =item mv_return_fields
 
-The fields that should be returned by the match, specified either by
-field name or by column number. Specify 0 as the first field to be
-returned if searching the products database, since that is the key for
-accessing database fields.
+The field(s) that should be returned by the match, specified either by
+field name or by column number, separated by commas. Do not list the
+same field more than once per search. Specify 0 as the first field to
+be returned if searching the products database, since that is the key
+for accessing database fields.
+
+=back
+
+As with SQL queries, you can use the '*' shortcut to return all
+fields. For example:
+
+    [loop search="fi=nation/ra=yes/rf=*"]
+
+when used with a hypothetical 'nation' table would be equivalent to:
+
+    [loop search="
+          fi=nation
+          ra=yes
+          rf=code,sorder,region,name,tax
+    "]
+
+as well as:
+
+    [loop search="fi=nation/ra=yes/rf=0,1,2,3,4"]
+
+and:
+
+    [query sql="select * from nation"][/query]
+
+However, you probably rarely need to use every single field in a row.
+For maximum maintainability and execution speed the best practice is
+to list by name only the fields you want returned.
+
+=over 4
 
 =item mv_return_spec
 
@@ -3553,24 +3586,26 @@ is set to be userdb. If another table name must be used, include a
 database=table parameter with any call to userdb. The global
 parameters (default in parens):
 
-   database     Sets user database table (userdb)
-   show         Show the return value of certain functions
-                or the error message, if any (0)
-   force_lower  Force possibly upper-case database fields
-                to lower case session variable names (0)
-   billing      Set the billing fields (see Accounts)
-   shipping     Set the shipping fields (see Address Book)
-   preferences  Set the preferences fields (see Preferences)
-   bill_field   Set field name for accounts (accounts)
-   addr_field   Set field name for address book (address_book)
-   pref_field   Set field name for preferences (preferences)
-   cart_field   Set field name for cart storage (carts)
-   pass_field   Set field name for password (password)
-   time_field   Set field for storing last login time (time)
-   expire_field Set field for expiration date (expire_date)
-   acl          Set field for simple access control storage (acl)
-   file_acl     Set field for file access control storage (file_acl)
-   db_acl       Set field for database access control storage (db_acl)
+ database          Sets user database table (userdb)
+ show              Show the return value of certain functions
+                   or the error message, if any (0)
+ force_lower       Force possibly upper-case database fields
+                   to lower case session variable names (0)
+ billing           Set the billing fields (see Accounts)
+ shipping          Set the shipping fields (see Address Book)
+ preferences       Set the preferences fields (see Preferences)
+ bill_field        Set field name for accounts (accounts)
+ addr_field        Set field name for address book (address_book)
+ pref_field        Set field name for preferences (preferences)
+ cart_field        Set field name for cart storage (carts)
+ pass_field        Set field name for password (password)
+ time_field        Set field for storing last login time (time)
+ outboard          Set fields that live in another table
+ outboard_key_col  Set field providing key for outboard tables
+ expire_field      Set field for expiration date (expire_date)
+ acl               Set field for simple access control storage (acl)
+ file_acl          Set field for file access control storage (file_acl)
+ db_acl            Set field for database access control storage (db_acl)
 
 By default the system crypt() call will be used to compare the
 password. This is best for security, but the passwords in the user
@@ -3791,7 +3826,10 @@ See Accounts Book below.
 =item save
 
 Saves all non-special form values that have columns in the user
-database.
+database. If a field is defined as scratch, it retrieves the field
+from the Scratch storage area; otherwise from Values. If the field is
+one of the outboard fields, it will save it in the outboard table
+with the value of outboard_key_col as the key.
 
 =item set_cart
 
@@ -4070,6 +4108,42 @@ Access can be disallowed with:
 
 Of course, a pre-existing database with the ACL values will work as
 well. It need not be in the UserDB setup.
+
+=head2 Using more than one table
+
+You can save/retrieve userdb information from more than one table with
+the outboard specifier. It is a key-value comma-separated series of
+field specifications. For instance, if the billing address is to be
+stored in a separate table named "billing", you would do:
+
+        UserDB  outboard  <<EOF
+            b_fname=billing::first_name,
+            b_lname=billing::last_name,
+            b_address1=billing::address1,
+            b_address2=billing::address2,
+                b_etc=billing::etc
+        EOF
+
+When the user logs in, Interchange will access the first_name field
+in table billing to get the value of b_fname. When the values
+are saved, it will be saved there as well. If you wish to make the
+fields read-only, just set UserDB default scratch "b_fname b_lname
+..." and the values will be retrieved/saved from there. To initialize
+the values for a form, you could do a function after the user logs in:
+
+ [calc]
+        my @s_fields = grep /\S/, split /[\s,\0]+/, $Config->{UserDB}{scratch};
+        for(@s_fields) {
+                $Values->{$_} = $Scratch->{$_};
+        }
+        return;
+ [/calc]
+
+If the fields in the outboard table use another key besides
+username, you can specify the column in the userdb that contains
+the key value:
+
+        UserDB  default  outboard_key_col   account_id
 
 =head1 Tracking and Back-End Order Entry
 
@@ -4542,11 +4616,11 @@ designation.
 
 B<IMPORTANT NOTE: >Interchange attempts to perform operations
 securely, but no guarantees or warranties of any kind are made! Since
-Interchange comes with Perl source, it is possible to modify the
+Interchange comes with source code, it is fairly easy to modify the
 program to create security problems. One way to minimize this
-possibility is to record digital signatures, using MD5 or PGP, of
-interchange, interchange.cfg, and all modules included in
-Interchange. Check them on a regular basis to ensure they have not
+possibility is to record digital signatures, using MD5 or PGP or
+GnuPG, of interchange, interchange.cfg, and all modules included
+in Interchange. Check them on a regular basis to ensure they have not
 been changed.
 
 Interchange uses the SecureURL directive to set the base URL for
@@ -4749,4 +4823,9 @@ databases' and the proper data source, and you should have access to
 the database residing on the UNIX side.
 
 =back
+
+ ________________________________________
+
+Copyright 2001 Red Hat, Inc. Freely redistributable under terms of the
+GNU General Public License.
 
