@@ -67,7 +67,7 @@ code	sorder	country	state	name	tax	postcode	shipmodes	tax_name
 00040	01	CA	BC	British Columbia				
 00041	01	CA	MB	Manitoba	6%			PST
 00042	01	CA	NB	New Brunswick				
-00043	01	CA	NF	Newfoundland				
+00043	01	CA	NL	Newfoundland and Labrador				
 00044	01	CA	NS	Nova Scotia				
 00045	01	CA	NT	Northwest Territories				
 00046	01	CA	NU	Nunavut				
