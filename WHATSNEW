@@ -1,5 +1,101 @@
 Interchange 4.7.0
 
+  * Added ability to cascade mv_click statements, i.e.
+
+    [set delete]
+        deleterecords=1
+        item_id=[item-code]
+        mv_click=db_maintenance
+    [/set]
+    
+    [page   href="@@MV_PAGE@@"
+            form="
+                mv_action=back
+                mv_click=db_maintenance
+            "]Delete this</A>
+
+  * Added "clone item" to item pages. Allows you to clone an
+    existing item for purposes of adding new ones.
+
+  * Re-instituted multiple-table deletes for deleting an item. It
+    will look in __UI_ITEM_TABLES__ and delete records
+
+  * Added clone_set and clone_row primitives in Data modules.
+    Allows you to copy a record except for certain fields.
+
+  * Added [item-options] tag which automatically finds and
+    presents options based on the options table. The table
+    name is settable based on Variable MV_OPTION_TABLE. Fields
+    can be remapped with MV_OPTION_TABLE_MAP.
+
+  * Now can use "variant" items which are based on a base
+    SKU but set in an options table (same as the one for
+    [item-options]). Changed behavior of [item-field ...]
+    to look in the code first, then the base SKU, for the
+    relevant product databases. [item-data ...] always works
+    off of the relevant base SKU.
+
+  * Price looks at variant code first, then the base SKU if
+    that is zero; or it can be made to do so with CommonAdjust.
+
+  * New [profile ...] tag allows you to set directives normally
+    set in catalog.cfg with a tag in the session Autoload. This
+    is really the same as the current Autoload, except it is
+    automatic on login/logout, faster, and leaves Autoload
+    for user user.
+
+      [profile name=profile_name tag=tag set=1 run=1 restore=1]
+
+      name      name of profile. Needed unless restore=1.
+      tag       normally not set, defaults to "default". Matches
+                what is the UserDB profile.
+      run       run profile code only, don't save.
+      set       set profile for future only, don't run.
+      restore   remove the current profile
+
+     [profile name] will run and set by default.
+
+  * UserDB now can set a price_level via the [profile ...]
+    tag routine. Set this in catalog.cfg for dealer pricing:
+
+
+		Profile dealer CommonAdjust <<EOR
+	    "
+		  	pricing:w5,w10:,
+			;:wholesale,
+			;:wholesale:mv_sku,
+			;$,
+			==:options
+		"
+		EOR
+		Profile dealer NonTaxableField nontaxable
+
+	Quotes are needed (as in all locale-style directives) unless
+	you want to do a full hash set like
+
+		Profile dealer <<EOR
+	    { 
+			CommonAdjust => q(
+		  	pricing:w5,w10:,
+			;:wholesale,
+			;:wholesale:mv_sku,
+			;$,
+			==:options
+			),
+
+			NonTaxableField => 'nontaxable',
+		}
+		EOR
+	
+	which is also supported.
+
+  * Added SDBM database option for those poor Solaris folks.
+  
+  * Added MINIVEND_ALLDBM environment check to prevent using
+    unneeded modules (takes more memory).
+
+  * Added [table-editor ...] tag which easily produces 
+    editable tables. Ready for a form widget? 8-)
 
 Interchange 4.6.1
 
@@ -78,13 +174,13 @@ Interchange 4.5.6 changes -- complete overhaul of UI
 * "construct" is now the default demo -- a "foundation" demo will be
   added later.
 
-	-- Improved graphics and layout over older demos.
-	-- Split ship addresses for items
-	-- Shipping notices integrated
-	-- Recurring order facility (doesn't yet work).
-	-- PO with credit limit
-	-- Merchandising cross-sells by category or item.
-	-- "Others who bought this"
+    -- Improved graphics and layout over older demos.
+    -- Split ship addresses for items
+    -- Shipping notices integrated
+    -- Recurring order facility (doesn't yet work).
+    -- PO with credit limit
+    -- Merchandising cross-sells by category or item.
+    -- "Others who bought this"
 
   The HTML rendering is kind of slow on Netscape, any help with that
   would be appreciated.
@@ -181,25 +277,25 @@ Core:
 * Added "tabbed" filter, and some other Filters. Now you can add
   your own filters persistently with:
 
-	Sub <<EOS
-	sub somesub { 
-		$Filter{foo_to_bar} = sub {
-			my $value = shift;
-			$value =~ s/foo/bar/g;
-			return $value;
-		};
-	}
-	EOS
-	
-	or just in the current page
+    Sub <<EOS
+    sub somesub { 
+        $Filter{foo_to_bar} = sub {
+            my $value = shift;
+            $value =~ s/foo/bar/g;
+            return $value;
+        };
+    }
+    EOS
+    
+    or just in the current page
 
-	[perl]
-		$Filter{foo_to_bar_tmp} = sub {
-			my $value = shift;
-			$value =~ s/foo/bar/g;
-			return $value;
-		};
-		return;
+    [perl]
+        $Filter{foo_to_bar_tmp} = sub {
+            my $value = shift;
+            $value =~ s/foo/bar/g;
+            return $value;
+        };
+        return;
     [/perl]
 
   Thanks to Stefan Hornburg for suggestion.
@@ -238,10 +334,10 @@ Interchange 4.5.0 changes -- the start of the Tallyman merge.
   normal Minivend Database connectivity. Searchable, too!
   Put in catalog.cfg:
 
-	Database  variable variable.txt LDAP:some.servername.com
-	Database  variable BIND_DN      cn=fragermk, o=catalogs, c=minivend
-	Database  variable BASE_DN      o=catalogs, c=minivend
-	Database  variable BIND_PW      secret
+    Database  variable variable.txt LDAP:some.servername.com
+    Database  variable BIND_DN      cn=fragermk, o=catalogs, c=minivend
+    Database  variable BASE_DN      o=catalogs, c=minivend
+    Database  variable BIND_PW      secret
 
   Programmed by Mike Frager with a bit of help from Mike Heins.
 
