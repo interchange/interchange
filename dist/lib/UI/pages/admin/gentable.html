@@ -41,7 +41,7 @@ sub {
 	};
 	my $ref = {
 		upload => { 
-						img => 'admin/up.gif',
+						img => '@_UI_IMG_@admin/up.gif',
 						url => "$url/upload_file?mv_arg=" .
 								$froot->(join "/",
 											($Config->{Database}{$tab}{dir} || $Config->{ProductDir}),
@@ -50,7 +50,7 @@ sub {
 								. '&ui_return_to=@@MV_PAGE@@',
 					},
 		view => { 
-						img => 'admin/index.gif',
+						img => '@_UI_IMG_@admin/index.gif',
 						url => "$url/do_view?mv_arg=" .
 								$froot->(join "/",
 											($Config->{Database}{$tab}{dir} || $Config->{ProductDir}),
@@ -58,7 +58,7 @@ sub {
 										),
 					},
 		download => { 
-						img => 'admin/down.gif',
+						img => '@_UI_IMG_@admin/down.gif',
 						url => "$Config->{VendURL}/ui_download/" .
 								$froot->(join "/",
 											($Config->{Database}{$tab}{dir} || $Config->{ProductDir}),
@@ -66,15 +66,15 @@ sub {
 										),
 					},
 		import => { 
-						img => 'admin/left.gif',
+						img => '@_UI_IMG_@admin/left.gif',
 						url => "$url/import_table?mv_data_table=$tab",
 					},
 		export => { 
-						img => 'admin/right.gif',
+						img => '@_UI_IMG_@admin/right.gif',
 						url => "$url/export_table?mv_data_table=$tab",
 					},
 		edit => { 
-						img => 'admin/layout.gif',
+						img => '@_UI_IMG_@admin/layout.gif',
 						url => "$url/flex_select?mv_data_table=$tab",
 					},
 	};
