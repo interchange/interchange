@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18.2.24 2001-05-28 13:40:41 heins Exp $
+# $Id: Order.pm,v 1.18.2.25 2001-06-18 15:51:57 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.24 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.25 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1536,6 +1536,9 @@ sub route_order {
 		if($route->{attach}) {
 			$Vend::Items->[0]{mv_order_report} = $page;
 		}
+		elsif ($route->{empty}) {
+			# Do nothing
+		}
 		elsif ($address = $route->{email}) {
 			$address = $::Values->{$address} if $address =~ /^\w+$/;
 			$subject = $route->{subject} || $::Values->{mv_order_subject} || 'ORDER %s';
@@ -1549,9 +1552,6 @@ sub route_order {
 				push @$ary, "From: $route->{from}";
 			}
 			push @out, $ary;
-		}
-		elsif ($route->{empty}) {
-			# Do nothing
 		}
 		else {
 			die "Empty order routing $c (and not explicitly empty)";

@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.5
 #
-# $Id: interchange.PL,v 1.15.2.48 2001-06-16 05:52:45 jon Exp $
+# $Id: interchange.PL,v 1.15.2.49 2001-06-18 15:51:57 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -1117,6 +1117,37 @@ my %form_action = (
 					$Vend::Items = $CGI::values{mv_cartname}
 						if $CGI::values{mv_cartname};
 
+#::logDebug("Default order route=$::Values->{mv_order_route}");
+					## Determine the master order route, if routes
+					## are not set in CGI values (4.7.x default)
+					if(
+						$Vend::Cfg->{Route}
+						and ! defined $::Values->{mv_order_route}
+						)
+					{
+						my $curr = $Vend::Cfg->{Route};
+						my $repos = $Vend::Cfg->{Route_repository};
+
+						if($curr->{master}) {
+							# Default route is master
+
+							for(keys %$repos) {
+								next unless $curr eq $repos->{$_};
+								$::Values->{mv_order_route} = $_;
+								last;
+							}
+						}
+						else {
+							for(keys %$repos) {
+								next unless $repos->{$_}->{master};
+								$::Values->{mv_order_route} = $_;
+								last;
+							}
+						}
+					}
+
+#::logDebug("Default order route=$::Values->{mv_order_route}");
+
 				  CHECK_ORDER: {
 
 					# If the user sets this later, will be used
@@ -1132,12 +1163,12 @@ my %form_action = (
 #::logDebug("Profile status status=$status final=$final errors=$missing");
 
 					my $provisional;
-					if ($status and defined $CGI::values{mv_order_route}) {
+					if ($status and defined $::Values->{mv_order_route}) {
 						# This checks only route order profiles
 #::logDebug("Routing order, pre-check");
 						($status, $provisional, $missing)
 										= route_order(
-												$CGI::values{mv_order_route},
+												$::Values->{mv_order_route},
 												$Vend::Items,
 												'check',
 											);
@@ -1163,12 +1194,12 @@ my %form_action = (
 					return 1 unless $final;
 
 					my $order_no;
-					if (defined $CGI::values{mv_order_route}) {
+					if (defined $::Values->{mv_order_route}) {
 						# $ok will not be defined unless Route "supplant" was set
 						# $order_no will come back so we don't issue two of them
-#::logDebug("Routing order $CGI::values{mv_order_route}");
+#::logDebug("Routing order $::Values->{mv_order_route}");
 						($ok, $order_no, $result_hash) = route_order(
-											$CGI::values{mv_order_route},
+											$::Values->{mv_order_route},
 											$Vend::Items
 											);
 					}
