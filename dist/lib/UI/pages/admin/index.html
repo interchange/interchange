@@ -4,6 +4,7 @@
 [/if-mm]
 [perl]
 if ($goto = delete $Scratch->{ui_goto}) {
+    $cgiref = $$goto[1];
 #	for (sort (keys %$cgiref)) {
 #		Log ("CGI $_: $$cgiref{$_}");
 #	}
