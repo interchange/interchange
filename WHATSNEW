@@ -41,6 +41,9 @@ Admin UI
 * Added capability to page editor to cope with any ITL page instead of only
   the ones derived from the foundation demo.
 
+* Fixed a bug in the permission check in the order resp. traffic
+  statistics pages.
+
 Foundation
 ----------
 
