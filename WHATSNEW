@@ -39,6 +39,8 @@ Usertags
   since UPS rejects ZIP+4. Thanks to Bill Carr <bill@worldwideimpact.com> 
   for pointing out this requirement in Business::UPS docs.
 
+* Added cause option to formel tag.
+
 Admin UI
 --------
 
@@ -114,6 +116,12 @@ I18N
   [L]...[/L] and alike in usertags and variables.
 
 * improved Dutch translation (UI)
+
+Miscellaneous
+-------------
+
+* stop expire script if catalog configuration fails and add catalog name
+  to error message
 
 ------------------------------------------------------------------------------
 
