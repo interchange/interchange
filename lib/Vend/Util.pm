@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.44 2002-12-18 19:54:52 mheins Exp $
+# $Id: Util.pm,v 2.45 2003-01-02 23:27:07 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -85,7 +85,7 @@ require HTML::Entities;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.44 $, 10);
+$VERSION = substr(q$Revision: 2.45 $, 10);
 
 BEGIN {
 	eval {
@@ -1240,8 +1240,6 @@ my @scratches = qw/
 				add_source
 				link_relative
 				match_security
-				no_count
-				no_session_id
 				/;
 
 sub vendUrl {
@@ -1258,11 +1256,13 @@ sub vendUrl {
 	}
 
 	$opt ||= {};
+	my %skip = qw/form 1 href 1 reparse 1/;
+
 	for(@scratches) {
 		next if defined $opt->{$_};
-		my $mvparm = "mv_$_";
-		next unless $::Scratch->{$mvparm};
-		$opt->{$_} = $::Scratch->{$mvparm};
+		next unless defined $::Scratch->{"mv_$_"};
+		$skip{$_} = 1;
+		$opt->{$_} = $::Scratch->{"mv_$_"};
 	}
 
 	my $extra;
@@ -1270,7 +1270,6 @@ sub vendUrl {
 		$path = 'process' unless $path;
 		if($opt->{form} eq 'auto') {
 			my $form = '';
-			my %skip = qw/form 1 href 1 reparse 1/;
 			while( my ($k, $v) = each %$opt) {
 				next if $skip{$k};
 				$k =~ s/^__//;
@@ -1283,9 +1282,10 @@ sub vendUrl {
 
 	my($id, $ct);
 	$id = $Vend::SessionID
-		unless $opt->{no_session_id} or ($can_cache and $Vend::Cookie);
+		unless $opt->{no_session_id}
+		or     ($Vend::Cookie and $can_cache and $::Scratch->{mv_no_session_id});
 	$ct = ++$Vend::Session->{pageCount}
-		unless $opt->{no_count} or $can_cache;
+		unless $opt->{no_count} or ($can_cache && $::Scratch->{mv_no_count});
 
 	if($opt->{match_security}) {
 		$opt->{secure} = $CGI::secure;
