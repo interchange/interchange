@@ -10,6 +10,9 @@ sub {
 	elsif($opt->{conf}) {
 		$fn = "$Global::ConfDir/$fn"
 	}
+	elsif($opt->{run}) {
+		$fn = "$Global::RunDir/$fn"
+	}
 	my @stat = stat($fn);
 	my %info;
 	my @ary;
