@@ -12,6 +12,14 @@ Interchange 4.9.3 not yet released.
 Core
 ----
 
+* The interchange script is now only used for configuration and
+  options. All code that previously resided there (notably the
+  dispatch(), respond(), update_data(), and do_order() routines)
+  has been relocated. Code that calls ::update_data, etc. should
+  NOT break, because we still use the modules in the script.
+  This caused the addition of Vend::Dispatch to hold many of
+  the routines.
+
 * Added new [deliver ....] tag that allows you to deliver some content
   without worrying about [tag op=header] and page spacing issues. Adds 
   new global variable $Vend::Sent which is authoritative notification
@@ -25,6 +33,110 @@ Core
 
   From a suggestion by Dan <ic@concolor.org>.
 
+* Add new [menu ...] tag which can build simple, tree, and flyout
+  menus from a menu specification. See the UI.
+
+* Add robot tolerance facility, where mv_tmp_session is set when either
+  a RobotUA or RobotIP wildcard matches.
+
+  In interchange.cfg:
+
+      RobotUA   Inktomi, Scooter, Site*Sucker
+      RobotIP   209.135.65, 64.172.5
+
+  After that, it is all automatic. mv_tmp_session gets set to one, the
+  Scratch values mv_no_session_id and mv_no_count are set to one, and
+  normal pages don't get IDs put out by area.
+
+  What this will do for the user:
+
+        1. Allow those UAs to follow a URL.
+        2. Prevent useless session files from cluttering disk
+        3. Prevent session writes from inhibiting disk performance.
+
+* Add the oft-requested DirectoryIndex feature.
+
+* Add new content management features. This allows Interchange to:
+
+    -- Accept Apache error redirects, i.e. handle 404 errors
+    -- Initially process page, process page after variables, and
+       process page before image substitution with configurable subroutines
+    -- Take puts for DAV-style publishing
+
+*   New "AcceptRedirect" directive. If "Yes", will look for REDIRECT_URL,
+    REDIRECT_QUERY_STRING, etc. and use those to provide the request.
+
+    This allows:
+
+        ErrorDocument 404 /cgi-bin/foundation
+
+    At that point, a request for /index.html that is not found will
+    be equivalent to /cgi-bin/foundation/index.html and will be
+    indistinguishable from the real page by the client.
+
+*   New Pragmas init_page, pre_page, post_page, which specify
+    Sub/GlobalSub routines to run at various points in page build.
+
+    init_page     Run before Variable substitution
+    pre_page      Run after Variable substitution, before interpolation
+    post_page     Run before Image substitution
+
+* Allow PUT operations. Add
+
+    [value-extended test=isput]       Check for a PUT
+    [value-extended put_contents=1]   Return PUT string
+    [value-extended put_ref=1]        Return ref to PUT string (scalar)
+
+  Some more DAV-type features can be done, I think, but they are not yet
+  scoped.
+
+* Remove min_string test from Search.pm, where it never really was used
+  or called due to mv_min_string default being 0.
+
+* Place mv_min_string check back in Glimpse where it was intended in the first
+  place.
+
+* Convert Mac line endings to Unix (as well as DOS).
+
+* Add "future" profile comparator so that you can do:
+
+    appointment_date=future 1 day "Sorry, we need some lead time."
+
+  That allows you to check that a date value (ala the date widget) is
+  in the future.
+
+* Enhance unique profile check to allow specification of a foreign key
+  for uniqueness check.
+
+* Finally discovered what is going on with GPG and errors.
+
+  -- If PGP fails due to a system problem, like out of memory or
+     bad file permissions, it fails with a status that will cause
+     a real error which is in the lower 8 bits.
+
+  -- If PGP fails due to an internal problem like "key not found",
+     or no secret key ring, it will fail with system status set to
+     zero but the upper level status indicating its problem.
+
+     So a failed key will turn up as "File not found" in the
+     upper order bits, while a key *ring* not found will fail
+     with the same error in the lower status bits.
+
+  This patch is temporary, and at least tells you what $! is. I will
+  examine GPG's error messages and provide some simple ones like "key
+  not on keyring" and catch them to provide a better error.
+
+* Add general multiple-table update feature to Vend::Data::update_data.
+
+* Allow authoritative table name for constructed queries. Usage:
+
+    my $db = database_exists_ref($table);
+    my $tname = $db->name();
+
+    my $query = "select * from $tname";
+    $db->query($query);
+
+  This should allow REAL_NAME many more places.
 
 Payment
 -------
@@ -33,11 +145,179 @@ Payment
   their site's interaction with the Interchange Payment system, without
   actually being connected to a real Payment Services Provider. 
 
+Foundation
+----------
+
+* Add several different color schemes instead of only the Foundation Red.
+  "blueyellow" is the new default.
+
+* Change logos and such to reflect ICDEVGROUP instead of Red Hat.
+
+* Add product_tree and product_flyout components to work with new
+  menu editor.
+
+* Change checkout display to work easier for DHTML browsers, old
+  browsers should see much the same thing.
+
+* Change order profiles and etc/log_transaction to do a more reliable
+  job of order checking. If your database has transactions (i.e. Postgres),
+  a failure in the log_transaction can cause a failure of the order.
 
 UserTags
 --------
 
 * [xml-generator] removed.
+
+* [tabbed-display] tag added. 
+
+* [history-scan ...] now escapes form parameters properly.
+
+* Add [jsq] [/jsq] .. and [jsqn] [/jsqn] tags that build properly
+  JavaScript strings (jsq with variable substitution, jsqn without).
+
+* Add [tabbed-display] tag that shows DHTML tabbed panels.
+
+        [tabbed-display OPTIONS]
+            [tabbed-panel The title of one]
+            The contents of one
+            [/tabbed-panel]
+            [tabbed-panel The titel of two]
+            The contents of two
+            [/tabbed-panel]
+        [/tabbed-display]
+
+  It is pretty much that simple. It is documented.
+
+* [table-editor ...] tag starts extensive rework. Added tabbed displays,
+  with eventual full templating of the display.
+
+* Many minor changes in metadata and preferences.
+
+UI
+----
+
+* Extensive update to look and feel of the admin UI. The HTML design was
+  done by David and Hamish, core members from Zeald, Ltd. in New Zealand.
+  There are no more BGCOLOR references, and only a couple of <font ..>
+  tags. All has been switched to CSS.
+
+* Remove icmenu database. That work now done by lib/UI/pages/include/menus/*.
+
+* Major update to [table-editor ...] which so much of the UI is based
+  around. 
+
+    -- Tabbed displays
+    -- Insert spreadsheet linked via foreign key
+    -- Control over styles and classes for table columns
+
+* Add the suggested feature from Dan Browning -- a great idea --
+  a spreadsheet of a linked table within the table editor.
+
+  Adds the options:
+
+    link_table               Table to link in
+
+    link_key                 Key field to link to
+
+    link_fields              Columns to display
+
+    link_sort                How to order the linked rows
+                             (probably should add link_query here)
+
+    link_view                The view for spreasheet meta
+
+    link_label               How to label the thing (default
+                             is something like "Settings in
+                             link_table linked by link_key"
+
+    link_before              Where to plop the thing, input
+                             a column name in the main table to
+                             put it before
+
+    link_extra               Class, style, or other data for
+                             the table cells in the spreadsheet
+
+
+   To make it even better, multiple link tables are allowed,
+   so you could do:
+
+       [table-editor
+            link-table.0=options
+            link-table.1=pricing
+            link-key.0=sku
+            link-key.1=price_group
+        ]
+
+   To test, try this little test-snippet in a default foundation
+   from the latest CVS.
+
+    [table-editor
+        table=products
+        item_id="os28004"
+        link-table=options
+        link-key=sku
+        link-fields="sku price description"
+        link-sort="price desc"
+        link-before="weight"
+    ]
+
+* Complete rework of content editor. Improvements too many to name.
+
+    - "Edit page", "Edit menu", even "edit component" links are inserted when
+      you are logged in as admin.
+
+    - Complete cleanup of page/template/component parsing code, now perhaps
+      someone besides Mike could understand it. 8-)
+
+    - File navigator only now used for pages, not for templates/components,
+      retains context.
+
+    - Hooks are there for doing an entire edit session then pushing new content all
+      at once. Theoreticially, you could create an entire new site, browse it
+      and test it without the public seeing it, and then push one button to
+      publish it all. I say theoretically because I haven't done it yet, but
+      it should be there soon.
+
+    - Preview now holds true for browsing catalog.
+
+    - Now can create and edit pages that have no template wrapper.
+
+    - Add page to clone (push) sets of components to like sets of pages, i.e.
+      edit one to get the components like you want them and then select the
+      pages that that setup should be copied to.
+
+    - Closed all Bugzillas relating to it.
+       -- New pages not creating properly
+       -- Unable to edit in subdirectories
+       -- Templates not written properly
+
+    - TODO:
+
+        -- Allow alternate DSN for staging database tables.
+        -- Document this puppy, finally.
+        -- Change templates so that left-side/right-side components interchange,
+           and so that most class=content components can go vertical.
+        -- Vet the new [menu][/menu] component so that left-hand side
+           menu can be directory/location sensitive.
+        -- Build in the "use the index.html page in the current directory
+           as the template" functionality.
+ 
+* Improve spreadsheet.
+
+    -- Any meta widget can be used.
+    -- No possiblity of data crossover with embedded nulls.
+    -- Remove need for "Change display" with improved meta edit (will
+       add temporary view selector soon).
+    -- Better display (I think).
+    -- Better consistency of display for data and new record, etc.
+    -- Fields can use meta, go to textarea, have text field all selectable
+       from spreadsheet meta control.
+
+* Add cheesy mail list manager, a common thing to ask. Supported by unsubscribe
+  function and a batch download mode for large mailings....probably should
+  create some online help.
+
+* Many, many, minor bug fixes and improvements.
 
 ------------------------------------------------------------------------------
 
@@ -58,10 +338,10 @@ Core
     to deal with HTTP.
   - Use $Vend::Cfg->{Cron} for setup.
   - Emails either to command line address or $Vend::Cfg->{Cron}{email}
-	(only if the cron job supplies output). Uses the $Vend::Cfg->{Cron}
-	variables subject, from, reply_to and extra_headers.
+    (only if the cron job supplies output). Uses the $Vend::Cfg->{Cron}
+    variables subject, from, reply_to and extra_headers.
   - Logs to $Vend::Cfg->{Cron}{log}
-	(only if the cron job supplies output).
+    (only if the cron job supplies output).
   - Can add session dump when $Vend::Cfg->{Cron}{add_session}.
   - Base directory set by $Vend::Cfg->{Cron}{base_directory}, defaults
     to etc/cron. If $Vend::Cfg->{Cron}{use_global} is set, 
@@ -71,6 +351,9 @@ Core
  
 * Add First and Last links to more-list, with ability to customize via
   [first-anchor] and [last-anchor] containers.
+
+* Bye bye Wizard. Suggest anyone who wants it resurrect it and
+  make it work properly...
 
 * Add new menu editor and menu system. It is based around Vend::Menu
   and the new tag [menu ...], which builds various types of DHTMl and
@@ -178,6 +461,28 @@ Extensions
   
   - Accompanying documentation.
 
+Utilities/EG
+-------------
+
+* eg/te -- jon's great tabbed file editor.
+
+    Add some new options:
+
+    -f to handle files without field names on first line of file.
+    -n to number rows in comments.
+
+    -s for starting value support (really only vi).
+
+        te -s os28004 <file>
+
+        Jumps to first occurrence of "os28004" in <file>. Option -i ignores case
+        in the search.
+
+    Allow setting of persistent options in environment variable TE_OPTIONS.
+
+    Handle -i and -s with mixed-case search term (lowercase it first).
+
+    Don't escape " in search term, as it doesn't seem special.
 
 Payment
 -------
@@ -291,15 +596,15 @@ Core
 
  -When the following configuration is added:
 
-  	Database products HIDE_FIELD inactive
+    Database products HIDE_FIELD inactive
 
  -It adds automatically the qualification to every search:
 
-  	WHERE inactive != 1
+    WHERE inactive != 1
 
  -To use, you should have a field of char(1) or int type.
 
-	Database products COLUMN_DEF "inactive=int default 0"
+    Database products COLUMN_DEF "inactive=int default 0"
 
  -This has the side-effect of hiding fields with NULL in the
   field, so be careful. You should probably set "default 0"
@@ -406,9 +711,9 @@ UI
     3. Safe evals session string
     4. Retrieves session username/admin info
 
-	[su create_user=1 username=bobby password=howdy verify=howdy]
+    [su create_user=1 username=bobby password=howdy verify=howdy]
 
-	Allows combined creation of new user and switching to that user. 
+    Allows combined creation of new user and switching to that user. 
     Any options you would pass to userdb tag can be given to su usertag, 
     to tweak account creation. If user already exists, it's silently switched to.
 
