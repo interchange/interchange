@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.7.6
 #
-# $Id: interchange.PL,v 1.15.2.54 2001-07-04 17:35:37 jon Exp $
+# $Id: interchange.PL,v 1.15.2.55 2001-07-10 07:39:51 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -866,6 +866,7 @@ sub update_data {
 			my $qd = {};
 			my $qf = {};
 			my $qv = {};
+			my $qret;
 
 			my $blob;
 			my $brec;
@@ -914,7 +915,8 @@ sub update_data {
 			}
 
 			for(keys %$qd) {
-				$qd->{$_}->set_slice($key, $qf->{$_}, $qv->{$_});
+				$qret = $qd->{$_}->set_slice($key, $qf->{$_}, $qv->{$_});
+				$rows_set[$i] = $qret unless $rows_set[$i];
 			}
 			if($blob) {
 				$brec->{mv_data_fields} = join " ", @fields;
