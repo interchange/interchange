@@ -871,7 +871,7 @@ ui_template_name: noleft
       <td>
         <p>&nbsp;</p>
 	<INPUT TYPE=SUBMIT VALUE="Refresh">	
-	<B><INPUT TYPE=SUBMIT VALUE="Place Order" name="mv_click" style="border-color: __BARBG__; background-color: __XBARBG__; color: __XBARTEXT__; font-weight: bold"></B>
+	<B><INPUT TYPE=SUBMIT VALUE="Place Order" name="mv_todo.submit.x" style="border-color: __BARBG__; background-color: __XBARBG__; color: __XBARTEXT__; font-weight: bold"></B>
         <p>&nbsp;</p>
         </form>
 	[seti clear_errors][error all=1 hide=1 comment="Clear errors"][/seti]
@@ -883,10 +883,6 @@ ui_template_name: noleft
 			
     [include templates/components/specials]
 
-    [set Place Order]
-      mv_todo=submit
-    [/set]
-						
   </td>
 </tr>
 </table>
