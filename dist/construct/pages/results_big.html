@@ -5,13 +5,13 @@ ui_template_name: leftright
 
 [set bgcolor]#FFFFFF[/set]
 [set component_right]promo_vertical[/set]
-[set component_after]random_horizontal[/set]
+[set component_after]cross_horizontal[/set]
 [set members_only]0[/set]
 [set component_vsize]4[/set]
 [set page_banner] [/set]
 [set vbanner]Specials[/set]
 [set component_hsize]2[/set]
-[set hbanner]You might also like[/set]
+[set hbanner]Also see...[/set]
 [set component_before][/set]
 [set hpromo_type]specials[/set]
 [set page_title]__COMPANY__ -- Search results[/set]
@@ -21,7 +21,7 @@ ui_template_name: leftright
 <!-- BEGIN CONTENT -->
 [search-region]
 
-[tmp cross_category][value-extended name=mv_searchspec index=0][/tmp]
+[tmp cross_sale][value-extended name=mv_searchspec index=0][/tmp]
 
 [search-list]
 
@@ -59,15 +59,36 @@ ui_template_name: leftright
                                       </td>
                                     </tr>
                                     <tr> 
+                                      <td align="center"><font __FFACE__>[item-price]</font></td>
+                                    </tr>
+                                    <tr> 
                                       <td align="center"><font __FFACE__>&nbsp;</font></td>
                                     </tr>
-						
+									
+[item-calc]
+	my $q = q{[item-data inventory quantity]};
+	if($q > 0) {
+		return <<EOF;
+                                    <tr> 
+                                      <td align="center"><font __FFACE__ size="1" color="#008000"><b>In Stock</b></font></td>
+                                    </tr>
+EOF
+	}
+	else {
+		return <<EOF;
+                                    <tr> 
+                                      <td align="center"><font __FFACE__ size="1" color="#FF0000"><b>Out Of Stock</b></font><br><br>
+									  <font __FFACE__ size="1"><a href="[area stock-alert [item-code]]">In Stock Notification</a></font></td>
+                                    </tr>
+EOF
+	}
+[/item-calc]									
                                     <tr> 
                                       <td align="center"><font __FFACE__>&nbsp;</font></td>
                                     </tr>
                                     <tr> 
-                                      <td align="center"> <font __FFACE__ size="1">Amount:</font> 
-                                        <input type="text" name="mv_order_quantity" size="8" value="25.00">
+                                      <td align="center"> <font __FFACE__ size="1">Quantity:</font> 
+                                        <input type="text" name="mv_order_quantity" size="4" value="1">
                                       </td>
                                     </tr>
                                     <tr> 

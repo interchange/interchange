@@ -1,51 +1,6 @@
 [comment]
 ui_template: Yes
 ui_template_name: leftonly
-ui_template_layout: LEFTONLY_TOP, UI_CONTENT, LEFTONLY_BOTTOM
-ui_template_description: Page with top/left areas.
-
-page_title: 
-	description: Page title
-
-page_banner: 
-	description: Page banner
-	help: Defaults to page title
-
-members_only:
-	options: 1=Yes,0=No*
-	widget: radio
-	description: Members only
-
-break1:
-	widget: break
-
-component_before:
-	options: =none, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Upsell, cross_horizontal=Cross sell
-	widget: select
-	description: Component before content
-
-component_after:
-	options: =none, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Upsell, cross_horizontal=Cross sell
-	widget: select
-	description: Component after content
-
-component_hsize:
-	options: 1,2*,3
-	widget: select
-	description: Component items horizontal
-
-hbanner:
-	options: =--custom--,Specials, New items, Also see..., You might also like, Some of our fine products
-	widget: move_combo
-	width: 40
-	description: Before/after Banner
-	help: Banner for Before/after component
-
-hpromo_type:
-	options: specials=Specials, new=New items
-	widget: select
-	description: Special tag
-	help: Only for a horizontal Promotion
 [/comment]
 
 [set component_after][/set]
@@ -56,7 +11,7 @@ hpromo_type:
 [set component_before][/set]
 [set hpromo_type]specials[/set]
 [set page_title]__COMPANY__ -- Stock Alerting[/set]
-__LEFTONLY_TOP__
+@_LEFTONLY_TOP_@
 
 <!-- BEGIN CONTENT -->
 [if session arg]
@@ -67,10 +22,10 @@ __LEFTONLY_TOP__
       <TABLE cellPadding=8 border="0">
         <TBODY>
         <TR>
-          <TD align=left vAlign=top><FONT face="Verdana, Arial, Helvetica, sans-serif" size=2 color="red">
+          <TD align=left vAlign=top><FONT __FFACE__ size=2 color="red">
 		  <b>[value form_errors] [value name=form_errors set=""]</b></font>
 		  <br><br>
-		  <FONT face="Verdana, Arial, Helvetica, sans-serif" size=2>
+		  <FONT __FFACE__ size=2>
 		  Please try your request again.
 		  </FONT></TD>
 		</TR>
@@ -92,16 +47,16 @@ __LEFTONLY_TOP__
                   <table border="0" cellpadding="3" cellspacing="0">
                     <tr> 
                       <td valign="top"> 
-                        <p align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b><i>[data table=products column=description key='[scratch code]']</i></b></font></p>
+                        <p align="center"><font __FFACE__ size="1"><b><i>[data table=products column=description key='[scratch code]']</i></b></font></p>
                       </td>
                     </tr>
                     <tr> 
-                      <td align="center"><font face="Verdana, Arial, Helvetica, sans-serif">[data table=products column=price key='[scratch code]']</font></td>
+                      <td align="center"><font __FFACE__>[data table=products column=price key='[scratch code]']</font></td>
                     </tr>
                   </table>
                 </td>
 			<td valign="top">
-                    <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#000000">
+                    <p><font __FFACE__ size="2" color="#000000">
 					Please complete the form below and we will contact you once the item you have selected becomes
 					available. This is a complementary feature and you are not in any way obligated to purchase
 					the item.
@@ -111,7 +66,7 @@ __LEFTONLY_TOP__
 			  <tr><td>&nbsp;</td></tr>
 			  <tr>
 			<td valign="top" colspan="3">
-                    <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#669999">
+                    <p><font __FFACE__ size="2" color="#669999">
 					You may also pre-order the item. When the item becomes available, you will be
 					notified via email and the order will be shipped the same day.
 					<br><br>
@@ -127,8 +82,8 @@ __LEFTONLY_TOP__
                           <td> 
                             <table width="400" border="0" cellspacing="0" cellpadding="0" align="center">
                               <tr> 
-                                <td bgcolor="#0099FF"><font face="Verdana, Arial, Helvetica, sans-serif"><b><font size="1" color="#FFFFFF">Contact Information</font></b></font></td>
-                                <td bgcolor="#0099FF"><i><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF">&nbsp;</font></i></td>
+                                <td bgcolor="#0099FF"><font __FFACE__><b><font size="1" color="#FFFFFF">Contact Information</font></b></font></td>
+                                <td bgcolor="#0099FF"><i><font __FFACE__ size="1" color="#FFFFFF">&nbsp;</font></i></td>
                                 <td bgcolor="#0099FF">&nbsp;</td>
                                 <td bgcolor="#0099FF">&nbsp;</td>
                               </tr>
@@ -148,21 +103,21 @@ __LEFTONLY_TOP__
 
                               <tr> 
                                 <td> 
-                                  <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=fname std_label="First Name" required=1]</font></div>
+                                  <div align="right"><font __FFACE__ size="1">[error name=fname std_label="First Name" required=1]</font></div>
                                 </td>
                                 <td> 
-                                  <div align="left"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                                  <div align="left"><b><font __FFACE__ size="1"> 
                                     <INPUT TYPE=text NAME=fname VALUE="[value fname]" size="20" maxlength="20">
                                     </font></b></div>
                                 </td>
-                                <td><div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=lname std_label=Last required=1]</font></div></td>
+                                <td><div align="right"><font __FFACE__ size="1">[error name=lname std_label=Last required=1]</font></div></td>
                                 <td align="left"> <INPUT TYPE=text NAME=lname VALUE="[value lname]" size="20"></td>
                               </tr>
                               <tr> 
                                 <td> 
-                                  <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[error name=email std_label="Email Address" required=1]</font></div>
+                                  <div align="right"><font __FFACE__ size="1">[error name=email std_label="Email Address" required=1]</font></div>
                                 </td>
-                                <td colspan="3"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                                <td colspan="3"><b><font __FFACE__ size="1"> 
                                   <INPUT TYPE=text NAME=email VALUE="[value email]" size="51">
                                   </font></b></td>
                               </tr>
@@ -173,9 +128,9 @@ __LEFTONLY_TOP__
                                 <td>&nbsp;</td>
                               </tr>
                               <tr bgcolor="#FF9900"> 
-                                <td><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b><font color="#FFFFFF">Mailing 
+                                <td><font __FFACE__ size="1"><b><font color="#FFFFFF">Mailing 
                                   Status</font></b></font></td>
-                                <td><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b><font color="#FF9900">a</font></b></font></td>
+                                <td><font __FFACE__ size="1"><b><font color="#FF9900">a</font></b></font></td>
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
                               </tr>
@@ -192,7 +147,7 @@ __LEFTONLY_TOP__
 <OPTION [selected mail_list 1] VALUE="1">Yes
 </SELECT>
                                 </td>
-                                <td align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Put 
+                                <td align="left"><font __FFACE__ size="1">Put 
                                   me on your email list of infrequent offers</font></td>
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
@@ -214,4 +169,4 @@ __LEFTONLY_TOP__
 					
 <!-- END CONTENT -->
 
-__LEFTONLY_BOTTOM__
+@_LEFTONLY_BOTTOM_@

@@ -1,83 +1,6 @@
 [comment]
 ui_template: Yes
 ui_template_name: leftright
-ui_template_layout: LEFTRIGHT_TOP, UI_CONTENT, LEFTRIGHT_BOTTOM
-ui_template_description: Page with top/left/right areas.
-
-page_title: 
-	description: Page title
-
-page_banner: 
-	description: Page banner
-	help: Defaults to page title
-
-members_only:
-	options: 1=Yes,0=No*
-	widget: radio
-	description: Members only
-
-break1:
-	widget: break
-
-component_before:
-	options: =none, promo_horizontal=Specials, random_horizontal=Random items, upsell_horizontal=Up sell, cross_horizontal=Cross sell
-	widget: select
-	description: Horizontal before content
-
-component_after:
-	options: =none, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Up sell, cross_horizontal=Cross sell
-	widget: select
-	description: Horizontal after content
-
-component_hsize:
-	options: 1,2*,3
-	widget: select
-	description: Horizontal item width
-
-hpromo_type:
-	options: specials=Specials, new=New items
-	widget: select
-	description: Special tag
-	help: Only for a promotion
-
-hbanner:
-	options: =--custom--,Specials, New items, Also see..., You might also like, Some of our fine products
-	widget: move_combo
-	width: 40
-	description: Before/after Banner
-	help: Banner for after/before component
-
-break2:
-	widget: break
-
-component_right:
-	options: =none, promo_vertical=Promotion, random_vertical=Random items, upsell_vertical=Up sell, cross_vertical=Cross sell
-	widget: select
-	description: Vertical Component
-
-component_vsize:
-	options: 1,2,3*,4,5,10
-	widget: select
-	description: Vertical items height
-
-vbanner:
-	options: =--custom--,Specials, New items, Also see..., You might also like, Some of our fine products
-	widget: move_combo
-	width: 40
-	description: Right Banner
-	help: Banner for vertical component
-
-vpromo_type:
-	options: specials=Specials, new=New items
-	widget: select
-	description: Special tag
-	help: Only for a promotion
-
-
-bgcolor:
-	options: #FFFFFF=White,pink=Pink
-	widget: select
-	description: Background color
 [/comment]
 
 [set bgcolor]#FFFFFF[/set]
@@ -93,7 +16,7 @@ bgcolor:
 [set hpromo_type]specials[/set]
 [set page_title]__COMPANY__ -- Product Views All[/set]
 [set vpromo_type]new[/set]
-__LEFTRIGHT_TOP__
+@_LEFTRIGHT_TOP_@
 
 <!-- BEGIN CONTENT -->
 [loop more=1 search="ra=yes/tf=category/tf=title/ml=5"]
@@ -111,7 +34,7 @@ __LEFTRIGHT_TOP__
 <table width="250" border="0" cellspacing="0" cellpadding="0" bgcolor="0099ff">
   <tr> 
 	<td width="10"><img src="navigation/minime1.gif" width="10" height="20" align="top"></td>
-	<td width="227"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b><i><font color="ffffff" size="2">
+	<td width="227"><font __FFACE__ size="1"><b><i><font color="ffffff" size="2">
 [loop-field category]
 </font></i></b></font></td>
 	<td width="10"><img src="navigation/minime2.gif" width="10" height="20" align="top"></td>
@@ -139,14 +62,14 @@ __LEFTRIGHT_TOP__
 <INPUT TYPE=hidden  NAME="mv_order_item"  VALUE="[loop-code]">
 				<tr> 
 				  <td valign="top"> 
-					<p><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b><i>[loop-field title]</i></b></font></p>
+					<p><font __FFACE__ size="1"><b><i>[loop-field title]</i></b></font></p>
 				  </td>
 				</tr>
 				<tr> 
-				  <td align="center"><font face="Verdana, Arial, Helvetica, sans-serif">[loop-price]</font></td>
+				  <td align="center"><font __FFACE__>[loop-price]</font></td>
 				</tr>
 				<tr> 
-				  <td align="center"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;</font></td>
+				  <td align="center"><font __FFACE__>&nbsp;</font></td>
 				</tr>
 				
 [loop-calc]
@@ -154,24 +77,24 @@ my $q = q{[loop-data inventory quantity]};
 if($q > 0) {
 return <<EOF;
 				<tr> 
-				  <td align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#008000"><b>In Stock</b></font></td>
+				  <td align="center"><font __FFACE__ size="1" color="#008000"><b>In Stock</b></font></td>
 				</tr>
 EOF
 }
 else {
 return <<EOF;
 				<tr> 
-				  <td align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FF0000"><b>Out Of Stock</b></font><br><br>
-				  <font face="Verdana, Arial, Helvetica, sans-serif" size="1"><a href="[area stock-alert [loop-code]]">In Stock Notification</a></font></td>
+				  <td align="center"><font __FFACE__ size="1" color="#FF0000"><b>Out Of Stock</b></font><br><br>
+				  <font __FFACE__ size="1"><a href="[area stock-alert [loop-code]]">In Stock Notification</a></font></td>
 				</tr>
 EOF
 }
 [/loop-calc]									
 				<tr> 
-				  <td align="center"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;</font></td>
+				  <td align="center"><font __FFACE__>&nbsp;</font></td>
 				</tr>
 				<tr> 
-				  <td align="center"> <font face="Verdana, Arial, Helvetica, sans-serif" size="1">Quantity:</font> 
+				  <td align="center"> <font __FFACE__ size="1">Quantity:</font> 
 					<input type="text" name="mv_order_quantity" size="4" value="1">
 				  </td>
 				</tr>
@@ -186,7 +109,7 @@ EOF
 		  </tr>
 		  <tr> 
 			<td colspan="2"> 
-			  <p><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+			  <p><font __FFACE__ size="1">
 			  [loop-field comment]
 			  </font></p>
 			</td>
@@ -209,4 +132,4 @@ EOF
 					
 <!-- END CONTENT -->
 
-__LEFTRIGHT_BOTTOM__
+@_LEFTRIGHT_BOTTOM_@

@@ -1,39 +1,10 @@
 [comment]
 ui_template: Yes
 ui_template_name: leftonly
-ui_template_layout: LEFTONLY_TOP, UI_CONTENT, LEFTONLY_BOTTOM
-ui_template_description: Page with top/left areas.
-
-page_title: 
-	description: Page title
-
-page_banner: 
-	description: Page banner
-	help: Defaults to page title
-
-members_only:
-	options: 1=Yes,0=No*
-	widget: radio
-	description: Members only
-
-component_before:
-	options: =none, specials=Specials, random=Random items
-	widget: select
-	description: Component before content
-
-component_after:
-	options: =none, specials=Specials, random=Random items
-	widget: select
-	description: Component after content
-
-bgcolor:
-	options: #FFFFFF=White,pink=Pink
-	widget: select
-	description: Background color
 [/comment]
 [set page_title]__COMPANY__ -- Shipping Address Removed[/set]
 [set page_banner]Shipping Address Removed[/set]
-__LEFTONLY_TOP__
+@_LEFTONLY_TOP_@
 
 <!-- BEGIN CONTENT -->
 
@@ -46,15 +17,16 @@ $Scratch->{sql_req} = $sql_req;
 return "";
 [/perl]
 
+[tag flag write]ship_addresses[/tag]
 [seti remove_addresses][query sql="[scratch sql_req]"][/query][/seti]
 
 
 <br>
-<font face="Verdana, Arial, Helvetica, sans-serif" size="2">
+<font __FFACE__ size="2">
 The selected shipping addresses have been removed.
 </font>
 <P>			
-<a href="[area ship_addresses]"><font size="2"><b><font face="Verdana, Arial, Helvetica, sans-serif">BACK</font></b></font></a>		
+<a href="[area ship_addresses]"><font size="2"><b><font __FFACE__>BACK</font></b></font></a>		
 <!-- END CONTENT -->
 
-__LEFTONLY_BOTTOM__
+@_LEFTONLY_BOTTOM_@
