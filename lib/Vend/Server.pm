@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.11 2002-08-14 15:32:04 mheins Exp $
+# $Id: Server.pm,v 2.12 2002-09-01 13:13:43 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.11 $, 10);
+$VERSION = substr(q$Revision: 2.12 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -65,29 +65,36 @@ sub new {
     bless $http, $class;
 }
 
-my @Map =
-    (
-     'authorization' => 'AUTHORIZATION',
-     'content_length' => 'CONTENT_LENGTH',
-     'content_type' => 'CONTENT_TYPE',
-     'content_encoding' => 'HTTP_CONTENT_ENCODING',
-     'cookie' => 'HTTP_COOKIE',
-     'http_host' => 'HTTP_HOST',
-     'path_info' => 'PATH_INFO',
-     'pragma' => 'HTTP_PRAGMA',
-     'query_string' => 'QUERY_STRING',
-     'referer' => 'HTTP_REFERER',
-     'remote_addr' => 'REMOTE_ADDR',
-     'remote_host' => 'REMOTE_HOST',
-     'remote_user' => 'REMOTE_USER',
-     'request_method', => 'REQUEST_METHOD',
-     'script_name' => 'SCRIPT_NAME',
-     'secure' => 'HTTPS',
-     'server_name' => 'SERVER_NAME',
-     'server_host' => 'HTTP_HOST',
-     'server_port' => 'SERVER_PORT',
-     'useragent' => 'HTTP_USER_AGENT',
-);
+my @Map = qw/
+    authorization      AUTHORIZATION
+    content_length     CONTENT_LENGTH
+    content_type       CONTENT_TYPE
+    content_encoding   HTTP_CONTENT_ENCODING
+    cookie             HTTP_COOKIE
+    http_host          HTTP_HOST
+    path_info          PATH_INFO
+    pragma             HTTP_PRAGMA
+    query_string       QUERY_STRING
+    referer            HTTP_REFERER
+    remote_addr        REMOTE_ADDR
+    remote_host        REMOTE_HOST
+    remote_user        REMOTE_USER
+    request_method     REQUEST_METHOD
+    script_name        SCRIPT_NAME
+    secure             HTTPS
+    server_name        SERVER_NAME
+    server_host        HTTP_HOST
+    server_port        SERVER_PORT
+    useragent          HTTP_USER_AGENT
+/;
+
+my @RedirMap = qw/
+    path_info          REDIRECT_URL
+    query_string       REDIRECT_QUERY_STRING
+    error_notes        REDIRECT_ERROR_NOTES
+    redirect_status    REDIRECT_STATUS
+    request_method     REDIRECT_REQUEST_METHOD
+/;
 
 ### This is to account for some bad Socket.pm implementations
 ### which don't set SOMAXCONN, I think SCO is the big one
@@ -196,6 +203,14 @@ EOF
 		parse_post(\$CGI::query_string)
 			if $Global::TolerateGet;
 		parse_post($h->{entity});
+	}
+	elsif ("\U$CGI::request_method" eq 'PUT') {
+#::logDebug("Put operation.");
+		parse_post(\$CGI::query_string);
+		$CGI::put_ref = $h->{entity};
+#::logDebug("Put contents: $$CGI::put_ref");
+		$$CGI::put_ref =~ s/^\s*--+\s+begin\s+content\s+--+\r?\n//i;
+		$$CGI::put_ref =~ s/^\r?\n--+\s+end\s+content\s+--+\s*$//i;
 	}
 	else {
 		 parse_post(\$CGI::query_string);
@@ -2309,6 +2324,11 @@ sub run_server {
     my $next;
 	
     my $pidh = open_pid($Global::PIDfile);
+
+	if($Global::AcceptRedirect) {
+		push @Map, @RedirMap
+			unless grep $_ eq 'REDIRECT_URL', @Map;
+	}
 
 	if ($Global::mod_perl) {
 		undef $Global::Unix_Mode;

@@ -3,7 +3,7 @@
 #
 # Interchange version 4.9.3
 #
-# $Id: interchange.PL,v 2.52 2002-08-27 16:52:06 mheins Exp $
+# $Id: interchange.PL,v 2.53 2002-09-01 13:13:46 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and others.
 # http://www.icdevgroup.org/
@@ -1997,6 +1997,7 @@ sub close_cat {
 sub run_macro {
 	my $macro = shift
 		or return;
+	my $content_ref = shift;
 
 	my @mac;
 	if(ref $macro eq 'ARRAY') {
@@ -2016,7 +2017,7 @@ sub run_macro {
 					logError("Unknown Autoload macro '%s'.", $macro);
 					next;
 				};
-			$sub->();
+			$sub->($content_ref);
 		}
 		elsif($m =~ /^\w+-\w+$/) {
 			Vend::Interpolate::tag_profile($m);

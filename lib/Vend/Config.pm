@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.67 2002-08-15 22:01:23 mheins Exp $
+# $Id: Config.pm,v 2.68 2002-09-01 13:13:43 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.67 $, 10);
+$VERSION = substr(q$Revision: 2.68 $, 10);
 
 my %CDname;
 
@@ -248,6 +248,7 @@ sub global_directives {
 	['TcpMap',           'hash',             ''],
 	['Environment',      'array',            ''],
 	['TcpHost',           undef,             'localhost 127.0.0.1'],
+	['AcceptRedirect',	 'yesno',			 'No'],
 	['SendMailProgram',  'executable',		 [
 												$Global::SendMailLocation,
 											   '/usr/sbin/sendmail',
@@ -413,7 +414,7 @@ sub catalog_directives {
 	['MaxQuantityField', undef,     	     ''],
 	['MinQuantityField', undef,     	     ''],
 	['LogFile', 		  undef,     	     'etc/log'],
-	['Pragma',		 	 'boolean',     	 ''],
+	['Pragma',		 	 'boolean_value',    ''],
 	['DynamicData', 	 'boolean',     	 ''],
 	['NoImport',	 	 'boolean',     	 ''],
 	['NoImportExternal', 'yesno',	     	 'no'],
@@ -1827,6 +1828,34 @@ sub parse_boolean {
 
 	for (@setting) {
 		$c->{$_} = $val;
+	}
+	return $c;
+}
+
+# Sets a boolean array, but configurable value with tag=value
+sub parse_boolean_value {
+	my($item,$settings) = @_;
+	my(@setting) = split /[\s,]+/, $settings;
+	my $c;
+
+	if(defined $C) {
+		$c = $C->{$item} || {};
+	}
+	else {
+		no strict 'refs';
+		$c = ${"Global::$item"} || {};
+	}
+
+	for (@setting) {
+		my ($k,$v);
+		if(/=/) {
+			($k,$v) = split /=/, $_, 2;
+		}
+		else {
+			$k = $_;
+			$v = 1;
+		}
+		$c->{$k} = $v;
 	}
 	return $c;
 }

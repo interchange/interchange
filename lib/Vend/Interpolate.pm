@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.107 2002-08-26 00:58:26 mheins Exp $
+# $Id: Interpolate.pm,v 2.108 2002-09-01 13:13:43 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.107 $, 10);
+$VERSION = substr(q$Revision: 2.108 $, 10);
 
 @EXPORT = qw (
 
@@ -452,6 +452,13 @@ sub get_joiner {
 sub substitute_image {
 	my ($text) = @_;
 
+	## If post_page routine processor returns true, return. Otherwise,
+	## continue image rewrite
+	if($::Pragma->{post_page}) {
+		::run_macro($::Pragma->{post_page}, $text)
+			and return;
+	}
+
 	unless ( $::Pragma->{no_image_rewrite} ) {
 		my $dir = $CGI::secure											?
 			($Vend::Cfg->{ImageDirSecure} || $Vend::Cfg->{ImageDir})	:
@@ -576,6 +583,10 @@ sub vars_and_comments {
 	1 while $$html =~ s/\[pragma\s+(\w+)(?:\s+(\w+))?\]/
 		$::Pragma->{$1} = (length($2) ? $2 : 1), ''/ige;
 
+	if($::Pragma->{init_page}) {
+		::run_macro($::Pragma->{init_page}, $html);
+	}
+
 	# Substitute in Variable values
 	$$html =~ s/$Gvar/$Global::Variable->{$1}/g;
 	if($::Pragma->{dynamic_variables}) {
@@ -589,6 +600,10 @@ sub vars_and_comments {
 			and
 		$$html =~ s/$Evar/$::Variable->{$1} || $Global::Variable->{$1}/ge;
 		$$html =~ s/$Cvar/$::Variable->{$1}/g;
+	}
+
+	if($::Pragma->{pre_page}) {
+		::run_macro($::Pragma->{pre_page}, $html);
 	}
 
 	# Strip out [comment] [/comment] blocks
@@ -2632,6 +2647,9 @@ sub tag_value_extended {
 	my $no = $opt->{'no'} || '';
 
 	if($opt->{test}) {
+		$opt->{test} =~ /(?:is)?put/i
+			and
+			return defined $CGI::put_ref ? $yes : $no;
 		$opt->{test} =~ /(?:is)?file/i
 			and
 			return defined $CGI::file{$var} ? $yes : $no;
@@ -2643,6 +2661,11 @@ sub tag_value_extended {
 		return '';
 	}
 
+	if($opt->{put_contents}) {
+		return undef if ! defined $CGI::put_ref;
+		return $$CGI::put_ref;
+	}
+
 	my $val = $CGI::values{$var} || $::Values->{$var} || return undef;
 	$val =~ s/</&lt;/g unless $opt->{enable_html};
 	$val =~ s/\[/&#91;/g unless $opt->{enable_itl};
@@ -2650,6 +2673,10 @@ sub tag_value_extended {
 	if($opt->{file_contents}) {
 		return '' if ! defined $CGI::file{$var};
 		return $CGI::file{$var};
+	}
+
+	if($opt->{put_ref}) {
+		return $CGI::put_ref;
 	}
 
 	if($opt->{outfile}) {
