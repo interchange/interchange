@@ -21,6 +21,7 @@ dist/barry/config/menubar
 dist/barry/config/menubottom
 dist/barry/config/no_left
 dist/barry/config/no_right
+dist/barry/config/postcopy_commands
 dist/barry/config/precopy_commands
 dist/barry/config/rightside
 dist/barry/etc/log_entry
@@ -64,9 +65,11 @@ dist/barry/images/admin/icon_regen_anim.gif
 dist/barry/images/admin/icon_stats.gif
 dist/barry/images/admin/index.gif
 dist/barry/images/admin/layout.gif
+dist/barry/images/admin/left.gif
 dist/barry/images/admin/plus.gif
 dist/barry/images/admin/red_logo.gif
 dist/barry/images/admin/reddot.gif
+dist/barry/images/admin/right.gif
 dist/barry/images/admin/tallyman_logo.gif
 dist/barry/images/admin/up.gif
 dist/barry/images/admin/widgets.gif
@@ -199,6 +202,7 @@ dist/barry/mysql/area.mysql
 dist/barry/mysql/cat.mysql
 dist/barry/mysql/country.mysql
 dist/barry/mysql/inventory.mysql
+dist/barry/mysql/merchandising.mysql
 dist/barry/mysql/orderline.mysql
 dist/barry/mysql/pricing.mysql
 dist/barry/mysql/products.mysql
@@ -247,6 +251,7 @@ dist/barry/pgsql/area.pgsql
 dist/barry/pgsql/cat.pgsql
 dist/barry/pgsql/country.pgsql
 dist/barry/pgsql/inventory.pgsql
+dist/barry/pgsql/merchandising.pgsql
 dist/barry/pgsql/orderline.pgsql
 dist/barry/pgsql/pricing.pgsql
 dist/barry/pgsql/products.pgsql
@@ -270,6 +275,7 @@ dist/barry/products/cat.txt
 dist/barry/products/country.txt
 dist/barry/products/inventory.txt
 dist/barry/products/locale.txt
+dist/barry/products/merchandising.txt
 dist/barry/products/mv_metadata.asc
 dist/barry/products/orderline.txt
 dist/barry/products/pricing.txt
@@ -308,6 +314,7 @@ dist/build/makecat.redhat
 dist/build/makedirs.redhat
 dist/catalog_after.cfg
 dist/catalog_before.cfg
+dist/compat/backend/AsciiBackend
 dist/compat/body
 dist/compat/buttonbar
 dist/compat/form_mail.cfg
@@ -352,8 +359,6 @@ dist/lib/UI/pages/admin/index.html
 dist/lib/UI/pages/admin/item.html
 dist/lib/UI/pages/admin/item_edit.html
 dist/lib/UI/pages/admin/layout.html
-dist/lib/UI/pages/admin/layout_create.html
-dist/lib/UI/pages/admin/layout_subcat.html
 dist/lib/UI/pages/admin/login.html
 dist/lib/UI/pages/admin/logout.html
 dist/lib/UI/pages/admin/matrix_create.html
@@ -366,8 +371,11 @@ dist/lib/UI/pages/admin/page_edit.html
 dist/lib/UI/pages/admin/page_preview.html
 dist/lib/UI/pages/admin/page_save.html
 dist/lib/UI/pages/admin/payment.html
+dist/lib/UI/pages/admin/preferences.html
 dist/lib/UI/pages/admin/quicklinks.html
 dist/lib/UI/pages/admin/reconfig.html
+dist/lib/UI/pages/admin/regen.html
+dist/lib/UI/pages/admin/regenerate.html
 dist/lib/UI/pages/admin/report.html
 dist/lib/UI/pages/admin/report_results.html
 dist/lib/UI/pages/admin/report_save.html
@@ -375,19 +383,23 @@ dist/lib/UI/pages/admin/reports/order/ByAffiliate.html
 dist/lib/UI/pages/admin/reports/order/Detail.html
 dist/lib/UI/pages/admin/reports/order/Monthly.html
 dist/lib/UI/pages/admin/reports/traffic/ByAffiliate.html
-dist/lib/UI/pages/admin/search_builder.html
-dist/lib/UI/pages/admin/search_builder_results.html
+dist/lib/UI/pages/admin/search_wizard.html
+dist/lib/UI/pages/admin/search_wizard2.html
+dist/lib/UI/pages/admin/search_wizard3.html
+dist/lib/UI/pages/admin/search_wizard_results.html
 dist/lib/UI/pages/admin/ship.html
 dist/lib/UI/pages/admin/ship_data.html
 dist/lib/UI/pages/admin/ship_edit.html
 dist/lib/UI/pages/admin/ship_range.html
 dist/lib/UI/pages/admin/special/key_violation.html
 dist/lib/UI/pages/admin/spread.html
+dist/lib/UI/pages/admin/spread_control.html
 dist/lib/UI/pages/admin/table_editor.html
 dist/lib/UI/pages/admin/tax.html
 dist/lib/UI/pages/admin/trafficstats.html
 dist/lib/UI/pages/admin/upload_config.html
 dist/lib/UI/pages/admin/upload_file.html
+dist/lib/UI/pages/admin/upload_image.html
 dist/lib/UI/pages/admin/upload_other.html
 dist/lib/UI/pages/admin/upload_pages.html
 dist/lib/UI/pages/admin/user_change_pass.html
@@ -397,9 +409,10 @@ dist/lib/UI/profiles/order_button_build
 dist/lib/UI/ui.cfg
 dist/lib/UI/usertag/available_ups_internal
 dist/lib/UI/usertag/available_www_shipping
-dist/lib/UI/usertag/backup-database
+dist/lib/UI/usertag/backup_database
 dist/lib/UI/usertag/backup_file
 dist/lib/UI/usertag/base_url
+dist/lib/UI/usertag/button
 dist/lib/UI/usertag/check_upload
 dist/lib/UI/usertag/db_columns
 dist/lib/UI/usertag/db_hash
@@ -429,6 +442,8 @@ dist/lib/UI/usertag/quick_table
 dist/lib/UI/usertag/read_serial
 dist/lib/UI/usertag/read_shipping
 dist/lib/UI/usertag/read_ui_template
+dist/lib/UI/usertag/regenerate
+dist/lib/UI/usertag/return_to
 dist/lib/UI/usertag/rotate_database
 dist/lib/UI/usertag/rotate_file
 dist/lib/UI/usertag/rotate_table
@@ -522,9 +537,11 @@ dist/simple/images/admin/icon_regen_anim.gif
 dist/simple/images/admin/icon_stats.gif
 dist/simple/images/admin/index.gif
 dist/simple/images/admin/layout.gif
+dist/simple/images/admin/left.gif
 dist/simple/images/admin/plus.gif
 dist/simple/images/admin/red_logo.gif
 dist/simple/images/admin/reddot.gif
+dist/simple/images/admin/right.gif
 dist/simple/images/admin/tallyman_logo.gif
 dist/simple/images/admin/up.gif
 dist/simple/images/admin/widgets.gif
@@ -586,6 +603,7 @@ dist/simple/mysql/area.mysql
 dist/simple/mysql/cat.mysql
 dist/simple/mysql/country.mysql
 dist/simple/mysql/inventory.mysql
+dist/simple/mysql/merchandising.mysql
 dist/simple/mysql/orderline.mysql
 dist/simple/mysql/pricing.mysql
 dist/simple/mysql/products.mysql
@@ -632,6 +650,7 @@ dist/simple/pgsql/area.pgsql
 dist/simple/pgsql/cat.pgsql
 dist/simple/pgsql/country.pgsql
 dist/simple/pgsql/inventory.pgsql
+dist/simple/pgsql/merchandising.pgsql
 dist/simple/pgsql/orderline.pgsql
 dist/simple/pgsql/pricing.pgsql
 dist/simple/pgsql/products.pgsql
@@ -655,6 +674,7 @@ dist/simple/products/cat.txt
 dist/simple/products/country.txt
 dist/simple/products/inventory.txt
 dist/simple/products/locale.txt
+dist/simple/products/merchandising.txt
 dist/simple/products/mv_metadata.asc
 dist/simple/products/orderline.txt
 dist/simple/products/pricing.txt
@@ -700,6 +720,7 @@ dist/src/tlink.pl
 dist/src/vlink.c
 dist/src/vlink.pl
 dist/usertag/bar_button
+dist/usertag/convert_date
 dist/usertag/db_date
 dist/usertag/email
 dist/usertag/email_raw
@@ -769,6 +790,8 @@ lib/Vend/TextSearch.pm
 lib/Vend/Track.pm
 lib/Vend/UserDB.pm
 lib/Vend/Util.pm
+perl/Interchange.pm
+pod/QuickStart.pod
 pod/mvdocs.pod
 pod/mvfaq.pod
 pod/mvrpm.pod
