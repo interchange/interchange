@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.0 2001-07-18 02:23:13 jon Exp $
+# $Id: Interpolate.pm,v 2.1 2001-07-23 18:57:13 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.0 $, 10);
+$VERSION = substr(q$Revision: 2.1 $, 10);
 
 @EXPORT = qw (
 
@@ -1094,6 +1094,7 @@ sub tag_data {
 				},
 	'textarea_get' => sub {
 					my $val = shift;
+::logDebug("textarea_get \$val: $val");
 					$val =~ s/\&amp;/\&/g;
 					return $val;
 				},
@@ -2200,6 +2201,7 @@ sub tag_accessories {
 	return $data if "\L$type" eq 'show';
 
 	my $attrib_value = $item ? $item->{$attribute} : '';
+	HTML::Entities::encode($attrib_value);
 
 	if($ishash) {
 #::logDebug("tag_accessories: name=$name item=$item=" . ::uneval_it($item) . " opt_item=$opt->{item} attr=$attribute");
@@ -2239,14 +2241,12 @@ sub tag_accessories {
 		elsif("\L$type" =~ /^text_(\d+)$/) {
 			$cols = $1;
 		}
-		HTML::Entities::encode($attrib_value);
 		$cols = ($opt->{cols} || $opt->{width} || 60)
 			if ! $cols;
 		return qq|$p<INPUT TYPE=text NAME="$name" SIZE="$cols" VALUE="$attrib_value"$opt->{extra}>$a|;
 	}
 	elsif($type =~ /^password/i) {
 #::logDebug("hit password");
-		HTML::Entities::encode($attrib_value);
 		$opt->{extra} = " $opt->{extra}" if $opt->{extra};
 		return qq|$p<INPUT TYPE=password NAME="$name" SIZE=$1 VALUE="$attrib_value"$opt->{extra}>$a|
 			if "\L$type" =~ /_(\d+)/;
