@@ -9,114 +9,6 @@ UserTag table-editor-tpl AttrAlias key   item_id
 UserTag table-editor-tpl AttrAlias view  ui_meta_view
 UserTag table-editor-tpl AttrAlias profile ui_profile
 UserTag table-editor-tpl AttrAlias email_fields ui_display_only
-#UserTag table-editor Documentation <<EOD
-#=head1 NAME
-#
-#[table-editor-tpl]
-#
-#=head1 SYNOPSIS
-#
-#  [table-editor-tpl
-#  		table=ic_table
-#		cgi=1*
-#		item-id="key"
-#		across=n*
-#		noexport=1*
-# 
-#		wizard=1*
-#		next_text='Next -->'*
-#		cancel_text='Cancel'*
-#		back_text='<-- Back'*
-# 
-#		hidden.formvarname="value"
-#
-#		item_id_left="keys remaining"
-#		mv_blob_field=column*
-#		mv_blob_nick=name*
-#		mv_blob_pointer="current name"*
-#		mv_blob_label="Label text"
-#		mv_blob_title="Title HTML"
-#
-#		ui_break_before="field1 field2"
-#		ui_break_before_label="field1=Label 1, field2=Label 2"
-#		ui_data_fields="field1 field2 fieldn ..."*
-#		ui_data_fields_all=1*
-#		ui_display_only="no_set_field"*
-#		ui_hide_key=1*
-#		ui_meta_specific=1*
-#		ui_meta_view="viewname"
-#		ui_nextpage="next_destination"
-#		ui_prevpage="back_destination"
-#		ui_return_to="cancel_destination"
-#		ui_new_item=1*
-#		ui_sequence_edit=1*
-#		ui_clone_id="key"
-#		ui_clone_tables="table1 table2 ..."
-#		ui_delete_box=1*
-#		mv_update_empty=0*
-# 
-#		widget.field="select|text|any ic widget"
-#		label.field="Field Label"
-#		help.field="Help text"
-#		help-url.field="http://url/to/more/help"
-#		default.field="preset value"*
-#		override.field="forced value"*
-#		filter.field="filter1 filter2"
-#		pre-filter.field="filter1 filter2"
-#		error.field=1*
-#		height.field=N
-#		width.field=N
-#		passed.field="val1=Label 1, val2=Label 2"
-#		lookup.field="lookup_field"
-#		database.field="table"
-#		field.field="column"
-#		outboard.field="key"
-#		append.field="HTML"
-#		prepend.field="HTML"
-#
-#	]
-#
-#=head1 DESCRIPTION
-#
-#The [table-editor] tag produces an HTML form that edits a database
-#table or collects values for a "wizard". It is extremely configurable
-#as to display and characteristics of the widgets used to collect the
-#input.
-#
-#The widget types are based on the Interchange C<[display ...]> UserTag,
-#which in turn is heavily based on the ITL core C<[accessories ...]> tag.
-#
-#The C<simplest> form of C<[table-editor]> is:
-#
-#	[table-editor table=foo]
-#
-#A page which contains only that tag will edit the table C<foo>, where
-#C<foo> is the name of an Interchange table to edit. If no C<foo> table
-#is C<defined>, then nothing will be displayed.
-#
-#If the C<mv_metadata> entry "foo" is present, it is used as the
-#definition for table display, including the fields to edit and labels
-#for sections of the form. If C<ui_data_fields> is defined, this
-#cancels fetch of the view and any breaks and labels must be
-#defined with C<ui_break_before> and C<ui_break_before_label>. More
-#on the view concept later.
-#
-#A simple "wizard" can be made with:
-#
-#	[table-editor
-#			wizard=1
-#			ui_wizard_fields="foo bar"
-#			mv_nextpage=wizard2
-#			mv_prevpage=wizard_intro
-#			]
-#
-#The purpose of a "wizard" is to collect values from the user and
-#place them in the $Values array. A next page value (option mv_nextpage)
-#must be defined to give a destination; if mv_prevpage is defined then
-#a "Back" button is presented to allow paging backward in the wizard.
-#
-#EOD
-
 UserTag table-editor-tpl Routine <<EOR
 
 my $Default_template = <<'EOT';
@@ -148,6 +40,9 @@ my $Default_template = <<'EOT';
 [columns]
 [column-list]
 <tr class=rnorm>
+[if-editor-param row_template]
+[editor-param row_template]
+[else]
    <td class=clabel width="[editor-param left_width]"> 
      [editor-param label_prepend][column-param label][editor-param label_append][column-param meta]
    </td>
@@ -168,6 +63,8 @@ my $Default_template = <<'EOT';
        </tr>
      </table>
    </td>
+[/else]
+[/if-editor-param]
 </tr>
 [/column-list]
 [/columns]
@@ -248,7 +145,7 @@ sub run_templates {
 		$ary    = shift @things;
 
 		delete $todo{$region};
-::logDebug("run_template region=$region prefix=$prefix ary=$ary from=$opt->{from_session}");
+#::logDebug("run_template region=$region prefix=$prefix ary=$ary from=$opt->{from_session}");
 		$region =~ s/[-_]/[-_]/g;
 
 		next unless $$bref =~ m{\[$region\](.*?)\[/$region\]}is;
@@ -1393,6 +1290,26 @@ EOF
 		}
 	}
 
+ 	if($opt_out{row_template} = $opt->{row_template}) {
+		$opt_out{row_template} =~ s/\$blabel\$?/[column-param label_prepend]/ig;
+		$opt_out{row_template} =~ s/\$elabel\$?/[column-param label_append]/ig;
+		$opt_out{row_template} =~ s#{([A-Z_]+)}(.*?){/\1}#
+				my $parm = lc $1;
+				my $string = $2;
+				my $tmp = qq{[if-column-param $parm]};
+				$tmp .= $string;
+				$tmp .= qq{[/if-column-param]};
+									#ges;
+		$opt_out{row_template} =~ s/\$LABEL\$/[column-param label]/g;
+		$opt_out{row_template} =~ s/\$HELP\$/[column-param help]/g;
+		$opt_out{row_template} =~ s/\$WIDGET\$/[column-param widget]/g;
+		$opt_out{row_template} =~ s/\$HELP_URL\$/[column-param help_url]/g;
+		$opt_out{row_template} =~ s/\~META\~/[column-param meta]/g;
+		$opt_out{row_template} =~ s/\~TKEY\~/[column-param tkey]/g;
+	}
+
+#::logDebug("row_template now: $opt_out{row_template}");
+
 	foreach my $col (@cols) {
 		my $t;
 		my $c;
@@ -1514,6 +1431,7 @@ EOF
 		}
 
 		my $meta = '';
+		my $sublabel;
 		if($error->{$c}) {
 			my $parm = {
 					name => $c,
@@ -1527,7 +1445,7 @@ EOF
 [else]{REQUIRED <B>}{LABEL}{REQUIRED </B>}[/else]
 EOF
 			}
-			$ref->{label} = $Tag->error($parm);
+			$sublabel = $Tag->error($parm);
 		}
 #::logDebug("col=$c currval=$currval widget=$widget->{$c} label=$label->{$c} (type=$type)");
 		my ($drw, $drl, $drh, $drhu) = $Tag->display({
@@ -1561,8 +1479,12 @@ EOF
 										width => $width->{$c},
 										template => $template,
 									});
+		if($sublabel) {
+			$sublabel =~ s/\$LABEL\$/$drl/g;
+			$drl = $sublabel;
+		}
 		$ref->{widget}   = $drw;
-		$ref->{label}  ||= $drl; ## May have been set previously
+		$ref->{label}    = $drl;
 		$ref->{help}	 = $drh;
 		$ref->{help_url} = $drhu;
 
@@ -1778,6 +1700,7 @@ EOF
 
 	my $eregion = editor_region($opt, \%opt_out, \%hidden);
 	my $cregion = column_region($opt, \%opt_out, \@controls);
+	$opt->{safe_data} = 1;
 
 	$template = '' unless $template =~ /\S/;
 	$template ||= $Default_template;
