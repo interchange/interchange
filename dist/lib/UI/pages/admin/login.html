@@ -4,7 +4,9 @@
 		[calc]delete $Session->{su}; return; [/calc]
 		[bounce page="__UI_BASE__/index"]
 	[else]
-	[userdb function=logout clear=1 hide=1]
+	[try]
+		[userdb profile=ui function=logout clear=1 hide=1]
+	[/try]
 	[/else]
 	[/if]
 [/if]
@@ -165,4 +167,4 @@ EOF
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ -->
+<!-- page: @@MV_PAGE@@ $Revision: 2.9 $ -->
