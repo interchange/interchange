@@ -1,5 +1,5 @@
 [tmp page_perm]files[/tmp]
-[tmp page_title]Administration: [calc]$Config->{CatalogName}[/calc][/tmp]
+[tmp page_title][L]Administration[/L]: [calc]$Config->{CatalogName}[/calc][/tmp]
 [set ui_class]Admin[/set]
 [tmp help_name]genconfig.main[/tmp]
 [tmp icon_name]icon_config.gif[/tmp]
@@ -13,12 +13,12 @@
 <tr><td align=left bgcolor=__UI_C_INTBLOCK__>
 <TABLE border=0>
 <TR>
-  <TD BGCOLOR=__UI_C_TOPBLOCKBAR__ COLSPAN=3><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1><CENTER>Catalog Information</CENTER></TD>
+  <TD BGCOLOR=__UI_C_TOPBLOCKBAR__ COLSPAN=3><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1><CENTER>[L]Catalog Information[/L]</CENTER></TD>
 </TR>
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
-	Catalog URL
+	[L]Catalog URL[/L]
 	</TH>
 	<TD>&nbsp; &nbsp;</TD>
 	<TD>[calc]$url=$Scratch->{ui_catalog_url};$url=~s%/index[^/]*%%;return qq{<A HREF="$url">$url}[/calc]</A></TD>
@@ -26,7 +26,7 @@
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
-	Secure URL
+	[L]Secure URL[/L]
 	</TH>
 	<TD>&nbsp; &nbsp;</TD>
 	<TD>[calc]return qq{<A HREF="$Config->{SecureURL}">$Config->{SecureURL}}[/calc]</A></TD>
@@ -34,26 +34,26 @@
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
-	Location of Error Logs
+	[L]Location of Error Logs[/L]
 	</TH>
 	<TD>&nbsp; &nbsp;</TD>
 	<TD>
-		Global: [version extended=1 global_error=1]<br>
-		Local: [version extended=1 local_error=1]
+		[L]Global[/L]: [version extended=1 global_error=1]<br>
+		[L]Local[/L]: [version extended=1 local_error=1]
 		</TD>
 </TR>
 
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
-	Active sessions
+	[L]Active sessions[/L]
 	[if cgi list_sessions]<br><small><i>
-	(last
+	([L]last[/L]
 	[calc] int (
 					$::Variable->{ACTIVE_SESSION_MINUTES}
 					|| ( ($Config->{SessionExpire} || 60) / 60)
 				)
-				 [/calc] minutes)</I></small>
+				 [/calc] [L]minutes[/L])</I></small>
 	[/if]
 	</TH>
 	<TD>&nbsp; &nbsp;</TD>
@@ -62,19 +62,19 @@
 														form='show_session=[loop-code]'
 														]">[loop-code]</A><BR>[/loop]
 	[else]
-		[page href="@@MV_PAGE@@" form="list_sessions=1"]Show active sessions</A>
+		[page href="@@MV_PAGE@@" form="list_sessions=1"][L]Show active sessions[/L]</A>
 		<br>
-		<small><i>(last
+		<small><i>([L]last[/L]
 		[calc] int (
 					$::Variable->{ACTIVE_SESSION_MINUTES}
 					|| ( ($Config->{SessionExpire} || 60) / 60)
 				)
-				 [/calc] minutes)</I></small>
+				 [/calc] [L]minutes[/L])</I></small>
 
 	[/else]
 	[/if]
 	[if cgi show_session]
-		<P><B>Showing session: [cgi show_session]</B>
+		<P><B>[L]Showing session[/L]: [cgi show_session]</B>
 		<FONT SIZE=1>
 <XMP>
 [dump-session name="[cgi show_session]"]
@@ -89,12 +89,12 @@
 </TR>
 
 <TR>
-  <TD BGCOLOR=__UI_C_TOPBLOCKBAR__ COLSPAN=3><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1><CENTER>Interchange Server Information</CENTER></TD>
+  <TD BGCOLOR=__UI_C_TOPBLOCKBAR__ COLSPAN=3><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1><CENTER>[L]Interchange Server Information[/L]</CENTER></TD>
 </TR>
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
-	Interchange version
+	[L]Interchange version[/L]
 	</TH>
 	<TD>&nbsp; &nbsp;</TD>
 	<TD> [version]</A></TD>
@@ -102,7 +102,7 @@
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
-	Interchange PID
+	[L]Interchange PID[/L]
 	</TH>
 	<TD>&nbsp; &nbsp;</TD>
 	<TD>[version extended=1 pid=1]</TD>
@@ -110,7 +110,7 @@
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
-	Interchange SUID User
+	[L]Interchange SUID User[/L]
 	</TH>
 	<TD>&nbsp; &nbsp;</TD>
 	<TD>[version extended=1 uid=1]</TD>
@@ -118,7 +118,7 @@
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
-	Last time server restarted
+	[L]Last time server restarted[/L]
 	</TH>
 	<TD>&nbsp; &nbsp;</TD>
 	<TD>[calc] scalar localtime([file-info conf=1 name="interchange.pid" time=1])[/calc]</TD>
@@ -126,15 +126,15 @@
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
-	Last time changes applied
+	[L]Last time changes applied[/L]
 	</TH>
 	<TD>&nbsp; &nbsp;</TD>
-	<TD>[file name=`"etc/status.$Config->{CatalogName}"`] ([page __UI_BASE__/reconfig @@MV_PAGE@@]apply now</A>)</TD>
+	<TD>[file name=`"etc/status.$Config->{CatalogName}"`] ([page __UI_BASE__/reconfig @@MV_PAGE@@][L]apply now[/L]</A>)</TD>
 </TR>
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
-	<A HREF="[area __UI_BASE__/env_vars]">Environment</A> variables passed
+	<A HREF="[area __UI_BASE__/env_vars]">[L]Environment</A> variables passed[/L]
 	</TH>
 	<TD>&nbsp; &nbsp;</TD>
 	<TD>[version extended=1 env=1]</TD>
@@ -145,12 +145,12 @@
 </TR>
 
 <TR>
-  <TD BGCOLOR=__UI_C_TOPBLOCKBAR__ COLSPAN=3><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1><CENTER>Perl Information</CENTER></TD>
+  <TD BGCOLOR=__UI_C_TOPBLOCKBAR__ COLSPAN=3><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1><CENTER>[L]Perl Information[/L]</CENTER></TD>
 </TR>
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
-	<A HREF="[area href="@@MV_PAGE@@" form="more_perl=1"]">Perl Version</A>
+	<A HREF="[area href="@@MV_PAGE@@" form="more_perl=1"]">[L]Perl Version[/L]</A>
 	</TH>
 	<TD>&nbsp; &nbsp;</TD>
 	<TD>Perl [version extended=1 perl=1 perl_config="[cgi more_perl]"]
@@ -159,7 +159,7 @@
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
-	Optional Module Information
+	[L]Optional Module Information[/L]
 	</TH>
 	<TD>&nbsp; &nbsp;</TD>
 	<TD> [version extended=1 modules=1]</A></TD>
@@ -167,7 +167,7 @@
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
-	Safe operations untrapped
+	[L]Safe operations untrapped[/L]
 	</TH>
 	<TD>&nbsp; &nbsp;</TD>
 	<TD>[version extended=1 safe=1]</TD>
@@ -178,12 +178,12 @@
 </TR>
 
 <TR>
-  <TD BGCOLOR=__UI_C_TOPBLOCKBAR__ COLSPAN=3><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1><CENTER>Database Information</CENTER></TD>
+  <TD BGCOLOR=__UI_C_TOPBLOCKBAR__ COLSPAN=3><img src="bg.gif" width=__UI_MAIN_WIDTH__ height=1><CENTER>[L]Database Information[/L]</CENTER></TD>
 </TR>
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
-	Database Interfaces
+	[L]Database Interfaces[/L]
 	</TH>
 	<TD>&nbsp; &nbsp;</TD>
 	<TD VALIGN=top> [version extended=1 db=1]</TD>
@@ -191,7 +191,7 @@
 
 <TR>
 	<TH VALIGN=TOP ALIGN=RIGHT>
-	Database Tables
+	[L]Database Tables[/L]
 	</TH>
 	<TD>&nbsp; &nbsp;</TD>
 	<TD VALIGN=top>	<small>
