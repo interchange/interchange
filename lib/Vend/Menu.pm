@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.21 2003-01-14 00:24:27 mheins Exp $
+# $Id: Menu.pm,v 2.22 2003-01-20 16:50:28 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.21 $, 10);
+$VERSION = substr(q$Revision: 2.22 $, 10);
 
 use Vend::Util;
 use strict;
@@ -947,6 +947,30 @@ EOF
 
 	push @out, $out;
 
+	if($opt->{specific_image_toggle}) {
+		$opt->{specific_image_toggle} =~ s/\D+//;
+		if(defined $opt->{specific_image_base}) {
+			$opt->{specific_image_base} =~ s:/*$:/:;
+		}
+		else {
+			$opt->{specific_image_base} = $Vend::Cfg->{ImageDir};
+		}
+	}
+
+	if($opt->{specific_image_link}) {
+		if(defined $opt->{specific_image_base}) {
+			$opt->{specific_image_base} =~ s:/*$:/:;
+		}
+		else {
+			$opt->{specific_image_base} = $Vend::Cfg->{ImageDir};
+		}
+	}
+
+	$opt->{image_link_extra} = Vend::Tags->jsq($opt->{image_link_extra});
+	$opt->{image_link_extra} ||= qq{'border=0'};
+
+	$opt->{specific_image_toggle} ||= 0;
+
 	push @out, <<EOF;
 var ${vpf}next_level = 0;
 var ${vpf}openstring = '';
@@ -956,14 +980,44 @@ var ${vpf}link_class_closed = '$opt->{link_class_closed}';
 var ${vpf}link_style = '$opt->{link_style}';
 var ${vpf}link_style_open = '$opt->{link_style_open}';
 var ${vpf}link_style_closed = '$opt->{link_style_closed}';
+var ${vpf}specific_image_toggle = $opt->{specific_image_toggle};
+var ${vpf}specific_image_base = '$opt->{specific_image_base}';
+var ${vpf}specific_image_link;
+var ${vpf}image_link_extra = $opt->{image_link_extra};
 var ${vpf}toggle_class = '$opt->{toggle_class}';
 var ${vpf}toggle_anchor_clear = '$opt->{toggle_anchor_clear}';
 var ${vpf}toggle_anchor_closed = '$opt->{toggle_anchor_closed}';
 var ${vpf}toggle_anchor_open = '$opt->{toggle_anchor_open}';
 var ${vpf}treebox = document.getElementById('${vpf}treebox');
+if(${vpf}image_link_extra)
+	${vpf}image_link_extra = ' ' + ${vpf}image_link_extra;
+var alert_shown;
 EOF
 
+	push @out, "${vpf}specific_image_link = 1;"
+		if $opt->{specific_image_link};
+
 	push @out, <<EOF unless $opt->{no_emit_code};
+
+function ${vpf}image_link (rec) {
+	if(rec == undefined)
+		return;
+	var out;
+	if(rec[ ${vpf}IMG_UP ]) {
+		out = '<img src="';
+		out += ${vpf}specific_image_base;
+		out += rec[ ${vpf}IMG_UP ];
+		out += '"';
+		out += ${vpf}image_link_extra;
+		out += '>';
+// alert('img=' + out);
+	}
+	else {
+		out = rec[${vpf}NAME];
+	}
+	return out;
+}
+
 function ${vpf}tree_link (idx) {
 
 	var out = '';
@@ -978,6 +1032,18 @@ function ${vpf}tree_link (idx) {
 	if(l[${vpf}MV_LEVEL] > ${vpf}next_level)
 		return '';
 
+	var spec_toggle = 0;
+	if(${vpf}specific_image_toggle > 0) {
+		var toglevel = ${vpf}specific_image_toggle - 1;
+// if(alert_shown == undefined) {
+// alert('specific image toggle triggered, toglevel=' + toglevel + ", mv_level=" + l[${vpf}MV_LEVEL]);
+// alert_shown = 1;
+// }
+		if(l[${vpf}MV_LEVEL] <= toglevel) {
+			spec_toggle = 1;
+		}
+	}
+
 	var i;
 	var needed = l[${vpf}MV_LEVEL];
 	for(i = 1; i <= needed; i++)
@@ -989,13 +1055,31 @@ function ${vpf}tree_link (idx) {
 		if(${vpf}openstatus[idx] == 1) {
 			tclass = ${vpf}link_class_open;
 			tstyle = ${vpf}link_style_open;
-			tanchor = ${vpf}toggle_anchor_open;
+			if(spec_toggle > 0) {
+				tanchor = '<img border=0 src="' + ${vpf}specific_image_base + l[${vpf}IMG_DN] + '">';
+// if(alert_shown < 2) {
+// alert('tanchor=' + tanchor);
+// alert_shown = 2;
+// }
+			}
+			else {
+				tanchor = ${vpf}toggle_anchor_open;
+			}
 			${vpf}next_level = l[${vpf}MV_LEVEL] + 1;
 		}
 		else {
 			tclass = ${vpf}link_class_closed;
 			tstyle = ${vpf}link_style_closed;
-			tanchor = ${vpf}toggle_anchor_closed;
+			if(spec_toggle > 0) {
+				tanchor = '<img border=0 src="' + ${vpf}specific_image_base + l[${vpf}IMG_UP] + '">';
+// if(alert_shown < 2) {
+// alert('tanchor=' + tanchor);
+// alert_shown = 2;
+// }
+			}
+			else {
+				tanchor = ${vpf}toggle_anchor_closed;
+			}
 			${vpf}next_level = l[${vpf}MV_LEVEL];
 		}
 
@@ -1013,19 +1097,25 @@ function ${vpf}tree_link (idx) {
 		next_level = l[${vpf}MV_LEVEL];
 	}
 
-	if(l[${vpf}PAGE]) {
-		out = out + '<a href="' + l[${vpf}PAGE] + ${vpf}openstring + '"';
-		if(tclass)
-			out = out + ' class="' + tclass + '"';
-		if(tstyle)
-			out = out + ' style="' + tstyle + '"';
-		if(l[${vpf}DESCRIPTION])
-			out = out + ' title="' + l[${vpf}DESCRIPTION] + '"';
-		out = out + '>';
-		out = out + l[${vpf}NAME] + '</a>';
-	}
-	else {
-		out = out + l[${vpf}NAME];
+	if(spec_toggle == 0) {
+		if(l[${vpf}PAGE]) {
+			out = out + '<a href="' + l[${vpf}PAGE] + ${vpf}openstring + '"';
+			if(tclass)
+				out = out + ' class="' + tclass + '"';
+			if(tstyle)
+				out = out + ' style="' + tstyle + '"';
+			if(l[${vpf}DESCRIPTION])
+				out = out + ' title="' + l[${vpf}DESCRIPTION] + '"';
+			out = out + '>';
+			if(${vpf}specific_image_link) 
+				out += ${vpf}image_link(l);
+			else
+				out += l[${vpf}NAME];
+			out += '</a>';
+		}
+		else {
+			out = out + l[${vpf}NAME];
+		}
 	}
 	out = out + '<br>';
 
