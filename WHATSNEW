@@ -455,6 +455,33 @@ UI
 
 * Many, many, minor bug fixes and improvements.
 
+Swish Search
+------------
+
+* Added module to search indexes with Swish.
+
+* To use, you must add to interchange.cfg:
+
+	Require module Vend::Swish
+	AddDirective Swish hash
+	Variable swish Vend::Swish
+
+* The search is called with st=swish (same as mv_searchtype=swish).
+
+* The fields to return are configurable, and default to;
+
+	rf=code score title url mod_date filesize
+	fn=code score title url mod_date filesize
+
+  These correspond to:
+
+			code		swishreccount
+			score		swishrank
+			url			swishdocpath
+			title		swishtitle
+			filesize	swishdocsize
+			mod_date	swishlastmodified
+
 mod_interchange
 ---------------
 
