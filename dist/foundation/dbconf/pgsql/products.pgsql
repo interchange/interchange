@@ -7,7 +7,7 @@ Database  products  USER         __SQLUSER__
 Database  products  PASS         __SQLPASS__
 #endif
 Database  products  KEY          sku
-Database  products  COLUMN_DEF   "sku=VARCHAR(14) NOT NULL PRIMARY KEY"
+Database  products  COLUMN_DEF   "sku=VARCHAR(64) NOT NULL PRIMARY KEY"
 Database  products  COLUMN_DEF   "description=VARCHAR(128)"
 Database  products  COLUMN_DEF   "title=VARCHAR(128)"
 Database  products  COLUMN_DEF   "artist=VARCHAR(128)"
