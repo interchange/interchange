@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.7 2001-12-06 03:13:54 jon Exp $
+# $Id: Parse.pm,v 2.8 2002-01-09 19:29:47 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -1749,10 +1749,12 @@ sub _find_tag {
 	return ($eaten);
 }
 
-# checks for implicit tags
-# INT is special in that it doesn't get pushed on @attrseq
+# Implicit tag attributes
+# These are deprecated. Please do not document them,
+# as they may go away in the future.
 sub implicit {
 	my($self, $tag, $attr) = @_;
+	# 'int' is special in that it doesn't get pushed on @attrseq
 	return ('interpolate', 1, 1) if $attr eq 'int';
 	return ($attr, undef) unless defined $Implicit{$tag} and $Implicit{$tag}{$attr};
 	my $imp = $Implicit{$tag}{$attr};
