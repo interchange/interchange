@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.25 2003-02-28 18:26:49 jon Exp $
+# $Id: Data.pm,v 2.26 2003-03-31 15:42:36 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -2143,6 +2143,7 @@ sub update_data {
 							 );
 			}
 			$select_key = $value if $_ eq $prikey;
+			not defined $value and $value = '';
 			push(@v, $value);
 		}
 
