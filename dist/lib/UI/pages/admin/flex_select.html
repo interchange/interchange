@@ -140,6 +140,10 @@
 [update values]
 <!-- ----- BEGIN REAL STUFF ----- -->
 <FORM ACTION="[area @@MV_PAGE@@]" METHOD=GET>
+<INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
+<INPUT TYPE=hidden NAME=mv_action        VALUE=back>
+<INPUT TYPE=hidden NAME=ui_show_fields VALUE="[cgi ui_show_fields]">
+
 <table>
 <tr>
 <td>
@@ -156,11 +160,11 @@
 		[/loop]
 </td>
 <td>
-<input NAME=ui_text_qualification size=16> <INPUT TYPE=submit VALUE="Limit with search"> 
- <INPUT TYPE=submit VALUE="Temporarily remove checked fields"> 
+<input NAME=ui_text_qualification size=16><INPUT TYPE=submit VALUE="Limit with search">
 </td>
 </tr>
 </table>
+</FORM>
 [if scratch ui_failure]
 <P>
 <BLOCKQUOTE>
@@ -288,14 +292,15 @@ EOF
 
 	my (@limit_field) = split " ", $CGI->{ui_limit_fields};
 
-Log("show_field: " . $Tag->uneval( { ref => \@cols } ));
-Log("cols ary:   " . $Tag->uneval( { ref => \@cols } ));
+#Log("show_field: " . $Tag->uneval( { ref => \@cols } ));
+#Log("cols ary:   " . $Tag->uneval( { ref => \@cols } ));
+#Log("limit_fields ary: " . $Tag->uneval( { ref => \@limit_field } ));
 	if(@limit_field) {
-Log("limit_fields ary: " . $Tag->uneval( { ref => \@limit_field } ));
+#Log("limit_fields ary: " . $Tag->uneval( { ref => \@limit_field } ));
 		@limit_field{@limit_field} = ();
-Log("limit_fields: " . $Tag->uneval( { ref => \%limit_field } ));
+#Log("limit_fields: " . $Tag->uneval( { ref => \%limit_field } ));
 		@cols = grep ! exists($limit_field{$_}), @cols;
-Log("cols ary:   " . $Tag->uneval( { ref => \@cols } ));
+#Log("cols ary:   " . $Tag->uneval( { ref => \@cols } ));
 	}
 
 	unshift(@cols, $Scratch->{keyname})
@@ -322,20 +327,27 @@ Log("cols ary:   " . $Tag->uneval( { ref => \@cols } ));
 EOF
 	return $out_message;
 [/perl]
+</FORM>
 
 <!-- tq: [scratch sparams] -->
- [scratch sparams]
-
+<TABLE CELLSPACING=1 cellmargin=3>
+<FORM ACTION="[area @@MV_PAGE@@]" METHOD=POST>
 <INPUT TYPE=hidden NAME=mv_data_table    VALUE="[cgi mv_data_table]">
+[if cgi ui_meta_view]
+[return-to]
+[else]
+<INPUT TYPE=hidden NAME=ui_meta_specific VALUE="[cgi ui_meta_specific]">
 <INPUT TYPE=hidden NAME=ui_page_title    VALUE="[cgi ui_page_title]">
 <INPUT TYPE=hidden NAME=ui_page_title    VALUE="[cgi ui_page_banner]">
 <INPUT TYPE=hidden NAME=ui_meta_specific VALUE="[cgi ui_meta_specific]">
 <INPUT TYPE=hidden NAME=ui_limit_fields VALUE="[cgi ui_limit_fields]">
+<INPUT TYPE=hidden NAME=ui_show_fields VALUE="[cgi ui_show_fields]">
 <INPUT TYPE=hidden NAME=ui_return_to     VALUE="@@MV_PAGE@@">
 <INPUT TYPE=hidden NAME=ui_return_to     VALUE="mv_data_table=[cgi mv_data_table]">
 <INPUT TYPE=hidden NAME=ui_return_to     VALUE="ui_sequence_edit=1">
+[/else]
+[/if]
 <INPUT TYPE=hidden NAME=mv_action        VALUE=back>
-<TABLE CELLSPACING=1 cellmargin=3>
 <TR BGCOLOR="__UI_C_TITLEBARBG__">
 [loop list="[cgi ui_description_fields]"]
 <TH[loop-calc]
@@ -350,10 +362,8 @@ EOF
 					form='
 						mv_data_table=[cgi mv_data_table]
 						mv_arg=[loop-code]
-						ui_limit_fields=[cgi ui_limit_fields]
-						ui_show_fields=[cgi ui_show_fields]
 					'
-				]"><IMG ALT="select by [loop-code]" SRC="@_UI_IMG_@admin/layout.gif" BORDER=0></A>&nbsp;<INPUT TYPE=checkbox NAME=ui_limit_fields VALUE="[loop-code]"></TH>
+				]"><IMG ALT="select by [loop-code]" SRC="@_UI_IMG_@admin/layout.gif" BORDER=0></A></TH>
 [/loop]
 </tr>
 <TR BGCOLOR="__UI_C_TITLEBARBG__">
@@ -373,16 +383,12 @@ EOF
 							ui_text_qualification=$ui_text_qualification
 							mv_data_table=$CGI->{mv_data_table}
 							ui_sort_field=$f
-							ui_show_fields=$CGI->{ui_show_fields}
-							ui_limit_fields=$CGI->{ui_limit_fields}
 							ui_sort_option=$o
 						);
 					`
 				]">[loop-code]</TH>
 [/loop]
 </tr>
-</FORM>
-<FORM ACTION="[area @@MV_PAGE@@]" METHOD=POST>
 [search-region more=1 arg="[scratch sparams]"]
 [search-list]
 <TR [item-alternate 2]BGCOLOR="__UI_T_ROW_EVEN__"[else]BGCOLOR="__UI_T_ROW_ODD__"[/else][/item-alternate]>
@@ -438,6 +444,7 @@ More rows: [decade-next][/decade-next] [more] [decade-prev][/decade-prev]
 [/more-list]
 </table>
 
+[if !cgi ui_meta_view]
 [button text="Edit checked records in sequence"]
 ui_sequence_edit=[calc]
 	$CGI->{item_id_left} = $CGI->{item_id};
@@ -454,6 +461,7 @@ ui_sequence_edit=[calc]
 mv_nextpage=__UI_BASE__/flex_editor
 mv_todo=return
 [/button]
+[/if]
 
 &nbsp;&nbsp;&nbsp;&nbsp;
 
@@ -461,8 +469,7 @@ mv_todo=return
 		confirm="Are you sure you want to delete the checked records?"]
 [flag type=write table="[cgi mv_data_table]"]
 deleterecords=1
-mv_todo=back
-mv_nextpage=@@MV_PAGE@@
+mv_click=db_maintenance
 [/button]
 </FORM>
 [/search-region]
