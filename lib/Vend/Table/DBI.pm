@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.6 2000-12-17 07:08:30 heins Exp $
+# $Id: DBI.pm,v 1.25.2.7 2000-12-21 11:32:39 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.6 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.7 $, 10);
 
 use strict;
 
@@ -175,6 +175,11 @@ sub create {
 		die "connect failed (create) -- $msg\n";
 	}
 
+	# Allow multiple tables in different DBs to have same local name
+	$tablename = $config->{REAL_NAME}
+		if $config->{REAL_NAME};
+	
+	# Used so you can do query() and nothing else
 	if($config->{HANDLE_ONLY}) {
 		return bless [$config, $tablename, undef, undef, undef, $db], $class;
 	}
@@ -356,6 +361,16 @@ sub open_table {
 		}
 		$DBI_connect_cache{$config->{dsn_id}} = $db;
 #::logDebug("connected to $config->{dsn_id}");
+	}
+
+	# Allow multiple tables in different DBs to have same local name
+	$tablename = $config->{REAL_NAME}
+and ::logDebug("REAL_NAME=$config->{REAL_NAME}")
+		if $config->{REAL_NAME};
+
+	# Used so you can do query() and nothing else
+	if($config->{HANDLE_ONLY}) {
+		return bless [$config, $tablename, undef, undef, undef, $db], $class;
 	}
 
 	check_capability($config, $db->{Driver}{Name});
