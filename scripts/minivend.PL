@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.5.x
 #
-# $Id: minivend.PL,v 1.14 2000-08-19 04:17:02 heins Exp $
+# $Id: minivend.PL,v 1.15 2000-08-26 16:43:23 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -1813,19 +1813,31 @@ EOF
 	$Vend::Session->{extension} = $1 || '';
 #::logDebug("path=$Vend::FinalPath");
 
+  DOACTION: {
     @path = split('/', $Vend::FinalPath, 2);
 	if (defined $CGI::values{mv_action}) {
-		$Vend::Action = 'process';
 		$CGI::values{mv_todo} = $CGI::values{mv_action}
-			if ! defined $CGI::values{mv_todo} and ! defined $CGI::values{mv_doit};
-		$CGI::values{mv_nextpage} = $Vend::FinalPath
-			if ! defined $CGI::values{mv_nextpage};
+			if ! defined $CGI::values{mv_todo}
+			and ! defined $CGI::values{mv_doit};
+		if($path[0] eq 'ui_wrap') {
+			$Vend::Action = 'ui_wrap';
+			delete $CGI::values{mv_action};
+			shift(@path);
+			$CGI::values{mv_nextpage} = $path[0]
+				if ! defined $CGI::values{mv_nextpage};
+			$path[0] = "process/$path[0]";
+		}
+		else {
+			$Vend::Action = 'process';
+			$CGI::values{mv_nextpage} = $Vend::FinalPath
+				if ! defined $CGI::values{mv_nextpage};
+		}
 	}
 	else {
 		$Vend::Action = shift @path;
 	}
 
-#::logDebug("action=$Vend::Action path=$Vend::FinalPath");
+::logGlobal("action=$Vend::Action path=$Vend::FinalPath");
 	my ($sub, $status);
 	Vend::Interpolate::reset_calc();
 	if(defined $Vend::Cfg->{ActionMap}{$Vend::Action}) {
@@ -1847,6 +1859,7 @@ EOF
 			$status = 1;
 		}
 	};
+	(undef $Vend::RedoAction, redo DOACTION) if $Vend::RedoAction;
 
 	if($@) {
 		undef $status;
@@ -1879,6 +1892,7 @@ EOF
 			$sub->();
 		}
 	}
+  }
 
 # TRACK
 	$Vend::Track->filetrack();
@@ -2161,7 +2175,7 @@ sub catch_warnings {
 		return;
 	}
 	$SIG{'__WARN__'} = sub {
-		return @_ unless $_[0] =~ /^Use of unitialized /;
+		return @_ unless $_[0] =~ /^Use of uninitialized /;
 		my $warn = $_[0];
 		my $configline;
 		if($warn =~ /CONFIG>\s+chunk\s+(\d+)/) {
@@ -2311,6 +2325,21 @@ sub parse_options {
 
 }
 
+# This routine is called at startup. It performs the program and
+# catalog configuration functions, to wit:
+#
+#   --- seed random generator
+#   --- set up a couple of preloaded arrays
+#   --- parse command-line options
+#   --- read global configuration file minivend.cfg and
+#       get catalog definitions
+#   --- configure each catalog and store its configuration
+#       in a reference mapped to the SCRIPT_NAME or catalog name
+#   --- determine the program mode, and if it is to begin daemon
+#       operation, run the Vend::Server::run_server() routine.
+#   --- If Vend::Server::run_server() is entered, that will
+#       never exit until a signal is sent
+#
 sub main_loop {
 	# Setup
 	unless ($Global::Windows) {
@@ -2318,19 +2347,31 @@ sub main_loop {
 		$ENV{'SHELL'} = '/bin/sh';
 		$ENV{'IFS'} = '';
 	}
+	# Initially seed the random generator
 	srand;
-	setup_escape_chars();
-	my $status = 0;
 
+	# Set up a couple of arrays
+	setup_escape_chars();
+
+	# These are only starting values, can be changed by command-line
+	# options or the minivend.cfg file
 	$Global::ConfDir = "$Global::VendRoot/etc";
 	$Global::PIDfile = "$Global::ConfDir/minivend.pid";
+
 	$Vend::mode = 'serve';      # mode will be reset by options if appropriate
-	parse_options() or die usage() . "\n";
+
+	# Parse command line options, getting mode if not -serve
+	# May actually exit in some situations
+	parse_options()
+		or die usage() . "\n";
+
+	# Cannot run as root unless in 'make test'
 	if($> == 0 and ! $Global::Windows) {
 		die errmsg("The Interchange server must not be run as root.\n")
 			unless $ENV{MINIVEND_ROOT} =~ m{/blib$};
 	}
 
+	## Bring in the CyberCash libraries if present
 	## Moved here to prevent unwanted messages
 	eval {
 		package Vend::Order;
@@ -2360,11 +2401,14 @@ sub main_loop {
 
 	$Vend::CyberCash = $Vend::CyberCash || ! $@;
 
+	# These modules no longer necessary, why take up memory?
 	delete $INC{'FindBin.pm'};
 	delete $INC{'Getopt/Long.pm'};
+
 	$Global::ErrorFile = "$Global::VendRoot/error.log"
 		if $Global::ErrorFile eq $Global::InitialErrorFile;
 	undef $Global::InitialErrorFile;
+
 	chdir($Global::VendRoot) 
 		or die "Couldn't change directory to $Global::VendRoot: $!\n";
 	$Global::ConfigFile = "$Global::VendRoot/minivend.cfg"
@@ -2373,21 +2417,21 @@ sub main_loop {
 	die "Interchange not configured, no $Global::ConfigFile.\n"
 		unless -f $Global::ConfigFile;
 
-# OPTION_EXTENSION
-#	parse_stdin() unless eof();
-# END OPTION_EXTENSION
-
 	if(! $Global::DEBUG) {
 		$Global::DEBUG = $ENV{MINIVEND_DEBUG} || 0;
 	}
 
 print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DEBUG;
 
+	# Restrictive file permissions to begin with
 	umask 077;
+
+	# Read minivend.cfg (or whatever its name is set to be)
 	global_config();
 
 #::logDebug(::uneval(\%Global::Catalog));
 
+	# This is only gotten to if -reconfig passed in on command line
 	if($Vend::mode eq 'reconfig') {
 		eval {
 			signal_reconfig(@Vend::CatalogToReconfig);
@@ -2398,6 +2442,9 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 
 	$| = 1;
 	logGlobal( "Interchange V$VERSION");
+
+	# The global configuration set up which catalogs exist.
+	# Certain ones may have been skipped with -skip on command line...
 	CATCONFIG: {
 		my $i = 0;
 		my ($g, $c, $name);
@@ -2415,12 +2462,15 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 				next;
 			}
 
+			# Set WARN handler to atch certain warnings and maybe elucidate
 			catch_warnings(1);
+
+			# This actually configures the catalog
 			eval {
 				$c = config_named_catalog($name, "at server startup");
 			};
-			catch_warnings(0);
 
+			# See if catalog configuration erred in some way....
 			if ($@ or ! defined $c) {
 				my $msg = $@;
 				print "\n$msg\n\a$g->{'name'}: error in configuration. Skipping.\n";
@@ -2431,6 +2481,10 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 				next;
 			}
 
+			# Reset WARN handler
+			catch_warnings(0);
+
+			# Set up the mapping of the main SCRIPT_NAME
 			$Global::Selector{$g->{script}} = $c;
 
 			# Set up aliases
@@ -2448,6 +2502,8 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 				}
 			}
 # STATICPAGE
+			# This is probably not useful any more.....use the
+			# regen feature of the UI.
 			if ($Vend::CatalogToBuild{$g->{name}}) {
 				require Vend::Misc::Static;
 				eval {
@@ -2467,10 +2523,11 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 
 	if ($Vend::mode eq 'serve') {
 		undef $Vend::Foreground;
-		# This should never return unless killed or an error
+
+		# Here we prepare enter the daemon mode.
 
 		# Set the $0 to something not having 'perl' (won't
-		# work on Solaris and IRIX)
+		# work on Solaris and IRIX among possibly others)
 		if(defined $Global::Variable->{MV_DOLLAR_ZERO}) {
 			$0 = $Global::Variable->{MV_DOLLAR_ZERO};
 			$0 = "minivend --> $Global::VendRoot"
@@ -2480,12 +2537,14 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 			$0 = 'minivend';
 		}
 
-
+		# We won't have much output on any of this, but if we get some
+		# we want it immediately
         select STDERR; 
         $| = 1;
         select STDOUT;
         $| = 1;
 
+		# This should never return unless killed or a catastrophic error
         Vend::Server::run_server();
 	}
 	elsif ($Vend::mode eq 'test' || $Vend::mode eq 'build') {
@@ -2498,6 +2557,7 @@ print errmsg("\n##### DEBUG MODE, running in foreground #####\n") if $Global::DE
 
 }
 
+### This is where we run after the first portion of the initialization
 eval { main_loop(); };
 if ($@) {
 	my($msg) = ($@);
