@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.0 2001-07-18 02:23:20 jon Exp $
+# $Id: DBI.pm,v 2.1 2001-10-18 04:16:16 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.0 $, 10);
+$VERSION = substr(q$Revision: 2.1 $, 10);
 
 use strict;
 
@@ -912,6 +912,15 @@ sub set_slice {
 	$tkey = $s->quote($key, $s->[$KEY]) if defined $key;
 #::logDebug("tkey now $tkey");
 
+	if(ref $fary ne 'ARRAY') {
+		my $href = $fary;
+		if(ref $href ne 'HASH') {
+			$href = { $fary, $vary, @_ }
+		}
+		$vary = [ values %$href ];
+		$fary = [ keys   %$href ];
+	}
+
 	if(defined $tkey) {
 		my $fstring = join ",", map { "$_=?" } @$fary;
 		$sql = "update $s->[$TABLE] SET $fstring WHERE $s->[$KEY] = $tkey";
@@ -1646,7 +1655,7 @@ eval {
 	}
 } # MVSEARCH
 #::logDebug("finished query, rc=$rc ref=$ref arrayref=$opt->{arrayref} Tmp=$Vend::Interpolate::Tmp->{$opt->{arrayref}}");
-	if(ref $ref) {
+	if(CORE::ref($ref)) {
 		# make sure rc is set if we got a ref from MVSEARCH
 		$rc = scalar @{$ref};
 	}
