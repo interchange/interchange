@@ -2,40 +2,45 @@
 
                 U P G R A D I N G     I N T E R C H A N G E
 
-Interchange is designed to be compatible between major versions, and
-for the most part a catalog designed under Interchange 4.8 should
-be compatible with 5.0.
 
-More information on upgrades is available in the document icupgrade, part
-of the Interchange documentation package.
+Interchange is designed to be drop-in compatible in its major version.
 
-NOTE: All below procedures assume you have installed in
-      /usr/lib/interchange -- substitute paths as appropriate.
+ 5.0.x -- There should be few to no compatibility issues in
+          upgrading from another 5.x version.
 
-BACK UP EVERYTHING BEFORE YOU START!
+ 4.8.x -- There should be only a few issues in upgrading from 4.8.x; known
+          issues are shown below.
+          
+ 4.6.x -- Upgrading from 4.6.x and before is problematic, and you would
+          be well-advised to find a competent consultant to help you.
+          interchange-biz@icdevgroup.org is a mail list designed to
+          help Interchange users connect with consultants.
 
-TO UPGRADE FROM 4.8.x
----------------------
+INSTALLING INTERCHANGE IN THE SAME LOCATION
+--------------------------------------------
 
-It is recommended that you:
+NOTE:    All below procedures assume you have installed in
+         /usr/local/interchange -- substitute paths as appropriate.
+
+WARNING: BACK UP EVERYTHING BEFORE YOU START!
 
     1. Make a tar backup of your Interchange software directory, i.e.
        
-        tar czvf ~/ic_backup.tar.gz /usr/lib/interchange 
+        tar czvf ~/ic_backup.tar.gz /usr/local/interchange 
 
     2. Unpack the new version of the software and change
        to that directory.
 
-        tar xzf interchange-5.x.tar.gz
-        cd interchange-5.x
+        tar xzf interchange-5.x.x.tar.gz
+        cd interchange-5.x.x
 
-	3. You can see the section below, "TO TEST BEFORE YOU UPGRADE", if
-	   you want to try it out before you switch your running catalog.
+    3. You can see the section below, "TO TEST BEFORE YOU UPGRADE", if
+       you want to try it out before you switch your running catalog.
 
     4. Install it in the same location as your current software:
 
         ## Create the makefile
-        perl Makefile.PL prefix=/usr/lib/interchange
+        perl Makefile.PL prefix=/usr/local/interchange
 
         ## Make the software
         make
@@ -50,18 +55,68 @@ It is recommended that you:
 
     6. Restart Interchange.
 
-    7. See the "problems with UserTags" section, below.
+That's it. Verify your catalog's operation, and you are live.
 
-That should be it. Test the catalog to make sure it works. 
+---------------------------------------------------------------------------
+
+                K N O W N   I S S U E S
+
+KNOWN ISSUES UPGRADING FROM 5.0.x
+
+	None.
+
+
+KNOWN ISSUES UPGRADING FROM 4.8.x
+
+Interchange is designed to be compatible between major versions, and
+for the most part a catalog designed under Interchange 4.8 should
+be compatible with 5.0.
+
+More information on upgrades is available in the document icupgrade, part
+of the Interchange documentation package.
 
 UPGRADE NOTES FOR FOUNDATION-STYLE CATALOGS
 -------------------------------------------
 
-Add new columns extended and default to products/mv_metadata.asc.
+* Add a new columns "extended" products/mv_metadata.asc. This just involves
+  adding a TAB and "extended" to the end of the first line of the file.
 
-Remove variables UI_IMAGE_DIR and UI_IMAGE_DIR_SECURE or point
-them to the new location, e.g. replace /interchange/
-with /interchange-5/.
+* Remove variables UI_IMAGE_DIR and UI_IMAGE_DIR_SECURE or point
+  them to the new location, e.g. replace /interchange/
+  with /interchange-5/.
+
+* If you didn't follow Interchange's SKU naming convention for Matrix
+  options, and assigned them arbitrary part numbers, or you hand-edited
+  the options table, you may find that your product options don't work. 
+  You should post the question to the user mail list or contact a
+  competent Interchange consultant at interchange-biz@icdevgroup.org.
+
+* You might receive a message about "history-scan tag overrides global
+  definition". This is because that tag was moved into the Interchange
+  global UserTag area.
+  
+  To stop this message, simply remove the history-scan
+  UserTag from your catalog.cfg file. 
+  
+  If you customized that tag, you will have to either perform the
+  customizations on the global tag or put up with the message.
+
+* The static-page build capability is no longer supported in
+  Interchange 5. You will receive warnings about "Directive StaticPath
+  no longer supported at line XXX". 
+
+  To stop these warnings, remove the NoCache directive and any
+  directive beginning with "Static" from your catalog.cfg file.
+  In the foundation-style catalog, these are all located near
+  each other.
+
+  If you use the static page build facility, there are other means of
+  accomplishing the same thing with scripts. Contact a competent
+  Interchange consultant at interchange-biz@icdevgroup.org to get help.
+
+* See the section "PROBLEMS WITH USERTAGS" below.
+
+---------------------------------------------------------------------------
 
 TO TEST BEFORE YOU UPGRADE
 --------------------------
@@ -74,31 +129,31 @@ something could happen. It should not happen in a catalog that is
 based on Foundation and not heavily customized (i.e. using global UserTag
 routines).
 
-1. Install the new Interchange 5.x Interchange in /usr/lib/interchange-5
+1. Install the new Interchange 5.x.x in /usr/lib/interchange-5.x.x
 using the procedure from INSTALL.
 
-2. Make /usr/lib/interchange-5/interchange.cfg match your
+2. Make /usr/lib/interchange-5.x.x/interchange.cfg match your
 /usr/lib/interchange.cfg. Note that there may be new options; but the
 existing one should work if you just copy it.
 
 3. Run bin/compile_link:
 
     cd /usr/lib/interchange-5
-	bin/compile_link -p 7787
+    bin/compile_link -p 7787
     
 NOTE: If you use the INET mode linking method, you have to run the
       test server on a different port. Assuming you use the standard
       7786 on your live catalog, you would add to interchange.cfg:
 
-	     TcpMap  localhost:7787
+         TcpMap  localhost:7787
 
 After running compile_link, you should see four new files in the
-/usr/lib/interchange-5/src:
+/usr/lib/interchange-5.x.x/src:
 
--rwxr-xr-x    1 root     root   8088 Oct  3 09:59 tlink
--rwxr-xr-x    1 root     root   8088 Oct  3 09:59 tlink.localhost.7787
--rwxr-xr-x    1 root     root   7704 Oct  3 09:59 vlink
--rwxr-xr-x    1 root     root   7704 Oct  3 09:59 vlink._usr_lib_interchange_5_etc_socket
+-rwxr-xr-x  1 root  root  8088 Oct  3 09:59 tlink
+-rwxr-xr-x  1 root  root  8088 Oct  3 09:59 tlink.localhost.7787
+-rwxr-xr-x  1 root  root  7704 Oct  3 09:59 vlink
+-rwxr-xr-x  1 root  root  7704 Oct  3 09:59 vlink._usr_lib_interchange_5_etc_socket
 
 4. Note the Catalog lines in your interchange.cfg:
 
@@ -170,8 +225,17 @@ be significantly changed, and that all features of the UI may not be
 supported by your old catalog. The customer-facing side should function
 in much the same way.
 
-IF YOU UPGRADED FROM 4.6.x
---------------------------
+------------------------------------------------------------------------
+
+UPGRADING FROM 4.6.x
+
+It is not recommended that you update your catalog from 4.6.x unless
+you are very proficient in Perl and Interchange. It is usually better
+to build a new catalog from scratch, and integrate your look and 
+feel with that. Contact a competent Interchange consultant to help
+(interchange-biz@icdevgroup.org).
+
+That being said, here are some of the issues.
 
 If you have this line in interchange.cfg:
 
