@@ -63,7 +63,9 @@
 		unless $page =~ /$Config->{HTMLsuffix}$/;
 #Log("final page=$page");
 	push @out, '';
-	$Tag->write_relative_file($page, (join "\n", @out));
+	unless ($Tag->write_relative_file($page, (join "\n", @out))) {
+		$Scratch->{ui_error} = "Couldn't save page $page.";
+    }
 	$Scratch->{ui_output_page} = $page;
 	return;
 [/perl]
