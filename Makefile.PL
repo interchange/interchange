@@ -718,15 +718,7 @@ EOF
 sub MY::postamble {
 	return <<'EOF';
 UIDIR=dist/lib/UI
-<<<<<<< Makefile.PL
-<<<<<<< Makefile.PL
-UILANGS=de_DE nl_NL #fr_FR it_IT ru_RU
-=======
-UILANGS=de_DE nl_NL
->>>>>>> 2.3
-=======
 UILANGS=da_DK de_DE nl_NL sv_SE
->>>>>>> 2.5
 
 localefiles:
 	@for lang in $(UILANGS); do \
