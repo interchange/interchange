@@ -2,5 +2,6 @@
 /etc/interchange/catalogs.cfg
 /etc/interchange/interchange.cfg
 /etc/interchange/makecat.cfg
+/etc/interchange/robots.cfg
 /etc/init.d/interchange
 /etc/logrotate.d/interchange

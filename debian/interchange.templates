@@ -87,3 +87,25 @@ Default: false
 Description: Whether to enable the FullURL directive or not
  This setting determines if the whole URL is considered while checking
  for the corresponding catalog.
+
+Template: interchange/cansoap
+Type: note
+Description: SOAP server not available
+ Because the Perl module SOAP::Lite is not installed, you are unable
+ to run the Interchange SOAP server. To change this, install the
+ libsoap-lite-perl Debian package and run interchangeconfig SOAP=1.
+
+Template: interchange/soap
+Type: boolean
+Default: false
+Description: Whether to enable the SOAP server or not
+ This setting determines if the SOAP server is started or not.
+
+Template: interchange/robots
+Type: boolean
+Default: true
+Description: Whether to enable robots settings or not
+ The Interchange Debian package uses a separate configuration file
+ /etc/interchange/robots.cfg for the directives RobotUA, RobotIP
+ and RobotHost. It is recommended to include these settings so
+ Interchange can distinguish between robots and ordinary users.
