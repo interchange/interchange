@@ -6,7 +6,7 @@ Database  userdb  USER         __SQLUSER__
 Database  userdb  PASS         __SQLPASS__
 #endif
 Database  userdb  COLUMN_DEF   "code=VARCHAR(20) NOT NULL PRIMARY KEY"
-Database  userdb  COLUMN_DEF   "password=VARCHAR(20) NOT NULL"
+Database  userdb  COLUMN_DEF   "password=VARCHAR(20)"
 Database  userdb  COLUMN_DEF   "acl=text"
 Database  userdb  COLUMN_DEF   "mod_time=timestamp DEFAULT '2000-01-01'"
 Database  userdb  COLUMN_DEF   "s_nickname=text"
