@@ -1,6 +1,6 @@
 # Vend::Table::Common - Common access methods for Interchange databases
 #
-# $Id: Common.pm,v 2.25 2003-02-13 16:12:18 racke Exp $
+# $Id: Common.pm,v 2.26 2003-02-16 11:48:02 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -23,7 +23,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 2.25 $, 10);
+$VERSION = substr(q$Revision: 2.26 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -127,7 +127,11 @@ sub stuff {
     return $val;
 }
 
-*unstuff = \&Vend::Util::unhexify;
+sub unstuff {
+    my ($val) = @_;
+    $val =~ s,%(..),chr(hex($1)),eg;
+    return $val;
+}
 
 sub autonumber {
 	my $s = shift;
@@ -229,7 +233,7 @@ sub column_index {
     my ($s, $column) = @_;
 	$s = $s->import_db() if ! defined $s->[$TIE_HASH];
     my $i = $s->[$COLUMN_INDEX]{$column};
-    die "There is no column named '$column'" unless defined $i;
+    die "There is no column named '$column' in $s->[$FILENAME]" unless defined $i;
     return $i;
 }
 
