@@ -5,7 +5,7 @@
 [/calc]
 [set table_perm]1[/set]
 [set ui_class]Content[/set]
-[set page_title][L]Set up a survey[/L][/set]
+[set page_title][L]Set up surveys[/L][/set]
 [set help_name]survey.main[/set]
 [set icon_name]icon_pages.gif[/set]
 @_UI_STD_HEAD_@
@@ -25,17 +25,17 @@
 	  "][loop-code]	[loop-param label]
 [/loop][/tmp]
 
-<div class=titlebox>Edit an existing survey</div>
+<div class=titlebox>[L]Edit an existing survey[/L]</div>
 <ul>
 [loop list="[scratch survey_keys]" lr=1 head-skip=1]
 <li>[page href="__UI_BASE__/survey/overall" form="item_id=[loop-code]"][loop-code] -- [loop-param label]</A>
-	([page href=survey/standard form="survey_start=[loop-code]"]run</a>)
+	([page href=survey/standard form="survey_start=[loop-code]"][L]run[/L]</a>)
 	 </li>
 [/loop]
 </ul>
 
 
-<div class=titlebox>Create a new survey</div>
+<div class=titlebox>[L]Create a new survey[/L]</div>
 <blockquote>
 <form action="[area __UI_BASE__/survey/overall]">
 <input type=hidden name=mv_action value=back>
@@ -43,8 +43,8 @@
 <input type=hidden name="mv_filter:item_id" value=word>
 <table class=rseparator cellspacing=0 cellpadding=3>
 <tr class=rhead>
-	<td>Survey name</td>
-	<td colspan=2>Clone from</td>
+	<td>[L]Survey name[/L]</td>
+	<td colspan=2>[L]Clone from[/L]</td>
 </tr>
 <tr class=rownorm>
 	<td class=clabel>
@@ -64,7 +64,7 @@
 
 </form>
 </blockquote>
-<div class=titlebox>Access survey results</div>
+<div class=titlebox>[L]Access survey results[/L]</div>
 
 <blockquote>
 	[file-navigator initial_dir="logs/survey" no-up=1 no-new-file=1]
@@ -72,4 +72,4 @@
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: index.html,v 1.4 2003-07-19 22:07:55 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: index.html,v 1.5 2004-03-12 14:14:10 racke Exp $ -->
