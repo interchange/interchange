@@ -5,6 +5,15 @@
 
 ------------------------------------------------------------------------------
 
+Interchange 5.2.0 not yet released.
+
+Debian
+------
+  
+* Now creating system group for Interchange user instead of a regular one
+  (Closes: #246323)
+
+------------------------------------------------------------------------------
 
 Interchange 5.1.1 released 2004-04-20.
 
