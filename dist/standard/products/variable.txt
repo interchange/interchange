@@ -92,6 +92,7 @@ UI_PAGE_DIR	pages	Directories and Paths
 UI_SECURE		Admin Control
 UI_TEMPLATE_DIR	templates	Directories and Paths
 UI_TRAFFIC_STATS		Directories and Paths
+UI_WIDGET_TYPES		Admin Control
 UPS_COUNTRY_FIELD	country	Shipping
 UPS_ORIGIN	45056	Shipping
 UPS_POSTCODE_FIELD	zip	Shipping

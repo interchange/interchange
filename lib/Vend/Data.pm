@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.38 2004-04-11 16:34:50 mheins Exp $
+# $Id: Data.pm,v 2.39 2004-06-03 06:31:18 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -1983,20 +1983,21 @@ sub update_data {
 		}
 
 		for (my $i = 0; $i < @file_fields; $i++) {
-			unless (length($data{$file_fields[$i]}->[0])) {
+			my $nm = $file_fields[$i];
+			unless (length($data{$nm}->[0])) {
 				# no need for a file update
-				$data{$file_fields[$i]}->[0] = $file_oldfiles[$i];
+				$data{$nm}->[0] = $file_oldfiles[$i];
 				next;
 			}
 
 			# remove path components
-			$data{$file_fields[$i]}->[0] =~ s:.*/::; 
-			$data{$file_fields[$i]}->[0] =~ s:.*\\::; 
+			$data{$nm}->[0] =~ s:.*/::; 
+			$data{$nm}->[0] =~ s:.*\\::; 
 
 			if (length ($file_paths[$i])) {
 				# real file upload
-				$outfile = join('/', $file_paths[$i], $data{$file_fields[$i]}->[0]);
-#::logDebug("file upload: field=$file_fields[$i] path=$file_paths[$i] outfile=$outfile");
+				$outfile = join('/', $file_paths[$i], $data{$nm}->[0]);
+#::logDebug("file upload: field=$nm path=$file_paths[$i] outfile=$outfile");
 				my $ok;
 				if (-f $outfile) {
 					eval {
@@ -2018,17 +2019,17 @@ sub update_data {
 				} 
 				my $err;
 				Vend::Interpolate::tag_value_extended(
-										$file_fields[$i],
+										$nm,
 										{
 											test => 'isfile'
 										}
 										)
 					or do {
-						 logError("%s is not a file.", $data{$file_fields[$i]}->[0]);
+						 logError("%s is not a file.", $data{$nm}->[0]);
 						 next;
 					};
 				Vend::Interpolate::tag_value_extended(
-						$file_fields[$i],
+						$nm,
 						{
 							outfile => $outfile,
 							umask => $::Scratch->{mv_create_umask} || '022',
@@ -2043,9 +2044,15 @@ sub update_data {
 			}
 			else {
 				# preparing to dump file contents into database column
-				$data{$file_fields[$i]}->[0]
-					= Vend::Interpolate::tag_value_extended ($file_fields[$i],
+				if(my $nfield = $CGI::values{"mv_data_file_name_to_$nm"}) {
+					$data{$nfield}->[0] = $data{$nm}->[0];
+				}
+				$data{$nm}->[0]
+					= Vend::Interpolate::tag_value_extended ($nm,
 						{file_contents => 1});
+				if(my $sfield = $CGI::values{"mv_data_file_size_to_$nm"}) {
+					$data{$sfield}->[0] = length $data{$nm}->[0];
+				}
 			}
 		}
 	}

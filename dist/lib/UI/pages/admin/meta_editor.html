@@ -74,6 +74,7 @@ EOF
 	if($sneak_type) {
 		$extra_meta = $Tag->meta_record("_widget::$sneak_type", undef, undef, 1);
 	}
+
 	%me_opt = (
 	ui_data_fields => qq{
 		=Typical
@@ -124,6 +125,11 @@ EOF
 	   extended.data_cell_class
 	   extended.data_cell_style
 
+	   =File Upload
+
+	   extended.name_to
+	   extended.size_to
+
 	   =Advanced
 
 	   outboard
@@ -135,6 +141,9 @@ EOF
 
 	options	=> {
 		'extended.ui_sort_option' => qq{=--default--,f=Case insensitive, fr=Case insensitive/Reverse, n=Numeric, nr=Reverse Numeric},
+		'extended.size_to' => qq{columns::$m_table},
+		'extended.name_to' => qq{columns::$m_table},
+		'field' => qq{columns::$m_table},
 	},
 
 	filter => {
@@ -164,9 +173,13 @@ EOF
 		'extended.data_row_class_even' => 'Data row CSS class, even numbers',
 		'extended.data_cell_class' => 'Data cell CSS class',
 		'extended.data_cell_style' => 'Data cell CSS style',
+		'extended.lookup_query' => 'SQL for options',
+		'extended.lookup_merge' => 'SQL for options merge',
 		'extended.maxlength' => 'Maxlength',
 		'extended.check' => 'Profile check',
 		'extended.blank_default' => 'Default value',
+		'extended.size_to' => 'Field to store uploadblob size in',
+		'extended.name_to' => 'Field to store uploadblob file name in',
 	},
 	help => {
 		'extended.fs_data_calc' => 'Current record passed as $item',
@@ -174,11 +187,15 @@ EOF
 		'extended.maxlength' => 'For text widget (HTML maxlength=NN)',
 		'extended.blank_default' => 'Applies only when empty',
 		'extended.check' => 'Standard IC mv_profile checks -- required, postcode, etc.',
+		'extended.size_to' => 'if any -- must be in fields of table editor',
+		'extended.name_to' => 'if any -- must be in fields of table editor',
 	},
 	widget => {
 		extended => "textarea_5_50",
 		'extended.ui_more_alpha' => 'yesno',
 		'extended.ui_sort_option' => 'select',
+		'extended.size_to' => 'select',
+		'extended.name_to' => 'select',
 		'extended.fs_no_group' => 'yesno',
 		'extended.fs_display_filter' => 'text_50',
 		'extended.fs_data_calc' => 'textarea_4_70',
@@ -186,6 +203,12 @@ EOF
 		'extended.check' => 'textarea_2_50',
 	},
 	);
+
+	if($Variable->{UI_WIDGET_TYPES}) {
+#Debug("Found UI_WIDGET_TYPES");
+		$me_opt{options}{type} = $Variable->{UI_WIDGET_TYPES};
+#Debug("me_opt{options}=" . uneval($me_opt{options}));
+	}
 
 	if($extra_meta) {
 #Debug("Found extra_meta=" . uneval($extra_meta));
@@ -255,4 +278,4 @@ EOF
 	][/table-editor]
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Revision: 2.11 $ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.12 $ -->

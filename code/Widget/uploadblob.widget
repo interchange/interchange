@@ -1,0 +1,24 @@
+CodeDef uploadblob  Widget  1
+CodeDef uploadblob  Routine <<EOR
+sub {
+	# $column, $value, $record->{outboard}, $record->{width}
+    my ($opt) = @_;
+	my $name = $opt->{name};
+	my $size = $opt->{cols} || $opt->{width};
+
+	my $out = '';
+
+	if(my $n = $opt->{name_to}) {
+		$out .= qq{<INPUT TYPE=hidden NAME="mv_data_file_name_to_$name" VALUE="$n">};
+	}
+	if(my $s = $opt->{size_to}) {
+		$out .= qq{<INPUT TYPE=hidden NAME="mv_data_file_size_to_$name" VALUE="$s">};
+	}
+	
+	$size = qq{ SIZE="$size"} if $size > 0;
+    $out .= qq{<INPUT TYPE=hidden NAME="mv_data_file_field" VALUE="$name">
+<INPUT TYPE=file NAME="$name"$size>};
+	return $out;
+}
+EOR
+
