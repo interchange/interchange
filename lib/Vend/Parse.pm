@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.0.2.1 2001-08-14 18:38:33 jon Exp $
+# $Id: Parse.pm,v 2.0.2.2 2001-10-06 06:20:08 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.0.2.1 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.2 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -68,7 +68,7 @@ my %PosNumber =	( qw!
 				default          2
 				description      2
 				discount         1
-				dump             0
+				dump             1
 				ecml             2
 				either           0
 				error            1
@@ -153,7 +153,7 @@ my %Order =	(
 				counter			=> [qw( file )],
 				data			=> [qw( table field key )],
 				default			=> [qw( name default )],
-				dump			=> [qw( )],
+				dump			=> [qw( key )],
 				description		=> [qw( code base )],
 				discount		=> [qw( code  )],
 				ecml			=> [qw( name function )],

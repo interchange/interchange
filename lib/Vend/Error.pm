@@ -1,6 +1,6 @@
 # Vend::Error - Handle Interchange error pages and messages
 # 
-# $Id: Error.pm,v 2.1 2001-08-13 14:39:22 heins Exp $
+# $Id: Error.pm,v 2.1.2.1 2001-10-06 06:20:08 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -37,7 +37,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.1.2.1 $, 10);
 
 sub get_locale_message {
 	my ($code, $message, @arg) = @_;
@@ -108,7 +108,17 @@ EOF
 }
 
 sub full_dump {
-	my $out = minidump();
+	my $portion = shift;
+	my $out = '';
+	if($portion) {
+		$out .= "###### SESSION ($portion) #####\n";
+		$out .= ::uneval($Vend::Session->{$portion});
+		$out .= "\n###### END SESSION    #####\n";
+		$out =~ s/\0/\\0/g;
+		return $out;
+	}
+
+	$out = minidump();
 	local($Data::Dumper::Indent) = 2;
 	unless(caller() eq 'Vend::SOAP') {
 		$out .= "###### ENVIRONMENT     #####\n";
