@@ -19,7 +19,7 @@ sub {
 		$value = $::Values->{$name} || $opt->{default};
 	}
 	if($opt->{pre_filter}) {
-::logDebug("pre-filter with $opt->{pre_filter}");
+#::logDebug("pre-filter with $opt->{pre_filter}");
 		$value = $Tag->filter($opt->{pre_filter}, $value);
 	}
 	my $ref = {
