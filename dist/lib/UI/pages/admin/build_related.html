@@ -26,7 +26,7 @@
 			rf=sku,others_bought
 		"][loop-calc]
 		my $ref = q[[loop-data merchandising others_bought]];
-		return '' if $out !~ m/^\s*{/;
+		return '' if $ref !~ m/^\s*{/;
 		return <<EOF;
 '[loop-code]' => $ref,
 EOF
