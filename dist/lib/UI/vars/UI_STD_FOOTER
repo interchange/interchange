@@ -39,9 +39,7 @@ Variable UI_STD_FOOTER  <<EOV
         <A href="[area __UI_BASE__/login]"><small>Log out</small></A>
       </td>
       <td valign="top" align="right" nowrap>
-        <a href="[area admin/index]">
-	  <img border="0" src="@_UI_IMG_@navigation/poweredby.gif" align="top">
-	</a> &nbsp;
+        <a href="[area admin/index]"><img border="0" src="@_UI_IMG_@navigation/poweredby.gif" align="top"></a> &nbsp;
       </td>
     </tr>
     </table>
