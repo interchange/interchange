@@ -31,12 +31,6 @@ Debian Specific Changes
 * any global usertags used locally should go into /etc/interchange/usertag
   and they'll be included if they have the extension .tag
 
-* backport of patches to 4.9.x which fixes problems with the following
-  tag calls:
-
-  [area href="Catalog/Clothing/Long Pants"]
-  [area href="scan" arg="st=db/lf=category/ls=%Videos"]
-
 Other Notes
 ===========
 
