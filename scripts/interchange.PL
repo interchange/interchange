@@ -23,9 +23,9 @@ DOIT: {
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# Interchange version 4.7.2
+# Interchange version 4.7.3
 #
-# $Id: interchange.PL,v 1.15.2.40 2001-05-08 15:39:22 jon Exp $
+# $Id: interchange.PL,v 1.15.2.41 2001-05-13 02:59:33 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -141,7 +141,7 @@ use vars qw($VERSION);
 require Exporter;
 
 BEGIN {
-	$VERSION = '4.7.2';
+	$VERSION = '4.7.3';
 }
 
 use Fcntl;
@@ -2249,7 +2249,7 @@ interchange [--options] [file]
 
 =head1 VERSION
 
-4.7.2
+4.7.3
 
 =head1 DESCRIPTION
 
@@ -2267,7 +2267,7 @@ its web site:
 Interchange requires Perl 5.005 or higher; more information on Perl can
 be seen at:
 
-		http://www.perl.com
+		http://www.perl.com/
 
 =head1 OPTIONS
 
@@ -2826,7 +2826,7 @@ license.
 
 =head1 AUTHOR
 
-Mike Heins, <mheins@redhat.com>. along with Dave Adams, Jon Jensen,
+Mike Heins, <mheins@redhat.com>, along with Dave Adams, Jon Jensen,
 Brev Patterson, Jason Kohles, and others of the Red Hat E-Business
 Solutions Group. Please do not contact the author for direct help with
 the system. Use the Interchange mail list:
