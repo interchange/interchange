@@ -1,6 +1,6 @@
 # Vend::Payment::iTransact - Interchange iTransact Support
 #
-# $Id: iTransact.pm,v 2.0 2001-07-18 02:23:16 jon Exp $
+# $Id: iTransact.pm,v 2.1 2002-01-07 15:23:27 mheins Exp $
 #
 # Copyright (C) 1999-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Payment::iTransact;
 
 =head1 Interchange iTransact Support
 
-Vend::Payment::iTransact $Revision: 2.0 $
+Vend::Payment::iTransact $Revision: 2.1 $
 
 =head1 SYNOPSIS
 
@@ -243,7 +243,7 @@ sub itransact {
 	$actual{mv_credit_card_number} =~ s/\D//g;
 
 	my @month = (qw/January
-				   Febuary
+				   February
 				   March
 				   April
 				   May
