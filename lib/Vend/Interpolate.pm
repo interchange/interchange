@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.102 2002-08-07 08:02:59 mheins Exp $
+# $Id: Interpolate.pm,v 2.103 2002-08-10 02:30:26 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.102 $, 10);
+$VERSION = substr(q$Revision: 2.103 $, 10);
 
 @EXPORT = qw (
 
@@ -2060,6 +2060,9 @@ sub tag_perl {
 				$Sql{$tab} = $hole->wrap($db->dbh())
 					if $db->can('dbh');
 				$Db{$tab} = $hole->wrap($db);
+				if($db->config('name') ne $tab) {
+					$Db{$db->config('name')} = $Db{$tab};
+				}
 			}
 			else {
 				$Sql{$tab} = $db->[$Vend::Table::DBI::DBI]

@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.14 2002-08-07 08:02:59 mheins Exp $
+# $Id: Data.pm,v 2.15 2002-08-10 02:30:26 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -100,6 +100,7 @@ sub instant_database {
 	
 	$Vend::Database{$dbname}
 		and return $Vend::Database{$dbname}->ref();
+	$Vend::WriteDatabase{$file} and $Vend::WriteDatabase{$dbname} = 1;
 	if( file_name_is_absolute($_[0]) ) {
 		my $msg = errmsg(
 						"Instant database (%s): no absolute file names.",

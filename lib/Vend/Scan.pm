@@ -1,6 +1,6 @@
 # Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 2.15 2002-08-07 08:02:59 mheins Exp $
+# $Id: Scan.pm,v 2.16 2002-08-10 02:30:26 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -29,7 +29,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 2.15 $, 10);
+$VERSION = substr(q$Revision: 2.16 $, 10);
 
 use strict;
 use Vend::Util;
@@ -873,19 +873,17 @@ sub _scalar {
 	defined $_[1] ? $_[1] : '';
 }
 
-my $Pat = ($^O =~ /win32/i) ? '([A-Za-z]:)?[\\/]' : '/';
-
 sub _file_security {
 	my ($junk, $param, $passed) = @_;
 	$passed = [] unless $passed;
 	my(@files) = grep /\S/, split /\s*[,\0]\s*/, $param, -1;
 	for(@files) {
-		my $ok = (m:^$Pat:o || /\.\./) ? 0 : 1;
+		my $ok = (file_name_is_absolute($_) or /\.\./) ? 0 : 1;
 		if(!$ok) {
 			$ok = 1 if $_ eq $::Variable->{MV_SEARCH_FILE};
 			$ok = 1 if $::Scratch->{$_};
 		}
-		if($_ !~ /\./) {
+		if(/^\w+$/ and ! $::Variable->{MV_DEFAULT_SEARCH_DB}) {
 			$_ = $Vend::Cfg->{Database}{$_}{file}
 				if defined $Vend::Cfg->{Database}{$_};
 		}
