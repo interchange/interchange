@@ -4,15 +4,26 @@ interchange (4.9.0-0.1) unstable; urgency=low
 
  -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 17 Aug 2001 00:24:29 +0200
 
+interchange (4.8.2-1.1) unstable; urgency=low
+
+  * change ownership on "documentroot" only if "documentroot" exists
+    (Closes: #113357)
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 24 Sep 2001 16:49:51 +0200
+
 interchange (4.8.2-1) unstable; urgency=low
 
   * new upstream release
+  * upstream fixes and enhancements from CVS
   * install README.debian into /usr/share/doc
   * useful descriptions for interchange-ui and interchange-cat-foundation
-    added (Closes: #109228)
+    added (Closes: #109228, #109565)
   * foundation catalog was disabled if not reinstalled in postinst
+  * change owner/group of the base directory for static HTML files
+    to the Interchange owner/group
+  * let makecat write into /etc/interchange/catalogs.cfg
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 24 Aug 2001 01:54:37 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 19 Sep 2001 21:02:53 +0200
 
 interchange (4.8.1-1) unstable; urgency=low
 
@@ -144,6 +155,4 @@ interchange (4.5.8-1) unstable; urgency=low
 
  -- Stefan Hornburg <racke@linuxia.de>  Fri, 20 Oct 2000 22:16:24 +0200
 
-Local variables:
-mode: debian-changelog
-End:
+
