@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.1.2.2 2001-11-15 11:12:54 mheins Exp $
+# $Id: Util.pm,v 2.1.2.3 2001-11-15 16:42:55 jon Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -74,7 +74,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.1.2.2 $, 10);
+$VERSION = substr(q$Revision: 2.1.2.3 $, 10);
 
 BEGIN {
 	eval {
@@ -200,25 +200,6 @@ sub round_to_frac_digits {
 	elsif ( $Vend::Cfg->{Locale} ) {
 		$digits = $Vend::Cfg->{Locale}{frac_digits};
 		$digits = 2 if ! defined $digits;
-	}
-	else {
-		$digits = 2;
-	}
-	my @frac;
-	$num =~ /^(\d*)\.(\d+)$/
-		or return $num;
-	my $int = $1;
-	@frac = split //, $2;
-	local($^W) = 0;
-	my $frac = join "", @frac[0 .. $digits - 1];
-	if($frac[$digits] > 4) {
-		$frac++;
-	}
-	if(length($frac) > $digits) {
-		$int++;
-		$frac = 0 x $digits;
-	}
-	$frac .= '0' while length($frac) < $digits;
 	}
 	else {
 		$digits = 2;
