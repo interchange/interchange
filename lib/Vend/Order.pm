@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.11 2001-11-08 18:27:35 mheins Exp $
+# $Id: Order.pm,v 2.12 2001-11-08 20:19:05 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.11 $, 10);
+$VERSION = substr(q$Revision: 2.12 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1493,7 +1493,7 @@ sub route_order {
 
 		my $use_mime;
 		undef $::Instance->{MIME};
-		if(! $route->{credit_card} || $route->{encrypt}) {
+		if(not ($route->{credit_card} || $route->{encrypt}) ) {
 			$::Values->{mv_credit_card_info}
 				=~ s/^(\s*\w+\s+)(\d\d)[\d ]+(\d\d\d\d)/$1$2 NEED ENCRYPTION $3/;
 		}
