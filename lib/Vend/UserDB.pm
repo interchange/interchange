@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.9 2002-07-20 14:43:28 mheins Exp $
+# $Id: UserDB.pm,v 2.10 2002-09-16 23:06:31 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -16,7 +16,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = substr(q$Revision: 2.10 $, 10);
 
 use vars qw!
 	$VERSION
@@ -500,7 +500,7 @@ sub _set_acl {
 	else {
 		$f->{$options{location}} = $options{mode} || 'rw';
 	}
-	my $return = $self->{DB}->set_field( $self->{USERNAME}, $loc, Vend::Util::uneval_it($f) );
+	my $return = $self->{DB}->set_field( $self->{USERNAME}, $loc, uneval_it($f) );
 	return $return if $options{show};
 	return;
 }
@@ -897,7 +897,7 @@ sub delete_nickname {
 		return undef;
 	}
 
-	my $s = ::uneval_it($self->{$name});
+	my $s = uneval_it($self->{$name});
 
 	$self->{DB}->set_field( $self->{USERNAME}, $field_name, $s);
 
@@ -935,7 +935,7 @@ sub set_hash {
 		return undef;
 	}
 
-	my $s = ::uneval_it($self->{$name});
+	my $s = uneval_it($self->{$name});
 
 	$self->{DB}->set_field( $self->{USERNAME}, $field_name, $s);
 

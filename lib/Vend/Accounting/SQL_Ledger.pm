@@ -73,7 +73,7 @@ sub new {
 		$cfg->{counter} = "$tab:id";
 	}
     bless $self, $class;
-#::logDebug("Accounting self=" . ::uneval($self) );
+#::logDebug("Accounting self=" . uneval($self) );
 	return $self;
 }
 
@@ -276,7 +276,7 @@ sub save_transactions_list {
 			logError($msg);
 #::logDebug($msg);
 		}
-#::logDebug("passing rec=" . ::uneval($rec));
+#::logDebug("passing rec=" . uneval($rec));
 		$self->save_customer_data($id, $rec);
 		my $on = $rec->{order_number};
 		my $query = "select * from $tab where order_number = '$on'";
@@ -322,7 +322,7 @@ sub save_transactions_list {
 				handling => $rec->{handling} || 0,
 				total_cost => $rec->{total_cost} || 0,
 			};
-#::logDebug("Getting ready to create order entry: " . ::uneval($o));
+#::logDebug("Getting ready to create order entry: " . uneval($o));
 		$obj->create_order_entry($o);
 		$count++;
 	}
@@ -397,11 +397,11 @@ sub create_order_entry {
 
 
 	my @charges;
-#::logDebug("Levies=" . ::uneval($Vend::Cfg->{Levies}));
+#::logDebug("Levies=" . uneval($Vend::Cfg->{Levies}));
 	if($Vend::Cfg->{Levies}) {
 		$Tag->levies(1);
 		my $lcart = $::Levies;
-#::logDebug("levy cart=" . ::uneval($lcart));
+#::logDebug("levy cart=" . uneval($lcart));
 		for my $levy (@$lcart) {
 			my $pid = $levy->{part_number};
 			$pid ||= uc($levy->{group} || $levy->{type});
@@ -410,7 +410,7 @@ sub create_order_entry {
 						description => $levy->{description},
 						mv_price => $levy->{cost},
 			};
-#::logDebug("levy result=" . ::uneval($lresult));
+#::logDebug("levy result=" . uneval($lresult));
 			push @charges, $lresult;
 		}
 	}
@@ -679,7 +679,7 @@ CREATE TABLE "oe" (
 				$res->{currency},
 				);
 	
-#::logDebug("ready to execute tquery=$tq with values=" . ::uneval(\@vals));
+#::logDebug("ready to execute tquery=$tq with values=" . uneval(\@vals));
 	$tsth->execute(@vals) 
 		or die errmsg("Statement '%s' failed.", $tq);
 
@@ -720,7 +720,7 @@ CREATE TABLE "oe" (
 	}
 		
 	$res->{rowcount} = $idx;
-#::logDebug("past accounting, ready to return res=" . ::uneval($res));
+#::logDebug("past accounting, ready to return res=" . uneval($res));
 
 	if($opt->{do_payment}) {
 		$res->{paid_1} = $opt->{total_cost};
@@ -962,7 +962,7 @@ sub parts_update {
 
 sub enter_payment {
     my ($self, $string) = @_;
-	my $datastuff = ::uneval(\@_);
+	my $datastuff = uneval(\@_);
 	`echo "This is a enter_customer_payment test... $datastuff" >> testlog.txt`;
     return $string;
 }
@@ -975,7 +975,7 @@ sub post_invoice {
 	my $myconfig = $self->myconfig();
 	my $cfg = $self->{Config};
 
-#::logDebug("have myconfig=" . ::uneval($myconfig));
+#::logDebug("have myconfig=" . uneval($myconfig));
 	$form->{AR}				||= $cfg->{default_ar}			|| 1200;
 	$form->{AR_paid}		||= $cfg->{default_ar_paid}		|| 1060;
 	$form->{fxgain_accno}	||= $cfg->{default_fxgain_accno}|| 4450;
@@ -1003,9 +1003,9 @@ sub post_invoice {
 	  $form->{"shipto$key"} =~ s/"/&quot;/g;
 	}
 
-#::logDebug("customer details back, form set up=" . ::uneval($form));
+#::logDebug("customer details back, form set up=" . uneval($form));
 	my $status = IS->post_invoice($myconfig, $form);
-#::logDebug("post_status=$status, form now=" . ::uneval($form));
+#::logDebug("post_status=$status, form now=" . uneval($form));
 	return $form;
 }
 

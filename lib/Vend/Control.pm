@@ -1,6 +1,6 @@
 # Vend::Control - Routines that alter the running Interchange daemon
 # 
-# $Id: Control.pm,v 2.4 2002-07-19 05:13:16 mheins Exp $
+# $Id: Control.pm,v 2.5 2002-09-16 23:06:31 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -45,7 +45,7 @@ sub signal_reconfig {
 	my (@cats) = @_;
 	for(@cats) {
 		my $ref = $Global::Catalog{$_}
-			or die ::errmsg("Unknown catalog '%s'. Stopping.\n", $_);
+			or die errmsg("Unknown catalog '%s'. Stopping.\n", $_);
 		Vend::Util::writefile("$Global::RunDir/reconfig", "$ref->{script}\n");
 	}
 }
@@ -111,7 +111,7 @@ EOF
 	}
 	my $msg;
 	if($mode eq 'cron') {
-		$msg = ::errmsg(
+		$msg = errmsg(
 					"Dispatching jobs=%s for cat %s to Interchange server %s with %s.\n",
 					$Vend::CronJob,
 					$Vend::CronCat,
@@ -120,7 +120,7 @@ EOF
 				);
 	}
 	else {
-		$msg = ::errmsg(
+		$msg = errmsg(
 					"Killing Interchange server %s with %s.\n",
 					$pid,
 					$sig,
@@ -140,7 +140,7 @@ sub remove_catalog {
 	my @aliases;
 
 	unless(defined $g) {
-		::logGlobal( {level => 'error'}, "Attempt to remove non-existant catalog %s." , $name );
+		logGlobal( {level => 'error'}, "Attempt to remove non-existant catalog %s." , $name );
 		return undef;
 	}
 

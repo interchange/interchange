@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.31 2002-09-10 15:38:49 mheins Exp $
+# $Id: Order.pm,v 2.32 2002-09-16 23:06:31 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,12 +28,13 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.31 $, 10);
+$VERSION = substr(q$Revision: 2.32 $, 10);
 
 @ISA = qw(Exporter);
 
 @EXPORT = qw (
 	add_items
+	do_order
 	check_order
 	check_required
 	cyber_charge
@@ -41,6 +42,7 @@ $VERSION = substr(q$Revision: 2.31 $, 10);
 	mail_order
 	onfly
 	route_order
+	update_quantity
 	validate_whole_cc
 );
 
@@ -1819,6 +1821,174 @@ sub route_order {
 		return ($status, $::Values->{mv_order_number}, $main);
 	}
 	return (undef, $::Values->{mv_order_number}, $main);
+}
+
+## DO ORDER
+
+# Order an item
+sub do_order {
+    my($path) = @_;
+	my $code        = $CGI::values{mv_arg};
+#::logDebug("do_order: path=$path");
+	my $cart;
+	my $page;
+# LEGACY
+	if($path =~ s:/(.*)::) {
+		$cart = $1;
+		if($cart =~ s:/(.*)::) {
+			$page = $1;
+		}
+	}
+# END LEGACY
+	if(defined $CGI::values{mv_pc} and $CGI::values{mv_pc} =~ /_(\d+)/) {
+		$CGI::values{mv_order_quantity} = $1;
+	}
+	$CGI::values{mv_cartname} = $cart if $cart;
+	$CGI::values{mv_nextpage} = $page if $page;
+# LEGACY
+	$CGI::values{mv_nextpage} = $CGI::values{mv_orderpage}
+								|| find_special_page('order')
+		if ! $CGI::values{mv_nextpage};
+# END LEGACY
+	add_items($code);
+    return 1;
+}
+
+my @Scan_modifiers = qw/
+		mv_ad
+		mv_an
+		mv_bd
+		mv_bd
+/;
+
+# Returns undef if interaction error
+sub update_quantity {
+    return 1 unless defined  $CGI::values{"quantity0"}
+		|| $CGI::values{mv_quantity_update};
+	my($h, $i, $quantity, $modifier, $cart);
+
+	if ($CGI::values{mv_cartname}) {
+		$cart = $::Carts->{$CGI::values{mv_cartname}} ||= [];
+	}
+	else {
+		$cart = $Vend::Items;
+	}
+
+	my @mods;
+	@mods = @{$Vend::Cfg->{UseModifier}} if $Vend::Cfg->{UseModifier};
+
+#::logDebug("adding modifiers");
+	push(@mods, (grep $_ !~ /^mv_/, split /\0/, $CGI::values{mv_item_option}))
+		if defined $CGI::values{mv_item_option};
+
+	my %seen;
+	push @mods, grep defined $CGI::values{"${_}0"}, @Scan_modifiers;
+	@mods = grep ! $seen{$_}++, @mods;
+
+	foreach $h (@mods) {
+		delete @{$::Values}{grep /^$h\d+$/, keys %$::Values};
+		foreach $i (0 .. $#$cart) {
+#::logDebug("updating line $i modifiers: " . ::uneval($cart->[$i]));
+#::logDebug(qq{CGI value=$CGI::values{"$h$i"}});
+			$modifier = $CGI::values{"$h$i"}
+					  || (defined $cart->[$i]{$h} ? '' : undef);
+#::logDebug("line $i modifier $h now $modifier");
+			if (defined($modifier)) {
+				$modifier =~ s/\0+/\0/g;
+				$modifier =~ s/\0$//;
+				$modifier =~ s/^\0//;
+				$modifier =~ s/\0/, /g;
+				$cart->[$i]->{$h} = $modifier;
+				$::Values->{"$h$i"} = $modifier;
+				delete $CGI::values{"$h$i"};
+			}
+		}
+	}
+
+	foreach $i (0 .. $#$cart) {
+#::logDebug("updating line $i quantity: " . ::uneval($cart->[$i]));
+		my $line = $cart->[$i];
+		$line->{mv_ip} = $i;
+    	$quantity = $CGI::values{"quantity$i"};
+    	next unless defined $quantity;
+    	if ($quantity =~ m/^\d*$/) {
+        	$line->{'quantity'} = $quantity || 0;
+    	}
+    	elsif ($quantity =~ m/^[\d.]+$/
+				and $Vend::Cfg->{FractionalItems} ) {
+        	$line->{'quantity'} = $quantity;
+    	}
+		# This allows a last-positioned input of item quantity to
+		# remove the item
+		elsif ($quantity =~ s/.*\00$/0/) {
+			$CGI::values{"quantity$i"} = $quantity;
+			redo;
+		}
+		# This allows a multiple input of item quantity to
+		# pass -- FIRST ONE CONTROLS
+		elsif ($quantity =~ s/\0.*//) {
+			$CGI::values{"quantity$i"} = $quantity;
+			redo;
+		}
+		else {
+			my $item = $line->{'code'};
+			$line->{quantity} = int $line->{quantity};
+        	$Vend::Session->{errors}{mv_order_quantity} =
+				errmsg("'%s' for item %s is not numeric/integer", $quantity, $item);
+    	}
+    	$::Values->{"quantity$i"} = delete $CGI::values{"quantity$i"};
+		SKUSET: {
+			my $sku;
+			my $found_option;
+			last SKUSET unless $sku = delete $CGI::values{"mv_sku$i"};
+			my @sku = split /\0/, $sku, -1;
+			for(@sku[1..$#sku]) {
+				if (not length $_) {
+				$_ = $::Variable->{MV_VARIANT_JOINER} || '0';
+				next;
+				}
+				$found_option++;
+			}
+
+			if(@sku > 1 and ! $found_option) {
+				splice @sku, 1;
+			}
+
+			$sku = join "-", @sku;
+
+			my $ib;
+			unless($ib 	= ::product_code_exists_tag($sku)) {
+				push @{$Vend::Session->{warnings} ||= []},
+					errmsg("Not a valid option combination: %s", $sku);
+					last SKUSET;
+			}
+
+			$line->{mv_ib} = $ib;
+
+			if($sku ne $line->{code}) {
+				if($line->{mv_mp}) {
+					$line->{mv_sku} = $line->{code} = $sku;
+				}
+				elsif (! $line->{mv_sku}) {
+					$line->{mv_sku} = $line->{code};
+					$line->{code} 	= $sku;
+				}
+				else {
+					$line->{code}	= $sku;
+				}
+			}
+		}
+    }
+#::logDebug("after update, cart is: " . ::uneval($cart));
+
+	# If the user has put in "0" for any quantity, delete that item
+    # from the order list. Handles sub-items.
+    Vend::Cart::toss_cart($cart, $CGI::values{mv_cartname});
+
+#::logDebug("after toss, cart is: " . ::uneval($cart));
+
+	1;
+
 }
 
 sub add_items {

@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.13 2002-09-07 20:05:10 mheins Exp $
+# $Id: Server.pm,v 2.14 2002-09-16 23:06:31 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.13 $, 10);
+$VERSION = substr(q$Revision: 2.14 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -1058,8 +1058,12 @@ EOF
                 }
 
 				eval {
-					$c = ::config_named_catalog($cat->{CatalogName},
-                                    "from running server ($$)", $table, $cfile);
+					$c = Vend::Config::config_named_catalog(
+									$cat->{CatalogName},
+                                    "from running server ($$)",
+									$table,
+									$cfile
+								);
 				};
 
 				if (defined $c) {
@@ -2225,7 +2229,7 @@ sub touch_pid {
 sub cron_job {
 	my ($cat, @jobs) = @_;
 	for my $job (@jobs) {
-		::run_in_catalog($cat, $job);
+		Vend::Dispatch::run_in_catalog($cat, $job);
 	}
 }
 

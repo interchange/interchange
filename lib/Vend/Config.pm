@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.70 2002-09-07 20:05:10 mheins Exp $
+# $Id: Config.pm,v 2.71 2002-09-16 23:06:31 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ require Exporter;
 
 @ISA = qw(Exporter);
 
-@EXPORT		= qw( config global_config );
+@EXPORT		= qw( config global_config config_named_catalog );
 
 @EXPORT_OK	= qw( get_catalog_default get_global_default parse_time parse_database);
 
@@ -43,8 +43,9 @@ use Safe;
 use Fcntl;
 use Vend::Parse;
 use Vend::Util;
+use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.70 $, 10);
+$VERSION = substr(q$Revision: 2.71 $, 10);
 
 my %CDname;
 
@@ -176,7 +177,7 @@ sub config_error {
 		warn "$msg\n" unless $Vend::Quiet;
 	}
 	else {
-		::logGlobal({level => 'warn'}, $msg);
+		logGlobal({level => 'warn'}, $msg);
 		die "$msg\n";
 	}
 }
@@ -972,6 +973,146 @@ sub read_here {
 	return $value;
 }
 
+sub config_named_catalog {
+	my ($cat_name, $source, $db_only, $dbconfig) = @_;
+	my ($g,$c);
+
+	$g = $Global::Catalog{$cat_name};
+	unless (defined $g) {
+		logGlobal( "Can't find catalog '%s'" , $cat_name );
+		return undef;
+	}
+
+	$Vend::Log_suppress = 1;
+
+	unless ($db_only or $Vend::Quiet) {
+		logGlobal( "Config '%s' %s%s", $g->{'name'}, $source );
+	}
+	undef $Vend::Log_suppress;
+
+    chdir $g->{'dir'}
+            or die "Couldn't change to $g->{'dir'}: $!\n";
+
+	if($db_only) {
+		logGlobal(
+			"Config table '%s' (file %s) for catalog %s from %s",
+			$db_only,
+			$dbconfig,
+			$g->{'name'},
+			$source,
+			);
+		my $cfg = $Global::Selector{$g->{script}}
+			or die errmsg("'%s' not a catalog (%s).", $g->{name}, $g->{script});
+		undef $cfg->{Database}{$db_only};
+		$Vend::Cfg = config(
+				$g->{name},
+				$g->{dir},
+				undef,
+				undef,
+				$cfg,
+				$dbconfig,
+				)
+			or die errmsg("error configuring catalog %s table %s: %s",
+							$g->{name},
+							$db_only,
+							$@,
+					);
+		open_database();
+		close_database();
+		return $Vend::Cfg;
+	}
+
+    eval {
+        $c = config($g->{'name'},
+					$g->{'dir'},
+					undef,
+					$g->{'base'} || undef,
+# OPTION_EXTENSION
+#					$Vend::CommandLine->{$g->{'name'}} || undef
+# END OPTION_EXTENSION
+					);
+    };
+
+    if($@) {
+		my $msg = $@;
+        logGlobal( "%s config error: %s" , $g->{'name'}, $msg );
+     	return undef;
+    }
+
+	if (defined $g->{base}) {
+		open_database(1);
+		dump_structure($c, $g->{name}) if $Global::DumpStructure;
+		return $c;
+	}
+
+	eval {
+		$Vend::Cfg = $c;	
+		$::Variable = $Vend::Cfg->{Variable};
+		$::Pragma   = $Vend::Cfg->{Pragma};
+		Vend::Data::read_salestax();
+		Vend::Data::read_shipping();
+		open_database(1);
+		my $db;
+
+		LREAD: {
+			last LREAD unless $db = $Vend::Cfg->{LocaleDatabase};
+			$db = database_exists_ref($db)
+				or last LREAD;
+			$db = $db->ref();
+			my ($k, @f);	# key and fields
+			my @l;			# refs to locale repository
+			my @n;			# names of locales
+
+			@n = $db->columns();
+			my $extra;
+			for(@n) {
+				$Vend::Cfg->{Locale_repository}{$_} = {}
+					unless $Vend::Cfg->{Locale_repository}{$_};
+				push @l, $Vend::Cfg->{Locale_repository}{$_};
+			}
+			my $i;
+			while( ($k , @f ) = $db->each_record) {
+				for ($i = 0; $i < @f; $i++) {
+					next unless length($f[$i]);
+					$l[$i]->{$k} = $f[$i];
+				}
+			}
+			unless ($Vend::Cfg->{Locale}) {
+				for(@n) {
+					next unless $Vend::Cfg->{Locale_repository}{$_}{'default'};
+					$Vend::Cfg->{DefaultLocale} = $_;
+					$Vend::Cfg->{Locale} = $Vend::Cfg->{Locale_repository}{$_};
+					last;
+				}
+				unless ($Vend::Cfg->{Locale}) {
+					$Vend::Cfg->{Locale} = $Vend::Cfg->{Locale_repository}{$n[0]};
+					$Vend::Cfg->{DefaultLocale} = $n[0];
+				}
+			}
+		}
+
+		close_database();
+	};
+
+	undef $Vend::Cfg;
+    if($@) {
+		my $msg = $@;
+		$msg =~ s/\s+$//;
+        logGlobal( "%s config error: %s" , $g->{'name'}, $msg );
+     	return undef;
+    }
+
+	dump_structure($c, $g->{name}) if $Global::DumpStructure;
+
+	my $stime = scalar localtime();
+	Vend::Util::writefile(">$Global::RunDir/status.$g->{name}", "$stime\n");
+	Vend::Util::writefile(">$c->{ConfDir}/status.$g->{name}", "$stime\n");
+
+	return $c;
+
+}
+
+
 use File::Find;
 
 my %extmap = qw/
@@ -1331,7 +1472,7 @@ sub watch {
 	push @{$C->{Tie_Watch}}, $name;
 
 	my ($ref, $orig);
-#::logDebug("Contents of $name: " . ::uneval_it($C->{$name}));
+#::logDebug("Contents of $name: " . uneval_it($C->{$name}));
 	if(ref($C->{$name}) =~ /ARRAY/) {
 #::logDebug("watch ref=array");
 		$ref = $C->{$name};
@@ -1783,7 +1924,7 @@ sub parse_message {
 		print $msg;
 	}
 	else {
-		::logGlobal({level => 'info', strip => $strip },
+		logGlobal({level => 'info', strip => $strip },
 				errmsg($val,
 						$name,
 						$.,
@@ -2128,6 +2269,11 @@ my %Default = (
 						$C->{AdminUserDB} = {} unless $C->{AdminUserDB};
 						$C->{AdminUserDB}{$_} = $set->{$_}{admin};
 					}
+					return 1;
+				},
+		Glimpse => sub {
+					return 1 unless shift;
+					require Vend::Glimpse;
 					return 1;
 				},
 		SOAP_Socket => sub {
@@ -2615,7 +2761,7 @@ sub parse_catalog {
 		$cat->{$key} = $value;
 	}
 
-#::logDebug ("parsing catalog $name = " . ::uneval_it($cat));
+#::logDebug ("parsing catalog $name = " . uneval_it($cat));
 
 	$Global::Catalog{$name} = $cat;
 
@@ -2744,7 +2890,7 @@ sub parse_config_db {
 		}
 	}
 
-#::logDebug("d object: " . ::uneval_it($d));
+#::logDebug("d object: " . uneval_it($d));
 	if($d->{ACTIVE} and ! $d->{OBJECT}) {
 		my $name = $d->{'name'};
 		$d->{OBJECT} = Vend::Data::import_database($d)
@@ -2940,7 +3086,7 @@ sub get_configdb {
 			config_warn(
 				"Bad $var value '%s': %s\n%s",
 				"Database $table $file $type",
-				::uneval($C->{Database}),
+				uneval($C->{Database}),
 			);
 			return '';
 		}

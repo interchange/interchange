@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.11 2002-09-01 23:19:51 mheins Exp $
+# $Id: Search.pm,v 2.12 2002-09-16 23:06:31 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.11 $, 10);
+$VERSION = substr(q$Revision: 2.12 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -213,15 +213,15 @@ sub dump_coord {
 			$msg,
             $s->{mv_coordinate},
 			scalar @$specs,
-			::uneval($specs),
+			Vend::Util::uneval($specs),
 			scalar @{$s->{mv_search_field}},
-			::uneval($s->{mv_search_field}),
+			Vend::Util::uneval($s->{mv_search_field}),
 			scalar @{$s->{mv_column_op}},
-			::uneval($s->{mv_column_op}),
+			Vend::Util::uneval($s->{mv_column_op}),
 			scalar @{$s->{mv_numeric}},
-			::uneval($s->{mv_numeric}),
+			Vend::Util::uneval($s->{mv_numeric}),
 			scalar @{$s->{mv_negate}},
-			::uneval($s->{mv_negate}),
+			Vend::Util::uneval($s->{mv_negate}),
 			;
 }
 
@@ -988,7 +988,7 @@ sub save_context {
 	for (@save) {
 		$return->{$_} = $s->{$_};
 	}
-	::uneval_fast($return);
+	Vend::Util::uneval_fast($return);
 }
 
 sub dump_options {
@@ -998,7 +998,7 @@ sub dump_options {
 		$Data::Dumper::Indent = 3;
 		$Data::Dumper::Terse = 1;
 	}
-	return ::uneval($s);
+	return Vend::Util::uneval($s);
 }
 
 sub search_error {

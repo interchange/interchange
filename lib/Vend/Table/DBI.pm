@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.31 2002-09-10 17:29:09 mheins Exp $
+# $Id: DBI.pm,v 2.32 2002-09-16 23:06:32 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.31 $, 10);
+$VERSION = substr(q$Revision: 2.32 $, 10);
 
 use strict;
 
@@ -647,8 +647,8 @@ sub open_table {
 	$config->{KEY_INDEX} = $config->{COLUMN_INDEX}{lc $key}
 		if ! $config->{KEY_INDEX};
 	die ::errmsg("Bad key specification: %s"  .
-					::uneval_it($config->{NAME}) .
-					::uneval_it($config->{COLUMN_INDEX}),
+					Vend::Util::uneval_it($config->{NAME}) .
+					Vend::Util::uneval_it($config->{COLUMN_INDEX}),
 					$key
 		)
 		if ! defined $config->{KEY_INDEX};

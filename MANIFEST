@@ -147,16 +147,12 @@ code/UI_Tag/list_databases.coretag
 code/UI_Tag/list_glob.coretag
 code/UI_Tag/list_keys.coretag
 code/UI_Tag/list_pages.coretag
-code/UI_Tag/load_templates.coretag
 code/UI_Tag/meta_record.coretag
 code/UI_Tag/mm_locale.coretag
 code/UI_Tag/mm_value.coretag
 code/UI_Tag/newer.coretag
 code/UI_Tag/quick_table.coretag
-code/UI_Tag/read_page.coretag
 code/UI_Tag/read_shipping.coretag
-code/UI_Tag/read_ui_page.coretag
-code/UI_Tag/read_ui_template.coretag
 code/UI_Tag/reconfig.coretag
 code/UI_Tag/reconfig_time.coretag
 code/UI_Tag/reconfig_wait.coretag
@@ -918,7 +914,6 @@ dist/lib/UI/pages/admin/auto_wizard.html
 dist/lib/UI/pages/admin/bug_report.html
 dist/lib/UI/pages/admin/build_related.html
 dist/lib/UI/pages/admin/button_builder.html
-dist/lib/UI/pages/admin/compedit.html
 dist/lib/UI/pages/admin/content.html
 dist/lib/UI/pages/admin/content_editor.html
 dist/lib/UI/pages/admin/content_preview.html
@@ -1174,6 +1169,7 @@ lib/Vend/Control.pm
 lib/Vend/CounterFile.pm
 lib/Vend/Data.pm
 lib/Vend/DbSearch.pm
+lib/Vend/Dispatch.pm
 lib/Vend/Document.pm
 lib/Vend/Error.pm
 lib/Vend/External.pm

@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.109 2002-09-07 18:45:41 mheins Exp $
+# $Id: Interpolate.pm,v 2.110 2002-09-16 23:06:31 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.109 $, 10);
+$VERSION = substr(q$Revision: 2.110 $, 10);
 
 @EXPORT = qw (
 
@@ -455,7 +455,7 @@ sub substitute_image {
 	## If post_page routine processor returns true, return. Otherwise,
 	## continue image rewrite
 	if($::Pragma->{post_page}) {
-		::run_macro($::Pragma->{post_page}, $text)
+		Vend::Dispatch::run_macro($::Pragma->{post_page}, $text)
 			and return;
 	}
 
@@ -524,7 +524,7 @@ sub cache_html {
 	$parse->parse($html);
 	while($parse->{_buf}) {
 		substitute_image(\$parse->{OUT});
-		::response( \$parse->{OUT});
+		Vend::Dispatch::response( \$parse->{OUT});
 		$full .= $parse->{OUT};
 		$parse->{OUT} = '';
 		$parse->parse('');
@@ -586,7 +586,7 @@ sub vars_and_comments {
 	undef $Vend::PageInit unless $::Pragma->{init_page};
 
 	if(defined $Vend::PageInit and ! $Vend::PageInit++) {
-		::run_macro($::Pragma->{init_page}, $html);
+		Vend::Dispatch::run_macro($::Pragma->{init_page}, $html);
 	}
 
 	# Substitute in Variable values
@@ -605,7 +605,7 @@ sub vars_and_comments {
 	}
 
 	if($::Pragma->{pre_page}) {
-		::run_macro($::Pragma->{pre_page}, $html);
+		Vend::Dispatch::run_macro($::Pragma->{pre_page}, $html);
 	}
 
 	# Strip out [comment] [/comment] blocks
@@ -629,7 +629,7 @@ sub interpolate_html {
 	defined $::Variable->{MV_AUTOLOAD}
 		and $html =~ s/^/$::Variable->{MV_AUTOLOAD}/;
 
-#::logDebug("opt=" . ::uneval($opt));
+#::logDebug("opt=" . uneval($opt));
 	vars_and_comments(\$html)
 		unless $opt and $opt->{onfly};
 
@@ -679,7 +679,7 @@ sub filter_value {
 			next;
 		}
 		unless (defined $Filter{$_}) {
-			::logError ("Unknown filter '%s'", $_);
+			logError ("Unknown filter '%s'", $_);
 			next;
 		}
 		unshift @args, $value, $tag;
@@ -784,7 +784,7 @@ sub tag_data {
 				return $db->delete_column($field, $opt->{value});
 			}
 			else {
-				::logError("alter function '%s' not found", $opt->{alter});
+				logError("alter function '%s' not found", $opt->{alter});
 				return undef;
 			}
 		}
@@ -999,7 +999,7 @@ sub tag_data {
 				},
 	'crypt' => sub {
 					my $val = shift;
-					return crypt($val, ::random_string(2));
+					return crypt($val, random_string(2));
 				},
 	'html2text' => sub {
 					my $val = shift;
@@ -1125,7 +1125,7 @@ sub tag_data {
 
 	loc => sub {
 					my $val = shift;
-					return ::errmsg($val);
+					return errmsg($val);
 				},
 
 	restrict_html => sub {
@@ -1147,7 +1147,7 @@ $Filter{e} = $Filter{encode_entities};
 
 sub input_filter_do {
 	my($varname, $opt, $routine) = @_;
-#::logDebug("filter var=$varname opt=" . ::uneval_it($opt));
+#::logDebug("filter var=$varname opt=" . uneval_it($opt));
 	return undef unless defined $CGI::values{$varname};
 #::logDebug("before filter=$CGI::values{$varname}");
 	$routine = $opt->{routine} || ''
@@ -1345,7 +1345,7 @@ sub conditional {
 	elsif($base eq 'validcc') {
 		$CacheInvalid = 1;
 		no strict 'refs';
-		$status = ::validate_whole_cc($term, $operator, $comp);
+		$status = Vend::Order::validate_whole_cc($term, $operator, $comp);
 	}
     elsif($base eq 'config') {
 		$op = qq%$Vend::Cfg->{$term}%;
@@ -1515,7 +1515,7 @@ sub restore_profile {
 
 sub tag_profile {
 	my($profile, $opt) = @_;
-#::logDebug("in tag_profile=$profile opt=" . ::uneval_it($opt));
+#::logDebug("in tag_profile=$profile opt=" . uneval_it($opt));
 
 	$opt = {} if ! $opt;
 	my $tag = $opt->{tag} || 'default';
@@ -1543,7 +1543,7 @@ sub tag_profile {
 	}
 
 	if( "$profile$tag" =~ /\W/ ) {
-		::logError(
+		logError(
 			"profile: invalid characters (tag=%s profile=%s), must be [A-Za-z_]+",
 			$tag,
 			$profile,
@@ -1555,7 +1555,7 @@ sub tag_profile {
 #::logDebug("running profile=$profile tag=$tag");
 		my $prof = $Vend::Cfg->{Profile_repository}{$profile};
 	    if (not $prof) {
-			::logError( "profile %s (%s) non-existant.", $profile, $tag );
+			logError( "profile %s (%s) non-existant.", $profile, $tag );
 			return $opt->{failure};
 		} 
 #::logDebug("found profile=$profile");
@@ -1586,10 +1586,10 @@ sub tag_profile {
 			}
 			}
 			else {
-				::logError( "profile: cannot handle object of type %s.",
+				logError( "profile: cannot handle object of type %s.",
 							$Vend::Cfg->{$one},
 							);
-				::logError("profile: profile for $one not changed.");
+				logError("profile: profile for $one not changed.");
 				next;
 			}
 
@@ -1597,7 +1597,7 @@ sub tag_profile {
 			$val = $ready_safe->reval($string) if $string;
 
 			if($@) {
-				::logError( "profile: bad object %s: %s", $one, $string );
+				logError( "profile: bad object %s: %s", $one, $string );
 				next;
 			}
 			$Vend::Session->{Profile_save}{$one} = $Vend::Cfg->{$one}
@@ -1627,7 +1627,7 @@ sub tag_profile {
 	}
 	$al = [] if ! $al;
 	push @$al, "$tag-$profile";
-#::logDebug("profile=$profile Autoload=" . ::uneval_it($al));
+#::logDebug("profile=$profile Autoload=" . uneval_it($al));
 	$Vend::Session->{Autoload} = $al;
 
 	return $opt->{success};
@@ -1931,7 +1931,7 @@ sub produce_range {
 			or next;
 		my @new = $1 .. $2;
 		if(@new > $max) {
-			::logError(
+			logError(
 				"Refuse to add %d options to option list via range, max %d.",
 				scalar(@new),
 				$max,
@@ -1959,7 +1959,7 @@ sub tag_accessories {
 	}
 
 	# Had extra if got here
-#::logDebug("tag_accessories: code=$code opt=" . ::uneval_it($opt) . " item=" . ::uneval_it($item) . " extra=$extra");
+#::logDebug("tag_accessories: code=$code opt=" . uneval_it($opt) . " item=" . uneval_it($item) . " extra=$extra");
 	my($attribute, $type, $field, $db, $name, $outboard, $passed);
 	$opt = {} if ! $opt;
 	if($extra) {
@@ -2034,22 +2034,22 @@ $safe_safe = new Safe;
 sub tag_perl {
 	my ($tables, $opt,$body) = @_;
 	my ($result,@share);
-#::logDebug("tag_perl MVSAFE=$MVSAFE::Safe opts=" . ::uneval($opt));
+#::logDebug("tag_perl MVSAFE=$MVSAFE::Safe opts=" . uneval($opt));
 
 	if($Vend::NoInterpolate) {
-		::logGlobal({ level => 'alert' },
+		logGlobal({ level => 'alert' },
 					"Attempt to interpolate perl/ITL from RPC, no permissions."
 					);
 		return undef;
 	}
 
 	if ($MVSAFE::Safe) {
-		::logGlobal({ level => 'alert' }, "Attempt to call perl from within Safe.");
+		logGlobal({ level => 'alert' }, "Attempt to call perl from within Safe.");
 		return undef;
 	}
 
-#::logDebug("tag_perl: tables=$tables opt=" . ::uneval($opt) . " body=$body");
-#::logDebug("tag_perl initialized=$Vend::Calc_initialized: carts=" . ::uneval($::Carts));
+#::logDebug("tag_perl: tables=$tables opt=" . uneval($opt) . " body=$body");
+#::logDebug("tag_perl initialized=$Vend::Calc_initialized: carts=" . uneval($::Carts));
 	if($opt->{subs} || (defined $opt->{arg} and $opt->{arg} =~ /\bsub\b/)) {
 		no strict 'refs';
 		for(keys %{$Global::GlobalSub}) {
@@ -2097,7 +2097,7 @@ sub tag_perl {
 	if($Vend::Cfg->{Tie_Watch}) {
 		eval {
 			for(@{$Vend::Cfg->{Tie_Watch}}) {
-				::logGlobal("touching $_");
+				logGlobal("touching $_");
 				my $junk = $Config->{$_};
 			}
 		};
@@ -2167,7 +2167,7 @@ sub tag_perl {
         }
 		return $opt->{failure};
 	}
-#::logDebug("tag_perl initialized=$Vend::Calc_initialized: carts=" . ::uneval($::Carts));
+#::logDebug("tag_perl initialized=$Vend::Calc_initialized: carts=" . uneval($::Carts));
 
 	if ($opt->{no_return}) {
 		$Vend::Session->{mv_perl_result} = $result;
@@ -2223,7 +2223,7 @@ sub flag {
 	my $fmt = $opt->{status} || '';
 	my @status;
 
-#::logDebug("tag flag=$flag text=$text value=$value opt=". ::uneval_it($opt));
+#::logDebug("tag flag=$flag text=$text value=$value opt=". uneval_it($opt));
 	if($flag eq 'write' || $flag eq 'read') {
 		my $arg = $opt->{table} || $text;
 		$value = 0 if $flag eq 'read';
@@ -2279,11 +2279,11 @@ sub flag {
 			next unless $db->isopen();
 			next unless $db->config('Transactions');
 			if( ! $db ) {
-				::logError("attempt to $method on unknown database: %s", $dbname);
+				logError("attempt to $method on unknown database: %s", $dbname);
 				return undef;
 			}
 			if( ! $db->$method() ) {
-				::logError("problem doing $method for table: %s", $dbname);
+				logError("problem doing $method for table: %s", $dbname);
 				return undef;
 			}
 		}
@@ -2347,7 +2347,7 @@ sub mime {
 
 	my $out;
 
-#::logDebug("mime call, opt=" . ::uneval($opt));
+#::logDebug("mime call, opt=" . uneval($opt));
 	$Vend::TIMESTAMP = POSIX::strftime("%y%m%d%H%M%S", localtime())
 		unless defined $Vend::TIMESTAMP;
 
@@ -2551,7 +2551,7 @@ use vars qw/ %Tag_op_map /;
 							my $table = shift;
 							my $opt = shift;
 							$opt->{search} = "ra=yes\nst=db\nml=100000\nfi=$table";
-#::logDebug("tag each: table=$table opt=" . ::uneval($opt));
+#::logDebug("tag each: table=$table opt=" . uneval($opt));
 							return tag_loop_list('', $opt, shift);
 						},
 			MIME	=> \&mime,
@@ -2560,10 +2560,10 @@ use vars qw/ %Tag_op_map /;
 
 sub do_tag {
 	my $op = uc $_[0];
-#::logDebug("tag op: op=$op opt=" . ::uneval(\@_));
+#::logDebug("tag op: op=$op opt=" . uneval(\@_));
 	return $_[3] if !  defined $Tag_op_map{$op};
 	shift;
-#::logDebug("tag args now: op=$op opt=" . ::uneval(\@_));
+#::logDebug("tag args now: op=$op opt=" . uneval(\@_));
 	return &{$Tag_op_map{$op}}(@_);
 }
 
@@ -2704,14 +2704,14 @@ sub tag_value_extended {
 			}
 		}
 		if($opt->{maxsize} and length($CGI::file{$var}) > $opt->{maxsize}) {
-			::logError(
+			logError(
 				"Uploaded file write of %s bytes greater than maxsize %s. Aborted.",
 				length($CGI::file{$var}),
 				$opt->{maxsize},
 			);
 			return $opt->{no} || '';
 		}
-#::logDebug(">$file \$CGI::file{$var}" . ::uneval($opt)); 
+#::logDebug(">$file \$CGI::file{$var}" . uneval($opt)); 
 		Vend::Util::writefile(">$file", \$CGI::file{$var}, $opt)
 			and return $opt->{yes} || '';
 		return $opt->{'no'} || '';
@@ -2743,7 +2743,7 @@ sub tag_value_extended {
 		@ary = @$val;
 	}
 	else {
-		::logError( "value-extended %s: passed non-scalar, non-array object", $var);
+		logError( "value-extended %s: passed non-scalar, non-array object", $var);
 	}
 
 	return join " ", 0 .. $#ary if $opt->{elements};
@@ -2751,7 +2751,7 @@ sub tag_value_extended {
 	eval {
 		@ary = @ary[$ready_safe->reval( $index eq '*' ? "0 .. $#ary" : $index )];
 	};
-	::logError("value-extended $var: bad index") if $@;
+	logError("value-extended $var: bad index") if $@;
 
 	if($opt->{filter}) {
 		for(@ary) {
@@ -2764,7 +2764,7 @@ sub tag_value_extended {
 sub format_auto_transmission {
 	my $ref = shift;
 
-	## Auto-transmission from ::update_data
+	## Auto-transmission from Vend::Data::update_data
 	## Looking for structure like:
 	##
 	##	[ '### BEGIN submission from', 'ckirk' ],
@@ -2842,13 +2842,13 @@ sub tag_mail {
 
 	unless($opt->{raw}) {
 		for my $header (@todo) {
-			::logError("invalid email header: %s", $header)
+			logError("invalid email header: %s", $header)
 				if $header =~ /[^-\w]/;
 			my $key = lc $header;
 			$key =~ tr/-/_/;
 			my $val = $opt->{$key} || $setsub->($key); 
 			if($key eq 'subject' and ! length($val) ) {
-				$val = ::errmsg('<no subject>');
+				$val = errmsg('<no subject>');
 			}
 			next unless length $val;
 			$found{$key} = $val;
@@ -2915,7 +2915,7 @@ sub tag_mail {
 # Returns the text of a user entered field named VAR.
 sub tag_value {
     my($var,$opt) = @_;
-#::logDebug("called value args=" . ::uneval(\@_));
+#::logDebug("called value args=" . uneval(\@_));
     my($value);
 
 	local($^W) = 0;
@@ -2972,8 +2972,8 @@ sub escape_scan {
 			$scan = Vend::Scan::sql_statement($scan, $ref || \%CGI::values)
 		};
 		if($@) {
-			my $msg = ::errmsg("SQL query failed: %s\nquery was: %s", $@, $scan);
-			::logError($msg);
+			my $msg = errmsg("SQL query failed: %s\nquery was: %s", $@, $scan);
+			logError($msg);
 			$scan = 'se=BAD_SQL';
 		}
 	}
@@ -3192,7 +3192,7 @@ sub tag_calc {
 	my($body) = @_;
 	my $result;
 	if($Vend::NoInterpolate) {
-		::logGlobal({ level => 'alert' },
+		logGlobal({ level => 'alert' },
 					"Attempt to interpolate perl/ITL from RPC, no permissions."
 					);
 	}
@@ -3287,7 +3287,7 @@ my %cond_op = (
 				 $_[1] =~ s:^/(.*)/$:$1:;
    				 eval { $re = qr/$_[1]/ };
 				 if($@) {
-					::logError("bad regex %s in if-PREFIX-data", $_[1]);
+					logError("bad regex %s in if-PREFIX-data", $_[1]);
 					return undef;
 				 }
 				 return $_[0] =~ $re;
@@ -3297,7 +3297,7 @@ my %cond_op = (
 				 $_[1] =~ s:^/(.*)/$:$1:;
    				 eval { $re = qr/$_[1]/ };
 				 if($@) {
-					::logError("bad regex %s in if-PREFIX-data", $_[1]);
+					logError("bad regex %s in if-PREFIX-data", $_[1]);
 					return undef;
 				 }
 				 return $_[0] !~ $re;
@@ -3310,7 +3310,7 @@ sub pull_cond {
 	my ($op, $rhs) = split /\s+/, $cond;
 	$rhs =~ s/^(["'])(.*)\1$/$2/;
 	if(! defined $cond_op{$op} ) {
-		::logError("bad conditional operator %s in if-PREFIX-data", $op);
+		logError("bad conditional operator %s in if-PREFIX-data", $op);
 		return pull_else($string, $reverse);
 	}
 	return 	$cond_op{$op}->($lhs, $rhs)
@@ -3368,7 +3368,7 @@ sub tag_sort_ary {
     my($opts, $list) = (@_); 
     $opts =~ s/^\s+//; 
     $opts =~ s/\s+$//; 
-#::logDebug("tag_sort_ary: opts=$opts list=" . ::uneval($list));
+#::logDebug("tag_sort_ary: opts=$opts list=" . uneval($list));
 	my @codes;
 	my $key = 0;
 
@@ -3441,7 +3441,7 @@ sub tag_sort_ary {
 	if(defined $num) {
 		splice(@codes, $num);
 	}
-#::logDebug("tag_sort_ary routine returns: " . ::uneval(\@codes));
+#::logDebug("tag_sort_ary routine returns: " . uneval(\@codes));
 	return \@codes;
 }
 
@@ -3449,7 +3449,7 @@ sub tag_sort_hash {
     my($opts, $list) = (@_); 
     $opts =~ s/^\s+//; 
     $opts =~ s/\s+$//; 
-#::logDebug("tag_sort_hash: opts=$opts list=" . ::uneval($list));
+#::logDebug("tag_sort_hash: opts=$opts list=" . uneval($list));
 	my @codes;
 	my $key = 'code';
 
@@ -3489,7 +3489,7 @@ sub tag_sort_hash {
  	}
 
 	if (! defined $list->[0]->{$key}) {
-		::logError("sort key '$key' not defined in list. Skipping sort.");
+		logError("sort key '$key' not defined in list. Skipping sort.");
 		return $list;
 	}
 
@@ -3527,7 +3527,7 @@ sub tag_sort_hash {
 	if(defined $num) {
 		splice(@codes, $num);
 	}
-#::logDebug("tag_sort_hash routine returns: " . ::uneval(\@codes));
+#::logDebug("tag_sort_hash routine returns: " . uneval(\@codes));
 	return \@codes;
 }
 
@@ -3723,7 +3723,7 @@ sub tag_more_list {
 			$first_anchor = $1;
 		}
 		else {
-			$first_anchor = ::errmsg('First');
+			$first_anchor = errmsg('First');
 		}
 		unless ($first_anchor eq 'none') {
 			$arg = $session;
@@ -3738,7 +3738,7 @@ sub tag_more_list {
 				$prev_anchor = $1;
 			}
 			else {
-				$prev_anchor = ::errmsg('Previous');
+				$prev_anchor = errmsg('Previous');
 			}
 		}
 		elsif ($prev_anchor ne 'none') {
@@ -3766,7 +3766,7 @@ sub tag_more_list {
 				$next_anchor = $1;
 			}
 			else {
-				$next_anchor = ::errmsg('Next');
+				$next_anchor = errmsg('Next');
 			}
 		}
 		else {
@@ -3782,7 +3782,7 @@ sub tag_more_list {
 			$last_anchor = $1;
 		}
 		else {
-			$last_anchor = ::errmsg('Last');
+			$last_anchor = errmsg('Last');
 		}
 		unless ($last_anchor eq 'none') {
 			$last = $total - 1;
@@ -3809,7 +3809,7 @@ sub tag_more_list {
 
 	$page_anchor =~ s/\$(MIN|MAX)?PAGE\$/__${1}PAGE__/g;
 
-	my $more_string = ::errmsg('more');
+	my $more_string = errmsg('more');
 	my ($decade_next, $decade_prev, $decade_div);
 	if( $q->{mv_more_decade} or $r =~ m:\[decade[-_]next\]:) {
 		$r =~ s:\[decade[-_]next\]($All)\[/decade[-_]next\]::i
@@ -4005,7 +4005,7 @@ sub labeled_list {
 	$Safe_data = 1 if $opt->{safe_data};
 
 #	if($opt->{prefix} eq 'item') {
-#::logDebug("labeled list: opt:\n" . ::uneval($opt) . "\nobj:" . ::uneval($obj) . "text:" . substr($text,0,100));
+#::logDebug("labeled list: opt:\n" . uneval($opt) . "\nobj:" . uneval($obj) . "text:" . substr($text,0,100));
 #	}
 	$Orig_prefix = $Prefix = $opt->{prefix} || 'item';
 
@@ -4125,7 +4125,7 @@ sub tag_attr_list {
 	if(! ref $hash) {
 		$hash = string_to_ref($hash);
 		if($@) {
-			::logDebug("eval error: $@");
+			logDebug("eval error: $@");
 		}
 		return undef if ! ref $hash;
 	}
@@ -4198,7 +4198,7 @@ sub tag_address {
 		%$addr = %{ $::Values };
 	}
 
-#::logDebug("addr=" . ::uneval($addr));
+#::logDebug("addr=" . uneval($addr));
 
 	$addr->{mv_an} = $nick;
 	my @nick = sort keys %$blob;
@@ -4358,7 +4358,7 @@ sub tag_dispatch {
 	}
 	else {
 		$attrhash->{body} = $this_tag unless defined $attrhash->{body};
-#::logDebug("calling do_tag tag=$tag this_tag=$this_tag attrhash=" . ::uneval($attrhash));
+#::logDebug("calling do_tag tag=$tag this_tag=$this_tag attrhash=" . uneval($attrhash));
 		$Tag ||= new Vend::Tags;
 		$out = $Tag->$tag($attrhash);
 	}
@@ -4461,7 +4461,7 @@ sub iterate_array_list {
 
 	my ($run, $row, $code, $return);
 my $once = 0;
-#::logDebug("iterating array $i to $end. count=$count opt_select=$opt_select ary=" . ::uneval($ary));
+#::logDebug("iterating array $i to $end. count=$count opt_select=$opt_select ary=" . uneval($ary));
 	if($text =~ m/^$B$QR{_line}\s*$/is) {
 		my $i = $1 || 0;
 		my $count = scalar values %$fh;
@@ -4474,7 +4474,7 @@ my $once = 0;
 		my $name = $1;
 		my $routine = $2;
 		## Not necessary?
-		## $Vend::Cfg->{Sub}{''} = sub { ::errmsg('undefined sub') }
+		## $Vend::Cfg->{Sub}{''} = sub { errmsg('undefined sub') }
 		##	unless defined $Vend::Cfg->{Sub}{''};
 		$routine = 'sub { ' . $routine . ' }' unless $routine =~ /^\s*sub\s*{/;
 		my $sub;
@@ -4482,8 +4482,8 @@ my $once = 0;
 			$sub = $ready_safe->reval($routine);
 		};
 		if($@) {
-			::logError( ::errmsg("syntax error on %s-sub %s]: $@", $B, $name) );
-			$sub = sub { ::errmsg('ERROR') };
+			logError( errmsg("syntax error on %s-sub %s]: $@", $B, $name) );
+			$sub = sub { errmsg('ERROR') };
 		}
 #::logDebug("sub $name: $sub --> $routine");
 		$Vend::Cfg->{Sub}{$name} = $sub;
@@ -4520,9 +4520,9 @@ my $once = 0;
 	$run = $text;
 	if(! $opt->{ignore_undefined}) {
 	$run =~ s#$B$QR{_param}# defined $fh->{$1} ||
-		::logOnce(@field_msg, $1, "$Orig_prefix-param") #ige;
+		logOnce(@field_msg, $1, "$Orig_prefix-param") #ige;
 	$run =~ s#$IB$QR{_param_if}# defined $fh->{$3} ||
-		::logOnce(@field_msg, $3, "if-$Orig_prefix-param") #ige;
+		logOnce(@field_msg, $3, "if-$Orig_prefix-param") #ige;
 	}
 
 	for( ; $i <= $end ; $i++, $count++ ) {
@@ -4548,7 +4548,7 @@ my $once = 0;
 						?	pull_if($5,$2,$4,$row->[$3])
 						:	pull_else($5,$2,$4,$row->[$3])#ige;
 	    $run =~ s#$B$QR{_pos}#ed($row->[$1])#ige;
-#::logDebug("fh: " . ::uneval($fh) . ::uneval($row)) unless $once++;
+#::logDebug("fh: " . uneval($fh) . uneval($row)) unless $once++;
 		1 while $run =~ s#$IB$QR{_field_if}$IE[-_]field\1\]#
 				  my $tmp = product_field($3, $code);
 				  $tmp	?	pull_if($5,$2,$4,$tmp)
@@ -4626,12 +4626,12 @@ sub iterate_hash_list {
 
 	$nc and local(@Hash_code{keys %$nc}) = values %$nc;
 
-#::logDebug("iterating hash $i to $end. count=$count opt_select=$opt_select hash=" . ::uneval($hash));
+#::logDebug("iterating hash $i to $end. count=$count opt_select=$opt_select hash=" . uneval($hash));
 	while($text =~ s#$B$QR{_sub}$E$QR{'/_sub'}##i) {
 		my $name = $1;
 		my $routine = $2;
 		## Not necessary?
-		## $Vend::Cfg->{Sub}{''} = sub { ::errmsg('undefined sub') }
+		## $Vend::Cfg->{Sub}{''} = sub { errmsg('undefined sub') }
 		##	unless defined $Vend::Cfg->{Sub}{''};
 		$routine = 'sub { ' . $routine . ' }' unless $routine =~ /^\s*sub\s*{/;
 		my $sub;
@@ -4639,8 +4639,8 @@ sub iterate_hash_list {
 			$sub = $ready_safe->reval($routine);
 		};
 		if($@) {
-			::logError( ::errmsg("syntax error on %s-sub %s]: $@", $B, $name) );
-			$sub = sub { ::errmsg('ERROR') };
+			logError( errmsg("syntax error on %s-sub %s]: $@", $B, $name) );
+			$sub = sub { errmsg('ERROR') };
 		}
 		$Vend::Cfg->{Sub}{$name} = $sub;
 	}
@@ -4814,7 +4814,7 @@ sub error_opt {
 	my $msg = errmsg(@args);
 	$msg = "$opt->{error_id}: $msg" if $opt->{error_id};
 	if($opt->{log_error}) {
-		::logError($msg);
+		logError($msg);
 	}
 	return $msg if $opt->{show_error};
 	return undef;
@@ -5005,7 +5005,7 @@ sub region {
 			find_search_params();
 			delete $CGI::values{mv_more_matches};
 
-			#::logDebug("more object = " . ::uneval($c));
+#::logDebug("more object = " . uneval($c));
 
 		}
 		elsif ($opt->{search}) {
@@ -5063,7 +5063,7 @@ sub region {
 		$mprefix = "";
 	}
 
-#::logDebug("region: opt:\n" . ::uneval($opt) . "\npage:" . substr($page,0,100));
+#::logDebug("region: opt:\n" . uneval($opt) . "\npage:" . substr($page,0,100));
 
 	if($opt->{ml} and ! defined $obj->{mv_matchlimit} ) {
 		$obj->{mv_matchlimit} = $opt->{ml};
@@ -5121,7 +5121,7 @@ sub tag_loop_list {
 	$opt->{label}  =  "loop" . $List_it++ . $Global::Variable->{MV_PAGE}
 						unless defined $opt->{label};
 
-#::logDebug("list is: " . ::uneval($list) );
+#::logDebug("list is: " . uneval($list) );
 
 	## Thanks to Kaare Rasmussen for this suggestion
 	## about passing embedded Perl objects to a list
@@ -5135,9 +5135,9 @@ sub tag_loop_list {
 	#	[loop list=`$Scratch->{ary}`] [loop-code]
 	#	[/loop]
 	if (ref $list) {
-#::logDebug("opt->list in: " . ::uneval($list) );
+#::logDebug("opt->list in: " . uneval($list) );
 		unless (ref $list eq 'ARRAY' and ref $list->[0] eq 'ARRAY') {
-			::logError("loop was passed invalid list=`...` argument");
+			logError("loop was passed invalid list=`...` argument");
 			return;
 		}
 		my ($ary, $fh, $fa) = @$list;
@@ -5199,7 +5199,7 @@ sub tag_loop_list {
 				push @rows, [ $o, $l ];
 			}
 		};
-#::logDebug("rows:" . ::uneval(\@rows));
+#::logDebug("rows:" . uneval(\@rows));
 	}
 	elsif($opt->{quoted}) {
 #::logDebug("loop resolve quoted");
@@ -5220,7 +5220,7 @@ sub tag_loop_list {
 	}
 
 	if($@) {
-		::logError("bad split delimiter in loop list: $@");
+		logError("bad split delimiter in loop list: $@");
 #::logDebug("loop resolve error $@");
 	}
 
@@ -5239,7 +5239,7 @@ sub tag_loop_list {
 			mv_field_names => $fn,
 	};
 	
-#::logDebug("loop object: " . ::uneval($opt));
+#::logDebug("loop object: " . uneval($opt));
 	return region($opt, $text);
 }
 
@@ -5568,7 +5568,7 @@ sub read_shipping {
 					$line[OPT]->{$k} = $v;
 				}
 			};
-			::logError(
+			logError(
 				"bad shipping index %s for mode %s in $file",
 				$k,
 				$line[0],
@@ -5580,7 +5580,7 @@ sub read_shipping {
 		if @line;
 
 	if($waiting) {
-		::logError(
+		logError(
 			"Failed to find end-of-line termination '%s' in shipping read",
 			$waiting,
 		);
@@ -5781,7 +5781,7 @@ sub timed_build {
 		if($saved_file) {
 			$file = $saved_file;
 			$file =~ s:^scan/::;
-			$file = ::generate_key($file);
+			$file = generate_key($file);
 			$file = "scan/$file";
 		}
 		else {
@@ -5812,7 +5812,7 @@ sub timed_build {
 		$opt->{umask} = '22' unless defined $opt->{umask};
         Vend::Util::writefile(">$file", $out, $opt );
 # STATICPAGE
-		if ($Vend::Cfg->{StaticDBM} and ::tie_static_dbm(1) ) {
+		if ($Vend::Cfg->{StaticDBM} and Vend::Session::tie_static_dbm(1) ) {
 			if ($opt->{scan}) {
 				$saved_file =~ s!=([^/]+)=!=$1%3d!g;
 				$saved_file =~ s!=([^/]+)-!=$1%2d!g;
@@ -5834,7 +5834,7 @@ sub timed_build {
 sub update {
 	my ($func, $opt) = @_;
 	if($func eq 'quantity') {
-		::update_quantity();
+		Vend::Order::update_quantity();
 	}
 	elsif($func eq 'cart') {
 		my $cart;
@@ -5848,13 +5848,13 @@ sub update {
 		Vend::Cart::toss_cart($cart, $opt->{name});
 	}
 	elsif ($func eq 'process') {
-		::do_process();
+		Vend::Dispatch::do_process();
 	}
 	elsif ($func eq 'values') {
-		::update_user();
+		Vend::Dispatch::update_user();
 	}
 	elsif ($func eq 'data') {
-		::update_data();
+		Vend::Data::update_data();
 	}
 	return;
 }
@@ -5891,7 +5891,7 @@ sub shipping {
 	else {
 		@bin = @$Vend::Items;
 	}
-#::logDebug("doing shipping, mode=$mode bin=" . ::uneval(\@bin));
+#::logDebug("doing shipping, mode=$mode bin=" . uneval(\@bin));
 
 	$Vend::Session->{ship_message} = '' if $opt->{reset_message};
 
@@ -5932,7 +5932,7 @@ sub shipping {
 	my @lines;
 	@lines = grep $_->[0] =~ /^$mode/, @{$Vend::Cfg->{Shipping_line}};
 	goto SHIPFORMAT unless @lines;
-#::logDebug("shipping lines selected: " . ::uneval(\@lines));
+#::logDebug("shipping lines selected: " . uneval(\@lines));
 	my $q;
 	if($lines[0][QUERY]) {
 		my $q = interpolate_html($lines[0][QUERY]);
@@ -5941,7 +5941,7 @@ sub shipping {
 		my $ary = query($q, { wantarray => 1 });
 		if(ref $ary) {
 			@lines = @$ary;
-#::logDebug("shipping lines reselected with SQL: " . ::uneval(\@lines));
+#::logDebug("shipping lines reselected with SQL: " . uneval(\@lines));
 		}
 		else {
 #::logDebug("shipping lines failed reselect with SQL query '$q'");
@@ -5950,7 +5950,7 @@ sub shipping {
 
 	my $o = get_option_hash($lines[0][OPT]) || {};
 
-#::logDebug("shipping opt=" . ::uneval($o));
+#::logDebug("shipping opt=" . uneval($o));
 
 	if($o->{limit}) {
 		$o->{filter} = '(?i)\s*[1ty]' if ! $o->{filter};
@@ -5962,7 +5962,7 @@ sub shipping {
 
 	tag_cart('mv_shipping');
 
-#::logDebug("Check 2, must get to FINAL. Vend::Items=" . ::uneval($Vend::Items) . " main=" . ::uneval($::Carts->{main}) . " mv_shipping=" . ::uneval($::Carts->{mv_shipping}));
+#::logDebug("Check 2, must get to FINAL. Vend::Items=" . uneval($Vend::Items) . " main=" . uneval($::Carts->{main}) . " mv_shipping=" . uneval($::Carts->{mv_shipping}));
 
 	if($o->{perl}) {
 		$Vend::Interpolate::Shipping   = $lines[0];
@@ -6189,7 +6189,7 @@ sub shipping {
 		$Vend::Items = $save;
 #::logDebug("Check FINAL. Vend::Items=$Vend::Items main=$::Carts->{main}");
 		last SHIPFORMAT unless defined $final;
-#::logDebug("ship options: " . ::uneval($o) );
+#::logDebug("ship options: " . uneval($o) );
 		$final /= $Vend::Cfg->{PriceDivide}
 			if $o->{PriceDivide} and $Vend::Cfg->{PriceDivide} != 0;
 		unless ($o->{free}) {
@@ -6219,7 +6219,7 @@ sub shipping {
 		}
 		else {
 			return $final unless $opt->{label};
-#::logDebug("actual options: " . ::uneval($o));
+#::logDebug("actual options: " . uneval($o));
 			$number = Vend::Util::currency( 
 											$final,
 											$opt->{noformat},
@@ -6423,7 +6423,7 @@ sub fly_tax {
 
 sub tax_vat {
 	my($type, $opt) = @_;
-#::logDebug("entering VAT, opts=" . ::uneval($opt));
+#::logDebug("entering VAT, opts=" . uneval($opt));
 	my $cfield = $::Variable->{MV_COUNTRY_FIELD} || 'country';
 	my $country = $opt->{country} || $::Values->{$cfield};
 
@@ -6475,9 +6475,9 @@ sub tax_vat {
 			$ary = $db->query($q);
 		};
 		if($@) {
-			::logError("error on state tax query %s", $q);
+			logError("error on state tax query %s", $q);
 		}
-#::logDebug("query returns " . ::uneval($ary));
+#::logDebug("query returns " . uneval($ary));
 		return 0 unless ref $ary;
 		for(@$ary) {
 			next unless $_->[0];
@@ -6515,7 +6515,7 @@ sub tax_vat {
 	else {
 			$tax = Vend::Util::get_option_hash($t);
 	}
-#::logDebug("tax hash=" . ::uneval($tax));
+#::logDebug("tax hash=" . uneval($tax));
 	my $pfield   = $opt->{tax_category_field}
 				|| $::Variable->{MV_TAX_CATEGORY_FIELD}
 				|| 'tax_category';
@@ -6568,11 +6568,11 @@ sub salestax {
 	}
 	elsif($Vend::Cfg->{SalesTaxFunction}) {
 		$tax_hash = tag_calc($Vend::Cfg->{SalesTaxFunction});
-#::logDebug("found custom tax function: " . ::uneval($tax_hash));
+#::logDebug("found custom tax function: " . uneval($tax_hash));
 	}
 	else {
 		$tax_hash = $Vend::Cfg->{SalesTaxTable};
-#::logDebug("looking for tax function: " . ::uneval($tax_hash));
+#::logDebug("looking for tax function: " . uneval($tax_hash));
 	}
 
 # if we have a cost from previous routines, return it
@@ -6585,7 +6585,7 @@ sub salestax {
 		$cost = fly_tax();
 	}
 
-#::logDebug("got to tax function: " . ::uneval($tax_hash));
+#::logDebug("got to tax function: " . uneval($tax_hash));
 	my $amount = taxable_amount();
 	my($r, $code);
 	# Make it upper case for state and overseas postal
@@ -6728,7 +6728,7 @@ sub tag_ups {
 	my(@fieldnames);
 	my($i,$point,$zone);
 
-#::logDebug("tag_ups: type=$type zip=$zip weight=$weight code=$code opt=" . ::uneval($opt));
+#::logDebug("tag_ups: type=$type zip=$zip weight=$weight code=$code opt=" . uneval($opt));
 	$code = 'u' unless $code;
 
 	unless (defined $Vend::Database{$type}) {

@@ -1,6 +1,6 @@
 # Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 2.6 2002-07-15 14:20:00 mheins Exp $
+# $Id: Session.pm,v 2.7 2002-09-16 23:06:31 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -26,7 +26,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.7 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -38,9 +38,12 @@ expire_sessions
 close_session
 get_session
 init_session
+is_retired
 new_session
 put_session
+retire_id
 session_name
+tie_static_dbm
 
 );
 
@@ -205,6 +208,25 @@ sub count_ip {
 	return Vend::CounterFile->new($fn)->value();
 }
 
+sub is_retired {
+	my $id = shift;
+	mkdir "$Vend::Cfg->{ScratchDir}/retired", 0777
+		unless -d "$Vend::Cfg->{ScratchDir}/retired";
+	my $fn = Vend::Util::get_filename($id, 2, 1, "$Vend::Cfg->{ScratchDir}/retired");
+	return -f $fn ? 1 : 0;
+}
+
+sub retire_id {
+	my $id = shift;
+	return unless $id =~ /^\w+$/;
+	mkdir "$Vend::Cfg->{ScratchDir}/retired", 0777
+		unless -d "$Vend::Cfg->{ScratchDir}/retired";
+	my $fn = Vend::Util::get_filename($id, 2, 1, "$Vend::Cfg->{ScratchDir}/retired");
+	open(TMPRET, ">$fn")
+		or die "retire id open: $!\n";
+	close(TMPRET);
+	return;
+}
 
 sub new_session {
     my($seed) = @_;
@@ -218,8 +240,8 @@ sub new_session {
 			undef $Vend::CookieID;
 		}
 		undef $seed;
-		if (::is_retired($Vend::SessionID)) {
-			::retire_id($Vend::SessionID);
+		if (is_retired($Vend::SessionID)) {
+			retire_id($Vend::SessionID);
 			next;
 		}
 		$name = session_name();
@@ -544,6 +566,39 @@ sub check_save {
 
 	return ($expire > $time);
 }	
+
+sub tie_static_dbm {
+	my $rw = shift;
+	untie(%Vend::StaticDBM) if $rw;
+	if($Global::GDBM) {
+        my $flags = $rw ? &GDBM_WRITER : &GDBM_READER;
+        $flags = &GDBM_NEWDB
+            if $rw && (! -f "$Vend::Cfg->{StaticDBM}.gdbm");
+        tie(%Vend::StaticDBM,
+            'GDBM_File',
+            "$Vend::Cfg->{StaticDBM}.gdbm",
+            $flags,
+            $Vend::Cfg->{'FileCreationMask'},
+        )
+        or $Vend::Cfg->{SaveStaticDBM} = delete $Vend::Cfg->{StaticDBM};
+	}
+	elsif ($Global::DB_File) {
+		tie(%Vend::StaticDBM,
+			'DB_File',
+			"$Vend::Cfg->{StaticDBM}.db",
+			($rw ? &O_RDWR | &O_CREAT : &O_RDONLY),
+			$Vend::Cfg->{'FileCreationMask'},
+			)
+		or undef $Vend::Cfg->{StaticDBM};
+	}
+	else {
+        $Vend::Cfg->{SaveStaticDBM} = delete $Vend::Cfg->{StaticDBM};
+	}
+	::logError("Failed to create StaticDBM %s", $Vend::Cfg->{StaticDBM})
+		if $rw && ! $Vend::Cfg->{StaticDBM};
+	return $Vend::Cfg->{StaticDBM} || undef;
+}
+
 
 1;
 

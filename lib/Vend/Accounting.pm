@@ -1,6 +1,6 @@
 # Vend::Accounting - Interchange payment processing routines
 #
-# $Id: Accounting.pm,v 2.1 2002-06-11 20:30:58 mheins Exp $
+# $Id: Accounting.pm,v 2.2 2002-09-16 23:06:31 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@heins.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Accounting;
 
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2 $, 10);
 
 use Vend::Util;
 use LWP::UserAgent;
@@ -224,7 +224,7 @@ sub post_data {
 	my %result;
 	if($Have_Net_SSLeay) {
 #::logDebug("placing Net::SSLeay request: host=$server, port=$port, script=$script");
-#::logDebug("values: " . ::uneval($query) );
+#::logDebug("values: " . uneval($query) );
 		my ($page, $response, %reply_headers)
                 = post_https(
 					   $server, $port, $script,
@@ -247,7 +247,7 @@ sub post_data {
 		my @query = %{$query};
 		my $ua = new LWP::UserAgent;
 		my $req = POST($submit_url, \@query, %header);
-#::logDebug("placing LWP request: " . ::uneval_it($req) );
+#::logDebug("placing LWP request: " . uneval_it($req) );
 		my $resp = $ua->request($req);
 		$result{status_line} = $resp->status_line();
 		$result{status_line} =~ /(\d+)/
@@ -257,7 +257,7 @@ sub post_data {
 #::logDebug("received LWP header: $header_string");
 		$result{result_page} = $resp->content();
 	}
-#::logDebug("returning thing: " . ::uneval_it(\%result) );
+#::logDebug("returning thing: " . uneval_it(\%result) );
 	return \%result;
 }
 

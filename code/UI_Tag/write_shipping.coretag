@@ -16,7 +16,7 @@ sub {
 		my @line = @$_;
 		my $opt = '';
 		if (ref($line[7]) =~ /HASH/) {
-			$line[7] = ::uneval_it($line[7]);
+			$line[7] = uneval_it($line[7]);
 		}
 		push @outlines, \@line;
 	}

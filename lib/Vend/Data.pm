@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.15 2002-08-10 02:30:26 mheins Exp $
+# $Id: Data.pm,v 2.16 2002-09-16 23:06:31 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -55,6 +55,7 @@ product_price
 product_row
 product_row_hash
 set_field
+update_data
 
 );
 @EXPORT_OK = qw(update_productbase column_index);
@@ -196,7 +197,7 @@ sub update_productbase {
 	undef $Vend::OnlyProducts if scalar @Vend::Productbase > 1;
 
 	$Products = $Vend::Productbase[0];
-#::logError("Productbase: '@Vend::Productbase' --> " . ::uneval(\%Vend::Basefinder));
+#::logError("Productbase: '@Vend::Productbase' --> " . uneval(\%Vend::Basefinder));
 
 }
 
@@ -230,7 +231,7 @@ sub product_description {
 
 sub database_field {
     my ($db, $key, $field_name, $foreign) = @_;
-#::logDebug("database_field: " . ::uneval_it(\@_));
+#::logDebug("database_field: " . uneval_it(\@_));
     $db = database_exists_ref($db) or return undef;
     return '' unless defined $db->test_column($field_name);
 	$key = $db->foreign($key, $foreign) if $foreign;
@@ -251,7 +252,7 @@ sub increment_field {
 	$db = $db->ref();
     return undef unless $db->test_record($key);
     return undef unless defined $db->test_column($field_name);
-#::logDebug(__PACKAGE__ . "increment_field: " . ::uneval_it(\@_));
+#::logDebug(__PACKAGE__ . "increment_field: " . uneval_it(\@_));
     return $db->inc_field($key, $field_name, $adder);
 }
 
@@ -742,15 +743,15 @@ sub tie_database {
 				};
 				if($@) {
 						my $msg = "table '%s' failed: %s";
-						$msg = ::errmsg($msg, $name, $@);
-						::logError($msg);
+						$msg = errmsg($msg, $name, $@);
+						logError($msg);
 				}
 			}
 			else {
 				if($data->{GUESS_NUMERIC}) {
 					my $dir = $data->{DIR} || $Vend::Cfg->{ProductDir};
 					my $fn = Vend::Util::catfile( $dir, $data->{file} );
-					my @fields = grep /\S/, split /\s+/, ::readfile("$fn.numeric");
+					my @fields = grep /\S/, split /\s+/, readfile("$fn.numeric");
 					$data->{NUMERIC} = {};
 					for(@fields) {
 						$data->{NUMERIC}{$_} = 1;
@@ -799,10 +800,10 @@ sub import_database {
 #	if($type == 9) {
 #my @caller = caller();
 #::logDebug ("enter import_database: dummy=$dummy");
-#::logDebug("opening table table=$database config=" . ::uneval($obj) . " caller=@caller");
+#::logDebug("opening table table=$database config=" . uneval($obj) . " caller=@caller");
 #
-#::logDebug ("database=$database type=$type name=$name obj=" . ::uneval($obj));
-#::logDebug ("database=$database type=$type name=$name obj=" . ::uneval($obj)) if $obj->{HOT};
+#::logDebug ("database=$database type=$type name=$name obj=" . uneval($obj));
+#::logDebug ("database=$database type=$type name=$name obj=" . uneval($obj)) if $obj->{HOT};
 #	
 #	}
 	return $Vend::Cfg->{SaveDatabase}->{$name}
@@ -1096,7 +1097,7 @@ sub index_database {
 
 #::logDebug(
 #	"dbname=$dbname db_fn=$db_fn bx_fn=$bx_fn ix_fn=$ix_fn\n" .
-#	"options: " . Vend::Util::uneval($opt) . "\n"
+#	"options: " . uneval($opt) . "\n"
 #	);
 
 	if(		! -f $bx_fn
@@ -1126,7 +1127,7 @@ sub index_database {
 		my @fields = grep $_ ne $key, split /[\0,\s]+/, $opt->{fn};
 		my $sort = join ",", @fields;
 		if(! $opt->{fn}) {
-			::logError(errmsg("index attempted on table '%s' with no fields, no search spec", $dbname));
+			logError(errmsg("index attempted on table '%s' with no fields, no search spec", $dbname));
 			return undef;
 		}
 		$opt->{spec} = <<EOF;
@@ -1156,7 +1157,7 @@ EOF
 		@fn = split /\s*[\0,]+\s*/, $c->{mv_return_fields};
 	}
 
-#::logDebug( "search options: " . Vend::Util::uneval($c) . "\n");
+#::logDebug( "search options: " . uneval($c) . "\n");
 
 	open(Vend::Data::INDEX, "+<$ix_fn") or
 		open(Vend::Data::INDEX, "+>$ix_fn") or
@@ -1419,7 +1420,7 @@ sub modular_cost {
 
 	my $db = database_exists_ref($table);
 	if(! $db) {
-		::logError('Non-existent price option table %s', $table);
+		logError('Non-existent price option table %s', $table);
 		return;
 	}
 #::logDebug("database $table exists");
@@ -1445,7 +1446,7 @@ sub option_cost {
 #::logDebug("called option_cost");
 	my $db = database_exists_ref($table);
 	if(! $db) {
-		::logError('Non-existent price option table %s', $table);
+		logError('Non-existent price option table %s', $table);
 		return;
 	}
 
@@ -1493,7 +1494,7 @@ sub option_cost {
 	my $f;
 
 	foreach $ref (@$ary) {
-#::logDebug("checking option " . ::uneval_it($ref));
+#::logDebug("checking option " . uneval_it($ref));
 		next unless defined $item->{$ref->[0]};
 		$ref->[1] =~ s/^\s+//;
 		$ref->[1] =~ s/\s+$//;
@@ -1536,11 +1537,11 @@ sub chain_cost {
 		@p = Text::ParseWords::shellwords($raw);
 	}
 	if(scalar @p > ($Vend::Cfg->{Limit}{chained_cost_levels} || 64)) {
-		::logError('Too many chained cost levels for item ' .  uneval($item) );
+		logError('Too many chained cost levels for item ' .  uneval($item) );
 		return undef;
 	}
 
-#::logDebug("chain_cost item = " . uneval ($item) . "\np=" . ::uneval(\@p) );
+#::logDebug("chain_cost item = " . uneval ($item) . "\np=" . uneval(\@p) );
 	my ($chain, $percent);
 	my $passed_key;
 	my $want_key;
@@ -1548,7 +1549,7 @@ CHAIN:
 	foreach $price (@p) {
 		next if ! length($price);
 		if($its++ > ($Vend::Cfg->{Limit}{chained_cost_levels} || 64)) {
-			::logError('Too many chained cost levels for item ' .  uneval($item) );
+			logError('Too many chained cost levels for item ' .  uneval($item) );
 			last CHAIN;
 		}
 		$price =~ s/^\s+//;
@@ -1640,6 +1641,30 @@ CHAIN:
 #::logDebug("database referenc found table=$table field=$field key=$key|$item->{$key}|$item->{code} price=$price");
 				redo CHAIN;
 			}
+			elsif ($mod =~ s/(\w+)=(.*)//) {
+				my $tag = $1;
+				my(@args) = split /:/, $2;
+				my $sub	=   # $intrinsic_price{$tag} ||
+							$Vend::Cfg->{Sub}{$tag} || $Global::GlobalSub->{$tag};
+
+				my %i = %$item;
+			
+				for(@args) {
+					my($k, $v) = split /=/, $_;
+					$i{$k} = $v;
+				}
+
+				$i{final} = $final;
+				$i{passed_key} = $passed_key if $passed_key;
+
+				if ($sub) {
+					$price = $sub->(\%i);
+				}
+				else {
+					$price = Vend::Tags->$tag(\%i);
+				}
+				redo CHAIN;
+			}
 			elsif ($mod =~ s/^[&]//) {
 				$Vend::Interpolate::item = $item;
 				$Vend::Interpolate::s = $final;
@@ -1652,7 +1677,7 @@ CHAIN:
 				$final += $1 if $1;
 				my ($attribute, $table, $field, $key) = split /:/, $2;
 				if($item->{$attribute}) {
-					$key = $field ? $item->{$attribute} : $item->{'code'}
+					$key = $field ? $item->{$attribute} : $item->{code}
 						unless $key;
 					$price = database_field( ( $table ||
 												$item->{mv_ib} ||
@@ -1734,7 +1759,7 @@ sub item_price {
 		$master = $item;
 		my $mv_mp = $item->{mv_mi}
 			or do {
-				::logError("Bad modular item %s: ", ::uneval_it($item));
+				logError("Bad modular item %s: ", uneval_it($item));
 				return 0;
 			};
 		for(@$Vend::Items) {
@@ -1763,7 +1788,7 @@ sub item_price {
 		if($Vend::Cfg->{PriceDivide} == 0) {
 			my $msg = "Locale %s PriceDivide non-numeric or zero [%s].";
 			$msg .= " Possibly bad locale data.",
-			::logError(
+			logError(
 				$msg,
 				$::Scratch->{mv_currency} || $::Scratch->{mv_locale},
 				$Vend::Cfg->{PriceDivide},
@@ -1824,6 +1849,527 @@ sub item_field {
 sub item_subtotal {
 	item_price($_[0]) * $_[0]->{quantity};
 }
+
+sub set_db {
+	my ($base, $thing) = @_;
+	return ($base, $thing) unless $thing =~ /^(\w+):+(.*)/;
+	my $t = $1;
+	my $c = $2;
+
+	# Security handled before this in update_data
+	$Vend::WriteDatabase{$t} = 1;
+
+	my $db = database_exists_ref($t);
+	return undef unless $db;
+	return ($db->ref(), $c);
+}
+
+## Update the user-entered fields.
+sub update_data {
+	my($key,$value);
+	my @cgi_keys = keys %CGI::values;
+    # Update a database record
+	# Check to see if this is allowed
+#::logDebug("mv_data_enable=$::Scratch->{mv_data_enable}");
+	if(! $::Scratch->{mv_data_enable}) {
+		logError(
+			 "Attempted database update without permission, table=%s key=%s.",
+			 $CGI::values{mv_data_table},
+			 $CGI::values{$CGI::values{mv_data_key}},
+		);
+		return undef;
+	}
+	unless (defined $CGI::values{mv_data_table} and 
+		    defined $CGI::values{mv_data_key}      ) {
+		logError("Attempted database operation without table, fields, or key.\n" .
+					 "Table: '%s'\n" .
+					 "Fields:'%s'\n" .
+					 "Key:   '%s'\n",
+					 $CGI::values{mv_data_table},
+					 $CGI::values{mv_data_fields},
+					 $CGI::values{mv_data_key},
+				 );
+
+		return undef;
+	}
+
+	my $function	= lc (delete $CGI::values{mv_data_function});
+	if($function eq 'delete' and ! delete $CGI::values{mv_data_verify}) {
+		logError("update_data: DELETE without VERIFY, abort");
+		return undef;
+	}
+	my $table		= $CGI::values{mv_data_table};
+	my $prikey		= $CGI::values{mv_data_key};
+	my $decode		= is_yes($CGI::values{mv_data_decode});
+	my ($ref, $db, $database);
+
+	my $en_col;
+#::logDebug("data_enable=$::Scratch->{mv_data_enable}, checking");
+	if($::Scratch->{mv_data_enable} =~ /^(\w+):(.*?):/) {
+		# check for single key and possible set of columns
+		my $en_table = $1;
+		$en_col   = $2;
+		my $en_key   = $::Scratch->{mv_data_enable_key};
+#::logDebug("en_table=$en_table en_col=$en_col, en_key=$en_key, checking");
+		if(  $en_table ne $table
+			 or 
+			 ($en_key and $CGI::values{$prikey} ne $en_key)
+			)
+		{
+			logError("Attempted database operation without permission:\n" .
+						 "Permission: '%s' (key='$en_key')\n" .
+						 "Table: '%s'\n" .
+						 "Fields:'%s'\n" .
+						 "Key:   '%s'\n",
+						 $::Scratch->{mv_data_enable},
+						 $CGI::values{mv_data_table},
+						 $CGI::values{mv_data_fields},
+						 $CGI::values{$CGI::values{mv_data_key}},
+				 );
+			return undef;
+		}
+	}
+
+
+	$Vend::WriteDatabase{$table} = 1;
+
+    my $base_db = database_exists_ref($table)
+        or die "Not a defined database '$table': $!\n";
+    $base_db = $base_db->ref();
+
+	my @fields		= grep $_ && $_ ne $prikey,
+						split /[\s\0,]+/, $CGI::values{mv_data_fields};
+	unshift(@fields, $prikey);
+
+    my @file_fields = split /[\s\0,]+/, $CGI::values{mv_data_file_field};
+    my @file_paths = split /[\s\0,]+/, $CGI::values{mv_data_file_path};
+    my @file_oldfiles = split /[\s\0,]+/, $CGI::values{mv_data_file_oldfile};
+
+	if($en_col) {
+		$en_col =~ s/^\s+//;
+		$en_col =~ s/\s+$//;
+		my %col_present;
+		@col_present{ grep /\S/, split /[\s\0,]+/, $en_col } = ();
+		$col_present{$prikey} = 1;
+		for(@fields, $CGI::values{mv_blob_field}, $CGI::values{mv_blob_pointer}) {
+			next unless $_;
+			next if exists $col_present{$_};
+			next if /:/ and $::Scratch->{mv_data_enable} =~ / $_ /;
+			logError("Attempted database operation without permission:\n" .
+						 "Permission: '%s'\n" .
+						 "Table: '%s'\n" .
+						 "Fields:'%s'\n" .
+						 "Key:   '%s'\n",
+						 $::Scratch->{mv_data_enable},
+						 $CGI::values{mv_data_table},
+						 $CGI::values{mv_data_fields},
+						 $CGI::values{$CGI::values{mv_data_key}},
+				 );
+			return undef;
+		}
+	}
+	$function = 'update' unless $function;
+
+	my (%data);
+	for(@fields) {
+		$data{$_} = [];
+	}
+
+	my $count;
+	my $multi = $CGI::values{$prikey} =~ tr/\0/\0/;
+	my $max = 0;
+	my $min = 9999;
+	my ($minname, $maxname);
+
+	while (($key, $value) = each %CGI::values) {
+		next unless defined $data{$key};
+		if($CGI::values{"mv_data_prep_$key"}) {
+			$value = Vend::Interpolate::filter_value(
+						 $CGI::values{"mv_data_prep_$key"},
+						 $value
+						 );
+		}
+		$count = (@{$data{$key}} = split /\0/, $value, -1);
+		$max = $count, $maxname = $key if $count > $max;
+		$min = $count, $minname = $key if $count < $min;
+	}
+
+	if( $multi and ($max - $min) > 1 and ! $CGI::values{mv_data_force}) {
+		logError("probable bad form -- number of values min=%s (%s) max=%s (%s)", $min, $minname, $max, $maxname);
+		return;
+	}
+
+	my $autonumber;
+	if ($CGI::values{mv_data_auto_number}) {
+		$autonumber = 1;
+		my $ref = $data{$prikey};
+		while (scalar @$ref < $max) {
+			push @$ref, '';
+		}
+		$base_db->config('AUTO_NUMBER', '000001')
+			if ! $base_db->config('_Auto_number');
+		$CGI::values{mv_data_return_key} = $prikey
+			unless $CGI::values{mv_data_return_key};
+	}
+	elsif($function eq 'insert' and $base_db->config('_Auto_number') ) {
+			$autonumber = 1;
+	}
+ 
+
+ 	if(@file_fields) {
+		my $Tag = new Vend::Tags;
+		my $acl_func;
+		my $outfile;
+		if($Vend::Session->{logged_in} and $Vend::admin) {
+			$acl_func = sub {
+				return $Tag->if_mm('files', shift);
+			};
+		}
+		elsif($Vend::Session->{logged_in} and ! $Vend::admin) {
+			$acl_func = sub {
+				my $file = shift;
+				return 1 if $::Scratch->{$file} == 1;
+				return $Tag->userdb(
+								function => 'check_file_acl',
+								location => $file,
+								mode => 'w'
+								);
+			};
+		}
+		else {
+			$acl_func = sub { return $::Scratch->{shift(@_)} == 1 }
+		}
+
+		for (my $i = 0; $i < @file_fields; $i++) {
+			unless (length($data{$file_fields[$i]}->[0])) {
+				# no need for a file update
+				$data{$file_fields[$i]}->[0] = $file_oldfiles[$i];
+				next;
+			}
+
+			# remove path components
+			$data{$file_fields[$i]}->[0] =~ s:.*/::; 
+			$data{$file_fields[$i]}->[0] =~ s:.*\\::; 
+
+			if (length ($file_paths[$i])) {
+				# real file upload
+				$outfile = join('/', $file_paths[$i], $data{$file_fields[$i]}->[0]);
+#::logDebug("file upload: field=$file_fields[$i] path=$file_paths[$i] outfile=$outfile");
+				my $ok;
+				if (-f $outfile) {
+					eval {
+						$ok = $acl_func->($outfile);
+					};
+				} else {
+					eval {
+						$ok = $acl_func->($file_paths[$i]);
+					};
+				}
+				if (! $ok) {
+					if($@) {
+						logError ("ACL function failed on '%s': %s", $outfile, $@);
+					}
+					else {
+						logError ("Not allowed to upload \"%s\"", $outfile);
+					}
+					next;
+				} 
+				my $err;
+				Vend::Interpolate::tag_value_extended(
+										$file_fields[$i],
+										{
+											test => 'isfile'
+										}
+										)
+					or do {
+						 logError("%s is not a file.", $data{$file_fields[$i]}->[0]);
+						 next;
+					};
+				Vend::Interpolate::tag_value_extended(
+										$file_fields[$i],
+										{
+											outfile => $outfile,
+											umask => '022',
+											yes => '1',
+										}
+										)
+					or do {
+						 logError("failed to write %s: %s", $outfile, $!);
+						 next;
+					};
+			}
+			else {
+				# preparing to dump file contents into database column
+				$data{$file_fields[$i]}->[0]
+					= Vend::Interpolate::tag_value_extended ($file_fields[$i],
+						{file_contents => 1});
+			}
+		}
+	}
+
+	if (not defined $data{$prikey}) {
+		logError("No key '%s' in field specifier %s", $prikey, 'mv_data_fields');
+		return undef;
+	}
+	elsif ( ! @{$data{$prikey}}) {
+		if($autonumber) {
+			@{$data{$prikey}} = map { '' } @{ $data{$fields[1]} };
+		}
+		else {
+			logError("No key '%s' found for function='%s' table='%s'",
+						$prikey, $function, $CGI::values{mv_data_table},
+						);
+			return undef;
+		}
+	}
+
+	my ($query,$i);
+	my (@k);
+	my (@v);
+	my (@c);
+	my (@rows_set);
+	my (@email_rows);
+
+	my $safe;
+	my $blob_field;
+	my $blob_nick;
+	my $blob_ptr;
+
+	# Fields to set in database despite mv_blob_only
+	my %blob_exception;
+
+	if($CGI::values{mv_blob_field} and $CGI::values{mv_blob_nick}) {
+#::logDebug("update_data: blob processing enabled");
+		$blob_field = $CGI::values{mv_blob_field};
+		$blob_nick  = $CGI::values{mv_blob_nick};
+		$blob_ptr   = $CGI::values{mv_blob_pointer};
+
+		%blob_exception   =
+				map { ($_, 1) } split /[\s,\0]+/, $CGI::values{mv_blob_exception};
+
+		if( ! $base_db->column_exists($blob_field) ) {
+			undef $blob_field;
+			undef $blob_nick;
+			logError("No blob field '%s' found for table='%s', skipping blob save.",
+						$CGI::values{mv_blob_field}, $CGI::values{mv_data_table},
+						);
+		}
+		elsif ($MVSAFE::Safe) {
+			$safe = $Vend::Interpolate::ready_safe;
+		}
+		else {
+			$safe = new Safe;
+		}
+		$base_db->column_exists($blob_ptr)
+			or undef $blob_ptr;
+#::logDebug("update_data: blob safe object=$safe");
+	}
+
+	my @multis;
+	if($CGI::values{mv_data_multiple}) {
+		my $re = qr/^\d+_$prikey$/;
+		@multis = grep $_ =~ $re, @cgi_keys;
+		for(@multis) {
+			s/_.*//;
+		}
+		@multis = sort { $a <=> $b } @multis;
+	}
+
+#::logDebug("update_data:db=$db key=$prikey VALUES=" . ::uneval(\%CGI::values));
+#::logDebug("update_data:db=$db key=$prikey data=" . ::uneval(\%data));
+	my $select_key;
+ SETDATA: {
+	for($i = 0; $i < @{$data{$prikey}}; $i++) {
+#::logDebug("iteration of update_data:db=$db key=$prikey data=" . ::uneval(\%data));
+		@k = (); @v = ();
+		for(keys %data) {
+#::logDebug("iteration of field $_");
+
+			next unless (length($value = $data{$_}->[$i]) || $CGI::values{mv_update_empty} );
+			push(@k, $_);
+# LEGACY
+			HTML::Entities::decode($value) if $decode;
+# END LEGACY
+			if($CGI::values{"mv_data_filter_$_"}) {
+				$value = Vend::Interpolate::filter_value(
+							 $CGI::values{"mv_data_filter_$_"},
+							 $value,
+							 $i,
+							 );
+			}
+			$select_key = $value if $_ eq $prikey;
+			push(@v, $value);
+		}
+
+		if(! length($select_key) ) {
+			next if  defined $CGI::values{mv_update_empty_key}
+					 and   ! $CGI::values{mv_update_empty_key};
+		}
+
+		if($function eq 'delete') {
+			$base_db->delete_record($select_key);
+		}
+		else {
+			my $field;
+			$key = $data{$prikey}->[$i];
+			if(! length($key) and $autonumber) {
+				## KEY IS possibly SET HERE 
+				$key = $base_db->set_row($key);
+			}
+			push(@rows_set, $key);
+
+			# allow form submissions to go to database and to mail
+			if ($CGI::values{mv_data_email}) {
+				push( @email_rows,
+					[ errmsg("### Form Submission from %s", $key), $blob_nick, ],
+					[ $prikey, $key, ],
+				);
+			}
+
+			my $qd = {};
+			my $qf = {};
+			my $qv = {};
+			my $qret;
+
+			my $blob;
+			my $brec;
+			if($blob_field) {
+				my $string = $base_db->field($key, $blob_field);
+#::logDebug("update_data: blob string=$string");
+				$blob = $safe->reval($string);
+#::logDebug("update_data: blob object=$blob");
+				$blob = {} unless ref($blob) eq 'HASH';
+				$brec = $blob;
+				my @keys = split /::/, $blob_nick;
+				for(@keys) {
+					unless ( ref($brec->{$_}) eq 'HASH') {
+						$brec->{$_} = {};
+					}
+					$brec = $brec->{$_};
+				}
+			}
+			while($field = shift @k) {
+				$value = shift @v;
+				next if $field eq $prikey;
+				
+				## DATA IS SET HERE
+				# We are going to set the field unless it is only for
+				# storing in a blob (and possibly emailing)
+				my  ($d, $f);
+				if ($CGI::values{mv_blob_only} and ! $blob_exception{$field}) {
+#::logDebug("$field not storing, only blob");
+					$f = $field;
+				}
+				else {
+#::logDebug("storing d=$d $field blob_only=$CGI::values{mv_blob_only}");
+					($d, $f) = set_db($base_db, $field);
+#::logDebug("storing table=$table d=$d f=$f key=$key");
+					if(! defined $qd->{$d}) {
+						$qd->{$d} = $d;
+						$qf->{$d} = [$f];
+						$qv->{$d} = [$value];
+					}
+					else {
+						push @{$qf->{$d}}, $f;
+						push @{$qv->{$d}}, $value;
+					}
+					#$d->set_field($key, $f, $value);
+				}
+
+				push(@email_rows, [$f, $value])
+					if $CGI::values{mv_data_email};
+#::logDebug("update_data:db=$d key=$key field=$f value=$value");
+				$brec->{$f} = $value if $brec;
+			}
+
+			for(keys %$qd) {
+				$qret = $qd->{$_}->set_slice($key, $qf->{$_}, $qv->{$_});
+				$rows_set[$i] = $qret unless $rows_set[$i];
+			}
+			if($blob) {
+				$brec->{mv_data_fields} = join " ", @fields;
+				my $string =  uneval_it($blob);
+#::logDebug("update_data: blob saving string=$string");
+				$base_db->set_field($key, $blob_field, $string);
+				if($blob_ptr) {
+					$base_db->set_field($key, $blob_ptr, $blob_nick);
+				}
+			}
+			push(
+					@email_rows,
+					[ errmsg("### END FORM SUBMISSION %s", $key), $blob_nick, ]
+				)
+				if $CGI::values{mv_data_email};
+		}
+	}
+	if(my $new = shift(@multis)) {
+#::logDebug("Doing multi for $new");
+		last SETDATA unless length $CGI::values{"${new}_$prikey"};
+		for(@fields) {
+			my $value = $CGI::values{$_} = $CGI::values{"${new}_$_"};
+			$data{$_} = [ $value ];
+		}
+		redo SETDATA;
+	}
+ } # end SETDATA
+
+	if($CGI::values{mv_data_return_key}) {
+		my @keys = split /\0/, $CGI::values{mv_data_return_key};
+		for(@keys) {
+#::logDebug("return_key, setting $_");
+			$CGI::values{$_} = join("\0", @rows_set);
+		}
+	}
+
+	if($CGI::values{mv_auto_export}) {
+		Vend::Data::export_database($table);
+	}
+
+	if($CGI::values{mv_data_email}) {
+		push @email_rows, [ 'mv_data_fields', \@fields ];
+		Vend::Interpolate::tag_mail('', { log_error => 1 }, \@email_rows);
+	}
+
+	# Allow setting in one then returning to another
+	if($CGI::values{mv_return_table}) {
+		$CGI::values{mv_data_table} = $CGI::values{mv_return_table};
+	}
+
+	my @reloads = grep /^mv_data_table__\d+$/, keys %CGI::values;
+	if(@reloads) {
+		@reloads = map { m/.*__(\d+)$/; $1 } @reloads;
+		@reloads = sort { $a <=> $b } @reloads;
+		my $new = shift @reloads;
+		my $this = qr{__$new$};
+		my $some = qr{__\d+$};
+#::logDebug("Reloading, new=$new this=$this some=$some");
+		my %cgiset;
+		my @death_row;
+		for(@cgi_keys) {
+			push(@death_row, $_), next unless $_ =~ $some;
+			if($_ =~ $this) {
+				my $k = $_;
+				$k =~ s/$this//;
+				$cgiset{$k} = delete $CGI::values{$_};
+			}
+		}
+
+		$::Scratch->{mv_data_enable} = delete $::Scratch->{"mv_data_enable__$new"};
+		delete $::Scratch->{mv_data_enable_key};
+
+		for(@death_row) {
+			next unless /^mv_(data|blob|update)_/ or $data{$_}; # Reprieve!
+			delete $CGI::values{$_};
+		}
+
+		@CGI::values{keys %cgiset} = values %cgiset;
+		update_data();
+	}
+
+	return;
+}
+
+*dbref = \&database_exists_ref;
 
 1;
 

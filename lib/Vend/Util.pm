@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.35 2002-09-13 20:46:21 mheins Exp $
+# $Id: Util.pm,v 2.36 2002-09-16 23:06:31 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -32,6 +32,7 @@ require Exporter;
 	check_security
 	copyref
 	currency
+	dbref
 	dump_structure
 	errmsg
 	escape_chars
@@ -82,7 +83,7 @@ require HTML::Entities;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.35 $, 10);
+$VERSION = substr(q$Revision: 2.36 $, 10);
 
 BEGIN {
 	eval {
@@ -113,6 +114,11 @@ $ESCAPE_CHARS::ok_in_url =
 		'0123456789'				 .
 		'-_./~='
 	;
+
+## This is an alias for a commonly-used function
+sub dbref {
+	return Vend::Data::database_exists_ref(@_);
+}
 
 ## This is a character class for HTML::Entities
 $ESCAPE_CHARS::std = "^\n\t !\#\$%\'-;=?-Z\\\]-~";

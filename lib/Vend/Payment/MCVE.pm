@@ -1,6 +1,6 @@
 # Vend::Payment::MCVE - Interchange MCVE support
 #
-# $Id: MCVE.pm,v 1.1 2002-07-24 15:30:58 kwalsh Exp $
+# $Id: MCVE.pm,v 1.2 2002-09-16 23:06:32 mheins Exp $
 #
 # Author: Tom Friedel (tom@readyink.com) for Carlc Internet Services (http://www.carlc.com)
 #
@@ -22,11 +22,11 @@
 package Vend::Payment::MCVE;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 
 =head1 Interchange MCVE support
 
-Vend::Payment::MCVE $Revision: 1.1 $
+Vend::Payment::MCVE $Revision: 1.2 $
 
 =head1 SYNOPSIS
 
@@ -217,7 +217,7 @@ package Vend::Payment;
 sub mcve {
     my ($opt) = @_;
 
-    ::logDebug("mcve called, args=" . ::uneval(\@_));
+#::logDebug("mcve called, args=" . ::uneval(\@_));
 
     my $sess;
     my %result;
@@ -471,7 +471,7 @@ sub mcve {
     &MCVE::MCVE_DestroyConn($conn);
     &MCVE::MCVE_DestroyEngine();
 
-    ::logDebug("mcve returns, result=" . ::uneval(\%result));
+#::logDebug("mcve returns, result=" . ::uneval(\%result));
     return %result;
 }
 

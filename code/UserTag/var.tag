@@ -18,9 +18,13 @@ sub {
 	return $Vend::Cfg->{Member}{$key}
 		if	$Vend::Session->{logged_in}
 			&& defined $Vend::Cfg->{Member}{$key};
-	if($global) {
-		return Vend::Interpolate::dynamic_var($key) || $Global::Variable->{$key};
+
+	if($::Pragma->{dynamic_variables}) {
+		return Vend::Interpolate::dynamic_var($key) || $Global::Variable->{$key}
+			if $global;
+		return Vend::Interpolate::dynamic_var($key);
 	}
-	return Vend::Interpolate::dynamic_var($key);
+	return $::Variable->{$key} || $Global::Variable if $global;
+	return $::Variable->{$key};
 }
 EOR

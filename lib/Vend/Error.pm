@@ -1,6 +1,6 @@
 # Vend::Error - Handle Interchange error pages and messages
 # 
-# $Id: Error.pm,v 2.4 2002-07-21 01:15:02 mheins Exp $
+# $Id: Error.pm,v 2.5 2002-09-16 23:06:31 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -37,7 +37,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 
 sub get_locale_message {
 	my ($code, $message, @arg) = @_;
@@ -112,7 +112,7 @@ sub full_dump {
 	my $out = '';
 	if($portion) {
 		$out .= "###### SESSION ($portion) #####\n";
-		$out .= ::uneval($Vend::Session->{$portion});
+		$out .= uneval($Vend::Session->{$portion});
 		$out .= "\n###### END SESSION    #####\n";
 		$out =~ s/\0/\\0/g;
 		return $out;
@@ -122,17 +122,17 @@ sub full_dump {
 	local($Data::Dumper::Indent) = 2;
 	$out .= "###### ENVIRONMENT     #####\n";
 	if(my $h = ::http()) {
-		$out .= ::uneval($h->{env});
+		$out .= uneval($h->{env});
 	}
 	else {
-		$out .= ::uneval(\%ENV);
+		$out .= uneval(\%ENV);
 	}
 	$out .= "\n###### END ENVIRONMENT #####\n";
 	$out .= "###### CGI VALUES      #####\n";
-	$out .= ::uneval(\%CGI::values);
+	$out .= uneval(\%CGI::values);
 	$out .= "\n###### END CGI VALUES  #####\n";
 	$out .= "###### SESSION         #####\n";
-	$out .= ::uneval($Vend::Session);
+	$out .= uneval($Vend::Session);
 	$out .= "\n###### END SESSION    #####\n";
 	$out =~ s/\0/\\0/g;
 	return $out;

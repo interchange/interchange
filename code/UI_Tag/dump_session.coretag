@@ -30,7 +30,7 @@ sub {
 	else {
 		my $fn = Vend::Util::get_filename($name, 2, 1, $Vend::Cfg->{SessionDatabase});
 		return '' unless -f $fn;
-		return ::uneval(Vend::Util::eval_file($fn));
+		return uneval(Vend::Util::eval_file($fn));
 	}
 }
 EOR
