@@ -93,6 +93,7 @@ order_date: [value order_date]
 affiliate: [data session source]
 campaign: [value campaign]
 status: pending
+description: [filter mac][item-description][/filter]
 [/import]
 Inventory now: [data table=inventory col=quantity key="[item-code]" increment=1 value="-[item-quantity]"]
 [/item-list][/try]
