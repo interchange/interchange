@@ -52,7 +52,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
+# $Id: makecat.PL,v 2.1 2001-07-25 12:35:39 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -2213,7 +2213,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.0 2001-07-18 02:23:27 jon Exp $
+# $Id: makecat.PL,v 2.1 2001-07-25 12:35:39 racke Exp $
 
 =head1 INTRODUCTION
 
@@ -2400,6 +2400,14 @@ The directory where template images go.
 =item --imageurl=url
 
 The URL to prefix images with.
+
+=item --sharedir=directory
+
+The directory where shared admin images go.
+
+=item --shareurl=url
+
+The URL to prefix shared admin images with.
 
 =item --nocfg
 
