@@ -81,6 +81,15 @@ Admin UI
 * Fix spurious "backup" error message in page_edit caused by search without
   backup database.
 
+Payment
+-------
+
+* Fixed bug where decimal pricing would not be forced, causing failure for
+  round amounts with some gateways.
+
+* Add penny_pricing option for those gateways which might not accept
+  decimals.
+
 Foundation
 ----------
 
