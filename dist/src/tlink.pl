@@ -1,7 +1,7 @@
 #!/usr/bin/perl -wT
 # tlink.pl: runs as a cgi program and passes request to Vend server
 #
-#   $Id: tlink.pl,v 1.2 2000-07-12 03:08:10 heins Exp $
+#   $Id: tlink.pl,v 1.2.4.1 2000-11-27 02:05:31 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -26,7 +26,7 @@ use Socket;
 my $LINK_TIMEOUT = 30;
 #my $LINK_TIMEOUT = ~_~LINK_TIMEOUT~_~;
 my $LINK_PORT    = $ENV{MINIVEND_PORT} || 7786;
-#my $LINK_PORT    = $ENV{MINIVEND_PORT} || ~_~LINK_HOST~_~;
+#my $LINK_PORT    = $ENV{MINIVEND_PORT} || ~_~LINK_PORT~_~;
 my $LINK_HOST    = 'localhost';
 #my $LINK_HOST    = '~_~LINK_HOST~_~';
 my $ERROR_ACTION = "-notify";
