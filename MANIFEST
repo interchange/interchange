@@ -1319,7 +1319,6 @@ scripts/ic_mod_perl.PL
 scripts/interchange.PL
 scripts/localize.PL
 scripts/makecat.PL
-scripts/newcat.PL
 scripts/offline.PL
 scripts/restart.PL
 scripts/update.PL
