@@ -305,6 +305,9 @@ UserTags
   (This situation resulted in the oddity of the shipping rate displaying
   as $0.00 on the checkout page, but still getting added into the total cost
   and displaying in the shipping rate pulldown select box just fine.)
+  
+* [fedex-query] -- Updated FedEx URL, reported by Rick Boykin
+  <rick@epitomedesign.com>
 
 * interchange.cfg: Remove now-redundant include of usertag/*.tag.
 
