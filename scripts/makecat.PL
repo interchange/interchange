@@ -1724,7 +1724,12 @@ EOF
 	chdir "$Conf{relocate}$Conf{vendroot}"
 		or die "\nCouldn't change directory to $Conf{relocate}$Conf{vendroot}: $!\n";
 
-	my $pidfile = 'etc/minivend.pid';
+	my $pidfile;
+	for(qw! etc/interchange.pid etc/minivend.pid etc/interchange.pid !) {
+		$pidfile = $_;
+		last if -f $_;
+	}
+
 	PID: {
 		local ($/);
 		open(PID,"+<$pidfile") or last PID;
@@ -1958,7 +1963,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.11 2000-09-21 23:09:07 zarko Exp $
+$Id: makecat.PL,v 1.12 2000-09-23 18:38:22 heins Exp $
 
 =head1 INTRODUCTION
 
