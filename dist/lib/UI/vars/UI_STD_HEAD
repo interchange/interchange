@@ -188,7 +188,8 @@ a:visited { text-decoration: none; font-weight: normal; color: __UI_C_VLINK__ }
     <td valign=center nowrap><font face="Verdana, Arial, Helvetica, sans-serif" size="-1"><img src="@_UI_IMG_@admin/bg.gif" height=19 width=3 align=middle alt=x>&nbsp;&nbsp;&nbsp;&nbsp;
 EOF
 	$out .= $pre;
-	$out .= q{</td></tr><tr bgcolor="__UI_C_INTBLOCKBAR__"><td nowrap valign=center><img src="@_UI_IMG_@admin/bg.gif" height=19 width=3 align=middle alt=x>}
+	$out .= q{</td></tr><tr bgcolor="__UI_C_INTBLOCKBAR__"><td nowrap valign=center><img src="@_UI_IMG_@admin/bg.gif" height=19 width=3 align=middle alt=x>&nbsp;&nbsp;&nbsp;&nbsp;
+}
 		if $next;
 	$out .= qq{<A HREF="} if $page;
 	$out .= $Tag->area( { href => $page, form => $form } )
