@@ -1,12 +1,104 @@
 #### begin [value mv_order_number] #####
-[tmp transaction_record]
 [loop list="transactions orderline inventory userdb"]
 [flag type=write table="[loop-code]"]
 [/loop]
+[tmp transaction_record]
+Total order: [total-cost]
+Payment processing...payment_method=[value mv_order_profile]
+[set do_payment][/set]
+[set do_invoice][/set]
+
+[try]
+
+[if value mv_order_profile eq postal]
+
+	[comment]Sales order only[/comment]
+	Payment: [value name=mv_payment set="Check or Money Order (will call)"]
+
+[elsif value mv_order_profile eq purchase_order]
+	limit=[scratch tmp_climit]
+	total=[data session latest_total]
+	[perl userdb]
+		return unless length($Scratch->{tmp_climit});
+		my $limit = $Tag->data( 'userdb', 'credit_limit', $Session->{username});
+		my $minus	= $Session->{latest_total};
+		$minus = -$minus;
+		my $expect	= $limit + $minus;
+		Log("Access to userdb worked... limit=$limit minus=$minus expect=$expect");
+		$Tag->data(
+						'userdb',
+						'credit_limit',
+						$Session->{username},
+						{
+							value => $minus,
+							increment => 1,
+						}
+					);
+		my $remain = $Tag->data( 'userdb', 'credit_limit', $Session->{username});
+		Log("Write to userdb worked...expect='$expect' remain='$remain'");
+		if ($expect ne $remain) {
+			die errmsg(
+				"error setting credit limit! Limit was %s, subtract %s, got %s, expect %s.\n",
+				$limit,
+				$Session->{latest_total},
+				$remain,
+				$expect,
+				);
+		}
+		$Scratch->{credit_limit} = $remain;
+		return "Credit limit was=$limit\nCredit limit now=$remain\n";
+	[/perl]
+[/elsif]
+[elsif value mv_order_profile eq online_check]
+	[set do_invoice]1[/set]
+[/elsif]
+[elsif value mv_order_profile eq cod]
+	[comment] do nothing [/comment]
+[/elsif]
+[elsif variable MV_PAYMENT_MODE]
+	[tmp name="charge_succeed"][charge route="[var MV_PAYMENT_MODE]"][/tmp]
+	[if scratch charge_succeed]
+	[then]
+	[set do_invoice]1[/set]
+	[set do_payment]1[/set]
+	Real-time charge succeeded. ID=[data session payment_id]
+	[/then]
+	[else]
+	Real-time charge FAILED. Reason: [data session cybercash_error]
+	[calc]
+		die errmsg(
+				"Real-time charge failed. Reason: %s",
+				errmsg($Session->{cybercash_error}),
+			);
+	[/calc]
+	[/else]
+	[/if]
+[/elsif]
+
+[else]
+	Offline credit card [value mv_credit_card_type] [value mv_credit_card_reference].
+	Payment: [value name=mv_payment set="COD"]
+[/else]
+[/if]
+
+[calc]
+	 $Values->{mv_payment} =~ s/\%c/$Values->{mv_credit_card_type}/g;
+	 return;
+[/calc]
+
+[/try]
+
+[catch error-set="Payment process" error-scratch="mv_route_failed"]
+	There was an error accepting payment: $ERROR$
+[/catch]
+
+[goto if="[scratch mv_route_failed]"]
+
 [if type=explicit compare=`
 		return 1 if ! $Session->{logged_in} or $Session->{login_table} ne 'userdb';
 		return 0;
 		`]
+[try]
 	[if session logged_in]
 		[userdb function=logout clear=0 clear_cart=0]
 	[/if]
@@ -29,6 +121,11 @@
 	[perl] die errmsg("Auto-create of user failed."); [/perl]
 	[/else]
 	[/if]
+[/try]
+[catch error-set="Customer record creation" error-scratch="mv_route_failed"]
+There was an error adding you to the customer table.
+[/catch]
+
 [/if]
 
 [comment][perl] Log("Starting report."); [/perl][/comment]
@@ -41,7 +138,7 @@ Add main order [value mv_order_number] to transactions:
 code: [value mv_order_number]
 store_id: __STORE_ID__
 order_number: [value mv_order_number]
-session__MVC_FIELDMUNGE__: [data session id]
+session: [data session id]
 username: [data session username]
 shipmode: [value mv_shipmode] ([shipping-desc])
 shipping: [shipping noformat=1]
@@ -88,7 +185,13 @@ campaign: [value campaign]
 parent: __PARENT__
 po_number: [value filter=strip name=po_number] 
 [/import]
+[/try]
 
+[catch error-set="log_orderline_table" error-scratch="mv_route_failed"]
+There was an error adding the order to the transaction table. It was: $ERROR$
+[/catch]
+
+[try]
 [if value mv_payment_mode eq purchase_order]
 set credit_limit: [seti credit_limit][data
 		table=userdb
@@ -108,11 +211,11 @@ set credit_limit: [seti credit_limit][data
 code: [value mv_order_number]-[item-increment]
 store_id: __STORE_ID__
 order_number: [value mv_order_number]
-session__MVC_FIELDMUNGE__: [data session id]
+session: [data session id]
 username: [data session username]
 shipmode: [item-modifier mv_shipmode]
 sku: [item-code]
-options: [item-filter mac strip][item-options report=1][/item-filter]
+options: [item-filter mac strip][item-options report=1 type=value][/item-filter]
 quantity: [item-quantity]
 price: [item-price noformat]
 subtotal: [item-subtotal noformat]
@@ -152,16 +255,46 @@ description: [filter mac][item-description][/filter]
 
 [/try]
 
-[catch]
-[set mv_route_failed]1[/set]
-There was an error adding to the transaction log.
+[catch
+	error-set="log_orderline_table"
+	error-scratch="mv_route_failed"
+	]
+There was an error adding the items to the orderline table: $ERROR$
 [/catch]
 
-[userdb save]
+[goto if="[scratch mv_route_failed]"]
 
+[try]
+Realtime: [scratch realtime]
+Add to SQL-Ledger: [accounting function=create_order_entry do_invoice="[scratch do_invoice]" do_payment="[scratch do_payment]"]
+[/try]
+
+[catch
+	error-set="log_accounting_xfer"
+	error-scratch="mv_route_failed"
+	]
+There was an error transferring accounting information: $ERROR$
+[/catch]
+
+[goto if="[scratch mv_route_failed]"]
+
+[try]
+[tmpn tmp_user_save]FAILED[/tmpn]
+[if type=explicit compare="[userdb save]"]
+[tmpn tmp_user_save]SUCCESS[/tmpn]
+[/if]
+Saved user information to user database: [scratch tmp_user_save]
 [if scratch auto_create]
 	Logout auto-created user: [userdb function=logout clear=0 clear_cart=0]
 [/if]
+[/try]
+
+[catch
+	error-set="log_userdb_table"
+	error-scratch="mv_route_failed"
+	]
+There was an error updating the user information: $ERROR$
+[/catch]
 
 [comment]Past add data entry.[/comment]
 
@@ -171,7 +304,7 @@ There was an error adding to the transaction log.
 	$out =~ s/^\s+//mg;
 	$out =~ s/\s+$//mg;
 	$out =~ s/[\r\n]+/\n/;
-	$out =~ s/:\n(1|yes|succe\w+|fail\w+)\n/: $1\n/g;
+	$out =~ s/:\n(\d+|yes|succe\w+|fail\w+)\n/: $1\n/ig;
 	return $out;
 [/perl]
 #### end [value mv_order_number] #####
