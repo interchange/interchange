@@ -49,6 +49,13 @@ Type: string
 Default: ""
 Description: 
 
+Template: interchange/docroot
+Type: string
+Default: /var/www/shops
+Description: Where to place static HTML files ?
+ Catalog installations need a directory where HTML files
+ can be placed.
+
 Template: interchange/debug
 Type: boolean
 Default: false

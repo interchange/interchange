@@ -28,6 +28,9 @@ chown -R $USER.$GROUP /var/run/interchange
 chown -R $USER.$GROUP /usr/lib/cgi-bin/ic
 chmod u+s /usr/lib/cgi-bin/ic/*
 
+# Ensure correct permissions for catalog base directory
+chown $USER.$GROUP /var/lib/interchange/catalogs
+
 # Make makecat.cfg accessible for the interchange user
 chown $USER.$GROUP /etc/interchange/makecat.cfg
 
@@ -52,6 +55,9 @@ esac
 echo MODE=$MODE >> $INITCFG
 echo USER=$USER >> $INITCFG
 echo GROUP=$GROUP >> $INITCFG
+
+db_get interchange/docroot
+echo DOCROOT=$RET >> $INITCFG
 
 # 2. Settings which influence the global configuration
 # and make senses to be configured by debconf
