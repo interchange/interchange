@@ -1,6 +1,6 @@
 # Vend::SQL_Parser - Interchange SQL parser class
 #
-# $Id: SQL_Parser.pm,v 2.6 2003-09-01 16:20:13 mheins Exp $
+# $Id: SQL_Parser.pm,v 2.7 2003-09-15 17:26:30 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1997-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use strict;
 use Vend::Util;
 use Text::ParseWords;
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.7 $, 10);
 
 sub new {
 	my $class = shift;
@@ -435,7 +435,7 @@ sub where {
 			$lhs = $val;
 		}
 		elsif(! $op) {
-			if(s/^([=!<>]+)(.+)/$1/) {
+			if(s/^([=!<>]+)([^=!<>]+)/$1/) {
 				$op = $1;
 				unshift @things, $2;
 #::logDebug("found merged operator and righthand term $things[0]");
