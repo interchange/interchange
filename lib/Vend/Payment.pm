@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Payment.pm,v 1.1.2.1 2001-04-09 06:39:20 heins Exp $
+# $Id: Payment.pm,v 1.1.2.2 2001-04-09 16:18:34 heins Exp $
 #
 # Copyright (C) 1996-2000 Red Hat, Inc., http://www.redhat.com
 #
@@ -22,7 +22,7 @@
 package Vend::Payment;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.1.2.1 $, 10);
+$VERSION = substr(q$Revision: 1.1.2.2 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -34,7 +34,6 @@ $VERSION = substr(q$Revision: 1.1.2.1 $, 10);
 
 @EXPORT_OK = qw(
 				map_actual
-				old_cybercash
 				);
 
 use Vend::Util;
@@ -78,80 +77,6 @@ sub charge_param {
 	return $::Variable->{$cyber_remap{$name}}
 		if defined $::Variable->{$cyber_remap{$name}};
 	return undef;
-}
-
-sub old_cybercash {
-		my ($opt) = @_;
-		no strict;
-		# Old cybercash stuff
-
-		# Interface to new stuff while keeping rest of code unchanged
-		my %actual;
-		if (ref $opt->{actual}) {
-			%actual = %{$opt->{actual}};
-		}
-		else {
-			%actual = map_actual();
-		}
-		my $amount  = $opt->{amount};
-		my $orderID = $opt->{order_id};
-		my $cfg	    = charge_param('configfile');
-
-#::logDebug("old_cybercash: amount=$amount orderID=$orderID");
-#::logDebug("old_cybercash: actual=" . ::uneval(\%actual));
-
-		# Cybercash 3.x libraries to be used.
-		# Initialize the merchant configuration file
-		my $status = InitConfig($cfg);
-		if ($status != 0) {
-			return (
-					MStatus => 'failure-hard',
-					MErrMsg => MCKGetErrorMessage($status),
-			);
-		}
-
-		my $host = charge_param('host') || $Config{CCPS_HOST};
-
-		my $sendurl = $host . 'directcardpayment.cgi';
-
-		my %paymentNVList;
-		$paymentNVList{'mo.cybercash-id'} = $Config{CYBERCASH_ID};
-		$paymentNVList{'mo.version'} = $MCKversion;
-
-		$paymentNVList{'mo.signed-cpi'}      = "no";
-		$paymentNVList{'mo.order-id'}        = $orderID;
-		$paymentNVList{'mo.price'}           = $amount;
-
-		$paymentNVList{'cpi.card-number'}	= $actual{mv_credit_card_number};
-		$paymentNVList{'cpi.card-exp'}		= $actual{mv_credit_card_exp_all};
-		$paymentNVList{'cpi.card-name'}		= $actual{b_name};
-		$paymentNVList{'cpi.card-address'}	= $actual{b_address};
-		$paymentNVList{'cpi.card-city'}		= $actual{b_city};
-		$paymentNVList{'cpi.card-state'}	= $actual{b_state};
-		$paymentNVList{'cpi.card-zip'}		= $actual{b_zip};
-		$paymentNVList{'cpi.card-country'}	= $actual{b_country};
-
-#::logDebug("sendurl=$sendurl");
-#::logDebug("list=" . ::uneval(\%paymentNVList));
-
-		my (%tokenlist);
-		my ($POPref, $tokenlistref ) = 
-						  doDirectPayment( $sendurl, \%paymentNVList );
-		
-		$POPref->{MStatus}    = $POPref->{'pop.status'};
-		$POPref->{MErrMsg}    = $POPref->{'pop.error-message'};
-		$POPref->{'order-id'} = $POPref->{'pop.order-id'};
-
-		# other values found in POP which might be used in some way:
-		#		$POP{'pop.auth-code'};
-		#		$POP{'pop.ref-code'};
-		#		$POP{'pop.txn-id'};
-		#		$POP{'pop.sale_date'};
-		#		$POP{'pop.sign'};
-		#		$POP{'pop.avs_code'};
-		#		$POP{'pop.price'};
-
-		return %$POPref;
 }
 
 # Do remapping of payment variables submitted by user
@@ -435,7 +360,7 @@ sub charge {
 	elsif ($Vend::CC3) {
 		### Deprecated
 		eval {
-			%result = old_cybercash($pay_opt);
+			%result = cybercash($pay_opt);
 		};
 		if($@) {
 			my $msg = errmsg( "CyberCash died: %s", $@ );
