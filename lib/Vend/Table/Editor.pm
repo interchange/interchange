@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.7 2002-09-24 15:40:58 mheins Exp $
+# $Id: Editor.pm,v 1.8 2002-09-27 07:16:57 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.7 $, 10);
+$VERSION = substr(q$Revision: 1.8 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -230,7 +230,7 @@ sub display {
 	my $mtab;
 	my $record;
 
-	my $no_meta = $CGI::values{ui_no_meta_display};
+	my $no_meta = $opt->{ui_no_meta_display};
 
 	METALOOK: {
 		## No meta display wanted
@@ -1074,6 +1074,8 @@ sub resolve_options {
 		file_upload
 		help_cell_class
 		help_cell_style
+		include_before
+		include_form
 		label_cell_class
 		label_cell_style
 		left_width
@@ -1124,12 +1126,13 @@ sub resolve_options {
 		ui_meta_view
 		ui_new_item
 		ui_nextpage
+		ui_no_meta_display
 		widget_cell_class
 		widget_cell_style
 	/;
 
 	for(grep defined $tmeta->{$_}, @mapdirect) {
-		$opt->{$_} ||= $tmeta->{$_};
+		$opt->{$_} = $tmeta->{$_} if ! defined $opt->{$_};
 	}
 
 	if($opt->{cgi}) {
@@ -1367,8 +1370,6 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	my $widget       = $opt->{widget};
 	my $width        = $opt->{width};
 
-	#my $blabel      = $opt->{begin_label} || '<b>';
-	#my $elabel      = $opt->{end_label} || '</b>';
 	my $blabel = $opt->{blabel};
 	my $elabel = $opt->{elabel};
 	my $mlabel = '';
@@ -1434,6 +1435,7 @@ EOF
 	$::Scratch->{$opt->{back_text}}   = $btext if $btext;
 
 	undef $opt->{tabbed} if $::Scratch->{ui_old_browser};
+	undef $opt->{auto_secure} if $opt->{cgi};
 
 	### Build the error checking
 	my $error_show_var = 1;
@@ -2498,6 +2500,41 @@ $l_pkey</td>};
 		}
 	}
 
+	if($opt->{include_form}) {
+#::logDebug("In link table routines...");
+		my @icells;
+		my @ibefore;
+		my $tcount = 1;
+		my @includes;
+		if(ref($opt->{include_form}) eq 'ARRAY') {
+			@icells  = @{delete $opt->{include_form}};
+			@ibefore = @{delete $opt->{include_before} || []};
+		}
+		else {
+			@icells  = delete $opt->{include_form};
+			@ibefore = delete $opt->{include_before};
+		}
+
+		$opt->{include_before} = {};
+		while(my $it = shift @icells) {
+			my $ib = shift @ibefore;
+
+			my $rcount = 0;
+
+#::logDebug("Made include_before=$it");
+			if($ib) {
+				$opt->{include_before}{$ib} = $it;
+			}
+			elsif($it =~ /^\s*<tr\b/i) {
+				push @includes, $it;
+			}
+			else {
+				push @includes, "<tr>$it</tr>";
+			}
+		}
+		$opt->{include_form} = join "\n", @includes if @includes;
+	}
+
     if($opt->{tabbed}) {
         my $ph = $opt->{panel_height} || '600';
         my $pw = $opt->{panel_width} || '800';
@@ -2508,6 +2545,8 @@ $l_pkey</td>};
                   : " width=$pw height=$oh";
         chunk ttag(), qq{<tr><td colspan=$span$extra>\n};
     }
+
+#::logDebug("include_before: " . uneval($opt->{include_before}));
 
 	my @extra_hidden;
 	my $icount = 0;
@@ -2742,6 +2781,7 @@ EOF
 										type => $widget->{$c} || $type,
 										width => $width->{$c},
 										return_hash => 1,
+										ui_no_meta_display => $opt->{ui_no_meta_display},
 									});
 #::logDebug("finished display of col=$c");
 		my $update_ctl;
@@ -2777,8 +2817,10 @@ EOF
 						delete $link_row{$link_before{$col}};
 		}
 		if($opt->{include_before} and $opt->{include_before}{$col}) {
-			my $h = { ROW => $opt->{include_before}{$col} };
-			col_chunk "_INCLUDE_$link_before{$col}", $h;
+#::logDebug("include_before: $col $opt->{include_before}{$col}");
+			my $h = { ROW => delete $opt->{include_before}{$col} };
+			$h->{TEMPLATE} = $opt->{whole_template} || '<tr>{ROW}</tr>';
+			col_chunk "_INCLUDE_$col", $h;
 		}
 		$ctl_index++ if $update_ctl;
 		if($opt->{start_at} and $opt->{start_at} eq $namecol) {
@@ -2786,7 +2828,7 @@ EOF
 #::logDebug("set start_at_index to $ctl_index");
 		}
 #::logDebug("control index now=$ctl_index");
-		col_chunk $c, $display;
+		col_chunk $col, $display;
 	}
 
 	for(sort keys %link_row) {
@@ -2838,7 +2880,11 @@ EOF
 	### Here the user can include some extra stuff in the form....
 	###
 	if($opt->{include_form}) {
-		col_chunk '_INCLUDE_FORM', { ROW => $opt->{include_form} };
+		col_chunk '_INCLUDE_FORM',
+					{
+						ROW => $opt->{include_form},
+						TEMPLATE => $opt->{whole_template} || '<tr>{ROW}</tr>',
+					};
 	}
 	### END USER INCLUDE
 
@@ -3158,8 +3204,8 @@ sub create_rows {
 			or next;
 		if($ref->{ROW}) {
 #::logDebug("outputting ROW $_=$ref->{ROW}");
-			my $tpl = $ref->{TEMPLATE} || $opt->{row_template};
-			push @out, tag_attr_list($opt->{combo_template}, $ref);
+			my $tpl = $ref->{TEMPLATE} || $opt->{combo_template};
+			push @out, tag_attr_list($tpl, $ref);
 			$rowcount = 0;
 			next;
 		}

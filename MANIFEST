@@ -1005,6 +1005,7 @@ dist/lib/UI/pages/admin/ship.html
 dist/lib/UI/pages/admin/ship_data.html
 dist/lib/UI/pages/admin/ship_edit.html
 dist/lib/UI/pages/admin/ship_range.html
+dist/lib/UI/pages/admin/show_session.html
 dist/lib/UI/pages/admin/sku_selector.html
 dist/lib/UI/pages/admin/special/.access
 dist/lib/UI/pages/admin/special/.autoload
@@ -1087,6 +1088,7 @@ dist/lib/UI/profiles/file_maintenance
 dist/lib/UI/profiles/login
 dist/lib/UI/profiles/order_button_build
 dist/lib/UI/profiles/process_filter
+dist/lib/UI/profiles/recompute_transaction
 dist/lib/UI/ui.cfg
 dist/lib/UI/vars/UI_EDIT_LINK
 dist/lib/UI/vars/UI_STD_FILE_NAV
