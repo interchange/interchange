@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.33 2004-12-17 21:08:46 mheins Exp $
+# $Id: UserDB.pm,v 2.34 2005-03-05 19:01:54 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.33 $, 10);
+$VERSION = substr(q$Revision: 2.34 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1629,8 +1629,39 @@ sub get_cart {
 
 	if($opt->{merge}) {
 		$to = [] unless ref $to;
+		my %used;
+		my %alias;
+		my $max;
+
+		for(@$to) {
+			my $master;
+			next unless $master = $_->{mv_mi};
+			$used{$master} = 1;
+			$max = $master if $master > $max;
+		}
+
+		$max++;
+
+		my $rename;
+		my $alias = 100;
+		for(@$cart) {
+			my $master;
+			next unless $master = $_->{mv_mi};
+			next unless $used{$master};
+
+			if(! $_->{mv_si}) {
+				$alias{$master} = $max++;
+				$_->{mv_mi} = $alias{$master};
+			}
+			else {
+				$_->{mv_mi} = $alias{$master};
+			}
+		}
+
 		push(@$to,@$cart);
-	} else {
+
+	}
+	else {
 		@$to = @$cart;
 	}
 }

@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.67 2005-02-10 06:45:40 mheins Exp $
+# $Id: Order.pm,v 2.68 2005-03-05 19:01:54 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.67 $, 10);
+$VERSION = substr(q$Revision: 2.68 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -2457,9 +2457,18 @@ sub add_items {
 	}
 
 	@group   = split /\0/, (delete $CGI::values{mv_order_group} || '');
+	
+	my $inc;
 	for( my $i = 0; $i < @group; $i++ ) {
 #::logDebug("processing order group=$group[$i]");
-	   $attr{mv_mi}->[$i] = $group[$i] ? ++$Vend::Session->{pageCount} : 0;
+		if($group[$i]) {
+			$inc ||= time();
+			my $add = sprintf('%06d', ++$Vend::Session->{pageCount});
+			$attr{mv_mi}->[$i] = $inc . $add;
+		}
+		else {
+			$attr{mv_mi}->[$i] = 0;
+		}
 	}
 
 	$j = 0;
