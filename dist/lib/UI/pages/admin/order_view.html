@@ -39,7 +39,7 @@
                <td width="25%" nowrap class="block4bold">
 			   	Order Status: &nbsp;
 					[page href="admin/order_status" form="order=[loop-code]"]
-						<span class="alert">Pending</span>
+						<span class="alert">[display table=transactions col=status type=display key="[loop-code]"]</span>
 					</a>
 					[if-loop-data transactions archived == 1]
 					([L]archived[/L])
@@ -397,4 +397,4 @@ vieworder=
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: order_view.html,v 2.10 2003-01-28 18:05:38 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order_view.html,v 2.11 2003-04-12 01:05:24 mheins Exp $ -->
