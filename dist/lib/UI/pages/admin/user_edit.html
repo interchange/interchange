@@ -33,7 +33,7 @@
 <td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/bg.gif" width=600 height=1></td>
 </tr>
 
-<input type="hidden" name="user_id" value="1001">
+<input type="hidden" name="user_id" value="[cgi user_id]">
 <tr>
 <td bgcolor=__UI_C_INTBLOCK__ align=right>
 <small>Real name</small>
@@ -113,16 +113,18 @@
 <p>
 
 [if-mm advanced access=e]
-	[set Ok]
-	mv_todo=set
-	[/set]
-	<input type=submit name="mv_click" value="Ok">
+	[button text=Ok]
+		mv_todo=set
+	[/button]
+	[button text=Permissions]
+		mv_todo=back
+		mv_nextpage=__UI_BASE__/access_permissions
+	[/button]
 	<input type=submit value="Cancel">
 [else]
-	[set Back]
+	[button text=Back]
 	mv_todo=back
-	[/set]
-	<input type=submit value="Back">
+	[/button]
 [/else]
 [/if-mm]
 
