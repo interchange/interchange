@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.29 2003-03-30 22:05:20 mheins Exp $
+# $Id: Form.pm,v 2.30 2003-04-10 17:38:14 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -37,7 +37,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.29 $, 10);
+$VERSION = substr(q$Revision: 2.30 $, 10);
 
 @EXPORT = qw (
 	display
@@ -1107,7 +1107,21 @@ if($opt->{debug}) {
 							} @$data;
 			}
 		}
-		unshift @$data, @$ary if $ary;
+
+		unless($opt->{lookup_merge}) {
+			unshift @$data, @$ary if $ary;
+		}
+		elsif($ary) {
+			my %existing;
+			for(@$ary) {
+				$existing{$_->[0]}++;
+			}
+			for(@$data) {
+				next if $existing{$_->[0]};
+				push @$ary, $_;
+			}
+			$data = $ary;
+		}
 	}
 
 ## Some legacy stuff, has to do with default behavior when called from
