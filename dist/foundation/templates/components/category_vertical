@@ -20,6 +20,10 @@ set_selector:
 	advanced: 1
 [/comment]
 
+<tr><td><br></td></tr>
+<tr><td align="center">
+  <table>
+
 <!-- BEGIN COMPONENT [control component category_vertical] -->
 [loop
 	prefix=box
@@ -40,18 +44,9 @@ set_selector:
 		se=[control page_class all|@@MV_PAGE@@]
 "]
  <tr> 
-   <td colspan=2>&nbsp;</td>
- </tr> 
- <tr> 
-   <td>
-   <p>&nbsp;</p>
-   </td>
    <td width="119" bgcolor="__BARBG__" valign="top"><font face="Geneva,Arial,Helvetica" size=2 color="#FFFFFF"><b>[box-exec bar_link]area[/box-exec]</b></font></td>
  </tr>
  <tr> 
-   <td> 
-	 <p>&nbsp;</p>
-   </td>
    <td width="119" valign="top">
 	 <p>
 [set found_cat][/set]
@@ -73,3 +68,6 @@ set_selector:
  </tr>
 [/loop]
 <!-- END COMPONENT [control component category_vertical] -->
+
+  </table>
+</td></tr>
