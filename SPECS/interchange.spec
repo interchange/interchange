@@ -6,7 +6,7 @@
 %define autostart 1
 
 
-Summary: A complete web application platform
+Summary: Interchange web application platform
 Name: interchange
 Version: 4.8.4
 Release: 9
@@ -19,6 +19,7 @@ Source1: interchange-wrapper
 Source2: interchange-init
 Source3: interchange-logrotate
 License: GPL
+Prereq: /sbin/chkconfig, /sbin/service, /usr/sbin/useradd, /usr/sbin/groupadd
 Requires: perl >= 5.005
 Requires: perl-Business-UPS
 Requires: perl-Digest-MD5
@@ -37,7 +38,7 @@ ecommerce, dynamic data presentation, and content management.
 
 
 %package foundation
-Summary: A template for building your own store with Interchange
+Summary: A template store for Interchange
 Group: System Environment/Daemons
 Requires: interchange = %{version}-%{release}
 
@@ -207,11 +208,9 @@ find . -path .$ICBASE/foundation -prune -mindepth $DIRDEPTH -maxdepth $DIRDEPTH 
 /sbin/service interchange stop > /dev/null 2>&1 || :
 
 # Create interch user/group if they don't already exist
-[ -z "`grep ^%{ic_group}: /etc/group`" ] && \
-	/usr/sbin/groupadd -g 52 %ic_group || :
-[ -z "`grep ^%{ic_user}: /etc/passwd`" ] && \
-	/usr/sbin/useradd -u 52 -g interch -c "Interchange server" \
-	-s /bin/bash -r -d %{_localstatedir}/lib/interchange %ic_user || :
+/usr/sbin/groupadd -g 52 %ic_group 2>/dev/null || :
+/usr/sbin/useradd -u 52 -g %ic_group -c "Interchange server" -s /bin/bash \
+	-r -d %{_localstatedir}/lib/interchange %ic_user 2>/dev/null || :
 
 
 %files foundation
@@ -296,49 +295,50 @@ fi
 
 HOST=`hostname`
 
-for i in foundation
-do 
-	perl -pi -e "s/RPM_CHANGE_HOST/$HOST/g" \
-		%{_localstatedir}/lib/interchange/$i/catalog.cfg \
-		%{_localstatedir}/lib/interchange/$i/products/*.txt \
-		%{_localstatedir}/lib/interchange/$i/products/*.asc \
-		%{_localstatedir}/lib/interchange/$i/config/* \
-		%{webdir}/html/$i/index.html
+i=foundation
+perl -pi -e "s/RPM_CHANGE_HOST/$HOST/g" \
+	%{_localstatedir}/lib/interchange/$i/catalog.cfg \
+	%{_localstatedir}/lib/interchange/$i/products/*.txt \
+	%{_localstatedir}/lib/interchange/$i/products/*.asc \
+	%{_localstatedir}/lib/interchange/$i/config/* \
+	%{webdir}/html/$i/index.html
 
-	# Add Catalog directive to interchange.cfg
-	ICCFG=%{_sysconfdir}/interchange.cfg
-	catline="`grep -i \"^#*[ \t]*Catalog[ \t][ \t]*$i[ \t]\" $ICCFG`"
-	if [ -z "$catline" ]; then
-		catline="Catalog  $i  /var/lib/interchange/$i  /cgi-bin/$i"
-		perl -pi -e "next if ! /^\s*#\s*Catalog\s/i or \$done; s,\$,\n$catline,; ++\$done" $ICCFG
-	fi
+# Add Catalog directive to interchange.cfg
+ICCFG=%{_sysconfdir}/interchange.cfg
+catline="`grep -i \"^#*[ \t]*Catalog[ \t][ \t]*$i[ \t]\" $ICCFG`"
+if [ -z "$catline" ]; then
+	catline="Catalog  $i  /var/lib/interchange/$i  /cgi-bin/$i"
+	perl -pi -e "next if ! /^\s*#\s*Catalog\s/i or \$done; s,\$,\n$catline,; ++\$done" $ICCFG
+fi
 
-	# Add the new catalog to the running Interchange daemon
-	if [ -n "`/sbin/service interchange status 2>/dev/null | grep -i 'interchange.*is running'`" ]
-	then
-		echo "$catline" | %{_sbindir}/interchange --add=$i > /dev/null 2>&1
-	fi
-done
+# Add the new catalog to the running Interchange daemon
+if [ -n "`/sbin/service interchange status 2>/dev/null | grep -i 'interchange.*is running'`" ]
+then
+	echo "$catline" | %{_sbindir}/interchange --add=$i > /dev/null 2>&1
+fi
 
 
 %preun
 
-# Stop Interchange if running
-/sbin/service interchange stop > /dev/null 2>&1
+if [ $1 = 0 ]; then
+	# Stop Interchange if running
+	/sbin/service interchange stop > /dev/null 2>&1
 
-# Remove autostart of interchange
-/sbin/chkconfig --del interchange 2>/dev/null
+	# Remove autostart of interchange
+	/sbin/chkconfig --del interchange 2>/dev/null
 
-# Remove non-user data
-rm -rf %{_localstatedir}/run/interchange/*
-rm -rf %{_localstatedir}/cache/interchange/*
-rm -rf %{_libdir}/interchange/lib/HTML
+	# Remove non-user data
+	rm -rf %{_localstatedir}/run/interchange/*
+	rm -rf %{_localstatedir}/cache/interchange/*
+	rm -rf %{_libdir}/interchange/lib/HTML
+fi
 
 
 %preun foundation-demo
 
-for i in foundation
-do
+if [ $1 = 0 ]; then
+	i=foundation
+
 	# Remove catalog from running Interchange
 	if [ -n "`/sbin/service interchange status 2>/dev/null | grep -i 'interchange.*is running'`" ]
 	then
@@ -360,7 +360,7 @@ do
 	rm -rf %{_localstatedir}/lib/interchange/$i/products/*.autonumber
 	rm -rf %{_localstatedir}/lib/interchange/$i/products/*.numeric
 	rm -rf %{_localstatedir}/lib/interchange/$i/etc/status.$i
-done
+fi
 
 
 %clean
@@ -370,7 +370,13 @@ rm -f %filelist
 
 
 %changelog
-* Mon Apr 29 2002 Jon Jensen <jon@redhat.com> 4.8.4-9
+* Tue Apr 30 2002 Jon Jensen <jon@redhat.com> 4.8.4-9
+- Check package count in uninstall scripts.
+- Add Prereqs for system tools used
+- Let useradd and groupadd fail gracefully, rather than assuming interch
+  user will appear in /etc/passwd or /etc/group
+
+* Mon Apr 29 2002 Jon Jensen <jon@redhat.com>
 - Request uid and gid to be 52, Red Hat's assigned numbers for Interchange.
 - Start IC daemon in UNIX mode only by default.
 - Build foundation-demo with MV_DEMO_MODE set by default.
