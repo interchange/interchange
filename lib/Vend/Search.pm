@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.6 2002-02-28 17:32:15 jon Exp $
+# $Id: Search.pm,v 2.7 2002-06-11 04:50:23 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.7 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -90,6 +90,25 @@ my %maytag = (
 );
 
 my (@hashable) = (qw/mv_return_fields mv_range_look mv_search_field mv_sort_field/);
+
+sub search_reference {
+	my ($s, $ref) = @_;
+	my $c = { mv_searchtype => 'ref', label => ref($s), mv_search_file => '__none__' };
+
+	my $ns = $s->{mv_next_search};
+	$ns = $::Scratch->{$ns} unless $ns =~ /=/;
+	my $params = Vend::Interpolate::escape_scan($ns);
+#::logDebug("search_params: $params");
+	Vend::Scan::find_search_params($c, $params);
+
+	$c->{mv_return_filtered} = 1;
+	$c->{mv_return_fields} = '*';
+	$c->{mv_field_names} = $s->{mv_field_names};
+	$c->{mv_search_reference} = $ref;
+#::logDebug("Ref ready to search: " . ::uneval($c));
+	my $o = Vend::Scan::perform_search($c);
+	return @{$o->{mv_results} || []};
+}
 
 sub hash_fields {
 	my ($s, $fn, @laundry) = @_;
@@ -421,7 +440,7 @@ sub get_return {
 
 		# We will pick out the return fields later if sorting
 		# This returns
-		if( $s->{mv_sort_field} ) {
+		if( $s->{mv_sort_field} || $s->{mv_next_search}) {
 			return ( 
 				sub {
 					[ split /$delim/o, shift(@_) ]
@@ -445,7 +464,7 @@ sub get_return {
 	else {
 		# We will pick out the return fields later if sorting
 		# This returns
-		if(! $final and $s->{mv_sort_field}) {
+		if(! $final and $s->{mv_sort_field} || $s->{mv_next_search}) {
 			return ( sub { [ @{ shift(@_) } ] }, 1);
 		}
 
@@ -991,11 +1010,12 @@ sub dump_options {
 }
 
 sub search_error {
-	my ($s, $msg) = @_;
+	my ($s, $msg, @args) = @_;
 	$s->{mv_search_error} = [] if ! $s->{mv_search_error};
+	$msg = ::errmsg($msg, @args);
 	push @{$s->{mv_search_error}}, $msg;
 	$s->{matches} = -1;
-	::logError ("search error: $msg");
+	::logError ("search error: %s", $msg);
 	return undef;
 }
 
@@ -1053,7 +1073,7 @@ use vars qw/ %Sort_field /;
 sub sort_search_return {
     my ($s, $target) = @_;
 
-	@Flds	= @{$s->{mv_sort_field}};
+	@Flds	= @{$s->{mv_sort_field} || []};
 	for(@Flds) {
 		next if /^\d+$/;
 		$_ = $s->{field_hash}{$_}

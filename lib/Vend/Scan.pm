@@ -1,6 +1,6 @@
 # Vend::Scan - Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 2.7 2002-01-31 17:32:31 mheins Exp $
+# $Id: Scan.pm,v 2.8 2002-06-11 04:50:23 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -29,12 +29,15 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 
 use strict;
 use Vend::Util;
 use Vend::Interpolate;
 use Vend::Data qw(product_code_exists_ref column_index);
+use Vend::TextSearch;
+use Vend::DbSearch;
+use Vend::RefSearch;
 
 my @Order = ( qw(
 	mv_dict_look
@@ -99,6 +102,8 @@ my @Order = ( qw(
 	mv_unique
 	mv_more_matches
 	mv_value
+	mv_next_search
+	mv_search_reference
 	prefix
 ));
 
@@ -142,12 +147,14 @@ my %Scan = ( qw(
 	ne  mv_negate
 	ng  mv_negate
 	np  mv_nextpage
+	ns  mv_next_search
 	nu  mv_numeric
 	op  mv_column_op
 	os  mv_orsearch
 	pf  prefix
 	ra  mv_return_all
 	rd  mv_return_delim
+	re	mv_search_reference
 	rf  mv_return_fields
 	rg  mv_range_alpha
 	rl  mv_range_look
@@ -491,6 +498,9 @@ sub perform_search {
 		}
 		elsif (! $options{mv_searchtype} or $options{mv_searchtype} eq 'text') {
 			$q = new Vend::TextSearch %options;
+		}
+		elsif ( $options{mv_searchtype} eq 'ref'){
+			$q = new Vend::RefSearch %options;
 		}
 # GLIMPSE
 		elsif ( $options{mv_searchtype} eq 'glimpse'){

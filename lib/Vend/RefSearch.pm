@@ -1,6 +1,6 @@
 # Vend::DbSearch - Search indexes with Interchange
 #
-# $Id: DbSearch.pm,v 2.9 2002-06-11 04:50:23 mheins Exp $
+# $Id: RefSearch.pm,v 2.1 2002-06-11 04:50:23 mheins Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
@@ -21,14 +21,13 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-package Vend::DbSearch;
+package Vend::RefSearch;
 require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = substr(q$Revision: 2.1 $, 10);
 
-use Search::Dict;
 use strict;
 
 sub array {
@@ -125,30 +124,7 @@ sub search {
 	$s->{mv_return_delim} = $s->{mv_index_delim}
 		unless defined $s->{mv_return_delim};
 
-	@searchfiles = @{$s->{mv_search_file}};
-
-	for(@searchfiles) {
-		s:.*/::;
-		s/\..*//;
-	}
-#::logDebug ("searching: searchfiles='@searchfiles', obj=" . ::uneval($s));
-	my $dbref = $s->{table} || undef;
-#::logDebug("before db mapping: self=" . ::Vend::Util::uneval_it({%$s}));
-
-#::logDebug("searching $searchfiles[0], keys Database before=" . join ",", grep /backup/, keys %{$Vend::Cfg->{Database}});
-	if( ! $dbref ) {
-		$s->{dbref} = $dbref = Vend::Data::database_exists_ref($searchfiles[0]);
-	}
-#::logDebug("searching $searchfiles[0], keys  after=" . join ",", grep /backup/, keys %{$Vend::Cfg->{Database}});
-	if(! $dbref) {
-		return $s->search_error(
-			"search file '$searchfiles[0]' is not a valid database reference."
-			);
-	}
-	$s->{dbref} = $dbref;
-
-	my (@fn) = $dbref->columns();
-
+#::logDebug("Called RefSearch, object=" . ::uneval($s));
 	@specs = @{$s->{mv_searchspec}};
 
 	if(ref $s->{mv_range_look}) {
@@ -164,9 +140,6 @@ sub search {
 
 	if ($s->{mv_coordinate}) {
 		undef $f;
-	}
-	elsif ($s->{mv_return_all}) {
-		$f = sub {1};
 	}
 	elsif ($s->{mv_orsearch}[0]) {
 		eval {$f = $s->create_search_or(
@@ -185,117 +158,84 @@ sub search {
 
 	$@  and  return $s->search_error("Function creation: $@");
 
-	if(ref $s->{mv_like_field} and ref $s->{mv_like_spec}) {
-#::logDebug("Entering like_spec");
-		my $ary = [];
-		for(my $i = 0; $i < @{$s->{mv_like_field}}; $i++) {
-			my $col = $s->{mv_like_field}[$i];
-#::logDebug("Checking column '$col'");
-			next unless length($col);
-			my $val = $s->{mv_like_spec}[$i];
-			length($val) or next;
-			next unless defined $dbref->test_column($col);
-			$val = $dbref->quote("$val%");
-			if(
-				! $dbref->config('UPPER_COMPARE')
-					or 
-				$s->{mv_case_sensitive} and $s->{mv_case_sensitive}[0]
-				)
-			{
-				push @$ary, "$col like $val";
-			}
-			else {
-				$val = uc $val;
-				push @$ary, "UPPER($col) like $val";
-			}
-		}
-		if(@$ary) {
-			$s->{eq_specs_sql} = [] if ! $s->{eq_specs_sql};
-			push @{$s->{eq_specs_sql}}, @$ary;
-		}
-#::logDebug("like_spec: " . join ",", @$ary);
-	}
-
-	my $qual;
-	if($s->{eq_specs_sql}) {
-		$qual = ' WHERE ';
-		my $joiner = ' AND ';
-		$joiner = ' OR ' if $s->{mv_orsearch}[0];
-		$qual .= join $joiner, @{$s->{eq_specs_sql}};
-	}
-
 	$s->save_specs();
 #::logDebug("searchfiles=@searchfiles");
-	foreach $searchfile (@searchfiles) {
-		$searchfile =~ s/\..*//;
-		my $db;
-		if (! $s->{mv_one_sql_table} ) {
-			$db = Vend::Data::database_exists_ref($searchfile)
-				or ::logError(
-							"Attempt to search non-existent database %s",
-							$searchfile,
-						), next;
-			
-			$dbref = $s->{dbref} = $db->ref();
-			@fn = $dbref->columns();
-		}
-		$s->hash_fields(\@fn);
-		my $prospect;
-		eval {
-			($limit_sub, $prospect) = $s->get_limit($f);
-		};
+	
 
-		$@  and  return $s->search_error("Limit subroutine creation: $@");
+	### Now we search
 
-		$f = $prospect if $prospect;
+	my $target = $s->{mv_search_reference};
 
-		eval {($return_sub, $delayed_return) = $s->get_return()};
+#::logDebug("target: " . ::uneval($target));
+	if(
+		ref($target) ne 'ARRAY'
+			or
+		(defined $target->[0] && ref($target->[0]) ne 'ARRAY')
+	  )
+	{
+		return $s->search_error("Reference for search must be array of arrays");
+	}
 
-		$@  and  return $s->search_error("Return subroutine creation: $@");
-
-#::logDebug("qual=$qual");
-		if(! defined $f and defined $limit_sub) {
-#::logDebug("no f, limit, dbref=$dbref");
-			local($_);
-			my $ref;
-			while($ref = $dbref->each_nokey($qual) ) {
-				next unless $limit_sub->($ref);
-				push @out, $return_sub->($ref);
-			}
-		}
-		elsif(defined $limit_sub) {
-#::logDebug("f and limit, dbref=$dbref");
-			local($_);
-			my $ref;
-			while($ref = $dbref->each_nokey($qual) ) {
-				$_ = join "\t", @$ref;
-				next unless &$f();
-				next unless $limit_sub->($ref);
-				push @out, $return_sub->($ref);
-			}
-		}
-		elsif (!defined $f) {
-			return $s->search_error('No search definition');
+	if(! $s->{mv_field_names}) {
+		if($s->{head_skip}) {
+			my @lines = splice(@$target,0,$s->{mv_head_skip});
+			$s->{mv_field_names} = pop(@lines);
 		}
 		else {
-#::logDebug("f and no limit, dbref=$dbref");
-			local($_);
-			my $ref;
-			while($ref = $dbref->each_nokey($qual) ) {
-#::logDebug("f and no limit, ref=$ref");
-				$_ = join "\t", @$ref;
-				next unless &$f();
-				push @out, $return_sub->($ref);
-			}
+			$s->{mv_field_names} = [ 0 .. (@{$target->[0]} - 1) ]
 		}
-		$s->restore_specs();
 	}
 
-	# Search the results and return
-	if($s->{mv_next_search}) {
-		@out = $s->search_reference(\@out);
-#::logDebug("did next_search: " . ::uneval(\@out));
+	$s->hash_fields($s->{mv_field_names});
+	
+	my $prospect;
+	eval {
+		($limit_sub, $prospect) = $s->get_limit($f);
+	};
+
+	$@  and  return $s->search_error("Limit subroutine creation: $@");
+
+	$f = $prospect if $prospect;
+
+	eval {($return_sub, $delayed_return) = $s->get_return()};
+
+	$@  and  return $s->search_error("Return subroutine creation: $@");
+
+	if(! defined $f and defined $limit_sub) {
+#::logDebug("no f, limit, dbref=$dbref");
+		local($_);
+		my $ref;
+		for $ref (@$target) {
+			next unless $limit_sub->($ref);
+			push @out, $return_sub->($ref);
+		}
 	}
+	elsif(defined $limit_sub) {
+#::logDebug("f and limit, dbref=$dbref");
+		local($_);
+		my $ref;
+		for $ref (@$target) {
+			$_ = join "\t", @$ref;
+			next unless &$f();
+			next unless $limit_sub->($ref);
+			push @out, $return_sub->($ref);
+		}
+	}
+	elsif (!defined $f) {
+		return $s->search_error('No search definition');
+	}
+	else {
+#::logDebug("f and no limit, dbref=$dbref");
+		local($_);
+		my $ref;
+		for $ref (@$target) {
+#::logDebug("f and no limit, ref=$ref");
+			$_ = join "\t", @$ref;
+			next unless &$f();
+			push @out, $return_sub->($ref);
+		}
+	}
+	$s->restore_specs();
 
 	$s->{matches} = scalar(@out);
 #::logDebug("before delayed return: self=" . ::Vend::Util::uneval_it({%$s}));
@@ -313,6 +253,10 @@ sub search {
 		@out = grep ! $seen{$_->[0]}++, @out;
 		$s->{matches} = scalar(@out);
 	}
+
+	## This is the normal return point unless RefSearch called by program
+	## or ITL
+	return @out if $s->{mv_return_filtered};
 
 	if ($s->{matches} > $s->{mv_matchlimit}) {
 		$s->save_more(\@out)
