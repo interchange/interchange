@@ -21,6 +21,7 @@
 [perl tables=country]### pre-open database for calcs below[/perl] 
 
 [query list=1
+		table=userdb
 		prefix=loop
 		sql="select * from userdb where username = '[cgi customer]'"]
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -44,7 +45,7 @@
                <td width="25%" nowrap class="block4bold">
 			   		
 					[L]Total Sales[/L]: &nbsp;
-				[query arrayref=totals sql=|
+				[query arrayref=totals table=transactions sql=|
 										SELECT total_cost,status
 										FROM  transactions
 					                    WHERE username = '[loop-code]'
@@ -325,7 +326,7 @@
                <td width="14%" class=rhead style="padding: 5px; text-align: right">[L]Subtotal[/L]</td>
                <td width="14%" class=rhead style="padding: 5px; text-align: right">[L]Total[/L]</td>
             </tr>
-[query list=1 sql="select * from transactions where username = '[loop-param username]'"]
+[query list=1 table=transactions sql="select * from transactions where username = '[loop-param username]'"]
             <tr class="[sql-alternate 2]rowalt[else]rownorm[/else][/sql-alternate]"> 
                <td style="padding: 5px">[page href="admin/order_status"
 			   							 form="order=[sql-code]"
@@ -393,4 +394,4 @@ vieworder=
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: customer_view.html,v 2.12 2003-11-06 19:55:34 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: customer_view.html,v 2.13 2003-12-04 18:57:34 edl Exp $ -->

@@ -148,6 +148,7 @@
 [comment] Get previous order numbers for possible repeat [/comment]
 [if value customer_id]
 	[query
+		table=transactions
 		sql="	
 			select order_number from transactions
 			where username = '[value customer_id]'

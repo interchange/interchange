@@ -318,7 +318,7 @@
                <td width="14%" class=rhead style="padding: 5px; text-align: right">[L]Unit Price[/L]</td>
                <td width="14%" class=rhead style="padding: 5px; text-align: right">[L]Total[/L]</td>
             </tr>
-[query list=1 sql="select * from orderline where order_number = '[loop-code]'"]
+[query list=1 table=orderline sql="select * from orderline where order_number = '[loop-code]'"]
             <tr class="[sql-alternate 2]rowalt[else]rownorm[/else][/sql-alternate]" valign=top> 
                <td style="padding: 5px">[page href="admin/order_status"
 			   							 form="order=[loop-code]"
@@ -435,4 +435,4 @@ vieworder=
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: order_view.html,v 2.16 2003-11-20 22:11:31 edl Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order_view.html,v 2.17 2003-12-04 18:57:34 edl Exp $ -->
