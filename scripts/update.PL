@@ -23,11 +23,13 @@ DOIT: {
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# update - Interchange database updater
+# Interchange database updater
 #
-# $Id: update.PL,v 1.6 2000-09-23 18:49:30 heins Exp $
+# $Id: update.PL,v 1.7 2000-09-25 16:08:06 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+#
+# See the file 'Changes' for information.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -49,14 +51,19 @@ use lib '/usr/local/interchange/lib';
 use lib '/usr/local/interchange';
 #use lib '~_~INSTALLARCHLIB~_~';
 
-BEGIN {
+use strict;
+use Fcntl;
+use Vend::Config;
+use Vend::Data;
+use Vend::Util;
 
-    eval {
-        require 5.004;
-        require FindBin;
-        1 and $Global::VendRoot = "$FindBin::RealBin";
-        1 and $Global::VendRoot =~ s/.bin$//;
-    };
+BEGIN {
+	eval {
+		require 5.004;
+		require FindBin;
+		1 and $Global::VendRoot = "$FindBin::RealBin";
+		1 and $Global::VendRoot =~ s/.bin$//;
+	};
 	($Global::VendRoot = $ENV{MINIVEND_ROOT})
 		if defined $ENV{MINIVEND_ROOT};
 	$Global::VendRoot = $Global::VendRoot || '/usr/local/interchange';
@@ -75,7 +82,8 @@ BEGIN {
 		$Global::ConfigFile = 'interchange.cfg';
 	}
 }
-### END CONFIGURABLE VARIABLES
+
+### END CONFIGURATION VARIABLES
 
 sub dontwarn { $FindBin::RealBin; }
 
@@ -83,9 +91,6 @@ $Global::ErrorFile = "$Global::VendRoot/error.log";
 $Vend::ExternalProgram = 1;
 
 my $DEBUG = 0;
-
-use strict;
-use Fcntl;
 
 #select a DBM
 
@@ -116,10 +121,6 @@ BEGIN {
 		die "No DBM defined! Update not designed to work with DBI or memory databases.\n";
 	}
 }
-
-use Vend::Config;
-use Vend::Data;
-use Vend::Util;
 
 $Vend::Cfg = {};
 
