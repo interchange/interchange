@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.42 2004-05-28 16:45:39 mheins Exp $
+# $Id: Dispatch.pm,v 1.43 2004-09-25 23:32:28 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.42 $, 10);
+$VERSION = substr(q$Revision: 1.43 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -70,7 +70,6 @@ sub response {
 	my $possible = shift;
 	return if $Vend::Sent;
 	if($::Pragma->{download}) {
-		my $out = ref $possible ? $$possible : $possible;
 		# do nothing
 	}
 	elsif(defined $possible) {
