@@ -11,6 +11,9 @@ Interchange 4.9.9 not yet released.
 Core
 ----
 
+* Remove long-deprecated %Safe hash. Use $CGI, $Carts, $Items, $Config,
+  $Scratch, and $Values instead of $Safe{cgi} etc.
+
 * Fix locking of NFS sessions.
 
 * Make [bounce ...] more reliable with respect to terminating output

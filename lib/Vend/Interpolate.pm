@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.193 2003-10-05 19:09:23 mheins Exp $
+# $Id: Interpolate.pm,v 2.194 2003-10-24 15:01:40 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.193 $, 10);
+$VERSION = substr(q$Revision: 2.194 $, 10);
 
 @EXPORT = qw (
 
@@ -128,7 +128,6 @@ BEGIN {
 							$Carts
 							$Config
 							%Sql
-							%Safe
 							$Items
 							$Scratch
 							$Shipping
@@ -201,18 +200,17 @@ sub reset_calc {
 sub init_calc {
 #::logDebug("reset_state=$Vend::Calc_reset init_state=$Vend::Calc_initialized -- initting calc from " . caller);
 	reset_calc() unless $Vend::Calc_reset;
-	$CGI_array                   = \%CGI::values_array;
-	$CGI        = $Safe{cgi}     = \%CGI::values;
-	$Carts      = $Safe{carts}   = $::Carts;
-	$Items      = $Safe{items}   = $Vend::Items;
-	$Config     = $Safe{config}  = $Vend::Cfg;
-	$Scratch    = $Safe{scratch} = $::Scratch;
-	$Values     = $Safe{values}  = $::Values;
-	$Session                     = $Vend::Session;
-	$Search                      = $::Instance->{SearchObject} ||= {};
+	$CGI_array  = \%CGI::values_array;
+	$CGI        = \%CGI::values;
+	$Carts      = $::Carts;
+	$Items      = $Vend::Items;
+	$Config     = $Vend::Cfg;
+	$Scratch    = $::Scratch;
+	$Values     = $::Values;
+	$Session    = $Vend::Session;
+	$Search     = $::Instance->{SearchObject} ||= {};
 	$Variable   = $::Variable;
 	$Vend::Calc_initialized = 1;
-	
 	return;
 }
 

@@ -3,7 +3,7 @@
 <TITLE>Basket 1 Contents</TITLE>
 </HEAD>
 [body 1]
-[perl values] $Safe{values}{state} = 'default'; return ''; [/perl]
+[perl] $Values->{state} = 'default'; return ''; [/perl]
 <P>
 Order URL: [process-order]
 <P>
@@ -38,10 +38,10 @@ Order URL: [process-order]
 	[item-description]
 [if explicit items scratch]
 [condition]
-$no = $Safe{scratch}->{"nodisplay_[item-code]"};
+$no = $Scratch->{"nodisplay_[item-code]"};
 return 1 unless $no;
-foreach $item (reverse @{$Safe{items}}) {
-	return '' if $no eq $item->{'code'};
+foreach $item (reverse @$Items) {
+	return '' if $no eq $item->{code};
 }
 1;
 [/condition]

@@ -69,10 +69,10 @@ name=required
 address=required
 city=required
 country=required
-[perl values config]
-$state      = $Safe{'values'}->{state};
-$country    = $Safe{'values'}->{country};
-$zip        = $Safe{'values'}->{zip};
+[perl]
+$state      = $Values->{state};
+$country    = $Values->{country};
+$zip        = $Values->{zip};
 $state_ok   = [if salestax [value state] ne '']1[else]0[/else][/if];
 $country    =~ s/\W//g;
 $zip_ok     = ($zip =~ /^\s*\d\d\d\d\d(-\d\d\d\d)?\s*$/);
