@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.36 2000-10-17 21:46:16 heins Exp $
+# $Id: Interpolate.pm,v 1.37 2000-10-18 20:18:19 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.36 $, 10);
+$VERSION = substr(q$Revision: 1.37 $, 10);
 
 @EXPORT = qw (
 
@@ -832,6 +832,13 @@ sub tag_data {
 					my $val = shift;
 					return crypt($val, ::random_string(2));
 				},
+	'html2text' => sub {
+					my $val = shift;
+					$val =~ s|\s*<BR>\s*|\n|gi;
+					$val =~ s|\s*<P>\s*|\n|gi;
+					$val =~ s|\s*</P>\s*||gi;
+					return $val;
+				},
 	'namecase' => sub {
 					use locale;
 					my $val = shift;
@@ -904,8 +911,8 @@ sub tag_data {
 				},
 	'text2html' => sub {
 					my $val = shift;
-					$val =~ s|\r?\n\r?\n|<P>|;
-					$val =~ s|\r?\n|<BR>|;
+					$val =~ s|\r?\n\r?\n|<P>|g;
+					$val =~ s|\r?\n|<BR>|g;
 					return $val;
 				},
 	'urlencode' => sub {
