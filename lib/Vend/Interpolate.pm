@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.17 2001-02-05 13:25:41 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.18 2001-02-13 14:29:28 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.17 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.18 $, 10);
 
 @EXPORT = qw (
 
@@ -130,7 +130,7 @@ BEGIN {
 }
 
 use vars @Share_vars, @Share_routines, qw/$Calc_initialized $Calc_reset $ready_safe/;
-use vars qw/%Filter %Ship_handler/;
+use vars qw/%Filter %Ship_handler $Safe_data/;
 
 $ready_safe = new Safe;
 $ready_safe->untrap(qw/sort ftfile/);
@@ -653,6 +653,9 @@ sub tag_data {
 	my($selector,$field,$key,$opt,$flag) = @_;
 	$CacheInvalid = 1 if defined $Vend::Cfg->{DynamicData}->{$selector};
 
+	local($Safe_data);
+	$Safe_data = 1 if $opt->{safe_data};
+
 	if ( not defined $Vend::Database{$selector}) {
 		if($selector eq 'session') {
 			$CacheInvalid = 1;
@@ -725,7 +728,7 @@ sub tag_data {
 	}
 
 	#The most common , don't enter a block, no accoutrements
-	return database_field($selector,$key,$field);
+	return ed(database_field($selector,$key,$field));
 
 }
 
@@ -1003,6 +1006,9 @@ sub tag_data {
 					return HTML::Entities::encode(shift);
 				},
 	);
+
+$Filter{upper} = $Filter{uc};
+$Filter{lower} = $Filter{lc};
 
 sub input_filter_do {
 	my($varname, $opt, $routine) = @_;
@@ -2205,6 +2211,12 @@ sub tag_perl {
 	return $result;
 }
 
+sub ed {
+	return $_[0] if $Safe_data;
+	$_[0] =~ s/\[/&#91;/g;
+	return $_[0];
+}
+
 sub show_tags {
 	my($type, $opt, $text) = @_;
 
@@ -3065,9 +3077,11 @@ sub form_link {
 	$href =~ s:^/+::;
 	$href = "$base/$href"     unless $href =~ /^\w+:/;
 
-	my $extra = <<EOF;
-mv_session_id=$Vend::Session->{id}
-EOF
+	my $extra = '';
+	$extra .= "mv_session_id=$Vend::Session->{id}\n"
+		unless $::Scratch->{mv_force_cache};
+	$extra .= "mv_pc=" . ++$Vend::Session->{pageCount} . "\n"
+		unless $::Scratch->{mv_force_cache};
 	$arg = '' if ! $arg;
 	$arg = "mv_arg=$arg\n" if $arg && $arg !~ /\n/; 
 	$extra .= $arg . $opt->{form};
@@ -3904,7 +3918,7 @@ sub tag_labeled_data_row {
 			and undef $done;
 #::logDebug("after if: table=$table 1=$1 2=$2 3=$3 $$text =~ s#$LdIB $tabRE $LdI $LdIE#");
 
-		$$text =~ s/$LdB$tabRE$LdD/$row->{$1}/g
+		$$text =~ s/$LdB$tabRE$LdD/ed($row->{$1})/eg
 			and undef $done;
 		last if $done;
 	}
@@ -3943,6 +3957,10 @@ sub labeled_list {
 	
 	my $save_unsafe = $MVSAFE::Unsafe || '';
 	$MVSAFE::Unsafe = 1;
+
+	# This allows left brackets to be output by the data tags
+	local($Safe_data);
+	$Safe_data = 1 if $opt->{safe_data};
 
 	if($opt->{prefix} eq 'item') {
 #::logDebug("labeled list: opt:\n" . ::uneval($opt) . "\nobj:" . ::uneval($obj) . "text:" . substr($text,0,100));
@@ -4041,12 +4059,8 @@ sub labeled_list {
 		my $fa = $obj->{mv_return_fields} || undef;
 		my $fh = $obj->{mv_field_hash}    || undef;
 		my $fn = $obj->{mv_field_names}   || undef;
-#::logDebug("fa: " . ::uneval($fa));
-#::logDebug("fh: " . ::uneval($fh));
-#::logDebug("fn: " . ::uneval($fn));
 		$ary = tag_sort_ary($opt->{sort}, $ary) if $opt->{sort};
 		if($fa) {
-#::logDebug("fa before fn: " . ::uneval($fa));
 			my $idx = 0;
 			$fh = {};
 			for(@$fa) {
@@ -4054,16 +4068,11 @@ sub labeled_list {
 			}
 		}
 		elsif (! $fh and $fn) {
-#::logDebug("Not fh, fn: " . ::uneval($fn));
 			my $idx = 0;
 			$fh = {};
 			for(@$fn) {
 				$fh->{$_} = $idx++;
 			}
-#::logDebug("Not fh, fn: " . ::uneval($fh));
-		}
-		else {
-#::logDebug("fh is there." . ::uneval($fh));
 		}
 		$r = iterate_array_list($i, $end, $count, $text, $ary, $opt_select, $fh);
 	}
@@ -4304,12 +4313,12 @@ my $once = 0;
 				  (defined $fh->{$3} ? $row->[$fh->{$3}] : '')
 				  					?	pull_if($5,$2,$4,$row->[$3])
 									:	pull_else($5,$2,$4,$row->[$3])#ige;
-	    $run =~ s#$B$QR{_param}#defined $fh->{$1} ? $row->[$fh->{$1}] : ''#ige;
+	    $run =~ s#$B$QR{_param}#defined $fh->{$1} ? ed($row->[$fh->{$1}]) : ''#ige;
 		1 while $run =~ s#$IB$QR{_pos_if}$IE[-_]pos\1\]#
 				  $row->[$3] 
 						?	pull_if($5,$2,$4,$row->[$3])
 						:	pull_else($5,$2,$4,$row->[$3])#ige;
-	    $run =~ s#$B$QR{_pos}#$row->[$1]#ig;
+	    $run =~ s#$B$QR{_pos}#ed($row->[$1])#ige;
 #::logDebug("fh: " . ::uneval($fh) . ::uneval($row)) unless $once++;
 		1 while $run =~ s#$IB$QR{_field_if}$IE[-_]field\1\]#
 				  my $tmp = product_field($3, $code);
@@ -4323,7 +4332,7 @@ my $once = 0;
 						tag_options($code,$1):ige;
 		$run =~ s:$B$QR{_code}:$code:ig;
 		$run =~ s:$B$QR{_description}:product_description($code):ige;
-		$run =~ s:$B$QR{_field}:product_field($1, $code):ige;
+		$run =~ s:$B$QR{_field}:ed(product_field($1, $code)):ige;
 		tag_labeled_data_row($code, \$run);
 		$run =~ s!$B$QR{_price}!
 					currency(product_price($code,$1), $2)!ige;
@@ -4333,7 +4342,10 @@ my $once = 0;
 											?	pull_if($4)
 											:	pull_else($4)!ige;
 		$run =~ s#$B$QR{_calc}$E$QR{'/_calc'}#tag_calc($1)#ige;
-		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#init_calc() if ! $Calc_initialized;($Vend::Cfg->{Sub}{$1} || sub { 'ERROR' })->($2,$row)#ige;
+		$run =~ s#$B$QR{_exec}$E$QR{'/_exec'}#
+					init_calc() if ! $Calc_initialized;
+					($Vend::Cfg->{Sub}{$1} || sub { 'ERROR' })->($2,$row)
+				#ige;
 		$run =~ s#$B$QR{_filter}$E$QR{'/_filter'}#filter_value($1,$2)#ige;
 		$run =~ s#$B$QR{_last}$E$QR{'/_last'}#
                     my $tmp = interpolate_html($1);
@@ -4434,8 +4446,8 @@ sub iterate_hash_list {
 		$run =~ s:$B$QR{_sku}:$code:ig;
 		$run =~ s:$B$QR{_code}:$item->{code}:ig;
 		$run =~ s:$B$QR{_quantity}:$item->{quantity}:g;
-		$run =~ s:$B$QR{_modifier}:$item->{$1}:g;
-		$run =~ s:$B$QR{_param}:$item->{$1}:g;
+		$run =~ s:$B$QR{_modifier}:ed($item->{$1}):ge;
+		$run =~ s:$B$QR{_param}:ed($item->{$1}):ge;
 		$run =~ s:$QR{quantity_name}:quantity$item->{mv_ip}:g;
 		$run =~ s:$QR{modifier_name}:$1$item->{mv_ip}:g;
 		$run =~ s!$B$QR{_subtotal}!currency(item_subtotal($item),$1)!ge;
@@ -4446,9 +4458,9 @@ sub iterate_hash_list {
 								$1
 								)!ge;
 		$run =~ s:$B$QR{_code}:$code:g;
-		$run =~ s:$B$QR{_field}:item_field($item, $1) || $item->{$1}:ge;
+		$run =~ s:$B$QR{_field}:ed(item_field($item, $1) || $item->{$1}):ge;
 		$run =~ s:$B$QR{_description}:
-							item_description($item) || $item->{description}
+							ed(item_description($item) || $item->{description})
 							:ge;
 		$run =~ s!$B$QR{_price}!currency(item_price($item,$1), $2)!ge;
 		$run =~ s!$B$QR{_discount_price}!
