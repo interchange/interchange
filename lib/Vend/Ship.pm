@@ -1,8 +1,8 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.8 2004-07-05 21:59:56 mheins Exp $
+# $Id: Ship.pm,v 2.9 2004-10-02 22:21:49 jon Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -845,6 +845,7 @@ sub shipping {
 #::logDebug("ship options: " . uneval($o) );
 		$final /= $Vend::Cfg->{PriceDivide}
 			if $o->{PriceDivide} and $Vend::Cfg->{PriceDivide} != 0;
+		$o->{free} = interpolate_html($o->{free}) if $o->{free} =~ /[_@[]/;
 		unless ($o->{free}) {
 			return '' if $final == 0;
 			$o->{adder} =~ s/\bx\b/$final/g;
