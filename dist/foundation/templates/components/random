@@ -33,39 +33,22 @@ banner:
 [/comment]
 
 <!-- BEGIN COMPONENT [control component random] -->
-<STYLE type=text/css>
-<!--
-[control row_css
-#rv {
-	font-face: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 8pt;
-	font-weight: bold;
-	text-align: center;
-	}]
--->
-</STYLE>
-<table width="[control table_width 90%]" align=center>
+
+<table width="[control table_width 95%]" align="center">
 <tr> 
-<td style="[control toprow_css
-				font-face: Verdana, Arial, Helvetica, sans-serif;
-				font-style: italic;
-				font-weight: bold;
-				text-align: left;
-				background-color: __BARBG__;
-				color: __BARTEXT__;
-				]"> 
-<font color="__BARTEXT__">[control banner See also...]</font>
-</td>
+  <td class="categorybar">
+    <b>[control banner See also...]</b>
+  </td>
 </tr>
 <tr>
-<td> 
-  [calc]
+  <td> 
+    [calc]
   	my $n = [control cols 2];
 	$Scratch->{width_percent} = int(100 / $n) . '%';
 	return;
-  [/calc]
-  <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-[table-organize embed=1 pretty=1 cols="[control cols 2]"]
+    [/calc]
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+    [table-organize embed=1 pretty=1 cols="[control cols 2]"]
 	[loop
 			random="[control size 2]"
 			search="
@@ -74,57 +57,50 @@ banner:
 					ra=yes
 					ml=[control pool 1000]
 				"]
-	  <TD width="[scratch width_percent]"> 
-		<table border="0" cellspacing="0" cellpadding="0">
-		  <tr> 
-			<td id=rv>[loop-description]</td>
-		  </tr>
-		  <tr> 
-			<td id=rv>
-				[if-loop-data options o_modular]
-					[page [loop-code]]
-				[else]
-					[order [loop-code]]
-				[/else]
-				[/if-loop-data]
-					Buy Now
-				</A>
-				</td>
-		  </tr>
-		  <tr> 
-			<td align=center> 
-			  <table cellspacing=0 cellpadding=0>
-				<tr> 
-				  <td><img src="thumb/[loop-field thumb]"></td>
-				</tr>
-			  </table>
-			</td>
-		  </tr>
-		  <tr> 
-			<td align="center" height="5">&nbsp;</td>
-		  </tr>
-		  <tr> 
-			<td id=rv>
-				<span style="font-size: smaller">
-				Our Price: [loop-price]
-				</span>
-			</td>
-		  </tr>
-		  <tr> 
-			<td id=rv>
-				<a href="[area [loop-code]]">More Information</a>
-			</td>
-		  </tr>
-		  <tr> 
-			<td>&nbsp;</td>
-		  </tr>
-		</table>
-	  </TD>
-	[/loop]
-[/table-organize]
-  </table>
-  <p>&nbsp;</p>
+      <TD width="[scratch width_percent]"> 
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr> 
+	  <td id=rv>[loop-description]</td>
+	</tr>
+	<tr> 
+	  <td id=rv>
+		[if-loop-data options o_modular]
+			[page [loop-code]]
+		[else]
+			[order [loop-code]]
+		[/else]
+		[/if-loop-data]
+	    <img src="__THEME_IMG_DIR__buynow.gif" border="0"></A>
+	  </td>
+	</tr>
+	<tr> 
+	  <td align="center"> 
+	    <table cellspacing="0" cellpadding="0">
+	    <tr> 
+	      <td>
+		<img src="thumb/[loop-field thumb]">
+	      </td>
+	    </tr>
+	    </table>
+	  </td>
+	</tr>
+	<tr> 
+	  <td id=rv>
+	    Our Price: <b>[loop-price]</b>
+	  </td>
+	</tr>
+	<tr> 
+	  <td id=rv>
+	    <a href="[area [loop-code]]">More Info</a>
+	  </td>
+	</tr>
+	</table>
+      </TD>
+      [/loop]
+      [/table-organize]
+    </table>
   </td>
 </tr>
 </table>
+
 <!-- END COMPONENT [control component random] -->
