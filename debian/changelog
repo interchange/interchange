@@ -1,4 +1,4 @@
-interchange (4.7.3-0.4) unstable; urgency=low
+interchange (4.7.3-1) unstable; urgency=low
 
   * new upstream release
   * foundation is now the demo catalog instead of construct
@@ -17,7 +17,7 @@ interchange (4.7.3-0.4) unstable; urgency=low
   * images are now installed to /var/www/interchange
   * docroot for catalogs added to makecat.wrapper
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 12 Jun 2001 13:47:26 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 13 Jun 2001 10:58:09 +0200
   
 interchange (4.6.5-1) unstable; urgency=high
 
