@@ -7,7 +7,7 @@ Build-Depends: debhelper, libdigest-md5-perl, libmime-base64-perl, libsafe-hole-
 
 Package: interchange-cat-foundation
 Architecture: all
-Depends: libwww-perl, debconf, interchange (>=4.8.1), interchange-ui (>=4.8.1)
+Depends: libwww-perl, debconf (>= 0.2.26), interchange (>=4.8.1), interchange-ui (>=4.8.1)
 Description: Foundation Store, a sample Interchange catalog
  The Foundation store is a demo catalog which you can use to
  build your Interchange applications from. While the Foundation store

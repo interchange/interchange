@@ -1013,6 +1013,9 @@ Debian
   (Closes: #215003, thanks to Daniel Schepler
   <schepler@math.berkeley.edu> for the bug report)
 
+* Add versioned dependency on debconf to interchange-cat-foundation
+  (Closes: #215633).
+
 Miscellaneous
 -------------
 
