@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18.2.6 2001-01-28 08:40:09 heins Exp $
+# $Id: Order.pm,v 1.18.2.7 2001-01-31 12:02:41 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.6 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.7 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1758,6 +1758,8 @@ sub route_order {
 	my $msg;
 
 	if($check_only) {
+		$::Values = $value_save;
+		$Vend::Items = $save_cart;
 		if(@route_failed) {
 			return (0, 0, $errors);
 		}
