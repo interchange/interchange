@@ -32,6 +32,11 @@ sub {
 		$done_something = 1;
 	}
 
+	if($opt->{child_pid}) {
+		push @out, $$;
+		$done_something = 1;
+	}
+
 	if($opt->{modtest}) {
 		eval "require $opt->{modtest}";
 		if($@) {
