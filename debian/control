@@ -3,7 +3,7 @@ Section: web
 Priority: optional
 Maintainer: Stefan Hornburg (Racke) <racke@linuxia.de>
 Standards-Version: 3.5.6.0
-Build-Depends: debhelper, libdigest-md5-perl, libmime-base64-perl, libsafe-hole-perl, libstorable-perl, liburi-perl, apache-dev
+Build-Depends: debhelper, libdigest-md5-perl, libmime-base64-perl, libsafe-hole-perl, libstorable-perl, liburi-perl, libhtml-parser-perl, apache-dev
 
 Package: interchange-cat-foundation
 Architecture: all
