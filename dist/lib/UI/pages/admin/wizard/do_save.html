@@ -12,6 +12,66 @@
 	my $udb= $Db{userdb};
 	my $mvdb = $Db{mv_metadata};
 
+my %pref = (
+    ADDRESS                => 'Company',
+    CENTERED_FLYPAGE       => 'Display Layout',
+    CHECK_ACCEPTED         => 'Payment',
+    CLICK_ENLARGE          => 'Display Layout',
+    COD_ACCEPTED           => 'Payment',
+    COMPANY                => 'Company',
+    COUNTRY                => 'Company',
+    CREDIT_CARDS_ACCEPTED  => 'Payment',
+    CYBER_CONFIGFILE       => 'Company',
+    CYBER_ID               => 'Company',
+    CYBER_KEY              => 'Company',
+    CYBER_MODE             => 'Company',
+    DEALER_PRICE           => 'Display Layout',
+    DOMAINNAME             => 'Company',
+    EMAIL_INFO             => 'Company',
+    EMAIL_SERVICE          => 'Company',
+    FAX                    => 'Company',
+    FEDEX_MODES            => 'Shipping',
+    IN_STOCK_NOTIFY        => 'Display Layout',
+    IN_STOCK_OPTS          => 'Display Layout',
+    MV_PAYMENT_ID          => 'Payment',
+    MV_PAYMENT_MODE        => 'Payment',
+    MV_PAYMENT_REFERER     => 'Payment',
+    MV_PAYMENT_SECRET      => 'Payment',
+    MV_PAYMENT_SERVER      => 'Payment',
+    ORDERS_TO              => 'Orders',
+    PGP_KEY                => 'Encryption',
+    PHONE                  => 'Company',
+    POSTAL_ACCEPTED        => 'Payment',
+    PO_ACCEPTED            => 'Payment',
+    SALE_PRICE             => 'Display Layout',
+    SECURE_ENABLE          => 'Security',
+    SEPARATE_SHIPPING      => 'Display Layout',
+    SHIP_DEFAULT_COUNTRY   => 'Shipping',
+    SHIP_DEFAULT_MODE      => 'Shipping',
+    SHIP_DEFAULT_ZIP       => 'Shipping',
+    SHIP_FLAT_DOM_RATE     => 'Shipping',
+    SHIP_FLAT_INTL_RATE    => 'Shipping',
+    STATE                  => 'Company',
+    STYLE                  => 'Display Layout',
+    TAXAREA                => 'Tax',
+    TAXRATE                => 'Tax',
+    TAXSHIPPING            => 'Tax',
+    TOLLFREE               => 'Company',
+    TOWN                   => 'Company',
+    UPS_MODES              => 'Shipping',
+    UPS_ORIGIN             => 'Shipping',
+    ZIP                    => 'Company',
+);
+
+	my $vset = sub {
+		my($name, $value) = @_;
+		$vdb->set_field($name, 'Variable', $value);
+		return 1 if $vdb->field($name, 'pref_group');
+		return 0 if ! $pref{$name};
+		$vdb->set_field($name, 'pref_group', $pref{$name});
+		return 1;
+	};
+
 my %doit = (
 abouttext           => sub {
 						my $content = $Values->{abouttext};
@@ -129,8 +189,13 @@ images              => sub {
 						$arch = $Tag->filter('filesafe', $arch);
 						$Tag->image_collate($arch, { thumb => $Values->{thumbs}, verbose => 1 });
 					},
-products            => sub {
-                    },
+products              => sub {
+						my $arch = $Values->{images}
+							or return;
+						$arch =~ s:.*/::;
+						$arch =~ s:.*\\::;
+						$Values->{products} = $Tag->filter('filesafe', $arch);
+					},
 shipzip             => 'UPS_ORIGIN',
 shoppass           => sub {
 						$udb->set_field(
@@ -183,11 +248,7 @@ saleprice           => sub {
 					'options',
 					$mvline,
 				);
-				$vdb->set_field(
-					'SALE_PRICE',
-					'Variable',
-					$saleprice,
-				);
+				$vset->('SALE_PRICE', $saleprice);
 			}, 
 wholeprice	    => sub {
 				my $wholeprice = $Values->{wholeprice};
@@ -205,9 +266,8 @@ wholeprice	    => sub {
 					'options',
 					$mvline,
 				);
-				$vdb->set_field(
+				$vset->(
 					'DEALER_PRICE',
-					'Variable',
 					$wholeprice,	
 				); 
 			},
@@ -227,9 +287,8 @@ image_opts	    => sub {
 					'options',
 					$mvline,
 				);
-				$vdb->set_field(
+				$vset->(
 					'CLICK_ENLARGE',
-					'Variable',
 					$image_opts,
 				);
 			}, 
@@ -479,12 +538,12 @@ zip                 => 'ZIP',
 			my $status = $val->();
 			push @messages, "$_ subroutine returned $status.";
 			if($status =~ /^[A-Z][A-Z_]+[A-Z]$/) {
-				$vdb->set_field($status, 'Variable', $Values->{$_});
+				$vset->($status, $Values->{$_});
 				push @messages, "$_ set $status to '$Values->{$_}' in variable.";
 			}
 		}
 		elsif($val =~ /\w+/) {
-			$vdb->set_field($val, 'Variable', $Values->{$_});
+			$vset->($val, $Values->{$_});
 			push @messages, "$_ set $val to '$Values->{$_}' in variable.";
 		}
 		else {
@@ -561,6 +620,7 @@ push @messages, "set shipmodes to '$na_string' in Canada";
 					table=userdb
 	]
 [/if]
+<!-- export variables: [export variable] -->
 [if value sampleproducts]
 [perl tables="area cat products"]
 	my $go_page = 'index';
@@ -663,9 +723,9 @@ Catalog activated with new values.
 Your catalog is now operational for testing.
 </P>
 <blockquote>
-<LARGE><A HREF="[area index]" target="_new">Preview</A></LARGE>
+<span style="font-size: larger"><A HREF="[area index]" target="_new">Preview</A></span>
 </blockquote>
-You may need to click your browsers Reload button several times to see the changes.
+You may need to click your browser's Reload button to see the changes.
 
 </blockquote>
 @_UI_STD_FOOTER_@
