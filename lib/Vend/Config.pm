@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.13 2001-10-30 06:10:16 jon Exp $
+# $Id: Config.pm,v 2.14 2001-11-09 22:08:02 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.13 $, 10);
+$VERSION = substr(q$Revision: 2.14 $, 10);
 
 my %CDname;
 
@@ -2183,7 +2183,7 @@ sub time_to_seconds {
 	($n, $dur) = ($str =~ m/(\d+)[\s\0]*(\w+)?/);
 	return undef unless defined $n;
 	if (defined $dur) {
-		$_ = $dur;
+		local($_) = $dur;
 		if (m/^s|sec|secs|second|seconds$/i) {
 		}
 		elsif (m/^m|min|mins|minute|minutes$/i) {
