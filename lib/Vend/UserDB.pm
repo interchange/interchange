@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.30 2004-10-12 11:41:26 racke Exp $
+# $Id: UserDB.pm,v 2.31 2004-10-15 15:09:54 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.30 $, 10);
+$VERSION = substr(q$Revision: 2.31 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1494,7 +1494,7 @@ sub new_account {
 		if ($foreign) {
 			my $uname = ($self->{PASSED_USERNAME} ||= $self->{USERNAME});
 			$uname = $udb->quote($uname);
-			my $q = "select username from $self->{DB_ID} where $foreign = $uname";
+			my $q = "select $foreign from $self->{DB_ID} where $foreign = $uname";
 			my $ary = $udb->query($q)
 				or do {
 					my $msg = errmsg( "Database access error for query: %s", $q);
