@@ -33,10 +33,13 @@ configure.in$
 control/.*
 custom/.*
 dev/.*
+dist/barry/*
+dist/basic/*
+dist/books.*
 dist/etc/[^.].*
 dist/lib/MiniMate.*
 dist/mvmall.*
-dist/books.*
+dist/simple/*
 doc/.*[^d]
 help/.*
 lib/src/config.cache
@@ -47,5 +50,6 @@ lib/src/syscfg
 run/.*
 scripts/.*[a-z]$
 scripts/initp.PL
+win/*
 windows/*
 work/.*
