@@ -8,10 +8,6 @@ ui_template_description: Page with top/left areas.
 page_title: 
 	description: Page title
 
-page_banner: 
-	description: Page banner
-	help: Defaults to page title
-
 members_only:
 	options: 1=Yes,=No*
 	widget: radio
@@ -19,5 +15,4 @@ members_only:
 
 [/comment]
 [set page_title][set]
-[set page_banner][set]
 [set members_only][set]
