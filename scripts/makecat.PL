@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.32.4.3 2000-12-21 12:14:48 heins Exp $
+# $Id: makecat.PL,v 1.32.4.4 2001-02-02 07:50:04 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -1508,11 +1508,13 @@ PRECMD: {
 	print "\nFound system commands to run.\n\n";
 	local ($/) = "";
 	while(<ADDL>) {
+		my $unprompted;
 		s/\s+$//;
 		s/__MVC_([A-Z0-9]+)(__)?/substitute($1,$2)/eg;
 		my ($command, $prompt) = split /\n/, $_, 2;
 		$command =~ s/^\s+//;
 		$command =~ s/\s+$//;
+		$command =~ s/^!// and $unprompted = 1;
 		if($command =~ s/{\s*([A-Z0-9]+)(\s*\S.*?)?\s*}\s*//) {
 			my $param = $1;
 			my $test = $2;
@@ -1525,7 +1527,8 @@ PRECMD: {
 			next unless $true;
 		}
 		print "$prompt\n\n";
-		my $ans = prompt( qq{run "$command"? }, 'y' );
+		print "Running: $command\n" if $unprompted;
+		my $ans = $unprompted ? 'y' : prompt( qq{run "$command"? }, 'y' );
 		if($ans =~ /^\s*y/i) {
 			system $command;
 			if($?) {
@@ -1869,11 +1872,13 @@ POSTCMD: {
 	print "\nFound additional system commands to run.\n\n";
 	local ($/) = "";
 	while(<ADDL>) {
+		my $unprompted;
 		s/\s+$//;
 		s/__MVC_([A-Z0-9]+)(__)?/substitute($1,$2)/eg;
 		my ($command, $prompt) = split /\n/, $_, 2;
 		$command =~ s/^\s+//;
 		$command =~ s/\s+$//;
+		$command =~ s/^!// and $unprompted = 1;
 		if($command =~ s/{\s*([A-Z0-9]+)(\s*\S.*?)?\s*}\s*//) {
 			my $param = $1;
 			my $test = $2;
@@ -1886,7 +1891,8 @@ POSTCMD: {
 			next unless $true;
 		}
 		print "$prompt\n\n";
-		my $ans = prompt( qq{run "$command"? }, 'y' );
+		print "Running: $command\n" if $unprompted;
+		my $ans = $unprompted ? 'y' : prompt( qq{run "$command"? }, 'y' );
 		if($ans =~ /^\s*y/i) {
 			system $command;
 			if($?) {
@@ -2079,7 +2085,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 1.32.4.3 2000-12-21 12:14:48 heins Exp $
+# $Id: makecat.PL,v 1.32.4.4 2001-02-02 07:50:04 heins Exp $
 
 =head1 INTRODUCTION
 
