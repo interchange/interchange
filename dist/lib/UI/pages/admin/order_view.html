@@ -91,22 +91,6 @@
 <font size=2><b> Payment type: </b></font>
 </td><td><font size=2>[loop-data transactions payment_method]</a></font></tr>
 
-<tr><td align=right>
-<font size=2><b> Field 1: </b></font>
-</td><td><font size=2> </font></td></tr>
-
-<tr><td align=right>
-<font size=2><b> Field 2: </b></font>
-</td><td><font size=2> </font></td></tr>
-
-<tr><td align=right>
-<font size=2><b> Field 3: </b></font>
-</td><td><font size=2>  </font></td></tr>
-
-<tr><td align=right>
-<font size=2><b> Field 4: </b></font>
-</td><td><font size=2> </font></td></tr>
-
 </table>
 
 </td><td valign=top colspan=4>
@@ -196,7 +180,7 @@
 <tr>
 <td width=50 align=center bgcolor="__UI_C_INTBLOCKBAR__">
 <font size=2>
-<b>Qty.</b></font></td>
+<b>Status</b></font></td>
 
 <td width=230 align=left bgcolor="__UI_C_INTBLOCKBAR__">
 <font size=2>
@@ -205,6 +189,10 @@
 <td width=100 align=left bgcolor="__UI_C_INTBLOCKBAR__">
 <font size=2>
 <b>SKU</b></font></td>
+
+<td width=50 align=center bgcolor="__UI_C_INTBLOCKBAR__">
+<font size=2>
+<b>Qty.</b></font></td>
 
 <td width=70 align=right bgcolor="__UI_C_INTBLOCKBAR__">
 <font size=2>
@@ -225,8 +213,7 @@
 	$total_weight += ([field field=weight key="[sql-param sku]"] + 0 || 0) * [sql-data orderline quantity];
 	return;
 [/calc]
-[sql-data orderline quantity] 
-<BR>[sql-filter upper]<B>[sql-data orderline status]</B>[/sql-filter]
+[sql-filter upper]<B>[sql-data orderline status]</B>[/sql-filter]
 <BR>&nbsp;
 </font></td>
 
@@ -253,6 +240,11 @@ Options: [sql-data orderline options]
 [sql-data orderline sku]
 </font></td>
 
+<td width=50 align=right bgcolor=__UI_C_INTBLOCK__>
+<font size=2>
+[sql-data orderline quantity]
+</font></td>
+
 <td width=70 align=right bgcolor=__UI_C_INTBLOCK__>
 <font size=2>
 [currency][sql-data orderline price][/currency]
@@ -274,7 +266,7 @@ Options: [sql-data orderline options]
 <!-- ----- Product total ----- -->
 
 <tr>
-<td colspan=5 align=right>
+<td colspan=6 align=right>
 <font size=2>Product Total:</font>
 </td>
 <td align=right bgcolor="__UI_C_INTBLOCKBAR__">
@@ -285,7 +277,7 @@ Options: [sql-data orderline options]
 <!-- ----- Tax total ----- -->
 
 <tr>
-<td colspan=5 align=right>
+<td colspan=6 align=right>
 <font size=2>Tax:</font>
 </td>
 <td align=right bgcolor="__UI_C_INTBLOCKBAR__">
@@ -296,7 +288,7 @@ Options: [sql-data orderline options]
 <!-- ----- Shipping total ----- -->
 
 <tr>
-<td colspan=5 align=right>
+<td colspan=6 align=right>
 <font size=2>Shipping: [loop-data transactions shipmode]</font>
 </td>
 <td align=right bgcolor="__UI_C_INTBLOCKBAR__">
@@ -308,7 +300,7 @@ Options: [sql-data orderline options]
 <!-- ----- Grand total ----- -->
 
 <tr>
-<td colspan=5 align=right>
+<td colspan=6 align=right>
 <font size=3><b>Grand total:</b></font>
 </td>
 <td align=right bgcolor="__UI_C_INTBLOCKBAR__">
@@ -321,7 +313,7 @@ Options: [sql-data orderline options]
 <tr></tr>
 
 <tr>
-<td colspan=5 align=right>
+<td colspan=6 align=right>
 <font size=2>Total weight:</font>
 </td>
 <td align=right bgcolor="__UI_C_INTBLOCKBAR__">
@@ -332,7 +324,7 @@ Options: [sql-data orderline options]
 <!-- ----- Volume total ----- -->
 
 <tr>
-<td colspan=5 align=right>
+<td colspan=6 align=right>
 <font size=2>Total volume:</font>
 </td>
 <td align=right bgcolor="__UI_C_INTBLOCKBAR__">
@@ -346,13 +338,13 @@ Options: [sql-data orderline options]
 </tr>
 
 <tr>
-<td colspan=6 align=left bgcolor=__UI_C_INTBLOCK__>
+<td colspan=7 align=left bgcolor=__UI_C_INTBLOCK__>
 <pre>[loop-data transactions comments]</pre>
 </td>
 </tr>
 
 <tr>
-<td colspan=6 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" height=1></td>
+<td colspan=7 bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" height=1></td>
 </tr>
 
 </table>
