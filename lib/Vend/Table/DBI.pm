@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.0.2.3 2001-11-02 13:26:57 mheins Exp $
+# $Id: DBI.pm,v 2.0.2.4 2001-12-05 15:36:37 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.0.2.3 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.4 $, 10);
 
 use strict;
 
@@ -987,7 +987,7 @@ sub set_slice {
 
 	my $val	= $s->[$CONFIG]->{AUTO_SEQUENCE}
 			?  $s->last_sequence_value()
-			: $tkey;
+			: $key;
 
 	return $val;
 }
