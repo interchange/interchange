@@ -136,12 +136,12 @@ return;
 	[if-item-modifier gift_cert]
 	GIFT CERT
 	<br>
-	[/if]
+	[/if-item-modifier]
 	
 <br>
 [seti count][data table=inventory column=quantity key='[item-code]'][/seti]
 [if scratch count eq 0]
-	<a href="http://demo.minivend.com/~construct/construct.cgi/stock-alert.html?mv_arg=[item-code]"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FF0000">Back Ordered</FONT>
+	<a href="[area stock-alert [item-code]]"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FF0000">Back Ordered</FONT>
 [else]
 	<font face="Verdana, Arial, Helvetica, sans-serif" size="1">Sizes:</font> <FONT SIZE=1>[item-accessories size][item-accessories color]</FONT>
 [/else]
@@ -193,7 +193,7 @@ return;
                       <tr> 
 					  <td>
                           <div align="center">
-						  <INPUT type="image" src="http://demo.minivend.com/~construct/images/navigation/recalculate_button.gif" BORDER=0>
+						  <INPUT type="image" src="navigation/recalculate_button.gif" BORDER=0>
                           </div>
 					  </td>
                         <td width="34%">
@@ -201,10 +201,10 @@ return;
                           <div align="center">
 						  
     [button
-	text="Continue_shopping"
-     	src="/~construct/images/navigation/continue_shopping.gif"
-	hidetext=1
-	form=basket
+	text="Continue shopping"
+     	src="navigation/continue_shopping.gif"
+		hidetext=1
+		form=basket
 	]
      [bounce href='[history-scan exclude="^/ord|^/multi/|^/process" default=browse]']
      mv_nextpage=nothing
@@ -218,8 +218,8 @@ return;
 						<td colspan="4" align="right">
 
     [button
-	text="Check_out"
-     	src="/~construct/images/navigation/checkout_button.gif"
+	text="Check out"
+     	src="navigation/checkout_button.gif"
 	hidetext=1
 	form=basket
 	]

@@ -1,37 +1,36 @@
 code	Variable	pref_group
-ADDRESS	__MVC_ADDRESS__	Company
+ADDRESS	123 Any St.	Company
 CATALOG_STATIC	No	Static pages
 CGI_URL	__MVC_CGIURL__	Directories and Paths
 CHECK_ACCEPTED	1	Payment
-CITY	__MVC_CITY__	Company
+CITY	Anytown, USA 45056	Company
 COD_ACCEPTED	0	Payment
-COMPANY	__MVC_COMPANY__	Company
+COMPANY	Construct Something	Company
 CREDIT_CARDS_ACCEPTED	visa mc discover amex	Payment
 DOCROOT	__MVC_DOCROOT__	Directories and Paths
 ENCRYPTOR	none	Payment
-FAX	__MVC_FAX__	Company
-IMAGE_DIR	__MVC_IMAGEDIR__	Directories and Paths
+FAX	513-555-5556	Company
+IMAGE_DIR	__MVC_IMAGEURL__	Directories and Paths
 LOGGED_STATIC	1	Static pages
 LOGO		Template
 MULTIORDER		Order
 MYSQL	1	Database
-ORDERS_TO	cbp@InternetExpertsLLC.com	Order
+ORDERS_TO	__MVC_MAILORDERTO__	Order
 PGSQL		Database
 PHONE	(555) 555-5555	Company
 PO_ACCEPTED	0	Payment
-SAMPLEHTML	/home/construct/www/construct	Directories and Paths
-SAMPLEURL	http://demo.minivend.com/construct	Directories and Paths
-SECURE_SERVER	http://demo.minivend.com/~construct	Directories and Paths
-SERVER_NAME	demo.minivend.com/~construct	Directories and Paths
+SAMPLEHTML	__MVC_SAMPLEHTML__	Directories and Paths
+SAMPLEURL	__MVC_SAMPLEURL__	Directories and Paths
+SECURE_SERVER	http://__MVC_SERVERNAME__	Directories and Paths
+SERVER_NAME	__MVC_SERVERNAME__	Directories and Paths
 SMLOGO		Template
 SOMESQL	1	Database
 SQLPASS		Database
 SQLUSER		Database
-TAXAREA	VA UT	Tax
+TAXAREA	OH	Tax
 TAXFIELD	state	Tax
-TAXRATE	VA=7.5, UT=7.25	Tax
+TAXRATE	OH=6.75	Tax
 TAXSHIPPING		Tax
-TEMPLATE	green1	Template
 TOLLFREE	(888) 555-5555	Company
 UI_BOTTOMIMG	poweredby.gif	Admin layout
 UI_C_ALINK	#000000	Admin colors
@@ -50,7 +49,7 @@ UI_META_LINK	1	Admin control
 UI_OVERALL_WIDTH	750	Admin layout
 UI_RIGHT_WIDTH	450	Admin layout
 UI_T_BG	beige	Admin colors
-UI_TRAFFIC_STATS	/home/construct/catalogs/construct/logs/usertrack	Directories and Paths
+UI_TRAFFIC_STATS	__MVC_CATROOT__/logs/usertrack	Directories and Paths
 UPS_COUNTRY_FIELD	country	Shipping
-UPS_ORIGIN	00000	Shipping
+UPS_ORIGIN	45056	Shipping
 UPS_POSTCODE_FIELD	zip	Shipping

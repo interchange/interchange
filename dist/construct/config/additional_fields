@@ -1,46 +1,6 @@
 COMPANY
 Your company name
-Barry's Books, Bikes, and Birkenstocks
-
-ADDRESS
-Your company address
-123 Any St.
-
-CITY
-Your company city/state/zip
-Anytown, USA 00000
-
-PHONE
-Your company phone
-(555) 555-5555
-
-FAX
-Your company fax number
-(555) 555-5556
-
-TOLLFREE
-Your company tollfree number (if any)
-(888) 555-5555
-
-MULTIORDER
-Set to 1 to enable multi-page order screens
-0	1
-
-TAXAREA
-Area(s) to tax in
-VA UT
-
-TAXRATE
-Percentage rate(s) for tax in different areas
-VA=7.5, UT=7.25
-
-UPSADDER
-Amount to add on to standard UPS costs
-3.00
-
-UPSORIGIN
-Origin zip code for UPS lookups
-00000	45056
+Construct Something
 
 SOMESQL
 Set to 1 if you want to use MySQL or Postgres
@@ -52,35 +12,35 @@ Set to 1 if you want to use MySQL
 
 {MYSQL}SQLDB
 Database to use (will be created)
-test_construct	minivend
+test___MVC_CATALOGNAME__	intchg
 
 {MYSQL}SQLDSN
 DBI DSN to use
-dbi:mysql:test_construct
+dbi:mysql:__MVC_SQLDB__
 
 {MYSQL}SQLUSER
 Username for MySQL (if any)
-	minivend
+	intchg
 
 {MYSQL}SQLPASS
 Password for MySQL (if any)
 	pass
 
-{SOMESQL and ! '1'}PGSQL
+{SOMESQL and ! '__MVC_MYSQL__'}PGSQL
 Set to 1 if you want to use PostGres
 1	0
 
 {PGSQL}SQLDB
 Database to use (will be created)
-test_construct	minivend
+test___MVC_CATALOGNAME__	interchange
 
 {PGSQL}SQLDSN
 DBI DSN to use
-dbi:Pg:dbname=test_construct
+dbi:Pg:dbname=__MVC_SQLDB__
 
 {PGSQL}SQLUSER
 Username for Postgres (if any)
-	minivend
+	__MVC_CATUSER__
 
 {PGSQL}SQLPASS
 Password for Postgres (if any)
@@ -88,4 +48,8 @@ Password for Postgres (if any)
 
 SUPERUSER
 Account name that will control this catalog
-construct	minivend
+__MVC_CATUSER__	intchg
+
+CRYPTPW
+Administrative password
+pass	nevairbe
