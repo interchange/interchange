@@ -3,7 +3,7 @@ ui_template: Yes
 ui_template_name: leftright
 [/comment]
 
-[tmp page_title]__COMPANY__ -- Search results[/tmp]
+[tmp page_title]__COMPANY__ -- [L]Search results[/L][/tmp]
 
 [control reset=1]
 
@@ -27,7 +27,7 @@ ui_template_name: leftright
 [component]random[/component]
 [size]2[/size]
 [cols]2[/cols]
-[banner]You might also like[/banner]
+[banner][L]You might also like[/L][/banner]
 [/control-set]
 
 [control-set]
@@ -104,7 +104,7 @@ ui_template_name: leftright
   </tr>
   <tr> 
     <td class="contentbar1" align="right"> 
-      <input type="submit" value="Buy it Now!">
+      <input type="submit" value="[L]Buy it Now![/L]">
     </td>
   </tr>
 </table>
@@ -117,9 +117,9 @@ ui_template_name: leftright
 [no-match]
 <BR><BR>
 <BLOCKQUOTE>
-Sorry, no matches for <B>[value-extended name=mv_searchspec joiner=" | "]</B>.
+[L]Sorry, no matches for[/L] <B>[value-extended name=mv_searchspec joiner=" | "]</B>.
 [if value mv_search_error]
-<P><B>Errors:
+<P><B>[L]Errors[/L]:
 <BR> [value-extended name=mv_search_error joiner="<BR>"]
 </B>
 [/if]
@@ -128,7 +128,7 @@ Sorry, no matches for <B>[value-extended name=mv_searchspec joiner=" | "]</B>.
 <BR CLEAR=LEFT>
 [more-list]
 <BLOCKQUOTE>
-Matches [matches] of [match-count] found.
+[msg arg.0="[matches]" arg.1="[match-count]"]Matches %s of %s found.[/msg]
 <BR>[more]<BR>
 </BLOCKQUOTE>
 [/more-list]

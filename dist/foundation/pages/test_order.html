@@ -3,7 +3,7 @@ ui_template: Yes
 ui_template_name: noleft
 [/comment]
 
-[tmp page_title]__COMPANY__ -- Place one-click test order[/tmp]
+[tmp page_title]__COMPANY__ -- [L]Place one-click test order[/L][/tmp]
 
 @_NOLEFT_TOP_@
 
@@ -30,7 +30,7 @@ ui_template_name: noleft
 	[/loop-calc][/loop]
     [/tmp]
 
-    Will one-click order these random items:
+    [L]Will one-click order these random items[/L]:
     <xmp>[scratch itemstuff]</xmp>
 
 	[page
@@ -47,7 +47,7 @@ ui_template_name: noleft
 		    mv_credit_card_exp_month=%m
 		[/time]
 		    [scratch itemstuff]
-	    |]Order this</A>
+	    |][L]Order this[/L]</A>
 </div>
 
 <!-- END CONTENT -->
