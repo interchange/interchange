@@ -11,13 +11,10 @@ address1=required
 city=required
 country=required
 [if value country =~ /^(US|CA)$/i]
-	state=state_province "[value state]" is not a valid US/Canada state or province.
-	zip=postcode "[value zip]" is not a valid US/Canada postal code.
-	&or phone_night=phone, phone_day=phone Must have day or evening phone number
-[else]
-	&or phone_night=phone, phone_day=phone Must have day or evening phone number
-[/else]
+	state=state_province
+	zip=postcode
 [/if]
+&or phone_night=phone, phone_day=phone Must have day or evening phone number
 
 &fatal = yes
 email=required
@@ -85,13 +82,10 @@ address1=required
 city=required
 country=required
 [if value country =~ /^(US|CA)$/i]
-	state=state_province "[value state]" is not a valid US/Canada state or province.
-	zip=postcode "[value zip]" is not a valid US/Canada postal code.
-	&or phone_day=phone, phone_night=phone Must have day or evening phone number
-[else]
-	&or phone_day=phone, phone_night=phone Must have day or evening phone number
-[/else]
+	state=state_province
+	zip=postcode
 [/if]
+&or phone_day=phone, phone_night=phone Must have day or evening phone number
 email=required
 
 &fatal = yes
@@ -108,13 +102,10 @@ address1=required
 city=required
 country=required
 [if value country =~ /^(US|CA)$/i]
-	state=state_province "[value state]" is not a valid US/Canada state or province.
-	zip=postcode "[value zip]" is not a valid US/Canada postal code.
-	&or phone_day=phone, phone_night=phone Must have day or evening phone number
-[else]
-	&or phone_day=phone, phone_night=phone Must have day or evening phone number
-[/else]
+	state=state_province
+	zip=postcode
 [/if]
+&or phone_day=phone, phone_night=phone Must have day or evening phone number
 email=required
 &fatal = yes
 email=email
