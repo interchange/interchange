@@ -1,6 +1,6 @@
 # Vend/Scan.pm:  Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 1.7.2.4 2001-03-21 16:55:39 heins Exp $
+# $Id: Scan.pm,v 1.7.2.5 2001-04-19 21:31:40 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -29,7 +29,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 1.7.2.4 $, 10);
+$VERSION = substr(q$Revision: 1.7.2.5 $, 10);
 
 use strict;
 use Vend::Util;
@@ -692,7 +692,7 @@ sub sql_statement {
 #::logDebug("where col=$col spec=$spec");
 				$spec = $ref->{$spec->name()}		if ref $spec;
 
-				last OP unless $spec;
+				last OP unless defined $spec;
 
 				# Column name is a variable if a string
 				$col = $where->arg1();
