@@ -341,23 +341,18 @@ HREF="[area
 
 	my $line = shift;
 	my $piece = <<EOF;
- 	if(this_form.$parm\[this_form.$parm.selectedIndex].text != '--choose--') {
+ 	if(this_form.$parm\[this_form.$parm.selectedIndex].value != '') {
 		other_form.description.value =
 							other_form.description.value
 							+ joiner
 							+ this_form.$parm\[this_form.$parm.selectedIndex].text;
 		joiner = ', ';
 	}
- 	if(this_form.$parm\[this_form.$parm.selectedIndex].value == '') {
-		this_form.$parm\[this_form.$parm.selectedIndex].value = '__MV_VARIANT_JOINER__';
-	}
- 	if(this_form.$parm\[this_form.$parm.selectedIndex].value == '') {
-		this_form.$parm\[this_form.$parm.selectedIndex].value = '0';
-	}
+
 	other_form.code.value =
 			other_form.code.value
 			+ '-'
-			+ this_form.$parm\[this_form.$parm.selectedIndex].value;
+			+ (this_form.$parm\[this_form.$parm.selectedIndex].value || '__MV_VARIANT_JOINER__' || '0');
 	_NEXT_DESC_
 EOF
 	$Scratch->{built_js} =~ s/_NEXT_DESC_/$piece/;
