@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.0
 #
-# $Id: interchange.PL,v 1.15.2.2 2000-11-30 03:09:21 heins Exp $
+# $Id: interchange.PL,v 1.15.2.3 2000-12-02 20:37:29 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -389,7 +389,7 @@ sub update_quantity {
 	}
 
 	foreach $i (0 .. $#$cart) {
-::logDebug("updating line $i quantity: " . ::uneval($cart->[$i]));
+#::logDebug("updating line $i quantity: " . ::uneval($cart->[$i]));
 		my $line = $cart->[$i];
     	$quantity = $CGI::values{"quantity$i"};
     	if (! defined $quantity) {
@@ -429,7 +429,7 @@ sub update_quantity {
 			$line->{mv_ib} 	= ::product_code_exists_tag($sku);
 		}
     }
-::logDebug("after update, cart is: " . ::uneval($cart));
+#::logDebug("after update, cart is: " . ::uneval($cart));
 
 	# If the user has put in "0" for any quantity, delete that item
     # from the order list. Handles sub-items.
@@ -446,7 +446,7 @@ sub set_db {
 	return ($base, $thing) unless $thing =~ /^(\w+):+(.*)/;
 	my $t = $1;
 	my $c = $2;
-	$Vend::WriteDatabase = 1 if $::Scratch->{mv_data_enable} =~ /\b$t\b/;
+	$Vend::WriteDatabase = 1 if $::Scratch->{mv_data_enable} =~ / $t[: ]/;
 	my $db = ::database_exists_ref($t);
 	return undef unless $db;
 	return ($db->ref(), $c);
@@ -490,9 +490,35 @@ sub update_data {
 	my $decode		= is_yes($CGI::values{mv_data_decode});
 	my ($ref, $db, $database);
 
-	$ref = $Vend::Cfg->{Database}->{$table} || '';
+	my $en_col;
+#::logDebug("data_enable=$::Scratch->{mv_data_enable}, checking");
+	if($::Scratch->{mv_data_enable} =~ /^(\w+):(.*?):/) {
+		# check for single key and possible set of columns
+		my $en_table = $1;
+		$en_col   = $2;
+		my $en_key   = $::Scratch->{mv_data_enable_key};
+#::logDebug("en_table=$en_table en_col=$en_col, en_key=$en_key, checking");
+		if(  $en_table ne $table
+			 or 
+			 ($en_key and $CGI::values{$prikey} ne $en_key)
+			)
+		{
+			logError("Attempted database operation without permission:\n" .
+						 "Permission: '%s' (key='$en_key')\n" .
+						 "Table: '%s'\n" .
+						 "Fields:'%s'\n" .
+						 "Key:   '%s'\n",
+						 $::Scratch->{mv_data_enable},
+						 $CGI::values{mv_data_table},
+						 $CGI::values{mv_data_fields},
+						 $CGI::values{mv_data_key},
+				 );
+			return undef;
+		}
+	}
 
-	if (! $ref) {
+
+	if (! $Vend::Cfg->{Database}{$table}) {
 		logError("set: non-existent table %s", $table);
 		return undef;
 	}
@@ -505,6 +531,28 @@ sub update_data {
 	my @fields		= grep $_ && $_ ne $prikey,
 						split /[\s\0,]+/, $CGI::values{mv_data_fields};
 	unshift(@fields, $prikey);
+	if($en_col) {
+		$en_col =~ s/^\s+//;
+		$en_col =~ s/\s+$//;
+		my %col_present;
+		@col_present{ split /[\s\0,]+/, $en_col } = ();
+		for(@fields, $CGI::values{mv_blob_field}, $CGI::values{mv_blob_pointer}) {
+			next unless $_;
+			next if exists $col_present{$_};
+			next if /:/ and $::Scratch->{mv_data_enable} =~ / $_ /;
+			logError("Attempted database operation without permission:\n" .
+						 "Permission: '%s'\n" .
+						 "Table: '%s'\n" .
+						 "Fields:'%s'\n" .
+						 "Key:   '%s'\n",
+						 $::Scratch->{mv_data_enable},
+						 $CGI::values{mv_data_table},
+						 $CGI::values{mv_data_fields},
+						 $CGI::values{mv_data_key},
+				 );
+			return undef;
+		}
+	}
 	$function = 'update' unless $function;
 
 	my (%data);
@@ -551,6 +599,33 @@ sub update_data {
 	my (@c);
 	my (@rows_set);
 
+	my $safe;
+	my $blob_field;
+	my $blob_nick;
+	my $blob_ptr;
+	if($CGI::values{mv_blob_field} and $CGI::values{mv_blob_nick}) {
+#::logDebug("update_data: blob processing enabled");
+		$blob_field = $CGI::values{mv_blob_field};
+		$blob_nick  = $CGI::values{mv_blob_nick};
+		$blob_ptr   = $CGI::values{mv_blob_pointer};
+		if( ! $base_db->column_exists($blob_field) ) {
+			undef $blob_field;
+			undef $blob_nick;
+			logError("No blob field '%s' found for table='%s', skipping blob save.",
+						$CGI::values{mv_blob_field}, $CGI::values{mv_data_table},
+						);
+		}
+		elsif ($MVSAFE::Safe) {
+			$safe = $Vend::Interpolate::ready_safe;
+		}
+		else {
+			$safe = new Safe;
+		}
+		$base_db->column_exists($blob_ptr)
+			or undef $blob_ptr;
+#::logDebug("update_data: blob safe object=$safe");
+	}
+
 #::logDebug("update_data:db=$db key=$prikey VALUES=" . ::uneval(\%CGI::values));
 	my $select_key;
 	for($i = 0; $i < @{$data{$prikey}}; $i++) {
@@ -582,12 +657,34 @@ sub update_data {
 				$key = $base_db->set_row($key);
 			}
 			push(@rows_set, $key);
+			my $blob;
+			my $brec;
+			if($blob_field) {
+				my $string = $base_db->field($key, $blob_field);
+#::logDebug("update_data: blob string=$string");
+				$blob = $safe->reval($string);
+#::logDebug("update_data: blob object=$blob");
+				$blob = {} if ! $blob;
+				$blob->{$blob_nick} = {}
+					if ! $blob->{$blob_nick};
+				$brec = $blob->{$blob_nick};
+			}
 			while($field = shift @k) {
 				$value = shift @v;
 				next if $field eq $prikey;
 				my ($d, $f) = set_db($base_db, $field);
-::logDebug("update_data:db=$d key=$key field=$f value=$value");
-				$d->set_field($key, $f, $value);
+				$d->set_field($key, $f, $value)
+					unless $CGI::values{mv_blob_only};
+#::logDebug("update_data:db=$d key=$key field=$f value=$value");
+				$brec->{$f} = $value if $brec;
+			}
+			if($blob) {
+				my $string =  ::uneval_it($blob);
+#::logDebug("update_data: blob saving string=$string");
+				$base_db->set_field($key, $blob_field, $string);
+				if($blob_ptr) {
+					$base_db->set_field($key, $blob_ptr, $blob_nick);
+				}
 			}
 		}
 	}
@@ -595,7 +692,7 @@ sub update_data {
 	if($CGI::values{mv_data_return_key}) {
 		my @keys = split /\0/, $CGI::values{mv_data_return_key};
 		for(@keys) {
-::logDebug("return_key, setting $_");
+#::logDebug("return_key, setting $_");
 			$CGI::values{$_} = join("\0", @rows_set);
 		}
 	}
@@ -977,6 +1074,13 @@ $form_action{go} = $form_action{return};
 
 sub do_process {
 
+	if($CGI::values{mv_form_profile}) {
+#::logDebug("checking form profile $CGI::values{mv_form_profile} = $::Scratch->{$CGI::values{mv_form_profile}}");
+		my ($status) = check_order($CGI::values{mv_form_profile});
+#::logDebug("checked form profile=" . (defined $status ? $status : 'undef') );
+		return 1 if defined $status and ! $status;
+	}
+
 	do_click();
 
     my $todo = $CGI::values{mv_todo};
@@ -987,7 +1091,10 @@ sub do_process {
 				my $x = $CGI::values{'mv_todo.x'};
 				my $y = $CGI::values{'mv_todo.y'};
 				my $map = $CGI::values{'mv_todo.map'};
-				$todo = Vend::Imagemap::action_map($x,$y,$map);
+				# Called with action_map and not package id
+				# since "autouse" is possibly in force...found
+				# by Jeff Carnahan
+				$todo = action_map($x,$y,$map);
 		}
 		elsif (defined $CGI::values{'mv_todo.submit.x'}) {
 			$todo = 'submit';
@@ -1734,7 +1841,12 @@ EOF
 	{
 		if(ref $macro) {
 			for (@$macro) {
-				interpolate_html($_);
+				if(/^\w+-\w+$/) {
+					Vend::Interpolate::tag_profile($_);
+				}
+				else {
+					interpolate_html($_);
+				}
 			}
 		}
 		else {
