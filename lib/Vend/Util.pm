@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.13 2000-11-11 20:45:12 heins Exp $
+# $Id: Util.pm,v 1.14 2000-11-12 20:52:25 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -77,7 +77,7 @@ use Config;
 use Fcntl;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.13 $, 10);
+$VERSION = substr(q$Revision: 1.14 $, 10);
 
 BEGIN {
 	eval {
@@ -1016,6 +1016,47 @@ sub flock_unlock {
     flock($fh, $flock_LOCK_UN) or die "Could not unlock file: $!\n";
 }
 
+sub fcntl_lock {
+    my ($fh, $excl, $wait) = @_;
+    my $flag = $excl ? F_WRLCK : F_RDLCK;
+    my $op = $wait ? F_SETLKW : F_SETLK;
+
+	my $struct = pack('sslli', $flag, 0, 0, 0, $$);
+
+    if ($wait) {
+        fcntl($fh, $op, $struct) or die "Could not fcntl_lock file: $!\n";
+        return 1;
+    }
+    else {
+        if (fcntl($fh, $op, $struct) < 0) {
+            if ($! =~ m/^Try again/
+                or $! =~ m/^Resource temporarily unavailable/
+                or $! =~ m/^Operation would block/) {
+                return 0;
+            }
+            else {
+                die "Could not lock file: $!\n";
+            }
+        }
+        return 1;
+    }
+}
+
+sub fcntl_unlock {
+    my ($fh) = @_;
+	my $struct = pack('sslli', F_UNLCK, 0, 0, 0, $$);
+	if (fcntl($fh, F_SETLK, $struct) < 0) {
+		if ($! =~ m/^Try again/
+                or $! =~ m/^Resource temporarily unavailable/
+                or $! =~ m/^Operation would block/) {
+			return 0;
+		}
+		else {
+			die "Could not un-fcntl_lock file: $!\n";
+		}
+	}
+	return 1;
+}
 
 ### Select based on os, vestigial
 
