@@ -19,6 +19,9 @@ Core
   as a Perl alphanumeric range q99, r00, r01, r02, etc. instead of
   q99, q100, q101.
 
+* Remove wrong default for DatabaseDefault, could cause error when a
+  DatabaseDefault value had not been previously set.
+
 Menu
 ----
 
@@ -92,6 +95,9 @@ Foundation
 * Support for SQLite added.
 
 * Make metadata correspond to current UI version.
+
+* Fix orderline import deficiency in etc/log_entry found by Karen Gold
+  (KarenG@LOADUP.com). 
 
 Debian
 ------
