@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.9.0
 #
-# $Id: interchange.PL,v 2.10 2001-10-06 07:03:37 mheins Exp $
+# $Id: interchange.PL,v 2.11 2001-10-18 05:39:36 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -971,6 +971,7 @@ sub update_data {
 	}
 	return;
 }
+
 # Parse the mv_click and mv_check special variables
 sub parse_click {
 	my ($ref, $click, $extra) = @_;
@@ -1064,13 +1065,43 @@ sub update_values {
 		) = encrypt_standard_cc(\%CGI::values);
 	}	
 
-	my ($key, $value);
-    while (($key, $value) = each %CGI::values) {
+	my $restrict;
+	if($restrict = $Vend::Session->{restrict_html} and ! ref $restrict) {
+		$restrict = [ map { lc $_ } split /\s+/, $restrict ];
+		$Vend::Session->{restrict_html} = $restrict;
+	}
+
+    while (my ($key, $value) = each %CGI::values) {
+		# values explicly ignored in configuration
         next if defined $Ignore{$key};
-        next if defined $Vend::Cfg->{FormIgnore}->{$key};
-        next if ($key =~ m/^quantity\d+$/);
+        next if defined $Vend::Cfg->{FormIgnore}{$key};
+
+#LEGACY
 		# We add any checkbox ordered items, but don't update -- 
 		# we don't want to order them twice
+        next if ($key =~ m/^quantity\d+$/);
+#END LEGACY
+
+		# Admins should know what they are doing
+		if($Vend::admin) {
+			$::Values->{$key} = $value;
+			next;
+		}
+		elsif ($restrict and $value =~ /</) {
+			# Allow designer to allow only certain HTML tags from trusted users
+			# Will go away when current session ends...
+			# [ script start character handled in [value ...] ITL tag
+			$value = Vend::Interpolate::filter_value(
+						'restrict_html',
+						$value,
+						$key,
+						@$restrict,
+					);
+			next;
+		}
+		$value =~ tr/<[//d;
+		$value =~ s/&lt;//ig;
+		$value =~ s/&#91;//g;
         $::Values->{$key} = $value;
     }
 }
