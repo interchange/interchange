@@ -104,6 +104,25 @@ knows the sku and can do products database lookups based on it.
 
 Defaults to scratch mv_imagesubdir if set.
 
+=item makesize
+
+If ImageMagick is installed, you can display an arbitrary size of
+the image, creating it if necessary.
+
+This will create a subdirectory corresponding to the size, (i.e. 64x48)
+and copy the source image to it. It will then use the ImageMagick C<mogrify>
+command to resize.
+
+This requires a writable image directory, of course.
+
+Looks for the c<mogrify> command in the path (with /usr/X11R6/bin added).
+If it will not be found there, or to improve performance slightly, you
+can set in interchange.cfg:
+
+	Variable IMAGE_MOGRIFY  /path/to/mogrify
+
+Sets umask to 2 temporarily when creating directories or files.
+
 =item secure
 
 This attribute forces using either secure or insecure image directories,
@@ -209,7 +228,7 @@ sub {
 	}
 
 	if ($src =~ /$absurlre/) {
-		# we have no way to check validity of full URLs,
+		# we have no way to check validity or create/read sizes of full URLs,
 		# so we just assume they're good
 		$image = $src;
 	} else {
@@ -277,6 +296,65 @@ sub {
 
 		return unless $image;
 		return 1 if $opt->{exists_only};
+
+		my $mask;
+
+		if($opt->{makesize} and $path) {
+			my $dir = $path;
+			$dir =~ s:/([^/]+$)::;
+			my $fn = $1;
+			my $siz = $opt->{makesize};
+			MOGIT: {
+				$siz =~ s/\W+//g;
+				$siz =~ m{^\d+x\d+$}
+					or do {
+						logError("%s: Unable to make image with bad size '%s'", 'image tag', $siz);
+						last MOGIT;
+					};
+
+				$dir .= "/$siz";
+				
+				my $newpath = "$dir/$fn";
+				if(-f $newpath) {
+					$image =~ s:(/?)([^/]+$):$1$siz/$2:;
+					$path = $newpath;
+					last MOGIT;
+				}
+
+				$mask = umask(2);
+
+				unless(-d $dir) {
+					File::Path::mkpath($dir);
+				}
+
+				File::Copy::copy($path, $newpath)
+					or do {
+						logError("%s: Unable to create image '%s'", 'image tag', $newpath);
+						last MOGIT;
+					};
+				my $exec = $Global::Variable->{IMAGE_MOGRIFY};
+				if(! $exec) {
+					my @dirs = split /:/, "/usr/X11R6/bin:$ENV{PATH}";
+					for(@dirs) {
+						next unless -x "$_/mogrify";
+						 $exec = "$_/mogrify";
+						 $Global::Variable->{IMAGE_MOGRIFY} = $exec;
+						last;
+					}
+				}
+				last MOGIT unless $exec;
+				system "$exec -geometry $siz $newpath";
+				if($?) {
+					logError("%s: Unable to mogrify image '%s'", 'image tag', $newpath);
+					last MOGIT;
+				}
+
+				$image =~ s:(/?)([^/]+$):$1$siz/$2:;
+				$path = $newpath;
+			}
+		}
+
+		umask($mask) if defined $mask;
 
 		if ($opt->{getsize} and $path) {
 			eval {
