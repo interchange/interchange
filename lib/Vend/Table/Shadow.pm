@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.34 2003-04-17 16:19:12 racke Exp $
+# $Id: Shadow.pm,v 1.35 2003-04-22 08:07:36 racke Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.34 $, 10);
+$VERSION = substr(q$Revision: 1.35 $, 10);
 
 # TODO
 #
@@ -316,15 +316,26 @@ sub query {
 				die "key not in query, cannot handle";
 			}
 			# replace shadowed fields
-			my ($pos, $name, $row, $map_entry);
-			my $result = $s->[$OBJ]->query($opt, $text, @arg);
+			my ($pos, $name, $row, $map_entry, $list, @qa, $result);
+			if ($list = $opt->{list}) {
+				$opt->{list} = 0;
+				@qa = $s->[$OBJ]->query($opt, $text, @arg);
+				$result = $qa[0];
+			} else {
+				$result = $s->[$OBJ]->query($opt, $text, @arg);
+			}
 			for $row (@$result) {
 				for $pos (@map_matches) {
 					($name, $map_entry) = @{$map_entries[$pos]};
 					$row->[$pos] = $s->_map_column($row->[$keypos], $name, 1, $row->[$pos], $map_entry);
 				}
 			}
-			return $result;
+			if ($list) {
+				$opt->{list} = 1;
+				return Vend::Interpolate::tag_sql_list($text, $result, $qa[1], $opt, $qa[2]);
+			} else {
+				return $result;
+			}
 		}
 	}
 }
