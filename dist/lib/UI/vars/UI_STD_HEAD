@@ -102,6 +102,7 @@ function MM_swapImage() { //v3.0
 </script>
 <STYLE TYPE="text/css">
 <!--
+body { font-family: Verdana, Arial, Helvetica, sans-serif }
 .margin { margin-top: 0px; margin-left: 0px}
 a:link { text-decoration: none; font-weight: normal; color: __UI_C_LINK__ }
 a:hover { text-decoration: underline; font-weight: normal; color: __UI_C_LINK__ }
