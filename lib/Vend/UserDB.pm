@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.19 2003-07-03 16:03:03 mheins Exp $
+# $Id: UserDB.pm,v 2.20 2003-07-07 00:31:18 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.19 $, 10);
+$VERSION = substr(q$Revision: 2.20 $, 10);
 
 use vars qw!
 	$VERSION
@@ -402,7 +402,7 @@ sub create_db {
 
 sub log {
 	my $self = shift;
-	my $time = $self->{OPTIONS}{UNIX_TIME} ?  time() :
+	my $time = $self->{OPTIONS}{unix_time} ?  time() :
 				POSIX::strftime("%Y%m%d%H%M", localtime());
 	my $msg = shift;
 	logData( ($self->{OPTIONS}{logfile} || $Vend::Cfg->{LogFile}),
