@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.9.1
 #
-# $Id: interchange.PL,v 2.34 2002-06-17 22:24:12 jon Exp $
+# $Id: interchange.PL,v 2.35 2002-06-25 03:20:49 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -312,8 +312,6 @@ use Vend::Track;
 # END TRACK
 
 use Vend::Scan;
-use Vend::TextSearch;
-use Vend::DbSearch;
 use Vend::Data;
 use Vend::UserDB;
 use Vend::Interpolate;
@@ -1033,7 +1031,7 @@ sub parse_click {
 # This is the set of CGI-passed variables to ignore, in other words
 # never set in the user session.  If set in the mv_check pass, though,
 # they will stick.
-my %Ignore = qw(
+%Global::Ignore = qw(
 	mv_todo  1
 	mv_todo.submit.x  1
 	mv_todo.submit.y  1
@@ -1057,21 +1055,32 @@ my %Ignore = qw(
 
 sub update_values {
 
-	if( $Vend::Cfg->{CreditCardAuto} and $CGI::values{mv_credit_card_number} ) {
-		(
-			@{$::Values}{
-				qw/
-						mv_credit_card_valid
-						mv_credit_card_info
-						mv_credit_card_exp_month
-						mv_credit_card_exp_year
-						mv_credit_card_exp_all
-						mv_credit_card_type
-						mv_credit_card_reference
-						mv_credit_card_error
-				/ }
-		) = encrypt_standard_cc(\%CGI::values);
-	}	
+	my (@keys) = @_;
+
+	my $set;
+	if(@keys) {
+		$set = {};
+		@{$set}{@keys} = @CGI::values{@keys};
+	}
+	else {
+		$set = \%CGI::values;
+
+		if( $Vend::Cfg->{CreditCardAuto} and $CGI::values{mv_credit_card_number} ) {
+			(
+				@{$::Values}{
+					qw/
+							mv_credit_card_valid
+							mv_credit_card_info
+							mv_credit_card_exp_month
+							mv_credit_card_exp_year
+							mv_credit_card_exp_all
+							mv_credit_card_type
+							mv_credit_card_reference
+							mv_credit_card_error
+					/ }
+			) = encrypt_standard_cc(\%CGI::values);
+		}	
+	}
 
 	my $restrict;
 	if($restrict = $Vend::Session->{restrict_html} and ! ref $restrict) {
@@ -1079,9 +1088,9 @@ sub update_values {
 		$Vend::Session->{restrict_html} = $restrict;
 	}
 
-    while (my ($key, $value) = each %CGI::values) {
+    while (my ($key, $value) = each %$set) {
 		# values explicly ignored in configuration
-        next if defined $Ignore{$key};
+        next if defined $Global::Ignore{$key};
         next if defined $Vend::Cfg->{FormIgnore}{$key};
 
 #LEGACY
