@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.0.2.2 2001-10-18 11:31:40 racke Exp $
+# $Id: Data.pm,v 2.0.2.3 2001-10-25 23:26:06 jon Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -1197,9 +1197,11 @@ sub export_database {
 	elsif($record_delim eq "\n") {
 		print EXPORT join $delim, @cols;
 		print EXPORT $record_delim;
+		my $detab = ($delim eq "\t") ? 1 : 0;
 		if(defined $nuke) {
 			while( (undef, @data) = $db->each_record() ) {
-				splice(@data, $nuke, 1) if defined $nuke;
+				splice(@data, $nuke, 1);
+				if ($detab) { s/\t/ /g for @data; }
 				$tempdata = join $delim, @data;
 				$tempdata =~ s/\r?\n/\r/g;
 				print EXPORT $tempdata, $record_delim;
@@ -1207,6 +1209,7 @@ sub export_database {
 		}
 		else {
 			while( (undef, @data) = $db->each_record() ) {
+				if ($detab) { s/\t/ /g for @data; }
 				$tempdata = join $delim, @data;
 				$tempdata =~ s/\r?\n/\r/g;
 				print EXPORT $tempdata, $record_delim;
@@ -1216,8 +1219,10 @@ sub export_database {
 	else {
 		print EXPORT join $delim, @cols;
 		print EXPORT $record_delim;
+		my $detab = ($delim eq "\t" or $record_delim eq "\t") ? 1 : 0;
 		while( (undef, @data) = $db->each_record() ) {
 			splice(@data, $nuke, 1) if defined $nuke;
+			if ($detab) { s/\t/ /g for @data; }
 			print EXPORT join($delim, @data);
 			print EXPORT $record_delim;
 		}
