@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.13.6.6 2000-12-17 07:30:05 heins Exp $
+# $Id: UserDB.pm,v 1.13.6.7 2001-02-22 19:55:34 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.13.6.6 $, 10);
+$VERSION = substr(q$Revision: 1.13.6.7 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -1093,7 +1093,7 @@ sub new_account {
 		my $pw = $self->{PASSWORD};
 		if($self->{CRYPT}) {
 			eval {
-				$self->{PASSWORD} = crypt(
+				$pw = crypt(
 										$pw,
 										Vend::Util::random_string(2)
 									);
@@ -1117,7 +1117,7 @@ sub new_account {
 		my $pass = $self->{DB}->set_field(
 						$self->{USERNAME},
 						$self->{LOCATION}{PASSWORD},
-						$self->{PASSWORD}
+						$pw
 						);
 		die ::errmsg("Database access error.") . "\n" unless defined $pass;
 
