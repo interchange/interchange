@@ -1,6 +1,6 @@
-# Vend::Menu - Interchange payment processing routines
+# Vend::Menu - Interchange menu processing routines
 #
-# $Id: Menu.pm,v 2.20 2002-12-08 06:12:59 mheins Exp $
+# $Id: Menu.pm,v 2.21 2003-01-14 00:24:27 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.20 $, 10);
+$VERSION = substr(q$Revision: 2.21 $, 10);
 
 use Vend::Util;
 use strict;
@@ -342,6 +342,20 @@ my %transform = (
 		return 1;
 	},
 );
+
+sub extra_value {
+	my ($extra, $row) = @_;
+	if(ref($extra) ne 'HASH') {
+		my ($k, $v) = split /=/, $extra, 2;
+		$extra = { $k => $v };
+	}
+
+	for(keys %$extra) {
+		$row->{$_} = $extra->{$_}
+			if length($extra->{$_});
+	}
+	return;
+}
 
 sub reset_transforms {
 #::logDebug("resetting transforms");
@@ -817,6 +831,8 @@ EOF
 
 	for my $row (@$rows) {
 		next if $_->{deleted};
+		extra_value($opt->{extra_value}, $row)
+			if $opt->{extra_value};
 		push @out, Vend::Tags->uc_attr_list($row, $template);
 	}
 
@@ -1159,6 +1175,8 @@ sub tree_link {
 	else {
 		$row->{toggle_anchor} =	$opt->{toggle_anchor_clear};
 	}
+	extra_value($opt->{extra_value}, $row)
+			if $opt->{extra_value};
 	return Vend::Tags->uc_attr_list($row, $template);
 }
 
@@ -1312,6 +1330,8 @@ EOF
 		}
 		$row->{href} = Vend::Tags->area( { href => $row->{page}, form => $row->{form} });
 	}
+	extra_value($opt->{extra_value}, $row)
+			if $opt->{extra_value};
 	return Vend::Tags->uc_attr_list($row, $template);
 }
 
