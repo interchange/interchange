@@ -264,6 +264,7 @@ There was an error adding the items to the orderline table: $ERROR$
 
 [goto if="[scratch mv_route_failed]"]
 
+[if variable TRANSACTION_ACCOUNTING_SYSTEM]
 [try]
 Realtime: [scratch realtime]
 Add to SQL-Ledger: [accounting function=create_order_entry do_invoice="[scratch do_invoice]" do_payment="[scratch do_payment]"]
@@ -277,6 +278,7 @@ There was an error transferring accounting information: $ERROR$
 [/catch]
 
 [goto if="[scratch mv_route_failed]"]
+[/if]
 
 [try]
 [tmpn tmp_user_save]FAILED[/tmpn]
