@@ -299,8 +299,6 @@ UserTags
   as $0.00 on the checkout page, but still getting added into the total cost
   and displaying in the shipping rate pulldown select box just fine.)
 
-* [formel] -- cause option added (from stable branch)
-
 * interchange.cfg: Remove now-redundant include of usertag/*.tag.
 
 * [db-columns] -- Add ability to get back an array instead of a joined string
@@ -309,6 +307,10 @@ UserTags
 * [email] -- Add enhancement made by Jurgen Botz to use send_mail program
   so that Net::SMTP can send the email tag. Thanks Jurgen!
 
+* [history_scan] -- Count option added, which guarantees that the
+  returned link is at least count # of clicks back in the page history.
+
+* [image] -- descriptionsfields and exists_only options added.
 
 Build
 -----
