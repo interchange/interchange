@@ -3,12 +3,12 @@
 #
 # Interchange database builder and indexer
 #
-# $Id: offline.PL,v 2.2 2002-06-27 18:55:50 jon Exp $
+# $Id: offline.PL,v 2.3 2002-06-27 22:24:11 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program was originally based on Vend 0.2 and 0.3
-# Copyright 1995-96 by Andrew M. Wilcox <awilcox@world.std.com>
+# Copyright 1995-96 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -247,7 +247,7 @@ offline -- Interchange offline database builder
 
 =head1 VERSION
 
-# $Id: offline.PL,v 2.2 2002-06-27 18:55:50 jon Exp $
+# $Id: offline.PL,v 2.3 2002-06-27 22:24:11 jon Exp $
 
 =head1 DESCRIPTION
 

@@ -1,11 +1,11 @@
 # Vend::Table::DB_File - Access an Interchange table stored in a DB file hash
 #
-# $Id: DB_File.pm,v 2.2 2002-06-17 22:24:12 jon Exp $
+# $Id: DB_File.pm,v 2.3 2002-06-27 22:24:10 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program was originally based on Vend 0.2 and 0.3
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
+# Copyright 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ use vars qw($VERSION @ISA);
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 
 sub create {
 	my ($class, $config, $columns, $filename) = @_;

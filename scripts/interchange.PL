@@ -3,12 +3,12 @@
 #
 # Interchange version 4.9.1
 #
-# $Id: interchange.PL,v 2.37 2002-06-27 18:55:50 jon Exp $
+# $Id: interchange.PL,v 2.38 2002-06-27 22:24:11 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
 # This program was originally based on Vend 0.2 and 0.3
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
+# Copyright 1995 by Andrew M. Wilcox <amw@wilcoxsolutions.com>
 #
 # See the files 'README' and 'WHATSNEW' for information.
 #
