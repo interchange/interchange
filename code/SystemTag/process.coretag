@@ -7,7 +7,8 @@ sub {
 
 	$secure = defined $secure ? $secure : $CGI::secure;
 
-	my $url = $secure ? secure_vendUrl('process') : vendUrl('process');
+	my $page = $opt->{href} || 'process';
+	my $url = $secure ? secure_vendUrl($page) : vendUrl($page);
 	return $url unless $target;
 	return qq{$url" TARGET="$target};
 }
