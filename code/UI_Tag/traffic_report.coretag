@@ -119,6 +119,7 @@ EOF
     my $min_interval = 9999999;
     my $out = '';
     my $visits;
+    my $visit_number;
     my %action_by_aff;
     my %action_by_day;
     my %action_by_period;
@@ -192,7 +193,6 @@ EOF
 		}
 		$last_access{$line->[1]} = $line->[4];
 
-		my $visit_number;
 		if($update_visit) {
 			$visits++;
 			$visit_number = "$line->[1]:" . $visit_by_session{$line->[1]}++;
