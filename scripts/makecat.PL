@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 1.32.4.7 2001-02-26 01:17:26 heins Exp $
+# $Id: makecat.PL,v 1.32.4.8 2001-03-23 12:17:20 jon Exp $
 #
 # Copyright (C) 1996-2001 Akopia, Inc. <info@akopia.com>
 #
@@ -2180,7 +2180,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 1.32.4.7 2001-02-26 01:17:26 heins Exp $
+# $Id: makecat.PL,v 1.32.4.8 2001-03-23 12:17:20 jon Exp $
 
 =head1 INTRODUCTION
 
@@ -2575,7 +2575,6 @@ General information and documentation for Interchange is at:
 
 __END__
 
-# Sample catalog definition
 [catalog construct]
 basedir         =
 catroot         =
@@ -2585,6 +2584,26 @@ cgibin          =
 cgidir          =
 cgiurl          =
 demotype        = construct
+documentroot    =
+imagedir        =
+imageurl        =
+mailorderto     =
+interchangegroup=
+interchangeuser =
+samplehtml      =
+sampleurl       =
+servername      =
+vendroot        =
+
+[catalog foundation]
+basedir         =
+catroot         =
+catuser         =
+cgibase         =
+cgibin          =
+cgidir          =
+cgiurl          =
+demotype        = foundation
 documentroot    =
 imagedir        =
 imageurl        =
@@ -2616,7 +2635,6 @@ sampleurl       =
 servername      =
 vendroot        =
 
-# Simple catalog definition
 [catalog simple]
 basedir         =
 catroot         =
