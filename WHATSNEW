@@ -50,6 +50,11 @@ Foundation
 
 * Change Newfoundland from NF to NL in "state" table.
 
+Payment
+-------
+
+* Add Linkpoint payment module.
+
 
 ------------------------------------------------------------------------------
 
