@@ -20,9 +20,9 @@ set_selector:
 	advanced: 1
 [/comment]
 
-<tr><td align="center" class="categorybar">
+<tr><td align="left" class="categorybar">
   <br>
-  <table>
+  <table width="90%" align="center">
 
 <!-- BEGIN COMPONENT [control component category_vertical] -->
 [loop
