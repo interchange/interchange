@@ -15,11 +15,13 @@ debian/changelog
 debian/control
 debian/copyright
 debian/docs
+debian/interchange-cat-foundation.files
 debian/interchange-doc.docs
 debian/interchange-ui.files
 debian/interchange-ui.postinst
 debian/interchange.cfg
 debian/interchange.conffiles
+debian/interchange.config
 debian/interchange.cron.daily
 debian/interchange.dirs
 debian/interchange.docs
@@ -347,10 +349,6 @@ dist/foundation/pages/quantity.html
 dist/foundation/pages/query/check_orders.html
 dist/foundation/pages/query/order_detail.html
 dist/foundation/pages/query/order_return.html
-dist/foundation/pages/recurring_add.html
-dist/foundation/pages/recurring_orders.html
-dist/foundation/pages/recurring_orders_added.html
-dist/foundation/pages/recurring_orders_removed.html
 dist/foundation/pages/results.html
 dist/foundation/pages/results_big.html
 dist/foundation/pages/results_either.html
@@ -428,6 +426,7 @@ dist/foundation/templates/components/promo_vertical
 dist/foundation/templates/components/random
 dist/foundation/templates/components/random_horizontal
 dist/foundation/templates/components/random_vertical
+dist/foundation/templates/components/saved_carts_list_small
 dist/foundation/templates/components/search_box_small
 dist/foundation/templates/components/upsell
 dist/foundation/templates/components/upsell_horizontal
