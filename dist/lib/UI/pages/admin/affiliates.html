@@ -90,9 +90,9 @@
 				href=__UI_BASE__/flex_editor
 				form="
 					item_id=[item-code]
-					page_title=Edit affiliate -- [item-data affiliate name]
-					page_banner=Edit affiliate: <B>[item-data affiliate name]</B>
-					mv_data_table=affiliate
+					page_title=Edit affiliate -- [item-data __UI_AFFILIATE_TABLE__ name]
+					page_banner=Edit affiliate: <B>[item-data __UI_AFFILIATE_TABLE__ name]</B>
+					mv_data_table=__UI_AFFILIATE_TABLE__
 					icon_name=admin/icon_people.gif
 					ui_return_to=__UI_BASE__/affiliates
 					help_name=affiliate.edit
@@ -115,7 +115,7 @@ entry:&nbsp;[calc]
 					start_date=[tag time]%Y%m[/tag]
 					affiliate=[item-code]
 			"]Order report</A></TD>
-<TD ALIGN=CENTER VALIGN=top>[if-item-data affiliate active]Yes[else]No[/else][/if-item-data]
+<TD ALIGN=CENTER VALIGN=top>[if-item-data __UI_AFFILIATE_TABLE__ active]Yes[else]No[/else][/if-item-data]
 </TD>
 </tr>
 [/search-list]
