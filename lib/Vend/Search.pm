@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.0.2.1 2002-01-24 05:07:01 jon Exp $
+# $Id: Search.pm,v 2.0.2.2 2002-02-06 03:48:36 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.0.2.1 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.2 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -255,9 +255,9 @@ EOF
 				if(	$s->{mv_column_op}[$i] =~ /([=][~]|rm|em)/ ) {
 					$specs[$i] = quotemeta $specs[$i]
 						if $s->{mv_all_chars}[$i];
-					$s->{regex_specs} = []
-						unless $s->{regex_specs};
 					last COLOP if $s->{mv_begin_string}[$i];
+					last COLOP if $s->{mv_column_op}[$i] eq 'em';
+					$s->{regex_specs} ||= [];
 					$specs[$i] =~ /(.*)/;
 					push @{$s->{regex_specs}}, $1
 				}
@@ -715,10 +715,10 @@ EOF
 		}
 #::logDebug("coderef=" . ::uneval_it(\@code));
 
-		undef $f if $s->{mv_search_relate} =~ s/\bor\b/or/ig;
 		DOLIMIT: {
 #::logDebug(::uneval_it({%$s}));
 #::logDebug("do_limit.");
+			undef $f, last DOLIMIT unless $s->{regex_specs};
 			last DOLIMIT if $f;
 #::logDebug("do_limit past f.");
 			last DOLIMIT if $s->{mv_small_data};
