@@ -3,7 +3,7 @@
 # Connection routine for AuthorizeNet version 3 using the 'ADC Direct Response'
 # method.
 #
-# $Id: AuthorizeNet.pm,v 2.11 2003-09-10 15:58:52 mheins Exp $
+# $Id: AuthorizeNet.pm,v 2.12 2003-09-11 20:12:56 kwalsh Exp $
 #
 # Copyright (C) 2003 Interchange Development Group, http://www.icdevgroup.org/
 # Copyright (C) 1999-2002 Red Hat, Inc.
@@ -412,6 +412,7 @@ sub authorizenet {
 		x_Version				=> '3.1',
 		x_ADC_URL				=> 'FALSE',
 		x_ADC_Delim_Data		=> 'TRUE',
+		x_ADC_Delim_Character	=> "\037",
     );
 
     my @query;
@@ -497,7 +498,7 @@ sub authorizenet {
 			x_cvv2_resp_code			
 		/
 		}
-		 = split (/,/,$page);
+		 = split (/\037/,$page);
     	
 #::logDebug(qq{authorizenet response_reason_text=$result{x_response_reason_text} response_code: $result{x_response_code}});    	
 
