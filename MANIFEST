@@ -644,6 +644,12 @@ dist/standard/images/blank5.gif
 dist/standard/images/blank6.gif
 dist/standard/images/blankv.gif
 dist/standard/images/blankvl.gif
+dist/standard/images/button_alt_general.gif
+dist/standard/images/button_alt_product.gif
+dist/standard/images/button_alt_search.gif
+dist/standard/images/button_general.gif
+dist/standard/images/button_product.gif
+dist/standard/images/button_search.gif
 dist/standard/images/download.png
 dist/standard/images/fc.gif
 dist/standard/images/fo.gif
@@ -691,6 +697,8 @@ dist/standard/images/items/os29000.gif
 dist/standard/images/logo.gif
 dist/standard/images/logo.png
 dist/standard/images/logo2.gif
+dist/standard/images/navigation_alt.gif
+dist/standard/images/navigation_bar.gif
 dist/standard/images/poweredby.gif
 dist/standard/images/right.gif
 dist/standard/images/sep.gif
@@ -699,6 +707,7 @@ dist/standard/images/smallamex.png
 dist/standard/images/smalldisc.png
 dist/standard/images/smallmc.png
 dist/standard/images/smallvisa.png
+dist/standard/images/sml_cart.gif
 dist/standard/images/thumb.gif
 dist/standard/images/thumb/os28004_b.gif
 dist/standard/images/thumb/os28005_b.gif
@@ -740,6 +749,8 @@ dist/standard/images/thumb/os28111_b.gif
 dist/standard/images/thumb/os28112_b.gif
 dist/standard/images/thumb/os28113_b.gif
 dist/standard/images/thumb/os29000_b.gif
+dist/standard/images/title_tab_cross.gif
+dist/standard/images/title_tab_random.gif
 dist/standard/images/yourimage.gif
 dist/standard/include/checkout/billing_address
 dist/standard/include/checkout/initialization
