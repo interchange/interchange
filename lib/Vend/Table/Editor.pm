@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.34 2003-06-18 17:34:46 jon Exp $
+# $Id: Editor.pm,v 1.35 2003-06-19 16:00:39 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.34 $, 10);
+$VERSION = substr(q$Revision: 1.35 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -1656,6 +1656,7 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	my @messages;
 	my @errors;
 	my $pass_return_to;
+	my $hidden = $opt->{hidden} ||= {};
 
 #::logDebug("key at beginning: $key");
 	$opt->{mv_data_table} = $table if $table;
@@ -1670,21 +1671,33 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 		$opt->{ui_sequence_edit} ||= $CGI::values{ui_sequence_edit};
 	}
 
-	if($key =~ /\0/ or (! $key and $key = delete $opt->{item_id_left}) ) {
+	if($opt->{ui_sequence_edit}) {
 		delete $opt->{ui_sequence_edit};
-		if($key =~ s/\0(.*)//s or $key =~ s/,(.*)//s ) {
-			$opt->{item_id_left} = $1;
-			$opt->{ui_sequence_edit} = 1;
+		my $left = delete $opt->{item_id_left}; 
+
+		if(! $key) {
+#::logDebug("No key, getting from $left");
+			if($left =~ s/(.*?)[\0,]// ) {
+				$key = $opt->{item_id} = $1;
+				$hidden->{item_id_left} = $left;
+				$hidden->{ui_sequence_edit} = 1;
+			}
+			elsif($left) {
+				$key = $opt->{item_id} = $left;
+			}
+#::logDebug("No key, left now $left");
+		}
+		elsif($left) {
+#::logDebug("Key, leaving left $left");
+			$hidden->{item_id_left} = $left;
+			$hidden->{ui_sequence_edit} = 1;
 		}
 	}
 
 	$opt->{item_id} = $key;
 
-	$pass_return_to = save_cgi() if $opt->{ui_sequence_edit};
+	$pass_return_to = save_cgi() if $hidden->{ui_sequence_edit};
 
-#::logDebug("item_id_left=" . ::uneval($opt->{item_id_left}));
-#::logDebug("pass_return_to=" . ::uneval($pass_return_to));
-#::logDebug("ui_sequence_edit=$opt->{ui_sequence_edit}");
 	my $data;
 	my $exists;
 	my $db;
@@ -1759,7 +1772,6 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	my $blabel = $opt->{blabel};
 	my $elabel = $opt->{elabel};
 	my $mlabel = '';
-	my $hidden = $opt->{hidden} ||= {};
 	my $hidden_all = $opt->{hidden_all} ||= {};
 #::logDebug("hidden_all=" . ::uneval($hidden_all));
 	my $ntext;
@@ -2289,12 +2301,7 @@ EOF
 						mv_data_function
 				/);
 
-	my @cgi_set = ( qw/
-						item_id_left
-						ui_sequence_edit
-					/ );
-
-	for my $k (@opt_set, @cgi_set) {
+	for my $k (@opt_set) {
 		$opt->{hidden}{$k} = $opt->{$k};
 	}
 
