@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.7.1
 #
-# $Id: interchange.PL,v 1.15.2.25 2001-03-31 14:14:50 heins Exp $
+# $Id: interchange.PL,v 1.15.2.26 2001-03-31 17:32:45 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
@@ -1833,11 +1833,13 @@ RESOLVEID: {
 								: ($Vend::Session->{ohost});
 
 			if(! $compare_host) {
-				new_session() unless $CGI::secure;
+				new_session($seed) unless $CGI::secure;
+				init_session();
 				$Vend::Session->{shost} = $CGI::remote_addr;
 			}
 			elsif ($compare_host ne $CGI::remote_addr) {
-				new_session();
+				new_session($seed);
+				init_session();
 			}
 		}
 		if ($now - $Vend::Session->{'time'} > $Vend::Cfg->{SessionExpire}) {
