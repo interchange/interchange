@@ -1,12 +1,12 @@
 interchange (5.1.1-1) unstable; urgency=low
 
-  * new upstream revision
+  * new upstream release
 
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Mon, 19 Apr 2004 17:18:03 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Tue, 20 Apr 2004 01:15:36 +0200
 
 interchange (5.1.0-1) unstable; urgency=low
 
-  * new upstream version
+  * new upstream release
   * added French translation of debconf templates (Closes: #242771,
     thanks to Christian Perrier <bubulle@debian.org>)
   
