@@ -1,6 +1,6 @@
 # Vend::Control - Routines that alter the running Interchange daemon
 # 
-# $Id: Control.pm,v 2.9 2003-07-29 00:12:39 racke Exp $
+# $Id: Control.pm,v 2.10 2003-07-31 19:33:40 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -68,7 +68,7 @@ sub signal_jobs {
 	$job =~ s/^,+//;
 	$job =~ s/,+$//;
 	$Vend::JobsJob = $job;
-	Vend::Util::writefile("$Global::RunDir/jobs", "jobs $cat $delay $job\n");
+	Vend::Util::writefile("$Global::RunDir/jobsqueue", "jobs $cat $delay $job\n");
 #::logGlobal("signal_jobs: wrote file, ready to control_interchange");
 	control_interchange('jobs', 'HUP');
 }

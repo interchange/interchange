@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.38 2003-07-27 16:06:53 racke Exp $
+# $Id: Server.pm,v 2.39 2003-07-31 19:33:40 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.38 $, 10);
+$VERSION = substr(q$Revision: 2.39 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -1017,7 +1017,7 @@ sub housekeeping {
 		($reconfig) = grep $_ eq 'reconfig', @files;
 		($restart) = grep $_ eq 'restart', @files
 			if $Signal_Restart || $Global::Windows;
-		($jobs) = grep $_ eq 'jobs', @files;
+		($jobs) = grep $_ eq 'jobsqueue', @files;
 		if($Global::PIDcheck) {
 			$Num_servers = 0;
 			@pids = grep /^pid\.\d+$/, @files;
@@ -1126,10 +1126,10 @@ EOF
 		}
 		if (defined $jobs) {
 			my (@scheduled_jobs, @queued_jobs);
-			open(Vend::Server::JOBS, "+<$Global::RunDir/jobs")
-				or die "open $Global::RunDir/jobs: $!\n";
+			open(Vend::Server::JOBS, "+<$Global::RunDir/jobsqueue")
+				or die "open $Global::RunDir/jobsqueue: $!\n";
 			lockfile(\*Vend::Server::JOBS, 1, 1)
-				or die "lock $Global::RunDir/jobs: $!\n";
+				or die "lock $Global::RunDir/jobsqueue: $!\n";
 			while(<Vend::Server::JOBS>) {
 				chomp;
 				my ($directive,$value) = split /\s+/, $_, 2;
@@ -1153,24 +1153,24 @@ EOF
 			}
 
 			truncate(Vend::Server::JOBS, 0)
-				or die "truncate $Global::RunDir/jobs: $!\n";
+				or die "truncate $Global::RunDir/jobsqueue: $!\n";
             seek(Vend::Server::JOBS, 0, 0)
-                or die "seek $Global::RunDir/jobs: $!\n";
+                or die "seek $Global::RunDir/jobsqueue: $!\n";
 
             if (@queued_jobs) {
 #::logDebug("Size of queue $$: %s", scalar(@queued_jobs));
 				print Vend::Server::JOBS join("\n", @queued_jobs, '');
                 unlockfile(\*Vend::Server::JOBS)
-					or die "unlock $Global::RunDir/jobs: $!\n";
+					or die "unlock $Global::RunDir/jobsqueue: $!\n";
 				close(Vend::Server::JOBS)
-					or die "close $Global::RunDir/jobs: $!\n";
+					or die "close $Global::RunDir/jobsqueue: $!\n";
 			} else {
 				unlockfile(\*Vend::Server::JOBS)
-					or die "unlock $Global::RunDir/jobs: $!\n";
+					or die "unlock $Global::RunDir/jobsqueue: $!\n";
 				close(Vend::Server::JOBS)
-					or die "close $Global::RunDir/jobs: $!\n";
-				unlink "$Global::RunDir/jobs"
-					or die "unlink $Global::RunDir/jobs: $!\n";
+					or die "close $Global::RunDir/jobsqueue: $!\n";
+				unlink "$Global::RunDir/jobsqueue"
+					or die "unlink $Global::RunDir/jobsqueue: $!\n";
 			}
 
 			# now we run the scheduled jobs
