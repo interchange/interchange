@@ -2,7 +2,7 @@ NAME
     README.rpm - Interchange RPM for Red Hat Linux systems
 
 VERSION
-    4.6.4
+    4.6.5
 
 SYNOPSIS
     rpm -Uvh interchange-4.6.*.rh6.i386.rpm
