@@ -28,18 +28,11 @@ random:
 <!-- BEGIN COMPONENT [control component upsell] -->
 [if scratch upsell]
 <br clear=all>
-<table width="[control table_width 80%]" align=center>
-<tr>
-<td style="[control toprow_css 
-					font-face: Verdana, Arial, Helvetica, sans-serif;
-					font-style: italic;
-					font-weight: bold;
-					text-align: left;
-					background-color: __BARBG__;
-					color: __BARTEXT__;
-				]"> 
-<font color="__BARTEXT__">[control banner Other items you may like]</font>
-</td>
+<table width="[control table_width 95%]" align=center>
+<tr class="categorybar">
+  <td style="categorybar"> 
+	[control banner Other items you may like]
+  </td>
 </tr>
 <tr>
 <td> 
@@ -82,9 +75,7 @@ random:
 		  </tr>
 		  <tr> 
 			<td>
-				<span style="font-size: smaller">
 				Our Price: [loop-price]
-				</span>
 			</td>
 		  </tr>
 		  <tr> 

@@ -1,13 +1,8 @@
 <!-- BEGIN COMPONENT promo_horizontal -->
 <br clear=all>
-<table width="80%" align=center>
-<tr bgcolor="#0099FF"> 
-<td> 
-  <div align="left"><font color="#FFFFFF" size="2" face="Verdana, Arial, Helvetica, sans-serif"><b><i>[scratch hbanner]</i></b></font></div>
-</td>
-</tr>
+<table width="95%" align=center>
 <tr> 
-<td> 
+  <td> 
 	[query arrayref=main
 		   sql="
 		   	SELECT sku,timed_promotion,start_date,finish_date
@@ -40,47 +35,53 @@
 	list="[scratch promo_codes]"
 		 ] 
   <td> 
-	<table width="132" border="0" cellspacing="0" cellpadding="0">
+	<table border="0" cellspacing="0" cellpadding="0">
 	  <tr> 
-		<td width="132" align="center"><font color="#000000" size="1" face="Verdana, Arial, Helvetica, sans-serif"><b>
+		<td align="center">
+			<b>
 		[if-loop-data merchandising blurb_begin]
 			[loop-data merchandising blurb_begin]
 		[else]
 			[loop-description]
 		[/else]
-		[/if-loop-data]</b></font></td>
+		[/if-loop-data]</b>
+	    </td>
 	  </tr>
 	  <tr> 
-		<td width="132" align="center"><font color="#000000" size="1" face="Verdana, Arial, Helvetica, sans-serif"><font size="2"><b>[order [loop-code]]Buy Now[/order]</b></font></font></td>
+	    <td align="center">
+		<b>[order [loop-code]]Buy Now[/order]</b>
+	    </td>
 	  </tr>
 	  <tr> 
-		<td width="132" align="center"> 
-		  <table width="80" border="0" cellspacing="0" cellpadding="0">
+		<td align="center"> 
+		  <table border="0" cellspacing="0" cellpadding="0">
 			<tr> 
-			  <td><img src="thumb/[loop-field thumb]" width="80" height="80"></td>
+			  <td><img src="thumb/[loop-field thumb]"></td>
 			</tr>
 		  </table>
 		</td>
 	  </tr>
 	  <tr> 
-		<td width="132" align="center" height="5">&nbsp;</td>
-	  </tr>
-	  <tr> 
-		<td width="132" align="center"><font color="#000000" size="1" face="Verdana, Arial, Helvetica, sans-serif">Our 
-		  Price:</font> <font color="#000000" size="1" face="Verdana, Arial, Helvetica, sans-serif">[loop-price]</font></td>
+		<td align="center">
+			Our Price: [loop-price]
+		</td>
 	  </tr>
 	[if-loop-data merchandising blurb_end]
 	  <tr> 
-		<td width="132" align="center"><font color="#0099FF" size="1" face="Verdana, Arial, Helvetica, sans-serif"><a href="[area [loop-code]]"><font size="2">[loop-data merchandising blurb_end]</font></a></font></td>
+		<td align="center">
+		  <a href="[area [loop-code]]">[loop-data merchandising blurb_end]</a>
+		</td>
 	  </tr>
 	[else]
 	  <tr> 
-		<td width="132" align="center"><font color="#0099FF" size="1" face="Verdana, Arial, Helvetica, sans-serif"><a href="[area [loop-code]]"><font size="2">More Information</font></a></font></td>
+	    <td align="center">
+	      <a href="[area [loop-code]]">More Information</a>
+	    </td>
 	  </tr>
 	[/else]
 	[/if-loop-data]
 	  <tr> 
-		<td width="132" align="center">&nbsp;</td>
+		<td align="center">&nbsp;</td>
 	  </tr>
 	</table>
   </td>

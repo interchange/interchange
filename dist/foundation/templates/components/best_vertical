@@ -26,28 +26,34 @@ banner:
 					ml=[control size 3]
 	"
  ] 
-<table width="132" border="0" cellspacing="0" cellpadding="0">
-	<tr bgcolor="#FF9900" align="center" valign="middle"> 
-		  <td><font size="2" color="__BARTEXT__"><i><b><font face="Verdana, Arial, Helvetica, sans-serif">[control banner Best Sellers]</font></b></i></font></td>
+<table border="0" cellspacing="0" cellpadding="0">
+	<tr class="categorybar" align="center" valign="middle"> 
+	  <td class="categorybar">
+		<b>[control banner Best Sellers]</b>
+	  </td>
 	</tr>
 	<tr align="center"> 
 	  <td>
-[list]
-			<table width="132" border="0" cellspacing="0" cellpadding="0">
+		[list]
+			<table border="0" cellspacing="0" cellpadding="0">
 			  <tr> 
-				<td width="132" align="center"><font color="__BARTEXT__" size="1" face="Verdana, Arial, Helvetica, sans-serif"><b>[loop-field description]</b></font></td>
+				<td align="center">
+					<b>[loop-field description]</b>
+				</td>
 			  </tr>
 			  <tr> 
-				<td width="132" align="center"><font color="__BARTEXT__" size="1" face="Verdana, Arial, Helvetica, sans-serif"><font size="2"><b>
+				<td align="center">
+				  <b>
 				[if-loop-data options o_modular]
 				[page [loop-code]]
 				[else][order [loop-code]]
 				[/else]
-				[/if-loop-data]Buy Now[/order]</b></font></font></td>
+				[/if-loop-data]Buy Now[/order]</b>
+				</td>
 			  </tr>
 			  <tr> 
-				<td width="132" align="center"> 
-				  <table width="80" border="0" cellspacing="0" cellpadding="0">
+				<td align="center"> 
+				  <table border="0" cellspacing="0" cellpadding="0">
 					<tr> 
 					  <td><img src="thumb/[loop-field thumb]" width="80" height="80"></td>
 					</tr>
@@ -55,17 +61,17 @@ banner:
 				</td>
 			  </tr>
 			  <tr> 
-				<td width="132" align="center" height="5">&nbsp;</td>
+				<td align="center">
+				  Our Price: [loop-price]
+				</td>
 			  </tr>
 			  <tr> 
-				<td width="132" align="center"><font color="__BARTEXT__" size="1" face="Verdana, Arial, Helvetica, sans-serif">Our 
-				  Price:</font> <font color="__BARTEXT__" size="1" face="Verdana, Arial, Helvetica, sans-serif">[loop-price]</font></td>
+				<td align="center">
+					<A HREF="[area [loop-code]]">More Information</a>
+				</td>
 			  </tr>
 			  <tr> 
-				<td width="132" align="center"><font color="__BARBG__" size="1" face="Verdana, Arial, Helvetica, sans-serif"><A HREF="[area [loop-code]]"><font size="2">More Information</font></a></font></td>
-			  </tr>
-			  <tr> 
-				<td width="132" align="center">&nbsp;</td>
+				<td align="center">&nbsp;</td>
 			  </tr>
 			</table>
 [/list]

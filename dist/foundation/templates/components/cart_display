@@ -8,33 +8,34 @@ ui_component_label: Smaller cart for display in content area
 <!-- BEGIN COMPONENT [control component cart_display] -->
 [if items]
 <center>
-  <table width="90%" border="0" cellspacing="0" cellpadding="0" bordercolor="#FF9900">
-		<TR class=sheader VALIGN=TOP>
-                        <td width="9%" align=center class=sheader>Action</td>
-                        <td width="13%" class=sheader> 
+  <table width="95%" border="0" cellspacing="0" cellpadding="0">
+		<TR class="contentbar2" VALIGN=TOP>
+                        <td align=center class="contentbar2">Action</td>
+                        <td class="contentbar2"> 
                           SKU
                         </td>
-                        <td width="27%" class=sheader> 
+                        <td class="contentbar2"> 
                           Description
                         </td>
-                        <td width="13%" class=sheader> 
+                        <td class="contentbar2"> 
                           Quantity
                         </td>
-                        <td width="19%" class=sheader> 
+                        <td class="contentbar2"> 
                           Price
                         </td>
-                        <td width="19%" class=sheader> 
+                        <td class="contentbar2"> 
                           Extension
                         </td>
 		</TR>
 	<TBODY>
 [item-list]
 
-<tr class="[item-alternate 2]cartrow[else]cartalt[/else][/item-alternate]">
+<tr class="[item-alternate 2]maincontent[else]contentbar1[/else][/item-alternate]">
 	<td align=center valign=top>
-	<span class="font-size: 8px">[page ord/basket]edit</A></span></TD>
-	<td valign=top>[item-code]</font></TD>
-	<td valign=top>[page [item-code]][item-description]</A></font>
+	  [page ord/basket]edit</A>
+	</TD>
+	<td valign=top>[item-code]</TD>
+	<td valign=top>[page [item-code]][item-description]</A>
 </TD>
 
 [if-item-modifier gift_cert]
@@ -55,7 +56,6 @@ ui_component_label: Smaller cart for display in content area
 [/if-item-modifier]
 </TR>
 
-<TR class="[item-alternate 2]cartrow[else]cartalt[/else][/item-alternate]"><TD ALIGN=CENTER COLSPAN=6><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="4" BORDER="0"></td></TR>
 [/item-list]
 </TBODY>
 </table>
