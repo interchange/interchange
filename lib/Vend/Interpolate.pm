@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.54 2001-04-19 20:40:07 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.55 2001-04-20 18:13:20 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.54 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.55 $, 10);
 
 @EXPORT = qw (
 
@@ -3980,9 +3980,20 @@ sub tag_more_list {
 	}
 #::logDebug("more_list: pages=$pages current=$current b=$b e=$e next=$next last=$last decade_div=$decade_div");
 
-	foreach $inc ($b .. $e) {
-		last if $page_anchor eq 'none';
-		$list .= more_link($inc, $page_anchor);
+	if ($q->{mv_alpha_list}) {
+		for my $record (@{$q->{mv_alpha_list}}) {
+			$arg = "$session:$record->[2]:$record->[3]:" . ($record->[3] - $record->[2] + 1);
+			$r .= '<A HREF="';
+			$r .= tag_area( "scan/MM=$arg", '', { form => $form_arg });
+			$r .= '">';
+			$r .= substr($record->[0],0,$record->[1]);
+			$r .= '</A> ';
+		}
+	} else {
+		foreach $inc ($b .. $e) {
+			last if $page_anchor eq 'none';
+			$list .= more_link($inc, $page_anchor);
+		}
 	}
 
 	$list .= " $decade_next " if defined $decade_next;
