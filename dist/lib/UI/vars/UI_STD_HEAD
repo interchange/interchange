@@ -68,7 +68,7 @@ EOF
   opts="top=0,left=0,scrollbars,status=no,menubar=no,location=yes,toolbar=no,resizable=yes,fullsize=no,width=__UI_HELP_WIDTH__,height=__UI_HELP_HEIGHT__";
   window.open(url, 'Help', opts);
 }
--->
+//-->
 </SCRIPT>
 <STYLE TYPE="text/css">
 <!--
