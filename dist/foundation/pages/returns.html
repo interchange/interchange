@@ -23,13 +23,7 @@ ui_template_name: leftonly
 
 <!-- BEGIN CONTENT -->
 
-Please select an order below to continue with the return process.
-
-<br><Br>
-				  
-<FORM ACTION="[process-target]" METHOD=POST>
-<INPUT TYPE=hidden NAME=mv_todo VALUE=return>
-<INPUT TYPE=hidden NAME=mv_nextpage VALUE="returns_processed">
+<br>
 
 [query st=db arrayref=orders
 		sql="SELECT
@@ -50,11 +44,20 @@ Please select an order below to continue with the return process.
 	my $orders = $Tmp->{orders};
 	
 	if(! $orders or scalar @$orders == 0) {
-		$Document->write( "No pending orders for $uid.");
+		$Document->write( "<p>No orders found for $uid.</p>");
 		return;
 	}
 
-	HTML "<TABLE CELLSPACING=0 CELLMARGIN=0 BORDER=1 WIDTH=450>";
+	HTML <<'EOF';
+Please select an order below to continue with the return process.
+</p>
+				  
+<FORM ACTION="[process-target]" METHOD=POST>
+<INPUT TYPE=hidden NAME=mv_todo VALUE=return>
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="returns_processed">
+
+<TABLE CELLSPACING=0 CELLMARGIN=0 BORDER=1 WIDTH=450>
+EOF
 
 	my $header_template = <<'EOF';
 
@@ -138,7 +141,7 @@ EOF
 		HTML $line;
 	}
 
-	HTML "</TABLE>";
+	HTML "</TABLE></FORM>";
 %>
 [/mvasp]
 
