@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18.2.8 2001-02-02 00:01:52 heins Exp $
+# $Id: Order.pm,v 1.18.2.9 2001-02-07 11:50:08 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.8 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.9 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -46,11 +46,10 @@ $VERSION = substr(q$Revision: 1.18.2.8 $, 10);
 	route_order
 	validate_whole_cc
 );
-# LEGACY4
+
 push @EXPORT, qw (
 	send_mail
 );
-# END LEGACY4
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -298,24 +297,50 @@ sub _charge {
 
 sub _credit_card {
 	my($ref, $params) = @_;
+	my $subname;
 	my $sub;
+	my $opt;
+
 	$params =~ s/^\s+//;
 	$params =~ s/\s+$//;
-	if($params =~ s/\s+keep//i) {
+
+	# Make a copy if we need to keep the credit card number in memory for
+	# a while
+
+	# New or Compatibility to get options
+
+	if($params =~ /=/) {		# New
+::logDebug("New options");
+		$params =~ s/^\s*(\w+)(\s+|$)//
+			and $subname = $1;
+		$subname = 'standard' if ! $subname;
+		$opt = get_option_hash($params);
+	}
+	else {      				# Compat
+::logDebug("Old options");
+		$opt = {};
+		$opt->{keep} = 1 if $params =~ s/\s+keep//i;
+	
+		if($params =~ s/\s+(.*)//) {
+			$opt->{accepted} = $1;
+		}
+		$subname = $params;
+	}
+
+	$sub = $subname eq 'standard'
+		 ? \&encrypt_standard_cc
+		 :	$Global::GlobalSub->{$subname};
+
+	if(! $sub) {
+		::logError("bad credit card check GlobalSub: '%s'", $subname);
+		return undef;
+	}
+
+	if($opt->{keep}) {
 		my (%cgi) = %$ref;
 		$ref = \%cgi;
 	}
-	my $accepted;
-	if($params =~ s/\s+(.*)//) {
-		$accepted = $1;
-	}
-	if(! $params || $params =~ /^standard$/i ) {
-		$sub = \&encrypt_standard_cc;
-	}
-	elsif(! defined ($sub = $Global::GlobalSub->{$params}) ) {
-		::logError("bad credit card check GlobalSub: %s", $params);
-		return undef;
-	}
+
 	eval {
 		@{$::Values}{ qw/
 					mv_credit_card_valid
@@ -327,10 +352,11 @@ sub _credit_card {
 					mv_credit_card_reference
 					mv_credit_card_error
 					/}
-				= $sub->($ref, undef, { accepted => $accepted } );
+				= $sub->($ref, undef, $opt );
 	};
+
 	if($@) {
-		::logError("credit card check GlobalSub %s error: %s", $params, $@);
+		::logError("credit card check (%s) error: %s", $subname, $@);
 		return undef;
 	}
 	elsif(! $::Values->{mv_credit_card_valid}) {
@@ -482,6 +508,12 @@ sub encrypt_standard_cc {
 	my($valid, $info);
 
 	$opt = {} unless ref $opt;
+	my @deletes = qw /
+					mv_credit_card_type		mv_credit_card_number
+					mv_credit_card_exp_year	mv_credit_card_exp_month
+					mv_credit_card_force	mv_credit_card_exp_reference
+					mv_credit_card_exp_all	mv_credit_card_exp_separate  
+					/;
 
 	my $month	= $ref->{mv_credit_card_exp_month}	|| '';
 	my $type	= $ref->{mv_credit_card_type}		|| '';
@@ -489,16 +521,9 @@ sub encrypt_standard_cc {
 	my $year	= $ref->{mv_credit_card_exp_year}	|| '';
 	my $all		= $ref->{mv_credit_card_exp_all}	|| '';
 	my $force	= $ref->{mv_credit_card_force}		|| '';
-	my $separate = $ref->{mv_credit_card_separate}  || '';
+	my $separate = $ref->{mv_credit_card_separate}  || $opt->{separate} || '';
 
-	for ( qw (	mv_credit_card_type		mv_credit_card_number
-				mv_credit_card_exp_year	mv_credit_card_exp_month
-				mv_credit_card_exp_separate mv_credit_card_exp_reference
-				mv_credit_card_exp_all  mv_credit_card_force))
-	{
-		next unless defined $ref->{$_};
-		delete $ref->{$_} unless $nodelete;
-	}
+	delete @$ref{@deletes}        unless ($opt->{nodelete} or $nodelete);
 
 	# remove unwanted chars from card number
 	$num =~ tr/0-9//cd;
@@ -520,8 +545,7 @@ sub encrypt_standard_cc {
 		$month = $1;
 		$year  = "$2$3";
 	}
-	elsif ($month >= 1  and $month <= 12 and $year) 
-	{
+	elsif ($month >= 1  and $month <= 12 and $year) {
 		$all = "$month/$year";
 	}
 	else {
@@ -570,8 +594,8 @@ sub encrypt_standard_cc {
 	elsif ($type) {
 		$return[5] = $type;
 	}
-	else {
-		my $msg = errmsg("Can't figure out credit card type.");
+	elsif(! $opt->{any}) {
+		my $msg = errmsg("Can't figure out credit card type from number.");
 		$Vend::Session->{errors}{mv_credit_card_valid} = $msg;
 		push @return, $msg;
 		return @return;
@@ -1188,11 +1212,11 @@ sub check_order {
 	$errors = '' unless defined $errors and ! $Success;
 #::logDebug("FINISH checking profile $Profile: Fatal=$Fatal Final=$Final Status=$status\nErrors:\n$errors\n");
 	if($status) {
-		$::Values->{mv_nextpage} = $CGI::values{mv_nextpage} = $Success_page
+		$CGI::values{mv_nextpage} = $Success_page
 			if $Success_page;
 	}
 	elsif ($Fail_page) {
-		$::Values->{mv_nextpage} = $CGI::values{mv_nextpage} = $Fail_page;
+		$CGI::values{mv_nextpage} = $Fail_page;
 	}
 	if($Final and ! scalar @{$Vend::Items}) {
 		$status = 0;
