@@ -29,14 +29,15 @@ email=email
 &set = mv_payment Check or Money Order (will call)
 
 [elsif value fax_order == 2]
-&set = mv_payment Purchase order [value po_number]
+project_id=required Please include your PO number
+&set = mv_payment Purchase order [value project_id]
 [value name=tmp_total set="[total-cost noformat=1]" hide=1]
 [perl tables="pricing products userdb"]
 	$CGI->{credit_limit_ok} = 1;
 	my $total = delete $Values->{tmp_total};
 	return unless $limit = tag_data('userdb', 'credit_limit', $Session->{username});
+	Log("credit_limit=$limit total=$total");
 	delete $CGI->{credit_limit_ok};
-	#Log("credit_limit=$limit total=$total");
 	if($limit >= $total) {
 		$CGI->{credit_limit_ok} = 1;
 	}

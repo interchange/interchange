@@ -23,6 +23,7 @@
 
 [try]
 [comment][perl] Log("Past ACL create log."); [/perl][/comment]
+[seti total_cost][total-cost noformat=1][/seti]
 Add main order[data
 	table=userdb
 	column=order_numbers
@@ -41,7 +42,7 @@ nitems: [nitems]
 subtotal: [subtotal noformat=1]
 handling: [handling noformat=1]
 salestax: [salestax noformat=1]
-total_cost: [total-cost noformat=1]
+total_cost: [scratch total_cost]
 fname: [value filter=strip name=fname]
 lname: [value filter=strip name=lname]
 company: [value filter=strip name=company]
@@ -77,6 +78,13 @@ campaign: [value campaign]
 parent: __PARENT__
 po_number: [value filter=strip po_number] 
 [/import]
+set credit_limit: [seti credit_limit][data
+		table=userdb
+		col=credit_limit
+		key="[data session username]"
+		value="-[scratch total_cost]"
+		increment=1
+	][/seti]
 [comment][perl] Log("Past transactions entry."); [/perl][/comment][item-list]Added [item-code] to orderline: [import table=orderline type=LINE continue=NOTES]
 code: [value mv_order_number]-[item-increment]
 store_id: __STORE_ID__
