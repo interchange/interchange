@@ -84,6 +84,13 @@ Core
 * Vend::Util::string_to_ref no longer looks at $Vend::Cfg->{ExtraSecure},
   which really contradicts the documentation.
 
+* Allow $Session->{mv_order_number} to be set anywhere.
+
+* Allow multiple start points for a tree query.
+
+* Prevent NOT NULL errors for data that is actually supposed to be defined
+  during a data update.
+
 Options
 -------
 
@@ -264,6 +271,9 @@ Form
 
 * Remove extra closing HTML tag '>' character from password widget.
 
+* Allow multiple semi-colon-separated queries to populate options via
+  lookup_query.
+
 UI
 --
 
@@ -312,6 +322,8 @@ UI
   deleted order numbers here and there don't throw the user back to the
   order list view. Maximum number to skip settable by variable
   UI_ORDER_VIEWNEXT_MAX_SKIP, now in Foundation "Admin control" section.
+
+* Add option to replace all occurences to Search & Replace page.
 
 Payment
 -------
@@ -400,6 +412,8 @@ Foundation
 
 * Remove straggling Red Hat/IC logo and URLs, update foundation logos to match
   Interchange 4.8's latest.
+
+* Added ALT attribute to Home links.
 
 Debian
 ------
