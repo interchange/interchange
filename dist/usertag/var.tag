@@ -18,9 +18,9 @@ sub {
 	return $Vend::Cfg->{Member}{$key}
 		if	$Vend::Session->{logged_in}
 			&& defined $Vend::Cfg->{Member}{$key};
-	return $Vend::Cfg->{Variable}{$key}
-		if defined $Vend::Cfg->{Variable}{$key};
-	return $Global::Variable->{$key} if $global;
-	return '';
+	if($global) {
+		return Vend::Interpolate::dynamic_var($key) || $Global::Variable->{$key};
+	}
+	return Vend::Interpolate::dynamic_var($key);
 }
 EOR
