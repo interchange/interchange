@@ -9,7 +9,7 @@
 
   </td>
   <td width="1" valign="top">
-    <img src="__THEME_IMG_DIR__littlebar.gif" width="1" height="600">
+    <img src="__THEME_IMG_DIR__littlebar.gif" width="1" height="650">
   </td>
   <td width="15%" valign="top" align="right" class="maincontent">
     [include file="templates/components/[control component none]"][control]
