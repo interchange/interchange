@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.11 2002-07-08 15:32:06 mheins Exp $
+# $Id: Data.pm,v 2.12 2002-07-14 03:21:05 jon Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -52,6 +52,8 @@ product_description
 product_common
 product_field
 product_price
+product_row
+product_row_hash
 set_field
 
 );
@@ -300,6 +302,18 @@ sub set_field {
 		$value = $db->field($key, $field_name) . $value;
 	}
     return $db->set_field($key, $field_name, $value);
+}
+
+sub product_row {
+	my ($code) = @_;
+	my $db = product_code_exists_ref($code) or return;
+	return $db->row($code);
+}
+
+sub product_row_hash {
+	my ($code) = @_;
+	my $db = product_code_exists_ref($code) or return;
+	return $db->row_hash($code);
 }
 
 sub product_field {
