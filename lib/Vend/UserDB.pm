@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.13.6.7 2001-02-22 19:55:34 heins Exp $
+# $Id: UserDB.pm,v 1.13.6.8 2001-02-26 06:13:44 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.13.6.7 $, 10);
+$VERSION = substr(q$Revision: 1.13.6.8 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -1282,7 +1282,6 @@ sub userdb {
 		delete $Vend::Session->{username};
 		undef $Vend::username;
 		undef $Vend::admin;
-		::put_session();
 		$user = new Vend::UserDB %options;
 		unless (defined $user) {
 			$Vend::Session->{failure} = ::errmsg("Unable to access user database.");
