@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.39 2001-07-06 17:37:45 heins Exp $
+# $Id: Util.pm,v 1.14.2.40 2001-07-11 14:48:11 heins Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -74,7 +74,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.39 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.40 $, 10);
 
 BEGIN {
 	eval {
@@ -1204,7 +1204,12 @@ sub unlockfile {
 }
 
 ### Still necessary, sad to say.....
-set_lock_type('none') if $Global::Windows;
+if($Global::Windows) {
+	set_lock_type('none');
+}
+elsif($^O =~ /hpux/) {
+	set_lock_type('fcntl');
+}
 
 # Returns the total number of items ordered.
 # Uses the current cart if none specified.
