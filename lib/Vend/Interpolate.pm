@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.9 2001-08-06 16:15:24 heins Exp $
+# $Id: Interpolate.pm,v 2.10 2001-08-15 12:27:26 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = substr(q$Revision: 2.10 $, 10);
 
 @EXPORT = qw (
 
@@ -7261,7 +7261,7 @@ sub tax_vat {
 				|| $::Variable->{MV_COUNTRY_TAX_FIELD}
 				|| 'tax';
 #::logDebug("ctable=$ctable c_taxfield=$c_taxfield");
-	my $type = tag_data($ctable, $c_taxfield, $country)
+	$type = tag_data($ctable, $c_taxfield, $country)
 		or return 0;
 #::logDebug("tax type=$type");
 	$type =~ s/^\s+//;
