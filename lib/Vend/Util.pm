@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.12 2002-01-16 01:54:09 jon Exp $
+# $Id: Util.pm,v 2.13 2002-01-22 02:07:08 mheins Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -81,7 +81,7 @@ use Text::ParseWords;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.12 $, 10);
+$VERSION = substr(q$Revision: 2.13 $, 10);
 
 BEGIN {
 	eval {
@@ -883,6 +883,29 @@ sub find_locale_bit {
 	return $text;
 }
 
+sub teleport_name {
+	my ($file, $teleport, $table) = @_;
+	my $db;
+	return $file
+		unless	 $teleport
+			and  $db = Vend::Data::database_exists_ref($table);
+
+	my @f = qw/code base_code expiration_date show_date page_text/;
+	my ($c, $bc, $ed, $sd, $pt) = @{$Vend::Cfg->{PageTableMap}}{@f};
+	my $q = qq{
+		SELECT $c from $table
+		WHERE  $bc = '$file'
+		AND    $ed <  $teleport
+		AND    $sd >= $teleport
+		ORDER BY $sd DESC
+	};
+	my $ary = $db->query($q);
+	if($ary and $ary->[0]) {
+		$file = $ary->[0][0];
+	}
+	return $file;
+}
+
 # Reads in a page from the page directory with the name FILE and ".html"
 # appended. If the HTMLsuffix configuration has changed (because of setting in
 # catalog.cfg or Locale definitions) it will substitute that. Returns the
@@ -890,7 +913,7 @@ sub find_locale_bit {
 # Substitutes Locale bits as necessary.
 
 sub readin {
-    my($file, $only) = @_;
+    my($file, $only, $locale) = @_;
 
 	## We don't want to try if we are forcing a flypage
 	return undef if $Vend::ForceFlypage;
@@ -913,7 +936,27 @@ sub readin {
 	$pathdir =~ s:^/+::;
 	my $try;
 	my $suffix = $Vend::Cfg->{HTMLsuffix};
+	my $db_tried;
+	$locale = 1 unless defined $locale;
+	my $record;
   FINDPAGE: {
+  	## If PageTables is set, we try to find the page in the table first
+	## but only once, without the suffix
+  	if(! $db_tried++ and $Vend::Cfg->{PageTables}) {
+		my $teleport = $Vend::Session->{teleport};
+		my $field = $Vend::Cfg->{PageTableMap}{page_text};
+		foreach my $t (@{$Vend::Cfg->{PageTables}}) {
+			my $db = Vend::Data::database_exists_ref($t);
+			if($teleport) {
+				$file = teleport_name($file, $teleport, $t);
+			}
+			$record = $db->row_hash($file)
+				or next;
+			$contents = $record->{$field};
+			last FINDPAGE if length $contents;
+			undef $contents;
+		}
+	}
 	foreach $try (
 					$Vend::Cfg->{PageDir},
 					@{$Vend::Cfg->{TemplateDir}},
@@ -976,7 +1019,7 @@ EOF
 
 	return unless defined $contents;
 	
-	if($Vend::Cfg->{Locale}) {
+	if($locale and $Vend::Cfg->{Locale}) {
 		my $key;
 		$contents =~ s~\[L(\s+([^\]]+))?\]([\000-\377]*?)\[/L\]~
 						$key = $2 || $3;		
@@ -990,7 +1033,8 @@ EOF
 		$contents =~ s~\[L(?:\s+[^\]]+)?\]([\000-\377]*?)\[/L\]~$1~g;
 	}
 
-	return $contents;
+	return $contents unless wantarray;
+	return ($contents, $record);
 }
 
 sub readfile_db {
@@ -1708,7 +1752,6 @@ sub logError {
 				);
     }
 }
-
 
 # Front-end to log routines that ignores repeated identical
 # log messages after the first occurrence

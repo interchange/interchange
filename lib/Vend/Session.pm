@@ -1,6 +1,6 @@
 # Vend::Session - Interchange session routines
 #
-# $Id: Session.pm,v 2.1 2001-11-15 00:53:04 mheins Exp $
+# $Id: Session.pm,v 2.2 2002-01-22 02:07:08 mheins Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -26,7 +26,7 @@ package Vend::Session;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -384,7 +384,8 @@ sub read_session {
     $::Values	= $Vend::Session->{'values'};
     $::Scratch	= $Vend::Session->{scratch};
     $::Carts	= $Vend::Session->{carts};
-    $::Control	= $Vend::Session->{control} = [];
+    $Vend::Interpolate::Tmp ||= {};
+    $::Control	= $Vend::Interpolate::Tmp->{control} = [];
 	tie $Vend::Items, 'Vend::Cart';
 }
 

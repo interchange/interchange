@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.20 2002-01-16 02:28:25 jon Exp $
+# $Id: Config.pm,v 2.21 2002-01-22 02:07:08 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.20 $, 10);
+$VERSION = substr(q$Revision: 2.21 $, 10);
 
 my %CDname;
 
@@ -382,6 +382,14 @@ sub catalog_directives {
 	['Profile',			 'locale',     	 	 ''],
 	['ValuesDefault',	 'hash',     	 	 ''],
 	['ProductFiles',	 'array_complete',  'products'],
+	['PageTables',		 'array_complete',  ''],
+	['PageTableMap',	 'hash',			qq{
+												expiration_date expiration_date
+												show_date       show_date
+												page_text       page_text
+												base_page       base_page
+												code            code
+											}],
 	['DisplayErrors',    'yesno',            'No'],
 	['ParseVariables',	 'yesno',     	     'No'],
 	['SpecialPage',		 'special', 'order ord/basket results results search results flypage flypage'],
