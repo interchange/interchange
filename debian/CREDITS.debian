@@ -1,0 +1,5 @@
+Ardo van Rangelrooij <ardo@debian.org> for:
+- reporting bug #104747 (package contains spurious .packlist)
+
+Marcelo E. Magallon <mmagallo@debian.org> for:
+- reporting bug #109228 (package description interchange-cat-foundation)
