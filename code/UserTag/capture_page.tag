@@ -1,3 +1,7 @@
+# Copyright 2003 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: capture_page.tag,v 1.6 2004-10-01 20:37:30 docelic Exp $
+
 UserTag capture_page Order page file
 UserTag capture_page addAttr
 UserTag capture_page Routine <<EOR
@@ -39,3 +43,4 @@ sub {
 	return $opt->{hide} ? '' : $retval;
 }
 EOR
+
