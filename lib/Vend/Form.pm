@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.21 2002-11-08 17:27:24 mheins Exp $
+# $Id: Form.pm,v 2.22 2002-11-14 19:24:53 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -37,7 +37,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.21 $, 10);
+$VERSION = substr(q$Revision: 2.22 $, 10);
 
 @EXPORT = qw (
 	display
@@ -555,11 +555,17 @@ sub combo {
 			$template = '<br>';
 			if(! $opt->{rows} or $opt->{rows} > 1) {
 				$template .= q(<textarea rows="{ROWS|2}" wrap="{WRAP|virtual}");
-				$template .= q( cols="{COLS|60}" name="{NAME}">{ENCODED}</textarea>);
+				$template .= q( cols="{COLS|60}" name="{NAME}">);
+				$template .= '{ENCODED}'
+					unless $opt->{conditional_text} and length($opt->{value}) < 3;
+				$template .= q(</textarea>);
 			}
 			else {
 				$template .= qq(<input TYPE="text" size="{COLS|40}");
-				$template .= qq( name="{NAME}" value="{ENCODED}">);
+				$template .= qq( name="{NAME}" value=");
+				$template .= '{ENCODED}'
+					unless $opt->{conditional_text} and length($opt->{value}) < 3;
+				$template .= qq(">);
 			}
 		}
 		$addl = attr_list($template, $opt);
@@ -1230,6 +1236,7 @@ sub parse_type {
 		$opt->{type} = 'combo';
 		$opt->{textarea} = 1;
 		$opt->{reverse} = 1;
+		$opt->{conditional_text} = 1;
 	}
 	elsif($type =~ /^reverse_combo[ _]*(?:(\d+)(?:[ _]+(\d+))?)?/i) {
 		$opt->{rows} = $opt->{rows} || $1 || 1;
