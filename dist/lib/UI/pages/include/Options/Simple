@@ -3,6 +3,9 @@
 	$Tag->tmp('option_table');
 	my $loc = $Config->{Options_repository}{Simple} || {};
 	$Scratch->{option_table} = $loc->{table} || 'options';
+	if($CGI->{item_id} and ! $CGI->{sku}) {
+		$CGI->{sku} = $CGI->{item_id};
+	}
 	return;
 [/calc]
 
@@ -22,27 +25,68 @@
 [/perl]
 [/if]
 
-[if cgi sku]
+[if cgi opt_groups]
     [perl tables="[scratch option_table]"]
         my $otab = $Scratch->{option_table};
         my $odb = $Db{$otab};
 
+		my %existing;
+		my @groups = split /\0/, $CGI->{opt_groups};
+		for(@groups) {
+			$existing{$_} = 1;
+		}
+
         foreach(sort keys %{$CGI}) {
             next unless /^opt_group_(.*)/;
-            my $key = $1;
+            my $key = $1 || '';
+Debug("looking at opt_group_$key");
 
-            my $name = $CGI->{"opt_group_$key"};
-            my $value = $Tag->filter('line2options', $CGI->{"opt_value_$key"});
-            my $label = $CGI->{"opt_label_$key"};
+            my $rec_key;
+            my $name;
+            my $wid;
+			my $ref = {};
+			# New option
+			if(! $key) {
+				$name = $CGI->{"opt_group_"}
+					or next;
+				if($existing{$name}) {
+					$Tag->error({
+						name => 'Set option groups',
+						set => errmsg("o_group %s already exists, will not set", $name),
+					});
+					next;
+				}
+				$rec_key = $CGI->{sku} . "-$name";
+				$ref->{o_group} = $name;
+				$ref->{o_widget} = 'select';
+				$ref->{sku} = $CGI->{sku};
+			}
+			else {
+				$name = $key;
+				$rec_key = $CGI->{"opt_key_$key"};
+			}
 
-            next unless $name && $value;
+			$ref->{o_value} = $Tag->filter('line2options', $CGI->{"opt_value_$key"});
 
-            unless($key) { $key = $CGI->{sku}."-$name"; }
+            $ref->{o_label} = $CGI->{"opt_label_$key"};
 
-			$key =~ s/_/-/g; # javascript won't handle form names with '-'
+			if($name =~ /\W/) {
+				$Tag->error({
+					name => 'Set option groups',
+					set => errmsg("o_group '%s', bad name, skipping", $name),
+				});
+				next;
+			}
+			elsif (! $ref->{o_value}) {
+				$Tag->error({
+					name => 'Set option groups',
+					set => errmsg("o_group '%s' has no value, skipping", $name),
+				});
+				next;
+			}
 
-            $odb->set_slice($key,[qw(sku o_group o_value o_widget o_label)],
-				[$CGI->{sku},$name,$value,'select',$label]);
+Debug("doing set_slice for key=$rec_key, ref=" . uneval($ref));
+            $odb->set_slice($rec_key,$ref);
         }
 
         return;
@@ -67,7 +111,7 @@
 <P>
 &nbsp;
 [/if]
-<INPUT TYPE=hidden NAME=sku              VALUE="[cgi item_id]">
+<INPUT TYPE=hidden NAME=sku              VALUE="[cgi sku]">
 <INPUT TYPE=hidden NAME=ui_page_title    VALUE="[cgi ui_page_title]">
 <INPUT TYPE=hidden NAME=ui_page_title    VALUE="[cgi ui_page_banner]">
 <INPUT TYPE=hidden NAME=ui_return_to     VALUE="@@MV_PAGE@@">
@@ -75,30 +119,37 @@
 
 <TABLE BORDER=0><TR><TD VALIGN=TOP>
 
-[query list=1 sql="select * from [scratch option_table] where sku='[filter op=sql interpolate=1][cgi item_id][/filter]' and o_group is not null"]
+[query list=1 sql="select * from [scratch option_table] where sku='[filter op=sql interpolate=1][cgi sku][/filter]' and o_group is not null and o_group != ''"]
 [list]
-[if-sql-data options o_group]
-[calc] $Scratch->{mod_code} = q{[sql-code]}; $Scratch->{mod_code} =~ s/-/_/g; return;[/calc]
 
 <div style="border: 1px solid black; margin-bottom: 3px">
 <table	border=0
 		cellspacing=0 cellpadding=3
 		class="[sql-alternate 2]__UI_T_ROW_EVEN__[else]__UI_T_ROW_ODD__[/else][/sql-alternate]"
 		>
+[if-sql-param o_group !~ /^\w+$/]
+<tr>
+	<td>
+		Bad option group '[filter entities][sql-param o_group][/filter]'
+	</td>
+</tr>
+[else]
 <tr>
 	<td valign=center class=titlebox>
-		Option: [filter entities][sql-param o_group][/filter]
-<INPUT TYPE=hidden NAME="opt_group_[scratch mod_code]" VALUE="[filter entities][sql-param o_group][/filter]">
+		[L]Option[/L]: [sql-param o_group]
+		<INPUT TYPE=hidden NAME="opt_key_[sql-param o_group]" VALUE="[sql-code]">
+		<INPUT TYPE=hidden NAME="opt_group_[sql-param o_group]" VALUE="[sql-param o_group]">
+		<INPUT TYPE=hidden NAME="opt_groups" VALUE="[sql-param o_group]">
 	</td>
 </tr>
 <tr>
 	<td valign=center>
 		[L]Label[/L]:
-			<INPUT TYPE=text SIZE=20 NAME="opt_label_[scratch mod_code]" VALUE="[filter entities][sql-param o_label][/filter]">
+			<INPUT TYPE=text SIZE=20 NAME="opt_label_[sql-param o_group]" VALUE="[filter entities][sql-param o_label][/filter]">
 <A HREF="[area href='@@MV_PAGE@@'
                form='deleterecords=1
                      ui_delete_id=[sql-code]
-                     item_id=[cgi item_id]
+                     item_id=[cgi sku]
                      mv_data_table=options
                      mv_click=db_maintenance
                      mv_action=back
@@ -107,28 +158,21 @@
          ]"
 		 title="Delete [sql-param o_group] option"
 		 ><IMG SRC="delete.gif" ALT="[L]Delete[/L]" ALIGN=CENTER BORDER=0></A>
-
-	<input type=hidden
-			name="reset_[scratch mod_code]"
-			value="[filter entities][sql-param o_label][/filter]">
-<script><!--
-document.write('<br><INPUT TYPE=checkbox [sql-calc]q{[sql-param o_label]} eq q{[sql-param o_group]} ? 'CHECKED' : undef;[/sql-calc]\n' +
-'	onClick="if (this.checked) { this.form.opt_label_[scratch mod_code].value = this.form.opt_group_[scratch mod_code].value; } else { this.form.opt_label_[scratch mod_code].value = this.form.reset_[scratch mod_code].value; }">\n' +
-'<font size=2>[L]Set label to name[/L]</font>');
-// -->
-</script>
-</TD></TR>
+	</td>
+</tr>
+[/else]
+[/if-sql-param]
 
 
 <TR><TD>
-<TEXTAREA ROWS=5 COLS=30 NAME="opt_value_[scratch mod_code]">[filter options2line][sql-param o_value][/filter]</TEXTAREA><br>
+<TEXTAREA ROWS=5 COLS=30 NAME="opt_value_[sql-param o_group]">[filter options2line][sql-param o_value][/filter]</TEXTAREA><br>
 <span style="font-size: smaller">
 [page href="admin/flex_editor"
 		form="
 			mv_data_table=options
 			nodelete=1
 			ui_return_to=@@MV_PAGE@@
-			ui_return_to=item_id=[cgi item_id]
+			ui_return_to=item_id=[cgi sku]
 			item_id=[sql-code]
 			ui_data_fields=code sku o_widget o_width o_height
 			ui_te_widget:sku=hidden
@@ -141,7 +185,7 @@ document.write('<br><INPUT TYPE=checkbox [sql-calc]q{[sql-param o_label]} eq q{[
 			nodelete=1
 			item_id=[sql-code]
 			ui_return_to=@@MV_PAGE@@
-			ui_return_to=item_id=[cgi item_id]
+			ui_return_to=item_id=[cgi sku]
 			ui_data_fields=code sku o_value price
 			ui_te_widget:sku=hidden
 			ui_meta_view=simple_price
@@ -158,7 +202,6 @@ document.write('<br><INPUT TYPE=checkbox [sql-calc]q{[sql-param o_label]} eq q{[
 </TD></TR>
 </TABLE>
 </div>
-[/if-sql-data]
 [/list]
 [/query]
 
