@@ -13,7 +13,7 @@ sub {
 #::logDebug("gpg_get_keys flags=$flags");
 	
 	open(GPGIMP, "$gpgexe $flags |") 
-		or die "Can't fork!";
+		or die "Can't fork: $!";
 
 	my $fmt = $opt->{long} ?  "%s=%s (date %s, id %s)" : "%s=%s";
 
