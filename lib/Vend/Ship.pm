@@ -1,6 +1,6 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.7 2004-07-05 21:46:33 mheins Exp $
+# $Id: Ship.pm,v 2.8 2004-07-05 21:59:56 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -705,6 +705,7 @@ sub shipping {
 		elsif ($what =~ /^f\s*(.*)/i) {
 			$formula = $o->{formula} || $1;
 			$formula =~ s/\@\@TOTAL\@\\?\@/$total/ig;
+			$formula =~ s/\@\@CRIT\@\\?\@/$total/ig;
 			$formula = interpolate_html($formula)
 				if $formula =~ /__\w+__|\[\w/;
 			$cost = $Vend::Interpolate::ready_safe->reval($formula);
