@@ -85,8 +85,8 @@ TAXFIELD	state	Tax
 TAXRATE	__MVC_TAXRATE__	Tax
 TAXSHIPPING	__MVC_TAXSHIPPING__	Tax
 TOLLFREE	__MVC_TOLLFREE__	Company
-UI_ABOUT_LOGIN_URL	http://www.redhat.com/ecommerce	Admin layout
-UI_ABOUT_NORMAL_URL	http://www.redhat.com/ecommerce	Admin layout
+UI_ABOUT_LOGIN_URL	http://www.icdevgroup.org/	Admin layout
+UI_ABOUT_NORMAL_URL	http://www.icdevgroup.org/	Admin layout
 UI_ADMIN_TABLES	mv_metadata locale variable dict icmenu ichelp route access	Admin control
 UI_BOTTOMIMG	poweredby.gif	Admin layout
 UI_COMPONENT_DIR	templates/components	Directories and Paths
