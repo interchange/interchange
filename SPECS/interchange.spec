@@ -1,3 +1,10 @@
+# use Perl installation in /usr/local custom built from source?
+%define localperl 0
+
+%if %localperl
+%define __perl /usr/local/bin/perl
+%endif
+
 %define ic_user				interch
 %define ic_group			interch
 
@@ -7,8 +14,8 @@
 
 Summary: Interchange web application platform
 Name: interchange
-Version: 4.9.8
-Release: 2
+Version: 4.9.9
+Release: 1
 Vendor: Interchange Development Group
 Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
@@ -21,14 +28,6 @@ Source3: interchange-logrotate
 License: GPL
 Prereq: /sbin/chkconfig, /sbin/service, /usr/sbin/useradd, /usr/sbin/groupadd
 Requires: perl >= 5.6.0
-Requires: perl-Business-UPS
-Requires: perl-Digest-MD5
-Requires: perl-MIME-Base64
-Requires: perl-Safe-Hole
-Requires: perl-Storable
-Requires: perl-URI
-Requires: perl-libnet
-Requires: perl-libwww-perl
 BuildPrereq: perl >= 5.6.0
 
 %description
@@ -227,6 +226,7 @@ find . -path .$ICBASE/foundation -prune -mindepth $DIRDEPTH -maxdepth $DIRDEPTH 
 %dir %{_localstatedir}/run/interchange
 %dir %{_localstatedir}/cache/interchange
 %dir %{_localstatedir}/log/interchange
+%{_localstatedir}/log/interchange/error.log
 %dir %{_localstatedir}/lib/interchange
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/interchange.cfg
 
@@ -374,6 +374,13 @@ fi
 
 
 %changelog
+* Fri Oct 24 2003 Jon Jensen <jon@icdevgroup.org> 4.9.9-1
+- Update for new release
+- Add support for custom no-dependency Perl build in /usr/local
+- Package dangling /var/log/interchange/error.log
+- Remove explicit Perl package dependencies, as rpmbuild now finds them
+  automatically (for better or for worse)
+
 * Tue Jul 29 2003 Jon Jensen <jon@icdevgroup.org> 4.9.8-2
 - Remove dependency on SQL::Statement.
 
