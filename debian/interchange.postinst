@@ -46,7 +46,11 @@ chown -R $USER.$GROUP /usr/lib/cgi-bin/ic
 chmod u+s /usr/lib/cgi-bin/ic/*
 
 # Ensure correct permissions for catalog base directory
+# and static HTML base directory
+
 chown $USER.$GROUP /var/lib/interchange/catalogs
+db_get interchange/docroot
+chown $USER.$GROUP "$RET"
 
 # Record debconf configuration in multiple files
 # 1. Stuff needed for the init script
