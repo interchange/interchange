@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.8 2001-10-08 08:15:26 racke Exp $
+# $Id: Config.pm,v 2.9 2001-10-08 14:38:42 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = substr(q$Revision: 2.9 $, 10);
 
 my %CDname;
 
@@ -491,7 +491,7 @@ sub catalog_directives {
 	['UserDatabase',	 undef,		     	 ''],  #undocumented
 	['RobotLimit',		 'integer',		      0],
 	['OrderLineLimit',	 'integer',		      0],
-	['StaticPage',		 'array',     	     ''],
+	['StaticPage',		 'boolean',     	     ''],
 	['StaticPath',		 undef,     	     '/'],
 	['StaticPattern',	 'regex',     	     ''],
 	['StaticSuffix',	 undef,     	     '.html'],
