@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.32 2004-11-30 14:20:38 jon Exp $
+# $Id: UserDB.pm,v 2.33 2004-12-17 21:08:46 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.32 $, 10);
+$VERSION = substr(q$Revision: 2.33 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1531,6 +1531,7 @@ sub new_account {
 			$Vend::Session->{auto_created_user} = $self->{USERNAME};
 		}
 		else {
+			$self->{USERNAME} = $foreign if $foreign;
 			username_cookies($self->{USERNAME}, $pw) 
 				if $Vend::Cfg->{CookieLogin};
 
