@@ -1,6 +1,0 @@
-UserTag index               Order        table
-UserTag index               addAttr
-UserTag index               attrAlias    base table
-UserTag index               attrAlias    database table
-UserTag index               PosNumber    1
-UserTag index               MapRoutine   Vend::Data::index_database

@@ -1,4 +1,0 @@
-UserTag onfly               Order        code quantity
-UserTag onfly               addAttr
-UserTag onfly               PosNumber    2
-UserTag onfly               MapRoutine   Vend::Order::onfly

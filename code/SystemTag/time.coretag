@@ -1,5 +1,0 @@
-UserTag time                Order        locale
-UserTag time                addAttr
-UserTag time                hasEndTag
-UserTag time                PosNumber    1
-UserTag time                MapRoutine   Vend::Interpolate::mvtime

@@ -1,4 +1,0 @@
-UserTag value-extended      Order        name
-UserTag value-extended      addAttr
-UserTag value-extended      PosNumber    1
-UserTag value-extended      MapRoutine   Vend::Interpolate::tag_value_extended

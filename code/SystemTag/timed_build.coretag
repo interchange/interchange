@@ -1,6 +1,0 @@
-UserTag timed-build         Order        file
-UserTag timed-build         addAttr
-UserTag timed-build         Gobble
-UserTag timed-build         hasEndTag
-UserTag timed-build         PosNumber    1
-UserTag timed-build         MapRoutine   Vend::Interpolate::timed_build

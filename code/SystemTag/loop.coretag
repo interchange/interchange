@@ -1,7 +1,0 @@
-UserTag loop                Order        list
-UserTag loop                addAttr
-UserTag loop                attrAlias    args list
-UserTag loop                attrAlias    arg list
-UserTag loop                hasEndTag
-UserTag loop                PosNumber    1
-UserTag loop                MapRoutine   Vend::Interpolate::tag_loop_list

@@ -1,5 +1,0 @@
-UserTag seti                Order        name
-UserTag seti                hasEndTag
-UserTag seti                Interpolate
-UserTag seti                PosNumber    1
-UserTag seti                MapRoutine   Vend::Interpolate::set_scratch

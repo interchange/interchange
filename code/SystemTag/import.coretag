@@ -1,8 +1,0 @@
-UserTag import              Order        table type
-UserTag import              addAttr
-UserTag import              attrAlias    base table
-UserTag import              attrAlias    database table
-UserTag import              hasEndTag
-UserTag import              Interpolate
-UserTag import              PosNumber    2
-UserTag import              MapRoutine   Vend::Data::import_text

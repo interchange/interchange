@@ -1,8 +1,0 @@
-UserTag shipping            Order        mode
-UserTag shipping            addAttr
-UserTag shipping            attrAlias    tables table
-UserTag shipping            attrAlias    carts cart
-UserTag shipping            attrAlias    modes mode
-UserTag shipping            attrAlias    name mode
-UserTag shipping            PosNumber    1
-UserTag shipping            MapRoutine   Vend::Interpolate::tag_shipping
