@@ -18,6 +18,8 @@ Core
 * Prevent converting exchange rates twice for shipping -- bug found
   and patch supplied by Frederic Steinfels <fredo@dvdupgrades.ch>.
 
+* Fixed searches with op=em as single specification.
+
 * row_hash returns undef now for memory databases too instead of 
   throwing an error if no row is found.
 
@@ -61,6 +63,18 @@ Foundation
 * Added missing Database UPPERCASE 1 settings in the Oracle database
   configuration. Thanks to Jonathan Lee <jonalee740304@yahoo.com>
   for reporting.
+
+Packaging
+---------
+
+* Username and password for UI superuser account is queried from
+  the user by debconf for the interchange-cat-foundation Debian
+  package.
+
+* Directory /etc/interchange/usertag for locally used global usertags 
+  add to the interchange Debian package.
+
+* interchange-ui Debian package now suggests a HTTPS server
 
 ------------------------------------------------------------------------------
 
