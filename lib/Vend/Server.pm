@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.20 2002-11-20 14:45:58 jon Exp $
+# $Id: Server.pm,v 2.21 2002-11-21 22:24:16 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.20 $, 10);
+$VERSION = substr(q$Revision: 2.21 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -2109,7 +2109,7 @@ my $pretty_vector = unpack('b*', $rin);
 	  eval {
 		SPAWN: {
 			last SPAWN unless defined $spawn;
-#::logDebug #("Spawning connection, " .  ($no_fork ? 'no fork, ' : 'forked, ') .  scalar localtime() . "\n");
+#::logDebug("Spawning connection, " .  ($no_fork ? 'no fork, ' : 'forked, ') .  scalar localtime() . "\n");
 			if(defined $no_fork) {
 				$::Instance = {};
 				connection();
