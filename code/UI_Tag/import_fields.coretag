@@ -251,11 +251,20 @@ EOF
 			}
 		}
 		for ($i = 0; $i < $idx; $i++) {
-			$set[$i]->($k, $f[$i]);
 			if ($opt->{cleanse}) {
 				delete $keys{$k};
 			}
 		}
+		if(@names) {
+			my %hash;
+			@hash{@names} = @f;
+			$db->set_slice($k, \%hash);
+		}
+		if($@) {
+   			my $msg = ::errmsg("error on update: %s", $@);
+			::logError($msg);
+   			$out .= $msg;
+   		}
 		$count++;
 	}
 	if ($opt->{cleanse}) {

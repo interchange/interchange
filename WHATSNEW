@@ -152,7 +152,14 @@ Payment
 * Support for the Mainstreet Credit Verification Engine (MCVE) added.
   Written, tested, and donated by Tom Friedel <tom@readyink.com>.
   Thanks, Tom!
+ 
 
+UI
+--
+
+* [import_fields]: Performance enhancement: use set_slice() to update all 
+  fields in a record at once when importing files.
+  
 
 ------------------------------------------------------------------------------
 
