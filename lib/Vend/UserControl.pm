@@ -1,6 +1,6 @@
 # Vend::UserControl - Enhanced Interchange user database functions
 #
-# $Id: UserControl.pm,v 2.2 2004-06-03 11:53:01 racke Exp $
+# $Id: UserControl.pm,v 2.3 2004-06-27 19:00:44 mheins Exp $
 #
 # Copyright (C) 2003 Interchange Development Group
 # Copyright (C) 2003 Mike Heins, <mikey@heins.net>
@@ -17,7 +17,7 @@
 
 package Vend::UserControl;
 
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 
 require Vend::UserDB;
 use Vend::Data;
@@ -430,6 +430,29 @@ sub get_address {
 	}
 
 	return $rec->{$tcode};
+}
+
+sub get_names {
+	my $self = shift;
+	my $nick = shift;
+	my $o = $self->{OPTIONS} || {};
+
+	my $adb = dbref($o->{address_table} || 'address');
+	my $tname = $adb->name();
+	my $nf = $o->{address_nickname_field} || 'nickname';
+	my $uf = $o->{address_username_field} || 'username';
+	my $uv = $adb->quote($self->{USERNAME}, $uf);
+	my $q = "select $nf from $tname where $uf = $uv";
+	my $ary = $adb->query($q);
+	my @names;
+	if($ary and @$ary) {
+		for(@$ary) {
+			push @names, $_->[0];
+		}
+	}
+
+	$o->{joiner} ||= "\n";
+	return join $o->{joiner}, @names;
 }
 
 sub set_shipping {
