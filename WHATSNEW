@@ -6,7 +6,23 @@
 ------------------------------------------------------------------------------
 
 
-Interchange 4.9.2 not yet released
+Interchange 4.9.3 not yet released.
+
+
+Core
+----
+
+* Added new [deliver ....] tag that allows you to deliver some content
+  without worrying about [tag op=header] and page spacing issues. Adds 
+  new global variable $Vend::Sent which is authoritative notification
+  that all content is sent and that all further parsing of ITL
+  should stop.
+
+
+------------------------------------------------------------------------------
+
+
+Interchange 4.9.2 released 2002-08-12.
 
 
 Core
