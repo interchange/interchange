@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.168 2003-05-15 12:25:19 racke Exp $
+# $Id: Interpolate.pm,v 2.169 2003-05-21 11:19:57 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.168 $, 10);
+$VERSION = substr(q$Revision: 2.169 $, 10);
 
 @EXPORT = qw (
 
@@ -466,19 +466,6 @@ sub substitute_image {
 						$1 . $dir . $2#ige;
 	        $$text =~ s#(<t(?:[dhr]|able)\s+[^>]*?background=")(?!\w+:)([^/'][^"]+)#
 						$1 . $dir . $2#ige;
-		}
-	}
-
-	if ( $::Pragma->{path_adjust} ) {
-		my $dir = $Vend::Cfg->{StaticPath};
-#::logDebug("have a dir for path_adjust, $dir");
-		if ($dir) {
-			$$text =~ s{(<a(?:rea)?\s+[^>]*?href=)"(/[^"]+)"} {$1'$dir$2'}ig;
-			$$text =~ s{(<link\s+[^>]*?href=)"(/[^"]+)"}      {$1'$dir$2'}ig;
-			$$text =~ s{(<i\w+\s+[^>]*?src=)"(/[^"]*)"}       {$1'$dir$2'}ig;
-	        $$text =~ s{(<body\s+[^>]*?background=)"(/[^"]+)"}{$1'$dir$2'}ig;
-	        $$text =~ s{(<t(?:[dhr]|able)\s+[^>]*?background=)"(/[^"]+)"}
-					   {$1'$dir$2'}ig;
 		}
 	}
 

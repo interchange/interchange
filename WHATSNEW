@@ -907,6 +907,8 @@ Static Page Generation
   -- remove InvalidateCache attribute from usertags
   -- remove build flag from [tag] usertag
   -- remove UI pages (regen and regenerate)
+  -- remove path_adjust Pragma which is only useful in conjunction with
+     StaticPath configuration directive
   -- remove Vend::Interpolate::cache_html, Vend::Interpolate::resolve_static, 
      Vend::Session::tie_static_dbm routines
   
