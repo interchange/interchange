@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.13 2002-02-08 23:08:21 mheins Exp $
+# $Id: Form.pm,v 2.14 2002-02-09 03:16:05 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -37,7 +37,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.13 $, 10);
+$VERSION = substr(q$Revision: 2.14 $, 10);
 
 @EXPORT = qw (
 	display
@@ -1067,6 +1067,7 @@ if($opt->{debug}) {
 
 	$opt->{value} = $opt->{default} if ! defined $opt->{value};
     $opt->{encoded} = encode($opt->{value}, $ESCAPE_CHARS::std);
+    $opt->{value} =~ s/&#91;/\[/g if $opt->{enable_itl};
 
 	# Action taken for various types
 	my %daction = (
