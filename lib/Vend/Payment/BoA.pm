@@ -1,6 +1,6 @@
 # Vend::Payment::BoA - Interchange BoA support
 #
-# $Id: BoA.pm,v 1.3.2.2 2002-01-24 05:07:03 jon Exp $
+# $Id: BoA.pm,v 1.3.2.3 2002-03-28 15:53:49 jon Exp $
 #
 # Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -33,7 +33,7 @@ package Vend::Payment::BoA;
 
 =head1 Interchange BoA Support
 
-Vend::Payment::BoA $Revision: 1.3.2.2 $
+Vend::Payment::BoA $Revision: 1.3.2.3 $
 
 =head1 SYNOPSIS
 
@@ -440,6 +440,7 @@ sub boa {
     }
 
 #::logDebug("BoA query: " . ::uneval(\%query));
+
     $opt->{extra_headers} = { Referer => $referer };
 
     my $call_gateway = sub {
@@ -447,18 +448,15 @@ sub boa {
 	my $thing    = post_data($opt, $query);
 	my $page     = $thing->{result_page};
 	my $response = $thing->{status_line};
+
 #::logDebug("BoA post_data response: " . ::uneval($thing) );
 	
 	my %result;
- 	if ($opt->{script} =~ /payment/) {
-		$page =~ s/^.*?A HREF=\?m=$user&//si;
-		$page =~ s/>.*$//s;
-	
-	} else {
-		$page =~ s/\cM{2}.*$//s;
-	}
+	my $sep = "<BR>";
 
-	foreach ( split( /\cM|&/, $page) ) {
+	$page =~ s/\r*<html>.*$//is;
+
+	foreach ( split( /$sep/i, $page) ) {
 		my ($key, $value) = split (/=/, $_, 2);
 		$value =~ tr/+/ /;
 		$value =~ s/%([0-9a-fA-F]{2})/chr( hex( $1 ) )/ge;
@@ -466,12 +464,13 @@ sub boa {
 		$result{"\L$key"} = $value;
 	}
 
+
 #::logDebug("BoA result hash: " . ::uneval(\%result) );
 
 	return %result;
     };
 
-    my %result = $call_gateway->($opt,\%query,'auth');
+    my %result = $call_gateway->($opt,\%query);
 
     if ($transtype =~ /^(?:auth|sale)/) {
 	# Interchange names are on the left, BoA on the right
@@ -490,7 +489,7 @@ sub boa {
 			if defined $result{$result_map{$_}};
 	}
 
-#::logDebug(qq{BoA %result after result_map loop:\n} . ::uneval(\%result) );
+#::logDebug(qq{BoA %result after result_map loop:\n} . ::uneval(\%result));
 
 	if (exists $boa_accept_map{ $result{ioc_response_code} } ) {
 		$result{MStatus} = 'success';
