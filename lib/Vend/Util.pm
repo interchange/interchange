@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.65 2003-12-15 22:25:07 mheins Exp $
+# $Id: Util.pm,v 2.66 2003-12-16 14:07:56 jon Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -87,7 +87,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.65 $, 10);
+$VERSION = substr(q$Revision: 2.66 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1162,6 +1162,8 @@ my @scratches = qw/
 sub vendUrl {
     my($path, $arguments, $r, $opt) = @_;
 
+	$opt ||= {};
+
 	if($opt->{auto_format}) {
 		return $path if $path =~ m{^/};
 		$path =~ s:#([^/.])+$::
@@ -1180,7 +1182,6 @@ sub vendUrl {
 		$r = $Vend::Cfg->{SecureURL};
 	}
 
-	$opt ||= {};
 	my %skip = qw/form 1 href 1 reparse 1/;
 
 	for(@scratches) {
