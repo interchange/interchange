@@ -1,6 +1,6 @@
 # Page.pm - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 1.5.6.3 2001-02-26 00:52:04 heins Exp $
+# $Id: Page.pm,v 1.5.6.4 2001-04-09 06:24:05 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -48,7 +48,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 1.5.6.3 $, 10);
+$VERSION = substr(q$Revision: 1.5.6.4 $, 10);
 
 my $wantref = 1;
 
@@ -58,9 +58,12 @@ sub display_special_page {
 	
 	$subject = $subject || 'unspecified error';
 	
-	$page = readin($name);
+#::logDebug("looking for special_page=$name");
+	$page = readfile($name, $Global::NoAbsolute, 1) || readin($name);
+
 	die ::get_locale_message(412, "Missing special page: %s\n", $name)
 		unless defined $page;
+#::logDebug("displaying special_page=$name");
 	$page =~ s#\[subject\]#$subject#ig;
 	return ::response(::interpolate_html($page, 1));
 }
