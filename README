@@ -6,8 +6,7 @@ Interchange 4.8.1
 
 Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 
-Originally based on Vend 0.2, with portions from Vend 0.3
-Copyright 1995-96 by Andrew M. Wilcox
+Originally based on Vend 0.2 and 0.3, copyright 1995-96 by Andrew M. Wilcox.
 
 See the file LICENSE for redistribution terms.
 
@@ -55,7 +54,7 @@ dist/          The distribution files, exclusive of executable
                files and modules. Includes:
 
                interchange.cfg.dist   Distribution interchange.cfg
-               foundation/            Demo catalog application
+               foundation/            Demo catalog skeleton, used by makecat
                src/                   C and Perl code for CGI links
                lib/                   Back-end administrative interface
                usertag/               Some fairly standard usertags
@@ -114,7 +113,7 @@ Visit http://demo.akopia.com/ to see a live demo on our servers.
                          D O C U M E N T A T I O N
 
 The included documentation is in POD and man(1) formats. The developer web
-site it located at:
+site is located at:
 
 http://interchange.redhat.com/
 
