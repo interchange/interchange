@@ -10,7 +10,7 @@
 [set icon_name]admin/icon_stats.gif[/set]
 [set help_name]report[/set]
 
-@@UI_STD_HEAD@@
+@_UI_STD_HEAD_@
 
 [seti name=tables][list-databases][/seti]
 [perl table="[scratch tables]"]
@@ -48,7 +48,7 @@
             search_op         op
             case_sensitive    cs
             begin_string      bs
-            substring         ss
+            substring         su
 			return            rf
 		/
 	);
@@ -156,5 +156,5 @@ Window-Target: test
 [set search_page][/set]
 [/if]
 [set search_string][/set]
-@@UI_STD_FOOTER@@
+@_UI_STD_FOOTER_@
 

@@ -25,15 +25,93 @@
 	}
 	$out = "<SCRIPT LANGUAGE=JAVASCRIPT>\n<!-- \n";
 
-	my $saved = $Values->{saved_search};
 	my (@wanted) = qw/
 						num_columns
 						search_name
 						search_table
 						search_template
 						unique_only
+						allow_regex	
 						matchlimit
 						/;
+	my (%wantmap) = qw/
+						search_table		fi
+						allow_regex		    ac
+						search_template		sp
+						unique_only			un
+						matchlimit			ml
+						/;
+
+	my %want_invert = qw/ ac 1 /;
+	@wantmap{values %wantmap} = keys %wantmap;
+
+	my $saved = $Values->{saved_search} || {};
+	my @lines;
+	if($CGI->{ui_searchblob} ) {
+		$saved = {};
+		@lines = grep /\S/, split /\n/, $CGI->{ui_searchblob};
+		@lines = map { s/^\s+//; s/\s+$//; $_ } @lines;
+		for(@lines) {
+Log("processing searchblob line $_");
+			my($k, $v) = split /\s*=\s*/, $_, 2;
+			my $keyname;
+			if ($keyname = delete($wantmap{$k}) ) {
+				$v = ! $v if $want_invert{$k};
+				$saved->{$keyname} = $v;
+			}
+			else {
+				push @rescan, [$k, $v];
+			}
+		}
+	}
+	else {
+		$saved = $Values->{saved_search};
+	}
+
+	my %remap = (
+					qw/
+					fi  search_table
+					sf  search_field
+					op  search_op
+					se  search_spec
+					cs  case_sensitive
+					bs  begin_string
+					su  substring
+					nu  numeric
+					tf  sort_order
+					rf  return
+					to  sort_option
+					/
+	);
+	my %count_rescan;
+	my $r;
+	foreach $r (@rescan) {
+		my $keyname = $remap{$r->[0]} . ($count_rescan{$r->[0]}++ || 0);
+		if($r->[0] eq 'sf') {
+			my ($kn, $tab);
+			if( $r->[1] =~ s/(\w+)://) {
+				$tab = $1;
+				$kn = $keyname;
+				$kn =~ s/search_field/search_table/;
+				$saved->{$kn} = $tab;
+			}
+			else {
+				my $kn = $keyname;
+				$kn =~ s/search_field/search_table/;
+				$saved->{$kn} = $saved->{search_table};
+			}
+		}
+		if($r->[0] eq 'sf' and $r->[1] =~ s/(\w+)://) {
+			my $tab = $1;
+			my $kn = $keyname;
+			$kn =~ s/search_field/search_table/;
+			$saved->{$remap{$kn}} = $tab;
+		}
+Log("processing searchblob rescan $keyname = $r->[1]");
+		$saved->{$keyname} = $r->[1];
+	}
+
+Log($Tag->uneval( { ref => $saved } ));
 	if(ref $saved) {
 		for (@wanted) {
 			delete $Values->{$_};
@@ -70,10 +148,7 @@
 		}
 	}
 	$Scratch->{column_nums} = join " ", 0 .. $max_columns;
-	for(my $i = 0; $i <= $max_columns ; $i++) {
-
-		for (
-				qw/ search_table
+	my @incs = qw/ search_table
 					search_field
 					search_op
 					search_spec
@@ -83,29 +158,16 @@
 					numeric
 					sort_order
 					sort_option
-				/
-			)
-		{ delete $Values->{"$_$i"}; }
+					return
+				/;
+
+	for(my $i = 0; $i <= $max_columns ; $i++) {
+
+		for (@incs) { delete $Values->{"$_$i"}; }
 
 		next if ! $saved;
 
-		for(
-			qw/ search_table
-				search_field
-				search_op
-				search_spec
-				case_sensitive
-				begin_string
-				substring
-				numeric
-				sort_order
-				sort_option
-			/
-			)
-		{ $Values->{"$_$i"} = $saved->{"$_$i"}; }
-		my $tab = $saved->{"search_table0"}
-		            or next;
-		$Values->{"return$i"}  .= "<OPTION SELECTED VALUE='$tab'>$tab</OPTION>";
+		for( @incs ) { $Values->{"$_$i"} = $saved->{"$_$i"}; }
 	}
 	$out .= <<EOF;
 
@@ -149,7 +211,7 @@ EOF
 
 [calc] $Config->{NoSearch} = ''; [/calc]
 
-@@UI_STD_HEAD@@
+@_UI_STD_HEAD_@
 
 [seti table_list]
 	[loop prefix=table list="[scratch tables]" option=search_table]
@@ -210,7 +272,12 @@ EOF
 	</SELECT>
 		</TD>
 		<TD>
-	<INPUT NAME="search_template" VALUE="[value search_template]">
+	<select NAME="search_template">
+		<option value=""> --default ([calc] $Config->{Special}{results} [/calc]) --
+		[loop option=search_template list="[list-pages]"]
+			<option>[loop-code]
+		[/loop]
+	</select>
 		</TD>
 		<TD>
 	<SELECT NAME="matchlimit">
@@ -363,4 +430,4 @@ le	Less than or equal
 
 </FORM>
 
-@@UI_STD_FOOTER@@
+@_UI_STD_FOOTER_@
