@@ -78,13 +78,6 @@ Display an extra Ok/Cancel button pair if there are more than
 EOF
 [/perl]
 
-
-[seti extra_tables]
-[query list=1 sql="SELECT DISTINCT db FROM __UI_META_TABLE__" table="__UI_META_TABLE__"]
-	[sql-code]
-[/query]
-[/seti]
-
 [mvasp tables="[list-databases] __UI_META_TABLE__ __UI_ACCESS_TABLE__"]
 <%
 	my $table	= $Values->{mv_data_table};
