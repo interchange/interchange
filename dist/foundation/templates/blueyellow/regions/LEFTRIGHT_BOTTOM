@@ -16,6 +16,8 @@
   </td>
   <td width="15%" valign="top" align="right" class="maincontent">
     [component group=vertical]
+    [component group=vertical]
+    [component group=vertical]
   </td>
 </tr>
 </table>

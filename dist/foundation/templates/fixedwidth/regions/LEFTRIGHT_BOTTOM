@@ -21,6 +21,8 @@
     <tr>
       <td>
         [component group=vertical]
+        [component group=vertical]
+        [component group=vertical]
       </td>
     </tr>
     </table>

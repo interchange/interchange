@@ -66,8 +66,8 @@
   <td width="20%" valign="top" align="left" class="categorybar"> 
     <!--Left Sidebar-->
     <table width="100%" border="0" cellspacing="0" cellpadding="0">
-      [component default=search_box_small group=vertical]
-      [component default=category_vertical group=vertical]
+      [component group=vertical]
+      [component group=vertical]
       [component group=vertical]
     </table>				  
   </td>
