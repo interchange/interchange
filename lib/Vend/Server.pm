@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.41 2003-09-10 16:55:14 mheins Exp $
+# $Id: Server.pm,v 2.42 2003-12-06 20:25:35 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.41 $, 10);
+$VERSION = substr(q$Revision: 2.42 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -323,7 +323,7 @@ sub parse_post {
 	my $redo;
   CGIVAL: {
   	# This loop semi-duplicated in store_cgi_kv
-	foreach $pair (@pairs) {
+	foreach $pair (grep length, @pairs) {
 		($key, $value) = ($pair =~ m/([^=]+)=(.*)/)
 			or do {
 				if ($Global::TolerateGet) {
