@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.67 2004-02-04 14:54:09 racke Exp $
+# $Id: Util.pm,v 2.68 2004-02-11 14:37:02 jon Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -87,7 +87,7 @@ use Safe;
 use Vend::File;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.67 $, 10);
+$VERSION = substr(q$Revision: 2.68 $, 10);
 
 my $Eval_routine;
 my $Eval_routine_file;
@@ -1159,6 +1159,8 @@ my @scratches = qw/
 				add_source
 				link_relative
 				match_security
+				no_count
+				no_session
 				/;
 
 sub vendUrl {
@@ -1213,7 +1215,7 @@ sub vendUrl {
 		unless $opt->{no_session_id}
 		or     ($Vend::Cookie and $::Scratch->{mv_no_session_id});
 	$ct = ++$Vend::Session->{pageCount}
-		unless $opt->{no_count} or $::Scratch->{mv_no_count};
+		unless $opt->{no_count};
 
 	if($opt->{match_security}) {
 		$opt->{secure} = $CGI::secure;
