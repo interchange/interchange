@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.34 2001-06-05 15:18:32 racke Exp $
+# $Id: DBI.pm,v 1.25.2.35 2001-06-09 20:01:09 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.34 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.35 $, 10);
 
 use strict;
 
@@ -1445,12 +1445,16 @@ sub query {
 			die "$msg\n";
 		}
 		$opt->{row_count} = 1 if $update;
-		$sth = $db->prepare($query);
+		$sth = $db->prepare($query) or die $DBI::errstr;
 #::logDebug("Query prepared OK. sth=$sth");
-		$rc = $sth->execute();
+		$rc = $sth->execute() or die $DBI::errstr;
 #::logDebug("Query executed OK. rc=" . (defined $rc ? $rc : 'undef'));
 		
-		if ($opt->{hashref}) {
+		if ($update) {
+			$ref = $Vend::Interpolate::Tmp->{$opt->{hashref} ?
+				$opt->{hashref} : $opt->{arrayref}} = [];
+		}
+		elsif ($opt->{hashref}) {
 			my @ary;
 			while ( defined (my $rowhashref = $sth->fetchrow_hashref) ) {
 				if ($s->config('UPPERCASE')) {
