@@ -49,7 +49,7 @@
 	@ignore{@ignore} = @ignore;
 
 	my %typemap = (
-		1	=> 'DBM/Memory, default delimiter',
+		1	=> 'DBM/Memory, auto-detect delimiter',
 		2	=> 'DBM/Memory, LINE delimiter',
 		3	=> 'DBM/Memory, %% delimiter',
 		4	=> 'DBM/Memory, CSV delimiter',
@@ -68,13 +68,24 @@
 				$tinfo = "<br>($tinfo)";
 			}
 		}
+
 		my $ref = $Config->{Database}{$_};
 		my $class = $ref->{Class};
 		my $file  = $ref->{file};
 		my $dfile = ($class eq 'DBI' ? $ref->{db_file_extended} : $ref->{db_file});
 		my $dfn   = $dfile;
 		$dfile =~ s:^$Config->{ProductDir}/::o;
-		my $dir   = $ref->{dir} || $Config->{ProductDir};
+		my $dir   = $ref->{DIR} || $Config->{ProductDir};
+		my %delim_map = (
+			"|" => 'PIPE',
+			"\t" => 'TAB',
+			"\n" => 'LINE',
+		);
+
+		my $delim;
+		$delim = $ref->{delimiter};
+		$delim   = $delim_map{$delim} || $delim;
+
 		my $type  = $typemap{$ref->{type}};
 
 		$type .= " DSN=$ref->{DSN}" if $ref->{DSN};
@@ -114,6 +125,16 @@
 			<th valign=top align=left width="30%">DB File</th>
 			<td>$dfile</td>
 		</tr>
+EOF
+
+		$out .= <<EOF if $delim;
+		<tr>
+			<th valign=top align=left width="30%">Delimiter</th>
+			<td>$delim</td>
+		</tr>
+EOF
+
+		$out .= <<EOF;
 		<tr>
 			<th colspan=2>Other</th>
 		</tr>
