@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.182 2003-07-14 09:47:26 racke Exp $
+# $Id: Interpolate.pm,v 2.183 2003-07-22 01:24:36 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.182 $, 10);
+$VERSION = substr(q$Revision: 2.183 $, 10);
 
 @EXPORT = qw (
 
@@ -5256,23 +5256,32 @@ sub timed_build {
 
 	my $secs;
 	CHECKDIR: {
-		last CHECKDIR if $file;
-		my $dir = 'timed';
-
-		$file = $saved_file || $Vend::Flypart || $Global::Variable->{MV_PAGE};
-#::logDebug("static=$file");
-		if($saved_file) {
-			$file = $saved_file;
-			$file =~ s:^scan/::;
-			$file = generate_key($file);
-			$file = "scan/$file";
+		last CHECKDIR if $file and $file !~ m:/:;
+		my $dir;
+		if ($file) {
+			$dir = '.';
 		}
 		else {
-		 	$saved_file = $file = ($Vend::Flypart || $Global::Variable->{MV_PAGE});
+			$dir = 'timed';
+			$file = $saved_file || $Vend::Flypart || $Global::Variable->{MV_PAGE};
+#::logDebug("static=$file");
+			if($saved_file) {
+				$file = $saved_file;
+				$file =~ s:^scan/::;
+				$file = generate_key($file);
+				$file = "scan/$file";
+			}
+			else {
+				$saved_file = $file = ($Vend::Flypart || $Global::Variable->{MV_PAGE});
+			}
+			$file .= $Vend::Cfg->{HTMLsuffix};
 		}
-		$file .= $Vend::Cfg->{HTMLsuffix};
 		$dir .= "/$1" 
 			if $file =~ s:(.*)/::;
+		unless (allowed_file($dir)) {
+			log_file_violation($dir, 'timed_build');
+			return;
+		}
 		if(! -d $dir) {
 			require File::Path;
 			File::Path::mkpath($dir);
