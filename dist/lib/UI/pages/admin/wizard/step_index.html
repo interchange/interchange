@@ -1,11 +1,11 @@
-[set page_title]Index Page[/set]
+[set page_title][L]Index Page[/L][/set]
 [set ui_checklist]1[/set]
 [set help_name]wizard.indexpage[/set]
 @_UI_STD_HEAD_@
 
-Enter the title and content to be displayed on your index page.  The index page is the first page of your site.  The
+[L WIZARD_STEP_INDEX_PAR_1]Enter the title and content to be displayed on your index page.  The index page is the first page of your site.  The
 <b>Content</b> section already contains sample text formatted in HTML. You 
-can manipulate this text or enter new text.
+can manipulate this text or enter new text.[/L]
 <p>
 
 [tmp default_indextext]
@@ -16,19 +16,18 @@ can manipulate this text or enter new text.
     <br> 
     <p>
       <large>
-        Welcome to [if value company][value company], [/if]the Internet's 
-	premier source of ...
+		[msg arg.0="[if value company][value company], [/if]"]Welcome to %sthe Internet's premier source of ...[/msg]
       </large>
     </p>
     <p>
-      This foundation site is intended to give you the
+      [L WIZARD_STEP_INDEX_PAR_2]This foundation site is intended to give you the
       start you need to design your own Interchange 
       site. Just replace the stock graphics, products, 
       and categories we have here with your own, and 
-      you're good to go.
+      you're good to go.[/L]
     </p>
     <p>
-      Thank you for visiting.
+      [L]Thank you for visiting.[/L]
     </p>
   </td>
 </tr>
@@ -55,12 +54,12 @@ can manipulate this text or enter new text.
 
 	ui_wizard_fields="indextitle indextext"
 
-	label.indextitle="Page Title"
-	help.indextitle="Title for the page (top bar)"
+	label.indextitle="[L]Page Title[/L]"
+	help.indextitle="[L]Title for the page (top bar)[/L]"
 	widget.indextitle=text
-	default.indextitle=`'Welcome' . ($Values->{company} ? ' to ' . $Values->{company} : '') . "!"`
+	default.indextitle=`($Values->{company} ? errmsg("Welcome to %s", $Values->{company}) : errmsg("Welcome")) . "!"`
 
-	label.indextext="Content"
+	label.indextext="[L]Content[/L]"
 	widget.indextext=textarea_18_60
 	default.indextext=`$Scratch->{default_indextext}`
 ]
