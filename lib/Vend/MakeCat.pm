@@ -1,6 +1,6 @@
 # Vend::MakeCat - Routines for Interchange catalog configurator
 #
-# $Id: MakeCat.pm,v 2.6 2001-09-01 14:26:51 mheins Exp $
+# $Id: MakeCat.pm,v 2.7 2001-09-04 20:15:53 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -109,7 +109,7 @@ use vars qw/
 	%Window
 /;
 
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.7 $, 10);
 
 $Force = 0;
 $History = 0;
@@ -2208,7 +2208,7 @@ sub unique_ary {
 sub resolve_owner {
 	my $cref = shift || \%Conf;
 	die errmsg("Usage: %s", "resolve_owner({ })")
-		unless ref $cref;
+		unless ref $cref eq 'HASH';
 	return unless $> == 0 || $cref->{asroot};
 	my @things = qw/interchangeuser interchangegroup catuser catgroup/;
 	my ($icu, $icg, $catu, $catg) = @$cref{@things};
