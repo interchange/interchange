@@ -109,6 +109,7 @@
 
 	%Adv_set_sql = (
 		CHOPBLANKS => "1=Strip trailing white space from fixed-length text, 0=Don't strip (warning: dangerous)",
+		HAS_DESCRIBE  => "0=No DESCRIBE TABLE available, 1=has DESCRIBE TABLE",
 		HAS_LIMIT  => "0=No LIMIT available, 1=has LIMIT to limit rows",
 		AUTOCOMMIT => "=Honor default AutoCommit setting, 0=No AutoCommit, 1=Set AutoCommit",
 		PRINTERROR => "=Honor default PrintError setting, 0=No PrintError, 1=Set PrintError",
@@ -260,6 +261,7 @@
 	my $new;
 	my $ref;
 	my $tname = $CGI->{mv_data_table};
+	my $db = $Db{$tname};
 
 	$ref = $Config->{Database}{$tname};
 
@@ -309,7 +311,7 @@
 			if(/,/) {
 				my @ones = split /\s*,\s*/, $_;
 				for ( @ones ) {
-					$multi_index->{$_};
+					$multi_index->{$_} = 1;
 				}
 			}
 			elsif ($uniq) {
@@ -512,8 +514,6 @@ EOF
 EOF
 	}
 
-ROWINFO: {
-
 	my $fdbh;
 	if($current_sql) {
 		$fdbh = $Sql{$tname};
@@ -521,6 +521,8 @@ ROWINFO: {
 	elsif ($new and $base_sql) {
 		$fdbh = $Sql{$base_sql};
 	}
+
+ROWINFO: {
 
 	last ROWINFO unless $fdbh and $fdbh->can('type_info_all');
 
@@ -560,11 +562,62 @@ ROWINFO: {
 	}
 	undef $fdbh;
 
-
+	my @rows;
 	push @out, <<EOF;
 	<tr>
-		<th valign=top align=left>Field configuration</th>
-		<td><table>
+		<td valign=top align=left><b>Field configuration</b><br><br>
+<script language=JavaScript>
+function visible (index) {
+	var vis = new Array;
+	var xi;
+	var dosel;
+	var selnam = 'dynform' + index;
+
+	for( xi = 0; ; xi++) {
+		nam = 'dynform' + xi;
+		var el = document.getElementById(nam);
+		if(el == undefined) break;
+
+		el.style.visibility = 'Hidden';
+
+	}
+	var element = document.getElementById(selnam);
+	element.style.visibility = 'Visible';
+	return;
+}
+</script>
+EOF
+	for(my $i = 0; $i < @names; $i++) {
+		my $name = $names[$i];
+		push @out, qq{<A HREF="javascript:void(0)" onClick="visible($i)">$name</a><br>};
+	}
+
+	push @out, <<EOF;
+		</td>
+		<td>
+<div
+	style="
+			Position:Relative;
+			Left:0; Top:0; Height:100%; Width:100%;
+			Visibility:Visible;
+			z-index:0;
+		">
+<div
+	style="
+			Position:Absolute;
+			Left:0; Top:0; Height:100%; Width:100%;
+			Visibility:Visible;
+			z-index:0;
+			background-color: #999999
+		">&nbsp;</div>
+<div
+	style="
+			Position:Absolute;
+			Left:2; Top:2; Height:98%; Width:98%;
+			Visibility:Visible;
+			z-index:0;
+			background-color: #EEEEEE
+		">&nbsp;</div>
 EOF
 
 	for(my $i = 0; $i <= scalar @names; $i++) {
@@ -599,9 +652,10 @@ EOF
 			$def =~ /\bNOT\s+NULL\b/i and $notnull = 'SELECTED';
 			($def =~ /\bdefault\s+'(.*?)'/i and $fdefault = $1)
 				or
-			($def =~ /\bdefault\s+(\S+)($|\s)/i and $fdefault = $1);
+				($def =~ /\bdefault\s+(\S+)($|\s)/i and $fdefault = $1);
 		}
 
+		my $vis = $i ? 'Hidden' : 'Visible';
 		$wid = $Tag->widget( {
 						type => 'select',
 						passed => $wid_opts,
@@ -609,10 +663,19 @@ EOF
 						name => 'mv_dbconf_COLUMN_DEF_type',
 						} );
 		push @out, <<EOF;
+<div
+	id=dynform$i
+	style="
+			Position:Absolute;
+			Left:2; Top:2; Width:98%; Height: 98%;
+			Visibility: $vis
+			z-index:2;
+		">
+	<table>
 	<tr>
-		<th valign=top align=left>$rname</th>
 		<td>
-			<table border=1>
+		<span style="font-size: larger; font-weight: bold">$rname</span><br>
+			<table border=1 style="border-type: thin" width="98%">
 			<tr>
 				<td><small><b>type</td>
 				<td><small><b>length</td>
@@ -647,13 +710,18 @@ EOF
 			</table>
 		</td>
 	</tr>
+	</table>
+</div>
 EOF
-
 
 	}
 
 	push @out, <<EOF;
-		</table></td>
+		</div>
+	<script>
+		visible(0);
+	</script>
+	</td>
 	</tr>
 EOF
 
@@ -690,6 +758,8 @@ EOF
 	</tr>
 EOF
 
+	my $create_sql = $ref->{CREATE_SQL} || $db->create_sql();
+Debug("create_sql=$create_sql");
 	if($current_sql or ($new and $base_sql) ) {
 		my @post;
 		if ($ref->{POSTCREATE}) {
@@ -721,7 +791,7 @@ EOF
 		push @out, <<EOF;
 	<tr>
 		<th valign=top align=left>Custom table creation SQL</th>
-		<td><TEXTAREA NAME="mv_dbconf_CREATE_SQL" ROWS=12 COLS=50>$ref->{CREATE_SQL}</TEXTAREA></td>
+		<td><TEXTAREA NAME="mv_dbconf_CREATE_SQL" ROWS=12 COLS=50>$create_sql</TEXTAREA></td>
 	</tr>
 EOF
 	}
