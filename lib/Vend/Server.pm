@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.55 2004-06-27 19:02:27 mheins Exp $
+# $Id: Server.pm,v 2.56 2004-07-12 05:02:50 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.55 $, 10);
+$VERSION = substr(q$Revision: 2.56 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -1031,8 +1031,9 @@ sub housekeeping {
 
 			foreach my $pid (@pids) {
 				kill(0, $pid) and next;
-#::logDebug("Unresponsive server at PID %s", $pid);
+#::logDebug("Non-existent server at PID %s", $pid);
 				push @bad_pids, $pid;
+				delete $Page_pids{$pid};
 			}
 
 			while($count < $Global::StartServers) {
@@ -1042,17 +1043,17 @@ sub housekeeping {
 			}
 			for my $pid (@bad_pids) {
 #::logDebug("Killing excess or unresponsive server at PID %s", $pid);
+				next unless delete $Page_pids{$pid};
 				if(kill 'TERM', $pid) {
 #::logDebug("Server at PID %s terminated OK", $pid);
 					# This is OK
 				}
-				elsif (kill 'TERM', $pid) {
+				elsif (kill 'KILL', $pid) {
 					::logGlobal("page server pid %s required KILL", $pid);
 				}
 				else {
 					::logGlobal("page server pid %s won't die!", $pid);
 				}
-				delete $Page_pids{$pid};
 			}
 		}
 
