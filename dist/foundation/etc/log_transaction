@@ -138,7 +138,7 @@ Inventory of [item-code] now:
 [/item-list]
 [/try]
 
-[catch]
+[catch label="default" interpolate=1]
 [set mv_route_failed]1[/set]
 There was an error adding to the transaction log.
 [/catch]
