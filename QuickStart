@@ -73,6 +73,8 @@ Install Walkthrough
             ./configure
                 You will be asked to enter the path for the install
                 directory for the Interchange distribution.
+				If you have the Storable module installed, you may be asked
+				how you would like to use it.  Choose the defualt.
 
 Demo Store Install Walkthrough
 
@@ -102,6 +104,9 @@ Demo Store Install Walkthrough
      You will be asked a series of questions at this point.  If you
      want to change the answers to any of these questions later, it
      can be done through the editing of the configuration scripts.
+	 The installer does its best to pick defaults that will work best
+	 with your configuration.  Most of the time the default responses
+	 will work just fine.
 
 <--Select a short, mnemonic name for the catalog. This will be
 <--used to set the defaults for naming the catalog, executable,
@@ -111,24 +116,188 @@ Demo Store Install Walkthrough
 <--program. Depending on your CGI setup, it may also have the
 <--extension .cgi added.
 
-<--If you are doing the demo for the first time, you might use "basic".
+<--If you are doing the demo for the first time, you might use "construct".
 
     This will be the name of your catalog.  The installer will use this
     name as the unique identifier for this catalog.  This will be the
     name of the cgi script that intercepts interchange requests.  It
     will also be used as the default for the directory in which to
-    store catalog fiels.
+    store catalog files.
 
 <--Catalog name?
--->example
+-->construct
 
-    I chose "example" as the catalog name in this case.
+    I chose "construct" as the catalog name in this case.
 
 <--makecat -- Interchange catalog installation program.
 
-<--*** We will be making a catalog named 'example'. ***
+<--*** We will be making a catalog named 'construct'. ***
 
+
+<--New configuration file '/home/sonny/akopia/tmp/interchange/etc/makecat.cfg'
+
+<--If you are using the Apache or NCSA web server, Interchange can set
+<--some of the default parameters for you by reading the file.
+
+<--If you use the Netscape Enterprise server or other non-NCSA HTTP server,
+<--enter 'none' -- the information, if any, will not be useful.
+
+
+<--Try using the UP arrow at some of the prompts -- you have the
+<--Term::ReadLine module installed, and Interchange may find some
+<--default values in your HTTP server configuration file.  You can
+<--cycle among them with the UP and DOWN arrows.
+
+<--Enter path to httpd.conf file: /usr/local/apache/conf/httpd.conf
+-->/usr/local/apache/conf/httpd.conf
+
+<--This demo configuration sometimes requires root permissions,
+<--depending on your ISP.  It needs to copy a few files to the CGI
+<--and HTML directories.
+
+<--You must either have your own CGI directory, or be able to run
+<--a CGI with an extension like '.cgi'.
+
+<--If you will be operating only on directories owned by the
+<--user you are running this as, you will be able to do
+<--everything.
+
+
+<--Since there was no master configuration file, we will ask
+<--some questions to help set initial defaults for making this
+<--and future catalogs.
+
+<--Interchange can set many of the defaults for you if it knows the server
+<--name that is going to be used.
+
+<--Enter the default server that should be used. This is only a default, to
+<--determine the *first* one that will be looked at -- you will be given
+<--a choice of all available servers.
+
+<--There is a "history" mechanism that will allow you to use the up
+<--and down arrows on your terminal (assuming you have a standard terminal)
+<--to cycle between possible choices.  This should contain the available
+<--servers.
+
+<--Default server? localhost
+-->localhost
+
+    It is the name at which the web server is receiving connections.
+    Interchange will also be running on this server.
+
+
+<--We need to know if all of your CGI programs are run as a file ending
+<--in .cgi or some other extension, or whether you have your own personal
+<--CGI directory.
+
+<--Do you have a CGI directory? y
+-->y
+
+<--# The location of the normal CGI directory. This is a
+<--# file path, not a script alias.
+<--#
+<--# If all of your CGI programs must end in .cgi, this is
+<--# should be the same as your HTML directory.
+<--#
+
+<--CgiDir? [/usr/local/httpd/cgi-bin]
+-->/usr/local/httpd/cgi-bin
+
+<--#
+<--# The URL-style location of the normal CGI directory.
+<--# Only used to set the default for the CgiUrl setting.
+<--# 
+<--# DO NOT PUT A TRAILING /.
+<--#
+<--# http://www.virtual.com/cgi-bin/prog
+<--#                       ^^^^^^^^
+<--#
+<--# If you have no CGI-bin directory, (your CGI programs end
+<--# in .cgi), leave this blank.
+<--#
+
+
+<--CgiBase? /cgi-bin
+-->/cgi-bin
+
+    This is the URL to the cgi program for your catalog (example in
+    this case).  This would be the script-alias in the httpd.conf set
+    up for your cgi-bin.
+
+
+<--# The base directory for HTML for this (possibly virtual) domain.
+<--# This is a directory path name, not a URL -- it is your HTML
+<--# directory.
+<--#
+
+<--DocumentRoot? /home/ic_user/public_html
+-->/home/ic_user/public_html
+
+	This is the directory path to your html document root.  A number of
+  	static elements of your catalog will be stored here.
+
+
+<--# This is a directory path name (not a URL) where the administration user
+<--# interface images from share/ should be copied to. These will normally be
+<--# shared by all catalogs. Often this is the same as your DocumentRoot.
+<--#
+
+<--ShareDir? /home/ic_user/public_html
+-->/home/ic_user/public_html
+
+	If you wish to use the same admin interface for all of your catalogs, the
+	common files can be shared in this directory.
+
+<--# The URL base for the administration user interface images. Sets the
+<--# Variable UI_IMG directive in the UI configuration file, ui.cfg.
+<--# This is a URL fragment, not an entire URL. If you set ShareDir to be
+<--# the same as DocumentRoot, this would just be a '/'.
+<--#
+<--#         <IMG SRC="/akopia/ui/bg.gif">
+<--#                   ^
+<--#
+
+<--ShareUrl? /akopia/ui/
+-->/akopia/ui
+
+<--# The directory where the Interchange software is installed.
+<--#
+
+
+<--VendRoot? /home/ic_user/interchange
+-->/home/ic_user/interchange
+
+<--# 
+<--# DIRECTORY where the Interchange catalog directories will go. These
+<--# are the catalog files, such as the ASCII database source,
+<--# Interchange page files, and catalog.cfg file. Catalogs will
+<--# be an individual subdirectory of this directory.
+<--#
+
+<--BaseDir? /home/ic_user/catalogs
+-->/home/ic_user/catalogs
+
+<--# The user name the Interchange server runs under on this machine. This
+<--# should not be the same as the user that runs the HTTP server (i.e.
+<--# NOT nobody).
+<--#
+
+
+<--InterchangeUser? ic_user
+-->ic_user
+
+<--#########     END BASE CONFIGURATION      #########
+<--
 <--######### BEGINNING CATALOG CONFIGURATION #########
+
+<--During many of the following operations, defaults are placed in
+<--a buffer for you.  You may use the up and down arrows to toggle
+<--between the defaults.
+
+<--If you made a mistake on a *previous* entry and realize that
+<--in a later one, if you enter ONLY an @ sign and press return you
+<--should be returned to the previous step.
+
 <--# The server name, something like: www.company.com
 <--#                                  www.company.com:8000
 <--#                                  www.company.com/~yourname
@@ -136,14 +305,10 @@ Demo Store Install Walkthrough
 <--Server name? [localhost]
 -->localhost
 
-    It is the name at which the web server is receiving connections.
-    Interchange will also be running on this server.
-
 <--# The type of demo catalog to use. Standard types
 <--# distributed are:
 <--#
 <--#    simple   -- database-based catalog, not really simple 8-)
-<--#    basic    -- simplified set of features
 <--#    barry    -- Barry's Books version of "simple"
 <--#
 <--# If you have defined your own custom template catalog,
@@ -152,16 +317,14 @@ Demo Store Install Walkthrough
 <--# If you are new to Interchange and not a sophisticated web designer,
 <--# use "barry" to start with.
 
+<--DemoType? [construct]
+-->construct
 
-<--DemoType? [basic]
--->barry
+    There are currently two types of demo's.  Simple is a not so
+    very simple implementation of "The Art Store".  Construct something
+    newest demo.  This is the most feature rich demo, and a good 
+	platform for constructing your own store.
 
-    There are currently three types of demo's.  Basic is a very well,
-    basic site implementation of "The Art Store".  Simple is a not so
-    very simple implementation of "The Art Store".  Barry is the
-    newest demo.  It has the same feature set as Simple, but with the
-    "Barry's Bikes, Books, and Birkenstocks" previously of Tallyman
-    fame.  This is the one we will be working with.
 
 <--# The email address where orders for this catalog should go.
 <--# To have a secure catalog, either this should be a local user name and
@@ -169,10 +332,10 @@ Demo Store Install Walkthrough
 <--#
 
 
-<--MailOrderTo? [orders@barry.com]
--->user@localhost.com
+<--MailOrderTo? ic_user
+-->orders@construct.net
 
-    The barry catalog is designed to email the orders once they are
+    The contruct catalog is designed to email the orders once they are
     made to the person responsible for handling orders.
 
 <--# Where the Interchange files for this catalog will go, pages,
@@ -183,11 +346,12 @@ Demo Store Install Walkthrough
 <--#
 
 
-<--CatRoot? [/home/user/catalogs/example]
--->/home/user/catalogs/example
+<--CatRoot? [/home/ic_user/catalogs/example]
+-->/home/ic_user/catalogs/example
 
     This is where the catalog config files and working data go.  The
     default location is a good place for this.
+
 
 <--# The location of the normal CGI directory. This is a
 <--# file path, not a script alias.
@@ -196,13 +360,12 @@ Demo Store Install Walkthrough
 <--# should be the same as your HTML directory.
 <--#
 
+<--CgiDir? /home/ic_user/public_html/cgi-bin
 
-<--CgiDir? [/usr/local/httpd/cgi-bin]
--->/usr/local/httpd/cgi-bin
+	A file with you store's name will go into the cgi-bin dir.  This
+  	program (vlink or tlink) will provide the bridge between the web
+ 	server and the Interchange server.
 
-  A file with you store's name will go into the cgi-bin dir.  This
-  program (vlink or tlink) will provide the bridge between the web
-  server and the Interchange server.
 
 <--# The URL location of the CGI program, without the http://
 <--# or server name.
@@ -215,10 +378,10 @@ Demo Store Install Walkthrough
 <--#
 
 
-<--CgiUrl? [/cgi-bin/example]
--->/cgi-bin/example
+<--CgiUrl? /cgi-bin/construct
+-->/cgi-bin/construct
 
-    This is the URL to the cgi program for your catalog (example in
+    This is the URL to the cgi program for your catalog (construct in
     this case).  This would be the script-alias in the httpd.conf set
     up for your cgi-bin.
 
@@ -236,8 +399,8 @@ Demo Store Install Walkthrough
 <--#
 
 
-<--Aliases? [/example]
--->/example
+<--Aliases? /construct
+-->/construct
 
    This one is "beyond the scope of this document."  For the purposes
    of getting started, this option can be safely ignored.  For those
@@ -254,17 +417,14 @@ Demo Store Install Walkthrough
 <--DocumentRoot? [/usr/local/httpd/htdocs]
 -->/usr/local/httpd/htdocs
 
-  This is the directory path to your html document root.  A number of
-  static elements of your catalog will be stored here.
-
 <--# Where the sample HTML files (not Interchange pages) should be
 <--# installed. There is a difference.  Usually a subdirectory of
 <--# your HTML directory.
 <--#
 
 
-<--SampleHtml? [/usr/local/httpd/htdocs/example]
--->/usr/local/httpd/htdocs/example
+<--SampleHtml? [/usr/local/httpd/htdocs/construct]
+-->/usr/local/httpd/htdocs/construct
 
   Interchange will create a directory under the html document root in
   order to store the static html pages for the demo catalog.
@@ -274,10 +434,10 @@ Demo Store Install Walkthrough
 <--#
 
 
-<--ImageDir? [/home/sonny/public_html/example/images]
--->/home/sonny/public_html/example/images
+<--ImageDir? [/home/sonny/public_html/construct/images]
+-->/home/sonny/public_html/construct/images
 
-  Additionally, a place for the images.
+	Additionally, a place for the images.
 
 <--# The URL base for the sample images. Sets the ImageDir
 <--# directive in the catalog configuration file. This is a URL
@@ -288,7 +448,7 @@ Demo Store Install Walkthrough
 <--#
 
 
-<--ImageUrl? [/example/images]
+<--ImageUrl? [/construct/images]
 
    This is the URL for the images stored in the directory created
    above.  Interchange needs this in order to create <IMG SRC> tags
@@ -313,84 +473,10 @@ Demo Store Install Walkthrough
 
     If you don't know the answer, no should be the right answer.
 
-<--Checking directories........................................mkdir
-/home/sonny/akopia/catalogs2/example
-<--mkdir /home/sonny/public_html/example
-<--mkdir /home/sonny/public_html/example/images
-<--done.
-<--Copying demo files..........................................found more to
-ask.
 
-   Doing stuff.
+   Does some stuff.
 
-<--Your company name: .....................[Barry's Books]
-<--Your company address: ..................[123 Any St.]
-<--Your company city/state/zip: ...........[Anytown, USA 00000]
-<--Your company phone: ....................[(555) 555-5555]
-<--Your company fax number: ...............[(555) 555-5556]
-<--Your company tollfree number (if any): ..[(888) 555-5555]
-
-    Here are several questions concerning your store information.
-    These are the defaults, you can change them if you like.
-
-<--Interchange can do order pages in any way; two examples are provided.
-<--The default is single-page.
-
-<--Set to 1 to enable multi-page order screens: ..
--->1
-
-    This demo catalog allows you to configure a single or multiple
-    page order finalization.  The multiple page setup will break the
-    confirmation process into several pages asking for shipping and
-    billng address, payment info, and so forth.  The single page setup
-    lumps all of this together on a longish page.
-
-<--There are three color schemes available as an example of
-<--how you might template catalogs. Select one of:
-<--
-<--  brown1  blue1  yellow1
-<--
-<--Select color scheme: ...................[green1]
--->blue1
-
-    Three colorization templates are avaliable for your customizing
-    pleasure.  These are designed around the demo catalog.
-
-<--For the US, this is usually the state(s) your business is
-<--located in. Non-US users will probably have to set this
-<--differently depending on their tax laws.
-
-<--Area(s) to tax in: .....................[VA UT]
--->VA UT
-
-   List the states for which to calculate sales tax.
-
-<--For US users, this looks like STATE=RATE, where the rate
-<--is in percent. The default below taxes Ohio at 6% and
-<--Illinois at 7.25 percent. More states can be added or
-<--you can have only one. Should correspond to TAXAREA.
-
-<--Percentage rate(s) for tax in different areas: ..[VA=7.5, UT=7.25]
--->VA=4.5 UT=6.35
-
-    The percentage of tax to calculate for each state.
-
-<--For the UPS lookup, the standard UPS tables are normally
-<--used. If you want to add a handling charge, do it here.
-
-<--Amount to add on to standard UPS costs: ..[3.00]
--->3.00
-
-   Add this amount to the shipping charges for each order when using
-   the ups shipping methods.
-
-<--Origin zip code for UPS lookups: .......[00000]
--->83617
-
-    UPS calculates shipping based from one zip code to another
-    zipcode.  This zip is the one you would be shipping from.  If
-    you'll be shipping from multiple locations, you'll need to consult
-    the documentation or contact Akopia support.
+<--Your company name: .....................Construct Something
 
 <--Interchange has a workable internal database, but many things will
 <--work better (and a few worse) if you use a SQL database. Interchange
@@ -403,73 +489,48 @@ ask.
     Interchange internal database.  Consult the documentation for
     information about using your SQL database of choice.
 
-<--You can use MiniMate, Interchange's companion configuration
+<--You can use Interchange's companion configuration
 <--interface, to do upload/download of files, manipulation of
 <--the database, reconfiguration of the catalog, and much more.
 
-<--To enable MiniMate, you will need a "super-user" account
+<--To enable the UI, you will need a "super-user" account
 <--name that has full access.
 
-<--Account name that will control this catalog: ..[sonny]
--->user
+<--The initial password is "pass". CHANGE IT! You can do this
+<--by going to the admin menu and selecting the superuser and
+<--then "Change password".
 
-    In this and all future versions, Minimate has been replaced with
-    the Interchange administrative interface.  Tallyman users should
-    find it very familiar since it's based on Tallyman's interface.
-    See the Admin walkthrough below.  This gives the user with full
-    administrative control of the catalog.
+<--Account name that will control this catalog: ..ic_user
+-->ic_user
+<--Administrative password: ...............pass
+-->pass
 
-    The administrative password for [user] above is "pass".  This is a
-    very weak password as I probably don't have to tell you.
-    You should definitely change this -- use the
-    Administrators->Change password function in the UI.
 
-    
 <--Found system commands to run.
-    This may prompt you if you selected MySQL or Postgress. Otherwise
-    it will be silent (and do nothing). If you selected Mysql or
-    Postgres and this doesn't work, your catalog will probably
-    not work.
 
-<--done.
-<--Moving link program to /usr/local/httpd/cgi-bin/example.....done.
-<--Moving HTML files to /home/sonny/public_html/example........done.
-<--Moving image files to /home/sonny/public_html/example/images..done.
+	does some more stuff
 
-    Doing some sutff.
+<--Found additional system commands to run.
 
-<--Add catalog to minivend.cfg? [y]
+<--To enable image upload feature, you need to make a symbolic
+<--link of the image base directory into your catalog directory.
+
+<--uct/images /home/sonny/akopia/catalogs/construct1"? ..y
 -->y
 
-    This will add your catalog to the list which Interchange will use
-    when it starts up.
+	Say yes here if you would like to be able to upload images 
+	into interchange.
 
-<--Done with installation. If my reading of your input is correct, you
-<--should be able to access the demo catalog with the following URL:
-<--
-<--        http://localhost/example
-<--
-<--In any case, you should get direct access at:
-<--
-<--        http://localhost/cgi-bin/example
-<--
-<--That is, after you START or RESTART the Interchange server.  8-)
-<--It is best done with:
-<--
-<--        /home/user/interchange/bin/interchange -r
-<--
-<--For session expiration, you might want to place a line like this in your
-<--crontab:
-<--
-<--44 4 * * * /home/user/interchange/bin/expireall -r
-<--
-<--It will prevent the session databases from getting too large.
+<--Add catalog to interchange.cfg? y
+
+	This will make your catalog avaliable to the interchange server.
+	Now your done with the catalog configuration.
 
 
     That's it.  The demo store should be installed and ready to go.  Now
     you want to start the Interchange server:
 
-        /home/user/interchange/bin/interchange -r
+        /home/user/interchange/bin/interchange
 
     You should see something like this:
 
@@ -494,7 +555,7 @@ The adminstrative side
     in that particular area.
 
     How to get there
-        Go to http://localhost/cgi-bin/example/admin/logout.html
+        Go to http://localhost/cgi-bin/construct/admin/logout.html
         changing whatever is necessary for your setup.  If you see an
         akopia interchange login prompt, that's a very good sign it
         worked.  If not, that is a good sign that it didn't work.
@@ -505,10 +566,8 @@ The adminstrative side
         it, enter the correct information and click login.
 
     The main page
-        This is the front admin page.  From here you can access most
-        of the other pages of the admin section.  Alternitively, you
-        can click on Quicklinks which will provide a set of quick
-        links to all of the administrative pages.
+        This is the front admin page.  From here you can access the 
+		other pages of the admin section.  
 
         Orders
             From here you can view a summary of all of the orders as
@@ -516,106 +575,167 @@ The adminstrative side
             detail.  This is the command center for viewing and
             managing the site's transaction information.
 
-        Items
-            Items are things in your inventory.  From this page, you
-            can manipulate your product data -- pricing, descriptions,
-            options, sku, weight, and category (do determine where it
-            should appear in the site).
+			Archive Orders
+				Archive orders which have been processed.
 
-        Statistics
-            Interchange keeps statsistcs on both order information and
-            web site traffic.
-
+			Enter Order
+				Enter a new order into the Interchange system.
+				
         Customers
             Customer information can be managed from this interface.
             You can deactivate accounts or delete customers as well as
-            view information about each one.
+            view and modify information about each one.
 
-        Apply Changes
-            Updates the Interchange system to apply your changes.  If
-            you change a tax rate or a shipping option, for example, it
-            won't affect the live site until you apply changes.
+			Active Customers
+				Show active customers
+			
+			Inactive Customers
+				Show inactive customers
 
-    Other pages
-        You can get to these through the quicklinks, but not through
-        the main page.    These are anticipated to be less used items
-        mostly pertaining to system configuration.
+			Create New Customer
+				Enter a new customer into the Interchange system.
 
-        Affiliates
-            The affiliates feature lets referral orders from other web
-            sites be flagged and recorded for the purposes of reimbursing
-            the affiliate or simply for research purposes.  Here, you
-            can add or remove affiliates.  Traffic and order stats for
-            affiliates can also be viewed from this interface.
+        Items
+            From this page, you can manipulate your product data, as well
+			as mechandising and inventory.
 
-        Site Layout
-            This is for managing the layout of your store site.  This
-            is mostly for content management purposes.
+			Item List
+				List items in product database.
 
-        Page Editor
-            This lets you create and edit pages that will appear in your
-            site.  You can select which template you'd like applied to
-            a new page, and a filename, then create it, or edit an existing
-            page.
+			Create New Item
+				Add an item to the Interchange system.
 
-        Search Builder
-            Interchange searches can be constructed and executed from
-            this interface.  This can be used for generating actual
-            code for searches or just doing something you thought up
-            but don't have an interface for.  The search builder can be
-            considered the dynamic content engine for Interchange.
+		Content
+			This section allows you to upload, download, edit, and create
+			site content.
 
-        Button Builder
-            This interface is for generating buttons and links to
-            Interchange componenets.
+			Page Edit
+				Edit an existing page.
 
-        Tax
-            Tax definitions can be set up here.
+			File Transfer
+				Upload and download Interchange and catalog files.
+			Page Edit
+				Edit an existing page.
 
-        Shipping
-            Shipping options are configured from this interface.
-            Shipping tables can also be manipulated.
+		Design
+			Configure the site design for your catalog.
 
-        Payment
-            From this interfacce, you set which payment methods you
-            accept or don't accept.
+	        Site Layout
+				This is the layout editor which allows you some control over the
+				layout of the site, allowing you to organize logical catagories
+				for pages and items.
 
-        File Manager
-            This expands on the page builder functionality to let you not
-            only edit pages, but view, upload, download, or edit any file
-            in the site.
+		 	Search Builder
+	            Interchange searches can be constructed and executed from
+    	        this interface.  This can be used for generating actual
+        	    code for searches or just doing something you thought up
+            	but don't have an interface for.
 
-        Table import/export
-            Tables can be imported into or experted from the interchange
-            database.  Some of the tables you might want to import or
-            export:  inventory, pricing, shipping info.
+	        Button Builder
+    	        This interface is for generating buttons and links to
+        	    Interchange componenets.
+	
+			Generate Static
+				Interchange can be configured to generate any of your catalog
+				pages statically so that they are not parsed each time they
+				are requested.
 
-        Users
-            A user is someone who has a set of permissions defined for
-            accessing the administrative services.  Fine grained
-            access controls can be set here.  For exmple, you may want
-            to give warehouse staff access to check orders only, but
-            not change item pricing information.
+			File Transfer
+				Upload and download Interchange and catalog files.
 
-        Groups
-            Access control groups can be set up with permissions to do
-            certain administrative tasks.
+			Page Edit
+				Edit an existing page.
 
-        Permissions
-            Permissions for users can be set up and maintaned from
-            this interface.
+		Merchandising
+			Allows you to set up and manipulate quantity pricing, up-sell, 
+			promotions, and affiliates .
 
-        Environment
-            Shows all of the current Interchange environment.
+			Product Merchandising
+				Control merchandising parameters for products.
 
-        Direct Table Edit
-            Direct access to Interchanges tables is provided through
-            this interface.
+			Affiliates
+	            The affiliates feature lets referral orders from other web
+    	        sites be flagged and recorded for the purposes of reimbursing
+        	    the affiliate or simply for research purposes.  Here, you
+            	can add or remove affiliates.				
 
-        Knar Editor
-            The Knar is an acronym for "Knar's not a registry."  That
-            is in fact exactly what it is.  A random collection of
-            Interchange system variables and flags.
+			Generate "Others who" . . .
+				Generate links for "Others who bought this product" products.
+
+        Reporting
+            Interchange keeps statsistcs on both order information and
+            web site traffic.
+
+			Orders
+				Report on order stats
+
+			Traffic
+				Report site traffic stats
+
+			Custom
+				Run custom reports on your catalog.
+
+		Administration
+			Various site/catalog administration tools.
+
+			Info
+				Interchang system information
+			
+	        Tax
+    	        Tax definitions can be set up here.
+
+        	Shipping
+            	Shipping options and tables are configured and manipulated
+				from this interface.			
+
+	        Payment
+    	        From this interfacce, you set which payment methods you
+        	    accept or don't accept.
+
+			Access
+	            Control administrative access for interchange users with
+				varying degrees of granularity.
+
+			Preferences
+				A high level interface to some Interchange system variables
+				used to control the environment.
+
+	        Knar Editor
+    	        The Knar is an acronym for "Knar's not a registry."  That
+        	    is in fact exactly what it is.  A random collection of
+            	Interchange system variables and flags.  This is a low level
+				interface to control the environment.
+			
+				Edit
+					Modify knar variables.
+
+				Import Data
+					Import data into the interchange tables.
+
+				Export
+					Export data from the interchange tables.
+
+				Spreadsheet
+					A spreadsheet format editor for knar variables.
+
+				New Entry
+					Create a new variable.
+
+				Re-Select Table
+					Link to the table configurator.
+
+		    Table
+	            Tables can be imported into or experted from the interchange
+    	        database, as well as viewed and edited.  Some of the tables 
+				you might want to import or export:  inventory, pricing, 
+				shipping info.
+
+	        Apply Changes
+    	        Updates the Interchange system to apply your changes.  If
+        	    you change a tax rate or a shipping option, for example, it
+            	won't affect the live site until you apply changes.
+
+
 
 Interesting files
     minivend.cfg
