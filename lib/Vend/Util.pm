@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14.2.15 2001-03-22 14:56:30 heins Exp $
+# $Id: Util.pm,v 1.14.2.16 2001-03-22 16:32:01 jon Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -79,7 +79,7 @@ use Fcntl;
 use Errno;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14.2.15 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.16 $, 10);
 
 BEGIN {
 	eval {
@@ -1089,8 +1089,6 @@ sub resolve_links {
 	return $html;
 }
 
-my $use = $Global::LockType;
-
 ### flock locking
 
 # sys/file.h:
@@ -1164,8 +1162,6 @@ sub fcntl_unlock {
 	}
 	return 1;
 }
-
-### Select based on os, vestigial
 
 my $lock_function;
 my $unlock_function;
