@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.64 2004-03-06 22:16:57 mheins Exp $
+# $Id: Order.pm,v 2.65 2004-05-13 22:48:21 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -29,7 +29,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.64 $, 10);
+$VERSION = substr(q$Revision: 2.65 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1023,6 +1023,7 @@ sub check_order {
 		undef $individual;
 	}
 
+::logDebug("nextpage=$CGI::values{mv_nextpage}");
 	for my $profile (split /\0+/, $profiles) {
 
 		$status = check_order_each($profile, $vref, $individual);
@@ -1054,6 +1055,7 @@ sub check_order {
 			}
 		}
 		else {
+::logDebug("Got to status=$status on profile=$profile");
 			if($Fail_page) {
 				$np = $CGI::values{mv_nextpage} = $Fail_page;
 			}
@@ -1094,6 +1096,7 @@ sub check_order {
 	my $errors = join "\n", @Errors;
 #::logDebug("Errors after checking profile(s):\n$errors") if $errors;
 	$errors = '' unless defined $errors and ! $Success;
+::logDebug("status=$status nextpage=$CGI::values{mv_nextpage}");
 	return ($status, $Final, $errors);
 }
 
@@ -2553,13 +2556,14 @@ sub add_items {
 			}
 			if($Vend::Cfg->{AutoModifier}) {
 				foreach $i (@{$Vend::Cfg->{AutoModifier}}) {
-					my ($table,$key) = split /:/, $i;
+					my ($table,$key,$attrib) = split /:/, $i;
+					my $select = $attrib ? $item->{$attrib} : $code;
 					unless ($key) {
 						$key = $table;
-						$item->{$key} = item_common($item, $key, $code)
+						$item->{$key} = item_common($item, $key, $select)
 					}
 					else {
-						$item->{$key} = tag_data($table, $key, $code);
+						$item->{$key} = tag_data($table, $key, $select);
 					}
 				}
 			}
