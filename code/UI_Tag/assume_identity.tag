@@ -16,7 +16,7 @@ sub {
 	$Global::Variable->{MV_PAGE} = $pn;
 	$locale = 1 unless defined $locale;
 	return Vend::Interpolate::interpolate_html(
-		Vend::Util::readfile($file, $Global::NoAbsolute, $locale)
+		Vend::Util::readfile($file, undef, $locale)
 	);
 }
 EOR

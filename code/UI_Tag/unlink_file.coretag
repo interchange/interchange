@@ -5,8 +5,7 @@ sub {
 	my ($file, $prefix) = @_;
 #::logDebug("got to unlink: file=$file prefix=$prefix");
 	$prefix = 'tmp/' unless $prefix;
-	return if Vend::Util::file_name_is_absolute($file);
-	return if $file =~ /\.\./;
+	return if Vend::File::absolute_or_relative($file);
 	return unless $file =~ /^$prefix/;
 #::logDebug("got to unlink: $file qualifies");
 	unlink $file;

@@ -43,12 +43,7 @@ sub {
 
 	if($action eq 'chdir') {
 		my $newdir = $CGI::values{dir} || '.';
-		if(
-			Vend::Util::file_name_is_absolute($newdir)
-				or
-			$newdir =~ m{^\.\.|\.\./}
-			)
-		{
+		unless( Vend::File::allowed_file($newdir) ) {
 			$Scratch->{ui_error} = ::errmsg('Security violation');
 			return interpolate_html("[bounce page='$base_admin/error']");
 		}
@@ -302,7 +297,7 @@ EOF
 		  or $nd = $opt->{top_of_tree};
 		my $msg = errmsg(
 					"<large><b>..</b></large> &#91;%s&#93",
-					$opt->{parent_directory_message} || 'parent directory',
+					$opt->{parent_directory_nessage} || 'parent directory',
 					);
 		unshift @dir, [ $nd, $msg, $dtmpl ];
 	}

@@ -18,8 +18,7 @@ sub {
 	my ($file, $data) = @_;
 #::logDebug("writing $file");
 	$file =~ m:(.*)/:;
-	return undef if Vend::Util::file_name_is_absolute($file);
-	return undef if $file =~ /\.\./;
+	return undef if Vend::File::absolute_or_relative($file);
 	my $dir = $1;
 	use File::Path;
 	if($dir and ! -d $dir) {
