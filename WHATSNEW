@@ -5,9 +5,14 @@
 
 ------------------------------------------------------------------------------
 
+Interchange-4.9.5 -- minor bugfix release
 
-Interchange 4.9.5 not yet released.
+Foundation
+----------
+* Add component files in for new selectable results-list done by Ton.
 
+* Make proper patches to history-scan and barlink() to work with Randy
+  Moore's cateegory_vert_toggle component.
 
 Core
 ----
@@ -18,10 +23,43 @@ Core
 * Make sure STDERR is selected in mod_perl mode in case some other mod_perl 
   code uses select. 
 
+* Change default for MaxServers in "rpc" profile to zero. This is probably
+  best for the vast majority of servers running in PreFork mode.
+
+* Tolerate missing configdb database, issue warning only.
+
 * Tolerate people forgetting and putting , on the end of a parameter
   when using line2options. A comma should never be the last character, I
   would think, but you can choose to not use the filter if by some
   bizarre chance it is needed.
+
+* A number of refinements and fixes to Menu module.
+
+	- Passing timed=1 to [menu ...] tag prevents putting session ID and
+	  count in URL, allowing timed-build to work well.
+
+	- first_line and last_line transforms allow you to specify a field
+	  to set to trigger the first line or the last line of the menu.
+	  This allows the current IC menu structures to work well with
+	  menus separated by space.
+
+	- logical_page feature allows a tab "up" indication in another
+	  menu, based on the page of the entry. This allows multi-level
+	  tabs to have an "up" indication on different menus.
+
+	- expand_values_form allows setting of ITL tag values even
+	  on multiple form values.  Honors [cgi ..], [value ..], and [var ..].
+
+    - Fix ordering of open paramter for trees -- it was broken by the new
+	  Vend::Util::vendUrl routine.
+
+* Simplify field_settor subroutines with prepared query and placeholders.
+  Prevents infamous DBD::Pg::do errors.
+
+* Form module -- add intrinsic "file" type, and allow setting of a
+  widget class directly without using "extra".
+
+* Other minor bugfixes too insignificant to mention.
 
 UserTags
 --------
@@ -35,15 +73,20 @@ UserTags
   has the database and IC on the same machine, it should relieve
   some network bandwidth on distributed setups.
 
-  If it is an IC database, uses $db->query() as before.
-
+Installation
+------------
+* Various debian build patches.
 
 ------------------------------------------------------------------------------
 
 
 Interchange 4.9.4 released 2002-12-02.
 
+* Fix problem with PreFork and mod_perl modes where Interchange children
+  kept order profile state between runs.
 
+* Tolerate people forgetting and putting , on the end of a parameter
+  when using line2options.
 Core
 ----
 
@@ -241,7 +284,7 @@ Filters
     2. If existing value is blank, return max + 1 in the sort field,
        i.e. equivalent to: 
 
-	   SELECT sort FROM survey_q
+           SELECT sort FROM survey_q
        ORDER BY sort DESC
        LIMIT 1   
 
@@ -368,9 +411,9 @@ UI
     -- Tabbed displays
     -- Insert spreadsheet linked via foreign key
     -- Insert custom form widgets for form processing use,
-	   a "recompute transaction" included for an example
+           a "recompute transaction" included for an example
     -- Control over styles and classes for table columns
-	-- Completely templateable
+        -- Completely templateable
 
 * Add the suggested feature from Dan Browning -- a great idea --
   a spreadsheet of a linked table within the table editor.
@@ -495,25 +538,25 @@ Swish Search
 
 * To use, you must add to interchange.cfg:
 
-	Require module Vend::Swish
-	AddDirective Swish hash
-	Variable swish Vend::Swish
+        Require module Vend::Swish
+        AddDirective Swish hash
+        Variable swish Vend::Swish
 
 * The search is called with st=swish (same as mv_searchtype=swish).
 
 * The fields to return are configurable, and default to;
 
-	rf=code score title url mod_date filesize
-	fn=code score title url mod_date filesize
+        rf=code score title url mod_date filesize
+        fn=code score title url mod_date filesize
 
   These correspond to:
 
-			code		swishreccount
-			score		swishrank
-			url			swishdocpath
-			title		swishtitle
-			filesize	swishdocsize
-			mod_date	swishlastmodified
+                        code            swishreccount
+                        score           swishrank
+                        url                     swishdocpath
+                        title           swishtitle
+                        filesize        swishdocsize
+                        mod_date        swishlastmodified
 
 mod_interchange
 ---------------
@@ -531,7 +574,7 @@ Forum
 
   This is a complete forum display:
 
-  	[forum top=THREAD_ID /]
+        [forum top=THREAD_ID /]
 
   You can get more complex than that. There is an illustration of the
   templated version in the pages/forum/display.html page.
