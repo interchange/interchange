@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.106 2003-04-03 21:30:22 racke Exp $
+# $Id: Config.pm,v 2.107 2003-04-04 04:51:06 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.106 $, 10);
+$VERSION = substr(q$Revision: 2.107 $, 10);
 
 my %CDname;
 my %CPname;
@@ -180,7 +180,7 @@ my %InitializeEmpty = (qw(
 					FileControl			1
 				));
 
-my %AllowMappedAction = (qw(
+my %AllowScalarAction = (qw(
 					FileControl			1
 				));
 
@@ -1673,19 +1673,27 @@ sub parse_action {
 				$c->{$name} = $Global::GlobalSub->{$sub};
 			}
 		}
-		if(! $c->{$name}) {
+		if(! $c->{$name} and $AllowScalarAction{$var}) {
+			$c->{$name} = $sub;
+		}
+		elsif(! $c->{$name}) {
 			$@ = errmsg("Mapped %s action routine '%s' is non-existant.", $var, $sub);
 		}
 	}
 	elsif ( ! $mapped and $sub !~ /^sub\b/) {
-		my $code = <<EOF;
+		if($AllowScalarAction{$var}) {
+			$c->{$name} = $sub;
+		}
+		else {
+			my $code = <<EOF;
 sub {
 				return Vend::Interpolate::interpolate_html(<<EndOfThisHaiRYTHING);
 $sub
 EndOfThisHaiRYTHING
 }
 EOF
-		$c->{$name} = eval $code;
+			$c->{$name} = eval $code;
+		}
 	}
 	elsif (! $C or $Global::AllowGlobal->{$C->{CatalogName}}) {
 		package Vend::Interpolate;

@@ -1,6 +1,6 @@
 # Vend::File - Interchange file functions
 #
-# $Id: File.pm,v 2.3 2003-04-02 19:08:29 mheins Exp $
+# $Id: File.pm,v 2.4 2003-04-04 04:51:06 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -51,8 +51,8 @@ use Fcntl;
 use Errno;
 use Vend::Util;
 use subs qw(logError logGlobal);
-use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.3 $, 10);
+use vars qw($VERSION @EXPORT @EXPORT_OK $errstr);
+$VERSION = substr(q$Revision: 2.4 $, 10);
 
 sub writefile {
     my($file, $data, $opt) = @_;
@@ -522,6 +522,85 @@ sub check_user_read {
 	return 0;
 }
 
+my %intrinsic = (
+	ic_super => sub { return 1 if $Vend::superuser; },
+	ic_admin => sub { return 1 if $Vend::admin; },
+	ic_logged => sub {
+					my ($fn, $write, $sub) = @_;
+					return 0 unless $Vend::username;
+					return 0 unless $Vend::Session->{logged_in};
+					return 0 if $sub and $Vend::login_table ne $sub;
+					return 1;
+					},
+	ic_session => sub {
+					my ($fn, $write, $sub) = @_;
+					return 1 if $Vend::Session->{$sub};
+					return 0;
+					},
+	ic_session_deny => sub {
+					my ($fn, $write, $sub) = @_;
+					return 0 if $Vend::Session->{$sub};
+					return 1;
+					},
+	ic_scratch => sub {
+					my ($fn, $write, $sub) = @_;
+					return 1 if $::Scratch->{$sub};
+					return 0;
+					},
+	ic_scratch_deny => sub {
+					my ($fn, $write, $sub) = @_;
+					return 0 if $::Scratch->{$sub};
+					return 1;
+					},
+	ic_userdb => sub {
+		my ($fn, $write, $profile, $sub, $mode) = @_;
+		return 0 unless $Vend::username;
+		return 0 unless $Vend::Session->{logged_in};
+		$profile ||= 'default';
+		$sub     ||= 'file_acl';
+		my $u = new Vend::UserDB profile => $profile;
+		$mode ||= $write ? 'w' : 'r';
+		my $func = "check_$sub";
+		my %o = ( 
+			location => $fn,
+			mode => $mode,
+		);
+		return undef unless $u->can($func);
+		my $status = $u->$func( %o );
+		::logDebug("status=$status back from userdb: " . ::uneval(\%o));
+		return $status;
+	},
+);
+
+sub _intrinsic {
+	my ($thing, $fn, $write) = @_;
+	$thing =~ s/^\s+//;
+	$thing =~ s/\s+$//;
+	my @checks = split /\s*;\s*/, $thing;
+	my $status = 1;
+	for(@checks) {
+		my ($check, @args) = split /:/, $_;
+		my $sub = $intrinsic{$check}
+			or do {
+				## $errstr is package global
+				$errstr = ::errmsg("Bad intrinsic check '%s', denying.", $_);
+				return undef;
+			};
+		unless( $sub->($fn, $write, @args) ) {
+			## $errstr is package global
+			$errstr = ::errmsg(
+						"Failed intrinsic check '%s'%s for %s, denying.",
+						$_,
+						$write ? " (write)" : '',
+						$fn,
+						);
+			$status = 0;
+			last;
+		}
+	}
+	return $status;
+}
+
 sub check_user_write {
 	my $fn = shift;
 	my $un = $Global::CatalogUser->{$Vend::Cat}
@@ -561,8 +640,11 @@ sub file_control {
 	my $f = $fn;
 	CHECKPATH: {
 		do {
-			if($subref->{$f}) {
+			if(ref($subref->{$f}) eq 'CODE') {
 				return $subref->{$f}->($fn, $write, @caller);
+			}
+			elsif ($subref->{$f}) {
+				return _intrinsic($subref->{$f}, $fn, $write);
 			}
 		} while $f =~ s{/[^/]*$}{};
 	}
