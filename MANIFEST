@@ -264,6 +264,7 @@ debian/makecat.cfg
 debian/makecat.wrapper
 debian/po/POTFILES.in
 debian/po/de.po
+debian/po/fr.po
 debian/po/templates.pot
 debian/robots.cfg
 debian/rules
