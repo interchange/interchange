@@ -5,6 +5,114 @@
 ------------------------------------------------------------------------------
 
 
+Interchange 4.8.2 released 2001-09-19.
+
+Core and usertags
+-----------------
+* In ups_query tag, don't use defaults for country, always send. Fixes
+  problem caused when UPS changed their behavior.
+
+* Add ability to set beginning/ending years in date widget.
+
+* localize now catches [msg] tags.
+
+* compile_link: Check for build_dir = source_dir to prevent attempts by
+  File::Copy to copy files on top of themselves; truncates the files.
+
+* Fix bug that caused HTML entities to not be encoded if another filter was
+  already chosen.
+
+* UserDB: Add outboard_key_col option so that you can do lookups on an
+  account_id or other information with outboard DBs.
+
+* Add option to print ellipsis (...) after truncated [filter] results,
+  like this:
+
+  [filter 10]Howdy there good buddy[/filter] -> Howdy ther
+  [filter 10.]Howdy there good buddy[/filter] -> Howdy ther...
+
+  Wherever filters work, including PREFIX-filter, etc.
+
+* Fix Util::change_url and Interpolate image rewriting for any full URL
+  protocol specification (like javascript:), not just http: and https:.
+
+* makecat
+  - take sampleurl from command line if -F specified.
+  - new option --catalogconf to make makecat fully usable on Debian
+    installations
+
+* Config.pm: Change root_dir parse routine so that it returns a scalar.
+  Add root_dir_array parsing routine for TemplateDir.
+
+* Strip Windows-style path components from uploaded images (in update_data).
+
+Foundation
+----------
+* Fix some country and state database problems for Great Britain.
+
+* Show correct 'log in' or 'log out' text for foundation users.
+
+* makedirs: Don't try to chown or chgrp if no username was given
+  (as is common when running as root, mode U, no group).
+
+* Fix promo bug forcing thumbnail sizes to 80 pixels.
+
+Admin
+-----
+* Support UI_LANG_DIRECTION variable: rtl (right to left, for Hebrew,
+  Arabic, etc.) or ltr (left to right).
+
+* Fix build_related.html so it works with DBM databases.
+
+* icmenu: The "create new affiliate" had an exclude_on setting that
+  should've been an include_on setting. The menu option now shows up in
+  the correct place. Fix for bug #297.
+
+* page_edit: Fix problem where image paths are substituted, reported
+  by Cameron Prince and others.
+
+* preferences.html fix: close input tag.
+
+* Add support for no-cookies browsing to numerous UI forms.
+
+* Add the Ultimate Image Widget (tm) suggested by Cameron Prince. Combines
+  best aspects of imagehelper and imagedir widget. Activated by adding
+  wildcard on end of outboard parameter in metadata, i.e. images/items/*
+  instead of images/items.
+
+* Primitive.pm: Add capability for specifying suffix in imagedir widget type.
+  Specify one of:
+  - Complete regex: \.(gif|jpe?g|png)
+  - or list of extensions (case-sensitive): gif jpg png
+  - or to ignore case on some: (?i)gif (?i)jpg JPEG png
+
+* Fix disappearing submenus in UI_STD_HEAD. Thanks to Brian Kosick for
+  noticing the problem.
+
+* Stop admin menus from appearing right after a logout. Thanks to John
+  Beima for pointing out the fix.
+
+* Stop generating OPTION GROUP tags for Opera browser in UI Wizard.
+
+* Resolve bug #319 by removing a page that was specific to the now-defunct
+  sample computer data.
+
+* Don't cut help topics after the default of 50 items (thanks to Ed LaFrance).
+
+Packaging
+---------
+* Minor RPM dependency improvement for interchange-foundation-demo.
+
+* Debian packaging improvements:
+  - install README.debian into /usr/share/doc
+  - useful descriptions for interchange-ui and interchange-cat-foundation
+    added (closes: #109228, #109565)
+  - foundation catalog was disabled if not reinstalled in postinst
+  - change owner/group of the base directory for static HTML files
+    to the Interchange owner/group
+  - let makecat write into /etc/interchange/catalogs.cfg
+
+
 Interchange 4.8.1 released 2001-08-13.
 
 Foundation
