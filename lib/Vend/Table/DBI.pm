@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.11 2001-01-28 08:43:16 heins Exp $
+# $Id: DBI.pm,v 1.25.2.12 2001-03-06 15:10:29 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.11 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.12 $, 10);
 
 use strict;
 
@@ -487,6 +487,7 @@ and ::logDebug("REAL_NAME=$config->{REAL_NAME}")
 sub close_table {
 	my $s = shift;
 	return 1 if ! defined $s->[$DBI];
+	undef $DBI_connect_bad{$s->[$CONFIG]->{dsn_id}};
 	undef $s->[$CONFIG]{_Insert_h};
 	undef $s->[$CONFIG]{Update_handle};
     undef $s->[$CONFIG]{Exists_handle};
@@ -1153,65 +1154,59 @@ sub query {
 	my @out;
 	my $db = $s->[$DBI];
 
-    if ( 0 and "\L$opt->{st}" eq 'db') {
-		eval {
-			($spec, $stmt) = Vend::Scan::sql_statement($query, $ref);
-		};
-		if(! CORE::ref $spec) {
-			::logError("Bad SQL, query was: %s", $query);
-			return ($opt->{failure} || undef);
-		}
-		my @additions = grep length($_) == 2, keys %$opt;
-		if(@additions) {
-			@{$spec}{@additions} = @{$opt}{@additions};
-		}
-	}
-	else {
-		$update = 1 if $query !~ /^\s*select\s+/i;
+	$update = 1 if $query !~ /^\s*select\s+/i;
 
-		eval {
-			if($update and $s->[$CONFIG]{Read_only}) {
-				my $msg = ::errmsg(
-							"Attempt to do update on read-only table.\nquery: %s",
-							$query,
-						  );
-				::logError($msg);
-				die "$msg\n";
-			}
-			$opt->{row_count} = 1 if $update;
-			$sth = $db->prepare($query);
-			$rc = $sth->execute();
-			
-			if ($opt->{hashref}) {
-				my @ary;
-				while ( defined (my $rowhashref = $sth->fetchrow_hashref) ) {
-					if ($s->config('UPPERCASE')) {
-						$rowhashref->{lc $_} = $rowhashref->{$_} for (keys %$rowhashref);
-					}
-					push @ary, $rowhashref;
+	eval {
+		if($update and $s->[$CONFIG]{Read_only}) {
+			my $msg = ::errmsg(
+						"Attempt to do update on read-only table.\nquery: %s",
+						$query,
+					  );
+			::logError($msg);
+			die "$msg\n";
+		}
+		$opt->{row_count} = 1 if $update;
+		$sth = $db->prepare($query);
+#::logDebug("Query prepared OK. sth=$sth");
+		$rc = $sth->execute();
+#::logDebug("Query executed OK. rc=" . defined $rc ? $rc : 'undef');
+		
+		if ($opt->{hashref}) {
+			my @ary;
+			while ( defined (my $rowhashref = $sth->fetchrow_hashref) ) {
+				if ($s->config('UPPERCASE')) {
+					$rowhashref->{lc $_} = $rowhashref->{$_} for (keys %$rowhashref);
 				}
-				die $DBI::errstr if $sth->err();
-				$ref = $Vend::Interpolate::Tmp->{$opt->{hashref}} = \@ary;
+				push @ary, $rowhashref;
 			}
-			else {
-				my $i = 0;
-				@na = @{$sth->{NAME} || []};
-				%nh = map { (lc $_, $i++) } @na;
-				$ref = $Vend::Interpolate::Tmp->{$opt->{arrayref}}
-					= $sth->fetchall_arrayref()
-					 or die $DBI::errstr;
-			}
-		};
-		if($@) {
-			if(! $sth) {
-				# query failed, probably because no table
-				# Do nothing but log to debug and fall through to MVSEARCH
-				::logDebug(qq{query "$query" failed: $@});
-			}
-			else {
-				::logError("SQL query failed: %s\nquery was: %s", $@, $query);
-				$return = $opt->{failure} || undef;
-			}
+			die $DBI::errstr if $sth->err();
+			$ref = $Vend::Interpolate::Tmp->{$opt->{hashref}} = \@ary;
+		}
+		else {
+			my $i = 0;
+			@na = @{$sth->{NAME} || []};
+			%nh = map { (lc $_, $i++) } @na;
+			$ref = $Vend::Interpolate::Tmp->{$opt->{arrayref}}
+				= $sth->fetchall_arrayref()
+				 or die $DBI::errstr;
+		}
+	};
+	if($@) {
+		if(! $sth or ! defined $rc) {
+			# query failed, probably because no table
+			# Do nothing but log to debug and fall through to MVSEARCH
+			eval {
+				($spec, $stmt) = Vend::Scan::sql_statement($query, $ref);
+				my @additions = grep length($_) == 2, keys %$opt;
+				if(@additions) {
+					@{$spec}{@additions} = @{$opt}{@additions};
+				}
+			};
+			::logError(qq{rerouted query "$query" failed: $@}) if $@;
+		}
+		else {
+			::logError("SQL query failed: %s\nquery was: %s", $@, $query);
+			$return = $opt->{failure} || undef;
 		}
 	}
 
