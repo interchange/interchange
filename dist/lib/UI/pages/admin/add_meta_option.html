@@ -142,8 +142,9 @@ EOF
 [mvasp tables="[list-databases] __UI_META_TABLE__ __UI_ACCESS_TABLE__"]
 <%
 	my $table	= $Values->{mv_data_table};
+	my $mtable	= q{__UI_META_TABLE__} || 'mv_metadata';
 	my $db		= $Db{$table};
-	my $mdb		= $Db{__UI_META_TABLE__};
+	my $mdb		= $Db{$mtable};
 	my %break;
 	my %break_label;
 	if($CGI->{ui_break_before}) {
@@ -296,7 +297,7 @@ EOF
 							{	href => "$base/meta_editor",
 								form => qq{
 										item_id=${t}::${c}::$key
-										mv_data_table=mv_metadata
+										mv_data_table=$mtable
 										ui_hide_key=1
 										ui_meta_view=metaconfig
 										ui_return_to=$page
