@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.6.2.7 2002-05-16 15:06:25 jon Exp $
+# $Id: Order.pm,v 2.6.2.8 2002-06-04 18:33:01 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.6.2.7 $, 10);
+$VERSION = substr(q$Revision: 2.6.2.8 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -212,10 +212,12 @@ my %Parse = (
 
 sub _fatal {
 	$Fatal = ( defined($_[1]) && ($_[1] =~ /^[yYtT1]/) ) ? 1 : 0;
+	return 1;
 }
 
 sub _final {
 	$Final = ( defined($_[1]) && ($_[1] =~ /^[yYtT1]/) ) ? 1 : 0;
+	return 1;
 }
 
 sub _return {
