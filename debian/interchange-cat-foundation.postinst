@@ -93,7 +93,8 @@ if [ "$GOAHEAD" = "true" ]; then
 		--vendroot=/usr/lib/interchange \
 		--linkmode=UNIX \
 		--catuser=$USER \
-		--mailorderto=$USER
+		--mailorderto=$USER \
+		--nocfg
 fi
 
 
