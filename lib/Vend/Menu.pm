@@ -1,6 +1,6 @@
 # Vend::Menu - Interchange payment processing routines
 #
-# $Id: Menu.pm,v 2.18 2002-10-27 04:20:32 mheins Exp $
+# $Id: Menu.pm,v 2.19 2002-12-08 05:20:24 mheins Exp $
 #
 # Copyright (C) 2002 Mike Heins, <mike@perusion.net>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Menu;
 
-$VERSION = substr(q$Revision: 2.18 $, 10);
+$VERSION = substr(q$Revision: 2.19 $, 10);
 
 use Vend::Util;
 use strict;
@@ -1122,13 +1122,13 @@ sub tree_line {
 			$form = join "\n", split $Global::UrlSplittor, $form;
 		}
 
-		if($form) {
-			$form .= "\nopen=";
+		$row->{page} = Vend::Tags->area( { href => $row->{page}, form => $form });
+		if($row->{page} =~ m{\?.+=}) {
+			$row->{page} .= $Global::UrlJoiner . 'open=';
 		}
 		else {
-			$form = 'open=';
+			$row->{page} .= '?open=';
 		}
-		$row->{page} = Vend::Tags->area( { href => $row->{page}, form => $form });
 	}
 
 	my @values = @{$row}{@$fields};
