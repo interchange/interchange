@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.20 2003-07-07 00:31:18 mheins Exp $
+# $Id: UserDB.pm,v 2.21 2003-07-15 22:45:51 ramoore Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.20 $, 10);
+$VERSION = substr(q$Revision: 2.21 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1175,11 +1175,18 @@ sub login {
 			if $Vend::Cfg->{CookieLogin};
 
 		if ($self->{LOCATION}{LAST} ne 'none') {
+			my $now = time();
+			my $login_time;
+			unless($self->{OPTIONS}{null_time}) {
+				$login_time = $self->{OPTIONS}{iso_time}
+						? POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime($now))
+						: $now;
+			}
 			eval {
 				$udb->set_field( $self->{USERNAME},
-										$self->{LOCATION}{LAST},
-										time()
-									  );
+									$self->{LOCATION}{LAST},
+									$login_time
+									);
 			};
 			if ($@) {
 				my $msg = ::errmsg("Failed to record timestamp in UserDB: %s", $@);
