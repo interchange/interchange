@@ -58,22 +58,13 @@ random:
 					"] [loop-code][/loop][/tmp]
 [/if]
 
-<table width="90%" align=center>
+<table width="95%" align="center">
 <tr> 
-<td style="[control toprow_css
-				font-face: Verdana, Arial, Helvetica, sans-serif;
-				font-style: italic;
-				font-weight: bold;
-				text-align: left;
-				background-color: __BARBG__;
-				color: __BARTEXT__;
-				]"> 
-<font color="__BARTEXT__">[control banner Best sellers...]</font>
-</td>
+  <td class="categorybar">&nbsp;[control banner Best sellers...]</td>
 </tr>
 <tr>
-<td> 
-  [calc]
+  <td> 
+    [calc]
   	my $n = [control cols 2];
 	$Scratch->{width_percent} = int(100 / $n) . '%';
 	my $rand = q{[control random 1]};
@@ -82,54 +73,48 @@ random:
 		$Scratch->{random} = $n;
 	}
 	return;
-  [/calc]
-  <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-[table-organize embed=1 pretty=1 cols="[control cols 2]"]
-	[loop random="[scratch random]" list="[strip][scratch cross_codes][/strip]"]
-	  <TD width="[scratch width_percent]"> 
-		<table border="0" cellspacing="0" cellpadding="0">
-		  <tr> 
-			<td align="center" class=cdata><b>[loop-description]</b></td>
-		  </tr>
-		  <tr> 
-			<td align="center" class=cdata><b>
-				[if-loop-data options o_modular]
+    [/calc]
+    <table border="0" width="100%">
+    [table-organize embed=1 pretty=1 cols="[control cols 2]"]
+    [loop random="[scratch random]" list="[strip][scratch cross_codes][/strip]"]
+      <TD width="[scratch width_percent]"> 
+	<table border="0">
+	<tr> 
+          <td>
+	    <a href="[area [loop-code]]">
+	      <img border="0" src="thumb/[loop-field thumb]">
+	    </a>
+	  </td>
+          <td valign="middle">
+            <table cellspacing="0">
+     	    <tr>
+  	      <td align="left" class="contentbar1">
+	        &nbsp;<b>[loop-description]</b>
+              </td>
+	    </tr>
+	    <tr> 
+	      <td align="left">
+			[if-loop-data options o_modular]
 				[page [loop-code]]
 				[else][order [loop-code]]
 				[/else]
 				[/if-loop-data]
-					Buy Now
-				</A></b></td>
-		  </tr>
-		  <tr> 
-			<td align="center"> 
-			  <table border="0" cellspacing="0" cellpadding="0">
-				<tr> 
-				  <td><img src="thumb/[loop-field thumb]"></td>
-				</tr>
-			  </table>
-			</td>
-		  </tr>
-		  <tr> 
-			<td align="center" height="5">&nbsp;</td>
-		  </tr>
-		  <tr> 
-			<td align="center" class=cdata>Our Price: <B>[loop-price]</B></td>
-		  </tr>
-		  <tr> 
-			<td align="center">
-				<a href="[area [loop-code]]">More Information</a>
-			</td>
-		  </tr>
-		  <tr> 
-			<td align="center">&nbsp;</td>
-		  </tr>
-		</table>
-	  </TD>
-	[/loop]
-[/table-organize]
-  </table>
-  <p>&nbsp;</p>
+  		<img src="__THEME_IMG_DIR__buynow.gif" border="0" align="middle"></a>
+		&nbsp;
+	        <a href="[area [loop-code]]">More Info</a>
+              </td>
+	    </tr>
+	    <tr> 
+	      <td align="left">Our Price: <B>[loop-price]</B></td>
+	    </tr>
+	    </table>
+	  </td>
+        </tr>
+        </table>
+      </TD>
+    [/loop]
+    [/table-organize]
+    </table>
   </td>
 </tr>
 </table>
