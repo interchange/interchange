@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18.2.25 2001-06-18 15:51:57 heins Exp $
+# $Id: Order.pm,v 1.18.2.26 2001-06-28 14:30:03 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.25 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.26 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1805,8 +1805,11 @@ sub add_items {
 	foreach $code (@items) {
 		undef $item;
 		$quantity = defined $quantities[$j] ? $quantities[$j] : 1;
-		($j++,next) unless $quantity;
 		$set = $quantity =~ s/^=//;
+		$quantity =~ s/^(-?)\D+/$1/;
+		$quantity =~ s/^(-?\d*)\D.*/$1/
+			unless $Vend::Cfg->{FractionalItems};
+		($j++,next) unless $quantity;
 		if(! $fly[$j]) {
 			$base = product_code_exists_tag($code, $bases[$j] || undef);
 		}
