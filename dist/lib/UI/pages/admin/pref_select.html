@@ -31,7 +31,7 @@
 		[calc]
 			my $thing = $CGI->{ui_text_qualification};
 			$thing =~ s/^\s*\w+=//;
-			return "Preference edit: $thing";
+			return errmsg("Preference edit: %s", $thing);
 		[/calc]
 	[else]
 		[scratch page_title]
@@ -596,4 +596,4 @@ mv_click=db_maintenance
 [update values]
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ Revision: $Id: pref_select.html,v 2.1 2003-01-14 02:25:50 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ Revision: $Id: pref_select.html,v 2.2 2003-05-24 02:11:43 racke Exp $ -->
