@@ -1,6 +1,11 @@
-interchange (4.5.8-1.1) unstable; urgency=low
+interchange (4.5.8-1.2) unstable; urgency=low
 
   * patch to eg/globalsub/signio from upstream
+  * patch to construct/pages/index.html from upstream (coupon bug)
+  * layout fixes to dist/lib/UI/pages/admin/{affiliates,index,page_edit}.html 
+    from upstream
+  * modified expire scripts so they work from cron
+  * log form action errors
   * option size of usertag formel implemented
 
  -- Stefan Hornburg <racke@linuxia.de>  Wed, 25 Oct 2000 10:52:05 +0200
