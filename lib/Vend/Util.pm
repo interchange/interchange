@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.38 2002-10-05 23:57:10 danb Exp $
+# $Id: Util.pm,v 2.39 2002-11-04 21:36:37 racke Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -83,7 +83,7 @@ require HTML::Entities;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.38 $, 10);
+$VERSION = substr(q$Revision: 2.39 $, 10);
 
 BEGIN {
 	eval {
@@ -1208,14 +1208,7 @@ sub readfile {
 		(defined $loc ? $loc : $Vend::Cfg->{Locale}->{readfile} )
 		)
 	{
-		my $key;
-		$contents =~ s~\[L(\s+([^\]]+))?\]([\000-\377]*?)\[/L\]~
-						$key = $2 || $3;		
-						defined $Vend::Cfg->{Locale}->{$key}
-						?  ($Vend::Cfg->{Locale}->{$key})	: $3 ~eg;
-		$contents =~ s~\[LC\]([\000-\377]*?)\[/LC\]~
-						find_locale_bit($1) ~eg;
-		undef $Lang;
+		parse_locale(\$contents);
 	}
     return $contents;
 }
