@@ -17,7 +17,7 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0016	Admin	16	1			access_menu	admin/access		Users					
 0017	Admin	17				access_menu	admin/group		Groups					
 0018	Content	01					admin/page		Page Edit					
-0019	Content	02					admin/genupload		File Transfer					
+0019	Content	02					admin/file_transfer		File Transfer					
 0020	Customers	01		showactive			admin/customer	showactive=1	Active Customers					
 0021	Customers	02		showinactive			admin/customer	showinactive=1	Inactive Customers					
 0022	Customers	03					admin/flex_editor	page_title=Create new customer&mv_data_table=userdb&help_name=create.new.customer&item_id=new&ui_return_to=admin/customer	Create new customer					
@@ -32,7 +32,7 @@ code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super
 0031	Design	02					admin/search_wizard		Search Builder					
 0032	Design	03					admin/button_builder		Button Builder					
 0033	Design	04					admin/regenerate		Generate Static					
-0034	Design	05					admin/genupload		File Transfer					
+0034	Design	05					admin/file_transfer		File Transfer					
 0035	Design	06					admin/page		Page Edit					
 0036	Items	01					admin/item		Item list					
 0044	Items	02					admin/item_edit	item_id=new&ui_new_item=1	&nbsp;&nbsp;&nbsp;&nbsp;Create new item					
