@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.25.4.1 $, 10);
+$VERSION = substr(q$Revision: 1.25.4.2 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -357,6 +357,8 @@ sub ui_acl_global {
   		}
 
 		my @fields = grep /\S/, split /[,\s\0]+/, $CGI->{mv_data_fields};
+		push @fields, $CGI->{mv_blob_field}
+			if $CGI->{mv_blob_field};
 
 		for(@fields) {
 			$CGI->{$_} =~ s/\[/&#91;/g unless $mml_enable;
@@ -728,6 +730,27 @@ sub option_widget {
 	$out .= "</TABLE>";
 }
 
+sub imagehelper_widget {
+    my ($name, $val, $path, $imagebase, $size) = @_;
+	
+	if ($imagebase ||= '') {
+		$imagebase =~ s/^\s+//;
+		$imagebase =~ s:[\s/]*$:/:;
+	}
+	$size = qq{ SIZE="$size"} if $size > 0;
+    if ($val) {
+        qq{<A HREF="$imagebase$path/$val">$val</A>&nbsp;<INPUT TYPE=hidden NAME=mv_data_file_field VALUE="$name">
+<INPUT TYPE=hidden NAME=mv_data_file_path VALUE="$path">
+<INPUT TYPE=hidden NAME=mv_data_file_oldfile VALUE="$val">
+<INPUT TYPE=file NAME="$name" VALUE="$val">};      
+    } else {
+        qq{<INPUT TYPE=hidden NAME=mv_data_file_field VALUE="$name">
+<INPUT TYPE=hidden NAME=mv_data_file_path VALUE="$path">
+<INPUT TYPE=hidden NAME=mv_data_file_oldfile VALUE="">
+<INPUT TYPE=file NAME="$name"$size>};
+    }
+}
+
 my $base_entry_value;
 
 sub meta_display {
@@ -772,6 +795,9 @@ sub meta_display {
 		}
 #::logDebug("metadisplay record: " . Vend::Util::uneval_it($record));
 		my $opt;
+		for(qw/pre_filter filter height width append prepend/) {
+			$record->{$_} = $o->{$_} if defined $o->{$_};
+		}
 		if($record->{options} and $record->{options} =~ /^[\w:]+$/) {
 			PASS: {
 				my $passed = $record->{options};
@@ -799,7 +825,9 @@ sub meta_display {
 			}
 		}
 		if($record->{pre_filter}) {
+#::logDebug("filtering '$value' with $record->{pre_filter}");
 			$value = Vend::Interpolate::filter_value($record->{pre_filter}, $value);
+#::logDebug("filtered value='$value'");
 		}
 		if($record->{lookup}) {
 			my $fld = $record->{field} || $record->{lookup};
@@ -861,6 +889,17 @@ sub meta_display {
 			$record->{passed} = join ",",
 									map { s/,/&#44;/g; $_} @files;
 		}
+		elsif ($record->{type} eq 'imagehelper') {
+            my $w = imagehelper_widget(	
+							$column,
+							$value,
+							$record->{outboard},
+							$record->{prepend},
+							$record->{width},
+							);
+			return $w unless $o->{template};
+			return ($w, $record->{label}, $record->{help}, $record->{help_url});
+        }
 
 		for(qw/append prepend/) {
 			next unless $record->{$_};
