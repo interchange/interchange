@@ -2,7 +2,7 @@
 #
 # UI::ContentEditor - Interchange page/component edit
 # 
-# $Id: ContentEditor.pm,v 2.8 2003-01-22 15:26:59 mheins Exp $
+# $Id: ContentEditor.pm,v 2.9 2003-04-07 12:59:00 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -23,7 +23,7 @@
 
 package UI::ContentEditor;
 
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = substr(q$Revision: 2.9 $, 10);
 $DEBUG = 0;
 
 use POSIX qw/strftime/;
@@ -987,7 +987,7 @@ sub get_content_data {
 	my @data;
 	for(get_content_filenames($spec, $opt)) {
 #::logDebug("Looking at filename $_");
-		push @data, [ Vend::Util::readfile($_, $Global::NoAbsolute, 0), $_ ];
+		push @data, [ Vend::Util::readfile($_, undef, 0), $_ ];
 	}
 	
 	return @data if wantarray;
