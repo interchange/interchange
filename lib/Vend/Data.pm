@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.5 2001-12-29 19:49:33 mheins Exp $
+# $Id: Data.pm,v 2.6 2002-01-31 17:57:02 mheins Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -663,37 +663,33 @@ sub tie_database {
 				push @delayed, $name;
 				next;
 			}
-		if(! $data->{name}) {
-#::logDebug("Screwed up database: " . ::uneval( $data) );
-			next;
-		}
-		if( $data->{type} > 6 or $data->{HOT} or $data->{IMPORT_ONCE} ) {
-#::logDebug("Importing '$data->{name}'...");
-			eval {
-				$Vend::Database{$name} = import_database($data);
-			};
-			if($@) {
-					my $msg = "table '%s' failed: %s";
-					$msg = ::errmsg($msg, $name, $@);
-					::logError($msg);
+			if(! $data->{name}) {
+				next;
 			}
-		}
-		else {
-#::logDebug("Tieing '$data->{name}'...");
-			if($data->{GUESS_NUMERIC}) {
-				my $dir = $data->{DIR} || $Vend::Cfg->{ProductDir};
-				my $fn = Vend::Util::catfile( $dir, $data->{file} );
-				my @fields = grep /\S/, split /\s+/, ::readfile("$fn.numeric");
-#::logDebug("fields=@fields");
-				$data->{NUMERIC} = {};
-				for(@fields) {
-					$data->{NUMERIC}{$_} = 1;
+			if( $data->{type} > 6 or $data->{HOT} or $data->{IMPORT_ONCE} ) {
+				eval {
+					$Vend::Database{$name} = import_database($data);
+				};
+				if($@) {
+						my $msg = "table '%s' failed: %s";
+						$msg = ::errmsg($msg, $name, $@);
+						::logError($msg);
 				}
 			}
-			my $class = $db_config{$data->{Class}}->{Class};
-			$Vend::Database{$name} = new $class ($data);
+			else {
+				if($data->{GUESS_NUMERIC}) {
+					my $dir = $data->{DIR} || $Vend::Cfg->{ProductDir};
+					my $fn = Vend::Util::catfile( $dir, $data->{file} );
+					my @fields = grep /\S/, split /\s+/, ::readfile("$fn.numeric");
+					$data->{NUMERIC} = {};
+					for(@fields) {
+						$data->{NUMERIC}{$_} = 1;
+					}
+				}
+				my $class = $db_config{$data->{Class}}->{Class};
+				$Vend::Database{$name} = new $class ($data);
+			}
 		}
-	}
 
 		# So mirrors will not happen until after mirror source
 		if(@delayed) {
