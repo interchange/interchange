@@ -8,7 +8,7 @@ Database  userdb  PASS         __SQLPASS__
 Database  userdb  COLUMN_DEF   "code=VARCHAR(20) NOT NULL PRIMARY KEY"
 Database  userdb  COLUMN_DEF   "password=VARCHAR(20)"
 Database  userdb  COLUMN_DEF   "acl=text"
-Database  userdb  COLUMN_DEF   "mod_time=timestamp DEFAULT '2000-01-01'"
+Database  userdb  COLUMN_DEF   "mod_time=char(20)"
 Database  userdb  COLUMN_DEF   "s_nickname=text"
 Database  userdb  COLUMN_DEF   "company=VARCHAR(30)"
 Database  userdb  COLUMN_DEF   "fname=VARCHAR(20)"
