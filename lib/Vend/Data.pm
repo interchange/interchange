@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.19 2002-12-10 20:09:43 jon Exp $
+# $Id: Data.pm,v 2.20 2002-12-13 21:35:29 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -297,11 +297,11 @@ sub import_text {
 	}
 	else {
 		$options->{field_names} = \@columns;
-		$options->{'delimiter'} = $delimiter;
+		$options->{delimiter} = $options->{DELIMITER} = $delimiter;
 	}
 
-	if($options->{'file'}) {
-		$fn = $options->{'file'};
+	if($options->{file}) {
+		$fn = $options->{file};
 		if( $Global::NoAbsolute) {
 			die "No absolute file names like '$fn' allowed.\n"
 				if Vend::Util::file_name_is_absolute($fn);
@@ -790,6 +790,23 @@ sub dummy_database {
 
 my $tried_import;
 
+sub create_empty_txt {
+	my ($obj, $database_txt, $delimiter, $record_delim) = @_;
+	return if -f $database_txt;
+	return unless $obj->{CREATE_EMPTY_TXT};
+	if(! ref($obj->{NAME}) eq 'ARRAY') {
+		logError("Cannot create text file with no database NAME parameter");
+	}
+	else {
+		$delimiter ||= "\t";
+		$record_delim ||= "\n";
+		my $line = join $obj->{DELIMITER}, @{$obj->{NAME}};
+		$line .= $record_delim;
+		Vend::Util::writefile($database_txt, $line);
+	}
+	return;
+}
+
 sub import_database {
     my ($obj, $dummy) = @_;
 
@@ -905,7 +922,7 @@ sub import_database {
 		if (
 			$Vend::Cfg->{NoImportExternal}
 			or -f $database_dbm
-			or ! -f $database_txt
+			or (! $obj->{CREATE_EMPTY_TXT} and ! -f $database_txt)
 			)
 		{
 			$no_import = 1;
@@ -944,7 +961,6 @@ sub import_database {
            ($dbm_time = file_modification_time($database_dbm))
 		)
 	{
-		
         warn "Importing $obj->{'name'} table from $database_txt\n"
 			unless $Vend::Quiet;
 
@@ -955,11 +971,15 @@ sub import_database {
 			($delimiter, $record_delim) = auto_delimiter($database_txt);
 		}
 
-		$obj->{'delimiter'} = $obj->{'DELIMITER'} = $delimiter;
+		$obj->{delimiter} = $obj->{DELIMITER} = $delimiter;
 
 		my $save = $/;
 
 		local($/) = $record_delim if defined $record_delim;
+
+		if($obj->{CREATE_EMPTY_TXT}) {
+			create_empty_txt($obj, $database_txt, $delimiter, $record_delim);
+		}
 
 		if($obj->{MIRROR}) {
 			$db = Vend::Table::Common::import_from_ic_db(
@@ -1214,7 +1234,8 @@ sub export_database {
 	}
 
 	my ($delim, $record_delim) = find_delimiter($type || $db->config('type'));
-	$delim or ($delim, $record_delim) = find_delimiter($db->config('delimiter'));
+	$delim or ($delim, $record_delim) = find_delimiter($db->config('DELIMITER'));
+	$delim or ($delim, $record_delim) = find_delimiter('TAB');
 
 	$file = $file || $db->config('file');
 	my $dir = $db->config('DIR');
@@ -2002,6 +2023,7 @@ sub update_data {
 	}
 
 	my $autonumber;
+#::logDebug("function=$function auto_number=" . $base_db->config('_Auto_number'));
 	if ($CGI::values{mv_data_auto_number}) {
 		$autonumber = 1;
 		my $ref = $data{$prikey};
@@ -2016,7 +2038,7 @@ sub update_data {
 	elsif($function eq 'insert' and $base_db->config('_Auto_number') ) {
 			$autonumber = 1;
 	}
- 
+#::logDebug("autonumber=$autonumber");
 
  	if(@file_fields) {
 		my $Tag = new Vend::Tags;
@@ -2168,6 +2190,7 @@ sub update_data {
 	}
 
 	my @multis;
+	my $multiqual = $CGI::values{mv_data_multiple_qual} || $prikey;
 	if($CGI::values{mv_data_multiple}) {
 		my $re = qr/^\d+_$prikey$/;
 		@multis = grep $_ =~ $re, @cgi_keys;
@@ -2214,7 +2237,7 @@ sub update_data {
 		else {
 			my $field;
 			$key = $data{$prikey}->[$i];
-			if(! length($key) and $autonumber) {
+			if(! length($key) and ! $autonumber) {
 				## KEY IS possibly SET HERE 
 				$key = $base_db->set_row($key);
 			}
@@ -2285,6 +2308,7 @@ sub update_data {
 			}
 
 			for(keys %$qd) {
+#::logDebug("update_data: Getting ready to set_slice");
 				$qret = $qd->{$_}->set_slice($key, $qf->{$_}, $qv->{$_});
 				$rows_set[$i] = $qret unless $rows_set[$i];
 			}
@@ -2306,7 +2330,7 @@ sub update_data {
 	}
 	if(my $new = shift(@multis)) {
 #::logDebug("Doing multi for $new");
-		last SETDATA unless length $CGI::values{"${new}_$prikey"};
+		last SETDATA unless length $CGI::values{"${new}_$multiqual"};
 		for(@fields) {
 			my $value = $CGI::values{$_} = $CGI::values{"${new}_$_"};
 			$data{$_} = [ $value ];
@@ -2365,6 +2389,7 @@ sub update_data {
 		}
 
 		@CGI::values{keys %cgiset} = values %cgiset;
+#::logDebug("Reloading, function=$CGI::values{mv_data_function}");
 		update_data();
 	}
 
