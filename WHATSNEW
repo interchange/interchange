@@ -20,6 +20,9 @@ Core
   The "province" profile check will now accept both NF and NL, but NF is now
   deprecated and will be removed in a future release.
 
+* Limit data part of Vend::File:writefile error message to 120 characters in
+  order to avoid disk abuse, resolve scalar references.
+
 UI
 --
 

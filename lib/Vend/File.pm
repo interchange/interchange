@@ -1,6 +1,6 @@
 # Vend::File - Interchange file functions
 #
-# $Id: File.pm,v 2.12 2003-11-13 15:12:49 racke Exp $
+# $Id: File.pm,v 2.13 2003-11-24 21:09:00 racke Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -53,7 +53,7 @@ use Errno;
 use Vend::Util;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK $errstr);
-$VERSION = substr(q$Revision: 2.12 $, 10);
+$VERSION = substr(q$Revision: 2.13 $, 10);
 
 sub writefile {
     my($file, $data, $opt) = @_;
@@ -109,7 +109,7 @@ sub writefile {
 				$@,
 				$file,
 				$!,
-				$data,
+				substr(ref($data) ? $$data : $data,0,120),
 				);
 		$status = 0;
     }
