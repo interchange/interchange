@@ -340,7 +340,7 @@ dist/foundation/templates/sampledata/reports/products/transactions.txt
 dist/foundation/templates/sampledata/reports/products/userdb.txt
 dist/foundation/templates/sampledata/tools/etc/after.cfg
 dist/foundation/templates/sampledata/tools/etc/before.cfg
-dist/foundation/templates/sampledata/tools/images/items/gift_certificate_large.gif
+dist/foundation/templates/sampledata/tools/images/items/gift_cert.gif
 dist/foundation/templates/sampledata/tools/images/items/os28004.gif
 dist/foundation/templates/sampledata/tools/images/items/os28005.gif
 dist/foundation/templates/sampledata/tools/images/items/os28006.gif
@@ -381,7 +381,7 @@ dist/foundation/templates/sampledata/tools/images/items/os28111.gif
 dist/foundation/templates/sampledata/tools/images/items/os28112.gif
 dist/foundation/templates/sampledata/tools/images/items/os28113.gif
 dist/foundation/templates/sampledata/tools/images/items/os29000.gif
-dist/foundation/templates/sampledata/tools/images/thumb/gift_certificate.gif
+dist/foundation/templates/sampledata/tools/images/thumb/gift_cert.gif
 dist/foundation/templates/sampledata/tools/images/thumb/os28004_b.gif
 dist/foundation/templates/sampledata/tools/images/thumb/os28005_b.gif
 dist/foundation/templates/sampledata/tools/images/thumb/os28006_b.gif
