@@ -28,7 +28,7 @@ ui_component_label: Small cart for left/right display
 	[item-next][item-modifier mv_si][/item-next]
       <tr>
 	<td valign="top" align="left" class="contentbar2">
-	  <a href="[area [item-code]]"><small>[item-filter 20][item-description][/item-filter]</small></A>
+	  <a href="[area [item-sku]]"><small>[item-filter 20][item-data products description][/item-filter]</small></A>
 	</td>
 	<TD ALIGN="right" valign="top" class="contentbar1">
 	  <small>[item-quantity]@[discount-price]</small>
