@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.10 2001-02-07 11:38:40 heins Exp $
+# $Id: Server.pm,v 1.8.2.11 2001-02-13 14:36:45 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.10 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.11 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -76,7 +76,6 @@ my @Map =
      'cookie' => 'HTTP_COOKIE',
      'http_host' => 'HTTP_HOST',
      'path_info' => 'PATH_INFO',
-     'path_translated' => 'PATH_TRANSLATED',
      'pragma' => 'HTTP_PRAGMA',
      'query_string' => 'QUERY_STRING',
      'referer' => 'HTTP_REFERER',
@@ -717,17 +716,21 @@ sub read_cgi_data {
     for (;;) {
         $block = _find(\$in, "\n");
         if ($block =~ m/^[GPH]/) {
+#::logDebug("http block");
            	return http_server($block, $in, @_);
 		}
 		elsif ($block =~ s/^ipc ([-\w]+)$//) {
+#::logDebug("ipc block");
 			my $cat = $1;
 		}
 		elsif (($n) = ($block =~ m/^arg (\d+)$/)) {
+#::logDebug("arg block");
             $#$argv = $n - 1;
             foreach $i (0 .. $n - 1) {
                 $$argv[$i] = _string(\$in);
             }
         } elsif (($n) = ($block =~ m/^env (\d+)$/)) {
+#::logDebug("env block");
             foreach $i (0 .. $n - 1) {
                 $e = _string(\$in);
                 if (($key, $value) = ($e =~ m/^([^=]+)=(.*)$/s)) {
@@ -735,8 +738,10 @@ sub read_cgi_data {
                 }
             }
         } elsif ($block =~ m/^entity$/) {
+#::logDebug("entity block");
             $$entity = _string(\$in);
         } elsif ($block =~ m/^end$/) {
+#::logDebug("end block");
             last;
         } else {
 			die "Unrecognized block: $block\n";
@@ -1051,6 +1056,7 @@ sub server_both {
 	my %fh_map;
 	my %vec_map;
 	my $made_at_least_one;
+	my @active_tcp;
 
 	my @types;
 	push (@types, 'INET') if $Global::Inet_Mode;
@@ -1110,26 +1116,33 @@ sub server_both {
 					$@,
 				  );
 		}
-		next if $made_at_least_one;
-		open(Vend::Server::INET_MODE_INDICATOR, ">$Global::ConfDir/mode.inet")
-			or die "creat $Global::ConfDir/mode.inet: $!";
-		close(Vend::Server::INET_MODE_INDICATOR);
+		push @active_tcp, "$bind_ip:$port";
+#::logDebug( "Made port $bind_ip:$port\n");
 	  }
 	}
 
-	if (! $made_at_least_one and $Global::Inet_Mode) {
-		my $msg;
-		if ($Global::Unix_Mode) {
-			$msg = errmsg("Continuing in UNIX MODE ONLY" );
-			::logGlobal({ level => 'warn' }, $msg);
-			print "$msg\n";
+	if ($Global::Inet_Mode) {
+		if (! $made_at_least_one) {
+			my $msg;
+			if ($Global::Unix_Mode) {
+				$msg = errmsg("Continuing in UNIX MODE ONLY" );
+				::logGlobal({ level => 'warn' }, $msg);
+				print "$msg\n";
+			}
+			else {
+				$msg = errmsg( "No sockets -- INTERCHANGE SERVER TERMINATING\a" );
+				::logGlobal( {level => 'alert'}, $msg );
+				print "$msg\n";
+				exit 1;
+			}
 		}
-		else {
-			$msg = errmsg( "No sockets -- INTERCHANGE SERVER TERMINATING\a" );
-			::logGlobal( {level => 'alert'}, $msg );
-			print "$msg\n";
-			exit 1;
-		}
+#::logDebug( "writing port indicator: " .  join " ", @active_tcp);
+		open(INET_MODE_INDICATOR, ">$Global::ConfDir/mode.inet")
+			or die "creat $Global::ConfDir/mode.inet: $!";
+		print INET_MODE_INDICATOR join " ", @active_tcp;
+		close(INET_MODE_INDICATOR);
+		# So that other apps can read if appropriate
+		chmod $Global::SocketPerms, "$Global::ConfDir/mode.inet";
 	}
 
 	my $no_fork;
