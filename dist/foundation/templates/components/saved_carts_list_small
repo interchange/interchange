@@ -24,6 +24,7 @@ ui_component_label: Small saved cart list for left/right display
  [perl]
   $Scratch->{saved_carts_carts} = '';
   $Scratch->{saved_carts_recurring} = '';
+  push(@Vend::TmpScratch,qw/saved_carts_carts saved_carts_recurring/);
 
   foreach my $var (split("\n",$Tag->value('carts'))) {
     my($name,$last_update,$type) = split(':',$var);
