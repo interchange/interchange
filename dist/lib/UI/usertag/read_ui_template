@@ -61,16 +61,29 @@ sub {
 		$data =~ m{\[comment\]\s*(ui_.*?)\[/comment\]}s;
 		my $structure = $1 || '';
 		next unless $structure;
-		my @lines = grep /\S/, split /\n/, $structure;
+		my @lines = split /\n/, $structure;
+		$ref->{ui_definition} = join "\n", @lines;
+		my $current;
 		for(@lines) {
-			my ($el, $el_item, $el_data) = split /\s*:\s*/, $_;
-			#Log ("found el=$el el_item=$el_item el_data=$el_data");
-			if(defined $el_data) {
-				$ref->{$el} = { } if ! ref($ref->{$el});
-				$ref->{$el}{$el_item} = $el_data;
+			if(/^ui_/) {
+				my ($el, $el_item, $el_data) = split /\s*:\s*/, $_;
+				#Log ("found el=$el el_item=$el_item el_data=$el_data");
+				if(defined $el_data) {
+					$ref->{$el} = { } if ! ref($ref->{$el});
+					$ref->{$el}{$el_item} = $el_data;
+				}
+				else {
+					$ref->{$el} = $el_item;
+				}
 			}
-			else {
-				$ref->{$el} = $el_item;
+			elsif ( /^(\w+)\s*:\s*(.*)$/) {
+				$current = $1;
+				$ref->{ui_control_element}{$current} = $2;
+				$ref->{ui_display_order} = [] if ! $ref->{ui_display_order};
+				push @{$ref->{ui_display_order}}, $current;
+			}
+			elsif( /^\s+(\w+)\s*:\s*(.*)/ ) {
+				$ref->{"ui_control_$1"}{$current} = $2;
 			}
 		}
 		if($opt->{structure}) {
@@ -83,6 +96,7 @@ sub {
 			push @out, $ref;
 		}
 	}
+
 	if(wantarray) {
 		return \%out if $opt->{structure};
 		return \@out;
@@ -93,5 +107,6 @@ sub {
 	else {
 		return join "\n", @out;
 	}
+
 }
 EOR
