@@ -159,6 +159,9 @@ Debian
   /etc/interchange/features.cfg in order to start Interchange 
   properly on systems with threaded Perl (Closes: #221939)
 
+* Revive USE_FOUNDATION handling in interchange-ui postinst to
+  keep 4.8.x interchange-cat-foundation catalogs running
+
 
 ------------------------------------------------------------------------------
 

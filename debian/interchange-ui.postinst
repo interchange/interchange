@@ -20,9 +20,21 @@
 # Source debconf library
 . /usr/share/debconf/confmodule
 
+# Check for installed foundation demo catalog and set configuration
+# variable accordingly (only for backwards compatibility to 4.8
+# interchange-cat-foundation packages)
+
+USE_FOUNDATION=
+if dpkg --status interchange-cat-foundation 2>/dev/null | grep -q '^Status: .* installed$'; then
+	db_get interchange-cat-foundation/install
+	if [ "$RET" = "true" ]; then
+		USE_FOUNDATION=1
+	fi
+fi
+
 db_get interchange-ui/defaultlocale
 UI_LOCALE=$RET
-/usr/sbin/interchangeconfig UI=1 UI_LOCALE=$UI_LOCALE
+/usr/sbin/interchangeconfig UI=1 UI_LOCALE=$UI_LOCALE USE_FOUNDATION=$USE_FOUNDATION
 
 #DEBHELPER#
 
