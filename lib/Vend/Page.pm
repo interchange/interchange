@@ -1,6 +1,6 @@
 # Page.pm - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 1.4 2000-07-20 07:15:47 heins Exp $
+# $Id: Page.pm,v 1.5 2000-08-06 19:48:42 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -48,7 +48,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.5 $ =~ /(\d+)\.(\d+)/);
 
 my $wantref = 1;
 
@@ -151,6 +151,7 @@ sub do_scan {
 		$Vend::Session->{last_search} = "scan/MM=$c->{mv_more_matches}";
 		$Vend::More_in_progress = 1;
 		$c->{mv_more_matches} =~ m/([a-zA-Z0-9])+/;
+		$c->{mv_more_id} = $CGI::values{mv_more_id} || undef;
 		$c->{mv_cache_key} = $1;
 		$CGI::values{mv_nextpage} = $c->{mv_nextpage}
 			if ! defined $CGI::values{mv_nextpage};

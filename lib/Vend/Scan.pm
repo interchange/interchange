@@ -1,6 +1,6 @@
 # Vend/Scan.pm:  Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 1.4 2000-07-20 07:15:47 heins Exp $
+# $Id: Scan.pm,v 1.5 2000-08-06 19:49:44 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -29,7 +29,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 
 use strict;
 use Vend::Util;
@@ -68,6 +68,7 @@ my @Order = ( qw(
 					mv_list_only
 					mv_matchlimit
                     mv_more_decade
+                    mv_more_id
 					mv_min_string
 					mv_max_matches
 					mv_orsearch
@@ -126,6 +127,7 @@ my %Scan = ( qw(
                     lo  mv_list_only
                     lr  mv_search_line_return
                     md  mv_more_decade
+                    mi  mv_more_id
                     ml  mv_matchlimit
                     mm  mv_max_matches
                     MM  mv_more_matches
@@ -413,6 +415,8 @@ sub perform_search {
 	if($c->{mv_more_matches}) {
 		@options{qw/mv_cache_key mv_next_pointer mv_last_pointer mv_matchlimit/}
 			= split /:/, $c->{mv_more_matches};
+		$options{mv_more_id} = $c->{mv_more_id}
+			if $c->{mv_more_id};
 		my $s = new Vend::Search %options;
 		$q = $s->more_matches();
 		finish_search($q);
@@ -438,7 +442,7 @@ sub perform_search {
 				if ! defined $c->{$Scan{$p}};
 		}
 		foreach $p ( grep defined $c->{$_}, @Order) {
-#::logDebug("Parsing $p");
+#::logDebug("Parsing $p mv_search_file");
 			if(defined $Parse{$p}) {
 				$options{$p} = &{$Parse{$p}}(\%options, $c->{$p})
 			}
