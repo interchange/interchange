@@ -2,7 +2,7 @@
 #
 # UI::ContentEditor - Interchange page/component edit
 # 
-# $Id: ContentEditor.pm,v 2.2 2002-02-16 19:24:45 mheins Exp $
+# $Id: ContentEditor.pm,v 2.3 2002-06-03 17:46:00 kwalsh Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -23,7 +23,7 @@
 
 package UI::ContentEditor;
 
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 $DEBUG = 0;
 
 use POSIX qw/strftime/;
@@ -978,7 +978,7 @@ sub page_component_editor {
 		$meta->{$st} = {
 			label => 'how to set',
 			type => 'select',
-			passed => qq{tmp-no=Unparsed and temporary,
+			passed => qq{tmpn=Unparsed and temporary,
 					set=Unparsed and persistent,
 					tmp=Parsed and temporary,
 					seti=Parsed and persistent},
@@ -1054,7 +1054,7 @@ sub page_control_editor {
 			label => 'how to set',
 			type => 'select',
 			passed => qq{
-					tmp-no=Unparsed and temporary,
+					tmpn=Unparsed and temporary,
 					set=Unparsed and persistent,
 					tmp=Parsed and temporary,
 					seti=Parsed and persistent,
@@ -1397,7 +1397,7 @@ sub format_page {
 	# n=name k=key v=value
 	for my $n (@$order) {
 		my $r;
-		my $stype = $scratches->{$n} || 'tmp-no'; 
+		my $stype = $scratches->{$n} || 'tmpn'; 
 		push @sets, "[$stype $n]" . $vals->{$n} . "[/$stype]";
 	}
 	
