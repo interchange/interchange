@@ -13,8 +13,8 @@ GROUP=$RET
 chown -R $USER.$GROUP /var/log/interchange
 chmod 770 /var/log/interchange
 chown -R $USER.$GROUP /var/run/interchange
-chown $USER.$GROUP /usr/lib/cgi-bin/{tlink,vlink}
-chmod u+s /usr/lib/cgi-bin/{tlink,vlink}
+chown -R $USER.$GROUP /usr/lib/cgi-bin/ic
+chmod u+s /usr/lib/cgi-bin/ic/*
 
 # Record debconf configuration in a file
 INITCFG=/etc/interchange/init.cfg
