@@ -1,4 +1,8 @@
-[calc]$CGI->{mv_data_table} = 'variable'; return;[/calc]
+[calc]
+	$Values->{mv_data_table} = $CGI->{mv_data_table} = 'variable';
+	$CGI->{no_dbmenu} = 1;
+	return;
+[/calc]
 [set table_perm]1[/set]
 [set ui_class]Admin[/set]
 [set page_title]Tax configuration[/set]

@@ -1,14 +1,14 @@
-[if !cgi user_id]
-	[calc] $CGI->{user_id} = $Values->{user_id}; return;[/calc]
-[/if]
+[calc]
+	$CGI->{no_dbmenu} = 1;
+	$CGI->{access_menu} = 1;
+	$CGI->{mv_data_table} = $Values->{mv_data_table} = '__UI_ACCESS_TABLE__';
+	$CGI->{user_id} = $Values->{user_id} if ! $CGI->{user_id};
+	return;
+[/calc]
+
 [if !cgi user_id]
 [bounce page="__UI_BASE__/access"]
 [/if]
-
-[calc]
-	$CGI->{mv_data_table} = $Values->{mv_data_table} = '__UI_ACCESS_TABLE__';
-	return;
-[/calc]
 
 [seti page_title]Edit Permissions: [cgi user_id][/seti]
 [set ui_class]Admin[/set]
