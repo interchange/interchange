@@ -59,6 +59,12 @@ Adds newline and tab characters to provide some reasonable indenting.
 
 Contents to place in empty cells put on as filler. Defaults to C<&nbsp;>.
 
+=item min_rows
+
+On small result sets, can be ugly to build more than necessary columns.
+This will guarantee a minimum number of rows -- columns will change
+as numbers change. Formula: $num_cells % $opt->{min_rows}.
+
 =item limit
 
 Maximum number of cells to use. Truncates extra cells silently.
@@ -171,7 +177,10 @@ sub {
 	my $postamble = $2;
 
 	my @cells;
-	if($opt->{embed}) {
+	if($opt->{cells} and ref($opt->{cells}) eq 'ARRAY') {
+		@cells = @{$opt->{cells}};
+	}
+	elsif($opt->{embed}) {
 		if($opt->{embed} eq 'lc') {
 			push @cells, $1 while $body =~ s:(<td\b.*?</td>)::s;
 		}
@@ -181,6 +190,11 @@ sub {
 	}
 	else {
 		push @cells, $1 while $body =~ s:(<td\b.*?</td>)::is;
+	}
+
+	while ($opt->{min_rows} and ($opt->{min_rows} * $cols) > scalar(@cells) ) {
+		$cols--;
+		last if $cols == 1;
 	}
 
 	if(int($opt->{limit}) and $opt->{limit} < scalar(@cells) ) {
