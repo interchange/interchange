@@ -1,4 +1,4 @@
-{MYSQL}mysqladmin create __MVC_SQLDB__
+{MYSQL}mysqladmin __MVC_SQLCREATEOPT__ create __MVC_SQLDB__
 Since you selected the MySQL option, you need to create
 a database named "__MVC_SQLDB__". In a default MySQL
 configuration, any user may create and drop and modify
