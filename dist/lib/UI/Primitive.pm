@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.25.4.15 $, 10);
+$VERSION = substr(q$Revision: 1.25.4.16 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -1070,7 +1070,7 @@ sub meta_display {
 		my $filter;
 #::logDebug("filters: o=$o->{filter} r=$record->{filter}");
 		if($filter = ($o->{filter} || $record->{filter})) {
-			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$column" VALUE="};
+			$w .= qq{<INPUT TYPE=hidden NAME="ui_filter:$opt->{name}" VALUE="};
 			$w .= $filter;
 			$w .= '">';
 		}
