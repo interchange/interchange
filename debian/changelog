@@ -9,6 +9,15 @@ interchange (4.7.2-0) unstable; urgency=low
   * UI_SECURE added to interchange.cfg
   
  -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri,  6 Apr 2001 12:48:21 +0200
+  
+interchange (4.6.4-2) unstable; urgency=low
+
+  * Build-Depends fixed (Closes: #92570)
+  * Added upstream fix to InMemory.pm
+  * Added mod_interchange
+  * Suggest secure http daemon
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri,  6 Apr 2001 13:22:22 +0200
 
 interchange (4.6.4-1) unstable; urgency=low
   
