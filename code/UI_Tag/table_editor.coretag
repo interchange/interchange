@@ -1603,10 +1603,12 @@ EOF
 						$extra
 					!,
 					});
+		my $delstr = errmsg('Delete');
+		my $delmsg = errmsg('Are you sure you want to delete %s?',$key);
 		push @out, <<EOF if ! $opt->{nosave};
 <BR><BR><A
-onClick="return confirm('Are you sure you want to delete $key?')"
-HREF="$url"><IMG SRC="delete.gif" ALT="Delete $key" BORDER=0></A> Delete
+onClick="return confirm('$delmsg')"
+HREF="$url"><IMG SRC="delete.gif" ALT="Delete $key" BORDER=0></A> $delstr
 EOF
 	}
 	push @out, <<EOF;
