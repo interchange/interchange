@@ -1,6 +1,6 @@
 # Vend::SOAP - Handle SOAP connections for Interchange
 #
-# $Id: SOAP.pm,v 2.4 2003-03-07 13:49:50 racke Exp $
+# $Id: SOAP.pm,v 2.5 2003-03-09 01:06:14 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -34,7 +34,7 @@ require SOAP::Transport::HTTP;
 use strict;
 
 use vars qw($VERSION @ISA $AUTOLOAD);
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 @ISA = qw/SOAP::Server/;
 
 my %Allowed_tags;
@@ -278,6 +278,7 @@ sub AUTOLOAD {
     my $routine = $AUTOLOAD;
 #::logDebug("SOAP autoload called, routine=$routine, args=" . ::uneval(\@_));
 	my $class = shift;
+	my $sub;
 
 	if($Tmp::Autoloaded++ > 100) {
 		die "must be in endless loop, autoloaded $Tmp::Autoloaded times";
@@ -290,19 +291,29 @@ sub AUTOLOAD {
 #::logDebug("session " . ::full_dump() );
 
     $routine =~ s/.*:://;
-	die ::errmsg("Not allowed routine: %s", $routine) if ! $Allowed_tags{$routine};
+	if ($Vend::Cfg->{SOAP_Action}{$routine}) {
+		$sub = $Vend::Cfg->{SOAP_Action}{$routine};
+	} elsif (! $Allowed_tags{$routine}) {
+		die ::errmsg("Not allowed routine: %s", $routine);
+	}
 
 	my $result;
+	if (defined $sub) {
+		eval {
+			$result = $sub->(@_);
+		};
+	} else {
 #::logDebug("do_tag $routine, args=" . ::uneval(\@_));
-	eval {
-		if(ref($_[0])) {
+		eval {
+			if(ref($_[0])) {
 #::logDebug("resolving args");
-			@_ = Vend::Parse::resolve_args($routine, @_);
-		}
+				@_ = Vend::Parse::resolve_args($routine, @_);
+			}
 #::logDebug("do_tag $routine");
-		$result = Vend::Parse::do_tag($routine, @_);
-	};
-
+			$result = Vend::Parse::do_tag($routine, @_);
+		};
+	}
+	
 	my $error;
 	if($@) {
 		$error = errmsg("SOAP tag call failed: %s", $@);

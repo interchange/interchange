@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.100 2003-02-12 03:59:12 mheins Exp $
+# $Id: Config.pm,v 2.101 2003-03-09 01:06:14 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -46,7 +46,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.100 $, 10);
+$VERSION = substr(q$Revision: 2.101 $, 10);
 
 my %CDname;
 
@@ -483,6 +483,7 @@ sub catalog_directives {
 	['StaticTrack',		 undef,     	     ''],
 	['SOAP',			 'yesno',			 'No'],
 	['SOAP_Enable',		 'hash',			 ''],
+	['SOAP_Action',		 'action',			 ''],				   
 	['UserDB',			 'locale',	     	 ''], 
 	['UserDatabase',	 undef,		     	 ''],  #undocumented
 	['RobotLimit',		 'integer',		      0],
