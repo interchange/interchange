@@ -6,6 +6,19 @@ Interchange 4.6.2
   index pointers, and an optional array ref giving the field names in
   order. Thanks to Kaare Rasmussen for the suggestion.
 
+* Fixed bad bug in History, saving mv_credit_card_number in session. Oops.
+ 
+* Fixed bug in secure/non-secure host comparison, thanks to Murray Gibbins,
+  Stefan Hornburg, and Hans-Joachim Leidinger.
+  
+* Add MV_USERPROFILE to the list of recognized cookies, allowing a
+  cookie-based admin login. Providing the password is saved in a cookie
+  (perhaps with no expiration time?) then this will allow multiple-order
+  entry by running the login process again.
+   
+* Fixed up the DisplayErrors auto-response to be localized. Not many people
+  use this, but trying to localize all error messages.
+
 * Fixed bug in ui_date_widget, generated month name for "Feb 30" which turned
   into March.
 
@@ -23,6 +36,18 @@ Interchange 4.6.2
 * Fixed a couple of hard-coded mv_metadata references in admin pages
   preventing renaming of __UI_META_TABLE__.
 
+* Fix problem with ProductFiles resolution in loops. The Vend::OnlyProducts
+  setting was confused after the on-the-fly update.
+
+* Convert '[' characters to &#91; in [value-extended] to prevent reparsing
+  of Interchange tags from user data.
+
+* Fixed problem with fly-list not accepting base parameter as per docs.
+  Found by Victor Nolton.
+
+* Added Stefan Hornburg's patch for table image background paths.
+  Set pragma substitute_table_image to enable this.
+
 * Improved makecat error message when problems occur reading config file.
 
 * Made NoAbsolute default to Yes in interchange.cfg, which gives better
@@ -30,12 +55,6 @@ Interchange 4.6.2
 
 * Various minor HTML corrections. Thanks to Paul <porl@namee.com.au> and
   Mediabang.
-
-* Fix problem with ProductFiles resolution in loops. The Vend::OnlyProducts
-  setting was confused after the on-the-fly update.
-
-* Convert '[' characters to &#91; in [value-extended] to prevent reparsing
-  of Interchange tags from user data.
 
 * RPM only: Fixed logrotate.d file to prevent cascading log rotation like
   error.log.1.gz.1.gz etc. Thanks to Murray Gibbins for diagnosis & fix.
