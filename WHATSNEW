@@ -302,6 +302,31 @@ Debian
 
 * Check for existence of expireall binary in cron script.
 
+Mod_interchange
+---------------
+
+* Fixed a weird bug where null HTTP variables were being passed
+  under certain circumstances.
+
+* Added a SUN_LEN() macro for those operating systems that don't
+  have one already.  I think this was done for Solaris.  I can't
+  remember now. :-)
+
+* Fixed a bunch of potential buffer overflows.  Each of them would
+  have a very remote possibility of being tripped, unless intentionally.
+
+* Added a "OrdinaryFileList" directive to DECLINE requests where the
+  path starts with one of the values in the list.  If this module
+  DECLINEs a request then Apache will attempt to serve the request
+  instead.  This is useful for creating excptions to <Location />,
+  for image files etc.
+
+* Added a "InterchangeScript" directive.  The new directive can be used
+  to specify a SCRIPT_NAME to pass to Interchange.  The value will override
+  the SCRIPT_NAME=/foo that would default from <Location /foo>.
+
+* Lots of minor cleanups.
+
 ------------------------------------------------------------------------------
 
 (end)
