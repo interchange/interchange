@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.73 2001-06-14 12:38:49 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.74 2001-06-14 18:30:58 jason Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.73 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.74 $, 10);
 
 @EXPORT = qw (
 
@@ -1077,8 +1077,11 @@ sub tag_data {
 	'strftime' => sub {
 					return scalar localtime(shift);
 				},
-	'entities' => sub {
+	'encode_entities' => sub {
 					return HTML::Entities::encode(shift);
+				},
+	'decode_entities' => sub {
+					return HTML::Entities::decode(shift);
 				},
 	'yesno' => sub {
 					my $val = shift(@_) ? 'Yes' : 'No';
@@ -1096,6 +1099,7 @@ sub tag_data {
 
 $Filter{upper} = $Filter{uc};
 $Filter{lower} = $Filter{lc};
+$Filter{entities} = $Filter{encode_entities};
 
 sub input_filter_do {
 	my($varname, $opt, $routine) = @_;
