@@ -2,6 +2,13 @@ UserTag substitute_file Order file
 UserTag substitute_file addAttr
 UserTag substitute_file hasEndTag
 UserTag substitute_file Routine <<EOR
+## This is a stupid thing to make 5.6.1 and File::Copy
+## compatible with Safe
+require File::Copy;
+package File::Copy;
+require File::Basename;
+import File::Basename 'basename';
+package Vend::Interpolate;
 sub {
 	my ($file, $opt, $replace) = @_;
 	my $die = sub {
@@ -32,7 +39,6 @@ sub {
 		return $die->("missing begin or end marker");
 	}
 
-	require File::Copy;
 	my $bak = POSIX::tmpnam();
 	File::Copy::copy($file, $bak)
 		or return $die->(
