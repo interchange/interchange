@@ -3,7 +3,7 @@
 #
 # Interchange session expiration for all catalogs
 #
-# $Id: findtags.PL,v 1.2 2003-06-18 17:34:47 jon Exp $
+# $Id: findtags.PL,v 1.3 2003-08-25 11:13:58 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -285,3 +285,80 @@ else {
 	print join("\n", sort @tags);
 }
 __END__
+
+=head1 NAME
+
+findtags - find tags in Interchange catalogs and directories
+
+=head1 SYNOPSIS
+
+  findtags -a -d lib/UI
+  findtags -a -d lib/UI -t -u
+  findtags -a -u -t 
+
+=head1 DESCRIPTION
+
+Find tags in Interchange catalogs and directories -- intended to develop
+a list for TagInclude.
+
+WARNING: This is not 100%, for developing tag names from Variable definitions
+and other sources can fool it. If you include all directories, make sure you
+don't include documentation files or the usertags themselves.
+
+With the standard distribution, this should find just about all
+tags needed for foundation:
+
+	findtags -a -d lib/UI
+
+To develop a TagInclude statement which excludes unused tags, try:
+
+	findtags -a -d lib/UI -t -u
+
+If you don't want to use the UI, then do:
+
+	findtags -a -u -t 
+
+=head1 OPTIONS
+
+=over 4
+
+=item -a
+
+Look in all catalogs.
+
+=item -c CAT
+
+Only look in catalog CAT.
+
+=item -d DIR1 DIR2 ....
+
+Look in given directories.
+
+=item -f FILE
+
+Use alternate interchange.cfg file FILE.
+
+=item -h
+
+Display help.
+
+=item -n
+
+Don't report system tags.
+
+=item -t
+
+Output suitable for TagInclude directive.
+
+=item -u
+
+Report unseen tags.
+
+=item -v
+  
+Slightly verbose, report directories scanned.
+
+=item -x DIR1 DIR2 ....
+
+Exclude given directories from scanning. Default is session and tmp.
+
