@@ -16,15 +16,63 @@ members_only:
 	widget: radio
 	description: Members only
 
+break1:
+	widget: break
+
 component_before:
-	options: =none, specials=Specials, random=Random items
+	options: =none, promo_horizontal=Specials, random_horizontal=Random items, upsell_horizontal=Up sell, cross_horizontal=Cross sell
 	widget: select
-	description: Component before content
+	description: Horizontal before content
 
 component_after:
-	options: =none, specials=Specials, random=Random items
+	options: =none, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Up sell, cross_horizontal=Cross sell
 	widget: select
-	description: Component after content
+	description: Horizontal after content
+
+component_hsize:
+	options: 1,2*,3
+	widget: select
+	description: Horizontal item width
+
+hpromo_type:
+	options: specials=Specials, new=New items
+	widget: select
+	description: Special tag
+	help: Only for a promotion
+
+hbanner:
+	options: =--custom--,Specials, New items, Also see..., You might also like, Some of our fine products
+	widget: move_combo
+	width: 40
+	description: Before/after Banner
+	help: Banner for after/before component
+
+break2:
+	widget: break
+
+component_right:
+	options: =none, promo_vertical=Promotion, random_vertical=Random items, upsell_vertical=Up sell, cross_vertical=Cross sell
+	widget: select
+	description: Vertical Component
+
+component_vsize:
+	options: 1,2,3*,4,5,10
+	widget: select
+	description: Vertical items height
+
+vbanner:
+	options: =--custom--,Specials, New items, Also see..., You might also like, Some of our fine products
+	widget: move_combo
+	width: 40
+	description: Right Banner
+	help: Banner for vertical component
+
+vpromo_type:
+	options: specials=Specials, new=New items
+	widget: select
+	description: Special tag
+	help: Only for a promotion
+
 
 bgcolor:
 	options: #FFFFFF=White,pink=Pink
@@ -32,13 +80,22 @@ bgcolor:
 	description: Background color
 [/comment]
 
-[set page_title]__COMPANY__ -- Welcome[/set]
+[set bgcolor]#FFFFFF[/set]
+[set component_right]promo_vertical[/set]
+[set component_after]promo_horizontal[/set]
+[set members_only]0[/set]
+[set component_vsize]3[/set]
 [set page_banner]Welcome[/set]
-[set include_component]specials[/set]
+[set vbanner]New items[/set]
+[set component_hsize]2[/set]
+[set hbanner]Specials[/set]
+[set component_before][/set]
+[set hpromo_type]specials[/set]
+[set page_title]__COMPANY__ -- Welcome[/set]
+[set vpromo_type]new[/set]
 __LEFTRIGHT_TOP__
 
 <!-- BEGIN CONTENT -->
-
 						
 	[if session source]						
 		[calc]
@@ -81,7 +138,6 @@ __LEFTRIGHT_TOP__
 		to Construct Something, the internet's premier source 
 		of quality hand tools! We have tools for every building 
 		project. Thank you for visiting.</font></p><br>
-
 <!-- END CONTENT -->
 
 __LEFTRIGHT_BOTTOM__

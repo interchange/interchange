@@ -16,15 +16,63 @@ members_only:
 	widget: radio
 	description: Members only
 
+break1:
+	widget: break
+
 component_before:
-	options: =none, specials=Specials, random=Random items
+	options: =none, promo_horizontal=Specials, random_horizontal=Random items, upsell_horizontal=Up sell, cross_horizontal=Cross sell
 	widget: select
-	description: Component before content
+	description: Horizontal before content
 
 component_after:
-	options: =none, specials=Specials, random=Random items
+	options: =none, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Up sell, cross_horizontal=Cross sell
 	widget: select
-	description: Component after content
+	description: Horizontal after content
+
+component_hsize:
+	options: 1,2*,3
+	widget: select
+	description: Horizontal item width
+
+hpromo_type:
+	options: specials=Specials, new=New items
+	widget: select
+	description: Special tag
+	help: Only for a promotion
+
+hbanner:
+	options: =--custom--,Specials, New items, Also see..., You might also like, Some of our fine products
+	widget: move_combo
+	width: 40
+	description: Before/after Banner
+	help: Banner for after/before component
+
+break2:
+	widget: break
+
+component_right:
+	options: =none, promo_vertical=Promotion, random_vertical=Random items, upsell_vertical=Up sell, cross_vertical=Cross sell
+	widget: select
+	description: Vertical Component
+
+component_vsize:
+	options: 1,2,3*,4,5,10
+	widget: select
+	description: Vertical items height
+
+vbanner:
+	options: =--custom--,Specials, New items, Also see..., You might also like, Some of our fine products
+	widget: move_combo
+	width: 40
+	description: Right Banner
+	help: Banner for vertical component
+
+vpromo_type:
+	options: specials=Specials, new=New items
+	widget: select
+	description: Special tag
+	help: Only for a promotion
+
 
 bgcolor:
 	options: #FFFFFF=White,pink=Pink
@@ -32,14 +80,22 @@ bgcolor:
 	description: Background color
 [/comment]
 
-[set page_title]__COMPANY__ -- Search results[/set]
-[set page_banner]&nbsp;[/set]
 [set bgcolor]#FFFFFF[/set]
-
+[set component_right]promo_vertical[/set]
+[set component_after]cross_horizontal[/set]
+[set members_only]0[/set]
+[set component_vsize]4[/set]
+[set page_banner] [/set]
+[set vbanner]Specials[/set]
+[set component_hsize]2[/set]
+[set hbanner]Also see...[/set]
+[set component_before][/set]
+[set hpromo_type]specials[/set]
+[set page_title]__COMPANY__ -- Search results[/set]
+[set vpromo_type]specials[/set]
 __LEFTRIGHT_TOP__
 
 <!-- BEGIN CONTENT -->
-
 [search-region]
 
 [tmp cross_sale][value-extended name=mv_searchspec index=0][/tmp]
@@ -65,7 +121,7 @@ __LEFTRIGHT_TOP__
                                 <td valign="top" align="center"> 
                                   <table width="25%" border="0" cellspacing="0" cellpadding="0">
                                     <tr> 
-                                      <td>[if-item-field image]<IMG SRC="items/[item-field image]" ALT="[item-field title]" BORDER="0">[/if-item-field]</td>
+                                      <td>[if-item-field image]<A HREF="[area [item-code]]"><img src="items/[item-field image]" ALT="[item-field title]" BORDER="0"></A>[/if-item-field]</td>
                                     </tr>
                                   </table>
                                 </td>
@@ -162,7 +218,6 @@ Matches [matches] of [value mv_search_match_count] found.
 [/more-list]
 
 [/search-region]
-
 <!-- END CONTENT -->
 
 __LEFTRIGHT_BOTTOM__

@@ -1,299 +1,83 @@
 [comment]
 ui_template: Yes
-ui_template_name: leftonly
+ui_template_name: cart
 ui_template_layout: LEFTONLY_TOP, UI_CONTENT, LEFTONLY_BOTTOM
-ui_template_description: Page with top/left areas.
+ui_template_description: Shopping cart page
 
 page_title: 
 	description: Page title
 
 page_banner: 
 	description: Page banner
+
 	help: Defaults to page title
 
-members_only:
-	options: 1=Yes,0=No*
-	widget: radio
-	description: Members only
-
 component_before:
-	options: =none, specials=Specials, random=Random items, upsell_horiz_2=Two upsell items, upsell_horiz_3=Three upsell items
+	options: =none, cart=Shopping Cart*, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Upsell, cross_horizontal=Cross sell
 	widget: select
-	description: Component before content
+	description: Upper component
+
+others_bought:
+	options: 1=Yes, =No
+	widget: select
+	description: "Others bought" in cart
+	help: Must run build related
+
+upsell_in_cart:
+	options: =No, 1=Yes
+	widget: select
+	description: Upsell in cart
+	help: Includes upsell references inside cart description.
+
+split_address:
+	options: =No, 1=Yes
+	widget: select
+	description: Allow split shipping addresses
+	help: Only if logged in...
+
+break1:
+	widget: break
 
 component_after:
-	options: =none, specials=Specials, random=Random items, upsell_horiz_2=Two upsell items, upsell_horiz_3=Three upsell items
+	options: =none, cart=Shopping Cart, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Upsell, cross_horizontal=Cross sell*
 	widget: select
-	description: Component after content
+	description: Lower component
 
-bgcolor:
-	options: #FFFFFF=White,pink=Pink
+hbanner:
+	options: =--custom--,Specials, New items, Also see..., You might also like, Some of our fine products
+	widget: move_combo
+	width: 40
+	description: Lower component banner
+	help: Banner for list component
+
+component_hsize:
+	options: 1,2,3*
 	widget: select
-	description: Background color
+	description: Component items horizontal
+	help: Only applies to list items...
+
+
+hpromo_type:
+	options: specials=Specials, new=New items
+	widget: select
+	description: Special tag
+	help: Only active if a Promotion component.
 [/comment]
 
+[set others_bought]1[/set]
+[set component_after]cross_horizontal[/set]
 [set page_banner]Shopping Cart Contents[/set]
-[set bgcolor]#FFFFFF[/set]
-[set component_before][/set]
-[set component_after]upsell_horiz_3[/set]
-[set members_only]0[/set]
+[set component_hsize]3[/set]
+[set split_address][/set]
+[set hbanner]You might also like[/set]
+[set component_before]cart[/set]
+[set upsell_in_cart][/set]
+[set hpromo_type]specials[/set]
 [set page_title]__COMPANY__ -- Shopping Cart[/set]
 __LEFTONLY_TOP__
 
 <!-- BEGIN CONTENT -->
-
-<p>
-[if type=explicit compare="q{[read-cookie MV_SESSION_ID]}"]
-[elsif scratch tried]
-You must have cookies set to leave the basket. Check out now or forever
-lose your shopping cart.
-[/elsif]
-[else]
-[set tried]1[/set]
-[bounce href="[area ord/basket]"]
-[/else]
-[/if]
-<FORM ACTION="[process-target secure=1]" METHOD=POST name="basket">
-<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
-<INPUT TYPE=hidden NAME=mv_doit      VALUE=refresh>
-<INPUT TYPE=hidden NAME=mv_orderpage VALUE="ord/basket">
-<INPUT TYPE=hidden NAME=mv_checkout  VALUE="ord/checkout">
-<INPUT TYPE=hidden NAME=mv_nextpage  VALUE=index>
- <br>
-  <table width="450" border="1" cellspacing="0" cellpadding="0" bordercolor="#FF9900">
-    <tr>
-      <td>
-
-  <table width="450" border="0" cellspacing="0" cellpadding="0" bordercolor="#FF9900">
-		<TR bgcolor="#669999" VALIGN=TOP>
-                        <td width="9%"><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="0"><b>Remove</b></font></td>
-                        <td width="13%"> 
-                          <div align="center"><font color="#FFFFFF" size="2" face="Verdana, Arial, Helvetica, sans-serif"><b><font size="1">SKU</font></b></font></div>
-                        </td>
-                        <td width="27%"> 
-                          <div align="center"><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="1"><b>Description</b></font></div>
-                        </td>
-                        <td width="13%"> 
-                          <div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF"><b>Quantity</b></font></div>
-                        </td>
-                        <td width="19%"> 
-                          <div align="center"><b><font size="1" face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF">Price</font></b></div>
-                        </td>
-                        <td width="19%"> 
-                          <div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF"><b>Extension</b></font></div>
-                        </td>
-		</TR>
-	<TBODY>
-[if items]
-[then]
-[item-list]
-[calc]
-my $item = '[item-increment]';
-my $up = q{[item-data merchandising upsell_to]};
-$upsell_remove{'[item-code]'} = 1;
-my %seen = ( '' => 1 );
-
-$Scratch->{upsell} .= " $up" if $up;
-my @up = split /\s+/, $Scratch->{upsell};
-@up = grep  ( (!$seen{$_}++ && ! $upsell_remove{$_}), @up);
-$Scratch->{upsell} = join " ", @up;
-
-if ($item % 2 == 1) {
-	$Scratch->{color} = "#CCCCCC";
-}
-else {
-	$Scratch->{color} = "#CCCC99";
-}
-return;
-[/calc]
-
-<TR bgcolor="[scratch color]">
-	<TD align=center valign=top>
-	<FONT SIZE="-2"><INPUT TYPE=checkbox NAME="[quantity-name]"
-			   onClick="this.form.action='[process-target]',
-			   			this.form.submit()"
-			   VALUE=0></FONT></TD>
-	<TD valign=top><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[item-code]</font></TD>
-	<TD><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[page [item-code]][item-description]</A></font>
-	[if scratch dealer]
-	[if-item-data pricing sku]
-		<BR>[page quantity [item-code]]
-			<font face="Verdana, Arial, Helvetica, sans-serif" size="1" COLOR=__CONTRAST__>QUANTITY PRICING</FONT>
-			</A>
-	[/if-item-data]
-	[/if]
-	[if-item-field weight]
-	[seti weight][summary amount=`[item-quantity] * [item-field weight]`][/seti]
-	[/if-item-field]
-	[if-item-data merchandising others_bought]
-	[perl tables=products]
-		my $hash = [item-data merchandising others_bought];
-		my @ary = sort { $hash->{$b} <=> $hash->{$a} } keys %$hash;
-		return '' unless @ary;
-		my %in_basket;
-		splice(@ary, 3);
-		for(@{$Carts->{main}}) {
-			$in_basket{$_->{code}} = 1;
-		}
-		@ary = grep ! $in_basket{$_}, @ary;
-		return '' unless @ary;
-		my $out = <<'EOF';
-	<TABLE CELLPADDING=0 CELLSPACING=0 WIDTH="100%">
-		<TR><TD __HEADERBG__><FONT SIZE="1" COLOR="__HEADERTEXT__">Customers who bought this item also bought:</TD>
-		</TR><TR>
-		<TD><FONT SIZE="1">
-EOF
-		for(@ary) {
- 			my $desc = tag_data( 'products', 'description', $_);
-			$out .= <<EOF;
-		<A HREF="[area $_]">$desc</A><BR>
-EOF
-		}
-		return $out . '</TD></TR></TABLE>';
-	[/perl]
-	[/if-item-field]
-	[if-item-modifier gift_cert]
-	GIFT CERT
-	<br>
-	[/if-item-modifier]
-	
-<br>
-[set count][item-data inventory quantity][/set]
-[if scratch count < 1]
-	<a href="[area stock-alert [item-code]]"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FF0000">Back Ordered</FONT>
-[else]
-	<font face="Verdana, Arial, Helvetica, sans-serif" size="1">Sizes:</font> <FONT SIZE=1>[item-accessories size][item-accessories color]</FONT>
-[/else]
-[/if]
-	</TD>
-	<TD ALIGN=CENTER><INPUT TYPE=text NAME="[quantity-name]" VALUE="[item-quantity]" SIZE=3></TD>
-	<TD ALIGN=right><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[discount-price]</font>[if discount [item-code]]<BR><font face="Verdana, Arial, Helvetica, sans-serif" size="1" COLOR=__CONTRAST__>Item is discounted [item-discount]</FONT>[/if]</TD>
-	<TD ALIGN=right><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[item-subtotal]</font></TD>
-</TR>
-<TR bgcolor="[scratch color]"><TD ALIGN=CENTER COLSPAN=6><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="2" BORDER="0"></td></TR>
-<TR bgcolor="[scratch color]">
-<TD COLSPAN=2 align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" ><b>Ship To:</b></font></td>
-<TD COLSPAN=4 align="left">&nbsp;
-[if !value shipto_[item-increment]][value name=shipto_[item-increment] set="primary" hide=1][/if]
-		<SELECT NAME=shipto_[item-increment]>
-			<OPTION VALUE="primary" [selected shipto_[item-increment] primary]> Primary
-[loop search="
- ra=yes
- st=db
- sq=select * from ship_addresses where username = '[data session username]'
- ml=1000
- tf=entry
-"]
-			<OPTION VALUE="[loop-data ship_addresses code]" [selected shipto_[item-increment] [loop-data ship_addresses code]]> [loop-data ship_addresses addr_nick] 
-			[/loop]
-		</SELECT>
-
-<a href="[area ship_addresses]"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" >Add Address</font></a>
-</td>
-</TR>
-<TR bgcolor="[scratch color]"><TD ALIGN=CENTER COLSPAN=6><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="4" BORDER="0"></td></TR>
-[/item-list]
-[/then]
-[else]
-	<TR><TD ALIGN=CENTER COLSPAN=6>
-		<H3><font face="Verdana, Arial, Helvetica, sans-serif">No items at the moment.</font></H3>
-	</TD></TR>
-[/else]
-[/if]
-</TBODY>
-</table>
-					  
-</td></tr></table>
-<br clear=left>
-<table width="100%" cellpadding="1" cellpadding="1" align="center" border="0">  
-<tr>
-<td>
-					 <table width="100%" border="0" cellspacing="0" cellpadding="2">
-                      <tr> 
-					  <td>
-                          <div align="center">
-						  <INPUT type="image" src="navigation/recalculate_button.gif" BORDER=0>
-                          </div>
-					  </td>
-                        <td width="34%">
-
-                          <div align="center">
-						  
-    [button
-	text="Continue shopping"
-     	src="navigation/continue_shopping.gif"
-		hidetext=1
-		form=basket
-	]
-     [bounce href='[history-scan exclude="^/ord|^/multi/|^/process" default=browse]']
-     mv_nextpage=nothing
-    [/button]
-
-                          </div>
-
-                        </td>
-						</tr>
-						<tr>
-						<td colspan="4" align="right">
-
-    [button
-	text="Check out"
-     	src="navigation/checkout_button.gif"
-	hidetext=1
-	form=basket
-	]
-	mv_todo=return
-	mv_nextpage=ord/checkout
-	[/button]
-
-					
-						</td>				
-
-						
-                      </tr>
-                    </table>
-
-			</td><td align="right">
-                    <table width="100%" border="0" cellspacing="2" cellpadding="2" align="right">
-[if scratch order_discounted]
-                      <tr>
-                        <td align="right">
-						[comment]
-                          <div align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#ff0000">Discount:</font></b></div>
-						[/comment]
-						<img src="navigation/coupon_item.gif" border="0">
-                        </td>
-                        <td width="100" bgcolor="#CCCC99" align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">-[currency][scratch coupon_amount][/currency]</font></td>
-                      </tr>
-[/if]
-                      <tr> 
-                        <td nowrap>
-                          <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b>Shipping 
-                            Weight:</b></font></div>
-                        </td>
-                        <td width="100" bgcolor="#CCCC99" align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[summary format="%s" total=1]</font></td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <div align="right"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Subtotal:</font></b></div>
-                        </td>
-                        <td width="100" bgcolor="#CCCC99" align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">[subtotal]</font></td>
-                      </tr>
-					  </table>
-
-</td>
-</tr>
-
-
-
-</TABLE>
-
-
-
-</FORM>
-
-                    <p>&nbsp;</p>
-
+<!-- placeholder -->
 <!-- END CONTENT -->
 
 __LEFTONLY_BOTTOM__

@@ -16,27 +16,49 @@ members_only:
 	widget: radio
 	description: Members only
 
+break1:
+	widget: break
+
 component_before:
-	options: =none, specials=Specials, random=Random items
+	options: =none, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Upsell, cross_horizontal=Cross sell
 	widget: select
 	description: Component before content
 
 component_after:
-	options: =none, specials=Specials, random=Random items
+	options: =none, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Upsell, cross_horizontal=Cross sell
 	widget: select
 	description: Component after content
 
-bgcolor:
-	options: #FFFFFF=White,pink=Pink
+component_hsize:
+	options: 1,2*,3
 	widget: select
-	description: Background color
+	description: Component items horizontal
+
+hbanner:
+	options: =--custom--,Specials, New items, Also see..., You might also like, Some of our fine products
+	widget: move_combo
+	width: 40
+	description: Before/after Banner
+	help: Banner for Before/after component
+
+hpromo_type:
+	options: specials=Specials, new=New items
+	widget: select
+	description: Special tag
+	help: Only for a horizontal Promotion
 [/comment]
-[set page_title]__COMPANY__ -- Customer Service[/set]
+
+[set component_after][/set]
+[set members_only]0[/set]
 [set page_banner]Customer Service[/set]
+[set component_hsize]2[/set]
+[set hbanner][/set]
+[set component_before][/set]
+[set hpromo_type]specials[/set]
+[set page_title]__COMPANY__ -- Customer Service[/set]
 __LEFTONLY_TOP__
 
 <!-- BEGIN CONTENT -->
-
                     <p>&nbsp;</p>
                     <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#669999">At 
                       Construct Something customer service is our number one concern. 
