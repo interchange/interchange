@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.44 2002-01-29 05:52:43 mheins Exp $
+# $Id: Interpolate.pm,v 2.45 2002-01-31 14:58:41 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.44 $, 10);
+$VERSION = substr(q$Revision: 2.45 $, 10);
 
 @EXPORT = qw (
 
@@ -91,6 +91,7 @@ BEGIN {
 use strict;
 use Vend::Util;
 use Vend::Data;
+use Vend::Form;
 require Vend::Cart;
 
 
@@ -2208,6 +2209,9 @@ sub tag_accessories {
 	($attribute, $type, $field, $db, $name, $outboard, $passed) = 
 		@{$opt}{qw/attribute type column table name outboard passed/};
 
+	return Vend::Form::display($opt, $item)
+		if $::Variable->{MV_DANGEROUS_NEW_FORM}
+		or $Global::Variable->{MV_DANGEROUS_NEW_FORM};
 	my $p = $opt->{prepend} || '';
 	my $a = $opt->{append} || '';
 	my $delimiter = $opt->{delimiter} || ',';
@@ -3394,7 +3398,7 @@ sub escape_mv {
 	@args = grep $_, @args;
 	for(@args) {
 		s!/!__SLASH__!g unless defined $not_scan;
-		s!\0!__NULL__!g;
+		s!\0!-_NULL_-!g;
 		s!(\w\w=)(.*)!$1 . esc($2)!eg
 			or (undef $_, next);
 		s!__SLASH__!::!g unless defined $not_scan;
