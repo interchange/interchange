@@ -1,6 +1,6 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 2.7 2001-11-02 14:09:53 mheins Exp $
+# $Id: Primitive.pm,v 2.8 2001-11-06 22:42:21 edl Exp $
 
 # Copyright (C) 1998-2001 Red Hat, Inc. <interchange@redhat.com>
 
@@ -25,7 +25,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 2.7 $, 10);
+$VERSION = substr(q$Revision: 2.8 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -987,7 +987,7 @@ sub meta_display {
 				my $sub;
 				if($record->{lookup_exclude}) {
 					eval {
-						$sub = sub { $_[0] !~ m{$record->{lookup_exclude}}o };
+						$sub = sub { $_[0] !~ m{$record->{lookup_exclude}} };
 					};
 					if ($@) {
 						::logError(errmsg(
