@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.2 2002-09-19 17:52:34 mheins Exp $
+# $Id: Editor.pm,v 1.3 2002-09-20 16:57:15 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,11 +26,12 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.3 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
 use Vend::Data;
+use strict;
 
 =head1 NAME
 
@@ -706,7 +707,7 @@ EOF
 <DIV id="${id}panel$i"
 		class="${id}panel"
 		style="
-			background-color: $c; 
+			background-color: $colors[$i]; 
 			z-index:$zi
 		">
 $opt->{panel_prepend}
@@ -718,7 +719,7 @@ $opt->{panel_append}
 	id="${id}tab$i"
 	class="${id}tab"
 	style="
-		background-color: $c; 
+		background-color: $colors[$i]; 
 		cursor: pointer;
 		left: ${left}px;
 		top: ${top}px;
@@ -733,7 +734,7 @@ EOF
 					+ $opt->{tab_vert_offset} - 2;
 		$s2 .= <<EOF;
 <LAYER
-	bgcolor="$c"
+	bgcolor="$colors[$i]"
 	style="$opt->{layer_tab_style}"
 	width="$opt->{tab_width}"
 	height="$lheight"
@@ -747,7 +748,7 @@ EOF
 $tit->[$i]
 </LAYER>
 <LAYER
-	bgcolor="$c"
+	bgcolor="$colors[$i]"
 	style="$opt->{layer_panel_style}"
 	width="$opt->{panel_width}"
 	height="$opt->{panel_height}"
@@ -875,21 +876,71 @@ sub editor_init {
 	@titles = ();
 	%outhash = ();
 	%alias = ();
-	$tab_number = $tcount_all = 0;
+	$tcount_all = 0;
 }
 
-sub editor {
+my %o_default_length = (
+	
+);
 
-	my ($table, $key, $opt, $template) = @_;
-show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
+my %o_default_var = (qw/
+	color_fail			UI_CONTRAST
+	color_success		UI_C_SUCCESS
+/);
 
-	use vars qw/$Tag/;
+my %o_default_defined = (
+	mv_update_empty		=> 1,
+	restrict_allow		=> 'page area',
+);
 
+my %o_default = (
+	action				=> 'set',
+	wizard_next			=> 'return',
+	wizard_cancel		=> 'back',
+	across				=> 1,
+	color_success		=> '#00FF00',
+	color_fail			=> '#FF0000',
+	table_width			=> '60%',
+	left_width			=> '30%',
+);
+
+# Build maps for ui_te_* option pass
+my @cgi_opts = qw/
+        append check database default extra field filter height help
+        help_url lookup options outboard override passed pre_filter
+        prepend widget width
+/;
+
+my @hmap;
+
+for(@cgi_opts) {
+	push @hmap, [ qr/ui_te_$_:/, $_ ];
+}
+
+sub resolve_options {
+	my ($opt, $CGI) = @_;
+
+	# This may be passed by the caller, but is normally from the form
+	# or URL
+	$CGI ||= \%CGI::values;
+
+	my $table	= $opt->{mv_data_table};
+	my $key		= $opt->{item_id};
+
+	$table = $CGI->{mv_data_table}
+		if ! $table and $opt->{cgi} and $CGI->{mv_data_table};
+
+	$opt->{table} = $opt->{mv_data_table} = $table;
+
+	# First we see if something has created a big options munge
+	# for us
 	if(ref($opt->{all_opts}) eq 'HASH') {
+#Debug("all_opts being brought in...");
 		my $o = $opt->{all_opts};
 		for (keys %$o ) {
 			$opt->{$_} = $o->{$_};
 		}
+#Debug("options now=" . ::uneval($opt));
 	}
 	elsif ($opt->{all_opts}) {
 		logError("%s: improper option %s, must be %s, was %s.",
@@ -899,18 +950,11 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 					ref $opt->{all_opts},
 					);
 	}
-#Debug("options now=" . ::uneval($opt));
 
-	my @messages;
-	my @errors;
-
-	$table = $CGI->{mv_data_table}
-		if ! $table and $opt->{cgi} and $CGI->{mv_data_table};
-
-	### Need cleanup. Probably should bring in, along with
-	### display tag.
 	my $tmeta = meta_record($table, $opt->{ui_meta_view}) || {};
 
+	# This section checks the passed options and converts them from
+	# strings to refs if necessary
 	FORMATS: {
 		no strict 'refs';
 		my $ref;
@@ -951,134 +995,6 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 		}
 	}
 
-	my $rowcount = 0;
-	my $action = $opt->{action} || 'set';
-	my $wizard_next   = $opt->{wizard_next}   || 'return';
-	my $wizard_cancel = $opt->{wizard_cancel} || 'back';
-	my $rowdiv = $opt->{across} || 1;
-	my $span = $rowdiv * 2;
-	my $oddspan = $span - 1;
-	my $def = $opt->{default_ref} || $::Values;
-
-	my $check       = $opt->{check};
-	my $default     = $opt->{default};
-	my $error       = $opt->{error};
-	my $extra       = $opt->{extra};
-	my $filter      = $opt->{filter};
-	my $height      = $opt->{height};
-	my $help        = $opt->{help};
-	my $help_url    = $opt->{help_url};
-	my $label       = $opt->{label};
-	my $override    = $opt->{override};
-	my $pre_filter  = $opt->{pre_filter};
-	my $passed      = $opt->{passed};
-	my $options     = $opt->{options};
-	my $outboard    = $opt->{outboard};
-	my $prepend     = $opt->{prepend};
-	my $append      = $opt->{append};
-	my $lookup      = $opt->{lookup};
-	my $lookup_query = $opt->{lookup_query};
-	my $database    = $opt->{database};
-	my $field       = $opt->{field};
-	my $widget      = $opt->{widget};
-	my $width       = $opt->{width};
-	my $pmeta       = $opt->{meta};
-
-
-	#my $blabel      = $opt->{begin_label} || '<b>';
-	#my $elabel      = $opt->{end_label} || '</b>';
-	my $blabel      ;
-	my $elabel      ;
-	my $mlabel = '';
-
-	if($opt->{wizard}) {
-		$opt->{noexport} = 1;
-		$opt->{next_text} = 'Next -->' unless $opt->{next_text};
-		$opt->{cancel_text} = 'Cancel' unless $opt->{cancel_text};
-		$opt->{back_text} = '<-- Back' unless $opt->{back_text};
-	}
-	else {
-		$opt->{cancel_text} = 'Cancel' unless $opt->{cancel_text};
-		$opt->{next_text} = "Ok" unless $opt->{next_text};
-	}
-
-	for(qw/ next_text cancel_text back_text/ ) {
-		$opt->{$_} = errmsg($opt->{$_});
-	}
-
-	my $ntext;
-	my $btext;
-	my $ctext;
-	unless ($opt->{wizard} || $opt->{nosave}) {
-		$::Scratch->{$opt->{next_text}} = $Tag->return_to('click', 1);
-	}
-	else {
-		if($opt->{action_click}) {
-			$ntext = <<EOF;
-mv_todo=$wizard_next
-ui_wizard_action=Next
-mv_click=$opt->{action_click}
-EOF
-		}
-		else {
-			$ntext = <<EOF;
-mv_todo=$wizard_next
-ui_wizard_action=Next
-mv_click=ui_override_next
-EOF
-		}
-		$::Scratch->{$opt->{next_text}} = $ntext;
-
-		my $hidgo = $opt->{mv_cancelpage} || $opt->{hidden}{ui_return_to} || $CGI->{return_to};
-		$hidgo =~ s/\0.*//s;
-		$ctext = $::Scratch->{$opt->{cancel_text}} = <<EOF;
-mv_form_profile=
-ui_wizard_action=Cancel
-mv_nextpage=$hidgo
-mv_todo=$wizard_cancel
-EOF
-		if($opt->{mv_prevpage}) {
-			$btext = $::Scratch->{$opt->{back_text}} = <<EOF;
-mv_form_profile=
-ui_wizard_action=Back
-mv_nextpage=$opt->{mv_prevpage}
-mv_todo=$wizard_next
-EOF
-		}
-		else {
-			delete $opt->{back_text};
-		}
-	}
-
-	for(qw/next_text back_text cancel_text/) {
-		$opt->{"orig_$_"} = $opt->{$_};
-	}
-
-	$::Scratch->{$opt->{next_text}}   = $ntext if $ntext;
-	$::Scratch->{$opt->{cancel_text}} = $ctext if $ctext;
-	$::Scratch->{$opt->{back_text}}   = $btext if $btext;
-
-	$opt->{next_text} = HTML::Entities::encode($opt->{next_text}, $ESCAPE_CHARS::std);
-	$opt->{back_text} = HTML::Entities::encode($opt->{back_text}, $ESCAPE_CHARS::std);
-	$opt->{cancel_text} = HTML::Entities::encode($opt->{cancel_text});
-
-	$::Scratch->{$opt->{next_text}}   = $ntext if $ntext;
-	$::Scratch->{$opt->{cancel_text}} = $ctext if $ctext;
-	$::Scratch->{$opt->{back_text}}   = $btext if $btext;
-
-	if($opt->{wizard} || $opt->{notable} and ! $table) {
-		$table = 'mv_null';
-		$Vend::Database{mv_null} = 
-			bless [
-					{},
-					undef,
-					[ 'code', 'value' ],
-					[ 'code' => 0, 'value' => 1 ],
-					0,
-					{ },
-					], 'Vend::Table::InMemory';
-	}
-
 	my @mapdirect = qw/
 		mv_data_decode
 		mv_data_table
@@ -1098,6 +1014,7 @@ EOF
 		panel_height
 		panel_width
 		panel_id
+		file_upload
 		tab_horiz_offset
 		tab_vert_offset
 		ui_break_before
@@ -1131,27 +1048,6 @@ EOF
 			next if ! defined $CGI->{$_};
 			$opt->{$_} = $CGI->{$_};
 		}
-		my @hmap = (
-			[ qr/^ui_te_check:/, $check ],
-			[ qr/^ui_te_default:/, $default ],
-			[ qr/^ui_te_extra:/, $extra ],
-			[ qr/^ui_te_widget:/, $widget ],
-			[ qr/^ui_te_passed:/, $passed ],
-			[ qr/^ui_te_options:/, $options ],
-			[ qr/^ui_te_outboard:/, $outboard ],
-			[ qr/^ui_te_prepend:/, $prepend ],
-			[ qr/^ui_te_append:/, $append ],
-			[ qr/^ui_te_lookup:/, $lookup ],
-			[ qr/^ui_te_database:/, $database ],
-			[ qr/^ui_te_field:/, $field ],
-			[ qr/^ui_te_override:/, $override ],
-			[ qr/^ui_te_filter:/, $filter ],
-			[ qr/^ui_te_pre_filter:/, $pre_filter ],
-			[ qr/^ui_te_height:/, $height ],
-			[ qr/^ui_te_width:/, $width ],
-			[ qr/^ui_te_help:/, $help ],
-			[ qr/^ui_te_help_url:/, $help_url ],
-		);
 		my @cgi = keys %{$CGI};
 		foreach my $row (@hmap) {
 			my @keys = grep $_ =~ $row->[0], @cgi;
@@ -1160,12 +1056,27 @@ EOF
 					and $row->[1]->{$1} = $CGI->{$_};
 			}
 		}
-		$table = $opt->{mv_data_table};
-		$key = $opt->{item_id};
+
+		### Why these here?
+		#$table = $opt->{mv_data_table};
+		#$key = $opt->{item_id};
 	}
 
-	$opt->{table_width} = '60%' if ! $opt->{table_width};
-	$opt->{left_width}  = '30%' if ! $opt->{left_width};
+	if($opt->{wizard}) {
+		$opt->{noexport} = 1;
+		$opt->{next_text} = 'Next -->' unless $opt->{next_text};
+		$opt->{cancel_text} = 'Cancel' unless $opt->{cancel_text};
+		$opt->{back_text} = '<-- Back' unless $opt->{back_text};
+	}
+	else {
+		$opt->{cancel_text} = 'Cancel' unless $opt->{cancel_text};
+		$opt->{next_text} = "Ok" unless $opt->{next_text};
+	}
+
+	for(qw/ next_text cancel_text back_text/ ) {
+		$opt->{$_} = errmsg($opt->{$_});
+	}
+
 	if (! $opt->{inner_table_width}) {
 		if($opt->{table_width} =~ /%/) {
 			$opt->{inner_table_width} = '100%';
@@ -1178,10 +1089,215 @@ EOF
 		}
 	}
 
-	$opt->{color_success} = $::Variable->{UI_C_SUCCESS} || '#00FF00'
-		if ! $opt->{color_success};
-	$opt->{color_fail} = $::Variable->{UI_CONTRAST} || '#FF0000'
-		if ! $opt->{color_fail};
+	if($opt->{wizard} || $opt->{notable} and ! $opt->{table}) {
+		$opt->{table} = 'mv_null';
+		$Vend::Database{mv_null} = 
+			bless [
+					{},
+					undef,
+					[ 'code', 'value' ],
+					[ 'code' => 0, 'value' => 1 ],
+					0,
+					{ },
+					], 'Vend::Table::InMemory';
+	}
+
+	# resolve form defaults
+
+	while( my ($k, $v) = each %o_default_var) {
+		$opt->{$k} ||= $::Variable->{$v};
+	}
+
+	while( my ($k, $v) = each %o_default_length) {
+		$opt->{$k} = $v if ! length($opt->{$k});
+	}
+
+	while( my ($k, $v) = each %o_default_defined) {
+		$opt->{$k} = $v if ! defined($opt->{$k});
+	}
+
+	while( my ($k, $v) = each %o_default) {
+		$opt->{$k} ||= $v;
+	}
+
+	###############################################################
+	# Get the field display information including breaks and labels
+	###############################################################
+	if( ! $opt->{ui_data_fields} and ! $opt->{ui_data_fields_all}) {
+		$opt->{ui_data_fields} = $tmeta->{ui_data_fields} || $tmeta->{options};
+	}
+#::logDebug("fields were=$opt->{ui_data_fields}");
+	$opt->{ui_data_fields} =~ s/\r\n/\n/g;
+	$opt->{ui_data_fields} =~ s/\r/\n/g;
+	$opt->{ui_data_fields} =~ s/^[ \t]+//mg;
+	$opt->{ui_data_fields} =~ s/[ \t]+$//mg;
+
+	if($opt->{ui_data_fields} =~ /\n\n/) {
+		my @breaks;
+		my @break_labels;
+		my $fstring = "\n\n$opt->{ui_data_fields}";
+		while ($fstring =~ s/\n+(?:\n[ \t]*=(.*))?\n+[ \t]*(\w[:.\w]+)/\n$2/) {
+			push @breaks, $2;
+			push @break_labels, "$2=$1" if $1;
+		}
+		$opt->{ui_break_before} = join(" ", @breaks)
+			if ! $opt->{ui_break_before};
+		$opt->{ui_break_before_label} = join(",", @break_labels)
+			if ! $opt->{ui_break_before_label};
+		$opt->{ui_data_fields} = $fstring;
+	}
+
+	$opt->{ui_data_fields} ||= $opt->{mv_data_fields};
+	$opt->{ui_data_fields} =~ s/^[\s,\0]+//;
+	$opt->{ui_data_fields} =~ s/[\s,\0]+$//;
+#::logDebug("fields now=$opt->{ui_data_fields}");
+
+	$opt->{mv_nextpage} = $Global::Variable->{MV_PAGE}
+		if ! $opt->{mv_nextpage};
+
+	$opt->{form_extra} =~ s/^\s*/ /
+		if $opt->{form_extra};
+
+	$opt->{form_name} = qq{ NAME="$opt->{form_name}"}
+		if $opt->{form_name};
+
+	$opt->{enctype} = $opt->{file_upload} ? ' ENCTYPE="multipart/form-data"' : '';
+
+}
+# UserTag table-editor Order mv_data_table item_id
+# UserTag table-editor addAttr
+# UserTag table-editor AttrAlias clone ui_clone_id
+# UserTag table-editor AttrAlias table mv_data_table
+# UserTag table-editor AttrAlias fields ui_data_fields
+# UserTag table-editor AttrAlias mv_data_fields ui_data_fields
+# UserTag table-editor AttrAlias key   item_id
+# UserTag table-editor AttrAlias view  ui_meta_view
+# UserTag table-editor AttrAlias profile ui_profile
+# UserTag table-editor AttrAlias email_fields ui_display_only
+# UserTag table-editor hasEndTag
+# UserTag table-editor MapRoutine Vend::Table::Editor::editor
+sub editor {
+
+	my ($table, $key, $opt, $template) = @_;
+show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
+
+	use vars qw/$Tag/;
+
+	editor_init($opt);
+
+	my @messages;
+	my @errors;
+
+#::logDebug("key at beginning: $key");
+	$opt->{mv_data_table} = $table if $table;
+	$opt->{item_id}		  = $key if $key;
+	$opt->{table}		  = $opt->{mv_data_table};
+#::logDebug("key before resolve_options: $key");
+
+	resolve_options($opt);
+	$table = $opt->{table};
+	$key = $opt->{item_id};
+#::logDebug("key after resolve_options: $key");
+
+	my $rowdiv = $opt->{across} || 1;
+	my $rowcount = 0;
+	my $span = $rowdiv * 2;
+	my $oddspan = $span - 1;
+	my $def = $opt->{default_ref} || $::Values;
+
+
+	my $append       = $opt->{append};
+	my $check        = $opt->{check};
+	my $database     = $opt->{database};
+	my $default      = $opt->{default};
+	my $error        = $opt->{error};
+	my $extra        = $opt->{extra};
+	my $field        = $opt->{field};
+	my $filter       = $opt->{filter};
+	my $height       = $opt->{height};
+	my $help         = $opt->{help};
+	my $help_url     = $opt->{help_url};
+	my $label        = $opt->{label};
+	my $lookup       = $opt->{lookup};
+	my $lookup_query = $opt->{lookup_query};
+	my $meta         = $opt->{meta};
+	my $options      = $opt->{options};
+	my $outboard     = $opt->{outboard};
+	my $override     = $opt->{override};
+	my $passed       = $opt->{passed};
+	my $pre_filter   = $opt->{pre_filter};
+	my $prepend      = $opt->{prepend};
+	my $widget       = $opt->{widget};
+	my $width        = $opt->{width};
+
+	#my $blabel      = $opt->{begin_label} || '<b>';
+	#my $elabel      = $opt->{end_label} || '</b>';
+	my $blabel      ;
+	my $elabel      ;
+	my $mlabel = '';
+
+	my $ntext;
+	my $btext;
+	my $ctext;
+	unless ($opt->{wizard} || $opt->{nosave}) {
+		$::Scratch->{$opt->{next_text}} = $Tag->return_to('click', 1);
+	}
+	else {
+		if($opt->{action_click}) {
+			$ntext = <<EOF;
+mv_todo=$opt->{wizard_next}
+ui_wizard_action=Next
+mv_click=$opt->{action_click}
+EOF
+		}
+		else {
+			$ntext = <<EOF;
+mv_todo=$opt->{wizard_next}
+ui_wizard_action=Next
+mv_click=ui_override_next
+EOF
+		}
+		$::Scratch->{$opt->{next_text}} = $ntext;
+
+		my $hidgo = $opt->{mv_cancelpage} || $opt->{hidden}{ui_return_to} || $CGI->{return_to};
+		$hidgo =~ s/\0.*//s;
+		$ctext = $::Scratch->{$opt->{cancel_text}} = <<EOF;
+mv_form_profile=
+ui_wizard_action=Cancel
+mv_nextpage=$hidgo
+mv_todo=$opt->{wizard_cancel}
+EOF
+		if($opt->{mv_prevpage}) {
+			$btext = $::Scratch->{$opt->{back_text}} = <<EOF;
+mv_form_profile=
+ui_wizard_action=Back
+mv_nextpage=$opt->{mv_prevpage}
+mv_todo=$opt->{wizard_next}
+EOF
+		}
+		else {
+			delete $opt->{back_text};
+		}
+	}
+
+	for(qw/next_text back_text cancel_text/) {
+		$opt->{"orig_$_"} = $opt->{$_};
+	}
+
+	$::Scratch->{$opt->{next_text}}   = $ntext if $ntext;
+	$::Scratch->{$opt->{cancel_text}} = $ctext if $ctext;
+	$::Scratch->{$opt->{back_text}}   = $btext if $btext;
+
+	$opt->{next_text} = HTML::Entities::encode($opt->{next_text}, $ESCAPE_CHARS::std);
+	$opt->{back_text} = HTML::Entities::encode($opt->{back_text}, $ESCAPE_CHARS::std);
+	$opt->{cancel_text} = HTML::Entities::encode($opt->{cancel_text});
+
+	$::Scratch->{$opt->{next_text}}   = $ntext if $ntext;
+	$::Scratch->{$opt->{cancel_text}} = $ctext if $ctext;
+	$::Scratch->{$opt->{back_text}}   = $btext if $btext;
+
+	undef $opt->{tabbed} if $::Scratch->{ui_old_browser};
+
 	### Build the error checking
 	my $error_show_var = 1;
 	my $have_errors;
@@ -1264,7 +1380,7 @@ $prof
 &fatal=1
 $success
 mv_form_profile=mandatory
-&set=mv_todo $action
+&set=mv_todo $opt->{action}
 EOP
 [/perl]
 EOF
@@ -1299,9 +1415,22 @@ EOF
 
 	my $db;
 	unless($opt->{notable}) {
-		$db = Vend::Data::database_exists_ref($table)
-		or return $die->('table-editor: bad table %s', $table);
+		# From Vend::Data
+		$db = database_exists_ref($table)
+			or return $die->("table-editor: bad table '%s'", $table);
 	}
+
+	if(! $opt->{ui_data_fields}) {
+		if( $opt->{notable}) {
+			::logError("table_editor: no place to get fields!");
+			return '';
+		}
+		else {
+			$opt->{ui_data_fields} = join " ", $db->columns();
+		}
+	}
+
+	$opt->{ui_data_fields} =~ s/[,\0\s]+/ /g;
 
 	if($opt->{ui_wizard_fields}) {
 		$opt->{ui_data_fields} = $opt->{ui_display_only} = $opt->{ui_wizard_fields};
@@ -1315,49 +1444,6 @@ EOF
 		$keycol = $opt->{ui_data_key_name} || $db->config('KEY');
 	}
 
-	$opt->{form_extra} =~ s/^\s*/ /
-		if $opt->{form_extra};
-
-	$opt->{form_name} = qq{ NAME="$opt->{form_name}"}
-		if $opt->{form_name};
-
-	###############################################################
-	# Get the field display information including breaks and labels
-	###############################################################
-	if( ! $opt->{ui_data_fields} and ! $opt->{ui_data_fields_all}) {
-		$opt->{ui_data_fields} = $tmeta->{ui_data_fields} || $tmeta->{options};
-	}
-
-	$opt->{ui_data_fields} =~ s/\r\n/\n/g;
-	$opt->{ui_data_fields} =~ s/\r/\n/g;
-
-	if($opt->{ui_data_fields} =~ /\n\n/) {
-		my @breaks;
-		my @break_labels;
-		my $fstring = "\n\n$opt->{ui_data_fields}";
-		while ($fstring =~ s/\n+(?:\n[ \t]*=(.*))?\n+[ \t]*(\w[:.\w]+)/\n$2/) {
-			push @breaks, $2;
-			push @break_labels, "$2=$1" if $1;
-		}
-		$opt->{ui_break_before} = join(" ", @breaks)
-			if ! $opt->{ui_break_before};
-		$opt->{ui_break_before_label} = join(",", @break_labels)
-			if ! $opt->{ui_break_before_label};
-	}
-
-	$opt->{ui_data_fields} ||= $opt->{mv_data_fields};
-
-	if(! $opt->{ui_data_fields}) {
-		if( $opt->{notable}) {
-			::logError("table_editor: no place to get fields!");
-			return '';
-		}
-		else {
-			$opt->{ui_data_fields} = join " ", $db->columns();
-		}
-	}
-
-	$opt->{ui_data_fields} =~ s/[,\0\s]+/ /g;
 	###############################################################
 
 	my $linecount;
@@ -1596,9 +1682,6 @@ EOF
 		$opt->{mv_data_function} = $exists ? 'update' : 'insert';
 	}
 
-	$opt->{mv_nextpage} = $Global::Variable->{MV_PAGE} if ! $opt->{mv_nextpage};
-	$opt->{mv_update_empty} = 1 unless defined $opt->{mv_update_empty};
-
 	my $url_base = $opt->{secure} ? $Vend::Cfg->{SecureURL} : $Vend::Cfg->{VendURL};
 
 	$opt->{href} = "$url_base/ui" if ! $opt->{href};
@@ -1614,7 +1697,6 @@ EOF
 		$sidstr = qq{<INPUT TYPE=hidden NAME=mv_session_id VALUE="$Vend::Session->{id}">
 };
 	}
-	$opt->{enctype} = $opt->{file_upload} ? ' ENCTYPE="multipart/form-data"' : '';
 
 	my $wo = $opt->{widgets_only};
 
@@ -1629,7 +1711,7 @@ EOF
 
 	chunk 'FORM_BEGIN', 'WO', 'TOP_PORTION', <<EOF; # unless $wo;
 $restrict_begin<FORM METHOD=$opt->{method} ACTION="$opt->{href}"$opt->{form_name}$opt->{enctype}$opt->{form_extra}>
-$sidstr<INPUT TYPE=hidden NAME=mv_todo VALUE="$action">
+$sidstr<INPUT TYPE=hidden NAME=mv_todo VALUE="$opt->{action}">
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_filter">
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="$opt->{mv_nextpage}">
 <INPUT TYPE=hidden NAME=mv_data_table VALUE="$table">
@@ -2439,7 +2521,7 @@ EOF
 			$template =~ s/\$LABEL\$/$Tag->error($parm)/eg;
 		}
 
-		my $meta = '';
+		my $meta_string = '';
 		my $meta_url;
 		my $meta_url_specific;
 		if($show_meta) {
@@ -2483,7 +2565,7 @@ EOF
 								
 			$opt->{meta_append} = '</FONT>'
 				unless defined $opt->{meta_append};
-			$meta = <<EOF;
+			$meta_string = <<EOF;
 $opt->{meta_prepend}<a href="$meta_url"$opt->{meta_extra}>$opt->{meta_anchor}</A>
 $meta_specific$opt->{meta_append}
 EOF
@@ -2505,7 +2587,7 @@ EOF
 										help_url => $help_url->{$c},
 										label => $label->{$c},
 										key => $key,
-										meta => $pmeta->{$c},
+										meta => $meta->{$c},
 										meta_url => $meta_url,
 										meta_url_specific => $meta_url_specific,
 										name => $namecol,
@@ -2532,16 +2614,14 @@ EOF
 			next;
 		}
 
-		if($show_meta and $display =~ /\~META\~/) {
-			$display =~ s/\~META\~/$meta/g;
-		}
+		$display =~ s/\~META\~/$meta_string/g;
 
 		$display =~ s/\~ERROR\~/$Tag->error({ name => $c, keep => 1 })/eg;
         
 		my $update_ctl;
 		if (! $wo and $break{$namecol}) {
 			push @titles, $break_label{$namecol};
-			if(@columns == 0 and @titles == 1) {
+			if(@controls == 0 and @titles == 1) {
 				# do nothing
 			}
 			else {
