@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.33 2001-12-28 17:16:26 mheins Exp $
+# $Id: Interpolate.pm,v 2.34 2001-12-28 17:55:44 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.33 $, 10);
+$VERSION = substr(q$Revision: 2.34 $, 10);
 
 @EXPORT = qw (
 
@@ -294,6 +294,7 @@ my @th = (qw!
 		_calc
 		_change
 		_code
+		_common
 		_data
 		_description
 		_discount
@@ -394,6 +395,7 @@ my @th = (qw!
 	'_field_if'		=> qr($T{_field}(\d*)$Spacef(!?)\s*($Codere)$Optr\]($Some)),
 	'_field_if_wo'	=> qr($T{_field}$Spacef(!?)\s*($Codere$Optr)\]),
 	'_field'		=> qr($T{_field}$Mandf\]),
+	'_common'		=> qr($T{_common}$Mandf\]),
 	'_increment'	=> qr($T{_increment}\]),
 	'_last'			=> qr($T{_last}\]\s*($Some)\s*),
 	'_line'			=> qr($T{_line}$Opt\]),
@@ -2017,6 +2019,14 @@ sub tag_options {
 	my $remap;
 	my %map;
 
+	my $inv_func;
+	if($opt->{inventory}) {
+		my ($t, $c) = split /[.:]+/, $opt->{inventory};
+		if($db = database_exists_ref($t)) {
+			$inv_func = $db->field_accessor($c);
+		}
+	}
+
 	if($::Variable->{MV_OPTION_TABLE_MAP}) {
 		$remap = $::Variable->{MV_OPTION_TABLE_MAP};
 		$remap =~ s/^\s+//;
@@ -2077,6 +2087,13 @@ sub tag_options {
 		foreach $ref (@$ary) {
 
 			next unless $ref->[3];
+
+			# skip based on inventory if enabled
+			if($inv_func) {
+				my $oh = $inv_func->($ref->[0]);
+				next if $oh <= 0;
+			}
+
 			$i++;
 
 			# skip unless o_value
@@ -2146,6 +2163,13 @@ sub tag_options {
 			next unless $ref->[1];
 			# skip unless description
 			next unless $ref->[3];
+
+			# skip based on inventory if enabled
+			if($inv_func) {
+				my $oh = $inv_func->($ref->[0]);
+				next if $oh <= 0;
+			}
+
 			$ref->[3] =~ s/,/&#44;/g;
 			$ref->[3] =~ s/=/&#61;/g;
 			$price->{$ref->[0]} = $ref->[4];
@@ -4963,6 +4987,7 @@ my $once = 0;
 		$run =~ s:$B$QR{_code}:$code:ig;
 		$run =~ s:$B$QR{_description}:ed(product_description($code)):ige;
 		$run =~ s:$B$QR{_field}:ed(product_field($1, $code)):ige;
+		$run =~ s:$B$QR{_common}:ed(product_common($1, $code)):ige;
 		tag_labeled_data_row($code, \$run);
 		$run =~ s!$B$QR{_price}!
 					currency(product_price($code,$1), $2)!ige;
@@ -5102,6 +5127,7 @@ sub iterate_hash_list {
 								)!ge;
 		$run =~ s:$B$QR{_code}:$code:g;
 		$run =~ s:$B$QR{_field}:ed(item_field($item, $1) || $item->{$1}):ge;
+		$run =~ s:$B$QR{_common}:ed(item_common($item, $1) || $item->{$1}):ge;
 		$run =~ s:$B$QR{_description}:
 							ed(item_description($item) || $item->{description})
 							:ge;

@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.3 2001-10-25 23:31:03 jon Exp $
+# $Id: Data.pm,v 2.4 2001-12-28 17:55:44 mheins Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -38,6 +38,7 @@ export_database
 import_database
 increment_field
 item_category
+item_common
 item_description
 item_field
 item_price
@@ -48,6 +49,7 @@ product_category
 product_code_exists_ref
 product_code_exists_tag
 product_description
+product_common
 product_field
 product_price
 set_field
@@ -311,6 +313,21 @@ sub product_field {
 #::logDebug("product_field: exists db=$db");
     return "" unless defined $db->test_column($field_name);
     return $db->field($code, $field_name);
+}
+
+
+sub product_common {
+    my ($field_name, $code) = @_;
+#::logDebug("product_field: name=$field_name code=$code base=$base");
+	my $result;
+	for(@{$Vend::Cfg->{ProductFiles}}) {
+		my $db = database_exists_ref($_)
+			or next;
+		next unless defined $db->test_column($field_name);
+		$result = database_field($db, $code, $field_name);
+		length($result) and last;
+	}
+    return $result;
 }
 
 my %T;
@@ -1657,6 +1674,23 @@ sub item_description {
 	my $item = shift;
 	my $base = $Vend::Database{$item->{mv_ib}} || $Products;
 	return database_field($base, $item->{code}, $Vend::Cfg->{DescriptionField});
+}
+
+sub item_common {
+	my ($item, $field) = @_;
+	my $base = $item->{mv_ib};
+	my $res;
+	foreach my $code ($item->{code}, $item->{mv_sku}) {
+		next if ! length($code);
+		for my $dbname ($base, @{$Vend::Cfg->{ProductFiles}} ) {
+			next if ! $dbname;
+			my $db = database_exists_ref($dbname)
+				or next;
+			last unless defined $db->test_column($field);
+			$res = database_field($db, $code, $field);
+			return $res if length $res;
+		}
+	}
 }
 
 sub item_field {
