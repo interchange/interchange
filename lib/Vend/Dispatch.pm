@@ -1,6 +1,6 @@
 # Vend::Dispatch - Handle Interchange page requests
 #
-# $Id: Dispatch.pm,v 1.25 2003-07-26 20:25:43 mheins Exp $
+# $Id: Dispatch.pm,v 1.26 2003-09-10 15:46:47 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Dispatch;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.25 $, 10);
+$VERSION = substr(q$Revision: 1.26 $, 10);
 
 use POSIX qw(strftime);
 use Vend::Util;
@@ -851,11 +851,7 @@ sub url_history {
 		unless defined $Vend::Session->{History};
 	shift @{$Vend::Session->{History}}
 		if $#{$Vend::Session->{History}} >= $Vend::Cfg->{History};
-	if(
-		($CGI::pragma =~ /\bno-cache\b/ and ! $CGI::values{mv_force_cache})
-		or $CGI::values{mv_no_cache}
-		)
-	{
+	if( $CGI::values{mv_no_cache} ) {
 		push (@{$Vend::Session->{History}},  [ 'expired', {} ]);
 	}
 	else {
@@ -1143,11 +1139,23 @@ sub dispatch {
 	$CGI::host = 'nobody' if $Vend::Cfg->{WideOpen};
 
 	if(! $sessionid) {
-		my $id = $::Variable->{MV_SESSION_ID};
-		$sessionid = $CGI::values{$id} if $CGI::values{$id};
+		if(my $id = $::Variable->{MV_SESSION_ID}) {
+			$sessionid = $CGI::values{$id} if $CGI::values{$id};
+		}
+
+		if(! $sessionid and $CGI::redirect_status and $Vend::Cfg->{RedirectCache}) {
+			$Vend::tmp_session = $Vend::new_session = 1;
+			$sessionid = 'nsession';
+			$Vend::Cookie = 1;
+			$Vend::Cfg->{ScratchDefault}{mv_no_count} = 1;
+			$Vend::Cfg->{ScratchDefault}{mv_no_session_id} = 1;
+			$Vend::write_redirect = 1;
+		}
+
 		if (! $sessionid and $Vend::Cfg->{FallbackIP}) {
 			$sessionid = generate_key($CGI::remote_addr . $CGI::useragent);
 		}
+
 	}
 	elsif (! $::Instance->{ExternalCookie} and $sessionid !~ /^\w+$/) {
 		my $msg = get_locale_message(
@@ -1273,15 +1281,18 @@ EOF
 		$::Values = $Vend::Session->{values_repository}{$vspace} ||= {};
 	}
 
-	if($Vend::Cfg->{CookieLogin}) {
+	if($Vend::Cfg->{CookieLogin} and ! $Vend::Session->{logged_in}) {
 		COOKIELOGIN: {
-			last COOKIELOGIN if $Vend::Session->{logged_in};
-			last COOKIELOGIN if defined $CGI::values{mv_username};
-			last COOKIELOGIN unless
-				$CGI::values{mv_username} = Vend::Util::read_cookie('MV_USERNAME');
+			my $username;
 			my $password;
-			last COOKIELOGIN unless
-				$password = Vend::Util::read_cookie('MV_PASSWORD');
+			last COOKIELOGIN
+				if  exists  $CGI::values{mv_username}
+				and defined $CGI::values{mv_username};
+			last COOKIELOGIN
+				unless $username = Vend::Util::read_cookie('MV_USERNAME');
+			last COOKIELOGIN
+				unless $password = Vend::Util::read_cookie('MV_PASSWORD');
+			$CGI::values{mv_username} = $username;
 			$CGI::values{mv_password} = $password;
 			my $profile = Vend::Util::read_cookie('MV_USERPROFILE');
 			local(%SIG);
@@ -1505,6 +1516,7 @@ EOF
 			;
 		$template = get_locale_message(500, $template, $err);
 		$template .= "($err)";
+		undef $Vend::write_redirect;
 		response($template);
 	}
 
@@ -1513,7 +1525,6 @@ EOF
 
 	do_page() if $status;
 #show_times("end page display") if $Global::ShowTimes;
-
 
 	if(my $macro = $Vend::Cfg->{AutoEnd}) {
 		if($macro =~ /\[\w+/) {

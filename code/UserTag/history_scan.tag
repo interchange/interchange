@@ -89,8 +89,8 @@ sub {
 		return $Tag->area($default);
 	}
 	$href =~ s|/+|/|g;
+	$href =~ s|^/||;
 	if ($opt->{pageonly}) {
-		$href =~ s|^/||;
 		return $href;
 	}
 	my $form = '';
