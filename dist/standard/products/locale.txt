@@ -58,7 +58,7 @@ Change password	Change password			Wijzigen wachtwoord
 Change your password	Change your password			Wijzig uw wachtwoord
 Check Information	Check Information			Cheque-informatie
 Check Number	Check Number			Chequenummer
-Check Out	Check Out			Naar de kassa
+Check Out	Check Out	Zur Kasse		Naar de kassa
 City	City	Stadt		Plaats
 City, State, Zip	City, State, Zip			Plaats, Provincie, Postcode
 Clear&nbsp;cart	Clear&nbsp;cart			Wis&nbsp;winkelwagen
