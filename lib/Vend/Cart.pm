@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Cart.pm,v 1.2.6.3 2001-03-24 17:47:07 heins Exp $
+# $Id: Cart.pm,v 1.2.6.4 2001-03-27 19:36:29 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,7 +27,7 @@
 
 package Vend::Cart;
 
-$VERSION = substr(q$Revision: 1.2.6.3 $, 10);
+$VERSION = substr(q$Revision: 1.2.6.4 $, 10);
 
 use strict;
 
@@ -144,6 +144,8 @@ sub toss_cart {
 	my (@cascade);
 	DELETE: for (;;) {
 		foreach $i (0 .. $#$s) {
+			$s->[$i] = $Vend::Cfg->{ItemAction}{$s->[$i]{code}}
+				if $Vend::Cfg->{ItemAction}{$s->[$i]{code}}
 			if ($s->[$i]->{quantity} <= 0) {
 				next if defined $s->[$i]->{mv_control} and
 								$s->[$i]->{mv_control} =~ /\bnotoss\b/;
