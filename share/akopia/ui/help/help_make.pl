@@ -123,7 +123,7 @@ sub readfile {
 sub writefile {
 	my ($filename, $data) = @_;
 	my $pathname = "$writedir/$filename";
-	open OUT, ">$pathname" or warn "Couldn't write '$filename': $!", return undef;
+	open OUT, ">$pathname" or warn("Couldn't write '$filename': $!"), return undef;
 	print OUT $data;
 	close OUT or warn("Couldn't close '$filename': $!"), return undef;
 	return 1;
