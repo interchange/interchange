@@ -426,6 +426,7 @@ HREF="[area
 	list=1
 	prefix=clone
 	db=1
+	table="[cgi mv_data_table]"
 	sql="SELECT DISTINCT code
 		 FROM  [cgi mv_data_table]
 		 WHERE o_matrix  >= '1'

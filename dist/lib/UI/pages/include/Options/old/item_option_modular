@@ -211,6 +211,7 @@
 
 
 [query
+	table=options
 	hashref=master
 	sql="SELECT * FROM options
 			WHERE o_master = '[cgi name=item_id filter=sql]'

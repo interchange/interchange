@@ -457,6 +457,7 @@ HREF="[area
 <SELECT NAME=ui_clone_id>
 <OPTION VALUE=""> --
 [query
+	table="[cgi mv_data_table]"
 	list=1
 	prefix=clone
 	db=1

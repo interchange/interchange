@@ -105,7 +105,7 @@
 
 <TABLE BORDER=0><TR><TD VALIGN=TOP>
 
-[query list=1 sql="select * from options where sku='[filter op=sql interpolate=1][cgi item_id][/filter]' and o_group is not null"]
+[query list=1 table=options sql="select * from options where sku='[filter op=sql interpolate=1][cgi item_id][/filter]' and o_group is not null"]
 [list]
 [if-sql-data options o_group]
 [calc] $Scratch->{mod_code} = q{[sql-code]}; $Scratch->{mod_code} =~ s/-/_/g; return;[/calc]
@@ -180,6 +180,7 @@ document.write('<br><INPUT TYPE=checkbox\n' +
 <BR><BR><B>[L]Clone an existing option set[/L]:</B><BR>
 
 [query
+	table="[cgi mv_data_table]"
 	list=1
 	prefix=clone
 	sql="select DISTINCT sku from [cgi mv_data_table] where o_group <> ''"
