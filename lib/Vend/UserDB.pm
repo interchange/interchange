@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.13.4.1 2000-11-28 22:33:52 racke Exp $
+# $Id: UserDB.pm,v 1.13.4.2 2000-11-28 22:37:23 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.13.4.1 $, 10);
+$VERSION = substr(q$Revision: 1.13.4.2 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -1272,10 +1272,10 @@ sub userdb {
 				$Vend::Cfg->{AdminUserDB}{$user->{PROFILE}}
 				)
 			{
-::logDebug("logged in $Vend::username via $user->{DB_ID} -- ADMIN");
+#::logDebug("logged in $Vend::username via $user->{DB_ID} -- ADMIN");
 				$Vend::admin = 1;
 			}
-::logDebug("logged in $Vend::username via $user->{DB_ID} $Vend::Cfg->{AdminUserDB}");
+#::logDebug("logged in $Vend::username via $user->{DB_ID}");
 			undef $Vend::Cookie
 				unless $Vend::Cfg->{StaticLogged};
 			::update_user();
