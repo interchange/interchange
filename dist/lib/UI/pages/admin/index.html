@@ -5,7 +5,7 @@
 [if-mm !logged_in]
 	[bounce page="__UI_BASE__/login"]
 [/if-mm]
-[set page_title]Interchange Administration[/set]
+[set page_title][L]Interchange Administration[/L][/set]
 [tmp ui_no_title]1[/tmp]
 [set icon_name][/set]
 [set help_name]home[/set]
@@ -148,10 +148,10 @@ EOF
 <TR>
 <TD COLSPAN=3>
 <blockquote class=titlebox>
-UI update appears to have been done and metadata has not
-been updated for this catalog...
+[L]UI update appears to have been done and metadata has not
+been updated for this catalog...[/L]
 	<blockquote>
-		[page href=admin/merge_meta extra=class=titlebox]Merge Metadata</a>
+		[page href=admin/merge_meta extra=class=titlebox][L]Merge Metadata[/L]</a>
 	</blockquote>
 </blockquote>
 </TD>
