@@ -540,10 +540,16 @@ Form
 * Allow multiple semi-colon-separated queries to populate options via
   lookup_query.
 
+* Added a =None to the file list of the imagedir widget so one has
+  the opportunity to choose an 'empty' value if no input is required.
+
 Editor
 ------
 
 * Allow override of checking for incomplete forms.
+
+* Get rid of excess space which causes "unparsed and temporary" page
+  controls to fail.
 
 UI
 --
@@ -655,6 +661,8 @@ UI
 
 * Fix bug in address display in customer_view page.
 
+* Message for free shipping added to entry page.
+
 Payment
 -------
 
@@ -682,6 +690,10 @@ Payment
     (uses Authorize.Net protocol version 3.1). (Chaim Klar <c_klar@c-cs.com>).
 
   - Added the whole list of response codes (Chaim Klar <c_klar@c-cs.com>).
+
+* Add new Verisign route parameter, "check_sub", which allows a Sub or
+  GlobalSub to be called after a successful charge for a check of some
+  sort. 
 
 Shipping
 --------
