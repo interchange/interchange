@@ -1,6 +1,6 @@
 # This -*-perl -*- module implements a persistent counter class.
 #
-# $Id: CounterFile.pm,v 1.3 2003-08-04 05:11:20 mheins Exp $
+# $Id: CounterFile.pm,v 1.4 2003-09-19 03:27:59 mheins Exp $
 #
 
 package Vend::CounterFile;
@@ -98,7 +98,7 @@ eval {
 };
 
 sub Version { $VERSION; }
-$VERSION = sprintf("%d.%02d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/);
 
 # first line in counter file, regex to match good value
 $MAGIC           = "#COUNTER-1.0\n";    # first line in standard counter files
@@ -124,7 +124,7 @@ use overload ('++'     => \&inc,
 
 sub new
 {
-	my($class, $file, $initial, $date) = @_;
+	my($class, $file, $initial, $date, $inc_routine, $dec_routine) = @_;
 	croak "No file specified\n" unless defined $file;
 
 	$file = "$DEFAULT_DIR/$file" unless $file =~ /^[\.\/]/;
@@ -187,6 +187,8 @@ sub new
 	my $s = { file    => $file,  # the filename for the counter
 		   'value'  => $value, # the current value
 			updated => 0,      # flag indicating if value has changed
+			inc_routine => $inc_routine,      # Custom incrementor
+			dec_routine => $dec_routine,      # Custom decrementor
 			initial => $initial,      # initial value for date-based
 			magic_value => $magic_value,      # initial magic value for date-based
 			date	=> $date,  # flag indicating date-based counter
@@ -199,6 +201,10 @@ sub new
 
 sub inc_value {
 	my $self = shift;
+	if ($self->{inc_routine}) {
+		$self->{value} = $self->{inc_routine}->($self->{value});
+		return;
+	}
 	$self->{'value'}++, return unless $self->{date};
 	my $datebase = $self->{gmt}
 				 ? strftime($DATE_FORMAT, gmtime())
@@ -210,6 +216,16 @@ sub inc_value {
 	$inc++;
 #::logDebug("initial=$self->{initial} inc after  autoincrement value=$inc");
 	$self->{value} = $datebase . $inc;
+}
+
+sub dec_value {
+	my $self = shift;
+	if ($self->{dec_routine}) {
+		$self->{value} = $self->{dec_routine}->($self->{value});
+		return;
+	}
+	$self->{'value'}--;
+	return;
 }
 
 sub locked
@@ -296,18 +312,18 @@ sub dec
 
 	if ($self->locked) {
 		croak "Autodecrement is not magical in perl"
-			unless $self->{'value'} =~ /^\d+$/;
+			unless $self->{dec_routine} || $self->{'value'} =~ /^\d+$/;
 		croak "cannot decrement date-based counters"
 			if $self->{date};
-		$self->{'value'}--;
+		$self->dec_value();
 		$self->{updated} = 1;
 	} else {
 		$self->lock;
 		croak "Autodecrement is not magical in perl"
-			unless $self->{'value'} =~ /^\d+$/;
+			unless $self->{dec_routine} || $self->{'value'} =~ /^\d+$/;
 		croak "cannot decrement date-based counters"
 			if $self->{date};
-		$self->{'value'}--;
+		$self->dec_value();
 		$self->{updated} = 1;
 		$self->unlock;
 	}

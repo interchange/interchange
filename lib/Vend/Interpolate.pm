@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.191 2003-09-11 15:15:32 racke Exp $
+# $Id: Interpolate.pm,v 2.192 2003-09-19 03:27:59 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.191 $, 10);
+$VERSION = substr(q$Revision: 2.192 $, 10);
 
 @EXPORT = qw (
 
@@ -2343,7 +2343,7 @@ sub do_tag {
 sub tag_counter {
     my $file = shift || 'etc/counter';
 	my $opt = shift;
-#::logDebug("counter: file=$file start=$opt->{start} sql=$opt->{sql} caller=" . scalar(caller()) );
+::logDebug("counter: file=$file start=$opt->{start} sql=$opt->{sql} routine=$opt->{inc_routine} caller=" . scalar(caller()) );
 	if($opt->{sql}) {
 		my ($tab, $seq) = split /:+/, $opt->{sql}, 2;
 		my $db = database_exists_ref($tab);
@@ -2413,7 +2413,23 @@ sub tag_counter {
 	
     $file = $Vend::Cfg->{VendRoot} . "/$file"
         unless Vend::Util::file_name_is_absolute($file);
-    my $ctr = new Vend::CounterFile $file, $opt->{start} || undef, $opt->{date};
+
+	for(qw/inc_routine dec_routine/) {
+		my $routine = $opt->{$_}
+			or next;
+
+		if( ! ref($routine) ) {
+			$opt->{$_}   = $Vend::Cfg->{Sub}{$routine};
+			$opt->{$_} ||= $Global::GlobalSub->{$routine};
+		}
+	}
+
+    my $ctr = new Vend::CounterFile
+					$file,
+					$opt->{start} || undef,
+					$opt->{date},
+					$opt->{inc_routine},
+					$opt->{dec_routine};
     return $ctr->value() if $opt->{value};
     return $ctr->dec() if $opt->{decrement};
     return $ctr->inc();
