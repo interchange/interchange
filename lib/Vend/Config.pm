@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.129 2003-11-17 21:35:22 edl Exp $
+# $Id: Config.pm,v 2.130 2004-01-11 15:06:00 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.129 $, 10);
+$VERSION = substr(q$Revision: 2.130 $, 10);
 
 my %CDname;
 my %CPname;
@@ -3838,7 +3838,8 @@ sub parse_tag {
 					"Local usertag %s overrides global definition",
 					$tag,
 				)
-			);
+			)
+				unless $C->{Limit}{override_tag} =~ /\b$tag\b/;
 		}
 
 		my $sub;
