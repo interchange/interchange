@@ -54,7 +54,7 @@ make install
 gzip $RBR/usr/man/man*/* 2>/dev/null
 cp extra/HTML/Entities.pm $RBR/usr/lib/interchange/build
 cp extra/IniConf.pm $RBR/usr/lib/interchange/build
-cp QuickStart WHATSNEW README README.rpm README.CVS $RBR/usr/doc/%{interchange_package}-%{version}
+cp QuickStart WHATSNEW README README.rpm README.cvs $RBR/usr/doc/%{interchange_package}-%{version}
 chown -R root.root $RBR
 cd $RBR/usr/lib/interchange
 export PERL5LIB=$RBR/usr/lib/interchange/lib
