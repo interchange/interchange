@@ -10,7 +10,14 @@ UserTag widget Routine <<EOR
 sub {
 	my($name, $opt, $string) = @_;
 	#my($name, $type, $value, $table, $column, $key, $data, $string) = @_;
-	my $value = $::Values->{$name} || $opt->{default};
+	my $value;
+	
+	if(defined $opt->{set}) {
+		$value = $opt->{set};
+	}
+	else {
+		$value = $::Values->{$name} || $opt->{default};
+	}
 	if($opt->{pre_filter}) {
 ::logDebug("pre-filter with $opt->{pre_filter}");
 		$value = $Tag->filter($opt->{pre_filter}, $value);
