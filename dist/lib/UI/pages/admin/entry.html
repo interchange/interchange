@@ -180,7 +180,6 @@ They are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
 [comment] checkout_profile in etc/profiles.order [/comment]
 <INPUT TYPE=hidden NAME=mv_order_profile VALUE=checkout_profile>
 [comment] Order routes in catalog.cfg [/comment]
-<INPUT TYPE=hidden NAME=mv_order_route   VALUE="log_entry main copy_user">
 
 <br>
 <TABLE border=0 WIDTH=600><TR><TD BGCOLOR="__UI_C_TITLEBARBG__">
@@ -545,6 +544,7 @@ Card Number<BR>
 </TABLE><br>
 
 [set Place Order!]
+mv_order_route=log_entry main copy_user
 mv_todo=submit
 [/set]
 
