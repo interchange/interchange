@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.11 2000-07-20 07:15:47 heins Exp $
+# $Id: DBI.pm,v 1.12 2000-08-06 19:58:24 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.11 $, 10);
+$VERSION = substr(q$Revision: 1.12 $, 10);
 
 use strict;
 
@@ -411,14 +411,21 @@ sub set_row {
 	my $cfg = $s->[$CONFIG];
 	$s->filter(\@fields, $s->[$CONFIG]{COLUMN_INDEX}, $s->[$CONFIG]{FILTER_TO})
 		if $s->[$CONFIG]{FILTER_TO};
+	my $val;
 	if(scalar @fields == 1) {
+		if(! $fields[0] and $s->[$CONFIG]{AUTO_NUMBER}) {
+			$fields[0] = $s->autonumber();
+		}
 		eval {
-			my $val = $s->quote($fields[0], $s->[$KEY]);
+			$val = $s->quote($fields[0], $s->[$KEY]);
+			if($s->[$CONFIG]{AUTO_NUMBER}) {
+				my $ctr
+			}
 			$s->[$DBI]->do("delete from $s->[$TABLE] where $s->[$KEY] = $val");
 			$s->[$DBI]->do("insert into $s->[$TABLE] ($s->[$KEY]) VALUES ($val)");
 		};
 		die "$DBI::errstr\n" if $@;
-		return 1;
+		return $val;
 	}
 	if(! $cfg->{_Insert_h}) {
 		my (@ins_mark);
@@ -439,14 +446,16 @@ sub set_row {
 
 	unless ($s->[$CONFIG]{Clean_start}) {
 		eval {
-			my $val = $s->quote($fields[$cfg->{_Key_column}], $s->[$KEY]);
+			$val = $s->quote($fields[$cfg->{_Key_column}], $s->[$KEY]);
 			$s->[$DBI]->do("delete from $s->[$TABLE] where $s->[$KEY] = $val")
 				unless $s->[$CONFIG]{Clean_start};
 		};
 	}
     $s->bind_entire_row($cfg->{_Insert_h}, undef, @fields);
+	$val = $fields[$cfg->{_Key_column}];
 	$cfg->{_Insert_h}->execute()
 		or die "$DBI::errstr\n";
+	return $val;
 }
 
 sub row_hash {
