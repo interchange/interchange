@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.37 2001-05-20 15:05:15 racke Exp $
+# $Id: Server.pm,v 1.8.2.38 2001-05-21 20:52:10 jason Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.37 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.38 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -680,7 +680,7 @@ sub http_soap {
 	my $status = 200;
 
 	shift(@path);
-	my $catname = shift(@path);
+	my $catname = '/'.shift(@path);
 	$$env{SESSION_ID} = shift(@path);
 
 #::logDebug("catname is $catname");
