@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.6 2000-07-20 07:15:47 heins Exp $
+# $Id: Order.pm,v 1.7 2000-08-06 19:47:38 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 1.7 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1105,7 +1105,7 @@ sub check_order {
 my $state = <<EOF;
 | AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD |
 | MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA PR RI |
-| SC SD TN TX UT VT VA WA WV WI WY DC AP FP FPO APO GU VI     |
+| SC SD TN TX UT VT VA WA WV WI WY DC AP FP FPO APO GU VI AS  |
 EOF
 
 my $province = <<EOF;
@@ -1114,7 +1114,11 @@ EOF
 
 sub _state_province {
 	my($ref,$var,$val) = @_;
-	if( $state =~ /\S/ and ($state =~ /\s$val\s/i or $province =~ /\s$val\s/i) ) {
+	$province = " $::Variable->{MV_VALID_PROVINCE} "
+		if defined $::Variable->{MV_VALID_PROVINCE};
+	$state = " $::Variable->{MV_VALID_STATE} "
+		if defined $::Variable->{MV_VALID_STATE};
+	if( $val =~ /\S/ and ($state =~ /\s$val\s/i or $province =~ /\s$val\s/i) ) {
 		return (1, $var, '');
 	}
 	else {
@@ -1124,10 +1128,10 @@ sub _state_province {
 
 sub _state {
 	my($ref,$var,$val) = @_;
-	$state = $::Variable->{MV_VALID_STATE}
+	$state = " $::Variable->{MV_VALID_STATE} "
 		if defined $::Variable->{MV_VALID_STATE};
 
-	if( $state =~ /\S/ and $state =~ /\s$val\s/i ) {
+	if( $val =~ /\S/ and $state =~ /\s$val\s/i ) {
 		return (1, $var, '');
 	}
 	else {
@@ -1137,9 +1141,9 @@ sub _state {
 
 sub _province {
 	my($ref,$var,$val) = @_;
-	$province = $::Variable->{MV_VALID_PROVINCE}
+	$province = " $::Variable->{MV_VALID_PROVINCE} "
 		if defined $::Variable->{MV_VALID_PROVINCE};
-	if( $province =~ /\s$val\s/i) {
+	if( $val =~ /\S/ and $province =~ /\s$val\s/i) {
 		return (1, $var, '');
 	}
 	else {
