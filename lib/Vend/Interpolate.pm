@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.112 2002-09-19 03:25:47 mheins Exp $
+# $Id: Interpolate.pm,v 2.113 2002-09-23 20:38:39 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.112 $, 10);
+$VERSION = substr(q$Revision: 2.113 $, 10);
 
 @EXPORT = qw (
 
@@ -35,6 +35,7 @@ cache_html
 interpolate_html
 subtotal
 tag_data
+tag_attr_list
 $Tag
 $CGI
 $Session

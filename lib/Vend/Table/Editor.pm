@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.4 2002-09-23 17:57:18 mheins Exp $
+# $Id: Editor.pm,v 1.5 2002-09-23 20:38:39 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -767,6 +767,9 @@ $tit->[$i]
 </LAYER>
 EOF
 	}
+
+	my $start_index = $opt->{start_at_index} || 0;
+	$start_index += 0;
 	return <<EOF;
 $out
 <div style="
@@ -776,7 +779,7 @@ $out
 	">
 $s1
 <script>
-	selectTab(0);
+	selectTab($start_index);
 </script>
 </div>
 EOF
@@ -971,24 +974,42 @@ sub resolve_options {
 
 	# First we see if something has created a big options munge
 	# for us
-	if(ref($opt->{all_opts}) eq 'HASH') {
-#Debug("all_opts being brought in...");
-		my $o = $opt->{all_opts};
-		for (keys %$o ) {
-			$opt->{$_} = $o->{$_};
+	if($opt->{all_opts}) {
+#::logDebug("all_opts being brought in...=$opt->{all_opts}");
+		if(ref($opt->{all_opts}) eq 'HASH') {
+#::logDebug("all_opts being brought in...");
+			my $o = $opt->{all_opts};
+			for (keys %$o ) {
+				$opt->{$_} = $o->{$_};
+			}
 		}
-#Debug("options now=" . ::uneval($opt));
-	}
-	elsif ($opt->{all_opts}) {
-		logError("%s: improper option %s, must be %s, was %s.",
-					'table_editor',
-					'all_opts',
-					'hash',
-					ref $opt->{all_opts},
-					);
+		else {
+			my $o = meta_record($opt->{all_opts});
+#::logDebug("all_opts being brought in, o=$o");
+			if($o) {
+				for (keys %$o ) {
+					$opt->{$_} = $o->{$_};
+				}
+			}
+			else {
+				logError("%s: improper option %s, must be %s, was %s.",
+							'table_editor',
+							'all_opts',
+							'hash',
+							ref $opt->{all_opts},
+							);
+			}
+		}
+#::logDebug("options now=" . ::uneval($opt));
 	}
 
-	my $tmeta = meta_record($table, $opt->{ui_meta_view}) || {};
+	my $tmeta;
+	if($opt->{no_table_meta}) {
+		$tmeta = {};
+	}
+	else {
+		$tmeta = meta_record($table, $opt->{ui_meta_view}) || {};
+	}
 
 	# This section checks the passed options and converts them from
 	# strings to refs if necessary
@@ -1005,6 +1026,7 @@ sub resolve_options {
                     filter
                     height
                     help
+                    help_url
                     label
                     lookup
                     lookup_query
@@ -1086,6 +1108,8 @@ sub resolve_options {
 		ui_new_item
 		ui_delete_box
 		mv_update_empty
+		bottom_buttons
+		top_buttons
 	/;
 
 	for(grep defined $tmeta->{$_}, @mapdirect) {
@@ -1286,11 +1310,13 @@ show_times("begin table editor call item_id=$key") if $Global::ShowTimes;
 	$opt->{mv_data_table} = $table if $table;
 	$opt->{item_id}		  = $key if $key;
 	$opt->{table}		  = $opt->{mv_data_table};
-#::logDebug("key before resolve_options: $key");
 
 	resolve_options($opt);
 	$table = $opt->{table};
 	$key = $opt->{item_id};
+	if($opt->{save_meta}) {
+		$::Scratch->{$opt->{save_meta}} = uneval($opt);
+	}
 #::logDebug("key after resolve_options: $key");
 
 	my $rowdiv         = $opt->{across}    || 1;
@@ -2725,6 +2751,9 @@ EOF
 			}
 		}
 		$ctl_index++ if $update_ctl;
+		if($opt->{start_at} and $opt->{start_at} eq $namecol) {
+			$opt->{start_at_index} = $ctl_index;
+		}
 #::logDebug("control index now=$ctl_index");
 		col_chunk $c, $display;
 	}
