@@ -86,6 +86,7 @@ use Vend::MakeCat;
 use Vend::Util;
 use Getopt::Long;
 use IniConf;
+use Cwd;
 
 #use strict;
 
@@ -1731,11 +1732,9 @@ EOF
 							
 						 };
 
-	my $ok = 0;
-
 	unless ($Conf{sharedir} eq 'NONE') {
 		print do_msg("Copying share/ files to $Conf{sharedir}");
-		my $oldpwd = getcwd;
+		my $oldpwd = getcwd();
 		my @sharedirs;
 		eval {
 			chdir $Conf{vendroot} or die "\nchdir $Conf{vendroot}: $!\n";
@@ -1759,6 +1758,7 @@ EOF
 		chdir $oldpwd;
 	}
 
+	my $ok = 0;
 	unless($Conf{samplehtml} eq 'NONE') {
 		print do_msg("Moving HTML files to $Conf{samplehtml}");
 		eval {
@@ -1767,7 +1767,6 @@ EOF
 			chdir '..';
 			File::Path::rmtree('html'); 
 		};
-
 
 		if($@ and !$ok) {
 			die "\nCouldn't move HTML files to $Conf{relocate}$Conf{samplehtml}: $@\n";
@@ -1780,10 +1779,10 @@ EOF
 				if $isroot;
 		}
 
-
 		print "done.\n";
 	}
 
+	$ok = 0;
 	unless($Conf{imagedir} eq 'NONE') {
 		print do_msg("Moving image files to $Conf{imagedir}");
 		eval {
@@ -2049,7 +2048,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.16 2000-09-24 07:03:37 jon Exp $
+$Id: makecat.PL,v 1.17 2000-09-24 08:03:45 jon Exp $
 
 =head1 INTRODUCTION
 
