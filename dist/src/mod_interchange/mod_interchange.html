@@ -1,17 +1,17 @@
-<!-- $Id: mod_interchange.html,v 2.2 2002-08-05 19:22:53 kwalsh Exp $ -->
+<!-- $Id: mod_interchange.html,v 2.3 2002-10-02 02:00:16 kwalsh Exp $ -->
 <html>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <title>Apache module: mod_interchange (version 1.22)</title>
+   <title>Apache module: mod_interchange (version 1.23)</title>
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
-    <h1>Apache module: mod_interchange (version 1.22)</h1>
+    <h1>Apache module: mod_interchange (version 1.23)</h1>
     <h2>Apache link module for Interchange</h2>
     <p>
 	This module replaces the <i>tlink</i> and <i>vlink</i> programs
 	that come with <a href="http://www.icdevgroup.org/">Interchange</a>.&nbsp;
 	It has been tested with all Interchange versions up to and
-	including 4.9.2.&nbsp;
+	including 4.9.3 (development).&nbsp;
 	Although this module is known to have worked with MiniVend versions 3
 	and 4, its current compatibility has not been tested.
     </p>
@@ -223,6 +223,24 @@
     <h2><a name="changelog">Change Log</a></h2>
     <ul>
 	<li>
+	    1.23
+	    (Wed 02 Oct 2002)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Added the module identification to the Apache version
+		    string so that it shows up in the "Server:" response
+		    header field when Apache is configured to show version
+		    information.&nbsp;
+		    Of course, suitably paranoid system administrators should
+		    configure Apache so that it doesn't release unnecessay
+		    server information.&nbsp;
+		    Any competent adminsitrator should know what module
+		    versions they have anyway. :-)
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
 	    1.22
 	    (Mon 05 Aug 2002)
 	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>

@@ -1,10 +1,10 @@
 /*
- *	$Id: mod_interchange.c,v 2.2 2002-08-05 19:22:53 kwalsh Exp $
+ *	$Id: mod_interchange.c,v 2.3 2002-10-02 02:00:16 kwalsh Exp $
  *
  *	Apache Module implementation of the Interchange application server
  *	link programs.
  *
- *	Version: 1.22
+ *	Version: 1.23
  *
  *	Author: Kevin Walsh <kevin@cursor.biz>
  *	Based on original code by Francis J. Lacoste <francis.lacoste@iNsu.COM>
@@ -41,6 +41,8 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
+
+#define	MODULE_VERSION	"mod_interchange/1.23"
 
 #ifdef	OSX
 typedef long socklen_t;
@@ -92,6 +94,7 @@ typedef struct ic_response_buffer_struct{
 	char buff[HUGE_STRING_LEN];
 }ic_response_buffer;
 
+static void ic_initialise(server_rec *,pool *);
 static void *ic_create_dir_config(pool *,char *);
 static const char *ic_server_cmd(cmd_parms *,void *,const char *);
 static const char *ic_serverbackup_cmd(cmd_parms *,void *,const char *);
@@ -104,6 +107,16 @@ static int ic_select(int,int,int,int);
 static int ic_send_request(request_rec *,ic_conf_rec *,BUFF *);
 static int ic_transfer_response(request_rec *,BUFF *);
 static int ic_handler(request_rec *);
+
+/*
+ *	ic_initialise()
+ *	---------------
+ *	Module initialisation.
+ */
+static void ic_initialise(server_rec *s,pool *p)
+{
+	ap_add_version_component(MODULE_VERSION);
+}
 
 /*
  *	ic_create_dir_config()
@@ -850,7 +863,7 @@ static handler_rec ic_handlers[] ={
  */
 module MODULE_VAR_EXPORT interchange_module ={
 	STANDARD_MODULE_STUFF,
-	NULL,			/* module initializer                 */
+	ic_initialise,		/* module initialiser                 */
 	ic_create_dir_config,	/* per-directory config creator       */
 	NULL,			/* dir config merger                  */
 	NULL,			/* server config creator              */
