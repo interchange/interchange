@@ -94,12 +94,14 @@ ui_template_name: noleft
 	    <input type="submit" value="Log In">
           </td>
         </tr>
+		[if config CookieLogin]
         <tr>
           <td align="right">
 	    <INPUT TYPE=hidden NAME=mv_cookie_password VALUE=0><INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1>
           </td>
           <td>Log me in automatically (sets cookie)</td>
         </tr>
+		[/if]
         </table>
       </td>
     </tr>

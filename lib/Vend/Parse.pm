@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.0.2.2 2001-10-06 06:20:08 mheins Exp $
+# $Id: Parse.pm,v 2.0.2.3 2001-10-13 23:10:23 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.0.2.2 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.3 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -241,6 +241,7 @@ my %addAttr = (
 					assign          1
 					banner          1
 					catch           1
+                    cgi             1
 					charge          1
 					checked         1
 					counter         1
@@ -1205,6 +1206,7 @@ sub html_start {
 		return 1;
 	}
 
+	$attr->{enable_html} = 1 if $Vend::Cfg->{Promiscuous};
 	$attr->{'decode'} = 1 unless defined $attr->{'decode'};
 	$attr->{'reparse'} = 1 unless	defined $NoReparse{$tag}
 								||	defined $attr->{'reparse'};
@@ -1508,6 +1510,7 @@ sub start {
 		$self->{INVALID} += $p->{INVALID};
 	}
 
+	$attr->{enable_html} = 1 if $Vend::Cfg->{Promiscuous};
 	$attr->{'reparse'} = 1
 		unless (defined $NoReparse{$tag} || defined $attr->{'reparse'});
 

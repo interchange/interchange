@@ -94,12 +94,14 @@ mv_nextpage=new_account
         <INPUT TYPE=submit VALUE="Create Account">
       </td>
     </tr>
+	[if config CookieLogin]
     <tr class="contentbar1"> 
       <td align="right"> 
         <INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1>
       </td>
       <td>Log me in automatically (sets cookie)</td>
     </tr>
+	[/if]
     <tr class="contentbar1"> 
       <td align="right" colspan="2">&nbsp;</td>
     </tr>

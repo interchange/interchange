@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.9.2.4 2001-10-11 00:23:38 mheins Exp $
+# $Id: Interpolate.pm,v 2.9.2.5 2001-10-13 23:10:23 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.9.2.4 $, 10);
+$VERSION = substr(q$Revision: 2.9.2.5 $, 10);
 
 @EXPORT = qw (
 
@@ -2975,8 +2975,12 @@ sub tag_cgi {
 		$value = filter_value($opt->{filter}, $value, $var);
 		$CGI::values{$var} = $value unless $opt->{keep};
 	}
-    return $value unless $opt->{hide};
-    return '';
+
+    return '' if $opt->{hide};
+
+	$value =~ s/</&lt;/g
+		unless $opt->{enable_html};
+    return $value;
 }
 
 # Returns the text of a user entered field named VAR.
@@ -2999,6 +3003,8 @@ sub tag_value_extended {
 	}
 
 	my $val = $CGI::values{$var} || $::Values->{$var} || return undef;
+	$val =~ s/</&lt;/g unless $opt->{enable_html};
+	$val =~ s/\[/&#91;/g unless $opt->{enable_itl};
 	
 	if($opt->{file_contents}) {
 		return '' if ! defined $CGI::file{$var};
@@ -3371,6 +3377,8 @@ sub tag_value {
 	$::Scratch->{$var} = $value if $opt->{scratch};
 	return '' if $opt->{hide};
     return $opt->{default} if ! $value and defined $opt->{default};
+	$value =~ s/</&lt;/g
+		unless $opt->{enable_html};
     return $value;
 }
 

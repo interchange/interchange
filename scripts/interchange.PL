@@ -48,9 +48,9 @@ DOIT: {
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# Interchange version 4.8.2
+# Interchange version 4.8.3
 #
-# $Id: interchange.PL,v 2.7.2.2 2001-09-04 13:25:17 mheins Exp $
+# $Id: interchange.PL,v 2.7.2.3 2001-10-13 23:10:24 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -166,7 +166,7 @@ use vars qw($VERSION);
 require Exporter;
 
 BEGIN {
-	$VERSION = '4.8.2';
+	$VERSION = '4.8.3';
 }
 
 use Fcntl;
@@ -644,7 +644,7 @@ sub update_data {
 
 	while (($key, $value) = each %CGI::values) {
 		next unless defined $data{$key};
-		$count = (@{$data{$key}} = split /\0/, $value);
+		$count = (@{$data{$key}} = split /\0/, $value, -1);
 		$max = $count, $maxname = $key if $count > $max;
 		$min = $count, $minname = $key if $count < $min;
 	}
@@ -843,6 +843,11 @@ sub update_data {
 			}
 			$select_key = $value if $_ eq $prikey;
 			push(@v, $value);
+		}
+
+		if(! length($select_key) ) {
+			next if  defined $CGI::values{mv_update_empty_key}
+					 and   ! $CGI::values{mv_update_empty_key};
 		}
 
 		if($function eq 'delete') {
@@ -1054,13 +1059,43 @@ sub update_values {
 		) = encrypt_standard_cc(\%CGI::values);
 	}	
 
-	my ($key, $value);
-    while (($key, $value) = each %CGI::values) {
+	my $restrict;
+	if($restrict = $Vend::Session->{restrict_html} and ! ref $restrict) {
+		$restrict = [ map { lc $_ } split /\s+/, $restrict ];
+		$Vend::Session->{restrict_html} = $restrict;
+	}
+
+    while (my ($key, $value) = each %CGI::values) {
+		# values explicly ignored in configuration
         next if defined $Ignore{$key};
-        next if defined $Vend::Cfg->{FormIgnore}->{$key};
-        next if ($key =~ m/^quantity\d+$/);
+        next if defined $Vend::Cfg->{FormIgnore}{$key};
+
+#LEGACY
 		# We add any checkbox ordered items, but don't update -- 
 		# we don't want to order them twice
+        next if ($key =~ m/^quantity\d+$/);
+#END LEGACY
+
+		# Admins should know what they are doing
+		if($Vend::admin) {
+			$::Values->{$key} = $value;
+			next;
+		}
+		elsif ($restrict and $value =~ /</) {
+			# Allow designer to allow only certain HTML tags from trusted users
+			# Will go away when current session ends...
+			# [ script start character handled in [value ...] ITL tag
+			$value = Vend::Interpolate::filter_value(
+						'restrict_html',
+						$value,
+						$key,
+						@$restrict,
+					);
+			next;
+		}
+		$value =~ tr/<[//d;
+		$value =~ s/&lt;//ig;
+		$value =~ s/&#91;//g;
         $::Values->{$key} = $value;
     }
 }
@@ -2329,7 +2364,7 @@ interchange [--options] [file]
 
 =head1 VERSION
 
-4.8.2
+4.8.3
 
 =head1 DESCRIPTION
 

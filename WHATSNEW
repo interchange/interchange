@@ -8,13 +8,41 @@ Interchange 4.8.3 not yet released.
 
 Core and usertags
 -----------------
+
+* Some fairly major changes to limit exposure to the cross-site
+  JavaScript vulnerabilities described in:
+
+		http://www.cert.org/advisories/CA-2000-02.html
+
+  The vulnerability is only serious if you have "CookieLogin Yes"
+  in your catalog.cfg definition (as unfortunately was in foundation).
+
+  It is recommended that you either set CookieLogin to No, or at least
+  do
+
+  		SaveExpire  8 hours
+
+  - Notably, [cgi ...] and [value ...] will not display < characters
+    unless you specifically enable it with the enable-html=1 option.
+
+	Normally this should cause no problems. If your site breaks
+	because of this update, you can temporarily re-enable this with:
+
+		Promiscuous Yes
+
+	in your catalog.cfg file.
+
+* New filter restrict_html.  Called with:
+
+	[filter restrict_html.a.b.i.u.p.br]
+			<SCRIPT> malicious('Gotcha!') </SCRIPT>
+	[/filter]
+
+  which prevents the <SCRIPT> from executing.
+
 * Make mv_more_alpha working in query tags.
 
 * Allow [dump] of portion of session, for example [dump scratch].
-  !!UNDOCUMENTED!!
-
-* New filter restrict_html.
-  !!UNDOCUMENTED!!
 
 I18N
 --------

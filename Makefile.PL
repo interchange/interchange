@@ -28,7 +28,7 @@ my @mods_to_get;
 my @remove_old;
 my $Lock_troubles;
 
-$VERSION = '4.8.2';
+$VERSION = '4.8.3';
 
 # See if we have the CPAN module
 

@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.2.2.2 2001-10-08 15:11:39 racke Exp $
+# $Id: Config.pm,v 2.2.2.3 2001-10-13 23:10:23 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.2.2.2 $, 10);
+$VERSION = substr(q$Revision: 2.2.2.3 $, 10);
 
 my %CDname;
 
@@ -450,6 +450,7 @@ sub catalog_directives {
 	['ExtraSecure',		 'yesno',     	     'No'],
 	['FallbackIP',		 'yesno',     	     'No'],
 	['WideOpen',		 'yesno',     	     'No'],
+	['Promiscuous',		 'yesno',     	     'No'],
 	['Cookies',			 'yesno',     	     'Yes'],
 	['CookieName',		 undef,     	     ''],
 	['CookiePattern',	 'regex',     	     '[-\w:.]+'],
