@@ -69,6 +69,12 @@ Core
 * Compile warnings in catalog usertags now show up in the logs instead
   of "UserTag 'ugly_hack' code is not a subroutine reference".
 
+UserTags
+--------
+
+* Obsolete usertags dbinfo, if-key-exists, if_sql, reconfig_wait, 
+  rotate_file, with and write_page removed
+
 Filters
 -------
 
@@ -104,6 +110,8 @@ Foundation
 * New PayflowPro control variables MV_PAYMENT_PARTNER and MV_PAYMENT_VENDOR.
 
 * Payment routes use now generic MV_PAYMENT_* variables.
+
+* Test order page added.
 
 Shadow Database
 ---------------
