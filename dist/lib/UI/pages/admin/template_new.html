@@ -1,4 +1,4 @@
-[set page_title]Template editor -- create new[/set]
+[set page_title][L]Template editor[/L] -- [L]create new[/L][/set]
 [set ui_class]Content[/set]
 [set help_name]page.main[/set]
 [set icon_name]icon_pages.gif[/set]
@@ -7,6 +7,7 @@
 <!-- ----- BEGIN REAL STUFF ----- -->
 
 <form action="[area href="__UI_BASE__/template_edit"]" method=POST ENCTYPE="multipart/form-data">
+<input type=hidden name=mv_session_id value="[data session id]">
 <input type=hidden name=mv_action value=back>
 
 [if scratch ui_error]
@@ -25,7 +26,7 @@
 [set [L]Create new template[/L]]
 [if !cgi ui_template_new]
 mv_nextpage=@@MV_PAGE@@
-[set ui_error]Need to select a file name.[/set]
+[set ui_error][L]Need to select a file name.[/L][/set]
 mv_todo=return
 [else]
 mv_nextpage=__UI_BASE__/template_edit
@@ -42,16 +43,16 @@ mv_todo=return
 
 <tr id=rnorm>
 <td colspan=2>
-<B>1.</B> Either...
+<B>1.</B> [L]Either...[/L]
 </tr>
 
 <tr class=ralt>
 <td width=25%>
-<b>a.</B> Choose a page template to base the new template on:
+<b>a.</B> [L]Choose a page template to base the new template on:[/L]
 </td>
 <td>
 <select name="ui_template_template" size=1>
-<option value=> Select a page template to base this on (optional)
+<option value=> [L]Select a page template to base this on (optional)[/L]
 [calc]
 	my $tdir = $Variable->{UI_TEMPLATE_DIR} || 'templates';
 	@files = $Tag->list_glob("$tdir/*");
@@ -87,25 +88,25 @@ mv_todo=return
 
 <tr id=rnorm>
 <td colspan=2>
-<blockquote>or...</blockquote>
+<blockquote>[L]or...[/L]</blockquote>
 </tr>
 
 <tr id=rnorm>
 <td valign=top>
-<B>b.</b>Upload a page to base it on:
+<B>b.</b>[L]Upload a page to base it on:[/L]
 </td>
 <td>
 <input type="file" name="ui_upload_template"><BR>
 <span style="font-size: smaller; font-style: italic">
-	You must have set up the page properly, with a
-	&lt;!-- BEGIN CONTENT --&gt; and &lt;!-- END CONTENT --&gt; pair to
-	delineate the top and bottom areas.</span>
+[L TEMPLATE_NEW_PAR_1]You must have set up the page properly, with a
+&lt;!-- BEGIN CONTENT --&gt; and &lt;!-- END CONTENT --&gt; pair to
+delineate the top and bottom areas.[/L]</span>
 </td>
 </tr>
 
 <tr id=ralt>
 <td>
-<B>2.</b> Name the template you are creating:
+<B>2.</b> [L]Name the template you are creating:[/L]
 </td>
 <td>
 <INPUT NAME=ui_template_new>
@@ -114,7 +115,7 @@ mv_todo=return
 
 <tr id=ralt>
 <td>
-<B>3.</b> Short description of the template (if any):
+<B>3.</b> [L]Short description of the template (if any):[/L]
 </td>
 <td>
 <INPUT NAME=ui_template_description>
