@@ -22,7 +22,7 @@
 
 db_get interchange-ui/defaultlocale
 UI_LOCALE=$RET
-/usr/sbin/interchangeconfig UI_LOCALE=$UI_LOCALE
+/usr/sbin/interchangeconfig UI=1 UI_LOCALE=$UI_LOCALE
 
 #DEBHELPER#
 
