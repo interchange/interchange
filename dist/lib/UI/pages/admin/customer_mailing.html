@@ -229,10 +229,12 @@ Thanks for your business!
 
 [if cgi show_members]
 <div style="
-			Height: 100px;
 			Margin-left: 5%;
 			Width: 600px;
+			[if !scratch ui_old_browser]
+			Height: 100px;
 			Overflow: auto;
+			[/if]
 		">[tmpn tmp_seen][/tmpn]
 [loop search="
 		fi=userdb

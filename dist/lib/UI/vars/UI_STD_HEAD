@@ -1,5 +1,9 @@
 Variable UI_STD_INIT <<EOV
-[perl]
+[calc]
+	my $regex = $Tag->var('MV_DHTML_BROWSER', 2) || 'MSIE.*Windows|Mozilla.*Gecko';
+	$Scratch->{ui_old_browser} = $Session->{browser} !~ /$regex/;
+	return '';
+[/calc][perl]
 	# call only once per page
 	return if $Config->{ImageDirOriginal};
 
@@ -87,18 +91,9 @@ Variable UI_STD_HEAD <<EOV
 	[/if-mm]
 [/if]
 [if scratch dhtml_required]
-	[calc]
-	$regex = qr/MSIE [5-9].*Windows|Mozilla.*Gecko/;
-	if ($Session->{browser} =~ $regex) {
-		delete $Scratch->{old_browser};
-	}
-	else {
-		$Scratch->{old_browser} = 1;
-		$Scratch->{ui_error} = "Modern browser like Mozilla or MSIE 5 required for page accessed.";
-	}
-	return;
-	[/calc]
-	[bounce page="__UI_BASE__/error" if="[scratch old_browser]"]
+[and scratch ui_old_browser]
+	[seti ui_error][loc]Modern browser like Mozilla or MSIE 5 required for page accessed[/loc][/seti]
+	[bounce page="__UI_BASE__/error"]
 [/if]
 <html[scratch ui_language_direction]>
 <head>
