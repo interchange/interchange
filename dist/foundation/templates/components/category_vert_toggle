@@ -6,7 +6,7 @@ ui_component_label: Collapsable Vertical Category List
 
 page_class:
 	label: Page class
-	widget: select
+	type: select
 	lookup: which_page
 	db: area
 	help: Defines which sets of items should be displayed
@@ -14,7 +14,7 @@ page_class:
 
 set_selector:
 	label: Page area selector
-	widget: select
+	type: select
 	db: area
 	lookup: sel
 	help: Defines which sets of items should be displayed
@@ -22,14 +22,15 @@ set_selector:
 
 timed:
 	label: Use timed build
-	widget: select
+	type: select
 	help: Makes more efficient for large/busy catalogs
 	options: 0=No, 5=5 minutes, 10=10 minutes, 20=20 minutes, 60=60 minutes, 1440=Daily
 	advanced: 1
+	code: timed
 
 toggleswitchon:
 	label: Toggle Open Switch
-	widget:  text
+	type:  text
 	help: Image to use for opening a category, leave blank to leave default +
 	advanced: 1
 
@@ -41,21 +42,19 @@ toggleswitchoff:
 
 imagedirpath:
 	label: Override default image directory path
-	widget:  text
+	type:  text
 	help: Image directory path defaults to '__DOCROOT__/__IMAGE_DIR__'
 	advanced: 1
 
 imagedirurl:
 	label: Override default image directory URL
-	widget:  text
+	type:  text
 	help: Image directory URL defaults to '' (include trailing '/')
 	advanced: 1
 [/comment]
 
 <tr><td align="left" class="categorybar">
-
-  <table width="90%" align="center" cellpadding=0 cellspacing=0 border=0>
-
+  <table width="90%" align="center">
 
 <!-- BEGIN COMPONENT [control component category_vert_toggle] -->
 
@@ -65,8 +64,20 @@ imagedirurl:
 [set imagedirurl][/set]
 [set imagedirpath]__DOCROOT__/__IMAGE_DIR__[/set]
 
+[seti showtoggleon][if type=file term="[control imagedirpath]/[control toggleswitchon]"]
+		<img border=0 src="[control imagedirurl][control toggleswitchon]">
+	[else]
+		<font class="categorybar"><font size="+1">+</font></font>
+	[/else]
+	[/if][/seti]
+[seti showtoggleoff][if type=file term="[control imagedirpath]/[control toggleswitchoff]"]
+		<img border=0 src="[control imagedirurl][control toggleswitchoff]">
+	[else]
+		<font class="categorybar"><font size="+1">-</font></font>
+	[/else]
+	[/if][/seti]
+
 [timed-build auto=1 if="[control timed 0]" minutes="[control timed 0]"]
-[set found_cat][/set]
 [perl]
 	if ($CGI->{expand}) {
 		$area = $CGI->{expand};
@@ -95,137 +106,102 @@ imagedirurl:
 <tr>
     <td valign="top" align="right" colspan=3>
 	<a href="[history-scan]&expandall=1">
-	[if type=file term="[control imagedirpath]/[control toggleswitchon]"]
-		<img border=0 src="[control imagedirurl][control toggleswitchon]">
-	[else]
-		<font class="categorybar"><font size="+1">+</font></font>
-	[/else]
-	[/if]
-	<font class="categorybar">
-	<b>Show All Subcategories</b></a>
+	[scratch showtoggleon]
+	<font class="categorybar"><b>Show All Subcategories</b></a>
 </tr>
 <tr>
     <td valign="top" align="right" colspan=3>
 	<a href="[history-scan]&collapseall=1">
-	[if type=file term="[control imagedirpath]/[control toggleswitchoff]"]
-		<img border=0 src="[control imagedirurl][control toggleswitchoff]">
-	[else]
-		<font class="categorybar"><font size="+1">-</font></font>
-	[/else]
-	[/if]
+	[scratch showtoggleoff]
 	<font class="categorybar">
 	<b>Collapse All Categories</b></a>
     </td>
 </tr>
-[loop
-	prefix=box
-	search="
-		fi=area
-		st=db
-		tf=sort
-		ac=0
-		ac=0
-		co=yes
 
-		sf=sel
-		op=eq
-		se=[control set_selector left]
+[set found_cat][/set]
+[loop 
+        prefix=box
+        search="
+                fi=area
+                st=db
+                tf=sort
+                ac=0
+                ac=0
+                co=yes
 
-		sf=which_page
-		op=rm
-		se=[control page_class all|@@MV_PAGE@@]
+                sf=sel
+                op=eq 
+                se=[control set_selector left]
+                
+                sf=which_page
+                op=rm  
+                se=[control page_class all|@@MV_PAGE@@]
 "]
-  [if CGI expandall]
-	[perl]
-		$area = "[box-code]";
-		$Scratch->{expandarea}{$area} = 1;
-		return('');
-	[/perl]
-  [/if]
-  [if CGI collapseall]
-	[perl]
-		$area = "[box-code]";
-		undef $Scratch->{expandarea}{$area};
-		return('');
-	[/perl]
-  [/if]
-
   [set found_cat]1[/set]
+  [perl]
+    $Scratch->{expandarea}{"[box-code]"} = 1 if ($CGI->{expandall});
+    undef $Scratch->{expandarea}{"[box-code]"} if ($CGI->{collapseall});
+    return('');
+  [/perl]
   <tr>
-    <td valign="top">
+    <td>
 	[if explicit]
 	    [condition] 
-		$area = "[box-code]";
-		return($Scratch->{expandarea}{$area});
+		return($Scratch->{expandarea}{"[box-code]"});
 	    [/condition] 
-		<a href="[history-scan]&collapse=[box-code]">
-		[if type=file term="[control imagedirpath]/[control toggleswitchoff]"]
-			<img border=0 src="[control imagedirurl][control toggleswitchoff]">
-		[else]
-			<font class="categorybar"><font size="+1">-</font></font>
-		[/else]
-		[/if]
-		</a>
+		<a href="[history-scan]&collapse=[box-code]">[scratch showtoggleoff]</a>
     	[else]
-		<a href="[history-scan]&expand=[box-code]">
-		[if type=file term="[control imagedirpath]/[control toggleswitchon]"]
-			<img border=0 src="[control imagedirurl][control toggleswitchon]">
-		[else]
-			<font class="categorybar"><font size="+1">+</font></font>
-		[/else]
-		[/if]
-		</a>
+		<a href="[history-scan]&expand=[box-code]">[scratch showtoggleon]</a>
 	[/else]
 	[/if]
     </td>
-    <td valign="top" class="categorybar" colspan=2>
+    <td class="categorybar" colspan=2>
     	<b>&nbsp;&nbsp;[box-exec bar_link]area <A HREF="$URL$$EXPAND$" class=barlink>$ANCHOR$</A>[/box-exec]</b>
     </td>
   </tr>
 [if explicit]
     [condition] 
-	$area = "[box-code]";
-	return($Scratch->{expandarea}{$area});
+	return($Scratch->{expandarea}{"[box-code]"});
     [/condition] 
   <tr>
     <td>&nbsp;</td>
     <td>&nbsp;&nbsp;&nbsp;</td>
-    <td valign="top" class="categorybar">
+    <td class="categorybar">
 
     [loop prefix=cat
 	search="
 		fi=cat
 		st=db
+		co=yes
 		tf=sort
 		tf=name
 		rf=code,name
 		sf=sel
 		se=[box-code]
-	"
-	]
+	"]
 	[cat-exec bar_link]cat[/cat-exec]<br>
     [/loop]
     </td>
   </tr>
 [/if]
 [/loop]
+
 <tr>
   <td>&nbsp;</td>
 </tr>
 
 [if !scratch found_cat]
-	<tr>
-		<td class="categorybar">
 [loop
     search="
         ra=yes
         tf=description
-    "
-    ]
-      &nbsp;&nbsp;[page [loop-code]][loop-field description][/page]<BR>
+    "]
+  <tr>   
+    <td class="categorybar">
+      	<b>[page [loop-code]]<font class="categorybar">[loop-field description]</font>[/page]</b>
+    </td>
+  </tr>
 [/loop]
-	  </td>
-	</tr>
 [/if]
 [/timed-build]
 

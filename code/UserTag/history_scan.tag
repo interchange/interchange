@@ -5,6 +5,10 @@ my %var_exclude = ( qw/
 	mv_credit_card_number 1
 	mv_pc                 1
 	mv_session_id         1
+	expand                1
+	collapse              1
+	expandall             1
+	collapseall           1
 /);
 sub {
 	my ($find, $exclude, $default, $opt) = @_;
@@ -34,6 +38,7 @@ sub {
 		$form .= "\n$_=";
 		$form .= join("\n$_=", split /\0/, $cgi->{$_});
 	}
+	$href =~ s|/+|/|g;
 	return $Tag->area( { href => $href, form => $form} );
 }
 EOR
