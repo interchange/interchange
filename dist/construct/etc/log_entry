@@ -130,7 +130,7 @@ sku: [item-code]
 quantity: [item-quantity]
 price: [item-price noformat]
 subtotal: [item-subtotal noformat]
-size: [item-modifier size]
+size__MVC_FIELDMUNGE__: [item-modifier size__MVC_FIELDMUNGE__]
 color: [item-modifier color]
 order_date: [value order_date]
 affiliate: ORDER_DESK

@@ -50,7 +50,7 @@ Quan  Item No.    Description                            Price       Extension
 [column width=5 gutter=1 align=right]  [item-data orderline quantity] [/column]
 [column width=12 gutter=1]  [item-data orderline sku] [/column]
 [column width=32 gutter=1 align=left wrap=1][item-data orderline description]
-[if-item-data transactions size]SIZE-->[item-item-data transactions size][/if-item-data][if-item-data transactions color] COLOR-->[item-item-data transactions color][/if-item-data]
+[if-item-data transactions size__MVC_FIELDMUNGE__]SIZE-->[item-item-data transactions size__MVC_FIELDMUNGE__][/if-item-data][if-item-data transactions color] COLOR-->[item-item-data transactions color][/if-item-data]
 [/column]
 [column width=15 gutter=1 align=r][currency][item-data orderline price][/currency][/column]
 [column width=16 gutter=0 align=r][currency][item-data orderline subtotal][/currency][/column]
