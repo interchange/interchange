@@ -1,9 +1,9 @@
 mod_interchange
 ===============
 
-$Id: README,v 2.7 2003-01-13 17:42:51 kwalsh Exp $
+$Id: README,v 2.8 2004-03-26 22:30:44 kwalsh Exp $
 
-Version: 1.29
+Version: 1.30
 
 Description
 -----------
@@ -112,6 +112,56 @@ waste any more time processing the (bogus) requests than we have to.
 	DropRequestList /default.ida /x.ida /cmd.exe /root.exe
     </Location>
 
+The OrdinaryFileList allows a list of up to 10 space-separated URI path
+components to be specified.  If one of the list entries is found at the
+start of any request then that request will not be passed to Interchange.
+Instead, the file will be directly served by Apache.  For example:
+
+    <Location />
+	SetHandler interchange-handler
+	InterchangeServer localhost:7786
+	DropRequestList /default.ida /x.ida /cmd.exe /root.exe
+	OrdinaryFileList /foundation/ /interchange-5/ /robots.txt /somefile.css
+    </Location>
+
+This will result in the following:
+
+    www.example.com/index.html          (handled by Interchange)
+    www.example.com/ord/basket.html     (handled by Interchange)
+    www.example.com/foundation/images/somefile.gif (served by Apache)
+    www.example.com/robots.txt          (served by Apache)
+
+You should add a trailing slash to directory names to prevent, for instance,
+"/images/foo.gif" from being confused with the likes of "/images.html".
+If OrdinaryFileList was set to "/images" then both of those requests would
+be handled by Apache.  If OrdinaryFileList was set to "/images/" then
+"/images/foo.gif" would be handled by Apache and "/images.html" would be
+handled by Interchange.
+
+If you're using "<Location />" then you will need a dummy "index.html" file
+in your VirtualHost's DocumentRoot directory to avoid permission problems
+assocated with the Apache directory index creation code.
+
+The InterchangeScript parameter allows the SCRIPT_NAME to be different from
+the <Location>.  For example:
+
+    <Location /shop>
+        ...
+    </Location>
+
+The above will set the SCRIPT_NAME to "/shop".
+
+    <Location /shop>
+        ...
+	InterchangeScript /foo
+    </Location>
+
+The above will set the SCRIPT_NAME to "/foo", instead of "/shop"  before
+passing the request to Interchange.
+
+The appropriate SCRIPT_NAME must be configured into the "Catalog"
+directive in your interchange.cfg file.
+
 
 Bugs
 ----
@@ -130,3 +180,9 @@ This program is free software.  You can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation.  You may refer to either version 2 of the
 License or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+for more details.
+

@@ -1,6 +1,6 @@
 Summary: Apache Module to link with Interchange
 Name: mod_interchange
-Version: 1.29
+Version: 1.30
 Release: 1
 License: GPL
 Group: WWW/Applications
@@ -11,6 +11,8 @@ BuildRoot: /var/tmp/%{name}-%{version}-root
 %description
 Apache module that replaces the tlink and vlink program from the 
 Interchange distribution.
+
+Please note that this module is not compatible with Apache 2.
 
 %prep
 %setup -q
@@ -36,6 +38,10 @@ rm -fr $RPM_BUILD_ROOT
 /home/httpd/html/manual/mod/mod_interchange.html
 
 %changelog
+* Fri Mar 26 2004  Kevin Walsh <kevin@cursor.biz>
+  [1.30]
+- Added a note to point out that this module is not compatible with Apache 2.
+
 * Mon Feb 12 2001  Jon Jensen <jon@akopia.com>
   [1.04-1]
 - Renamed to mod_interchange.

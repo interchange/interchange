@@ -1,6 +1,6 @@
-#define	MODULE_VERSION	"mod_interchange/1.29"
+#define	MODULE_VERSION	"mod_interchange/1.30"
 /*
- *	$Id: mod_interchange.c,v 2.8 2003-01-13 17:42:51 kwalsh Exp $
+ *	$Id: mod_interchange.c,v 2.9 2004-03-26 22:30:44 kwalsh Exp $
  *
  *	Apache Module implementation of the Interchange application server
  *	link programs.
@@ -9,7 +9,7 @@
  *	Based on original code by Francis J. Lacoste <francis.lacoste@iNsu.COM>
  *
  *	Copyright (c) 1999 Francis J. Lacoste, iNsu Innovations.
- *	Copyright (c) 2000-2003 Cursor Software Limited.
+ *	Copyright (c) 2000-2004 Cursor Software Limited.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -53,18 +53,21 @@ typedef long socklen_t;
 #define	PF_LOCAL	PF_UNIX
 #endif
 
-#ifndef SUN_LEN
-#define SUN_LEN(su)	(sizeof(*(su)) - sizeof((su)->sun_path) + strlen((su)->sun_path))
+#ifndef	SUN_LEN
+#define	SUN_LEN(su)	(sizeof(*(su)) - sizeof((su)->sun_path) + strlen((su)->sun_path))
 #endif
 
-#define IC_DEFAULT_PORT			7786
-#define IC_DEFAULT_ADDR			"127.0.0.1"
+#define	IC_DEFAULT_PORT			7786
+#define	IC_DEFAULT_ADDR			"127.0.0.1"
 #define	IC_DEFAULT_TIMEOUT		10
 #define	IC_DEFAULT_CONNECT_TRIES	10
 #define	IC_DEFAULT_CONNECT_RETRY_DELAY	2
 
 #define	IC_MAX_DROPLIST			10
-#define IC_MAX_SERVERS			2
+#define	IC_MAX_ORDINARYLIST		10
+#define	IC_MAX_LIST_ENTRYSIZE		40
+#define	IC_MAX_SERVERS			2
+#define	IC_CONFIG_STRING_LEN		100
 
 module MODULE_VAR_EXPORT interchange_module;
 
@@ -79,16 +82,19 @@ typedef struct ic_conf_struct{
 	ic_socket_rec *server[IC_MAX_SERVERS];	/* connection to IC server(s) */
 	int connect_tries;	/* number of times to ret to connect to IC */
 	int connect_retry_delay; /* delay this many seconds between retries */
-	int droplist_no;
-	int loclen;			/* size of the location string */
-	char location[HUGE_STRING_LEN];	/* configured <Location> */
-	char droplist[IC_MAX_DROPLIST][HUGE_STRING_LEN];
+	int droplist_no;	/* number of entries in the "drop list" */
+	int ordinarylist_no;	/* number of entries in the "ordinary file list" */
+	int location_len;	/* length of the configured <Location> path */
+	char location[IC_CONFIG_STRING_LEN+1];	/* configured <Location> path */
+	char script_name[IC_CONFIG_STRING_LEN+1];
+	char droplist[IC_MAX_DROPLIST][IC_MAX_LIST_ENTRYSIZE+1];
+	char ordinarylist[IC_MAX_DROPLIST][IC_MAX_LIST_ENTRYSIZE+1];
 }ic_conf_rec;
 
 typedef struct ic_response_buffer_struct{
 	int buff_size;
 	int pos;
-	char buff[HUGE_STRING_LEN];
+	char buff[MAX_STRING_LEN];
 }ic_response_buffer;
 
 static void ic_initialise(server_rec *,pool *);
@@ -155,22 +161,34 @@ static void *ic_create_dir_config(pool *p,char *dir)
 		conf_rec->server[tmp] = (ic_socket_rec *)NULL;
 
 	if (dir){
-		if (*dir == '/')
+		/*
+		 *	remove leading '/' characters
+		 */
+		while (*dir == '/')
 			dir++;
-		strcpy(conf_rec->location,dir);
-		conf_rec->loclen = strlen(conf_rec->location);
+
+		/*
+		 *	copy the configured <Location> path into place
+		 */
+		strncpy(conf_rec->location,dir,IC_CONFIG_STRING_LEN);
+		conf_rec->location[IC_CONFIG_STRING_LEN] = '\0';
+		conf_rec->location_len = strlen(conf_rec->location);
+
+		/*
+		 *	remove trailing '/' characters
+		 */
+		while (conf_rec->location_len > 1 && conf_rec->location[conf_rec->location_len] == '/'){
+			conf_rec->location[conf_rec->location_len--] = '\0';
+		}
 	}else{
 		conf_rec->location[0] = '\0';
-		conf_rec->loclen = 0;
-	}
-	if (conf_rec->location[conf_rec->loclen] != '/'){
-		conf_rec->location[conf_rec->loclen++] = '/';
-		conf_rec->location[conf_rec->loclen] = '\0';
+		conf_rec->location_len = 0;
 	}
 	conf_rec->connect_tries = IC_DEFAULT_CONNECT_TRIES;
 	conf_rec->connect_retry_delay = IC_DEFAULT_CONNECT_RETRY_DELAY;
 	conf_rec->droplist_no = 0;
-
+	conf_rec->ordinarylist_no = 0;
+	conf_rec->script_name[0] = '\0';
 	return conf_rec;
 }
 
@@ -319,17 +337,48 @@ static const char *ic_connectretrydelay_cmd(cmd_parms *parms,void *mconfig,const
 }
 
 /*
- *	ic_droprequest_cmd()
- *	--------------------
+ *	ic_droprequestlist_cmd()
+ *	------------------------
  *	Handle the "DropRequestList" module configuration directive
  */
 static const char *ic_droprequestlist_cmd(cmd_parms *parms,void *mconfig,const char *arg)
 {
 	ic_conf_rec *conf_rec = (ic_conf_rec *)mconfig;
 
-	if (conf_rec->droplist_no < IC_MAX_DROPLIST)
-		strcpy(conf_rec->droplist[conf_rec->droplist_no++],arg);
+	if (conf_rec->droplist_no < IC_MAX_DROPLIST){
+		strncpy(conf_rec->droplist[conf_rec->droplist_no],arg,IC_MAX_LIST_ENTRYSIZE);
+		conf_rec->droplist[conf_rec->droplist_no++][IC_MAX_LIST_ENTRYSIZE] = '\0';
+	}
+	return NULL;
+}
 
+/*
+ *	ic_ordinaryfilelist_cmd()
+ *	-------------------------
+ *	Handle the "OrdinaryFileList" module configuration directive
+ */
+static const char *ic_ordinaryfilelist_cmd(cmd_parms *parms,void *mconfig,const char *arg)
+{
+	ic_conf_rec *conf_rec = (ic_conf_rec *)mconfig;
+
+	if (conf_rec->ordinarylist_no < IC_MAX_DROPLIST){
+		strncpy(conf_rec->ordinarylist[conf_rec->ordinarylist_no],arg,IC_MAX_LIST_ENTRYSIZE);
+		conf_rec->ordinarylist[conf_rec->ordinarylist_no++][IC_MAX_LIST_ENTRYSIZE] = '\0';
+	}
+	return NULL;
+}
+
+/*
+ *	ic_interchangescript_cmd()
+ *	--------------------------
+ *	Handle the "InterchangeScript" module configuration directive
+ */
+static const char *ic_interchangescript_cmd(cmd_parms *parms,void *mconfig,const char *arg)
+{
+	ic_conf_rec *conf_rec = (ic_conf_rec *)mconfig;
+
+	strncpy(conf_rec->script_name,arg,IC_CONFIG_STRING_LEN);
+	conf_rec->script_name[IC_CONFIG_STRING_LEN] = '\0';
 	return NULL;
 }
 
@@ -377,7 +426,7 @@ static BUFF *ic_connect(request_rec *r,ic_conf_rec *conf_rec)
 			ap_pclosesocket(r->pool,ic_sock);
 		}
 		if (connected)
-		    break;
+			break;
 		sleep(conf_rec->connect_retry_delay);
 	}
 	ap_kill_timeout(r);
@@ -441,8 +490,8 @@ static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 {
 	char **env,**e,*rp;
 	int env_count,rc;
-	char request_uri[HUGE_STRING_LEN];
-	char redirect_url[HUGE_STRING_LEN];
+	char request_uri[MAX_STRING_LEN];
+	char redirect_url[MAX_STRING_LEN];
 
 	/*
 	 *	send the Interchange-link arg parameter
@@ -488,37 +537,45 @@ static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 	redirect_url[0] = '\0';
 	for (e = env; *e != NULL; e++){
 		int len;
+		char tmp[MAX_STRING_LEN];
+		char *p = *e;
 
-		if (strncmp(*e,"PATH_INFO=",10) == 0)
+		if (strncmp(p,"PATH_INFO=",10) == 0)
 			continue;
-		if (strncmp(*e,"REDIRECT_URL=",13) == 0){
-			strcpy(redirect_url,(*e) + 13);
+		if (strncmp(p,"REDIRECT_URL=",13) == 0){
+			strncpy(redirect_url,p + 13,MAX_STRING_LEN - 14);
 			continue;
 		}
-		if (strncmp(*e,"REQUEST_URI=",12) == 0)
-			strcpy(request_uri,(*e) + 12);
-		else if (strncmp(*e,"SCRIPT_NAME=",12) == 0){
-			*(*e + 12) = '/';
-			strcpy(*e + 13,conf_rec->location);
-			if (*(*e + 12 + conf_rec->loclen) == '/')
-				*(*e + 12 + conf_rec->loclen) = '\0';
+		if (strncmp(p,"REQUEST_URI=",12) == 0)
+			strncpy(request_uri,p + 12,MAX_STRING_LEN - 13);
+		else if (strncmp(p,"SCRIPT_NAME=",12) == 0){
+			p = tmp;
+			strcpy(p,"SCRIPT_NAME=");
+
+			if (conf_rec->script_name[0])
+				strcat(p,conf_rec->script_name);
+			else{
+				strcat(p,"/");
+				strcat(p,conf_rec->location);
+			}
 		}
-		len = strlen(*e);
-		if (len && ap_bprintf(ic_buff,"%d %s\n",len,*e) < 0){
+		len = strlen(p);
+		if (len && ap_bprintf(ic_buff,"%d %s\n",len,p) < 0){
 			ap_log_reason("error writing to Interchange",r->uri,r);
 			return HTTP_INTERNAL_SERVER_ERROR;
 		}
-		ap_reset_timeout(r);
 	}
 
 	rp = request_uri;
 	while (*rp == '/')
 		rp++;
 
-	if (strncmp(rp,conf_rec->location,conf_rec->loclen) == 0)
-		rp += (conf_rec->loclen - 1);
+	if (strncmp(rp,conf_rec->location,conf_rec->location_len) == 0)
+		rp += conf_rec->location_len;
 
-	strcpy(request_uri,rp);
+	strncpy(request_uri,rp,MAX_STRING_LEN - 1);
+	request_uri[MAX_STRING_LEN - 1] = '\0';
+
 	for (rp = request_uri; *rp != '\0'; rp++){
 		if (*rp == '?'){
 			*rp = '\0';
@@ -549,10 +606,12 @@ static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 		while (*rp == '/')
 			rp++;
 
-		if (strncmp(rp,conf_rec->location,conf_rec->loclen) == 0)
-			rp += (conf_rec->loclen - 1);
+		if (strncmp(rp,conf_rec->location,conf_rec->location_len) == 0)
+			rp += conf_rec->location_len;
 
-		strcpy(redirect_url,rp);
+		strncpy(redirect_url,rp,MAX_STRING_LEN - 1);
+		redirect_url[MAX_STRING_LEN - 1] = '\0';
+
 		for (rp = redirect_url; *rp != '\0'; rp++){
 			if (*rp == '?'){
 				*rp = '\0';
@@ -577,7 +636,7 @@ static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 	 *	send the request body, if any
 	 */
 	if (ap_should_client_block(r)){
-		char buffer[HUGE_STRING_LEN];
+		char buffer[MAX_STRING_LEN];
 		int len_read;
 		long length = r->remaining;
 
@@ -641,7 +700,7 @@ static int ic_transfer_response(request_rec *r,BUFF *ic_buff)
 {
 	const char *location;
 	int rc,ic_sock;
-	char sbuf[MAX_STRING_LEN],argsbuffer[HUGE_STRING_LEN];
+	char sbuf[MAX_STRING_LEN],argsbuffer[MAX_STRING_LEN];
 
 	/*
 	 *	get the socket we are using to talk to the
@@ -691,7 +750,7 @@ static int ic_transfer_response(request_rec *r,BUFF *ic_buff)
 		 *	soak up any body-text sent by the Interchange server
 		 */
 		ap_soft_timeout("mod_interchange: Interchange read",r);
-		while (ap_bgets(argsbuffer,HUGE_STRING_LEN,ic_buff) > 0)
+		while (ap_bgets(argsbuffer,MAX_STRING_LEN,ic_buff) > 0)
 			;
 		ap_kill_timeout(r);
 
@@ -769,14 +828,27 @@ static int ic_handler(request_rec *r)
 	}
 
 	/*
-	 *	check if the requested URI matches strings
-	 *	in the drop list
+	 *	check if the requested URI matches strings in the
+	 *	"ordinary file" list.  This module will not handle
+	 *	the request if a match is found, and will leave it
+	 *	up to Apache to work out what to do with the request
+	 */
+	for (i = 0; i < conf_rec->ordinarylist_no; i++){
+		if (strncmp(r->uri,conf_rec->ordinarylist[i],strlen(conf_rec->ordinarylist[i])) == 0){
+			return DECLINED;
+		}
+	}
+
+	/*
+	 *	check if the requested URI matches an entry in the drop list.
+	 *	If so then return a 404 (not found) status.  Note that a
+	 *	substring match is used
 	 */
 	for (i = 0; i < conf_rec->droplist_no; i++){
 		if (strstr(r->uri,conf_rec->droplist[i])){
 			ap_log_reason("interchange-handler match found in the drop list",r->uri,r);
 			ap_log_rerror(APLOG_MARK,APLOG_ERR|APLOG_NOERRNO,r,"Requested URI (%s) matches drop list entry (%s)",r->uri,conf_rec->droplist[i]);
-			return DECLINED;
+			return HTTP_NOT_FOUND;
 		}
 	}
 
@@ -816,8 +888,7 @@ static command_rec ic_cmds[] ={
 		NULL,			/* argument to include in call */
 		ACCESS_CONF,		/* where available */
 		TAKE1,			/* arguments */
-		"Address of the primary Interchange server - for use in a <Location> block"
-					/* directive description */
+		"Address of the primary Interchange server"
 	},
 	{
 		"InterchangeServerBackup",	/* directive name */
@@ -825,8 +896,7 @@ static command_rec ic_cmds[] ={
 		NULL,			/* argument to include in call */
 		ACCESS_CONF,		/* where available */
 		TAKE1,			/* arguments */
-		"Address of the backup Interchange server - for use in a <Location> block"
-					/* directive description */
+		"Address of the backup Interchange server"
 	},
 	{
 		"ConnectTries",		/* directive name */
@@ -835,7 +905,6 @@ static command_rec ic_cmds[] ={
 		ACCESS_CONF,		/* where available */
 		TAKE1,			/* arguments */
 		"The number of connection attempts to make before giving up"
-					/* directive description */
 	},
 	{
 		"ConnectRetryDelay",	/* directive name */
@@ -844,7 +913,6 @@ static command_rec ic_cmds[] ={
 		ACCESS_CONF,		/* where available */
 		TAKE1,			/* arguments */
 		"The number of connection attempts to make before giving up"
-					/* directive description */
 	},
 	{
 		"DropRequestList",	/* directive name */
@@ -852,8 +920,23 @@ static command_rec ic_cmds[] ={
 		NULL,			/* argument to include in call */
 		ACCESS_CONF,		/* where available */
 		ITERATE,		/* arguments */
-		"Drop the URI request if it contains the specified string"
-					/* directive description */
+		"Drop the request if the URI path contains one of the specified strings"
+	},
+	{
+		"OrdinaryFileList",	/* directive name */
+		ic_ordinaryfilelist_cmd,/* config action routine */
+		NULL,			/* argument to include in call */
+		ACCESS_CONF,		/* where available */
+		ITERATE,		/* arguments */
+		"Don't pass to Interchange if the URI path matches one of the strings"
+	},
+	{
+		"InterchangeScript",	/* directive name */
+		ic_interchangescript_cmd, /* config action routine */
+		NULL,			/* argument to include in call */
+		ACCESS_CONF,		/* where available */
+		TAKE1,			/* arguments */
+		"Replace the 'script name' with this value before calling Interchange"
 	},
 	{NULL}
 };
