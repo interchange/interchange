@@ -6,6 +6,15 @@
 
 Interchange 4.9.0 not yet released
 
+Core
+----
+
+* New function Vend::Util::logOnce which ignores repeated identical
+  log messages (works only in the scope of the current Interchange
+  page)
+
+* Remove last remnants of mv_raw_searchspec.
+
 UI
 --
 
