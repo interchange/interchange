@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.34 2002-10-07 15:35:57 mheins Exp $
+# $Id: DBI.pm,v 2.35 2002-10-09 14:24:58 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.34 $, 10);
+$VERSION = substr(q$Revision: 2.35 $, 10);
 
 use strict;
 
@@ -204,6 +204,9 @@ my %known_capability = (
 		Oracle => 1,
 		Pg	   => 1,
 	},
+	MAX_FIELD_LENGTH  => {
+	    Pg    => "SELECT a.attnum,t.typname,a.attlen,a.atttypmod,a.attname FROM pg_class c,pg_attribute a,pg_type t WHERE c.relname='_TABLE_' AND a.attnum > 0 AND a.attrelid = c.oid AND a.atttypid = t.oid ORDER BY a.attnum;",
+        },
 );
 
 sub check_capability {
@@ -655,6 +658,47 @@ sub open_table {
 		)
 		if ! defined $config->{KEY_INDEX};
 
+    if ( $config->{MAX_FIELD_LENGTH}
+			and
+		  $config->{LENGTH_EXCEPTION_DEFAULT}
+			and 
+		  ! $config->{FIELD_LENGTH_DATA}
+		)
+			{
+		my $ssql = $config->{MAX_FIELD_LENGTH};
+		$ssql =~ s/_TABLE_/$tablename/g;
+		my $osth = $db->prepare($ssql);
+		$osth->execute;
+	
+		$config->{FIELD_LENGTH_DATA} = {};
+
+		while (my @ores = $osth->fetchrow_array) {
+			my $stype   = $ores[1];
+			my $slen    = $ores[2];
+			my $slenvar = $ores[3];
+			my $scfg = $config->{FIELD_LENGTH_DATA}{$ores[4]} = {};
+	    
+			$scfg->{TYPE} = $stype;
+
+			if( $stype=~/numeric/i  or $stype=~/varbit/i ){  
+				$scfg->{LENGTH} = $slenvar;
+			}
+			else {
+				if ($slen > 0) {
+					$scfg->{LENGTH} = $slen;
+				}
+				elsif ($slenvar>0) {
+					$scfg->{LENGTH} = ($slenvar-4);
+				}
+				else {
+					$scfg->{LENGTH} = 'var';
+				}
+			}
+	    }
+
+		$osth->finish;
+    }
+
     my $s = [$config, $tablename, $key, $config->{NAME}, $config->{EXTENDED}, $db];
 	bless $s, $class;
 }
@@ -1004,6 +1048,61 @@ sub clone_set {
 	return $new;
 }
 
+sub length_exception {
+	my ($s, $fname, $data) = @_;
+
+	my $fcfg = $s->[$CONFIG]{FIELD_LENGTH_DATA}{$fname}
+		or return $data;
+	my $action = $s->[$CONFIG]{LENGTH_EXCEPTION}{$fname}
+			   || $s->[$CONFIG]{LENGTH_EXCEPTION_DEFAULT};
+
+	my $slen = $fcfg->{LENGTH};
+
+	my $errout;
+	if( $action =~ /^truncate(?:_(\w+))$/i) {
+		my $errout = lc $1;
+		$data = substr($data,0,$slen);			      
+	}
+	elsif ($action =~ /^filter/i){
+		my $faction = $action;
+		$faction =~ s/^filter\s+//i;
+		my @filters = Text::ParseWords::shellwords($faction);
+		for my $filt (@filters) {
+			if ($filt eq 'truncate') {
+				$data = substr($data,0,$slen);
+			}
+			else {
+				$data = Vend::Interpolate::filter_value($filt, $data);
+			}
+		}    
+	}
+
+	if($errout) {
+		my $caller = caller();
+		my $msg1 = errmsg(
+				"%s - Length Exception! - Data length: %s Field length: %s",
+				$caller,
+				length($data),
+				$slen,
+			);
+		my $msg2 = errmsg(
+				"%s - Length Exception - Table: %s, Field: %s. Action to take: %s",
+				$caller,
+				$s->[$TABLE],
+				$action,
+			);
+		if($errout eq 'debug') {
+			::logDebug($msg1);
+			::logDebug($msg2);
+		}
+		elsif($errout eq 'log') {
+			::logError($msg1);
+			::logError($msg2);
+		}
+	}
+	return $data;
+}
+
 sub get_slice {
     my ($s, $key, $fary) = @_;
 	$s = $s->import_db() if ! defined $s->[$DBI];
@@ -1067,6 +1166,22 @@ sub set_slice {
 		$vary = [ values %$href ];
 		$fary = [ keys   %$href ];
 	}
+
+    if($s->[$CONFIG]->{LENGTH_EXCEPTION_DEFAULT}) {
+
+		my $lcfg   = $s->[$CONFIG]{FIELD_LENGTH_DATA}
+			or die "No field length data!";
+		my $ecfg   = $s->[$CONFIG]{LENGTH_EXCEPTION} || {};
+		my $edefault = $s->[$CONFIG]{LENGTH_EXCEPTION_DEFAULT};
+
+		for (my $i=0; $i < @$fary; $i++){
+			next unless defined $lcfg->{$fary->[$i]};
+
+			$vary->[$i] = $s->length_exception($fary->[$i], $vary->[$i])
+				if length($vary->[$i]) > $lcfg->{$fary->[$i]}{LENGTH};
+
+		}
+    }
 
 	$tkey = $s->quote($key, $s->[$KEY]) if defined $key;
 #::logDebug("tkey now $tkey");
