@@ -7,7 +7,7 @@
 
 Summary: Interchange web application platform
 Name: interchange
-Version: 4.8.7
+Version: 4.8.8
 Release: 1
 Vendor: Interchange Development Group
 Group: System Environment/Daemons
@@ -224,6 +224,7 @@ find . -path .$ICBASE/foundation -prune -mindepth $DIRDEPTH -maxdepth $DIRDEPTH 
 %dir %{_localstatedir}/run/interchange
 %dir %{_localstatedir}/cache/interchange
 %dir %{_localstatedir}/log/interchange
+%{_localstatedir}/log/interchange/error.log
 %dir %{_localstatedir}/lib/interchange
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/interchange.cfg
 
