@@ -4,14 +4,19 @@
 	return;
 [/calc]
 [/if]
-[comment]
-[if-mm function="!tables" table=`$Config->{ProductFiles}[0]`]
-[bounce page="__UI_BASE__/error"]
-[/if-mm]
-[/comment]
+
 
 <!-- sequence_edit: [cgi ui_sequence_edit] -->
 <!-- item_id_left: [cgi item_id_left] -->
+[if cgi deleterecords]
+[if-mm function="!tables" table="[cgi mv_data_table]"]
+[bounce page="__UI_BASE__/error"]
+[else]
+<!-- flag write for delete: [flag type=write table="[cgi mv_data_table]"] -->
+[/else]
+[/if-mm]
+[/if]
+
 [perl tables="[cgi mv_data_table] __UI_META_TABLE__"]
 	delete $Scratch->{ui_location};
 	if($CGI->{ui_sequence_edit}) {
@@ -49,8 +54,9 @@
 	delete $Scratch->{ui_location};
 	$Config->{NoSearch} = '';
 	my $tab = $CGI->{mv_data_table} or return;
+
 	my $db = $Db{$tab};
-	if(! $db) {
+	if(! ref $db) {
 		$Scratch->{error_message} = "<FONT CLASS=error>Error: no <B>$tab</B> database.</FONT><BR>";
 		$Scratch->{ui_location} = "__UI_BASE__/error";
 		return;
