@@ -603,6 +603,7 @@ dist/lib/UI/pages/admin/wizard/step_tax.html
 dist/lib/UI/pages/include/item_option_matrix
 dist/lib/UI/pages/include/item_option_modular
 dist/lib/UI/pages/include/item_option_simple
+dist/lib/UI/pages/include/order_delete_archive
 dist/lib/UI/pages/include/page_edit
 dist/lib/UI/pages/include/page_edit_old
 dist/lib/UI/pages/include/page_save
