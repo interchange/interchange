@@ -7,6 +7,16 @@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
+[if cgi ui_allow_multiple]
+	[calc]
+		my @tables = grep /\S/, split /[\s,\0]+/, q{[list-databases extended="i"]};
+		for(@tables) {
+			#Log("tagging write $_");
+			$Tag->flag( { type => 'write', table => $_ } );
+		}
+		return;
+	[/calc]
+[/if]
 [if type=explicit compare="[value-extended
 							name=upload_file
 							test=isfile]"]
@@ -29,11 +39,15 @@
 	[if cgi ui_upload_ext eq add]
 	[import-fields	table="[cgi mv_data_table]"
 					file="__UI_PRODUCT_DIR__/[cgi mv_data_table].add"
+					multiple="[cgi ui_allow_multiple]"
 					delete="[cgi ui_allow_delete]"
+					quiet="[cgi ui_import_quiet]"
 					move=1 add=1 dir=backup]
 	[elsif cgi ui_upload_ext eq update]
 	[import-fields	table="[cgi mv_data_table]"
+					multiple="[cgi ui_allow_multiple]"
 					delete="[cgi ui_allow_delete]"
+					quiet="[cgi ui_import_quiet]"
 					file="__UI_PRODUCT_DIR__/[cgi mv_data_table].update"
 					move=1 dir=backup]
 	[/elsif]
@@ -64,6 +78,10 @@
 	<OPTION VALUE=add> Add new items if present
 	<OPTION VALUE=update> Ignore new items
 </SELECT>&nbsp;&nbsp;&nbsp;<INPUT TYPE=checkbox NAME=ui_allow_delete VALUE=1> Allow delete
+<BR><INPUT TYPE=checkbox NAME=ui_allow_multiple VALUE=1> Multiple tables (gnumeric simple text)
+<BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=0 [checked name=ui_import_quiet value=0]> Show summary/add record/delete record messages
+<BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=1 [checked name=ui_import_quiet value=1 default=1]> Show summary messages only
+<BR><INPUT TYPE=radio NAME=ui_import_quiet VALUE=2 [checked name=ui_import_quiet value=2]> Show *no* messages
 </td>
 <td bgcolor="__UI_C_INTBLOCK__">
 

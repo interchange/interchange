@@ -11,9 +11,9 @@
 [/comment]
 
 [set ui_class]Merchandising[/set]
-[set page_title]Merchandising editor[/set]
+[set page_title]Merchandising Editor[/set]
 [set table_perm]1[/set]
-[set help_name]item.main[/set]
+[set help_name]merchandising[/set]
 [set icon_name]admin/icon_item.gif[/set]
 @_UI_STD_HEAD_@
 
@@ -35,7 +35,7 @@
 	$Config->{Sub}{do_timed} = sub {
 		my $code = shift;
 		return unless $db->field($code, 'timed_promotion');
-		return if $date le $db->field($code, 'finish');
+		return if $date le $db->field($code, 'finish_date');
 		$db->set_field($code, 'featured', 'expired');
 		return;
 	};
@@ -44,8 +44,8 @@
 		my $feature = $db->field($code, 'featured');
 		return $space if ! $feature;
 		return $space if $feature =~ /^expire/;
-		return 'future' if $db->field($code, 'start') gt $date;
-		my $exp =  $db->field($code, 'finish');
+		return 'future' if $db->field($code, 'start_date') gt $date;
+		my $exp =  $db->field($code, 'finish_date');
 		if($exp lt $date) {
 			$db->set_field($code, 'featured', 'expired');
 			return $space;
@@ -55,7 +55,6 @@
 	return;
 [/perl]
 
-[comment]former ui_data_fields from tmp merch_edit:  blurb_begin blurb_end banner_text banner_image start finish[/comment]
 <FORM ACTION="[area @@MV_PAGE@@]">
 <INPUT NAME=ui_text_qualification>
 <INPUT TYPE=submit VALUE="Limit with search">
@@ -77,7 +76,7 @@
 		[/if]
 		st=db
 		sp=@@MV_PAGE@@
-		ml=25
+		ml=__UI_SZ_LIST_MERCH__
 "][on-match]
 [calc] 
 	my $so   = $CGI->{ui_sort_option};
@@ -103,8 +102,8 @@
 	return "ui_sort_field=description\n" . sortrev('description');
 	`]Description</TH>
 <TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Qty pricing</TH>
-<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Up sell</TH>
-<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Cross sell</TH>
+<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Up-sell</TH>
+<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Cross-sell</TH>
 <TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Promotion</TH>
 <TH><FONT COLOR="__UI_C_TITLEBARTXT__">&nbsp;</TH>
 </tr>

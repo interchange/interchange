@@ -1,26 +1,32 @@
 code	Variable	pref_group
-ADDRESS	123 Any St.	Company
+ADDRESS	__MVC_ADDRESS__	Company
 BAR_LINK_TEMPLATE	<A HREF="$URL$" CLASS="barlink"><FONT COLOR="#FFFFFF">$ANCHOR$</FONT></A>	Admin colors
 CATALOG_STATIC	No	Static pages
 CGI_URL	__MVC_CGIURL__	Directories and Paths
 CHECK_ACCEPTED	1	Payment
-CITY	Anytown, USA 45056	Company
+CITY	__MVC_CITY__	Company
 COD_ACCEPTED	0	Payment
 COMPANY	__MVC_COMPANY__	Company
+CONTRAST	RED	Template
 CREDIT_CARDS_ACCEPTED	visa mc discover amex	Payment
 DOCROOT	__MVC_DOCUMENTROOT__	Directories and Paths
+EMAIL_INFO	__MVC_MAILORDERTO__	Company
+EMAIL_SERVICE	__MVC_MAILORDERTO__	Company
 ENCRYPTOR	none	Payment
-FAX	513-555-5556	Company
+FAX	__MVC_FAX__	Company
+FFACE	face="Verdana, Arial, Helvetica, sans-serif"	Template
 IMAGE_DIR	__MVC_IMAGEURL__	Directories and Paths
 LOGGED_STATIC	1	Static pages
 LOGO		Template
-MULTIORDER		Order
+MV_DEFAULT_SEARCHTYPE_DB	__MVC_MYSQL____MVC_PGSQL__	Database
 MYSQL	__MVC_MYSQL__	Database
-ORDERS_TO	__MVC_MAILORDERTO__	Order
+ORACLE	__MVC_ORACLE__	Database
 ORDER_ROUTES	log main copy_user	Order
+ORDERS_TO	__MVC_MAILORDERTO__	Order
 PGSQL	__MVC_PGSQL__	Database
-PHONE	(555) 555-5555	Company
+PHONE	__MVC_PHONE__	Company
 PO_ACCEPTED	1	Payment
+POSTAL_ACCEPTED	0	Payment
 SAMPLEHTML	__MVC_SAMPLEHTML__	Directories and Paths
 SAMPLEURL	__MVC_SAMPLEURL__	Directories and Paths
 SECURE_SERVER	http://__MVC_SERVERNAME__	Directories and Paths
@@ -28,11 +34,11 @@ SERVER_NAME	__MVC_SERVERNAME__	Directories and Paths
 SMLOGO		Template
 SQLPASS	__MVC_SQLPASS__	Database
 SQLUSER	__MVC_SQLUSER__	Database
-TAXAREA	OH AZ CA FL MD NY OR TX VA WA DC	Tax
+TAXAREA	__MVC_TAXAREA__	Tax
 TAXFIELD	state	Tax
-TAXRATE	OH=6.75,AZ=5,CA=6,FL=6,MD=5,NY=4,OR=0,TX=6.3,VA=3.5,WA=6.5,DC=5.8	Tax
-TAXSHIPPING		Tax
-TOLLFREE	(888) 555-5555	Company
+TAXRATE	__MVC_TAXRATE__	Tax
+TAXSHIPPING	__MVC_TAXSHIPPING__	Tax
+TOLLFREE	__MVC_TOLLFREE__	Company
 UI_ABOUT_LOGIN_URL	http://help.akopia.com/4.5.8/about/	Admin control
 UI_ABOUT_NORMAL_URL	http://help.akopia.com/4.5.8/about/	Admin control
 UI_BOTTOMIMG	poweredby.gif	Admin layout
@@ -44,15 +50,17 @@ UI_C_TITLEBARBG	#6699FF	Admin colors
 UI_C_TITLEBARTXT	#FFFFFF	Admin colors
 UI_C_TOPBLOCKBAR	#6699FF	Admin colors
 UI_HELP_BASE_URL	http://help.akopia.com/4.5.8	Admin control
+UI_HELP_HEIGHT	480	Admin control
+UI_HELP_WIDTH	650	Admin control
 UI_IMG	__MVC_SHAREURL__/akopia/ui/	Admin control
-UI_ITEM_FIELDS	sku description category price image comment size color weight	Item display
-UI_META_LINK	0	Admin control
-UI_SZ_LIST_CUSTOMER	25	Customer display
-UI_SZ_LIST_ORDER	50	Order display
+UI_ITEM_FIELDS	sku description category price image display comment__MVC_FIELDMUNGE__ size__MVC_FIELDMUNGE__ color weight	Item display
+UI_ITEM_BREAK	image size__MVC_FIELDMUNGE__	Item display
 UI_META_LINK	1	Admin control
 UI_SZ_LIST_CUSTOMER	25	Customer display
 UI_SZ_LIST_ORDER	50	Order display
+UI_SZ_LIST_ITEM	25	Item display
+UI_SZ_LIST_MERCH	25	Item display
 UI_TRAFFIC_STATS	__MVC_CATROOT__/logs/usertrack	Directories and Paths
 UPS_COUNTRY_FIELD	country	Shipping
-UPS_ORIGIN	45056	Shipping
+UPS_ORIGIN	__MVC_UPSORIGIN__	Shipping
 UPS_POSTCODE_FIELD	zip	Shipping

@@ -31,21 +31,6 @@ my $Lock_troubles;
 $VERSION = '4.5.8';
 
 # See if we have the CPAN module
-my $Cpan = 0;
-my $CpanInit;
-eval { 	
-		die if $^O =~ /win32/i;
-		unless( -f ".cpan.tried") {
-			open TMP, ">.cpan.tried" and close TMP;
-			require CPAN::Config;
-			require CPAN;
-			import CPAN;
-		}
-		unlink ".cpan.tried";
-};
-unless($@) {
-	$Cpan = 1;
-}
 
 my @os_hints;
 eval {
@@ -74,9 +59,6 @@ eval {
 };
 unless($@) {
 	$ENV{PERL_RL} = 'Perl';
-}
-elsif ($Cpan) {
-	push @mods_to_get, 'Term::ReadKey', 'Term::ReadLine::Perl';
 }
 
 my $term;
@@ -194,52 +176,6 @@ sub my_prompt {
     $ans ? $ans : $def;
 }
 
-sub cpan_get {
-	my($module, $libdir, $prompt) = @_;
-	
-	print <<EOF unless defined $CpanInit;
-
-Since you have the CPAN module installed and initialized,
-we can go and get optional modules that help Interchange work a
-bit better and faster. At least we can if you are connected
-to the Internet and have one of the following on your machine:
-
-		Perl LWP libraries
-		Perl Net::FTP library
-		ncftp (a nice FTP program)
-		lynx  (the text-based web browser)
-
-In case you were wondering, CPAN is a worldwide network of
-over 40 FTP sites which maintain the latest Perl software.
-If you don't know a URL to use, you can try:
-
-	ftp://ftp.freesoftware.com/pub/perl/CPAN
-	ftp://ftp.funet.fi/pub/languages/perl/CPAN
-
-If you have never used CPAN before, you may want to reply NO.
-Interchange should work anyway -- it just won't be quite as easy
-to build the demo catalogs.
-
-If you have errors during the process, don't worry. Either
-just continue on or stop the program and try again, replying
-No when prompted for CPAN.
-
-EOF
-	$prompt = "Get $module module? [yes]" unless defined $prompt;
-	my $ask = my_prompt($prompt);
-	return undef if $ask =~ /^\s*n/i;
-	
-	return undef unless defined $CPAN::Config;
-	$CPAN::Config->{makepl_arg} = "INSTALLPRIVLIB=$libdir/lib INSTALLARCHLIB=$libdir/lib INSTALLSITELIB=$libdir/lib INSTALLMAN1DIR=none INSTALLMAN3DIR=none INSTALLSITEARCH=$libdir/lib INSTALLDIRS=perl";
-	$CPAN::Config->{keep_source_where} = "$libdir/src"
-		unless -w $CPAN::Config->{keep_source_where};
-	$CPAN::Config->{cpan_home} = "$libdir/src"
-		unless -w $CPAN::Config->{cpan_home};
-	$CPAN::Config->{build_dir} = "$libdir/src"
-		unless -w $CPAN::Config->{build_dir};
-	return CPAN::install($module);
-}
-
 sub extra_libs {
 
 	my ($realdir) = @_;
@@ -279,7 +215,7 @@ sub extra_libs {
 	};
 	unless ($@) {
 				my $def = 's';
-		        print <<EOF;
+		        print <<EOF if $MV::Default{storable};
 
 You appear to have Raphael Manfredi's Storable module installed.
 
@@ -306,7 +242,10 @@ EOF
 		elsif($ENV{MINIVEND_STORABLE} || -f "$realdir/_session_storable" || -f "_session_storable") {
 			$def = 's';
 		}
-		my $ask = my_prompt("Use Storable module? (y/n/s) ", $def);
+		my $ask;
+		$ask = $def;
+		$ask = my_prompt("Use Storable module? (y/n/s) ", $def) 
+			if $MV::Default{storable};
 		if ($ask =~ /^\s*(y|d)/i) {
 			open(TSTORABLE, ">_db_storable")
 				or die "creat _db_storable: $!\n";
@@ -509,8 +448,6 @@ sub initialize {
 	my @re_dir  = qw( simple/download );
 	my @re_copy = qw(	
 						../pod/mvtags.pod simple/download/mvtags.pod
-						../pod/mvdocs.pod simple/download/mvdocs.pod
-						../pod/mvfaq.pod simple/download/mvfaq.pod
 						);
 
 #warn "Got past mvtags build\n" ; #if $X{RPMBUILDDIR};
@@ -678,6 +615,69 @@ EOF
 		print <<EOF;
 
 Your Interchange main software installation appears to have been successful.
+EOF
+		FINCHECK: {
+			@mods_to_get = ();
+			eval {
+					require Digest::MD5;
+				};
+			push(@mods_to_get, 'Digest::MD5') if $@;
+			eval {
+					require SQL::Statement;
+				};
+			push(@mods_to_get, 'SQL::Statement') if $@;
+			eval {
+					require Safe::Hole;
+				};
+			push(@mods_to_get, 'Safe::Hole') if $@;
+			eval {
+					require MIME::Base64;
+				};
+			push(@mods_to_get, 'MIME::Base64') if $@;
+			eval {
+					require Storable;
+				};
+			push(@mods_to_get, 'Storable') if $@;
+			eval {
+					require URI::URL;
+				};
+			push(@mods_to_get, 'URI::URL') if $@;
+		}
+		if(@mods_to_get) {
+			my $mods = join "\n\t", @mods_to_get;
+			print <<EOF;
+You do not appear to have all the required modules installed. You are missing:
+
+	$mods
+
+Trying to install now.
+EOF
+			chdir $realdir
+				or die "Couldn't change directory to $realdir: $!\n";
+			system $^X, 'src/cpan_local_install';
+			eval {
+					require Storable;
+					open JUNK, ">_session_storable"
+						and close JUNK;
+			};
+			eval {
+				require Business::UPS;
+			};
+			if($@) {
+				print "Retrying a couple of modules, just a sec...\n\n";
+				require HTML::Tagset
+					or
+					system $^X, 'src/cpan_local_install', '-c', 'HTML::Tagset';
+				require HTML::Parser
+					or
+					system $^X, 'src/cpan_local_install', '-c', 'HTML::Parser';
+				system $^X, 'src/cpan_local_install', '-c', 'LWP::Simple';
+				system $^X, 'src/cpan_local_install', '-c', 'Business::UPS';
+			}
+			system $^X, 'src/cpan_local_install', '-c';
+		}
+		print <<EOF;
+
 You are now ready to cd to $realdir and run 'bin/makecat'
 to set up your first catalog.
 
@@ -687,78 +687,9 @@ EOF
 	}
 
 
-	MODCHECK: {
-		eval {
-				require Digest::MD5;
-			};
-		push(@mods_to_get, 'Digest::MD5') if $@ and $Cpan;
-		eval {
-				require SQL::Statement;
-			};
-		push(@mods_to_get, 'SQL::Statement') if $@ and $Cpan;
-		eval {
-				require Safe::Hole;
-			};
-		push(@mods_to_get, 'Safe::Hole') if $@ and $Cpan;
-		eval {
-				require MIME::Base64;
-			};
-		push(@mods_to_get, 'MIME::Base64') if $@ and $Cpan;
-		eval {
-				require URI::URL;
-			};
-		push(@mods_to_get, 'URI::URL') if $@ and $Cpan;
-	}
-
-	local($);
-	$ = 0;
-
-	MODGET: {
-		last MODGET unless $Cpan;
-		my $odir = cwd();
-		unless (-d 'build') {
-			mkdir('build', 0777)
-				or die "Couldn't make build directory for CPAN: $!\n";
-		}
-		chdir 'build'
-			or die "Couldn't chdir to build directory for CPAN: $!\n";
-		my $mod;
-		foreach $mod (@mods_to_get) {
-			my $ok = eval { cpan_get($mod, $realdir)};
-			if (! $@) {
-				$CpanInit = 1;
-				print "\n\n";
-			}
-			else {
-				print "\a\n$mod get failed.\n\n";
-			}
-		}
-		chdir $odir
-			or die "Couldn't return to original dir $odir: $!\n";
-	}
-
 	# Check for extra needed libraries
 	extra_libs($realdir);
 
-	my @msgs;
-	for(@mods_to_get) {
-		eval {
-			eval "require $_"
-				or die "No $_ module available.";
-		};
-		if($@) {
-			push @msgs, $@;
-		}
-	}
-	if(@msgs) {
-		die join "\n", @msgs, '', <<EOF;
-These modules must be installed to run Interchange. Try:
-
-	perl -MCPAN -e 'install Bundle::Interchange'
-
-or use normal Perl procedures to install them.
-EOF
-	}
 	mk_initp(\%X);
 	delete $X{RPMBUILDDIR};
     return \%X;
@@ -803,7 +734,7 @@ EOF
 }
 
 	my %mv_specific = qw/
-						PREFIX 1 FORCE 1 FINAL 1 RPMBUILDDIR 1 INTERCHANGE_USER 1
+						STORABLE 1 PREFIX 1 FORCE 1 FINAL 1 RPMBUILDDIR 1 INTERCHANGE_USER 1
 					  /;
 	my %delete;
 	use Getopt::Long;
@@ -852,13 +783,18 @@ else {
 	WriteMakefile(
 		NAME       => "Interchange",
 		MAN3PODS => {
-						'pod/mvdocs.pod' => 'blib/man3/mvdocs.8',
-						'pod/mvtags.pod' => 'blib/man3/mvtags.8',
-						'pod/mvfaq.pod' => 'blib/man3/mvfaq.8',
+						'pod/icbackoffice.pod' => 'blib/man3/icbackoffice.8',
+						'pod/icconfig.pod'		=> 'blib/man3/icconfig.8',
+						'pod/icdatabase.pod'	=> 'blib/man3/icdatabase.8',
+						'pod/icinstall.pod'		=> 'blib/man3/icinstall.8',
+						'pod/icintro.pod'		=> 'blib/man3/icintro.8',
+						'pod/ictemplates.pod'	=> 'blib/man3/ictemplates.8',
+						'pod/mv_metadata.pod'	=> 'blib/man3/mv_metadata.8',
+						'pod/mvtags.pod'       => 'blib/man3/mvtags.8',
 						},
 		DISTNAME => "interchange",
 		clean    => {
-					FILES=> "lib/IniConf.pm _uid _db_storable _session_storable lib/File/CounterFile.pm scripts/initp.pl scripts/compile_link scripts/config_prog scripts/configdump scripts/dump scripts/expire scripts/localize scripts/expireall scripts/makecat scripts/interchange scripts/offline scripts/restart scripts/update dist/simple/download/mvdocs.pod dist/simple/download/mvtags.pod dist/simple/download/mvfaq.pod pod/mvtags.pod",
+					FILES=> "lib/IniConf.pm _uid _db_storable _session_storable lib/File/CounterFile.pm scripts/initp.pl scripts/compile_link scripts/config_prog scripts/configdump scripts/dump scripts/expire scripts/localize scripts/expireall scripts/makecat scripts/interchange scripts/offline scripts/restart scripts/update dist/simple/download/mvtags.pod",
 				   },
 
 		dist     => {

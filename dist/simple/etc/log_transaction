@@ -33,7 +33,7 @@ Add main order[data
 code: [value mv_order_number]
 store_id: __STORE_ID__
 order_number: [value mv_order_number]
-session: [data session id]
+session__MVC_FIELDMUNGE__: [data session id]
 username: [data session username]
 shipmode: [value mv_shipmode] ([shipping-desc])
 shipping: [shipping noformat=1]
@@ -81,7 +81,7 @@ po_number: [value filter=strip po_number]
 code: [value mv_order_number]-[item-increment]
 store_id: __STORE_ID__
 order_number: [value mv_order_number]
-session: [data session id]
+session__MVC_FIELDMUNGE__: [data session id]
 username: [data session username]
 shipmode: [item-modifier mv_shipmode]
 sku: [item-code]

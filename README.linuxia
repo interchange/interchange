@@ -1,11 +1,17 @@
 This file documents all changes of the LINUXIA branch of Interchange.
 
 - Debian packaging files added
+- let `force' override directory check in Makefile.PL (CVS 1.23.4.3)
 - Debian configuration file location added to interchange.PL (CVS 1.8.4.2)
 - new UI UserTag related, called from item_edit (CVS 1.12.4.3)
 - superfluous she-bang removed from MakeCat.pm (CVS 1.12.4.1)
 - new UserTag formel
+- preliminary fix for dump_structure in Config.pm (CVS 1.23.4.1)
 
 Changes that made into the main branch:
 
 - patch to makecat.PL to make -f working (CVS 1.26.4.2, modified, 2000-10-18)
+
+Candidates for 4.7:
+
+- new UI UserTag related

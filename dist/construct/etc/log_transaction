@@ -34,7 +34,7 @@ Add main order[data
 code: [value mv_order_number]
 store_id: __STORE_ID__
 order_number: [value mv_order_number]
-session: [data session id]
+session__MVC_FIELDMUNGE__: [data session id]
 username: [data session username]
 shipmode: [value mv_shipmode] ([shipping-desc])
 shipping: [shipping noformat=1]
@@ -90,14 +90,14 @@ set credit_limit: [seti credit_limit][data
 code: [value mv_order_number]-[item-increment]
 store_id: __STORE_ID__
 order_number: [value mv_order_number]
-session: [data session id]
+session__MVC_FIELDMUNGE__: [data session id]
 username: [data session username]
 shipmode: [item-modifier mv_shipmode]
 sku: [item-code]
 quantity: [item-quantity]
 price: [item-price noformat]
 subtotal: [item-subtotal noformat]
-size: [item-modifier size]
+size__MVC_FIELDMUNGE__: [item-modifier size__MVC_FIELDMUNGE__]
 color: [item-modifier color]
 order_date: [value order_date]
 affiliate: [data session source]

@@ -76,7 +76,14 @@
 <INPUT TYPE=hidden NAME="mv_data_decode" VALUE="yes">
 <INPUT TYPE=hidden NAME="mv_update_empty" VALUE="1">
 <INPUT TYPE=hidden NAME="ui_text_qualification" value="[cgi ui_text_qualification]">
-<INPUT TYPE=hidden NAME="ui_return_to" value="[cgi ui_return_to]">
+[calc]
+for(@{$CGI_array->{'ui_return_to'}}) {
+	$out .= <<EOF;
+<INPUT TYPE=hidden NAME=ui_return_to VALUE="$_">
+EOF
+}
+return $out;
+[/calc]
 <INPUT TYPE=hidden NAME="mv_data_fields"
 	VALUE="[db-columns columns='[value ui_data_fields]']">
 

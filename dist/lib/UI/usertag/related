@@ -27,7 +27,7 @@ sub {
     my $db = $Db{$table};
     my (%relmap, $url, $out, $ary);
     my $ui_base = $Vend::Cfg->{Variable}{UI_BASE};
-    my $return_to = ''; "$ui_base/item_edit";
+    my $return_to = "$ui_base/item_edit";
 
     # sanity check
     unless ($db) {
@@ -65,6 +65,7 @@ sub {
                                form=>qq{
                                   mv_data_table=$base
                                   ui_return_to=$return_to
+                                  ui_return_to=item_id=$CGI->{item_id}
                                   ui_text_qualification=$relmap{$base}=$CGI->{item_id}
             }});    
             $out .= qq{<BR>\n<A HREF="$url">Related entries from $base</A>};

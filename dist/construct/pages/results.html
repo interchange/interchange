@@ -32,16 +32,28 @@ ui_template_name: leftright
 		next unless length $_;
 		$_ = "=$_";
 	}
-	$CGI_array->{mv_order_quantity} = \@q;
-	$CGI->{mv_order_quantity} = join "\0", @q;
 	@parms = grep /^mv_oi\d+/ && $CGI->{$_}, keys %{$CGI};
-	return unless @parms;
+
+	# If we have parms, means an individual buy. If we don't
+	# we want to strip empty items
+	unless (@parms) {
+		@i = split "\0", $CGI->{mv_order_item};
+		for(my $i = 0; $i < @i; $i++) {
+			next if length($q[$i]);
+			$i[$i] = '';
+		}
+		@i = grep length($_), @i;
+		@q = grep length($_), @q;
+		$CGI_array->{mv_order_quantity} = \@q;
+		$CGI->{mv_order_quantity} = join "\0", @q;
+		$CGI_array->{mv_order_item} = \@i;
+		$CGI->{mv_order_item} = join "\0", @i;
+		return;
+	}
 	my $item = $parms[0];
 	$item =~ /(\d+)/ or return;
 	my $idx = $1;
-	Log("idx = $idx");
 	$idx--;
-	Log("quantities=" . join ",", @q);
 	$CGI->{mv_order_item} = $CGI->{$item};
 	$CGI->{mv_order_quantity} = "$q[$idx]";
 	return;
@@ -155,7 +167,7 @@ Sorry, no matches for <B>[calc]
 </font>
 <BLOCKQUOTE>
 <font __FFACE__ size="2">
-Matches [matches] of [value mv_search_match_count] found.
+Matches [matches] of [match-count] found.
 <BR>[more]<BR>
 </font>
 </BLOCKQUOTE>

@@ -1,11 +1,10 @@
 [if value email_copy]
 Sending email copy of order [value mv_order_number] to [value email]: [email to="[value email]"
-        subject="Thank you for your order [value mv_order_number]!"
+        subject="Thank you for your order #[value mv_order_number]!"
         from=|"__COMPANY__ Customer Service" <__ORDERS_TO__>| ]
 Dear __COMPANY__ customer,
 
-Thank you for your order #[value mv_order_number], it is being electronically
-processed.
+Thank you for your order #[value mv_order_number]. It is being electronically processed.
 
             Name: [value fname] [value lname]
 [if value company]         Company: [value company][/if]
@@ -29,60 +28,60 @@ City, State, Zip: [value b_city][if value b_state], [value b_state]  [value b_zi
 [if value b_country] Billing Country: [value b_country][/if]
 [/if]
 
-Quan  Item No.    Description                            Price       Extension
----- ----------- ------------------------------- -------------- ---------------- 
+Quan  Item No.    Description                            Price        Extension
+---- ----------- ------------------------------- -------------- ----------------
 [item-list][row 82]
 [column width=5 gutter=1 align=right]  [item-quantity] [/column]
 [column width=12 gutter=1]  [item-code] [/column]
 [column width=32 gutter=1 align=left wrap=1]
 [item-description]
-[if-modifier size]SIZE-->[item-modifier size][/if-modifier][if-modifier color] COLOR-->[item-modifier color][/if-modifier]
+[if-modifier size__MVC_FIELDMUNGE__]SIZE-->[item-modifier size__MVC_FIELDMUNGE__][/if-modifier][if-modifier color] COLOR-->[item-modifier color][/if-modifier]
 [/column]
 [column width=15 gutter=1 align=r]  [item-price] [/column]
-[column width=16 gutter=0 align=r] [item-subtotal] [/column]
+[column width=17 gutter=1 align=r] [item-subtotal] [/column]
 [/row]
 
 [/item-list]
 [row 82]
-[column width=5 align=right][/column]
-[column width=12 gutter=1][/column]
-[column width=32 align=R wrap=1 gutter=1][/column]
-[column width=15 gutter=1]SUBTOTAL[/column]
-[column width=16 gutter=0 align=r][subtotal][/column]
+	[column width=5 align=right][/column]
+	[column width=12 gutter=1][/column]
+	[column width=32 align=R wrap=1 gutter=1][/column]
+	[column width=15 gutter=1]SUBTOTAL[/column]
+	[column width=15 gutter=0 align=r][subtotal][/column]
 [/row]
 [row 82]
-[column width=5 align=right][/column]
-[column width=12 gutter=1][/column]
-[column width=32 align=R wrap=1 gutter=1][/column]
-[column width=15 gutter=1]SALES TAX[/column]
-[column width=16 align=right gutter=0][salestax][/column]
+	[column width=5 align=right][/column]
+	[column width=12 gutter=1][/column]
+	[column width=32 align=R wrap=1 gutter=1][/column]
+	[column width=15 gutter=1]SALES TAX[/column]
+	[column width=15 align=right gutter=0][salestax][/column]
 [/row]
 [row 82]
-    [column width=5 align=right][/column]
-    [column width=12 gutter=1][/column]
-    [column width=32 align=R wrap=1 gutter=1][/column]
-    [column width=15 gutter=1]SHIPPING[/column]
-    [column width=16 align=right gutter=0][shipping][/column]
+	[column width=5 align=right][/column]
+	[column width=12 gutter=1][/column]
+	[column width=32 align=R wrap=1 gutter=1][/column]
+	[column width=15 gutter=1]SHIPPING[/column]
+	[column width=15 align=right gutter=0][shipping][/column]
 [/row]
 
 [row 82]
-[column width=5 align=right][/column]
-[column width=12 gutter=1][/column]
-[column width=32 align=R wrap=1 gutter=1][/column]
-[column width=15 gutter=1]ORDER TOTAL[/column]
-[column width=16 align = right gutter=0][total-cost][/column]
+	[column width=5 align=right][/column]
+	[column width=12 gutter=1][/column]
+	[column width=32 align=R wrap=1 gutter=1][/column]
+	[column width=15 gutter=1]ORDER TOTAL[/column]
+	[column width=15 align=right gutter=0][total-cost][/column]
 [/row]
 
 [if value gift_note]
 Note for Gift
---------------
+-------------
 [value gift_note]
 [/if]
-  
+
 Should you have a question about your order, or about other __COMPANY__
 products, please reply to this message and let us help.
 
-Always reference your Order Number when calling for a status. [if !session logged_in]
+Always reference your order number when calling for a status.[if !session logged_in]
 Or you can check status via this URL:
 
    [area form='
@@ -95,16 +94,16 @@ Or you can check status via this URL:
             mv_click=Login
             mv_todo=return
             mv_nextpage=query/check_orders
-     ']"
+     ']
 [/if]
 Remember, you can always visit our site at:
 
-    __SERVER_NAME__
+    __SAMPLEURL__
 
 Regards and thanks for your business!
 
 __COMPANY__
-__ADDRESS__
+[filter op=html2text]__ADDRESS__[/filter]
 __CITY__
 __PHONE__
 __TOLLFREE__

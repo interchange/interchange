@@ -23,4 +23,6 @@ code	sel	name	which_page	sort	display_type	image	image_prop	banner_image	banner_
 22	2	Levels								simple					category=Levels	
 23	3	Step Stools								simple					category=Step Stools	
 24	7	Nails								simple					category=Nails	
-25	8	Gift Certificate								simple					category=Gift Certificate	
+25	8 9	Gift Certificate		03	name					simple		products	swap_results		category=Gift Certificate	
+26	9	New items		01	name					complex				fi=merchandisingsf=featuredse=new		
+27	9	Sale items		01	name					complex				fi=merchandisingsf=featuredse=specialsu=yes		

@@ -117,7 +117,7 @@
 		[/if]
 		st=db
 		sp=@@MV_PAGE@@
-		ml=25
+		ml=__UI_SZ_LIST_ITEMS__
 "][on-match]
 [calc] 
 	my $so   = $CGI->{ui_sort_option};
@@ -149,8 +149,8 @@
 	return "ui_sort_field=price\n" . sortrev('price', 1);
 	`]Price</TH>
 <TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Qty pricing</TH>
-<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Up sell</TH>
-<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Cross sell</TH>
+<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Up-sell</TH>
+<TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Cross-sell</TH>
 <TH ALIGN=CENTER><FONT COLOR="__UI_C_TITLEBARTXT__">Promotion</TH>
 <TH ALIGN=right><FONT COLOR="__UI_C_TITLEBARTXT__">Inventory</TH>
 

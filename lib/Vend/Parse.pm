@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.9 2000-10-04 09:45:42 heins Exp $
+# $Id: Parse.pm,v 1.9.4.1 2000-10-20 10:18:43 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,12 +27,12 @@
 
 package Vend::Parse;
 
-# $Id: Parse.pm,v 1.9 2000-10-04 09:45:42 heins Exp $
+# $Id: Parse.pm,v 1.9.4.1 2000-10-20 10:18:43 racke Exp $
 
 require Vend::Parser;
 
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.9 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.9.4.1 $ =~ /(\d+)\.(\d+)/);
 
 use Safe;
 use Vend::Util;
@@ -44,7 +44,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.9 $, 10);
+$VERSION = substr(q$Revision: 1.9.4.1 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -106,7 +106,6 @@ my %PosNumber =	( qw!
                 salestax         2
                 scratch          1
                 scratchd         1
-                search           1
 				record			 0
                 region		     0
                 selected         3
@@ -189,7 +188,6 @@ my %Order =	(
 				'salestax'		=> [qw( name noformat)],
 				scratch			=> [qw( name  )],
 				scratchd		=> [qw( name  )],
-				search			=> [qw( arg   )],
 				search_region	=> [qw( arg   )],
 				region			=> [qw( )],
 				record			=> [qw( )],
@@ -251,7 +249,6 @@ my %addAttr = (
                     record          1
                     region          1
                     search_region   1
-                    search          1
 					shipping        1
 					handling        1
                     tag             1
@@ -482,7 +479,6 @@ my %Routine = (
 				'salestax'		=> \&Vend::Interpolate::tag_salestax,
 				scratch			=> \&Vend::Interpolate::tag_scratch,
 				scratchd		=> \&Vend::Interpolate::tag_scratchd,
-				search			=> \&Vend::Interpolate::tag_search_region,
 				record			=> \&Vend::Interpolate::tag_record,
 				region			=> \&Vend::Interpolate::region,
 				search_region	=> \&Vend::Interpolate::tag_search_region,

@@ -10,7 +10,7 @@
 <td> 
 	[query arrayref=main
 		   sql="
-		   	SELECT sku,timed_promotion,start,finish
+		   	SELECT sku,timed_promotion,start_date,finish_date
 			FROM merchandising
 			WHERE featured = '[scratch hpromo_type]'
 			"][/query]

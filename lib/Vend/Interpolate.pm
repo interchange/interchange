@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.29.4.2 2000-10-14 14:48:02 racke Exp $
+# $Id: Interpolate.pm,v 1.29.4.3 2000-10-20 10:18:42 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.29.4.2 $, 10);
+$VERSION = substr(q$Revision: 1.29.4.3 $, 10);
 
 @EXPORT = qw (
 
@@ -272,6 +272,7 @@ my @th = (qw!
 		else
 		elsif
 		matches
+		match_count
 		modifier_name
 		more
 		more_list
@@ -362,6 +363,7 @@ my @th = (qw!
 	'else_end'		=> qr($T{else}\]($All)$T{'/else'}\s*$),
 	'elsif_end'		=> qr($T{elsif}\s+($All)$T{'/elsif'}\s*$),
 	'matches'		=> qr($T{matches}\]),
+	'match_count'		=> qr($T{match_count}\]),
 	'modifier_name'	=> qr($T{modifier_name}$Spacef(\w+)\]),
 	'more'			=> qr($T{more}\]),
 	'more_list'		=> qr($T{more_list}$Optx$Optx$Optx$Optx$Optx\]($Some)$T{'/more_list'}),
@@ -830,6 +832,13 @@ sub tag_data {
 					my $val = shift;
 					return crypt($val, ::random_string(2));
 				},
+	'html2text' => sub {
+					my $val = shift;
+					$val =~ s|\s*<BR>\s*|\n|gi;
+					$val =~ s|\s*<P>\s*|\n|gi;
+					$val =~ s|\s*</P>\s*||gi;
+					return $val;
+				},
 	'namecase' => sub {
 					use locale;
 					my $val = shift;
@@ -902,8 +911,8 @@ sub tag_data {
 				},
 	'text2html' => sub {
 					my $val = shift;
-					$val =~ s|\r?\n\r?\n|<P>|;
-					$val =~ s|\r?\n|<BR>|;
+					$val =~ s|\r?\n\r?\n|<P>|g;
+					$val =~ s|\r?\n|<BR>|g;
 					return $val;
 				},
 	'urlencode' => sub {
@@ -3153,6 +3162,7 @@ sub tag_more_list {
 	$m = $first . '-' . $last;
 	$r =~ s,$QR{more},$list,g;
 	$r =~ s,$QR{matches},$m,g;
+	$r =~ s,$QR{match_count},$q->{matches},g;
 
 	$r;
 
@@ -3229,11 +3239,6 @@ sub tag_labeled_data_row {
     while($$text =~ $LdExpr) {
 		$table = $1;
 		$tabRE = qr/$table/;
-#::logDebug("In row: table=$table tabRE=$tabRE");
-		if($Vend::UPPERCASE{$table}) {
-			$$text =~ s#($LdB$tabRE)$LdD#$1 \U$2]#g;
-			$$text =~ s#($LdIB$tabRE)$LdD#$1 \U$2]#g;
-		}
 		$row = $Data_cache{"$table.$key"}
 				|| ( $Data_cache{"$table.$key"}
 						= Vend::Data::database_row($table, $key)

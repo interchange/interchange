@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.19 2000-09-25 15:51:57 heins Exp $
+# $Id: DBI.pm,v 1.19.4.1 2000-10-20 10:18:45 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.19 $, 10);
+$VERSION = substr(q$Revision: 1.19.4.1 $, 10);
 
 use strict;
 
@@ -123,6 +123,8 @@ sub create {
     die "columns argument $columns is not an array ref\n"
         unless CORE::ref($columns) eq 'ARRAY';
 
+	my $oracle = 1 if $db->{Driver}->{Name} =~ /Oracle/;
+
 	if(defined $dattr) {
 		for(keys %$dattr) {
 			$db->{$_} = $dattr->{$_};
@@ -167,10 +169,10 @@ sub create {
 	TESTIT: {
 		my $q = $query;
 		eval {
-			$db->do("drop table mv_test_create")
+			$db->do("drop table ic_test_create")
 		};
-		$q =~ s/create\s+table\s+(\S+)/create table mv_test_create/;
-		if(!  $db->do($q) ) {
+		$q =~ s/create\s+table\s+\S+/create table ic_test_create/;
+		if(! $db->do($q) ) {
 			::logError(
 						"bad table creation statement:\n%s\n\nError: %s",
 						$query,
@@ -179,7 +181,7 @@ sub create {
 			warn "$DBI::errstr\n";
 			return undef;
 		}
-		$db->do("drop table mv_test_create")
+		$db->do("drop table ic_test_create")
 	}
 
 	eval {
@@ -201,8 +203,10 @@ sub create {
 								$DBI::errstr,
 					);
 		}
-	}
-	else {
+	} elsif ($oracle and ($config->{COLUMN_DEF}->{$key} =~ /PRIMARY\s+KEY/i)) {
+		# Oracle automatically creates indexes on primary keys,
+		# so we don't need to do it again
+	} else {
 		$db->do("create index ${tablename}_${key} on $tablename ($key)")
 			or ::logError("table %s index failed: %s" , $tablename, $DBI::errstr);
 	}
@@ -275,6 +279,7 @@ sub open_table {
 		$config->{EXTENDED} =	defined($config->{FIELD_ALIAS}) 
 							||	defined $config->{FILTER_FROM}
 							||	defined $config->{FILTER_TO}
+							||	$config->{UPPERCASE}
 							||	'';
 	}
 
@@ -491,7 +496,19 @@ sub row_hash {
 
 	return $sth->fetchrow_hashref()
 		unless $s->[$TYPE];
-	my $ref = $sth->fetchrow_hashref();
+	my $ref;
+	if($s->config('UPPERCASE')) {
+		my $aref = $sth->fetchrow_arrayref()
+			or return undef;
+		$ref = {};
+		my @nm = @{$sth->{NAME}};
+		for ( my $i = 0; $i < @$aref; $i++) {
+			$ref->{$nm[$i]} = $ref->{lc $nm[$i]} = $aref->[$i];
+		}
+	}
+	else {
+		$ref = $sth->fetchrow_hashref();
+	}
 	return $ref unless $s->[$CONFIG]{FIELD_ALIAS};
 	my ($k, $v);
 	while ( ($k, $v) = each %{ $s->[$CONFIG]{FIELD_ALIAS} } ) {
@@ -646,6 +663,9 @@ sub list_fields {
 			}
 		};
 	}
+	if($config->{UPPERCASE}) {
+		@fld = map { lc $_ } @fld;
+	}
 	return \@fld;
 }
 
@@ -670,7 +690,7 @@ sub sort_each {
 # Now supported, including qualification
 sub each_record {
     my ($s, $qual) = @_;
-#::logDebug("qual=$qual");
+#::logDebug("each_record qual=$qual");
 	$qual = '' if ! $qual;
 	$qual .= $s->[$CONFIG]{Export_order} 
 		if $s->[$CONFIG]{Export_order};
@@ -701,7 +721,7 @@ sub each_record {
 # Now supported, including qualification
 sub each_nokey {
     my ($s, $qual) = @_;
-#::logDebug("qual=$qual");
+#::logDebug("each_nokey qual=$qual");
 	$qual = '' if ! $qual;
 	$qual .= $s->[$CONFIG]{Export_order} 
 		if $s->[$CONFIG]{Export_order};
@@ -826,8 +846,11 @@ sub query {
 			
 			if ($opt->{hashref}) {
 				my @ary;
-				while ( defined ($_ = $sth->fetchrow_hashref) ) {
-					push @ary, $_;
+				while ( defined (my $rowhashref = $sth->fetchrow_hashref) ) {
+					if ($s->config('UPPERCASE')) {
+						$rowhashref->{lc $_} = $rowhashref->{$_} for (keys %$rowhashref);
+					}
+					push @ary, $rowhashref;
 				}
 				die $DBI::errstr if $sth->err();
 				$ref = $Vend::Interpolate::Tmp->{$opt->{hashref}} = \@ary;

@@ -38,9 +38,9 @@ __MENU_END_FAQ__
 <tr>
 <td>
 
-<p>&nbsp;<br><font face="Verdana,Arial,Helvetica,sans-serif"><b>
+<h2>&nbsp;<br>
 __HELP_TITLE__
-</b></font></p>
+</h2>
 
 <hr noshade size=2 width="100%">
 

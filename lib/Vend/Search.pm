@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# $Id: Search.pm,v 1.6.4.1 2000-10-12 12:48:13 racke Exp $
+# $Id: Search.pm,v 1.6.4.2 2000-10-20 10:18:43 racke Exp $
 #
 # Vend::Search -- Base class for search engines
 #
@@ -26,7 +26,7 @@
 #
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 1.6.4.1 $, 10);
+$VERSION = substr(q$Revision: 1.6.4.2 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -684,6 +684,9 @@ EOF
 				$relate .= ')';
 			}
 			$relate .= ' );';
+		}
+		elsif (! ref $code[0] ) {
+			die("bad limit creation code in coordinated search, probably search group without search specification.");
 		}
 		else {
 			$relate = "return ( " . join("", @{$code[0]}) . " );";

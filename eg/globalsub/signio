@@ -1,26 +1,24 @@
-# This is how you can use Signio PayPro with
-# Interchange.
+# This is how you can use Signio PayPro with Interchange.
 # 
 Variable SIGNIO_HELP <<EOV
 
- 1. Modify minivend.cfg to use this file.
+ 1. Modify interchange.cfg to use this file.
  
-	#include globalsub/signio
+ #include globalsub/signio
 
  2. Modify catalog.cfg to set the server and your Signio account info
 
-	
  # Username and password
  Variable MV_PAYMENT_ID      YourSignioID
  Variable MV_PAYMENT_SECRET  YourSignioPassword
  # Use test.signio.com for testing
  Variable MV_PAYMENT_SERVER  connect.signio.com
 
- 3. Set in checkout profile:
+ 3. Set the payment mode in catalog.cfg:
 
- &charge=custom signio
+ Variable MV_PAYMENT_MODE    custom signio
 
- 4. Make sure CreditCardAuto is off (default in MV4)
+ 4. Make sure CreditCardAuto is off (default)
 
  5. Restart Interchange.
 

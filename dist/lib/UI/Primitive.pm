@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.21.4.2 $, 10);
+$VERSION = substr(q$Revision: 1.21.4.3 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -823,6 +823,7 @@ sub meta_display {
 			$record->{passed} = join ",",
 									map { s/,/&#44;/g; $_} @files;
 		}
+
 		for(qw/append prepend/) {
 			next unless $record->{$_};
 			$record->{$_} = Vend::Util::resolve_links($record->{$_});

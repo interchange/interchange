@@ -41,7 +41,7 @@ sub {
 
 	return $val unless $opt->{update};
 
-	my $val = delete $::Scratch->{$name};
+	$val = delete $::Scratch->{$name};
 
 	if(! $val) {
 		::logError("write component %s in table %s: no value in Scratch",
