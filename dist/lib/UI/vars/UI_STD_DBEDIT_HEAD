@@ -48,8 +48,28 @@ if(! $db) {
 
 $Values->{ui_data_key_name} = $db->config('KEY');
 
-if( $mdb and ! $CGI->{ui_data_fields} and ! $CGI->{ui_data_fields_all} and $mdb->record_exists($table) ) {
+###############################################################
+# Get the field display information including breaks and labels
+###############################################################
+if( $mdb
+	and ! $CGI->{ui_data_fields}
+	and ! $CGI->{ui_data_fields_all}
+	and $mdb->record_exists($table)
+	)
+{
 	$CGI->{ui_data_fields} = $mdb->field($table, 'options');
+	$CGI->{ui_data_fields} =~ s/\r\n/\n/g;
+	$CGI->{ui_data_fields} =~ s/\r/\n/g;
+	if($CGI->{ui_data_fields} =~ /\n\n/) {
+		my @breaks;
+		my @break_labels;
+		while ($CGI->{ui_data_fields} =~ s/\n+(?:\n=(.*)\n)?\n+(\w+)/\n$2/) {
+			push @breaks, $2;
+			push @break_labels, "$2=$1" if $1;
+		}
+		$CGI->{ui_break_before} = join " ", @breaks;
+		$CGI->{ui_break_before_label} = join ",", @break_labels;
+	}
 	$CGI->{ui_data_fields} =~ s/^\s+//;
 	$CGI->{ui_data_fields} =~ s/\s+$//;
 }
@@ -61,6 +81,7 @@ $Values->{ui_data_fields} =
 	(join " ", $db->columns());
 #Log("data fields: '$Values->{ui_data_fields}' cgi='$CGI->{ui_data_fields}'");
 $Values->{ui_data_fields} =~ s/[,\0\s]+/ /g;
+###############################################################
 
 my @cols = split /[,\0\s]/, $Values->{ui_data_fields};
 @cols = grep /:/ || $db->column_exists($_), @cols;
