@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.33 2002-02-03 06:41:08 mheins Exp $
+# $Id: Config.pm,v 2.34 2002-02-03 23:11:57 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.33 $, 10);
+$VERSION = substr(q$Revision: 2.34 $, 10);
 
 my %CDname;
 
@@ -959,6 +959,7 @@ use File::Find;
 sub get_system_code {
 
 	return if $CodeDest;
+	return if $Vend::ControllingInterchange;
 	
 	# defined means don't go here anymore
 	$SystemCodeDone = '';
@@ -1531,6 +1532,7 @@ sub parse_require {
 	my($var, $val, $warn, $cap) = @_;
 
 	return if $Vend::ExternalProgram;
+	return if $Vend::ControllingInterchange;
 
 	my $carptype;
 	my $error_message;
@@ -3274,6 +3276,7 @@ sub parse_tag {
 				return $c;
 			}
 		}
+		local($^W) = 1;
 		my $fail;
 		{
 			local $SIG{'__WARN__'} = sub {$fail .= "@_";};
@@ -3283,7 +3286,7 @@ sub parse_tag {
 				die $@ if $@;
 			};
 		}
-		if($@ or $fail) {
+		if($@) {
 			config_warn(
 						"UserTag '%s' subroutine failed compilation:\n\n\t%s",
 						$tag,
@@ -3291,12 +3294,18 @@ sub parse_tag {
 			);
 			return $c;
 		}
-		else {
+		elsif($fail) {
 			config_warn(
-					"UserTag '%s' code is not a subroutine reference",
+						"Warning while compiling UserTag '%s':\n\n\t%s",
 					$tag,
-			) unless ref($sub) =~ /CODE/;
+						$fail,
+			);
+			return $c;
 		}
+		config_warn(
+				"UserTag '%s' code is not a subroutine reference",
+				$tag,
+		) unless ref($sub) eq 'CODE';
 
 		$c->{$p}{$tag} = $sub;
 		$c->{Order}{$tag} = []

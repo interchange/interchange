@@ -1,6 +1,6 @@
 # Vend::Control - Routines that alter the running Interchange daemon
 # 
-# $Id: Control.pm,v 2.0 2001-07-18 02:23:13 jon Exp $
+# $Id: Control.pm,v 2.1 2002-02-03 23:11:57 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -66,6 +66,7 @@ sub signal_add {
 sub control_interchange {
 	my ($mode, $sig, $restart) = @_;
 
+	$Vend::ControllingInterchange = 1;
 	unless(-f $Global::PIDfile) {
 		warn errmsg(
 			"The Interchange server was not running (%s).\n",
