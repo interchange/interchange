@@ -63,9 +63,26 @@
 
 [set ui_class]Items[/set]
 [seti page_title]Item editor: [cgi item_id][/seti]
-[seti page_banner]Item editor: edit item <B>[cgi item_id]</B>[/seti]
 [set help_name]edit.item[/set]
 [set icon_name]icon_item.gif[/set]
+
+[if-mm super]
+[tmp page_banner][page href="__UI_BASE__/flex_editor"
+				 form='
+				 mv_data_table=__UI_META_TABLE__
+				 ui_meta_view=dbconfig
+				 ui_data_fields=code name height field outboard options help help_url display_filter
+				 ui_break_before=height display_filter
+				 page_title=Change display information: [cgi mv_data_table]
+				 ui_return_to=__UI_BASE__/item
+				 ui_return_to=ui_scrub_table=1
+				 item_id=[cgi mv_data_table]
+		 ']Item editor</A> edit item <B>[cgi item_id]</B>
+[/tmp]
+[else]
+[tmp page_banner]Item editor: edit item <B>[cgi item_id]</B>[/tmp]
+[/else]
+[/if-mm]
 
 @_UI_STD_HEAD_@
 <P>
