@@ -131,3 +131,20 @@ files for changes. In particular, mv_metadata.asc is used to format
 and present quite a few things in the user interface. You may have
 to merge the databases manually. In most cases, you can import them
 into a spreadsheet or database.
+
+=head1 Troubleshooting
+
+Some problems can occur due to the CVS image being dynamic.
+
+=head2 MANIFEST out of sync -- file not found
+
+If you get a complaint that a "file is not found" when trying to do 
+a C<make tardist> or C<make dist>, just do:
+
+	rm MANIFEST
+	make manifest
+
+=head2 Trying to run from the CVS directory
+
+If you install in the directory where your CVS image lies, you will have
+problems.
