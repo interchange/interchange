@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.22 2002-03-29 18:47:33 racke Exp $
+# $Id: Util.pm,v 2.23 2002-04-15 14:40:03 jon Exp $
 # 
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -82,7 +82,7 @@ require HTML::Entities;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.22 $, 10);
+$VERSION = substr(q$Revision: 2.23 $, 10);
 
 BEGIN {
 	eval {
@@ -2138,7 +2138,7 @@ sub send_mail {
 #::logDebug("testing sendmail send none=$none");
 		last SEND if $none;
 #::logDebug("in Sendmail send $using");
-		open(MVMAIL,"|$Vend::Cfg->{SendMailProgram} $to") or last SEND;
+		open(MVMAIL,"|$Vend::Cfg->{SendMailProgram}") or last SEND;
 		my $mime = '';
 		$mime = Vend::Interpolate::mime('header', {}, '') if $use_mime;
 		print MVMAIL "To: $to\n", $reply, "Subject: $subject\n"
