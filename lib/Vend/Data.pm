@@ -1,6 +1,6 @@
 # Data.pm - Interchange databases
 #
-# $Id: Data.pm,v 1.13.4.6 2001-01-02 18:17:24 racke Exp $
+# $Id: Data.pm,v 1.13.4.7 2001-02-10 01:41:41 racke Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -291,7 +291,7 @@ sub set_field {
 
 sub product_field {
     my ($field_name, $code, $base) = @_;
-	return database_field($Vend::OnlyProducts, $field_name, $code)
+	return database_field($Vend::OnlyProducts, $code, $field_name)
 		if $Vend::OnlyProducts;
 	my ($db);
     $db = product_code_exists_ref($code, $base || undef)
