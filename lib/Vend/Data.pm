@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.45 2004-12-24 18:00:34 jon Exp $
+# $Id: Data.pm,v 2.46 2005-01-01 00:09:12 jon Exp $
 # 
 # Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -1739,7 +1739,7 @@ sub item_price {
 					or ($Vend::Cfg->{OnFly} && 'mv_fly')
 					or return undef;
 			}
-			$price = database_field($base, $item->{code}, $Vend::Cfg->{PriceField})
+			$price = database_field($base, $item->{code}, $Vend::Cfg->{PriceField});
 		}
 
 #::logDebug("price for item before chain $item->{code}=$price PriceField=$Vend::Cfg->{PriceField}");
