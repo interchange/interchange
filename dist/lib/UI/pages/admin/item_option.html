@@ -1,4 +1,9 @@
 [strip int]
+
+[if cgi sku]
+  [tag flag write]options[/tag]
+[/if]
+
 [if cgi mv_more_ip]<!-- 
 [calc]
 	for( grep defined $Values->{$_}, qw/
@@ -32,6 +37,32 @@
 	$CGI->{ui_display_only} = '__ProductFiles_0__:__DescriptionField__';
 	return;
 [/calc]
+
+[if cgi setting]
+    [tag flag write][cgi mv_data_table][/tag]
+    [tmp hide_results]
+        [if cgi setting eq 'none']
+            [data table="[cgi mv_data_table]" col="o_enable" key="[cgi item_id]" value="0"]
+            [data table="[cgi mv_data_table]" col="o_matrix" key="[cgi item_id]" value="0"]
+            [data table="[cgi mv_data_table]" col="o_modular" key="[cgi item_id]" value="0"]
+        [elsif cgi setting eq 'simple']
+            [data table="[cgi mv_data_table]" col="o_enable" key="[cgi item_id]" value="1"]
+            [data table="[cgi mv_data_table]" col="o_matrix" key="[cgi item_id]" value="0"]
+            [data table="[cgi mv_data_table]" col="o_modular" key="[cgi item_id]" value="0"]
+        [/elsif]
+        [elsif cgi setting eq 'matrix']
+            [data table="[cgi mv_data_table]" col="o_enable" key="[cgi item_id]" value="1"]
+            [data table="[cgi mv_data_table]" col="o_matrix" key="[cgi item_id]" value="1"]
+            [data table="[cgi mv_data_table]" col="o_modular" key="[cgi item_id]" value="0"]
+        [/elsif]
+        [elsif cgi setting eq 'modular']
+            [data table="[cgi mv_data_table]" col="o_enable" key="[cgi item_id]" value="1"]
+            [data table="[cgi mv_data_table]" col="o_matrix" key="[cgi item_id]" value="0"]
+            [data table="[cgi mv_data_table]" col="o_modular" key="[cgi item_id]" value="1"]
+        [/elsif]
+        [/if]
+    [/tmp]
+[/if]
 
 [tmp page_title]
 	[either]
@@ -104,21 +135,27 @@
 		disable
 	[/else][/if] options
 </H2>
-[table-editor
-	table="[cgi mv_data_table]"
-	hidden.item_id="[cgi item_id]"
-	hidden.ignore_sku="1"
-	across=3
-	key="[cgi item_id]"
-	ui_meta_view="[cgi ui_meta_view]"
-	ui_data_fields="[cgi ui_data_fields]"
-	ui_display_only="[cgi ui_display_only]"
-	widget.sku="hidden"
-	widget.o_master="hidden"
-	override.sku="[cgi item_id]"
-	override.o_master="NONE"
-	table_width="400"
-]
+
+[if type="!data" term="[cgi mv_data_table]::o_enable::[cgi item_id]"]
+    [tmp setting]none[/tmp]
+    [elsif type=data term="[cgi mv_data_table]::o_matrix::[cgi item_id]"] [tmp setting]matrix[/tmp] [/elsif]
+    [elsif type=data term="[cgi mv_data_table]::o_modular::[cgi item_id]"] [tmp setting]modular[/tmp] [/elsif]
+    [else] [tmp setting]simple[/tmp] [/else]
+[/if]
+
+<FORM METHOD=POST ACTION="[area @@MV_PAGE@@]">
+<INPUT TYPE=HIDDEN NAME="item_id" VALUE="[cgi item_id]">
+<INPUT TYPE=RADIO NAME="setting" VALUE="none" [if scratch setting eq 'none']CHECKED[/if]> No Options<BR>
+<INPUT TYPE=RADIO NAME="setting" VALUE="simple" [if scratch setting eq 'simple']CHECKED[/if]> Simple Options<BR>
+<INPUT TYPE=RADIO NAME="setting" VALUE="matrix" [if scratch setting eq 'matrix']CHECKED[/if]> Matrix Options<BR>
+<INPUT TYPE=RADIO NAME="setting" VALUE="modular" [if scratch setting eq 'modular']CHECKED[/if]> Modular Options<BR>
+[button text="Update" mv_check="Update"]
+mv_todo=return
+mv_nextpage="@@MV_PAGE@@"
+[/button]
+
+</FORM>
+
 [/then]
 [else]
 [loop list="[cgi item_id]"]
@@ -129,7 +166,7 @@
 </tr>
 
 <tr class=rnorm>
-	<td class=clabel>Option type:
+	<td class=clabel colspan=2>Option type:
 		[if-loop-data @_MV_OPTION_TABLE_@ o_matrix]
 			Matrix [tmp matrix_or_modular]1[/tmp]
 		[/if-loop-data]
@@ -138,13 +175,12 @@
 		[/if-loop-data]
 		[if !scratch matrix_or_modular]
 			Simple
-		[/if]</STRONG>
-	</td>
-	<td class=chelp align=right>
-<SPAN style="align: right">[page href="@@MV_PAGE@@" form="
-							ui_change_options=1
-							item_id=[loop-code]
-							"]Change</A></span><br>
+		[/if]
+&nbsp; &nbsp; &nbsp;
+                [page href="@@MV_PAGE@@" form="
+			ui_change_options=1
+			item_id=[loop-code]
+			"]Change</A><br>
 	</td>
 </tr>
 <tr class=rtitle>
@@ -155,9 +191,9 @@
 <P>
 [/loop]
 
-[if type=data term="options::o_matrix::[cgi item_id]"]
+[if type=data term="[cgi mv_data_table]::o_matrix::[cgi item_id]"]
 	[include include/item_option_matrix]
-[elsif type=data term="options::o_modular::[cgi item_id]"]
+[elsif type=data term="[cgi mv_data_table]::o_modular::[cgi item_id]"]
 	[include include/item_option_modular]
 [/elsif]
 [else]
