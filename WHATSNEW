@@ -9,6 +9,35 @@
 Interchange 4.9.5 not yet released.
 
 
+Core
+----
+
+* Fixed problem with PreFork and mod_perl modes where Interchange children
+  kept order profile state between runs.
+
+* Make sure STDERR is selected in mod_perl mode in case some other mod_perl 
+  code uses select. 
+
+* Tolerate people forgetting and putting , on the end of a parameter
+  when using line2options. A comma should never be the last character, I
+  would think, but you can choose to not use the filter if by some
+  bizarre chance it is needed.
+
+UserTags
+--------
+
+* min-rows option added to table-organize tag. Allows building small
+  result sets in one column (or however many columns needed to reach
+  min-rows).
+
+* Reworked [tree ...] tag to use DBI placeholders if supported.
+  While this doesn't seem to save too much CPU on a machine that
+  has the database and IC on the same machine, it should relieve
+  some network bandwidth on distributed setups.
+
+  If it is an IC database, uses $db->query() as before.
+
+
 ------------------------------------------------------------------------------
 
 
