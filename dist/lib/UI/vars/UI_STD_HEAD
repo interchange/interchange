@@ -201,7 +201,7 @@ EOF
 	[calc]
 	return unless $sm_once;
 	$out = qq!</td></TR>!;
-	$out .= q!<tr bgcolor="#000000"><td colspan=2>!;
+	$out .= q!<tr bgcolor="#000000"><td>!;
 	$out .= q!<IMG SRC="@_UI_IMG_@admin/bg.gif" WIDTH="1" HEIGHT="1" alt=x>!;
 	$out .= q!</td></tr></table>!;
 	[/calc]
