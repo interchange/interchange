@@ -116,6 +116,22 @@ __NOLEFT_TOP__
 	[shipping_desc]
 	</td>
 </tr>
+[if value mv_handling]
+<tr>
+	<th align=right>
+		Handling Charge
+	</th>
+	<td>
+	[loop list="[value mv_handling]"]
+	[loop-change 1]
+		[condition]1[/condition]
+		[else]<BR>[/else]
+	[/loop-change 1]
+	[either][shipping_desc mode="[loop-code]"][or]CHARGED[/either]
+	[/loop]
+	</td>
+</tr>
+[/if]
 [if value phone_day]
 <tr>
 	<th align=right>
