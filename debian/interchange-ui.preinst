@@ -17,6 +17,13 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
+# If only interchange-ui is installed, we need to stop
+# the server first
+
+if [ ! -f /var/run/interchange-install ]; then
+	/etc/init.d/interchange stop
+fi
+
 # We use the file /var/run/interchange-install to record 
 # the installed interchange packages, so only one server
 # restart is needed 
