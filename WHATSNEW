@@ -43,6 +43,9 @@ Admin UI
   <mciancio@tiscali.it> for investigating to audit the permission checks)
   and a typo in if-mm.
 
+* Make link_template in layout.html editable (thanks to Mark Johnson
+  for the patch)
+
 * About links are working now in catalogs that are not based on foundation.
 
 * Edit button which appears on flex_select page if database attribute
@@ -50,6 +53,9 @@ Admin UI
 
 Payment
 -------
+
+* Improved documentation and added default URL in the Skipjack module.
+  Thanks to Ron Phipps <rphipps@reliant-solutions.com> for this patch.
 
 * Mispelled month name fixed in iTransact module which caused failure.
   Found by Cameron Prince.
