@@ -1749,7 +1749,7 @@ EOF
 
 	unless ($Conf{sharedir} eq 'NONE') {
 		print do_msg("Copying share/ files to $Conf{sharedir}");
-		my $oldpwd = getcwd();
+		my $oldpwd = cwd();
 		my @sharedirs;
 		eval {
 			chdir $Conf{vendroot} or die "\nchdir $Conf{vendroot}: $!\n";
@@ -2063,7 +2063,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.21 2000-09-25 11:33:20 heins Exp $
+$Id: makecat.PL,v 1.22 2000-09-25 15:41:27 jon Exp $
 
 =head1 INTRODUCTION
 

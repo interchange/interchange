@@ -10,7 +10,7 @@
 #
 
 use strict; 
-use Cwd 'getcwd';
+use Cwd 'cwd';
 
 $| = 1;
 undef $/;
@@ -44,7 +44,7 @@ EOT
 
 die "No $srcname/ directory in which to find help fragments to process!"
 	unless -d $srcname;
-my $writedir = getcwd;
+my $writedir = cwd();
 print "Complete help files will be written to $writedir\n";
 my $srcdir = "$writedir/$srcname";
 chdir $srcdir or die "Couldn't chdir to $srcdir: $!";

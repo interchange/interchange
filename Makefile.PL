@@ -543,7 +543,7 @@ sub initialize {
 		install_file('.', $realdir, $_) for @sharefiles;
 
 		# build context-sensitive admin help files
-		my $sourcedir = getcwd;
+		my $sourcedir = cwd();
 		BUILD_HELP_HTML: {
 			chdir "$realdir/share/akopia/ui/help" or last BUILD_HELP_HTML;
 			local $/;

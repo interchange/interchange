@@ -11,7 +11,7 @@
 #
 
 use Cwd;
-$oldpwd = getcwd;
+$oldpwd = cwd();
 
 chdir "../../../..";
 @lines = `rgrep -r help_name *`;
