@@ -64,6 +64,8 @@ Core
 * Minor cleanup in Data.pm, including ensuring $obj->{DELIMITER} 
   and $obj->{delimiter} match.
 
+* Avoid infinite loops in catalog configuration caused by includes.
+ 
 Filters
 -------
 

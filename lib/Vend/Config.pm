@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.86 2002-12-13 04:45:17 jon Exp $
+# $Id: Config.pm,v 2.87 2002-12-30 00:22:01 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -45,7 +45,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.86 $, 10);
+$VERSION = substr(q$Revision: 2.87 $, 10);
 
 my %CDname;
 
@@ -690,6 +690,7 @@ sub config {
 	}
 
 	my(@include) = ($passed_file || $C->{ConfigFile});
+	my %include_hash = ($include[0] => 1);
 	my $done_one;
 	my ($db, $dname, $nm);
 	my ($before, $after);
@@ -706,6 +707,7 @@ sub config {
 		# Backwards because of unshift;
 		for (@hidden_config) {
 			unshift @include, $_;
+			$include_hash{$_} = 1;
 		}
 
 		@hidden_config = grep -f $_, 
@@ -715,6 +717,7 @@ sub config {
 
 		for (@hidden_config) {
 			push @include, $_;
+			$include_hash{$_} = 1;
 		}
 	}
 
@@ -736,6 +739,7 @@ sub config {
 		}
 		close CMDLINE;
 		push @include, $fn;
+		$include_hash{$_} = 1;
 	}
 
 	my $allcfg;
@@ -825,6 +829,11 @@ CONFIGLOOP:
 #print "found $_\n";
 			my $spec = $1;
 			$spec = substitute_variable($spec) if $C->{ParseVariables};
+			if ($include_hash{$spec}) {
+				config_error("Possible infinite loop through inclusion of $spec at line %s of %s, skipping", $., $configfile);
+				next;
+			}
+			$include_hash{$spec} = 1;
 			my $ref = [ $configfile, tell(CONFIG)];
 #print "saving config $configfile (pos $ref->[1])\n";
 			#unshift @include, [ $configfile, tell(CONFIG) ];
@@ -897,6 +906,7 @@ CONFIGLOOP:
 	}
 	$done_one = 1;
 	close CONFIG;
+	delete $include_hash{$configfile};
 
 	# See if we have an active configuration database
 	if($C->{ConfigDatabase}->{ACTIVE}) {
