@@ -118,6 +118,12 @@ Miscellaneous
   with the chosen owner and group. The patch was created and tested by Carl
   Bailey.
 
+UserTags
+--------
+
+* history-scan - Added new option called 'pageonly' that causes history-scan 
+  to return only the name of the previous page rather than a full "area" link.
+  Can be used to set mv_successpage for a form.
 
 ------------------------------------------------------------------------------
 
