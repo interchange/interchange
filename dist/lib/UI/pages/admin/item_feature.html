@@ -7,11 +7,11 @@
 		$CGI->{mv_data_table} = 'merchandising';
 	}
 	if(! $CGI->{ui_data_fields}) {
-		$CGI->{ui_data_fields} = 'sku products:description featured blurb_begin blurb_end start finish';
-		$CGI->{ui_display_only} = 'products:description';
+		$CGI->{ui_data_fields} = 'sku __UI_PRODUCT_TABLE__:description featured blurb_begin blurb_end timed_promotion start finish';
+		$CGI->{ui_display_only} = '__UI_PRODUCT_TABLE__:description';
 	}
 	if(! $CGI->{ui_break_before}) {
-		$CGI->{ui_break_before} = 'blurb_begin start';
+		$CGI->{ui_break_before} = 'blurb_begin timed_promotion';
 	}
 	my @args = (
 		 '__UI_BASE__/item_edit',
@@ -38,7 +38,7 @@
 <A HREF="[area href=admin/flex_editor
 				form='
 					item_id=[cgi item_id]
-					mv_data_table=products
+					mv_data_table=__UI_PRODUCT_TABLE__
 					page_title=Edit items: [cgi item_id]
 					help_name=inventory.edit
 					ui_no_meta_display=1

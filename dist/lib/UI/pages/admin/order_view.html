@@ -232,7 +232,7 @@
 
 <td width=330 bgcolor=__UI_C_INTBLOCK__>
 <font size=2>
-[either][sql-data orderline description][or][data table=products col=description key="[sql-data orderline sku]"][/either]
+[either][sql-data orderline description][or][data table=__UI_PRODUCT_TABLE__ col=description key="[sql-data orderline sku]"][/either]
 [if-sql-data orderline size]
 <BR>
 Size: [sql-data orderline size]

@@ -48,8 +48,8 @@
 [if type=explicit
 	compare=|
 			[newer
-				source=products/shipping.asc
-				target=`"etc/status.$Config->{CatalogName}"`
+				source=__UI_PRODUCT_DIR__/shipping.asc
+				target=`"$Config->{ConfDir}/status.$Config->{CatalogName}"`
 				]
 			|]
 [value name=ui_changes_made set=1 hide=1]

@@ -22,19 +22,19 @@
 	[check-upload file="[cgi mv_data_table].[cgi ui_upload_ext]" same=1]
 	[/if]
 
-	[if type=file term="products/[cgi mv_data_table].[cgi ui_upload_ext]"]
+	[if type=file term="__UI_PRODUCT_DIR__/[cgi mv_data_table].[cgi ui_upload_ext]"]
 	[flag type=write table="[cgi mv_data_table]"]
 	[/if]
 
 	[if cgi ui_upload_ext eq add]
 	[import-fields	table="[cgi mv_data_table]"
-					file="products/[cgi mv_data_table].add"
+					file="__UI_PRODUCT_DIR__/[cgi mv_data_table].add"
 					delete="[cgi ui_allow_delete]"
 					move=1 add=1 dir=backup]
 	[elsif cgi ui_upload_ext eq update]
 	[import-fields	table="[cgi mv_data_table]"
 					delete="[cgi ui_allow_delete]"
-					file="products/[cgi mv_data_table].update"
+					file="__UI_PRODUCT_DIR__/[cgi mv_data_table].update"
 					move=1 dir=backup]
 	[/elsif]
 	[/if]
