@@ -1,0 +1,113 @@
+
+[if scratch component_after]
+[include file="templates/components/[scratch component_after]"]
+[set component_after][/set]
+[/if]
+				  </td>
+				  <td valign=top align=center width=132>
+                    <table width="132" border="1" cellspacing="0" cellpadding="0" bordercolorlight="#FF9900" bordercolordark="#FF9900">
+                      <tr valign="baseline"> 
+                        <td>
+
+[seti cross_codes][loop
+	random=3
+	search=`
+		my $search = q{
+			st=db
+			fi=merchandising
+		};
+		if($cat = $Scratch->{cross_sale}) {
+			$Scratch->{right_banner} = 'Also see...';
+			$search .= "se=$cat\n";
+			$search .= "sf=cross_category";
+		}
+		else {
+			$Scratch->{right_banner} = 'Specials';
+			$search .= "se=$cat\n";
+			$search .= "sf=cross_category";
+		}
+		return $search;
+	`
+][loop-code]
+[/loop]
+[/seti]
+
+[loop
+	list="[either]
+			[scratch cross_codes]
+		  [or]
+		  [loop search='ra=yes' random=3] [loop-code][/loop]
+		  [/either]"
+		  ]
+                          <table width="132" border="0" cellspacing="0" cellpadding="0">
+                            <tr bgcolor="#FF9900" align="center" valign="middle"> 
+                              <td><font size="2" color="#FFFFFF"><i><b><font face="Verdana, Arial, Helvetica, sans-serif">
+							[scratchd right_banner]</font></b></i></font></td>
+                            </tr>
+                            <tr align="center"> 
+                              <td>
+[list]
+                                <table width="132" border="0" cellspacing="0" cellpadding="0">
+                                  <tr> 
+                                    <td width="132" align="center"><font color="#000000" size="1" face="Verdana, Arial, Helvetica, sans-serif"><b>[loop-field description]</b></font></td>
+                                  </tr>
+                                  <tr> 
+                                    <td width="132" align="center"><font color="#000000" size="1" face="Verdana, Arial, Helvetica, sans-serif"><font size="2"><b>[order [loop-code]]Buy 
+                                      Now[/order]</b></font></font></td>
+                                  </tr>
+                                  <tr> 
+                                    <td width="132" align="center"> 
+                                      <table width="80" border="0" cellspacing="0" cellpadding="0">
+                                        <tr> 
+                                          <td><img src="thumb/[loop-field display]" width="80" height="80"></td>
+                                        </tr>
+                                      </table>
+                                    </td>
+                                  </tr>
+                                  <tr> 
+                                    <td width="132" align="center" height="5">&nbsp;</td>
+                                  </tr>
+                                  <tr> 
+                                    <td width="132" align="center"><font color="#000000" size="1" face="Verdana, Arial, Helvetica, sans-serif">Our 
+                                      Price:</font> <font color="#000000" size="1" face="Verdana, Arial, Helvetica, sans-serif">[loop-price]</font></td>
+                                  </tr>
+                                  <tr> 
+                                    <td width="132" align="center"><font color="#0099FF" size="1" face="Verdana, Arial, Helvetica, sans-serif"><A HREF="[area [loop-code]]"><font size="2">More 
+                                      Information</font></a></font></td>
+                                  </tr>
+                                  <tr> 
+                                    <td width="132" align="center">&nbsp;</td>
+                                  </tr>
+                                </table>
+[/list]
+								
+                              </td>
+                            </tr>
+                            <tr align="center">
+                              <td>&nbsp;</td>
+                            </tr>
+                          </table>
+[/loop]
+
+				  </td>
+				  </tr>
+				  </table>
+                  </td>
+                </tr>
+                <tr> 
+                  <td bgcolor="#999999" width="131"><img src="navigation/poweredby.gif" width="131" height="61"></td>
+                  <td width="12">&nbsp;</td>
+                  <td valign="top" colspan=2>&nbsp;</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</div>
+</body>
+</html>

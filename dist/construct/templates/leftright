@@ -1,8 +1,8 @@
 [comment]
 ui_template: Yes
-ui_template_name: leftonly
-ui_template_layout: LEFTONLY_TOP, UI_CONTENT, LEFTONLY_BOTTOM
-ui_template_description: Page with top/left areas.
+ui_template_name: leftright
+ui_template_layout: LEFTRIGHT_TOP, UI_CONTENT, LEFTRIGHT_BOTTOM
+ui_template_description: Page with top/left/right areas.
 
 page_title: 
 	description: Page title
