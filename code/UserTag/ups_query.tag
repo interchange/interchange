@@ -32,8 +32,6 @@ sub {
 	# In the U.S., UPS only wants the 5-digit base ZIP code, not ZIP+4
 	$country eq 'US' and $zip =~ /^(\d{5})/ and $zip = $1;
 
-::logGlobal("calling with: " . join("|", $mode, $origin, $zip, $weight, $country,$modulo));
-
 	my $cache;
 	my $cache_code;
 	my $db;
