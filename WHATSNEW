@@ -103,6 +103,13 @@ Debian
 * Check if /etc/init.d/interchange and /usr/sbin/interchangeconfig are 
   executable in interchange-ui maintainer scripts.
 
+Miscellaneous
+-------------
+
+* Fix a bug that prevented the cgi-bin link program from being associated 
+  with the chosen owner and group. The patch was created and tested by Carl
+  Bailey.
+
 
 ------------------------------------------------------------------------------
 
