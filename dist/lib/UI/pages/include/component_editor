@@ -263,8 +263,12 @@ New name: <input type=text name=ui_destination size=22 value="">
 		js_changed=changed
 		override.ui_body_text=`$Scratch->{c_content}`
 		table=mv_metadata
-		ui_data_fields="ui_body_text"
-		ui_display_only="ui_body_text"
+		ui_data_fields="code ui_body_text"
+		notable=1
+		no-table-meta=1
+		widget.ui_body_text="textarea"
+		width.ui_body_text="90"
+		height.ui_body_text="42"
 		ui_hide_key=1
 		view=ui_component
 		]
