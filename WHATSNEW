@@ -70,6 +70,11 @@ Core and usertags
 * New methods hash_query and get_slice added to the Table
   modules.
 
+Payment
+-------
+
+* Bank of America payment module added
+
 UI
 --------
 * Static page building uses the original catalog settings instead
