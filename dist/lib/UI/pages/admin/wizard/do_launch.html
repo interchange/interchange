@@ -26,8 +26,8 @@ nukeorders           => sub {
 						$tdb->query('delete from transactions');
                     },
 enablesecure        => 'SECURE_ENABLE',
-startorder         => sub {
-						$Values->{startorder} = '01000' unless $Values->{startorder};
+orderstart 	    => sub {
+						$Values->{orderstart} = '01000' unless $Values->{orderstart};
 						$Tag->substitute_file(
 								{ 
 									begin => q{^\w+},
@@ -36,11 +36,11 @@ startorder         => sub {
 									end => q!$!,
 									greedy => 0,
 									file => 'etc/order.number',
-									body => $Values->{startorder},
+									body => $Values->{orderstart},
 								}
 						);
 					},
-
+);
 	for (keys %doit) {
 		my $val;
 		next unless $val = $doit{$_};
