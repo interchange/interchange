@@ -1,3 +1,11 @@
+[if !session admin]
+[or !session logged_in]
+[then]
+	[set violation]Must be logged in as admin.[/set]
+	[bounce page="__UI_BASE__/error"]
+[/then]
+[/if]
+
 [perl]
 	my @filters = grep /^ui_filter:/, keys %$CGI;
 	foreach my $key (@filters) {
@@ -56,7 +64,7 @@
 	}
 	my $page = $Tag->filter('filesafe', $CGI->{ui_page});
 	if( ! $page) {
-		$Scratch->{ui_error} = "No page name given.";
+		$Scratch->{ui_error} = errmsg("No page name given.");
 		$Tag->bounce('__UI_BASE__/error');
 		return;
 	}
