@@ -1,6 +1,6 @@
 # Vend::File - Interchange file functions
 #
-# $Id: File.pm,v 2.2 2003-04-02 03:06:18 ramoore Exp $
+# $Id: File.pm,v 2.3 2003-04-02 19:08:29 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -52,7 +52,7 @@ use Errno;
 use Vend::Util;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 
 sub writefile {
     my($file, $data, $opt) = @_;
@@ -172,8 +172,10 @@ sub readfile {
     local($/);
 
 	unless(allowed_file($ifile)) {
-		::logError("Can't read file '%s' with NoAbsolute set" , $ifile);
-		::logGlobal({ level => 'auth'}, "Can't read file '%s' with NoAbsolute set" , $ifile );
+		my $msg = $Vend::File::errstr
+				|| ::errmsg("Can't read file '%s' with NoAbsolute set" , $ifile);
+		::logError($msg);
+		::logGlobal({ level => 'auth'}, $msg);
 		return undef;
 	}
 
@@ -552,10 +554,26 @@ sub check_user_read {
 	return 0;
 }
 
+sub file_control {
+	my ($fn, $write, $global, @caller) = @_;
+	return 1 if $Vend::superuser and ! $global;
+	my $subref = $global ? $Global::FileControl : $Vend::Cfg->{FileControl};
+	my $f = $fn;
+	CHECKPATH: {
+		do {
+			if($subref->{$f}) {
+				return $subref->{$f}->($fn, $write, @caller);
+			}
+		} while $f =~ s{/[^/]*$}{};
+	}
+	return 1;
+}
+
 sub allowed_file {
 	my $fn = shift;
 	my $write = shift;
 	my $status = 1;
+	$Vend::File::errstr = '';
 	if(	$Global::NoAbsolute
 			and
 		$fn !~ $Vend::Cfg->{AllowedFileRegex}
@@ -565,6 +583,25 @@ sub allowed_file {
 	{
 		$status = $write ? check_user_write($fn) : check_user_read($fn);
 	}
+	if($status and $Global::FileControl) {
+		$status &= file_control($fn, $write, 1, caller(0))
+			or $Vend::File::errstr ||=
+							::errmsg(
+								 "Denied %s access to %s by global FileControl.",
+								 $write ? 'write' : 'read',
+								 $fn,
+							 );
+	}
+	if($status and $Vend::Cfg->{FileControl}) {
+		$status &= file_control($fn, $write, 0, caller(0))
+		  or $Vend::File::errstr ||=
+		  					::errmsg(
+								 "Denied %s access to %s by catalog FileControl.",
+								 $write ? 'write' : 'read',
+								 $fn,
+							 );
+	}
+	
 #::logDebug("allowed_file check for $fn: $status");
 	return $status;
 }

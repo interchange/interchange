@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.154 2003-04-01 04:12:32 mheins Exp $
+# $Id: Interpolate.pm,v 2.155 2003-04-02 19:08:29 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.154 $, 10);
+$VERSION = substr(q$Revision: 2.155 $, 10);
 
 @EXPORT = qw (
 
@@ -2191,11 +2191,12 @@ sub log {
 
 	$file = Vend::Util::escape_chars($file);
 	unless(Vend::File::allowed_file($file)) {
-		my $msg = errmsg(
-						"%s: Can't use file '%s' with NoAbsolute set",
-						'log',
-						$file,
-					);
+		my $msg = $Vend::File::errstr
+				|| errmsg(
+								"%s: Can't use file '%s' with NoAbsolute set",
+								'log',
+								$file,
+							);
 		::logError($msg);
 		::logGlobal({ level => 'auth'}, $msg);
 		return undef;
@@ -2424,11 +2425,12 @@ sub tag_counter {
 	}
 
 	unless (allowed_file($file)) {
-		my $msg = errmsg(
-						"%s: Can't use file '%s' with NoAbsolute set",
-						'counter',
-						$file,
-					);
+		my $msg = $Vend::File::errstr
+				|| errmsg(
+								"%s: Can't use file '%s' with NoAbsolute set",
+								'counter',
+								$file,
+							);
 		::logError($msg);
 		::logGlobal({ level => 'auth'}, $msg);
 		return undef;

@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.48 2003-04-01 04:12:32 mheins Exp $
+# $Id: Order.pm,v 2.49 2003-04-02 19:08:29 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.48 $, 10);
+$VERSION = substr(q$Revision: 2.49 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -798,7 +798,8 @@ sub mail_order {
 # LEGACY
 	if ($::Values->{mv_order_report}) {
 		unless( allowed_file($::Values->{mv_order_report}) ) {
-			my $msg = errmsg(
+			my $msg = $Vend::File::errstr
+					|| errmsg(
 							"%s: Can't use file '%s' with NoAbsolute set",
 							'mail_order',
 							 $::Values->{mv_order_report},

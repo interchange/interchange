@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.104 2003-04-01 17:34:36 mheins Exp $
+# $Id: Config.pm,v 2.105 2003-04-02 19:08:29 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.104 $, 10);
+$VERSION = substr(q$Revision: 2.105 $, 10);
 
 my %CDname;
 my %CPname;
@@ -174,6 +174,14 @@ my %UseExtended = (qw(
 					Catalog				1
 					SubCatalog			1
 					Variable			1
+				));
+
+my %InitializeEmpty = (qw(
+					FileControl			1
+				));
+
+my %AllowMappedAction = (qw(
+					FileControl			1
 				));
 
 my $StdTags;
@@ -302,6 +310,7 @@ sub global_directives {
 	['TagGroup',		 'tag_group',		 $StdTags],
 	['TagInclude',		 'tag_include',		 'ALL'],
 	['ActionMap',		 'action',			 ''],
+	['FileControl',		 'action',			 ''],
 	['FormAction',		 'action',			 ''],
 	['MaxServers',       'integer',          10],
 	['GlobalSub',		 'subroutine',       ''],
@@ -361,6 +370,7 @@ sub catalog_directives {
 
 	['ErrorFile',        undef,              'error.log'],
 	['ActionMap',		 'action',			 ''],
+	['FileControl',		 'action',			 ''],
 	['FormAction',		 'action',			 ''],
 	['ItemAction',		 'action',			 ''],
 	['PageDir',          'relative_dir',     'pages'],
@@ -1618,10 +1628,12 @@ sub get_wildcard_list {
 	return parse_regex($var, $value);
 }
 
-# Set up an ActionMap or FormAction
+# Set up an ActionMap or FormAction or FileAction
 sub parse_action {
 	my ($var, $value, $mapped) = @_;
-	return {} if ! $value;
+	if (! $value) {
+		return $InitializeEmpty{$var} ? '' : {};
+	}
 
 	return if $Vend::ExternalProgram;
 
@@ -1630,11 +1642,11 @@ sub parse_action {
 		$c = $mapped;
 	}
 	elsif(defined $C) {
-		$c = $C->{$var};
+		$c = $C->{$var} ||= {};
 	}
 	else {
 		no strict 'refs';
-		$c = ${"Global::$var"};
+		$c = ${"Global::$var"} ||= {};
 	}
 
 	if (defined $C and ! $c->{_mvsafe}) {
@@ -1648,9 +1660,22 @@ sub parse_action {
 	$sub = $1;
 
 	if($sub !~ /\s/) {
-		$c->{$name} = $Global::GlobalSub->{$_}
-			if defined $Global::GlobalSub->{$_};
-		return $c;
+		no strict 'refs';
+		if($sub =~ /::/ and ! $C) {
+			$c->{$name} = \&{"$sub"};
+		}
+		else {
+			if($C and $C->{Sub}) {
+				$c->{$name} = $C->{Sub}{$sub};
+			}
+
+			if(! $c->{name} and $Global::GlobalSub) {
+				$c->{$name} = $Global::GlobalSub->{$sub};
+			}
+		}
+		if(! $c->{$name}) {
+			$@ = errmsg("Mapped %s action routine '%s' is non-existant.", $var, $sub);
+		}
 	}
 	elsif ( ! $mapped and $sub !~ /^sub\b/) {
 		my $code = <<EOF;
