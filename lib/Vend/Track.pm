@@ -1,6 +1,6 @@
 # Track.pm - Interchange User Tracking
 #
-# $Id: Track.pm,v 1.3 2000-07-12 03:08:12 heins Exp $
+# $Id: Track.pm,v 1.3.4.1 2001-03-23 12:31:55 racke Exp $
 #
 # Copyright 2000 by Stefan Hornburg <racke@linuxia.de>
 #
@@ -33,7 +33,7 @@ package Vend::Track;
 require Exporter;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.3 $, 10);
+$VERSION = substr(q$Revision: 1.3.4.1 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -101,6 +101,10 @@ sub header {
 		} else {
 			push(@hdr, "$aref->[0]=$aref->[1]");
 		}
+	}
+	for(@hdr) {
+		s/\n/<LF>/g;
+		s/\r/<CR>/g;
 	}
 	join('&',@hdr);
 }
