@@ -354,7 +354,7 @@ EOF
 	    <INPUT type="image" src="__THEME__/recalculate_button.gif" BORDER=0>
 	  </td>
 	  <td align="center" valign="center" class="categorybar">
-    		[button
+    		<b>[button
 		text="Check out"
      		src="checkout_button.gif"
 		hidetext=1
@@ -362,7 +362,7 @@ EOF
 		]
 			mv_todo=return
 			mv_nextpage=ord/checkout
-		[/button]
+		[/button]</b>
 	  </td>
 	  <td align="center">
 	    [if type=explicit compare="[control continue_shopping]"]

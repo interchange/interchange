@@ -867,16 +867,23 @@ ui_template_name: noleft
 			
       </td>
     </tr>
-    <tr>
+    <tr><td>
+      <br>
+      <table align="center" cellpadding="10" cellspacing="10"><tr>
       <td>
-        <p>&nbsp;</p>
 	<INPUT TYPE=SUBMIT VALUE="Refresh">	
-	<B><INPUT TYPE=SUBMIT VALUE="Place Order" name="mv_todo.submit.x" style="border-color: __BARBG__; background-color: __XBARBG__; color: __XBARTEXT__; font-weight: bold"></B>
-        <p>&nbsp;</p>
-        </form>
-	[seti clear_errors][error all=1 hide=1 comment="Clear errors"][/seti]
       </td>
-    </tr>
+      <td class="categorybar">
+	<B>
+	<INPUT TYPE=SUBMIT VALUE="Place Order" name="mv_todo.submit.x" style="border-color: __BARBG__; background-color: __XBARBG__; color: __XBARTEXT__; font-weight: bold">
+	</B>
+      </td>
+      </tr></table>
+        
+      </form>
+      [seti clear_errors][error all=1 hide=1 comment="Clear errors"][/seti]
+
+    </td></tr>
     </table>
 
     <p>			
