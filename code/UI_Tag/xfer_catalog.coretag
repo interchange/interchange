@@ -65,7 +65,7 @@ then
 	exit 1;
 fi
 
-cp xfer/exports/* products
+cp -r xfer/exports/* products
 EOF
 	my %maptype = (
 		mysql => {
@@ -201,13 +201,18 @@ EOF
 	}
 
 	for my $t (keys %export) {
+		$export{$t} =~ m{(.*)/}
+			and do {
+				my $dircomp = $1;
+				File::Path::mkpath("$root/xfer/exports/$dircomp");
+			};
 		Vend::Data::export_database($t, "$root/xfer/exports/$export{$t}", undef, {})
 			or logError("Failed to export table $t in xfer-catalog.");
 	}
 	for(keys %dsn) {
 		my $ext = $_ eq $::Variable->{SQLDSN} ? 'maindump' : 'dump';
 		my $cmd = "$dsn{$_} > xfer/dumps/$dbname{$_}.$dbtype{$_}.$ext";
-::logDebug("executing $cmd");
+#::logDebug("executing $cmd");
 		system $cmd;
 		if($?) {
 			my $status = $?;
