@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.13 2000-10-05 19:41:51 heins Exp $
+# $Id: UserDB.pm,v 1.13.4.1 2000-11-28 22:33:52 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.13 $, 10);
+$VERSION = substr(q$Revision: 1.13.4.1 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -63,38 +63,38 @@ is selected by the form values C<s_nickname>, C<b_nickname>, and C<p_nickname>.
 
 User login:
 
-    $obj->login();        # Form values are
-                          # mv_username, mv_password
+	$obj->login();        # Form values are
+	                      # mv_username, mv_password
 
 Create account:
 
-    $obj->new_account();  # Form values are
-                          # mv_username, mv_password, mv_verify
+	$obj->new_account();  # Form values are
+	                      # mv_username, mv_password, mv_verify
 
 Change password:
 
-    $obj->change_pass();  # Form values are
-                          # mv_username, mv_password_old, mv_password, mv_verify(new)
+	$obj->change_pass();  # Form values are
+	                      # mv_username, mv_password_old, mv_password, mv_verify(new)
 
 Get, set user information:
 
-    $obj->get_values();
-    $obj->set_values();
-    $obj->clear_values();
+	$obj->get_values();
+	$obj->set_values();
+	$obj->clear_values();
 
 Save, restore filed user information:
 
-    $obj->get_shipping();
-    $obj->set_shipping();
- 
-    $obj->get_billing();
-    $obj->set_billing();
- 
-    $obj->get_preferences();
-    $obj->set_preferences();
+	$obj->get_shipping();
+	$obj->set_shipping();
 
-    $obj->get_cart();
-    $obj->set_cart();
+	$obj->get_billing();
+	$obj->set_billing();
+
+	$obj->get_preferences();
+	$obj->set_preferences();
+
+	$obj->get_cart();
+	$obj->set_cart();
 
 =head2 Shipping Address Book
 
@@ -135,7 +135,7 @@ qw!
 	country	
 	phone_day
 	mv_shipmode
-  !
+!
 );
 
 =head2 Accounts Book
@@ -179,7 +179,7 @@ qw!
 	country	
 	phone_day
 	mv_shipmode
-  !
+!
 );
 
 @B_FIELDS = ( 
@@ -760,8 +760,8 @@ sub delete_preferences {
 sub delete_nickname {
 	my($self, $name, @fields) = @_;
 
-	die "no fields?" unless @fields;
-	die "no name?" unless $name;
+	die ::errmsg("no fields?") unless @fields;
+	die ::errmsg("no name?") unless $name;
 
 	$self->get_hash($name) unless ref $self->{$name};
 
@@ -788,8 +788,8 @@ sub delete_nickname {
 sub set_hash {
 	my($self, $name, @fields) = @_;
 
-	die "no fields?" unless @fields;
-	die "no name?" unless $name;
+	die ::errmsg("no fields?") unless @fields;
+	die ::errmsg("no name?") unless $name;
 
 	$self->get_hash($name) unless ref $self->{$name};
 
@@ -800,7 +800,7 @@ sub set_hash {
 	$::Values->{$nick_field} = $nick;
 	$CGI::values{$nick_field} = $nick if $self->{CGI};
 
-	die "no nickname?" unless $nick;
+	die ::errmsg("no nickname?") unless $nick;
 
 	$self->{$name}{$nick} = {} unless $self->{OPTIONS}{keep}
 							   and    defined $self->{$name}{$nick};
@@ -830,8 +830,8 @@ sub get_hash {
 	my ($nick, $s);
 
 	eval {
-		die "no name?"					unless $name;
-		die "$field_name field not present to get $name\n"
+		die ::errmsg("no name?")					unless $name;
+		die ::errmsg("%s field not present to get %s", $field_name, $name) . "\n"
 										unless $self->{PRESENT}->{$field_name};
 
 		$s = $self->{DB}->field( $self->{USERNAME}, $field_name);
@@ -908,7 +908,7 @@ sub login {
 			$self->{PASSWORD} = lc $self->{PASSWORD};
 			$self->{USERNAME} = lc $self->{USERNAME};
 		}
-		die "Username does not exist.\n"
+		die ::errmsg("Username does not exist.") . "\n"
 			unless $self->{DB}->record_exists($self->{USERNAME});
 		my $db_pass = $self->{DB}->field(
 						$self->{USERNAME},
@@ -918,7 +918,7 @@ sub login {
 		if($self->{CRYPT}) {
 			$self->{PASSWORD} = crypt($pw,$db_pass);
 		}
-		die "Password mismatch.\n"
+		die ::errmsg("Password mismatch.") . "\n"
 			unless $self->{PASSWORD} eq $db_pass;
 
 		if($self->{PRESENT}->{ $self->{LOCATION}{EXPIRATION} } ) {
@@ -930,10 +930,10 @@ sub login {
 						$self->{USERNAME},
 						$self->{LOCATION}{EXPIRATION},
 						);
-			die "Expiration date not set.\n" 
+			die ::errmsg("Expiration date not set.") . "\n"
 				if ! $exp and $self->{EMPTY_EXPIRE_FATAL};
 			if($exp and $exp < $cmp) {
-				die "Expired $exp.\n";
+				die ::errmsg("Expired %s.", $exp) . "\n";
 			}
 		}
 
@@ -1032,12 +1032,12 @@ sub change_pass {
 my $GOOD_CHARS = '[-A-Za-z0-9_@.]';
 
 sub assign_username {
-        my $self = shift;
-        my $file = shift || $self->{OPTIONS}{'counter'};
-        my $start = $self->{OPTIONS}{username} || 'U00000';
-        $file = './etc/username.counter' if ! $file;
-        my $ctr = File::CounterFile->new($file, $start);
-        return $ctr->inc();
+	my $self = shift;
+	my $file = shift || $self->{OPTIONS}{'counter'};
+	my $start = $self->{OPTIONS}{username} || 'U00000';
+	$file = './etc/username.counter' if ! $file;
+	my $ctr = File::CounterFile->new($file, $start);
+	return $ctr->inc();
 }
 
 sub new_account {
@@ -1221,8 +1221,6 @@ sub set_cart {
 			$d->{$to} = [] unless ref $d->{$to};
 			push(@{$d->{$to}}, @{$from});
 		}
-		else {
-		}
 
 		$d->{$to} = $from;
 
@@ -1274,10 +1272,10 @@ sub userdb {
 				$Vend::Cfg->{AdminUserDB}{$user->{PROFILE}}
 				)
 			{
-#::logDebug("logged in $Vend::username via $user->{DB_ID} -- ADMIN");
+::logDebug("logged in $Vend::username via $user->{DB_ID} -- ADMIN");
 				$Vend::admin = 1;
 			}
-#::logDebug("logged in $Vend::username via $user->{DB_ID}");
+::logDebug("logged in $Vend::username via $user->{DB_ID} $Vend::Cfg->{AdminUserDB}");
 			undef $Vend::Cookie
 				unless $Vend::Cfg->{StaticLogged};
 			::update_user();
