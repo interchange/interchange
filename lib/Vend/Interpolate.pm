@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.94 2001-07-03 15:12:21 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.95 2001-07-05 19:58:02 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.94 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.95 $, 10);
 
 @EXPORT = qw (
 
@@ -2900,7 +2900,7 @@ sub tag_cgi {
     my($value);
 
 	local($^W) = 0;
-	$CGI::values->{$var} = $opt->{set} if defined $opt->{set};
+	$CGI::values{$var} = $opt->{set} if defined $opt->{set};
 	$value = defined $CGI::values{$var} ? ($CGI::values{$var}) : '';
     if ($value) {
 		# Eliminate any Interchange tags
