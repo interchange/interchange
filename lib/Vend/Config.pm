@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.4 2001-08-20 21:02:21 heins Exp $
+# $Id: Config.pm,v 2.5 2001-09-01 14:20:30 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.4 $, 10);
+$VERSION = substr(q$Revision: 2.5 $, 10);
 
 my %CDname;
 
@@ -318,7 +318,7 @@ sub global_directives {
 	['HitCount',		 'yesno',            'No'],
 	['IpHead',			 'yesno',            'No'],
 	['IpQuad',			 'integer',          '1'],
-	['TemplateDir',      'root_dir', 	     ''],
+	['TemplateDir',      'root_dir_array', 	 ''],
 	['DomainTail',		 'yesno',            'Yes'],
 	['AcrossLocks',		 'yesno',            'No'],
 	['TolerateGet',		 'yesno',            'No'],
@@ -2092,6 +2092,15 @@ sub parse_regex {
 # unless it already starts with a leading /.
 
 sub parse_root_dir {
+	my($var, $value) = @_;
+	return '' unless $value;
+	$value = "$Global::VendRoot/$value"
+		unless Vend::Util::file_name_is_absolute($value);
+	$value =~ s./+$..;
+	return $value;
+}
+
+sub parse_root_dir_array {
 	my($var, $value) = @_;
 	return [] unless $value;
 	$value = "$Global::VendRoot/$value"
