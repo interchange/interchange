@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.30 2003-05-05 14:18:53 mheins Exp $
+# $Id: Editor.pm,v 1.31 2003-05-11 04:04:25 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.30 $, 10);
+$VERSION = substr(q$Revision: 1.31 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -3666,12 +3666,16 @@ show_times("end table editor call item_id=$key") if $Global::ShowTimes;
 			logError("must have chunk {%s} defined in overall template.", $item);
 			return undef;
 		};
-		$overall_template =~ /{TOP_OF_FORM}/
-			or return $death->('TOP_OF_FORM');
-		$overall_template =~ /{HIDDEN_FIELDS}/
-			or return $death->('HIDDEN_FIELDS');
-		$overall_template =~ /{BOTTOM_OF_FORM}/
-			or return $death->('BOTTOM_OF_FORM');
+
+		unless($opt->{incomplete_form_ok}) {
+			$overall_template =~ /{TOP_OF_FORM}/
+				or return $death->('TOP_OF_FORM');
+			$overall_template =~ /{HIDDEN_FIELDS}/
+				or return $death->('HIDDEN_FIELDS');
+			$overall_template =~ /{BOTTOM_OF_FORM}/
+				or return $death->('BOTTOM_OF_FORM');
+		}
+
 		while($overall_template =~ m/\{((?:_INCLUDE_|COLUMN_|_SPREAD_).*?)\}/g) {
 			my $name = $1;
 			my $orig = $name;
