@@ -11,6 +11,7 @@ Variable UI_STD_DBEDIT_TABLE <<EndOfVar
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_filter">
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="admin/flex_select">
 <INPUT TYPE=hidden NAME=mv_data_table VALUE="[value mv_data_table]">
+<INPUT TYPE=hidden NAME=ui_meta_specific VALUE="[cgi ui_meta_specific]">
 <INPUT TYPE=hidden NAME=mv_data_key VALUE="[value ui_data_key_name]">
 <INPUT TYPE=hidden NAME=mv_data_decode VALUE="[value mv_data_decode]">
 [calc]
@@ -101,7 +102,7 @@ EOF
 											key => $key,
 										} );
 		my $meta = '';
-		if($super) {
+		if($super and ($Variable->{UI_META_LINK} || $Values->{ui_meta_force}) ) {
 			$meta .= '<FONT SIZE=1><BR>';
 			# Get global variables
 			my $base = $Tag->var('UI_BASE', 1);
@@ -130,7 +131,7 @@ EOF
 				if $CGI->{ui_meta_specific};
 			$meta .= '</FONT>';
 		}
-Log("Current preload val for $table:$col -- $currval");
+#Log("Current preload val for $table:$col -- $currval");
 		my $display = $Tag->display({
 										table => $table,
 										column => $col,
@@ -144,10 +145,10 @@ Log("Current preload val for $table:$col -- $currval");
 EOF
 		$Document->write(<<EOF);
 <tr>
-<td bgcolor=__UI_C_INTBLOCK__ align=right width=__UI_LEFT_WIDTH__>
+<td bgcolor=__UI_C_INTBLOCK__ align=right width=__UI_LEFT_WIDTH__ VALIGN=TOP>
 $label$meta
 </td>
-<td bgcolor=__UI_C_INTBLOCK__ width=__UI_RIGHT_WIDTH__>
+<td bgcolor=__UI_C_INTBLOCK__ width=__UI_RIGHT_WIDTH__ VALIGN=TOP>
 $display
 </td>
 </tr>
