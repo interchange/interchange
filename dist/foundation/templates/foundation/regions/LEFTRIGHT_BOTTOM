@@ -1,4 +1,4 @@
-    [include file="templates/components/[control component none]"][control]
+    [include file="templates/components/[control component none]" group=content][control]
 
   <center>
     <p><a href="http://www.akopia.com/interchange"><img src="__THEME_IMG_DIR__poweredby.gif" border="0"></a></p>
@@ -12,7 +12,7 @@
     <img src="__THEME_IMG_DIR__littlebar.gif" width="1" height="650">
   </td>
   <td width="15%" valign="top" align="right" class="maincontent">
-    [include file="templates/components/[control component none]"][control]
+    [include file="templates/components/[control component none]" group=vertical][control]
   </td>
 </tr>
 </table>

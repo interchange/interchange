@@ -1,4 +1,4 @@
-    [include file="templates/components/[control component none]"][control]
+    [include file="templates/components/[control component none]" group=content][control]
 
   <center>
     <p><a href="http://www.akopia.com/interchange"><img src="__THEME_IMG_DIR__poweredby.gif" border="0"></a></p>
