@@ -84,6 +84,7 @@ EOF
 
 [query	hashref=main
 	st=db
+	ml=100000
 	table=transactions
 	sql="
 	select order_number, affiliate, campaign, total_cost, payment_method, state, city, status, order_date
