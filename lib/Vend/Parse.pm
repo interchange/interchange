@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 2.18 2002-06-27 22:24:10 jon Exp $
+# $Id: Parse.pm,v 2.19 2002-07-20 14:56:08 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 2.18 $, 10);
+$VERSION = substr(q$Revision: 2.19 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -650,6 +650,9 @@ sub start {
 			}
 			$Vend::StatusLine = '' if ! $Vend::StatusLine;
 			$Vend::StatusLine .= "\n" if $Vend::StatusLine !~ /\n$/;
+			$Vend::StatusLine .= <<EOF if $attr->{target};
+Window-Target: $attr->{target}
+EOF
 			$Vend::StatusLine .= <<EOF;
 Status: 302 moved
 Location: $attr->{href}
