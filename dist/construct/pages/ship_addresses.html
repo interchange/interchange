@@ -45,7 +45,7 @@ __LEFTONLY_TOP__
 	st=db
 	sql=|
 		select count(*) from ship_addresses
-		where user = '[data session username]'
+		where username = '[data session username]'
 	|
 ]
 			[seti addresses][sql-code][/seti]
@@ -72,7 +72,7 @@ __LEFTONLY_TOP__
 [search-region more=1 search="
 		ra=yes
         st=sql
-        sq=select * from ship_addresses where user = '[data session username]'
+        sq=select * from ship_addresses where username = '[data session username]'
 		ml=999999
 		tf=entry
 		"]

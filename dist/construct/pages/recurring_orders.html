@@ -45,7 +45,7 @@ __LEFTONLY_TOP__
 	st=db
 	sql=|
 		select count(*) from recurring_orders
-		where user = '[data session username]'
+		where username = '[data session username]'
 	|
 ]
 			[seti orders][sql-code][/seti]
@@ -76,7 +76,7 @@ __LEFTONLY_TOP__
 [search-region more=1 search="
 		ra=yes
         st=sql
-        sq=select * from recurring_orders where user = '[data session username]'
+        sq=select * from recurring_orders where username = '[data session username]'
 		ml=999999
 		tf=code
 		"]
