@@ -72,8 +72,30 @@
 </td>
 <td bgcolor=__UI_C_INTBLOCK__>
 
+[calc]
+	$modes = <<'EOF';
+[loop lr=1 search="
+			ra=yes
+			fi=country
+			ml=1000
+			rf=code,shipmodes
+		"][loop-line]
+[/loop]
+EOF
+	my $mode = $CGI->{ui_shipmode};
+	my (@c) = map { s/\t.*//; $_ } grep /\b$mode\b/, split /\n/, $modes;
+	$Values->{ui_ship_country} = join " ", @c;
+	return;
+[/calc]
+[value ui_ship_country]
 <select name=ui_ship_country MULTIPLE size=10>
-[loop search="ra=yes/fi=country/ml=1000/tf=name/rf=code,name"]
+[loop search="
+			ra=yes
+			fi=country
+			ml=1000
+			tf=name
+			rf=code,name
+		" option=ui_ship_country]
 		 <OPTION VALUE="[loop-code]"> [loop-param name]
 [/loop]
 
