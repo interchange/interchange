@@ -162,7 +162,7 @@ ui_template_name: leftonly
     <INPUT TYPE=text NAME=phone_day VALUE="[value phone_day]" size="15" maxlength="20">
   </td>
   <td align=right> 
-    [L]Evening Phone[/L]
+    [error name=phone_night std_label="[L]Evening Phone[/L]"]
   </td>
   <td>
     <INPUT TYPE=text NAME=phone_night VALUE="[value phone_night]" size="15" maxlength="20">
@@ -323,13 +323,14 @@ ui_template_name: leftonly
     mv_nextpage=ord/checkout
   [/set]
 
-  <INPUT TYPE=hidden VALUE="Save and Checkout" NAME="mv_click"  >
-  <INPUT TYPE=SUBMIT VALUE="[L]Save and Checkout[/L]">
+  <INPUT TYPE=SUBMIT name=mv_click VALUE="[L]Save and Checkout[/L]">
   <br><br>
   <A HREF="[area ord/checkout]">[L]No change, go to checkout[/L]</A>
 [/if]
 
  </form>
+
+[seti clear_errors][error all=1 hide=1 comment="Clear errors"][/seti]
 
 <!-- END CONTENT -->
 
