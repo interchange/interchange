@@ -1180,7 +1180,6 @@ dist/src/vlink.c
 dist/src/vlink.pl
 eg/compact
 eg/globalsub/authorizenet
-eg/globalsub/ccvs
 eg/globalsub/signio
 eg/globalsub/test_card
 eg/gpg_display
@@ -1268,7 +1267,6 @@ lib/Vend/Parser.pm
 lib/Vend/Payment.pm
 lib/Vend/Payment/AuthorizeNet.pm
 lib/Vend/Payment/BoA.pm
-lib/Vend/Payment/CCVS.pm
 lib/Vend/Payment/CyberCash.pm
 lib/Vend/Payment/ECHO.pm
 lib/Vend/Payment/MCVE.pm
