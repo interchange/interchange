@@ -54,11 +54,11 @@ my $myimagedir = $Scratch->{myimagedir};
 my $row = <<"END";
 
 <tr class="">
-  <td valign=top class="contentbar2">
+  <td valign=top class="titletab_small">
     $delink<img src="${myimagedir}delsm.gif" border=0></a>&nbsp;&nbsp;
   </td>
   <td valign=top class="contentbar1">$golink$name</A></td>
-  <td valign=top class="contentbar2" nowrap><small>$last_update</small></td>
+  <td valign=top class="titletab_small" nowrap><small>$last_update</small></td>
 </tr>
 END
 
@@ -76,34 +76,31 @@ END
 
 <tr> 
   <td valign="top">
-    <table border="0" width="95%">
-    <tr>
-      <td align="center">
-        <table border="0" cellspacing="0" cellpadding="2">
-        <tr class="">
-          <td colspan=3 align=center class="categorybar">
-            [if explicit]
-            [condition]'[loop-code]' eq 'saved_carts_carts'[/condition]
-              [L]Saved Carts[/L]
-            [else]
-              [L]Recurring Orders[/L]
-            [/else]
-            [/if]
-           </td>
-        </tr>
-        <tr class="menubar">
-          <td class="menubar" align="left">&nbsp;X</td>
-          <td align="center" class="menubar">&nbsp;[L]Name[/L]</td>
-	  <td align="right" class="menubar">[L]Modified[/L]&nbsp;</td>
-        </tr>
-
-        [scratch [loop-code]]
-
-        </table>
-      </td>
-    </tr>
-    </table>
- 
+  <div padding="2" align="center">
+	<div align="center" class="carttiny_title">	  
+		[if explicit]
+	       	[condition]'[loop-code]' eq 'saved_carts_carts'[/condition]
+       		[L]Saved Carts[/L]
+        	[else]
+              	[L]Recurring Orders[/L]
+            	[/else]
+            	[/if]
+	</div>
+  	<div class="carttiny">
+  		<table width="100%" cellspacing="0" cellpadding="2">
+      			<tr>
+          			<td align="left" class=ctiny_heading>&nbsp;X</td>
+          			<td align="center" class=ctiny_heading>&nbsp;[L]Name[/L]</td>
+	  			<td align="right" class=ctiny_heading>[L]Modified[/L]&nbsp;</td>
+        		</tr>
+			<tr>
+				<td colspan="3">
+					[scratch [loop-code]]
+				</td>
+			</tr>
+  		</table>
+	</div>
+  </div>
   </td>
 </tr>
 

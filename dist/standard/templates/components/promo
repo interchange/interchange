@@ -29,9 +29,9 @@ banner:
 [/comment]
 <!-- BEGIN COMPONENT [control component promo] -->
 
-<table width="95%" align=center>
-<tr class="titlebar3"> 
-  <td class="categorybar" align="left"><b>[control name=banner default="[L]Specials[/L]"]</b></td>
+<table width="100%" align=center>
+<tr> 
+  <td class="titletab_small" align="left"><b>[control name=banner default="[L]Specials[/L]"]</b></td>
 </tr>
 <tr> 
   <td> 
@@ -58,56 +58,40 @@ banner:
 		$Scratch->{promo_codes} = join(' ', @out);
 		return;
 	[/perl]
-      <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+      <table width="100%" align="center">
     [table-organize embed=1 pretty=1 cols="[control cols 2]"]
 [loop
 	random="[control matches 3]"
 	list="[scratch promo_codes]"
 	 ] 
      <TD> 
-	  <table border="0" cellspacing="0" cellpadding="0">
+	  <table border="0">
 	  <tr> 
-		<td align="center" colspan="2" class="titlebar1">
-		  <b>
+		<td align="center" class="titlebar1">		  
 		  [if-loop-data merchandising blurb_begin]
 			[loop-data merchandising blurb_begin]
 		  [else]
-			[loop-description]
+			<a href="[area href="[loop-code]"]" class="crosstitle">
+			<b>[loop-description]</b><br>
 		  [/else]
-		  [/if-loop-data]</b>
+		  [/if-loop-data]
+		  [if-loop-field thumb]
+		  	<img src="thumb/[loop-field thumb]" height="80" border="0"></a><br>
+		  [/if-loop-field]
+		  	[L]Our Price[/L]: <b>[loop-price]</b>
+		  [if-loop-data merchandising blurb_end]
+		  	<a href="[area [loop-code]]">[loop-data merchandising blurb_end]</a>
+		  [else]
+		  [if type=explicit condition="[control buttons]"]
+                	[b-link [loop-code]][L]MORE INFO[/L][/b-link]
+		  	[b-link order mv_order_item=[loop-code]]BUY NOW[/b-link]
+		  [/if]
+		  [/else]
+		  [/if-loop-data]
 		</td>
 	  </tr>
    
-      [if-loop-field thumb]
-	  <tr> 
-		<td align="center" colspan="2"> 
-		  <img src="thumb/[loop-field thumb]" height="80">
-		</td>
-	  </tr>
-      [/if-loop-field]
-
-	  <tr> 
-		<td align="center" colspan="2">
-		  [L]Our Price[/L]: <b>[loop-price]</b>
-		</td>
-	  </tr>
-	[if-loop-data merchandising blurb_end]
-	  <tr> 
-		<td align="center" colspan="2">
-		  <a href="[area [loop-code]]">[loop-data merchandising blurb_end]</a>
-		</td>
-	  </tr>
-	[else]
-	  <tr> 
-		<td align="center">
-			[b-link [loop-code]][L]MORE INFO[/L][/b-link]
-		</td>
-		<td align="center">
-			[b-link order mv_order_item=[loop-code]][L]BUY NOW[/L][/b-link]
-		</td>
-	  </tr>
-	[/else]
-	[/if-loop-data]
+      
 	  <tr> 
 		<td align="center">&nbsp;</td>
 	  </tr>

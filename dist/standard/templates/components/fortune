@@ -31,7 +31,7 @@ short:
 		</td>
       </tr>
       <tr>
-		<td valign=top align=left class=contentbar2>
+		<td valign=top align=left class="titletab_small">
 		[fortune short="[control short yes]"]
 		</td>
       </table>

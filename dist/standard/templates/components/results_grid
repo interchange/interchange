@@ -135,12 +135,12 @@ Please send any comments or suggestions for improvement to:
 	my $tmpl = $Tag->control('htmltmpl') || <<EO_TMPL;
 <div style="border: solid 1px #DDDDDD;" width="100%">
   <table cellpadding=2 cellspacing=0 border=0 width="100%">
-     <tr class="contentbar1"><td colspan=2><b>{DESCRIPTION}</b></td></tr>
+     <tr class="results_description"><td colspan=2><b>{DESCRIPTION}</b></td></tr>
      <tr>
 	<td><a href="{PRODUCT_LINK}">{THUMB}</a></td>
 	<td valign=top bgcolor="#eeeeee" width="100%">
 		<div style="padding-left:5px;">	
-			<span style="font-size:10px;">
+			<span style="font-size:10px; color: black">
 				[L]SKU[/L]: {SKU}<br><br>
 				[L]Stock[/L]: {STOCK}<br>
 			</span>
@@ -185,7 +185,7 @@ EOF
 	$record->{product_link} = $Tag->area($sku);
 
 	$record->{buy_button} = <<EOF;
-<input type=submit value="[L]BUY NOW[/L] onClick="this.form.mv_oi$Scratch->{itemcount}.value='$sku'" class=button2>
+<input type=submit value="[L]BUY NOW[/L]" onClick="this.form.mv_oi$Scratch->{itemcount}.value='$sku'" class=button2>
 EOF
 
 	$record->{quantity_box} = <<EOF;

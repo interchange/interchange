@@ -17,34 +17,34 @@ ui_help: This is the old results_big page.
 <br>
 <table border="0" cellspacing="0" cellpadding="0">
 <tr> 
-  <td><b>[either][value banner_text][or][item-field category][/either]</b></td>
+  <td class="title"><b>[either][value banner_text][or][item-field category][/either]</b></td>
 </tr>
 </table>
 [/item-change 1]
 
 <br>
-<table width="95%" border="0" cellspacing="0" cellpadding="0">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
 <tr valign="middle"> 
   <td align=center> 
                             
     <table border="0" cellspacing="0" cellpadding="3" align="center">
     <tr> 
-      <td valign="top" align="center"> 
+      <td valign="top" align="center">
         <table width="25%" border="0" cellspacing="0" cellpadding="0">
         <tr> 
           <td>[if-item-field image]<A HREF="[area [item-code]]"><img src="items/[item-field image]" ALT="[item-filter entities][item-description][/item-filter]" BORDER="0"></A>[/if-item-field]</td>
         </tr>
         </table>
       </td>
-      <td valign="top" align="center"> 
+      <td valign="top"> 
         <table border="0" cellpadding="3" cellspacing="0">
         <tr> 
-          <td valign="top"> 
-            <b><i>[item-description]</i></b>
+          <td valign="top" class="results_description"> 
+            [item-description]
           </td>
         </tr>
         <tr> 
-          <td align="center">[item-price]</td>
+          <td>[item-price]</td>
         </tr>
         <tr> 
           <td align="center">&nbsp;</td>
@@ -55,8 +55,8 @@ ui_help: This is the old results_big page.
         if($q > 0) {
                 return <<EOF;
         <tr> 
-          <td align="center">
-            <b>In Stock</b>
+          <td class="results_description">
+            In Stock
           </td>
         </tr>
 EOF
@@ -64,8 +64,8 @@ EOF
         else {
                 return <<EOF;
         <tr> 
-          <td align="center">
-            <b>Out Of Stock</b>
+          <td class="results_description">
+            Out Of Stock
             <br><br>
             <a href="[area function/stock_alert [item-code]]">[L]In Stock Notification[/L]</a>
           </td>
@@ -94,8 +94,8 @@ EOF
           </td>
         </tr>
         <tr> 
-          <td align="center"> 
-            <input type="submit" value="[L]Buy it Now![/L]">
+          <td> 
+            <input type="submit" value="[L]Buy it Now![/L]" class="button2">
           </td>
         </tr>
 </FORM>
@@ -105,7 +105,7 @@ EOF
       </td>
     </tr>
     <tr> 
-      <td colspan="2"> 
+      <td colspan="2"><br><br> 
         [item-field comment]
       </td>
     </tr>

@@ -22,7 +22,7 @@ continue_shopping:
 
 <br><b>[L]Your Current Shopping Cart[/L]:</b><br>
 
-<table width="95%" cellspacing="0">
+<table width="100%" cellspacing="0">
 <tr>
 	<td align="center">
 
@@ -54,12 +54,12 @@ continue_shopping:
       		<td>
         		<table cellspacing="0" cellpadding="4" border="0">
 			<TR>
-          			<td class="contentbar2"><b>&nbsp;[L]Remove[/L]</b></td>
-			        <td class="contentbar2" align="center"><b>[L]SKU[/L]</b></td>
-          			<td class="contentbar2"><b>[L]Description[/L]</b></td>
-          			<td class="contentbar2"><b>[L]Quantity[/L]</b></td>
-          			<td class="contentbar2" align="center"><b>[L]Price[/L]</b></td>
-          			<td class="contentbar2"><b>[L]Extension[/L]&nbsp;</b></td>
+          			<td class="titletab_small"><b>&nbsp;[L]Remove[/L]</b></td>
+			       <td class="titletab_small" align="center"><b>[L]SKU[/L]</b></td>
+          			<td class="titletab_small"><b>[L]Description[/L]</b></td>
+          			<td class="titletab_small"><b>[L]Quantity[/L]</b></td>
+          			<td class="titletab_small" align="center"><b>[L]Price[/L]</b></td>
+          			<td class="titletab_small"><b>[L]Extension[/L]&nbsp;</b></td>
 			</TR>
 			<TBODY>
 	
@@ -72,7 +72,7 @@ continue_shopping:
 
 [item-calc]
 #Log("Checking master item $master");
-	$row_class = ++$count % 2 ?  'maincontent' : 'contentbar1';
+	$row_class = ++$count % 2 ?  'cartnorm' : 'cartalt';
 	my $item = '[item-increment]';
 	my $up = q{[item-data merchandising upsell_to]};
 	my $cr = q{[item-data merchandising cross_sell]};
@@ -91,12 +91,12 @@ continue_shopping:
 	return;
 [/item-calc]
 
-	<TR class="[item-calc]$row_class || 'contentbar1'[/item-calc]">
-		<TD align=center>
+	<TR class="[item-calc]$row_class || 'cartnorm'[/item-calc]">
+		<TD align=center valign="top">
 	    		<INPUT TYPE=checkbox NAME="[quantity-name]" onClick="this.form.action='[process-target]', this.form.submit()" VALUE=0>
 	  	</TD>
-	  	<TD><b>[item-sku]</b></TD>
-	  	<td>[page [item-sku]]<b>[item-description]</b></A>
+	  	<TD valign="top"><b>[item-sku]</b></TD>
+	  	<td><a href="[area href="item-sku"]" class="cartlink"><b>[item-description]</b></A><br><br>
 
 	[if scratch dealer]
 	[if-item-data pricing sku]
@@ -135,8 +135,8 @@ continue_shopping:
 		return '' unless @ary;
 		my $out = <<'EOF';
 	    <TABLE>
-	    <TR class="contentbar2">
-              <TD>[L]Customers who bought this item also bought[/L]:</TD>
+	    <TR>
+              <TD class="titletab_small">[L]&nbsp;Customers who bought this item also bought&nbsp;[/L]:</TD>
 	    </TR>
             <TR class="[item-calc]$row_class || 'contentbar1'[/item-calc]">
 	      <TD>
@@ -144,7 +144,7 @@ EOF
 		for(@ary) {
  			my $desc = tag_data( 'products', 'description', $_);
 			$out .= <<EOF;
-		<A HREF="[area $_]">$desc</A><BR>
+			<A HREF="[area $_]" class="cartlink">$desc</A><BR>
 EOF
 		}
 		return $out . '</TD></TR></TABLE>';
@@ -157,21 +157,21 @@ EOF
 	[set upsell_found][/set]
 	[loop list="[item-data merchandising upsell_to]"]
 	[if scratch upsell_found]
-	<TABLE CELLPADDING=0 CELLSPACING=0>
-	<TR class="contentbar2">
-		<TD class="contentbar1">
-			[L]Other items you may like[/L]:
+	<TABLE>
+	<TR>
+		<TD class="titletab_small">
+			[L]&nbsp;Other items you may like&nbsp;[/L]:
 	      	</TD>
-	      	<TD class="contentbar1"></TD>
+	      	<TD></TD>
 	</TR>
 	<TR>
-	      	<TD class="contentbar1">
+	      	<TD>
 		  [list]
 		  [loop-calc]
 		  @ary = grep $_->{code} eq q{[loop-code]}, @{$Carts->{main}};
 		  return if scalar @ary;
 		  $Scratch->{upsell_found} = 1;
-		  return q{<A HREF="[area [loop-code]]">[loop-description]</A><BR>};
+		  return q{<A HREF="[area [loop-code]]" class="cartlink">[loop-description]</A><BR>};
 		  [/loop-calc]
 		  [/list]
 	      	</TD>
@@ -192,24 +192,24 @@ EOF
 
 [input-filter name="[quantity-name]" op="nullselect digits_dot"][/input-filter]
 
-	  <TD ALIGN=CENTER>
+	  <TD ALIGN=CENTER valign="top">
 	    <INPUT TYPE=text NAME="[quantity-name]" VALUE="[item-quantity]" SIZE=3>
 	  </TD>
 	[if discount [item-code]]
-	  <TD ALIGN=right>
+	  <TD ALIGN=right valign="top">
 	    [L]Regular price[/L] <STRIKE>[item-price]</STRIKE>
 	    <BR>
 	    <B>[L]Your price[/L]: [discount-price]<br>
 	    [L]You save[/L]: [item-difference]
 	  </TD>
-	  <TD ALIGN=right>
+	  <TD ALIGN=right valign="top">
 	    <strike>[item-subtotal]</strike><br>
 	    <B>[item-discount-subtotal]<BR>
 	    [L]You save[/L]: [item-discount]</b>
 	  </TD>
 	[else]
-	  <TD ALIGN=right>[item-price]</TD>
-	  <TD ALIGN=right>[item-subtotal]</TD>
+	  <TD ALIGN=right valign="top">[item-price]</TD>
+	  <TD ALIGN=right valign="top">[item-subtotal]</TD>
 	[/else]
 	[/if]
 	</TR>
@@ -287,7 +287,7 @@ EOF
 [else]
 
 	<TR>
-	  <TD ALIGN=CENTER COLSPAN=6 class="contentbar1">
+	  <TD ALIGN=CENTER COLSPAN=6 class="cartnorm">
 	    <b>[L]No items at the moment.[/L]</b>
 	  </TD>
 	</TR>
@@ -311,12 +311,12 @@ EOF
 	<table border="0" width="100%">
         <tr> 
 	  <td>
-	    <INPUT type="submit" value="Recalculate" class=button1>
+	    <INPUT type="submit" value="Recalculate" class="button3">
 	  </td>
 	  <td align="center" valign="center"> 
     		[button
      		  text="[L]Check Out[/L]"
-			  class=button4
+			  class="button3"
 			  form=basket
 		  ]
 			mv_todo=return
@@ -327,7 +327,7 @@ EOF
 	    [if type=explicit compare="[control continue_shopping]"]
     	      [button
 				text="[L]Continue shopping[/L]"
-				class=buttonv
+				class=button2
 				form=basket
 			  ]
      	  		[bounce page=index]
@@ -338,16 +338,16 @@ EOF
       	  <td align="Right">
             <table cellspacing="0" cellpadding="4" border="0">
             <tr> 
-              <td align=right class="contentbar1">
+              <td align=right>
                 [L]Shipping Weight[/L]:
               </td>
-              <td class="contentbar2" align="right">[summary format="%s" total=1]</td>
+              <td class="titletab_small" align="right">[summary format="%s" total=1]</td>
             </tr>
             <tr>
-              <td align="right" class="contentbar1">
+              <td align="right">
                 <b>[L]Subtotal[/L]:</b>
               </td>
-              <td class="contentbar2" align=right><b>[subtotal]</b></td>
+              <td class="titletab_small" align=right><b>[subtotal]</b></td>
             </tr>
 	    </table>
 	  </td>
@@ -396,7 +396,7 @@ EOF
       [button
           text="[L]Save This Cart[/L]"
           src="__IMAGE_DIR__/savecart.gif"
-          extra="class=contentbar2"
+          extra="class=titletab_small"
           hidetext=1
           form=basket
           mv_check="Save This Cart"
@@ -408,7 +408,7 @@ EOF
       [button
           text="[L]Set As Recurring Order[/L]"
           src="__IMAGE_DIR__/saverecur.gif"
-          extra="class=contentbar2"
+          extra="class=titletab_small"
           hidetext=1
           form=basket
           mv_check="Set As Recurring Order"

@@ -32,6 +32,10 @@ random:
 	label: Random order?
 	type: yesno
 
+buttons:
+	label: Display buy/info buttons
+	type: yesno
+
 [/comment]
 <!-- BEGIN COMPONENT [control component cross_horizontal] -->
 [if !scratch cross_codes]
@@ -62,15 +66,10 @@ random:
 						ml=10
 					"] [loop-code][/loop][/tmp]
 [/if]
-
-<table width="[control width 95%]" align="[control table_align center]">
-<tr> 
-  <td class="titlebar3">
-    &nbsp;<b>[control name=banner default="[L]See also...[/L]"]</b>
-  </td>
-</tr>
-<tr>
-  <td> 
+    <div class="specials_title">
+    <b>[control name=banner default="[L]See also...[/L]"]</b>
+    </div>
+    <div class="specials_body"> 
     [calc]
   	my $n = [control cols 3];
 	$Scratch->{width_percent} = q{[control width_percent 100%]}
@@ -81,53 +80,35 @@ random:
 		$Scratch->{random} = q{[control size 3]};
 	}
 	return;
-    [/calc]
-    <table border="0" width="100%">
-    [table-organize embed=1 pretty=1 cols="[control cols 3]"]
-    [loop random="[scratch random]" list="[strip interpolate=1][scratch cross_codes][/strip]"]
-      <TD width="[scratch width_percent]"> 
-	<table border="0">
-	<tr>
-    	  
-    [if-loop-field thumb]
-      <td>
-	    <a href="[area [loop-code]]">
-	      <img border="0" src="thumb/[loop-field thumb]"></a>
-	  </td>
-    [else]
-      <td>&nbsp;
-      </td>
-    [/else]
-    [/if-loop-field]
-
-          <td valign="middle">
-            <table cellspacing="0">
-     	    <tr>
-  	      <td align="left" class="contentbar1">
-	        &nbsp;[loop-description]
-              </td>
-	    </tr>
-	    <tr> 
-	      <td align="left">
-			[b-link order mv_order_item=[loop-code]][L]BUY NOW[/L][/b-link]
+    [/calc]          
+    <table border="0" cellspacing="0" cellpadding="10">
+    [table-organize embed=1 pretty=1 cols="[control cols 2]"]
+    [loop random="[scratch random]" list="[strip interpolate=1][scratch cross_codes][/strip]"]    
+    <TD width="[scratch width_percent]" valign="top">
+    <table border="0" cellspacing="0" cellpadding="2">
+	
+	[if-loop-field thumb]    
+    	<tr>    	  
+		<td align="center">
+			<a href="[area [loop-code]]" class="crosstitle">			 	      
+				[loop-description]<br>
+				<img border="0" src="thumb/[loop-field thumb]"><br>
+			</a>
+       		[L]Our Price[/L]: <B>[loop-price]</B><br>
+[if type=explicit condition="[control buttons]"]
+			<br>
+			[b-link order mv_order_item=[loop-code]]BUY NOW[/b-link]
 			[b-link [loop-code]][L]MORE INFO[/L][/b-link]
-              </td>
-	    </tr>
-	    <tr> 
-	      <td align="left">
-		[L]Our Price[/L]: <B>[loop-price]</B>
-	      </td>
-	    </tr>
-	    </table>
-	  </td>
-        </tr>
-        </table>
-      </TD>
+[/if]
+		</td>    		      		
+     	</tr>
+	[/if-loop-field]	           
+    </table>
+    </TD>
     [/loop]
     [/table-organize]
-    </table>
-  </td>
-</tr>
-</table>
+    </table>       
+    </div>  
 
 <!-- END COMPONENT [control component cross_horizontal] -->
+	

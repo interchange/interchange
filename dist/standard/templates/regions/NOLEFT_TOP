@@ -1,6 +1,6 @@
 __PAGE_INIT__
-[output name=main_css]
-__THEME_CSS__
+[output name=main_css][css name=THEME_CSS basefile=variables/THEME_CSS][output name="trash"]
+
 
 [if !scratch logo]
 [set logo]__LOGO__[/set]

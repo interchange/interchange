@@ -33,9 +33,10 @@ random:
 <br clear=all>
 
 <table width="[control table_width 95%]" align=center>
-<tr class="[control title_class categorybar]">
-  <td style="[control title_class categorybar]"> 
+<tr class="[control title_class titletab_small]">
+  <td style="[control title_class titletab_small]"><b>
 	[control name=banner default="[L]Other items you may like[/L]"]
+	</b>
   </td>
 </tr>
 <tr>
@@ -50,9 +51,9 @@ random:
     [table-organize embed=1 pretty=1 cols="[control cols 2]"]
 	[loop random="[control size 2]" list="[scratchd upsell]"]
 	  <TD width="[scratch width_percent]"> 
-		<table border="0" cellspacing="0" cellpadding="0">
+		<table border="0" cellspacing="0" cellpadding="4">
 		  <tr> 
-			<td align="center" colspan="2" class="titlebar1">[loop-description]</td>
+			<td align="center" colspan="2" class="random_description">[loop-description]</td>
 		  </tr>
 
 		  [if-loop-field thumb]
@@ -64,7 +65,7 @@ random:
 		  [/if-loop-field]
 
 		  <tr> 
-			<td colspan="2">
+			<td colspan="2" align="center">
 				[L]Our Price[/L]: <b>[loop-price]</b>
 			</td>
 		  </tr>
@@ -73,7 +74,7 @@ random:
 				[b-link [loop-code]][L]MORE INFO[/L][/b-link]
 			</td>
 			<td align="center">
-				[b-link order mv_order_item=[loop-code]][L]BUY NOW[/L][/b-link]
+				[b-link order mv_order_item=[loop-code]]BUY NOW[/b-link]
 			</td>
 		  </tr>
 		</table>

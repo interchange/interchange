@@ -18,9 +18,9 @@ matches:
       <br>     
       <form action="[area search]" method=post>
 	  <input type=hidden name=mv_session_id value="[data session id]">
-      <table border="0" width="95%">
+      <table border="0" width="100%">
       <tr> 
-	    <td align="left">
+	    <td align="center">
 	      <INPUT TYPE=hidden NAME=mv_coordinate VALUE=1>
 	      <INPUT TYPE=hidden NAME=mv_searchtype VALUE=db>
 	      <INPUT TYPE=hidden NAME=mv_matchlimit VALUE=[control matches 10]>
@@ -33,11 +33,17 @@ matches:
 				NAME=mv_column_op
 				VALUE="[if module-version Text::Query]aq[else]rm[/else][/if]"
 			>
-	      <INPUT MAXLENGTH=30 NAME=mv_searchspec type=text size=12>
+	      <INPUT MAXLENGTH=30 NAME=mv_searchspec type=text size=15>
 	    </td>
-	    <td align="right" valign="middle" width="45">
-	      <input type=submit value="[L]SEARCH[/L]" class=button2>
-	      <a href="[area advancedsearch]"><font size=-2 class="[control table_class categorybar]">[L]Advanced[/L]</a>
+	</tr>
+	<tr>
+	    <td align="center" valign="middle">
+	      <input type=submit value="[L]SEARCH[/L]" class="search_button">	      
+	    </td>
+      </tr>
+      <tr>
+	    <td align="center">
+	           <a href="[area advancedsearch]"><font size=-2 class="[control table_class categorybar]">[L]Advanced Search[/L]</a>
 	    </td>
       </tr>
       </table>
