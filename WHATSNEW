@@ -44,6 +44,12 @@ Admin UI
 * Fixed a bug in the permission check in the order resp. traffic
   statistics pages.
 
+* Avoid spurious image on login page which appeared under certain
+  conditions if the session has been expired.
+
+* Import page has a new option to replace existing items seamlessly
+  by the imported set.
+
 Foundation
 ----------
 
@@ -74,6 +80,8 @@ I18N
 
 * Spanish locale added made by Ignacio Lizarán and 
   José Mª Revuelto <josemaria.revuelto@solgrama.com>.
+
+* Continued the preparation of the UI pages and usertags for translation.
 
 Miscellaneous
 -------------
