@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.29.2.6 2000-11-08 22:57:41 zarko Exp $
+# $Id: Interpolate.pm,v 1.29.2.7 2000-11-13 16:15:35 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.29.2.6 $, 10);
+$VERSION = substr(q$Revision: 1.29.2.7 $, 10);
 
 @EXPORT = qw (
 
@@ -353,12 +353,12 @@ my @th = (qw!
 	'_pos_if'		=> qr($T{_pos}$Spacef(!?)\s*(\d+)$Optr\]($Some)),
 	'_price'		=> qr!$T{_price}(?:\s+(\d+))?$Optx\]!,
 	'_quantity'		=> qr($T{_quantity}\]),
-	'_subtotal'		=> qr($T{_subtotal}$Opt\]),
+	'_subtotal'		=> qr($T{_subtotal}$Optx\]),
 	'condition'		=> qr($T{condition}$T($Some)$T{'/condition'}),
 	'condition_begin' => qr(^\s*$T{condition}\]($Some)$T{'/condition'}),
-	'_discount_price' => qr($T{_discount_price}(?:\s+(\d+))?$Opt\]),
-	'discount_price' => qr($T{discount_price}(?:\s+(\d+))?$Opt\]),
-	'_discount_subtotal' => qr($T{_discount_subtotal}\]),
+	'_discount_price' => qr($T{_discount_price}(?:\s+(\d+))?$Optx\]),
+	'discount_price' => qr($T{discount_price}(?:\s+(\d+))?$Optx\]),
+	'_discount_subtotal' => qr($T{_discount_subtotal}$Optx\]),
 	'else_end'		=> qr($T{else}\]($All)$T{'/else'}\s*$),
 	'elsif_end'		=> qr($T{elsif}\s+($All)$T{'/elsif'}\s*$),
 	'matches'		=> qr($T{matches}\]),
