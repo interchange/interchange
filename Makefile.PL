@@ -158,7 +158,7 @@ sub copyright_prompt {
 
  Interchange V$VERSION
  
- Copyright (C) 2002-2003 Interchange Development Group.
+ Copyright (C) 2002-2004 Interchange Development Group.
  Copyright (C) 1996-2002 Red Hat, Inc.
  Interchange is free under the terms of the GNU General Public License.
 
