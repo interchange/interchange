@@ -1,6 +1,6 @@
 package Vend::Parser;
 
-# $Id: Parser.pm,v 1.2.6.4 2001-02-14 05:02:31 jon Exp $
+# $Id: Parser.pm,v 1.2.6.5 2001-02-25 15:31:27 heins Exp $
 #
 # Vend::Parser - Interchange parser class
 # Copyright 1997-2001 by Michael J. Heins <heins@akopia.com>
@@ -67,7 +67,7 @@ use strict;
 
 use HTML::Entities ();
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.2.6.4 $, 10);
+$VERSION = substr(q$Revision: 1.2.6.5 $, 10);
 
 
 sub new
@@ -263,7 +263,7 @@ sub parse
 		} elsif ($$buf =~ s|^<||) {
 			# start tag
 			$eaten = '<';
-#::logDebug("do < tag") if ! $Vend::DoneDebug++;
+#::logDebug("do < tag") if ! $Tmp::DoneDebug++;
 
 			# This first thing we must find is a tag name.  RFC1866 says:
 			#   A name consists of a letter followed by letters,
@@ -273,7 +273,7 @@ sub parse
 			#   for HTML".  In a start-tag, the element name must
 			#   immediately follow the tag open delimiter `<'.
 			if ($$buf =~ s|^(([a-zA-Z][-a-zA-Z0-9._]*)((?:\s+[^>]+)?\s+[mM][Vv]\s*=)\s*)||) {
-#::logDebug("REALLY do < tag") if ! $Vend::DoneDebug++;
+#::logDebug("REALLY do < tag") if ! $Tmp::DoneDebug++;
 				$eaten .= $1;
 				$self->{HTML} = 1;
 
