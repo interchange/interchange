@@ -245,7 +245,6 @@ dist/foundation/pages/query/order_detail.html
 dist/foundation/pages/query/order_return.html
 dist/foundation/pages/results.html
 dist/foundation/pages/results_big.html
-dist/foundation/pages/results_either.html
 dist/foundation/pages/returns.html
 dist/foundation/pages/saved_carts.html
 dist/foundation/pages/ship_addresses.html
