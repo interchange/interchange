@@ -134,7 +134,7 @@ EOF
 	else {
 		$ftmpl_ed = <<EOF;
 <img src="admin/cleardot.gif" height=1 width=%d>
-<A HREF="$base_url/do_view?mv_arg=~FN~">$vw_img</A><A HREF="$base_url/ui_download/~FN~">$dn_img</A><A HREF="$base_url/upload_file?mv_arg=~FN~&ui_return_to=$this_page">$up_img</A><A HREF="$base_url/page_edit?ui_page=~FN~&ui_return_to=$this_page">$ed_img</A>&nbsp;%s<BR>
+<A HREF="$base_url/do_view?mv_arg=~FN~">$vw_img</A><A HREF="$Vend::Cfg->{VendUrl}/ui_download/~FN~">$dn_img</A><A HREF="$base_url/upload_file?mv_arg=~FN~&ui_return_to=$this_page">$up_img</A><A HREF="$base_url/page_edit?ui_page=~FN~&ui_return_to=$this_page">$ed_img</A>&nbsp;%s<BR>
 EOF
 	}
 
