@@ -425,9 +425,21 @@ rm -rf /var/run/interchange/*
 rm -rf /var/lib/interchange/*/images
 rm -rf %{_prefix}/lib/interchange/lib/HTML
 rm -f %warning_file
+rm -f /var/log/interchange/error.log
+
+# Remove construct demo stuff -- we'd rather not do this, but
+# Red Hat's certification tests require no files be left over
+DEMOCATDIR=/var/lib/interchange/construct
+rm -rf $DEMOCATDIR/tmp/* $DEMOCATDIR/session/* $DEMOCATDIR/logs/*
+rm -f $DEMOCATDIR/products/*.gdbm $DEMOCATDIR/products/Ground.csv.numeric $DEMOCATDIR/products/products.txt.*
+rm -f $DEMOCATDIR/etc/status.construct
 
 
 %changelog
+* Sat Jan  6 2001 Jon Jensen <jon@akopia.com>
+- purge global error.log and most of construct demo when uninstalling
+  to satisfy Red Hat's RPM certification requirements
+
 * Fri Dec  1 2000 Jon Jensen <jon@akopia.com>
 - combined Red Hat 6 and Red Hat 7 specfiles -- target platform is now
   determined by build machine
