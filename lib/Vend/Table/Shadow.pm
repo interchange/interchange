@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.18 2003-01-01 15:22:51 racke Exp $
+# $Id: Shadow.pm,v 1.19 2003-01-03 11:55:22 racke Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.18 $, 10);
+$VERSION = substr(q$Revision: 1.19 $, 10);
 
 # TODO
 #
@@ -136,6 +136,13 @@ sub column_exists {
 	return defined($orig_db->[$CONFIG]{COLUMN_INDEX}{lc $orig_col});
 }
 
+sub set_slice {
+	my ($s, $key, $fary, $vary) = @_;
+
+	$s = $s->import_db() if ! defined $s->[$OBJ];
+	$s->[$OBJ]->set_slice($key, $fary, $vary);
+}
+	
 sub set_row {
 	my ($s, @fields) = @_;
 
@@ -210,6 +217,18 @@ sub record_exists {
 	my ($s, $key) = @_;
 	$s = $s->import_db() unless defined $s->[$OBJ];
 	$s->[$OBJ]->record_exists($key);
+}
+
+sub touch {
+	my ($s) = @_;
+	$s = $s->import_db() unless defined $s->[$OBJ];
+	$s->[$OBJ]->touch();
+}
+
+sub each_record {
+	my ($s, $qual) = @_;
+	$s = $s->import_db() unless defined $s->[$OBJ];
+	return $s->[$OBJ]->each_record($qual);
 }
 
 sub each_nokey {
