@@ -1,0 +1,480 @@
+[set page_title]Edit Template[/set]
+[set ui_class]Content[/set]
+[set help_name]page.main[/set]
+[set icon_name]admin/icon_pages.gif[/set]
+@_UI_STD_HEAD_@
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+<form action="[base-url]/__MV_PAGE__" method=POST ENCTYPE="multipart/form-data">
+<input type=hidden name=mv_action value=back>
+
+<table __UI_T_PROPERTIES__>
+<tr id=rborder>
+<td colspan=2>
+<img src="@_UI_IMG_@admin/bg.gif" height=1>
+</td>
+</tr>
+
+[perl tables="[list-databases] __UI_META_TABLE__"] 
+
+	# Some inits
+	my $imgpath = $Tag->var('UI_IMG', 1) || $Variable->{UI_IMG} || '';
+	my $template_dir = $Variable->{UI_TEMPLATE_DIR} || 'templates';
+	my $out = '';
+	my $ver = $Tag->version();
+
+	sub tmp_error {
+		my $msg = errmsg(@_);
+		my $messages = join "\n--message--\n", @messages;
+		return <<EOF;
+<TR class=rerror><td colspan=2 class=cerror>$msg</td></tr>
+<TR class=rerror><td colspan=2 class=cerror><XMP>$messages</XMP></td></tr>
+EOF
+	}
+
+	# Probably should offload this to mv_click=process_filter
+	my @filters = grep /^ui_filter:/, keys %$CGI;
+	foreach my $key (@filters) {
+		my $val = delete $CGI->{$key};
+		$key =~ s/ui_filter://;
+		next unless $val;
+		next unless defined $CGI->{$key};
+		$CGI->{$key} = $Tag->filter($val, $CGI->{$key}, $key);
+	}
+
+	my $new;
+	if($CGI->{ui_template_new}) {
+Log("found new template");
+		$t_desc = $CGI->{ui_template_description} || $CGI->{ui_template_new};
+		$t_name = $CGI->{ui_template_new};
+		$t_name =~ s/^\W+//;
+		$t_name =~ s/\W+$//;
+		$t_name = lc $t_name;
+		$t_name =~ s/\W/_/g;
+		$new = 1;
+	}
+	else {
+		$t_name = $CGI->{ui_template};
+	}
+
+	my $t_file = "$template_dir/$t_name";
+
+	push @messages, "template: $t_name; t_file=$t_file";
+
+	### Add some code here to check for existing templates...
+	
+	my $exists = -f $t_file;
+
+	if($exists and $new) {
+		return tmp_error(
+				"Template named '%s', already exists, please delete first.",
+				$t_name,
+				);
+	}
+	my $ary;
+	my $tref;
+
+	TEMPLATE_READ:  {
+		if(! $new) {
+			$ary = $Tag->read_ui_template("$template_dir/$t_name");
+			$tref = shift @$ary;
+			ref($tref) =~ /HASH/ 
+				or return tmp_error(
+						"Template read error reading '%s'.",
+						$t_name,
+					);
+			last TEMPLATE_READ;
+		}
+		$tref = {};
+		my $name_top = uc($t_name) . "_TOP";
+		my $name_bot = uc($t_name) . "_BOTTOM";
+		$tref->{ui_template} = $t_name;
+		$tref->{ui_template_name} = $t_name;
+		$tref->{ui_template_layout} = "$name_top, UI_CONTENT, $name_bot";
+		$tref->{ui_template_description} = $t_desc;
+
+		$tref->{ui_definition} = $tref->{ui_short_definition} = <<EOF;
+ui_template: $t_name;
+ui_template_name: $t_name;
+ui_template_layout: $name_top, UI_CONTENT, $name_bot
+ui_template_description: $t_desc
+ui_template_version: $ver
+
+EOF
+		my $template_input;
+		my $content;
+		if( $Values->{ui_upload_template}
+			and $Tag->value_extended(
+					{
+						name => 'ui_upload_template',
+						test => 'isfile',
+					}
+				)
+			)							
+		{
+push @messages, "template from upload:\n$tref->{ui_definition}";
+			$template_input = $Tag->value_extended( {
+													name => 'ui_upload_template',
+													file_contents => 1,
+													});
+#push @messages, "template from upload is:\n$template_input";
+			$template_input =~ s{(.*)(<!--\s+begin\s+content\s+-->)}{$2}is;
+			$template_top = $1;
+			$template_top =~ s/^\s+//;
+			$template_top =~ s/\s+$//;
+			$template_input =~ s{(<!--\s+end\s+content\s+-->)\n*(.*)}{$1\n}is;
+			$template_bot = $2;
+			$template_bot =~ s/^\s+//;
+			$template_bot =~ s/\s+$//;
+			$content = $template_input;
+			$content =~ s/^\s*<!--+\s+begin\s+content\s+--+>(?:\s*\n+)?//i;
+			$content =~ s/(?:\n+\s*)?<!--+\s+end\s+content\s+--+>\s*$//i;
+			push @messages, "Content:\n$content";
+		}
+	
+   }
+
+Log("t_name=$t_name");
+	$out .= <<EOF;
+<tr>
+	<td class=ralt><b>Template description</b></td>
+	<td class=ralt>$t_desc</td>
+</tr>
+<tr>
+	<td class=ralt>
+		<b>Template sequence</b><br>
+	</td>
+	<td class=ralt VALIGN=top>
+		$tref->{ui_template_layout}
+	</td>
+</tr>
+<tr>
+	<td class=ralt colspan=2>
+		<small><i>UI_CONTENT is the content portion(s), all others refer
+		to Knar elements.</i></small>
+	</td>
+</tr>
+<tr class=rtitle>
+<td colspan=2 class=ctitle><img src="${imgpath}admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+EOF
+
+	$content = '' if ! $content;
+
+	$content_display = $content;
+
+	my @comp_order;
+
+	my $compdir = $Variable->{UI_COMPONENT_DIR} || 'templates/components';
+	for(\$template_top, \$template_bot) {
+		while( $$_ =~ m{
+				 [ \t]* 
+				 (?:
+				 	<!--+ \s+ begin \s+ component \s+ (\w+) \s+ --+>
+				 	(.*?)
+					<!--+ \s+ end \s+ component \s+ \1 \s+ --+> 
+				 | 
+				 	\[ include \s+ file \s*=\s*["'][^"]*/
+						(?:\[control \s+ component \s+ )?
+							(\w+)
+						\]? ['"]
+				 	(.*?)
+					\]  \s*  \[control\]
+				 )
+			}gsix)
+		{
+			my $compname = $1 || $3;
+			my $current_content = $2 || $4;
+			
+			push @comp_order, $compname;
+
+			# Parens needed for array context
+			my ($carray) = $Tag->read_ui_template("$compdir/$compname");
+			push @messages, ("Read component $compname=$carray.");
+#			push @messages, ("component $compname structuret:\n"
+#							. $Tag->uneval({ ref => $carray } ) );
+			if ($carray and scalar @$carray) {
+				push @cobj, @$carray;
+			}
+			else {
+				my $desc	= -f "$compdir/$compname"
+							? 'Static component, no controls'
+							: 'non-existent component (creating later?)';
+				push @cobj, {
+					ui_component  => $compname,
+					ui_component_name => $compname,
+					ui_component_description => $desc,
+				};
+			}
+		}
+		$$_ =~ s{
+				 [ \t]*<!--+
+				 	\s+ begin \s+ component \s+ (\S+) \s+ --+>
+				 	(.*?)
+				 <!--+ \s+end \s+component \s+ \1 \s+ --+> 
+			}
+			{[include file="$compdir/[control component $1]"][control]}gsix;
+		
+	}
+
+	$template_top_display = $template_top;
+	$template_bot_display = $template_bot;
+	
+	for(\$template_top_display, \$template_bot_display, $content_display) {
+		$$_ =~ s/\&/\&amp;/g;
+		$$_ =~ s/\[/&#91;/g;
+		$$_ =~ s/</&lt;/g;
+	}
+
+	$out .= <<EOF if $CGI->{ui_show_template};
+<tr class=cmarq>
+<td colspan=2><img src="${imgpath}admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+<tr class=ralt>
+	<td valign=top>
+	<b>Top of template</b>
+	<small><br><br>
+	<A HREF="$Config->{VendURL}/ui_download/$page?mv_no_cache=$Session->{pageCount}"><img src="${imgpath}admin/down.gif" border=0 height=11 width=10 alt="download $page">download content</a>
+	<br><i>(will not reflect changes below unless saved)</I></small>
+	</td>
+	<td>
+	<B>
+	<small>
+	<INPUT TYPE=file NAME=ui_upload_template_top><BR>
+	[button text="Upload new template portion from file"]
+		mv_todo=return
+		[js]onclick="this.form.target='_self'"[/js]
+		mv_nextpage=__MV_PAGE__
+	[/button]</small></b>
+	</td>
+</tr>
+
+<tr class=ralt>
+	<td colspan=2 class=clabel>
+		<b>or input below:</b><br>
+		<TEXTAREA NAME=ui_template_top COLS=85 ROWS=20>$template_top_display</TEXTAREA>
+	</td>
+</tr>
+<tr>
+<td colspan=2 class=rtitle><img src="${imgpath}admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+EOF
+
+
+	# Find the current settings
+	if($current =~ m/
+						\[control \s+ reset \s* = \s* ["']?
+							[^0] [^\]]*  \]
+						(.*)
+						\[control \s+ reset \s* = \s* ["']?
+							[^0] [^\]]*  \]
+					/six)
+	{
+		# New style
+		@comp_default = split /\s*\[control\]\s*/, $1;
+	}
+	else {
+		# Legacy style, ugly
+		my $comp_text = $current;
+		my $scan = '(\[/(?:set|tmp|seti)\])';
+		$comp_text =~ s#($scan)(?!.*$scan)#$1#is;
+		for(@cobj) {
+			push @comp_default, $comp_text;
+		}
+	}
+
+	my $idx = 0;
+	my $num = $idx + 1;
+
+	sub get_unified_ref {
+		my ($name, $ref) = @_;
+		my $uniref = {};
+		for(keys %$ref) {
+			next unless ref($ref->{$_}) eq 'HASH';
+			$uniref->{$_} = $ref->{$_}{$name} || undef;
+		}
+		return $uniref;
+	}
+
+	my $sep_template = <<EOF;
+<tr class=rtitle>
+<td colspan=2 class=ctitle>~NAME~ - ~DESC~<INPUT TYPE=hidden NAME="~VARNAME~" VALUE="~NAME~"</td>
+</tr>
+EOF
+
+	my $break_template = <<EOF;
+<tr class=cmarq>
+<td colspan=2><img src="${imgpath}admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+EOF
+
+	my $control_template = <<EOF;
+<tr>
+   <td class=clabel width="$Variable->{UI_LEFT_WIDTH}"> 
+     \$LABEL\$~META~
+   </td>
+   <td class=cdata> 
+     <table cellspacing=0 cellmargin=0 width="100%">
+       <tr> 
+         <td class=cwidget> 
+           \$WIDGET\$
+         </td>
+         <td class=chelp>~TKEY~<i>\$HELP\$</i>{HELPURL}<BR><A HREF="\$HELP_URL\$">help</A>{/HELPURL}</FONT></td>
+       </tr>
+     </table>
+   </td>
+</tr>
+EOF
+
+	for(my $i = 0; $i < @cobj; $i++) {
+		my $ref = $cobj[$i];
+		my $c_name = $ref->{ui_component_name} || $ref->{ui_component} || 'None';
+		my $c_label  = $ref->{ui_component_label}
+					|| $ref->{ui_component_description}
+					|| 'no description';
+		push @messages, "ui_component_name=$ref->{ui_component_name}";
+		push @messages, "ui_component=$ref->{ui_component}";
+		push @messages, "ui_component_label=$ref->{ui_component_label}";
+		push @messages, "ui_component_description=$ref->{ui_component_description}";
+
+		my @def;
+
+		my $titlebar = $sep_template;
+		$titlebar =~ s/~NAME~/$c_name/g;
+		$titlebar =~ s/~DESC~/$c_label/g;
+		$titlebar =~ s/~VARNAME~/$i.ui_component/g;
+		push @controls, $titlebar;
+		my $def_string = $ref->{ui_definition};
+		$def_string =~ s/"/&quot;/g;
+
+		my $short_def = "ui_component: $c_name";
+
+		my $deftext = $comp_default[$i];
+
+		my $r;
+Log("element=$ref->{element}(or $ref->{element})");
+
+		if (ref $ref->{element}) {
+				my $widget;
+				my @order;
+				if($ref->{ui_display_order}) {
+					@order = @{$ref->{ui_display_order}};
+				}
+				else {
+					@order = sort keys %{$ref->{element}};
+				}
+				for(@order) {
+					$r = get_unified_ref($_, $ref);
+					my ($set) = $current =~ m{\[(seti?|tmp)\s+$_\](.*?)\[/\1\]};
+					my $t_set = $r->{$_};
+					my $wtype = $r->{widget} || '';
+					my $label = $r->{label} || $r->{description} || $_;
+					if($wtype eq 'break') {
+						push @controls, $break_template;
+						next;
+					}
+					my $options = $r->{options};
+push @messages, "r key $_ set='$set' options=$options value=$Values->{$_} widget=$wtype";
+					my $help = $r->{help} || '';
+
+					if(! $wtype) {
+						$wtype = 'text';
+						$r->{width} = 40
+							if ! $r->{width};
+					}
+					$widget = $Tag->display( {
+									name => "$i.ui_control_$_",
+									type => $wtype,
+									lookup => $r->{lookup},
+									db => $r->{db},
+									passed => $r->{options},
+									rows =>  $r->{height},
+									cols =>  $r->{width},
+									override => $set,
+									help => $help,
+									label =>  $label,
+									filter => $r->{filter},
+									pre_filter => $r->{prefilter},
+									template => $control_template,
+								});
+					push @messages, "widget='$widget'";
+					# No meta for now
+					$widget =~ s/~[A-Z]{3,}~//g;
+					push @controls, $widget;
+				}
+		}
+
+	}
+
+	$out .= join "\n", @controls;
+	
+	$out .= <<EOF if $CGI->{ui_show_template};
+<tr>
+<td colspan=2 class=rtitle><img src="${imgpath}admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+<tr class=ralt>
+	<td valign=top>
+	<b>Bottom of template</b>
+	<small><br><br>
+	<A HREF="$Config->{VendURL}/ui_download/$page?mv_no_cache=$Session->{pageCount}"><img src="${imgpath}admin/down.gif" border=0 height=11 width=10 alt="download $page">download content</a>
+	<br><i>(will not reflect changes below unless saved)</I></small>
+	</td>
+	<td>
+	<B>
+	<small>
+	<INPUT TYPE=file NAME=ui_upload_template_bot><BR>
+	[button text="Upload new template portion from file"]
+		mv_todo=return
+		[js]onclick="this.form.target='_self'"[/js]
+		mv_nextpage=__MV_PAGE__
+	[/button]</small></b>
+	</td>
+</tr>
+<tr class=ralt>
+	<td colspan=2 class=clabel>
+		or input below:<br>
+		<TEXTAREA NAME=ui_template_bot COLS=85 ROWS=20>$template_bot_display</TEXTAREA>
+	</td>
+</tr>
+EOF
+
+	return $out;
+	return $out . tmp_error("Finished checking first part.");
+[/perl]
+
+<tr>
+<td colspan=2 class=rtitle><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+<tr class=ralt>
+<td colspan=2>
+[set Preview]
+mv_nextpage=__UI_BASE__/page_preview
+mv_action=back
+[/set]
+
+[set Save]
+mv_nextpage=__UI_BASE__/page_save
+[/set]
+
+<INPUT TYPE=submit NAME=mv_click VALUE=Preview onClick="this.form.target='page_preview'">
+<INPUT TYPE=hidden NAME=ui_return_to VALUE="__UI_BASE__/page">
+<INPUT TYPE=submit NAME=mv_click VALUE=Save onClick="this.form.target='_self'">
+<INPUT TYPE=submit NAME=mv_click VALUE=Cancel onClick="this.form.target='_self'"><br>
+<INPUT TYPE=checkbox NAME=ui_save_t_in_page VALUE=1 [cgi save_in_page]> Save template in page
+
+</td>
+</tr>
+
+<tr>
+<td colspan=2 class=rtitle><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+</table>
+</form>
+
+
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@
+<!-- page: __MV_PAGE__ -->
