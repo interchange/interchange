@@ -2,45 +2,72 @@ UserTag button Order name src text
 UserTag button addAttr
 UserTag button attrAlias value text
 UserTag button hasEndTag
+UserTag button Version $Id: button.tag,v 2.1.2.3 2003-01-24 05:14:47 jon Exp $
 UserTag button Documentation <<EOD
-This tag creates an mv_click button either as a <INPUT TYPE=submit ...>
-or a JavaScript-linked <A HREF=....><img src=...> combination.
 
-[button text="Delete item" confirm="Are you sure?" src="delete.gif"]
-	[comment]
-		This is the action, same as [set Delete item] action [/set]
-	[/comment]
-	[mvtag] Use any Interchange tag here, i.e. ....[/mvtag]
-	[perl] # code to delete item [/perl]
-[/button]
+=pod
 
-Parameters:
+This tag creates an mv_click button either as a C<< <INPUT TYPE=submit ...> >>
+or a JavaScript-linked C<< <A HREF=....><img src=...> >> combination.
 
-    name      Name of the variable, by default mv_click. 
-             
-    src       Image source file. If it is a relative image, the existence
-              of the file is checked for
-             
-    text      The text of the button, also the name of the scratch action
-              (VALUE is an alias for TEXT.) 
+    [button text="Delete item" confirm="Are you sure?" src="delete.gif"]
+	    [comment]
+		    This is the action, same as [set Delete item] action [/set]
+	    [/comment]
+	    [mvtag] Use any Interchange tag here, i.e. ....[/mvtag]
+	    [perl] # code to delete item [/perl]
+    [/button]
 
-    border, height, width, vspace, hspace, AND
-    align     The image alignment parameters. Border defaults to 0.
-             
-    form      The name of the form, defaults to document.forms[0] -- be careful!
-             
-    confirm   The text to use for a JavaScript confirm, if any.
-             
-    getsize   If true, tries to use Image::Size to add height=Y width=X.
-             
-    alt       The alt text to be displayed in window.status and balloons.
-              Defaults to the same as TEXT.
-             
-    anchor    Set to the anchor text value, defaults to TEXT
-             
-    hidetext  Set true if you don't want the anchor displayed
+Parameters for this tag are:
 
+=over 4
 
+=item name
+
+Name of the variable, by default mv_click.
+
+=item src
+             
+Image source file. If it is a relative image, the existence
+of the file is checked for.
+
+=item text             
+
+The text of the button, also the name of the scratch action
+(VALUE is an alias for TEXT.) 
+
+=item border, height, width, vspace, hspace, align
+
+The image alignment parameters. Border defaults to 0.
+
+=item form      
+
+The name of the form, defaults to document.forms[0] -- be careful!
+
+=item confirm             
+
+The text to use for a JavaScript confirm, if any.
+             
+=item getsize
+
+If true, tries to use Image::Size to add height=Y width=X.
+             
+=item alt       
+
+The alt text to be displayed in window.status and balloons.
+Defaults to the same as TEXT.
+             
+=item anchor 
+
+Set to the anchor text value, defaults to TEXT
+             
+=item hidetext
+
+Set true if you don't want the anchor displayed
+
+=back
+
+=cut
 EOD
 
 UserTag button Routine <<EOR
@@ -186,11 +213,37 @@ sub {
 		$anchor = "<b>$anchor</b>";
 	}
 
+	my $a_before = '</a>';
+	my $a_after  = '';
+	if($opt->{link_text_too}) {
+		$a_before = '';
+		$a_after = '</a>';
+	}
+
+	$opt->{link_href} ||= 'javascript: void 0';
 	$out .= <<EOF;
-<A HREF="javascript:void 0"$opt->{extra} onMouseOver="window.status='$wstatus'"
-	onClick="$confirm ($opt->{form}.$clickname.value='$text') && $opt->{form}.submit(); return(false);"
-	ALT="$wstatus"><IMG ALT="$wstatus" SRC="$src" border=$opt->{border}$position></A>$anchor
+<A HREF="$opt->{link_href}"$opt->{extra} onMouseOver="window.status='$wstatus'"
+	onClick="$confirm mv_click_map_unique(document.$opt->{form}, '$clickname', '$text') && $opt->{form}.submit(); return(false);"
+	ALT="$wstatus"><IMG ALT="$wstatus" SRC="$src" border=$opt->{border}$position>$a_before$anchor$a_after
 EOF
+
+	my $function = '';
+	unless ($::Instance->{js_functions}{mv_do_click}++) {
+		$function = "\n" . <<'EOJS';
+function mv_click_map_unique(myform, clickname, clicktext) {
+	for (var i = 0; i < myform.length; i++) {
+		var widget = myform.elements[i];
+		if (
+			(widget.type == 'hidden')
+			&& (widget.name != 'mv_click_map')
+			&& (widget.name.indexOf('mv_click_') == 0)
+		)
+			widget.value = (widget.name == clickname) ? clicktext : '';
+	}
+	return true;
+}
+EOJS
+	}
 
 	# Must escape backslashes and single quotes for JavaScript write function.
 	# Also must get rid of newlines and carriage returns.
@@ -198,7 +251,7 @@ EOF
 	$out =~ s/[\n\r]+/ /g;
 	$out = <<EOV;
 <script language="javascript1.2">
-<!--
+<!--$function
 document.write('$out');
 // -->
 </script>
@@ -207,4 +260,5 @@ EOV
 
 	return $out;
 }
+
 EOR
