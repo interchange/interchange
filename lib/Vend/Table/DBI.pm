@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.14 2002-03-04 19:50:02 jon Exp $
+# $Id: DBI.pm,v 2.15 2002-03-05 00:45:00 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.14 $, 10);
+$VERSION = substr(q$Revision: 2.15 $, 10);
 
 use strict;
 
@@ -1757,8 +1757,9 @@ eval {
 
 	if ($rc < 1 and CORE::ref($ref) and scalar(@$ref) ) {
 		$rc = scalar(@$ref);
-		$::Values->{mv_search_match_count} = $rc;
 	}
+	# force to numeric, to handle DBI "0E0"-type results
+	$::Values->{mv_search_match_count} = $rc + 0;
 	if ($opt->{row_count}) {
 		return $rc unless $opt->{list};
 		$ref = [ [ $rc ] ];
