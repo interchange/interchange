@@ -5,6 +5,10 @@ endif
 ifdef SQLPASS
 Database  transactions  PASS         __SQLPASS__
 endif
+
+## this truncates too-long user input that might cause a die otherwise
+Database  transactions  LENGTH_EXCEPTION_DEFAULT  truncate_log
+
 Database  transactions  DEFAULT_TYPE varchar(128)
 Database  transactions  COLUMN_DEF   "code=VARCHAR(14) NOT NULL PRIMARY KEY"
 Database  transactions  COLUMN_DEF   "store_id=VARCHAR(9)"

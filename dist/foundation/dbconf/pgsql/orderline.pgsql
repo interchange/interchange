@@ -5,6 +5,10 @@ endif
 ifdef SQLPASS
 Database  orderline  PASS         __SQLPASS__
 endif
+
+## this truncates too-long user input that might cause a die otherwise
+Database  orderline  LENGTH_EXCEPTION_DEFAULT  truncate_log
+
 Database  orderline  DEFAULT_TYPE varchar(128)
 Database  orderline  COLUMN_DEF   "code=varchar(14) NOT NULL PRIMARY KEY"
 Database  orderline  COLUMN_DEF   "store_id=varchar(9)"

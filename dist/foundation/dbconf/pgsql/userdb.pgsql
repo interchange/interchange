@@ -1,4 +1,5 @@
 Database  userdb  userdb.txt   __SQLDSN__
+
 ifdef SQLUSER
 Database  userdb  USER         __SQLUSER__
 endif
@@ -6,6 +7,10 @@ ifdef SQLPASS
 Database  userdb  PASS         __SQLPASS__
 endif
 Database  userdb  DEFAULT_TYPE  VARCHAR(255)
+
+## this truncates too-long user input that might cause a die otherwise
+Database  userdb  LENGTH_EXCEPTION_DEFAULT  truncate_log
+
 Database  userdb  COLUMN_DEF   "username=VARCHAR(20) NOT NULL PRIMARY KEY"
 Database  userdb  COLUMN_DEF   "password=VARCHAR(20)"
 Database  userdb  COLUMN_DEF   "acl=text"
