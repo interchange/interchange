@@ -484,9 +484,13 @@ Card Number<BR>
 	</SELECT>
 </TD></TR></TABLE>
 
+<INPUT TYPE=radio NAME=fax_order VALUE=0
+		[if !value fax_order]CHECKED[/if]>
+<I>Charge credit card</I><BR>
+
 [if variable CHECK_ACCEPTED]
 	<INPUT TYPE=radio NAME=fax_order VALUE=1 [checked fax_order 1]>
-	<I>I will call with payment information</I><BR>
+	<I>Call customer for payment information</I><BR>
 [/if]
 
 [if variable PO_ACCEPTED]

@@ -22,10 +22,12 @@
 
 [if cgi newarea]
 <!-- Creating area: 
+[flag type=write table=area]
 [value name=area set="[fcounter etc/area.recordnumber]" hide=1]
 [data table=area column=name key="[value area]" value="[cgi newarea]"] -->
 [elsif cgi newcat]
 <!-- Creating category: 
+[flag type=write table=cat]
 [value name=cat set="[fcounter etc/cat.recordnumber]" hide=1]
 [data table=cat column=name key="[value cat]" value="[cgi newcat]"]
 [data table=cat column=sel key="[value cat]" value="[value area]"] -->

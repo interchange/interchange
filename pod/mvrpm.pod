@@ -1,6 +1,6 @@
 =head1 NAME
 
-mvrpm - Minivend RPM for Redhat Systems
+icrpm - Interchange RPM for Redhat Systems
 
 =head2 VERSION
 
@@ -8,11 +8,11 @@ mvrpm - Minivend RPM for Redhat Systems
 
 =head1 SYNOPSIS
 
-rpm -Uvh minivend-4.XX-X.rpm
+rpm -Uvh interchange-4.X.X-X.rpm
 
 =head1 DESCRIPTION
 
-The Minivend 4 RPM is designed to integrate Minivend with a stock Redhat
+The Interchange 4 RPM is designed to integrate Interchange with a stock Redhat
 installation. It places logs and run files in fairly standard locations,
 i.e.:
 
@@ -24,39 +24,39 @@ Configuration file is /etc/minivend.cfg. It is only writable by root.
 
 =item Data
 
-Catalog directories, at least the demos, are located in /var/lib/minivend.
+Catalog directories, at least the demos, are located in /var/lib/interchange.
 
 =item Invocation
 
-Invocation is the normal /etc/rc.d startup method. Minivend installs to
+Invocation is the normal /etc/rc.d startup method. Interchange installs to
 be active in run levels 3, 4, and 5; to be killed in all. 
 
-IMPORTANT NOTE: Do not expect /usr/local/minivend/bin/restart to work!
+IMPORTANT NOTE: Do not expect /usr/local/interchange/bin/restart to work!
 
-Minivend uses a special invocation script, located at /usr/local/bin/minivend,
-to start the Minivend server.  This is called by /etc/rc.d/init.d/minivend.
+Interchange uses a special invocation script, located at /usr/local/bin/interchange,
+to start the Interchange server.  This is called by /etc/rc.d/init.d/interchange.
 
 =item Run
 
-Run files go in /var/run/minivend/*. The subdirectory is needed to allow
-the Minivend user ID to write/create files.
+Run files go in /var/run/interchange/*. The subdirectory is needed to allow
+the Interchange user ID to write/create files.
 
 =item Logs
 
-Logs go in /var/log/minivend/*. The subdirectory is needed to allow
-the Minivend user ID to write/create files.
+Logs go in /var/log/interchange/*. The subdirectory is needed to allow
+the Interchange user ID to write/create files.
 
 =back
 
 =head1 ASSUMPTIONS
 
-The Minivend RPM makes several assumptions:
+The Interchange RPM makes several assumptions:
 
 =over 4
 
 =item Stock Apache
 
-Minivend relies upon the following things in the Apache installation:
+Interchange relies upon the following things in the Apache installation:
 
  -- Server root in /home/httpd
  -- ScriptAlias /cgi-bin/ /home/httpd/cgi-bin/
@@ -72,32 +72,52 @@ INET mode link program and use it instead of VLINK.
 
 =item Logs
 
-Logs are located in /var/log/minivend.  Minivend drops a file in
+Logs are located in /var/log/interchange.  Interchange drops a file in
 /etc/logrotate.d to do log rotation.
 
 =item Run files
 
 To place the logs, configuration, and run files in standard Redhat/LSB 
-locations, Minivend relies on a special invocation from /usr/local/bin/minivend.
+locations, Interchange relies on a special invocation from /usr/local/bin/minivend.
 In other words, don't expect /usr/local/minivend/bin/restart to work.
 
-Minivend will be started by this command:
+Interchange will be started by this command:
 
-    /etc/rc.d/init.d/minivend start
+    /etc/rc.d/init.d/interchange start
 
 and will be re-started by this command:
 
-    /etc/rc.d/init.d/minivend restart
+    /etc/rc.d/init.d/interchange restart
 
 or possibly:
 
-    /usr/local/bin/minivend -r
+    /usr/local/bin/interchange -r
 
 The run files, i.e. UNIX-domain socket, catalog status files, will be
-placed in /var/run/minivend. That directory must be owned/writable by
-the minivend user ID.
+placed in /var/run/interchange. That directory must be owned/writable by
+the interchange user ID.
 
 =back
+
+=head1 USING INTERCHANGE
+
+When the installation finishes, you should be able to access the two
+installed catalogs:
+
+	http://localhost/barry/
+	http://localhost/simple/
+
+The initial user name is "interchange", and the password is "pass". CHANGE IT.
+
+=head1 SEE ALSO
+
+Documentation and other information on Interchange is at:
+
+	http://www.akopia.com/
+
+There will soon be a developer site. For now, use:
+
+	http://www.minivend.com/minivend/
 
 =head1 AUTHOR
 

@@ -270,7 +270,7 @@ sub extra_libs {
 		require Storable;
 	};
 	unless ($@) {
-				my $def = 'y';
+				my $def = 's';
 		        print <<EOF;
 
 You appear to have Raphael Manfredi's Storable module installed.
@@ -284,10 +284,8 @@ You can reply one of:
 		s -- Use for sessions only, won't break existing databases
 		y -- Use for both sessions and databases
 
-It is recommended that new installations reply YES, and that
-existing installations reply S unless there is a need for
-improved performance. Replying S will mean you have to delete all
-of your session files.
+It is recommended that all installations reply S unless there is a need for
+improved performance in Minivend DBM databases.
 
 If you reply YES and you use any GDBM or DB_File databases
 they will NEED TO BE REMADE for ALL CATALOGS using this

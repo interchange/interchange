@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.14 2000-08-06 19:46:55 heins Exp $
+# $Id: Interpolate.pm,v 1.15 2000-08-07 05:38:15 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.14 $, 10);
+$VERSION = substr(q$Revision: 1.15 $, 10);
 
 @EXPORT = qw (
 
@@ -2079,7 +2079,7 @@ sub tag_value_extended {
 	eval {
 		@ary = @ary[$ready_safe->reval( $index eq '*' ? "0 .. $#ary" : $index )];
 	};
-	logError("value-extend $var: bad index") if $@;
+	::logError("value-extend $var: bad index") if $@;
 
 	if($opt->{filter}) {
 		for(@ary) {

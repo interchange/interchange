@@ -24,7 +24,7 @@
     </TR>
 	<TR>
 		<TD WIDTH=100 BGCOLOR=__TOPCOLOR__ HEIGHT=10><IMG SRC="clear.gif" WIDTH=100 ALT="" HEIGHT=1 BORDER=0>&nbsp;</TD>
-		<TD WIDTH=420 BGCOLOR=__TOPCOLOR__ HEIGHT=10 VALIGN=top ALIGN=middle><FONT SIZE=2 FACE="Tahoma, Arial, Helvetica" COLOR=__TOPTEXT__><B>[if session logged_in][value fname] [value lname][else]Unregistered customer[/else][/if]</B></FONT></TD>
+		<TD WIDTH=420 BGCOLOR=__TOPCOLOR__ HEIGHT=10 VALIGN=top ALIGN=middle><FONT SIZE=2 FACE="Tahoma, Arial, Helvetica" COLOR=__TOPTEXT__><B>[if session logged_in][value fname] [value lname]&nbsp;[else]Unregistered customer[/else][/if]</B></FONT></TD>
 		<TD WIDTH=100 BGCOLOR=__TOPCOLOR__ HEIGHT=10 VALIGN=top ALIGN=right><FONT SIZE=1 FACE="Tahoma, Arial, Helvetica" COLOR=__BARTEXT__><B>[tag time]%b %d, %Y %H:%M[/tag]</B></FONT>&nbsp;&nbsp;&nbsp;</TD>
 	</TR>
 	<TR>
@@ -124,12 +124,12 @@
 		<TD __HEADERBG__ VALIGN=MIDDLE ALIGN=left><FONT SIZE="-1" FACE="Tahoma, Arial, Helvetica">&nbsp;&nbsp;<A HREF="[area query/check_orders]">Order Status</A>
 		</TD>
 		</TR>
-	[if session login_table eq '__UI_ACCESS_TABLE__']
+	[if type=data term="__UI_ACCESS_TABLE__::username::[data session username]"]
 		<TR>
 		<TD COLSPAN=2><HR></TD>
 		</TR>
 		<TR>
-		<TD WIDTH=68 __HEADERBG__ VALIGN=MIDDLE ALIGN=right><FONT SIZE="-1" FACE="Tahoma, Arial, Helvetica">[page __UI_BASE__/index]Admin</A>&nbsp;&nbsp;</TD>
+		<TD WIDTH=68 __HEADERBG__ VALIGN=MIDDLE ALIGN=right><FONT SIZE="-1" FACE="Tahoma, Arial, Helvetica">[page admin/index]Admin</A>&nbsp;&nbsp;</TD>
 		<TD __HEADERBG__ VALIGN=MIDDLE ALIGN=left><FONT SIZE="-1" FACE="Tahoma, Arial, Helvetica">&nbsp;&nbsp;<A HREF="[area __UI_BASE__/orderstats]">Reports</A>
 		</TD>
 		</TR>

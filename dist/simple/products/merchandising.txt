@@ -1,3 +1,6 @@
 sku	featured	banner_text	banner_image	blurb_begin	blurb_end	start	finish	upsell_to	cross_sell
-22-200		Featured in the Abstract Gallery					
-98-101		Featured in the Expressionist Gallery				20000805	20001005
+22-200	front	Featured in the Abstract Gallery				20000806	20000806		
+98-101	front	Featured in the Expressionist Gallery				20000805	20001005		
+00-402	front					20000806	20000806		
+MVFAQ1	front	The Fine Documentation				20000806	20000806		
+MVDOC1	front	Worth a look...				20000806	20000806		

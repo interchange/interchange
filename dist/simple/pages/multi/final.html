@@ -1,19 +1,8 @@
-[comment]
-ui_template: Yes
-ui_template_name: standalone
-ui_template_layout: LOGOBAR, MENUBAR, UI_CONTENT, MENUBOTTOM, COPYRIGHT
-ui_template_description: Page with top logo bar. menu bar and copyright at bottom.
-ui_control_element: page_title :
-ui_control_element: members_only : 0=No,1=Yes
-ui_control_description: page_title : Page title
-ui_control_description: members_only : Members only
-[/comment]
-[set members_only][/set]
 [set name=page_title interpolate=1]Check out with [nitems] items in basket[/set]
 
 __LOGOBAR__
 __MENUBAR__
-<!-- BEGIN CONTENT -->
+__NO_LEFT__
 
 <CENTER>
 <FORM ACTION="[process secure=1]" METHOD="POST">
@@ -24,7 +13,7 @@ __MENUBAR__
 <INPUT TYPE=hidden NAME=mv_order_profile VALUE="checkout_profile">
 [if items]
 [then]
-<TABLE WIDTH=600>
+<TABLE WIDTH="450">
 <TR><TD COLSPAN=4 __HEADERBG__>
 	<FONT SIZE="+2" COLOR="__HEADERTEXT__">Review order details</FONT>
 	</TD>
@@ -83,7 +72,7 @@ They are shown in <FONT COLOR=__CONTRAST__>__CONTRAST__</FONT> below.</FONT>
 [/if]
 
 [if variable CREDIT_CARDS_ACCEPTED =~ /\S/]
-<TABLE WIDTH=600><TR><TD __HEADERBG__>
+<TABLE WIDTH="450"><TR><TD __HEADERBG__>
 <FONT SIZE="+2" COLOR=__HEADERTEXT__>[error std_label="Credit Card Information" name=mv_credit_card_valid]</FONT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[calc]
 	my $accepted = $Variable->{CREDIT_CARDS_ACCEPTED};
 	my (@out);
@@ -197,7 +186,7 @@ Card Number <FONT SIZE=1>(test number 4111 1111 1111 1111)</FONT><BR>
 </BLOCKQUOTE>
 </TD></TR></TABLE>
 
-<TABLE WIDTH=600><TR><TD __HEADERBG__>
+<TABLE WIDTH="450"><TR><TD __HEADERBG__>
 <FONT SIZE="+2" COLOR="__HEADERTEXT__">Email preferences</FONT>
 </TD></TR></TABLE>
 
@@ -227,16 +216,16 @@ Card Number <FONT SIZE=1>(test number 4111 1111 1111 1111)</FONT><BR>
 </CENTER>
 
 
-<TABLE WIDTH=600><TR><TD __HEADERBG__>
+<TABLE WIDTH="450"><TR><TD __HEADERBG__>
 <FONT SIZE="+2" COLOR="__HEADERTEXT__"><B>Gift note or Special Instructions<BR>
 </TD></TR>
 <TR><TD>
-<TEXTAREA NAME=gift_note ROWS=5 COLS=72>[value gift_note]</TEXTAREA>
+<TEXTAREA NAME=gift_note ROWS=5 COLS=60>[value gift_note]</TEXTAREA>
 </TD></TR></TABLE>
 </FORM>
 </CENTER>
 
-<!-- END CONTENT -->
+__NO_RIGHT__
 __MENUBOTTOM__
 __COPYRIGHT__
 

@@ -11,6 +11,7 @@ DOCROOT	__MVC_DOCUMENTROOT__	Directories and Paths
 ENCRYPTOR	none	Payment
 FAX	__MVC_FAX__	Company
 IMAGE_DIR	__MVC_IMAGEURL__	Directories and Paths
+LOGGED_STATIC	1	Static pages
 LOGO	__MVC_LOGO__	Template
 MULTIORDER	__MVC_MULTIORDER__	Order
 MYSQL	__MVC_MYSQL__	Database

@@ -85,7 +85,7 @@ things:
 [item-change 1][condition][item-field category][/condition]
 <TR VALIGN="top" ALIGN="left">
 <TD WIDTH="10" BGCOLOR="__TITLETEXT__" HEIGHT="13" VALIGN="top" ALIGN="left"></TD>
-<TD WIDTH="460" COLSPAN="3" BGCOLOR="__TITLEBG__" VALIGN="center" ALIGN="middle"><FONT SIZE="+1" FACE="Tahoma, Arial, Helvetica" COLOR="__BARTEXT__"><B>[data table=cat col=banner_text key="[item-field category]"]</B></FONT></TD>
+<TD WIDTH="460" COLSPAN="3" BGCOLOR="__TITLEBG__" VALIGN="center" ALIGN="middle"><FONT SIZE="+1" FACE="Tahoma, Arial, Helvetica" COLOR="__BARTEXT__"><B>[if-item-data merchandising banner_text][item-data merchandising banner_text][else][item-field category][/else][/if-item-data]</B></FONT></TD>
 </TR>
 [/item-change 1]
 <TR>
@@ -101,7 +101,7 @@ things:
 <TD WIDTH="126" HEIGHT="166" VALIGN="CENTER" ALIGN="CENTER">[if-item-field image]<IMG SRC="items/[item-field image]" ALT="[item-field artist]: [item-field title]" BORDER="0">[/if-item-field]</TD>
 <TD WIDTH="8" HEIGHT="166" VALIGN="top" ALIGN="left"><IMG SRC="clear.gif" WIDTH="1" ALT="" HEIGHT="1" BORDER="0"></TD>
 <TD WIDTH="310" HEIGHT="166" VALIGN="top" ALIGN="left"><FONT FACE="Arial" COLOR="__HEADERTEXT__"><B>[item-field title]</B></FONT><BR>
-<FONT SIZE="-1" FACE="Arial" COLOR="__TITLEBG__"><B>by [filter namecase][item-field artist]</B></FONT><BR><BR>
+<FONT SIZE="-1" FACE="Arial" COLOR="__TITLEBG__"><B>by [filter op="namecase name"][item-field artist][/filter]</B></FONT><BR><BR>
 <FONT SIZE="-1" FACE="Arial" COLOR="__CONTRAST__"><B>Price: [item-price]</B></FONT>&nbsp;&nbsp;&nbsp;<FONT SIZE="-1" FACE="Arial" COLOR="__TITLEBG__"><B><A HREF="[area order [item-code]]">buy now <IMG SRC="template/cart.png" BORDER=0></A></B></FONT><BR><BR>
 <FONT SIZE="1" FACE="Arial" COLOR="black">[item-field comments]</FONT><BR><BR>
 <FONT SIZE="1" FACE="Arial" COLOR="black"><B>More <A HREF="[area 

@@ -36,8 +36,8 @@
 @_UI_STD_HEAD_@
 [update values]
 <!-- ----- BEGIN REAL STUFF ----- -->
-<form action="[area __UI_BASE__/flex_editor]" method="GET">
-<INPUT TYPE=hidden NAME=mv_action     VALUE=return>
+<form action="[process]" method="GET">
+<INPUT TYPE=hidden NAME=mv_todo     VALUE=return>
 <INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/flex_editor">
 <INPUT TYPE=hidden NAME=mv_data_table VALUE="[cgi mv_data_table]">
 <INPUT TYPE=hidden NAME=page_title VALUE="Edit Affiliate">
@@ -71,13 +71,11 @@
 <br>
 
 [button text="Show Orders"]
-mv_todo=return
 affiliate=[cgi item_id]
 mv_nextpage=__UI_BASE__/reports/order/ByAffiliate
 [/button]<br>
 
 [button text="Show Traffic"]
-mv_todo=return
 affiliate=[cgi item_id]
 [tag time]
 ui_begin_date=%Y%m

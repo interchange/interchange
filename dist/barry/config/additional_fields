@@ -26,10 +26,6 @@ MULTIORDER
 Set to 1 to enable multi-page order screens
 0	1
 
-TEMPLATE
-Select color scheme
-green1	blue1	yellow1
-
 TAXAREA
 Area(s) to tax in
 VA UT

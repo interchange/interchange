@@ -1,19 +1,8 @@
-[comment]
-ui_template: Yes
-ui_template_name: standalone
-ui_template_layout: LOGOBAR, MENUBAR, UI_CONTENT, MENUBOTTOM, COPYRIGHT
-ui_template_description: Page with top logo bar. menu bar and copyright at bottom.
-ui_control_element: page_title :
-ui_control_element: members_only : 0=No,1=Yes
-ui_control_description: page_title : Page title
-ui_control_description: members_only : Members only
-[/comment]
-[set members_only][/set]
 [set page_title]Check out -- __COMPANY__[/set]
 __LOGOBAR__
 __MENUBAR__
-<!-- BEGIN CONTENT -->
-<TABLE WIDTH=620 ALIGN=CENTER>
+__NO_LEFT__
+<TABLE ALIGN=CENTER>
 <TR><TD>
 <FONT SIZE="-1" __CONTRAST__><B>NOTE:</B> If you access something above, it will not save anything you have entered.<BR>
 <!--
@@ -43,11 +32,12 @@ __MENUBAR__
 -->
 
 [if !items]
-<TABLE WIDTH=600>
+<TABLE WIDTH=450>
 <TR><TD COLSPAN=4 __HEADERBG__>
     <FONT SIZE="+2" COLOR="__HEADERTEXT__">No Items?</FONT>
     </TD>
-</TR></TABLE>
+</TR>
+<TR><TD COLSPAN=4>
 <B>You have no items in your shopping cart.</B>
 <P>This usually means that one of several things has occurred:
 <UL>
@@ -61,6 +51,9 @@ You can confirm this by [page form="
 </UL>
 Try calling us at __PHONE__ [if variable TOLLFREE]or __TOLLFREE__[/if]
 to place the order. 
+</td>
+</tr>
+</TABLE>
 [/if]
 
 [if session logged_in]
@@ -106,7 +99,7 @@ If you have an account with us, please enter your user name and password. (test/
         <INPUT TYPE=submit VALUE="Log in"> &nbsp;&nbsp;
         </TD></TR>
     <TR><TD ALIGN=RIGHT>&nbsp;</TD>
-    	<TD ALIGN=RIGHT><INPUT TYPE=hidden NAME=mv_cookie_password VALUE=0><INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1 CHECKED> <I>Log me in automatically</I> </TD>
+    	<TD ALIGN=RIGHT><INPUT TYPE=hidden NAME=mv_cookie_password VALUE=0><INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1> <I>Log me in automatically</I> </TD>
     </TABLE>
 
     </FORM>
@@ -146,18 +139,26 @@ They are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
 <INPUT TYPE=hidden NAME=mv_order_profile VALUE=checkout_profile>
 <INPUT TYPE=hidden NAME=mv_order_route   VALUE="log main copy_user">
 
-<TABLE WIDTH=600><TR><TD __HEADERBG__>
+<TABLE WIDTH=450><TR><TD __HEADERBG__>
 <FONT SIZE="+2" COLOR="__HEADERTEXT__">Shipping Address</FONT>
 </TD></TR></TABLE>
 
-<TABLE WIDTH=90%>
+<TABLE WIDTH=95%>
 
 <TR>
 	<TD ALIGN=RIGHT>
 	[error name=fname std_label="First Name" required=1]</TD>
 	<TD>
 		<INPUT TYPE=text NAME=fname VALUE="[value fname]" size=20>
-	[error name=lname std_label=Last required=1]&nbsp;<INPUT TYPE=text NAME=lname VALUE="[value lname]" size=20>
+	</TD>
+</TR>
+
+<TR>
+	<TD ALIGN=RIGHT>
+	[error name=lname std_label="Last Name" required=1]
+	</td>
+	<TD>
+	<INPUT TYPE=text NAME=lname VALUE="[value lname]" size=20>
 	</TD>
 </TR>
 
@@ -180,28 +181,26 @@ They are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
 		[error name=city std_label="City" required=1]
 	</TD>
 	<TD>
-	<TABLE>
-	<TR>
-		<TD>
-			<INPUT TYPE=text NAME=city VALUE="[value city]" size=20>
-		</TD>
-		<TD>
-			[error name=state std_label="State/Province" required=1]
-		</TD>
-		<TD>
-			<INPUT onChange="check_tax(this.form)"
-				TYPE=text NAME=state VALUE="[value name=state filter=uc]" size=3>
-		</TD>
-		<TD>
-			[error name=zip std_label="Zip/Postal Code" required=1]
-		</TD>
-		<TD>
-			<INPUT TYPE=text NAME=zip VALUE="[value name=zip filter=word]" size=10>
-		</TD> 
-	</TR>
-	</TABLE>
+		<INPUT TYPE=text NAME=city VALUE="[value city]" size=20>
 	</TD>
 </TR>
+<TR>
+	<TD>
+		[error name=state std_label="State/Province" required=1]
+	</TD>
+	<TD>
+		<INPUT TYPE=text NAME=state VALUE="[value name=state filter=uc]" size=3>
+	</TD>
+</TR>
+<TR>
+	<TD>
+		[error name=zip std_label="Zip/Postal Code" required=1]
+	</TD>
+	<TD>
+		<INPUT TYPE=text NAME=zip VALUE="[value name=zip filter=word]" size=10>
+	</TD> 
+</TR>
+
 
 <TR>
 	<TD ALIGN=RIGHT><B>[error name=email std_label="Email Address" required=1]</B></TD>
@@ -236,19 +235,16 @@ They are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
 <TR>	
 	<TD ALIGN=RIGHT>[error name=phone_day std_label="Daytime Phone" required=1]</TD>
 	<TD>
-	<TABLE>
-	<TR>
-		<TD>
-		<INPUT TYPE=text NAME=phone_day VALUE="[value phone_day]" size=16>
-		</TD>
-		<TD ALIGN=RIGHT>
-		[error name=phone_night std_label="Evening Phone" required=0]
-		</TD>
-		<TD>
-		<INPUT TYPE=text NAME=phone_night VALUE="[value phone_night]" size=16>
-		</TD>
-	</TR>
-	</TABLE>
+	<INPUT TYPE=text NAME=phone_day VALUE="[value phone_day]" size=16>
+	</TD>
+</TR>
+<TR>
+	<TD ALIGN=RIGHT>
+	[error name=phone_night std_label="Evening Phone" required=0]
+	</TD>
+	<TD>
+	<INPUT TYPE=text NAME=phone_night VALUE="[value phone_night]" size=16>
+	</TD>
 </TR>
 
 <TR>
@@ -271,7 +267,7 @@ They are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
 		[/set]
 	</TD>
 	<TD>
-	<FONT SIZE="-1">
+	<FONT SIZE="-2">
 	<I>If you want to save this address in your address book,
 	[if value address_book]or recall a saved address,[/if]
 	click the button below.<BR></I>
@@ -291,18 +287,17 @@ They are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
 [/item-list]
 [if !scratch only_downloadable]
 <P>
-<TABLE WIDTH=600><TR><TD __HEADERBG__>
+<TABLE WIDTH=450><TR><TD __HEADERBG__>
 <FONT SIZE="+2" COLOR=__HEADERTEXT__>Choose your shipping method</FONT>
 </TD></TR></TABLE>
 
 <P>
-<TABLE WIDTH=600>
+<TABLE WIDTH=450>
 <TR><TD>
     <SELECT onChange="this.form.submit()" NAME=mv_shipmode>
-		]
     [shipping
 		label=1
-		mode=| [data table=country key='[default country US]' sf=selector col=shipmodes]|
+		mode=|[data table=country key='[default country US]' sf=selector col=shipmodes]|
 		]
     </SELECT>
 </TD>
@@ -318,9 +313,8 @@ They are shown in <FONT COLOR=__CONTRAST__>this color</FONT> below.</FONT>
 </TR></TABLE>
 [/if]
 
-
 [if variable CREDIT_CARDS_ACCEPTED =~ /\S/]
-<TABLE WIDTH=600><TR><TD __HEADERBG__>
+<TABLE WIDTH=450><TR><TD __HEADERBG__>
 <FONT SIZE="+2" COLOR=__HEADERTEXT__>[error std_label="Credit Card Information" name=mv_credit_card_valid]</FONT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[calc]
 	my $accepted = $Variable->{CREDIT_CARDS_ACCEPTED};
 	my (@out);
@@ -365,17 +359,22 @@ Card Number <FONT SIZE=1>(test number 4111 1111 1111 1111)</FONT><BR>
 		<OPTION VALUE=12 [selected mv_credit_card_exp_month 12]> 12 - December
 	</SELECT>
 	<SELECT NAME=mv_credit_card_exp_year>
-		<OPTION VALUE=00 [selected mv_credit_card_exp_year 00]> 2000
-		<OPTION VALUE=01 [selected mv_credit_card_exp_year 01]> 2001
-		<OPTION VALUE=02 [selected mv_credit_card_exp_year 02]> 2002
-		<OPTION VALUE=03 [selected mv_credit_card_exp_year 03]> 2003
-		<OPTION VALUE=04 [selected mv_credit_card_exp_year 04]> 2004
-		<OPTION VALUE=05 [selected mv_credit_card_exp_year 05]> 2005
-		<OPTION VALUE=06 [selected mv_credit_card_exp_year 06]> 2006
-		<OPTION VALUE=07 [selected mv_credit_card_exp_year 07]> 2007
-		<OPTION VALUE=08 [selected mv_credit_card_exp_year 08]> 2008
-		<OPTION VALUE=09 [selected mv_credit_card_exp_year 09]> 2009
-		<OPTION VALUE=10 [selected mv_credit_card_exp_year 10]> 2010
+	[comment]
+		This should always return the current year as the first, then
+		7 more years.
+	[/comment]
+	[loop option=mv_credit_card_exp_year lr=1 list=`
+		my $year = $Tag->time( '', { format => '%Y' }, '%Y' );
+		my $out = '';
+		for ($year .. $year + 7) {
+			/\d\d(\d\d)/;
+			$last_two = $1;
+			$out .= "$last_two\t$_\n";
+		}
+		return $out;
+	`]
+		<OPTION VALUE="[loop-code]"> [loop-pos 1]
+	[/loop]
 	</SELECT>
 </TD></TR></TABLE>
 [if scratch some_downloadable]
@@ -429,7 +428,7 @@ Card Number <FONT SIZE=1>(test number 4111 1111 1111 1111)</FONT><BR>
 	<I>I will pay by COD ([handling cod] extra charge will be added)</I><BR>
 [/if]
 
-<TABLE WIDTH=600><TR><TD __HEADERBG__>
+<TABLE WIDTH=450><TR><TD __HEADERBG__>
 <FONT SIZE="+2" COLOR="__HEADERTEXT__">Billing Address (if different)</FONT>
 </TD></TR></TABLE>
 
@@ -450,7 +449,7 @@ Card Number <FONT SIZE=1>(test number 4111 1111 1111 1111)</FONT><BR>
 	</TD>
 </TR>
 <TR>
-	<TD ALIGN=RIGHT><B>City, State, Postal Code</B></TD>
+	<TD ALIGN=RIGHT><B>City/ST/Zip</B></TD>
 	<TD>
 		<INPUT TYPE=text NAME=b_city VALUE="[value b_city]" size=20>
 		<INPUT TYPE=text NAME=b_state VALUE="[value b_state]" size=3>
@@ -485,7 +484,7 @@ Card Number <FONT SIZE=1>(test number 4111 1111 1111 1111)</FONT><BR>
 mv_todo=submit
 [/set]
 
-<TABLE WIDTH=600><TR><TD __HEADERBG__>
+<TABLE WIDTH=450><TR><TD __HEADERBG__>
 <FONT SIZE="+2" COLOR="__HEADERTEXT__">Email preferences</FONT>
 </TD></TR></TABLE>
 
@@ -512,7 +511,7 @@ mv_todo=submit
 
 [if items]
 [then]
-<TABLE WIDTH=600>
+<TABLE WIDTH=450>
 <TR><TD COLSPAN=4 __HEADERBG__>
 	<FONT SIZE="+2" COLOR="__HEADERTEXT__">Review order details</FONT>
 	</TD>
@@ -578,7 +577,7 @@ mv_todo=submit
 <FONT SIZE="-1" __CONTRAST__><B>NOTE:</B> If you access something below, it will not save anything you have entered.
 
 </TD></TR></TABLE>
-<!-- END CONTENT -->
+__NO_RIGHT__
 __MENUBOTTOM__
 __COPYRIGHT__
 <!-- current page: @@MV_PAGE@@ -->

@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.14 $, 10);
+$VERSION = substr(q$Revision: 1.15 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -136,7 +136,7 @@ sub get_ui_table_acl {
 	}
 	else {
 		unless ($acl_top = $Vend::UI_entry) {
-	#::logDebug("Call get_ui_table_acl: acl_top=" . ::uneval($acl_top));
+#::logDebug("Call get_ui_table_acl: acl_top=" . ::uneval($acl_top));
 			return undef unless ref($acl_top = ui_acl_enabled());
 		}
 	}

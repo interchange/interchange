@@ -60,6 +60,8 @@ This is the default page of the catalog.
 <TABLE WIDTH="470" __TABLEFG__ VALIGN="TOP" ALIGN="left" CELLSPACING="0" BORDER="0" CELLPADDING="0">
 [loop random=3
 	search= |
+		fi=merchandising
+		st=db
 		sf=featured
 		se=front
 		ml=25
@@ -67,7 +69,7 @@ This is the default page of the catalog.
 ]
 <TR VALIGN=top ALIGN=left>
 <TD WIDTH=10 BGCOLOR=__BARTEXT__ HEIGHT=13 VALIGN=top ALIGN=left></TD>
-<TD WIDTH=460 COLSPAN=3 BGCOLOR=__TITLEBG__ VALIGN=middle ALIGN=middle><FONT SIZE="+1" FACE="Tahoma, Arial, Helvetica" COLOR=__BARTEXT__><B>[data table=cat col=banner_text key="[loop-field category]"]</B></FONT></TD>
+<TD WIDTH=460 COLSPAN=3 BGCOLOR=__TITLEBG__ VALIGN=middle ALIGN=middle><FONT SIZE="+1" FACE="Tahoma, Arial, Helvetica" COLOR=__BARTEXT__><B>[if-loop-data merchandising banner_text][loop-data merchandising banner_text][else][loop-field category][/else][/if-loop-data]</B></FONT></TD>
 </TR>
 <TR>
 <TD WIDTH=10 BGCOLOR=__BARTEXT__ HEIGHT="*" VALIGN=top ALIGN=left><IMG SRC="clear.gif" WIDTH=1 ALT="" HEIGHT=1 BORDER=0></TD>

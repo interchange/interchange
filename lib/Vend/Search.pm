@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# $Id: Search.pm,v 1.4 2000-08-06 19:51:16 heins Exp $
+# $Id: Search.pm,v 1.5 2000-08-07 05:38:15 heins Exp $
 #
 # Vend::Search -- Base class for search engines
 #
@@ -26,7 +26,7 @@
 #
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -480,7 +480,7 @@ sub get_limit {
 	my $limit_sub;
 	my $range_code = '';
 	my $rd = $s->{mv_record_delim} || '\n';
-	my $code       = "sub {\nmy \$line = shift; chomp \$line; \$line =~ tr/$rd//d; ::logDebug(\$line);\n";
+	my $code       = "sub {\nmy \$line = shift; chomp \$line; \$line =~ tr/$rd//d;\n";
 	my $join_key;
 	$join_key = defined $s->{mv_return_fields} ? $s->{mv_return_fields}[0] : 0;
 	$join_key = 0 if $join_key eq '*';

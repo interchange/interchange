@@ -489,6 +489,7 @@ dist/simple/config/brown1/menubottom
 dist/simple/config/brown1/no_right
 dist/simple/config/brown1/only_logo
 dist/simple/config/brown1/rightside
+dist/simple/config/postcopy_commands
 dist/simple/config/precopy_commands
 dist/simple/config/yellow1/copyright
 dist/simple/config/yellow1/leftside
@@ -579,6 +580,7 @@ dist/simple/images/items/okeeffe6.jpg
 dist/simple/images/items/paul_harlequin.jpg
 dist/simple/images/items/pol1.jpg
 dist/simple/images/items/pol2.jpg
+dist/simple/images/items/poweredby.gif
 dist/simple/images/items/tshirt.jpg
 dist/simple/images/items/two_fridas.jpg
 dist/simple/images/items/womanfan.jpg

@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.13 2000-08-06 19:38:57 heins Exp $
+# $Id: Config.pm,v 1.14 2000-08-07 05:38:15 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -101,7 +101,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.13 $, 10);
+$VERSION = substr(q$Revision: 1.14 $, 10);
 
 my %CDname;
 
@@ -1985,6 +1985,7 @@ my %Hash_ref = (  qw!
 my %Ary_ref = (   qw!
 							NAME         NAME
 							BINARY       BINARY 
+							POSTCREATE   POSTCREATE 
 					! );
 
 sub parse_config_db {

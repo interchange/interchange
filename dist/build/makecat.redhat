@@ -4,19 +4,19 @@ HOST=`hostname`
 
 if test -n "$RPM_BUILD_ROOT"
 then 
-	VENDROOT=/usr/local/minivend
-	BASEDIR=/var/lib/minivend
+	VENDROOT=/usr/local/interchange
+	BASEDIR=/var/lib/interchange
 	RELOCATE="relocate=$RPM_BUILD_ROOT"
 	HOST=RPM_CHANGE_HOST
-elif test -d /usr/local/minivend -a -w /usr/local/minivend
+elif test -d /usr/local/interchange -a -w /usr/local/interchange
 then 
-	VENDROOT=/usr/local/minivend
-	BASEDIR=/var/lib/minivend
-elif test -d /usr/local/minivend -a -w /usr/local/minivend
+	VENDROOT=/usr/local/interchange
+	BASEDIR=/var/lib/interchange
+elif test -d /usr/local/interchange -a -w /usr/local/interchange
 then
 	VENDROOT=$HOME/mvend
 else
-	echo "Can't find minivend directory."
+	echo "Can't find interchange directory."
 	exit 1
 fi
 
@@ -68,8 +68,8 @@ do
 		   --cgibase=$CGIBASE \
 		   --basedir=$BASEDIR \
 		   --documentroot=$DOCROOT \
-		   --minivenduser=minivend \
-		   --minivendgroup=minivend \
+		   --minivenduser=interchange \
+		   --minivendgroup=interchange \
 		   --serverconf=$SERVERCONF \
 		   --vendroot=$VENDROOT \
 		   --catroot=$BASEDIR/$i \
@@ -78,8 +78,8 @@ do
 		   --servername=$HOST \
 		   --cgiurl=$CGIBASE/$i \
 		   --demotype=$i \
-		   --mailorderto=minivend@$HOST \
-		   --catuser=minivend \
+		   --mailorderto=interchange@$HOST \
+		   --catuser=interchange \
 		   --permtype=user \
 		   --samplehtml=$DOCROOT/$i \
 		   --imagedir=$DOCROOT/$i/images \

@@ -9,6 +9,7 @@ ui_control_description: page_title: Page title
 ui_control_description: members_only : Members only
 [/comment]
 [set name=page_title int]Search results -- [value-extended name=mv_searchspec joiner=" | "][/set]
+[flag type=build]
 __LOGOBAR__
 __MENUBAR__
 __LEFTSIDE__
@@ -30,15 +31,7 @@ __LEFTSIDE__
 [item-change 1][condition][item-field category][/condition]
 <TR VALIGN="top" ALIGN="left">
 <TD WIDTH="10" BGCOLOR="__BARTEXT__" HEIGHT="13" VALIGN="top" ALIGN="left"></TD>
-<TD WIDTH="460" COLSPAN="3" BGCOLOR="__TITLEBG__" VALIGN="center" ALIGN="middle"><FONT SIZE="+1" FACE="Tahoma, Arial, Helvetica" COLOR="__BARTEXT__"><B>[data
-		table=cat
-		col=banner_text
-		key=`
-			$tmp = q{[item-field category]};
-			$tmp =~ s/[ ,].*//;
-			$tmp
-		`]</B></FONT></TD>
-</TR>
+<TD WIDTH="460" COLSPAN="3" BGCOLOR="__TITLEBG__" VALIGN="center" ALIGN="middle"><FONT SIZE="+1" FACE="Tahoma, Arial, Helvetica" COLOR="__BARTEXT__"><B>[if value link_banner][value link_banner][value name=link_banner set=""][else][item-data products category][/else][/if]</TR>
 [/item-change 1]
 <TR>
 <TD WIDTH=10 BGCOLOR=__BARTEXT__ HEIGHT="*" VALIGN=top ALIGN=left><IMG SRC="clear.gif" WIDTH=1 ALT="" HEIGHT=1 BORDER=0></TD>

@@ -24,7 +24,7 @@
     </TR>
 	<TR>
 		<TD WIDTH=100 BGCOLOR=__TOPCOLOR__ HEIGHT=10><IMG SRC="clear.gif" WIDTH=100 ALT="" HEIGHT=1 BORDER=0>&nbsp;</TD>
-		<TD WIDTH=420 BGCOLOR=__TOPCOLOR__ HEIGHT=10 VALIGN=top ALIGN=middle><FONT SIZE=2 FACE="Tahoma, Arial, Helvetica" COLOR=__TOPTEXT__><B>[if session logged_in][value fname] [value lname][else]Unregistered customer[/else][/if]</B></FONT></TD>
+		<TD WIDTH=420 BGCOLOR=__TOPCOLOR__ HEIGHT=10 VALIGN=top ALIGN=middle><FONT SIZE=2 FACE="Tahoma, Arial, Helvetica" COLOR=__TOPTEXT__><B>[if session logged_in][value fname] [value lname]&nbsp;[else]Unregistered customer[/else][/if]</B></FONT></TD>
 		<TD WIDTH=100 BGCOLOR=__TOPCOLOR__ HEIGHT=10 VALIGN=top ALIGN=right><FONT SIZE=1 FACE="Tahoma, Arial, Helvetica" COLOR=__BARTEXT__><B>[tag time]%b %d, %Y %H:%M[/tag]</B></FONT>&nbsp;&nbsp;&nbsp;</TD>
 	</TR>
 	<TR>

@@ -57,7 +57,8 @@ __LEFTSIDE__
 [loop-change 1][condition][loop-field category][/condition]
 <TR VALIGN="top" ALIGN="left">
 <TD WIDTH="10" BGCOLOR="__TITLETEXT__" HEIGHT="13" VALIGN="top" ALIGN="left"></TD>
-<TD WIDTH="460" COLSPAN="3" BGCOLOR="__TITLEBG__" VALIGN="center" ALIGN="middle"><FONT SIZE="+1" FACE="Tahoma, Arial, Helvetica" COLOR="__TITLETEXT__"><B>[data table=cat col=banner_text key="[loop-field category]"]</B></FONT></TD>
+<TD WIDTH="460" COLSPAN="3" BGCOLOR="__TITLEBG__" VALIGN="center" ALIGN="middle"><FONT SIZE="+1" FACE="Tahoma, Arial, Helvetica" COLOR="__TITLETEXT__"><B>[if-loop-data merchandising banner_text][loop-data merchandising banner_text][else][loop-field category][/else][/if-loop-data]</B></FONT></TD>
+
 </TR>
 [/loop-change 1]
 <TR>

@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.12 2000-08-06 19:58:24 heins Exp $
+# $Id: DBI.pm,v 1.13 2000-08-07 05:38:16 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.12 $, 10);
+$VERSION = substr(q$Revision: 1.13 $, 10);
 
 use strict;
 
@@ -191,6 +191,17 @@ sub create {
 	$db->do($query)
 		or warn "DBI: Create table '$tablename' failed: $DBI::errstr\n";
 	::logError("table %s created: %s" , $tablename, $query );
+
+	if(ref $config->{POSTCREATE}) {
+		for(@{$config->{POSTCREATE}} ) {
+			$db->do($_) 
+				or ::logError(
+								"DBI: Post creation query '%s' failed: %s" ,
+								$_,
+								$DBI::errstr,
+					);
+		}
+	}
 
 	$db->do("create index ${tablename}_${key} on $tablename ($key)")
 		or ::logError("table %s index failed: %s" , $tablename, $DBI::errstr);

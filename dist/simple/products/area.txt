@@ -1,4 +1,4 @@
-code	selector	name	banner_img	subs	sort
-A3	Links	Links			3
-A1	Galleries	Galleries			1
-A2	Other	Other Stuff			2
+code	sel	name	which_page	sort	display_type	image	image_prop	banner_image	banner_text	link_type	url	tab	page	search	selector
+1	left	Galleries	all 	00	name					none	browse1 		browse1		1
+2	left	Other Stuff	all 	00	name					none					2
+3	left	Links	all 	01	name					none					3
