@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.26 2003-02-02 21:04:22 racke Exp $
+# $Id: Server.pm,v 2.27 2003-02-06 20:26:29 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.26 $, 10);
+$VERSION = substr(q$Revision: 2.27 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -1200,7 +1200,7 @@ sub server_start_message {
 	push (@types, 'SOAP') if $Global::SOAP;
 	push (@types, 'mod_perl') if $Global::mod_perl;
 	my $server_type = join(" and ", @types);
-	my $pid = read_pidfile();
+	my $pid = $Global::Variable->{MV_BAD_LOCK} ? $$ : read_pidfile();
 	my @args = $reverse ? ($server_type, $pid) : ($pid, $server_type);
 	return ::errmsg ($fmt , @args );
 }
