@@ -3,7 +3,7 @@ ui_template: Yes
 ui_template_name: leftonly
 [/comment]
 
-[tmp page_title]__COMPANY__ -- Log In[/tmp]
+[tmp page_title]__COMPANY__ -- [L]Log In[/L][/tmp]
 
 [control reset=1]
 
@@ -53,7 +53,7 @@ mv_nextpage=new_account
 	<table align="center">
 	<tr> 
 	  <td align=right class="contentbar2">
-	    Username
+	    [L]Username[/L]
 	  </td>
 	  <td class="contentbar2">
 	    <INPUT NAME=mv_username VALUE="[read-cookie MV_USERNAME]">
@@ -61,7 +61,7 @@ mv_nextpage=new_account
 	</tr>
 	<tr>
 	  <td align=right class="contentbar2">
-	    Password
+	    [L]Password[/L]
 	  </td>
 	  <td class="contentbar2">
 	    <INPUT TYPE=password NAME=mv_password VALUE="">
@@ -70,7 +70,7 @@ mv_nextpage=new_account
 	<tr>
 	  <td>&nbsp;</td>
 	  <td class="contentbar1">
-	    <input type=submit value="Log In">
+	    <input type=submit value="[L]Log In[/L]">
 	    <input type="submit" NAME="mv_click" value="New Account">
 	  </td>
 	</tr>
@@ -81,7 +81,7 @@ mv_nextpage=new_account
 	    <INPUT TYPE=checkbox NAME=mv_cookie_password VALUE=1>
 	  </td>
 	  <td class="contentbar1">
-	    Log me in automatically (sets cookie)
+	    [L]Log me in automatically (sets cookie)[/L]
 	  </td>
 	</tr>
 	[/if]
@@ -106,20 +106,20 @@ mv_nextpage=new_account
 	<table>
 	<tr class=contentbar2> 
 	  <td colspan=2 class=contentbar2>
-	    <b>You are already logged in.</b>
+	    <b>[L]You are already logged in.[/L]</b>
 	  </td>
 	</tr>
 	<tr>
 	  <td>&nbsp;</td>
 	  <td class="contentbar1">
 	  	<br>&nbsp;<br>
-	    <INPUT TYPE=submit VALUE="Log out"> <INPUT TYPE=checkbox NAME=clear_values CHECKED VALUE=1>&nbsp;Clear&nbsp;name/address[if items]&nbsp;&nbsp;<INPUT TYPE=checkbox NAME=clear_cart CHECKED VALUE=1>&nbsp;Clear&nbsp;cart[/if]<BR>
+	    <INPUT TYPE=submit VALUE="Log out"> <INPUT TYPE=checkbox NAME=clear_values CHECKED VALUE=1>&nbsp;[L]Clear&nbsp;name/address[/L][if items]&nbsp;&nbsp;<INPUT TYPE=checkbox NAME=clear_cart CHECKED VALUE=1>&nbsp;[L]Clear&nbsp;cart[/L][/if]<BR>
 	  	<br>&nbsp;<br>
 	  </td>
 	</tr>
 	<tr class=contentbar2> 
 	  <td colspan=2>
-	    Or you can create a <A HREF="[area new_account]">new account</a>.
+	    [msg arg.0="<A HREF='[area new_account]'>" arg.1="</a>"]Or you can create a %snew account%s.[/msg]
 	  </td>
 	</tr>
 	</table>
@@ -135,7 +135,7 @@ mv_nextpage=new_account
 
 	<p>
 	<center>
-	[page lost_password]Lost your password?</a>
+	[page lost_password][L]Lost your password?[/L]</a>
 	</center>
 
   </td>

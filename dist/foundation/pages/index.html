@@ -3,7 +3,7 @@ ui_template: Yes
 ui_template_name: leftright
 [/comment]
 
-[tmp page_title]__COMPANY__ -- Welcome[/tmp]
+[tmp page_title]__COMPANY__ -- [L]Welcome[/L][/tmp]
 
 [control reset=1]
 
@@ -27,14 +27,14 @@ ui_template_name: leftright
 [component]cross[/component]
 [size]2[/size]
 [cols]2[/cols]
-[banner]Specials[/banner]
+[banner][L]Specials[/L][/banner]
 [/control-set]
 
 [control-set]
 [component]random[/component]
 [size]3[/size]
 [cols]1[/cols]
-[banner]See also...[/banner]
+[banner][L]See also...[/L][/banner]
 [/control-set]
 
 [control reset=1]
@@ -47,21 +47,22 @@ ui_template_name: leftright
 <tr> 
   <td>
     <br>
+    [L INDEX_PAR1]
     Welcome to the <b>Interchange</b> Foundation Store! This 
     site is intended to get you started building
     your own e-business site. Replace the stock graphics, products, 
-    and categories in this store to begin building your custom site.
+    and categories in this store to begin building your custom site.[/L]
     <br><br>
   </td>
 </tr>
 <tr> 
   <td>
     <br>
-    Take our 
+    [L]Take our[/L] 
 		[page
 			href=survey/standard
 			form="survey_start=customer_satisfaction"
-		]Customer Satisfaction Survey</A>.
+		][L]Customer Satisfaction Survey[/L]</A>.
   </td>
 </tr>
 </table>

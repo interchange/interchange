@@ -92,7 +92,7 @@ ui_template_name: leftonly
 	  <tr>
 	    <td colspan="2">
 	      [if ordered [item-code]]
-	        This item is currently in your [page ord/basket]shopping cart</a>.
+	        [msg arg.0="[page ord/basket]" arg.1="</a>"]This item is currently in your %sshopping cart%s.[/msg]
 	        <br>
 	      [/if]
 	      [if-item-data options o_enable]
@@ -114,19 +114,19 @@ ui_template_name: leftonly
 	  <tr> 
   	    [if-item-data inventory quantity < 1]
 	    <td align="left">
-	      <b>Out Of Stock<b>
+	      <b>[L]Out Of Stock[/L]<b>
 	        <br>
-	        <a href="[area stock-alert [item-code]]">In-Stock Notification</a>
+	        <a href="[area stock-alert [item-code]]">[L]In-Stock Notification[/L]</a>
 	    </td>
 	    [else]
 	    <td align="left">
-		<b>In Stock</b>
+		<b>[L]In Stock[/L]</b>
             </td>
 	    [/else]
 	    [/if-item-data]
 
 	    <td align="right">
-	      Quantity: <input type="text" name="mv_order_quantity" size="2" value="1">
+	      [L]Quantity[/L]: <input type="text" name="mv_order_quantity" size="2" value="1">
 	    </td>
 
 	  </tr>
@@ -142,11 +142,11 @@ ui_template_name: leftonly
 	<table width="100%">
 	<tr>
 	  <td align="left">
-      		Price: <b>[item-price]</b>
+      		[L]Price[/L]: <b>[item-price]</b>
 	  </td>
 	  <td align="right">					
 
-	    <input type="image" src="__THEME_IMG_DIR__buynow.gif" border="0" value="Buy it Now!">
+	    <input type="image" src="__THEME_IMG_DIR__buynow.gif" border="0" value="[L]Buy it Now![/L]">
 
 	  </td>
 	</tr>
@@ -164,7 +164,7 @@ ui_template_name: leftonly
 					product=1
 					mv_arg=[item-code]
 				"
-		]Comment on this product.</A>
+		][L]Comment on this product.[/L]</A>
 		</p>
 	</td>
   </tr>
