@@ -75,6 +75,7 @@ EOF
 			host => '-h %s',
 			port => '-p %s',
 			user => '-u %s',
+			pass => '-p%s',
 		},
 		Pg => {
 			restore => $::Variable->{RESTORE_COMMAND_PG} || 'psql -q',
@@ -187,9 +188,15 @@ EOF
 		$dsn{$dsn} = join " ", $map->{command}, @args, $dbname;
 		if (my $user = $o->{USER}) {
 			$user{$dsn} = $user;
+			my $tpl = $map->{user};
+			$tpl =~ s/\%s/$user/g
+					and $dsn{$dsn} .= " $tpl";
 		}
 		if (my $pass = $o->{PASS}) {
 			$pass{$dsn} = $pass;
+			my $tpl = $map->{pass};
+			$tpl =~ s/\%s/$pass/g
+					and $dsn{$dsn} .= " $tpl";
 		}
 	}
 
@@ -200,7 +207,7 @@ EOF
 	for(keys %dsn) {
 		my $ext = $_ eq $::Variable->{SQLDSN} ? 'maindump' : 'dump';
 		my $cmd = "$dsn{$_} > xfer/dumps/$dbname{$_}.$dbtype{$_}.$ext";
-#::logDebug("executing $cmd");
+::logDebug("executing $cmd");
 		system $cmd;
 		if($?) {
 			my $status = $?;
