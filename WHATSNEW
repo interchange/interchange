@@ -40,10 +40,14 @@ Core and usertags
 
   which prevents the <SCRIPT> from executing.
 
+* Fixed Vend::Util::round_to_frac_digits() to work if frac_digits are
+  zero. Thanks to Shozo Murahashi <murahashi@ayayu.com> who
+  investigated and detailed this problem.
+
 * Make mv_more_alpha working in query tags.
 
 * Fixed get_option_hash in Util.pm, thanks to Javier Martin
-  <martin@trymedia.com>, who discovered and analyzed this bug
+  <martin@trymedia.com> who discovered and analyzed this bug
   (in his case any options for &charge are ignored)
 
 * Fixed bug in database query methods which can hose query strings
