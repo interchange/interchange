@@ -145,7 +145,7 @@ function addItem(selector, receptor, joiner) {
                                           <td class=rtitle><img src="bg.gif" width=1 height=1></td>
                                        </tr>
                                        <tr> 
-                                          <td width=29 height=22 align=center class=rtitle><a href="[area href='admin/page_metaconfig' form='page=[var MV_PAGE 1]']" title="[L]Page properties[/L]"><img src="[either][scratch icon_name][or]icon_error.gif[/either]" border=0></a></td>
+                                          <td width=29 height=22 align=center class=rtitle>[if session admin]<a href="[area href='admin/page_metaconfig' form='page=[var MV_PAGE 1]']" title="[L]Page properties[/L]"><img src="[either][scratch icon_name][or]icon_error.gif[/either]" border=0></a>[/if]</td>
                                           <td class=rtitle>[either][scratch page_banner][or][scratch page_title][/either]</td>
                                        </tr>
                                     </table>
