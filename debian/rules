@@ -105,10 +105,10 @@ install: build
 	mkdir -p $(TMP)/usr/lib/interchange/src
 	for file in dist/src/*; do if test -f $$file; then cp $$file $(TMP)/usr/lib/interchange/src; fi; done
 # UI images and stuff
-	mkdir -p $(TMP)/var/www/interchange
-	for dir in $(TMP)/usr/lib/interchange/share/interchange/*; do mv $$dir $(TMP)/var/www/interchange; done
-	chmod -x -R $(TMP)/var/www/interchange
-	rm -r $(TMP)/usr/lib/interchange/share/interchange
+	mkdir -p $(TMP)/var/www/interchange-5
+	for dir in $(TMP)/usr/lib/interchange/share/interchange-5/*; do mv $$dir $(TMP)/var/www/interchange-5; done
+	chmod -x -R $(TMP)/var/www/interchange-5
+	rm -r $(TMP)/usr/lib/interchange/share/interchange-5
 # mod_interchange
 	mkdir -p $(TMP)/usr/lib/apache/1.3
 	(cd dist/src/mod_interchange; $(APXS) -i -S LIBEXECDIR=$(TMP)/usr/lib/apache/1.3 -n interchange mod_interchange.so)
