@@ -1,5 +1,5 @@
 Template: interchange-ui/defaultlocale
-Type: multiselect
+Type: select
 Choices: en_US, da_DK, de_DE, nl_NL, sv_SE 
 Default: en_US
 Description: Select default language for UI
