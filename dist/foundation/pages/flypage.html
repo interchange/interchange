@@ -85,12 +85,12 @@ ui_template_name: leftonly
   	    [if-item-data inventory quantity < 1]
 	    <td align="left">
 	      <b>Out Of Stock<b>
-	      <br>
-	      <a href="[area stock-alert [item-code]]">In-Stock Notification</a>
+	        <br>
+	        <a href="[area stock-alert [item-code]]">In-Stock Notification</a>
 	    </td>
 	    [else]
 	    <td align="left">
-	      <b>In Stock<b>
+		<b>In Stock</b>
             </td>
 	    [/else]
 	    [/if-item-data]
@@ -112,18 +112,7 @@ ui_template_name: leftonly
 	<table width="100%">
 	<tr>
 	  <td align="left">
-    [if-item-field sale_price]
-      [tmp enable_sale_price]__SALE_PRICE__[/tmp]
-    [/if-item-field]
-    
-    [if scratch enable_sale_price]
-      Their price: <STRIKE>[currency][item-field price][/currency]</STRIKE>
-      Our Price: <b>[item-price]<b>
-    [else]
-      Price: <b>[item-price]<b>
-    [/else]
-    [/if]
-
+      		Price: <b>[item-price]<b>
 	  </td>
 	  <td align="right">					
 	    <input type="submit" value="Buy it Now!">
