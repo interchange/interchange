@@ -133,7 +133,7 @@ ui_template_name: leftonly
     [error name=country std_label="[L]Country[/L]" required=1]
   </td>
   <td colspan=3> 
-      <SELECT NAME=country onChange="this.form.submit()">
+      <SELECT NAME=country onChange="this.form.mv_form_profile.value = ''; this.form.submit()">
     [if value country =~ /(^$|US|CA)/]
 	<OPTION VALUE="US"> [L]United States[/L]
 	<OPTION [selected country CA] VALUE="CA"> [L]Canada[/L]
