@@ -1,5 +1,7 @@
-interchange (4.8.4-1) unstable; urgency=low
+interchange (4.8.3.20020306-1) unstable; urgency=low
 
+  * use sources from CVS (stable branch) in anticipation of the 4.8.4
+    upstream release
   * fixed overly strict dependency on apache-common (Closes: #133671,
     thanks to Matthew Wilcox <willy@debian.org>)
   * add version to dependency on libsql-statement-perl, because newer
@@ -9,7 +11,7 @@ interchange (4.8.4-1) unstable; urgency=low
   * query username and password for UI superuser account in the foundation
     catalog from the user via debconf
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 13 Feb 2002 09:58:39 +0100
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed,  6 Mar 2002 23:42:22 +0100
 
 interchange (4.8.3-1) unstable; urgency=low
 
