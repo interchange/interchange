@@ -1,6 +1,6 @@
 # Vend::DbSearch - Search indexes with Interchange
 #
-# $Id: DbSearch.pm,v 2.6 2001-12-29 19:49:33 mheins Exp $
+# $Id: DbSearch.pm,v 2.7 2002-01-22 21:38:28 jason Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
@@ -26,7 +26,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.6 $, 10);
+$VERSION = substr(q$Revision: 2.7 $, 10);
 
 use Search::Dict;
 use strict;
@@ -142,7 +142,7 @@ sub search {
 #::logDebug("searching $searchfiles[0], keys  after=" . join ",", grep /backup/, keys %{$Vend::Cfg->{Database}});
 	if(! $dbref) {
 		return $s->search_error(
-			"your search file a valid database reference, was '$searchfiles[0]'."
+			"search file '$searchfiles[0]' is not a valid database reference."
 			);
 	}
 	$s->{dbref} = $dbref;
