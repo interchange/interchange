@@ -1,6 +1,6 @@
 # Vend::MakeCat - Routines for Interchange catalog configurator
 #
-# $Id: MakeCat.pm,v 2.1 2001-08-04 15:59:21 heins Exp $
+# $Id: MakeCat.pm,v 2.2 2001-08-06 15:46:15 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -55,7 +55,7 @@ sethistory
 use strict;
 
 use vars qw($Force $Error $History $VERSION);
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2 $, 10);
 
 $Force = 0;
 $History = 0;
@@ -504,7 +504,7 @@ eval {
 	$term = new Term::ReadLine::Perl 'Interchange Configuration';
 	die "No Term::ReadLine::Perl" unless defined $term;
 
-	readline::rl_set('EditingMode', '');
+	readline::rl_set('EditingMode', 'emacs');
 	readline::rl_bind('C-B', 'catch_at');
 	$Prompt_sub = sub {
 		my ($prompt, $default) = @_;
