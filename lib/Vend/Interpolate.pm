@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.177 2003-07-03 23:19:36 mheins Exp $
+# $Id: Interpolate.pm,v 2.178 2003-07-07 04:11:34 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -28,7 +28,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.177 $, 10);
+$VERSION = substr(q$Revision: 2.178 $, 10);
 
 @EXPORT = qw (
 
@@ -259,6 +259,7 @@ my @th = (qw!
 		/_change
 		/_exec
 		/_filter
+		/_header_param
 		/_last
 		/_modifier
 		/_next
@@ -287,6 +288,7 @@ my @th = (qw!
 		_exec
 		_field
 		_filter
+		_header_param
 		_increment
 		_last
 		_line
@@ -390,6 +392,8 @@ my @th = (qw!
 	'_modifier'		=> qr($T{_modifier}$Spacef(\w+)\]),
 	'_next'			=> qr($T{_next}\]\s*($Some)\s*),
 	'_options'		=> qr($T{_options}($Spacef[^\]]+)?\]),
+	'_header_param'	=> qr($T{_header_param}$Mandf$Optr\]),
+	'_header_param_if'	=> qr($T{_header_param}(\d*)$Spacef(!?)\s*($Codere)$Optr\]($Some)),
 	'_param_if'		=> qr($T{_param}(\d*)$Spacef(!?)\s*($Codere)$Optr\]($Some)),
 	'_param'		=> qr($T{_param}$Mandf\]),
 	'_parent_if'	=> qr($T{_parent}(\d*)$Spacef(!?)\s*($Codere)$Optr\]($Some)),
@@ -586,15 +590,13 @@ sub interpolate_html {
 	return ${$parse->{OUT}};
 }
 
-my $Filters_initted;
-
 sub filter_value {
 	my($filter, $value, $tag, @passed_args) = @_;
 #::logDebug("filter_value: filter='$filter' value='$value' tag='$tag'");
 	my @filters = Text::ParseWords::shellwords($filter); 
 	my @args;
 
-	if(! $Filters_initted++ and my $ref = $Vend::Cfg->{CodeDef}{Filter}) {
+	if(! $Vend::Filters_initted++ and my $ref = $Vend::Cfg->{CodeDef}{Filter}) {
 		while (my($k, $v) = each %{$ref->{Routine}}) {
 			$Filter{$k} = $v;
 		}
@@ -4108,7 +4110,7 @@ sub map_list_routines {
 
 sub iterate_array_list {
 	my ($i, $end, $count, $text, $ary, $opt_select, $fh, $opt) = @_;
-
+::logDebug("passed opt=" . ::uneval($opt));
 	my $r = '';
 	$opt ||= {};
 
@@ -4136,6 +4138,7 @@ sub iterate_array_list {
 	my ($run, $row, $code, $return);
 my $once = 0;
 #::logDebug("iterating array $i to $end. count=$count opt_select=$opt_select ary=" . uneval($ary));
+
 	if($text =~ m/^$B$QR{_line}\s*$/is) {
 		my $i = $1 || 0;
 		my $fa = $opt->{mv_return_fields};
@@ -4143,6 +4146,11 @@ my $once = 0;
 		$r .= join "\t", @$fa[$i .. $#$fa];
 		$r .= "\n";
 	}
+	1 while $text =~ s#$IB$QR{_header_param_if}$IE[-_]header[-_]param\1\]#
+			  (defined $opt->{$3} ? $opt->{$3} : '')
+				  					?	pull_if($5,$2,$4,$opt->{$3})
+									:	pull_else($5,$2,$4,$opt->{$3})#ige;
+	$text =~ s#$B$QR{_header_param}#defined $opt->{$1} ? ed($opt->{$1}) : ''#ige;
 	while($text =~ s#$B$QR{_sub}$E$QR{'/_sub'}##i) {
 		my $name = $1;
 		my $routine = $2;
@@ -4300,6 +4308,11 @@ sub iterate_hash_list {
 	$nc and local(@Hash_code{keys %$nc}) = values %$nc;
 
 #::logDebug("iterating hash $i to $end. count=$count opt_select=$opt_select hash=" . uneval($hash));
+	1 while $text =~ s#$IB$QR{_header_param_if}$IE[-_]header[-_]param\1\]#
+			  (defined $opt->{$3} ? $opt->{$3} : '')
+				  					?	pull_if($5,$2,$4,$opt->{$3})
+									:	pull_else($5,$2,$4,$opt->{$3})#ige;
+	$text =~ s#$B$QR{_header_param}#defined $opt->{$1} ? ed($opt->{$1}) : ''#ige;
 	while($text =~ s#$B$QR{_sub}$E$QR{'/_sub'}##i) {
 		my $name = $1;
 		my $routine = $2;
