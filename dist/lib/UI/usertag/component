@@ -83,7 +83,7 @@ sub {
 		\$Scratch->{ui_component} = q{$name}; return; [/calc]
 EOF
 		print COMPONENT $val;
-		print COMPONENT qq{__UI_EDIT_LINK__[calc] \$Scratch->{ui_component} = pop \@$C_stack; return; [/calc]};
+		print COMPONENT qq{__UI_EDIT_LINK__[calc] \$Scratch->{ui_component} = pop \@\$C_stack; return; [/calc]};
 		print COMPONENT "\n_EO_COMPONENT\n";
 		close COMPONENT;
 	}
