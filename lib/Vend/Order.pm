@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.35 2002-11-07 20:40:17 kwalsh Exp $
+# $Id: Order.pm,v 2.36 2002-11-09 06:07:18 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.35 $, 10);
+$VERSION = substr(q$Revision: 2.36 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1440,7 +1440,7 @@ sub route_order {
 
 	# Careful! If you set it on one order and not on another,
 	# you must delete in between.
-	if(! $check_only and ! $Vend::Session->{mv_order_number}) {
+	if(! $check_only and ! $main->{no_increment} and ! $Vend::Session->{mv_order_number}) {
 		$::Values->{mv_order_number} = counter_number(
 											$main->{counter},
 											$main->{sql_counter},
