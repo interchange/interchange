@@ -72,7 +72,6 @@ The types are:
 .
     tools      Construct Something, includes products, users, orders
     reports    Marketing reports, downloadable softgoods, products, users
-    computers  Construct Something, includes products, users, orders
     none       No data. Same as leaving blank.
 
 MULTIORDER
