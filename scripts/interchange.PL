@@ -3,7 +3,7 @@
 #
 # Interchange version 4.9.7
 #
-# $Id: interchange.PL,v 2.71 2003-04-26 15:00:51 mheins Exp $
+# $Id: interchange.PL,v 2.72 2003-05-13 19:05:18 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and others.
 # http://www.icdevgroup.org/
@@ -239,6 +239,7 @@ use Vend::Server;
 use Vend::Session;
 use Vend::Config;
 use Vend::Payment;
+use Vend::Ship;
 
 # You might try commenting out these lines and uncommenting the ones
 # below to compact memory size

@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.113 2003-05-05 21:06:46 racke Exp $
+# $Id: Config.pm,v 2.114 2003-05-13 19:05:18 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.113 $, 10);
+$VERSION = substr(q$Revision: 2.114 $, 10);
 
 my %CDname;
 my %CPname;
@@ -2426,6 +2426,41 @@ my %Default = (
 				}
 			}
 			$C->{Options} = $o->{default} || $o->{Simple};
+		},
+		Shipping => sub {
+			my $o = $C->{Shipping_repository} ||= {};
+
+			my @base = qw/Postal/;
+			my %base;
+			@base{@base} = @base;
+
+			my %seen;
+			my @types = grep !$seen{$_}, keys %$o, @base;
+
+			for(@types) {
+				my $loc = $o->{$_} ||= {};
+				eval "require Vend::Ship::$_;";
+				if($@) {
+					my $msg = $@;
+					config_warn(
+						"Unable to use options type %s, no module. Error: %s",
+						$_,
+						$msg,
+					);
+					undef $o->{$_};
+					next;
+				}
+				eval {
+					my $name = "Vend::Ship::${_}::Default";
+					no strict;
+					while(my ($k,$v) = each %{"$name"}) {
+						next unless $k;
+						next if exists $loc->{$k};
+						$loc->{$k} = $v;
+					}
+				};
+			}
+			$C->{Shipping} = $o->{default} || $o->{Postal};
 		},
 		UserDB => sub {
 					shift;
