@@ -102,7 +102,7 @@ a:visited { text-decoration: none; font-weight: normal; color: __UI_C_VLINK__ }
 [if-mm advanced order]2	B2.gif	B2_b.gif	B2_b.gif	__UI_BASE__/order		Order administration	Orders
 [/if-mm][if-mm advanced userdb]3	B3.gif	B3_b.gif	B3_b.gif	__UI_BASE__/customer		Customer administration	Customers
 [/if-mm][if-mm advanced items]4	B4.gif	B4_b.gif	B4_b.gif	__UI_BASE__/item		Item management	Items
-[/if-mm][if-mm advanced content]5	B5.gif	B5_b.gif	B5_b.gif	__UI_BASE__/page		Content edit	Content
+[/if-mm][if-mm advanced page]5	B5.gif	B5_b.gif	B5_b.gif	__UI_BASE__/page		Content edit	Content
 [/if-mm][if-mm advanced layout]6	B6.gif	B6_b.gif	B6_b.gif	__UI_BASE__/layout		Site design	Design
 [/if-mm][if-mm advanced items]7	B7.gif	B7_b.gif	B7_b.gif	__UI_BASE__/merchandising		merchandising	Merchandising
 [/if-mm][if-mm advanced stats]8	B8.gif	B8_b.gif	B8_b.gif	__UI_BASE__/orderstats		Statistics and reports	Reports
