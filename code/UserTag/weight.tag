@@ -67,6 +67,9 @@ sub {
 			return $it->{$attr} if defined $it->{$attr};
 			my $tab = $table || $it->{mv_ib} || $Vend::Cfg->{ProductFiles}[0];
 			$it->{$attr} = tag_data($tab,$field,$it->{code}) || 0;
+			if($opt->{matrix} and ! $it->{$attr} and $it->{mv_sku}) {
+				$it->{$attr} = Vend::Data::product_field($field,$it->{mv_sku});
+			}
 			return $it->{$attr};
 		};
 	}
@@ -74,7 +77,11 @@ sub {
 		$wsub = sub {
 			my $it = shift;
 			my $tab = $table || $it->{mv_ib} || $Vend::Cfg->{ProductFiles}[0];
-			return tag_data($tab,$field,$it->{code});
+			my $w = tag_data($tab,$field,$it->{code}) || 0;
+			if(! $w and $opt->{matrix} and $it->{mv_sku}) {
+				$w = Vend::Data::product_field($field,$it->{mv_sku});
+			}
+			return $w;
 		};
 	}
 
@@ -108,6 +115,7 @@ ITL tag [weight] -- calculate shipping weight from cart
     field=sh_weight*
     fill-attribute=weight*
     hide=1|0*
+	matrix=1
     no-set=1|0*
     table=weights*
     weight-scratch=sh_weight*
@@ -150,6 +158,12 @@ Sets to weight of a single unit, of course.
 
 Don't display the weight, only set in Scratch. It makes no sense to
 use hide=1 and no-set=1.
+
+=item matrix
+
+If set, will get the weight from the ProductFiles for the mv_sku
+attribute of the item. In other words, if the weight for a variant
+is not set, it will use the weight for the base SKU.
 
 =item no-set
 
