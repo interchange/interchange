@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.1 2000-11-25 00:22:34 heins Exp $
+# $Id: Server.pm,v 1.8.2.2 2000-11-30 02:43:56 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.1 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.2 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -43,7 +43,7 @@ sub new {
 		(
 			$CGI::script_name,
 			$CGI::values{mv_session_id}, 
-			$CGI::post_input
+			$CGI::query_string
 		) = @Global::argv;
 		map_cgi();
 		$Global::FastMode = 1;
@@ -113,19 +113,22 @@ sub map_cgi {
 		$CGI::script_path = $CGI::script_name;
 		$CGI::script_name = $CGI::server_host . $CGI::script_path
 			if $Global::FullUrl;
-		if ("\U$CGI::request_method" eq 'POST') {
-			$CGI::post_input = $h->{'entity'};
-		}
-		else {
-			$CGI::post_input = $CGI::query_string;
-		}
 	}
-	my $g = $Global::Selector{$CGI::script_name} || undef;
+	my $g = $Global::Selector{$CGI::script_name}
+		or die ::errmsg("catalog %s not defined", $CGI::script_name);
+
 	($::IV, $::VN, $::SV) = defined $g->{VarName}
 			? ($g->{IV}, $g->{VN}, $g->{IgnoreMultiple})
 			: ($Global::IV, $Global::VN, $Global::IgnoreMultiple);
-		
-	parse_post();
+
+	if ("\U$CGI::request_method" eq 'POST') {
+		parse_post(\$CGI::query_string)
+			if $Global::TolerateGet;
+		parse_post($h->{entity});
+	}
+	else {
+		 parse_post(\$CGI::query_string);
+	}
 
 }
 
@@ -145,20 +148,21 @@ sub store_cgi_kv {
 }
 
 sub parse_post {
+	my $sref = shift;
 	my(@pairs, $pair, $key, $value);
 	undef %CGI::values;
-	return unless defined $CGI::post_input;
+	return unless length $$sref;
 	if ($CGI::content_type =~ /^multipart/i) {
-		return parse_multipart() if  $CGI::useragent !~ /MSIE\s+5/i;
+		return parse_multipart($sref) if  $CGI::useragent !~ /MSIE\s+5/i;
 		# try and work around an apparent IE5 bug that sends the content type
 		# of the next POST after a multipart/form POST as multipart also -
 		# even though it's sent as non-multipart data
 		# Contributed by Bill Randle
 		my ($boundary) = $CGI::content_type =~ /boundary=\"?([^\";]+)\"?/;
 		$boundary = "--$boundary";
-		return parse_multipart() if $CGI::post_input =~ /^\s*$boundary\s+/;
+		return parse_multipart($sref) if $$sref =~ /^\s*$boundary\s+/;
 	}
-	@pairs = split(/&/, $CGI::post_input);
+	@pairs = split(/&/, $$sref);
 	if( defined $pairs[0] and $pairs[0] =~ /^	(\w{8,32})? ; /x)  {
 		@CGI::values{qw/ mv_session_id mv_arg mv_pc /}
 			= split /;/, $pairs[0], 3;
@@ -175,7 +179,18 @@ sub parse_post {
   	# This loop semi-duplicated in store_cgi_kv
 	foreach $pair (@pairs) {
 		($key, $value) = ($pair =~ m/([^=]+)=(.*)/)
-			or die "Syntax error in post input:\n$pair\n";
+			or do {
+				if($CGI::request_method =~ /^post$/i) {
+					die ::errmsg("Syntax error in POST input: %s\n", $pair);
+				}
+				elsif ($Global::TolerateGet) {
+					$key = $pair;
+					$value = undef;
+				}
+				else {
+					die ::errmsg("Syntax error in GET input: %s\n", $pair);
+				}
+			};
 
 #::logDebug("incoming --> $key");
 		$key = $::IV->{$key} if defined $::IV->{$key};
@@ -212,17 +227,18 @@ sub parse_post {
 }
 
 sub parse_multipart {
+	my $sref = shift;
 	my ($boundary) = $CGI::content_type =~ /boundary=\"?([^\";]+)\"?/;
 #::logDebug("got to multipart");
 	# Stolen from CGI.pm, thanks Lincoln
 	$boundary = "--$boundary"
 		unless $CGI::useragent =~ /MSIE 3\.0[12];  Mac/i;
-	unless ($CGI::post_input =~ s/^\s*$boundary\s+//) {
-		die errmsg("multipart/form-data sent incorrectly\n");
+	unless ($$sref =~ s/^\s*$boundary\s+//) {
+		die ::errmsg("multipart/form-data sent incorrectly:\n%s\n", $$sref);
 	}
 
 	my @parts;
-	@parts = split /\r?\n$boundary/, $CGI::post_input;
+	@parts = split /\r?\n$boundary/, $$sref;
 	
 #::logDebug("multipart: " . scalar @parts . " parts");
 
@@ -411,11 +427,6 @@ sub respond {
     print $fh "\r\n";
     print $fh $$body;
     $Vend::ResponseMade = 1;
-}
-
-sub read_entity_body {
-    my ($s) = @_;
-    $s->{entity};
 }
 
 sub _read {
@@ -703,7 +714,7 @@ sub connection {
 #::logDebug ("begin connection: " . (join " ", times()) . "\n");
     read_cgi_data(\@Global::argv, \%env, \$entity)
     	or return 0;
-	$http = new Vend::Server \*Vend::Server::MESSAGE, \%env, $entity;
+	$http = new Vend::Server \*Vend::Server::MESSAGE, \%env, \$entity;
 #::logGlobal ("begin dispatch: " . (join " ", times()) . "\n");
     ::dispatch($http);
 #::logDebug ("end connection: " . (join " ", times()) . "\n");
