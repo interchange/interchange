@@ -7,6 +7,18 @@
 
 Interchange 4.9.7 not yet released
 
+
+Debian
+------
+
+* Default traffic setting is low now.
+
+* Allow selection of traffic setting with debconf and interchangeconfig.
+
+
+------------------------------------------------------------------------------
+
+
 Interchange 4.9.6, released 8-Jan-2003.
 
 

@@ -71,3 +71,12 @@ Description: Directory for GnuPG public keyring
  will be encrypted and mailed to the shop owner instead of storing it
  on the server. Please choose the directory Interchange uses for the
  GnuPG public keyring.
+
+Template: interchange/traffic
+Type: select
+Choices: low, high, rpc
+Default: low
+Description: Selects set of server parameters
+ You can choose different sets of server parameters. Any store based on
+ the foundation demo will change its behaviour too. If rpc is selected,
+ the Interchange server will run in PreFork mode.

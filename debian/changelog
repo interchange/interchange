@@ -1,6 +1,7 @@
 interchange (4.9.7-1) unstable; urgency=low
 
   * new upstream release
+  * new debconf option for traffic, use low traffic as default
   * UPGRADE and README.cvs added to interchange.docs
   * new debconf option for GnuPG home directory
   

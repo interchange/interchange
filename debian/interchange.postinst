@@ -96,7 +96,9 @@ if [ "$RET" = true ]; then
 else
 	DEBUG=0
 fi
-/usr/sbin/interchangeconfig DEBUG=$DEBUG
+db_get interchange/traffic
+TRAFFIC="$RET"
+/usr/sbin/interchangeconfig DEBUG=$DEBUG TRAFFIC=$RET
 
 # Make configuration files owned by the interchange user
 chown -R $USER.$GROUP /etc/interchange
