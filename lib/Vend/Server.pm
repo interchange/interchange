@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.17 2001-02-28 20:23:38 heins Exp $
+# $Id: Server.pm,v 1.8.2.18 2001-03-01 17:36:16 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.17 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.18 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -1452,7 +1452,7 @@ my $pretty_vector = unpack('b*', $rin);
 
 		undef $Vend::Cfg;
 
-::logDebug("pid=$$ cycle=$c tick=$tick vector=$pretty_vector n=$n num_servers=$Num_servers");
+#::logDebug("pid=$$ cycle=$c handled=$handled tick=$tick vector=$pretty_vector n=$n num_servers=$Num_servers");
         if ($n == -1) {
 			last if $Signal_Terminate;
 			my $msg = $!;
@@ -1468,18 +1468,18 @@ my $pretty_vector = unpack('b*', $rin);
 
             my ($ok, $p, $v);
 			while (($p, $v) = each %vec_map) {
-::logDebug("PAGE trying p=$p v=$v vec=" . vec($rout,$v,1) . " pid=$$ c=$c i=" . $i++ );
+#::logDebug("PAGE trying p=$p v=$v vec=" . vec($rout,$v,1) . " pid=$$ c=$c i=" . $i++ );
         		next unless vec($rout, $v, 1);
-::logDebug("PAGE accepting p=$p v=$v pid=$$ c=$c i=" . $i++);
+#::logDebug("PAGE accepting p=$p v=$v pid=$$ c=$c i=" . $i++);
 				$Global::TcpPort = $p;
 				$ok = accept(MESSAGE, $fh_map{$p});
 				last;
 			}
 
-::logDebug("PAGE port $Global::TcpPort n=$n v=$v error=$! p=$p unix=$unix_socket{$p} ipc=$ipc_socket{$p} pid=$$ c=$c i=" . $i++);
+#::logDebug("PAGE port $Global::TcpPort handled=$handled n=$n v=$v error=$! p=$p unix=$unix_socket{$p} ipc=$ipc_socket{$p} pid=$$ c=$c i=" . $i++);
 
 			unless (defined $ok) {
-::logDebug("PAGE redo accept on error=$! n=$n v=$v p=$p unix=$unix_socket{$p} pid=$$ c=$c i=" . $i++);
+#::logDebug("PAGE redo accept on error=$! n=$n v=$v p=$p unix=$unix_socket{$p} pid=$$ c=$c i=" . $i++);
 				redo;
 				#die ("accept: $! ok=$ok pid=$$ n=$n c=$c i=" . $i++);
 			}
@@ -1504,18 +1504,19 @@ my $pretty_vector = unpack('b*', $rin);
 	  if($@) {
 	  	my $msg = $@;
 		$msg =~ s/\s+$//;
-::logDebug("Died in select, retrying: $msg");
+#::logDebug("Died in select, retrying: $msg");
 	    ::logGlobal({ level => 'error' },  "Died in select, retrying: %s", $msg);
 	  }
 
 	  eval {
 		SPAWN: {
 			last SPAWN unless defined $spawn;
-::logDebug ("Spawning connection, " .  ($no_fork ? 'no fork, ' : 'forked, ') .  scalar localtime() . "\n");
+#::logDebug ("Spawning connection, " .  ($no_fork ? 'no fork, ' : 'forked, ') .  scalar localtime() . "\n");
 			if($no_fork) {
 				### Careful, returns after MaxRequests or terminate signal
 				$Vend::NoFork = {};
 				$::Instance = {};
+				$handled++;
 				connection();
 				undef $Vend::NoFork;
 				undef $::Instance;
@@ -1580,11 +1581,10 @@ my $pretty_vector = unpack('b*', $rin);
 			undef $Vend::Cfg;
 		}
 
-		if($no_fork) {
-			if ($Global::MaxRequests and $handled > $Global::MaxRequests) {
-				return 1;
-			}
-		}
+		return 1
+			if $no_fork
+			and $Global::MaxRequestsPerChild
+			and $handled >= $Global::MaxRequestsPerChild;
 
 		return if $Signal_Terminate || $Signal_Debug;
 		send_ipc("$$");
@@ -1694,7 +1694,7 @@ my $pretty_vector = unpack('b*', $s_vector);
 			else {
 #::logDebug("we have our SOAP enable, entity is $entity");
 				($Vend::SessionID, $CGI::cookiehost) = split /:/, $env{SESSION_ID};
-::logDebug("Received ID=$Vend::SessionID, host='$CGI::cookiehost'");
+#::logDebug("Received ID=$Vend::SessionID, host='$CGI::cookiehost'");
 				$Vend::NoInterpolate = 1
 					unless $Vend::Cfg->{SOAP_Enable}->{interpolate};
 				$result = Vend::SOAP::Transport::Server
@@ -1712,7 +1712,7 @@ my $pretty_vector = unpack('b*', $s_vector);
 	  if($@) {
 	  	my $msg = $@;
 		$msg =~ s/\s+$//;
-::logDebug("SOAP died in processing: $msg");
+#::logDebug("SOAP died in processing: $msg");
 	    ::logGlobal({ level => 'error' },  "SOAP died in processing: %s", $msg);
 		close MESSAGE;
 	  }
@@ -1755,7 +1755,7 @@ sub process_ipc {
 		delete $Page_pids{$1};
 #::logDebug("deleted Page pid $1");
 		$Page_servers--;
-		start_page(undef,$Global::NoFork,1);
+		start_page(undef,$Global::PreFork,1);
 	}
 	elsif($thing =~ /^+\d+$/) {
 		close $fh;
@@ -1970,7 +1970,7 @@ sub server_both {
 	if($Global::StartServers) {
 		$master_ipc = 1;
 		$p_vector = $vector ^ $ipc_vector;
-		start_page(1,$Global::NoFork);
+		start_page(1,$Global::PreFork);
 	}
 	
 

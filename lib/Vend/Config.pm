@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.22 2001-02-28 20:23:36 heins Exp $
+# $Id: Config.pm,v 1.25.2.23 2001-03-01 17:36:16 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -97,7 +97,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.22 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.23 $, 10);
 
 my %CDname;
 
@@ -273,9 +273,9 @@ sub global_directives {
 	['SOAP',     	     'yesno',            'No'],
 	['SOAP_Socket',       'array',            ''],
 	['SOAP_Perms',        'integer',          0600],
-	['MaxRequests', 	  'integer',           50],
+	['MaxRequestsPerChild','integer',           50],
 	['StartServers',      'integer',          1],
-	['NoFork',		      'yesno',            0],
+	['PreFork',		      'yesno',            0],
 	['SOAP_MaxRequests', 'integer',           50],
 	['SOAP_StartServers', 'integer',          1],
 	['SOAP_Host',         undef,              'localhost 127.0.0.1'],
