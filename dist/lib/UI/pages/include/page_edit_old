@@ -1,6 +1,7 @@
 <!-- begin page_edit_old -->
 
 <form action="[base-url]/@@MV_PAGE@@" method=POST ENCTYPE="multipart/form-data">
+<input type=hidden name=mv_session_id value="[data session id]">
 <input type=hidden name=mv_action value=back>
 
 <table __UI_T_PROPERTIES__>
