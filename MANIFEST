@@ -1070,6 +1070,8 @@ share/interchange/en_US/folder.gif
 share/interchange/en_US/folder.open.gif
 share/interchange/en_US/forward.gif
 share/interchange/en_US/generic.gif
+share/interchange/en_US/icfooter.gif
+share/interchange/en_US/iclogo.gif
 share/interchange/en_US/icon_config.gif
 share/interchange/en_US/icon_design.gif
 share/interchange/en_US/icon_error.gif
@@ -1093,10 +1095,15 @@ share/interchange/en_US/spacer2.gif
 share/interchange/en_US/spacer3.gif
 share/interchange/en_US/spacer4.gif
 share/interchange/en_US/spacer_tall.gif
+share/interchange/en_US/tab_dark_left.gif
+share/interchange/en_US/tab_dark_right.gif
+share/interchange/en_US/tab_light_left.gif
+share/interchange/en_US/tab_light_right.gif
 share/interchange/en_US/text.gif
 share/interchange/en_US/transfer.gif
 share/interchange/en_US/unknown.gif
 share/interchange/en_US/up.gif
+share/interchange/en_US/vr_emboss.gif
 share/interchange/es_ES/B2.gif
 share/interchange/es_ES/B2_b.gif
 share/interchange/es_ES/B3.gif
