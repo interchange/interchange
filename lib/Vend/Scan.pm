@@ -1,6 +1,6 @@
 # Vend/Scan.pm:  Prepare searches for Interchange
 #
-# $Id: Scan.pm,v 1.7.2.1 2000-12-02 20:08:29 heins Exp $
+# $Id: Scan.pm,v 1.7.2.2 2000-12-13 16:19:08 zarko Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -29,7 +29,7 @@ require Exporter;
 			perform_search
 			);
 
-$VERSION = substr(q$Revision: 1.7.2.1 $, 10);
+$VERSION = substr(q$Revision: 1.7.2.2 $, 10);
 
 use strict;
 use Vend::Util;
@@ -37,177 +37,173 @@ use Vend::Interpolate;
 use Vend::Data qw(product_code_exists_ref column_index);
 
 my @Order = ( qw(
-					mv_dict_look
-					mv_searchspec
-					mv_search_file
-					mv_base_directory
-					mv_field_names
-                    mv_field_file
-					mv_verbatim_columns
-					mv_range_look
-					mv_cache_key
-					mv_profile
-					mv_case
-					mv_negate
-					mv_numeric
-                    mv_column_op
-					mv_begin_string
-					mv_coordinate
-					mv_nextpage
-					mv_dict_end
-					mv_dict_fold
-					mv_dict_limit
-					mv_dict_order
-					mv_failpage
-					mv_first_match
-					mv_all_chars
-					mv_return_all
-					mv_exact_match
-					mv_head_skip
-					mv_index_delim
-					mv_list_only
-					mv_matchlimit
-                    mv_more_decade
-                    mv_more_id
-					mv_min_string
-					mv_max_matches
-					mv_orsearch
-					mv_range_min
-					mv_range_max
-					mv_range_alpha
-					mv_record_delim
-					mv_return_delim
-					mv_return_fields
-					mv_return_file_name
-					mv_return_reference
-					mv_substring_match
-					mv_start_match
-					mv_return_spec
-					mv_spelling_errors
-					mv_search_field
-					mv_search_group
-					mv_search_label
-					mv_search_page
-					mv_search_relate
-					mv_sort_field
-					mv_sort_option
-					mv_searchtype
-					mv_unique
-					mv_more_matches
-					mv_value
-					prefix
-
+	mv_dict_look
+	mv_searchspec
+	mv_search_file
+	mv_base_directory
+	mv_field_names
+	mv_field_file
+	mv_verbatim_columns
+	mv_range_look
+	mv_cache_key
+	mv_profile
+	mv_case
+	mv_negate
+	mv_numeric
+	mv_column_op
+	mv_begin_string
+	mv_coordinate
+	mv_nextpage
+	mv_dict_end
+	mv_dict_fold
+	mv_dict_limit
+	mv_dict_order
+	mv_failpage
+	mv_first_match
+	mv_all_chars
+	mv_return_all
+	mv_exact_match
+	mv_head_skip
+	mv_index_delim
+	mv_list_only
+	mv_matchlimit
+	mv_more_decade
+	mv_more_id
+	mv_min_string
+	mv_max_matches
+	mv_orsearch
+	mv_range_min
+	mv_range_max
+	mv_range_alpha
+	mv_record_delim
+	mv_return_delim
+	mv_return_fields
+	mv_return_file_name
+	mv_return_reference
+	mv_substring_match
+	mv_start_match
+	mv_return_spec
+	mv_spelling_errors
+	mv_search_field
+	mv_search_group
+	mv_search_label
+	mv_search_page
+	mv_search_relate
+	mv_sort_field
+	mv_sort_option
+	mv_searchtype
+	mv_unique
+	mv_more_matches
+	mv_value
+	prefix
 ));
 
 my %Scan = ( qw(
-
-                    ac  mv_all_chars
-                    bd  mv_base_directory
-                    bs  mv_begin_string
-                    ck  mv_cache_key
-                    co  mv_coordinate
-                    cs  mv_case
-                    cv  mv_verbatim_columns
-                    de  mv_dict_end
-                    df  mv_dict_fold
-                    di  mv_dict_limit
-                    dl  mv_dict_look
-                    DL  mv_raw_dict_look
-                    do  mv_dict_order
-                    dr  mv_record_delim
-                    em  mv_exact_match
-                    er  mv_spelling_errors
-                    ff  mv_field_file
-                    fi  mv_search_file
-                    fm  mv_first_match
-                    fn  mv_field_names
-                    hs  mv_head_skip
-                    ix  mv_index_delim
-                    lb  mv_search_label
-                    lo  mv_list_only
-                    lr  mv_search_line_return
-                    md  mv_more_decade
-                    mi  mv_more_id
-                    ml  mv_matchlimit
-                    mm  mv_max_matches
-                    MM  mv_more_matches
-                    mp  mv_profile
-                    ms  mv_min_string
-                    ne  mv_negate
-                    ng  mv_negate
-                    np  mv_nextpage
-                    nu  mv_numeric
-                    op  mv_column_op
-                    os  mv_orsearch
-					pf  prefix
-                    ra  mv_return_all
-                    rd  mv_return_delim
-                    rf  mv_return_fields
-                    rg  mv_range_alpha
-                    rl  mv_range_look
-                    rm  mv_range_min
-                    rn  mv_return_file_name
-                    rr  mv_return_reference
-                    rs  mv_return_spec
-                    rx  mv_range_max
-                    SE  mv_raw_searchspec
-                    se  mv_searchspec
-                    sf  mv_search_field
-                    sg  mv_search_group
-                    si  mv_search_immediate
-                    sm  mv_start_match
-                    sp  mv_search_page
-                    sq  mv_sql_query
-                    sr  mv_search_relate
-                    st  mv_searchtype
-                    su  mv_substring_match
-                    tf  mv_sort_field
-                    to  mv_sort_option
-                    un  mv_unique
-                    va  mv_value
-
-				) );
+	ac  mv_all_chars
+	bd  mv_base_directory
+	bs  mv_begin_string
+	ck  mv_cache_key
+	co  mv_coordinate
+	cs  mv_case
+	cv  mv_verbatim_columns
+	de  mv_dict_end
+	df  mv_dict_fold
+	di  mv_dict_limit
+	dl  mv_dict_look
+	DL  mv_raw_dict_look
+	do  mv_dict_order
+	dr  mv_record_delim
+	em  mv_exact_match
+	er  mv_spelling_errors
+	ff  mv_field_file
+	fi  mv_search_file
+	fm  mv_first_match
+	fn  mv_field_names
+	hs  mv_head_skip
+	ix  mv_index_delim
+	lb  mv_search_label
+	lo  mv_list_only
+	lr  mv_search_line_return
+	md  mv_more_decade
+	mi  mv_more_id
+	ml  mv_matchlimit
+	mm  mv_max_matches
+	MM  mv_more_matches
+	mp  mv_profile
+	ms  mv_min_string
+	ne  mv_negate
+	ng  mv_negate
+	np  mv_nextpage
+	nu  mv_numeric
+	op  mv_column_op
+	os  mv_orsearch
+	pf  prefix
+	ra  mv_return_all
+	rd  mv_return_delim
+	rf  mv_return_fields
+	rg  mv_range_alpha
+	rl  mv_range_look
+	rm  mv_range_min
+	rn  mv_return_file_name
+	rr  mv_return_reference
+	rs  mv_return_spec
+	rx  mv_range_max
+	SE  mv_raw_searchspec
+	se  mv_searchspec
+	sf  mv_search_field
+	sg  mv_search_group
+	si  mv_search_immediate
+	sm  mv_start_match
+	sp  mv_search_page
+	sq  mv_sql_query
+	sr  mv_search_relate
+	st  mv_searchtype
+	su  mv_substring_match
+	tf  mv_sort_field
+	to  mv_sort_option
+	un  mv_unique
+	va  mv_value
+) );
 
 my @ScanKeys = keys %Scan;
 my %RevScan;
 %RevScan = reverse %Scan;
 
 my %Parse = (
-
-    mv_search_group         =>  \&_array,
-    mv_search_field         =>  \&_array,
-    mv_all_chars            =>  \&_yes_array,
-    mv_begin_string         =>  \&_yes_array,
-    mv_case                 =>  \&_yes_array,
-    mv_negate               =>  \&_yes_array,
-    mv_numeric              =>  \&_yes_array,
-    mv_orsearch             =>  \&_yes_array,
-    mv_substring_match      =>  \&_yes_array,
-    mv_column_op            =>  \&_array,
-    mv_coordinate           =>  \&_yes,
+	mv_search_group         =>  \&_array,
+	mv_search_field         =>  \&_array,
+	mv_all_chars            =>  \&_yes_array,
+	mv_begin_string         =>  \&_yes_array,
+	mv_case                 =>  \&_yes_array,
+	mv_negate               =>  \&_yes_array,
+	mv_numeric              =>  \&_yes_array,
+	mv_orsearch             =>  \&_yes_array,
+	mv_substring_match      =>  \&_yes_array,
+	mv_column_op            =>  \&_array,
+	mv_coordinate           =>  \&_yes,
 
 	mv_field_names          =>	\&_array,
 	mv_spelling_errors      => 	sub { my $n = int($_[1]); $n < 8 ? $n : 1; },
-    mv_dict_limit           =>  \&_dict_limit,
-    mv_exact_match          =>  \&_yes,
-    mv_head_skip            =>  \&_number,
-    mv_matchlimit           =>  sub { $_[1] =~ /(\d+)/ ? $1 : 50 },
-    mv_max_matches          =>  sub { $_[1] =~ /(\d+)/ ? $1 : 2000 },
-    mv_min_string           =>  sub { $_[1] =~ /(\d+)/ ? $1 : 1 },
-    mv_profile              =>  \&parse_profile,
-    mv_range_alpha          =>  \&_array,
-    mv_range_look           =>  \&_array,
-    mv_range_max            =>  \&_array,
-    mv_range_min            =>  \&_array,
-    mv_return_all           =>  \&_yes,
-    mv_return_fields        =>  \&_array,
-    mv_return_file_name     =>  \&_yes,
-    mv_save_context         =>  \&_array,
-    mv_searchspec           =>  \&_verbatim_array,
-    mv_sort_field           =>  \&_array,
-    mv_sort_option          =>  \&_opt,
-    mv_unique               =>  \&_yes,
-    mv_value                =>  \&_value,
+	mv_dict_limit           =>  \&_dict_limit,
+	mv_exact_match          =>  \&_yes,
+	mv_head_skip            =>  \&_number,
+	mv_matchlimit           =>  sub { $_[1] =~ /(\d+)/ ? $1 : 50 },
+	mv_max_matches          =>  sub { $_[1] =~ /(\d+)/ ? $1 : 2000 },
+	mv_min_string           =>  sub { $_[1] =~ /(\d+)/ ? $1 : 1 },
+	mv_profile              =>  \&parse_profile,
+	mv_range_alpha          =>  \&_array,
+	mv_range_look           =>  \&_array,
+	mv_range_max            =>  \&_array,
+	mv_range_min            =>  \&_array,
+	mv_return_all           =>  \&_yes,
+	mv_return_fields        =>  \&_array,
+	mv_return_file_name     =>  \&_yes,
+	mv_save_context         =>  \&_array,
+	mv_searchspec           =>  \&_verbatim_array,
+	mv_sort_field           =>  \&_array,
+	mv_sort_option          =>  \&_opt,
+	mv_unique               =>  \&_yes,
+	mv_value                =>  \&_value,
 	mv_sql_query			=>  sub {
 								my($ref, $val) = @_;
 								my $p = Vend::Interpolate::escape_scan($val, $ref);
@@ -275,16 +271,16 @@ sub parse_map {
 	if(index($map, "\n") != -1) {
 		$params = $map;
 	}
-    elsif(defined $Vend::Cfg->{SearchProfileName}->{$map}) {
-        $map = $Vend::Cfg->{SearchProfileName}->{$map};
-        $params = $Vend::Cfg->{SearchProfile}->[$map];
-    }
-    elsif($map =~ /^\d+$/) {
-        $params = $Vend::Cfg->{SearchProfile}->[$map];
-    }
-    elsif(defined $::Scratch->{$map}) {
-        $params = $::Scratch->{$map};
-    }
+	elsif(defined $Vend::Cfg->{SearchProfileName}->{$map}) {
+		$map = $Vend::Cfg->{SearchProfileName}->{$map};
+		$params = $Vend::Cfg->{SearchProfile}->[$map];
+	}
+	elsif($map =~ /^\d+$/) {
+		$params = $Vend::Cfg->{SearchProfile}->[$map];
+	}
+	elsif(defined $::Scratch->{$map}) {
+		$params = $::Scratch->{$map};
+	}
 	
 	return undef unless $params;
 
@@ -308,9 +304,9 @@ sub parse_map {
 }
 
 sub parse_profile_ref {
-    my ($ref, $profile) = @_;
-    my ($var, $p);
-    foreach $p (keys %$profile) {
+	my ($ref, $profile) = @_;
+	my ($var, $p);
+	foreach $p (keys %$profile) {
 		next unless
 			$var = $Scan{$p}
 					or
@@ -318,24 +314,24 @@ sub parse_profile_ref {
 		$ref->{$var} = $profile->{$p}, next
 			if ref $profile->{$p} || ! defined $Parse{$var};
 		$ref->{$var} = &{$Parse{$var}}($ref,$profile->{$p});
-    }
-    return;
+	}
+	return;
 }
 
 sub parse_profile {
 	my($ref,$profile) = @_;
 	return undef unless defined $profile;
 	my($params);
-    if(defined $Vend::Cfg->{SearchProfileName}->{$profile}) {
-        $profile = $Vend::Cfg->{SearchProfileName}->{$profile};
-        $params = $Vend::Cfg->{SearchProfile}->[$profile];
-    }
-    elsif($profile =~ /^\d+$/) {
-        $params = $Vend::Cfg->{SearchProfile}->[$profile];
-    }
-    elsif(defined $::Scratch->{$profile}) {
-        $params = $::Scratch->{$profile};
-    }
+	if(defined $Vend::Cfg->{SearchProfileName}->{$profile}) {
+		$profile = $Vend::Cfg->{SearchProfileName}->{$profile};
+		$params = $Vend::Cfg->{SearchProfile}->[$profile];
+	}
+	elsif($profile =~ /^\d+$/) {
+		$params = $Vend::Cfg->{SearchProfile}->[$profile];
+	}
+	elsif(defined $::Scratch->{$profile}) {
+		$params = $::Scratch->{$profile};
+	}
 	
 	return undef unless $params;
 
@@ -364,25 +360,25 @@ sub parse_profile {
 }
 
 sub finish_search {
-    my($q) = @_;
+	my($q) = @_;
 #::logDebug("finishing up search spec=" . ::uneval($q));
-    my $matches = $q->{'matches'};
-    $::Values->{mv_search_match_count}    = $matches;
+	my $matches = $q->{'matches'};
+	$::Values->{mv_search_match_count}    = $matches;
 	delete $::Values->{mv_search_error};
 	$::Values->{mv_search_error} = $q->{mv_search_error}
 		if $q->{mv_search_error};
-    $::Values->{mv_matchlimit}     = $q->{mv_matchlimit};
-    $::Values->{mv_first_match}    = $q->{mv_first_match}
+	$::Values->{mv_matchlimit}     = $q->{mv_matchlimit};
+	$::Values->{mv_first_match}    = $q->{mv_first_match}
 			if defined $q->{mv_first_match};
-    $::Values->{mv_searchspec} 	   = $q->{mv_searchspec};
-    $::Values->{mv_raw_searchspec} = $q->{mv_raw_searchspec} || undef;
-    $::Values->{mv_raw_dict_look}  = $q->{mv_raw_dict_look}  || undef;
-    $::Values->{mv_dict_look}      = $q->{mv_dict_look} || undef;
+	$::Values->{mv_searchspec} 	   = $q->{mv_searchspec};
+	$::Values->{mv_raw_searchspec} = $q->{mv_raw_searchspec} || undef;
+	$::Values->{mv_raw_dict_look}  = $q->{mv_raw_dict_look}  || undef;
+	$::Values->{mv_dict_look}      = $q->{mv_dict_look} || undef;
 }
 
 # Search for an item with glimpse or text engine
 sub perform_search {
-    my($c,$more_matches,$pre_made) = @_;
+	my($c,$more_matches,$pre_made) = @_;
 #::logDebug('searching....');
 	if (!$c) {
 		return undef unless $Vend::Session->{search_params};
@@ -393,15 +389,15 @@ sub perform_search {
 		}
 	}
 	elsif ($c->{mv_search_immediate}) {
-        unless($c->{mv_cache_key}) {
-            undef $c->{mv_search_immediate};
-            Vend::Scan::create_last_search($c);
-            $c->{mv_cache_key} = generate_key($Vend::Session->{last_search});
-        }
+		unless($c->{mv_cache_key}) {
+			undef $c->{mv_search_immediate};
+			Vend::Scan::create_last_search($c);
+			$c->{mv_cache_key} = generate_key($Vend::Session->{last_search});
+		}
 	}
 
 	my($v) = $::Values;
-    my($param);
+	my($param);
 	my(@fields);
 	my(@specs);
 	my($out);
@@ -465,13 +461,12 @@ sub perform_search {
 #::logDebug("Options after parse: " . ::uneval(\%options));
 
 # GLIMPSE
- 	if (defined $options{mv_searchtype} && $options{mv_searchtype} eq 'glimpse') {
+	if (defined $options{mv_searchtype} && $options{mv_searchtype} eq 'glimpse') {
 		undef $options{mv_searchtype} if ! $Vend::Cfg->{Glimpse};
 	}
 # END GLIMPSE
 
-  SEARCH: {
-
+	SEARCH: {
 		$options{mv_return_all} = 1
 			if $options{mv_dict_look} and ! $options{mv_searchspec};
 	
@@ -516,7 +511,7 @@ sub perform_search {
 
 #::logDebug(::uneval($q));
 		$out = $q->search();
-  } # last SEARCH
+	} # last SEARCH
 
 	if($q->{mv_list_only}) {
 		return $q->{mv_results};
@@ -707,11 +702,11 @@ sub sql_statement {
 #::logDebug("where col=$col spec=$spec");
 
 #::logDebug("numeric for $col=$numeric");
-                push_spec('nu', ($numeric || 0),      $ary, $hash); 
-                push_spec('se', $spec,                $ary, $hash);
-                push_spec('op', $op,                  $ary, $hash);
-                push_spec('sf', $col,                 $ary, $hash);
-                push_spec('ne', ($where->neg() || 0), $ary, $hash);
+				push_spec('nu', ($numeric || 0),      $ary, $hash); 
+				push_spec('se', $spec,                $ary, $hash);
+				push_spec('op', $op,                  $ary, $hash);
+				push_spec('sf', $col,                 $ary, $hash);
+				push_spec('ne', ($where->neg() || 0), $ary, $hash);
 
 				
 			}
@@ -874,34 +869,34 @@ sub _scalar {
 my $Pat = ($^O =~ /win32/i) ? '([A-Za-z]:)?[\\/]' : '/';
 
 sub _file_security {
-    my ($junk, $param, $passed) = @_;
-    $passed = [] unless $passed;
-    my(@files) = grep /\S/, split /\s*[,\0]\s*/, $param, -1;
-    for(@files) {
-        my $ok = (m:^$Pat:o || /\.\./) ? 0 : 1;
-        if(!$ok) {
-            $ok = 1 if $_ eq $::Variable->{MV_SEARCH_FILE};
-            $ok = 1 if $::Scratch->{$_};
-        }
+	my ($junk, $param, $passed) = @_;
+	$passed = [] unless $passed;
+	my(@files) = grep /\S/, split /\s*[,\0]\s*/, $param, -1;
+	for(@files) {
+		my $ok = (m:^$Pat:o || /\.\./) ? 0 : 1;
+		if(!$ok) {
+			$ok = 1 if $_ eq $::Variable->{MV_SEARCH_FILE};
+			$ok = 1 if $::Scratch->{$_};
+		}
 		if($_ !~ /\./) {
 			$_ = $Vend::Cfg->{Database}{$_}{'file'}
 				if defined $Vend::Cfg->{Database}{$_}{'file'};
 		}
 		$ok &&= $_ !~ /$Vend::Cfg->{NoSearch}/
 			if $Vend::Cfg->{NoSearch};
-        push @$passed, $_ if $ok;
-    }
-    return $passed if @$passed;
+		push @$passed, $_ if $ok;
+	}
+	return $passed if @$passed;
 	return [];
 }
 
 sub _dir_security_scalar {
-    return undef if ! -d $_->[0];
+	return undef if ! -d $_->[0];
 	return $_->[0];
 }
 
 sub _file_security_scalar {
-    my $result = _file_security(@_);
+	my $result = _file_security(@_);
 	return $result->[0];
 }
 
@@ -930,8 +925,8 @@ sub _dict_limit {
 	my ($ref,$limit) = @_;
 	return undef unless	defined $ref->{mv_dict_look};
 	$limit = -1 if $limit =~ /^[^-0-9]/;
-    $ref->{mv_dict_end} = $ref->{mv_dict_look};
-    substr($ref->{mv_dict_end},$limit,1) =~ s/(.)/chr(ord($1) + 1)/e;
+	$ref->{mv_dict_end} = $ref->{mv_dict_look};
+	substr($ref->{mv_dict_end},$limit,1) =~ s/(.)/chr(ord($1) + 1)/e;
 	return $_[1];
 }
 
