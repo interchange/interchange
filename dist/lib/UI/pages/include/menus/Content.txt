@@ -1,4 +1,4 @@
 code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url
 0027	01	x					admin/content		Content Edit		0							
-001							admin/genconfig YES!											
+0028	02						admin/content_push		Clone component sets									
 0029	03	Content					admin/file_transfer		File Transfer		0							

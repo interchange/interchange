@@ -1,0 +1,184 @@
+[set page_perm]page[/set]
+[set page_title][L]Clone component sets to multiple pages[/L][/set]
+[set ui_class]Content[/set]
+[set help_name]page.editor[/set]
+[set icon_name]icon_pages.gif[/set]
+@_UI_STD_HEAD_@
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+[if cgi push]
+[perl]
+	my $source = $CGI->{source};
+	my @things = split /\0/, $CGI->{target};
+	my $out = 'cloning ';
+	
+
+	if(! $CGI->{source}) {
+		return "<blockquote class=cerror> No source! </blockquote>";
+	}
+	elsif(! $CGI->{target}) {
+		return "<blockquote class=cerror> No targets! </blockquote>";
+	}
+
+	my $sfile = $Tag->file($source);
+	$sfile =~ m{(\[control\s+reset=1\].*?\[control\s+reset=1\])}si;
+	my $scomp = $1;
+
+	my $count = 0;
+	for(@things) {
+		$Tag->backup_file($_) if $CGI->{backup};
+		my $dat = $Tag->file($_);
+		$dat =~ s{\[control\s+reset=1\].*?\[control\s+reset=1\]}{$scomp}si;
+		$Tag->write_relative_file($_, $dat)
+			and $count++;
+	}
+
+	return "<blockquote class=cmessage>$count files updated.</blockquote>";
+[/perl]
+[/if]
+
+<form action="[area @@MV_PAGE@@]" method=POST name=pushform>
+<input type=hidden name=mv_session_id value="[data session id]">
+<input type=hidden name=mv_action value=back>
+<table>
+<tr>
+	<td>
+		<b>Source</b> <select name=source onChange="doType(this)">
+			<option value=""> -- select source file --
+		</select>
+	</td>
+	<td id=messagebox style="font-size: larger">
+		Select page to clone. Only pages matching the template type of
+		the source page will be allowed.
+	</td>
+</table>
+
+<br>
+<b>Targets</b><br>
+<script>
+	var files = [
+
+[calc]
+	my $files = $Tag->list_pages( { arrayref => 1 });
+	my $dir = $Config->{PageDir};
+	$dir =~ s{^$Config->{VendRoot}/}{};
+	my $suf = $Config->{HTMLsuffix};
+	my @things = map { [ "$dir/$_$suf", $_ ] } @$files;
+
+	my @out;
+	@qualify = ();
+	for my $ref (@things) {
+		my ($fn, $lab) = @$ref;
+		my $dat = $Tag->file($fn);
+		$dat =~ m{\nui_(?:page_template|template_name):\s*(.*)}
+			or next;
+		my $type = $1;
+		push @$ref, $type;
+		push @qualify, [$fn, $lab, $type];
+		$fn =~ s/'/\\'/g;
+		$lab =~ s/'/\\'/g;
+		$type =~ s/'/\\'/g;
+		push @out, qq{[ '$fn', '$lab', '$type' ]};
+	}
+	return join ",\n", @out;
+[/calc]
+
+	];
+
+	function setBox (idx, active) {
+		if(idx < 0) 
+			return;
+		var dis = active == 1 ? 0 : 1;
+		var weight = active == 1 ? 'bold' : 'normal';
+
+		var w = document.getElementById('target' + idx);
+		var el = document.getElementById('lab' + idx);
+
+		el.style.fontWeight = weight;
+		if(dis) {
+			w.checked = 0;
+			w.disabled = 1;
+		}
+		else {
+			w.disabled = 0;
+		}
+		return;
+	}
+
+	function doType (wid) {
+		if(wid == undefined)
+			return;
+		if(wid.options == undefined)
+			return;
+		var idx = wid.selectedIndex;
+		if(idx <= 0)
+			return;
+		var l = files[idx - 1];
+		var type = l[2];
+		for(var i = 0; i < files.length; i++) {
+		    var f = files[i];
+			var active = 0;
+			if(type == f[2]) 
+				active = 1;
+			if(i == idx - 1) {
+				setBox(i, 0);
+			}
+			else {
+				setBox(i, active);
+			}
+		}
+		var d = document.getElementById('messagebox');
+		d.innerHTML = 'Type <i>' + type + '</i> selected, others disabled.';
+		return;
+	}
+
+	function populateSelect (wid) {
+		if(wid == undefined)
+			return;
+		if(wid.options == undefined)
+			return;
+		wid.options.length = 0;
+		wid.options[0] = new Option;
+		wid.options[0].value = '';
+		wid.options[0].text = '--select source--';
+		for(var i = 0; i < files.length; i++) {
+			var o = new Option;
+			var f = files[i];
+			o.value = f[0];
+			o.text = f[1];
+			wid.options[i + 1] = o;
+		}
+		return;
+	}
+
+	populateSelect(document.pushform.source);
+</script>
+
+<table>
+[table-organize columns=3 columnize=1 interplate=1]
+[calc]
+	my $i = 0;
+	for(@qualify) {
+		my ($fn, $lab, $type) = @$_;
+		push @out, <<EOF;
+<TD id=lab$i width="33%"><input name=target type=checkbox id=target$i value="$fn">$lab</TD>
+EOF
+		$i++;
+	}
+	return join "", @out;
+[/calc]
+[/table-organize]
+</table>
+
+<br>
+<input type=submit name=push value="[L]Push components[/L]">
+<br>
+<input type=checkbox name=backup value=1 CHECKED> Back files up
+</form>
+
+
+<!-- ----- END REAL STUFF ----- -->
+
+@_UI_STD_FOOTER_@
+<!-- page: @@MV_PAGE@@ -->
