@@ -36,24 +36,31 @@
 		return;
 	}
 	
+	my $compdir = $Variable->{UI_COMPONENT_DIR} || 'templates/components';
 	my $top = $Tag->filter('textarea_get', $CGI->{ui_template_top});
 	my $bot = $Tag->filter('textarea_get', $CGI->{ui_template_bot});
 	$top =~ s~<!--+\s*COMPONENT[\s#]+(\d+)\s*--+>~
 					my $name = $1 - 1;
-					$name .= ".ui_control_component";
+					$name .= ".ui_component";
 					my $type = $name;
 					$type .= "_type";
-				'[include file="[control component '
+				qq{[include file="$compdir/[control component }
 				. $CGI->{$name}
 				.  ']"' . qq{ group="$CGI->{$type}"} . '][control]'
 			~ge if $top;
 	$bot =~ s~<!--+\s*COMPONENT[\s#]+(\d+)\s*--+>~
 					my $name = $1 - 1;
-					$name .= ".ui_control_component";
-				'[include file="[control component '
+					$name .= ".ui_component";
+					my $type = $name;
+					$type .= "_type";
+				qq{[include file="$compdir/[control component }
 				. $CGI->{$name}
 				.  ']"' . qq{ group="$CGI->{$type}"} . '][control]'
 			~ge if $bot;
+
+	for(\$top, \$bot) {
+		$$_ =~ s/\s*$/\n/;
+	}
 
 	my $ver = $Tag->version();
 	$CGI->{ui_template_top} = $top;
@@ -66,23 +73,39 @@
 	}
 	my $name_top = "\U$CGI->{ui_template_name}_TOP";
 	my $name_bot = "\U$CGI->{ui_template_name}_BOTTOM";
-	my $def = <<EOF;
+
+	my @laundry = qw/
+		ui_template_top
+		ui_template_bot
+		ui_template_setting
+		ui_template_description
+	/;
+
+	sub regular {
+		local($_) = shift;
+		s/^\s+//;
+		s/\s+$//;
+		s/\r\n/\n/g;
+		tr/\r/\n/;
+		s/^[ \t]+$//mg;
+		return $_;
+	}
+
+	for(@laundry) {
+		$CGI->{$_} = regular($CGI->{$_});
+	}
+
+	$CGI->{ui_template_setting} =~ s/\n\n\n+/\n\n/g;
+	$CGI->{ui_definition} = <<EOF;
 ui_template: $t_name
 ui_template_name: $t_name
 ui_template_layout: $name_top, UI_CONTENT, $name_bot
 ui_template_description: $CGI->{ui_template_description}
+ui_template_limit_tag: $CGI->{ui_template_limit_tag} 
 ui_template_version: $ver
 
+$CGI->{ui_template_setting}
 EOF
-	my @comps = grep /\.ui_control_component$/, keys %$CGI;
-	for(@comps) {
-		/(\d+)\./;
-		$actual[$1] = $CGI->{$_};
-	}
-	for(@actual) {
-		$def .= $_ ? "$_: \n\n" : "NONE:\n\n";
-	}
-	$CGI->{ui_definition} = $def;
 
 	my $tdir    = $Variable->{UI_TEMPLATE_DIR} || 'templates';
 
