@@ -24,6 +24,7 @@ in <b>Bold</b>.
 </td></tr></table>
 
 [if session browser =~ /.*/i]
+[and session browser !~ /Opera/i]
 [comment] Using a browser that supports <OPTION GROUP> tags [/comment]
 [tmp state_options]
 [loop search='
