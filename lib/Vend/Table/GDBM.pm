@@ -1,6 +1,6 @@
 # Vend::Table::GDBM - Access an Interchange table stored in a GDBM file
 #
-# $Id: GDBM.pm,v 2.8 2003-07-12 04:47:10 mheins Exp $
+# $Id: GDBM.pm,v 2.9 2003-07-12 13:40:43 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -30,7 +30,7 @@ use GDBM_File;
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 2.8 $, 10);
+$VERSION = substr(q$Revision: 2.9 $, 10);
 
 sub new {
 	my ($class, $obj) = @_;
@@ -137,11 +137,13 @@ sub open_table {
 *config			= \&Vend::Table::Common::config;
 *delete_record	= \&Vend::Table::Common::delete_record;
 *each_record	= \&Vend::Table::Common::each_record;
+*errstr     	= \&Vend::Table::Common::errstr;
 *field			= \&Vend::Table::Common::field;
 *field_accessor	= \&Vend::Table::Common::field_accessor;
 *field_settor	= \&Vend::Table::Common::field_settor;
 *inc_field		= \&Vend::Table::Common::inc_field;
 *isopen			= \&Vend::Table::Common::isopen;
+*log_error  	= \&Vend::Table::Common::log_error;
 *name			= \&Vend::Table::Common::name;
 *numeric		= \&Vend::Table::Common::numeric;
 *quote			= \&Vend::Table::Common::quote;
