@@ -1416,6 +1416,15 @@ ADDITIONAL: {
 	close ADDL;
 }
 
+CRYPTPW: {
+	my $pw = substitute('CRYPTPW', '__');
+	last CRYPTPW unless $pw;
+	my @letters = ('A' .. 'Z', 'a' .. 'z');
+	my $salt = $letters[ int rand(scalar @letters) ];
+	$salt .= $letters[ int rand(scalar @letters) ];
+	$ENV{MVC_CRYPTPW} = crypt($pw, $salt);
+}
+
 PRECMD: {
 	last PRECMD unless -f "$dir/config/precopy_commands";
 	open(ADDL, "< $dir/config/precopy_commands") 
@@ -1946,7 +1955,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.6 2000-07-20 07:24:13 heins Exp $
+$Id: makecat.PL,v 1.7 2000-08-19 04:16:31 heins Exp $
 
 =head1 INTRODUCTION
 
