@@ -50,7 +50,7 @@ DOIT: {
 #
 # Interchange version 4.9.0
 #
-# $Id: interchange.PL,v 2.16 2001-11-28 02:41:42 jon Exp $
+# $Id: interchange.PL,v 2.17 2001-11-28 03:35:45 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -98,7 +98,7 @@ BEGIN {
 		$Global::ExeName = 'minivend';
 		$Global::ConfigFile = 'minivend.cfg';
 	}
-	elsif(-f "$Global::VendRoot/interchange.cfg.dist") {
+	else {
 		$Global::ExeName = 'interchange';
 		$Global::ConfigFile = 'interchange.cfg';
 	}
