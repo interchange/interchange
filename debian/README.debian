@@ -1,0 +1,20 @@
+INTRODUCTION
+
+This file describes changes to Interchange differing to 
+installations from the tar ball.
+
+WRAPPERS
+
+There are wrappers for the scripts /usr/lib/interchange/bin/interchange 
+and /usr/lib/interchange/bin/makecat installed into /usr/bin.
+
+The wrapper for interchange passes the configuration settings needed
+for this Debian package to /usr/lib/interchange/bin/interchange 
+and runs the command as the interchange user (default is interchange)
+if invoked from the superuser.
+
+The wrapper for makecat passes the configuration settings needed
+for this Debian package to /usr/lib/interchange/bin/makecat
+and runs the command as the interchange user (default is interchange)
+if invoked from the superuser. As any other user the options
+--nocfg and --norunning are passed to the makecat script.
