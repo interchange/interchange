@@ -235,7 +235,7 @@ sub {
 		my $count;
 		$count = $text =~ s/(\r\n|\r|\n)/$1/g;
 
-		encode($text, $ESCAPE_CHARS::std);
+		HTML::Entities::encode($text, $ESCAPE_CHARS::std);
 		my $size;
 		if ($count) {
 			$count++;
@@ -256,7 +256,9 @@ EOF
 EOF
 	}
 
-	return $w unless $template;
+	my $array_return = wantarray;
+
+	return $w unless $template || $array_return;
 
 	if($template and $template !~ /\s/) {
 		$template = <<'EOF';
@@ -284,10 +286,15 @@ EOF
 						: $record->{label},
 	);
 
-	# Strip the {TAG} {/TAG} pairs if nothing there
-	$template =~ s#{([A-Z_]+)}(.*?){/\1}#$sub{$1} ? $2: '' #ges;
-	# Insert the TAG
-	$template =~ s/\$([A-Z_]+)\$/$sub{$1}/g;
-	return $template;
+	if($array_return) {
+		return ($w, $sub{LABEL}, $sub{HELP}, $record->{help_url});
+	}
+	else {
+		# Strip the {TAG} {/TAG} pairs if nothing there
+		$template =~ s#{([A-Z_]+)}(.*?){/\1}#$sub{$1} ? $2: '' #ges;
+		# Insert the TAG
+		$template =~ s/\$([A-Z_]+)\$/$sub{$1}/g;
+		return $template;
+	}
 }
 EOR
