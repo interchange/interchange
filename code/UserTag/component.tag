@@ -108,6 +108,7 @@ sub {
 	}
 
 	my $result = interpolate_html($body);
+	$Tag->parse_locale(\$result);
 	$::Scratch->{control_index}++;
 	if($cache_it) {
 		my $thing = {
