@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.64 2002-08-11 15:59:29 mheins Exp $
+# $Id: Config.pm,v 2.65 2002-08-11 16:12:40 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.64 $, 10);
+$VERSION = substr(q$Revision: 2.65 $, 10);
 
 my %CDname;
 
@@ -245,7 +245,7 @@ sub global_directives {
 												defined $Global::Unix_Mode
 												)
 												? ($Global::Unix_Mode || 0) : 'Yes'],
-	['TcpMap',           'hash',             '- -'],
+	['TcpMap',           'hash',             ''],
 	['Environment',      'array',            ''],
 	['TcpHost',           undef,             'localhost 127.0.0.1'],
 	['SendMailProgram',  'executable',		 [
