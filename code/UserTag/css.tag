@@ -187,7 +187,7 @@ Mike Heins, Perusion <mikeh@perusion.com>
 			else {
 				logError("CSS dir %s has no write permission.", $dir);
 			}
-			last WRITEIT;
+			last WRITE;
 		}
 		my $mode = $opt->{mode} ? oct($opt->{mode}) : 0644;
 		$css = length($opt->{literal})
