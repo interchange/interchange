@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.26 2001-11-06 22:50:51 mheins Exp $
+# $Id: Interpolate.pm,v 2.27 2001-11-09 23:29:58 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.26 $, 10);
+$VERSION = substr(q$Revision: 2.27 $, 10);
 
 @EXPORT = qw (
 
@@ -1716,6 +1716,7 @@ sub build_accessory_select {
 
 		my $vvalue = $value;
 		$vvalue =~ s/"/&quot;/;
+		HTML::Entities::decode($value);
 		$run .= qq| VALUE="$vvalue"|;
 		if ($default) {
 			$regex	= qr/$re_b\Q$value\E$re_e/;
@@ -2966,15 +2967,25 @@ sub mvtime {
 	}
 
 	local($ENV{TZ}) = $opt->{tz} if $opt->{tz};
-
+	
 	my $now = $opt->{time} || time();
 	$fmt = '%Y%m%d' if $opt->{sortable};
 
 	if($opt->{adjust}) {
-		$opt->{adjust} =~ s/00$//;
-        $opt->{adjust} =~ s/^(-)?[0+]/$1/;
-        $now += (60 * 60) * $opt->{adjust};
+		my $neg = $opt->{adjust} =~ s/^\s*-\s*//;
+		my $diff;
+		$opt->{adjust} =~ s/^\s*\+\s*//;
+		if($opt->{adjust} !~ /[a-z]/) {
+			$opt->{adjust} =~ s/00$//;
+			$diff = (60 * 60) * $opt->{adjust};
+		}
+		else {
+			$diff = Vend::Config::time_to_seconds($opt->{adjust});
+		}
+		$now = $neg ? $now - $diff : $now + $diff;
 	}
+
+	$fmt ||= '%c';
     my $out = $opt->{gmt} ? ( POSIX::strftime($fmt, gmtime($now)    ))
                           : ( POSIX::strftime($fmt, localtime($now) ));
 	$out =~ s/\b0(\d)\b/$1/g if $opt->{zerofix};
