@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.57 2001-06-29 06:31:57 jon Exp $
+# $Id: Config.pm,v 1.25.2.58 2001-07-03 19:57:33 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -95,7 +95,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.57 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.58 $, 10);
 
 my %CDname;
 
@@ -281,6 +281,7 @@ sub global_directives {
 											   'Net::SMTP',
 											  ]
 										  ],
+	['EncryptProgram',  'executable',		 [ 'gpg', 'pgpe', 'none', ] ],
 	['PIDfile',     	  undef,             "$Global::VendRoot/etc/$Global::ExeName.pid"],
 	['SocketFile',     	 'array',            "$Global::VendRoot/etc/socket"],
 	['SocketPerms',      'integer',          0600],
@@ -457,7 +458,8 @@ sub catalog_directives {
 	['NoCache',	     	 'boolean',    	     ''],
 	['ClearCache',	     'yesno',     	     'No'],
 	['FormIgnore',	     'boolean',    	     ''],
-	['EncryptProgram',	 undef,     	     ''],
+	['EncryptProgram',	 undef,     	     $Global::EncryptProgram || ''],
+	['EncryptKey',		 undef,     	     ''],
 	['AsciiTrack',	 	 undef,     	     ''],
 	['TrackFile',	 	 undef,     	     ''],
 	['SalesTax',		 undef,     	     ''],

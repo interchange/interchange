@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 1.25.2.37 2001-07-01 12:02:13 heins Exp $
+# $Id: DBI.pm,v 1.25.2.38 2001-07-03 19:57:34 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.37 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.38 $, 10);
 
 use strict;
 
@@ -141,6 +141,7 @@ my %known_capability = (
 	},
 	ALTER_CHANGE => { 
 		mysql => 'ALTER TABLE _TABLE_ CHANGE COLUMN _COLUMN_ _COLUMN_ _DEF_',
+		Pg => 'ALTER TABLE _TABLE_ CHANGE COLUMN _COLUMN_ _COLUMN_ _DEF_',
 	},
 	ALTER_ADD	 => { 
 		mysql => 'ALTER TABLE _TABLE_ ADD COLUMN _COLUMN_ _DEF_',
@@ -722,6 +723,16 @@ sub add_column {
 	return $s->alter_column($column, $def, 'ALTER_ADD');
 }
 
+sub rename_table {
+	my ($s, $column, $def) = @_;
+	return $s->alter_column($column, $def, 'ALTER_RENAME');
+}
+
+sub copy_table {
+	my ($s, $column, $def) = @_;
+	return $s->alter_column($column, $def, 'ALTER_COPY');
+}
+
 sub change_column {
 	my ($s, $column, $def) = @_;
 	return $s->alter_column($column, $def, 'ALTER_CHANGE');
@@ -765,6 +776,7 @@ sub alter_column {
 		return undef;
 	}
 
+	$template =~ s/\b_BACKUP_\b/"bak_$s->[$TABLE]"/g;
 	$template =~ s/\b_TABLE_\b/$s->[$TABLE]/g;
 	$template =~ s/\b_COLUMN_\b/$column/g;
 	$template =~ s/\b_DEF_\b/$def/g;

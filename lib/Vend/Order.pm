@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 1.18.2.27 2001-06-29 02:19:25 jon Exp $
+# $Id: Order.pm,v 1.18.2.28 2001-07-03 19:57:33 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.27 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.28 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -510,65 +510,6 @@ sub guess_cc_type {
 }
 
 
-# Encrypts a credit card number with DES or the like
-# Prefers internal Des module, if was included
-sub encrypt_cc {
-	my($enclair) = @_;
-	my($encrypted, $status, $cmd);
-	my $infile    = 0;
-
-	$cmd = $Vend::Cfg->{EncryptProgram};
-	$cmd = '' if "\L$cmd" eq 'none';
-
-	my $tempfile = $Vend::Cfg->{ScratchDir} . '/' . $Vend::SessionID . '.cry';
-
-	#Substitute the filename
-	if ($cmd =~ s/%f/$tempfile/) {
-		$infile = 1;
-	}
-
-	# Want the whole file
-	local($/) = undef;
-
-	# Send the CC to a tempfile if incoming
-	if($infile) {
-		open(CARD, ">$Vend::Cfg->{ScratchDir}/$tempfile") ||
-			die "Couldn't write $tempfile: $!\n";
-		# Put the cardnumber there, and maybe password first
-		$enclair .= "\r\n\cZ\r\n" if $Global::Windows;
-		print CARD $enclair;
-		close CARD;
-
-		# Encrypt the string, but key on arg line will be exposed
-		# to ps(1) for systems that allow it
-		open(CRYPT, "$cmd |") || die "Couldn't fork: $!\n";
-		chomp($encrypted = <CRYPT>);
-		close CRYPT;
-		$status = $?;
-	}
-	else {
-		$cmd = "| $cmd " if $cmd;
-		open(CRYPT, "$cmd>$tempfile ") || die "Couldn't fork: $!\n";
-		print CRYPT $enclair;
-		close CRYPT;
-		$status = $cmd ? $? : 0;
-
-		open(CARD, "< $tempfile") || warn "open $tempfile: $!\n";
-		$encrypted = <CARD>;
-		close CARD;
-	}
-
-	unlink $tempfile;
-
-	# This means encryption failed
-	if( $status != 0 ) {
-		::logGlobal({ level => 'alert' }, "Encryption error: %s", $!);
-		return undef;
-	}
-
-	$encrypted;
-}
-
 # Takes a reference to a hash (usually %CGI::values) that contains
 # the following:
 # 
@@ -687,7 +628,7 @@ sub encrypt_standard_cc {
 	my $encrypt_string = $separate ? $num :
 		build_cc_info( [$num, $month, $year, $cvv2, $type] );
 #::logDebug("mv_credit_card_info:".$encrypt_string);
-	$info = encrypt_cc ($encrypt_string);
+	$info = pgp_encrypt ($encrypt_string);
 
 	unless (defined $info) {
 		my $msg = errmsg("Credit card encryption failed: %s", $! );
@@ -763,8 +704,8 @@ sub onfly {
 	return $item;
 }
 
-# Email the processed order.
-
+# Email the processed order. This is a legacy routine, not normally used
+# any more. Order email is normally sent via Route.
 sub mail_order {
 	my ($email, $order_no) = @_;
 	$email = $Vend::Cfg->{MailOrderTo} unless $email;
@@ -777,7 +718,6 @@ sub mail_order {
 #::logDebug( sprintf "found body length %s in values->mv_order_report", length($body));
 	$body = readfile($Vend::Cfg->{OrderReport})
 		if ! $body;
-#::logDebug( sprintf "found body length %s in OrderReport", length($body));
 	unless (defined $body) {
 		::logError(
 			q{Cannot find order report in:
@@ -800,9 +740,7 @@ trying one more time. Fix this.},
 
 	$body = pgp_encrypt($body) if $Vend::Cfg->{PGP};
 
-#::logDebug("Now ready to track order, number=$order_no");
 	track_order($order_no, $body);
-#::logDebug("finished track order, number=$order_no");
 
 	$subject = $::Values->{mv_order_subject} || "ORDER %n";
 
@@ -811,23 +749,43 @@ trying one more time. Fix this.},
 	}
 	else { $subject =~ s/\s*%n\s*//g; }
 
-#::logDebug("Now ready to send mail, subject=$subject");
-
-#### change this to use Vend::Mail::send
 	$ok = send_mail($email, $subject, $body);
 	return $ok;
 }
 
 sub pgp_encrypt {
 	my($body, $key, $cmd) = @_;
-	$cmd = $Vend::Cfg->{PGP} unless $cmd;
+#::logDebug("called pgp_encrypt key=$key cmd=$cmd");
+	$cmd = $Vend::Cfg->{EncryptProgram} unless $cmd;
+	$key = $Vend::Cfg->{EncryptKey}	    unless $key;
+
+	if($cmd =~ m{^(?:/\S+/)?\bgpg$}) {
+		$cmd .= " --batch --always-trust -e -a -r '%s'";
+	}
+	elsif($cmd =~ m{^(?:/\S+/)?pgpe$}) {
+		$cmd .= " -fat -r '%s'";
+	}
+	elsif($cmd =~ m{^(?:/\S+/)?\bpgp$}) {
+		$cmd .= " -fat - '%s'";
+	}
+
+	if($cmd =~ /[;|]/) {
+		die ::errmsg("Illegal character in encryption command: %s", $cmd);
+	}
+
 	if($key) {
 		$cmd =~ s/%%/:~PERCENT~:/g;
+		$key =~ s/'/\\'/g;
 		$cmd =~ s/%s/$key/g;
 		$cmd =~ s/:~PERCENT~:/%/g;
 	}
-	my $fpre = $Vend::Cfg->{ScratchDir} . "/pgp.$$";
-	open(PGP, "|$cmd >$fpre.out 2>$fpre.err")
+
+#::logDebug("after  pgp_encrypt key=$key cmd=$cmd");
+
+	my $fpre = $Vend::Cfg->{ScratchDir} . "/pgp.$Vend::Session->{id}.$$";
+	$cmd .= ">$fpre.out";
+	$cmd .= " 2>$fpre.err" unless $cmd =~ /2>/;
+	open(PGP, "|$cmd")
 			or die "Couldn't fork: $!";
 	print PGP $body;
 	close PGP;
@@ -1307,7 +1265,8 @@ sub route_order {
 
 	my $save_mime = $::Instance->{MIME} || undef;
 
-	my $encrypt_program = $main->{encrypt_program} || 'pgpe -fat -r %s';
+	my $encrypt_program = $main->{encrypt_program};
+
 	my (@routes);
 	my $shelf = { };
 	my $item;
@@ -1357,6 +1316,11 @@ sub route_order {
 
 	my @trans_tables;
 
+	# We aren't going to 
+	my %override_key = qw/
+		encrypt_program 1
+	/;
+
 	# Settable by user to indicate failure
 	delete $::Scratch->{mv_route_failed};
 
@@ -1365,10 +1329,15 @@ sub route_order {
 	foreach $c (@routes) {
 		my $route = $Vend::Cfg->{Route_repository}{$c} || {};
 		$main = $route if $route->{master};
+		my $old;
 
+#::logDebug("route $c is: " . ::uneval($route));
 		##### OK, can put variables in DB all the time. It can be dynamic
 		##### from the database if $main->{dynamic_routes} is set. ITL only if
 		##### $main->{expandable}.
+		#####
+		##### The encrypt_program key cannot be dynamic. You can set the
+		##### key substition value instead.
 
 		if($Vend::Cfg->{RouteDatabase} and $main->{dynamic_routes}) {
 			my $ref = tag_data( $Vend::Cfg->{RouteDatabase},
@@ -1377,7 +1346,13 @@ sub route_order {
 								{ hash => 1 }
 								);
 #::logDebug("Read dynamic route %s from database, got: %s", $c, $ref );
-			$route = $ref if $ref;
+			if($ref) {
+				$old = $route;
+				$route = $ref;
+				for(keys %override_key) {
+					$route->{$_} = $old->{$_};
+				}
+			}
 		}
 
 		if(! %$route) {
@@ -1391,7 +1366,8 @@ sub route_order {
 			if(ref $ref) {
 				for(keys %$ref) {
 #::logDebug("setting extended $_ = $ref->{$_}");
-					$route->{$_} = $ref->{$_};
+					$route->{$_} = $ref->{$_}
+						unless $override_key{$_};
 				}
 			}
 		}
@@ -1399,6 +1375,7 @@ sub route_order {
 		for(keys %$route) {
 			$route->{$_} =~ s/^\s*__([A-Z]\w+)__\s*$/$::Variable->{$1}/;
 			next unless $main->{expandable};
+			next if $override_key{$_};
 			next unless $route->{$_} =~ /\[/;
 #::logDebug("expanding $_ from=$route->{$_}");
 			$route->{$_} = ::interpolate_html($route->{$_});
@@ -1445,6 +1422,10 @@ sub route_order {
 			$::Values->{mv_credit_card_info} = build_cc_info(\%attrlist);
 #::logDebug("mv_credit_card_info:".$::Values->{mv_credit_card_info});
 		}
+		elsif ($::Values->{mv_credit_card_info}) {
+			$::Values->{mv_credit_card_info} =~ /BEGIN\s+PGP\s+MESSAGE/
+				and $pre_encrypted = 1;
+		}
 
 		$Vend::Items = $shelf->{$c};
 	eval {
@@ -1483,7 +1464,7 @@ sub route_order {
 			$::Values->{mv_credit_card_info} = pgp_encrypt(
 								$::Values->{mv_credit_card_info},
 								($route->{pgp_cc_key} || $route->{pgp_key}),
-								($route->{encrypt_program} || $encrypt_program),
+								($route->{encrypt_program} || $main->{encrypt_program} || $encrypt_program),
 							);
 		}
 
@@ -1526,7 +1507,7 @@ sub route_order {
 		if($route->{encrypt}) {
 			$page = pgp_encrypt($page,
 								$route->{pgp_key},
-								$route->{encrypt_program} || $encrypt_program,
+								($route->{encrypt_program} || $main->{encrypt_program} || $encrypt_program),
 								);
 		}
 		my ($address, $reply, $to, $subject, $template);
@@ -1722,6 +1703,7 @@ sub add_items {
 
 	my($code,$found,$item,$base,$quantity,$i,$j,$q);
 	my(@items);
+	my(@skus);
 	my(@quantities);
 	my(@bases);
 	my(@lines);
@@ -1760,6 +1742,15 @@ sub add_items {
 		my @mods = (grep $_ !~ /^mv_/, split /\0/, $CGI::values{mv_item_option});
 		@mods = grep ! $seen{$_}++, @mods;
 		push @{$Vend::Cfg->{UseModifier}}, @mods;
+	}
+
+	if($CGI::values{mv_sku}) {
+		my @sku = split /\0/, $CGI::values{mv_sku}, -1;
+		for (@sku) {
+			$_ = $::Variable->{MV_VARIANT_JOINER} || '0' if ! length($_);
+		}
+		$skus[0]   = $items[0];
+		$items[0] = join '-', @sku;
 	}
 
 	if ($Vend::Cfg->{UseModifier}) {
@@ -1877,6 +1868,8 @@ sub add_items {
 					$item->{mv_mp} = $attr{mv_mp}->[$j] || $mv_mp;
 				}
 			}
+
+			$item->{mv_sku} = $skus[$i] if defined $skus[$i];
 
 			if($Vend::Cfg->{UseModifier}) {
 				foreach $i (@{$Vend::Cfg->{UseModifier}}) {
