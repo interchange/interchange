@@ -1,6 +1,6 @@
 # Vend::Util - Interchange utility functions
 #
-# $Id: Util.pm,v 2.28 2002-07-03 05:16:42 mheins Exp $
+# $Id: Util.pm,v 2.29 2002-07-20 18:59:33 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -82,7 +82,7 @@ require HTML::Entities;
 use Safe;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 2.28 $, 10);
+$VERSION = substr(q$Revision: 2.29 $, 10);
 
 BEGIN {
 	eval {
@@ -713,7 +713,7 @@ sub logData {
 
 	$file = ">>$file" unless $file =~ /^[|>]/;
 
-	my $msg = tabbed @msg;
+	my $msg = tabbed @msg if @msg > 1;
 
     eval {
 		unless($file =~ s/^[|]\s*//) {
