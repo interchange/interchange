@@ -1,3 +1,6 @@
+[if cgi ui_return_table]
+	[calc] $CGI->{mv_data_table} = delete $CGI->{ui_return_table}; return; [/calc]
+[/if]
 [seti page_title]
 	[either]
 		[cgi page_title]
@@ -12,7 +15,7 @@
 
 [if cgi ui_new_item]
 	[calc]
-		$CGI->{item_id} = q{[counter file="products/[cgi mv_data_table].autonumber" start=new0000]};
+		$CGI->{item_id} = q{[counter file="__UI_PRODUCT_DIR__/[cgi mv_data_table].autonumber" start=new0000]};
 		return;
 	[/calc]
 [/if]

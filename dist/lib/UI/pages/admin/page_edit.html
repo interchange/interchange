@@ -94,6 +94,10 @@
 				my ($set) = $current =~ m{\[set\s+$_\](.*?)\[/set\]};
 				my $t_set = $r->{$_};
 				my $wtype = $ref->{ui_control_widget}{$_} || '';
+				if($wtype eq 'break') {
+					push @controls, ['break'];
+					next;
+				}
 				my $options = $ref->{ui_control_options}{$_} || $t_set || '=No,1=Yes';
 Log("r key $_ set='$set' options=$options value=$Values->{qq!ui_control_$_!}");
 				my $help = $ref->{ui_control_help}{$_} || '';
@@ -103,6 +107,8 @@ Log("r key $_ set='$set' options=$options value=$Values->{qq!ui_control_$_!}");
 											name => "ui_control_$_",
 											type => $wtype,
 											passed => $options,
+											rows =>  $ref->{ui_control_height}{$_},
+											cols =>  $ref->{ui_control_width}{$_},
 											set => $set,
 											filter => $ref->{ui_control_filter}{$_},
 											pre_filter => $ref->{ui_control_prefilter}{$_},
@@ -210,6 +216,14 @@ EOF
 	}
 	my $table_done;
 	for(@controls) {
+		if($_->[0] eq 'break') {
+			$out .= <<EOF;
+<tr>
+<td colspan=2 bgcolor=__UI_C_TOPBLOCKBAR__><img src="${imgpath}admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+EOF
+			next;
+		}
 		$out .= qq{<tr><td bgcolor=__UI_C_INTBLOCK__><b>$_->[0]</td><td bgcolor=__UI_C_INTBLOCK__>$_->[1]</td></tr>};
 	}
 

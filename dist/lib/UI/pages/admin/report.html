@@ -125,20 +125,6 @@
 		}
 	}
 	$out .= <<EOF;
-function addItem(selector, receptor) {
-	if(receptor.value != '') {
-		receptor.value = receptor.value + " ";
-	}
-	if(selector[selector.selectedIndex].value != null) {
-		receptor.value = receptor.value + selector[selector.selectedIndex].value;
-	}
-	else {
-		if(selector[selector.selectedIndex].text != null) {
-		receptor.value = receptor.value + selector[selector.selectedIndex].text;
-		}
-	}
-	return true;
-}
 function populateTable(table_options,column_options,key_options,selected) {
 	var selectedArray = eval ( "ary_" + selected );
 	var currentTable = "$Values->{mv_data_table}";
@@ -250,27 +236,41 @@ EOF
 	[/loop]
 </TD>
 <TD VALIGN=TOP WIDTH=200>
-	[if-mm super]
-		[seti report_spec][list-glob spec='pages/__UI_BASE__/report*/* pages/__UI_BASE__/user/[data session mm_username]/report*/*'][/seti]
-	[else]
-		[seti report_spec][list-glob spec='pages/__UI_BASE__/user/[data session mm_username]/report*/*'][/seti]
-	[/else]
-	[/if-mm]
+	[calc]
+		delete $Scratch->{report_spec};
+		$reldir = $Config->{PageDir};
+		$reldir =~ s:^$Config->{VendRoot}/::
+			or do {
+				$Scratch->{report_spec} = "Cannot do reports with absolute page directory.";
+				return;
+			
+			};
+		$Session->{username} =~ /^\S+$/
+			or return "Bad username, no spaces allowed.";
+		my @files = $Tag->list_glob("$reldir/__UI_BASE__/$Session->{username}/report*/*.html");
+		if($Tag->if_mm('super')) {
+			push @files, $Tag->list_glob("$reldir/__UI_BASE__/report*/*.html");
+		}
+		@files = sort @files;
+		$Scratch->{report_spec} = join "\n", @files;
+		return;
+	[/calc]
 	[set del_report]
 	[calc]
+		return unless $CGI->{ui_report_delete};
+		$reldir = $Config->{PageDir};
+		$reldir =~ s:^$Config->{VendRoot}/::
+			or return "Cannot do reports with absolute page directory.";
+		@files = grep /$CGI->{ui_report_delete}$/,
+					split /\n+/, $Scratch->{report_spec};
 		$out = '';
-		my @files;
-		if($CGI->{ui_report_delete}) {
-			@possible = split /\s+/, $Scratch->{report_spec};
-			@files = grep /$CGI->{ui_report_delete}$/, @possible;
-		}
 		for(@files) {
 			my $lab = $_;
 			$lab =~ s:.*/([^/]+/.+)\.html:$1:;
 			$lab =~ s/%([0-9a-fA-F]{2})/chr(hex($1))/ge;
 			$out .= "Delete $lab: ";
 			$out .= 
-				$Tag->unlink_file($_, 'pages/config') 
+				$Tag->unlink_file($_, "$reldir/") 
 				? 'success'
 				: 'FAILED';
 			$out .= '<BR>';
@@ -280,8 +280,7 @@ EOF
 	[/calc]
 	[/set]
 	<SMALL>
-	[scratch report_delete_message]
-	[set report_delete_message][/set]
+	[scratchd report_delete_message]
 	<FORM METHOD=POST ACTION="[process]">
 	<INPUT TYPE=hidden NAME=mv_click VALUE=del_report>
 	<INPUT TYPE=hidden NAME=mv_todo VALUE=return>

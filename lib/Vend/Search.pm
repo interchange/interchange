@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# $Id: Search.pm,v 1.6 2000-09-14 08:25:52 heins Exp $
+# $Id: Search.pm,v 1.6.4.1 2000-10-12 12:48:13 racke Exp $
 #
 # Vend::Search -- Base class for search engines
 #
@@ -26,7 +26,7 @@
 #
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 1.6.4.1 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -795,8 +795,9 @@ EOCODE
 
 	my $i = 0;
     for $pat (@_) {
-		$pat = "$begin$pat" if $begin;
-		$pat =~ s/(\w+)/$bound$1$bound/g if $bound;
+		$pat =~ s/(.*)/$bound$1$bound/
+			if $bound;
+		$pat =~ s/^(?:\\b)?/$begin/ if $begin;
 		$code .= <<EOCODE;
     return 0 unless $negate m{$pat}$case;
 EOCODE
@@ -838,8 +839,9 @@ EOCODE
 EOCODE
 
     for $pat (@_) {
-		$pat = "$begin$pat" if $begin;
-		$pat =~ s/(\w+)/$bound$1$bound/g if $bound;
+		$pat =~ s/(.*)/$bound$1$bound/
+			if $bound;
+		$pat =~ s/^(?:\\b)?/$begin/ if $begin;
 		$code .= <<EOCODE;
     return 1 if $negate m{$pat}$case;
 EOCODE

@@ -16,32 +16,49 @@ members_only:
 	widget: radio
 	description: Members only
 
+break1:
+	widget: break
+
 component_before:
-	options: =none, specials=Specials, random=Random items
+	options: =none, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Upsell, cross_horizontal=Cross sell
 	widget: select
 	description: Component before content
 
 component_after:
-	options: =none, specials=Specials, random=Random items
+	options: =none, promo_horizontal=Promotion, random_horizontal=Random items, upsell_horizontal=Upsell, cross_horizontal=Cross sell
 	widget: select
 	description: Component after content
 
-bgcolor:
-	options: #FFFFFF=White,pink=Pink
+component_hsize:
+	options: 1,2*,3
 	widget: select
-	description: Background color
+	description: Component items horizontal
+
+hbanner:
+	options: =--custom--,Specials, New items, Also see..., You might also like, Some of our fine products
+	widget: move_combo
+	width: 40
+	description: Before/after Banner
+	help: Banner for Before/after component
+
+hpromo_type:
+	options: specials=Specials, new=New items
+	widget: select
+	description: Special tag
+	help: Only for a horizontal Promotion
 [/comment]
 
-[set page_banner]About Us[/set]
-[set bgcolor]#FFFFFF[/set]
-[set component_before][/set]
-[set component_after][/set]
+[set component_after]promo_horizontal[/set]
 [set members_only]0[/set]
+[set page_banner]About Us[/set]
+[set component_hsize]3[/set]
+[set hbanner]Specials[/set]
+[set component_before][/set]
+[set hpromo_type]specials[/set]
 [set page_title]__COMPANY__ -- About Us[/set]
 __LEFTONLY_TOP__
 
 <!-- BEGIN CONTENT -->
-
 <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FF9900">(This is a demonstration store.)</font></p>
 <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#669999">Construct Something is the Internet's premier provider of quality tools. Our founders have over 20 years of combined experience in hardware and construction, and have created this line of tools for durability and ease of use. We offer our tools exclusively on the Internet and will ship anywhere in the world.</font></p>
 <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#669999">The key to the Construct Something tool line is the ergonomic tool design. All of our tools are formed to fit perfectly in any builder's hand. You will be able to work for hours without stress or strain to your arms ... guaranteed! Our tools also carry a lifetime warranty. If one of our tools ever breaks we will replace it at no cost to you!</font></p>
@@ -62,7 +79,6 @@ Fax: 703.456.2901</font>
 </td>
 </tr>
 </table>
-
 <!-- END CONTENT -->
 
 __LEFTONLY_BOTTOM__

@@ -7,8 +7,8 @@
 		$CGI->{mv_data_table} = 'merchandising';
 	}
 	if(! $CGI->{ui_data_fields}) {
-		$CGI->{ui_data_fields} = 'sku products:description cross_sell cross_category blurb_begin blurb_end';
-		$CGI->{ui_display_only} = 'products:description';
+		$CGI->{ui_data_fields} = 'sku __UI_PRODUCT_TABLE__:description cross_sell cross_category blurb_begin blurb_end';
+		$CGI->{ui_display_only} = '__UI_PRODUCT_TABLE__:description';
 	}
 	if(! $CGI->{ui_break_before}) {
 		$CGI->{ui_break_before} = 'blurb_begin';
@@ -27,7 +27,7 @@
 [set ui_class]Items[/set]
 [seti page_title]Cross selling: [cgi item_id][/seti]
 [seti page_banner]Cross selling: edit item <B>[page href="__UI_BASE__/item_edit" form="item_id=[cgi item_id]"][cgi item_id]</A></B>[/seti]
-[set help_name]item.edit[/set]
+[set help_name]crosssell[/set]
 [set icon_name]admin/icon_item.gif[/set]
 
 @_UI_STD_HEAD_@
@@ -38,7 +38,7 @@
 <A HREF="[area href=admin/flex_editor
 				form='
 					item_id=[cgi item_id]
-					mv_data_table=products
+					mv_data_table=__UI_PRODUCT_TABLE__
 					page_title=Edit items: [cgi item_id]
 					help_name=inventory.edit
 					ui_no_meta_display=1

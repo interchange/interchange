@@ -19,13 +19,15 @@ sub {
 		$value = $::Values->{$name} || $opt->{default};
 	}
 	if($opt->{pre_filter}) {
-::logDebug("pre-filter with $opt->{pre_filter}");
+#::logDebug("pre-filter with $opt->{pre_filter}");
 		$value = $Tag->filter($opt->{pre_filter}, $value);
 	}
 	my $ref = {
 				attribute	=> $opt->{attribute} || 'attribute',
 				db			=> $opt->{table} || undef,
 				field		=> $opt->{field} || undef,
+				cols		=> $opt->{cols} || undef,
+				rows		=> $opt->{rows} || undef,
 				name		=> $name,
 				outboard	=> $opt->{key} || undef,
 				passed		=> $opt->{data} || $opt->{passed} || $string,

@@ -63,7 +63,7 @@ my @chown_files = qw/
 use lib './lib';
 
 
-my $origdir = fastcwd();
+my $origdir = cwd();
 
 # See if we have Term::ReadLine::Perl
 eval {
@@ -457,10 +457,20 @@ sub initialize {
 	if(! $MV::Default{final}) {
 		&copyright_prompt();
 
-		$realdir = my_prompt(
+		# don't suggest install target same as software source directory
+		$MV::Default{PREFIX} = '' if
+			$MV::Default{PREFIX} =~ /^\Q$origdir/;
+
+		{
+			$realdir = my_prompt(
 								"Where is your Interchange to be installed? ",
 								$MV::Default{PREFIX},
 								);
+			if ($realdir =~ /^\Q$origdir/) {
+				warn "Can't install in software source directory!\n";
+				redo;
+			}
+		}
 		print "\n";
 		$realdir =~ s:[\\/]\s*$::;
 		$MV::Default{final} = $realdir if $Windows;
@@ -468,6 +478,9 @@ sub initialize {
 	else {
 		$realdir = $MV::Default{final};
 	}
+
+	die "Can't install in software source directory!\n" if
+		$realdir =~ /^\Q$origdir/;
 
 #warn "Got past realdir prompt\n" ; #if $X{RPMBUILDDIR};
 

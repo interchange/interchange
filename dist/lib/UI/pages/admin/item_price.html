@@ -7,8 +7,8 @@
 		$CGI->{mv_data_table} = 'pricing';
 	}
 	if(! $CGI->{ui_data_fields}) {
-		$CGI->{ui_data_fields} = 'products:price products:description [db-columns name=pricing]';
-		$CGI->{ui_display_only} = 'products:description';
+		$CGI->{ui_data_fields} = '__UI_PRODUCT_TABLE__:price __UI_PRODUCT_TABLE__:description [db-columns name=pricing]';
+		$CGI->{ui_display_only} = '__UI_PRODUCT_TABLE__:description';
 	}
 	if(! $CGI->{ui_break_before}) {
 		$CGI->{ui_break_before} = 'price_group q2';
@@ -27,7 +27,7 @@
 [set ui_class]Items[/set]
 [seti page_title]Pricing: [cgi item_id][/seti]
 [seti page_banner]Pricing: edit item <B>[page href="__UI_BASE__/item_edit" form="item_id=[cgi item_id]"][cgi item_id]</A></B>[/seti]
-[set help_name]item.edit[/set]
+[set help_name]pricing[/set]
 [set icon_name]admin/icon_item.gif[/set]
 
 @_UI_STD_HEAD_@
@@ -38,7 +38,7 @@
 <A HREF="[area href=admin/flex_editor
 				form='
 					item_id=[cgi item_id]
-					mv_data_table=products
+					mv_data_table=__UI_PRODUCT_TABLE__
 					page_title=Edit items: [cgi item_id]
 					help_name=inventory.edit
 					ui_no_meta_display=1

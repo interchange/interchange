@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.21 $, 10);
+$VERSION = substr(q$Revision: 1.21.4.1 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -710,7 +710,7 @@ sub meta_display {
 		or return undef;
 	$meta = $meta->ref();
 	if($column eq $meta->config('KEY')) {
-		$base_entry_value = $value;
+		$base_entry_value = $value =~ /::/ ? $table : $value;
 	}
 #::logDebug("metadisplay: got meta ref=$meta");
 	my $tag = '';
@@ -746,20 +746,23 @@ sub meta_display {
 #::logDebug("passed = '$passed'");
 
 				if($passed eq 'tables') {
-					$record->{passed} = list_tables({ joiner => ',' });
+					$record->{passed} = "=--none--," . list_tables({ joiner => ',' });
+				}
+				elsif($passed eq 'filters') {
+					$record->{passed} = $Vend::Interpolate::Tag->filters(1),
 				}
 				elsif($passed =~ /^columns(::(\w*))?$/) {
 					my $total = $1;
 					my $tname = $2 || $record->{db} || $table;
 					$tname = $base_entry_value if $total eq '::';
-#::logDebug("tname=$tname total=$total");
+#::logDebug("tname='$tname' total=$total");
 					my $db = $Vend::Database{$tname};
-					$record->{passed} = join (',', $db->columns())
+					$record->{passed} = join (',', "=--none--", $db->columns())
 						if $db;
 				}
 				elsif($passed =~ /^keys(::(\w+))?$/) {
 					my $tname = $2 || $record->{db} || $table;
-					$record->{passed} = list_keys($tname, { joiner => ',' });
+					$record->{passed} = "=--none--," . list_keys($tname, { joiner => ',' });
 				}
 			}
 		}
@@ -819,21 +822,20 @@ sub meta_display {
 			$record->{type} = 'combo';
 			$record->{passed} = join ",",
 									map { s/,/&#44;/g; $_} @files;
-			$record->{append} = Vend::Util::resolve_links($record->{append})
-				and $record->{append} =~ s/_UI_VALUE_/$value/g
-				and $record->{append} =~ s/_UI_TABLE_/$table/g
-				and $record->{append} =~ s/_UI_COLUMN_/$column/g
-				and $record->{append} =~ s/_UI_KEY_/$key/g
-				if $record->{append};
-			
-			$record->{prepend} = Vend::Util::resolve_links($record->{prepend})
-				and $record->{append} =~ s/_UI_VALUE_/$value/g
-				and $record->{append} =~ s/_UI_TABLE_/$table/g
-				and $record->{append} =~ s/_UI_COLUMN_/$column/g
-				and $record->{append} =~ s/_UI_KEY_/$key/g
-				if $record->{prepend};
 		}
 
+		for(qw/append prepend/) {
+			next unless $record->{$_};
+			$record->{$_} = Vend::Util::resolve_links($record->{$_});
+			$record->{$_} =~ s/_UI_VALUE_/$value/g;
+			$record->{$_} =~ s/_UI_TABLE_/$table/g;
+			$record->{$_} =~ s/_UI_COLUMN_/$column/g;
+			$record->{$_} =~ s/_UI_KEY_/$key/g;
+		}
+		for(qw/height width/) {
+			$record->{$_} = $o->{$_}
+				if defined $o->{$_};
+		}
 		if($record->{height}) {
 			if($record->{type} =~ /multi/i) {
 				$record->{type} = "MULTIPLE SIZE=$record->{height}";
@@ -858,6 +860,8 @@ sub meta_display {
 		$opt = {
 			attribute	=> ($record->{'attribute'}	|| $column),
 			table		=> ($record->{'db'}			|| $meta_db),
+			rows 		=> ($o->{rows} || $record->{height}),
+			cols 		=> ($o->{cols} || $record->{width}),
 			column		=> ($record->{'field'}		|| 'options'),
 			name		=> ($o->{'name'} || $record->{'name'} || $column),
 			outboard	=> ($record->{'outboard'}	|| $metakey),
@@ -866,7 +870,7 @@ sub meta_display {
 			prepend		=> ($record->{'prepend'}	|| undef),
 			append		=> ($record->{'append'}		|| undef),
 		};
-#::logDebug("going to display for $opt->{name}");
+#::logDebug("going to display for $opt->{name} type=$opt->{type}");
 		my $w = Vend::Interpolate::tag_accessories(
 				undef, undef, $opt, { $column => $value } );
 		my $filter;
