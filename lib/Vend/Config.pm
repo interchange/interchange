@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.23.4.7 2001-01-02 18:12:30 racke Exp $
+# $Id: Config.pm,v 1.23.4.8 2001-02-18 19:43:57 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -105,7 +105,7 @@ BEGIN {
 	};
 }
 
-$VERSION = substr(q$Revision: 1.23.4.7 $, 10);
+$VERSION = substr(q$Revision: 1.23.4.8 $, 10);
 
 my %CDname;
 
@@ -1657,6 +1657,7 @@ my %Default = (
 								return (undef, "No default search file!") 
 									unless scalar @out;
 							}
+							$C->{Variable}{MV_DEFAULT_SEARCH_FILE} = \@out;
 							return 1;
 						},
 );
