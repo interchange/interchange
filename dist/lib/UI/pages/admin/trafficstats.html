@@ -1,4 +1,7 @@
-[if-mm !advanced report]
+@_UI_STD_INIT_@[if-mm !advanced trafficstats]
+[set ui_error]
+[L]Not authorized for traffic statistics.[/L]
+[/set]
 [bounce page="__UI_BASE__/error"]
 [value name=saved_report set=""]
 [/if-mm]
