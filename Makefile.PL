@@ -690,6 +690,21 @@ EOF
 	$_;
 }
 
+sub MY::postamble {
+	return <<'EOF';
+UIDIR=dist/lib/UI
+UILANGS=de_DE #fr_FR it_IT ru_RU
+
+localefiles:
+	for lang in $(UILANGS); do \
+        mv $(UIDIR)/locales/$$lang.cfg $(UIDIR)/locales/$$lang.cfg.old; \
+		if ! $(INSTALLBIN)/localize -m $(UIDIR)/locales/$$lang.cfg.old -u $(UIDIR) -l $$lang `find $(UIDIR) -type f -not -empty` > $(UIDIR)/locales/$$lang.cfg; then \
+		mv $(UIDIR)/locales/$$lang.cfg.old $(UIDIR)/locales/$$lang.cfg; \
+		fi; \
+	done
+EOF
+}
+
 my %mv_specific = qw/
 	STORABLE 1 PREFIX 1 FORCE 1 FINAL 1 RPMBUILDDIR 1 INTERCHANGE_USER 1
 /;
