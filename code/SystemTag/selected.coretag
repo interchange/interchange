@@ -18,9 +18,29 @@ sub {
 	my $r = '';
 
 	return ' SELECTED' if $ref eq $value;
+
+	if ($opt->{delimiter}) {
+		$opt->{multiple} = 1;
+	}
+
 	if ($opt->{multiple}) {
-		my $regex = quotemeta $value;
-		return ' SELECTED' if $ref =~ /(?:^|\0)$regex(?:$|\0)/i;
+	    
+	    my $be;
+	    my $ee;
+	    $opt->{delimiter} = "\0" unless defined $opt->{delimiter};
+
+	    if (length $opt->{delimiter}) {
+		my $del = Vend::Interpolate::get_joiner($opt->{delimiter}, "\0");
+		$be = '(?:^|' . $del . ')'; ;
+		$ee = '(?:$|' . $del . ')'; ;
+	    }
+	    else {
+		$be = '';
+		$ee = '';
+	    }
+
+	    my $regex = qr/$be\Q$value\E$ee/;
+	    return ' SELECTED' if $ref =~ $regex;
 	}
 
 	return '';
