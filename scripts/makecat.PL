@@ -52,7 +52,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.2 2001-08-04 15:17:29 heins Exp $
+# $Id: makecat.PL,v 2.3 2001-08-06 15:41:31 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -459,7 +459,7 @@ $Conf{catalogname} = $catalog_name;
 
 my %Initial;
 
-my %IfRoot = (qw( permtype 1 interchangeuser 1 interchangegroup 1 catuser 1));
+my %IfRoot = (qw( permtype 1 interchangeuser 1 interchangegroup 1 catuser 1 linkmode 1));
 
 my %Prefix = (
 	vendroot     =>  $Global::VendRoot,
@@ -1074,6 +1074,10 @@ EOF
 			sethistory(@history);
 		}
 		$val = prefix($p, 1) || $Cfg->val("base", $p) || $hval;
+		if (! $isroot and defined $IfRoot{$p}) {
+			$Conf{$p} = $val;
+			next;
+		}
 		print "\n";
 		print description($p);
 		print "\n\n";
@@ -2255,7 +2259,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.2 2001-08-04 15:17:29 heins Exp $
+# $Id: makecat.PL,v 2.3 2001-08-06 15:41:31 heins Exp $
 
 =head1 INTRODUCTION
 
