@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.11 2002-09-27 20:00:34 racke Exp $
+# $Id: Shadow.pm,v 1.12 2002-09-30 11:13:41 racke Exp $
 #
 # Copyright (C) 2002 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.11 $, 10);
+$VERSION = substr(q$Revision: 1.12 $, 10);
 
 # TODO
 #
@@ -64,6 +64,9 @@ sub create {
 	
 	no strict 'refs';
 	$obj = &{"Vend::Table::$config->{OrigClass}::create"}('',$config,$columns,$tablename);
+	# during an import the object has the wrong class, so we fix it here
+	bless $obj, "Vend::Table::$config->{OrigClass}";
+
 	my $s = [$config, $tablename, undef, $columns, undef, $obj];
 	bless $s, $class;
 	
