@@ -4,7 +4,7 @@ ui_template_name: leftonly
 [/comment]
 
 [tmp members_only]1[/tmp]
-[tmp page_title]__COMPANY__ -- Order Detail[/tmp]
+[tmp page_title]__COMPANY__ -- [L]Order Detail[/L][/tmp]
 
 [control reset=1]
 
@@ -57,22 +57,22 @@ hide=1]
 [loop list="[scratch arg]"]
 <TABLE BORDER=0>
 [html-table fr='class="contentbar1"']
-	<B>ORDER NUMBER	[scratch arg]
-	<B>Name	[loop-data transactions fname] [loop-data transactions lname]
-	[if-loop-data transactions company]Company	[loop-data transactions company]
-	[/if-loop-data]<B>Address	[loop-data transactions address1][if-loop-data transactions address2]
+	<B>[L]ORDER NUMBER[/L]	[scratch arg]
+	<B>[L]Name[/L]	[loop-data transactions fname] [loop-data transactions lname]
+	[if-loop-data transactions company][L]Company[/L]	[loop-data transactions company]
+	[/if-loop-data]<B>[L]Address[/L]	[loop-data transactions address1][if-loop-data transactions address2]
 	[loop-data transactions address2][/if-loop-data]
-	<B>City, State, Zip	[loop-data transactions city], [loop-data transactions state]  [loop-data transactions zip]
-	<B>Country	[loop-data transactions country]
-	<B>Payment Method	[loop-data transactions payment_method]
-	<B>Shipping Method	[loop-data transactions shipmode]
-	<B>Daytime Phone	[loop-data transactions phone_day]
-	<B>Evening Phone	[loop-data transactions phone_night]
-	[if-loop-data transactions b_fname]<B>Billing Name	[loop-data transactions b_fname] [loop-data transactions b_lname]
-	[/if-loop-data][if-loop-data transactions b_address1]<B>Billing Address	[loop-data transactions b_address1]
+	<B>[L]City, State, Zip[/L]	[loop-data transactions city], [loop-data transactions state]  [loop-data transactions zip]
+	<B>[L]Country[/L]	[loop-data transactions country]
+	<B>[L]Payment Method[/L]	[loop-data transactions payment_method]
+	<B>[L]Shipping Method[/L]	[loop-data transactions shipmode]
+	<B>[L]Daytime Phone[/L]	[loop-data transactions phone_day]
+	<B>[L]Evening Phone[/L]	[loop-data transactions phone_night]
+	[if-loop-data transactions b_fname]<B>[L]Billing Name[/L]	[loop-data transactions b_fname] [loop-data transactions b_lname]
+	[/if-loop-data][if-loop-data transactions b_address1]<B>[L]Billing Address[/L]	[loop-data transactions b_address1]
 	[loop-data transactions b_address2]
-	<B>City, State, Zip	[loop-data transactions b_city], [loop-data transactions b_state]  [loop-data transactions b_zip]
-	[/if-loop-data][if-loop-data transactions b_country]<B>Shipping Country	[loop-data transactions b_country][/if-loop-data]
+	<B>[L]City, State, Zip[/L]	[loop-data transactions b_city], [loop-data transactions b_state]  [loop-data transactions b_zip]
+	[/if-loop-data][if-loop-data transactions b_country]<B>[L]Shipping Country[/L]	[loop-data transactions b_country][/if-loop-data]
 [/html-table]
 </TABLE>
 
@@ -94,7 +94,7 @@ hide=1]
 [/perl]
 
 [html-table interpolate=1 td="VALIGN=TOP"]
-<B>Quan	<B>Item No.	<B>Description	<B><DIV ALIGN=RIGHT>Price	<B><DIV ALIGN=RIGHT>Extension
+<B>[L]Quan[/L]	<B>[L]Item No.[/L]	<B>[L]Description[/L]	<B><DIV ALIGN=RIGHT>[L]Price[/L]	<B><DIV ALIGN=RIGHT>[L]Extension[/L]
 [query
 	list=1
 	st=db
@@ -103,17 +103,17 @@ hide=1]
 		WHERE order_number = '[scratch arg]'
 		ORDER BY code
 	|
-][sql-param quantity]	[sql-param sku]	[description [sql-param sku]]<BR>[if-sql-data orderline size__MVC_FIELDMUNGE__]SIZE-->[sql-param size__MVC_FIELDMUNGE__][/if-sql-data][if-sql-data orderline color] COLOR-->[sql-param color][/if-sql-data][calc]
+][sql-param quantity]	[sql-param sku]	[description [sql-param sku]]<BR>[if-sql-data orderline size]SIZE-->[sql-param size][/if-sql-data][if-sql-data orderline color] COLOR-->[sql-param color][/if-sql-data][calc]
 return unless
 	q{[userdb function=check_file_acl mode=expire location="[sql-param sku]"]};
 	return get_download(q{[sql-param sku]});
 [/calc]	<DIV ALIGN=RIGHT>[currency][sql-param price][/currency]	<DIV ALIGN=RIGHT>[currency][sql-param subtotal][/currency]
 [/query]
-			SUBTOTAL	<DIV ALIGN=RIGHT>[currency][loop-data transactions subtotal][/currency]
-			SALES TAX	<DIV ALIGN=RIGHT>[currency][loop-data transactions salestax][/currency]
-			SHIPPING	<DIV ALIGN=RIGHT>[currency][loop-data transactions shipping][/currency][if-loop-data transactions handling]
-			HANDLING	<DIV ALIGN=RIGHT>[currency][loop-data transactions handling][/currency][/if-loop-data]
-			ORDER TOTAL	<DIV ALIGN=RIGHT>[currency][loop-data transactions total_cost][/currency]
+			[L]SUBTOTAL[/L]	<DIV ALIGN=RIGHT>[currency][loop-data transactions subtotal][/currency]
+			[L]SALES TAX[/L]	<DIV ALIGN=RIGHT>[currency][loop-data transactions salestax][/currency]
+			[L]SHIPPING[/L]	<DIV ALIGN=RIGHT>[currency][loop-data transactions shipping][/currency][if-loop-data transactions handling]
+			[L]HANDLING[/L]	<DIV ALIGN=RIGHT>[currency][loop-data transactions handling][/currency][/if-loop-data]
+			[L]ORDER TOTAL[/L]	<DIV ALIGN=RIGHT>[currency][loop-data transactions total_cost][/currency]
 [/html-table]
 </TABLE>
 [/loop]

@@ -4,7 +4,7 @@ ui_template_name: leftonly
 [/comment]
 
 [tmp members_only]1[/tmp]
-[tmp page_title]__COMPANY__ -- Order History[/tmp]
+[tmp page_title]__COMPANY__ -- [L]Order History[/L][/tmp]
 
 [control reset=1]
 
@@ -68,14 +68,14 @@ ui_template_name: leftonly
 
 	my $header_template = <<'EOF';
 	<TR>
-		<TD VALIGN=bottom>DATE</TD>
-		<TD VALIGN=bottom>ORDER ID</TD>
-		<TD VALIGN=bottom>QTY<BR>TOTAL</TD>
-		<TD VALIGN=bottom>PAYMENT<BR>METHOD</TD>
-		<TD VALIGN=bottom>SUBTOTAL</TD>
-		<TD VALIGN=bottom>SHIPPING<BR>HANDLING</TD>
-		<TD VALIGN=bottom>TOTAL</TD>
-		<TD VALIGN=bottom>STATUS</TD>
+		<TD VALIGN=bottom>[L]DATE[/L]</TD>
+		<TD VALIGN=bottom>[L]ORDER ID[/L]</TD>
+		<TD VALIGN=bottom>[L]QTY<BR>TOTAL[/L]</TD>
+		<TD VALIGN=bottom>[L]PAYMENT<BR>METHOD[/L]</TD>
+		<TD VALIGN=bottom>[L]SUBTOTAL[/L]</TD>
+		<TD VALIGN=bottom>[L]SHIPPING<BR>HANDLING[/L]</TD>
+		<TD VALIGN=bottom>[L]TOTAL[/L]</TD>
+		<TD VALIGN=bottom>[L]STATUS[/L]</TD>
 	</TR>
 EOF
 

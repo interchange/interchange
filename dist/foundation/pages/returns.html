@@ -4,7 +4,7 @@ ui_template_name: leftonly
 [/comment]
 
 [tmp members_only]1[/tmp]
-[tmp page_title]__COMPANY__ -- Returns[/tmp]
+[tmp page_title]__COMPANY__ -- [L]Returns[/L][/tmp]
 
 [control reset=1]
 
@@ -48,7 +48,7 @@ ui_template_name: leftonly
 	}
 
 	HTML <<'EOF';
-Please select an order below to continue with the return process.
+[L]Please select an order below to continue with the return process.[/L]
 </p>
 				  
 <FORM ACTION="[process]" METHOD=POST>
@@ -63,16 +63,16 @@ EOF
 
 <TR>
 	<TD VALIGN=bottom>
-		ORDER ID
+		[L]ORDER ID[/L]
 	</TD>
 	<TD VALIGN=bottom>
-		DATE
+		[L]DATE[/L]
 	</TD>
 	<TD VALIGN=bottom>
-		TOTAL
+		[L]TOTAL[/L]
 	</TD>
 	<TD VALIGN=bottom>
-		STATUS
+		[L]STATUS[/L]
 	</TD>
 </TR>
 EOF

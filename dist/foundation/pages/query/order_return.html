@@ -4,7 +4,7 @@ ui_template_name: leftonly
 [/comment]
 
 [tmp members_only]1[/tmp]
-[tmp page_title]__COMPANY__ -- Returns[/tmp]
+[tmp page_title]__COMPANY__ -- [L]Returns[/L][/tmp]
 
 [control reset=1]
 
@@ -59,13 +59,13 @@ hide=1]
 
 [if scratch order_status eq shipped]
                     
-<p>Please verify the information below and select the items you wish to return by checking the corresponding checkboxes and modifying the quantity as needed.</p>
+<p>[L ORDER_RETURN_PAR1]Please verify the information below and select the items you wish to return by checking the corresponding checkboxes and modifying the quantity as needed.[/L]</p>
 
 [loop list="[scratch arg]"]
 <TABLE BORDER=0>
 [html-table fr='class="contentbar1"']
-<B>ORDER NUMBER	[scratch arg]
-<B>Order Date	[loop-data transactions order_date]
+<B>[L]ORDER NUMBER[/L]	[scratch arg]
+<B>[L]Order Date[/L]	[loop-data transactions order_date]
 [/html-table]
 </TABLE>
 
@@ -95,7 +95,7 @@ hide=1]
 <INPUT TYPE=hidden NAME=order_number VALUE="[scratch arg]">
 
 [html-table interpolate=1 td="VALIGN=TOP"]
-<B>Return	<B>Qty	<B>SKU	<B>Description	<B><DIV ALIGN=RIGHT>Price	<B><DIV ALIGN=RIGHT>Extension
+<B>[L]Return[/L]	<B>[L]Qty[/L]	<B>[L]SKU[/L]	<B>[L]Description[/L]	<B><DIV ALIGN=RIGHT>[L]Price[/L]	<B><DIV ALIGN=RIGHT>[L]Extension[/L]
 [query
 	list=1
 	st=db
@@ -104,7 +104,7 @@ hide=1]
 		WHERE order_number = '[scratch arg]'
 		ORDER BY code
 	|
-]<input type="checkbox" name="return_items" value="[sql-param code]">	<input type="text" name="qty-[sql-param code]" size="3" value="[sql-param quantity]">	[sql-param sku]	[description [sql-param sku]]<BR>[if-sql-data orderline size__MVC_FIELDMUNGE__]SIZE-->[sql-param size__MVC_FIELDMUNGE__][/if-sql-data][if-sql-data orderline color] COLOR-->[sql-param color][/if-sql-data][calc]
+]<input type="checkbox" name="return_items" value="[sql-param code]">	<input type="text" name="qty-[sql-param code]" size="3" value="[sql-param quantity]">	[sql-param sku]	[description [sql-param sku]]<BR>[if-sql-data orderline size][L]SIZE[/L]-->[sql-param size][/if-sql-data][if-sql-data orderline color] [L]COLOR[/L]-->[sql-param color][/if-sql-data][calc]
 return unless
 	q{[userdb function=check_file_acl mode=expire location="[sql-param sku]"]};
 	return get_download(q{[sql-param sku]});
@@ -122,38 +122,38 @@ return unless
 	
         	<table border="0" cellspacing="0" cellpadding="0" align="center">
                 <tr> 
-                	<td class="contentbar1"><b>Contact Information</b></td>
+                	<td class="contentbar1"><b>[L]Contact Information[/L]</b></td>
                         <td class="contentbar1">&nbsp;</td>
                 </tr>
                 <tr> 
-                	<td>[error name=fname std_label="Company" required=1]</td>
+                	<td>[error name=fname std_label="[L]Company[/L]" required=1]</td>
                         <td><INPUT TYPE=text NAME=company VALUE="[loop-data transactions company]" size="20" maxlength="20"></td>
                 </tr>							  
                 <tr> 
-                	<td>[error name=fname std_label="First Name" required=1]</td>
+                	<td>[error name=fname std_label="[L]First Name[/L]" required=1]</td>
                         <td><INPUT TYPE=text NAME=fname VALUE="[loop-data transactions fname]" size="20" maxlength="20"></td>
 		</tr>
 		<tr>
-                        <td>[error name=lname std_label=Last required=1]</td>
+                        <td>[error name=lname std_label="[L]Last Name[/L]" required=1]</td>
                         <td align="left"><INPUT TYPE=text NAME=lname VALUE="[loop-data transactions lname]" size="20"></td>
                 </tr>
                 <tr> 
-                	<td>[error name=email std_label="Email Address" required=1]</td>
+                	<td>[error name=email std_label="[L]Email Address[/L]" required=1]</td>
                         <td><b><INPUT TYPE=text NAME=email VALUE="[data table=userdb column=email key='[loop-data transactions username]']" size="20"></b></td>
                 </tr>
                 <tr> 
-                        <td>[error name=phone_day std_label="Daytime Phone" required=1]</td>
+                        <td>[error name=phone_day std_label="[L]Daytime Phone[/L]" required=1]</td>
                         <td><b><INPUT TYPE=text NAME=phone_day VALUE="[loop-data transactions phone_day]" size="10" maxlength="20"></b></td>
 		</tr>
 		<tr>
-                        <td><b>Evening Phone</b></td>
+                        <td><b>[L]Evening Phone[/L]</b></td>
                         <td align="left"><b><INPUT TYPE=text NAME=phone_night VALUE="[loop-data transactions phone_night]" size="10" maxlength="20"></b></td>
                 </tr>
                 </table>
 
 		<p>
 
-		<input type="submit" value="Return Selected Items">
+		<input type="submit" value="[L]Return Selected Items[/L]">
 		</form>
 	
 	</td>
@@ -161,10 +161,10 @@ return unless
 
 		<table align="right" cellpadding="0" cellspacing="0" border="0"> 
 		[html-table interpolate=1 td="VALIGN=TOP"]
-			<DIV ALIGN=RIGHT>Subtotal:	<DIV ALIGN=RIGHT>[currency][loop-data transactions subtotal][/currency]	 	
-			<DIV ALIGN=RIGHT>Sales Tax:	<DIV ALIGN=RIGHT>[currency][loop-data transactions salestax][/currency]	 	
-			<DIV ALIGN=RIGHT>Shipping:	<DIV ALIGN=RIGHT>[currency][loop-data transactions shipping][/currency]	 	
-			<DIV ALIGN=RIGHT>Order Total:	<DIV ALIGN=RIGHT>[currency][loop-data transactions total_cost][/currency]	 	
+			<DIV ALIGN=RIGHT>[L]Subtotal[/L]:	<DIV ALIGN=RIGHT>[currency][loop-data transactions subtotal][/currency]	 	
+			<DIV ALIGN=RIGHT>[L]Sales Tax[/L]:	<DIV ALIGN=RIGHT>[currency][loop-data transactions salestax][/currency]	 	
+			<DIV ALIGN=RIGHT>[L]Shipping[/L]:	<DIV ALIGN=RIGHT>[currency][loop-data transactions shipping][/currency]	 	
+			<DIV ALIGN=RIGHT>[L]Order Total[/L]:	<DIV ALIGN=RIGHT>[currency][loop-data transactions total_cost][/currency]	 	
 		[/html-table]
 		</table>
 	</td>
@@ -175,9 +175,8 @@ return unless
 
 [else]
 
-You may only return items from orders that have been fully shipped. 
-Please contact <a href="[area customerservice]">Customer Service</a> 
-for assistance.
+[L]You may only return items from orders that have been fully shipped.[/L] 
+[msg arg.0="<a href='[area customerservice]'>" arg.1="</a>"]Please contact %sCustomer Service%s for assistance.[/msg]
 
 [/else]
 [/if]
