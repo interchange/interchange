@@ -5,6 +5,10 @@
 [set page_perm]group=v[/set]
 [set help_name]group.main[/set]
 [set icon_name]admin/icon_config.gif[/set]
+[calc]
+	$CGI->{mv_data_table} = $Values->{mv_data_table} = '__UI_ACCESS_TABLE__'; 
+	return;
+[/calc]
 
 @_UI_STD_HEAD_@
 [if scratch ui_message]
