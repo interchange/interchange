@@ -1,6 +1,6 @@
 # Vend::Glimpse - Search indexes with Glimpse
 #
-# $Id: Glimpse.pm,v 2.0.2.1 2002-01-24 05:07:01 jon Exp $
+# $Id: Glimpse.pm,v 2.0.2.2 2002-09-01 23:21:07 mheins Exp $
 #
 # Adapted for use with Interchange from Search::Glimpse
 #
@@ -25,7 +25,7 @@ package Vend::Glimpse;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.0.2.1 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.2 $, 10);
 use strict;
 
 sub array {
@@ -130,14 +130,13 @@ sub search {
 			undef $s->{mv_range_look};
 		}
 	}
-	@specs = @{$s->{mv_searchspec}};
-
-	@pats = $s->spec_check(@specs);
 
 	return $s->search_error("Search with glimpse, no glimpse configured.")
 		if ! $s->{glimpse_cmd};
 
-	return undef if $s->{matches} == -1;
+	@specs = @{$s->{mv_searchspec}};
+
+	@pats = $s->spec_check(@specs);
 
 	# Build glimpse line
 	my @cmd;
@@ -212,6 +211,14 @@ sub search {
 	
 	my $spec = join $joiner, @pats;
 	$spec =~ s/'/./g;
+	if(length($spec) < $s->{mv_min_string}) {
+		my $msg = errmsg(
+					"Glimpse search string less than minimum %s characters: %s",
+					$s->{mv_min_string},
+					$spec,
+				);
+		return $s->search_error($msg);
+	}
 	push @cmd, "'$spec'";
 
 	$joiner = $spec;

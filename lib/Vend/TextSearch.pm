@@ -1,6 +1,6 @@
 # Vend::TextSearch - Search indexes with Perl
 #
-# $Id: TextSearch.pm,v 2.0.2.2 2002-06-22 15:11:40 edl Exp $
+# $Id: TextSearch.pm,v 2.0.2.3 2002-09-01 23:21:07 mheins Exp $
 #
 # Adapted for use with Interchange from Search::TextSearch
 #
@@ -28,7 +28,7 @@ require Exporter;
 use vars qw(@ISA);
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 2.0.2.2 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.3 $, 10);
 
 use Search::Dict;
 use strict;
@@ -151,8 +151,6 @@ sub search {
 	@specs = @{$s->{mv_searchspec}};
 
 	@pats = $s->spec_check(@specs);
-
-	return undef if $s->{matches} == -1;
 
 	if ($s->{mv_coordinate}) {
 		undef $f;
