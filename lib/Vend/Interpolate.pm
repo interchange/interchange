@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.9.2.11 2002-01-24 05:07:01 jon Exp $
+# $Id: Interpolate.pm,v 2.9.2.12 2002-01-24 18:57:12 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.9.2.11 $, 10);
+$VERSION = substr(q$Revision: 2.9.2.12 $, 10);
 
 @EXPORT = qw (
 
@@ -2017,6 +2017,8 @@ sub tag_options {
 							$sku,
 							'',
 							{ 
+								js => $opt->{js},
+								extra => $opt->{extra},
 								passed => $ref->[3],
 								type => $opt->{type} || $ref->[5] || 'select',
 								attribute => 'mv_sku',
@@ -2081,6 +2083,8 @@ sub tag_options {
 							$sku,
 							'',
 							{ 
+								js => $opt->{js},
+								extra => $opt->{extra},
 								passed => join(",", @out),
 								type => $opt->{type} || $ref->[8] || 'select',
 								attribute => 'code',
@@ -2129,6 +2133,8 @@ sub tag_options {
 								price => $opt->{price},
 								item => $item,
 								default => undef,
+								js => $opt->{js},
+								extra => $opt->{extra},
 							},
 							$item || undef,
 						);
