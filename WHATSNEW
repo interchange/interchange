@@ -68,10 +68,57 @@ UI
 
 	-- Prevent spurious .html extension on download link.
 
+* Add meta_editor support for MAXLENGTH and JavaScript checks.
+
+* Made default metadata (for merge) match foundation.
+
 Table Editor
 ------------
 
 * Fix sequential edit.
+
+* Modified passing of {table} parameter in display for table editor,
+  setting flag to prevent getting table data twice.
+
+* Make lookup_query honor {db} parameter for selecting base table
+  for lookup
+
+* Lookup should now work internally to the table if no {db} spec'd
+
+* Mozilla screwed up their CSS size passing like MSIE, so
+  remove special things that made item editor/table editor automatically
+  look better on Mozilla (without setting *_height and *_width explicitly).
+
+* Added MAXLENGTH to things you can set in meta_editor
+
+* Added MAXLENGTH to parameters honored by [display ...]/Vend::Form,
+  without having to manipulate extra=" maxlength=22" stuff.
+
+* Put hooks in for auto-JS checks in table editor / [display]
+
+* Allow default opening of a particular tab by adding * to the end of the
+  tab label.
+
+	Overridden by explicit "start_at" option given in options/args.
+
+* Further allow focus of editor to start at a particular field if
+  it is marked with a *.
+
+   ui_data_fields => q{
+
+   			=General
+
+			foo
+			bar
+
+			=Specific*
+
+			buz
+			baz*
+		},
+
+	The "Specific" tab will be presented open when the record is edited.
+	The form focus will be at the "baz" field.
 
 Foundation
 ----------
@@ -120,7 +167,7 @@ Debian
 ------
 
 * Drop Build-Depends on libdb2-dev to allow builds on woody and sid,
-  apache-dev already has the proper dependency (Closes:#198136)
+  apache-dev already has the proper dependency (Closes: #198136)
 
 Miscellaneous
 -------------
