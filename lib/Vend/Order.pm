@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: Order.pm,v 1.18.2.20 2001-04-23 14:38:57 jason Exp $
+# $Id: Order.pm,v 1.18.2.21 2001-05-04 17:52:19 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.20 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.21 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1394,16 +1394,17 @@ sub route_order {
 		}
 
 		if ($CGI::values{mv_credit_card_number}) {
+			$CGI::values{mv_credit_card_number} =~ s/^\s+//;
 			if(! $CGI::values{mv_credit_card_type} and
 				 $CGI::values{mv_credit_card_number} )
 			{
-				if($CGI::values{mv_credit_card_number} =~ /\s*4/) {
+				if($CGI::values{mv_credit_card_number} =~ /^4/) {
 					$CGI::values{mv_credit_card_type} = 'visa';
 				}
-				elsif($CGI::values{mv_credit_card_number} =~ /\s*5/) {
+				elsif($CGI::values{mv_credit_card_number} =~ /^5/) {
 					$CGI::values{mv_credit_card_type} = 'mc';
 				}
-				elsif($CGI::values{mv_credit_card_number} =~ /\s*37/) {
+				elsif($CGI::values{mv_credit_card_number} =~ /^37/) {
 					$CGI::values{mv_credit_card_type} = 'amex';
 				}
 				else {
