@@ -7,7 +7,9 @@ Feedback
 --------
 
 Please send your comments and bug reports to Stefan Hornburg (Racke)
-<racke@linuxia.de>.
+<racke@linuxia.de>. He is a member of the Interchange core team,
+but not employed by Red Hat, so don't blame them if you encounter
+problems with the Interchange Debian packages.
 
 APT Sources
 ===========
@@ -17,5 +19,5 @@ distribution.
 
 Interchange Debian packages for stable (potato) are available from:
 
-deb http://ftp.minivend.com/interchange/debian interchange main
-deb-src http://ftp.minivend.com/interchange/debian interchange main
+deb http://ftp.interchange.redhat.com/interchange/debian interchange main
+deb-src http://ftp.interchange.redhat.com/interchange/debian interchange main
