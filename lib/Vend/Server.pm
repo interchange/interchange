@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.0.2.6 2002-08-11 15:24:03 mheins Exp $
+# $Id: Server.pm,v 2.0.2.7 2002-11-04 04:46:24 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.0.2.6 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.7 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -973,6 +973,7 @@ sub reset_vars {
 	package CGI;
 	reset 'A-Z';
 	reset 'a-z';
+	srand();
 #::logDebug("Reset vars");
 }
 
