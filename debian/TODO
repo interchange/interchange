@@ -1,77 +1,13 @@
 various stuff
 =============
 
-write wrappers for the binaries
 include UI only if interchange-ui is installed
 
-documentation
-=============
+makecat
+=======
+
+interchange user
+share URL
 
 lintian bugs
 ============
-
-W: interchange-ui: script-not-executable ./usr/lib/interchange/lib/UI/pages/admin/change_t.pl
-N:
-N:   This file starts with the #! sequence that marks interpreted scripts,
-N:   but it is not executable.
-N:
-W: interchange-ui: perl-script-needs-dependency "libwww-perl (<= 5.32-1)" ./usr/lib/interchange/lib/UI/Primitive.pm use File::CounterFile
-N:
-N:   This perl script appears to need a module for which the package has
-N:   not declared an appropriate dependency.
-N:   
-N:   Lintian uses a grand list of perl modules to find out which
-N:   dependencies are necessary for a particular module; this list might be
-N:   a bit out of date. It is also possible for Lintian to be confused by
-N:   intricate perl syntax.
-N:   
-N:   The first parameter (between quote marks) is the dependency that
-N:   Lintian suggests for this package to make sure that the modules it
-N:   needs are available. The second parameter for this tag is the filename
-N:   of the perl script. The rest of the line is the use or require line in
-N:   that perl script that triggered this warning.
-N:
-W: interchange-ui: perl-script-needs-dependency "perl5|perl5-thread|perl-5.004|perl-5.005|perl-5.005-thread" ./usr/lib/interchange/lib/UI/Primitive.pm use Text::ParseWords
-W: interchange-ui: perl-script-uses-unknown-module ./usr/lib/interchange/lib/UI/Primitive.pm use Vend::Util qw/errmsg/
-N:
-N:   This perl script appears to need a module about which Lintian has no
-N:   information. Please make sure that the Depends line for this package
-N:   correctly ensures that the necessary module is available when the
-N:   script is installed.
-N:
-E: interchange: unknown-control-file config
-N:
-N:   The package contains an `unknown' control file, which should be
-N:   removed.
-N:   
-N:   (If this message is about the control file `du', simply recompiling
-N:   with a newer debhelper package should fix this bug.)
-N:
-E: interchange: unknown-control-file templates
-E: interchange: wrong-path-for-perl ./usr/lib/interchange/Vend/MakeCat.pm #!/usr/local/bin/perl
-N:
-N:   Perl is installed as /usr/bin/perl on Debian systems.
-N:   
-N:   Have a look at Policy Manual, section 4.4 for details.
-N:
-W: interchange: script-not-executable ./usr/lib/interchange/hints.pl
-W: interchange: script-not-executable ./usr/lib/interchange/build/makecat.redhat
-W: interchange: script-not-executable ./usr/lib/interchange/build/makedirs.redhat
-W: interchange: perl-script-needs-dependency "libwww-perl" ./usr/lib/interchange/Business/UPS.pm use LWP::Simple
-W: interchange: perl-script-uses-unknown-module ./usr/lib/interchange/Vend/Table/LDAP.pm require Net::LDAP::Entry
-W: interchange: perl-script-needs-dependency "libstorable-perl" ./usr/lib/interchange/Vend/Table/Common.pm require Storable
-E: interchange: script-needs-perl-version ./usr/lib/interchange/src/mod_perl_tlink.pl 5.005
-N:
-N:   The package contains a perl script that requires a specific version of
-N:   perl, but the package does not depend on at least that version of perl
-N:   or perl-base.
-N:
-W: interchange: perl-script-needs-dependency "libapache-mod-perl" ./usr/lib/interchange/src/mod_perl_tlink.pl use Apache::Registry
-W: interchange: perl-script-uses-unknown-module ./usr/lib/interchange/Vend/Config.pm require Tie::Watch or die
-W: interchange: perl-script-needs-dependency "libstorable-perl" ./usr/lib/interchange/Vend/Util.pm require Storable
-W: interchange: perl-script-uses-unknown-module ./usr/lib/interchange/Vend/Interpolate.pm require Safe::Hole
-W: interchange: perl-script-uses-unknown-module ./usr/lib/interchange/bin/interchange require Net::LDAP and $Global::LDAP = 1
-W: interchange: perl-script-uses-unknown-module ./usr/lib/interchange/bin/interchange use autouse 'Vend::Error' => qw/get_locale_message interaction_error do_lockout full_dump/
-W: interchange: perl-script-uses-unknown-module ./usr/lib/interchange/bin/interchange use autouse 'Vend::Imagemap' => qw/action_map/
-W: interchange: perl-script-uses-unknown-module ./usr/lib/interchange/bin/interchange use autouse 'Vend::Control' => qw/
-W: interchange: perl-script-uses-unknown-module ./usr/lib/interchange/bin/interchange use autouse 'Vend::Order' => qw/
