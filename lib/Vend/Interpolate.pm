@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.65 2001-06-05 19:50:07 jason Exp $
+# $Id: Interpolate.pm,v 1.40.2.66 2001-06-06 15:24:11 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.65 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.66 $, 10);
 
 @EXPORT = qw (
 
@@ -5904,19 +5904,24 @@ sub set_tmp {
 	return '';
 }
 
-# Returns the value of a scratchpad field named VAR.
+# Returns the value of a control field named VAR.
 sub tag_control {
 	my ($name, $default, $opt) = @_;
+
 	if(! $name) {
 		# Here we either reset the index or increment it
 		# Done this way for speed, no blocks to enter other than top one
 		($::Scratch->{control_index} = 0, return) if $opt->{reset};
 		return set_tmp('control_index', ++$::Scratch->{control_index});
 	}
-	elsif (! defined $default and $opt->{set}) {
+
+	$name = lc $name;
+	$name =~ s/-/_/g;
+	if (! defined $default and $opt->{set}) {
 		$::Control->[$::Scratch->{control_index}]{$name} = $::Scratch->{$name};
 		return;
 	}
+
 	return defined $::Control->[$::Scratch->{control_index}]{$name} 
 			?  ( $::Control->[$::Scratch->{control_index}]{$name} || $default )
 			:  ( length($::Scratch->{$name}) ? ($::Scratch->{$name}) : $default )
@@ -5933,8 +5938,11 @@ sub tag_control_set {
 		$inc = 1;
 	}
 	
-	while($body =~ m{\[(\w+)\](.*)\[/\1\]}sg) {
-		$::Control->[$index]{$1} = $2;
+	while($body =~ m{\[([-\w]+)\](.*)\[/\1\]}sg) {
+		my $name = lc $1;
+		my $val = $2;
+		$name =~ s/-/_/g;
+		$::Control->[$index]{$name} = $val;
 	}
 	$::Scratch->{control_index}++;
 	return;
