@@ -462,7 +462,7 @@ mv_nextpage=__UI_BASE__/order_status
 				}
 			}
 			var image_dir = '[image dir-only=1 ui=1 secure="__UI_SECURE__"]';
-			var types = ['all', 'none', 'shipped', 'pending', 'canceled', 'partial'];
+			var types = ['all', 'none', 'shipped', 'pending', 'waiting', 'partial'];
 			for(var i = 0; i < types.length; i++) {
 				var img = document.getElementById('img_check_' + types[i]);
 				if(img != undefined) 
@@ -480,7 +480,7 @@ mv_nextpage=__UI_BASE__/order_status
 			<A HREF="javascript:checkType('all')"><img id="img_check_all" src="__UI_IMG__box_empty.gif" border=0>Check all</A>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			<A HREF="javascript:checkType('none')"><img id="img_check_none" src="__UI_IMG__box_empty.gif" border=0>Uncheck all</A>
-[loop list="shipped pending canceled partial"]
+[loop list="shipped pending waiting partial"]
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 		<A HREF="javascript:checkType('[loop-code]')">
 			<img id="img_check_[loop-code]" src="__UI_IMG__box_empty.gif" border=0>Check all [loop-code]
@@ -496,4 +496,4 @@ mv_nextpage=__UI_BASE__/order_status
 
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Id: order.html,v 2.12 2003-01-14 02:25:50 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ version: $Id: order.html,v 2.13 2003-02-12 03:59:11 mheins Exp $ -->

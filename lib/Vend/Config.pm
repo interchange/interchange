@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.99 2003-02-08 01:12:56 racke Exp $
+# $Id: Config.pm,v 2.100 2003-02-12 03:59:12 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 # Copyright (C) 2003 ICDEVGROUP <interchange@icdevgroup.org>
@@ -46,7 +46,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.99 $, 10);
+$VERSION = substr(q$Revision: 2.100 $, 10);
 
 my %CDname;
 
@@ -434,6 +434,9 @@ sub catalog_directives {
 	['PriceDivide',	 	 undef,  	     	 1],
 	['PriceCommas',		 'yesno',     	     'Yes'],
 	['MixMatch',		 'yesno',     	     'No'],
+	['OptionsEnable',	 undef,     	     ''],
+	['OptionsAttribute', undef,     	     ''],
+	['Options',			 'locale',     	     ''],
 	['DifferentSecure',	 'boolean',  	     ''],
 	['AlwaysSecure',	 'boolean',  	     ''],
 	['Password',         undef,              ''],
@@ -2246,6 +2249,51 @@ sub set_default_search {
 }
 
 my %Default = (
+		## This rather extensive default setting is not typical for IC,
+		## but performance in pricing routines demands it
+		Options => sub {
+			my $o = $C->{Options_repository} ||= {};
+			my $var = $C->{Variable};
+
+			my @base = qw/Simple Matrix Old48/;
+			my %base;
+			@base{@base} = @base;
+
+			my %seen;
+			my @types = grep !$seen{$_}, keys %$o, @base;
+
+			for(@types) {
+				my $loc = $o->{$_} ||= {};
+				eval "require Vend::Options::$_;";
+				if($@) {
+					my $msg = $@;
+					config_warn(
+						"Unable to use options type %s, no module. Error: %s",
+						$_,
+						$msg,
+					);
+					undef $o->{$_};
+					next;
+				}
+				eval {
+					my $name = "Vend::Options::${_}::Default";
+					no strict;
+					while(my ($k,$v) = each %{"$name"}) {
+						next unless $k;
+						next if exists $loc->{$k};
+						$loc->{$k} = $v;
+					}
+				};
+				$loc->{map} = {};
+				if($loc->{remap} ||= $C->{Variable}{MV_OPTION_TABLE_MAP}) {
+					$loc->{remap} =~ s/^\s+//;
+					$loc->{remap} =~ s/\s+$//;
+					my @points = split /[\0,\s]+/, $loc->{remap};
+					map { m{(.*?)=(.*)} and $loc->{map}{$1} = $2} @points;
+				}
+			}
+			$C->{Options} = $o->{default} || $o->{Simple};
+		},
 		UserDB => sub {
 					shift;
 					my $set = $C->{UserDB_repository};
@@ -2254,6 +2302,23 @@ my %Default = (
 						$C->{AdminUserDB} = {} unless $C->{AdminUserDB};
 						$C->{AdminUserDB}{$_} = $set->{$_}{admin};
 					}
+					return 1;
+				},
+		AutoModifier => sub {
+					my $auto = shift;
+					if($C->{OptionsEnable}) {
+						$auto = $C->{AutoModifier} = []
+							if ! $auto;
+						push @$auto, $C->{OptionsEnable};
+					}
+					return 1;
+				},
+		OptionsEnable => sub {
+					my $enable = shift
+						or return 1;
+					return 1 if $C->{OptionsAttribute};
+					$enable =~ s,.*:,,;
+					$C->{OptionsAttribute} = $enable;
 					return 1;
 				},
 		Glimpse => sub {

@@ -1,0 +1,13 @@
+Database  variants  variants.txt __SQLDSN__
+Database  variants  DEFAULT_TYPE varchar2(255)
+Database  variants  COLUMN_DEF   "code=varchar2(64) NOT NULL PRIMARY KEY"
+Database  variants  COLUMN_DEF   "sku=varchar2(64)"
+Database  variants  COLUMN_DEF   "description=varchar2(128)"
+Database  variants  COLUMN_DEF   "comment=text"
+Database  variants  COLUMN_DEF   "thumb=varchar2(128)"
+Database  variants  COLUMN_DEF   "image=varchar2(128)"
+Database  variants  COLUMN_DEF   "price=varchar2(12)"
+Database  variants  COLUMN_DEF   "weight=varchar2(12)"
+Database  variants  COLUMN_DEF   "inactive=varchar2(1) default ''"
+Database  variants  NO_ASCII_INDEX 1
+Database  variants  INDEX         description price inactive sku

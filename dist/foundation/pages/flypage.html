@@ -88,28 +88,18 @@ ui_template_name: leftonly
 	    <td colspan="2">&nbsp;</td>
 	  </tr>
 
-	  [if-item-data options o_enable]
 	  <tr>
 	    <td colspan="2">
 	      [if ordered [item-code]]
 	        [msg arg.0="[page ord/basket]" arg.1="</a>"]This item is currently in your %sshopping cart%s.[/msg]
 	        <br>
 	      [/if]
-	      [if-item-data options o_enable]
-	        [if-item-data !options o_modular]
-	          [table-organize cols=2 table=' ' font="size=1" pretty=1]
-	            [item-options td=1 label=1 bold=1 price=1]
-	          [/table-organize]
-	        [/if-item-data]
-	      [/if-item-data]
+		  [table-organize cols=2 table=' ' font="size=1" pretty=1]
+			[item-options td=1 label=1 bold=1 price=1]
+		  [/table-organize]
 
-   	      [if-item-data options o_modular]
-	        [set arg][item-code][/set]
-	        [include templates/components/modular_buy]
-	      [/if-item-data]
 	    </td>
 	  </tr>
-	  [/if-item-data]
 			 
 	  <tr> 
   	    [if-item-data inventory quantity < 1]

@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.25 2003-02-09 21:43:29 mheins Exp $
+# $Id: Editor.pm,v 1.26 2003-02-12 03:59:13 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.25 $, 10);
+$VERSION = substr(q$Revision: 1.26 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -772,6 +772,7 @@ EOF
 							dir_only	=> 1,
 							secure		=> $Vend::admin && $::Variable->{UI_SECURE},
 						});
+	$opt->{clear_image} ||= 'bg.gif';
 	my $clear = "$ibase/$opt->{clear_image}";
 	my @dntabs;
 	my @uptabs;

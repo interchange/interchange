@@ -1,0 +1,1 @@
+code	sku	description	comment	thumb	image	image_large	price	wholesale	sale_price	weight	inactive

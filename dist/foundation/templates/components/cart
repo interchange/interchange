@@ -62,15 +62,12 @@ upsell_in_cart:
 	
 [if items]
 [then]
-[item-list modular=1]
+[item-list]
 
 [item-change 2][condition]2[/condition]
 [/item-change 2]
 
 [item-calc]
-	return if '[item-modifier mv_si]';
-	delete $Scratch->{subitems[item-increment]};
-	my $master = '[item-modifier mv_mi]';
 #Log("Checking master item $master");
 	$row_class = ++$count % 2 ?  'maincontent' : 'contentbar1';
 	my $item = '[item-increment]';
@@ -79,15 +76,6 @@ upsell_in_cart:
 	$upsell_remove{'[item-code]'} = 1;
 	$cross_remove{'[item-code]'} = 1;
 	my %seen = ( '' => 1 );
-	my @subitems;
-
-	for my $i (@$Items) {
-		next unless $i->{mv_si};
-		push @subitems, $i->{code}
-			if $i->{mv_mi} eq $master;
-	}
-
-	$Scratch->{subitems[item-increment]} = join " ", @subitems;
 
 	$Scratch->{upsell} .= " $up" if $up;
 	$Scratch->{cross_codes} .= " $cr" if $cr;
@@ -193,13 +181,9 @@ EOF
 
 	<br>
 
-	[if-item-data options o_enable]
-		[if-item-data !options o_modular]
-			[table-organize cols=4 table=' ' font="size=1" pretty=1]
-			[item-options td=1 label=1 bold=1 price=1]
-			[/table-organize]
-		[/if-item-data]
-	[/if-item-data]
+	[table-organize cols=4 table=' ' font="size=1" pretty=1]
+		[item-options td=1 label=1 bold=1 price=1]
+	[/table-organize]
 
 	  </TD>
 
@@ -219,7 +203,7 @@ EOF
 	  <TD ALIGN=right>
 	    Regular price <STRIKE>[item-price]</STRIKE>
 	    <BR>
-	    <B>Your price: [item-discount-price]<br>
+	    <B>Your price: [discount-price]<br>
 	    You save: [item-difference]
 	  </TD>
 	  <TD ALIGN=right>
@@ -235,40 +219,6 @@ EOF
 [/else]
 [/if-item-field]
 	</TR>
-
-[if scratch subitems[item-increment]]
-	[calc]
-	$string = <<EOF;
-[loop list="[scratch subitems[item-increment]]"][loop-description]
-[/loop]
-EOF
-	my $modify = $Tag->area( {
-		href => 'modular_modify',
-		form => '
-		mv_arg=[item-modifier mv_mi]
-		sku=[item-code]
-		',
-	});
-
-	my @lines = split /\n/, $string;
-	my $half = int(scalar(@lines) / 2);
-	my $first = join "<BR>", splice @lines, 0, $half;
-	my $last = join "<BR>", @lines;
-
-	return <<EOF;
-<TR class="[item-calc]$row_class || 'cartalt'[/item-calc]">
-  <TD COLSPAN=3 align="left">
-    $first<BR>
-    <A HREF="$modify">modify</A>
-  </td>
-  <TD COLSPAN=3 align="left">
-    $last
-  </td>
-  <td>&nbsp;</td>
-</TR>
-EOF
-	[/calc]
-[/if]
 
 [item-tag-address
 			set="[cgi mv_an[item-modifier mv_ip]]"

@@ -475,6 +475,13 @@ Options
 "][if-item-data options o_enable][L]Yes[/L][else][L]No[/L][/else][/if-item-data]</A>
 </TD>
 %%
+Option
+%%
+<TD ALIGN=CENTER>[page href=__UI_BASE__/item_option form="
+	item_id=[item-code]
+"][if-item-field option_type][item-field option_type][else][L]No[/L][/else][/if-item-field]</A>
+</TD>
+%%
 Qty price
 %%
 <TD ALIGN=CENTER>[page href=__UI_BASE__/item_price form="
@@ -574,4 +581,4 @@ mv_nextpage=@@MV_PAGE@@
 <!-- ----- END REAL STUFF ----- -->
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ Revision: $Id: item.html,v 2.14 2003-01-14 02:25:50 mheins Exp $ -->
+<!-- page: @@MV_PAGE@@ Revision: $Id: item.html,v 2.15 2003-02-12 03:59:11 mheins Exp $ -->

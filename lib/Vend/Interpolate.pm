@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.146 2003-02-06 20:27:16 jon Exp $
+# $Id: Interpolate.pm,v 2.147 2003-02-12 03:59:12 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.146 $, 10);
+$VERSION = substr(q$Revision: 2.147 $, 10);
 
 @EXPORT = qw (
 
@@ -1679,293 +1679,7 @@ sub tag_profile {
 	return $opt->{success};
 }
 
-sub tag_options {
-	my ($sku, $opt) = @_;
-	my $item;
-	if(ref $sku) {
-		$item = $sku;
-		$sku = $item->{mv_sku} || $item->{code};
-	}
-#::logDebug("entering tag_options for $sku");
-
-	$opt = get_option_hash($opt);
-
-	my $table = $opt->{table} || $::Variable->{MV_OPTION_TABLE} || 'options';
-
-	if($opt->{report}) {
-		$opt->{joiner} = ', '    if ! $opt->{joiner};
-		$opt->{separator} = ': ' if ! $opt->{separator};
-		$opt->{type} = 'display' if ! $opt->{type};
-	}
-	else {
-		$opt->{joiner} = '<BR>' if ! $opt->{joiner};
-	}
-
-	my $db = $Db{$table} || database_exists_ref($table);
-	$db->record_exists($sku)
-		or return;
-	my $record = $db->row_hash($sku)
-		or return;
-#::logDebug("found record for $sku in tag_options");
-
-	my $remap;
-	my %map;
-
-	my $inv_func;
-	if($opt->{inventory}) {
-		my ($t, $c) = split /[.:]+/, $opt->{inventory};
-		my $idb;
-		if($idb = database_exists_ref($t)) {
-			$inv_func = $idb->field_accessor($c);
-		}
-	}
-
-	if($::Variable->{MV_OPTION_TABLE_MAP}) {
-		$remap = $::Variable->{MV_OPTION_TABLE_MAP};
-		$remap =~ s/^\s+//;
-		$remap =~ s/\s+$//;
-		%map = split /[,\s]+/, $remap;
-		my %rec;
-		my @del;
-		my ($k, $v);
-		while (($k, $v) = each %map) {
-			next unless defined $record->{$v};
-			$rec{$k} = $record->{$v};
-			push @del, $v;
-		}
-		delete @{$record}{@del};
-		@{$record}{keys %rec} = (values %rec);
-	}
-
-	my $rsort = '';
-	$map{o_sort} ||= 'o_sort';
-	if($opt->{sort}) {
-		$map{o_sort} = $opt->{sort_field} if $opt->{sort_field};
-
-		if(! defined $db->test_column($map{o_sort}) ) {
-			logError(
-				"item-options sort column '%s' non-existent, unsorted",
-				$map{o_sort},
-			);
-		}
-		else {
-			$rsort = " ORDER BY $map{o_sort}";
-			my $sopt = $opt->{sort_option} || '';
-			$rsort .= " DESC" if $sopt =~ /^(r(?:ev(?:erse)?)?|desc(?:ending)?)/i;
-		}
-	}
-
-	return if ! $record->{o_enable};
-#::logDebug("record for $sku says options enabled");
-
-	my $out = '';
-	my @out;
-
-	my @rf;
-
-	if($opt->{display_type}) {
-		$opt->{display_type} = lc $opt->{display_type};
-	}
-	elsif (! $record->{o_matrix}) {
-		# Do nothing
-	}
-	elsif ($record->{o_matrix} == 2) {
-		$opt->{display_type} = 'separate';
-	}
-	elsif ($record->{o_matrix}) {
-		$opt->{display_type} = 'single';
-	}
-
-	if($record->{o_matrix} and $opt->{display_type} eq 'separate') {
-		for(qw/code o_enable o_group o_value o_label o_widget price/) {
-			push @rf, ($map{$_} || $_);
-		}
-		my @def;
-		if($item and $item->{code}) {
-			@def = split /-/, $item->{code};
-		}
-		my $fsel = $map{sku} || 'sku';
-		my $rsel = $db->quote($sku, $fsel);
-		$rsort ||= " ORDER BY $map{o_sort}";
-		
-		my $q = "SELECT " .
-				join (",", @rf) .
-				" FROM $table where $fsel = $rsel $rsort";
-#::logDebug("tag_options separate query: $q");
-		my $ary = $db->query($q); 
-		my $ref;
-		my $i = 0;
-		my $phony = { %{$item || { }} };
-		foreach $ref (@$ary) {
-
-			next unless $ref->[3];
-
-			# skip based on inventory if enabled
-			if($inv_func) {
-				my $oh = $inv_func->($ref->[0]);
-				next if $oh <= 0;
-			}
-
-			$i++;
-
-			# skip unless o_value
-			$phony->{mv_sku} = $def[$i];
-
-			if ($opt->{label}) {
-				$ref->[4] = "<B>$ref->[4]</b>" if $opt->{bold};
-				push @out, $ref->[4];
-			}
-			push @out, tag_accessories(
-							$sku,
-							'',
-							{ 
-								passed => $ref->[3],
-								type => $opt->{type} || $ref->[5] || 'select',
-								attribute => 'mv_sku',
-								price_data => $ref->[6],
-								price => $opt->{price},
-								extra => $opt->{extra},
-								js => $opt->{js},
-								item => $phony,
-							},
-							$phony || undef,
-						);
-		}
-		
-		$phony->{mv_sku} = $sku;
-		my $begin = tag_accessories(
-							$sku,
-							'',
-							{ 
-								type => 'hidden',
-								attribute => 'mv_sku',
-								item => $phony,
-								default => $sku,
-							},
-							$phony,
-						);
-		if($opt->{td}) {
-			for(@out) {
-				$out .= "<td>$begin$_</td>";
-				$begin = '';
-			}
-		}
-		else {
-			$opt->{joiner} = '<BR>' if ! $opt->{joiner};
-			$out .= $begin;
-			$out .= join $opt->{joiner}, @out;
-		}
-	}
-	elsif($record->{o_matrix}) {
-		for(qw/code o_enable o_group description price weight volume differential o_widget/) {
-			push @rf, ($map{$_} || $_);
-		}
-		my $lcol = $map{sku} || 'sku';
-		my $lval = $db->quote($sku, $lcol);
-
-		$rsort ||= " ORDER BY $map{o_sort}";
-		
-		my $q = "SELECT " . join(",", @rf);
-		$q .= " FROM $table where $lcol = $lval $rsort";
-#::logDebug("tag_options matrix query: $q");
-		my $ary = $db->query($q); 
-		my $ref;
-		my $price = {};
-		foreach $ref (@$ary) {
-
-			# skip unless description
-			next unless $ref->[3];
-
-			# skip based on inventory if enabled
-			if($inv_func) {
-				my $oh = $inv_func->($ref->[0]);
-				next if $oh <= 0;
-			}
-
-			$ref->[3] =~ s/,/&#44;/g;
-			$ref->[3] =~ s/=/&#61;/g;
-			$price->{$ref->[0]} = $ref->[4];
-			push @out, "$ref->[0]=$ref->[3]";
-		}
-		$out .= "<td>" if $opt->{td};
-		$out .= tag_accessories(
-							$sku,
-							'',
-							{ 
-								attribute => 'code',
-								default => undef,
-								extra => $opt->{extra},
-								item => $item,
-								js => $opt->{js},
-								name => 'mv_sku',
-								passed => join(",", @out),
-								price => $opt->{price},
-								price_data => $price,
-								type => $opt->{type} || $ref->[8] || 'select',
-							},
-							$item || undef,
-						);
-		$out .= "</td>" if $opt->{td};
-#::logDebug("matrix option returning $out");
-	}
-	elsif($record->{o_modular}) {
-#::logDebug("modular options");
-	}
-	else {
-#::logDebug("simple options");
-		for(qw/code o_enable o_group o_value o_label o_widget price o_height o_width/) {
-			push @rf, ($map{$_} || $_);
-		}
-		my $fsel = $map{sku} || 'sku';
-		my $rsel = $db->quote($sku, $fsel);
-		
-		my $q = "SELECT " . join (",", @rf) . " FROM $table where $fsel = $rsel";
-		$q .= $rsort;
-#::logDebug("tag_options simple query: $q");
-		my $ary = $db->query($q); 
-		my $ref;
-		foreach $ref (@$ary) {
-			# skip unless o_value
-			next unless $ref->[3];
-			if ($opt->{label}) {
-				$ref->[4] = "<B>$ref->[4]</b>" if $opt->{bold};
-				push @out, $ref->[4];
-			}
-			my $precursor = $opt->{report}
-						  ? "$ref->[2]$opt->{separator}"
-						  : qq{<input type=hidden name="mv_item_option" value="$ref->[2]">};
-			push @out, $precursor . tag_accessories(
-							$sku,
-							'',
-							{ 
-								attribute => $ref->[2],
-								default => undef,
-								extra => $opt->{extra},
-								item => $item,
-								js => $opt->{js},
-								passed => $ref->[3],
-								price => $opt->{price},
-								price_data => $ref->[6],
-								height => $opt->{height} || $ref->[7],
-								width  => $opt->{width} || $ref->[8],
-								type => $opt->{type} || $ref->[5] || 'select',
-							},
-							$item || undef,
-						);
-		}
-		if($opt->{td}) {
-			for(@out) {
-				$out .= "<td>$_</td>";
-			}
-		}
-		else {
-			$opt->{joiner} = '<BR>' if ! $opt->{joiner};
-			$out .= join $opt->{joiner}, @out;
-		}
-	}
-#::logDebug("tag_options returns:\n\n$out\n");
-	return $out;
-}
+*tag_options = \&Vend::Options::tag_options;
 
 sub produce_range {
 	my ($ary, $max) = @_;
@@ -4399,7 +4113,7 @@ use vars qw/%Ary_code/;
 	field => \&Vend::Data::product_field,
 	last => \&interpolate_html,
 	next => \&interpolate_html,
-	options => \&tag_options,
+	options => \&Vend::Options::tag_options,
 );
 
 use vars qw/%Hash_code/;
@@ -6354,7 +6068,7 @@ sub taxable_amount {
     foreach $i (0 .. $#$Vend::Items) {
 		$item =	$Vend::Items->[$i];
 		next if is_yes( $item->{mv_nontaxable} );
-		next if is_yes( item_common($item, $Vend::Cfg->{NonTaxableField}, 1) );
+		next if is_yes( item_field($item, $Vend::Cfg->{NonTaxableField}) );
 		$tmp = item_subtotal($item);
 		unless (defined $Vend::Session->{discount}) {
 			$taxable += $tmp;
@@ -6784,15 +6498,14 @@ sub total_cost {
 		$total += levies();
 	}
 	else {
-	my $shipping = 0;
-	$shipping += tag_shipping()
-		if $::Values->{mv_shipmode};
-	$shipping += tag_handling()
-		if $::Values->{mv_handling};
-    $total += subtotal();
-    $total += $shipping;
-    $total += salestax();
-
+		my $shipping = 0;
+		$shipping += tag_shipping()
+			if $::Values->{mv_shipmode};
+		$shipping += tag_handling()
+			if $::Values->{mv_handling};
+		$total += subtotal();
+		$total += $shipping;
+		$total += salestax();
 	}
 	$Vend::Items = $save if defined $save;
 	$Vend::Session->{latest_total} = $total;

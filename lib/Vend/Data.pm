@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.23 2003-02-06 20:27:16 jon Exp $
+# $Id: Data.pm,v 2.24 2003-02-12 03:59:12 mheins Exp $
 # 
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -1433,115 +1433,6 @@ sub remap_options {
 	return;
 }
 
-sub modular_cost {
-	my ($item, $table, $final) = @_;
-#::logDebug("called modular_cost");
-	return unless $item->{mv_si};
-	my $ptr = $item->{mv_mp}
-		or return;
-#::logDebug("modular_cost ptr=$ptr");
-
-	my $db = database_exists_ref($table);
-	if(! $db) {
-		logError('Non-existent price option table %s', $table);
-		return;
-	}
-#::logDebug("database $table exists");
-	
-	remap_options();
-
-	return unless $db->record_exists($ptr);
-#::logDebug("record $ptr exists");
-
-	my $fld = $opt_map{differential} || 'differential';
-	return unless $db->column_exists($fld);
-#::logDebug("field $fld exists");
-
-	my $p = $db->field($ptr,$fld);
-#::logDebug("p=$p for $fld") if $p;
-
-	return $p if $p != 0;
-	return;
-}
-
-sub option_cost {
-	my ($item, $table, $final) = @_;
-#::logDebug("called option_cost");
-	my $db = database_exists_ref($table);
-	if(! $db) {
-		logError('Non-existent price option table %s', $table);
-		return;
-	}
-
-	my $sku = $item->{code};
-
-	$db->record_exists($sku)
-		or return;
-	my $record = $db->row_hash($sku)
-		or return;
-
-	remap_options($record);
-
-#	if(! $opt_remap and $::Variable->{MV_OPTION_TABLE_MAP}) {
-#		$opt_remap = $::Variable->{MV_OPTION_TABLE_MAP};
-#		$opt_remap =~ s/^\s+//;
-#		$opt_remap =~ s/\s+$//;
-#		%opt_map = split /[,\s]+/, $opt_remap;
-#		my %rec;
-#		my @del;
-#		my ($k, $v);
-#		while (($k, $v) = each %opt_map) {
-#			next unless defined $record->{$v};
-#			$rec{$k} = $record->{$v};
-#			push @del, $v;
-#		}
-#		delete @{$record}{@del};
-#		@{$record}{keys %rec} = (values %rec);
-#	}
-
-	return if ! $record->{o_enable};
-
-#::logDebug("option_cost found enabled record");
-	my $fsel = $opt_map{sku} || 'sku';
-	my $rsel = $db->quote($sku, $fsel);
-	my @rf;
-	for(qw/o_group price o_master/) {
-		push @rf, ($opt_map{$_} || $_);
-	}
-
-	my $q = "SELECT " . join (",", @rf) . " FROM $table where $fsel = $rsel";
-	my $ary = $db->query($q); 
-	return if ! $ary->[0];
-	my $ref;
-	my $price = 0;
-	my $f;
-
-	foreach $ref (@$ary) {
-#::logDebug("checking option " . uneval_it($ref));
-		next unless defined $item->{$ref->[0]};
-		$ref->[1] =~ s/^\s+//;
-		$ref->[1] =~ s/\s+$//;
-		$ref->[1] =~ s/==/=:/g;
-		my %info = split /\s*[=,]\s*/, $ref->[1];
-		if(defined $info{ $item->{$ref->[0]} } ) {
-			my $atom = $info{ $item->{$ref->[0]} };
-			if($atom =~ s/^://) {
-				$f = $atom;
-				next;
-			}
-			elsif ($atom =~ s/\%$//) {
-				$f = $final if ! defined $f;
-				$f += ($atom * $final / 100);
-			}
-			else {
-				$price += $atom;
-			}
-		}
-	}
-#::logDebug("option_cost returning price=$price f=$f");
-	return ($price, $f);
-}
-
 sub chain_cost {
 	my ($item, $raw) = @_;
 
@@ -1728,12 +1619,7 @@ CHAIN:
 				elsif ($table) {
 #::logDebug("before option_cost price=$price final=$final");
 					my ($p, $f);
-					if($item->{mv_mp}) {
-						($p, $f) = modular_cost($item, $table, $final);
-					}
-					else {
-						($p, $f) = option_cost($item, $table, $final);
-					}
+					($p, $f) = Vend::Options::option_cost($item, $table, $final);
 					$final = $f if defined $f;
 					$price = $p || '';
 #::logDebug("option_cost returned p=$p f=$f, price=$price final=$final");
@@ -1786,7 +1672,24 @@ sub item_price {
 	return $item->{mv_cache_price}
 		if ! $quantity and defined $item->{mv_cache_price};
 
-	$item = { 'code' => $item, 'quantity' => ($quantity || 1) } unless ref $item;
+	$item = { 'code' => $item } unless ref $item;
+	$item->{quantity} = 1 if ! defined $item->{quantity};
+
+	if(	!	$item->{mv_ib}
+		and	$Vend::Cfg->{AutoModifier}
+		and	$item->{mv_ib} = product_code_exists_tag($item->{code})
+		)
+	{
+		foreach my $i (@{$Vend::Cfg->{AutoModifier}}) {
+			my ($table,$key) = split /:/, $i;
+			unless ($key) {
+				$key = $table;
+				$table = $item->{mv_ib};
+			}
+			$item->{$key} = ::tag_data($table, $key, $item->{code});
+		}
+#::logDebug("item=" . ::uneval($item));
+	}
 
 	my $master;
 

@@ -1,0 +1,19 @@
+code	sku	description	comment	thumb	image	image_large	price	wholesale	sale_price	weight	inactive
+os28004-CAM-BLK	os28004	Ergo Roller, Camel hair, Black					16	16			
+os28004-CAM-WHT	os28004	Ergo Roller, Camel hair, White					16	16			
+os28004-HUM-BLK	os28004	Ergo Roller, Human hair, Black					16.5	16			
+os28004-HUM-WHT	os28004	Ergo Roller, Human hair, White					16.5	16			
+os28004-SYN-BLK	os28004	Ergo Roller, Synthetic, Black					12.25	16			
+os28004-SYN-WHT	os28004	Ergo Roller, Synthetic, White					12.25	16			
+os28066-E-cs-P	os28066	Big L Carpenters Square, Ebony handle, Construct Something, Plastic blade					32.55	12			
+os28066-E-cs-S	os28066	Big L Carpenters Square, Ebony handle, Construct Something, Steel blade					33.99	12			
+os28066-E-cs-T	os28066	Big L Carpenters Square, Ebony handle, Construct Something, Titanium blade					133.99	12			
+os28066-E-yl-P	os28066	Big L Carpenters Square, Ebony handle, Your Logo, Plastic blade					36.88	12			
+os28066-E-yl-S	os28066	Big L Carpenters Square, Ebony handle, Your Logo, Steel blade					38.32	12			
+os28066-E-yl-T	os28066	Big L Carpenters Square, Ebony handle, Your Logo, Titanium blade					138.32	12			
+os28066-W-cs-P	os28066	Big L Carpenters Square, Wood handle, Construct Something, Plastic blade					12.55	12			
+os28066-W-cs-S	os28066	Big L Carpenters Square - Wood handle, Construct Something, Steel blade					11.99	12		1	
+os28066-W-cs-T	os28066	Big L Carpenters Square, Wood handle, Construct Something, Titanium blade					113.99	12			
+os28066-W-yl-P	os28066	Big L Carpenters Square, Wood handle, Your Logo, Plastic blade					16.88	12			
+os28066-W-yl-S	os28066	Big L Carpenters Square, Wood handle, Your Logo, Steel blade					18.32	12			
+os28066-W-yl-T	os28066	Big L Carpenters Square, Wood handle, Your Logo, Titanium blade					118.32	12			

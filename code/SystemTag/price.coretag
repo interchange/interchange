@@ -5,7 +5,7 @@ UserTag price               PosNumber    1
 UserTag price               Routine   <<EOR
 sub {
 	my ($code, $ref) = @_;
-	my $amount = Vend::Data::item_price($code, $ref->{quantity} || 1);
+	my $amount = Vend::Data::item_price($ref);
 	$amount = discount_price($code, $amount, $ref->{quantity})
 			if $ref->{discount};
 	return currency( $amount, $ref->{noformat} );

@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.43 2002-12-12 03:39:00 mheins Exp $
+# $Id: Order.pm,v 2.44 2003-02-12 03:59:12 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.43 $, 10);
+$VERSION = substr(q$Revision: 2.44 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -2220,10 +2220,32 @@ sub add_items {
 					my ($table,$key) = split /:/, $i;
 					unless ($key) {
 						$key = $table;
-						$table = $base;
+						$item->{$key} = item_common($item, $key, $code)
 					}
-					$item->{$key} = tag_data($table, $key, $code);
+					else {
+						$item->{$key} = tag_data($table, $key, $code);
+					}
 				}
+			}
+			if(my $oe = $Vend::Cfg->{OptionsAttribute}) {
+			  eval {
+				my $loc = $Vend::Cfg->{Options_repository}{$item->{$oe}};
+				if($loc and $loc->{item_add_routine}) {
+					no strict 'refs';
+					my $sub = \&{"$loc->{item_add_routine}"}; 
+					if(defined $sub) {
+						$sub->($item, $loc);
+					}
+				}
+			  };
+			  if($@) {
+			  	::logError(
+					"error during %s (option type %s) item_add_routine: %s",
+					$code,
+					$item->{$oe},
+					$@,
+				);
+			  }
 			}
 			if($lines[$j] =~ /^\d+$/ and defined $cart->[$lines[$j]] ) {
 				$cart->[$lines[$j]] = $item;

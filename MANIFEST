@@ -287,6 +287,7 @@ dist/foundation/dbconf/default_db/transactions.dbm
 dist/foundation/dbconf/default_db/tree.dbm
 dist/foundation/dbconf/default_db/userdb.dbm
 dist/foundation/dbconf/default_db/variable.dbm
+dist/foundation/dbconf/default_db/variants.dbm
 dist/foundation/dbconf/locales/de_DE.cfg
 dist/foundation/dbconf/locales/default.cfg
 dist/foundation/dbconf/mysql/2ndDayAir.dbm
@@ -316,6 +317,7 @@ dist/foundation/dbconf/mysql/transactions.mysql
 dist/foundation/dbconf/mysql/tree.mysql
 dist/foundation/dbconf/mysql/userdb.mysql
 dist/foundation/dbconf/mysql/variable.dbm
+dist/foundation/dbconf/mysql/variants.mysql
 dist/foundation/dbconf/oracle/2ndDayAir.dbm
 dist/foundation/dbconf/oracle/Ground.dbm
 dist/foundation/dbconf/oracle/NextDayAir.dbm
@@ -342,6 +344,7 @@ dist/foundation/dbconf/oracle/transactions.ora
 dist/foundation/dbconf/oracle/tree.ora
 dist/foundation/dbconf/oracle/userdb.ora
 dist/foundation/dbconf/oracle/variable.dbm
+dist/foundation/dbconf/oracle/variants.ora
 dist/foundation/dbconf/pgsql/2ndDayAir.dbm
 dist/foundation/dbconf/pgsql/Ground.dbm
 dist/foundation/dbconf/pgsql/NextDayAir.dbm
@@ -369,6 +372,7 @@ dist/foundation/dbconf/pgsql/transactions.pgsql
 dist/foundation/dbconf/pgsql/tree.pgsql
 dist/foundation/dbconf/pgsql/userdb.pgsql
 dist/foundation/dbconf/pgsql/variable.dbm
+dist/foundation/dbconf/pgsql/variants.pgsql
 dist/foundation/dbconf/sqlite/2ndDayAir.dbm
 dist/foundation/dbconf/sqlite/Ground.dbm
 dist/foundation/dbconf/sqlite/NextDayAir.dbm
@@ -396,6 +400,7 @@ dist/foundation/dbconf/sqlite/transactions.lite
 dist/foundation/dbconf/sqlite/tree.lite
 dist/foundation/dbconf/sqlite/userdb.lite
 dist/foundation/dbconf/sqlite/variable.dbm
+dist/foundation/dbconf/sqlite/variants.lite
 dist/foundation/etc/area.recordnumber
 dist/foundation/etc/cat.recordnumber
 dist/foundation/etc/log_entry
@@ -691,6 +696,7 @@ dist/foundation/products/transactions.txt
 dist/foundation/products/tree.txt
 dist/foundation/products/userdb.txt
 dist/foundation/products/variable.txt
+dist/foundation/products/variants.txt
 dist/foundation/special_pages/badsearch.html
 dist/foundation/special_pages/canceled.html
 dist/foundation/special_pages/cc_not_valid.html
@@ -936,6 +942,7 @@ dist/foundation/templates/sampledata/tools/products/products_de_DE.txt
 dist/foundation/templates/sampledata/tools/products/specs.txt
 dist/foundation/templates/sampledata/tools/products/transactions.txt
 dist/foundation/templates/sampledata/tools/products/userdb.txt
+dist/foundation/templates/sampledata/tools/products/variants.txt
 dist/foundation/upload/.empty
 dist/interchange.cfg.dist
 dist/lib/UI/ContentEditor.pm
@@ -1022,6 +1029,7 @@ dist/lib/UI/pages/admin/item_feature.html
 dist/lib/UI/pages/admin/item_group.html
 dist/lib/UI/pages/admin/item_inventory.html
 dist/lib/UI/pages/admin/item_option.html
+dist/lib/UI/pages/admin/item_option_old.html
 dist/lib/UI/pages/admin/item_option_phantom.html
 dist/lib/UI/pages/admin/item_price.html
 dist/lib/UI/pages/admin/item_up.html
@@ -1126,10 +1134,12 @@ dist/lib/UI/pages/admin/wizard/step_ship_ups.html
 dist/lib/UI/pages/admin/wizard/step_style.html
 dist/lib/UI/pages/admin/wizard/step_style_logo.html
 dist/lib/UI/pages/admin/wizard/step_tax.html
+dist/lib/UI/pages/include/Options/Matrix
+dist/lib/UI/pages/include/Options/Simple
+dist/lib/UI/pages/include/Options/old/item_option_matrix
+dist/lib/UI/pages/include/Options/old/item_option_modular
+dist/lib/UI/pages/include/Options/old/item_option_simple
 dist/lib/UI/pages/include/component_editor
-dist/lib/UI/pages/include/item_option_matrix
-dist/lib/UI/pages/include/item_option_modular
-dist/lib/UI/pages/include/item_option_simple
 dist/lib/UI/pages/include/menus/Accounting.txt
 dist/lib/UI/pages/include/menus/Admin.txt
 dist/lib/UI/pages/include/menus/Commerce.txt
@@ -1268,6 +1278,10 @@ lib/Vend/Interpolate.pm
 lib/Vend/MakeCat.pm
 lib/Vend/Menu.pm
 lib/Vend/ModPerl.pm
+lib/Vend/Options.pm
+lib/Vend/Options/Matrix.pm
+lib/Vend/Options/Old48.pm
+lib/Vend/Options/Simple.pm
 lib/Vend/Order.pm
 lib/Vend/Page.pm
 lib/Vend/Parse.pm

@@ -1,1 +1,1 @@
-sku	description	title	template_page	comment__MVC_FIELDMUNGE__	thumb	image	price	wholesale	prod_group	category	tax_category	nontaxable	weight	size__MVC_FIELDMUNGE__	color	gift_cert	related	featured	download	dl_type	dl_location	inactive	url	sale_price	image_large
+sku	description	title	template_page	comment__MVC_FIELDMUNGE__	thumb	image	price	wholesale	prod_group	category	tax_category	nontaxable	weight	option_type	gift_cert	related	featured	download	dl_type	dl_location	inactive	url	sale_price	image_large

@@ -1,4 +1,4 @@
 UserTag options             Order        code
 UserTag options             addAttr
 UserTag options             PosNumber    1
-UserTag options             MapRoutine   Vend::Interpolate::tag_options
+UserTag options             MapRoutine   Vend::Options::tag_options
