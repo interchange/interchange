@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.42 2001-04-18 06:40:06 heins Exp $
+# $Id: Config.pm,v 1.25.2.43 2001-04-21 05:29:25 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -98,7 +98,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.42 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.43 $, 10);
 
 my %CDname;
 
@@ -2619,7 +2619,7 @@ sub parse_dirconfig {
 	return '' if ! $value;
 	$value =~ s/(\w+)\s+//;
 	my $direc = $1;
-::logDebug("direc=$direc value=$value");
+#::logDebug("direc=$direc value=$value");
 	 
 	my $ref = $C->{$direc};
 
@@ -2637,7 +2637,7 @@ sub parse_dirconfig {
 		my @files = grep /^\w+$/, readdir(DIRCONFIG);
 		for(@files) {
 			next unless -f "$dir/$_";
-::logDebug("reading key=$_ from $dir/$_");
+#::logDebug("reading key=$_ from $dir/$_");
 			$ref->{$_} = readfile("$dir/$_", $Global::NoAbsolute, 0);
 			$sref->{$_} = "$dir/$_";
 		}
