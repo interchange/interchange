@@ -56,7 +56,7 @@ function MM_swapImgRestore() { //v3.0
 }
 
 function open_help(url) {
-  opts="top=0,left=0,scrollbars,status=no,menubar=no,location=no,toolbar=no,resizable=yes,fullsize=no,width=630,height=480";
+  opts="top=0,left=0,scrollbars,status=no,menubar=no,location=yes,toolbar=no,resizable=yes,fullsize=no,width=__UI_HELP_WIDTH__,height=__UI_HELP_HEIGHT__";
   window.open(url, 'Help', opts);
 }
 
@@ -135,8 +135,10 @@ a:visited { text-decoration: none; font-weight: normal; color: __UI_C_VLINK__ }
 	my $pre  = '';
 	my $post = '';
 	my $indicator = q{[sm-param indicator]};
+	my $exclude = q{[sm-param exclude_on]};
 #Log("indicator=$indicator");
 	my $depend = q{[sm-param depends_on]};
+	return '' if $exclude and $CGI->{$exclude};
 	return '' if $depend and ! $CGI->{$depend};
 	my $name = q{[sm-param name]};
 	my $next = q{[sm-param next_line]};
