@@ -5,13 +5,12 @@
 [set help_name]reconfig[/set]
 [set ui_class]Admin[/set]
 [set page_title][L]Reconfiguring[/L]....[/set]
-[seti meta_header]
-[set name=its int][calc]
-					$hk = q{[global-value Global::HouseKeeping]};
-					$hk += 2;
-					return join " ", 1 .. $hk;
-				[/calc][/set]
-[/seti]
+[calc]
+	my $hk = $Tag->global_value('Global::HouseKeeping');
+	$hk += 2;
+	$Scratch->{its} = join " ", 1 .. $hk;
+	return;
+[/calc]
 [set icon_name]icon_regen.gif[/set]
 @_UI_STD_HEAD_@
 

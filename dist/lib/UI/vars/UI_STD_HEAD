@@ -182,7 +182,7 @@ function MM_swapImage() {
 @_UI_STYLE_@
 -->
 </STYLE>
-[scratch meta_header][set meta_header][/set]
+[scratchd meta_header]
 </head>
 
 <body [scratch ui_body_extra] bgcolor="__UI_C_BG__" onLoad="MM_preloadImages('B3_b.gif','B4_b.gif','B5_b.gif','B6_b.gif','B7_b.gif','B2_b.gif','B8_b.gif','B9_b.gif','A1_b.gif','A3_b.gif')" leftmargin=0 topmargin=0 marginheight=0 marginwidth=0>
