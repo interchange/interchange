@@ -1,6 +1,6 @@
 # Vend::Table::Editor - Swiss-army-knife table editor for Interchange
 #
-# $Id: Editor.pm,v 1.28 2003-03-29 20:33:13 mheins Exp $
+# $Id: Editor.pm,v 1.29 2003-04-09 15:08:50 mheins Exp $
 #
 # Copyright (C) 2002 ICDEVGROUP <interchange@icdevgroup.org>
 # Copyright (C) 2002 Mike Heins <mike@perusion.net>
@@ -26,7 +26,7 @@
 package Vend::Table::Editor;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.28 $, 10);
+$VERSION = substr(q$Revision: 1.29 $, 10);
 
 use Vend::Util;
 use Vend::Interpolate;
@@ -931,7 +931,14 @@ sub col_chunk {
 
 #::logDebug("$tag content length=" . length($value));
 
-	die "duplicate tag settor $tag" if exists $outhash{$tag};
+	if(exists $outhash{$tag}) {
+		my $col = $tag;
+		$col =~ s/^COLUMN_//;
+		my $msg = errmsg("Column '%s' defined twice, skipping second.", $col);
+		Vend::Tags->warnings($msg);
+		return;
+	}
+
 	$outhash{$tag} = $value;
 
 	if(@others) {
@@ -1243,6 +1250,7 @@ sub resolve_options {
 		mv_data_table
 		mv_update_empty
 		nodelete
+		no_meta
 		output_map
 		panel_height
 		panel_id
