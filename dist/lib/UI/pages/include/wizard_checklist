@@ -19,11 +19,11 @@
 	co=yes
 	op=eq
 	tf=msort
-	rf=page,name,indicator,next_line,help_name
+	rf=page,name,indicator,next_line,help_name,form
 "]
 [loop-sub fig_box]
 	shift;
-	my ($page, $name, $indicator, $next_line, $help_name) = @{shift || []};
+	my ($page, $name, $indicator, $next_line, $help_name, $form) = @{shift || []};
 	my $current = q{@@MV_PAGE@@};
 	
 	my $complete = $Tag->run_profile($indicator);
@@ -41,11 +41,13 @@
 		$bgcolor = '#FFFFFF' unless $bgcolor;
 	}
 
+	$form =~ s/\&/\n/g;
 	my $url = $Tag->area({
 						href => $page,
 						form => qq{
 					  		page_title=$name
 					  		help_name=$help_name
+							$form
 						},
 					});
 	if($next_line) {

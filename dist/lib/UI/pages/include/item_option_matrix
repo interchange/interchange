@@ -316,6 +316,8 @@ HREF="[area
 				op=rn
 				ac=0
 
+				tf=o_sort
+
 				rf=*
 				"]
 [calc]
