@@ -2,7 +2,7 @@
 
 # Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 #
-# $Id: Link.pm,v 1.4 2005-01-25 04:03:35 jon Exp $
+# $Id: Link.pm,v 1.5 2005-01-25 04:15:24 mheins Exp $
 #
 # Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -45,7 +45,7 @@ Interchange::Link -- mod_perl 1.99/2.0 module for linking to Interchange
 
 =head1 VERSION
 
-$Revision: 1.4 $
+$Revision: 1.5 $
 
 =head1 SYNOPSIS
 
@@ -406,6 +406,26 @@ my $ent;
 
 # Return this message to the browser when the server is not running.
 # Log an error log entry if set to notify
+
+sub die_page {
+
+    my $r = shift;
+    my $msg;
+
+    warn "ALERT: bad pipe signal received for $ENV{SCRIPT_NAME}\n";   
+
+    $r->content_type ("text/html");
+    $r->print (<<EOF);
+<HTML><HEAD><TITLE>Interrupted</TITLE></HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<H3>Someone pressed stop...</H3>
+<P>
+We have aborted this request because someone terminated it.
+Please try again soon.
+</BODY></HTML>
+EOF
+
+}
 
 sub server_not_running {
 
