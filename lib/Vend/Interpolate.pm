@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.99 2001-07-16 18:46:18 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.100 2001-07-17 15:37:25 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.99 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.100 $, 10);
 
 @EXPORT = qw (
 
@@ -37,6 +37,36 @@ subtotal
 tag_data
 
 );
+
+=head1 NAME
+
+Vend::Interpolate -- Interchange tag interpolation routines
+
+=head1 SYNOPSIS
+
+(no external use)
+
+=head1 DESCRIPTION
+
+The Vend::Interpolate contains the majority of the Interchange Tag
+Language implementation rouines. Historically, it contained the entire
+tag language implementation for MiniVend, accounting for its name.
+
+It contains most of the handler routines pointed to by Vend::Parse, which
+accepts the parsing output of Vend::Parser. (Vend::Parser was originally based
+on HTML::Parser 1.x).
+
+There are two interpolative parsers in Vend::Interpolate,
+iterate_array_list() and iterate_hash_list() -- these routines parse
+the lists used in the widely employed [loop ..], [search-region ...],
+[item-list], and [query ..] ITL tag constructs.
+
+This module makes heavy use of precompiled regexes. You will notice variables
+being used in the regular expression constructs. For example, C<$All> is a
+a synonym for C<[\000-\377]*>, C<$Some> is equivalent to C<[\000-\377]*?>, etc.
+This is not only for clarity of the regular expression, but for speed.
+
+=cut
 
 # SQL
 push @EXPORT, 'tag_sql_list';
