@@ -44,6 +44,8 @@ Core
 
 * Don't track admin pages.
 
+* Allow multiline values for [scratch mv_data_enable].
+
 UI
 --
 
