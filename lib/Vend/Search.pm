@@ -1,8 +1,8 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.25 2004-08-09 18:00:43 jon Exp $
+# $Id: Search.pm,v 2.26 2004-09-10 23:17:57 jon Exp $
 #
-# Copyright (C) 2002-2003 Interchange Development Group
+# Copyright (C) 2002-2004 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.25 $, 10);
+$VERSION = substr(q$Revision: 2.26 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -976,7 +976,7 @@ EOF
 		}
 		 $code .= $range_code;
 		 $code .= <<EOF;
-	local(\$_) = join q{$s->{mv_index_delim}}, \@\$line[$fields];
+	local(\$_) = join q{$s->{mv_index_delim}}, \@fields[$fields];
 	return(1) if &\$sub();
 	return undef;
 }
