@@ -235,6 +235,11 @@ Miscellaneous
 
 * Allow set-cookie tag to set domain and path.
 
+* Added UI_SECURE variable which forces the use of the SecureURL instead
+  of VendURL if set, each UI page should include either UI_STD_INIT 
+  or UI_STD_HEAD to ensure this works 
+  (supplied by Stefan Hornburg <racke@linuxia.de>).
+
 Bug fixes
 ----------
 * Fix bug in IMPORT_ONCE reported by vasile_abo@wexim.com.
