@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.147 2004-10-15 18:35:02 racke Exp $
+# $Id: Config.pm,v 2.148 2004-10-26 12:36:39 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.147 $, 10);
+$VERSION = substr(q$Revision: 2.148 $, 10);
 
 my %CDname;
 my %CPname;
@@ -3741,16 +3741,22 @@ my %valid_dest = qw/
 
 sub finalize_mapped_code {
 	my $c = $C ? $C->{CodeDef} : $Global::CodeDef;
-	my $ref;
-	my $cfg;
+	my ($typeref, $ref, $cfg);
 
-	if(! $C and my $ref = $c->{Filter}) {
-		next unless $ref = $ref->{Routine};
+	if(! $C && ($typeref = $c->{Filter}) && ($ref = $typeref->{Routine})) {
 		for(keys %$ref) {
 			$Vend::Interpolate::Filter{$_} = $ref->{$_};
 		}
+		if ($ref = $typeref->{Alias}) {
+			for(keys %$ref) {
+				
+				if (exists $Vend::Interpolate::Filter{$_}) {
+					$Vend::Interpolate::Filter{$ref->{$_}} = $Vend::Interpolate::Filter{$_};
+				}
+			}
+		}
 	}
-
+	
 	no strict 'refs';
 	for my $type (qw/ ActionMap FormAction ItemAction OrderCheck /) {
 		my $ref;
