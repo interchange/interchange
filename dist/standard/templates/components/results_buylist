@@ -50,6 +50,7 @@ ui_source: templates/components/results_buylist
         my $item = $parms[0];
         $item =~ /(\d+)/ or return;
         my $idx = $1;
+		$idx -= $CGI->{first_match};
         $idx--;
         $CGI->{mv_order_item} = $CGI->{$item};
         $CGI->{mv_order_quantity} = "$q[$idx]";
@@ -64,6 +65,7 @@ ui_source: templates/components/results_buylist
 <INPUT TYPE=hidden NAME=mv_action VALUE=refresh>
 <INPUT TYPE=hidden NAME=mv_separate_items VALUE=0>
 <INPUT TYPE=hidden NAME=mv_click VALUE=munge_quantity>
+<INPUT TYPE=hidden NAME=first_match VALUE="[value mv_first_match]">
 
 <table width="95%" border="0" cellspacing="0" cellpadding="3">
 <tr class="contentbar2"> 
