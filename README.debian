@@ -1,0 +1,18 @@
+Interchange Debian Packages
+===========================
+
+This document contains information about the Interchange Debian packages.
+
+Status
+------
+
+The Interchange Debian packages are experimental and should not used
+on production systems. They may hose your installation. You have been
+warned! Please note that these packages contain several modifications 
+not (yet) approved by Akopia.
+
+Feedback
+--------
+
+Please send your comments and bug reports to Stefan Hornburg 
+<racke@linuxia.de>.
