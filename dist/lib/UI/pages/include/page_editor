@@ -224,22 +224,22 @@ function visible (index, base) {
 		[page-exec foo_sub][/page-exec]
 			</td>
 			<td align=right>
-			Template: [display
+			[L]Template[/L]: [display
 							name=ui_page_template
 							type=select
 							default="[page-param ui_page_template]"
 							passed="[content-info templates=1]"
 							]<br>
 
-[set Publish]
+[set [L]Publish[/L]]
 ui_content_op=publish
 mv_nextpage=__UI_BASE__/content
 [/set]
-[set Cancel]
+[set [L]Cancel[/L]]
 ui_content_op=cancel
 mv_nextpage=__UI_BASE__/content
 [/set]
-[set Preview]
+[set [L]Preview[/L]]
 ui_content_op=preview
 mv_nextpage=__UI_BASE__/content_preview
 [/set]
@@ -261,7 +261,7 @@ mv_nextpage=__UI_BASE__/content_preview
 <input
 	type=submit
 	name="mv_click"
-	value="Preview"
+	value="[L]Preview[/L]"
 > &nbsp;
 <input
 	type=submit
@@ -269,7 +269,7 @@ mv_nextpage=__UI_BASE__/content_preview
 			'This may delete components from your configuration.' +
 			'Continue?'
 		)"
-	value="Change template"
+	value="[L]Change template[/L]"
 
 			</td>
 			<td id=clicker1>
