@@ -64,10 +64,10 @@ Update userdb: [perl table=userdb]
 [/perl]
 
 
-[perl] Log("Starting entry."); [/perl]
+[comment][perl] Log("Starting entry."); [/perl][/comment]
 
 [try]
-[perl] Log("Past ACL update user."); [/perl]
+[comment][perl] Log("Past ACL update user."); [/perl][/comment]
 Add main order [data
 	table=userdb
 	column=order_numbers
@@ -119,7 +119,7 @@ archived: 0
 complete: 0
 comments: [value filter=mac name=gift_note]
 [/import]
-[perl] Log("Past transactions entry."); [/perl][item-list]Added [item-code] to orderline: [import table=orderline type=LINE continue=NOTES]
+[comment][perl] Log("Past transactions entry."); [/perl][/comment][item-list]Added [item-code] to orderline: [import table=orderline type=LINE continue=NOTES]
 code: [value mv_order_number]-[item-increment]
 store_id: __STORE_ID__
 order_number: [value mv_order_number]
@@ -140,9 +140,8 @@ status: pending
 Inventory now: [data table=inventory col=quantity key="[item-code]" increment=1 value="-[item-quantity]"]
 [/item-list][/try]
 [catch] There was an error adding to the transaction log. [/catch]
-[perl] Log("Past add data entry."); [/perl]
-
-[perl] Log("Past all transaction log."); [/perl]
+[comment][perl] Log("Past add data entry."); [/perl][/comment]
+[comment][perl] Log("Past all transaction log."); [/perl][/comment]
 [/seti][perl]
 	my $out = $Scratch->{transaction_record};
 	$out =~ s/^\s+//;

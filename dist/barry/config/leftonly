@@ -8,30 +8,19 @@
 					<td width="130" colspan="3" bgcolor="#ffffff"><img src="space.gif" width="130" height="1"></td>
 				</tr>
 [if session logged_in]
-[then]
 				<tr>
 					<td width="1" bgcolor="#ffffff"><img src="space.gif" width="1" height="1"></td>
 					<td width="128">
 		<img src="space.gif" width="128" height="1"><br>
 		<font face="verdana" size="2"><b>
-		[if session login_table eq '__UI_ACCESS_TABLE__']
-		<I>You are logged in as admin user <b>[data session username]</b>.
-		You will be logged out if you place an order.
-		<p>
-		&nbsp;&nbsp;<a href="[area __UI_BASE__/index]">admin menu</A><br>
-		&nbsp;&nbsp;<a href="[area logout]">log out</a><br>&nbsp;
-		[else]
 		&nbsp;&nbsp;[value fname] [value lname]<p>
 		&nbsp;&nbsp;<a href="[area query/check_orders]">order status</A><br>
-		&nbsp;&nbsp;<a href="[area logout]">log out</a><br>&nbsp;
-		[/else]
-		[/if]</td>
+		&nbsp;&nbsp;<a href="[area logout]">log out</a><br>&nbsp;</td>
 					<td width="1" bgcolor="#ffffff"><img src="space.gif" width="1" height="1"></td>
 				</tr>
 				<tr>
 					<td width="130" colspan="3" bgcolor="#ffffff"><img src="space.gif" width="130" height="1"></td>
 				</tr>
-[/then]
 [else]
 				<tr>
 					<td width="1" bgcolor="#ffffff"><img src="space.gif" width="1" height="1"></td>
@@ -55,30 +44,34 @@
 					<td width="130" colspan="3"><img src="space.gif" width="1" height="4"></td>
 				</tr>
 			</table>
-			<table cellpadding="0" cellspacing="0" border="0" align="center">
-				<tr>
-					<td width="130" colspan="3" bgcolor="#ffffff"><img src="space.gif" width="130" height="1"></td>
-				</tr>
-				<tr>
-					<td width="1" bgcolor="#ffffff"><img src="space.gif" width="1" height="1"></td>
-					<td width="128"><img src="space.gif" width="128" height="1"><br>&nbsp;&nbsp;<a href="[area about]"><img src="about.gif" border="0"></a></td>
-					<td width="1" bgcolor="#ffffff"><img src="space.gif" width="1" height="1"></td>
-				</tr>
-				<tr>
-					<td width="130" colspan="3" bgcolor="#ffffff"><img src="space.gif" width="130" height="1"></td>
-				</tr>
-				<tr>
-					<td width="130" colspan="3"><img src="space.gif" width="1" height="4"></td>
-				</tr>
-			</table>
+[loop
+	prefix=box
+	search="
+		fi=area
+		st=db
+		tf=sort
+		ac=0
+		ac=0
+		co=yes
+		
+		sf=sel
+			op=eq
+	[if scratch left_bar]
+		se=[scratch left_bar][set left_bar][/set]
+	[else]
+		se=left
+	[/else]
+	[/if]
 
-[loop search="
-	fi=area.txt
-	tf=sort
-	ra=yes
-	rf=selector,name,banner_img,url
-	un=yes
-" prefix=box]
+		sf=which_page
+			op=rm
+	[if scratch page_class]
+		se=all|[scratch page_class][set page_class][/set]
+	[else]
+		se=all|@@MV_PAGE@@
+	[/else]
+	[/if]
+	"]
 <!-- begin area loop -->
 
 			<table cellpadding="0" cellspacing="0" border="0" align="center">
@@ -87,26 +80,22 @@
 				</tr>
 				<tr>
 					<td width="1" bgcolor="#ffffff"><img src="space.gif" width="1" height="1"></td>
-					<td width="128"><img src="space.gif" width="128" height="1"><br>&nbsp;&nbsp;<a href="[if-box-param url][box-param url][else][area 
-						href=scan
-						search='
-							sf=category
-							se=[box-code]
-							va=category=[box-code]
-						'][/else][/if-box-param]"><img src="[box-param banner_img]" border="0"></a></td>
+					<td width="128"><img src="space.gif" width="128" height="1"><br>&nbsp;&nbsp;[box-exec bar_link]area[/box-exec]</td>
 					<td width="1" bgcolor="#ffffff"><img src="space.gif" width="1" height="1"></td>
 				</tr>
 
 [set found_cat][/set]
-[loop prefix=cat
+[loop
+	prefix=cat
 	search="
-		fi=cat.txt
+		fi=cat
+		st=db
+		tf=sort
 		tf=name
-		sf=area
-		se=[box-param selector]
-		rf=selector,page,name
-	"
-	]
+		rf=code,name
+		sf=sel
+		se=[box-code]
+	"]
 [cat-change catmark][condition]1[/condition]
 			</table>
 [/cat-change catmark]
@@ -124,23 +113,7 @@
 					<td width="128"><img src="space.gif" width="128" height="1"><br>
 					<font face="verdana" size="2"><b>
 [/if]
-					&nbsp;&nbsp;<a href="[area scan
-							co=yes
-							sf=category
-							se=[box-param selector]
-							sg=0
-							os=0
-							op=rm
-							sf=subcategory
-							se=[cat-code]
-							sg=1
-							os=1
-							sf=addl_category
-							se=[cat-code]
-							sg=1
-							os=1
-							op=em
-					]">[cat-param name]</a><br>
+					&nbsp;&nbsp;[cat-exec bar_link]cat[/cat-exec]<br>
 <!-- end cat_loop -->
 	[/loop]
 	[if scratch done_begin]
@@ -173,7 +146,6 @@
 	[/if]
 <!-- end area loop -->
 [/loop]
-			
 	</td>
 	<td bgcolor="ffffff"><img src="space.gif" width="1" height="600" align="left"></td>
 	<td bgcolor="ffffff" colspan=2 valign="top">
