@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 2.2 2001-07-20 21:43:45 heins Exp $
+# $Id: Order.pm,v 2.3 2001-07-24 16:00:23 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 2.2 $, 10);
+$VERSION = substr(q$Revision: 2.3 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1360,9 +1360,6 @@ sub route_order {
 		#####
 
 		# Compatibility 
-		if(! defined $route->{payment_mode} ) {
-			$route->{payment_mode} = $route->{cybermode};
-		}
 		if($route->{cascade}) {
 			my @extra = grep /\S/, split /[\s,\0]+/, $route->{cascade};
 			for(@extra) {
@@ -1381,6 +1378,7 @@ sub route_order {
 
 	eval {
 
+	  PROCESS: {
 		if(! $check_only and $route->{inline_profile}) {
 			my $status;
 			my $err;
@@ -1416,6 +1414,8 @@ sub route_order {
 			}
 		}
 
+	  	last PROCESS if $check_only;
+
 		if($route->{payment_mode}) {
 			my $ok;
 			$ok = Vend::Payment::charge($route->{payment_mode});
@@ -1438,8 +1438,6 @@ sub route_order {
 							);
 		}
 
-	  PROCESS: {
-	  	last PROCESS if $check_only;
 		if($Vend::Session->{mv_order_number}) {
 			$::Values->{mv_order_number} = $Vend::Session->{mv_order_number};
 		}
