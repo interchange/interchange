@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.124 2003-07-27 16:06:53 racke Exp $
+# $Id: Config.pm,v 2.125 2003-09-10 16:50:51 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.124 $, 10);
+$VERSION = substr(q$Revision: 2.125 $, 10);
 
 my %CDname;
 my %CPname;
@@ -327,6 +327,7 @@ sub global_directives {
 	['DomainTail',		 'yesno',            'Yes'],
 	['TrustProxy',		 'list_wildcard_full', ''],
 	['AcrossLocks',		 'yesno',            'No'],
+    ['DNSBL',            'array',            ''],
 	['RobotUA',			 'list_wildcard',      ''],
 	['RobotIP',			 'list_wildcard_full', ''],
 	['RobotHost',		 'list_wildcard_full', ''],
@@ -523,11 +524,28 @@ sub catalog_directives {
 	['UserDB',			 'locale',	     	 ''], 
 	['UserDatabase',	 undef,		     	 ''],  #undocumented
 	['RobotLimit',		 'integer',		      0],
+	my $rfh = $s->{rfh};
+	if($Vend::write_redirect and ! $rfh) {
+		$rfh = gensym();
+		my $fn = $Vend::Cfg->{RedirectCache} . $CGI::path_info;
+		my $save = umask(022);
+		open $rfh, "> $fn"
+			or do {
+				::logError("Unable to write redirected page %s: %s", $fn, $!);
+				undef $Vend::write_redirect;
+				undef $rfh;
+			};
+		$s->{rfh} = $rfh;
+		umask $save;
+	}
+
 	['OrderLineLimit',	 'integer',		      0],
 	['StaticPage',		 'warn',     	     ''],
+		print $rfh $$body if $rfh;
 	['StaticPath',		 'warn',     	     ''],
 	['StaticPattern',	 'warn',     	     ''],
 	['StaticSuffix',	 'warn',     	     ''],
+	['RedirectCache',	 undef,				 ''],
 	['HTMLsuffix',	     undef,     	     '.html'],
 	['CustomShipping',	 undef,     	     ''],
 	['DefaultShipping',	 undef,     	     'default'],
@@ -601,6 +619,7 @@ sub set_directive {
 	return undef;
 }
 
+	print $rfh $$body if $rfh;
 sub get_catalog_default {
 	my ($directive) = @_;
 	my $directives = catalog_directives();
@@ -857,6 +876,7 @@ CONFIGLOOP:
 #print "found $_\n";
 			undef $ifdef;
 			undef $begin_ifdef;
+	close $http->{rfh} if $http->{rfh};
 			next;
 		}
 		if(/^\s*${leadinghash}if(n?)def\s+(.*)/i) {
@@ -3958,15 +3978,12 @@ sub parse_subroutine {
 
 	return if $Vend::ExternalProgram;
 
-#::logDebug("parsing subroutine $var, " . substr($value, 0, 20) ) unless $C;
-	unless (defined $value and $value) { 
-		$c = {};
-		return $c;
-	}
-#::logDebug("into parse for $var") unless $C;
-
 	no strict 'refs';
 	$c = defined $C ? $C->{$var} : ${"Global::$var"};
+
+	unless (defined $value and $value) { 
+		return $c || {};
+	}
 
 	$value =~ s/^(\w+\s+)?\s*sub\s+(\w+\s*)?{/sub {/;
 
@@ -3992,7 +4009,7 @@ sub parse_subroutine {
 	}
 
 	$name =~ s/\s+//g;
-#::logDebug("into parse for $var, found sub named $name") unless $C;
+
 	# Untainting
 	$value =~ /([\000-\377]*)/;
 	$value = $1;
@@ -4013,9 +4030,8 @@ sub parse_subroutine {
 		$c->{$name} = $C->{ActionMap}{_mvsafe}->reval($value);
 	}
 
-#::logDebug("Parsing subroutine/variable (C=$C) $var=$name");
 	config_error("Bad $var '$name': $@") if $@;
-#::logDebug("Parsed subroutine/variable $var=$name code=$c->{$name}") unless $C;
+
 	return $c;
 }
 

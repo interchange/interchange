@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.39 2003-07-31 19:33:40 racke Exp $
+# $Id: Server.pm,v 2.40 2003-09-10 16:50:51 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -26,7 +26,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.39 $, 10);
+$VERSION = substr(q$Revision: 2.40 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -205,6 +205,29 @@ EOF
 			respond('', \$msg);
 			die($msg);
 		};
+
+	if($Global::DNSBL) {
+		my @quads = split /\./, $CGI::remote_addr;
+		my $intro = join ".", reverse(@quads), '';
+		my $blocked;
+		for(@{$Global::DNSBL}) {
+			my $addr = gethostbyname($intro . $_)
+			 or next;
+			$blocked = 1;
+		}
+		if($blocked) {
+			my $msg = ::get_locale_message( 403, "Listed on avoid list.",);
+			my $content_type = $msg =~ /<html/i ? 'text/html' : 'text/plain';
+			my $len = length($msg);
+			$Vend::StatusLine = <<EOF;
+Status: 403 Forbidden
+Content-Type: $content_type
+Content-Length: $len
+EOF
+			respond('', \$msg);
+			die($msg);
+		}
+	}
 
 	($::IV, $::VN, $::SV) = $g->{VarName}
 			? ($g->{IV}, $g->{VN}, $g->{IgnoreMultiple})

@@ -1,6 +1,6 @@
 # Vend::Page - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 2.14 2003-07-31 13:35:35 mheins Exp $
+# $Id: Page.pm,v 2.15 2003-09-10 16:50:51 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -46,13 +46,15 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.14 $, 10);
+$VERSION = substr(q$Revision: 2.15 $, 10);
 
 my $wantref = 1;
 
 sub display_special_page {
 	my($name, $subject) = @_;
 	my($page);
+
+	undef $Vend::write_redirect;
 
 	$name =~ m/[\[<]+/g
 		and do {
