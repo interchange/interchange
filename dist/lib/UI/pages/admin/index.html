@@ -1,22 +1,166 @@
-[set page_title]Catalog Wizard[/set]
-[set ui_checklist]1[/set]
-[set help_name]wizard.index[/set]
+[index table=icmenu export_only=1]
+[index table=ichelp export_only=1]
+[strip interpolate=1]
+[if-mm !logged_in]
+	[bounce page="__UI_BASE__/login"]
+[/if-mm]
+[set page_title]Interchange Administration[/set]
+[tmp ui_no_title]1[/tmp]
+[set icon_name][/set]
+[set help_name]home[/set]
+[set ui_class]None[/set]
+
+[seti meta_header]
+
+<script language="JavaScript1.2">
+<!--
+[calc]
+	my $browser = $Session->{browser};
+	if($browser =~ /msie.*mac/i) {
+		$Scratch->{ql_width} = 140;
+		$Scratch->{ql_height} = 640;
+	}
+	elsif($browser =~ /mozilla.*mac/i) {
+		$Scratch->{ql_width} = 140;
+		$Scratch->{ql_height} = 640;
+	}
+	elsif($browser =~ /msie.*windows/i) {
+		$Scratch->{ql_width} = 170;
+		$Scratch->{ql_height} = 700;
+	}
+	elsif($browser =~ /mozilla.*windows/i) {
+		$Scratch->{ql_width} = 170;
+		$Scratch->{ql_height} = 700;
+	}
+	else {
+		$Scratch->{ql_width} = 145;
+		$Scratch->{ql_height} = 620;
+	}
+	return;
+[/calc]
+
+[seti window_name][tag time]%m%d%H%M%S[/tag][/seti]
+
+function open_quicklinks() {
+  window.name = "mainwindow[scratch window_name]";
+  opts="top=0,left=0,scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=[scratch ql_width],height=[scratch ql_height]";
+  window.open('[area href="admin/quicklinks" arg="[scratch window_name]"]', 'Quicklinks[scratch window_name]', opts);
+}
+// -->
+</SCRIPT>
+[/seti]
+
+[/strip]
 @_UI_STD_HEAD_@
+<table width="100%" border="0" cellspacing="0" cellpadding="0" height="320" width=700 bgcolor="#eeeeee">
+<tr>
+<td valign=top>
+<br><br><br>
+<div align=center>
+<table width="90%" border="1" cellspacing=0 cellpadding="0">
+<tr>
+<td bgcolor="#FFFFFF">
+<br>						
+<div align=center>
+<table border=0 cellspacing=3 cellpadding=2>
 
-<p>The Catalog Wizard gets you started with the Interchange e-commerce
-platform. It will lead you through the process of configuring the
-fundamentals of your store. When you finish you will have a fully
-functioning e-commerce site!</p>
+[calc]
+	my $data = q{[version extended=1 modules=1 joiner="<P>"]};
+	$dbstatus = q{[version extended=1 modtest="GDBM_File"][version extended=1 modtest="DB_File"]};
+	return unless $data =~ /IMPORTANT/ or $dbstatus < 1;
+	my @lines = grep /not\s+found/, split '<P>', $data;
+	my @important = grep /IMPORTANT/, @lines;
+	my @minor = grep $_ !~ /IMPORTANT/, @lines;
+	my $imp = join '<P>', @important;
+	my $minor = join '<P>', @minor;
+	my $out = '';
+	$out .= <<EOF if $data =~ /IMPORTANT/;
+<TR>
+<TD COLSPAN=3>
+<H1>Admin interface will not work properly.</H1>
+Please install needed Perl modules:
+<small>
+<blockquote>
+	<FONT COLOR="__UI_C_CONTRAST__">$imp</FONT>
+</blockquote>
+<blockquote>
+	$minor
+</blockquote>
+</small>
+The easiest way to do this is to use the CPAN module and do:
+<blockquote>
+perl -MCPAN -e 'install Bundle::Interchange'
+</blockquote>
 
-<p>The checklist at the left side of the page shows your progress in
-the Catalog Wizard. You can complete the sections in any order and you
-can go back to any section at any time. At any point in the Catalog
-Wizard process you can choose to stop, save your settings, and continue
-later.<p>
+</TD>
+</TR>
+EOF
 
-<p>
-<form action="[area admin/wizard/step_company]">
-<input type=submit value="Next --&gt;">
-</form>
-</p>
+	if($dbstatus < 1) {
+	$out .= <<EOF;
+<TR>
+<TD COLSPAN=3>
+<H1>You need either GDBM_File or DB_File for Interchange to work as documented.</H1>
+Contact your system administrator about rebuilding Perl with GDBM or Berkeley DB.
+</TD>
+</TR>
+EOF
+	}
+	return $out;
+[/calc]
+
+[loop
+	  prefix=am
+	  search="
+	  	fi=icmenu
+		st=db
+		co=yes
+
+		sf=mgroup
+		se=Top
+		op=eq
+
+		tf=msort
+		rf=*
+	  "
+	  lr=1]
+	  [if-am-param !inactive]
+	  [if-mm advanced [am-param depends_on]]
+<tr>
+<td valign="top">
+	  [if-am-param img_icon]
+<img src="[am-param img_icon]">
+	  [/if-am-param]
+</td>
+<td valign="top">
+<b>
+<font face="Arial, Helvetica, sans-serif">
+&nbsp;<a href="[area [am-param page]]">[loc][am-param name][/loc]</a></font>
+</b>
+</font>
+</td>
+<td valign="top">
+<font size="-1" face="Arial, Helvetica, sans-serif">
+[loc][am-param special][/loc]
+</font>
+</td>
+</tr>
+	[/if-mm]
+	[/if-am-param]
+[/loop]
+
+</table>
+</div>
+<br>						
+</td>
+</tr>
+</table><br><br>
+</div>
+</td>
+</tr>
+</table>
+
+
 @_UI_STD_FOOTER_@
+
+<!-- page: @@MV_PAGE@@ -->

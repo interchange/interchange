@@ -71,8 +71,8 @@ in <b>Bold</b>.
 
 	hidden.ui_return_to="__UI_BASE__/wizard/index"
 	mv_failpage=@@MV_PAGE@@
-	mv_nextpage=__UI_BASE__/wizard/step_email
-	mv_prevpage=__UI_BASE__/wizard/index
+	mv_nextpage="[either][cgi ui_nextpage][or]__UI_BASE__/wizard/step_email[/either]"
+	mv_prevpage="[either][cgi ui_prevpage][or]__UI_BASE__/wizard/index[/either]"
 
 	ui_data_key=code
 	default.code=`$Values->{code}`
