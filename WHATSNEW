@@ -31,6 +31,10 @@ Core
 * Fix addAttr setting for [order] tag, restoring ability to use 'base' and
   'cart' attributes.
 
+* Restored functionality of mv_max_matches: for paged searches using [more-list],
+  it determines the maximum number of search results returned; mv_matchlimit
+  determines how to divide those up into pages.
+
 Usertags
 --------
 
