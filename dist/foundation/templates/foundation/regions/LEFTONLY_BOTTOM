@@ -1,6 +1,12 @@
     <!--- continued from LEFTONLY_TOP --->
 
     [include file="templates/components/[control component none]"][control]
+
+  <br><br>
+  <center>
+  <img src="__THEME_IMG_DIR__poweredby.gif">
+  </center>
+
   </td>
 </tr>
 </table>
