@@ -132,6 +132,8 @@ options:
 
     Optional:
     --catuser=username         The user files should be owned by (if root)
+    --sharedir=directory       The directory where shared admin images go
+    --shareurl=url             The URL to prefix shared admin images with
     --imagedir=directory       The directory where template images go
     --imageurl=url             The URL to prefix images with
     --linkmode=mode            UNIX or INET (link program vlink or tlink)
@@ -188,6 +190,8 @@ my %optctl = (
     'relocate'          => \$Conf{relocate},
     'samplehtml'        => \$Conf{samplehtml},
     'sampleurl'         => \$Conf{sampleurl},
+    'sharedir'          => \$Conf{sharedir},
+    'shareurl'          => \$Conf{shareurl},
     'serverconf'        => \$Conf{serverconf},
     'servername'        => \$Conf{servername},
     'vendroot'          => \$Conf{vendroot},
@@ -238,6 +242,8 @@ my @options = ( qw/
     sampleurl=s
     serverconf|conf=s
     servername|server=s
+    sharedir=s
+    shareurl=s
     vendroot|mvdir=s
     <>
 
@@ -492,6 +498,17 @@ my %Prefix = (
 						return $ENV{MVC_SAMPLEHTML} if $ENV{MVC_SAMPLEHTML};
 						$Conf{documentroot} . '/' . $catalog_name;
 						},
+	sharedir	 => sub {
+							return $ENV{MVC_SHAREDIR} if $ENV{MVC_SHAREDIR};
+							return prefix('documentroot');
+						},
+	shareurl	 => sub {
+							return $ENV{MVC_SHAREURL} if $ENV{MVC_SHAREURL};
+							my $url = '';
+							$url = $Tilde if defined $Tilde;
+							$url .= '/';
+							return $url;
+						},
 
 );
 
@@ -599,6 +616,27 @@ my %History = (
 						}
 						return @return;
 					},
+
+	sharedir	 =>	  sub {
+						my (@return) = @_;
+						if(defined $Servers->{$Servername}) {
+							push (@return,
+								values %{$Servers->{$Servername}->{alias}})
+							 if defined $Servers->{$Servername}->{alias};
+						}
+						return @return;
+					},
+
+	shareurl     =>   sub {
+						my (@return) = @_;
+						if(defined $Servers->{$Servername}) {
+							push (@return,
+								keys %{$Servers->{$Servername}->{alias}})
+							 if defined $Servers->{$Servername}->{alias};
+						}
+						return @return;
+					},
+
 	imagedir     =>   sub {
 						my (@return) = @_;
 						if(defined $Servers->{$Servername}) {
@@ -1692,7 +1730,35 @@ EOF
 								or die "\nchown $_: $!\n";
 							
 						 };
+
 	my $ok = 0;
+
+	unless ($Conf{sharedir} eq 'NONE') {
+		print do_msg("Copying share/ files to $Conf{sharedir}");
+		my $oldpwd = getcwd;
+		my @sharedirs;
+		eval {
+			chdir $Conf{vendroot} or die "\nchdir $Conf{vendroot}: $!\n";
+			# remember directories so we can chown below
+			chdir "share" or die "\nchdir $Conf{vendroot}: $!\n";
+			map { push @sharedirs, $_ if -d $_ } glob('*');
+			chdir "..";
+			# copy everything except some HTML help file stuff
+			my $exclude_pattern = '((^|/)src(/|$)|\.pl$)';
+			copy_dir("share", "$Conf{relocate}$Conf{sharedir}", $exclude_pattern) or die;
+		};
+		if ($@) {
+			print "\nError installing share/ files: $@\n" if $@;
+		} else {
+			File::Find::find(
+				$chg_to_catuser,
+				map { "$Conf{relocate}$Conf{sharedir}/$_" } @sharedirs
+			) if $isroot;
+			print "done.\n";
+		}
+		chdir $oldpwd;
+	}
+
 	unless($Conf{samplehtml} eq 'NONE') {
 		print do_msg("Moving HTML files to $Conf{samplehtml}");
 		eval {
@@ -1983,7 +2049,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-$Id: makecat.PL,v 1.15 2000-09-23 22:15:34 jon Exp $
+$Id: makecat.PL,v 1.16 2000-09-24 07:03:37 jon Exp $
 
 =head1 INTRODUCTION
 
@@ -2448,6 +2514,8 @@ basedir=
 cgidir=
 cgibase=
 documentroot=
+sharedir=
+shareurl=
 interchangegroup=
 interchangeuser=
 serverconf=
@@ -2471,7 +2539,7 @@ basedir
 catroot
 catuser
 cgibase
-cgibin     
+cgibin
 cgidir
 cgiurl
 demotype
@@ -2485,6 +2553,8 @@ samplehtml
 sampleurl
 serverconf
 servername
+sharedir
+shareurl
 vendroot
 EOF
 
@@ -2513,6 +2583,8 @@ askbase=<<EOF
 cgidir
 cgibase
 documentroot
+sharedir
+shareurl
 vendroot
 basedir
 interchangeuser
@@ -2568,6 +2640,8 @@ interchangegroup=1
 interchangeuser=1
 serverconf=1
 servername=1
+sharedir=1
+shareurl=1
 vendroot=1
 _EoP_
 	s{.*\n(#(.*)~_~(\w+)~_~(.*))}{$2 . doit($3) . "$4\n$1"}eg;
