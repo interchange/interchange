@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.32 2002-02-02 18:59:34 mheins Exp $
+# $Id: Config.pm,v 2.33 2002-02-03 06:41:08 mheins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.32 $, 10);
+$VERSION = substr(q$Revision: 2.33 $, 10);
 
 my %CDname;
 
@@ -3070,6 +3070,7 @@ my %tagCanon = ( qw(
 	addattr  		addAttr
 	attralias		attrAlias
 	cannest			canNest
+	description  	Description
 	documentation	Documentation
 	endhtml			endHTML
 	gobble			Gobble
