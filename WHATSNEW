@@ -6,7 +6,7 @@
 ------------------------------------------------------------------------------
 
 
-Interchange 5.1.0 not yet released.
+Interchange 5.1.0 released 2004-04-08.
 
 Security
 --------
@@ -223,6 +223,9 @@ Core
 * Vend::Table::DBI::set_slice handles passed list correctly and doesn't 
   mangle arrays passed by reference
 
+* Prevent Storable from dying when encountering a code object in
+  save_more.
+
 UserTag
 -------
 
@@ -310,6 +313,9 @@ Foundation
   and set the modulus, respectively. We still maintain the 'one big box'
   assumption that has been there all along, but now alternatives are somewhat
   easier to implement.
+
+* On special_pages/missing.html set correct scratch variable so admin
+  missing page error displays correctly.
 
 TableEditor
 -----------
@@ -426,6 +432,7 @@ Mod_interchange
   the SCRIPT_NAME=/foo that would default from <Location /foo>.
 
 * Lots of minor cleanups.
+
 
 ------------------------------------------------------------------------------
 
