@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.20 2003-07-07 05:49:33 mheins Exp $
+# $Id: Search.pm,v 2.21 2003-10-13 11:39:14 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -22,7 +22,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.20 $, 10);
+$VERSION = substr(q$Revision: 2.21 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -375,7 +375,7 @@ sub more_matches {
 
 sub more_alpha {
 	my ($s, $out) = @_;
-	my ($sfpos, $letter, $sortkey, $last, @alphaspecs, $i);
+	my ($sfpos, @letters, @compare, $changed, @pos, $sortkey, $last, @alphaspecs, $i, $l);
 	my $alphachars = $s->{mv_more_alpha_chars} || 3;
 
 	# determine position of sort field within results
@@ -390,9 +390,20 @@ sub more_alpha {
 	$last = 0;
 	for ($i = 0; $i < @$out; $i++) {
 		$sortkey = $out->[$i]->[$sfpos];
-		$letter = substr($sortkey,0,1);
+		@letters = split(//, $sortkey, $alphachars + 1);
+		pop(@letters);
+		$changed = 0;
 
-		if ($letter ne substr($alphaspecs[$last]->[0],0,1)) {
+		for ($l = 0; $l < $alphachars; $l++) {
+			if ($letters[$l] ne $compare[$l]) {				
+				$changed = 1;
+			}
+			next unless $changed;
+			$pos[$l] = $i;
+			$compare[$l] = $letters[$l];
+		}
+
+		if ($pos[0] == $i) {
 			# add record if first letter has changed
 			push (@alphaspecs, [$sortkey, 1, $i]);
 			# add last pointer to previous record
@@ -402,11 +413,11 @@ sub more_alpha {
 			# add record if match limit is exceeded and significant
 			# letters are different
 			for (my $c = 2; $c <= $alphachars; $c++) {
-				if (substr($sortkey,0,$c)
+				if (substr($sortkey, 0, $c)
 					ne substr($alphaspecs[$last]->[0],0,$c)) {
-					push (@alphaspecs, [$sortkey, $c, $i]);
+					push (@alphaspecs, [$sortkey, $c, $pos[$c - 1]]);
 					# add last pointer to previous record
-					push (@{$alphaspecs[$last++]}, $i - 1);
+					push (@{$alphaspecs[$last++]}, $pos[$c - 1] - 1);
 					last;
 				}
 			}
