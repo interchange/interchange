@@ -22,6 +22,8 @@ open(CONFIG, ">$ENV{MINIVEND_ROOT}/interchange.cfg")
 print CONFIG <<EOF;
 Catalog  test $ENV{MINIVEND_ROOT} /test
 TcpMap $ENV{MINIVEND_PORT} -
+TagDir 0
+TagDir etc
 EOF
 
 open(CONFIG, ">$ENV{MINIVEND_ROOT}/catalog.cfg")
