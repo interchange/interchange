@@ -1,6 +1,6 @@
 # Util.pm - Interchange utility functions
 #
-# $Id: Util.pm,v 1.14 2000-11-12 20:52:25 heins Exp $
+# $Id: Util.pm,v 1.14.2.1 2000-11-26 08:17:33 heins Exp $
 # 
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -77,7 +77,7 @@ use Config;
 use Fcntl;
 use subs qw(logError logGlobal);
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = substr(q$Revision: 1.14 $, 10);
+$VERSION = substr(q$Revision: 1.14.2.1 $, 10);
 
 BEGIN {
 	eval {
@@ -302,6 +302,18 @@ sub setlocale {
             @{$Vend::Cfg->{$_}} = split (/\s+/, $loc->{$_})
                 if $loc->{$_};
         }
+
+        for(@Vend::Config::Locale_directives_code) {
+			next unless $loc->{$_->[0]};
+			my ($routine, $args) = @{$_}[1,2];
+			if($args) {
+				$routine->(@$args);
+			}
+			else {
+				$routine->();
+			}
+        }
+
 		no strict 'refs';
 		for(qw/LC_COLLATE LC_CTYPE LC_TIME/) {
 			next unless $loc->{$_};
@@ -716,7 +728,18 @@ sub get_option_hash {
 	if($string =~ /^{/ and $string =~ /}/) {
 		return $Vend::Interpolate::ready_safe->reval($string);
 	}
-	my @opts = split /\s*,\s*/, $string;
+
+	my @opts;
+	unless ($string =~ /,/) {
+		@opts = grep $_ ne "=", Text::ParseWords::shellwords($string);
+		for(@opts) {
+			s/^(\w+)=(["'])(.*)\2$/$1$3/;
+		}
+	}
+	else {
+		@opts = split /\s*,\s*/, $string;
+	}
+
 	my %hash;
 	for(@opts) {
 		my ($k, $v) = split /[\s=]+/, $_, 2;
