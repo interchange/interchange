@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.84 2002-12-10 20:08:56 jon Exp $
+# $Id: Config.pm,v 2.85 2002-12-12 03:16:42 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -45,7 +45,7 @@ use Vend::Parse;
 use Vend::Util;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.84 $, 10);
+$VERSION = substr(q$Revision: 2.85 $, 10);
 
 my %CDname;
 
@@ -3141,7 +3141,10 @@ sub parse_configdb {
 	my ($file, $type);
 	return '' if ! $value;
 	local($Vend::Cfg) = $C;
-	my ($db, $table) = get_configdb($var, $value);
+	my ($db, $table);
+	eval {
+		($db, $table) = get_configdb($var, $value);
+	};
 
 	return '' if ! $db;
 
@@ -3224,7 +3227,10 @@ sub parse_dbconfig {
 	return '' if ! $value;
 	local($Vend::Cfg) = $C;
 
-	my ($db, $table) = get_configdb($var, $value);
+	my ($db, $table);
+	eval {
+		($db, $table) = get_configdb($var, $value);
+	};
 
 	return '' if ! $db;
 
