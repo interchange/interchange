@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.24 2001-10-26 00:17:32 edl Exp $
+# $Id: Interpolate.pm,v 2.25 2001-10-30 18:57:35 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.24 $, 10);
+$VERSION = substr(q$Revision: 2.25 $, 10);
 
 @EXPORT = qw (
 
@@ -5625,8 +5625,13 @@ sub tag_loop_list {
 	#	[/loop]
 	if (ref $list) {
 #::logDebug("opt->list in: " . ::uneval($list) );
+		unless (ref $list eq 'ARRAY' and ref $list->[0] eq 'ARRAY') {
+			::logError("loop was passed invalid list=`...` argument");
+			return;
+		}
 		my ($ary, $fh, $fa) = @$list;
 		$opt->{object}{mv_results} = $ary;
+		$opt->{object}{matches} = scalar @$ary;
 		$opt->{object}{mv_field_names} = $fa if $fa;
 		$opt->{object}{mv_field_hash} = $fh if $fh;
 		return region($opt, $text);
