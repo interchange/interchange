@@ -1,10 +1,10 @@
 /*
- *	$Id: mod_interchange.c,v 2.3 2002-10-02 02:00:16 kwalsh Exp $
+ *	$Id: mod_interchange.c,v 2.4 2002-10-21 19:20:43 kwalsh Exp $
  *
  *	Apache Module implementation of the Interchange application server
  *	link programs.
  *
- *	Version: 1.23
+ *	Version: 1.24
  *
  *	Author: Kevin Walsh <kevin@cursor.biz>
  *	Based on original code by Francis J. Lacoste <francis.lacoste@iNsu.COM>
@@ -42,7 +42,7 @@
 #include <sys/un.h>
 #include <unistd.h>
 
-#define	MODULE_VERSION	"mod_interchange/1.23"
+#define	MODULE_VERSION	"mod_interchange/1.24"
 
 #ifdef	OSX
 typedef long socklen_t;
@@ -158,7 +158,7 @@ static void *ic_create_dir_config(pool *p,char *dir)
 	for (i = 1; i < IC_MAX_SERVERS; i++)
 		conf_rec->server[i] = (ic_socket_rec *)NULL;
 
-	conf_rec->levels = 1;
+	conf_rec->levels = IC_DEFAULT_LEVELS;
 	conf_rec->connect_tries = IC_DEFAULT_CONNECT_TRIES;
 	conf_rec->connect_retry_delay = IC_DEFAULT_CONNECT_RETRY_DELAY;
 	conf_rec->droplist_no = 0;
@@ -529,8 +529,11 @@ static int ic_send_request(request_rec *r,ic_conf_rec *conf_rec,BUFF *ic_buff)
 	}
 	while (*rurip == '/')
 		rurip++;
-	while (*rurip != '\0' && *rurip != '/')
+
+	level = conf_rec->levels;
+	while (*rurip != '\0' && (*rurip != '/' || --level))
 		rurip++;
+
 	strcpy(request_uri,rurip);
 	for (rurip = request_uri; *rurip != '\0'; rurip++){
 		if (*rurip == '?'){

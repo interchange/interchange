@@ -1,11 +1,11 @@
-<!-- $Id: mod_interchange.html,v 2.3 2002-10-02 02:00:16 kwalsh Exp $ -->
+<!-- $Id: mod_interchange.html,v 2.4 2002-10-21 19:20:44 kwalsh Exp $ -->
 <html>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <title>Apache module: mod_interchange (version 1.23)</title>
+   <title>Apache module: mod_interchange (version 1.24)</title>
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
-    <h1>Apache module: mod_interchange (version 1.23)</h1>
+    <h1>Apache module: mod_interchange (version 1.24)</h1>
     <h2>Apache link module for Interchange</h2>
     <p>
 	This module replaces the <i>tlink</i> and <i>vlink</i> programs
@@ -223,6 +223,18 @@
     <h2><a name="changelog">Change Log</a></h2>
     <ul>
 	<li>
+	    1.24
+	    (Mon 31 Oct 2002)
+	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
+	    <ul>
+		<li>
+		    Fixed a bug reported by Shawn Mathews.&nbsp;
+		    The URILevels directive was not taken into account when
+		    munging the PATH_INFO HTTP environment variable.
+		</li>
+	    </ul>
+	    <br>
+	</li><li>
 	    1.23
 	    (Wed 02 Oct 2002)
 	    Kevin Walsh &lt;kevin@cursor.biz&gt;<br>
