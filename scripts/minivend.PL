@@ -25,7 +25,7 @@ DOIT: {
 #
 # MiniVend version 4.0xxx
 #
-# $Id: minivend.PL,v 1.2 2000-05-27 14:03:18 heins Exp $
+# $Id: minivend.PL,v 1.3 2000-06-04 04:18:54 heins Exp $
 #
 # Copyright 1996-2000 by Michael J. Heins <mikeh@minivend.com>
 #
@@ -478,6 +478,10 @@ sub update_data {
 		}
 	}
 
+	if($CGI::values{mv_auto_export}) {
+		Vend::Data::export_database($table);
+	}
+	return;
 }
 
 # Parse the mv_click and mv_check special variables
@@ -904,37 +908,6 @@ EOF
 		Vend::Data::read_shipping();
 		open_database(1);
 		my $db;
-		DREAD: {
-			last DREAD unless $db = $Vend::Cfg->{DbDatabase};
-			$db = database_exists_ref($db)
-				or last DREAD;
-			$db = $db->ref();
-			my ($k, @f);	# key and fields
-			my @l;			# refs to locale repository
-			my @n;			# names of locales
-
-			@n = $db->columns();
-			my $name;
-			foreach $name (@n) {
-				my $file = $db->field('_file', $name);
-				my $type = $db->field('_type', $name);
-				next unless $file and $type;
-				Vend::Config::parse_database('', "$name $file $type");
-			}
-			my $i;
-			while( ($k , @f ) = $db->each_record) {
-				next if $k =~ /^_/;
-				for ($i = 0; $i < @f; $i++) {
-					next unless length $f[$i];
-					Vend::Config::parse_database('', "$n[$i] $k $f[$i]");
-				}
-			}
-			my $save = $^W;
-			$^W = 0;
-			close_database();
-			$^W = $save;
-			open_database(1);
-		}
 
 		LREAD: {
 			last LREAD unless $db = $Vend::Cfg->{LocaleDatabase};
@@ -973,43 +946,9 @@ EOF
 			}
 		}
 
-		SREAD: {
-			last SREAD unless $db = ($Vend::Cfg->{DirectiveDatabase} || $Vend::Cfg->{VariableDatabase});
-			$db = database_exists_ref($db)
-				or last SREAD;
-			$db = $db->ref();
-			my ($k, @f);	# key and fields
-			my @l;			# refs to locale repository
-			my @n;			# names of locales
-			my @h;			# names of locales
-
-			@n = $db->columns();
-			shift @n;
-			my $extra;
-			for(@n) {
-				if (! ref $Vend::Cfg->{$_} or $Vend::Cfg->{$_} !~ /HASH/) {
-					# ignore non-existent directive, but put in hash
-					my $ref = {};
-					push @l, $ref;
-					push @h, [$_, $ref];
-					next;
-				}
-				push @l, $Vend::Cfg->{$_};
-			}
-			my $i;
-			while( ($k, undef, @f ) = $db->each_record) {
-				for ($i = 0; $i < @f; $i++) {
-					next unless length($f[$i]);
-					$l[$i]->{$k} = $f[$i];
-				}
-			}
-			for(@h) {
-				$Vend::Cfg->{Hash}{$_->[0]} = $_->[1];
-			}
-		}
-
 		close_database();
 	};
+
 	undef $Vend::Cfg;
 	undef $Vend::BuildingPages;  # In case of eval error
     if($@) {

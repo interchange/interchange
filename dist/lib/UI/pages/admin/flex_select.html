@@ -1,0 +1,142 @@
+<!-- [if cgi mv_more_ip]
+[calc]
+	for( qw/
+		help_name
+		icon_name
+		mv_data_table
+		page_title
+		ui_break_before
+		ui_description_field
+		ui_flex_description
+		ui_flex_key
+		page_banner
+		/)
+	{
+		$CGI->{$_} = $Values->{$_};
+		push @out, "$_ = $CGI->{$_}";
+	}
+	return join "\n", @out;
+[/calc]
+[/if] -->
+
+[seti page_title]
+	[either]
+		[cgi page_title]
+	[or]
+		Select for table Edit: [cgi mv_data_table]
+	[/either]
+[/seti]
+[seti page_banner]
+	[either]
+		[cgi page_banner]
+	[or]
+		[cgi page_title]
+	[or]
+		Select for table Edit: [cgi mv_data_table]
+	[/either]
+[/seti]
+[seti help_name][either][cgi help_name][or]gensql.main[/either][/seti]
+[seti icon_name][either][cgi icon_name][or]admin/icon_config.gif[/either][/seti]
+
+[if-mm function="!tables" table="[cgi mv_data_table]"]
+[bounce page="__UI_BASE__/error"]
+[/if-mm]
+
+@@UI_STD_HEAD@@
+[update values]
+<!-- ----- BEGIN REAL STUFF ----- -->
+<form action="[area __UI_BASE__/flex_editor]" method="post">
+<INPUT TYPE=hidden NAME=mv_todo     VALUE=return>
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/flex_editor">
+<INPUT TYPE=hidden NAME=mv_data_table VALUE="[cgi mv_data_table]">
+<INPUT TYPE=hidden NAME=page_title VALUE="[cgi page_title]">
+<INPUT TYPE=hidden NAME=ui_return_to VALUE="@@MV_PAGE@@">
+<INPUT TYPE=hidden NAME=ui_return_to VALUE="mv_data_table=[cgi mv_data_table]">
+<INPUT TYPE=hidden NAME=icon_name VALUE="[cgi icon_name]">
+<INPUT TYPE=hidden NAME=help_name VALUE="[cgi help_name]">
+<INPUT TYPE=hidden NAME=page_banner VALUE="[cgi page_banner]">
+<INPUT TYPE=hidden NAME=ui_data_fields VALUE="[either][cgi mv_data_fields][or][db-columns table="[cgi mv_data_table]"][/either][/either]">
+<INPUT TYPE=hidden NAME=ui_break_before VALUE="[cgi ui_break_before]">
+<table cellpadding=3 cellspacing=0>
+<tr>
+<td colspan=2 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+</tr>
+
+<tr>
+<td bgcolor="#94a0e0" width=150 colspan=2>
+<input type="submit" name="show_create_cmd" value="New item">
+</td>
+
+</td></tr>
+
+<tr>
+<td colspan=2 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+</tr>
+
+<tr>
+<td bgcolor="#94a0e0">
+
+<input type="submit" name="show_edit_cmd" value="Edit item">
+<br>
+
+<input type="submit" name="do_delete_cmd" value="Delete item" 
+ onClick="return confirm('Are you sure you want to delete this item?')">
+
+</td>
+<td bgcolor="#94a0e0">
+
+[if cgi ui_flex_key]
+[seti keypos][cgi ui_flex_key][/set]
+[else]
+[set keypos]0[/set]
+[/else]
+[/if]
+[if cgi ui_description_field]
+	[loop more=1
+		search="
+			fi=[cgi mv_data_table]
+			st=db
+			ra=yes
+			md=1
+			tf=[cgi ui_description_field]
+			rf=[scratch keypos],[cgi ui_flex_description]
+<select name="item_id" size=10>
+	[list]<option value="[loop-code]">[loop-pos 1]
+	[/list]
+</select>
+	[more-list]<BR>Too big for one page: [more][/more-list]
+	[/loop]
+[else]
+	[loop more=1
+		search="
+			fi=[cgi mv_data_table]
+			st=db
+			ra=yes
+			md=1
+			tf=0
+			rf=0
+	"]
+<select name="item_id" size=10>
+	[list]<option value="[loop-code]">[loop-code]
+	[/list]
+</select>
+	[more-list]<BR>Too big for one page: [more][/more-list]
+	[/loop]
+[/else]
+[/if]
+</td>
+</tr>
+
+<tr>
+<td colspan=2 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+</tr>
+
+</table>
+
+</form>
+
+
+<!-- ----- END REAL STUFF ----- -->
+
+@@UI_STD_FOOTER@@
+<!-- page: @@MV_PAGE@@ -->

@@ -20,14 +20,14 @@ you can have only one. Should correspond to TAXAREA.
 MYSQL
 .
 You can select this to use MySQL in your test catalog. Careful!
-This requires the ability to create a database named "test_minivend",
+This requires the ability to create a database named "test_mvmall",
 and is highly dependent on your Perl and MySQL configuration. Don't
 be too surprised if this doesn't work.
 
 PGSQL
 .
 You can select this to use PostGres in your test catalog.
-This requires the ability to create a database named "test_minivend",
+This requires the ability to create a database named "test_mvmall",
 and is highly dependent on your Perl and system configuration. Don't
 be too surprised if this doesn't work.
 

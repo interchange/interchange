@@ -11941,6 +11941,22 @@ in their page.
 
     CheckHTML  /usr/local/bin/weblint
 
+=head2 ConfigAllAfter
+
+The name of a file (or files) which should be read as a part of every catalog's
+configuration, I<after> any other configuration files are read. Default is
+I<catalog_after.cfg>.
+
+    ConfigAllAfter   check_actions.cfg check_variables.cfg
+
+=head2 ConfigAllBefore
+
+The name of a file (or files) which should be read as a part of every catalog's
+configuration, I<before> any other configuration files are read. Default is
+I<catalog_before.cfg>.
+
+    ConfigAllBefore   set_actions.cfg set_variables.cfg
+
 =head2 DisplayErrors
 
 While all errors are reported in the error log file, you can also have

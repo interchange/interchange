@@ -39,7 +39,7 @@ Welcome to TallyMan
 [set MMLogin] 
 mv_todo=return
 [if type=explicit compare="[userdb login]"]
-mv_nextpage=@@UI_BASE@@/index
+mv_nextpage=__UI_BASE__/index
 mv_username=[perl]$Session->{ui_username} = $Session->{username};[/perl]
 [else]
 mv_username=[perl]$Session->{ui_username} = $Session->{username} = '';[/perl]

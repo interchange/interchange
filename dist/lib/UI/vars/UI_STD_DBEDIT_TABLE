@@ -9,7 +9,7 @@ Variable UI_STD_DBEDIT_TABLE <<EndOfVar
 <FORM METHOD=POST ACTION="[area ui]">
 <INPUT TYPE=hidden NAME=mv_doit VALUE="set">
 <INPUT TYPE=hidden NAME=mv_click VALUE="process_filter">
-<INPUT TYPE=hidden NAME=mv_nextpage VALUE="admin/item">
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="admin/flex_select">
 <INPUT TYPE=hidden NAME=mv_data_table VALUE="[value mv_data_table]">
 <INPUT TYPE=hidden NAME=mv_data_key VALUE="[value ui_data_key_name]">
 <INPUT TYPE=hidden NAME=mv_data_decode VALUE="[value mv_data_decode]">
@@ -17,7 +17,7 @@ Variable UI_STD_DBEDIT_TABLE <<EndOfVar
 <INPUT TYPE=hidden NAME=ui_return_to   VALUE="item_id=[scratch arg]">
 <INPUT TYPE=hidden NAME=mv_update_empty VALUE="1">
 <INPUT TYPE=hidden NAME=mv_data_fields
-	VALUE="[db-columns columns='[value ui_data_fields]' ]">
+	VALUE="[db-columns columns='[cgi mv_data_fields]' ]">
 
 [if-key-exists table="[value mv_data_table]" key="[scratch arg]"]
 <INPUT TYPE=hidden NAME="mv_data_function" VALUE="update">
@@ -124,10 +124,11 @@ EOF
 
 <input type=submit value="Ok">
 
-[set Cancel]
+[seti Cancel]
 mv_todo=return
-mv_nextpage=admin/item
-[/set]
+mv_nextpage=[either][value-extended name=ui_return_to index=0][or]admin/flex_select[/either]
+mv_data_table=[cgi mv_data_table]
+[/seti]
 
 <input type=submit name="mv_click" value="Cancel">
 <BR>

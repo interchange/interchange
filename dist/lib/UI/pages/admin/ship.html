@@ -6,7 +6,7 @@
 
 &nbsp;
 <font size="+1" face="Verdana,arial,helvetica,sans-serif" color="#000000">
-Create method
+Shipping options
 <p>
 &nbsp;
 </font>
@@ -18,101 +18,95 @@ Create method
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 
-<form action="[area tally/shipping_create]" method=POST>
+<p>
+<form action="[process]" method=POST>
+<input type=hidden name=mv_todo value=return>
 
 <table cellpadding=3 cellspacing=0>
 
 <tr>
-<td colspan=2 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+<td colspan=2 bgcolor=#7079aa><img src="cleardot.gif" width=600 height=1></td>
 </tr>
 
-<tr>
-<td bgcolor=#94a0e0 align=right>
-<small>Name of this method</small>
-</td>
-<td bgcolor=#94a0e0>
-<input type=text size=40 name="label" value="">
-</td>
-</tr>
+[set Create new method]
+mv_nextpage=__UI_BASE__/ship_edit
+ui_shipmode=
+ui_header=Create method
+[/set]
 
 <tr>
-<td bgcolor=#94a0e0 align=right>
-<small>Enable this method</small>
-</td>
-<td bgcolor=#94a0e0>
-<INPUT type=checkbox name=available value=on CHECKED>
+<td colspan=2 bgcolor="#94a0e0" width=150>
+<input type=submit name="mv_click" value="Create new method">
 </td>
 </tr>
 
 <tr>
-<td bgcolor=#94a0e0 align=right>
-<small>Display "Call for quote" only?</small>
-</td>
-<td bgcolor=#94a0e0>
-<INPUT type=checkbox name=calculated value=on CHECKED>
-</td>
+<td colspan=2 bgcolor=#7079aa><img src="cleardot.gif" width=600 height=1></td>
 </tr>
 
 <tr>
-<td bgcolor=#94a0e0 align=right>
-<small>Calculate based on this algorithm</small>
+<td bgcolor="#94a0e0" width=150>
+
+[set Edit method]
+mv_nextpage=__UI_BASE__/ship_edit
+ui_header=Edit method
+[/set]
+
+<input type=submit name="mv_click" value="Edit method">
+<br>
+[set Edit data table]
+mv_nextpage=__UI_BASE__/ship_edit
+ui_header=Edit <I>[cgi ui_shipmode]</I> data table
+[/set]
+<input type=submit name="mv_click" value="Edit data table">
+<br>
+
+[set Delete method]
+mv_nextpage=@@MV_PAGE@@
+ui_ship_action=delete
+[/set]
+
+<input type=submit name="mv_click" value="Delete method"
+ onClick="return confirm('Are you sure you want to delete this method?')">
+<p>
+
+[set Back]
+[if scratch ui_return_menu]
+mv_nextpage=[scratch ui_return_menu]
+[else]
+mv_nextpage=admin/configure
+[/else]
+[/if]
+[/set]
+
+<input type=submit name="mv_click" value="Back">
 </td>
-<td bgcolor=#94a0e0>
 
-<select name=mt_shipping_algorithm>
-<option value="1001"> Standard shipping by price</option>
+<!-- Read the current shipping def, success=[read-shipping] -->
 
-<option value="weight"> Standard shipping by weight</option>
-
-<option value="volume"> Standard shipping by volume</option>
-
-<option value="quantity"> Standard shipping by quantity</option>
-
-<option value="1004"> UPS Ground</option>
-
-<option value="1005"> UPS Next Day Air</option>
-
-<option value="1006"> UPS Next Day Air Saver</option>
-
-<option value="1007"> UPS Second Day Air</option>
-
-<option value="1008"> UPS Second Day Air A.M.</option>
-
-<option value="1009"> UPS Three day select</option>
+<td bgcolor="#94a0e0" width=450>
+<select name=ui_shipmode size=10>
+[perl]
+	@modes = sort keys %{$Config->{Shipping_desc}};
+	my $max = 0;
+	for (@modes) {
+		$max = length($_) if length($_) > $max;
+	}
+	$max += 2;
+	for (@modes) {
+		push @out, sprintf(qq{<OPTION VALUE="$_">%s: %s</OPTION>}, $_, $Config->{Shipping_desc}{$_}); 
+	}
+	return (join "\n", @out);
+[/perl]
 </select>
-
-</td>
-</tr>
-
-<tr>
-<td bgcolor=#94a0e0 align=right>
-<small>Minimum shipping charge</small>
-</td>
-<td bgcolor=#94a0e0>
-<input type=text size=10 name="mt_ship_minimum" value="0">
-</td>
-</tr>
+</PRE>
+</td></tr>
 
 <tr>
-<td bgcolor=#94a0e0 align=right>
-<small>Additional shipping calculation</small>
-</td>
-<td bgcolor=#94a0e0>
-<input type=text size=50 name="mt_ship_extra_alg" value="">
-</td>
-</tr>
-
-<tr>
-<td colspan=2 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+<td colspan=2 bgcolor=#7079aa><img src="cleardot.gif" width=600 height=1></td>
 </tr>
 
 </table>
-
-<p>
-
-<input type=submit name="do_create_cmd" value="Ok">
-<input type=submit name="do_cancel" value="Cancel">
-
 </form>
 
 

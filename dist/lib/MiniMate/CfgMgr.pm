@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package MiniMate::CfgMgr;
 
-$VERSION = substr(q$Revision: 1.1 $, 10);
+$VERSION = substr(q$Revision: 1.2 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -276,7 +276,7 @@ sub mm_acl_enabled {
 	return $default unless $db;
 	$db = $db->ref() unless $Vend::Interpolate::Db{$table};
 	my $uid = $Vend::Session->{username} || $CGI::remote_user;
-	if(! $db->record_exists($uid) ) {
+	if(! $uid or  ! $db->record_exists($uid) ) {
 		return 0;
 	}
 	$Vend::Session->{mm_username} = $uid;

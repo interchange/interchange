@@ -1,0 +1,55 @@
+[set page_title]Direct Table Edit[/set]
+[set page_banner]Direct Table Edit[/set]
+[set help_name]gensql.main[/set]
+[set icon_name]admin/icon_config.gif[/set]
+@@UI_STD_HEAD@@
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+
+<form action="[area __UI_BASE__/item_edit]" method="post">
+<INPUT TYPE=hidden NAME=mv_todo     VALUE=return>
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/flex_select">
+<table cellpadding=3 cellspacing=0>
+<tr>
+<td colspan=2 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+</tr>
+
+<tr>
+<td bgcolor="#94a0e0">
+
+<input type="submit" value="Edit entries">
+<br>
+
+[set Import]
+mv_nextpage=[var UI_BASE 1]/table_import
+[/set]
+
+<input type="submit" name="mv_click" value="Import">
+<br>
+<hr>
+<input name="ui_text_qualification" value="[value-extended ui_text_qualification]">
+<br>
+<input type="submit" value="Search for text">
+<br>
+
+</td>
+<td bgcolor="#94a0e0">
+
+<select name="mv_data_table" size=10>
+[loop list="[list-databases]"]<option value="[loop-code]"> [loop-code]
+[/loop]
+</select>
+</td>
+</tr>
+
+<tr>
+<td colspan=2 bgcolor=#7079aa><img src="admin/cleardot.gif" width=600 height=1></td>
+</tr>
+
+</table>
+
+</form>
+
+<!-- ----- END REAL STUFF ----- -->
+
+@@UI_STD_FOOTER@@

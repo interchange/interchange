@@ -5,7 +5,7 @@
 [value name=mv_data_table set=transactions hide=1]
 [if-mm !tables]
 [set error_message]Not authorized for order administration. Contact administrator?[/set]
-[bounce page="@@UI_BASE@@/error"]
+[bounce page="__UI_BASE__/error"]
 [/if-mm]
 [tag flag write]transactions[/tag]
 [perl tables=transactions]
@@ -13,7 +13,7 @@
 	my $db = $Db{transactions};
 	if(! $db) {
 		$Scratch->{error_message} = "<FONT CLASS=error>Error: no transactions database.</FONT><BR>";
-		$Scratch->{ui_location} = "@@UI_BASE@@/error";
+		$Scratch->{ui_location} = "__UI_BASE__/error";
 		return;
 	}
 
@@ -31,12 +31,12 @@
 		$action_col = 'deleted';
 	}
 	elsif($CGI->{vieworder} and ! $CGI->{viewnext}) {
-		$Scratch->{ui_location} = $Tag->area('@@UI_BASE@@/order_view', $CGI->{order});
+		$Scratch->{ui_location} = $Tag->area('__UI_BASE__/order_view', $CGI->{order});
 	}
 	elsif($CGI->{deletebogusorder}) {
 	}
 	elsif($CGI->{xload}) {
-		$Scratch->{ui_location} = $Tag->area('@@UI_BASE@@/dbdownload');
+		$Scratch->{ui_location} = $Tag->area('__UI_BASE__/dbdownload');
 	}
 
 	if($action_col) {
@@ -75,7 +75,7 @@
 		if ($ordnum) {
 			$Scratch->{ui_location} = $Tag->area(
 									{
-										href => '@@UI_BASE@@/order_view',
+										href => '__UI_BASE__/order_view',
 										form => "order=$ordnum",
 									}
 									);
@@ -91,6 +91,7 @@
 [bounce href="[scratch ui_location]"]
 [/if]
 
+[set icon_name]admin/icon_orders.gif[/set]
 [seti page_title]
 	[if value showarchive]
 	Orders: archived orders
@@ -102,15 +103,8 @@
 	[/if]
 [/seti]
 [update values]
-@@UI_STD_HEADER@@
+@@UI_STD_HEAD@@
 
-<img src="admin/icon_orders.gif" width=16 height="16" border="0" valign="top" align="top">
-
-&nbsp;
-<font size="+1" face="Verdana,arial,helvetica,sans-serif" color="#000000">
-[if value showarchive]Archived[else]Pending[/else][/if] orders
-<p>
-&nbsp;
 [if scratch message]
 <BLOCKQUOTE>
 [scratch message]
@@ -118,16 +112,12 @@
 [set message][/set]
 [/if]
 </font>
-</td>
-</tr>
 
-<tr>
-<td colspan="2">
 <!-- ----- BEGIN REAL STUFF ----- -->
 
 <!-- ----- Show the archive/pending buttons ----- -->
 
-<form action="[area @@UI_BASE@@/order]" method=POST>
+<form action="[area __UI_BASE__/order]" method=POST>
 <INPUT TYPE=hidden NAME=mv_action VALUE=return>
 
 <input type=hidden name=archive value="false">
@@ -189,8 +179,13 @@
 <td bgcolor="#94a0e0" width=450>
 
 <!-- ----- Show the order list box ----- -->
-
 <pre>
+[loop search="
+		fi=transactions
+		ra=yes
+"][loop-code]
+[/loop]
+
 <select name=order size=10 MULTIPLE>
 
 [loop search="

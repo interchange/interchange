@@ -1,0 +1,136 @@
+[set help_name]shipping.edit[/set]
+[set page_title]Shipping options: edit method[/set]
+@@UI_STD_HEADER@@
+
+<img src="admin/icon_config.gif" width=16 height="16" border="0" valign="top" align="top">
+
+&nbsp;
+<font size="+1" face="Verdana,arial,helvetica,sans-serif" color="#000000">
+[either][cgi ui_header][or]Edit shipping[/either]
+<p>
+&nbsp;
+</font>
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+<!-- read shipping: [read-shipping] -->
+
+[if cgi ui_shipmode]
+	[perl]
+		my $mode = $CGI->{ui_shipmode};
+		my $lines = $Config->{Shipping_line};
+		for(@$lines) {
+			next unless $_->[0] eq $mode;
+			my $ref = $_;
+		}
+		my ($mode, $desc, $crit, $min, $max, $cost, $query, $opt) = @{$ref};
+		$opt = {} if ! ref $opt;
+		unless ($opt->{ui_ship_type}) {
+			if($crit eq 'weight') {
+				$opt->{ui_ship_type} = 'weight';
+			}
+			elsif($crit eq 'volume') {
+				$opt->{ui_ship_type} = 'volume';
+			}
+			elsif($crit eq 'quantity') {
+				$opt->{ui_ship_type} = 'quantity';
+			}
+			elsif($crit =~ /^[subtotal/) {
+				$opt->{ui_ship_type} = '_subtotal';
+			}
+		}
+	[/perl]
+[/if]
+<form action="[area @@MV_PAGE@@] method=POST>
+
+<table cellpadding=3 cellspacing=0>
+
+<tr>
+<td colspan=2 bgcolor=#7079aa><img src="images/cleardot.gif" width=600 height=1></td>
+</tr>
+
+<tr>
+<td bgcolor=#94a0e0 align=right>
+<small>Name of this method</small>
+</td>
+<td bgcolor=#94a0e0>
+<input type=text size=40 name="ui_shipmode" value="[cgi ui_shipmode]">
+</td>
+</tr>
+
+<tr>
+<td bgcolor=#94a0e0 align=right>
+<small>Calculate based on this algorithm</small>
+</td>
+<td bgcolor=#94a0e0>
+
+<select name=algorithm>
+<option value="_subtotal" SELECTED> Standard shipping by price</option>
+<option value="weight"> Standard shipping by weight</option>
+<option value="volume"> Standard shipping by volume</option>
+<option value="quantity"> Standard shipping by quantity</option>
+[available_www_shipping]
+</select>
+
+</td>
+</tr>
+
+<tr>
+<td bgcolor=#94a0e0 align=right valign=top>
+<BR><small>Apply this method by country<BR><I>(select as many as desired)</I></small>
+</td>
+<td bgcolor=#94a0e0>
+
+<select name=ui_ship_country MULTIPLE size=10>
+[loop search="ra=yes/fi=country/ml=1000/tf=name/rf=code,name"]
+		 <OPTION VALUE="[loop-code]"> [loop-param name]
+[/loop]
+
+</select>
+
+</td>
+</tr>
+
+
+<tr>
+<td bgcolor=#94a0e0 align=right>
+<small>Minimum shipping charge</small>
+</td>
+<td bgcolor=#94a0e0>
+<input type=text size=10 name="minimum" value="[value minimum]">
+</td>
+</tr>
+
+<tr>
+<td bgcolor=#94a0e0 align=right>
+<small>Additional shipping calculation</small>
+</td>
+<td bgcolor=#94a0e0>
+<input type=text size=50 name="extra_alg" value="">
+</td>
+</tr>
+
+<tr>
+<td colspan=2 bgcolor=#7079aa><img src="images/cleardot.gif" width=600 height=1></td>
+</tr>
+
+</table>
+
+<p>
+
+<input type=submit name="do_update_cmd" value="Ok">
+<input type=submit name="do_cancel" value="Cancel">
+
+</form>
+
+
+<!-- ----- END REAL STUFF ----- -->
+
+
+
+@@UI_STD_FOOTER@@
+<!-- page: @@MV_PAGE@@ -->
