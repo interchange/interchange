@@ -1,9 +1,14 @@
+# Copyright 2002 Interchange Development Group (http://www.icdevgroup.org/)
+# Licensed under the GNU GPL v2. See file LICENSE for details.
+# $Id: banner.coretag,v 1.3 2004-10-16 11:56:46 docelic Exp $
+
 UserTag banner              Order        category
 UserTag banner              addAttr
 UserTag banner              PosNumber    1
 UserTag banner              Routine      <<EOR
 sub {
-    my ($place, $opt) = @_;
+	my ($place, $opt) = @_;
+
 
 	sub initialize_banner_directory {
 		my ($dir, $category, $opt) = @_;
@@ -30,9 +35,9 @@ sub {
 		my $b_field = $opt->{b_field} || 'banner';
 		my $q = "select $w_field, $b_field from $t where $w_field >= 1$append";
 		my $banners = $db->query({
-								query => $q,
-								st => 'db',
-							});
+			query => $q,
+			st => 'db',
+		});
 		my $i = 0;
 		for(@$banners) {
 			my ($weight, $text) = @$_;
@@ -54,7 +59,7 @@ sub {
 			$c =~ s/\W//g;
 			$dir .= "/$c";
 		}
-		my $statfile =	$Vend::Cfg->{ConfDir};
+		my $statfile = $Vend::Cfg->{ConfDir};
 		$statfile .= "/status.$Vend::Cat";
 		my $start_time;
 		if($opt->{once}) {
@@ -69,44 +74,40 @@ sub {
 		}
 		my $weight_file = "$dir/total_weight";
 		initialize_banner_directory($dir, $category, $opt)
-			if  (	
-					! -f $weight_file
-						or
-					(stat(_))[9] < $start_time
-				);
+			if  ( ! -f $weight_file  or  (stat(_))[9] < $start_time );
 		my $n = int( rand( readfile($weight_file) ) );
 		return Vend::Util::readfile("$dir/$n");
 	}
 	return tag_weighted_banner($place, $opt) if $opt->{weighted};
 
-	my $table	= $opt->{table}		|| 'banner';
-	my $r_field	= $opt->{r_field}	|| 'rotate';
-	my $b_field	= $opt->{b_field}	|| 'banner';
-	my $sep		= $opt->{separator} || ':';
-	my $delim	= $opt->{delimiter} || "{or}";
+	my $table = $opt->{table}     || 'banner';
+	my $r_field = $opt->{r_field} || 'rotate';
+	my $b_field = $opt->{b_field} || 'banner';
+	my $sep  = $opt->{separator}  || ':';
+	my $delim = $opt->{delimiter} || "{or}";
 	$place = 'default' if ! $place;
-    my $totrot;
-    do {
+	my $totrot;
+	do {
 		my $banner_data;
-        $totrot = tag_data($table, $r_field, $place);
-        if(! length $totrot) {
+		$totrot = tag_data($table, $r_field, $place);
+		if(! length $totrot) {
 			# No banner present
-            unless ($place =~ /$sep/ or $place eq 'default') {
+			unless ($place =~ /$sep/ or $place eq 'default') {
 				$place = 'default';
 				redo;
 			}
-        }
-        elsif ($totrot) {
-            my $current = $::Scratch->{"rotate_$place"}++ || 0;
-            my $data = tag_data($table, $b_field, $place);
-            my(@banners) = split /\Q$delim/, $data;
-            return '' unless @banners;
-            return $banners[$current % scalar(@banners)];
-        }
-        else {
-            return tag_data($table, $b_field, $place);
-        }
-    } while $place =~ s/(.*)$sep.*/$1/;
+		}
+		elsif ($totrot) {
+			my $current = $::Scratch->{"rotate_$place"}++ || 0;
+			my $data = tag_data($table, $b_field, $place);
+			my(@banners) = split /\Q$delim/, $data;
+			return '' unless @banners;
+			return $banners[$current % scalar(@banners)];
+		}
+		else {
+			return tag_data($table, $b_field, $place);
+		}
+	} while $place =~ s/(.*)$sep.*/$1/;
 	return;
 }
 EOR
