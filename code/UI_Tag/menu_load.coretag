@@ -44,6 +44,9 @@ sub old_link {
 
 		push @out, qq{va=banner_image=$row->{banner_image}} if $row->{banner_image};
 		push @out, qq{va=banner_text=$row->{banner_text}} if $row->{banner_text};
+		for(@out) {
+			s/(.*?=)(.*)/$1 . Vend::Util::hexify($2)/ges;
+		}
 		$arg = join "&", @out;
 		$nrow->{form} = $arg;
 	  }
@@ -105,7 +108,7 @@ sub {
 			my $tname = $db->name();
 #::logDebug("LARGE=" . $db->config('LARGE'));
 			$opt->{key_field} ||= $db->config('KEY');
-			if(! $opt->{build_even_large} and $db->config('LARGE')) {
+			if(! $opt->{even_large} and $db->config('LARGE')) {
 				Vend::Tags->error({ set => errmsg(
 										"%s database %s for tree write: %s",
 										'check',
@@ -221,7 +224,7 @@ sub {
 							};
 
 #Debug("LARGE=" . $db->config('LARGE'));
-				if(! $CGI->{qmenu_even_large} and $db->config('LARGE')) {
+				if(! $opt->{even_large} and $db->config('LARGE')) {
 					$Tag->error({ set => errmsg(
 									"%s database %s for tree write: %s",
 									'check',
@@ -316,7 +319,10 @@ sub {
 					last AREABUILD;
 				};
 #Debug("LARGE=" . $db->config('LARGE'));
-			my $q = qq{ SELECT * FROM $tab ORDER BY sort };
+			my $q = qq{ SELECT * FROM $tab};
+			$q .= qq{ WHERE sel = '$opt->{sel}'}
+				if $opt->{sel};
+			$q .= qq{ ORDER BY sort };
 			my $ary = $db->query({ sql => $q, hashref => 1 } )
 							or do {
 								Vend::Tags->error({
@@ -384,7 +390,6 @@ sub {
 				push @out, join "\t", @{$_}{@menufields};
 #Debug("pushing out --> row=" . uneval($_));
 			}
-#Debug("qmenu_data=$Scratch->{qmenu_data}");
 		}
 	}
 	elsif($type eq 'html') {

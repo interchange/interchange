@@ -76,6 +76,7 @@ __UI_META_TABLE__
 			table => $CGI->{qmenu_products},
 			comb_field => $CGI->{qmenu_comb_field},
 			type => 'comb_category',
+			even_large => $CGI->{qmenu_even_large},
 		);
 
 		$CGI->{qmenu_text} = $Tag->menu_load(\%opt);
@@ -92,6 +93,7 @@ __UI_META_TABLE__
 			table => $CGI->{qmenu_products},
 			first_field => $CGI->{qmenu_toplevel_field},
 			second_field => $CGI->{qmenu_sublevel_field},
+			even_large => $CGI->{qmenu_even_large},
 			type => 'tree',
 		);
 
@@ -101,12 +103,21 @@ __UI_META_TABLE__
 	}
 	elsif ($CGI->{qmenu_cat}) {
 		# Build menu from top&sub level tables
+		if($CGI->{qmenu_sel_value} =~ /\S/) {
+			$CGI->{qmenu_sel_value} =~ s/^\s+//;
+			$CGI->{qmenu_sel_value} =~ s/\s+$//;
+		}
+		else {
+			undef $CGI->{qmenu_sel_value};
+		}
 
 		$CGI->{qmenu_toplevel} ||= 'area';
 		$CGI->{qmenu_sublevel} ||= 'cat';
 		my %opt = (
 			table => $CGI->{qmenu_toplevel},
+			sel => $CGI->{qmenu_sel_value},
 			cat_table => $CGI->{qmenu_sublevel},
+			even_large => $CGI->{qmenu_even_large},
 			type => 'cat_menu',
 		);
 
@@ -395,10 +406,11 @@ __UI_META_TABLE__
 	<span class=cmessage>[warnings auto=1]</span>
 	[error all=1 text="<ul class=cerror><li>%s</ul>" joiner="<li>"]
 	</td>
-	<td width="30%">
+	<td width="30%" rowspan=2>
 
 Build menu tree from database table(s):<br>
 [tabbed-display panel-width=300 panel-height=100
+        js-prefix=mvtb_
 		panel_style="
 			font-family: sans-serif;
 			font-size: 10px;
@@ -423,11 +435,11 @@ Build menu tree from database table(s):<br>
                 <input type=hidden name=mv_session_id value="[data session id]">
                 <input type=hidden name=mv_action value="back">
 
-[if !value qmenu_products]
-        [value name=qmenu_products set=products hide=1]
-        [value name=qmenu_comb_field set=comb_category hide=1]
-        [value name=qmenu_toplevel_field set=prod_group hide=1]
-        [value name=qmenu_sublevel_field set=category hide=1]
+[if !cgi qmenu_products]
+        [cgi name=qmenu_products set=products hide=1]
+        [cgi name=qmenu_comb_field set=comb_category hide=1]
+        [cgi name=qmenu_toplevel_field set=prod_group hide=1]
+        [cgi name=qmenu_sublevel_field set=category hide=1]
 [/if]
 		<select name="qmenu_products"
         		onChange="
@@ -448,34 +460,34 @@ Build menu tree from database table(s):<br>
             				);
         			"
 		size=1 style="width:130px;">
-			[loop list="[list-databases]" option=qmenu_products]
+			[loop list="[list-databases]" option=qmenu_products cgi=1]
 			<OPTION VALUE="[loop-code]">[loop-code]</OPTION>
 			[/loop]
 		</select> <input type=submit value=Go><br>
-<div id=combfield style="visibility:Visible;">
+<div id=combfield style="visibility:[if cgi qmenu_use_comb_field]Visible[else]Hidden[/else][/if];">
 		<select name="qmenu_comb_field" style="width:130px;">
 			<option value=""> -- none --
-			[loop list="[db-columns table='[value qmenu_products]']" option=qmenu_comb_field]
+			[loop list="[db-columns table='[cgi qmenu_products]']" option=qmenu_comb_field cgi=1]
 			<option>[loop-code]
 			[/loop]
-		</select> Comb_Field containing category info (Default: comb_category)
+		</select> Field (Default: comb_category)
 </div>
-<div id=nocombfield style="visibility:Hidden;">
+<div id=nocombfield style="visibility:[if cgi qmenu_use_comb_field]Hidden[else]Visible[/else][/if];">
 		<select name="qmenu_toplevel_field" style="width:130px;">
 			<option value=""> -- none --
-			[loop list="[db-columns table='[value qmenu_products]']" option=qmenu_toplevel_field]
+			[loop list="[db-columns table='[cgi qmenu_products]']" option=qmenu_toplevel_field cgi=1]
 			<option>[loop-code]
 			[/loop]
 		</select> Top Level Field<br>
 		<select name="qmenu_sublevel_field" style="width:130px;">
 			<option value=""> -- none --
-			[loop list="[db-columns table='[value qmenu_products]']" option=qmenu_sublevel_field]
+			[loop list="[db-columns table='[cgi qmenu_products]']" option=qmenu_sublevel_field cgi=1]
 			<option>[loop-code]
 			[/loop]
 		</select> Sub Level Field
 </div>
-                <input type=checkbox name="qmenu_use_comb_field" value=1 CHECKED onClick="toggle_comb(this.form.qmenu_use_comb_field.checked);"> Use comb_field&nbsp;&nbsp;
-                <input type=checkbox name="qmenu_even_large" value=1> Override, build even if large &nbsp;
+                <input type=checkbox name="qmenu_use_comb_field" value=1 onClick="toggle_comb(this.form.qmenu_use_comb_field.checked);" [checked name=qmenu_use_comb_field value=1 cgi=1]> Use comb_field&nbsp;&nbsp;
+                <input type=checkbox name="qmenu_even_large" value=1  [checked name=qmenu_even_large value=1 cgi=1]> Override, build even if large &nbsp;
                 </form>
 [/tabbed-panel]
 [tabbed-panel Top&Sub Level Tables]
@@ -484,14 +496,40 @@ Build menu tree from database table(s):<br>
                 <input type=hidden name=mv_action value="back">
                 <input type=hidden name=qmenu_cat value=1>
 
-                <select name=qmenu_toplevel>
-                [loop list="area [list-databases]" option=qmenu_toplevel cgi=1]
-                <option> [loop-code][/loop]
-                </select> Top Level table (Default: area)<br>
-                <select name=qmenu_sublevel>
-                [loop list="cat [list-databases]" option=qmenu_sublevel cgi=1]
-                <option> [loop-code][/loop]
-                </select> Sub Level table (Default: cat)<br>
+				<table style="font-size: 10px">
+					<tr>
+						<td>
+					<select name=qmenu_toplevel>
+					[loop list="area [list-databases]" option=qmenu_toplevel cgi=1]
+					<option> [loop-code][/loop]
+					</select>
+						</td>
+						<td>
+					Top Level table (Default: area)
+						</td>
+					</tr>
+					<tr>
+						<td>
+					<select name=qmenu_sublevel>
+					[loop list="cat [list-databases]" option=qmenu_sublevel cgi=1]
+					<option> [loop-code][/loop]
+					</select>
+						</td>
+						<td>
+					Sub Level table (Default: cat)
+						</td>
+					</tr>
+					<tr>
+						<td>
+					[display type=select name=qmenu_sel_value
+							 lookup_query="select distinct sel from area"
+							 options="=none" cgi=1]
+						</td>
+						<td>
+					Selector (if any)
+						</td>
+					</tr>
+				</table>
                 <input type=checkbox name="qmenu_even_large" value=1> Override, build even if large &nbsp;
                 <input type=submit value=Go>
                 </form>
@@ -499,7 +537,6 @@ Build menu tree from database table(s):<br>
 [/tabbed-display]
 	</td>
 </tr>
-</table>
 
 <script language="JavaScript1.2">
 	var lines = new Array;
@@ -515,6 +552,15 @@ Build menu tree from database table(s):<br>
 	var ltitle = new Array;
 	var emodes;
 	var evalues;
+	var image_dir = '[image dir-only=1 ui=1 secure="__UI_SECURE__"]';
+	var empty_img    = image_dir + 'box_empty.gif';
+	var up_img       = image_dir + 'up.gif';
+	var down_img     = image_dir + 'down.gif';
+	var full_img     = image_dir + 'box_checked.gif';
+	var left_img     = image_dir + 'left.gif';
+	var right_img    = image_dir + 'right.gif';
+	var forward_img  = image_dir + 'forward.gif';
+	var transfer_img = image_dir + 'transfer.gif';
 
 [perl reparse=0]
 	my @out;
@@ -650,6 +696,7 @@ sub {
 	return;
 [/calc]
 
+
 	var is_form_changed = 0;
 	var checkcur = 0;
 	var form;
@@ -743,8 +790,6 @@ sub {
 	function checkit(idx) {
 		var nam = 'img' + idx;
 		var i_el = document.getElementById(nam);
-		var empty_img = '[image dir-only=1 ui=1 secure="__UI_SECURE__"]box_empty.gif';
-		var full_img = '[image dir-only=1 ui=1 secure="__UI_SECURE__"]box_checked.gif';
 		var l = lines[idx];
 
 		if(l != undefined && l[CHECK] == 1) {
@@ -954,10 +999,10 @@ sub {
 			// out =	idx + 
 			out = ' <a href="javascript:checkit(' + idx + ');void(0)"><img ';
 			if(l[CHECK] == 1) {
-				out = out + 'src="__UI_IMG__box_checked.gif" ';
+				out = out + 'src="' + checked_img + '" ';
 			}
 			else {
-				out = out + 'src="__UI_IMG__box_empty.gif" ';
+				out = out + 'src="' + empty_img + '" ';
 			}
 
 			var grp = l[MSORT] + '';
@@ -968,11 +1013,11 @@ sub {
 			out = out + 'border=0 align=absbottom ' +
 					'id="img' + idx + '"></A>' + "\n" +
 					'<a href="javascript:motion(' + idx + ", 'left');void(0)" +
-					'"><img src="__UI_IMG__left.gif" border=0 align=absbottom></A>' + "\n" +
+					'"><img src="' + left_img + '" border=0 align=absbottom></A>' + "\n" +
 					'<a href="javascript:motion(' + idx + ", 'right');void(0)" +
-					'"><img src="__UI_IMG__right.gif" border=0 align=absbottom></A>' + "\n" +
+					'"><img src="' + right_img + '" border=0 align=absbottom></A>' + "\n" +
 					'<a href="javascript:loadForm(' + idx + ");void(0)" +
-					'"><img src="__UI_IMG__forward.gif" border=0 align=absbottom></A>' + "\n";
+					'"><img src="' + forward_img + '" border=0 align=absbottom></A>' + "\n";
 			for(i = 0; i < l[MSORT]; i++)
 				out = out + '&nbsp;&nbsp;&nbsp;'; 
 			if(showlevel == 1 && l[MSORT] > 0) {
@@ -1029,10 +1074,10 @@ sub {
 			// out =	idx + 
 			out = ' <a href="javascript:checkit(' + idx + ');void(0)"><img ';
 			if(l[CHECK] == 1) {
-				out = out + 'src="__UI_IMG__box_checked.gif" ';
+				out = out + 'src="' + checked_img + '" ';
 			}
 			else {
-				out = out + 'src="__UI_IMG__box_empty.gif" ';
+				out = out + 'src="' + empty_img + '" ';
 			}
 
 			var linktitle = '';
@@ -1045,11 +1090,11 @@ sub {
 			out = out + 'border=0 align=absbottom ' +
 					'id="img' + idx + '"></A>' + "\n" +
 					'<a href="javascript:motion(' + idx + ", 'up');void(0)" +
-					'"><img src="__UI_IMG__up.gif" border=0 align=absbottom></A>' + "\n" +
+					'"><img src="' + up_img + '" border=0 align=absbottom></A>' + "\n" +
 					'<a href="javascript:motion(' + idx + ", 'down');void(0)" +
-					'"><img src="__UI_IMG__down.gif" border=0 align=absbottom></A>' + "\n" +
+					'"><img src="' + down_img + '" border=0 align=absbottom></A>' + "\n" +
 					'<a href="javascript:loadForm(' + idx + ");void(0)" +
-					'"><img src="__UI_IMG__transfer.gif" border=0 align=absbottom></A>' + "\n";
+					'"><img src="' + transfer_img + '" border=0 align=absbottom></A>' + "\n";
 
 			var nme = l[NAME];
 			if(nme.length > 30) {
@@ -1631,17 +1676,14 @@ sub {
 
 </script>
 [/restrict]
-
-<form name=qmenuform action="[process href=@@MV_PAGE@@]" method=POST>
-<input name=mv_session_id type=hidden value="[data session id]">
-<input name=mv_action type=hidden value="back">
-<input name=cancelsubmit type=hidden value="">
-<input name=qmenu_name type=hidden value="[scratch qmenu_name]">
-<input name=qmenu_text type=hidden value="">
-
-<table>
 <tr>
-	<td>
+<form name=qmenuform action="[process href=@@MV_PAGE@@]" method=POST>
+	<td colspan=2>
+		<input name=mv_session_id type=hidden value="[data session id]">
+		<input name=mv_action type=hidden value="back">
+		<input name=cancelsubmit type=hidden value="">
+		<input name=qmenu_name type=hidden value="[scratch qmenu_name]">
+		<input name=qmenu_text type=hidden value="">
 Save to new menu <input name=qmenu_new type=text size=20 value="[cgi qmenu_new]">
 		<input type=submit
 				style="Visibility: Hidden;"

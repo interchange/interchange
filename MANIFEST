@@ -630,6 +630,8 @@ dist/foundation/pages/ship_addresses_removed.html
 dist/foundation/pages/splash.html
 dist/foundation/pages/stock-alert-added.html
 dist/foundation/pages/stock-alert.html
+dist/foundation/pages/survey/graph.html
+dist/foundation/pages/survey/graph.png.html
 dist/foundation/pages/survey/standard.html
 dist/foundation/pages/swap_results.html
 dist/foundation/products/2ndDayAir.csv
@@ -701,6 +703,7 @@ dist/foundation/templates/components/cart_tiny
 dist/foundation/templates/components/category_horizontal
 dist/foundation/templates/components/category_vert_toggle
 dist/foundation/templates/components/category_vertical
+dist/foundation/templates/components/category_vertical_tree
 dist/foundation/templates/components/cross
 dist/foundation/templates/components/fortune
 dist/foundation/templates/components/product_flyout
@@ -1150,6 +1153,7 @@ eg/news_feature/pages/news.html
 eg/news_feature/products/news.txt
 eg/news_feature/templates/components/news
 eg/reset_order_number
+eg/survey_graph.tag
 eg/te
 eg/usertag/benchmark
 eg/usertag/sleep
