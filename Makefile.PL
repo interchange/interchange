@@ -790,13 +790,14 @@ sub MY::postamble {
 	return <<'EOF';
 UIDIR=dist/lib/UI
 UILCDIR=$(UIDIR)/locales
+UIMENUDIR=$(UIDIR)/pages/include/menus
 
 localefiles:
 	@for langfile in $(UILCDIR)/*_*.cfg; do \
 		lang=`basename $$langfile .cfg`; \
 		mv $$langfile $$langfile.old; \
 		cat $(UILCDIR)/default.cfg >> $$langfile.old; \
-		if ! $(INSTALLBIN)/localize -n -m $$langfile.old -u $(UIDIR) -l $$lang `find $(UIDIR) -type f -not -empty` > $$langfile; then \
+		if ! $(INSTALLBIN)/localize -n -m $$langfile.old -u $(UIMENUDIR) -l $$lang `find $(UIDIR) -type f -not -empty` > $$langfile; then \
 		echo "Failed to generate locale file $$langfile"; \
 		mv $$langfile.old $$langfile; \
 		fi; \
