@@ -1,26 +1,26 @@
 =head1 NAME
 
-mvfaq - MiniVend FAQ
+mvfaq - Interchange FAQ
 
 =head2 VERSION
 
-Document version: $Id: mvfaq.pod,v 1.1 2000-05-26 18:50:46 heins Exp $
+Document version: $Id: mvfaq.pod,v 1.2 2000-07-12 01:18:51 heins Exp $
 
-This document describes MiniVend 4.0 and later.
+This document describes Interchange 4.5 and later.
 
 =head1 DESCRIPTION
 
-MiniVend is a freely-redistributable database retrieval and display
+Interchange is a freely-redistributable database retrieval and display
 application focused on e-commerce. In other words, a high-end and powerful
 shopping cart.  It serves any number of catalogs via the World Wide Web,
 allowing users to select items for placement on their shopping list,
 or cart, and then buy them by filling out an order form.
 
-MiniVend supports Secure Sockets Layer (SSL), PGP/GPG strong encryption,
+Interchange supports Secure Sockets Layer (SSL), PGP/GPG strong encryption,
 and online payment services to improve security. It is designed never
 to write an unencrypted credit card number to disk.
 
-MiniVend has a host of features -- a partial list is available at
+Interchange has a host of features -- a partial list is available at
 its web home page:
 
         http://www.minivend.com/
@@ -29,17 +29,17 @@ A more complete list is in its documentation, available via links from above.
 
 A full list can only be seen by examining its source code. 8-)
 
-MiniVend is written and maintained by Mike Heins, but much
-credit goes to Andrew Wilcox, who originated Vend and
-created many of the underlying algorithms.
+Interchange is developed and supported by Akopia, Inc.,
+and was originally written by by Mike Heins.  It was
+based on Andrew Wilcox's 1995 Vend.
 
-MiniVend is freely redistributable under the GNU General Public License,
-a copy of which should come with every MiniVend package. Basically
+Interchange is freely redistributable under the GNU General Public License,
+a copy of which should come with every Interchange package. Basically
 this means that you can use it for commercial or non-commercial
 purposes for free, but you you have certain responsibilities if you
 modify and/or redistribute it. See the GNU GPL for more information.
 
-=head2 Where can I get MiniVend?  How much does it cost?
+=head2 Where can I get Interchange?  How much does it cost?
 
 You simply download it from:
 
@@ -50,16 +50,16 @@ A list of CPAN locations is always available at
 
     http://www.perl.com/CPAN/
 
-As to cost, MiniVend is I<free> within the confines of the GNU General
-Public License.  Basically, any individual or company can use MiniVend
+As to cost, Interchange is I<free> within the confines of the GNU General
+Public License.  Basically, any individual or company can use Interchange
 free of charge -- you have certain responsibilities if you modify
 your copy then redistribute it. See the GPL at:
 
     http://www.gnu.org/copyleft/gpl.txt
 
-=head2 What else do I need to run MiniVend?
+=head2 What else do I need to run Interchange?
 
-MiniVend is a complex system requiring the services of other complex
+Interchange is a complex system requiring the services of other complex
 pieces of hardware and software. While it can be very easy to install,
 it is not always. You must look at the ongoing environment as well as
 just the initial installation.
@@ -68,13 +68,13 @@ just the initial installation.
 
 =item Perl
 
-First of all, you need a recent Perl. MiniVend 4 will
+First of all, you need a recent Perl. Interchange 4 will
 not run on anything less than Perl 5.005.
 
 =item Perl modules
 
-MiniVend I<will> run with a stock Perl, but to use some features
-of MiniVend (like the MiniMate interface) you will need some extra
+Interchange I<will> run with a stock Perl, but to use some features
+of Interchange (like the admin interface) you will need some extra
 modules. If you are on UNIX you can use the CPAN module and run:
 
     perl -MCPAN -e 'install Bundle::Minivend'
@@ -98,7 +98,7 @@ These are definitely recommended:
 
 These are nice to have but are not essential:
 
-    Business::UPS (comes with MiniVend)
+    Business::UPS (comes with Interchange)
     Term::ReadLine::Perl
     Term::ReadKey
 
@@ -113,7 +113,7 @@ The recommended packages for ActiveState Perl for Windows are:
     SQL_Statement
     DB_File
 
-FUTURE: The MiniVend setup program will attempt to use C<ppm.pl>, the ActivePerl
+FUTURE: The Interchange setup program will attempt to use C<ppm.pl>, the ActivePerl
 package manager, to install them at installation time.
 
 =item Operating System
@@ -121,7 +121,7 @@ package manager, to install them at installation time.
 UNIX is best. The Windows version, while perhaps more than just 
 a toy, is not suitable for high-volume catalog serving. This is
 mostly due to NT not fitting the UNIX fork() model which works
-so well with MiniVend.
+so well with Interchange.
 
 A catalog designed on a Windows machine should just move over to
 a UNIX machine with no changes, so Windows might be a suitable
@@ -129,7 +129,7 @@ development environment.
 
 Mac OS is not supported. If the time comes when it starts to reasonably
 support normal POSIX services, then an attempt to port will be made. This
-is not likely, in my estimation. MiniVend does run fine on OS/X.
+is not likely, in my estimation. Interchange does run fine on OS/X.
 
 =item Machine
 
@@ -143,24 +143,21 @@ is difficult to maintain a stable environment with that many users.
 
 =back
 
-MiniVend will run about as well as the platform beneath it. It routinely
+Interchange will run about as well as the platform beneath it. It routinely
 runs for months non-stop in a stable environment.
 
 =head2 If you are having problems
 
-MiniVend is not guaranteed to be supported in any fashion other
-than to make full source code of the current version available. However,
-the author is interested in making MiniVend as reliable and trouble-free
-as possible.  Forward bug reports, questions and comments to the
-mail list, minivend-users@minivend.com.
-
-MiniVend is powerful and correspondingly complex. If you are looking
-to "point-and-click" your way to a catalog, you probably should look
-elsewhere. While MiniMate I<can> make administration easier, you should
-not expect to put up a catalog with no effort.
+Interchange is not guaranteed to be supported in any fashion other than
+to make full source code of the current version available. However,
+Akopia is interested in making Interchange as reliable and trouble-free
+as possible and provides both free and paid support for Interchange.
+Forward bug reports, questions and comments to the mail list,
+minivend-users@minivend.com, or Akopia support, <support@akopia.com>.
 
 Do understand that any problems answered in this FAQ or the documentation
-will likely be ignored. Other problems will also be ignored if you don't:
+will likely be ignored by people on the mail list. Other problems will
+also be ignored if you don't:
 
 =over 4
 
@@ -179,16 +176,16 @@ mention what is (or is not) in the error.log files
 
 =back
 
-The official MiniVend web site is:
+The official Interchange web site is:
 
-    http://www.minivend.com/
+    http://www.akopia.com/interchange/
 
 The latest version of the software, this FAQ, and the documentation,
 are available there.  Your problem may not be unique -- check the site
 first. There is a search feature that encompasses the documentation
 and FAQ; there is also a mail list and an archive for it.
 
-The most common problem on UNIX is receiving the "We're sorry, the MiniVend
+The most common problem on UNIX is receiving the "We're sorry, the Interchange
 server is unavailable..." message.  This almost always means that permissions
 are not properly set up, or that the link program is not in the right location.
 
@@ -213,8 +210,8 @@ setting in C<minivend.cfg>:
 
     SocketPerms 0666
 
-If MiniVend then works you will have to make sure the user that the VLINK
-program runs as matches the user who is running the MiniVend daemon.
+If Interchange then works you will have to make sure the user that the VLINK
+program runs as matches the user who is running the Interchange daemon.
 It is usual to create a special C<mvend> or C<minivend> user to run the
 daemon and the link program.  This means the directory listing for your
 CGI-BIN should be something like:
@@ -225,31 +222,31 @@ and for the socket file it should be:
 
    srw-------   1 minivend users           0 Dec 30 11:41 etc/socket
 
-See the next section for troubles with running MiniVend on ISP sites.
+See the next section for troubles with running Interchange on ISP sites.
 
-Beyond that, if you are unable to get MiniVend installed you should
+Beyond that, if you are unable to get Interchange installed you should
 check to see if you can run I<any> CGI program from the path it
 is trying to use. The next most common problem is the user giving
 the wrong information to C<makecat>.
 
-MiniVend is intended to work on Perl Version 5.005 and higher, but
+Interchange is intended to work on Perl Version 5.005 and higher, but
 the author does not have the resources (read time) to regression
 test all versions with the different versions of Perl, nor the
-differing operating systems that exist. MiniVend
+differing operating systems that exist. Interchange
 will definitely be tested with the last major release of Perl at
-the time of package release.  As of this writing, MiniVend's
-version is 4.0 and Perl's latest release version is 5.005_03.
+the time of package release.  As of this writing, Interchange's
+version is 4.5.2 and Perl's latest release version is 5.6.0.
 
 B<Please understand that the first remedy in the case of unknown problems will>
 B<be to upgrade Perl to the latest version.>
 
 =head2 Information Needed for Support
 
-First, check the the official MiniVend web site for information:
+First, check the the official Interchange web site for information:
 
     http://www.minivend.com/
 
-If you are unable to get MiniVend installed, it is almost always
+If you are unable to get Interchange installed, it is almost always
 a problem with your answers to its questions or with the the Perl
 installation. Common problems include:
 
@@ -257,13 +254,13 @@ installation. Common problems include:
 
 =item *
 
-Your Perl has threading enabled. This may cause problems for MiniVend
+Your Perl has threading enabled. This may cause problems for Interchange
 on some operating systems. Try building a Perl without threading.
 
 =item *
 
 Occupied default port (8786) or interfering firewall during the test. This
-causes part of 'make test' to fail while MiniVend might still work
+causes part of 'make test' to fail while Interchange might still work
 just fine.
 
 =item *
@@ -2567,8 +2564,12 @@ of passing a parameter).
 =head1 CHANGES
 
 $Log: mvfaq.pod,v $
-Revision 1.1  2000-05-26 18:50:46  heins
-Initial revision
+Revision 1.2  2000-07-12 01:18:51  heins
+Changed docs to reflect name Interchange. Obviously, there are still
+instances of "minivend" all over the place in file names and programs.
+
+Revision 1.1.1.1  2000/05/26 18:50:46  heins
+Initial import of changed Challenger with UI instead of Minimate.
 
 Revision 1.1.1.1  2000/05/22 14:18:57  heins
 Initial Challenger deposit
