@@ -592,6 +592,9 @@ eg/globalsub/signio
 eg/grant.sql
 eg/ifdef
 eg/make_gnumeric.sh
+eg/usertag/benchmark
+eg/usertag/sleep
+eg/usertag/table_organize
 extensions/quickbooks/README
 extensions/quickbooks/etc/trans_quickbooks
 extensions/quickbooks/ic_qb.pod
