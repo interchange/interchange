@@ -381,8 +381,10 @@ vieworder=
 <input type=submit name="archiveorder" value="[L]Archive order and view next[/L]">
 [/else]
 [/if-loop-data]
+[if-mm advanced order=d]
 <input type=submit name="deleteorder" value="[L]Delete order and view next[/L]" 
  onClick="return confirm('[L]Are you sure you want to delete this order?[/L]')">
+[/if-mm]
 
 </form>
 </SMALL>

@@ -18,7 +18,7 @@
 		$value = 0;
 		$action_col = 'archived';
 	}
-	elsif($CGI->{deleteorder}) {
+	elsif($CGI->{deleteorder} and $Scratch->{can_delete}) {
 		$value = 1;
 		$action_col = 'deleted';
 	}
