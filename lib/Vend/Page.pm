@@ -1,6 +1,6 @@
 # Vend::Page - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 2.13 2003-07-03 15:11:50 racke Exp $
+# $Id: Page.pm,v 2.14 2003-07-31 13:35:35 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -46,7 +46,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 2.13 $, 10);
+$VERSION = substr(q$Revision: 2.14 $, 10);
 
 my $wantref = 1;
 
@@ -104,7 +104,7 @@ sub display_page {
 		$name = find_special_page('violation');
 	}
 
-	$page = readin($name);
+	$page = $Vend::VirtualPage || readin($name);
 # TRACK
 	if (defined $page && $Vend::Track) {
 		$Vend::Track->view_page($name);
