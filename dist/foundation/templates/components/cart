@@ -19,18 +19,21 @@ upsell_in_cart:
 <tr>
 	<td align="center">
 
-	[if type=explicit compare="q{[read-cookie MV_SESSION_ID]}"]
-
+	[calc]
+		my $cname = $Config->{CookieName} || 'MV_SESSION_ID';
+		$Scratch->{have_cookie} = $Tag->read_cookie($cname)
+			and delete $Scratch->{tried};
+		return;
+	[/calc]
+	[if scratch have_cookie]
 	[elsif scratch tried]
     		You must have cookies set to leave the basket. Check out now or forever
     		lose your shopping cart.
 	[/elsif]
-
 	[else]
 		[set tried]1[/set]
 		[bounce href="[area ord/basket]"]
 	[/else]
-
 	[/if]
 
 	<FORM ACTION="[process-target secure=1]" METHOD=POST name="basket">
