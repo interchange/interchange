@@ -14,6 +14,7 @@
 	my $udb = $Db{userdb};
 	my $tdb = $Db{transactions};
 	my $odb = $Db{orderline};
+	my $vdb = $Db{variable};
 
 my %doit = (
 nukeusers           => sub {
@@ -48,7 +49,7 @@ orderstart 	    => sub {
 			my $status = $val->();
 			push @messages, "$_ subroutine returned $status.";
 		}
-		elsif($val =~ /\w+/) {
+		elsif ($vdb && $val =~ /\w+/) {
 			$vdb->set_field($val, 'Variable', $Values->{$_});
 			push @messages, "$_ set $val to '$Values->{$_}' in variable.";
 		}
