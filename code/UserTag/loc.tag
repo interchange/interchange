@@ -3,6 +3,7 @@
 # This tag is the equivalent of [L] ... [/L] localization, except
 # it works with contained tags
 #
+UserTag l Alias	loc
 UserTag loc hasEndTag   1
 UserTag loc Interpolate 1
 UserTag loc Order locale
