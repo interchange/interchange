@@ -1,5 +1,9 @@
 This file documents all changes of the LINUXIA branch of Interchange.
 
 - Debian packaging files added
-- patch to makecat.PL to make -f working (CVS 1.26.4.2)
 - Debian configuration file location added to interchange.PL (CVS 1.8.4.2)
+
+
+Changes that made into the main branch:
+
+- patch to makecat.PL to make -f working (CVS 1.26.4.2, modified, 2000-10-18)
