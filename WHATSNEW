@@ -28,6 +28,18 @@ Core
 
 * Add filter option to [scratch], the same as with [value] and [cgi].
 
+* Tolerate empty CGI key/value pairs to avoid unfriendly 500 errors. We
+  already tolerated one at the beginning and one or more at the end of the
+  query parameters:
+
+  http://www.icdevgroup.org/i/dev/index?&id=abcd
+  http://www.icdevgroup.org/i/dev/index?id=abcd&&&&&&
+
+  Now these are handled gracefully too:
+
+  http://www.icdevgroup.org/i/dev/index?&&id=abcd
+  http://www.icdevgroup.org/i/dev/index?id=abcd&&&xyz=123
+
 UI
 --
 
@@ -36,7 +48,15 @@ UI
 
 * Fix content editor to actually use the selected template for new pages.
 
-* Fixed so inactive/HIDE_FIELD are always ignored for record display in UI.
+* inactive/HIDE_FIELD are always ignored for record display in UI.
+
+* Add table= parameter to [query] calls if table is different from products.
+  This fixes a rare problem that only occurs when using multiple external
+  databases in one catalog.
+
+* Improve [flex-select] so that key column can have formatting options 
+  via mv_metadata just like all other columns in a table.
+  The value that is passed to the flex_editor is unadulterated in all cases.
 
 Usertags
 --------
