@@ -2,7 +2,14 @@ interchange (4.9.0-0.1) unstable; urgency=low
 
   * new upstream release
 
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 15 Aug 2001 13:54:41 +0200
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri, 17 Aug 2001 00:24:29 +0200
+
+interchange (4.8.2-1) unstable; urgency=low
+
+  * new upstream release
+  * install README.debian into /usr/share/doc
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Wed, 15 Aug 2001 13:58:25 +0200
 
 interchange (4.8.1-1) unstable; urgency=low
 
