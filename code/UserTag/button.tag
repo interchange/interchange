@@ -2,7 +2,7 @@ UserTag button Order name src text
 UserTag button addAttr
 UserTag button attrAlias value text
 UserTag button hasEndTag
-UserTag button Version $Id: button.tag,v 1.5 2002-10-30 20:43:05 racke Exp $
+UserTag button Version $Id: button.tag,v 1.6 2002-11-04 15:46:52 mheins Exp $
 UserTag button Documentation <<EOD
 
 =pod
@@ -186,7 +186,7 @@ sub {
 	$out .= qq{<INPUT TYPE=hidden NAME="$clickname" VALUE="">} if $image; 
 
 	my $formname;
-	$opt->{form} = 'document.forms[0]'
+	$opt->{form} = 'forms[0]'
 		if ! $opt->{form};
 
 	$confirm .= ' && ' if $confirm;
