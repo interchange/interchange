@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.5.x
 #
-# $Id: minivend.PL,v 1.12 2000-07-20 07:24:13 heins Exp $
+# $Id: minivend.PL,v 1.13 2000-08-06 20:05:39 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -123,7 +123,7 @@ use vars qw($VERSION);
 require Exporter;
 
 BEGIN {
-	$VERSION = '4.5.4';
+	$VERSION = '4.5.5';
 }
 
 
@@ -430,8 +430,9 @@ sub update_data {
         or die "Not a defined database '$table': $!\n";
     $db = $db->ref();
 
-	my @fields		= grep $_, split /[\s\0,]+/, $CGI::values{mv_data_fields};
-
+	my @fields		= grep $_ && $_ ne $prikey,
+						split /[\s\0,]+/, $CGI::values{mv_data_fields};
+	unshift(@fields, $prikey);
 	$function = 'update' unless $function;
 
 	my (%data);
@@ -444,11 +445,14 @@ sub update_data {
 		@{$data{$key}} = split /\0/, $value;
 	}
 
-	unless ($data{$prikey}) {
-		logError("No key '%s' found for function='%s' table='%s' key='%s'",
-				$prikey, $function,
-				 $CGI::values{mv_data_table},
-				 $CGI::values{$prikey}   );
+	if (not defined $data{$prikey}) {
+		logError("No key '%s' in field specifier %s", $prikey, 'mv_data_fields');
+		return undef;
+	}
+	elsif ( ! @{$data{$prikey}}) {
+		logError("No key '%s' found for function='%s' table='%s'",
+					$prikey, $function, $CGI::values{mv_data_table},
+					);
 		return undef;
 	}
 
@@ -456,7 +460,7 @@ sub update_data {
 	my (@k);
 	my (@v);
 	my (@c);
-#::logDebug("update_data:db=$db key=$prikey VALUES=" . ::uneval(\%CGI::values));
+::logDebug("update_data:db=$db key=$prikey VALUES=" . ::uneval(\%CGI::values));
 	my $select_key;
 	for($i = 0; $i < @{$data{$prikey}}; $i++) {
 		@k = (); @v = ();
@@ -476,6 +480,7 @@ sub update_data {
 			$select_key = $value if $_ eq $prikey;
 			push(@v, $value);
 		}
+
 		if($function eq 'delete') {
 			$db->delete_record($select_key);
 		}
@@ -630,12 +635,13 @@ sub do_click {
 		foreach $click (@map) {
 			push (@clicks, $click)
 				if defined $CGI::values{"mv_click.$click.x"}
-				or defined $CGI::values{"$click.x"};
+				or defined $CGI::values{"$click.x"}
+				or $click = $CGI::values{"mv_click_$click"};
 		}
 	}
 
 	foreach $click (@clicks) {
-		parse_click \%CGI::values, $click;	
+		parse_click \%CGI::values, $click;
 	}
 	return 1;
 }
@@ -953,11 +959,13 @@ sub config_named_catalog {
 	return $c if defined $g->{'base'};
 
 	eval {
+		$Vend::Cfg = $c;	
 # STATICPAGE
 	READSTATIC: {
 			my $basedir = $c->{PageDir};
-			last READSTATIC if ! -f "$basedir/.static";
 			if ($c->{Static}) {
+				last READSTATIC if $c->{StaticDBM};
+				last READSTATIC if ! -f "$basedir/.static";
 				print "loading static page names..." unless $Vend::Quiet;
 				last READSTATIC if $c->{StaticDBM};
 				open STATICPAGE, "< $basedir/.static"
@@ -973,7 +981,6 @@ EOF
 			}
 		}
 # END STATICPAGE
-		$Vend::Cfg = $c;	
 		$::Variable = $Vend::Cfg->{Variable};
 		Vend::Data::read_salestax();
 		Vend::Data::read_shipping();
@@ -1072,14 +1079,14 @@ sub tie_static_dbm {
 	if($Global::GDBM) {
         my $flags = $rw ? &GDBM_WRITER : &GDBM_READER;
         $flags = &GDBM_NEWDB
-            if $rw && $Vend::BuildingPages;
+            if $rw && (! -f "$Vend::Cfg->{StaticDBM}.gdbm" || $Vend::BuildingPages);
         tie(%Vend::StaticDBM,
             'GDBM_File',
             "$Vend::Cfg->{StaticDBM}.gdbm",
             $flags,
             $Vend::Cfg->{'FileCreationMask'},
         )
-        or undef $Vend::Cfg->{StaticDBM};
+        or $Vend::Cfg->{SaveStaticDBM} = delete $Vend::Cfg->{StaticDBM};
 	}
 	elsif ($Global::DB_File) {
 		tie(%Vend::StaticDBM,
@@ -1091,7 +1098,7 @@ sub tie_static_dbm {
 		or undef $Vend::Cfg->{StaticDBM};
 	}
 	else {
-		undef $Vend::Cfg->{StaticDBM};
+        $Vend::Cfg->{SaveStaticDBM} = delete $Vend::Cfg->{StaticDBM};
 	}
 	::logError("Failed to create StaticDBM %s", $Vend::Cfg->{StaticDBM})
 		if $rw && ! $Vend::Cfg->{StaticDBM};
@@ -1176,6 +1183,210 @@ my %action = (
     order	=> \&do_order,
     obtain	=> \&do_order,
 );
+
+sub rpc_dispatch {
+	my($self, $cat) = @_;
+	$H = $self;
+	Vend::Interpolate::reset_calc();
+#::logDebug ("begin rpc dispatch: " . (join " ", times()) . "\n");
+#::logDebug ("begin rpc dispatch, locale LC_CTYPE: " . POSIX::setlocale(POSIX::LC_CTYPE()) . "\n");
+
+    my($sessionid);
+	my($g, $action);
+
+	$cat = $H->{cat} if ! $cat;
+
+	unless ($Vend::Cfg = $Global::Selector{$cat}) {
+		$H->error(404, errmsg("Catalog %s not found", $cat));
+		return undef;
+	}
+
+	my $catref = $Global::Catalog{$Vend::Cfg->{CatalogName}};
+	if(! $Vend::Foreground and defined $catref->{directive}) {
+		no strict 'refs';
+		my ($key, $val);
+		while ( ($key, $val) = each %{$catref->{directive}}) {
+#::logDebug("directive key=$key val=" . ::uneval($val));
+			${"Global::$key"} = $val;
+		}
+	}
+
+	# See if it is a subcatalog
+	if (defined $Vend::Cfg->{BaseCatalog}) {
+		my $name = $Vend::Cfg->{BaseCatalog};
+		my $ref = $Global::Catalog{$name};
+		my $c = $Vend::Cfg;
+		$Vend::Cfg = $Global::Selector{$ref->{'script'}};
+		for(keys %{$c->{Replace}}) {
+			undef $Vend::Cfg->{$_};
+		}
+		copyref($c, $Vend::Cfg);
+		if($Vend::Cfg->{Variable}{MV_LANG}) {
+			my $loc = $Vend::Cfg->{Variable}{MV_LANG};
+			$Vend::Cfg->{Locale} = $Vend::Cfg->{Locale_repository}{$loc}
+					if defined $Vend::Cfg->{Locale_repository}{$loc};
+		}
+		$Vend::Cfg->{StaticPage} = {}
+			unless $Vend::Cfg->{Static};
+	}
+	$::Variable = $Vend::Cfg->{Variable};
+
+	chdir $Vend::Cfg->{VendRoot} 
+		or die "Couldn't change to $Vend::Cfg->{VendRoot}: $!\n";
+	set_file_permissions();
+
+	umask $Vend::Cfg->{Umask};
+	open_database();
+
+	my $from_cookie;
+	$sessionid = $CGI::values{mv_session_id} || undef;
+	$Vend::OnlyProducts = defined $Vend::Cfg->{ProductFiles}->[1]
+						  ? undef
+						  : $Vend::Cfg->{ProductFiles}->[0];
+
+	$CGI::host = $Vend::Cfg->{WideOpen} ? 'nobody' : ($H->{host} || 'RPC');
+
+    if ($H->{sessionid}) {
+    	$Vend::SessionName = $Vend::SessionID = $H->{sessionid};
+		$Vend::SessionID = s/[^A-Za-z0-9].*//;
+		if(! get_session()) {
+			retire_id($sessionid);
+			last RESOLVEID;
+		}
+		my $now = time;
+
+		if ($now - $Vend::Session->{'time'} > $Vend::Cfg->{SessionExpire}) {
+			retire_id($sessionid);
+			new_session();
+			last RESOLVEID;
+		}
+    }
+	else {
+		$Vend::Session = {
+			'ohost'		=> 'RPC',
+			'browser'	=> 'RPC',
+			'scratch'	=> { %{$Vend::Cfg->{ScratchDefault}} },
+			'values'	=> { %{$Vend::Cfg->{ValuesDefault}} },
+			'carts'		=> {main => []},
+		};
+		$::Values     = $Vend::Session->{'values'};
+		$::Scratch	  = $Vend::Session->{scratch};
+		$::Scratch->{mv_locale} = $Vend::Cfg->{DefaultLocale}
+			if $Vend::Cfg->{DefaultLocale};
+		$::Carts	  = $Vend::Session->{carts};
+		tie $Vend::Items, 'Vend::Cart';
+    }
+
+#::logDebug("session name='$Vend::SessionName'\n");
+
+	%CGI::values = ();
+	%CGI::values = ( %{$H->{CGI}} ) if $H->{CGI};
+	$Vend::Interpolate::Calc_initialized = 0;
+	$CGI::values{mv_session_id} = $Vend::Session->{id} = $Vend::SessionID;
+
+	$Vend::Session->{arg} = $Vend::Argument = ($CGI::values{mv_arg} || undef);
+	if($CGI::values{mv_pc} and $CGI::values{mv_pc} =~ /[A-Za-z]/) {
+		$Vend::Session->{'source'} =	$CGI::values{mv_pc} eq 'RESET'
+										? ''
+										: $CGI::values{mv_pc};
+	}
+
+	my $locale;
+	# LEGACY
+	if($locale = $::Scratch->{mv_language}) {
+		$Global::Variable->{LANG}
+			= $::Variable->{LANG} = $locale;
+	}
+
+	if ($Vend::Cfg->{Locale}				and
+		$locale = $::Scratch->{mv_locale}	and
+		defined $Vend::Cfg->{Locale_repository}->{$locale}
+		)
+	{ 
+		$Global::Variable->{LANG}
+				= $::Variable->{LANG}
+				= $::Scratch->{mv_language}
+				= $locale
+			 if ! $::Scratch->{mv_language};
+		Vend::Util::setlocale(	$locale,
+								($::Scratch->{mv_currency} || undef),
+								{ persist => 1 }
+							);
+	}
+
+	my $macro;
+	if ($macro = $Vend::Cfg->{Autoload}) {
+		if($macro =~ /\[\w+/) {
+			interpolate_html($macro);
+		}
+		elsif ($macro =~ /^\w+$/) {
+			my $sub = $Vend::Cfg->{Sub}{$macro} || $Global::GlobalSub->{$macro};
+			$sub->();
+		}
+	}
+
+	if ($macro = $Vend::Cfg->{Filter}) {
+		for(keys %$macro) {
+			Vend::Interpolate::input_filter_do($_, { 'op' => $macro->{$_} } );
+		}
+	}
+
+	if (
+		defined $Vend::Session->{Filter} and
+		$macro = $Vend::Session->{Filter}
+		)
+	{
+		for(keys %$macro) {
+			Vend::Interpolate::input_filter_do($_, $macro->{$_});
+		}
+	}
+
+	if (
+		defined $Vend::Session->{Autoload} and
+		$macro = $Vend::Session->{Autoload}
+		)
+	{
+		if(ref $macro) {
+			for (@$macro) {
+				interpolate_html($_);
+			}
+		}
+		else {
+			interpolate_html($macro);
+		}
+	}
+
+	my $response;
+	eval {
+		$response = $H->do_rpc();
+	};
+
+	if($@) {
+		$H->error(500, $@);
+		return undef;
+	}
+
+	if(my $macro = $Vend::Cfg->{AutoEnd}) {
+		if($macro =~ /\[\w+/) {
+			interpolate_html($macro);
+		}
+		elsif ($macro =~ /^\w+$/) {
+			my $sub = $Vend::Cfg->{Sub}{$macro} || $Global::GlobalSub->{$macro};
+			$sub->();
+		}
+	}
+
+::logDebug ("end rpc dispatch: " . (join " ", times()) . "\n");
+
+	put_session() if $Vend::HaveSession;
+	close_database();
+
+	undef $Vend::Cfg;
+
+::logDebug ("closed all rpc: " .  join " ", times() . "\n");
+
+	return $response;
+}
 
 sub dispatch {
 	my($http) = @_;
@@ -1270,6 +1481,7 @@ EOF
 		}
 		unless (	$CGI::secure                                        or
 					$Vend::Cfg->{SecureURL} =~ m{$CGI::script_name$}     and
+					$Vend::Cfg->{VendURL}   !~ m{/nph-[^/]+$} 		     and
 					$Vend::Cfg->{VendURL}   !~ m{$CGI::script_name$} 		)
 		{
 			$Vend::Cfg->{VendURL}   =~ s!$real!$CGI::script_name!;
@@ -2349,6 +2561,7 @@ Contributions to Interchange have been made by:
     Gunnar Hellekson   
     Heinz Wittenbecher
     Jason Holt
+    Jeff Carnahan
     Jochen Wiedmann
     Jon Jensen
     Keiko
