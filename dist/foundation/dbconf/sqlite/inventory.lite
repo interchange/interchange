@@ -1,7 +1,0 @@
-Database  inventory  inventory.txt __SQLDSN__
-Database  inventory  COLUMN_DEF   "sku=char(64) NOT NULL PRIMARY KEY"
-Database  inventory  COLUMN_DEF   "quantity=INT"
-Database  inventory  COLUMN_DEF   "stock_msg=char(64)"
-Database  inventory  COLUMN_DEF   "account=char(64)"
-Database  inventory  COLUMN_DEF   "cogs_account=char(64)"
-Database  inventory  NUMERIC      quantity

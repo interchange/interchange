@@ -1,6 +1,0 @@
-UserTag counter             Order        file
-UserTag counter             addAttr
-UserTag counter             attrAlias    name file
-UserTag counter             PosNumber    1
-UserTag fcounter Alias counter
-UserTag counter             MapRoutine   Vend::Interpolate::tag_counter

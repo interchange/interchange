@@ -1,1 +1,0 @@
-code	sku	o_group	o_sort	o_default	o_label	o_value	o_widget	o_height	o_width	description	price	wholesale	display_type

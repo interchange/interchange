@@ -1,7 +1,0 @@
-UserTag soap                Order        call uri proxy
-UserTag soap                addAttr
-UserTag soap                PosNumber    3
-UserTag soap                MapRoutine   Vend::SOAP::tag_soap
-
-UserTag soap_entity			addAttr
-UserTag soap_entity			MapRoutine   Vend::SOAP::tag_soap_entity

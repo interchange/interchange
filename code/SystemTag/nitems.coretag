@@ -1,4 +1,0 @@
-UserTag nitems              Order        name
-UserTag nitems              addAttr
-UserTag nitems              PosNumber    1
-UserTag nitems              MapRoutine   Vend::Util::tag_nitems

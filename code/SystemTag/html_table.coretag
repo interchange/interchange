@@ -1,4 +1,0 @@
-UserTag html-table          addAttr
-UserTag html-table          hasEndTag
-UserTag html-table          PosNumber    0
-UserTag html-table          MapRoutine   Vend::Interpolate::html_table

@@ -1,4 +1,0 @@
-UserTag charge              Order        route
-UserTag charge              addAttr
-UserTag charge              PosNumber    1
-UserTag charge              MapRoutine   Vend::Payment::charge

@@ -1,9 +1,0 @@
-CodeDef line Filter
-CodeDef line Routine <<EOR
-sub {
-	my $val = shift;
-
-	$val =~ s/^(.*?)\r?\n.*$/$1/s;
-	return $val;
-}
-EOR

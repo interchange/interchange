@@ -1,1 +1,0 @@
-affiliate	name	campaigns	coupon_amount	join_date	url	timeout	active	password	image

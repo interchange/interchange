@@ -1,5 +1,0 @@
-UserTag sql                 Order        type query
-UserTag sql                 addAttr
-UserTag sql                 hasEndTag
-UserTag sql                 PosNumber    2
-UserTag sql                 MapRoutine   Vend::Data::sql_query

@@ -1,7 +1,0 @@
-CodeDef encrypt Filter
-CodeDef encrypt Routine <<EOR
-sub {
-	my ($val, $tag, $key) = @_;
-	return Vend::Order::pgp_encrypt($val, $key);
-}
-EOR

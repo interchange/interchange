@@ -1,3 +1,0 @@
-UserTag cart                Order        name
-UserTag cart                PosNumber    1
-UserTag cart                MapRoutine   Vend::Interpolate::tag_cart

@@ -1,7 +1,0 @@
-code	sel	name	which_page	sort	display_type	image	image_prop	banner_image	banner_text	link_type	url	tab	page	search	selector	link_template
-5	top	Automotive	all 	05	name					simple		products		tf=category	prod_group=Automotive
-4	left	Retail	all	05	name
-7	top	Retail	all 	05	name					simple		products		tf=category	prod_group=Retail
-3	left	Marketing	all	05	name
-6	top	Marketing	all 	05	name					simple		products		tf=category	prod_group=Marketing
-2	left	Automotive	all	05	name

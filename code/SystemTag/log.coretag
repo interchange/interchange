@@ -1,6 +1,0 @@
-UserTag log                 Order        file
-UserTag log                 addAttr
-UserTag log                 attrAlias    arg file
-UserTag log                 hasEndTag
-UserTag log                 PosNumber    1
-UserTag log                 MapRoutine   Vend::Interpolate::log

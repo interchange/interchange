@@ -1,3 +1,0 @@
-code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url	member
-001		x001					admin/layout		Layout Editor		0	Old Interchange 4 layout editor							
-002		x002					admin/layout_auto		Layout Auto-populate		0	Auto-populate the layout editor							

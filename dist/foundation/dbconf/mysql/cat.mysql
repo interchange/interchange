@@ -1,6 +1,0 @@
-Database  cat  cat.txt      __SQLDSN__
-Database  cat  DEFAULT_TYPE text
-Database  cat  COLUMN_DEF   "code=char(20) NOT NULL PRIMARY KEY"
-Database  cat  COLUMN_DEF   "sel=CHAR(64) DEFAULT '' NOT NULL, index(sel)"
-Database  cat  COLUMN_DEF   "name=CHAR(64) DEFAULT '' NOT NULL, index(name)"
-Database  cat  COLUMN_DEF   "sort=CHAR(4) DEFAULT 'ZZ' NOT NULL, index(sort)"

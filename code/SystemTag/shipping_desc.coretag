@@ -1,3 +1,0 @@
-UserTag shipping-desc       Order        mode
-UserTag shipping-desc       PosNumber    1
-UserTag shipping-desc       MapRoutine   Vend::Interpolate::tag_shipping_desc

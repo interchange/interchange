@@ -1,9 +1,0 @@
-UserTag content-editor Order name
-UserTag content-editor addAttr
-UserTag content-editor hasEndTag
-UserTag content-editor Routine <<EOR
-use UI::ContentEditor;
-sub {
-	return UI::ContentEditor::editor(@_);
-}
-EOR

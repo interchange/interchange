@@ -1,8 +1,0 @@
-code	mgroup	msort	next_line	indicator	exclude_on	depends_on	page	form	name	super	inactive	description	help_name	img_dn	img_up	img_sel	img_icon	url
-001	01	x001					admin/menu_editor		Menu Editor		0							
-002		x002					admin/menu_loader		Menu Loader		0	Load menus from a database						
-003	02	x003					admin/search_wizard	display_class=type1	Search Builder		1							
-004	03	x004					admin/button_builder		Button Builder		1							
-005	05	x005					admin/file_transfer		File Transfer		0							
-006	06	x006					admin/content		Page Edit		1							
-007		x007				`$Scratch->{help_name} eq 'layout.edit'`	admin/layout_auto		Auto-populate layout		1	Create vertical_category list stuff, deprecated for menu_editor						

@@ -1,4 +1,0 @@
-UserTag profile             Order        name
-UserTag profile             addAttr
-UserTag profile             PosNumber    1
-UserTag profile             MapRoutine   Vend::Interpolate::tag_profile

@@ -1,8 +1,0 @@
-UserTag scratchd            Order        name
-UserTag scratchd            PosNumber    1
-UserTag scratchd            Routine <<EOR
-sub {
-	my $var = shift;
-	return delete $::Scratch->{$var};
-}
-EOR

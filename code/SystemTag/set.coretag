@@ -1,4 +1,0 @@
-UserTag set                 Order        name
-UserTag set                 hasEndTag
-UserTag set                 PosNumber    1
-UserTag set                 MapRoutine   Vend::Interpolate::set_scratch

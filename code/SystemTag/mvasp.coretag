@@ -1,8 +1,0 @@
-UserTag mvasp               Order        tables
-UserTag mvasp               addAttr
-UserTag mvasp               attrAlias    table tables
-UserTag mvasp               Gobble
-UserTag mvasp               hasEndTag
-UserTag mvasp               PosNumber    1
-UserTag mvasp               NoReparse
-UserTag mvasp               MapRoutine   Vend::Interpolate::mvasp

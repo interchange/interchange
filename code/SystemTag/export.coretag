@@ -1,6 +1,0 @@
-UserTag export              Order        table
-UserTag export              addAttr
-UserTag export              attrAlias    base table
-UserTag export              attrAlias    database table
-UserTag export              PosNumber    1
-UserTag export              MapRoutine   Vend::Interpolate::export

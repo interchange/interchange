@@ -1,6 +1,0 @@
-UserTag tag                 Order        op arg
-UserTag tag                 addAttr
-UserTag tag                 attrAlias    description arg
-UserTag tag                 hasEndTag
-UserTag tag                 PosNumber    2
-UserTag tag                 MapRoutine   Vend::Interpolate::do_tag

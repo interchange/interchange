@@ -1,4 +1,0 @@
-UserTag tmpn                Order        name
-UserTag tmpn                hasEndTag
-UserTag tmpn                PosNumber    1
-UserTag tmpn                MapRoutine   Vend::Interpolate::set_tmp

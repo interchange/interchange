@@ -1,3 +1,0 @@
-UserTag calc                hasEndTag
-UserTag calc                Interpolate
-UserTag calc                MapRoutine   Vend::Interpolate::tag_calc

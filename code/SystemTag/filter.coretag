@@ -1,4 +1,0 @@
-UserTag filter              Order        op
-UserTag filter              hasEndTag
-UserTag filter              PosNumber    1
-UserTag filter              MapRoutine   Vend::Interpolate::filter_value
