@@ -65,6 +65,14 @@ END
  [/perl]
 
  [loop list="saved_carts_carts saved_carts_recurring"]
+    [if explicit]
+      [condition]'[loop-code]' eq 'saved_carts_carts'[/condition]
+      [tmp this_label]Saved Carts[/tmp]
+    [/if]
+    [if explicit]
+      [condition]'[loop-code]' eq 'saved_carts_recurring'[/condition]
+        [tmp this_label]Recurring Orders[/tmp]
+    [/if]
  [if scratch [loop-code]]
  <tr> 
    <td>
@@ -76,13 +84,7 @@ END
 	<table width="100" border="0" cellspacing="0" cellpadding="0">
 	<tr class=sheader>
 	<td colspan=3 align=center class=sheader>
-        [if explicit]
-          [condition]'[loop-code]' eq 'saved_carts_carts'[/condition]
-            Saved Carts
-          [else]
-            Recurring Orders
-          [/else]
-        [/if]
+        [scratch this_label]
         </td>
 	</tr>
 	<tr VALIGN=TOP class=cartalt>

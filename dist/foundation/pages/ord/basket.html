@@ -43,32 +43,34 @@ ui_template_name: cart
   [set Save Cart]
    mv_todo=return
    mv_nextpage=ord/basket
-   [seti nickname][perl]
+   [perl]
     my $nickname = $CGI->{c_nickname};
     my $lastupdate = $CGI->{c_updated};
+
+    push(@Vend::TmpScratch,qw/just_nickname nickname/);
 
     $nickname =~ s/://g; $lastupdate =~ s/://g;
     $Scratch->{just_nickname} = $nickname;
 
-    my $ret = join(':',$nickname,$lastupdate);
+    $Scratch->{nickname} = join(':',$nickname,$lastupdate);
 
     if($CGI->{save_cart} eq 'cart') {
-        $ret .= ':c';
+        $Scratch->{nickname} .= ':c';
     } elsif($CGI->{save_cart} eq 'recurring') {
-        $ret .= ':r';
+        $Scratch->{nickname} .= ':r';
     } else {
-        $ret .= ':?';
+        $Scratch->{nickname} .= ':?';
     }
 
     delete($CGI->{save_cart});
 
-    return $ret;
-   [/perl][/seti]
+    return '';
+   [/perl]
    [userdb function=set_cart nickname="[scratch nickname]"]
   [/set]
 
   [if !scratch just_nickname]
-    [seti just_nickname][tag time]%b-%d-%Y[/tag][/seti]
+    [tmp just_nickname][tag time]%b-%d-%Y[/tag][/tmp]
   [/if]
 
   [if cgi save_cart eq 'cart']

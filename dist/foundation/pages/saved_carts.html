@@ -49,6 +49,7 @@ ui_template_name: leftonly
   [perl]
     $Scratch->{saved_carts_carts} = '';
     $Scratch->{saved_carts_recurring} = '';
+    push(@Vend::TmpScratch,qw/saved_carts_carts saved_carts_recurring/);
 
     foreach my $var (split("\n",$Tag->value('carts'))) {
         my($name,$last_update,$type) = split(':',$var);
@@ -70,12 +71,12 @@ ui_template_name: leftonly
         });
 
 my $row = <<"END";
-<tr class=cartrow>
-<td valign=top class=cartrow>
+<tr>
+<td valign=top>
   $delink<img src="@_UI_IMG_@admin/delsm.gif" border=0></a>&nbsp;&nbsp;
 </td>
-<td valign=top class=cartrow>$golink$name</A></td>
-<td valign=top class=cartrow>$last_update</td>
+<td valign=top>$golink$name</A></td>
+<td valign=top>$last_update</td>
 </tr>
 END
 
@@ -90,44 +91,40 @@ END
   [/perl]
 [/if]
 
-<table border=1>
 [loop list="saved_carts_carts saved_carts_recurring"]
-[if scratch [loop-code]]
-<tr>
-   <td width="119" valign="top">
-        <table width="102" border="1" cellspacing="0" cellpadding="0" bordercolor="__BARCONTRAST__">
-        <tr><td>
-        <table width="100" border="0" cellspacing="0" cellpadding="0">
-        <tr>
-        <td colspan=3 align=center>
-        [if explicit]
-          [condition]'[loop-code]' eq 'saved_carts_carts'[/condition]
-          Saved Carts
-        [/if]
-        [if explicit]
-          [condition]'[loop-code]' eq 'saved_carts_recurring'[/condition]
-          Recurring Orders
-        [/if]
-        </td>
-        </tr>
-        <tr VALIGN=TOP class=cartalt>
-                <td>&nbsp;</td>
-                <td align=center width="67" class=cartalt>
-                        Name
-                </td>
-                <td align=center width="33" class=cartalt>
-                        Modified
-                </td>
-        </tr>
-        [scratch [loop-code]]
-        </table>
-        </td></tr>
-        </table>
- </td>
- </tr>
-[/if]
+  [if explicit]
+    [condition]'[loop-code]' eq 'saved_carts_carts'[/condition]
+    [tmp this_label]Saved Carts[/tmp]
+  [/if]
+  [if explicit]
+    [condition]'[loop-code]' eq 'saved_carts_recurring'[/condition]
+    [tmp this_label]Recurring Orders[/tmp]
+  [/if]
+  [if scratch [loop-code]]
+    <table border=1><tr><td>
+    <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+    <th colspan=3 align=center>
+    [scratch this_label]
+    </td>
+    </tr>
+    <tr valign=top>
+            <td>&nbsp;</td>
+            <td align=center>
+                    Name
+            </td>
+            <td align=center>
+                    Modified
+            </td>
+    </tr>
+    [scratch [loop-code]]
+    </table>
+    </td></tr></table>
+  [else]
+    No [scratch this_label] entered.<BR><BR>
+  [/else]
+  [/if]
 [/loop]
-</table>
 
 <!-- END CONTENT -->
 
