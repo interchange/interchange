@@ -105,16 +105,6 @@ Core
 
 * Convert Mac line endings to Unix (as well as DOS).
 
-* Add "future" profile comparator so that you can do:
-
-    appointment_date=future 1 day "Sorry, we need some lead time."
-
-  That allows you to check that a date value (ala the date widget) is
-  in the future.
-
-* Enhance unique profile check to allow specification of a foreign key
-  for uniqueness check.
-
 * Finally discovered what is going on with GPG and errors.
 
   -- If PGP fails due to a system problem, like out of memory or
@@ -215,6 +205,21 @@ Filters
   This allows a next-sequential numbering for things that need it.
   Developed to support general-purpose survey UI for Ton's excellent
   product rating system.
+
+Profiles
+--------
+
+* Add "future" profile comparator so that you can do:
+
+    appointment_date=future 1 day "Sorry, we need some lead time."
+
+  That allows you to check that a date value (ala the date widget) is
+  in the future.
+
+* Added "luhn" profile check for "LUHN-10"-encoded numbers.
+
+* Enhance unique profile check to allow specification of a foreign key
+  for uniqueness check.
 
 Foundation
 ----------
