@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.0 2001-07-18 02:23:14 jon Exp $
+# $Id: UserDB.pm,v 2.0.2.1 2001-08-17 22:30:09 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -16,7 +16,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.0 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.1 $, 10);
 
 use vars qw!
 	$VERSION
@@ -320,6 +320,7 @@ sub new {
 						PASSWORD	=> $options{pass_field} || 'password',
 						LAST		=> $options{time_field} || 'mod_time',
 						EXPIRATION	=> $options{expire_field} || 'expiration',
+						OUTBOARD_KEY=> $options{outboard_key_col},
 						SUPER		=> $options{super_field}|| 'super',
 						ACL			=> $options{acl}		|| 'acl',
 						FILE_ACL	=> $options{file_acl}	|| 'file_acl',
@@ -636,6 +637,10 @@ sub get_values {
 
 	my @needed;
 	my $row = $db->row_hash($self->{USERNAME});
+	my $outkey = $self->{LOCATION}->{OUTBOARD_KEY}
+				 ? $row->{$self->{LOCATION}->{OUTBOARD_KEY}}
+				 : $self->{USERNAME};
+
 
 	for(@fields) {
 		if($ignore{$_}) {
@@ -645,7 +650,7 @@ sub get_values {
 		my $val;
 		if ($outboard{$_}) {
 			my ($t, $c, $k) = split /:+/, $outboard{$_};
-			$val = ::tag_data($t, ($c || $_), $self->{USERNAME}, { foreign => $k });
+			$val = ::tag_data($t, ($c || $_), $outkey, { foreign => $k });
 		}
 		else {
 			$val = $row->{$_};
