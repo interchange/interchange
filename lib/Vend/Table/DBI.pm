@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.21 2000-10-17 21:55:48 heins Exp $
+# $Id: DBI.pm,v 1.22 2000-10-18 13:45:08 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.21 $, 10);
+$VERSION = substr(q$Revision: 1.22 $, 10);
 
 use strict;
 
@@ -494,7 +494,8 @@ sub row_hash {
 		unless $s->[$TYPE];
 	my $ref;
 	if($s->config('UPPERCASE')) {
-		my $aref = $sth->fetchrow_arrayref();
+		my $aref = $sth->fetchrow_arrayref()
+			or return undef;
 		$ref = {};
 		my @nm = @{$sth->{NAME}};
 		for ( my $i = 0; $i < @$aref; $i++) {
