@@ -45,7 +45,7 @@ my $table = $Values->{mv_data_table};
 my $db = $Db{$table};
 my $mdb = $Db{__UI_META_TABLE__};
 if(! $db) {
-	$Scratch->{ui_error} = "Bad table '$table'.";
+	$Scratch->{ui_error} = errmsg("Bad table '%s'", $table);
 	$Tag->bounce( { page => '__UI_BASE__/error' } );
 }
 
