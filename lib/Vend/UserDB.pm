@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.27 2004-03-01 05:59:07 mheins Exp $
+# $Id: UserDB.pm,v 2.27.2.1 2004-04-19 14:32:59 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.27 $, 10);
+$VERSION = substr(q$Revision: 2.27.2.1 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1716,11 +1716,7 @@ sub userdb {
 			return undef;
 		}
 		if ($status = $user->login(%options) ) {
-			if(
-				! $Vend::Cfg->{AdminUserDB} or
-				$Vend::Cfg->{AdminUserDB}{$user->{PROFILE}}
-				)
-			{
+			if( $Vend::ReadOnlyCfg->{AdminUserDB}{$user->{PROFILE}} ) {
 				$Vend::admin = 1;
 			}
 			undef $Vend::Cookie;

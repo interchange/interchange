@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.136 2004-04-02 17:19:21 mheins Exp $
+# $Id: Config.pm,v 2.136.2.1 2004-04-19 14:32:59 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -48,7 +48,7 @@ use Vend::Util;
 use Vend::File;
 use Vend::Data;
 
-$VERSION = substr(q$Revision: 2.136 $, 10);
+$VERSION = substr(q$Revision: 2.136.2.1 $, 10);
 
 my %CDname;
 my %CPname;
@@ -1017,6 +1017,7 @@ CONFIGLOOP:
 
 	finalize_mapped_code();
 
+	set_readonly_config();
 	# Ugly legacy stuff so API won't break
 	$C->{Special} = $C->{SpecialPage} if defined $C->{SpecialPage};
 	return $C;
@@ -2580,6 +2581,19 @@ my %Default = (
 
 sub set_global_defaults {
 	## Nothing here currently
+}
+
+my @readonly_members = qw/
+	UserDB_repository
+	AdminUserDB
+/;
+
+sub set_readonly_config {
+	my $cat = $C->{CatalogName} or return;
+	my $ro = $Global::ReadOnlyCfg{$cat} ||= {};
+	for(@readonly_members) {
+		$ro->{$_} = copyref($C->{$_});
+	}
 }
 
 sub set_defaults {
