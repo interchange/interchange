@@ -1,6 +1,6 @@
 # Vend::Config - Configure Interchange
 #
-# $Id: Config.pm,v 2.36 2002-02-06 02:38:58 mheins Exp $
+# $Id: Config.pm,v 2.37 2002-02-06 18:23:14 jon Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -44,7 +44,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 2.36 $, 10);
+$VERSION = substr(q$Revision: 2.37 $, 10);
 
 my %CDname;
 
@@ -1840,7 +1840,7 @@ sub parse_locale {
 			unless defined $c->{frac_digits};
 		$store->{$name} = $c;
 	}
-	elsif ($settings =~ s/^\s*(\w+)\s+//) {
+	elsif ($settings =~ s/^\s*([\w.@-]+)\s+//) {
 		$name = $1;
 
 		undef $eval;
