@@ -74,6 +74,9 @@
 		=Select page display
 
 		height
+		extended.explicit_edit extended.number_list
+		extended.no_code_link extended.no_checkbox
+		extended.check_uncheck_all
 		extended.ui_sort_field
 		extended.ui_sort_option
 		extended.ui_sort_combined
@@ -142,6 +145,11 @@
 		height							=> 'Rows on select page',
 		'extended.bottom_buttons'		=> 'Buttons only on bottom',
 		'extended.restrict_allow'		=> 'Allow these ITL tags',
+		'extended.explicit_edit'		=> 'Show "edit record" link',
+		'extended.no_code_link'		    => "Don't link key column to editor",
+		'extended.no_checkbox'		    => "No checkbox for group ops",
+		'extended.check_uncheck_all'	=> 'Links to check/uncheck all',
+		'extended.number_list'		    => "Number the entries",
 		'extended.file_upload'			=> 'Allow file upload for this table',
 		'extended.filter_field'			=> 'Import field filtering',
 		'extended.left_width'			=> 'Width specification for label column',
@@ -248,6 +256,11 @@
 		height							=> 'text_5',
 		type							=> 'hidden',
 		'extended.restrict_allow'		=> 'text_40',
+		'extended.explicit_edit'		=> 'yesno',
+		'extended.no_code_link'			=> 'yesno',
+		'extended.no_checkbox'			=> 'yesno',
+		'extended.number_list'			=> 'yesno',
+		'extended.check_uncheck_all'	=> 'yesno',
 		'extended.file_upload'			=> 'yesno',
 		'extended.filter_field'			=> 'textarea_2_40',
 		'extended.tab_style'			=> 'textarea_5_40',
@@ -325,7 +338,7 @@
 
 	width=`{
 		'extended.ui_data_fields'		=> 30,
-		'extended.ui_show_fields'		=> 30,
+		'extended.ui_show_fields'		=> 50,
 	}`
 
 	form=`{
@@ -361,4 +374,4 @@ Inventory;inventory:quantity:rn=Inventory},
 
 ]
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Revision: 2.16 $ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.17 $ -->

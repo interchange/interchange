@@ -94,6 +94,7 @@ EOF
 	table="[cgi mv_data_table]"
 	no-table-meta=1
 	no-meta=1
+	start-at="[cgi start_at]"
 	default=`$Scratch->{tmp_defaults}`
 	ui_data_fields="
 		=Typical
@@ -123,19 +124,79 @@ EOF
 	   extended.lookup_merge
 	   lookup_exclude
 
+	   =Select page behavior
+
+	   extended.ui_more_alpha
+	   extended.ui_sort_option
+	   extended.fs_no_group
+	   extended.fs_display_filter
+	   extended.fs_link_page
+	   extended.fs_link_anchor
+	   extended.fs_link_parm
+	   extended.fs_link_parm_extra
+	   extended.fs_data_calc
+	   extended.fs_data_tables
+	   extended.header_row_class
+	   extended.data_row_class_odd
+	   extended.data_row_class_even
+	   extended.header_cell_class
+	   extended.header_cell_style
+	   extended.header_link_class
+	   extended.data_cell_class
+	   extended.data_cell_style
+
 	   =Advanced
 
 	   outboard
 	   pre_filter
 	   prepend
 	   append
-
+	   __UI_META_ADDITIONAL__
 	"
-	widget.extended="textarea_5_50"
+
+	options=`{
+		'extended.ui_sort_option' => qq{=--default--,f=Case insensitive, fr=Case insensitive/Reverse, n=Numeric, nr=Reverse Numeric},
+	}`
+
+	label=`{
+		'extended.ui_more_alpha' => 'Alphabetic more links',
+		'extended.ui_sort_option' => 'Sort option',
+		'extended.fs_no_group' => 'No group link',
+		'extended.fs_display_filter' => 'Filter(s) for select display',
+		'extended.fs_link_page' => 'Page to link to',
+		'extended.fs_link_anchor' => 'Anchor for link',
+		'extended.fs_link_parm' => 'Parameters to send as',
+		'extended.fs_link_parm_extra' => 'Additional parms to send (from CGI)',
+		'extended.fs_data_calc' => 'Embedded perl code to run on data',
+		'extended.fs_data_tables' => 'Tables to have open for perl code',
+		'extended.fs_display_calc' => 'Embedded perl code to run on header',
+		'extended.header_link_class' => 'Header row link CSS class',
+		'extended.header_cell_class' => 'Header cell CSS class',
+		'extended.header_cell_style' => 'Header cell CSS style',
+		'extended.header_row_class' => 'Header row CSS class',
+		'extended.header_row_style' => 'Header row CSS style',
+		'extended.data_row_class_odd' => 'Data row CSS class, odd numbers',
+		'extended.data_row_class_even' => 'Data row CSS class, even numbers',
+		'extended.data_cell_class' => 'Data cell CSS class',
+		'extended.data_cell_style' => 'Data cell CSS style',
+	}`
+	help=`{
+		'extended.fs_data_calc' => 'Current record passed as $item',
+		'extended.fs_data_tables' => 'To have open for Safe module',
+	}`
+	widget=`{
+		extended => "textarea_5_50",
+		'extended.ui_more_alpha' => 'yesno',
+		'extended.ui_sort_option' => 'select',
+		'extended.fs_no_group' => 'yesno',
+		'extended.fs_display_filter' => 'text_50',
+		'extended.fs_data_calc' => 'textarea_4_70',
+	}`
+
 	ui_style=1
 	output_map=1
 	tabbed=1
 	][/table-editor]
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Revision: 2.8 $ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.9 $ -->
