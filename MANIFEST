@@ -31,6 +31,7 @@ dist/foundation/dbconf/default_db/banner.dbm
 dist/foundation/dbconf/default_db/cat.dbm
 dist/foundation/dbconf/default_db/component.dbm
 dist/foundation/dbconf/default_db/country.dbm
+dist/foundation/dbconf/default_db/default_db.cfg
 dist/foundation/dbconf/default_db/gift_certs.dbm
 dist/foundation/dbconf/default_db/inventory.dbm
 dist/foundation/dbconf/default_db/locale.dbm
@@ -60,6 +61,7 @@ dist/foundation/dbconf/mysql/inventory.mysql
 dist/foundation/dbconf/mysql/locale.dbm
 dist/foundation/dbconf/mysql/merchandising.mysql
 dist/foundation/dbconf/mysql/mv_metadata.dbm
+dist/foundation/dbconf/mysql/mysql.cfg
 dist/foundation/dbconf/mysql/options.mysql
 dist/foundation/dbconf/mysql/order_returns.mysql
 dist/foundation/dbconf/mysql/orderline.mysql
@@ -83,6 +85,7 @@ dist/foundation/dbconf/oracle/inventory.ora
 dist/foundation/dbconf/oracle/locale.dbm
 dist/foundation/dbconf/oracle/merchandising.ora
 dist/foundation/dbconf/oracle/mv_metadata.dbm
+dist/foundation/dbconf/oracle/oracle.cfg
 dist/foundation/dbconf/oracle/order_returns.ora
 dist/foundation/dbconf/oracle/orderline.ora
 dist/foundation/dbconf/oracle/pricing.ora
@@ -108,6 +111,7 @@ dist/foundation/dbconf/pgsql/mv_metadata.dbm
 dist/foundation/dbconf/pgsql/options.pgsql
 dist/foundation/dbconf/pgsql/order_returns.pgsql
 dist/foundation/dbconf/pgsql/orderline.pgsql
+dist/foundation/dbconf/pgsql/pgsql.cfg
 dist/foundation/dbconf/pgsql/pricing.pgsql
 dist/foundation/dbconf/pgsql/products.pgsql
 dist/foundation/dbconf/pgsql/state.pgsql

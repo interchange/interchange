@@ -1,3 +1,30 @@
+#========================================================================#
+
+# interchange.cfg
+# See 'icconfig' document for details.
+
+#========================================================================#
+
+# These settings all affect other configuration directives below.
+
+# Set to 1 to include back-end administration interface.
+Variable  UI  1
+
+# Set to "low", "high", or "rpc" to get different server parameters.
+Variable  TRAFFIC  low
+
+# Set to 1 to send extra debugging info to file /tmp/icdebug
+# and get a dump of global and catalog data structures.
+#Variable  DEBUG  1
+
+#========================================================================#
+
+# Set up individual catalogs here.
+
+#Catalog  store  /var/lib/interchange/catalogs/store  /cgi-bin/store
+
+#========================================================================#
+
 # This is a new option that ignores C-style directives like #ifdef,
 # #endif, #include, and only parses plain ifdef, endif, include, etc.
 # It can be turned on and off repeatedly as needed. When it's off,
@@ -6,30 +33,16 @@
 # files you include if you're upgrading.
 ConfigParseComments No
 
-#Catalog  store  /var/lib/interchange/catalogs/store  /cgi-bin/store
-
-# Set to 1 to include UI
-Variable   UI   1
-
-# Set to "low" or "high" to get different server parameters
-Variable   TRAFFIC    low
-#Variable   TRAFFIC    high
-
 Environment  MOD_PERL
 
-# Prevent arbitrary [file ...] and [include ...] among other things
+# Prevent arbitrary [file ...] and [include ...] among other things.
 NoAbsolute Yes
 
-#Uncomment to log to debug file /tmp/icdebug
-#Variable   DEBUG     1
-
-# You can set the Variable DEBUG above then tail -f the DebugFile
-# You can also see Interchange and catalog data structures
 ifdef @DEBUG
 Message Sending debug to /tmp/icdebug.
 DebugFile /tmp/icdebug
 GlobalSub sub test_global_sub { return 'Test of global subroutine OK.' }
-Variable  TEST_VARIABLE Test of global variable OK.
+Variable  TEST_VARIABLE  Test of global variable OK.
 endif
 
 ifdef TRAFFIC =~ /low/i
@@ -46,26 +59,33 @@ MaxServers   10
 PIDcheck     120
 endif
 
-# No real downside to adding this....
-Mall       Yes
+ifdef TRAFFIC =~ /rpc/i
+Message RPC traffic settings.
+PreFork             Yes
+StartServers        5
+MaxRequestsPerChild 100
+HouseKeeping        2
+PIDcheck            120
+endif
 
-# Additional Safe operations to untrap beyond the standard
-# "ftfile sort"
+# Set this so cookies are issued only for the current catalog, not for
+# the whole base domain.
+Mall  Yes
+
+# Additional Safe operations to untrap beyond the standard "ftfile sort".
 SafeUntrap  rand
 
 TcpMap 7786 -
 
-# Uses value of UI variable above
+# Include back office administration UI if variable set above.
 ifdef UI
-Message Calling UI....
+Message Calling UI...
 Variable UI_TAG_TITLE_BAR 1
 include lib/UI/ui.cfg
 endif
 
-#### Now including individual usertag files
-
+# Include individual usertags.
 include usertag/*.tag
 
-
-### Include if you want non-English error messages. Not complete.
+# Include if you want non-English error messages. Not complete.
 # include locale.error
