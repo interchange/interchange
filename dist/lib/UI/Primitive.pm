@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.25.4.8 $, 10);
+$VERSION = substr(q$Revision: 1.25.4.9 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -540,10 +540,6 @@ sub list_pages {
 	$base = $Vend::Cfg->{PageDir} if ! $base;
 	my @names;
 	my $wanted = sub {
-					if(-d $_ and $Vend::Cfg->{AdminPage}{$_}) {
-						$File::Find::prune = 1;
-						return;
-					}
 					return undef unless -f $_;
 					return undef unless /$suf$/;
 					my $n = $File::Find::name;
