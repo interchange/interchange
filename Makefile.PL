@@ -570,7 +570,6 @@ EOF
 
 
 	MODCHECK: {
-		last MODCHECK unless $Cpan;
 		eval {
 				require Digest::MD5;
 			};
@@ -623,6 +622,25 @@ EOF
 	# Check for extra needed libraries
 	extra_libs($realdir);
 
+	my @msgs;
+	for(@mods_to_get) {
+		eval {
+			require $_
+				or die "No $_ module available.";
+		};
+		if($@) {
+			push @msgs, $@;
+		}
+	}
+	if(@msgs) {
+		die join "\n", @msgs, '', <<EOF;
+These modules must be installed to run Interchange. Try:
+
+	perl -MCPAN -e 'install Bundle::Minivend'
+
+or use normal Perl procedures to install them.
+EOF
+	}
 	mk_initp(\%X);
 	delete $X{RPMBUILDDIR};
     return \%X;
