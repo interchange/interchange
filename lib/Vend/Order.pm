@@ -1,6 +1,6 @@
 # Vend::Order - Interchange order routing routines
 #
-# $Id: Order.pm,v 1.18.2.29 2001-07-06 17:37:45 heins Exp $
+# $Id: Order.pm,v 1.18.2.30 2001-07-09 12:24:23 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Order;
 require Exporter;
 
-$VERSION = substr(q$Revision: 1.18.2.29 $, 10);
+$VERSION = substr(q$Revision: 1.18.2.30 $, 10);
 
 @ISA = qw(Exporter);
 
@@ -1168,6 +1168,13 @@ sub _false {
 	my($ref,$var,$val) = @_;
 	return (1, $var, '') if is_no($val);
 	return (undef, $var, errmsg("true"));
+}
+
+sub _defined {
+	my($ref,$var,$val) = @_;
+	return (1, $var, '')
+		if defined $val;
+	return (undef, $var, errmsg("undefined"));
 }
 
 sub _required {
