@@ -1,6 +1,6 @@
 # Vend::UserDB - Interchange user database functions
 #
-# $Id: UserDB.pm,v 2.22 2003-07-24 12:55:03 mheins Exp $
+# $Id: UserDB.pm,v 2.23 2003-07-29 13:51:40 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -17,7 +17,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 2.22 $, 10);
+$VERSION = substr(q$Revision: 2.23 $, 10);
 
 use vars qw!
 	$VERSION
@@ -1491,7 +1491,7 @@ sub new_account {
 				if $Vend::Cfg->{CookieLogin};
 
 			$self->log('new account') if $options{'log'};
-			$self->set_values();
+			$self->set_values() unless $self->{OPTIONS}{no_set};
 			$self->login()
 				or die ::errmsg(
 							"Cannot log in after new account creation: %s",
