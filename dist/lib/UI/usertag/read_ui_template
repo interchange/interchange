@@ -83,7 +83,8 @@ sub {
 				push @{$ref->{ui_display_order}}, $current;
 			}
 			elsif( /^\s+(\w+)\s*:\s*(.*)/ ) {
-				$ref->{"ui_control_$1"}{$current} = $2;
+				my ($fn, $fv) = ( lc($1), $2 );
+				$ref->{"ui_control_$fn"}{$current} = $fv;
 			}
 		}
 		if($opt->{structure}) {
