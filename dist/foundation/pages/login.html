@@ -93,24 +93,31 @@ mv_nextpage=new_account
 
     <FORM ACTION="[process]" METHOD=POST>
     <INPUT TYPE=hidden NAME=mv_todo  VALUE=return>
-    <INPUT TYPE=hidden NAME=mv_click VALUE=Logout>
+    <INPUT TYPE=hidden NAME=mv_click VALUE=Logout_choice>
     <INPUT TYPE=hidden NAME=mv_nextpage VALUE="login">
 
     <table>
     <tr>
       <td class="contentbar1"> 
 	<table>
-	<tr> 
-	  <td align=right class="contentbar2">&nbsp;</td>
-	  <td class="contentbar2">
+	<tr class=contentbar2> 
+	  <td align=right class=contentbar2>&nbsp;</td>
+	  <td class=contentbar2>
 	    <b>You are already logged in.</b>
 	  </td>
 	</tr>
 	<tr>
 	  <td>&nbsp;</td>
 	  <td class="contentbar1">
-	    <INPUT TYPE=submit VALUE="Log out">
-	    <input type="submit" NAME="mv_click" value="New Account">
+	  	<br>&nbsp;<br>
+	    <INPUT TYPE=submit VALUE="Log out"> <INPUT TYPE=checkbox NAME=clear_values CHECKED VALUE=1>&nbsp;Clear&nbsp;name/address[if items]&nbsp;&nbsp;<INPUT TYPE=checkbox NAME=clear_cart CHECKED VALUE=1>&nbsp;Clear&nbsp;cart[/if]<BR>
+	  	<br>&nbsp;<br>
+	  </td>
+	</tr>
+	<tr class=contentbar2> 
+	  <td align=right>&nbsp;</td>
+	  <td>
+	    Or you can create a <A HREF="[area new_account]">new account</a>.
 	  </td>
 	</tr>
 	</table>
