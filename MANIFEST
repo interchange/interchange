@@ -6,8 +6,8 @@ QuickStart
 README
 README.cvs
 README.rpm
-SPECS/interchange-4.5.7-rh6.spec
-SPECS/interchange-4.5.7-rh7.spec
+SPECS/interchange-4.5.8-rh6.spec
+SPECS/interchange-4.5.8-rh7.spec
 UPGRADE_FROM_MV3
 WHATSNEW
 configure
@@ -145,9 +145,6 @@ dist/construct/images/admin/widgets.gif
 dist/construct/images/affiliate/hardhat.gif
 dist/construct/images/bg.gif
 dist/construct/images/clear.gif
-dist/construct/images/gift_certificate.gif
-dist/construct/images/gift_certificate_large.gif
-dist/construct/images/items/gift_certificate.gif
 dist/construct/images/items/gift_certificate_large.gif
 dist/construct/images/items/os28004.gif
 dist/construct/images/items/os28005.gif
@@ -233,6 +230,7 @@ dist/construct/images/navigation/poweredby.gif
 dist/construct/images/navigation/recalculate_button.gif
 dist/construct/images/navigation/whitey.gif
 dist/construct/images/poweredby.gif
+dist/construct/images/thumb/gift_certificate.gif
 dist/construct/images/thumb/os28004_b.gif
 dist/construct/images/thumb/os28005_b.gif
 dist/construct/images/thumb/os28006_b.gif
@@ -311,6 +309,7 @@ dist/construct/pages/ship_addresses_removed.html
 dist/construct/pages/splash.html
 dist/construct/pages/stock-alert-added.html
 dist/construct/pages/stock-alert.html
+dist/construct/pages/swap_results.html
 dist/construct/products/2ndDayAir.csv
 dist/construct/products/2ndDayAirAM.csv
 dist/construct/products/3DaySelect.csv
@@ -364,10 +363,16 @@ dist/construct/special_pages/reconfig.html
 dist/construct/special_pages/sec_faq.html
 dist/construct/special_pages/security.html
 dist/construct/special_pages/violation.html
-dist/construct/templates/components/random
-dist/construct/templates/components/specials
-dist/construct/templates/components/upsell_horiz_2
-dist/construct/templates/components/upsell_horiz_3
+dist/construct/templates/cart
+dist/construct/templates/components/cart
+dist/construct/templates/components/cross_horizontal
+dist/construct/templates/components/cross_vertical
+dist/construct/templates/components/promo_horizontal
+dist/construct/templates/components/promo_vertical
+dist/construct/templates/components/random_horizontal
+dist/construct/templates/components/random_vertical
+dist/construct/templates/components/upsell_horizontal
+dist/construct/templates/components/upsell_vertical
 dist/construct/templates/fullwidth
 dist/construct/templates/leftonly
 dist/construct/templates/leftright
@@ -385,8 +390,10 @@ dist/interchange.cfg.dist
 dist/lib/UI/Primitive.pm
 dist/lib/UI/pages/admin/access.html
 dist/lib/UI/pages/admin/access_permissions.html
+dist/lib/UI/pages/admin/add_meta_option.html
 dist/lib/UI/pages/admin/advanced.html
 dist/lib/UI/pages/admin/affiliates.html
+dist/lib/UI/pages/admin/bug_report.html
 dist/lib/UI/pages/admin/build_related.html
 dist/lib/UI/pages/admin/button_builder.html
 dist/lib/UI/pages/admin/change_t.pl
@@ -467,6 +474,7 @@ dist/lib/UI/pages/admin/ship.html
 dist/lib/UI/pages/admin/ship_data.html
 dist/lib/UI/pages/admin/ship_edit.html
 dist/lib/UI/pages/admin/ship_range.html
+dist/lib/UI/pages/admin/sku_selector.html
 dist/lib/UI/pages/admin/special/key_violation.html
 dist/lib/UI/pages/admin/spread.html
 dist/lib/UI/pages/admin/spread_control.html
@@ -502,6 +510,7 @@ dist/lib/UI/usertag/export_database
 dist/lib/UI/usertag/field_label
 dist/lib/UI/usertag/file_info
 dist/lib/UI/usertag/file_navigator
+dist/lib/UI/usertag/filters
 dist/lib/UI/usertag/global_value
 dist/lib/UI/usertag/grep_mm
 dist/lib/UI/usertag/if_key_exists
@@ -644,6 +653,7 @@ pod/deprecated.sdf
 pod/mv_metadata.pod
 pod/mvdocs.pod
 pod/mvfaq.pod
+pod/usertag.pod
 scripts/compile_link.PL
 scripts/config_prog.PL
 scripts/configdump.PL
@@ -711,10 +721,15 @@ share/akopia/ui/help/src/access.permissions.html
 share/akopia/ui/help/src/affiliate.edit.html
 share/akopia/ui/help/src/affiliates.main.html
 share/akopia/ui/help/src/button.builder.html
+share/akopia/ui/help/src/create.new.customer.html
+share/akopia/ui/help/src/crosssell.html
+share/akopia/ui/help/src/customer.edit.html
 share/akopia/ui/help/src/customer.html
 share/akopia/ui/help/src/customer.view.html
 share/akopia/ui/help/src/dbdownload.main.html
 share/akopia/ui/help/src/dbupload.main.html
+share/akopia/ui/help/src/edit.item.html
+share/akopia/ui/help/src/edit.page.html
 share/akopia/ui/help/src/env_vars.html
 share/akopia/ui/help/src/export.main.html
 share/akopia/ui/help/src/faq.html
@@ -731,6 +746,7 @@ share/akopia/ui/help/src/help_template.txt
 share/akopia/ui/help/src/import.main.html
 share/akopia/ui/help/src/index.html
 share/akopia/ui/help/src/item.edit.html
+share/akopia/ui/help/src/item.editor.html
 share/akopia/ui/help/src/item.main.html
 share/akopia/ui/help/src/knar.main.html
 share/akopia/ui/help/src/layout.edit.html
@@ -746,8 +762,11 @@ share/akopia/ui/help/src/order.main.pending.html
 share/akopia/ui/help/src/order.view.html
 share/akopia/ui/help/src/order_entry.main.html
 share/akopia/ui/help/src/orderstats.view.html
+share/akopia/ui/help/src/page.editor.html
 share/akopia/ui/help/src/payment.main.html
 share/akopia/ui/help/src/prefs.main.html
+share/akopia/ui/help/src/pricing.html
+share/akopia/ui/help/src/promotion.html
 share/akopia/ui/help/src/reconfig.html
 share/akopia/ui/help/src/regen.main.html
 share/akopia/ui/help/src/search_builder.html
@@ -763,6 +782,7 @@ share/akopia/ui/help/src/stats.order.html
 share/akopia/ui/help/src/stats.traffic.html
 share/akopia/ui/help/src/tax.main.html
 share/akopia/ui/help/src/upload.main.html
+share/akopia/ui/help/src/upsell.html
 share/akopia/ui/navigation/A1.gif
 share/akopia/ui/navigation/A1_b.gif
 share/akopia/ui/navigation/A2.gif

@@ -28,7 +28,7 @@ my @mods_to_get;
 my @remove_old;
 my $Lock_troubles;
 
-$VERSION = '4.5.7';
+$VERSION = '4.5.8';
 
 # See if we have the CPAN module
 my $Cpan = 0;
@@ -466,16 +466,19 @@ sub initialize {
 								"Where is your Interchange to be installed? ",
 								$MV::Default{PREFIX},
 								);
-			if ($realdir =~ /^\Q$origdir/) {
+			if ($realdir =~ /^\s*\Q$origdir/) {
 				warn "Can't install in software source directory!\n";
 				redo;
 			}
 		}
 		print "\n";
 		$realdir =~ s:[\\/]\s*$::;
+		$realdir =~ s:^\s*::;
 		$MV::Default{final} = $realdir if $Windows;
 	}
 	else {
+		$MV::Default{final} =~ s:[\\/]\s*$::;
+		$MV::Default{final} =~ s:^\s*::;
 		$realdir = $MV::Default{final};
 	}
 

@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.29.4.1 2000-10-12 12:48:12 racke Exp $
+# $Id: Interpolate.pm,v 1.29.4.2 2000-10-14 14:48:02 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.29.4.1 $, 10);
+$VERSION = substr(q$Revision: 1.29.4.2 $, 10);
 
 @EXPORT = qw (
 
@@ -2633,7 +2633,7 @@ my %cond_op = (
 
 sub pull_cond {
 	my($string, $reverse, $cond, $lhs) = @_;
-::logDebug("pull_cond string='$string' rev='$reverse' cond='$cond' lhs='$lhs'");
+#::logDebug("pull_cond string='$string' rev='$reverse' cond='$cond' lhs='$lhs'");
 	my ($op, $rhs) = split /\s+/, $cond;
 	$rhs =~ s/^(["'])(.*)\1$/$2/;
 	if(! defined $cond_op{$op} ) {

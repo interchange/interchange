@@ -1,4 +1,4 @@
-Interchange V4.5.7
+Interchange V4.5.8
 
 Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 
@@ -69,7 +69,7 @@ Install Walkthrough
              Write on the cgi-bin for the web server
 
         Unpack the distribution:
-            gzip -dc interchange-4.5.x.tar.gz | tar xvf -
+            gzip -dc interchange-4.5.8.tar.gz | tar xvf -
 
         Run the configuration script:
             ./configure
@@ -540,7 +540,7 @@ Demo Store Install Walkthrough
 Low traffic settings.
 Calling UI....
 ....UI is loaded....
-Interchange V4.5.7
+Interchange V4.5.8
 Configuring catalog example...done.
 Interchange server started in INET and UNIX mode(s) (process id 22200)
 

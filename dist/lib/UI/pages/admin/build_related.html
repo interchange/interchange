@@ -38,16 +38,27 @@ EOF
 	my $db = $Db{orderline};
 	return "NO ORDERLINE table???!" if ! $db;
 	my $start = tag_data( qw/__UI_META_TABLE__ lookup_exclude orderline/ );
-	my $query = "select code,order_number,sku from orderline ";
-	$query .= " where order_number > '$start'" if $start;
-	$query .= " order by code";
+
+	my $query = "select code,order_number,sku,username from orderline ";
+	if($start) {
+		$query .= " where order_number > '$start'";
+	}
+	else {
+		%sku = ();
+	}
+
+	my %on;            # Keep track by order number 
+	my %un;            # Keep track by username
+	my %times_ordered; # Keep track by sku
+
 	my $ary = $db->query( { sql => $query } );
 	for(@$ary) {
-		my ($line, $on, $sku) = @$_;
-		push @{$on{$on} ||= []}, $sku;
+		my ($line, $on, $sku, $un) = @$_;
+		push @{$un{$un} ||= []}, $sku;
+		$times_ordered{$sku}++;
 	}
-	for(keys %on) {
-		my $ref = $on{$_};
+	for(keys %un) {
+		my $ref = $un{$_};
 		@ary = @$ref;
 		for(@ary) {
 			my $sku = $_;
@@ -61,8 +72,9 @@ EOF
 	my $mdb = $Db{merchandising};
 	for(sort keys %sku) {
 		my $val = $Tag->uneval( { ref => $sku{$_} } );
-		$out .= "$_ ==> $val<br>\n";
+		$out .= "$_: times ordered=$times_ordered{$_} others_bought ==> $val<br>\n";
 		$mdb->set_field($_, 'others_bought', $val );
+		$mdb->set_field($_, 'times_ordered', $times_ordered{$_} );
 	}
 	return $out;
 [/perl]

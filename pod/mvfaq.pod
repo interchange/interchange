@@ -4,7 +4,7 @@ mvfaq - Interchange FAQ
 
 =head2 VERSION
 
-Document version: $Id: mvfaq.pod,v 1.3 2000-07-20 07:20:20 heins Exp $
+Document version: $Id: mvfaq.pod,v 1.3.4.1 2000-10-14 14:48:04 racke Exp $
 
 This document describes Interchange 4.5 and later.
 
@@ -816,6 +816,8 @@ if you do, but that is not strictly required.
 You can't resell Interchange because it is Gnu GPL licensed; but you can give
 it away. See the www.gnu.org website for more information.
 
+=back
+
 =head2 How many Interchange installations are there?
 
 This is unknown. Thousands of separate catalogs have
@@ -1508,6 +1510,8 @@ If you can't make this script run without error:
 then you don't have one of the above, and Interchange will never run
 a SQL type.
 
+=over 4
+
 =item I don't like the column types that Interchange defines!
 
 Then change them. See the simple/mysql directory for some examples
@@ -1542,6 +1546,8 @@ Yes, it will if you don't create a file called TABLENAME.sql, where
 C<TABLENAME> is the name of the Interchange table. If you want this to
 happen by default, then set C<NoImport TABLENAME>.
 
+=back
+
 =head2 How can I use Interchange with Microsoft Access?
 
 Though Interchange has ODBC capability, the Microsoft Access
@@ -1557,7 +1563,6 @@ program.
 Here is a quick procedure that might get you started:
 
 =over 4
-
 
 =item *
 
@@ -1628,7 +1633,6 @@ and the proper data source, and voila! You should have access to
 the database residing on the UNIX side.
 
 =back
-
 
 =head1 Setup Questions
 
@@ -2103,6 +2107,8 @@ less than 300MHz is probably not good enough unless it is completely
 dedicated to Interchange. The faster the processor, the happier you will
 be.
 
+=back
+
 =head2 Interchange runs, but it's sooo sllooowww...
 
 This is almost certainly due to a system that has inadequate memory
@@ -2221,7 +2227,13 @@ as it will in the C<cost> field.
 =head1 CHANGES
 
 $Log: mvfaq.pod,v $
-Revision 1.3  2000-07-20 07:20:20  heins
+Revision 1.3.4.1  2000-10-14 14:48:04  racke
+merged changes from main trunk in
+
+Revision 1.4  2000/10/12 21:02:08  zarko
+fixed pod errors
+
+Revision 1.3  2000/07/20 07:20:20  heins
 Made pod version of Quickstart.
 Changed Minivend --> Interchange in docs.
 

@@ -1,8 +1,14 @@
-Interchange-4.5.7 changes
+Interchange 4.5.8 beta release
+
+* Documentation overhaul
+* Various bugfixes
+* 'Construct' catalog improvements
 
 
+Interchange 4.5.7 beta release
 
-Interchange-4.5.6 changes -- complete overhaul of UI
+
+Interchange 4.5.6 changes -- complete overhaul of UI
 
 * Everything renamed to "interchange". interchange.cfg, interchange.pid,
   etc. If you keep minivend.cfg as the configuration file, the PID file
@@ -157,7 +163,7 @@ Core:
 * Added image copying for shared image directories (the admin).
 
 
-Interchange-4.5.0 changes -- the start of the Tallyman merge.
+Interchange 4.5.0 changes -- the start of the Tallyman merge.
 
 * Many, many, changes and improvments to the user interface.
   Minimate is broken out again and made separate; the UI should

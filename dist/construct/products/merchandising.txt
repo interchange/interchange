@@ -1,4 +1,4 @@
-sku	featured	banner_text	banner_image	blurb_begin	blurb_end	start	finish	upsell_to	cross_sell	cross_category	others_bought
+sku	featured	banner_text	banner_image	blurb_begin	blurb_end	start	finish	upsell_to	cross_sell	cross_category	others_bought	times_ordered
 os28066	specials			Keep on an even keel....		20000921	20000921			Levels	
 os28044	specials					20000921	20000921		test	Breathing Protection	
 os28008	specials					20000923	20000923			Step Stools	

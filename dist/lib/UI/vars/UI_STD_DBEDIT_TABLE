@@ -138,6 +138,7 @@ EOF
 	}
 
 	my $super = $Tag->if_mm('super');
+	my $override;
 
 	my $refkey = $key;
 
@@ -181,15 +182,22 @@ EOF
 			$type = 'value';
 #Log("hit display_only for $col, t=$t, c=$c, k=$k, currval=$currval");
 		}
+		elsif (defined $CGI->{"ui_preload:$t:$c"} ) {
+			$currval = delete $CGI->{"ui_preload:$t:$c"};
+			$override = 1;
+#Log("hit preload for $col,currval=$currval");
+		}
 		elsif( 
 				defined $CGI->{$col}
 				and ( !defined($key) || !length(tag_data($t, $c, $key)) )
 				)
 		{
+#Log("hit CGI->col for $col, t=$t, c=$c, k=$k, currval=$currval");
 			$currval = $CGI->{$col};
 		}
 		else {
 			$currval = delete $Scratch->{"ui_preload:$t:$c"} || undef;
+#Log("hit preload fallback for $col,currval=$currval");
 		}
 
 		my $meta = '';
@@ -200,6 +208,7 @@ EOF
 										key => $key,
 										type => $type,
 										default => $currval,
+										override => $override,
 										arbitrary => $CGI->{ui_meta_view},
 										fallback => 1,
 										template => q(

@@ -9,6 +9,7 @@
 [set help_name]tax.main[/set]
 [set icon_name]admin/icon_config.gif[/set]
 @_UI_STD_HEAD_@
+
 [flag type=write table=variable]
 <!-- ----- BEGIN REAL STUFF ----- -->
 [perl tables=variable]
@@ -44,7 +45,20 @@
 						value="[scratch taxship]"] -->
 	[set taxarea][/set]
 	[set taxrate][/set]
+	<!-- exporting: [export variable] -->
 [/if]
+
+[if type=explicit
+	compare=|
+			[newer
+				source=__UI_PRODUCT_DIR__/variable.txt
+				target=`"$Config->{ConfDir}/status.$Config->{CatalogName}"`
+				]
+			|]
+[value name=ui_changes_made set=1 hide=1]
+<FONT COLOR="__CONTRAST__">You need to [page __UI_BASE__/reconfig @@MV_PAGE@@]apply changes[/page] for changes to take effect.</FONT>
+[/if]
+
 [calc]
 		@areas = grep /\S/, split /\s+/, tag_data(qw/variable Variable TAXAREA/);
 		@rates = grep /\S/, split /,/, tag_data(qw/variable Variable TAXRATE/);

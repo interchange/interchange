@@ -3,7 +3,7 @@
 [tag flag write]transactions orderline userdb inventory[/tag]
 [if cgi new_customer_id]
 [or !cgi customer_id]
-Add new customer: [value name=customer_id set="[fcounter etc/customer.number]"]
+Add new customer: [value name=customer_id set="[counter etc/customer.number]"]
 Set password:  [value name=password set="[value name=zip filter='word uc']"]
 [/if]
 Update userdb: [perl table=userdb]
