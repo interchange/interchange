@@ -7,8 +7,8 @@ README
 README.cvs
 README.debian
 README.rpm
-SPECS/interchange-4.6.0-rh6.spec
-SPECS/interchange-4.6.0-rh7.spec
+SPECS/interchange-4.6.1-rh6.spec
+SPECS/interchange-4.6.1-rh7.spec
 UPGRADE_FROM_MV3
 WHATSNEW
 configure
@@ -653,6 +653,7 @@ lib/Vend/TextSearch.pm
 lib/Vend/Track.pm
 lib/Vend/UserDB.pm
 lib/Vend/Util.pm
+pdf/README
 pdf/icbackoffice.pdf
 pdf/icconfig.pdf
 pdf/icdatabase.pdf
@@ -660,6 +661,7 @@ pdf/icinstall.pdf
 pdf/icintro.pdf
 pdf/ictemplates.pdf
 perl/Interchange.pm
+pod/README
 pod/icbackoffice.pod
 pod/icconfig.pod
 pod/icdatabase.pod
