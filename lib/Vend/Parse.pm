@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.5 2000-09-14 08:08:07 heins Exp $
+# $Id: Parse.pm,v 1.6 2000-09-23 17:29:30 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,12 +27,12 @@
 
 package Vend::Parse;
 
-# $Id: Parse.pm,v 1.5 2000-09-14 08:08:07 heins Exp $
+# $Id: Parse.pm,v 1.6 2000-09-23 17:29:30 heins Exp $
 
 require Vend::Parser;
 
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.5 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.6 $ =~ /(\d+)\.(\d+)/);
 
 use Safe;
 use Vend::Util;
@@ -44,7 +44,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.5 $, 10);
+$VERSION = substr(q$Revision: 1.6 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -105,6 +105,7 @@ my %PosNumber =	( qw!
                 row              1
                 salestax         2
                 scratch          1
+                scratchd         1
                 search           1
 				record			 0
                 region		     0
@@ -187,6 +188,7 @@ my %Order =	(
 				row				=> [qw( width )],
 				'salestax'		=> [qw( name noformat)],
 				scratch			=> [qw( name  )],
+				scratchd		=> [qw( name  )],
 				search			=> [qw( arg   )],
 				search_region	=> [qw( arg   )],
 				region			=> [qw( )],
@@ -323,6 +325,7 @@ my %InvalidateCache = (
 				perl		1
 				'salestax'	1
 				scratch		1
+				scratchd	1
 				selected	1
 				read_cookie 1
 				set_cookie  1
@@ -477,6 +480,7 @@ my %Routine = (
 				row				=> \&Vend::Interpolate::tag_row,
 				'salestax'		=> \&Vend::Interpolate::tag_salestax,
 				scratch			=> \&Vend::Interpolate::tag_scratch,
+				scratchd		=> \&Vend::Interpolate::tag_scratchd,
 				search			=> \&Vend::Interpolate::tag_search,
 				record			=> \&Vend::Interpolate::tag_record,
 				region			=> \&Vend::Interpolate::region,

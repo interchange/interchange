@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.19 2000-09-10 21:25:55 heins Exp $
+# $Id: Interpolate.pm,v 1.20 2000-09-23 17:29:30 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.19 $, 10);
+$VERSION = substr(q$Revision: 1.20 $, 10);
 
 @EXPORT = qw (
 
@@ -104,6 +104,7 @@ BEGIN {
 							$Document
 							%Db
 							$DbSearch
+							%Filter
 							$Search
 							$Carts
 							$Config
@@ -1394,7 +1395,7 @@ sub tag_accessories {
 	my($code,$extra,$opt,$item) = @_;
 
 	# Had extra if got here
-#::logDebug("tag_accessories: code=$code opt=" . ::uneval_it($opt) . " item=" . ::uneval($item) . " extra=$extra");
+#::logDebug("tag_accessories: code=$code opt=" . ::uneval_it($opt) . " item=" . ::uneval_it($item) . " extra=$extra");
 	my($attribute, $type, $field, $db, $name, $outboard, $passed);
 	$opt = {} if ! $opt;
 	if($extra) {
@@ -1412,7 +1413,9 @@ sub tag_accessories {
 	$type = 'select' unless $type;
 	$field = $attribute unless $field;
 	$code = $outboard if $outboard;
-#::logDebug("accessory db=$db type=$type field=$field attr=$attribute name=$name passed=$passed");
+#::logDebug("accessory type=$type db=$db field=$field code=$code attr=$attribute name=$name passed=$passed attr_value=$item->{$attribute}");
+
+	return $item->{$attribute} if $type eq 'value';
 
 	my $data;
 	if($passed) {
@@ -1430,6 +1433,7 @@ sub tag_accessories {
 
 	return show_current_accessory_label($item->{$attribute},$data)
 			if "\L$type" eq 'display' and $item;
+
 	return $data if "\L$type" eq 'show';
 
 	my $attrib_value = $item ? $item->{$attribute} : '';
@@ -1665,9 +1669,10 @@ sub tag_perl {
 sub show_tags {
 	my($type, $opt, $text) = @_;
 
-	$type = 'html minivend' unless $type;
+	$type = 'html interchange' unless $type;
+	$type =~ s/minivend/interchange/g;
 
-	if ($type =~ /minivend/i) {
+	if ($type =~ /interchange/i) {
 		$text =~ s/\[/&#91;/g;
 	}
 	if($type =~ /html/i) {
@@ -4343,16 +4348,15 @@ sub set_tmp {
 }
 
 # Returns the value of a scratchpad field named VAR.
-sub tag_scratch {
-    my($var) = @_;
-    my($value);
+sub tag_scratchd {
+	my $var = shift;
+	return delete $::Scratch->{$var};
+}
 
-    if (defined ($value = $::Scratch->{$var})) {
-		return $value;
-    }
-	else {
-		return '';
-    }
+# Returns the value of a scratchpad field named VAR.
+sub tag_scratch {
+	my $var = shift;
+    return $::Scratch->{$var};
 }
 
 sub tag_lookup {
