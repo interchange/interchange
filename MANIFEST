@@ -396,7 +396,6 @@ dist/lib/UI/pages/admin/affiliates.html
 dist/lib/UI/pages/admin/bug_report.html
 dist/lib/UI/pages/admin/build_related.html
 dist/lib/UI/pages/admin/button_builder.html
-dist/lib/UI/pages/admin/change_t.pl
 dist/lib/UI/pages/admin/compedit.html
 dist/lib/UI/pages/admin/config.html
 dist/lib/UI/pages/admin/customer.html
