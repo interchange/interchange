@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.25 2002-07-18 19:31:32 mheins Exp $
+# $Id: DBI.pm,v 2.26 2002-07-18 19:47:08 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.25 $, 10);
+$VERSION = substr(q$Revision: 2.26 $, 10);
 
 use strict;
 
@@ -387,6 +387,15 @@ sub create {
 
 #::logDebug("seq: $config->{AUTO_SEQUENCE} create: $config->{SEQUENCE_CREATE}");
 	if($config->{AUTO_SEQUENCE} and my $q = $config->{SEQUENCE_CREATE}) {
+		if($config->{AUTO_SEQUENCE_DROP}) {
+			my $dq = $config->{SEQUENCE_DROP} || 'DROP SEQUENCE _SEQUENCE_NAME_';
+			$dq =~ s/_SEQUENCE_NAME_/$config->{AUTO_SEQUENCE}/g;
+#::logDebug("dropping sequence with query: $dq");
+			eval {
+				$db->do($dq)
+					or warn("drop sequence failed: $dq");
+			};
+		}
 		$q =~ s/_SEQUENCE_NAME_/$config->{AUTO_SEQUENCE}/g;
 		$q =~ s/_SEQUENCE_START_/$config->{AUTO_SEQUENCE_START} || 1/eg;
 		$q =~ s/_SEQUENCE_CACHE_/$config->{AUTO_SEQUENCE_CACHE} || 1/eg;
