@@ -1,8 +1,8 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.9 2004-10-02 22:21:49 jon Exp $
+# $Id: Ship.pm,v 2.10 2005-01-25 17:47:45 jon Exp $
 #
-# Copyright (C) 2002-2004 Interchange Development Group
+# Copyright (C) 2002-2005 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
 #
 # This program was originally based on Vend 0.2 and 0.3
@@ -68,8 +68,7 @@ sub do_error {
 	Vend::Tags->error({ name => 'shipping', set => $msg });
 	unless ($Vend::Cfg->{Limit}{no_ship_message}) {
 		$Vend::Session->{ship_message} ||= '';
-		$Vend::Session->{ship_message} .= ' ' if $Vend::Session->{shipping_error};
-		$Vend::Session->{ship_message} .= $msg;
+		$Vend::Session->{ship_message} .= $msg . ($msg =~ / $/ ? '' : ' ');
 	}
 	return undef;
 }
@@ -836,7 +835,7 @@ sub shipping {
 
 
 	SHIPFORMAT: {
-		$Vend::Session->{ship_message} .= $error_message
+		$Vend::Session->{ship_message} .= $error_message . ($error_message =~ / $/ ? '' : ' ')
 			if defined $error_message;
 		undef $::Carts->{mv_shipping};
 		$Vend::Items = $save;
@@ -1148,7 +1147,7 @@ sub tag_ups {
 	}
 	elsif (!$zone or $zone eq '-') {
 		$Vend::Session->{ship_message} .=
-			"No $type shipping allowed for geo code $zip.";
+			"No $type shipping allowed for geo code $zip. ";
 #::logDebug("tag_ups empty zone $zone.");
 		return undef;
 	}
@@ -1158,7 +1157,7 @@ sub tag_ups {
 	$cost += tag_data($type,$zone,$eas_zone)  if defined $eas_point;
 	$Vend::Session->{ship_message} .=
 								errmsg(
-									"Zero cost returned for mode %s, geo code %s.",
+									"Zero cost returned for mode %s, geo code %s. ",
 									$type,
 									$zip,
 								)
