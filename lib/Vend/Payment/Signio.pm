@@ -1,13 +1,9 @@
-# Vend::Payment::Signio - Interchange Signio support
+# Vend::Payment::Signio - Interchange support for Signio/Verisign Payflow Pro
 #
-# $Id: Signio.pm,v 2.4 2002-12-31 14:02:24 ramoore Exp $
+# $Id: Signio.pm,v 2.5 2003-01-21 03:51:10 jon Exp $
 #
-# Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
+# Copyright (C) 1999-2003 Red Hat, Inc. and Interchange Development Group
 #
-# Written by Cameron Prince <cprince@redhat.com> and
-# Mark Johnson <markj@redhat.com>,
-# based on code by Mike Heins <mheins@redhat.com>
-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -25,9 +21,9 @@
 
 package Vend::Payment::Signio;
 
-=head1 Interchange Signio Support
+=head1 Interchange support for Signio/Verisign Payflow Pro
 
-Vend::Payment::Signio $Revision: 2.4 $
+Vend::Payment::Signio $Revision: 2.5 $
 
 =head1 SYNOPSIS
 
@@ -39,17 +35,75 @@ Vend::Payment::Signio $Revision: 2.4 $
 
 =head1 PREREQUISITES
 
-  Signio PayFlow Pro, Version 2.10 or higher
+Verisign/Signio Payflow Pro, Version 2.10 or higher
+
+=head1 VERISIGN SOFTWARE SETUP
+
+Verisign's interface requires a proprietary binary-only shared library;
+thus you must download the appropriate package for your platform from Verisign.
+On Linux, the archive you download is F<pfpro_linux.tar.gz>. It includes
+documentation you should consult. Here's a brief installation guide for
+someone using Linux with root access:
+
+=over 4
+
+=item *
+
+Copy the F<payflowpro/linux/certs> directory to VENDROOT,
+your Interchange root directory (perhaps /usr/lib/interchange or
+/usr/local/interchange). This contains a single file with the client
+SSL certificate required to authenticate with Verisign's https server.
+
+=item *
+
+Install F<payflowpro/linux/lib/libpfpro.so> somewhere on your system
+fit for shared libraries, such as /usr/lib, or else in VENDROOT/lib.
+
+=item *
+
+Build the F<PFProAPI.pm> Perl module:
+
+=over 4
+
+=item *
+
+cd payflowpro/linux/perl
+
+=item *
+
+If you installed libpfpro.so somewhere other than in a standard location
+for shared libraries on your system, edit line 6 of Makefile.PL, so that
+"-L." instead reads "-L/path/to/libpfpro.so" with the correct path.
+
+=item *
+
+perl Makefile.PL && make && make test
+
+=item *
+
+As root, make install
+
+=back
+
+=back
+
+Using PFProAPI.pm is the best way to interact with Payflow Pro. However,
+if you can't get it to work for whatever reason, you may also use either
+of two small wrapper binaries, pfpro and pfpro-file, designed to be
+called from the shell. Interchange must fork and execute the binary, then
+retrieve the Verisign response from a temporary file. This module will
+automatically fall back to using one of them if it can't find PFProAPI.pm
+when Interchange is started.
 
 =head1 DESCRIPTION
 
-The Vend::Payment::Signio module implements the signio() routine
+The Vend::Payment::Signio module implements the signio() payment routine
 for use with Interchange. It is compatible on a call level with the other
 Interchange payment modules -- in theory (and even usually in practice) you
 could switch from CyberCash to Signio with a few configuration 
 file changes.
 
-To enable this module, place this directive in C<interchange.cfg>:
+To enable this module, place this directive in F<interchange.cfg>:
 
     Require module Vend::Payment::Signio
 
@@ -59,25 +113,25 @@ NOTE: Make sure CreditCardAuto is off (default in Interchange demos).
 
 The mode can be named anything, but the C<gateway> parameter must be set
 to C<signio>. To make it the default payment gateway for all credit
-card transactions in a specific catalog, you can set in C<catalog.cfg>:
+card transactions in a specific catalog, you can set in F<catalog.cfg>:
 
     Variable   MV_PAYMENT_MODE  signio
 
 It uses several of the standard settings from Interchange payment. Any time
 we speak of a setting, it is obtained either first from the tag/call options,
 then from an Interchange order Route named for the mode, then finally a
-default global payment variable, For example, the C<id> parameter would
+default global payment variable. For example, the C<id> parameter would
 be specified by:
 
-    [charge mode=signio id=YourSignioID]
+    [charge mode=signio id=YourPayflowProID]
 
 or
 
-    Route signio id YourSignioID
+    Route signio id YourPayflowProID
 
-or with only Signio as a payment provider
+or with only PayflowPro as a payment provider
 
-    Variable MV_PAYMENT_ID      YoursignioID
+    Variable MV_PAYMENT_ID      YourPayflowProID
 
 The active settings are:
 
@@ -85,31 +139,29 @@ The active settings are:
 
 =item id
 
-Your account ID, supplied by Signio/VeriSign when you sign up.
+Your account ID, supplied by VeriSign when you sign up.
 Global parameter is MV_PAYMENT_ID.
 
 =item secret
 
-Your account password, selected by you or provided by Signio when you sign up.
+Your account password, selected by you or provided by Verisign when you sign up.
 Global parameter is MV_PAYMENT_SECRET.
 
 =item partner
 
 Your account partner, selected by you or provided by Verisign when you
-sign up. This is required for installations after Feb 15, 2001.
-Global parameter is MV_PAYMENT_PARTNER.
+sign up. Global parameter is MV_PAYMENT_PARTNER.
 
 =item vendor
 
 Your account vendor, selected by you or provided by Verisign when you
-sign up. This is required for installations after Feb 15, 2001.
-Global parameter is MV_PAYMENT_PARTNER.
+sign up. Global parameter is MV_PAYMENT_VENDOR.
 
 =item transaction
 
 The type of transaction to be run. Valid values are:
 
-    Interchange         Signio
+    Interchange         Payflow Pro
     ----------------    -----------------
 	sale                S
 	auth                A
@@ -128,13 +180,13 @@ usually correct.
 
 =item remap 
 
-This remaps the form variable names to the ones needed by Signio. See
+This remaps the form variable names to the ones needed by Verisign. See
 the C<Payment Settings> heading in the Interchange documentation for use.
 
 =item host
 
-The Signio host to use. Default is "connect.signio.com>, and C<test.signio.com>
-when in test mode. Recent versions use 
+The payment gateway host to use. Default is C<payflow.verisign.com>, and
+C<test-payflow.verisign.com> when in test mode.
 
 =back
 
@@ -142,11 +194,11 @@ when in test mode. Recent versions use
 
 Try the instructions above, then enable test mode. A test order should complete.
 
-Then move to live mode and try a sale with the card number C<4111 1111 1111 1111>
-and a valid expiration date. The sale should be denied, and the reason should
-be in [data session payment_error].
+Then move to live mode and try a sale with the card number C<4111 1111
+1111 1111> and a valid future expiration date. The sale should be denied,
+and the reason should be in [data session payment_error].
 
-If nothing works:
+If it doesn't work:
 
 =over 4
 
@@ -158,8 +210,13 @@ Make sure you "Require"d the module in interchange.cfg:
 
 =item *
 
-Make sure the Signio C<pfpro> executable is available either in your
-path or in /path_to_interchange/lib.
+Make sure the Verisign C<libpfpro.so> shared library was available to
+PFProAPI.xs when you built and installed the PFProAPI.pm module, and that
+you haven't moved C<libpfpro.so> since then.
+
+If you're not using the PFProAPI Perl interface, make sure the Verisign
+C<pfpro> or C<pfpro-file> executable is available either in your path or
+in /path_to_interchange/lib.
 
 =item *
 
@@ -186,14 +243,15 @@ That should show what happened.
 
 =item *
 
-If all else fails, Red Hat and other consultants are available to help
-with integration for a fee.
+If all else fails, consultants are available to help with
+integration for a fee. You can find consultants by asking on the
+C<interchange-biz@icdevgroup.org> mailing list.
 
 =back
 
 =head1 SECURITY CONSIDERATIONS
 
-Because this library calls an executable, you should ensure that no
+Because this library may call an executable, you should ensure that no
 untrusted users have write permission on any of the system directories
 or Interchange software directories.
 
@@ -202,16 +260,33 @@ or Interchange software directories.
 There is actually nothing *in* Vend::Payment::Signio. It changes packages
 to Vend::Payment and places things there.
 
-=head1 AUTHOR
+=head1 AUTHORS
 
-Mike Heins, <mheins@redhat.com>.
+	Cameron Prince <cameronbprince@yahoo.com>
+	Mark Johnson <mark@endpoint.com>
+	Mike Heins <mike@perusion.com>
+	Jon Jensen <jon@icdevgroup.org>
 
 =cut
 
 package Vend::Payment;
 
+my $PFProAPI_found;
+BEGIN {
+	eval {
+		require PFProAPI;
+		$PFProAPI_found = 1;
+	};
+	if ($PFProAPI_found) {
+		print STDERR "PFProAPI module found.\n";
+	}
+	else {
+		print STDERR "PFProAPI module not found; will try to use pfpro binary.\n";
+	}
+}
+
 sub signio {
-#::logDebug("signio called");
+#::logDebug("signio called, PFProAPI_found=$PFProAPI_found");
 	my ($user, $amount) = @_;
 
 	my $opt;
@@ -225,49 +300,50 @@ sub signio {
 		$opt = {};
 	}
 
-    my $exe;
+	my ($exe, $stdin);
+	unless ($PFProAPI_found) {
+		my @try = split /:/, (charge_param('bin_path') || $ENV{PATH});
+		unshift @try,
+				"$Global::VendRoot/lib",
+				"$Global::VendRoot/bin",
+				$Global::VendRoot,
+				;
 
-	my @try = split /:/, (charge_param('bin_path') || $ENV{PATH});
-	unshift @try,
-			"$Global::VendRoot/lib",
-			"$Global::VendRoot/bin",
-			"$Global::VendRoot",
-			;
-
-	my $stdin;
-	for(@try) {
-		if(-f "$_/pfpro" and -x _) {
-			$exe = "$_/pfpro";
+		for(@try) {
+			if(-f "$_/pfpro" and -x _) {
+				$exe = "$_/pfpro";
+				last;
+			}
+			next unless -f "$_/pfpro-file" and -x _;
+			$exe = "$_/pfpro-file";
+			$stdin = 1;
 			last;
 		}
-		next unless -f "$_/pfpro-file" and -x _;
-		$exe = "$_/pfpro-file";
-		$stdin = 1;
-		last;
+
+		if(! $exe ) {
+			return (
+				MStatus => 'failure-hard',
+				MErrMsg => errmsg('pfpro executable not found.'),
+				);
+		}
+
+		# set loadable module path so not needed in /usr/lib
+		@try = split /:/, (charge_param('library_path') || $ENV{LD_LIBRARY_PATH});
+		unshift @try,
+				"$Global::VendRoot/lib",
+				"$Global::VendRoot/bin",
+				$Global::VendRoot,
+				charge_param('bin_path') . "/../lib",
+				;
+		$ENV{LD_LIBRARY_PATH} = join ':', @try;
 	}
 
-    if(! $exe ) {
-		return (
-			MStatus => 'failure-hard',
-			MErrMsg => errmsg('pfpro executable not found.'),
-			);
-    }
-
-	# set loadable module path so not needed in /usr/lib
-	@try = split /:/, (charge_param('library_path') || $ENV{LD_LIBRARY_PATH});
-	unshift @try,
-			"$Global::VendRoot/lib",
-			"$Global::VendRoot/bin",
-			"$Global::VendRoot",
-			charge_param('bin_path') . "/../lib",
-			;
-	$ENV{LD_LIBRARY_PATH} = join ':', @try;
-
-	# set certificat path for modern pfpro
+	# set certificate path for modern pfpro
 	$ENV{PFPRO_CERT_PATH} ||= charge_param('cert_path');
 	if(! -d $ENV{PFPRO_CERT_PATH} ) {
-		@try = (
-					"$Global::VendRoot",
+		my @try = (
+					charge_param('cert_path'),
+					$Global::VendRoot,
 					"$Global::VendRoot/lib",
 					'/usr/local/ssl',
 					'/usr/lib/ssl',
@@ -309,13 +385,13 @@ sub signio {
 	my $server;
 	my $port;
 	if(! $opt->{host} and charge_param('test')) {
-		$server = 'test.signio.com';
+		$server = 'test-payflow.verisign.com';
 		$port   = 443;
 	}
 	else {
 		# We won't read from MV_PAYMENT_SERVER because that would rarely
 		# be right and might often be wrong
-		$server  =   $opt->{host}  || 'connect.signio.com';
+		$server  =   $opt->{host}  || 'payflow.verisign.com';
 		$port    =   $opt->{port}  || '443';
 	}
 
@@ -396,21 +472,6 @@ sub signio {
     }
 #::logDebug("signio query: " . ::uneval(\%query));
 
-    my @query;
-
-    for (keys %query) {
-        my $key = $_;
-        my $val = $query{$key};
-        $val =~ s/["\$\n\r]//g;
-        $val =~ s/\$//g;
-        my $len = length($val);
-        if($val =~ /[&=]/) {
-            $key .= "[$len]";
-        }
-        push @query, "$key=$val";
-    }
-    my $string = join '&', @query;
-
 	my $timeout = $opt->{timeout} || 10;
 	$timeout =~ s/\D//g
 		and die "Bad timeout value, security violation.";
@@ -418,37 +479,58 @@ sub signio {
 		and die "Bad port value, security violation.";
 	$server =~ s/[^-\w.]//g
 		and die "Bad server value, security violation.";
-		
-	my $tempfile = "$Vend::Cfg->{ScratchDir}/signio.$orderID";
 
-    my $decline;
+	my $resultstr;
+	my $result = {};
+	my $decline;
 
-	if($stdin) {
-#::logDebug(qq{signio STDIN call: $exe $server $port - $timeout > $tempfile});
-		open(PFPRO, "| $exe $server $port - $timeout > $tempfile")
-			or die "exec pfpro-file: $!\n";
-		print PFPRO $string;
-		close PFPRO;
+	if ($PFProAPI_found) {
+		($result, $resultstr) = PFProAPI::pfpro(\%query, $server, $port, $timeout);
+#::logDebug("signio PFProAPI call server=$server port=$port timeout=$timeout");
+		$decline = $result->{RESULT} != 0;
 	}
 	else {
+		my @query;
+		for my $key (keys %query) {
+			my $val = $query{$key};
+			$val =~ s/["\$\n\r]//g;
+			if($val =~ /[&=]/) {
+				my $len = length($val);
+				$key .= "[$len]";
+			}
+			push @query, "$key=$val";
+		}
+		my $string = join '&', @query;
+
+		my $tempfile = "$Vend::Cfg->{ScratchDir}/signio.$orderID";
+
+		if($stdin) {
+#::logDebug(qq{signio STDIN call: $exe $server $port - $timeout > $tempfile});
+			open(PFPRO, "| $exe $server $port - $timeout > $tempfile")
+				or die "exec pfpro-file: $!\n";
+			print PFPRO $string;
+			close PFPRO;
+		}
+		else {
 #::logDebug(qq{signio call: $exe $server $port "$string" $timeout > $tempfile});
-		system(qq{$exe $server $port "$string" $timeout > $tempfile});
+			system(qq{$exe $server $port "$string" $timeout > $tempfile});
+		}
+
+		$decline = $? >> 8;
+
+		open(CONNECT, "< $tempfile")
+			or die ::errmsg("open %s: %s\n", $tempfile, $!);
+
+		$resultstr = join "", <CONNECT>;
+		close CONNECT;
+
+		unlink $tempfile;
+
+    	%$result = split /[&=]/, $resultstr;
 	}
-
-	$decline = $?;
-
-    open(CONNECT, "< $tempfile")
-		or die ::errmsg("open %s: %s\n", $tempfile, $!);
-    
-    my $result = join "", <CONNECT>;
-    close CONNECT;
-
-    unlink $tempfile;
-
-#::logDebug(qq{signio decline=$decline result: $result});
+#::logDebug(qq{signio decline=$decline result: $resultstr});
 
     my %result_map = ( qw/
-
             MStatus               ICSTATUS
             pop.status            ICSTATUS
             order-id              PNREF
@@ -460,30 +542,26 @@ sub signio {
     /
     );
 
-    my %result = split /[&=]/, $result;
-
     if ($decline) {
-        $decline = $decline >> 8;
-        $result{ICSTATUS} = 'failed';
-
+        $result->{ICSTATUS} = 'failed';
 		my $msg = errmsg("Charge error: %s Reason: %s. Please call in your order or try again.",
-			$result{RESULT} ,
-			$result{RESPMSG},
+			$result->{RESULT},
+			$result->{RESPMSG},
 		);
-		$result{MErrMsg} = $result{'pop.error-message'} = $msg;
+		$result->{MErrMsg} = $result{'pop.error-message'} = $msg;
     }
     else {
-        $result{ICSTATUS} = 'success';
+        $result->{ICSTATUS} = 'success';
     }
 
     for (keys %result_map) {
-        $result{$_} = $result{$result_map{$_}}
-            if defined $result{$result_map{$_}};
+        $result->{$_} = $result->{$result_map{$_}}
+            if defined $result->{$result_map{$_}};
     }
 
-#::logDebug(qq{signio decline=$decline result: } . ::uneval( \%result));
+#::logDebug(qq{signio decline=$decline result: } . ::uneval($result));
 
-    return %result;
+    return %$result;
 }
 
 *verisign = \&signio;
