@@ -1,6 +1,6 @@
 # Vend::Search - Base class for search engines
 #
-# $Id: Search.pm,v 2.14 2002-10-18 07:10:46 mheins Exp $
+# $Id: Search.pm,v 2.15 2002-10-28 20:46:30 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -21,7 +21,7 @@
 
 package Vend::Search;
 
-$VERSION = substr(q$Revision: 2.14 $, 10);
+$VERSION = substr(q$Revision: 2.15 $, 10);
 
 use strict;
 use vars qw($VERSION);
@@ -149,10 +149,10 @@ sub hash_fields {
 
 sub escape {
     my($s, @text) = @_;
-#::logDebug( "text=@text");
+#::logDebug( "escaped text=" . ::uneval(\@text));
 	return @text if ! $s->{mv_all_chars}[0];
 	@text = map {quotemeta $_} @text;
-#::logDebug( "text=@text");
+#::logDebug( "escaped text=" . ::uneval(\@text));
     return @text;
 }
 
