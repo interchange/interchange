@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.49 2001-04-15 05:59:10 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.50 2001-04-16 00:30:50 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.49 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.50 $, 10);
 
 @EXPORT = qw (
 
@@ -2179,7 +2179,7 @@ sub tag_perl {
 		for(keys %{$Global::GlobalSub}) {
 #::logDebug("tag_perl share subs: GlobalSub=$_");
 			next if defined $Global::AdminSub->{$_}
-				and ! $Global::AllowGlobal->{$Vend::Cfg->{CatalogName}};
+				and ! $Global::AllowGlobal->{$Vend::Cat};
 			*$_ = \&{$Global::GlobalSub->{$_}};
 			push @share, "&$_";
 		}
@@ -2233,7 +2233,7 @@ sub tag_perl {
 	if (
 		$opt->{global}
 			and
-		$Global::AllowGlobal->{$Vend::Cfg->{CatalogName}}
+		$Global::AllowGlobal->{$Vend::Cat}
 		)
 	{
 		$MVSAFE::Safe = 0 unless $MVSAFE::Unsafe;
@@ -2992,7 +2992,7 @@ sub tag_weighted_banner {
 	}
 #::logDebug("banner category=$category dir=$dir");
 	my $statfile =	$Vend::Cfg->{ConfDir};
-	$statfile .= "/status.$Vend::Cfg->{CatalogName}";
+	$statfile .= "/status.$Vend::Cat";
 #::logDebug("banner category=$category dir=$dir statfile=$statfile");
 	my $start_time;
 	if($opt->{once}) {
@@ -5945,10 +5945,31 @@ sub update {
 
 my $Ship_its = 0;
 
+sub set_error {
+	my ($error, $var, $opt) = @_;
+	$var = 'default' unless $var;
+	$opt = { keep => 1 } if ! $opt;
+	my $ref = $Vend::Session->{errors};
+	if($ref->{$var} and ! $opt->{overwrite}) {
+		$ref->{$var} .= errmsg(" AND ");
+	}
+	else {
+		$ref->{$var} = '';
+	}
+	
+	$ref->{$var} .= $error;
+	return tag_error($var, $opt);
+}
+
 sub tag_error {
 	my($var, $opt) = @_;
 	$Vend::Session->{errors} = {}
 		unless defined $Vend::Session->{errors};
+	if($opt->{set}) {
+		$opt->{keep} = 1 unless defined $opt->{keep};
+		my $error = delete $opt->{set};
+		return set_error($error, $var, $opt);
+	}
 	my $err_ref = $Vend::Session->{errors};
 	my $text;
 	$text = $opt->{text} if $opt->{text};
