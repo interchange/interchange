@@ -16,6 +16,7 @@ Variable UI_STD_INIT <<EOV
 		$Tag->image( { ui => 1, secure => 1, dir_only => 1 } );
 
 	# force using secure URL for this page?
+	$Config->{VendURLOriginal} = $Config->{VendURL};
 	if ($Variable->{UI_SECURE} or $Tag->var('UI_SECURE', 1)) {
 		$Config->{VendURL} = $Config->{SecureURL};
 	}
