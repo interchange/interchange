@@ -5,7 +5,8 @@ UserTag db-hash Routine <<EOR
 sub {
 	my($table, $col, $key, $opt) = @_;
 	$col =~ s/::(.*)//s;
-	#my $out = ::uneval(\@_);
+	my $out;
+	#$out .= ::uneval(\@_);
 	my $rest = $1;
 	my $val = ::tag_data($table,$col,$key);
 	my $ref;
@@ -25,9 +26,9 @@ sub {
 	@extra = split /::/, $rest;
 	my $final = pop @extra;
 	my $curr = $ref;
-	#$out .= "Original key request: $rest\n";
+	$out .= "Original key request: $rest\n";
 	#$out .= ::uneval($ref);
-	#$out .= "\nFinal key: $final\n";
+	$out .= "\nFinal key: $final\n";
 	for(@extra) {
 		$out .= "key --> $_\n";
 		$curr = $curr->{$_};

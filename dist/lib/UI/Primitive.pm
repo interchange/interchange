@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.5 $, 10);
+$VERSION = substr(q$Revision: 1.6 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -59,8 +59,25 @@ The Minivend UI is an interface to configure and administer Minivend catalogs.
 my $ui_safe = new Safe;
 $ui_safe->untrap(@{$Global::SafeUntrap});
 
+sub is_super {
+#::logDebug("called is_super");
+	return 0 if ! $Vend::Session->{logged_in};
+#::logDebug("is_super: logged in");
+	return 0 if ! $Vend::Session->{username};
+#::logDebug("is_super: have username");
+	my $db = Vend::Data::database_exists_ref($Vend::Cfg->{Variable}{UI_ACCESS_TABLE} || 'access');
+	return 0 if ! $db;
+#::logDebug("is_super: access db exists");
+	$db = $db->ref();
+	my $result = $db->field($Vend::Session->{username}, 'super');
+#::logDebug("is_super: result=$result");
+	return $result;
+}
+
+
 sub ui_acl_enabled {
 	my $table;
+	$Global::SuperUserFunction = \&is_super;
 	my $default = defined $Global::Variable->{UI_ACL}
 				 ? (! $Global::Variable->{UI_ACL})
 				 : 1;

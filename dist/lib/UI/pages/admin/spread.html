@@ -28,7 +28,7 @@ $Values->{mv_data_table} = $table;
 $Values->{ui_data_key_name} = $Db{$table}->config('KEY');
 $Values->{ui_data_fields} =
 	$CGI->{mv_data_fields} ||
-	$Values->{"$table:ui_data_fields"} || '' ;
+	$Values->{"spread:$table:ui_data_fields"} || '' ;
 return;
 [/perl]
 [if scratch ui_failure]
@@ -123,7 +123,7 @@ return;
 </FORM>
 <P>
 [title-bar 400 2][L]Limit fields to display (changes above will not be made)[/L][/title-bar]
-[set name=ui_data_fields_name int][value mv_data_table]:ui_data_fields[/set]
+[seti ui_data_fields_name]spread:[value mv_data_table]:ui_data_fields[/seti]
 <FORM METHOD=POST ACTION="[area @@MV_PAGE@@]">
 <INPUT TYPE=hidden NAME=mv_action VALUE=return>
 <INPUT TYPE=hidden NAME=mv_data_table VALUE="[value mv_data_table]">

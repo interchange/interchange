@@ -423,6 +423,7 @@ dist/lib/UI/pages/admin/search_builder.html
 dist/lib/UI/pages/admin/ship.html
 dist/lib/UI/pages/admin/ship_edit.html
 dist/lib/UI/pages/admin/ship_range.html
+dist/lib/UI/pages/admin/special/key_violation.html
 dist/lib/UI/pages/admin/spread.html
 dist/lib/UI/pages/admin/table_editor.html
 dist/lib/UI/pages/admin/tax.html
@@ -431,6 +432,7 @@ dist/lib/UI/usertag/available_www_shipping
 dist/lib/UI/usertag/base_url
 dist/lib/UI/usertag/check_upload
 dist/lib/UI/usertag/db_columns
+dist/lib/UI/usertag/db_hash
 dist/lib/UI/usertag/dbinfo
 dist/lib/UI/usertag/directive_value
 dist/lib/UI/usertag/display
@@ -699,6 +701,7 @@ dist/simple/products/state.txt
 dist/simple/products/transactions.txt
 dist/simple/products/ups_zone.asc
 dist/simple/products/userdb.txt
+dist/simple/products/variable.txt
 dist/simple/session/.empty
 dist/simple/special_pages/badsearch.html
 dist/simple/special_pages/canceled.html

@@ -3037,6 +3037,9 @@ reasonable default maximum. If you want to not use the text file for
 searching a Minivend DBM database, don't forget to use C<st=db>
 (mv_searchtype).
 
+When using C<st=db>, returned keys may be affected by C<TableRestrict>; see
+C<CATALOG.CFG>.
+
 Both can be sorted with C<[sort table:field:mod -start +number]> modifiers.
 See I<SORTING>.
 
@@ -6723,13 +6726,15 @@ spec (again in that order).
 
 If set to I<glimpse>, selects the Glimpse search (if Glimpse is defined).
 
-If set to I<sql>, formulates an SQL select statement to return the
-search list. 
-
 If set to I<db>, iterates over every row of the database (not the
 associated text source file).
 
+If set to I<sql>, same as C<db>.
+
 If set to I<text>, selects the text-based search.
+
+When using C<st=db>, returned keys may be affected by C<TableRestrict>; see
+C<CATALOG.CFG>.
 
 Defaults to I<text> if I<Glimpse> is not defined, to Glimpse if it
 is. This can allow use of both search types if that is desirable --
@@ -13762,6 +13767,44 @@ Catalog subroutines may not perform unsafe operations -- the I<Safe.pm>
 module enforces this unless global operations are allowed for the 
 catalog. See C<AllowGlobal>.
 
+=head2 TableRestrict
+
+Used to provide "views" in database-based searches. Does not affect
+the text searches. Affects the table being searched.
+
+Takes the form of C<field=session_param>, where C<field> is a column
+in the table being iterated over, and C<session_param> is a C<$Session>
+key (i.e. [data session username]).
+
+    TableRestrict  products  owner=username
+
+The above would prevent the database search from returning any records
+except those where the column C<owner> contains the current value of
+C<[data session username]>.
+
+Probably most usefully set by embedded Perl code in certain
+situations, i.e. 
+
+	[calc]
+		# Restrict edit to owned fields
+		$Config->{TableRestrict}{products} = 'owner=username';
+		return;
+	[/calc]
+
+When using SQL-based databases, in effect it turns the base search query
+
+	select * from products
+
+into 
+
+	select * from products where owner = '[data session username]'
+
+Minivend databases are similarly affected, though the methodology is
+different.
+
+Also may be useful in "mall" situations, where you want the user
+to only see products from the current store ID.
+
 =head2 TaxShipping
 
 A comma or space separated list of states or jurisdictions that
@@ -13830,7 +13873,8 @@ The name of a database containing a field Variable which will
 be used to set MiniVend variable values. For example, a database
 defined as:
 
-    Database  var var.asc TAB
+    Database  var var.txt TAB
+	VariableDatabase var
 
 and containing
 
@@ -13839,7 +13883,23 @@ and containing
 
 would cause __HELLO__ to appear as C<Hi!>. 
 
-The values set here override those set in C<catalog.cfg>.
+The field name B<is case-sensitive>, and C<variable> would not
+work.
+
+The values are inserted at time of definition. Any single-level
+hash-oriented Minivend directive, such as I<SpecialPage>, I<ScratchDefault>,
+or I<ValuesDefault>, can be set in the same way.
+
+If the C<VariableDatabase> named does not exist at definition time,
+a database of the default type with an ASCII file source appending
+C<.txt> is assumed. In other words
+
+	VariableDatabase variable
+
+is equivalent to
+
+    Database         variable variable.txt TAB
+	VariableDatabase variable
 
 =head2 VendURL
 
