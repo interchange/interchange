@@ -1,6 +1,6 @@
 # Vend::Server - Listen for Interchange CGI requests as a background server
 #
-# $Id: Server.pm,v 2.1 2001-10-19 00:32:37 mheins Exp $
+# $Id: Server.pm,v 2.2 2002-03-03 00:56:47 kwalsh Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -25,7 +25,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 2.1 $, 10);
+$VERSION = substr(q$Revision: 2.2 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -188,6 +188,7 @@ EOF
 
 #::logDebug("CGI::query_string=" . $CGI::query_string);
 #::logDebug("entity=" . ${$h->{entity}});
+	undef %CGI::values;
 	if ("\U$CGI::request_method" eq 'POST') {
 		parse_post(\$CGI::query_string)
 			if $Global::TolerateGet;
@@ -217,7 +218,6 @@ sub store_cgi_kv {
 sub parse_post {
 	my $sref = shift;
 	my(@pairs, $pair, $key, $value);
-	undef %CGI::values;
 	return unless length $$sref;
 	if ($CGI::content_type =~ /^multipart/i) {
 		return parse_multipart($sref) if $CGI::useragent !~ /MSIE\s+5/i;
