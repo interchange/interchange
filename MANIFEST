@@ -943,7 +943,6 @@ lib/Vend/Table/GDBM.pm
 lib/Vend/Table/InMemory.pm
 lib/Vend/Table/LDAP.pm
 lib/Vend/Table/SDBM.pm
-lib/Vend/Tagref.pm
 lib/Vend/Tags.pm
 lib/Vend/TextSearch.pm
 lib/Vend/Track.pm
