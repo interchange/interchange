@@ -1,5 +1,5 @@
 Variable UI_STD_FILE_NAV <<EONav
-<table cellpadding=3 cellspacing=0 width=__UI_MAIN_WIDTH__>
+<table cellpadding=3 cellspacing=0 width="85%">
 
 <tr>
 <td bgcolor=__UI_C_TOPBLOCKBAR__><img src="@_UI_IMG_@admin/bg.gif" width=__UI_MAIN_WIDTH__ height=1 alt=x></td>
@@ -24,10 +24,7 @@ Variable UI_STD_FILE_NAV <<EONav
 			<FORM ACTION="[area @_MV_PAGE_@]" METHOD=GET>
 			<INPUT TYPE=hidden NAME=mv_action VALUE=back>
 			<INPUT TYPE=hidden NAME=action VALUE=find>
-			Find files in and under current directory [calc]
-						return '(catalog root)' if $Session->{ui_cwd} eq '.';
-						return "($Session->{ui_cwd})";
-					[/calc]:<BR>
+			Find files in and under current directory:<BR>
 			<INPUT NAME=find VALUE="[calc]
 										return unless $CGI->{find};
 										my $str = $CGI->{find};
@@ -44,6 +41,17 @@ Variable UI_STD_FILE_NAV <<EONav
 			<INPUT TYPE=submit VALUE="Find files"><BR>
 			<small>
 			<INPUT TYPE=checkbox NAME="find_session" VALUE=1> Look in session and temporary files
+			&nbsp;&nbsp;&nbsp;
+			[if type=explicit
+				compare=`
+					return $CGI->{details} if defined $CGI->{details};
+					return $Session->{ui_file_details};
+			`]
+			[page href="@_MV_PAGE_@" form="details=0"]Hide file details</A>
+			[else]
+			[page href="@_MV_PAGE_@" form="details=1"]Show file details</A>
+			[/else]
+			[/if]
 			</small>
 			</FORM>
 			</td>

@@ -74,9 +74,9 @@ sub {
 			last unless defined $found;
 			if (defined $found) {
 				my $add = splice @lines, $found + 1, 1;
-::logDebug("Add is '$add', found index=$found");
+#::logDebug("Add is '$add', found index=$found");
 				$lines[$found] .= $add;
-::logDebug("Complete line now is '$lines[$found]'");
+#::logDebug("Complete line now is '$lines[$found]'");
 				undef $found;
 			}
 		}
@@ -86,7 +86,7 @@ sub {
 		for(@lines) {
 			if(/^\s*ui_/) {
 				my ($el, $el_item, $el_data) = split /\s*:\s*/, $_;
-#Log ("found el=$el el_item=$el_item el_data=$el_data");
+#::logDebug("found el=$el el_item=$el_item el_data=$el_data");
 				if(defined $el_data) {
 					$ref->{$el} = { } if ! ref($ref->{$el});
 					$ref->{$el}{$el_item} = $el_data;
