@@ -93,13 +93,63 @@ Core
   The some_action action (could be a page) will be prepended to
   any path sent with the PUT.
 
+* Add 'reverse' attribute to [item-list], to walk the cart lines in reverse
+  order.
+
+* Add ability to export only portions of tables based on a where= parameter.
+  Only works for DBI tables at the current time.
+
+  If the where parameter is a scalar, just passed as a "WHERE" clause,
+  i.e.
+
+  	  [export table=products where="prod_group='Ladders'"]
+
+  You can pass anything that won't cause a syntax error, even including
+  an "order by" or "limit".
+
+  If you want to pass multiple things, or not worry about quoting,
+  you can do:
+
+  	[export table=products where.prod_group=Ladders]
+
+  The normal caveats for hash parameters apply, i.e. you cannot
+  do:
+
+  	where.prod_group="[cgi foo]"
+
+  You *can* do:
+
+  	where.prod_group=`$Tag->cgi('foo')`
+
+	or
+
+	where.prod_group=`$CGI->{foo}`
+
+  Normal DBI quoting is always done, so you don't include quotes.
+
 UserTag
 -------
+
+* Add new UserTag option "attrDefault", which allows default attributes to
+  be set globally or catalog-wide for a given usertag. Two examples:
+ 
+  UserTag area attrDefault href index
+  UserTag calc attrDefault filter entities
+
+  Any user-specified attributes will take precedence, even if 0 or blank.
+
+  This is designed to allow changing the default behavior of a tag without 
+  changing its code, especially for built-in tags one would rather not
+  customize. Note that when using this directive on global usertags,
+  it must be done in interchange.cfg, and for catalog usertags in catalog.cfg.
 
 * Add option to specify useragent to get_url tag.
 
 * Add locale option to [convert-date] following a suggestion from 
   Rene Hertell <rene@hertell.com>.
+
+* Add filter attribute to var tag, similar to value, cgi, and scratch,
+  except that filtered value will never be saved back into the variable.
 
 UI
 --
@@ -155,7 +205,9 @@ TableEditor
 * Pass the form and form_name parameters to Vend::Form for use in
   widgets.
 
-* Display top buttoms if option notable is set.
+* Add option "top-buttons-rows" to set the number of rows where
+  top buttons will be triggered. Use said options in appropriate
+  UI pages.
 
 Menu
 ----
