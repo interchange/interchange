@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.25.4.6 $, 10);
+$VERSION = substr(q$Revision: 1.25.4.7 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -303,6 +303,7 @@ sub ui_acl_global {
 	my $record = ui_acl_enabled();
 	# First we see if we have ACL enforcement enabled
 	# If you don't, then people can do anything!
+#::logDebug("ui_acl_global: record=$record");
 	unless (ref $record) {
 		$::Scratch->{mv_data_enable} = $record;
 		return;
@@ -312,10 +313,13 @@ sub ui_acl_global {
 	my $Tag = new Vend::Tags;
 	$CGI->{mv_todo} = $CGI->{mv_doit}
 		if ! $CGI->{mv_todo};
+#::logDebug("ui_acl_global: enable prior to ui=$enable todo=$CGI->{mv_todo}");
 	if( $Tag->if_mm('super')) {
 		$::Scratch->{mv_data_enable} = $enable;
+#::logDebug("ui_acl_global: found super-user, enable=$enable todo=$CGI->{mv_todo}");
 		return;
 	}
+#::logDebug("ui_acl_global: past superuser");
 
     if( $CGI->{mv_todo} eq 'set' ) {
 		undef $::Scratch->{mv_data_enable};
@@ -717,13 +721,18 @@ sub option_widget {
 	$val = Vend::Interpolate::filter_value('option_format', $val);
 	my @opts = split /\s*,\s*/, $val;
 	my $out = "<TABLE CELLPADDING=0 CELLSPACING=0><TR><TH><SMALL>Value</SMALL></TH><TH ALIGN=LEFT COLSPAN=2><SMALL>Label</SMALL></TH></TR>";
+	my $done;
 	for(@opts) {
 		my ($v,$l) = split /\s*=\s*/, $_, 2;
 		next unless $l || length($v);
+		$done++;
 		my $default;
 		($l =~ s/\*$// or ! $l && $v =~ s/\*$//)
 			and $default = 1;
 		$out .= option_widget_box($name, $v, $l, $default, $width);
+	}
+	while($done++ < 3) {
+		$out .= option_widget_box($name, '', '', '', $width);
 	}
 	$out .= option_widget_box($name, '', '', '', $width);
 	$out .= option_widget_box($name, '', '', '', $width);
@@ -756,28 +765,22 @@ my $base_entry_value;
 sub meta_display {
 	my ($table,$column,$key,$value,$meta_db,$query,$o) = @_;
 
-#::logDebug("metadisplay: t=$table c=$column k=$key v=$value md=$meta_db");
 	my $metakey;
 	$meta_db = $::Variable->{UI_META_TABLE} || 'mv_metadata' if ! $meta_db;
 	$o = {} if ! ref $o;
-#::logDebug("metadisplay: t=$table c=$column k=$key v=$value opt=" . ::uneval_it($o));
 	my $meta = Vend::Data::database_exists_ref($meta_db)
 		or return undef;
 	$meta = $meta->ref();
 	if($column eq $meta->config('KEY')) {
 		if($o->{arbitrary} and $value !~ /::.+::/) {
-#::logDebug("metadisplay: base_entry_value is arbitrary value=$value");
 			$base_entry_value = ($value =~ /^[^:]+::(\w+)$/)
 								? $1
 								: $value;
 		}
 		else {
-#::logDebug("metadisplay: base_entry_value is standard value=$value");
 			$base_entry_value = $value =~ /::/ ? $table : $value;
 		}
-#::logDebug("metadisplay: base_entry_value=$base_entry_value");
 	}
-#::logDebug("metadisplay: got meta ref=$meta");
 	my $tag = '';
 	if($o->{arbitrary}) {
 		$tag = "$o->{arbitrary}::";
@@ -799,7 +802,6 @@ sub meta_display {
 		if $o->{type} || $o->{label};
 
 	for $metakey (@tries) {
-#::logDebug("enter metadisplay record $metakey");
 		my $record;
 		unless ( $record = $sess->{$metakey} and ref $record ) {
 			if(ref $metakey) {
@@ -814,7 +816,6 @@ sub meta_display {
 		if($query) {
 			return $record->{query};
 		}
-#::logDebug("metadisplay record: " . Vend::Util::uneval_it($record));
 		my $opt;
 
 		## Here we allow override with the display tag...
@@ -834,6 +835,7 @@ sub meta_display {
 							name
 							options
 							outboard
+							passed
 							pre_filter
 							prepend
 							type
@@ -846,7 +848,6 @@ sub meta_display {
 		if($record->{options} and $record->{options} =~ /^[\w:]+$/) {
 			PASS: {
 				my $passed = $record->{options};
-#::logDebug("passed = '$passed'");
 
 				if($passed eq 'tables') {
 					$record->{passed} = "=--none--," . list_tables({ joiner => ',' });
@@ -870,9 +871,7 @@ sub meta_display {
 			}
 		}
 		if($record->{pre_filter}) {
-#::logDebug("filtering '$value' with $record->{pre_filter}");
 			$value = Vend::Interpolate::filter_value($record->{pre_filter}, $value);
-#::logDebug("filtered value='$value'");
 		}
 		if($record->{lookup}) {
 			my $fld = $record->{field} || $record->{lookup};
@@ -957,7 +956,6 @@ sub meta_display {
         }
 
 		for(qw/append prepend/) {
-#::logDebug("found append/prepend HTML");
 			next unless $record->{$_};
 			$record->{$_} = Vend::Util::resolve_links($record->{$_});
 			$record->{$_} =~ s/_UI_VALUE_/$value/g;
