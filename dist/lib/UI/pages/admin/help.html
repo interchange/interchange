@@ -52,18 +52,25 @@
 	if ($Scratch->{help_text} =~ /~~HELP_TOPICS~~/) {
 		my $help_index = <<EOF;
 <ul>
-[loop search="
+[search-region more=1
+               form="topic=[scratch help_key]"
+	       search="
 	fi=@_UI_HELP_TABLE_@
 	ra=yes
 	rf=code,title
 	tf=title
-	ml=10000
+	ml=20
+	sp=@@MV_PAGE@@
 "]
-[if type=explicit compare="q{[loop-code]} !~ m{^(?:faq|home|404|\Q[scratch help_key]\E)$}"]
-	<li>[page href="@@MV_PAGE@@" form="topic=[loop-code]"][loop-pos 1]</a>
+[search-list]
+[if type=explicit compare="q{[item-code]} !~ m{^(?:faq|home|404|\Q[scratch help_key]\E)$}"]
+	<li>[page href="@@MV_PAGE@@" form="topic=[item-code]"][item-pos 1]</a>
 [/if]
-[/loop]
+[/search-list]
 </ul>
+[more-list]More help topics: [more][/more-list]
+[/search-region]
+
 EOF
 		$Scratch->{help_text} =~ s/~~HELP_TOPICS~~/$help_index/g;
 	}
