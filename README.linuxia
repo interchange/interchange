@@ -34,6 +34,7 @@ This file documents all changes of the LINUXIA branch of Interchange.
 - emit error message on undefined filters (Interpolate.pm: 1.29.4.3)
 - page_* works without any template 
   (page_save.html: 1.4.4.2, page_preview.html: 1.5.4.2)
+- tried a shipping fix (Interpolate.pm: 1.29.4.5)
 
 Changes that made into the main branch:
 
