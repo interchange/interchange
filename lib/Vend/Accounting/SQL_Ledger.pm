@@ -56,7 +56,7 @@ sub new {
     my $class = shift;
 	my $opt = shift;
 
-	if(ref($opt) ne 'HASH') {
+	if($opt and ref($opt) ne 'HASH') {
 		my $tmp = $opt;
 		$opt = { $tmp, @_ };
 	}
