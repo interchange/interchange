@@ -284,7 +284,7 @@ EOF
 	  </TD>
 	  <TD>
 	    <SMALL>
-	    {mv_ad}<INPUT TYPE=hidden NAME="[modifier-name mv_ad]" VALUE="[filter entities]{mv_ad}[/filter]">
+	    <PRE>{mv_ad}</PRE><INPUT TYPE=hidden NAME="[modifier-name mv_ad]" VALUE="[filter entities]{mv_ad}[/filter]">
 	    </SMALL>
 	  </TD>
 	  <TD>&nbsp;</TD>
