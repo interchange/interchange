@@ -1,5 +1,7 @@
 Interchange 4.6.1
 
+* Added MS Excel import/export capability.
+
 * Added new SessionType "NFS", which forces fcntl_lock/fcntl_unlock in
   SessionFile.pm (bug #76).
 
@@ -42,6 +44,8 @@ Interchange 4.6.1
 
 * Fixed typo ('error' vs. 'errors') in Order.pm preventing no-items
   error from being seen at checkout (bug #82). Thanks to Bas Bezemer.
+
+* Removed some duplicated image files, reducing package size by ~ 200 KB.
 
 
 Interchange 4.6.0
@@ -214,6 +218,12 @@ Core:
   compatibility with older catalogs.
 
 * Added image copying for shared image directories (the admin).
+
+
+Interchange 4.5.5 beta release
+
+
+Interchange 4.5.3 beta release
 
 
 Interchange 4.5.0 changes -- the start of the Tallyman merge.
