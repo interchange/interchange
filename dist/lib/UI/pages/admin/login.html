@@ -112,11 +112,7 @@ EOF
 <div align="right"><font size="2"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#000066">[L]Password[/L]</font><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;&nbsp;</font></b></font></div>
 </td>
 <td> 
-<INPUT TYPE=password NAME=mv_password VALUE="" SIZE=15
-[if !session browser =~ /msie.*mac/i]
-onChange="this.form.submit()"
-[/if]
->
+<INPUT TYPE=password NAME=mv_password VALUE="" SIZE=15>
 </td>
 </tr>
 [value name=currlocale set="[either][getlocale][or]en_US[/either]" hide=1]
