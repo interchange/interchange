@@ -64,7 +64,7 @@ sub {
 		my @lines = grep /\S/, split /\n/, $structure;
 		for(@lines) {
 			my ($el, $el_item, $el_data) = split /\s*:\s*/, $_;
-			Log ("found el=$el el_item=$el_item el_data=$el_data");
+			#Log ("found el=$el el_item=$el_item el_data=$el_data");
 			if(defined $el_data) {
 				$ref->{$el} = { } if ! ref($ref->{$el});
 				$ref->{$el}{$el_item} = $el_data;

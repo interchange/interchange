@@ -1,0 +1,361 @@
+<html>
+<body bgcolor="__UI_C_INTBLOCK__" link="__UI_C_LINK__" alink="__UI_C_ALINK__" vlink="__UI_C_VLINK__">
+
+<!-- ----- BEGIN REAL STUFF ----- -->
+[if-mm !advanced sitedesign=e]
+[set ui_error]Not authorized to edit layout.[/set]
+[bounce page="__UI_BASE__/error"]
+[/if-mm]
+
+
+[value name=mv_data_table set="cat" hide=1]
+
+[if-mm !tables]
+[bounce href="[area admin/special/table_violation]"]
+[/if-mm]
+
+[if-mm function=keys name="[cgi cat]"]
+[else][bounce href="[area admin/special/key_violation]"][/else]
+[/if-mm]
+
+[perl tables="[value mv_data_table]"]
+my $table = $Values->{mv_data_table};
+$Values->{ui_data_key_name} = $Db{$table}->config('KEY');
+if ($table ne $Values->{mv_data_table}) {
+	$Values->{mv_data_table} = $table;
+}
+$Values->{ui_data_fields} =
+	$CGI->{ui_data_fields} ||
+	$CGI->{mv_data_fields} ||
+	$Values->{"$table:ui_data_fields"} || '' ;
+$Values->{ui_data_fields} =~ s/\0+/ /g;
+return;
+[/perl]
+
+[set process_ui_cat]
+setcat=[cgi selector]
+[perl]
+	my @filters = grep /^ui_filter:/, keys %$CGI;
+	return unless @filters;
+	foreach my $key (@filters) {
+		my $val = delete $CGI->{$key};
+		$key =~ s/ui_filter://;
+		next unless $val;
+		next unless defined $CGI->{$key};
+		$CGI->{$key} = $Tag->filter($val, $CGI->{$key}, $key);
+	}
+	return;
+[/perl]
+[/set]
+
+
+[if scratch ui_failure]
+	<FONT COLOR=RED>Failed:
+	[scratch ui_failure][set ui_failure][/set]</FONT><BR>
+[/if]
+
+[loop list="[value cat]" prefix=table]
+<FORM METHOD=POST ACTION="[area ui]">
+<INPUT TYPE=hidden NAME=mv_doit VALUE="set">
+<INPUT TYPE=hidden NAME=from_category VALUE=1>
+<INPUT TYPE=hidden NAME=mv_click VALUE="process_ui_cat">
+<INPUT TYPE=hidden NAME=mv_nextpage VALUE="__UI_BASE__/layout">
+<INPUT TYPE=hidden NAME=mv_data_table VALUE="[value mv_data_table]">
+<INPUT TYPE=hidden NAME=mv_data_key VALUE="[value ui_data_key_name]">
+<INPUT TYPE=hidden NAME=mv_update_empty VALUE="1">
+<INPUT TYPE=hidden NAME=mv_data_fields VALUE="[db-columns]">
+<INPUT TYPE=hidden NAME=code VALUE="[table-code]">
+
+<table __UI_T_PROPERTIES__>
+
+<td bgcolor=__UI_C_TOPBLOCKBAR__ colspan=2><font color="#ffffff">Name and Link</td>
+</tr>
+
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<B>Name</B> &nbsp;<small>
+	<INPUT SIZE=20 NAME=name Value="[table-data cat name]">
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<table cellpadding=0 cellspacing=0>
+	<tr>
+		<td>
+		<B>Links from section</B>
+		</td>
+		<td>
+		<input type=hidden name="ui_filter:area" value="null_to_space">
+		<small>
+		<select name="area" MULTIPLE size=5>
+		[calc]
+			my (%current);
+			my (%seen);
+			my (@current) = split /\s+/, q{[table-data cat area]};
+			@current{@current} = @current;
+			my @passed = grep !$seen{$_}, split /\t/,
+							q{[loop search='
+										fi=area
+										st=db
+										ra=yes
+										un=yes
+										rf=code,name
+									'][loop-code] [loop-param name]	[/loop]};
+			my $out = '';
+			for (@passed) {
+				next unless /\S/; 
+				my ($value, $label) = split /\s+/, $_, 2;
+				$out .= qq{<OPTION VALUE="$value"};
+				$out .= ' SELECTED' if defined $current{$value};
+				$out .= qq{>$label};
+			}
+			return $out;
+		[/calc]
+		</select>
+		</td>
+	</tr>
+	</table>
+	</td>
+</tr>
+
+<tr><td bgcolor=__UI_C_TOPBLOCKBAR__ colspan=2><font color="#ffffff">Link URL properties (disables searching tables)</td></tr>
+
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<B>External</B>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small>
+	<input type=hidden name="ui_filter:url" value="nullselect">
+	<INPUT SIZE=50 NAME=url value="[calc]
+										my $tmp = q{[table-data cat url]};
+										$url_current = '';
+										if($tmp =~ /^\w+:/) {
+											$tmp =~ s/^\s+//;
+											$tmp =~ s/\s+$//;
+											return $tmp;
+										}
+										else {
+											$url_current = $tmp; 
+										}
+										return;
+								   [/calc]">
+	</td>
+</tr>
+
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<B>Internal</B>
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small>
+	<select name=url>
+	[calc]
+		my (%current);
+		my (%seen);
+		my $url;
+		($url, $ui_arg) = split /\s+/, $url_current, 2;
+		my @passed = split /\s+/, $Tag->list_pages();
+		my $out = '<OPTION VALUE="">--none--';
+		for (@passed) {
+			$out .= qq{<OPTION};
+			$out .= ' SELECTED' if $url eq $_;
+			$out .= qq{>$_};
+		}
+		return $out;
+	[/calc]
+	</SELECT>&nbsp;Parameters:&nbsp;<INPUT NAME=url SIZE=16 VALUE="[calc]$ui_arg[/calc]">
+	</td>
+</tr>
+
+<td bgcolor=__UI_C_TOPBLOCKBAR__ colspan=2><font color="#ffffff">Banner info</td>
+
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__ COLSPAN=2>
+	<table cellpadding=0 cellspacing=0>
+	<tr>
+		<td></td>
+		<td align=center><small><b>Text</td>
+		<td align=center><small><b>Image</td>
+	</tr>
+		<td>
+		<B>Banner</B>
+		</td>
+		<td>
+		<small>
+		<INPUT SIZE=30 NAME=banner_img value="[table-data cat banner_img]">
+		</td>
+		<td>
+		<small>or
+		<INPUT SIZE=30 NAME=banner_text value="[table-data cat banner_text]">
+		</td>
+	</tr>
+	</table>
+	</td>
+</tr>
+
+<tr><td bgcolor=__UI_C_TOPBLOCKBAR__ colspan=2><font color="#ffffff">Search properties</td></tr>
+[calc]
+	$Values->{tab} = q{[table-data cat tab]} || $Config->{ProductFiles}[0];
+	return;
+[/calc]
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__ COLSPAN=2>
+	<table cellpadding=0 cellspacing=0>
+	<tr>
+		<td></td>
+		<td align=center><small><b>Table</td>
+		<td align=center><small><b>field=column pairs</td>
+		<td align=center><small><b>Results page</td>
+	</tr>
+	<tr>
+		<td>
+		<B>Easy search</B>
+		</td>
+		<td>
+			<small>
+				<SELECT NAME=tab>
+				[loop list="[list-databases]" option=tab]<OPTION>[loop-code][/loop]
+				</SELECT>
+		</td>
+		<td>
+			<small>
+			<TEXTAREA NAME=selector COLS=20 ROWS=3>[table-data cat selector]</TEXTAREA>
+			</td>
+		</td>
+		<td>
+			<small>
+			<select name=page>
+			[calc]
+				my (%current);
+				my (%seen);
+				my $page = q{[table-data cat page]};
+				my @passed = split /\s+/, $Tag->list_pages();
+				my $out = '<OPTION VALUE="">--default--';
+				for (@passed) {
+					$out .= qq{<OPTION};
+					$out .= ' SELECTED' if $page eq $_;
+					$out .= qq{>$_};
+				}
+				return $out;
+			[/calc]
+			</SELECT>
+		</td>
+	</tr>
+	</table>
+	</td>
+</tr>
+
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	[set Create]
+	mv_todo=back
+	mv_nextpage=__UI_BASE__/search_builder
+	cat=[table-code]
+	ui_target=ui_prop
+	ui_return_to=@@MV_PAGE@@
+	[/set]
+	<B>Complex search link</B><br><small><INPUT TYPE=submit
+						name=mv_click
+						value="Create"
+						onClick="
+							this.form.target='search_prop';
+						">&nbsp;<small><INPUT TYPE=button onClick="this.form.search.value=''" VALUE="clear search">
+	</td>
+	<td bgcolor=__UI_C_INTBLOCK__>
+	<small>
+		[calc]
+		my $n = 4;
+		if($Scratch->{search_page}) {
+			$stuff = delete $Scratch->{search_page};
+			$stuff =~ s/.*?(['\|])(.*)\1.*/$2/s;
+			$stuff =~ s/^\s+//mg;
+			$stuff =~ s/\s+$//mg;
+		}
+		else {
+			$stuff = q{[table-data cat search]};
+		}
+		if($stuff =~ /\S/) {
+			$n = $stuff =~ tr/\n/\n/;
+		}
+		else { $stuff = '' };
+		return "<TEXTAREA name=search COLS=50 ROWS=$n>$stuff</TEXTAREA>";
+		[/calc]
+	</td>
+</tr>
+
+
+
+
+<tr><td bgcolor=__UI_C_TOPBLOCKBAR__ colspan=2><font color="#ffffff">Other</td></tr>
+
+<tr>
+	<td bgcolor=__UI_C_INTBLOCK__ colspan=2>
+	<table cellpadding=0 cellspacing=0>
+	<tr>
+		<td bgcolor=__UI_C_INTBLOCK__ width="50%">
+			<table width="100%">
+			<tr>
+				<td>
+				<B>Sorting within section</B><br><small><i>(ties sorted by name)
+				</td>
+				<td bgcolor=__UI_C_INTBLOCK__ align=right>
+				<small>
+				<select name=sort>
+				<option value=00>--first--
+				[calc]
+					my $curr = q{[table-data cat sort]};
+					for ('01' .. '49') {
+						$out .= qq{<OPTION};
+						$out .= ' SELECTED' if $curr eq $_;
+						$out .= qq{>$_};
+					}
+					return $out;
+				[/calc]
+				</SELECT>
+				</td>
+			</tr>
+			</table>
+		</td>
+		<td align=center valign=center rowspan=2 width="50%" align=center valign=center>
+			<table cellpadding=0 cellspacing=0 bgcolor="__UI_C_TOPBLOCKBAR__" width="100%" height="100%">
+			<tr>
+				<td align=center valign=center>
+				<table align=center cellpadding=0 cellspacing=0 align=center valign=center bgcolor="__UI_C_INTBLOCK__" width="100%" height="100%" >
+				<tr>
+					<td align=center valign=center>
+					<b> <input	type=submit
+							value="Ok"
+							onClick="this.form.target='ui_layout'"></B>
+					&nbsp;&nbsp;<small>
+					<input type=button onClick="self.close()" value="Cancel">
+					</td>
+				</tr>
+				</table>
+				</td>
+			</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td>
+		<B>Subwindow selection value
+		<small>
+		<INPUT SIZE=20 NAME=subs value="[table-data cat subs]">
+		</td>
+	</tr>
+	</table>
+	</td>
+</tr>
+
+</table>
+
+	[if-mm tables =x]
+	[if !value ui_too_large]
+	<INPUT TYPE=hidden NAME=mv_auto_export VALUE="[value mv_data_table]">
+	[/if]
+	[/if-mm]
+
+</form>
+[/loop]
+
+</body>
+</html>

@@ -166,6 +166,9 @@ EOF
 <tr>
 <td colspan=2 bgcolor=__UI_C_INTBLOCK__>
 <FORM NAME=report ACTION="[area __UI_BASE__/search_builder_results]" METHOD=POST>
+<INPUT TYPE=hidden NAME=cat          VALUE="[cgi cat]"         >
+<INPUT TYPE=hidden NAME=ui_return_to VALUE="[cgi ui_return_to]">
+<INPUT TYPE=hidden NAME=ui_target    VALUE="[cgi ui_target]"   >
 <INPUT TYPE=submit VALUE=Run>
 [if-mm advanced mml]
 <INPUT TYPE=submit NAME=generate_page VALUE="Generate definition">

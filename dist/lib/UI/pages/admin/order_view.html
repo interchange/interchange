@@ -169,6 +169,18 @@
 </blockquote>
 </font>
 
+<P>
+<A HREF="[area
+			href=__UI_BASE__/flex_editor
+			form="
+				item_id=[loop-code]
+				mv_data_table=transactions
+				page_title=Change status of order [loop-code]
+				ui_return_to=__UI_BASE__/order_view
+				ui_return_to=mv_arg=[cgi order]
+				ui_data_fields=code order_date status
+				ui_hide_key=1
+			"]"><U>Status</u>: [loop-data transactions status]</A>
 [set bill_address][/set]
 [set ship_address][/set]
 </td></tr>

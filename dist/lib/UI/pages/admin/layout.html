@@ -1,226 +1,307 @@
 [set page_title]Layout Editor[/set]
 [set page_banner]Layout Editor: Organize your site into categories[/set]
+[set page_perm]layout=e[/set]
 [set help_name]layout.edit[/set]
 [set icon_name]admin/icon_pages.gif[/set]
+[seti ui_body_extra]
+	[if cgi from_section]
+		onLoad="window.open('[area __UI_BASE__/layout_area_properties]', 'ui_prop', 
+			'resizable=1,scrollbars=1,width=750')"
+	[elsif cgi from_category]
+		onLoad="window.open('[area __UI_BASE__/layout_cat_properties]', 'ui_prop', 
+			'resizable=1,scrollbars=1,width=750')"
+	[/elsif]
+	[/if][/seti]
 
 @@UI_STD_HEAD@@
-
-<!-- ----- BEGIN REAL STUFF ----- -->
-<P>
+[if scratch ui_message]
 <BLOCKQUOTE>
-<FONT COLOR="__CONTRAST__" SIZE=+1><B>This page doesn't work yet.</B></FONT>
+<FONT COLOR="__CONTRAST__" SIZE=+1><B>[scratch ui_message][set ui_message][/set]</B></FONT>
 </BLOCKQUOTE>
-<P>
-<FORM METHOD=GET ACTION="[area @@MV_PAGE@@]" name="layoutform">
-<input type=hidden name=mv_action value=return>
+[/if]
+<!-- ----- BEGIN REAL STUFF ----- -->
+<FORM	METHOD=GET
+		ACTION="[process]"
+		name="layoutform"
+		onSubmit="document.layoutform.ui_window_name.value=window.name;" >
+<input type=hidden name=ui_window_name value="mainwindow[scratch window_name]">
+<input type=hidden name=mv_todo        value=return>
+<input type=hidden name=mv_nextpage    value="@@MV_PAGE@@">
 
 <table __UI_T_PROPERTIES__>
 
 [if cgi newarea]
+<!-- Creating area: 
 [value name=area set="[fcounter etc/area.recordnumber]" hide=1]
-[data table=area column=name key="[value area]" value="[cgi newarea]"]
+[data table=area column=name key="[value area]" value="[cgi newarea]"] -->
+[data table=area column=selector key="[value area]" value="[value area]"] -->
 [elsif cgi newcat]
+<!-- Creating category: 
 [value name=cat set="[fcounter etc/cat.recordnumber]" hide=1]
-[data table=cat column=name key="[value cat]" value="[cgi newarea]"]
-[data table=cat column=area key="[value cat]" value="[data table=area col=selector key='[value area]']"]
+[data table=cat column=name key="[value cat]" value="[cgi newcat]"]
+[data table=cat column=area key="[value cat]" value="[data table=area col=selector key='[value area]']"] -->
+[/elsif]
+[elsif cgi setarea]
+<!-- Setting area: [value name=area set="[value code]" hide=1] -->
+[/elsif]
+[elsif cgi setcat]
+<!-- Setting cat: [value name=cat set="[value code]" hide=1] -->
 [/elsif]
 [/if]
 
+[set Delete section]
+[tag flag write]area[/tag]
+mv_nextpage=__UI_BASE__/layout
+[if-mm advanced sitedesign=d]
+	[perl tables="area"]
+		my ($item) = $CGI->{area};
+		my $out;
+	    unless ($Db{area}) {
+			Log("no site design table 'area'");
+			return undef;
+		}
+		my $name = $Db{area}->field($item, 'name');
+		if ($Db{area}->delete_record($item)) {
+			$out .= "Deleted $name from area table<BR>";
+		}
+		else {
+			$out .= "Item $item not in $_ table (or delete failed)<BR>";
+		}
+		$Scratch->{ui_message} = $out;
+		return;
+	[/perl]
+[else]
+	[set ui_message]Not authorized to delete items.[/set]
+[/else]
+[/if-mm]
+[/set]
+
 <tr>
-<td [if value cat]colspan=3[elsif value area]colspan=2[/elsif][/if] bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+<td [if value area]colspan=3[/if] bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
 <tr>
 <td valign=top bgcolor="__UI_C_INTBLOCK__">
 
-<script language="javascript">
-<!--
-   document.write("Edit area:<br>");
-// -->
-</script>
-<noscript>
-<input type="submit" value="Edit section:"><br>
-</noscript>
+<B>Area -- section:</B><br>
 
-<select name="area" size=10 [if !value area]onchange="document.layoutform.submit()"[/if]>
+<select name="area" size=10 onchange="this.form.target='_self';document.layoutform.submit()">
 [loop   search="
 			fi=area
+			tf=bar
+			tf=sort
+			tf=name
 			st=db
 			ra=yes
-			rf=code,name
+			rf=code,name,bar
 		"
 		option=area ]
-<option value="[loop-code]"> [loop-param name]
+<option value="[loop-code]">[loop-param bar] -- [loop-param name]
 [/loop]
 </select>
 <br>
 
-<input type=submit value="Area Properties">
+[set Section Properties]
+mv_todo=return
+mv_nextpage=__UI_BASE__/layout_area_properties
+[/set]
+
+<input onclick="window.open('', 'ui_prop', 
+			'resizable=1,scrollbars=1,width=750'); this.form.target='ui_prop'" 
+type=submit name=mv_click value="Section Properties">
 
 <br>
 
-<input onclick="window.open('[area __UI_BASE__/layout_create.html]', 'create_window', 
-			    'resizable=1,width=240,height=120')" 
-	type="submit" value="Create new section">
+[set Create section]
+mv_todo=back
+mv_nextpage=__UI_BASE__/layout_create
+ui_varname=newarea
+ui_title=New section name
+[/set]
+
+<input onclick="window.open('', 'create_window', 
+			'resizable=1,width=240,height=120'); this.form.target='create_window'" 
+	type=submit name=mv_click value="Create section">
+
+<br>
+
+<input type=submit name=mv_click value="Delete section"
+	 onClick="this.form.target='_self'; return confirm('Are you sure you want to delete this section?')">
 
 
 </td>
 
 
 [if value area]
+[then]
 <td valign=top bgcolor="__UI_C_INTBLOCK__">
 
-<script language="javascript">
-<!--
-   document.write("Edit category:<br>");
-// -->
-</script>
-<noscript>
-<input type="submit" value="Edit category:"><br>
-</noscript>
+<B>Contains:</B><BR>
 
-<select name="cat" size=10 [if !value cat]onchange="document.layoutform.submit()"[/if]>
+<select name="cat" size=10>
 [loop   search="
 			fi=cat
 			st=db
 			ml=1000
+
+			tf=sort
+			tf=name
+
+			co=yes
+
 			sf=area
+			op=rm
 			se=[data table=area col=selector key='[value area]']
-			rf=code,name
-		option=cat
-			"]
-<option value="[loop-code]"> [loop-param name]
+
+			rf=code,name,sort
+			" option=cat]
+<OPTION VALUE="[loop-code]">[loop-param name] ([loop-param sort])
 [/loop]
 </select>
 <br>
 
-<input type=submit value="Category Properties"><br>
-[seti win_href][href form="cur_area=[value area]" href="__UI_BASE__/layout_subcat.html" ][/seti]
+[set Category Properties]
+mv_todo=return
+mv_nextpage=__UI_BASE__/layout_cat_properties
+[/set]
 
-<input onclick="window.open('[scratch win_href]', 'create_window', 
-			    'resizable=1,width=240,height=120')" 
-	type=submit value="Create category">
+<input onclick="window.open('', 'ui_prop', 
+			'resizable=1,scrollbars=1,width=750'); this.form.target='ui_prop'" 
+ type=submit name=mv_click value="Category Properties">
+<br>
+[set Create category]
+mv_todo=back
+mv_nextpage=__UI_BASE__/layout_create
+ui_varname=newcat
+ui_title=New category name
+[/set]
+
+<input onclick="window.open('', 'create_window', 
+			'resizable=1,width=240,height=120'); this.form.target='create_window'" 
+	type=submit name=mv_click value="Create category">
+
+[set Delete category]
+[tag flag write]cat[/tag]
+mv_nextpage=__UI_BASE__/layout
+[if-mm advanced sitedesign=d]
+	[perl tables="cat"]
+		my ($item) = $CGI->{cat};
+		my $out;
+	    unless ($Db{area}) {
+			Log("no site design table 'cat'");
+			return undef;
+		}
+		my $name = $Db{cat}->field($item, 'name');
+		if ($Db{cat}->delete_record($item)) {
+			$out .= "Deleted $name from cat table<BR>";
+		}
+		else {
+			$out .= "Item $item not in $_ table (or delete failed)<BR>";
+		}
+		$Scratch->{ui_message} = $out;
+		return;
+	[/perl]
+[else]
+	[set ui_message]Not authorized to delete items.[/set]
+[/else]
+[/if-mm]
+[/set]
+
+
+<br>
+<input type=submit name=mv_click value="Delete category"
+	 onClick="this.form.target='_self'; return confirm('Are you sure you want to delete this category?')">
+<br><br>
+<small><small><i>Values in (parentheses) are the sort precedence. Ties are sorted by title.</I></small></small>
 
 </td>
-[/if]
 
-[if value cat]
-
-<td bgcolor="__UI_C_INTBLOCK__">
+<td bgcolor="__UI_C_INTBLOCK__" valign=top>
 
 
 <table>
 <tr>
 
 <td>
-
-[seti cat_selector][data table=cat column=selector key="[value cat]"][/seti]
-[seti cat_name][data table=cat column=name key="[value cat]"][/seti]
-[seti cat_page][data table=cat column=page key="[value cat]"][/seti]
-[seti cat_url][data table=cat column=url key="[value cat]"][/seti]
-
-[perl]
-
- if($Scratch->{cat_url}) {
-
-    $Scratch->{cat_type} = 'url';
-
- # We need a better way to differentiate between product pages
- # and other kinds of local pages
- } elsif($Tag->scratch(cat_page)) {
-
-    $Scratch->{cat_type} = 'static';
-
- } else {
-
-    $Scratch->{cat_type} = 'items';
- }
- return;
+[set name="<--"]
+[if-mm advanced layout=e]
+[flag type=write table=cat]
+[perl tables=cat]
+	my $db = $Db{cat};
+	if (! $db) {
+		Log ("No category database.");
+		return;
+	}
+	my $area = $CGI->{area};
+	@codes = split /\0/, $CGI->{add_cat};
+	for(@codes) {
+		my $curr = $db->field($_, 'area');
+		if($curr) {
+			$curr =~ s/\s+$//;
+			$curr .= " $area";
+		}
+		else {
+			$curr = $area;
+		}
+		$db->set_field($_, 'area', $curr);
+	}
+	return;
 [/perl]
+[/if-mm]
+[perl tables=cat]
+[/set]
+[set name="-->"]
+[if-mm advanced layout=e]
+[flag type=write table=cat]
+[perl tables=cat]
+	my $db = $Db{cat};
+	if (! $db) {
+		Log ("No category database.");
+		return;
+	}
+	my $area = $CGI->{area};
+	@codes = split /\0/, $CGI->{cat};
+	my @there;
+	foreach my $one (@codes) {
+		my %seen;
+		my $curr = $db->field($one, 'area');
+		Log("current = $curr");
+		@there = grep $_ ne $area, split /\s+/, $curr;
+		Log("now = @there");
+		@there = grep !$seen{$_}++, @there;
+		$db->set_field($one, 'area', join " ", @there);
+	}
+	return;
+[/perl]
+[/if-mm]
+[/set]
+<INPUT TYPE=submit onClick="this.form.target='_self'"  NAME=mv_click VALUE="&lt;--">
+<INPUT TYPE=submit onClick="this.form.target='_self'" NAME=mv_click VALUE="--&gt;">
+</td>
 
-Type of category:
-<select name="cat_type">
-<option value="items" [if scratch cat_type eq items]selected[/if]>
-  Product page
-<option value="static" [if scratch cat_type eq static]selected[/if]>
-  Content page
-<option value="url" [if scratch cat_type eq url]selected[/if]>
-  Link to a foreign page
-</select>
+<td VALIGN=top><B>Available categories:</B><br>
+<select name="add_cat" size=10>
+[loop   search="
+			fi=cat
+			st=db
+			ml=1000
 
-<br>
+			tf=sort
+			tf=name
 
-[if scratch cat_type eq url]
+			co=yes
 
-URL: <input name="cat_url" size=20>
+			sf=area
+			op=rn
+			se=[data table=area col=selector key='[value area]']
 
-[/if]
-
-[if scratch cat_type eq static]
-
-<!-- should list files in catalogs/[...]/pages/, or something -->
-Page name: 
-<select NAME=cat_url>
-[list-pages options=1]
-</select>
-
-[/if]
-
-[if scratch cat_type eq items]
-
-
-<hr size=3 noshade>
-<br>
-
-
-Add an item to "[scratch cat_name]":<br>
-<select name="sku">
-[loop search="
-        fi=products
-		ra=yes
-		rf=description,sku
-		ml=1000
-"]
-<option value="[loop-param sku]">[loop-param description]
-[/loop]
-</select>
-<input type="submit" value="Add">
-<br>
-
-<hr>
-
-Items in category "[scratch cat_name]":<br>
-
-<select name="existing_items" size=10>
-[loop search="
-        fi=products
-		sf=category
-		se=[scratch cat_selector]
-        st=db
-		em=yes
-        rf=description,sku
-"]<option value="[loop-param sku]">[loop-param description]
+			rf=code,name,sort
+			"]
+<OPTION VALUE="[loop-code]">[loop-param name] ([loop-param sort])
 [/loop]
 </select>
 
 </td>
-
-</tr>
-<tr>
-<td>
-
-
-<input type=submit value="Remove item from category">
-<input type=submit value="Edit item">
-
-<br>
-
-
-[comment] cat_type: items [/comment]
-[/if]
-
-</td>
-
 </tr>
 </table>
 </td>
@@ -228,11 +309,20 @@ Items in category "[scratch cat_name]":<br>
 </tr>
 
 <tr>
+<td colspan=3 bgcolor=__UI_C_INTBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
+</tr>
+
+<tr>
 <td colspan=3 bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 
+[/then]
 [else]
 <!-- wait for them to select a category first -->
+</tr>
+
+<tr>
+<td [if value area]colspan=2[/if] bgcolor=__UI_C_TOPBLOCKBAR__><img src="admin/cleardot.gif" width=__UI_MAIN_WIDTH__ height=1></td>
 </tr>
 [/else]
 [/if]
@@ -240,11 +330,6 @@ Items in category "[scratch cat_name]":<br>
 </table>
 
 </form>
-<P>
-<BLOCKQUOTE>
-<FONT COLOR="__CONTRAST__" SIZE=+1><B>This page doesn't work yet.</B></FONT>
-</BLOCKQUOTE>
-<P>
 
 <BR>
 @@UI_STD_FOOTER@@

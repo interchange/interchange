@@ -124,12 +124,24 @@
 	$Scratch->{rows} = scalar(@string) + 5;
 	return;
 [/perl]
-
-[if !cgi generate_page]
+[if cgi ui_target]
+[tag op=header interpolate=1]
+Window-Target: [cgi ui_target]
+Location: [calc]
+			$Tag->area(	
+				{
+					href => $CGI->{ui_return_to},
+					form => "cat=$CGI->{cat}",
+				}
+			);
+[/calc]
+[/tag]
+[elsif !cgi generate_page]
 [tag op=header]
 Window-Target: test
 [/tag]
 [bounce href='[scratch name=search_page interpolate=1]']
+[/elsif]
 [/if]
 
 <A HREF="[scratch name=search_page interpolate=1]" TARGET=test>Test</A>
@@ -140,7 +152,9 @@ Window-Target: test
 
 <A HREF="[scratch name=search_page interpolate=1]" TARGET=test>Test</A>
 
+[if !cgi ui_target]
 [set search_page][/set]
+[/if]
 [set search_string][/set]
 @@UI_STD_FOOTER@@
 

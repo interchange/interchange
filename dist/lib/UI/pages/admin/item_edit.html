@@ -36,6 +36,7 @@
                 $Scratch->{prod_tables} = $tmp;
             `]
 [perl table="[scratch prod_tables]"]
+	$CGI->{ui_return_to} = '__UI_BASE__/item';
 	my $db = $Db{$Scratch->{prod_tables}}
 		or return;
 	my $fields = join " ", '', $db->columns(), '';

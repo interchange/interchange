@@ -93,7 +93,7 @@ function open_quicklinks() {
 </script>
 
 </head>
-<body bgcolor="__UI_C_BG__" link="__UI_C_LINK__" alink="__UI_C_ALINK__" vlink="__UI_C_VLINK__">
+<body [scratch ui_body_extra] bgcolor="__UI_C_BG__" link="__UI_C_LINK__" alink="__UI_C_ALINK__" vlink="__UI_C_VLINK__">
 
 <!-- ----- BEGIN TITLEBAR ----- -->
 
@@ -205,7 +205,7 @@ Help
 	<td colspan="2">
 	<style type="text/css">
 	<!--
-	 td{font-family:arial, helvetica, sans-serif; font-size:9pt}
+	 td{font-family:arial, helvetica, sans-serif}
 	   -->
    </style>
    <center>
@@ -218,6 +218,7 @@ Help
 				help_name
 				page_perm
 				table_perm
+				ui_body_extra
 		/) { delete $Scratch->{$_} }
 	return;
 [/calc]
