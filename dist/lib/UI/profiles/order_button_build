@@ -46,6 +46,20 @@ EOF
 		if(length $CGI->{item_destination}) {
 			push @parms, "mv_nextpage=$CGI->{item_destination}";
 		}
+		if($CGI->{item_button} > 1) {
+			my @fly;
+			if(! $CGI->{description}) {
+				$result .= "Error: on-the-fly item requires description";
+				last BUILD;
+			}
+			push @fly, "description=$CGI->{description}";
+			if(! $CGI->{price}) {
+				$result .= "Error: on-the-fly item requires price";
+				last BUILD;
+			}
+			push @fly, "price=$CGI->{price}";
+			push @parms, "mv_order_fly=" . join("|", @fly);;
+		}
 		if(length $CGI->{item_group}) {
 			push @parms, "mv_order_group=$CGI->{item_group}";
 		}
@@ -62,8 +76,10 @@ EOF
 		}
 	}
 	my $button;
+	my $isbutton;
 	if(@parms) {
-		if($CGI->{item_button}) {
+		if($CGI->{item_button} == 1 || $CGI->{item_button} == 3) {
+			$isbutton = 1;
 			my $url = $Config->{VendURL} . '/order';
 			$button = qq{<FORM ACTION="$url" METHOD=POST>\n};
 			for(@parms) {
@@ -85,7 +101,7 @@ EOF
 		$result .= $button;
 	}
 	$result .= "</TEXTAREA>\n";
-	if ($CGI->{item_button} and $button) {
+	if ($isbutton and $button) {
 		$Scratch->{test_button} = $button;
 		$Scratch->{test_button} =~ s/METHOD=/TARGET=item_test METHOD=/;
 	}

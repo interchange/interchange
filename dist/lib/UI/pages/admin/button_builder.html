@@ -58,6 +58,10 @@
 <SELECT NAME=item_button>
 <OPTION VALUE=0>Link
 <OPTION VALUE=1 [selected item_button 1]>Button
+[if config OnFly]
+<OPTION VALUE=2 [selected item_button 2]>On-the-fly link
+<OPTION VALUE=3 [selected item_button 3]>On-the-fly button
+[/if]
 </SELECT>
 </td>
 </tr>
@@ -88,7 +92,8 @@
 </select>
 [more-list]<BR>Too big for one page: [more][/more-list]
 [/loop]
-
+<br>
+Or enter SKU: <INPUT NAME=item_id SIZE=16>
 </td>
 </tr>
 
@@ -204,6 +209,30 @@ EOF
 
 </td>
 </tr>
+
+[if config OnFly]
+<tr>
+<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<B>Description</B>
+<BR>
+<font size="-1"><i>(on-the-fly only)</i></font>
+</td>
+<td bgcolor=__UI_C_INTBLOCK__>
+<input name="description" size=50>
+</td>
+</tr>
+
+<tr>
+<td bgcolor=__UI_C_INTBLOCK__ align=right>
+<B>Price</B>
+<BR>
+<font size="-1"><i>(on-the-fly only)</i></font>
+</td>
+<td bgcolor=__UI_C_INTBLOCK__>
+<input name="price" size=8>
+</td>
+</tr>
+[/if]
 
 [comment]
 [calc]
