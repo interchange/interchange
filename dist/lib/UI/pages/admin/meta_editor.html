@@ -66,11 +66,36 @@ EOF
 
 @_UI_STD_HEAD_@
 
+[flag type=write table="[cgi mv_data_table]"]
+
+[perl table="[cgi mv_data_table]"]
+	### If there is a view, set defaults from non-view record
+	### for this item
+	
+	# Always want this removed first, don't proceed if no view
+	$Tag->tmp('tmp_defaults');
+	return unless $CGI->{ui_meta_view};
+
+	my $db = $Db{$CGI->{mv_data_table}};
+
+	# Don't bother if already exists
+	return if $db->record_exists($CGI->{item_id});
+
+	my $id = $CGI->{item_id};
+	$id =~ s/^[^:]+:+//;
+	my $rec = $db->row_hash($id)
+		or return;
+	delete $rec->{code};
+	$Scratch->{tmp_defaults} = $rec;
+	return;
+[/perl]
+
 [table-editor
 	item_id="[cgi item_id]"
 	table="[cgi mv_data_table]"
 	no-table-meta=1
 	no-meta=1
+	default=`$Scratch->{tmp_defaults}`
 	ui_data_fields="
 		=Typical
 
@@ -113,4 +138,4 @@ EOF
 	][/table-editor]
 
 @_UI_STD_FOOTER_@
-<!-- page: @@MV_PAGE@@ version: $Revision: 2.5 $ -->
+<!-- page: @@MV_PAGE@@ version: $Revision: 2.6 $ -->
