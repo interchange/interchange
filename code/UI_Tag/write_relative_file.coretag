@@ -14,12 +14,14 @@ EOD
 
 UserTag write-relative-file Order file
 UserTag write-relative-file hasEndTag
+UserTag write-relative-file addAttr
 UserTag write-relative-file Routine <<EOR
 sub {
-	my ($file, $data) = @_;
+	my ($file, $opt, $data) = @_;
 #::logDebug("writing $file");
 	return undef unless Vend::File::allowed_file($file, 1);
-	Vend::File::writefile(">$file", $data, {auto_create_dir => 1});
+	$opt->{auto_create_dir} = 1 unless defined $opt->{auto_create_dir};
+	Vend::File::writefile(">$file", $data, $opt);
 }
 EOR
 
