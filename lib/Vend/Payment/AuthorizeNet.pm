@@ -1,18 +1,21 @@
 # Vend::Payment::AuthorizeNet - Interchange AuthorizeNet support
 #
-# $Id: AuthorizeNet.pm,v 2.7 2002-12-17 02:39:04 kwalsh Exp $
+# Connection routine for AuthorizeNet version 3 using the 'ADC Direct Response'
+# method.
 #
-# Copyright (C) 1999-2002 Red Hat, Inc. <interchange@redhat.com>
+# $Id: AuthorizeNet.pm,v 2.8 2003-05-21 20:22:15 jon Exp $
 #
-# by mark@summersault.com with code reused and inspired by
-#	Mike Heins <mheins@redhat.com>
-#	webmaster@nameastar.net
-#   Jeff Nappi <brage@cyberhighway.net>
-#   Paul Delys <paul@gi.alaska.edu>
-#  Edited by Ray Desjardins <ray@dfwmicrotech.com>
-
-# Patches for AUTH_CAPTURE and VOID support contributed by
-# nferrari@ccsc.com (Nelson H Ferrari)
+# Copyright (C) 2003 Interchange Development Group, http://www.icdevgroup.org/
+# Copyright (C) 1999-2002 Red Hat, Inc.
+#
+# Authors:
+# mark@summersault.com
+# Mike Heins <mike@perusion.com>
+# Jeff Nappi <brage@cyberhighway.net>
+# Paul Delys <paul@gi.alaska.edu>
+# webmaster@nameastar.net
+# Ray Desjardins <ray@dfwmicrotech.com>
+# Nelson H Ferrari <nferrari@ccsc.com>
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,16 +32,11 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-# Connection routine for AuthorizeNet version 3 using the 'ADC Direct Response'
-# method.
-
-# Reworked extensively to support new Interchange payment stuff by Mike Heins
-
 package Vend::Payment::AuthorizeNet;
 
 =head1 Interchange AuthorizeNet Support
 
-Vend::Payment::AuthorizeNet $Revision: 2.7 $
+Vend::Payment::AuthorizeNet $Revision: 2.8 $
 
 =head1 SYNOPSIS
 
@@ -209,8 +207,8 @@ That should show what happened.
 
 =item *
 
-If all else fails, Red Hat and other consultants are available to help
-with integration for a fee.
+If all else fails, consultants are available to help with integration for a fee.
+See http://www.icdevgroup.org/ for mailing lists and other information.
 
 =back
 
@@ -221,8 +219,8 @@ to Vend::Payment and places things there.
 
 =head1 AUTHORS
 
-Mark Stosberg <mark@summersault.com>, based on original code by Mike Heins
-<mheins@redhat.com>.
+Mark Stosberg <mark@summersault.com>.
+Based on original code by Mike Heins <mike@perusion.com>.
 
 =head1 CREDITS
 
@@ -377,31 +375,38 @@ sub authorizenet {
 
 #::logDebug("auth_code=$actual->{auth_code} order_id=$opt->{order_id}");
     my %query = (
-                    x_Test_Request	=> $opt->{test} || charge_param('test'),
-                    x_Card_Num		=> $actual->{mv_credit_card_number},
-                    x_First_Name    => $actual->{b_fname},
-                    x_Last_Name     => $actual->{b_lname},
-                    x_Address       => $actual->{b_address},
-                    x_City          => $actual->{b_city},
-                    x_State         => $actual->{b_state},
-                    x_Zip			=> $actual->{b_zip},
-                    x_Country		=> $actual->{b_country},
-					x_Type			=> $transtype,
-                    x_Amount    	=> $amount,
-                    x_Exp_Date  	=> $exp,
-                    x_Method    	=> 'CC',
-					x_Trans_ID		=> $actual->{order_id},
-					x_Auth_Code		=> $actual->{auth_code},
-                    x_Invoice_Num   => $actual->{mv_order_number},
-#                    x_Company      => $actual->{company},
-                    x_Email         => $actual->{email},
-                    x_Phone        => $actual->{phone_day},
-                    x_Password  	=> $secret,
-                    x_Login     	=> $user,
-                    x_Version   	=> '3.0',
-                    x_ADC_URL   	=> 'FALSE',
-                    x_ADC_Delim_Data	=> 'TRUE',
-
+		x_Test_Request			=> $opt->{test} || charge_param('test'),
+		x_First_Name			=> $actual->{b_fname},
+		x_Last_Name				=> $actual->{b_lname},
+		x_Company				=> $actual->{b_company},
+		x_Address				=> $actual->{b_address},
+		x_City					=> $actual->{b_city},
+		x_State					=> $actual->{b_state},
+		x_Zip					=> $actual->{b_zip},
+		x_Country				=> $actual->{b_country},
+		x_Ship_To_First_Name	=> $actual->{fname},
+		x_Ship_To_Last_Name		=> $actual->{lname},
+		x_Ship_To_Company		=> $actual->{company},
+		x_Ship_To_Address		=> $actual->{address},
+		x_Ship_To_City			=> $actual->{city},
+		x_Ship_To_State			=> $actual->{state},
+		x_Ship_To_Zip			=> $actual->{zip},
+		x_Ship_To_Country		=> $actual->{country},
+		x_Email					=> $actual->{email},
+		x_Phone					=> $actual->{phone_day},
+		x_Type					=> $transtype,
+		x_Amount				=> $amount,
+		x_Method				=> 'CC',
+		x_Card_Num				=> $actual->{mv_credit_card_number},
+		x_Exp_Date				=> $exp,
+		x_Trans_ID				=> $actual->{order_id},
+		x_Auth_Code				=> $actual->{auth_code},
+		x_Invoice_Num			=> $actual->{mv_order_number},
+		x_Password				=> $secret,
+		x_Login					=> $user,
+		x_Version				=> '3.0',
+		x_ADC_URL				=> 'FALSE',
+		x_ADC_Delim_Data		=> 'TRUE',
     );
 
     my @query;
