@@ -17,10 +17,11 @@ must have a valid To: or it will not be delivered.
 EOD
 
 UserTag email-raw hasEndTag
+UserTag email-raw addAttr
 UserTag email-raw Interpolate
 UserTag email-raw Routine <<EOR
 sub {
-    my($body) = @_;
+    my($opt, $body) = @_;
     my($ok);
     $body =~ s/^\s+//;
 
@@ -37,6 +38,7 @@ sub {
         ::logError("Unable to send mail using $Vend::Cfg->{SendMailProgram}\n" .
             "Message follows:\n\n$body");
     }
-    $ok;
+
+    return $opt->{hide} ? '' : $ok;
 }
 EOR
