@@ -1,6 +1,6 @@
 # Config.pm - Configure Interchange
 #
-# $Id: Config.pm,v 1.25.2.45 2001-04-25 15:28:41 heins Exp $
+# $Id: Config.pm,v 1.25.2.46 2001-05-13 02:49:53 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -98,7 +98,7 @@ use Fcntl;
 use Vend::Parse;
 use Vend::Util;
 
-$VERSION = substr(q$Revision: 1.25.2.45 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.46 $, 10);
 
 my %CDname;
 
@@ -1563,7 +1563,7 @@ sub parse_message {
 
 	return '' unless $val;
 
-	return if $Vend::Quiet;
+	return 1 if $Vend::Quiet;
 
 	my $strip;
 	my $info_only;
