@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.97 2002-08-02 03:22:27 mheins Exp $
+# $Id: Interpolate.pm,v 2.98 2002-08-02 18:52:55 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.97 $, 10);
+$VERSION = substr(q$Revision: 2.98 $, 10);
 
 @EXPORT = qw (
 
@@ -4378,10 +4378,12 @@ my $once = 0;
 	# used in if-prefix-param or prefix-param tags
 	my @field_msg = ('error', "Unknown field name '%s' used in tag %s");
 	$run = $text;
+	if(! $opt->{ignore_undefined}) {
 	$run =~ s#$B$QR{_param}# defined $fh->{$1} ||
 		::logOnce(@field_msg, $1, "$Orig_prefix-param") #ige;
 	$run =~ s#$IB$QR{_param_if}# defined $fh->{$3} ||
 		::logOnce(@field_msg, $3, "if-$Orig_prefix-param") #ige;
+	}
 
 	for( ; $i <= $end ; $i++, $count++ ) {
 		$row = $ary->[$i];
