@@ -41,7 +41,6 @@ upsell_in_cart:
     	<INPUT TYPE=hidden NAME=mv_session_id VALUE="[data session id]">
     	<INPUT TYPE=hidden NAME=mv_doit      VALUE=refresh>
     	<INPUT TYPE=hidden NAME=mv_orderpage VALUE="ord/basket">
-    	<INPUT TYPE=hidden NAME=mv_checkout  VALUE="ord/checkout">
     	<INPUT TYPE=hidden NAME=mv_nextpage  VALUE=index>
     	<br>
 
