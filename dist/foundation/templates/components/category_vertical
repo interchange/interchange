@@ -19,6 +19,13 @@ set_selector:
 	lookup: sel
 	help: Defines which sets of items should be displayed
 	advanced: 1
+
+timed:
+	label: Use timed build
+	widget: select
+	help: Makes more efficient for large/busy catalogs
+	options: 0=No, 5=5 minutes, 10=10 minutes, 20=20 minutes, 60=60 minutes, 1440=Daily
+	advanced: 1
 [/comment]
 
 <tr><td align="left" class="categorybar">
@@ -26,6 +33,7 @@ set_selector:
   <table width="90%" align="center">
 
 <!-- BEGIN COMPONENT [control component category_vertical] -->
+[timed-build auto=1 if="[control timed 0]" minutes="[control timed 0]"]
 [set found_cat][/set]
 [loop
 	prefix=box
@@ -86,6 +94,7 @@ set_selector:
 	  </td>
 	</tr>
 [/if]
+[/timed-build]
 
   </table>
   <br>
