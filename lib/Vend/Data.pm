@@ -1,6 +1,6 @@
 # Vend::Data - Interchange databases
 #
-# $Id: Data.pm,v 2.33 2003-12-09 11:05:41 racke Exp $
+# $Id: Data.pm,v 2.34 2004-02-12 18:22:08 mheins Exp $
 # 
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -1185,6 +1185,7 @@ sub export_database {
 	$field  = $opt->{field}         if $opt->{field};
 	$delete = $opt->{delete}		if $opt->{delete};
 
+
 	$db = database_exists_ref($db)
 		or do {
 			logError("Vend::Data export: non-existent database %s" , $db);
@@ -1192,6 +1193,21 @@ sub export_database {
 		};
 
 	$db = $db->ref();
+
+	my $qual;
+	if($qual = $opt->{where}) {
+		if(ref $qual) {
+			my @out;
+			for(keys %$qual) {
+				my $val = $db->quote($qual->{$_}, $_);
+				push @out, "$_ = $val";
+			}
+			$qual = 'WHERE ' . join(" AND ", @out);
+		}
+		elsif($qual !~ /^\s*where\s+/i) {
+			$qual = "WHERE $qual";
+		}
+	}
 
 	my $table_name = $db->config('name');
 	my $notes;
@@ -1276,7 +1292,7 @@ sub export_database {
 		print EXPORT '"';
 		print EXPORT join $delim, @cols;
 		print EXPORT qq%"\n%;
-		while( (undef, @data) = $db->each_record() ) {
+		while( (undef, @data) = $db->each_record($qual) ) {
 			print EXPORT '"';
 			splice(@data, $nuke, 1) if defined $nuke;
 			$tempdata = join $delim, @data;
@@ -1308,7 +1324,7 @@ sub export_database {
 		print EXPORT join "\n", @cols;
 		print EXPORT "\n$nf $sep\n\n";
 		my $i;
-		while( (undef, @data) = $db->each_record() ) {
+		while( (undef, @data) = $db->each_record($qual) ) {
 			splice(@data, $nuke, 1) if defined $nuke;
 			my $nd = splice(@data, $nf_col, 1);
 			# Yes, we don't want the last field yet. 8-)
@@ -1326,7 +1342,7 @@ sub export_database {
 		print EXPORT $record_delim;
 		my $detab = ($delim eq "\t") ? 1 : 0;
 		if(defined $nuke) {
-			while( (undef, @data) = $db->each_record() ) {
+			while( (undef, @data) = $db->each_record($qual) ) {
 				splice(@data, $nuke, 1);
 				if ($detab) { s/\t/ /g for @data; }
 				$tempdata = join $delim, @data;
@@ -1335,7 +1351,7 @@ sub export_database {
 			}
 		}
 		else {
-			while( (undef, @data) = $db->each_record() ) {
+			while( (undef, @data) = $db->each_record($qual) ) {
 				if ($detab) { s/\t/ /g for @data; }
 				$tempdata = join $delim, @data;
 				$tempdata =~ s/\r?\n/\r/g;
@@ -1347,7 +1363,7 @@ sub export_database {
 		print EXPORT join $delim, @cols;
 		print EXPORT $record_delim;
 		my $detab = ($delim eq "\t" or $record_delim eq "\t") ? 1 : 0;
-		while( (undef, @data) = $db->each_record() ) {
+		while( (undef, @data) = $db->each_record($qual) ) {
 			splice(@data, $nuke, 1) if defined $nuke;
 			if ($detab) { s/\t/ /g for @data; }
 			print EXPORT join($delim, @data);
