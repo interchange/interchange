@@ -3,7 +3,7 @@ code	en_US	de_DE	fr_FR	nl_NL
 About Us	About Us	Über uns		Over ons
 Access denied	Access denied	Zugriff verweigert		Toegang gewijgerd
 Account Information Erased	Account Information Erased			Rekeninginformatie gewist
-Account Maintenance	Account Maintenance			Rekeningonderhoud
+Account Maintenance	Account Maintenance	Benutzerkonto verwalten		Rekeningonderhoud
 Account Management Functions	Account Management Functions			Functies rekeningonderhoud
 Account Number	Account Number			Rekeningnummer
 Account active	Account active			Rekening actief
@@ -53,7 +53,7 @@ Cart Contents	Cart Contents	Warenkorbinhalt		Inhoud winkelwagen
 Catalog Reconfigured	Catalog Reconfigured			Catalogus opnieuw geconfigureerd
 Change Password	Change Password	Passwort ändern		Wijzigen wachtwoord
 Change password	Change password	Passwort ändern		Wijzigen wachtwoord
-Change your password	Change your password			Wijzig uw wachtwoord
+Change your password	Change your password		Passwort ändern	Wijzig uw wachtwoord
 Check Information	Check Information			Cheque-informatie
 Check Number	Check Number			Chequenummer
 Check Out	Check Out	Zur Kasse		Naar de kassa
@@ -76,10 +76,10 @@ Contact Information	Contact Information			Contactinformatie
 Contact Us	Contact Us			Neem contact met ons op
 Continue shopping	Continue shopping			Doorgaan met winkelen
 Country	Country	Land		Land
-Create Account	Create Account			Aanmaken rekening
+Create Account	Create Account	Benutzerkonto anlegen		Aanmaken rekening
 Create a new account	Create a new account			Nieuwe rekening aanmaken
 Credit Amount	Credit Amount			Credit bedrag
-Credit Card	Credit Card			
+Credit Card	Credit Card	Kreditkarte		
 Credit Card Information	Credit Card Information			Credit Card Informatie
 Credit Card number fails test	Credit Card number fails test			
 Current Price	Current Price			Huidige prijs
@@ -93,7 +93,7 @@ Day Phone	Day Phone	Telefon tagsüber		Telefoon overdag
 Daytime Phone	Daytime Phone	Telefon tagsüber		Telefoon overdag
 December		Dezember	D&eacute;cembre	December
 Description	Description	Beschreibung		Omschrijving
-Edit address	Edit address			Adres wijzigen
+Edit address	Edit address	Adresse bearbeiten		Adres wijzigen
 Email	Email			Email
 Email Address	Email Address	Emailadresse		Emailadres
 Enter as customer	Enter as customer			Betreedt als klant
@@ -120,7 +120,7 @@ Hi	Hi			Hallo
 ID sent by fastest available email method!	ID sent by fastest available email method!			Uw klantnummergegevens zijn verzonden met de snelste beschikbare emailmethode!
 INDEX_PAR1	    Welcome to the <b>Interchange</b> Foundation Store! This     site is intended to get you started building    your own e-business site. Replace the stock graphics, products,     and categories in this store to begin building your custom site.			Welkom bij de <b>Interchange</b> Foundation Store! Deze site is bedoeld om U op weg te helpen met het bouwen van uw eigen e-business site. Om te starten met uw eigen site vervangt U simpelweg de standaard afbeeldingen, producten en categorieen.
 If different than above	If different than above			Indien anders dan hierboven
-If you have an account with us, please login using the fields below. It is not required, but you can also %screate an account%s with us.	If you have an account with us, please login using the fields below. It is not required, but you can also %screate an account%s with us.			Als U een rekening bij ons hebt, kunt U zich aanmelden middels onderstaand formulier. Desgewenst kunt U ook een %snieuwe rekening%s aanmaken.
+If you have an account with us, please login using the fields below. It is not required, but you can also %screate an account%s with us.	If you have an account with us, please login using the fields below. It is not required, but you can also %screate an account%s with us.	Wenn Sie ein Benutzerkonto haben, bitte melden Sie sich mit dem folgenden Formular an. Für die Bestellung ist es nicht erforderlich, aber sie können auch %sein Benutzerkonto anlegen%s.		Als U een rekening bij ons hebt, kunt U zich aanmelden middels onderstaand formulier. Desgewenst kunt U ook een %snieuwe rekening%s aanmaken.
 If you would like further information on constructing a store like this, please contact the Interchange Development Group	If you would like further information on constructing a store like this, please contact the Interchange Development Group			Mocht u nadere informatie wensen over het bouwen van een winkel als deze, neem dan contact op met de Interchange Development Group
 In Stock	In Stock	Am Lager		Op Voorraad
 In Stock Notification	In Stock Notification			Op voorraadmelding
@@ -161,16 +161,17 @@ Modified	Modified			Gewijzigd
 More Info	More Info	Mehr Info		Meer informatie
 More info	More info			Meer informatie
 More info...	More info...			Meer informatie...
+Must enter at least %s characters for password.		Das Passwort muß mindestens %s Zeichen lang sein. 
 NEW_BROWSER_PAYMENT_MSG1	We will wait for a check sent to us referencing the order number you receive on your receipt.			
 Name	Name			Naam
-New Account	New Account			Nieuwe rekening
+New Account	New Account	Benutzerkonto anlegen		Nieuwe rekening
 New items	New items			Nieuw artikel
 Next	Next			Volgende
 Nickname	Nickname			Korte naam
 No	No	Nein		Nee
 No %s entered.	No %s entered.			Geen %s ingegeven.
 No Match for %s	No Match for %s			Geen resultaat voor %s
-No change, go to checkout	No change, go to checkout			Geen wijziging, ga naar kassa
+No change, go to checkout	No change, go to checkout	Ohne Änderung zur Kasse gehen		Geen wijziging, ga naar kassa
 No items at the moment.	No items at the moment.			Momenteel geen artikelen.
 No items in your shopping cart!	No items in your shopping cart!			Er bevinden zich geen artikelen in uw winkelwagen!
 No items were selected for return.	No items were selected for return.			Er zijn geen producten geselecteerd om te retourneren.
@@ -273,12 +274,12 @@ STATUS	STATUS			STATUS
 STOCK_ALERT_PAR1	Please complete the form below and we will contact you once the item you have selected becomes available. This is a complementary feature         and you are not in any way obligated to purchase the item.			Als U onderstaand formulier invult zullen wij U berichten zodra het door U geselecteerde artikel weer voorradig is. Dit is een aanvullende dienst en U bent op geen enkele wijze verplicht om het artikel te kopen.
 STOCK_ALERT_PAR2	You may also pre-order the item. When the item becomes available, you will be        notified via email and the order will be shipped the same day.			U mag het product ook vooruit bestellen. Zodra het product op voorraad is sturen wij U een kennisgeving per email en het artikel zal dezelfde dag worden verzonden. 
 SUBTOTAL	SUBTOTAL			SUBTOTAAL
-Sales Tax	Sales Tax			Btw
+Sales Tax	Sales Tax	Mehrwertsteuer		Btw
 Same shipping address	Same shipping address			Hetzelfde verzendadres
-Save	Save			Opslaan
+Save	Save	Speichern		Opslaan
 Save Acct. Info	Save Acct. Info			Opslaan rekeninginformatie
 Save Cart	Save Cart			Winkelwagen opslaan
-Save This Cart	Save This Cart			Deze winkelwagen opslaan
+Save This Cart	Save This Cart	Warenkorb speichern		Deze winkelwagen opslaan
 Save and Checkout	Save and Checkout			Opslaan en naar kassa
 Saved Carts	Saved Carts			Opgeslagen winkelwagen
 Saved Carts / Recurring Orders	Saved Carts / Recurring Orders			Opgeslagen winkelwagens / herhalingsorders
@@ -300,11 +301,11 @@ Shipping	Shipping	Versandkosten		Verzending
 Shipping Address	Shipping Address	Versandadresse		Verzendadres
 Shipping Address Added	Shipping Address Added			Verzendadres toegevoegd
 Shipping Address Removed	Shipping Address Removed			Verzendadres verwijderd
-Shipping Addresses	Shipping Addresses			Verzendadressen
+Shipping Addresses	Shipping Addresses	Versandadressen		Verzendadressen
 Shipping Country	Shipping Country			Verzendland
 Shipping Method	Shipping Method	Versandart		Verzendmethode
 Shipping Weight	Shipping Weight	Versandgewicht		Verzendgewicht
-Shipping method	Shipping method			Verzendwijze
+Shipping method	Shipping method	Versandart		Verzendwijze
 Shopping Cart	Shopping Cart	Warenkorb		Winkelwagen
 Show All Subcategories	Show All Subcategories			Toon alle sub-categorieen
 Something went wrong when mailing, perhaps a typo in your email address?	Something went wrong when mailing, perhaps a typo in your email address?			Er is iets fout gegaan bij het versturen van de email. Misschien een typefout in uw emailadres?
@@ -323,7 +324,7 @@ Story	Story			Commentaar
 Subject	Subject	Betreff		Onderwerp
 Submit	Submit			Verzend
 Submit Request	Submit Request			Verstuur verzoek
-Subtotal	Subtotal			Subtotaal
+Subtotal	Subtotal	Zwischensumme		Subtotaal
 TOTAL	TOTAL			TOTAAL
 Take our	Take our			Doe ons
 Thank you for ordering from us!	Thank you for ordering from us!			
@@ -339,7 +340,7 @@ The search could not be done. The problem was	The search could not be done. The 
 The selected shipping addresses have been removed.	The selected shipping addresses have been removed.			De geselecteerde verzendadressen zijn verwijderd.
 There are communication problems with the server. See the links below.	There are communication problems with the server. See the links below.			Er zijn communicatieproblemen met de server. Zie onderstaande links.
 There was an error adding the new address entry.	There was an error adding the new address entry.			Er is een fout opgetreden bij het toevoegen van het nieuwe adres.
-There were errors in your last submission	There were errors in your last submission			Er zijn fouten opgetreden bij de verzending
+There were errors in your last submission	There were errors in your last submission	Folgende Felder sind nicht korrekt ausgefüllt		Er zijn fouten opgetreden bij de verzending
 There were errors in your last submission.	There were errors in your last submission.			Er zijn fouten opgetreden bij de verzending
 There were no matches found.	There were no matches found.			Er zijn geen resultaten gevonden.
 There will be a %s charge added for COD.	There will be a %s charge added for COD.			Er geldt een toeslag van %s voor rembourszendingen.
@@ -362,10 +363,10 @@ United States	United States			Verenigde Staten
 Update item	Update item			Product bijwerken
 Use the Preview Button! Check those URLs!  Don't forget the http://!	Use the Preview Button! Check those URLs!  Don't forget the http://!			
 User support mail lists	User support mail lists			
-Username	Username			Gebruikersnaam
+Username	Username	Benutzername		Gebruikersnaam
 Username must be of characters [A-Za-z0-9]	Username must be of characters [A-Za-z0-9]			Gebruikersnaam moet bestaan uit letters [A-Za-z0-9]
-Verify	Verify			Verifieer
-Verify Password	Verify Password			Verifieer wachtwoord
+Verify	Verify	Kontrolle		Verifieer
+Verify Password	Verify Password	Passwort(Kontrolle)		Verifieer wachtwoord
 WWW Resources	WWW Resources			WWW bronnen
 We can be contacted at	We can be contacted at			Wij zijn te bereiken op
 We don't give out your information to anyone!	We don't give out your information to anyone!			Wij waken over uw informatie. Die zal nooit aan anderen worden uitgegeven!
@@ -382,7 +383,7 @@ We need a valid two-letter state code like CA.	We need a valid two-letter state 
 We need a zip code for UPS lookup.	We need a zip code for UPS lookup.			
 We need an address....	We need an address....			Het adres is nodig...
 We need some more information!	We need some more information!			Wij hebben wat meer informatie nodig!
-We need the <b>bold fields</b> to process your order	We need the <b>bold fields</b> to process your order			De <b>vetgedrukte velden</b> zijn nodig voor een correcte verwerking van uw bestelling
+We need the <b>bold fields</b> to process your order	We need the <b>bold fields</b> to process your order	Bitte die <b>fettgedruckten</b> Felder ausfüllen		De <b>vetgedrukte velden</b> zijn nodig voor een correcte verwerking van uw bestelling
 We need the bold fields to process your order	We need the bold fields to process your order			De vetgedrukte velden zijn nodig voor een correcte verwerking van dit formulier
 We need to have some fields entered to be able to process your order. Please %sgo back</A> and fill out the information.	We need to have some fields entered to be able to process your order. Please %sgo back</A> and fill out the information.			
 We will contact you once your selected item becomes available.	We will contact you once your selected item becomes available.			Wij nemen contact met U op zodra de door U geselecteerde artikelen beschikbaar zijn.
