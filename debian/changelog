@@ -1,14 +1,17 @@
-interchange (4.6.1-1.2) unstable; urgency=low
+interchange (4.6.2-0) unstable; urgency=low
 
-  * upstream patches
+  * new upstream release
   * interchange wrapper switches to the interchange user if invoked
     as root
   * new usertag email_html
-  * fixed makecat problem with virtual hosts in srm.conf
   * added documentroot value to makecat.cfg
-  * fixed confusing error message in makecat.PL
+  * ensure appropriate permissions for wrappers
+  * added interchange user to makecat options
+  * example added to catalogs.cfg
+  (suggested by Heiko Schlittermann <heiko@schlittermann.de>)
+  * better handling of documentation
   
- -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu,  3 Dec 2000 20:12:16 +0100
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Fri,  8 Dec 2000 17:04:45 +0100
 
 interchange (4.6.1-1) unstable; urgency=low
 
