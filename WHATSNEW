@@ -23,6 +23,8 @@ Core
   of other browsers, to get intermittent "CGI mapping error" failures
   when POSTing forms.
 
+* Skip host checking if configuration directive WideOpen is set.
+
 * Fix addAttr setting for [order] tag, restoring ability to use 'base' and
   'cart' attributes.
 
