@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.8 2002-08-02 17:09:30 racke Exp $
+# $Id: Shadow.pm,v 1.9 2002-09-26 11:51:06 racke Exp $
 #
 # Copyright (C) 2002 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.8 $, 10);
+$VERSION = substr(q$Revision: 1.9 $, 10);
 
 # TODO
 #
@@ -103,6 +103,12 @@ sub test_column {
 	my ($s, $column) = @_;
 	$s = $s->import_db() unless defined $s->[$OBJ];
 	return $s->[$OBJ]->test_column($column);
+}
+
+sub quote {
+	my ($s, $value, $field) = @_;
+	$s = $s->import_db() unless defined $s->[$OBJ];
+	return $s->[$OBJ]->quote($value, $field);
 }
 
 sub numeric {
