@@ -7,9 +7,9 @@ my %var_exclude = ( qw/
 	mv_session_id         1
 /);
 sub {
-	my ($find, $exclude, $default) = @_;
-	my $ref = $Vend::Session->{History}
-		or return $Tag->area($default || $Config->{SpecialPage}{catalog});
+	my ($find, $exclude, $default, $opt) = @_;
+	$default ||= $Config->{SpecialPage}{catalog};
+	my $ref = $Vend::Session->{History} or return $Tag->area($default);
 	my ($hist, $href, $cgi);
 	$exclude = qr/$exclude/ if $exclude;
 	for(my $i = $#$ref; $i >= 0; $i--) {
@@ -21,11 +21,11 @@ sub {
 		if($find) {
 			next unless $ref->[$i][0] =~ /$find/;
 		}
+		next if abs($opt->{count}) >= (@$ref - $i);
 		($href, $cgi) = @{$ref->[$i]};
 		last;
 	}
-	return $Tag->area($default || $Config->{SpecialPage}{catalog})
-		if ! $href;
+	return $Tag->area($default) if ! $href;
 	my $form = '';
 	for(grep !$var_exclude{$_}, keys %$cgi) {
 		$form .= "\n$_=";
