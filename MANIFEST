@@ -1,6 +1,7 @@
 LICENSE
 MANIFEST
 MANIFEST.SKIP
+META.yml			Module meta-data (added by MakeMaker)
 Makefile.PL
 README
 README.cvs
@@ -211,6 +212,7 @@ code/UserTag/table_organize.tag
 code/UserTag/title_bar.tag
 code/UserTag/ups_query.tag
 code/UserTag/usertrack.tag
+code/UserTag/usps_query.tag
 code/UserTag/var.tag
 code/UserTag/weight.tag
 code/Widget/gpg_keys.widget
@@ -1370,4 +1372,3 @@ share/interchange-5/u/tab_light_left.gif
 share/interchange-5/u/tab_light_right.gif
 share/interchange-5/u/tab_right.gif
 test.pl
-META.yml                                 Module meta-data (added by MakeMaker)
