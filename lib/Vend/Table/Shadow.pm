@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.45 2003-12-08 12:03:37 racke Exp $
+# $Id: Shadow.pm,v 1.46 2004-07-23 03:03:39 mheins Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.45 $, 10);
+$VERSION = substr(q$Revision: 1.46 $, 10);
 
 # CREDITS
 #
@@ -361,6 +361,14 @@ sub query {
 					$row->[$pos] = $s->_map_column($row->[$keypos], $name, 1, $row->[$pos], $map_entry);
 				}
 			}
+
+			if($opt->{search_label}) {
+				$::Instance->{SearchObject}{$opt->{search_label}} = {
+					mv_results => $result,
+					mv_field_names => $qa[2],
+				};
+			}
+
 			if ($list) {
 				$opt->{list} = 1;
 				return Vend::Interpolate::tag_sql_list($text, $result, $qa[1], $opt, $qa[2]);

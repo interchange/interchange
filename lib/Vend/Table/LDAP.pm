@@ -1,6 +1,6 @@
 # Vend::Table::LDAP - Interchange LDAP pseudo-table access
 #
-# $Id: LDAP.pm,v 2.10 2003-07-14 09:17:51 racke Exp $
+# $Id: LDAP.pm,v 2.11 2004-07-23 03:03:39 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -25,7 +25,7 @@
 
 package Vend::Table::LDAP;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 2.10 $, 10);
+$VERSION = substr(q$Revision: 2.11 $, 10);
 use strict;
 
 use vars qw(
@@ -668,6 +668,13 @@ eval {
 				$query,
 			);
 		$return = $opt->{failure} || undef;
+	}
+
+	if($opt->{search_label}) {
+		$::Instance->{SearchObject}{$opt->{search_label}} = {
+			mv_results => $ref,
+			mv_field_names => \@na,
+		};
 	}
 
 	return scalar @{$ref || []}
