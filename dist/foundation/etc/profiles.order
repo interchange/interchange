@@ -13,9 +13,9 @@ country=required
 [if value country =~ /^(US|CA)$/i]
 	state=state_province "[value state]" is not a valid US/Canada state or province.
 	zip=postcode "[value zip]" is not a valid US/Canada postal code.
-	&or phone_day=phone, phone_night=phone Must have evening or day phone_number
+	&or phone_night=phone, phone_day=phone Must have evening or day phone_number
 [else]
-	&or phone_day=phone, phone_night=phone Must have evening or day phone_number
+	&or phone_night=phone, phone_day=phone Must have evening or day phone_number
 [/else]
 [/if]
 
