@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.136 2002-11-28 17:12:22 kwalsh Exp $
+# $Id: Interpolate.pm,v 2.137 2002-12-01 16:28:45 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.136 $, 10);
+$VERSION = substr(q$Revision: 2.137 $, 10);
 
 @EXPORT = qw (
 
@@ -468,11 +468,11 @@ sub substitute_image {
 			$Vend::Cfg->{ImageDir};
 
 		if ($dir) {
-			$$text =~ s#(<i\w+\s+[^>]*?src=")(?!\w+:)([^/][^"]+)#
+			$$text =~ s#(<i\w+\s+[^>]*?src=")(?!\w+:)([^/'][^"]+)#
 						$1 . $dir . $2#ige;
-	        $$text =~ s#(<body\s+[^>]*?background=")(?!\w+:)([^/][^"]+)#
+	        $$text =~ s#(<body\s+[^>]*?background=")(?!\w+:)([^/'][^"]+)#
 						$1 . $dir . $2#ige;
-	        $$text =~ s#(<t(?:[dhr]|able)\s+[^>]*?background=")(?!\w+:)([^/][^"]+)#
+	        $$text =~ s#(<t(?:[dhr]|able)\s+[^>]*?background=")(?!\w+:)([^/'][^"]+)#
 						$1 . $dir . $2#ige;
 		}
 	}
@@ -3065,17 +3065,15 @@ sub escape_form {
 	$val =~ s/^\s+//mg;
 	$val =~ s/\s+$//mg;
 	my @args;
-	if($val =~ /^\S+=\S+=\S*$/) {
-		$val = Vend::Util::unhexify($val);
-		@args = split $Global::UrlSplittor, $val;
-	}
-	else {
-		$val =~ s/^\s+//mg;
-		$val =~ s/\s+$//mg;
-		@args = split /\n+/, $val;
-		for(@args) {
-			s/^(.*?=)(.+)/$1 . Vend::Util::unhexify($2)/ge;
-		}
+
+	## Already escaped, return
+	return $val if $val =~ /^\S+=\S+=\S*$/;
+
+	$val =~ s/^\s+//mg;
+	$val =~ s/\s+$//mg;
+	@args = split /\n+/, $val;
+	for(@args) {
+		s/^(.*?=)(.+)/$1 . Vend::Util::unhexify($2)/ge;
 	}
 
 	for(@args) {
