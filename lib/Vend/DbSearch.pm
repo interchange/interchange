@@ -1,6 +1,6 @@
 # Vend/DbSearch.pm:  Search indexes with Perl
 #
-# $Id: DbSearch.pm,v 1.7.6.1 2000-11-30 02:38:35 heins Exp $
+# $Id: DbSearch.pm,v 1.7.6.2 2000-12-02 20:09:23 heins Exp $
 #
 # ADAPTED FOR USE WITH INTERCHANGE from Search::TextSearch
 #
@@ -26,7 +26,7 @@ require Vend::Search;
 
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.7.6.1 $, 10);
+$VERSION = substr(q$Revision: 1.7.6.2 $, 10);
 
 use Search::Dict;
 use strict;
@@ -76,7 +76,10 @@ sub init {
     $s->{mv_numeric}            = [];
     $s->{mv_orsearch}           = [];
     $s->{mv_search_field}       = [];
-    $s->{mv_search_file}        = [@{$Vend::Cfg->{ProductFiles}}];
+    $s->{mv_search_file}        =	[ @{
+										$::Variable->{MV_DEFAULT_SEARCH_FILE}
+										||	$Vend::Cfg->{ProductFiles}
+										} ];
     $s->{mv_search_group}       = [];
     $s->{mv_searchspec}         = [];
     $s->{mv_sort_option}        = [];
