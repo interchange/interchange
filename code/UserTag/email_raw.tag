@@ -1,4 +1,4 @@
-UserTag email_raw Documentation <<EOD
+UserTag email-raw Documentation <<EOD
 
 =head1 email-raw
 
