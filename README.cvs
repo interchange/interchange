@@ -51,11 +51,11 @@ to make a distribution tar file:
 	$ make tardist
 	/usr/local/bin/perl -I/YOUR/PERL/LIB -MExtUtils::Manifest=manicopy,maniread \
 	-e "manicopy(maniread(),'interchange-4.9.x', 'best');"
-	mkdir interchange-5.0.0
-	mkdir interchange-5.0.0/dist
+	mkdir interchange-5.x.x
+	mkdir interchange-5.x.x/dist
 	....
 	$ ls interch*.tar.gz
-	interchange-5.0.0.tar.gz
+	interchange-5.x.x.tar.gz
 
 
 Unpack and install

@@ -14,7 +14,7 @@
 
 Summary: Interchange web application platform
 Name: interchange
-Version: 5.0.0
+Version: 5.0.1
 Release: 1
 Vendor: Interchange Development Group
 Group: System Environment/Daemons
@@ -380,6 +380,9 @@ fi
 
 
 %changelog
+* Mon Mar 15 2004 Jon Jensen <jon@icdevgroup.org> 5.0.1-1
+- Update for new release
+
 * Wed Dec 03 2003 Jon Jensen <jon@icdevgroup.org> 5.0.0-1
 - Update for new release
 - Add new expired session/tmp removal script for cron
