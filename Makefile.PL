@@ -179,7 +179,7 @@ sub copyright_prompt {
 
  Interchange V$VERSION
  
-  Copyright (C) 1996-2000 Akopia, Inc. <info\@akopia.com>
+  Copyright (C) 1996-2001 Akopia, Inc. <info\@akopia.com>
 
  Interchange is free under the terms of the GNU General Public License.
 
@@ -822,14 +822,15 @@ else {
 	WriteMakefile(
 		NAME       => "Interchange",
 		MAN3PODS => {
-						'pod/icbackoffice.pod' => 'blib/man3/icbackoffice.8',
+						'pod/icbackoffice.pod'	=> 'blib/man3/icbackoffice.8',
+						'pod/iccattut.pod'		=> 'blib/man3/iccattut.8',
 						'pod/icconfig.pod'		=> 'blib/man3/icconfig.8',
 						'pod/icdatabase.pod'	=> 'blib/man3/icdatabase.8',
 						'pod/icinstall.pod'		=> 'blib/man3/icinstall.8',
 						'pod/icintro.pod'		=> 'blib/man3/icintro.8',
 						'pod/ictemplates.pod'	=> 'blib/man3/ictemplates.8',
 						'pod/mv_metadata.pod'	=> 'blib/man3/mv_metadata.8',
-						'pod/mvtags.pod'       => 'blib/man3/mvtags.8',
+						'pod/mvtags.pod'		=> 'blib/man3/mvtags.8',
 						},
 		DISTNAME => "interchange",
 		clean    => {
