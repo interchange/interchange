@@ -84,7 +84,13 @@ Payment
 Jobs
 ----
 
-* removed update_locales job - as a consequence of the removal of the [find] usertag
+* Remove update_locales job - as a consequence of the removal of the [find] usertag
+
+Shadow
+------
+
+* Add stubs for commit and rollback methods, thanks to Thomas Weiss 
+  <pater.noster@gmx.net> for report.
 
 
 ------------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.43 2003-10-16 13:09:59 racke Exp $
+# $Id: Shadow.pm,v 1.44 2003-12-04 12:42:03 racke Exp $
 #
 # Copyright (C) 2002-2003 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.43 $, 10);
+$VERSION = substr(q$Revision: 1.44 $, 10);
 
 # CREDITS
 #
@@ -131,6 +131,18 @@ sub inc_field {
 	my ($s, $key, $column, $value) = @_;
 	$s = $s->import_db() unless defined $s->[$OBJ];
 	return $s->[$OBJ]->inc_field($key, $column, $value);
+}
+
+sub commit {
+	my ($s) = @_;
+	$s = $s->import_db() unless defined $s->[$OBJ];
+	return $s->[$OBJ]->commit();
+}
+
+sub rollback {
+	my ($s) = @_;
+	$s = $s->import_db() unless defined $s->[$OBJ];
+	return $s->[$OBJ]->rollback();
 }
 
 sub column_index {
