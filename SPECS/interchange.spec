@@ -17,6 +17,9 @@ URL: http://developer.akopia.com/
 Packager: Interchange Development Team <info@akopia.com>
 Source: http://ftp.akopia.com/interchange/interchange-%{ic_version}.tar.gz
 Group: Applications/Internet
+#Distribution: Stronghold?
+Requires: perl >= 5.005
+BuildPrereq: perl >= 5.005
 Provides: %ic_package_basename
 Obsoletes: %ic_package_basename
 BuildArchitectures: noarch
@@ -166,7 +169,13 @@ chmod +x $RPM_BUILD_ROOT$ETCBASE/rc.d/init.d/interchange
 # Make log rotation script
 mkdir -p $RPM_BUILD_ROOT$ETCBASE/logrotate.d
 cat > $RPM_BUILD_ROOT$ETCBASE/logrotate.d/interchange <<EOF
-/var/log/interchange/*log {
+/var/log/interchange/*.log {
+	rotate 4
+	weekly
+	compress
+}
+
+/var/log/interchange/*/error.log {
 	rotate 4
 	weekly
 	compress
