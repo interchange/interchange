@@ -225,22 +225,19 @@ sub extra_libs {
 		        print <<EOF if $MV::Default{storable};
 
 You appear to have Raphael Manfredi's Storable module installed.
-
-This module will significantly improve your DBM storage and
-fetch times.
+This module will significantly improve your DBM storage and fetch times.
 
 You can reply one of:
 
-		n -- Don't use Storable
-		s -- Use for sessions only, won't break existing databases
-		y -- Use for both sessions and databases
+	n -- Don't use Storable
+	s -- Use for sessions only, won't break existing databases
+	y -- Use for both sessions and databases
 
 It is recommended that all installations reply S unless there is a need for
 improved performance in Interchange DBM databases.
 
-If you reply YES and you use any GDBM or DB_File databases
-they will NEED TO BE REMADE for ALL CATALOGS using this
-Interchange server instance.
+If you reply YES and you use any GDBM or DB_File databases they will
+NEED TO BE REMADE for ALL CATALOGS using this Interchange server instance.
 EOF
 
 		if($ENV{MINIVEND_STORABLE_DB} || -f "$realdir/_db_storable" || -f "_db_storable") {
@@ -649,7 +646,6 @@ EOF
 
 	}
 
-
 	# Check for extra needed libraries
 	extra_libs($realdir);
 
@@ -706,48 +702,48 @@ EOF
 	$_;
 }
 
-	my %mv_specific = qw/
-						STORABLE 1 PREFIX 1 FORCE 1 FINAL 1 RPMBUILDDIR 1 INTERCHANGE_USER 1
-					  /;
-	my %delete;
-	use Getopt::Long;
-	my @saveargs = @ARGV;
-	my %optctl = (
-		'junk'			=> sub { 1 },
-		'<>'			=> sub {
-								my ($arg) = @_;
+my %mv_specific = qw/
+	STORABLE 1 PREFIX 1 FORCE 1 FINAL 1 RPMBUILDDIR 1 INTERCHANGE_USER 1
+/;
+my %delete;
+use Getopt::Long;
+my @saveargs = @ARGV;
+my %optctl = (
+	'junk'			=> sub { 1 },
+	'<>'			=> sub {
+							my ($arg) = @_;
 	#warn "checking option $arg\n";
-								my ($opt, $val);
-								if($arg !~ /=/) {
-									$opt = $arg;
-									$val = 1;
-								}
-								else {
-									($opt, $val) = split /=/, $arg, 2;
-								}
+							my ($opt, $val);
+							if($arg !~ /=/) {
+								$opt = $arg;
+								$val = 1;
+							}
+							else {
+								($opt, $val) = split /=/, $arg, 2;
+							}
 
-								$delete{$arg} = 1 if $mv_specific{uc $opt};
-									
-								$MV::Default{$opt} = $val;
-								return;
-							},
-	);
+							$delete{$arg} = 1 if $mv_specific{uc $opt};
 
-	my @options = ( qw/
-		junk
-		<>
-	/ );
+							$MV::Default{$opt} = $val;
+							return;
+						},
+);
 
-	Getopt::Long::config(qw/permute/);
-	GetOptions(\%optctl, @options)
-		or die "Bad option get\n";
+my @options = ( qw/
+	junk
+	<>
+/ );
 
-#	use Data::Dumper;
-#	$Data::Dumper::Terse = $Data::Dumper::Indent = 2;
-#	print "ARGV: " . Dumper(\@ARGV);
-#	print "OPT: " . Dumper(\%MV::Default);
+Getopt::Long::config(qw/permute/);
+GetOptions(\%optctl, @options)
+	or die "Bad option get\n";
 
-	@ARGV = grep ! $delete{$_}, @saveargs;
+#use Data::Dumper;
+#$Data::Dumper::Terse = $Data::Dumper::Indent = 2;
+#print "ARGV: " . Dumper(\@ARGV);
+#print "OPT: " . Dumper(\%MV::Default);
+
+@ARGV = grep ! $delete{$_}, @saveargs;
 
 WriteMakefile(
 	NAME       => "Interchange",
