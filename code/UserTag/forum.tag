@@ -83,7 +83,7 @@ EOF
 <A HREF="{DISPLAY_URL}">$opt->{threshold_message}</a>
 EOF
 
-	$tpl ||= <<EOF;
+	$tpl ||= $opt->{template} || <<EOF;
 <table cellspacing=0 cellpadding=2>
   <tr>
 	<td class=contentbar1>
@@ -121,6 +121,7 @@ EOF
 	$opt->{reply_page} ||= 'forum/reply';
 	$opt->{submit_page} ||= 'forum/submit';
 	$opt->{display_page} ||= $Global::Variable->{MV_PAGE};
+	$opt->{date_format} ||= '%B %e, %Y @%H:%M';
 	my $menu_row = sub {
 	  shift;
 	  my $row = shift;
@@ -146,7 +147,7 @@ EOF
 									});
 	  $row->{userinfo} = $Tag->forum_userlink($row);
 	  $row->{date} = $Tag->convert_date({
-									  fmt => '%B %e, %Y @%H:%M',
+									  fmt => $opt->{date_format},
 									  body => $row->{created},
 								  });
 	  my $lev = $row->{mv_level};
