@@ -1,4 +1,38 @@
 CodeDef decrypt Filter
+CodeDef decrypt Documentation <<EOF
+
+=pod
+
+=head1 decrypt
+
+       Decrypts the value against the standard GPG/PGP key
+           using the standard EncryptProgram.
+
+                  [filter op=decrypt] String [/filter]
+
+       You can decrypt against other keys by passing the ID as an argument:
+
+                  [filter op=decrypt.23883AEE]
+                        String, to decrypt against different key.
+                  [/filter]
+
+       You can even specify a different EncryptProgram decrypt by passing an ID 
+            and the program to use as arguments:
+
+                  [filter op=decrypt.23883AEE.pgp]
+                        String, to decrypt against different key using pgp 
+                        rather than the default
+                  [/filter]
+
+
+	Perl call:
+		my $cleartext = $Tag->filter('decrypt.672235FF', $ciphertext);
+
+	where  672235FF should be replace with your PGP_KEY value
+
+=cut
+EOF
+
 CodeDef decrypt Routine <<EOR
 sub {
 	my ($body, $tag, $key, $cmd) = @_;
@@ -31,7 +65,7 @@ sub {
                 $cmd =~ s/:~PERCENT~:/%/g;
         }
 
-#::logDebug("filter decrypt after key=$key cmd=$cmd");
+#::logDebug("decrypt filter after key=$key cmd=$cmd");
 
 	my $fpre = $Vend::Cfg->{ScratchDir} . "/pgp.$Vend::Session->{id}.$$";
 
@@ -53,9 +87,9 @@ sub {
                         $status = $status >> 8;
                         $! = $status;
                 }
-                logError("PGP failed with error level %s, status %s: $!", $?, $status);
+                logError("decrypt failed with error level %s, status %s: $!", $?, $status);
                 if($status) {
-                        logError("PGP hard failure, command that failed: %s", $cmd);
+                        logError("decrypt hard failure, command that failed: %s", $cmd);
                         return;
                 } 
         }
