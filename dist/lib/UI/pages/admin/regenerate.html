@@ -1,5 +1,5 @@
-[set page_title]Static site generation[/set]
-[set page_banner]Static site generation[/set]
+[set page_title][L]Static site generation[/L][/set]
+[set page_banner][L]Static site generation[/L][/set]
 [set page_perm]regen[/set]
 [set help_name]regen.main[/set]
 [set ui_class]Design[/set]
@@ -19,8 +19,8 @@
 <tr>
 <td bgcolor="__UI_C_INTBLOCK__" width="__UI_LEFT_WIDTH__" valign=top>
 
-<input type="submit" value="Regenerate"><BR><BR>
-<input type=checkbox name=ui_build_verbose> Verbose<br>
+<input type="submit" value="[L]Regenerate[/L]"><BR><BR>
+<input type=checkbox name=ui_build_verbose> [L]Verbose[/L]<br>
 <select NAME=ui_max_build>
 <option VALUE=100>100
 <option VALUE=200>200
@@ -32,7 +32,7 @@
 </select>
 </td>
 <td bgcolor="__UI_C_INTBLOCK__" width="__UI_RIGHT_WIDTH__">
-<b>Entry page:</b><br>
+<b>[L]Entry page:[/L]</b><br>
 
 [set pages][/set]
 [calc]
@@ -58,7 +58,7 @@
 	<table>
 		<tr>
 			<td>
-			<b>Force build of:</b><br>
+			<b>[L]Force build of:[/L]</b><br>
 			<select name="ui_force_build" multiple size=25>
 			[loop prefix=force option=ui_initial_page list="[scratch pages]"]
 				<option>[force-code]
@@ -67,7 +67,7 @@
 			</td>
 			<td>
 
-			<b>Never build:</b><br>
+			<b>[L]Never build:[/L]</b><br>
 			<select name="ui_never_build" multiple size=25>
 			[loop prefix=never list="[scratch pages]"]
 				<option>[never-code]
