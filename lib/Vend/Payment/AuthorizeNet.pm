@@ -1,6 +1,6 @@
 # Vend::Payment::AuthorizeNet - Interchange AuthorizeNet support
 #
-# $Id: AuthorizeNet.pm,v 2.3 2001-11-02 13:46:38 mheins Exp $
+# $Id: AuthorizeNet.pm,v 2.4 2002-04-27 20:55:57 kwalsh Exp $
 #
 # Copyright (C) 1999-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -38,7 +38,7 @@ package Vend::Payment::AuthorizeNet;
 
 =head1 Interchange AuthorizeNet Support
 
-Vend::Payment::AuthorizeNet $Revision: 2.3 $
+Vend::Payment::AuthorizeNet $Revision: 2.4 $
 
 =head1 SYNOPSIS
 
@@ -368,7 +368,7 @@ sub authorizenet {
                     x_Card_Num		=> $actual->{mv_credit_card_number},
                     x_First_Name    => $actual->{b_fname},
                     x_Last_Name     => $actual->{b_lname},
-                    x_Address       => $actual->{address},
+                    x_Address       => $actual->{b_address},
                     x_City          => $actual->{b_city},
                     x_State         => $actual->{b_state},
                     x_Zip			=> $actual->{b_zip},
