@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange link program configurator
 #
-# $Id: compile_link.PL,v 1.7 2000-11-13 21:10:29 jon Exp $
+# $Id: compile_link.PL,v 1.8 2000-11-14 18:59:48 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -313,6 +313,7 @@ if($Output) {
 			or die "Couldn't make $Output SUID: $!\n";
 	}
 	else {
+		chmod 0755, $Output
 			or die "Couldn't chmod 755 $Output: $!\n";
 	}
 }
