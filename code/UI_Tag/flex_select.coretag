@@ -73,6 +73,7 @@ sub flex_select_init {
 							href => $::Variable->{UI_ERROR_PAGE} || 'admin/error',
 							secure => $::Variable->{UI_SECURE},
 						});
+#::logDebug("delivering error url=$url");
 		$Tag->deliver( { location => $url });
 		return;
 	}
@@ -109,6 +110,7 @@ sub flex_select_init {
 		my $dest = $CGI->{ui_sequence_destination} || '__UI_BASE__/flex_editor';
 #::logDebug("Entering flex_select sequence edit stuff");
 		last SEQUENCE unless $CGI->{ui_sequence_edit};
+#::logDebug("doing flex_select sequence edit stuff");
 		my $doit;
 		if($CGI->{item_id_left} =~ s/^(.*?)[\0]//) {
 			$CGI->{ui_sequence_edit} = 1;
@@ -169,6 +171,7 @@ sub flex_select_init {
 sub {
 	my ($table, $opt, $body) = @_;
 
+#::logDebug("Entering flex_select");
 	my $CGI = \%CGI::values;
 
 	$table ||= $CGI->{mv_data_table};
@@ -221,6 +224,7 @@ sub {
 	my $ts = $Tmp->{flex_select}{$table} ||= {};
 	my $meta = $ts->{table_meta} ||= $Tag->meta_record($table, $CGI->{ui_meta_view});
 
+#::logDebug("flex_select table=$table");
 	if($meta->{sql_query}) {
 		$q = $meta->{sql_query};
 		if($CGI->{ui_sort_field} =~ s/^(\w+)(:[rfn]+)?$/$1/) {
@@ -257,6 +261,7 @@ sub {
 	}
 
 	if($spec) {
+#::logDebug("flex_select spec=$spec");
 		if($spec->{rf} and $spec->{rf}[0] ne '*') {
 			my @c;
 			my $header;
@@ -296,6 +301,7 @@ sub {
 	$ts->{owner_field} = $ref->config('OWNER_FIELD') || $::Scratch->{ui_owner};
 
 	if($CGI->{ui_exact_record}) {
+#::logDebug("found exact record input");
 		undef $CGI->{mv_like_field};
 		my $id = $CGI->{mv_like_spec};
 		$id =~ s/\0.*//s;
@@ -309,6 +315,7 @@ sub {
 							});
 
 		$Tag->deliver({ location => $url });
+#::logDebug("deliver=$url");
 		return;
 	}
 
@@ -424,7 +431,17 @@ EOF
 			push @q, "lf=$f[$i]";
 			push @q, "ls=$s[$i]";
 		}
-		if($found) { $CGI->{ui_text_qualification} = join "\n", @q; }
+		if($found) {
+			$CGI->{ui_text_qualification} = join "\n", @q;
+			my @out;
+			for(@q) {
+				my $thing = $_;
+				$thing =~ s/^ls=/mv_like_spec=/;
+				$thing =~ s/^lf=/mv_like_field=/;
+				push @out, $thing; 
+			}
+			$ts->{like_recall} = join "\n", @out;
+		}
 		else	   { $CGI->{ui_text_qualification} = "" }
 	}
 	elsif($ts->{owner_field}) {
@@ -442,7 +459,7 @@ EOF
 							column => $ts->{keyname},
 							template => 1,
 						});
-		$ts->{like_spec} = 1;
+		$ts->{like_spec} = $CGI->{mv_more_ip} ? 0 : 1;
 		$CGI->{ui_text_qualification} = "";
 	}
 	else {
@@ -646,6 +663,7 @@ EOF
 <form action="$action" method="$opt->{form_method}"$opt->{form_extra}>
 <INPUT TYPE=hidden NAME=mv_data_table    VALUE="$table">
 <INPUT TYPE=hidden NAME=mv_action        VALUE="$opt->{mv_action}">
+<INPUT TYPE=hidden NAME=mv_click         VALUE="warn_me_main_form">
 EOF
 
 	### What the heck is going on here?
@@ -803,6 +821,7 @@ EOF
 		my $url = $Tag->area( {
 								href => $cwp,
 								form => qq(
+									$ts->{like_recall}
 									ui_text_qualification=$ui_text_qualification
 									mv_data_table=$table
 									ui_meta_view=$mview
@@ -919,7 +938,10 @@ EOF
 	
 	my @rows;
 
-	if($body =~ /\S/) {
+	if($ts->{like_spec}) {
+		## Do nothing
+	}
+	elsif($body =~ /\S/) {
 		my $o = { 
 					label		=> $opt->{label},
 					list_prefix	=> 'flex',
@@ -1185,7 +1207,7 @@ EOF
 		$cboxes =~ s/\n//g;
 	}
 
-	if(! $opt->{no_checkbox}) {
+	if(! $opt->{no_checkbox} and ! $ts->{like_spec}) {
 		unless($opt->{no_top} || $opt->{bottom_buttons}) {
 			$output{TOP_BUTTONS} = $cboxes;
 			$output{TOP_BUTTONS} .= $ebutton;
@@ -1227,7 +1249,42 @@ EOF
 					BOTTOM_OF_FORM
 					BOTTOM_OF_TABLE
 				/;
-	
+	if($ts->{like_spec}) {
+		push @rows, <<EOF;
+	<tr>
+	<td>&nbsp;</td>
+	<td colspan="$ncols" align=left>
+	[L]Check the box for exact record and enter the record id/key.[/L]
+	[L]Or enter a query by example to select a set of records.[/L]
+	[L]Each input will match on the <i>beginning</i> text in the field.[/L]
+	<p>
+	<small><input type=checkbox name=ui_exact_record value=1 class=s3> Edit exact record in key column</small>
+	<br>
+	&nbsp;
+	</td>
+	</tr>
+	<tr>
+	<td>&nbsp;</td>
+	[loop list="[cgi ui_description_fields]"]
+	<TD>
+		<input type=hidden name=mv_like_field value="[loop-code]">
+		<input type=text name=mv_like_spec size=10>
+	</td>
+	[/loop]
+	</tr>
+	<tr>
+	<td>&nbsp;</td>
+	<td colspan="$ncols" align=left>
+	&nbsp;
+	<br>
+	&nbsp;
+	<br>
+	<input type=submit value="[L]Find[/L]">
+	</td>
+	</tr>
+EOF
+	}
+
 	$output{MAIN_BODY} = join "", @rows;
 
 	my @out;
