@@ -1,6 +1,6 @@
 # Vend::Swish - Search indexes with Swish-e
 #
-# $Id: Swish.pm,v 1.2 2003-06-21 01:52:43 kwalsh Exp $
+# $Id: Swish.pm,v 1.3 2003-06-26 10:22:23 ton Exp $
 #
 # Adapted from Vend::Glimpse
 #
@@ -25,7 +25,7 @@ package Vend::Swish;
 require Vend::Search;
 @ISA = qw(Vend::Search);
 
-$VERSION = substr(q$Revision: 1.2 $, 10);
+$VERSION = substr(q$Revision: 1.3 $, 10);
 use strict;
 
 sub array {
@@ -176,7 +176,7 @@ sub search {
 	
 	my $spec = join ' ', @pats;
 
-	$spec =~ s/[^-\w()"\s]+//g
+	$spec =~ s/[^-\w()"\s\*]+//g
 		and $CGI::values{debug}
 		and ::logError("Removed unsafe characters from search string");
 
