@@ -228,7 +228,7 @@ function MM_swapImage() {
 	  [if-mm advanced [am-param depends_on]]
 	  [if-am-param img_dn]
 	  	<!-- class=[am-param name]=[scratch ui_class_[am-param name]] -->
-	  <a href="[area href='[am-param page]' form='[am-param form]']" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('[am-param name]','','[am-param img_up]',1)"><img name="[am-param name]" alt="[am-param alt]" border="0" src="[if scratch ui_class_[am-param name]][am-param img_up][else][am-param img_dn][/else][/if]"></a>
+	  <a href="[area href='[am-param page]' form='[am-param form]']" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('[am-param name]','','[am-param img_up]',1)"><img name="[am-param name]" alt="[am-param name]" border="0" src="[if scratch ui_class_[am-param name]][am-param img_up][else][am-param img_dn][/else][/if]"></a>
 	  [/if-am-param]
 	  [if-am-param !img_dn]
 		  <a href="[area href='[am-param page]' form='[am-param form]']" class=ctitle>[msg][am-param name][/msg]</a>
