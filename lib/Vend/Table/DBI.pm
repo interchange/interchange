@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.19 2000-09-25 15:51:57 heins Exp $
+# $Id: DBI.pm,v 1.20 2000-10-17 19:59:25 jon Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.19 $, 10);
+$VERSION = substr(q$Revision: 1.20 $, 10);
 
 use strict;
 
@@ -646,6 +646,11 @@ sub list_fields {
 			}
 		};
 	}
+
+	if($config->{UPPERCASE}) {
+        @fld = map { lc $_ } @fld;
+    }
+
 	return \@fld;
 }
 
@@ -670,7 +675,7 @@ sub sort_each {
 # Now supported, including qualification
 sub each_record {
     my ($s, $qual) = @_;
-#::logDebug("qual=$qual");
+#::logDebug("each_record qual=$qual");
 	$qual = '' if ! $qual;
 	$qual .= $s->[$CONFIG]{Export_order} 
 		if $s->[$CONFIG]{Export_order};
@@ -701,7 +706,7 @@ sub each_record {
 # Now supported, including qualification
 sub each_nokey {
     my ($s, $qual) = @_;
-#::logDebug("qual=$qual");
+#::logDebug("each_nokey qual=$qual");
 	$qual = '' if ! $qual;
 	$qual .= $s->[$CONFIG]{Export_order} 
 		if $s->[$CONFIG]{Export_order};
