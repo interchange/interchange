@@ -1,6 +1,6 @@
 # Vend::Table::Shadow - Access a virtual "Shadow" table
 #
-# $Id: Shadow.pm,v 1.6 2002-08-02 13:04:12 racke Exp $
+# $Id: Shadow.pm,v 1.7 2002-08-02 15:32:47 racke Exp $
 #
 # Copyright (C) 2002 Stefan Hornburg (Racke) <racke@linuxia.de>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::Shadow;
-$VERSION = substr(q$Revision: 1.6 $, 10);
+$VERSION = substr(q$Revision: 1.7 $, 10);
 
 # TODO
 #
@@ -200,6 +200,7 @@ sub field {
 		if (exists $map->{table}) {
 			$db = Vend::Data::database_exists_ref($map->{table})
 				or die "unknown table $map->{table} in mapping for column $column of $s->[$TABLE] for locale $locale";
+			return unless $db->record_exists($key);
 			return $db->field($key, $map->{column});
 		} else {
 			$column = $map->{column};
@@ -226,7 +227,6 @@ sub record_exists {
 sub each_nokey {
 	my ($s, $qual) = @_;
 	$s = $s->import_db() unless defined $s->[$OBJ];
-	::logDebug('COLUMNS: ' . $s->columns());
 	return $s->[$OBJ]->each_nokey($qual);
 }
 
