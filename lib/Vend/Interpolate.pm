@@ -1,6 +1,6 @@
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.36 2001-03-27 19:47:36 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.37 2001-04-02 17:19:09 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -31,7 +31,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.36 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.37 $, 10);
 
 @EXPORT = qw (
 
@@ -1008,6 +1008,12 @@ sub tag_data {
 				},
 	'entities' => sub {
 					return HTML::Entities::encode(shift);
+				},
+	'yesno' => sub {
+					my $val = shift(@_) ? 'Yes' : 'No';
+					return $val unless $Vend::Cfg->{Locale};
+					return $val unless defined $Vend::Cfg->{Locale}{$val};
+					return $Vend::Cfg->{Locale}{$val};
 				},
 	);
 
