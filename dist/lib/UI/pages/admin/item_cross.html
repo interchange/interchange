@@ -7,8 +7,8 @@
 		$CGI->{mv_data_table} = 'merchandising';
 	}
 	if(! $CGI->{ui_data_fields}) {
-		$CGI->{ui_data_fields} = 'sku __UI_PRODUCT_TABLE__:__UI_ITEM_DESCRIPTION__ cross_sell cross_category blurb_begin blurb_end';
-		$CGI->{ui_display_only} = '__UI_PRODUCT_TABLE__:__UI_ITEM_DESCRIPTION__';
+		$CGI->{ui_data_fields} = 'sku __ProductFiles_0__:__DescriptionField__ cross_sell cross_category blurb_begin blurb_end';
+		$CGI->{ui_display_only} = '__ProductFiles_0__:__DescriptionField__';
 	}
 	if(! $CGI->{ui_break_before}) {
 		$CGI->{ui_break_before} = 'blurb_begin';
@@ -37,7 +37,7 @@
 <A HREF="[area href=admin/flex_editor
 				form='
 					item_id=[cgi item_id]
-					mv_data_table=__UI_PRODUCT_TABLE__
+					mv_data_table=__ProductFiles_0__
 					page_title=Edit items: [cgi item_id]
 					help_name=inventory.edit
 					ui_no_meta_display=1
