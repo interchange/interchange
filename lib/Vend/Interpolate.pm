@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.100 2001-07-17 15:37:25 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.101 2001-07-17 16:57:19 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.100 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.101 $, 10);
 
 @EXPORT = qw (
 
@@ -589,7 +589,7 @@ sub vars_and_comments {
 }
 
 sub interpolate_html {
-	my ($html, $wantref) = @_;
+	my ($html, $wantref, $opt) = @_;
 	return undef if $Vend::NoInterpolate;
 	my ($name, @post);
 	my ($bit, %post);
@@ -597,7 +597,9 @@ sub interpolate_html {
 	defined $::Variable->{MV_AUTOLOAD}
 		and $html =~ s/^/$::Variable->{MV_AUTOLOAD}/;
 
-	vars_and_comments(\$html);
+#::logDebug("opt=" . ::uneval($opt));
+	vars_and_comments(\$html)
+		unless $opt and $opt->{onfly};
 
     # Returns, could be recursive
 	my $parse = new Vend::Parse;
@@ -5557,8 +5559,6 @@ sub fly_page {
 	my($code, $opt, $page) = @_;
 
 	my $selector;
-
-	vars_and_comments(\$page) if $page;
 
 	return $page if (! $code and $Vend::Flypart eq $Vend::FinalPath);
 

@@ -1,6 +1,6 @@
 # Vend::Page - Handle Interchange page routing
 # 
-# $Id: Page.pm,v 1.5.6.6 2001-06-29 02:19:25 jon Exp $
+# $Id: Page.pm,v 1.5.6.7 2001-07-17 16:57:19 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -45,7 +45,7 @@ use strict;
 
 use vars qw/$VERSION/;
 
-$VERSION = substr(q$Revision: 1.5.6.6 $, 10);
+$VERSION = substr(q$Revision: 1.5.6.7 $, 10);
 
 my $wantref = 1;
 
@@ -88,13 +88,15 @@ sub display_page {
 	}
 # END TRACK	
 		
+	my $opt;
 	# Try for on-the-fly if not there
 	if(! defined $page) {
-		$page = Vend::Interpolate::fly_page($name);
+		$page = Vend::Interpolate::fly_page($name)
+			and $opt->{onfly} = 1;
 	}
 
 	if (defined $page) {
-		::response(::interpolate_html($page, 1));
+		::response(::interpolate_html($page, 1, $opt));
 		return 1;
 	}
 	else {

@@ -1,6 +1,6 @@
 # Vend::Parse - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12.2.28 2001-07-01 05:06:30 jon Exp $
+# $Id: Parse.pm,v 1.12.2.29 2001-07-17 16:57:19 heins Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -35,7 +35,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12.2.28 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.29 $, 10);
 
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
@@ -167,7 +167,7 @@ my %Order =	(
 				flag			=> [qw( type )],
 				time			=> [qw( locale )],
 				fly_tax			=> [qw( area )],
-				fly_list		=> [qw( code base )],
+				fly_list		=> [qw( code )],
 				goto			=> [qw( name if)],
 				harness		    => [qw( )],
 				html_table	    => [qw( )],
@@ -253,6 +253,7 @@ my %addAttr = (
 					warnings        1
 					export          1
 					flag            1
+					fly_list		1
 					harness         1
 					html_table      1
 					import          1
