@@ -25,7 +25,7 @@ DOIT: {
 #
 # Interchange version 4.6.0
 #
-# $Id: interchange.PL,v 1.8.4.8 2000-10-26 23:22:30 racke Exp $
+# $Id: interchange.PL,v 1.8.4.9 2000-11-02 16:26:00 racke Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -1728,12 +1728,13 @@ EOF
 		Vend::Interpolate::init_calc();
 		$CGI::values{mv_nextpage} = $Vend::FinalPath
 			if ! defined $CGI::values{mv_nextpage};
+		# allow catalog-defined user tags in action maps
+		new Vend::Parse;
 	}
 	elsif ( defined ($sub = $action{$Vend::Action}) )  {
 		Vend::Interpolate::init_calc();
 		$Vend::FinalPath = join "", @path;
 	}
-
 	eval {
 		if(defined $sub) {
 #::logDebug("found sub");
