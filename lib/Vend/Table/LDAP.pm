@@ -1,6 +1,6 @@
 # Vend::Table::LDAP - Interchange LDAP pseudo-table access
 #
-# $Id: LDAP.pm,v 2.9 2003-07-12 13:40:43 mheins Exp $
+# $Id: LDAP.pm,v 2.10 2003-07-14 09:17:51 racke Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -25,7 +25,7 @@
 
 package Vend::Table::LDAP;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 2.9 $, 10);
+$VERSION = substr(q$Revision: 2.10 $, 10);
 use strict;
 
 use vars qw(
@@ -100,7 +100,7 @@ sub open_table {
 			$alt_index++;
 			redo DOCONNECT;
 		}
-		die ::errmsg("Unable to connect to LDAP server %s", $host:$port);
+		die ::errmsg("Unable to connect to LDAP server %s", "$host:$port");
 	}
 	$ldap->bind(
 		dn => $config->{BIND_DN},
@@ -149,7 +149,7 @@ sub create {
 	($host, $port) = split /:/, $host if ($host =~ /:/);
 	my $column_index = Vend::Table::Common::create_columns($columns, $config);
 	my $ldap = Net::LDAP->new($host, port => $port)
-		or die ::errmsg("Unable to connect to LDAP server %s", $host:$port);
+		or die ::errmsg("Unable to connect to LDAP server %s", "$host:$port");
 #::logDebug("created object " . ::uneval($ldap));
 	$ldap->bind(
 		dn => $config->{BIND_DN},
