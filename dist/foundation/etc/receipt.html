@@ -31,28 +31,160 @@ __NOLEFT_TOP__
 
 <br>
 <center>
-<TABLE BORDER=1 WIDTH=450>
-[html-table fr='__TABLEFG__ WIDTH="20%"']
-<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><B>ORDER NUMBER</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[value mv_order_number]</font>
-<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><B>Name</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[value fname] [value lname]</font>
-[if value company]<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Company</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[value company]</font>
-[/if]<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><B>Email Address</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[value email]</font>
-<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><B>Address</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[value address1]</font>[if value address2]
-	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[value address2]</font>[/if]
-<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><B>City, State, Zip</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[value city], [value state]  [value zip]</font>
-<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><B>Country</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[value country]</font>
-<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><B>Payment Method</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[value mv_payment]</font>
-<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><B>Shipping Method</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[shipping_desc]</font>
-<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><B>Daytime Phone</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[value phone_day]</font>&nbsp;
-<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><B>Evening Phone</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[value phone_night]</font>&nbsp;
-[if value b_fname]<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><B>Billing Name</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[value b_fname] [value b_lname]</font>
+<TABLE>
+<tr>
+	<th align=right>
+	ORDER NUMBER
+	</th>
+	<td>
+	[value mv_order_number]
+	</td>
+</tr>
+<tr>
+	<th>
+		Name
+	</th>
+	<td>
+	[value fname] [value lname]
+	</td>
+</tr>
+[if value company]
+<tr>
+	<th align=right>
+		Company
+	</th>
+	<td>
+	[value company]
+	</td>
+</tr>
 [/if]
-[if value b_address1]<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><B>Billing Address</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[value b_address1][if value b_address2]</font>
-	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[value b_address2]</font>[/if]
-<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><B>City, State, Zip</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[value b_city], [value b_state]  [value b_zip]</font>
-[/if][if value b_country]
-<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><B>Billing Country</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[value b_country]</font>[/if]
-[/html-table]
+<tr>
+	<th align=right>
+		Email Address
+	</th>
+	<td>
+	[value email]
+	</td>
+</tr>
+<tr>
+	<th align=right>
+		Address
+	</th>
+	<td>
+	[value address1]
+	</td>
+</tr>
+[if value address2]
+<tr>
+	<th align=right>
+		&nbsp;
+	</th>
+	<td>
+	[value address2]
+	</td>
+</tr>
+[/if]
+<tr>
+	<th align=right>
+		City, State, Zip
+	</th>
+	<td>
+	[value city], [value state]  [value zip]
+	</td>
+</tr>
+<tr>
+	<th align=right>
+		Country
+	</th>
+	<td>
+	[value country]
+	</td>
+</tr>
+<tr>
+	<th align=right>
+		Payment Method
+	</th>
+	<td>
+	[value mv_payment]
+	</td>
+</tr>
+<tr>
+	<th align=right>
+		Shipping Method
+	</th>
+	<td>
+	[shipping_desc]
+	</td>
+</tr>
+[if value phone_day]
+<tr>
+	<th align=right>
+		Daytime Phone
+	</th>
+	<td>
+	[value phone_day]
+	</td>
+</tr>
+[/if]
+[if value phone_night]
+<tr>
+	<th align=right>
+		Evening Phone
+	</th>
+	<td>
+	[value phone_night]
+	</td>
+</tr>
+[/if]
+[if value b_fname]
+<tr>
+	<th align=right>
+		Billing Name
+	</th>
+	<td>
+	[value b_fname] [value b_lname]
+	</td>
+</tr>
+[/if]
+[if value b_address1]
+<tr>
+	<th align=right>
+		Billing Address
+	</th>
+	<td>
+	[value b_address1]
+	</td>
+</tr>
+[if value b_address2]
+<tr>
+	<th align=right>
+		&nbsp;
+	</th>
+	<td>
+	[value b_address2]
+	</td>
+</tr>
+[/if]
+<tr>
+	<th align=right>
+		City, State, Zip
+	</th>
+	<td>
+	[value b_city], [value b_state]  [value b_zip]
+	</td>
+</tr>
+[/if]
+[if value b_country]
+<tr>
+	<th align=right>
+		Billing Country
+	</th>
+	<td>
+	[value b_country]
+	</td>
+</tr>
+[/if]
+
 </TABLE>
 
 <p>
@@ -87,41 +219,111 @@ __NOLEFT_TOP__
 	return;
 [/perl]
 <p>
-<TABLE BORDER=1 __TABLEBG__ WIDTH=450>
-[html-table]
-<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><B>Quan</b></font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><B>Item No.</b></font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><B>Description</b></font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><B><DIV ALIGN=RIGHT>Price</b></font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><B><DIV ALIGN=RIGHT>Extension</b></font>
-[item-list modular=1]<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[item-quantity]</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[item-code]</font>	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">[item-description]<BR>[if-modifier size]SIZE-->[item-modifier size][/if-modifier][if-modifier color] COLOR-->[item-modifier color][/if-modifier]</font>[if-item-field download][calc]get_download('[item-code]')[/calc][/if-item-field]	<DIV ALIGN=RIGHT><font face="Verdana, Arial, Helvetica, sans-serif" size="2">[item-price]</font>	<DIV ALIGN=RIGHT><font face="Verdana, Arial, Helvetica, sans-serif" size="2">[item-subtotal]</font>
+<TABLE>
+<TH align=right>[L]Quan[/L]</TH>
+<TH>[L]Item No.[/L]</TH>
+<TH>[L]Description[/L]</TH>	
+<TH align=right>[L]Price[/L]</TH>	
+<TH align=right>[L]Extension[/L]</TH>	
+[item-list modular=1]
+<tr>
+	<td align=right valign=top>
+	[item-quantity]
+	</td>
+	<td valign=top>
+		[item-code]
+	</td>
+	<td>
+	[item-description]
+	[if-modifier size]<BR>SIZE-->[item-modifier size][/if-modifier][if-modifier color] COLOR-->[item-modifier color][/if-modifier]
+	[if-item-field download]
+		<br>[calc]get_download('[item-code]')[/calc]
+	[/if-item-field]
+	[if-item-modifier mv_ad]
+	<BR>
+	<tt><b>SHIP TO:</B></tt>
+	<PRE>[item-modifier mv_ad]</pre>
+	[/if-item-modifier]
+	</td>
+	<td align=right valign=top>
+		[item-price]
+	</td>
+	<td align=right valign=top>
+		[item-subtotal]
+	</td>
 [/item-list]
-			<font face="Verdana, Arial, Helvetica, sans-serif" size="2">SUBTOTAL</font>	<DIV ALIGN=RIGHT><font face="Verdana, Arial, Helvetica, sans-serif" size="2">[subtotal]</font>
-			<font face="Verdana, Arial, Helvetica, sans-serif" size="2">SALES TAX</font>	<DIV ALIGN=RIGHT><font face="Verdana, Arial, Helvetica, sans-serif" size="2">[salestax]</font>
-			<font face="Verdana, Arial, Helvetica, sans-serif" size="2">SHIPPING</font>	<DIV ALIGN=RIGHT><font face="Verdana, Arial, Helvetica, sans-serif" size="2">[shipping]</font>
-			<font face="Verdana, Arial, Helvetica, sans-serif" size="2">ORDER TOTAL</font>	<DIV ALIGN=RIGHT><font face="Verdana, Arial, Helvetica, sans-serif" size="2">[total-cost]</font>
-[/html-table]
-</TABLE>
-
-[item-list]
-[if-item-modifier mv_ad]
-Line [item-increment] ([item-description) ships to:
-<blockquote>
-<PRE>[item-modifier mv_ad]</PRE>
-</blockquote>
-<P>
-[/if-item-modifier]
-[/item-list]
-
-[if value gift_note]
-<TABLE WIDTH=450>
-	<tr>
-		<td>
-<B>Comments/Note for Gift:</B><BR>
-<PRE>
-[value gift_note]
-</PRE>
-		</td>
-	</tr>
-</TABLE>
-</BLOCKQUOTE>
+<tr>
+	<td colspan=3>
+		&nbsp;
+	</td>
+	<td>
+		SUBTOTAL
+	</td>
+	<td align=right>
+		[subtotal]
+	</td>
+</tr>
+<tr>
+	<td colspan=3>
+		&nbsp;
+	</td>
+	<td>
+		SALES TAX
+	</td>
+	<td align=right>
+		[salestax]
+	</td>
+</tr>
+[if value mv_shipmode]
+<tr>
+	<td colspan=3>
+		&nbsp;
+	</td>
+	<td>
+		SHIPPING
+	</td>
+	<td align=right>
+		[shipping]
+	</td>
+</tr>
 [/if]
+[if value mv_handling]
+<tr>
+	<td colspan=3>
+		&nbsp;
+	</td>
+	<td>
+		HANDLING
+	</td>
+	<td align=right>
+		[handling]
+	</td>
+</tr>
+[/if]
+<tr>
+	<td colspan=3>
+		&nbsp;
+	</td>
+	<td>
+		ORDER TOTAL
+	</td>
+	<td align=right>
+		[handling]
+	</td>
+</tr>
+[if value gift_note]
+<tr>
+	<td colspan=2>
+	<B>Comments/Note for Gift:</B>
+	</td>
+	<td colspan=3>
+	<PRE>
+	[value gift_note]
+	</PRE>
+	</td>
+</tr>
+[/if]
+</table>
 <P>
 <font face="Verdana, Arial, Helvetica, sans-serif" size="1">
 <I>(Please print this receipt for your records. Thank you for your order!)</I>
