@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.37 2002-12-02 22:14:22 mheins Exp $
+# $Id: DBI.pm,v 2.38 2002-12-08 15:55:23 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.37 $, 10);
+$VERSION = substr(q$Revision: 2.38 $, 10);
 
 use strict;
 
@@ -342,7 +342,7 @@ sub create {
 		for(@{$config->{PRECREATE}} ) {
 			$db->do($_) 
 				or ::logError(
-								"DBI: Post creation query '%s' failed: %s" ,
+								"DBI: Prior creation query '%s' failed: %s" ,
 								$_,
 								$DBI::errstr,
 					);
