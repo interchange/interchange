@@ -1,6 +1,6 @@
 # Vend::Payment::AuthorizeNet - Interchange AuthorizeNet support
 #
-# $Id: AuthorizeNet.pm,v 2.1 2001-08-06 13:23:51 heins Exp $
+# $Id: AuthorizeNet.pm,v 2.1.2.1 2001-10-30 13:01:08 mheins Exp $
 #
 # Copyright (C) 1999-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -38,7 +38,7 @@ package Vend::Payment::AuthorizeNet;
 
 =head1 Interchange AuthorizeNet Support
 
-Vend::Payment::AuthorizeNet $Revision: 2.1 $
+Vend::Payment::AuthorizeNet $Revision: 2.1.2.1 $
 
 =head1 SYNOPSIS
 
@@ -381,9 +381,8 @@ sub authorizenet {
 					x_Auth_Code		=> $actual->{auth_code},
                     x_Invoice_Num   => $actual->{mv_order_number},
 #                    x_Company      => $actual->{company},
-#                    x_Phone        => $actaul->{phone_day},
                     x_Email         => $actual->{email},
-                    x_Phone        => $actaul->{phone_day},
+                    x_Phone        => $actual->{phone_day},
                     x_Password  	=> $secret,
                     x_Login     	=> $user,
                     x_Version   	=> '3.0',
