@@ -449,7 +449,7 @@ mv_nextpage=@@MV_PAGE@@
 	default.o_matrix=1
 	default.o_enable=1
 	default.quantity=1
-	default.sku=`$CGI->{item_id}`
+	override.sku=`$CGI->{item_id}`
 	extra.description="wrap=auto"
 	form_name=variant
 	key=""
