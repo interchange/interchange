@@ -222,7 +222,7 @@ mv_todo=back
 		confirm="Are you sure you want to delete the checked rows?"]
 [flag type=write table="[cgi mv_data_table]"]
 mv_nextpage=__UI_BASE__/flex_select
-ui_auto_export=
+mv_auto_export=
 mv_todo=return
 [if-mm tables =d]
 	[perl tables="[cgi mv_data_table]"]
@@ -255,7 +255,7 @@ mv_todo=return
 		[return-to click]
 	[/button]
 	[if-mm super]
-	<BR><b><INPUT TYPE=checkbox NAME=ui_auto_export [if !scratch ui_too_large]CHECKED [/if]VALUE="[value mv_data_table]">
+	<BR><b><INPUT TYPE=checkbox NAME=mv_auto_export [if !scratch ui_too_large]CHECKED [/if]VALUE="[value mv_data_table]">
 		Auto-export</b>
 	[/if-mm]
 
