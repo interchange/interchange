@@ -27,6 +27,7 @@
 
 <!-- ----- BEGIN REAL STUFF ----- -->
 [update values]
+[perl tables=country]### pre-open database for calcs below[/perl] 
 [loop list="[value-extended order]"]
 
 <table __UI_T_PROPERTIES__>
@@ -101,6 +102,12 @@
 [loop-data transactions b_address2]<br>
 [/if-loop-data]
 [loop-data transactions b_city], [loop-data transactions b_state] [loop-data transactions b_zip]<br>
+[loop-calc]
+	my $c = q{[loop-data transactions b_country]};
+	return if '__SHIP_DEFAULT_COUNTRY__' eq $c;
+	my $name = tag_data('country', 'name', $c);
+	return qq{$name ($c)<br>};
+[/loop-calc]
 [/set]
 
 [set ship_address]
@@ -110,6 +117,12 @@
 [loop-data transactions address2]<br>
 [/if-loop-data]
 [loop-data transactions city], [loop-data transactions state] [loop-data transactions zip]<br>
+[loop-calc]
+	my $c = q{[loop-data transactions country]};
+	return if '__SHIP_DEFAULT_COUNTRY__' eq $c;
+	my $name = tag_data('country', 'name', $c);
+	return qq{$name ($c)<br>};
+[/loop-calc]
 [/set]
 
 <font size=2>
