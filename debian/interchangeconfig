@@ -29,7 +29,7 @@ my $settingsconf = '/etc/interchange/settings.cfg';
 
 # Interchange variables
 my %setvars = (DEBUG => 0, UI_LOCALE => 'en_US');
-my %featvars = (UI => 0);
+my %featvars = (UI => '', USE_FOUNDATION => '');
 my %skipvars;
 	
 # other variables
