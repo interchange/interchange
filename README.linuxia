@@ -27,7 +27,7 @@ This file documents all changes of the LINUXIA branch of Interchange.
 - support for sorting item keys numerically (item.html: 1.18.4.5)
 - support for affiliate commissions introduced 
   (reports/order/ByAffiliate.html: 1.10.4.3-7,
-  reports/order/Detail.html: 1.10.4.1,
+  reports/order/Detail.html: 1.10.4.1-2,
   reports/order/Monthly.html: 1.11.4.1)
 - imagehelper widget added (Primitive.pm: 1.21.4.5, interchange.PL: 1.8.4.7, 
   UI_STD_EDIT_TABLE: 1.18.4.5)
@@ -48,6 +48,7 @@ This file documents all changes of the LINUXIA branch of Interchange.
 
 f
 - UI_IMG fixes (order.html: 1.19.4.4, UI_STD_DBEDIT_TABLE: 1.18.4.6)
+- ugly fix for unforeseen transaction state (order_view.html: 1.16.4.4)
 
 Changes that made into the main branch:
 
