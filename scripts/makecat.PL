@@ -52,7 +52,7 @@ DOIT: {
 #
 # Interchange catalog configurator
 #
-# $Id: makecat.PL,v 2.6 2001-08-20 21:02:21 heins Exp $
+# $Id: makecat.PL,v 2.7 2001-08-23 23:32:08 racke Exp $
 #
 # Copyright (C) 1996-2001 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -1266,9 +1266,12 @@ entered:
 
 EOF
 
-	$tempurl  = prompt ("\nPlease re-enter or confirm: ",
+		if ($Vend::MakeCat::Force) {
+			$tempurl = $Conf{sampleurl};
+		} else {
+			$tempurl  = prompt ("\nPlease re-enter or confirm: ",
 						"http://$Conf{servername}/$guessdir");
-
+		}
 	}
 
 	$Conf{sampleurl} = $tempurl;
@@ -2257,7 +2260,7 @@ makecat [--options] name
 
 =head1 VERSION
 
-# $Id: makecat.PL,v 2.6 2001-08-20 21:02:21 heins Exp $
+# $Id: makecat.PL,v 2.7 2001-08-23 23:32:08 racke Exp $
 
 =head1 INTRODUCTION
 
