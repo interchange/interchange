@@ -1,6 +1,6 @@
 # Server.pm:  listen for cgi requests as a background server
 #
-# $Id: Server.pm,v 1.8.2.7 2001-01-20 20:02:28 heins Exp $
+# $Id: Server.pm,v 1.8.2.8 2001-01-28 08:41:17 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Server;
 
 use vars qw($VERSION);
-$VERSION = substr(q$Revision: 1.8.2.7 $, 10);
+$VERSION = substr(q$Revision: 1.8.2.8 $, 10);
 
 use POSIX qw(setsid strftime);
 use Vend::Util;
@@ -646,9 +646,9 @@ sub http_server {
 	}
 	my $cat = "/$catname";
 
-::logDebug("cat=$cat allowglobal=$Global::AllowGlobal->{$cat}");
+#::logDebug("cat=$cat allowglobal=$Global::AllowGlobal->{$cat}");
 	if($Global::Selector{$cat} and $Global::AllowGlobal->{$cat}) {
-::logDebug("found mv_admin");
+#::logDebug("found mv_admin");
 		if ($$env{AUTHORIZATION}) {
 			$$env{REMOTE_USER} =
 					Vend::Util::check_authorization( delete $$env{AUTHORIZATION} );
