@@ -1,6 +1,6 @@
 # Table/DBI.pm: access a table stored in an DBI/DBD Database
 #
-# $Id: DBI.pm,v 1.25.2.23 2001-04-12 04:56:50 heins Exp $
+# $Id: DBI.pm,v 1.25.2.24 2001-04-13 10:33:44 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 1.25.2.23 $, 10);
+$VERSION = substr(q$Revision: 1.25.2.24 $, 10);
 
 use strict;
 
@@ -125,7 +125,13 @@ my $Info;
 
 my %known_capability = (
 	AUTO_INDEX_PRIMARY_KEY => {
-		Oracle	=> 1
+		Oracle	=> 1,
+	},
+	HAS_TRANSACTIONS => {
+		Sybase	=> 1,
+		DB2		=> 1,
+		Pg		=> 1,
+		Oracle	=> 1,
 	},
 	HAS_LIMIT => {
 		mysql	=> 1,
@@ -502,6 +508,11 @@ sub open_table {
 	bless $s, $class;
 }
 
+sub suicide {
+	my $s = shift;
+	delete $s->[$DBI];
+}
+
 sub close_table {
 	my $s = shift;
 	return 1 if ! defined $s->[$DBI];
@@ -510,9 +521,10 @@ sub close_table {
 	undef $s->[$CONFIG]{Update_handle};
     undef $s->[$CONFIG]{Exists_handle};
     return 1 if $s->[$CONFIG]{hot_dbi};
-#::logDebug("connect count close: " . ($DBI_connect_count{$s->[$CONFIG]->{dsn_id}} - 1));
-	return 1 if --$DBI_connect_count{$s->[$CONFIG]->{dsn_id}} > 0;
-	undef $DBI_connect_cache{$s->[$CONFIG]->{dsn_id}};
+    my $id = delete $s->[$CONFIG]{dsn_id};
+#::logDebug("connect count close: " . ($DBI_connect_count{$id} - 1));
+	return 1 if --$DBI_connect_count{$id} > 0;
+	undef $DBI_connect_cache{$id};
 	$s->[$DBI]->disconnect();
 }
 
@@ -604,6 +616,10 @@ sub rollback {
 #	}
 
 	return $s->[$DBI]->rollback();
+}
+
+sub isopen {
+	return defined $_[0]->[$DBI];
 }
 
 sub column_index {

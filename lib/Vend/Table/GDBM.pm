@@ -1,6 +1,6 @@
 # Table/GDBM.pm: access a table stored in a GDBM file
 #
-# $Id: GDBM.pm,v 1.3.6.5 2001-04-10 05:22:20 heins Exp $
+# $Id: GDBM.pm,v 1.3.6.6 2001-04-13 10:33:45 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ use GDBM_File;
 use Vend::Table::Common;
 
 @ISA = qw(Vend::Table::Common);
-$VERSION = substr(q$Revision: 1.3.6.5 $, 10);
+$VERSION = substr(q$Revision: 1.3.6.6 $, 10);
 
 sub new {
 	my ($class, $obj) = @_;
@@ -89,6 +89,7 @@ sub open_table {
 	my $flags = GDBM_READER;
 
 	if (! $config->{Read_only}) {
+		undef $config->{Transactions};
 		$flags = GDBM_WRITER;
 		if(! defined $config->{AutoNumberCounter}) {
 			eval {
@@ -142,6 +143,7 @@ sub open_table {
 *field_accessor	= \&Vend::Table::Common::field_accessor;
 *field_settor	= \&Vend::Table::Common::field_settor;
 *inc_field		= \&Vend::Table::Common::inc_field;
+*isopen			= \&Vend::Table::Common::isopen;
 *numeric		= \&Vend::Table::Common::numeric;
 *quote			= \&Vend::Table::Common::quote;
 *record_exists	= \&Vend::Table::Common::record_exists;
@@ -153,6 +155,7 @@ sub open_table {
 *set_field		= \&Vend::Table::Common::set_field;
 *set_slice		= \&Vend::Table::Common::set_slice;
 *set_row  		= \&Vend::Table::Common::set_row;
+*suicide		= \&Vend::Table::Common::suicide;
 *test_record	= \&Vend::Table::Common::record_exists;
 *touch			= \&Vend::Table::Common::touch;
 *test_column	= \&Vend::Table::Common::test_column;

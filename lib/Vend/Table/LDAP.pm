@@ -1,6 +1,6 @@
 # Table/LDAP.pm: LDAP pseudo-table
 #
-# $Id: LDAP.pm,v 1.6.6.3 2001-04-10 20:23:53 heins Exp $
+# $Id: LDAP.pm,v 1.6.6.4 2001-04-13 10:33:45 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -27,7 +27,7 @@
 
 package Vend::Table::LDAP;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 1.6.6.3 $, 10);
+$VERSION = substr(q$Revision: 1.6.6.4 $, 10);
 use strict;
 
 use vars qw(
@@ -72,7 +72,9 @@ sub close_table {
 #::logDebug("closing LDAP table");
 	return 1 if ! defined $s->[$TIE_HASH];
 #::logDebug("closing LDAP table $s->[$FILENAME]");
-	$s->[$TIE_HASH]->unbind;
+	my $do = $s->[$TIE_HASH]->unbind;
+	undef $s->[$TIE_HASH];
+	return $do;
 }
 
 sub open_table {
@@ -82,6 +84,9 @@ sub open_table {
 	my $ldap;
 	my $column_index;
 	my $columns;
+
+	# LDAP doesn't do these
+	undef $config->{Transactions};
   DOCONNECT: {
 	my $base = $config->{BASE_DN};
 	my $host = $config->{LDAP_HOST};
@@ -654,6 +659,8 @@ e:logDebug("opt is: " . Vend::Util::uneval($opt));
 *column_index	= \&Vend::Table::Common::column_index;
 *column_exists	= \&Vend::Table::Common::column_exists;
 *numeric		= \&Vend::Table::Common::numeric;
+*isopen			= \&Vend::Table::Common::isopen;
+*suicide		= \&Vend::Table::Common::suicide;
 *test_column	= \&Vend::Table::Common::test_column;
 
 1;

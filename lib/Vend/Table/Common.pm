@@ -1,6 +1,6 @@
 # Table/Common.pm: Common access methods for Interchange Databases
 #
-# $Id: Common.pm,v 1.16.4.8 2001-04-10 20:23:52 heins Exp $
+# $Id: Common.pm,v 1.16.4.9 2001-04-13 10:33:44 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -25,7 +25,7 @@
 # Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA  02111-1307  USA.
 
-$VERSION = substr(q$Revision: 1.16.4.8 $, 10);
+$VERSION = substr(q$Revision: 1.16.4.9 $, 10);
 use strict;
 
 package Vend::Table::Common;
@@ -566,6 +566,12 @@ sub each_nokey {
 		}
 		return $s->row($key);
     }
+}
+
+sub suicide { 1 }
+
+sub isopen {
+	return defined $_[0]->[$TIE_HASH];
 }
 
 sub delete_record {
@@ -1278,39 +1284,6 @@ sub parse {
     return @a;
 }
 
-eval join('',<DATA>) || die $@ unless caller();
 1;
 
-__DATA__
-
-my @tests =
-  (
-   '' => [''],
-   ',' => ['', ''],
-   'a' => ['a'],
-   ',a' => ['', 'a'],
-   'a,' => ['a', ''],
-   ',,' => ['', '', ''],
-   ' a , b , c ' => ['a', 'b', 'c'],
-   '""' => [''],
-   '" a , b "' => [' a , b '],
-   "1,\t2, 3 " => ['1', '2', '3'],
-   ' a b c , d e f ' => ['a b c', 'd e f'],
-   ' " a"",b ",c' => [' a",b ', 'c'],
-   );
-
-my $errors = 0;
-my ($in, $out, @a, @b);
-while (($in, $out) = splice(@tests, 0, 2)) {
-    @a = @$out;
-    @b = parse($in);
-    if (@a != @b or grep($_ ne shift @a, @b)) {
-        print "'$in' parsed as ",
-              join(' ',map("<$_>",@b)),
-              " instead of the expected ",
-              join(' ',map("<$_>",@$out)), "\n";
-        ++$errors;
-    }
-}
-print "All tests successful\n" unless $errors;
-1;
+__END__

@@ -1,6 +1,6 @@
 # Table/InMemory.pm: store a table in memory
 #
-# $Id: InMemory.pm,v 1.3.6.3 2001-04-10 05:22:20 heins Exp $
+# $Id: InMemory.pm,v 1.3.6.4 2001-04-13 10:33:45 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Table::InMemory;
 use Vend::Table::Common;
 @ISA = qw/Vend::Table::Common/;
-$VERSION = substr(q$Revision: 1.3.6.3 $, 10);
+$VERSION = substr(q$Revision: 1.3.6.4 $, 10);
 use strict;
 
 # 0: column names
@@ -70,6 +70,8 @@ sub create {
 	my ($class, $config, $columns) = @_;
 
 	$config = {} unless defined $config;
+
+	undef $config->{Transactions};
 
 	die "columns argument $columns is not an array ref\n"
 		unless CORE::ref($columns) eq 'ARRAY';
@@ -209,6 +211,10 @@ sub touch {
 	1
 }
 
+sub isopen {
+	1
+}
+
 sub ref {
 	return $_[0];
 }
@@ -219,6 +225,7 @@ sub ref {
 *field			= \&Vend::Table::Common::field;
 *numeric		= \&Vend::Table::Common::numeric;
 *set_field		= \&Vend::Table::Common::set_field;
+*suicide		= \&Vend::Table::Common::suicide;
 *set_slice		= \&Vend::Table::Common::set_slice;
 
 1;
