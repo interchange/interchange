@@ -1,48 +1,24 @@
 package Vend::Parser;
 
-# $Id: Parser.pm,v 1.2 2000-07-12 03:08:11 heins Exp $
+# $Id: Parser.pm,v 1.2.4.1 2001-03-23 13:34:46 racke Exp $
 #
+# Vend::Parser - Interchange parser class
+# Copyright 1997-2001 by Michael J. Heins <heins@akopia.com>
 #
+# Based on HTML::Parser
 # Copyright 1996 Gisle Aas. All rights reserved.
-#
-# Modifications for Interchange Copyright 1997-2000 by Michael J. Heins
-# <heins@akopia.com>
 #
 
 =head1 NAME
 
 Vend::Parser - Interchange parser class
 
-=head1 SYNOPSIS
-
- require Vend::Parser;
- $p = Vend::Parser->new;  # should really a be subclass
- $p->parse($chunk1);
- $p->parse($chunk2);
- #...
- $p->eof;                 # signal end of document
-
- # Parse directly from file
- $p->parse_file("foo.html");
- # or
- open(F, "foo.html") || die;
- $p->parse_file(\*F);
-
 =head1 DESCRIPTION
 
-The C<Vend::Parser> will tokenize a Interchange page when the $p->parse()
-method is called.  The document to parse can be supplied in arbitrary
-chunks.  Call $p->eof() the end of the document to flush any remaining
-text.  The return value from parse() is a reference to the parser
-object.
-
-The $p->parse_file() method can be called to parse text from a file.
-The argument can be a filename or an already opened file handle. The
-return value from parse_file() is a reference to the parser object.
-
-In order to make the parser do anything interesting, you must make a
-subclass where you override one or more of the following methods as
-appropriate:
+C<Vend::Parser> will tokenize a Interchange page when the $p->parse()
+method is called. The document to parse can be supplied in arbitrary
+chunks. Call $p->eof() the end of the document to flush any remaining
+text. The return value from parse() is a reference to the parser object.
 
 =over 4
 
@@ -51,15 +27,15 @@ appropriate:
 This method is called when a complete start tag has been recognized.
 The first argument is the tag name (in lower case) and the second
 argument is a reference to a hash that contain all attributes found
-within the start tag.  The attribute keys are converted to lower case.
-Entities found in the attribute values are already expanded.  The
+within the start tag. The attribute keys are converted to lower case.
+Entities found in the attribute values are already expanded. The
 third argument is a reference to an array with the lower case
-attribute keys in the original order.  The fourth argument is the
+attribute keys in the original order. The fourth argument is the
 original Interchange page.
 
 =item $self->end($tag)
 
-This method is called when an end tag has been recognized.  The
+This method is called when an end tag has been recognized. The
 argument is the lower case tag name.
 
 =item $self->text($text)
@@ -69,42 +45,20 @@ The text is passed on unmodified and might contain multiple lines.
 Note that for efficiency reasons entities in the text are B<not>
 expanded. 
 
-=item $self->comment($comment)
-
-This method is called as comments are recognized.  The leading and
-trailing "--" sequences have been stripped off the comment text.
-
 =back
-
-The default implementation of these methods does nothing, I<i.e.,> the
-tokens are just ignored.
-
-=head1 BUGS
-
-You can instruct the parser to parse comments the way Netscape does it
-by calling the netscape_buggy_comment() method with a TRUE argument.
-This means that comments will always be terminated by the first
-occurence of "-->".
-
-=head1 SEE ALSO
-
-L<HTML::TreeBuilder>, L<HTML::HeadParser>, L<HTML::Entities>
 
 =head1 COPYRIGHT
 
-Copyright 1996 Gisle Aas. All rights reserved.
+Copyright 1997-2001 Akopia, Inc.  
+Original HTML::Parser module copyright 1996 Gisle Aas.
 
 This library is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
 
-Modified for use by Interchange.
+=head1 AUTHORS
 
-Copyright 1997-2000 Akopia, Inc.  
-
-=head1 AUTHOR
-
-Gisle Aas <aas@sn.no>
-Modified by Mike Heins <heins@akopia.com>  
+Vend::Parser - Mike Heins <heins@akopia.com>  
+HTML::Parser - Gisle Aas <aas@sn.no>
 
 =cut
 
@@ -113,38 +67,22 @@ use strict;
 
 use HTML::Entities ();
 use vars qw($VERSION);
-$VERSION = sprintf("%d.%02d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/);
+$VERSION = substr(q$Revision: 1.2.4.1 $, 10);
 
 
 sub new
 {
 	my $class = shift;
-	my $self = bless { '_buf'              => '' }, $class;
+	my $self = bless { '_buf' => '' }, $class;
 	$self;
 }
-
-# How does Netscape do it: It parse <xmp> in the depreceated 'literal'
-# mode, i.e. no tags are recognized until a </xmp> is found.
-# 
-# <listing> is parsed like <pre>, i.e. tags are recognized.  <listing>
-# are presentend in smaller font than <pre>
-#
-# Netscape does not parse this comment correctly (it terminates the comment
-# too early):
-#
-#    <! -- comment -- --> more comment -->
-#
-# Netscape does not allow space after the initial "<" in the start tag.
-# Like this "<a href='gisle'>"
-#
-# Netscape ignore '<!--' and '-->' within the <SCRIPT> tag.  This is used
-# as a trick to make non-script-aware browsers ignore the scripts.
 
 
 sub eof
 {
 	shift->parse(undef);
 }
+
 
 use vars qw/$Find_tag/;
 
@@ -159,10 +97,6 @@ sub parse
 		return $self;
 	}
 	$$buf .= $_[0];
-#	$Find_tag = qr{^([^[<]+)};
-#::logDebug("no_html_parse=$Vend::Cfg->{Pragma}{no_html_parse}");
-#	$Find_tag    = qr{^([^\[]+)} 
-#		 if $Vend::Cfg->{Pragma}{no_html_parse};
 	$Find_tag	= $Vend::Cfg->{Pragma}{no_html_parse}
 				?  qr{^([^[]+)}
 				:  qr{^([^[<]+)}
@@ -473,11 +407,6 @@ sub parse
 	$self;
 }
 
-
-sub comment
-{
-	# my($self, $comment) = @_;
-}
 
 1;
 __END__
