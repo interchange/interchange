@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: UserDB.pm,v 1.13.6.5 2000-12-14 17:03:28 zarko Exp $
+# $Id: UserDB.pm,v 1.13.6.6 2000-12-17 07:30:05 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -8,7 +8,7 @@
 
 package Vend::UserDB;
 
-$VERSION = substr(q$Revision: 1.13.6.5 $, 10);
+$VERSION = substr(q$Revision: 1.13.6.6 $, 10);
 
 use vars qw! $VERSION @S_FIELDS @B_FIELDS @P_FIELDS @I_FIELDS %S_to_B %B_to_S!;
 
@@ -135,7 +135,7 @@ qw!
 	country	
 	phone_day
 	mv_shipmode
-!
+  !
 );
 
 =head2 Accounts Book
@@ -179,7 +179,7 @@ qw!
 	country	
 	phone_day
 	mv_shipmode
-!
+  !
 );
 
 @B_FIELDS = ( 
@@ -203,7 +203,7 @@ qw!
 	mv_credit_card_exp_month
 	mv_credit_card_exp_year
 	mv_credit_card_reference
-!
+	!
 );
 
 =head2 Preferences
@@ -1052,12 +1052,12 @@ sub change_pass {
 my $GOOD_CHARS = '[-A-Za-z0-9_@.]';
 
 sub assign_username {
-	my $self = shift;
-	my $file = shift || $self->{OPTIONS}{'counter'};
-	my $start = $self->{OPTIONS}{username} || 'U00000';
-	$file = './etc/username.counter' if ! $file;
-	my $ctr = File::CounterFile->new($file, $start);
-	return $ctr->inc();
+        my $self = shift;
+        my $file = shift || $self->{OPTIONS}{'counter'};
+        my $start = $self->{OPTIONS}{username} || 'U00000';
+        $file = './etc/username.counter' if ! $file;
+        my $ctr = File::CounterFile->new($file, $start);
+        return $ctr->inc();
 }
 
 sub new_account {
@@ -1327,6 +1327,7 @@ sub userdb {
 		}
 		Vend::Interpolate::tag_profile("", { restore => 1 });
 		delete $Vend::Session->{logged_in};
+		undef $Vend::admin;
 		delete $Vend::Session->{login_table};
 		delete $Vend::Session->{username};
 		delete $CGI::values{mv_username};
