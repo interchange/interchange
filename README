@@ -2,7 +2,7 @@
 
                            I N T E R C H A N G E
 
-Interchange 4.7.0
+Interchange 4.7.1
 
 Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 
@@ -80,8 +80,8 @@ test.pl        The installation test script.
 
 Here is the quick installation summary:
 
-gzip -dc interchange-4.7.0.tar.gz | tar xvf -
-cd interchange-4.7.0
+gzip -dc interchange-4.7.1.tar.gz | tar xvf -
+cd interchange-4.7.1
 ./configure
 
 Then you will need to make your first Interchange catalog. See the

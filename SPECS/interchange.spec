@@ -2,7 +2,7 @@
 # Deal with broken UI image location
 # Use new install stuff in foundation/config/makedirs etc. instead of RPM symlinking
 
-%define ic_version			4.7.0
+%define ic_version			4.7.1
 %define ic_rpm_release		1
 %define ic_package_basename	interchange
 %define ic_user				interch

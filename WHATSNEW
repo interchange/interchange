@@ -1,4 +1,4 @@
-Interchange 4.7.1 released 2001-03-27.
+Interchange 4.7.1 released 2001-03-28.
 
 * Added ability to cascade mv_click statements, e.g.:
 
@@ -347,6 +347,76 @@ Interchange 4.7.1 released 2001-03-27.
   catalog skeleton. Should make RPM upgrading safer.
 
 * Removed Tagref.pm. There's now a normal ictags document instead.
+
+* Move UI menus into icmenu database.
+
+* Add ItemAction to map a subroutine to alter items every time toss_cart
+  is run, i.e. after an add or refresh.
+
+  Calling syntax is $sub->($item_reference), return value is not used.
+
+* Add a new directive "Limit". It is designed to hold limits for
+  certain things. Implemented to begin with:
+
+  Limit   chained_cost_levels       20
+  Limit   cart_quantity_per_line    10000
+
+* Rework server to allow preforking daemons, similar to Apache.
+  New global directives:
+
+  PreFork yes/no
+  StartServers number (0: old way; 1 or more: exact number to allow)
+
+* New SOAP protocol support allows two-way communication with all sorts
+  of other web "objects". Features:
+
+  - Catalog and session ID are embedded in proxy call. This avoids
+    having to do fancy gyrations with the SOAP envelope.
+
+  - Allows most any tag to be called, with nearly the same syntax
+    as with embedded perl on IC.
+
+  - Embedded Perl (and variants like [item-calc] and [item-exec]
+    are not allowed by default, but can be enabled with SOAP_Enable.
+
+  - Can specify the ID, or accept one from Interchange.
+
+  - Can get and put entire Values, Scratch, and Session structures.
+
+  Documentation for using SOAP is forthcoming.
+
+* Add mv_like_field and mv_like_spec to search specifications, designed
+  to filter SQL (only!) searches with
+
+  mv_like_field like 'mv_like_spec'.
+
+  This is a stackable field/spec set like mv_search_field and
+  mv_searchspec, and will eliminate any fields with empty mv_like_spec
+  values.
+
+  Checks the known_capability to see if UPPER_COMPARE is set for that
+  database, and uses (pseudo-code) "UPPER($col) like "\U$spec" if that
+  is the case.
+
+* Add known_capability UPPER_COMPARE (set for Pg and Oracle to begin
+  with) to allow upper-case transforms for case-insensitive compares.
+
+* Add ability to call custom UserTag or other ITL in Vend::Cfg->{SalesTax}.
+
+* Allow passing of extra parameters to button usertag with $opt->{extra}.
+
+* Add beginnings of transaction support. New [flag type=transaction table=x]
+  allows you to open (write implied) a table for transactions. Will have no
+  effect on tables that don't support it, but will open tables that do
+  support it in non-AutoCommit mode. Sequence is:
+
+  [flag type=transactions table="transactions orderline"]
+  [import ...] or any other db update routines [/import]
+  [flag type=commit table="transactions orderline"]
+
+  Tested only on PostgreSQL at this point.
+
+* Add ability to read files from a database instead of the filesystem.
 
 
 Interchange 4.7.0 not publicly released.

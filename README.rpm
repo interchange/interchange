@@ -2,7 +2,7 @@ NAME
     README.rpm - Interchange RPM for Redhat Systems
 
 VERSION
-    4.7.0
+    4.7.1
 
 SYNOPSIS
     rpm -Uvh interchange-*.rpm

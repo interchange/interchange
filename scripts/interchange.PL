@@ -23,19 +23,16 @@ DOIT: {
 #!/usr/bin/perl
 ##!~_~perlpath~_~
 #
-# Interchange version 4.7.0
+# Interchange version 4.7.1
 #
-# $Id: interchange.PL,v 1.15.2.23 2001-03-27 18:39:49 heins Exp $
+# $Id: interchange.PL,v 1.15.2.24 2001-03-28 06:18:46 jon Exp $
 #
-# Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
+# Copyright (C) 1996-2001 Red Hat, Inc. <info@akopia.com>
 #
-# This program was originally based on Vend 0.2
+# This program was originally based on Vend 0.2 and 0.3
 # Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
 #
-# Portions from Vend 0.3
-# Copyright 1995 by Andrew M. Wilcox <awilcox@world.std.com>
-#
-# See the file 'Changes' for information.
+# See the files 'README' and 'WHATSNEW' for information.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -144,7 +141,7 @@ use vars qw($VERSION);
 require Exporter;
 
 BEGIN {
-	$VERSION = '4.7.0';
+	$VERSION = '4.7.1';
 }
 
 use Fcntl;
@@ -2194,12 +2191,12 @@ sub dump_env {
 }
 
 sub version {
-	print "Interchange version $VERSION Copyright 1996-2000 Akopia, Inc.\n";
+	print "Interchange version $VERSION Copyright 1996-2001 Red Hat, Inc.\n";
 }
 
 =head1 NAME
 
-interchange - an e-commerce and general HTTP database display system
+Interchange - an e-commerce and general HTTP database display system
 
 =head1 SYNOPSIS
 
@@ -2207,7 +2204,7 @@ interchange [--options] [file]
 
 =head1 VERSION
 
-4.0
+4.7.1
 
 =head1 DESCRIPTION
 
