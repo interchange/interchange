@@ -1,6 +1,6 @@
 # Vend::Ship - Interchange shipping code
 # 
-# $Id: Ship.pm,v 2.4 2003-08-19 15:24:47 jon Exp $
+# $Id: Ship.pm,v 2.5 2003-09-12 19:45:49 jon Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -206,7 +206,7 @@ sub read_shipping {
 			next;
 		}
 
-		next unless /\S/;
+		next if ! /\S/ or /^\s*#/;
 		s/\s+$//;
 		if(/^[^\s:]+\t/) {
 			push (@shipping, [@line]) if @line;
