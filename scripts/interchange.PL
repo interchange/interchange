@@ -3,7 +3,7 @@
 #
 # Interchange version 4.9.3
 #
-# $Id: interchange.PL,v 2.53 2002-09-01 13:13:46 mheins Exp $
+# $Id: interchange.PL,v 2.54 2002-09-02 00:52:29 mheins Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. and others.
 # http://www.icdevgroup.org/
@@ -495,7 +495,10 @@ sub set_db {
 	return ($base, $thing) unless $thing =~ /^(\w+):+(.*)/;
 	my $t = $1;
 	my $c = $2;
-	$Vend::WriteDatabase = 1 if $::Scratch->{mv_data_enable} =~ / $t[: ]/;
+
+	# Security handled before this in update_data
+	$Vend::WriteDatabase{$t} = 1;
+
 	my $db = ::database_exists_ref($t);
 	return undef unless $db;
 	return ($db->ref(), $c);
