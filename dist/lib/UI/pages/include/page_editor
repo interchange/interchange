@@ -209,7 +209,7 @@ function visible (index, base) {
 		<table width="100%" cellpadding=0 cellspacing=0 cellmargin=3>
 		<tr>
 			<td id=clicker>
-	<h3 id="silent_display">Page Attributes/Controls</h3>
+	<h3 id="silent_display">[L]Page Attributes/Controls[/L]</h3>
 			Name: <b>[page-param ui_name]</b><BR>
 			Source: [page-param ui_source]
 		[page-sub foo_sub]
@@ -273,7 +273,7 @@ mv_nextpage=__UI_BASE__/content_preview
 
 			</td>
 			<td id=clicker1>
-	Page controls
+	[L]Page controls[/L]
 	<input type=checkbox
 			name="changed_[page-param ui_name]"
 			id="changed_[page-param ui_name]"
@@ -282,7 +282,7 @@ mv_nextpage=__UI_BASE__/content_preview
 	<A
 		HREF="javascript:void(0)"
 		onClick="visible(1)"
-		title="edit page controls"
+		title="[L]edit page controls[/L]"
 	>[loop-code]</A><br>
 [/loop]
 
@@ -304,9 +304,9 @@ mv_nextpage=__UI_BASE__/content_preview
 	 ">
 		<A
 			href="javascript:void(0)"
-			title="edit page preamble"
+			title="[L]edit page preamble[/L]"
 			onClick="visible(0)"
-		>PREAMBLE</A>&nbsp;<input
+		>[L]PREAMBLE[/L]</A>&nbsp;<input
 			type=checkbox
 			name=changed_PREAMBLE
 			id=changed_PREAMBLE
@@ -339,7 +339,7 @@ mv_nextpage=__UI_BASE__/content_preview
 	 <A	HREF="javascript:void(0)"
 			style="font-size: larger; font-weight: bolder"
 			onClick="visible([comp-increment],'comp')"
-			title="edit page content"
+			title="[L]edit page content[/L]"
 		>CONTENT</A>&nbsp;<input
 			type=checkbox
 			name=changed_CONTENT
@@ -353,7 +353,7 @@ mv_nextpage=__UI_BASE__/content_preview
 	 <A	HREF="javascript:void(0)"
 			style="font-size: larger; font-weight: bolder"
 			onClick="visible('only','comp')"
-			title="edit page content"
+			title="[L]edit page content[/L]"
 		>CONTENT</A>&nbsp;<input
 			type=checkbox
 			name=changed_CONTENT
@@ -369,9 +369,9 @@ mv_nextpage=__UI_BASE__/content_preview
 	 ">
 		<A
 			href="javascript:void(0)"
-			title="edit page postamble"
+			title="[L]edit page postamble[/L]"
 			onClick="visible(2)"
-		>POSTAMBLE</A>&nbsp;<input
+		>[L]POSTAMBLE[/L]</A>&nbsp;<input
 			type=checkbox
 			name=changed_POSTAMBLE
 			id=changed_POSTAMBLE
@@ -404,8 +404,8 @@ mv_nextpage=__UI_BASE__/content_preview
 				background: #EEEEEE;
 		">
 		<blockquote>
-		<h2>Edit area</H2>
-		When you select an element to the left, it will be edited here.
+		<h2>[L]Edit area[/L]</H2>
+		[L]When you select an element to the left, it will be edited here.[/L]
 		</blockquote>
 	</div>
 [components]
@@ -438,14 +438,14 @@ mv_nextpage=__UI_BASE__/content_preview
 			"
 	>
 	[if-comp-param component]
-	<b>Name</b>: <A HREF="[area
+	<b>[L]Name[/L]</b>: <A HREF="[area
 						href=@@MV_PAGE@@
 						form=auto
 						ui_type=component
 						ui_name=[comp-param component]
 					]" TARGET="_blank">[comp-param component] - [content-info code="[comp-param component]" label=1]</a><br>
 	[else]
-		<B>No component here</B><br>
+		<B>[L]No component here[/L]</B><br>
 	[/else]
 	[/if-comp-param]
 	<b>Class</b>: [comp-param class]<br>
@@ -638,8 +638,8 @@ EoPC
 					background: #DDDDDD;
 				"
 		>
-		<b>Name</b>: Page preamble<br>
-		<b>Slot</b>: N/A (precedes all slots and control settings)<br>
+		<b>[L]Name[/L]</b>: [L]Page preamble[/L]<br>
+		<b>[L]Slot[/L]</b>: [L]N/A[/L] ([L]precedes all slots and control settings[/L])<br>
 		</div>
 	</div>
 	<div
@@ -668,8 +668,8 @@ EoPC
 					background: #DDDDDD;
 				"
 		>
-		<b>Name</b>: Page controls<br>
-		<b>Slot</b>: N/A (precedes all except preamble)<br>
+		<b>Name</b>: [L]Page controls[/L]<br>
+		<b>Slot</b>: [L]N/A[/L] ([L]precedes all except preamble[/L])<br>
 		</div>
 	</div>
 	<div
@@ -726,8 +726,8 @@ EoPC
 					background: #DDDDDD;
 				"
 		>
-		<b>Name</b>: Page postamble<br>
-		<b>Slot</b>: N/A (after all slots and control settings)<br>
+		<b>[L]Name[/L]</b>: [L]Page postamble[/L]<br>
+		<b>[L]Slot[/L]</b>: [L]N/A[/L] ([L]after all slots and control settings[/L])<br>
 		</div>
 	</div>
 </div>
