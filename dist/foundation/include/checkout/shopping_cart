@@ -86,7 +86,7 @@
 
         <br>
 
-        <table border="0" cellspacing="0" cellpadding="0" width="50%">
+        <table border="0" cellspacing="0" cellpadding="0" width="75%">
         <TR>
           <td align="left">
                         [if items]
@@ -123,6 +123,12 @@
             </TR>
 			[/if]
 		[/else]
+		[/if]
+		[if type=explicit compare="[credit noformat=1]"]
+            <TR>
+              <TD ALIGN=left class="contentbar1" nowrap>[L]Payment/Credit Applied[/L]:&nbsp;</TD>
+              <TD ALIGN=RIGHT class="contentbar1">[credit]</TD>
+            </TR>
 		[/if]
             <TR>
               <TD ALIGN=left class="contentbar2">[L]TOTAL[/L]:</TD>
