@@ -171,6 +171,11 @@ Core
 * Keep copy of CGI values at time of history save, not reference to them
   (which can be changed in subsequent code).
 
+* Make mv_return_fields available to iterate_array_list.
+
+* Change processing of [PREFIX-line] to use that value instead of
+  rebuilding from scratch.
+
 File
 ----
 
@@ -589,6 +594,36 @@ UI
 * Fix HTML problem in order entry page found by 
   Nicholas Cook <ncook@foxmillpets.com>.
 
+* Add "Download slice" functionality to table export page. Allows you to
+  select arbitrary columns to directly download.
+
+* Add ability to download TAB-delimited results of an arbitrary SQL
+  query. You can do:
+
+		SELECT   sku, count(code) as times_ordered, sum(quantity) as qty
+		FROM     orderline
+		GROUP BY sku
+
+  and get downloaded to a file:
+
+			sku                 times_ordered       total
+			0738417912          1                   2
+			0972355901          1                   1
+			0972355936          1                   4
+			V4081300077         1                   1
+			V4081300116         1                   1
+			V4081300218         4                   5
+			V4081300218cd       3                   3
+			V4081300222cd       1                   1
+			V4081300233         11                  17
+			V4081300376         3                   3
+			V4081300469         1                   1
+			V4081300493         1                   1
+			V4081300498         1                   1
+
+* Add shipmethod to display in order_view page, make some display 
+  fields conditional.
+
 Payment
 -------
 
@@ -639,6 +674,20 @@ Shipping
   packages and then a final package at the remainder.
 
   If aggregate > 10, breaks it up into that many pound packages.
+
+* Break out shipping stuff from Vend::Interpolate. Add stubs so
+  custom code doesn't break.
+
+* Add ability to put custom shipping modules in, called with
+  "cost" field of "s Module".
+
+* Improve [ups-query ...] to aggregate shipments and cache prior
+  lookups.
+
+* Document [ups-query].
+
+* Add some tweezy scripts that help make US Postal zone charts and
+  tables. Use at your own risk.
 
 Levies
 ------
