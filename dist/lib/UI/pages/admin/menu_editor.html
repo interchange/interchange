@@ -1018,6 +1018,8 @@ function rewrite_tree (idx, tog) {
 		}
 
 		var nme = l[NAME];
+		// force text variable
+		nme = nme + '';
 		if(nme != undefined) {
 			nme = nme.replace(/</g, '&lt;');
 		}
