@@ -38,9 +38,8 @@
 
 	my $ary;
 	# force substitution of [L..]-stuff off	
-	my $savelocale = delete $Config->{Locale};
-	my $current = $Tag->file($page);
-	$Config->{Locale} = $savelocale;
+	# Can't do former method of delete $Vend::Cfg->{Locale} in foreground
+	my $current = $Tag->file($page, 'raw');
 	delete $CGI->{save_in_page};
 
 	# This call returns an array of hashes if exists
