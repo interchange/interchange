@@ -67,6 +67,9 @@ Usertags
 
 * Allow bounce targets (Window-Target: header).
 
+* Fixed missing labels for checkbox and radio types 
+  and added display type to formel tag.
+
 Admin UI
 --------
 
