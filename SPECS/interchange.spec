@@ -1,29 +1,30 @@
 %define interchange_version		4.6.1
+%define interchange_rpm_release	2
 %define interchange_package		interchange
 %define interchange_user		interch
 %define build_cats				construct
 
 # relevant differences between Red Hat 6 and Red Hat 7 file layout:
 # /home/httpd -> /var/www
-# /usr/man -> /usr/share/man
-# /usr/doc -> /usr/share/doc
+# /usr/man    -> /usr/share/man
+# /usr/doc    -> /usr/share/doc
 
 %define webdir %( if [ -d /var/www ]; then echo -n '/var/www' ; else echo -n '/home/httpd' ; fi )
-%define rpm_subrelease %( if [ "%webdir" = "/var/www" ]; then echo -n rh7 ; else echo -n rh6 ; fi )
+%define interchange_rpm_subrelease %( if [ "%webdir" = "/var/www" ]; then echo -n rh7 ; else echo -n rh6 ; fi )
 
-Name: interchange
-Version: 4.6.1
-Release: 2.%rpm_subrelease
+Name: %interchange_package
+Version: %interchange_version
+Release: %{interchange_rpm_release}.%interchange_rpm_subrelease
 Summary: Interchange is a powerful database access and HTML templating daemon focused on ecommerce.
 Vendor: Akopia, Inc.
 Copyright: GNU General Public License
 URL: http://developer.akopia.com/
 Packager: Akopia <info@akopia.com>
-Source: http://ftp.minivend.com/interchange/interchange-4.6.1.tar.gz
+Source: http://ftp.minivend.com/interchange/interchange-%{interchange_version}.tar.gz
 Group: Applications/Internet
 Distribution: Red Hat Linux Applications CD
-Provides: interchange
-Obsoletes: interchange
+Provides: %interchange_package
+Obsoletes: %interchange_package
 
 BuildRoot: /var/tmp/interchange
 
@@ -221,6 +222,7 @@ CGIDIR=%{webdir}/cgi-bin
 SERVERCONF=/etc/httpd/conf/httpd.conf
 CGIBASE=/cgi-bin
 HOST=RPM_CHANGE_HOST
+BASEDIR=/var/lib/interchange
 
 for i in %build_cats
 do 
@@ -229,7 +231,7 @@ do
 	MAKECATCMD="bin/makecat \
 		-F \
 		--cgibase=$CGIBASE \
-		--basedir=/var/lib/interchange \
+		--basedir=$BASEDIR \
 		--documentroot=$DOCROOT \
 		--sharedir=$DOCROOT \
 		--shareurl=/ \
@@ -237,7 +239,7 @@ do
 		--interchangegroup=interch \
 		--serverconf=$SERVERCONF \
 		--vendroot=/usr/lib/interchange \
-		--catroot=/var/lib/interchange/$i \
+		--catroot=$BASEDIR/$i \
 		--cgidir=$CGIDIR \
 		--relocate=$RPM_BUILD_ROOT \
 		--servername=$HOST \
