@@ -26,16 +26,6 @@ sub {
 	@dbs = $nohide ? (@dbs) : (@outdb);
 	
 	my $string = join " ", grep /\S/, @dbs;
-	if(defined $::Values->{mv_data_table}) {
-		return $string unless $d->{$::Values->{mv_data_table}};
-		my $size = -s $Vend::Cfg->{ProductDir} .
-						"/" .  $d->{$::Values->{mv_data_table}}{'file'};
-		$size = 3_000_000 if $size < 1;
-		$::Values->{ui_too_large} = $size > 100_000 ? 1 : '';
-		$::Values->{ui_way_too_large} = $size > 2_000_000 ? 1 : '';
-		local($_) = $::Values->{mv_data_table};
-		$::Values->{ui_rotate_spread} = $::Values->{ui_tables_to_rotate} =~ /\b$_\b/;
-	}
 	return $string;
 }
 EOR

@@ -6,6 +6,7 @@ Variable UI_STD_HEAD <<EOV
 [if scratch table_perm]
 	[if-mm !tables]
 	[seti ui_error]Sorry, no permission for table [cgi mv_data_table][/seti]
+	[set table_perm][/set]
 	[bounce page="__UI_BASE__/error"]
 	[/if-mm]
 [/if]

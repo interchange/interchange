@@ -1,8 +1,17 @@
+[if !cgi mv_data_table]
+[calc]
+	$CGI->{mv_data_table} = $Values->{mv_data_table} = $Config->{ProductFiles}[0];
+	return;
+[/calc]
+[/if]
+[comment]
 [if-mm function="!tables" table=`$Config->{ProductFiles}[0]`]
 [bounce page="__UI_BASE__/error"]
 [/if-mm]
+[/comment]
 
 [set page_title]Item editor[/set]
+[set table_perm]1[/set]
 [set help_name]item.main[/set]
 [set icon_name]admin/icon_item.gif[/set]
 @@UI_STD_HEAD@@

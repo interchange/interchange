@@ -23,7 +23,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.4 $, 10);
+$VERSION = substr(q$Revision: 1.5 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -459,23 +459,23 @@ sub rotate {
 sub meta_display {
 	my ($table,$column,$key,$value,$meta_db) = @_;
 
-::logDebug("metadisplay: t=$table c=$column k=$key v=$value md=$meta_db");
+#::logDebug("metadisplay: t=$table c=$column k=$key v=$value md=$meta_db");
 	my $metakey;
 	$meta_db = $::Variable->{UI_META_TABLE} || 'mv_metadata' if ! $meta_db;
-::logDebug("metadisplay: t=$table c=$column k=$key v=$value md=$meta_db");
+#::logDebug("metadisplay: t=$table c=$column k=$key v=$value md=$meta_db");
 	my $meta = Vend::Data::database_exists_ref($meta_db)
 		or return undef;
-::logDebug("metadisplay: got meta ref=$meta");
+#::logDebug("metadisplay: got meta ref=$meta");
 	my (@tries) = "${table}::$column";
 	if($key) {
 		unshift @tries, "${table}::${column}::$key", "${table}::$key";
 	}
 	for $metakey (@tries) {
-::logDebug("enter metadisplay record $metakey");
+#::logDebug("enter metadisplay record $metakey");
 		next unless $meta->record_exists($metakey);
 		$meta = $meta->ref();
 		my $record = $meta->row_hash($metakey);
-::logDebug("metadisplay record: " . Vend::Util::uneval_it($record));
+#::logDebug("metadisplay record: " . Vend::Util::uneval_it($record));
 		my $opt;
 		if($record->{options} and $record->{options} =~ /^[\w:]+$/) {
 			PASS: {
@@ -497,19 +497,19 @@ sub meta_display {
 		}
 		if($record->{lookup}) {
 			my $fld = $record->{field} || $record->{lookup};
-::logDebug("metadisplay lookup");
+#::logDebug("metadisplay lookup");
 			LOOK: {
 				my $dbname = $record->{db} || $table;
 				my $db = Vend::Data::database_exists_ref($dbname);
 				last LOOK unless $db;
 				my $query = "select DISTINCT $fld FROM $dbname ORDER BY $fld";
-::logDebug("metadisplay lookup, query=$query");
+#::logDebug("metadisplay lookup, query=$query");
 				my $ary = $db->query($query);
 				last LOOK unless ref($ary);
 				if(! scalar @$ary) {
 					push @$ary, ["=--no current values--"];
 				}
-::logDebug("metadisplay lookup, query succeeded, " . ::uneval_it($ary));
+#::logDebug("metadisplay lookup, query succeeded, " . ::uneval_it($ary));
 				undef $record->{type} unless $record->{type} =~ /multi|combo/;
 				$record->{passed} = join ",", grep length($_),
 									map
@@ -517,7 +517,7 @@ sub meta_display {
 									@$ary;
 				$record->{passed} = "=--no current values--"
 					if ! $record->{passed};
-::logDebug("metadisplay lookup, passed=$record->{passed}");
+#::logDebug("metadisplay lookup, passed=$record->{passed}");
 			}
 		}
 		elsif ($record->{type} eq 'imagedir') {
