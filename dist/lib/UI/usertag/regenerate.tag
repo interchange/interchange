@@ -221,7 +221,7 @@ EOF
 	$Vend::Cfg->{VendURL} = $Vend::Cfg->{VendURLOriginal}; 
 
 	my $umask = umask(022);
-	my $statpath = 'http://' . $::Variable->{SERVER_NAME} . $Vend::Cfg->{StaticPath};
+	my $statpath = $Vend::Cfg->{StaticPath};
 	my @bad;
 	my $base = $Vend::Cfg->{StaticDir};
 	eval {
