@@ -893,6 +893,8 @@ Shadow Database
 * Introduce mv_shadowpass scratch variable which instructs
   the Shadow database code to return the original database record.
 
+* Add stub for inc_field method.
+
 Static Page Generation
 ----------------------
 
