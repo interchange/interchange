@@ -51,11 +51,11 @@ to make a distribution tar file:
 	$ make tardist
 	/usr/local/bin/perl -I/YOUR/PERL/LIB -MExtUtils::Manifest=manicopy,maniread \
 	-e "manicopy(maniread(),'interchange-4.9.x', 'best');"
-	mkdir interchange-4.9.x
-	mkdir interchange-4.9.x/dist
+	mkdir interchange-5.0.0
+	mkdir interchange-5.0.0/dist
 	....
-	$ ls interch*
-	interchange-4.9.x.tar.gz
+	$ ls interch*.tar.gz
+	interchange-5.0.0.tar.gz
 
 
 Unpack and install
@@ -75,8 +75,9 @@ install directory.
 Checking for differences
 ------------------------
 
-If you want to see how your current image compares to the repository,
-cd into your checked out CVS copy and run:
+If you want to see how your current working files compare to the versions
+you checked out from the repository, cd into your checked out CVS copy and
+do:
 
 	cvs diff | more
 
@@ -119,8 +120,8 @@ If you are patterning your order methods after one of the template
 catalogs, you will want to check the products/*.txt and products/*.asc
 files for changes. In particular, mv_metadata.asc is used to format
 and present quite a few things in the user interface. You may have
-to merge the databases manually. In most cases, you can import them
-into a spreadsheet or database.
+to merge the databases, but there is an automated admin UI facility
+that can help you do this.
 
 
 Troubleshooting
@@ -137,18 +138,19 @@ sync with the current codebase. Just do:
 More on CVS
 -----------
 
-If you plan to frequently use CVS, it is helpful to create a .cvsrc file
-in your home directory with commonly-used options such as these:
+It is highly recommended that you create a .cvsrc file in your home
+directory to automatically use common options such as these:
 
-	cvs -z3
+	cvs -z3 -q
 	diff -u
 	update -Pd
 	checkout -P
 
 This directs CVS to (1) automatically compress all data communicated
-between you and our server (saving bandwidth); (2) show context-sensitive
-diffs; (3) prune empty directories and create any new directories added
-to the repository since your checkout; and (4) prune empty directories
+between you and our server (saving bandwidth) and be quiet (printing
+out fewer diagnostic messages); (2) show context-sensitive diffs;
+(3) prune empty directories and create any new directories added to
+the repository since your checkout; and (4) prune empty directories
 during your checkouts.
 
 Please see the CVS website for complete documentation:
