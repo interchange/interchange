@@ -50,6 +50,10 @@ UI
   of the UI ones for images and URLs. Fixed another bug that
   renders selection of "never build" pages useless.
 
+* Spreadsheet save error fixed. Interchange prevents loading of spreadsheet
+  values when the key is empty now. This has the side effect that
+  autonumbering is not possible when adding records from the spreadsheet.
+
 I18N
 --------
 * Hebrew locale from Chen Naor <chen@lilux.co.il> added.
