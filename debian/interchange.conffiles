@@ -1,5 +1,0 @@
-/etc/cron.daily/interchange
-/etc/interchange/catalogs.cfg
-/etc/interchange/interchange.cfg
-/etc/init.d/interchange
-/etc/logrotate.d/interchange

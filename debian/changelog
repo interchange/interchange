@@ -1,9 +1,0 @@
-interchange (4.5.7-1) unstable; urgency=low
-  
-  * initial release
-
- -- Stefan Hornburg <racke@linuxia.de>  Sun,  8 Oct 2000 15:24:25 +0200
-
-Local variables:
-mode: debian-changelog
-End:
