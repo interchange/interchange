@@ -1,6 +1,6 @@
 # UI::Primitive - Interchange configuration manager primitives
 
-# $Id: Primitive.pm,v 1.25.4.20 2001-07-06 18:25:52 heins Exp $
+# $Id: Primitive.pm,v 1.25.4.21 2001-07-16 23:10:14 racke Exp $
 
 # Copyright (C) 1998-2001 Red Hat, Inc. <interchange@redhat.com>
 
@@ -25,7 +25,7 @@ my($order, $label, %terms) = @_;
 
 package UI::Primitive;
 
-$VERSION = substr(q$Revision: 1.25.4.20 $, 10);
+$VERSION = substr(q$Revision: 1.25.4.21 $, 10);
 $DEBUG = 0;
 
 use vars qw!
@@ -640,7 +640,7 @@ sub date_widget {
 	my $out = qq{<SELECT NAME="$name">};
 	my $o;
 	for(@months) {
-		$o = qq{<OPTION VALUE="$_->[0]">$_->[1]};
+		$o = qq{<OPTION VALUE="$_->[0]">} . errmsg($_->[1]);
 		($out .= $o, next) unless ! $sel and $val;
 		$o =~ s/>/ SELECTED>/ && $sel++
 			if substr($val, 4, 2) eq $_->[0];
