@@ -1,4 +1,5 @@
 [set mv_no_count][/set]
+[set mv_no_session_id][/set]
 [set no_login_required]1[/set]
 [set ui_class]None[/set]
 [set page_title]Welcome to Interchange[/set]
@@ -21,7 +22,7 @@
 [set ui_error][/set]
 [/if]
 <!-- logout: [if session logged_in]
-[userdb logout]
+[userdb function=logout clear=1]
 [/if] -->
 
 <FORM ACTION="[process]" METHOD=POST>
