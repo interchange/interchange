@@ -1,6 +1,6 @@
 # Vend::Form - Generate Form widgets
 # 
-# $Id: Form.pm,v 2.41 2004-02-02 20:58:13 mheins Exp $
+# $Id: Form.pm,v 2.42 2004-02-11 21:32:13 mheins Exp $
 #
 # Copyright (C) 2002-2003 Interchange Development Group
 # Copyright (C) 1996-2002 Red Hat, Inc.
@@ -38,7 +38,7 @@ use vars qw/@ISA @EXPORT @EXPORT_OK $VERSION %Template/;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.41 $, 10);
+$VERSION = substr(q$Revision: 2.42 $, 10);
 
 @EXPORT = qw (
 	display
@@ -1067,7 +1067,7 @@ if($opt->{debug}) {
 		$data = [];
 		for my $l (@looks) {
 			next unless $db;
-			next unless $l =~ /^select\s+/i;
+			next unless $l =~ /^\s*select\s+/i;
 			my $qr = $db->query($l);
 			ref($qr) eq 'ARRAY' and push @$data, @$qr;
 		}
