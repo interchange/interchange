@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # tlink.pl: runs as a cgi program and passes request to Vend server
 #
-#   $Id: mod_perl_tlink.pl,v 1.2.2.1 2000-12-08 15:48:22 zarko Exp $
+#   $Id: mod_perl_tlink.pl,v 1.2.2.1.2.1 2000-12-17 06:56:52 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -51,6 +51,7 @@ my (%exclude_header) = qw/
 /;
 
 my $r = Apache->request();
+my $arg;
 my $env;
 my $ent;
 
@@ -79,6 +80,7 @@ please try again soon.
 
 <H3>This is it:</H3>
 <PRE>
+$arg
 $env
 $ent
 </PRE>
@@ -101,7 +103,19 @@ sub die_page {
   Apache::exit(1);
 }
 
+
 # Read the entity from stdin if present.
+
+sub send_arguments {
+
+	my $count = @ARGV;
+	my $val = "arg $count\n";
+	for(@ARGV) {
+		$val .= length($_);
+		$val .= " $_\n";
+	}
+	return $val;
+}
 
 sub send_environment () {
 	my (@tmp) = keys %ENV;
@@ -128,6 +142,7 @@ sub send_entity {
 	return $val . $r->content() . "\n";
 }
 
+$arg = send_arguments();
 $env = send_environment();
 $ent = send_entity();
 
@@ -168,8 +183,7 @@ select SOCK;
 $| = 1;
 
 alarm 0;
-warn "Command line arguments deprecated.  Ignoring!\n" if(@ARGV);
-for ( $env, $ent, "end\n" ) {
+for ( $arg, $env, $ent, "end\n" ) {
 	print $_;
 }
 
