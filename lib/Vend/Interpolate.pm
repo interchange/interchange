@@ -1,6 +1,6 @@
 # Vend::Interpolate - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 2.162 2003-05-06 13:35:41 racke Exp $
+# $Id: Interpolate.pm,v 2.163 2003-05-06 21:59:40 racke Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -27,7 +27,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 2.162 $, 10);
+$VERSION = substr(q$Revision: 2.163 $, 10);
 
 @EXPORT = qw (
 
@@ -2046,14 +2046,6 @@ sub flag {
 				return undef;
 			}
 		}
-	}
-	elsif($flag eq 'build') {
-		$Vend::ForceBuild = $value;
-		$text = $opt->{name} if $opt->{name};
-		if($text) {
-			$Vend::ScanName = Vend::Util::escape_chars(interpolate_html($text));
-		}
-		@status = ("Set build flag: %s name=%s", $value, $Vend::ScanName);
 	}
 	elsif($flag eq 'checkhtml') {
 		$Vend::CheckHTML = $value;
