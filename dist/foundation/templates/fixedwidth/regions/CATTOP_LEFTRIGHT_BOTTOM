@@ -3,7 +3,7 @@
     <center>
       <p><a href="http://www.icdevgroup.org/"><img src="__THEME_IMG_DIR__poweredby.gif" border="0"></a></p>
       [if type=explicit compare="__MV_DEMO_MODE__"]
-        <p>[page admin/index][msg]Admin[/msg]</a></p>
+        <p>[page admin/index][L]Admin[/L]</a></p>
       [/if]
     </center>
 
