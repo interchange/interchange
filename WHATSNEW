@@ -36,7 +36,7 @@ Core
 * Add option to product_common and item_common that allows an empty
   field to be returned. In effect this option means "give me the value
   of this field from the first ProductFiles table that has the field
-  at all" instead of "give me the first true value from a ProductFiles
+  at all" instead of "give me the first non-empty value from a ProductFiles
   table that has the field".
 
 * Optimize item_common a bit by looking at each table only once.
