@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12.2.7 2000-12-21 11:27:37 heins Exp $
+# $Id: Parse.pm,v 1.12.2.8 2001-01-28 08:38:04 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -28,7 +28,7 @@
 package Vend::Parse;
 require Vend::Parser;
 
-$VERSION = sprintf("%d.%02d", q$Revision: 1.12.2.7 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%02d", q$Revision: 1.12.2.8 $ =~ /(\d+)\.(\d+)/);
 
 use Safe;
 use Vend::Util;
@@ -40,7 +40,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12.2.7 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.8 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -657,7 +657,6 @@ my %Alias = (
 						urld			urldecode
 						href			area
 						shipping_description	shipping_desc
-						a				page
 						process_target	process
 				),
 					process_search		=> 'area href=search',
