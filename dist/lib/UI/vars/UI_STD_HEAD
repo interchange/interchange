@@ -55,6 +55,27 @@ function MM_swapImgRestore() { //v3.0
   var i,x,a=document.MM_sr; for(i=0;a&&i<a.length&&(x=a[i])&&x.oSrc;i++) x.src=x.oSrc;
 }
 
+function addItem(selector, receptor, joiner) {
+	if(joiner == null) {
+		joiner = " ";
+	}
+	else {
+		joiner = "\n";
+	}
+    if(receptor.value != '') {
+        receptor.value = receptor.value + joiner;
+    }
+    if(selector[selector.selectedIndex].value != null) {
+        receptor.value = receptor.value + selector[selector.selectedIndex].value;
+    }
+    else {
+        if(selector[selector.selectedIndex].text != null) {
+        receptor.value = receptor.value + selector[selector.selectedIndex].text;
+        }
+    }
+    return true;
+}
+
 function open_help(url) {
   opts="top=0,left=0,scrollbars,status=no,menubar=no,location=yes,toolbar=no,resizable=yes,fullsize=no,width=__UI_HELP_WIDTH__,height=__UI_HELP_HEIGHT__";
   window.open(url, 'Help', opts);
@@ -95,7 +116,7 @@ a:visited { text-decoration: none; font-weight: normal; color: __UI_C_VLINK__ }
 <!-- ----- BEGIN TITLEBAR ----- -->
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr>
-    <td><A HREF="http://www.akopia.com"><img src="@_UI_IMG_@navigation/akopia_logo.gif" width="69" height="53" border=0></A></td><td align="right" valign="bottom" nowrap><a href="[if session logged_in]@_UI_ABOUT_NORMAL_URL_@[else]@_UI_ABOUT_LOGIN_URL_@[/else][/if]" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('About','','@_UI_IMG_@navigation/A1_b.gif',1)"><img name="About" border="0" src="@_UI_IMG_@navigation/A1.gif" width="102" height="38"></a><a href="[area __UI_BASE__/index]" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Index','','@_UI_IMG_@navigation/A2_b.gif',1)"><img name="Index" border="0" src="@_UI_IMG_@navigation/A2.gif" width="294" height="38"></a><a href="javascript:open_help('__UI_HELP_BASE_URL__/[scratch help_name].html')" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Help','','@_UI_IMG_@navigation/A3_b.gif',1)"><img name="Help" border="0" src="@_UI_IMG_@navigation/A3.gif" width="125" height="38"></a></td>
+    <td><A HREF="http://www.akopia.com"><img src="@_UI_IMG_@navigation/akopia_logo.gif" width="69" height="53" border=0 alt="Akopia logo"></A></td><td align="right" valign="bottom" nowrap><a href="[if session logged_in]@_UI_ABOUT_NORMAL_URL_@[else]@_UI_ABOUT_LOGIN_URL_@[/else][/if]" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('About','','@_UI_IMG_@navigation/A1_b.gif',1)"><img name="About" border="0" src="@_UI_IMG_@navigation/A1.gif" width="102" height="38" alt=About></a><a href="[area __UI_BASE__/index]" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Index','','@_UI_IMG_@navigation/A2_b.gif',1)"><img name="Index" border="0" src="@_UI_IMG_@navigation/A2.gif" width="294" height="38" alt=Menu></a><a href="javascript:open_help('__UI_HELP_BASE_URL__/[scratch help_name].html')" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Help','','@_UI_IMG_@navigation/A3_b.gif',1)"><img name="Help" border="0" src="@_UI_IMG_@navigation/A3.gif" width="125" height="38" alt=Help></a></td>
   </tr></table>
 
 [tmp ui_menu_content]code	img_dn	img_up	img_sel	page	url	alt	name
@@ -110,18 +131,18 @@ a:visited { text-decoration: none; font-weight: normal; color: __UI_C_VLINK__ }
 [/if-mm][/tmp]
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr bgcolor="#000000"> 
-    <td><img src="@_UI_IMG_@navigation/spacer1.gif" width="1" height="1"></td>
+    <td><img src="@_UI_IMG_@navigation/spacer1.gif" width="1" height="1" alt=line></td>
   </tr>
   <tr bgcolor="#FFFFFF"> 
-    <td><img src="@_UI_IMG_@navigation/spacer2.gif" width="1" height="1"></td>
+    <td><img src="@_UI_IMG_@navigation/spacer2.gif" width="1" height="1" alt=line></td>
   </tr>
   <tr bgcolor="#99CCFF"> 
     <td nowrap> 
-      <div align="left"><img src="@_UI_IMG_@navigation/B1.gif" width="9" height="19">[loop
+      <div align="left"><img src="@_UI_IMG_@navigation/B1.gif" width="9" height="19" alt=line>[loop
 	  prefix=am
 	  head_skip=1
 	  list="[scratch ui_menu_content]"
-	  lr=1]<!-- class=[am-param name]=[scratch ui_class_[am-param name]] --><a href="[area [am-param page]]" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('[am-param name]','','@_UI_IMG_@navigation/[am-param img_up]',1)"><img name="[am-param name]" alt="[am-param alt]" border="0" src="@_UI_IMG_@navigation/[if scratch ui_class_[am-param name]][am-param img_up][else][am-param img_dn][/else][/if]"></a>[/loop]<img src="@_UI_IMG_@navigation/B10.gif" width="17" height="19"></div>
+	  lr=1]<!-- class=[am-param name]=[scratch ui_class_[am-param name]] --><a href="[area [am-param page]]" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('[am-param name]','','@_UI_IMG_@navigation/[am-param img_up]',1)"><img name="[am-param name]" alt="[am-param alt]" border="0" src="@_UI_IMG_@navigation/[if scratch ui_class_[am-param name]][am-param img_up][else][am-param img_dn][/else][/if]"></a>[/loop]<img src="@_UI_IMG_@navigation/B10.gif" width="17" height="19" alt=line></div>
     </td>
   </tr>
 </table>
@@ -158,16 +179,16 @@ a:visited { text-decoration: none; font-weight: normal; color: __UI_C_VLINK__ }
 	$out .= <<'EOF' if ! $sm_once++;
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr> 
-    <td bgcolor="__UI_C_TOPBLOCKBAR__"><img src="@_UI_IMG_@navigation/spacer3.gif" width=1 height=1></td>
+    <td bgcolor="__UI_C_TOPBLOCKBAR__"><img src="@_UI_IMG_@navigation/spacer3.gif" width=1 height=1 alt=line></td>
   </tr>
   <tr bgcolor="A1C6FF"> 
-    <td><img src="@_UI_IMG_@navigation/spacer4.gif" width=1 height=1></td>
+    <td><img src="@_UI_IMG_@navigation/spacer4.gif" width=1 height=1 alt=line></td>
   </tr>
   <tr bgcolor="__UI_C_TITLEBARBG__"> 
-    <td valign=center nowrap><font face="Verdana, Arial, Helvetica, sans-serif" size="-1"><img src="admin/bg.gif" height=19 width=3 align=middle>&nbsp;&nbsp;&nbsp;&nbsp;
+    <td valign=center nowrap><font face="Verdana, Arial, Helvetica, sans-serif" size="-1"><img src="@_UI_IMG_@admin/bg.gif" height=19 width=3 align=middle alt=x>&nbsp;&nbsp;&nbsp;&nbsp;
 EOF
 	$out .= $pre;
-	$out .= q{</td></tr><tr bgcolor="__UI_C_INTBLOCKBAR__"><td nowrap valign=center><img src="admin/bg.gif" height=19 width=3 align=middle>}
+	$out .= q{</td></tr><tr bgcolor="__UI_C_INTBLOCKBAR__"><td nowrap valign=center><img src="@_UI_IMG_@admin/bg.gif" height=19 width=3 align=middle alt=x>}
 		if $next;
 	$out .= qq{<A HREF="} if $page;
 	$out .= $Tag->area( { href => $page, form => $form } )
@@ -199,7 +220,7 @@ EOF
 [/sm-calc]&nbsp;&nbsp;&nbsp; [/loop]
 	[calc]
 	return unless $sm_once;
-	return q!<tr bgcolor="#000000"><td colspan=2><IMG SRC="@_UI_IMG_@admin/cleardot.gif" WIDTH="1" HEIGHT="1"></td></tr>
+	return q!<tr bgcolor="#000000"><td colspan=2><IMG SRC="@_UI_IMG_@admin/bg.gif" WIDTH="1" HEIGHT="1" alt=x></td></tr>
                  </td></tr></table>!;
 	[/calc]
 <!-- ----- END MENUBAR ----- -->
@@ -208,7 +229,7 @@ EOF
 <TR>
 <TD WIDTH="20">&nbsp;</td><TD>
           <br>
-		[if scratch icon_name]<img src="@_UI_IMG_@[scratch icon_name]" width=16 height=16 border=0 valign=top> &nbsp; [/if]
+		[if scratch icon_name]<img src="@_UI_IMG_@[scratch icon_name]" width=16 height=16 border=0 valign=top alt=icon> &nbsp; [/if]
 	   <font size="+1" face="Verdana,arial,helvetica,sans-serif" color="__UI_C_HEADERTXT__">[either][scratch page_banner][or][scratch page_title][/either]&nbsp;</font><p>
 [/if]
 [comment] Clear these puppies [/comment]
