@@ -23,7 +23,11 @@ Variable UI_STD_FOOTER  <<EOV
 			<tr>
 				<td>
 <font face="Verdana,Arial,Helvetica,sans-serif" size="1">
-<a href="javascript:window.name = 'mainwindow[scratch window_name]';window.open('[area href=|admin/quicklinks| arg=|[scratch window_name]|]','Quicklinks[scratch window_name]','top=0,left=0,scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=170,height=700'); void 0">Quicklinks</A><br>
+[if session logged_in]
+	<a href="[area __UI_BASE__/gentable]">Tables</A><br>
+
+	<a href="javascript:window.name = 'mainwindow[scratch window_name]';window.open('[area href=|admin/quicklinks| arg=|[scratch window_name]|]','Quicklinks[scratch window_name]','top=0,left=0,scrollbars,location=no,status=no,toolbar=no,resizable,fullsize=no,width=170,height=700'); void 0">Quicklinks</A><br>
+[/if]
 			[if-mm advanced reconfig]
 			<A href="[area __UI_BASE__/reconfig]">Apply changes</A><br>
 			[/if-mm]
