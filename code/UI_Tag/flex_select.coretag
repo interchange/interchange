@@ -181,6 +181,12 @@ sub {
 		return flex_select_init($table, $opt);
 	}
 
+	my $filter;
+	if(ref($opt->{filter}) eq 'HASH') {
+		$filter = $opt->{filter};
+	}
+	$filter ||= {};
+
 	my $spec;
 	my $stmt;
 	my $q;
@@ -705,8 +711,15 @@ EOF
 				my $stuff = '';
 				for(qw/ class style align valign /) {
 					my $tag = "header_cell_$_";
-					my $thing = $m->{$tag} || $opt->{$tag}
-						or next;
+					my $thing;
+					if(ref $opt->{$tag}) {
+						$thing = $opt->{$tag}{$col} || $m->{$tag} || $opt->{"all_$tag"}
+							or next;
+					}
+					else {
+						$thing = $m->{$tag} || $opt->{$tag}
+							or next;
+					}
 					encode_entities($thing);
 					$stuff .= qq{ $_="$thing"};
 				}
@@ -719,8 +732,15 @@ EOF
 				my $stuff = '';
 				for(qw/ class style align valign /) {
 					my $tag = "data_cell_$_";
-					my $thing = $m->{$tag} || $opt->{$tag}
-						or next;
+					my $thing;
+					if(ref $opt->{$tag}) {
+						$thing = $opt->{$tag}{$col} || $m->{$tag} || $opt->{"all_$tag"}
+							or next;
+					}
+					else {
+						$thing = $m->{$tag} || $opt->{$tag}
+							or next;
+					}
 					encode_entities($thing);
 					$stuff .= qq{ $_="$thing"};
 				}
@@ -836,6 +856,8 @@ EOF
 
 		# Set up some stuff for the data cells;
 		$style[$idx] = $data_cell_style->($mcol);
+
+		$filter_show[$idx] = $filter->{$mcol} if $filter->{$mcol};
 		$filter_show[$idx] ||= $m->{fs_display_filter} || 'encode_entities';
 		$filter_show[$idx] .= ' encode_entities'
 			 unless $filter_show[$idx] =~ /\b(?:encode_)?entities\b/;
