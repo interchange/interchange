@@ -1,6 +1,6 @@
 # Parse.pm - Parse Interchange tags
 # 
-# $Id: Parse.pm,v 1.12.2.20 2001-05-29 16:20:49 bill Exp $
+# $Id: Parse.pm,v 1.12.2.21 2001-06-01 15:08:59 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -38,7 +38,7 @@ require Exporter;
 
 @ISA = qw(Exporter Vend::Parser);
 
-$VERSION = substr(q$Revision: 1.12.2.20 $, 10);
+$VERSION = substr(q$Revision: 1.12.2.21 $, 10);
 @EXPORT = ();
 @EXPORT_OK = qw(find_matching_end);
 
@@ -786,8 +786,6 @@ my %Gobble = ( qw/
 					mvasp			1
 				/ );
 
-my $Tags_added = 0;
-
 my $Initialized = 0;
 
 my $Test = 'test001';
@@ -839,7 +837,7 @@ sub new {
 	$self->{INVALID} = 0;
 
 	add_tags($Vend::Cfg->{UserTag})
-		unless $Tags_added++;
+		unless $Vend::Tags_added++;
 
 	$self->{TOPLEVEL} = 1 if ! $Initialized;
 
@@ -1638,8 +1636,6 @@ sub implicit {
 	return ($attr, $imp) if $imp =~ s/^$attr=//i;
 	return ( $Implicit{$tag}{$attr}, $attr );
 }
-
-$Tags_added = 0;
 
 1;
 __END__
