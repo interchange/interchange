@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Interpolate.pm - Interpret Interchange tags
 # 
-# $Id: Interpolate.pm,v 1.40.2.16 2001-01-28 12:17:23 heins Exp $
+# $Id: Interpolate.pm,v 1.40.2.17 2001-02-05 13:25:41 heins Exp $
 #
 # Copyright (C) 1996-2000 Akopia, Inc. <info@akopia.com>
 #
@@ -32,7 +32,7 @@ package Vend::Interpolate;
 require Exporter;
 @ISA = qw(Exporter);
 
-$VERSION = substr(q$Revision: 1.40.2.16 $, 10);
+$VERSION = substr(q$Revision: 1.40.2.17 $, 10);
 
 @EXPORT = qw (
 
@@ -1628,8 +1628,6 @@ sub tag_profile {
 		$opt->{set} = $opt->{run} = 1;
 	}
 
-	my $tag = $opt->{tag} || 'default';
-
 	if( "$profile$tag" =~ /\W/ ) {
 		::logError(
 			"profile: invalid characters (tag=%s profile=%s), must be [A-Za-z_]+",
@@ -2451,10 +2449,23 @@ sub _mime_id {
 }
 
 sub http_header {
-	my ($op, $opt, $text) = @_;
+	shift;
+	my ($opt, $text) = @_;
 	$text =~ s/^\s+//;
+	if($opt->{name}) {
+		my $name =~ lc $opt->{name};
+		$name =~ s/-/_/g;
+		$name =~ s/\W+//g;
+		$name =~ tr/_/-/s;
+		$name =~ s/(\w+)/\u$1/g;
+		my $content = $opt->{content} || $text;
+		$content =~ s/^\s+//;
+		$content =~ s/\s+$//;
+		$content =~ s/[\r\n]/; /g;
+		$text = "$name: $content";
+	}
 	if($Vend::StatusLine and ! $opt->{replace}) {
-		$Vend::StatusLine =~ s/\s+$/\r\n/;
+		$Vend::StatusLine =~ s/\s*$/\r\n/;
 		$Vend::StatusLine .= $text;
 	}
 	else {
