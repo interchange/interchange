@@ -22,6 +22,11 @@ Hit action for no-content
 
 	$Tag->tmp('qmenu_fdata');
 	$Tag->tmp('qmenu_data');
+	%menuinit = (
+				code => 0,
+				inactive => 0,
+				msort => "'x'",
+				);
 
 	if($CGI->{qmenu_text}) {
 		my $menufile;
@@ -46,31 +51,34 @@ Hit action for no-content
 			$text =~ s/\r\n/\n/g;
 			$Tag->backup_file($menufile);
 			if($Tag->write_relative_file($menufile, $text) ) {
-				$Scratch->{qmessage} = errmsg(
-											"Menu '%s' saved to file %s.",
-											$menuname,
-											$menufile,
-										);
+				$Tag->warnings( errmsg(
+									"Menu '%s' saved to file %s.",
+									$menuname,
+									$menufile,
+								));
 			}
 			else {
-				$Scratch->{qmessage} = errmsg(
-											"Failed to save menu '%s' to file %s.",
-											$Tag->filter('unescape', $menuname),
-											$menufile,
-										);
+				$Tag->error({ name => 'Save menu',
+							  set => errmsg(
+										"Failed to save menu '%s' to file %s.",
+										$Tag->filter('unescape', $menuname),
+										$menufile,
+									),
+								});
 			}
 			my $tab = $Variable->{MV_TREE_TABLE} || 'tree';
 			if($CGI->{qmenu_tree} && $CGI->{qmenu_write_tree} and $Db{$tab}) {
 			  TREEWRITE: {
 				my $db = $Db{$tab}
 					or do {
-						$Scratch->{qerror} .= "<br>" if $Scratch->{qerror};
-						$Scratch->{qerror} .= errmsg(
-												"%s database %s for tree write: %s",
-												'open',
-												$tab,
-												'non-existent',
-											);
+						$Tag->error({
+								set =>  errmsg(
+											"%s database %s for tree write: %s",
+											'open',
+											$tab,
+											'non-existent',
+										),
+								});
 						last TREEWRITE;
 
 					};
@@ -117,11 +125,18 @@ Hit action for no-content
 #Debug("values to set: " . uneval(\@row));
 					$parent[$lev + 1] = $key;
 				}
+				$Tag->warnings( errmsg(
+									"Successfully wrote %s lines to tree %s.",
+									scalar(@lines),
+									$menuname,
+								) );
 			  }
 			}
 		}
 		else {
-			$Scratch->{qmessage} = "No menu name to write.";
+			$Tag->error({	name => 'qmenu_name/qmenu_new',
+							set => "No menu name to write.",
+						});
 		}
 	}
 	elsif ($CGI->{qmenu_products}) {
@@ -129,22 +144,22 @@ Hit action for no-content
 			my $tab = $CGI->{qmenu_products};
 			my $db = $Db{$tab}
 				or do {
-					$Scratch->{qerror} .= '<br>' if $Scratch->{qerror};
-					$Scratch->{qerror} .= errmsg(
-								"Failed to open products table %s.",
-								$tab,
-								);
+					$Tag->error({ set => errmsg(
+										"Failed to open products table %s.",
+										$tab,
+										),
+									});
 					last PRODBUILD;
 				};
 #Debug("LARGE=" . $db->config('LARGE'));
 			if(! $CGI->{qmenu_even_large} and $db->config('LARGE')) {
-				$Scratch->{qerror} .= "<br>" if $Scratch->{qerror};
-				$Scratch->{qerror} .= errmsg(
+				$Tag->error({ set => errmsg(
 										"%s database %s for tree write: %s",
 										'check',
 										$tab,
 										'too large, must override',
-									);
+									),
+								});
 				last PRODBUILD;
 			}
 			my @somefields = qw/mgroup page name description/;
@@ -155,11 +170,12 @@ Hit action for no-content
 						};
 			my $ary = $db->query($q)
 							or do {
-								$Scratch->{qerror} .= '<br>' if $Scratch->{qerror};
-								$Scratch->{qerror} .= errmsg(
-									"No results from products table %s.",
-									$tab,
-								);
+								$Tag->error({
+										set => errmsg(
+											"No results from products table %s.",
+											$tab,
+										),
+									});
 					last PRODBUILD;
 				};
 			my $prev_area = '';
@@ -168,11 +184,6 @@ Hit action for no-content
 			my @rows;
 			my $base_search = "scan/co=yes/fi=$tab";
 				
-			my %init = (
-						code => 0,
-						inactive => 0,
-						msort => 0,
-						);
 
 			for(@$ary) {
 				my($sku, $area, $cat, $desc) = @$_;
@@ -190,8 +201,8 @@ Hit action for no-content
 								"tf=category,description",
 								;
 					push @rows, {
-							%init,
-							mgroup => 0,
+							%menuinit,
+							msort => 0,
 							page	=> $url,
 							inactive => 0,
 							name => $area,
@@ -211,16 +222,16 @@ Hit action for no-content
 								;
 
 					push @rows, {
-							%init,
-							mgroup => 1,
+							%menuinit,
+							msort => 1,
 							page	=> $url,
 							inactive => 0,
 							name => $cat,
 							};
 				}
 				push @rows, {
-					%init,
-					mgroup => 2,
+					%menuinit,
+					msort => 2,
 					name => $desc,
 					inactive => 0,
 					page => $sku,
@@ -302,6 +313,47 @@ Hit action for no-content
 		$Scratch->{qmenu_data} = $filedata;
 		$Scratch->{qmenu_name} = $mn;
 	}
+
+	my %illegal;
+	my @illegal  = qw/check msg code/;
+	my %required;
+	my %suggested = qw/
+                        extended 1
+                        inactive 1
+					/;
+	my @required = qw/
+                        description
+                        form
+                        mgroup
+                        msort
+                        name
+                        page
+					/;
+	@required{@required} = @required;
+	@illegal{@illegal} = @illegal;
+	my $illegal = 0;
+	for(my $i = 1; $i < @menufields; $i++) {
+		my $f = lc $menufields[$i];
+		$menu_fh{$f} = $i;
+		delete $required{$f};
+		delete $suggested{$f};
+		if($illegal{$f}) {
+			$Tag->error({
+						name => 'Illegal field name',
+						set => errmsg( "Name reserved: %s.", $f),
+					});
+			$illegal++;
+		}
+	}
+	@required = keys %required;
+	@suggested = keys %suggested;
+	for(@required) {
+			$Tag->error({
+						set => errmsg( "Required field '%s' missing.", $_),
+					});
+			$illegal++;
+	}
+	delete $Scratch->{qmenu_data} if $illegal;
 	return;
 [/perl]
 
@@ -326,19 +378,13 @@ Hit action for no-content
 [/if]
 	</td>
 	<td width="40%">
-	[if scratch qmessage]
-		<span class=cmessage>[scratchd qmessage]</span>
-		<br>
-	[/if]
-	[if scratch qerror]
-		<span class=cerror>[scratchd qerror]</span>
-		<br>
-	[/if]
-		<br>
-		[page href="__UI_BASE__/file_transfer"
-				form="
-					initial_dir=include/menus
-				"]Delete/Manage files</A>
+	[page href="__UI_BASE__/file_transfer"
+			form="
+				initial_dir=include/menus
+			"]Delete/Manage files</A>
+	<br>
+	<span class=cmessage>[warnings auto=1]</span>
+	[error all=1 text="<ul class=cerror><li>%s</ul>" joiner="<li>"]
 	</td>
 	<td width="30%">
 		<form action="[process href=@@MV_PAGE@@]">
@@ -369,7 +415,11 @@ Hit action for no-content
 [calc]
 	my @out;
 	for(my $i = 1; $i < @menufields; $i++) {
-		push @out, "	\U$menufields[$i]\E = $i;";
+		push @out, "    var \U$menufields[$i]\E = $i;";
+	}
+
+	for (@suggested) {
+		push @out, "    var \U$_;";
 	}
 
 	$i = scalar(@menufields);
@@ -391,6 +441,13 @@ sub {
 		push @$row, '';
 	}
 
+	if($CGI->{remap}) {
+		my $tmp = $row->[$menu_fh{mgroup}];
+		$row->[$menu_fh{mgroup}] = $row->[$menu_fh{msort}];
+		$row->[$menu_fh{msort}] = $tmp;
+	}
+
+	my $i = 0;
 	for(@$row) {
 		my $foundit = '';
 		if($_ eq '0') {
@@ -398,6 +455,9 @@ sub {
 		}
 		elsif(/^[1-9](\d*\.)?\d*$/) {
 			# Do nothing
+		}
+		elsif(! length($_) and exists $menuinit{$menufields[$i]}) {
+			$_ = $menuinit{$menufields[$i]};
 		}
 		elsif($_ !~ /'/) {
 			s/\r/\\r/g;
@@ -422,6 +482,7 @@ sub {
 			}
 			$_ = qq{'$_'};
 		}
+		$i++;
 	}
 	my $line = "$loopname\[" . $loopinc  . "] = [" . join(", ", @$row) . "];";
 #Debug("Final line=$line");
@@ -443,6 +504,7 @@ sub {
 
 	var is_form_changed = 0;
 	var checkcur = 0;
+	var form;
 
 	function form_changed (is) {
 		if(is == undefined) 
@@ -455,7 +517,6 @@ sub {
 
 	function check_change (wid) {
 
-		var form = document.qmenuform;
 		form.cancelsubmit.value = wid == undefined ? 0 : 1;
 
 		if(form_changed() == 0) {
@@ -597,6 +658,25 @@ sub {
 	var page_rep = '';
 	var params_rep = '';
 	var name_rep = '';
+	var showlevel = 1;
+	
+	function toggleShowlevel () {
+	    if(showlevel != 1) {
+			showlevel = 1;
+		}
+		else {
+			showlevel = 0;
+		}
+
+		if(tree_mode == 1) {
+			for(var i = 1; i < lines.length; i++)
+				rewrite_tree(i);
+		}
+		else {
+			showlevel = 0;
+		}
+		form.showlevel.checked = showlevel;
+	}
 	
 	function toggleName (form,val) {
 		if(val != undefined) {
@@ -660,7 +740,6 @@ sub {
 	}
 
 	function find_extended () {
-		var form = document.qmenuform;
 		var el;
 		extended = new Array;
 		emodes = new Array;
@@ -702,12 +781,14 @@ sub {
 // alert("change mode, el=" + el);
 		if(mode == 'tree') {
 			tree_mode = 1;
+			lines[1][MSORT] = 0;
 			el.value = "Set simple mode";
 			ch.checked = 1;
 			tel.style.visibility = 'Visible';
 		}
 		else {
 			tree_mode = 0;
+			lines[1][MSORT] = 'x';
 			el.value = "Set tree mode";
 			ch.checked = 0;
 			tel.style.visibility = 'Hidden';
@@ -716,6 +797,7 @@ sub {
 		for(i = 1; i < lines.length; i++) {
 			rewrite(i);
 		}
+		setOutput();
 		return;
 	}
 
@@ -734,10 +816,10 @@ sub {
 				out = out + 'src="__UI_IMG__box_empty.gif" ';
 			}
 
-			var grp = l[MGROUP] + '';
+			var grp = l[MSORT] + '';
 // alert("rewrite grp=" + grp);
 			if(! grp.match(/^\d+$/) ) {
-				l[MGROUP] = 0;
+				l[MSORT] = 0;
 			}
 			out = out + 'border=0 align=absbottom ' +
 					'id="img' + idx + '"></A>' + "\n" +
@@ -747,10 +829,10 @@ sub {
 					'"><img src="__UI_IMG__right.gif" border=0 align=absbottom></A>' + "\n" +
 					'<a href="javascript:loadForm(' + idx + ");void(0)" +
 					'"><img src="/icons/small/forward.gif" border=0 align=absbottom></A>' + "\n";
-			for(i = 0; i < l[MGROUP]; i++)
+			for(i = 0; i < l[MSORT]; i++)
 				out = out + '&nbsp;&nbsp;&nbsp;'; 
-			if(l[MGROUP] > 0) {
-				out = out + l[MGROUP] + '&nbsp;'
+			if(showlevel == 1 && l[MSORT] > 0) {
+				out = out + l[MSORT] + '&nbsp;'
 			}
 			if(l[PAGE]) {
 				var i;
@@ -877,10 +959,16 @@ sub {
 		var last = len - 2;
 
 		if(tree_mode == 1) {
-			var save = no_alert;
-			no_alert = 1;
-			motion(idx, 'left');
-			no_alert = save;
+			var d = lines[idx + 1];
+			if(l[MSORT] == 0 && d != undefined && d[MSORT] > 0) {
+				motion(idx + 1, 'left');
+			}
+			else {
+				var save = no_alert;
+				no_alert = 1;
+				motion(idx, 'left');
+				no_alert = save;
+			}
 		}
 
 		for( i = idx; i <= last; i++) {
@@ -901,7 +989,6 @@ sub {
 		if( ! check_change() )
 			return;
 
-		var form = document.qmenuform;
 		if(idx == undefined || idx < 1) {
 			idx = checkcur;
 			if (idx > 0)
@@ -931,10 +1018,10 @@ sub {
 
 		if(tree_mode == 1) {
 			if(lines[idx - 1] != undefined) {
-				lines[idx][MGROUP] = lines[idx-1][MGROUP];
+				lines[idx][MSORT] = lines[idx-1][MSORT];
 			}
 			else {
-				lines[idx][MGROUP] = 0;
+				lines[idx][MSORT] = 0;
 			}
 		}
 
@@ -965,8 +1052,6 @@ sub {
 		if( ! check_change() )
 			return;
 
-		var form = document.qmenuform;
-
 		if(idx == undefined || idx <= 0) {
 			idx = checkcur;
 			if (idx <= 0) return;
@@ -974,70 +1059,70 @@ sub {
 		}
 
 		if(msg == undefined)
-			msg = 'loaded';
-
+			msg = 'loaded'; 
+                            
 		if(zeromsg == undefined)
 			zeromsg = 'loaded';
 
 		var l = lines[idx];
 		// alert("idx=" + idx + "\nl=" + l + "\nform=" + form);
 
-		page_rep = form.page.value = l[PAGE];
-		params_rep = form.params.value = unescapeParams(l[FORM]);
-		name_rep = form.name.value = l[NAME];
-		form.description.value = l[DESCRIPTION];
-		form.extended.value = l[EXTENDED];
+		form.name.value      = name_rep   = l[NAME];
+		form.page.value      = page_rep   = l[PAGE];
+		form.params.value    = params_rep = unescapeParams(l[FORM]);
+		form.description.value            = l[DESCRIPTION];
+		form.mgroup.value                 = l[MGROUP];
 
-		if(extended.length > 0) {
-			var j;
-			var hash = l[EXTENDED];
-			if(hash == undefined || ! hash.match(/=>/)) {
-				hash = '[]';
-			}
-			else {
-				hash = hash.replace(/^{\s*/, '[');
-				hash = hash.replace(/,?\s*}\s*$/, ']');
-				// hash = hash.replace(/\\'/g, "-_ESC_QUOTE_-");
-				hash = hash.replace(/\s*(\w+)\s+=>\s+/g, "  '$1', ");
-				hash = hash.replace(/\s=>\s/g, ", ");
-				hash = hash.replace(/\r/g, "\\r");
-			}
-			var ary = eval(hash);
-			for(j = 0; j < extended.length; j++) {
-				var el = extended[j];
-				var nm = extended_name(el.name);
+		if( EXTENDED != undefined ) {
+			form.extended.value = l[EXTENDED];
 
-				if(nm == '')
-					continue;
-				var val;
-				for(j = 0; j < ary.length; j = j + 2) {
-					if( ary[j] == nm ) {
-						val = ary[j + 1];
-						break;
-					}
+			if(extended.length > 0) {
+				var j;
+				var hash = l[EXTENDED];
+				if(hash == undefined || ! hash.match(/=>/)) {
+					hash = '[]';
 				}
+				else {
+					hash = hash.replace(/^{\s*/, '[');
+					hash = hash.replace(/,?\s*}\s*$/, ']');
+					// hash = hash.replace(/\\'/g, "-_ESC_QUOTE_-");
+					hash = hash.replace(/\s*(\w+)\s+=>\s+/g, "  '$1', ");
+					hash = hash.replace(/\s=>\s/g, ", ");
+					hash = hash.replace(/\r/g, "\\r");
+				}
+				var ary = eval(hash);
+				for(j = 0; j < extended.length; j++) {
+					var el = extended[j];
+					var nm = extended_name(el.name);
 
-				if(val == undefined)
-					val = '';
-
-				if(el.type == 'select') {
-					for(j = 0; j < el.length; j++) {
-						if(val == el.options[j].value) {
-							el.selectedIndex = j;
+					if(nm == '')
+						continue;
+					var val;
+					for(j = 0; j < ary.length; j = j + 2) {
+						if( ary[j] == nm ) {
+							val = ary[j + 1];
 							break;
 						}
 					}
-				}
-				else {
-					el.value = val;
+
+					if(val == undefined)
+						val = '';
+
+					if(el.type == 'select') {
+						for(j = 0; j < el.length; j++) {
+							if(val == el.options[j].value) {
+								el.selectedIndex = j;
+								break;
+							}
+						}
+					}
+					else {
+						el.value = val;
+					}
 				}
 			}
 		}
 
-		form.full.disabled = tree_mode;
-		if(tree_mode != 1) {
-			form.full.checked = l[MGROUP] != '' ? 1 : 0;
-		}
 		if(INACTIVE != undefined) {
 			form.inactive.disabled = 0;
 			form.inactive.checked = l[INACTIVE] == 1 ? 1 : 0;
@@ -1081,14 +1166,14 @@ sub {
 		form.params.value = '';
 		form.name.value = '';
 		form.description.value = '';
-		form.extended.value = '';
+		form.mgroup.value = '';
+		if(EXTENDED != undefined)
+			form.extended.value = '';
 
-		form.full.checked = 0;
-		form.full.disabled = tree_mode;
 		form.breakline.checked = 0;
 		form.label.checked = 0;
 		form.lineidx.value = 0;
-		
+
 		if(extended.length > 0) {
 			for(j = 0; j < extended.length; j++) {
 				var el = extended[j];
@@ -1111,8 +1196,6 @@ sub {
 
 	function saveForm (idx, msg, zeromsg) {
 
-		var form = document.qmenuform;
-
 		if(idx == undefined || idx < 1)
 			idx = form.lineidx.value;
 
@@ -1134,44 +1217,38 @@ sub {
 		l[PAGE] = form.page.value;
 		l[FORM] = escapeParams(form.params.value);
 		l[NAME] = form.name.value;
+		l[MGROUP] = form.mgroup.value;
 
 		var ttt = form.description.value;
 		ttt = ttt.replace(/\r\n/g, "\r");
 		l[DESCRIPTION] = ttt.replace(/\n/g, "\r");
 
-		if(extended.length > 0) {
-			ttt = "{\r";
-			var j;
-			for(j = 0; j < extended.length; j++) {
-				var el = extended[j];
-				var nm = extended_name(el.name);
-				if(nm == '')
-					continue;
-				var val;
-				if(el.type == 'select') {
-					val = el.options[el.selectedIndex].value;
+		if(EXTENDED != undefined) {
+			if(extended.length > 0) {
+				ttt = "{\r";
+				var j;
+				for(j = 0; j < extended.length; j++) {
+					var el = extended[j];
+					var nm = extended_name(el.name);
+					if(nm == '')
+						continue;
+					var val;
+					if(el.type == 'select') {
+						val = el.options[el.selectedIndex].value;
+					}
+					else {
+						val = el.value;
+					}
+					val = val.replace(/'/g, "\\'");
+					ttt = ttt + "  " + nm + " => '" + val + "',\n";
 				}
-				else {
-					val = el.value;
-				}
-				val = val.replace(/'/g, "\\'");
-				ttt = ttt + "  " + nm + " => '" + val + "',\n";
-			}
-			ttt = ttt + "}";
-		}
-		else {
-			ttt = form.extended.value;
-		}
-		ttt = ttt.replace(/\r\n/g, "\r");
-		l[EXTENDED] = ttt.replace(/\n/g, "\r");
-
-		if(tree_mode != 1) {
-			if(form.full.checked) {
-				l[MGROUP] = 'full';
+				ttt = ttt + "}";
 			}
 			else {
-				l[MGROUP] = '';
+				ttt = form.extended.value;
 			}
+			ttt = ttt.replace(/\r\n/g, "\r");
+			l[EXTENDED] = ttt.replace(/\n/g, "\r");
 		}
 
 		if(INACTIVE != undefined) {
@@ -1205,7 +1282,6 @@ sub {
 			var ttt = "" + i;
 			while( ttt.length < 3 )
 				ttt = '0' + ttt;
-			lines[i][0] = lines[i][MSORT] = ttt;
 			var tl = new Array;
 			var j;
 			for( j = 0; j < linelen; j++) {
@@ -1214,7 +1290,8 @@ sub {
 					tl[j] = '';
 			}
 			tl[DESCRIPTION] = tl[DESCRIPTION].replace(/\r/g, "\\r");
-			tl[EXTENDED] = tl[EXTENDED].replace(/\r/g, "\\r");
+			if(EXTENDED != undefined) 
+				tl[EXTENDED] = tl[EXTENDED].replace(/\r/g, "\\r");
 			output[i] = tl.join("\t");
 		}
 		document.qmenuform.qmenu_text.value = output.join("\n") + "\n";
@@ -1276,42 +1353,42 @@ sub {
 			var l = lines[x];
 			var u = lines[up];
 			var d = lines[dn];
-			u[MGROUP] *= 1;
-			l[MGROUP] *= 1;
-			if(isNaN(u[MGROUP])) {
-				u[MGROUP] = 0;
+			u[MSORT] *= 1;
+			l[MSORT] *= 1;
+			if(isNaN(u[MSORT])) {
+				u[MSORT] = 0;
 			}
 
-			if(isNaN(l[MGROUP])) {
-				l[MGROUP] = 0;
+			if(isNaN(l[MSORT])) {
+				l[MSORT] = 0;
 			}
 
 			if(motion == 'left') {
-				if(l[MGROUP] == 0) {
+				if(l[MSORT] == 0) {
 					if(x == idx) {
 						do_alert("Already at top level.");
 						break;
 					}
 				}
 				else {
-					l[MGROUP] -= 1;
+					l[MSORT] -= 1;
 				}
-				while (x >= end && d != undefined && d[MGROUP] - 1 > l[MGROUP]) {
-					d[MGROUP] -= 1;
+				while (x >= end && d != undefined && d[MSORT] - 1 > l[MSORT]) {
+					d[MSORT] -= 1;
 					rewrite_tree(dn);
 					dn++;
 					d = lines[dn];
 				}
 			}
 			else {
-				if(l[MGROUP] > u[MGROUP]) {
+				if(l[MSORT] > u[MSORT]) {
 					if(x == idx) {
 						do_alert("Already at farthest right, need parent at same level or higher.");
 						break;
 					}
 				}
 				else {
-					l[MGROUP] += 1;
+					l[MSORT] += 1;
 				}
 			}
 			dn++;
@@ -1425,7 +1502,7 @@ Save to new menu <input name=qmenu_new type=text size=20 value="[cgi qmenu_new]"
 		<div id=treebox>
 		<input type=checkbox name=qmenu_tree value=1> Tree mode
 		<input type=checkbox name=qmenu_write_tree value=1> Write tree to DB
-		<input type=checkbox name=showlevel value=1> Show numerical level
+		<input type=checkbox name=showlevel value=1 onClick="toggleShowlevel()" CHECKED=1> Show numerical level
 		</div>
 <br>
 		<input type=button
@@ -1501,9 +1578,9 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 				Options
 			</td>
 			<td class=cdata>
-				<input name=full  type=checkbox value=1 onChange="form_changed(1);">Only on full menu
+				Menu Group <input name=mgroup  type=text onChange="form_changed(1);">
 				&nbsp;&nbsp;
-				<input name=inactive  type=checkbox value=1 onChange="form_changed(1);" disabled=0>Inactive entry<br>
+				<input name=inactive  type=checkbox value=1 onChange="form_changed(1);">Inactive entry<br>
 				<input name=label type=checkbox value=1 onChange="form_changed(1);toggleName(this.form)">Label only<br>
 				<input name=breakline type=checkbox value=1 onChange="form_changed(1);toggleBreak(this.form)">Break line
 			</td>
@@ -1538,25 +1615,13 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 				value="Cancel">
 			</td>
 		</tr>
-		<tr>
-			<td class=clabel>
-				Extended Parameters (advanced)
-			</td>
-			<td class=cdata>
-				<textarea cols=50 rows=4 name=extended onChange="form_changed(1);"></textarea>
-			</td>
-		</tr>
-		</table>
-	</td>
-</tr>
-</table>
-</form>
 <script>
+		form = document.qmenuform;
 		var i ;
 		var tm = 1;
 
 		for(i = 1; i < lines.length; i++) {
-			if( isNaN(lines[i][MGROUP] * 1)  ) {
+			if( isNaN(lines[i][MSORT] * 1)  ) {
 					tm=0;
 					break;
 			}
@@ -1574,9 +1639,30 @@ onChange="this.form.qmenu_new.focus()"></textarea>
 
 		set_checked_buttons();
 		set_save_buttons();
+		if(INACTIVE == undefined) {
+			document.qmenuform.inactive.disabled = 1;
+		}
 		initialized = 1;
 		find_extended();
+		if(EXTENDED != undefined) {
+			document.write("<tr>" +
+'			<td class=clabel>' +
+'				Extended Parameters (advanced)' +
+'			</td>' +
+'			<td class=cdata>' +
+'				<textarea cols=50 rows=4 name=extended onChange="form_changed(1);"></textarea>' +
+'			</td>' +
+'		</tr>');
+		}
+
 </script>
+		</table>
+	</td>
+</tr>
+</table>
+<a href="javascript:document.qmenuform.inactive.disabled = 1; void(0)">Disable</A>
+<a href="javascript:document.qmenuform.inactive.disabled = 0; void(0)">Enable</A>
+</form>
 <!-- ----- END REAL STUFF ----- -->
 @_UI_STD_FOOTER_@
 <!-- page: @@MV_PAGE@@ -->
