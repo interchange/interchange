@@ -1,7 +1,4 @@
-# differences from RH 6 specfile:
-# /home/httpd -> /var/www
-# /usr/man -> /usr/share/man
-%define interchange_version		4.5.8
+%define interchange_version		4.6.0
 %define interchange_package		interchange
 %define interchange_user		interch
 %define build_cats				construct
@@ -11,14 +8,14 @@
 Name: interchange
 Summary: Interchange is a powerful database access and HTML templating daemon focused on e-commerce.
 Group: Applications/Internet
-Version: 4.5.8
+Version: 4.6.0
 Copyright: GNU General Public License
-Release: 1.rh7
+Release: 1.rh6
 URL: http://developer.akopia.com/
 Packager: Akopia <info@akopia.com>
 Distribution: Red Hat Linux Applications CD
 Vendor: Akopia, Inc.
-Source: http://ftp.minivend.com/interchange/beta/interchange-4.5.8.tar.gz
+Source: http://ftp.minivend.com/interchange/beta/interchange-4.6.0.tar.gz
 Provides: interchange
 Obsoletes: interchange
 
@@ -37,8 +34,8 @@ perl Makefile.PL \
 	rpmbuilddir=$RPM_BUILD_ROOT \
 	INTERCHANGE_USER=%{interchange_user} \
 	PREFIX=$RPM_BUILD_ROOT/usr/lib/interchange \
-	INSTALLMAN1DIR=$RPM_BUILD_ROOT/usr/share/man/man1 \
-	INSTALLMAN3DIR=$RPM_BUILD_ROOT/usr/share/man/man8 \
+	INSTALLMAN1DIR=$RPM_BUILD_ROOT/usr/man/man1 \
+	INSTALLMAN3DIR=$RPM_BUILD_ROOT/usr/man/man8 \
 	force=1
 make > /dev/null
 make test
@@ -52,7 +49,7 @@ fi
 rm -rf $RBR
 mkdir -p $RBR
 make install
-gzip $RBR/usr/share/man/man*/* 2>/dev/null
+gzip $RBR/usr/man/man*/* 2>/dev/null
 cp extra/HTML/Entities.pm $RBR/usr/lib/interchange/build
 cp extra/IniConf.pm $RBR/usr/lib/interchange/build
 chown -R root.root $RBR
@@ -107,14 +104,14 @@ useradd -M -r -d /var/lib/interchange -s /bin/bash -c "Interchange server" %{int
 %config(noreplace) /etc/interchange.cfg
 %config(noreplace) /etc/logrotate.d/interchange
 %config /etc/rc.d/init.d/interchange
-/var/www/cgi-bin/construct
-/var/www/html/construct
-/var/www/html/akopia
+/home/httpd/cgi-bin/construct
+/home/httpd/html/construct
+/home/httpd/html/akopia
 /var/lib/interchange/construct
 /usr/sbin/interchange
 /usr/lib/interchange
-/usr/share/man/man1
-/usr/share/man/man8
+/usr/man/man1
+/usr/man/man8
 %dir /var/lib/interchange
 /var/log/interchange
 /var/run/interchange
@@ -131,14 +128,14 @@ chown -R %{interchange_user}.%{interchange_user} /var/run/interchange
 
 for i in %{build_cats}
 do
-	ln -s /var/www/html/$i/images /var/lib/interchange/$i
-	chown %{interchange_user}.%{interchange_user} /var/www/cgi-bin/$i
-	chmod 4755 /var/www/cgi-bin/$i
+	ln -s /home/httpd/html/$i/images /var/lib/interchange/$i
+	chown %{interchange_user}.%{interchange_user} /home/httpd/cgi-bin/$i
+	chmod 4755 /home/httpd/cgi-bin/$i
 done
 
 # Set the hostname
 HOST=`hostname`
-perl -pi -e "s/RPM_CHANGE_HOST/$HOST/g"	/var/lib/interchange/*/catalog.cfg /var/lib/interchange/*/products/variable.txt /var/www/html/construct/index.html
+perl -pi -e "s/RPM_CHANGE_HOST/$HOST/g"	/var/lib/interchange/*/catalog.cfg /var/lib/interchange/*/products/variable.txt /home/httpd/html/construct/index.html
 
 # Get to a place where no random Perl libraries should be found
 cd /usr
