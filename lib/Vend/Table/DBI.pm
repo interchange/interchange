@@ -1,6 +1,6 @@
 # Vend::Table::DBI - Access a table stored in an DBI/DBD database
 #
-# $Id: DBI.pm,v 2.0.2.6 2002-06-17 15:57:28 jon Exp $
+# $Id: DBI.pm,v 2.0.2.7 2002-07-15 21:09:15 jon Exp $
 #
 # Copyright (C) 1996-2002 Red Hat, Inc. <interchange@redhat.com>
 #
@@ -20,7 +20,7 @@
 # MA  02111-1307  USA.
 
 package Vend::Table::DBI;
-$VERSION = substr(q$Revision: 2.0.2.6 $, 10);
+$VERSION = substr(q$Revision: 2.0.2.7 $, 10);
 
 use strict;
 
@@ -966,11 +966,10 @@ sub set_slice {
 		$sql = "update $s->[$TABLE] SET $fstring WHERE $s->[$KEY] = $tkey";
 	}
 	else {
-		my $found;
 		for(my $i = 0; $i < @$fary; $i++) {
 			next unless $fary->[$i] eq $s->[$KEY];
-			splice @$fary, $i;
-			splice @$vary, $i;
+			splice @$fary, $i, 1;
+			splice @$vary, $i, 1;
 			last;
 		}
 		my $fstring = join ",", @$fary;
