@@ -1,0 +1,137 @@
+#!/usr/bin/make -f
+#
+# Copyright 2000,2001 by Stefan Hornburg (Racke) <racke@linuxia.de>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public
+# License along with this program; if not, write to the Free
+# Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+# MA  02111-1307  USA.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# This is the debhelper compatability version to use.
+export DH_COMPAT=2
+
+ifndef PERL
+	PERL = /usr/bin/perl
+endif
+TMP =`pwd`/debian/tmp
+
+build: build-stamp
+build-stamp:
+	dh_testdir
+
+# Add here commands to compile the package.
+	$(PERL) Makefile.PL force=1 \
+		INTERCHANGE_USER=interchange \
+		PREFIX=/usr/lib/interchange
+	$(MAKE)
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp install-stamp
+
+	# Add here commands to clean up after the build process.
+	-$(MAKE) clean
+
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+# Add here commands to install the package into debian/tmp.
+	$(MAKE) install PREFIX=$(TMP)/usr INSTALLARCHLIB=$(TMP)/usr/lib/interchange INSTALLPRIVLIB=$(TMP)/usr/lib/interchange INSTALLMAN1DIR=$(TMP)/usr/share/man/man1 INSTALLMAN3DIR=$(TMP)/usr/share/man/man8
+# Sample configuration file not needed (code in interchange.PL
+# to determine configuration file location will stop to work too)
+	rm $(TMP)/usr/lib/interchange/interchange.cfg.dist
+# Create symbolic link for the configuration file. Makes
+# more sense than script hacking.
+	ln -s /etc/interchange/interchange.cfg $(TMP)/usr/lib/interchange
+# Setup wrapper
+	mkdir -p $(TMP)/usr/sbin
+	cp debian/interchange.wrapper $(TMP)/usr/sbin/interchange
+	mkdir -p $(TMP)/usr/bin
+	cp debian/makecat.wrapper $(TMP)/usr/bin/makecat
+	chmod +x $(TMP)/usr/sbin/interchange $(TMP)/usr/bin/makecat
+# Setup configuration directory
+	mkdir -p $(TMP)/etc/interchange/
+	cp debian/interchange.cfg debian/catalogs.cfg debian/makecat.cfg \
+		$(TMP)/etc/interchange    
+# build Interchange control program(s)
+	mkdir -p $(TMP)/usr/lib/cgi-bin/ic
+	$(PERL) scripts/compile_link \
+		--socket=/var/run/interchange/interchange.sock \
+		--port=7786 \
+		--host=127.0.0.1 \
+		--source=dist/src \
+		--build=$(TMP)/usr/lib/cgi-bin/ic
+	cd $(TMP)/usr/lib/cgi-bin/ic; rm compile.pl config* mod_perl_tlink.pl mvctl.c syscfg* testcgi tlink.* vlink.* cpan_local_install
+# Add link sources
+	mkdir -p $(TMP)/usr/lib/interchange/src
+	for file in dist/src/*; do if test -f $$file; then cp $$file $(TMP)/usr/lib/interchange/src; fi; done
+# UI images (construct gets replaced by foundation in IC 4.7 and up)
+	mkdir -p $(TMP)/var/www/ui/admin
+	if [ -f dist/construct ]; then \
+		cp dist/construct/images/poweredby.gif $(TMP)/var/www/ui; \
+    fi
+	for file in share/akopia/ui/admin/*.*; do cp $$file $(TMP)/var/www/ui/admin; done
+	mkdir $(TMP)/var/www/ui/navigation
+	for file in share/akopia/ui/navigation/*.*; do cp $$file $(TMP)/var/www/ui/navigation; done
+# UI help
+	mv $(TMP)/usr/lib/interchange/share/akopia/ui/help $(TMP)/var/www/ui/help
+	rm $(TMP)/var/www/ui/help/*.pl
+	rm -r $(TMP)/var/www/ui/help/src
+	rm -r $(TMP)/usr/lib/interchange/share/akopia/
+# remove unneeded stuff
+	rm $(TMP)/usr/lib/interchange/error.log
+	rm $(TMP)/usr/lib/interchange/hints.pl
+	rm $(TMP)/usr/lib/interchange/_session_storable
+	rm $(TMP)/usr/lib/interchange/_uid
+# install logrotate configuration file
+	install -m 0755 -d $(TMP)/etc/logrotate.d/
+	install -m 0644 debian/interchange.logrotate $(TMP)/etc/logrotate.d/interchange
+	dh_movefiles
+	touch install-stamp
+
+# Build architecture-independent files here.
+binary-indep: build install
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_installdebconf
+	dh_installdocs 
+# install init.d script
+	dh_installinit -- defaults 21 19
+# install cron script
+	dh_installcron
+#	dh_installmanpages -v -pinterchange-doc
+	dh_installchangelogs 
+	dh_compress
+	dh_fixperms
+	# You may want to make some executables suid here.
+	dh_installdeb
+	dh_perl usr/lib/interchange
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install

@@ -1,0 +1,10 @@
+#! /bin/sh -e
+
+. /etc/interchange/init.cfg
+OPTS="--log /var/log/interchange/error.log --confdir /var/run/interchange"
+CMD="/usr/lib/interchange/bin/interchange $OPTS $@"
+if [ "$UID" -eq 0 ]; then
+	su -s /bin/sh -c "$CMD" $USER
+else
+	$CMD
+fi

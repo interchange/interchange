@@ -1,0 +1,51 @@
+Template: interchange/mode
+Type: select
+Choices: unix mode, internet mode, both
+Default: unix mode
+Description: Start Interchange in Unix mode, Internet mode or both ?
+ Unix mode is is the most secure way to run Interchange, for there is 
+ no way for systems on the internet to interact with the Interchange server.
+
+Template: interchange/user
+Type: string
+Default: interchange
+Description: Which is the name of the user to run the interchange server as ?
+ This determines the user for the interchange server and for file permissions.
+ Please note that using another user has serious security implications.
+ Don't choose root, it is not recommended and will be discarded anyway.
+
+Template: interchange/createuser
+Type: boolean
+Default: true
+Description: Should I create the user ${USER} ?
+
+Template: interchange/usernoroot
+Type: note
+Description: It is not allowed to run interchange as user root !
+ You have been warned. Either choose an appropriate one or
+ stay with the default.
+
+Template: interchange/group
+Type: string
+Default: interchange
+Description: Which is the name of the group to run the interchange server as ?
+ This determines the group for the interchange server and for file permissions.
+ Please note that using another user has serious security implications.
+ Don't choose root, it is not recommended and will be discarded anyway.
+
+Template: interchange/groupnoroot
+Type: note
+Description: It is not allowed to install interchange with group root !
+ You have been warned. Either choose an appropriate one or
+ stay with the default.
+
+Template: interchange/creategroup
+Type: boolean
+Default: true
+Description: Should I create the group ${GROUP} ?
+
+Template: interchange/olduser
+Type: string
+Default: ""
+Description: 
+

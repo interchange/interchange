@@ -1,0 +1,72 @@
+interchange (4.6.3-1) unstable; urgency=low
+
+  * new upstream release
+  * UI start page hack replaced by a better solution
+
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Sat, 10 Feb 2001 03:07:24 +0100
+
+interchange (4.6.2-1) unstable; urgency=low
+
+  * new upstream release
+  * interchange wrapper switches to the interchange user if invoked
+    as root
+  * new usertag email_html
+  * added documentroot value to makecat.cfg
+  * ensure appropriate permissions for wrappers
+  * added interchange user to makecat options
+  * example added to catalogs.cfg
+  (suggested by Heiko Schlittermann <heiko@schlittermann.de>)
+  * better handling of documentation
+  * new route options locale and sub
+  * upload of new files fixed, backported modifications to
+    imagehelper stuff
+  * hack to get another start page for the UI
+  * improvement for database downloads from UI page gentable
+  * create symbolic link for configuration file
+  * hints script removed from distribution
+  * file widget added
+  * architecture of interchange package changed to any
+  * location of global log file set by the wrapper now
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu,  8 Feb 2001 21:31:01 +0100
+
+interchange (4.6.1-1) unstable; urgency=low
+
+  * new upstream release
+  * pragma substitute_table_image added
+  * emit error message on undefined filters
+  * user/group configuration introduced
+  * use directory /usr/lib/cgi-bin/ic for link programs
+  * added CGI_BASE to configuration file
+  * user defined break labels
+  * moved UI help stuff to interchange-ui package, removed unneeded
+    stuff in share, link help to localhost
+  * options checkfor and signal, type radio added to formel user tag
+  * fix for empty code field within meta editor
+  * some absolute font settings extinguished
+  * profile check de_postcode added
+  * protect currency against leaking locale
+  * imagehelper widget fix
+  * wrapper for interchange and makecat added
+  
+ -- Stefan Hornburg (Racke) <racke@linuxia.de>  Thu,  3 Dec 2000 18:27:20 +0100
+
+interchange (4.6.0-1) unstable; urgency=low
+
+  * new upstream release 
+  * modified expire scripts so they work from cron
+  * log form action errors
+  * imagehelper widget added
+  * option size of usertag formel implemented
+
+ -- Stefan Hornburg <racke@linuxia.de>  Fri, 27 Oct 2000 11:50:14 +0200
+
+interchange (4.5.8-1) unstable; urgency=low
+  
+  * initial release
+
+ -- Stefan Hornburg <racke@linuxia.de>  Fri, 20 Oct 2000 22:16:24 +0200
+
+Local variables:
+mode: debian-changelog
+End:

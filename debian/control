@@ -1,0 +1,33 @@
+Source: interchange
+Section: web
+Priority: optional
+Maintainer: Stefan Hornburg <racke@linuxia.de>
+Standards-Version: 3.1.1.1
+Build-Depends: debhelper
+
+Package: interchange-doc
+Architecture: all
+Description: Interchange documentation
+ Additional Interchange documentation
+
+Package: interchange-cat-construct
+Architecture: all
+Depends: interchange
+Description: Sample Interchange catalog
+ Sample Interchange catalog
+
+Package: interchange-ui
+Architecture: all
+Depends: ${perl:Depends}, interchange
+Description: Interchange administration interface
+ Interchange administration interface
+
+Package: interchange
+Architecture: any
+Depends: ${perl:Depends}, debconf, libdigest-md5-perl, libhtml-parser-perl, libmime-base64-perl, libsafe-hole-perl (>=0.06), libsql-statement-perl, libstorable-perl, liburi-perl, logrotate
+Recommends: interchange-ui
+Description: e-commerce and general HTTP database display system
+ Interchange is a database access and retrieval system focused on e-commerce.
+ It allows customers to select items to buy from catalog pages. The program
+ tracks user information in sessions and interacts with a HTTP server
+ through sockets.
